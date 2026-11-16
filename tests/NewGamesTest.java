@@ -4,6 +4,7 @@ import java.util.*;
 import sa.urtv.screensaver.games.forehead.ForeheadGame;
 import sa.urtv.screensaver.games.author.AuthorGame;
 import sa.urtv.screensaver.games.closest.ClosestGame;
+import sa.urtv.screensaver.games.liar.LiarGame;
 
 /** For tests/new_games_test.py: the rules of the new games (4.4) on a plain JVM, fake clocks. Prints PASS/FAIL lines. */
 public final class NewGamesTest {
@@ -107,10 +108,38 @@ public final class NewGamesTest {
         check("closest: the bundled bank opens and parses (" + (real == null ? 0 : real.size()) + " items, at least 120), every item has a unit text or none, an English question, no Israel", real != null && real.size() >= 120 && real.stream().allMatch(p -> !p.q[1].isEmpty() && !p.q[1].contains("Israel") && !p.q[0].contains("إسرائيل")));
     }
 
+    static void liar(String bundleFile) throws Exception {
+        LiarGame g = new LiarGame(5, prompts(60).subList(0, 4), new Random(9));
+        int[] t = g.tellers();
+        check("liar: three different tellers, exactly one of them the liar; the TV does not know the liar before the reveal",
+            t.length == 3 && t[0] != t[1] && t[1] != t[2] && t[0] != t[2] && java.util.stream.IntStream.of(t).filter(g::liarIs).count() == 1 && g.liar() == -1 && g.phase == LiarGame.Phase.DEAL);
+        g.startTelling(); check("liar: the telling is on", g.phase == LiarGame.Phase.TELL && !g.vote(0, t[0])); g.endTelling();
+        int voter1 = -1, voter2 = -1; for (int p = 0; p < 5; p++) if (!g.isTeller(p)) { if (voter1 < 0) voter1 = p; else voter2 = p; }
+        int liarP = -1; for (int x : t) if (g.liarIs(x)) liarP = x; int other = -1; for (int x : t) if (x != liarP) other = x;
+        check("liar: a teller cannot vote, a vote must name one of the three, once each", !g.vote(t[0], t[1]) && !g.vote(voter1, voter1) && g.vote(voter1, liarP) && !g.vote(voter1, other));
+        g.vote(voter2, other); check("liar: all voted (the five minus the three)", g.allVoted());
+        g.reveal();
+        check("liar: finding the liar scores 2, each wrong vote scores 1 for the liar; the liar is named only now", g.liar() == liarP && g.gained[voter1] == 2 && g.gained[liarP] == 1 && g.gained[voter2] == 0);
+        int[] before = g.told.clone(); g.next();
+        int[] t2 = g.tellers(); boolean fresh = true; for (int x : t2) fresh &= before[x] == 1 || before[x] == 0;
+        check("liar: the next round's tellers are the players who have told the fewest times", g.phase == LiarGame.Phase.DEAL && g.index == 1 && fresh);
+        int[] counts = new int[6];
+        LiarGame h = new LiarGame(6, prompts(60).subList(0, 4), new Random(4));
+        for (int r = 0; r < 4; r++) { for (int x : h.tellers()) counts[x]++; h.startTelling(); h.endTelling(); h.reveal(); h.next(); }
+        int mn = 99, mx = 0; for (int c : counts) { mn = Math.min(mn, c); mx = Math.max(mx, c); }
+        check("liar: over four rounds of six players everyone has told at least once and nobody more than twice", mn >= 1 && mx <= 3 && h.phase == LiarGame.Phase.END);
+        boolean threw = false; try { new LiarGame(3, prompts(60), new Random(1)); } catch (IllegalArgumentException e) { threw = true; }
+        check("liar: three players are refused (four to ten)", threw);
+        byte[] json = GameBundle.open("liar", java.nio.file.Files.readAllBytes(java.nio.file.Paths.get(bundleFile)));
+        List<AuthorGame.Prompt> real = json == null ? null : AuthorGame.parse(MiniJson.parse(new String(json, java.nio.charset.StandardCharsets.UTF_8)));
+        check("liar: the bundled topics open and parse (" + (real == null ? 0 : real.size()) + ", at least 80), each with an English text", real != null && real.size() >= 80 && real.stream().allMatch(p -> !p.q[1].isEmpty()));
+    }
+
     public static void main(String[] a) throws Exception {
         forehead();
         author(a[0]);
         closest(a[1]);
+        liar(a[2]);
         System.exit(failed == 0 ? 0 : 1);
     }
 }
