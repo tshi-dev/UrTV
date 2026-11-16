@@ -928,31 +928,67 @@ public class SettingsActivity extends Activity {
         b.show();
     }
 
+    /**
+     * 4.3.3: the offline list first (CitySearch: the built-in cities and assets/cities-more.txt), read off the main thread; its last row asks the
+     * online search. Nothing offline: the online search at once, as before.
+     */
+    private void searchCity(final int country) {
+        ask("اسم المدينة أو القرية", q -> {
+            final String code = country < 0 ? "" : Location.COUNTRIES[country][0];
+            toast("جارٍ البحث…");   // the first search reads the list: a second or two on a weak TV
+            new Thread(() -> {
+                final List<CitiesMore.Place> found = CitySearch.find(q, code, 30);
+                runOnUiThread(() -> {
+                    if (isFinishing()) return;
+                    if (found.isEmpty()) { searchOnline(country, q); return; }
+                    final int n = found.size();
+                    boolean online = country < 0 || Location.searchable(country);
+                    String[] rows = new String[n + (online ? 1 : 0)];
+                    for (int i = 0; i < n; i++) rows[i] = placeRow(found.get(i).row);
+                    if (online) rows[n] = "ابحث على الإنترنت…";
+                    new Dlg(this).setTitle("اختر المكان").setItems(rows, (d, i) -> {
+                        if (i >= n) { searchOnline(country, q); return; }
+                        String[] c = found.get(i).row;
+                        prefs.setCity(c[0], c[1], c[2], c[3], c[5]);
+                        render();
+                    }).show();
+                });
+            }).start();
+        });
+    }
+
+    /** a row of the offline results: «أبها · Abha  ·  السعودية», with English «Abha  ·  Saudi Arabia» */
+    private static String placeRow(String[] c) {
+        String land = S.en() ? Places.country(c[5]) : Location.countryLabel(c[5], c[3]);
+        if (S.en()) return (c[4] != null && !c[4].isEmpty() ? c[4] : c[0]) + (land == null ? "" : "  ·  " + land);
+        return c[0] + (c[4] != null && !c[4].isEmpty() ? " · " + c[4] : "") + (land == null ? "" : "  ·  " + land);
+    }
+
     // Any searchable country, or the one country picked, from Open-Meteo's GeoNames search.
     // Without a country filter, ask for the world's hundred best matches; PS keeps its checked list.
-    private void searchCity(final int country) {
-        ask("اسم المدينة أو القرية", q -> fetch("https://geocoding-api.open-meteo.com/v1/search?count=100&language=" + (S.en() ? "en" : "ar") + "&name="
+    private void searchOnline(final int country, final String q) {
+        fetch("https://geocoding-api.open-meteo.com/v1/search?count=100&language=" + (S.en() ? "en" : "ar") + "&name="
             + Uri.encode(q) + (country < 0 ? "" : "&countryCode=" + Location.COUNTRIES[country][0]), json -> {
-                JSONArray all = new JSONObject(json).optJSONArray("results"), a = new JSONArray();
-                for (int k = 0; all != null && k < all.length() && a.length() < 20; k++)
-                    if (PrayerMethod.searchable(all.getJSONObject(k).optString("country_code"))) a.put(all.getJSONObject(k));
-                if (a.length() == 0) { toast("لا توجد نتائج"); return; }
-                final int n = a.length();
-                final String[] names = new String[n], lats = new String[n], lons = new String[n], zones = new String[n], countries = new String[n], rows = new String[n];
-                for (int i = 0; i < n; i++) {
-                    JSONObject c = a.getJSONObject(i);
-                    names[i] = c.optString("name");
-                    countries[i] = c.optString("country_code");
-                    lats[i] = String.valueOf(c.optDouble("latitude"));
-                    lons[i] = String.valueOf(c.optDouble("longitude"));
-                    zones[i] = c.optString("timezone", "");   // the place's own; empty: the TV's (Prefs.cityTz)
-                    String region = c.optString("admin1", "");
-                    String land = c.optString("country", "");   // several countries now: the row says which
-                    rows[i] = names[i] + (region.isEmpty() ? "" : "  ·  " + region) + (land.isEmpty() ? "" : "  ·  " + land);
-                }
-                new Dlg(this).setTitle("اختر المكان")
-                    .setItems(rows, (d, i) -> { prefs.setCity(names[i], lats[i], lons[i], zones[i], countries[i]); render(); }).show();
-            }));
+            JSONArray all = new JSONObject(json).optJSONArray("results"), a = new JSONArray();
+            for (int k = 0; all != null && k < all.length() && a.length() < 20; k++)
+                if (PrayerMethod.searchable(all.getJSONObject(k).optString("country_code"))) a.put(all.getJSONObject(k));
+            if (a.length() == 0) { toast("لا توجد نتائج"); return; }
+            final int n = a.length();
+            final String[] names = new String[n], lats = new String[n], lons = new String[n], zones = new String[n], countries = new String[n], rows = new String[n];
+            for (int i = 0; i < n; i++) {
+                JSONObject c = a.getJSONObject(i);
+                names[i] = c.optString("name");
+                countries[i] = c.optString("country_code");
+                lats[i] = String.valueOf(c.optDouble("latitude"));
+                lons[i] = String.valueOf(c.optDouble("longitude"));
+                zones[i] = c.optString("timezone", "");   // the place's own; empty: the TV's (Prefs.cityTz)
+                String region = c.optString("admin1", "");
+                String land = c.optString("country", "");   // several countries now: the row says which
+                rows[i] = names[i] + (region.isEmpty() ? "" : "  ·  " + region) + (land.isEmpty() ? "" : "  ·  " + land);
+            }
+            new Dlg(this).setTitle("اختر المكان")
+                .setItems(rows, (d, i) -> { prefs.setCity(names[i], lats[i], lons[i], zones[i], countries[i]); render(); }).show();
+        });
     }
 
     /** Followed teams: untick to remove, or add one (presets, league browsing, search). Up to 20. */
