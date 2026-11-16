@@ -53,7 +53,7 @@ with tempfile.TemporaryDirectory() as tmp:
     tmp = Path(tmp)
     queries = [q for q, _ in CASES] + NAMES
     (tmp / "queries.txt").write_text("\n".join(queries) + "\n", encoding="utf-8")
-    r = subprocess.run([javac, "-encoding", "UTF-8", "-d", str(tmp), str(SRC / "CityMatch.java"), str(SRC / "Cities.java"),
+    r = subprocess.run([javac, "-encoding", "UTF-8", "-d", str(tmp), str(SRC / "CityMatch.java"), str(SRC / "Cities.java"), str(SRC / "CitySearch.java"), str(SRC / "CitiesMore.java"),
                         str(SRC / "TeamSearch.java"), str(ROOT / "tests/CityMatchRun.java")], capture_output=True, text=True)
     check("CityMatch.java compiles", r.returncode == 0, r.stderr[-600:])
     if r.returncode == 0:

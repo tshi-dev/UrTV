@@ -45,7 +45,7 @@ original = re.findall(r'\{"[^"]+", "[-\d.]+", "[-\d.]+"(?:, "[^"]+")?\}', java)
 check('all 374 original city rows are byte-for-byte unchanged', len(original) == 374 and hashlib.sha256('\n'.join(original).encode()).hexdigest() == 'c48a06f40efe53347b707158686f75679534067a45d0ac70799cfee2a46ccd89')
 with tempfile.TemporaryDirectory() as temp:
     temp = Path(temp)
-    subprocess.run(['javac', '-encoding', 'UTF-8', '-d', str(temp), *map(str, [src / 'Cities.java', src / 'CityMatch.java', src / 'TeamSearch.java', src / 'Location.java', src / 'PrayerMethod.java', ROOT / 'tests/WorldCitiesRun.java'])], check=True)
+    subprocess.run(['javac', '-encoding', 'UTF-8', '-d', str(temp), *map(str, [src / 'Cities.java', src / 'CityMatch.java', src / 'CitySearch.java', src / 'CitiesMore.java', src / 'TeamSearch.java', src / 'Location.java', src / 'PrayerMethod.java', ROOT / 'tests/WorldCitiesRun.java'])], check=True)
     result = subprocess.run(['java', '-Dfile.encoding=UTF-8', '-cp', str(temp), 'sa.urtv.screensaver.WorldCitiesRun'], capture_output=True, check=True).stdout.decode('utf-8').splitlines()
     decoded = [line.split('\t') for line in result if line.startswith('CITY\t')]
     world = [r for r in decoded if r[6]]

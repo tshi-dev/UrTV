@@ -67,4 +67,50 @@ try:
 except ImportError:
     print("SKIP the generator check: pip install -r .github/tools/cities-world/requirements.txt")
 
+# searches: the first result (country|Arabic) for what people type; CityMatch (saver.sh city): the name it takes
+SEARCH = [
+    ("الرياض", "SA|الرياض"), ("رياض", "SA|الرياض"), ("Riyadh", "SA|الرياض"), ("riyadh", "SA|الرياض"),
+    ("ابها", "SA|أبها"), ("أبها", "SA|أبها"), ("Abha", "SA|أبها"), ("خميس", "SA|خميس مشيط"), ("Khamis Mushait", "SA|خميس مشيط"), ("مشيط", "SA|خميس مشيط"),
+    ("جده", "SA|جدة"), ("Jeddah", "SA|جدة"), ("مكه", "SA|مكة المكرمة"), ("Mecca", "SA|مكة المكرمة"), ("المدينه", "SA|المدينة المنورة"),
+    ("الدمام", "SA|الدمام"), ("Dammam", "SA|الدمام"), ("الاحساء", "SA|الهفوف"), ("حفر", "SA|حفر الباطن"),
+    ("برلين", "DE|برلين"), ("Berlin", "DE|برلين"), ("Munich", None), ("ميونخ", None), ("Hamburg", None), ("Frankfurt", None), ("Cologne", None),
+    ("الأحساء", "SA|الهفوف"), ("Hofuf", "SA|الهفوف"), ("Al Ula", "SA|العلا"), ("العلا", "SA|العلا"), ("ديرة", "AE|ديرة"), ("الموصل", "IQ|الموصل"),
+    ("Dearborn", "US|ديربورن"), ("ديربورن", "US|ديربورن"), ("Alexandria", "EG|الإسكندرية"), ("Toronto", "CA|تورنتو"), ("Bursa", "TR|بورصة"),
+    ("Düsseldorf", "DE|دوسلدورف"), ("Dusseldorf", "DE|دوسلدورف"), ("Stuttgart", "DE|شتوتغارت"), ("شرورة", "SA|شرورة"), ("تنومه", "SA|تنومة"),
+    ("Dubai", "AE|دبي"), ("Doha", "QA|الدوحة"), ("Muscat", "OM|مسقط"), ("Cairo", "EG|القاهرة"),
+]
+MATCH = [("Riyadh", "الرياض"), ("ابها", "أبها"), ("خميس", "خميس مشيط"), ("Alexandria", "الإسكندرية"), ("Dearborn", "ديربورن"), ("Munich", "ميونخ")]
+javac, javaexe = shutil.which("javac"), shutil.which("java")
+if not (javac and javaexe):
+    print("SKIP the Java search: no javac here (CI's Build APKs compiles it)")
+    sys.exit(1 if failed else 0)
+with tempfile.TemporaryDirectory() as tmp:
+    tmp = Path(tmp)
+    queries = [q for q, _ in SEARCH] + [q for q, _ in MATCH]
+    (tmp / "q.txt").write_text("\n".join(queries) + "\n", encoding="utf-8")
+    r = subprocess.run([javac, "-encoding", "UTF-8", "-d", str(tmp)] + [str(SRC / f) for f in ("Cities.java", "CityMatch.java", "TeamSearch.java", "CitiesMore.java", "CitySearch.java")]
+                       + [str(ROOT / "tests/CitySearchRun.java")], capture_output=True, text=True)
+    check("the search compiles", r.returncode == 0, r.stderr[-800:])
+    if r.returncode:
+        sys.exit(1)
+    r = subprocess.run([javaexe, "-Dfile.encoding=UTF-8", "-cp", str(tmp), "sa.urtv.screensaver.CitySearchRun", str(ASSET), str(tmp / "q.txt")], capture_output=True)
+    check("the search runs", r.returncode == 0, r.stderr.decode()[-800:])
+    out = r.stdout.decode("utf-8").splitlines()
+    first = {l.split("\t")[1]: (l.split("\t")[2:] + [""])[0] for l in out if l.startswith("Q\t")}
+    match = {l.split("\t")[1]: l.split("\t")[2:] for l in out if l.startswith("M\t")}
+    for q, want in SEARCH:
+        got = first.get(q, "")
+        if want is None:
+            check(f"{q!r} finds a place first", bool(got), got)
+        else:
+            check(f"{q!r} finds {want} first", got.startswith(want + "|"), got)
+    for q, want in [("Munich", "DE|"), ("ميونخ", "DE|"), ("Hamburg", "DE|"), ("Frankfurt", "DE|"), ("Cologne", "DE|"), ("الاحساء", "SA|")]:
+        check(f"{q!r} is in {want[:2]}", first.get(q, "").startswith(want), first.get(q))
+    for q, want in MATCH:
+        check(f"saver.sh city {q!r} takes {want}", [m.split("|")[0] for m in match.get(q, [])] == [want], match.get(q))
+    places = [l.split("\t") for l in out if l.startswith("P\t")]
+    check("Java reads every place of the file and every built-in city", sum(p[7] == "false" for p in places) == len(rows)
+          and sum(p[7] == "true" for p in places) == len(builtin_lines), (len(places), len(rows), len(builtin_lines)))
+    check("Java knows every zone exactly (no GMT fallback)", all(p[3] == p[4] for p in places), [p[1:5] for p in places if p[3] != p[4]][:5])
+    check("every built-in city (the old ids: name, latitude, longitude) still resolves", all(p[8] == "true" for p in places if p[7] == "true"))
 sys.exit(1 if failed else 0)

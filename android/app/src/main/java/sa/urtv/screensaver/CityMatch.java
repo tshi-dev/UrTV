@@ -71,6 +71,8 @@ final class CityMatch {
                 if (hit) out.add(e.city);
             }
         }
+        // 4.3.3: nothing in the built-in list: the offline search list (CitiesMore), its best fit only («Riyadh», «Abha», a town the list lacks)
+        if (out.isEmpty()) out.addAll(CitySearch.best(typed, country, 20));
         return out;
     }
 }

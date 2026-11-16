@@ -128,6 +128,7 @@ final class Prefs {
         if (!sp.contains("tournaments")) sp.edit().putBoolean("tournaments", sp.getAll().isEmpty()).apply();   // 4.3.1 «البطولات الكبرى»: on for a new install (nothing saved yet), off for one that already had settings
         GlassStyle.setTweaks(tweaks());
         if (ZoneFix.logger == null) ZoneFix.logger = line -> android.util.Log.i("UrTVZone", line);
+        if (CitiesMore.opener == null) { final Context app = c.getApplicationContext() != null ? c.getApplicationContext() : c; CitiesMore.opener = () -> app.getAssets().open(CitiesMore.FILE); }   // 4.3.3: read only on a search
         ZoneFix.report(pageZone());   // issue #55: the page's last word on the city's zone, after a restart too
     }
 
