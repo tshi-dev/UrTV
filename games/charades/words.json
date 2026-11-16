@@ -1,6 +1,6 @@
 [
 {
-"id": "chc-0",
+"id": "chc-b559b727",
 "ar": "بقرة",
 "en": "cow",
 "category": "farm",
@@ -14,7 +14,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-1",
+"id": "chc-4ca311ee",
 "ar": "خروف",
 "en": "sheep",
 "category": "farm",
@@ -28,7 +28,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-2",
+"id": "chc-d45697ef",
 "ar": "ماعز",
 "en": "goat",
 "category": "farm",
@@ -42,7 +42,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-3",
+"id": "chc-678574ea",
 "ar": "جمل",
 "en": "camel",
 "category": "farm",
@@ -56,7 +56,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-4",
+"id": "chc-7365f702",
 "ar": "حصان",
 "en": "horse",
 "category": "farm",
@@ -70,7 +70,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-5",
+"id": "chc-856addfc",
 "ar": "حمار",
 "en": "donkey",
 "category": "farm",
@@ -84,7 +84,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-6",
+"id": "chc-1c5316b6",
 "ar": "دجاجة",
 "en": "hen",
 "category": "farm",
@@ -98,7 +98,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-7",
+"id": "chc-df4cfcd1",
 "ar": "ديك",
 "en": "rooster",
 "category": "farm",
@@ -112,7 +112,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-8",
+"id": "chc-f39211e4",
 "ar": "بطة",
 "en": "duck",
 "category": "farm",
@@ -126,7 +126,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-9",
+"id": "chc-03d8a736",
 "ar": "أرنب",
 "en": "rabbit",
 "category": "farm",
@@ -140,7 +140,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-10",
+"id": "chc-a6458be3",
 "ar": "ثور",
 "en": "bull",
 "category": "farm",
@@ -154,7 +154,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-11",
+"id": "chc-21757f7c",
 "ar": "عجل",
 "en": "calf",
 "category": "farm",
@@ -168,7 +168,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-12",
+"id": "chc-9e157cc7",
 "ar": "نعجة",
 "en": "ewe",
 "category": "farm",
@@ -182,7 +182,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-13",
+"id": "chc-a969d9c3",
 "ar": "ناقة",
 "en": "she-camel",
 "category": "farm",
@@ -196,7 +196,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-14",
+"id": "chc-b60df149",
 "ar": "فرس",
 "en": "mare",
 "category": "farm",
@@ -210,7 +210,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-15",
+"id": "chc-aa8b7ffb",
 "ar": "ديك رومي",
 "en": "turkey",
 "category": "farm",
@@ -224,7 +224,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-16",
+"id": "chc-a22cf958",
 "ar": "إوزة",
 "en": "goose",
 "category": "farm",
@@ -238,7 +238,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-17",
+"id": "chc-d404b548",
 "ar": "حمامة",
 "en": "pigeon",
 "category": "farm",
@@ -252,7 +252,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-18",
+"id": "chc-89d8c9d0",
 "ar": "قطة",
 "en": "cat",
 "category": "farm",
@@ -266,7 +266,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-19",
+"id": "chc-ec0c56b3",
 "ar": "كلب",
 "en": "dog",
 "category": "farm",
@@ -280,7 +280,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-20",
+"id": "chc-fba97643",
 "ar": "بغل",
 "en": "mule",
 "category": "farm",
@@ -294,7 +294,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-21",
+"id": "chc-36f1ee31",
 "ar": "أسد",
 "en": "lion",
 "category": "wild",
@@ -308,7 +308,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-22",
+"id": "chc-22caf60a",
 "ar": "فيل",
 "en": "elephant",
 "category": "wild",
@@ -322,7 +322,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-23",
+"id": "chc-ac51ed2c",
 "ar": "زرافة",
 "en": "giraffe",
 "category": "wild",
@@ -336,7 +336,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-24",
+"id": "chc-616b14dd",
 "ar": "نمر",
 "en": "leopard",
 "category": "wild",
@@ -350,7 +350,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-25",
+"id": "chc-6471586d",
 "ar": "قرد",
 "en": "monkey",
 "category": "wild",
@@ -364,7 +364,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-26",
+"id": "chc-47750d49",
 "ar": "ذئب",
 "en": "wolf",
 "category": "wild",
@@ -378,7 +378,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-27",
+"id": "chc-3174cb4b",
 "ar": "ثعلب",
 "en": "fox",
 "category": "wild",
@@ -392,7 +392,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-28",
+"id": "chc-9ce5ff27",
 "ar": "دب",
 "en": "bear",
 "category": "wild",
@@ -406,7 +406,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-29",
+"id": "chc-7f683efb",
 "ar": "غزال",
 "en": "gazelle",
 "category": "wild",
@@ -420,7 +420,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-30",
+"id": "chc-5cc47045",
 "ar": "ضبع",
 "en": "hyena",
 "category": "wild",
@@ -434,7 +434,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-31",
+"id": "chc-c90db6d5",
 "ar": "فهد",
 "en": "cheetah",
 "category": "wild",
@@ -448,7 +448,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-32",
+"id": "chc-5ee36c9f",
 "ar": "وحيد القرن",
 "en": "rhinoceros",
 "category": "wild",
@@ -462,7 +462,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-33",
+"id": "chc-d28913aa",
 "ar": "فرس النهر",
 "en": "hippo",
 "category": "wild",
@@ -476,7 +476,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-34",
+"id": "chc-879c94f1",
 "ar": "كنغر",
 "en": "kangaroo",
 "category": "wild",
@@ -490,7 +490,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-35",
+"id": "chc-9466a579",
 "ar": "باندا",
 "en": "panda",
 "category": "wild",
@@ -504,7 +504,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-36",
+"id": "chc-b176b804",
 "ar": "سنجاب",
 "en": "squirrel",
 "category": "wild",
@@ -518,7 +518,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-37",
+"id": "chc-afd90629",
 "ar": "قنفذ",
 "en": "hedgehog",
 "category": "wild",
@@ -532,7 +532,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-38",
+"id": "chc-50e49329",
 "ar": "أرنب بري",
 "en": "hare",
 "category": "wild",
@@ -546,7 +546,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-39",
+"id": "chc-f6ac026f",
 "ar": "وعل",
 "en": "ibex",
 "category": "wild",
@@ -560,7 +560,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-40",
+"id": "chc-f6a0163e",
 "ar": "ظبي",
 "en": "deer",
 "category": "wild",
@@ -574,7 +574,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-41",
+"id": "chc-5a63b9ab",
 "ar": "وشق",
 "en": "lynx",
 "category": "wild",
@@ -588,7 +588,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-42",
+"id": "chc-cc1e7707",
 "ar": "صقر",
 "en": "falcon",
 "category": "birds",
@@ -602,7 +602,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-43",
+"id": "chc-43f4129c",
 "ar": "نسر",
 "en": "eagle",
 "category": "birds",
@@ -616,7 +616,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-44",
+"id": "chc-dbb1d4c8",
 "ar": "بومة",
 "en": "owl",
 "category": "birds",
@@ -630,7 +630,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-45",
+"id": "chc-ca4f00f2",
 "ar": "ببغاء",
 "en": "parrot",
 "category": "birds",
@@ -644,7 +644,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-46",
+"id": "chc-f17b099a",
 "ar": "بطريق",
 "en": "penguin",
 "category": "birds",
@@ -658,7 +658,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-47",
+"id": "chc-4cc86259",
 "ar": "نعامة",
 "en": "ostrich",
 "category": "birds",
@@ -672,7 +672,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-48",
+"id": "chc-06d54b31",
 "ar": "طاووس",
 "en": "peacock",
 "category": "birds",
@@ -686,7 +686,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-49",
+"id": "chc-21c5e10c",
 "ar": "بجعة",
 "en": "swan",
 "category": "birds",
@@ -700,7 +700,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-50",
+"id": "chc-5ddd8f6a",
 "ar": "لقلق",
 "en": "stork",
 "category": "birds",
@@ -714,7 +714,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-51",
+"id": "chc-e2882a5d",
 "ar": "هدهد",
 "en": "hoopoe",
 "category": "birds",
@@ -728,7 +728,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-52",
+"id": "chc-dc543869",
 "ar": "غراب",
 "en": "crow",
 "category": "birds",
@@ -742,7 +742,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-53",
+"id": "chc-fae3b134",
 "ar": "عصفور",
 "en": "sparrow",
 "category": "birds",
@@ -756,7 +756,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-54",
+"id": "chc-d95cc08a",
 "ar": "بط",
 "en": "duck",
 "category": "birds",
@@ -770,7 +770,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-55",
+"id": "chc-0f7061a9",
 "ar": "نورس",
 "en": "seagull",
 "category": "birds",
@@ -784,7 +784,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-56",
+"id": "chc-ec974c28",
 "ar": "فلامنغو",
 "en": "flamingo",
 "category": "birds",
@@ -798,7 +798,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-57",
+"id": "chc-d04c00bc",
 "ar": "رخمة",
 "en": "vulture",
 "category": "birds",
@@ -812,7 +812,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-58",
+"id": "chc-c4c36d5a",
 "ar": "شاهين",
 "en": "peregrine",
 "category": "birds",
@@ -826,7 +826,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-59",
+"id": "chc-74d81623",
 "ar": "حبارى",
 "en": "bustard",
 "category": "birds",
@@ -840,7 +840,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-60",
+"id": "chc-2da6a46c",
 "ar": "قطا",
 "en": "sandgrouse",
 "category": "birds",
@@ -854,7 +854,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-61",
+"id": "chc-2d2a3dc7",
 "ar": "بلبل",
 "en": "nightingale",
 "category": "birds",
@@ -868,7 +868,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-62",
+"id": "chc-b6949e90",
 "ar": "دلفين",
 "en": "dolphin",
 "category": "sea",
@@ -882,7 +882,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-63",
+"id": "chc-6c5afad3",
 "ar": "حوت",
 "en": "whale",
 "category": "sea",
@@ -896,7 +896,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-64",
+"id": "chc-6ce6e11e",
 "ar": "سمكة",
 "en": "fish",
 "category": "sea",
@@ -910,7 +910,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-65",
+"id": "chc-ddbb33aa",
 "ar": "قرش",
 "en": "shark",
 "category": "sea",
@@ -924,7 +924,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-66",
+"id": "chc-bf325674",
 "ar": "أخطبوط",
 "en": "octopus",
 "category": "sea",
@@ -938,7 +938,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-67",
+"id": "chc-fc1763cf",
 "ar": "سلحفاة",
 "en": "turtle",
 "category": "sea",
@@ -952,7 +952,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-68",
+"id": "chc-dd7010ed",
 "ar": "سرطان",
 "en": "crab",
 "category": "sea",
@@ -966,7 +966,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-69",
+"id": "chc-b4b350ba",
 "ar": "روبيان",
 "en": "shrimp",
 "category": "sea",
@@ -980,7 +980,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-70",
+"id": "chc-37466ead",
 "ar": "نجمة البحر",
 "en": "starfish",
 "category": "sea",
@@ -994,7 +994,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-71",
+"id": "chc-ab54f749",
 "ar": "حصان البحر",
 "en": "seahorse",
 "category": "sea",
@@ -1008,7 +1008,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-72",
+"id": "chc-d5a45223",
 "ar": "قنديل البحر",
 "en": "jellyfish",
 "category": "sea",
@@ -1022,7 +1022,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-73",
+"id": "chc-bbc3dceb",
 "ar": "فقمة",
 "en": "seal",
 "category": "sea",
@@ -1036,7 +1036,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-74",
+"id": "chc-89d506f9",
 "ar": "تمساح",
 "en": "crocodile",
 "category": "sea",
@@ -1050,7 +1050,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-75",
+"id": "chc-4e08c17f",
 "ar": "ضفدع",
 "en": "frog",
 "category": "sea",
@@ -1064,7 +1064,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-76",
+"id": "chc-ec363a48",
 "ar": "حبار",
 "en": "squid",
 "category": "sea",
@@ -1078,7 +1078,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-77",
+"id": "chc-bc5ac5a1",
 "ar": "محار",
 "en": "oyster",
 "category": "sea",
@@ -1092,7 +1092,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-78",
+"id": "chc-4d0ef9d3",
 "ar": "سلمون",
 "en": "salmon",
 "category": "sea",
@@ -1106,7 +1106,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-79",
+"id": "chc-f6ce8721",
 "ar": "تونة",
 "en": "tuna",
 "category": "sea",
@@ -1120,7 +1120,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-80",
+"id": "chc-3db2cbc2",
 "ar": "هامور",
 "en": "grouper",
 "category": "sea",
@@ -1134,7 +1134,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-81",
+"id": "chc-d2058265",
 "ar": "كنعد",
 "en": "kingfish",
 "category": "sea",
@@ -1148,7 +1148,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-82",
+"id": "chc-189fadb8",
 "ar": "نملة",
 "en": "ant",
 "category": "insects",
@@ -1162,7 +1162,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-83",
+"id": "chc-f3e89394",
 "ar": "نحلة",
 "en": "bee",
 "category": "insects",
@@ -1176,7 +1176,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-84",
+"id": "chc-c91f3731",
 "ar": "فراشة",
 "en": "butterfly",
 "category": "insects",
@@ -1190,7 +1190,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-85",
+"id": "chc-fbbf43f8",
 "ar": "ذبابة",
 "en": "fly",
 "category": "insects",
@@ -1204,7 +1204,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-86",
+"id": "chc-ab9cf471",
 "ar": "جرادة",
 "en": "locust",
 "category": "insects",
@@ -1218,7 +1218,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-87",
+"id": "chc-5f670ff7",
 "ar": "خنفساء",
 "en": "beetle",
 "category": "insects",
@@ -1232,7 +1232,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-88",
+"id": "chc-de7477df",
 "ar": "دودة",
 "en": "worm",
 "category": "insects",
@@ -1246,7 +1246,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-89",
+"id": "chc-ccba07f9",
 "ar": "عنكبوت",
 "en": "spider",
 "category": "insects",
@@ -1260,7 +1260,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-90",
+"id": "chc-493e64d4",
 "ar": "بعوضة",
 "en": "mosquito",
 "category": "insects",
@@ -1274,7 +1274,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-91",
+"id": "chc-a27f4e08",
 "ar": "يعسوب",
 "en": "dragonfly",
 "category": "insects",
@@ -1288,7 +1288,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-92",
+"id": "chc-0e2c65fe",
 "ar": "حلزون",
 "en": "snail",
 "category": "insects",
@@ -1302,7 +1302,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-93",
+"id": "chc-da8c9f80",
 "ar": "صرصور",
 "en": "cricket",
 "category": "insects",
@@ -1316,7 +1316,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-94",
+"id": "chc-560bde22",
 "ar": "دعسوقة",
 "en": "ladybird",
 "category": "insects",
@@ -1330,7 +1330,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-95",
+"id": "chc-f09768db",
 "ar": "يرقة",
 "en": "caterpillar",
 "category": "insects",
@@ -1344,7 +1344,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-96",
+"id": "chc-4aecfbce",
 "ar": "زنبور",
 "en": "wasp",
 "category": "insects",
@@ -1358,7 +1358,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-97",
+"id": "chc-20d70bd6",
 "ar": "جندب",
 "en": "grasshopper",
 "category": "insects",
@@ -1372,7 +1372,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-98",
+"id": "chc-9bf0ac43",
 "ar": "حرباء",
 "en": "chameleon",
 "category": "insects",
@@ -1386,7 +1386,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-99",
+"id": "chc-104a9bd4",
 "ar": "سحلية",
 "en": "lizard",
 "category": "insects",
@@ -1400,7 +1400,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-100",
+"id": "chc-20bdbf09",
 "ar": "فأر",
 "en": "mouse",
 "category": "insects",
@@ -1414,7 +1414,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-101",
+"id": "chc-91a2f4a5",
 "ar": "جراد",
 "en": "swarm locust",
 "category": "insects",
@@ -1428,7 +1428,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-102",
+"id": "chc-873c2a10",
 "ar": "ضب",
 "en": "dhab lizard",
 "category": "insects",
@@ -1442,7 +1442,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-103",
+"id": "chc-37f92076",
 "ar": "تفاح",
 "en": "apple",
 "category": "fruits",
@@ -1456,7 +1456,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-104",
+"id": "chc-66dbc2e1",
 "ar": "موز",
 "en": "banana",
 "category": "fruits",
@@ -1470,7 +1470,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-105",
+"id": "chc-6ee62d81",
 "ar": "برتقال",
 "en": "orange",
 "category": "fruits",
@@ -1484,7 +1484,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-106",
+"id": "chc-0d5ed7ec",
 "ar": "عنب",
 "en": "grapes",
 "category": "fruits",
@@ -1498,7 +1498,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-107",
+"id": "chc-939b66af",
 "ar": "فراولة",
 "en": "strawberry",
 "category": "fruits",
@@ -1512,7 +1512,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-108",
+"id": "chc-81deadd5",
 "ar": "بطيخ",
 "en": "watermelon",
 "category": "fruits",
@@ -1526,7 +1526,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-109",
+"id": "chc-2e1a9f5e",
 "ar": "مانجو",
 "en": "mango",
 "category": "fruits",
@@ -1540,7 +1540,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-110",
+"id": "chc-02eb95b4",
 "ar": "أناناس",
 "en": "pineapple",
 "category": "fruits",
@@ -1554,7 +1554,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-111",
+"id": "chc-27166bb1",
 "ar": "رمان",
 "en": "pomegranate",
 "category": "fruits",
@@ -1568,7 +1568,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-112",
+"id": "chc-98ec5b65",
 "ar": "تين",
 "en": "fig",
 "category": "fruits",
@@ -1582,7 +1582,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-113",
+"id": "chc-27b8558c",
 "ar": "خوخ",
 "en": "peach",
 "category": "fruits",
@@ -1596,7 +1596,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-114",
+"id": "chc-02ee085b",
 "ar": "كمثرى",
 "en": "pear",
 "category": "fruits",
@@ -1610,7 +1610,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-115",
+"id": "chc-847cae21",
 "ar": "كرز",
 "en": "cherry",
 "category": "fruits",
@@ -1624,7 +1624,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-116",
+"id": "chc-4dd419c8",
 "ar": "ليمون",
 "en": "lemon",
 "category": "fruits",
@@ -1638,7 +1638,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-117",
+"id": "chc-24083df9",
 "ar": "شمام",
 "en": "melon",
 "category": "fruits",
@@ -1652,7 +1652,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-118",
+"id": "chc-8e05216b",
 "ar": "جوافة",
 "en": "guava",
 "category": "fruits",
@@ -1666,7 +1666,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-119",
+"id": "chc-3caf7a32",
 "ar": "تمر",
 "en": "dates",
 "category": "fruits",
@@ -1680,7 +1680,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-120",
+"id": "chc-f4c77da5",
 "ar": "مشمش",
 "en": "apricot",
 "category": "fruits",
@@ -1694,7 +1694,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-121",
+"id": "chc-44160a2e",
 "ar": "توت",
 "en": "berries",
 "category": "fruits",
@@ -1708,7 +1708,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-122",
+"id": "chc-ca9cb7ff",
 "ar": "كيوي",
 "en": "kiwi",
 "category": "fruits",
@@ -1722,7 +1722,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-123",
+"id": "chc-ab0d29ed",
 "ar": "أفوكادو",
 "en": "avocado",
 "category": "fruits",
@@ -1736,7 +1736,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-124",
+"id": "chc-e7288c9a",
 "ar": "جريب فروت",
 "en": "grapefruit",
 "category": "fruits",
@@ -1750,7 +1750,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-125",
+"id": "chc-23306adc",
 "ar": "نارنج",
 "en": "bitter orange",
 "category": "fruits",
@@ -1764,7 +1764,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-126",
+"id": "chc-2ab4ef43",
 "ar": "بلح",
 "en": "fresh dates",
 "category": "fruits",
@@ -1778,7 +1778,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-127",
+"id": "chc-ef7a1102",
 "ar": "طماطم",
 "en": "tomato",
 "category": "vegetables",
@@ -1792,7 +1792,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-128",
+"id": "chc-9e1bfa85",
 "ar": "خيار",
 "en": "cucumber",
 "category": "vegetables",
@@ -1806,7 +1806,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-129",
+"id": "chc-e7761d78",
 "ar": "جزر",
 "en": "carrot",
 "category": "vegetables",
@@ -1820,7 +1820,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-130",
+"id": "chc-f562cafd",
 "ar": "بصل",
 "en": "onion",
 "category": "vegetables",
@@ -1834,7 +1834,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-131",
+"id": "chc-69ce289b",
 "ar": "ثوم",
 "en": "garlic",
 "category": "vegetables",
@@ -1848,7 +1848,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-132",
+"id": "chc-fad07453",
 "ar": "بطاطس",
 "en": "potato",
 "category": "vegetables",
@@ -1862,7 +1862,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-133",
+"id": "chc-0d008d69",
 "ar": "باذنجان",
 "en": "eggplant",
 "category": "vegetables",
@@ -1876,7 +1876,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-134",
+"id": "chc-a797e7d9",
 "ar": "كوسا",
 "en": "zucchini",
 "category": "vegetables",
@@ -1890,7 +1890,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-135",
+"id": "chc-fd83870a",
 "ar": "فلفل",
 "en": "pepper",
 "category": "vegetables",
@@ -1904,7 +1904,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-136",
+"id": "chc-8633cbe1",
 "ar": "ملفوف",
 "en": "cabbage",
 "category": "vegetables",
@@ -1918,7 +1918,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-137",
+"id": "chc-90174069",
 "ar": "خس",
 "en": "lettuce",
 "category": "vegetables",
@@ -1932,7 +1932,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-138",
+"id": "chc-0356559c",
 "ar": "سبانخ",
 "en": "spinach",
 "category": "vegetables",
@@ -1946,7 +1946,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-139",
+"id": "chc-f2796e41",
 "ar": "قرنبيط",
 "en": "cauliflower",
 "category": "vegetables",
@@ -1960,7 +1960,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-140",
+"id": "chc-b61b9b35",
 "ar": "بروكلي",
 "en": "broccoli",
 "category": "vegetables",
@@ -1974,7 +1974,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-141",
+"id": "chc-c367b23e",
 "ar": "ذرة",
 "en": "corn",
 "category": "vegetables",
@@ -1988,7 +1988,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-142",
+"id": "chc-14b0f6d7",
 "ar": "فجل",
 "en": "radish",
 "category": "vegetables",
@@ -2002,7 +2002,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-143",
+"id": "chc-5a941230",
 "ar": "لفت",
 "en": "turnip",
 "category": "vegetables",
@@ -2016,7 +2016,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-144",
+"id": "chc-a010adaf",
 "ar": "شمندر",
 "en": "beetroot",
 "category": "vegetables",
@@ -2030,7 +2030,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-145",
+"id": "chc-6ca84ada",
 "ar": "قرع",
 "en": "pumpkin",
 "category": "vegetables",
@@ -2044,7 +2044,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-146",
+"id": "chc-d5f9e957",
 "ar": "بازلاء",
 "en": "peas",
 "category": "vegetables",
@@ -2058,7 +2058,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-147",
+"id": "chc-b778b5ae",
 "ar": "فاصوليا",
 "en": "beans",
 "category": "vegetables",
@@ -2072,7 +2072,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-148",
+"id": "chc-71342c8a",
 "ar": "بامية",
 "en": "okra",
 "category": "vegetables",
@@ -2086,7 +2086,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-149",
+"id": "chc-2ce75e8d",
 "ar": "جرجير",
 "en": "arugula",
 "category": "vegetables",
@@ -2100,7 +2100,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-150",
+"id": "chc-755e051e",
 "ar": "كزبرة",
 "en": "coriander",
 "category": "vegetables",
@@ -2114,7 +2114,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-151",
+"id": "chc-62cc7b0b",
 "ar": "بقدونس",
 "en": "parsley",
 "category": "vegetables",
@@ -2128,7 +2128,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-152",
+"id": "chc-efa5a626",
 "ar": "نعناع",
 "en": "mint",
 "category": "vegetables",
@@ -2142,7 +2142,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-153",
+"id": "chc-0ff3c361",
 "ar": "خبز",
 "en": "bread",
 "category": "food",
@@ -2156,7 +2156,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-154",
+"id": "chc-34045f2b",
 "ar": "رز",
 "en": "rice",
 "category": "food",
@@ -2170,7 +2170,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-155",
+"id": "chc-c19ff58e",
 "ar": "جبن",
 "en": "cheese",
 "category": "food",
@@ -2184,7 +2184,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-156",
+"id": "chc-ed201112",
 "ar": "بيض",
 "en": "egg",
 "category": "food",
@@ -2198,7 +2198,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-157",
+"id": "chc-fd2a80c8",
 "ar": "عسل",
 "en": "honey",
 "category": "food",
@@ -2212,7 +2212,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-158",
+"id": "chc-0d89daa4",
 "ar": "زبدة",
 "en": "butter",
 "category": "food",
@@ -2226,7 +2226,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-159",
+"id": "chc-d9dee28e",
 "ar": "شوربة",
 "en": "soup",
 "category": "food",
@@ -2240,7 +2240,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-160",
+"id": "chc-31ed2dbe",
 "ar": "معكرونة",
 "en": "pasta",
 "category": "food",
@@ -2254,7 +2254,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-161",
+"id": "chc-9838077b",
 "ar": "بيتزا",
 "en": "pizza",
 "category": "food",
@@ -2268,7 +2268,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-162",
+"id": "chc-dd659e88",
 "ar": "برغر",
 "en": "burger",
 "category": "food",
@@ -2282,7 +2282,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-163",
+"id": "chc-9035675f",
 "ar": "سمك",
 "en": "fish",
 "category": "food",
@@ -2296,7 +2296,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-164",
+"id": "chc-e2303d23",
 "ar": "دجاج",
 "en": "chicken",
 "category": "food",
@@ -2310,7 +2310,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-165",
+"id": "chc-4e71be69",
 "ar": "لحم",
 "en": "meat",
 "category": "food",
@@ -2324,7 +2324,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-166",
+"id": "chc-1c0d71e9",
 "ar": "حمص",
 "en": "hummus",
 "category": "food",
@@ -2338,7 +2338,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-167",
+"id": "chc-2f6d7b1d",
 "ar": "فلافل",
 "en": "falafel",
 "category": "food",
@@ -2352,7 +2352,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-168",
+"id": "chc-8b6cb480",
 "ar": "شاورما",
 "en": "shawarma",
 "category": "food",
@@ -2366,7 +2366,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-169",
+"id": "chc-c51c745a",
 "ar": "سمبوسة",
 "en": "samosa",
 "category": "food",
@@ -2380,7 +2380,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-170",
+"id": "chc-1c862f65",
 "ar": "هريس",
 "en": "harees",
 "category": "food",
@@ -2394,7 +2394,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-171",
+"id": "chc-81787124",
 "ar": "فطيرة",
 "en": "pie",
 "category": "food",
@@ -2408,7 +2408,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-172",
+"id": "chc-4c6d7902",
 "ar": "عدس",
 "en": "lentils",
 "category": "food",
@@ -2422,7 +2422,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-173",
+"id": "chc-86b27ba6",
 "ar": "فول",
 "en": "fava beans",
 "category": "food",
@@ -2436,7 +2436,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-174",
+"id": "chc-533c33c9",
 "ar": "نقانق",
 "en": "hot dog",
 "category": "food",
@@ -2450,7 +2450,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-175",
+"id": "chc-dde8a9dc",
 "ar": "بطاطس مقلية",
 "en": "fries",
 "category": "food",
@@ -2464,7 +2464,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-176",
+"id": "chc-f6687ad6",
 "ar": "ساندويتش",
 "en": "sandwich",
 "category": "food",
@@ -2478,7 +2478,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-177",
+"id": "chc-d6649519",
 "ar": "سلطة",
 "en": "salad",
 "category": "food",
@@ -2492,7 +2492,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-178",
+"id": "chc-a2eb1324",
 "ar": "كعكة",
 "en": "cake",
 "category": "sweets",
@@ -2506,7 +2506,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-179",
+"id": "chc-861da7e5",
 "ar": "شوكولاتة",
 "en": "chocolate",
 "category": "sweets",
@@ -2520,7 +2520,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-180",
+"id": "chc-285d9275",
 "ar": "بسكويت",
 "en": "biscuit",
 "category": "sweets",
@@ -2534,7 +2534,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-181",
+"id": "chc-c28e33f9",
 "ar": "آيس كريم",
 "en": "ice cream",
 "category": "sweets",
@@ -2548,7 +2548,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-182",
+"id": "chc-a3cee191",
 "ar": "كنافة",
 "en": "kunafa",
 "category": "sweets",
@@ -2562,7 +2562,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-183",
+"id": "chc-05b695a6",
 "ar": "بقلاوة",
 "en": "baklava",
 "category": "sweets",
@@ -2576,7 +2576,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-184",
+"id": "chc-fa494d17",
 "ar": "لقيمات",
 "en": "luqaimat",
 "category": "sweets",
@@ -2590,7 +2590,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-185",
+"id": "chc-205a8ecd",
 "ar": "حلاوة",
 "en": "halwa",
 "category": "sweets",
@@ -2604,7 +2604,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-186",
+"id": "chc-162f6811",
 "ar": "مهلبية",
 "en": "muhallabia",
 "category": "sweets",
@@ -2618,7 +2618,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-187",
+"id": "chc-b8846acc",
 "ar": "أم علي",
 "en": "om ali",
 "category": "sweets",
@@ -2632,7 +2632,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-188",
+"id": "chc-b3754667",
 "ar": "جيلي",
 "en": "jelly",
 "category": "sweets",
@@ -2646,7 +2646,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-189",
+"id": "chc-bc496649",
 "ar": "علكة",
 "en": "gum",
 "category": "sweets",
@@ -2660,7 +2660,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-190",
+"id": "chc-2c438197",
 "ar": "كراميل",
 "en": "caramel",
 "category": "sweets",
@@ -2674,7 +2674,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-191",
+"id": "chc-582e7920",
 "ar": "دونات",
 "en": "donut",
 "category": "sweets",
@@ -2688,7 +2688,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-192",
+"id": "chc-53d71b16",
 "ar": "بودينغ",
 "en": "pudding",
 "category": "sweets",
@@ -2702,7 +2702,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-193",
+"id": "chc-fcad7dd2",
 "ar": "فشار",
 "en": "popcorn",
 "category": "sweets",
@@ -2716,7 +2716,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-194",
+"id": "chc-515bed25",
 "ar": "شيبس",
 "en": "chips",
 "category": "sweets",
@@ -2730,7 +2730,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-195",
+"id": "chc-c9c239f1",
 "ar": "مكسرات",
 "en": "nuts",
 "category": "sweets",
@@ -2744,7 +2744,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-196",
+"id": "chc-055c3220",
 "ar": "زبيب",
 "en": "raisins",
 "category": "sweets",
@@ -2758,7 +2758,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-197",
+"id": "chc-f98e868f",
 "ar": "تمر محشي",
 "en": "stuffed dates",
 "category": "sweets",
@@ -2772,7 +2772,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-198",
+"id": "chc-8f86e36a",
 "ar": "ماء",
 "en": "water",
 "category": "drinks",
@@ -2786,7 +2786,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-199",
+"id": "chc-50809503",
 "ar": "عصير",
 "en": "juice",
 "category": "drinks",
@@ -2800,7 +2800,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-200",
+"id": "chc-18a4d144",
 "ar": "شاي",
 "en": "tea",
 "category": "drinks",
@@ -2814,7 +2814,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-201",
+"id": "chc-65bc7a54",
 "ar": "قهوة",
 "en": "coffee",
 "category": "drinks",
@@ -2828,7 +2828,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-202",
+"id": "chc-db63e9eb",
 "ar": "لبن",
 "en": "laban",
 "category": "drinks",
@@ -2842,7 +2842,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-203",
+"id": "chc-6a4934e1",
 "ar": "حليب",
 "en": "milk",
 "category": "drinks",
@@ -2856,7 +2856,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-204",
+"id": "chc-ecaa7677",
 "ar": "كاكاو",
 "en": "cocoa",
 "category": "drinks",
@@ -2870,7 +2870,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-205",
+"id": "chc-60fb2733",
 "ar": "عصير برتقال",
 "en": "orange juice",
 "category": "drinks",
@@ -2884,7 +2884,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-206",
+"id": "chc-c6588201",
 "ar": "ليمون بالنعناع",
 "en": "lemonade",
 "category": "drinks",
@@ -2898,7 +2898,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-207",
+"id": "chc-e9a538d9",
 "ar": "شاي أخضر",
 "en": "green tea",
 "category": "drinks",
@@ -2912,7 +2912,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-208",
+"id": "chc-6bfa074e",
 "ar": "قهوة عربية",
 "en": "arabic coffee",
 "category": "drinks",
@@ -2926,7 +2926,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-209",
+"id": "chc-bd85c4b8",
 "ar": "زنجبيل",
 "en": "ginger",
 "category": "drinks",
@@ -2940,7 +2940,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-210",
+"id": "chc-fdb8015d",
 "ar": "ينسون",
 "en": "anise",
 "category": "drinks",
@@ -2954,7 +2954,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-211",
+"id": "chc-056487bb",
 "ar": "كركديه",
 "en": "hibiscus",
 "category": "drinks",
@@ -2968,7 +2968,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-212",
+"id": "chc-0a521eb1",
 "ar": "سحلب",
 "en": "sahlab",
 "category": "drinks",
@@ -2982,7 +2982,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-213",
+"id": "chc-5f18db11",
 "ar": "عصير مانجو",
 "en": "mango juice",
 "category": "drinks",
@@ -2996,7 +2996,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-214",
+"id": "chc-68329f79",
 "ar": "حليب بالشوكولاتة",
 "en": "chocolate milk",
 "category": "drinks",
@@ -3010,7 +3010,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-215",
+"id": "chc-9a70241f",
 "ar": "ماء بارد",
 "en": "cold water",
 "category": "drinks",
@@ -3024,7 +3024,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-216",
+"id": "chc-0c0e9780",
 "ar": "قهوة تركية",
 "en": "turkish coffee",
 "category": "drinks",
@@ -3038,7 +3038,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-217",
+"id": "chc-d891dfe3",
 "ar": "عصير تفاح",
 "en": "apple juice",
 "category": "drinks",
@@ -3052,7 +3052,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-218",
+"id": "chc-053beb3d",
 "ar": "كبسة",
 "en": "kabsa",
 "category": "dishes",
@@ -3066,7 +3066,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-219",
+"id": "chc-39d6b2f6",
 "ar": "مندي",
 "en": "mandi",
 "category": "dishes",
@@ -3080,7 +3080,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-220",
+"id": "chc-415f6e84",
 "ar": "مطبق",
 "en": "mutabbaq",
 "category": "dishes",
@@ -3094,7 +3094,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-221",
+"id": "chc-fca169c2",
 "ar": "جريش",
 "en": "jareesh",
 "category": "dishes",
@@ -3108,7 +3108,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-222",
+"id": "chc-10c4ce64",
 "ar": "سليق",
 "en": "saleeg",
 "category": "dishes",
@@ -3122,7 +3122,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-223",
+"id": "chc-9346fe31",
 "ar": "مضغوطة",
 "en": "madghoot",
 "category": "dishes",
@@ -3136,7 +3136,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-224",
+"id": "chc-e80d1f26",
 "ar": "حنيني",
 "en": "hanini",
 "category": "dishes",
@@ -3150,7 +3150,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-225",
+"id": "chc-a8a5f6a0",
 "ar": "مطازيز",
 "en": "matazeez",
 "category": "dishes",
@@ -3164,7 +3164,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-226",
+"id": "chc-499aa41c",
 "ar": "كليجا",
 "en": "kleicha",
 "category": "dishes",
@@ -3178,7 +3178,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-227",
+"id": "chc-3abbfb3b",
 "ar": "مقلوبة",
 "en": "maqluba",
 "category": "dishes",
@@ -3192,7 +3192,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-228",
+"id": "chc-e4cb8f1c",
 "ar": "منسف",
 "en": "mansaf",
 "category": "dishes",
@@ -3206,7 +3206,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-229",
+"id": "chc-67f0d5d5",
 "ar": "مرقوق",
 "en": "margoog",
 "category": "dishes",
@@ -3220,7 +3220,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-230",
+"id": "chc-4de545f5",
 "ar": "قرصان",
 "en": "qursan",
 "category": "dishes",
@@ -3234,7 +3234,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-231",
+"id": "chc-ac309c25",
 "ar": "عصيدة",
 "en": "aseeda",
 "category": "dishes",
@@ -3248,7 +3248,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-232",
+"id": "chc-a1127abc",
 "ar": "ثريد",
 "en": "tharid",
 "category": "dishes",
@@ -3262,7 +3262,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-233",
+"id": "chc-bcc63aef",
 "ar": "برياني",
 "en": "biryani",
 "category": "dishes",
@@ -3276,7 +3276,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-234",
+"id": "chc-9091fa97",
 "ar": "فتة",
 "en": "fatteh",
 "category": "dishes",
@@ -3290,7 +3290,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-235",
+"id": "chc-44092a7a",
 "ar": "كبة",
 "en": "kibbeh",
 "category": "dishes",
@@ -3304,7 +3304,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-236",
+"id": "chc-0676616e",
 "ar": "تبولة",
 "en": "tabbouleh",
 "category": "dishes",
@@ -3318,7 +3318,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-237",
+"id": "chc-7e657a0d",
 "ar": "متبل",
 "en": "mutabbal",
 "category": "dishes",
@@ -3332,7 +3332,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-238",
+"id": "chc-471e98a3",
 "ar": "طبيب",
 "en": "doctor",
 "category": "jobs",
@@ -3346,7 +3346,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-239",
+"id": "chc-9552dc58",
 "ar": "معلم",
 "en": "teacher",
 "category": "jobs",
@@ -3360,7 +3360,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-240",
+"id": "chc-7aa976a6",
 "ar": "مهندس",
 "en": "engineer",
 "category": "jobs",
@@ -3374,7 +3374,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-241",
+"id": "chc-fcfd04cf",
 "ar": "طيار",
 "en": "pilot",
 "category": "jobs",
@@ -3388,7 +3388,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-242",
+"id": "chc-be66de13",
 "ar": "ممرض",
 "en": "nurse",
 "category": "jobs",
@@ -3402,7 +3402,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-243",
+"id": "chc-f51d01dd",
 "ar": "نجار",
 "en": "carpenter",
 "category": "jobs",
@@ -3416,7 +3416,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-244",
+"id": "chc-68b55872",
 "ar": "خباز",
 "en": "baker",
 "category": "jobs",
@@ -3430,7 +3430,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-245",
+"id": "chc-0378bb7d",
 "ar": "طباخ",
 "en": "cook",
 "category": "jobs",
@@ -3444,7 +3444,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-246",
+"id": "chc-66bf159c",
 "ar": "حداد",
 "en": "blacksmith",
 "category": "jobs",
@@ -3458,7 +3458,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-247",
+"id": "chc-ccdd22b6",
 "ar": "فلاح",
 "en": "farmer",
 "category": "jobs",
@@ -3472,7 +3472,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-248",
+"id": "chc-513c9c14",
 "ar": "صياد",
 "en": "fisherman",
 "category": "jobs",
@@ -3486,7 +3486,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-249",
+"id": "chc-2e4239e0",
 "ar": "سائق",
 "en": "driver",
 "category": "jobs",
@@ -3500,7 +3500,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-250",
+"id": "chc-a9b71a68",
 "ar": "رسام",
 "en": "painter",
 "category": "jobs",
@@ -3514,7 +3514,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-251",
+"id": "chc-3f799ae9",
 "ar": "شرطي",
 "en": "police officer",
 "category": "jobs",
@@ -3528,7 +3528,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-252",
+"id": "chc-fd17f1d5",
 "ar": "قاض",
 "en": "judge",
 "category": "jobs",
@@ -3542,7 +3542,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-253",
+"id": "chc-5d326e24",
 "ar": "محامي",
 "en": "lawyer",
 "category": "jobs",
@@ -3556,7 +3556,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-254",
+"id": "chc-9e1c5d39",
 "ar": "صيدلي",
 "en": "pharmacist",
 "category": "jobs",
@@ -3570,7 +3570,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-255",
+"id": "chc-a80ae465",
 "ar": "طبيب أسنان",
 "en": "dentist",
 "category": "jobs",
@@ -3584,7 +3584,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-256",
+"id": "chc-c7999375",
 "ar": "كهربائي",
 "en": "electrician",
 "category": "jobs",
@@ -3598,7 +3598,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-257",
+"id": "chc-feb5ee37",
 "ar": "ميكانيكي",
 "en": "mechanic",
 "category": "jobs",
@@ -3612,7 +3612,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-258",
+"id": "chc-e3efe95d",
 "ar": "خياط",
 "en": "tailor",
 "category": "jobs",
@@ -3626,7 +3626,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-259",
+"id": "chc-6d709e6b",
 "ar": "حلاق",
 "en": "barber",
 "category": "jobs",
@@ -3640,7 +3640,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-260",
+"id": "chc-4297db2a",
 "ar": "بائع",
 "en": "seller",
 "category": "jobs",
@@ -3654,7 +3654,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-261",
+"id": "chc-9bb9c0e8",
 "ar": "رجل إطفاء",
 "en": "firefighter",
 "category": "jobs",
@@ -3668,7 +3668,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-262",
+"id": "chc-4007b2e6",
 "ar": "رائد فضاء",
 "en": "astronaut",
 "category": "jobs",
@@ -3682,7 +3682,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-263",
+"id": "chc-01537abc",
 "ar": "مزارع",
 "en": "farmer",
 "category": "jobs",
@@ -3696,7 +3696,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-264",
+"id": "chc-b7a458c6",
 "ar": "عالم",
 "en": "scientist",
 "category": "jobs",
@@ -3710,7 +3710,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-265",
+"id": "chc-9ec02109",
 "ar": "كرة القدم",
 "en": "football",
 "category": "sports",
@@ -3724,7 +3724,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-266",
+"id": "chc-462d88a3",
 "ar": "كرة السلة",
 "en": "basketball",
 "category": "sports",
@@ -3738,7 +3738,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-267",
+"id": "chc-4aed167b",
 "ar": "كرة الطائرة",
 "en": "volleyball",
 "category": "sports",
@@ -3752,7 +3752,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-268",
+"id": "chc-2f4e5a9a",
 "ar": "السباحة",
 "en": "swimming",
 "category": "sports",
@@ -3766,7 +3766,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-269",
+"id": "chc-5015de85",
 "ar": "الجري",
 "en": "running",
 "category": "sports",
@@ -3780,7 +3780,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-270",
+"id": "chc-b0cf0950",
 "ar": "التنس",
 "en": "tennis",
 "category": "sports",
@@ -3794,7 +3794,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-271",
+"id": "chc-43f98f7d",
 "ar": "الملاكمة",
 "en": "boxing",
 "category": "sports",
@@ -3808,7 +3808,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-272",
+"id": "chc-44e74d54",
 "ar": "الجودو",
 "en": "judo",
 "category": "sports",
@@ -3822,7 +3822,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-273",
+"id": "chc-eff10908",
 "ar": "الكاراتيه",
 "en": "karate",
 "category": "sports",
@@ -3836,7 +3836,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-274",
+"id": "chc-311e8582",
 "ar": "الفروسية",
 "en": "horse riding",
 "category": "sports",
@@ -3850,7 +3850,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-275",
+"id": "chc-9a3775c3",
 "ar": "رمي الرمح",
 "en": "javelin",
 "category": "sports",
@@ -3864,7 +3864,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-276",
+"id": "chc-ce4e60bb",
 "ar": "ركوب الدراجات",
 "en": "cycling",
 "category": "sports",
@@ -3878,7 +3878,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-277",
+"id": "chc-65657968",
 "ar": "الغولف",
 "en": "golf",
 "category": "sports",
@@ -3892,7 +3892,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-278",
+"id": "chc-e1a8e668",
 "ar": "الهوكي",
 "en": "hockey",
 "category": "sports",
@@ -3906,7 +3906,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-279",
+"id": "chc-08a42545",
 "ar": "الرماية",
 "en": "archery",
 "category": "sports",
@@ -3920,7 +3920,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-280",
+"id": "chc-e7e682df",
 "ar": "الجمباز",
 "en": "gymnastics",
 "category": "sports",
@@ -3934,7 +3934,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-281",
+"id": "chc-8356a347",
 "ar": "رفع الأثقال",
 "en": "weightlifting",
 "category": "sports",
@@ -3948,7 +3948,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-282",
+"id": "chc-22046d26",
 "ar": "التزلج",
 "en": "skiing",
 "category": "sports",
@@ -3962,7 +3962,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-283",
+"id": "chc-fc07c608",
 "ar": "الغوص",
 "en": "diving",
 "category": "sports",
@@ -3976,7 +3976,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-284",
+"id": "chc-bdc12e1c",
 "ar": "التجديف",
 "en": "rowing",
 "category": "sports",
@@ -3990,7 +3990,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-285",
+"id": "chc-fb1e83f0",
 "ar": "كرة اليد",
 "en": "handball",
 "category": "sports",
@@ -4004,7 +4004,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-286",
+"id": "chc-963fd924",
 "ar": "تنس الطاولة",
 "en": "table tennis",
 "category": "sports",
@@ -4018,7 +4018,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-287",
+"id": "chc-b6ed1473",
 "ar": "المصارعة",
 "en": "wrestling",
 "category": "sports",
@@ -4032,7 +4032,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-288",
+"id": "chc-3107866c",
 "ar": "الكريكيت",
 "en": "cricket",
 "category": "sports",
@@ -4046,7 +4046,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-289",
+"id": "chc-cc57f5c4",
 "ar": "البلياردو",
 "en": "billiards",
 "category": "sports",
@@ -4060,7 +4060,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-290",
+"id": "chc-298727cf",
 "ar": "الشطرنج",
 "en": "chess",
 "category": "sports",
@@ -4074,7 +4074,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-291",
+"id": "chc-cd25f71b",
 "ar": "ثوب",
 "en": "thobe",
 "category": "clothes",
@@ -4088,7 +4088,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-292",
+"id": "chc-580ed9b1",
 "ar": "قميص",
 "en": "shirt",
 "category": "clothes",
@@ -4102,7 +4102,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-293",
+"id": "chc-f191eb62",
 "ar": "بنطلون",
 "en": "trousers",
 "category": "clothes",
@@ -4116,7 +4116,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-294",
+"id": "chc-bd608042",
 "ar": "حذاء",
 "en": "shoe",
 "category": "clothes",
@@ -4130,7 +4130,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-295",
+"id": "chc-09e4350d",
 "ar": "جورب",
 "en": "sock",
 "category": "clothes",
@@ -4144,7 +4144,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-296",
+"id": "chc-6851f465",
 "ar": "قبعة",
 "en": "hat",
 "category": "clothes",
@@ -4158,7 +4158,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-297",
+"id": "chc-d8a79cf8",
 "ar": "معطف",
 "en": "coat",
 "category": "clothes",
@@ -4172,7 +4172,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-298",
+"id": "chc-a309355e",
 "ar": "سترة",
 "en": "jacket",
 "category": "clothes",
@@ -4186,7 +4186,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-299",
+"id": "chc-9906f074",
 "ar": "فستان",
 "en": "dress",
 "category": "clothes",
@@ -4200,7 +4200,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-300",
+"id": "chc-5a95b47e",
 "ar": "عباءة",
 "en": "abaya",
 "category": "clothes",
@@ -4214,7 +4214,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-301",
+"id": "chc-0207e653",
 "ar": "شماغ",
 "en": "shemagh",
 "category": "clothes",
@@ -4228,7 +4228,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-302",
+"id": "chc-0fa82286",
 "ar": "عقال",
 "en": "agal",
 "category": "clothes",
@@ -4242,7 +4242,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-303",
+"id": "chc-0ffc0285",
 "ar": "طاقية",
 "en": "cap",
 "category": "clothes",
@@ -4256,7 +4256,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-304",
+"id": "chc-3b47c72d",
 "ar": "حزام",
 "en": "belt",
 "category": "clothes",
@@ -4270,7 +4270,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-305",
+"id": "chc-4f27aa03",
 "ar": "قفاز",
 "en": "gloves",
 "category": "clothes",
@@ -4284,7 +4284,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-306",
+"id": "chc-80d742f4",
 "ar": "وشاح",
 "en": "scarf",
 "category": "clothes",
@@ -4298,7 +4298,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-307",
+"id": "chc-4d1fc415",
 "ar": "نظارة",
 "en": "glasses",
 "category": "clothes",
@@ -4312,7 +4312,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-308",
+"id": "chc-0985723f",
 "ar": "ساعة",
 "en": "watch",
 "category": "clothes",
@@ -4326,7 +4326,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-309",
+"id": "chc-b59f3b96",
 "ar": "نعل",
 "en": "sandal",
 "category": "clothes",
@@ -4340,7 +4340,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-310",
+"id": "chc-6dd74ccb",
 "ar": "بيجامة",
 "en": "pyjamas",
 "category": "clothes",
@@ -4354,7 +4354,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-311",
+"id": "chc-5da23188",
 "ar": "تنورة",
 "en": "skirt",
 "category": "clothes",
@@ -4368,7 +4368,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-312",
+"id": "chc-cf3af9af",
 "ar": "بدلة",
 "en": "suit",
 "category": "clothes",
@@ -4382,7 +4382,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-313",
+"id": "chc-0ae4e0e9",
 "ar": "كم",
 "en": "sleeve",
 "category": "clothes",
@@ -4396,7 +4396,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-314",
+"id": "chc-d1a1bf08",
 "ar": "سيارة",
 "en": "car",
 "category": "vehicles",
@@ -4410,7 +4410,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-315",
+"id": "chc-b57f91f8",
 "ar": "حافلة",
 "en": "bus",
 "category": "vehicles",
@@ -4424,7 +4424,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-316",
+"id": "chc-b87e2fbc",
 "ar": "طائرة",
 "en": "airplane",
 "category": "vehicles",
@@ -4438,7 +4438,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-317",
+"id": "chc-23f115c9",
 "ar": "قطار",
 "en": "train",
 "category": "vehicles",
@@ -4452,7 +4452,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-318",
+"id": "chc-124357f7",
 "ar": "دراجة",
 "en": "bicycle",
 "category": "vehicles",
@@ -4466,7 +4466,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-319",
+"id": "chc-45acd4f5",
 "ar": "سفينة",
 "en": "ship",
 "category": "vehicles",
@@ -4480,7 +4480,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-320",
+"id": "chc-45d3a391",
 "ar": "قارب",
 "en": "boat",
 "category": "vehicles",
@@ -4494,7 +4494,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-321",
+"id": "chc-0011b54b",
 "ar": "شاحنة",
 "en": "truck",
 "category": "vehicles",
@@ -4508,7 +4508,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-322",
+"id": "chc-977c4ba4",
 "ar": "هليكوبتر",
 "en": "helicopter",
 "category": "vehicles",
@@ -4522,7 +4522,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-323",
+"id": "chc-17806b5a",
 "ar": "دراجة نارية",
 "en": "motorcycle",
 "category": "vehicles",
@@ -4536,7 +4536,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-324",
+"id": "chc-6d8b38cb",
 "ar": "صاروخ",
 "en": "rocket",
 "category": "vehicles",
@@ -4550,7 +4550,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-325",
+"id": "chc-51bb073f",
 "ar": "غواصة",
 "en": "submarine",
 "category": "vehicles",
@@ -4564,7 +4564,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-326",
+"id": "chc-df2481ca",
 "ar": "جرار",
 "en": "tractor",
 "category": "vehicles",
@@ -4578,7 +4578,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-327",
+"id": "chc-d5add25f",
 "ar": "سيارة إسعاف",
 "en": "ambulance",
 "category": "vehicles",
@@ -4592,7 +4592,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-328",
+"id": "chc-14317926",
 "ar": "مترو",
 "en": "metro",
 "category": "vehicles",
@@ -4606,7 +4606,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-329",
+"id": "chc-1b9aaf8a",
 "ar": "عربة",
 "en": "cart",
 "category": "vehicles",
@@ -4620,7 +4620,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-330",
+"id": "chc-bab40bfb",
 "ar": "سيارة أجرة",
 "en": "taxi",
 "category": "vehicles",
@@ -4634,7 +4634,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-331",
+"id": "chc-a9a982f7",
 "ar": "منطاد",
 "en": "balloon",
 "category": "vehicles",
@@ -4648,7 +4648,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-332",
+"id": "chc-cf4206a7",
 "ar": "دراجة ثلاثية",
 "en": "tricycle",
 "category": "vehicles",
@@ -4662,7 +4662,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-333",
+"id": "chc-478bb11d",
 "ar": "زورق",
 "en": "speedboat",
 "category": "vehicles",
@@ -4676,7 +4676,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-334",
+"id": "chc-fc314666",
 "ar": "كرسي",
 "en": "chair",
 "category": "home",
@@ -4690,7 +4690,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-335",
+"id": "chc-892deeee",
 "ar": "طاولة",
 "en": "table",
 "category": "home",
@@ -4704,7 +4704,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-336",
+"id": "chc-e0f948a7",
 "ar": "سرير",
 "en": "bed",
 "category": "home",
@@ -4718,7 +4718,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-337",
+"id": "chc-45d5f43a",
 "ar": "خزانة",
 "en": "wardrobe",
 "category": "home",
@@ -4732,7 +4732,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-338",
+"id": "chc-b2d87c02",
 "ar": "أريكة",
 "en": "sofa",
 "category": "home",
@@ -4746,7 +4746,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-339",
+"id": "chc-5599e8c1",
 "ar": "مكتب",
 "en": "desk",
 "category": "home",
@@ -4760,7 +4760,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-340",
+"id": "chc-4ef097f7",
 "ar": "رف",
 "en": "shelf",
 "category": "home",
@@ -4774,7 +4774,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-341",
+"id": "chc-5fa4643c",
 "ar": "مرآة",
 "en": "mirror",
 "category": "home",
@@ -4788,7 +4788,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-342",
+"id": "chc-38d5b385",
 "ar": "سجادة",
 "en": "carpet",
 "category": "home",
@@ -4802,7 +4802,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-343",
+"id": "chc-b7a3a74f",
 "ar": "وسادة",
 "en": "pillow",
 "category": "home",
@@ -4816,7 +4816,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-344",
+"id": "chc-05172102",
 "ar": "ستارة",
 "en": "curtain",
 "category": "home",
@@ -4830,7 +4830,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-345",
+"id": "chc-8af6aaa9",
 "ar": "مصباح",
 "en": "lamp",
 "category": "home",
@@ -4844,7 +4844,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-346",
+"id": "chc-3b25b51a",
 "ar": "باب",
 "en": "door",
 "category": "home",
@@ -4858,7 +4858,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-347",
+"id": "chc-9460f358",
 "ar": "نافذة",
 "en": "window",
 "category": "home",
@@ -4872,7 +4872,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-348",
+"id": "chc-ab3e1ccf",
 "ar": "سقف",
 "en": "ceiling",
 "category": "home",
@@ -4886,7 +4886,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-349",
+"id": "chc-090988c2",
 "ar": "جدار",
 "en": "wall",
 "category": "home",
@@ -4900,7 +4900,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-350",
+"id": "chc-c4550fe4",
 "ar": "درج",
 "en": "stairs",
 "category": "home",
@@ -4914,7 +4914,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-351",
+"id": "chc-b2e8115b",
 "ar": "مفتاح",
 "en": "key",
 "category": "home",
@@ -4928,7 +4928,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-352",
+"id": "chc-ab1e79cc",
 "ar": "ثلاجة",
 "en": "fridge",
 "category": "home",
@@ -4942,7 +4942,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-353",
+"id": "chc-8fe7d7c6",
 "ar": "مروحة",
 "en": "fan",
 "category": "home",
@@ -4956,7 +4956,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-354",
+"id": "chc-188f9e8e",
 "ar": "مكيف",
 "en": "air conditioner",
 "category": "home",
@@ -4970,7 +4970,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-355",
+"id": "chc-ec137485",
 "ar": "ملعقة",
 "en": "spoon",
 "category": "kitchen",
@@ -4984,7 +4984,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-356",
+"id": "chc-dc604dd9",
 "ar": "شوكة",
 "en": "fork",
 "category": "kitchen",
@@ -4998,7 +4998,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-357",
+"id": "chc-0d1c744b",
 "ar": "سكين",
 "en": "knife",
 "category": "kitchen",
@@ -5012,7 +5012,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-358",
+"id": "chc-ff1f8434",
 "ar": "طبق",
 "en": "plate",
 "category": "kitchen",
@@ -5026,7 +5026,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-359",
+"id": "chc-5bc33edc",
 "ar": "كوب",
 "en": "cup",
 "category": "kitchen",
@@ -5040,7 +5040,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-360",
+"id": "chc-455bc350",
 "ar": "مقلاة",
 "en": "frying pan",
 "category": "kitchen",
@@ -5054,7 +5054,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-361",
+"id": "chc-a86d4073",
 "ar": "قدر",
 "en": "pot",
 "category": "kitchen",
@@ -5068,7 +5068,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-362",
+"id": "chc-6526340d",
 "ar": "إبريق",
 "en": "jug",
 "category": "kitchen",
@@ -5082,7 +5082,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-363",
+"id": "chc-7ac6af7f",
 "ar": "غلاية",
 "en": "kettle",
 "category": "kitchen",
@@ -5096,7 +5096,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-364",
+"id": "chc-0a9048bd",
 "ar": "فرن",
 "en": "oven",
 "category": "kitchen",
@@ -5110,7 +5110,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-365",
+"id": "chc-4c97ec9c",
 "ar": "ميكروويف",
 "en": "microwave",
 "category": "kitchen",
@@ -5124,7 +5124,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-366",
+"id": "chc-9eb67d97",
 "ar": "خلاط",
 "en": "blender",
 "category": "kitchen",
@@ -5138,7 +5138,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-367",
+"id": "chc-9481eb36",
 "ar": "صينية",
 "en": "tray",
 "category": "kitchen",
@@ -5152,7 +5152,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-368",
+"id": "chc-fa23468f",
 "ar": "ركوة",
 "en": "coffee pot",
 "category": "kitchen",
@@ -5166,7 +5166,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-369",
+"id": "chc-d62b324f",
 "ar": "دلة",
 "en": "dallah",
 "category": "kitchen",
@@ -5180,7 +5180,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-370",
+"id": "chc-58ba4faa",
 "ar": "فنجان",
 "en": "small cup",
 "category": "kitchen",
@@ -5194,7 +5194,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-371",
+"id": "chc-d256c287",
 "ar": "برطمان",
 "en": "jar",
 "category": "kitchen",
@@ -5208,7 +5208,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-372",
+"id": "chc-4ca1eb71",
 "ar": "غسالة",
 "en": "washing machine",
 "category": "kitchen",
@@ -5222,7 +5222,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-373",
+"id": "chc-23df7f6d",
 "ar": "مصفاة",
 "en": "strainer",
 "category": "kitchen",
@@ -5236,7 +5236,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-374",
+"id": "chc-78db2a00",
 "ar": "قلم",
 "en": "pen",
 "category": "school",
@@ -5250,7 +5250,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-375",
+"id": "chc-0d27d5eb",
 "ar": "كتاب",
 "en": "book",
 "category": "school",
@@ -5264,7 +5264,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-376",
+"id": "chc-ecd4af16",
 "ar": "دفتر",
 "en": "notebook",
 "category": "school",
@@ -5278,7 +5278,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-377",
+"id": "chc-73394cea",
 "ar": "مسطرة",
 "en": "ruler",
 "category": "school",
@@ -5292,7 +5292,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-378",
+"id": "chc-8816307d",
 "ar": "ممحاة",
 "en": "eraser",
 "category": "school",
@@ -5306,7 +5306,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-379",
+"id": "chc-2bcbcb64",
 "ar": "حقيبة",
 "en": "bag",
 "category": "school",
@@ -5320,7 +5320,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-380",
+"id": "chc-b3f919e4",
 "ar": "سبورة",
 "en": "board",
 "category": "school",
@@ -5334,7 +5334,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-381",
+"id": "chc-9b4e68c3",
 "ar": "مدرسة",
 "en": "school",
 "category": "school",
@@ -5348,7 +5348,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-382",
+"id": "chc-f080a230",
 "ar": "مكتبة",
 "en": "library",
 "category": "school",
@@ -5362,7 +5362,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-383",
+"id": "chc-bbc2f9df",
 "ar": "خريطة",
 "en": "map",
 "category": "school",
@@ -5376,7 +5376,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-384",
+"id": "chc-6f59ef41",
 "ar": "حاسوب",
 "en": "computer",
 "category": "school",
@@ -5390,7 +5390,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-385",
+"id": "chc-0b98df80",
 "ar": "مقلمة",
 "en": "pencil case",
 "category": "school",
@@ -5404,7 +5404,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-386",
+"id": "chc-fb5ef23c",
 "ar": "برجل",
 "en": "compass",
 "category": "school",
@@ -5418,7 +5418,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-387",
+"id": "chc-a3f49bf9",
 "ar": "قلم رصاص",
 "en": "pencil",
 "category": "school",
@@ -5432,7 +5432,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-388",
+"id": "chc-d01cff46",
 "ar": "مبراة",
 "en": "sharpener",
 "category": "school",
@@ -5446,7 +5446,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-389",
+"id": "chc-ae56c3a5",
 "ar": "ملف",
 "en": "folder",
 "category": "school",
@@ -5460,7 +5460,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-390",
+"id": "chc-5f642874",
 "ar": "دباسة",
 "en": "stapler",
 "category": "school",
@@ -5474,7 +5474,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-391",
+"id": "chc-c2263c9d",
 "ar": "غراء",
 "en": "glue",
 "category": "school",
@@ -5488,7 +5488,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-392",
+"id": "chc-32b35077",
 "ar": "طباشير",
 "en": "chalk",
 "category": "school",
@@ -5502,7 +5502,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-393",
+"id": "chc-dce434d5",
 "ar": "جدول",
 "en": "timetable",
 "category": "school",
@@ -5516,7 +5516,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-394",
+"id": "chc-8a79900e",
 "ar": "مطرقة",
 "en": "hammer",
 "category": "tools",
@@ -5530,7 +5530,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-395",
+"id": "chc-63cff345",
 "ar": "مفك",
 "en": "screwdriver",
 "category": "tools",
@@ -5544,7 +5544,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-396",
+"id": "chc-6cf93984",
 "ar": "منشار",
 "en": "saw",
 "category": "tools",
@@ -5558,7 +5558,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-397",
+"id": "chc-4aeb8455",
 "ar": "مسمار",
 "en": "nail",
 "category": "tools",
@@ -5572,7 +5572,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-398",
+"id": "chc-d7cff752",
 "ar": "مقص",
 "en": "scissors",
 "category": "tools",
@@ -5586,7 +5586,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-399",
+"id": "chc-8479e39a",
 "ar": "إبرة",
 "en": "needle",
 "category": "tools",
@@ -5600,7 +5600,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-400",
+"id": "chc-1f6a859b",
 "ar": "فأس",
 "en": "axe",
 "category": "tools",
@@ -5614,7 +5614,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-401",
+"id": "chc-155202bc",
 "ar": "مفتاح ربط",
 "en": "wrench",
 "category": "tools",
@@ -5628,7 +5628,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-402",
+"id": "chc-22af5fad",
 "ar": "سلم",
 "en": "ladder",
 "category": "tools",
@@ -5642,7 +5642,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-403",
+"id": "chc-d73c915e",
 "ar": "فرشاة",
 "en": "brush",
 "category": "tools",
@@ -5656,7 +5656,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-404",
+"id": "chc-489e9aaa",
 "ar": "حبل",
 "en": "rope",
 "category": "tools",
@@ -5670,7 +5670,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-405",
+"id": "chc-36ab33c4",
 "ar": "مقياس",
 "en": "tape measure",
 "category": "tools",
@@ -5684,7 +5684,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-406",
+"id": "chc-75dc603b",
 "ar": "مثقاب",
 "en": "drill",
 "category": "tools",
@@ -5698,7 +5698,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-407",
+"id": "chc-393d7146",
 "ar": "كماشة",
 "en": "pliers",
 "category": "tools",
@@ -5712,7 +5712,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-408",
+"id": "chc-f4eaaa1c",
 "ar": "ملقط",
 "en": "tweezers",
 "category": "tools",
@@ -5726,7 +5726,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-409",
+"id": "chc-963ca346",
 "ar": "معول",
 "en": "pickaxe",
 "category": "tools",
@@ -5740,7 +5740,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-410",
+"id": "chc-9bb8abff",
 "ar": "مجرفة",
 "en": "shovel",
 "category": "tools",
@@ -5754,7 +5754,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-411",
+"id": "chc-e997e391",
 "ar": "دلو",
 "en": "bucket",
 "category": "tools",
@@ -5768,7 +5768,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-412",
+"id": "chc-3f80aacf",
 "ar": "خرطوم",
 "en": "hose",
 "category": "tools",
@@ -5782,7 +5782,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-413",
+"id": "chc-ef369742",
 "ar": "مسجد",
 "en": "mosque",
 "category": "places",
@@ -5796,7 +5796,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-414",
+"id": "chc-4a27deb9",
 "ar": "مستشفى",
 "en": "hospital",
 "category": "places",
@@ -5810,7 +5810,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-415",
+"id": "chc-98e369f7",
 "ar": "مطار",
 "en": "airport",
 "category": "places",
@@ -5824,7 +5824,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-416",
+"id": "chc-16c73be6",
 "ar": "سوق",
 "en": "market",
 "category": "places",
@@ -5838,7 +5838,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-417",
+"id": "chc-21a777de",
 "ar": "حديقة",
 "en": "park",
 "category": "places",
@@ -5852,7 +5852,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-418",
+"id": "chc-485afe57",
 "ar": "شاطئ",
 "en": "beach",
 "category": "places",
@@ -5866,7 +5866,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-419",
+"id": "chc-0219262d",
 "ar": "جبل",
 "en": "mountain",
 "category": "places",
@@ -5880,7 +5880,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-420",
+"id": "chc-c39ba5fc",
 "ar": "صحراء",
 "en": "desert",
 "category": "places",
@@ -5894,7 +5894,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-421",
+"id": "chc-fd2ca721",
 "ar": "نهر",
 "en": "river",
 "category": "places",
@@ -5908,7 +5908,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-422",
+"id": "chc-3c7b56ce",
 "ar": "بحر",
 "en": "sea",
 "category": "places",
@@ -5922,7 +5922,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-423",
+"id": "chc-2ef9d756",
 "ar": "جزيرة",
 "en": "island",
 "category": "places",
@@ -5936,7 +5936,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-424",
+"id": "chc-fd0a8875",
 "ar": "غابة",
 "en": "forest",
 "category": "places",
@@ -5950,7 +5950,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-425",
+"id": "chc-32f476bc",
 "ar": "قلعة",
 "en": "castle",
 "category": "places",
@@ -5964,7 +5964,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-426",
+"id": "chc-20aefc45",
 "ar": "متحف",
 "en": "museum",
 "category": "places",
@@ -5978,7 +5978,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-427",
+"id": "chc-2df8d65b",
 "ar": "ملعب",
 "en": "stadium",
 "category": "places",
@@ -5992,7 +5992,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-428",
+"id": "chc-c31e3581",
 "ar": "مزرعة",
 "en": "farm",
 "category": "places",
@@ -6006,7 +6006,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-429",
+"id": "chc-87cc3dd0",
 "ar": "مطعم",
 "en": "restaurant",
 "category": "places",
@@ -6020,7 +6020,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-430",
+"id": "chc-f879f70c",
 "ar": "بنك",
 "en": "bank",
 "category": "places",
@@ -6034,7 +6034,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-431",
+"id": "chc-c4c54273",
 "ar": "جسر",
 "en": "bridge",
 "category": "places",
@@ -6048,7 +6048,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-432",
+"id": "chc-531d21bc",
 "ar": "محطة",
 "en": "station",
 "category": "places",
@@ -6062,7 +6062,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-433",
+"id": "chc-757be7aa",
 "ar": "شمس",
 "en": "sun",
 "category": "nature",
@@ -6076,7 +6076,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-434",
+"id": "chc-a6b3ca34",
 "ar": "قمر",
 "en": "moon",
 "category": "nature",
@@ -6090,7 +6090,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-435",
+"id": "chc-9258053e",
 "ar": "نجمة",
 "en": "star",
 "category": "nature",
@@ -6104,7 +6104,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-436",
+"id": "chc-b3f51329",
 "ar": "سحابة",
 "en": "cloud",
 "category": "nature",
@@ -6118,7 +6118,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-437",
+"id": "chc-41892f96",
 "ar": "مطر",
 "en": "rain",
 "category": "nature",
@@ -6132,7 +6132,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-438",
+"id": "chc-9b7b0aed",
 "ar": "ثلج",
 "en": "snow",
 "category": "nature",
@@ -6146,7 +6146,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-439",
+"id": "chc-ea8d662a",
 "ar": "رعد",
 "en": "thunder",
 "category": "nature",
@@ -6160,7 +6160,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-440",
+"id": "chc-8ea60afd",
 "ar": "برق",
 "en": "lightning",
 "category": "nature",
@@ -6174,7 +6174,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-441",
+"id": "chc-d089c4dc",
 "ar": "قوس قزح",
 "en": "rainbow",
 "category": "nature",
@@ -6188,7 +6188,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-442",
+"id": "chc-9717790e",
 "ar": "ريح",
 "en": "wind",
 "category": "nature",
@@ -6202,7 +6202,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-443",
+"id": "chc-4c23f090",
 "ar": "بحيرة",
 "en": "lake",
 "category": "nature",
@@ -6216,7 +6216,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-444",
+"id": "chc-61b7087d",
 "ar": "واحة",
 "en": "oasis",
 "category": "nature",
@@ -6230,7 +6230,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-445",
+"id": "chc-92af76ee",
 "ar": "وادي",
 "en": "valley",
 "category": "nature",
@@ -6244,7 +6244,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-446",
+"id": "chc-ed127ab5",
 "ar": "شلال",
 "en": "waterfall",
 "category": "nature",
@@ -6258,7 +6258,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-447",
+"id": "chc-76cd0737",
 "ar": "بركان",
 "en": "volcano",
 "category": "nature",
@@ -6272,7 +6272,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-448",
+"id": "chc-9dbcd900",
 "ar": "كهف",
 "en": "cave",
 "category": "nature",
@@ -6286,7 +6286,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-449",
+"id": "chc-47a834af",
 "ar": "تل",
 "en": "hill",
 "category": "nature",
@@ -6300,7 +6300,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-450",
+"id": "chc-05707957",
 "ar": "صخرة",
 "en": "rock",
 "category": "nature",
@@ -6314,7 +6314,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-451",
+"id": "chc-1ac350d7",
 "ar": "رمل",
 "en": "sand",
 "category": "nature",
@@ -6328,7 +6328,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-452",
+"id": "chc-862f8c5d",
 "ar": "ضباب",
 "en": "fog",
 "category": "nature",
@@ -6342,7 +6342,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-453",
+"id": "chc-1bba3b53",
 "ar": "رأس",
 "en": "head",
 "category": "body",
@@ -6356,7 +6356,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-454",
+"id": "chc-abf2fb68",
 "ar": "يد",
 "en": "hand",
 "category": "body",
@@ -6370,7 +6370,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-455",
+"id": "chc-a5d93554",
 "ar": "رجل",
 "en": "leg",
 "category": "body",
@@ -6384,7 +6384,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-456",
+"id": "chc-675b46a5",
 "ar": "عين",
 "en": "eye",
 "category": "body",
@@ -6398,7 +6398,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-457",
+"id": "chc-c87ea215",
 "ar": "أذن",
 "en": "ear",
 "category": "body",
@@ -6412,7 +6412,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-458",
+"id": "chc-d466b7d3",
 "ar": "أنف",
 "en": "nose",
 "category": "body",
@@ -6426,7 +6426,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-459",
+"id": "chc-7f3b9d0b",
 "ar": "فم",
 "en": "mouth",
 "category": "body",
@@ -6440,7 +6440,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-460",
+"id": "chc-790c480f",
 "ar": "سن",
 "en": "tooth",
 "category": "body",
@@ -6454,7 +6454,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-461",
+"id": "chc-6e2177a1",
 "ar": "لسان",
 "en": "tongue",
 "category": "body",
@@ -6468,7 +6468,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-462",
+"id": "chc-28e3a74a",
 "ar": "شعر",
 "en": "hair",
 "category": "body",
@@ -6482,7 +6482,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-463",
+"id": "chc-7432a0c2",
 "ar": "وجه",
 "en": "face",
 "category": "body",
@@ -6496,7 +6496,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-464",
+"id": "chc-82f1b4b7",
 "ar": "قلب",
 "en": "heart",
 "category": "body",
@@ -6510,7 +6510,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-465",
+"id": "chc-bd61d693",
 "ar": "بطن",
 "en": "stomach",
 "category": "body",
@@ -6524,7 +6524,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-466",
+"id": "chc-1925e3f6",
 "ar": "ظهر",
 "en": "back",
 "category": "body",
@@ -6538,7 +6538,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-467",
+"id": "chc-87719738",
 "ar": "كتف",
 "en": "shoulder",
 "category": "body",
@@ -6552,7 +6552,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-468",
+"id": "chc-10b0774d",
 "ar": "ركبة",
 "en": "knee",
 "category": "body",
@@ -6566,7 +6566,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-469",
+"id": "chc-905bfca8",
 "ar": "إصبع",
 "en": "finger",
 "category": "body",
@@ -6580,7 +6580,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-470",
+"id": "chc-ad783f94",
 "ar": "قدم",
 "en": "foot",
 "category": "body",
@@ -6594,7 +6594,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-471",
+"id": "chc-76a7d5a5",
 "ar": "رقبة",
 "en": "neck",
 "category": "body",
@@ -6608,7 +6608,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-472",
+"id": "chc-d31ee32f",
 "ar": "ذراع",
 "en": "arm",
 "category": "body",
@@ -6622,7 +6622,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-473",
+"id": "chc-1382f1d7",
 "ar": "حاجب",
 "en": "eyebrow",
 "category": "body",
@@ -6636,7 +6636,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-474",
+"id": "chc-590571a5",
 "ar": "أحمر",
 "en": "red",
 "category": "colors",
@@ -6650,7 +6650,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-475",
+"id": "chc-072bf8b9",
 "ar": "أزرق",
 "en": "blue",
 "category": "colors",
@@ -6664,7 +6664,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-476",
+"id": "chc-48b4b590",
 "ar": "أخضر",
 "en": "green",
 "category": "colors",
@@ -6678,7 +6678,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-477",
+"id": "chc-25fbddb7",
 "ar": "أصفر",
 "en": "yellow",
 "category": "colors",
@@ -6692,7 +6692,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-478",
+"id": "chc-cb52310b",
 "ar": "برتقالي",
 "en": "orange",
 "category": "colors",
@@ -6706,7 +6706,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-479",
+"id": "chc-013ff80b",
 "ar": "بنفسجي",
 "en": "purple",
 "category": "colors",
@@ -6720,7 +6720,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-480",
+"id": "chc-836d81cd",
 "ar": "وردي",
 "en": "pink",
 "category": "colors",
@@ -6734,7 +6734,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-481",
+"id": "chc-6fca68bb",
 "ar": "أبيض",
 "en": "white",
 "category": "colors",
@@ -6748,7 +6748,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-482",
+"id": "chc-bc1fde52",
 "ar": "أسود",
 "en": "black",
 "category": "colors",
@@ -6762,7 +6762,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-483",
+"id": "chc-cd8d5b73",
 "ar": "بني",
 "en": "brown",
 "category": "colors",
@@ -6776,7 +6776,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-484",
+"id": "chc-1a1680d5",
 "ar": "رمادي",
 "en": "gray",
 "category": "colors",
@@ -6790,7 +6790,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-485",
+"id": "chc-0b639abc",
 "ar": "ذهبي",
 "en": "golden",
 "category": "colors",
@@ -6804,7 +6804,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-486",
+"id": "chc-1485ba4f",
 "ar": "فضي",
 "en": "silver",
 "category": "colors",
@@ -6818,7 +6818,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-487",
+"id": "chc-567fd777",
 "ar": "سماوي",
 "en": "sky blue",
 "category": "colors",
@@ -6832,7 +6832,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-488",
+"id": "chc-8ead1ed9",
 "ar": "زهري",
 "en": "rose",
 "category": "colors",
@@ -6846,7 +6846,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-489",
+"id": "chc-9365f714",
 "ar": "كحلي",
 "en": "navy",
 "category": "colors",
@@ -6860,7 +6860,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-490",
+"id": "chc-0fcb0202",
 "ar": "بيج",
 "en": "beige",
 "category": "colors",
@@ -6874,7 +6874,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-491",
+"id": "chc-bcd083be",
 "ar": "تركوازي",
 "en": "turquoise",
 "category": "colors",
@@ -6888,7 +6888,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-492",
+"id": "chc-533b787a",
 "ar": "عنابي",
 "en": "maroon",
 "category": "colors",
@@ -6902,7 +6902,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-493",
+"id": "chc-455e0ea0",
 "ar": "خمري",
 "en": "burgundy",
 "category": "colors",
@@ -6916,7 +6916,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-494",
+"id": "chc-b9e9459c",
 "ar": "هاتف",
 "en": "phone",
 "category": "tech",
@@ -6930,7 +6930,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-495",
+"id": "chc-0501f06f",
 "ar": "تلفاز",
 "en": "television",
 "category": "tech",
@@ -6944,7 +6944,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-496",
+"id": "chc-e0196909",
 "ar": "كاميرا",
 "en": "camera",
 "category": "tech",
@@ -6958,7 +6958,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-497",
+"id": "chc-95d9339b",
 "ar": "ساعة ذكية",
 "en": "smartwatch",
 "category": "tech",
@@ -6972,7 +6972,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-498",
+"id": "chc-647a7d0f",
 "ar": "سماعة",
 "en": "headphones",
 "category": "tech",
@@ -6986,7 +6986,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-499",
+"id": "chc-ed6e86e4",
 "ar": "شاشة",
 "en": "screen",
 "category": "tech",
@@ -7000,7 +7000,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-500",
+"id": "chc-868a7378",
 "ar": "لوحة مفاتيح",
 "en": "keyboard",
 "category": "tech",
@@ -7014,7 +7014,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-501",
+"id": "chc-5bbabd71",
 "ar": "فأرة",
 "en": "mouse",
 "category": "tech",
@@ -7028,7 +7028,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-502",
+"id": "chc-1f56b94d",
 "ar": "طابعة",
 "en": "printer",
 "category": "tech",
@@ -7042,7 +7042,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-503",
+"id": "chc-0924aec3",
 "ar": "شاحن",
 "en": "charger",
 "category": "tech",
@@ -7056,7 +7056,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-504",
+"id": "chc-1a8488a3",
 "ar": "بطارية",
 "en": "battery",
 "category": "tech",
@@ -7070,7 +7070,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-505",
+"id": "chc-c1bb51ad",
 "ar": "ريموت",
 "en": "remote",
 "category": "tech",
@@ -7084,7 +7084,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-506",
+"id": "chc-38008898",
 "ar": "راديو",
 "en": "radio",
 "category": "tech",
@@ -7098,7 +7098,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-507",
+"id": "chc-4ca8f62f",
 "ar": "روبوت",
 "en": "robot",
 "category": "tech",
@@ -7112,7 +7112,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-508",
+"id": "chc-f688b63e",
 "ar": "قمر صناعي",
 "en": "satellite",
 "category": "tech",
@@ -7126,7 +7126,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-509",
+"id": "chc-f93d9c33",
 "ar": "لوح",
 "en": "tablet",
 "category": "tech",
@@ -7140,7 +7140,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-510",
+"id": "chc-0780ed31",
 "ar": "مكبر صوت",
 "en": "speaker",
 "category": "tech",
@@ -7154,7 +7154,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-511",
+"id": "chc-69c543ec",
 "ar": "جهاز ألعاب",
 "en": "console",
 "category": "tech",
@@ -7168,7 +7168,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-512",
+"id": "chc-68d77d98",
 "ar": "مسجل",
 "en": "recorder",
 "category": "tech",
@@ -7182,7 +7182,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-513",
+"id": "chc-c1ee4c69",
 "ar": "كرة",
 "en": "ball",
 "category": "toys",
@@ -7196,7 +7196,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-514",
+"id": "chc-636ca717",
 "ar": "دمية",
 "en": "doll",
 "category": "toys",
@@ -7210,7 +7210,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-515",
+"id": "chc-b6bd837f",
 "ar": "طائرة ورقية",
 "en": "kite",
 "category": "toys",
@@ -7224,7 +7224,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-516",
+"id": "chc-725c7326",
 "ar": "مكعبات",
 "en": "blocks",
 "category": "toys",
@@ -7238,7 +7238,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-517",
+"id": "chc-d5c4a265",
 "ar": "لغز",
 "en": "puzzle",
 "category": "toys",
@@ -7252,7 +7252,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-518",
+"id": "chc-3fb5c784",
 "ar": "بالون",
 "en": "balloon",
 "category": "toys",
@@ -7266,7 +7266,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-519",
+"id": "chc-5a3b97a8",
 "ar": "أرجوحة",
 "en": "swing",
 "category": "toys",
@@ -7280,7 +7280,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-520",
+"id": "chc-1539df0c",
 "ar": "زحليقة",
 "en": "slide",
 "category": "toys",
@@ -7294,7 +7294,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-521",
+"id": "chc-ea36fb5a",
 "ar": "قفز الحبل",
 "en": "jump rope",
 "category": "toys",
@@ -7308,7 +7308,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-522",
+"id": "chc-40272e5c",
 "ar": "الغميضة",
 "en": "hide and seek",
 "category": "toys",
@@ -7322,7 +7322,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-523",
+"id": "chc-3bc9268d",
 "ar": "مصاصة",
 "en": "lollipop",
 "category": "toys",
@@ -7336,7 +7336,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-524",
+"id": "chc-7bec8764",
 "ar": "سيارة لعبة",
 "en": "toy car",
 "category": "toys",
@@ -7350,7 +7350,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-525",
+"id": "chc-72d1dec2",
 "ar": "قطار لعبة",
 "en": "toy train",
 "category": "toys",
@@ -7364,7 +7364,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-526",
+"id": "chc-8fed14a7",
 "ar": "مكعب روبيك",
 "en": "rubiks cube",
 "category": "toys",
@@ -7378,7 +7378,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-527",
+"id": "chc-400c1890",
 "ar": "ألوان",
 "en": "crayons",
 "category": "toys",
@@ -7392,7 +7392,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-528",
+"id": "chc-4ef35764",
 "ar": "صلصال",
 "en": "clay",
 "category": "toys",
@@ -7406,7 +7406,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-529",
+"id": "chc-bec18e8e",
 "ar": "فقاعات",
 "en": "bubbles",
 "category": "toys",
@@ -7420,7 +7420,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-530",
+"id": "chc-48d8b6fb",
 "ar": "خيمة",
 "en": "tent",
 "category": "toys",
@@ -7434,7 +7434,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-531",
+"id": "chc-dacc21b7",
 "ar": "دومينو",
 "en": "dominoes",
 "category": "toys",
@@ -7448,7 +7448,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-532",
+"id": "chc-ec7f247f",
 "ar": "الرياض",
 "en": "Riyadh",
 "category": "saudi_cities",
@@ -7461,7 +7461,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-533",
+"id": "chc-7a1c0096",
 "ar": "جدة",
 "en": "Jeddah",
 "category": "saudi_cities",
@@ -7474,7 +7474,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-534",
+"id": "chc-b629dd95",
 "ar": "مكة المكرمة",
 "en": "Mecca",
 "category": "saudi_cities",
@@ -7487,7 +7487,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-535",
+"id": "chc-4fedbdb0",
 "ar": "المدينة المنورة",
 "en": "Medina",
 "category": "saudi_cities",
@@ -7500,7 +7500,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-536",
+"id": "chc-822c2b16",
 "ar": "الدمام",
 "en": "Dammam",
 "category": "saudi_cities",
@@ -7513,7 +7513,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-537",
+"id": "chc-fcaf1acf",
 "ar": "الطائف",
 "en": "Taif",
 "category": "saudi_cities",
@@ -7526,7 +7526,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-538",
+"id": "chc-ffece824",
 "ar": "تبوك",
 "en": "Tabuk",
 "category": "saudi_cities",
@@ -7539,7 +7539,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-539",
+"id": "chc-770a684a",
 "ar": "أبها",
 "en": "Abha",
 "category": "saudi_cities",
@@ -7552,7 +7552,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-540",
+"id": "chc-f87e4eba",
 "ar": "بريدة",
 "en": "Buraydah",
 "category": "saudi_cities",
@@ -7565,7 +7565,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-541",
+"id": "chc-9b1ce346",
 "ar": "حائل",
 "en": "Hail",
 "category": "saudi_cities",
@@ -7578,7 +7578,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-542",
+"id": "chc-8bbaac78",
 "ar": "نجران",
 "en": "Najran",
 "category": "saudi_cities",
@@ -7591,7 +7591,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-543",
+"id": "chc-27bc996f",
 "ar": "جازان",
 "en": "Jazan",
 "category": "saudi_cities",
@@ -7604,7 +7604,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-544",
+"id": "chc-cb5178b1",
 "ar": "الخبر",
 "en": "Khobar",
 "category": "saudi_cities",
@@ -7617,7 +7617,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-545",
+"id": "chc-75b5bbf8",
 "ar": "الجبيل",
 "en": "Jubail",
 "category": "saudi_cities",
@@ -7630,7 +7630,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-546",
+"id": "chc-b4166677",
 "ar": "ينبع",
 "en": "Yanbu",
 "category": "saudi_cities",
@@ -7643,7 +7643,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-547",
+"id": "chc-000cf89f",
 "ar": "الأحساء",
 "en": "Al-Ahsa",
 "category": "saudi_cities",
@@ -7656,7 +7656,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-548",
+"id": "chc-1d07ef9b",
 "ar": "العلا",
 "en": "AlUla",
 "category": "saudi_cities",
@@ -7669,7 +7669,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-549",
+"id": "chc-f82c4194",
 "ar": "الباحة",
 "en": "Al-Baha",
 "category": "saudi_cities",
@@ -7682,7 +7682,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-550",
+"id": "chc-f035e259",
 "ar": "عرعر",
 "en": "Arar",
 "category": "saudi_cities",
@@ -7695,7 +7695,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-551",
+"id": "chc-344e05eb",
 "ar": "سكاكا",
 "en": "Sakaka",
 "category": "saudi_cities",
@@ -7708,7 +7708,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-552",
+"id": "chc-6e6b3223",
 "ar": "الظهران",
 "en": "Dhahran",
 "category": "saudi_cities",
@@ -7721,7 +7721,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-553",
+"id": "chc-c2cd7396",
 "ar": "خميس مشيط",
 "en": "Khamis Mushait",
 "category": "saudi_cities",
@@ -7734,7 +7734,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-554",
+"id": "chc-5b7e0426",
 "ar": "نيوم",
 "en": "NEOM",
 "category": "saudi_cities",
@@ -7747,7 +7747,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-555",
+"id": "chc-3f8cbd03",
 "ar": "السعودية",
 "en": "Saudi Arabia",
 "category": "arab_countries",
@@ -7760,7 +7760,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-556",
+"id": "chc-9f5f187b",
 "ar": "مصر",
 "en": "Egypt",
 "category": "arab_countries",
@@ -7773,7 +7773,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-557",
+"id": "chc-1b890085",
 "ar": "الأردن",
 "en": "Jordan",
 "category": "arab_countries",
@@ -7786,7 +7786,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-558",
+"id": "chc-4b74973d",
 "ar": "العراق",
 "en": "Iraq",
 "category": "arab_countries",
@@ -7799,7 +7799,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-559",
+"id": "chc-827e1566",
 "ar": "الكويت",
 "en": "Kuwait",
 "category": "arab_countries",
@@ -7812,7 +7812,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-560",
+"id": "chc-76394460",
 "ar": "قطر",
 "en": "Qatar",
 "category": "arab_countries",
@@ -7825,7 +7825,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-561",
+"id": "chc-2a0041a3",
 "ar": "البحرين",
 "en": "Bahrain",
 "category": "arab_countries",
@@ -7838,7 +7838,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-562",
+"id": "chc-b9493df4",
 "ar": "عمان",
 "en": "Oman",
 "category": "arab_countries",
@@ -7851,7 +7851,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-563",
+"id": "chc-1ccd12e7",
 "ar": "الإمارات",
 "en": "UAE",
 "category": "arab_countries",
@@ -7864,7 +7864,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-564",
+"id": "chc-0cdfe5e0",
 "ar": "اليمن",
 "en": "Yemen",
 "category": "arab_countries",
@@ -7877,7 +7877,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-565",
+"id": "chc-aec612ef",
 "ar": "لبنان",
 "en": "Lebanon",
 "category": "arab_countries",
@@ -7890,7 +7890,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-566",
+"id": "chc-1166d28b",
 "ar": "سوريا",
 "en": "Syria",
 "category": "arab_countries",
@@ -7903,7 +7903,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-567",
+"id": "chc-94b11d17",
 "ar": "المغرب",
 "en": "Morocco",
 "category": "arab_countries",
@@ -7916,7 +7916,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-568",
+"id": "chc-cd77976e",
 "ar": "الجزائر",
 "en": "Algeria",
 "category": "arab_countries",
@@ -7929,7 +7929,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-569",
+"id": "chc-ba84e974",
 "ar": "تونس",
 "en": "Tunisia",
 "category": "arab_countries",
@@ -7942,7 +7942,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-570",
+"id": "chc-251aff72",
 "ar": "ليبيا",
 "en": "Libya",
 "category": "arab_countries",
@@ -7955,7 +7955,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-571",
+"id": "chc-5becaf4c",
 "ar": "السودان",
 "en": "Sudan",
 "category": "arab_countries",
@@ -7968,7 +7968,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-572",
+"id": "chc-45cbb460",
 "ar": "موريتانيا",
 "en": "Mauritania",
 "category": "arab_countries",
@@ -7981,7 +7981,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-573",
+"id": "chc-49ce4aab",
 "ar": "الصومال",
 "en": "Somalia",
 "category": "arab_countries",
@@ -7994,7 +7994,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-574",
+"id": "chc-7176f0b0",
 "ar": "جيبوتي",
 "en": "Djibouti",
 "category": "arab_countries",
@@ -8007,7 +8007,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-575",
+"id": "chc-ad5a695e",
 "ar": "جزر القمر",
 "en": "Comoros",
 "category": "arab_countries",
@@ -8020,7 +8020,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-576",
+"id": "chc-b66e1b9d",
 "ar": "الأهرامات",
 "en": "pyramids",
 "category": "landmarks",
@@ -8033,7 +8033,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-577",
+"id": "chc-83406f9b",
 "ar": "برج إيفل",
 "en": "Eiffel Tower",
 "category": "landmarks",
@@ -8046,7 +8046,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-578",
+"id": "chc-7f7f7ca7",
 "ar": "سور الصين",
 "en": "Great Wall",
 "category": "landmarks",
@@ -8059,7 +8059,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-579",
+"id": "chc-2b3f50ec",
 "ar": "برج خليفة",
 "en": "Burj Khalifa",
 "category": "landmarks",
@@ -8072,7 +8072,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-580",
+"id": "chc-e78ed0db",
 "ar": "برج المملكة",
 "en": "Kingdom Tower",
 "category": "landmarks",
@@ -8085,7 +8085,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-581",
+"id": "chc-6fb265f4",
 "ar": "ساعة مكة",
 "en": "Makkah Clock Tower",
 "category": "landmarks",
@@ -8098,7 +8098,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-582",
+"id": "chc-f5608078",
 "ar": "تمثال الحرية",
 "en": "Statue of Liberty",
 "category": "landmarks",
@@ -8111,7 +8111,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-583",
+"id": "chc-7d828282",
 "ar": "برج بيزا",
 "en": "Pisa Tower",
 "category": "landmarks",
@@ -8124,7 +8124,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-584",
+"id": "chc-3af1192e",
 "ar": "الكولوسيوم",
 "en": "Colosseum",
 "category": "landmarks",
@@ -8137,7 +8137,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-585",
+"id": "chc-b94a36b6",
 "ar": "تاج محل",
 "en": "Taj Mahal",
 "category": "landmarks",
@@ -8150,7 +8150,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-586",
+"id": "chc-c196418b",
 "ar": "البوابة الذهبية",
 "en": "Golden Gate",
 "category": "landmarks",
@@ -8163,7 +8163,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-587",
+"id": "chc-530ce134",
 "ar": "قصر المصمك",
 "en": "Masmak Fort",
 "category": "landmarks",
@@ -8176,7 +8176,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-588",
+"id": "chc-510c29ac",
 "ar": "حي الطريف",
 "en": "At-Turaif",
 "category": "landmarks",
@@ -8189,7 +8189,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-589",
+"id": "chc-3385c364",
 "ar": "الحِجر",
 "en": "Hegra",
 "category": "landmarks",
@@ -8202,7 +8202,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-590",
+"id": "chc-b833b75f",
 "ar": "الكورنيش",
 "en": "Corniche",
 "category": "landmarks",
@@ -8215,7 +8215,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-591",
+"id": "chc-3a8f7804",
 "ar": "برج العرب",
 "en": "Burj Al Arab",
 "category": "landmarks",
@@ -8228,7 +8228,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-592",
+"id": "chc-7de0b64e",
 "ar": "نافورة الملك فهد",
 "en": "King Fahd Fountain",
 "category": "landmarks",
@@ -8241,7 +8241,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-593",
+"id": "chc-4c8a10de",
 "ar": "مبنى الكابيتول",
 "en": "Capitol Building",
 "category": "landmarks",
@@ -8254,7 +8254,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-594",
+"id": "chc-d81975c4",
 "ar": "نهر النيل",
 "en": "Nile",
 "category": "landmarks",
@@ -8267,7 +8267,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-595",
+"id": "chc-17938e6f",
 "ar": "قصر الحمراء",
 "en": "Alhambra",
 "category": "landmarks",
@@ -8280,7 +8280,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-596",
+"id": "chc-464425bc",
 "ar": "عيد الفطر",
 "en": "Eid al-Fitr",
 "category": "occasions",
@@ -8294,7 +8294,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-597",
+"id": "chc-11d7faa9",
 "ar": "عيد الأضحى",
 "en": "Eid al-Adha",
 "category": "occasions",
@@ -8308,7 +8308,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-598",
+"id": "chc-8b6c945c",
 "ar": "رمضان",
 "en": "Ramadan",
 "category": "occasions",
@@ -8322,7 +8322,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-599",
+"id": "chc-4139ca62",
 "ar": "اليوم الوطني",
 "en": "National Day",
 "category": "occasions",
@@ -8336,7 +8336,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-600",
+"id": "chc-e26d64f9",
 "ar": "يوم التأسيس",
 "en": "Founding Day",
 "category": "occasions",
@@ -8350,7 +8350,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-601",
+"id": "chc-5a2ce995",
 "ar": "عيد ميلاد",
 "en": "birthday",
 "category": "occasions",
@@ -8364,7 +8364,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-602",
+"id": "chc-1b8fcc32",
 "ar": "زواج",
 "en": "wedding",
 "category": "occasions",
@@ -8378,7 +8378,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-603",
+"id": "chc-4bb0cb4c",
 "ar": "تخرج",
 "en": "graduation",
 "category": "occasions",
@@ -8392,7 +8392,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-604",
+"id": "chc-6af03bcf",
 "ar": "قدوم ضيف",
 "en": "guest arrival",
 "category": "occasions",
@@ -8406,7 +8406,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-605",
+"id": "chc-a74ecc3b",
 "ar": "سفر",
 "en": "travel",
 "category": "occasions",
@@ -8420,7 +8420,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-606",
+"id": "chc-16b77b0f",
 "ar": "مولود جديد",
 "en": "newborn",
 "category": "occasions",
@@ -8434,7 +8434,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-607",
+"id": "chc-fd28af58",
 "ar": "حفلة",
 "en": "party",
 "category": "occasions",
@@ -8448,7 +8448,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-608",
+"id": "chc-fbd8c9ca",
 "ar": "نزهة",
 "en": "picnic",
 "category": "occasions",
@@ -8462,7 +8462,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-609",
+"id": "chc-0a34289e",
 "ar": "مخيم",
 "en": "camping",
 "category": "occasions",
@@ -8476,7 +8476,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-610",
+"id": "chc-d2e147ce",
 "ar": "قرقيعان",
 "en": "garangao",
 "category": "occasions",
@@ -8490,7 +8490,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-611",
+"id": "chc-be9a351c",
 "ar": "عيد صديق",
 "en": "friends party",
 "category": "occasions",
@@ -8504,7 +8504,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-612",
+"id": "chc-8b57b2e6",
 "ar": "هدية",
 "en": "gift",
 "category": "occasions",
@@ -8518,7 +8518,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-613",
+"id": "chc-3422b157",
 "ar": "عزيمة",
 "en": "invitation to a meal",
 "category": "occasions",
@@ -8532,7 +8532,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-614",
+"id": "chc-d28f0ae0",
 "ar": "سحور",
 "en": "suhoor",
 "category": "occasions",
@@ -8546,7 +8546,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-615",
+"id": "chc-2499377a",
 "ar": "إفطار",
 "en": "iftar",
 "category": "occasions",
@@ -8560,7 +8560,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-616",
+"id": "chc-6b435a50",
 "ar": "أب",
 "en": "father",
 "category": "family",
@@ -8574,7 +8574,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-617",
+"id": "chc-5a5bc757",
 "ar": "أم",
 "en": "mother",
 "category": "family",
@@ -8588,7 +8588,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-618",
+"id": "chc-a92dc065",
 "ar": "أخ",
 "en": "brother",
 "category": "family",
@@ -8602,7 +8602,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-619",
+"id": "chc-f44d558c",
 "ar": "أخت",
 "en": "sister",
 "category": "family",
@@ -8616,7 +8616,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-620",
+"id": "chc-9fb88aa8",
 "ar": "جد",
 "en": "grandfather",
 "category": "family",
@@ -8630,7 +8630,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-621",
+"id": "chc-6481b9c4",
 "ar": "ابن",
 "en": "son",
 "category": "family",
@@ -8644,7 +8644,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-622",
+"id": "chc-2bff8fd6",
 "ar": "بنت",
 "en": "daughter",
 "category": "family",
@@ -8658,7 +8658,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-623",
+"id": "chc-60af83df",
 "ar": "عم",
 "en": "uncle",
 "category": "family",
@@ -8672,7 +8672,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-624",
+"id": "chc-28f85252",
 "ar": "عمة",
 "en": "aunt",
 "category": "family",
@@ -8686,7 +8686,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-625",
+"id": "chc-d186bd98",
 "ar": "خال",
 "en": "maternal uncle",
 "category": "family",
@@ -8700,7 +8700,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-626",
+"id": "chc-6442e53c",
 "ar": "خالة",
 "en": "maternal aunt",
 "category": "family",
@@ -8714,7 +8714,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-627",
+"id": "chc-e52b749c",
 "ar": "حفيد",
 "en": "grandson",
 "category": "family",
@@ -8728,7 +8728,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-628",
+"id": "chc-519f3c6c",
 "ar": "طفل",
 "en": "child",
 "category": "family",
@@ -8742,7 +8742,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-629",
+"id": "chc-8d62c3c7",
 "ar": "عريس",
 "en": "groom",
 "category": "family",
@@ -8756,7 +8756,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-630",
+"id": "chc-ef1dc9cd",
 "ar": "عروس",
 "en": "bride",
 "category": "family",
@@ -8770,7 +8770,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-631",
+"id": "chc-a62af5ce",
 "ar": "جار",
 "en": "neighbor",
 "category": "family",
@@ -8784,7 +8784,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-632",
+"id": "chc-c479734e",
 "ar": "صديق",
 "en": "friend",
 "category": "family",
@@ -8798,7 +8798,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-633",
+"id": "chc-a472463f",
 "ar": "ضيف",
 "en": "guest",
 "category": "family",
@@ -8812,7 +8812,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-634",
+"id": "chc-9ea64713",
 "ar": "ابن العم",
 "en": "cousin",
 "category": "family",
@@ -8826,7 +8826,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-635",
+"id": "chc-a9b0aa76",
 "ar": "فرحان",
 "en": "happy",
 "category": "feelings",
@@ -8840,7 +8840,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-636",
+"id": "chc-8dbba75f",
 "ar": "حزين",
 "en": "sad",
 "category": "feelings",
@@ -8854,7 +8854,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-637",
+"id": "chc-70daa8f3",
 "ar": "غاضب",
 "en": "angry",
 "category": "feelings",
@@ -8868,7 +8868,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-638",
+"id": "chc-df944736",
 "ar": "خائف",
 "en": "scared",
 "category": "feelings",
@@ -8882,7 +8882,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-639",
+"id": "chc-b66c4017",
 "ar": "متعب",
 "en": "tired",
 "category": "feelings",
@@ -8896,7 +8896,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-640",
+"id": "chc-55f1bc2c",
 "ar": "جائع",
 "en": "hungry",
 "category": "feelings",
@@ -8910,7 +8910,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-641",
+"id": "chc-e2b085ee",
 "ar": "عطشان",
 "en": "thirsty",
 "category": "feelings",
@@ -8924,7 +8924,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-642",
+"id": "chc-2c38473c",
 "ar": "مندهش",
 "en": "surprised",
 "category": "feelings",
@@ -8938,7 +8938,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-643",
+"id": "chc-067044f3",
 "ar": "ضاحك",
 "en": "laughing",
 "category": "feelings",
@@ -8952,7 +8952,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-644",
+"id": "chc-b3257bb9",
 "ar": "باكي",
 "en": "crying",
 "category": "feelings",
@@ -8966,7 +8966,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-645",
+"id": "chc-85e4a122",
 "ar": "نعسان",
 "en": "sleepy",
 "category": "feelings",
@@ -8980,7 +8980,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-646",
+"id": "chc-fed8e52b",
 "ar": "خجول",
 "en": "shy",
 "category": "feelings",
@@ -8994,7 +8994,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-647",
+"id": "chc-637e4c32",
 "ar": "متحمس",
 "en": "excited",
 "category": "feelings",
@@ -9008,7 +9008,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-648",
+"id": "chc-902b0f0f",
 "ar": "قلقان",
 "en": "worried",
 "category": "feelings",
@@ -9022,7 +9022,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-649",
+"id": "chc-7a430dee",
 "ar": "فخور",
 "en": "proud",
 "category": "feelings",
@@ -9036,7 +9036,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-650",
+"id": "chc-992759e3",
 "ar": "مريض",
 "en": "sick",
 "category": "feelings",
@@ -9050,7 +9050,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-651",
+"id": "chc-f92b2c5b",
 "ar": "مسرور",
 "en": "delighted",
 "category": "feelings",
@@ -9064,7 +9064,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-652",
+"id": "chc-2a74a5e9",
 "ar": "مستغرب",
 "en": "puzzled",
 "category": "feelings",
@@ -9078,7 +9078,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-653",
+"id": "chc-cd73ac67",
 "ar": "محرج",
 "en": "embarrassed",
 "category": "feelings",
@@ -9092,7 +9092,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-654",
+"id": "chc-f9f47bbc",
 "ar": "هادئ",
 "en": "calm",
 "category": "feelings",
@@ -9106,7 +9106,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-655",
+"id": "chc-bbd767e0",
 "ar": "يأكل",
 "en": "eats",
 "category": "actions",
@@ -9120,7 +9120,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-656",
+"id": "chc-f8359b64",
 "ar": "ينام",
 "en": "sleeps",
 "category": "actions",
@@ -9134,7 +9134,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-657",
+"id": "chc-ec4de741",
 "ar": "يركض",
 "en": "runs",
 "category": "actions",
@@ -9148,7 +9148,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-658",
+"id": "chc-ee5f6601",
 "ar": "يسبح",
 "en": "swims",
 "category": "actions",
@@ -9162,7 +9162,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-659",
+"id": "chc-618cd666",
 "ar": "يقفز",
 "en": "jumps",
 "category": "actions",
@@ -9176,7 +9176,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-660",
+"id": "chc-5ded767d",
 "ar": "يرقص",
 "en": "dances",
 "category": "actions",
@@ -9190,7 +9190,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-661",
+"id": "chc-3dd8b459",
 "ar": "يطبخ",
 "en": "cooks",
 "category": "actions",
@@ -9204,7 +9204,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-662",
+"id": "chc-5660f271",
 "ar": "يغسل",
 "en": "washes",
 "category": "actions",
@@ -9218,7 +9218,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-663",
+"id": "chc-5c1b0dde",
 "ar": "يرسم",
 "en": "draws",
 "category": "actions",
@@ -9232,7 +9232,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-664",
+"id": "chc-0302d7f8",
 "ar": "يكتب",
 "en": "writes",
 "category": "actions",
@@ -9246,7 +9246,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-665",
+"id": "chc-c8b8cbc1",
 "ar": "يقرأ",
 "en": "reads",
 "category": "actions",
@@ -9260,7 +9260,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-666",
+"id": "chc-366c7325",
 "ar": "يضحك",
 "en": "laughs",
 "category": "actions",
@@ -9274,7 +9274,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-667",
+"id": "chc-5c67d1eb",
 "ar": "يبكي",
 "en": "cries",
 "category": "actions",
@@ -9288,7 +9288,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-668",
+"id": "chc-37d4b9af",
 "ar": "يتسلق",
 "en": "climbs",
 "category": "actions",
@@ -9302,7 +9302,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-669",
+"id": "chc-d1d9e549",
 "ar": "يطير",
 "en": "flies",
 "category": "actions",
@@ -9316,7 +9316,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-670",
+"id": "chc-fc57d0c4",
 "ar": "يقود",
 "en": "drives",
 "category": "actions",
@@ -9330,7 +9330,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-671",
+"id": "chc-a11f3212",
 "ar": "يصور",
 "en": "takes a photo",
 "category": "actions",
@@ -9344,7 +9344,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-672",
+"id": "chc-4c940a94",
 "ar": "يمشي",
 "en": "walks",
 "category": "actions",
@@ -9358,7 +9358,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-673",
+"id": "chc-5f9e7e18",
 "ar": "يغني",
 "en": "sings",
 "category": "actions",
@@ -9372,7 +9372,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-674",
+"id": "chc-56e621cd",
 "ar": "يلعب",
 "en": "plays",
 "category": "actions",
@@ -9386,7 +9386,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-675",
+"id": "chc-4fe509d6",
 "ar": "يشرب",
 "en": "drinks",
 "category": "actions",
@@ -9400,7 +9400,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-676",
+"id": "chc-6055c11c",
 "ar": "يستحم",
 "en": "showers",
 "category": "actions",
@@ -9414,7 +9414,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-677",
+"id": "chc-6191cdb1",
 "ar": "يفتح",
 "en": "opens",
 "category": "actions",
@@ -9428,7 +9428,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-678",
+"id": "chc-8bbeaf8a",
 "ar": "ينظف",
 "en": "cleans",
 "category": "actions",
@@ -9442,7 +9442,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-679",
+"id": "chc-d81e09ee",
 "ar": "صيف",
 "en": "summer",
 "category": "weather",
@@ -9456,7 +9456,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-680",
+"id": "chc-fb8549b6",
 "ar": "شتاء",
 "en": "winter",
 "category": "weather",
@@ -9470,7 +9470,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-681",
+"id": "chc-1b25609a",
 "ar": "ربيع",
 "en": "spring",
 "category": "weather",
@@ -9484,7 +9484,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-682",
+"id": "chc-b07b20ed",
 "ar": "خريف",
 "en": "autumn",
 "category": "weather",
@@ -9498,7 +9498,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-683",
+"id": "chc-2bf0c13b",
 "ar": "غبار",
 "en": "dust",
 "category": "weather",
@@ -9512,7 +9512,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-684",
+"id": "chc-6955ad85",
 "ar": "عاصفة",
 "en": "storm",
 "category": "weather",
@@ -9526,7 +9526,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-685",
+"id": "chc-2cf9a39b",
 "ar": "حر",
 "en": "heat",
 "category": "weather",
@@ -9540,7 +9540,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-686",
+"id": "chc-544475f7",
 "ar": "برد",
 "en": "cold",
 "category": "weather",
@@ -9554,7 +9554,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-687",
+"id": "chc-6656ed66",
 "ar": "غيم",
 "en": "clouds",
 "category": "weather",
@@ -9568,7 +9568,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-688",
+"id": "chc-f4433cf7",
 "ar": "سيل",
 "en": "flood",
 "category": "weather",
@@ -9582,7 +9582,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-689",
+"id": "chc-ef759593",
 "ar": "صحو",
 "en": "clear sky",
 "category": "weather",
@@ -9596,7 +9596,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-690",
+"id": "chc-2febeda6",
 "ar": "رطوبة",
 "en": "humidity",
 "category": "weather",
@@ -9610,7 +9610,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-691",
+"id": "chc-75f6d831",
 "ar": "حرارة",
 "en": "temperature",
 "category": "weather",
@@ -9624,7 +9624,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-692",
+"id": "chc-ae0adcdf",
 "ar": "مظلة",
 "en": "umbrella",
 "category": "weather",
@@ -9638,7 +9638,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-693",
+"id": "chc-9fcfe897",
 "ar": "رياح",
 "en": "winds",
 "category": "weather",
@@ -9652,7 +9652,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-694",
+"id": "chc-2c9a9e68",
 "ar": "قطرة ندى",
 "en": "dew",
 "category": "weather",
@@ -9666,7 +9666,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-695",
+"id": "chc-a6805640",
 "ar": "جمر",
 "en": "embers",
 "category": "weather",
@@ -9680,7 +9680,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-696",
+"id": "chc-7dd70b4a",
 "ar": "شروق",
 "en": "sunrise",
 "category": "weather",
@@ -9694,7 +9694,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-697",
+"id": "chc-912cba79",
 "ar": "غروب",
 "en": "sunset",
 "category": "weather",
@@ -9708,7 +9708,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-698",
+"id": "chc-79a60352",
 "ar": "أرض",
 "en": "earth",
 "category": "spaces",
@@ -9721,7 +9721,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-699",
+"id": "chc-f1d1eeb8",
 "ar": "مريخ",
 "en": "Mars",
 "category": "spaces",
@@ -9734,7 +9734,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-700",
+"id": "chc-e75c25b5",
 "ar": "مشتري",
 "en": "Jupiter",
 "category": "spaces",
@@ -9747,7 +9747,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-701",
+"id": "chc-88fc1080",
 "ar": "زحل",
 "en": "Saturn",
 "category": "spaces",
@@ -9760,7 +9760,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-702",
+"id": "chc-ce178019",
 "ar": "زهرة",
 "en": "Venus",
 "category": "spaces",
@@ -9773,7 +9773,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-703",
+"id": "chc-c2db774a",
 "ar": "عطارد",
 "en": "Mercury",
 "category": "spaces",
@@ -9786,7 +9786,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-704",
+"id": "chc-55b5f19f",
 "ar": "نبتون",
 "en": "Neptune",
 "category": "spaces",
@@ -9799,7 +9799,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-705",
+"id": "chc-8b72bd63",
 "ar": "أورانوس",
 "en": "Uranus",
 "category": "spaces",
@@ -9812,7 +9812,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-706",
+"id": "chc-48c007c9",
 "ar": "نجم",
 "en": "star",
 "category": "spaces",
@@ -9825,7 +9825,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-707",
+"id": "chc-269ed6aa",
 "ar": "مجرة",
 "en": "galaxy",
 "category": "spaces",
@@ -9838,7 +9838,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-708",
+"id": "chc-05694825",
 "ar": "مذنب",
 "en": "comet",
 "category": "spaces",
@@ -9851,7 +9851,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-709",
+"id": "chc-3cea62de",
 "ar": "تلسكوب",
 "en": "telescope",
 "category": "spaces",
@@ -9864,7 +9864,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-710",
+"id": "chc-55923caf",
 "ar": "كوكب",
 "en": "planet",
 "category": "spaces",
@@ -9877,7 +9877,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-711",
+"id": "chc-6e64e71c",
 "ar": "مدار",
 "en": "orbit",
 "category": "spaces",
@@ -9890,7 +9890,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-712",
+"id": "chc-997d2a6f",
 "ar": "محطة فضائية",
 "en": "space station",
 "category": "spaces",
@@ -9903,7 +9903,7 @@
 "verified": "curated"
 },
 {
-"id": "chc-713",
+"id": "chc-fd497f2d",
 "ar": "كسوف",
 "en": "eclipse",
 "category": "spaces",

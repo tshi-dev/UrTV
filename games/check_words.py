@@ -69,7 +69,7 @@ if a and acc is not None:
         elif norm(x["display"]) != x["word"]: err("word5/answers", f"display does not normalize to word: {x['word']}")
         elif x["word"] not in S: err("word5/answers", f"answer not in accepted: {x['word']}")
         if not (ver_ok(x["verified"]) and src_ok(x["source"]) and (x["en"] or x["category"] == "dictionary")): err("word5/answers", f"bad entry {x['word']}")
-    if len(a) < 500: err("word5/answers", f"only {len(a)} answers, need at least 500")
+    if len(a) < 400: err("word5/answers", f"only {len(a)} answers, need at least 400")   # was 500: the review pass of 2026-11 removed 64 rare or unsuitable words on purpose
     if len(acc) < 2000: err("word5/accepted", f"only {len(acc)} accepted words, need at least 2000")
 # missing-word
 d = load("missing-word/items.json")

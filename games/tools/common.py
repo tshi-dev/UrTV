@@ -25,3 +25,16 @@ def item(id, type, category, difficulty, age, q_ar, q_en, a, wrong=None, source=
     if evidence: d["evidence"] = evidence
     d["verified"] = True
     return d
+
+
+import re as _re
+def _norm(s):
+    s = _re.sub(r"[\u064B-\u065F\u0670\u0640\u06D6-\u06ED]", "", s)
+    return _re.sub("[أإآٱ]", "ا", s).replace("ة", "ه").replace("ى", "ي")
+
+def leaks(it):
+    """the answer is in the question as whole words («ما عاصمة موناكو؟» answered «موناكو»): a quiz item that gives itself away"""
+    a = _norm(it["answer"]["ar"]); a = _re.sub(r"^ال", "", a) if len(a) > 5 else a
+    qt = [_re.sub(r"^ال", "", w) if len(w) > 5 else w for w in _re.findall(r"[\u0621-\u064A]+", _norm(it["question"]["ar"]))]
+    at = _re.findall(r"[\u0621-\u064A]+", a)
+    return len(a) > 3 and bool(at) and all(x in qt for x in at)

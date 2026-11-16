@@ -303,40 +303,6 @@
 "verified": true
 },
 {
-"id": "geo-cap-Q1007",
-"type": "quiz",
-"category": "geography",
-"difficulty": 3,
-"age": "all",
-"question": {
-"ar": "ما عاصمة غينيا بيساو؟",
-"en": "What is the capital of Guinea-Bissau?"
-},
-"answer": {
-"ar": "بيساو",
-"en": "Bissau"
-},
-"wrong": [
-{
-"ar": "مدريد",
-"en": "Madrid"
-},
-{
-"ar": "سوفا",
-"en": "Suva"
-},
-{
-"ar": "بوخارست",
-"en": "Bucharest"
-}
-],
-"source": [
-"https://www.wikidata.org/wiki/Q1007",
-"https://www.wikidata.org/wiki/Q3739"
-],
-"verified": true
-},
-{
 "id": "geo-cont-Q1007",
 "type": "quiz",
 "category": "geography",
@@ -692,7 +658,7 @@
 "en": "Oman"
 },
 {
-"ar": "جمهورية التشيك",
+"ar": "التشيك",
 "en": "Czech Republic"
 },
 {
@@ -831,7 +797,7 @@
 "en": "Tokyo"
 },
 {
-"ar": "مدينة سان مارينو",
+"ar": "سان مارينو",
 "en": "San Marino"
 }
 ],
@@ -1092,7 +1058,7 @@
 },
 "wrong": [
 {
-"ar": "غواتيمالا العاصمة",
+"ar": "غواتيمالا",
 "en": "Guatemala City"
 },
 {
@@ -1470,7 +1436,7 @@
 "en": "Bangui"
 },
 {
-"ar": "مدينة بروكسل",
+"ar": "بروكسل",
 "en": "Brussels"
 }
 ],
@@ -1638,7 +1604,7 @@
 "en": "Germany"
 },
 {
-"ar": "الإمارات العربية المتحدة",
+"ar": "الإمارات",
 "en": "United Arab Emirates"
 }
 ],
@@ -1948,40 +1914,6 @@
 "source": [
 "https://www.wikidata.org/wiki/Q1037",
 "https://www.wikidata.org/wiki/Q3859"
-],
-"verified": true
-},
-{
-"id": "geo-cap-Q1039",
-"type": "quiz",
-"category": "geography",
-"difficulty": 3,
-"age": "all",
-"question": {
-"ar": "ما عاصمة ساو تومي وبرينسيب؟",
-"en": "What is the capital of São Tomé and Príncipe?"
-},
-"answer": {
-"ar": "ساو تومي",
-"en": "São Tomé"
-},
-"wrong": [
-{
-"ar": "كينغستاون",
-"en": "Kingstown"
-},
-{
-"ar": "لندن",
-"en": "London"
-},
-{
-"ar": "نيو دلهي",
-"en": "New Delhi"
-}
-],
-"source": [
-"https://www.wikidata.org/wiki/Q1039",
-"https://www.wikidata.org/wiki/Q3932"
 ],
 "verified": true
 },
@@ -2543,7 +2475,7 @@
 "en": "Astana"
 },
 {
-"ar": "مدينة سان مارينو",
+"ar": "سان مارينو",
 "en": "San Marino"
 },
 {
@@ -2610,7 +2542,7 @@
 "en": "Eritrea"
 },
 {
-"ar": "جمهورية الدومينيكان",
+"ar": "الدومينيكان",
 "en": "Dominican Republic"
 },
 {
@@ -2644,7 +2576,7 @@
 "en": "St. George's"
 },
 {
-"ar": "واشنطن العاصمة",
+"ar": "واشنطن",
 "en": "Washington, D.C."
 },
 {
@@ -3321,7 +3253,7 @@
 "en": "Togo"
 },
 {
-"ar": "الإمارات العربية المتحدة",
+"ar": "الإمارات",
 "en": "United Arab Emirates"
 }
 ],
@@ -4129,7 +4061,7 @@
 "en": "Liechtenstein"
 },
 {
-"ar": "الإمارات العربية المتحدة",
+"ar": "الإمارات",
 "en": "United Arab Emirates"
 }
 ],
@@ -4146,7 +4078,7 @@
 "difficulty": 3,
 "age": "all",
 "question": {
-"ar": "ما عاصمة جمهورية التشيك؟",
+"ar": "ما عاصمة التشيك؟",
 "en": "What is the capital of Czech Republic?"
 },
 "answer": {
@@ -4180,7 +4112,7 @@
 "difficulty": 2,
 "age": "all",
 "question": {
-"ar": "في أي قارة تقع جمهورية التشيك؟",
+"ar": "في أي قارة تقع التشيك؟",
 "en": "On which continent is Czech Republic?"
 },
 "answer": {
@@ -4217,7 +4149,7 @@
 "en": "Prague is the capital of which country?"
 },
 "answer": {
-"ar": "جمهورية التشيك",
+"ar": "التشيك",
 "en": "Czech Republic"
 },
 "wrong": [
@@ -4226,7 +4158,7 @@
 "en": "Malta"
 },
 {
-"ar": "جمهورية الكونغو الديمقراطية",
+"ar": "الكونغو الديمقراطية",
 "en": "DR Congo"
 },
 {
@@ -4462,7 +4394,7 @@
 "en": "Port Moresby"
 },
 {
-"ar": "مدينة سان مارينو",
+"ar": "سان مارينو",
 "en": "San Marino"
 },
 {
@@ -4525,7 +4457,7 @@
 },
 "wrong": [
 {
-"ar": "جمهورية الدومينيكان",
+"ar": "الدومينيكان",
 "en": "Dominican Republic"
 },
 {
@@ -4971,7 +4903,7 @@
 "en": "Nairobi"
 },
 {
-"ar": "مدينة مكسيكو",
+"ar": "مكسيكو",
 "en": "Mexico City"
 }
 ],
@@ -5318,40 +5250,6 @@
 "verified": true
 },
 {
-"id": "geo-rev-Q228",
-"type": "quiz",
-"category": "geography",
-"difficulty": 3,
-"age": "all",
-"question": {
-"ar": "أندورا لا فيلا هي عاصمة أي دولة؟",
-"en": "Andorra la Vella is the capital of which country?"
-},
-"answer": {
-"ar": "أندورا",
-"en": "Andorra"
-},
-"wrong": [
-{
-"ar": "كينيا",
-"en": "Kenya"
-},
-{
-"ar": "تركيا",
-"en": "Turkey"
-},
-{
-"ar": "مدغشقر",
-"en": "Madagascar"
-}
-],
-"source": [
-"https://www.wikidata.org/wiki/Q228",
-"https://www.wikidata.org/wiki/Q1863"
-],
-"verified": true
-},
-{
 "id": "geo-cap-Q229",
 "type": "quiz",
 "category": "geography",
@@ -5622,40 +5520,6 @@
 "verified": true
 },
 {
-"id": "geo-cap-Q235",
-"type": "quiz",
-"category": "geography",
-"difficulty": 3,
-"age": "all",
-"question": {
-"ar": "ما عاصمة موناكو؟",
-"en": "What is the capital of Monaco?"
-},
-"answer": {
-"ar": "موناكو",
-"en": "Monaco"
-},
-"wrong": [
-{
-"ar": "براغ",
-"en": "Prague"
-},
-{
-"ar": "بانكوك",
-"en": "Bangkok"
-},
-{
-"ar": "الخرطوم",
-"en": "Khartoum"
-}
-],
-"source": [
-"https://www.wikidata.org/wiki/Q235",
-"https://www.wikidata.org/wiki/Q235"
-],
-"verified": true
-},
-{
 "id": "geo-cont-Q235",
 "type": "quiz",
 "category": "geography",
@@ -5685,74 +5549,6 @@
 ],
 "source": [
 "https://www.wikidata.org/wiki/Q235"
-],
-"verified": true
-},
-{
-"id": "geo-rev-Q235",
-"type": "quiz",
-"category": "geography",
-"difficulty": 3,
-"age": "all",
-"question": {
-"ar": "موناكو هي عاصمة أي دولة؟",
-"en": "Monaco is the capital of which country?"
-},
-"answer": {
-"ar": "موناكو",
-"en": "Monaco"
-},
-"wrong": [
-{
-"ar": "لاتفيا",
-"en": "Latvia"
-},
-{
-"ar": "فيتنام",
-"en": "Vietnam"
-},
-{
-"ar": "مولدوفا",
-"en": "Moldova"
-}
-],
-"source": [
-"https://www.wikidata.org/wiki/Q235",
-"https://www.wikidata.org/wiki/Q235"
-],
-"verified": true
-},
-{
-"id": "geo-cap-Q238",
-"type": "quiz",
-"category": "geography",
-"difficulty": 3,
-"age": "all",
-"question": {
-"ar": "ما عاصمة سان مارينو؟",
-"en": "What is the capital of San Marino?"
-},
-"answer": {
-"ar": "مدينة سان مارينو",
-"en": "San Marino"
-},
-"wrong": [
-{
-"ar": "كامبالا",
-"en": "Kampala"
-},
-{
-"ar": "سانتو دومينغو",
-"en": "Santo Domingo"
-},
-{
-"ar": "طشقند",
-"en": "Tashkent"
-}
-],
-"source": [
-"https://www.wikidata.org/wiki/Q238",
-"https://www.wikidata.org/wiki/Q1848"
 ],
 "verified": true
 },
@@ -5790,40 +5586,6 @@
 "verified": true
 },
 {
-"id": "geo-rev-Q238",
-"type": "quiz",
-"category": "geography",
-"difficulty": 3,
-"age": "all",
-"question": {
-"ar": "مدينة سان مارينو هي عاصمة أي دولة؟",
-"en": "San Marino is the capital of which country?"
-},
-"answer": {
-"ar": "سان مارينو",
-"en": "San Marino"
-},
-"wrong": [
-{
-"ar": "السنغال",
-"en": "Senegal"
-},
-{
-"ar": "نيبال",
-"en": "Nepal"
-},
-{
-"ar": "تشاد",
-"en": "Chad"
-}
-],
-"source": [
-"https://www.wikidata.org/wiki/Q238",
-"https://www.wikidata.org/wiki/Q1848"
-],
-"verified": true
-},
-{
 "id": "geo-cap-Q241",
 "type": "quiz",
 "category": "geography",
@@ -5843,7 +5605,7 @@
 "en": "Chișinău"
 },
 {
-"ar": "مدينة لوكسمبورغ",
+"ar": "لوكسمبورغ",
 "en": "Luxembourg"
 },
 {
@@ -5906,7 +5668,7 @@
 },
 "wrong": [
 {
-"ar": "جمهورية إفريقيا الوسطى",
+"ar": "إفريقيا الوسطى",
 "en": "Central African Republic"
 },
 {
@@ -6217,7 +5979,7 @@
 "en": "Buenos Aires"
 },
 {
-"ar": "مدينة سان مارينو",
+"ar": "سان مارينو",
 "en": "San Marino"
 }
 ],
@@ -6347,7 +6109,7 @@
 "en": "Lesotho"
 },
 {
-"ar": "جمهورية إفريقيا الوسطى",
+"ar": "إفريقيا الوسطى",
 "en": "Central African Republic"
 },
 {
@@ -6742,7 +6504,7 @@
 "en": "What is the capital of United States?"
 },
 "answer": {
-"ar": "واشنطن العاصمة",
+"ar": "واشنطن",
 "en": "Washington, D.C."
 },
 "wrong": [
@@ -6809,7 +6571,7 @@
 "en": "What is the capital of Belgium?"
 },
 "answer": {
-"ar": "مدينة بروكسل",
+"ar": "بروكسل",
 "en": "Brussels"
 },
 "wrong": [
@@ -6872,7 +6634,7 @@
 "difficulty": 3,
 "age": "all",
 "question": {
-"ar": "مدينة بروكسل هي عاصمة أي دولة؟",
+"ar": "بروكسل هي عاصمة أي دولة؟",
 "en": "Brussels is the capital of which country?"
 },
 "answer": {
@@ -6896,40 +6658,6 @@
 "source": [
 "https://www.wikidata.org/wiki/Q31",
 "https://www.wikidata.org/wiki/Q239"
-],
-"verified": true
-},
-{
-"id": "geo-cap-Q32",
-"type": "quiz",
-"category": "geography",
-"difficulty": 3,
-"age": "all",
-"question": {
-"ar": "ما عاصمة لوكسمبورغ؟",
-"en": "What is the capital of Luxembourg?"
-},
-"answer": {
-"ar": "مدينة لوكسمبورغ",
-"en": "Luxembourg"
-},
-"wrong": [
-{
-"ar": "الدوحة",
-"en": "Doha"
-},
-{
-"ar": "نيامي",
-"en": "Niamey"
-},
-{
-"ar": "ضاحية يارين",
-"en": "Yaren District"
-}
-],
-"source": [
-"https://www.wikidata.org/wiki/Q32",
-"https://www.wikidata.org/wiki/Q1842"
 ],
 "verified": true
 },
@@ -6967,40 +6695,6 @@
 "verified": true
 },
 {
-"id": "geo-rev-Q32",
-"type": "quiz",
-"category": "geography",
-"difficulty": 3,
-"age": "all",
-"question": {
-"ar": "مدينة لوكسمبورغ هي عاصمة أي دولة؟",
-"en": "Luxembourg is the capital of which country?"
-},
-"answer": {
-"ar": "لوكسمبورغ",
-"en": "Luxembourg"
-},
-"wrong": [
-{
-"ar": "كيريباتي",
-"en": "Kiribati"
-},
-{
-"ar": "الإكوادور",
-"en": "Ecuador"
-},
-{
-"ar": "جزر البهاما",
-"en": "Bahamas"
-}
-],
-"source": [
-"https://www.wikidata.org/wiki/Q32",
-"https://www.wikidata.org/wiki/Q1842"
-],
-"verified": true
-},
-{
 "id": "geo-cap-Q33",
 "type": "quiz",
 "category": "geography",
@@ -7024,7 +6718,7 @@
 "en": "Manila"
 },
 {
-"ar": "مدينة لوكسمبورغ",
+"ar": "لوكسمبورغ",
 "en": "Luxembourg"
 }
 ],
@@ -7102,40 +6796,6 @@
 "verified": true
 },
 {
-"id": "geo-cap-Q334",
-"type": "quiz",
-"category": "geography",
-"difficulty": 3,
-"age": "all",
-"question": {
-"ar": "ما عاصمة سنغافورة؟",
-"en": "What is the capital of Singapore?"
-},
-"answer": {
-"ar": "سنغافورة",
-"en": "Singapore"
-},
-"wrong": [
-{
-"ar": "ليما",
-"en": "Lima"
-},
-{
-"ar": "برايا",
-"en": "Praia"
-},
-{
-"ar": "كيتو",
-"en": "Quito"
-}
-],
-"source": [
-"https://www.wikidata.org/wiki/Q334",
-"https://www.wikidata.org/wiki/Q334"
-],
-"verified": true
-},
-{
 "id": "geo-cont-Q334",
 "type": "quiz",
 "category": "geography",
@@ -7164,40 +6824,6 @@
 }
 ],
 "source": [
-"https://www.wikidata.org/wiki/Q334"
-],
-"verified": true
-},
-{
-"id": "geo-rev-Q334",
-"type": "quiz",
-"category": "geography",
-"difficulty": 3,
-"age": "all",
-"question": {
-"ar": "سنغافورة هي عاصمة أي دولة؟",
-"en": "Singapore is the capital of which country?"
-},
-"answer": {
-"ar": "سنغافورة",
-"en": "Singapore"
-},
-"wrong": [
-{
-"ar": "المجر",
-"en": "Hungary"
-},
-{
-"ar": "كمبوديا",
-"en": "Cambodia"
-},
-{
-"ar": "موناكو",
-"en": "Monaco"
-}
-],
-"source": [
-"https://www.wikidata.org/wiki/Q334",
 "https://www.wikidata.org/wiki/Q334"
 ],
 "verified": true
@@ -7386,7 +7012,7 @@
 },
 "wrong": [
 {
-"ar": "ولايات ميكرونيسيا المتحدة",
+"ar": "ميكرونيسيا",
 "en": "Federated States of Micronesia"
 },
 {
@@ -8597,7 +8223,7 @@
 },
 "wrong": [
 {
-"ar": "غواتيمالا العاصمة",
+"ar": "غواتيمالا",
 "en": "Guatemala City"
 },
 {
@@ -9110,7 +8736,7 @@
 "en": "Kampala"
 },
 {
-"ar": "مدينة سان مارينو",
+"ar": "سان مارينو",
 "en": "San Marino"
 }
 ],
@@ -9170,7 +8796,7 @@
 },
 "wrong": [
 {
-"ar": "غواتيمالا العاصمة",
+"ar": "غواتيمالا",
 "en": "Guatemala City"
 },
 {
@@ -9342,7 +8968,7 @@
 "en": "Kenya"
 },
 {
-"ar": "جمهورية إفريقيا الوسطى",
+"ar": "إفريقيا الوسطى",
 "en": "Central African Republic"
 },
 {
@@ -9380,7 +9006,7 @@
 "en": "Suva"
 },
 {
-"ar": "مدينة لوكسمبورغ",
+"ar": "لوكسمبورغ",
 "en": "Luxembourg"
 }
 ],
@@ -9508,7 +9134,7 @@
 },
 "wrong": [
 {
-"ar": "مدينة مكسيكو",
+"ar": "مكسيكو",
 "en": "Mexico City"
 },
 {
@@ -9769,7 +9395,7 @@
 "difficulty": 3,
 "age": "all",
 "question": {
-"ar": "ما عاصمة ولايات ميكرونيسيا المتحدة؟",
+"ar": "ما عاصمة ميكرونيسيا؟",
 "en": "What is the capital of Federated States of Micronesia?"
 },
 "answer": {
@@ -9803,7 +9429,7 @@
 "difficulty": 2,
 "age": "all",
 "question": {
-"ar": "في أي قارة تقع ولايات ميكرونيسيا المتحدة؟",
+"ar": "في أي قارة تقع ميكرونيسيا؟",
 "en": "On which continent is Federated States of Micronesia?"
 },
 "answer": {
@@ -9840,7 +9466,7 @@
 "en": "Palikir is the capital of which country?"
 },
 "answer": {
-"ar": "ولايات ميكرونيسيا المتحدة",
+"ar": "ميكرونيسيا",
 "en": "Federated States of Micronesia"
 },
 "wrong": [
@@ -10119,7 +9745,7 @@
 "en": "Brazil"
 },
 {
-"ar": "الإمارات العربية المتحدة",
+"ar": "الإمارات",
 "en": "United Arab Emirates"
 },
 {
@@ -11025,7 +10651,7 @@
 },
 "wrong": [
 {
-"ar": "مدينة بنما",
+"ar": "بنما",
 "en": "Panama City"
 },
 {
@@ -11197,7 +10823,7 @@
 "en": "Jamaica"
 },
 {
-"ar": "جمهورية الدومينيكان",
+"ar": "الدومينيكان",
 "en": "Dominican Republic"
 },
 {
@@ -11429,7 +11055,7 @@
 },
 "wrong": [
 {
-"ar": "واشنطن العاصمة",
+"ar": "واشنطن",
 "en": "Washington, D.C."
 },
 {
@@ -11515,40 +11141,6 @@
 "verified": true
 },
 {
-"id": "geo-cap-Q774",
-"type": "quiz",
-"category": "geography",
-"difficulty": 3,
-"age": "all",
-"question": {
-"ar": "ما عاصمة غواتيمالا؟",
-"en": "What is the capital of Guatemala?"
-},
-"answer": {
-"ar": "غواتيمالا العاصمة",
-"en": "Guatemala City"
-},
-"wrong": [
-{
-"ar": "تيرانا",
-"en": "Tirana"
-},
-{
-"ar": "بيشكك",
-"en": "Bishkek"
-},
-{
-"ar": "سان سلفادور",
-"en": "San Salvador"
-}
-],
-"source": [
-"https://www.wikidata.org/wiki/Q774",
-"https://www.wikidata.org/wiki/Q1555"
-],
-"verified": true
-},
-{
 "id": "geo-cont-Q774",
 "type": "quiz",
 "category": "geography",
@@ -11578,40 +11170,6 @@
 ],
 "source": [
 "https://www.wikidata.org/wiki/Q774"
-],
-"verified": true
-},
-{
-"id": "geo-rev-Q774",
-"type": "quiz",
-"category": "geography",
-"difficulty": 3,
-"age": "all",
-"question": {
-"ar": "غواتيمالا العاصمة هي عاصمة أي دولة؟",
-"en": "Guatemala City is the capital of which country?"
-},
-"answer": {
-"ar": "غواتيمالا",
-"en": "Guatemala"
-},
-"wrong": [
-{
-"ar": "ألبانيا",
-"en": "Albania"
-},
-{
-"ar": "غينيا",
-"en": "Guinea"
-},
-{
-"ar": "منغوليا",
-"en": "Mongolia"
-}
-],
-"source": [
-"https://www.wikidata.org/wiki/Q774",
-"https://www.wikidata.org/wiki/Q1555"
 ],
 "verified": true
 },
@@ -11799,7 +11357,7 @@
 },
 "wrong": [
 {
-"ar": "جمهورية الدومينيكان",
+"ar": "الدومينيكان",
 "en": "Dominican Republic"
 },
 {
@@ -11925,7 +11483,7 @@
 "difficulty": 3,
 "age": "all",
 "question": {
-"ar": "ما عاصمة جمهورية الدومينيكان؟",
+"ar": "ما عاصمة الدومينيكان؟",
 "en": "What is the capital of Dominican Republic?"
 },
 "answer": {
@@ -11942,7 +11500,7 @@
 "en": "Kathmandu"
 },
 {
-"ar": "مدينة لوكسمبورغ",
+"ar": "لوكسمبورغ",
 "en": "Luxembourg"
 }
 ],
@@ -11959,7 +11517,7 @@
 "difficulty": 2,
 "age": "all",
 "question": {
-"ar": "في أي قارة تقع جمهورية الدومينيكان؟",
+"ar": "في أي قارة تقع الدومينيكان؟",
 "en": "On which continent is Dominican Republic?"
 },
 "answer": {
@@ -11996,7 +11554,7 @@
 "en": "Santo Domingo is the capital of which country?"
 },
 "answer": {
-"ar": "جمهورية الدومينيكان",
+"ar": "الدومينيكان",
 "en": "Dominican Republic"
 },
 "wrong": [
@@ -12043,7 +11601,7 @@
 "en": "Port of Spain"
 },
 {
-"ar": "مدينة بروكسل",
+"ar": "بروكسل",
 "en": "Brussels"
 }
 ],
@@ -12289,40 +11847,6 @@
 "verified": true
 },
 {
-"id": "geo-rev-Q792",
-"type": "quiz",
-"category": "geography",
-"difficulty": 3,
-"age": "all",
-"question": {
-"ar": "سان سلفادور هي عاصمة أي دولة؟",
-"en": "San Salvador is the capital of which country?"
-},
-"answer": {
-"ar": "السلفادور",
-"en": "El Salvador"
-},
-"wrong": [
-{
-"ar": "جمهورية التشيك",
-"en": "Czech Republic"
-},
-{
-"ar": "جنوب السودان",
-"en": "South Sudan"
-},
-{
-"ar": "كوستاريكا",
-"en": "Costa Rica"
-}
-],
-"source": [
-"https://www.wikidata.org/wiki/Q792",
-"https://www.wikidata.org/wiki/Q3110"
-],
-"verified": true
-},
-{
 "id": "geo-cap-Q794",
 "type": "quiz",
 "category": "geography",
@@ -12558,40 +12082,6 @@
 "verified": true
 },
 {
-"id": "geo-cap-Q804",
-"type": "quiz",
-"category": "geography",
-"difficulty": 3,
-"age": "all",
-"question": {
-"ar": "ما عاصمة بنما؟",
-"en": "What is the capital of Panama?"
-},
-"answer": {
-"ar": "مدينة بنما",
-"en": "Panama City"
-},
-"wrong": [
-{
-"ar": "المنامة",
-"en": "Manama"
-},
-{
-"ar": "تيغوسيغالبا",
-"en": "Tegucigalpa"
-},
-{
-"ar": "واغادوغو",
-"en": "Ouagadougou"
-}
-],
-"source": [
-"https://www.wikidata.org/wiki/Q804",
-"https://www.wikidata.org/wiki/Q3306"
-],
-"verified": true
-},
-{
 "id": "geo-cont-Q804",
 "type": "quiz",
 "category": "geography",
@@ -12625,40 +12115,6 @@
 "verified": true
 },
 {
-"id": "geo-rev-Q804",
-"type": "quiz",
-"category": "geography",
-"difficulty": 3,
-"age": "all",
-"question": {
-"ar": "مدينة بنما هي عاصمة أي دولة؟",
-"en": "Panama City is the capital of which country?"
-},
-"answer": {
-"ar": "بنما",
-"en": "Panama"
-},
-"wrong": [
-{
-"ar": "الإكوادور",
-"en": "Ecuador"
-},
-{
-"ar": "منغوليا",
-"en": "Mongolia"
-},
-{
-"ar": "الصومال",
-"en": "Somalia"
-}
-],
-"source": [
-"https://www.wikidata.org/wiki/Q804",
-"https://www.wikidata.org/wiki/Q3306"
-],
-"verified": true
-},
-{
 "id": "geo-cap-Q810",
 "type": "quiz",
 "category": "geography",
@@ -12682,7 +12138,7 @@
 "en": "Havana"
 },
 {
-"ar": "واشنطن العاصمة",
+"ar": "واشنطن",
 "en": "Washington, D.C."
 }
 ],
@@ -12928,40 +12384,6 @@
 "verified": true
 },
 {
-"id": "geo-cap-Q817",
-"type": "quiz",
-"category": "saudi-gulf",
-"difficulty": 1,
-"age": "kids",
-"question": {
-"ar": "ما عاصمة الكويت؟",
-"en": "What is the capital of Kuwait?"
-},
-"answer": {
-"ar": "مدينة الكويت",
-"en": "Kuwait City"
-},
-"wrong": [
-{
-"ar": "مدريد",
-"en": "Madrid"
-},
-{
-"ar": "بغداد",
-"en": "Baghdad"
-},
-{
-"ar": "سانتياغو",
-"en": "Santiago"
-}
-],
-"source": [
-"https://www.wikidata.org/wiki/Q817",
-"https://www.wikidata.org/wiki/Q35178"
-],
-"verified": true
-},
-{
 "id": "geo-cont-Q817",
 "type": "quiz",
 "category": "geography",
@@ -13014,7 +12436,7 @@
 "en": "Abu Dhabi"
 },
 {
-"ar": "مدينة سان مارينو",
+"ar": "سان مارينو",
 "en": "San Marino"
 },
 {
@@ -14110,7 +13532,7 @@
 "difficulty": 1,
 "age": "kids",
 "question": {
-"ar": "ما عاصمة الإمارات العربية المتحدة؟",
+"ar": "ما عاصمة الإمارات؟",
 "en": "What is the capital of United Arab Emirates?"
 },
 "answer": {
@@ -14144,7 +13566,7 @@
 "difficulty": 1,
 "age": "kids",
 "question": {
-"ar": "في أي قارة تقع الإمارات العربية المتحدة؟",
+"ar": "في أي قارة تقع الإمارات؟",
 "en": "On which continent is United Arab Emirates?"
 },
 "answer": {
@@ -14859,7 +14281,7 @@
 },
 "wrong": [
 {
-"ar": "مدينة مكسيكو",
+"ar": "مكسيكو",
 "en": "Mexico City"
 },
 {
@@ -15052,7 +14474,7 @@
 "difficulty": 3,
 "age": "all",
 "question": {
-"ar": "ما عاصمة جمهورية إفريقيا الوسطى؟",
+"ar": "ما عاصمة إفريقيا الوسطى؟",
 "en": "What is the capital of Central African Republic?"
 },
 "answer": {
@@ -15080,39 +14502,6 @@
 "verified": true
 },
 {
-"id": "geo-cont-Q929",
-"type": "quiz",
-"category": "geography",
-"difficulty": 2,
-"age": "all",
-"question": {
-"ar": "في أي قارة تقع جمهورية إفريقيا الوسطى؟",
-"en": "On which continent is Central African Republic?"
-},
-"answer": {
-"ar": "أفريقيا",
-"en": "Africa"
-},
-"wrong": [
-{
-"ar": "أمريكا الشمالية",
-"en": "North America"
-},
-{
-"ar": "أمريكا الجنوبية",
-"en": "South America"
-},
-{
-"ar": "أوروبا",
-"en": "Europe"
-}
-],
-"source": [
-"https://www.wikidata.org/wiki/Q929"
-],
-"verified": true
-},
-{
 "id": "geo-rev-Q929",
 "type": "quiz",
 "category": "geography",
@@ -15123,7 +14512,7 @@
 "en": "Bangui is the capital of which country?"
 },
 "answer": {
-"ar": "جمهورية إفريقيا الوسطى",
+"ar": "إفريقيا الوسطى",
 "en": "Central African Republic"
 },
 "wrong": [
@@ -15248,40 +14637,6 @@
 "verified": true
 },
 {
-"id": "geo-cap-Q948",
-"type": "quiz",
-"category": "geography",
-"difficulty": 1,
-"age": "kids",
-"question": {
-"ar": "ما عاصمة تونس؟",
-"en": "What is the capital of Tunisia?"
-},
-"answer": {
-"ar": "تونس",
-"en": "Tunis"
-},
-"wrong": [
-{
-"ar": "أبيا",
-"en": "Apia"
-},
-{
-"ar": "إسكوبية",
-"en": "Skopje"
-},
-{
-"ar": "تالين",
-"en": "Tallinn"
-}
-],
-"source": [
-"https://www.wikidata.org/wiki/Q948",
-"https://www.wikidata.org/wiki/Q3572"
-],
-"verified": true
-},
-{
 "id": "geo-cont-Q948",
 "type": "quiz",
 "category": "geography",
@@ -15397,7 +14752,7 @@
 },
 "wrong": [
 {
-"ar": "الإمارات العربية المتحدة",
+"ar": "الإمارات",
 "en": "United Arab Emirates"
 },
 {
@@ -15431,7 +14786,7 @@
 },
 "wrong": [
 {
-"ar": "مدينة الكويت",
+"ar": "الكويت",
 "en": "Kuwait City"
 },
 {
@@ -15628,7 +14983,7 @@
 "en": "What is the capital of Mexico?"
 },
 "answer": {
-"ar": "مدينة مكسيكو",
+"ar": "مكسيكو",
 "en": "Mexico City"
 },
 "wrong": [
@@ -15868,7 +15223,7 @@
 },
 "wrong": [
 {
-"ar": "الإمارات العربية المتحدة",
+"ar": "الإمارات",
 "en": "United Arab Emirates"
 },
 {
@@ -16095,7 +15450,7 @@
 "difficulty": 3,
 "age": "all",
 "question": {
-"ar": "ما عاصمة جمهورية الكونغو؟",
+"ar": "ما عاصمة الكونغو؟",
 "en": "What is the capital of Republic of the Congo?"
 },
 "answer": {
@@ -16129,7 +15484,7 @@
 "difficulty": 2,
 "age": "all",
 "question": {
-"ar": "في أي قارة تقع جمهورية الكونغو؟",
+"ar": "في أي قارة تقع الكونغو؟",
 "en": "On which continent is Republic of the Congo?"
 },
 "answer": {
@@ -16166,7 +15521,7 @@
 "en": "Brazzaville is the capital of which country?"
 },
 "answer": {
-"ar": "جمهورية الكونغو",
+"ar": "الكونغو",
 "en": "Republic of the Congo"
 },
 "wrong": [
@@ -16196,7 +15551,7 @@
 "difficulty": 3,
 "age": "all",
 "question": {
-"ar": "ما عاصمة جمهورية الكونغو الديمقراطية؟",
+"ar": "ما عاصمة الكونغو الديمقراطية؟",
 "en": "What is the capital of DR Congo?"
 },
 "answer": {
@@ -16230,7 +15585,7 @@
 "difficulty": 2,
 "age": "all",
 "question": {
-"ar": "في أي قارة تقع جمهورية الكونغو الديمقراطية؟",
+"ar": "في أي قارة تقع الكونغو الديمقراطية؟",
 "en": "On which continent is DR Congo?"
 },
 "answer": {
@@ -16267,7 +15622,7 @@
 "en": "Kinshasa is the capital of which country?"
 },
 "answer": {
-"ar": "جمهورية الكونغو الديمقراطية",
+"ar": "الكونغو الديمقراطية",
 "en": "DR Congo"
 },
 "wrong": [
@@ -16287,40 +15642,6 @@
 "source": [
 "https://www.wikidata.org/wiki/Q974",
 "https://www.wikidata.org/wiki/Q3838"
-],
-"verified": true
-},
-{
-"id": "geo-cap-Q977",
-"type": "quiz",
-"category": "geography",
-"difficulty": 3,
-"age": "all",
-"question": {
-"ar": "ما عاصمة جيبوتي؟",
-"en": "What is the capital of Djibouti?"
-},
-"answer": {
-"ar": "جيبوتي",
-"en": "Djibouti"
-},
-"wrong": [
-{
-"ar": "فيينا",
-"en": "Vienna"
-},
-{
-"ar": "سانتو دومينغو",
-"en": "Santo Domingo"
-},
-{
-"ar": "بيونغيانغ",
-"en": "Pyongyang"
-}
-],
-"source": [
-"https://www.wikidata.org/wiki/Q977",
-"https://www.wikidata.org/wiki/Q3604"
 ],
 "verified": true
 },
@@ -16354,40 +15675,6 @@
 ],
 "source": [
 "https://www.wikidata.org/wiki/Q977"
-],
-"verified": true
-},
-{
-"id": "geo-rev-Q977",
-"type": "quiz",
-"category": "geography",
-"difficulty": 3,
-"age": "all",
-"question": {
-"ar": "جيبوتي هي عاصمة أي دولة؟",
-"en": "Djibouti is the capital of which country?"
-},
-"answer": {
-"ar": "جيبوتي",
-"en": "Djibouti"
-},
-"wrong": [
-{
-"ar": "إيطاليا",
-"en": "Italy"
-},
-{
-"ar": "ساو تومي وبرينسيب",
-"en": "São Tomé and Príncipe"
-},
-{
-"ar": "سورينام",
-"en": "Suriname"
-}
-],
-"source": [
-"https://www.wikidata.org/wiki/Q977",
-"https://www.wikidata.org/wiki/Q3604"
 ],
 "verified": true
 },
@@ -18310,41 +17597,6 @@
 "verified": true
 },
 {
-"id": "el-name-21",
-"type": "quiz",
-"category": "science",
-"difficulty": 3,
-"age": "all",
-"question": {
-"ar": "أي عنصر رقمه الذري 21؟",
-"en": "Which element has atomic number 21?"
-},
-"answer": {
-"ar": "سكانديوم",
-"en": "scandium"
-},
-"wrong": [
-{
-"ar": "بلاديوم",
-"en": "palladium"
-},
-{
-"ar": "نيوديميوم",
-"en": "neodymium"
-},
-{
-"ar": "تيلوريوم",
-"en": "tellurium"
-}
-],
-"source": [
-"https://www.wikidata.org/wiki/Q713",
-"https://en.wikipedia.org/wiki/scandium"
-],
-"numeric": true,
-"verified": true
-},
-{
 "id": "el-sym-23",
 "type": "quiz",
 "category": "science",
@@ -18410,41 +17662,6 @@
 "https://www.wikidata.org/wiki/Q722",
 "https://en.wikipedia.org/wiki/vanadium"
 ],
-"verified": true
-},
-{
-"id": "el-name-23",
-"type": "quiz",
-"category": "science",
-"difficulty": 3,
-"age": "all",
-"question": {
-"ar": "أي عنصر رقمه الذري 23؟",
-"en": "Which element has atomic number 23?"
-},
-"answer": {
-"ar": "فاناديوم",
-"en": "vanadium"
-},
-"wrong": [
-{
-"ar": "روديوم",
-"en": "rhodium"
-},
-{
-"ar": "إريديوم",
-"en": "iridium"
-},
-{
-"ar": "غاليوم",
-"en": "gallium"
-}
-],
-"source": [
-"https://www.wikidata.org/wiki/Q722",
-"https://en.wikipedia.org/wiki/vanadium"
-],
-"numeric": true,
 "verified": true
 },
 {
@@ -18516,41 +17733,6 @@
 "verified": true
 },
 {
-"id": "el-name-24",
-"type": "quiz",
-"category": "science",
-"difficulty": 3,
-"age": "all",
-"question": {
-"ar": "أي عنصر رقمه الذري 24؟",
-"en": "Which element has atomic number 24?"
-},
-"answer": {
-"ar": "كروم",
-"en": "chromium"
-},
-"wrong": [
-{
-"ar": "ديسبروسيوم",
-"en": "dysprosium"
-},
-{
-"ar": "زرنيخ",
-"en": "arsenic"
-},
-{
-"ar": "ليثيوم",
-"en": "lithium"
-}
-],
-"source": [
-"https://www.wikidata.org/wiki/Q725",
-"https://en.wikipedia.org/wiki/chromium"
-],
-"numeric": true,
-"verified": true
-},
-{
 "id": "el-sym-25",
 "type": "quiz",
 "category": "science",
@@ -18616,41 +17798,6 @@
 "https://www.wikidata.org/wiki/Q731",
 "https://en.wikipedia.org/wiki/manganese"
 ],
-"verified": true
-},
-{
-"id": "el-name-25",
-"type": "quiz",
-"category": "science",
-"difficulty": 3,
-"age": "all",
-"question": {
-"ar": "أي عنصر رقمه الذري 25؟",
-"en": "Which element has atomic number 25?"
-},
-"answer": {
-"ar": "منغنيز",
-"en": "manganese"
-},
-"wrong": [
-{
-"ar": "سترونتيوم",
-"en": "strontium"
-},
-{
-"ar": "تانتالوم",
-"en": "tantalum"
-},
-{
-"ar": "بزموت",
-"en": "bismuth"
-}
-],
-"source": [
-"https://www.wikidata.org/wiki/Q731",
-"https://en.wikipedia.org/wiki/manganese"
-],
-"numeric": true,
 "verified": true
 },
 {
@@ -18722,41 +17869,6 @@
 "verified": true
 },
 {
-"id": "el-name-27",
-"type": "quiz",
-"category": "science",
-"difficulty": 3,
-"age": "all",
-"question": {
-"ar": "أي عنصر رقمه الذري 27؟",
-"en": "Which element has atomic number 27?"
-},
-"answer": {
-"ar": "كوبالت",
-"en": "cobalt"
-},
-"wrong": [
-{
-"ar": "هولميوم",
-"en": "holmium"
-},
-{
-"ar": "كادميوم",
-"en": "cadmium"
-},
-{
-"ar": "روديوم",
-"en": "rhodium"
-}
-],
-"source": [
-"https://www.wikidata.org/wiki/Q740",
-"https://en.wikipedia.org/wiki/cobalt"
-],
-"numeric": true,
-"verified": true
-},
-{
 "id": "el-sym-28",
 "type": "quiz",
 "category": "science",
@@ -18822,41 +17934,6 @@
 "https://www.wikidata.org/wiki/Q744",
 "https://en.wikipedia.org/wiki/nickel"
 ],
-"verified": true
-},
-{
-"id": "el-name-28",
-"type": "quiz",
-"category": "science",
-"difficulty": 3,
-"age": "all",
-"question": {
-"ar": "أي عنصر رقمه الذري 28؟",
-"en": "Which element has atomic number 28?"
-},
-"answer": {
-"ar": "نيكل",
-"en": "nickel"
-},
-"wrong": [
-{
-"ar": "رينيوم",
-"en": "rhenium"
-},
-{
-"ar": "إتيربيوم",
-"en": "ytterbium"
-},
-{
-"ar": "أستاتين",
-"en": "astatine"
-}
-],
-"source": [
-"https://www.wikidata.org/wiki/Q744",
-"https://en.wikipedia.org/wiki/nickel"
-],
-"numeric": true,
 "verified": true
 },
 {
@@ -18928,41 +18005,6 @@
 "verified": true
 },
 {
-"id": "el-name-30",
-"type": "quiz",
-"category": "science",
-"difficulty": 3,
-"age": "all",
-"question": {
-"ar": "أي عنصر رقمه الذري 30؟",
-"en": "Which element has atomic number 30?"
-},
-"answer": {
-"ar": "زنك",
-"en": "zinc"
-},
-"wrong": [
-{
-"ar": "بروميثيوم",
-"en": "promethium"
-},
-{
-"ar": "موليبدنوم",
-"en": "molybdenum"
-},
-{
-"ar": "أستاتين",
-"en": "astatine"
-}
-],
-"source": [
-"https://www.wikidata.org/wiki/Q758",
-"https://en.wikipedia.org/wiki/zinc"
-],
-"numeric": true,
-"verified": true
-},
-{
 "id": "el-sym-31",
 "type": "quiz",
 "category": "science",
@@ -19028,41 +18070,6 @@
 "https://www.wikidata.org/wiki/Q861",
 "https://en.wikipedia.org/wiki/gallium"
 ],
-"verified": true
-},
-{
-"id": "el-name-31",
-"type": "quiz",
-"category": "science",
-"difficulty": 3,
-"age": "all",
-"question": {
-"ar": "أي عنصر رقمه الذري 31؟",
-"en": "Which element has atomic number 31?"
-},
-"answer": {
-"ar": "غاليوم",
-"en": "gallium"
-},
-"wrong": [
-{
-"ar": "أوزميوم",
-"en": "osmium"
-},
-{
-"ar": "تربيوم",
-"en": "terbium"
-},
-{
-"ar": "إريديوم",
-"en": "iridium"
-}
-],
-"source": [
-"https://www.wikidata.org/wiki/Q861",
-"https://en.wikipedia.org/wiki/gallium"
-],
-"numeric": true,
 "verified": true
 },
 {
@@ -19134,41 +18141,6 @@
 "verified": true
 },
 {
-"id": "el-name-32",
-"type": "quiz",
-"category": "science",
-"difficulty": 3,
-"age": "all",
-"question": {
-"ar": "أي عنصر رقمه الذري 32؟",
-"en": "Which element has atomic number 32?"
-},
-"answer": {
-"ar": "جرمانيوم",
-"en": "germanium"
-},
-"wrong": [
-{
-"ar": "سترونتيوم",
-"en": "strontium"
-},
-{
-"ar": "روبيديوم",
-"en": "rubidium"
-},
-{
-"ar": "ثوليوم",
-"en": "thulium"
-}
-],
-"source": [
-"https://www.wikidata.org/wiki/Q867",
-"https://en.wikipedia.org/wiki/germanium"
-],
-"numeric": true,
-"verified": true
-},
-{
 "id": "el-sym-33",
 "type": "quiz",
 "category": "science",
@@ -19234,41 +18206,6 @@
 "https://www.wikidata.org/wiki/Q871",
 "https://en.wikipedia.org/wiki/arsenic"
 ],
-"verified": true
-},
-{
-"id": "el-name-33",
-"type": "quiz",
-"category": "science",
-"difficulty": 3,
-"age": "all",
-"question": {
-"ar": "أي عنصر رقمه الذري 33؟",
-"en": "Which element has atomic number 33?"
-},
-"answer": {
-"ar": "زرنيخ",
-"en": "arsenic"
-},
-"wrong": [
-{
-"ar": "روثينيوم",
-"en": "ruthenium"
-},
-{
-"ar": "كوبالت",
-"en": "cobalt"
-},
-{
-"ar": "سيريوم",
-"en": "cerium"
-}
-],
-"source": [
-"https://www.wikidata.org/wiki/Q871",
-"https://en.wikipedia.org/wiki/arsenic"
-],
-"numeric": true,
 "verified": true
 },
 {
@@ -19340,41 +18277,6 @@
 "verified": true
 },
 {
-"id": "el-name-34",
-"type": "quiz",
-"category": "science",
-"difficulty": 3,
-"age": "all",
-"question": {
-"ar": "أي عنصر رقمه الذري 34؟",
-"en": "Which element has atomic number 34?"
-},
-"answer": {
-"ar": "سيلينيوم",
-"en": "selenium"
-},
-"wrong": [
-{
-"ar": "روديوم",
-"en": "rhodium"
-},
-{
-"ar": "يوروبيوم",
-"en": "europium"
-},
-{
-"ar": "لوتيشيوم",
-"en": "lutetium"
-}
-],
-"source": [
-"https://www.wikidata.org/wiki/Q876",
-"https://en.wikipedia.org/wiki/selenium"
-],
-"numeric": true,
-"verified": true
-},
-{
 "id": "el-sym-36",
 "type": "quiz",
 "category": "science",
@@ -19440,41 +18342,6 @@
 "https://www.wikidata.org/wiki/Q888",
 "https://en.wikipedia.org/wiki/krypton"
 ],
-"verified": true
-},
-{
-"id": "el-name-36",
-"type": "quiz",
-"category": "science",
-"difficulty": 3,
-"age": "all",
-"question": {
-"ar": "أي عنصر رقمه الذري 36؟",
-"en": "Which element has atomic number 36?"
-},
-"answer": {
-"ar": "كريبتون",
-"en": "krypton"
-},
-"wrong": [
-{
-"ar": "تانتالوم",
-"en": "tantalum"
-},
-{
-"ar": "فاناديوم",
-"en": "vanadium"
-},
-{
-"ar": "بزموت",
-"en": "bismuth"
-}
-],
-"source": [
-"https://www.wikidata.org/wiki/Q888",
-"https://en.wikipedia.org/wiki/krypton"
-],
-"numeric": true,
 "verified": true
 },
 {
@@ -19546,41 +18413,6 @@
 "verified": true
 },
 {
-"id": "el-name-37",
-"type": "quiz",
-"category": "science",
-"difficulty": 3,
-"age": "all",
-"question": {
-"ar": "أي عنصر رقمه الذري 37؟",
-"en": "Which element has atomic number 37?"
-},
-"answer": {
-"ar": "روبيديوم",
-"en": "rubidium"
-},
-"wrong": [
-{
-"ar": "إريديوم",
-"en": "iridium"
-},
-{
-"ar": "بولونيوم",
-"en": "polonium"
-},
-{
-"ar": "زينون",
-"en": "xenon"
-}
-],
-"source": [
-"https://www.wikidata.org/wiki/Q895",
-"https://en.wikipedia.org/wiki/rubidium"
-],
-"numeric": true,
-"verified": true
-},
-{
 "id": "el-sym-38",
 "type": "quiz",
 "category": "science",
@@ -19646,41 +18478,6 @@
 "https://www.wikidata.org/wiki/Q938",
 "https://en.wikipedia.org/wiki/strontium"
 ],
-"verified": true
-},
-{
-"id": "el-name-38",
-"type": "quiz",
-"category": "science",
-"difficulty": 3,
-"age": "all",
-"question": {
-"ar": "أي عنصر رقمه الذري 38؟",
-"en": "Which element has atomic number 38?"
-},
-"answer": {
-"ar": "سترونتيوم",
-"en": "strontium"
-},
-"wrong": [
-{
-"ar": "فسفور",
-"en": "phosphorus"
-},
-{
-"ar": "تانتالوم",
-"en": "tantalum"
-},
-{
-"ar": "بولونيوم",
-"en": "polonium"
-}
-],
-"source": [
-"https://www.wikidata.org/wiki/Q938",
-"https://en.wikipedia.org/wiki/strontium"
-],
-"numeric": true,
 "verified": true
 },
 {
@@ -19752,41 +18549,6 @@
 "verified": true
 },
 {
-"id": "el-name-39",
-"type": "quiz",
-"category": "science",
-"difficulty": 3,
-"age": "all",
-"question": {
-"ar": "أي عنصر رقمه الذري 39؟",
-"en": "Which element has atomic number 39?"
-},
-"answer": {
-"ar": "إتريوم",
-"en": "yttrium"
-},
-"wrong": [
-{
-"ar": "نيتروجين",
-"en": "nitrogen"
-},
-{
-"ar": "تكنيشيوم",
-"en": "technetium"
-},
-{
-"ar": "بروميثيوم",
-"en": "promethium"
-}
-],
-"source": [
-"https://www.wikidata.org/wiki/Q941",
-"https://en.wikipedia.org/wiki/yttrium"
-],
-"numeric": true,
-"verified": true
-},
-{
 "id": "el-sym-40",
 "type": "quiz",
 "category": "science",
@@ -19852,41 +18614,6 @@
 "https://www.wikidata.org/wiki/Q1038",
 "https://en.wikipedia.org/wiki/zirconium"
 ],
-"verified": true
-},
-{
-"id": "el-name-40",
-"type": "quiz",
-"category": "science",
-"difficulty": 3,
-"age": "all",
-"question": {
-"ar": "أي عنصر رقمه الذري 40؟",
-"en": "Which element has atomic number 40?"
-},
-"answer": {
-"ar": "زركونيوم",
-"en": "zirconium"
-},
-"wrong": [
-{
-"ar": "براسوديميوم",
-"en": "praseodymium"
-},
-{
-"ar": "هافنيوم",
-"en": "hafnium"
-},
-{
-"ar": "لانثانوم",
-"en": "lanthanum"
-}
-],
-"source": [
-"https://www.wikidata.org/wiki/Q1038",
-"https://en.wikipedia.org/wiki/zirconium"
-],
-"numeric": true,
 "verified": true
 },
 {
@@ -19958,41 +18685,6 @@
 "verified": true
 },
 {
-"id": "el-name-42",
-"type": "quiz",
-"category": "science",
-"difficulty": 3,
-"age": "all",
-"question": {
-"ar": "أي عنصر رقمه الذري 42؟",
-"en": "Which element has atomic number 42?"
-},
-"answer": {
-"ar": "موليبدنوم",
-"en": "molybdenum"
-},
-"wrong": [
-{
-"ar": "زنك",
-"en": "zinc"
-},
-{
-"ar": "بلاتين",
-"en": "platinum"
-},
-{
-"ar": "روثينيوم",
-"en": "ruthenium"
-}
-],
-"source": [
-"https://www.wikidata.org/wiki/Q1053",
-"https://en.wikipedia.org/wiki/molybdenum"
-],
-"numeric": true,
-"verified": true
-},
-{
 "id": "el-sym-43",
 "type": "quiz",
 "category": "science",
@@ -20058,41 +18750,6 @@
 "https://www.wikidata.org/wiki/Q1054",
 "https://en.wikipedia.org/wiki/technetium"
 ],
-"verified": true
-},
-{
-"id": "el-name-43",
-"type": "quiz",
-"category": "science",
-"difficulty": 3,
-"age": "all",
-"question": {
-"ar": "أي عنصر رقمه الذري 43؟",
-"en": "Which element has atomic number 43?"
-},
-"answer": {
-"ar": "تكنيشيوم",
-"en": "technetium"
-},
-"wrong": [
-{
-"ar": "كروم",
-"en": "chromium"
-},
-{
-"ar": "ساماريوم",
-"en": "samarium"
-},
-{
-"ar": "زركونيوم",
-"en": "zirconium"
-}
-],
-"source": [
-"https://www.wikidata.org/wiki/Q1054",
-"https://en.wikipedia.org/wiki/technetium"
-],
-"numeric": true,
 "verified": true
 },
 {
@@ -20164,41 +18821,6 @@
 "verified": true
 },
 {
-"id": "el-name-44",
-"type": "quiz",
-"category": "science",
-"difficulty": 3,
-"age": "all",
-"question": {
-"ar": "أي عنصر رقمه الذري 44؟",
-"en": "Which element has atomic number 44?"
-},
-"answer": {
-"ar": "روثينيوم",
-"en": "ruthenium"
-},
-"wrong": [
-{
-"ar": "سترونتيوم",
-"en": "strontium"
-},
-{
-"ar": "براسوديميوم",
-"en": "praseodymium"
-},
-{
-"ar": "إربيوم",
-"en": "erbium"
-}
-],
-"source": [
-"https://www.wikidata.org/wiki/Q1086",
-"https://en.wikipedia.org/wiki/ruthenium"
-],
-"numeric": true,
-"verified": true
-},
-{
 "id": "el-sym-45",
 "type": "quiz",
 "category": "science",
@@ -20264,41 +18886,6 @@
 "https://www.wikidata.org/wiki/Q1087",
 "https://en.wikipedia.org/wiki/rhodium"
 ],
-"verified": true
-},
-{
-"id": "el-name-45",
-"type": "quiz",
-"category": "science",
-"difficulty": 3,
-"age": "all",
-"question": {
-"ar": "أي عنصر رقمه الذري 45؟",
-"en": "Which element has atomic number 45?"
-},
-"answer": {
-"ar": "روديوم",
-"en": "rhodium"
-},
-"wrong": [
-{
-"ar": "تكنيشيوم",
-"en": "technetium"
-},
-{
-"ar": "يود",
-"en": "iodine"
-},
-{
-"ar": "كبريت",
-"en": "sulfur"
-}
-],
-"source": [
-"https://www.wikidata.org/wiki/Q1087",
-"https://en.wikipedia.org/wiki/rhodium"
-],
-"numeric": true,
 "verified": true
 },
 {
@@ -20370,41 +18957,6 @@
 "verified": true
 },
 {
-"id": "el-name-46",
-"type": "quiz",
-"category": "science",
-"difficulty": 3,
-"age": "all",
-"question": {
-"ar": "أي عنصر رقمه الذري 46؟",
-"en": "Which element has atomic number 46?"
-},
-"answer": {
-"ar": "بلاديوم",
-"en": "palladium"
-},
-"wrong": [
-{
-"ar": "ألومنيوم",
-"en": "aluminium"
-},
-{
-"ar": "تكنيشيوم",
-"en": "technetium"
-},
-{
-"ar": "فاناديوم",
-"en": "vanadium"
-}
-],
-"source": [
-"https://www.wikidata.org/wiki/Q1089",
-"https://en.wikipedia.org/wiki/palladium"
-],
-"numeric": true,
-"verified": true
-},
-{
 "id": "el-sym-48",
 "type": "quiz",
 "category": "science",
@@ -20470,41 +19022,6 @@
 "https://www.wikidata.org/wiki/Q1091",
 "https://en.wikipedia.org/wiki/cadmium"
 ],
-"verified": true
-},
-{
-"id": "el-name-48",
-"type": "quiz",
-"category": "science",
-"difficulty": 3,
-"age": "all",
-"question": {
-"ar": "أي عنصر رقمه الذري 48؟",
-"en": "Which element has atomic number 48?"
-},
-"answer": {
-"ar": "كادميوم",
-"en": "cadmium"
-},
-"wrong": [
-{
-"ar": "براسوديميوم",
-"en": "praseodymium"
-},
-{
-"ar": "زركونيوم",
-"en": "zirconium"
-},
-{
-"ar": "إريديوم",
-"en": "iridium"
-}
-],
-"source": [
-"https://www.wikidata.org/wiki/Q1091",
-"https://en.wikipedia.org/wiki/cadmium"
-],
-"numeric": true,
 "verified": true
 },
 {
@@ -20576,41 +19093,6 @@
 "verified": true
 },
 {
-"id": "el-name-52",
-"type": "quiz",
-"category": "science",
-"difficulty": 3,
-"age": "all",
-"question": {
-"ar": "أي عنصر رقمه الذري 52؟",
-"en": "Which element has atomic number 52?"
-},
-"answer": {
-"ar": "تيلوريوم",
-"en": "tellurium"
-},
-"wrong": [
-{
-"ar": "كادميوم",
-"en": "cadmium"
-},
-{
-"ar": "تربيوم",
-"en": "terbium"
-},
-{
-"ar": "بزموت",
-"en": "bismuth"
-}
-],
-"source": [
-"https://www.wikidata.org/wiki/Q1100",
-"https://en.wikipedia.org/wiki/tellurium"
-],
-"numeric": true,
-"verified": true
-},
-{
 "id": "el-sym-53",
 "type": "quiz",
 "category": "science",
@@ -20676,41 +19158,6 @@
 "https://www.wikidata.org/wiki/Q1103",
 "https://en.wikipedia.org/wiki/iodine"
 ],
-"verified": true
-},
-{
-"id": "el-name-53",
-"type": "quiz",
-"category": "science",
-"difficulty": 3,
-"age": "all",
-"question": {
-"ar": "أي عنصر رقمه الذري 53؟",
-"en": "Which element has atomic number 53?"
-},
-"answer": {
-"ar": "يود",
-"en": "iodine"
-},
-"wrong": [
-{
-"ar": "زينون",
-"en": "xenon"
-},
-{
-"ar": "يوروبيوم",
-"en": "europium"
-},
-{
-"ar": "أوزميوم",
-"en": "osmium"
-}
-],
-"source": [
-"https://www.wikidata.org/wiki/Q1103",
-"https://en.wikipedia.org/wiki/iodine"
-],
-"numeric": true,
 "verified": true
 },
 {
@@ -20782,2307 +19229,6 @@
 "verified": true
 },
 {
-"id": "el-name-54",
-"type": "quiz",
-"category": "science",
-"difficulty": 3,
-"age": "all",
-"question": {
-"ar": "أي عنصر رقمه الذري 54؟",
-"en": "Which element has atomic number 54?"
-},
-"answer": {
-"ar": "زينون",
-"en": "xenon"
-},
-"wrong": [
-{
-"ar": "إتيربيوم",
-"en": "ytterbium"
-},
-{
-"ar": "هيليوم",
-"en": "helium"
-},
-{
-"ar": "فلور",
-"en": "fluorine"
-}
-],
-"source": [
-"https://www.wikidata.org/wiki/Q1106",
-"https://en.wikipedia.org/wiki/xenon"
-],
-"numeric": true,
-"verified": true
-},
-{
-"id": "el-sym-55",
-"type": "quiz",
-"category": "science",
-"difficulty": 3,
-"age": "all",
-"question": {
-"ar": "ما الرمز الكيميائي لعنصر سيزيوم؟",
-"en": "What is the chemical symbol of caesium?"
-},
-"answer": {
-"ar": "Cs",
-"en": "Cs"
-},
-"wrong": [
-{
-"ar": "Pm",
-"en": "Pm"
-},
-{
-"ar": "At",
-"en": "At"
-},
-{
-"ar": "S",
-"en": "S"
-}
-],
-"source": [
-"https://www.wikidata.org/wiki/Q1108",
-"https://en.wikipedia.org/wiki/caesium"
-],
-"verified": true
-},
-{
-"id": "el-bysym-55",
-"type": "quiz",
-"category": "science",
-"difficulty": 3,
-"age": "all",
-"question": {
-"ar": "ما العنصر الذي رمزه الكيميائي Cs؟",
-"en": "Which element has the chemical symbol Cs?"
-},
-"answer": {
-"ar": "سيزيوم",
-"en": "caesium"
-},
-"wrong": [
-{
-"ar": "تيلوريوم",
-"en": "tellurium"
-},
-{
-"ar": "إتيربيوم",
-"en": "ytterbium"
-},
-{
-"ar": "ثوليوم",
-"en": "thulium"
-}
-],
-"source": [
-"https://www.wikidata.org/wiki/Q1108",
-"https://en.wikipedia.org/wiki/caesium"
-],
-"verified": true
-},
-{
-"id": "el-name-55",
-"type": "quiz",
-"category": "science",
-"difficulty": 3,
-"age": "all",
-"question": {
-"ar": "أي عنصر رقمه الذري 55؟",
-"en": "Which element has atomic number 55?"
-},
-"answer": {
-"ar": "سيزيوم",
-"en": "caesium"
-},
-"wrong": [
-{
-"ar": "هولميوم",
-"en": "holmium"
-},
-{
-"ar": "بزموت",
-"en": "bismuth"
-},
-{
-"ar": "يود",
-"en": "iodine"
-}
-],
-"source": [
-"https://www.wikidata.org/wiki/Q1108",
-"https://en.wikipedia.org/wiki/caesium"
-],
-"numeric": true,
-"verified": true
-},
-{
-"id": "el-sym-56",
-"type": "quiz",
-"category": "science",
-"difficulty": 3,
-"age": "all",
-"question": {
-"ar": "ما الرمز الكيميائي لعنصر باريوم؟",
-"en": "What is the chemical symbol of barium?"
-},
-"answer": {
-"ar": "Ba",
-"en": "Ba"
-},
-"wrong": [
-{
-"ar": "Mn",
-"en": "Mn"
-},
-{
-"ar": "Rn",
-"en": "Rn"
-},
-{
-"ar": "Rb",
-"en": "Rb"
-}
-],
-"source": [
-"https://www.wikidata.org/wiki/Q1112",
-"https://en.wikipedia.org/wiki/barium"
-],
-"verified": true
-},
-{
-"id": "el-bysym-56",
-"type": "quiz",
-"category": "science",
-"difficulty": 3,
-"age": "all",
-"question": {
-"ar": "ما العنصر الذي رمزه الكيميائي Ba؟",
-"en": "Which element has the chemical symbol Ba?"
-},
-"answer": {
-"ar": "باريوم",
-"en": "barium"
-},
-"wrong": [
-{
-"ar": "تيلوريوم",
-"en": "tellurium"
-},
-{
-"ar": "تربيوم",
-"en": "terbium"
-},
-{
-"ar": "هافنيوم",
-"en": "hafnium"
-}
-],
-"source": [
-"https://www.wikidata.org/wiki/Q1112",
-"https://en.wikipedia.org/wiki/barium"
-],
-"verified": true
-},
-{
-"id": "el-name-56",
-"type": "quiz",
-"category": "science",
-"difficulty": 3,
-"age": "all",
-"question": {
-"ar": "أي عنصر رقمه الذري 56؟",
-"en": "Which element has atomic number 56?"
-},
-"answer": {
-"ar": "باريوم",
-"en": "barium"
-},
-"wrong": [
-{
-"ar": "كلور",
-"en": "chlorine"
-},
-{
-"ar": "ليثيوم",
-"en": "lithium"
-},
-{
-"ar": "مغنسيوم",
-"en": "magnesium"
-}
-],
-"source": [
-"https://www.wikidata.org/wiki/Q1112",
-"https://en.wikipedia.org/wiki/barium"
-],
-"numeric": true,
-"verified": true
-},
-{
-"id": "el-sym-57",
-"type": "quiz",
-"category": "science",
-"difficulty": 3,
-"age": "all",
-"question": {
-"ar": "ما الرمز الكيميائي لعنصر لانثانوم؟",
-"en": "What is the chemical symbol of lanthanum?"
-},
-"answer": {
-"ar": "La",
-"en": "La"
-},
-"wrong": [
-{
-"ar": "Re",
-"en": "Re"
-},
-{
-"ar": "Ar",
-"en": "Ar"
-},
-{
-"ar": "Hf",
-"en": "Hf"
-}
-],
-"source": [
-"https://www.wikidata.org/wiki/Q1801",
-"https://en.wikipedia.org/wiki/lanthanum"
-],
-"verified": true
-},
-{
-"id": "el-bysym-57",
-"type": "quiz",
-"category": "science",
-"difficulty": 3,
-"age": "all",
-"question": {
-"ar": "ما العنصر الذي رمزه الكيميائي La؟",
-"en": "Which element has the chemical symbol La?"
-},
-"answer": {
-"ar": "لانثانوم",
-"en": "lanthanum"
-},
-"wrong": [
-{
-"ar": "بلاتين",
-"en": "platinum"
-},
-{
-"ar": "بلاديوم",
-"en": "palladium"
-},
-{
-"ar": "كبريت",
-"en": "sulfur"
-}
-],
-"source": [
-"https://www.wikidata.org/wiki/Q1801",
-"https://en.wikipedia.org/wiki/lanthanum"
-],
-"verified": true
-},
-{
-"id": "el-name-57",
-"type": "quiz",
-"category": "science",
-"difficulty": 3,
-"age": "all",
-"question": {
-"ar": "أي عنصر رقمه الذري 57؟",
-"en": "Which element has atomic number 57?"
-},
-"answer": {
-"ar": "لانثانوم",
-"en": "lanthanum"
-},
-"wrong": [
-{
-"ar": "كوبالت",
-"en": "cobalt"
-},
-{
-"ar": "مغنسيوم",
-"en": "magnesium"
-},
-{
-"ar": "إريديوم",
-"en": "iridium"
-}
-],
-"source": [
-"https://www.wikidata.org/wiki/Q1801",
-"https://en.wikipedia.org/wiki/lanthanum"
-],
-"numeric": true,
-"verified": true
-},
-{
-"id": "el-sym-58",
-"type": "quiz",
-"category": "science",
-"difficulty": 3,
-"age": "all",
-"question": {
-"ar": "ما الرمز الكيميائي لعنصر سيريوم؟",
-"en": "What is the chemical symbol of cerium?"
-},
-"answer": {
-"ar": "Ce",
-"en": "Ce"
-},
-"wrong": [
-{
-"ar": "He",
-"en": "He"
-},
-{
-"ar": "Er",
-"en": "Er"
-},
-{
-"ar": "B",
-"en": "B"
-}
-],
-"source": [
-"https://www.wikidata.org/wiki/Q1385",
-"https://en.wikipedia.org/wiki/cerium"
-],
-"verified": true
-},
-{
-"id": "el-bysym-58",
-"type": "quiz",
-"category": "science",
-"difficulty": 3,
-"age": "all",
-"question": {
-"ar": "ما العنصر الذي رمزه الكيميائي Ce؟",
-"en": "Which element has the chemical symbol Ce?"
-},
-"answer": {
-"ar": "سيريوم",
-"en": "cerium"
-},
-"wrong": [
-{
-"ar": "فسفور",
-"en": "phosphorus"
-},
-{
-"ar": "بورون",
-"en": "boron"
-},
-{
-"ar": "باريوم",
-"en": "barium"
-}
-],
-"source": [
-"https://www.wikidata.org/wiki/Q1385",
-"https://en.wikipedia.org/wiki/cerium"
-],
-"verified": true
-},
-{
-"id": "el-name-58",
-"type": "quiz",
-"category": "science",
-"difficulty": 3,
-"age": "all",
-"question": {
-"ar": "أي عنصر رقمه الذري 58؟",
-"en": "Which element has atomic number 58?"
-},
-"answer": {
-"ar": "سيريوم",
-"en": "cerium"
-},
-"wrong": [
-{
-"ar": "كبريت",
-"en": "sulfur"
-},
-{
-"ar": "أوزميوم",
-"en": "osmium"
-},
-{
-"ar": "بولونيوم",
-"en": "polonium"
-}
-],
-"source": [
-"https://www.wikidata.org/wiki/Q1385",
-"https://en.wikipedia.org/wiki/cerium"
-],
-"numeric": true,
-"verified": true
-},
-{
-"id": "el-sym-59",
-"type": "quiz",
-"category": "science",
-"difficulty": 3,
-"age": "all",
-"question": {
-"ar": "ما الرمز الكيميائي لعنصر براسوديميوم؟",
-"en": "What is the chemical symbol of praseodymium?"
-},
-"answer": {
-"ar": "Pr",
-"en": "Pr"
-},
-"wrong": [
-{
-"ar": "Co",
-"en": "Co"
-},
-{
-"ar": "Lu",
-"en": "Lu"
-},
-{
-"ar": "Ca",
-"en": "Ca"
-}
-],
-"source": [
-"https://www.wikidata.org/wiki/Q1386",
-"https://en.wikipedia.org/wiki/praseodymium"
-],
-"verified": true
-},
-{
-"id": "el-bysym-59",
-"type": "quiz",
-"category": "science",
-"difficulty": 3,
-"age": "all",
-"question": {
-"ar": "ما العنصر الذي رمزه الكيميائي Pr؟",
-"en": "Which element has the chemical symbol Pr?"
-},
-"answer": {
-"ar": "براسوديميوم",
-"en": "praseodymium"
-},
-"wrong": [
-{
-"ar": "كادميوم",
-"en": "cadmium"
-},
-{
-"ar": "رادون",
-"en": "radon"
-},
-{
-"ar": "بيريليوم",
-"en": "beryllium"
-}
-],
-"source": [
-"https://www.wikidata.org/wiki/Q1386",
-"https://en.wikipedia.org/wiki/praseodymium"
-],
-"verified": true
-},
-{
-"id": "el-name-59",
-"type": "quiz",
-"category": "science",
-"difficulty": 3,
-"age": "all",
-"question": {
-"ar": "أي عنصر رقمه الذري 59؟",
-"en": "Which element has atomic number 59?"
-},
-"answer": {
-"ar": "براسوديميوم",
-"en": "praseodymium"
-},
-"wrong": [
-{
-"ar": "مغنسيوم",
-"en": "magnesium"
-},
-{
-"ar": "لانثانوم",
-"en": "lanthanum"
-},
-{
-"ar": "موليبدنوم",
-"en": "molybdenum"
-}
-],
-"source": [
-"https://www.wikidata.org/wiki/Q1386",
-"https://en.wikipedia.org/wiki/praseodymium"
-],
-"numeric": true,
-"verified": true
-},
-{
-"id": "el-sym-60",
-"type": "quiz",
-"category": "science",
-"difficulty": 3,
-"age": "all",
-"question": {
-"ar": "ما الرمز الكيميائي لعنصر نيوديميوم؟",
-"en": "What is the chemical symbol of neodymium?"
-},
-"answer": {
-"ar": "Nd",
-"en": "Nd"
-},
-"wrong": [
-{
-"ar": "Sc",
-"en": "Sc"
-},
-{
-"ar": "Ce",
-"en": "Ce"
-},
-{
-"ar": "Tc",
-"en": "Tc"
-}
-],
-"source": [
-"https://www.wikidata.org/wiki/Q1388",
-"https://en.wikipedia.org/wiki/neodymium"
-],
-"verified": true
-},
-{
-"id": "el-bysym-60",
-"type": "quiz",
-"category": "science",
-"difficulty": 3,
-"age": "all",
-"question": {
-"ar": "ما العنصر الذي رمزه الكيميائي Nd؟",
-"en": "Which element has the chemical symbol Nd?"
-},
-"answer": {
-"ar": "نيوديميوم",
-"en": "neodymium"
-},
-"wrong": [
-{
-"ar": "ألومنيوم",
-"en": "aluminium"
-},
-{
-"ar": "كادميوم",
-"en": "cadmium"
-},
-{
-"ar": "كبريت",
-"en": "sulfur"
-}
-],
-"source": [
-"https://www.wikidata.org/wiki/Q1388",
-"https://en.wikipedia.org/wiki/neodymium"
-],
-"verified": true
-},
-{
-"id": "el-name-60",
-"type": "quiz",
-"category": "science",
-"difficulty": 3,
-"age": "all",
-"question": {
-"ar": "أي عنصر رقمه الذري 60؟",
-"en": "Which element has atomic number 60?"
-},
-"answer": {
-"ar": "نيوديميوم",
-"en": "neodymium"
-},
-"wrong": [
-{
-"ar": "إتيربيوم",
-"en": "ytterbium"
-},
-{
-"ar": "ليثيوم",
-"en": "lithium"
-},
-{
-"ar": "تيلوريوم",
-"en": "tellurium"
-}
-],
-"source": [
-"https://www.wikidata.org/wiki/Q1388",
-"https://en.wikipedia.org/wiki/neodymium"
-],
-"numeric": true,
-"verified": true
-},
-{
-"id": "el-sym-61",
-"type": "quiz",
-"category": "science",
-"difficulty": 3,
-"age": "all",
-"question": {
-"ar": "ما الرمز الكيميائي لعنصر بروميثيوم؟",
-"en": "What is the chemical symbol of promethium?"
-},
-"answer": {
-"ar": "Pm",
-"en": "Pm"
-},
-"wrong": [
-{
-"ar": "Sc",
-"en": "Sc"
-},
-{
-"ar": "Y",
-"en": "Y"
-},
-{
-"ar": "Ru",
-"en": "Ru"
-}
-],
-"source": [
-"https://www.wikidata.org/wiki/Q1809",
-"https://en.wikipedia.org/wiki/promethium"
-],
-"verified": true
-},
-{
-"id": "el-bysym-61",
-"type": "quiz",
-"category": "science",
-"difficulty": 3,
-"age": "all",
-"question": {
-"ar": "ما العنصر الذي رمزه الكيميائي Pm؟",
-"en": "Which element has the chemical symbol Pm?"
-},
-"answer": {
-"ar": "بروميثيوم",
-"en": "promethium"
-},
-"wrong": [
-{
-"ar": "سيليكون",
-"en": "silicon"
-},
-{
-"ar": "فلور",
-"en": "fluorine"
-},
-{
-"ar": "كوبالت",
-"en": "cobalt"
-}
-],
-"source": [
-"https://www.wikidata.org/wiki/Q1809",
-"https://en.wikipedia.org/wiki/promethium"
-],
-"verified": true
-},
-{
-"id": "el-name-61",
-"type": "quiz",
-"category": "science",
-"difficulty": 3,
-"age": "all",
-"question": {
-"ar": "أي عنصر رقمه الذري 61؟",
-"en": "Which element has atomic number 61?"
-},
-"answer": {
-"ar": "بروميثيوم",
-"en": "promethium"
-},
-"wrong": [
-{
-"ar": "بيريليوم",
-"en": "beryllium"
-},
-{
-"ar": "غاليوم",
-"en": "gallium"
-},
-{
-"ar": "ثوليوم",
-"en": "thulium"
-}
-],
-"source": [
-"https://www.wikidata.org/wiki/Q1809",
-"https://en.wikipedia.org/wiki/promethium"
-],
-"numeric": true,
-"verified": true
-},
-{
-"id": "el-sym-62",
-"type": "quiz",
-"category": "science",
-"difficulty": 3,
-"age": "all",
-"question": {
-"ar": "ما الرمز الكيميائي لعنصر ساماريوم؟",
-"en": "What is the chemical symbol of samarium?"
-},
-"answer": {
-"ar": "Sm",
-"en": "Sm"
-},
-"wrong": [
-{
-"ar": "Rn",
-"en": "Rn"
-},
-{
-"ar": "Bi",
-"en": "Bi"
-},
-{
-"ar": "At",
-"en": "At"
-}
-],
-"source": [
-"https://www.wikidata.org/wiki/Q1819",
-"https://en.wikipedia.org/wiki/samarium"
-],
-"verified": true
-},
-{
-"id": "el-bysym-62",
-"type": "quiz",
-"category": "science",
-"difficulty": 3,
-"age": "all",
-"question": {
-"ar": "ما العنصر الذي رمزه الكيميائي Sm؟",
-"en": "Which element has the chemical symbol Sm?"
-},
-"answer": {
-"ar": "ساماريوم",
-"en": "samarium"
-},
-"wrong": [
-{
-"ar": "كروم",
-"en": "chromium"
-},
-{
-"ar": "إربيوم",
-"en": "erbium"
-},
-{
-"ar": "سيزيوم",
-"en": "caesium"
-}
-],
-"source": [
-"https://www.wikidata.org/wiki/Q1819",
-"https://en.wikipedia.org/wiki/samarium"
-],
-"verified": true
-},
-{
-"id": "el-name-62",
-"type": "quiz",
-"category": "science",
-"difficulty": 3,
-"age": "all",
-"question": {
-"ar": "أي عنصر رقمه الذري 62؟",
-"en": "Which element has atomic number 62?"
-},
-"answer": {
-"ar": "ساماريوم",
-"en": "samarium"
-},
-"wrong": [
-{
-"ar": "إربيوم",
-"en": "erbium"
-},
-{
-"ar": "باريوم",
-"en": "barium"
-},
-{
-"ar": "سيريوم",
-"en": "cerium"
-}
-],
-"source": [
-"https://www.wikidata.org/wiki/Q1819",
-"https://en.wikipedia.org/wiki/samarium"
-],
-"numeric": true,
-"verified": true
-},
-{
-"id": "el-sym-63",
-"type": "quiz",
-"category": "science",
-"difficulty": 3,
-"age": "all",
-"question": {
-"ar": "ما الرمز الكيميائي لعنصر يوروبيوم؟",
-"en": "What is the chemical symbol of europium?"
-},
-"answer": {
-"ar": "Eu",
-"en": "Eu"
-},
-"wrong": [
-{
-"ar": "Sm",
-"en": "Sm"
-},
-{
-"ar": "Cd",
-"en": "Cd"
-},
-{
-"ar": "Os",
-"en": "Os"
-}
-],
-"source": [
-"https://www.wikidata.org/wiki/Q1396",
-"https://en.wikipedia.org/wiki/europium"
-],
-"verified": true
-},
-{
-"id": "el-bysym-63",
-"type": "quiz",
-"category": "science",
-"difficulty": 3,
-"age": "all",
-"question": {
-"ar": "ما العنصر الذي رمزه الكيميائي Eu؟",
-"en": "Which element has the chemical symbol Eu?"
-},
-"answer": {
-"ar": "يوروبيوم",
-"en": "europium"
-},
-"wrong": [
-{
-"ar": "بولونيوم",
-"en": "polonium"
-},
-{
-"ar": "ألومنيوم",
-"en": "aluminium"
-},
-{
-"ar": "لانثانوم",
-"en": "lanthanum"
-}
-],
-"source": [
-"https://www.wikidata.org/wiki/Q1396",
-"https://en.wikipedia.org/wiki/europium"
-],
-"verified": true
-},
-{
-"id": "el-name-63",
-"type": "quiz",
-"category": "science",
-"difficulty": 3,
-"age": "all",
-"question": {
-"ar": "أي عنصر رقمه الذري 63؟",
-"en": "Which element has atomic number 63?"
-},
-"answer": {
-"ar": "يوروبيوم",
-"en": "europium"
-},
-"wrong": [
-{
-"ar": "روبيديوم",
-"en": "rubidium"
-},
-{
-"ar": "بولونيوم",
-"en": "polonium"
-},
-{
-"ar": "كبريت",
-"en": "sulfur"
-}
-],
-"source": [
-"https://www.wikidata.org/wiki/Q1396",
-"https://en.wikipedia.org/wiki/europium"
-],
-"numeric": true,
-"verified": true
-},
-{
-"id": "el-sym-64",
-"type": "quiz",
-"category": "science",
-"difficulty": 3,
-"age": "all",
-"question": {
-"ar": "ما الرمز الكيميائي لعنصر غادولينيوم؟",
-"en": "What is the chemical symbol of gadolinium?"
-},
-"answer": {
-"ar": "Gd",
-"en": "Gd"
-},
-"wrong": [
-{
-"ar": "S",
-"en": "S"
-},
-{
-"ar": "Ta",
-"en": "Ta"
-},
-{
-"ar": "P",
-"en": "P"
-}
-],
-"source": [
-"https://www.wikidata.org/wiki/Q1832",
-"https://en.wikipedia.org/wiki/gadolinium"
-],
-"verified": true
-},
-{
-"id": "el-bysym-64",
-"type": "quiz",
-"category": "science",
-"difficulty": 3,
-"age": "all",
-"question": {
-"ar": "ما العنصر الذي رمزه الكيميائي Gd؟",
-"en": "Which element has the chemical symbol Gd?"
-},
-"answer": {
-"ar": "غادولينيوم",
-"en": "gadolinium"
-},
-"wrong": [
-{
-"ar": "يوروبيوم",
-"en": "europium"
-},
-{
-"ar": "بزموت",
-"en": "bismuth"
-},
-{
-"ar": "ألومنيوم",
-"en": "aluminium"
-}
-],
-"source": [
-"https://www.wikidata.org/wiki/Q1832",
-"https://en.wikipedia.org/wiki/gadolinium"
-],
-"verified": true
-},
-{
-"id": "el-name-64",
-"type": "quiz",
-"category": "science",
-"difficulty": 3,
-"age": "all",
-"question": {
-"ar": "أي عنصر رقمه الذري 64؟",
-"en": "Which element has atomic number 64?"
-},
-"answer": {
-"ar": "غادولينيوم",
-"en": "gadolinium"
-},
-"wrong": [
-{
-"ar": "نيكل",
-"en": "nickel"
-},
-{
-"ar": "رينيوم",
-"en": "rhenium"
-},
-{
-"ar": "بولونيوم",
-"en": "polonium"
-}
-],
-"source": [
-"https://www.wikidata.org/wiki/Q1832",
-"https://en.wikipedia.org/wiki/gadolinium"
-],
-"numeric": true,
-"verified": true
-},
-{
-"id": "el-sym-65",
-"type": "quiz",
-"category": "science",
-"difficulty": 3,
-"age": "all",
-"question": {
-"ar": "ما الرمز الكيميائي لعنصر تربيوم؟",
-"en": "What is the chemical symbol of terbium?"
-},
-"answer": {
-"ar": "Tb",
-"en": "Tb"
-},
-"wrong": [
-{
-"ar": "Pm",
-"en": "Pm"
-},
-{
-"ar": "Be",
-"en": "Be"
-},
-{
-"ar": "Pd",
-"en": "Pd"
-}
-],
-"source": [
-"https://www.wikidata.org/wiki/Q1838",
-"https://en.wikipedia.org/wiki/terbium"
-],
-"verified": true
-},
-{
-"id": "el-bysym-65",
-"type": "quiz",
-"category": "science",
-"difficulty": 3,
-"age": "all",
-"question": {
-"ar": "ما العنصر الذي رمزه الكيميائي Tb؟",
-"en": "Which element has the chemical symbol Tb?"
-},
-"answer": {
-"ar": "تربيوم",
-"en": "terbium"
-},
-"wrong": [
-{
-"ar": "غادولينيوم",
-"en": "gadolinium"
-},
-{
-"ar": "موليبدنوم",
-"en": "molybdenum"
-},
-{
-"ar": "سيريوم",
-"en": "cerium"
-}
-],
-"source": [
-"https://www.wikidata.org/wiki/Q1838",
-"https://en.wikipedia.org/wiki/terbium"
-],
-"verified": true
-},
-{
-"id": "el-name-65",
-"type": "quiz",
-"category": "science",
-"difficulty": 3,
-"age": "all",
-"question": {
-"ar": "أي عنصر رقمه الذري 65؟",
-"en": "Which element has atomic number 65?"
-},
-"answer": {
-"ar": "تربيوم",
-"en": "terbium"
-},
-"wrong": [
-{
-"ar": "فاناديوم",
-"en": "vanadium"
-},
-{
-"ar": "هولميوم",
-"en": "holmium"
-},
-{
-"ar": "زركونيوم",
-"en": "zirconium"
-}
-],
-"source": [
-"https://www.wikidata.org/wiki/Q1838",
-"https://en.wikipedia.org/wiki/terbium"
-],
-"numeric": true,
-"verified": true
-},
-{
-"id": "el-sym-66",
-"type": "quiz",
-"category": "science",
-"difficulty": 3,
-"age": "all",
-"question": {
-"ar": "ما الرمز الكيميائي لعنصر ديسبروسيوم؟",
-"en": "What is the chemical symbol of dysprosium?"
-},
-"answer": {
-"ar": "Dy",
-"en": "Dy"
-},
-"wrong": [
-{
-"ar": "Bi",
-"en": "Bi"
-},
-{
-"ar": "As",
-"en": "As"
-},
-{
-"ar": "Nd",
-"en": "Nd"
-}
-],
-"source": [
-"https://www.wikidata.org/wiki/Q1843",
-"https://en.wikipedia.org/wiki/dysprosium"
-],
-"verified": true
-},
-{
-"id": "el-bysym-66",
-"type": "quiz",
-"category": "science",
-"difficulty": 3,
-"age": "all",
-"question": {
-"ar": "ما العنصر الذي رمزه الكيميائي Dy؟",
-"en": "Which element has the chemical symbol Dy?"
-},
-"answer": {
-"ar": "ديسبروسيوم",
-"en": "dysprosium"
-},
-"wrong": [
-{
-"ar": "رادون",
-"en": "radon"
-},
-{
-"ar": "أرغون",
-"en": "argon"
-},
-{
-"ar": "فلور",
-"en": "fluorine"
-}
-],
-"source": [
-"https://www.wikidata.org/wiki/Q1843",
-"https://en.wikipedia.org/wiki/dysprosium"
-],
-"verified": true
-},
-{
-"id": "el-name-66",
-"type": "quiz",
-"category": "science",
-"difficulty": 3,
-"age": "all",
-"question": {
-"ar": "أي عنصر رقمه الذري 66؟",
-"en": "Which element has atomic number 66?"
-},
-"answer": {
-"ar": "ديسبروسيوم",
-"en": "dysprosium"
-},
-"wrong": [
-{
-"ar": "رادون",
-"en": "radon"
-},
-{
-"ar": "سكانديوم",
-"en": "scandium"
-},
-{
-"ar": "إربيوم",
-"en": "erbium"
-}
-],
-"source": [
-"https://www.wikidata.org/wiki/Q1843",
-"https://en.wikipedia.org/wiki/dysprosium"
-],
-"numeric": true,
-"verified": true
-},
-{
-"id": "el-sym-67",
-"type": "quiz",
-"category": "science",
-"difficulty": 3,
-"age": "all",
-"question": {
-"ar": "ما الرمز الكيميائي لعنصر هولميوم؟",
-"en": "What is the chemical symbol of holmium?"
-},
-"answer": {
-"ar": "Ho",
-"en": "Ho"
-},
-"wrong": [
-{
-"ar": "Si",
-"en": "Si"
-},
-{
-"ar": "Xe",
-"en": "Xe"
-},
-{
-"ar": "Pm",
-"en": "Pm"
-}
-],
-"source": [
-"https://www.wikidata.org/wiki/Q1846",
-"https://en.wikipedia.org/wiki/holmium"
-],
-"verified": true
-},
-{
-"id": "el-bysym-67",
-"type": "quiz",
-"category": "science",
-"difficulty": 3,
-"age": "all",
-"question": {
-"ar": "ما العنصر الذي رمزه الكيميائي Ho؟",
-"en": "Which element has the chemical symbol Ho?"
-},
-"answer": {
-"ar": "هولميوم",
-"en": "holmium"
-},
-"wrong": [
-{
-"ar": "زرنيخ",
-"en": "arsenic"
-},
-{
-"ar": "كوبالت",
-"en": "cobalt"
-},
-{
-"ar": "فسفور",
-"en": "phosphorus"
-}
-],
-"source": [
-"https://www.wikidata.org/wiki/Q1846",
-"https://en.wikipedia.org/wiki/holmium"
-],
-"verified": true
-},
-{
-"id": "el-name-67",
-"type": "quiz",
-"category": "science",
-"difficulty": 3,
-"age": "all",
-"question": {
-"ar": "أي عنصر رقمه الذري 67؟",
-"en": "Which element has atomic number 67?"
-},
-"answer": {
-"ar": "هولميوم",
-"en": "holmium"
-},
-"wrong": [
-{
-"ar": "غادولينيوم",
-"en": "gadolinium"
-},
-{
-"ar": "ساماريوم",
-"en": "samarium"
-},
-{
-"ar": "زركونيوم",
-"en": "zirconium"
-}
-],
-"source": [
-"https://www.wikidata.org/wiki/Q1846",
-"https://en.wikipedia.org/wiki/holmium"
-],
-"numeric": true,
-"verified": true
-},
-{
-"id": "el-sym-68",
-"type": "quiz",
-"category": "science",
-"difficulty": 3,
-"age": "all",
-"question": {
-"ar": "ما الرمز الكيميائي لعنصر إربيوم؟",
-"en": "What is the chemical symbol of erbium?"
-},
-"answer": {
-"ar": "Er",
-"en": "Er"
-},
-"wrong": [
-{
-"ar": "Co",
-"en": "Co"
-},
-{
-"ar": "Hf",
-"en": "Hf"
-},
-{
-"ar": "Li",
-"en": "Li"
-}
-],
-"source": [
-"https://www.wikidata.org/wiki/Q1849",
-"https://en.wikipedia.org/wiki/erbium"
-],
-"verified": true
-},
-{
-"id": "el-bysym-68",
-"type": "quiz",
-"category": "science",
-"difficulty": 3,
-"age": "all",
-"question": {
-"ar": "ما العنصر الذي رمزه الكيميائي Er؟",
-"en": "Which element has the chemical symbol Er?"
-},
-"answer": {
-"ar": "إربيوم",
-"en": "erbium"
-},
-"wrong": [
-{
-"ar": "بروميثيوم",
-"en": "promethium"
-},
-{
-"ar": "بيريليوم",
-"en": "beryllium"
-},
-{
-"ar": "كادميوم",
-"en": "cadmium"
-}
-],
-"source": [
-"https://www.wikidata.org/wiki/Q1849",
-"https://en.wikipedia.org/wiki/erbium"
-],
-"verified": true
-},
-{
-"id": "el-name-68",
-"type": "quiz",
-"category": "science",
-"difficulty": 3,
-"age": "all",
-"question": {
-"ar": "أي عنصر رقمه الذري 68؟",
-"en": "Which element has atomic number 68?"
-},
-"answer": {
-"ar": "إربيوم",
-"en": "erbium"
-},
-"wrong": [
-{
-"ar": "بلاديوم",
-"en": "palladium"
-},
-{
-"ar": "منغنيز",
-"en": "manganese"
-},
-{
-"ar": "يود",
-"en": "iodine"
-}
-],
-"source": [
-"https://www.wikidata.org/wiki/Q1849",
-"https://en.wikipedia.org/wiki/erbium"
-],
-"numeric": true,
-"verified": true
-},
-{
-"id": "el-sym-69",
-"type": "quiz",
-"category": "science",
-"difficulty": 3,
-"age": "all",
-"question": {
-"ar": "ما الرمز الكيميائي لعنصر ثوليوم؟",
-"en": "What is the chemical symbol of thulium?"
-},
-"answer": {
-"ar": "Tm",
-"en": "Tm"
-},
-"wrong": [
-{
-"ar": "F",
-"en": "F"
-},
-{
-"ar": "Cl",
-"en": "Cl"
-},
-{
-"ar": "Si",
-"en": "Si"
-}
-],
-"source": [
-"https://www.wikidata.org/wiki/Q1853",
-"https://en.wikipedia.org/wiki/thulium"
-],
-"verified": true
-},
-{
-"id": "el-bysym-69",
-"type": "quiz",
-"category": "science",
-"difficulty": 3,
-"age": "all",
-"question": {
-"ar": "ما العنصر الذي رمزه الكيميائي Tm؟",
-"en": "Which element has the chemical symbol Tm?"
-},
-"answer": {
-"ar": "ثوليوم",
-"en": "thulium"
-},
-"wrong": [
-{
-"ar": "زرنيخ",
-"en": "arsenic"
-},
-{
-"ar": "نيكل",
-"en": "nickel"
-},
-{
-"ar": "كبريت",
-"en": "sulfur"
-}
-],
-"source": [
-"https://www.wikidata.org/wiki/Q1853",
-"https://en.wikipedia.org/wiki/thulium"
-],
-"verified": true
-},
-{
-"id": "el-name-69",
-"type": "quiz",
-"category": "science",
-"difficulty": 3,
-"age": "all",
-"question": {
-"ar": "أي عنصر رقمه الذري 69؟",
-"en": "Which element has atomic number 69?"
-},
-"answer": {
-"ar": "ثوليوم",
-"en": "thulium"
-},
-"wrong": [
-{
-"ar": "أوزميوم",
-"en": "osmium"
-},
-{
-"ar": "ثاليوم",
-"en": "thallium"
-},
-{
-"ar": "روديوم",
-"en": "rhodium"
-}
-],
-"source": [
-"https://www.wikidata.org/wiki/Q1853",
-"https://en.wikipedia.org/wiki/thulium"
-],
-"numeric": true,
-"verified": true
-},
-{
-"id": "el-sym-70",
-"type": "quiz",
-"category": "science",
-"difficulty": 3,
-"age": "all",
-"question": {
-"ar": "ما الرمز الكيميائي لعنصر إتيربيوم؟",
-"en": "What is the chemical symbol of ytterbium?"
-},
-"answer": {
-"ar": "Yb",
-"en": "Yb"
-},
-"wrong": [
-{
-"ar": "Sc",
-"en": "Sc"
-},
-{
-"ar": "Te",
-"en": "Te"
-},
-{
-"ar": "Pr",
-"en": "Pr"
-}
-],
-"source": [
-"https://www.wikidata.org/wiki/Q1855",
-"https://en.wikipedia.org/wiki/ytterbium"
-],
-"verified": true
-},
-{
-"id": "el-bysym-70",
-"type": "quiz",
-"category": "science",
-"difficulty": 3,
-"age": "all",
-"question": {
-"ar": "ما العنصر الذي رمزه الكيميائي Yb؟",
-"en": "Which element has the chemical symbol Yb?"
-},
-"answer": {
-"ar": "إتيربيوم",
-"en": "ytterbium"
-},
-"wrong": [
-{
-"ar": "كبريت",
-"en": "sulfur"
-},
-{
-"ar": "ديسبروسيوم",
-"en": "dysprosium"
-},
-{
-"ar": "تربيوم",
-"en": "terbium"
-}
-],
-"source": [
-"https://www.wikidata.org/wiki/Q1855",
-"https://en.wikipedia.org/wiki/ytterbium"
-],
-"verified": true
-},
-{
-"id": "el-name-70",
-"type": "quiz",
-"category": "science",
-"difficulty": 3,
-"age": "all",
-"question": {
-"ar": "أي عنصر رقمه الذري 70؟",
-"en": "Which element has atomic number 70?"
-},
-"answer": {
-"ar": "إتيربيوم",
-"en": "ytterbium"
-},
-"wrong": [
-{
-"ar": "لانثانوم",
-"en": "lanthanum"
-},
-{
-"ar": "سترونتيوم",
-"en": "strontium"
-},
-{
-"ar": "زنك",
-"en": "zinc"
-}
-],
-"source": [
-"https://www.wikidata.org/wiki/Q1855",
-"https://en.wikipedia.org/wiki/ytterbium"
-],
-"numeric": true,
-"verified": true
-},
-{
-"id": "el-sym-71",
-"type": "quiz",
-"category": "science",
-"difficulty": 3,
-"age": "all",
-"question": {
-"ar": "ما الرمز الكيميائي لعنصر لوتيشيوم؟",
-"en": "What is the chemical symbol of lutetium?"
-},
-"answer": {
-"ar": "Lu",
-"en": "Lu"
-},
-"wrong": [
-{
-"ar": "V",
-"en": "V"
-},
-{
-"ar": "He",
-"en": "He"
-},
-{
-"ar": "N",
-"en": "N"
-}
-],
-"source": [
-"https://www.wikidata.org/wiki/Q1857",
-"https://en.wikipedia.org/wiki/lutetium"
-],
-"verified": true
-},
-{
-"id": "el-bysym-71",
-"type": "quiz",
-"category": "science",
-"difficulty": 3,
-"age": "all",
-"question": {
-"ar": "ما العنصر الذي رمزه الكيميائي Lu؟",
-"en": "Which element has the chemical symbol Lu?"
-},
-"answer": {
-"ar": "لوتيشيوم",
-"en": "lutetium"
-},
-"wrong": [
-{
-"ar": "مغنسيوم",
-"en": "magnesium"
-},
-{
-"ar": "ديسبروسيوم",
-"en": "dysprosium"
-},
-{
-"ar": "سكانديوم",
-"en": "scandium"
-}
-],
-"source": [
-"https://www.wikidata.org/wiki/Q1857",
-"https://en.wikipedia.org/wiki/lutetium"
-],
-"verified": true
-},
-{
-"id": "el-name-71",
-"type": "quiz",
-"category": "science",
-"difficulty": 3,
-"age": "all",
-"question": {
-"ar": "أي عنصر رقمه الذري 71؟",
-"en": "Which element has atomic number 71?"
-},
-"answer": {
-"ar": "لوتيشيوم",
-"en": "lutetium"
-},
-"wrong": [
-{
-"ar": "زرنيخ",
-"en": "arsenic"
-},
-{
-"ar": "تيلوريوم",
-"en": "tellurium"
-},
-{
-"ar": "كربون",
-"en": "carbon"
-}
-],
-"source": [
-"https://www.wikidata.org/wiki/Q1857",
-"https://en.wikipedia.org/wiki/lutetium"
-],
-"numeric": true,
-"verified": true
-},
-{
-"id": "el-sym-72",
-"type": "quiz",
-"category": "science",
-"difficulty": 3,
-"age": "all",
-"question": {
-"ar": "ما الرمز الكيميائي لعنصر هافنيوم؟",
-"en": "What is the chemical symbol of hafnium?"
-},
-"answer": {
-"ar": "Hf",
-"en": "Hf"
-},
-"wrong": [
-{
-"ar": "Se",
-"en": "Se"
-},
-{
-"ar": "N",
-"en": "N"
-},
-{
-"ar": "H",
-"en": "H"
-}
-],
-"source": [
-"https://www.wikidata.org/wiki/Q1119",
-"https://en.wikipedia.org/wiki/hafnium"
-],
-"verified": true
-},
-{
-"id": "el-bysym-72",
-"type": "quiz",
-"category": "science",
-"difficulty": 3,
-"age": "all",
-"question": {
-"ar": "ما العنصر الذي رمزه الكيميائي Hf؟",
-"en": "Which element has the chemical symbol Hf?"
-},
-"answer": {
-"ar": "هافنيوم",
-"en": "hafnium"
-},
-"wrong": [
-{
-"ar": "كادميوم",
-"en": "cadmium"
-},
-{
-"ar": "يوروبيوم",
-"en": "europium"
-},
-{
-"ar": "تربيوم",
-"en": "terbium"
-}
-],
-"source": [
-"https://www.wikidata.org/wiki/Q1119",
-"https://en.wikipedia.org/wiki/hafnium"
-],
-"verified": true
-},
-{
-"id": "el-name-72",
-"type": "quiz",
-"category": "science",
-"difficulty": 3,
-"age": "all",
-"question": {
-"ar": "أي عنصر رقمه الذري 72؟",
-"en": "Which element has atomic number 72?"
-},
-"answer": {
-"ar": "هافنيوم",
-"en": "hafnium"
-},
-"wrong": [
-{
-"ar": "هيدروجين",
-"en": "hydrogen"
-},
-{
-"ar": "رينيوم",
-"en": "rhenium"
-},
-{
-"ar": "كبريت",
-"en": "sulfur"
-}
-],
-"source": [
-"https://www.wikidata.org/wiki/Q1119",
-"https://en.wikipedia.org/wiki/hafnium"
-],
-"numeric": true,
-"verified": true
-},
-{
-"id": "el-sym-73",
-"type": "quiz",
-"category": "science",
-"difficulty": 3,
-"age": "all",
-"question": {
-"ar": "ما الرمز الكيميائي لعنصر تانتالوم؟",
-"en": "What is the chemical symbol of tantalum?"
-},
-"answer": {
-"ar": "Ta",
-"en": "Ta"
-},
-"wrong": [
-{
-"ar": "H",
-"en": "H"
-},
-{
-"ar": "Pd",
-"en": "Pd"
-},
-{
-"ar": "Bi",
-"en": "Bi"
-}
-],
-"source": [
-"https://www.wikidata.org/wiki/Q1123",
-"https://en.wikipedia.org/wiki/tantalum"
-],
-"verified": true
-},
-{
-"id": "el-bysym-73",
-"type": "quiz",
-"category": "science",
-"difficulty": 3,
-"age": "all",
-"question": {
-"ar": "ما العنصر الذي رمزه الكيميائي Ta؟",
-"en": "Which element has the chemical symbol Ta?"
-},
-"answer": {
-"ar": "تانتالوم",
-"en": "tantalum"
-},
-"wrong": [
-{
-"ar": "فسفور",
-"en": "phosphorus"
-},
-{
-"ar": "إتيربيوم",
-"en": "ytterbium"
-},
-{
-"ar": "بروميثيوم",
-"en": "promethium"
-}
-],
-"source": [
-"https://www.wikidata.org/wiki/Q1123",
-"https://en.wikipedia.org/wiki/tantalum"
-],
-"verified": true
-},
-{
-"id": "el-name-73",
-"type": "quiz",
-"category": "science",
-"difficulty": 3,
-"age": "all",
-"question": {
-"ar": "أي عنصر رقمه الذري 73؟",
-"en": "Which element has atomic number 73?"
-},
-"answer": {
-"ar": "تانتالوم",
-"en": "tantalum"
-},
-"wrong": [
-{
-"ar": "غادولينيوم",
-"en": "gadolinium"
-},
-{
-"ar": "إريديوم",
-"en": "iridium"
-},
-{
-"ar": "هيدروجين",
-"en": "hydrogen"
-}
-],
-"source": [
-"https://www.wikidata.org/wiki/Q1123",
-"https://en.wikipedia.org/wiki/tantalum"
-],
-"numeric": true,
-"verified": true
-},
-{
-"id": "el-sym-75",
-"type": "quiz",
-"category": "science",
-"difficulty": 3,
-"age": "all",
-"question": {
-"ar": "ما الرمز الكيميائي لعنصر رينيوم؟",
-"en": "What is the chemical symbol of rhenium?"
-},
-"answer": {
-"ar": "Re",
-"en": "Re"
-},
-"wrong": [
-{
-"ar": "Pt",
-"en": "Pt"
-},
-{
-"ar": "Mo",
-"en": "Mo"
-},
-{
-"ar": "Eu",
-"en": "Eu"
-}
-],
-"source": [
-"https://www.wikidata.org/wiki/Q737",
-"https://en.wikipedia.org/wiki/rhenium"
-],
-"verified": true
-},
-{
-"id": "el-bysym-75",
-"type": "quiz",
-"category": "science",
-"difficulty": 3,
-"age": "all",
-"question": {
-"ar": "ما العنصر الذي رمزه الكيميائي Re؟",
-"en": "Which element has the chemical symbol Re?"
-},
-"answer": {
-"ar": "رينيوم",
-"en": "rhenium"
-},
-"wrong": [
-{
-"ar": "بلاديوم",
-"en": "palladium"
-},
-{
-"ar": "بيريليوم",
-"en": "beryllium"
-},
-{
-"ar": "نيتروجين",
-"en": "nitrogen"
-}
-],
-"source": [
-"https://www.wikidata.org/wiki/Q737",
-"https://en.wikipedia.org/wiki/rhenium"
-],
-"verified": true
-},
-{
-"id": "el-name-75",
-"type": "quiz",
-"category": "science",
-"difficulty": 3,
-"age": "all",
-"question": {
-"ar": "أي عنصر رقمه الذري 75؟",
-"en": "Which element has atomic number 75?"
-},
-"answer": {
-"ar": "رينيوم",
-"en": "rhenium"
-},
-"wrong": [
-{
-"ar": "كالسيوم",
-"en": "calcium"
-},
-{
-"ar": "سيلينيوم",
-"en": "selenium"
-},
-{
-"ar": "ليثيوم",
-"en": "lithium"
-}
-],
-"source": [
-"https://www.wikidata.org/wiki/Q737",
-"https://en.wikipedia.org/wiki/rhenium"
-],
-"numeric": true,
-"verified": true
-},
-{
-"id": "el-sym-76",
-"type": "quiz",
-"category": "science",
-"difficulty": 3,
-"age": "all",
-"question": {
-"ar": "ما الرمز الكيميائي لعنصر أوزميوم؟",
-"en": "What is the chemical symbol of osmium?"
-},
-"answer": {
-"ar": "Os",
-"en": "Os"
-},
-"wrong": [
-{
-"ar": "Li",
-"en": "Li"
-},
-{
-"ar": "N",
-"en": "N"
-},
-{
-"ar": "B",
-"en": "B"
-}
-],
-"source": [
-"https://www.wikidata.org/wiki/Q751",
-"https://en.wikipedia.org/wiki/osmium"
-],
-"verified": true
-},
-{
-"id": "el-bysym-76",
-"type": "quiz",
-"category": "science",
-"difficulty": 3,
-"age": "all",
-"question": {
-"ar": "ما العنصر الذي رمزه الكيميائي Os؟",
-"en": "Which element has the chemical symbol Os?"
-},
-"answer": {
-"ar": "أوزميوم",
-"en": "osmium"
-},
-"wrong": [
-{
-"ar": "جرمانيوم",
-"en": "germanium"
-},
-{
-"ar": "زينون",
-"en": "xenon"
-},
-{
-"ar": "إربيوم",
-"en": "erbium"
-}
-],
-"source": [
-"https://www.wikidata.org/wiki/Q751",
-"https://en.wikipedia.org/wiki/osmium"
-],
-"verified": true
-},
-{
-"id": "el-name-76",
-"type": "quiz",
-"category": "science",
-"difficulty": 3,
-"age": "all",
-"question": {
-"ar": "أي عنصر رقمه الذري 76؟",
-"en": "Which element has atomic number 76?"
-},
-"answer": {
-"ar": "أوزميوم",
-"en": "osmium"
-},
-"wrong": [
-{
-"ar": "أستاتين",
-"en": "astatine"
-},
-{
-"ar": "بروميثيوم",
-"en": "promethium"
-},
-{
-"ar": "كلور",
-"en": "chlorine"
-}
-],
-"source": [
-"https://www.wikidata.org/wiki/Q751",
-"https://en.wikipedia.org/wiki/osmium"
-],
-"numeric": true,
-"verified": true
-},
-{
-"id": "el-sym-77",
-"type": "quiz",
-"category": "science",
-"difficulty": 3,
-"age": "all",
-"question": {
-"ar": "ما الرمز الكيميائي لعنصر إريديوم؟",
-"en": "What is the chemical symbol of iridium?"
-},
-"answer": {
-"ar": "Ir",
-"en": "Ir"
-},
-"wrong": [
-{
-"ar": "Ar",
-"en": "Ar"
-},
-{
-"ar": "Eu",
-"en": "Eu"
-},
-{
-"ar": "Zn",
-"en": "Zn"
-}
-],
-"source": [
-"https://www.wikidata.org/wiki/Q877",
-"https://en.wikipedia.org/wiki/iridium"
-],
-"verified": true
-},
-{
-"id": "el-bysym-77",
-"type": "quiz",
-"category": "science",
-"difficulty": 3,
-"age": "all",
-"question": {
-"ar": "ما العنصر الذي رمزه الكيميائي Ir؟",
-"en": "Which element has the chemical symbol Ir?"
-},
-"answer": {
-"ar": "إريديوم",
-"en": "iridium"
-},
-"wrong": [
-{
-"ar": "كربون",
-"en": "carbon"
-},
-{
-"ar": "ليثيوم",
-"en": "lithium"
-},
-{
-"ar": "إتيربيوم",
-"en": "ytterbium"
-}
-],
-"source": [
-"https://www.wikidata.org/wiki/Q877",
-"https://en.wikipedia.org/wiki/iridium"
-],
-"verified": true
-},
-{
-"id": "el-name-77",
-"type": "quiz",
-"category": "science",
-"difficulty": 3,
-"age": "all",
-"question": {
-"ar": "أي عنصر رقمه الذري 77؟",
-"en": "Which element has atomic number 77?"
-},
-"answer": {
-"ar": "إريديوم",
-"en": "iridium"
-},
-"wrong": [
-{
-"ar": "إتريوم",
-"en": "yttrium"
-},
-{
-"ar": "زنك",
-"en": "zinc"
-},
-{
-"ar": "روثينيوم",
-"en": "ruthenium"
-}
-],
-"source": [
-"https://www.wikidata.org/wiki/Q877",
-"https://en.wikipedia.org/wiki/iridium"
-],
-"numeric": true,
-"verified": true
-},
-{
 "id": "el-sym-78",
 "type": "quiz",
 "category": "science",
@@ -23148,556 +19294,6 @@
 "https://www.wikidata.org/wiki/Q880",
 "https://en.wikipedia.org/wiki/platinum"
 ],
-"verified": true
-},
-{
-"id": "el-name-78",
-"type": "quiz",
-"category": "science",
-"difficulty": 3,
-"age": "all",
-"question": {
-"ar": "أي عنصر رقمه الذري 78؟",
-"en": "Which element has atomic number 78?"
-},
-"answer": {
-"ar": "بلاتين",
-"en": "platinum"
-},
-"wrong": [
-{
-"ar": "فاناديوم",
-"en": "vanadium"
-},
-{
-"ar": "إربيوم",
-"en": "erbium"
-},
-{
-"ar": "تيلوريوم",
-"en": "tellurium"
-}
-],
-"source": [
-"https://www.wikidata.org/wiki/Q880",
-"https://en.wikipedia.org/wiki/platinum"
-],
-"numeric": true,
-"verified": true
-},
-{
-"id": "el-sym-81",
-"type": "quiz",
-"category": "science",
-"difficulty": 3,
-"age": "all",
-"question": {
-"ar": "ما الرمز الكيميائي لعنصر ثاليوم؟",
-"en": "What is the chemical symbol of thallium?"
-},
-"answer": {
-"ar": "Tl",
-"en": "Tl"
-},
-"wrong": [
-{
-"ar": "Ca",
-"en": "Ca"
-},
-{
-"ar": "Lu",
-"en": "Lu"
-},
-{
-"ar": "Eu",
-"en": "Eu"
-}
-],
-"source": [
-"https://www.wikidata.org/wiki/Q932",
-"https://en.wikipedia.org/wiki/thallium"
-],
-"verified": true
-},
-{
-"id": "el-bysym-81",
-"type": "quiz",
-"category": "science",
-"difficulty": 3,
-"age": "all",
-"question": {
-"ar": "ما العنصر الذي رمزه الكيميائي Tl؟",
-"en": "Which element has the chemical symbol Tl?"
-},
-"answer": {
-"ar": "ثاليوم",
-"en": "thallium"
-},
-"wrong": [
-{
-"ar": "روديوم",
-"en": "rhodium"
-},
-{
-"ar": "براسوديميوم",
-"en": "praseodymium"
-},
-{
-"ar": "هولميوم",
-"en": "holmium"
-}
-],
-"source": [
-"https://www.wikidata.org/wiki/Q932",
-"https://en.wikipedia.org/wiki/thallium"
-],
-"verified": true
-},
-{
-"id": "el-name-81",
-"type": "quiz",
-"category": "science",
-"difficulty": 3,
-"age": "all",
-"question": {
-"ar": "أي عنصر رقمه الذري 81؟",
-"en": "Which element has atomic number 81?"
-},
-"answer": {
-"ar": "ثاليوم",
-"en": "thallium"
-},
-"wrong": [
-{
-"ar": "سترونتيوم",
-"en": "strontium"
-},
-{
-"ar": "بيريليوم",
-"en": "beryllium"
-},
-{
-"ar": "تيلوريوم",
-"en": "tellurium"
-}
-],
-"source": [
-"https://www.wikidata.org/wiki/Q932",
-"https://en.wikipedia.org/wiki/thallium"
-],
-"numeric": true,
-"verified": true
-},
-{
-"id": "el-sym-83",
-"type": "quiz",
-"category": "science",
-"difficulty": 3,
-"age": "all",
-"question": {
-"ar": "ما الرمز الكيميائي لعنصر بزموت؟",
-"en": "What is the chemical symbol of bismuth?"
-},
-"answer": {
-"ar": "Bi",
-"en": "Bi"
-},
-"wrong": [
-{
-"ar": "Ba",
-"en": "Ba"
-},
-{
-"ar": "N",
-"en": "N"
-},
-{
-"ar": "As",
-"en": "As"
-}
-],
-"source": [
-"https://www.wikidata.org/wiki/Q942",
-"https://en.wikipedia.org/wiki/bismuth"
-],
-"verified": true
-},
-{
-"id": "el-bysym-83",
-"type": "quiz",
-"category": "science",
-"difficulty": 3,
-"age": "all",
-"question": {
-"ar": "ما العنصر الذي رمزه الكيميائي Bi؟",
-"en": "Which element has the chemical symbol Bi?"
-},
-"answer": {
-"ar": "بزموت",
-"en": "bismuth"
-},
-"wrong": [
-{
-"ar": "سترونتيوم",
-"en": "strontium"
-},
-{
-"ar": "فسفور",
-"en": "phosphorus"
-},
-{
-"ar": "ثاليوم",
-"en": "thallium"
-}
-],
-"source": [
-"https://www.wikidata.org/wiki/Q942",
-"https://en.wikipedia.org/wiki/bismuth"
-],
-"verified": true
-},
-{
-"id": "el-name-83",
-"type": "quiz",
-"category": "science",
-"difficulty": 3,
-"age": "all",
-"question": {
-"ar": "أي عنصر رقمه الذري 83؟",
-"en": "Which element has atomic number 83?"
-},
-"answer": {
-"ar": "بزموت",
-"en": "bismuth"
-},
-"wrong": [
-{
-"ar": "غاليوم",
-"en": "gallium"
-},
-{
-"ar": "بروميثيوم",
-"en": "promethium"
-},
-{
-"ar": "فلور",
-"en": "fluorine"
-}
-],
-"source": [
-"https://www.wikidata.org/wiki/Q942",
-"https://en.wikipedia.org/wiki/bismuth"
-],
-"numeric": true,
-"verified": true
-},
-{
-"id": "el-sym-84",
-"type": "quiz",
-"category": "science",
-"difficulty": 3,
-"age": "all",
-"question": {
-"ar": "ما الرمز الكيميائي لعنصر بولونيوم؟",
-"en": "What is the chemical symbol of polonium?"
-},
-"answer": {
-"ar": "Po",
-"en": "Po"
-},
-"wrong": [
-{
-"ar": "Cr",
-"en": "Cr"
-},
-{
-"ar": "La",
-"en": "La"
-},
-{
-"ar": "Ge",
-"en": "Ge"
-}
-],
-"source": [
-"https://www.wikidata.org/wiki/Q979",
-"https://en.wikipedia.org/wiki/polonium"
-],
-"verified": true
-},
-{
-"id": "el-bysym-84",
-"type": "quiz",
-"category": "science",
-"difficulty": 3,
-"age": "all",
-"question": {
-"ar": "ما العنصر الذي رمزه الكيميائي Po؟",
-"en": "Which element has the chemical symbol Po?"
-},
-"answer": {
-"ar": "بولونيوم",
-"en": "polonium"
-},
-"wrong": [
-{
-"ar": "فاناديوم",
-"en": "vanadium"
-},
-{
-"ar": "تكنيشيوم",
-"en": "technetium"
-},
-{
-"ar": "بروميثيوم",
-"en": "promethium"
-}
-],
-"source": [
-"https://www.wikidata.org/wiki/Q979",
-"https://en.wikipedia.org/wiki/polonium"
-],
-"verified": true
-},
-{
-"id": "el-name-84",
-"type": "quiz",
-"category": "science",
-"difficulty": 3,
-"age": "all",
-"question": {
-"ar": "أي عنصر رقمه الذري 84؟",
-"en": "Which element has atomic number 84?"
-},
-"answer": {
-"ar": "بولونيوم",
-"en": "polonium"
-},
-"wrong": [
-{
-"ar": "بروميثيوم",
-"en": "promethium"
-},
-{
-"ar": "كوبالت",
-"en": "cobalt"
-},
-{
-"ar": "تيلوريوم",
-"en": "tellurium"
-}
-],
-"source": [
-"https://www.wikidata.org/wiki/Q979",
-"https://en.wikipedia.org/wiki/polonium"
-],
-"numeric": true,
-"verified": true
-},
-{
-"id": "el-sym-85",
-"type": "quiz",
-"category": "science",
-"difficulty": 3,
-"age": "all",
-"question": {
-"ar": "ما الرمز الكيميائي لعنصر أستاتين؟",
-"en": "What is the chemical symbol of astatine?"
-},
-"answer": {
-"ar": "At",
-"en": "At"
-},
-"wrong": [
-{
-"ar": "Cs",
-"en": "Cs"
-},
-{
-"ar": "Yb",
-"en": "Yb"
-},
-{
-"ar": "Cr",
-"en": "Cr"
-}
-],
-"source": [
-"https://www.wikidata.org/wiki/Q999",
-"https://en.wikipedia.org/wiki/astatine"
-],
-"verified": true
-},
-{
-"id": "el-bysym-85",
-"type": "quiz",
-"category": "science",
-"difficulty": 3,
-"age": "all",
-"question": {
-"ar": "ما العنصر الذي رمزه الكيميائي At؟",
-"en": "Which element has the chemical symbol At?"
-},
-"answer": {
-"ar": "أستاتين",
-"en": "astatine"
-},
-"wrong": [
-{
-"ar": "أوزميوم",
-"en": "osmium"
-},
-{
-"ar": "زنك",
-"en": "zinc"
-},
-{
-"ar": "تربيوم",
-"en": "terbium"
-}
-],
-"source": [
-"https://www.wikidata.org/wiki/Q999",
-"https://en.wikipedia.org/wiki/astatine"
-],
-"verified": true
-},
-{
-"id": "el-name-85",
-"type": "quiz",
-"category": "science",
-"difficulty": 3,
-"age": "all",
-"question": {
-"ar": "أي عنصر رقمه الذري 85؟",
-"en": "Which element has atomic number 85?"
-},
-"answer": {
-"ar": "أستاتين",
-"en": "astatine"
-},
-"wrong": [
-{
-"ar": "سيليكون",
-"en": "silicon"
-},
-{
-"ar": "بلاديوم",
-"en": "palladium"
-},
-{
-"ar": "منغنيز",
-"en": "manganese"
-}
-],
-"source": [
-"https://www.wikidata.org/wiki/Q999",
-"https://en.wikipedia.org/wiki/astatine"
-],
-"numeric": true,
-"verified": true
-},
-{
-"id": "el-sym-86",
-"type": "quiz",
-"category": "science",
-"difficulty": 3,
-"age": "all",
-"question": {
-"ar": "ما الرمز الكيميائي لعنصر رادون؟",
-"en": "What is the chemical symbol of radon?"
-},
-"answer": {
-"ar": "Rn",
-"en": "Rn"
-},
-"wrong": [
-{
-"ar": "N",
-"en": "N"
-},
-{
-"ar": "Re",
-"en": "Re"
-},
-{
-"ar": "Yb",
-"en": "Yb"
-}
-],
-"source": [
-"https://www.wikidata.org/wiki/Q1133",
-"https://en.wikipedia.org/wiki/radon"
-],
-"verified": true
-},
-{
-"id": "el-bysym-86",
-"type": "quiz",
-"category": "science",
-"difficulty": 3,
-"age": "all",
-"question": {
-"ar": "ما العنصر الذي رمزه الكيميائي Rn؟",
-"en": "Which element has the chemical symbol Rn?"
-},
-"answer": {
-"ar": "رادون",
-"en": "radon"
-},
-"wrong": [
-{
-"ar": "نيتروجين",
-"en": "nitrogen"
-},
-{
-"ar": "روديوم",
-"en": "rhodium"
-},
-{
-"ar": "سيلينيوم",
-"en": "selenium"
-}
-],
-"source": [
-"https://www.wikidata.org/wiki/Q1133",
-"https://en.wikipedia.org/wiki/radon"
-],
-"verified": true
-},
-{
-"id": "el-name-86",
-"type": "quiz",
-"category": "science",
-"difficulty": 3,
-"age": "all",
-"question": {
-"ar": "أي عنصر رقمه الذري 86؟",
-"en": "Which element has atomic number 86?"
-},
-"answer": {
-"ar": "رادون",
-"en": "radon"
-},
-"wrong": [
-{
-"ar": "ديسبروسيوم",
-"en": "dysprosium"
-},
-{
-"ar": "تيلوريوم",
-"en": "tellurium"
-},
-{
-"ar": "غاليوم",
-"en": "gallium"
-}
-],
-"source": [
-"https://www.wikidata.org/wiki/Q1133",
-"https://en.wikipedia.org/wiki/radon"
-],
-"numeric": true,
 "verified": true
 },
 {
@@ -30239,78 +25835,6 @@
 "verified": true
 },
 {
-"id": "sg-najran",
-"type": "quiz",
-"category": "saudi-gulf",
-"difficulty": 2,
-"age": "all",
-"question": {
-"ar": "ما عاصمة منطقة نجران؟",
-"en": "What is the capital of Najran Province?"
-},
-"answer": {
-"ar": "نجران",
-"en": "Najran"
-},
-"wrong": [
-{
-"ar": "جازان",
-"en": "Jazan"
-},
-{
-"ar": "أبها",
-"en": "Abha"
-},
-{
-"ar": "الباحة",
-"en": "Al Bahah"
-}
-],
-"source": [
-"https://en.wikipedia.org/wiki/Najran"
-],
-"evidence": [
-"capital of Najran Province"
-],
-"verified": true
-},
-{
-"id": "sg-bahah",
-"type": "quiz",
-"category": "saudi-gulf",
-"difficulty": 2,
-"age": "all",
-"question": {
-"ar": "ما عاصمة منطقة الباحة؟",
-"en": "What is the capital of Al-Baha Province?"
-},
-"answer": {
-"ar": "الباحة",
-"en": "Al Bahah"
-},
-"wrong": [
-{
-"ar": "نجران",
-"en": "Najran"
-},
-{
-"ar": "أبها",
-"en": "Abha"
-},
-{
-"ar": "الطائف",
-"en": "Taif"
-}
-],
-"source": [
-"https://en.wikipedia.org/wiki/Al_Bahah"
-],
-"evidence": [
-"capital and administrative center of Al-Baha Province"
-],
-"verified": true
-},
-{
 "id": "sg-jawf",
 "type": "quiz",
 "category": "saudi-gulf",
@@ -30343,42 +25867,6 @@
 ],
 "evidence": [
 "capital of Al-Jawf Province"
-],
-"verified": true
-},
-{
-"id": "sg-tabuk",
-"type": "quiz",
-"category": "saudi-gulf",
-"difficulty": 1,
-"age": "all",
-"question": {
-"ar": "ما عاصمة منطقة تبوك؟",
-"en": "What is the capital of Tabuk Province?"
-},
-"answer": {
-"ar": "تبوك",
-"en": "Tabuk"
-},
-"wrong": [
-{
-"ar": "ضباء",
-"en": "Duba"
-},
-{
-"ar": "أملج",
-"en": "Umluj"
-},
-{
-"ar": "حقل",
-"en": "Haql"
-}
-],
-"source": [
-"https://en.wikipedia.org/wiki/Tabuk,_Saudi_Arabia"
-],
-"evidence": [
-"capital of Tabuk Province"
 ],
 "verified": true
 },
@@ -30595,42 +26083,6 @@
 ],
 "evidence": [
 "convert light energy"
-],
-"verified": true
-},
-{
-"id": "sc-moon",
-"type": "quiz",
-"category": "science",
-"difficulty": 1,
-"age": "kids",
-"question": {
-"ar": "ما القمر الطبيعي الوحيد للأرض؟",
-"en": "What is Earth's only natural satellite?"
-},
-"answer": {
-"ar": "القمر",
-"en": "The Moon"
-},
-"wrong": [
-{
-"ar": "المريخ",
-"en": "Mars"
-},
-{
-"ar": "الزهرة",
-"en": "Venus"
-},
-{
-"ar": "الشمس",
-"en": "The Sun"
-}
-],
-"source": [
-"https://en.wikipedia.org/wiki/Moon"
-],
-"evidence": [
-"only natural satellite of Earth"
 ],
 "verified": true
 },
@@ -30994,42 +26446,6 @@
 ],
 "evidence": [
 "first successful"
-],
-"verified": true
-},
-{
-"id": "fo-hummus",
-"type": "quiz",
-"category": "food",
-"difficulty": 1,
-"age": "kids",
-"question": {
-"ar": "من أي حبوب يُصنع الحمص بالطحينة؟",
-"en": "Which legume is hummus made from?"
-},
-"answer": {
-"ar": "الحمّص",
-"en": "Chickpeas"
-},
-"wrong": [
-{
-"ar": "العدس",
-"en": "Lentils"
-},
-{
-"ar": "الفول",
-"en": "Fava beans"
-},
-{
-"ar": "الفاصولياء",
-"en": "Kidney beans"
-}
-],
-"source": [
-"https://en.wikipedia.org/wiki/Hummus"
-],
-"evidence": [
-"cooked, mashed chickpeas"
 ],
 "verified": true
 },
@@ -31403,8 +26819,8 @@
 "difficulty": 3,
 "age": "all",
 "question": {
-"ar": "أي عالم من العصر الذهبي كتب بالعربية في الرياضيات والفلك وسُمّيت الخوارزمية باسمه؟",
-"en": "Which Islamic Golden Age scholar wrote in mathematics, astronomy and geography, and gave his name to the algorithm?"
+"ar": "أي عالم من العصر الذهبي كتب بالعربية في الرياضيات والفلك والجغرافيا؟",
+"en": "Which Islamic Golden Age scholar wrote in Arabic on mathematics, astronomy and geography?"
 },
 "answer": {
 "ar": "الخوارزمي",
@@ -31425,48 +26841,10 @@
 }
 ],
 "source": [
-"https://en.wikipedia.org/wiki/Muhammad_ibn_Musa_al-Khwarizmi",
 "https://en.wikipedia.org/wiki/Muhammad_ibn_Musa_al-Khwarizmi"
 ],
 "evidence": [
-"mathematics, astronomy, and geography",
-"algorithm"
-],
-"verified": true
-},
-{
-"id": "hv-trench",
-"type": "quiz",
-"category": "islamic",
-"difficulty": 2,
-"age": "all",
-"question": {
-"ar": "ما اسم الغزوة التي حُفر فيها خندق حول المدينة المنورة؟",
-"en": "Which battle was fought around a trench dug near Medina?"
-},
-"answer": {
-"ar": "الخندق",
-"en": "The Trench"
-},
-"wrong": [
-{
-"ar": "بدر",
-"en": "Badr"
-},
-{
-"ar": "أحد",
-"en": "Uhud"
-},
-{
-"ar": "تبوك",
-"en": "Tabuk"
-}
-],
-"source": [
-"https://en.wikipedia.org/wiki/Battle_of_the_Trench"
-],
-"evidence": [
-"Ghazwat al-Khandaq"
+"mathematics, astronomy, and geography"
 ],
 "verified": true
 },
@@ -35116,7 +30494,7 @@
 "id": "geo-lang-Q1000",
 "type": "quiz",
 "category": "geography",
-"difficulty": 2,
+"difficulty": 3,
 "age": "all",
 "question": {
 "ar": "ما اللغة الرسمية في الغابون؟",
@@ -35150,7 +30528,7 @@
 "id": "geo-lang-Q1005",
 "type": "quiz",
 "category": "geography",
-"difficulty": 2,
+"difficulty": 3,
 "age": "all",
 "question": {
 "ar": "ما اللغة الرسمية في غامبيا؟",
@@ -35184,7 +30562,7 @@
 "id": "geo-lang-Q1007",
 "type": "quiz",
 "category": "geography",
-"difficulty": 2,
+"difficulty": 3,
 "age": "all",
 "question": {
 "ar": "ما اللغة الرسمية في غينيا بيساو؟",
@@ -35218,7 +30596,7 @@
 "id": "geo-lang-Q1014",
 "type": "quiz",
 "category": "geography",
-"difficulty": 2,
+"difficulty": 3,
 "age": "all",
 "question": {
 "ar": "ما اللغة الرسمية في ليبيريا؟",
@@ -35286,7 +30664,7 @@
 "id": "geo-lang-Q1029",
 "type": "quiz",
 "category": "geography",
-"difficulty": 2,
+"difficulty": 3,
 "age": "all",
 "question": {
 "ar": "ما اللغة الرسمية في موزمبيق؟",
@@ -35320,7 +30698,7 @@
 "id": "geo-lang-Q1030",
 "type": "quiz",
 "category": "geography",
-"difficulty": 2,
+"difficulty": 3,
 "age": "all",
 "question": {
 "ar": "ما اللغة الرسمية في ناميبيا؟",
@@ -35354,7 +30732,7 @@
 "id": "geo-lang-Q1032",
 "type": "quiz",
 "category": "geography",
-"difficulty": 2,
+"difficulty": 3,
 "age": "all",
 "question": {
 "ar": "ما اللغة الرسمية في النيجر؟",
@@ -35388,7 +30766,7 @@
 "id": "geo-lang-Q1033",
 "type": "quiz",
 "category": "geography",
-"difficulty": 2,
+"difficulty": 3,
 "age": "all",
 "question": {
 "ar": "ما اللغة الرسمية في نيجيريا؟",
@@ -35422,7 +30800,7 @@
 "id": "geo-lang-Q1039",
 "type": "quiz",
 "category": "geography",
-"difficulty": 2,
+"difficulty": 3,
 "age": "all",
 "question": {
 "ar": "ما اللغة الرسمية في ساو تومي وبرينسيب؟",
@@ -35456,7 +30834,7 @@
 "id": "geo-lang-Q1044",
 "type": "quiz",
 "category": "geography",
-"difficulty": 2,
+"difficulty": 3,
 "age": "all",
 "question": {
 "ar": "ما اللغة الرسمية في سيراليون؟",
@@ -35490,7 +30868,7 @@
 "id": "geo-lang-Q115",
 "type": "quiz",
 "category": "geography",
-"difficulty": 2,
+"difficulty": 3,
 "age": "all",
 "question": {
 "ar": "ما اللغة الرسمية في إثيوبيا؟",
@@ -35524,7 +30902,7 @@
 "id": "geo-lang-Q117",
 "type": "quiz",
 "category": "geography",
-"difficulty": 2,
+"difficulty": 3,
 "age": "all",
 "question": {
 "ar": "ما اللغة الرسمية في غانا؟",
@@ -35585,40 +30963,6 @@
 "source": [
 "https://www.wikidata.org/wiki/Q142",
 "https://www.wikidata.org/wiki/Q150"
-],
-"verified": true
-},
-{
-"id": "geo-lang-Q145",
-"type": "quiz",
-"category": "geography",
-"difficulty": 2,
-"age": "all",
-"question": {
-"ar": "ما اللغة الرسمية في المملكة المتحدة؟",
-"en": "What is the official language of United Kingdom?"
-},
-"answer": {
-"ar": "الإنجليزية",
-"en": "English"
-},
-"wrong": [
-{
-"ar": "التركمانية",
-"en": "Turkmen"
-},
-{
-"ar": "الإستونية",
-"en": "Estonian"
-},
-{
-"ar": "الأرمنية",
-"en": "Armenian"
-}
-],
-"source": [
-"https://www.wikidata.org/wiki/Q145",
-"https://www.wikidata.org/wiki/Q1860"
 ],
 "verified": true
 },
@@ -35691,40 +31035,6 @@
 "verified": true
 },
 {
-"id": "geo-lang-Q17",
-"type": "quiz",
-"category": "geography",
-"difficulty": 2,
-"age": "all",
-"question": {
-"ar": "ما اللغة الرسمية في اليابان؟",
-"en": "What is the official language of Japan?"
-},
-"answer": {
-"ar": "اليابانية",
-"en": "Japanese"
-},
-"wrong": [
-{
-"ar": "لغة دزونكا",
-"en": "Dzongkha"
-},
-{
-"ar": "البلغارية",
-"en": "Bulgarian"
-},
-{
-"ar": "السلوفاكية",
-"en": "Slovak"
-}
-],
-"source": [
-"https://www.wikidata.org/wiki/Q17",
-"https://www.wikidata.org/wiki/Q5287"
-],
-"verified": true
-},
-{
 "id": "geo-lang-Q183",
 "type": "quiz",
 "category": "geography",
@@ -35762,7 +31072,7 @@
 "id": "geo-lang-Q189",
 "type": "quiz",
 "category": "geography",
-"difficulty": 2,
+"difficulty": 3,
 "age": "all",
 "question": {
 "ar": "ما اللغة الرسمية في آيسلندا؟",
@@ -35796,7 +31106,7 @@
 "id": "geo-lang-Q191",
 "type": "quiz",
 "category": "geography",
-"difficulty": 2,
+"difficulty": 3,
 "age": "all",
 "question": {
 "ar": "ما اللغة الرسمية في إستونيا؟",
@@ -35830,7 +31140,7 @@
 "id": "geo-lang-Q211",
 "type": "quiz",
 "category": "geography",
-"difficulty": 2,
+"difficulty": 3,
 "age": "all",
 "question": {
 "ar": "ما اللغة الرسمية في لاتفيا؟",
@@ -35864,7 +31174,7 @@
 "id": "geo-lang-Q212",
 "type": "quiz",
 "category": "geography",
-"difficulty": 2,
+"difficulty": 3,
 "age": "all",
 "question": {
 "ar": "ما اللغة الرسمية في أوكرانيا؟",
@@ -35898,10 +31208,10 @@
 "id": "geo-lang-Q213",
 "type": "quiz",
 "category": "geography",
-"difficulty": 2,
+"difficulty": 3,
 "age": "all",
 "question": {
-"ar": "ما اللغة الرسمية في جمهورية التشيك؟",
+"ar": "ما اللغة الرسمية في التشيك؟",
 "en": "What is the official language of Czech Republic?"
 },
 "answer": {
@@ -35932,7 +31242,7 @@
 "id": "geo-lang-Q214",
 "type": "quiz",
 "category": "geography",
-"difficulty": 2,
+"difficulty": 3,
 "age": "all",
 "question": {
 "ar": "ما اللغة الرسمية في سلوفاكيا؟",
@@ -35966,7 +31276,7 @@
 "id": "geo-lang-Q215",
 "type": "quiz",
 "category": "geography",
-"difficulty": 2,
+"difficulty": 3,
 "age": "all",
 "question": {
 "ar": "ما اللغة الرسمية في سلوفينيا؟",
@@ -36000,7 +31310,7 @@
 "id": "geo-lang-Q217",
 "type": "quiz",
 "category": "geography",
-"difficulty": 2,
+"difficulty": 3,
 "age": "all",
 "question": {
 "ar": "ما اللغة الرسمية في مولدوفا؟",
@@ -36034,7 +31344,7 @@
 "id": "geo-lang-Q218",
 "type": "quiz",
 "category": "geography",
-"difficulty": 2,
+"difficulty": 3,
 "age": "all",
 "question": {
 "ar": "ما اللغة الرسمية في رومانيا؟",
@@ -36068,7 +31378,7 @@
 "id": "geo-lang-Q219",
 "type": "quiz",
 "category": "geography",
-"difficulty": 2,
+"difficulty": 3,
 "age": "all",
 "question": {
 "ar": "ما اللغة الرسمية في بلغاريا؟",
@@ -36102,7 +31412,7 @@
 "id": "geo-lang-Q222",
 "type": "quiz",
 "category": "geography",
-"difficulty": 2,
+"difficulty": 3,
 "age": "all",
 "question": {
 "ar": "ما اللغة الرسمية في ألبانيا؟",
@@ -36136,7 +31446,7 @@
 "id": "geo-lang-Q224",
 "type": "quiz",
 "category": "geography",
-"difficulty": 2,
+"difficulty": 3,
 "age": "all",
 "question": {
 "ar": "ما اللغة الرسمية في كرواتيا؟",
@@ -36170,7 +31480,7 @@
 "id": "geo-lang-Q227",
 "type": "quiz",
 "category": "geography",
-"difficulty": 2,
+"difficulty": 3,
 "age": "all",
 "question": {
 "ar": "ما اللغة الرسمية في أذربيجان؟",
@@ -36204,7 +31514,7 @@
 "id": "geo-lang-Q228",
 "type": "quiz",
 "category": "geography",
-"difficulty": 2,
+"difficulty": 3,
 "age": "all",
 "question": {
 "ar": "ما اللغة الرسمية في أندورا؟",
@@ -36238,7 +31548,7 @@
 "id": "geo-lang-Q235",
 "type": "quiz",
 "category": "geography",
-"difficulty": 2,
+"difficulty": 3,
 "age": "all",
 "question": {
 "ar": "ما اللغة الرسمية في موناكو؟",
@@ -36272,7 +31582,7 @@
 "id": "geo-lang-Q238",
 "type": "quiz",
 "category": "geography",
-"difficulty": 2,
+"difficulty": 3,
 "age": "all",
 "question": {
 "ar": "ما اللغة الرسمية في سان مارينو؟",
@@ -36306,7 +31616,7 @@
 "id": "geo-lang-Q241",
 "type": "quiz",
 "category": "geography",
-"difficulty": 2,
+"difficulty": 3,
 "age": "all",
 "question": {
 "ar": "ما اللغة الرسمية في كوبا؟",
@@ -36340,7 +31650,7 @@
 "id": "geo-lang-Q242",
 "type": "quiz",
 "category": "geography",
-"difficulty": 2,
+"difficulty": 3,
 "age": "all",
 "question": {
 "ar": "ما اللغة الرسمية في بليز؟",
@@ -36366,6 +31676,40 @@
 ],
 "source": [
 "https://www.wikidata.org/wiki/Q242",
+"https://www.wikidata.org/wiki/Q1860"
+],
+"verified": true
+},
+{
+"id": "geo-lang-Q244",
+"type": "quiz",
+"category": "geography",
+"difficulty": 3,
+"age": "all",
+"question": {
+"ar": "ما اللغة الرسمية في باربادوس؟",
+"en": "What is the official language of Barbados?"
+},
+"answer": {
+"ar": "الإنجليزية",
+"en": "English"
+},
+"wrong": [
+{
+"ar": "القرغيزية",
+"en": "Kyrgyz"
+},
+{
+"ar": "اللاتفية",
+"en": "Latvian"
+},
+{
+"ar": "البلغارية",
+"en": "Bulgarian"
+}
+],
+"source": [
+"https://www.wikidata.org/wiki/Q244",
 "https://www.wikidata.org/wiki/Q1860"
 ],
 "verified": true
@@ -36408,7 +31752,7 @@
 "id": "geo-lang-Q265",
 "type": "quiz",
 "category": "geography",
-"difficulty": 2,
+"difficulty": 3,
 "age": "all",
 "question": {
 "ar": "ما اللغة الرسمية في أوزبكستان؟",
@@ -36442,7 +31786,7 @@
 "id": "geo-lang-Q28",
 "type": "quiz",
 "category": "geography",
-"difficulty": 2,
+"difficulty": 3,
 "age": "all",
 "question": {
 "ar": "ما اللغة الرسمية في المجر؟",
@@ -36510,7 +31854,7 @@
 "id": "geo-lang-Q298",
 "type": "quiz",
 "category": "geography",
-"difficulty": 2,
+"difficulty": 3,
 "age": "all",
 "question": {
 "ar": "ما اللغة الرسمية في تشيلي؟",
@@ -36544,7 +31888,7 @@
 "id": "geo-lang-Q34",
 "type": "quiz",
 "category": "geography",
-"difficulty": 2,
+"difficulty": 3,
 "age": "all",
 "question": {
 "ar": "ما اللغة الرسمية في السويد؟",
@@ -36578,7 +31922,7 @@
 "id": "geo-lang-Q347",
 "type": "quiz",
 "category": "geography",
-"difficulty": 2,
+"difficulty": 3,
 "age": "all",
 "question": {
 "ar": "ما اللغة الرسمية في ليختنشتاين؟",
@@ -36612,7 +31956,7 @@
 "id": "geo-lang-Q36",
 "type": "quiz",
 "category": "geography",
-"difficulty": 2,
+"difficulty": 3,
 "age": "all",
 "question": {
 "ar": "ما اللغة الرسمية في بولندا؟",
@@ -36646,7 +31990,7 @@
 "id": "geo-lang-Q37",
 "type": "quiz",
 "category": "geography",
-"difficulty": 2,
+"difficulty": 3,
 "age": "all",
 "question": {
 "ar": "ما اللغة الرسمية في لتوانيا؟",
@@ -36748,7 +32092,7 @@
 "id": "geo-lang-Q399",
 "type": "quiz",
 "category": "geography",
-"difficulty": 2,
+"difficulty": 3,
 "age": "all",
 "question": {
 "ar": "ما اللغة الرسمية في أرمينيا؟",
@@ -36782,7 +32126,7 @@
 "id": "geo-lang-Q403",
 "type": "quiz",
 "category": "geography",
-"difficulty": 2,
+"difficulty": 3,
 "age": "all",
 "question": {
 "ar": "ما اللغة الرسمية في صربيا؟",
@@ -36884,7 +32228,7 @@
 "id": "geo-lang-Q424",
 "type": "quiz",
 "category": "geography",
-"difficulty": 2,
+"difficulty": 3,
 "age": "all",
 "question": {
 "ar": "ما اللغة الرسمية في كمبوديا؟",
@@ -36952,7 +32296,7 @@
 "id": "geo-lang-Q45",
 "type": "quiz",
 "category": "geography",
-"difficulty": 2,
+"difficulty": 3,
 "age": "all",
 "question": {
 "ar": "ما اللغة الرسمية في البرتغال؟",
@@ -36986,7 +32330,7 @@
 "id": "geo-lang-Q711",
 "type": "quiz",
 "category": "geography",
-"difficulty": 2,
+"difficulty": 3,
 "age": "all",
 "question": {
 "ar": "ما اللغة الرسمية في منغوليا؟",
@@ -37020,7 +32364,7 @@
 "id": "geo-lang-Q730",
 "type": "quiz",
 "category": "geography",
-"difficulty": 2,
+"difficulty": 3,
 "age": "all",
 "question": {
 "ar": "ما اللغة الرسمية في سورينام؟",
@@ -37054,7 +32398,7 @@
 "id": "geo-lang-Q739",
 "type": "quiz",
 "category": "geography",
-"difficulty": 2,
+"difficulty": 3,
 "age": "all",
 "question": {
 "ar": "ما اللغة الرسمية في كولومبيا؟",
@@ -37088,7 +32432,7 @@
 "id": "geo-lang-Q774",
 "type": "quiz",
 "category": "geography",
-"difficulty": 2,
+"difficulty": 3,
 "age": "all",
 "question": {
 "ar": "ما اللغة الرسمية في غواتيمالا؟",
@@ -37122,7 +32466,7 @@
 "id": "geo-lang-Q783",
 "type": "quiz",
 "category": "geography",
-"difficulty": 2,
+"difficulty": 3,
 "age": "all",
 "question": {
 "ar": "ما اللغة الرسمية في هندوراس؟",
@@ -37156,10 +32500,10 @@
 "id": "geo-lang-Q786",
 "type": "quiz",
 "category": "geography",
-"difficulty": 2,
+"difficulty": 3,
 "age": "all",
 "question": {
-"ar": "ما اللغة الرسمية في جمهورية الدومينيكان؟",
+"ar": "ما اللغة الرسمية في الدومينيكان؟",
 "en": "What is the official language of Dominican Republic?"
 },
 "answer": {
@@ -37292,7 +32636,7 @@
 "id": "geo-lang-Q813",
 "type": "quiz",
 "category": "geography",
-"difficulty": 2,
+"difficulty": 3,
 "age": "all",
 "question": {
 "ar": "ما اللغة الرسمية في قرغيزستان؟",
@@ -37360,7 +32704,7 @@
 "id": "geo-lang-Q819",
 "type": "quiz",
 "category": "geography",
-"difficulty": 2,
+"difficulty": 3,
 "age": "all",
 "question": {
 "ar": "ما اللغة الرسمية في لاوس؟",
@@ -37428,7 +32772,7 @@
 "id": "geo-lang-Q826",
 "type": "quiz",
 "category": "geography",
-"difficulty": 2,
+"difficulty": 3,
 "age": "all",
 "question": {
 "ar": "ما اللغة الرسمية في المالديف؟",
@@ -37462,7 +32806,7 @@
 "id": "geo-lang-Q836",
 "type": "quiz",
 "category": "geography",
-"difficulty": 2,
+"difficulty": 3,
 "age": "all",
 "question": {
 "ar": "ما اللغة الرسمية في ميانمار؟",
@@ -37496,7 +32840,7 @@
 "id": "geo-lang-Q837",
 "type": "quiz",
 "category": "geography",
-"difficulty": 2,
+"difficulty": 3,
 "age": "all",
 "question": {
 "ar": "ما اللغة الرسمية في نيبال؟",
@@ -37598,7 +32942,7 @@
 "id": "geo-lang-Q863",
 "type": "quiz",
 "category": "geography",
-"difficulty": 2,
+"difficulty": 3,
 "age": "all",
 "question": {
 "ar": "ما اللغة الرسمية في طاجيكستان؟",
@@ -37632,7 +32976,7 @@
 "id": "geo-lang-Q869",
 "type": "quiz",
 "category": "geography",
-"difficulty": 2,
+"difficulty": 3,
 "age": "all",
 "question": {
 "ar": "ما اللغة الرسمية في تايلاند؟",
@@ -37666,7 +33010,7 @@
 "id": "geo-lang-Q874",
 "type": "quiz",
 "category": "geography",
-"difficulty": 2,
+"difficulty": 3,
 "age": "all",
 "question": {
 "ar": "ما اللغة الرسمية في تركمانستان؟",
@@ -37700,7 +33044,7 @@
 "id": "geo-lang-Q881",
 "type": "quiz",
 "category": "geography",
-"difficulty": 2,
+"difficulty": 3,
 "age": "all",
 "question": {
 "ar": "ما اللغة الرسمية في فيتنام؟",
@@ -37768,7 +33112,7 @@
 "id": "geo-lang-Q902",
 "type": "quiz",
 "category": "geography",
-"difficulty": 2,
+"difficulty": 3,
 "age": "all",
 "question": {
 "ar": "ما اللغة الرسمية في بنغلاديش؟",
@@ -37802,7 +33146,7 @@
 "id": "geo-lang-Q916",
 "type": "quiz",
 "category": "geography",
-"difficulty": 2,
+"difficulty": 3,
 "age": "all",
 "question": {
 "ar": "ما اللغة الرسمية في أنغولا؟",
@@ -37836,7 +33180,7 @@
 "id": "geo-lang-Q917",
 "type": "quiz",
 "category": "geography",
-"difficulty": 2,
+"difficulty": 3,
 "age": "all",
 "question": {
 "ar": "ما اللغة الرسمية في بوتان؟",
@@ -37870,7 +33214,7 @@
 "id": "geo-lang-Q945",
 "type": "quiz",
 "category": "geography",
-"difficulty": 2,
+"difficulty": 3,
 "age": "all",
 "question": {
 "ar": "ما اللغة الرسمية في توغو؟",
@@ -37904,10 +33248,10 @@
 "id": "geo-lang-Q971",
 "type": "quiz",
 "category": "geography",
-"difficulty": 2,
+"difficulty": 3,
 "age": "all",
 "question": {
-"ar": "ما اللغة الرسمية في جمهورية الكونغو؟",
+"ar": "ما اللغة الرسمية في الكونغو؟",
 "en": "What is the official language of Republic of the Congo?"
 },
 "answer": {
@@ -37938,10 +33282,10 @@
 "id": "geo-lang-Q974",
 "type": "quiz",
 "category": "geography",
-"difficulty": 2,
+"difficulty": 3,
 "age": "all",
 "question": {
-"ar": "ما اللغة الرسمية في جمهورية الكونغو الديمقراطية؟",
+"ar": "ما اللغة الرسمية في الكونغو الديمقراطية؟",
 "en": "What is the official language of DR Congo?"
 },
 "answer": {
@@ -37972,7 +33316,7 @@
 "id": "geo-cur-Q1000",
 "type": "quiz",
 "category": "geography",
-"difficulty": 2,
+"difficulty": 3,
 "age": "all",
 "question": {
 "ar": "ما عملة الغابون؟",
@@ -38006,7 +33350,7 @@
 "id": "geo-cur-Q1005",
 "type": "quiz",
 "category": "geography",
-"difficulty": 2,
+"difficulty": 3,
 "age": "all",
 "question": {
 "ar": "ما عملة غامبيا؟",
@@ -38040,7 +33384,7 @@
 "id": "geo-cur-Q1006",
 "type": "quiz",
 "category": "geography",
-"difficulty": 2,
+"difficulty": 3,
 "age": "all",
 "question": {
 "ar": "ما عملة غينيا؟",
@@ -38074,7 +33418,7 @@
 "id": "geo-cur-Q1007",
 "type": "quiz",
 "category": "geography",
-"difficulty": 2,
+"difficulty": 3,
 "age": "all",
 "question": {
 "ar": "ما عملة غينيا بيساو؟",
@@ -38108,7 +33452,7 @@
 "id": "geo-cur-Q1009",
 "type": "quiz",
 "category": "geography",
-"difficulty": 2,
+"difficulty": 3,
 "age": "all",
 "question": {
 "ar": "ما عملة الكاميرون؟",
@@ -38139,10 +33483,44 @@
 "verified": true
 },
 {
+"id": "geo-cur-Q1011",
+"type": "quiz",
+"category": "geography",
+"difficulty": 3,
+"age": "all",
+"question": {
+"ar": "ما عملة الرأس الأخضر؟",
+"en": "What is the currency of Cape Verde?"
+},
+"answer": {
+"ar": "إسكودو",
+"en": "Cape Verdean escudo"
+},
+"wrong": [
+{
+"ar": "أرياري مدغشقري",
+"en": "ariary"
+},
+{
+"ar": "درام أرميني",
+"en": "Armenian dram"
+},
+{
+"ar": "دولار جزر سليمان",
+"en": "Solomon Islands dollar"
+}
+],
+"source": [
+"https://www.wikidata.org/wiki/Q1011",
+"https://www.wikidata.org/wiki/Q4591"
+],
+"verified": true
+},
+{
 "id": "geo-cur-Q1014",
 "type": "quiz",
 "category": "geography",
-"difficulty": 2,
+"difficulty": 3,
 "age": "all",
 "question": {
 "ar": "ما عملة ليبيريا؟",
@@ -38210,7 +33588,7 @@
 "id": "geo-cur-Q1019",
 "type": "quiz",
 "category": "geography",
-"difficulty": 2,
+"difficulty": 3,
 "age": "all",
 "question": {
 "ar": "ما عملة مدغشقر؟",
@@ -38244,7 +33622,7 @@
 "id": "geo-cur-Q1020",
 "type": "quiz",
 "category": "geography",
-"difficulty": 2,
+"difficulty": 3,
 "age": "all",
 "question": {
 "ar": "ما عملة ملاوي؟",
@@ -38278,7 +33656,7 @@
 "id": "geo-cur-Q1025",
 "type": "quiz",
 "category": "geography",
-"difficulty": 2,
+"difficulty": 3,
 "age": "all",
 "question": {
 "ar": "ما عملة موريتانيا؟",
@@ -38312,7 +33690,7 @@
 "id": "geo-cur-Q1027",
 "type": "quiz",
 "category": "geography",
-"difficulty": 2,
+"difficulty": 3,
 "age": "all",
 "question": {
 "ar": "ما عملة موريشيوس؟",
@@ -38380,7 +33758,7 @@
 "id": "geo-cur-Q1029",
 "type": "quiz",
 "category": "geography",
-"difficulty": 2,
+"difficulty": 3,
 "age": "all",
 "question": {
 "ar": "ما عملة موزمبيق؟",
@@ -38414,7 +33792,7 @@
 "id": "geo-cur-Q1032",
 "type": "quiz",
 "category": "geography",
-"difficulty": 2,
+"difficulty": 3,
 "age": "all",
 "question": {
 "ar": "ما عملة النيجر؟",
@@ -38448,7 +33826,7 @@
 "id": "geo-cur-Q1033",
 "type": "quiz",
 "category": "geography",
-"difficulty": 2,
+"difficulty": 3,
 "age": "all",
 "question": {
 "ar": "ما عملة نيجيريا؟",
@@ -38482,7 +33860,7 @@
 "id": "geo-cur-Q1036",
 "type": "quiz",
 "category": "geography",
-"difficulty": 2,
+"difficulty": 3,
 "age": "all",
 "question": {
 "ar": "ما عملة أوغندا؟",
@@ -38516,7 +33894,7 @@
 "id": "geo-cur-Q1037",
 "type": "quiz",
 "category": "geography",
-"difficulty": 2,
+"difficulty": 3,
 "age": "all",
 "question": {
 "ar": "ما عملة رواندا؟",
@@ -38547,10 +33925,44 @@
 "verified": true
 },
 {
+"id": "geo-cur-Q1039",
+"type": "quiz",
+"category": "geography",
+"difficulty": 3,
+"age": "all",
+"question": {
+"ar": "ما عملة ساو تومي وبرينسيب؟",
+"en": "What is the currency of São Tomé and Príncipe?"
+},
+"answer": {
+"ar": "دوبرا",
+"en": "São Tomé and Príncipe dobra"
+},
+"wrong": [
+{
+"ar": "ليو روماني",
+"en": "Romanian leu"
+},
+{
+"ar": "ساماني طاجيكي",
+"en": "Tajikistani somoni"
+},
+{
+"ar": "دولار بهامي",
+"en": "Bahamian dollar"
+}
+],
+"source": [
+"https://www.wikidata.org/wiki/Q1039",
+"https://www.wikidata.org/wiki/Q193712"
+],
+"verified": true
+},
+{
 "id": "geo-cur-Q1041",
 "type": "quiz",
 "category": "geography",
-"difficulty": 2,
+"difficulty": 3,
 "age": "all",
 "question": {
 "ar": "ما عملة السنغال؟",
@@ -38584,7 +33996,7 @@
 "id": "geo-cur-Q1042",
 "type": "quiz",
 "category": "geography",
-"difficulty": 2,
+"difficulty": 3,
 "age": "all",
 "question": {
 "ar": "ما عملة سيشل؟",
@@ -38618,7 +34030,7 @@
 "id": "geo-cur-Q1044",
 "type": "quiz",
 "category": "geography",
-"difficulty": 2,
+"difficulty": 3,
 "age": "all",
 "question": {
 "ar": "ما عملة سيراليون؟",
@@ -38652,7 +34064,7 @@
 "id": "geo-cur-Q1045",
 "type": "quiz",
 "category": "geography",
-"difficulty": 2,
+"difficulty": 3,
 "age": "all",
 "question": {
 "ar": "ما عملة الصومال؟",
@@ -38702,7 +34114,7 @@
 "en": "naira"
 },
 {
-"ar": "كينا بابوا غينيا الجديدة",
+"ar": "كينا",
 "en": "kina"
 },
 {
@@ -38720,7 +34132,7 @@
 "id": "geo-cur-Q114",
 "type": "quiz",
 "category": "geography",
-"difficulty": 2,
+"difficulty": 3,
 "age": "all",
 "question": {
 "ar": "ما عملة كينيا؟",
@@ -38754,7 +34166,7 @@
 "id": "geo-cur-Q115",
 "type": "quiz",
 "category": "geography",
-"difficulty": 2,
+"difficulty": 3,
 "age": "all",
 "question": {
 "ar": "ما عملة إثيوبيا؟",
@@ -38788,7 +34200,7 @@
 "id": "geo-cur-Q117",
 "type": "quiz",
 "category": "geography",
-"difficulty": 2,
+"difficulty": 3,
 "age": "all",
 "question": {
 "ar": "ما عملة غانا؟",
@@ -38856,7 +34268,7 @@
 "id": "geo-cur-Q148",
 "type": "quiz",
 "category": "geography",
-"difficulty": 2,
+"difficulty": 3,
 "age": "all",
 "question": {
 "ar": "ما عملة الصين؟",
@@ -39060,7 +34472,7 @@
 "id": "geo-cur-Q184",
 "type": "quiz",
 "category": "geography",
-"difficulty": 2,
+"difficulty": 3,
 "age": "all",
 "question": {
 "ar": "ما عملة بيلاروس؟",
@@ -39094,7 +34506,7 @@
 "id": "geo-cur-Q189",
 "type": "quiz",
 "category": "geography",
-"difficulty": 2,
+"difficulty": 3,
 "age": "all",
 "question": {
 "ar": "ما عملة آيسلندا؟",
@@ -39128,7 +34540,7 @@
 "id": "geo-cur-Q191",
 "type": "quiz",
 "category": "geography",
-"difficulty": 2,
+"difficulty": 3,
 "age": "all",
 "question": {
 "ar": "ما عملة إستونيا؟",
@@ -39162,7 +34574,7 @@
 "id": "geo-cur-Q20",
 "type": "quiz",
 "category": "geography",
-"difficulty": 2,
+"difficulty": 3,
 "age": "all",
 "question": {
 "ar": "ما عملة النرويج؟",
@@ -39196,7 +34608,7 @@
 "id": "geo-cur-Q211",
 "type": "quiz",
 "category": "geography",
-"difficulty": 2,
+"difficulty": 3,
 "age": "all",
 "question": {
 "ar": "ما عملة لاتفيا؟",
@@ -39230,7 +34642,7 @@
 "id": "geo-cur-Q212",
 "type": "quiz",
 "category": "geography",
-"difficulty": 2,
+"difficulty": 3,
 "age": "all",
 "question": {
 "ar": "ما عملة أوكرانيا؟",
@@ -39264,10 +34676,10 @@
 "id": "geo-cur-Q213",
 "type": "quiz",
 "category": "geography",
-"difficulty": 2,
+"difficulty": 3,
 "age": "all",
 "question": {
-"ar": "ما عملة جمهورية التشيك؟",
+"ar": "ما عملة التشيك؟",
 "en": "What is the currency of Czech Republic?"
 },
 "answer": {
@@ -39276,7 +34688,7 @@
 },
 "wrong": [
 {
-"ar": "دولار ترينيداد وتوباغو",
+"ar": "دولار ترينيداد",
 "en": "Trinidad and Tobago dollar"
 },
 {
@@ -39298,7 +34710,7 @@
 "id": "geo-cur-Q214",
 "type": "quiz",
 "category": "geography",
-"difficulty": 2,
+"difficulty": 3,
 "age": "all",
 "question": {
 "ar": "ما عملة سلوفاكيا؟",
@@ -39332,7 +34744,7 @@
 "id": "geo-cur-Q215",
 "type": "quiz",
 "category": "geography",
-"difficulty": 2,
+"difficulty": 3,
 "age": "all",
 "question": {
 "ar": "ما عملة سلوفينيا؟",
@@ -39348,7 +34760,7 @@
 "en": "Nicaraguan córdoba"
 },
 {
-"ar": "دوبرا ساو تومي وبرينسيب",
+"ar": "دوبرا",
 "en": "São Tomé and Príncipe dobra"
 },
 {
@@ -39366,7 +34778,7 @@
 "id": "geo-cur-Q217",
 "type": "quiz",
 "category": "geography",
-"difficulty": 2,
+"difficulty": 3,
 "age": "all",
 "question": {
 "ar": "ما عملة مولدوفا؟",
@@ -39400,7 +34812,7 @@
 "id": "geo-cur-Q218",
 "type": "quiz",
 "category": "geography",
-"difficulty": 2,
+"difficulty": 3,
 "age": "all",
 "question": {
 "ar": "ما عملة رومانيا؟",
@@ -39434,7 +34846,7 @@
 "id": "geo-cur-Q219",
 "type": "quiz",
 "category": "geography",
-"difficulty": 2,
+"difficulty": 3,
 "age": "all",
 "question": {
 "ar": "ما عملة بلغاريا؟",
@@ -39446,7 +34858,7 @@
 },
 "wrong": [
 {
-"ar": "دولار ترينيداد وتوباغو",
+"ar": "دولار ترينيداد",
 "en": "Trinidad and Tobago dollar"
 },
 {
@@ -39468,7 +34880,7 @@
 "id": "geo-cur-Q221",
 "type": "quiz",
 "category": "geography",
-"difficulty": 2,
+"difficulty": 3,
 "age": "all",
 "question": {
 "ar": "ما عملة مقدونيا الشمالية؟",
@@ -39488,7 +34900,7 @@
 "en": "Mongolian tögrög"
 },
 {
-"ar": "دولار ترينيداد وتوباغو",
+"ar": "دولار ترينيداد",
 "en": "Trinidad and Tobago dollar"
 }
 ],
@@ -39502,7 +34914,7 @@
 "id": "geo-cur-Q222",
 "type": "quiz",
 "category": "geography",
-"difficulty": 2,
+"difficulty": 3,
 "age": "all",
 "question": {
 "ar": "ما عملة ألبانيا؟",
@@ -39536,7 +34948,7 @@
 "id": "geo-cur-Q224",
 "type": "quiz",
 "category": "geography",
-"difficulty": 2,
+"difficulty": 3,
 "age": "all",
 "question": {
 "ar": "ما عملة كرواتيا؟",
@@ -39570,7 +34982,7 @@
 "id": "geo-cur-Q227",
 "type": "quiz",
 "category": "geography",
-"difficulty": 2,
+"difficulty": 3,
 "age": "all",
 "question": {
 "ar": "ما عملة أذربيجان؟",
@@ -39604,7 +35016,7 @@
 "id": "geo-cur-Q228",
 "type": "quiz",
 "category": "geography",
-"difficulty": 2,
+"difficulty": 3,
 "age": "all",
 "question": {
 "ar": "ما عملة أندورا؟",
@@ -39638,7 +35050,7 @@
 "id": "geo-cur-Q232",
 "type": "quiz",
 "category": "geography",
-"difficulty": 2,
+"difficulty": 3,
 "age": "all",
 "question": {
 "ar": "ما عملة كازاخستان؟",
@@ -39654,7 +35066,7 @@
 "en": "Colombian peso"
 },
 {
-"ar": "كينا بابوا غينيا الجديدة",
+"ar": "كينا",
 "en": "kina"
 },
 {
@@ -39672,7 +35084,7 @@
 "id": "geo-cur-Q241",
 "type": "quiz",
 "category": "geography",
-"difficulty": 2,
+"difficulty": 3,
 "age": "all",
 "question": {
 "ar": "ما عملة كوبا؟",
@@ -39706,7 +35118,7 @@
 "id": "geo-cur-Q242",
 "type": "quiz",
 "category": "geography",
-"difficulty": 2,
+"difficulty": 3,
 "age": "all",
 "question": {
 "ar": "ما عملة بليز؟",
@@ -39740,7 +35152,7 @@
 "id": "geo-cur-Q244",
 "type": "quiz",
 "category": "geography",
-"difficulty": 2,
+"difficulty": 3,
 "age": "all",
 "question": {
 "ar": "ما عملة باربادوس؟",
@@ -39794,7 +35206,7 @@
 "en": "Iranian rial"
 },
 {
-"ar": "إيسكودو جزر الرأس الأخضر",
+"ar": "إسكودو",
 "en": "Cape Verdean escudo"
 }
 ],
@@ -39820,7 +35232,7 @@
 },
 "wrong": [
 {
-"ar": "كينا بابوا غينيا الجديدة",
+"ar": "كينا",
 "en": "kina"
 },
 {
@@ -39842,7 +35254,7 @@
 "id": "geo-cur-Q265",
 "type": "quiz",
 "category": "geography",
-"difficulty": 2,
+"difficulty": 3,
 "age": "all",
 "question": {
 "ar": "ما عملة أوزبكستان؟",
@@ -39876,7 +35288,7 @@
 "id": "geo-cur-Q28",
 "type": "quiz",
 "category": "geography",
-"difficulty": 2,
+"difficulty": 3,
 "age": "all",
 "question": {
 "ar": "ما عملة المجر؟",
@@ -39910,7 +35322,7 @@
 "id": "geo-cur-Q298",
 "type": "quiz",
 "category": "geography",
-"difficulty": 2,
+"difficulty": 3,
 "age": "all",
 "question": {
 "ar": "ما عملة تشيلي؟",
@@ -39951,7 +35363,7 @@
 "en": "What is the currency of United States?"
 },
 "answer": {
-"ar": "دولار للولايات المتحدة",
+"ar": "الدولار الأمريكي",
 "en": "United States dollar"
 },
 "wrong": [
@@ -39978,7 +35390,7 @@
 "id": "geo-cur-Q334",
 "type": "quiz",
 "category": "geography",
-"difficulty": 2,
+"difficulty": 3,
 "age": "all",
 "question": {
 "ar": "ما عملة سنغافورة؟",
@@ -40012,7 +35424,7 @@
 "id": "geo-cur-Q34",
 "type": "quiz",
 "category": "geography",
-"difficulty": 2,
+"difficulty": 3,
 "age": "all",
 "question": {
 "ar": "ما عملة السويد؟",
@@ -40046,7 +35458,7 @@
 "id": "geo-cur-Q347",
 "type": "quiz",
 "category": "geography",
-"difficulty": 2,
+"difficulty": 3,
 "age": "all",
 "question": {
 "ar": "ما عملة ليختنشتاين؟",
@@ -40080,7 +35492,7 @@
 "id": "geo-cur-Q36",
 "type": "quiz",
 "category": "geography",
-"difficulty": 2,
+"difficulty": 3,
 "age": "all",
 "question": {
 "ar": "ما عملة بولندا؟",
@@ -40096,7 +35508,7 @@
 "en": "Burundian franc"
 },
 {
-"ar": "دوبرا ساو تومي وبرينسيب",
+"ar": "دوبرا",
 "en": "São Tomé and Príncipe dobra"
 },
 {
@@ -40148,7 +35560,7 @@
 "id": "geo-cur-Q399",
 "type": "quiz",
 "category": "geography",
-"difficulty": 2,
+"difficulty": 3,
 "age": "all",
 "question": {
 "ar": "ما عملة أرمينيا؟",
@@ -40182,7 +35594,7 @@
 "id": "geo-cur-Q403",
 "type": "quiz",
 "category": "geography",
-"difficulty": 2,
+"difficulty": 3,
 "age": "all",
 "question": {
 "ar": "ما عملة صربيا؟",
@@ -40236,7 +35648,7 @@
 "en": "Kenyan shilling"
 },
 {
-"ar": "دولار للولايات المتحدة",
+"ar": "الدولار الأمريكي",
 "en": "United States dollar"
 }
 ],
@@ -40284,7 +35696,7 @@
 "id": "geo-cur-Q419",
 "type": "quiz",
 "category": "geography",
-"difficulty": 2,
+"difficulty": 3,
 "age": "all",
 "question": {
 "ar": "ما عملة بيرو؟",
@@ -40318,7 +35730,7 @@
 "id": "geo-cur-Q423",
 "type": "quiz",
 "category": "geography",
-"difficulty": 2,
+"difficulty": 3,
 "age": "all",
 "question": {
 "ar": "ما عملة كوريا الشمالية؟",
@@ -40352,7 +35764,7 @@
 "id": "geo-cur-Q424",
 "type": "quiz",
 "category": "geography",
-"difficulty": 2,
+"difficulty": 3,
 "age": "all",
 "question": {
 "ar": "ما عملة كمبوديا؟",
@@ -40420,7 +35832,7 @@
 "id": "geo-cur-Q657",
 "type": "quiz",
 "category": "geography",
-"difficulty": 2,
+"difficulty": 3,
 "age": "all",
 "question": {
 "ar": "ما عملة تشاد؟",
@@ -40436,7 +35848,7 @@
 "en": "Turkish lira"
 },
 {
-"ar": "دولار ترينيداد وتوباغو",
+"ar": "دولار ترينيداد",
 "en": "Trinidad and Tobago dollar"
 },
 {
@@ -40454,7 +35866,7 @@
 "id": "geo-cur-Q664",
 "type": "quiz",
 "category": "geography",
-"difficulty": 2,
+"difficulty": 3,
 "age": "all",
 "question": {
 "ar": "ما عملة نيوزيلندا؟",
@@ -40522,7 +35934,7 @@
 "id": "geo-cur-Q678",
 "type": "quiz",
 "category": "geography",
-"difficulty": 2,
+"difficulty": 3,
 "age": "all",
 "question": {
 "ar": "ما عملة تونغا؟",
@@ -40556,7 +35968,7 @@
 "id": "geo-cur-Q683",
 "type": "quiz",
 "category": "geography",
-"difficulty": 2,
+"difficulty": 3,
 "age": "all",
 "question": {
 "ar": "ما عملة ساموا؟",
@@ -40590,7 +36002,7 @@
 "id": "geo-cur-Q685",
 "type": "quiz",
 "category": "geography",
-"difficulty": 2,
+"difficulty": 3,
 "age": "all",
 "question": {
 "ar": "ما عملة جزر سليمان؟",
@@ -40624,7 +36036,7 @@
 "id": "geo-cur-Q686",
 "type": "quiz",
 "category": "geography",
-"difficulty": 2,
+"difficulty": 3,
 "age": "all",
 "question": {
 "ar": "ما عملة فانواتو؟",
@@ -40655,17 +36067,51 @@
 "verified": true
 },
 {
+"id": "geo-cur-Q691",
+"type": "quiz",
+"category": "geography",
+"difficulty": 3,
+"age": "all",
+"question": {
+"ar": "ما عملة بابوا غينيا الجديدة؟",
+"en": "What is the currency of Papua New Guinea?"
+},
+"answer": {
+"ar": "كينا",
+"en": "kina"
+},
+"wrong": [
+{
+"ar": "روبية إندونيسية",
+"en": "rupiah"
+},
+{
+"ar": "بيزو أوروغواني",
+"en": "Uruguayan peso"
+},
+{
+"ar": "نيرة نيجيرية",
+"en": "naira"
+}
+],
+"source": [
+"https://www.wikidata.org/wiki/Q691",
+"https://www.wikidata.org/wiki/Q200759"
+],
+"verified": true
+},
+{
 "id": "geo-cur-Q695",
 "type": "quiz",
 "category": "geography",
-"difficulty": 2,
+"difficulty": 3,
 "age": "all",
 "question": {
 "ar": "ما عملة بالاو؟",
 "en": "What is the currency of Palau?"
 },
 "answer": {
-"ar": "دولار للولايات المتحدة",
+"ar": "الدولار الأمريكي",
 "en": "United States dollar"
 },
 "wrong": [
@@ -40692,7 +36138,7 @@
 "id": "geo-cur-Q697",
 "type": "quiz",
 "category": "geography",
-"difficulty": 2,
+"difficulty": 3,
 "age": "all",
 "question": {
 "ar": "ما عملة ناورو؟",
@@ -40726,14 +36172,14 @@
 "id": "geo-cur-Q702",
 "type": "quiz",
 "category": "geography",
-"difficulty": 2,
+"difficulty": 3,
 "age": "all",
 "question": {
-"ar": "ما عملة ولايات ميكرونيسيا المتحدة؟",
+"ar": "ما عملة ميكرونيسيا؟",
 "en": "What is the currency of Federated States of Micronesia?"
 },
 "answer": {
-"ar": "دولار للولايات المتحدة",
+"ar": "الدولار الأمريكي",
 "en": "United States dollar"
 },
 "wrong": [
@@ -40746,7 +36192,7 @@
 "en": "Singapore dollar"
 },
 {
-"ar": "كينا بابوا غينيا الجديدة",
+"ar": "كينا",
 "en": "kina"
 }
 ],
@@ -40760,14 +36206,14 @@
 "id": "geo-cur-Q709",
 "type": "quiz",
 "category": "geography",
-"difficulty": 2,
+"difficulty": 3,
 "age": "all",
 "question": {
 "ar": "ما عملة جزر مارشال؟",
 "en": "What is the currency of Marshall Islands?"
 },
 "answer": {
-"ar": "دولار للولايات المتحدة",
+"ar": "الدولار الأمريكي",
 "en": "United States dollar"
 },
 "wrong": [
@@ -40794,7 +36240,7 @@
 "id": "geo-cur-Q711",
 "type": "quiz",
 "category": "geography",
-"difficulty": 2,
+"difficulty": 3,
 "age": "all",
 "question": {
 "ar": "ما عملة منغوليا؟",
@@ -40810,7 +36256,7 @@
 "en": "Tajikistani somoni"
 },
 {
-"ar": "دوبرا ساو تومي وبرينسيب",
+"ar": "دوبرا",
 "en": "São Tomé and Príncipe dobra"
 },
 {
@@ -40828,7 +36274,7 @@
 "id": "geo-cur-Q712",
 "type": "quiz",
 "category": "geography",
-"difficulty": 2,
+"difficulty": 3,
 "age": "all",
 "question": {
 "ar": "ما عملة فيجي؟",
@@ -40862,7 +36308,7 @@
 "id": "geo-cur-Q717",
 "type": "quiz",
 "category": "geography",
-"difficulty": 2,
+"difficulty": 3,
 "age": "all",
 "question": {
 "ar": "ما عملة فنزويلا؟",
@@ -40896,7 +36342,7 @@
 "id": "geo-cur-Q730",
 "type": "quiz",
 "category": "geography",
-"difficulty": 2,
+"difficulty": 3,
 "age": "all",
 "question": {
 "ar": "ما عملة سورينام؟",
@@ -40912,7 +36358,7 @@
 "en": "Singapore dollar"
 },
 {
-"ar": "دوبرا ساو تومي وبرينسيب",
+"ar": "دوبرا",
 "en": "São Tomé and Príncipe dobra"
 },
 {
@@ -40930,7 +36376,7 @@
 "id": "geo-cur-Q733",
 "type": "quiz",
 "category": "geography",
-"difficulty": 2,
+"difficulty": 3,
 "age": "all",
 "question": {
 "ar": "ما عملة باراغواي؟",
@@ -40964,7 +36410,7 @@
 "id": "geo-cur-Q734",
 "type": "quiz",
 "category": "geography",
-"difficulty": 2,
+"difficulty": 3,
 "age": "all",
 "question": {
 "ar": "ما عملة غيانا؟",
@@ -40998,14 +36444,14 @@
 "id": "geo-cur-Q736",
 "type": "quiz",
 "category": "geography",
-"difficulty": 2,
+"difficulty": 3,
 "age": "all",
 "question": {
 "ar": "ما عملة الإكوادور؟",
 "en": "What is the currency of Ecuador?"
 },
 "answer": {
-"ar": "دولار للولايات المتحدة",
+"ar": "الدولار الأمريكي",
 "en": "United States dollar"
 },
 "wrong": [
@@ -41032,7 +36478,7 @@
 "id": "geo-cur-Q739",
 "type": "quiz",
 "category": "geography",
-"difficulty": 2,
+"difficulty": 3,
 "age": "all",
 "question": {
 "ar": "ما عملة كولومبيا؟",
@@ -41066,14 +36512,14 @@
 "id": "geo-cur-Q754",
 "type": "quiz",
 "category": "geography",
-"difficulty": 2,
+"difficulty": 3,
 "age": "all",
 "question": {
 "ar": "ما عملة ترينيداد وتوباغو؟",
 "en": "What is the currency of Trinidad and Tobago?"
 },
 "answer": {
-"ar": "دولار ترينيداد وتوباغو",
+"ar": "دولار ترينيداد",
 "en": "Trinidad and Tobago dollar"
 },
 "wrong": [
@@ -41100,7 +36546,7 @@
 "id": "geo-cur-Q757",
 "type": "quiz",
 "category": "geography",
-"difficulty": 2,
+"difficulty": 3,
 "age": "all",
 "question": {
 "ar": "ما عملة سانت فينسنت والغرينادين؟",
@@ -41134,7 +36580,7 @@
 "id": "geo-cur-Q760",
 "type": "quiz",
 "category": "geography",
-"difficulty": 2,
+"difficulty": 3,
 "age": "all",
 "question": {
 "ar": "ما عملة سانت لوسيا؟",
@@ -41168,7 +36614,7 @@
 "id": "geo-cur-Q763",
 "type": "quiz",
 "category": "geography",
-"difficulty": 2,
+"difficulty": 3,
 "age": "all",
 "question": {
 "ar": "ما عملة سانت كيتس ونيفيس؟",
@@ -41202,7 +36648,7 @@
 "id": "geo-cur-Q766",
 "type": "quiz",
 "category": "geography",
-"difficulty": 2,
+"difficulty": 3,
 "age": "all",
 "question": {
 "ar": "ما عملة جامايكا؟",
@@ -41236,7 +36682,7 @@
 "id": "geo-cur-Q769",
 "type": "quiz",
 "category": "geography",
-"difficulty": 2,
+"difficulty": 3,
 "age": "all",
 "question": {
 "ar": "ما عملة غرنادة؟",
@@ -41270,7 +36716,7 @@
 "id": "geo-cur-Q77",
 "type": "quiz",
 "category": "geography",
-"difficulty": 2,
+"difficulty": 3,
 "age": "all",
 "question": {
 "ar": "ما عملة الأوروغواي؟",
@@ -41304,7 +36750,7 @@
 "id": "geo-cur-Q774",
 "type": "quiz",
 "category": "geography",
-"difficulty": 2,
+"difficulty": 3,
 "age": "all",
 "question": {
 "ar": "ما عملة غواتيمالا؟",
@@ -41338,7 +36784,7 @@
 "id": "geo-cur-Q778",
 "type": "quiz",
 "category": "geography",
-"difficulty": 2,
+"difficulty": 3,
 "age": "all",
 "question": {
 "ar": "ما عملة جزر البهاما؟",
@@ -41372,7 +36818,7 @@
 "id": "geo-cur-Q783",
 "type": "quiz",
 "category": "geography",
-"difficulty": 2,
+"difficulty": 3,
 "age": "all",
 "question": {
 "ar": "ما عملة هندوراس؟",
@@ -41406,7 +36852,7 @@
 "id": "geo-cur-Q784",
 "type": "quiz",
 "category": "geography",
-"difficulty": 2,
+"difficulty": 3,
 "age": "all",
 "question": {
 "ar": "ما عملة دومينيكا؟",
@@ -41422,7 +36868,7 @@
 "en": "Brazilian real"
 },
 {
-"ar": "إيسكودو جزر الرأس الأخضر",
+"ar": "إسكودو",
 "en": "Cape Verdean escudo"
 },
 {
@@ -41440,10 +36886,10 @@
 "id": "geo-cur-Q786",
 "type": "quiz",
 "category": "geography",
-"difficulty": 2,
+"difficulty": 3,
 "age": "all",
 "question": {
-"ar": "ما عملة جمهورية الدومينيكان؟",
+"ar": "ما عملة الدومينيكان؟",
 "en": "What is the currency of Dominican Republic?"
 },
 "answer": {
@@ -41494,7 +36940,7 @@
 "en": "euro"
 },
 {
-"ar": "كينا بابوا غينيا الجديدة",
+"ar": "كينا",
 "en": "kina"
 }
 ],
@@ -41508,7 +36954,7 @@
 "id": "geo-cur-Q790",
 "type": "quiz",
 "category": "geography",
-"difficulty": 2,
+"difficulty": 3,
 "age": "all",
 "question": {
 "ar": "ما عملة هايتي؟",
@@ -41610,7 +37056,7 @@
 "id": "geo-cur-Q800",
 "type": "quiz",
 "category": "geography",
-"difficulty": 2,
+"difficulty": 3,
 "age": "all",
 "question": {
 "ar": "ما عملة كوستاريكا؟",
@@ -41678,7 +37124,7 @@
 "id": "geo-cur-Q811",
 "type": "quiz",
 "category": "geography",
-"difficulty": 2,
+"difficulty": 3,
 "age": "all",
 "question": {
 "ar": "ما عملة نيكاراغوا؟",
@@ -41712,7 +37158,7 @@
 "id": "geo-cur-Q813",
 "type": "quiz",
 "category": "geography",
-"difficulty": 2,
+"difficulty": 3,
 "age": "all",
 "question": {
 "ar": "ما عملة قرغيزستان؟",
@@ -41780,7 +37226,7 @@
 "id": "geo-cur-Q819",
 "type": "quiz",
 "category": "geography",
-"difficulty": 2,
+"difficulty": 3,
 "age": "all",
 "question": {
 "ar": "ما عملة لاوس؟",
@@ -41848,7 +37294,7 @@
 "id": "geo-cur-Q826",
 "type": "quiz",
 "category": "geography",
-"difficulty": 2,
+"difficulty": 3,
 "age": "all",
 "question": {
 "ar": "ما عملة المالديف؟",
@@ -41882,7 +37328,7 @@
 "id": "geo-cur-Q836",
 "type": "quiz",
 "category": "geography",
-"difficulty": 2,
+"difficulty": 3,
 "age": "all",
 "question": {
 "ar": "ما عملة ميانمار؟",
@@ -41902,7 +37348,7 @@
 "en": "nakfa"
 },
 {
-"ar": "دوبرا ساو تومي وبرينسيب",
+"ar": "دوبرا",
 "en": "São Tomé and Príncipe dobra"
 }
 ],
@@ -41916,7 +37362,7 @@
 "id": "geo-cur-Q837",
 "type": "quiz",
 "category": "geography",
-"difficulty": 2,
+"difficulty": 3,
 "age": "all",
 "question": {
 "ar": "ما عملة نيبال؟",
@@ -41932,7 +37378,7 @@
 "en": "Romanian leu"
 },
 {
-"ar": "إيسكودو جزر الرأس الأخضر",
+"ar": "إسكودو",
 "en": "Cape Verdean escudo"
 },
 {
@@ -42120,7 +37566,7 @@
 "id": "geo-cur-Q863",
 "type": "quiz",
 "category": "geography",
-"difficulty": 2,
+"difficulty": 3,
 "age": "all",
 "question": {
 "ar": "ما عملة طاجيكستان؟",
@@ -42154,7 +37600,7 @@
 "id": "geo-cur-Q869",
 "type": "quiz",
 "category": "geography",
-"difficulty": 2,
+"difficulty": 3,
 "age": "all",
 "question": {
 "ar": "ما عملة تايلاند؟",
@@ -42188,7 +37634,7 @@
 "id": "geo-cur-Q874",
 "type": "quiz",
 "category": "geography",
-"difficulty": 2,
+"difficulty": 3,
 "age": "all",
 "question": {
 "ar": "ما عملة تركمانستان؟",
@@ -42225,7 +37671,7 @@
 "difficulty": 2,
 "age": "all",
 "question": {
-"ar": "ما عملة الإمارات العربية المتحدة؟",
+"ar": "ما عملة الإمارات؟",
 "en": "What is the currency of United Arab Emirates?"
 },
 "answer": {
@@ -42238,7 +37684,7 @@
 "en": "Moldovan leu"
 },
 {
-"ar": "دولار ترينيداد وتوباغو",
+"ar": "دولار ترينيداد",
 "en": "Trinidad and Tobago dollar"
 },
 {
@@ -42256,7 +37702,7 @@
 "id": "geo-cur-Q881",
 "type": "quiz",
 "category": "geography",
-"difficulty": 2,
+"difficulty": 3,
 "age": "all",
 "question": {
 "ar": "ما عملة فيتنام؟",
@@ -42290,7 +37736,7 @@
 "id": "geo-cur-Q889",
 "type": "quiz",
 "category": "geography",
-"difficulty": 2,
+"difficulty": 3,
 "age": "all",
 "question": {
 "ar": "ما عملة أفغانستان؟",
@@ -42324,7 +37770,7 @@
 "id": "geo-cur-Q902",
 "type": "quiz",
 "category": "geography",
-"difficulty": 2,
+"difficulty": 3,
 "age": "all",
 "question": {
 "ar": "ما عملة بنغلاديش؟",
@@ -42358,7 +37804,7 @@
 "id": "geo-cur-Q912",
 "type": "quiz",
 "category": "geography",
-"difficulty": 2,
+"difficulty": 3,
 "age": "all",
 "question": {
 "ar": "ما عملة مالي؟",
@@ -42392,7 +37838,7 @@
 "id": "geo-cur-Q916",
 "type": "quiz",
 "category": "geography",
-"difficulty": 2,
+"difficulty": 3,
 "age": "all",
 "question": {
 "ar": "ما عملة أنغولا؟",
@@ -42426,7 +37872,7 @@
 "id": "geo-cur-Q917",
 "type": "quiz",
 "category": "geography",
-"difficulty": 2,
+"difficulty": 3,
 "age": "all",
 "question": {
 "ar": "ما عملة بوتان؟",
@@ -42460,7 +37906,7 @@
 "id": "geo-cur-Q921",
 "type": "quiz",
 "category": "geography",
-"difficulty": 2,
+"difficulty": 3,
 "age": "all",
 "question": {
 "ar": "ما عملة بروناي؟",
@@ -42494,7 +37940,7 @@
 "id": "geo-cur-Q928",
 "type": "quiz",
 "category": "geography",
-"difficulty": 2,
+"difficulty": 3,
 "age": "all",
 "question": {
 "ar": "ما عملة الفلبين؟",
@@ -42528,10 +37974,10 @@
 "id": "geo-cur-Q929",
 "type": "quiz",
 "category": "geography",
-"difficulty": 2,
+"difficulty": 3,
 "age": "all",
 "question": {
-"ar": "ما عملة جمهورية إفريقيا الوسطى؟",
+"ar": "ما عملة إفريقيا الوسطى؟",
 "en": "What is the currency of Central African Republic?"
 },
 "answer": {
@@ -42562,7 +38008,7 @@
 "id": "geo-cur-Q945",
 "type": "quiz",
 "category": "geography",
-"difficulty": 2,
+"difficulty": 3,
 "age": "all",
 "question": {
 "ar": "ما عملة توغو؟",
@@ -42616,7 +38062,7 @@
 "en": "renminbi"
 },
 {
-"ar": "دولار للولايات المتحدة",
+"ar": "الدولار الأمريكي",
 "en": "United States dollar"
 }
 ],
@@ -42630,7 +38076,7 @@
 "id": "geo-cur-Q953",
 "type": "quiz",
 "category": "geography",
-"difficulty": 2,
+"difficulty": 3,
 "age": "all",
 "question": {
 "ar": "ما عملة زامبيا؟",
@@ -42664,7 +38110,7 @@
 "id": "geo-cur-Q958",
 "type": "quiz",
 "category": "geography",
-"difficulty": 2,
+"difficulty": 3,
 "age": "all",
 "question": {
 "ar": "ما عملة جنوب السودان؟",
@@ -42732,7 +38178,7 @@
 "id": "geo-cur-Q963",
 "type": "quiz",
 "category": "geography",
-"difficulty": 2,
+"difficulty": 3,
 "age": "all",
 "question": {
 "ar": "ما عملة بوتسوانا؟",
@@ -42752,7 +38198,7 @@
 "en": "Qatari riyal"
 },
 {
-"ar": "إيسكودو جزر الرأس الأخضر",
+"ar": "إسكودو",
 "en": "Cape Verdean escudo"
 }
 ],
@@ -42766,7 +38212,7 @@
 "id": "geo-cur-Q965",
 "type": "quiz",
 "category": "geography",
-"difficulty": 2,
+"difficulty": 3,
 "age": "all",
 "question": {
 "ar": "ما عملة بوركينا فاسو؟",
@@ -42800,7 +38246,7 @@
 "id": "geo-cur-Q967",
 "type": "quiz",
 "category": "geography",
-"difficulty": 2,
+"difficulty": 3,
 "age": "all",
 "question": {
 "ar": "ما عملة بوروندي؟",
@@ -42812,7 +38258,7 @@
 },
 "wrong": [
 {
-"ar": "إيسكودو جزر الرأس الأخضر",
+"ar": "إسكودو",
 "en": "Cape Verdean escudo"
 },
 {
@@ -42834,7 +38280,7 @@
 "id": "geo-cur-Q970",
 "type": "quiz",
 "category": "geography",
-"difficulty": 2,
+"difficulty": 3,
 "age": "all",
 "question": {
 "ar": "ما عملة جزر القمر؟",
@@ -42868,10 +38314,10 @@
 "id": "geo-cur-Q971",
 "type": "quiz",
 "category": "geography",
-"difficulty": 2,
+"difficulty": 3,
 "age": "all",
 "question": {
-"ar": "ما عملة جمهورية الكونغو؟",
+"ar": "ما عملة الكونغو؟",
 "en": "What is the currency of Republic of the Congo?"
 },
 "answer": {
@@ -42902,10 +38348,10 @@
 "id": "geo-cur-Q974",
 "type": "quiz",
 "category": "geography",
-"difficulty": 2,
+"difficulty": 3,
 "age": "all",
 "question": {
-"ar": "ما عملة جمهورية الكونغو الديمقراطية؟",
+"ar": "ما عملة الكونغو الديمقراطية؟",
 "en": "What is the currency of DR Congo?"
 },
 "answer": {
@@ -42936,7 +38382,7 @@
 "id": "geo-cur-Q977",
 "type": "quiz",
 "category": "geography",
-"difficulty": 2,
+"difficulty": 3,
 "age": "all",
 "question": {
 "ar": "ما عملة جيبوتي؟",
@@ -42970,7 +38416,7 @@
 "id": "geo-cur-Q983",
 "type": "quiz",
 "category": "geography",
-"difficulty": 2,
+"difficulty": 3,
 "age": "all",
 "question": {
 "ar": "ما عملة غينيا الاستوائية؟",
@@ -43004,7 +38450,7 @@
 "id": "geo-cur-Q986",
 "type": "quiz",
 "category": "geography",
-"difficulty": 2,
+"difficulty": 3,
 "age": "all",
 "question": {
 "ar": "ما عملة إرتريا؟",

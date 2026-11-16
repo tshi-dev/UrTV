@@ -1670,16 +1670,6 @@
 "verified": true
 },
 {
-"word": "افريز",
-"display": "إفريز",
-"en": "",
-"category": "dictionary",
-"difficulty": 3,
-"age": "all",
-"source": "https://www.wikidata.org/wiki/Lexeme:L1486209",
-"verified": true
-},
-{
 "word": "افلاس",
 "display": "إفلاس",
 "en": "",
@@ -1687,16 +1677,6 @@
 "difficulty": 3,
 "age": "all",
 "source": "https://www.wikidata.org/wiki/Lexeme:L1487859",
-"verified": true
-},
-{
-"word": "افندي",
-"display": "أفندي",
-"en": "",
-"category": "dictionary",
-"difficulty": 3,
-"age": "all",
-"source": "https://www.wikidata.org/wiki/Lexeme:L1489245",
 "verified": true
 },
 {
@@ -1710,16 +1690,6 @@
 "verified": true
 },
 {
-"word": "اكسيد",
-"display": "أكسيد",
-"en": "",
-"category": "dictionary",
-"difficulty": 3,
-"age": "all",
-"source": "https://www.wikidata.org/wiki/Lexeme:L1491223",
-"verified": true
-},
-{
 "word": "اكسير",
 "display": "إكسير",
 "en": "",
@@ -1727,16 +1697,6 @@
 "difficulty": 3,
 "age": "all",
 "source": "https://www.wikidata.org/wiki/Lexeme:L1489120",
-"verified": true
-},
-{
-"word": "امركه",
-"display": "أمركة",
-"en": "",
-"category": "dictionary",
-"difficulty": 3,
-"age": "all",
-"source": "https://www.wikidata.org/wiki/Lexeme:L1489181",
 "verified": true
 },
 {
@@ -1777,16 +1737,6 @@
 "difficulty": 2,
 "age": "all",
 "source": "https://www.wikidata.org/wiki/Lexeme:L1214573",
-"verified": true
-},
-{
-"word": "اهانه",
-"display": "إهانة",
-"en": "",
-"category": "dictionary",
-"difficulty": 3,
-"age": "all",
-"source": "https://www.wikidata.org/wiki/Lexeme:L1500974",
 "verified": true
 },
 {
@@ -1860,16 +1810,6 @@
 "verified": true
 },
 {
-"word": "براده",
-"display": "برادة",
-"en": "",
-"category": "dictionary",
-"difficulty": 3,
-"age": "all",
-"source": "https://www.wikidata.org/wiki/Lexeme:L1500939",
-"verified": true
-},
-{
 "word": "برمجه",
 "display": "برمجة",
 "en": "",
@@ -1900,16 +1840,6 @@
 "verified": true
 },
 {
-"word": "بلعوم",
-"display": "بلعوم",
-"en": "",
-"category": "dictionary",
-"difficulty": 3,
-"age": "all",
-"source": "https://www.wikidata.org/wiki/Lexeme:L1485696",
-"verified": true
-},
-{
 "word": "بلوره",
 "display": "بلورة",
 "en": "",
@@ -1920,16 +1850,6 @@
 "verified": true
 },
 {
-"word": "بليله",
-"display": "بليلة",
-"en": "",
-"category": "dictionary",
-"difficulty": 3,
-"age": "all",
-"source": "https://www.wikidata.org/wiki/Lexeme:L1488044",
-"verified": true
-},
-{
 "word": "بنايه",
 "display": "بناية",
 "en": "",
@@ -1937,26 +1857,6 @@
 "difficulty": 2,
 "age": "all",
 "source": "https://www.wikidata.org/wiki/Lexeme:L1501428",
-"verified": true
-},
-{
-"word": "بهلول",
-"display": "بهلول",
-"en": "",
-"category": "dictionary",
-"difficulty": 3,
-"age": "all",
-"source": "https://www.wikidata.org/wiki/Lexeme:L1488981",
-"verified": true
-},
-{
-"word": "بيانه",
-"display": "بيانة",
-"en": "",
-"category": "dictionary",
-"difficulty": 3,
-"age": "all",
-"source": "https://www.wikidata.org/wiki/Lexeme:L1501280",
 "verified": true
 },
 {
@@ -2140,16 +2040,6 @@
 "verified": true
 },
 {
-"word": "تخسيس",
-"display": "تخسيس",
-"en": "",
-"category": "dictionary",
-"difficulty": 2,
-"age": "all",
-"source": "https://www.wikidata.org/wiki/Lexeme:L1476411",
-"verified": true
-},
-{
 "word": "تخصيب",
 "display": "تخصيب",
 "en": "",
@@ -2167,16 +2057,6 @@
 "difficulty": 2,
 "age": "all",
 "source": "https://www.wikidata.org/wiki/Lexeme:L1486680",
-"verified": true
-},
-{
-"word": "تخلخل",
-"display": "تخلخل",
-"en": "",
-"category": "dictionary",
-"difficulty": 3,
-"age": "all",
-"source": "https://www.wikidata.org/wiki/Lexeme:L1488164",
 "verified": true
 },
 {
@@ -2287,16 +2167,6 @@
 "difficulty": 2,
 "age": "all",
 "source": "https://www.wikidata.org/wiki/Lexeme:L1484229",
-"verified": true
-},
-{
-"word": "ترقوه",
-"display": "ترقوة",
-"en": "",
-"category": "dictionary",
-"difficulty": 2,
-"age": "all",
-"source": "https://www.wikidata.org/wiki/Lexeme:L1498716",
 "verified": true
 },
 {
@@ -2460,16 +2330,6 @@
 "verified": true
 },
 {
-"word": "تصفيح",
-"display": "تصفيح",
-"en": "",
-"category": "dictionary",
-"difficulty": 3,
-"age": "all",
-"source": "https://www.wikidata.org/wiki/Lexeme:L1488062",
-"verified": true
-},
-{
 "word": "تصفيق",
 "display": "تصفيق",
 "en": "",
@@ -2487,16 +2347,6 @@
 "difficulty": 2,
 "age": "all",
 "source": "https://www.wikidata.org/wiki/Lexeme:L1479154",
-"verified": true
-},
-{
-"word": "تصيير",
-"display": "تصيير",
-"en": "",
-"category": "dictionary",
-"difficulty": 3,
-"age": "all",
-"source": "https://www.wikidata.org/wiki/Lexeme:L1486274",
 "verified": true
 },
 {
@@ -2610,16 +2460,6 @@
 "verified": true
 },
 {
-"word": "تفقيط",
-"display": "تفقيط",
-"en": "",
-"category": "dictionary",
-"difficulty": 3,
-"age": "all",
-"source": "https://www.wikidata.org/wiki/Lexeme:L1486791",
-"verified": true
-},
-{
 "word": "تفكير",
 "display": "تفكير",
 "en": "",
@@ -2730,26 +2570,6 @@
 "verified": true
 },
 {
-"word": "تلفزه",
-"display": "تلفزة",
-"en": "",
-"category": "dictionary",
-"difficulty": 2,
-"age": "all",
-"source": "https://www.wikidata.org/wiki/Lexeme:L1488604",
-"verified": true
-},
-{
-"word": "تلفيف",
-"display": "تلفيف",
-"en": "",
-"category": "dictionary",
-"difficulty": 3,
-"age": "all",
-"source": "https://www.wikidata.org/wiki/Lexeme:L1479224",
-"verified": true
-},
-{
 "word": "تلميع",
 "display": "تلميع",
 "en": "",
@@ -2830,26 +2650,6 @@
 "verified": true
 },
 {
-"word": "تناضح",
-"display": "تناضح",
-"en": "",
-"category": "dictionary",
-"difficulty": 2,
-"age": "all",
-"source": "https://www.wikidata.org/wiki/Lexeme:L1501189",
-"verified": true
-},
-{
-"word": "تنبول",
-"display": "تنبول",
-"en": "",
-"category": "dictionary",
-"difficulty": 3,
-"age": "all",
-"source": "https://www.wikidata.org/wiki/Lexeme:L1324987",
-"verified": true
-},
-{
 "word": "تنبيه",
 "display": "تنبيه",
 "en": "",
@@ -2880,26 +2680,6 @@
 "verified": true
 },
 {
-"word": "تنفير",
-"display": "تنفير",
-"en": "",
-"category": "dictionary",
-"difficulty": 2,
-"age": "all",
-"source": "https://www.wikidata.org/wiki/Lexeme:L1487456",
-"verified": true
-},
-{
-"word": "تنفيس",
-"display": "تنفيس",
-"en": "",
-"category": "dictionary",
-"difficulty": 3,
-"age": "all",
-"source": "https://www.wikidata.org/wiki/Lexeme:L1485949",
-"verified": true
-},
-{
 "word": "تنقيح",
 "display": "تنقيح",
 "en": "",
@@ -2907,16 +2687,6 @@
 "difficulty": 3,
 "age": "all",
 "source": "https://www.wikidata.org/wiki/Lexeme:L1477632",
-"verified": true
-},
-{
-"word": "تنميل",
-"display": "تنميل",
-"en": "",
-"category": "dictionary",
-"difficulty": 3,
-"age": "all",
-"source": "https://www.wikidata.org/wiki/Lexeme:L1484751",
 "verified": true
 },
 {
@@ -3100,16 +2870,6 @@
 "verified": true
 },
 {
-"word": "حاضنه",
-"display": "حاضنة",
-"en": "",
-"category": "dictionary",
-"difficulty": 3,
-"age": "all",
-"source": "https://www.wikidata.org/wiki/Lexeme:L1495964",
-"verified": true
-},
-{
 "word": "حجامه",
 "display": "حجامة",
 "en": "",
@@ -3120,26 +2880,6 @@
 "verified": true
 },
 {
-"word": "حديدي",
-"display": "حديدي",
-"en": "",
-"category": "dictionary",
-"difficulty": 3,
-"age": "all",
-"source": "https://www.wikidata.org/wiki/Lexeme:L1477893",
-"verified": true
-},
-{
-"word": "حرقده",
-"display": "حرقدة",
-"en": "",
-"category": "dictionary",
-"difficulty": 3,
-"age": "all",
-"source": "https://www.wikidata.org/wiki/Lexeme:L1489262",
-"verified": true
-},
-{
 "word": "حقيقه",
 "display": "حقيقة",
 "en": "",
@@ -3147,16 +2887,6 @@
 "difficulty": 2,
 "age": "all",
 "source": "https://www.wikidata.org/wiki/Lexeme:L1323805",
-"verified": true
-},
-{
-"word": "حلتيت",
-"display": "حلتيت",
-"en": "",
-"category": "dictionary",
-"difficulty": 3,
-"age": "all",
-"source": "https://www.wikidata.org/wiki/Lexeme:L1488785",
 "verified": true
 },
 {
@@ -3217,16 +2947,6 @@
 "difficulty": 3,
 "age": "all",
 "source": "https://www.wikidata.org/wiki/Lexeme:L1496983",
-"verified": true
-},
-{
-"word": "خرشنه",
-"display": "خرشنة",
-"en": "",
-"category": "dictionary",
-"difficulty": 3,
-"age": "all",
-"source": "https://www.wikidata.org/wiki/Lexeme:L1501940",
 "verified": true
 },
 {
@@ -3310,26 +3030,6 @@
 "verified": true
 },
 {
-"word": "خيشوم",
-"display": "خيشوم",
-"en": "",
-"category": "dictionary",
-"difficulty": 3,
-"age": "all",
-"source": "https://www.wikidata.org/wiki/Lexeme:L1477555",
-"verified": true
-},
-{
-"word": "دركاه",
-"display": "دركاه",
-"en": "",
-"category": "dictionary",
-"difficulty": 3,
-"age": "all",
-"source": "https://www.wikidata.org/wiki/Lexeme:L1501320",
-"verified": true
-},
-{
 "word": "دغدغه",
 "display": "دغدغة",
 "en": "",
@@ -3337,16 +3037,6 @@
 "difficulty": 3,
 "age": "all",
 "source": "https://www.wikidata.org/wiki/Lexeme:L1478835",
-"verified": true
-},
-{
-"word": "دغموس",
-"display": "دغموس",
-"en": "",
-"category": "dictionary",
-"difficulty": 3,
-"age": "all",
-"source": "https://www.wikidata.org/wiki/Lexeme:L1489112",
 "verified": true
 },
 {
@@ -3420,16 +3110,6 @@
 "verified": true
 },
 {
-"word": "زرنيخ",
-"display": "زرنيخ",
-"en": "",
-"category": "dictionary",
-"difficulty": 2,
-"age": "all",
-"source": "https://www.wikidata.org/wiki/Lexeme:L1489171",
-"verified": true
-},
-{
 "word": "زغايه",
 "display": "زغاية",
 "en": "",
@@ -3480,16 +3160,6 @@
 "verified": true
 },
 {
-"word": "ساجور",
-"display": "ساجور",
-"en": "",
-"category": "dictionary",
-"difficulty": 2,
-"age": "all",
-"source": "https://www.wikidata.org/wiki/Lexeme:L1495737",
-"verified": true
-},
-{
 "word": "سبابه",
 "display": "سبابة",
 "en": "",
@@ -3520,16 +3190,6 @@
 "verified": true
 },
 {
-"word": "سكباج",
-"display": "سكباج",
-"en": "",
-"category": "dictionary",
-"difficulty": 3,
-"age": "all",
-"source": "https://www.wikidata.org/wiki/Lexeme:L1160592",
-"verified": true
-},
-{
 "word": "سلامه",
 "display": "سلامة",
 "en": "",
@@ -3547,46 +3207,6 @@
 "difficulty": 3,
 "age": "all",
 "source": "https://www.wikidata.org/wiki/Lexeme:L1486023",
-"verified": true
-},
-{
-"word": "سليخه",
-"display": "سليخة",
-"en": "",
-"category": "dictionary",
-"difficulty": 3,
-"age": "all",
-"source": "https://www.wikidata.org/wiki/Lexeme:L1487957",
-"verified": true
-},
-{
-"word": "سنبوق",
-"display": "سنبوق",
-"en": "",
-"category": "dictionary",
-"difficulty": 3,
-"age": "all",
-"source": "https://www.wikidata.org/wiki/Lexeme:L1489132",
-"verified": true
-},
-{
-"word": "شربين",
-"display": "شربين",
-"en": "",
-"category": "dictionary",
-"difficulty": 3,
-"age": "all",
-"source": "https://www.wikidata.org/wiki/Lexeme:L1485858",
-"verified": true
-},
-{
-"word": "شرشور",
-"display": "شرشور",
-"en": "",
-"category": "dictionary",
-"difficulty": 3,
-"age": "all",
-"source": "https://www.wikidata.org/wiki/Lexeme:L1478399",
 "verified": true
 },
 {
@@ -3657,16 +3277,6 @@
 "difficulty": 3,
 "age": "all",
 "source": "https://www.wikidata.org/wiki/Lexeme:L1477458",
-"verified": true
-},
-{
-"word": "طاغيه",
-"display": "طاغية",
-"en": "",
-"category": "dictionary",
-"difficulty": 2,
-"age": "all",
-"source": "https://www.wikidata.org/wiki/Lexeme:L1496509",
 "verified": true
 },
 {
@@ -3750,16 +3360,6 @@
 "verified": true
 },
 {
-"word": "علجوم",
-"display": "علجوم",
-"en": "",
-"category": "dictionary",
-"difficulty": 3,
-"age": "all",
-"source": "https://www.wikidata.org/wiki/Lexeme:L1478436",
-"verified": true
-},
-{
 "word": "عماره",
 "display": "عمارة",
 "en": "",
@@ -3777,16 +3377,6 @@
 "difficulty": 2,
 "age": "all",
 "source": "https://www.wikidata.org/wiki/Lexeme:L1496197",
-"verified": true
-},
-{
-"word": "عموله",
-"display": "عمولة",
-"en": "",
-"category": "dictionary",
-"difficulty": 3,
-"age": "all",
-"source": "https://www.wikidata.org/wiki/Lexeme:L1478955",
 "verified": true
 },
 {
@@ -3820,26 +3410,6 @@
 "verified": true
 },
 {
-"word": "غطرسه",
-"display": "غطرسة",
-"en": "",
-"category": "dictionary",
-"difficulty": 3,
-"age": "all",
-"source": "https://www.wikidata.org/wiki/Lexeme:L1487962",
-"verified": true
-},
-{
-"word": "غمازه",
-"display": "غمازة",
-"en": "",
-"category": "dictionary",
-"difficulty": 3,
-"age": "all",
-"source": "https://www.wikidata.org/wiki/Lexeme:L1498692",
-"verified": true
-},
-{
 "word": "فاصله",
 "display": "فاصلة",
 "en": "",
@@ -3847,16 +3417,6 @@
 "difficulty": 3,
 "age": "all",
 "source": "https://www.wikidata.org/wiki/Lexeme:L1499148",
-"verified": true
-},
-{
-"word": "فاغره",
-"display": "فاغرة",
-"en": "",
-"category": "dictionary",
-"difficulty": 3,
-"age": "all",
-"source": "https://www.wikidata.org/wiki/Lexeme:L1488001",
 "verified": true
 },
 {
@@ -3870,16 +3430,6 @@
 "verified": true
 },
 {
-"word": "فانيد",
-"display": "فانيد",
-"en": "",
-"category": "dictionary",
-"difficulty": 3,
-"age": "all",
-"source": "https://www.wikidata.org/wiki/Lexeme:L1412454",
-"verified": true
-},
-{
 "word": "فسفور",
 "display": "فسفور",
 "en": "",
@@ -3887,16 +3437,6 @@
 "difficulty": 2,
 "age": "all",
 "source": "https://www.wikidata.org/wiki/Lexeme:L1488724",
-"verified": true
-},
-{
-"word": "فسيله",
-"display": "فسيلة",
-"en": "",
-"category": "dictionary",
-"difficulty": 3,
-"age": "all",
-"source": "https://www.wikidata.org/wiki/Lexeme:L1491146",
 "verified": true
 },
 {
@@ -4040,16 +3580,6 @@
 "verified": true
 },
 {
-"word": "قطمير",
-"display": "قطمير",
-"en": "",
-"category": "dictionary",
-"difficulty": 3,
-"age": "all",
-"source": "https://www.wikidata.org/wiki/Lexeme:L1487046",
-"verified": true
-},
-{
 "word": "قنطار",
 "display": "قنطار",
 "en": "",
@@ -4097,46 +3627,6 @@
 "difficulty": 2,
 "age": "all",
 "source": "https://www.wikidata.org/wiki/Lexeme:L1488862",
-"verified": true
-},
-{
-"word": "كردون",
-"display": "كردون",
-"en": "",
-"category": "dictionary",
-"difficulty": 3,
-"age": "all",
-"source": "https://www.wikidata.org/wiki/Lexeme:L1488767",
-"verified": true
-},
-{
-"word": "كرسوع",
-"display": "كرسوع",
-"en": "",
-"category": "dictionary",
-"difficulty": 3,
-"age": "all",
-"source": "https://www.wikidata.org/wiki/Lexeme:L1488834",
-"verified": true
-},
-{
-"word": "كروبي",
-"display": "كروبي",
-"en": "",
-"category": "dictionary",
-"difficulty": 3,
-"age": "all",
-"source": "https://www.wikidata.org/wiki/Lexeme:L1501886",
-"verified": true
-},
-{
-"word": "كناشه",
-"display": "كناشة",
-"en": "",
-"category": "dictionary",
-"difficulty": 2,
-"age": "all",
-"source": "https://www.wikidata.org/wiki/Lexeme:L1501871",
 "verified": true
 },
 {
@@ -4320,16 +3810,6 @@
 "verified": true
 },
 {
-"word": "مذراه",
-"display": "مذراة",
-"en": "",
-"category": "dictionary",
-"difficulty": 3,
-"age": "all",
-"source": "https://www.wikidata.org/wiki/Lexeme:L1498808",
-"verified": true
-},
-{
 "word": "مراره",
 "display": "مرارة",
 "en": "",
@@ -4370,16 +3850,6 @@
 "verified": true
 },
 {
-"word": "مرسين",
-"display": "مرسين",
-"en": "",
-"category": "dictionary",
-"difficulty": 2,
-"age": "all",
-"source": "https://www.wikidata.org/wiki/Lexeme:L1488747",
-"verified": true
-},
-{
 "word": "مركبه",
 "display": "مركبة",
 "en": "",
@@ -4397,26 +3867,6 @@
 "difficulty": 3,
 "age": "all",
 "source": "https://www.wikidata.org/wiki/Lexeme:L1477724",
-"verified": true
-},
-{
-"word": "مزراب",
-"display": "مزراب",
-"en": "",
-"category": "dictionary",
-"difficulty": 3,
-"age": "all",
-"source": "https://www.wikidata.org/wiki/Lexeme:L1502028",
-"verified": true
-},
-{
-"word": "مزراق",
-"display": "مزراق",
-"en": "",
-"category": "dictionary",
-"difficulty": 3,
-"age": "all",
-"source": "https://www.wikidata.org/wiki/Lexeme:L1449838",
 "verified": true
 },
 {
@@ -4440,16 +3890,6 @@
 "verified": true
 },
 {
-"word": "مسكان",
-"display": "مسكان",
-"en": "",
-"category": "dictionary",
-"difficulty": 3,
-"age": "all",
-"source": "https://www.wikidata.org/wiki/Lexeme:L1502070",
-"verified": true
-},
-{
 "word": "مسكون",
 "display": "مسكون",
 "en": "",
@@ -4467,16 +3907,6 @@
 "difficulty": 3,
 "age": "all",
 "source": "https://www.wikidata.org/wiki/Lexeme:L1414204",
-"verified": true
-},
-{
-"word": "مسلفه",
-"display": "مسلفة",
-"en": "",
-"category": "dictionary",
-"difficulty": 3,
-"age": "all",
-"source": "https://www.wikidata.org/wiki/Lexeme:L1491077",
 "verified": true
 },
 {
@@ -4600,16 +4030,6 @@
 "verified": true
 },
 {
-"word": "معزقه",
-"display": "معزقة",
-"en": "",
-"category": "dictionary",
-"difficulty": 3,
-"age": "all",
-"source": "https://www.wikidata.org/wiki/Lexeme:L1477544",
-"verified": true
-},
-{
 "word": "معمول",
 "display": "معمول",
 "en": "",
@@ -4617,16 +4037,6 @@
 "difficulty": 3,
 "age": "all",
 "source": "https://www.wikidata.org/wiki/Lexeme:L1479382",
-"verified": true
-},
-{
-"word": "مغلاق",
-"display": "مغلاق",
-"en": "",
-"category": "dictionary",
-"difficulty": 3,
-"age": "all",
-"source": "https://www.wikidata.org/wiki/Lexeme:L1499332",
 "verified": true
 },
 {
@@ -4770,16 +4180,6 @@
 "verified": true
 },
 {
-"word": "منثور",
-"display": "منثور",
-"en": "",
-"category": "dictionary",
-"difficulty": 3,
-"age": "all",
-"source": "https://www.wikidata.org/wiki/Lexeme:L1479294",
-"verified": true
-},
-{
 "word": "منديل",
 "display": "منديل",
 "en": "",
@@ -4847,16 +4247,6 @@
 "difficulty": 3,
 "age": "all",
 "source": "https://www.wikidata.org/wiki/Lexeme:L1478779",
-"verified": true
-},
-{
-"word": "منفحه",
-"display": "منفحة",
-"en": "",
-"category": "dictionary",
-"difficulty": 3,
-"age": "all",
-"source": "https://www.wikidata.org/wiki/Lexeme:L1487633",
 "verified": true
 },
 {
@@ -4950,26 +4340,6 @@
 "verified": true
 },
 {
-"word": "نقاره",
-"display": "نقارة",
-"en": "",
-"category": "dictionary",
-"difficulty": 3,
-"age": "all",
-"source": "https://www.wikidata.org/wiki/Lexeme:L1496686",
-"verified": true
-},
-{
-"word": "نميمه",
-"display": "نميمة",
-"en": "",
-"category": "dictionary",
-"difficulty": 2,
-"age": "all",
-"source": "https://www.wikidata.org/wiki/Lexeme:L1496656",
-"verified": true
-},
-{
 "word": "هروله",
 "display": "هرولة",
 "en": "",
@@ -4977,16 +4347,6 @@
 "difficulty": 3,
 "age": "all",
 "source": "https://www.wikidata.org/wiki/Lexeme:L1486976",
-"verified": true
-},
-{
-"word": "هليلج",
-"display": "هليلج",
-"en": "",
-"category": "dictionary",
-"difficulty": 3,
-"age": "all",
-"source": "https://www.wikidata.org/wiki/Lexeme:L1476449",
 "verified": true
 },
 {

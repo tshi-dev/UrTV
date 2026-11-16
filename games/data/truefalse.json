@@ -737,7 +737,7 @@
 "difficulty": 3,
 "age": "all",
 "question": {
-"ar": "عاصمة جمهورية التشيك هي كتمندو.",
+"ar": "عاصمة التشيك هي كتمندو.",
 "en": "The capital of Czech Republic is Kathmandu."
 },
 "answer": false,
@@ -1026,7 +1026,7 @@
 "difficulty": 3,
 "age": "all",
 "question": {
-"ar": "عاصمة كوبا هي مدينة لوكسمبورغ.",
+"ar": "عاصمة كوبا هي لوكسمبورغ.",
 "en": "The capital of Cuba is Luxembourg."
 },
 "answer": false,
@@ -1774,7 +1774,7 @@
 "difficulty": 3,
 "age": "all",
 "question": {
-"ar": "عاصمة ولايات ميكرونيسيا المتحدة هي فادوتس.",
+"ar": "عاصمة ميكرونيسيا هي فادوتس.",
 "en": "The capital of Federated States of Micronesia is Vaduz."
 },
 "answer": false,
@@ -2029,7 +2029,7 @@
 "difficulty": 3,
 "age": "all",
 "question": {
-"ar": "عاصمة جامايكا هي مدينة لوكسمبورغ.",
+"ar": "عاصمة جامايكا هي لوكسمبورغ.",
 "en": "The capital of Jamaica is Luxembourg."
 },
 "answer": false,
@@ -2080,7 +2080,7 @@
 "difficulty": 3,
 "age": "all",
 "question": {
-"ar": "عاصمة غواتيمالا هي غواتيمالا العاصمة.",
+"ar": "عاصمة غواتيمالا هي غواتيمالا.",
 "en": "The capital of Guatemala is Guatemala City."
 },
 "answer": true,
@@ -2148,7 +2148,7 @@
 "difficulty": 3,
 "age": "all",
 "question": {
-"ar": "عاصمة جمهورية الدومينيكان هي باريس.",
+"ar": "عاصمة الدومينيكان هي باريس.",
 "en": "The capital of Dominican Republic is Paris."
 },
 "answer": false,
@@ -2267,7 +2267,7 @@
 "difficulty": 3,
 "age": "all",
 "question": {
-"ar": "عاصمة بنما هي مدينة بنما.",
+"ar": "عاصمة بنما هي بنما.",
 "en": "The capital of Panama is Panama City."
 },
 "answer": true,
@@ -2573,7 +2573,7 @@
 "difficulty": 1,
 "age": "kids",
 "question": {
-"ar": "عاصمة الإمارات العربية المتحدة هي أبو ظبي.",
+"ar": "عاصمة الإمارات هي أبو ظبي.",
 "en": "The capital of United Arab Emirates is Abu Dhabi."
 },
 "answer": true,
@@ -2743,7 +2743,7 @@
 "difficulty": 3,
 "age": "all",
 "question": {
-"ar": "عاصمة جمهورية إفريقيا الوسطى هي بنغي.",
+"ar": "عاصمة إفريقيا الوسطى هي بنغي.",
 "en": "The capital of Central African Republic is Bangui."
 },
 "answer": true,
@@ -2845,7 +2845,7 @@
 "difficulty": 1,
 "age": "kids",
 "question": {
-"ar": "عاصمة المكسيك هي مدينة مكسيكو.",
+"ar": "عاصمة المكسيك هي مكسيكو.",
 "en": "The capital of Mexico is Mexico City."
 },
 "answer": true,
@@ -2930,7 +2930,7 @@
 "difficulty": 3,
 "age": "all",
 "question": {
-"ar": "عاصمة جمهورية الكونغو هي برازافيل.",
+"ar": "عاصمة الكونغو هي برازافيل.",
 "en": "The capital of Republic of the Congo is Brazzaville."
 },
 "answer": true,
@@ -2947,7 +2947,7 @@
 "difficulty": 3,
 "age": "all",
 "question": {
-"ar": "عاصمة جمهورية الكونغو الديمقراطية هي كينشاسا.",
+"ar": "عاصمة الكونغو الديمقراطية هي كينشاسا.",
 "en": "The capital of DR Congo is Kinshasa."
 },
 "answer": true,

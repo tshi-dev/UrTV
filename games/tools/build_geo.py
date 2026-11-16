@@ -19,6 +19,11 @@ CONT = {"Asia": ("آسيا", "Asia"), "Africa": ("أفريقيا", "Africa"), "E
         "North America": ("أمريكا الشمالية", "North America"), "South America": ("أمريكا الجنوبية", "South America"),
         "Oceania": ("أوقيانوسيا", "Oceania")}
 
+AR_COUNTRY = {"جمهورية الكونغو": "الكونغو", "جمهورية الكونغو الديمقراطية": "الكونغو الديمقراطية", "جمهورية إفريقيا الوسطى": "إفريقيا الوسطى", "الإمارات العربية المتحدة": "الإمارات",
+              "جمهورية التشيك": "التشيك", "جمهورية الدومينيكان": "الدومينيكان", "ولايات ميكرونيسيا المتحدة": "ميكرونيسيا"}
+AR_CITY = {"مدينة الكويت": "الكويت", "مدينة بروكسل": "بروكسل", "مدينة لوكسمبورغ": "لوكسمبورغ", "مدينة سان مارينو": "سان مارينو", "غواتيمالا العاصمة": "غواتيمالا",
+           "واشنطن العاصمة": "واشنطن", "مدينة بنما": "بنما", "مدينة مكسيكو": "مكسيكو"}
+
 def build():
     rows = geo_fetch.countries()
     cs = []
@@ -26,7 +31,7 @@ def build():
         en = NAMES.get(r["en"], r["en"])
         if r["en"] in SKIP or len(r["caps"]) != 1: continue
         (cq, (cen, car)), = r["caps"].items()
-        cs.append({"q": q, "en": en, "ar": r["ar"], "cq": cq, "cen": cen, "car": car, "conts": r["conts"],
+        cs.append({"q": q, "en": en, "ar": AR_COUNTRY.get(r["ar"], r["ar"]), "cq": cq, "cen": cen, "car": AR_CITY.get(car, car), "conts": r["conts"],
                    "d": 1 if r["en"] in FAMOUS else 3})
     cs.sort(key=lambda c: c["q"])
     caps = [(c["car"], c["cen"]) for c in cs]

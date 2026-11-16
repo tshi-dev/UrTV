@@ -3,7 +3,7 @@ Run after build_all.py: SSL_CERT_FILE=<ca bundle> python3 -I games/tools/build_w
 import sys, os, re, json, collections, urllib.parse
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
-import net, curated, sayings_curated, names_curated, build_words as bw, geo_fetch, build_geo
+import hashlib, net, curated, sayings_curated, names_curated, build_words as bw, geo_fetch, build_geo
 G = os.path.join(HERE, "..")
 LET28, norm, strip, first_letter = bw.LET28, bw.norm, bw.strip, bw.first_letter
 dump = lambda path, obj, **kw: json.dump(obj, open(os.path.join(G, path), "w", encoding="utf-8"), ensure_ascii=False, **kw)
@@ -37,7 +37,7 @@ def main(forms_path):
         for i, (a, e) in enumerate(rows):
             if norm(a) in seen: continue
             seen.add(norm(a)); lv = level(i, len(rows))
-            words.append({"id": f"chc-{len(words)}", "ar": a, "en": e, "category": tid, "difficulty": lv, "age": "kids" if lv == 1 and tid not in ("jobs",) else "all",
+            words.append({"id": "chc-" + hashlib.sha1(norm(a).encode()).hexdigest()[:8], "ar": a, "en": e, "category": tid, "difficulty": lv, "age": "kids" if lv == 1 and tid not in ("jobs",) else "all",
                           "modes": ["describe"] if tid in DESCRIBE_ONLY else ["act", "describe"], "source": "curated", "verified": "curated"})
     dump("charades/words.json", words, indent=0)
     # ---- khanat
@@ -77,8 +77,11 @@ def main(forms_path):
         if any(norm(strip(s)) in h or h in norm(strip(s)) for h in have if len(h) > 10): continue
         c = cloze(s)
         if not c: continue
-        mw.append({"id": f"mw-cur-{nxt}", "deck": "saying", "text": {"ar": c[0], "en": ""}, "answer": {"ar": c[1], "en": ""}, "accept": [], "difficulty": 2, "age": "all",
+        mw.append({"id": "mw-cur-" + hashlib.sha1(norm(strip(s)).encode()).hexdigest()[:8], "deck": "saying", "text": {"ar": c[0], "en": ""}, "answer": {"ar": c[1], "en": ""}, "accept": [], "difficulty": 2, "age": "all",
                    "source": ["curated"], "verified": "curated", "full": s}); nxt += 1
+    for x in mw:   # ids of the repo's sayings were their position in wisdom.json: now a hash of the saying, so they survive a reorder
+        if x["id"].startswith("mw-wis-"): x["id"] = "mw-wis-" + hashlib.sha1(norm(strip(x["text"]["ar"].replace("___", x["answer"]["ar"]))).encode()).hexdigest()[:8]
+    assert len({x["id"] for x in mw}) == len(mw), "duplicate ids"
     dump("missing-word/items.json", mw, indent=0)
     print("missing-word", collections.Counter(x["deck"] for x in mw))
     # ---- letter-hive: 28 letters
@@ -125,6 +128,10 @@ def main(forms_path):
             if "missing" in pg or "redirect" in pg or pg.get("length", 0) < 3000: continue
             exists[pg["title"]] = pg["length"]
     BLOCK5 = {"تكفير", "تشييع", "جنازه", "مذبحه", "مقبره", "عقوبه", "وسواس", "خازوق", "مسحور", "شعوذه", "جريمه", "تدخين", "عنوسه", "كنيسه", "تابين", "ناووس", "مناضل", "ترهيب", "مقاتل", "تشهير", "تجريف", "تغريب", "علمنه", "عقيده", "تاويل", "فلسفه", "شفاعه", "تعذيب", "تجريم", "سياسه", "ضريبه", "تخريف", "تضليل", "بوليس", "سينما", "مسكنه", "مجهول", "مدسوس", "تشييط", "سياسي", "حكومه", "وزاره", "دبابه", "ذخيره", "طاعون", "تاميم", "ثالوث", "تعزير", "تعزيه", "عداوه", "تهجير", "سفاره", "تاييد", "تجنيد", "تسليح", "مقلاع", "صاروخ", "ابليس", "شيطان", "افيون", "خنزير", "اعدام", "احليل", "غرمول", "زانيه", "فاحشه", "مومسه", "مخنوث", "منكوح", "جاسوس", "هرطقه", "زندقه", "عفريت", "كابوس", "مخمور", "مدمنه", "مجذوم", "اسهال", "بقشيش", "بخشيش", "شيطنه", "هلوسه", "سفسطه", "مجذور", "مجدور", "قرصنه", "ثفروق", "غرنوق", "مسخره", "ساخره", "داعره", "عاهره", "خمره", "سكران", "سكيره", "نحوسه", "ملحمه", "معركه", "مقتله", "مقتول", "مجزره", "مشنقه", "قذيفه", "مقصله", "صليبي", "يسوعي", "انجيل", "اقنوم", "كهنوت", "اصحاح", "تثليث", "تنصير", "تعميد", "اسلمه", "عنعنه"}
+    # review pass 2026-11: words a family would not know (asafoetida, a fig-tree shoot...) or would not want (arsenic, insult, tyrant): out of the answers, still accepted as guesses
+    OBSCURE = "إفريز حرقدة حلتيت دركاه دغموس ساجور سكباج سليخة سنبوق شربين شرشور علجوم غمازة فاغرة فانيد فسيلة قطمير كرسوع كردون كروبي كناشة مذراة مرسين مزراب مزراق مسكان مسلفة معزقة مغلاق منفحة منثور نقارة هليلج خرشنة خيشوم ترقوة تنبول تناضح تنميل تلفيف تصفيح تصيير تفقيط تخلخل بهلول بيانة بليلة بلعوم برادة أمركة أفندي أكسيد زرنيخ تخسيس إهانة نميمة غطرسة طاغية عمولة تلفزة حاضنة حديدي تنفير تنفيس".split()
+    HARD_BLOCK = set(BLOCK5)
+    BLOCK5 |= {norm(w) for w in OBSCURE}
     ans, aseen = [], set()
     for t, (ar, en, rows) in T.items():
         for i, (a, e) in enumerate(rows):
@@ -138,7 +145,7 @@ def main(forms_path):
         ans.append({"word": w, "display": disp, "en": "", "category": "dictionary", "difficulty": 2 if exists[disp] >= 15000 else 3, "age": "all",
                     "source": "https://www.wikidata.org/wiki/Lexeme:" + lid, "verified": True})
     for w in list(accepted):
-        if w in BLOCK5: accepted.discard(w)
+        if w in HARD_BLOCK: accepted.discard(w)   # unsuitable words are refused as guesses too; merely rare ones are still accepted
     accepted |= {a["word"] for a in ans}
     dump("word5/answers.json", ans, indent=0)
     dump("word5/accepted.json", sorted(accepted))

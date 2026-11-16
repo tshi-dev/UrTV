@@ -27,7 +27,9 @@ def build(stats):
     out = {"quiz": [], "truefalse": []}
     names = [(ar, en) for z, q, en, ar, sym in ok]
     syms = [(s, s) for *_, s in ok]
+    SYM_OK = lambda z: z <= 54 or z in (74, 78, 79, 80, 82)   # the symbols and names people know; Yb, Hf and the like are not quiz questions
     for z, q, en, ar, sym in ok:
+        if not SYM_OK(z): continue
         src = [f"https://www.wikidata.org/wiki/{q}", f"https://en.wikipedia.org/wiki/{en.replace(' ', '_')}"]
         d = 1 if en in COMMON else (2 if z <= 54 else 3)
         a = (sym, sym)
@@ -36,6 +38,7 @@ def build(stats):
         out["quiz"].append(item(f"el-bysym-{z}", "quiz", "science", min(3, d + 1), "all", f"ما العنصر الذي رمزه الكيميائي {sym}؟",
             f"Which element has the chemical symbol {sym}?", (ar, en), pick_wrong(f"b{z}", names, (ar, en)), src))
         a2 = (ar, en)
+        if z > 20: continue   # «أي عنصر رقمه الذري Z»: only the first twenty, whose numbers are taught
         out["quiz"].append(item(f"el-name-{z}", "quiz", "science", min(3, d + 1), "all", f"أي عنصر رقمه الذري {z}؟",
             f"Which element has atomic number {z}?", a2, pick_wrong(f"n{z}", names, a2), src, numeric=True))
     return out

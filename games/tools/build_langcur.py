@@ -8,6 +8,11 @@ def q(prop):
     return f'''SELECT ?c ?v ?vl ?vla WHERE {{ ?c wdt:P463 wd:Q1065 ; wdt:P31 wd:Q3624078 ; wdt:{prop} ?v . FILTER NOT EXISTS {{ ?c wdt:P576 ?g }}
  ?v rdfs:label ?vl FILTER(lang(?vl)="en") ?v rdfs:label ?vla FILTER(lang(?vla)="ar") }}'''
 
+SHORT = {"إيسكودو جزر الرأس الأخضر": "إسكودو", "دوبرا ساو تومي وبرينسيب": "دوبرا", "كينا بابوا غينيا الجديدة": "كينا", "دولار ترينيداد وتوباغو": "دولار ترينيداد",
+         "دولار للولايات المتحدة": "الدولار الأمريكي"}
+# countries whose language is de facto, not written in law or shared with other official languages: left out of the language question
+DE_FACTO = {"United States", "United Kingdom", "Australia", "Mexico", "Japan"}
+
 def build():
     rows = geo_fetch.countries()
     ok = {k: v for k, v in rows.items() if v["en"] not in build_geo.SKIP and len(v["caps"]) == 1}
@@ -22,18 +27,20 @@ def build():
         cnt = collections.Counter()
         for c, (vq, (vla, vl)) in sorted(single.items()):
             ar_ans = vla[len("اللغة "):] if vla.startswith("اللغة ") else vla
+            ar_ans = SHORT.get(ar_ans, ar_ans)
+            if ok[c]["en"] in DE_FACTO and kind == "lang": continue   # no official language by law: an arguable question
             if len(ar_ans) > 22 or cnt[vq] >= 8: continue
             cnt[vq] += 1
             name = build_geo.NAMES.get(ok[c]["en"], ok[c]["en"])
             if kind == "lang":
-                qa, qe, cat = f"ما اللغة الرسمية في {ok[c]['ar']}؟", f"What is the official language of {name}?", "geography"
+                qa, qe, cat = f"ما اللغة الرسمية في {build_geo.AR_COUNTRY.get(ok[c]['ar'], ok[c]['ar'])}؟", f"What is the official language of {name}?", "geography"
                 en_ans = vl.replace(" language", "")
             else:
-                qa, qe, cat = f"ما عملة {ok[c]['ar']}؟", f"What is the currency of {name}?", "geography"
+                qa, qe, cat = f"ما عملة {build_geo.AR_COUNTRY.get(ok[c]['ar'], ok[c]['ar'])}؟", f"What is the currency of {name}?", "geography"
                 en_ans = vl
             a = (ar_ans, en_ans)
-            wrong_pool = [((p[0][len("اللغة "):] if p[0].startswith("اللغة ") else p[0]), p[1].replace(" language", "")) for p in pool_pairs(single)]
-            out["quiz"].append(item(f"geo-{kind}-{c}", "quiz", cat, 2, "all", qa, qe, a, pick_wrong(f"{kind}{c}", wrong_pool, a),
+            wrong_pool = [(SHORT.get(a0, a0), p[1].replace(" language", "")) for p in pool_pairs(single) for a0 in [(p[0][len("اللغة "):] if p[0].startswith("اللغة ") else p[0])]]
+            out["quiz"].append(item(f"geo-{kind}-{c}", "quiz", cat, 2 if ok[c]["en"] in build_geo.FAMOUS else 3, "all", qa, qe, a, pick_wrong(f"{kind}{c}", wrong_pool, a),
                                     [f"https://www.wikidata.org/wiki/{c}", f"https://www.wikidata.org/wiki/{vq}"]))
     return out
 

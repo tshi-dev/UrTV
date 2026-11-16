@@ -10,6 +10,10 @@ parts = [build_geo.build(), build_science.build(stats), build_quran.build(stats)
 files = collections.defaultdict(list)
 for p in parts:
     for t, items in p.items(): files[t] += items
+from common import leaks
+dropped_leaks = [i["id"] for i in files["quiz"] if leaks(i)]
+files["quiz"] = [i for i in files["quiz"] if not leaks(i)]
+stats["leaks_dropped"] = dropped_leaks
 data = os.path.join(os.path.dirname(__file__), "..", "data")
 for t, items in files.items():
     json.dump(items, open(os.path.join(data, t + ".json"), "w", encoding="utf-8"), ensure_ascii=False, indent=0)
