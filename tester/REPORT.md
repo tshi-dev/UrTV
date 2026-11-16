@@ -2881,3 +2881,12 @@ All four APKs from apk-next 376 installed over 349 (home 4.4/376). Start state: 
 - After 180 s: the page still shows the same card; no timeout message, no «try again».
 - Role launcherx; Home not tested again (nothing changed).
 Next: try 2 after a reboot (does adbd then show the dialog?). If not, the fix is on the TV side (adb_keys) or the app must tell the person to «Revoke USB debugging authorizations» first.
+
+## step 86 B rerun, try 2 on 376 — **setup completes, but HOME DOES NOT WORK: the watch says «ours not chosen»**
+- After a reboot, «Set everything up» → the REAL dialog appeared at once (fingerprint 65:B2:9E:6D…). So try 1's missing dialog was a first-start thing (adbd «Invalid base64 key» right after the install), gone after a reboot.
+- On the dialog: focus starts on «Always allow from this computer» (checkbox). OK ticks it (`checked=true`). **DOWN goes to «Cancel» (`android:id/button2`)**; LEFT then goes to «Allow» (`button1`) — confirmed with uiautomator and a picture (step86c/t2/02-focus-allow.png), then OK. (For the owner's remote: Select, Down, **Left**, Select.)
+- a+9 s: page «Suggested apps: tick the ones to install too» (TV Bro / SmartTube «already installed: left as it is», both unticked, but the line says «**2 apps chosen**» — wrong count), «Start» focused.
+- Start → progress «8 of 15 steps» at s+10, the Arabic note «اتصال التصحيح في هذا التلفزيون لا يبقى بعد إعادة التشغيل، فلن نعيد تشغيله…», «13 of 15 · 86% · Activate» at 02:24; around s+33 the TV's own **Settings** opened by itself over the page, s+45 Google TV's home came to the front, s+92 our screensaver. When I opened the setup page again it was on its report: **«انتهى الإعداد مع 0 خطوة لم تتم و1 تُركت (التفاصيل فوق)» · «15 of 15 steps، Took 02:41»** — the «details above» are not on the page (only Check/Prepare/Install/Activate/Report). Mixed languages: the page is English, its status lines are Arabic.
+- **Result: HOME role = launcherx; Home from YouTube ×5 (2 s and 6 s): Google TV every time.** 18 packages off (unchanged), no SetupRevert alarm.
+- **`logcat -s UrTVWatch`: «role stock wanted no» → «decision ours not chosen»** on every Home. So after a completed setup the «wanted» flag is NO: the add-on's watch thinks the person did not choose UrTV, and never brings it.
+Pictures: step86c/t2/ (s*, r*, report-top.png).
