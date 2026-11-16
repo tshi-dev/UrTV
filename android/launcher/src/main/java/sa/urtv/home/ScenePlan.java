@@ -141,14 +141,13 @@ final class ScenePlan {
 
     /**
      * 4.4 the owner: depth never makes a digit unreadable (the night lake's trees made its ٤ a ٢, the golden tower made a ٤ an ع) or hides the colon.
-     * Each digit of the clock as the digits' box holds it (digits 0.56 of its height wide, the colon 0.24, centred: «١٢:٣٠», and «٤:٥٨» either way
-     * round) may be covered by the scenery for at most COVER of its height, from its base, and under the colon as much (its dot never), the picture zoomed by k about the top centre. The same rule
+     * Each digit of the clock as the digits' box holds it (digits 0.56 of its height wide, the colon 0.24, centred: «١٢:٣٠» and «٤:٥٨») may be covered by the scenery for at most COVER of its height, from its base, and under the colon as much (its dot never), the picture zoomed by k about the top centre. The same rule
      * as the masks gate (.github/tools/photo_masks.py), which places a pack's clocks by it; here it holds wherever the clock really is (the cards or
      * the apps row move it). sky: the scenery's top in columns (any number, px of 1080), as skyline() gives it, read with smoothing so a spike a few
      * px wide does not count.
      */
     static final float COVER = 0.25f;
-    static final float[][] GLYPHS = {{0.56f, 0.56f, -0.24f, 0.56f, 0.56f}, {0.56f, -0.24f, 0.56f, 0.56f}, {0.56f, 0.56f, -0.24f, 0.56f}};
+    static final float[][] GLYPHS = {{0.56f, 0.56f, -0.24f, 0.56f, 0.56f}, {0.56f, -0.24f, 0.56f, 0.56f}};   // «١٢:٣٠» and «٤:٥٨» (the time runs left to right)
 
     /** the most of any digit's height the scenery covers (0..1), or of the colon's ({@code colon}) */
     static float cover(int[] sky, int[] box, int w, int h, float k, boolean colon) {

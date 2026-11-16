@@ -80,7 +80,7 @@ public final class ScenePlanRun {
                     boolean draw = ScenePlan.draws(sc.depth, ScenePlan.layout(cards, place.equals("couch")), sc.is(ScenePlan.OWNER_OK), l48, l192, b2, 1920, 1080);
                     out.append("depth\t").append(sc.id).append('\t').append(place).append('\t').append(draw ? "FIT" : "FRONT-ONLY").append('\t')
                        .append(String.format("%.3f", ScenePlan.cover(l192, b2, 1920, 1080, 1f))).append('\t').append(String.format("%.3f", ScenePlan.cover(l192, b2, 1920, 1080, 1f, true))).append('\t')
-                       .append(b2[0]).append(',').append(b2[1]).append(',').append(b2[2]).append(',').append(b2[3]).append('\t').append(sc.is(ScenePlan.OWNER_OK) && !cards).append('\t')
+                       .append(b2[0]).append(',').append(b2[1]).append(',').append(b2[2]).append(',').append(b2[3]).append('\t').append(sc.is(ScenePlan.OWNER_OK) && ScenePlan.layout(cards, place.equals("couch")) != null && (sc.depth == null || sc.depth.contains("," + ScenePlan.layout(cards, place.equals("couch")) + ","))).append('\t')
                        .append(!draw || sc.is(ScenePlan.OWNER_OK) || ScenePlan.legible(l192, b2, 1920, 1080, 1f)).append('\n');
                 }
             }
