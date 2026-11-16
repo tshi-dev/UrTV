@@ -729,7 +729,7 @@ def history(args):
                 want, sure = expected(spec, season, clubs(evs))
                 n, empty, r, found = 0, 0, 1, 0
                 limit = max([60] + [x + 3 for x in rounds if x < 100])
-                whole = ti.PAID and how["season"] > 0 and not (want and len(evs) < want)   # the paid key's season list is the whole season
+                whole = ti.PAID and how["season"] > 0 and not (want and sure and len(evs) < want)   # the paid key's season list is the whole season
                 while not whole and r <= limit and empty < (3 if found else 4):
                     k = keep(ask(f"eventsround.php?id={lg}&r={r}&s={season}").get("events"), lg, season, evs)
                     got_round = k or any(str(e.get("intRound")) == str(r) for e in evs.values())
