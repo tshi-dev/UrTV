@@ -17,6 +17,7 @@ OUT = ROOT / "docs/SETTINGS-TREE.md"
 # a row's choices: (Prefs constant of [value, name] pairs) or (values constant, names constant), and the Prefs getter its default is read from
 CHOICES = {
     "الأرقام": ("DIGITS", None, "digits"),
+    "أشكال جاهزة": ("PRESETS", "PRESET_NAMES", "preset"),
     "شكل كنبة": (None, None, "couchOn"),
     "التخطيط": ("HOME_LAYOUTS", "HOME_LAYOUT_NAMES", "homeLayout"),
     "الخلفية": ("HOME_BGS", "HOME_BG_NAMES", "homeBg"),

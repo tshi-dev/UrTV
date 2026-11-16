@@ -51,7 +51,11 @@ the phone page's key, «مركز التحكم» the control centre's row that op
     مثال للوكيل: optimize/saver.sh wxmore on  (`off` = the default)
       القيم المقبولة: on|off
 — المظهر
-—— شكل كنبة والتخطيط
+—— أشكال جاهزة والتخطيط
+——— أشكال جاهزة [الرئيسية وشاشة التوقف]
+    الخيارات: شكلك المعتاد / منظر وساعة / صورة فقط / مواقيت يومي / مباريات اليوم / ليل هادئ
+    مثال للوكيل: optimize/saver.sh preset family  (tv, couch, clean, family, sport, calm)
+      القيم المقبولة: tv|couch|clean|family|sport|calm
 ——— شكل كنبة [الرئيسية]
     الخيارات: مفعّل / متوقف
     الأصل: متوقف
@@ -744,6 +748,10 @@ the phone page's key, «مركز التحكم» the control centre's row that op
      مثال للوكيل: optimize/saver.sh watchnext off  (`on`, the default)
        القيم المقبولة: on|off
 — المظهر والخلفيات
+—— أشكال جاهزة [الرئيسية وشاشة التوقف]
+   الخيارات: شكلك المعتاد / منظر وساعة / صورة فقط / مواقيت يومي / مباريات اليوم / ليل هادئ
+   مثال للوكيل: optimize/saver.sh preset family  (tv, couch, clean, family, sport, calm)
+     القيم المقبولة: tv|couch|clean|family|sport|calm
 —— شكل كنبة [الرئيسية]
    الخيارات: مفعّل / متوقف
    الأصل: متوقف

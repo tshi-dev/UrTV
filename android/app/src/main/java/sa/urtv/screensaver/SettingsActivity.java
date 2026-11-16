@@ -456,7 +456,9 @@ public class SettingsActivity extends Activity {
         // «المظهر»: one page for everything about the look of both apps (AppearanceActivity), each choice with its picture
         // 4.3.3 «الواجهة»: the home as it was (the default), the football home, or «الآفاق» (a scene with the glass clock behind its scenery); and the scene packs
         // 4.4 the owner: one switch; on applies the Couch preset and keeps the person's own values, off puts them back (Prefs.setCouch)
-        row("شكل كنبة", prefs.couchLabel(), R.drawable.ic_eye, new Runnable() { public void run() { flipCouch(); } });
+        // 4.4 the owner: «أشكال جاهزة», six looks at once (Prefs.setPreset); with PRESETS_REPLACE_COUCH it takes the place of «شكل كنبة»
+        row("أشكال جاهزة", prefs.presetLabel(), R.drawable.ic_eye, new Runnable() { public void run() { pickPreset(); } });
+        if (!Prefs.PRESETS_REPLACE_COUCH) row("شكل كنبة", prefs.couchLabel(), R.drawable.ic_eye, new Runnable() { public void run() { flipCouch(); } });
         row("التخطيط", Prefs.homeLayoutLabel(prefs.homeLayout()), R.drawable.ic_eye, new Runnable() { public void run() { pickHomeLayout(); } });
         row("الخلفية", Prefs.homeBgLabel(prefs.homeBg()), R.drawable.ic_eye, new Runnable() { public void run() {
             pickOne("الخلفية", Prefs.HOME_BG_NAMES, java.util.Arrays.asList(Prefs.HOME_BGS).indexOf(prefs.homeBg()), i -> prefs.setHomeBg(Prefs.HOME_BGS[i])); } });
@@ -685,6 +687,93 @@ public class SettingsActivity extends Activity {
      * «شكل كنبة» flipped here: the home's look changes with it (Prefs.setCouch), and so does this screen: the settings open again in the other layout,
      * on its look section with the focus on the switch.
      */
+    /**
+     * «أشكال جاهزة»: the six looks, each with its picture (assets/presets/<key>.jpg, the home with its screensaver small in a corner) and what it
+     * sets; OK applies it (Prefs.setPreset). When the look changes the settings screen's layout (the Couch look's side list), the settings open again
+     * in the other layout on this row, as «شكل كنبة» did.
+     */
+    private void pickPreset() {
+        final String[] keys = Prefs.PRESETS;
+        final LinearLayout box = new LinearLayout(this);
+        box.setOrientation(LinearLayout.HORIZONTAL);
+        box.setLayoutDirection(Dir.layout());
+        box.setPadding(dp(12), dp(4), dp(12), dp(4));
+        final android.widget.ListView lv = new android.widget.ListView(this);
+        lv.setDividerHeight(0);
+        lv.setSelector(GlassPaint.focused(this, look, 12));
+        lv.setAdapter(new android.widget.BaseAdapter() {
+            @Override public int getCount() { return keys.length; }
+            @Override public Object getItem(int i) { return keys[i]; }
+            @Override public long getItemId(int i) { return i; }
+            @Override public View getView(int i, View old, android.view.ViewGroup parent) {
+                LinearLayout r = new LinearLayout(SettingsActivity.this);
+                r.setOrientation(LinearLayout.VERTICAL);
+                r.setPadding(dp(16), dp(10), dp(16), dp(10));
+                TextView n = new TextView(SettingsActivity.this);
+                n.setText(conv(Prefs.PRESET_NAMES[i]));
+                n.setTextColor(focusColors(look.text, look.onFocus));
+                n.setTextSize(TypedValue.COMPLEX_UNIT_SP, 19);
+                n.setTypeface(font("Thmanyah-Medium"));
+                r.addView(n);
+                TextView a = new TextView(SettingsActivity.this);
+                a.setText(conv(Prefs.PRESET_ABOUT[i]));
+                a.setTextColor(focusColors(look.sub, look.onFocusSub));
+                a.setTextSize(TypedValue.COMPLEX_UNIT_SP, 13);
+                a.setTypeface(font("Thmanyah-Regular"));
+                r.addView(a);
+                return r;
+            }
+        });
+        box.addView(lv, new LinearLayout.LayoutParams(0, dp(380), 1f));
+        final ImageView pic = new ImageView(this);
+        pic.setScaleType(ImageView.ScaleType.CENTER_CROP);
+        pic.setOutlineProvider(new ViewOutlineProvider() {
+            @Override public void getOutline(View v, Outline o) { o.setRoundRect(0, 0, v.getWidth(), v.getHeight(), dp(18)); }
+        });
+        pic.setClipToOutline(true);
+        final LinearLayout.LayoutParams pp = new LinearLayout.LayoutParams(dp(480), dp(270));
+        pp.setMarginStart(dp(16));
+        pp.gravity = Gravity.CENTER_VERTICAL;
+        box.addView(pic, pp);
+        final int[] shown = {-1};
+        final Runnable update = () -> {
+            int i = lv.getSelectedItemPosition();
+            if (i < 0) i = Math.max(0, java.util.Arrays.asList(keys).indexOf(prefs.preset()));
+            if (i == shown[0]) return;
+            shown[0] = i;
+            try (InputStream in = getAssets().open("presets/" + keys[i] + ".jpg")) {
+                android.graphics.drawable.Drawable old = pic.getDrawable();
+                pic.setImageBitmap(android.graphics.BitmapFactory.decodeStream(in));
+                if (old instanceof android.graphics.drawable.BitmapDrawable) ((android.graphics.drawable.BitmapDrawable) old).getBitmap().recycle();
+            } catch (java.io.IOException | RuntimeException e) { pic.setImageDrawable(null); }
+        };
+        lv.setOnItemSelectedListener(new android.widget.AdapterView.OnItemSelectedListener() {
+            @Override public void onItemSelected(android.widget.AdapterView<?> p, View v, int pos, long id) { update.run(); }
+            @Override public void onNothingSelected(android.widget.AdapterView<?> p) { }
+        });
+        final AlertDialog dialog = new Dlg(this).setTitle("أشكال جاهزة").setView(box).setNegativeButton("إلغاء", null).create();
+        lv.setOnItemClickListener((p, v, pos, id) -> { dialog.dismiss(); applyPreset(keys[pos]); });
+        dialog.setOnShowListener(d -> {
+            dress(dialog);
+            dialog.getWindow().setLayout(Math.min(getResources().getDisplayMetrics().widthPixels - dp(48), dp(940)), android.view.ViewGroup.LayoutParams.WRAP_CONTENT);
+            lv.requestFocus();
+            lv.setSelection(Math.max(0, java.util.Arrays.asList(keys).indexOf(prefs.preset())));
+            update.run();
+        });
+        dialog.setOnDismissListener(d -> pic.setImageDrawable(null));
+        dialog.show();
+    }
+
+    /** a look chosen: applied; the settings open again in the other layout when it changed (the Couch look's side list), else drawn again */
+    private void applyPreset(String key) {
+        boolean wasClassic = !prefs.couchOn();
+        prefs.setPreset(key);
+        if (wasClassic == !prefs.couchOn()) { render(); return; }
+        startActivity(new Intent(this, SettingsActivity.class).putExtra("screen", "look").putExtra("hubAt", "look").putExtra("want", "أشكال جاهزة")
+            .addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION));
+        finish();
+    }
+
     private void flipCouch() {
         prefs.setCouch(!prefs.couchOn());
         startActivity(new Intent(this, SettingsActivity.class).putExtra("screen", "look").putExtra("hubAt", "look").putExtra("want", "شكل كنبة")

@@ -1245,11 +1245,143 @@ final class Prefs {
         for (String[] l : LOOKS) if (l[0].equals(key)) { sp.edit().putString("homeLayout", l[2]).putString("homeBg", l[3]).putString("homeClock", l[4]).putString("appsStyle", l[5]).apply(); return; }
     }
     /**
-     * 4.4 the owner: «شكل كنبة» is one switch (off by default). On: the Couch preset at once, and the person's own four values kept; off: those put
-     * back exactly. A row changed while on leaves it on, and its line says «مخصّص». A TV that has the couch values with no switch stored reads on.
+     * 4.4 the owner: «أشكال جاهزة» (docs/mockups/presets): six looks, each a set of values for rows that already exist (no cost when the TV runs).
+     * Choosing one keeps the person's own values once (presetBefore, the first time a look is left from «شكلك المعتاد»), puts them back, then sets
+     * the look's own; «شكلك المعتاد» puts them back exactly. A row changed after reads «مخصّص». The city, the adhan, the teams and the locks are never
+     * touched: a look is the look only. Two of the owner's open questions are flags here, both on until he says otherwise.
      */
-    boolean couchOn() { return sp.contains("couchOn") ? sp.getBoolean("couchOn", false) : "couch".equals(look3()); }
+    static final boolean PRESETS_REPLACE_COUCH = true;    // «أشكال جاهزة» replaces the «شكل كنبة» switch («منظر وساعة» is the Couch look)
+    static final boolean CLEAN_HIDES_BUTTONS = true;      // «صورة فقط» hides the home's round buttons (they stay in the control centre and the menu key)
+    static final String[] PRESETS = {"tv", "couch", "clean", "family", "sport", "calm"};
+    static final String[] PRESET_NAMES = {"شكلك المعتاد", "منظر وساعة", "صورة فقط", "مواقيت يومي", "مباريات اليوم", "ليل هادئ"};
+    static final String[] PRESET_ABOUT = {
+        "اختياراتك كما كانت قبل أي شكل، والتطبيقات مربعات ملونة",
+        "تخطيط كنبة، الآفاق، ساعة زجاجية خلف الصورة، التطبيقات أيقونات، داكن",
+        CLEAN_HIDES_BUTTONS ? "الصورة والساعة الزجاجية فقط، بلا بطاقات ولا تحية ولا أزرار" : "الصورة والساعة الزجاجية فقط، بلا بطاقات ولا تحية",
+        "ساعة زجاجية، والصلوات الست في صف، ومواقيت اليوم في شاشة التوقف",
+        "تخطيط كرة القدم، مباشر الآن ومباريات فرقك والترتيب، داكن",
+        "الصورة معتّمة، ساعة كبيرة، الصلاة القادمة فقط، داكن مع تعتيم الليل"};
+    /** what a look sets, in this order; its Arabic names for the «مخصّص» line */
+    static final String[] PRESET_FIELDS = {"layout", "bg", "clock", "apps", "cards", "greeting", "buttons", "appearance", "nightDim", "saverPanel", "clockSize", "wallDim"};
+    static final String[] PRESET_FIELD_NAMES = {"التخطيط", "الخلفية", "الساعة", "شكل التطبيقات", "البطاقات", "التحية والطقس", "الأزرار", "الإضاءة", "تعتيم الليل",
+        "بطاقة شاشة التوقف", "حجم الساعة", "تعتيم الصورة"};
+    /** each look's values (null: the person's own); «شكلك المعتاد» is the person's own, these are its values when nothing was kept */
+    static final String[][] PRESET_VALUES = {
+        {"classic", "photos", "plain", "tiles", null, null, null, null, null, null, null, null},
+        {"couch", "scenes", "glass", "icons", null, null, null, "dark", null, "none", null, null},
+        {"classic", null, "glass", null, "none", "false", CLEAN_HIDES_BUTTONS ? "hidden" : null, null, null, "none", null, null},
+        {"classic", null, "glass", null, "prayerrow", null, null, null, null, "prayers", null, null},
+        {"football", null, "plain", null, "livenow,nextmatches,minitable", null, null, "dark", null, "matchday", null, null},
+        {"classic", null, "plain", null, "nextprayer", "false", null, "dark", "true", "none", "large", "40"}};
+    static final String BUTTONS_HIDDEN = "markets,matches,center,phone|false|false|false";   // pillsHidden|listenPill|tasksPill|searchPill
+    String presetField(String f) {
+        switch (f) {
+            case "layout": return homeLayout();
+            case "bg": return homeBg();
+            case "clock": return homeClock();
+            case "apps": return appsStyle();
+            case "cards": return homePanel();
+            case "greeting": return String.valueOf(greeting());
+            case "buttons": return pillsHidden() + "|" + listenPill() + "|" + tasksPill() + "|" + searchPill();
+            case "appearance": return appearance();
+            case "nightDim": return String.valueOf(nightDim());
+            case "saverPanel": return panel();
+            case "clockSize": return clockSize();
+            case "wallDim": return String.valueOf(wallDim());
+        }
+        return "";
+    }
+    void setPresetField(String f, String v) {
+        if (v == null) return;
+        switch (f) {
+            case "layout": setHomeLayout(v); break;
+            case "bg": setHomeBg(v); break;
+            case "clock": setHomeClock(v); break;
+            case "apps": setAppsStyle(v); break;
+            case "cards": setHomePanels(java.util.Arrays.asList(v.split(","))); break;
+            case "greeting": setGreeting(Boolean.parseBoolean(v)); break;
+            case "buttons": {
+                String[] b = ("hidden".equals(v) ? BUTTONS_HIDDEN : v).split("\\|", -1);
+                if (b.length != 4) return;
+                setPillsHidden(b[0]); setListenPill(Boolean.parseBoolean(b[1])); setTasksPill(Boolean.parseBoolean(b[2])); setSearchPill(Boolean.parseBoolean(b[3]));
+                break;
+            }
+            case "appearance": setAppearance(v); break;
+            case "nightDim": setNightDim(Boolean.parseBoolean(v)); break;
+            case "saverPanel": setPanel(v); break;
+            case "clockSize": setClockSize(v); break;
+            case "wallDim": try { setWallDim(Integer.parseInt(v)); } catch (NumberFormatException e) { } break;
+        }
+    }
+    private String presetNow() {
+        StringBuilder b = new StringBuilder();
+        for (String f : PRESET_FIELDS) b.append(b.length() == 0 ? "" : "\n").append(f).append('=').append(presetField(f));
+        return b.toString();
+    }
+    private void presetPut(String saved) {
+        for (String line : saved.split("\n")) {
+            int eq = line.indexOf('=');
+            if (eq > 0) setPresetField(line.substring(0, eq), line.substring(eq + 1));
+        }
+    }
+    /** the look chosen ("tv" when none); a TV that had «شكل كنبة» on reads «منظر وساعة», its four values kept as the person's own */
+    String preset() {
+        if (!sp.contains("preset") && sp.getBoolean("couchOn", false)) {
+            String[] b = sp.getString("couchBefore", "").split(",");
+            String before = b.length == 4 ? "layout=" + b[0] + "\nbg=" + b[1] + "\nclock=" + b[2] + "\napps=" + b[3] : "";
+            sp.edit().putString("preset", "couch").putString("presetBefore", before).putString("presetApplied", presetNow()).apply();
+        }
+        String v = sp.getString("preset", "tv");
+        return java.util.Arrays.asList(PRESETS).contains(v) ? v : "tv";
+    }
+    void setPreset(String key) {
+        int i = java.util.Arrays.asList(PRESETS).indexOf(key);
+        if (i < 0) return;
+        String before = sp.getString("presetBefore", null);
+        if ("tv".equals(key)) {
+            if (before != null) presetPut(before);
+            else for (int k = 0; k < PRESET_FIELDS.length; k++) setPresetField(PRESET_FIELDS[k], PRESET_VALUES[0][k]);
+            sp.edit().remove("preset").remove("presetBefore").remove("presetApplied").putBoolean("couchOn", false).remove("couchBefore").apply();
+            return;
+        }
+        if (before == null) { before = presetNow(); sp.edit().putString("presetBefore", before).apply(); }   // the person's own, kept once
+        else presetPut(before);                                                                                // back to them, then the look
+        for (int k = 0; k < PRESET_FIELDS.length; k++) setPresetField(PRESET_FIELDS[k], PRESET_VALUES[i][k]);
+        sp.edit().putString("preset", key).putString("presetApplied", presetNow()).putBoolean("couchOn", "couch".equals(key)).remove("couchBefore").apply();
+    }
+    /** the rows changed since the look was chosen (their Arabic names), none while it is as chosen */
+    List<String> presetChanged() {
+        List<String> out = new ArrayList<>();
+        if ("tv".equals(preset())) return out;
+        for (String line : sp.getString("presetApplied", "").split("\n")) {
+            int eq = line.indexOf('=');
+            if (eq <= 0) continue;
+            int k = java.util.Arrays.asList(PRESET_FIELDS).indexOf(line.substring(0, eq));
+            if (k >= 0 && !line.substring(eq + 1).equals(presetField(PRESET_FIELDS[k]))) out.add(PRESET_FIELD_NAMES[k]);
+        }
+        return out;
+    }
+    static String presetName(String key) { int i = java.util.Arrays.asList(PRESETS).indexOf(key); return PRESET_NAMES[Math.max(0, i)]; }
+    /** the row's line: the look, or «مخصّص (منظر وساعة، وتغيّر: الساعة)», or «…، وتغيّر أكثر من صف» */
+    String presetLabel() {
+        String key = preset();
+        List<String> ch = presetChanged();
+        if (ch.isEmpty()) return presetName(key);
+        return ch.size() == 1 ? String.format("مخصّص (%s، وتغيّر: %s)", presetName(key), ch.get(0)) : String.format("مخصّص (%s، وتغيّر أكثر من صف)", presetName(key));
+    }
+    /** saver.sh show: "family" or "family (custom)" */
+    String presetShow() { return preset() + (presetChanged().isEmpty() ? "" : " (custom)"); }
+
+    /**
+     * 4.4 the owner: «شكل كنبة» was one switch. With PRESETS_REPLACE_COUCH it is the look «منظر وساعة»: on chooses it, off chooses «شكلك المعتاد».
+     * Without it, the switch as before: on, the Couch preset at once and the person's own four values kept; off, those put back exactly.
+     */
+    boolean couchOn() {
+        if (PRESETS_REPLACE_COUCH) return "couch".equals(preset());
+        return sp.contains("couchOn") ? sp.getBoolean("couchOn", false) : "couch".equals(look3());
+    }
     void setCouch(boolean on) {
+        if (PRESETS_REPLACE_COUCH) { if (on != couchOn()) setPreset(on ? "couch" : "tv"); return; }
         if (on == couchOn() && sp.contains("couchOn")) return;
         if (on) {
             sp.edit().putString("couchBefore", homeLayout() + "," + homeBg() + "," + homeClock() + "," + appsStyle()).putBoolean("couchOn", true).apply();

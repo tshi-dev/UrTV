@@ -45,7 +45,10 @@
 #   optimize/saver.sh homemine only                home screen: «صوري» with ours (mix), only them (only), none (off), or as the screensaver's (same, the default)
 #   optimize/saver.sh appearance auto              home screen: «المظهر ← الإضاءة», dark (default), light, or auto (light from sunrise until Maghrib in the city)
 #   optimize/saver.sh look navy                    all our screens: «المظهر ← الشكل», glass (default), graphite, navy, clean, or sand
-#   optimize/saver.sh couch on                    4.4 «المظهر ← شكل كنبة»: on (the Couch preset; the person's own four values kept) or off (the default; they come back)
+#   optimize/saver.sh preset family               4.4 «المظهر ← أشكال جاهزة»: tv (شكلك المعتاد: the person's own values back, the default), couch (منظر وساعة),
+#                                                 clean (صورة فقط), family (مواقيت يومي), sport (مباريات اليوم) or calm (ليل هادئ); show says "preset: family" or
+#                                                 "family (custom)" once a row was changed after. The city, the adhan, the teams and the locks are never touched
+#   optimize/saver.sh couch on                    4.4 the same as "preset couch" (on) or "preset tv" (off)
 #   optimize/saver.sh homelayout football         the home's layout («التخطيط»): classic (our layout, the default), couch (the cards in a row above the apps, the big clock centred) or football (weather, prayers, today's games)
 #   optimize/saver.sh background scenes           the home's background («الخلفية»): photos (the photos and photo packs, the default) or scenes
 #   optimize/saver.sh clock glass                 the home's clock («الساعة»): plain (the default) or glass (behind the photo's scenery where the photo has a cut-out)
@@ -268,6 +271,7 @@ case "${1:-}" in
   appearance) set1 appearance "${2:?usage: optimize/saver.sh appearance dark|light|auto}" ;;
   look) set1 look "${2:?usage: optimize/saver.sh look glass|graphite|navy|clean|sand}" ;;
   homelayout) set1 homelayout "${2:?usage: optimize/saver.sh homelayout classic|couch|football}" ;;
+  preset)     set1 preset "${2:?usage: optimize/saver.sh preset tv|couch|clean|family|sport|calm}" ;;
   couch)      set1 couch "${2:?usage: optimize/saver.sh couch on|off}" ;;
   background) set1 background "${2:?usage: optimize/saver.sh background photos|scenes}" ;;
   clock)      set1 clock "${2:?usage: optimize/saver.sh clock plain|glass}" ;;
