@@ -1,8 +1,8 @@
 {
- "v": 4,
+ "v": 5,
  "pack": "couch",
  "name": "مشاهد Couch TV",
- "sha256": "88c0a35b94d4cad8514287ef3a68faa5a24aee6e4dc783384503999a496aeecf",
- "bytes": 1772939,
+ "sha256": "19aba4ef8597789425ee898cb9e966fbaed1e039133c19157182c35f2b0fe271",
+ "bytes": 1434913,
  "credits": "couch-tv (https://github.com/Seagey/couch-tv) scene backgrounds, made with an AI image model, MIT License, Copyright (c) 2026 Seagey"
 }
