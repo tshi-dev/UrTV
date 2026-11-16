@@ -1,0 +1,38 @@
+name: Horizon photo from Commons
+
+# 4.4 a photo for a horizon (the owner: a clean Riyadh night photo, CC BY or BY-SA): search Commons for candidates (a numbered sheet to choose
+# from by eye) or fetch the chosen one (cropped to 1920x1080, its licence checked again, its credit written). The result goes on the branch named
+# in `branch` (never master or next), for the photo masks tool to cut. Run by hand only.
+on:
+  workflow_dispatch:
+    inputs:
+      mode: {description: "search or fetch", required: true, default: search}
+      words: {description: "search: the words; fetch: the File: title", required: true}
+      cats: {description: "search: categories, | between them", required: false, default: ""}
+      id: {description: "fetch: the scene id (riyadh)", required: false, default: riyadh}
+      branch: {description: "the branch the result goes on", required: true, default: work/433-horizon-photo}
+
+permissions:
+  contents: write
+
+jobs:
+  pick:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - run: pip install Pillow
+      - name: Run
+        env: {MODE: "${{ inputs.mode }}", WORDS: "${{ inputs.words }}", CATS: "${{ inputs.cats }}", SID: "${{ inputs.id }}"}
+        run: |
+          if [ "$MODE" = search ]; then IFS='|' read -ra C <<< "$CATS"; python3 -I .github/tools/commons_pick.py search "$RUNNER_TEMP/out" "$WORDS" "${C[@]}"
+          else python3 -I .github/tools/commons_pick.py fetch "$RUNNER_TEMP/out" "$WORDS" "$SID"; fi
+      - name: Push
+        env: {B: "${{ inputs.branch }}", MODE: "${{ inputs.mode }}"}
+        run: |
+          case "$B" in master|next|main) echo "not that branch"; exit 1;; esac
+          git config user.name "github-actions[bot]"; git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          if git fetch -q origin "$B"; then git checkout -q -B "$B" FETCH_HEAD; else git checkout -q --orphan "$B"; git rm -rfq --cached . >/dev/null; find . -mindepth 1 -maxdepth 1 ! -name .git -exec rm -rf {} +; fi
+          mkdir -p "$MODE" && cp -r "$RUNNER_TEMP/out/." "$MODE/"
+          git add "$MODE"; git diff --cached --quiet && exit 0
+          git commit -qm "Horizon photo: $MODE"; git push origin "$B"
