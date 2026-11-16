@@ -2494,12 +2494,15 @@ public class SettingsActivity extends Activity {
         return name;
     }
 
-    /** «إضافات تلفزيونك» is installed and its service is turned on in the TV's accessibility list (it answers the buttons over other apps) */
+    /** «إضافات تلفزيونك» is installed and Android runs its service (it answers the buttons over other apps); only read, from Android's own list */
     private boolean extrasOn() {
         try {
             getPackageManager().getPackageInfo("sa.urtv.extras", 0);
-            String on = android.provider.Settings.Secure.getString(getContentResolver(), android.provider.Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES);
-            return on != null && on.contains("sa.urtv.extras/");
+            android.view.accessibility.AccessibilityManager am = (android.view.accessibility.AccessibilityManager) getSystemService(ACCESSIBILITY_SERVICE);
+            if (am == null) return false;
+            for (android.accessibilityservice.AccessibilityServiceInfo i : am.getEnabledAccessibilityServiceList(android.accessibilityservice.AccessibilityServiceInfo.FEEDBACK_ALL_MASK))
+                if (i.getId() != null && i.getId().startsWith("sa.urtv.extras/")) return true;
+            return false;
         } catch (Exception e) {
             return false;
         }
