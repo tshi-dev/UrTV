@@ -56,6 +56,11 @@ check("docs/RESCUE.md: Arabic first, the rescue app through Downloader, the phon
       doc.index("إنقاذ تلفزيونك") < doc.index("## English") and "Bugjaeger" in doc and "Remote ADB Shell" in doc and "urtv-rescue.apk" in doc
       and re.search(r"```\npm enable com\.google\.android\.apps\.tv\.launcherx; [^\n]*pm enable com\.google\.android\.tungsten\.setupwraith; [^\n]*cmd role add-role-holder --user 0 android\.app\.role\.HOME com\.google\.android\.apps\.tv\.launcherx; [^\n]*input keyevent KEYCODE_HOME\n```", doc)
       and "disable" not in doc.split("```")[1] and "uninstall" not in doc.split("```")[1])
+order = [doc.index(w) for w in ("## ١. من التلفزيون وحده", "## ٢. على التلفزيون: «إنقاذ تلفزيونك»", "## ٣. من جوال أندرويد", "## ٤. من آيفون: iSH", "## ٥. من أي كمبيوتر فيه Chrome")]
+check("owner 4.4: a route for every person, easiest first (the TV alone, the rescue app, Android phone, iPhone with iSH, any computer with Chrome via Tango), each saying what it needs, the same one line, English with all five",
+      order == sorted(order) and order[-1] < doc.index("## English") and doc.count("يحتاج") >= 3 and "إظهار تطبيقات النظام" in doc and "apk add android-tools" in doc
+      and "adb connect عنوان_التلفزيون:5555" in doc and "tangoapp.dev" in doc and "MIT" in doc and doc.count("```") == 2
+      and all(w in doc.split("## English", 1)[1] for w in ("Show system apps", "iSH", "Tango", "USB data cable")))
 boot, hook, main = text(SETUP / "SetupBootReceiver.java"), text(SETUP / "SetupHook.java"), text(SETUP.parent / "MainActivity.java")
 check("the home's own check: two boots in a row where our home (the TV's Home) never came up and crashed: the next start offers «رجّع الواجهة الأصلية» first (nothing done by itself)",
       "homeGuard(app);" in boot and "BootGuard.onBoot(prev, Math.max(0, crashesSince(app, prev.bootAt))" in boot and "store.put(SetupHook.STOCK_OFFER" in boot
