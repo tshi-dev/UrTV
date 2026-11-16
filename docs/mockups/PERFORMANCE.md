@@ -9,13 +9,13 @@ Nothing here is built yet. The numbers are budgets for the build, checked by tes
 
 | File | What | 1080 budget | 4K (`@2x`) |
 |---|---|---|---|
-| `scene-<id>.jpg` | the photo, 1920x1080, JPEG q 82, progressive off | ≤ 220 KB | ≤ 1.1 MB, NORMAL tier on a 4K panel only |
+| `scene-<id>.jpg` | the photo, 1920x1080, JPEG q 82, progressive off | ≤ 320 KB (a detailed photo, AlUla, needed more than 220 KB) | ≤ 1.1 MB, NORMAL tier on a 4K panel only |
 | `scene-<id>-glass.jpg` | a blurred, brightened copy: the clock's glass fill and the cards' glass | ≤ 80 KB (it is a blur: 960x540 scaled up is enough) | none |
-| `scene-<id>-fg.webp` | the subject mask: everything in front of the sky, the sky transparent, drawn over the clock | ≤ 180 KB, lossy WebP with alpha | ≤ 700 KB |
-| `scene-<id>.json` | clock box (top, size, x), date line, ink colours, the mask's bounding box | < 1 KB | |
+| `scene-<id>-fg.webp` | the subject mask: everything in front of the sky, the sky transparent, drawn over the clock | ≤ 200 KB, lossy WebP with alpha | ≤ 700 KB |
+| `scenes.tsv` (one line a scene) | the digits' top and bottom, the mask's bounding box, dark or light clock, the credit | < 1 KB | |
 
-Each pack of five scenes at 1080 is about 2.4 MB (the couch-tv set measures 2.3 MB). The default pack ships in the launcher APK and the
-other is downloaded when chosen, the same way as the photo packs (`photos/packs.json`, sha256 checked); the 4K copies
+Each pack of five scenes at 1080 is about 2 to 2.5 MB. «مشاهد السعودية» ships in the launcher APK (2.4 MB); «مشاهد Couch TV» (1.9 MB) is downloaded once
+when chosen, from urtv-data's scenes/ (index.json gives its sha256 and size, checked before the zip is opened); the 4K copies
 are fetched on first use by a 4K NORMAL TV only and cached, never bundled.
 
 The subject masks are made once, offline, never on the TV (no segmentation model in the app). Only the pixels of the photo are kept;
@@ -54,8 +54,8 @@ The memory tiers already exist (`dock.sh ramtier`, docs/SETTINGS.md): LOW is And
 scene home is the static fallback, by itself, with nothing to set:
 
 - the photo at 1280x720 (`inSampleSize` 2 on the 1080 file), `RGB_565`;
-- **no subject mask**: the clock sits above the scenery (each scene's JSON has a `lowTop` that keeps the digits clear of it), so the
-  depth trick costs nothing; the glass fill stays (it is a shader, not a layer);
+- **no subject mask**: the clock is drawn over the scenery (no depth, no extra layer, no memory for it); the glass fill stays (it is a
+  shader, not a layer);
 - no crossfade, no drift, no clip, no weather; the scene changes at most every 5 minutes;
 - the cards are a flat translucent tint, no glass crop;
 - the clock redraws once a minute, seconds forced off on the home.
@@ -65,7 +65,8 @@ on any TV for a test.
 
 ## Guards the build adds (tests, then a field check)
 
-- A test fails the build if a scene file is over its budget above, if a scene has no `lowTop`, or if a clip is over 8 MB or 12 s.
+- tests/scene_home_test.py fails the build if a scene file is over its budget above, a file is missing or extra, a cut-out does not match its box,
+  or a tier's rules change (clips: none yet; when they come, over 8 MB or 12 s fails too).
 - The launcher's start time with the scene home on LOW stays within 10% of today's classic home (measured on the weakest TV we
   have), and the home's memory after a minute stays under today's plus 15 MB on NORMAL, plus 6 MB on LOW.
 - If decoding a scene fails or memory is short (`onTrimMemory` at `RUNNING_LOW`), the home drops to the static photo, then to the

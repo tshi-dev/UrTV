@@ -102,7 +102,12 @@ final class SceneHome extends FrameLayout {
         for (Slot s : slots) s.clock.setTime(time);
     }
 
-    void start() { running = true; if (on && index < 0 && !scenes.isEmpty()) show(); else schedule(); }
+    /** the home is in front: the scenes take turns (called on every return and every minute: a running timer is left as it is) */
+    void start() {
+        if (running) return;
+        running = true;
+        if (on && index < 0 && !scenes.isEmpty()) show(); else schedule();
+    }
 
     void stop() { running = false; ui.removeCallbacksAndMessages(null); }
 

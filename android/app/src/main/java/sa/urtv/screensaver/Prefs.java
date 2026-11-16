@@ -1064,8 +1064,17 @@ final class Prefs {
     boolean updateBell() { return sp.getBoolean("updateBell", true); }
     /** «أكمل المشاهدة» under the home screen's favourites (default on; it shows only once the home app may read the TV's Watch Next list). */
     /** «المظهر ← الواجهة»: the home's layout, classic (the default, the home as it always was) or football (docs/PROPOSALS-NOV2.md §1) */
-    static final String[] HOME_LAYOUTS = {"classic", "football"};
-    static final String[] HOME_LAYOUT_NAMES = {"العادية", "كرة القدم"};
+    static final String[] HOME_LAYOUTS = {"classic", "football", "scenes"};
+    static final String[] HOME_LAYOUT_NAMES = {"العادية", "كرة القدم", "المشاهد"};
+    /** 4.3.3 «حزم المشاهد» (the scene home): «مشاهد السعودية» is in the app, «مشاهد Couch TV» is downloaded when chosen; none chosen is the Saudi pack */
+    static final String[][] SCENE_PACKS = {{"saudi", "مشاهد السعودية"}, {"couch", "مشاهد Couch TV"}};
+    List<String> scenePacks() {
+        List<String> out = new ArrayList<>();
+        for (String s : list("scenePacks")) for (String[] k : SCENE_PACKS) if (k[0].equals(s) && !out.contains(s)) out.add(s);
+        if (out.isEmpty()) out.add("saudi");
+        return out;
+    }
+    void setScenePacks(List<String> v) { setList("scenePacks", v); }
     String homeLayout() { String v = sp.getString("homeLayout", HOME_LAYOUTS[0]); return java.util.Arrays.asList(HOME_LAYOUTS).contains(v) ? v : HOME_LAYOUTS[0]; }
     void setHomeLayout(String v) { if (java.util.Arrays.asList(HOME_LAYOUTS).contains(v)) sp.edit().putString("homeLayout", v).apply(); }
     static String homeLayoutLabel(String v) { int i = java.util.Arrays.asList(HOME_LAYOUTS).indexOf(v); return HOME_LAYOUT_NAMES[Math.max(0, i)]; }

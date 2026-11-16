@@ -415,6 +415,10 @@ public class SettingsActivity extends Activity {
         // the line says «مفعّل» (the on/off rule: the value starts with the state word) while the mask is on; the home answers (read once per visit, the last answer kept)
         row("\u2066UrTV\u2069 النظيف", Boolean.TRUE.equals(homeCleanSeen()) ? "مفعّل الأساسيات فقط، وبضغطة ترجع الشاشة الكاملة" : "الأساسيات فقط، وبضغطة ترجع الشاشة الكاملة", R.drawable.ic_eye, new Runnable() { public void run() { openClean(); } });
         // «المظهر»: one page for everything about the look of both apps (AppearanceActivity), each choice with its picture
+        // 4.3.3 «الواجهة»: the home as it was (the default), the football home, or «المشاهد» (a scene with the glass clock behind its scenery); and the scene packs
+        row("الواجهة", Prefs.homeLayoutLabel(prefs.homeLayout()), R.drawable.ic_eye, new Runnable() { public void run() { pickHomeLayout(); } });
+        row("حزم المشاهد", labels(Prefs.SCENE_PACKS, prefs.scenePacks(), "مشاهد السعودية"), R.drawable.ic_eye,
+            new Runnable() { public void run() { pickMany("scenePacks", "حزم المشاهد", Prefs.SCENE_PACKS, "بدون اختيار = مشاهد السعودية"); } });
         row("المظهر", Prefs.lookLabel(prefs.look()) + " · " + Prefs.appearanceLabel(prefs.appearance()), R.drawable.ic_eye,
             new Runnable() { public void run() { startActivity(new Intent(SettingsActivity.this, AppearanceActivity.class)); } });
         row("صفحات الأسهم والمباريات داكنة", prefs.pagesDark() ? "مفعّل · بالمظهر الداكن دائمًا" : "متوقف · تتبع مظهر الرئيسية", R.drawable.ic_eye,
@@ -2203,11 +2207,11 @@ public class SettingsActivity extends Activity {
             .show();
     }
 
-    /** «الواجهة»: the home's layout, «العادية» (the default) or «كرة القدم» (the weather, the prayers and today's games over the same favourites bar). */
+    /** «الواجهة»: the home's layout, «العادية» (the default), «كرة القدم» (the weather, the prayers and today's games over the same favourites bar) or «المشاهد» (4.3.3). */
     private void pickHomeLayout() {
         final String[] labels = new String[Prefs.HOME_LAYOUTS.length];
         for (int i = 0; i < labels.length; i++) labels[i] = Prefs.HOME_LAYOUT_NAMES[i];
-        new Dlg(this).setTitle("المظهر: الواجهة")
+        new Dlg(this).setTitle("الشكل والمشاهد: الواجهة")
             .setSingleChoiceItems(labels, java.util.Arrays.asList(Prefs.HOME_LAYOUTS).indexOf(prefs.homeLayout()), (d, i) -> {
                 prefs.setHomeLayout(Prefs.HOME_LAYOUTS[i]);
                 d.dismiss();

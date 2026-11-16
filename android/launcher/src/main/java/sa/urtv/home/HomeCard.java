@@ -87,6 +87,8 @@ final class HomeCard {
     private WebView web;
     private String url;
     private volatile int cards;   // how many the page in `web` shows
+    /** how many cards the page shows now (0: none, or the football layout) */
+    int shownCards() { return cards; }
     private volatile boolean tasks;   // «المهام» is one of them: `target` exists
     private View target;
     private FrameLayout.LayoutParams targetParams;
