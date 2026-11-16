@@ -1,0 +1,2505 @@
+{
+ "counts": {
+  "haramain": {
+   "FIT": 0,
+   "FRONT-ONLY": "all (never cut)",
+   "REJECT": 0
+  },
+  "ksa-cities": {
+   "FIT": 2,
+   "FRONT-ONLY": 9,
+   "REJECT": 2
+  },
+  "nature": {
+   "FIT": 7,
+   "FRONT-ONLY": 8,
+   "REJECT": 1
+  },
+  "photos": {
+   "FIT": 15,
+   "FRONT-ONLY": 64,
+   "REJECT": 6
+  },
+  "sea": {
+   "FIT": 5,
+   "FRONT-ONLY": 14,
+   "REJECT": 0
+  },
+  "space": {
+   "FIT": 0,
+   "FRONT-ONLY": 7,
+   "REJECT": 5
+  }
+ },
+ "photos": {
+  "ksa-cities/1": {
+   "published": false,
+   "scores": {
+    "cols": 0.216,
+    "cross": 0.065,
+    "crossing": true,
+    "halo": 0.66,
+    "holes": 0,
+    "islands": 0,
+    "jagged": 0.0915,
+    "sky": 0.66,
+    "visible": 0.935,
+    "zoom": 1.0
+   },
+   "verdict": "FRONT-ONLY",
+   "why": "only a sliver crosses the digits (cross 0.065, columns 0.216)"
+  },
+  "ksa-cities/10": {
+   "published": false,
+   "scores": {
+    "cols": 0.0,
+    "cross": 0.0,
+    "crossing": false,
+    "halo": 2.21,
+    "holes": 0,
+    "islands": 0,
+    "jagged": 0.1615,
+    "sky": 0.226,
+    "visible": 1.0,
+    "zoom": 1.0
+   },
+   "verdict": "FRONT-ONLY",
+   "why": "the scenery is too high or too low to cross the digits"
+  },
+  "ksa-cities/11": {
+   "published": false,
+   "scores": {
+    "cols": 0.162,
+    "cross": 0.039,
+    "crossing": true,
+    "halo": 3.25,
+    "holes": 0,
+    "islands": 0,
+    "jagged": 0.1566,
+    "sky": 0.658,
+    "visible": 0.961,
+    "zoom": 1.0
+   },
+   "verdict": "REJECT",
+   "why": "a fringe along the edge (3.25 > 3.0)"
+  },
+  "ksa-cities/12": {
+   "published": false,
+   "scores": {
+    "cols": 0.0,
+    "cross": 0.0,
+    "crossing": false,
+    "halo": 0.23,
+    "holes": 0,
+    "islands": 0,
+    "jagged": 0.0,
+    "sky": 0.17,
+    "visible": 1.0,
+    "zoom": 1.0
+   },
+   "verdict": "FRONT-ONLY",
+   "why": "the scenery is too high or too low to cross the digits"
+  },
+  "ksa-cities/13": {
+   "published": false,
+   "scores": {
+    "cols": 0.0,
+    "cross": 0.0,
+    "crossing": false,
+    "halo": 1.51,
+    "holes": 0,
+    "islands": 0,
+    "jagged": 0.1729,
+    "sky": 0.602,
+    "visible": 1.0,
+    "zoom": 1.0
+   },
+   "verdict": "FRONT-ONLY",
+   "why": "the scenery is too high or too low to cross the digits"
+  },
+  "ksa-cities/2": {
+   "published": false,
+   "scores": {
+    "cols": 0.0,
+    "cross": 0.0,
+    "crossing": false,
+    "halo": 1.33,
+    "holes": 0,
+    "islands": 0,
+    "jagged": 0.1091,
+    "sky": 0.272,
+    "visible": 1.0,
+    "zoom": 1.0
+   },
+   "verdict": "FRONT-ONLY",
+   "why": "the scenery is too high or too low to cross the digits"
+  },
+  "ksa-cities/3": {
+   "published": true,
+   "scores": {
+    "cols": 0.514,
+    "cross": 0.116,
+    "crossing": true,
+    "halo": 0.92,
+    "holes": 0,
+    "islands": 0,
+    "jagged": 0.0734,
+    "sky": 0.373,
+    "visible": 0.884,
+    "zoom": 1.0
+   },
+   "verdict": "FIT",
+   "why": "clean, and the scenery crosses the digits' lower part"
+  },
+  "ksa-cities/4": {
+   "published": false,
+   "scores": {
+    "cols": 0.0,
+    "cross": 0.0,
+    "crossing": false,
+    "halo": 0.81,
+    "holes": 0,
+    "islands": 0,
+    "jagged": 0.009,
+    "sky": 0.203,
+    "visible": 1.0,
+    "zoom": 1.0
+   },
+   "verdict": "FRONT-ONLY",
+   "why": "the scenery is too high or too low to cross the digits"
+  },
+  "ksa-cities/5": {
+   "published": false,
+   "scores": {
+    "cols": 0.0,
+    "cross": 0.0,
+    "crossing": false,
+    "halo": 0.99,
+    "holes": 0,
+    "islands": 0,
+    "jagged": 0.1439,
+    "sky": 0.311,
+    "visible": 1.0,
+    "zoom": 1.0
+   },
+   "verdict": "FRONT-ONLY",
+   "why": "the scenery is too high or too low to cross the digits"
+  },
+  "ksa-cities/6": {
+   "published": false,
+   "scores": {
+    "cols": 0.0,
+    "cross": 0.0,
+    "crossing": false,
+    "halo": 0.36,
+    "holes": 0,
+    "islands": 0,
+    "jagged": 0.1294,
+    "sky": 0.561,
+    "visible": 1.0,
+    "zoom": 1.0
+   },
+   "verdict": "FRONT-ONLY",
+   "why": "the scenery is too high or too low to cross the digits"
+  },
+  "ksa-cities/7": {
+   "published": false,
+   "scores": {
+    "cols": 0.0,
+    "cross": 0.0,
+    "crossing": false,
+    "halo": 1.02,
+    "holes": 0,
+    "islands": 0,
+    "jagged": 0.1067,
+    "sky": 0.708,
+    "visible": 1.0,
+    "zoom": 1.0
+   },
+   "verdict": "REJECT",
+   "why": "no sky found along the top"
+  },
+  "ksa-cities/8": {
+   "published": false,
+   "scores": {
+    "cols": 0.0,
+    "cross": 0.0,
+    "crossing": false,
+    "halo": 0.67,
+    "holes": 0,
+    "islands": 0,
+    "jagged": 0.0915,
+    "sky": 0.398,
+    "visible": 1.0,
+    "zoom": 1.0
+   },
+   "verdict": "FRONT-ONLY",
+   "why": "the scenery is too high or too low to cross the digits"
+  },
+  "ksa-cities/9": {
+   "published": true,
+   "scores": {
+    "cols": 0.946,
+    "cross": 0.145,
+    "crossing": true,
+    "halo": 1.46,
+    "holes": 0,
+    "islands": 0,
+    "jagged": 0.1562,
+    "sky": 0.406,
+    "visible": 0.855,
+    "zoom": 1.01
+   },
+   "verdict": "FIT",
+   "why": "clean, and the scenery crosses the digits' lower part"
+  },
+  "nature/1": {
+   "published": false,
+   "scores": {
+    "cols": 0.0,
+    "cross": 0.0,
+    "crossing": false,
+    "halo": 0.44,
+    "holes": 0,
+    "islands": 0,
+    "jagged": 0.0486,
+    "sky": 0.841,
+    "visible": 1.0,
+    "zoom": 1.0
+   },
+   "verdict": "FRONT-ONLY",
+   "why": "the scenery is too high or too low to cross the digits"
+  },
+  "nature/10": {
+   "published": true,
+   "scores": {
+    "cols": 0.514,
+    "cross": 0.104,
+    "crossing": true,
+    "halo": 0.34,
+    "holes": 0,
+    "islands": 0,
+    "jagged": 0.0026,
+    "sky": 0.365,
+    "visible": 0.896,
+    "zoom": 1.0
+   },
+   "verdict": "FIT",
+   "why": "clean, and the scenery crosses the digits' lower part"
+  },
+  "nature/11": {
+   "published": false,
+   "scores": {
+    "cols": 0.0,
+    "cross": 0.0,
+    "crossing": false,
+    "halo": 1.98,
+    "holes": 0,
+    "islands": 0,
+    "jagged": 0.3076,
+    "sky": 0.356,
+    "visible": 1.0,
+    "zoom": 1.0
+   },
+   "verdict": "FRONT-ONLY",
+   "why": "the scenery is too high or too low to cross the digits"
+  },
+  "nature/12": {
+   "published": false,
+   "scores": {
+    "cols": 0.0,
+    "cross": 0.0,
+    "crossing": false,
+    "halo": 1.13,
+    "holes": 0,
+    "islands": 0,
+    "jagged": 0.0762,
+    "sky": 0.152,
+    "visible": 1.0,
+    "zoom": 1.0
+   },
+   "verdict": "FRONT-ONLY",
+   "why": "the scenery is too high or too low to cross the digits"
+  },
+  "nature/13": {
+   "eye": "by eye: white fog, the digits cannot be read",
+   "published": false,
+   "scores": {
+    "cols": 0.514,
+    "cross": 0.122,
+    "crossing": true,
+    "halo": 0.1,
+    "holes": 0,
+    "islands": 0,
+    "jagged": 0.088,
+    "sky": 0.388,
+    "visible": 0.878,
+    "zoom": 1.0
+   },
+   "verdict": "FIT",
+   "why": "clean, and the scenery crosses the digits' lower part"
+  },
+  "nature/14": {
+   "published": false,
+   "scores": {
+    "cols": 0.0,
+    "cross": 0.0,
+    "crossing": false,
+    "halo": 0.53,
+    "holes": 0,
+    "islands": 0,
+    "jagged": 0.0,
+    "sky": 0.707,
+    "visible": 1.0,
+    "zoom": 1.0
+   },
+   "verdict": "FRONT-ONLY",
+   "why": "the scenery is too high or too low to cross the digits"
+  },
+  "nature/15": {
+   "published": true,
+   "scores": {
+    "cols": 0.784,
+    "cross": 0.138,
+    "crossing": true,
+    "halo": 0.09,
+    "holes": 0,
+    "islands": 0,
+    "jagged": 0.0045,
+    "sky": 0.562,
+    "visible": 0.862,
+    "zoom": 1.03
+   },
+   "verdict": "FIT",
+   "why": "clean, and the scenery crosses the digits' lower part"
+  },
+  "nature/16": {
+   "published": true,
+   "scores": {
+    "cols": 0.432,
+    "cross": 0.084,
+    "crossing": true,
+    "halo": 0.79,
+    "holes": 0,
+    "islands": 0,
+    "jagged": 0.0299,
+    "sky": 0.453,
+    "visible": 0.916,
+    "zoom": 1.0
+   },
+   "verdict": "FIT",
+   "why": "clean, and the scenery crosses the digits' lower part"
+  },
+  "nature/2": {
+   "published": true,
+   "scores": {
+    "cols": 1.0,
+    "cross": 0.199,
+    "crossing": true,
+    "halo": 0.3,
+    "holes": 0,
+    "islands": 0,
+    "jagged": 0.0501,
+    "sky": 0.277,
+    "visible": 0.801,
+    "zoom": 1.15
+   },
+   "verdict": "FIT",
+   "why": "clean, and the scenery crosses the digits' lower part"
+  },
+  "nature/3": {
+   "published": true,
+   "scores": {
+    "cols": 0.378,
+    "cross": 0.084,
+    "crossing": true,
+    "halo": 0.54,
+    "holes": 0,
+    "islands": 0,
+    "jagged": 0.0311,
+    "sky": 0.479,
+    "visible": 0.916,
+    "zoom": 1.0
+   },
+   "verdict": "FIT",
+   "why": "clean, and the scenery crosses the digits' lower part"
+  },
+  "nature/4": {
+   "published": false,
+   "scores": {
+    "cols": 0.0,
+    "cross": 0.0,
+    "crossing": false,
+    "halo": 2.55,
+    "holes": 0,
+    "islands": 0,
+    "jagged": 0.2161,
+    "sky": 0.604,
+    "visible": 1.0,
+    "zoom": 1.0
+   },
+   "verdict": "FRONT-ONLY",
+   "why": "the scenery is too high or too low to cross the digits"
+  },
+  "nature/5": {
+   "eye": "by eye: the far mountains taken for sky",
+   "published": false,
+   "scores": {
+    "cols": 1.0,
+    "cross": 0.143,
+    "crossing": true,
+    "halo": 0.94,
+    "holes": 0,
+    "islands": 1,
+    "jagged": 0.198,
+    "sky": 0.287,
+    "visible": 0.857,
+    "zoom": 1.07
+   },
+   "verdict": "FIT",
+   "why": "clean, and the scenery crosses the digits' lower part"
+  },
+  "nature/6": {
+   "published": false,
+   "scores": {
+    "cols": 0.0,
+    "cross": 0.0,
+    "crossing": false,
+    "halo": 1.34,
+    "holes": 2,
+    "islands": 1,
+    "jagged": 0.3012,
+    "sky": 0.294,
+    "visible": 1.0,
+    "zoom": 1.0
+   },
+   "verdict": "FRONT-ONLY",
+   "why": "the scenery is too high or too low to cross the digits"
+  },
+  "nature/7": {
+   "published": false,
+   "scores": {
+    "cols": 0.459,
+    "cross": 0.072,
+    "crossing": true,
+    "halo": 0.09,
+    "holes": 0,
+    "islands": 0,
+    "jagged": 0.0048,
+    "sky": 0.487,
+    "visible": 0.928,
+    "zoom": 1.0
+   },
+   "verdict": "FRONT-ONLY",
+   "why": "only a sliver crosses the digits (cross 0.072, columns 0.459)"
+  },
+  "nature/8": {
+   "published": false,
+   "scores": {
+    "cols": 0.0,
+    "cross": 0.0,
+    "crossing": false,
+    "halo": 1.49,
+    "holes": 0,
+    "islands": 0,
+    "jagged": 0.0808,
+    "sky": 0.183,
+    "visible": 1.0,
+    "zoom": 1.0
+   },
+   "verdict": "FRONT-ONLY",
+   "why": "the scenery is too high or too low to cross the digits"
+  },
+  "nature/9": {
+   "published": false,
+   "scores": {
+    "cols": 0.0,
+    "cross": 0.0,
+    "crossing": false,
+    "halo": 13.37,
+    "holes": 1,
+    "islands": 1,
+    "jagged": 0.1405,
+    "sky": 0.496,
+    "visible": 1.0,
+    "zoom": 1.0
+   },
+   "verdict": "REJECT",
+   "why": "a fringe along the edge (13.37 > 3.0)"
+  },
+  "photos/-RlktmDy3Ec": {
+   "published": true,
+   "scores": {
+    "cols": 0.595,
+    "cross": 0.127,
+    "crossing": true,
+    "halo": 0.15,
+    "holes": 0,
+    "islands": 0,
+    "jagged": 0.0081,
+    "sky": 0.414,
+    "visible": 0.873,
+    "zoom": 1.0
+   },
+   "verdict": "FIT",
+   "why": "clean, and the scenery crosses the digits' lower part"
+  },
+  "photos/01u4zLK54tE": {
+   "published": true,
+   "scores": {
+    "cols": 1.0,
+    "cross": 0.133,
+    "crossing": true,
+    "halo": 0.52,
+    "holes": 0,
+    "islands": 0,
+    "jagged": 0.1231,
+    "sky": 0.388,
+    "visible": 0.867,
+    "zoom": 1.07
+   },
+   "verdict": "FIT",
+   "why": "clean, and the scenery crosses the digits' lower part"
+  },
+  "photos/0SUho_B0nus": {
+   "published": false,
+   "scores": {
+    "cols": 0.0,
+    "cross": 0.0,
+    "crossing": false,
+    "halo": 0.46,
+    "holes": 0,
+    "islands": 0,
+    "jagged": 0.0536,
+    "sky": 0.281,
+    "visible": 1.0,
+    "zoom": 1.0
+   },
+   "verdict": "FRONT-ONLY",
+   "why": "the scenery is too high or too low to cross the digits"
+  },
+  "photos/0rCJ-y3wx6g": {
+   "published": false,
+   "scores": {
+    "cols": 0.0,
+    "cross": 0.0,
+    "crossing": false,
+    "halo": 1.94,
+    "holes": 0,
+    "islands": 0,
+    "jagged": 0.1458,
+    "sky": 0.206,
+    "visible": 1.0,
+    "zoom": 1.0
+   },
+   "verdict": "FRONT-ONLY",
+   "why": "the scenery is too high or too low to cross the digits"
+  },
+  "photos/0rvKw0fDiHk": {
+   "published": false,
+   "scores": {
+    "cols": 0.0,
+    "cross": 0.0,
+    "crossing": false,
+    "halo": 0.29,
+    "holes": 2,
+    "islands": 0,
+    "jagged": 0.0354,
+    "sky": 0.404,
+    "visible": 1.0,
+    "zoom": 1.0
+   },
+   "verdict": "REJECT",
+   "why": "the edge cuts through a face or a person"
+  },
+  "photos/207NEuFvjlg": {
+   "published": false,
+   "scores": {
+    "cols": 0.378,
+    "cross": 0.075,
+    "crossing": true,
+    "halo": 0.15,
+    "holes": 0,
+    "islands": 0,
+    "jagged": 0.0233,
+    "sky": 0.431,
+    "visible": 0.925,
+    "zoom": 1.0
+   },
+   "verdict": "FRONT-ONLY",
+   "why": "only a sliver crosses the digits (cross 0.075, columns 0.378)"
+  },
+  "photos/2gVgVf5CNAE": {
+   "published": true,
+   "scores": {
+    "cols": 0.865,
+    "cross": 0.14,
+    "crossing": true,
+    "halo": 0.51,
+    "holes": 0,
+    "islands": 0,
+    "jagged": 0.068,
+    "sky": 0.557,
+    "visible": 0.86,
+    "zoom": 1.05
+   },
+   "verdict": "FIT",
+   "why": "clean, and the scenery crosses the digits' lower part"
+  },
+  "photos/39n8YVSn0d4": {
+   "published": false,
+   "scores": {
+    "cols": 0.0,
+    "cross": 0.0,
+    "crossing": false,
+    "halo": 0.83,
+    "holes": 0,
+    "islands": 0,
+    "jagged": 0.1189,
+    "sky": 0.138,
+    "visible": 1.0,
+    "zoom": 1.0
+   },
+   "verdict": "FRONT-ONLY",
+   "why": "the scenery is too high or too low to cross the digits"
+  },
+  "photos/3DPaL6XDcZE": {
+   "published": false,
+   "scores": {
+    "cols": 0.0,
+    "cross": 0.0,
+    "crossing": false,
+    "halo": 1.51,
+    "holes": 0,
+    "islands": 0,
+    "jagged": 0.1348,
+    "sky": 0.301,
+    "visible": 1.0,
+    "zoom": 1.0
+   },
+   "verdict": "FRONT-ONLY",
+   "why": "the scenery is too high or too low to cross the digits"
+  },
+  "photos/4q87Z96NBYg": {
+   "published": false,
+   "scores": {
+    "cols": 0.0,
+    "cross": 0.0,
+    "crossing": false,
+    "halo": 1.41,
+    "holes": 0,
+    "islands": 0,
+    "jagged": 0.1348,
+    "sky": 0.13,
+    "visible": 1.0,
+    "zoom": 1.0
+   },
+   "verdict": "FRONT-ONLY",
+   "why": "the scenery is too high or too low to cross the digits"
+  },
+  "photos/7EkyXZYeYsw": {
+   "published": true,
+   "scores": {
+    "cols": 0.811,
+    "cross": 0.144,
+    "crossing": true,
+    "halo": 0.9,
+    "holes": 0,
+    "islands": 0,
+    "jagged": 0.0405,
+    "sky": 0.485,
+    "visible": 0.856,
+    "zoom": 1.03
+   },
+   "verdict": "FIT",
+   "why": "clean, and the scenery crosses the digits' lower part"
+  },
+  "photos/7vOpzRF33Zo": {
+   "published": true,
+   "scores": {
+    "cols": 1.0,
+    "cross": 0.148,
+    "crossing": true,
+    "halo": 1.23,
+    "holes": 0,
+    "islands": 0,
+    "jagged": 0.1146,
+    "sky": 0.38,
+    "visible": 0.852,
+    "zoom": 1.01
+   },
+   "verdict": "FIT",
+   "why": "clean, and the scenery crosses the digits' lower part"
+  },
+  "photos/85ey1vFIwkc": {
+   "published": false,
+   "scores": {
+    "cols": 0.0,
+    "cross": 0.0,
+    "crossing": false,
+    "halo": 0.56,
+    "holes": 0,
+    "islands": 0,
+    "jagged": 0.1939,
+    "sky": 0.402,
+    "visible": 1.0,
+    "zoom": 1.0
+   },
+   "verdict": "FRONT-ONLY",
+   "why": "the scenery is too high or too low to cross the digits"
+  },
+  "photos/9633dHhioC8": {
+   "published": false,
+   "scores": {
+    "cols": 0.0,
+    "cross": 0.0,
+    "crossing": false,
+    "halo": 1.53,
+    "holes": 1,
+    "islands": 0,
+    "jagged": 0.1287,
+    "sky": 0.231,
+    "visible": 1.0,
+    "zoom": 1.0
+   },
+   "verdict": "FRONT-ONLY",
+   "why": "the scenery is too high or too low to cross the digits"
+  },
+  "photos/9Jgo0Ix_TRw": {
+   "published": false,
+   "scores": {
+    "cols": 0.0,
+    "cross": 0.0,
+    "crossing": false,
+    "halo": 0.19,
+    "holes": 0,
+    "islands": 0,
+    "jagged": 0.0,
+    "sky": 0.47,
+    "visible": 1.0,
+    "zoom": 1.0
+   },
+   "verdict": "FRONT-ONLY",
+   "why": "the scenery is too high or too low to cross the digits"
+  },
+  "photos/9f7oiGARGIg": {
+   "published": false,
+   "scores": {
+    "cols": 0.0,
+    "cross": 0.0,
+    "crossing": false,
+    "halo": 0.62,
+    "holes": 0,
+    "islands": 0,
+    "jagged": 0.1477,
+    "sky": 0.658,
+    "visible": 1.0,
+    "zoom": 1.0
+   },
+   "verdict": "FRONT-ONLY",
+   "why": "the scenery is too high or too low to cross the digits"
+  },
+  "photos/9hWJs7iblh8": {
+   "published": true,
+   "scores": {
+    "cols": 1.0,
+    "cross": 0.146,
+    "crossing": true,
+    "halo": 0.1,
+    "holes": 0,
+    "islands": 0,
+    "jagged": 0.006,
+    "sky": 0.543,
+    "visible": 0.854,
+    "zoom": 1.02
+   },
+   "verdict": "FIT",
+   "why": "clean, and the scenery crosses the digits' lower part"
+  },
+  "photos/AC3T7tvwPrY": {
+   "published": true,
+   "scores": {
+    "cols": 1.0,
+    "cross": 0.143,
+    "crossing": true,
+    "halo": 0.38,
+    "holes": 0,
+    "islands": 0,
+    "jagged": 0.1825,
+    "sky": 0.352,
+    "visible": 0.857,
+    "zoom": 1.01
+   },
+   "verdict": "FIT",
+   "why": "clean, and the scenery crosses the digits' lower part"
+  },
+  "photos/AGZgrNeq7Kg": {
+   "published": false,
+   "scores": {
+    "cols": 0.297,
+    "cross": 0.057,
+    "crossing": true,
+    "halo": 1.64,
+    "holes": 0,
+    "islands": 0,
+    "jagged": 0.0714,
+    "sky": 0.582,
+    "visible": 0.943,
+    "zoom": 1.0
+   },
+   "verdict": "FRONT-ONLY",
+   "why": "only a sliver crosses the digits (cross 0.057, columns 0.297)"
+  },
+  "photos/ARpmY5qq7Lk": {
+   "published": false,
+   "scores": {
+    "cols": 0.0,
+    "cross": 0.0,
+    "crossing": false,
+    "halo": 2.93,
+    "holes": 0,
+    "islands": 0,
+    "jagged": 0.1168,
+    "sky": 0.672,
+    "visible": 1.0,
+    "zoom": 1.0
+   },
+   "verdict": "FRONT-ONLY",
+   "why": "the scenery is too high or too low to cross the digits"
+  },
+  "photos/D1RR-UEnsjw": {
+   "published": false,
+   "scores": {
+    "cols": 0.0,
+    "cross": 0.0,
+    "crossing": false,
+    "halo": 0.15,
+    "holes": 0,
+    "islands": 0,
+    "jagged": 0.1759,
+    "sky": 0.222,
+    "visible": 1.0,
+    "zoom": 1.0
+   },
+   "verdict": "FRONT-ONLY",
+   "why": "the scenery is too high or too low to cross the digits"
+  },
+  "photos/G8_JBLFMWTg": {
+   "published": false,
+   "scores": {
+    "cols": 0.243,
+    "cross": 0.061,
+    "crossing": true,
+    "halo": 1.01,
+    "holes": 0,
+    "islands": 0,
+    "jagged": 0.0286,
+    "sky": 0.609,
+    "visible": 0.939,
+    "zoom": 1.0
+   },
+   "verdict": "FRONT-ONLY",
+   "why": "only a sliver crosses the digits (cross 0.061, columns 0.243)"
+  },
+  "photos/HbixalFpY1w": {
+   "published": false,
+   "scores": {
+    "cols": 0.0,
+    "cross": 0.0,
+    "crossing": false,
+    "halo": 0.25,
+    "holes": 0,
+    "islands": 0,
+    "jagged": 0.041,
+    "sky": 0.493,
+    "visible": 1.0,
+    "zoom": 1.0
+   },
+   "verdict": "FRONT-ONLY",
+   "why": "the scenery is too high or too low to cross the digits"
+  },
+  "photos/IU-gFwAyazs": {
+   "published": false,
+   "scores": {
+    "cols": 0.162,
+    "cross": 0.038,
+    "crossing": true,
+    "halo": 0.66,
+    "holes": 0,
+    "islands": 0,
+    "jagged": 0.0816,
+    "sky": 0.345,
+    "visible": 0.962,
+    "zoom": 1.0
+   },
+   "verdict": "FRONT-ONLY",
+   "why": "only a sliver crosses the digits (cross 0.038, columns 0.162)"
+  },
+  "photos/Iogsh4Cbdjs": {
+   "published": false,
+   "scores": {
+    "cols": 0.0,
+    "cross": 0.0,
+    "crossing": false,
+    "halo": 1.59,
+    "holes": 0,
+    "islands": 0,
+    "jagged": 0.0866,
+    "sky": 0.138,
+    "visible": 1.0,
+    "zoom": 1.0
+   },
+   "verdict": "FRONT-ONLY",
+   "why": "the scenery is too high or too low to cross the digits"
+  },
+  "photos/Iy59i0M7oP4": {
+   "published": true,
+   "scores": {
+    "cols": 0.946,
+    "cross": 0.143,
+    "crossing": true,
+    "halo": 0.46,
+    "holes": 1,
+    "islands": 0,
+    "jagged": 0.1536,
+    "sky": 0.318,
+    "visible": 0.857,
+    "zoom": 1.05
+   },
+   "verdict": "FIT",
+   "why": "clean, and the scenery crosses the digits' lower part"
+  },
+  "photos/LAj90eAXOZA": {
+   "published": false,
+   "scores": {
+    "cols": 0.0,
+    "cross": 0.0,
+    "crossing": false,
+    "halo": 0.97,
+    "holes": 0,
+    "islands": 0,
+    "jagged": 0.0717,
+    "sky": 0.165,
+    "visible": 1.0,
+    "zoom": 1.0
+   },
+   "verdict": "FRONT-ONLY",
+   "why": "the scenery is too high or too low to cross the digits"
+  },
+  "photos/MV7iHCilMJc": {
+   "published": false,
+   "scores": {
+    "cols": 0.0,
+    "cross": 0.0,
+    "crossing": false,
+    "halo": 0.37,
+    "holes": 0,
+    "islands": 0,
+    "jagged": 0.0776,
+    "sky": 0.161,
+    "visible": 1.0,
+    "zoom": 1.0
+   },
+   "verdict": "FRONT-ONLY",
+   "why": "the scenery is too high or too low to cross the digits"
+  },
+  "photos/NPDnHmYsl6Y": {
+   "eye": "by eye: half underwater, the digits wash out",
+   "published": false,
+   "scores": {
+    "cols": 0.946,
+    "cross": 0.148,
+    "crossing": true,
+    "halo": 0.68,
+    "holes": 0,
+    "islands": 0,
+    "jagged": 0.0068,
+    "sky": 0.265,
+    "visible": 0.852,
+    "zoom": 1.03
+   },
+   "verdict": "FIT",
+   "why": "clean, and the scenery crosses the digits' lower part"
+  },
+  "photos/QOGeYSi11-w": {
+   "published": false,
+   "scores": {
+    "cols": 0.0,
+    "cross": 0.0,
+    "crossing": false,
+    "halo": 0.63,
+    "holes": 0,
+    "islands": 0,
+    "jagged": 0.0449,
+    "sky": 0.13,
+    "visible": 1.0,
+    "zoom": 1.0
+   },
+   "verdict": "FRONT-ONLY",
+   "why": "the scenery is too high or too low to cross the digits"
+  },
+  "photos/RqfFauPXJx0": {
+   "published": false,
+   "scores": {
+    "cols": 0.0,
+    "cross": 0.0,
+    "crossing": false,
+    "halo": 0.9,
+    "holes": 0,
+    "islands": 0,
+    "jagged": 0.1814,
+    "sky": 0.235,
+    "visible": 1.0,
+    "zoom": 1.0
+   },
+   "verdict": "FRONT-ONLY",
+   "why": "the scenery is too high or too low to cross the digits"
+  },
+  "photos/SGZ5DkDOoRo": {
+   "published": false,
+   "scores": {
+    "cols": 0.0,
+    "cross": 0.0,
+    "crossing": false,
+    "halo": 0.25,
+    "holes": 0,
+    "islands": 0,
+    "jagged": 0.0336,
+    "sky": 0.233,
+    "visible": 1.0,
+    "zoom": 1.0
+   },
+   "verdict": "FRONT-ONLY",
+   "why": "the scenery is too high or too low to cross the digits"
+  },
+  "photos/SUIMrEKVOXc": {
+   "published": false,
+   "scores": {
+    "cols": 0.0,
+    "cross": 0.0,
+    "crossing": false,
+    "halo": 0.04,
+    "holes": 0,
+    "islands": 0,
+    "jagged": 0.0088,
+    "sky": 0.398,
+    "visible": 1.0,
+    "zoom": 1.0
+   },
+   "verdict": "FRONT-ONLY",
+   "why": "the scenery is too high or too low to cross the digits"
+  },
+  "photos/THlO6Mkf5uI": {
+   "published": false,
+   "scores": {
+    "cols": 0.0,
+    "cross": 0.0,
+    "crossing": false,
+    "halo": 0.7,
+    "holes": 0,
+    "islands": 0,
+    "jagged": 0.0396,
+    "sky": 0.279,
+    "visible": 1.0,
+    "zoom": 1.0
+   },
+   "verdict": "FRONT-ONLY",
+   "why": "the scenery is too high or too low to cross the digits"
+  },
+  "photos/UuzkCF-jmPY": {
+   "published": false,
+   "scores": {
+    "cols": 0.0,
+    "cross": 0.0,
+    "crossing": false,
+    "halo": 0.74,
+    "holes": 0,
+    "islands": 0,
+    "jagged": 0.1672,
+    "sky": 0.488,
+    "visible": 1.0,
+    "zoom": 1.0
+   },
+   "verdict": "FRONT-ONLY",
+   "why": "the scenery is too high or too low to cross the digits"
+  },
+  "photos/WpOMM4uE-F8": {
+   "published": true,
+   "scores": {
+    "cols": 1.0,
+    "cross": 0.15,
+    "crossing": true,
+    "halo": 0.14,
+    "holes": 0,
+    "islands": 0,
+    "jagged": 0.1085,
+    "sky": 0.503,
+    "visible": 0.85,
+    "zoom": 1.05
+   },
+   "verdict": "FIT",
+   "why": "clean, and the scenery crosses the digits' lower part"
+  },
+  "photos/XDtzu1D2P8c": {
+   "published": false,
+   "scores": {
+    "cols": 0.0,
+    "cross": 0.0,
+    "crossing": false,
+    "halo": 0.66,
+    "holes": 0,
+    "islands": 0,
+    "jagged": 0.1161,
+    "sky": 0.135,
+    "visible": 1.0,
+    "zoom": 1.0
+   },
+   "verdict": "FRONT-ONLY",
+   "why": "the scenery is too high or too low to cross the digits"
+  },
+  "photos/Xm1wdkNUwrY": {
+   "published": false,
+   "scores": {
+    "cols": 0.0,
+    "cross": 0.0,
+    "crossing": false,
+    "halo": 0.59,
+    "holes": 0,
+    "islands": 0,
+    "jagged": 0.1419,
+    "sky": 0.287,
+    "visible": 1.0,
+    "zoom": 1.0
+   },
+   "verdict": "FRONT-ONLY",
+   "why": "the scenery is too high or too low to cross the digits"
+  },
+  "photos/_5TOw0ED9Jk": {
+   "published": false,
+   "scores": {
+    "cols": 0.0,
+    "cross": 0.0,
+    "crossing": false,
+    "halo": 0.24,
+    "holes": 0,
+    "islands": 0,
+    "jagged": 0.145,
+    "sky": 0.225,
+    "visible": 1.0,
+    "zoom": 1.0
+   },
+   "verdict": "FRONT-ONLY",
+   "why": "the scenery is too high or too low to cross the digits"
+  },
+  "photos/_Fmibx42BVU": {
+   "published": false,
+   "scores": {
+    "cols": 0.0,
+    "cross": 0.0,
+    "crossing": false,
+    "halo": 0.13,
+    "holes": 0,
+    "islands": 0,
+    "jagged": 0.0808,
+    "sky": 0.686,
+    "visible": 1.0,
+    "zoom": 1.0
+   },
+   "verdict": "FRONT-ONLY",
+   "why": "the scenery is too high or too low to cross the digits"
+  },
+  "photos/_TFgiFZyH6M": {
+   "published": false,
+   "scores": {
+    "cols": 0.0,
+    "cross": 0.0,
+    "crossing": false,
+    "halo": 0.82,
+    "holes": 0,
+    "islands": 0,
+    "jagged": 0.0625,
+    "sky": 0.27,
+    "visible": 1.0,
+    "zoom": 1.0
+   },
+   "verdict": "FRONT-ONLY",
+   "why": "the scenery is too high or too low to cross the digits"
+  },
+  "photos/_jfejQo2tZw": {
+   "published": false,
+   "scores": {
+    "cols": 0.0,
+    "cross": 0.0,
+    "crossing": false,
+    "halo": 0.6,
+    "holes": 0,
+    "islands": 0,
+    "jagged": 0.0949,
+    "sky": 0.173,
+    "visible": 1.0,
+    "zoom": 1.0
+   },
+   "verdict": "FRONT-ONLY",
+   "why": "the scenery is too high or too low to cross the digits"
+  },
+  "photos/anozjF6uqI0": {
+   "published": true,
+   "scores": {
+    "cols": 0.919,
+    "cross": 0.144,
+    "crossing": true,
+    "halo": 0.11,
+    "holes": 0,
+    "islands": 0,
+    "jagged": 0.0543,
+    "sky": 0.466,
+    "visible": 0.856,
+    "zoom": 1.04
+   },
+   "verdict": "FIT",
+   "why": "clean, and the scenery crosses the digits' lower part"
+  },
+  "photos/bRRy9ucK1rY": {
+   "published": false,
+   "scores": {
+    "cols": 0.081,
+    "cross": 0.016,
+    "crossing": true,
+    "halo": 1.47,
+    "holes": 0,
+    "islands": 0,
+    "jagged": 0.0704,
+    "sky": 0.487,
+    "visible": 0.984,
+    "zoom": 1.0
+   },
+   "verdict": "FRONT-ONLY",
+   "why": "only a sliver crosses the digits (cross 0.016, columns 0.081)"
+  },
+  "photos/ckfXPMb2_BI": {
+   "published": false,
+   "scores": {
+    "cols": 0.0,
+    "cross": 0.0,
+    "crossing": false,
+    "halo": 0.81,
+    "holes": 0,
+    "islands": 0,
+    "jagged": 0.0763,
+    "sky": 0.328,
+    "visible": 1.0,
+    "zoom": 1.0
+   },
+   "verdict": "FRONT-ONLY",
+   "why": "the scenery is too high or too low to cross the digits"
+  },
+  "photos/dMSYsXdwl9M": {
+   "published": false,
+   "scores": {
+    "cols": 0.0,
+    "cross": 0.0,
+    "crossing": false,
+    "halo": 1.15,
+    "holes": 0,
+    "islands": 0,
+    "jagged": 0.0978,
+    "sky": 0.143,
+    "visible": 1.0,
+    "zoom": 1.0
+   },
+   "verdict": "FRONT-ONLY",
+   "why": "the scenery is too high or too low to cross the digits"
+  },
+  "photos/dfglhJbc4Uc": {
+   "published": false,
+   "scores": {
+    "cols": 0.0,
+    "cross": 0.0,
+    "crossing": false,
+    "halo": 1.67,
+    "holes": 0,
+    "islands": 0,
+    "jagged": 0.0769,
+    "sky": 0.15,
+    "visible": 1.0,
+    "zoom": 1.0
+   },
+   "verdict": "FRONT-ONLY",
+   "why": "the scenery is too high or too low to cross the digits"
+  },
+  "photos/e5UUZcgQ5IU": {
+   "published": false,
+   "scores": {
+    "cols": 0.324,
+    "cross": 0.074,
+    "crossing": true,
+    "halo": 0.53,
+    "holes": 0,
+    "islands": 0,
+    "jagged": 0.0893,
+    "sky": 0.572,
+    "visible": 0.926,
+    "zoom": 1.0
+   },
+   "verdict": "FRONT-ONLY",
+   "why": "only a sliver crosses the digits (cross 0.074, columns 0.324)"
+  },
+  "photos/eOWabmCNEdg": {
+   "published": false,
+   "scores": {
+    "cols": 0.162,
+    "cross": 0.037,
+    "crossing": true,
+    "halo": 0.71,
+    "holes": 0,
+    "islands": 0,
+    "jagged": 0.0212,
+    "sky": 0.422,
+    "visible": 0.963,
+    "zoom": 1.0
+   },
+   "verdict": "REJECT",
+   "why": "the edge cuts through a face or a person"
+  },
+  "photos/efzvMAIpfWY": {
+   "published": false,
+   "scores": {
+    "cols": 0.0,
+    "cross": 0.0,
+    "crossing": false,
+    "halo": 1.17,
+    "holes": 0,
+    "islands": 0,
+    "jagged": 0.1979,
+    "sky": 0.347,
+    "visible": 1.0,
+    "zoom": 1.0
+   },
+   "verdict": "FRONT-ONLY",
+   "why": "the scenery is too high or too low to cross the digits"
+  },
+  "photos/epQdtCvBrc4": {
+   "published": false,
+   "scores": {
+    "cols": 0.0,
+    "cross": 0.0,
+    "crossing": false,
+    "halo": 0.29,
+    "holes": 0,
+    "islands": 0,
+    "jagged": 0.1421,
+    "sky": 0.188,
+    "visible": 1.0,
+    "zoom": 1.0
+   },
+   "verdict": "FRONT-ONLY",
+   "why": "the scenery is too high or too low to cross the digits"
+  },
+  "photos/f5ZB0LHwi0s": {
+   "published": false,
+   "scores": {
+    "cols": 0.0,
+    "cross": 0.0,
+    "crossing": false,
+    "halo": 0.3,
+    "holes": 0,
+    "islands": 0,
+    "jagged": 0.0197,
+    "sky": 0.86,
+    "visible": 1.0,
+    "zoom": 1.0
+   },
+   "verdict": "FRONT-ONLY",
+   "why": "the scenery is too high or too low to cross the digits"
+  },
+  "photos/fNXY1xjZQYI": {
+   "published": false,
+   "scores": {
+    "cols": 0.0,
+    "cross": 0.0,
+    "crossing": false,
+    "halo": 1.54,
+    "holes": 1,
+    "islands": 0,
+    "jagged": 0.185,
+    "sky": 0.257,
+    "visible": 1.0,
+    "zoom": 1.0
+   },
+   "verdict": "FRONT-ONLY",
+   "why": "the scenery is too high or too low to cross the digits"
+  },
+  "photos/fYTVHcpak2g": {
+   "published": false,
+   "scores": {
+    "cols": 0.0,
+    "cross": 0.0,
+    "crossing": false,
+    "halo": 0.22,
+    "holes": 0,
+    "islands": 0,
+    "jagged": 0.1329,
+    "sky": 0.296,
+    "visible": 1.0,
+    "zoom": 1.0
+   },
+   "verdict": "FRONT-ONLY",
+   "why": "the scenery is too high or too low to cross the digits"
+  },
+  "photos/g9wCI64k2yw": {
+   "published": false,
+   "scores": {
+    "cols": 0.0,
+    "cross": 0.0,
+    "crossing": false,
+    "halo": 0.63,
+    "holes": 0,
+    "islands": 0,
+    "jagged": 0.014,
+    "sky": 0.164,
+    "visible": 1.0,
+    "zoom": 1.0
+   },
+   "verdict": "FRONT-ONLY",
+   "why": "the scenery is too high or too low to cross the digits"
+  },
+  "photos/gOqBe7ropxM": {
+   "published": false,
+   "scores": {
+    "cols": 0.135,
+    "cross": 0.025,
+    "crossing": true,
+    "halo": 0.29,
+    "holes": 0,
+    "islands": 0,
+    "jagged": 0.0364,
+    "sky": 0.613,
+    "visible": 0.975,
+    "zoom": 1.0
+   },
+   "verdict": "FRONT-ONLY",
+   "why": "only a sliver crosses the digits (cross 0.025, columns 0.135)"
+  },
+  "photos/iQR2jzuw9m8": {
+   "published": false,
+   "scores": {
+    "cols": 0.0,
+    "cross": 0.0,
+    "crossing": false,
+    "halo": 1.03,
+    "holes": 0,
+    "islands": 0,
+    "jagged": 0.0785,
+    "sky": 0.435,
+    "visible": 1.0,
+    "zoom": 1.0
+   },
+   "verdict": "FRONT-ONLY",
+   "why": "the scenery is too high or too low to cross the digits"
+  },
+  "photos/ihIKOg_lHgI": {
+   "published": false,
+   "scores": {
+    "cols": 0.0,
+    "cross": 0.0,
+    "crossing": false,
+    "halo": 0.34,
+    "holes": 0,
+    "islands": 0,
+    "jagged": 0.0977,
+    "sky": 0.75,
+    "visible": 1.0,
+    "zoom": 1.0
+   },
+   "verdict": "FRONT-ONLY",
+   "why": "the scenery is too high or too low to cross the digits"
+  },
+  "photos/kzEFwhXPXwo": {
+   "published": false,
+   "scores": {
+    "cols": 0.0,
+    "cross": 0.0,
+    "crossing": false,
+    "halo": 0.31,
+    "holes": 0,
+    "islands": 0,
+    "jagged": 0.0533,
+    "sky": 0.462,
+    "visible": 1.0,
+    "zoom": 1.0
+   },
+   "verdict": "FRONT-ONLY",
+   "why": "the scenery is too high or too low to cross the digits"
+  },
+  "photos/ljEXet84nL8": {
+   "published": false,
+   "scores": {
+    "cols": 0.0,
+    "cross": 0.0,
+    "crossing": false,
+    "halo": 2.25,
+    "holes": 0,
+    "islands": 0,
+    "jagged": 0.0923,
+    "sky": 0.142,
+    "visible": 1.0,
+    "zoom": 1.0
+   },
+   "verdict": "FRONT-ONLY",
+   "why": "the scenery is too high or too low to cross the digits"
+  },
+  "photos/lrhF4w-KKjA": {
+   "published": false,
+   "scores": {
+    "cols": 0.0,
+    "cross": 0.0,
+    "crossing": false,
+    "halo": 0.75,
+    "holes": 0,
+    "islands": 0,
+    "jagged": 0.0556,
+    "sky": 0.418,
+    "visible": 1.0,
+    "zoom": 1.0
+   },
+   "verdict": "FRONT-ONLY",
+   "why": "the scenery is too high or too low to cross the digits"
+  },
+  "photos/nrhz95KUhrI": {
+   "published": false,
+   "scores": {
+    "cols": 0.0,
+    "cross": 0.0,
+    "crossing": false,
+    "halo": 0.35,
+    "holes": 0,
+    "islands": 0,
+    "jagged": 0.0714,
+    "sky": 0.287,
+    "visible": 1.0,
+    "zoom": 1.0
+   },
+   "verdict": "FRONT-ONLY",
+   "why": "the scenery is too high or too low to cross the digits"
+  },
+  "photos/oem64GHBGH8": {
+   "published": false,
+   "scores": {
+    "cols": 0.0,
+    "cross": 0.0,
+    "crossing": false,
+    "halo": 0.68,
+    "holes": 8,
+    "islands": 0,
+    "jagged": 0.2144,
+    "sky": 0.376,
+    "visible": 1.0,
+    "zoom": 1.0
+   },
+   "verdict": "REJECT",
+   "why": "a broken edge (0 islands, 8 holes)"
+  },
+  "photos/pyThxd4x8Tk": {
+   "published": false,
+   "scores": {
+    "cols": 0.0,
+    "cross": 0.0,
+    "crossing": false,
+    "halo": 1.01,
+    "holes": 3,
+    "islands": 1,
+    "jagged": 0.1055,
+    "sky": 0.829,
+    "visible": 1.0,
+    "zoom": 1.0
+   },
+   "verdict": "REJECT",
+   "why": "no sky found along the top"
+  },
+  "photos/qGH25zv5xMk": {
+   "published": false,
+   "scores": {
+    "cols": 0.0,
+    "cross": 0.0,
+    "crossing": false,
+    "halo": 0.96,
+    "holes": 0,
+    "islands": 0,
+    "jagged": 0.075,
+    "sky": 0.287,
+    "visible": 1.0,
+    "zoom": 1.0
+   },
+   "verdict": "FRONT-ONLY",
+   "why": "the scenery is too high or too low to cross the digits"
+  },
+  "photos/qqwX49ov8UY": {
+   "published": false,
+   "scores": {
+    "cols": 0.0,
+    "cross": 0.0,
+    "crossing": false,
+    "halo": 0.31,
+    "holes": 0,
+    "islands": 0,
+    "jagged": 0.1149,
+    "sky": 0.302,
+    "visible": 1.0,
+    "zoom": 1.0
+   },
+   "verdict": "FRONT-ONLY",
+   "why": "the scenery is too high or too low to cross the digits"
+  },
+  "photos/r4ZSR0cKJw8": {
+   "published": false,
+   "scores": {
+    "cols": 0.0,
+    "cross": 0.0,
+    "crossing": false,
+    "halo": 0.19,
+    "holes": 0,
+    "islands": 0,
+    "jagged": 0.0775,
+    "sky": 0.258,
+    "visible": 1.0,
+    "zoom": 1.0
+   },
+   "verdict": "FRONT-ONLY",
+   "why": "the scenery is too high or too low to cross the digits"
+  },
+  "photos/rVC6O_gDE0Q": {
+   "published": false,
+   "scores": {
+    "cols": 0.27,
+    "cross": 0.051,
+    "crossing": true,
+    "halo": 0.33,
+    "holes": 0,
+    "islands": 0,
+    "jagged": 0.0556,
+    "sky": 0.714,
+    "visible": 0.949,
+    "zoom": 1.0
+   },
+   "verdict": "FRONT-ONLY",
+   "why": "only a sliver crosses the digits (cross 0.051, columns 0.27)"
+  },
+  "photos/rkRYbmPuhOE": {
+   "published": true,
+   "scores": {
+    "cols": 1.0,
+    "cross": 0.139,
+    "crossing": true,
+    "halo": 0.57,
+    "holes": 0,
+    "islands": 0,
+    "jagged": 0.0443,
+    "sky": 0.44,
+    "visible": 0.861,
+    "zoom": 1.09
+   },
+   "verdict": "FIT",
+   "why": "clean, and the scenery crosses the digits' lower part"
+  },
+  "photos/s3leOixsIX0": {
+   "published": false,
+   "scores": {
+    "cols": 0.0,
+    "cross": 0.0,
+    "crossing": false,
+    "halo": 0.26,
+    "holes": 0,
+    "islands": 0,
+    "jagged": 0.1013,
+    "sky": 0.173,
+    "visible": 1.0,
+    "zoom": 1.0
+   },
+   "verdict": "FRONT-ONLY",
+   "why": "the scenery is too high or too low to cross the digits"
+  },
+  "photos/s6g6ZSxM3kQ": {
+   "published": false,
+   "scores": {
+    "cols": 0.0,
+    "cross": 0.0,
+    "crossing": false,
+    "halo": 0.92,
+    "holes": 1,
+    "islands": 0,
+    "jagged": 0.0394,
+    "sky": 0.605,
+    "visible": 1.0,
+    "zoom": 1.0
+   },
+   "verdict": "FRONT-ONLY",
+   "why": "the scenery is too high or too low to cross the digits"
+  },
+  "photos/seX13AzLqls": {
+   "published": true,
+   "scores": {
+    "cols": 0.757,
+    "cross": 0.149,
+    "crossing": true,
+    "halo": 0.19,
+    "holes": 0,
+    "islands": 0,
+    "jagged": 0.055,
+    "sky": 0.383,
+    "visible": 0.851,
+    "zoom": 1.05
+   },
+   "verdict": "FIT",
+   "why": "clean, and the scenery crosses the digits' lower part"
+  },
+  "photos/t3dlLOhdEzs": {
+   "published": false,
+   "scores": {
+    "cols": 0.0,
+    "cross": 0.0,
+    "crossing": false,
+    "halo": 0.45,
+    "holes": 0,
+    "islands": 0,
+    "jagged": 0.11,
+    "sky": 0.203,
+    "visible": 1.0,
+    "zoom": 1.0
+   },
+   "verdict": "FRONT-ONLY",
+   "why": "the scenery is too high or too low to cross the digits"
+  },
+  "photos/tUqMoFE_eAE": {
+   "published": false,
+   "scores": {
+    "cols": 0.0,
+    "cross": 0.0,
+    "crossing": false,
+    "halo": 1.17,
+    "holes": 0,
+    "islands": 0,
+    "jagged": 0.0947,
+    "sky": 0.142,
+    "visible": 1.0,
+    "zoom": 1.0
+   },
+   "verdict": "FRONT-ONLY",
+   "why": "the scenery is too high or too low to cross the digits"
+  },
+  "photos/ud9NlvvEzUI": {
+   "published": false,
+   "scores": {
+    "cols": 0.0,
+    "cross": 0.0,
+    "crossing": false,
+    "halo": 0.56,
+    "holes": 0,
+    "islands": 0,
+    "jagged": 0.0374,
+    "sky": 0.632,
+    "visible": 1.0,
+    "zoom": 1.0
+   },
+   "verdict": "FRONT-ONLY",
+   "why": "the scenery is too high or too low to cross the digits"
+  },
+  "photos/uqAUg1zvMXQ": {
+   "published": true,
+   "scores": {
+    "cols": 0.973,
+    "cross": 0.14,
+    "crossing": true,
+    "halo": 0.15,
+    "holes": 0,
+    "islands": 0,
+    "jagged": 0.0424,
+    "sky": 0.58,
+    "visible": 0.86,
+    "zoom": 1.04
+   },
+   "verdict": "FIT",
+   "why": "clean, and the scenery crosses the digits' lower part"
+  },
+  "photos/va9218QJFAk": {
+   "published": false,
+   "scores": {
+    "cols": 0.0,
+    "cross": 0.0,
+    "crossing": false,
+    "halo": 0.52,
+    "holes": 0,
+    "islands": 0,
+    "jagged": 0.0487,
+    "sky": 0.144,
+    "visible": 1.0,
+    "zoom": 1.0
+   },
+   "verdict": "FRONT-ONLY",
+   "why": "the scenery is too high or too low to cross the digits"
+  },
+  "photos/w-yuRFSkbVw": {
+   "published": false,
+   "scores": {
+    "cols": 0.054,
+    "cross": 0.006,
+    "crossing": true,
+    "halo": 0.34,
+    "holes": 1,
+    "islands": 0,
+    "jagged": 0.1317,
+    "sky": 0.534,
+    "visible": 0.994,
+    "zoom": 1.0
+   },
+   "verdict": "FRONT-ONLY",
+   "why": "only a sliver crosses the digits (cross 0.006, columns 0.054)"
+  },
+  "photos/wMHauMZiQjg": {
+   "published": false,
+   "scores": {
+    "cols": 0.0,
+    "cross": 0.0,
+    "crossing": false,
+    "halo": 0.92,
+    "holes": 0,
+    "islands": 0,
+    "jagged": 0.2143,
+    "sky": 0.367,
+    "visible": 1.0,
+    "zoom": 1.0
+   },
+   "verdict": "FRONT-ONLY",
+   "why": "the scenery is too high or too low to cross the digits"
+  },
+  "photos/wSJmlKMecHU": {
+   "published": true,
+   "scores": {
+    "cols": 0.486,
+    "cross": 0.133,
+    "crossing": true,
+    "halo": 0.8,
+    "holes": 1,
+    "islands": 0,
+    "jagged": 0.1006,
+    "sky": 0.244,
+    "visible": 0.867,
+    "zoom": 1.0
+   },
+   "verdict": "FIT",
+   "why": "clean, and the scenery crosses the digits' lower part"
+  },
+  "photos/wTmGtmGQCjQ": {
+   "published": false,
+   "scores": {
+    "cols": 0.0,
+    "cross": 0.0,
+    "crossing": false,
+    "halo": 0.93,
+    "holes": 0,
+    "islands": 0,
+    "jagged": 0.1155,
+    "sky": 0.41,
+    "visible": 1.0,
+    "zoom": 1.0
+   },
+   "verdict": "REJECT",
+   "why": "no sky found along the top"
+  },
+  "photos/xAPIN3qwZN0": {
+   "published": false,
+   "scores": {
+    "cols": 0.0,
+    "cross": 0.0,
+    "crossing": false,
+    "halo": 1.26,
+    "holes": 0,
+    "islands": 0,
+    "jagged": 0.1294,
+    "sky": 0.287,
+    "visible": 1.0,
+    "zoom": 1.0
+   },
+   "verdict": "FRONT-ONLY",
+   "why": "the scenery is too high or too low to cross the digits"
+  },
+  "photos/xXqWVUvf_Gw": {
+   "published": false,
+   "scores": {
+    "cols": 0.0,
+    "cross": 0.0,
+    "crossing": false,
+    "halo": 0.69,
+    "holes": 0,
+    "islands": 0,
+    "jagged": 0.1357,
+    "sky": 0.267,
+    "visible": 1.0,
+    "zoom": 1.0
+   },
+   "verdict": "FRONT-ONLY",
+   "why": "the scenery is too high or too low to cross the digits"
+  },
+  "photos/yUcH008GS6A": {
+   "published": false,
+   "scores": {
+    "cols": 0.0,
+    "cross": 0.0,
+    "crossing": false,
+    "halo": 0.32,
+    "holes": 0,
+    "islands": 0,
+    "jagged": 0.1056,
+    "sky": 0.425,
+    "visible": 1.0,
+    "zoom": 1.0
+   },
+   "verdict": "FRONT-ONLY",
+   "why": "the scenery is too high or too low to cross the digits"
+  },
+  "photos/yx7TJle8LhM": {
+   "published": false,
+   "scores": {
+    "cols": 0.0,
+    "cross": 0.0,
+    "crossing": false,
+    "halo": 0.71,
+    "holes": 0,
+    "islands": 0,
+    "jagged": 0.1067,
+    "sky": 0.719,
+    "visible": 1.0,
+    "zoom": 1.0
+   },
+   "verdict": "REJECT",
+   "why": "no sky found along the top"
+  },
+  "sea/1": {
+   "published": true,
+   "scores": {
+    "cols": 1.0,
+    "cross": 0.142,
+    "crossing": true,
+    "halo": 0.3,
+    "holes": 0,
+    "islands": 0,
+    "jagged": 0.0914,
+    "sky": 0.283,
+    "visible": 0.858,
+    "zoom": 1.12
+   },
+   "verdict": "FIT",
+   "why": "clean, and the scenery crosses the digits' lower part"
+  },
+  "sea/10": {
+   "published": false,
+   "scores": {
+    "cols": 0.0,
+    "cross": 0.0,
+    "crossing": false,
+    "halo": 0.11,
+    "holes": 0,
+    "islands": 0,
+    "jagged": 0.0,
+    "sky": 0.669,
+    "visible": 1.0,
+    "zoom": 1.0
+   },
+   "verdict": "FRONT-ONLY",
+   "why": "the scenery is too high or too low to cross the digits"
+  },
+  "sea/11": {
+   "published": false,
+   "scores": {
+    "cols": 0.0,
+    "cross": 0.0,
+    "crossing": false,
+    "halo": 0.26,
+    "holes": 0,
+    "islands": 0,
+    "jagged": 0.0864,
+    "sky": 0.378,
+    "visible": 1.0,
+    "zoom": 1.0
+   },
+   "verdict": "FRONT-ONLY",
+   "why": "the scenery is too high or too low to cross the digits"
+  },
+  "sea/12": {
+   "published": true,
+   "scores": {
+    "cols": 1.0,
+    "cross": 0.127,
+    "crossing": true,
+    "halo": 0.11,
+    "holes": 0,
+    "islands": 0,
+    "jagged": 0.0,
+    "sky": 0.601,
+    "visible": 0.873,
+    "zoom": 1.07
+   },
+   "verdict": "FIT",
+   "why": "clean, and the scenery crosses the digits' lower part"
+  },
+  "sea/13": {
+   "published": false,
+   "scores": {
+    "cols": 0.0,
+    "cross": 0.0,
+    "crossing": false,
+    "halo": 1.61,
+    "holes": 0,
+    "islands": 0,
+    "jagged": 0.1179,
+    "sky": 0.134,
+    "visible": 1.0,
+    "zoom": 1.0
+   },
+   "verdict": "FRONT-ONLY",
+   "why": "the scenery is too high or too low to cross the digits"
+  },
+  "sea/14": {
+   "published": false,
+   "scores": {
+    "cols": 0.0,
+    "cross": 0.0,
+    "crossing": false,
+    "halo": 1.14,
+    "holes": 0,
+    "islands": 0,
+    "jagged": 0.0847,
+    "sky": 0.349,
+    "visible": 1.0,
+    "zoom": 1.0
+   },
+   "verdict": "FRONT-ONLY",
+   "why": "the scenery is too high or too low to cross the digits"
+  },
+  "sea/15": {
+   "published": true,
+   "scores": {
+    "cols": 1.0,
+    "cross": 0.145,
+    "crossing": true,
+    "halo": 0.9,
+    "holes": 0,
+    "islands": 0,
+    "jagged": 0.0245,
+    "sky": 0.602,
+    "visible": 0.855,
+    "zoom": 1.06
+   },
+   "verdict": "FIT",
+   "why": "clean, and the scenery crosses the digits' lower part"
+  },
+  "sea/16": {
+   "published": true,
+   "scores": {
+    "cols": 1.0,
+    "cross": 0.14,
+    "crossing": true,
+    "halo": 0.16,
+    "holes": 0,
+    "islands": 0,
+    "jagged": 0.0,
+    "sky": 0.498,
+    "visible": 0.86,
+    "zoom": 1.08
+   },
+   "verdict": "FIT",
+   "why": "clean, and the scenery crosses the digits' lower part"
+  },
+  "sea/17": {
+   "published": false,
+   "scores": {
+    "cols": 0.0,
+    "cross": 0.0,
+    "crossing": false,
+    "halo": 0.91,
+    "holes": 0,
+    "islands": 0,
+    "jagged": 0.0,
+    "sky": 0.482,
+    "visible": 1.0,
+    "zoom": 1.0
+   },
+   "verdict": "FRONT-ONLY",
+   "why": "the scenery is too high or too low to cross the digits"
+  },
+  "sea/18": {
+   "published": false,
+   "scores": {
+    "cols": 0.0,
+    "cross": 0.0,
+    "crossing": false,
+    "halo": 1.03,
+    "holes": 0,
+    "islands": 0,
+    "jagged": 0.0476,
+    "sky": 0.159,
+    "visible": 1.0,
+    "zoom": 1.0
+   },
+   "verdict": "FRONT-ONLY",
+   "why": "the scenery is too high or too low to cross the digits"
+  },
+  "sea/19": {
+   "published": false,
+   "scores": {
+    "cols": 0.0,
+    "cross": 0.0,
+    "crossing": false,
+    "halo": 0.91,
+    "holes": 1,
+    "islands": 0,
+    "jagged": 0.0564,
+    "sky": 0.33,
+    "visible": 1.0,
+    "zoom": 1.0
+   },
+   "verdict": "FRONT-ONLY",
+   "why": "the scenery is too high or too low to cross the digits"
+  },
+  "sea/2": {
+   "published": false,
+   "scores": {
+    "cols": 0.0,
+    "cross": 0.0,
+    "crossing": false,
+    "halo": 0.12,
+    "holes": 0,
+    "islands": 0,
+    "jagged": 0.0446,
+    "sky": 0.637,
+    "visible": 1.0,
+    "zoom": 1.0
+   },
+   "verdict": "FRONT-ONLY",
+   "why": "the scenery is too high or too low to cross the digits"
+  },
+  "sea/3": {
+   "published": false,
+   "scores": {
+    "cols": 0.0,
+    "cross": 0.0,
+    "crossing": false,
+    "halo": 1.56,
+    "holes": 0,
+    "islands": 0,
+    "jagged": 0.1065,
+    "sky": 0.272,
+    "visible": 1.0,
+    "zoom": 1.0
+   },
+   "verdict": "FRONT-ONLY",
+   "why": "the scenery is too high or too low to cross the digits"
+  },
+  "sea/4": {
+   "published": false,
+   "scores": {
+    "cols": 0.108,
+    "cross": 0.017,
+    "crossing": true,
+    "halo": 1.14,
+    "holes": 0,
+    "islands": 0,
+    "jagged": 0.0718,
+    "sky": 0.533,
+    "visible": 0.983,
+    "zoom": 1.0
+   },
+   "verdict": "FRONT-ONLY",
+   "why": "only a sliver crosses the digits (cross 0.017, columns 0.108)"
+  },
+  "sea/5": {
+   "published": false,
+   "scores": {
+    "cols": 0.0,
+    "cross": 0.0,
+    "crossing": false,
+    "halo": 0.79,
+    "holes": 0,
+    "islands": 0,
+    "jagged": 0.0494,
+    "sky": 0.144,
+    "visible": 1.0,
+    "zoom": 1.0
+   },
+   "verdict": "FRONT-ONLY",
+   "why": "the scenery is too high or too low to cross the digits"
+  },
+  "sea/6": {
+   "published": true,
+   "scores": {
+    "cols": 1.0,
+    "cross": 0.139,
+    "crossing": true,
+    "halo": 1.18,
+    "holes": 0,
+    "islands": 0,
+    "jagged": 0.125,
+    "sky": 0.361,
+    "visible": 0.861,
+    "zoom": 1.11
+   },
+   "verdict": "FIT",
+   "why": "clean, and the scenery crosses the digits' lower part"
+  },
+  "sea/7": {
+   "published": false,
+   "scores": {
+    "cols": 0.0,
+    "cross": 0.0,
+    "crossing": false,
+    "halo": 1.52,
+    "holes": 1,
+    "islands": 0,
+    "jagged": 0.0462,
+    "sky": 0.366,
+    "visible": 1.0,
+    "zoom": 1.0
+   },
+   "verdict": "FRONT-ONLY",
+   "why": "the scenery is too high or too low to cross the digits"
+  },
+  "sea/8": {
+   "published": false,
+   "scores": {
+    "cols": 0.0,
+    "cross": 0.0,
+    "crossing": false,
+    "halo": 0.41,
+    "holes": 0,
+    "islands": 0,
+    "jagged": 0.1353,
+    "sky": 0.161,
+    "visible": 1.0,
+    "zoom": 1.0
+   },
+   "verdict": "FRONT-ONLY",
+   "why": "the scenery is too high or too low to cross the digits"
+  },
+  "sea/9": {
+   "published": false,
+   "scores": {
+    "cols": 0.0,
+    "cross": 0.0,
+    "crossing": false,
+    "halo": 1.05,
+    "holes": 0,
+    "islands": 0,
+    "jagged": 0.0763,
+    "sky": 0.463,
+    "visible": 1.0,
+    "zoom": 1.0
+   },
+   "verdict": "FRONT-ONLY",
+   "why": "the scenery is too high or too low to cross the digits"
+  },
+  "space/1": {
+   "published": false,
+   "scores": {
+    "cols": 0.0,
+    "cross": 0.0,
+    "crossing": false,
+    "halo": 0.63,
+    "holes": 0,
+    "islands": 0,
+    "jagged": 0.1617,
+    "sky": 0.808,
+    "visible": 1.0,
+    "zoom": 1.0
+   },
+   "verdict": "REJECT",
+   "why": "no sky found along the top"
+  },
+  "space/10": {
+   "published": false,
+   "scores": {
+    "cols": 0.0,
+    "cross": 0.0,
+    "crossing": false,
+    "halo": 0.82,
+    "holes": 0,
+    "islands": 1,
+    "jagged": 0.0733,
+    "sky": 0.184,
+    "visible": 1.0,
+    "zoom": 1.0
+   },
+   "verdict": "FRONT-ONLY",
+   "why": "the scenery is too high or too low to cross the digits"
+  },
+  "space/11": {
+   "published": false,
+   "scores": {
+    "cols": 0.0,
+    "cross": 0.0,
+    "crossing": false,
+    "halo": 0.05,
+    "holes": 0,
+    "islands": 0,
+    "jagged": 0.092,
+    "sky": 0.176,
+    "visible": 1.0,
+    "zoom": 1.0
+   },
+   "verdict": "FRONT-ONLY",
+   "why": "the scenery is too high or too low to cross the digits"
+  },
+  "space/12": {
+   "published": false,
+   "scores": {
+    "cols": 0.0,
+    "cross": 0.0,
+    "crossing": false,
+    "halo": 0.0,
+    "holes": 0,
+    "islands": 0,
+    "jagged": 0.0,
+    "sky": 0.901,
+    "visible": 1.0,
+    "zoom": 1.0
+   },
+   "verdict": "FRONT-ONLY",
+   "why": "the scenery is too high or too low to cross the digits"
+  },
+  "space/2": {
+   "published": false,
+   "scores": {
+    "cols": 0.0,
+    "cross": 0.0,
+    "crossing": false,
+    "halo": 0.44,
+    "holes": 0,
+    "islands": 0,
+    "jagged": 0.0749,
+    "sky": 0.142,
+    "visible": 1.0,
+    "zoom": 1.0
+   },
+   "verdict": "FRONT-ONLY",
+   "why": "the scenery is too high or too low to cross the digits"
+  },
+  "space/3": {
+   "published": false,
+   "scores": {
+    "cols": 0.0,
+    "cross": 0.0,
+    "crossing": false,
+    "halo": 0.14,
+    "holes": 0,
+    "islands": 0,
+    "jagged": 0.1457,
+    "sky": 0.87,
+    "visible": 1.0,
+    "zoom": 1.0
+   },
+   "verdict": "REJECT",
+   "why": "no sky found along the top"
+  },
+  "space/4": {
+   "published": false,
+   "scores": {
+    "cols": 0.0,
+    "cross": 0.0,
+    "crossing": false,
+    "halo": 0.18,
+    "holes": 0,
+    "islands": 0,
+    "jagged": 0.0,
+    "sky": 0.794,
+    "visible": 1.0,
+    "zoom": 1.0
+   },
+   "verdict": "FRONT-ONLY",
+   "why": "the scenery is too high or too low to cross the digits"
+  },
+  "space/5": {
+   "published": false,
+   "scores": {
+    "cols": 0.0,
+    "cross": 0.0,
+    "crossing": false,
+    "halo": 0.25,
+    "holes": 0,
+    "islands": 1,
+    "jagged": 0.0135,
+    "sky": 0.644,
+    "visible": 1.0,
+    "zoom": 1.0
+   },
+   "verdict": "REJECT",
+   "why": "no sky found along the top"
+  },
+  "space/6": {
+   "published": false,
+   "scores": {
+    "cols": 0.0,
+    "cross": 0.0,
+    "crossing": false,
+    "halo": 0.58,
+    "holes": 0,
+    "islands": 0,
+    "jagged": 0.2051,
+    "sky": 0.823,
+    "visible": 1.0,
+    "zoom": 1.0
+   },
+   "verdict": "REJECT",
+   "why": "no sky found along the top"
+  },
+  "space/7": {
+   "published": false,
+   "scores": {
+    "cols": 0.0,
+    "cross": 0.0,
+    "crossing": false,
+    "halo": 0.64,
+    "holes": 0,
+    "islands": 0,
+    "jagged": 0.0784,
+    "sky": 0.312,
+    "visible": 1.0,
+    "zoom": 1.0
+   },
+   "verdict": "FRONT-ONLY",
+   "why": "the scenery is too high or too low to cross the digits"
+  },
+  "space/8": {
+   "published": false,
+   "scores": {
+    "cols": 0.0,
+    "cross": 0.0,
+    "crossing": false,
+    "halo": 0.15,
+    "holes": 0,
+    "islands": 0,
+    "jagged": 0.0749,
+    "sky": 0.751,
+    "visible": 1.0,
+    "zoom": 1.0
+   },
+   "verdict": "FRONT-ONLY",
+   "why": "the scenery is too high or too low to cross the digits"
+  },
+  "space/9": {
+   "published": false,
+   "scores": {
+    "cols": 0.0,
+    "cross": 0.0,
+    "crossing": false,
+    "halo": 0.76,
+    "holes": 0,
+    "islands": 0,
+    "jagged": 0.1198,
+    "sky": 0.856,
+    "visible": 1.0,
+    "zoom": 1.0
+   },
+   "verdict": "REJECT",
+   "why": "no sky found along the top"
+  }
+ },
+ "v": 1
+}
