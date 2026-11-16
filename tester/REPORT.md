@@ -2753,3 +2753,16 @@ Night look: big glass clock over a photo scene, date + weather, a dock of 10 app
 
 ### Z
 Settings lists, dock, photos, DNS, disabled apps (20) and Home are identical to before this step (`step47/before76` vs `after76`, only a timestamp differs). Teams, home card, dock, screensaver restored; channel `next`, build 300. TV muted and asleep. No stream or token kept.
+
+## step 76 — rest, on the newest apk-next (4.3.2 build 322, installed 14:12 from the next channel)
+**VERDICT: SAFE TO RELEASE 4.3.2** (0 new problems; the 4 earlier notes of 76 part 1 stay as they were)
+
+- Update: next channel → «تحديث جديد 4.3.2» → both apps updated (two Update questions) → «تم التحديث ✓». `dock` still 9 apps; `favbar 5`.
+- **Favourites row shows 5 tiles** (Apple TV, MBC/Shahid, Netflix, Crunchyroll, YouTube, plus the arrow for more) – picture in the report folder.
+- 1 Smoke: Home on return ×5 → always `sa.urtv.home/MainActivity`; cold start (force-stop then Home) → home; standby (sleep/wake) → home with the same 5 tiles; hub opens (4 tiles, «تلفزيونك»); games page lists all game tiles; control centre opens (Bluetooth, sleep timer, network, sound, speed test…); screensaver started by itself after the 45 s idle; adhan `off` as the owner had it.
+- 3 Markets «قائمتي»: 4164/4002/4349 are not in the movers lists, so I could not open their cards. Tested the same flow with 1080 (from «الأكثر ارتفاعًا»): card → «أضف إلى قائمتي» → `saver.sh stocks` = …,2082,1080; again → «أزل من قائمتي» → back to `2222,1120,7010,2010,2082`.
+- 4 Radio «الشيخ عبدالله خياط»: it is not in `music.sh stations` (that prints 0–11) but `music.sh radio 12` plays it. 2 minutes: playing=1, pos 39→126 s, rebuffers 0, errors 0, buffering 0. Stopped.
+- 6 «قبل ما تحذف التطبيق…» (الإعدادات ← البطاقات ← الشاشة الرئيسية, 4th row): OK opens the dialog with the warning text and one button «إغلاق» (factory home is on here, so no «رجّع واجهة المصنع» button was expected to be offered… I did not turn the factory home off to see that variant). Closed with the button, nothing changed.
+- Skipped as told: 7 remaining settings pages, 11 baselines.
+- Small note: `music.sh stations` lists 12 while station 12 (Khayyat) exists – the listing seems to hide it.
+- State at the end: owner's teams, stocks, dock, markets, city, idle as before; radio stopped; TV muted, asleep, UrTV home.
