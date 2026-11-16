@@ -156,7 +156,12 @@ final class SetupRunner {
 
     static final String STATE_FILE = "runner.txt";
     static final int RING = 400;
-    static final int RESUME_TRIES = 40, RESUME_WAIT_MS = 15_000;   // ten minutes for the TV's adb to come back after a restart
+    static final int RESUME_TRIES = 40, RESUME_WAIT_MS = 15_000;
+    /** 4.3.3: a step that may run twice is run again this many times on a new connection when the TV's adb drops in it */
+    static final int RECONNECTS = 2;
+    static final String RECONNECT_LINE = "انقطع الاتصال بالتلفزيون؛ نعيد الاتصال ونعيد هذه الخطوة.";
+    /** 4.3.3: a full run cut off by a restart nobody asked for (IRIS TV and others at 20 to 26 %) goes on by itself at the boot, this many times per run at most */
+    static final int AUTO_RESUMES = 2;   // ten minutes for the TV's adb to come back after a restart
 
     private static final SetupRunner INSTANCE = new SetupRunner();
 
@@ -217,6 +222,11 @@ final class SetupRunner {
         p.add(new Def("home", false, c -> {
             if (c.engine.askWifi()) throw new Paused();   // before anything of the switch: the person is asked once, the run resumes here
             SetupEngine.Result r = c.engine.home();
+            if (c.engine.watchPending()) {   // 4.4: the stock home keeps the Home key (Google TV): «إضافات تلفزيونك» installed and turned on over this adb, then the key checked again
+                SetupEngine.Result add = install(c).addon();
+                SetupEngine.Result on = add.status == SetupEngine.Status.DONE ? c.engine.enableWatch() : add;
+                r = c.engine.finishWatch(on.status == SetupEngine.Status.DONE);
+            }
             c.runner.wantScreen();   // the stock home and then ours come in front: our home opens this screen again
             return r;
         }));
@@ -587,13 +597,40 @@ final class SetupRunner {
         return resumable(store) && "restart".equals(readState(store).get("await"));
     }
 
+    /**
+     * 4.3.3: a full run was still running when the TV went down (no end was written: «live=1» stays, no await), within the last day, and a boot has not
+     * resumed it {@link #AUTO_RESUMES} times already: the TV restarted by itself in the middle (IRIS TV and others stopped at 20 to 26 % and restarted),
+     * so the boot resumes it. A run that ended (done, or stopped by a cut connection the person was told about) has no «live» and waits for «جهّز كل شي».
+     */
+    static boolean cutByRestart(SetupEngine.Store store) {
+        Map<String, String> s = readState(store);
+        if (!resumable(store) || !"1".equals(s.get("live")) || s.get("await") != null) return false;
+        int n;
+        try { n = Integer.parseInt(s.getOrDefault("auto", "0")); } catch (NumberFormatException e) { n = AUTO_RESUMES; }
+        return n < AUTO_RESUMES;
+    }
+
+    /** The boot resumes the run (planned restart, or {@link #cutByRestart}): the count of resumes on their own goes up first, so a run that keeps restarting the TV stops. */
+    static boolean resumeAtBoot(SetupEngine.Store store) throws IOException {
+        if (awaitingRestart(store)) return true;
+        if (!cutByRestart(store)) return false;
+        Map<String, String> s = readState(store);
+        int n;
+        try { n = Integer.parseInt(s.getOrDefault("auto", "0")); } catch (NumberFormatException e) { n = 0; }
+        String t = store.get(STATE_FILE);
+        StringBuilder b = new StringBuilder();
+        for (String l : t.split("\n")) if (!l.startsWith("auto=") && !l.isEmpty()) b.append(l).append('\n');
+        store.put(STATE_FILE, b.append("auto=").append(n + 1).append('\n').toString());
+        return true;
+    }
+
     /** True when the run paused for the Wi-Fi (the person forgets the network and joins it again, then «كمّل»). */
     static boolean awaitingWifi(SetupEngine.Store store) {
         return resumable(store) && "wifi".equals(readState(store).get("await"));
     }
 
     /** The ADB key stays only while a run waits: for the TV's restart, or for the person's «كمّل» (no second prompt then). */
-    static boolean awaiting(SetupEngine.Store store) { return awaitingRestart(store) || awaitingWifi(store); }
+    static boolean awaiting(SetupEngine.Store store) { return awaitingRestart(store) || awaitingWifi(store) || cutByRestart(store); }
 
     static Map<String, String> readState(SetupEngine.Store store) {
         Map<String, String> out = new LinkedHashMap<>();
@@ -608,7 +645,9 @@ final class SetupRunner {
 
     /** The pointer and every finished step, written before a step starts and after it ends (all or nothing: FileStore). */
     private void writeState(SetupEngine.Store store, Options o, String at, String phase) throws IOException {
-        StringBuilder b = new StringBuilder("kind=FULL\nextras=" + (o.extras ? "1" : "0") + (o.picks == null ? "" : "\npicks=" + sa.urtv.home.SuggestedApps.join(o.picks)) + "\nat=" + at + "\nphase=" + phase + "\ntime=" + System.currentTimeMillis() + "\n");
+        String auto = readState(store).get("auto");   // how many times a boot resumed this run by itself (kept across the run's writes)
+        StringBuilder b = new StringBuilder("kind=FULL\nextras=" + (o.extras ? "1" : "0") + (o.picks == null ? "" : "\npicks=" + sa.urtv.home.SuggestedApps.join(o.picks)) + "\nat=" + at + "\nphase=" + phase + "\ntime=" + System.currentTimeMillis() + "\nlive=1\n"
+            + (auto == null || auto.isEmpty() ? "" : "auto=" + auto + "\n"));
         for (Step s : steps()) {
             if (s.state == State.DONE || s.state == State.SKIPPED || s.state == State.FAILED) b.append("s.").append(s.id).append('=').append(s.state).append('\t').append(oneLine(s.reason)).append('\n');
         }
@@ -632,7 +671,7 @@ final class SetupRunner {
             e = new End(WIFI_ASK_TEXT, false, true);   // the person is asked; «كمّل» resumes the run at the home switch
             try {
                 String st = host.store().get(STATE_FILE);
-                host.store().put(STATE_FILE, (st == null ? "" : st) + "await=wifi\n");
+                host.store().put(STATE_FILE, (st == null ? "" : st.replace("live=1\n", "")) + "await=wifi\n");
             } catch (IOException ignored) { }
         } catch (NotStarted n) {
             e = new End(NOT_STARTED, false);
@@ -648,7 +687,7 @@ final class SetupRunner {
                 if (complete) host.store().put(STATE_FILE, "");
                 else {
                     String st = host.store().get(STATE_FILE);
-                    if (st != null) host.store().put(STATE_FILE, st.replace("await=restart\n", ""));
+                    if (st != null) host.store().put(STATE_FILE, st.replace("await=restart\n", "").replace("live=1\n", ""));   // ended here: no boot resumes it by itself
                 }
             } catch (IOException ignored) { }
         }
@@ -703,8 +742,10 @@ final class SetupRunner {
                 if (k == Kind.FULL) { writeState(host.store(), o, d.id, "started"); stamp(host, "start " + d.id); }
                 set(d.id, State.RUNNING, "", host);
                 SetupEngine.Result r;
+                for (int again = 0; ; again++) {
                 try {
                     r = d.body.run(c);
+                    break;
                 } catch (Restarting e) {
                     if (k == Kind.FULL) stamp(host, "stopped " + d.id + " (the TV restarts for the measurement)");
                     throw e;
@@ -719,9 +760,23 @@ final class SetupRunner {
                     for (Step st : steps()) if (st.state == State.PENDING) set(st.id, State.SKIPPED, NOT_STARTED, host);
                     if (k == Kind.FULL) stamp(host, "stopped " + d.id + " (not started: no «ابدأ»)");
                     throw e;
-                } catch (IOException | RuntimeException e) {
-                    if (k == Kind.FULL) stamp(host, "stopped " + d.id + " (" + (e instanceof IOException ? "the connection" : "an error") + ")");
+                } catch (IOException e) {
+                    // 4.3.3: the connection dropped (the TV's adb went quiet: a Skyworth SWTV-22AE on Android 14 stopped the precheck three times so).
+                    // A step that may run twice is run again on a new connection (the key is known: no prompt), twice at most; any other stops as before.
+                    if (!d.repeatable || again >= RECONNECTS) {
+                        if (k == Kind.FULL) stamp(host, "stopped " + d.id + " (the connection)");
+                        throw e;
+                    }
+                    if (k == Kind.FULL) stamp(host, "reconnect " + d.id + " (the connection)");
+                    line(RECONNECT_LINE);
+                    try { s.close(); } catch (RuntimeException ignored) { }
+                    s = openAgain(host, out);
+                    c = new Context(s.engine(), s.shell(), host.store(), o, out, this, host);
+                    c.session = s;
+                } catch (RuntimeException e) {
+                    if (k == Kind.FULL) stamp(host, "stopped " + d.id + " (an error)");
                     throw e;
+                }
                 }
                 set(d.id, r.status == SetupEngine.Status.DONE ? State.DONE : r.status == SetupEngine.Status.SKIPPED ? State.SKIPPED : State.FAILED, r.message, host);
                 if (k == Kind.FULL) { writeState(host.store(), o, d.id, "done"); stamp(host, "done " + d.id); }

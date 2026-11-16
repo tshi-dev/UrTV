@@ -33,8 +33,8 @@ check("«any key» is on by default", 'getBoolean("adhan_stopkey", true)' in (TI
 check("the home bar never takes the focus (no requestFocus on it): the focus stays where it was", "adhanBar.requestFocus" not in home and "adhanBarHeld" not in home)
 check("only the volume keys and the power family are left alone (Home, Back, settings, media all stop it)",
       "KEYCODE_HOME" not in (HOME / "AdhanKeys.java").read_text(encoding="utf-8") and "KEYCODE_SETTINGS" not in (HOME / "AdhanKeys.java").read_text(encoding="utf-8"))
-check("no key-filter capability on this branch (that is work/khalid-settingskey, after a TV test)",
-      "canRequestFilterKeyEvents" not in (ROOT / "android/launcher/src/main/res/xml/sleep_service.xml").read_text(encoding="utf-8"))
+check("no accessibility service (so no key filter) in the home: 4.3.3, the one service is the add-on «إضافات تلفزيونك»'s",
+      not (ROOT / "android/launcher/src/main/res/xml/sleep_service.xml").exists() and "BIND_ACCESSIBILITY_SERVICE" not in (ROOT / "android/launcher/src/main/AndroidManifest.xml").read_text(encoding="utf-8"))
 check("«أذان مختصر» and «إيقاف الأذان بأي زر» are rows of the adhan tab", "KIND_STOPKEY" in (TIL / "MainActivity.java").read_text(encoding="utf-8"))
 if not shutil.which("javac"):
     print("SKIP adhan keys: no javac here")

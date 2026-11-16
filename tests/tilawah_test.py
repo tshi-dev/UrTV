@@ -40,11 +40,11 @@ stations = load("stations.json")["stations"]
 surahs = load("surahs.json")["surahs"]
 
 # ---- the catalog the app ships
-check("forty-two reciters (Badr Al-Turki and Muhammad Ayyub added from the field reports)", len(reciters) == 42, len(reciters))
+check("forty-three reciters (Badr Al-Turki and Muhammad Ayyub added from the field reports; 4.3.3 Ahmed Talib bin Humaid, 107 surahs)", len(reciters) == 43, len(reciters))
 check("unique reciter ids", len({r["id"] for r in reciters}) == len(reciters))
 check("unique reciter names", len({r["name"] for r in reciters}) == len(reciters))
-check("every reciter has 114 surahs", all(r["surahs"] == 114 for r in reciters),
-      [r["id"] for r in reciters if r["surahs"] != 114])
+check("every reciter has 114 surahs, or 114 less its «missing» ones (4.3.3, tests/surah_set_test.py)", all(r["surahs"] == 114 - len(r.get("missing", [])) for r in reciters),
+      [r["id"] for r in reciters if r["surahs"] != 114 - len(r.get("missing", []))])
 check("reciter audio is https", all(r["server"].startswith("https://") for r in reciters),
       [r["server"] for r in reciters if not r["server"].startswith("https://")])
 check("reciter ids are url-safe", all(re.fullmatch(r"[a-z]+", r["id"]) for r in reciters),

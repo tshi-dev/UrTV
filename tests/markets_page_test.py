@@ -82,8 +82,8 @@ check("the page: the stocks card gets the ring and no mic mark; with no kind, bo
       "c.kind === 'stocks' ? c.el.classList.add('tap')" in page and "function setLiveFocus(on, kind = 'tasks')" in page
       and "function liveRect(kind = 'tasks')" in page and "html.widget .week.tap.lf{" in page)
 st = text(APP / "SettingsActivity.java")
-check("the settings: «صفحة الأسواق» in «المباريات والأسواق» opens it", 'row("صفحة الأسواق"' in st and '"sa.urtv.home.MarketsActivity"' in st
-      and '{"صفحة الأسواق", CONTENT}' in text(APP / "SettingsHub.java"))
+check("the settings: «افتح صفحة الأسواق» in «المباريات والأسواق» opens it", 'row("افتح صفحة الأسواق"' in st and '"sa.urtv.home.MarketsActivity"' in st
+      and '{"افتح صفحة الأسواق", CONTENT}' in text(APP / "SettingsHub.java"))
 cp = text(APP / "ConfigProvider.java")
 check("the stock card's buttons change the watchlist and the bar through the screensaver's own checks (phone_set -> SaverReceiver.set)",
       'new String[] {"stocks", "markets"}' in cp and 'getContentResolver().call(SAVER, "phone_set", null, e)' in act)
@@ -154,7 +154,7 @@ check("step 182: the app's own FX_CODES are CI's, in the same order (a TV asks Y
 mf182 = text(HOME / "MarketFile.java")
 lf = mf182[mf182.index("static void loadFx("):mf182.index("private static String fxFromYahoo(")]
 check("step 182: CI's fx.json first; Yahoo asked only when it is missing, empty or older than 48 h, once a day (the copy of today returns first), not again for 30 min after a failure; only today's rates are saved",
-      "DAY_OF_YEAR" in lf and lf.index("download(MarketData.FX_URL)") < lf.index("MarketData.fxNeedsOwn(text, t) && t - fxOwnAskedAt >= FX_OWN_PAUSE_MS") < lf.index("fxFromYahoo()")
+      "DAY_OF_YEAR" in lf and lf.index("download(c, MarketData.FX_URL)") < lf.index("MarketData.fxNeedsOwn(text, t) && t - fxOwnAskedAt >= FX_OWN_PAUSE_MS") < lf.index("fxFromYahoo()")
       and "FX_OWN_PAUSE_MS = 30 * 60_000L" in mf182 and "FX_STALE_MS = 48 * 3600_000L" in text(HOME / "MarketData.java")
       and "if (!MarketData.fxNeedsOwn(text, t)) { save(c, FX, text); fxText = text; }" in lf and "fxText == null ||" not in lf)
 peg_doc = text(HOME / "MarketData.java")

@@ -28,6 +28,8 @@ public class SetupEngineRun {
         int reboots;
         long memAvailKb = 1024000;
         boolean autoStartOps;
+        int refuseBinds;            // 4.4: how many times the TV refuses to bind «إضافات تلفزيونك» (a TCL's TclAppBoot); a put of the list with it is one try
+        int extrasListPuts;
         // the Wi-Fi (read only by the setup): connected, how many networks are saved; lost when the wizard goes off (wifiGoesWithWizard)
         boolean wifiConnected = true, wifiGoesWithWizard, homeNotInFront, wifiSilent;
         int savedNetworks = 1;
@@ -38,11 +40,16 @@ public class SetupEngineRun {
         final Set<String> stuck = new LinkedHashSet<>();   // a package the TV will not turn on again (factory_test)
         final List<String> log = new ArrayList<>();
 
+        boolean extrasBound() {
+            String list = settings.getOrDefault("secure/enabled_accessibility_services", "");
+            return list.contains("sa.urtv.extras/sa.urtv.home.ExtrasA11yService") && installed.contains("sa.urtv.extras") && extrasListPuts > refuseBinds;
+        }
+
         String home() {
             if (emptyResolve) return "";
             String h = roleHolder;
             if (ignoreRoleBack && h.equals("sa.urtv.home") && refuseSwitch) return "com.google.android.tungsten.setupwraith/.RecoveryActivity";   // stuck on the setup wizard's recovery screen
-            if (h.equals("sa.urtv.home") && !off.contains("sa.urtv.home")) return refuseSwitch ? stockPkg + "/.home.HomeActivity" : "sa.urtv.home/.MainActivity";
+            if (h.equals("sa.urtv.home") && !off.contains("sa.urtv.home")) return refuseSwitch && !extrasBound() ? stockPkg + "/.home.HomeActivity" : "sa.urtv.home/.MainActivity";   // 4.4: the add-on's watch brings ours back
             if (off.contains(h)) return "com.google.android.tungsten.setupwraith/.RecoveryActivity";
             return h + "/.home.HomeActivity";
         }
@@ -144,7 +151,9 @@ public class SetupEngineRun {
             if (c.startsWith("appops set sa.urtv.home REQUEST_INSTALL_PACKAGES ")) { if (!appopRefused) appops.put("REQUEST_INSTALL_PACKAGES", c.substring(c.lastIndexOf(' ') + 1)); return ""; }
             if (c.startsWith("dumpsys webviewupdate")) return webview + "\n";
             if (c.startsWith("settings get ")) { String[] w = c.split(" "); return settings.getOrDefault(w[2] + "/" + w[3], "null") + "\n"; }
-            if (c.startsWith("settings put ")) { String[] w = c.split(" "); settings.put(w[2] + "/" + w[3], w[4].replace("'", "")); return ""; }
+            if (c.startsWith("settings put ")) { String[] w = c.split(" "); settings.put(w[2] + "/" + w[3], w[4].replace("'", "")); if (c.contains("ExtrasA11yService")) extrasListPuts++; return ""; }
+            if (c.startsWith("dumpsys accessibility")) return extrasBound() ? "  Bound services:{Service[label=x, component=ComponentInfo{sa.urtv.extras/sa.urtv.home.ExtrasA11yService}]}\n" : "  Bound services:{}\n";
+            if (c.startsWith("am start -a android.settings.SETTINGS")) { top = "com.android.tv.settings/.MainSettings"; return ""; }
             if (c.startsWith("settings delete ")) { String[] w = c.split(" "); settings.remove(w[2] + "/" + w[3]); return ""; }
             if (c.startsWith("cmd role get-role-holders")) return noRoleManager ? "" : roleHolder + "\n";
             if (c.startsWith("cmd role add-role-holder")) {
@@ -226,6 +235,7 @@ public class SetupEngineRun {
     static void line(String s) { System.out.println(s); }
 
     public static void main(String[] a) throws Exception {
+        SetupEngine.KEEP_STOCK_ON = false;   // these scenarios are the OLD switch's rules (the safe order, the wizard asked about the Wi-Fi); 4.3.2's keep-the-stock-home switch has its own scenarios (stockhome_test.py)
         // A: a healthy TV, the whole run, then the undo puts everything back
         FakeTv t = tv(); Mem m = new Mem(); Dead d = new Dead(); List<String> said = new ArrayList<>();
         String before = snapshot(t);
@@ -403,5 +413,67 @@ public class SetupEngineRun {
         // K: parsing
         line("K " + (SetupEngine.packagesOf("package:a\npackage:b\n") == null) + " " + (SetupEngine.packagesOf("package:a\r\nEND_OF_LIST\r\n").size()) + " " + (SetupEngine.packagesOf("") == null)
             + " " + SetupEngine.webviewMajor("Current WebView package (name, version): (com.google.android.webview, 120.0.6099.144)") + " " + SetupEngine.webviewMajor("nothing") + " " + SetupEngine.ledgerNames("a.b\n# no\na.b\n\nc d\ne.f\r\n"));
+        // ---- 4.3.2 (tests/stockhome_test.py): the switch keeps the stock home, the wizard and the helpers ON; a TV switched the old way gets them back once
+        SetupEngine.KEEP_STOCK_ON = true;
+        String WR = "com.google.android.tungsten.setupwraith", LX = "com.google.android.apps.tv.launcherx", HELP = "com.google.android.leanbacklauncher.recommendations";
+        FakeTv s1 = tv(); s1.wizardAnswersHome = true; s1.wizardOwnsWifi = true; Mem sm1 = new Mem(); Dead sd1 = new Dead(); List<String> ss1 = new ArrayList<>();
+        SetupEngine se1 = engine(s1, sm1, sd1, ss1);
+        boolean asked = se1.askWifi();
+        SetupEngine.Result sr1 = se1.home();
+        line("S1 " + sr1.status + " asked=" + asked + " role=" + s1.roleHolder + " home=" + s1.home() + " stockOff=" + s1.off.contains(LX) + " wizardOff=" + s1.off.contains(WR)
+            + " helperOff=" + s1.off.contains(HELP) + " disables=" + s1.count("pm disable-user") + " journal=" + se1.journal("state") + " armed=" + sd1.armed + " disarmed=" + sd1.disarmed);
+        SetupEngine.Result su1 = se1.undo();
+        line("S1_undo " + su1.status + " role=" + s1.roleHolder + " home=" + s1.home());
+        // S2: the old switch happened (the stock home, the helpers and the wizard off): the migration turns on what the journal says we turned off, once; ours stays Home
+        SetupEngine.KEEP_STOCK_ON = false;
+        FakeTv s2 = tv(); Mem sm2 = new Mem(); SetupEngine se2 = engine(s2, sm2, new Dead(), new ArrayList<>());
+        se2.home();
+        s2.off.add(WR);   // the old switch also turned the wizard off (on a TV where it answered Home and the Wi-Fi was not its)
+        SetupEngine.KEEP_STOCK_ON = true;
+        String offBefore = new TreeSet<>(s2.off).toString();
+        SetupEngine.Result m2a = se2.migrateStockHome();
+        line("S2 before=" + offBefore + " status=" + (m2a == null ? "null" : m2a.status) + " notice=" + (m2a != null && m2a.message.equals(StockMigration.NOTICE)) + " off=" + new TreeSet<>(s2.off) + " role=" + s2.roleHolder + " home=" + s2.home()
+            + " mark=" + (sm2.get(StockMigration.MARK) != null && sm2.get(StockMigration.MARK).startsWith("done")));
+        int enables = s2.count("pm enable");
+        SetupEngine.Result m2b = se2.migrateStockHome();
+        line("S2_twice " + (m2b == null) + " extra_enables=" + (s2.count("pm enable") - enables));
+        // S3: «تخلّص من واجهة المصنع» is on: the person's own choice, nothing is turned on; a switch still «switching» is the recovery's; a TV that had them off itself: untouched
+        SetupEngine.KEEP_STOCK_ON = false;
+        FakeTv s3 = tv(); Mem sm3 = new Mem(); SetupEngine se3 = engine(s3, sm3, new Dead(), new ArrayList<>());
+        se3.home(); sm3.put(SetupEngine.FACTORY, "on 2026-11-16 10:00\n");
+        SetupEngine.KEEP_STOCK_ON = true;
+        int en3 = s3.count("pm enable");
+        SetupEngine.Result mig3 = se3.migrateStockHome();
+        line("S3_factory " + (mig3 == null) + " enables=" + (s3.count("pm enable") - en3) + " stockOff=" + s3.off.contains(LX));
+        FakeTv s4 = tv(); s4.off.add(LX); s4.off.add(WR); Mem sm4 = new Mem(); SetupEngine se4 = engine(s4, sm4, new Dead(), new ArrayList<>());
+        sm4.put("home-switch.json", "{\n  \"nonce\": \"app\",\n  \"state\": \"done\",\n  \"stock\": \"" + LX + "/.home.HomeActivity\",\n  \"role_holder_before\": \"" + LX + "\",\n  \"wizard_before\": \"disabled\",\n  \"stock_before\": \"disabled\",\n  \"safety_switch\": \"armed\"\n}\n");
+        line("S4_off_before_us " + (se4.migrateStockHome() == null) + " off=" + new TreeSet<>(s4.off) + " enables=" + s4.count("pm enable"));
+        FakeTv s5 = tv(); s5.off.add(LX); Mem sm5 = new Mem(); SetupEngine se5 = engine(s5, sm5, new Dead(), new ArrayList<>());
+        sm5.put("home-switch.json", "{\n  \"state\": \"switching\",\n  \"stock\": \"" + LX + "/.home.HomeActivity\",\n  \"wizard_before\": \"enabled\",\n  \"stock_before\": \"enabled\"\n}\n");
+        line("S5_switching " + (se5.migrateStockHome() == null) + " enables=" + s5.count("pm enable"));
+        // the pure rules
+        line("S6 " + StockMigration.due("done", "enabled", "enabled", null, null) + " " + StockMigration.due("done", "enabled", "enabled", "on x", null) + " " + StockMigration.due("done", "enabled", "enabled", null, "done x")
+            + " " + StockMigration.due("switching", "enabled", "enabled", null, null) + " " + StockMigration.due("done", "disabled", "absent", null, null) + " " + StockMigration.due("done", "absent", "enabled", "off x", null));
+        // 4.4 (HomeFails): the switch fails twice on this TV: the third try is not made (SKIPPED with the computer's line, not one command), a success starts the count again
+        FakeTv thf = tv(); thf.refuseSwitch = true; Mem mhf = new Mem();
+        SetupEngine ehf1 = engine(thf, mhf, new Dead(), new ArrayList<>());
+        SetupEngine.Result f0 = ehf1.home();
+        boolean pending = ehf1.watchPending();
+        line("HF0 " + f0.status + " pending=" + pending + " role=" + thf.roleHolder + " fails_after_first=" + mhf.get(HomeFails.FILE));
+        SetupEngine.Result f1 = ehf1.finishWatch(false);   // the add-on could not be set up (SetupRunner): the stock home back, counted
+        SetupEngine ehf2 = engine(thf, mhf, new Dead(), new ArrayList<>());
+        ehf2.home();
+        SetupEngine.Result f2 = ehf2.finishWatch(false);
+        int roleAsks = thf.count("cmd role add-role-holder --user 0 android.app.role.HOME sa.urtv.home");
+        SetupEngine.Result f3 = engine(thf, mhf, new Dead(), new ArrayList<>()).home();
+        line("HF " + f1.status + " " + f2.status + " " + f3.status + " count=" + mhf.get(HomeFails.FILE).trim() + " third_line=" + f3.message.startsWith(HomeFails.LINE)
+            + " third_asked=" + (thf.count("cmd role add-role-holder --user 0 android.app.role.HOME sa.urtv.home") - roleAsks));
+        FakeTv thg = tv(); Mem mhg = new Mem(); mhg.put(HomeFails.FILE, "1\n");
+        SetupEngine.Result g1 = engine(thg, mhg, new Dead(), new ArrayList<>()).home();
+        line("HF2 " + g1.status + " count=" + mhg.get(HomeFails.FILE).trim() + " " + HomeFails.givenUp("2") + " " + HomeFails.givenUp("1") + " " + HomeFails.givenUp(null) + " " + HomeFails.after(null, false, false).isEmpty());
+        // 4.3.3 (A17): the wizard owns the saved Wi-Fi: nothing says so on the start screen, and «تخلّص من واجهة المصنع» is offered (the wizard is never turned off)
+        FakeTv s7 = tv(); s7.wizardAnswersHome = true; s7.wizardOwnsWifi = true; SetupEngine se7 = engine(s7, new Mem(), new Dead(), new ArrayList<>());
+        SetupEngine.FactoryOffer fo7 = se7.factoryOffer();
+        line("S7 owns=" + se7.wizardOwnsWifi() + " refusal=" + (fo7.refusal == null ? "none" : "yes") + " wizardInPlan=" + fo7.packages.contains(WR) + " wizardOff=" + s7.off.contains(WR));
     }
 }

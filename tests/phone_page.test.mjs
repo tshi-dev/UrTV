@@ -250,13 +250,13 @@ await T('text other apps', async () => {
     check(`result ${r}: message and the field is cleared`, await until(async () => (await W.p.textContent('#msg')).includes(msg)) && await until(async () => (await W.p.inputValue('#txt')) === ''), await W.p.textContent('#msg'));
     await W.ctx.close();
   }
-  for (const [e, msg] of [['service_off', 'فعّل خدمة "تلفزيونك: التحكم والكتابة من الجوال"'], ['refused', 'ما أقدر أكتب في هذا التطبيق'], ['locked', 'مقفول بالرقم السري، افتحه على التلفزيون'], ['password_field', 'ما أكتب في حقل كلمة المرور'], ['failed', 'ما نجحت']]) {
+  for (const [e, msg] of [['service_off', 'فعّل خدمة "إضافات تلفزيونك"'], ['refused', 'ما أقدر أكتب في هذا التطبيق'], ['locked', 'مقفول بالرقم السري، افتحه على التلفزيون'], ['password_field', 'ما أكتب في حقل كلمة المرور'], ['failed', 'ما نجحت']]) {
     const W = await boot({ cfg: { textAnswer: { ok: false, error: e } } });
     await W.p.fill('#txt', 'نص'); await W.p.click('#txtSearch');
     check(`error ${e}: message and the text is kept`, await until(async () => (await W.p.textContent('#msg')).includes(msg)) && (await W.p.inputValue('#txt')) === 'نص', await W.p.textContent('#msg'));
     if (e === 'service_off') {
       const n = await W.p.textContent('#svcNote');
-      check('service_off: the permanent note with the path, visible after the toast is gone', n.includes('الإعدادات ← إمكانية الوصول ← تلفزيونك: التحكم والكتابة من الجوال') && await W.p.isVisible('#svcNote'));
+      check('service_off: the permanent note with the path, visible after the toast is gone', n.includes('الإعدادات ← إمكانية الوصول ← إضافات تلفزيونك') && await W.p.isVisible('#svcNote'));
       await sleep(3800);
       check('the note stays', await W.p.isVisible('#svcNote'));
     }
@@ -275,11 +275,11 @@ await T('note', async () => {
   const c = await mk({ foreground: 'other', keys_everywhere: true, dpad_everywhere: false });
   check('no note while our screen is in front', !own.shown);
   check('other app + a service on that reaches everything: the short note', a.shown && a.t === 'الأسهم والاختيار والرجوع والرئيسية تعمل في التطبيق الذي أمامك' && !a.warn, a.t);
-  check('other app, service on but the arrows not reaching it (before Android 13, no typing/remote service): Back and Home, and what the arrows need', c.shown && c.t.includes('الرجوع والرئيسية تعمل في كل التطبيقات') && c.t.includes('أندرويد ١٣') && c.t.includes('تلفزيونك: التحكم والكتابة من الجوال') && !c.warn, c.t);
-  check('other app, no service: the warning with the service\'s name and where to turn it on', b.shown && b.t.includes('فعّل خدمة «تلفزيونك: التحكم والكتابة من الجوال»') && b.t.includes('إمكانية الوصول') && b.warn, b.t);
+  check('other app, service on but the arrows not reaching it (before Android 13, no typing/remote service): Back and Home, and what the arrows need', c.shown && c.t.includes('الرجوع والرئيسية تعمل في كل التطبيقات') && c.t.includes('أندرويد ١٣') && c.t.includes('إضافات تلفزيونك') && !c.warn, c.t);
+  check('other app, no service: the warning with the service\'s name and where to turn it on', b.shown && b.t.includes('فعّل خدمة «إضافات تلفزيونك»') && b.t.includes('إمكانية الوصول') && b.warn, b.t);
   const S = await boot({ state: OLD({ foreground: 'other' }) });
   const o = OLD(); o.foreground = 'other'; S.cfg.state = o; await tab(S, 'now'); await tab(S, 'remote');
-  check('old state with another app in front: the warning with the service\'s name', (await S.p.textContent('#foreNote')).includes('فعّل خدمة «تلفزيونك: التحكم والكتابة من الجوال»'));
+  check('old state with another app in front: the warning with the service\'s name', (await S.p.textContent('#foreNote')).includes('فعّل خدمة «إضافات تلفزيونك»'));
   await S.ctx.close();
 });
 
@@ -569,7 +569,7 @@ await T('cards', async () => {
 });
 
 await T('key answers', async () => {
-  for (const [e, msg] of [['other_app_limited', 'ما قدرنا نحرك التركيز'], ['other_app', 'فعّل خدمة «تلفزيونك: التحكم والكتابة من الجوال»']]) {
+  for (const [e, msg] of [['other_app_limited', 'ما قدرنا نحرك التركيز'], ['other_app', 'فعّل خدمة «إضافات تلفزيونك»']]) {
     const S = await boot({ cfg: { keyAnswer: { ok: false, error: e } } });
     await S.p.click('[data-k=ok]');
     check(`key answered ${e}: the toast says what to do`, await until(async () => (await S.p.textContent('#msg')).includes(msg)), await S.p.textContent('#msg'));
@@ -753,9 +753,9 @@ for (const scheme of ['dark', 'light']) for (const w of [320, 360]) await T(`on 
   const box = sel => p.evaluate(sel => [...document.querySelectorAll(sel)].map(e => { const b = e.getBoundingClientRect(), c = getComputedStyle(e);
     return { href: e.getAttribute('href'), w: b.width, h: b.height, l: b.left, r: b.right, radius: c.borderTopLeftRadius, svg: e.querySelectorAll('svg').length, text: e.textContent, deco: c.textDecorationLine, chev: getComputedStyle(e, '::after').width }; }), sel);
   const card = await p.evaluate(() => { const c = document.getElementById('msgCard'); return { head: c.querySelector('h2').textContent, kids: [...c.children].map(e => e.id || e.className), ph: document.getElementById('msgT').placeholder, in: c.closest('#t-remote') !== null }; });
-  check(`${scheme} ${w}: one card «على الشاشة» on the remote tab: heading, the field, the button, then two rows`, card.in && card.head === 'على الشاشة' && card.kids.join() === 'ch,msgT,msgGo,rw,rw' && card.ph === 'اكتب رسالة للتلفزيون', JSON.stringify(card));
+  check(`${scheme} ${w}: one card «على الشاشة» on the remote tab: heading, the field, the button, then three rows (4.4: «صوتياتي»)`, card.in && card.head === 'على الشاشة' && card.kids.join() === 'ch,msgT,msgGo,rw,rw,rw' && card.ph === 'اكتب رسالة للتلفزيون', JSON.stringify(card));
   const rows = await box('#msgCard a.rw');
-  check(`${scheme} ${w}: «ارسم» opens /d and «صوري» /u, each with its icon, label, short line and chevron`, rows.length === 2 && rows[0].href === '/d' && rows[1].href === '/u' && rows[0].text === 'ارسماكتب بإصبعك على الشاشة' && rows[1].text === 'صوريخلفيات وصور التلفزيون' && rows.every(r => r.svg === 1 && r.chev === '8px' && r.deco === 'none'), JSON.stringify(rows));
+  check(`${scheme} ${w}: «ارسم» opens /d, «صوري» /u and «صوتياتي» /a, each with its icon, label, short line and chevron`, rows.length === 3 && rows[0].href === '/d' && rows[1].href === '/u' && rows[2].href === '/a' && rows[0].text === 'ارسماكتب بإصبعك على الشاشة' && rows[1].text === 'صوريخلفيات وصور التلفزيون' && rows[2].text === 'صوتياتيأدعية وأذان' && rows.every(r => r.svg === 1 && r.chev === '8px' && r.deco === 'none'), JSON.stringify(rows));
   check(`${scheme} ${w}: the rows are 56 px, one line each, as wide as the field, 16 px corners`, rows.every(r => r.h >= 56 && r.h < 60 && r.radius === '16px' && r.l >= 0 && r.r <= w) && Math.abs(rows[0].w - (await box('#msgT'))[0].w) < 1, JSON.stringify(rows));
   await p.fill('#msgT', '  أهلًا  بكم '); await p.click('#msgGo');
   await until(() => posts(S, '/api/message').length === 1);

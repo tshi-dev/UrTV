@@ -14,29 +14,39 @@ import java.util.Set;
 
 /**
  * «الأسرع»: the question bank and what the quiz remembers (docs/QUIZ.md). The questions are loaded on demand: a small starter set ships with the app
- * (assets/quiz/starter.json, so the first game works with no network); the verified bank is fetched from the data branch (quiz/quiz.json, built by
- * .github/tools/make_quiz_bank.py), kept in the app's files and used from the next game on; a fetch happens at most every 3 days and only when the quiz
- * screen opens. What is remembered: the chips of the last game, the sound switch and the ids of the last 100 questions asked (so they are not repeated).
+ * (assets/quiz/bank.json, the whole verified bank of the day the app was built, so a game works offline; assets/quiz/starter.json is the last resort); the newer bank is
+ * fetched from the data branch (quiz/quiz-v2.json, built by games/tools/build_meta.py) in the background when a quiz screen opens, at most once a day and only when
+ * quiz/rev.txt says it is newer, kept in the app's files and used from the next time a quiz screen opens. A game reads only from local storage, whole, before it starts. What is remembered: the chips of the last game, the sound switch and the ids of the last 100 questions asked (so they are not repeated).
  * No player, name or score is ever stored.
  */
 final class QuizBank {
     private QuizBank() {}
 
-    static final String URL = "https://raw.githubusercontent.com/tshi-dev/UrTV/data-games/quiz/quiz.json";
-    static final long REFRESH_MS = 3L * 24 * 3600 * 1000;
+    static final String URL = "https://raw.githubusercontent.com/tshi-dev/UrTV/data-games/quiz/quiz.json", URL_V2 = "https://raw.githubusercontent.com/tshi-dev/UrTV/data-games/quiz/quiz-v2.json";
+    /** the tiny file next to the bank that says which build of the bank is published (the UTC date and hour, 2026111600): the app downloads the bank only when this is newer than what it holds */
+    static final String URL_REV = "https://raw.githubusercontent.com/tshi-dev/UrTV/data-games/quiz/rev.txt";
+    static final long CHECK_MS = 24L * 3600 * 1000;
+    /** the build of the bank bundled in the app (assets/quiz/bank.json): a downloaded copy older than this is not used */
+    static final long BUNDLED_REV = 2026111609L;
     private static final String FILE = "quiz-bank.json", PREFS = "quiz";
     private static volatile boolean fetching;
+    /** a round is being played: the background download waits (it is only ever started when a quiz screen opens, and it never writes anything a round reads) */
+    static volatile boolean playing;
 
-    /** the kept bank if it passes the check, else the starter set (which passes the same check); never throws */
+    /** the bank of a game, always from this TV's own storage, whole and in memory before the first question: the downloaded copy when it is at least as new as the
+     *  bundled one and passes the check, else the bundled bank (assets/quiz/bank.json), else the small starter set. No network, no error screen; never throws. */
     static List<QuizPick.Item> load(Context c) {
         List<QuizPick.Item> v = null;
         File f = new File(c.getFilesDir(), FILE);
-        if (f.isFile()) v = QuizBankCheck.parse(read(f));
-        if (v == null || v.size() < QuizPick.MIN_ITEMS) {   // nothing fetched yet, or a damaged file: the starter set
-            try (InputStream in = c.getAssets().open("quiz/starter.json")) { v = QuizBankCheck.parse(Bounded.readAll(in, QuizBankCheck.BYTES_MAX)); }
-            catch (Exception e) { v = null; }
-        }
+        if (f.isFile() && sp(c).getLong("rev", 0) >= BUNDLED_REV) v = QuizBankCheck.parse(read(f));
+        if (v == null || v.size() < QuizPick.MIN_ITEMS) v = asset(c, "quiz/bank.json");
+        if (v == null || v.size() < QuizPick.MIN_ITEMS) v = asset(c, "quiz/starter.json");
         return v == null ? new ArrayList<>() : v;
+    }
+
+    private static List<QuizPick.Item> asset(Context c, String name) {
+        try (InputStream in = c.getAssets().open(name)) { return QuizBankCheck.parse(Bounded.readAll(in, QuizBankCheck.BYTES_MAX)); }
+        catch (Exception e) { return null; }
     }
 
     private static byte[] read(File f) {
@@ -45,29 +55,55 @@ final class QuizBank {
         catch (Exception e) { return null; }
     }
 
-    /** a background fetch of the verified bank when the kept one is older than 3 days (or missing); used from the next game on. The download is read with a
-     *  size cap and checked whole (QuizBankCheck) before it replaces the kept file; anything wrong and the last good copy stays. */
+    /** In the background, when a quiz screen opens and at most once a day: ask for the published build (rev.txt, a few bytes) and download the bank only when it is
+     *  newer than what this TV holds. The download is read with a size cap and checked whole (QuizBankCheck) before it replaces the kept file; anything wrong, no network
+     *  or a round in play, and the kept copy (or the bundled one) stays. It is used from the next time a quiz screen opens. */
     static void refresh(final Context c) {
         final Context app = c.getApplicationContext();
         final File f = new File(app.getFilesDir(), FILE);
-        if (fetching || (f.isFile() && System.currentTimeMillis() - f.lastModified() < REFRESH_MS)) return;
+        final SharedPreferences p = sp(app);
+        if (fetching || System.currentTimeMillis() - p.getLong("checked", 0) < CHECK_MS) return;
         fetching = true;
-        new Thread(() -> {
+        Thread t = new Thread(() -> {
             try {
-                Net.Reply r = Net.get(URL, null, 15000, 20000, QuizBankCheck.BYTES_MAX);   // no redirect, a size cap, IPv4 first (Net)
-                if (r.status != 200) return;
-                byte[] b = r.body;
-                List<QuizPick.Item> v = QuizBankCheck.parse(b);
-                if (v == null || v.size() < QuizPick.MIN_ITEMS) return;   // never replace a good file with a bad one
-                File tmp = new File(app.getFilesDir(), FILE + ".tmp");
-                try (FileOutputStream o = new FileOutputStream(tmp)) { o.write(b); }
-                if (!tmp.renameTo(f)) tmp.delete();
+                long remote = fetchRev();
+                if (remote < 0) return;                      // no network, or no rev file: nothing is touched, asked again next time
+                long have = f.isFile() ? Math.max(BUNDLED_REV, p.getLong("rev", 0)) : BUNDLED_REV;
+                if (remote > have) {
+                    if (playing) return;                     // never while a round is on
+                    byte[] b = fetch(URL_V2);                // the versioned file first; an app that finds none (or a bad one) takes the old array
+                    if (b == null) b = fetch(URL);
+                    if (b == null) return;                   // never replace a good file with a bad one
+                    File tmp = new File(app.getFilesDir(), FILE + ".tmp");
+                    try (FileOutputStream o = new FileOutputStream(tmp)) { o.write(b); }
+                    if (!tmp.renameTo(f)) { tmp.delete(); return; }
+                    p.edit().putLong("rev", remote).apply();
+                }
+                p.edit().putLong("checked", System.currentTimeMillis()).apply();
             } catch (Exception ignored) {
-                // no network, a file too big, a bad answer: the kept bank or the starter set is used
+                // no network, a file too big, a bad answer: the kept bank or the bundled one is used
             } finally {
                 fetching = false;
             }
-        }, "quiz-bank").start();
+        }, "quiz-bank");
+        t.setPriority(Thread.MIN_PRIORITY); t.setDaemon(true); t.start();
+    }
+
+    /** the published build number, or -1 */
+    static long fetchRev() {
+        try {
+            Net.Reply r = DataHost.get(URL_REV, 8000, 10000, 64);   // urtv-data, then the old branch (DataHost)
+            return r.status == 200 ? QuizBankCheck.parseRev(r.body) : -1;
+        } catch (Exception e) { return -1; }
+    }
+    /** one download, read with a size cap and checked whole; the bytes, or null when anything is wrong */
+    private static byte[] fetch(String url) {
+        try {
+            Net.Reply r = DataHost.get(url, 15000, 20000, QuizBankCheck.BYTES_MAX);   // urtv-data, then the old branch (DataHost); no redirect, a size cap, IPv4 first (Net)
+            if (r.status != 200) return null;
+            List<QuizPick.Item> v = QuizBankCheck.parse(r.body);
+            return v == null || v.size() < QuizPick.MIN_ITEMS ? null : r.body;
+        } catch (Exception e) { return null; }
     }
 
     // ---------------------------------------------------------------- what is remembered

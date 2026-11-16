@@ -11,7 +11,7 @@ permissions:
 
 jobs:
   unsplash:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
       - run: python3 .github/tools/fetch_unsplash.py

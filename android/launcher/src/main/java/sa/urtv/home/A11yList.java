@@ -155,7 +155,7 @@ public final class A11yList {
         }
         if (!c.a11yDone) {
             String now_ = tv.list();
-            List<String> lost = ownLost(c.saved, now_, "sa.urtv.home/sa.urtv.home.TypeService", "sa.urtv.home/sa.urtv.home.SleepService");
+            List<String> lost = ownLost(c.saved, now_, ExtrasWords.SERVICE);
             String r = a11yStep(c.hadOurs, lost, tv.switchOn(), tv.bound());
             if (r.equals("write")) {
                 c.a11yTries++;

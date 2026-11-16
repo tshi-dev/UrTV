@@ -79,7 +79,7 @@ public class TasksActivity extends Activity implements sa.urtv.home.phone.TextTa
         frame.addView(col, new FrameLayout.LayoutParams(dp(600), -2, Gravity.CENTER_HORIZONTAL));
 
         col.addView(text(S.t("المهام"), 26, "Medium", TEXT), right(0));
-        col.addView(text(S.t("اختيار على مهمة لإنجازها. اكتب مهمة جديدة في الخانة ثم «إضافة». أو اضغط «تكلّم» وقل: أضف مهمة … / خلصت … / احذف …"), 14, "Regular", DIM), right(dp(10)));
+        col.addView(text(S.t("اختيار على مهمة لإنجازها. اكتب مهمة جديدة في الخانة ثم «إضافة». أو اضغط «تكلّم» وقل المهمة، أو: خلصت … / احذف …"), 14, "Regular", DIM), right(dp(10)));
 
         field = new EditText(this);
         field.setId(View.generateViewId());
@@ -400,13 +400,19 @@ public class TasksActivity extends Activity implements sa.urtv.home.phone.TextTa
         }
         if (code != SPEECH || result != RESULT_OK || data == null) return;
         ArrayList<String> heard = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
-        if (heard == null || heard.isEmpty()) return;
+        if (heard == null || heard.isEmpty()) {   // #48: a recognizer (Google TV's assistant) that hands the words back as a search query
+            String q = data.getStringExtra(android.app.SearchManager.QUERY);
+            if (q == null || q.trim().isEmpty()) return;
+            heard = new ArrayList<>();
+            heard.add(q);
+        }
         load();
         TaskVoice.Result r = null;
         for (String h : heard) {   // the recognizer's best guess first; the first one that is a command
             r = TaskVoice.understand(h, texts, dones);
             if (r.kind != TaskVoice.Kind.NONE) break;
         }
+        if (r.kind == TaskVoice.Kind.NONE) r = TaskVoice.spoken(heard.get(0), texts, dones, MAX_CHARS);   // #48: just the task, said with no «أضف»: asked as one to add
         status.setText(S.t("سمعت: %s", heard.get(0)));
         switch (r.kind) {
             case ADD: {

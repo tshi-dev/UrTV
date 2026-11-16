@@ -129,7 +129,7 @@ const checkLineGeo = (label, g, sel) => {
   check('football home: three games, the followed team first, live with its score and minute', lines.length === 3 && /الهلال/.test(lines[0]) && /٢ - ١/.test(lines[0]) && /الدقيقة ٦٧/.test(lines[0]), lines.join(' / '));
   checkLineGeo('football home: the match line', await lineGeo(p, '#fb-mt-c .fln'));
   check('football home: a game during a prayer says which, in amber', await p.$$eval('#fb-mt-c .fnote', ns => ns.some(n => /المغرب/.test(n.textContent) && getComputedStyle(n).color !== 'rgb(255, 255, 255)')), lines.join(' / '));
-  check('football home: the count and the source over the games', /TheSportsDB · ٤ مباريات/.test(await p.textContent('#fb-mt h3')), await p.textContent('#fb-mt h3'));
+  check('football home: the count and the source over the games', /TheSportsDB، ٤ مباريات/.test(await p.textContent('#fb-mt h3')), await p.textContent('#fb-mt h3'));
   check('football home: the weather (city, temperature, feels-like, humidity, wind)', await p.evaluate(() => { const t = document.getElementById('fb-wx').textContent; return /الرياض/.test(t) && /٢٨°/.test(t) && /٣٠°/.test(t) && /١٨/.test(t) && /١٢ كم\/س/.test(t); }), await p.textContent('#fb-wx'));
   check('football home: five prayers, the next one lit, its time left under them', await p.$$eval('#fb-pr li', l => l.length === 5 && l.filter(x => x.classList.contains('nx')).length === 1) && /بعد/.test(await p.textContent('.fpn')));
   await shot(p, 'football-home.png');
@@ -326,7 +326,7 @@ const TOUR = { updated: '2026-11-04T03:00:00Z', names: { '4490': 'دوري ال�
   check('matches page: the card opens with a visible focus: the card itself is ringed and no button is', await p.$$eval('#mp-detail .mdx.f', c => c.length === 1) && await p.$$eval('.mdb button.f', b => b.length === 0));
   check('matches page: the card\'s buttons cannot take the browser\'s own focus (tabindex -1), so there is one focus: the drawn ring', await p.$$eval('.mdb button', b => b.every(x => x.getAttribute('tabindex') === '-1')));
   // «رجوع» under the card's actions (the owner, step 28b): a button of its own, ▼ rings it alone, OK or Back closes the card and the game's row is ringed again
-  check('matches page: the card has «رجوع» as a row of its own under the actions, not ringed at first', await p.$$eval('.mdq button', b => b.length === 1 && b[0].textContent.trim() === 'رجوع' && !b[0].classList.contains('f')));
+  check('matches page: the card has «رجوع» as a row of its own under the actions (4.3.3: «صفحة الفريقين» beside it), not ringed at first', await p.$$eval('.mdq button', b => b.length === 2 && b[0].textContent.trim() === 'رجوع' && b[1].dataset.k === 'club' && ![...b].some(x => x.classList.contains('f'))));
   await p.keyboard.press('ArrowDown');
   check('matches page: ▼ rings «رجوع» alone (no action and not the card)', await p.$$eval('.mdq button.f', b => b.length === 1) && await p.$$eval('.mdb button.f', b => b.length === 0) && await p.$$eval('#mp-detail .mdx.f', c => c.length === 0));
   await p.keyboard.press('ArrowUp');
@@ -501,6 +501,23 @@ const TOUR = { updated: '2026-11-04T03:00:00Z', names: { '4490': 'دوري ال�
   await p.waitForTimeout(500);
   const g = await p.evaluate(() => ({ mask: getComputedStyle(document.querySelector('.fbv')).maskImage, first: document.querySelector('.fcd').getBoundingClientRect().left, view: document.querySelector('.fbv').getBoundingClientRect().left }));
   check('English football home: the row\'s fade is at its right end (to right), the first card starts at the row\'s left edge, not shifted', /to right/.test(g.mask) && !/to left/.test(g.mask) && Math.abs(g.first - g.view) < 1, JSON.stringify(g));
+  await ctx.close();
+}
+{
+  // 4.3.3 «المباريات المنتهية» (#fbhide=1): the football home leaves out the games that ended; with none left today it shows the next day's
+  const { p, ctx, errors } = await open('teams=136013&widget=1&football=1&fbhide=1', { rows: ROWS });
+  const r = await p.evaluate(() => {
+    const ids = now => fbHome(now).map(e => e.idEvent).sort().join(',');
+    const evening = Date.parse('2026-11-04T17:30:00Z'), night = Date.parse('2026-11-04T20:40:00Z');
+    const on = CONFIG.fbHide, hidden = [ids(evening), ids(night)];
+    CONFIG.fbHide = false;
+    const shown = [ids(evening), ids(night)];
+    CONFIG.fbHide = on;
+    return { on, hidden, shown };
+  });
+  check('#fbhide=1 is read; the games that ended leave the football home (17:30: 1 and 3 ended, 2 live, 4 to come), and with all of today\'s ended the next day\'s show',
+    r.on === true && r.hidden[0] === '2,4' && r.hidden[1] === '5' && !errors.length, JSON.stringify(r) + errors.join(' | '));
+  check('without it the football home is as it was: today\'s games, ended ones too', r.shown[0] === '1,2,3,4' && r.shown[1] === '1,2,3,4', JSON.stringify(r));
   await ctx.close();
 }
 await browser.close();

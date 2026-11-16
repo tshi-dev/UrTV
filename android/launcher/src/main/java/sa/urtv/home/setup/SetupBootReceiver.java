@@ -14,7 +14,12 @@ public class SetupBootReceiver extends BroadcastReceiver {
     @Override public void onReceive(Context context, Intent intent) {
         final Context app = context.getApplicationContext();
         factoryGuard(app);
-        if (SetupRunner.awaitingRestart(new FileStore(app))) SetupRunner.get().resume(new SetupHost(app));   // its own thread; it waits for a pending home first
+        homeGuard(app);
+        try {   // a planned restart, or (4.3.3) one nobody asked for in the middle of the run: it goes on from its pointer (its own thread; it waits for a pending home first)
+            if (SetupRunner.resumeAtBoot(new FileStore(app))) SetupRunner.get().resume(new SetupHost(app));
+        } catch (java.io.IOException | RuntimeException ignored) {
+            // the boot must not be broken by this: «جهّز كل شي» still goes on from the pointer
+        }
         if (!SetupRecovery.pending(app)) return;
         SetupRecovery.rearmFromDisk(app);
         final PendingResult pending = goAsync();
@@ -56,6 +61,27 @@ public class SetupBootReceiver extends BroadcastReceiver {
                     }
                 }
             }, "factory-restore").start();
+        } catch (Exception ignored) {
+            // the boot must not be broken by this
+        }
+    }
+
+    /**
+     * 4.4: the home's own check. While our home is the TV's Home (and «تخلّص من واجهة المصنع» is off: that has its own restore), a boot where our home never came up
+     * and our process crashed counts (Android 11+; an older TV cannot say, and a boot with no home of ours is not counted there: someone may go straight to HDMI);
+     * two in a row and the next time our app runs it offers «رجّع الواجهة الأصلية» first. Nothing is changed by itself.
+     */
+    private void homeGuard(Context app) {
+        try {
+            FileStore store = new FileStore(app);
+            String f = store.get(SetupEngine.FACTORY);
+            if (f != null && f.startsWith("on")) return;
+            android.content.pm.ResolveInfo ri = app.getPackageManager().resolveActivity(new Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_HOME), android.content.pm.PackageManager.MATCH_DEFAULT_ONLY);
+            if (ri == null || ri.activityInfo == null || !app.getPackageName().equals(ri.activityInfo.packageName)) return;
+            BootGuard.State prev = BootGuard.State.parse(store.get(SetupHook.HOME_GUARD));
+            BootGuard.Decision d = BootGuard.onBoot(prev, Math.max(0, crashesSince(app, prev.bootAt)), System.currentTimeMillis());
+            store.put(SetupHook.HOME_GUARD, d.state.text());
+            if (d.restore) store.put(SetupHook.STOCK_OFFER, "1 " + System.currentTimeMillis() + "\n");
         } catch (Exception ignored) {
             // the boot must not be broken by this
         }

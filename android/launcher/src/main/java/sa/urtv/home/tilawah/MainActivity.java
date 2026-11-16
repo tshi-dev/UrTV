@@ -38,7 +38,7 @@ public class MainActivity extends Activity {
     private static final int TAB_RECITERS = 0, TAB_STATIONS = 1, TAB_ADHAN = 2;
 
     private static final int KIND_RESUME = 0, KIND_RECITER = 1, KIND_STATION = 2,
-            KIND_PRAYER = 3, KIND_ADHAN_TOGGLE = 4, KIND_VOICE = 5, KIND_VOLUME = 6, KIND_EXACT = 7, KIND_FAJR_VOICE = 8, KIND_SHORT = 9, KIND_STOPKEY = 10, KIND_SAVER_ONLY = 11, KIND_NOTICE = 12, KIND_TAKBIR = 13, KIND_SAVER_AT = 14, KIND_LINK = 15;
+            KIND_PRAYER = 3, KIND_ADHAN_TOGGLE = 4, KIND_VOICE = 5, KIND_VOLUME = 6, KIND_EXACT = 7, KIND_FAJR_VOICE = 8, KIND_SHORT = 9, KIND_STOPKEY = 10, KIND_SAVER_ONLY = 11, KIND_NOTICE = 12, KIND_TAKBIR = 13, KIND_SAVER_AT = 14, KIND_LINK = 15, KIND_AUDIO = 16, KIND_DUAS = 17, KIND_PRAYER_SOUND = 18, KIND_QUIET = 19;
 
     private Catalog cat;
     private Prefs prefs;
@@ -106,7 +106,8 @@ public class MainActivity extends Activity {
                 MusicService.playRadio(this, row.index);
                 openPlayer();
             } else if (row.kind == KIND_PRAYER) {
-                int voice = prefs.playVoiceFor(this, row.index == PrayerTimes.FAJR);   // Fajr has its own muezzin
+                int voice = prefs.playFor(this, row.index);   // Fajr has its own muezzin; 4.4: the prayer's own choice (a silent one: its general voice, to hear it)
+                if (voice == PrayerSound.SILENT) voice = prefs.playVoiceFor(this, row.index == PrayerTimes.FAJR);
                 MusicService.adhan(this, voice, Adhan.name(voice), 0);
                 openPlayer();
             } else if (row.kind == KIND_ADHAN_TOGGLE) {
@@ -146,6 +147,14 @@ public class MainActivity extends Activity {
                 focusList(list.getSelectedItemPosition());
             } else if (row.kind == KIND_LINK) {
                 openHaramLive(row.index);
+            } else if (row.kind == KIND_QUIET) {
+                startActivity(new Intent(this, QuietActivity.class));
+            } else if (row.kind == KIND_PRAYER_SOUND) {
+                startActivity(new Intent(this, PrayerSoundActivity.class));
+            } else if (row.kind == KIND_DUAS) {
+                startActivity(new Intent(this, DuaActivity.class));
+            } else if (row.kind == KIND_AUDIO) {
+                startActivity(new Intent(this, AudioActivity.class));
             } else if (row.kind == KIND_EXACT) {
                 openExactAlarmSettings();
             }   // «صوت الأذان» is set with left/right (changeVolume); OK on it does nothing
@@ -569,9 +578,21 @@ public class MainActivity extends Activity {
                     boolean isNext = next != null && next.index == prayer;
                     String detail = PrayerTimes.clockText(times.clock[prayer]);
                     if (isNext) detail += "  •  " + PrayerTimes.remaining(next.at - System.currentTimeMillis());
+                    if ("silent".equals(prefs.prayerSound(prayer))) detail = sa.urtv.home.S.t("%s، صامت", detail);   // 4.4 «أذان كل صلاة»
                     rows.add(new Row(false, KIND_PRAYER, PrayerTimes.NAMES[prayer], detail, prayer, isNext));
                 }
                 rows.add(new Row(false, KIND_VOICE, getString(R.string.adhan_voice), Adhan.label(prefs.playVoice(MainActivity.this)), -1));
+                // 4.4 «أذان كل صلاة»: which prayers are heard, and with what
+                rows.add(new Row(false, KIND_PRAYER_SOUND, sa.urtv.home.S.t("أذان كل صلاة"), PrayerSoundActivity.summary(prefs), -1));
+                // 4.4 «الأدعية والتذكيرات»: sounds the person picks, played at their times like the adhan
+                int duasOn = 0;
+                for (DuaStore.Dua d : DuaStore.list(MainActivity.this)) if (d.on) duasOn++;
+                rows.add(new Row(false, KIND_DUAS, sa.urtv.home.S.t("الأدعية والتذكيرات"),
+                        duasOn == 0 ? sa.urtv.home.S.t("أصوات تختارها تُشغَّل في وقتها، مثل الأذان") : sa.urtv.home.S.t("%s مفعّلة", Ui.arabic(duasOn)), -1));
+                // 4.4 «ساعات الهدوء»: no dua at night; the adhan in it as the person chose
+                rows.add(new Row(false, KIND_QUIET, sa.urtv.home.S.t("ساعات الهدوء"), QuietActivity.summary(prefs), -1));
+                // 4.4: the person's own sound files (USB or the phone), and from them «أذاني الخاص» and the Fajr one
+                rows.add(new Row(false, KIND_AUDIO, sa.urtv.home.S.t("صوتياتي وأذاني الخاص"), sa.urtv.home.S.t("من فلاشة USB أو من الجوال"), -1));
                 rows.add(new Row(false, KIND_FAJR_VOICE, getString(R.string.adhan_fajr_voice), Adhan.label(prefs.playFajrVoice(MainActivity.this)), -1));
                 rows.add(new Row(false, KIND_SHORT, getString(R.string.adhan_short),
                         getString(prefs.adhanShort() ? R.string.adhan_short_on : R.string.adhan_short_off), -1));

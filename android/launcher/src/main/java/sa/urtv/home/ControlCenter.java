@@ -61,6 +61,10 @@ final class ControlCenter {
         void openSleep(View anchor);   // «مؤقت النوم» popup, locked by «@sleep»
         boolean saverInstalled();
         Typeface font(String family);
+        /** 4.3.3: today's Fajr, Dhuhr, Asr, Maghrib and Isha (ms) and 1 on a Friday, as the adhan bar reads them; null when unknown */
+        long[] adhanTimes();
+        /** a time as the home's clock writes it (the city's zone, 12 or 24 hours, the digits chosen) */
+        String clock(long ms);
     }
 
     /** the panel: 560 px of 1920 wide, inside the 5 % safe area (x from 96, y from 54 to 1026 at 1080p) */
@@ -72,7 +76,7 @@ final class ControlCenter {
     /** the round toggles, in this order; every other item is a row */
     static final String[] TOGGLES = {"bluetooth", "mirror", "sleep", "off"};
     /** the rows' order before the person moves any; «شاشة التوقف» is unticked until they ask for it (its own pill is on the home) */
-    static final String[] ROWS = {"net", "sound", "speed", "ours", "games", "city", "tv", "saver"};   // 4.3.1: ours before the TV's, the city beside it
+    static final String[] ROWS = {"net", "sound", "speed", "ours", "games", "city", "adhan", "tv", "saver"};   // 4.3.1: ours before the TV's, the city beside it; 4.3.3: «الأذان والإقامة»
     /** the order before 4.3.1 (ours after the TV's): saved by anyone who opened the editor, never a choice, so it follows the new default */
     static final String OLD_DEFAULT = "net,sound,speed,tv,ours,saver";
     static final String[] DEFAULT_OFF = {"saver"};
@@ -122,13 +126,24 @@ final class ControlCenter {
      * settings, which every TV has, and never the sound screen again (no crash loop). The mark is kept on this TV.
      */
     static final long SOUND_FAIL_MS = 3500;
+    /** 4.3.3: where the crash leaves its «keeps stopping» window up for a moment the return is later: two returns in a row within this are the crash too */
+    static final long SOUND_SLOW_FAIL_MS = 10_000;
 
     private void soundReturned() {
         long t = prefs().getLong("sound_t", 0);
         if (t == 0) return;
+        long away = System.currentTimeMillis() - t;
+        int quick = prefs().getInt("sound_quick", 0);
         SharedPreferences.Editor e = prefs().edit().remove("sound_t");
-        if (System.currentTimeMillis() - t < SOUND_FAIL_MS) e.putBoolean("sound_bad", true);
+        if (soundBroken(away, quick)) e.putBoolean("sound_bad", true);
+        e.putInt("sound_quick", away >= 0 && away < SOUND_SLOW_FAIL_MS ? quick + 1 : 0);
         e.apply();
+    }
+
+    /** the sound screen crashed: back within SOUND_FAIL_MS, or within SOUND_SLOW_FAIL_MS for the second time in a row (quickBefore: such returns just before) */
+    static boolean soundBroken(long away, int quickBefore) {
+        if (away < 0) return false;   // the clock moved back
+        return away < SOUND_FAIL_MS || (away < SOUND_SLOW_FAIL_MS && quickBefore >= 1);
     }
 
     /** one thing the panel can show: a round toggle or a row */
@@ -169,19 +184,38 @@ final class ControlCenter {
                 Intent sound = soundIntent();
                 if (Settings.ACTION_SOUND_SETTINGS.equals(sound.getAction())) prefs().edit().putLong("sound_t", System.currentTimeMillis()).apply();   // soundReturned reads it
                 host.launchGuarded(ParentalPolicy.PILL_TV_SETTINGS, sound, S.t("إعدادات الصوت"));
-            } catch (RuntimeException e) {   // A6: the TCL G07 crashed here: the tile must never take the home down; the log says what it was
+            } catch (RuntimeException | LinkageError e) {   // A6: the TCL G07 crashed here: the tile must never take the home down; the log says what it was
                 android.util.Log.w("UrTVControl", "sound tile failed " + e.getClass().getSimpleName());
+                try { host.launchGuarded(ParentalPolicy.PILL_TV_SETTINGS, new Intent(Settings.ACTION_SETTINGS), S.t("إعدادات التلفزيون")); }   // the TV's settings instead of nothing
+                catch (RuntimeException | LinkageError ignored) { }
             }
         });
+        // 4.3.3 «الأذان والإقامة»: the next prayer's adhan and iqama times (the home's own, as its adhan bar), OK plays the muezzin it will have for a few seconds
+        final long[] times = host.adhanTimes();
+        final int next = ControlText.nextPrayer(times, System.currentTimeMillis());   // -1: after Isha (tomorrow's Fajr is next) or no times
+        String adhanValue = ControlText.ADHAN_HINT;
+        if (next >= 0) {
+            long iq = ControlText.iqamaAt(times, next);
+            adhanValue = ControlText.adhanLine(S.tv(ControlText.prayerName(next, times)), host.clock(times[next]), iq > 0 ? host.clock(iq) : "");
+        }
+        final Item adhan = tile("adhan", ControlText.ADHAN, adhanValue, R.drawable.ic_listen, null);
+        adhan.action = () -> {
+            try {
+                sa.urtv.home.tilawah.AdhanPreview.play(act, next <= 0);   // Fajr's own muezzin for Fajr, today's or tomorrow's
+                adhan.setValue(S.t("يُسمع الآن"));
+            } catch (RuntimeException e) {
+                android.util.Log.w("UrTVControl", "adhan preview failed " + e.getClass().getSimpleName());
+            }
+        };
         Item test = tile("speed", S.t("اختبار السرعة"), S.t("اضغط اختيار للبدء"), R.drawable.ic_speed, null);
         test.action = () -> speedTest(test);
         tile("sleep", S.t("مؤقت النوم"), sleepLine(), R.drawable.ic_sleep, () -> { dismiss(); host.openSleep(anchor); });
-        Item off = tile("off", S.t("أطفئ الآن"), SleepService.enabled() ? S.t("تُطفأ الشاشة فورًا") : S.t("يحتاج تفعيل، اضغط للتفعيل"),
+        Item off = tile("off", S.t("أطفئ الآن"), Extras.enabled() ? S.t("تُطفأ الشاشة فورًا") : S.t("يحتاج تفعيل، اضغط للتفعيل"),
                 R.drawable.ic_power, null);
         off.action = () -> turnOffNow();
-        off.hold = () -> {   // a long OK: where the sleep service is turned on, behind the same lock as the sleep timer's own line
+        off.hold = () -> {   // a long OK: «إضافات تلفزيونك» (install it, or turn its service on), behind the same lock as the sleep timer's own line
             dismiss();
-            host.launchGuarded(ParentalPolicy.SLEEP_ACCESSIBILITY, new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS), "إعدادات التلفزيون");
+            host.launchGuarded(ParentalPolicy.SLEEP_ACCESSIBILITY, Extras.intent(act, "sleep"), "إعدادات التلفزيون");
         };
         // «انعكاس الشاشة»: the TV's own mirroring app (ControlText.MIRROR_APPS), only when one is installed; locked as that app's own tile is
         final Intent mirror = mirrorIntent();
@@ -305,7 +339,7 @@ final class ControlCenter {
     // ---------------------------------------------------------------- the main view
 
     /** «أطفئ الآن» while the sleep service is off: its round toggle says so under the name */
-    private static boolean needsOn(Item it) { return it != null && it.key.equals("off") && !SleepService.enabled(); }
+    private static boolean needsOn(Item it) { return it != null && it.key.equals("off") && !Extras.enabled(); }
 
     private Item tile(String key, String title, String value, int icon, Runnable action) {
         Item it = new Item(key, S.tv(title), S.tv(value), icon);   // a name or line given as our Arabic words (ControlText's) is said in «اللغة»; one already said stays
@@ -886,10 +920,9 @@ final class ControlCenter {
      * lock as the sleep timer's own line) with a line saying which service to turn on; there is no silent fallback here any more («شاشة التوقف» next to it starts the screensaver).
      */
     private void turnOffNow() {
-        if (SleepService.enabled()) { dismiss(); SleepTimer.turnOff(act); return; }
+        if (Extras.enabled()) { dismiss(); SleepTimer.turnOff(act); return; }
         dismiss();
-        android.widget.Toast.makeText(act, S.t("فعّل «%s»", act.getString(R.string.sleep_service_label)), android.widget.Toast.LENGTH_LONG).show();
-        host.launchGuarded(ParentalPolicy.SLEEP_ACCESSIBILITY, new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS), "إعدادات التلفزيون");
+        host.launchGuarded(ParentalPolicy.SLEEP_ACCESSIBILITY, Extras.intent(act, "sleep"), "إعدادات التلفزيون");   // 4.3.3: the offer of «إضافات تلفزيونك»
     }
 
     // ---------------------------------------------------------------- «اختبار السرعة»

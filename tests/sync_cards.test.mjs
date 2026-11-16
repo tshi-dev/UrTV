@@ -29,7 +29,7 @@ async function card(file, panel, q) {
     const n = s => s.match(/[\d.]+/g).map(Number), w = document.querySelector('.week'), cs = getComputedStyle(w);
     const texts = [...w.querySelectorAll('*')].filter(e => e.getClientRects().length && [...e.childNodes].some(x => x.nodeType === 3 && x.textContent.trim()) && +getComputedStyle(e).opacity > 0)
       .map(e => ({ t: e.textContent.trim().slice(0, 12), c: n(getComputedStyle(e).color), cls: e.className + '/' + e.parentNode.className }));
-    return { cls: document.documentElement.className, bg: n(cs.backgroundColor), line: n(cs.borderTopColor), shadow: cs.boxShadow, radius: cs.borderTopLeftRadius, hd: n(getComputedStyle(w.querySelector('.hd')).color), texts };
+    return { cls: document.documentElement.className, bg: n(cs.backgroundColor), img: cs.backgroundImage, line: n(cs.borderTopColor), shadow: cs.boxShadow, radius: cs.borderTopLeftRadius, hd: n(getComputedStyle(w.querySelector('.hd')).color), texts };
   });
   await ctx.close();
   return { ...r, errors };
@@ -51,8 +51,9 @@ for (const file of ['tv.html', 'tv-en.html']) for (const panel of ['prayers', 'v
     && l.hd.slice(0, 3).join() === '11,94,81' && l.texts.length > 1 && low.every(t => faint.includes(t)), JSON.stringify(low.slice(0, 4)));
   const o = await card(file, panel, OFF);
   const plain = await card(file, panel, '');
-  check(`${at}, off: the fill and the line only, the words are the page's own`, o.cls.includes('hcard') && !o.cls.includes('hsync') && near(o.bg, [255, 255, 255, 0.141])
-    && JSON.stringify(o.texts) === JSON.stringify(plain.texts) && o.hd.join() === plain.hd.join(), JSON.stringify([o.cls, o.bg, o.hd, plain.hd]));
+  // 4.4: the fill over a dark floor (the floor is the colour, the fill a layer over it), so a bright photo never washes the words out
+  check(`${at}, off: the fill and the line only, over the dark floor, the words are the page's own`, o.cls.includes('hcard') && !o.cls.includes('hsync') && near(o.bg, [10, 12, 16, 0.52]) && /255, 255, 255, 0\.14\b/.test(o.img)
+    && JSON.stringify(o.texts) === JSON.stringify(plain.texts) && o.hd.join() === plain.hd.join(), JSON.stringify([o.cls, o.bg, o.img, o.hd, plain.hd]));
   check(`${at}, nothing from the launcher: the page as it was`, !/hcard|hsync|hlt/.test(plain.cls), plain.cls);
 }
 const bad = await card('tv.html', 'prayers', 'hpanel=rgba(32,33,36,0.902)&hline=rgba(255,255,255,0.078)&hink=red&hsub=rgba(185,182,176,1)&hacc=rgba(240,166,74,1)');

@@ -22,7 +22,7 @@ jobs:
   apk:
     needs: checks
     if: ${{ !cancelled() && (needs.checks.result == 'success' || needs.checks.result == 'skipped') }}
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
       # Thmanyah's licence allows its files only inside a built product: they live in the private
@@ -84,13 +84,15 @@ jobs:
         run: |
           cp android/app/build/outputs/apk/release/app-release.apk urtv-screensaver.apk
           cp android/launcher/build/outputs/apk/release/launcher-release.apk urtv-home.apk
+          cp android/extras/build/outputs/apk/release/extras-release.apk urtv-extras.apk   # 4.3.3 «إضافات تلفزيونك»: the optional add-on (the accessibility service)
+          cp android/rescue/build/outputs/apk/release/rescue-release.apk urtv-rescue.apk   # 4.4 «إنقاذ تلفزيونك»: one button that puts the TV back as it was (its own Downloader code)
           echo "3.${{ github.run_number }}" > version.txt   # EXACTLY "3.<run>": every app that ever shipped (3.142 and after) reads the newest build from here, whatever the apps are called now; /releases/latest ends in apk-latest, not in a number
 
       # apksigner, not keytool: the home APK has no v1 (JAR) signature, so keytool sees no signer in it
       - name: Which key signed them
         run: |
           apksigner=$(ls -d "$ANDROID_HOME"/build-tools/*/apksigner | sort -V | tail -1)
-          for f in urtv-screensaver.apk urtv-home.apk; do
+          for f in urtv-screensaver.apk urtv-home.apk urtv-extras.apk urtv-rescue.apk; do
             echo "$f:"; "$apksigner" verify --print-certs "$f" | grep -m2 -E 'certificate (DN|SHA-256)'
           done
 
@@ -100,6 +102,8 @@ jobs:
           path: |
             urtv-screensaver.apk
             urtv-home.apk
+            urtv-extras.apk
+            urtv-rescue.apk
 
       # fixed download links: .../releases/download/apk-latest/urtv-screensaver.apk and urtv-home.apk
       - name: Publish to the apk-latest release
@@ -113,6 +117,8 @@ jobs:
           files: |
             urtv-screensaver.apk
             urtv-home.apk
+            urtv-extras.apk
+            urtv-rescue.apk
             version.txt
           make_latest: true
 
@@ -128,6 +134,8 @@ jobs:
           files: |
             urtv-screensaver.apk
             urtv-home.apk
+            urtv-extras.apk
+            urtv-rescue.apk
           make_latest: false
 
       # next: one test release, replaced by each build; install with APK_TAG=apk-next optimize/install.sh all
@@ -143,6 +151,8 @@ jobs:
           files: |
             urtv-screensaver.apk
             urtv-home.apk
+            urtv-extras.apk
+            urtv-rescue.apk
             version.txt
           prerelease: true
           make_latest: false

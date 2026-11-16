@@ -53,7 +53,7 @@ check("the boot counter: a boot counts only when our home did not come up in it 
 if not shutil.which("javac"):
     print("SKIP factory logic: no javac"); sys.exit(1 if failed else 0)
 with tempfile.TemporaryDirectory() as tmp:
-    pure = [p for p in sorted(SETUP.glob("*.java")) if "import android." not in p.read_text(encoding="utf-8")] + [HOME / "phone/UpdateRules.java", HOME / "SuggestedApps.java"]
+    pure = [p for p in sorted(SETUP.glob("*.java")) if "import android." not in p.read_text(encoding="utf-8")] + [HOME / "phone/UpdateRules.java", HOME / "SuggestedApps.java", HOME / "ExtrasWords.java"]
     r = subprocess.run(["javac", "-encoding", "UTF-8", "-d", tmp, *map(str, pure), str(ROOT / "tests/SetupEngineRun.java"), str(ROOT / "tests/FactoryRun.java"), str(ROOT / "tests/BootGuardRun.java")], capture_output=True, text=True)
     check("the engine, the fake TV and the runners compile", r.returncode == 0, r.stderr[-800:])
     if r.returncode:

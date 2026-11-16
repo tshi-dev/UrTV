@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Every check in one go: static checks, then the screen in a real browser. See tests/check.py and page.test.mjs.
-#   pip install fonttools brotli pillow -r .github/tools/cities-world/requirements.txt && npm install --no-save playwright@1.56.1 && npx playwright install chromium
+#   pip install fonttools brotli pillow -r .github/tools/cities-world/requirements.txt && npm install --no-save playwright@1.56.1 acorn@8.14.0 && npx playwright install chromium
 set -euo pipefail
 cd "$(dirname "$0")/.."
 python3 tests/check.py
@@ -20,11 +20,27 @@ python3 tests/install_extras_test.py
 python3 tests/share_test.py
 python3 tests/install_versions_test.py
 python3 tests/install_retry_test.py
+python3 tests/install_stream_test.py   # 4.3.3: the APK streamed to `cmd package install -S`, else the file as before
+python3 tests/rescue_test.py   # 4.4 «إنقاذ تلفزيونك» and the other ways back with no computer
+python3 tests/extras_test.py   # 4.3.3 «إضافات تلفزيونك»: the add-on with the accessibility service, the home without one
+python3 tests/stock_kept_test.py   # 4.3.3: the computer's home switch keeps the stock home and the wizard on; the factory provider
 python3 tests/cast_test.py   # «البث من الجوال»: a Chromecast keeps its setup wizard (the cast credentials); dock.sh cast on|off|status
 python3 tests/step52_test.py   # the tester's step 52 findings in the source: the saver's first frame, the debug switches, the top row's layout, the dark patch, the clean row
 python3 tests/party_games_test.py   # «واحد مو معنا» and «بدون كلام / وصّف»: the rules on a plain JVM, the bundled word files
 python3 tests/ram_tier_test.py   # the three memory tiers (LOW under 2000 MB, MID under 2600, NORMAL), one rule per app, the test switch
+python3 tests/scene_home_test.py   # 4.3.3 «المشاهد»: the scene rules per tier on a JVM, the Saudi pack's files and sizes, the Couch TV download checks, the wiring
+python3 tests/settings_classic_test.py   # 4.4 «شكل كنبة» switches the settings screen too: every row in both layouts (4.3.2 and the side list), search in both, the switch in both
+python3 tests/settings_tree_test.py   # docs/SETTINGS-TREE.md is what the code says now (.github/tools/settings_tree.py)
+python3 tests/scene_zoom_test.py   # 4.4 the owner: the clock where it is, the picture lower: more of the digits above the scenery (the visible share on a JVM over the scene's real cut-out)
+python3 tests/photo_glass_test.py   # 4.4 «الساعة: زجاجية» over our photos: which cut-out, where the digits go (on a JVM), made only while chosen, never «الحرمين»
+python3 tests/cache_sweep_test.py   # 4.3.3 «مسح الملفات المؤقتة»: the caches only, on a JVM over made-up folders
 python3 tests/lowram_test.py   # a weak TV (Ram.low): no key filter, the clock off the UI thread, pictures let go behind apps, markets «عادي» and 60 s, #lowram=1
+python3 tests/netlog_test.py   # G3: the request log (NetLog: requests by host, one UrTVNet line per 10 minutes with the bytes)
+python3 tests/page_cache_test.py   # G3: the page revalidates its data (ETag, 304) through the WebView cache, and skips periodic loads while offline
+python3 tests/net_cache_test.py   # G3: Net.cached: ETag and date revalidation, calls merged, the offline back-off, the size cap; the markets, next match and leagues list use it
+python3 tests/photo_size_test.py   # G3: photos kept at the TV's own screen size (1280 on a 720p screen or a weak TV)
+python3 tests/lite_mode_test.py   # A14: «الوضع الخفيف» auto (low memory or 2 cores) / on / off in both apps, its row and command
+python3 tests/home_return_test.py   # G4: less before the home's first frame: no live TV lookup at a cold start; the provider, update record and changed packages off the return's path
 python3 tests/deadman_test.py
 python3 tests/run_lock_test.py
 python3 tests/run_identity_test.py
@@ -103,6 +119,7 @@ python3 tests/team_search_test.py
 python3 tests/team_ids_test.py
 python3 tests/city_match_test.py
 python3 tests/cities_world_test.py
+python3 tests/cities_more_test.py   # 4.3.3 the offline city search: the list (GeoNames + Wikidata), its generator, the ranking
 python3 tests/cities_md_test.py
 python3 tests/home_card_test.py
 python3 tests/home_page_test.py   # the home's cards on the screensaver's newer page (its stocks stayed stale on the APK's own)
@@ -111,6 +128,11 @@ python3 tests/league_fixtures_test.py
 python3 tests/match_archive_test.py   # 4.3.1 the match archive: append-only, a corrected score, the live window, the backfill names
 python3 tests/league_catalogue_test.py   # 4.3 «كل الدوريات»: the CI catalogue (the walk, the content rules, the Arabic names)
 python3 tests/catalogue_leagues_test.py   # 4.3 «كل الدوريات» on the TV: read only when the picker opens, picked ones only, 8 at most
+python3 tests/data_host_test.py   # 4.3.3 the data files: tshi-dev/urtv-data first, the old data branch second, one map in both apps and the page
+python3 tests/prayer_fix_test.py   # 4.3.3 published prayer corrections: by country and city, by date, never over the person's own minutes, through adj=
+python3 tests/seasonal_test.py   # 4.3.3 seasonal photo packs: only between their days, first in the picker, licensed, the same checks as every pack
+python3 tests/device_rule_test.py   # 4.3.3 per-model defaults: matched by brand, model, device and SDK, applied only where nothing is set
+python3 tests/notice_test.py   # 4.3.3 remote notices: one at a time, once per id, never over playback, no links
 python3 tests/market_prices_test.py
 python3 tests/markets_page_test.py   # «الأسواق»: the data and the sums on a JVM, only the sources we have, «الأخبار» off, the ways in
 python3 tests/portfolio_privacy_test.py   # «محفظتي» stays on the TV: share.py, Report, settings_move, ConfigProvider, the commands
@@ -156,6 +178,15 @@ python3 tests/own_adhan_test.py
 python3 tests/own_adhan_keep_test.py
 python3 tests/player_logic_test.py
 python3 tests/stall_watch_test.py   # 4.3 A2: the live station's stall watchdog and ExoPlayer for HLS
+python3 tests/focus_rule_test.py   # 4.3.3 G1: the player keeps on behind the screensaver and the TV's settings; another sound pauses it and it comes back
+python3 tests/surah_set_test.py   # 4.3.3: a reciter with «missing» surahs; the player steps over them
+python3 tests/audio_library_test.py   # 4.4 «صوتياتي»: sound files from a USB stick or the phone, kept in the app; the caps; the own adhan from them
+python3 tests/dua_test.py   # 4.4 «الأدعية والتذكيرات»: the rule (days, both calendars, prayer times), the alarm, playing like the adhan, the card
+python3 tests/prayer_sound_test.py   # 4.4 «أذان كل صلاة»: silent prayers, a muezzin or own recording per prayer
+python3 tests/quiet_hours_test.py   # 4.4 touch «ساعات الهدوء»
+python3 tests/kahf_template_test.py   # 4.4 touch: the Friday Kahf, ready
+python3 tests/fade_in_test.py   # 4.4 touch «يبدأ بهدوء»
+python3 tests/friday_dhuhr_test.py   # 4.4 touch «أذان الجمعة»
 python3 tests/loudness_test.py   # the recitation and the adhan lifted inside the player (LoudnessEnhancer), never the TV volume or mute
 python3 tests/seek_burst_test.py
 python3 tests/pill_text_test.py
@@ -220,11 +251,17 @@ python3 tests/parental_text_test.py   # «الرقابة الأبوية»: the c
 python3 tests/fav_bar_test.py   # the favourites bar: the tray, five tiles, the focus inside it, the one 40 px move (docs/PROPOSALS-NOV2.md §1)
 python3 tests/called_off_test.py   # 4.3 A1-A3: a called-off game is never live or upcoming; a team's game read from the copy further on
 python3 tests/usb_test.py   # 4.3 B8: the USB viewers are never off and always in the apps row (issue #50)
+python3 tests/sideload_apps_test.py   # #57: a sideloaded app shows on the home next to a Google home (only the TV's own phone-only helpers stay out)
+python3 tests/kids_exit_test.py   # 4.3.3: kids mode always has a way out to «الرقابة الأبوية» (the long OK box, Menu, star, a long Settings key), behind the PIN
+python3 tests/date_num_test.py   # the home's date with its year; «التاريخ بالأرقام» on the home and the screensaver
+python3 tests/global_search_test.py   # «بحث» on the home: the TV's own search inside the apps, off by default
 python3 tests/report_words_test.py   # 4.3 B10: the report page asks what happened, required
 python3 tests/phone_message_test.py   # 4.3 #53: a short message from a paired phone on the TV's screen
 python3 tests/photos_phone_test.py   # 4.3 «صوري»: 50, and from a paired phone (no camera data)
 python3 tests/own_adhan_fajr_test.py   # 4.3 C16: a second own adhan, for Fajr
 python3 tests/football_test.py   # the football home and «المباريات»: the setting, the pages, the widgets' focus, the tray's move, the broadcast table (docs/PROPOSALS-NOV2.md §1)
+python3 tests/three_teams_test.py   # 4.3.3 A3: three followed teams through every step (saver Prefs, the provider, the launcher's link, the page)
+python3 tests/follow_store_test.py   # 4.3.3 following from «المباريات» with the screensaver app missing or older: the home keeps it, joins it, hands it over
 python3 tests/settings_report_test.py   # «أرسل تقرير»: share.py's allowlist, nothing personal
 python3 tests/dialog_fit_test.py
 python3 tests/second_card_test.py
@@ -239,6 +276,10 @@ python3 tests/i18n_saver_test.py   # the settings in English (Words, WordMatch, 
 #
 # English phase 2 (the page): its new tests go right under this line
 python3 tests/i18n_page_test.py   # dist/tv-en.html: built beside tv.html (byte for byte), current, under budget; the app and the home card pick it
+node tests/es2017_parse.test.mjs   # #19: the built pages parse as ES2017 (Android 9 TVs stuck on WebView 66)
+node tests/date_num.test.mjs   # «التاريخ بالأرقام» on the screensaver page: day/month/year in the digits chosen
+node tests/wx_icon.test.mjs   # the screensaver's weather line: the condition's icon beside the temperature
+node tests/js_strip_test.mjs   # the pages ship without the script's comments: the same program (acorn trees), 50 KB smaller
 node tests/i18n_page_test.mjs   # dist/tv-en.html in a browser: left to right, no Arabic in its own words on any card
 #
 # English phase 3 (the home app): its new tests go right under this line
@@ -262,8 +303,12 @@ node tests/prayer_crosscheck_page.mjs
 node tests/prayer_crosscheck_world_page.mjs
 node tests/hijri_crosscheck_page.mjs
 node tests/page.test.mjs
+node tests/tafsir.test.mjs   # «التفسير الميسر» (#tafsir=1): every verse of the deck has its tafsir, whole, in pages of three lines at most, never «…»
 node tests/football_page.test.mjs   # the football home's widgets and «المباريات» in a browser, on fixed games
+node tests/matches_archive.test.mjs   # «المباريات» with the match archive (data-archive): every followed team, yesterday's results, a club, a league, the chooser
 node tests/phone_page.test.mjs
 node tests/sync_cards.test.mjs   # «توحيد المظهر» on the page: the cards in the material's fill, line and ink, readable on a light look
+node tests/couch_row.test.mjs   # 4.4 the page: «كنبة» (#row=1, the cards in one strip above the tray) and «مربعات» (today's prayers as boxes in a row, the next one lit with its countdown)
+node tests/photo_mask_page.test.mjs   # 4.4 the phone page «صوري»: a photo with its mask, checked on the phone, previewed, sent after the photo; the page's own CSP
 node tests/reminder_page.test.mjs   # the screensaver's reminder card: its time, «الآن», «تم», the snooze, the keys, the adhan, English
 node tests/tvports_page.test.mjs   # the packaged page with simulated webOS and Tizen keys

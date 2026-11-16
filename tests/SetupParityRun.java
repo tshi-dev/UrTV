@@ -50,6 +50,7 @@ public class SetupParityRun {
     }
 
     public static void main(String[] a) throws Exception {
+        SetupEngine.KEEP_STOCK_ON = false;   // the parity is with the scripts' switch, which still disables the stock home (4.3.2: the app's switch no longer does; scripts follow in 4.3.3 after the TV test)
         String step = a[0];
         Tv tv = new Tv(a[1]);
         Dir store = new Dir(new File(a[2]));

@@ -53,7 +53,7 @@ ALLOWED_TOP = ("schema", "city", "digits", "prayer", "hijri_offset", "clock24", 
 # reads that file and fails if these drift from it).
 DIGITS = ("hindi", "latin")
 PRAYER_METHODS = ("auto", "gulf")   # 4.3 A4: an older file's «jafari» is imported as «auto» (no longer offered)
-CARD_STYLES = ("current", "dark1", "glass1", "dark3", "glass3")
+CARD_STYLES = ("current", "dark1", "glass1", "dark3", "glass3", "boxes", "classic")
 CLOCK_SIZES = ("large", "medium", "small")
 MK_STYLES = ("arrows", "prices")
 MONTHS = ("default", "levant")
@@ -74,7 +74,7 @@ MAX_HOME_PACKS = 12   # docs/PHOTO-PACKS.md: at most 12 packs
 SWITCHES = ("greeting", "sunrise", "prayerbar", "wxmore", "pagesdark")   # on/off switches the TV reports as «on» / «off»
 MARKETS = ("tasi", "aramco", "spx", "btc", "gold", "silver", "oil", "xrp")
 MAX_MARKETS = 4
-PANELS = ("shows", "prayers", "forecast", "hourly", "prayerrow", "nextprayer", "matches", "verse", "wisdom", "adhkar",
+PANELS = ("shows", "prayers", "forecast", "hourly", "prayerrow", "nextprayer", "matches", "nextmatch", "verse", "wisdom", "adhkar",
           "stocks", "tasks", "year", "smart", "today", "album", "none")
 HOME_ONLY = ("nextprayer",)   # Prefs.homeOnly: offered on the home cards, never as the screensaver's panel
 HOME_CARDS = 3

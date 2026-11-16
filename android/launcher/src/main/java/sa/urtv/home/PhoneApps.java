@@ -190,22 +190,27 @@ public final class PhoneApps {
         return true;
     }
 
-    /** Is one of our accessibility services on (the typing/remote one or the sleep one)? Then Back and Home work in every app. */
-    public static boolean keysEverywhere() { return SleepService.enabled() || TypeService.enabled(); }
+    /** Is «إضافات تلفزيونك» on (4.3.3: the add-on holds the accessibility service the home had)? Then Back and Home work in every app. */
+    public static boolean keysEverywhere() { return Extras.enabled(); }
 
     /** Do the arrows and OK reach another app too? From Android 13 any of the services does it; before that only the typing/remote one. */
-    public static boolean dpadEverywhere() { return RemoteNav.dpadEverywhere(android.os.Build.VERSION.SDK_INT, keysEverywhere(), TypeService.enabled()); }
+    public static boolean dpadEverywhere() { boolean on = keysEverywhere(); return RemoteNav.dpadEverywhere(android.os.Build.VERSION.SDK_INT, on, on); }
 
     /** A phone key into the app in front through whichever of our services is on (one of RemoteNav's words: done, service_off, other_app_limited, failed). */
     public static String pressKey(String key) {
-        String r = TypeService.press(key);
-        return RemoteNav.OFF.equals(r) ? SleepService.press(key) : r;
+        String r = Extras.press(key);
+        if (RemoteNav.OFF.equals(r)) Extras.offerOnce("keys");   // the add-on is missing or off: the TV offers it (once in a while, not at every key)
+        return r;
     }
 
     /** The phone's text into another app (TypeService.typeText); one of its fixed words. */
-    public static String typeText(Context c, String text, boolean append, boolean search) { return TypeService.typeText(c.getApplicationContext(), text, append, search); }
+    public static String typeText(Context c, String text, boolean append, boolean search) {
+        String r = Extras.typeText(text, append, search);
+        if (ExtrasWords.OFF.equals(r)) Extras.offerOnce("type");
+        return r;
+    }
 
     /** Is the typing service on? Without it a phone cannot type into other apps (the page says how to turn it on). */
-    public static boolean typingEnabled() { return TypeService.enabled(); }
+    public static boolean typingEnabled() { return Extras.enabled(); }
 
 }

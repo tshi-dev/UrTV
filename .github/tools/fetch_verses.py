@@ -6,7 +6,8 @@
            assets/fonts/UthmanicHafs-v30.woff2 is made for; verify_uthmani.py compares it with the source in CI.
            Never show it in another font.
   tafsir   «التفسير الميسر» (King Fahd Complex), api.alquran.cloud edition ar.muyassar; the screen shows it
-           only with #tafsir=1
+           only with #tafsir=1, whole (its terms of publication allow no cut, no addition): src/build.py writes it to
+           dist/tafsir.json, read by the page only when it is on
 
 Runs in CI (.github/workflows/verses.yml): api.alquran.cloud is unreachable from the dev container. The screen never
 holds Quran text typed by hand; it only shows what this script fetched, copied to assets/shared/verses.json.

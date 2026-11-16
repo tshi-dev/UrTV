@@ -15,10 +15,10 @@ def check(what, ok, extra=""):
 if not shutil.which("javac"):
     print("SKIP quiz: no javac"); sys.exit(1)
 with tempfile.TemporaryDirectory() as tmp:
-    c = subprocess.run(["javac", "-nowarn", "-d", tmp, *(str(APP / f"Quiz{n}.java") for n in ("Room", "Pick", "Server", "BankCheck")), str(APP / "MiniJson.java"), str(APP / "DigitsText.java"), str(ROOT / "tests/QuizTest.java")], capture_output=True, text=True)
+    c = subprocess.run(["javac", "-nowarn", "-d", tmp, *(str(APP / f"Quiz{n}.java") for n in ("Room", "Pick", "Server", "BankCheck")), str(APP / "MiniJson.java"), str(APP / "PhoneRoom.java"), str(APP / "DigitsText.java"), str(APP / "GamesMeta.java"), str(APP / "GameDataCheck.java"), str(ROOT / "tests/QuizTest.java")], capture_output=True, text=True)
     check("the quiz compiles on a plain JVM (no Android in the rules, the picking or the server)", c.returncode == 0, c.stderr[-600:])
     if c.returncode == 0:
-        r = subprocess.run(["java", "-cp", tmp, "sa.urtv.screensaver.QuizTest", str(ROOT / "assets/quiz/starter.json")], capture_output=True, text=True, timeout=240)
+        r = subprocess.run(["java", "-cp", tmp, "sa.urtv.screensaver.QuizTest", str(ROOT / "assets/quiz/starter.json"), str(ROOT / "assets/quiz/bank.json")], capture_output=True, text=True, timeout=240)
         for line in r.stdout.splitlines():
             if line.startswith(("PASS", "FAIL")):
                 print(line)
@@ -41,8 +41,8 @@ with tempfile.TemporaryDirectory() as t2:
           mqb.verify(str(Path(t2) / "h.json"), 40) and bad(lambda d: d[0]["w"][0].__setitem__(0, d[0]["a"][0]), "a.json") and bad(lambda d: d[1].__setitem__("i", d[0]["i"]), "b.json")
           and bad(lambda d: d[0].__setitem__("d", 4), "c.json") and bad(lambda d: d[0].__setitem__("x", 1), "d.json") and bad(lambda d: d.__delitem__(slice(10, None)), "e.json"))
 bank_src = (APP / "QuizBank.java").read_text(encoding="utf-8")
-check("the app checks what it downloads before it keeps it: through Net (a size cap, no redirect), the whole-file check, a temporary file renamed, the last good copy kept; no org.json in the quiz",
-      "QuizBankCheck.parse(b)" in bank_src and "Net.get(URL, null, 15000, 20000, QuizBankCheck.BYTES_MAX)" in bank_src and "r.status != 200" in bank_src and "tmp.renameTo(f)" in bank_src
+check("the app checks what it downloads before it keeps it: through Net (a size cap, no redirect; urtv-data first, DataHost), the whole-file check, a temporary file renamed, the last good copy kept; no org.json in the quiz",
+      "QuizBankCheck.parse(r.body)" in bank_src and "DataHost.get(url, 15000, 20000, QuizBankCheck.BYTES_MAX)" in bank_src and "r.status != 200" in bank_src and "tmp.renameTo(f)" in bank_src and "fetch(URL_V2)" in bank_src and "fetch(URL)" in bank_src
       and "org.json" not in bank_src + (APP / "QuizBankCheck.java").read_text(encoding="utf-8"))
 check("the room code and the tokens come from a SecureRandom", "new java.security.SecureRandom()" in (APP / "QuizActivity.java").read_text(encoding="utf-8"))
 
@@ -104,9 +104,22 @@ check("phone: «gone» keeps the token and says «خرجت من الغرفة، �
       "e === 'gone'" in page and "e_gone: 'خرجت من الغرفة، ادخل من جديد'" in page and "function roomLabel()" in page and "QuizRoom.isolateMath(" in act)
 check("language: the TV shows the question and the four answers in UrTV's language (q.text(en), q.opt(i, en)); the letters are A B C D in English and أ ب ج د in Arabic on the TV; the setup page's chips follow it (S.tv)",
       "String qText = q.text(en);" in act and "String a = q.opt(i, en);" in act and 'LETTERS_AR = {"أ", "ب", "ج", "د"}, LETTERS_EN = {"A", "B", "C", "D"}' in act and "private String letter(int i) { return en ? LETTERS_EN[i] : LETTERS_AR[i]; }" in act
-      and "S.tv(QuizPick.CATEGORIES[i][1])" in act and "S.tv(QuizPick.LEVELS[i])" in act and "QuizPick.forLang(QuizBank.load(this), S.en())" in act)
+      and "S.tv(cats[i][1])" in act and "S.tv(QuizPick.LEVELS[i])" in act and "QuizPick.forLang(QuizBank.load(this), S.en())" in act)
 check("language: each phone gets its own page's language (the state poll sends &l=, the room answers in it), the letters on the phone are أ ب ج د in Arabic and A B C D in English, the digits fixing touches the Arabic text only",
       "'&l=' + L, null, 4000)" in page and 'room.stateFor(p.get("t"), "en".equals(p.get("l")))' in srv and "letters: ['أ', 'ب', 'ج', 'د']" in page and "letters: ['A', 'B', 'C', 'D']" in page
       and "q.texts[1]};   // the English text is left as it is" in act)
 check("docs/QUIZ.md exists and names the conflicts between the SPEC and the mockups", "conflicts" in doc.lower() and "SPEC" in doc)
 sys.exit(1 if failed else 0)
+
+# ---- offline first (4.3.3): a bundled bank, a downloaded copy only when newer, every game reads local storage only
+bk = (APP / "QuizBank.java").read_text(encoding="utf-8")
+check("the bank: the downloaded copy is used only when it is at least as new as the bundled one, then the bundled bank, then the starter set, with no network in load()",
+      'sp(c).getLong("rev", 0) >= BUNDLED_REV' in bk and bk.index('asset(c, "quiz/bank.json")') < bk.index('asset(c, "quiz/starter.json")') and "Net." not in bk[bk.index("static List<QuizPick.Item> load"):bk.index("private static List<QuizPick.Item> asset")])
+check("the bank: the background check asks for rev.txt first, at most once a day, never while a round is on, at the lowest priority, and downloads only a newer build",
+      "CHECK_MS = 24L * 3600 * 1000" in bk and "long remote = fetchRev();" in bk and "if (remote > have)" in bk and "if (playing) return;" in bk and "Thread.MIN_PRIORITY" in bk)
+check("the quiz marks a round as on and the workflow publishes rev.txt after the verify",
+      "QuizBank.playing = true;" in act and "QuizBank.playing = false;" in act and wf.index("--verify out out/quiz/quiz.json") < wf.index("out/quiz/rev.txt"))
+import json as _j2
+_b = _j2.load(open(ROOT / "assets/quiz/bank.json", encoding="utf-8"))
+check("the bundled bank is the v2 file with the whole verified bank (at least 1000 items) and stays small (under 500 KB, it is compressed in the APK)",
+      _b["v"] == 2 and len(_b["items"]) >= 1000 and (ROOT / "assets/quiz/bank.json").stat().st_size < 500_000)

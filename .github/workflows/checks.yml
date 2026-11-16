@@ -11,7 +11,7 @@ on:
 
 jobs:
   checks:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
       # Thmanyah's licence allows its files only inside a built product: they live in the private
@@ -36,5 +36,5 @@ jobs:
         with:
           python-version: '3.12'
       - run: pip install fonttools brotli pillow -r .github/tools/cities-world/requirements.txt
-      - run: npm install --no-save playwright@1.56.1 && npx playwright install --with-deps chromium
+      - run: npm install --no-save playwright@1.56.1 acorn@8.14.0 && npx playwright install --with-deps chromium   # acorn: tests/js_strip_test.mjs
       - run: tests/run.sh

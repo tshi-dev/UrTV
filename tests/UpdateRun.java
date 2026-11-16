@@ -109,7 +109,7 @@ public final class UpdateRun {
             && !UpdateRules.answerIsOurs("", "sa.urtv.home", null) && !UpdateRules.answerIsOurs(null, "sa.urtv.home", null)
             && !UpdateRules.answerIsOurs("sa.urtv.screensaver", "sa.urtv.home", null) && !UpdateRules.answerIsOurs("sa.urtv.home", null, null)
             && !UpdateRules.answerIsOurs("sa.urtv.home", "sa.urtv.home", "com.evil.app"), "");
-        check("the order is the one of UpdateRules.APKS (screensaver, then home)", UpdateRules.APKS[0][0].equals(UpdateOrder.SAVER) && UpdateRules.APKS[1][0].equals(UpdateOrder.LAUNCHER), "");
+        check("the order is the one of UpdateRules.APKS (screensaver, then home)", UpdateRules.APKS[0][0].equals(UpdateOrder.SAVER) && UpdateRules.APKS[UpdateRules.APKS.length - 1][0].equals(UpdateOrder.LAUNCHER) && UpdateRules.APKS[1][0].equals(UpdateOrder.EXTRAS), "");
 
         // ---- the record: written before the launcher is replaced, read after the restart
         Mem disk = new Mem();

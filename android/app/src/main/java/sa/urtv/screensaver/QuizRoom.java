@@ -12,7 +12,7 @@ import java.util.function.LongSupplier;
  * The TV owns everything: the phones only join, send «answer N for question Q» and read their own state. Nothing here is written to disk;
  * when the game is closed the object is dropped (names, colours, tokens and scores exist only in memory). docs/QUIZ.md, games/live-quiz/SPEC.md.
  */
-final class QuizRoom {
+final class QuizRoom implements PhoneRoom {
     static final int MAX_PLAYERS = 12, NAME_MAX = 12, COLORS = 8;
     static final int QUESTION_MS = 20000, REVEAL_MS = 8000;   // the reveal 4 s and the top five 4 s (the tester found 3 + 3 short)
     static final int BASE = 500, BONUS = 500;
@@ -53,6 +53,8 @@ final class QuizRoom {
     private long revealAt, endAt, lockedUntil; private int wrongCodes; private final ArrayDeque<Long> joins = new ArrayDeque<>();
     int[] counts = new int[4]; private String nonce = "";
 
+    @Override public String code() { return code; }
+
     QuizRoom(String code, LongSupplier clock, Random rnd) { this.code = code; this.clock = clock; this.rnd = rnd; }
 
     static String newCode(Random r) { return String.format(java.util.Locale.ROOT, "%04d", r.nextInt(10000)); }
@@ -70,7 +72,7 @@ final class QuizRoom {
     // ---------------------------------------------------------------- join
 
     /** the code is checked here too: 5 wrong codes lock joining for 60 s, 20 join attempts a minute for the room, 12 players, a late join waits for the next question */
-    synchronized Result join(String c, String name, int color, String token) {
+    @Override public synchronized Result join(String c, String name, int color, String token) {
         long now = clock.getAsLong();
         if (phase == Phase.CLOSED || (phase == Phase.END && now - endAt > CODE_LIFE_AFTER_END_MS)) return new Result(false, "closed", null);
         if (now < lockedUntil) return new Result(false, "locked", null);
@@ -179,7 +181,7 @@ final class QuizRoom {
     synchronized long revealLeftMs() { return phase == Phase.REVEAL ? Math.max(0, revealAt + REVEAL_MS - clock.getAsLong()) : 0; }
 
     /** the question's own nonce (state q.x): an answer must carry it, so a late or retried one from another question, or another game, is refused */
-    synchronized String answer(String token, int q, int a, String x) {
+    @Override public synchronized String answer(String token, int q, int a, String x) {
         if (x == null || !x.equals(nonce) || nonce.isEmpty()) {
             Player p = byToken(token);
             return p == null ? "token" : "closed";
@@ -289,7 +291,7 @@ final class QuizRoom {
     synchronized void close() { phase = Phase.CLOSED; players.clear(); questions.clear(); bump(); }
 
     /** a player leaves: gone at once from the lobby, grey in the list with the points kept during a game */
-    synchronized void leave(String token) {
+    @Override public synchronized void leave(String token) {
         Player p = byToken(token); if (p == null) return;
         if (phase == Phase.LOBBY) players.remove(p); else p.left = true;
         bump();
@@ -322,7 +324,7 @@ final class QuizRoom {
     synchronized String stateFor(String token) { return stateFor(token, false); }
 
     /** the phone's own language (its page's, `?l=` of the state poll): the question and the four answers come in that language, the places are the same in both */
-    synchronized String stateFor(String token, boolean en) {
+    @Override public synchronized String stateFor(String token, boolean en) {
         Player p = byToken(token);
         if (phase == Phase.CLOSED) return "{\"ok\":false,\"e\":\"closed\"}";
         if (p == null) return goneTokens.contains(token) ? "{\"ok\":false,\"e\":\"gone\"}" : "{\"ok\":false,\"e\":\"token\"}";

@@ -53,7 +53,7 @@ check("B5: another app resumed by the OEM is paused with one media key only insi
       "KEYCODE_MEDIA_PAUSE" in carry and "pauseOthers(true, c.muted, adhan, tv.ourPlaying(), tv.musicActive(), false, since) && since <= OEM_WINDOW_MS" in heal_list
       and "getLaunchIntentForPackage" not in carry and carry.count("startActivity(") == 1 and "CATEGORY_HOME" in carry and "startActivity" not in heal)
 check("A2 (build 180): after an update started from our UpdateActivity the install's removal of our task is answered by bringing our home to the front: the HOME intent, HOME through the accessibility service, a full-screen notification, in turn, only in the first 45 s",
-      "tv.bringFront(c.frontTries)" in heal_list and "FRONT_WINDOW_MS = 45_000" in heal_list and "c.ui && !c.frontDone" in heal_list and "TypeService.goHome()" in carry and "setFullScreenIntent(pi, true)" in carry
+      "tv.bringFront(c.frontTries)" in heal_list and "FRONT_WINDOW_MS = 45_000" in heal_list and "c.ui && !c.frontDone" in heal_list and "Extras.goHome()" in carry and "setFullScreenIntent(pi, true)" in carry
       and "UpdateCarry.homeShown = true;" in text(HOME / "MainActivity.java"))
 check("A3 (build 180): every call logs what it found, a record from the build before included (no generation: its time is the generation), also when it does nothing",
       'log("step", 0, "no_record"' in carry and 'rec.gen = sp.getLong("at", 0)' in carry and '"no_a11y_entry"' in heal_list and 'tv.log("audio", r, "why=" + why)' in heal_list)

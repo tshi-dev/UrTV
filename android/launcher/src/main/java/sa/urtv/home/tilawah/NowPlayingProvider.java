@@ -47,8 +47,10 @@ public class NowPlayingProvider extends ContentProvider {
             return a;
         }
         if (uri != null && "adhan".equals(uri.getLastPathSegment())) {
-            MatrixCursor a = new MatrixCursor(new String[]{"prayer", "any_key"});
-            if (MusicService.adhanLive()) a.addRow(new Object[]{MusicService.adhanPrayer(), new Prefs(getContext()).adhanStopKey() ? 1 : 0});
+            // 4.4: a third column, the dua's name while a dua or reminder plays ("" for an adhan): an older screensaver reads the first two only
+            MatrixCursor a = new MatrixCursor(new String[]{"prayer", "any_key", "name"});
+            String dua = MusicService.duaName();
+            if (MusicService.adhanLive()) a.addRow(new Object[]{MusicService.adhanPrayer(), new Prefs(getContext()).adhanStopKey() ? 1 : 0, dua == null ? "" : dua});
             return a;
         }
         MatrixCursor out = new MatrixCursor(new String[]{"playing", "title", "who"});
@@ -62,6 +64,14 @@ public class NowPlayingProvider extends ContentProvider {
         if ("stop_adhan".equals(method) && getContext() != null
                 && getContext().checkCallingPermission("sa.urtv.home.READ_NOW_PLAYING") == PackageManager.PERMISSION_GRANTED) {
             if (MusicService.adhanLive()) MusicService.stopAdhan(getContext());
+        }
+        // 4.3.3 «مسح الملفات المؤقتة» in the screensaver's settings (same key only): this app's cache folder, its size or the sweep (CacheSweep keeps the adhan's sounds and an APK on its way)
+        if (("cache_size".equals(method) || "clear_cache".equals(method)) && getContext() != null
+                && getContext().checkCallingPermission("sa.urtv.home.READ_NOW_PLAYING") == PackageManager.PERMISSION_GRANTED) {
+            java.io.File cache = getContext().getCacheDir();
+            Bundle b = new Bundle();
+            b.putLong("bytes", "clear_cache".equals(method) ? sa.urtv.home.CacheSweep.clear(cache) : sa.urtv.home.CacheSweep.size(cache));
+            return b;
         }
         return null;
     }

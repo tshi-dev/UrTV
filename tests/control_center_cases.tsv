@@ -43,3 +43,9 @@ mirror	com.xiaomi.mitv.smartshare,com.mediatek.wfd				com.xiaomi.mitv.smartshare
 mirror	com.softwinner.miracastReceiver				com.softwinner.miracastReceiver	an Allwinner projector
 mirror	com.google.android.apps.mediashell,com.tcl.airplay2				none	Google Cast and AirPlay are not mirroring apps to open: no tile
 mirror					none	nothing installed: no tile
+# adhan (4.3.3 «الأذان والإقامة»): now (minutes of the day), friday, -, -, the line (times as @minutes), note
+adhan	200	0			الفجر @300، الإقامة @325	before Fajr: Fajr, its iqama 25 minutes on
+adhan	900	0			العصر @920، الإقامة @940	before Asr: Asr, iqama 20 minutes on
+adhan	1100	0			العشاء @1155، الإقامة @1175	after Maghrib: Isha
+adhan	600	1			الجمعة @720	a Friday's Dhuhr: «الجمعة», no iqama (the khutba first)
+adhan	1200	0			none	after Isha: none today (the row keeps its hint; OK plays Fajr's muezzin)

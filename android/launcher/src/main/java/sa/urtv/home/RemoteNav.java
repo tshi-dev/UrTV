@@ -4,7 +4,7 @@ package sa.urtv.home;
  * The phone remote's keys into ANOTHER app, through our accessibility service: which call a key becomes. No Android in it (the numbers are
  * written out), so tests/RemoteNavRun.java runs it. Back and Home are global actions on every Android. The arrows and OK are global actions
  * from Android 13 (GLOBAL_ACTION_DPAD_*); before that they are a focus move on the window in front (a node's focusSearch then ACTION_FOCUS, OK
- * is ACTION_CLICK on the focused node), which needs the service that may read the window (TypeService). Our own screens never come here:
+ * is ACTION_CLICK on the focused node), which needs the service that may read the window (the add-on's ExtrasA11yService, 4.3.3). Our own screens never come here:
  * they take the key through dispatchKeyEvent, which is exact.
  */
 public final class RemoteNav {
@@ -28,7 +28,7 @@ public final class RemoteNav {
 
     private static final Step NONE = new Step(Route.NONE, 0);
 
-    /** The step for a phone key on this Android; `canReadWindow`: the service in hand may look at the window (TypeService, not SleepService). */
+    /** The step for a phone key on this Android; `canReadWindow`: the service in hand may look at the window (the add-on's ExtrasA11yService). */
     static Step plan(String key, int sdk, boolean canReadWindow) {
         if (key == null) return NONE;
         switch (key) {

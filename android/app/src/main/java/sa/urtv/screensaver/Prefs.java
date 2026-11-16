@@ -83,7 +83,7 @@ final class Prefs {
 
     // look of the card beside the clock (sent to the page as #cardstyle=; current is the plain card it always had)
     static final String[][] CARD_STYLES = {{"current", "الحالية"}, {"dark1", "داكنة"}, {"glass1", "زجاجية"},
-        {"dark3", "داكنة بإطار"}, {"glass3", "زجاجية بإطار"}};
+        {"dark3", "داكنة بإطار"}, {"glass3", "زجاجية بإطار"}, {"boxes", "مربعات"}, {"classic", "الشكل السابق"}};
 
     // markets at the top left (sent to the page as #markets=, up to MAX_MARKETS, in this order of choice; tasi,spx,btc is what it always showed)
     static final String[][] MARKETS = {
@@ -128,6 +128,8 @@ final class Prefs {
         if (!sp.contains("tournaments")) sp.edit().putBoolean("tournaments", sp.getAll().isEmpty()).apply();   // 4.3.1 «البطولات الكبرى»: on for a new install (nothing saved yet), off for one that already had settings
         GlassStyle.setTweaks(tweaks());
         if (ZoneFix.logger == null) ZoneFix.logger = line -> android.util.Log.i("UrTVZone", line);
+        if (NetLog.logger == null) NetLog.logger = new NetLogcat();   // G3: one line per 10 minutes of requests (tag UrTVNet)
+        if (CitiesMore.opener == null) { final Context app = c.getApplicationContext() != null ? c.getApplicationContext() : c; CitiesMore.opener = () -> app.getAssets().open(CitiesMore.FILE); }   // 4.3.3: read only on a search
         ZoneFix.report(pageZone());   // issue #55: the page's last word on the city's zone, after a restart too
     }
 
@@ -210,6 +212,34 @@ final class Prefs {
         return v;
     }
 
+    /** 4.3.3 a league followed from «المباريات»: a built-in one by its English name (its own file), else the catalogue's entry; false when there or full */
+    boolean addLeague(String id, String ar, String en) {
+        String[] b = en == null ? null : leagueByName(en);
+        String e = b != null ? b[0] : CatalogueLeagues.entry(id, ar, en);
+        if (e == null) return false;
+        List<String> v = leagues();
+        for (String s : v) if (sameLeague(s, id, en)) return false;
+        if (v.size() >= MAX_LEAGUES) return false;
+        v.add(e);
+        setList("leagues", v);
+        return true;
+    }
+
+    /** …and unfollowed: false when it was not followed */
+    boolean removeLeague(String id, String en) {
+        List<String> v = leagues();
+        boolean had = v.removeIf(s -> sameLeague(s, id, en));
+        if (had) setList("leagues", v);
+        return had;
+    }
+
+    /** the stored league is this id (a catalogue entry) or this built-in one (by its English name) */
+    static boolean sameLeague(String stored, String id, String en) {
+        if (id != null && id.matches("\\d{1,6}") && CatalogueLeagues.same(stored, "id" + id)) return true;
+        String[] b = en == null || en.trim().isEmpty() ? null : leagueByName(en);
+        return b != null && stored.equalsIgnoreCase(b[0]);
+    }
+
     /** 4.3.1 «البطولات الكبرى»: the big tournaments' games in the matches page and the cards (leagues/tournaments.json, one request every 30 minutes) */
     boolean tournaments() { return sp.getBoolean("tournaments", false); }
     void setTournaments(boolean v) { sp.edit().putBoolean("tournaments", v).apply(); }
@@ -262,7 +292,7 @@ final class Prefs {
     // The card beside the clock: value sent to the page (#panel=), Arabic label
     static final String[][] PANELS = {
         {"shows", "جديد المسلسلات"}, {"prayers", "مواقيت الصلاة اليوم"}, {"forecast", "طقس الأيام القادمة"}, {"hourly", "طقس الساعات القادمة"}, {"prayerrow", "الصلوات في صف"}, {"nextprayer", "الصلاة القادمة"},
-        {"matches", "مباريات فرقك القادمة"}, {"verse", "آية أو حديث اليوم"}, {"wisdom", "حكمة اليوم"},
+        {"matches", "مباريات فرقك القادمة"}, {"nextmatch", "مباراة فريقك القادمة"}, {"verse", "آية أو حديث اليوم"}, {"wisdom", "حكمة اليوم"},
         {"adhkar", "أذكار الصباح والمساء"}, {"stocks", "الأسهم"}, {"tasks", "المهام"}, {"year", "السنة"},
         {"smart", "البطاقة الذكية"}, {"today", "يومك"}, {"album", "ألبوم صوري"},
         {"none", "لا شيء"},
@@ -299,6 +329,7 @@ final class Prefs {
         {"prayerrow", "الخمس صلوات في صف واحد، والجاية مضيئة"},
         {"nextprayer", "سطر واحد: الصلاة الجاية ووقتها وكم باقي لها"},
         {"matches", "مباريات الأسبوع ونتائج آخر يوم لفرقك، وكل مباراة بسطر واحد"},
+        {"nextmatch", "مباراة فرقك الجاية بس، وتحتها آخر ٥ مواجهات بين الفريقين"},
         {"verse", "آية يوم، وحديث صحيح من الكتب الستة اليوم اللي بعده، ومعه مصدره"},
         {"wisdom", "مثل أو قول عربي معروف مع مصدره"},
         {"adhkar", "من الفجر للظهر أذكار الصباح، ومن العصر للمغرب أذكار المساء"},
@@ -316,6 +347,8 @@ final class Prefs {
         {"glass1", "زجاجية ضبابية فوق الصورة"},
         {"dark3", "داكنة بإطار ذهبي داخلي ومعيّن على الحافتين"},
         {"glass3", "زجاجية بإطار ذهبي داخلي ومعيّن على الحافتين"},
+        {"boxes", "مواقيت اليوم مربعات في صف، والصلاة القادمة مضيئة وتحتها كم باقي"},
+        {"classic", "مواقيت اليوم في صف والمباريات والعدّ التنازلي كما كانت قبل ٤٫٤"},
     };
 
     static String about(String[][] table, String v) {
@@ -472,6 +505,24 @@ final class Prefs {
         return mb > 0 && mb < MID_MB ? RAM_MID : RAM_NORMAL;
     }
 
+    /** A14 (4.3.3): a TV with this many cores or fewer is LOW whatever its memory (the same number as the home's Ram.LITE_CORES) */
+    static final int LITE_CORES = 2;
+
+    /** The rule with the cores (0 = not known): few cores is LOW too. */
+    static int ramTier(boolean lowRamFlag, long mb, int cores) { return cores > 0 && cores <= LITE_CORES ? RAM_LOW : ramTier(lowRamFlag, mb); }
+
+    /**
+     * A14 «الوضع الخفيف»: the person's choice over what the TV found: "on" is LOW (every cut: fewer animations, slower refresh, smaller photos, no blur),
+     * "off" is never LOW (a TV found LOW keeps MID's cheap memory cuts, nothing the person sees), "auto" (the default) what was found. The same rule as the home's Ram.liteTier.
+     */
+    static int liteTier(int found, String lite) { return "on".equals(lite) ? RAM_LOW : "off".equals(lite) ? Math.max(found, RAM_MID) : found; }
+
+    static final String[] LITE = {"auto", "on", "off"};
+    String lite() { String v = sp.getString("lite", "auto"); return "on".equals(v) || "off".equals(v) ? v : "auto"; }
+    void setLite(String v) { sp.edit().putString("lite", "on".equals(v) || "off".equals(v) ? v : "auto").apply(); ramTier = -1; }
+    /** what the settings row says */
+    static String liteLabel(String v, boolean lowNow) { return "on".equals(v) ? "مفعّل" : "off".equals(v) ? "مطفأ" : lowNow ? "تلقائي، ومفعّل على هذا التلفزيون" : "تلقائي، ومطفأ على هذا التلفزيون"; }
+
     static int ramNamed(String n) { return "low".equals(n) ? RAM_LOW : "mid".equals(n) ? RAM_MID : "normal".equals(n) ? RAM_NORMAL : -1; }
 
     /** This TV's tier, read once (a forced tier from `saver.sh ramtier` wins, from the next start of the app). The one place that decides. */
@@ -479,10 +530,12 @@ final class Prefs {
         if (ramTier < 0) {
             boolean flag = false;
             try { flag = ((android.app.ActivityManager) c.getSystemService(Context.ACTIVITY_SERVICE)).isLowRamDevice(); } catch (RuntimeException ignored) { }
-            int t = ramTier(flag, ramMb(c));
+            int t = ramTier(flag, ramMb(c), Runtime.getRuntime().availableProcessors());
             try {
-                int f = ramNamed(c.getSharedPreferences("settings", Context.MODE_PRIVATE).getString("ramtier", ""));
-                if (f >= 0) t = f;
+                android.content.SharedPreferences s = c.getSharedPreferences("settings", Context.MODE_PRIVATE);
+                t = liteTier(t, s.getString("lite", "auto"));   // A14 «الوضع الخفيف»
+                int f = ramNamed(s.getString("ramtier", ""));
+                if (f >= 0) t = f;   // the tester's switch wins
             } catch (RuntimeException ignored) { }
             ramTier = t;
         }
@@ -553,6 +606,15 @@ final class Prefs {
      * the one `dock.sh backsaver` sets) and moves it when this one changes (Dock.followBackSaver); #backsaver=1 only while on.
      */
     boolean backSaver() { return sp.getBoolean("backSaver", false); }
+    /** 4.3.3 «المباريات المنتهية» on the football home: shown (the default, as always) or hidden; #fbhide=1 only while hidden */
+    boolean fbHideDone() { return sp.getBoolean("fbHideDone", false); }
+    /** 4.3.3 «التاريخ بالأرقام»: the dates in words (the default, as always) or as day/month/year, Hijri and Gregorian; #datenum=1 only while on. The digits stay «الأرقام»'s. */
+    boolean dateNum() { return sp.getBoolean("dateNum", false); }
+    /** 4.3.3 «زر البحث»: the home's round button to the TV's own search inside the apps; off by default, #searchpill=1 only while on */
+    boolean searchPill() { return sp.getBoolean("searchPill", false); }
+    void setSearchPill(boolean v) { sp.edit().putBoolean("searchPill", v).apply(); }
+    void setDateNum(boolean v) { sp.edit().putBoolean("dateNum", v).apply(); }
+    void setFbHideDone(boolean v) { sp.edit().putBoolean("fbHideDone", v).apply(); }
     void setBackSaver(boolean v) { sp.edit().putBoolean("backSaver", v).apply(); }
 
     /** «تبديل الآية والحديث»: the verse-or-hadith card once a day (default, as always) or every 3 minutes (QuoteEvery); #versemin=3 only then. */
@@ -577,6 +639,22 @@ final class Prefs {
 
     /** «تعديل وقت الصلاة» (default off): the five prayers moved by their own minutes, −20..20 (PrayerAdj); sent to the page and the home screen as #adj=. */
     boolean prayerAdjOn() { return sp.getBoolean("prayerAdjOn", false); }
+
+    /** 4.3.3 today's published prayer corrections for the city (PrayerFix), from the kept copy; fetched again in the background twice a day */
+    int[] prayerFix() {
+        ContentFile.refresh(ctx, PrayerFix.PATH, PrayerFix.NAME, 12 * 3600_000L);
+        java.text.SimpleDateFormat f = new java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.ROOT);
+        f.setTimeZone(java.util.TimeZone.getTimeZone("UTC"));   // the city's day, by ZoneFix's offset for its zone
+        long now = System.currentTimeMillis();
+        return PrayerFix.forDay(ContentFile.read(ctx, PrayerFix.NAME), cityCountry(), city()[0], f.format(new java.util.Date(now + ZoneFix.offset(cityTz(), now))));
+    }
+
+    /** the adj= of the fragment: the person's own minutes where set, the published correction elsewhere; nothing when both are none */
+    String prayerAdjFragment() {
+        int[] fix = prayerFix(), own = prayerAdj();
+        boolean on = prayerAdjOn();
+        return PrayerAdj.fragment(on || PrayerAdj.any(fix), PrayerFix.combine(on, own, fix));
+    }
     void setPrayerAdjOn(boolean v) { sp.edit().putBoolean("prayerAdjOn", v).apply(); }
     int[] prayerAdj() { return PrayerAdj.decode(sp.getString("prayerAdj", "")); }
     void setPrayerAdj(int[] v) { sp.edit().putString("prayerAdj", PrayerAdj.encode(v)).apply(); }
@@ -662,12 +740,13 @@ final class Prefs {
             + HomeExit.fragment(homeExit())
             + (occasion() ? "" : "&occasion=0") + (nightDim() ? "" : "&nightdim=0") + (tasksPill() ? "" : "&taskspill=0")
             + (backSaver() ? "&backsaver=1" : "")
+            + (fbHideDone() ? "&fbhide=1" : "") + (dateNum() ? "&datenum=1" : "") + (searchPill() ? "&searchpill=1" : "")   // the football home without the games that ended
             + "&cardstyle=" + cardStyle()
             + "&adhanbar=" + (adhanBar() ? "1" : "0")
             + "&yearstrip=" + (yearStrip() ? "1" : "0")
             + (sunrise() ? "&sunrise=1" : "") + (prayerBar() ? "&prayerbar=1" : "") + (wxMore() ? "&wxmore=1" : "")
             + ("levant".equals(months()) ? "&months=levant" : "")
-            + PrayerAdj.fragment(prayerAdjOn(), prayerAdj())
+            + prayerAdjFragment()   // 4.3.3: the person's own minutes, and a published correction where they set none (PrayerFix)
             + PrayerMethod.fragment(prayerMethod(), cityCountry(), cityTz())
             + HijriOffset.fragment(hijriOffset())
             + "&national=" + national()
@@ -729,6 +808,13 @@ final class Prefs {
     /** «صور شاشة التوقف»: the packs that are on (ids), and whether our own set («صورنا», on by default) is. Sent as #packs=id:count,... and #ours=0 only when set, so the fragment is as before. */
     java.util.Set<String> packsOn() { return PhotoPacks.parseOn(sp.getString("packsOn", "")); }
     void setPacksOn(java.util.Set<String> v) { sp.edit().putString("packsOn", PhotoPacks.joinOn(v)).apply(); }
+    /** 4.3.3 «النسبة»: each pack's share of the packs' turns in percent (none: by its size, as always) */
+    java.util.Map<String, Integer> packShares() { return PhotoPacks.parseShares(sp.getString("packShares", "")); }
+    void setPackShare(String id, int pct) {
+        java.util.Map<String, Integer> m = packShares();
+        if (pct > 0) m.put(id, pct); else m.remove(id);
+        sp.edit().putString("packShares", PhotoPacks.joinShares(m)).apply();
+    }
     boolean oursOn() { return sp.getBoolean("oursOn", true); }
     void setOursOn(boolean v) { sp.edit().putBoolean("oursOn", v).apply(); }
 
@@ -754,7 +840,7 @@ final class Prefs {
         java.util.Map<String, Integer> have = PackStore.installed(ctx);
         // «صورنا» off counts only while a pack that is on is on the TV: a pack deleted meanwhile brings ours back (nothing is left blank)
         boolean ours = oursOn() || !PhotoPacks.mayTurnOursOff(packsOn(), have);
-        return PhotoPacks.fragment(packsOn(), have) + (ours ? "" : "&ours=0");
+        return PhotoPacks.fragment(packsOn(), have, packShares()) + (ours ? "" : "&ours=0");
     }
 
     /** the home's own choice for «صوري»: "mix" (with ours), "only", "off"; null (never chosen) follows the screensaver's own mode, as before */
@@ -1064,11 +1150,93 @@ final class Prefs {
     boolean updateBell() { return sp.getBoolean("updateBell", true); }
     /** «أكمل المشاهدة» under the home screen's favourites (default on; it shows only once the home app may read the TV's Watch Next list). */
     /** «المظهر ← الواجهة»: the home's layout, classic (the default, the home as it always was) or football (docs/PROPOSALS-NOV2.md §1) */
-    static final String[] HOME_LAYOUTS = {"classic", "football"};
-    static final String[] HOME_LAYOUT_NAMES = {"العادية", "كرة القدم"};
+    /**
+     * 4.4 the look in three independent choices (the owner): «التخطيط» (our layout, the default, or the football home), «الخلفية» (the photos as always,
+     * or the scenes) and «الساعة» (plain, or glass behind the photo's scenery). The presets «شكل تلفزيونك» (the default) and «شكل كنبة» set the three.
+     * A layout «scenes» kept by a test build of 4.3.3 reads as our layout with the scenes and the glass clock.
+     */
+    static final String[] HOME_LAYOUTS = {"classic", "couch", "football"};
+    static final String[] HOME_LAYOUT_NAMES = {"تلفزيونك", "كنبة", "كرة القدم"};
+    static final String[] HOME_BGS = {"photos", "scenes"};
+    static final String[] HOME_BG_NAMES = {"صوري وحزم الصور", "الآفاق"};
+    static final String[] HOME_CLOCKS = {"plain", "glass"};
+    static final String[] HOME_CLOCK_NAMES = {"عادية", "زجاجية خلف الصورة"};
+    /** 4.4 «شكل التطبيقات»: how the focused app of the tray shows: a ring in the look's colour and its name above the tray (as always), or larger with a soft shadow, its name under it */
+    static final String[] HOME_APPS = {"frame", "zoom"};
+    static final String[] HOME_APPS_NAMES = {"إطار", "تكبير وظل"};
+    /** the presets: name, layout, background, clock, the apps' focus */
+    static final String[][] LOOKS = {{"urtv", "شكل تلفزيونك", "classic", "photos", "plain", "frame"}, {"couch", "شكل كنبة", "couch", "scenes", "glass", "zoom"}};
+    private boolean oldScenes() { return "scenes".equals(sp.getString("homeLayout", "")); }
     String homeLayout() { String v = sp.getString("homeLayout", HOME_LAYOUTS[0]); return java.util.Arrays.asList(HOME_LAYOUTS).contains(v) ? v : HOME_LAYOUTS[0]; }
-    void setHomeLayout(String v) { if (java.util.Arrays.asList(HOME_LAYOUTS).contains(v)) sp.edit().putString("homeLayout", v).apply(); }
+    void setHomeLayout(String v) {
+        if (!java.util.Arrays.asList(HOME_LAYOUTS).contains(v)) return;
+        boolean was = oldScenes();
+        if (was) sp.edit().putString("homeBg", homeBg()).putString("homeClock", homeClock()).apply();   // the old value's scenes and clock kept as their own choices
+        sp.edit().putString("homeLayout", v).apply();
+    }
     static String homeLayoutLabel(String v) { int i = java.util.Arrays.asList(HOME_LAYOUTS).indexOf(v); return HOME_LAYOUT_NAMES[Math.max(0, i)]; }
+    String homeBg() { String v = sp.getString("homeBg", oldScenes() ? "scenes" : "photos"); return java.util.Arrays.asList(HOME_BGS).contains(v) ? v : "photos"; }
+    void setHomeBg(String v) { if (java.util.Arrays.asList(HOME_BGS).contains(v)) sp.edit().putString("homeBg", v).apply(); }
+    static String homeBgLabel(String v) { int i = java.util.Arrays.asList(HOME_BGS).indexOf(v); return HOME_BG_NAMES[Math.max(0, i)]; }
+    String homeClock() { String v = sp.getString("homeClock", oldScenes() ? "glass" : "plain"); return java.util.Arrays.asList(HOME_CLOCKS).contains(v) ? v : "plain"; }
+    void setHomeClock(String v) { if (java.util.Arrays.asList(HOME_CLOCKS).contains(v)) sp.edit().putString("homeClock", v).apply(); }
+    static String homeClockLabel(String v) { int i = java.util.Arrays.asList(HOME_CLOCKS).indexOf(v); return HOME_CLOCK_NAMES[Math.max(0, i)]; }
+    String appsStyle() { String v = sp.getString("appsStyle", "frame"); return java.util.Arrays.asList(HOME_APPS).contains(v) ? v : "frame"; }
+    void setAppsStyle(String v) { if (java.util.Arrays.asList(HOME_APPS).contains(v)) sp.edit().putString("appsStyle", v).apply(); }
+    static String appsStyleLabel(String v) { int i = java.util.Arrays.asList(HOME_APPS).indexOf(v); return HOME_APPS_NAMES[Math.max(0, i)]; }
+    /** the preset the three choices match ("urtv", "couch"), or "" (custom) */
+    String look3() {
+        for (String[] l : LOOKS) if (l[2].equals(homeLayout()) && l[3].equals(homeBg()) && l[4].equals(homeClock()) && l[5].equals(appsStyle())) return l[0];
+        return "";
+    }
+    void setLook3(String key) {
+        for (String[] l : LOOKS) if (l[0].equals(key)) { sp.edit().putString("homeLayout", l[2]).putString("homeBg", l[3]).putString("homeClock", l[4]).putString("appsStyle", l[5]).apply(); return; }
+    }
+    /**
+     * 4.4 the owner: «شكل كنبة» is one switch (off by default). On: the Couch preset at once, and the person's own four values kept; off: those put
+     * back exactly. A row changed while on leaves it on, and its line says «مخصّص». A TV that has the couch values with no switch stored reads on.
+     */
+    boolean couchOn() { return sp.contains("couchOn") ? sp.getBoolean("couchOn", false) : "couch".equals(look3()); }
+    void setCouch(boolean on) {
+        if (on == couchOn() && sp.contains("couchOn")) return;
+        if (on) {
+            sp.edit().putString("couchBefore", homeLayout() + "," + homeBg() + "," + homeClock() + "," + appsStyle()).putBoolean("couchOn", true).apply();
+            setLook3("couch");
+            return;
+        }
+        String[] b = sp.getString("couchBefore", "").split(",");
+        if (b.length == 4) { setHomeLayout(b[0]); setHomeBg(b[1]); setHomeClock(b[2]); setAppsStyle(b[3]); } else setLook3("urtv");
+        sp.edit().putBoolean("couchOn", false).remove("couchBefore").apply();
+    }
+    /** the switch's line: off, on as the preset, or on with a row changed since («مخصّص») */
+    String couchLabel() {
+        if (!couchOn()) return "متوقف";
+        return "couch".equals(look3()) ? "مفعّل (التخطيط كنبة، الخلفية الآفاق، الساعة زجاجية، التطبيقات تكبير وظل؛ إيقافه يرجّع اختياراتك)"
+            : "مفعّل (مخصّص: غيّرت صفًا من الأربعة؛ إيقافه يرجّع اختياراتك قبل التشغيل)";
+    }
+    static String look3Label(String key) {
+        for (String[] l : LOOKS) if (l[0].equals(key)) return l[1];
+        return "مخصّص";
+    }
+    /** 4.3.3 «حزم الآفاق» (the scene home): «آفاق السعودية» is in the app, «آفاق عالمية» is downloaded when chosen; none chosen is the Saudi pack */
+    static final String[][] SCENE_PACKS = {{"saudi", "آفاق السعودية"}, {"couch", "آفاق عالمية"}};
+    List<String> scenePacks() {
+        List<String> out = new ArrayList<>();
+        for (String s : list("scenePacks")) for (String[] k : SCENE_PACKS) if (k[0].equals(s) && !out.contains(s)) out.add(s);
+        if (out.isEmpty()) out.add("saudi");
+        return out;
+    }
+    void setScenePacks(List<String> v) { setList("scenePacks", v); }
+    /** «بقاء كل أفق» in seconds (20 the default); «الأفق يتبع الوقت» (the night scenes from Maghrib to Fajr) and «الأفق يتبع الطقس» (the fog scenes in fog): off by default */
+    static final String[] SCENE_STAYS = {"10", "20", "60", "300"};
+    static final String[] SCENE_STAY_NAMES = {"١٠ ثوانٍ", "٢٠ ثانية", "دقيقة واحدة", "خمس دقائق"};
+    String sceneStay() { String v = sp.getString("sceneStay", "20"); return java.util.Arrays.asList(SCENE_STAYS).contains(v) ? v : "20"; }
+    void setSceneStay(String v) { if (java.util.Arrays.asList(SCENE_STAYS).contains(v)) sp.edit().putString("sceneStay", v).apply(); }
+    static String sceneStayLabel(String v) { int i = java.util.Arrays.asList(SCENE_STAYS).indexOf(v); return SCENE_STAY_NAMES[Math.max(0, i)]; }
+    boolean sceneByTime() { return sp.getBoolean("sceneByTime", false); }
+    void setSceneByTime(boolean on) { sp.edit().putBoolean("sceneByTime", on).apply(); }
+    boolean sceneByWeather() { return sp.getBoolean("sceneByWeather", false); }
+    void setSceneByWeather(boolean on) { sp.edit().putBoolean("sceneByWeather", on).apply(); }
     /** «تطبيقات في الشريط»: how many favourites the home's tray shows whole at once, 5 (the default, as always) to 10, or "all" (up to 10, never a scroll) */
     static final String[] FAV_BARS = {"5", "6", "7", "8", "9", "10", "all"};
     /** 9 and 10 were taken as 8 for a while (step 28); the owner wants them whole again (4.3.1), so a saved word stays as it is */

@@ -136,13 +136,90 @@ final class PhotoPacks {
      * The page's #packs=: "id:count" for each pack that is on AND on the TV (a pack not downloaded gives the page nothing to ask for),
      * comma separated; nothing when there is none, so the fragment is as it was. installed maps id to its number of photos.
      */
-    static String fragment(Set<String> on, Map<String, Integer> installed) {
-        StringBuilder sb = new StringBuilder();
+    static String fragment(Set<String> on, Map<String, Integer> installed) { return fragment(on, installed, null); }
+
+    /**
+     * 4.3.3 «نسبة كل مجموعة»: with shares (pack id -> percent of the packs' photos, 10 to 90; a pack without one shares what is left by its
+     * size) a pack is named in #packs= as many times as reps() says, so the page (any version: it takes each entry as photos to rotate)
+     * shows it that much more often. No shares: the fragment is exactly what it was.
+     */
+    static String fragment(Set<String> on, Map<String, Integer> installed, Map<String, Integer> shares) {
+        List<String> ids = new ArrayList<>();
+        List<Integer> counts = new ArrayList<>();
         for (String id : on) {
             Integer n = installed.get(id);
-            if (n != null && n > 0 && validId(id)) sb.append(sb.length() == 0 ? "" : ",").append(id).append(':').append(n);
+            if (n != null && n > 0 && validId(id)) { ids.add(id); counts.add(n); }
         }
+        int[] pct = new int[ids.size()], cnt = new int[ids.size()];
+        for (int i = 0; i < ids.size(); i++) { cnt[i] = counts.get(i); Integer s = shares == null ? null : shares.get(ids.get(i)); pct[i] = s == null ? 0 : s; }
+        int[] reps = reps(cnt, pct, PACKS_MAX);   // the page reads 12 names at most
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < ids.size(); i++)
+            for (int r = 0; r < reps[i]; r++) sb.append(sb.length() == 0 ? "" : ",").append(ids.get(i)).append(':').append(cnt[i]);
         return sb.length() == 0 ? "" : "&packs=" + sb;
+    }
+
+    /** the shares a pack may be given, in percent; 0 is «تلقائي» (by its size, as always) */
+    static final int[] SHARES = {0, 10, 20, 30, 40, 50, 60, 70, 80, 90};
+
+    /**
+     * How many times each pack is named so its photos take about its share of the packs' turns: counts[i] photos, pct[i] its percent (0: by
+     * its size, from what the others leave). Every pack at least once, at most {@code max} names in all (the page reads 12). All 0: once each.
+     */
+    static int[] reps(int[] counts, int[] pct, int max) {
+        int n = counts.length;
+        int[] one = new int[n];
+        java.util.Arrays.fill(one, 1);
+        int given = 0, autoPhotos = 0;
+        for (int i = 0; i < n; i++) { given += Math.max(0, pct[i]); if (pct[i] <= 0) autoPhotos += counts[i]; }
+        if (given == 0 || n < 2 || n > max) return one;
+        double[] want = new double[n];
+        double left = Math.max(0, 100 - given), total = 0;
+        for (int i = 0; i < n; i++) {
+            want[i] = pct[i] > 0 ? pct[i] : autoPhotos > 0 ? left * counts[i] / autoPhotos : 0;
+            total += want[i];
+        }
+        if (total <= 0) return one;
+        int[] best = one;
+        double bestErr = err(counts, one, want, total);
+        for (double scale = 0.05; scale <= 400; scale *= 1.05) {   // names per «percent per photo»: every scale that fits in max, the closest kept
+            int[] r = new int[n];
+            int sum = 0;
+            for (int i = 0; i < n; i++) { r[i] = (int) Math.max(1, Math.round(want[i] / counts[i] * scale)); sum += r[i]; }
+            if (sum > max) break;
+            double e = err(counts, r, want, total);
+            if (e < bestErr - 1e-9) { bestErr = e; best = r; }
+        }
+        return best;
+    }
+
+    /** the largest gap, in percent, between each pack's share of the turns with these names and the one wanted */
+    private static double err(int[] counts, int[] reps, double[] want, double total) {
+        double all = 0, worst = 0;
+        for (int i = 0; i < counts.length; i++) all += (double) counts[i] * reps[i];
+        for (int i = 0; i < counts.length; i++) worst = Math.max(worst, Math.abs(100.0 * counts[i] * reps[i] / all - 100.0 * want[i] / total));
+        return worst;
+    }
+
+    /** "nature:70,ksa-cities:30" <-> {nature=70, ksa-cities=30}; anything not a valid id with one of SHARES (but 0) is left out */
+    static Map<String, Integer> parseShares(String s) {
+        Map<String, Integer> out = new java.util.LinkedHashMap<>();
+        if (s == null) return out;
+        for (String kv : s.split(",")) {
+            String[] p = kv.split(":");
+            if (p.length != 2 || !validId(p[0])) continue;
+            try {
+                int v = Integer.parseInt(p[1]);
+                if (v > 0 && java.util.Arrays.binarySearch(SHARES, v) >= 0) out.put(p[0], v);
+            } catch (NumberFormatException ignored) { }
+        }
+        return out;
+    }
+
+    static String joinShares(Map<String, Integer> m) {
+        StringBuilder sb = new StringBuilder();
+        for (Map.Entry<String, Integer> e : m.entrySet()) if (e.getValue() != null && e.getValue() > 0) sb.append(sb.length() == 0 ? "" : ",").append(e.getKey()).append(':').append(e.getValue());
+        return sb.toString();
     }
 
     /** «صورنا» may be turned off only while a pack that is on and downloaded gives the screen something else to show */

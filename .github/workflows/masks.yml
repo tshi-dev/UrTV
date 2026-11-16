@@ -1,0 +1,52 @@
+name: Photo cut-outs for the glass clock
+
+# 4.4 «الساعة: زجاجية خلف الصورة»: the cut-out (the scenery, the sky transparent) of each of our photos checked by eye
+# (.github/tools/photo_masks_ok.txt), made here, never on a TV, and put on the data-masks branch to be copied into urtv-data masks/.
+# «الحرمين» is never cut. Run by hand with review: true to get every cut-out that passes and its review sheet as an artifact.
+on:
+  workflow_dispatch:
+    inputs:
+      review:
+        description: "every cut-out that passes, with the review sheet (an artifact; nothing pushed)"
+        type: boolean
+        default: false
+  push:
+    branches: [master, next]
+    paths: ['.github/tools/photo_masks.py', '.github/tools/photo_masks_ok.txt', 'photos/packs.json']
+
+permissions:
+  contents: write
+
+jobs:
+  masks:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - run: pip install numpy scipy opencv-python-headless Pillow
+      - name: Review sheet
+        if: ${{ inputs.review }}
+        run: python3 -I .github/tools/photo_masks.py review --work "$RUNNER_TEMP/work" --all
+      - uses: actions/upload-artifact@v4
+        if: ${{ inputs.review }}
+        with:
+          name: masks-review
+          path: review
+      - name: Cut-outs
+        if: ${{ !inputs.review }}
+        run: python3 -I .github/tools/photo_masks.py "$RUNNER_TEMP/masks" --work "$RUNNER_TEMP/work"
+      - name: Push to data-masks
+        if: ${{ !inputs.review }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          # a work branch writes its own branch, so it never changes the one urtv-data is copied from
+          B=data-masks; case "$GITHUB_REF_NAME" in master|next) ;; *) B=data-masks-work ;; esac
+          if git fetch -q origin "$B"; then git checkout -q -B "$B" FETCH_HEAD; else git checkout -q --orphan "$B"; fi
+          git rm -rfq --cached . >/dev/null 2>&1 || true
+          find . -mindepth 1 -maxdepth 1 ! -name .git -exec rm -rf {} +
+          mkdir masks && cp -r "$RUNNER_TEMP/masks/." masks/
+          git add masks
+          git diff --cached --quiet && { echo "no change"; exit 0; }
+          git commit -qm "Photo cut-outs for the glass clock"
+          git push origin "$B"

@@ -20,6 +20,8 @@ final class FavBar {
     static final int SHOWN = 5;
     /** the focused tile: 6 up and 1.08 from its centre, a 3 px ring, in 150 ms; a tile picked up to move: a little more, still inside */
     static final float FOCUS_SCALE = 1.08f, LIFTED_SCALE = 1.12f;
+    /** 4.4 «شكل التطبيقات: تكبير وظل»: the focused app's size (the ring's look is FOCUS_SCALE) */
+    static final float ZOOM_SCALE = 1.14f;
     static final int LIFT = 6, RING = 3, MS = 150;
     /** the app's name: 30 px, its box 56 above the tray's top (about 16 px between its baseline and the tray) */
     static final int NAME_PX = 30, NAME_GAP = 16;

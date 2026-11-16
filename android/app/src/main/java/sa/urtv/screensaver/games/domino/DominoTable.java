@@ -66,6 +66,19 @@ public final class DominoTable {
         return game.mustDraw(p) ? DominoGame.DRAW : game.mustPass(p) ? DominoGame.PASS : -1;
     }
 
+    /** A phone chose: the hand's tile `index` (it must fit), or BUTTON for the draw / pass button when one is on offer. The focus goes there; false when that cannot be now. */
+    public boolean select(int index) {
+        if (state != State.TURN) return false;
+        if (index == BUTTON) { if (button() == -1) return false; focus = BUTTON; return true; }
+        if (!fits(index)) return false;
+        focus = index; return true;
+    }
+    /** A phone chose the end (DominoGame.LEFT or RIGHT) while the table asks which. */
+    public boolean selectEnd(int e) {
+        if (state != State.CHOOSE_END || (e != DominoGame.LEFT && e != DominoGame.RIGHT)) return false;
+        end = e; return true;
+    }
+
     /** Left (-1) or right (+1) in the hand's order: to the next tile that fits; in CHOOSE_END the end. */
     public int move(int d) {
         if (d == 0) return NOTHING;

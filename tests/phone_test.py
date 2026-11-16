@@ -104,7 +104,8 @@ check("the page's one script carries the nonce the server fills in", page.count(
 check("the page sends the session in X-UrTV-Session and the cookie goes with it", "'X-UrTV-Session'" in page and "credentials: 'same-origin'" in page, "")
 check("the page takes the token out of the address bar at once", "history.replaceState" in page and page.index("history.replaceState") < page.index("pair({ token: h })"), "")
 api = text(PHONE / "PhoneApi.java")
-served = set(re.findall(r'case "(/api/[a-z_/]+)"', api)) | {"/api/state"} | ({"/api/icon/"} if 'startsWith("/api/icon/")' in api else set())
+served = set(re.findall(r'case "(/api/[a-z_/]+)"', api)) | {"/api/state"} | ({"/api/icon/"} if 'startsWith("/api/icon/")' in api else set()) \
+    | ({"/api/audio_piece"} if "r.path.equals(PhoneServer.AUDIO_PATH)" in api and 'AUDIO_PATH = "/api/audio_piece"' in text(PHONE / "PhoneServer.java") else set())
 # «محفظتي»'s own page (/m): the same rules as the main page
 pf = text(ROOT / "android/launcher/src/main/assets/phone/portfolio.html")
 check("portfolio.html builds no HTML from data, has one script with the nonce, sends the session the same way",
@@ -112,10 +113,11 @@ check("portfolio.html builds no HTML from data, has one script with the nonce, s
       and pf.count("<script") == 1 and '<script nonce="__NONCE__">' in pf and "'X-UrTV-Session'" in pf and "credentials: 'same-origin'" in pf, "")
 check("portfolio.html takes the token out of the address bar before pairing, and keeps no holding (no localStorage write, the form cleared after saving)",
       pf.index("history.replaceState") < pf.index("pairToken(m[1])") and "localStorage.setItem" not in pf and "$('buys').textContent = '';" in pf, "")
-used = set(re.findall(r"['\"](/api/[a-z_/]+)['\"]", page)) | set(re.findall(r"['\"](/api/[a-z_/]+)['\"]", pf))
-check("every call of the page (and of portfolio.html) is an endpoint the server has, and the reverse", used == served, (used ^ served))
+au = text(ROOT / "android/launcher/src/main/assets/phone/audio.html")   # 4.4 «صوتياتي» (/a)
+used = set(re.findall(r"['\"](/api/[a-z_/]+)['\"]", page)) | set(re.findall(r"['\"](/api/[a-z_/]+)['\"]", pf)) | set(re.findall(r"['\"](/api/[a-z_/]+)['\"]", au))
+check("every call of the page (and of portfolio.html and audio.html) is an endpoint the server has, and the reverse", used == served, (used ^ served))
 check("the page says plainly what it cannot do: keys to other apps, and text outside our screens",
-      "فعّل خدمة «تلفزيونك: التحكم والكتابة من الجوال»" in page and "تحتاج أندرويد ١٣" in page and "يُكتب في حقلها بعد تفعيل خدمة إمكانية الوصول" in page and "/api/text" in page, "")
+      "فعّل خدمة «إضافات تلفزيونك»" in page and "تحتاج أندرويد ١٣" in page and "يُكتب في حقلها بعد تفعيل خدمة إمكانية الوصول" in page and "/api/text" in page, "")
 check("the page has no reset, uninstall, ADB or PIN-changing control", not re.search(r"reset|uninstall|adb|إعادة ضبط|حذف التطبيق", page, re.I), "")
 
 # ---- docs and registration
@@ -124,7 +126,7 @@ check("the tests are registered in tests/run.sh", "tests/phone_test.py" in runsh
 features = text(ROOT / "docs/FEATURES.md")
 settings = text(ROOT / "docs/SETTINGS.md")
 check("FEATURES.md has «تحكم من الجوال» and says honestly what the phone page can't do", "تحكم من الجوال" in features and "لا يقدر" in features.split("تحكم من الجوال", 1)[1], "")
-check("SETTINGS.md has a row for it", "تحكم من الجوال" in settings, "")
+check("SETTINGS.md has a row for it", ("تحكم من الجوال" in settings or "الجوالات المسموح لها" in settings), "")
 
 # ---- the family PIN: the phone asks the same store as the TV's keypad
 activity = text(JAVA / "PhoneActivity.java")
@@ -162,7 +164,7 @@ check("the family summary is read only and never carries the PIN", "public stati
 check("the phone has no way to change the family lock, reset, uninstall or reach ADB: no such call anywhere in the phone package",
       not re.search(r"setLocked|setKids|setAllowed|adbSet|adbReset|adbLock|turnOff\(|\.uninstall\(|deletePackage|uninstallPackage|Runtime\.getRuntime|ProcessBuilder|\"adb\"|pm clear|factory", "".join(text(p) for p in PHONE.glob("*.java"))), "")
 check("Back, Home and the arrows reach every app through our accessibility services when one is on (RemoteNav says which call; our own screens keep dispatchKeyEvent): see tests/remote_nav_test.py",
-      'PhoneApps.pressKey(key)' in actions_src and "performGlobalAction(st.code)" in text(JAVA / "SleepService.java") and "GLOBAL_BACK = 1" in text(JAVA / "RemoteNav.java") and "a.dispatchKeyEvent" in actions_src)
+      'PhoneApps.pressKey(key)' in actions_src and "performGlobalAction(st.code)" in text(ROOT / "android/extras/src/main/java/sa/urtv/home/ExtrasA11yService.java") and "GLOBAL_BACK = 1" in text(JAVA / "RemoteNav.java") and "a.dispatchKeyEvent" in actions_src)
 check("the adhan stop and the sleep timer go through the app's own code", "MusicService.stopAdhan(c)" in text(til / "PhoneBridge.java") and "SleepTimer.start(" in apps_src and "SleepTimer.MINUTES" in apps_src)
 check("the favourites are looked up at most every few seconds and cleared on a package or favourites change; an icon comes from the cache after that check and expires",
       "APPS_TTL_MS = 5_000" in apps_src and "public static synchronized void invalidate()" in apps_src and "PhoneApps.invalidate();" in main_src and main_src.count("PhoneApps.invalidate();") == 2

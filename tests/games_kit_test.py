@@ -17,12 +17,12 @@ def check(what, ok, extra=""):
 def src(name): return (APP / name).read_text(encoding="utf-8")
 def code(s): return re.sub(r"/\*.*?\*/|//[^\n]*", "", s, flags=re.S)
 
-KIT = ["GameRegistry", "GameScore", "GameChips", "GameClock", "GameDataCheck"]   # no Android in these
+KIT = ["GameRegistry", "GameScore", "GameChips", "GameClock", "GameDataCheck", "SunPos", "GameNames"]   # no Android in these
 ENGINES = ["KhanatData", "KhanatEngine", "KhanatLayout", "MissingWord", "games/domino/Tile", "games/domino/DominoGame", "games/domino/DominoBot", "games/domino/Snake", "games/domino/DominoTable"]                           # each game's rules and data: no Android either
 if not shutil.which("javac"):
     print("SKIP games kit: no javac"); sys.exit(1)
 with tempfile.TemporaryDirectory() as tmp:
-    c = subprocess.run(["javac", "-nowarn", "-d", tmp, *(str(APP / f"{n}.java") for n in KIT + ENGINES), str(APP / "MiniJson.java"), str(ROOT / "tests/GamesKitTest.java")], capture_output=True, text=True)
+    c = subprocess.run(["javac", "-nowarn", "-d", tmp, *(str(APP / f"{n}.java") for n in KIT + ENGINES), str(APP / "MiniJson.java"), str(APP / "DigitsText.java"), str(ROOT / "tests/GamesKitTest.java")], capture_output=True, text=True)
     check("the kit's rules and every game's engine compile on a plain JVM (no Android in them)", c.returncode == 0, c.stderr[-800:])
     if c.returncode == 0:
         r = subprocess.run(["java", "-cp", tmp, "sa.urtv.screensaver.GamesKitTest", str(ROOT / "assets/games/khanat.json"), str(ROOT / "assets/games/missing-word.json")], capture_output=True, text=True, timeout=120)
@@ -69,13 +69,34 @@ check("«إنهاء الجولة» while a hand-over is up drops it (cancelHandO
       "pauseCard = false; cancelHandOver(); onPauseChanged(false" in base and "protected final void cancelHandOver() { hand = 0; handDone = null;" in base and "static final int MAX = 10;" in src("GameScore.java")
       and len(re.findall(r"0xFF[0-9A-F]{6}", look.split("SIDES = {")[1].split("}")[0])) == 10 and "tiny ? 72 : small ? 90 : 142" in base and 236 + 9 * 72 + 64 <= 960 and 236 + 7 * 90 + 80 <= 960)
 check("the sounds are the existing tones (QuizSound), behind the one sound switch", "QuizSound.play(sound, which)" in base and "AudioTrack" not in base)
-check("one look, two sets (PAPER, NIGHT), decided in one place; a game writes no colour of its own",
-      "static final GameLook PAPER" in look and "NIGHT = new GameLook(true" in look and "static GameLook of(Context c)" in look
+check("one look: the paper by day and three night palettes, decided in one place (GamePrefs.nightNow); a game writes no colour of its own",
+      "static final GameLook PAPER" in look and "NIGHTS = {" in look and look.count("new GameLook(true") == 3 and "static GameLook of(Context c)" in look and "GamePrefs.nightNow(c) ? NIGHTS[GamePrefs.palette(c)] : PAPER" in look
       and all(not re.search(r"0xFF[0-9A-Fa-f]{6}", code(src(f"{g[3]}.java"))) for g in games if g[5] == "true" and g[4] == "false"))
-check("data: the kept copy must pass the published check, the starter its own; a download goes through Net with a size cap, is checked whole, written beside and renamed, the last good copy stays",
-      "published.parse(Bounded.readAll(in, GameDataCheck.BYTES_MAX))" in data and "starter.parse(Bounded.readAll(in, GameDataCheck.BYTES_MAX))" in data and "Net.get(BASE + name + \".json\", null, 15000, 20000, Math.min(maxBytes, GameDataCheck.BYTES_MAX))" in data
+check("data: the kept copy must pass the published check, the starter its own; a download goes through Net with a size cap (urtv-data first, DataHost), is checked whole, written beside and renamed, the last good copy stays",
+      "published.parse(Bounded.readAll(in, GameDataCheck.BYTES_MAX))" in data and "starter.parse(Bounded.readAll(in, GameDataCheck.BYTES_MAX))" in data and "DataHost.get(BASE + name + \".json\", 15000, 20000, Math.min(maxBytes, GameDataCheck.BYTES_MAX))" in data
       and "r.status != 200" in data and "if (published.parse(b) == null) return;" in data and "tmp.renameTo(f)" in data and "data-games/games/" in data and "org.json" not in data)
-check("nothing about the people playing is stored: only chips, the last game, the sound switch and item ids", set(re.findall(r'put\w+\("([\w.]+)"', prefs)) == {"chips.", "last", "sound", "recent."} and "FileOutputStream" not in base)
+check("nothing about the people playing is stored but the team and player names they chose to write (this TV only, «أسماء جديدة» forgets them): chips, the last game, the sound switch, the night look and its palette, the list's filter, and item ids", set(re.findall(r'put\w+\("([\w.]+)"', prefs)) == {"chips.", "last", "sound", "recent.", "night", "palette", "filter", "names."} and "FileOutputStream" not in base)
+# the night look: contrast floors in every set, the switch and the sun
+def _lum(h):
+    r, g, b = [int(h[i:i + 2], 16) / 255 for i in (0, 2, 4)]
+    f = lambda c: c / 12.92 if c <= .03928 else ((c + .055) / 1.055) ** 2.4
+    return .2126 * f(r) + .7152 * f(g) + .0722 * f(b)
+def _ratio(a, b):
+    x, y = sorted((_lum(a), _lum(b)), reverse=True)
+    return (x + .05) / (y + .05)
+sets = re.findall(r"new GameLook\((true|false), " + ", ".join([r"0xFF(\w{6})"] * 10), look)
+floors = []
+for night, paper, ink, tile, deep, tick, saff, on_saff, on_deep, ok, pink in sets:
+    floors += [_ratio(ink, paper) >= 7, _ratio(ink, tile) >= 7, _ratio(paper, ink) >= 7, _ratio(on_deep, deep) >= 4.5, _ratio(on_saff, saff) >= 4.5, _ratio(on_deep, ok) >= (3 if night == "false" else 4.5), _ratio(pink, paper) >= (3 if night == "true" else 2.5)]
+    if night == "true": floors += [_ratio(saff, paper) >= 4.5, _ratio(ok, paper) >= 3, _ratio(on_deep, pink) >= 3]
+sides_night = re.findall(r"0xFF(\w{6})", look.split("SIDES_NIGHT = {")[1].split("}")[0])
+floors += [len(set(sides_night)) == 10] + [_ratio(c, p[1]) >= 5 for c in sides_night for p in sets if p[0] == "true"]
+check("night mode: all four sets meet the contrast floors (words 7:1, words on the green block and on saffron 4.5:1, the right answer's words 4.5:1 at night, saffron and the right green 3:1 or more on the night ground) and the ten dimmed team colours are ten different ones, each at least 5:1 on every night ground",
+      len(sets) == 4 and all(floors), (len(sets), floors))
+sw = src("QuizGamesActivity.java"); pf = src("GamePrefs.java")
+check("night mode: the switch is at the top of the games list (off, on, automatic after Maghrib; the three palettes), remembered per TV; automatic uses the sun at the TV's city (no network); the shared views read the same colours",
+      "headerButtons()" in sw and "GamePrefs.setNight(this, st)" in sw and "NIGHT_AUTO = 2" in pf and "SunPos.isNight(lat, lon, System.currentTimeMillis())" in pf and "QuizActivity.applyLook(L)" in base and "applyLook(GameLook.of(this))" in src("QuizActivity.java")
+      and not re.search(r"0xFF(EFE8DA|16140F|FBF8F1|0E5A45)", code(src("QuizActivity.java")).split("static void applyLook")[1]) and "GameLook.SIDES[" not in "".join(code(src(g[3] + ".java")) for g in games if g[5] == "true" and g[3] != "QuizActivity"))
 lim = json.loads(json.dumps({"khanat": 200_000, "missing-word": 300_000}))
 check("the app's limits are docs/GAMES-DATA.md's: khanat 200 KB, 200 to 4,000 samples of 24; missing-word 300 KB, 100 to 5,000 items, 90 characters",
       "BYTES_MAX = 200_000, SAMPLES_MAX = 4000, SAMPLE_LEN = 24, PUBLISHED_MIN = 200" in src("KhanatData.java") and "BYTES_MAX = 300_000, ITEMS_MAX = 5000, PUBLISHED_MIN = 100" in src("MissingWord.java") and "TEXT_LEN = 90" in src("MissingWord.java"))
@@ -104,3 +125,16 @@ check("a key press redraws only what it changes: «خمّن الكلمة» repai
 
 check("«خمّن الكلمة»: ة ى ء take no colour of their own (only a typed letter's key does; ء is only a spelling of ا)", "int c = k < Word5Keys.LETTERS ? game.key(letterOf(k)) : 0;" in w5)
 sys.exit(1 if failed else 0)
+
+# ---- names written by the people playing (4.3.3)
+_ga = (APP / "GameActivity.java").read_text(encoding="utf-8")
+check("the base: team and player names come from what the people wrote (else the suggestions), the ready screen has a «الأسماء» button, the list has a reset, the keyboard is the TV's own",
+      'GameNames.resolve(GamePrefs.names(this, "teams")' in _ga and 'GameNames.resolve(GamePrefs.names(this, "players")' in _ga and 'S.t("الأسماء")' in _ga and 'S.t("أسماء جديدة")' in _ga and "GameNames.Pad" in _ga)
+for _g, _k in (("Khanat", "players\" : \"teams"), ("MissingWord", "teams"), ("Charades", "teams"), ("OddOne", "players"), ("DominoActivity", "teams"), ("LetterHive", "teams")):
+    _f = _g if _g.endswith("Activity") else _g + "Activity"
+    _t = (APP / f"{_f}.java").read_text(encoding="utf-8")
+    check(f"{_f}: names the kind of names it has and how many", "namesKind()" in _t and "namesCount()" in _t and _k.split('"')[0] in _t)
+check("no game builds its own default names any more: the only «لاعب %s» is the base's", sum((APP / f"{g}.java").read_text(encoding="utf-8").count('S.t("لاعب %s"') for g in ("KhanatActivity", "OddOneActivity", "MissingWordActivity", "CharadesActivity", "DominoActivity", "LetterHiveActivity")) == 0)
+
+check("the night colours start on the third palette (dim beige); a stored choice and an out-of-range value are handled in one place",
+      "PALETTE_DEFAULT = 2" in prefs and 'getInt("palette", PALETTE_DEFAULT)' in prefs and "? PALETTE_DEFAULT : v" in prefs)

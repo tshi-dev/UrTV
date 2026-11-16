@@ -12,7 +12,7 @@
 #   optimize/saver.sh find-team الهلال             a club's id (Arabic or English name): id:Name | league
 #   optimize/saver.sh teams 136013:Al-Hilal 150643:Al-Zulfi    followed teams in order (up to 20; more are left out and listed);
 #                                                  `teams none` (or `teams ""`) follows no team: the defaults (الهلال، المنتخب السعودي) go
-#   optimize/saver.sh card prayers                 beside the clock: shows prayers forecast hourly prayerrow matches verse wisdom adhkar stocks tasks year smart today album none
+#   optimize/saver.sh card prayers                 beside the clock: shows prayers forecast hourly prayerrow matches nextmatch verse wisdom adhkar stocks tasks year smart today album none
 #   optimize/saver.sh card2 hourly                 a second card beside the clock, shown only while the clock is small (clocksize small):
 #                                                  the same choices but nextprayer and the first card; card2 none = one card (default)
 #   optimize/saver.sh home-card verse,hourly,year  on the home screen (launcher): up to 3 cards, same choices and nextprayer (home only), in this order
@@ -45,7 +45,15 @@
 #   optimize/saver.sh homemine only                home screen: «صوري» with ours (mix), only them (only), none (off), or as the screensaver's (same, the default)
 #   optimize/saver.sh appearance auto              home screen: «المظهر ← الإضاءة», dark (default), light, or auto (light from sunrise until Maghrib in the city)
 #   optimize/saver.sh look navy                    all our screens: «المظهر ← الشكل», glass (default), graphite, navy, clean, or sand
-#   optimize/saver.sh homelayout football         the home screen's layout («المظهر ← الواجهة»): classic (default) or football (weather, prayers, today's games)
+#   optimize/saver.sh couch on                    4.4 «المظهر ← شكل كنبة»: on (the Couch preset; the person's own four values kept) or off (the default; they come back)
+#   optimize/saver.sh homelayout football         the home's layout («التخطيط»): classic (our layout, the default), couch (the cards in a row above the apps, the big clock centred) or football (weather, prayers, today's games)
+#   optimize/saver.sh background scenes           the home's background («الخلفية»): photos (the photos and photo packs, the default) or scenes
+#   optimize/saver.sh clock glass                 the home's clock («الساعة»): plain (the default) or glass (behind the photo's scenery where the photo has a cut-out)
+#   optimize/saver.sh appsstyle zoom              «شكل التطبيقات»: frame (the default: a ring, the name above the tray) or zoom (the focused app larger with a soft shadow, its name under it)
+#   optimize/saver.sh scenepacks saudi,couch      the scene home's packs («المظهر ← حزم الآفاق»): saudi (default, in the app), couch (downloaded once), or both
+#   optimize/saver.sh scenestay 60                how long each scene stays («بقاء كل أفق»): 10, 20 (default), 60 or 300 seconds
+#   optimize/saver.sh scenetime on                «الأفق يتبع الوقت»: the night scenes from Maghrib to Fajr, the others by day (off by default)
+#   optimize/saver.sh sceneweather on             «الأفق يتبع الطقس»: the fog scenes while the city is foggy (off by default)
 #   optimize/saver.sh adhanbar off                 the slim bar before the adhan (last 10 minutes, then until the iqama) on the screensaver and the home screen: on (default) or off
 #   optimize/saver.sh updatechannel next          TESTING ONLY (agents; no screen shows it): «تحديث تلفزيوني» reads the version and the APKs from the apk-next release instead
 #                                                  of apk-latest: next or latest (default). Same signature, newer-version and permission checks. Put it back to latest after
@@ -60,8 +68,11 @@
 #   optimize/saver.sh occasion off                 «المناسبة القادمة» at the bottom middle of the screensaver (the countdown to Ramadan and the feasts, the iftar and
 #                                                  suhoor in Ramadan): on (default) or off (the place stays empty)
 #   optimize/saver.sh nightdim off                 «تعتيم الليل», the screensaver darker at night (from 21:00, most 23:00-05:00, normal at 07:00): on (default) or off
+#   optimize/saver.sh searchpill on               home screen: a «بحث» button for the TV's own search inside the apps (off = the default; only where the TV has that search)
+#   optimize/saver.sh datenum on                  the dates as day/month/year, Hijri and Gregorian, on the screensaver and the home (off = the default: in words); the digits stay `digits`
+#   optimize/saver.sh fbhide on                   the football home: hide the games that ended (off = the default: they show with their score)
 #   optimize/saver.sh taskspill off                home screen: the «المهام» button: on (default) or off. Off removes only the button: the tasks stay, in the «المهام» card and on the phone
-#   optimize/saver.sh verse 3                      the verse-or-hadith card (card verse): day (default: a verse one day, a hadith the next) or 3 (a new one every 3 minutes)
+#   optimize/saver.sh verse 3                      the verse-or-hadith card (card verse): day (default: a verse one day, a hadith the next), 3 or 10 (a new one every 3 or 10 minutes)
 #   optimize/saver.sh versekind verse              what that card shows: both (default: a verse, then a hadith), verse (verses only) or hadith (hadith only)
 #   optimize/saver.sh genres Drama,Comedy          episodes card: Drama Comedy Action Crime Thriller Mystery
 #                                                  Science-Fiction Fantasy Adventure Romance Family History Horror
@@ -73,11 +84,12 @@
 #                                                  only on a TV with 2 GB of memory; a smaller one refuses it, 1 minute is its shortest)
 #   optimize/saver.sh idle 10                      the TV starts the screensaver after N idle minutes: 1 2 5 10 15 30
 #                                                  (the TV's own timer; left alone unless you run this)
-#   optimize/saver.sh cardstyle glass1             look of the card beside the clock: current dark1 glass1 dark3 glass3
+#   optimize/saver.sh cardstyle glass1             look of the card beside the clock: current dark1 glass1 dark3 glass3 boxes classic
 #   optimize/saver.sh national off                 the quiet green look on National Day (21-25 Sep) and Founding Day (20-24 Feb): auto (default) or off
 #   optimize/saver.sh digits latin                 numbers: hindi = ١٢٣ (default), latin = 123
 #   optimize/saver.sh hijrioffset -1               the Hijri date moved by whole days, -2..2 (default 0 = Umm al-Qura as it is): where the month
 #                                                  starts by moon sighting (Egypt, Jordan, the Levant, Morocco); the page and the home screen both follow
+#   optimize/saver.sh lite on                      «الوضع الخفيف»: auto (default: on by itself on a weak TV: little memory or 2 cores) | on | off: fewer animations, slower refresh, smaller photos, no blur
 #   optimize/saver.sh ramtier low|mid|normal|auto   a test switch: the memory tier the screensaver uses (auto = the TV's real one); counts from the next start of the app
 #   optimize/saver.sh clock24 on                   every time of day as 24-hour (١٩:٣٠) instead of 12-hour (٧:٣٠ م): on | off (default off)
 #   optimize/saver.sh seconds on                   the seconds on the screensaver's clock, small beside the minutes: on | off (default off)
@@ -252,7 +264,15 @@ case "${1:-}" in
   homemine) set1 homemine "${2:?usage: optimize/saver.sh homemine same|mix|only|off}" ;;
   appearance) set1 appearance "${2:?usage: optimize/saver.sh appearance dark|light|auto}" ;;
   look) set1 look "${2:?usage: optimize/saver.sh look glass|graphite|navy|clean|sand}" ;;
-  homelayout) set1 homelayout "${2:?usage: optimize/saver.sh homelayout classic|football}" ;;
+  homelayout) set1 homelayout "${2:?usage: optimize/saver.sh homelayout classic|couch|football}" ;;
+  couch)      set1 couch "${2:?usage: optimize/saver.sh couch on|off}" ;;
+  background) set1 background "${2:?usage: optimize/saver.sh background photos|scenes}" ;;
+  clock)      set1 clock "${2:?usage: optimize/saver.sh clock plain|glass}" ;;
+  appsstyle)  set1 appsstyle "${2:?usage: optimize/saver.sh appsstyle frame|zoom}" ;;
+  scenepacks) set1 scenepacks "${2:?usage: optimize/saver.sh scenepacks saudi|couch|saudi,couch}" ;;
+  scenestay)  set1 scenestay "${2:?usage: optimize/saver.sh scenestay 10|20|60|300}" ;;
+  scenetime)  set1 scenetime "${2:?usage: optimize/saver.sh scenetime on|off}" ;;
+  sceneweather) set1 sceneweather "${2:?usage: optimize/saver.sh sceneweather on|off}" ;;
   adhanbar) set1 adhanbar "${2:?usage: optimize/saver.sh adhanbar on|off}" ;;
   updatechannel) set1 updatechannel "${2:?usage: optimize/saver.sh updatechannel next|latest   (testing only)}" ;;
   reciter-fav)
@@ -271,7 +291,10 @@ case "${1:-}" in
   occasion) set1 occasion "${2:?usage: optimize/saver.sh occasion on|off}" ;;
   nightdim) set1 nightdim "${2:?usage: optimize/saver.sh nightdim on|off}" ;;
   taskspill) set1 taskspill "${2:?usage: optimize/saver.sh taskspill on|off}" ;;
-  verse)    set1 verse "${2:?usage: optimize/saver.sh verse day|3}" ;;
+  fbhide)   set1 fbhide "${2:?usage: optimize/saver.sh fbhide on|off}" ;;
+  datenum)  set1 datenum "${2:?usage: optimize/saver.sh datenum on|off}" ;;
+  searchpill) set1 searchpill "${2:?usage: optimize/saver.sh searchpill on|off}" ;;
+  verse)    set1 verse "${2:?usage: optimize/saver.sh verse day|3|10}" ;;
   versekind) case "${2:-}" in both|verse|hadith) set1 versekind "$2" ;; *) echo "usage: optimize/saver.sh versekind both|verse|hadith"; exit 1 ;; esac ;;
   seconds)  case "${2:-}" in on|off) set1 seconds "$2" ;; *) echo "usage: optimize/saver.sh seconds on|off"; exit 1 ;; esac ;;
   backexit) case "${2:-}" in press|hold|three) set1 backexit "$2" ;; *) echo "usage: optimize/saver.sh backexit press|hold|three"; exit 1 ;; esac ;;
@@ -284,8 +307,8 @@ case "${1:-}" in
   langs)    [ $# -ge 2 ] || { echo "usage: optimize/saver.sh langs Arabic,English"; exit 1; }
             set1 langs "$2" ;;
   minrating)set1 minrating "${2:?usage: optimize/saver.sh minrating 7}" ;;
-  photos)   set1 photos "${2:?usage: optimize/saver.sh photos 15}" ;;
-  cardstyle)set1 cardstyle "${2:?usage: optimize/saver.sh cardstyle glass1}" ;;
+  photos)   set1 photos "${2:?usage: optimize/saver.sh photos 30s|1|5|10|15|30|60 (minutes; 30s = every 30 seconds)}" ;;
+  cardstyle)set1 cardstyle "${2:?usage: optimize/saver.sh cardstyle current|dark1|glass1|dark3|glass3|boxes}" ;;
   markets)  case "${2:?usage: optimize/saver.sh markets tasi,gold,btc | off | on}" in
               off|on) set1 mkbar "$2" ;;
               *) set1 markets "$2" && set1 mkbar on > /dev/null ;;   # choosing markets shows the line
@@ -305,17 +328,18 @@ case "${1:-}" in
     if [ $# -eq 3 ]; then v=$(quote "$3") || exit 1; extra="$extra --es cdname $v"; fi
     send SET "$extra" ;;
   national) set1 national "${2:?usage: optimize/saver.sh national auto|off}" ;;
-  digits)   set1 digits "${2:?usage: optimize/saver.sh digits latin}" ;;
+  digits)   set1 digits "${2:?usage: optimize/saver.sh digits hindi|latin}" ;;
   hijrioffset)
     [[ "${2:-}" =~ ^[+-]?[0-2]$ ]] || { echo "usage: optimize/saver.sh hijrioffset -2|-1|0|+1|+2   (days; 0 = Umm al-Qura as it is)"; exit 1; }
     v=$(quote "$2") || exit 1
     send SET "--es hijrioffset $v" ;;   # the offset moves what is shown, never a prayer time: no adhan alarm to set again
+  lite)     case "${2:-}" in auto|on|off) set1 lite "$2" ;; *) echo "usage: optimize/saver.sh lite auto|on|off"; exit 1 ;; esac ;;
   ramtier)  case "${2:-}" in low|mid|normal|auto) set1 ramtier "$2" ;; *) echo "usage: optimize/saver.sh ramtier low|mid|normal|auto"; exit 1 ;; esac ;;
   clock24)  case "${2:-}" in on|off) set1 clock24 "$2" ;; *) echo "usage: optimize/saver.sh clock24 on|off"; exit 1 ;; esac ;;
   lang)     case "${2:-}" in ar|en) set1 lang "$2" ;; *) echo "usage: optimize/saver.sh lang ar|en"; exit 1 ;; esac ;;
   idle)
     # the app may change the TV's timer only if the owner allowed it; the shell always may
-    v=$(quote "${2:?usage: optimize/saver.sh idle 10}") || exit 1
+    v=$(quote "${2:?usage: optimize/saver.sh idle 1|2|5|10|15|30 (minutes)}") || exit 1
     out=$(send SET "--es idle $v") || true
     case "$out" in
       "error: idle not allowed"*)

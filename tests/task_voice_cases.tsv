@@ -19,3 +19,11 @@
 اشتري خبز	اشتري خبز	NONE	-1	
 مرحبا		NONE	-1	
 		NONE	-1	
+# «تكلّم» (#48): a leading "~" runs TaskVoice.spoken: plain words with no command are a task to add (asked first); commands as above
+~شراء خبز		ADD	-1	شراء خبز
+~  موعد   الأسنان الساعة ٥ 	اشتري خبز	ADD	-1	موعد الأسنان الساعة ٥
+~أضف مهمة اشتري خبز		ADD	-1	اشتري خبز
+~خلصت الخبز	اشتري خبز	DONE	0	اشتري خبز
+~أضف		NONE	-1	
+~احذف	اشتري خبز	NONE	-1	
+~		NONE	-1	

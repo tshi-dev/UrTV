@@ -9,14 +9,16 @@ import java.util.Set;
 
 /**
  * «الأسرع»: what the TV accepts as a question bank (no Android, tested on a plain JVM). A downloaded file is checked whole before it is used: not bigger than
- * 1.5 MB, not an HTML page or anything but a JSON array, at most 5,000 items, every item of exactly the compact form (docs/QUIZ.md), every text 1 to 200
- * characters without control characters, four different options in each language, ids unique and plain. One bad item rejects the file (it is made by CI, a
- * bad one means a bad file); the caller then keeps the last good copy. The bundled starter set goes through the same check.
+ * 6 MB, not an HTML page or anything but the old bare JSON array or the versioned object {"v":2,"items":[...]}, at most 20,000 items (games/SCHEMA.md).
+ * It is TOLERANT, so the data can grow without an app update: an item with fields this app does not know is kept and the unknown fields are ignored; an
+ * item that cannot be used (a missing field, difficulty 4, a repeated option, a text of 201 characters, a duplicate id) is skipped, not the file. A file
+ * of another version, or one with no usable item at all, is refused and the caller keeps the last good copy (or the starter). Every text is 1 to 200
+ * characters without control characters, four different options in each language, ids unique and plain.
  */
 final class QuizBankCheck {
     private QuizBankCheck() {}
 
-    static final int BYTES_MAX = 1_500_000, ITEMS_MAX = 5000, TEXT_MAX = 200;
+    static final int BYTES_MAX = 6_000_000, ITEMS_MAX = 20_000, TEXT_MAX = 200;
 
     /** the items, or null when anything is wrong */
     static List<QuizPick.Item> parse(byte[] raw) {
@@ -24,26 +26,28 @@ final class QuizBankCheck {
         String text = new String(raw, StandardCharsets.UTF_8);
         int i = 0;
         while (i < text.length() && (Character.isWhitespace(text.charAt(i)) || text.charAt(i) == '﻿')) i++;
-        if (i >= text.length() || text.charAt(i) != '[') return null;   // an HTML page, an error message, an object: not a bank
-        Object root = MiniJson.parse(text);
-        if (!(root instanceof List)) return null;
-        List<?> all = (List<?>) root;
+        if (i >= text.length() || (text.charAt(i) != '[' && text.charAt(i) != '{')) return null;   // an HTML page, an error message: not a bank
+        Object root;
+        try { root = MiniJson.parse(text); } catch (RuntimeException e) { return null; }
+        List<?> all;
+        if (root instanceof List) all = (List<?>) root;                       // v1: the bare array
+        else if (root instanceof Map && Double.valueOf(2).equals(((Map<?, ?>) root).get("v")) && ((Map<?, ?>) root).get("items") instanceof List) all = (List<?>) ((Map<?, ?>) root).get("items");   // v2
+        else return null;                                                      // another version or kind of file
         if (all.isEmpty() || all.size() > ITEMS_MAX) return null;
         List<QuizPick.Item> out = new ArrayList<>(all.size());
         Set<String> ids = new HashSet<>();
         for (Object o : all) {
             QuizPick.Item it = item(o);
-            if (it == null || !ids.add(it.id)) return null;
-            out.add(it);
+            if (it != null && ids.add(it.id)) out.add(it);                     // an unusable item is skipped, never the file
         }
-        return out;
+        return out.isEmpty() ? null : out;
     }
 
     /** one compact item, or null (also read by GamesBoardData for the items a letter-hive starter embeds) */
     static QuizPick.Item item(Object o) {
         if (!(o instanceof Map)) return null;
         Map<?, ?> m = (Map<?, ?>) o;
-        if (m.size() != 7) return null;
+        if (m.size() < 7) return null;   // the seven fields the games need; any other field (a tag, a note) is ignored
         Object id = m.get("i"), cat = m.get("c"), d = m.get("d"), k = m.get("k");
         if (!(id instanceof String) || !((String) id).matches("[A-Za-z0-9._:\\-]{1,64}")) return null;
         if (!(cat instanceof String) || !((String) cat).matches("[a-z\\-]{1,24}")) return null;
@@ -79,5 +83,12 @@ final class QuizBankCheck {
         if (s.isEmpty() || s.length() > TEXT_MAX) return false;
         for (int i = 0; i < s.length(); i++) if (Character.isISOControl(s.charAt(i))) return false;
         return true;
+    }
+
+    /** the published build number (rev.txt): 1 to 12 digits and nothing else, a line end allowed; -1 for anything else (an HTML page, a longer file) */
+    static long parseRev(byte[] b) {
+        if (b == null || b.length > 64) return -1;
+        String s = new String(b, java.nio.charset.StandardCharsets.US_ASCII).trim();
+        return s.matches("[0-9]{1,12}") ? Long.parseLong(s) : -1;
     }
 }

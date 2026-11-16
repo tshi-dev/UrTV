@@ -45,8 +45,8 @@ check("the counts follow the person's digits setting (the screens' DigitsText)",
 check("the 20 s notice is the owner's wording", 'PROMPT_LATE = "ما ظهرت الرسالة؟ أعد تشغيل التلفزيون وافتح «إعداد تلفزيوني» واضغط «جهّز كل شي» وخلك عند التلفزيون"' in runner)
 check("a run lives in a foreground service (it outlives the screen), not exported", 'android:name=".setup.SetupService" android:exported="false"' in manifest
       and "startForeground(" in service and "startForegroundService" in service)
-check("the TV's start resumes a full run only when it restarted the TV on purpose; the ADB key stays only while a run waits (the restart, or «كمّل» after the Wi-Fi)",
-      "SetupRunner.awaitingRestart(new FileStore(app))" in boot and "SetupRunner.get().resume(" in boot and "SetupRunner.awaiting(new FileStore(c))" in session
+check("the TV's start resumes a full run when it restarted the TV on purpose, or (4.3.3) when a restart nobody asked for cut it (twice at most); the ADB key stays only while a run waits (the restart, «كمّل» after the Wi-Fi, a cut run)",
+      "SetupRunner.resumeAtBoot(new FileStore(app))" in boot and "awaitingRestart(store)" in runner[runner.index("static boolean resumeAtBoot"):] and "SetupRunner.get().resume(" in boot and "SetupRunner.awaiting(new FileStore(c))" in session
       and "awaitingWifi" not in boot)
 hold = (SETUP / "SetupHold.java").read_text(encoding="utf-8")
 npp = (SETUP.parent / "tilawah/NowPlayingProvider.java").read_text(encoding="utf-8")
@@ -64,7 +64,7 @@ if not shutil.which("javac"):
     print("SKIP the runner on a JVM: no javac on this machine")
     sys.exit(1 if failed else 0)
 with tempfile.TemporaryDirectory() as tmp:
-    pure = [p for p in sorted(SETUP.glob("*.java")) if "import android." not in p.read_text(encoding="utf-8")] + [SETUP.parent / "phone/UpdateRules.java", SETUP.parent / "SuggestedApps.java"]   # (read only: its rule for updates)
+    pure = [p for p in sorted(SETUP.glob("*.java")) if "import android." not in p.read_text(encoding="utf-8")] + [SETUP.parent / "phone/UpdateRules.java", SETUP.parent / "SuggestedApps.java", SETUP.parent / "ExtrasWords.java"]   # (read only: its rule for updates)
     r = subprocess.run(["javac", "-encoding", "UTF-8", "-d", tmp, *map(str, pure), str(ROOT / "tests/SetupEngineRun.java"), str(ROOT / "tests/SetupRunnerRun.java"), str(ROOT / "tests/AdbClientRun.java")], capture_output=True, text=True)
     check("the pure classes and the runner's harness compile", r.returncode == 0, r.stderr)
     if r.returncode:
@@ -169,4 +169,21 @@ check("R30: end to end over the real ADB client and the fake adbd: «السما�
 skipped_rest = ",".join(f"{i}:" + ("DONE" if i == "precheck" else "FAILED" if i == "backup" else "SKIPPED") for i in PLAN)
 check("R12: the backup is the full run's gate: a nearly empty package list saves nothing and nothing after it runs (not one change), «توقّفنا قبل أي تغيير.»",
       got.get("R12") == f"R12 {skipped_rest} backup=null changes=0 true توقّفنا قبل أي تغيير.", got.get("R12"))
+# ---- 4.3.3: a drop of the TV's adb in a step that may run twice; a restart nobody asked for
+check("R33: the adb drops in the precheck: one new connection, the step again (said on screen and in steps.log), the run ends well",
+      got.get("R33") == "R33 opens=2 done=true said=true stamped=true bad=false", got.get("R33"))
+check("R33b: it keeps dropping: two new connections at most, then it stops as before; the pointer stays for «جهّز كل شي» and no boot resumes it",
+      got.get("R33b") == "R33b opens=3 bad=true pointer=true boot=false", got.get("R33b"))
+check("R33c: a drop in the home switch is never run again by itself", got.get("R33c") == "R33c true reconnects=false", got.get("R33c"))
+check("R34: a run a restart cut in the middle is resumed by the boot twice at most; one that ended (no live) or waits for the Wi-Fi is not; the key stays only for a cut one",
+      got.get("R34") == "R34 true true false keyKept=false/false ended=false wifi=false", got.get("R34"))
+check("R34b: the resumed run goes on from its pointer to the end", got.get("R34b") == "R34b true true tweaks:DONE home=home:DONE cleared=true", got.get("R34b"))
+# ---- 4.4: a Google TV whose launcherx keeps the Home key: the add-on's watch set up over the TV's adb, the key checked the person's way, the report honest
+check("R35: the Home key opens the stock home with the role ours: «إضافات تلفزيونك» is installed and turned on over the TV's adb, the key is checked again and opens UrTV; nothing is turned off; the report's «Home:» is what the key really opened",
+      got.get("R35") == "R35 home:DONE extras=true listed=true switch=1 role=sa.urtv.home stockOff=false wizardOff=false fails=0 reportHome=sa.urtv.home/.MainActivity safety=1/1", got.get("R35"))
+check("R35b: the TV refuses the first bind (TclAppBoot): the list goes off and on again, then it binds", got.get("R35b") == "R35b home:DONE puts=2", got.get("R35b"))
+check("R35c: it never binds: «ما قدرنا نخلي زر الرئيسية يفتح تلفزيونك على هذا التلفزيون», the stock home given Home back (never off), counted once, the rest of the run done, the report says the stock home",
+      (got.get("R35c") or "").startswith("R35c home:FAILED said=true role=com.google.android.apps.tv.launcherx stockOff=false fails=1 after=true reportHome=com.google.android.apps.tv.launcherx/")
+      and (got.get("R35c") or "").endswith(" safety=1/1"), got.get("R35c"))
+check("R35d: «تراجع» turns the add-on's service off again (the TV had none: the list and the switch as they were)", got.get("R35d") == "R35d undo:DONE listed=none switch=none", got.get("R35d"))
 sys.exit(1 if failed else 0)

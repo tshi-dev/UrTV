@@ -26,6 +26,7 @@ public class AdhanReceiver extends BroadcastReceiver {
         if (!alarm) {
             // boot, clock or timezone change, or the app was just updated: set the next alarm, and ask Aladhan for today
             AdhanScheduler.schedule(context);
+            DuaScheduler.schedule(context);   // 4.4: the duas' alarm too (a reboot, a clock or time-zone change, an update)
             PrayerTimes.refresh(context, null);
             return;
         }
@@ -42,9 +43,13 @@ public class AdhanReceiver extends BroadcastReceiver {
             if (due > 0) prefs.setLastDue(due); else prefs.setLastAlarmAt(now);
             int prayer = intent.getIntExtra(AdhanScheduler.EXTRA_PRAYER, -1);   // an alarm of an older version has none: the usual voice
             int front = AdhanFront.now(context);
-            boolean play = prefs.adhanOn() && AdhanPlan.mayPlay(prefs.adhanSaverOnly(), front);
+            int voice = prayer < 0 ? prefs.playVoiceFor(context, false) : prefs.playFor(context, prayer);   // 4.4 «أذان كل صلاة»
+            boolean silent = voice == PrayerSound.SILENT
+                    || QuietHours.silencesAdhan(prefs.quietOn(), prefs.quietNow(context), prefs.quietAdhan(), prayer);   // 4.4 «ساعات الهدوء»
+            boolean play = prefs.adhanOn() && AdhanPlan.mayPlay(prefs.adhanSaverOnly(), front) && !silent;
             boolean notice = prefs.adhanNotice();
-            if (play) MusicService.adhan(context, prefs.playVoiceFor(context, prayer == PrayerTimes.FAJR), null, 0, prayer);
+            if (play) MusicService.adhan(context, voice, null, 0, prayer);
+            else if (prefs.adhanOn() && silent) Log.i("UrTVAdhan", "adhan silent: this prayer is set to no sound (its time and card stay)");
             else if (prefs.adhanOn()) Log.i("UrTVAdhan", "adhan skipped: another app is in front (saver-only is on)");
             if (notice) AdhanNotice.show(context, prayer);
             boolean saver = AdhanPlan.startSaver(prefs.adhanSaverAt(), front) && AdhanSaver.start(context);   // after the adhan and the notice: nothing waits for it

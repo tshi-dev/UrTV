@@ -1,0 +1,14 @@
+# The cut-outs checked by eye on the review sheet (photo_masks.py --all writes OUT/sheet.jpg: the sky red, the scenery as kept).
+# Only these are published: a cut that bites into the scenery (a dune's shadow, a red cloth, a pale wall taken for sky) is left out,
+# and that photo keeps the glass clock in front. A new photo is added here only after its sheet is looked at.
+ksa-cities/1
+nature/7
+photos/2gVgVf5CNAE
+photos/9f7oiGARGIg
+photos/9hWJs7iblh8
+photos/G8_JBLFMWTg
+photos/MV7iHCilMJc
+photos/_jfejQo2tZw
+photos/dfglhJbc4Uc
+photos/s6g6ZSxM3kQ
+sea/16

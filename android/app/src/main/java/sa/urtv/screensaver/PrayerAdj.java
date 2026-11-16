@@ -45,6 +45,11 @@ final class PrayerAdj {
     /** One step of the + / − keys, held to −20..20. */
     static int step(int v, int delta) { return Math.max(-MAX, Math.min(MAX, v + delta)); }
 
+    static boolean any(int[] v) {
+        for (int x : v) if (x != 0) return true;
+        return false;
+    }
+
     /** What goes in the settings fragment: nothing while the setting is off or every offset is zero (the page is then as it was). */
     static String fragment(boolean on, int[] v) {
         boolean any = false;

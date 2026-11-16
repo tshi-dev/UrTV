@@ -155,7 +155,7 @@ public final class UpdateCarry {
                 c.startActivity(new Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_HOME).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
                 return "home_intent_sent";
             }
-            if (attempt == 1) return TypeService.goHome() ? "a11y_home_pressed" : "a11y_not_bound";
+            if (attempt == 1) return Extras.goHome() ? "a11y_home_pressed" : "a11y_not_bound";
             android.app.NotificationManager nm = (android.app.NotificationManager) c.getSystemService(Context.NOTIFICATION_SERVICE);
             if (nm == null) return "no_notification_service";
             nm.createNotificationChannel(new android.app.NotificationChannel("carry_front", S.t("تحديث تلفزيونك"), android.app.NotificationManager.IMPORTANCE_HIGH));

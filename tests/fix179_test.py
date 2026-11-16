@@ -35,7 +35,7 @@ check("PIN pad: no focus scale on a key (it ate 4 px of the gap beside it); the 
       "scaleX" not in pin and text(HOME / "PinPrompt.java").count("dp(a, 12)") >= 5)
 settings = text(APP / "SettingsActivity.java")
 check("settings pages: 64 px above the first line, a group's header 32 above and 16 under it (the first row was 124 px down)",
-      "list.setPadding(dp(8), dp(32), dp(8), dp(16));" in settings and "t.setPadding(dp(10), dp(16), dp(10), dp(8));" in settings and "head.setPadding(0, 0, 0, dp(16));" in settings)
+      "list.setPadding(dp(8), dp(32), dp(8), dp(16));" in settings and "t.setPadding(dp(10), dp(16), dp(10), dp(8));" in settings and "title.setPadding(dp(10), 0, dp(10), dp(4));" in settings)
 mk = text(HOME / "MarketsActivity.java")
 check("markets: the page ends at the safe area (5 % under it), so no list starts under y 1026 and the lists scroll in",
       "page.setPadding(Math.round(dm.widthPixels * 0.05f), Math.round(dm.heightPixels * 0.05f), Math.round(dm.widthPixels * 0.05f), Math.round(dm.heightPixels * 0.05f));" in mk
@@ -84,7 +84,7 @@ check("item 11: the dock is topped up from the other apps in the order of their 
       "AppsEdit.topUp(have, other, MIN_DOCK)" in main and "java.util.Collections.sort(pool);" in text(HOME / "AppsEdit.java"))
 tpl2 = text(ROOT / "src/template.html")
 check("item 9: the matches page opens on the day the widget shows (today's games, else the next day that has games, in the city's zone) until the person picks a day",
-      "if(!MP.picked){" in tpl2 and "const next = fbGames().filter(ev => fbKick(ev) > now).sort((a, b) => fbKick(a) - fbKick(b))[0];" in tpl2 and "MP.picked = true;" in tpl2)
+      "if(!V && !MP.picked){" in tpl2 and "const next = fbGames().filter(ev => fbKick(ev) > now).sort((a, b) => fbKick(a) - fbKick(b))[0];" in tpl2 and "MP.picked = true;" in tpl2)
 check("item 9: a match's card opens with no button focused (OK adds nothing by accident); ◀ ▶ go to the buttons",
-      "MP.btn = Math.max(-1, Math.min(MP.btn, btns.length));" in tpl2 and ": -1;   // «شاهد على …» is ringed when it is there" in tpl2 and "ringed = document.querySelector('#mp-detail .mdb button.f, #mp-detail .mdq button.f')" in tpl2)   # step 28b: btns.length is «رجوع»
+      "MP.btn = Math.max(-1, Math.min(MP.btn, btns.length + club));" in tpl2 and ": -1;   // «شاهد على …» is ringed when it is there" in tpl2 and "ringed = document.querySelector('#mp-detail .mdb button.f, #mp-detail .mdq button.f')" in tpl2)   # step 28b: btns.length is «رجوع»
 sys.exit(1 if failed else 0)

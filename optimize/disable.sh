@@ -61,6 +61,20 @@ else
   echo "!! disable.sh: the TV did not say which packages it has or which were already off, so NOTHING was turned off (a restore could not be exact). Run the same command again." >&2
   exit 1
 fi
+# 4.3.3: whatever a list says, an app that answers Home on this TV (its stock home, the setup wizard, a maker's home) stays on: with it off some
+# TVs cannot start (a blank screen and a restart loop; couch-tv's TROUBLESHOOTING.md, github.com/Seagey/couch-tv, MIT). keep.txt names the Google
+# ones; this asks the TV for the rest. Ours (sa.urtv.*) is never in a list. If the TV does not say, keep.txt and core.txt still hold.
+if [ -n "$intended" ]; then
+  homes=$("$PY" -I optimize/tv.py "cmd package query-activities --brief -a android.intent.action.MAIN -c android.intent.category.HOME 2> /dev/null" 2> /dev/null | tr -d '\r' \
+          | sed 's/^[[:space:]]*//' | sed -n -E 's#^([A-Za-z0-9_.]+)/[A-Za-z0-9_.$]+$#\1#p' | grep -v '^sa\.urtv\.' | sort -u || true)
+  homeheld=$(printf '%s\n' "$intended" | grep -Fx -f <(printf '%s\n' "$homes" | grep . || echo '#none#') || true)
+  if [ -n "$homeheld" ]; then
+    echo "Left on, the TV starts with them (they answer Home): $(paste -sd' ' - <<< "$homeheld")" >&2
+    pkgs=$(printf '%s\n' "$pkgs" | awk 'NR==FNR { if ($0 != "") s[$0] = 1; next } !($0 in s)' <(printf '%s\n' "$homeheld") -)
+    intended=$(printf '%s\n' "$intended" | awk 'NR==FNR { if ($0 != "") s[$0] = 1; next } !($0 in s)' <(printf '%s\n' "$homeheld") -)
+    [ -n "$pkgs" ] || exit 0
+  fi
+fi
 # The TV's own answer: a package that asks for TV_INPUT_HARDWARE (its own «requested permissions» block, not a shared user's), or serves
 # android.media.tv.TvInputService or an input method, stays on whatever its name. From Android 6 (SDK 23) a readable dump with no permission block
 # asks for nothing, so it passes; an older one, or a dump that cannot be read, stays on (NOCHK). «hung system process» is Android's watchdog

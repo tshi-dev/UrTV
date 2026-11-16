@@ -62,7 +62,7 @@ check("MainActivity: Greeting is told whether the home is resumed", "new Greetin
 check("MainActivity: resumed is volatile (the photo thread reads it)", "private volatile boolean resumed" in main)
 nxt = method(main, "private void nextWallpaper()")
 check("MainActivity: the photo list and downloads ask NetGate after the local photo is shown",
-      nxt.index("showWallpaperIfCurrent(bm, gen);") < nxt.index("NetGate.allowed(resumed") < nxt.index("refreshPhotoIndex();"))
+      nxt.index("showWallpaperIfCurrent(bm, gen, key);") < nxt.index("NetGate.allowed(resumed") < nxt.index("refreshPhotoIndex();"))
 pt = src(H / "tilawah/PrayerTimes.java")
 check("PrayerTimes.refresh: skipped with the display off", "NetGate.backgroundOk" in method(pt, "static void refresh(final Context c"))
 check("PrayerTimes.refreshIfDue: a try is not counted with the display off",

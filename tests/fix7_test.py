@@ -64,7 +64,7 @@ sr = text("android/app/src/main/java/sa/urtv/screensaver/SaverReceiver.java")
 check("the receiver takes none / an empty list as «no cards»", 'if (h.isEmpty() || "none".equals(h)) continue;' in sr and "if (homeCards != null) p.setHomePanels(homeCards);" in sr)
 
 # 2. typing where the app has no field
-ts = text(HOME + "TypeService.java")
+ts = text("android/extras/src/main/java/sa/urtv/home/ExtrasA11yService.java")   # 4.3.3: the add-on «إضافات تلفزيونك»
 check("YouTube TV in front: its own search first, on any screen and whatever the field, by ACTION_SEARCH then its web link, both bound to the package",
       "if (AppSearch.supports(pkg)) {" in ts and "new Intent(Intent.ACTION_SEARCH).setPackage(pkg).putExtra(SearchManager.QUERY, q)" in ts
       and "new Intent(Intent.ACTION_VIEW, Uri.parse(AppSearch.webUrl(q))).setPackage(pkg)" in ts and ts.index("AppSearch.supports(pkg)") < ts.index("root.findFocus(AccessibilityNodeInfo.FOCUS_INPUT)")

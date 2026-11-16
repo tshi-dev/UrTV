@@ -15,12 +15,13 @@ final class AdhanBar {
 
     /** An adhan for a prayer is playing and the bar is on: the bar names it and says how to stop it (a key stops it: AdhanKeys). */
     static boolean playing(ConfigSnapshot snap) {
-        return snap.adhanBarOn && NowPlaying.adhanLive();
+        return snap.adhanBarOn && NowPlaying.adhanLive() && NowPlaying.duaName() == null;   // 4.4: a dua has its card (DuaCard), not the bar
     }
 
     /** What the bar says now, or null: it is off, nothing is near, or the times are out of reach. */
     static String text(Context c, ConfigSnapshot snap) {
         if (!snap.adhanBarOn) return null;
+        if (NowPlaying.duaName() != null) return null;   // 4.4: a dua plays: its card says it
         try {
             if (NowPlaying.adhanLive()) {
                 boolean friday = false;

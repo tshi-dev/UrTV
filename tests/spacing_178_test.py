@@ -72,17 +72,17 @@ check("…and neither has its English", "Standard (January, February, March)" in
 # the matches and markets pages by keys (docs/SETTINGS.md has the path)
 hub = text(APP / "SettingsHub.java")
 cats = re.findall(r'^\s*\{([A-Z]+), "', hub[hub.index("CATEGORIES = {"):], re.M)
-check("hub order: CITY wide (4.3.1), then two to a row from ADHAN; «المزيد» is the 11th tile after it", cats[:12] == ["CITY", "ADHAN", "PLACE", "CLOCK", "LISTEN", "CARDS", "LOOK", "CONTROL", "PHONE", "UPDATE", "REPORT", "MORE"], cats[:11])
-check("«المباريات والأسواق» is the first button of «المزيد»", [c for c in cats if c in ("CONTENT", "APPS", "SHOWS", "PARENTAL", "FAMILY", "LANG")][0] == "CONTENT")
+check("side list order (4.3.3): the search, then the ten sections", cats[:11] == ["SEARCH", "LANG", "PLACE", "LOOK", "APPS", "BUTTONS", "PRAY", "CONTENT", "SAVER", "FAMILY", "UPDATE"], cats[:11])
+check("«المباريات والأسواق» is the eighth item of the side list, six under «اللغة» where the settings open (▼ ×6)", cats.index("CONTENT") == 7 and cats.index("LANG") == 1)
 rows = re.findall(r'^\s*row\("([^"]+)"', settings[settings.index("private void render()"):], re.M)
-content = ["مباريات اليوم", "الفرق المتابعة (", "الدوريات كاملة", "رياضات أخرى", "صفحة الأسواق"]
+content = ["مباريات اليوم", "الفرق المتابعة (", "الدوريات كاملة", "رياضات أخرى", "افتح صفحة الأسواق"]
 order = [r for r in rows if any(r.startswith(c) for c in content)]
-check("«مباريات اليوم» is the first row of «المباريات والأسواق» and «صفحة الأسواق» the fifth (four ▼ from the first)", [r.split(" (")[0] for r in order][:5] == ["مباريات اليوم", "الفرق المتابعة", "الدوريات كاملة", "رياضات أخرى", "صفحة الأسواق"], order)
+check("«مباريات اليوم» is the first row of «المباريات والأسواق» and «افتح صفحة الأسواق» the fifth (four ▼ from the first)", [r.split(" (")[0] for r in order][:5] == ["مباريات اليوم", "الفرق المتابعة", "الدوريات كاملة", "رياضات أخرى", "افتح صفحة الأسواق"], order)
 check("both rows open the launcher's pages, and those are exported", 'setClassName("sa.urtv.home", "sa.urtv.home.MatchesActivity")' in settings and 'setClassName("sa.urtv.home", "sa.urtv.home.MarketsActivity")' in settings
       and re.search(r'android:name="\.MatchesActivity"\s+android:exported="true"', text(ROOT / "android/launcher/src/main/AndroidManifest.xml")) is not None
       and re.search(r'android:name="\.MarketsActivity"\s+android:exported="true"', text(ROOT / "android/launcher/src/main/AndroidManifest.xml")) is not None)
 check("from the home: OK on the stocks card opens the markets page, OK on the games widget the matches page",
       "launch(new Intent(MainActivity.this, MarketsActivity.class));" in main and "new Intent(MainActivity.this, MatchesActivity.class)" in main)
 doc = text(ROOT / "docs/SETTINGS.md")
-check("docs/SETTINGS.md has the key path", "المباريات والأسواق" in doc and "▼ ×5" in doc and "▼ ×4" in doc)
+check("docs/SETTINGS.md has the key path", "المباريات والأسواق" in doc and "▼ ×6" in doc and "▼ ×5" in doc)
 sys.exit(1 if failed else 0)

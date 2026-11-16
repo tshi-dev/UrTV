@@ -90,34 +90,44 @@ sleep 25
 shot saver-now-playing 2
 music sa.urtv.home.STOP
 
-# ---- the screensaver's settings: the top, the pickers, the end
+# ---- 4.4 «شكل كنبة» off (the default): the 4.3.2 settings screen, its first screen of buttons, then «المظهر والخلفيات» with the switch first
 start sa.urtv.screensaver/.SettingsActivity
-shot settings-01-top 3
-key DPAD_DOWN DPAD_DOWN DPAD_DOWN DPAD_DOWN
-shot settings-02-scrolled 1
-for i in 1 2 3 4 5 6 7 8 9; do key DPAD_DOWN; done
-shot settings-03-further 1
-key DPAD_DOWN DPAD_DOWN DPAD_DOWN
-shot settings-04-card-rows 1
+shot settings-00-classic-hub 3
+for i in 1 2 3 4 5 6; do key DPAD_DOWN; done
 key DPAD_CENTER
-shot settings-05-content-picker 4
-key DPAD_DOWN DPAD_DOWN
-shot settings-06-content-picker-down 3
-key DPAD_DOWN DPAD_DOWN DPAD_DOWN
-shot settings-07-content-picker-down2 3
-key BACK
-key DPAD_DOWN DPAD_CENTER
-shot settings-08-card-style-picker 4
+shot settings-00-classic-look 2
+key BACK BACK
+# ---- «شكل كنبة» on: the side list on the right, the rows on the left; they open on «اللغة», the focus on its item; ▼ shows the next section's
+# rows at once (the focus stays on the list), OK goes into the rows, Back comes back to the section's item
+saver --es couch on
+start sa.urtv.screensaver/.SettingsActivity
+shot settings-01-lang 3
 key DPAD_DOWN
-shot settings-09-card-style-picker-down 3
-key BACK
-key DPAD_UP DPAD_UP DPAD_UP DPAD_UP DPAD_UP DPAD_UP DPAD_UP DPAD_UP DPAD_UP DPAD_UP DPAD_UP DPAD_UP DPAD_UP DPAD_UP
-key DPAD_DOWN DPAD_CENTER
-shot settings-10-city-dialog 2
-key BACK
-key DPAD_UP DPAD_DOWN DPAD_DOWN DPAD_CENTER
-shot settings-11-teams-dialog 2
-key BACK
+shot settings-02-place 2
+key DPAD_DOWN
+shot settings-03-look 2
+key DPAD_CENTER
+for i in 1 2 3 4 5 6 7 8 9; do key DPAD_DOWN; done
+shot settings-04-look-further 1
+key BACK DPAD_DOWN
+shot settings-05-apps 2
+key DPAD_DOWN
+shot settings-06-buttons 2
+key DPAD_DOWN
+shot settings-07-prayer 2
+key DPAD_DOWN
+shot settings-08-matches-and-markets 2
+key DPAD_DOWN
+shot settings-09-saver 2
+key DPAD_DOWN
+shot settings-10-family 2
+key DPAD_DOWN
+shot settings-11-about 2
+for i in 1 2 3 4 5 6 7 8 9 10; do key DPAD_UP; done
+key DPAD_CENTER
+shot settings-12-search 2
+key BACK BACK
+saver --es couch off
 
 adb logcat -d -s AndroidRuntime:E > "$OUT/crashes.txt"
 ls "$OUT"

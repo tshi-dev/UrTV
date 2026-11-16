@@ -80,8 +80,8 @@ final class Dock {
 
     /**
      * Shows what the TV's own home screen would: next to a Google home (which lists only TV apps; counted if it is
-     * installed, even disabled by install.sh), apps with only an ordinary launcher activity stay out, as they are
-     * mostly the maker's helpers; next to a maker's own home (CVTE, MediaTek sets) they come in, as its store and
+     * installed, even disabled by install.sh), apps that came with the TV and have only an ordinary launcher activity stay
+     * out, as they are mostly the maker's helpers (one the person sideloaded comes in: #57, {@link AppRule}); next to a maker's own home (CVTE, MediaTek sets) they come in, as its store and
      * settings are among them. On top of that rule: the hidden apps in config.xml, other home screens, and what was
      * hidden or shown from ADB (optimize/dock.sh hide / show).
      */
@@ -110,13 +110,11 @@ final class Dock {
             for (ResolveInfo ri : pm.queryIntentActivities(q, PackageManager.GET_RESOLVED_FILTER)) {
                 String p = ri.activityInfo.packageName;
                 if (p.equals(c.getPackageName()) || out.containsKey(p) || (why != null && why.containsKey(p)) || seenHidden.contains(p)) continue;
-                String reason = hidden.contains(p) ? "hidden with dock.sh hide or the × of «تعديل التطبيقات»"
-                        : shown.contains(p) ? null
-                        : config.contains(p) ? "hidden in config.xml"
-                        : homes.contains(p) ? "a home screen"
-                        : UsbViewers.is(p) ? null   // 4.3 B8: the TV's viewer of a USB stick is always in the row (issue #50)
-                        : googleHome && category.equals(Intent.CATEGORY_LAUNCHER)
-                                ? "no TV activity, and the TV's own home lists only TV apps" : null;
+                android.content.pm.ApplicationInfo app = ri.activityInfo.applicationInfo;
+                boolean system = app != null && (app.flags & (android.content.pm.ApplicationInfo.FLAG_SYSTEM
+                        | android.content.pm.ApplicationInfo.FLAG_UPDATED_SYSTEM_APP)) != 0;
+                String reason = AppRule.reason(hidden.contains(p), shown.contains(p), config.contains(p), homes.contains(p), UsbViewers.is(p),
+                        googleHome, category.equals(Intent.CATEGORY_LAUNCHER), system);   // #57: a sideloaded app shows even without a TV activity
                 if (reason == null) out.put(p, ri);
                 else if (why != null) why.put(p, reason);
                 if (hidden.contains(p) && seenHidden.add(p) && hiddenOut != null) hiddenOut.add(ri);

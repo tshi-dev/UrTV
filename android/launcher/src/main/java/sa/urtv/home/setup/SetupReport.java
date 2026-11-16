@@ -196,6 +196,16 @@ final class SetupReport {
         return text;
     }
 
+    /** the component in front after the Home key, pressed over another app; "?" when the TV did not say */
+    private String homeKeyOpens() throws IOException {
+        tv.text("am start -a android.settings.SETTINGS");
+        tv.text("sleep 3");
+        tv.text("input keyevent KEYCODE_HOME");
+        tv.text("sleep 4");
+        java.util.regex.Matcher m = java.util.regex.Pattern.compile(" ([A-Za-z0-9_.]+/[A-Za-z0-9_.$]+)").matcher(tv.tail1("dumpsys activity activities | grep -E 'mResumedActivity|topResumedActivity' | head -n 1"));
+        return m.find() ? m.group(1) : "?";
+    }
+
     private List<String> checks() throws IOException {
         List<String> out = new ArrayList<>(), bad = new ArrayList<>();
         Set<String> installed = tv.packages("pm list packages"), disabled = tv.packages("pm list packages -d");
@@ -207,8 +217,9 @@ final class SetupReport {
         }
         out.add("Protected features on: " + ok + "/" + (ok + bad.size()));
         out.addAll(bad);
-        String home = tv.tail1(SetupEngine.RESOLVE_HOME).trim();
-        out.add("Home: " + (home.matches("[A-Za-z0-9_.]+/[A-Za-z0-9_.$]+") ? home : "?"));
+        // 4.4: «Home:» is what the Home key really opens (the person's way: another app in front, the key, then who is in front), never what the role resolves to: on a
+        // Google TV launcherx keeps the key whatever the role says, and the old line said «sa.urtv.home» there (16 runs, a false pass on every Google TV)
+        out.add("Home: " + homeKeyOpens());
         String saver = tv.tail1("settings get secure screensaver_components").trim();
         out.add("Screensaver: " + (saver.matches("[A-Za-z0-9_.$/,]+") ? saver : "?"));
         String vs = appver(SetupEngine.SAVER), vh = appver(SetupEngine.SELF);

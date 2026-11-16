@@ -36,7 +36,7 @@ public final class A11yListRun {
         check("added back at the end, the others exactly as written; an entry already there is not doubled",
             A11yList.with(km, Arrays.asList(type)).equals(km + ":" + type) && A11yList.with("", Arrays.asList(type)).equals(type)
             && A11yList.with(null, Arrays.asList(type)).equals(type) && A11yList.with(km + ":sa.urtv.home/.TypeService", Arrays.asList(type)).equals(km + ":sa.urtv.home/.TypeService"));
-        carry(type, km);
+        carry(ExtrasWords.SERVICE, km);   // 4.3.3: the entry the carry keeps is the add-on's («إضافات تلفزيونك»)
         System.out.println(failed == 0 ? "ALL PASS" : "FAILED " + failed);
         System.exit(failed == 0 ? 0 : 1);
     }

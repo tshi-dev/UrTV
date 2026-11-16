@@ -45,6 +45,8 @@ final class PhoneApi implements PhoneServer.Handler {
         if (r.path.equals("/u")) return post ? json(405, err("method")) : photosPage();
         // 4.3 «ارسم»: the drawing's own page; the strokes go to /api/draw behind the session
         if (r.path.equals("/d")) return post ? json(405, err("method")) : drawPage();
+        // 4.4 «صوتياتي»: its own page, words and code only; the file goes to /api/audio_piece in pieces behind the session
+        if (r.path.equals("/a")) return post ? json(405, err("method")) : audioPage();
         // the fonts are no secret, and CSS asks for them without the X-UrTV-Session header: no session, like the page itself
         if (r.path.startsWith("/fonts/")) return post ? json(405, err("method")) : font(r.path.substring("/fonts/".length()));
 
@@ -56,6 +58,21 @@ final class PhoneApi implements PhoneServer.Handler {
                 String secret = session(r);
                 if (secret == null) return json(401, err("no_session"));
                 return result(control.actions().photoAdd(r.raw));
+            }
+            if (r.path.equals(PhoneServer.MASK_PATH)) {   // 4.4: the photo's mask, a PNG, read only as raw bytes; the screensaver checks it against the photo
+                if (r.raw == null || type == null || !type.toLowerCase().trim().equals("image/png")) return json(415, err("png_only"));
+                String secret = session(r);
+                if (secret == null) return json(401, err("no_session"));
+                return result(control.actions().photoMask(r.raw));
+            }
+            if (r.path.equals(PhoneServer.AUDIO_PATH)) {   // 4.4: a piece of a sound file, raw bytes; where it goes is in three headers
+                if (r.raw == null || type == null || !type.toLowerCase().trim().equals("application/octet-stream")) return json(415, err("bytes_only"));
+                String secret = session(r);
+                if (secret == null) return json(401, err("no_session"));
+                long offset = number(r.header("x-urtv-offset")), total = number(r.header("x-urtv-total"));
+                String name = fileName(r.header("x-urtv-name"));
+                if (offset < 0 || total <= 0 || name == null) return json(400, err("bad_request"));
+                return result(control.actions().audioPiece(offset, total, name, r.raw));
             }
             if (type == null || !type.toLowerCase().replace(" ", "").matches("application/json(;charset=utf-8)?")) return json(415, err("json_only"));
         }
@@ -76,6 +93,7 @@ final class PhoneApi implements PhoneServer.Handler {
                 case "/api/apps": return ok(control.actions().apps());
                 case "/api/family": return ok(control.actions().family());
                 case "/api/backdrop": return backdrop();
+                case "/api/audio": return ok(control.actions().audio());   // 4.4 «صوتياتي»: the list and the caps
                 case "/api/portfolio": {
                     Map<String, Object> p = control.actions().portfolio();
                     return p == null ? json(403, err("portfolio_closed")) : ok(p);
@@ -100,6 +118,7 @@ final class PhoneApi implements PhoneServer.Handler {
             case "/api/logout": endpoint = "logout"; break;
             case "/api/portfolio": endpoint = "portfolio"; break;
             case "/api/message": endpoint = "message"; break;   // 4.3 #53: a short message shown on the TV
+            case "/api/audio": endpoint = "audio"; break;   // 4.4 «صوتياتي»: use a file, or delete it
             case DRAW_PATH: endpoint = "draw"; break;   // 4.3 #53 «ارسم»: live strokes over the TV's screen
             default: return json(404, err("not_found"));
         }
@@ -138,6 +157,7 @@ final class PhoneApi implements PhoneServer.Handler {
             }
             case "quran": return result(a.quran(v));
             case "message": return result(a.message((String) v.get("text")));
+            case "audio": return result(a.audioOp((String) v.get("op"), (Long) v.get("id"), (String) v.get("as")));
             case "draw": return result(a.draw((List<?>) v.get("s"), Boolean.TRUE.equals(v.get("clear"))));
             case "cities": {
                 Map<String, Object> out = ok();
@@ -282,6 +302,27 @@ final class PhoneApi implements PhoneServer.Handler {
         return html == null ? json(404, err("not_found")) : page(html);
     }
 
+    private PhoneServer.Response audioPage() {
+        String html = control.page().audioHtml();
+        return html == null ? json(404, err("not_found")) : page(html);
+    }
+
+    /** a whole number of at most 10 digits from a header, -1 otherwise */
+    static long number(String h) {
+        return h != null && h.matches("[0-9]{1,10}") ? Long.parseLong(h) : -1;
+    }
+
+    /** the file's name from its header (percent-encoded UTF-8, as encodeURIComponent makes it), at most 200 characters; null when it is not one */
+    static String fileName(String h) {
+        if (h == null || h.isEmpty() || h.length() > 600) return null;
+        try {
+            String n = java.net.URLDecoder.decode(h.replace("+", "%2B"), "UTF-8");
+            return n.length() > 200 ? null : n;
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
     private PhoneServer.Response portfolioPage() {
         String html = control.page().portfolioHtml();
         return html == null ? json(404, err("not_found")) : page(html);
@@ -336,7 +377,7 @@ final class PhoneApi implements PhoneServer.Handler {
     /** For tests: the endpoints that need a session. */
     static List<String> sessionPaths() {
         List<String> l = new ArrayList<>();
-        for (String p : new String[] {"/api/state", "/api/key", "/api/text", "/api/set", "/api/quran", "/api/cities", "/api/update", "/api/launch", "/api/adhan_stop", "/api/do", "/api/apps", "/api/family", "/api/icon/com.example.app", "/api/backdrop", "/api/logout", "/api/portfolio"}) l.add(p);
+        for (String p : new String[] {"/api/state", "/api/key", "/api/text", "/api/set", "/api/quran", "/api/cities", "/api/update", "/api/launch", "/api/adhan_stop", "/api/do", "/api/apps", "/api/family", "/api/icon/com.example.app", "/api/backdrop", "/api/logout", "/api/portfolio", "/api/audio", PhoneServer.AUDIO_PATH}) l.add(p);
         return l;
     }
 }

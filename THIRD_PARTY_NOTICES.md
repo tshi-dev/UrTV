@@ -4,6 +4,21 @@ Code and ideas taken from other projects, with their licenses. Fonts, photos and
 `assets/fonts/*-NOTICE.txt` and `*-OFL.txt`, `docs/PHOTO-CREDITS.md`, `optimize/lists/community/LICENSE-CleanYourTV.txt`, and the
 launcher's origin in `android/launcher/LICENSE-tv-home`.
 
+## التفسير الميسر
+
+«التفسير الميسر» under the verse of the day (only with «التفسير الميسر» on, `#tafsir=1`): نخبة من العلماء، مجمع الملك فهد لطباعة المصحف الشريف
+(King Fahd Glorious Quran Printing Complex), fetched by `.github/tools/fetch_verses.py` from api.alquran.cloud (edition `ar.muyassar`) into
+`assets/shared/verses.json`, and shipped as `dist/tafsir.json`. The text is shown whole and unchanged (never shortened, nothing added),
+with its name above it; QuranEnc.com publishes the same tafsir on these terms (re-publication allowed with no modification, addition or
+deletion, the publisher and source named).
+
+## couch-tv
+
+The 4.3.3 scene home proposal (`docs/mockups/`) follows couch-tv's design (https://github.com/Seagey/couch-tv: scenes with a glass
+clock behind the scenery, settings with side sections), and its mockups use couch-tv's five scene photos, their cut-outs and glass
+copies (`tv-home/web/backgrounds/scene-*`, made for couch-tv with an AI image model, "use them however you like"), under the MIT
+License, Copyright (c) 2026 Seagey, the same text as below.
+
 ## talkies
 
 The home screen's spring motion (`android/launcher/src/main/java/sa/urtv/home/Spring.java`) and the ideas for the channel and
@@ -157,3 +172,14 @@ per-model lists, packages only, re-taken at commit 3cd274f8 (2 Nov 2026). Clean 
 «تطبيقات مقترحة» offers Open Shelf (https://github.com/wingedpanther/openshelf, GPL-3.0; its font under the SIL Open Font License 1.1) as one entry. We only link to it: the settings download its own release file
 (`OpenShelf-<version>.apk` from that repository's releases), check that it is that package, and hand it to Android's installer, which asks the person first. Nothing of Open Shelf is bundled in our apps, and we
 have not vetted the apps it installs (the line on its tile says so).
+
+## GeoNames and Wikidata (the offline city search)
+
+`android/app/src/main/assets/cities-more.txt` (the places the settings' city search and `saver.sh city` find without the internet, built by
+`.github/tools/cities-more/build.py`) and the world part of the built-in list (`Cities.java`) are made from:
+
+- **GeoNames** (https://www.geonames.org/), cities500, through the `geonamescache` package: names, coordinates, populations and time zones,
+  under the Creative Commons Attribution 4.0 License (CC BY 4.0, https://creativecommons.org/licenses/by/4.0/). Changes: places chosen by
+  country and population, places already in the built-in list left out, coordinates rounded to four decimals.
+- **Wikidata** (https://www.wikidata.org/): the Arabic names and other Arabic spellings of those GeoNames places (by their GeoNames id, P1566)
+  and the seats of the Saudi governorates, under CC0 1.0 (public domain dedication). A snapshot is kept in `.github/tools/cities-more/sources/`.

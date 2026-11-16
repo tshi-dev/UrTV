@@ -46,12 +46,25 @@
   html.widget .mid{display:grid;grid-template-columns:minmax(0,1fr);gap:var(--cg,clamp(8px,2vw,22px));align-items:start}
   html.widget .mid.n2,html.widget .mid.n3{grid-template-columns:minmax(0,560fr) minmax(0,540fr)}
   html.widget .mid .week.w3{grid-column:1/-1}
+  /* 4.4 «التخطيط: كنبة» (#row=1): the cards side by side in one low strip above the apps tray, the same height; today's prayers in one row */
+  html.row .mid.n2{grid-template-columns:1fr 1fr}html.row .mid.n3{grid-template-columns:1fr 1fr 1fr}
+  html.row .mid{align-items:stretch}html.row .mid .week.w3{grid-column:auto}
+  html.row .week ul.pgrid{grid-template-columns:repeat(6,minmax(0,1fr));gap:.5em}
+  html.row .week ul.pgrid li{padding:.6em .2em;font-size:calc(clamp(16px,1.2vw,26px)*var(--z,1))}
+  /* the owner: in the strip the cards' words are centred, the heading, the main line and the line under it */
+  html.row .week .hd{justify-content:center}html.row .week .hd::after{display:none}
+  html.row .week li{justify-content:center;text-align:center}
   html.widget .week{width:100%}
   /* the home's cards take the apps tray's glass (#hpanel= and #hline= from the launcher: FavBar's fill and line, as thin as «شفافية الشريط» says): one family in every look, no per-card tint */
   html.hcard .week{background:var(--hpanel)!important;border-color:var(--hline)!important}
   html.hcard .week:not(.lf){box-shadow:none!important}   /* the card styles' soft drop shadow (0 24px 60px) is cut at the card's box on the home: a straight-edged dark patch under the glass (step 52); the focus ring (.lf) stays */
   html.hcard[class*="cs-"] .week{background:none!important}
   html.hcard[class*="cs-"] .week::before{background:var(--hpanel)!important}
+  /* 4.4 card review: a dark floor under the glass, so a bright photo (sky, sand) never washes the words out; the glass itself unchanged.
+     Not with «توحيد المظهر» (html.hsync: the cards are the tray's one material, exactly) */
+  html.hcard:not(.hsync) .week{background:linear-gradient(var(--hpanel),var(--hpanel)),rgba(10,12,16,.52)!important}
+  html.hcard:not(.hsync)[class*="cs-"] .week{background:none!important}
+  html.hcard:not(.hsync)[class*="cs-"] .week::before{background:linear-gradient(var(--hpanel),var(--hpanel)),rgba(10,12,16,.52)!important}
   html.hsync .week::after,html.hsync .week .frm,html.hsync .week .dia{display:none!important}   /* «توحيد المظهر» on: the one material, no sheen and no bright rim of the card styles */
   /* «توحيد المظهر» on (#hink=, #hsub=, #hacc= beside the two above): the cards' words are the look's too, its text, second text and accent; on a light look (html.hlt) the muted and the up/down colours written for dark glass become ones that read on white */
   html.hsync .week{--sand:var(--hink);--dim:var(--hsub);--gold:var(--hacc);--gold-2:var(--hacc);--gold-3:var(--hacc);--gold-hi:var(--hacc);--gold-rgb:var(--haccrgb);color:var(--hink)}
@@ -59,6 +72,11 @@
   html.hlt .week li{color:var(--hink)}html.hlt .week .past{opacity:.72}
   html.hlt .week .next,html.hlt .week .next .dt,html.hlt .week .next i,html.hlt .week .yt b{color:var(--hacc)!important}
   html.hlt .week .up{color:#166A45!important}html.hlt .week .down{color:#8E2A10!important}
+  /* the 4.4 cards' own light words, on a light look the look's ink; the next prayer a tint of its accent */
+  html.hlt .week .hc i,html.hlt .week .fc .hi,html.hlt .week li.np .t,html.hlt .week li.np .r,html.hlt .week ul.pgrid li:not(.next):not(.past) span,html.hlt .week li.prow .pc:not(.next):not(.past) b,html.hlt .week li.prow .pc:not(.next):not(.past) i,html.hlt .week .mg .mwhen{color:var(--hink)!important}
+  html.hlt .week li.src,html.hlt .week li.np .iq,html.hlt .week .fc .lo,html.hlt .week .past *{color:var(--hsub)!important}
+  html.hlt .week ul.pgrid li.next,html.hlt .week li.prow .pc.next{background:rgba(var(--haccrgb,0,0,0),.14)!important;border-color:var(--hacc)!important}
+  html.hlt .week .next *{color:var(--hacc)!important}
   html.widget .week.boxes{padding:max(1.7vh,10px) max(1.4vw,14px)}   /* the prayer boxes keep a clear, even distance from the card's edge */
   html,body{
     height:100%;overflow:hidden;background:#040E09;color:var(--sand);
@@ -124,7 +142,7 @@
   }
   .week .hd{
     display:flex;align-items:center;gap:.7em;margin-bottom:1vh;
-    font-size:calc(clamp(12px,1vw,18px)*var(--z,1));font-weight:500;letter-spacing:0;color:var(--gold-2);
+    font-size:calc(clamp(12px,1vw,18px)*var(--z,1));font-weight:500;letter-spacing:0;color:var(--gold-3);
   }
   .week .hd::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,rgba(var(--gold-rgb),.5),transparent)}
   .week ul{list-style:none;display:flex;flex-direction:column;gap:0}
@@ -136,7 +154,7 @@
   }
   .week li:last-child{border-bottom:none}
   .week li span:first-child{flex:0 1 auto;max-width:68%;overflow:hidden;text-overflow:ellipsis;padding-bottom:.3em;margin-bottom:-.3em}
-  .week li .ep{flex:0 0 auto;color:#9FB8A8;font-size:.74em;font-variant-numeric:tabular-nums}
+  .week li .ep{flex:0 0 auto;color:#CFC6B2;font-size:.74em;font-variant-numeric:tabular-nums}
   .week li .rt{flex:0 0 auto;color:var(--gold-3);font-size:.74em;font-variant-numeric:tabular-nums}
   .week li .mwhen{display:block;font-style:normal;margin-top:.15em;font-size:.68em;font-weight:300;color:#A79C85;overflow:hidden;text-overflow:ellipsis}
   /* a game is one line, on the launcher's card and the screensaver's: the clubs with their crests beside the score, then the date, then
@@ -152,7 +170,15 @@
   .week li .tm .nm{max-width:none;overflow:visible;text-overflow:clip;padding:0;margin:0}   /* a name is never cut by the first-name rule above */
   .week li.mg .tm .cr{margin:0}
   .week li.mg .sc{font-variant-numeric:tabular-nums;color:var(--gold-hi);font-weight:600}
-  .week li .dt{flex:1 1 auto;color:#9C9279;font-size:.72em;min-width:3.2em;text-align:left}
+  html:not(.cso) .week li.mg .mr .mwhen{color:#E2DACA;text-align:center;align-self:center;line-height:1.3}
+  html:not(.cso) .week li.mg .mr .dt{color:var(--gold-3)}
+  html:not(.cso) .week li.mg.done{color:#CFC6B2}html:not(.cso) .week li.mg.done .mr .dt{color:#B9B09C}
+  html:not(.cso) .week.nm1 li.mg .mr{flex-wrap:wrap;row-gap:.3em;white-space:normal}
+  html:not(.cso) .week.nm1 li.mg .mr .tm .nm,html:not(.cso) .week.nm1 li.mg .mr .x,html:not(.cso) .week.nm1 li.mg .sc{font-size:1.7em;font-weight:500}
+  html:not(.cso) .week.nm1 li.mg .mr .mwhen{order:5;flex:0 0 auto;text-align:start;font-size:1em;color:#F1E7D0}
+  html:not(.cso) .week.nm1 li.mg .mr .dt{order:6;flex:1 0 auto;font-size:1em}
+  html:not(.cso) .week.nm1 li.mg .mr::after{content:'';order:4;flex:0 0 100%}
+  .week li .dt{flex:1 1 auto;color:#CFC6B2;font-size:.72em;min-width:3.2em;text-align:left}
   .week li .tm .cr{width:1.25em;height:1.25em;object-fit:contain;vertical-align:middle;margin-block:-.25em}
   .week li .tm .crgap{display:inline-block;flex:0 0 auto;width:1.25em;height:1.25em}   /* a club with no crest, beside clubs that have one */
   .week li .tm .cr:not([src]){visibility:hidden}   /* a restored row waits for its picture: the same room */
@@ -167,22 +193,39 @@
   /* «مواقيت اليوم»: the six times as boxes, three and three, larger than a list's rows; the next one lit, the past ones dimmed. Even room
      round every box and round the grid, so it sits symmetrical in the card (renderCard puts .pgrid on the list) */
   .week ul.pgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:calc(1.2vh + 6px) calc(.9vw + 6px);padding:calc(.5vh + 2px) 0 calc(.3vh + 2px)}
-  .week ul.pgrid li{flex-direction:column;align-items:center;justify-content:center;gap:.3em;white-space:nowrap;text-align:center;
-    padding:calc(1.7vh + 6px) .5em;border:1px solid rgba(var(--gold-rgb),.24);border-radius:calc(10px + .5vw);background:rgba(255,255,255,.045);
+  .week ul.pgrid li{flex-direction:column;align-items:center;justify-content:center;gap:.15em;white-space:nowrap;text-align:center;
+    padding:calc(1.7vh + 6px) .5em;border:1px solid rgba(255,255,255,.14);border-radius:calc(10px + .5vw);background:rgba(255,255,255,.04);
     font-size:calc(clamp(18px,1.7vw,32px)*var(--z,1))}
-  .week ul.pgrid li:last-child{border-bottom:1px solid rgba(var(--gold-rgb),.24)}
-  .week ul.pgrid li span:first-child{max-width:none;overflow:visible;padding:0;margin:0;font-weight:500}
-  .week ul.pgrid li .dt{flex:none;min-width:0;text-align:center;font-size:.82em;color:#CFC5AD;font-variant-numeric:tabular-nums}
-  .week ul.pgrid li.past{color:#8F8670;background:rgba(255,255,255,.02);border-color:rgba(var(--gold-rgb),.12)}
-  .week ul.pgrid li.past .dt{color:#8A826D}
-  .week ul.pgrid li.next{background:rgba(var(--gold-rgb),.18);border-color:rgba(var(--gold-rgb),.55);color:var(--gold-hi)}
-  .week ul.pgrid li.next .dt{color:var(--gold-3)}
+  .week ul.pgrid li:last-child{border-bottom:1px solid rgba(255,255,255,.14)}
+  .week ul.pgrid li span:first-child{max-width:none;overflow:visible;padding:0;margin:0;font-weight:400;font-size:.9em;color:#E9E1CE}
+  .week ul.pgrid li .dt{flex:none;min-width:0;text-align:center;font-size:1.06em;font-weight:500;color:#FFF;font-variant-numeric:tabular-nums}
+  .week ul.pgrid li.past{background:none;border-color:rgba(255,255,255,.08)}
+  .week ul.pgrid li.past span:first-child,.week ul.pgrid li.past .dt{color:#B9B09C;font-weight:400}
+  .week ul.pgrid li.next{background:#EBC67D;border-color:#EBC67D}
+  .week ul.pgrid li.next span:first-child,.week ul.pgrid li.next .dt{color:#1A1409}
+  .week ul.pgrid li .cd{font-size:.7em;color:#3A2C10;white-space:nowrap}
+  /* 4.4 «شكل البطاقة: مربعات» (html.pbx): today's prayers as separate boxes in one row, no card round them; each box the launcher's glass
+     (#hpanel=) or a dark one, so it reads over any photo; the next one light with its countdown under it */
+  html.pbx .week.boxes,html.pbx .week.boxes::before{background:none!important;border:0!important;box-shadow:none!important;padding:0!important}
+  html.pbx .week.boxes::after,html.pbx .week.boxes .hd,html.pbx .week.boxes .frm,html.pbx .week.boxes .dia{display:none!important}
+  html.pbx .week ul.pgrid{display:flex;flex-direction:row;gap:.45em;padding:.3em}
+  html.pbx .week ul.pgrid li{flex:1 1 0;min-width:0}html.pbx .week ul.pgrid li.next{flex-grow:1.7}
+  html.pbx .week ul.pgrid li{background:var(--hpanel,rgba(22,18,14,.62));border-color:var(--hline,rgba(255,255,255,.16));padding:.7em .15em;gap:.2em;font-size:calc(clamp(14px,1.45vw,28px)*var(--z,1))}
+  html.pbx .week ul.pgrid li.past{opacity:.8}
+  html.pbx .week ul.pgrid li span:first-child{font-weight:500;font-size:1em;color:inherit}
+  html.pbx .week ul.pgrid li .dt{font-size:.82em;font-weight:400;color:#CFC5AD}
+  html.pbx .week ul.pgrid li.past span:first-child{color:#8F8670}html.pbx .week ul.pgrid li.past .dt{color:#8A826D}
+  html.pbx .week ul.pgrid li.next span:first-child{color:inherit}
+  html.pbx .week ul.pgrid li.next{background:#F6EAD2;border-color:#F6EAD2;color:#2A1D0E!important;transform:scale(1.06)}
+  html.pbx .week ul.pgrid li.next .dt,html.pbx .week li .cd{color:#6B4A1E!important}
+  html.pbx .week li .cd{font-size:.68em;white-space:nowrap}
   /* «الساعات القادمة»: the next six hours in one row, the earliest on the right */
-  .week li.hrs{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:.3em;white-space:normal;border-bottom:none;padding:1.2vh 0 .5vh;align-items:start;text-align:center}
-  .week li.hrs .hc{display:flex;flex-direction:column;align-items:center;gap:.4em;min-width:0}
-  .week li.hrs .hc b{font-weight:400;font-size:.78em;color:#B9AE96;white-space:nowrap}
-  .week li.hrs .hc svg{width:1.9em;height:1.9em;fill:none;stroke:var(--gold-3);stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
-  .week li.hrs .hc i{font-style:normal;font-variant-numeric:tabular-nums;font-size:1.05em;white-space:nowrap}
+  .week li.hrs{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px;white-space:normal;border-bottom:none;padding:8px 0 4px;align-items:start;text-align:center}
+  .week li.hrs .hc{display:flex;flex-direction:column;align-items:center;gap:.35em;min-width:0}
+  .week li.hrs .hc b{font-weight:400;font-size:.84em;color:#E2DACA;white-space:nowrap}
+  .week li.hrs .hc svg,.week li.fc .wxi svg{width:1.7em;height:1.7em;fill:none;stroke:var(--gold-3);stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+  .week li.hrs .hc i{font-style:normal;font-variant-numeric:tabular-nums;font-size:1.2em;font-weight:500;color:#FFF;white-space:nowrap}
+  .wxi{align-self:center}.wxi svg{width:1em;height:1em}
   /* «الصلوات في صف»: the five prayers side by side, the next one lit */
   .week li.prow{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:.3em;white-space:normal;border-bottom:none;padding:.9vh 0 .3vh;text-align:center;align-items:stretch}
   .week li.prow .pc{display:flex;flex-direction:column;align-items:center;gap:.3em;padding:.55em .1em;border-radius:.7em;min-width:0}
@@ -192,6 +235,12 @@
   .week li.prow .pc.past i{color:#7F775F}
   .week li.prow .pc.next{background:rgba(var(--gold-rgb),.18);box-shadow:inset 0 0 0 1px rgba(var(--gold-rgb),.45);color:var(--gold-hi)}
   .week li.prow .pc.next i{color:var(--gold-3)}
+  html:not(.cso) .week li.prow .pc{gap:.15em}
+  html:not(.cso) .week li.prow .pc b{font-weight:400;font-size:.88em;color:#E9E1CE}
+  html:not(.cso) .week li.prow .pc i{font-size:.9em;color:#FFF;font-weight:500}
+  html:not(.cso) .week li.prow .pc.past b,html:not(.cso) .week li.prow .pc.past i{color:#B9B09C;font-weight:400}
+  html:not(.cso) .week li.prow .pc.next{background:#EBC67D;box-shadow:none}
+  html:not(.cso) .week li.prow .pc.next b,html:not(.cso) .week li.prow .pc.next i{color:#1A1409}
   /* the same game in the card: «مباشر · الدقيقة ٦٧» over the two names with the score between, one line (fitLive) */
   .week li.lv{display:block;white-space:normal;text-align:center;border-bottom:none;padding:.5vh 0 .2vh}
   .week li.lv .lvm{font-size:.8em;color:#E6DCC4;margin-bottom:.35em}
@@ -205,10 +254,24 @@
   .week li.lv .sc{color:var(--gold-hi);font-size:1.25em;font-weight:700;font-variant-numeric:tabular-nums;padding:0 .1em}
   /* «الصلاة القادمة»: the name lit, its time, and the time left (as large and as bright as the time: the most useful part); the line
      may wrap between them, never inside one */
-  .week li.np{display:flex;flex-wrap:wrap;align-items:baseline;gap:.15em .5em;white-space:normal;border-bottom:none;padding:1.2vh 0 .6vh}
-  .week li.np > *{flex:0 0 auto;max-width:none;overflow:visible;text-overflow:clip;padding:0;margin:0;white-space:nowrap}
-  .week li.np b{font-weight:500;color:var(--gold-hi)}
-  .week li.np .t{font-variant-numeric:tabular-nums}
+  /* «الأيام القادمة» (4.4): the day, its icon and words, then the low, a bar of the days' range from cool to warm in the reading direction, the high */
+  .week li.fc{display:grid;grid-template-columns:4.2em 1.5em minmax(0,1fr) 2em minmax(2.5em,5.5em) 2em;align-items:center;gap:0 .6em}
+  .week li.fc > span{max-width:none;overflow:hidden;text-overflow:ellipsis;padding:0;margin:0}
+  .week li.fc .wxi svg{width:1.35em;height:1.35em;display:block;fill:none;stroke:var(--gold-3);stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+  .week li.fc .ep{font-size:.8em;white-space:normal;overflow:visible;line-height:1.2}   /* a narrow card (the small clock's pair): the words wrap, never cut */
+  .week li.fc .lo,.week li.fc .hi{text-align:center;font-variant-numeric:tabular-nums}
+  .week li.fc .lo{color:#CFC6B2}.week li.fc .hi{color:#FFF;font-weight:500}
+  .week li.fc .rg{position:relative;height:5px;border-radius:3px;background:rgba(255,255,255,.14)}
+  .week li.fc .rg i{position:absolute;top:0;bottom:0;border-radius:3px;background:linear-gradient(to left,#8FC3C9,var(--gold-3) 60%,#F0975F)}
+  html[dir=ltr] .week li.fc .rg i{background:linear-gradient(to right,#8FC3C9,var(--gold-3) 60%,#F0975F)}
+  .week li.np{display:grid;grid-template-columns:auto 1fr auto;align-items:baseline;gap:.35em .6em;white-space:normal;border-bottom:none;padding:.4em 0 .2em}
+  .week li.np > *{max-width:none;overflow:visible;text-overflow:clip;padding:0;margin:0;white-space:nowrap}
+  .week li.np b{grid-column:1;font-size:2em;line-height:1.1;font-weight:500;color:var(--gold-hi)}
+  .week li.np .t{grid-column:2;font-size:2em;line-height:1.1;color:#FFF;font-variant-numeric:tabular-nums}
+  .week li.np .r{grid-column:1/3;font-size:1.05em;color:#F1E7D0}
+  .week li.np .iq{grid-column:3;grid-row:2;font-size:.86em;color:#CFC6B2}
+  .week li.np .pb{grid-column:1/-1;height:4px;border-radius:2px;background:rgba(255,255,255,.16);overflow:hidden;margin-top:.3em}
+  .week li.np .pb i{display:block;height:100%;background:var(--gold-3);border-radius:2px}
   /* «يومك»: a small name, then the thing itself (it may wrap, never «…»), then when */
   .week li.td{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:.1em .8em;align-items:baseline;white-space:normal}
   .week li.td > span{max-width:none;overflow:visible;text-overflow:clip;padding:0;margin:0}   /* not the list rows' first-name rule */
@@ -221,8 +284,9 @@
   .week li.quote{white-space:normal;display:block;font-size:calc(clamp(17px,1.5vw,29px)*var(--z,1));line-height:1.75;
     border-bottom:none;padding:.4vh 0 0;color:#FFF7E6}
   /* Thmanyah draws ﴿﴾ as small angle marks: they come from the NotoMarks subset */
-  .week li.quote .orn{font-family:'NotoMarks','Noto Naskh Arabic',serif;color:var(--gold-2);
-    font-size:1.05em;padding:0 .15em}
+  .week li.quote .orn{font-family:'NotoMarks','Noto Naskh Arabic',serif;color:var(--gold-3);
+    font-size:1.5em;line-height:1;vertical-align:-.12em;padding:0 .12em}
+  .week li.quote,.week li.src{text-align:center}   /* 4.4: the verse and the hadith as on a plaque */
   /* ﷺ is not in Thmanyah either: NotoMarks, in gold like the verse brackets so it reads as ornament */
   .week li.quote .saw{font-family:'NotoMarks','Noto Naskh Arabic',serif;color:var(--gold-2);font-size:1.6em;line-height:1;vertical-align:-.1em}
   /* the Uthmanic Hafs face is small for its size and its marks stack high: larger, with more leading */
@@ -231,9 +295,13 @@
   .week li.quote.quran.q1{font-size:calc(clamp(13px,1.3vw,25px)*var(--z,1));line-height:1.85}   /* the Hafs face is wide: a lower floor than the other cards' */
   .week li.quote.quran.q2{line-height:1.8}
   .week li.quote.quran.q3,.week li.quote.quran.q4{line-height:1.55}   /* the longest verses, on the smallest screens, must still fit the card */
-  /* «التفسير الميسر» under the verse (#tafsir=1): small and dim, three lines at most (fitTafsir) */
-  .week li.tafsir{white-space:normal;display:block;border-bottom:none;padding:.5vh 0 0;line-height:1.65;
-    font-size:calc(clamp(11px,.92vw,17px)*var(--z,1));color:#B9AE96}
+  /* «التفسير الميسر» under the verse (#tafsir=1): its name small in gold, then the text whole: three lines at most a page, the pages in
+     turn (fitTafsir), never cut, never «…» */
+  .week li.tafsir{white-space:normal;display:block;border-bottom:none;padding:.6vh 0 0;line-height:1.65;text-align:start;
+    font-size:calc(clamp(11px,.92vw,17px)*var(--z,1));color:#CFC6B2}
+  .week li.tafsir .tk{display:block;font-size:.86em;color:var(--gold-3);line-height:1.4}
+  .week li.tafsir .tt{display:block}
+  .week li.tafsir .tp{display:block;font-size:.8em;color:#B9B09C;text-align:end;line-height:1.3}
   /* a full hadith: the isnad and the narration small and muted, the Prophet's words ﷺ at full size */
   .week li.quote.hadith{font-size:calc(clamp(15px,1.3vw,25px)*var(--z,1));line-height:1.7}
   /* long texts a step smaller (by length, see quoteSize()), so the card never grows past the clock row */
@@ -246,7 +314,7 @@
   .week li.quote.hadith.q3{font-size:calc(clamp(12px,.94vw,18px)*var(--z,1))}
   .week li.quote .nar{font-size:.66em;color:#B9AE96}
   .week li.quote .nar .saw{font-size:1.45em}
-  .week li.src{border-bottom:none;padding:.6vh 0 0;font-size:calc(clamp(12px,.95vw,18px)*var(--z,1));color:var(--gold-2)}
+  .week li.src{border-bottom:none;padding:.9vh 0 0;font-size:calc(clamp(12px,.95vw,18px)*var(--z,1));color:#CFC6B2}
   /* «أذكار الصباح والمساء»: the header takes a line icon and the window's end; the footer holds source, count and dots */
   .week .hd::after{order:1}
   .week .hd svg{flex:0 0 auto;width:1.5em;height:1.5em;fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
@@ -256,8 +324,9 @@
   .week li.stk{align-items:center;gap:.8em}
   .week li.stk .nm{flex:1 1 auto;min-width:0;max-width:none;overflow:hidden;text-overflow:ellipsis;padding-bottom:.3em;margin-bottom:-.3em}
   .week li.stk.old{opacity:.6}
-  .week li.stk .cl{font-size:.64em;color:#9C9279;margin-inline-start:.6em}
-  .week li.stk svg{flex:0 0 auto;width:4.4em;height:1.1em;fill:none;stroke:currentColor;stroke-width:1.5;stroke-linejoin:round;stroke-linecap:round;vector-effect:non-scaling-stroke}
+  .week li.stk .cl{font-size:.74em;color:#B9B09C;margin-inline-start:.6em}
+  .week li.stk .up,.week li.stk .down{font-size:.9em;font-weight:500}
+  .week li.stk svg{flex:0 0 auto;width:4.4em;height:1.1em;fill:none;stroke:currentColor;stroke-width:2;stroke-linejoin:round;stroke-linecap:round;vector-effect:non-scaling-stroke}
   .week li.stk svg polyline{vector-effect:non-scaling-stroke}
   .week li.stk .px{flex:0 0 auto;min-width:3.6em;text-align:left;font-variant-numeric:tabular-nums;direction:ltr}
   .week li.stk .chg{flex:0 0 auto;min-width:4.9em;text-align:left;font-size:.74em;font-variant-numeric:tabular-nums}
@@ -539,14 +608,14 @@
   .wxt{font-family:'ThmanyahDisplay','Thmanyah',serif;font-weight:700;color:#FFFCF2;direction:ltr;
     font-variant-numeric:tabular-nums}
   .wxdust{color:#E8B86A;font-size:.82em}   /* the dust, beside the condition and not instead of it */
-  .wxdust:not(:empty)::before{content:'·';margin-inline-end:.5em;color:rgba(214,175,107,.7)}
+  .wxdust:not(:empty)::before{content:'،';margin-inline-end:.5em;color:rgba(214,175,107,.7)}
   .wxmore{margin-top:.3vh;font-size:clamp(11px,.92vw,18px);font-weight:300;color:var(--dim);white-space:nowrap}
   .wxmore[hidden]{display:none}
   .wxsrc{margin-top:.3vh;font-size:clamp(10px,.86vw,17px);font-weight:300;color:var(--dim);opacity:.8;white-space:nowrap}
   .wxsrc:empty{display:none}
   .wxsub{margin-top:.55vh;font-size:clamp(12px,1.06vw,21px);font-weight:300;color:var(--dim);white-space:nowrap}
-  .wxr:not(:empty)::before{content:'  ·  ';white-space:pre;color:rgba(214,175,107,.7)}
-  .wxt:empty,.wxd:empty,.wxr:empty,.wxdust:empty{display:none}
+  .wxr:not(:empty)::before{content:'، ';white-space:pre;color:rgba(214,175,107,.7)}
+  .wxt:empty,.wxd:empty,.wxr:empty,.wxdust:empty,.wxi:empty{display:none}
   .rule.l{margin-left:0;margin-right:auto;background:linear-gradient(90deg,var(--gold),rgba(var(--gold-rgb),0))}
   .mk{margin-top:1.2vh;display:flex;justify-content:flex-end;gap:1.6em;white-space:nowrap;
     font-size:clamp(12px,1.06vw,21px);font-weight:400;color:#D8CDB6}
@@ -692,7 +761,7 @@
   /* ---- «المباريات» (#matchpage=1): the light look, sand paper and white cards, a green ring for the focus */
   html.mpage .stage,html.mpage .photo,html.mpage .veil,html.mpage .grain,html.mpage .top-veil,html.mpage .bottom-veil,html.mpage .dimmer,html.mpage #credit,html.mpage .adbar{display:none}
   html.mpage,html.mpage body{background:#F4F2EC}
-  #mp,#mp-detail{--fi:#1B1F1D;--fs:#5E635F;--fgr:#1B8354;--fam:#8A5600;--fring:#1B8354;--fln:#E4E1D8;--fbg:#fff;--chip:#fff;--rowf:#EEF6F1;--dlg:#F7F6F1;--btn:#fff;--pri:#21915F;--veil:rgba(244,242,236,.72);--shd:rgba(40,36,24,.18)}
+  #mp,#mp-detail{--fi:#1B1F1D;--fs:#5E635F;--fgr:#1B8354;--fam:#8A5600;--fring:#1B8354;--fln:#E4E1D8;--fbg:#fff;--chip:#fff;--rowf:#EEF6F1;--dlg:#F7F6F1;--btn:#fff;--pri:#21915F;--veil:rgba(244,242,236,.72);--shd:rgba(40,36,24,.18);--flo:#B3261E}
   #mp{position:fixed;inset:0;padding:calc(var(--u)*64) calc(var(--u)*120) calc(var(--u)*56);color:var(--fi);display:flex;flex-direction:column;font-size:calc(var(--u)*28)}
   #mp header{display:flex;justify-content:space-between;align-items:baseline;gap:calc(var(--u)*24);flex-wrap:wrap}   /* 4.3.2: the source line never touches the title */
   #mp h1{font-size:calc(var(--u)*64);font-weight:700}
@@ -720,6 +789,28 @@
   .mpg{min-height:calc(var(--u)*88);padding:calc(var(--u)*16) calc(var(--u)*24);border-radius:calc(var(--u)*16)}
   .mpg + .mpg{border-top:1px solid var(--fln)}
   .mpg.f{box-shadow:inset 0 0 0 calc(var(--u)*3) var(--fring);background:var(--rowf)}
+  /* 4.3.3 a row of a view that is not a game (a team, a league, a place in the table), on the games' rows' look */
+  .mpi{display:flex;justify-content:space-between;align-items:center;gap:calc(var(--u)*24);min-height:calc(var(--u)*72)}
+  .mpi span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .mpi i{font-style:normal;color:var(--fs);font-size:calc(var(--u)*24);white-space:nowrap}
+  #mp-side{max-height:100%;overflow-y:auto;scrollbar-width:none}
+  #mp-side::-webkit-scrollbar{display:none}
+  #mp-side .fg svg{width:1em;height:1em;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linejoin:round}
+  #mp-side li.pin i{color:var(--fgr)}
+  #mp-days{overflow:hidden}
+  /* 4.3.3 a club's form: ف ت خ in their colours */
+  .fm{display:inline-flex;gap:calc(var(--u)*10);font-size:calc(var(--u)*26);font-weight:700}
+  .fm i{font-style:normal}
+  .fm-w{color:var(--fgr)}
+  .fm-d{color:var(--fs)}
+  .fm-l{color:var(--flo)}
+  .fmh{margin-inline-end:calc(var(--u)*12)}
+  .mdf{display:flex;align-items:baseline;gap:calc(var(--u)*16)}
+  .mdt .rk{color:var(--fs);font-size:calc(var(--u)*24)}
+  .mdv{text-align:center;color:var(--fs);margin:calc(var(--u)*-8) 0 calc(var(--u)*20)}   /* the clubs' last meetings, one line under them */
+  .mdx.tight{padding-top:calc(var(--u)*36);padding-bottom:calc(var(--u)*36)}   /* a place or a form under the names: the card stays inside the screen */
+  .mdx.tight .mdt{gap:calc(var(--u)*10)}
+  #mp-q{font:inherit;color:var(--fi);background:var(--fbg);border:1px solid var(--fln);border-radius:calc(var(--u)*12);padding:calc(var(--u)*4) calc(var(--u)*16);width:calc(var(--u)*560);outline:none}
   #mp .fnote{font-size:calc(var(--u)*22)}
   #mp .fmk{opacity:1;color:var(--fs);border-color:var(--fln);background:var(--chip)}
   #mp .fnone{min-height:calc(var(--u)*240)}
@@ -766,7 +857,7 @@
   .mdn{min-height:calc(var(--u)*36);margin-top:calc(var(--u)*16);text-align:center;color:var(--fgr);font-size:calc(var(--u)*24)}
   /* the dark look (#pagedark=1): GlassStyle.DARK's colours, same sizes and rings */
   html.mpage.mpdark,html.mpage.mpdark body{background:#17181B}
-  html.mpdark #mp,html.mpdark #mp-detail{--fi:#FFFFFF;--fs:#DADCE0;--fgr:#8FE0B4;--fam:#F0B35A;--fring:#8FE0B4;--fln:rgba(255,255,255,.16);--fbg:#202227;--chip:rgba(255,255,255,.08);--rowf:rgba(143,224,180,.14);--dlg:#1D1F24;--btn:#2A2D33;--pri:#1B8354;--veil:rgba(0,0,0,.66);--shd:rgba(0,0,0,.5)}
+  html.mpdark #mp,html.mpdark #mp-detail{--fi:#FFFFFF;--fs:#DADCE0;--fgr:#8FE0B4;--fam:#F0B35A;--fring:#8FE0B4;--fln:rgba(255,255,255,.16);--fbg:#202227;--chip:rgba(255,255,255,.08);--rowf:rgba(143,224,180,.14);--dlg:#1D1F24;--btn:#2A2D33;--pri:#1B8354;--veil:rgba(0,0,0,.66);--shd:rgba(0,0,0,.5);--flo:#FF9A8F}
 /* #lowram=1 (a weak TV): no transitions, the moves happen at once */
 html.lowram *, html.lowram *::before, html.lowram *::after { transition: none !important; }
 /* …and no animation either: the photo's minute-long settle redraws the whole screen every frame, the cards' fade-ins are the same (a weak TV's CPU stayed busy: reports on C05 and two 1.5 GB sets) */
@@ -801,7 +892,7 @@ html.lowram .photo.settle, html.lowram .week ul.flip li, html.lowram .mrow.flip 
     </div>
 
     <div class="markets">
-      <div class="wxline"><span class="wxt" id="wx-temp"></span><span class="wxd" id="wx-desc"></span><span class="wxdust" id="wx-dust"></span></div>
+      <div class="wxline"><span class="wxi" id="wx-ico"></span><span class="wxt" id="wx-temp"></span><span class="wxd" id="wx-desc"></span><span class="wxdust" id="wx-dust"></span></div>
       <div class="wxsub"><span id="wx-city">الرياض</span><span class="wxr" id="wx-range"></span></div>
       <div class="wxsrc" id="wx-src"></div>
       <div class="rule l"></div>
@@ -854,7 +945,7 @@ html.lowram .photo.settle, html.lowram .week ul.flip li, html.lowram .mrow.flip 
   <!-- «يُتلى الآن»: while the Quran or a radio station plays in the launcher (nowPlayingTick), in the style of the card beside the clock -->
   <div class="week np" id="np" hidden>
     <span class="frm"></span><span class="dia t"></span><span class="dia b"></span>
-    <div class="npl" id="np-l"><span class="npe"><i></i><i></i><i></i></span><span class="npk">يُتلى الآن</span><span class="nps">·</span><b id="np-t"></b><span class="nps" id="np-s">·</span><span class="npw" id="np-w"></span></div>
+    <div class="npl" id="np-l"><span class="npe"><i></i><i></i><i></i></span><span class="npk">يُتلى الآن</span><span class="nps">،</span><b id="np-t"></b><span class="nps" id="np-s">،</span><span class="npw" id="np-w"></span></div>
   </div>
 
 </main>
@@ -868,11 +959,13 @@ __BG_SET__
 const _Q = new URLSearchParams((location.hash || '').replace(/^#/, ''));
 if(_Q.get('clean'))document.documentElement.classList.add('clean','cl'+_Q.get('clean'));
 const _list = k => (_Q.get(k) || '').split(',').map(x=>x.trim()).filter(Boolean);
+// 4.4: the one separator between two parts of a line («سورة المؤمنون، الآية ٩٧»), never «·»; the English page has its own
+const SEP = '، ';
 const _num = (k, d) => { const v = parseFloat(_Q.get(k)); return isNaN(v) ? d : v; };
 // the city's time zone, #tz=: the clock, prayers, matches and dates all go by it
 const _tzOk = z => { try{ new Intl.DateTimeFormat('en',{timeZone:z}); return true; }catch(e){ return false; } };
 // the cards a slot can show (Prefs.PANELS in the app is the same list); «none» is the absence of one
-const CARD_KINDS = ['shows','prayers','forecast','hourly','prayerrow','nextprayer','matches','verse','wisdom','adhkar','stocks','tasks','year','smart','today','album'];
+const CARD_KINDS = ['shows','prayers','forecast','hourly','prayerrow','nextprayer','matches','nextmatch','verse','wisdom','adhkar','stocks','tasks','year','smart','today','album'];
 const CONFIG = {
   city: _Q.get('city') || 'الرياض',
   latitude: _num('lat', 24.7136),
@@ -937,10 +1030,10 @@ const CONFIG = {
   digits: _Q.get('digits') === 'latin' ? 'latin' : 'hindi',
   // «ساعة ٢٤»: #clock=24 shows every time of day as 24-hour
   clock24: _Q.get('clock') === '24',
-  // the look of the card beside the clock: #cardstyle=current|dark1|glass1|dark3|glass3
+  // the look of the card beside the clock: #cardstyle=current|dark1|glass1|dark3|glass3|boxes|classic («الشكل السابق»: the 4.3 prayer row, games and countdown)
   // the size of the clock: #clocksize=large|medium|small (anything else = large)
   clockSize: (v => ['medium','small'].includes(v) ? v : 'large')(_Q.get('clocksize')),
-  cardStyle: (v => ['dark1','glass1','dark3','glass3'].includes(v) ? v : 'current')(_Q.get('cardstyle')),
+  cardStyle: (v => ['dark1','glass1','dark3','glass3','boxes','classic'].includes(v) ? v : 'current')(_Q.get('cardstyle')),
   // the markets at the top left: #markets=tasi,spx,btc
   // and #mkstyle=arrows (a ▲/▼ only, the default) or prices (the price and the day's change)
   markets: (l => l.length ? l : ['tasi','spx','btc'])(
@@ -963,8 +1056,8 @@ const CONFIG = {
   // suhoor; the place stays, so nothing else moves) and #nightdim=0 keeps the night as bright as the day (no dimmer)
   occasion: _Q.get('occasion') !== '0',
   nightDim: _Q.get('nightdim') !== '0',
-  // «تبديل الآية والحديث»: #versemin=3 a new verse or hadith every 3 minutes
-  verseMin: _Q.get('versemin') === '3' ? 3 : 0,
+  // «تبديل الآية والحديث»: #versemin=3 or 10 minutes
+  verseMin: ({3:3, 10:10})[_Q.get('versemin')] || 0,
   // «الآية والحديث»: #versekind=verse only verses, #versekind=hadith only hadith
   verseKind: (v => v === 'verse' || v === 'hadith' ? v : 'both')(_Q.get('versekind')),
   // «إظهار الثواني»: #seconds=1 the seconds on the screensaver's clock, small beside the minutes
@@ -1004,10 +1097,13 @@ const CONFIG = {
   // #football=1 (with #widget=1): the launcher's football home, the weather, the prayers and today's games
   // #matchpage=1: «المباريات», the launcher's page of the games
   football: _Q.get('football') === '1' && _Q.get('widget') === '1',
+  fbHide: _Q.get('fbhide') === '1',
+  dateNum: _Q.get('datenum') === '1',   // dd/mm/yyyy
   matchPage: _Q.get('matchpage') === '1',
   // #pagedark=1 with #matchpage=1: the dark theme
   pageDark: _Q.get('pagedark') === '1',
 };
+const OLD_LOOK = CONFIG.cardStyle === 'classic';   // «شكل البطاقة: الشكل السابق»
 document.documentElement.style.setProperty('--walldim', (CONFIG.wallDim / 100).toFixed(2));
 (() => {   // the home's cards in the tray's glass (see html.hcard); nothing without the two values, so every other page is as it was
   const ok = v => /^rgba\(\d{1,3},\d{1,3},\d{1,3},(0|1|0?\.\d{1,3})\)$/.test(v || '');
@@ -1026,6 +1122,7 @@ document.documentElement.style.setProperty('--walldim', (CONFIG.wallDim / 100).t
 // 4.3 «مباريات اليوم وبكرة»: with no league of their own, the matches page also loads the top leagues
 const MP_TOP = ['id4328', 'id4335', 'id4332', 'id4331', 'id4334', 'id4480'], MP_TOP_IDS = ['4668', '4328', '4335', '4332', '4331', '4334', '4480'];
 const MP_MORE = CONFIG.matchPage && !CONFIG.leagues.length;
+CONFIG.ownLeagues = CONFIG.leagues.slice();   // 4.3.3 the person's own (the pins, «دورياتي»), before the defaults below join the list
 if((CONFIG.football || CONFIG.matchPage) && !CONFIG.leagues.length) CONFIG.leagues = ['Saudi-Arabian Pro League'];
 if(MP_MORE) CONFIG.leagues = CONFIG.leagues.concat(MP_TOP);
 // The cards on this page: the screensaver's one
@@ -1037,7 +1134,7 @@ CONFIG.prayerMethod = _Q.get('pm') === 'gulf' ? 8
   : RESOLVED_METHOD !== null ? RESOLVED_METHOD : ({'Asia/Kuwait':9, 'Asia/Qatar':10, 'Asia/Dubai':16, 'Asia/Bahrain':8, 'Asia/Muscat':100, 'Africa/Cairo':5, 'Asia/Amman':23, 'Asia/Damascus':5, 'Asia/Beirut':5, 'Asia/Gaza':5, 'Asia/Hebron':5, 'Asia/Jerusalem':5, 'Africa/Casablanca':21, 'Africa/El_Aaiun':21, 'Africa/Algiers':19, 'Africa/Tunis':18})[CONFIG.timezone] || 4;
 // the calculation's name under the clock, none for Umm al-Qura (ClockZone.calendar says the same on the home screen)
 const CAL_LABEL = {1:'جامعة العلوم الإسلامية بكراتشي',2:'الجمعية الإسلامية لأمريكا الشمالية',3:'رابطة العالم الإسلامي',11:'المجلس الإسلامي السنغافوري',12:'اتحاد المنظمات الإسلامية في فرنسا',13:'رئاسة الشؤون الدينية التركية',14:'الإدارة الدينية لمسلمي روسيا',15:'لجنة رصد الهلال العالمية',17:'إدارة التنمية الإسلامية الماليزية',20:'وزارة الشؤون الدينية الإندونيسية', 8:'حساب الخليج', 100:'حساب عُمان', 9:'حساب الكويت', 10:'حساب قطر', 16:'حساب الإمارات', 5:'حساب الهيئة المصرية', 23:'حساب الأردن', 21:'حساب المغرب', 19:'حساب الجزائر', 18:'حساب تونس'};
-const clockSubText = () => 'بتوقيت ' + CONFIG.city + (CAL_LABEL[CONFIG.prayerMethod] ? ' · ' + CAL_LABEL[CONFIG.prayerMethod] : '');
+const clockSubText = () => 'بتوقيت ' + CONFIG.city + (CAL_LABEL[CONFIG.prayerMethod] ? SEP + CAL_LABEL[CONFIG.prayerMethod] : '');
 // «بطاقة ثانية» (#panel2=): a second card beside the small clock only
 // or when it is the first card again or the next prayer
 CONFIG.panel2 = (p => CARD_KINDS.includes(p) && p !== 'nextprayer' && p !== CONFIG.panel ? p : 'none')(_Q.get('panel2') || '');
@@ -1047,7 +1144,7 @@ CONFIG.cards = (CONFIG.widget && _Q.has('home_panel') ? _list('home_panel') : PA
 CONFIG.panel = CONFIG.cards[0] || 'none';   // the first one, for what only needs to know "the card"
 // does a card on this page need that kind's data? The smart card reads what the matches, the adhkar, the prayers and the hours load;
 // «يومك» what the prayers, the matches and the tasks do
-const USES_OF = {smart:['matches','adhkar','prayers','prayerrow','hourly'], today:['prayers','matches','tasks'], nextprayer:['prayers']};
+const USES_OF = {smart:['matches','adhkar','prayers','prayerrow','hourly'], today:['prayers','matches','tasks'], nextprayer:['prayers'], nextmatch:['matches']};
 const USES = k => ((CONFIG.football || CONFIG.matchPage) && (k === 'matches' || k === 'prayers')) || CONFIG.cards.some(c => c === k || (USES_OF[c] || []).includes(k));
 
 // The panels' snapshot is keyed by the link without the settings that only change how things look
@@ -1059,7 +1156,7 @@ if(CONFIG.clear){
   const st = document.querySelector('style'), dark = '#FFFFFF', ink = '#1B1F1D';
   if(st) st.textContent = st.textContent
     .replace(/(--fs:)(?:#4B514D|#5E635F)/g, '$1' + ink).replace(/(--fs:)(?:rgba\(255,255,255,\.74\)|#DADCE0)/g, '$1' + dark)
-    .replace(/(--dim:)#C3B8A2/g, '$1' + dark).replace(/(?<![-\w])(color:)#(?:B9AE96|A79C85|9C9279|8F8670|CFC5AD|D8CDB6|E6DCC4|9FB8A8)\b/gi, '$1' + dark);
+    .replace(/(--dim:)#C3B8A2/g, '$1' + dark).replace(/(^|[^-\w])(color:)#(?:B9AE96|A79C85|9C9279|8F8670|CFC5AD|D8CDB6|E6DCC4|9FB8A8)\b/gi, '$1$2' + dark);
 }
 const SNAP_LOOK = ['citynote', 'cardstyle', 'panel', 'panel2', 'week', 'clocksize', 'adhanbar', 'yearstrip', 'national', 'photos', 'adj', 'own', 'ownmode', 'packs', 'ours', 'gap'];
 function snapLink(){
@@ -1161,7 +1258,7 @@ function nationalNow(){
   const p = riyadhParts();
   for(const e of NATIONAL){
     const diff = Math.round((Date.UTC(p.y, p.mo-1, p.d) - Date.UTC(p.y, e.mo-1, e.d)) / 86400000);
-    if(Math.abs(diff) <= 2) return {...e, today: diff === 0, n: p.y - e.since};
+    if(Math.abs(diff) <= 2) return Object.assign({}, e, {today: diff === 0, n: p.y - e.since});
   }
   return null;
 }
@@ -1201,6 +1298,13 @@ function tickDates(){
     setText(document.getElementById('greg'), gregFmt({
       timeZone: CONFIG.timezone, weekday:'long', day:'numeric', month:'long', year:'numeric'
     }).format(now));
+  }catch(e){}
+  if(CONFIG.dateNum) try{
+    const n = (c, d) => { const p = new Intl.DateTimeFormat('en-u-ca-' + c + '-nu-latn', {timeZone: CONFIG.timezone, day:'2-digit', month:'2-digit', year:'numeric'})
+      .formatToParts(d).reduce((a, x) => (a[x.type] = x.value, a), {}); return ar(p.day + '/' + p.month + '/' + parseInt(p.year)); };
+    const wd = new Intl.DateTimeFormat(GREG, {timeZone: CONFIG.timezone, weekday:'long'}).format(now) + '، ';
+    setText(document.getElementById('hijri'), wd + n('islamic-umalqura', hijriAt(now)) + ' هـ');
+    setText(document.getElementById('greg'), wd + n('gregory', now));
   }catch(e){}
 }
 
@@ -1406,14 +1510,16 @@ async function loadPrayers(){
 }
 
 const UNIT = {
-  day: {one:'يوم', two:'يومين', few:'أيام', many:'يوم'},
+  day: {one:'يوم', two:'يومين', few:'أيام', many:'يوم', mid:'يومًا'},
   hour:{one:'ساعة', two:'ساعتين', few:'ساعات', many:'ساعة'},
   min: {one:'دقيقة', two:'دقيقتين', few:'دقائق', many:'دقيقة'}
 };
+// the counted noun as Arabic says it: «يوم», «يومين», «٥ أيام», «١١ يومًا», «١٠٠ يوم», «١٠٥ أيام» (by the last two digits)
+const unitOf = (n, u) => { const r = n % 100; return r >= 3 && r <= 10 ? u.few : r >= 11 && u.mid || u.many; };
 function qty(n,u){
+  if(n === 1) return u.one;
   if(n === 2) return u.two;
-  if(n >= 3 && n <= 10) return `${ar(n)} ${u.few}`;
-  return `${ar(n)} ${u.many}`;
+  return `${ar(n)} ${unitOf(n, u)}`;
 }
 function humanRemaining(sec){
   const h = Math.floor(sec/3600), m = Math.floor((sec%3600)/60), out = [];
@@ -1448,15 +1554,16 @@ let ADHAN_LIVE = null;
 const ADHAN_PRAYER_NAMES = {0:'الفجر', 2:'الظهر', 3:'العصر', 4:'المغرب', 5:'العشاء'};
 function adhanLiveText(){
   if(!ADHAN_LIVE) return '';
+  if(ADHAN_LIVE.name) return ADHAN_LIVE.name + '، ' + (ADHAN_LIVE.any ? 'أي زر يوقفه' : 'اختيار يوقفه');   // 4.4: a dua or reminder (its own name)
   const n = ADHAN_LIVE.prayer === 2 && isFriday() ? 'الجمعة' : ADHAN_PRAYER_NAMES[ADHAN_LIVE.prayer];
-  return (n ? 'أذان ' + n : 'الأذان') + '  ·  ' + (ADHAN_LIVE.any ? 'أي زر يوقف الأذان' : 'اختيار: إيقاف الأذان');
+  return (n ? 'أذان ' + n : 'الأذان') + SEP + (ADHAN_LIVE.any ? 'أي زر يوقف الأذان' : 'اختيار: إيقاف الأذان');
 }
 function adhanLiveTick(){
   if(CONFIG.widget || !CONFIG.adhanBar || !(window.UrtvNative && window.UrtvNative.adhan)) return;
   // asked every 3 s whenever the app answers (a call to the app's provider, about a millisecond)
   let s = null;
   try{ const raw = window.UrtvNative.adhan(); s = raw ? JSON.parse(raw) : null; }catch(e){}
-  ADHAN_LIVE = s && s.live && typeof s.prayer === 'number' && isFinite(s.prayer) ? {prayer: +s.prayer, any: !!s.any} : null;
+  ADHAN_LIVE = s && s.live && typeof s.prayer === 'number' && isFinite(s.prayer) ? {prayer: +s.prayer, any: !!s.any, name: typeof s.name === 'string' ? s.name.slice(0, 60) : ''} : null;
   tickAdhanBar();
 }
 function adhanBarText(){
@@ -1728,9 +1835,9 @@ function tickOccasion(){
     setText(elS, '');
     return;
   }
-  setHTML(elD, ar(oc.days) + ' <span class="unit">' + OCC_TEXT.unit + '</span>');
+  setHTML(elD, ar(oc.days) + ' <span class="unit">' + unitOf(oc.days, UNIT.day) + '</span>');   // «١٠٩ أيام», «٥٧ يومًا»
   setHTML(elS, esc(gregFmt({timeZone:'UTC',weekday:'long',day:'numeric',month:'long'})
-      .format(new Date(Date.UTC(oc.y, oc.mo-1, oc.d, 12))).replace('،','') + ' · ' + OCC_TEXT.expected)
+      .format(new Date(Date.UTC(oc.y, oc.mo-1, oc.d, 12))).replace('،','') + SEP + OCC_TEXT.expected)
     + (o.note ? '<div class="note">' + esc(o.note) + '</div>' : ''));
 }
 
@@ -1775,7 +1882,10 @@ const JITTER_MS = (()=>{
 // the offset never exceeds the task's own period
 // keeps the whole 0-29 (scaled, so TVs stay spread over the period)
 const spread = ms => Math.floor(JITTER_MS * Math.min(ms, 30*60000) / (30*60000));
-const periodic = (fn, ms) => setTimeout(() => { fn(); setInterval(fn, ms); }, ms + spread(ms));   // the first periodic run is late by the offset
+// G3: while the TV says it is offline a periodic load is not tried; each one skipped runs once when the network is back
+const OFF = new Set();
+addEventListener('online', () => { OFF.forEach(f => f()); OFF.clear(); });
+const periodic = (fn, ms) => { const g = () => navigator.onLine === false ? OFF.add(fn) : fn(); setTimeout(() => { g(); setInterval(g, ms); }, ms + spread(ms)); };   // the first periodic run is late by the offset
 const later = fn => setTimeout(fn, JITTER_MS);   // the same offset for the refresh at midnight
 const fmtAgo = ms => { const p = riyadhParts(new Date(ms)); return 'آخر تحديث ' + fmtTime(p.h, p.mi); };
 
@@ -1936,21 +2046,72 @@ function fresher(ev, lg){
 }
 // a followed team's games in the league files it is in (a result there that eventslast does not have yet)
 const leagueOf = (id, lg) => [...lg.values()].filter(e => String(e.idHomeTeam) === String(id) || String(e.idAwayTeam) === String(id));
-function resultsFor(id, lg = leagueMap()){
+// 4.3.3 the match archive (docs/MATCH-ARCHIVE.md, branch data-archive): small files CI keeps. A 404, an unreadable answer or a `v` this page
+// does not know is «no data», never a wrong value. Each address is asked at most every 15 minutes (ARCH_C: j undefined until the first answer)
+const ARCH_BASE = 'https://raw.githubusercontent.com/tshi-dev/UrTV/data-archive/';   // the one place the archive's address is written (it may move to another data repository)
+const ARCH_C = {};
+const archUrl = path => /^https:/.test(path) ? path : ARCH_BASE + path;
+function archLoad(path){
+  const u = archUrl(path), c = ARCH_C[u] || (ARCH_C[u] = {at: 0});
+  if(c.p) return c.p;
+  if(Date.now() - c.at < 15 * 60000) return Promise.resolve(c.j);
+  return c.p = fetchData(u, 12000).then(r => r.ok ? r.json() : r.status === 404 ? null : c.j).catch(() => c.j).then(j => {
+    c.j = j && typeof j === 'object' && (j.v === 1 || !u.startsWith(ARCH_BASE)) ? j : null;   // a failed ask keeps the copy it had
+    c.at = Date.now(); c.p = null;
+    if(c.j && u === ARCH_BASE + 'index.json' && c.j.leagues) Object.entries(c.j.leagues).forEach(([id, l]) => { if(l && l.ar && !CONFIG.leagueNames[id]) CONFIG.leagueNames[id] = String(l.ar).slice(0, 60); });
+    return c.j;
+  });
+}
+// a game of the archive in the page's own shape (TheSportsDB's names); team: the team file it comes from (its games say `home` and `vs`)
+function archEv(g, team){
+  if(!g || !g.id || !/^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\dZ$/.test(String(g.t))) return null;
+  const me = team && [team.id, team.en, g.gf], them = team && [g.vs, g.vsn, g.ga];
+  const [h, a] = team ? (g.home ? [me, them] : [them, me]) : [[g.h, g.hn, g.hs], [g.a, g.an, g.as]];
+  const ix = ARCH_C[ARCH_BASE + 'index.json'], lg = ix && ix.j && ix.j.leagues && ix.j.leagues[g.lg];
+  const sc = x => x == null || x === '' ? null : String(x), badge = id => (CRESTS[id] && CRESTS[id].u) || '';
+  return {idEvent: String(g.id), idLeague: String(g.lg || ''), strLeague: lg ? String(lg.en || '') : '', strSeason: String(g.s || ''), strTimestamp: g.t.slice(0, 19),
+    dateEvent: g.t.slice(0, 10), strTime: g.t.slice(11, 19), idHomeTeam: String(h[0]), strHomeTeam: String(h[1] || ''), intHomeScore: sc(h[2]),
+    idAwayTeam: String(a[0]), strAwayTeam: String(a[1] || ''), intAwayScore: sc(a[2]), strStatus: String(g.st || ''), intRound: String(g.r || ''), strSport: 'Soccer',
+    strHomeTeamBadge: badge(h[0]), strAwayTeamBadge: badge(a[0])};
+}
+// 4.3.3 A3: a followed team's games from its archive file too (home and away; the free key's own answer may hold fewer), kept like the server's
+let ARCH_T = (()=>{ try{ return JSON.parse(localStorage.getItem('archTeams') || '{}') || {}; }catch(e){ return {}; } })();   // team id -> {next, last}
+async function archTeam(id){
+  const j = await archLoad('teams/' + id + '.json');
+  if(!j || String(j.id) !== String(id)) return 0;
+  ARCH_T[id] = {next: (j.next || []).map(g => archEv(g, j)).filter(Boolean), last: (j.last || []).map(g => archEv(g, j)).filter(Boolean)};
+  return 1;
+}
+const archOf = (id, k) => (ARCH_T[id] && ARCH_T[id][k]) || [];
+// the archive's games a list does not have yet (the same id, or the same day and teams)
+function archNew(own, arch){
+  if(!arch.length) return arch;
   const seen = new Set();
-  return [...(RESULTS[id] || []), ...(KEPT[id] || []), MATCHES[id], ...leagueOf(id, lg)]
+  own.forEach(ev => { if(ev){ seen.add(String(ev.idEvent)); seen.add(evKey(ev)); } });
+  return arch.filter(ev => !seen.has(ev.idEvent) && !seen.has(evKey(ev)));
+}
+function resultsFor(id, lg = leagueMap()){
+  const seen = new Set(), own = [...(RESULTS[id] || []), ...(KEPT[id] || []), MATCHES[id], ...leagueOf(id, lg)];
+  return own.concat(archNew(own, archOf(id, 'last')))
     .filter(ev => ev && ev.idEvent && !seen.has(ev.idEvent) && seen.add(ev.idEvent)).map(ev => fresher(ev, lg));
 }
-// a followed team's coming games, each the newer copy
-const teamNext = (id, lg = leagueMap()) => [MATCHES[id], ...(NEXT_LIST[id] || [])].map(ev => fresher(ev, lg));
+// a followed team's coming games, each the newer copy (with the archive's: all in time order)
+const teamNext = (id, lg = leagueMap()) => { const own = [MATCHES[id], ...(NEXT_LIST[id] || [])], more = archNew(own, archOf(id, 'next'));
+  return (more.length ? own.concat(more).filter(Boolean).sort((a, b) => toDate(a) - toDate(b)) : own).map(ev => fresher(ev, lg)); };
 
 // «السبت ٢٤ أكتوبر · ٩:١٦ م»: the small line under an upcoming game, in the slot and in the card beside the clock
 function matchWhen(d){
   const p = hmParts(d);
   return FMT_DAY_MONTH.format(d).replace('،','')
-    + ' · ' + fmtTime(+p.hour % 24, +p.minute);
+    + SEP + fmtTime(+p.hour % 24, +p.minute);
 }
 
+// 4.4, the card's line: «اليوم ٩:٠٠ م», «غداً ٤:٣٠ م», «الجمعة ٦:٣٠ م» within the week, the full date further on («الشكل السابق»: always the full date)
+function matchNear(d, now){
+  if(OLD_LOOK) return matchWhen(d);
+  const p = hmParts(d), k = cityToday(+d), t = fmtTime(+p.hour % 24, +p.minute);
+  return k === cityToday(now) ? 'اليوم' + ' ' + t : k === cityToday(now + DAY_MS) ? 'غداً' + ' ' + t : d - now < 6 * DAY_MS ? FMT_WEEKDAY.format(d) + ' ' + t : matchWhen(d);
+}
 // «الخميس ٢٢ أكتوبر»: the day of a finished game
 const matchDay = d => FMT_DAY_MONTH.format(d).replace('،','');
 const FMT_DM = gregFmt({timeZone:CONFIG.timezone,day:'numeric',month:'long'});
@@ -1965,7 +2126,7 @@ function resultBlock(done){
   const day = FMT_WEEKDAY.format(toDate(done));
   return `<div class="mblock">`
     + `<div class="big"><span><span class="tm">${esc(teamAr(done.strHomeTeam, done.idHomeTeam))}</span> <span class="sc">${ar(+done.intHomeScore)} - ${ar(+done.intAwayScore)}</span> <span class="tm">${esc(teamAr(done.strAwayTeam, done.idAwayTeam))}</span></span></div>`
-    + `<div class="sub">النتيجة النهائية · ${day}</div></div>`;
+    + `<div class="sub">النتيجة النهائية${SEP}${day}</div></div>`;
 }
 // a game under way or due within the week; '' for any other
 function gameBlock(ev, now, big){
@@ -1973,7 +2134,7 @@ function gameBlock(ev, now, big){
   const d = toDate(ev), diff = d - now;
   if(calledOff(ev))   // 4.3 A1: postponed, cancelled, abandoned: said so, for a day after its date, never «مباشر»
     return diff < -86400000 || diff > CONFIG.weekWindowDays * 86400000 ? ''
-      : `<div class="mblock"><div class="big"><span><span class="tm">${home}</span> × <span class="tm">${away}</span></span></div><div class="sub">${offWord(ev)} · ${matchDay(d)}</div></div>`;
+      : `<div class="mblock"><div class="big"><span><span class="tm">${home}</span> × <span class="tm">${away}</span></span></div><div class="sub">${offWord(ev)}${SEP}${matchDay(d)}</div></div>`;
   if(timeTbd(ev))   // the time is not set: the day only
     return diff < -86400000 || diff > CONFIG.weekWindowDays * 86400000 ? ''
       : `<div class="mblock"><div class="big"><span><span class="tm">${home}</span> × <span class="tm">${away}</span></span></div><div class="sub">${matchDay(d)}</div></div>`;
@@ -1988,7 +2149,7 @@ function gameBlock(ev, now, big){
   const live = diff <= 0 && ev.intHomeScore != null && ev.intAwayScore != null;
   // «بعد ٣ أيام» and under it the date and time, small
   const dateLine = matchWhen(d);
-  const sub = diff > 0 ? `بعد ${shortRemaining(diff)}</div><div class="sub when">${dateLine}` : `<span class="live">مباشر</span> · ${liveStatus(ev, clk)}`;
+  const sub = diff > 0 ? `بعد ${shortRemaining(diff)}</div><div class="sub when">${dateLine}` : `<span class="live">مباشر</span>${SEP}${liveStatus(ev, clk)}`;
   const mid = live ? ` <span class="sc">${ar(+ev.intHomeScore)} - ${ar(+ev.intAwayScore)}</span> ` : ' × ';
   return `<div class="mblock${big ? ' lvb' : ''}">`
        + `<div class="big"><span><span class="tm">${home}</span>${mid}<span class="tm">${away}</span></span></div>`
@@ -2053,14 +2214,14 @@ async function loadLeagues(step, ready){
   const cat = (async () => { await ready; for(const name of CONFIG.leagues.filter(catId)) got += await loadCatalogueLeague(name, step); })();
   await Promise.all([cat, ...CONFIG.leagues.filter(n => !catId(n)).map(async name => {
     try{
-      const r = await fetchT(LEAGUE_BASE + leagueSlug(name) + '.json', 12000);
+      const r = await fetchData(LEAGUE_BASE + leagueSlug(name) + '.json', 12000);
       if(!r.ok) return;
       const j = await r.json();
       if(j && Array.isArray(j.events)){ LEAGUE_DATA[name] = {updated: j.updated, events: j.events}; got++; }
     }catch(e){}
   })]);
   if(CONFIG.tour) try{
-    const r = await fetchT(LEAGUE_BASE + 'tournaments.json', 12000), j = r.ok && await r.json();
+    const r = await fetchData(LEAGUE_BASE + 'tournaments.json', 12000), j = r.ok && await r.json();
     if(j && Array.isArray(j.events)){ LEAGUE_DATA.tournaments = {updated: j.updated, events: j.events, names: j.names || {}}; got++; }
   }catch(e){}
   try{ localStorage.setItem('leagueData', JSON.stringify(LEAGUE_DATA)); }catch(e){}
@@ -2195,24 +2356,24 @@ function eventInfo(key, ev){
     }
     if(!session) session = 'السباق';
     const gpName = gp ? 'جائزة ' + (GP_AR[place] || trl(gp[1].trim())) + ' الكبرى' : trl(name);
-    title = gpName + ' · ' + session;
+    title = gpName + SEP + session;
     // the session goes under it, so the big line stays short
     head = gp ? `<span class="tm" data-short="${esc(gpName.replace(/ الكبرى$/, ''))}">${esc(gpName)}</span>` : esc(gpName);
     pre = session;
-    card = head + ' · ' + esc(session);
+    card = head + SEP + esc(session);
   }else{
     let prefix = '', rest = name;
     const u = key === 'ufc' ? name.match(/^UFC(\s+Fight\s+Night)?\s*(\d+)?\s*[:\-]?\s*(.*)$/i) : null;
     if(u){ prefix = 'UFC' + (u[1] ? ' فايت نايت' : '') + (u[2] ? ' ' + arDigits(u[2]) : ''); rest = u[3]; }
     let pair = ev.strHomeTeam && ev.strAwayTeam ? [ev.strHomeTeam, ev.strAwayTeam] : rest.split(/\s+vs\.?\s+/i);
     const body = pair.length === 2 ? trl(pair[0]) + ' × ' + trl(pair[1]) : trl(rest);
-    title = arDigits([prefix, body].filter(Boolean).join(' · '));
+    title = arDigits([prefix, body].filter(Boolean).join(SEP));
     // the fighters on the big line, each with the family name as the short form fitMatches may need
     const who = n => { const w = trl(n).trim(), last = w.split(/\s+/).pop();
       return `<span class="tm"${last !== w ? ` data-short="${esc(last)}"` : ''}>${esc(w)}</span>`; };
     head = arDigits(pair.length === 2 ? who(pair[0]) + ' × ' + who(pair[1]) : esc(body));
     pre = arDigits(prefix);
-    card = [pre && esc(pre), head].filter(Boolean).join(' · ');
+    card = [pre && esc(pre), head].filter(Boolean).join(SEP);
   }
   const c = foldKey(ev.strCountry);
   const country = COUNTRY_AR[c] || (c ? trl(ev.strCountry) : '');
@@ -2236,14 +2397,14 @@ function eventWhen(i, now){
   const sameDay = FMT_DATE.format(new Date(i.t + (i.dateOnly ? 3600000 : 0))) === FMT_DATE.format(new Date(now));
   const dayName = sameDay ? 'اليوم' : FMT_WEEKDAY.format(new Date(i.t + (i.dateOnly ? 3600000 : 0)));
   if(i.dateOnly) return {live:false, text: sameDay ? 'اليوم' : dayName, row: dayName};
-  if(now >= i.t) return {live:true, text: `<span class="live">مباشر</span> · بدأ ${clk}`, row: '<span class="live">مباشر</span>'};
-  return {live:false, text: `${dayName} · ${clk}`, row: `${dayName} ${clk}`};
+  if(now >= i.t) return {live:true, text: `<span class="live">مباشر</span>${SEP}بدأ ${clk}`, row: '<span class="live">مباشر</span>'};
+  return {live:false, text: `${dayName}${SEP}${clk}`, row: `${dayName} ${clk}`};
 }
 function eventSlot(key, now){
   const x = eventsOf(key, now)[0];
   if(!x) return '';
   const w = eventWhen(x.i, now);
-  const about = [x.i.pre, x.i.tag, x.i.country].filter(Boolean).map(esc).join(' · ');
+  const about = [x.i.pre, x.i.tag, x.i.country].filter(Boolean).map(esc).join(SEP);
   return `<div class="mblock"><div class="big"><span>${x.i.head}</span></div>`
        + (about ? `<div class="sub">${about}</div><div class="sub when">${w.text}</div>` : `<div class="sub">${w.text}</div>`) + `</div>`;
 }
@@ -2330,13 +2491,12 @@ function renderMatches(turn){
 // the row steps down in size until every game fits
 // form (only then); still too long, renderMatches shows the two games one to a page
 // resort for a single game. Both games keep one size.
-const TEAM_SHORT = {
+const TEAM_SHORT = Object.assign({
   'مانشستر سيتي':'السيتي', 'مانشستر يونايتد':'اليونايتد', 'ريال مدريد':'الريال', 'أتلتيكو مدريد':'أتلتيكو',
   'باريس سان جيرمان':'باريس', 'بايرن ميونخ':'بايرن', 'بوروسيا دورتموند':'دورتموند', 'بوروسيا مونشنغلادباخ':'مونشنغلادباخ',
   'باير ليفركوزن':'ليفركوزن', 'آينتراخت فرانكفورت':'فرانكفورت', 'نوتنغهام فورست':'فورست', 'كريستال بالاس':'بالاس',
   'وولفرهامبتون':'وولفز', 'سبورتينغ لشبونة':'سبورتينغ', 'لوس أنجلوس جالاكسي':'جالاكسي', 'البنك الأهلي المصري':'البنك الأهلي',
-  ...__TEAMS_SHORT__,   // NBA and NFL: the nickname without the city («ليكرز»), made by src/build.py from teams.json
-};
+}, __TEAMS_SHORT__);   // NBA and NFL nicknames («ليكرز»), from teams.json by src/build.py
 const FIT_STEPS = [1, .92, .85, .78, .72];
 const FIT_RANGE = document.createRange();
 function fits(sp){   // to the fraction of a pixel: scrollWidth rounds, and a name short by 0.4 px still got «…»
@@ -2394,6 +2554,23 @@ function shortenRows(ul){
   });
 }
 
+// 4.4: the games' day and time in one column, centred: each row's date starts where the widest clubs of the card end, and «بعد …» has one
+// width, so every date is centred in the same place (in em, so the card's size steps keep it); a row it would push out keeps its own
+function alignGames(card){
+  const rows = OLD_LOOK || card.el.classList.contains('nm1') ? [] : [...card.ul.querySelectorAll('li.mg > .mr')].filter(r => r.querySelector('.mwhen'));
+  rows.forEach(r => { r.children[2].style.marginInlineEnd = ''; r.lastElementChild.style.minWidth = ''; });
+  if(rows.length < 2) return;
+  const rtl = getComputedStyle(rows[0]).direction === 'rtl', edge = (r, e) => { const a = r.getBoundingClientRect(), b = e.getBoundingClientRect(); return rtl ? a.right - b.left : b.right - a.left; };
+  const clubs = rows.map(r => edge(r, r.children[2])), when = rows.map(r => r.lastElementChild.getBoundingClientRect().width);
+  const W = Math.max(...clubs), D = Math.max(...when);
+  rows.forEach((r, i) => {
+    const em = parseFloat(getComputedStyle(r).fontSize) || 16;
+    r.children[2].style.marginInlineEnd = ((W - clubs[i]) / em).toFixed(3) + 'em';
+    r.lastElementChild.style.minWidth = (D / parseFloat(getComputedStyle(r.lastElementChild).fontSize || em)).toFixed(3) + 'em';
+    if(r.scrollWidth > r.clientWidth + 1){ r.children[2].style.marginInlineEnd = ''; r.lastElementChild.style.minWidth = ''; }
+  });
+}
+
 async function fetchLast(id){
   const r = await fetchT(`https://www.thesportsdb.com/api/v1/json/${CONFIG.sportsKey}/eventslast.php?id=${id}`, 12000);
   if(!r.ok) throw 0;
@@ -2409,6 +2586,7 @@ const loadMatches = guarded('matches', async function(){
   let teamsDone, leagues = 0;
   const teamsAsked = new Promise(r => { teamsDone = r; });
   if(CONFIG.leagues.length) leagues = loadLeagues(step, teamsAsked);
+  const arch = Promise.all(CONFIG.teamIds.map(id => archTeam(id).catch(() => 0)));   // GitHub, not the sports server: beside its queue
   const failed = [];
   for(const id of CONFIG.teamIds){
     let got = 0;
@@ -2427,6 +2605,8 @@ const loadMatches = guarded('matches', async function(){
   teamsDone();
   if(failed.length && !MATCH_RETRIED){ MATCH_RETRIED = true; setTimeout(loadMatches, 20000); }   // a team the server refused is asked again once
   answered += await leagues;
+  answered += (await arch).reduce((a, b) => a + b, 0);
+  try{ localStorage.setItem('archTeams', JSON.stringify(Object.fromEntries(CONFIG.teamIds.filter(i => ARCH_T[i]).map(i => [i, ARCH_T[i]])))); }catch(e){}
   if(!answered && (CONFIG.teamIds.length || CONFIG.leagues.length)){   // no answer: keep what is shown, and say so when there is nothing else
     MATCH_FAIL_AT = Date.now();
     if(!MATCHES_LOADED) setTimeout(loadMatches, CONFIG.retryMs);   // a first load that failed tries again soon, then the normal period
@@ -2567,21 +2747,22 @@ function slotHTML(s){
     return known.map(t => { const v = MK_LAST[t.key];
       return slotBlock(esc(t.name) + (v.price ? ' <span class="num">' + num(v.price, t.dec) + '</span>' : ''),
         (v.pct === null ? '' : `<span class="${v.pct >= 0 ? 'up' : 'down'}">${v.pct >= 0 ? '▲' : '▼'} ${num(Math.abs(v.pct), 2)}${LATIN ? '%' : '٪'}</span>`)
-        + (staleMark(v) ? `${v.pct === null ? '' : ' · '}<span class="old">${staleMark(v)}</span>` : '')); }).join('');
+        + (staleMark(v) ? `${v.pct === null ? '' : SEP}<span class="old">${staleMark(v)}</span>` : '')); }).join('');
   }
   if(s === 'countdown'){
-    const n = countdownDays();
-    const name = CONFIG.cdName ? esc(CONFIG.cdName)
-      : gregFmt({timeZone:'UTC', day:'numeric', month:'long'}).format(new Date(CONFIG.cd + 'T12:00:00Z'));
-    return slotBlock(n === 0 ? 'اليوم' : '<span class="num">' + ar(n) + '</span> <span class="unit">يوم</span>', name);
+    const n = countdownDays(), cd = new Date(CONFIG.cd + 'T12:00:00Z');
+    const days = '<span class="num">' + ar(n) + '</span> <span class="unit">' + unitOf(n, UNIT.day) + '</span>';
+    if(OLD_LOOK) return slotBlock(n === 0 ? 'اليوم' : days, CONFIG.cdName ? esc(CONFIG.cdName) : gregFmt({timeZone:'UTC', day:'numeric', month:'long'}).format(cd));
+    // 4.4: the name is the label (renderSlot), the days in words, the date under them
+    return slotBlock(n === 0 ? 'اليوم' : n === 1 ? 'غداً' : days, gregFmt({timeZone:'UTC', weekday:'long', day:'numeric', month:'long'}).format(cd).replace('،', ''));
   }
   return null;
 }
 function renderSlot(){
   const s = slotNow();
   if(s === 'none') return;
-  setText(document.getElementById('slot-label'), SLOT_LABEL[s]);
-  if(s === 'matches'){ renderMatches(); setText(document.getElementById('slot-label'), SLOT_LABEL.matches + (matchesStaleNote() ? ' · ' + matchesStaleNote() : '')); return; }
+  setText(document.getElementById('slot-label'), s === 'countdown' && CONFIG.cdName && !OLD_LOOK ? CONFIG.cdName : SLOT_LABEL[s]);
+  if(s === 'matches'){ renderMatches(); setText(document.getElementById('slot-label'), SLOT_LABEL.matches + (matchesStaleNote() ? SEP + matchesStaleNote() : '')); return; }
   const row = document.getElementById('match-row'), h = slotHTML(s);
   if(h !== null && setHTML(row, h)) fitMatches(row);
 }
@@ -2620,7 +2801,7 @@ function paintMkUp(){
   const stale = known.filter(t => staleMark(MK_LAST[t.key])).map(t => MK_LAST[t.key]).sort((a, b) => (a.at || 0) - (b.at || 0));
   up.hidden = false;
   up.classList.toggle('old', stale.length > 0);
-  setText(up, stale.length ? staleMark(stale[0]) : fmtAgo(Math.max(...known.map(t => MK_LAST[t.key].at || 0))) + (known.some(t => sesOpen(t.fk) && Date.now() - MK_LAST[t.key].at > LATE_MS) ? ' · ' + 'متأخر' : ''));
+  setText(up, stale.length ? staleMark(stale[0]) : fmtAgo(Math.max(...known.map(t => MK_LAST[t.key].at || 0))) + (known.some(t => sesOpen(t.fk) && Date.now() - MK_LAST[t.key].at > LATE_MS) ? SEP + 'متأخر' : ''));
 }
 
 // The deadline covers the answer's headers and its body
@@ -2629,11 +2810,27 @@ function paintMkUp(){
 async function fetchT(url, ms){
   const c = new AbortController(); const id = setTimeout(()=>c.abort(), ms||12000);
   let r;
-  try{ r = await fetch(url,{cache:'no-store', signal:c.signal}); }
+  try{ r = await fetch(url,{cache:'no-cache', signal:c.signal}); }   // G3: asked again each time, with the ETag or date of the copy: an unchanged file is a 304
   catch(e){ clearTimeout(id); throw e; }
   if(!r.ok) clearTimeout(id);   // nobody reads the body of an error
   const body = kind => async () => { try{ return await r[kind](); }finally{ clearTimeout(id); } };
   return {ok:r.ok, status:r.status, json:body('json'), text:body('text'), blob:body('blob')};
+}
+
+// 4.3.3 data: urtv-data first, the old branch second (docs/DATA-HOST.md, the apps' DataHost)
+const DATA_OLD = 'https://raw.githubusercontent.com/tshi-dev/UrTV/', DATA_NEW = 'https://raw.githubusercontent.com/tshi-dev/urtv-data/data/';
+const DATA_MAP = [['data-leagues/leagues/', 'football/leagues/'], ['data-catalogue/catalogue/', 'football/catalogue/'], ['data-archive/', 'football/archive/'],
+  ['data-games/quiz/', 'games/quiz/'], ['data-games/games/', 'games/'], ['data-markets/markets/', 'markets/'], ['data-stations/stations/', 'stations/']];
+function dataUrls(u){
+  const r = u.slice(DATA_OLD.length), m = u.startsWith(DATA_OLD) && DATA_MAP.find(m => r.startsWith(m[0]));
+  return m ? [DATA_NEW + m[1] + r.slice(m[0].length), u] : [u];
+}
+// the first ok answer, else the last answer or error
+async function fetchData(url, ms){
+  let r, e;
+  for(const u of dataUrls(url)){ try{ r = await fetchT(u, ms); if(r.ok) return r; }catch(x){ e = x; } }
+  if(r) return r;
+  throw e;
 }
 
 // ---- prices. First the file CI keeps (.github/tools/market_prices.py, branch data-markets)
@@ -2643,7 +2840,7 @@ const MARKET_TRUST_MS = 3*3600000;
 let MARKET_FILE = null;   // {updated, quotes: {symbol: {p, v, c, t}}}
 async function loadMarketFile(){
   try{
-    const r = await fetchT(MARKET_URL, 12000);
+    const r = await fetchData(MARKET_URL, 12000);
     if(r.ok){ const j = await r.json(); if(j && j.quotes && Date.parse(j.updated)) MARKET_FILE = j; }
   }catch(e){}                                  // offline: the copy from before, which fileQuote() trusts for 3 hours only
 }
@@ -2770,7 +2967,7 @@ const loadWeek = guarded('week', async function(){
     const prem = e.number === 1;
     out.push({
       name: s.name,
-      ep: e.season ? (prem ? `الموسم ${ar(e.season)}` : `الموسم ${ar(e.season)} · ح ${ar(e.number)}`) : '',
+      ep: e.season ? (prem ? `الموسم ${ar(e.season)}` : `الموسم ${ar(e.season)}${SEP}ح ${ar(e.number)}`) : '',
       date: e.airdate || '',
       rating: (s.rating && s.rating.average) || 0,
       prem, picked
@@ -2893,7 +3090,7 @@ function liveRect(kind = 'tasks'){
 
 let FORECAST = [];
 try{ FORECAST = JSON.parse(localStorage.getItem(LS.forecast) || '[]') || []; }catch(e){}
-const PANEL_TITLE = {album:'ألبوم صوري', today:'يومك', shows:'هذا الأسبوع', prayers:'مواقيت اليوم', nextprayer:'الصلاة القادمة', forecast:'الأيام القادمة', hourly:'الساعات القادمة', matches:CONFIG.leagues.length ? 'المباريات' : 'مباريات فرقك', tasks:'المهام', year:'السنة'};
+const PANEL_TITLE = {album:'ألبوم صوري', today:'يومك', shows:'هذا الأسبوع', prayers:'مواقيت اليوم', nextprayer:'الصلاة القادمة', nextmatch:'مباراة فريقك القادمة', forecast:'الأيام القادمة', hourly:'الساعات القادمة', matches:CONFIG.leagues.length ? 'المباريات' : 'مباريات فرقك', tasks:'المهام', year:'السنة'};
 const LISTS = ['matches', 'stocks', 'tasks', 'shows'];   // the kinds that page through their rows
 
 // ---- «يومك» (today): the day in one card
@@ -2918,7 +3115,7 @@ function todayCard(){
     const p = riyadhParts(), mins = p.h * 60 + p.mi + p.s / 60;
     let n = PRAYERS.find(x => x.h * 60 + x.mi > mins), tomorrow = false;
     if(!n){ n = PRAYERS[0]; tomorrow = true; }
-    rows.push(tdRow('الصلاة القادمة', `${prayerName(n)} · ${fmtTime(n.h, n.mi)}`, 'بعد ' + shortHM(Math.max(0, Math.round((n.h * 60 + n.mi + (tomorrow ? 1440 : 0) - mins) * 60)))));
+    rows.push(tdRow('الصلاة القادمة', `${prayerName(n)}${SEP}${fmtTime(n.h, n.mi)}`, 'بعد ' + shortHM(Math.max(0, Math.round((n.h * 60 + n.mi + (tomorrow ? 1440 : 0) - mins) * 60)))));
   }
   const g = nextFollowedGame(now);
   if(g){
@@ -2939,9 +3136,13 @@ function todayCard(){
 // show it alone, with both crests where there are crests
 function liveWhen(ev){   // «مباشر» and «الدقيقة ٦٧» / «استراحة» / «بدأت ٦:٣٠ م»
   const p = hmParts(toDate(ev));
-  return `<span class="live">مباشر</span> · ${liveStatus(ev, ar(fmtTime(+p.hour % 24, +p.minute)))}`;
+  return `<span class="live">مباشر</span>${SEP}${liveStatus(ev, ar(fmtTime(+p.hour % 24, +p.minute)))}`;
 }
 const liveScore = ev => ev.intHomeScore != null && ev.intAwayScore != null ? `<span class="sc">${ar(+ev.intHomeScore)} - ${ar(+ev.intAwayScore)}</span>` : '<span class="sc">×</span>';
+// 4.3.3 the followed teams' next game (or the one under way): the soonest that is not over nor called off
+function nextTeamGame(now){
+  return matchEvents().filter(ev => fbMine(ev) && !calledOff(ev) && !FINAL.includes(String(ev.strStatus || '').toUpperCase()) && fbKick(ev) + durMs(ev) > now).sort((a, b) => fbKick(a) - fbKick(b))[0] || null;
+}
 function liveRow(ev){   // a row of the card: «الهلال [شعار] ٢ - ١ [شعار] النصر», the crests next to the score
   return `<li class="lv"><div class="lvm">${liveWhen(ev)}</div><div class="lvt"><span class="tm"><span class="nm">${esc(teamAr(ev.strHomeTeam, ev.idHomeTeam))}</span>${crestImg(ev, 'Home')}</span>`
     + `${liveScore(ev)}<span class="tm">${crestImg(ev, 'Away')}<span class="nm">${esc(teamAr(ev.strAwayTeam, ev.idAwayTeam))}</span></span></div></li>`;
@@ -2999,7 +3200,7 @@ function paintHd(hd, title, html){
 // Draw the cards of these kinds (none given = all)
 function renderPanel(animate, ...kinds){
   for(const c of CARDS){
-    if(kinds.length && !kinds.includes(c.kind) && c.kind !== 'smart' && c.kind !== 'today') continue;
+    if(kinds.length && !kinds.includes(c.kind) && !kinds.includes(c.eff) && c.kind !== 'smart' && c.kind !== 'today') continue;
     renderCard(c, animate);
   }
   fitCards();
@@ -3010,7 +3211,7 @@ function renderPanel(animate, ...kinds){
 function renderCard(card, animate, keepSize){
   const ul = card.ul, hd = card.hd;
   const was = card.eff;
-  card.eff = card.kind === 'smart' ? smartKind() : card.kind;
+  card.eff = card.kind === 'smart' ? smartKind() : card.kind === 'nextmatch' ? 'matches' : card.kind;   // 4.3.3 «مباراة فريقك القادمة»: the games' card, one game
   const P = card.eff;
   ul.classList.toggle('pgrid', P === 'prayers');
   card.el.classList.toggle('boxes', P === 'prayers');
@@ -3025,13 +3226,18 @@ function renderCard(card, animate, keepSize){
     renderWeekPage(card, animate); return;
   }
   card.el.classList.toggle('stocks', P === 'stocks');   // 24 px of its own inside
+  card.el.classList.toggle('nm1', card.kind === 'nextmatch' && !OLD_LOOK);   // 4.4 «مباراة فريقك القادمة»: one game, read big
   let rows = [];
   if(P === 'prayers') rows = prayerRows();
   else if(P === 'forecast') rows = forecastRows();
   else if(P === 'hourly') rows = hourlyRows();
   else if(P === 'prayerrow'){ const q = prayerRowCard(); paintHd(hd, q.title); rows = q.rows; }
   else if(P === 'nextprayer') rows = nextPrayerRows();
-  else if(P === 'matches') rows = matchRows(card);
+  else if(P === 'matches'){
+    rows = matchRows(card);
+    const n = card.kind === 'nextmatch' && rows.length && nextTeamGame(Date.now()), meet = n && !fbLive(n, Date.now()) && h2hLine(n);
+    if(meet) rows = rows.concat(`<li class="h2l"><span>${esc(meet)}</span></li>`);   // under it the two clubs' last meetings
+  }
   else if(P === 'year') rows = [yearCard(card)];
   else if(P === 'album') rows = [albumCard(card)];
   else if(P === 'today'){ const q = todayCard(); paintHd(hd, q.title); rows = q.rows; }
@@ -3040,8 +3246,9 @@ function renderCard(card, animate, keepSize){
   else if(P === 'wisdom'){ const q = wisdomOfDay(); paintHd(hd, q.title); rows = q.rows; }
   else if(P === 'adhkar'){ const q = adhkarCard(card); paintHd(hd, q.title, q.hd); rows = q.rows; }
   else if(P === 'stocks'){ const q = stocksCard(); paintHd(hd, '', q.hd); rows = q.rows; }
-  if(P === 'matches' && matchesStaleNote()) paintHd(hd, '', `<span>${PANEL_TITLE.matches}</span><span class="until">${matchesStaleNote()}</span>`);
-  else if(PANEL_TITLE[P]) paintHd(hd, PANEL_TITLE[P]);
+  const title = PANEL_TITLE[card.kind === 'nextmatch' ? 'nextmatch' : P];
+  if(P === 'matches' && matchesStaleNote()) paintHd(hd, '', `<span>${title}</span><span class="until">${matchesStaleNote()}</span>`);
+  else if(title) paintHd(hd, title);
   if(!rows.length){
     if(P === 'matches' && !MATCHES_LOADED && ul.firstElementChild && !ul.firstElementChild.classList.contains('empty')) return;
     if(P === 'matches' && ul.firstElementChild && ul.firstElementChild.classList.contains('empty') && ul.firstElementChild.textContent === matchesEmptyText()) return;
@@ -3061,7 +3268,7 @@ function renderCard(card, animate, keepSize){
   }
   const wrote = setHTML(ul, rows.join(''), animate);
   if(!keepSize){ card.base = rows.length; card.len0 = card.len || 0; }   // what full size holds: the rows of a page, the length of the text
-  if(P === 'matches'){ fillCrests(ul); if(wrote){ shortenRows(ul); fitLive(ul); } }
+  if(P === 'matches'){ fillCrests(ul); if(wrote){ shortenRows(ul); fitLive(ul); } alignGames(card); }
   fitQuote(ul);
   if(CONFIG.tafsir) fitTafsir(ul);
   ul.classList.remove('flip');
@@ -3156,7 +3363,7 @@ function yearFacts(){
   const total = (y % 4 === 0 && y % 100 !== 0) || y % 400 === 0 ? 366 : 365;
   const day = Math.round((Date.UTC(y, p.mo - 1, p.d) - Date.UTC(y, 0, 1)) / 864e5) + 1;
   const pct = Math.round(100 * day / total);
-  return {y, total, day, pct, text: `اليوم <b>${ar(day)}</b> من ${ar(total)} · ${ar(pct)}${LATIN ? '%' : '٪'}`};
+  return {y, total, day, pct, text: `اليوم <b>${ar(day)}</b> من ${ar(total)}${SEP}${ar(pct)}${LATIN ? '%' : '٪'}`};
 }
 
 // ---- «السنة»: a dot for every day of this Gregorian year
@@ -3261,7 +3468,8 @@ function prayerRows(){
   return Object.keys(names).filter(k => DAY_TIMES[k]).map(k => {
     const [h, mi] = String(DAY_TIMES[k]).split(':').map(Number);
     const cls = k === lit ? 'next' : at(k) <= mins && !(tomorrow && k === lit) ? 'past' : '';
-    return `<li class="${cls}"><span>${names[k]}</span><span class="dt">${fmtTime(h, mi)}</span></li>`;
+    const cd = cls === 'next' && !cur ? '<span class="cd">' + 'بعد ' + shortHM(Math.max(60, Math.round((at(k) + (tomorrow ? 1440 : 0) - mins) * 60))) + '</span>' : '';   // the countdown in the next one (4.4: every style, not only «مربعات»)
+    return `<li class="${cls}"><span>${names[k]}</span><span class="dt">${fmtTime(h, mi)}</span>${cd}</li>`;
   });
 }
 
@@ -3273,11 +3481,13 @@ function forecastRows(){
   const today = cityToday(), tomorrow = new Date(Date.parse(today + 'T12:00:00Z') + DAY_MS).toISOString().slice(0, 10);
   const days = FORECAST.filter(d => d.date >= today).slice(0, 5);
   if(!days.some(d => d.date === today)) return [];
+  const lo = Math.min(...days.map(d => d.lo)), span = Math.max(1, Math.max(...days.map(d => d.hi)) - lo);   // the bar's scale: the days shown
   return days.map(d => {
     const day = d.date === today ? 'اليوم' : d.date === tomorrow ? 'غداً'
       : new Intl.DateTimeFormat(GREG, {timeZone:'UTC', weekday:'long'}).format(new Date(d.date + 'T12:00:00Z'));
-    return `<li><span>${day}</span><span class="ep">${WX_CODES[d.code] || ''}</span>`
-         + `<span class="dt">${ar(Math.round(d.hi))}° / ${ar(Math.round(d.lo))}°</span></li>`;
+    const a = (d.lo - lo) / span * 100, b = (d.hi - d.lo) / span * 100;
+    return `<li class="fc"><span>${day}</span><span class="wxi">${wxIcon(d.code, false)}</span><span class="ep">${WX_CODES[d.code] || ''}</span>`
+         + `<span class="lo">${ar(Math.round(d.lo))}°</span><span class="rg"><i style="inset-inline-start:${a.toFixed(0)}%;width:${b.toFixed(0)}%"></i></span><span class="hi">${ar(Math.round(d.hi))}°</span></li>`;
   });
 }
 
@@ -3364,14 +3574,19 @@ function shortHM(sec){   // «١ س و ٥ د», «٢ س», «٥ د»
   return [h ? ar(h) + ' س' : '', m || !h ? ar(Math.max(m, 1)) + ' د' : ''].filter(Boolean).join(' و ');
 }
 // ---- «الصلاة القادمة»: one line, «المغرب ٥:٢١ م، بعد ١ ساعة و ٩ دقائق», the calm one of the prayer cards
+// 4.4: the name and the time big, under them the time left and the iqama, and a bar from the last prayer to this one (it fills from the start)
 function nextPrayerRows(){
   if(!PRAYERS.length) return [];
   const p = riyadhParts(), mins = p.h * 60 + p.mi + p.s / 60;
-  let n = PRAYERS.find(x => x.h * 60 + x.mi > mins), tomorrow = false;
-  if(!n){ n = PRAYERS[0]; tomorrow = true; }
+  let i = PRAYERS.findIndex(x => x.h * 60 + x.mi > mins), tomorrow = false;
+  if(i < 0){ i = 0; tomorrow = true; }
+  const n = PRAYERS[i], at = n.h * 60 + n.mi + (tomorrow ? 1440 : 0), pr = PRAYERS[(i + PRAYERS.length - 1) % PRAYERS.length];
+  const from = pr.h * 60 + pr.mi - (i === 0 && !tomorrow ? 1440 : 0), done = Math.max(0, Math.min(100, (mins - from) / Math.max(1, at - from) * 100));
+  const iq = n.key === 'Dhuhr' && isFriday() ? 0 : CONFIG.iqama[n.key] || 0, q = n.h * 60 + n.mi + iq;
   // in the words of the bar and of the screensaver's own «الصلاة القادمة»
-  const left = untilAdhan(n.h * 60 + n.mi + (tomorrow ? 1440 : 0) - mins);
-  return [`<li class="np"><b>${prayerName(n)}</b><span class="t">${fmtTime(n.h, n.mi)}،</span><span class="r">بعد ${left}</span></li>`];   // «،», not «·»: beside «م» it reads as «٠»
+  const left = untilAdhan(at - mins);
+  return [`<li class="np"><b>${prayerName(n)}</b><span class="t">${fmtTime(n.h, n.mi)}</span><span class="r">بعد ${left}</span>`
+    + (iq ? '<span class="iq">' + 'الإقامة' + ' ' + fmtTime(Math.floor(q / 60) % 24, q % 60) + '</span>' : '') + `<span class="pb"><i style="width:${done.toFixed(1)}%"></i></span></li>`];
 }
 
 function prayerRowCard(){
@@ -3429,7 +3644,7 @@ function matchEvents(){
   const seen = new Set(), evs = [], lg = leagueMap();
   const take = ev => ev && ev.idEvent && !seen.has(ev.idEvent) && !seen.has(evKey(ev)) && seen.add(ev.idEvent) && seen.add(evKey(ev));
   CONFIG.teamIds.forEach(id => {
-    const next = NEXT_LIST[id] || (MATCHES[id] ? [MATCHES[id]] : []);
+    const next = (NEXT_LIST[id] || (MATCHES[id] ? [MATCHES[id]] : [])).concat(archOf(id, 'next'));
     next.forEach(ev => { if(take(ev)){ const e = fresher(MATCHES[id] && MATCHES[id].idEvent === ev.idEvent ? MATCHES[id] : ev, lg); if(!calledOff(e)) evs.push(e); } });
     resultsFor(id, lg).forEach(ev => { if(take(ev) && !calledOff(ev)) evs.push(ev); });
   });
@@ -3446,7 +3661,9 @@ function matchRows(card){
   let evs = matchEvents();
   const smart = card && card.kind === 'smart';
   if(smart){ const ids = new Set(focusGames(now).map(ev => ev.idEvent)); evs = evs.filter(ev => ids.has(ev.idEvent)); }   // only the game that brought the smart card here
-  const others = smart ? [] : eventRows(now);
+  const one = card && card.kind === 'nextmatch';
+  if(one){ const n = nextTeamGame(now); evs = n ? evs.filter(ev => ev.idEvent === n.idEvent) : []; }   // 4.3.3 the followed teams' next game alone
+  const others = smart || one ? [] : eventRows(now);
   const shown = evs.map(ev => ({ev, t: toDate(ev).getTime(), r: gameRank(ev, now) + (ev.tour ? 100 : 0)}))
     .filter(x => finishedRecently(x.ev, now) || pendingResult(x.ev, now)
       || (now < x.t + durMs(x.ev) && !FINAL.includes((x.ev.strStatus || '').toUpperCase())
@@ -3466,11 +3683,11 @@ function matchRows(card){
         : now >= t ? '<span class="live">مباشر</span>'
         : 'بعد ' + shortRemaining(t - now).split(' و ')[0];   // one unit: the date says the rest
       // the date is always there but for a game under way
-      const date = upcoming || pending ? matchWhen(d) : done ? matchDay(d) : '';
+      const date = upcoming || pending ? matchNear(d, now) : done ? (OLD_LOOK || cityToday(t) !== cityToday(now) ? matchDay(d) : 'اليوم') : '';
       const dateEl = date ? `<i class="mwhen" data-s="${esc(matchWhenShort(d, now, done))}">${date}</i>` : '';
       const club = (id, name, home) => `<span class="tm">${home ? '' : crestOrGap(ev, 'Away')}<span class="nm">${esc(teamAr(name, id))}</span>${home ? crestOrGap(ev, 'Home') : ''}</span>`;
-      return {t, r, html: `<li class="mg"><span class="mr">${club(ev.idHomeTeam, ev.strHomeTeam, true)} ${mid} ${club(ev.idAwayTeam, ev.strAwayTeam, false)} ${dateEl} <span class="dt">${when}</span></span></li>`};
-    }), ...others.map(o => ({...o, r: o.t <= now ? 1 : 2}))].sort(byRank).map(x => x.html);
+      return {t, r, html: `<li class="mg${done ? ' done' : ''}"><span class="mr">${club(ev.idHomeTeam, ev.strHomeTeam, true)} ${mid} ${club(ev.idAwayTeam, ev.strAwayTeam, false)} ${dateEl} <span class="dt">${when}</span></span></li>`};
+    }), ...others.map(o => (Object.assign({}, o, {r: o.t <= now ? 1 : 2})))].sort(byRank).map(x => x.html);
 }
 
 // ---- «الأسهم»: the watchlist card. A Tadawul code
@@ -3517,7 +3734,7 @@ function stocksCard(){
       + (pct === null ? '' : `<span class="chg ${cls}">${pct >= 0 ? '▲' : '▼'} ${CONFIG.stkChg === 'amount'
           ? num(Math.abs(d.p - v), 2) : num(Math.abs(pct), 2) + (LATIN ? '%' : '٪')}</span>`) + '</li>';
   });
-  const note = [allClosed ? 'السوق مغلق' : '', stale.length ? staleMark(stale[0]) : shown.some(k => marketOpen(isSA(k)) && Date.now() - STOCKS[k].at > LATE_MS) ? 'متأخر' : ''].filter(Boolean).join(' · ');   // the oldest price that is not current
+  const note = [allClosed ? 'السوق مغلق' : '', stale.length ? staleMark(stale[0]) : shown.some(k => marketOpen(isSA(k)) && Date.now() - STOCKS[k].at > LATE_MS) ? 'متأخر' : ''].filter(Boolean).join(SEP);   // the oldest price that is not current
   return {hd: '<span>الأسهم</span>' + (note ? `<span class="until near">${note}</span>` : ''), rows};
 }
 
@@ -3543,23 +3760,61 @@ function fitQuote(ul){
 }
 // the tafsir cut at a word, «…» after it, until it fits three lines
 // that is already full (a long verse on a small screen) fewer lines, none at all if not even one fits
+// «التفسير الميسر» (#tafsir=1): dist/tafsir.json beside the page (its terms allow the text only whole, so it is too large to be in the
+// page), read once and only when it is on: beside the page, the app's own assets (the screensaver's, the launcher's web/), or the repository
+let TAFSIR = null;
+const TAFSIR_NAME = 'التفسير الميسر';
+const tafsirOf = v => TAFSIR && TAFSIR[v.surah + ':' + v.ayah] || '';
+function loadTafsir(){
+  if(!CONFIG.tafsir || TAFSIR) return;
+  const urls = ['tafsir.json', 'file:///android_asset/tafsir.json', 'file:///android_asset/web/tafsir.json', 'https://raw.githubusercontent.com/tshi-dev/UrTV/master/dist/tafsir.json'];
+  const next = i => {
+    if(i >= urls.length) return;
+    const x = new XMLHttpRequest();   // XHR, not fetch: a file:// page reads file:// only this way
+    const fail = () => next(i + 1);
+    x.onload = () => { try{ const j = JSON.parse(x.responseText); if(j && typeof j === 'object' && !Array.isArray(j)){ TAFSIR = j; renderPanel(false, 'verse'); return; } }catch(e){} fail(); };
+    x.onerror = x.ontimeout = fail;
+    try{ x.open('GET', urls[i]); x.timeout = 8000; x.send(); }catch(e){ fail(); }
+  };
+  next(0);
+}
+// The whole tafsir, as large as the card allows (three steps), else in pages of three lines (two in a crowded card) at the smallest,
+// each in turn every 12 s (20 s on a weak TV); the tallest page holds the line's height, so the card never moves
+const TAFSIR_PG = {t: 0};
 function fitTafsir(ul){
+  clearInterval(TAFSIR_PG.t); TAFSIR_PG.t = 0;
   const el = ul.querySelector('li.tafsir');
   if(!el) return;
-  const full = el.textContent.replace(/…$/, ''), words = full.split(' '), was = el.textContent !== full;
-  const card = ul.closest('.week'), bar = document.querySelector('.bottom');
-  const lines = () => Math.round(el.getBoundingClientRect().height / parseFloat(getComputedStyle(el).lineHeight));
-  const crowded = () => { const c = card.getBoundingClientRect(); return c.height > .42 * innerHeight || c.bottom > bar.getBoundingClientRect().top - 4; };
-  for(let max = 3; max > 0; max--){
-    let n = words.length;
-    el.textContent = full + (was ? '…' : '');
-    while(lines() > max && n > 1){
-      n--;
-      el.textContent = words.slice(0, n).join(' ').replace(/[\s،,:؛.]+$/, '') + '…';
-    }
-    if(!crowded()) return;
+  const tt = el.querySelector('.tt'), tp = el.querySelector('.tp'), full = el.dataset.full || (el.dataset.full = tt.textContent), words = full.split(' ');
+  const card = ul.closest('.week'), bar = document.querySelector('.bottom'), mid = document.querySelector('.mid');
+  const lines = () => Math.round(tt.getBoundingClientRect().height / parseFloat(getComputedStyle(tt).lineHeight));
+  const crowded = () => { const c = card.getBoundingClientRect();
+    return CONFIG.widget ? mid.getBoundingClientRect().height > innerHeight + .5 : c.height > .42 * innerHeight || c.bottom > bar.getBoundingClientRect().top - 4; };
+  tt.style.minHeight = ''; setText(tp, '');
+  for(const k of [1, .9, .82]){
+    el.style.fontSize = k === 1 ? '' : 'calc(clamp(11px,.92vw,17px)*var(--z,1)*' + k + ')';
+    setText(tt, full);
+    if(lines() <= 3 && !crowded()){ el.__pages = [full]; return; }
   }
-  el.remove();
+  for(const max of [3, 2]){
+    const pages = [];
+    for(let i = 0; i < words.length;){
+      let n = i + 1;
+      while(n < words.length){ setText(tt, words.slice(i, n + 1).join(' ')); if(lines() > max) break; n++; }
+      pages.push(words.slice(i, n).join(' ')); i = n;
+    }
+    let h = 0;
+    for(const p of pages){ setText(tt, p); h = Math.max(h, tt.getBoundingClientRect().height); }
+    tt.style.minHeight = h + 'px';
+    let k = 0;
+    el.__pages = pages;   // (the tests read them)
+    const show = () => { setText(tt, pages[k]); setText(tp, pages.length > 1 ? ar(k + 1) + '/' + ar(pages.length) : ''); };
+    show();
+    if(crowded() && max === 3) continue;
+    if(crowded()){ el.remove(); return; }   // even two lines a page do not fit beside this card: no tafsir here, never a cut one
+    if(pages.length > 1) TAFSIR_PG.t = setInterval(() => { k = (k + 1) % pages.length; show(); }, CONFIG.lowram ? 20000 : 12000);
+    return;
+  }
 }
 // A card in a small place (the launcher's second or third) asks for a text no longer than card.maxLen
 // day's own, going on from it; none that short, the shortest.
@@ -3583,8 +3838,8 @@ function quoteOfDay(card){
   const n = quoteTurn(), kind = CONFIG.verseKind, half = kind === 'both' ? Math.floor(n / 2) : n;
   if(VERSES.length && (kind === 'verse' || (kind === 'both' && n % 2 === 0))){
     const v = pickShort(VERSES, half, x => x.text.length, card);
-    return {title:CONFIG.verseMin ? 'آية كريمة' : 'آية اليوم', rows:[`<li class="quote quran${v.text.length > 330 ? ' q4' : quoteSize(v.text.length)}"><span class="orn">﴿</span><span class="qt">${esc(v.text)}</span><span class="orn">﴾</span></li>`, `<li class="src">${esc(v.surah)} · ${ar(v.ayah)}</li>`]
-      .concat(CONFIG.tafsir && v.tafsir ? [`<li class="tafsir">${esc(v.tafsir)}</li>`] : [])};
+    return {title:CONFIG.verseMin ? 'آية كريمة' : 'آية اليوم', rows:[`<li class="quote quran${v.text.length > 330 ? ' q4' : quoteSize(v.text.length)}"><span class="orn">﴿</span><span class="qt">${esc(v.text)}</span><span class="orn">﴾</span></li>`, '<li class="src">' + esc(v.surah) + SEP + 'الآية' + ' ' + ar(v.ayah) + '</li>']
+      .concat(CONFIG.tafsir && tafsirOf(v) ? [`<li class="tafsir"><span class="tk">${TAFSIR_NAME}</span><span class="tt">${esc(tafsirOf(v))}</span><span class="tp"></span></li>`] : [])};
   }
   const h = pickShort(HADITH, half, x => x.parts.reduce((m, [, t]) => m + t.length, 0), card);
   const saw = s => s.replace(/ﷺ/g, '<span class="saw">ﷺ</span>').replace(/[﴿﴾]/g, m => `<span class="orn">${m}</span>`);
@@ -3660,7 +3915,7 @@ function adhkarCard(card){
     title,
     hd: `${ADHKAR_ICON[icon] || ''}<span>${title}</span><span class="until">${esc(until)}</span>`,
     rows: [`<li class="quote${d.quran ? ' quran' : ''}${d.text.length > 560 ? ' q4' : quoteSize(d.text.length)}">${text}</li>`,
-           `<li class="adf"><span class="s">${esc(ar(d.virtue ? `${d.virtue.text} · ${d.virtue.source.replace(' · ', ' ')}` : d.source))}</span><span class="c">${ADHKAR_COUNT[d.count] || ar(d.count) + ' مرة'}</span>`
+           `<li class="adf"><span class="s">${esc(ar(d.virtue ? `${d.virtue.text}${SEP}${d.virtue.source.replace(' · ', ' ')}` : d.source.replace(/ · /g, SEP)))}</span><span class="c">${ADHKAR_COUNT[d.count] || ar(d.count) + ' مرة'}</span>`
            + `<span class="d">${Array.from({length: dots}, (_, k) => k === on ? '<i class="on"></i>' : '<i></i>').join('')}</span></li>`],
   };
 }
@@ -3681,7 +3936,7 @@ try{ WX = Object.assign(WX, JSON.parse(localStorage.getItem(LS.wx) || '{}')); }c
 const saveWx = () => { try{ localStorage.setItem(LS.wx, JSON.stringify(WX)); }catch(e){} };
 function wxExpire(){
   if(Date.now() - WX.at < WX_STALE_MS) return;
-  ['wx-temp', 'wx-desc', 'wx-dust', 'wx-range', 'wx-src'].forEach(id => { const el = document.getElementById(id); if(el) setText(el, ''); });
+  ['wx-ico', 'wx-temp', 'wx-desc', 'wx-dust', 'wx-range', 'wx-src'].forEach(id => { const el = document.getElementById(id); if(el) setText(el, ''); });
 }
 // «Open-Meteo · قبل ١٥ د»: where the weather comes from and how old the reading is
 function wxAgeText(ms){
@@ -3692,7 +3947,7 @@ function wxSource(){
   const el = document.getElementById('wx-src');
   if(!el) return;
   const fresh = WX.at && Date.now() - WX.at < WX_STALE_MS;
-  setText(el, fresh ? 'Open-Meteo · ' + wxAgeText(Date.now() - WX.at) : '');
+  setText(el, fresh ? 'Open-Meteo' + SEP + wxAgeText(Date.now() - WX.at) : '');
   // #wxmore=1: «رطوبة ٤٥٪، رياح ١٢ كم/س» («،», not «·»: beside «٪» it reads as «٠») from the same reading (none of it when the reading is stale or did not have it)
   const more = document.getElementById('wx-more');
   if(!more) return;
@@ -3718,6 +3973,7 @@ async function loadWeather(){
     WX.wind = CONFIG.wxMore && typeof j.current.wind_speed_10m === 'number' ? j.current.wind_speed_10m : null;
     saveWx();
     setText(document.getElementById('wx-temp'), ar(Math.round(j.current.temperature_2m)) + '°');
+    setHTML(document.getElementById('wx-ico'), wxIcon(j.current.weather_code, isNight(hourKey())));
     const d = document.getElementById('wx-desc');
     setText(d, WX_CODES[j.current.weather_code] || '');
     wxSource();
@@ -3857,7 +4113,7 @@ function cardRelease(){
 function cardBlurLater(url){
   CARD.url = url; CARD.since = Date.now();
   cardRelease();
-  if(!CARD_FILTER[CONFIG.cardStyle]) return;
+  if(!CARD_FILTER[CONFIG.cardStyle] || CONFIG.lowram) return;   // A14 «خفيف»: no blurred copy behind the card
   const calm = !window.matchMedia || matchMedia('(prefers-reduced-motion: no-preference)').matches;   // else it never drifts
   CARD.t = setTimeout(cardBlurNow, calm ? 61000 : 0);
 }
@@ -4114,6 +4370,12 @@ const FB_W = {
   startsAfter:'تبدأ بعد %s %s', startsBefore:'تبدأ قبل %s %s', adhanAt:'أذان %s في الدقيقة %s منها', ago:'قبل %s', nextIn:'%s بعد %s',
   h1:'بساعة', h2:'بساعتين', hFew:'ب%s ساعات', hMany:'ب%s ساعة', m1:'بدقيقة', m2:'بدقيقتين', mFew:'ب%s دقائق', mMany:'ب%s دقيقة',
   am1:'ودقيقة', am2:'ودقيقتين', amFew:'و%s دقائق', amMany:'و%s دقيقة', taskText:'مباراة %s، تبدأ %s',
+  table:'جدول الترتيب', results:'النتائج', noTable:'الترتيب غير متاح الآن', pts:'%s نقطة',
+  myLeagues:'دورياتي', add:'أضف دوريًا أو فريقًا', manage:'إعدادات فرقي', noTeams:'ما تتابع فريقًا بعد', noLeagues:'ما تتابع دوريًا بعد', allLands:'كل الدول',
+  lgTeams:'فرق هذا الدوري', lgOpen:'الترتيب والنتائج', followedL:'أُضيف %s إلى دورياتك', unfollowedL:'أُزيل %s من دورياتك', on:'متابَع', find:'ابحث عن فريق', found:'نتائج البحث', typeName:'اكتب اسم الفريق', full:'وصلت للحد: ٨ دوريات', choose:'اختر دوريًا',
+  h2hSum:'%s: %s %s فوز، %s تعادل، %s %s', h2h1:'آخر مواجهة', h2h2:'آخر مواجهتين', h2hN:'آخر %s مواجهات',
+  marks:'فتخ', form:'آخر ٥', rank:'المركز %s',
+  club:'صفحة الفريقين', last:'آخر النتائج', h2h:'المواجهات مع %s', see:'صفحة %s', loading:'جارٍ التحميل…', noData:'لا شيء هنا بعد', followT:'تابع %s', unfollowT:'ألغِ متابعة %s',
 };
 const fw = (s, ...a) => { let i = 0; return String(s).replace(/%(\d)\$s|%s|%%/g, (m, n) => m === '%%' ? '%' : String(n ? a[+n - 1] : a[i++])); };
 const FB_EN = document.documentElement.lang === 'en';
@@ -4237,11 +4499,12 @@ const FB_GLYPH = {
   temp:'<svg viewBox="0 0 24 24"><path d="M10 13.5V5a2 2 0 0 1 4 0v8.5a4 4 0 1 1-4 0z"/></svg>',
   drop:'<svg viewBox="0 0 24 24"><path d="M12 3.5s-5.5 6.3-5.5 10.2a5.5 5.5 0 0 0 11 0C17.5 9.8 12 3.5 12 3.5z"/></svg>',
   wind:'<svg viewBox="0 0 24 24"><path d="M3 9h11a3 3 0 1 0-3-3M3 13h15a3 3 0 1 1-3 3M3 17h7"/></svg>',
+  star:'<svg viewBox="0 0 24 24"><path d="M12 3.6l2.5 5.2 5.7.8-4.1 4 1 5.6-5.1-2.7-5.1 2.7 1-5.6-4.1-4 5.7-.8z"/></svg>',
   bell:'<svg viewBox="0 0 24 24"><path d="M6 16V11a6 6 0 0 1 12 0v5l1.5 2h-15zM10 20.5a2 2 0 0 0 4 0"/></svg>',
 };
 const fbGlyph = k => `<span class="fg">${FB_GLYPH[k]}</span>`;
 function fbHome(now){   // today's games, the followed teams' first; with none today, the next day that has games
-  const all = fbGames(), today = cityToday(now);
+  const all = fbGames().filter(ev => !CONFIG.fbHide || !fbDone(ev, now)), today = cityToday(now);
   let list = all.filter(ev => fbDayOf(fbKick(ev)) === today);
   if(!list.length){
     const next = all.filter(ev => fbKick(ev) > now).sort((a, b) => fbKick(a) - fbKick(b))[0];
@@ -4293,7 +4556,7 @@ function fbCard(ev, now, i){
 }
 function fbAllOn(list){   // «كلها على ثمانية» when every game has the same mark
   const m = list.map(ev => (markOf(ev) || {}).mark);
-  return m.length && m[0] && m.every(x => x === m[0]) ? ' · ' + fw(FB_W.allOn, m[0]) : '';
+  return m.length && m[0] && m.every(x => x === m[0]) ? SEP + fw(FB_W.allOn, m[0]) : '';
 }
 function fbRender(){
   const root = document.getElementById('fb');
@@ -4302,7 +4565,7 @@ function fbRender(){
   FB.at = Math.max(0, Math.min(FB.at, list.length - 1));
   setHTML(document.getElementById('fb-wx-c'), fbWeatherHtml());
   setHTML(document.getElementById('fb-pr-c'), fbPrayersHtml());
-  const count = list.length ? 'TheSportsDB · ' + fbCount(list.length) : '';
+  const count = list.length ? 'TheSportsDB' + SEP + fbCount(list.length) : '';
   const upcoming = list.length && !list.some(ev => fbDayOf(fbKick(ev)) === cityToday(now));   // none today: the next day's, titled so
   for(const id of ['fb-mt', 'fb-row']){
     const h = document.querySelector('#' + id + ' h3'), t = h && h.firstChild;
@@ -4388,12 +4651,108 @@ function bootFootball(){
 }
 
 // ---- «المباريات»: a page of its own on the light look
-const MP = {day: '', picked: false, zone: 'rows', d: 1, l: 0, r: 0, detail: null, btn: 0, rows: [], leagues: [], days: [], note: ''};
-function mpGroups(){   // [{key, name, games}] of the chosen day: «فرقك», then each league in Prefs.LEAGUES' order
-  const games = fbGames().filter(ev => fbDayOf(fbKick(ev)) === MP.day && !(!fbMine(ev) && (ev.tour || (MP_MORE && MP_TOP_IDS.indexOf(String(ev.idLeague || '')) > 0)))), mine = games.filter(fbMine);
-  const by = {};
+const MP = {day: '', picked: false, zone: 'rows', d: 1, l: 0, r: 0, detail: null, btn: 0, rows: [], leagues: [], days: [], note: '', view: null, stack: [], saved: null};
+// 4.3.3 the followed leagues pinned on top of the side list: OK opens the league (its table, its results, its games)
+const mpPins = () => mpLeagueIds().map(id => ({key: 'pin' + id, side: lgName(id), games: [], pin: id}));
+function lgName(id){
+  const ix = ARCH_C[ARCH_BASE + 'index.json'], l = ix && ix.j && ix.j.leagues && ix.j.leagues[id];
+  return FB_LEAGUES[id] || CONFIG.leagueNames[id] || (l && (l.ar || l.en)) || '#' + id;
+}
+function mpLeagueView(v){
+  const id = String(v.id), tab = v.tab || 0, now = Date.now(), groups = [];
+  const tabs = [FB_W.table, FB_W.results, FB_W.title].map((t, i) => ({t, on: i === tab, act: () => { v.tab = i; MP.l = MP.r = 0; mpRender(); }}));
+  const res = tab < 2 ? archWant('results/' + id + '.json') : null;
+  if(tab === 1){
+    const by = new Map();
+    ((res && res.results) || []).map(g => archEv(g)).filter(Boolean).forEach(ev => { const d = fbDayOf(fbKick(ev)); if(!by.has(d)) by.set(d, []); by.get(d).push(ev); });
+    by.forEach((games, d) => groups.push({key: 'd' + d, name: mpDayName(d), games}));
+    if(!by.size) groups.push({key: 'r', name: FB_W.results, games: [], none: res === undefined ? FB_W.loading : FB_W.noData});
+  } else if(tab === 2){
+    const by = new Map();
+    fbGames().filter(ev => String(ev.idLeague) === id && !fbDone(ev, now)).forEach(ev => { const k = fbRound(ev); if(!by.has(k)) by.set(k, []); by.get(k).push(ev); });
+    by.forEach((games, k) => groups.push({key: 'n' + groups.length, name: k, games, dated: 1}));
+    if(!by.size) groups.push({key: 'n', name: FB_W.title, games: [], none: MATCHES_LOADED ? FB_W.noData : FB_W.loading});
+  } else {   // TheSportsDB's table of the season the league's games say (one request, when this tab is open)
+    const g = fbGames().find(ev => String(ev.idLeague) === id && ev.strSeason), r0 = res && res.results && res.results[0];
+    const season = String((g && g.strSeason) || (r0 && r0.s) || '');
+    const t = tableUrl(id, season) ? archWant(tableUrl(id, season)) : res === undefined ? undefined : null;
+    const rows = ((t && Array.isArray(t.table) && t.table) || []).filter(x => x && /^\d+$/.test(String(x.idTeam)))
+      .map(x => mpItem(ar(+x.intRank || 0) + '. ' + teamAr(x.strTeam, String(x.idTeam)), fw(FB_W.pts, ar(+x.intPoints || 0)), () => mpGo({k: 'club', id: String(x.idTeam)})));
+    groups.push({key: 't', name: FB_W.table, games: rows, none: t === undefined ? FB_W.loading : FB_W.noTable});
+  }
+  return {title: lgName(id), tabs, groups};
+}
+// 4.3.3 the followed leagues' ids (a built-in one by its file's games, else by the archive's index)
+const mpLeagueIds = () => [...new Set(CONFIG.ownLeagues.map(n => catId(n) || lgIdOf(n)).filter(Boolean))];
+const LG_IDS = {};   // a league followed from the page: its token -> its id (before its file or the index say)
+function lgIdOf(name){
+  const d = LEAGUE_DATA[name], e = d && (d.events || []).find(x => x && x.idLeague);
+  if(e) return String(e.idLeague);
+  if(LG_IDS[name]) return LG_IDS[name];
+  const ix = archWant('index.json'), hit = ix && ix.leagues && Object.entries(ix.leagues).find(([, l]) => l && String(l.en).toLowerCase() === String(name).toLowerCase());
+  return hit ? hit[0] : '';
+}
+// what shows the archive's data is drawn again when a file answers: «المباريات», else the home's card of the next game
+function archDrawn(){ if(document.getElementById('mp')) mpRender(); else if(CARDS.some(c => c.kind === 'nextmatch')) renderPanel(false, 'nextmatch'); }
+// 4.3.3 two clubs' last meetings (at most 5, the archive's h2h): {n, a, d, b}, a the first club's wins; null when none is known
+function h2hOf(a, b){
+  a = String(a); b = String(b);
+  if(!/^\d+$/.test(a) || !/^\d+$/.test(b) || a === b) return null;
+  const j = archWant('h2h/' + [a, b].sort((x, y) => x - y).join('-') + '.json');
+  const ms = ((j && j.meetings) || []).filter(m => m && m.hs != null && m.as != null && m.hs !== '' && m.as !== '').slice(0, 5);
+  if(!ms.length) return null;
+  const r = {n: ms.length, a: 0, d: 0, b: 0};
+  ms.forEach(m => { const hs = +m.hs, as = +m.as; if(hs === as) r.d++; else if((hs > as) === (String(m.h) === a)) r.a++; else r.b++; });
+  return r;
+}
+// 4.3.3 TheSportsDB's table of a league's season (asked once while something shows it), and a club's place in it ('' when none)
+const tableUrl = (lg, season) => /^\d{1,6}$/.test(String(lg)) && /^\d{4}(-\d{4})?$/.test(String(season)) ? `https://www.thesportsdb.com/api/v1/json/${CONFIG.sportsKey}/lookuptable.php?l=${lg}&s=${season}` : '';
+function rankOf(ev, id){
+  const u = tableUrl(ev.idLeague, ev.strSeason), t = u && archWant(u);
+  const row = t && Array.isArray(t.table) && t.table.find(x => x && String(x.idTeam) === String(id));
+  return row && +row.intRank > 0 ? +row.intRank : '';
+}
+// 4.3.3 a club's form: its last 5 results, newest first, 'w' 'd' 'l' (the page's own and its archive file's)
+function formOf(id){
+  id = String(id);
+  const j = archWant('teams/' + id + '.json'), now = Date.now();
+  const own = fbGames().filter(ev => (String(ev.idHomeTeam) === id || String(ev.idAwayTeam) === id) && fbDone(ev, now) && fbScored(ev));
+  return own.concat(archNew(own, ((j && j.last) || []).map(g => archEv(g, j)).filter(ev => ev && fbScored(ev)))).sort((a, b) => fbKick(b) - fbKick(a)).slice(0, 5)
+    .map(ev => { const h = +ev.intHomeScore, a = +ev.intAwayScore; return h === a ? 'd' : (h > a) === (String(ev.idHomeTeam) === id) ? 'w' : 'l'; });
+}
+// …as marks: ف (win) ت (draw) خ (loss), each in its colour, no box round them
+const formHtml = f => f.length ? `<span class="fm">${f.map(x => `<i class="fm-${x}">${FB_W.marks['wdl'.indexOf(x)]}</i>`).join('')}</span>` : '';
+// «آخر ٥ مواجهات: الهلال ٣ فوز، ١ تعادل، النصر ١»
+function h2hLine(ev){
+  const h = String(ev.idHomeTeam), a = String(ev.idAwayTeam), r = h2hOf(h, a);
+  return r ? fw(FB_W.h2hSum, r.n === 1 ? FB_W.h2h1 : r.n === 2 ? FB_W.h2h2 : fw(FB_W.h2hN, ar(r.n)), teamAr(ev.strHomeTeam, h), ar(r.a), ar(r.d), teamAr(ev.strAwayTeam, a), ar(r.b)) : '';
+}
+// …the page's own: the file asked when not answered for 15 minutes, the page drawn again when it answers
+function archWant(path){
+  const c = ARCH_C[archUrl(path)];
+  if(!c || (!c.p && Date.now() - c.at >= 15 * 60000)) archLoad(path).then(archDrawn);
+  return ARCH_C[archUrl(path)].j;
+}
+// 4.3.3 a past day: its results alone, from the archive's league files (the followed leagues, then the top ones) beside what the page has
+function mpPast(day, seen){
+  const out = [];
+  MP.wait = false;
+  [...new Set(mpLeagueIds().concat(MP_TOP_IDS))].forEach(id => {
+    const j = archWant('results/' + id + '.json');
+    if(j === undefined) MP.wait = true;
+    ((j && j.results) || []).forEach(g => { const ev = archEv(g); if(ev && fbDayOf(fbKick(ev)) === day && !seen.has(ev.idEvent) && !seen.has(evKey(ev))){ seen.add(ev.idEvent); seen.add(evKey(ev)); out.push(ev); } });
+  });
+  return out;
+}
+function mpGroups(){   // [{key, name, games}] of the chosen day: «فرقك», then each league in Prefs.LEAGUES' order (a past day: the followed leagues first)
+  const now = Date.now(), past = MP.day < cityToday(now);
+  let all = fbGames();
+  if(past){ const seen = new Set(); all.forEach(ev => { seen.add(String(ev.idEvent)); seen.add(evKey(ev)); }); all = all.concat(mpPast(MP.day, seen)).filter(ev => fbDone(ev, now) && fbScored(ev)); }
+  const games = all.filter(ev => fbDayOf(fbKick(ev)) === MP.day && (past || !(!fbMine(ev) && (ev.tour || (MP_MORE && MP_TOP_IDS.indexOf(String(ev.idLeague || '')) > 0))))), mine = games.filter(fbMine);
+  const by = {}, fol = past ? mpLeagueIds() : [];
   games.forEach(ev => { const k = String(ev.idLeague || ev.strLeague || ''); (by[k] = by[k] || []).push(ev); });
-  const keys = Object.keys(by).sort((a, b) => (FB_LEAGUE_ORDER.indexOf(a) + 1 || 99) - (FB_LEAGUE_ORDER.indexOf(b) + 1 || 99));
+  const rank = k => (fol.indexOf(k) + 1) || 50 + (FB_LEAGUE_ORDER.indexOf(k) + 1 || 49);
+  const keys = Object.keys(by).sort((a, b) => rank(a) - rank(b));
   const out = mine.length ? [{key: 'mine', name: FB_W.yours, games: mine, count: mine.length}] : [];
   const shown = new Set();
   keys.forEach(k => {
@@ -4419,21 +4778,26 @@ function mpMore(shown){
   return fbGames().filter(ev => !fbMine(ev) && rank(ev) >= 0 && !shown.has(String(ev.idLeague || ev.strLeague || '')) && days.includes(fbDayOf(fbKick(ev)))).sort((a, b) => (rank(a) - rank(b)) || fbKick(a) - fbKick(b)).slice(0, MP_MORE_MAX);
 }
 function mpRow(ev, now, i, withDay){
-  const c = fbClash(ev);
-  return fbMatchLine(ev, now, 'mpg' + (i === MP.r && MP.zone === 'rows' && !MP.detail ? ' f' : ''), ` data-r="${i}"`, fbLive(ev, now) || fbDone(ev, now) ? fbWhen(ev, now) : (withDay ? fbDayWord(fbDayOf(fbKick(ev))) + ' ' : '') + fbClock(fbKick(ev)),
+  const c = withDay !== 2 && fbClash(ev), d = fbDayOf(fbKick(ev));
+  return fbMatchLine(ev, now, 'mpg' + (i === MP.r && MP.zone === 'rows' && !MP.detail ? ' f' : ''), ` data-r="${i}"`, withDay === 2 && fbDone(ev, now) ? mpDayName(d) : fbLive(ev, now) || fbDone(ev, now) ? fbWhen(ev, now) : (withDay ? fbDayWord(d) + ' ' : '') + fbClock(fbKick(ev)),
     c ? `<span class="fnote">${esc(fbNote(c))}</span>` : '', fbMarkChip(ev));
 }
+const mpDayName = d => Math.abs(Date.parse(d) - Date.parse(cityToday())) <= DAY_MS ? fbDayWord(d) : FMT_DM.format(new Date(d + 'T12:00:00Z'));
+// a row of a view that is not a game (a team, a league, a place in the table): its name, a small note, what OK does
+const mpItem = (t, sub, act) => ({it: 1, idEvent: '', t, sub: sub || '', act});
+const mpItemRow = (x, i) => `<li class="mpg mpi${i === MP.r && MP.zone === 'rows' && !MP.detail ? ' f' : ''}" data-r="${i}"><span>${esc(x.t)}</span><i>${esc(x.sub)}</i></li>`;
 function mpAge(){
   const at = Math.max(MATCH_OK_AT || 0, ...Object.values(LEAGUE_DATA).map(d => Date.parse(d && d.updated) || 0));
   if(!at) return 'TheSportsDB';
   const m = Math.round((Date.now() - at) / 60000);
-  return 'TheSportsDB · ' + (m < 60 ? fw(FB_W.ago, qty(Math.max(1, m), UNIT.min)) : fmtAgo(at));
+  return 'TheSportsDB' + SEP + (m < 60 ? fw(FB_W.ago, qty(Math.max(1, m), UNIT.min)) : fmtAgo(at));
 }
 function mpRender(){
   if(!document.getElementById('mp')) return;
-  const now = Date.now(), t = cityToday(now);
+  const now = Date.now(), t = cityToday(now), V = MP.view ? mpView(MP.view) : null;
   MP.days = [-1, 0, 1, 2, 3, 4, 5].map(n => fbDayAdd(t, n));
-  if(!MP.picked){   // the day the widget shows (fbHome): today's games, else the next day that has games, in the city's zone
+  MP.tabs = V ? V.tabs : null; MP.only = !!(V && V.only);
+  if(!V && !MP.picked){   // the day the widget shows (fbHome): today's games, else the next day that has games, in the city's zone
     let day = t;
     if(!fbGames().some(ev => fbDayOf(fbKick(ev)) === t)){
       const next = fbGames().filter(ev => fbKick(ev) > now).sort((a, b) => fbKick(a) - fbKick(b))[0];
@@ -4441,26 +4805,35 @@ function mpRender(){
     }
     if(day !== MP.day){ MP.day = day; MP.d = MP.days.indexOf(day); MP.r = 0; MP.l = 0; }
   }
-  const groups = mpGroups();
-  MP.rows = []; groups.forEach(g => g.games.forEach(ev => MP.rows.push(ev)));
-  MP.leagues = groups;
+  const groups = V ? V.groups : mpGroups(), pins = V ? [] : mpPins();
+  MP.leagues = pins.concat(groups);
+  if(!V && MP.zone !== 'leagues' && groups.length){ let n = 0; MP.leagues.forEach((g, i) => { if(!g.pin && MP.r >= n) MP.l = i; n += g.games.length; }); }   // the side's lit row: the focused game's league, not a pin
+  MP.l = Math.max(0, Math.min(MP.l, MP.leagues.length - 1));
+  const shown = MP.only ? groups.slice(MP.l, MP.l + 1) : groups;   // a view of lists (the chooser): the side's chosen one alone
+  MP.rows = []; shown.forEach(g => g.games.forEach(ev => MP.rows.push(ev)));
   MP.r = Math.max(0, Math.min(MP.r, MP.rows.length - 1));
-  MP.l = Math.max(0, Math.min(MP.l, groups.length - 1));
-  setText(document.getElementById('mp-age'), mpAge());
-  const tb = document.getElementById('mp-teams'); if(tb) tb.classList.toggle('f', MP.zone === 'head');   // «فرقي»: the header's button, above the days
-  setHTML(document.getElementById('mp-days'), MP.days.map((d, i) => {
+  setText(document.getElementById('mp-h'), V ? V.title : FB_W.title);
+  if(V) setHTML(document.getElementById('mp-age'), MP.note ? esc(MP.note) : V.sub || '', true); else setText(document.getElementById('mp-age'), mpAge());
+  const tb = document.getElementById('mp-teams'); if(tb){ tb.classList.toggle('f', MP.zone === 'head'); tb.hidden = !!V; }   // «فرقي»: the header's button, above the days
+  const ring = i => (MP.zone === 'days' || (!MP.rows.length && MP.zone !== 'head')) && i === MP.d ? ' f' : '';
+  setHTML(document.getElementById('mp-days'), V ? V.tabs.map((x, i) => `<li class="${x.on ? 'on' : ''}${ring(i)}">${x.input ? '<input id="mp-q" type="search" autocomplete="off" tabindex="-1">' : esc(x.t)}</li>`).join('')
+    : MP.days.map((d, i) => {
     const word = i < 3 ? fbDayWord(d) : FMT_WEEKDAY.format(new Date(d + 'T12:00:00Z')) + ' ' + ar(+d.slice(8));
-    return `<li class="${d === MP.day ? 'on' : ''}${(MP.zone === 'days' || (!MP.rows.length && MP.zone !== 'head')) && i === MP.d ? ' f' : ''}">${word}</li>`;
+    return `<li class="${d === MP.day ? 'on' : ''}${ring(i)}">${word}</li>`;
   }).join(''));
-  setHTML(document.getElementById('mp-side'), groups.length ? groups.map((g, i) =>
-    `<li class="${i === MP.l ? 'on' : ''}${MP.zone === 'leagues' && i === MP.l ? ' f' : ''}"><span>${esc(g.side || g.name)}</span><i>${ar(g.count)}</i></li>`).join('') : '');
+  setHTML(document.getElementById('mp-side'), MP.leagues.map((g, i) =>
+    `<li class="${i === MP.l ? 'on' : ''}${g.pin ? ' pin' : ''}${MP.zone === 'leagues' && i === MP.l ? ' f' : ''}"><span>${esc(g.side || g.name)}</span><i>${g.pin ? fbGlyph('star') : ar(g.count != null ? g.count : g.games.length)}</i></li>`).join(''));
   let n = 0;
-  setHTML(document.getElementById('mp-list'), groups.length ? groups.map(g => `<section data-g="${esc(g.key)}"><h2>${g.nameHtml || esc(g.name)}</h2><ul>`
-    + g.games.map(ev => mpRow(ev, now, n++, g.more)).join('') + '</ul>' + (g.loading ? `<div class="fnone">${esc(matchesEmptyText())}</div>` : '') + '</section>').join('')
-    : `<div class="fnone">${MATCHES_LOADED ? fbNone(MP.day) : matchesEmptyText()}</div>`);
+  setHTML(document.getElementById('mp-list'), shown.length ? shown.map(g => `<section data-g="${esc(g.key)}"><h2>${g.nameHtml || esc(g.name)}</h2>`
+    + (g.games.length ? '<ul>' + g.games.map(ev => ev.it ? mpItemRow(ev, n++) : mpRow(ev, now, n++, g.dated ? 2 : g.more)).join('') + '</ul>' : '')
+    + (g.loading ? `<div class="fnone">${esc(matchesEmptyText())}</div>` : '') + (g.none && !g.games.length ? `<div class="fnone">${esc(g.none)}</div>` : '') + '</section>').join('')
+    : `<div class="fnone">${V ? esc(V.empty || FB_W.noData) : MATCHES_LOADED && !(MP.wait && MP.day < t) ? fbNone(MP.day) : matchesEmptyText()}</div>`);
   fillCrests(document.getElementById('mp'));
-  const f = MP.zone === 'leagues' ? document.querySelectorAll('#mp-list section')[MP.l] : document.querySelector('#mp-list li.f');
+  const f = MP.zone === 'leagues' ? !MP.only && document.querySelectorAll('#mp-list section')[MP.l - pins.length] : document.querySelector('#mp-list li.f');
   if(f) f.scrollIntoView({block: MP.zone === 'leagues' ? 'start' : 'nearest'});
+  const sf = document.querySelector('#mp-side li.on'); if(sf) sf.scrollIntoView({block: 'nearest'});
+  const q = document.getElementById('mp-q');
+  if(q){ if(MP.zone === 'days' && document.activeElement !== q){ q.value = MP.q || ''; q.focus(); } else if(MP.zone !== 'days') q.blur(); }
   if(MP.detail) mpDetailRender();
 }
 function mpLine(ev){   // «مع الصلاة»: the prayers around the game on one line, the game a green bar on it
@@ -4497,19 +4870,25 @@ function mpButtons(ev, now){   // «شاهد على …» (the broadcaster's app
   else if(drop) out.push({k: 'unfollow', side: drop, t: fw(FB_W.unfollow, teamAr(ev['str' + drop + 'Team'], ev['id' + drop + 'Team']))});
   return out;
 }
+const mdfLine = (rk, fm) => rk || fm ? `<div class="mdf">${rk}${fm}</div>` : '';   // 4.3.3 one line under a club's name: its place, its form
+const mpHasClub = ev => /^\d+$/.test(String(ev.idHomeTeam)) && /^\d+$/.test(String(ev.idAwayTeam)) ? 1 : 0;   // 4.3.3 the two clubs' page: their games and their meetings
 function mpDetailRender(){
   const ev = MP.detail, now = Date.now(), m = markOf(ev), k = fbKick(ev);
-  const big = side => { const c = crestOf(ev, side); return `<div class="mdt">${c ? `<img class="mdc" src="${esc(c.u)}" alt="">` : '<span class="mdc"></span>'}<b>${esc(nbName(teamAr(ev['str' + side + 'Team'], ev['id' + side + 'Team'])))}</b></div>`; };
+  const big = side => { const c = crestOf(ev, side), id = ev['id' + side + 'Team']; return `<div class="mdt">${c ? `<img class="mdc" src="${esc(c.u)}" alt="">` : '<span class="mdc"></span>'}<b>${esc(nbName(teamAr(ev['str' + side + 'Team'], id)))}</b>`
+    + mdfLine(rankOf(ev, id) ? `<small class="rk">${fw(FB_W.rank, ar(rankOf(ev, id)))}</small>` : '', /^\d+$/.test(String(id)) ? formHtml(formOf(id)) : '') + '</div>'; };   // 4.3.3 its place in the league's table and its form under the name
   const mid = (fbLive(ev, now) || fbDone(ev, now)) && fbScored(ev) ? `<b>${ar(+ev.intHomeScore)} - ${ar(+ev.intAwayScore)}</b><i>${fbWhen(ev, now)}</i>`
     : `<b>${fbClock(k)}</b><i>${fbDayWord(fbDayOf(k))}</i>`;
+  const meet = !fbLive(ev, now) && !fbDone(ev, now) && h2hLine(ev);   // 4.3.3 a coming game: the two clubs' last meetings
   const rows = [ev.strVenue ? `<li><span>${FB_W.venue}</span><i>${esc(venueName(ev.strVenue))}</i></li>` : '', m ? `<li><span>${FB_W.channel}</span><i>${esc(m.detail)}</i></li>` : '',
     `<li class="mdp"><div><span>${FB_W.withPrayer}</span><i class="mds">${esc(fbLive(ev, now) ? fbStatus(ev, now) : fbDone(ev, now) ? FB_W.ended : fbSentence(ev))}</i></div>${mpLine(ev)}</li>`].join('');
-  const btns = mpButtons(ev, now);
-  MP.btn = Math.max(-1, Math.min(MP.btn, btns.length));   // btns.length is «رجوع», the row under the actions
-  setHTML(document.getElementById('mp-detail'), `<div class="mdx${MP.btn < 0 ? ' f' : ''}"><div class="mdh"><span>${fbRoundHtml(ev)}</span>${fbMarkChip(ev)}</div>`
-    + `<div class="mdm">${big('Home')}<div class="mdk">${mid}</div>${big('Away')}</div><ul class="mdr">${rows}</ul>`
+  const btns = mpButtons(ev, now), club = mpHasClub(ev);
+  MP.btn = Math.max(-1, Math.min(MP.btn, btns.length + club));   // btns.length is «رجوع», the row under the actions; 4.3.3 beside it «صفحة الفريقين»
+  const hb = big('Home'), ab = big('Away'), tight = hb.includes('class="mdf"') || ab.includes('class="mdf"');
+  setHTML(document.getElementById('mp-detail'), `<div class="mdx${MP.btn < 0 ? ' f' : ''}${tight ? ' tight' : ''}"><div class="mdh"><span>${fbRoundHtml(ev)}</span>${fbMarkChip(ev)}</div>`
+    + `<div class="mdm">${hb}<div class="mdk">${mid}</div>${ab}</div>${meet ? `<div class="mdv">${esc(meet)}</div>` : ''}<ul class="mdr">${rows}</ul>`
     + `<div class="mdb">${btns.map((b, i) => `<button tabindex="-1" class="${i === 0 ? 'pri' : ''}${i === MP.btn ? ' f' : ''}" data-k="${b.k}">${b.icon ? fbGlyph('bell') : ''}<span>${esc(b.t)}</span></button>`).join('')}</div>`
-    + `<div class="mdq"><button tabindex="-1" class="${MP.btn === btns.length ? 'f' : ''}" data-k="back"><span>${FB_W.back}</span></button></div>`
+    + `<div class="mdq"><button tabindex="-1" class="${MP.btn === btns.length ? 'f' : ''}" data-k="back"><span>${FB_W.back}</span></button>`
+    + (club ? `<button tabindex="-1" class="${MP.btn === btns.length + 1 ? 'f' : ''}" data-k="club"><span>${FB_W.club}</span></button>` : '') + '</div>'
     + `<div class="mdn" id="mp-note">${esc(MP.note)}</div></div>`);
   document.getElementById('mp-detail').hidden = false;
   mpFixLine(document.getElementById('mp-detail'));
@@ -4522,15 +4901,132 @@ function mpFacts(ev){
 }
 function mpOpen(ev){ MP.detail = ev; MP.btn = mpButtons(ev, Date.now())[0] && /^(watch|player|install)$/.test(mpButtons(ev, Date.now())[0].k) ? 0 : -1;   // «شاهد على …» is ringed when it is there
    MP.note = ''; mpDetailRender(); }
-function mpBack(){   // the launcher's Back: closes the card first; 'out' when there is nothing to close
-  if(!MP.detail) return 'out';
-  MP.detail = null; document.getElementById('mp-detail').hidden = true; mpRender();
+function mpBack(){   // the launcher's Back: closes the card first, then a view (the one under it, at last the day as it was); 'out' when there is nothing to close
+  if(MP.detail){ MP.detail = null; document.getElementById('mp-detail').hidden = true; mpRender(); return 'closed'; }
+  if(!MP.view) return 'out';
+  const v = MP.stack.pop() || null;
+  MP.view = v; MP.ask = ''; MP.note = '';
+  Object.assign(MP, v ? v.at || {zone: 'rows', d: 0, l: 0, r: 0} : MP.saved);
+  mpRender();
   return 'closed';
+}
+// 4.3.3 the page's other views, on its own look (the strip, the side list, the list): a club, a league; MP.view is the open one, MP.stack the ones under it
+function mpGo(v){
+  if(MP.view){ MP.view.at = {zone: MP.zone, d: MP.d, l: MP.l, r: MP.r}; MP.stack.push(MP.view); } else { MP.stack = []; MP.saved = {zone: MP.zone, d: MP.d, l: MP.l, r: MP.r}; }
+  MP.view = v; MP.zone = v.k === 'find' ? 'days' : 'rows'; MP.d = 0; MP.l = 0; MP.r = 0; MP.ask = ''; MP.note = '';
+  mpRender();
+}
+function mpView(v){
+  try{ return v.k === 'club' ? mpClubView(v) : v.k === 'league' ? mpLeagueView(v) : MP_VIEWS[v.k] ? MP_VIEWS[v.k](v) : null; }catch(e){ return {title: FB_W.title, tabs: [], groups: [], empty: FB_W.noData}; }
+}
+const MP_VIEWS = {};
+const CATALOGUE = 'https://raw.githubusercontent.com/tshi-dev/UrTV/data-catalogue/catalogue/catalogue.json';
+// 4.3.3 «فرقي»: the followed teams (each opens its club's page) and leagues (each its league), «أضف دوريًا أو فريقًا», and the settings' own chooser
+MP_VIEWS.mine = () => {
+  const host = window.UrtvMatches, tabs = [{t: FB_W.add, act: () => mpGo({k: 'pick'})}];
+  if(host && host.openTeams) tabs.push({t: FB_W.manage, act: () => { try{ host.openTeams(); }catch(e){} }});
+  return {title: FB_W.teams, tabs, groups: [
+    {key: 'teams', name: FB_W.teams, games: CONFIG.teamIds.map(id => mpItem(teamNameOf(id), '', () => mpGo({k: 'club', id}))), none: FB_W.noTeams},
+    {key: 'leagues', name: FB_W.myLeagues, games: mpLeagueIds().map(id => mpItem(lgName(id), '', () => mpGo({k: 'league', id}))), none: FB_W.noLeagues}]};
+};
+// the chooser: the side list «كل الدول» then each country, the list its leagues (the catalogue's, the best-known first); OK on one: its teams
+const catRows = () => { const c = archWant(CATALOGUE); return {c, rows: ((c && c.leagues) || []).filter(r => r && /^\d{1,6}$/.test(String(r.id)))}; };
+const lgFollowed = id => mpLeagueIds().includes(String(id));
+MP_VIEWS.pick = () => {
+  const {c, rows} = catRows(), lands = new Map();
+  const item = (r, land) => mpItem(r.ar || r.en, lgFollowed(r.id) ? FB_W.on : land ? (r.country_ar || r.country || '') : '', () => mpGo({k: 'lteams', id: String(r.id), ar: r.ar || '', en: r.en || ''}));
+  rows.forEach(r => { const k = r.country || ''; if(!lands.has(k)) lands.set(k, {name: r.country_ar || r.country || '—', rows: []}); lands.get(k).rows.push(r); });
+  const all = rows.filter(r => r.top).concat(rows.filter(r => !r.top));
+  return {title: FB_W.choose, only: 1, tabs: [{t: FB_W.find, act: () => mpGo({k: 'find'})}], empty: c === undefined ? FB_W.loading : FB_W.failed,
+    groups: rows.length ? [{key: 'all', name: FB_W.allLands, games: all.map(r => item(r, 1))}].concat([...lands.values()].map((l, i) => ({key: 'c' + i, name: l.name, games: l.rows.map(r => item(r))}))) : []};
+};
+// «فرق هذا الدوري»: the clubs the archive has in it (else TheSportsDB's list of the league), each opens its page; «تابع» the whole league
+MP_VIEWS.lteams = v => {
+  const ix = archWant('index.json'), name = v.ar || v.en || lgName(v.id);
+  let teams = ix && ix.teams ? Object.entries(ix.teams).filter(([, t]) => t && (t.leagues || []).map(String).includes(v.id)).map(([id, t]) => [id, t.ar || teamAr(t.en, id)]) : [];
+  let wait = ix === undefined;
+  if(!teams.length && ix !== undefined && v.en){
+    const j = archWant(`https://www.thesportsdb.com/api/v1/json/${CONFIG.sportsKey}/search_all_teams.php?l=${encodeURIComponent(v.en)}`);
+    wait = j === undefined;
+    teams = ((j && j.teams) || []).filter(t => t && /^\d+$/.test(String(t.idTeam))).map(t => [String(t.idTeam), teamAr(t.strTeam, String(t.idTeam))]);
+  }
+  teams.sort((a, b) => a[1].localeCompare(b[1], 'ar'));
+  const on = lgFollowed(v.id);
+  return {title: name, tabs: [{t: fw(on ? FB_W.unfollowT : FB_W.followT, name), act: () => mpFollowLeague(v)}, {t: FB_W.lgOpen, act: () => mpGo({k: 'league', id: v.id})}],
+    groups: [{key: 'teams', name: FB_W.lgTeams, games: teams.map(([id, n]) => mpItem(n, fbFollowed(id) ? FB_W.on : '', () => mpGo({k: 'club', id}))), none: wait ? FB_W.loading : FB_W.noData}]};
+};
+// «ابحث عن فريق»: a field in the strip; the archive's clubs whose Arabic or English name has the words
+MP_VIEWS.find = () => {
+  const ix = archWant('index.json'), q = String(MP.q || '').trim().toLowerCase();
+  const hits = q && ix && ix.teams ? Object.entries(ix.teams).filter(([, t]) => t && (String(t.ar || '').includes(q) || String(t.en || '').toLowerCase().includes(q))).slice(0, 40) : [];
+  return {title: FB_W.find, tabs: [{input: 1, t: ''}], groups: [{key: 'found', name: FB_W.found, games: hits.map(([id, t]) => mpItem(t.ar || teamAr(t.en, id), fbFollowed(id) ? FB_W.on : '', () => mpGo({k: 'club', id}))),
+    none: !q ? FB_W.typeName : ix === undefined ? FB_W.loading : FB_W.noData}]};
+};
+// a league followed or unfollowed from the page: a second OK confirms; the screensaver's list, or the home's while it cannot take it
+function mpFollowLeague(v){
+  const host = window.UrtvMatches, id = String(v.id), on = lgFollowed(id), name = v.ar || v.en || lgName(id);
+  const token = FB_LEAGUES[id] && /^[A-Za-z0-9 \-]{2,40}$/.test(v.en || '') ? v.en : 'id' + id;   // a built-in league: its own file
+  if(!on && mpLeagueIds().length >= 8){ MP.note = FB_W.full; return mpRender(); }
+  if(MP.ask !== 'l' + id){ MP.ask = 'l' + id; MP.note = FB_W.sure; return mpRender(); }
+  MP.ask = '';
+  let ok = false;
+  try{ ok = !!(host && host.followLeague && (on ? host.unfollowLeague(id, v.en || '') : host.followLeague(id, v.ar || '', v.en || '', token))); }catch(e){}
+  if(ok){
+    const same = n => n === token || n === 'id' + id || (catId(n) || lgIdOf(n)) === id;
+    if(on){ CONFIG.ownLeagues = CONFIG.ownLeagues.filter(n => !same(n)); CONFIG.leagues = CONFIG.leagues.filter(n => !same(n)); }
+    else { LG_IDS[token] = id; CONFIG.ownLeagues.push(token); if(!CONFIG.leagues.includes(token)) CONFIG.leagues.push(token); if(v.ar) CONFIG.leagueNames[id] = String(v.ar).slice(0, 60); }
+    mpReload();
+  }
+  MP.note = ok ? fw(on ? FB_W.unfollowedL : FB_W.followedL, name) : FB_W.failed;
+  mpRender();
+}
+// a team's name: the archive's index (its Arabic, else its English made Arabic), else a game it is in
+function teamNameOf(id, j){
+  id = String(id);
+  const ix = archWant('index.json'), t = (j && String(j.id) === id && j) || (ix && ix.teams && ix.teams[id]);
+  if(t) return t.ar || teamAr(t.en, id);
+  const ev = fbGames().find(e => String(e.idHomeTeam) === id || String(e.idAwayTeam) === id);
+  return ev ? teamAr(ev[String(ev.idHomeTeam) === id ? 'strHomeTeam' : 'strAwayTeam'], id) : (teamAr('', id) || '#' + id);
+}
+const teamEnOf = id => { const ix = archWant('index.json'), t = ix && ix.teams && ix.teams[id]; return t ? String(t.en || '') : ''; };
+// «تابع» / «ألغِ متابعة» from a view: a second OK confirms, as on a game's card; the page is filled again with the new list
+function mpFollowTeam(id){
+  const name = teamNameOf(id), on = fbFollowed(id), host = window.UrtvMatches;
+  if(MP.ask !== 'f' + id){ MP.ask = 'f' + id; MP.note = FB_W.sure; return mpRender(); }
+  MP.ask = '';
+  let ok = false;
+  try{ ok = !!(host && (on ? host.unfollow(id) : host.follow(id, teamEnOf(id)))); }catch(e){}
+  if(ok){ if(on) CONFIG.teamIds.splice(CONFIG.teamIds.indexOf(id), 1); else if(!CONFIG.teamIds.includes(id)) CONFIG.teamIds.push(id); mpReload(); }
+  MP.note = ok ? fw(on ? FB_W.unfollowed : FB_W.followed, name) : FB_W.failed;
+  mpRender();
+}
+function mpReload(){ try{ Promise.resolve(loadMatches()).then(() => { fbRender(); mpRender(); }).catch(() => {}); }catch(e){} }
+// A2 a club: its coming games by round, its last results, its meetings with the other club (of the game it was opened from, else of its next game)
+function mpClubView(v){
+  const id = String(v.id), j = archWant('teams/' + id + '.json'), name = teamNameOf(id, j), now = Date.now();
+  const its = ev => String(ev.idHomeTeam) === id || String(ev.idAwayTeam) === id;
+  const own = fbGames().filter(ev => its(ev) && !fbDone(ev, now));
+  const coming = own.concat(archNew(own, ((j && j.next) || []).map(g => archEv(g, j)).filter(ev => ev && !fbDone(ev, now)))).sort((a, b) => fbKick(a) - fbKick(b));
+  const lastOwn = fbGames().filter(ev => its(ev) && fbDone(ev, now) && fbScored(ev));
+  const last = lastOwn.concat(archNew(lastOwn, ((j && j.last) || []).map(g => archEv(g, j)).filter(Boolean))).sort((a, b) => fbKick(b) - fbKick(a)).slice(0, 10);
+  const vs = String(v.vs || (coming[0] ? (String(coming[0].idHomeTeam) === id ? coming[0].idAwayTeam : coming[0].idHomeTeam) : '') || '');
+  const h = /^\d+$/.test(vs) ? archWant('h2h/' + [id, vs].sort((a, b) => a - b).join('-') + '.json') : null;
+  const wait = x => x === undefined ? FB_W.loading : FB_W.noData, groups = [], by = new Map();
+  coming.forEach(ev => { const k = fbRound(ev) || FB_W.upcoming; if(!by.has(k)) by.set(k, []); by.get(k).push(ev); });
+  by.forEach((games, k) => groups.push({key: 'n' + groups.length, name: k, games, dated: 1}));
+  if(!coming.length) groups.push({key: 'n', name: FB_W.upcoming, games: [], none: wait(j)});
+  groups.push({key: 'last', name: FB_W.last, games: last, dated: 1, none: wait(j)});
+  if(/^\d+$/.test(vs)) groups.push({key: 'h2h', name: fw(FB_W.h2h, teamNameOf(vs)), games: ((h && h.meetings) || []).slice(0, 10).map(g => archEv(g)).filter(Boolean), dated: 1, none: wait(h)});
+  const tabs = [{t: fw(fbFollowed(id) ? FB_W.unfollowT : FB_W.followT, name), act: () => mpFollowTeam(id)}];
+  if(v.vs) tabs.push({t: fw(FB_W.see, teamNameOf(vs)), act: () => { MP.view = {k: 'club', id: vs, vs: id}; MP.zone = 'rows'; MP.d = MP.l = MP.r = 0; MP.note = MP.ask = ''; mpRender(); }});
+  const f = formOf(id);
+  return {title: name, tabs, groups, sub: f.length ? `<span class="fmh">${FB_W.form}</span>${formHtml(f)}` : ''};
 }
 function mpAct(){
   // one focus: OK acts on the button that is RINGED on screen
   const ev = MP.detail, ringed = document.querySelector('#mp-detail .mdb button.f, #mp-detail .mdq button.f');
   if(ringed && ringed.dataset.k === 'back'){ mpBack(); return; }   // «رجوع»: the card closes, the focus is on the game's row again
+  if(ringed && ringed.dataset.k === 'club'){ mpBack(); mpGo({k: 'club', id: String(ev.idHomeTeam), vs: String(ev.idAwayTeam)}); return; }
   const b = ringed && mpButtons(ev, Date.now()).find(x => x.k === ringed.dataset.k);
   if(!b) return;
   if((b.k === 'follow' || b.k === 'unfollow') && MP.ask !== b.k){ MP.ask = b.k; MP.note = FB_W.sure; return mpDetailRender(); }   // one OK never follows or unfollows: the second confirms
@@ -4570,38 +5066,48 @@ function mpKey(e){
     if(ok) return mpAct(), e.preventDefault();
     MP.ask = '';   // any other key withdraws the question
     if(k === 'Escape' || k === 'Backspace'){ mpBack(); return e.preventDefault(); }   // the card is closed: nothing of it to draw again
-    if(MP.btn === n){ if(k === 'ArrowUp') MP.btn = n > 0 ? 0 : -1; }   // on «رجوع»: ▲ goes up to the actions (the first, else the card); ◀ ▶ stay
+    if(MP.btn >= n){ if(k === 'ArrowUp') MP.btn = n > 0 ? 0 : -1; else if((k === fwd || k === back) && mpHasClub(MP.detail)) MP.btn = MP.btn === n ? n + 1 : n; }   // on «رجوع»: ▲ goes up to the actions (the first, else the card); ◀ ▶ to «صفحة الفريقين» and back
     else if(k === 'ArrowDown') MP.btn = n;
     else if(k === fwd) MP.btn = Math.min(n - 1, MP.btn + 1);
     else if(k === back) MP.btn = Math.max(-1, MP.btn - 1);
     else return;
     e.preventDefault(); return mpDetailRender();
   }
+  if(MP.view && MP.zone === 'head') MP.zone = 'days';
   if(MP.zone === 'head'){   // 4.3.1 «فرقي»: OK opens the teams chooser of the settings (the page is made again when it comes back), ▼ goes to the days
-    if(ok){ try{ if(window.UrtvMatches) window.UrtvMatches.openTeams(); }catch(err){} return e.preventDefault(); }
+    if(ok){ e.preventDefault(); return mpGo({k: 'mine'}); }   // 4.3.3 the page's own «فرقي» (the settings' chooser is one of its actions)
     if(k !== 'ArrowDown') return;
     MP.zone = 'days'; e.preventDefault(); return mpRender();
   }
   if(MP.zone !== 'days' && !MP.rows.length) MP.zone = 'days';   // a day with no game: the days are where the focus is
-  if(MP.zone === 'days'){
+  if(MP.zone === 'days' && MP.tabs){   // a view's strip: its actions (◀ ▶ walk them, OK does one); the search field keeps its keys
+    if(e.target && e.target.id === 'mp-q' && !['ArrowDown', 'ArrowUp', 'Enter'].includes(k)) return;
+    if(k === fwd) MP.d = Math.min(MP.tabs.length - 1, MP.d + 1); else if(k === back) MP.d = Math.max(0, MP.d - 1);
+    else if(k === 'ArrowDown' || (k === 'Enter' && e.target && e.target.id === 'mp-q')) MP.zone = MP.rows.length ? 'rows' : MP.leagues.length ? 'leagues' : 'days';
+    else if(ok){ const x = MP.tabs[MP.d]; e.preventDefault(); if(x && x.act) x.act(); return; }
+    else if(k !== 'ArrowUp') return;
+  } else if(MP.zone === 'days'){
     if(k === fwd) MP.d = Math.min(MP.days.length - 1, MP.d + 1); else if(k === back) MP.d = Math.max(0, MP.d - 1);
     else if(k === 'ArrowDown') MP.zone = MP.rows.length ? 'rows' : MP.leagues.length ? 'leagues' : 'days';
     else if(k === 'ArrowUp' && document.getElementById('mp-teams')) MP.zone = 'head';
     else if(!ok) return;
     if(k === fwd || k === back || ok){ MP.day = MP.days[MP.d]; MP.picked = true; MP.r = 0; MP.l = 0; }
   } else if(MP.zone === 'leagues'){
+    const pin = MP.leagues[MP.l] && MP.leagues[MP.l].pin;
     if(k === 'ArrowDown') MP.l = Math.min(MP.leagues.length - 1, MP.l + 1);
     else if(k === 'ArrowUp'){ if(MP.l) MP.l--; else MP.zone = 'days'; }
+    else if(pin && (k === fwd || ok)){ e.preventDefault(); return mpGo({k: 'league', id: pin}); }   // a pinned league: its table, results and games
     else if(k === fwd || ok){ if(MP.rows.length) MP.zone = 'rows'; }
     else return;
-    if(MP.zone === 'leagues' || k === fwd || ok){ let n = 0; for(let i = 0; i < MP.l; i++) n += MP.leagues[i].games.length; MP.r = n; }
+    if(MP.only) MP.r = 0;
+    else if(MP.zone === 'leagues' || k === fwd || ok){ let n = 0; for(let i = 0; i < MP.l; i++) n += MP.leagues[i].games.length; MP.r = n; }
   } else {
     if(k === 'ArrowDown') MP.r = Math.min(MP.rows.length - 1, MP.r + 1);
     else if(k === 'ArrowUp'){ if(MP.r) MP.r--; else MP.zone = 'days'; }
     else if(k === back){ if(MP.leagues.length) MP.zone = 'leagues'; }
-    else if(ok){ if(MP.rows[MP.r]) mpOpen(MP.rows[MP.r]); e.preventDefault(); return; }
+    else if(ok){ const x = MP.rows[MP.r]; e.preventDefault(); if(x && x.it){ if(x.act) x.act(); } else if(x) mpOpen(x); return; }
     else return;
-    let n = 0; MP.leagues.forEach((g, i) => { if(MP.r >= n) MP.l = i; n += g.games.length; });
+    if(!MP.only){ let n = 0; MP.leagues.forEach((g, i) => { if(MP.r >= n) MP.l = i; n += g.games.length; }); }
   }
   e.preventDefault();
   mpRender();
@@ -4609,11 +5115,12 @@ function mpKey(e){
 function bootMatchPage(){
   document.documentElement.classList.add('mpage');
   document.documentElement.classList.toggle('mpdark', !!CONFIG.pageDark);
-  document.body.insertAdjacentHTML('beforeend', `<div id="mp"><header><h1>${FB_W.title}</h1><span id="mp-age"></span>${window.UrtvMatches && window.UrtvMatches.openTeams ? `<button id="mp-teams" type="button" tabindex="-1">${FB_W.teams}</button>` : ''}</header>`
+  document.body.insertAdjacentHTML('beforeend', `<div id="mp"><header><h1 id="mp-h">${FB_W.title}</h1><span id="mp-age"></span>${window.UrtvMatches && window.UrtvMatches.openTeams ? `<button id="mp-teams" type="button" tabindex="-1">${FB_W.teams}</button>` : ''}</header>`
     + '<ul id="mp-days"></ul><div class="mpb"><ul id="mp-side"></ul><div id="mp-list"></div></div></div><div id="mp-detail" hidden></div>');
   document.documentElement.style.setProperty('--u', (innerWidth / 1920) + 'px');
   addEventListener('resize', () => document.documentElement.style.setProperty('--u', (innerWidth / 1920) + 'px'));
   addEventListener('keydown', mpKey);
+  addEventListener('input', e => { if(e.target && e.target.id === 'mp-q'){ MP.q = e.target.value.slice(0, 40); MP.r = 0; mpRender(); } });
   const want = _Q.get('event');   // OK on a game of the home: its card opens at once
   mpRender();
   const openWanted = () => { if(want && !MP.detail){ const ev = fbGames().find(x => String(x.idEvent) === want); if(ev){ MP.day = fbDayOf(fbKick(ev)); MP.picked = true; mpRender(); MP.r = MP.rows.indexOf(ev); mpOpen(ev); } } };
@@ -4641,7 +5148,7 @@ function boot(){
   if(CONFIG.slot === 'none') document.documentElement.classList.add('slot-none');
   if(!CONFIG.occasion) document.documentElement.classList.add('occ-off');
   if(!SLOT_MATCHES) document.getElementById('match-row').textContent = '';   // not «لا شيء هذا الأسبوع»: that is the matches slot's
-  if(CONFIG.cardStyle !== 'current') document.documentElement.classList.add('cs-' + CONFIG.cardStyle);
+  addCardStyle();
   if(CONFIG.clockSize !== 'large') document.documentElement.classList.add('ck-' + CONFIG.clockSize);
   // the small clock's column: its widest time of day in ems, every minute measured in Thmanyah Display
   // in Latin digits 3.25), so the cards beside it and the panels under it never move
@@ -4678,7 +5185,7 @@ function boot(){
   loadMarkets();
   renderPanel(false, ...CARD_KINDS.filter(k => k !== 'shows'));   // shows: its own data arrives with prayers, weather, matches
   if(NEEDS_MATCHES) loadMatches();
-  loadPrayers(); if(USES('shows')) loadWeek(); loadWeather();
+  loadPrayers(); if(USES('shows')) loadWeek(); loadWeather(); loadTafsir();
   applyNight(); pixelShift();
 
   nowPlayingTick();
@@ -4716,11 +5223,17 @@ function boot(){
   }, 60*1000);
 }
 
+// «شكل البطاقة»: html.cs-<style>; «مربعات» is html.pbx (the prayers card's own look: the other cards stay as they are)
+function addCardStyle(){
+  if(CONFIG.cardStyle !== 'current') document.documentElement.classList.add(CONFIG.cardStyle === 'boxes' ? 'pbx' : OLD_LOOK ? 'cso' : 'cs-' + CONFIG.cardStyle);
+}
+
 // The launcher's cards: the chosen ones only
 function bootWidget(){
   document.documentElement.classList.add('widget');
+  if(_Q.get('row') === '1') document.documentElement.classList.add('row');   // 4.4 «التخطيط: كنبة»: the cards in one row above the apps tray
   if(CONFIG.lowram) document.documentElement.classList.add('lowram');
-  if(CONFIG.cardStyle !== 'current') document.documentElement.classList.add('cs-' + CONFIG.cardStyle);   // «شكل البطاقة» applies to each of them
+  addCardStyle();   // «شكل البطاقة» applies to each of them
   buildCards();
   restoreSnap();
   setTimeout(saveSnap, 15*1000);
@@ -4736,6 +5249,7 @@ function bootWidget(){
   if(USES('forecast') || USES('hourly')){ loadWeather(); periodic(loadWeather, 30*60*1000); }
   if(USES('matches')){ loadMatches(); periodic(loadMatches, 30*60*1000); periodic(loadLive, 2*60000); }
   if(USES('stocks')){ loadMarkets(); periodic(loadMarkets, (CONFIG.lowram ? 15 : CONFIG.midram ? 10 : 5)*60*1000); }
+  if(USES('verse')) loadTafsir();
   cardTimers();
   let lastDay = riyadhDayNumber();
   setInterval(() => { if(riyadhDayNumber() !== lastDay){ lastDay = riyadhDayNumber(); renderPanel(false); if(USES('prayers') || USES('prayerrow') || USES('adhkar')) later(loadPrayers); } }, 60*1000);

@@ -102,7 +102,27 @@ public final class DominoTest {
         return steps;
     }
 
+    /** with phones the choice comes as a number: the tile, or the draw button, then the end */
+    static void phones() {
+        boolean played = false, refused = true, ends = false;
+        for (long seed = 1; seed < 40 && !played; seed++) {
+            DominoTable tb = new DominoTable(new int[]{0, 0}, 100, new Random(seed), new Random(seed));
+            if (tb.state() != DominoTable.State.HANDOVER || tb.select(0)) { refused = false; break; }   // nothing is chosen on a hand-over screen
+            tb.ok();
+            int p = tb.game.turn(), fit = -1;
+            for (int i = 0; i < tb.game.count(p); i++) if (tb.fits(i)) { fit = i; break; }
+            int bad = -1;
+            for (int i = 0; i < tb.game.count(p); i++) if (!tb.fits(i)) { bad = i; break; }
+            if (bad >= 0 && tb.select(bad)) refused = false;
+            if (fit >= 0 && tb.select(fit)) { int before = tb.game.count(p); tb.ok(); played = tb.game.count(p) == before - 1 || tb.state() == DominoTable.State.CHOOSE_END; }
+        }
+        check("phones: a choice on a hand-over screen or a tile that does not fit is refused, a tile that fits is played", played && refused);
+        DominoTable tb = new DominoTable(new int[]{0, 0}, 100, new Random(3), new Random(3));
+        check("phones: an end is chosen only while the table asks which, and only left or right", !tb.selectEnd(DominoGame.LEFT) && !tb.selectEnd(7));
+    }
+
     public static void main(String[] a) throws Exception {
+        phones();
         // ---- the set and the deal
         List<Tile> set = Tile.set();
         Set<Integer> ids = new HashSet<>(); int pips = 0, doubles = 0; int[] per = new int[7];

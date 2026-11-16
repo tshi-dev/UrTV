@@ -39,6 +39,11 @@ public final class PhoneBridge {
             Map<String, Object> m = new LinkedHashMap<>();
             m.put("id", r.id);
             m.put("name", r.name);
+            if (r.missing.length > 0) {   // 4.3.3: the surahs it has no recording of (a pick of one plays the next it has: MusicService)
+                List<Object> gone = new ArrayList<>();
+                for (int n : r.missing) gone.add((long) n);
+                m.put("missing", gone);
+            }
             reciters.add(m);
         }
         List<Object> surahs = new ArrayList<>();

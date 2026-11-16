@@ -68,7 +68,7 @@ if [ -f "$RUNDIR/accessibility-before.txt" ]; then
     echo "!! enabled_accessibility_services: the TV did not say which accessibility services are on, so our sleep service and the accessibility switch were left as they are: run optimize/reset.sh again if the sleep service must go"
   else
   [ "$svcs" != null ] || svcs=""
-  rest=$(tr ':' '\n' <<< "$svcs" | grep -v '^sa\.urtv\.home/' | grep . | paste -sd: - || true)
+  rest=$(tr ':' '\n' <<< "$svcs" | grep -vE '^sa\.urtv\.(home|extras)/' | grep . | paste -sd: - || true)
   if [ -n "$rest" ]; then
     if [ "$rest" = "$svcs" ]; then :   # ours was not in the list: nothing to take out
     elif [[ "$rest" =~ ^[A-Za-z0-9_.\$/:]+$ ]]; then echo "settings put secure enabled_accessibility_services '$rest'" | tv --batch > /dev/null
@@ -112,7 +112,7 @@ if [ -s "$appop_file" ]; then
     tv "appops set sa.urtv.home REQUEST_INSTALL_PACKAGES $appop_mode" > /dev/null 2>&1 && rm -f "$appop_file" || true
   fi
 fi   # APPOP-END
-for p in sa.urtv.home sa.urtv.screensaver sa.urtv.listening sa.yourtv.home sa.yourtv.screensaver com.abdullah.tvhome com.abdullah.tvsaver; do
+for p in sa.urtv.home sa.urtv.screensaver sa.urtv.extras sa.urtv.listening sa.yourtv.home sa.yourtv.screensaver com.abdullah.tvhome com.abdullah.tvsaver; do
   tv "pm uninstall $p" | grep -q Success && echo "   removed $p" || true
 done
 # TV Bro and SmartTube: only if the setup put them there (not in the TV's package list saved before it)

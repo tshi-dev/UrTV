@@ -68,6 +68,7 @@
 تعديل وقت الصلاة	Adjust prayer times
 يعمل · لكل صلاة دقائقها، من −٢٠ إلى +٢٠ (الشروق لا يتغيّر)	On · Minutes per prayer, −20 to +20 (sunrise stays)
 متوقف · الأوقات كما تُحسب	Off · Times as calculated
+تصحيح منشور لأوقات اليوم، وتعديلك لأي صلاة يبقى هو المعتمد	A published correction applies to today's times; your own adjustment of a prayer always wins
 المباريات	Matches
 الفرق المتابعة	Followed teams
 الدوريات كاملة	Whole leagues
@@ -176,6 +177,7 @@
 مخفية	Hidden
 # ---- the place pickers
 بحث عن مدينة أو قرية	Search for a city or town
+ابحث على الإنترنت…	Search the internet…
 المنطقة	Region
 بحث	Search
 اسم المدينة أو القرية	City or town name
@@ -206,6 +208,7 @@
 كل الدوريات…	All leagues…
 كل الدوريات	All leagues
 الأشهر	The best known
+كل الدول	All countries
 حتى %s دوريات	Up to %s leagues
 لا توجد مسلسلات مختارة	No picked shows
 المسلسلات المختارة (ألغِ التحديد للحذف)	Picked shows (untick to remove)
@@ -311,6 +314,7 @@
 عربية 123	Western (123)
 كل يوم	Every day
 كل ٣ دقائق	Every 3 minutes
+كل ١٠ دقائق	Every 10 minutes
 آية وحديث	Verse and hadith
 آية فقط	Verse only
 حديث فقط	Hadith only
@@ -405,6 +409,7 @@
 الصلوات في صف	Prayers in a row
 الصلاة القادمة	Next prayer
 مباريات فرقك القادمة	Your teams’ matches
+مباراة فريقك القادمة	Your team’s next match
 آية أو حديث اليوم	Verse or hadith of the day
 حكمة اليوم	Saying of the day
 أذكار الصباح والمساء	Morning and evening adhkar
@@ -420,6 +425,7 @@
 الخمس صلوات في صف واحد، والجاية مضيئة	The five prayers in one row, the next one lit
 سطر واحد: الصلاة الجاية ووقتها وكم باقي لها	One line: the next prayer, its time, and time left
 مباريات الأسبوع ونتائج آخر يوم لفرقك، وكل مباراة بسطر واحد	This week’s matches and the latest results for your teams, one line each
+مباراة فرقك الجاية بس، وتحتها آخر ٥ مواجهات بين الفريقين	Your teams’ next match alone, with the two clubs’ last 5 meetings under it
 آية يوم، وحديث صحيح من الكتب الستة اليوم اللي بعده، ومعه مصدره	A verse one day, an authentic hadith from the Six Books the next, with its source
 مثل أو قول عربي معروف مع مصدره	A well-known Arabic proverb or saying with its source
 من الفجر للظهر أذكار الصباح، ومن العصر للمغرب أذكار المساء	Morning adhkar from Fajr to Dhuhr, evening adhkar from Asr to Maghrib
@@ -463,6 +469,7 @@
 لا توجد مجموعات للتنزيل الآن.	No packs to download right now.
 بلا أشخاص، وكل صورة بمصدرها ورخصتها في «حقوق الصور».	No people, and every photo with its source and licence in “Photo credits”.
 المساحة الفاضية: %s	Free space: %s
+النسبة: %s	Share: %s
 %s صورة · %s م.ب	%s photos · %s MB
 فعّل مجموعة منزّلة أولاً، وبعدها تقدر توقف صورنا	Turn on a downloaded pack first, then you can turn off ours
 تم التنزيل، والمجموعة مفعّلة	Downloaded, and the pack is on
@@ -483,6 +490,9 @@
 كرة القدم	Football
 مباريات اليوم	Today’s matches
 المباريات القادمة	Upcoming matches
+إخفاء المباريات المنتهية	Hide finished matches
+التاريخ بالأرقام	Dates in numbers
+زر البحث	Search button
 الأيام والدوريات، وفرقك أولاً	Days and leagues, your teams first
 تطبيقات في الشريط	Apps in the bar
 كل المفضلة	All favourites
@@ -525,6 +535,9 @@
 حجم ألبوم صوري	Album size
 نص أوضح	Clearer text
 توهّج لون التطبيق	App colour glow
+الوضع الخفيف	Light mode
+تلقائي، ومفعّل على هذا التلفزيون	Auto, on for this TV
+تلقائي، ومطفأ على هذا التلفزيون	Auto, off for this TV
 مطفأ	Off
 خفيف	Light
 مفعّل الكلام الرمادي بلون النص الكامل	On: the grey words in the full text colour
@@ -815,6 +828,12 @@
 الحكم لكم: أي جواب صحيح يُحسب	You are the judge: any correct answer counts
 أمثلة: %s	Examples: %s
 اكشف الجواب	Show the answer
+وضع ليلي	Night mode
+تلقائي بعد المغرب	Auto after Maghrib
+ألوان الليل	Night colours
+فحم دافئ	Warm charcoal
+ليل أزرق	Blue-black
+بيج خافت	Dim sepia
 حرف %s، من جاوب؟	Letter %s, who answered?
 ما أحد	Nobody
 خيارات	Options
@@ -881,3 +900,145 @@
 اقرأ هذا قبل ما تحذف UrTV من التلفزيون	Read this before you delete UrTV from the TV
 واجهة المصنع معطّلة الحين، وUrTV هو الشاشة الرئيسية. إذا حذفت UrTV وهي معطّلة يبقى التلفزيون بلا شاشة رئيسية، وتطلع شاشة سوداء. اضغط «رجّع واجهة المصنع» أولاً، ثم احذف.	The factory interface is off now and UrTV is the home screen. If you delete UrTV while it is off, the TV is left with no home screen and shows a black screen. Press «Bring back the factory interface» first, then delete.
 إذا شغّلت «تخلّص من واجهة المصنع» ثم حذفت UrTV، يبقى التلفزيون بلا شاشة رئيسية وتطلع شاشة سوداء. لا تحذفه قبل «رجّع واجهة المصنع» من هنا، أو «إعداد تلفزيوني» ثم «تراجع».	If you turned on «Get rid of the factory interface» and then delete UrTV, the TV is left with no home screen and shows a black screen. Do not delete it before «Bring back the factory interface», from here, or «TV setup» then «Undo».
+اللعب بالجوالات	Phone play
+شوفوا التلفزيون	Look at the TV
+شوفوا كلماتكم في جوالاتكم	Look at your word on your phone
+كل واحد يشوف كلمته	Everyone sees their own word
+اللعبة تتسع لعشرة لاعبين	The game has room for ten players
+الممثل يشوف الكلمة في جواله	The actor sees the word on their phone
+الوقت يبدأ لما تضغط شفتها	The time starts when you tap Got it
+ابدأ الوقت	Start the time
+صوّتوا من جوالاتكم	Vote on your phones
+احسب الأصوات	Count the votes
+اختيار الأصوات أو الأصابع	Count the votes or the fingers
+كل واحد بجواله، والريموت للمضيف	Everyone on their phone, the remote for the host
+شافوا %s من %s	%s of %s have seen it
+لازم %s لاعبين على الأقل	At least %s players needed
+صوّت %s من %s	%s of %s voted
+عرض	Show
+أسماء الفرق	Team names
+أسماء اللاعبين	Player names
+أسماء جديدة	New names
+اكتب الاسم	Write the name
+اكتبوها أنتم	You write them
+الأسماء	Names
+الحروف	Letters
+مسافة	Space
+اكتبوا الكلمة الناقصة	Type the missing word
+اللعبة تتسع لأربعة فرق	The game has room for four teams
+%s يكتب الكلمة في جواله	%s is typing the word on their phone
+كتب %s: %s	%s typed: %s
+اختاروا حرفًا من الخلية	Pick a letter on the board
+أنت أول واحد! جاوب بصوت عالٍ	You were first! Answer out loud
+%s ضغط أولًا	%s buzzed first
+%s ضغط أولًا: %s	%s buzzed first: %s
+حرف %s	Letter %s
+خمسة حروف	Five letters
+%s: الكلمة خمسة حروف	%s: the word has five letters
+%s: ما نعرف هذي الكلمة	%s: we don't know that word
+خمّن الكلمة: %s من %s	Guess the word: %s of %s
+%s خلّص، باقي الباقين ثواني	%s is done, the others have a few seconds
+كلمة لكل خانة تبدأ بحرف %s	A word for every box starting with %s
+أي طرف؟	Which end?
+العب من جوالك	Play from your phone
+اللعبة تتسع لأربعة لاعبين	The game has room for four players
+دورك: اختر حجرًا	Your turn: pick a tile
+ضع أي حجر	Play any tile
+الطرفان: %s و %s	The ends: %s and %s
+طرف %s	End %s
+الصلاة والأذان والتلاوة	Prayer & recitation
+المدينة واللغة والوقت	City, language & time
+التحكم والجوال	Control & phone
+التحديث وحول	Update & about
+بحث في الإعدادات	Search the settings
+الشكل والألوان والإضاءة، والخلفية والصور، وشكل الساعة والبطاقات، والنص الأوضح وتوهّج التطبيق.	The look, colours and light, the background and photos, the clock and the cards, clearer text and the app glow.
+بطاقاتها وأزرارها، والتطبيقات المفضلة وترتيبها، وواجهة المصنع، وUrTV النظيف.	Its cards and buttons, the favourite apps and their order, the factory interface, and clean UrTV.
+ما يظهر على شاشة التوقف: الساعة والبطاقة بجانبها، ومتى تبدأ.	What the screensaver shows: the clock, the card beside it, and when it starts.
+الأذان وتنبيهاته، وطريقة حساب المواقيت، وشاشة التلاوة.	The adhan and its alerts, how prayer times are worked out, and the recitation screen.
+ما تعرضه البطاقات: فرقك ودورياتك، والأسواق والأسهم، وجديد المسلسلات.	What the cards show: your teams and leagues, the markets and stocks, and new series.
+مركز التحكم والتحكم من الجوال، والرقابة الأبوية وتصفية المواقع.	The control center and phone control, parental controls and the site filter.
+المدينة والدولة، واللغة، ونظام الساعة ١٢ أو ٢٤.	The city and country, the language, and the 12 or 24-hour clock.
+تحديث التطبيقين وإصدارهما، وتحديث صفحة شاشة التوقف، وإرسال تقرير.	Updating both apps and their version, the screensaver page, and sending a report.
+مركز التحكم والجوال والرقابة الأبوية	Control center, phone and parental controls
+اكتب كلمة وانتقل إلى الصف	Type a word and jump to the row
+اكتب كلمة، مثل: صوت، لون، مدينة	Type a word, such as: sound, colour, city
+لا يوجد صف بهذا الاسم	No setting by that name
+الأزرار	Buttons
+فرق التاريخ الهجري	Hijri date shift
+يومان قبل	Two days earlier
+يوم قبل	A day earlier
+كما هو (أم القرى)	As is (Umm al-Qura)
+يوم بعد	A day later
+يومان بعد	Two days later
+لغة التلفزيون، والأرقام والتقويم ونظام الساعة.	The TV's language, the digits, the calendar and the 12 or 24 hour clock.
+الموقع والطقس	Location & weather
+المدينة هنا فقط: منها الطقس ومواقيت الصلاة والتحية وشاشة التوقف ومواعيد المباريات.	The city is set here only: it drives the weather, the prayer times, the greeting, the screensaver and the match times.
+الواجهة والألوان، والساعة والنص، والبطاقات والصور.	The home style and the colours, the clock and the text, the cards and the photos.
+التطبيقات	Apps
+شريط التطبيقات وترتيبه وأقفاله، وواجهة المصنع.	The app row, its order and its locks, and the factory home.
+الأزرار السريعة	Quick buttons
+أزرار الشاشة الرئيسية ومركز التحكم.	The home screen's buttons and the control center.
+الصلاة والأذان	Prayer and adhan
+فرقك ودورياتك، والأسواق والأسهم، وجديد المسلسلات.	Your teams and leagues, the markets and stocks, and new series.
+العائلة والأمان	Family & safety
+الرقابة الأبوية، وتصفية المواقع للعائلة، والجوالات المرتبطة.	The parental lock, the family site filter, and the linked phones.
+حول	About
+الإصدار والتحديث، وإعداد التلفزيون، وإرسال تقرير.	The version and updates, the TV's setup, and sending a report.
+شريط التطبيقات وترتيبه وأقفاله	The app row, its order and locks
+أزرار الرئيسية ومركز التحكم	Home buttons and the control center
+الرقابة الأبوية وتصفية المواقع والجوالات	Parental lock, site filter and phones
+الأذان مفعّل	Adhan on
+الأذان متوقف	Adhan off
+الساعة والنص	Clock & text
+الشاشة الرئيسية للتلفزيون	The TV's home screen
+حزم الآفاق	Horizon packs
+آفاق السعودية	Saudi horizons
+آفاق عالمية	World horizons
+الآفاق	Horizons
+بدون اختيار = آفاق السعودية	nothing chosen = Saudi horizons
+مسح الملفات المؤقتة	Clear temporary files
+الصور والبيانات المؤقتة للتطبيقين؛ الإعدادات وصورك والحزم تبقى	Both apps' temporary pictures and data; the settings, your photos and the packs stay
+امسح	Clear
+تم	Done
+تُمسح %s ميغابايت من الصور والبيانات المؤقتة، وتنزل من جديد وقت الحاجة. الإعدادات وصورك وحزم الصور والمشاهد وصوت الأذان تبقى.	%s MB of temporary pictures and data will be cleared; they download again when needed. The settings, your photos, the photo and scene packs and the adhan sound stay.
+مُسح %s ميغابايت.	%s MB cleared.
+بقاء كل أفق	Each horizon stays
+الأفق يتبع الوقت	Horizon follows the time
+الأفق يتبع الطقس	Horizon follows the weather
+مفعّل (أفق الليل من المغرب إلى الفجر)	On (the night horizon from Maghrib to Fajr)
+مفعّل (أفق الضباب وقت الضباب)	On (the fog horizon in fog)
+١٠ ثوانٍ	10 seconds
+٢٠ ثانية	20 seconds
+خمس دقائق	5 minutes
+اختيار يفتح، ورجوع يرجّعك خطوة	OK opens, Back goes one step back
+التخطيط	Layout
+الخلفية	Background
+الساعة	Time
+صوري وحزم الصور	My photos and photo packs
+عادية	Plain
+زجاجية خلف الصورة	Glass, behind the photo
+شكل تلفزيونك	UrTV look
+شكل كنبة	Couch look
+مخصّص	Custom
+الألوان	Colours
+كنبة	Couch
+مربعات	Boxes
+مواقيت اليوم مربعات في صف، والصلاة القادمة مضيئة وتحتها كم باقي	Today's prayers as boxes in a row, the next one lit with the time left under it
+الشكل السابق	Previous look
+مواقيت اليوم في صف والمباريات والعدّ التنازلي كما كانت قبل ٤٫٤	The prayer row, the games and the countdown as they were before 4.4
+شكل التطبيقات	Apps look
+تكبير وظل	Larger, with a shadow
+
+وضع الألوان	Colour mode
+الجوالات المسموح لها	Phones allowed
+افتح صفحة الأسواق	Open the markets page
+شكل كنبة والتخطيط	Couch look and layout
+الخلفية والآفاق	Background and horizons
+الرئيسية	Home
+الرئيسية وشاشة التوقف	Home and screensaver
+كل التلفزيون	Whole TV
+شكل كنبة والتخطيط، والخلفية والآفاق، والساعة والنص، والتطبيقات، والبطاقات، والصور.	Couch look and layout, background and horizons, clock and text, apps, cards, and photos.
+التحكم من الجوال: تشغيله وإيقافه وربط جوال، وفي الشاشة حالته الآن	Control from the phone: turn it on or off and pair a phone; the screen shows its state now
+الشكل: %s، والإضاءة: %s	Look: %s, lighting: %s
+مفعّل (التخطيط كنبة، الخلفية الآفاق، الساعة زجاجية، التطبيقات تكبير وظل؛ إيقافه يرجّع اختياراتك)	On (layout Couch, background horizons, glass clock, apps larger with a shadow; turning it off brings your own choices back)
+مفعّل (مخصّص: غيّرت صفًا من الأربعة؛ إيقافه يرجّع اختياراتك قبل التشغيل)	On (custom: you changed one of the four rows; turning it off brings back your choices from before)

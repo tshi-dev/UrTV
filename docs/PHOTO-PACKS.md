@@ -12,6 +12,10 @@ only while a pack that is on is on the TV.
    zip not from our releases: nothing is kept (`PhotoPacks`, `PackStore`; `tests/photo_packs_test.py`).
 3. Several packs can be on; the photos rotate across all of them and «صورنا».
 4. «حذف» frees the space. The credits of every photo are in «حقوق الصور» on the same screen.
+5. «النسبة» (4.3.3, OK on a pack that is on): its share of the packs' turns, 10 % to 90 %, or «تلقائي» (by its number of photos, as before):
+   70 % «الطبيعة» and 30 % «مدن السعودية». A pack is named that many more times in `#packs=` (`PhotoPacks.reps`: each at least once, 12 names
+   at most, the closest mix within that), so every page version simply rotates its photos more often; with no share set the link is exactly
+   what it was. Packs left on «تلقائي» share what the others leave, by size. «صورنا» keeps its own turns.
 
 ## The index: `photos/packs.json`
 
