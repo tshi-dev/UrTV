@@ -4174,6 +4174,8 @@ const FB_W = {
   h1:'بساعة', h2:'بساعتين', hFew:'ب%s ساعات', hMany:'ب%s ساعة', m1:'بدقيقة', m2:'بدقيقتين', mFew:'ب%s دقائق', mMany:'ب%s دقيقة',
   am1:'ودقيقة', am2:'ودقيقتين', amFew:'و%s دقائق', amMany:'و%s دقيقة', taskText:'مباراة %s، تبدأ %s',
   table:'جدول الترتيب', results:'النتائج', noTable:'الترتيب غير متاح الآن', pts:'%s نقطة',
+  myLeagues:'دورياتي', add:'أضف دوريًا أو فريقًا', manage:'إعدادات فرقي', noTeams:'ما تتابع فريقًا بعد', noLeagues:'ما تتابع دوريًا بعد', allLands:'كل الدول',
+  lgTeams:'فرق هذا الدوري', lgOpen:'الترتيب والنتائج', followedL:'أُضيف %s إلى دورياتك', unfollowedL:'أُزيل %s من دورياتك', on:'متابَع', find:'ابحث عن فريق', found:'نتائج البحث', typeName:'اكتب اسم الفريق', full:'وصلت للحد: ٨ دوريات', choose:'اختر دوريًا',
   club:'صفحة الفريقين', last:'آخر النتائج', h2h:'المواجهات مع %s', see:'صفحة %s', loading:'جارٍ التحميل…', noData:'لا شيء هنا بعد', followT:'تابع %s', unfollowT:'ألغِ متابعة %s',
 };
 const fw = (s, ...a) => { let i = 0; return String(s).replace(/%(\d)\$s|%s|%%/g, (m, n) => m === '%%' ? '%' : String(n ? a[+n - 1] : a[i++])); };
@@ -4483,9 +4485,11 @@ function mpLeagueView(v){
 }
 // 4.3.3 the followed leagues' ids (a built-in one by its file's games, else by the archive's index)
 const mpLeagueIds = () => [...new Set(CONFIG.ownLeagues.map(n => catId(n) || lgIdOf(n)).filter(Boolean))];
+const LG_IDS = {};   // a league followed from the page: its token -> its id (before its file or the index say)
 function lgIdOf(name){
   const d = LEAGUE_DATA[name], e = d && (d.events || []).find(x => x && x.idLeague);
   if(e) return String(e.idLeague);
+  if(LG_IDS[name]) return LG_IDS[name];
   const ix = archWant('index.json'), hit = ix && ix.leagues && Object.entries(ix.leagues).find(([, l]) => l && String(l.en).toLowerCase() === String(name).toLowerCase());
   return hit ? hit[0] : '';
 }
@@ -4671,13 +4675,73 @@ function mpBack(){   // the launcher's Back: closes the card first, then a view 
 // 4.3.3 the page's other views, on its own look (the strip, the side list, the list): a club, a league; MP.view is the open one, MP.stack the ones under it
 function mpGo(v){
   if(MP.view){ MP.view.at = {zone: MP.zone, d: MP.d, l: MP.l, r: MP.r}; MP.stack.push(MP.view); } else { MP.stack = []; MP.saved = {zone: MP.zone, d: MP.d, l: MP.l, r: MP.r}; }
-  MP.view = v; MP.zone = 'rows'; MP.d = 0; MP.l = 0; MP.r = 0; MP.ask = ''; MP.note = '';
+  MP.view = v; MP.zone = v.k === 'find' ? 'days' : 'rows'; MP.d = 0; MP.l = 0; MP.r = 0; MP.ask = ''; MP.note = '';
   mpRender();
 }
 function mpView(v){
   try{ return v.k === 'club' ? mpClubView(v) : v.k === 'league' ? mpLeagueView(v) : MP_VIEWS[v.k] ? MP_VIEWS[v.k](v) : null; }catch(e){ return {title: FB_W.title, tabs: [], groups: [], empty: FB_W.noData}; }
 }
 const MP_VIEWS = {};
+const CATALOGUE = 'https://raw.githubusercontent.com/tshi-dev/UrTV/data-catalogue/catalogue/catalogue.json';
+// 4.3.3 «فرقي»: the followed teams (each opens its club's page) and leagues (each its league), «أضف دوريًا أو فريقًا», and the settings' own chooser
+MP_VIEWS.mine = () => {
+  const host = window.UrtvMatches, tabs = [{t: FB_W.add, act: () => mpGo({k: 'pick'})}];
+  if(host && host.openTeams) tabs.push({t: FB_W.manage, act: () => { try{ host.openTeams(); }catch(e){} }});
+  return {title: FB_W.teams, tabs, groups: [
+    {key: 'teams', name: FB_W.teams, games: CONFIG.teamIds.map(id => mpItem(teamNameOf(id), '', () => mpGo({k: 'club', id}))), none: FB_W.noTeams},
+    {key: 'leagues', name: FB_W.myLeagues, games: mpLeagueIds().map(id => mpItem(lgName(id), '', () => mpGo({k: 'league', id}))), none: FB_W.noLeagues}]};
+};
+// the chooser: the side list «كل الدول» then each country, the list its leagues (the catalogue's, the best-known first); OK on one: its teams
+const catRows = () => { const c = archWant(CATALOGUE); return {c, rows: ((c && c.leagues) || []).filter(r => r && /^\d{1,6}$/.test(String(r.id)))}; };
+const lgFollowed = id => mpLeagueIds().includes(String(id));
+MP_VIEWS.pick = () => {
+  const {c, rows} = catRows(), lands = new Map();
+  const item = (r, land) => mpItem(r.ar || r.en, lgFollowed(r.id) ? FB_W.on : land ? (r.country_ar || r.country || '') : '', () => mpGo({k: 'lteams', id: String(r.id), ar: r.ar || '', en: r.en || ''}));
+  rows.forEach(r => { const k = r.country || ''; if(!lands.has(k)) lands.set(k, {name: r.country_ar || r.country || '—', rows: []}); lands.get(k).rows.push(r); });
+  const all = rows.filter(r => r.top).concat(rows.filter(r => !r.top));
+  return {title: FB_W.choose, only: 1, tabs: [{t: FB_W.find, act: () => mpGo({k: 'find'})}], empty: c === undefined ? FB_W.loading : FB_W.failed,
+    groups: rows.length ? [{key: 'all', name: FB_W.allLands, games: all.map(r => item(r, 1))}].concat([...lands.values()].map((l, i) => ({key: 'c' + i, name: l.name, games: l.rows.map(r => item(r))}))) : []};
+};
+// «فرق هذا الدوري»: the clubs the archive has in it (else TheSportsDB's list of the league), each opens its page; «تابع» the whole league
+MP_VIEWS.lteams = v => {
+  const ix = archWant('index.json'), name = v.ar || v.en || lgName(v.id);
+  let teams = ix && ix.teams ? Object.entries(ix.teams).filter(([, t]) => t && (t.leagues || []).map(String).includes(v.id)).map(([id, t]) => [id, t.ar || teamAr(t.en, id)]) : [];
+  let wait = ix === undefined;
+  if(!teams.length && ix !== undefined && v.en){
+    const j = archWant(`https://www.thesportsdb.com/api/v1/json/${CONFIG.sportsKey}/search_all_teams.php?l=${encodeURIComponent(v.en)}`);
+    wait = j === undefined;
+    teams = ((j && j.teams) || []).filter(t => t && /^\d+$/.test(String(t.idTeam))).map(t => [String(t.idTeam), teamAr(t.strTeam, String(t.idTeam))]);
+  }
+  teams.sort((a, b) => a[1].localeCompare(b[1], 'ar'));
+  const on = lgFollowed(v.id);
+  return {title: name, tabs: [{t: fw(on ? FB_W.unfollowT : FB_W.followT, name), act: () => mpFollowLeague(v)}, {t: FB_W.lgOpen, act: () => mpGo({k: 'league', id: v.id})}],
+    groups: [{key: 'teams', name: FB_W.lgTeams, games: teams.map(([id, n]) => mpItem(n, fbFollowed(id) ? FB_W.on : '', () => mpGo({k: 'club', id}))), none: wait ? FB_W.loading : FB_W.noData}]};
+};
+// «ابحث عن فريق»: a field in the strip; the archive's clubs whose Arabic or English name has the words
+MP_VIEWS.find = () => {
+  const ix = archWant('index.json'), q = String(MP.q || '').trim().toLowerCase();
+  const hits = q && ix && ix.teams ? Object.entries(ix.teams).filter(([, t]) => t && (String(t.ar || '').includes(q) || String(t.en || '').toLowerCase().includes(q))).slice(0, 40) : [];
+  return {title: FB_W.find, tabs: [{input: 1, t: ''}], groups: [{key: 'found', name: FB_W.found, games: hits.map(([id, t]) => mpItem(t.ar || teamAr(t.en, id), fbFollowed(id) ? FB_W.on : '', () => mpGo({k: 'club', id}))),
+    none: !q ? FB_W.typeName : ix === undefined ? FB_W.loading : FB_W.noData}]};
+};
+// a league followed or unfollowed from the page: a second OK confirms; the screensaver's list, or the home's while it cannot take it
+function mpFollowLeague(v){
+  const host = window.UrtvMatches, id = String(v.id), on = lgFollowed(id), name = v.ar || v.en || lgName(id);
+  const token = FB_LEAGUES[id] && /^[A-Za-z0-9 \-]{2,40}$/.test(v.en || '') ? v.en : 'id' + id;   // a built-in league: its own file
+  if(!on && mpLeagueIds().length >= 8){ MP.note = FB_W.full; return mpRender(); }
+  if(MP.ask !== 'l' + id){ MP.ask = 'l' + id; MP.note = FB_W.sure; return mpRender(); }
+  MP.ask = '';
+  let ok = false;
+  try{ ok = !!(host && host.followLeague && (on ? host.unfollowLeague(id, v.en || '') : host.followLeague(id, v.ar || '', v.en || '', token))); }catch(e){}
+  if(ok){
+    const same = n => n === token || n === 'id' + id || (catId(n) || lgIdOf(n)) === id;
+    if(on){ CONFIG.ownLeagues = CONFIG.ownLeagues.filter(n => !same(n)); CONFIG.leagues = CONFIG.leagues.filter(n => !same(n)); }
+    else { LG_IDS[token] = id; CONFIG.ownLeagues.push(token); if(!CONFIG.leagues.includes(token)) CONFIG.leagues.push(token); if(v.ar) CONFIG.leagueNames[id] = String(v.ar).slice(0, 60); }
+    mpReload();
+  }
+  MP.note = ok ? fw(on ? FB_W.unfollowedL : FB_W.followedL, name) : FB_W.failed;
+  mpRender();
+}
 // a team's name: the archive's index (its Arabic, else its English made Arabic), else a game it is in
 function teamNameOf(id, j){
   id = String(id);
@@ -4772,7 +4836,7 @@ function mpKey(e){
   }
   if(MP.view && MP.zone === 'head') MP.zone = 'days';
   if(MP.zone === 'head'){   // 4.3.1 «فرقي»: OK opens the teams chooser of the settings (the page is made again when it comes back), ▼ goes to the days
-    if(ok){ try{ if(window.UrtvMatches) window.UrtvMatches.openTeams(); }catch(err){} return e.preventDefault(); }
+    if(ok){ e.preventDefault(); return mpGo({k: 'mine'}); }   // 4.3.3 the page's own «فرقي» (the settings' chooser is one of its actions)
     if(k !== 'ArrowDown') return;
     MP.zone = 'days'; e.preventDefault(); return mpRender();
   }
@@ -4817,6 +4881,7 @@ function bootMatchPage(){
   document.documentElement.style.setProperty('--u', (innerWidth / 1920) + 'px');
   addEventListener('resize', () => document.documentElement.style.setProperty('--u', (innerWidth / 1920) + 'px'));
   addEventListener('keydown', mpKey);
+  addEventListener('input', e => { if(e.target && e.target.id === 'mp-q'){ MP.q = e.target.value.slice(0, 40); MP.r = 0; mpRender(); } });
   const want = _Q.get('event');   // OK on a game of the home: its card opens at once
   mpRender();
   const openWanted = () => { if(want && !MP.detail){ const ev = fbGames().find(x => String(x.idEvent) === want); if(ev){ MP.day = fbDayOf(fbKick(ev)); MP.picked = true; mpRender(); MP.r = MP.rows.indexOf(ev); mpOpen(ev); } } };

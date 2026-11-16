@@ -18,7 +18,7 @@ const team = (id, en, ar, next, last) => ({ v: 1, id, en, ar, updated: '2026-11-
 const SERVER_NEXT = { '136013': [ev('11', 'Al-Hilal', '136013', 'Al-Fateh', '136011', '2026-11-04T17:00:00')] };
 const ARCHIVE = {
   'index.json': { v: 1, updated: '2026-11-04T00:00:00Z', teams: { '136013': { en: 'Al-Hilal', ar: 'الهلال', leagues: ['4668'] }, '136014': { en: 'Al-Nassr', ar: 'النصر', leagues: ['4668'] },
-    '136015': { en: 'Al-Ittihad', ar: 'الاتحاد', leagues: ['4668'] }, '136017': { en: 'Al-Shabab', ar: 'الشباب', leagues: ['4668'] }, '136016': { en: 'Al-Qadsiah', ar: 'القادسية', leagues: ['4668'] } },
+    '136015': { en: 'Al-Ittihad', ar: 'الاتحاد', leagues: ['4668'] }, '133600': { en: 'Ajax', ar: 'أياكس', leagues: ['4337'] }, '133601': { en: 'PSV Eindhoven', ar: 'آيندهوفن', leagues: ['4337', '4480'] }, '136017': { en: 'Al-Shabab', ar: 'الشباب', leagues: ['4668'] }, '136016': { en: 'Al-Qadsiah', ar: 'القادسية', leagues: ['4668'] } },
     leagues: { '4668': { en: 'Saudi-Arabian Pro League', ar: 'دوري روشن السعودي' }, '4328': { en: 'English Premier League', ar: 'الدوري الإنجليزي' } } },
   'teams/136013.json': team('136013', 'Al-Hilal', 'الهلال', [g('11', '2026-11-04T17:00:00Z', true, '136011', 'Al-Fateh', null, null), g('14', '2026-11-08T17:00:00Z', false, '136017', 'Al-Shabab', null, null, '14'),
     g('15', '2026-11-26T17:00:00Z', false, '4999', 'Cup Side', null, null, '', '5649')], [g('23', '2026-11-02T18:00:00Z', true, '136011', 'Al-Fateh', '3', '0', '12'), g('d:2026-10-20:136013:136016', '2026-10-20T15:00:00Z', true, '136016', 'Al-Qadsiah', '1', '1', '')]),
@@ -41,7 +41,15 @@ const TABLE = { table: [{ idTeam: '133604', strTeam: 'Arsenal', intRank: '1', in
 
 const browser = await chromium.launch(process.env.CHROMIUM ? { executablePath: process.env.CHROMIUM } : {});
 const json = (r, j) => r.fulfill({ json: j, headers: { 'Access-Control-Allow-Origin': '*' } });
-async function open(hash, { archive = ARCHIVE } = {}) {
+const CATALOGUE = { leagues: [{ id: '4668', en: 'Saudi-Arabian Pro League', ar: 'دوري روشن السعودي', country: 'Saudi Arabia', country_ar: 'السعودية', sport: 'Soccer', top: true },
+  { id: '4328', en: 'English Premier League', ar: 'الدوري الإنجليزي', country: 'England', country_ar: 'إنجلترا', sport: 'Soccer', top: true },
+  { id: '4396', en: 'English League 1', ar: '', country: 'England', country_ar: 'إنجلترا', sport: 'Soccer' },
+  { id: '4337', en: 'Dutch Eredivisie', ar: 'الدوري الهولندي', country: 'Netherlands', country_ar: 'هولندا', sport: 'Soccer', top: true }] };
+// the launcher's bridge, as MatchesActivity gives it; every call is written down
+const HOST = () => { window.__calls = []; const w = (x, r = true) => { window.__calls.push(x); return r; };
+  window.UrtvMatches = { openTeams: () => w('openTeams'), follow: (id, n) => w('follow:' + id + ':' + n), unfollow: id => w('unfollow:' + id),
+    followLeague: (id, ar, en, t) => w(['followLeague', id, ar, en, t].join(':')), unfollowLeague: (id, en) => w('unfollowLeague:' + id + ':' + en) }; };
+async function open(hash, { archive = ARCHIVE, host = false } = {}) {
   const ctx = await browser.newContext({ viewport: { width: 1920, height: 1080 }, timezoneId: 'Asia/Riyadh' });
   const asked = [];
   await ctx.route(/^https?:/, r => {
@@ -50,6 +58,8 @@ async function open(hash, { archive = ARCHIVE } = {}) {
     if (a) { asked.push(a[1]); return archive[a[1]] ? json(r, archive[a[1]]) : r.fulfill({ status: 404, body: '' }); }
     const l = /\/data-leagues\/leagues\/(.+)\.json$/.exec(u);
     if (l) return LEAGUES[l[1]] ? json(r, LEAGUES[l[1]]) : r.fulfill({ status: 404, body: '' });
+    if (u.endsWith('/data-catalogue/catalogue/catalogue.json')) return json(r, CATALOGUE);
+    if (/search_all_teams\.php\?l=English%20League%201$/.test(u)) return json(r, { teams: [{ idTeam: '134000', strTeam: 'Wigan Athletic' }, { idTeam: '134001', strTeam: 'Bolton Wanderers' }] });
     if (/lookuptable\.php\?l=4328&s=2026-2027$/.test(u)) { asked.push('table'); return json(r, TABLE); }
     const n = /eventsnext\.php\?id=(\d+)/.exec(u);
     if (n) return json(r, { events: SERVER_NEXT[n[1]] || null });
@@ -57,6 +67,7 @@ async function open(hash, { archive = ARCHIVE } = {}) {
     return r.abort();
   });
   const p = await ctx.newPage();
+  if (host) await p.addInitScript(HOST);
   const errors = [];
   p.on('pageerror', e => errors.push(e.message));
   await p.clock.setFixedTime(NOW);
@@ -177,6 +188,72 @@ const ids = (p, key) => p.evaluate(k => ((MP.leagues.find(x => x.key === k) || {
   await p.evaluate(() => mpGo({k: 'league', id: '4339'}));
   await p.waitForTimeout(300);
   check('pins: a league with no table says so', !errors.length && await p.textContent('#mp-list .fnone') === 'الترتيب غير متاح الآن', errors.join(' | ') + await p.textContent('#mp-list'));
+  await ctx.close();
+}
+
+// ---- «فرقي», the chooser («كل الدول», a country, «فرق هذا الدوري») and the search: following natively from the page
+{
+  const { p, ctx, errors } = await open('teams=136013&leagues=English Premier League&matchpage=1', { host: true });
+  await p.evaluate(() => { MP.zone = 'head'; mpRender(); });
+  await p.keyboard.press('Enter');
+  await p.waitForTimeout(300);
+  check('native: OK on «فرقي» opens the page\'s own «فرقي», not the settings', await p.evaluate(() => MP.view && MP.view.k === 'mine' && !__calls.includes('openTeams')));
+  const mine = await p.evaluate(() => MP.leagues.map(g => g.key + ':' + g.games.map(x => x.t).join('+')).join(' | '));
+  check('native: «فرقي» lists the followed teams and leagues', mine === 'teams:الهلال | leagues:الدوري الإنجليزي', mine);
+  check('native: its strip: «أضف دوريًا أو فريقًا» and the settings\' «إعدادات فرقي»', (await p.$$eval('#mp-days li', ls => ls.map(l => l.textContent).join())) === 'أضف دوريًا أو فريقًا,إعدادات فرقي');
+  await p.keyboard.press('Enter');
+  check('native: OK on a team opens its club page', await p.evaluate(() => MP.view.k === 'club' && MP.view.id === '136013'));
+  await p.evaluate(() => mpBack());
+  await p.evaluate(() => { MP.zone = 'days'; MP.d = 0; mpRender(); });
+  await p.keyboard.press('Enter');
+  await p.waitForTimeout(300);
+  const side = await p.$$eval('#mp-side li span', ls => ls.map(l => l.textContent));
+  check('6: the chooser\'s side list: «كل الدول» first, then each country', side.join() === 'كل الدول,السعودية,إنجلترا,هولندا', side.join());
+  const all = await p.$$eval('#mp-list li', ls => ls.map(l => l.textContent));
+  check('6: «كل الدول» lists every league, the best-known first, with its country (a followed one says so)', all.length === 4 && all[0] === 'دوري روشن السعوديالسعودية' && all[1] === 'الدوري الإنجليزيمتابَع' && all[3] === 'English League 1إنجلترا', all.join(' / '));
+  await p.evaluate(() => { MP.zone = 'leagues'; MP.l = 0; mpRender(); });
+  await p.keyboard.press('ArrowDown'); await p.keyboard.press('ArrowDown');
+  const eng = await p.$$eval('#mp-list li', ls => ls.map(l => l.textContent));
+  check('6: a country on the side shows its leagues alone', eng.length === 2 && /الدوري الإنجليزي/.test(eng[0]) && /English League 1/.test(eng[1]), eng.join(' / '));
+  await p.keyboard.press('ArrowDown');
+  await p.keyboard.press('Enter');   // to the list
+  await p.keyboard.press('Enter');   // «الدوري الهولندي»
+  await p.waitForTimeout(300);
+  const teams = await p.evaluate(() => MP.view.k + ':' + MP.leagues.map(g => g.name + '=' + g.games.map(x => x.t).join('+')).join());
+  check('6: «فرق هذا الدوري»: the archive\'s clubs in it', teams === 'lteams:فرق هذا الدوري=آيندهوفن+أياكس', teams);
+  await p.evaluate(() => { MP.zone = 'days'; MP.d = 0; mpRender(); });
+  check('native: the strip offers «تابع الدوري الهولندي» and its table and results', (await p.$$eval('#mp-days li', ls => ls.map(l => l.textContent).join())) === 'تابع الدوري الهولندي,الترتيب والنتائج');
+  await p.keyboard.press('Enter');
+  check('native: one OK asks again, follows nothing', await p.evaluate(() => !__calls.length) && await p.textContent('#mp-age') === 'اضغط مرة ثانية للتأكيد');
+  await p.keyboard.press('Enter');
+  check('native: the second OK follows the league by its own file\'s name (a built-in one)', await p.evaluate(() => __calls.join()) === 'followLeague:4337:الدوري الهولندي:Dutch Eredivisie:Dutch Eredivisie', await p.evaluate(() => __calls.join()));
+  check('native: the page has it at once (pinned, «دورياتي»)', await p.evaluate(() => CONFIG.ownLeagues.includes('Dutch Eredivisie') && mpPins().some(x => x.pin === '4337')) && await p.textContent('#mp-age') === 'أُضيف الدوري الهولندي إلى دورياتك', await p.textContent('#mp-age'));
+  await p.evaluate(() => { MP.zone = 'rows'; MP.r = 1; mpRender(); });
+  await p.keyboard.press('Enter');
+  await p.evaluate(() => { MP.zone = 'days'; MP.d = 0; mpRender(); });
+  await p.keyboard.press('Enter'); await p.keyboard.press('Enter');
+  check('native: a club of the league followed from its page (its English name to the app)', await p.evaluate(() => __calls.includes('follow:133600:Ajax') && CONFIG.teamIds.includes('133600')), await p.evaluate(() => __calls.join()));
+  await p.evaluate(() => { mpBack(); mpBack(); MP.zone = 'leagues'; MP.l = 2; mpRender(); });
+  await p.keyboard.press('Enter'); await p.keyboard.press('ArrowDown'); await p.keyboard.press('Enter');
+  await p.waitForTimeout(300);
+  const l1 = await p.evaluate(() => MP.view.k + ':' + MP.leagues[0].games.map(x => x.t).join('+'));
+  check('6: a league the archive has no club of: TheSportsDB\'s list of it', /^lteams:(بولتون|Bolton).*\+/.test(l1) && l1.split('+').length === 2, l1);
+  check('native: no script error', !errors.length, errors.join(' | '));
+  await ctx.close();
+}
+{   // the search: a field in the strip, the archive's clubs by Arabic or English name
+  const { p, ctx, errors } = await open('matchpage=1', { host: true });
+  await p.evaluate(() => mpGo({k: 'find'}));
+  await p.waitForTimeout(300);
+  check('search: the field has the focus', await p.evaluate(() => document.activeElement && document.activeElement.id === 'mp-q'));
+  await p.keyboard.type('نصر');
+  await p.waitForTimeout(100);
+  check('search: an Arabic part of the name finds the club', (await p.$$eval('#mp-list li', ls => ls.map(l => l.textContent))).join() === 'النصر');
+  await p.evaluate(() => { const q = document.getElementById('mp-q'); q.value = 'psv'; q.dispatchEvent(new Event('input', {bubbles: true})); });
+  check('search: …and an English one', (await p.$$eval('#mp-list li', ls => ls.map(l => l.textContent))).join() === 'آيندهوفن');
+  await p.keyboard.press('ArrowDown'); await p.keyboard.press('Enter');
+  check('search: ▼ then OK opens the club', await p.evaluate(() => MP.view.k === 'club' && MP.view.id === '133601'));
+  check('search: no script error', !errors.length, errors.join(' | '));
   await ctx.close();
 }
 

@@ -33,7 +33,8 @@ check("the catalogue is read in one place only: openCatalogue, from the picker's
       and st.rfind("private void openCatalogue()", 0, uses[0]) > st.rfind("\n    private void ", 0, uses[0]) - 1
       and 'setNeutralButton("كل الدوريات…", (d, w) -> { prefs.setList("leagues", ticked(keys, on)); render(); openCatalogue(); })' in st)
 check("nothing else in the apps reads the catalogue", not any("data-catalogue" in read(p) for p in (ROOT / "android").rglob("*.java") if p.name != "CatalogueLeagues.java")
-      and "data-catalogue" not in read(ROOT / "src/template.html"))
+      and read(ROOT / "src/template.html").count("data-catalogue") == 1 and read(ROOT / "src/template.html").count("archWant(CATALOGUE)") == 1
+      and "const catRows = () => { const c = archWant(CATALOGUE);" in read(ROOT / "src/template.html"))   # 4.3.3 the matches page's chooser, only when it opens
 check("a failed read falls back on the last copy, which only a whole answer replaces", 'new JSONObject(body).getJSONArray("leagues");' in st and "league-catalogue.json" in st)
 check("a kept copy is shown at once only when CatalogueLeagues.useKept says so (recent, every country in Arabic); else the published one first",
       "if (CatalogueLeagues.useKept(kept, cache.lastModified(), System.currentTimeMillis())) {" in st)

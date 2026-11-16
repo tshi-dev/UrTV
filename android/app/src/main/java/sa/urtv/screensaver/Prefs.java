@@ -210,6 +210,34 @@ final class Prefs {
         return v;
     }
 
+    /** 4.3.3 a league followed from «المباريات»: a built-in one by its English name (its own file), else the catalogue's entry; false when there or full */
+    boolean addLeague(String id, String ar, String en) {
+        String[] b = en == null ? null : leagueByName(en);
+        String e = b != null ? b[0] : CatalogueLeagues.entry(id, ar, en);
+        if (e == null) return false;
+        List<String> v = leagues();
+        for (String s : v) if (sameLeague(s, id, en)) return false;
+        if (v.size() >= MAX_LEAGUES) return false;
+        v.add(e);
+        setList("leagues", v);
+        return true;
+    }
+
+    /** …and unfollowed: false when it was not followed */
+    boolean removeLeague(String id, String en) {
+        List<String> v = leagues();
+        boolean had = v.removeIf(s -> sameLeague(s, id, en));
+        if (had) setList("leagues", v);
+        return had;
+    }
+
+    /** the stored league is this id (a catalogue entry) or this built-in one (by its English name) */
+    static boolean sameLeague(String stored, String id, String en) {
+        if (id != null && id.matches("\\d{1,6}") && CatalogueLeagues.same(stored, "id" + id)) return true;
+        String[] b = en == null || en.trim().isEmpty() ? null : leagueByName(en);
+        return b != null && stored.equalsIgnoreCase(b[0]);
+    }
+
     /** 4.3.1 «البطولات الكبرى»: the big tournaments' games in the matches page and the cards (leagues/tournaments.json, one request every 30 minutes) */
     boolean tournaments() { return sp.getBoolean("tournaments", false); }
     void setTournaments(boolean v) { sp.edit().putBoolean("tournaments", v).apply(); }
