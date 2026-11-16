@@ -1,4 +1,12 @@
-«⏸ Step 86 B report received (work/tester-report dabdcbfd), thanks. HOLD: do not set the HOME role by hand and do not turn packages off by hand. The setup session is fixing (1) the HOME role reverting after ~2 min (SetupDeadman), (2) the add-on's Home watch doing nothing, (3) the adb key regenerated each start, (4) Cancel on the debugging dialog giving no message, (5) the setup page too big (small centred window, QR left). When the new build is on apk-next, the GO line names it and you repeat 86 B (3 tries + Cancel once on purpose + leaving the page mid-setup + Home ×5 + reboot + role after 10 min). ON THE DIALOG: take a screenshot and confirm the focus is on «Allow»/«السماح» before pressing OK (DOWN from the checkbox lands on Cancel). Keep pushing reports to work/tester-report. TV muted.»
+«▶ GO step 87 — the «Home doctor» (owner's request). Get optimize/homedoctor.py from branch work/44-homedoctor (git fetch origin work/44-homedoctor; if the branch is not there yet, wait for it and check again in 10 minutes). Then do step 87 below. Step 86 B rerun comes after, when its build is on apk-next. TV muted.»
+
+## step 87 — «Home doctor»: find why UrTV does not stay the HOME on this TV
+1. `git fetch origin work/44-homedoctor && git checkout origin/work/44-homedoctor -- optimize/homedoctor.py docs/HOME-DOCTOR.md` (read the doc first).
+2. `python3 optimize/homedoctor.py --dry-run` → push the printed plan to work/tester-report as «step 87 plan».
+3. Run it for real: `python3 optimize/homedoctor.py --reboot`. Angle E is by hand: when it asks, open the TV's default-home screen with the remote, picture each screen, say what it offers, press Enter.
+4. Push run/homedoctor/<time>/report.md + report.json (+ the screencaps; logs are text) to work/tester-report as «step 87 result: <winning angle or NONE>».
+5. If an angle passed, run it again with `--angle <X> --keep --reboot` and check Home ×5 from YouTube + the role after 10 minutes; report. Never disable launcherx/setupwraith, never factory reset, never the family PIN. Put the owner's settings back at the end if anything changed them.
+
 
 **OWNER'S WORD (2026-11-16): the tester may do EVERYTHING needed on this TV for these steps without asking**: remove and reinstall UrTV and its apps, run «تراجع»/restore/reset, reboot, enable/disable packages and accessibility services, change the HOME role, type pairing codes, install test builds, uninstall to allow older builds. Still: keep a backup first and put the owner's settings back at the end; never the family PIN; never a factory reset of the TV.
 
