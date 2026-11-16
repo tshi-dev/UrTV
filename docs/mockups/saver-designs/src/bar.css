@@ -27,3 +27,5 @@ html.sd-wx-usual .top{display:flex!important}html.sd-wx-usual .top .dates,html.s
 html.sd-glass .clock .sep.sd-dots::before,html.sd-glass .clock .sep.sd-dots::after{background:rgba(255,255,255,.9);box-shadow:0 1px 4px rgba(0,0,0,.3)}
 html.sd-big .clock .sep.sd-dots::before,html.sd-big .clock .sep.sd-dots::after{width:.07em;height:.07em;margin-left:-.035em}
 html.sd-glass.sd-dark .clock .sep.sd-dots::before,html.sd-glass.sd-dark .clock .sep.sd-dots::after{background:rgba(64,64,68,.94)}   /* the dark glass's own colour */
+
+.pt{unicode-bidi:isolate;direction:rtl;margin-inline-start:.3em}
