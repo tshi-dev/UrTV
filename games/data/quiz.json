@@ -5116,39 +5116,6 @@
 "verified": true
 },
 {
-"id": "geo-cont-Q227",
-"type": "quiz",
-"category": "geography",
-"difficulty": 2,
-"age": "all",
-"question": {
-"ar": "في أي قارة تقع أذربيجان؟",
-"en": "On which continent is Azerbaijan?"
-},
-"answer": {
-"ar": "آسيا",
-"en": "Asia"
-},
-"wrong": [
-{
-"ar": "أوروبا",
-"en": "Europe"
-},
-{
-"ar": "أمريكا الشمالية",
-"en": "North America"
-},
-{
-"ar": "أمريكا الجنوبية",
-"en": "South America"
-}
-],
-"source": [
-"https://www.wikidata.org/wiki/Q227"
-],
-"verified": true
-},
-{
 "id": "geo-rev-Q227",
 "type": "quiz",
 "category": "geography",
@@ -5280,39 +5247,6 @@
 "source": [
 "https://www.wikidata.org/wiki/Q229",
 "https://www.wikidata.org/wiki/Q3856"
-],
-"verified": true
-},
-{
-"id": "geo-cont-Q229",
-"type": "quiz",
-"category": "geography",
-"difficulty": 2,
-"age": "all",
-"question": {
-"ar": "في أي قارة تقع قبرص؟",
-"en": "On which continent is Cyprus?"
-},
-"answer": {
-"ar": "أوروبا",
-"en": "Europe"
-},
-"wrong": [
-{
-"ar": "أوقيانوسيا",
-"en": "Oceania"
-},
-{
-"ar": "أفريقيا",
-"en": "Africa"
-},
-{
-"ar": "آسيا",
-"en": "Asia"
-}
-],
-"source": [
-"https://www.wikidata.org/wiki/Q229"
 ],
 "verified": true
 },
@@ -7435,39 +7369,6 @@
 "verified": true
 },
 {
-"id": "geo-cont-Q399",
-"type": "quiz",
-"category": "geography",
-"difficulty": 2,
-"age": "all",
-"question": {
-"ar": "في أي قارة تقع أرمينيا؟",
-"en": "On which continent is Armenia?"
-},
-"answer": {
-"ar": "آسيا",
-"en": "Asia"
-},
-"wrong": [
-{
-"ar": "أوروبا",
-"en": "Europe"
-},
-{
-"ar": "أمريكا الجنوبية",
-"en": "South America"
-},
-{
-"ar": "أوقيانوسيا",
-"en": "Oceania"
-}
-],
-"source": [
-"https://www.wikidata.org/wiki/Q399"
-],
-"verified": true
-},
-{
 "id": "geo-rev-Q399",
 "type": "quiz",
 "category": "geography",
@@ -9298,8 +9199,8 @@
 "en": "What is the capital of Nauru?"
 },
 "answer": {
-"ar": "ضاحية يارين",
-"en": "Yaren District"
+"ar": "يارين",
+"en": "Yaren"
 },
 "wrong": [
 {
@@ -9361,8 +9262,8 @@
 "difficulty": 3,
 "age": "all",
 "question": {
-"ar": "ضاحية يارين هي عاصمة أي دولة؟",
-"en": "Yaren District is the capital of which country?"
+"ar": "يارين هي عاصمة أي دولة؟",
+"en": "Yaren is the capital of which country?"
 },
 "answer": {
 "ar": "ناورو",
@@ -14285,8 +14186,8 @@
 "en": "Mexico City"
 },
 {
-"ar": "ضاحية يارين",
-"en": "Yaren District"
+"ar": "يارين",
+"en": "Yaren"
 },
 {
 "ar": "أندورا لا فيلا",
@@ -30739,8 +30640,8 @@
 "en": "What is the official language of Niger?"
 },
 "answer": {
-"ar": "الهوسية",
-"en": "Hausa"
+"ar": "الفرنسية",
+"en": "French"
 },
 "wrong": [
 {
@@ -31303,40 +31204,6 @@
 "source": [
 "https://www.wikidata.org/wiki/Q215",
 "https://www.wikidata.org/wiki/Q9063"
-],
-"verified": true
-},
-{
-"id": "geo-lang-Q217",
-"type": "quiz",
-"category": "geography",
-"difficulty": 3,
-"age": "all",
-"question": {
-"ar": "ما اللغة الرسمية في مولدوفا؟",
-"en": "What is the official language of Moldova?"
-},
-"answer": {
-"ar": "الرومانية",
-"en": "Romanian"
-},
-"wrong": [
-{
-"ar": "الكورية",
-"en": "Korean"
-},
-{
-"ar": "الروسية",
-"en": "Russian"
-},
-{
-"ar": "الهولندية",
-"en": "Dutch"
-}
-],
-"source": [
-"https://www.wikidata.org/wiki/Q217",
-"https://www.wikidata.org/wiki/Q7913"
 ],
 "verified": true
 },
@@ -33983,7 +33850,7 @@
 },
 {
 "ar": "فاتو فانواتي",
-"en": "Vanuatu vatus"
+"en": "Vanuatu vatu"
 }
 ],
 "source": [
@@ -34174,12 +34041,12 @@
 },
 "answer": {
 "ar": "بير إثيوبي",
-"en": "bir"
+"en": "birr"
 },
 "wrong": [
 {
 "ar": "منات تركمانستاني",
-"en": "Turkmenistan new manat"
+"en": "Turkmenistan manat"
 },
 {
 "ar": "كواشا زامبي",
@@ -34421,7 +34288,7 @@
 },
 {
 "ar": "فاتو فانواتي",
-"en": "Vanuatu vatus"
+"en": "Vanuatu vatu"
 },
 {
 "ar": "فرنك روندي",
@@ -34557,7 +34424,7 @@
 },
 {
 "ar": "بير إثيوبي",
-"en": "bir"
+"en": "birr"
 },
 {
 "ar": "لو ملداوي",
@@ -34620,8 +34487,8 @@
 },
 "wrong": [
 {
-"ar": "سول بيروفي جديد",
-"en": "Nuevo sol"
+"ar": "سول بيروفي",
+"en": "Peruvian sol"
 },
 {
 "ar": "دولار كندي",
@@ -34727,7 +34594,7 @@
 },
 {
 "ar": "بير إثيوبي",
-"en": "bir"
+"en": "birr"
 },
 {
 "ar": "بيسو فلبيني",
@@ -34867,7 +34734,7 @@
 },
 {
 "ar": "فاتو فانواتي",
-"en": "Vanuatu vatus"
+"en": "Vanuatu vatu"
 }
 ],
 "source": [
@@ -35266,8 +35133,8 @@
 },
 "wrong": [
 {
-"ar": "سول بيروفي جديد",
-"en": "Nuevo sol"
+"ar": "سول بيروفي",
+"en": "Peruvian sol"
 },
 {
 "ar": "جوردة هايتية",
@@ -35547,7 +35414,7 @@
 },
 {
 "ar": "منات تركمانستاني",
-"en": "Turkmenistan new manat"
+"en": "Turkmenistan manat"
 }
 ],
 "source": [
@@ -35640,8 +35507,8 @@
 },
 "wrong": [
 {
-"ar": "سول بيروفي جديد",
-"en": "Nuevo sol"
+"ar": "سول بيروفي",
+"en": "Peruvian sol"
 },
 {
 "ar": "شلن كيني",
@@ -35670,7 +35537,7 @@
 },
 "answer": {
 "ar": "بيزو أرجنتيني",
-"en": "Argentine convertible peso"
+"en": "Argentine peso"
 },
 "wrong": [
 {
@@ -35703,8 +35570,8 @@
 "en": "What is the currency of Peru?"
 },
 "answer": {
-"ar": "سول بيروفي جديد",
-"en": "Nuevo sol"
+"ar": "سول بيروفي",
+"en": "Peruvian sol"
 },
 "wrong": [
 {
@@ -36044,7 +35911,7 @@
 },
 "answer": {
 "ar": "فاتو فانواتي",
-"en": "Vanuatu vatus"
+"en": "Vanuatu vatu"
 },
 "wrong": [
 {
@@ -36567,7 +36434,7 @@
 },
 {
 "ar": "بيزو أرجنتيني",
-"en": "Argentine convertible peso"
+"en": "Argentine peso"
 }
 ],
 "source": [
@@ -36835,7 +36702,7 @@
 },
 {
 "ar": "بيزو أرجنتيني",
-"en": "Argentine convertible peso"
+"en": "Argentine peso"
 },
 {
 "ar": "بوتسوانا بولا",
@@ -37171,7 +37038,7 @@
 "wrong": [
 {
 "ar": "بيزو مكسيكي",
-"en": "peso"
+"en": "Mexican peso"
 },
 {
 "ar": "تنك قزاقستاني",
@@ -37179,7 +37046,7 @@
 },
 {
 "ar": "منات تركمانستاني",
-"en": "Turkmenistan new manat"
+"en": "Turkmenistan manat"
 }
 ],
 "source": [
@@ -37212,8 +37079,8 @@
 "en": "Djiboutian franc"
 },
 {
-"ar": "سول بيروفي جديد",
-"en": "Nuevo sol"
+"ar": "سول بيروفي",
+"en": "Peruvian sol"
 }
 ],
 "source": [
@@ -37617,7 +37484,7 @@
 },
 {
 "ar": "بيزو مكسيكي",
-"en": "peso"
+"en": "Mexican peso"
 },
 {
 "ar": "فورنت مجري",
@@ -37642,7 +37509,7 @@
 },
 "answer": {
 "ar": "منات تركمانستاني",
-"en": "Turkmenistan new manat"
+"en": "Turkmenistan manat"
 },
 "wrong": [
 {
@@ -38127,7 +37994,7 @@
 },
 {
 "ar": "فاتو فانواتي",
-"en": "Vanuatu vatus"
+"en": "Vanuatu vatu"
 },
 {
 "ar": "دولار سورينامي",
@@ -38152,7 +38019,7 @@
 },
 "answer": {
 "ar": "بيزو مكسيكي",
-"en": "peso"
+"en": "Mexican peso"
 },
 "wrong": [
 {
