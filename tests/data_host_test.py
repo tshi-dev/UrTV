@@ -38,9 +38,9 @@ check("the quiz's folder comes before the other games' in the map", [m[0] for m 
 # every reader of a data branch goes through the map; the old address stays in the code as the fallback
 readers = {
     APP / "GameData.java": "DataHost.get(BASE + name + \".json\"",
-    APP / "QuizBank.java": "DataHost.get(URL,",
-    APP / "SettingsActivity.java": "DataHost.get(CatalogueLeagues.URL,",
-    HOME / "MarketFile.java": "DataHost.get(url,",
+    APP / "QuizBank.java": "DataHost.get(url,",   # the rev and the versioned file go through the same helper
+    APP / "SettingsActivity.java": "CatalogueLeagues.URL, 15000, 12000, Bounded.JSON_MAX, 0, false)",   # DataHost.cached: the copy's ETag stays
+    HOME / "MarketFile.java": "DataHost.cached(new File(c.getCacheDir(), \"net\"), url,",
 }
 for p, call in readers.items():
     check(f"{p.name} reads through DataHost", call in read(p))
@@ -69,7 +69,7 @@ if not shutil.which("javac"):
     print("SKIP the run: no javac")
 else:
     with tempfile.TemporaryDirectory() as tmp:
-        r = subprocess.run(["javac", "-encoding", "UTF-8", "-d", tmp, str(APP / "DataHost.java"), str(APP / "Net.java"), str(ROOT / "tests/DataHostRun.java")],
+        r = subprocess.run(["javac", "-encoding", "UTF-8", "-d", tmp, str(APP / "DataHost.java"), str(APP / "Net.java"), str(APP / "NetLog.java"), str(ROOT / "tests/DataHostRun.java")],
                            capture_output=True, text=True)
         check("DataHost compiles on a plain JVM", r.returncode == 0, r.stderr[-800:])
         if r.returncode == 0:
