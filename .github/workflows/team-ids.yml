@@ -42,7 +42,7 @@ env:   # the monthly run checks everything again; a push checks only new and ren
 
 jobs:
   plan:   # the parts, read from Prefs.LEAGUES: the workflow never lists the leagues itself
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     outputs:
       parts: ${{ steps.plan.outputs.parts }}
     steps:
@@ -52,7 +52,7 @@ jobs:
 
   collect:
     needs: plan
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 45
     strategy:
       fail-fast: false
@@ -72,7 +72,7 @@ jobs:
   merge:
     needs: collect
     if: always() && needs.collect.result != 'cancelled'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4

@@ -22,7 +22,7 @@ jobs:
   apk:
     needs: checks
     if: ${{ !cancelled() && (needs.checks.result == 'success' || needs.checks.result == 'skipped') }}
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
       # Thmanyah's licence allows its files only inside a built product: they live in the private

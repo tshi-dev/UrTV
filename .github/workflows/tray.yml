@@ -23,7 +23,7 @@ concurrency:
 
 jobs:
   tray:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     permissions:
       contents: write   # only for the pictures step below (a commit whose message asks for it)
     timeout-minutes: 60
