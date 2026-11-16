@@ -17,9 +17,9 @@ def check(what, ok, extra=""):
     if not ok: failed += 1
 def text(p): return Path(p).read_text(encoding="utf-8")
 
-check("the markets' files go through Net.cached (a background call: the back-off applies)", "Net.cached(new File(c.getCacheDir(), \"net\"), url," in text(HOME / "MarketFile.java") and "Net.get(url" not in text(HOME / "MarketFile.java"))
+check("the markets' files go through Net.cached (a background call: the back-off applies)", "DataHost.cached(new File(c.getCacheDir(), \"net\"), url," in text(HOME / "MarketFile.java") and "Net.get(url" not in text(HOME / "MarketFile.java"))
 check("the next match goes through Net.cached (background)", "Net.cached(new java.io.File(c.getCacheDir(), \"net\"), url," in text(APP / "NextMatch.java"))
-check("the leagues list goes through Net.cached, without the back-off (the person waits for it)", "Net.cached(new java.io.File(cache.getParentFile(), \"net\"), CatalogueLeagues.URL, 15000, 12000, Bounded.JSON_MAX, 0, false)" in text(APP / "SettingsActivity.java"))
+check("the leagues list goes through Net.cached, without the back-off (the person waits for it)", "DataHost.cached(new java.io.File(cache.getParentFile(), \"net\"), CatalogueLeagues.URL, 15000, 12000, Bounded.JSON_MAX, 0, false)" in text(APP / "SettingsActivity.java"))
 if not shutil.which("javac"):
     print("SKIP the JVM run: no javac"); sys.exit(1 if failed else 0)
 with tempfile.TemporaryDirectory() as tmp:

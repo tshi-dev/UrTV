@@ -642,8 +642,9 @@ final class Prefs {
     int[] prayerFix() {
         ContentFile.refresh(ctx, PrayerFix.PATH, PrayerFix.NAME, 12 * 3600_000L);
         java.text.SimpleDateFormat f = new java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.ROOT);
-        f.setTimeZone(java.util.TimeZone.getTimeZone(cityTz()));
-        return PrayerFix.forDay(ContentFile.read(ctx, PrayerFix.NAME), cityCountry(), city()[0], f.format(new java.util.Date()));
+        f.setTimeZone(java.util.TimeZone.getTimeZone("UTC"));   // the city's day, by ZoneFix's offset for its zone
+        long now = System.currentTimeMillis();
+        return PrayerFix.forDay(ContentFile.read(ctx, PrayerFix.NAME), cityCountry(), city()[0], f.format(new java.util.Date(now + ZoneFix.offset(cityTz(), now))));
     }
 
     /** the adj= of the fragment: the person's own minutes where set, the published correction elsewhere; nothing when both are none */
