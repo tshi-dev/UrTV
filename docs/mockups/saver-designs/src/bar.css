@@ -1,0 +1,23 @@
+/* the centred bar, for any design (off by default in «نظيفة»): one panel, centred at the bottom or under the clock, holding what the person
+   picks: the day's prayers (the next one lit) or one item (the next match, the weather, a countdown, the markets). No capsule, no «·». */
+.sd-bar{position:fixed;left:50%;transform:translateX(-50%);z-index:7;display:flex;align-items:stretch;gap:6px;padding:8px;border-radius:16px;
+  background:rgba(12,14,18,.6);border:1px solid rgba(255,255,255,.16);color:#fff;white-space:nowrap}
+html.sd-low .sd-bar{background:rgba(12,14,18,.62)}
+.sd-bar.at-bottom{bottom:36px}
+.sd-bar .c{display:flex;flex-direction:column;align-items:center;justify-content:center;min-width:86px;padding:8px 10px;border-radius:10px}
+.sd-bar .c b{font-size:14px;font-weight:400;color:#E9E1CE}
+.sd-bar .c i{font-style:normal;font-size:19px;font-weight:500;margin-top:2px}
+.sd-bar .c.past b,.sd-bar .c.past i{color:#B9B09C;font-weight:400}
+.sd-bar .c.next{background:#EBC67D}.sd-bar .c.next b,.sd-bar .c.next i{color:#1A1409}
+.sd-bar .c.next em{font-style:normal;font-size:12px;color:#3A2C10;margin-top:1px}
+.sd-bar .one{display:flex;align-items:center;gap:16px;padding:6px 16px}
+.sd-bar .one .k{font-size:14px;color:#E0BA74}
+.sd-bar .one .v{font-size:21px;font-weight:500}
+.sd-bar .one .r{font-size:15px;color:#E2DACA}
+.sd-bar .one .sc{color:#FFE9B8}
+/* the weather's place: off, its usual place (top start), under the clock, or a top corner */
+.sd-wx{position:fixed;z-index:7;color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.55),0 0 14px rgba(0,0,0,.3);white-space:nowrap}
+.sd-wx b{font-weight:500}.sd-wx span{color:#E2DACA}
+.sd-wx.at-clock{left:0;right:0;text-align:center;font-size:16px}
+.sd-wx.at-corner{top:22px;left:28px;font-size:15px}
+html.sd-wx-usual .top{display:flex!important}html.sd-wx-usual .top .dates,html.sd-wx-usual .top .mk,html.sd-wx-usual .top .rule{visibility:hidden}
