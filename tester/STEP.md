@@ -1,4 +1,16 @@
-«✅ GO — next = 94bd7169 (4.4: the home fix 43fd44ea + sports + fixed clock + remote keys + black screen + the Home doctor's HOME_WANTED). Wait until apk-next is rebuilt from 94bd7169 (versionName 4.4, versionCode above 349), install all four APKs, then: FIRST step 86 B rerun (3 clean tries + Cancel once on purpose + leaving the page mid-setup + Home ×5 from YouTube + reboot + role after 10 min; logcat -s UrTVSetup UrTVWatch). If HOME still does not stay ours, run step 87 (the Home doctor) right after. Report each to work/tester-report at once. On the debugging dialog: screenshot, confirm focus is on «Allow» before OK. TV muted.»
+«▶ OWNER: keep going until you find the MOST RELIABLE way to make UrTV the main launcher on this Google TV. Order: (1) step 86 B rerun on the 94bd7169 build, (2) step 87 Home doctor, (3) step 88 below, iterating, and do not stop at the first pass: measure reliability. Report each round to work/tester-report. Never disable launcherx/setupwraith, never factory reset, never the family PIN. TV muted.»
+
+## step 88 — find the most reliable Home method (owner), iterate until one is reliable
+How others do it on Google TV (research, 2025–26): Projectivy Launcher does NOT replace the default home; its «Override current launcher» uses an ACCESSIBILITY service that intercepts the Home press and opens itself, plus «Boot on Power» to start at boot. Guides note a Google TV firmware update once broke that override on some devices (Home went back to Google TV), so the method must be re-checked per firmware. Other known routes: `cmd role add-role-holder android.app.role.HOME`, `cmd package set-home-activity`, a key-remap accessibility service catching KEYCODE_HOME. Disabling launcherx works for some people but breaks setup/OTA: forbidden here.
+Angles to measure (each one alone, put back before the next):
+- R1: role holder only (A).
+- R2: the add-on's window watch (D, 4.4 build).
+- R3: KEY interception: does KEYCODE_HOME reach an accessibility service with flagRequestFilterKeyEvents on this TV? Check with the add-on's key filter (remote buttons, 4.4) and logcat; if it does, test catching Home there and starting sa.urtv.home (you MAY build a local experimental extras APK for this, signed with the debug key, pushed only to branch work/tester-exp; never to shared branches).
+- R4: start at boot (BOOT_COMPLETED / LOCKED_BOOT_COMPLETED) in front of Google TV.
+- R5: combinations: R1+R2, R1+R3, R2+R4, R1+R3+R4.
+Reliability test per angle: Home ×20 from YouTube, Netflix, Settings and HDMI input (5 each), at 2 s and 6 s → % UrTV; then 3 reboots → % UrTV after boot and first Home; then 30 min idle + Home ×3; note any flash of Google TV (ms, from screenrecord), any loop, any broken Settings/Assistant/voice/input.
+Output: tester/step88.md table: angle | Home % | boot % | flash ms | side effects | verdict, and the winner with the exact commands/build. Keep iterating with new combos if no angle reaches 100% Home and 100% boot without side effects. End by restoring the owner's settings, with the winner kept if it is clean.
+
 
 ## step 87 — «Home doctor»: find why UrTV does not stay the HOME on this TV
 1. `git fetch origin work/44-homedoctor && git checkout origin/work/44-homedoctor -- optimize/homedoctor.py docs/HOMEDOCTOR.md` (read the doc first). Run it with `optimize/venv/bin/python -I optimize/homedoctor.py …`. Each angle takes ~3 min; leave the TV alone except at angle E.
