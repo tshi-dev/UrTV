@@ -1,7 +1,8 @@
 # urtv-data
 
 Open data for UrTV (tshi-dev/UrTV): football (fixtures, results, live window, teams, head-to-head, seasons, the league catalogue), the live
-Quran stations' check, the games' word lists and quiz bank, market prices, and the photo packs' metadata. Updated automatically by the
+Quran stations' check, the games' word lists and quiz bank, market prices, the photo packs' metadata, and hand-edited content (short
+notices, per-model defaults, seasonal photo packs, prayer time corrections, in `content/`). Updated automatically by the
 workflows in `.github/workflows`.
 
 - **`main`** (this branch): the generators (`.github/tools`, copied from UrTV unchanged), the publisher (`tools/`), the workflows and the docs.
@@ -15,6 +16,10 @@ workflows in `.github/workflows`.
 | [docs/LAYOUT.md](docs/LAYOUT.md) | the folders, the data branch and why, how writers never race, versions |
 | [docs/SCHEMAS.md](docs/SCHEMAS.md) | the form of every file |
 | [docs/SERVING.md](docs/SERVING.md) | raw.githubusercontent.com and jsDelivr addresses, and which data must not go through the CDN |
+
+Status: `docs/index.html` on GitHub Pages (each dataset's last update, red when its writer is late), from `status/status.json`.
+
+License: code MIT ([LICENSE](LICENSE)); data CC BY 4.0 with its sources' credits and terms ([DATA-LICENSE.md](DATA-LICENSE.md)). Reuse is welcome.
 
 Rules: data grows additively; every dataset has a `v` (in `index.json`, and in the file itself for forms made here); a breaking change is a new
 file name, so the apps already on TVs keep working. No personal data, no keys.
