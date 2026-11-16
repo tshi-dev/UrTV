@@ -339,9 +339,11 @@ final class MarketData {
 
     Quote of(String code) { return code == null ? null : quotes.get(symbol(code)); }
 
-    /** the short Arabic name of one of the 30, else the code itself (a US ticker, another Tadawul code) */
+    /** the short Arabic name of one of the 30 or of the page's other codes, else the code itself (a US ticker, a code the page has no name for) */
     static String name(String code) {
         for (String[] t : TADAWUL) if (t[0].equals(code)) return t[1];
+        String more = MarketNames.get(code);   // 4.4 (GitHub #60): the page's other codes, generated from its map (.github/tools/market_names.py)
+        if (more != null) return more;
         if ("^GSPC".equals(code)) return "S&P 500";
         if ("^IXIC".equals(code)) return "ناسداك";
         if ("^DJI".equals(code)) return "داو جونز";
