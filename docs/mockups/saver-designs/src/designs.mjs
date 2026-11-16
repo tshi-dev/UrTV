@@ -24,10 +24,10 @@ function net(route) {
     return route.fulfill({ contentType: 'application/json', headers: hdr, body: JSON.stringify(u.pathname.endsWith('eventsnext.php') && u.searchParams.get('id') === '136013' ? { events: F.events.filter(e => e.idHomeTeam === '136013' || e.idAwayTeam === '136013').slice(-2) } : { events: null, results: null }) }); }
   return route.abort();
 }
-const SCENES = {   // the photo, its glass and its cut-out (the scenery over the clock), where the cut-out sits (dp) and where the digits go
-  riyadh: { photo: 'riyadh.jpg', glass: 'riyadh-glass.jpg', fg: 'riyadh-fg.webp', fgTop: 64, fgH: 476, top: 150, size: 190 },
-  night: { photo: 'night.jpg', glass: 'night-glass.jpg', fg: 'night-fg.webp', fgTop: 0, fgH: 540, top: 72, size: 200 },
-  nature7: { photo: 'nature7.jpg', glass: 'nature7-glass.jpg', fg: 'nature7-fg.webp', fgTop: 214, fgH: 326, top: 70, size: 200 },
+const SCENES = {   // the photo, its frosted glass (SceneClock.frost), its cut-out cropped to its box (scenes.tsv / masks index.json) and the digits' place, in dp
+  riyadh: { photo: 'riyadh.jpg', glass: 'riyadh-frost.jpg', fg: 'riyadh-fg.webp', fgTop: 67.5, fgH: 321.5, top: 110, size: 190 },
+  night: { photo: 'night.jpg', glass: 'night-frost.jpg', fg: 'night-fg.webp', fgTop: 77.5, fgH: 311.5, top: 113, size: 196 },
+  nature7: { photo: 'nature16.jpg', glass: 'nature16-frost.jpg', fg: 'nature16-fg.webp', fgTop: 171, fgH: 218, top: 71, size: 200 },
 };
 const SHOTS = [
   ['01-clean-riyadh', 'clean', 'riyadh'], ['02-clean-night', 'clean', 'night'], ['03-clean-photo', 'clean', 'nature7'], ['04-clean-nonext-night', 'clean', 'night', 'nonext'],
