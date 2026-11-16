@@ -63,7 +63,7 @@ public class QuizGamesActivity extends Activity {
         root.setBackgroundColor(L.paper);
         setContentView(root);
         filter = GamePrefs.filter(this);
-        PackStore.sweep(this);   // a «تلقائي» pack nobody opened for 14 days goes
+        GamePackStore.sweep(this);   // a «تلقائي» pack nobody opened for 14 days goes
         sel = filter == 0 ? GameRegistry.firstFocus(GamePrefs.last(this)) : 0;
         draw();
     }

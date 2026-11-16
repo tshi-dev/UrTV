@@ -20,15 +20,15 @@ public class GamePacksActivity extends GameActivity {
     @Override protected void onCreate(Bundle b) { super.onCreate(b); load(); }
     private void load() {
         rows = new ArrayList<>();
-        for (GamePacks.Pack p : PackStore.index(this)) rows.add(p);
-        for (java.io.File f : new java.io.File(getFilesDir(), "packs").listFiles() == null ? new java.io.File[0] : new java.io.File(getFilesDir(), "packs").listFiles()) {   // a pack on this TV that the index no longer lists
+        for (GamePacks.Pack p : GamePackStore.index(this)) rows.add(p);
+        for (java.io.File f : new java.io.File(getFilesDir(), "gamepacks").listFiles() == null ? new java.io.File[0] : new java.io.File(getFilesDir(), "gamepacks").listFiles()) {   // a pack on this TV that the index no longer lists
             String n = f.getName();
             if (!n.endsWith(".gb")) continue;
             String pid = n.substring(0, n.length() - 3); boolean known = false;
             for (GamePacks.Pack p : rows) known |= p.id.equals(pid);
             if (!known) rows.add(new GamePacks.Pack(pid, pid, pid, 0, f.length(), ""));
         }
-        PackStore.ensure(this, "", null);   // the newest index, for the next time this screen opens
+        GamePackStore.ensure(this, "", null);   // the newest index, for the next time this screen opens
     }
 
     @Override protected void draw() {
@@ -36,9 +36,9 @@ public class GamePacksActivity extends GameActivity {
         if (rows.isEmpty()) { root.addView(centered(S.t("ما فيه حزم الآن"), 64, L.ink(0xCC), true), at(1728, 100, 96, 360)); hints(S.t("رجوع"), S.t("الألعاب")); return; }
         for (int i = 0; i < rows.size() && i < 6; i++) {
             GamePacks.Pack p = rows.get(i);
-            boolean on = PackStore.installed(this, p.id), keep = PackStore.mode(this, p.id) == GamePacks.KEEP;
+            boolean on = GamePackStore.installed(this, p.id), keep = GamePackStore.mode(this, p.id) == GamePacks.KEEP;
             float y = 232 + i * 120;
-            long bytes = PackStore.size(this, p.id) > 0 ? PackStore.size(this, p.id) : p.bytes;
+            long bytes = GamePackStore.size(this, p.id) > 0 ? GamePackStore.size(this, p.id) : p.bytes;
             root.addView(text(clip(p.name(en), 52, 900), 52, L.ink, true), at(960, 64, 96, y));
             root.addView(text((on ? S.t("محمّلة") : S.t("غير محمّلة")) + ": " + num(Math.max(1, Math.round(bytes / 1000f))) + " KB", 36, L.ink(0xCC), false), at(960, 48, 96, y + 62));
             root.addView(button(keep ? S.t("احتفظ دائمًا") : S.t("تلقائي"), sel == i && col == 0), at(360, 88, 1100, y));
@@ -54,8 +54,8 @@ public class GamePacksActivity extends GameActivity {
         if (dx != 0) { col = dx > 0 ? 1 : 0; redraw(); return; }
         if (!ok) return;
         GamePacks.Pack p = rows.get(sel);
-        if (col == 0) PackStore.setMode(this, p.id, PackStore.mode(this, p.id) == GamePacks.KEEP ? GamePacks.AUTO : GamePacks.KEEP);
-        else PackStore.delete(this, p.id);
+        if (col == 0) GamePackStore.setMode(this, p.id, GamePackStore.mode(this, p.id) == GamePacks.KEEP ? GamePacks.AUTO : GamePacks.KEEP);
+        else GamePackStore.delete(this, p.id);
         redraw();
     }
 }
