@@ -3660,7 +3660,7 @@ public class MainActivity extends Activity {
                 java.io.File dir = f.getParentFile();
                 if (dir.isDirectory() || dir.mkdirs()) {
                     java.io.File tmp = new java.io.File(dir, f.getName() + ".tmp");
-                    data = PhotoShrink.toScreen(data);   // P8: kept at screen size
+                    data = PhotoShrink.toSize(data, Ram.low(this) ? PhotoShrink.LOW : PhotoShrink.screenMax(this));   // P8: kept at screen size; G3: the TV's own (1280 on a 720p screen), 1280 on a weak TV («خفيف»)
                     try (java.io.FileOutputStream out = new java.io.FileOutputStream(tmp)) { out.write(data); }
                     if (!tmp.renameTo(f)) tmp.delete();
                 }
