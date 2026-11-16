@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """4.4 the owner: on a scene or one of our masked photos the clock stays where it is and the picture comes down a little (a zoom from the screen's top
-centre, the cut-out and the glass in the digits with it, never an empty band) so more of the digits are above the scenery: the visible share goes up by
-ScenePlan.MORE (0.2), up to ScenePlan.CAP (0.9); one already at CAP or more stays as it is. ScenePlan runs on a JVM over the bundled scene's real
+centre, the cut-out and the glass in the digits with it, never an empty band) so more of the digits are above the scenery, by the owner's bands: under
+60 % visible to 75 %, 60 to 70 % to 80 %, 70 to 85 % to 85 %, 85 % or more as it is. ScenePlan runs on a JVM over the bundled scene's real
 cut-out (and, with URTV_SCENES=dir1:dir2, over downloaded packs' folders too), and over made-up skylines; the wiring is read from the source.
 
     python3 tests/scene_zoom_test.py      (needs javac and Pillow)"""
@@ -23,8 +23,15 @@ def read(p): return p.read_text(encoding="utf-8")
 
 
 plan = read(HOME / "ScenePlan.java")
-m = re.search(r"static final float MORE = ([0-9.]+)f, CAP = ([0-9.]+)f, MAX_ZOOM = ([0-9.]+)f;", plan)
-MORE, CAP, MAX = map(float, m.groups())
+BANDS = [tuple(map(float, b)) for b in re.findall(r"\{([0-9.]+)f, ([0-9.]+)f\}", re.search(r"BANDS = \{(.*?)\};", plan).group(1))]
+MAX = float(re.search(r"MAX_ZOOM = ([0-9.]+)f;", plan).group(1))
+check("the owner's bands: under 60 % to 75 %, 60-70 % to 80 %, 70-85 % to 85 %, from 85 % as it is", BANDS == [(0.6, 0.75), (0.7, 0.8), (0.85, 0.85)], BANDS)
+
+
+def target(v):
+    for lo, t in BANDS:
+        if v < lo: return t
+    return v
 if not shutil.which("javac"):
     print("SKIP scene zoom: no javac here")
 else:
@@ -50,16 +57,17 @@ else:
         bad = []
         for r in rows:
             v0, k, v1 = float(r[3]), float(r[4]), float(r[5])
-            target = min(v0 + MORE, max(v0, CAP))
-            if not (1 <= k <= MAX and v1 >= target - 0.005):
+            want = target(v0)
+            if not (1 <= k <= MAX and v1 >= want - 0.005):
                 bad.append(r)
-        check(f"every scene with a cut-out: the visible share of the digits reaches its target (+{MORE}, up to {CAP}) with a zoom of 1 to {MAX}, cards or not",
+        check(f"every scene with a cut-out: the visible share of the digits reaches its band's target with a zoom of 1 to {MAX}, cards or not",
               rows and not bad, bad or "no scene")
         print("     " + "; ".join(f"{r[1]}{' (cards)' if r[2] == 'true' else ''} {float(r[3]):.2f}->{float(r[5]):.2f} x{float(r[4]):.2f}" for r in rows))
-        flat = {r[1]: (float(r[2]), float(r[3]), float(r[4])) for r in (l.split("\t") for y in ("450", "300", "700", "1080") for l in run("flat", y))}
-        check("made up: scenery at the digits' middle, 50 % visible: zoomed to 70 %", abs(flat["450"][0] - 0.5) < 0.01 and flat["450"][2] >= 0.695 and flat["450"][1] > 1, flat["450"])
-        check("…scenery over the whole digits, none visible: zoomed to 20 % at most up to MAX_ZOOM", flat["300"][0] == 0 and (flat["300"][2] >= 0.195 or flat["300"][1] == MAX), flat["300"])
-        check("…scenery under the digits (all visible) and no scenery at all: no zoom", flat["700"][1] == 1 and flat["1080"][1] == 1, [flat["700"], flat["1080"]])
+        # the digits' box is 300..600: scenery at y is (y - 300) / 300 visible
+        ys = {"450": 0.5, "495": 0.65, "534": 0.78, "570": 0.9, "700": 1.0, "1080": 1.0}
+        flat = {r[1]: (float(r[2]), float(r[3]), float(r[4])) for r in (l.split("\t") for y in ys for l in run("flat", y))}
+        check("made up, each band: 50 % → 75 %, 65 % → 80 %, 78 % → 85 % (zoomed); 90 %, all visible and no scenery: as they are", all(
+              abs(flat[y][0] - v) < 0.01 and (flat[y][2] >= target(v) - 0.005 and flat[y][1] > 1 if v < 0.85 else flat[y][1] == 1) for y, v in ys.items()), flat)
 
 home, glass, clock, main = read(HOME / "SceneHome.java"), read(HOME / "PhotoGlass.java"), read(HOME / "SceneClock.java"), read(HOME / "MainActivity.java")
 check("the scenes: the zoom from the cut-out, on the scene's thread; the photo and the cut-out zoom about the screen's top centre, the glass in the digits too",

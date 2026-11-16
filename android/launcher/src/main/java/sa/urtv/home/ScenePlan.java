@@ -95,10 +95,17 @@ final class ScenePlan {
      */
     /**
      * 4.4 the owner: the clock stays where it is and the picture (with its cut-out and the glass in the digits) comes down a little, by a zoom from
-     * the screen's top centre (never an empty band), until the share of the digits above the scenery is MORE higher, up to CAP; a picture already
-     * showing CAP or more stays as it is (the scenery still crosses the digits). MAX_ZOOM at most.
+     * the screen's top centre (never an empty band), until the share of the digits above the scenery reaches its band's target (target()): under 60 %
+     * to 75 %, 60 to 70 % to 80 %, 70 to 85 % to 85 %; 85 % or more stays as it is (Riyadh, 92 %). MAX_ZOOM at most.
      */
-    static final float MORE = 0.2f, CAP = 0.9f, MAX_ZOOM = 1.4f;
+    static final float[][] BANDS = {{0.60f, 0.75f}, {0.70f, 0.80f}, {0.85f, 0.85f}};
+    static final float MAX_ZOOM = 1.4f;
+
+    /** the visible share a picture showing v of the digits is brought to (BANDS; v itself from 85 %) */
+    static float target(float v) {
+        for (float[] b : BANDS) if (v < b[0]) return b[1];
+        return v;
+    }
 
     /** the share of the digits' box (left, top, right, bottom on a w x h screen) above the scenery, the picture zoomed by k about the top centre; sky: 48 columns, px of 1080 */
     static float visible(int[] sky, int[] box, int w, int h, float k) {
@@ -115,9 +122,9 @@ final class ScenePlan {
         return n == 0 ? 1f : 1f - cover / n;
     }
 
-    /** the zoom (1 or more) that shows the digits MORE more, up to CAP (see above) */
+    /** the zoom (1 or more) that brings the digits' visible share to its band's target (see above) */
     static float zoom(int[] sky, int[] box, int w, int h) {
-        float v0 = visible(sky, box, w, h, 1f), target = Math.min(v0 + MORE, Math.max(v0, CAP));
+        float v0 = visible(sky, box, w, h, 1f), target = target(v0);
         float k = 1f;
         while (visible(sky, box, w, h, k) < target - 1e-4f && k < MAX_ZOOM) k = Math.round((k + 0.01f) * 100) / 100f;
         return k;
