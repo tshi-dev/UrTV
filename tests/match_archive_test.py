@@ -225,7 +225,7 @@ def fake_tsdb(capped=2):
 
 
 fetch, asked = fake_tsdb()
-sys.modules["team_ids"] = SimpleNamespace(API="x/", STATS={"thesportsdb": 0}, fetch=fetch, team_key=lambda n: n.lower(),
+sys.modules["team_ids"] = SimpleNamespace(API="x/", STATS={"thesportsdb": 0}, PAID=False, fetch=fetch, team_key=lambda n: n.lower(),
                                          same_team=lambda a, b: a.lower() == b.lower())
 saved = ma.HISTORY
 ma.HISTORY = [("4668", "Saudi Pro League", 4)]
@@ -257,11 +257,87 @@ check("the Wikipedia check: same, different and missing scores counted", c["same
 check("the Wikipedia check names the page", c["page"] == "2024–25 Saudi Pro League")
 ma.HISTORY = saved
 check("HISTORY puts Saudi first and expects 306 games a season since 2023-24",
-      ma.HISTORY[0][0] == "4668" and ma.expected(ma.HISTORY[0][2], "2024-2025") == 306 and ma.expected(ma.HISTORY[0][2], "2022-2023") == 240)
+      ma.HISTORY[0][0] == "4668" and ma.expected(ma.HISTORY[0][2], "2024-2025") == (306, True) and ma.expected(ma.HISTORY[0][2], "2022-2023") == (240, True))
+check("«auto» leagues: expected from the clubs seen, never a sure count", ma.expected("auto", "2024-2025", 12) == (132, False))
 check("openfootball's rounds: a number from «Matchday 7», a knockout's words kept", ma.round_of("League, Matchday 7") == "7"
       and ma.round_of("Quarter-finals") == "Quarter-finals")
 check("calendar-year leagues (MLS) read by year", ma.calendar_years(["2024-25", "2025-26"]) == ["2024", "2025", "2026"])
 del sys.modules["team_ids"]
+
+
+# 12. the followed leagues' health; the matrix's plan and merge
+stH = ma.Store()
+nowH = ma.now_utc()
+def put_(i, days, scored_):
+    t = ma.iso(nowH + dt.timedelta(days=days))
+    stH.put({"id": i, "lg": "4668", "s": "2026-2027", "t": t, "h": "1", "a": "2", "hn": "", "an": "", "hs": "1" if scored_ else None,
+             "as": "0" if scored_ else None, "st": "FT" if scored_ else "NS", "r": "", "sp": "Soccer", "pp": False, "src": "tsdb"})
+put_("a", -20, True); put_("b", -5, False); put_("c", 5, False)
+summ, probs = ma.league_health(stH, nowH, {})
+check("a followed league whose last 10 days' games have no result is a problem", any("Saudi Pro League (4668)" in p and "none with a result" in p for p in probs), probs)
+put_("b", -5, True)
+summ, probs = ma.league_health(stH, nowH, {"4668": {"2024-2025": {"expected": 306, "expected_sure": True, "finished": 300, "current": False}}})
+check("results in the last 10 days: no freshness problem", not any("none with a result" in p or "no game known" in p for p in probs if "4668" in p), probs)
+check("a past season short of its sure count is a problem", any("2024-2025: 300 results of 306" in p for p in probs), probs)
+check("health lists every followed league with its newest result", summ["4668"]["results_10d"] == 1 and summ["4668"]["last_result"] and len(summ) == len(ma.HISTORY))
+import io, contextlib
+buf = io.StringIO()
+with contextlib.redirect_stdout(buf):
+    ma.plan(SimpleNamespace(leagues=""))
+plan_ = json.loads(buf.getvalue())
+check("the matrix: every followed league, Saudi first", plan_["league"][0] == "4668" and len(plan_["league"]) == len(ma.HISTORY))
+buf = io.StringIO()
+with contextlib.redirect_stdout(buf):
+    ma.plan(SimpleNamespace(leagues="4339, 4668"))
+check("the matrix of a rerun: only the leagues asked for, in HISTORY's order", json.loads(buf.getvalue())["league"] == ["4668", "4339"])
+md = Path(tempfile.mkdtemp())
+(md / "history-4668").mkdir()
+(md / "history-4668" / "games.json").write_text(json.dumps({"events": [{"idEvent": "1"}]}))
+(md / "history-4668" / "state.json").write_text(json.dumps({"4668": {"2025-2026": {"complete": True}}, "4339": {"x": {}}}))
+(md / "history-4668" / "report.json").write_text(json.dumps({"4668": {"name": "Saudi"}, "requests": {"thesportsdb": 3}}))
+prevst = md / "prev.json"
+prevst.write_text(json.dumps({"4339": {"2024-2025": {"complete": True}}}))
+ma.merge_history(SimpleNamespace(dir=str(md), state=str(prevst), expect="4668,4339", out=str(md / "g.json"), state_out=str(md / "s.json"),
+                                 report=str(md / "r.json")))
+mst, mrp = json.loads((md / "s.json").read_text()), json.loads((md / "r.json").read_text())
+check("merge: a league's job replaces only its own seasons; the others' stay", mst["4668"]["2025-2026"]["complete"] and mst["4339"] == {"2024-2025": {"complete": True}}, mst)
+check("merge: a league whose job failed is listed (and rerun by itself)", mrp["failed"] == ["history-4339"], mrp)
+src_ti = (ROOT / ".github/tools/team_ids.py").read_text()
+check("the key comes only from THESPORTSDB_KEY, the free 123 without it, and is taken out of every error",
+      'os.environ.get("THESPORTSDB_KEY")' in src_ti and 'redact(url)' in src_ti and '"123"' in src_ti)
+
+
+# 13. the owner's issue (archive_health.py): the problems, the two copies compared, one issue opened, updated, closed
+spec2 = importlib.util.spec_from_file_location("archive_health", ROOT / ".github/tools/archive_health.py")
+ah = importlib.util.module_from_spec(spec2)
+spec2.loader.exec_module(ah)
+hf = Path(tempfile.mkdtemp()) / "health.json"
+hf.write_text(json.dumps({"problems": ["Saudi Pro League (4668): 9 games in the last 10 days, none with a result"]}))
+ah.count_events = lambda u, b, f: {"a": 100, "b": 98}[b]
+pr = ah.problems([("x/urtv-data", "a", "football/archive"), ("x/UrTV", "b", "")], str(hf))
+check("health: the archive's own problems and the two copies differing", len(pr) == 2 and "differ" in pr[1] and "100" in pr[1], pr)
+ah.count_events = lambda u, b, f: 100
+check("health: the same games in both copies is no problem", ah.problems([("x/a", "a", ""), ("x/b", "b", "")], None) == [])
+calls, state_ = [], {"open": []}
+def fake_gh(*a):
+    calls.append(a)
+    if a[:2] == ("issue", "list"):
+        return SimpleNamespace(returncode=0, stdout=json.dumps(state_["open"]), stderr="")
+    if a[:2] == ("issue", "create"):
+        state_["open"] = [{"number": 7, "body": a[a.index("--body") + 1]}]
+    return SimpleNamespace(returncode=0, stdout="", stderr="")
+ah.gh = fake_gh
+ah.issue("problem one")
+check("issue: opened once with the label", sum(1 for c in calls if c[:2] == ("issue", "create")) == 1 and any("data-health" in c for c in calls if c[:2] == ("issue", "create")))
+calls.clear(); ah.issue("problem one")
+check("issue: the same problems again change nothing (no mail)", not any(c[:2] in (("issue", "create"), ("issue", "edit")) for c in calls), calls)
+calls.clear(); ah.issue("problem two")
+check("issue: other problems update the one issue", any(c[:2] == ("issue", "edit") for c in calls) and not any(c[:2] == ("issue", "create") for c in calls))
+calls.clear(); ah.issue("")
+check("issue: healthy again closes it", any(c[:2] == ("issue", "close") for c in calls))
+wf2 = (ROOT / ".github/workflows/league-fixtures.yml").read_text()
+check("data-archive copies urtv-data's archive unchanged (builds only when it cannot be read)", "mirror=true" in wf2 and "steps.src.outputs.mirror != 'true'" in wf2)
+check("the workflow's actions are pinned to a commit and run on ubuntu-24.04", not re.search(r"uses: actions/\w+@v\d", wf2) and "ubuntu-latest" not in wf2)
 
 doc = (ROOT / "docs/MATCH-ARCHIVE.md").read_text()
 check("docs/MATCH-ARCHIVE.md describes every file a client reads", all(x in doc for x in ("index.json", "teams/&lt;teamId&gt;.json",

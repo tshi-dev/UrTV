@@ -22,6 +22,7 @@ index.json (team id -> names and leagues; league id -> names), health.json (the 
 import argparse
 import datetime as dt
 import json
+import os
 import re
 import shutil
 import sys
@@ -290,6 +291,38 @@ def read_league_files(leagues):
     return out, names
 
 
+STALE_DAYS = 10   # a followed league in its season with no new result this long is a problem (health.json, the data-health issue)
+
+
+def league_health(store, now, state):
+    """Each followed league (HISTORY): its newest result and its games of the last 10 days; and the problems: a league in its season whose
+    games of the last 10 days have no result (or that has no game known in 10 days between games before and after), a past season short of
+    its sure expected count."""
+    summary, problems = {}, []
+    lo, soon = now - dt.timedelta(days=STALE_DAYS), now - dt.timedelta(hours=4)
+    by = {}
+    for e in store.events():
+        by.setdefault(e["lg"], []).append(e)
+    for lg, name, _ in HISTORY:
+        evs = by.get(lg, [])
+        times = [(kickoff_t(e), e) for e in evs if kickoff_t(e)]
+        done = [t for t, e in times if stage(e) == 3]
+        recent = [e for t, e in times if lo <= t <= soon]
+        recent_done = [e for e in recent if stage(e) == 3]
+        before = any(now - dt.timedelta(days=40) <= t < lo for t, _ in times)
+        after = any(now < t <= now + dt.timedelta(days=30) for t, _ in times)
+        row = {"name": name, "last_result": iso(max(done)) if done else "", "games_10d": len(recent), "results_10d": len(recent_done)}
+        summary[lg] = row
+        if recent and not recent_done:
+            problems.append(f"{name} ({lg}): {len(recent)} games in the last {STALE_DAYS} days, none with a result")
+        elif not recent and before and after:
+            problems.append(f"{name} ({lg}): in its season but no game known in the last {STALE_DAYS} days")
+        for season, x in sorted(state.get(lg, {}).items()):
+            if not x.get("current") and x.get("expected_sure") and x.get("expected") and x.get("finished", 0) < x["expected"]:
+                problems.append(f"{name} ({lg}) {season}: {x.get('finished', 0)} results of {x['expected']} expected")
+    return summary, problems
+
+
 def build(args):
     t0 = time.time()
     now = now_utc()
@@ -356,6 +389,10 @@ def build(args):
         shutil.copyfile(rep, out / "backfill.json")
         r = json.loads(rep.read_text(encoding="utf-8"))
         health["backfill"] = {"games": r.get("games", 0), "names_not_found": len(r.get("names_not_found") or {})}
+    hist = out / "history.json"
+    summary, issues = league_health(store, now, json.loads(hist.read_text(encoding="utf-8")) if hist.is_file() else {})
+    health["followed"] = summary
+    problems += issues
     if size > SIZE_CAP:
         problems.append(f"the archive is {size // 1_000_000} MB, over {SIZE_CAP // 1_000_000} MB: lower KEEP_SEASONS")
     (out / "health.json").write_text(json.dumps(health, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
@@ -570,29 +607,78 @@ def backfill(args):
 # (the expected count is teams * (teams - 1)); None: a cup or a format with play-offs, reported without an expected count.
 HISTORY = [
     ("4668", "Saudi Pro League", {"2021-2022": 16, "2022-2023": 16, "2023-2024": 18, "2024-2025": 18, "2025-2026": 18, "2026-2027": 18}),
-    ("5627", "Saudi First Division League", 18),
-    ("5649", "Saudi King Cup", None),
-    ("4719", "AFC Champions League Elite", None),
-    ("4829", "Egyptian Premier League", None),
-    ("4663", "Qatar Stars League", 12),
-    ("4678", "UAE Pro League", 14),
-    ("5056", "Iraqi Premier League", 20),
-    ("4520", "Moroccan Championship", 16),
     ("4339", "Turkish Super Lig", {"2021-2022": 20, "2022-2023": 19, "2023-2024": 20, "2024-2025": 19, "2025-2026": 18, "2026-2027": 18}),
     ("4480", "UEFA Champions League", None),
+    ("4719", "AFC Champions League Elite", None),
+    ("4829", "Egyptian Premier League", None),
+    ("5649", "Saudi King Cup", None),
+    ("4663", "Qatar Stars League", "auto"),
+    ("4678", "UAE Pro League", "auto"),
+    ("5056", "Iraqi Premier League", "auto"),
+    ("4520", "Moroccan Championship", "auto"),
     ("4346", "American Major League Soccer", None),
+    ("5627", "Saudi First Division League", "auto"),
     ("4328", "English Premier League", 20), ("4335", "Spanish La Liga", 20), ("4332", "Italian Serie A", 20),
-    ("4331", "German Bundesliga", 18), ("4334", "French Ligue 1", {"2021-2022": 20, "2022-2023": 20, "2023-2024": 18}),
+    ("4331", "German Bundesliga", 18), ("4334", "French Ligue 1", {"2021-2022": 20, "2022-2023": 20, "*": 18}),
     ("4344", "Portuguese Primeira Liga", 18), ("4337", "Dutch Eredivisie", 18),
 ]
+# teams: the clubs of a double round-robin (expected games = teams * (teams - 1)), by season where it changed; "auto": the same formula from
+# the clubs the season's games name (reported, never a problem: a format may have play-offs); None: a cup or a league with play-offs.
 CUP_ROUNDS = [105, 110, 115, 120, 125, 130, 140, 150, 160, 170, 180, 190, 200, 500]   # TheSportsDB's knockout rounds (125 quarter-finals, 150 semis, 200 final)
 WIKI_PAGE = {"4668": "{y1}–{y2} Saudi Pro League"}   # the season's results table, for the check (en.wikipedia.org, CC BY-SA)
 WIKI_API = "https://en.wikipedia.org/w/api.php"
 
 
-def expected(spec, season):
+def expected(spec, season, teams=0):
+    """(the expected games of the season, whether that count is sure enough to call a shortfall a problem)"""
+    if spec == "auto":
+        return (teams * (teams - 1) if teams > 1 else None), False
     n = spec.get(season, spec.get("*")) if isinstance(spec, dict) else spec
-    return n * (n - 1) if n else None
+    return (n * (n - 1) if n else None), bool(n)
+
+
+def clubs(evs):
+    return len(({e.get("idHomeTeam") for e in evs.values()} | {e.get("idAwayTeam") for e in evs.values()}) - {None, ""})
+
+
+def plan(args):
+    """The matrix of the history workflow: the leagues of HISTORY (in its order, Saudi first), or those asked for. Every league is in it every
+    night: its current season is read again (that is how a followed league's finished games all land, whatever the free key's league calls
+    give), its complete past seasons are skipped by history itself."""
+    only = [x for x in (args.leagues or "").replace(" ", "").split(",") if x]
+    ids = [lg for lg, _, _ in HISTORY if not only or lg in only]
+    print(json.dumps({"league": ids}))
+    return 0
+
+
+def merge_history(args):
+    """The matrix's league files into one: games (one file for build), state (history.json: the previous one with each league's seasons
+    replaced by what its job read) and report."""
+    state = json.loads(Path(args.state).read_text(encoding="utf-8")) if args.state and Path(args.state).is_file() else {}
+    games, report, failed = [], {}, []
+    for d in sorted(x for x in Path(args.dir).glob("*") if x.is_dir()):
+        g, st, rp = d / "games.json", d / "state.json", d / "report.json"
+        if not (g.is_file() and st.is_file() and rp.is_file()):
+            failed.append(d.name)
+            continue
+        games += json.loads(g.read_text(encoding="utf-8")).get("events") or []
+        for lg, seasons in json.loads(st.read_text(encoding="utf-8")).items():
+            if lg in json.loads(rp.read_text(encoding="utf-8")):   # only the league this job read
+                state.setdefault(lg, {}).update(seasons)
+        r = json.loads(rp.read_text(encoding="utf-8"))
+        for k, v in r.items():
+            if k in ("requests", "stopped", "check"):
+                report.setdefault(k, {})[d.name] = v
+            else:
+                report[k] = v
+    want = [x for x in (args.expect or "").split(",") if x]
+    got = {d.name.replace("history-", "") for d in Path(args.dir).glob("*") if d.is_dir() and d.name not in failed}
+    report["failed"] = sorted(set(failed) | {f"history-{x}" for x in want if x not in got})
+    Path(args.out).write_text(json.dumps({"events": games}, ensure_ascii=False) + "\n", encoding="utf-8")
+    Path(args.state_out).write_text(json.dumps(state, ensure_ascii=False, indent=1, sort_keys=True) + "\n", encoding="utf-8")
+    Path(args.report).write_text(json.dumps(report, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
+    print(f"{len(games)} games from {len(got)} leagues; failed: {report['failed']}")
+    return 0
 
 
 def history(args):
@@ -601,7 +687,8 @@ def history(args):
     expected count is not asked again (history.json). Writes the games for build (--history) and a report per league and season."""
     sys.path.insert(0, str(HERE))
     import team_ids as ti
-    pace = args.pace
+    pace = args.pace if args.pace is not None else float(os.environ.get("PACE") or (2.4 if ti.PAID else 2.2))
+    n_seasons = args.seasons or (5 if ti.PAID else 3)   # the paid key reads a whole season in one request: two more seasons cost two requests
     state = json.loads(Path(args.state).read_text(encoding="utf-8")) if args.state and Path(args.state).is_file() else {}
     only = set(args.leagues.split(",")) if args.leagues else None
     budget = args.budget
@@ -629,8 +716,8 @@ def history(args):
             if only and lg not in only:
                 continue
             seasons = sorted({x.get("strSeason") for x in (ask(f"search_all_seasons.php?id={lg}").get("seasons") or []) if x.get("strSeason")})
-            seasons = seasons[-args.seasons:]
-            report[lg] = {"name": name, "seasons": {}}
+            seasons = seasons[-n_seasons:]
+            report[lg] = {"name": name, "key": "paid" if ti.PAID else "free", "seasons": {}}
             for season in seasons:
                 done = state.get(lg, {}).get(season, {})
                 if done.get("complete") and season != seasons[-1]:
@@ -639,10 +726,11 @@ def history(args):
                 evs, how = {}, {}
                 how["season"] = keep(ask(f"eventsseason.php?id={lg}&s={season}").get("events"), lg, season, evs)
                 rounds = {int(e["intRound"]) for e in evs.values() if str(e.get("intRound") or "").isdigit()}
-                want = expected(spec, season)
+                want, sure = expected(spec, season, clubs(evs))
                 n, empty, r, found = 0, 0, 1, 0
                 limit = max([60] + [x + 3 for x in rounds if x < 100])
-                while r <= limit and empty < (3 if found else 4):
+                whole = ti.PAID and how["season"] > 0 and not (want and len(evs) < want)   # the paid key's season list is the whole season
+                while not whole and r <= limit and empty < (3 if found else 4):
                     k = keep(ask(f"eventsround.php?id={lg}&r={r}&s={season}").get("events"), lg, season, evs)
                     got_round = k or any(str(e.get("intRound")) == str(r) for e in evs.values())
                     found += bool(got_round)
@@ -651,7 +739,7 @@ def history(args):
                     r += 1
                     if want and len(evs) >= want:
                         break
-                for cr in sorted(set(CUP_ROUNDS) | {x for x in rounds if x >= 100}) if not want else []:
+                for cr in sorted(set(CUP_ROUNDS) | {x for x in rounds if x >= 100}) if not want and not whole else []:
                     n += keep(ask(f"eventsround.php?id={lg}&r={cr}&s={season}").get("events"), lg, season, evs)
                 how["rounds"] = n
                 if want and len(evs) < want and args.days:
@@ -667,10 +755,17 @@ def history(args):
                             d += dt.timedelta(days=1)
                         how["days"] = n
                 finished = sum(1 for e in evs.values() if stage(compact(e)) == 3)
-                teams = len({e.get("idHomeTeam") for e in evs.values()} | {e.get("idAwayTeam") for e in evs.values()} - {None})
-                row = {"games": len(evs), "finished": finished, "expected": want, "teams": teams, "how": how,
-                       "complete": (finished >= want) if want else (finished > 0 and season != seasons[-1]), "at": iso(now_utc())}
-                state.setdefault(lg, {})[season] = {k: row[k] for k in ("games", "finished", "expected", "teams", "complete", "at")}
+                teams = clubs(evs)
+                want, sure = expected(spec, season, teams)
+                past = season != seasons[-1]
+                complete = past and finished > 0 and ((finished >= want) if (want and sure) else (whole or not want or finished >= want))
+                row = {"games": len(evs), "finished": finished, "expected": want, "expected_sure": sure, "teams": teams, "how": how,
+                       "current": not past, "complete": complete, "at": iso(now_utc())}
+                old = state.get(lg, {}).get(season, {})
+                if old.get("finished", 0) > finished:   # a short answer this time (a limit, an error) never lowers what was read before
+                    row["note"] = f"read {finished} finished this time, {old['finished']} before: the store keeps them all"
+                state.setdefault(lg, {})[season] = {k: row[k] for k in ("games", "finished", "expected", "expected_sure", "teams", "current",
+                                                                         "complete", "at")}
                 report[lg]["seasons"][season] = row
                 got_all += list(evs.values())
                 print(f"{lg} {name} {season}: {len(evs)} games, {finished} finished, expected {want}, {how}", flush=True)
@@ -786,13 +881,22 @@ def main():
     hi.add_argument("--report", required=True)
     hi.add_argument("--state", help="history.json: the seasons already complete, read and written")
     hi.add_argument("--leagues", default="", help="ids, comma-separated (default: every league of HISTORY, Saudi first)")
-    hi.add_argument("--seasons", type=int, default=3, help="the last N seasons of each league (the current one and N-1 before)")
+    hi.add_argument("--seasons", type=int, default=0, help="the last N seasons of each league, the current one included (default 5 with the paid key, 3 with the free one)")
     hi.add_argument("--budget", type=int, default=2500, help="at most this many requests (the free key: about 30 a minute)")
-    hi.add_argument("--pace", type=float, default=2.2)
+    hi.add_argument("--pace", type=float, default=None, help="seconds between requests (default: env PACE, else 2.4 paid, 2.2 free)")
     hi.add_argument("--days", action="store_true", help="a season still short after its rounds is asked day by day (costly)")
     hi.add_argument("--check", action="store_true", help="check the seasons against Wikipedia's results tables (WIKI_PAGE)")
+    pl = sub.add_parser("plan")
+    pl.add_argument("--leagues", default="")
+    mh = sub.add_parser("merge-history")
+    mh.add_argument("--dir", required=True, help="one folder per league job: games.json, state.json, report.json")
+    mh.add_argument("--state", help="the previous history.json")
+    mh.add_argument("--expect", default="", help="the leagues the matrix had (a missing one is listed as failed)")
+    mh.add_argument("--out", required=True)
+    mh.add_argument("--state-out", dest="state_out", required=True)
+    mh.add_argument("--report", required=True)
     a = p.parse_args()
-    return {"build": build, "live": live, "backfill": backfill, "history": history}[a.cmd](a)
+    return {"build": build, "live": live, "backfill": backfill, "history": history, "plan": plan, "merge-history": merge_history}[a.cmd](a)
 
 
 if __name__ == "__main__":

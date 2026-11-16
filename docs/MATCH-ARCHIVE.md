@@ -121,11 +121,18 @@ For tools and for building new derived files; a screen should not read it (it is
 |---|---|---|
 | [TheSportsDB](https://www.thesportsdb.com) (free key) | every game of the current seasons (fixtures, live window) and the last seasons of the followed leagues (`mode=history`: the season list, then round by round, then day by day where a season is still short) | free API key, about 30 requests a minute; credited as the source |
 | [openfootball/football.json](https://github.com/openfootball/football.json) | past seasons of the big European leagues, the Champions League (only the seasons it has) and the MLS | public domain (CC0) |
-| [Wikipedia](https://en.wikipedia.org) season pages | **not stored**: each Saudi Pro League season is checked against the page's results table (`history-report.json`, `check`) | CC BY-SA; read only to compare scores |
+| [Wikipedia](https://en.wikipedia.org) season pages | **not stored**: each Saudi Pro League season is checked against the page's results table (`history-report.json`, `check`) | CC BY-SA; read only to compare scores, nothing copied |
 
-History (`mode=history`, by hand; `leagues` and `days` inputs): the leagues and their expected games a season are `HISTORY` in the tool
-(Saudi Pro League first: 306 a season since 2023-24, 240 before). `history.json` on the branch lists each league's seasons with the games
-read, the finished ones, the expected count and whether the season is complete (a complete past season is not asked again);
+History: tshi-dev/urtv-data's workflow «Football history» (`.github/workflows/football-history.yml` there): one job per followed league
+(`HISTORY` in the tool, Saudi Pro League first: 306 games a season since 2023-24, 240 before), then one job that merges, rebuilds and
+publishes. Nightly it reads each league's current season again (so every finished game of a followed league lands) and skips the past
+seasons already complete. The key is the secret `THESPORTSDB_KEY` (a paid month: a whole season in one request, 5 seasons) or else the free
+key (3 seasons, round by round); it is never printed. `history.json` lists each league's seasons (games read, finished, expected, complete);
 `history-report.json` says how each season was read and the Wikipedia check (same scores, different, not in Wikipedia).
 `r` (the round) is a number for a league's matchday; a knockout round may be TheSportsDB's code (125 quarter-finals, 150 semi-finals,
 200 final) or openfootball's words ("Quarter-finals").
+
+One archive, two addresses: urtv-data's `football/archive` is where it is made; UrTV's league-fixtures.yml (job «archive») copies it to
+`data-archive` unchanged for the apps up to 4.3.2, checks both hold the same games (`archive_health.py`) and keeps one issue labelled
+`data-health` open while there is a problem: a followed league in its season with no result in 10 days, a past season short of its sure
+expected count, the two copies differing. It closes itself when healthy again.
