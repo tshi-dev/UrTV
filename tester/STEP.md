@@ -1,4 +1,18 @@
-«✅ GO — step 75 now (the owner's week plan started 2026-11-16; he allowed testing couch-tv and Clean your TV on his TV). Then step 76 (4.3.2 release check), then step 77 (the safe home switch).»
+«✅ GO — step 75 now (the owner's week plan started 2026-11-16; he allowed testing couch-tv and Clean your TV on his TV). Then step 76 (4.3.2 release check), then step 77 (the safe home switch), then step 78 (background recitation + Player beta9).»
+
+## step 78 — background recitation (branch work/433-media 8d41bd7) and Player beta9
+A. Recitation: install the home + screensaver from the Build APKs run artifact of work/433-media (branch builds are not published; find the run for 8d41bd7 on github.com/tshi-dev/UrTV Actions). S = `adb shell am broadcast -n sa.urtv.home/.tilawah.MusicReceiver -a sa.urtv.home.GET_PLAYER` (read playing=, foreground=, focus_wait=). TV volume low but NOT muted for this part only if needed to hear; otherwise read S and logcat -s Listening.
+ 1. Surah from «تلاوة»; S → playing=1 foreground=1. Home, then the TV's Settings 2 min: still playing.
+ 2. Screensaver 5+ min: still playing; wake: still playing.
+ 3. 1–2 with a radio station.
+ 4. YouTube video ~10 s, pause, Home: the surah resumes within ~5 s by itself (log «focus: the other sound ended, taken back»); during YouTube S shows focus_wait=1.
+ 5. YouTube > 70 s: the surah stays paused; play on the «يُتلى الآن» card resumes it.
+ 6. Voice search with the mic key: pauses, resumes after.
+ 7. `adb shell am broadcast -n sa.urtv.home/.tilawah.MusicReceiver -a sa.urtv.home.ADHAN`: surah pauses, adhan, surah resumes at the same place. (Keep it short: stop the adhan with OK.)
+ 8. Stop from the notification/media panel and from the player's «إيقاف»: S → playing=0.
+ 9. From the phone page while the screensaver is on: play a surah; S; 10 min later still playing.
+ Then reinstall the normal apk-next build.
+B. Player beta9 (https://github.com/tshi-dev/UrTV-Player/releases/download/v0.9.16-beta9/urtv-player.apk) with the owner's account: logcat -s UrTVPerf: cold_start_first_frame, list_build, `memory:` lines for 20 min on the home; first channels appear before the full list is parsed; Home shows «أُضيف حديثًا» and «الأكثر مشاهدة»; Settings → «سجل الأداء والأخطاء» opens; the commentary card: «تطبيق» keeps, «إلغاء» and Back restore. TMDB parts are off in this build (no key yet): skip them.
 
 ## step 77 — the safe home switch (branch work/432-stockhome 9d4ff5f6; it decides if this joins 4.3.2)
 Do it AFTER step 76. TV muted. The APKs are the `apks` artifact of the Build APKs run 301 on github.com/tshi-dev/UrTV (branch builds are not published). The full steps are docs/TEST-PLAN.md §13 (S1–S7) on that branch: read them there and follow them exactly.
