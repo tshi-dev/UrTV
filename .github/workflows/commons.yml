@@ -2,15 +2,13 @@ name: Horizon photo from Commons
 
 # 4.4 a photo for a horizon (the owner: a clean Riyadh night photo, CC BY or BY-SA): search Commons for candidates (a numbered sheet to choose
 # from by eye) or fetch the chosen one (cropped to 1920x1080, its licence checked again, its credit written). The result goes on the branch named
-# in `branch` (never master or next), for the photo masks tool to cut. Run by hand only.
+# work/433-horizon-photo, for the photo masks tool to cut. It runs when a request is pushed to a branch named work/*-horizon-req: the file
+# .github/horizon-request.json there says {"mode": "search"|"fetch", "words": ..., "cats": [...], "id": ...} (a workflow that is not on master
+# cannot be started by hand).
 on:
-  workflow_dispatch:
-    inputs:
-      mode: {description: "search or fetch", required: true, default: search}
-      words: {description: "search: the words; fetch: the File: title", required: true}
-      cats: {description: "search: categories, | between them", required: false, default: ""}
-      id: {description: "fetch: the scene id (riyadh)", required: false, default: riyadh}
-      branch: {description: "the branch the result goes on", required: true, default: work/433-horizon-photo}
+  push:
+    branches: ['work/*-horizon-req']
+    paths: ['.github/horizon-request.json']
 
 permissions:
   contents: write
@@ -23,13 +21,18 @@ jobs:
       - uses: actions/checkout@v4
       - run: pip install Pillow
       - name: Run
-        env: {MODE: "${{ inputs.mode }}", WORDS: "${{ inputs.words }}", CATS: "${{ inputs.cats }}", SID: "${{ inputs.id }}"}
         run: |
-          if [ "$MODE" = search ]; then IFS='|' read -ra C <<< "$CATS"; python3 -I .github/tools/commons_pick.py search "$RUNNER_TEMP/out" "$WORDS" "${C[@]}"
-          else python3 -I .github/tools/commons_pick.py fetch "$RUNNER_TEMP/out" "$WORDS" "$SID"; fi
+          python3 -I - <<'PY'
+          import json, subprocess
+          r = json.load(open(".github/horizon-request.json"))
+          args = [r["words"], *r.get("cats", [])] if r["mode"] == "search" else [r["words"], r.get("id", "riyadh")]
+          open("mode.txt", "w").write(r["mode"])
+          subprocess.run(["python3", "-I", ".github/tools/commons_pick.py", r["mode"], "out", *args], check=True)
+          PY
+          mv out "$RUNNER_TEMP/out"
       - name: Push
-        env: {B: "${{ inputs.branch }}", MODE: "${{ inputs.mode }}"}
         run: |
+          B=work/433-horizon-photo; MODE=$(cat mode.txt); rm mode.txt
           case "$B" in master|next|main) echo "not that branch"; exit 1;; esac
           git config user.name "github-actions[bot]"; git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           if git fetch -q origin "$B"; then git checkout -q -B "$B" FETCH_HEAD; else git checkout -q --orphan "$B"; git rm -rfq --cached . >/dev/null; find . -mindepth 1 -maxdepth 1 ! -name .git -exec rm -rf {} +; fi
