@@ -88,6 +88,10 @@ public class MusicReceiver extends BroadcastReceiver {
                 setResultData("saved\nquiet=" + quietText(prefs));
                 return;
             }
+            case "sa.urtv.home.FRIDAY_DHUHR":   // 4.4 optimize/music.sh adhan friday on|off
+                prefs.setFridayDhuhr(intent.getBooleanExtra("on", true));
+                setResultData("saved\nfriday_dhuhr=" + (prefs.fridayDhuhr() ? "on" : "off"));
+                return;
             case "sa.urtv.home.PRAYER_SOUND": {   // 4.4 optimize/music.sh adhan prayer <name> <general|silent|own|own_fajr|N>
                 int p = intent.getIntExtra("prayer", -1);
                 String choice = intent.getStringExtra("choice");
@@ -276,6 +280,7 @@ public class MusicReceiver extends BroadcastReceiver {
                 + "|fajr_voice=" + (prefs.playFajrVoice(context) == Prefs.OWN_FAJR ? "own_fajr" : prefs.playFajrVoice(context) == Prefs.OWN ? "own" : String.valueOf(prefs.fajrVoice()))
                 + "|prayer_sound=" + prayerSounds(prefs)
                 + "|quiet=" + quietText(prefs)
+                + "|friday_dhuhr=" + (prefs.fridayDhuhr() ? "on" : "off")
                 + "|adhan_short=" + (prefs.adhanShort() ? "on" : "off")
                 + "|adhan_takbir=" + (prefs.adhanTakbir() ? "on" : "off")
                 + "|adhan_stopkey=" + (prefs.adhanStopKey() ? "on" : "off")

@@ -22,6 +22,9 @@ public class PrayerSoundActivity extends RowScreen {
             @Override public String tagline() { return S.t("الصلاة الصامتة يبقى وقتها وبطاقتها وتنبيهها، بلا صوت"); }
             @Override public void rows(List<Row> out) {
                 for (int p : PrayerTimes.PRAYERS) out.add(Row.of(S.tv(PrayerTimes.NAMES[p]), word(p), () -> choose(p)));
+                // touch «أذان الجمعة»: a silent Dhuhr is heard on Fridays
+                out.add(Row.of(S.t("أذان الجمعة"), prefs.fridayDhuhr() ? S.t("مفعّل: الظهر يُسمع يوم الجمعة ولو كان صامتًا") : S.t("متوقف"),
+                        () -> { prefs.setFridayDhuhr(!prefs.fridayDhuhr()); refresh(); }));
             }
         };
     }

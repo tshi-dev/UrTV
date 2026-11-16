@@ -125,6 +125,7 @@ Usage: optimize/music.sh <command> [arguments]
   adhan notice on | off   a 5-second notice with the prayer's name at its time (default off)
   adhan takbir on | off   only the opening takbir plays, then a fade (default off; turns short off)
   adhan prayer <fajr|dhuhr|asr|maghrib|isha> <general|silent|own|own_fajr|1-21>   «أذان كل صلاة»: that prayer's sound (default general)
+  adhan friday on | off   «أذان الجمعة»: a Dhuhr set silent is heard on Fridays (default on)
   adhan quiet off | <HH:MM> <HH:MM> [heard|fajr|silent]   «ساعات الهدوء»: no dua or reminder then; the adhan in it (default heard)
   adhan stopkey on | off  any key stops the adhan while it plays (default on; off: only OK on the adhan bar)
   adhan stop              stop the adhan that is playing
@@ -218,7 +219,7 @@ PY
         out=$(tv "am broadcast -n sa.urtv.home/.tilawah.MusicReceiver -a sa.urtv.home.GET_PLAYER")
         data=$(printf '%s\n' "$out" | sed -n 's/.*data="\(.*\)"/\1/p' | tail -n 1)
         [ -n "$data" ] || { echo "No status from sa.urtv.home. Is the app installed and the TV reachable?" >&2; exit 1; }
-        printf '%s\n' "$data" | tr '|' '\n' | grep -E '^(adhan=|voice=|fajr_voice=|prayer_sound=|quiet=|adhan_short=|adhan_takbir=|adhan_stopkey=|adhan_saver_only=|adhan_saver_at=|adhan_notice=|adhan_alarm_last=|adhan_live=|adhan_volume=|adhan_exact=|adhan_next|adhan_last|source=|playing=)'
+        printf '%s\n' "$data" | tr '|' '\n' | grep -E '^(adhan=|voice=|fajr_voice=|prayer_sound=|quiet=|friday_dhuhr=|adhan_short=|adhan_takbir=|adhan_stopkey=|adhan_saver_only=|adhan_saver_at=|adhan_notice=|adhan_alarm_last=|adhan_live=|adhan_volume=|adhan_exact=|adhan_next|adhan_last|source=|playing=)'
         own=$(printf '%s\n' "$data" | tr '|' '\n' | sed -n 's/^own_bytes=//p')
         if [ "${own:-0}" -gt 0 ] 2> /dev/null; then
           echo "own=$((own / 1024)) KB (your own recording; adhan voice own uses it, adhan own-clear removes it)"
@@ -289,6 +290,12 @@ PY
         case "$2" in on) flag=true;; off) flag=false;; *) usage;; esac
         tv "am broadcast -n sa.urtv.home/.tilawah.MusicReceiver -a sa.urtv.home.ADHAN_SHORT --ez on $flag" > /dev/null
         if [ "$flag" = true ]; then echo "Short adhan on: it stops after its first minute."; else echo "Short adhan off: the whole adhan plays."; fi
+        ;;
+      friday)
+        [ $# -eq 2 ] || usage
+        case "$2" in on) flag=true;; off) flag=false;; *) usage;; esac
+        tv "am broadcast -n sa.urtv.home/.tilawah.MusicReceiver -a sa.urtv.home.FRIDAY_DHUHR --ez on $flag" > /dev/null
+        if [ "$flag" = true ]; then echo "Friday adhan on: a silent Dhuhr is heard on Fridays."; else echo "Friday adhan off."; fi
         ;;
       quiet)
         if [ "${2:-}" = off ] && [ $# -eq 2 ]; then

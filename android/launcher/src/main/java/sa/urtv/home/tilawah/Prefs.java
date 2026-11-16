@@ -108,8 +108,14 @@ final class Prefs {
 
     /** 4.4: what plays at this prayer now: a voice (Prefs.OWN…, 1..COUNT) or PrayerSound.SILENT */
     int playFor(Context c, int prayer) {
-        return PrayerSound.voice(prayerSound(prayer), prayer, playVoiceFor(c, prayer == PrayerTimes.FAJR), OwnAdhan.exists(c), OwnAdhan.fajrExists(c));
+        boolean friday = fridayDhuhr()
+                && java.util.Calendar.getInstance(sa.urtv.home.ZoneFix.zone(Place.get(c).tz), java.util.Locale.US).get(java.util.Calendar.DAY_OF_WEEK) == java.util.Calendar.FRIDAY;
+        return PrayerSound.voice(prayerSound(prayer), prayer, playVoiceFor(c, prayer == PrayerTimes.FAJR), OwnAdhan.exists(c), OwnAdhan.fajrExists(c), friday);
     }
+
+    /** 4.4 touch «أذان الجمعة»: on by default: a Dhuhr set silent is still heard on Fridays (it matters only when Dhuhr is silent) */
+    boolean fridayDhuhr() { return sp.getBoolean("friday_dhuhr", true); }
+    void setFridayDhuhr(boolean on) { sp.edit().putBoolean("friday_dhuhr", on).apply(); }
 
     /**
      * Writes down what Fajr is using now before one of the two choices changes, so a change to the other prayers' voice never moves the one

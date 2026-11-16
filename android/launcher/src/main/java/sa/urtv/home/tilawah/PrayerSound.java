@@ -26,9 +26,12 @@ final class PrayerSound {
      * The voice to play (Prefs.OWN, Prefs.OWN_FAJR, 1..COUNT) or SILENT.
      * @param general what the prayer played before 4.4 (Prefs.playVoiceFor)
      */
-    static int voice(String choice, int prayer, int general, boolean ownOk, boolean ownFajrOk) {
+    static int voice(String choice, int prayer, int general, boolean ownOk, boolean ownFajrOk) { return voice(choice, prayer, general, ownOk, ownFajrOk, false); }
+
+    /** 4.4 touch «أذان الجمعة»: fridayDhuhr (the setting on, and it is Friday): a silent Dhuhr is heard, with the general voice */
+    static int voice(String choice, int prayer, int general, boolean ownOk, boolean ownFajrOk, boolean fridayDhuhr) {
         if (!valid(choice) || choice.isEmpty()) return general;
-        if (choice.equals("silent")) return SILENT;
+        if (choice.equals("silent")) return prayer == DHUHR && fridayDhuhr ? general : SILENT;
         if (choice.equals("own")) return ownOk ? Prefs.OWN : general;
         if (choice.equals("own_fajr")) return ownFajrOk ? Prefs.OWN_FAJR : general;
         int n = Integer.parseInt(choice.substring(1));
