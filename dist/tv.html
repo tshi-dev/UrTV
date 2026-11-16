@@ -157,7 +157,7 @@
   .week li .tm .nm{max-width:none;overflow:visible;text-overflow:clip;padding:0;margin:0}   
   .week li.mg .tm .cr{margin:0}
   .week li.mg .sc{font-variant-numeric:tabular-nums;color:var(--gold-hi);font-weight:600}
-  html:not(.cso) .week li.mg .mr .mwhen{color:#E2DACA}
+  html:not(.cso) .week li.mg .mr .mwhen{color:#E2DACA;text-align:center;align-self:center;line-height:1.3}
   html:not(.cso) .week li.mg .mr .dt{color:var(--gold-3)}
   html:not(.cso) .week li.mg.done{color:#CFC6B2}html:not(.cso) .week li.mg.done .mr .dt{color:#B9B09C}
   html:not(.cso) .week.nm1 li.mg .mr{flex-wrap:wrap;row-gap:.3em;white-space:normal}
@@ -2223,6 +2223,21 @@ function shortenRows(ul){
   });
 }
 
+function alignGames(card){
+  const rows = OLD_LOOK || card.el.classList.contains('nm1') ? [] : [...card.ul.querySelectorAll('li.mg > .mr')].filter(r => r.querySelector('.mwhen'));
+  rows.forEach(r => { r.children[2].style.marginInlineEnd = ''; r.lastElementChild.style.minWidth = ''; });
+  if(rows.length < 2) return;
+  const rtl = getComputedStyle(rows[0]).direction === 'rtl', edge = (r, e) => { const a = r.getBoundingClientRect(), b = e.getBoundingClientRect(); return rtl ? a.right - b.left : b.right - a.left; };
+  const clubs = rows.map(r => edge(r, r.children[2])), when = rows.map(r => r.lastElementChild.getBoundingClientRect().width);
+  const W = Math.max(...clubs), D = Math.max(...when);
+  rows.forEach((r, i) => {
+    const em = parseFloat(getComputedStyle(r).fontSize) || 16;
+    r.children[2].style.marginInlineEnd = ((W - clubs[i]) / em).toFixed(3) + 'em';
+    r.lastElementChild.style.minWidth = (D / parseFloat(getComputedStyle(r.lastElementChild).fontSize || em)).toFixed(3) + 'em';
+    if(r.scrollWidth > r.clientWidth + 1){ r.children[2].style.marginInlineEnd = ''; r.lastElementChild.style.minWidth = ''; }
+  });
+}
+
 async function fetchLast(id){
   const r = await fetchT(`https://www.thesportsdb.com/api/v1/json/${CONFIG.sportsKey}/eventslast.php?id=${id}`, 12000);
   if(!r.ok) throw 0;
@@ -2831,7 +2846,7 @@ function renderCard(card, animate, keepSize){
   }
   const wrote = setHTML(ul, rows.join(''), animate);
   if(!keepSize){ card.base = rows.length; card.len0 = card.len || 0; }
-  if(P === 'matches'){ fillCrests(ul); if(wrote){ shortenRows(ul); fitLive(ul); } }
+  if(P === 'matches'){ fillCrests(ul); if(wrote){ shortenRows(ul); fitLive(ul); } alignGames(card); }
   fitQuote(ul);
   if(CONFIG.tafsir) fitTafsir(ul);
   ul.classList.remove('flip');
