@@ -181,7 +181,8 @@
   .week li.hrs{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:.3em;white-space:normal;border-bottom:none;padding:1.2vh 0 .5vh;align-items:start;text-align:center}
   .week li.hrs .hc{display:flex;flex-direction:column;align-items:center;gap:.4em;min-width:0}
   .week li.hrs .hc b{font-weight:400;font-size:.78em;color:#B9AE96;white-space:nowrap}
-  .week li.hrs .hc svg{width:1.9em;height:1.9em;fill:none;stroke:var(--gold-3);stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+  .week li.hrs .hc svg,.wxi svg{width:1.9em;height:1.9em;fill:none;stroke:var(--gold-3);stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+  .wxi{align-self:center}.wxi svg{width:1em;height:1em}
   .week li.hrs .hc i{font-style:normal;font-variant-numeric:tabular-nums;font-size:1.05em;white-space:nowrap}
   /* «الصلوات في صف»: the five prayers side by side, the next one lit */
   .week li.prow{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:.3em;white-space:normal;border-bottom:none;padding:.9vh 0 .3vh;text-align:center;align-items:stretch}
@@ -546,7 +547,7 @@
   .wxsrc:empty{display:none}
   .wxsub{margin-top:.55vh;font-size:clamp(12px,1.06vw,21px);font-weight:300;color:var(--dim);white-space:nowrap}
   .wxr:not(:empty)::before{content:'  ·  ';white-space:pre;color:rgba(214,175,107,.7)}
-  .wxt:empty,.wxd:empty,.wxr:empty,.wxdust:empty{display:none}
+  .wxt:empty,.wxd:empty,.wxr:empty,.wxdust:empty,.wxi:empty{display:none}
   .rule.l{margin-left:0;margin-right:auto;background:linear-gradient(90deg,var(--gold),rgba(var(--gold-rgb),0))}
   .mk{margin-top:1.2vh;display:flex;justify-content:flex-end;gap:1.6em;white-space:nowrap;
     font-size:clamp(12px,1.06vw,21px);font-weight:400;color:#D8CDB6}
@@ -801,7 +802,7 @@ html.lowram .photo.settle, html.lowram .week ul.flip li, html.lowram .mrow.flip 
     </div>
 
     <div class="markets">
-      <div class="wxline"><span class="wxt" id="wx-temp"></span><span class="wxd" id="wx-desc"></span><span class="wxdust" id="wx-dust"></span></div>
+      <div class="wxline"><span class="wxi" id="wx-ico"></span><span class="wxt" id="wx-temp"></span><span class="wxd" id="wx-desc"></span><span class="wxdust" id="wx-dust"></span></div>
       <div class="wxsub"><span id="wx-city">الرياض</span><span class="wxr" id="wx-range"></span></div>
       <div class="wxsrc" id="wx-src"></div>
       <div class="rule l"></div>
@@ -963,7 +964,7 @@ const CONFIG = {
   // suhoor; the place stays, so nothing else moves) and #nightdim=0 keeps the night as bright as the day (no dimmer)
   occasion: _Q.get('occasion') !== '0',
   nightDim: _Q.get('nightdim') !== '0',
-  // «تبديل الآية والحديث»: #versemin=3 (or 10) a new verse or hadith every 3 (10) minutes
+  // «تبديل الآية والحديث»: #versemin=3 or 10 minutes
   verseMin: ({3:3, 10:10})[_Q.get('versemin')] || 0,
   // «الآية والحديث»: #versekind=verse only verses, #versekind=hadith only hadith
   verseKind: (v => v === 'verse' || v === 'hadith' ? v : 'both')(_Q.get('versekind')),
@@ -2344,7 +2345,7 @@ const TEAM_SHORT = Object.assign({
   'باريس سان جيرمان':'باريس', 'بايرن ميونخ':'بايرن', 'بوروسيا دورتموند':'دورتموند', 'بوروسيا مونشنغلادباخ':'مونشنغلادباخ',
   'باير ليفركوزن':'ليفركوزن', 'آينتراخت فرانكفورت':'فرانكفورت', 'نوتنغهام فورست':'فورست', 'كريستال بالاس':'بالاس',
   'وولفرهامبتون':'وولفز', 'سبورتينغ لشبونة':'سبورتينغ', 'لوس أنجلوس جالاكسي':'جالاكسي', 'البنك الأهلي المصري':'البنك الأهلي',
-}, __TEAMS_SHORT__);   // NBA and NFL: the nickname without the city («ليكرز»), made by src/build.py from teams.json
+}, __TEAMS_SHORT__);   // NBA and NFL nicknames («ليكرز»), from teams.json by src/build.py
 const FIT_STEPS = [1, .92, .85, .78, .72];
 const FIT_RANGE = document.createRange();
 function fits(sp){   // to the fraction of a pixel: scrollWidth rounds, and a name short by 0.4 px still got «…»
@@ -3689,7 +3690,7 @@ try{ WX = Object.assign(WX, JSON.parse(localStorage.getItem(LS.wx) || '{}')); }c
 const saveWx = () => { try{ localStorage.setItem(LS.wx, JSON.stringify(WX)); }catch(e){} };
 function wxExpire(){
   if(Date.now() - WX.at < WX_STALE_MS) return;
-  ['wx-temp', 'wx-desc', 'wx-dust', 'wx-range', 'wx-src'].forEach(id => { const el = document.getElementById(id); if(el) setText(el, ''); });
+  ['wx-ico', 'wx-temp', 'wx-desc', 'wx-dust', 'wx-range', 'wx-src'].forEach(id => { const el = document.getElementById(id); if(el) setText(el, ''); });
 }
 // «Open-Meteo · قبل ١٥ د»: where the weather comes from and how old the reading is
 function wxAgeText(ms){
@@ -3726,6 +3727,7 @@ async function loadWeather(){
     WX.wind = CONFIG.wxMore && typeof j.current.wind_speed_10m === 'number' ? j.current.wind_speed_10m : null;
     saveWx();
     setText(document.getElementById('wx-temp'), ar(Math.round(j.current.temperature_2m)) + '°');
+    setHTML(document.getElementById('wx-ico'), wxIcon(j.current.weather_code, isNight(hourKey())));
     const d = document.getElementById('wx-desc');
     setText(d, WX_CODES[j.current.weather_code] || '');
     wxSource();
