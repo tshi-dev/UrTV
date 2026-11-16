@@ -19,6 +19,8 @@ public final class ExtrasWords {
 
     // the add-on's calls (the home asks)
     public static final String STATUS = "status", TYPE = "type", PRESS = "press", SLEEP = "sleep", GO_HOME = "go_home", WATCH = "watch";
+    /** 4.4: WATCH's other two arguments: the person's chosen home is ours (the setup confirmed it) or not any more («تراجع»); WANTED is also the bundle's key */
+    public static final String WANTED = "wanted", UNWANTED = "unwanted";
     // the home's calls (the add-on asks)
     public static final String TYPE_CHECK = "type_check", SETTINGS_PIN = "settings_pin", KEY = "key", LEDGER = "ledger";
     /** 4.4 «إنقاذ تلفزيونك» (UrTV Rescue): its package and release file */

@@ -138,15 +138,16 @@ check("the buttons ask for the family PIN when one is set, and ignore touches th
       "SetupGate.guard" in act_src and "setFilterTouchesWhenObscured(true)" in btn and act_src.count("setFocusable(true)") == 1 and "setFocusable(true)" in btn, "")
 runner_src = (SETUP / "SetupRunner.java").read_text(encoding="utf-8")
 host_src = (SETUP / "SetupHost.java").read_text(encoding="utf-8")
-check("the ADB key is deleted when the job is finished (setup done, or undone) and nothing is pending (the runner's host, after every end)",
-      "SetupSession.deleteKeyIfFinished(app)" in host_src and "AdbKeys.delete" in (SETUP / "SetupSession.java").read_text(encoding="utf-8"), "")
+check("4.4 (step 86 B): ONE ADB key for good: nothing deletes it (every run made a new key and the TV's list filled with urtv-home@tv); the host only says it is kept",
+      "SetupSession.keepKey(app)" in host_src and "AdbKeys.delete" not in "".join(p.read_text(encoding="utf-8") for p in SETUP.glob("*.java"))
+      and "static void delete(" not in (SETUP / "AdbKeys.java").read_text(encoding="utf-8") and "deleteKeyIfFinished" not in "".join(p.read_text(encoding="utf-8") for p in SETUP.glob("*.java")), "")
 main_src = (ROOT / "android/launcher/src/main/java/sa/urtv/home/MainActivity.java").read_text(encoding="utf-8")
 hook_src = (SETUP / "SetupHook.java").read_text(encoding="utf-8")
 check("the home screen re-arms a cut-off switch at its start with ONE call that never throws (a Force-stop, then Home)", main_src.count("SetupHook.atHomeStart(this)") == 1 and "catch (RuntimeException ignored)" in hook_src and "rearmFromDisk" in hook_src and "SetupRecovery.attempt" in hook_src, "")
 fin = runner_src[runner_src.index("private void run(Kind k"):runner_src.index("private End runSteps")]
-check("the key is deleted after EVERY end of a run (it refuses by itself while a switch is pending): host.finished() after the try, outside every catch",
+check("after EVERY end of a run the host is told (4.4: it keeps the one key and says so): host.finished() after the try, outside every catch",
       "host.finished()" in fin and fin.index("host.finished()") > fin.rindex("catch (RuntimeException ex)") and "if (finished)" not in fin
-      and "SetupRunner.awaiting(new FileStore(c))" in (SETUP / "SetupSession.java").read_text(encoding="utf-8"), "")
+      and "adb key: kept (one key for good)" in (SETUP / "SetupSession.java").read_text(encoding="utf-8"), "")
 check("after the automatic attempts run out the person is told at every start (the home and the setup screen)", "GAVE_UP_NOTICE" in hook_src and "GAVE_UP_NOTICE" in act_src, "")
 check("the setup screen is not in the home screen's own app grid (Dock.catalogue skips this package)", "p.equals(c.getPackageName())" in (ROOT / "android/launcher/src/main/java/sa/urtv/home/Dock.java").read_text(encoding="utf-8"), "")
 check("the engine runs only fixed commands: none is built from text the TV sent, except package names that matched [A-Za-z0-9_.]+",
@@ -166,7 +167,7 @@ check("HF (4.4): the home switch failed twice on this TV: the third try is not m
 check("HF2 (4.4): a switch that worked starts the count again; two is the limit; nothing tried writes nothing", got.get("HF2") == "HF2 DONE count=0 true false false true", got.get("HF2"))
 act = (ROOT / "android/launcher/src/main/java/sa/urtv/home/setup/SetupActivity.java").read_text(encoding="utf-8")
 check("4.4: the setup screen shows the computer's way with a QR to docs/SETUP-PROMPT.md once the switch failed twice (start and done screens)",
-      act.count("computerHelp();") == 2 and "QrCode.encodeLarge(HomeFails.GUIDE_URL)" in act and "if (!HomeFails.givenUp(new FileStore(this).get(HomeFails.FILE))) return;" in act
+      act.count("computerHelp();") == 2 and "qrBeside(words, HomeFails.GUIDE_URL, 120);" in act and "if (!HomeFails.givenUp(new FileStore(this).get(HomeFails.FILE))) return;" in act
       and 'GUIDE_URL = "https://github.com/tshi-dev/UrTV/blob/master/docs/SETUP-PROMPT.md"' in (ROOT / "android/launcher/src/main/java/sa/urtv/home/setup/HomeFails.java").read_text(encoding="utf-8"))
 check("S7 (4.3.3, A17): the wizard owns the saved Wi-Fi: the start screen does not ask about it, «تخلّص من واجهة المصنع» is offered and never names the wizard",
       got.get("S7") == "S7 owns=false refusal=none wizardInPlan=false wizardOff=false", got.get("S7"))

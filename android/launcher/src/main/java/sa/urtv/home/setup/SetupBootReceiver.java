@@ -15,6 +15,8 @@ public class SetupBootReceiver extends BroadcastReceiver {
         final Context app = context.getApplicationContext();
         factoryGuard(app);
         homeGuard(app);
+        SetupHook.tellWatch(app);   // 4.4: the add-on's watch knows the person's home after a restart
+        SetupHook.reapplyIfLost(app);   // 4.4: the TV took the HOME role back by itself: given back once
         try {   // a planned restart, or (4.3.3) one nobody asked for in the middle of the run: it goes on from its pointer (its own thread; it waits for a pending home first)
             if (SetupRunner.resumeAtBoot(new FileStore(app))) SetupRunner.get().resume(new SetupHost(app));
         } catch (java.io.IOException | RuntimeException ignored) {

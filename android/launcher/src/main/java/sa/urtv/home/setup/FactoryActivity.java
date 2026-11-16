@@ -203,7 +203,7 @@ public class FactoryActivity extends Activity {
             SetupEngine.Result r;
             try (SetupSession s = SetupSession.open(this, 60_000, null, line -> { })) {
                 r = s.engine.restoreFactory();
-                if (r.status == SetupEngine.Status.DONE) SetupSession.deleteKeyIfFinished(this);
+                if (r.status == SetupEngine.Status.DONE) SetupSession.keepKey(this);
             } catch (Exception e) {
                 r = new SetupEngine.Result(SetupEngine.Status.FAILED, S.t("ما قدرنا نكلّم التلفزيون. تأكد من تصحيح USB وجرّب مرة ثانية."));
             }

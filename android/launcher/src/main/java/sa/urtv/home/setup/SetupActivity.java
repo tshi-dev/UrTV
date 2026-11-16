@@ -62,33 +62,40 @@ public class SetupActivity extends Activity {
     protected void onCreate(Bundle b) {
         super.onCreate(b);
         Digits.init(this);
-        ScrollView scroll = new ScrollView(this);
-        glass(scroll);   // the glass look: the home's photo, small and blurred once, under its veil
-        scroll.setVerticalScrollBarEnabled(false);
-        scroll.setFillViewport(true);
-        // one card on a solid surface, in the 5 % safe area and 16 dp more, as the update screen
+        // 4.4 (the owner, step 86 B: «The window is tooooo big… scrollable in a small fit in center window. And the QR to the left.»): a SMALL window
+        // in the middle of the screen, inside the 5 % safe area, never taller than it; its title stays, and what is under it scrolls INSIDE the
+        // window. Before, the whole page scrolled and the card was centred in it: a card taller than the screen began above its top edge (the title
+        // cut off) and «جهّز كل شي» sat at the bottom edge.
         FrameLayout frame = new FrameLayout(this);
-        scroll.addView(frame, new FrameLayout.LayoutParams(-1, -1));
+        glass(frame);   // the glass look: the home's photo, small and blurred once, under its veil
         int sw = getResources().getDisplayMetrics().widthPixels, sh = getResources().getDisplayMetrics().heightPixels;
-        frame.setPadding(Math.round(sw * 0.05f), Math.round(sh * 0.05f) + dp(16), Math.round(sw * 0.05f), Math.round(sh * 0.05f) + dp(16));
-        LinearLayout col = new LinearLayout(this);
+        frame.setPadding(Math.round(sw * 0.05f), Math.round(sh * 0.05f), Math.round(sw * 0.05f), Math.round(sh * 0.05f));
+        LinearLayout col = new WindowColumn(this, windowMaxHeight(sh));
         col.setOrientation(LinearLayout.VERTICAL);
         col.setLayoutDirection(Dir.layout());
-        col.setPadding(dp(40), dp(32), dp(40), dp(32));
+        col.setPadding(dp(32), dp(24), dp(32), dp(24));
         col.setBackground(sa.urtv.home.GlassPaint.fill(this, sa.urtv.home.GlassStyle.over(look.dialog, look.base), 22, look.line));
         screenW = sw;
-        colLp = new FrameLayout.LayoutParams(Math.min(dp(880), sw - 2 * Math.round(sw * 0.05f)), -2, Gravity.CENTER);
+        colLp = new FrameLayout.LayoutParams(windowWidth("start"), -2, Gravity.CENTER);
         this.col = col;
         frame.addView(col, colLp);
-        col.addView(text(S.t("إعداد تلفزيوني"), 28, "Medium", TEXT), right(dp(16)));
+        col.addView(text(S.t("إعداد تلفزيوني"), 24, "Medium", TEXT), right(dp(12)));
+        ScrollView scroll = new ScrollView(this);   // inside the window: the title above stays
+        scroll.setVerticalScrollBarEnabled(true);
+        scroll.setScrollbarFadingEnabled(false);
+        scroll.setFillViewport(false);
+        LinearLayout inner = new LinearLayout(this);
+        inner.setOrientation(LinearLayout.VERTICAL);
+        scroll.addView(inner, new FrameLayout.LayoutParams(-1, -2));
+        col.addView(scroll, new LinearLayout.LayoutParams(-1, -2));
         body = new LinearLayout(this);
         body.setOrientation(LinearLayout.VERTICAL);
-        col.addView(body, right(0));
+        inner.addView(body, right(0));
         status = text("", 16, "Medium", GOLD);
-        col.addView(status, right(dp(8)));
+        inner.addView(status, right(dp(8)));
         detail = text("", 13, "Regular", DIM);
-        col.addView(detail, right(0));
-        setContentView(scroll);
+        inner.addView(detail, right(0));
+        setContentView(frame);
         show();
         if (SetupRecovery.pending(this) && SetupRecovery.gaveUp(this)) {
             say(SetupRecovery.GAVE_UP_NOTICE + ": اضغط «تراجع».", RED);
@@ -121,8 +128,7 @@ public class SetupActivity extends Activity {
             progress = null;
             clock.removeCallbacks(secondTick);
             ticking = false;
-            colLp.width = want.equals("progress") || want.equals("done") ? Math.max(dp(880), screenW - 2 * Math.round(screenW * 0.05f)) : Math.min(dp(880), screenW - 2 * Math.round(screenW * 0.05f));   // the progress and the result use the whole safe width
-            colLp.width = Math.min(colLp.width, screenW - 2 * Math.round(screenW * 0.05f));
+            colLp.width = windowWidth(want);   // 4.4: a small window; the progress and the result a little wider
             col.setLayoutParams(colLp);
             detail.setText("");
             if (want.equals("plan")) buildPlan(r);
@@ -287,27 +293,43 @@ public class SetupActivity extends Activity {
 
     /** 4.4 «قبل ما نبدأ: لو صار شيء» (RescueInfo): three steps to «إنقاذ تلفزيونك», a QR to docs/RESCUE.md, and a photo of the screen asked for */
     private void rescueFirst() {
-        add(text(S.tv(RescueInfo.TITLE), 17, "Medium", GOLD), dp(4));
-        add(text(digits(S.tv(RescueInfo.STEP1)), 14, "Regular", TEXT), dp(4));
-        add(text(RescueInfo.hasCode() ? S.tv(RescueInfo.STEP2_CODE, RescueInfo.DOWNLOADER_CODE) : digits(S.tv(RescueInfo.STEP2_DOC)), 14, "Regular", TEXT), dp(4));   // the code in Latin digits, as Downloader asks it
-        add(text(digits(S.tv(RescueInfo.STEP3)), 14, "Regular", TEXT), dp(8));
-        add(text(S.tv(RescueInfo.PHOTO), 13, "Regular", GOLD), dp(8));
+        LinearLayout words = new LinearLayout(this);
+        words.setOrientation(LinearLayout.VERTICAL);
+        words.setLayoutDirection(Dir.layout());
+        words.addView(text(S.tv(RescueInfo.TITLE), 17, "Medium", GOLD), right(dp(4)));
+        words.addView(text(digits(S.tv(RescueInfo.STEP1)), 14, "Regular", TEXT), right(dp(4)));
+        words.addView(text(RescueInfo.hasCode() ? S.tv(RescueInfo.STEP2_CODE, RescueInfo.DOWNLOADER_CODE) : digits(S.tv(RescueInfo.STEP2_DOC)), 14, "Regular", TEXT), right(dp(4)));   // the code in Latin digits, as Downloader asks it
+        words.addView(text(digits(S.tv(RescueInfo.STEP3)), 14, "Regular", TEXT), right(dp(8)));
+        words.addView(text(S.tv(RescueInfo.PHOTO), 13, "Regular", GOLD), right(0));
+        qrBeside(words, RescueInfo.DOC_URL, 120);
+    }
+
+    /**
+     * 4.4 (the owner: «And the QR to the left»): the words and their QR side by side, the QR on the LEFT of the screen in both languages (the row is laid
+     * out left to right; the words keep their own direction), so the window stays short.
+     */
+    private void qrBeside(LinearLayout words, String url, int qrDp) {
+        LinearLayout row = new LinearLayout(this);
+        row.setOrientation(LinearLayout.HORIZONTAL);
+        row.setLayoutDirection(View.LAYOUT_DIRECTION_LTR);
+        row.setGravity(Gravity.CENTER_VERTICAL);
         try {
             QrView qr = new QrView(this);
-            qr.setCode(QrCode.encodeLarge(RescueInfo.DOC_URL));
+            qr.setCode(QrCode.encodeLarge(url));
             LinearLayout card = new LinearLayout(this);
             card.setGravity(Gravity.CENTER);
-            card.setPadding(dp(12), dp(12), dp(12), dp(12));
+            card.setPadding(dp(8), dp(8), dp(8), dp(8));
             android.graphics.drawable.GradientDrawable white = new android.graphics.drawable.GradientDrawable();
             white.setColor(0xFFFFFFFF);
-            white.setCornerRadius(dp(14));
+            white.setCornerRadius(dp(12));
             card.setBackground(white);
-            card.addView(qr, new LinearLayout.LayoutParams(dp(120), dp(120)));
+            card.addView(qr, new LinearLayout.LayoutParams(dp(qrDp), dp(qrDp)));
             LinearLayout.LayoutParams cp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-            cp.gravity = Dir.start();
-            cp.bottomMargin = dp(16);
-            body.addView(card, cp);
+            cp.rightMargin = dp(24);
+            row.addView(card, cp);
         } catch (IllegalArgumentException ignored) { }
+        row.addView(words, new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f));
+        add(row, dp(16));
     }
 
     /** RescueInfo's words, said in «اللغة» (S.tv above) */
@@ -324,24 +346,12 @@ public class SetupActivity extends Activity {
 
     private void computerHelp() {
         if (!HomeFails.givenUp(new FileStore(this).get(HomeFails.FILE))) return;
-        add(text(S.tv(HomeFails.LINE), 18, "Medium", GOLD), dp(4));
-        add(text(S.tv(HomeFails.GUIDE), 14, "Regular", TEXT), dp(8));
-        try {
-            QrView qr = new QrView(this);
-            qr.setCode(QrCode.encodeLarge(HomeFails.GUIDE_URL));
-            LinearLayout card = new LinearLayout(this);
-            card.setGravity(Gravity.CENTER);
-            card.setPadding(dp(12), dp(12), dp(12), dp(12));
-            android.graphics.drawable.GradientDrawable white = new android.graphics.drawable.GradientDrawable();
-            white.setColor(0xFFFFFFFF);
-            white.setCornerRadius(dp(16));
-            card.setBackground(white);
-            card.addView(qr, new LinearLayout.LayoutParams(dp(140), dp(140)));
-            LinearLayout.LayoutParams cp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-            cp.gravity = Dir.start();
-            cp.bottomMargin = dp(16);
-            body.addView(card, cp);
-        } catch (IllegalArgumentException ignored) { }
+        LinearLayout words = new LinearLayout(this);
+        words.setOrientation(LinearLayout.VERTICAL);
+        words.setLayoutDirection(Dir.layout());
+        words.addView(text(S.tv(HomeFails.LINE), 18, "Medium", GOLD), right(dp(4)));
+        words.addView(text(S.tv(HomeFails.GUIDE), 14, "Regular", TEXT), right(0));
+        qrBeside(words, HomeFails.GUIDE_URL, 120);
     }
 
     private void buildProgress(SetupRunner r) {
@@ -532,6 +542,14 @@ public class SetupActivity extends Activity {
     private void buildDone(SetupRunner r) {
         final SetupRunner.End e = r.end();
         say(S.tv(e.text), e.bad ? RED : GOLD);
+        if (e.retry) {   // 4.4: «إلغاء» on the prompt, or no answer: nothing changed; the same job again, first and focused (a full run shows this on the start screen)
+            final boolean undoAgain = r.kind() == SetupRunner.Kind.UNDO;
+            final TextView again = button(undoAgain ? S.t("تراجع (يرجّع التلفزيون كما كان)") : S.t("جهّز كل شي"));
+            again.setOnClickListener(new View.OnClickListener() { public void onClick(View v) { dismissed = e; go(undoAgain); } });
+            add(again, dp(12));
+            again.post(new Runnable() { @Override public void run() { again.requestFocus(); } });
+            return;
+        }
         if (r.kind() == SetupRunner.Kind.FULL) {
             progress = new SetupProgressView(this, look, typeface("Medium"), typeface("Regular"));   // the same phases as the progress, all settled, and the result in the main area
             body.addView(progress, right(dp(24)));
@@ -648,6 +666,23 @@ public class SetupActivity extends Activity {
         show();   // a run started before this screen was opened (or while it was closed) is shown as it is now
     }
 
+    /**
+     * 4.4 (step 86 B): the TV's «السماح بتصحيح USB؟» is a window over this screen. When it closes this screen gets its focus back; if the run was still
+     * waiting for the answer, the runner counts it as «إلغاء» unless the TV answers within a few seconds (SetupRunner.promptClosed). The screen never
+     * closes by itself: it says «ضغطت «إلغاء»…» and offers «جهّز كل شي» again.
+     */
+    @Override public void onWindowFocusChanged(boolean hasFocus) {
+        super.onWindowFocusChanged(hasFocus);
+        SetupRunner r = SetupRunner.get();
+        if (!hasFocus && r.promptWaiting()) promptCovered = true;
+        else if (hasFocus && promptCovered) {
+            promptCovered = false;
+            if (r.promptWaiting()) r.promptClosed(System.currentTimeMillis());
+        }
+    }
+
+    private boolean promptCovered;
+
     @Override protected void onPause() {
         resumedNow = false;
         SetupRunner.get().setListener(null);
@@ -740,6 +775,29 @@ public class SetupActivity extends Activity {
         t.setTextColor(DIM);
         t.setOnFocusChangeListener(new View.OnFocusChangeListener() { public void onFocusChange(View v, boolean has) { t.setTextColor(has ? INK : DIM); } });
         return t;
+    }
+
+    /** 4.4: the window's width: 640 dp for the start, the plan and the Wi-Fi (two thirds of a 1080p screen); 800 dp for the progress and the result; never wider than the safe area */
+    private int windowWidth(String mode) {
+        int safe = screenW - 2 * Math.round(screenW * 0.05f);
+        return Math.min(mode.equals("progress") || mode.equals("done") ? dp(WINDOW_WIDE_DP) : dp(WINDOW_DP), safe);
+    }
+
+    static final int WINDOW_DP = 640, WINDOW_WIDE_DP = 800;
+    /** the window is at most this share of the screen's height (inside the 5 % safe area: 90 %); what does not fit scrolls inside it */
+    static final float WINDOW_HEIGHT = 0.80f;
+
+    private static int windowMaxHeight(int screenH) { return Math.round(screenH * WINDOW_HEIGHT); }
+
+    /** The window: as tall as its content, never taller than maxH (its scroll then takes what is left under the title). */
+    private static final class WindowColumn extends LinearLayout {
+        private final int maxH;
+        WindowColumn(android.content.Context c, int maxH) { super(c); this.maxH = maxH; }
+        @Override protected void onMeasure(int w, int h) {
+            int size = MeasureSpec.getSize(h), mode = MeasureSpec.getMode(h);
+            int cap = mode == MeasureSpec.UNSPECIFIED ? maxH : Math.min(size, maxH);
+            super.onMeasure(w, MeasureSpec.makeMeasureSpec(cap, MeasureSpec.AT_MOST));
+        }
     }
 
     private LinearLayout.LayoutParams right(int bottom) {

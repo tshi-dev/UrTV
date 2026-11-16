@@ -36,7 +36,9 @@ public class ExtrasCallProvider extends ContentProvider {
                 break;
             case ExtrasWords.WATCH:
                 if ("on".equals(arg) || "off".equals(arg)) ExtrasA11yService.setWatch(getContext(), "on".equals(arg));
+                if (ExtrasWords.WANTED.equals(arg) || ExtrasWords.UNWANTED.equals(arg)) ExtrasA11yService.setWanted(getContext(), ExtrasWords.WANTED.equals(arg));   // 4.4
                 out.putBoolean(ExtrasWords.WATCH, ExtrasA11yService.watchOn(getContext()));
+                out.putBoolean(ExtrasWords.WANTED, ExtrasA11yService.wanted(getContext()));
                 break;
             default:
                 break;

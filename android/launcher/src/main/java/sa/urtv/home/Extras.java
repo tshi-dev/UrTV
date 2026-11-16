@@ -73,6 +73,19 @@ public final class Extras {
         return r == null ? ExtrasWords.OFF : r;
     }
 
+    /**
+     * 4.4 (step 86 B): whether the person's chosen home is ours (the setup confirmed a switch, «تراجع» not pressed). The add-on's Home watch then brings
+     * our home forward even when the TV gave the HOME role back to its own home. Quiet without the add-on.
+     */
+    public static boolean homeWanted(Context c, boolean wanted) {
+        try {
+            Bundle b = c.getContentResolver().call(Uri.parse("content://" + ExtrasWords.EXTRAS_AUTHORITY), ExtrasWords.WATCH, wanted ? ExtrasWords.WANTED : ExtrasWords.UNWANTED, null);
+            return b != null;
+        } catch (RuntimeException e) {
+            return false;   // no add-on: told again at the next start of the home
+        }
+    }
+
     /** the Home-button watch: "on", "off", or null to only read it; null back when the add-on did not answer */
     static Boolean watch(String set) {
         Bundle b = call(ExtrasWords.WATCH, set, null);

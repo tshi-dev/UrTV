@@ -56,7 +56,14 @@ final class AdbClient implements Closeable {
     private static void note(String step) { Trace t = trace; if (t != null) t.line(step); }
 
     /** Notified when the TV is showing the permission prompt (so the screen can explain what to do). */
-    interface Approval { void waiting(); }
+    interface Approval {
+        void waiting();
+        /** 4.4: the person answered the prompt with «إلغاء» (the screen saw it close and no answer came): the wait ends at once */
+        default boolean cancelled() { return false; }
+    }
+
+    /** the words of the IOException a «إلغاء» on the prompt ends with (SetupRunner.friendly says it to the person) */
+    static final String CANCELLED = "the person pressed Cancel on «Allow USB debugging?»";
 
     /** android.util.Base64 on the TV, java.util.Base64 in the tests. */
     interface Base64Coder { String encode(byte[] bytes); }
@@ -140,12 +147,26 @@ final class AdbClient implements Closeable {
                     note("key offered: the TV should now show «Allow USB debugging?» (waiting up to " + approvalMs + " ms" + (sdk < 30 ? "; Android 8 to 10 give the answer to the FIRST connection that offered a key, e.g. a computer's adb" : "") + ")");
                     if (approval != null) approval.waiting();
                     if (sdk >= 30) {
+                        // 4.4 (step 86 B): no single long read any more. A «إلغاء» leaves the connection open with no answer, and the page waited for
+                        // ever; now it looks every half second whether the answer came, whether the person cancelled, or whether the time is up
+                        long until = System.currentTimeMillis() + approvalMs;
+                        while (adb.in.available() == 0) {
+                            if (approval != null && approval.cancelled()) { note("the prompt was answered with Cancel"); throw new IOException(CANCELLED); }
+                            if (System.currentTimeMillis() > until) throw new IOException("debugging permission was not accepted on the TV");
+                            try {
+                                Thread.sleep(500);
+                            } catch (InterruptedException e) {
+                                Thread.currentThread().interrupt();
+                                throw new IOException("interrupted");
+                            }
+                        }
                         s.setSoTimeout(approvalMs);
                     } else {
                         // Android 8 to 10 hand the answer to the first connection that offered a key while it stays open (often the
                         // computer's adb). "Always allow" saves our key, so a new connection that only signs gets in.
                         long until = System.currentTimeMillis() + approvalMs;
                         while (adb.in.available() == 0) {
+                            if (approval != null && approval.cancelled()) { note("the prompt was answered with Cancel"); throw new IOException(CANCELLED); }
                             if (System.currentTimeMillis() > until) throw new IOException("debugging permission was not accepted on the TV");
                             try {
                                 Thread.sleep(2000);
