@@ -675,3 +675,60 @@ HDMI ARC (مضخم أو ساوند بار)	HDMI ARC (amplifier or soundbar)
 يثبّت…	Installing…
 الملف ليس موقّعًا بمفتاح UrTV، فما ثبّتناه	The file is not signed with UrTV's key, so it was not installed
 الملف ليس الجزء الثاني من UrTV، فما ثبّتناه	The file is not the second part of UrTV, so it was not installed
+صوتياتي	My sounds
+اختر الصوت	Choose the sound
+أدعية وتذكيرات وأذانك الخاص، محفوظة في التلفزيون	Duas, reminders and your own adhan, kept on the TV
+من فلاشة USB	From a USB stick
+يُنسخ الملف إلى التلفزيون ولا يُشغَّل من الفلاشة	The file is copied to the TV, never played from the stick
+من الجوال	From the phone
+صفحة الجوال، ثم «صوتياتي»	The phone page, then «My sounds»
+افتح صفحة الجوال من «أسهل من الجوال»، ثم «صوتياتي»، واختر الملف	Open the phone page from «Easier from the phone», then «My sounds», and pick the file
+الملفات: %1$s من %2$s	Files: %1$s of %2$s
+لا ملفات بعد	No files yet
+أضف من الفلاشة أو من الجوال	Add from a stick or from the phone
+السعة	Room
+سعة أكبر	More room
+مفعّل: %1$s للملف و%2$s للكل	On: %1$s a file and %2$s in all
+متوقف: %1$s للملف و%2$s للكل	Off: %1$s a file and %2$s in all
+حسنًا للفتح، ومطوّلًا للاستماع، ورجوع للعودة	OK: open, hold: listen, Back: return
+أذاني الخاص	My adhan
+أذان الفجر الخاص	My Fajr adhan
+%1$s، %2$s	%1$s, %2$s
+%1$s، %2$s، %3$s	%1$s, %2$s, %3$s
+استمع	Listen
+أول ١٥ ثانية	The first 15 seconds
+استخدمه لأذاني الخاص	Use it as my adhan
+لكل الصلوات، والفجر إن لم يكن له تسجيل	For every prayer, and Fajr unless it has its own
+استخدمه لأذان الفجر الخاص	Use it as my Fajr adhan
+للفجر فقط	For Fajr only
+أوقف استخدامه للأذان	Stop using it for the adhan
+يرجع الأذان لمؤذنه	The adhan goes back to its muezzin
+من التلفزيون	From the TV
+تحذف «%s»؟	Delete «%s»?
+ما يُحذف من الفلاشة ولا من الجوال	Nothing is deleted from the stick or the phone
+الأذان خمس دقائق على الأكثر	An adhan is at most 5 minutes
+تعذّر نسخ الملف	Couldn’t copy the file
+رجع الأذان لمؤذنه	The adhan is back to its muezzin
+صار أذانك ✓	It is your adhan now ✓
+هذا ليس ملفًا صوتيًا يشتغل على التلفزيون	This is not a sound the TV can play
+احذف بعض الملفات أولًا: المحفوظ أكبر من السعة العادية	Delete some files first: what is kept is over the usual room
+تنبيه: الملفات الكبيرة تأخذ من مساحة التلفزيون نفسها. إذا امتلأت قد تبطؤ التطبيقات أو يتوقف تحديثها. فعّلها فقط إذا كان في التلفزيون مساحة فارغة كافية.	Warning: big files take the TV’s own storage. When it fills up, apps can slow down or stop updating. Turn this on only if the TV has enough free space.
+فعّل: %1$s للملف و%2$s للكل	Turn on: %1$s a file and %2$s in all
+ما وجدنا فلاشة: ركّبها في التلفزيون وانتظر ثواني	No stick found: plug it into the TV and wait a few seconds
+اختر الفلاشة	Choose the stick
+مجلد	Folder
+أكبر من %s: لا يُنسخ	Bigger than %s: not copied
+لا ملفات صوتية هنا	No sound files here
+mp3 أو m4a أو ogg أو wav	mp3, m4a, ogg or wav
+ينسخ «%s»…	Copying «%s»…
+وصل للتلفزيون ✓ استخدمه لـ	It is on the TV ✓ Use it as
+احفظه فقط	Just keep it
+بدون إذن قراءة الملفات ما نقدر نشوف الفلاشة. تقدر تضيف من الجوال	Without the permission to read files the stick can’t be seen. You can add from the phone
+صوتياتي وأذاني الخاص	My sounds and my adhan
+من فلاشة USB أو من الجوال	From a USB stick or the phone
+صوت	Sound
+الملف أكبر من %s	The file is bigger than %s
+ما بقي مكان: الحد لكل الصوتيات %s	No room left: all sounds together are up to %s
+وصلت الحد: %s ملفًا	The limit is reached: %s files
+الملف فارغ	The file is empty
+حسنًا للاختيار، ومطوّلًا لخيارات أكثر، ورجوع للعودة	OK: choose, hold: more, Back: return

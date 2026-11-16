@@ -22,6 +22,9 @@
          a TV setting itself up over its own adb fits no other type than specialUse (see the property on SetupService) -->
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <!-- 4.4 «صوتياتي»: a sound file on a USB stick is read (and copied into the app) only when the person opens the stick in «صوتياتي» and allows it -->
+    <uses-permission android:name="android.permission.READ_MEDIA_AUDIO" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" android:maxSdkVersion="32" />
     <!-- the adhan alarm, put back after a reboot or a clock change -->
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
@@ -471,6 +474,13 @@
             android:name=".tilawah.PlayerActivity"
             android:exported="false"
             android:launchMode="singleTop"
+            android:screenOrientation="landscape"
+            android:theme="@style/App"
+            android:configChanges="keyboard|keyboardHidden|navigation|orientation|screenSize|screenLayout|uiMode|density" />
+
+        <activity
+            android:name=".tilawah.AudioActivity"
+            android:exported="false"
             android:screenOrientation="landscape"
             android:theme="@style/App"
             android:configChanges="keyboard|keyboardHidden|navigation|orientation|screenSize|screenLayout|uiMode|density" />

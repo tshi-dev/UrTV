@@ -82,4 +82,10 @@ public interface Actions {
 
     /** 4.3: one photo for «صوري», a JPEG the phone re-encoded (no camera or location data); the screensaver keeps it (Own). */
     default Result photoAdd(byte[] jpeg) { return Result.fail("failed"); }
+    /** 4.4 «صوتياتي»: the list and the caps */
+    default Map<String, Object> audio() { return new java.util.LinkedHashMap<>(); }
+    /** one piece of a sound file: ok "more" or "done", else a refusal code */
+    default Result audioPiece(long offset, long total, String name, byte[] data) { return Result.fail("failed"); }
+    /** use a file (as own, own_fajr, dua, none), or delete it */
+    default Result audioOp(String op, Long id, String as) { return Result.fail("failed"); }
 }

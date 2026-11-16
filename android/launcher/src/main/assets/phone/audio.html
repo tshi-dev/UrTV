@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="referrer" content="no-referrer">
+<meta name="color-scheme" content="dark light">
+<title>صوتياتي</title>
+<style>
+/* 4.4 «صوتياتي» from the phone: its own page, like «صوري». A sound file (mp3, m4a, ogg, wav) is sent in pieces of 512 KB to /api/audio_piece;
+   the TV checks its size before the first piece is kept and its kind when the last arrives, and keeps it in the app. Then the person picks what it
+   is for. Only a phone the owner allowed (the session of the main page) can send one. «اللغة» English: the TV sends <html lang="en">. */
+:root { --bg:#17181b; --card:rgba(30,33,39,.92); --line:rgba(255,255,255,.12); --acc:#54c08a; --text:#fff; --dim:#dadce0; --ink:#14161a; --bad:#ff8a80 }
+@media (prefers-color-scheme: light) { :root:not([data-theme="dark"]) { --bg:#f6f4ef; --card:#fff; --line:#e3dfd5; --acc:#166a45; --text:#1b1f1d; --dim:#545a57; --ink:#fff; --bad:#b3261e } }
+:root[data-theme="light"] { --bg:#f6f4ef; --card:#fff; --line:#e3dfd5; --acc:#166a45; --text:#1b1f1d; --dim:#545a57; --ink:#fff; --bad:#b3261e }
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+@font-face{font-family:'Thmanyah';font-weight:400;font-display:swap;src:url(/fonts/Thmanyah-Regular.woff2) format("woff2")}
+html,body{margin:0;color:var(--text);background:var(--bg);font:16px/1.45 'Thmanyah',system-ui,-apple-system,"Segoe UI",Tahoma,sans-serif}
+body{max-width:560px;margin:0 auto;padding:24px 16px calc(32px + env(safe-area-inset-bottom))}
+h1{font-size:24px;margin:16px 0 4px}
+p{margin:8px 0;color:var(--dim);font-size:14px}
+.hidden{display:none !important}
+label.main{display:block;text-align:center;min-height:56px;line-height:56px;background:var(--acc);color:var(--ink);font-weight:700;border-radius:16px;margin:16px 0 8px;cursor:pointer}
+input[type=file]{position:absolute;opacity:0;width:1px;height:1px}
+#state{font-weight:700;color:var(--text);min-height:1.5em}
+.bar{height:6px;border-radius:3px;background:var(--line);margin:8px 0}.bar i{display:block;height:6px;width:0;border-radius:3px;background:var(--acc)}
+.f{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:14px 16px;margin:10px 0}
+.f b{display:block;font-size:17px;overflow-wrap:anywhere}
+.f small{color:var(--dim);font-size:13px}
+.use{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+.use button{flex:1;min-width:30%;min-height:40px;font:inherit;font-size:14px;color:var(--text);background:transparent;border:1px solid var(--line);border-radius:10px}
+.use button.on{border-color:var(--acc);color:var(--acc);font-weight:700}
+.use button.del{flex:0 0 auto;min-width:64px;color:var(--bad)}
+a{color:var(--acc)}
+</style>
+</head>
+<body>
+<h1 id="t1">صوتياتي على التلفزيون</h1>
+<p id="t2">أدعية وتذكيرات وأذانك الخاص. الملف يُحفظ في التلفزيون، ثم تختار له الاستخدام.</p>
+<div id="go" class="hidden">
+<label class="main" for="pick" id="t3">اختر ملفًا صوتيًا</label>
+<input id="pick" type="file" accept="audio/mpeg,audio/mp4,audio/x-m4a,audio/ogg,audio/wav,audio/x-wav,.mp3,.m4a,.ogg,.wav">
+<p id="caps"></p>
+</div>
+<p id="state" role="status"></p>
+<div id="prog" class="bar hidden"><i></i></div>
+<div id="list"></div>
+<p id="none" class="hidden"><span id="t4">افتح صفحة الجوال وامسح الرمز من «أسهل من الجوال» على التلفزيون أولاً.</span> <a href="/" id="t5">صفحة الجوال</a></p>
+<script nonce="__NONCE__">
+(function () {
+  try { var th = localStorage.getItem('urtvTheme'); if (th === 'light' || th === 'dark') document.documentElement.setAttribute('data-theme', th); } catch (e) { }
+  var EN = document.documentElement.lang === 'en';
+  var W = EN ? {
+    t1: 'My sounds on the TV', t2: 'Duas, reminders and your own adhan. The file is kept on the TV, then you pick what it is for.',
+    t3: 'Pick a sound file', t4: 'Open the phone page and scan the code from «Easier from the phone» on the TV first.', t5: 'Phone page',
+    caps: 'mp3, m4a, ogg or wav, up to {f} each; {u} of {t} used', sending: 'Sending… {p}%', done: 'It is on the TV ✓',
+    too_big: 'The file is bigger than {f}.', full: 'No room left: all sounds together are up to {t}.', too_many: 'The TV holds as many sounds as it can.',
+    format: 'This is not a sound the TV can play.', too_long: 'An adhan is at most 5 minutes.', failed: 'Not sent: check the Wi-Fi and try again.',
+    no_session: 'The session ended.', own: 'My adhan', own_fajr: 'Fajr adhan', none: 'Not used', del: 'Delete', ask: 'Delete «{n}» from the TV?'
+  } : {
+    caps: 'mp3 أو m4a أو ogg أو wav، حتى {f} للملف، والمستخدم {u} من {t}', sending: 'يرسل… {p}٪', done: 'وصل للتلفزيون ✓',
+    too_big: 'الملف أكبر من {f}.', full: 'ما بقي مكان: الحد لكل الصوتيات {t}.', too_many: 'التلفزيون فيه أكثر عدد يقدر عليه من الصوتيات.',
+    format: 'هذا ليس ملفًا صوتيًا يشتغل على التلفزيون.', too_long: 'الأذان خمس دقائق على الأكثر.', failed: 'ما انرسل: تأكد من الواي فاي وجرّب مرة ثانية.',
+    no_session: 'انتهت الجلسة.', own: 'أذاني الخاص', own_fajr: 'أذان الفجر', none: 'بلا استخدام', del: 'حذف', ask: 'تحذف «{n}» من التلفزيون؟'
+  };
+  var $ = function (id) { return document.getElementById(id); };
+  if (EN) ['t1', 't2', 't3', 't4', 't5'].forEach(function (k) { $(k).textContent = W[k]; });
+  var sess = null, S = { chunk: 524288, file_max: '', total_max: '', used: '', items: [] };
+  try { sess = sessionStorage.getItem('urtv'); } catch (e) { }
+  $(sess ? 'go' : 'none').classList.remove('hidden');
+  function fill(t) { return t.replace('{f}', S.file_max).replace('{t}', S.total_max).replace('{u}', S.used); }
+  function say(t) { $('state').textContent = t; }
+  function hdr(extra) { var h = extra || {}; if (sess) h['X-UrTV-Session'] = sess; return h; }
+  function call(url, opt) {
+    return fetch(url, opt).then(function (r) { return r.json(); }, function () { return { ok: false, error: 'failed' }; }).catch(function () { return { ok: false, error: 'failed' }; });
+  }
+  function word(e) { e = String(e || '').replace(/^audio_/, ''); return W[e] ? fill(W[e]) : e === 'no_session' ? W.no_session : W.failed; }
+  function load() {
+    if (!sess) return;
+    call('/api/audio', { credentials: 'same-origin', headers: hdr(), cache: 'no-store' }).then(function (j) {
+      if (!j || !j.ok) { if (j && j.error === 'no_session') say(W.no_session); return; }
+      S = j; $('caps').textContent = fill(W.caps); draw();
+    });
+  }
+  function op(body) {
+    return call('/api/audio', { method: 'POST', credentials: 'same-origin', headers: hdr({ 'Content-Type': 'application/json' }), body: JSON.stringify(body), cache: 'no-store' })
+      .then(function (j) { if (!j || !j.ok) say(word(j && j.error)); load(); });
+  }
+  function draw() {
+    var box = $('list'); box.textContent = '';
+    (S.items || []).forEach(function (it) {
+      var d = document.createElement('div'); d.className = 'f';
+      var b = document.createElement('b'); b.textContent = it.name; d.appendChild(b);
+      var s = document.createElement('small'); s.textContent = it.size; d.appendChild(s);
+      var u = document.createElement('div'); u.className = 'use';
+      ['own', 'own_fajr', 'none'].forEach(function (k) {
+        var x = document.createElement('button'); x.type = 'button'; x.textContent = W[k];
+        if ((it.use || 'none') === k) x.className = 'on';
+        x.onclick = function () { op({ op: 'use', id: it.id, as: k }); };
+        u.appendChild(x);
+      });
+      var del = document.createElement('button'); del.type = 'button'; del.className = 'del'; del.textContent = W.del;
+      del.onclick = function () { if (confirm(W.ask.replace('{n}', it.name))) op({ op: 'delete', id: it.id }); };
+      u.appendChild(del); d.appendChild(u); box.appendChild(d);
+    });
+  }
+  // one piece after the other: the TV keeps one piece in memory at a time, never the whole file
+  $('pick').onchange = function () {
+    var file = this.files && this.files[0], size = file ? file.size : 0, at = 0, step = S.chunk || 524288;
+    this.value = '';
+    if (!file) return;
+    $('prog').classList.remove('hidden');
+    function bar() { $('prog').firstChild.style.width = Math.round(at * 100 / size) + '%'; say(W.sending.replace('{p}', Math.round(at * 100 / size))); }
+    function next() {
+      bar();
+      call('/api/audio_piece', { method: 'POST', credentials: 'same-origin', cache: 'no-store', body: file.slice(at, Math.min(size, at + step)),
+        headers: hdr({ 'Content-Type': 'application/octet-stream', 'X-UrTV-Offset': String(at), 'X-UrTV-Total': String(size), 'X-UrTV-Name': encodeURIComponent(file.name) }) })
+        .then(function (j) {
+          if (!j || !j.ok) { $('prog').classList.add('hidden'); say(word(j && j.error)); return; }
+          at = Math.min(size, at + step);
+          if (j.result === 'done') { $('prog').classList.add('hidden'); say(W.done); load(); return; }
+          next();
+        });
+    }
+    next();
+  };
+  load();
+})();
+</script>
+</body>
+</html>

@@ -67,6 +67,9 @@ public final class PhoneServer {
     /** 4.3: «صوري» from the phone, one JPEG the phone resized (1920 px): only on POST /api/photo, only as image/jpeg */
     public static final String PHOTO_PATH = "/api/photo";
     public static final int MAX_PHOTO_BODY = 1_000_000;
+    /** 4.4 «صوتياتي»: one piece of a sound file (application/octet-stream), at most AudioRules.CHUNK; the file comes in many such pieces */
+    public static final String AUDIO_PATH = "/api/audio_piece";
+    public static final int MAX_AUDIO_BODY = 512 * 1024;
     static final int READ_TIMEOUT_MS = 3000;
     static final long TOTAL_MS = 8000;
 
@@ -187,9 +190,10 @@ public final class PhoneServer {
         if (p[0].equals("POST")) {
             String cl = h.get("content-length");
             boolean photo = target.equals(PHOTO_PATH) && "image/jpeg".equals(String.valueOf(h.get("content-type")).toLowerCase(Locale.ROOT).trim());
-            if (cl == null || !cl.matches(photo ? "[0-9]{1,7}" : "[0-9]{1,5}")) fail(411);
+            boolean audio = target.equals(AUDIO_PATH) && "application/octet-stream".equals(String.valueOf(h.get("content-type")).toLowerCase(Locale.ROOT).trim());
+            if (cl == null || !cl.matches(photo || audio ? "[0-9]{1,7}" : "[0-9]{1,5}")) fail(411);
             int n = Integer.parseInt(cl);
-            if (n > (photo ? MAX_PHOTO_BODY : MAX_BODY)) fail(413);
+            if (n > (photo ? MAX_PHOTO_BODY : audio ? MAX_AUDIO_BODY : MAX_BODY)) fail(413);
             byte[] buf = new byte[n];
             int got = 0;
             while (got < n) {
@@ -198,7 +202,7 @@ public final class PhoneServer {
                 if (r < 0) fail(400);
                 got += r;
             }
-            if (photo) return new Request(p[0], target, h, "", s.getInetAddress().getHostAddress(), buf);
+            if (photo || audio) return new Request(p[0], target, h, "", s.getInetAddress().getHostAddress(), buf);
             body = new String(buf, StandardCharsets.UTF_8);
         } else if (h.containsKey("content-length") && !"0".equals(h.get("content-length"))) {
             fail(400);
