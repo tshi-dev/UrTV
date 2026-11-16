@@ -45,7 +45,7 @@ public class AdhanReceiver extends BroadcastReceiver {
             int front = AdhanFront.now(context);
             int voice = prayer < 0 ? prefs.playVoiceFor(context, false) : prefs.playFor(context, prayer);   // 4.4 «أذان كل صلاة»
             boolean silent = voice == PrayerSound.SILENT;
-            boolean play = prefs.adhanOn() && !silent && AdhanPlan.mayPlay(prefs.adhanSaverOnly(), front);
+            boolean play = prefs.adhanOn() && AdhanPlan.mayPlay(prefs.adhanSaverOnly(), front) && !silent;
             boolean notice = prefs.adhanNotice();
             if (play) MusicService.adhan(context, voice, null, 0, prayer);
             else if (prefs.adhanOn() && silent) Log.i("UrTVAdhan", "adhan silent: this prayer is set to no sound (its time and card stay)");

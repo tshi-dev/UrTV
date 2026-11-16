@@ -18,7 +18,7 @@ recv, prefs, ps, rec = read(T / "AdhanReceiver.java"), read(T / "Prefs.java"), r
 check("PrayerSound is plain Java", "import android" not in ps)
 check("the default is the general adhan (an empty word): nothing changes for a TV where nothing was chosen", 'sp.getString("pp_" + prayer, "")' in prefs and 'if (!valid(choice) || choice.isEmpty()) return general;' in ps)
 check("the alarm plays the prayer's own choice; a silent prayer still shows its notice and its screensaver", "prefs.playFor(context, prayer)" in recv
-      and "boolean play = prefs.adhanOn() && !silent && AdhanPlan.mayPlay(" in recv and recv.index("boolean notice = prefs.adhanNotice();") > recv.index("boolean silent"))
+      and "boolean play = prefs.adhanOn() && AdhanPlan.mayPlay(prefs.adhanSaverOnly(), front) && !silent;" in recv and recv.index("boolean notice = prefs.adhanNotice();") > recv.index("boolean silent"))
 check("music.sh adhan prayer, its status, and the line in docs/SETTINGS.md", '"sa.urtv.home.PRAYER_SOUND"' in rec and "|prayer_sound=" in rec
       and "adhan prayer <fajr|dhuhr|asr|maghrib|isha>" in read(ROOT / "optimize/music.sh") and "| the adhan per prayer (4.4) | أذان كل صلاة |" in read(ROOT / "docs/SETTINGS.md"))
 check("the adhan tab opens it and says which prayers are silent", "startActivity(new Intent(this, PrayerSoundActivity.class));" in read(T / "MainActivity.java")
