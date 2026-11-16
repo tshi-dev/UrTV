@@ -1,4 +1,13 @@
-«⏸ WAIT — 4.3.2 is being released from master. Branch builds can't be installed over the newer apk-next (versionCode = CI run number), so steps 77–84 will NOT be run branch by branch: they will be re-queued as ONE pass on the 4.4 build (work/rel-433) when it reaches apk-next with a higher number. Until then: do nothing that changes the TV; leave it on the 433-setup build (323). Next GO line will say «4.4 on apk-next».»
+«✅ GO — step 86 now (owner's order: start the TV fresh). Do PART A now; PART B when the next GO line gives you the build.»
+
+## step 86 — fresh start on the owner's TV, then «جهّز كل شي» the way a user does it, repeated until it works
+PART A (now), the owner allowed removing UrTV fully from his TV. NOT a factory reset.
+1. Back up first: `optimize/saver.sh show`, `optimize/dock.sh show`, `optimize/music.sh adhan`, teams, leagues, stocks, city, photos list, family DNS, locked apps, `pm list packages -d`, the HOME role holder, accessibility services. Save it all as tester/backup-86/ (text) and push it (no personal data beyond what you already store).
+2. Undo everything UrTV did: «إعداد تلفزيوني» → «تراجع» (or optimize/restore.sh), then optimize/reset.sh to remove the home, the screensaver and «إضافات تلفزيونك». Check: launcherx and setupwraith enabled, Home opens Google TV, the apps UrTV turned off are back on (compare with the backup; the ones the TV had off itself stay off), no UrTV package left, TV still on Wi-Fi.
+3. Reboot once; confirm the TV starts normally on Google TV.
+4. Report «step 86 A» with the before/after lists. TV muted.
+PART B (when told): install exactly as a user would: the home APK from the build the GO line names (adb install is fine, it's the same file Downloader gets), open it, open «إعداد تلفزيوني» → «جهّز كل شي», accept the Allow-USB-debugging prompt, let it run. Record every step and time, pictures of each screen, the final report text, and the REAL result: from YouTube press Home (adb input keyevent KEYCODE_HOME) 3 times, write which app comes to the front each time; reboot and press Home again. Then put the owner's backed-up settings back (city, teams, dock, etc.). Report «step 86 B try N» with a clear line: HOME WORKS / HOME DOES NOT WORK + why.
+
 
 ## step 85 — «إضافات تلفزيونك» add-on (branch work/433-setup c65efb66; APKs from Build APKs run 43839174446 artifact «apks»)
 Follow docs/TEST-PLAN.md §14b X1–X12 on that branch (install home then urtv-extras.apk, enable its accessibility service with `optimize/dock.sh extras-setup`, check Bound services). Most important: X1 (the home has no accessibility service), X2–X5 (offer, install, enable, screen-off), X6 typing from the phone into YouTube, X7 Settings key over a video (record which handler answers), X8–X9 Home watch on this Google TV (no loop). Write down the owner's accessibility settings first and put them back after; reinstall apk-next at the end.
