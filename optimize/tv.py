@@ -707,7 +707,11 @@ def wait_for_tv(limit_s=WAIT_S, before=None, restart=False):
     if restart and not down:
         sys.exit("!! The TV kept answering but never restarted: it may have ignored the reboot. Restart it from its "
                  "own menu (not with this command again), then go on.")
+    wifi_dbg = "TV_PORT" not in os.environ and wireless.state_for(HOST)
     sys.exit("!! The TV did not come back within 10 minutes. Check it is on and on Wi-Fi (ADB stays on after a reboot)."
+             + (" It is reached by Wireless debugging: its new port was looked for on the Wi-Fi (mDNS) every 10 s and not found. Ask the person to open"
+                " Settings → Developer options → Wireless debugging (turn it on if a restart turned it off) and read «IP address & Port», then:"
+                " optimize/find-tv.sh connect <that IP:port>, and the same command again (it goes on from its step)." if wifi_dbg else "")
              + ("\n" + "\n".join(hinted) if hinted else ""))
 
 

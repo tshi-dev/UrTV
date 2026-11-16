@@ -45,8 +45,8 @@ check("the counts follow the person's digits setting (the screens' DigitsText)",
 check("the 20 s notice is the owner's wording", 'PROMPT_LATE = "ما ظهرت الرسالة؟ أعد تشغيل التلفزيون وافتح «إعداد تلفزيوني» واضغط «جهّز كل شي» وخلك عند التلفزيون"' in runner)
 check("a run lives in a foreground service (it outlives the screen), not exported", 'android:name=".setup.SetupService" android:exported="false"' in manifest
       and "startForeground(" in service and "startForegroundService" in service)
-check("the TV's start resumes a full run only when it restarted the TV on purpose; the ADB key stays only while a run waits (the restart, or «كمّل» after the Wi-Fi)",
-      "SetupRunner.awaitingRestart(new FileStore(app))" in boot and "SetupRunner.get().resume(" in boot and "SetupRunner.awaiting(new FileStore(c))" in session
+check("the TV's start resumes a full run when it restarted the TV on purpose, or (4.3.3) when a restart nobody asked for cut it (twice at most); the ADB key stays only while a run waits (the restart, «كمّل» after the Wi-Fi, a cut run)",
+      "SetupRunner.resumeAtBoot(new FileStore(app))" in boot and "awaitingRestart(store)" in runner[runner.index("static boolean resumeAtBoot"):] and "SetupRunner.get().resume(" in boot and "SetupRunner.awaiting(new FileStore(c))" in session
       and "awaitingWifi" not in boot)
 hold = (SETUP / "SetupHold.java").read_text(encoding="utf-8")
 npp = (SETUP.parent / "tilawah/NowPlayingProvider.java").read_text(encoding="utf-8")
@@ -169,4 +169,13 @@ check("R30: end to end over the real ADB client and the fake adbd: «السما�
 skipped_rest = ",".join(f"{i}:" + ("DONE" if i == "precheck" else "FAILED" if i == "backup" else "SKIPPED") for i in PLAN)
 check("R12: the backup is the full run's gate: a nearly empty package list saves nothing and nothing after it runs (not one change), «توقّفنا قبل أي تغيير.»",
       got.get("R12") == f"R12 {skipped_rest} backup=null changes=0 true توقّفنا قبل أي تغيير.", got.get("R12"))
+# ---- 4.3.3: a drop of the TV's adb in a step that may run twice; a restart nobody asked for
+check("R33: the adb drops in the precheck: one new connection, the step again (said on screen and in steps.log), the run ends well",
+      got.get("R33") == "R33 opens=2 done=true said=true stamped=true bad=false", got.get("R33"))
+check("R33b: it keeps dropping: two new connections at most, then it stops as before; the pointer stays for «جهّز كل شي» and no boot resumes it",
+      got.get("R33b") == "R33b opens=3 bad=true pointer=true boot=false", got.get("R33b"))
+check("R33c: a drop in the home switch is never run again by itself", got.get("R33c") == "R33c true reconnects=false", got.get("R33c"))
+check("R34: a run a restart cut in the middle is resumed by the boot twice at most; one that ended (no live) or waits for the Wi-Fi is not; the key stays only for a cut one",
+      got.get("R34") == "R34 true true false keyKept=false/false ended=false wifi=false", got.get("R34"))
+check("R34b: the resumed run goes on from its pointer to the end", got.get("R34b") == "R34b true true tweaks:DONE home=home:DONE cleared=true", got.get("R34b"))
 sys.exit(1 if failed else 0)

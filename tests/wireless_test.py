@@ -237,6 +237,18 @@ try:
 except SystemExit as e:
     check("tv.py: port lost and mDNS silent -> stops and says to ask for «IP address & Port»",
           "find-tv.sh connect" in str(e), str(e))
+try:   # 4.3.3: a restart where the new port is never found: the wait says how to give it by hand, then go on from the step
+    _t = tv.time; _c = [0.0]
+    tv.time = types.SimpleNamespace(time=lambda: _c.__setitem__(0, _c[0] + 5) or _c[0], sleep=lambda s: None)
+    tv.address_hint = lambda *a: ""
+    try:
+        with redirect_stderr(io.StringIO()), redirect_stdout(io.StringIO()):
+            tv.wait_for_tv(limit_s=30)
+    finally:
+        tv.time = _t
+    check("tv.py --wait: a Wireless-debugging TV that is not found again says to read «IP address & Port» and connect", False, "no exit")
+except SystemExit as e:
+    check("tv.py --wait: a Wireless-debugging TV that is not found again says to read «IP address & Port» and connect", "find-tv.sh connect" in str(e) and "Wireless debugging" in str(e), str(e))
 adb.hand_out = True
 adb.port = 38888
 pulled = os.path.join(tmp, "pulled")
