@@ -23,6 +23,7 @@ Update both apps from the app on channel next (About must say 4.3.2). Report eac
  T3 `optimize/install.sh extras` with SmartTube already installed: «already on the TV», nothing downloaded.
  T4 `optimize/install.sh saver`: if «reached the TV with another size» shows, it re-sends once and continues; no !! at the end.
  T5 `optimize/share.sh --preview --problem --owner "x" "y"`: apps the TV had off before setup say «were already off before UrTV». Do NOT send it.
+11. Feedback checks (numbers only, change nothing): (a) play a recitation in «تلاوة وأذان», then let the screensaver start, then open UrTV's settings, then the TV's settings: does the recitation keep playing each time? (b) the matches page: are yesterday's results of a followed team shown? (c) network: `dumpsys netstats detail` or the app's own log: how many requests and how many KB the home makes in 10 minutes idle on the home, and in 10 minutes with the screensaver on; (d) speed baseline: cold start of the home (`am start -W`), return to home time, the page load time from the log. These are the 4.3.3 baselines.
 10. Data: on the PC open https://mp3quran.net/api/v3/reciters?language=ar and find «أحمد طالب بن حميد» (server cdn.mp3quran.net/audio/ahmad-humaid/r1/): copy his `surah_list` (the surah numbers he has) into the report.
 End: TV muted and asleep, the owner's settings as before.
 
