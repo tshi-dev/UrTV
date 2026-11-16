@@ -48,6 +48,21 @@ final class ConfigSnapshot {
         this.appearance = Look.mode(appearance);
     }
 
+    /** The same values with another fragment (the one kept on disk). */
+    private ConfigSnapshot withFragment(String f) { ConfigSnapshot c = new ConfigSnapshot(f, greetingOn, adhanBarOn, listenPillOn, updateBellOn, appearance, watchNextOn, look, stale, placeTicket); c.favBar = favBar; c.tweaks = tweaks; c.pagesDark = pagesDark; c.pillsHidden = pillsHidden; c.matchApp = matchApp; c.cityChosen = cityChosen; return c; }
+
+    private static volatile String savedFragment;   // what this process last wrote (or read) of the kept fragment
+
+    private static String keptFragment(Context c) {
+        try { return savedFragment = c.getSharedPreferences("config_last", Context.MODE_PRIVATE).getString("fragment", null); } catch (RuntimeException e) { return null; }
+    }
+
+    private static void keep(Context c, String fresh) {
+        if (!FragmentKeep.shouldSave(fresh, savedFragment)) return;
+        savedFragment = fresh;
+        try { c.getSharedPreferences("config_last", Context.MODE_PRIVATE).edit().putString("fragment", fresh).apply(); } catch (RuntimeException ignored) { }
+    }
+
     /** The same values, marked as an old copy. */
     ConfigSnapshot asStale() { ConfigSnapshot c = new ConfigSnapshot(fragment, greetingOn, adhanBarOn, listenPillOn, updateBellOn, appearance, watchNextOn, look, true, placeTicket); c.favBar = favBar; c.tweaks = tweaks; c.pagesDark = pagesDark; c.pillsHidden = pillsHidden; c.matchApp = matchApp; c.cityChosen = cityChosen; return c; }
 
@@ -84,7 +99,13 @@ final class ConfigSnapshot {
         });
         // no answer: the last good values stay on the screen (marked old), not the defaults; the next call asks again, so the real ones
         // return as soon as the screensaver answers; with no older copy at all, the defaults as before
-        if (r.value == null) return none[0] != null ? none[0] : query(c);
+        if (r.value == null) {
+            ConfigSnapshot d = none[0] != null ? none[0] : query(c);
+            // 4.3.2: nothing in memory either (the home just started while the screensaver app cannot answer): the last real answer kept on disk, marked old
+            String kept = keptFragment(c);
+            if (d.fragment == null && FragmentKeep.usedKept(null, kept)) return d.withFragment(kept).asStale();
+            return d;
+        }
         return r.stale ? r.value.asStale() : r.value;
     }
 
@@ -131,6 +152,7 @@ final class ConfigSnapshot {
         } catch (RuntimeException ignored) {
             // the screensaver is missing or signed with another key: the defaults (Riyadh, on)
         }
+        keep(c, fragment);   // a real answer: kept for a start when the screensaver cannot answer
         ConfigSnapshot made = new ConfigSnapshot(fragment, greeting, bar, listenPill, updateBell, appearance, watchNext, look, false, ticket);
         made.favBar = favBar;
         made.tweaks = tweaks;
