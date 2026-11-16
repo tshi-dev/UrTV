@@ -138,7 +138,7 @@ final class ScenePlan {
     /**
      * 4.4 the owner: depth never makes a digit unreadable (the night lake's trees made its ٤ a ٢, the golden tower made a ٤ an ع) or hides the colon.
      * Each digit of the clock as the digits' box holds it (digits 0.56 of its height wide, the colon 0.24, centred: «١٢:٣٠», and «٤:٥٨» either way
-     * round) may be covered by the scenery for at most COVER of its height, from its base, and the colon not at all (COLON_DOT), the picture zoomed by k about the top centre. The same rule
+     * round) may be covered by the scenery for at most COVER of its height, from its base, and under the colon as much (its dot never), the picture zoomed by k about the top centre. The same rule
      * as the masks gate (.github/tools/photo_masks.py), which places a pack's clocks by it; here it holds wherever the clock really is (the cards or
      * the apps row move it). sky: the scenery's top in columns (any number, px of 1080), as skyline() gives it, read with smoothing so a spike a few
      * px wide does not count.
@@ -171,12 +171,12 @@ final class ScenePlan {
 
     static float cover(int[] sky, int[] box, int w, int h, float k) { return cover(sky, box, w, h, k, false); }
 
-    /** the colon's lower dot starts this share of the digits' height up from their base: the scenery under the colon stays below it (the colon never) */
-    static final float COLON_DOT = 0.30f;
-
-    /** every digit covered at most COVER of its height from its base, the colon not at all (the scenery under it stays below its lower dot) */
+    /**
+     * every digit covered at most COVER of its height from its base, and the scenery under the colon too (its lower dot starts about 30 % up: the
+     * colon itself is never covered); the masks gate's numbers
+     */
     static boolean legible(int[] sky, int[] box, int w, int h, float k) {
-        return cover(sky, box, w, h, k, false) <= COVER + 1e-4f && cover(sky, box, w, h, k, true) < COLON_DOT;
+        return cover(sky, box, w, h, k, false) <= COVER + 1e-4f && cover(sky, box, w, h, k, true) <= COVER + 1e-4f;
     }
 
     /**

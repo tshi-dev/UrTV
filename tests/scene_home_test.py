@@ -94,7 +94,8 @@ if shutil.which("javac"):
     zm = [r for r in rows if r[0] == "zoomed"][0][1:]
     check("a broad block a little over 25 %: the picture is zoomed (MAX_ZOOM at most) until it is under, the cut-out kept", zm == ["true", "true"], zm)
     co = [r for r in rows if r[0] == "colon"][0][1:]
-    check("the colon is never covered: a narrow tower under it may rise to its lower dot (30 % of the digits' height), not into it", co[1] == "false" and float(co[0]) >= 0.30, co)
+    check("the colon is never covered: a narrow tower under it may rise a quarter of the digits' height (its lower dot starts about 30 % up), not more",
+          co[1] == "false" and float(co[0]) > 0.25, co)
     dp = {(r[1], r[2], r[3]): r[4:] for r in rows if r[0] == "depth"}
     masked = [l.split("\t")[0] for l in read(PACK / "scenes.tsv").splitlines() if l and not l.startswith("#") and l.split("\t")[5].strip() != "-"]
     if small:
