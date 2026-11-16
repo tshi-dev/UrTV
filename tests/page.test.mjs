@@ -275,7 +275,7 @@ for (const [width, height, style] of [[1920, 1080, ''], [1280, 720, ''], [960, 5
 }
 
 // ---- every verse and hadith fits the card: each day's text drawn, clear of the clock and the bottom bar,
-// in every card style, and with the tafsir on (a long one is put under each verse, three lines at most)
+// in every card style, and with the tafsir on (a long one is put under each verse: whole, in pages of three lines at most)
 const LONG_TAFSIR = 'هذا شرح ميسر للآية الكريمة يبين معناها بعبارة سهلة قريبة من الفهم ويذكر ما فيها من الهداية والعبرة والأحكام ' +
   'ويطيل الكلام حتى يزيد عن ثلاثة أسطر في البطاقة مهما اتسعت ليتأكد الاختبار أن النص يقطع عند كلمة كاملة وتتبعه علامة الحذف في آخره';
 for (const [width, height] of [[1920, 1080], [1280, 720], [960, 540]]) {
@@ -283,7 +283,7 @@ for (const [width, height] of [[1920, 1080], [1280, 720], [960, 540]]) {
                       'panel=verse&cardstyle=glass3', 'panel=verse&tafsir=1&cardstyle=glass3', 'panel=verse&tafsir=1']) {
     const { p, ctx, errors } = await open('tv.html', hash, { width, height });
     const r = await p.evaluate(tafsir => {
-      if (CONFIG.tafsir) VERSES.forEach(v => { v.tafsir = tafsir; });
+      if (CONFIG.tafsir) TAFSIR = Object.fromEntries(VERSES.map(v => [v.surah + ':' + v.ayah, tafsir]));   // dist/tafsir.json's shape
       const day = riyadhDayNumber(), card = document.querySelector('.week'), bad = [];
       const days = 2 * Math.max(VERSES.length, HADITH.length);   // a verse on even days, a hadith on odd: all of both
       let tallest = 0;
@@ -327,32 +327,32 @@ for (const [width, height] of [[1920, 1080], [1280, 720], [960, 540]]) {
 }
 
 const TAFSIR_3X = [LONG_TAFSIR, LONG_TAFSIR, LONG_TAFSIR].join(' ');   // well over three lines at any size
-// ---- «التفسير الميسر» under the verse of the day: #tafsir=1 only, small, three lines at most cut at a word with «…»;
+// ---- «التفسير الميسر» under the verse of the day: #tafsir=1 only, small, whole: a long one in pages of three lines at most (never «…»);
 // never on a hadith day, never in the adhkar card, nothing when a verse has none
 for (const [hash, on] of [['panel=verse', false], ['panel=verse&tafsir=1', true], ['panel=verse&tafsir=0', false], ['panel=verse&tafsir=yes', false]]) {
   for (const [width, height] of [[1920, 1080], [960, 540]]) {
     const { p, ctx, errors } = await open('tv.html', hash, { width, height });
     const r = await p.evaluate(long => {
       const per = 2 * VERSES.length, day = per * Math.ceil(riyadhDayNumber() / per), at = k => { window.riyadhDayNumber = () => day + k; renderPanel(false); };
-      const tafsir = () => document.querySelector('#week-list li.tafsir');
-      VERSES[0].tafsir = long; VERSES[1].tafsir = 'تفسير قصير.'; delete VERSES[2].tafsir;
+      const tafsir = () => document.querySelector('#week-list li.tafsir'), key = v => v.surah + ':' + v.ayah;
+      if (CONFIG.tafsir) TAFSIR = { [key(VERSES[0])]: long, [key(VERSES[1])]: 'تفسير قصير.' };   // VERSES[2]: none
       at(0);
-      const t = tafsir(), long1 = t && t.textContent;
-      const lines = t ? Math.round(t.getBoundingClientRect().height / parseFloat(getComputedStyle(t).lineHeight)) : 0;
+      clearInterval(TAFSIR_PG.t);
+      const t = tafsir(), tt = t && t.querySelector('.tt'), pages = t ? t.__pages : null, long1 = t ? pages.join(' ') : null;
+      const lines = t ? Math.max(...pages.map(pg => { tt.textContent = pg; return Math.round(tt.getBoundingClientRect().height / parseFloat(getComputedStyle(tt).lineHeight)); })) : 0;
       const after = t && t.previousElementSibling.className;
-      at(2); const short = tafsir() && tafsir().textContent;
+      at(2); const short = tafsir() && tafsir().querySelector('.tt').textContent;
       at(4); const none = !!tafsir();
       at(1); const hadith = !!tafsir();
       ADHKAR.length = 0; ADHKAR.push({ when: 'both', text: 'قُلْ هُوَ اللَّهُ أَحَدٌ', count: 3, source: 'سورة الإخلاص · 1–4', quran: true });
       buildPrayers({ Fajr: '00:00', Sunrise: '00:01', Dhuhr: '23:58', Asr: '00:00', Maghrib: '23:59', Isha: '23:59' });
       CARDS[0].kind = 'adhkar'; renderPanel(false);
-      return { long1, lines, after, short, none, hadith, adhkar: !!tafsir(), words: long.split(' ').length };
+      return { long1, lines, pages: pages && pages.length, dots: !!(t && t.textContent.includes('…')), after, short, none, hadith, adhkar: !!tafsir(), words: long.split(' ').length };
     }, TAFSIR_3X);
     const ok = on
-      ? r.long1 && r.lines <= 3 && r.long1.endsWith('…') && !/[\s،,:؛.]…$/.test(r.long1) && TAFSIR_3X.startsWith(r.long1.slice(0, -1))
-        && TAFSIR_3X[r.long1.length - 1] === ' ' && r.short === 'تفسير قصير.' && !r.none && !r.hadith && !r.adhkar && r.after === 'src'
+      ? r.long1 === TAFSIR_3X && r.pages > 1 && r.lines <= 3 && !r.dots && r.short === 'تفسير قصير.' && !r.none && !r.hadith && !r.adhkar && r.after === 'src'
       : r.long1 === null && r.short === null && !r.none && !r.hadith && !r.adhkar;
-    check(`link #${hash} at ${width}x${height} → tafsir ${on ? 'under the verse, 3 lines at most, cut at a word with «…»' : 'off'}; never on hadith or adhkar cards`,
+    check(`link #${hash} at ${width}x${height} → tafsir ${on ? 'under the verse, whole, in pages of 3 lines at most, never «…»' : 'off'}; never on hadith or adhkar cards`,
       !errors.length && !!ok, JSON.stringify(r) + errors.join('; '));
     await ctx.close();
   }

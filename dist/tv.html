@@ -287,8 +287,11 @@
   .week li.quote.quran.q2{line-height:1.8}
   .week li.quote.quran.q3,.week li.quote.quran.q4{line-height:1.55}   
   
-  .week li.tafsir{white-space:normal;display:block;border-bottom:none;padding:.5vh 0 0;line-height:1.65;
-    font-size:calc(clamp(11px,.92vw,17px)*var(--z,1));color:#B9AE96}
+  .week li.tafsir{white-space:normal;display:block;border-bottom:none;padding:.6vh 0 0;line-height:1.65;text-align:start;
+    font-size:calc(clamp(11px,.92vw,17px)*var(--z,1));color:#CFC6B2}
+  .week li.tafsir .tk{display:block;font-size:.86em;color:var(--gold-3);line-height:1.4}
+  .week li.tafsir .tt{display:block}
+  .week li.tafsir .tp{display:block;font-size:.8em;color:#B9B09C;text-align:end;line-height:1.3}
   
   .week li.quote.hadith{font-size:calc(clamp(15px,1.3vw,25px)*var(--z,1));line-height:1.7}
   
@@ -3295,23 +3298,57 @@ function fitQuote(ul){
     li.classList.add('q' + ++at);
   }
 }
+let TAFSIR = null;
+const TAFSIR_NAME = 'التفسير الميسر';
+const tafsirOf = v => TAFSIR && TAFSIR[v.surah + ':' + v.ayah] || '';
+function loadTafsir(){
+  if(!CONFIG.tafsir || TAFSIR) return;
+  const urls = ['tafsir.json', 'file:///android_asset/tafsir.json', 'file:///android_asset/web/tafsir.json', 'https://raw.githubusercontent.com/tshi-dev/UrTV/master/dist/tafsir.json'];
+  const next = i => {
+    if(i >= urls.length) return;
+    const x = new XMLHttpRequest();
+    const fail = () => next(i + 1);
+    x.onload = () => { try{ const j = JSON.parse(x.responseText); if(j && typeof j === 'object' && !Array.isArray(j)){ TAFSIR = j; renderPanel(false, 'verse'); return; } }catch(e){} fail(); };
+    x.onerror = x.ontimeout = fail;
+    try{ x.open('GET', urls[i]); x.timeout = 8000; x.send(); }catch(e){ fail(); }
+  };
+  next(0);
+}
+const TAFSIR_PG = {t: 0};
 function fitTafsir(ul){
+  clearInterval(TAFSIR_PG.t); TAFSIR_PG.t = 0;
   const el = ul.querySelector('li.tafsir');
   if(!el) return;
-  const full = el.textContent.replace(/…$/, ''), words = full.split(' '), was = el.textContent !== full;
-  const card = ul.closest('.week'), bar = document.querySelector('.bottom');
-  const lines = () => Math.round(el.getBoundingClientRect().height / parseFloat(getComputedStyle(el).lineHeight));
-  const crowded = () => { const c = card.getBoundingClientRect(); return c.height > .42 * innerHeight || c.bottom > bar.getBoundingClientRect().top - 4; };
-  for(let max = 3; max > 0; max--){
-    let n = words.length;
-    el.textContent = full + (was ? '…' : '');
-    while(lines() > max && n > 1){
-      n--;
-      el.textContent = words.slice(0, n).join(' ').replace(/[\s،,:؛.]+$/, '') + '…';
-    }
-    if(!crowded()) return;
+  const tt = el.querySelector('.tt'), tp = el.querySelector('.tp'), full = el.dataset.full || (el.dataset.full = tt.textContent), words = full.split(' ');
+  const card = ul.closest('.week'), bar = document.querySelector('.bottom'), mid = document.querySelector('.mid');
+  const lines = () => Math.round(tt.getBoundingClientRect().height / parseFloat(getComputedStyle(tt).lineHeight));
+  const crowded = () => { const c = card.getBoundingClientRect();
+    return CONFIG.widget ? mid.getBoundingClientRect().height > innerHeight + .5 : c.height > .42 * innerHeight || c.bottom > bar.getBoundingClientRect().top - 4; };
+  tt.style.minHeight = ''; setText(tp, '');
+  for(const k of [1, .9, .82]){
+    el.style.fontSize = k === 1 ? '' : 'calc(clamp(11px,.92vw,17px)*var(--z,1)*' + k + ')';
+    setText(tt, full);
+    if(lines() <= 3 && !crowded()){ el.__pages = [full]; return; }
   }
-  el.remove();
+  for(const max of [3, 2]){
+    const pages = [];
+    for(let i = 0; i < words.length;){
+      let n = i + 1;
+      while(n < words.length){ setText(tt, words.slice(i, n + 1).join(' ')); if(lines() > max) break; n++; }
+      pages.push(words.slice(i, n).join(' ')); i = n;
+    }
+    let h = 0;
+    for(const p of pages){ setText(tt, p); h = Math.max(h, tt.getBoundingClientRect().height); }
+    tt.style.minHeight = h + 'px';
+    let k = 0;
+    el.__pages = pages;
+    const show = () => { setText(tt, pages[k]); setText(tp, pages.length > 1 ? ar(k + 1) + '/' + ar(pages.length) : ''); };
+    show();
+    if(crowded() && max === 3) continue;
+    if(crowded()){ el.remove(); return; }
+    if(pages.length > 1) TAFSIR_PG.t = setInterval(() => { k = (k + 1) % pages.length; show(); }, CONFIG.lowram ? 20000 : 12000);
+    return;
+  }
 }
 function pickShort(list, at, len, card){
   card = card || {};
@@ -3332,7 +3369,7 @@ function quoteOfDay(card){
   if(VERSES.length && (kind === 'verse' || (kind === 'both' && n % 2 === 0))){
     const v = pickShort(VERSES, half, x => x.text.length, card);
     return {title:CONFIG.verseMin ? 'آية كريمة' : 'آية اليوم', rows:[`<li class="quote quran${v.text.length > 330 ? ' q4' : quoteSize(v.text.length)}"><span class="orn">﴿</span><span class="qt">${esc(v.text)}</span><span class="orn">﴾</span></li>`, '<li class="src">' + esc(v.surah) + SEP + 'الآية' + ' ' + ar(v.ayah) + '</li>']
-      .concat(CONFIG.tafsir && v.tafsir ? [`<li class="tafsir">${esc(v.tafsir)}</li>`] : [])};
+      .concat(CONFIG.tafsir && tafsirOf(v) ? [`<li class="tafsir"><span class="tk">${TAFSIR_NAME}</span><span class="tt">${esc(tafsirOf(v))}</span><span class="tp"></span></li>`] : [])};
   }
   const h = pickShort(HADITH, half, x => x.parts.reduce((m, [, t]) => m + t.length, 0), card);
   const saw = s => s.replace(/ﷺ/g, '<span class="saw">ﷺ</span>').replace(/[﴿﴾]/g, m => `<span class="orn">${m}</span>`);
@@ -4341,7 +4378,7 @@ function boot(){
   loadMarkets();
   renderPanel(false, ...CARD_KINDS.filter(k => k !== 'shows'));
   if(NEEDS_MATCHES) loadMatches();
-  loadPrayers(); if(USES('shows')) loadWeek(); loadWeather();
+  loadPrayers(); if(USES('shows')) loadWeek(); loadWeather(); loadTafsir();
   applyNight(); pixelShift();
 
   nowPlayingTick();
@@ -4402,6 +4439,7 @@ function bootWidget(){
   if(USES('forecast') || USES('hourly')){ loadWeather(); periodic(loadWeather, 30*60*1000); }
   if(USES('matches')){ loadMatches(); periodic(loadMatches, 30*60*1000); periodic(loadLive, 2*60000); }
   if(USES('stocks')){ loadMarkets(); periodic(loadMarkets, (CONFIG.lowram ? 15 : CONFIG.midram ? 10 : 5)*60*1000); }
+  if(USES('verse')) loadTafsir();
   cardTimers();
   let lastDay = riyadhDayNumber();
   setInterval(() => { if(riyadhDayNumber() !== lastDay){ lastDay = riyadhDayNumber(); renderPanel(false); if(USES('prayers') || USES('prayerrow') || USES('adhkar')) later(loadPrayers); } }, 60*1000);

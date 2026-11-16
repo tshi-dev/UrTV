@@ -31,18 +31,20 @@ FONTS = {
 REPO = "https://raw.githubusercontent.com/tshi-dev/UrTV/master/"
 
 
-TAFSIR_MAX = 130   # characters kept of «التفسير الميسر»; the card shows at most three lines of it
-
-
 def tafsir_for_screen(text):
-    """The tafsir cut at a word to TAFSIR_MAX characters, «…» after it if cut ('' when there is none)."""
-    t = " ".join((text or "").split())
-    if len(t) <= TAFSIR_MAX:
-        return t
-    return t[:TAFSIR_MAX].rsplit(" ", 1)[0].rstrip(" ،,:؛.") + "…"
+    """«التفسير الميسر» whole, only its spaces made single: its terms of publication allow no cut, no addition (QuranEnc.com's,
+    for this King Fahd Complex text). A long one is shown in pages by the page (fitTafsir), never ended with «…»."""
+    return " ".join((text or "").split())
 
 
-def verses_for_screen():
+def tafsir_file():
+    """{"<surah name as the card shows it>:<ayah>": tafsir} for every verse of the deck: dist/tafsir.json, read by the page only with
+    #tafsir=1 (the whole tafsir is about 200 KB, four times what the page may grow). The key is the card's own words, so a newer page
+    with another deck still finds the right text, or none."""
+    return {f"{v['surah']}:{v['ayah']}": v["tafsir"] for v in verses_for_screen(with_tafsir=True) if v.get("tafsir")}
+
+
+def verses_for_screen(with_tafsir=False):
     """assets/shared/verses.json as fetched by .github/tools/fetch_verses.py. The text shown is the `uthmani` one, the
     KFGQPC text the Uthmanic Hafs font is made for, kept exactly as fetched (waqf signs included, the font draws them;
     its code points are not normalised or re-ordered) except the ۞ hizb sign the data puts in front of a word. A verse without it is left out: this font gets no other text.
@@ -58,7 +60,7 @@ def verses_for_screen():
         name = re.sub("[\u064B-\u065F\u0670\u06D6-\u06ED]", "", unicodedata.normalize("NFC", v["surah"]))
         name = name.replace("\u0671", "ا")   # ٱ: no glyph in Thmanyah
         e = {"text": " ".join(v["uthmani"].replace("\u06DE", "").split()), "surah": name, "ayah": v["ayah"]}
-        if v.get("tafsir"):
+        if with_tafsir and v.get("tafsir"):   # not in the page itself: dist/tafsir.json (tafsir_file)
             e["tafsir"] = tafsir_for_screen(v["tafsir"])
         out.append(e)
     return out
@@ -599,6 +601,9 @@ def main():
         keep = os.environ.get("URTV_JS_COMMENTS") == "keep"
         out.write_text((lambda h: h if keep else strip_page_js(h))(strip_css_comments(page.replace("__BG_SET__", ",\n".join(entries)))), encoding="utf-8")
         print(f"wrote {out.relative_to(ROOT) if out.is_relative_to(ROOT) else out} ({out.stat().st_size / 1e6:.1f} MB)")
+    tafsir = Path(os.environ.get("URTV_DIST") or ROOT / "dist") / "tafsir.json"
+    tafsir.write_text(json.dumps(tafsir_file(), ensure_ascii=False, separators=(",", ":"), sort_keys=True) + "\n", encoding="utf-8")
+    print(f"wrote {tafsir.relative_to(ROOT) if tafsir.is_relative_to(ROOT) else tafsir} ({tafsir.stat().st_size / 1e6:.2f} MB)")
 
 if __name__ == "__main__":
     main()
