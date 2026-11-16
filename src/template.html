@@ -94,7 +94,7 @@
     transform:scale(1.03);   /* edges stay covered while it settles */
   }
   /* each photo's darkness as a plain black layer: same look as filter:brightness, nothing to recompute */
-  .photo::after{content:'';position:absolute;inset:0;background:#000;opacity:calc(1 - (1 - var(--dim,.05)) * (1 - var(--walldim,0)))}   /* «تعتيم الخلفية»: 0 leaves the photo's own dimming exactly as it was */
+  .photo::after{content:'';position:absolute;inset:0;background:#000;opacity:calc(1 - (1 - var(--pdim,0)) * (1 - var(--walldim,0)))}   /* «تعتيم الخلفية»: 0 leaves the photo's own dimming exactly as it was */
   .veil{
     position:fixed;inset:0;z-index:1;
     background:
@@ -965,7 +965,7 @@ const _num = (k, d) => { const v = parseFloat(_Q.get(k)); return isNaN(v) ? d : 
 // the city's time zone, #tz=: the clock, prayers, matches and dates all go by it
 const _tzOk = z => { try{ new Intl.DateTimeFormat('en',{timeZone:z}); return true; }catch(e){ return false; } };
 // the cards a slot can show (Prefs.PANELS in the app is the same list); «none» is the absence of one
-const CARD_KINDS = ['shows','prayers','forecast','hourly','prayerrow','nextprayer','matches','nextmatch','verse','wisdom','adhkar','stocks','tasks','year','smart','today','album'];
+const CARD_KINDS = ['shows','prayers','forecast','hourly','prayerrow','nextprayer','matches','nextmatch','matchday','livenow','minitable','nextmatches','yesterday','weekend','cuppath','formula','national','verse','wisdom','adhkar','stocks','tasks','year','smart','today','album'];
 const CONFIG = {
   city: _Q.get('city') || 'الرياض',
   latitude: _num('lat', 24.7136),
@@ -1145,6 +1145,9 @@ CONFIG.panel = CONFIG.cards[0] || 'none';   // the first one, for what only need
 // does a card on this page need that kind's data? The smart card reads what the matches, the adhkar, the prayers and the hours load;
 // «يومك» what the prayers, the matches and the tasks do
 const USES_OF = {smart:['matches','adhkar','prayers','prayerrow','hourly'], today:['prayers','matches','tasks'], nextprayer:['prayers'], nextmatch:['matches']};
+// 4.4 «الرياضة»: the sports cards (their code is dist/sports.js beside the page, loaded only when one is chosen or the kick-off alert is on)
+const SPORT_KINDS = ['matchday','livenow','minitable','nextmatches','yesterday','weekend','cuppath','formula','national'];
+SPORT_KINDS.forEach(k => { USES_OF[k] = ['matches']; });
 const USES = k => ((CONFIG.football || CONFIG.matchPage) && (k === 'matches' || k === 'prayers')) || CONFIG.cards.some(c => c === k || (USES_OF[c] || []).includes(k));
 
 // The panels' snapshot is keyed by the link without the settings that only change how things look
@@ -2619,6 +2622,7 @@ const loadMatches = guarded('matches', async function(){
   renderPanel(false, 'matches');
   loadCrests();
   loadLive();   // a game already under way gets its score now, not at the next 2-minute tick
+  if(SPORTS) await SPORTS.load();   // 4.4 the sports cards' files and the kick-off times, at the games' own pace
   if(CONFIG.events.length) await loadEvents();   // the other sports, after the games, one league at a time
 });
 
@@ -3090,7 +3094,7 @@ function liveRect(kind = 'tasks'){
 
 let FORECAST = [];
 try{ FORECAST = JSON.parse(localStorage.getItem(LS.forecast) || '[]') || []; }catch(e){}
-const PANEL_TITLE = {album:'ألبوم صوري', today:'يومك', shows:'هذا الأسبوع', prayers:'مواقيت اليوم', nextprayer:'الصلاة القادمة', nextmatch:'مباراة فريقك القادمة', forecast:'الأيام القادمة', hourly:'الساعات القادمة', matches:CONFIG.leagues.length ? 'المباريات' : 'مباريات فرقك', tasks:'المهام', year:'السنة'};
+const PANEL_TITLE = {album:'ألبوم صوري', today:'يومك', shows:'هذا الأسبوع', prayers:'مواقيت اليوم', nextprayer:'الصلاة القادمة', nextmatch:'مباراة فريقك القادمة', matchday:'مباراة اليوم', livenow:'مباشر الآن', minitable:'جدول الترتيب', nextmatches:'مباريات فرقك القادمة', yesterday:'نتائج أمس', weekend:'نهاية الأسبوع', cuppath:'طريق الكأس', formula:'فورمولا ١', national:'المنتخب', forecast:'الأيام القادمة', hourly:'الساعات القادمة', matches:CONFIG.leagues.length ? 'المباريات' : 'مباريات فرقك', tasks:'المهام', year:'السنة'};
 const LISTS = ['matches', 'stocks', 'tasks', 'shows'];   // the kinds that page through their rows
 
 // ---- «يومك» (today): the day in one card
@@ -3238,6 +3242,7 @@ function renderCard(card, animate, keepSize){
     const n = card.kind === 'nextmatch' && rows.length && nextTeamGame(Date.now()), meet = n && !fbLive(n, Date.now()) && h2hLine(n);
     if(meet) rows = rows.concat(`<li class="h2l"><span>${esc(meet)}</span></li>`);   // under it the two clubs' last meetings
   }
+  else if(SPORT_KINDS.includes(P)){ const q = SPORTS ? SPORTS.card(card, P) : {rows: [`<li class="empty">${matchesEmptyText()}</li>`]}; if(q.title) PANEL_TITLE[P] = q.title; rows = q.rows; }
   else if(P === 'year') rows = [yearCard(card)];
   else if(P === 'album') rows = [albumCard(card)];
   else if(P === 'today'){ const q = todayCard(); paintHd(hd, q.title); rows = q.rows; }
@@ -4090,7 +4095,7 @@ function showBackground(url, b){
   const next = "url('" + url + "')";
   if(ph.style.backgroundImage === next) return;   // same photo: no reload, no new movement
   ph.style.backgroundImage = next;
-  ph.style.setProperty('--dim', (1 - (b.d || 0.95)).toFixed(2));
+  ph.style.setProperty('--pdim', (1 - (b.d || 0.95)).toFixed(2));   // --pdim, never --dim: --dim is a COLOUR on :root, and a colour read as an opacity is invalid, which means 1 (a solid black photo)
   ph.classList.remove('settle'); void ph.offsetWidth; ph.classList.add('settle');
   cardBlurLater(url);
   const cr = document.getElementById('credit');
@@ -4141,7 +4146,7 @@ function cardBlurNow(){
           g.drawImage(img, (W - dw) * .5, (H - dh) * .26, dw, dh);
           g.filter = 'none';
           patch();
-          g.fillStyle = `rgba(0,0,0,${document.querySelector('.photo').style.getPropertyValue('--dim') || .05})`;   // the photo's own darkness
+          g.fillStyle = `rgba(0,0,0,${document.querySelector('.photo').style.getPropertyValue('--pdim') || .05})`;   // the photo's own darkness
           g.fillRect(0, 0, W, H);
           const v = g.createLinearGradient(0, 0, 0, H);   // the vertical part of .veil, the part that reaches the card
           v.addColorStop(0, 'rgba(3,10,7,.62)'); v.addColorStop(.22, 'rgba(3,10,7,.30)'); v.addColorStop(.46, 'rgba(3,10,7,.12)');
@@ -4693,7 +4698,7 @@ function lgIdOf(name){
   return hit ? hit[0] : '';
 }
 // what shows the archive's data is drawn again when a file answers: «المباريات», else the home's card of the next game
-function archDrawn(){ if(document.getElementById('mp')) mpRender(); else if(CARDS.some(c => c.kind === 'nextmatch')) renderPanel(false, 'nextmatch'); }
+function archDrawn(){ if(document.getElementById('mp')) mpRender(); else if(CARDS.some(c => c.kind === 'nextmatch' || SPORT_KINDS.includes(c.kind))) renderPanel(false, 'nextmatch', ...SPORT_KINDS); }
 // 4.3.3 two clubs' last meetings (at most 5, the archive's h2h): {n, a, d, b}, a the first club's wins; null when none is known
 function h2hOf(a, b){
   a = String(a); b = String(b);
@@ -5132,13 +5137,35 @@ function bootMatchPage(){
   reveal();
 }
 
+// 4.4 dist/sports.js (sports-en.js for the English page): the one built with this page (its stamp must be this page's), from beside the page,
+// the app's own assets or the repository (a downloaded newer page has none beside it); once, and only when a sports card or the kick-off
+// alert (on unless #ko=0, for followed teams) needs it
+let SPORTS = null;
+function loadSportsJs(){
+  if(SPORTS || !(CONFIG.cards.some(k => SPORT_KINDS.includes(k)) || (CONFIG.teamIds.length && _Q.get('ko') !== '0'))) return;
+  const stamp = document.querySelector('meta[name="urtv-build"]').content, f = document.documentElement.lang === 'en' ? 'sports-en.js' : 'sports.js';
+  const urls = [f, 'file:///android_asset/' + f, 'file:///android_asset/web/' + f, 'https://raw.githubusercontent.com/tshi-dev/UrTV/master/dist/' + f];
+  const next = i => {
+    if(i >= urls.length) return;
+    const x = new XMLHttpRequest(), fail = () => next(i + 1);
+    x.onload = () => {
+      if(!x.responseText.includes('SPORTS_BUILD:' + stamp + ':')) return fail();   // another build's code: never run against this page
+      const sc = document.createElement('script'); sc.textContent = x.responseText; document.head.appendChild(sc);
+      if(SPORTS){ renderPanel(false, ...SPORT_KINDS); if(MATCHES_LOADED) SPORTS.load(); }
+    };
+    x.onerror = x.ontimeout = fail;
+    try{ x.open('GET', urls[i]); x.timeout = 8000; x.send(); }catch(e){ fail(); }
+  };
+  next(0);
+}
 function boot(){
   if(CONFIG.lowram) document.documentElement.classList.add('lowram');
   pruneStorage();
   if(CONFIG.matchPage){ bootMatchPage(); return; }
-  if(CONFIG.football){ bootFootball(); return; }
-  if(CONFIG.widget){ bootWidget(); return; }
+  if(CONFIG.football){ bootFootball(); loadSportsJs(); return; }
+  if(CONFIG.widget){ bootWidget(); loadSportsJs(); return; }
   buildCards();
+  loadSportsJs();
   if(document.fonts) document.fonts.ready.then(() => {   // widths change once the fonts are in
     fitYearStrip();
     fitMatches(document.getElementById('match-row'));

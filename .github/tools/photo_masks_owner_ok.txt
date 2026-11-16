@@ -1,0 +1,3 @@
+# Photos whose clock place the owner chose himself (his ad picture, 2026-11-16): the legibility rule is waived for these only (the clock
+# stays where the home puts it, the scenery in front of it); the edge, halo and alignment checks still apply, and each is checked by eye.
+ksa-cities/1

@@ -671,11 +671,55 @@ final class SetupEngine {
 
     /** the switch is confirmed: the safety switch off, the journal done, the count of failed tries starts again */
     private Result finishHome(Set<String> pk, String said) throws IOException {
+        confirmOurs();
+        return done(said);
+    }
+
+    /**
+     * 4.4 (step 86 B): our home holds the HOME role and works; the safety switch is for a TV left with no home, so it is disarmed and the journal
+     * is «done». HOME_WANTED says the person chose our home: the add-on's watch brings it back, and the home re-applies the role once if the TV
+     * takes it back by itself (SetupHook.reapplyIfLost).
+     */
+    private void confirmOurs() throws IOException {
         deadman.disarm();
         clearDeadline();
         journalState("done");
         store.put(WIFI_ASK, "");
-        return done(said);
+        store.put(HOME_WANTED, "1");
+        store.put(HOME_REAPPLIED, "");
+    }
+
+    /**
+     * 4.4 (step 86 B): the person's home is ours (HOME_WANTED) but the TV gave the HOME role back to its own home by itself (a Google TV did, two minutes
+     * after the owner's switch). The role and the home activity are given to ours again, ONCE (SetupHook.reapplyIfLost keeps the time; a second loss
+     * is left to the person: it may be their own choice in the TV's settings). Nothing is turned off. True when Home resolves to ours after it.
+     */
+    boolean reapplyHomeRole() throws IOException {
+        sh.run("cmd role add-role-holder --user 0 android.app.role.HOME " + SELF);
+        sh.run("cmd package set-home-activity --user 0 " + q(HOME_ACTIVITY));
+        store.put(HOME_REAPPLIED, String.valueOf(now()));
+        return resolveHome().startsWith(SELF + "/");
+    }
+
+    /** 4.4: «1» while the person's chosen home is ours (set when a switch is confirmed; cleared when the stock home is put back or by «تراجع») */
+    static final String HOME_WANTED = "home-wanted.txt";
+
+    /** 4.4: the HOME role was re-applied after the TV took it back by itself (the time, once; cleared by a new switch) */
+    static final String HOME_REAPPLIED = "home-reapplied.txt";
+
+    /**
+     * 4.4 (step 86 B): our home was drawn (MainActivity resumed) while it is the TV's default home and the journal still says «switching»: the switch
+     * works, so the safety switch must not undo it. Disarmed and «done» here, with no adb (files and the alarm are this app's). False: nothing to do.
+     */
+    static boolean confirmDrawn(Store store, Deadman deadman) throws IOException {
+        String j = store.get("home-switch.json");
+        if (j == null || !j.contains("  \"state\": \"switching\",")) return false;
+        store.put("home-switch.json", j.replaceAll("(?m)^  \"state\": \".*\",", "  \"state\": \"done\","));
+        store.put("home-deadline.txt", "");
+        store.put(HOME_WANTED, "1");
+        store.put(HOME_REAPPLIED, "");
+        deadman.disarm();
+        return true;
     }
 
     /**
@@ -686,12 +730,20 @@ final class SetupEngine {
         String[] w = watchFor;
         watchFor = null;
         if (w == null) return failed("ما بدأ تبديل الشاشة الرئيسية.");
-        Result r = watchOk && homeKeyOpensOurs()
-            ? finishHome(null, "زر الرئيسية يفتح تلفزيونك الآن (عن طريق «إضافات تلفزيونك»). اضغط زر الرئيسية في الريموت للتأكد.")
-            : abort(w[0], w[1], w[2], "ما قدرنا نخلي زر الرئيسية يفتح تلفزيونك على هذا التلفزيون، وكل شيء غيره يشتغل: افتح تلفزيونك من أيقونته في صف التطبيقات.", false);
+        // 4.4 (step 86 B): Home still opening the stock home is not a broken TV. Our home holds the role and opens from its tile, so nothing is put back
+        // (that undid the owner's switch two minutes later); the switch is confirmed and the person told plainly. Only a TV left with no home is put back.
+        Result r;
+        if (watchOk && homeKeyOpensOurs()) r = finishHome(null, "زر الرئيسية يفتح تلفزيونك الآن (عن طريق «إضافات تلفزيونك»). اضغط زر الرئيسية في الريموت للتأكد.");
+        else {
+            confirmOurs();
+            r = failed(WATCH_FAILED);
+        }
         try { store.put(HomeFails.FILE, HomeFails.after(store.get(HomeFails.FILE), true, r.status == Status.DONE)); } catch (IOException ignored) { }
         return r;
     }
+
+    /** 4.4: Home still opens the stock home after the add-on was set up; our home stays the TV's home for everything else */
+    static final String WATCH_FAILED = "ما قدرنا نخلي زر الرئيسية يفتح تلفزيونك على هذا التلفزيون، وكل شيء غيره يشتغل: افتح تلفزيونك من أيقونته في صف التطبيقات. تلفزيونك بقي الشاشة الرئيسية، و«تراجع» يرجّع الأصلية.";
 
     /**
      * The add-on's service on, over this adb: what the TV had is kept once (EXTRAS_A11Y, «تراجع» puts it back), our entry added (the home's own entries of 4.3.2 and before
@@ -752,10 +804,7 @@ final class SetupEngine {
             ok = verifyHome();
         }
         if (!ok) return abort(stock, stockPkg, holder, "الشاشة الرئيسية لم تفتح تلفزيونك.", false);
-        deadman.disarm();
-        clearDeadline();
-        journalState("done");
-        store.put(WIFI_ASK, "");   // done: a later run starts afresh (install.sh removes wifi-ask.txt here)
+        confirmOurs();   // done: a later run starts afresh (install.sh removes wifi-ask.txt here)
         if (!KEEP_STOCK_ON) for (String h : SetupLists.HOME_HELPERS) if (pk.contains(h)) sh.run("pm disable-user --user 0 " + h);   // only now: the stock home's helpers are dead weight
         if (safeOrder) out.line("وسيط الإعداد موقوف، والواي فاي بقي متصلاً وشبكته محفوظة (تأكدنا بعد إيقاف الوسيط وقبل إيقاف الشاشة الأصلية).");
         return done("تلفزيونك الآن هو الشاشة الرئيسية. اضغط زر الرئيسية في الريموت للتأكد.");
@@ -770,12 +819,16 @@ final class SetupEngine {
             deadman.disarm();
             clearDeadline();
             journalState("restored");
+            store.put(HOME_WANTED, "");
             return skipOnly ? skipped(why) : failed(why + " رجّعنا الشاشة الأصلية وتأكدنا منها. ما ضاع شيء.");
         }
         return failed(why + " حاولنا إرجاع الشاشة الأصلية ولم نتأكد منها بعد؛ مفتاح الأمان سيعيد المحاولة تلقائياً. إن لم تظهر فاضغط «تراجع».");
     }
 
     private void clearDeadline() throws IOException { store.put("home-deadline.txt", ""); }
+
+    /** a file emptied only when it holds something (a TV that answers nothing gets no file written) */
+    private void clearFile(String name) throws IOException { String v = store.get(name); if (v != null && !v.trim().isEmpty()) store.put(name, ""); }
 
     long now() { return System.currentTimeMillis(); }
 
@@ -842,9 +895,7 @@ final class SetupEngine {
         String res = resolveHome();
         if (res.isEmpty()) return failed("بدأ تبديل الشاشة الرئيسية ثم انقطع، والتلفزيون لا يجاوب الآن. سنعيد المحاولة تلقائياً.");
         if (res.startsWith(SELF + "/")) {    // ours is Home, and this code is running: the switch took
-            deadman.disarm();
-            clearDeadline();
-            journalState("done");
+            confirmOurs();
             return done("سجّلنا أن تلفزيونك صار الشاشة الرئيسية بعد تبديل انقطع (لم نفحص الشاشة بعد). اضغط زر الرئيسية للتأكد.");
         }
         String stock = journal("stock");
@@ -854,6 +905,7 @@ final class SetupEngine {
         deadman.disarm();
         clearDeadline();
         journalState("restored");
+        store.put(HOME_WANTED, "");
         return done("كان تبديل الشاشة الرئيسية قد انقطع؛ رجّعنا الشاشة الأصلية وتأكدنا منها.");
     }
 
@@ -865,6 +917,8 @@ final class SetupEngine {
      */
     Result undo() throws IOException {
         List<String> problems = new ArrayList<>();
+        clearFile(HOME_WANTED);   // 4.4: the person wants the TV as it was: nothing brings our home back or re-applies its role
+        clearFile(HOME_REAPPLIED);
         String stock = journal("stock");
         if (stock.isEmpty() || !COMPONENT.matcher(stock).matches()) {
             Set<String> pk = packages("pm list packages");

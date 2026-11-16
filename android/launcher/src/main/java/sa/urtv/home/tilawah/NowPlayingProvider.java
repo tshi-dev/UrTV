@@ -17,6 +17,8 @@ import android.os.Bundle;
  * And ".../setup": one row (running) while «إعداد تلفزيوني» runs a setup (SetupHold): the screensaver steps aside then.
  * And ".../adhan_on": one row (on 1 or 0), the adhan's switch, which the screensaver's settings show on their «الأذان» button. Nothing here
  * changes it: that button opens the adhan's page through the home, behind its family lock.
+ * 4.4: ".../kids", one row (on 1 or 0), kids mode, which the screensaver's page reads (no kick-off notice over it then); and
+ * call("kickoff_whistle"), the whistle once for «جرّب التنبيه» (never over the adhan).
  */
 public class NowPlayingProvider extends ContentProvider {
     @Override public boolean onCreate() { return true; }
@@ -28,6 +30,11 @@ public class NowPlayingProvider extends ContentProvider {
             MatrixCursor h = new MatrixCursor(new String[]{"held"});
             h.addRow(new Object[]{sa.urtv.home.setup.SaverHold.held(getContext()) ? 1 : 0});
             return h;
+        }
+        if (uri != null && "kids".equals(uri.getLastPathSegment())) {   // 4.4 kids mode (read only): the screensaver's page then draws no kick-off notice
+            MatrixCursor k = new MatrixCursor(new String[]{"on"});
+            k.addRow(new Object[]{sa.urtv.home.KidsNow.on(getContext()) ? 1 : 0});
+            return k;
         }
         if (uri != null && "setup".equals(uri.getLastPathSegment())) {
             MatrixCursor h = new MatrixCursor(new String[]{"running"});
@@ -64,6 +71,12 @@ public class NowPlayingProvider extends ContentProvider {
         if ("stop_adhan".equals(method) && getContext() != null
                 && getContext().checkCallingPermission("sa.urtv.home.READ_NOW_PLAYING") == PackageManager.PERMISSION_GRANTED) {
             if (MusicService.adhanLive()) MusicService.stopAdhan(getContext());
+        }
+        // 4.4 «جرّب التنبيه» in the screensaver's settings (same key only): the kick-off whistle once, never over the adhan
+        if ("kickoff_whistle".equals(method) && getContext() != null
+                && getContext().checkCallingPermission("sa.urtv.home.READ_NOW_PLAYING") == PackageManager.PERMISSION_GRANTED) {
+            if (!MusicService.adhanLive()) Whistle.play(getContext());
+            return new Bundle();
         }
         // 4.3.3 «مسح الملفات المؤقتة» in the screensaver's settings (same key only): this app's cache folder, its size or the sweep (CacheSweep keeps the adhan's sounds and an APK on its way)
         if (("cache_size".equals(method) || "clear_cache".equals(method)) && getContext() != null

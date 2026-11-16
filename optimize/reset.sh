@@ -104,6 +104,7 @@ echo "3/4 Removing our apps (old and new names; missing ones are skipped)…"
 # the appop the launcher was given for the adhan (it vanishes with the app anyway)
 sdk=$(tv "getprop ro.build.version.sdk" 2> /dev/null | tr -dc '0-9' || true)
 if [ "${sdk:-0}" -ge 31 ]; then tv "appops set sa.urtv.home SCHEDULE_EXACT_ALARM default" > /dev/null 2>&1 || true; fi
+tv "appops set sa.urtv.home SYSTEM_ALERT_WINDOW default" > /dev/null 2>&1 || true   # 4.4 «فوق تطبيق آخر» (dock.sh overlay on)
 # and «install unknown apps» (the TV's own update): put back exactly the mode install.sh found, then forget it
 appop_file="${URTV_RUN_DIR:-optimize/run}/install-appop.txt"      # APPOP-BEGIN (the same place install.sh keeps it)
 if [ -s "$appop_file" ]; then

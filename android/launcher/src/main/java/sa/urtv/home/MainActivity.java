@@ -160,6 +160,17 @@ public class MainActivity extends Activity {
     private DuaCard duaCard;   // «أذان المغرب بعد ٨ دقائق», over the top edge; while the adhan plays «أذان المغرب · أي زر يوقف الأذان»
     private final AdhanKeys adhanKeys = new AdhanKeys();
     private ReminderCard reminder;   // the card of a task with a time, over the home; the alarm (ReminderReceiver) and a return to the home bring it
+    /** 4.4 a followed club's kick-off: the notice on the home's page; with no page (no card), a text notice */
+    private final BroadcastReceiver kickoffDue = new BroadcastReceiver() {
+        @Override public void onReceive(Context c, Intent i) {
+            if (!resumed) return;
+            String json = i.getStringExtra("json");
+            String line = i.getStringExtra("line");
+            if ((homeCard == null || !homeCard.kick(json)) && line != null) {
+                try { android.widget.Toast.makeText(c, line, android.widget.Toast.LENGTH_LONG).show(); } catch (RuntimeException ignored) { }
+            }
+        }
+    };
     private final BroadcastReceiver reminderDue = new BroadcastReceiver() {
         @Override public void onReceive(Context c, Intent i) { if (reminder != null && resumed) reminder.refresh(); }
     };
@@ -252,6 +263,7 @@ public class MainActivity extends Activity {
             openRequested(getIntent());
             phoneRequested(getIntent());   // the phone remote's «افتح»
             settingsKeyRequested(getIntent());   // the Settings key outside the home, when the TV's settings need the PIN
+            keyAppRequested(getIntent());   // «أزرار الريموت» over another app, when the button's app needs the PIN
         }
         wantEdit = getIntent() != null && getIntent().getBooleanExtra(EXTRA_EDIT, false);   // the settings' «تعديل المفضلة»
         if (b == null) appsRequested(getIntent());   // the settings' «ترتيب كل التطبيقات» (not again after a restore)
@@ -269,6 +281,7 @@ public class MainActivity extends Activity {
         InternalReceivers.register(this, sleepChanged, new IntentFilter(SleepTimer.CHANGED));
         InternalReceivers.register(this, nowPlayingChanged, new IntentFilter(NowPlaying.CHANGED));
         InternalReceivers.register(this, reminderDue, new IntentFilter(ReminderReceiver.SHOW));
+        InternalReceivers.register(this, kickoffDue, new IntentFilter(KickoffReceiver.SHOW));
     }
 
     /** the photos were let go: decoding the next one starts HERE, at the start of the return (off the main thread, at screen size), not after the first frame's provider queries */
@@ -518,6 +531,7 @@ public class MainActivity extends Activity {
         unregisterReceiver(sleepChanged);
         unregisterReceiver(nowPlayingChanged);
         unregisterReceiver(reminderDue);
+        unregisterReceiver(kickoffDue);
         loader.shutdownNow();
         tvLoader.shutdownNow();
         clockReads.shutdownNow();
@@ -542,6 +556,7 @@ public class MainActivity extends Activity {
         openRequested(intent);   // the screensaver's «الأذان» row (open=adhan)
         phoneRequested(intent);   // the phone remote opened an app that asks for the PIN, or one of the pills
         settingsKeyRequested(intent);   // the Settings key outside the home, when the TV's settings need the PIN
+        keyAppRequested(intent);   // «أزرار الريموت» over another app, when the button's app needs the PIN
         // Home pressed while already home: jump back to the first dock app.
         if (inputsPopup != null) inputsPopup.dismiss();
         if (control != null) { control.dismiss(); control.forgetLast(); }
@@ -910,6 +925,11 @@ public class MainActivity extends Activity {
         nowCard.setVisibility(View.GONE);
         nowCard.setOnClickListener(v -> NowPlaying.toggle(this));   // OK: pause or play
         nowCard.setOnLongClickListener(v -> { launchGuarded(ParentalPolicy.PILL_LISTEN, NowPlaying.player(this), "تلاوة وأذان"); return true; });   // a long OK: the player, behind the same lock as the «تلاوة وأذان» pill
+        nowCard.setOnKeyListener((v, code, ev) -> {   // 4.4 #62: the menu key on the card: «شاشة سوداء», behind the same lock
+            if (code != KeyEvent.KEYCODE_MENU) return false;
+            if (ev.getAction() == KeyEvent.ACTION_UP) launchGuarded(ParentalPolicy.PILL_LISTEN, sa.urtv.home.tilawah.BlackScreenActivity.open(this), "تلاوة وأذان");
+            return true;
+        });
         nowCard.setOnFocusChangeListener((v, has) -> {
             if (has) { lastFocusedId = v.getId(); glideTo(0); fadeGlow(1f); }
         });
@@ -987,6 +1007,18 @@ public class MainActivity extends Activity {
 
     /** TypeService.openTvSettings: the remote's Settings key was pressed in another app and the TV's settings are behind the PIN: asked here. */
     static final String EXTRA_SETTINGS_KEY = "sa.urtv.home.SETTINGS_KEY";
+
+    /**
+     * «أزرار الريموت» over another app: the add-on found the button's app behind the family PIN and opened the home with it; asked here, as for its tile,
+     * then opened. Only an app the owner gave one of this remote's buttons (an intent with any other package does nothing).
+     */
+    private void keyAppRequested(Intent i) {
+        final String pkg = i == null ? null : i.getStringExtra(ExtrasWords.EXTRA_KEY_APP);
+        if (pkg == null) return;
+        i.removeExtra(ExtrasWords.EXTRA_KEY_APP);
+        if (!KeyApps.chosen(pkg) || !Dock.keyApps(this).containsValue(pkg) || !ParentalPolicy.visible(Parental.state(this), pkg)) return;
+        handler.post(() -> guarded(ParentalPolicy.REMOTE_APP, pkg, labelOf(pkg), () -> openPackage(pkg)));
+    }
 
     private void settingsKeyRequested(Intent i) {
         if (i == null || !i.getBooleanExtra(EXTRA_SETTINGS_KEY, false)) return;
@@ -3336,7 +3368,7 @@ public class MainActivity extends Activity {
             sceneBackdrop.addView(sceneHome, sceneBackdrop.indexOfChild(wallFront) + 1, new FrameLayout.LayoutParams(-1, -1));
         }
         if (on) {
-            sceneHome.set(true, cfg.scenePacks, ScenePlan.stay(cfg.sceneStay), homeCard != null && homeCard.shownCards() > 0 && !homeCard.inRow(), Dir.rtl(), glass);   // «كنبة»: the cards are under it, the clock in the middle
+            sceneHome.set(true, cfg.scenePacks, ScenePlan.stay(cfg.sceneStay), homeCard != null && homeCard.shownCards() > 0 && !homeCard.inRow(), homeCard != null && homeCard.inRow(), Dir.rtl(), glass);   // «كنبة»: the cards are under it, the clock in the middle
             boolean night = false, fog = false;
             if (cfg.sceneByTime) try {   // the city's Maghrib to its Fajr (the same prayer times as the adhan)
                 sa.urtv.home.tilawah.DayParts d = sa.urtv.home.tilawah.DayParts.now(this, cfg.placeFragment(), cfg.placeTicket());
@@ -3398,12 +3430,16 @@ public class MainActivity extends Activity {
         ampm.setVisibility(View.INVISIBLE);
     }
 
-    /** 4.4: the photo on the screen zoomed by k about the top centre, as its cut-out over the glass clock is (PhotoGlass); the one fading out keeps its own */
-    private void zoomWall(float k) {
-        wallFront.setPivotX(getResources().getDisplayMetrics().widthPixels / 2f);
+    /** 4.4: the photo on the screen framed as its cut-out over the glass clock is (PhotoGlass: its crop, then the zoom k about the top centre); the one fading out keeps its own */
+    private void zoomWall(int[] crop, float k) {
+        android.util.DisplayMetrics dm = getResources().getDisplayMetrics();
+        float[] f = ScenePlan.frame(crop, dm.widthPixels, dm.heightPixels, k);
+        wallFront.setPivotX(0);
         wallFront.setPivotY(0);
-        wallFront.setScaleX(k);
-        wallFront.setScaleY(k);
+        wallFront.setScaleX(f[0]);
+        wallFront.setScaleY(f[0]);
+        wallFront.setTranslationX(f[1]);
+        wallFront.setTranslationY(f[2]);
     }
 
     private void updateClock(ConfigSnapshot cfg) {
@@ -3481,6 +3517,7 @@ public class MainActivity extends Activity {
         applyListenPill(cfg.listenPillOn);
         applyTasksPill(cfg.tasksPillOn());
         Dock.followBackSaver(this, cfg.backSaver());   // «الرجوع يفتح شاشة التوقف» changed in the screensaver's settings: read at the next Back
+        Dock.followKeyApps(this, cfg.keyApps);   // «أزرار الريموت» changed in the screensaver's settings: read at the next key (and told to the add-on)
         applyUpdateBell(cfg.updateBellOn);   // [updates bell]
         applyBarSize(cfg.favBar);   // «تطبيقات في الشريط»
         hiddenQuick.clear();
@@ -3985,6 +4022,8 @@ public class MainActivity extends Activity {
         wallFront.setImageBitmap(bm);
         wallFront.setScaleX(1f);   // a layer never comes back with the zoom of the photo it showed before (PhotoGlass zooms the new one when it has a cut-out)
         wallFront.setScaleY(1f);
+        wallFront.setTranslationX(0);   // nor its crop (PhotoGlass frames the new one)
+        wallFront.setTranslationY(0);
         if (photoGlass != null) photoGlass.show(bm, key, NetGate.allowed(resumed, NetGateAndroid.displayOn(this)));   // after the swap: its zoom is the new photo's
         fullPhotoShown = true;
         logFirstPhoto("full photo");
@@ -4344,6 +4383,18 @@ public class MainActivity extends Activity {
         // the remote's shortcut keys (YouTube, Netflix, Settings, the star): with the stock launcher off nothing else answers them
         if (e.getAction() == KeyEvent.ACTION_DOWN && e.getRepeatCount() == 0)
             android.util.Log.d("UrTVKeys", "key=" + e.getKeyCode() + " scan=" + e.getScanCode());   // for the TV test: does the shortcut key reach the home screen at all? (codes only)
+        // «أزرار الريموت»: a button of this remote the owner gave an app that is on the TV opens it here, first (Xiaomi's burst is one press; kids mode's
+        // hidden app opens nothing; the family PIN as for its tile). A button on its default goes to RemoteKeys below, exactly as before anyone chose.
+        String keyId = KeyButton.of(e);
+        String keyChoice = keyId == null ? null : Dock.keyApp(this, keyId);
+        if (KeyApps.chosen(keyChoice) && isInstalled(keyChoice) || homeButtons.holding(e.getKeyCode())) {
+            int k = homeButtons.decide(keyId, e.getKeyCode(), e.getAction(), e.getRepeatCount(), e.getEventTime(), false, keyChoice, KeyButton.burstMs());
+            if (k == KeyApps.OPEN) {
+                final String pkg = homeButtons.pkg;
+                if (ParentalPolicy.visible(Parental.state(this), pkg)) guarded(ParentalPolicy.REMOTE_APP, pkg, labelOf(pkg), () -> openPackage(pkg));
+            }
+            if (k != KeyApps.PASS) return true;
+        }
         RemoteKeys.Decision key = remoteKeys.decide(e.getKeyCode(), e.getScanCode(), e.getAction(), e.getRepeatCount(), e.getEventTime() - e.getDownTime(),
                 RemoteKeys.opensApp(e.getKeyCode()) ? remoteInstalled() : Collections.<String>emptySet());
         if (key.kind == RemoteKeys.PASS && e.getAction() == KeyEvent.ACTION_DOWN && e.getRepeatCount() == 0 && RemoteKeys.unmapped(e.getKeyCode()))
@@ -4435,6 +4486,7 @@ public class MainActivity extends Activity {
     }
 
     private final RemoteKeys remoteKeys = new RemoteKeys();
+    private final KeyApps.Outside homeButtons = new KeyApps.Outside();
 
     /** The apps a shortcut key opens that are installed, and that kids mode shows (one it hides counts as not there: the key then does nothing). */
     private Set<String> remoteInstalled() {

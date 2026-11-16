@@ -48,7 +48,8 @@ final class Own {
 
     /**
      * 4.4: keeps png as the mask of the last photo: null, or why not ("late": no photo was just added; "shape": not the photo's shape within 2 %;
-     * "tones": not mostly black and white, or all one of them; "bad": not a PNG). The shape is the photo's, the size any.
+     * "tones": not mostly black and white, or all one of them; "cover": the scenery too little or too much, or no sky along the top; "edge": its top
+     * edge ragged; "bad": not a PNG). The shape is the photo's, the size any. The checks are MaskCheck's, the light form of our cut-outs' gate.
      */
     static synchronized String addMask(Context c, byte[] png) {
         int n = count(c);
@@ -66,10 +67,13 @@ final class Own {
         s.inSampleSize = Math.max(1, Math.min(b.outWidth, b.outHeight) / 120);
         android.graphics.Bitmap small = android.graphics.BitmapFactory.decodeByteArray(png, 0, png.length, s);
         if (small == null) return "bad";
-        int[] px = new int[small.getWidth() * small.getHeight()];
-        small.getPixels(px, 0, small.getWidth(), 0, 0, small.getWidth(), small.getHeight());
+        int sw = small.getWidth(), sh = small.getHeight();
+        int[] px = new int[sw * sh];
+        small.getPixels(px, 0, sw, 0, 0, sw, sh);
         small.recycle();
         if (!MaskCheck.twoTone(px)) return "tones";
+        if (!MaskCheck.cover(px, sw, sh)) return "cover";
+        if (!MaskCheck.smooth(px, sw, sh)) return "edge";
         File tmp = new File(dir(c), "mask.tmp");
         try (OutputStream o = new FileOutputStream(tmp)) { o.write(png); } catch (IOException e) { tmp.delete(); return "bad"; }
         if (!tmp.renameTo(mask(c, n))) { tmp.delete(); return "bad"; }

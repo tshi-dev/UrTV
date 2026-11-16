@@ -252,6 +252,10 @@ public class SaverReceiver extends BroadcastReceiver {
         String months = i.getStringExtra("months");
         if (months != null && !"default".equals(months) && !"levant".equals(months)) return "error: months is one of default levant";
         String occasion = i.getStringExtra("occasion"), nightDim = i.getStringExtra("nightdim"), tasksPill = i.getStringExtra("taskspill");
+        String kickoffOn = i.getStringExtra("kickoff"), kickoffGoal = i.getStringExtra("kickoffgoal"), kickoffEnd = i.getStringExtra("kickoffend"), kickoffOver = i.getStringExtra("kickoffover");
+        if (kickoffOn != null && !kickoffOn.matches("on|off|silent|whistle")) return "error: kickoff is one of on off silent whistle";
+        for (String[] x : new String[][] {{"kickoffgoal", kickoffGoal}, {"kickoffend", kickoffEnd}, {"kickoffover", kickoffOver}})
+            if (x[1] != null && !"on".equals(x[1]) && !"off".equals(x[1])) return "error: " + x[0] + " is one of on off";
         String backSaver = i.getStringExtra("backsaver"), fbHide = i.getStringExtra("fbhide"), dateNum = i.getStringExtra("datenum"), searchPill = i.getStringExtra("searchpill");
         for (String[] x : new String[][] {{"occasion", occasion}, {"nightdim", nightDim}, {"taskspill", tasksPill}, {"backsaver", backSaver}, {"fbhide", fbHide}, {"datenum", dateNum}, {"searchpill", searchPill}})
             if (x[1] != null && !"on".equals(x[1]) && !"off".equals(x[1])) return "error: " + x[0] + " is one of on off";
@@ -268,6 +272,15 @@ public class SaverReceiver extends BroadcastReceiver {
             return "error: greeting is one of on off";
         String matchApp = i.getStringExtra("matchapp");   // 4.3 «تطبيق المباريات»: auto, none or an app's package
         if (matchApp != null && !Prefs.matchAppOk(matchApp)) return "error: matchapp is auto, none or an app's package name";
+        String keyApp = i.getStringExtra("keyapp");   // «أزرار الريموت»: BUTTON=PKG or BUTTON=default (this remote's buttons: RemoteButtons)
+        String keyAppKey = null, keyAppPkg = null;
+        if (keyApp != null) {
+            int eq = keyApp.indexOf('=');
+            keyAppKey = eq < 0 ? keyApp : keyApp.substring(0, eq);
+            keyAppPkg = eq < 0 ? "" : keyApp.substring(eq + 1);
+            if ("default".equals(keyAppPkg)) keyAppPkg = "";
+            if (!Prefs.remoteKeyOk(keyAppKey) || !Prefs.keyAppOk(keyAppPkg)) return "error: keyapp is BUTTON=PKG or BUTTON=default, BUTTON one of this remote's (optimize/dock.sh key)";
+        }
         String pillsHidden = i.getStringExtra("pillshidden");   // the home's quick buttons to hide: markets, matches, center (comma list), or none
         if (pillsHidden != null && !"none".equals(pillsHidden)) {
             for (String k : pillsHidden.split(",")) if (!java.util.Arrays.asList(Prefs.QUICK_BUTTONS).contains(k)) return "error: pillshidden is none or a list of " + android.text.TextUtils.join(" ", Prefs.QUICK_BUTTONS);
@@ -456,6 +469,7 @@ public class SaverReceiver extends BroadcastReceiver {
         if (listenPill != null) p.setListenPill("on".equals(listenPill));
         if (pillsHidden != null) p.setPillsHidden(pillsHidden);
         if (matchApp != null) p.setMatchApp(matchApp);
+        if (keyAppKey != null) p.setKeyApp(keyAppKey, keyAppPkg);
         if (homePhotos != null) p.setHomePhotosSame("same".equals(homePhotos));
         if (homePacks != null) p.setHomePacksOn("none".equals(homePacks) ? new java.util.LinkedHashSet<String>() : PhotoPacks.parseOn(homePacks));
         if (homeOurs != null) p.setHomeOursOn("on".equals(homeOurs));
@@ -507,6 +521,10 @@ public class SaverReceiver extends BroadcastReceiver {
         if (tasksPill != null) p.setTasksPill("on".equals(tasksPill));
         if (backSaver != null) p.setBackSaver("on".equals(backSaver));
         if (fbHide != null) p.setFbHideDone("on".equals(fbHide));
+        if (kickoffOn != null) { if (kickoffOn.equals("on") || kickoffOn.equals("off")) p.setKickoff("on".equals(kickoffOn)); else { p.setKickoff(true); p.setKickoffWhistle("whistle".equals(kickoffOn)); } }
+        if (kickoffGoal != null) p.setKickoffGoal("on".equals(kickoffGoal));
+        if (kickoffEnd != null) p.setKickoffEnd("on".equals(kickoffEnd));
+        if (kickoffOver != null) p.setKickoffOver("on".equals(kickoffOver));
         if (dateNum != null) p.setDateNum("on".equals(dateNum));
         if (searchPill != null) p.setSearchPill("on".equals(searchPill));
         if (prayerMethod != null) p.setPrayerMethod(PrayerMethod.parse(prayerMethod));
@@ -669,7 +687,7 @@ public class SaverReceiver extends BroadcastReceiver {
             + "\ngreeting: " + (p.greeting() ? "on" : "off")
             + "\nlistenpill: " + (p.listenPill() ? "on" : "off")
             + "\nhomephotos: " + (p.homePhotosSame() ? "same" : "own") + "\nhomepacks: " + (p.homePacksOn().isEmpty() ? "none" : PhotoPacks.joinOn(p.homePacksOn())) + "\nhomeours: " + (p.homeOursOn() ? "on" : "off") + "\nhomemine: " + (p.homeMine() == null ? "same" : p.homeMine()) + "\nalbummode: " + p.albumMode() + "\nalbumdate: " + (p.albumDate() ? "on" : "off") + "\nalbumtitle: " + (p.albumTitle() ? "on" : "off") + "\nalbumfit: " + p.albumFit() + "\nalbumsize: " + p.albumSize() + "\ncleartext: " + (p.clearText() ? "on" : "off") + "\nglow: " + p.glowMode()
-            + "\npillshidden: " + (p.pillsHidden().isEmpty() ? "none" : p.pillsHidden()) + "\nmatchapp: " + p.matchApp()
+            + "\npillshidden: " + (p.pillsHidden().isEmpty() ? "none" : p.pillsHidden()) + "\nmatchapp: " + p.matchApp() + "\nkeyapps: " + p.keyApps()
             + "\nupdatebell: " + (p.updateBell() ? "on" : "off")
             + "\nwatchnext: " + (p.watchNext() ? "on" : "off")
             + "\nappearance: " + p.appearance()
@@ -688,7 +706,7 @@ public class SaverReceiver extends BroadcastReceiver {
             + "\nwxmore: " + (p.wxMore() ? "on" : "off") + "\nmonths: " + p.months() + "\nverse: " + p.quoteEvery()
             + "\nversekind: " + p.verseKind() + "\nseconds: " + (p.seconds() ? "on" : "off") + "\nbackexit: " + p.homeExit()
             + "\noccasion: " + (p.occasion() ? "on" : "off") + "\nnightdim: " + (p.nightDim() ? "on" : "off") + "\ntaskspill: " + (p.tasksPill() ? "on" : "off")
-            + "\nbacksaver: " + (p.backSaver() ? "on" : "off") + "\nfbhide: " + (p.fbHideDone() ? "on" : "off") + "\ndatenum: " + (p.dateNum() ? "on" : "off") + "\nsearchpill: " + (p.searchPill() ? "on" : "off")
+            + "\nbacksaver: " + (p.backSaver() ? "on" : "off") + "\nfbhide: " + (p.fbHideDone() ? "on" : "off") + "\nkickoff: " + (!p.kickoff() ? "off" : p.kickoffWhistle() ? "on (whistle)" : "on (silent)") + "\nkickoffgoal: " + (p.kickoffGoal() ? "on" : "off") + "\nkickoffend: " + (p.kickoffEnd() ? "on" : "off") + "\nkickoffover: " + (p.kickoffOver() ? "on" : "off") + "\ndatenum: " + (p.dateNum() ? "on" : "off") + "\nsearchpill: " + (p.searchPill() ? "on" : "off")
             + "\nprayermethod: " + p.prayerMethod()
             + "\nprayeradj: " + (p.prayerAdjOn() ? "on" : "off") + " " + PrayerAdj.describe(p.prayerAdj())
             + "\nhijrioffset: " + HijriOffset.describe(p.hijriOffset())

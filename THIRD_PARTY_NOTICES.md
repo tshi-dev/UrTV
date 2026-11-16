@@ -129,6 +129,11 @@ starting point) is also adapted from Free My TV: how to pack an `.ipk` and a `.w
 Mode (LG's Key Server and SSH, Samsung's SDB), and which key codes and manifest entries a TV app needs. Each adapted file says so in
 its header.
 
+«أزرار الريموت» (`android/launcher/src/main/java/sa/urtv/home/RemoteButtons.java`, and its copy in the screensaver app) takes Free My TV's
+per-brand remote table from `RemoteKeys.java`, `Prefs.java` and `SabrinaRemote.java` (release 1.5.0): which TVs (by maker, brand,
+model and Android version), which key and scan codes each app button sends, the onn and Chromecast remote checks, Xiaomi's burst
+and TCL Android 11's filter rule. Only the app buttons are taken. The file says so in its header; the licence is the one below.
+
 talkies has `Spring.java` from Free My TV (https://github.com/simbasjungles/free-my-tv, `app/src/io/freemytv/Spring.java`), under
 this license:
 
@@ -183,3 +188,9 @@ have not vetted the apps it installs (the line on its tile says so).
   country and population, places already in the built-in list left out, coordinates rounded to four decimals.
 - **Wikidata** (https://www.wikidata.org/): the Arabic names and other Arabic spellings of those GeoNames places (by their GeoNames id, P1566)
   and the seats of the Saudi governorates, under CC0 1.0 (public domain dedication). A snapshot is kept in `.github/tools/cities-more/sources/`.
+
+## The kick-off whistle (4.4, not third-party)
+
+`android/launcher/src/main/res/raw/kickoff_whistle.ogg` (1.2 s, about 10 KB) is not taken from anywhere: it is synthesised by
+`.github/tools/make_whistle.py` (a pea-whistle tone with its trill and a short release, numpy and ffmpeg) and dedicated to the
+public domain under CC0 1.0. Run the script again to make the same file.

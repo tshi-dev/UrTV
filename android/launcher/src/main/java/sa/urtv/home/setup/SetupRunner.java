@@ -50,8 +50,10 @@ final class SetupRunner {
     static final class End {
         final String text;
         final boolean bad, wifi;
+        /** 4.4: the run never got in (the prompt was cancelled, or got no answer): the screen offers «جهّز كل شي» again, first */
+        final boolean retry;
         End(String text, boolean bad) { this(text, bad, false); }
-        End(String text, boolean bad, boolean wifi) { this.text = text; this.bad = bad; this.wifi = wifi; }
+        End(String text, boolean bad, boolean wifi) { this.text = text; this.bad = bad; this.wifi = wifi; this.retry = CANCELLED_TEXT.equals(text) || NOT_ACCEPTED_TEXT.equals(text); }
     }
 
     /** What the full run would do on this TV, read (nothing changed) after the precheck: the start screen's plan and its real counts. */
@@ -83,7 +85,7 @@ final class SetupRunner {
         SetupEngine.Store store();
         /** Runs the job on a thread that survives the screen (a foreground service holds the process on the TV). */
         void spawn(Runnable job);
-        /** After EVERY end of a run, when its connection is closed: the ADB key goes when nothing is pending (SetupSession.deleteKeyIfFinished). */
+        /** After EVERY end of a run, when its connection is closed (4.4: the ADB key is kept for good, SetupSession.keepKey). */
         void finished();
         /**
          * Before a fresh run (a full one that does not resume, or the undo): an ADB key a run before kept (a switch was pending then) goes now when
@@ -180,6 +182,7 @@ final class SetupRunner {
     private boolean awaitingConfirm;
     private Boolean confirmed;            // null: no answer yet
     private long promptSince;             // when the TV was asked (0: not waiting for the prompt)
+    private long promptClosedAt;          // 4.4: when the screen saw the prompt close (it got its focus back) while no answer had come (0: not seen)
     private boolean promptLate;
 
     SetupRunner() { }
@@ -372,6 +375,18 @@ final class SetupRunner {
     /** The prompt got no answer in 20 s (the screen shows PROMPT_LATE while it still waits). */
     synchronized boolean promptLate() { return promptLate && promptSince > 0; }
     synchronized boolean promptWaiting() { return promptSince > 0; }
+
+    /** 4.4: «إلغاء» counts once the prompt has been closed this long and the TV still gave no answer (an «السماح» answers within a second or two) */
+    static final int CANCEL_GRACE_MS = 6000;
+
+    /** for the tests: the prompt is waiting since then */
+    synchronized void promptStartedForTest(long since) { promptSince = since; promptClosedAt = 0; }
+
+    /** The setup screen got its focus back while the prompt was waiting: the prompt was answered. If no answer comes within CANCEL_GRACE_MS, it was «إلغاء». */
+    synchronized void promptClosed(long now) { if (promptSince > 0 && promptClosedAt == 0) promptClosedAt = now; }
+
+    /** for AdbClient: the prompt closed CANCEL_GRACE_MS ago and still no answer */
+    synchronized boolean promptCancelled(long now) { return promptSince > 0 && promptClosedAt > 0 && now - promptClosedAt >= CANCEL_GRACE_MS; }
 
     private void promptCheck(Host host) {
         boolean say;
@@ -707,14 +722,17 @@ final class SetupRunner {
         Session s;
         if (resumeAt == null) {
             try {
-                s = host.open(180_000, () -> {
-                    line(PROMPT_LINE);
-                    synchronized (this) { promptSince = host.now(); promptLate = false; }
-                    changed();
-                    host.later(PROMPT_LATE_MS, () -> promptCheck(host));
+                s = host.open(180_000, new AdbClient.Approval() {
+                    @Override public void waiting() {
+                        line(PROMPT_LINE);
+                        synchronized (SetupRunner.this) { promptSince = host.now(); promptLate = false; promptClosedAt = 0; }
+                        changed();
+                        host.later(PROMPT_LATE_MS, () -> promptCheck(host));
+                    }
+                    @Override public boolean cancelled() { return promptCancelled(host.now()); }
                 }, out);
             } finally {
-                synchronized (this) { promptSince = 0; }
+                synchronized (this) { promptSince = 0; promptClosedAt = 0; }
             }
             changed();
         } else {
@@ -859,6 +877,11 @@ final class SetupRunner {
         return "انقطع الاتصال بالتلفزيون، والشاشة الرئيسية كما هي (ما كنا في منتصف تبديلها). اضغط «جهّز كل شي» ليكمل من حيث توقف.";
     }
 
+    /** 4.4 (the owner's words): «إلغاء» on the prompt; nothing changed, and the screen offers «جهّز كل شي» again */
+    static final String CANCELLED_TEXT = "ضغطت «إلغاء». اضغط «جهّز كل شي» مرة ثانية واختر «السماح دائماً». ما تغيّر شيء في التلفزيون.";
+    /** no answer to the prompt in time (it may never have shown) */
+    static final String NOT_ACCEPTED_TEXT = "ما وصلنا ردّ على «السماح بتصحيح USB؟». اضغط «جهّز كل شي» مرة ثانية واختر «السماح دائماً». إذا ما ظهرت الرسالة أصلاً: أعد تشغيل التلفزيون ثم جرّب. ما تغيّر شيء في التلفزيون.";   // a prompt left unanswered (e.g. under the screensaver) blocks every later one until adbd restarts: TV test, 30 Oct
+
     static final String CUT = "انقطع الاتصال بالتلفزيون. إن كنت في منتصف تبديل الشاشة الرئيسية فسترجع الأصلية وحدها بعد 5 دقائق. جرّب مرة ثانية.";
 
     /** What a connection error means for the person. */
@@ -866,7 +889,8 @@ final class SetupRunner {
         String cut = CUT;
         if (m == null) return cut;
         if (m.startsWith("debugging is off")) return "تصحيح USB مطفأ في التلفزيون. فعّله (خيارات المطوّر ← تصحيح USB) ثم اضغط «جهّز كل شي».";
-        if (m.contains("permission was not accepted")) return "لم تُقبل رسالة «السماح بتصحيح USB؟». إذا ما ظهرت الرسالة أصلاً: أعد تشغيل التلفزيون، ثم افتح «إعداد تلفزيوني» واضغط «جهّز كل شي» وخلك عند التلفزيون، تطلع خلال ثواني. واختر «السماح دائماً».";   // a prompt left unanswered (e.g. under the screensaver) blocks every later one until adbd restarts: TV test, 30 Oct
+        if (m.equals(AdbClient.CANCELLED)) return CANCELLED_TEXT;
+        if (m.contains("permission was not accepted")) return NOT_ACCEPTED_TEXT;   // a prompt left unanswered (e.g. under the screensaver) blocks every later one until adbd restarts: TV test, 30 Oct
         if (m.contains("TLS")) return "هذا التلفزيون يطلب التصحيح اللاسلكي؛ استخدم «تصحيح USB» العادي.";
         if (m.startsWith("the TV did not come back")) return "ما رجع الاتصال بالتلفزيون بعد إعادة تشغيله. تأكد أن «تصحيح USB» ما زال مفعّلاً، ثم اضغط «جهّز كل شي» ليكمل الإعداد من حيث توقف.";
         return cut;
@@ -875,7 +899,7 @@ final class SetupRunner {
     /** For the tests: a fresh runner state (the process-wide one is never reset on the TV). */
     synchronized void resetForTest() {
         ring.clear(); seq = 0; steps = new ArrayList<>(); kind = null; running = false; end = null; listener = null; options = new Options();
-        live = null; preview = null; awaitingConfirm = false; confirmed = null; promptSince = 0; promptLate = false;
+        live = null; preview = null; awaitingConfirm = false; confirmed = null; promptSince = 0; promptLate = false; promptClosedAt = 0;
     }
 
     static List<String> ids(List<Def> plan) {

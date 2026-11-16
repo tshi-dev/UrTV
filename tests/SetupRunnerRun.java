@@ -238,7 +238,23 @@ public class SetupRunnerRun {
         go(r5, h5, SetupRunner.Kind.FULL, new SetupRunner.Options());
         Host h5b = new Host(SetupEngineRun.tv(), new SetupEngineRun.Mem()); h5b.refuse = "debugging permission was not accepted on the TV";
         SetupRunner r5b = new SetupRunner(); go(r5b, h5b, SetupRunner.Kind.UNDO, new SetupRunner.Options());
-        line("R5 " + r5.end().bad + " " + h5.finished + " " + r5.end().text.startsWith("تصحيح USB مطفأ") + " " + r5b.end().text.startsWith("لم تُقبل رسالة") + " running=" + r5.running());
+        line("R5 " + r5.end().bad + " " + h5.finished + " " + r5.end().text.startsWith("تصحيح USB مطفأ") + " " + r5b.end().text.equals(SetupRunner.NOT_ACCEPTED_TEXT) + " running=" + r5.running()
+            + " retry=" + r5.end().retry + "/" + r5b.end().retry);
+        // 5c. 4.4: «إلغاء» on the prompt (AdbClient ends the wait with CANCELLED): said plainly, «جهّز كل شي» again, nothing sent
+        SetupEngineRun.FakeTv t5c = SetupEngineRun.tv(); Host h5c = new Host(t5c, new SetupEngineRun.Mem()); h5c.refuse = AdbClient.CANCELLED;
+        SetupRunner r5c = new SetupRunner(); go(r5c, h5c, SetupRunner.Kind.FULL, new SetupRunner.Options());
+        line("R5c " + r5c.end().bad + " " + r5c.end().text.equals(SetupRunner.CANCELLED_TEXT) + " retry=" + r5c.end().retry
+            + " changes=" + (t5c.count("pm disable-user") + t5c.count("settings put") + t5c.count("cmd role add")) + " running=" + r5c.running());
+        // 5d. the rule: closed (focus back) + 6 s with no answer = «إلغاء»
+        SetupRunner r5d = new SetupRunner();
+        boolean d1 = r5d.promptCancelled(10_000);            // no prompt waiting
+        r5d.promptStartedForTest(1_000);
+        boolean d2 = r5d.promptCancelled(30_000);            // waiting, never seen closing
+        r5d.promptClosed(20_000);
+        boolean d3 = r5d.promptCancelled(25_000), d4 = r5d.promptCancelled(26_000);   // 5 s after it closed: not yet; 6 s: «إلغاء»
+        r5d.resetForTest();
+        boolean d5 = r5d.promptCancelled(40_000);            // the wait is over
+        line("R5d " + d1 + " " + d2 + " " + d3 + " " + d4 + " " + d5);
         // 6. the undo through the runner: one step, the old sentence
         SetupRunner r6 = new SetupRunner();
         SetupEngineRun.FakeTv t6 = SetupEngineRun.tv(); SetupEngineRun.Mem m6 = new SetupEngineRun.Mem(); Host h6 = new Host(t6, m6);

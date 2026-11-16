@@ -27,6 +27,14 @@ public final class HomeWatchRun {
         HomeWatch s = new HomeWatch();
         boolean spaced = s.decide(true, lx, home, stock, true, 0 + 1) && s.decide(true, lx, home, stock, true, 30_000) && s.decide(true, lx, home, stock, true, 60_000) && s.decide(true, lx, home, stock, true, 90_000);
         check("brings spaced over minutes (the person pressing Home now and then): every one goes", spaced);
+        // 4.4 (step 86 B): Google TV's Home through another activity, or an alias; the stock home's other screens are left alone
+        Set<String> alias = new java.util.HashSet<>(java.util.Arrays.asList(lx + "/" + lx + ".StartupAlias"));
+        check("the HOME answers through an alias, the window is named by its real …HomeActivity: it is the home screen", HomeWatch.homeScreen(lx, home, alias) && new HomeWatch().decide(true, lx, home, alias, true, 1_000));
+        check("another …HomeActivity of the stock home (launcherx shows Home through more than one): the home screen", HomeWatch.homeScreen(lx, lx + ".main.MainHomeActivity", stock));
+        check("«Your apps», its search or its settings: not its home screen", !HomeWatch.homeScreen(lx, lx + ".apps.AppsActivity", stock) && !HomeWatch.homeScreen(lx, lx + ".settings.SettingsActivity", stock));
+        check("a …HomeActivity of ANOTHER app is never a stock home screen", !HomeWatch.homeScreen("com.example.tv", "com.example.tv.HomeActivity", stock));
+        check("a view's class (not an activity of the stock home) is not its home screen", !HomeWatch.homeScreen(lx, "android.widget.FrameLayout", stock));
+        check("the stock homes' packages", HomeWatch.packages(alias).equals(Collections.singleton(lx)));
         System.out.println(bad == 0 ? "ALL PASS" : bad + " FAILED");
         System.exit(bad == 0 ? 0 : 1);
     }

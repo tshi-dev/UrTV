@@ -24,13 +24,16 @@ render = render[:render.index("\n    }\n")]
 
 # ---- every row and header of the settings, in source order, with the header it sits under
 calls, header = [], ""
-for m in re.finditer(r'\bheader\("([^"]+)"\)|\brow\(("(?:[^"\\]|\\.)*"|HOME_CARD_NAMES\[k\]|PrayerAdj\.label\()', st):
+for m in re.finditer(r'\bheader\("([^"]+)"\)|\brow\(("(?:[^"\\]|\\.)*"|HOME_CARD_NAMES\[k\]|PrayerAdj\.label\(|k\.title)', st):
     if m.group(1):
         header = m.group(1)
         calls.append(("header", header, ""))
     elif m.group(2) == "HOME_CARD_NAMES[k]":
         names = re.search(r'HOME_CARD_NAMES = \{([^}]*)\}', st).group(1)
         for n in re.findall(r'"([^"]+)"', names): calls.append(("row", unesc(n), header))
+    elif m.group(2) == "k.title":   # «أزرار الريموت»: one row for each app button this TV's remote has (RemoteButtons; every brand's, for the map)
+        rb = (APP / "RemoteButtons.java").read_text(encoding="utf-8")
+        for n in re.findall(r'b\("[a-z]+", "([^"]+)"', rb): calls.append(("row", unesc(n), header))
     elif m.group(2) == "PrayerAdj.label(":
         pass   # adjRow: the prayers' own rows, by their names and minutes; checked below with the header they are made under
     else:
@@ -39,7 +42,7 @@ rows = [c for c in calls if c[0] == "row"]
 heads = [c for c in calls if c[0] == "header"]
 check("the source has the settings' rows and headers (the test reads what it should)", len(rows) >= 45 and len(heads) >= 9, (len(rows), len(heads)))
 check("no row is made outside render, adjRow and the home cards' loop (so the scan above sees them all)",
-      len(re.findall(r"(?<!View )\brow\((?!\))", st)) == len(re.findall(r'\brow\(("|HOME_CARD_NAMES\[k\]|PrayerAdj\.label\()', st)), "a row( call with another first argument")
+      len(re.findall(r"(?<!View )\brow\((?!\))", st)) == len(re.findall(r'\brow\(("|HOME_CARD_NAMES\[k\]|PrayerAdj\.label\(|k\.title)', st)), "a row( call with another first argument")
 
 catblock = hub[hub.index("static final String[][] CATEGORIES"):hub.index("static final String[][] OLD")]
 cat_names = dict(re.findall(r'\{(SEARCH|LANG|PLACE|LOOK|APPS|BUTTONS|PRAY|CONTENT|SAVER|FAMILY|UPDATE), "([^"]+)"', hub[hub.index("static final String[][] CATEGORIES"):hub.index("static final String[][] OLD")]))

@@ -39,7 +39,7 @@ PHONE = {"city": "المدينة", "home_cards": "البطاقة الأولى", 
          "adhan_fajr_voice": "الأذان", "adhan_volume": "الأذان", "sleep_minutes": None, "saver_idle": "بدء شاشة التوقف بعد", "lang": "اللغة",
          "fav_bar": "تطبيقات في الشريط"}
 # the control centre's rows (ControlCenter.ROWS) that open a setting's row; the others are actions or screens of their own
-CONTROL = {"net": None, "sound": None, "speed": None, "ours": None, "games": None, "city": "المدينة", "tv": None, "saver": None, "adhan": None}
+CONTROL = {"net": None, "sound": None, "speed": None, "ours": None, "games": None, "city": "المدينة", "tv": None, "saver": None, "adhan": None, "black": None}
 YES, NO = "مفعّل", "متوقف"
 # a row's command where docs/SETTINGS.md names its place another way: an example each (the subcommand must be a case of optimize/saver.sh: checked)
 MORE_CMDS = {
@@ -57,8 +57,11 @@ MORE_CMDS = {
     "قائمة الأسهم": ["optimize/saver.sh stocks 2222 1120 AAPL"], "تغيّر الأسهم": ["optimize/saver.sh stkchg amount"], "التصنيفات": ["optimize/saver.sh genres Drama,Comedy"],
     "اللغات": ["optimize/saver.sh langs Arabic,English"], "تصفية المواقع": ["optimize/dock.sh familydns on"], "قفل التطبيقات": ["optimize/dock.sh pin lock com.netflix.ninja"], "أقل تقييم": ["optimize/saver.sh minrating 7"], "تحديث صفحة شاشة التوقف": ["optimize/saver.sh update"],
 }
+# «أزرار الريموت»: one row per app button a remote has (RemoteButtons), each set with `optimize/dock.sh key <button> <package>`
+for _id, _title in re.findall(r'b\("([a-z]+)", "([^"]+)"', (ROOT / "android/app/src/main/java/sa/urtv/screensaver/RemoteButtons.java").read_text(encoding="utf-8")):
+    MORE_CMDS[_title] = [f"optimize/dock.sh key {_id} org.smarttube.stable", f"optimize/dock.sh key {_id} default"]
 # rows that are an action or open a screen of their own, not a value to set (nothing for a command to set)
-ACTIONS = {"اجعل UrTV الشاشة الرئيسية", "تخلّص من واجهة المصنع", "رجّع واجهة المصنع", "قبل ما تحذف التطبيق…", "تفاصيل التطبيقات", "افتح تلاوة وأذان",
+ACTIONS = {"اجعل UrTV الشاشة الرئيسية", "جرّب التنبيه", "تخلّص من واجهة المصنع", "رجّع واجهة المصنع", "قبل ما تحذف التطبيق…", "تفاصيل التطبيقات", "افتح تلاوة وأذان",
            "مباريات اليوم", "افتح صفحة الأسواق", "معاينة الشاشة", "تحديث تلفزيوني", "إعداد تلفزيوني", "مسح الملفات المؤقتة", "أرسل تقرير", "مركز التحكم", "بحث في الإعدادات",
            "تعديل المفضلة", "ترتيب التطبيقات المفضلة", "ترتيب كل التطبيقات", "أسماء المصادر"}
 # rows the code gives no command (no saver.sh case, no receiver extra): set from the TV only

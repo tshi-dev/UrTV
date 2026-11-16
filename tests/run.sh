@@ -22,6 +22,8 @@ python3 tests/install_versions_test.py
 python3 tests/install_retry_test.py
 python3 tests/install_stream_test.py   # 4.3.3: the APK streamed to `cmd package install -S`, else the file as before
 python3 tests/rescue_test.py   # 4.4 «إنقاذ تلفزيونك» and the other ways back with no computer
+python3 tests/homedoctor_test.py   # 4.4 the Home doctor (optimize/homedoctor.py): parsing, verdicts, a fake Google TV run
+python3 tests/home_fix_test.py   # 4.4 step 86 B: the switch survives, the Home watch, one ADB key, «إلغاء» on the prompt, the small setup window
 python3 tests/extras_test.py   # 4.3.3 «إضافات تلفزيونك»: the add-on with the accessibility service, the home without one
 python3 tests/stock_kept_test.py   # 4.3.3: the computer's home switch keeps the stock home and the wizard on; the factory provider
 python3 tests/cast_test.py   # «البث من الجوال»: a Chromecast keeps its setup wizard (the cast credentials); dock.sh cast on|off|status
@@ -32,6 +34,7 @@ python3 tests/scene_home_test.py   # 4.3.3 «المشاهد»: the scene rules p
 python3 tests/settings_classic_test.py   # 4.4 «شكل كنبة» switches the settings screen too: every row in both layouts (4.3.2 and the side list), search in both, the switch in both
 python3 tests/settings_tree_test.py   # docs/SETTINGS-TREE.md is what the code says now (.github/tools/settings_tree.py)
 python3 tests/scene_zoom_test.py   # 4.4 the owner: the clock where it is, the picture lower: more of the digits above the scenery (the visible share on a JVM over the scene's real cut-out)
+python3 tests/photo_masks_gate_test.py   # 4.4 the gate every cut-out passes before it is published: fringe, stairs, floating pieces, the digits' fit (FIT / FRONT-ONLY / REJECT)
 python3 tests/photo_glass_test.py   # 4.4 «الساعة: زجاجية» over our photos: which cut-out, where the digits go (on a JVM), made only while chosen, never «الحرمين»
 python3 tests/cache_sweep_test.py   # 4.3.3 «مسح الملفات المؤقتة»: the caches only, on a JVM over made-up folders
 python3 tests/lowram_test.py   # a weak TV (Ram.low): no key filter, the clock off the UI thread, pictures let go behind apps, markets «عادي» and 60 s, #lowram=1
@@ -76,6 +79,7 @@ python3 tests/update_ui_test.py   # the update screen: card, steps, bar, one but
 python3 tests/album_card_test.py   # «ألبوم صوري»: the card of the own photos (page, saver, home)
 python3 tests/home_nudge_test.py   # «خلّ تلفزيونك يفتح على UrTV»: the card while we are not the Home
 python3 tests/look_tweaks_test.py   # «اللون والتحكم»: accents, tray strength, wallpaper dimming, focus style
+python3 tests/photo_dim_test.py   # 4.4: the photo's darkness is --pdim, never the colour --dim (an opacity read from a colour is 1: a solid black photo)
 python3 tests/security_43_test.py   # 4.3 security and speed round
 python3 tests/appearance_test.py   # the look and backgrounds page
 python3 tests/sync_look_test.py   # 4.3 «توحيد المظهر»: one material for the home's upper buttons, cards and apps bar in every look; off, each on its own
@@ -126,6 +130,8 @@ python3 tests/home_page_test.py   # the home's cards on the screensaver's newer 
 python3 tests/perf_idle_test.py
 python3 tests/league_fixtures_test.py
 python3 tests/match_archive_test.py   # 4.3.1 the match archive: append-only, a corrected score, the live window, the backfill names
+python3 tests/sports_files_test.py   # 4.4 the sports cards' files: sports/<league>.json from the store, f1/next.json once a day
+python3 tests/kickoff_test.py   # 4.4 «تنبيه بداية المباراة»: the rules on a JVM (KickoffRun.java), the whistle, the defaults, the settings, saver.sh and dock.sh overlay
 python3 tests/league_catalogue_test.py   # 4.3 «كل الدوريات»: the CI catalogue (the walk, the content rules, the Arabic names)
 python3 tests/catalogue_leagues_test.py   # 4.3 «كل الدوريات» on the TV: read only when the picker opens, picked ones only, 8 at most
 python3 tests/data_host_test.py   # 4.3.3 the data files: tshi-dev/urtv-data first, the old data branch second, one map in both apps and the page
@@ -135,6 +141,7 @@ python3 tests/device_rule_test.py   # 4.3.3 per-model defaults: matched by brand
 python3 tests/notice_test.py   # 4.3.3 remote notices: one at a time, once per id, never over playback, no links
 python3 tests/market_prices_test.py
 python3 tests/markets_page_test.py   # «الأسواق»: the data and the sums on a JVM, only the sources we have, «الأخبار» off, the ways in
+python3 tests/market_names_test.py   # 4.4 (#60): the home names every code the page names (MarketNames.java is generated from the page's maps)
 python3 tests/portfolio_privacy_test.py   # «محفظتي» stays on the TV: share.py, Report, settings_move, ConfigProvider, the commands
 python3 tests/stocks_search_test.py   # «قائمة الأسهم»: a Tadawul code, ٢٢٢٢ or a company name, and the match shown
 python3 tests/adhkar_tool_test.py
@@ -187,6 +194,7 @@ python3 tests/quiet_hours_test.py   # 4.4 touch «ساعات الهدوء»
 python3 tests/kahf_template_test.py   # 4.4 touch: the Friday Kahf, ready
 python3 tests/fade_in_test.py   # 4.4 touch «يبدأ بهدوء»
 python3 tests/friday_dhuhr_test.py   # 4.4 touch «أذان الجمعة»
+python3 tests/black_screen_test.py   # 4.4 #62 «شاشة سوداء»: listening with the picture off
 python3 tests/loudness_test.py   # the recitation and the adhan lifted inside the player (LoudnessEnhancer), never the TV volume or mute
 python3 tests/seek_burst_test.py
 python3 tests/pill_text_test.py
@@ -213,6 +221,7 @@ python3 tests/apps_edit_test.py
 python3 tests/app_actions_test.py
 python3 tests/menu_dots_test.py
 python3 tests/remote_keys_test.py
+python3 tests/key_apps_test.py
 python3 tests/settings_key_test.py
 python3 tests/remote_nav_test.py
 python3 tests/dpad_rtl_test.py
@@ -305,6 +314,7 @@ node tests/hijri_crosscheck_page.mjs
 node tests/page.test.mjs
 node tests/tafsir.test.mjs   # «التفسير الميسر» (#tafsir=1): every verse of the deck has its tafsir, whole, in pages of three lines at most, never «…»
 node tests/football_page.test.mjs   # the football home's widgets and «المباريات» in a browser, on fixed games
+node tests/sports_cards.test.mjs   # 4.4 «الرياضة»: the sports cards (dist/sports.js) on the home, the couch row and the screensaver, the takeover, only the page's own build
 node tests/matches_archive.test.mjs   # «المباريات» with the match archive (data-archive): every followed team, yesterday's results, a club, a league, the chooser
 node tests/phone_page.test.mjs
 node tests/sync_cards.test.mjs   # «توحيد المظهر» on the page: the cards in the material's fill, line and ink, readable on a light look

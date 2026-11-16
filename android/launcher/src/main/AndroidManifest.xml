@@ -28,6 +28,8 @@
     <!-- the adhan alarm, put back after a reboot or a clock change -->
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
+    <!-- 4.4 «فوق تطبيق آخر» of the kick-off alert: a small notice over another app (TYPE_APPLICATION_OVERLAY, not focusable, not touchable); asked for only when chosen, granted on the TV or with appops (docs/SETTINGS.md); without it a text notice -->
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
     <!-- the adhan at its minute (an alarm clock for the prayer times): from targetSdk 33, Android 14 no longer gives SCHEDULE_EXACT_ALARM to a new
          install, so a TV set up from Downloader would hear the adhan minutes late until the setup's appops ran. USE_EXACT_ALARM (Android 13+, a
          normal permission) keeps it exact as it was on 30; Android 12 still reads SCHEDULE_EXACT_ALARM above. -->
@@ -429,6 +431,7 @@
                 <action android:name="sa.urtv.home.SHOW" />
                 <action android:name="sa.urtv.home.FAMILY_DNS" />
                 <action android:name="sa.urtv.home.BACK_SAVER" />
+                <action android:name="sa.urtv.home.HOME_WANTED" />
                 <action android:name="sa.urtv.home.PHONE_MESSAGE" />
                 <action android:name="sa.urtv.home.PIN_SET" />
                 <action android:name="sa.urtv.home.PIN_LOCK" />
@@ -478,6 +481,15 @@
             android:launchMode="singleTop"
             android:screenOrientation="landscape"
             android:theme="@style/App"
+            android:configChanges="keyboard|keyboardHidden|navigation|orientation|screenSize|screenLayout|uiMode|density" />
+
+        <!-- 4.4 #62 «شاشة سوداء»: black over everything while the recitation plays; any key closes it -->
+        <activity
+            android:name=".tilawah.BlackScreenActivity"
+            android:exported="false"
+            android:excludeFromRecents="true"
+            android:screenOrientation="landscape"
+            android:theme="@android:style/Theme.Black.NoTitleBar.Fullscreen"
             android:configChanges="keyboard|keyboardHidden|navigation|orientation|screenSize|screenLayout|uiMode|density" />
 
         <activity
@@ -632,6 +644,20 @@
                 <action android:name="android.intent.action.TIMEZONE_CHANGED" />
                 <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
                 <action android:name="sa.urtv.home.REMINDER_RESCHEDULE" />
+            </intent-filter>
+        </receiver>
+        <!-- 4.4 «تنبيه بداية المباراة»: the alarm at a followed club's kick-off (sports/KickoffScheduler), put back after a reboot, a clock change or an update -->
+        <receiver
+            android:name=".KickoffReceiver"
+            android:exported="true"
+            android:permission="android.permission.DUMP">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.QUICKBOOT_POWERON" />
+                <action android:name="android.intent.action.TIME_SET" />
+                <action android:name="android.intent.action.TIMEZONE_CHANGED" />
+                <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
+                <action android:name="sa.urtv.home.KICKOFF_RESCHEDULE" />
             </intent-filter>
         </receiver>
 

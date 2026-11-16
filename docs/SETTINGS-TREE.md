@@ -247,6 +247,63 @@ the phone page's key, «مركز التحكم» the control centre's row that op
      القيم المقبولة: on|off
 —— الرجوع يفتح شاشة التوقف [الرئيسية]
    مثال للوكيل: optimize/dock.sh backsaver on  (`off` = the default: Back does nothing at the top of the home, as always; no argument says `back-saver: on|off`)
+—— زر يوتيوب في الريموت [الرئيسية]
+   مثال للوكيل: optimize/dock.sh key youtube org.smarttube.stable
+   مثال للوكيل: optimize/dock.sh key youtube default
+—— زر نتفليكس في الريموت [الرئيسية]
+   مثال للوكيل: optimize/dock.sh key netflix org.smarttube.stable
+   مثال للوكيل: optimize/dock.sh key netflix default
+—— زر Prime Video في الريموت [الرئيسية]
+   مثال للوكيل: optimize/dock.sh key prime org.smarttube.stable
+   مثال للوكيل: optimize/dock.sh key prime default
+—— زر ديزني بلس في الريموت [الرئيسية]
+   مثال للوكيل: optimize/dock.sh key disney org.smarttube.stable
+   مثال للوكيل: optimize/dock.sh key disney default
+—— زر Paramount Plus في الريموت [الرئيسية]
+   مثال للوكيل: optimize/dock.sh key paramount org.smarttube.stable
+   مثال للوكيل: optimize/dock.sh key paramount default
+—— زر Free TV في الريموت [الرئيسية]
+   مثال للوكيل: optimize/dock.sh key freetv org.smarttube.stable
+   مثال للوكيل: optimize/dock.sh key freetv default
+—— الزر المخصص ★ في الريموت [الرئيسية]
+   مثال للوكيل: optimize/dock.sh key star org.smarttube.stable
+   مثال للوكيل: optimize/dock.sh key star default
+—— زر BRAVIA CORE في الريموت [الرئيسية]
+   مثال للوكيل: optimize/dock.sh key core org.smarttube.stable
+   مثال للوكيل: optimize/dock.sh key core default
+—— زر Crunchyroll في الريموت [الرئيسية]
+   مثال للوكيل: optimize/dock.sh key crunchyroll org.smarttube.stable
+   مثال للوكيل: optimize/dock.sh key crunchyroll default
+—— زر Google Play في الريموت [الرئيسية]
+   مثال للوكيل: optimize/dock.sh key play org.smarttube.stable
+   مثال للوكيل: optimize/dock.sh key play default
+—— زر SonyLIV في الريموت [الرئيسية]
+   مثال للوكيل: optimize/dock.sh key sonyliv org.smarttube.stable
+   مثال للوكيل: optimize/dock.sh key sonyliv default
+—— زر Tabii في الريموت [الرئيسية]
+   مثال للوكيل: optimize/dock.sh key tabii org.smarttube.stable
+   مثال للوكيل: optimize/dock.sh key tabii default
+—— زر TCL Channel في الريموت [الرئيسية]
+   مثال للوكيل: optimize/dock.sh key tclchannel org.smarttube.stable
+   مثال للوكيل: optimize/dock.sh key tclchannel default
+—— زر Okko في الريموت [الرئيسية]
+   مثال للوكيل: optimize/dock.sh key okko org.smarttube.stable
+   مثال للوكيل: optimize/dock.sh key okko default
+—— زر VK في الريموت [الرئيسية]
+   مثال للوكيل: optimize/dock.sh key vk org.smarttube.stable
+   مثال للوكيل: optimize/dock.sh key vk default
+—— زر Rutube في الريموت [الرئيسية]
+   مثال للوكيل: optimize/dock.sh key rutube org.smarttube.stable
+   مثال للوكيل: optimize/dock.sh key rutube default
+—— زر KION في الريموت [الرئيسية]
+   مثال للوكيل: optimize/dock.sh key kion org.smarttube.stable
+   مثال للوكيل: optimize/dock.sh key kion default
+—— زر Wink في الريموت [الرئيسية]
+   مثال للوكيل: optimize/dock.sh key wink org.smarttube.stable
+   مثال للوكيل: optimize/dock.sh key wink default
+—— زر IVI في الريموت [الرئيسية]
+   مثال للوكيل: optimize/dock.sh key ivi org.smarttube.stable
+   مثال للوكيل: optimize/dock.sh key ivi default
 — الصلاة والأذان
 —— الأذان [كل التلفزيون]
    مثال للوكيل: optimize/music.sh adhan
@@ -292,6 +349,26 @@ the phone page's key, «مركز التحكم» the control centre's row that op
 ——— إخفاء المباريات المنتهية [الرئيسية]
     مثال للوكيل: optimize/saver.sh fbhide on  (`off`, the default: an ended game stays with its score)
       القيم المقبولة: on|off
+——— تنبيه بداية المباراة [الرئيسية وشاشة التوقف]
+    مثال للوكيل: optimize/saver.sh kickoff off  (`on`, the default; `silent` = on with no sound, `whistle` = on with the short whistle)
+      القيم المقبولة: on|off|silent|whistle
+——— صوت التنبيه [الرئيسية وشاشة التوقف]
+    مثال للوكيل: optimize/saver.sh kickoff silent  (no sound)
+      القيم المقبولة: on|off|silent|whistle
+    مثال للوكيل: optimize/saver.sh kickoff whistle  (the short whistle, the default)
+      القيم المقبولة: on|off|silent|whistle
+——— عند الهدف [الرئيسية وشاشة التوقف]
+    مثال للوكيل: optimize/saver.sh kickoffgoal on  (`off`, the default)
+      القيم المقبولة: on|off
+——— صافرة النهاية [الرئيسية وشاشة التوقف]
+    مثال للوكيل: optimize/saver.sh kickoffend on  (`off`, the default)
+      القيم المقبولة: on|off
+——— فوق تطبيق آخر [كل التلفزيون]
+    مثال للوكيل: optimize/saver.sh kickoffover on  (`off`, the default)
+      القيم المقبولة: on|off
+    مثال للوكيل: optimize/dock.sh overlay on  (= `appops set sa.urtv.home SYSTEM_ALERT_WINDOW allow`; `overlay off`, `overlay status`)
+——— جرّب التنبيه [الرئيسية وشاشة التوقف]
+    إجراء أو شاشة من التلفزيون (ما فيه قيمة يضبطها أمر)
 —— صفحة الأسواق
 ——— افتح صفحة الأسواق [الرئيسية]
     إجراء أو شاشة من التلفزيون (ما فيه قيمة يضبطها أمر)
@@ -338,7 +415,7 @@ the phone page's key, «مركز التحكم» the control centre's row that op
      القيم المقبولة: auto|on|off
 —— بجانب الساعة
 ——— المحتوى [شاشة التوقف]
-    مثال للوكيل: optimize/saver.sh card <shows, prayers, forecast, hourly, prayerrow, matches, nextmatch, verse, wisdom, adhkar, stocks, tasks, year, smart, today, album, none>  (the app's own list, Prefs.SAVER_PANELS; `nextprayer` is a home-screen card only: `home-card`)
+    مثال للوكيل: optimize/saver.sh card <shows, prayers, forecast, hourly, prayerrow, matches, nextmatch, matchday, livenow, minitable, nextmatches, yesterday, weekend, cuppath, formula, national, verse, wisdom, adhkar, stocks, tasks, year, smart, today, album, none>  (the app's own list, Prefs.SAVER_PANELS; `nextprayer` is a home-screen card only: `home-card`)
 ——— بطاقة ثانية [شاشة التوقف]
     مثال للوكيل: optimize/saver.sh card2 <the same list as card, but never the card that is already first>  (`card2 none` = one card, the default; the second card can't repeat the first, and needs a first card: `card verse` first)
 ——— تبديل الآية والحديث [الرئيسية وشاشة التوقف]
@@ -516,7 +593,7 @@ the phone page's key, «مركز التحكم» the control centre's row that op
        القيم المقبولة: fasting
 ——— بجانب الساعة
 ———— المحتوى [شاشة التوقف]
-     مثال للوكيل: optimize/saver.sh card <shows, prayers, forecast, hourly, prayerrow, matches, nextmatch, verse, wisdom, adhkar, stocks, tasks, year, smart, today, album, none>  (the app's own list, Prefs.SAVER_PANELS; `nextprayer` is a home-screen card only: `home-card`)
+     مثال للوكيل: optimize/saver.sh card <shows, prayers, forecast, hourly, prayerrow, matches, nextmatch, matchday, livenow, minitable, nextmatches, yesterday, weekend, cuppath, formula, national, verse, wisdom, adhkar, stocks, tasks, year, smart, today, album, none>  (the app's own list, Prefs.SAVER_PANELS; `nextprayer` is a home-screen card only: `home-card`)
 ———— بطاقة ثانية [شاشة التوقف]
      مثال للوكيل: optimize/saver.sh card2 <the same list as card, but never the card that is already first>  (`card2 none` = one card, the default; the second card can't repeat the first, and needs a first card: `card verse` first)
 ———— شكل البطاقة [الرئيسية وشاشة التوقف]
@@ -598,6 +675,63 @@ the phone page's key, «مركز التحكم» the control centre's row that op
        القيم المقبولة: on|off
 ———— الرجوع يفتح شاشة التوقف [الرئيسية]
      مثال للوكيل: optimize/dock.sh backsaver on  (`off` = the default: Back does nothing at the top of the home, as always; no argument says `back-saver: on|off`)
+———— زر يوتيوب في الريموت [الرئيسية]
+     مثال للوكيل: optimize/dock.sh key youtube org.smarttube.stable
+     مثال للوكيل: optimize/dock.sh key youtube default
+———— زر نتفليكس في الريموت [الرئيسية]
+     مثال للوكيل: optimize/dock.sh key netflix org.smarttube.stable
+     مثال للوكيل: optimize/dock.sh key netflix default
+———— زر Prime Video في الريموت [الرئيسية]
+     مثال للوكيل: optimize/dock.sh key prime org.smarttube.stable
+     مثال للوكيل: optimize/dock.sh key prime default
+———— زر ديزني بلس في الريموت [الرئيسية]
+     مثال للوكيل: optimize/dock.sh key disney org.smarttube.stable
+     مثال للوكيل: optimize/dock.sh key disney default
+———— زر Paramount Plus في الريموت [الرئيسية]
+     مثال للوكيل: optimize/dock.sh key paramount org.smarttube.stable
+     مثال للوكيل: optimize/dock.sh key paramount default
+———— زر Free TV في الريموت [الرئيسية]
+     مثال للوكيل: optimize/dock.sh key freetv org.smarttube.stable
+     مثال للوكيل: optimize/dock.sh key freetv default
+———— الزر المخصص ★ في الريموت [الرئيسية]
+     مثال للوكيل: optimize/dock.sh key star org.smarttube.stable
+     مثال للوكيل: optimize/dock.sh key star default
+———— زر BRAVIA CORE في الريموت [الرئيسية]
+     مثال للوكيل: optimize/dock.sh key core org.smarttube.stable
+     مثال للوكيل: optimize/dock.sh key core default
+———— زر Crunchyroll في الريموت [الرئيسية]
+     مثال للوكيل: optimize/dock.sh key crunchyroll org.smarttube.stable
+     مثال للوكيل: optimize/dock.sh key crunchyroll default
+———— زر Google Play في الريموت [الرئيسية]
+     مثال للوكيل: optimize/dock.sh key play org.smarttube.stable
+     مثال للوكيل: optimize/dock.sh key play default
+———— زر SonyLIV في الريموت [الرئيسية]
+     مثال للوكيل: optimize/dock.sh key sonyliv org.smarttube.stable
+     مثال للوكيل: optimize/dock.sh key sonyliv default
+———— زر Tabii في الريموت [الرئيسية]
+     مثال للوكيل: optimize/dock.sh key tabii org.smarttube.stable
+     مثال للوكيل: optimize/dock.sh key tabii default
+———— زر TCL Channel في الريموت [الرئيسية]
+     مثال للوكيل: optimize/dock.sh key tclchannel org.smarttube.stable
+     مثال للوكيل: optimize/dock.sh key tclchannel default
+———— زر Okko في الريموت [الرئيسية]
+     مثال للوكيل: optimize/dock.sh key okko org.smarttube.stable
+     مثال للوكيل: optimize/dock.sh key okko default
+———— زر VK في الريموت [الرئيسية]
+     مثال للوكيل: optimize/dock.sh key vk org.smarttube.stable
+     مثال للوكيل: optimize/dock.sh key vk default
+———— زر Rutube في الريموت [الرئيسية]
+     مثال للوكيل: optimize/dock.sh key rutube org.smarttube.stable
+     مثال للوكيل: optimize/dock.sh key rutube default
+———— زر KION في الريموت [الرئيسية]
+     مثال للوكيل: optimize/dock.sh key kion org.smarttube.stable
+     مثال للوكيل: optimize/dock.sh key kion default
+———— زر Wink في الريموت [الرئيسية]
+     مثال للوكيل: optimize/dock.sh key wink org.smarttube.stable
+     مثال للوكيل: optimize/dock.sh key wink default
+———— زر IVI في الريموت [الرئيسية]
+     مثال للوكيل: optimize/dock.sh key ivi org.smarttube.stable
+     مثال للوكيل: optimize/dock.sh key ivi default
 ———— الخروج من تلفزيونك [كل التلفزيون]
      مثال للوكيل: optimize/saver.sh backexit hold  (a long Back, about a second, leaves)
        القيم المقبولة: press|hold|three
@@ -708,6 +842,26 @@ the phone page's key, «مركز التحكم» the control centre's row that op
 ———— إخفاء المباريات المنتهية [الرئيسية]
      مثال للوكيل: optimize/saver.sh fbhide on  (`off`, the default: an ended game stays with its score)
        القيم المقبولة: on|off
+———— تنبيه بداية المباراة [الرئيسية وشاشة التوقف]
+     مثال للوكيل: optimize/saver.sh kickoff off  (`on`, the default; `silent` = on with no sound, `whistle` = on with the short whistle)
+       القيم المقبولة: on|off|silent|whistle
+———— صوت التنبيه [الرئيسية وشاشة التوقف]
+     مثال للوكيل: optimize/saver.sh kickoff silent  (no sound)
+       القيم المقبولة: on|off|silent|whistle
+     مثال للوكيل: optimize/saver.sh kickoff whistle  (the short whistle, the default)
+       القيم المقبولة: on|off|silent|whistle
+———— عند الهدف [الرئيسية وشاشة التوقف]
+     مثال للوكيل: optimize/saver.sh kickoffgoal on  (`off`, the default)
+       القيم المقبولة: on|off
+———— صافرة النهاية [الرئيسية وشاشة التوقف]
+     مثال للوكيل: optimize/saver.sh kickoffend on  (`off`, the default)
+       القيم المقبولة: on|off
+———— فوق تطبيق آخر [كل التلفزيون]
+     مثال للوكيل: optimize/saver.sh kickoffover on  (`off`, the default)
+       القيم المقبولة: on|off
+     مثال للوكيل: optimize/dock.sh overlay on  (= `appops set sa.urtv.home SYSTEM_ALERT_WINDOW allow`; `overlay off`, `overlay status`)
+———— جرّب التنبيه [الرئيسية وشاشة التوقف]
+     إجراء أو شاشة من التلفزيون (ما فيه قيمة يضبطها أمر)
 ——— صفحة الأسواق
 ———— افتح صفحة الأسواق [الرئيسية]
      إجراء أو شاشة من التلفزيون (ما فيه قيمة يضبطها أمر)

@@ -76,7 +76,7 @@ final class ControlCenter {
     /** the round toggles, in this order; every other item is a row */
     static final String[] TOGGLES = {"bluetooth", "mirror", "sleep", "off"};
     /** the rows' order before the person moves any; «شاشة التوقف» is unticked until they ask for it (its own pill is on the home) */
-    static final String[] ROWS = {"net", "sound", "speed", "ours", "games", "city", "adhan", "tv", "saver"};   // 4.3.1: ours before the TV's, the city beside it; 4.3.3: «الأذان والإقامة»
+    static final String[] ROWS = {"net", "sound", "speed", "ours", "games", "city", "adhan", "tv", "saver", "black"};   // 4.3.1: ours before the TV's, the city beside it; 4.3.3: «الأذان والإقامة»; 4.4 #62: the black screen
     /** the order before 4.3.1 (ours after the TV's): saved by anyone who opened the editor, never a choice, so it follows the new default */
     static final String OLD_DEFAULT = "net,sound,speed,tv,ours,saver";
     static final String[] DEFAULT_OFF = {"saver"};
@@ -217,6 +217,10 @@ final class ControlCenter {
             dismiss();
             host.launchGuarded(ParentalPolicy.SLEEP_ACCESSIBILITY, Extras.intent(act, "sleep"), "إعدادات التلفزيون");
         };
+        // 4.4 #62 «شاشة سوداء»: only while a surah or a station is on; behind the «تلاوة وأذان» lock, as the player is
+        if (sa.urtv.home.tilawah.NowPlaying.read(act).show)
+            tile("black", S.t("شاشة سوداء"), S.t("الصوت يستمر والصورة تنطفئ"), R.drawable.ic_power,
+                    () -> { dismiss(); host.launchGuarded(ParentalPolicy.PILL_LISTEN, sa.urtv.home.tilawah.BlackScreenActivity.open(act), "تلاوة وأذان"); });
         // «انعكاس الشاشة»: the TV's own mirroring app (ControlText.MIRROR_APPS), only when one is installed; locked as that app's own tile is
         final Intent mirror = mirrorIntent();
         if (mirror != null)

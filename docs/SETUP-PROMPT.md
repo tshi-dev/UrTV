@@ -194,6 +194,8 @@ yet»), or an old UrTV folder is there without a working `.git`, delete that fol
   `optimize/share.sh --send`. Never open a GitHub issue, discussion, comment or pull request for me, never use `gh`
   or the GitHub website on my behalf: the developer reads the form, and a GitHub post is public and can carry my
   details. If the TV doesn't answer, send it anyway: the report says so.
+  A problem report also carries what the screen shows (the front activity, the windows that dim, the WebView, the brightness setting). For a dark or black
+  screen ask me «أقيس سطوع الصورة؟» and only if I say yes add `--screencap`: the picture is measured on this computer, one line of numbers is sent, the picture is deleted.
 - Ask me before anything not in this prompt. If something fails twice, and the table's fix didn't help, stop,
   show me the output and propose a fix.
 - Never tell me something worked without its proof: the script's own success line, or a screenshot you looked at.
@@ -442,6 +444,7 @@ optimize/saver.sh mkstyle <arrows or prices>      # ONLY if I asked to see the p
 optimize/saver.sh stocks <Tadawul codes and US tickers, e.g. 2222 1120 AAPL>   # ONLY with card stocks: my watchlist, up to 8 (default 2222 1120 7010 2010: leave it)
 optimize/saver.sh slot <matches, weather, fasting, countdown, markets or none>   # ONLY if I asked what the bottom-left slot shows (default matches: leave it; with no team it shows the weather by itself)
 optimize/saver.sh countdown <YYYY-MM-DD> '<name>'   # ONLY if I asked for a countdown (also: slot countdown); "countdown clear" removes it
+optimize/dock.sh key <button> <pkg>               # ONLY if I asked a remote button to open another app (`optimize/dock.sh key` lists this remote's buttons; default: as before, leave it); over other apps it needs «إضافات تلفزيونك» (`optimize/dock.sh extras-setup`)
 # own photos (only if I ask, or say yes to the offer in step 7): optimize/photos.sh add FILE... | list | del N | clear | mode mix|only|album | show
 optimize/saver.sh update
 optimize/saver.sh show                            # read both back to me

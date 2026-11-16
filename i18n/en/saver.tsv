@@ -410,6 +410,15 @@
 الصلاة القادمة	Next prayer
 مباريات فرقك القادمة	Your teams’ matches
 مباراة فريقك القادمة	Your team’s next match
+مباراة اليوم	Match day
+مباشر الآن	Live now
+جدول الترتيب	Table
+مباراة كل فريق القادمة	Each team’s next match
+نتائج أمس	Yesterday’s results
+نهاية الأسبوع	The weekend
+طريق الكأس	Cup path
+فورمولا ١	Formula 1
+المنتخب السعودي	Saudi national team
 آية أو حديث اليوم	Verse or hadith of the day
 حكمة اليوم	Saying of the day
 أذكار الصباح والمساء	Morning and evening adhkar
@@ -426,6 +435,15 @@
 سطر واحد: الصلاة الجاية ووقتها وكم باقي لها	One line: the next prayer, its time, and time left
 مباريات الأسبوع ونتائج آخر يوم لفرقك، وكل مباراة بسطر واحد	This week’s matches and the latest results for your teams, one line each
 مباراة فرقك الجاية بس، وتحتها آخر ٥ مواجهات بين الفريقين	Your teams’ next match alone, with the two clubs’ last 5 meetings under it
+يوم مباراة فريقك: العد التنازلي ثم النتيجة والدقيقة ثم النتيجة النهائية، وتأخذ وسط شاشة التوقف	Your team’s match day: the countdown, then the score and the minute, then the final score; it takes the middle of the screensaver
+مباريات فرقك ودورياتك الجارية الآن بنتيجتها ودقيقتها	Your teams’ and leagues’ matches under way, with the score and the minute
+الأربعة الأوائل وفريقك وجاراه، ومستوى كل فريق في آخر ٥	The top 4, your team and its neighbours, each with its last 5
+مربع لكل فريق تتابعه: الخصم واليوم والوقت والبطولة وعلى أرضه أو خارجها	A box for each team you follow: the other side, the day, the time, the competition, home or away
+نتائج أمس، فرقك أولًا ثم دورياتك	Yesterday’s results, your teams first, then your leagues
+مباريات الخميس والجمعة والسبت في دورياتك، ومباراة فريقك ذهبية	Thursday’s, Friday’s and Saturday’s matches of your leagues, your team’s in gold
+أدوار البطولة الإقصائية وطريق فريقك فيها	A cup’s knockout rounds and your team’s path through them
+السباق القادم وجلساته بتوقيت مدينتك	The next race and its sessions in your city’s time
+مباراة المنتخب السعودي القادمة: الخصم واليوم والوقت وآخر مواجهة	The Saudi national team’s next match: the other side, the day, the time and their last meeting
 آية يوم، وحديث صحيح من الكتب الستة اليوم اللي بعده، ومعه مصدره	A verse one day, an authentic hadith from the Six Books the next, with its source
 مثل أو قول عربي معروف مع مصدره	A well-known Arabic proverb or saying with its source
 من الفجر للظهر أذكار الصباح، ومن العصر للمغرب أذكار المساء	Morning adhkar from Fajr to Dhuhr, evening adhkar from Asr to Maghrib
@@ -1042,3 +1060,34 @@
 الشكل: %s، والإضاءة: %s	Look: %s, lighting: %s
 مفعّل (التخطيط كنبة، الخلفية الآفاق، الساعة زجاجية، التطبيقات تكبير وظل؛ إيقافه يرجّع اختياراتك)	On (layout Couch, background horizons, glass clock, apps larger with a shadow; turning it off brings your own choices back)
 مفعّل (مخصّص: غيّرت صفًا من الأربعة؛ إيقافه يرجّع اختياراتك قبل التشغيل)	On (custom: you changed one of the four rows; turning it off brings back your choices from before)
+زر يوتيوب في الريموت	Remote's YouTube button
+زر نتفليكس في الريموت	Remote's Netflix button
+زر Prime Video في الريموت	Remote's Prime Video button
+زر ديزني بلس في الريموت	Remote's Disney+ button
+زر Paramount Plus في الريموت	Paramount Plus button
+زر Free TV في الريموت	Remote's Free TV button
+الزر المخصص ★ في الريموت	Remote's custom button ★
+زر BRAVIA CORE في الريموت	BRAVIA CORE button
+زر Crunchyroll في الريموت	Remote's Crunchyroll button
+زر Google Play في الريموت	Remote's Google Play button
+زر SonyLIV في الريموت	Remote's SonyLIV button
+زر Tabii في الريموت	Remote's Tabii button
+زر TCL Channel في الريموت	Remote's TCL Channel button
+زر Okko في الريموت	Remote's Okko button
+زر VK في الريموت	Remote's VK button
+زر Rutube في الريموت	Remote's Rutube button
+زر KION في الريموت	Remote's KION button
+زر Wink في الريموت	Remote's Wink button
+زر IVI في الريموت	Remote's IVI button
+، على الشاشة الرئيسية فقط في هذا التلفزيون	, on the home screen only on this TV
+، على الشاشة الرئيسية فقط (وفوق التطبيقات مع «إضافات تلفزيونك»)	, on the home screen only (over other apps with «UrTV Extras»)
+تنبيه بداية المباراة	Kick-off alert
+صوت التنبيه	Alert sound
+عند الهدف	On a goal
+صافرة النهاية	Final whistle
+فوق تطبيق آخر	Over other apps
+هذا التلفزيون يخفي هذا الإذن، فيُعطى من الكمبيوتر	This TV hides this permission: it is given from the computer
+يعمل لفرقك	On, for your teams
+جرّب التنبيه	Try the alert
+يظهر الآن بفريقين للتجربة	Shows now, with two sample teams
+بدأت المباراة	Kick-off

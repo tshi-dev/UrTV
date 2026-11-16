@@ -44,7 +44,7 @@ check("the xml comment says why", "canRequestFilterKeyEvents:" in xml and "set a
 check("the service is declared once, in the add-on, with its xml, behind BIND_ACCESSIBILITY_SERVICE; the home has none",
       xman.count('android:name="sa.urtv.home.ExtrasA11yService"') == 1 and "@xml/extras_service" in xman and "BIND_ACCESSIBILITY_SERVICE" not in man
       and 'android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE"' in xman.split('android:name="sa.urtv.home.ExtrasA11yService"')[1][:300])
-check("no new permission for this (the launcher declares the same ones, and our own EXTRAS one)", man.count("<uses-permission") == 24)   # 19 since REQUEST_DELETE_PACKAGES («حذف التطبيق» in the app menu); 21 since targetSdk 34: FOREGROUND_SERVICE_SPECIAL_USE (SetupService must name its type) and USE_EXACT_ALARM (the adhan stays exact on a new install)
+check("no new permission for this (the launcher declares the same ones, and our own EXTRAS one)", man.count("<uses-permission") == 25)   # 25 since 4.4 the kick-off alert (SYSTEM_ALERT_WINDOW, «فوق تطبيق آخر», off by default); 19 since REQUEST_DELETE_PACKAGES («حذف التطبيق» in the app menu); 21 since targetSdk 34: FOREGROUND_SERVICE_SPECIAL_USE (SetupService must name its type) and USE_EXACT_ALARM (the adhan stays exact on a new install)
 check("the TV's accessibility settings tell the person about the Settings key", "زر الإعدادات في الريموت يفتح إعدادات التلفزيون" in text("android/extras/src/main/res/values/strings.xml"))
 
 # the service
@@ -73,10 +73,10 @@ check("the home answers EXTRA_SETTINGS_KEY once, through launchGuarded(REMOTE_SE
       "i.removeExtra(EXTRA_SETTINGS_KEY);" in skr and "launchGuarded(ParentalPolicy.REMOTE_SETTINGS, tv," in skr
       and main.count("settingsKeyRequested(getIntent());") == 1 and main.count("settingsKeyRequested(intent);") == 1)
 logs = re.findall(r'\blog\(([^;]*)\);', ts.split("// ---------------------------------------------------------------- the remote's Settings key")[1].split("// ---------------------------------------------------------------- typing from the phone")[0])
-check("the Settings key's log lines are fixed words only (no key code, no package)", logs and all(re.fullmatch(r'"settings key=[a-z]+"', l) for l in logs), logs)
+check("the Settings key's and the remote buttons' («أزرار الريموت») log lines are fixed words only (no key code, no package)", logs and all(re.fullmatch(r'"(settings key|key app)=[a-z]+"', l) for l in logs), logs)
 ev = ts.split("public void onAccessibilityEvent(AccessibilityEvent e) {")[1].split("\n    }\n")[0]
 check("the service tells from the window that comes to the front whether our home is in front (its package only), and sets the filter again when it changes",
-      "boolean front = pkg.equals(HOME_PKG);" in ev and "if (front != homeFront) { homeFront = front; filterKeys(); }" in ev)
+      "boolean front = pkg.equals(HOME_PKG);" in ev and "if (front != homeFront) {" in ev and "homeFront = front;" in ev and ev.index("homeFront = front;") < ev.index("filterKeys();"))
 check("a stock home is found by an ordinary HOME query (enabled packages only)", "queryIntentActivities(new Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_HOME), 0)" in ts
       and "SettingsKey.stockHomeOn(java.util.Collections.singletonList(ri.activityInfo.packageName), HOME_PKG)" in ts)
 check("our home's own Settings key path stays the home's (RemoteKeys: a long press OUR settings, a short one the TV's)", "case RemoteKeys.OPEN_OUR_SETTINGS:" in main and "case RemoteKeys.OPEN_SETTINGS:" in main)

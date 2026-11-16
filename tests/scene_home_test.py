@@ -33,12 +33,32 @@ ram = read(HOME / "Ram.java")
 if shutil.which("javac"):
     with tempfile.TemporaryDirectory() as tmp:
         subprocess.run(["javac", "-encoding", "UTF-8", "-d", tmp, str(HOME / "ScenePlan.java"), str(ROOT / "tests/ScenePlanRun.java")], check=True, capture_output=True)
-        out = subprocess.run(["java", "-Dfile.encoding=UTF-8", "-cp", tmp, "sa.urtv.home.ScenePlanRun", str(PACK / "scenes.tsv")],
+        small = []
+        try:   # each cut-out made small as the home does (SceneHome.skylineOf): 96 wide nearest, 384 wide smoothed
+            import struct
+            from PIL import Image as _I
+
+            def put(img, name):
+                raw = img.tobytes()
+                px = [(raw[i + 3] << 24 | raw[i] << 16 | raw[i + 1] << 8 | raw[i + 2]) - ((1 << 32) if raw[i + 3] >= 128 else 0) for i in range(0, len(raw), 4)]
+                (Path(tmp) / name).write_bytes(struct.pack(">ii", img.width, img.height) + struct.pack(f">{len(px)}i", *px))
+            for l in read(PACK / "scenes.tsv").splitlines():
+                f = l.split("\t")
+                if not l or l.startswith("#") or len(f) < 6 or f[5].strip() == "-": continue
+                fg = _I.open(PACK / f"{f[0]}-fg.webp").convert("RGBA")
+                for sw, how, name in ((96, _I.NEAREST, "48"), (384, _I.BILINEAR, "192")):
+                    put(fg.resize((sw, max(1, round(sw * fg.height / fg.width))), how), f"{f[0]}-{name}.bin")
+            small.append(tmp)
+        except ImportError:
+            print("SKIP the bundled cut-outs: no Pillow here")
+        out = subprocess.run(["java", "-Dfile.encoding=UTF-8", "-cp", tmp, "sa.urtv.home.ScenePlanRun", str(PACK / "scenes.tsv"), *small],
                              check=True, capture_output=True).stdout.decode("utf-8").splitlines()
     rows = [l.split("\t") for l in out]
     scenes = [r for r in rows if r[0] == "scene"]
-    check("4.4 the app carries one Saudi scene, Riyadh, with its cut-out (the four others are downloaded the first time: the owner keeps the APK light)",
-          [s[1] for s in scenes] == ["riyadh"] and all(s[5] != "-" for s in scenes), scenes)
+    check("4.4 the app carries one Saudi scene, Riyadh, with its cut-out (the four others are downloaded the first time: the owner keeps the APK "
+          "light); the clock where the owner put it, the towers in front (tag owner_ok: no legibility drop for it)",
+          [s[1] for s in scenes] == ["riyadh"] and all(s[5] != "-" for s in scenes)
+          and "owner_ok" in read(ROOT / "android/launcher/src/main/assets/scenes/saudi/scenes.tsv").split("riyadh\t")[1].splitlines()[0], scenes)
     check("a bad line is left out, never half read (a bad id, a clock too small to read, a bad box); a good one is kept",
           [r for r in rows if r[0] == "bad"][0][1] == "1")
     packs = {r[1]: r[2] for r in rows if r[0] == "packs"}
@@ -52,10 +72,12 @@ if shutil.which("javac"):
     top, bottom = int(scenes[0][3]), int(scenes[0][4])
     check("the clock: in the middle with no cards; with the cards (on the left of an Arabic home) on the right half, on the left in English",
           box[("false", "true")][0] + box[("false", "true")][2] == 1920 and box[("true", "true")][0] >= 960 and box[("true", "false")][2] <= 960, box)
-    check("the clock stands on the scene's own bottom line (its scenery crosses the digits there), and fits the screen",
-          all(b[3] == bottom and b[1] >= top and 0 <= b[0] < b[2] <= 1920 for b in box.values()), box)
+    check("4.4 the owner: the clock always in the same place across our images: the digits at 266-542 of 1080 (where the owner approved Riyadh) "
+          "on every scene and photo, whatever a scene's digits_top and digits_bottom say; with the cards beside it, the start half",
+          all(b[1] == 266 and b[3] == 542 and 0 <= b[0] < b[2] <= 1920 for b in box.values()) and box[("false", "true")] == [601, 266, 1319, 542]
+          and box[("true", "true")] == [1043, 266, 1761, 542] and box[("true", "false")] == [159, 266, 877, 542], box)
     b720 = [int(x) for x in [r for r in rows if r[0] == "box720"][0][1].split(",")]
-    check("a 720 screen: the same place, scaled", b720[3] == round(bottom * 720 / 1080) and b720[0] >= 640 and b720[2] <= 1280, b720)
+    check("a 720 screen: the same place, scaled", b720 == [695, 177, 1173, 361], b720)
     check("the scenes take turns in order, the first first; none: nothing", [r for r in rows if r[0] == "next"][0][1] == "0,0,-1")
     ch = {r[1]: (r[2], r[3] if len(r) > 3 else "") for r in rows if r[0] == "choose"}
     check("the scenes now (ScenePlan.choose): both rules off, all; «يتبع الوقت» at night the night scenes, by day the others; «يتبع الطقس» in fog the fog scenes (it wins); no fog: as the time says",
@@ -65,6 +87,68 @@ if shutil.which("javac"):
           ch["truetruefalsefalse"][1] == "riyadh" and ch["truefalsefalsefalse"][1] == "riyadh" and ch["falsefalsetruetrue"][1] == "riyadh", ch)
     check("«بقاء كل أفق»: 10, 20, 60 or 300 s, anything else 20; fog is Open-Meteo's 45 and 48",
           [r for r in rows if r[0] == "stay"][0][1] == "10,300,20,20" and [r for r in rows if r[0] == "fog"][0][1] == "true,true,false")
+    flat = {r[1]: r[2:] for r in rows if r[0] == "flat"}
+    check("4.4 never a digit misread (the owner: the night lake's ٤ read ٢, the golden tower made a ٤ an ع): the scenery may cover a digit "
+          "for 25 % of its height from its base, no more (and never reach the colon's lower dot)", flat == {"56": ["0.20", "true"], "84": ["0.30", "false"]}, flat)
+    tw = [r for r in rows if r[0] == "tower"][0][1:]
+    check("a narrow tower is seen (192 columns, not lost inside one of 48): the colon covered to its top is not legible, so the cut-out is not drawn "
+          "there (the clock in front); read on 48 columns alone it would have been missed", tw == ["false", "false", "true"], tw)
+    dw = [r for r in rows if r[0] == "draws"][0][1:]
+    check("4.4 the gate's «depth» (scenes.tsv's 12th column, the photos' index): the cut-out only in the layouts it lists (clean, couch); none listed "
+          "(old data) any; never with the cards beside the clock; owner_ok waives the rule, never the list", dw == ["110100 10", "clean,couch,null"], dw)
+    co = [r for r in rows if r[0] == "colon"][0][1:]
+    check("the colon is never covered: a narrow tower under it may rise a quarter of the digits' height (its lower dot starts about 30 % up), not more",
+          co[1] == "false" and float(co[0]) > 0.25, co)
+    dp = {(r[1], r[2]): r[3:] for r in rows if r[0] == "depth"}
+    masked = [l.split("\t")[0] for l in read(PACK / "scenes.tsv").splitlines() if l and not l.startswith("#") and l.split("\t")[5].strip() != "-"]
+    if small:
+        check("every bundled scene with a cut-out is measured in every place (clean, couch, the cards on the right, on the left)", {k[0] for k in dp} == set(masked), (dp, masked))
+        check("wherever the clock is: a cut-out drawn leaves every digit and the colon at most a quarter covered from the base (unless the owner approved it), "
+              "else the clock in front; with the cards beside the clock never", all(v[5] == "true" for v in dp.values())
+              and all(v[0] == "FRONT-ONLY" for (sid, place), v in dp.items() if place.startswith("cards")), dp)
+    fx = ROOT / "tests/fixtures/scene_legible.json"
+    if small and fx.is_file():   # the app and the masks gate agree (.github/tools/photo_masks.py wrote the fixture)
+        import json
+        frames = {r2[1]: [int(x) for x in r2[2].split(",")] for r2 in rows if r2[0] == "sceneframe"}
+        bad = []
+        for r in json.loads(fx.read_text(encoding="utf-8"))["rows"]:
+            v = dp.get((r["scene"], {"nocards": "clean"}.get(r["place"], r["place"])))
+            if v is None: bad.append((r, "not measured")); continue
+            verdict, digit, colon, box, ok = v[0], float(v[1]), float(v[2]), [int(x) for x in v[3].split(",")], v[4] == "true"
+            frame = r.get("frame") or [0, 0, 1920]
+            if (verdict != r["verdict"] or box != r["box"] or ok != r["owner_ok"] or frames.get(r["scene"]) != frame
+                    or abs(digit - r["digit_cover"]) > 0.01 or abs(colon - r["colon_cover"]) > 0.01):
+                bad.append((r, v))
+        check("the app and the masks gate agree on every bundled scene and place (tests/fixtures/scene_legible.json): the frame, the clock's box, the verdict, "
+              "owner_ok, and how much of the digits and the colon the scenery covers (within 0.01)", not bad, bad)
+    check("the home uses the rule: SceneHome and PhotoGlass take ScenePlan.draws at the clock's one place on the framed picture, and no draw hides the "
+          "cut-out (the clock in front); no zoom at runtime (the frame is it)",
+          "ScenePlan.draws(sc.depth, layout," in scene and "final Bitmap mask = draw ? cut : null;" in scene and "final float zoom = 1f;" in scene
+          and "ScenePlan.draws(depthIn, ScenePlan.layout(cardsShown, row), ownerOk, ScenePlan.framed(line, crop), ScenePlan.framed(fine, crop), digits, w, h)" in read(HOME / "PhotoGlass.java") and 'rec.optBoolean(ScenePlan.OWNER_OK, false)' in read(HOME / "PhotoGlass.java")
+          and "ScenePlan.fixedBox(w, h, cardsShown, rtl)" in read(HOME / "PhotoGlass.java") and "PhotoGlassPlan.box(" not in read(HOME / "PhotoGlass.java"))
+    al = {r[1]: r[2] for r in rows if r[0] == "aligned"}
+    check("4.4 never a misaligned cut-out (the owner's doubled buildings): one cut from its own photo at its place is drawn; the same 2 px off, or "
+          "another picture, is not (the clock in front)", al == {"own": "true", "off2": "false", "other": "false"}, al)
+    ok = [r for r in rows if r[0] == "ownerok"][0][1:]
+    check("«owner_ok» (a tag in scenes.tsv: the owner saw the placement and reads it) is read beside the other tags; the bundled Riyadh has it (night,owner_ok)",
+          ok == ["true", "true", "true"], ok)
+    check("an «owner_ok» scene keeps its cut-out where the owner saw it, at its own place with no cards beside the clock (no legibility drop, no zoom); with the cards beside it the rule decides; never one off its own pixels",
+          "cut != null && alignedTo(photo, cut, sc.mask) && drawsOf(cut, sc)" in scene and "sc.is(ScenePlan.OWNER_OK)" in scene)
+    check("the clock's place is the same for every scene, whatever its digits_top, digits_bottom or digits_x say (one box per layout and direction: no cards, cards on the right, on the left)",
+          [r for r in rows if r[0] == "samebox"][0][1] == "4")
+    cr = {r[1]: r[2] for r in rows if r[0] == "crop"}
+    check("4.4 per scene only the picture's framing: scenes.tsv's 11th column «frame» x,y,w (px of the 1920 x 1080 photo, its height w x 9/16, inside it); "
+          "\"-\", missing or out of the photo: the whole photo; and never an upscale (the owner): the pack's photos are 1920 wide, so a frame of 1600 is "
+          "not used", cr == {"aa": "0,0,1920", "bb": "0,0,1920", "cc": "0,0,1920", "dd": "0,0,1920"}, cr)
+    up = [r for r in rows if r[0] == "upscale"][0][1]
+    check("never upscaled nor stretched: a frame keeps the photo's own pixels at least one to one (1600 of a 1920 photo: not used; of a 2560 one: used); "
+          "the whole photo always", up == "1920,1600,1920,1920", up)
+    fr = [r for r in rows if r[0] == "frame"][0][1]
+    check("the framing: no crop and no zoom leaves the picture as it is; a zoom of 1.2 is about the screen's top centre; a crop of 1600 from 120, 60 "
+          "scales by 1.2 and moves the picture up and left by its corner", fr == "1.000,0.0,0.0;1.200,-192.0,0.0;1.200,-144.0,-72.0", fr)
+    fd = [r for r in rows if r[0] == "framed"][0][1:]
+    check("the cut-out's skyline is read through the crop (a tower at 960-1000 of the photo, its top at 500, stands in "
+          "the screen's column at 1000-1040, its top at 528); no crop: the skyline itself", fd == ["25:528", "true"], fd)
     check("ScenePlan's tiers are Ram's numbers", [r for r in rows if r[0] == "tiers"][0][1] == "0,1,2"
           and "public static final int LOW = 0, MID = 1, NORMAL = 2;" in ram)
 else:
@@ -94,8 +178,8 @@ for l in lines:
 check("each photo at most 320 KB, its glass copy 80 KB, its cut-out 200 KB (PERFORMANCE.md); every file the list names is there", not over, over)
 check("photos 1920x1080, glass copies 960x540, each cut-out the size of its box with its transparency", not bad, bad)
 names = {p.name for p in PACK.iterdir()}
-want = {"scenes.tsv", "CREDITS.txt"} | {f"{i}{s}" for i in ids for s in (".jpg", "-glass.jpg", "-fg.webp")}
-check("nothing else in the pack's folder", names == want, sorted(names ^ want))
+want = {"scenes.tsv", "CREDITS.txt"} | {f"{i}{s}" for i in ids for s in (".jpg", "-glass.jpg")} | {f"{l[0]}-fg.webp" for l in lines if l[5] != "-"}
+check("nothing else in the pack's folder (a scene the gate leaves with the clock in front has no cut-out file)", names == want, sorted(names ^ want))
 credits = read(PACK / "CREDITS.txt")
 check("every scene is credited (photographer, licence, source), the CC BY-SA one says its glass and cut-out carry its licence",
       all(re.search(rf"^{i}\s", credits, re.M) for i in ids) and "B.alotaby" in credits and "Richard Mortel" in credits and "Unsplash License" in credits
@@ -107,6 +191,9 @@ check("the downloaded packs (couch, and the Saudi pack's four others): from urtv
       'HOSTS = {"https://raw.githubusercontent.com/tshi-dev/urtv-data/data/scenes/", "https://cdn.jsdelivr.net/gh/tshi-dev/urtv-data@data/scenes/"}' in dl
       and 'get(pack + ".json", 16 * 1024)' in dl and 'get(pack + ".zip", MAX_BYTES)' in dl and "static boolean known(String pack) { return ScenePlan.SAUDI.equals(pack) || ScenePlan.COUCH.equals(pack); }" in dl
       and "SceneDownload.fetchIfNeeded(app, p, () ->" in scene)
+check("…kept in scenes/<pack>.<DATA> (2: the cut-outs made again with the depth model and the gate), so a TV with an older pack takes the new one once and the old folder goes",
+      "static final int DATA = 2;" in dl and 'new File(c.getFilesDir(), "scenes/" + pack + "." + DATA)' in dl
+      and 'delete(new File(app.getFilesDir(), v == 0 ? "scenes/" + pack : "scenes/" + pack + "." + v));' in dl)
 check("…its size and sha256 from the index checked before the zip is opened; a name that is not a scene file, nothing kept; 12 MB at most; moved into place whole",
       "zip.length != Integer.parseInt(want[1])" in dl and 'hex(MessageDigest.getInstance("SHA-256").digest(zip)).equals(want[0])' in dl
       and dl.index("MessageDigest.getInstance") < dl.index("new ZipInputStream") and "if (e.isDirectory() || !allowed(e.getName())) { delete(work); return false; }" in dl
@@ -115,8 +202,10 @@ check("…a failure waits a day; the Saudi pack shows meanwhile", "RETRY_MS = 24
       and "if (all.isEmpty()) all.addAll(ScenePlan.parse(ScenePlan.SAUDI" in scene)
 
 # ---- the clock and the layers
-check("the glass clock: the scene's glass copy as a BitmapShader in the digits, brighter, a light edge and a soft dark shadow; a pale scene a dark fill",
-      "new BitmapShader(glass" in clock and "float k = dark ? 0.42f : 1.45f;" in clock and "edge.setStyle(Paint.Style.STROKE);" in clock
+check("the glass clock: the scene's glass copy as a BitmapShader in the digits, frosted (40 % less colour, a white veil, a little see-through: no pink "
+      "or washed cast), a thin bright rim and a soft dark shadow; a pale scene a dark fill",
+      "new BitmapShader(glass" in clock and "cm.setSaturation(0.6f);" in clock and "0.72f, 0, 0, 0, 76," in clock and "lift.setScale(0.42f, 0.42f, 0.42f, 1f);" in clock
+      and "fill.setAlpha(dark ? 0xF0 : 0xE0);" in clock and "edge.setStrokeWidth(0.8f * density);" in clock and "edge.setStyle(Paint.Style.STROKE);" in clock
       and "shadow.setShadowLayer(" in clock and clock.index("c.drawText(text, x, y, shadow);") < clock.index("c.drawText(text, x, y, fill);"))
 check("the layers: the photo, the clock, then the cut-out over the clock; decoded off the UI thread; only the showing and the next scene in memory",
       "box.addView(photo" in scene and scene.index("box.addView(photo") < scene.index("box.addView(clock") < scene.index("box.addView(mask")
@@ -166,7 +255,7 @@ check("the presets set the three at once: «شكل تلفزيونك» (our layou
       and 'row("شكل كنبة", prefs.couchLabel()' in st and 'prefs.setCouch(!prefs.couchOn())' in st and 'row("التخطيط"' in st and 'row("الخلفية"' in st and 'row("الساعة"' in st)
 check("the home: «الخلفية ← الآفاق» shows the scenes on any layout; the glass clock and the cut-out only with «الساعة ← زجاجية», else the header's clock stays",
       'boolean on = "scenes".equals(cfg.homeBg);' in tick and 'boolean glass = "glass".equals(cfg.homeClock);' in tick and "boolean bigClock = glass;" in tick
-      and "final Bitmap glass = withClock ? decode(" in scene and "final Bitmap mask = withClock && sc.mask != null" in scene
+      and "final Bitmap glass = withClock ? decode(" in scene and "final Bitmap cut = withClock && sc.mask != null" in scene
       and 'if ("scenes".equals(homeLayout)) { homeLayout = "classic"; homeBg = "scenes"; homeClock = "glass"; }' in snap)
 check("«حزم الآفاق» (the owner's «الآفاق», was «المشاهد»): «آفاق السعودية» and «آفاق عالمية» (the Couch TV pack), none chosen is the Saudi one; in «المظهر» ← «الخلفية والآفاق»",
       '{"saudi", "آفاق السعودية"}, {"couch", "آفاق عالمية"}' in prefs and 'if (out.isEmpty()) out.add("saudi");' in prefs

@@ -41,6 +41,19 @@ else:
         subprocess.run(["javac", "-encoding", "UTF-8", "-d", tmp, str(HOME / "ScenePlan.java"), str(ROOT / "tests/SceneZoomRun.java")], check=True, capture_output=True)
         run = lambda *a: subprocess.run(["java", "-cp", tmp, "sa.urtv.home.SceneZoomRun", *a], check=True, capture_output=True).stdout.decode("utf-8").splitlines()
         rows = []
+        # 4.4 the bundled Riyadh has no cut-out (the owner's legibility rule left it with the clock in front): a made-up scene stands in, a hilly
+        # skyline across the digits' lower half, so the zoom bands are still checked on a real file read the app's way
+        syn = Path(tmp) / "syn"; syn.mkdir()
+        (syn / "scenes.tsv").write_text("# id\tname\tname_en\tdigits_top\tdigits_bottom\tmask x,y,w,h\tdark\tcredit\ttags\n"
+                                        "hills\tتلال\tHills\t266\t542\t0,360,1920,720\t0\ttest\t\n", encoding="utf-8")
+        import math
+        fgi = Image.new("RGBA", (1920, 720), (0, 0, 0, 0))
+        px = fgi.load()
+        for x in range(1920):
+            top = int(110 + 60 * math.sin(x / 140) + 30 * math.sin(x / 37))
+            for y in range(max(0, top), 720): px[x, y] = (40, 50, 60, 255)
+        fgi.save(syn / "hills-fg.webp", "WEBP", lossless=True)
+        dirs.append(syn)
         for d in dirs:
             for line in read(d / "scenes.tsv").splitlines():
                 c = line.split("\t")
@@ -70,13 +83,15 @@ else:
               abs(flat[y][0] - v) < 0.01 and (flat[y][2] >= target(v) - 0.005 and flat[y][1] > 1 if v < 0.85 else flat[y][1] == 1) for y, v in ys.items()), flat)
 
 home, glass, clock, main = read(HOME / "SceneHome.java"), read(HOME / "PhotoGlass.java"), read(HOME / "SceneClock.java"), read(HOME / "MainActivity.java")
-check("the scenes: the zoom from the cut-out, on the scene's thread; the photo and the cut-out zoom about the screen's top centre, the glass in the digits too",
-      "final float zoom = mask == null ? 1f : zoomOf(mask, sc);" in home and "back.photo.setPivotY(0);" in home and "back.mask.setPivotY(-lp.topMargin);" in home
-      and "back.clock.setZoom(zoom);" in home and "m.postScale(zoom, zoom, w / 2f, 0);" in clock)
-check("the clock stays where it is: its box is ScenePlan.clockBox / PhotoGlassPlan.box, the same with or without the zoom",
-      "ScenePlan.clockBox(sc, w, h, cardsShown, rtl)" in home and "clock.setScene(shown, digits, false);" in glass)
-check("our photos: the same rule from the cut-out's skyline; the home's photo layer follows, the one fading out keeps its own, a layer never comes back zoomed",
-      "float z = ScenePlan.zoom(line, digits, w, h);" in glass and "zoomTo.zoom(z);" in glass and "photoGlass.onZoom(this::zoomWall);" in main
+check("4.4 the scenes (the owner: the clock always in the same place): no zoom at runtime, the scene's frame is it (the masks gate chose it); the photo, "
+      "its cut-out and the glass in the digits take that one framing",
+      "final float zoom = 1f;" in home and "float[] f = ScenePlan.frame(sc.frame, w, h, zoom);" in home and "v.setTranslationX(f[1] + l * (f[0] - 1));" in home
+      and "back.clock.setFrame(sc.frame, zoom);" in home and "float[] f = ScenePlan.frame(crop, w, h, zoom);" in clock and "ScenePlan.zoom(" not in home)
+check("the clock stays where it is: its box is ScenePlan.clockBox / ScenePlan.fixedBox, the same on every scene and photo",
+      "ScenePlan.clockBox(sc, w, h, cardsShown, rtl)" in home and "clock.setScene(glass, digits, pale(digits));" in glass and "int[] digits = ScenePlan.fixedBox(w, h, cardsShown, rtl);" in glass)
+check("our photos: their index's frame (the photo, its cut-out, the glass, and the home's photo layer); the one fading out keeps its own, a layer never comes back framed",
+      "float[] f = ScenePlan.frame(crop, w, h, 1f);" in glass and "zoomTo.frame(crop, 1f);" in glass and "ScenePlan.zoom(" not in glass
+      and "float[] f = ScenePlan.frame(crop, dm.widthPixels, dm.heightPixels, k);" in main and "wallFront.setTranslationX(0);" in main and "photoGlass.onZoom(this::zoomWall);" in main
       and main.index("wallFront.setScaleX(1f);") < main.index("if (photoGlass != null) photoGlass.show(bm, key,"))
 check("a zoom of 1 or more about the top: never an empty band", "while (visible(sky, box, w, h, k) < target - 1e-4f && k < MAX_ZOOM)" in plan and "float k = 1f;" in plan)
 sys.exit(1 if failed else 0)

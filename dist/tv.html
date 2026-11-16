@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <!-- the build: UTC time (YYYYMMDDHHMMSS) of the newest commit of the page's sources, put in by src/build.py. The app loads the page with the newer stamp (its own
      copy or a downloaded one), never by file time, and does not keep a download whose stamp is older than its own (Updater, PageStamp). -->
-<meta name="urtv-build" content="20261116150227">
+<meta name="urtv-build" content="20261116185535">
 <title>شاشة تلفزيونك</title>
 <style>
   @font-face{font-family:'Thmanyah';font-weight:300;font-style:normal;font-display:block;src:url("https://raw.githubusercontent.com/tshi-dev/UrTV/master/assets/fonts/Thmanyah-Light.woff2") format("woff2")}
@@ -91,7 +91,7 @@
     transform:scale(1.03);   
   }
   
-  .photo::after{content:'';position:absolute;inset:0;background:#000;opacity:calc(1 - (1 - var(--dim,.05)) * (1 - var(--walldim,0)))}   
+  .photo::after{content:'';position:absolute;inset:0;background:#000;opacity:calc(1 - (1 - var(--pdim,0)) * (1 - var(--walldim,0)))}   
   .veil{
     position:fixed;inset:0;z-index:1;
     background:
@@ -929,7 +929,7 @@ const _list = k => (_Q.get(k) || '').split(',').map(x=>x.trim()).filter(Boolean)
 const SEP = '، ';
 const _num = (k, d) => { const v = parseFloat(_Q.get(k)); return isNaN(v) ? d : v; };
 const _tzOk = z => { try{ new Intl.DateTimeFormat('en',{timeZone:z}); return true; }catch(e){ return false; } };
-const CARD_KINDS = ['shows','prayers','forecast','hourly','prayerrow','nextprayer','matches','nextmatch','verse','wisdom','adhkar','stocks','tasks','year','smart','today','album'];
+const CARD_KINDS = ['shows','prayers','forecast','hourly','prayerrow','nextprayer','matches','nextmatch','matchday','livenow','minitable','nextmatches','yesterday','weekend','cuppath','formula','national','verse','wisdom','adhkar','stocks','tasks','year','smart','today','album'];
 const CONFIG = {
   city: _Q.get('city') || 'الرياض',
   latitude: _num('lat', 24.7136),
@@ -1046,6 +1046,8 @@ CONFIG.cards = (CONFIG.widget && _Q.has('home_panel') ? _list('home_panel') : PA
   .filter((k, i, a) => CARD_KINDS.includes(k) && a.indexOf(k) === i).slice(0, 3);
 CONFIG.panel = CONFIG.cards[0] || 'none';
 const USES_OF = {smart:['matches','adhkar','prayers','prayerrow','hourly'], today:['prayers','matches','tasks'], nextprayer:['prayers'], nextmatch:['matches']};
+const SPORT_KINDS = ['matchday','livenow','minitable','nextmatches','yesterday','weekend','cuppath','formula','national'];
+SPORT_KINDS.forEach(k => { USES_OF[k] = ['matches']; });
 const USES = k => ((CONFIG.football || CONFIG.matchPage) && (k === 'matches' || k === 'prayers')) || CONFIG.cards.some(c => c === k || (USES_OF[c] || []).includes(k));
 
 if(CONFIG.clear){
@@ -2366,6 +2368,7 @@ const loadMatches = guarded('matches', async function(){
   renderPanel(false, 'matches');
   loadCrests();
   loadLive();
+  if(SPORTS) await SPORTS.load();
   if(CONFIG.events.length) await loadEvents();
 });
 
@@ -2791,7 +2794,7 @@ function liveRect(kind = 'tasks'){
 
 let FORECAST = [];
 try{ FORECAST = JSON.parse(localStorage.getItem(LS.forecast) || '[]') || []; }catch(e){}
-const PANEL_TITLE = {album:'ألبوم صوري', today:'يومك', shows:'هذا الأسبوع', prayers:'مواقيت اليوم', nextprayer:'الصلاة القادمة', nextmatch:'مباراة فريقك القادمة', forecast:'الأيام القادمة', hourly:'الساعات القادمة', matches:CONFIG.leagues.length ? 'المباريات' : 'مباريات فرقك', tasks:'المهام', year:'السنة'};
+const PANEL_TITLE = {album:'ألبوم صوري', today:'يومك', shows:'هذا الأسبوع', prayers:'مواقيت اليوم', nextprayer:'الصلاة القادمة', nextmatch:'مباراة فريقك القادمة', matchday:'مباراة اليوم', livenow:'مباشر الآن', minitable:'جدول الترتيب', nextmatches:'مباريات فرقك القادمة', yesterday:'نتائج أمس', weekend:'نهاية الأسبوع', cuppath:'طريق الكأس', formula:'فورمولا ١', national:'المنتخب', forecast:'الأيام القادمة', hourly:'الساعات القادمة', matches:CONFIG.leagues.length ? 'المباريات' : 'مباريات فرقك', tasks:'المهام', year:'السنة'};
 const LISTS = ['matches', 'stocks', 'tasks', 'shows'];
 
 function nextFollowedGame(now){
@@ -2926,6 +2929,7 @@ function renderCard(card, animate, keepSize){
     const n = card.kind === 'nextmatch' && rows.length && nextTeamGame(Date.now()), meet = n && !fbLive(n, Date.now()) && h2hLine(n);
     if(meet) rows = rows.concat(`<li class="h2l"><span>${esc(meet)}</span></li>`);
   }
+  else if(SPORT_KINDS.includes(P)){ const q = SPORTS ? SPORTS.card(card, P) : {rows: [`<li class="empty">${matchesEmptyText()}</li>`]}; if(q.title) PANEL_TITLE[P] = q.title; rows = q.rows; }
   else if(P === 'year') rows = [yearCard(card)];
   else if(P === 'album') rows = [albumCard(card)];
   else if(P === 'today'){ const q = todayCard(); paintHd(hd, q.title); rows = q.rows; }
@@ -3697,7 +3701,7 @@ function showBackground(url, b){
   const next = "url('" + url + "')";
   if(ph.style.backgroundImage === next) return;
   ph.style.backgroundImage = next;
-  ph.style.setProperty('--dim', (1 - (b.d || 0.95)).toFixed(2));
+  ph.style.setProperty('--pdim', (1 - (b.d || 0.95)).toFixed(2));
   ph.classList.remove('settle'); void ph.offsetWidth; ph.classList.add('settle');
   cardBlurLater(url);
   const cr = document.getElementById('credit');
@@ -3744,7 +3748,7 @@ function cardBlurNow(){
           g.drawImage(img, (W - dw) * .5, (H - dh) * .26, dw, dh);
           g.filter = 'none';
           patch();
-          g.fillStyle = `rgba(0,0,0,${document.querySelector('.photo').style.getPropertyValue('--dim') || .05})`;
+          g.fillStyle = `rgba(0,0,0,${document.querySelector('.photo').style.getPropertyValue('--pdim') || .05})`;
           g.fillRect(0, 0, W, H);
           const v = g.createLinearGradient(0, 0, 0, H);
           v.addColorStop(0, 'rgba(3,10,7,.62)'); v.addColorStop(.22, 'rgba(3,10,7,.30)'); v.addColorStop(.46, 'rgba(3,10,7,.12)');
@@ -4247,7 +4251,7 @@ function lgIdOf(name){
   const ix = archWant('index.json'), hit = ix && ix.leagues && Object.entries(ix.leagues).find(([, l]) => l && String(l.en).toLowerCase() === String(name).toLowerCase());
   return hit ? hit[0] : '';
 }
-function archDrawn(){ if(document.getElementById('mp')) mpRender(); else if(CARDS.some(c => c.kind === 'nextmatch')) renderPanel(false, 'nextmatch'); }
+function archDrawn(){ if(document.getElementById('mp')) mpRender(); else if(CARDS.some(c => c.kind === 'nextmatch' || SPORT_KINDS.includes(c.kind))) renderPanel(false, 'nextmatch', ...SPORT_KINDS); }
 function h2hOf(a, b){
   a = String(a); b = String(b);
   if(!/^\d+$/.test(a) || !/^\d+$/.test(b) || a === b) return null;
@@ -4664,13 +4668,32 @@ function bootMatchPage(){
   reveal();
 }
 
+let SPORTS = null;
+function loadSportsJs(){
+  if(SPORTS || !(CONFIG.cards.some(k => SPORT_KINDS.includes(k)) || (CONFIG.teamIds.length && _Q.get('ko') !== '0'))) return;
+  const stamp = document.querySelector('meta[name="urtv-build"]').content, f = document.documentElement.lang === 'en' ? 'sports-en.js' : 'sports.js';
+  const urls = [f, 'file:///android_asset/' + f, 'file:///android_asset/web/' + f, 'https://raw.githubusercontent.com/tshi-dev/UrTV/master/dist/' + f];
+  const next = i => {
+    if(i >= urls.length) return;
+    const x = new XMLHttpRequest(), fail = () => next(i + 1);
+    x.onload = () => {
+      if(!x.responseText.includes('SPORTS_BUILD:' + stamp + ':')) return fail();
+      const sc = document.createElement('script'); sc.textContent = x.responseText; document.head.appendChild(sc);
+      if(SPORTS){ renderPanel(false, ...SPORT_KINDS); if(MATCHES_LOADED) SPORTS.load(); }
+    };
+    x.onerror = x.ontimeout = fail;
+    try{ x.open('GET', urls[i]); x.timeout = 8000; x.send(); }catch(e){ fail(); }
+  };
+  next(0);
+}
 function boot(){
   if(CONFIG.lowram) document.documentElement.classList.add('lowram');
   pruneStorage();
   if(CONFIG.matchPage){ bootMatchPage(); return; }
-  if(CONFIG.football){ bootFootball(); return; }
-  if(CONFIG.widget){ bootWidget(); return; }
+  if(CONFIG.football){ bootFootball(); loadSportsJs(); return; }
+  if(CONFIG.widget){ bootWidget(); loadSportsJs(); return; }
   buildCards();
+  loadSportsJs();
   if(document.fonts) document.fonts.ready.then(() => {
     fitYearStrip();
     fitMatches(document.getElementById('match-row'));

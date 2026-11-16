@@ -34,6 +34,9 @@ import java.util.Set;
  *   that app's text field: the screen is looked at only at that moment, only to find the field, and nothing of it is kept, logged or sent back; never a
  *   password field, never an app the family lock keeps (the home says, HOME_AUTHORITY);
  * - the remote's Settings key outside our home (SettingsKey, GitHub #37): key events are asked for only while it could act; every other key goes back at once;
+ * - «أزرار الريموت» over other apps (KeyApps, RemoteButtons; GitHub #59): only while some button of this remote was given an app, and never on TCL's
+ *   Android 11 (any key filter doubles its volume steps there); a chosen button's press opens its app (the family lock as its tile, the home asks), its
+ *   repeats and release are eaten; every other key, and a button on its default, goes back at once, untouched;
  * - the Home button on a Google TV (HomeWatch): of the window that comes to the front it reads its package and class only, to bring our home back when
  *   the stock home's HOME screen comes up while our home is the chosen one.
  *
@@ -53,11 +56,35 @@ public class ExtrasA11yService extends AccessibilityService {
     private volatile boolean stockHome;
     private volatile Boolean homeKeyLost;
     private Set<String> stockHomes = new HashSet<>();
+    private final KeyApps.Outside keyApps = new KeyApps.Outside();
+    /** «أزرار الريموت»: the owner's choices (the home tells us when they change, and we ask it when we start); kept so a restart needs no home */
+    private volatile java.util.Map<String, String> keyChoices = new java.util.HashMap<>();
+    /** 4.4: the stock homes' packages (only their windows are looked at further) */
+    private Set<String> stockPackages = new HashSet<>();
 
     @Override protected void onServiceConnected() {
         running = this;
         stockHomes = stockHomeActivities(this);
+        keyChoices = KeyApps.parse(getSharedPreferences("extras", MODE_PRIVATE).getString(ExtrasWords.KEY_APPS, ""));
+        stockPackages = HomeWatch.packages(stockHomes);
+        watchLog(watchOn(this) ? (wanted(this) ? 1 : 2) : 3);
+        watchLog(stockHomes.isEmpty() ? 4 : 5);
         filterKeys();
+        new Thread(() -> {   // the home's choices now (it may have changed them while we were off); quiet when it does not answer
+            Bundle b = askHome(this, ExtrasWords.KEY_APPS, null, null);
+            String line = b == null ? null : b.getString(ExtrasWords.RESULT);
+            if (line != null) keyApps(this, line);
+        }, "extras-key-apps").start();
+    }
+
+    /** «أزرار الريموت»: the home's choices ("youtube=PKG,netflix=,…"), kept and applied (the filter on or off) */
+    static void keyApps(Context c, String line) {
+        java.util.Map<String, String> m = KeyApps.parse(line);
+        c.getSharedPreferences("extras", MODE_PRIVATE).edit().putString(ExtrasWords.KEY_APPS, KeyApps.line(m)).apply();
+        ExtrasA11yService s = running;
+        if (s == null) return;
+        s.keyChoices = m;
+        s.main.post(s::filterKeys);
     }
     @Override public boolean onUnbind(Intent i) { running = null; return super.onUnbind(i); }
     @Override public void onInterrupt() { }
@@ -71,8 +98,22 @@ public class ExtrasA11yService extends AccessibilityService {
         String pkg = e.getPackageName().toString(), cls = e.getClassName() == null ? null : e.getClassName().toString();
         if (pkg.equals("com.android.systemui") || pkg.equals("android")) return;   // a volume bar or a system dialog over the app: the app in front did not change
         boolean front = pkg.equals(HOME_PKG);
-        if (front != homeFront) { homeFront = front; filterKeys(); }
-        if (watch.decide(watchOn(this), pkg, cls, stockHomes, oursChosen(), System.currentTimeMillis())) {
+        if (front != homeFront) {
+            homeFront = front;
+            if (!front) keyApps.leftHome(android.os.SystemClock.uptimeMillis(), KeyButton.burstMs());   // Xiaomi: the rest of the press our home answered
+            filterKeys();
+        }
+        if (!stockPackages.contains(pkg)) return;   // any other app's window: nothing read further, nothing logged
+        // 4.4 (step 86 B): every decision on a stock home's window is logged (the stock home's own class only), so a tester sees why. The watch
+        // brings ours while the person's home is ours: Android's default (the role), or the setup's word (WANTED) when the TV took the role back
+        boolean on = watchOn(this), chosen = oursChosen(), wantedNow = wanted(this), homeScreen = HomeWatch.homeScreen(pkg, cls, stockHomes);
+        long now = System.currentTimeMillis();
+        boolean bring = homeScreen && watch.decide(on, pkg, cls, stockHomes, chosen || wantedNow, now);
+        // fixed words only (the log never names a package or a class): which rule matched, then the decision
+        watchLog(stockHomes.contains(pkg + "/" + cls) ? 6 : homeScreen ? 7 : 8);
+        watchLog(chosen ? (wantedNow ? 9 : 10) : (wantedNow ? 11 : 12));
+        watchLog(bring ? 13 : !homeScreen ? 14 : !on ? 15 : !(chosen || wantedNow) ? 16 : watch.paused(now) ? 17 : 18);
+        if (bring) {
             try {
                 startActivity(new Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_HOME).setComponent(new ComponentName(HOME_PKG, HOME_PKG + ".MainActivity"))
                     .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED));
@@ -81,6 +122,42 @@ public class ExtrasA11yService extends AccessibilityService {
                 Log.i("UrTVWatch", "home=failed");
             }
         }
+    }
+
+    /**
+     * 4.4 (step 86 B): the watch's decisions for the tester, in fixed words only (never a package or a class name of any window): `logcat -s UrTVWatch`.
+     */
+    private static void watchLog(int what) {
+        switch (what) {
+            case 1: Log.i("UrTVWatch", "service on watch on wanted yes"); break;
+            case 2: Log.i("UrTVWatch", "service on watch on wanted no"); break;
+            case 3: Log.i("UrTVWatch", "service on watch off"); break;
+            case 4: Log.i("UrTVWatch", "stock home none"); break;
+            case 5: Log.i("UrTVWatch", "stock home found"); break;
+            case 6: Log.i("UrTVWatch", "stock window its home activity"); break;
+            case 7: Log.i("UrTVWatch", "stock window a home activity by name"); break;
+            case 8: Log.i("UrTVWatch", "stock window another screen"); break;
+            case 9: Log.i("UrTVWatch", "role ours wanted yes"); break;
+            case 10: Log.i("UrTVWatch", "role ours wanted no"); break;
+            case 11: Log.i("UrTVWatch", "role stock wanted yes"); break;
+            case 12: Log.i("UrTVWatch", "role stock wanted no"); break;
+            case 13: Log.i("UrTVWatch", "decision bring ours"); break;
+            case 14: Log.i("UrTVWatch", "decision not its home screen"); break;
+            case 15: Log.i("UrTVWatch", "decision watch off"); break;
+            case 16: Log.i("UrTVWatch", "decision ours not chosen"); break;
+            case 17: Log.i("UrTVWatch", "decision paused"); break;
+            case 18: Log.i("UrTVWatch", "decision left"); break;
+            case 19: Log.i("UrTVWatch", "wanted=yes"); break;
+            default: Log.i("UrTVWatch", "wanted=no"); break;
+        }
+    }
+
+    /** 4.4: the setup's word that the person's home is ours (WANTED from the home); off by «تراجع» (UNWANTED) */
+    static boolean wanted(Context c) { return c.getSharedPreferences("extras", MODE_PRIVATE).getBoolean(ExtrasWords.WANTED, false); }
+
+    static void setWanted(Context c, boolean on) {
+        c.getSharedPreferences("extras", MODE_PRIVATE).edit().putBoolean(ExtrasWords.WANTED, on).apply();
+        watchLog(on ? 19 : 20);
     }
 
     /** the watch's switch (the home turns it with WATCH; on by default on a TV whose stock home is Google TV's) */
@@ -109,7 +186,11 @@ public class ExtrasA11yService extends AccessibilityService {
             for (ResolveInfo ri : c.getPackageManager().queryIntentActivities(new Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_HOME), 0)) {
                 if (ri.activityInfo == null) continue;
                 pkgs.add(ri.activityInfo.packageName);
-                if (SettingsKey.stockHomeOn(java.util.Collections.singletonList(ri.activityInfo.packageName), HOME_PKG)) out.add(ri.activityInfo.packageName + "/" + ri.activityInfo.name);
+                if (SettingsKey.stockHomeOn(java.util.Collections.singletonList(ri.activityInfo.packageName), HOME_PKG)) {
+                    out.add(ri.activityInfo.packageName + "/" + ri.activityInfo.name);
+                    // 4.4: HOME often answers through an activity-alias; the window that comes to the front is named by the real activity
+                    if (ri.activityInfo.targetActivity != null) out.add(ri.activityInfo.packageName + "/" + ri.activityInfo.targetActivity);
+                }
             }
         } catch (RuntimeException ignored) { }
         return out;
@@ -128,7 +209,8 @@ public class ExtrasA11yService extends AccessibilityService {
             boolean front = homeFront, lowRam = Ram.low(this);
             if (!front && !lowRam) stockHome = stockHomeOn(this);   // one package query, only when the home leaves (none on a weak TV: no filter there)
             if (homeKeyLost == null) homeKeyLost = homeKeyLost(this);
-            boolean want = SettingsKey.filterWanted(front, stockHome, lowRam, homeKeyLost);
+            boolean want = SettingsKey.filterWanted(front, stockHome, lowRam, homeKeyLost)
+                || KeyApps.filterWanted(front, KeyApps.anyChosen(keyChoices), KeyButton.filterSafe());   // «أزرار الريموت»: only for a button given an app
             AccessibilityServiceInfo info = getServiceInfo();
             if (info == null) return;
             boolean has = (info.flags & AccessibilityServiceInfo.FLAG_REQUEST_FILTER_KEY_EVENTS) != 0;
@@ -147,6 +229,7 @@ public class ExtrasA11yService extends AccessibilityService {
     }
 
     @Override protected boolean onKeyEvent(KeyEvent e) {
+        if (appKey(e)) return true;   // «أزرار الريموت»: a button the owner gave an app; every other key goes on below, untouched
         Boolean lost = homeKeyLost;
         int d = settingsKey.decide(e.getKeyCode(), e.getAction(), e.getRepeatCount(), homeFront, stockHome, lost != null && lost);
         if (d == SettingsKey.PASS) return false;
@@ -159,6 +242,54 @@ public class ExtrasA11yService extends AccessibilityService {
         }
         if (d == SettingsKey.OPEN_TV_SETTINGS) new Thread(this::openTvSettings, "extras-settings").start();
         return true;
+    }
+
+    // ---------------------------------------------------------------- «أزرار الريموت» over other apps (KeyApps)
+
+    /** true: a button given an app that is on this TV, answered here (its press opens the app, its repeats and release are eaten); false: as before */
+    private boolean appKey(KeyEvent e) {
+        if (!KeyButton.filterSafe()) return false;   // TCL's Android 11: never (the filter is not asked for there either)
+        String id = KeyButton.of(e);
+        if (id == null) return false;   // every other key: untouched, nothing read or kept
+        String choice = keyChoices.get(id);
+        if (KeyApps.chosen(choice) && e.getAction() == KeyEvent.ACTION_DOWN && e.getRepeatCount() == 0 && launchIntent(this, choice) == null) choice = "";   // its app was removed: the button's own again (asked once a press)
+        int k = keyApps.decide(id, e.getKeyCode(), e.getAction(), e.getRepeatCount(), e.getEventTime(), homeFront, choice, KeyButton.burstMs());
+        if (k == KeyApps.OPEN) {
+            final String pkg = keyApps.pkg;
+            new Thread(() -> openKeyApp(pkg), "extras-key-app").start();
+        }
+        return k != KeyApps.PASS;
+    }
+
+    private static Intent launchIntent(Context c, String pkg) {
+        try {
+            Intent i = c.getPackageManager().getLeanbackLaunchIntentForPackage(pkg);
+            return i != null ? i : c.getPackageManager().getLaunchIntentForPackage(pkg);
+        } catch (RuntimeException e) {
+            return null;
+        }
+    }
+
+    /**
+     * The app over the app in front. Kids mode's hidden apps stay closed; an app behind the family PIN opens our home, which asks the PIN (as for its tile)
+     * and then opens it; the home not answering: the home too, never the app unasked.
+     */
+    private void openKeyApp(String pkg) {
+        Bundle r = askHome(this, ExtrasWords.KEY_APP_CHECK, pkg, null);
+        try {
+            if (r != null && r.getBoolean(ExtrasWords.HIDDEN, true)) { log("key app=hidden"); return; }
+            if (r == null || r.getBoolean(ExtrasWords.NEEDS_PIN, true)) {
+                startActivity(new Intent().setClassName(HOME_PKG, HOME_PKG + ".MainActivity").putExtra(ExtrasWords.EXTRA_KEY_APP, pkg).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+                log("key app=pin");
+                return;
+            }
+            Intent i = launchIntent(this, pkg);
+            if (i == null) { log("key app=missing"); return; }
+            startActivity(i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+            log("key app=open");
+        } catch (RuntimeException e) {
+            log("key app=failed");
+        }
     }
 
     static Intent tvSettingsIntent(Context c) {
