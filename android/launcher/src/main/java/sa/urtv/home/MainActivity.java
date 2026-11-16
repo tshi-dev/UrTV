@@ -140,6 +140,8 @@ public class MainActivity extends Activity {
     private int lastFocusedId = View.NO_ID;
     private boolean firstShow = true;
     private int packageSeq;
+    /** the settings the clock last drew with (null before the first) */
+    private ConfigSnapshot lastCfg;
     private PopupWindow inputsPopup;
     private HomeCard homeCard;
     private NowCard nowCard;   // «يُتلى الآن»: at the right end of the pills row while a surah or a station is on
@@ -1150,6 +1152,18 @@ public class MainActivity extends Activity {
             @Override public void openUpdate() { launchGuarded(ParentalPolicy.PILL_UPDATES, new Intent(MainActivity.this, UpdateActivity.class), "تحديث تلفزيوني"); }
             @Override public void openSleep(View anchor) { guarded(ParentalPolicy.PILL_SLEEP, null, S.t("مؤقت النوم"), () -> showSleep(anchor)); }
             @Override public boolean saverInstalled() { return isInstalled(SAVER_PKG); }
+            @Override public long[] adhanTimes() {   // 4.3.3 «الأذان والإقامة»: the adhan bar's own times
+                if (lastCfg == null) return null;
+                try {
+                    sa.urtv.home.tilawah.DayParts d = sa.urtv.home.tilawah.DayParts.now(MainActivity.this, lastCfg.placeFragment(), lastCfg.placeTicket());
+                    return new long[] {d.fajr, d.dhuhr, d.asr, d.maghrib, d.isha, d.friday ? 1 : 0};
+                } catch (RuntimeException e) { return null; }
+            }
+            @Override public String clock(long ms) {
+                String[] zone = lastCfg == null ? null : lastCfg.cityZone();
+                Calendar at = ClockZone.at(ms, zone == null ? java.util.TimeZone.getDefault().getID() : zone[1]);
+                return ClockText.time(at.get(Calendar.HOUR_OF_DAY), at.get(Calendar.MINUTE), Digits.clock24(), Digits.latin());
+            }
             @Override public Typeface font(String family) { return MainActivity.this.font(family); }
         };
     }
@@ -3177,6 +3191,7 @@ public class MainActivity extends Activity {
     }
 
     private void updateClock(ConfigSnapshot cfg) {
+        lastCfg = cfg;   // «مركز التحكم»'s «الأذان والإقامة» reads the times from it
         long ms = System.currentTimeMillis();
         clockDrawnAt = ms;
         String tvTz = java.util.TimeZone.getDefault().getID();

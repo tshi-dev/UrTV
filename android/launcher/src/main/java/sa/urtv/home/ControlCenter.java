@@ -61,6 +61,10 @@ final class ControlCenter {
         void openSleep(View anchor);   // «مؤقت النوم» popup, locked by «@sleep»
         boolean saverInstalled();
         Typeface font(String family);
+        /** 4.3.3: today's Fajr, Dhuhr, Asr, Maghrib and Isha (ms) and 1 on a Friday, as the adhan bar reads them; null when unknown */
+        long[] adhanTimes();
+        /** a time as the home's clock writes it (the city's zone, 12 or 24 hours, the digits chosen) */
+        String clock(long ms);
     }
 
     /** the panel: 560 px of 1920 wide, inside the 5 % safe area (x from 96, y from 54 to 1026 at 1080p) */
@@ -72,7 +76,7 @@ final class ControlCenter {
     /** the round toggles, in this order; every other item is a row */
     static final String[] TOGGLES = {"bluetooth", "mirror", "sleep", "off"};
     /** the rows' order before the person moves any; «شاشة التوقف» is unticked until they ask for it (its own pill is on the home) */
-    static final String[] ROWS = {"net", "sound", "speed", "ours", "games", "city", "tv", "saver"};   // 4.3.1: ours before the TV's, the city beside it
+    static final String[] ROWS = {"net", "sound", "speed", "ours", "games", "city", "adhan", "tv", "saver"};   // 4.3.1: ours before the TV's, the city beside it; 4.3.3: «الأذان والإقامة»
     /** the order before 4.3.1 (ours after the TV's): saved by anyone who opened the editor, never a choice, so it follows the new default */
     static final String OLD_DEFAULT = "net,sound,speed,tv,ours,saver";
     static final String[] DEFAULT_OFF = {"saver"};
@@ -186,6 +190,23 @@ final class ControlCenter {
                 catch (RuntimeException | LinkageError ignored) { }
             }
         });
+        // 4.3.3 «الأذان والإقامة»: the next prayer's adhan and iqama times (the home's own, as its adhan bar), OK plays the muezzin it will have for a few seconds
+        final long[] times = host.adhanTimes();
+        final int next = ControlText.nextPrayer(times, System.currentTimeMillis());   // -1: after Isha (tomorrow's Fajr is next) or no times
+        String adhanValue = ControlText.ADHAN_HINT;
+        if (next >= 0) {
+            long iq = ControlText.iqamaAt(times, next);
+            adhanValue = ControlText.adhanLine(S.tv(ControlText.prayerName(next, times)), host.clock(times[next]), iq > 0 ? host.clock(iq) : "");
+        }
+        final Item adhan = tile("adhan", ControlText.ADHAN, adhanValue, R.drawable.ic_listen, null);
+        adhan.action = () -> {
+            try {
+                sa.urtv.home.tilawah.AdhanPreview.play(act, next <= 0);   // Fajr's own muezzin for Fajr, today's or tomorrow's
+                adhan.setValue(S.t("يُسمع الآن"));
+            } catch (RuntimeException e) {
+                android.util.Log.w("UrTVControl", "adhan preview failed " + e.getClass().getSimpleName());
+            }
+        };
         Item test = tile("speed", S.t("اختبار السرعة"), S.t("اضغط اختيار للبدء"), R.drawable.ic_speed, null);
         test.action = () -> speedTest(test);
         tile("sleep", S.t("مؤقت النوم"), sleepLine(), R.drawable.ic_sleep, () -> { dismiss(); host.openSleep(anchor); });
