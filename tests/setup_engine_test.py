@@ -23,7 +23,7 @@ if not shutil.which("javac"):
     sys.exit(1 if failed else 0)
 with tempfile.TemporaryDirectory() as tmp:
     # (the Android-facing classes of the folder are compiled by tests/android_compile.sh; here only the pure ones)
-    pure = [p for p in sorted(SETUP.glob("*.java")) if "import android." not in p.read_text(encoding="utf-8")] + [SETUP.parent / "phone/UpdateRules.java", SETUP.parent / "SuggestedApps.java"]   # (read only: its rule for updates)
+    pure = [p for p in sorted(SETUP.glob("*.java")) if "import android." not in p.read_text(encoding="utf-8")] + [SETUP.parent / "phone/UpdateRules.java", SETUP.parent / "SuggestedApps.java", SETUP.parent / "ExtrasWords.java"]   # (read only: its rule for updates)
     r = subprocess.run(["javac", "-encoding", "UTF-8", "-d", tmp, *map(str, pure), str(ROOT / "tests/SetupEngineRun.java")], capture_output=True, text=True)
     check("the pure classes compile", r.returncode == 0, r.stderr)
     if r.returncode:
@@ -159,6 +159,15 @@ check("S1: «تراجع» gives the stock home its role and Home back", got.get(
 check("S2: a TV switched the old way: the stock home, the wizard and the helper are turned on again by the journal (what the TV had off itself, com.tcl.bi, stays off), ours stays Home, the notice is the one line, the mark is written",
       "status=DONE notice=true off=[com.tcl.bi] role=sa.urtv.home home=sa.urtv.home/.MainActivity mark=true" in (got.get("S2") or ""), got.get("S2"))
 check("S2: only once: a second start turns nothing on and says nothing", got.get("S2_twice") == "S2_twice true extra_enables=0", got.get("S2_twice"))
+check("HF0 (4.4): the Home key still opens the stock home after the role is ours (Google TV): the switch waits for the add-on's watch, not counted yet, the stock home NOT given the role back yet",
+      (got.get("HF0") or "").startswith("HF0 FAILED pending=true role=sa.urtv.home fails_after_first=null"), got.get("HF0"))
+check("HF (4.4): the home switch failed twice on this TV: the third try is not made (SKIPPED with «جرّب الإعداد بمساعد ذكي من الكمبيوتر», not one role asked)",
+      got.get("HF") == "HF FAILED FAILED SKIPPED count=2 third_line=true third_asked=0", got.get("HF"))
+check("HF2 (4.4): a switch that worked starts the count again; two is the limit; nothing tried writes nothing", got.get("HF2") == "HF2 DONE count=0 true false false true", got.get("HF2"))
+act = (ROOT / "android/launcher/src/main/java/sa/urtv/home/setup/SetupActivity.java").read_text(encoding="utf-8")
+check("4.4: the setup screen shows the computer's way with a QR to docs/SETUP-PROMPT.md once the switch failed twice (start and done screens)",
+      act.count("computerHelp();") == 2 and "QrCode.encodeLarge(HomeFails.GUIDE_URL)" in act and "if (!HomeFails.givenUp(new FileStore(this).get(HomeFails.FILE))) return;" in act
+      and 'GUIDE_URL = "https://github.com/tshi-dev/UrTV/blob/master/docs/SETUP-PROMPT.md"' in (ROOT / "android/launcher/src/main/java/sa/urtv/home/setup/HomeFails.java").read_text(encoding="utf-8"))
 check("S7 (4.3.3, A17): the wizard owns the saved Wi-Fi: the start screen does not ask about it, «تخلّص من واجهة المصنع» is offered and never names the wizard",
       got.get("S7") == "S7 owns=false refusal=none wizardInPlan=false wizardOff=false", got.get("S7"))
 check("S3: «تخلّص من واجهة المصنع» is on (the person's choice): the migration turns nothing on", got.get("S3_factory") == "S3_factory true enables=0 stockOff=true", got.get("S3_factory"))

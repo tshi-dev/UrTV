@@ -222,6 +222,11 @@ final class SetupRunner {
         p.add(new Def("home", false, c -> {
             if (c.engine.askWifi()) throw new Paused();   // before anything of the switch: the person is asked once, the run resumes here
             SetupEngine.Result r = c.engine.home();
+            if (c.engine.watchPending()) {   // 4.4: the stock home keeps the Home key (Google TV): «إضافات تلفزيونك» installed and turned on over this adb, then the key checked again
+                SetupEngine.Result add = install(c).addon();
+                SetupEngine.Result on = add.status == SetupEngine.Status.DONE ? c.engine.enableWatch() : add;
+                r = c.engine.finishWatch(on.status == SetupEngine.Status.DONE);
+            }
             c.runner.wantScreen();   // the stock home and then ours come in front: our home opens this screen again
             return r;
         }));

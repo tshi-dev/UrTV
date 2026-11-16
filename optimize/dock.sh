@@ -136,6 +136,31 @@ case "${1:-}:$#" in
     "$PY" -I optimize/tv.py "settings put secure accessibility_enabled 1" >/dev/null
     after=$("$PY" -I optimize/tv.py "settings get secure enabled_accessibility_services" | tail -n 1 | tr -d '\r')
     case "$after" in *"$svc"*) ;; *) echo "!! enabled_accessibility_services: this TV did not take $what (it says ${after:-nothing})" ;; esac
+    # 4.4: in the list is not running. A TCL's TclAppBoot refused the first bind («forbid bind service sa.urtv.extras/…»), and a force-stopped add-on is not bound
+    # again by itself: Android's own answer (Bound services) is read, and while ours is not in it the list goes off and on again (a change Android listens to),
+    # twice at most. A TV that does not say what is bound is left as it is (nothing guessed). TCL's boot manager is also told the add-on may start (AUTO_START).
+    "$PY" -I optimize/tv.py "appops set sa.urtv.extras AUTO_START allow" > /dev/null 2>&1 || true
+    bound=unknown
+    for try in 1 2 3; do
+      sleep 2
+      b=$("$PY" -I optimize/tv.py "dumpsys accessibility" | tr -d '\r' | grep -m1 'Bound services:' || true)
+      [ -n "$b" ] || break
+      if [[ "$b" == *"$svc"* ]]; then bound=yes; break; fi
+      bound=no
+      [ "$try" = 3 ] && break
+      now=$("$PY" -I optimize/tv.py "settings get secure enabled_accessibility_services" | tail -n 1 | tr -d '\r')
+      [[ "$now" == *"$svc"* ]] && [[ "$now" =~ ^[A-Za-z0-9_.\$/:]+$ ]] || break
+      rest=$(tr ':' '\n' <<< "$now" | grep -vxF "$svc" | paste -sd: - || true)
+      if [ -n "$rest" ]; then "$PY" -I optimize/tv.py "settings put secure enabled_accessibility_services '$rest'" >/dev/null
+      else "$PY" -I optimize/tv.py "settings delete secure enabled_accessibility_services" >/dev/null; fi
+      "$PY" -I optimize/tv.py "settings put secure enabled_accessibility_services '$now'" >/dev/null
+      echo "$what is in the list but Android did not run it (a TV may refuse the first bind): the list was turned off and on again ($try)"
+    done
+    if [ "$bound" = no ]; then
+      echo "!! $what is in the list but Android does not run it, even after turning it off and on twice. Ask the person, in Arabic: «افتح إعدادات التلفزيون ← تسهيل الاستخدام ← إضافات تلفزيونك، أطفئها وشغّلها من جديد». Then optimize/dock.sh extras-setup again to check."
+      exit 1
+    fi
+    [ "$bound" = yes ] && echo "Android runs it (Bound services)."
     echo "$done_msg" ;;
   pin:*)
     shift

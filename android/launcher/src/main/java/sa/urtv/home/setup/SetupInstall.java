@@ -168,6 +168,39 @@ final class SetupInstall {
         }
     }
 
+    // ---- 4.4 «إضافات تلفزيونك» from our release (the Home watch on a TV whose stock home keeps the Home key) -----------------------
+
+    /**
+     * The add-on, the same way as the screensaver: our release's file (apk-latest; apk-next while the latest has none yet), our package and our key checked, installed over
+     * the TV's own adb. One that is there already and as new is left; one signed with another key is never replaced or removed.
+     */
+    SetupEngine.Result addon() throws IOException {
+        String pkg = sa.urtv.home.ExtrasWords.PACKAGE;
+        boolean installed = tv.installed(pkg);
+        Apk apk = apks.download(UpdateRules.BASE + "urtv-extras.apk");
+        if (apk == null) apk = apks.download(UpdateRules.NEXT_BASE + "urtv-extras.apk");
+        if (apk == null) {
+            if (installed) return done("«إضافات تلفزيونك» مثبّتة (ما قدرنا ننزّل أحدث منها).");
+            return failed("ما قدرنا ننزّل «إضافات تلفزيونك» (الإنترنت؟).");
+        }
+        try {
+            if (installed) {
+                String why = UpdateRules.verify(pkg, apk.pkg, apks.installedCode(pkg), apk.code, apks.installedSigners(pkg), apk.signers);
+                if ("not_newer".equals(why)) return done("«إضافات تلفزيونك» مثبّتة وبآخر نسخة.");
+                if (why != null) return failed("نسخة «إضافات تلفزيونك» التي على التلفزيون ليست منّا، فما ثبّتنا فوقها ولا أزلناها.");
+            } else {
+                String why = InstallRules.fresh(pkg, apk.pkg, apks.selfSigners(), apk.signers);
+                if (why != null) return failed("الملف الذي نزل غير موقّع بمفتاح تطبيقنا، فما ثبّتناه (" + why + ").");
+                remember(pkg);   // before the install: «تراجع» removes it
+            }
+            String said = installWithVerifier(apk, pkg);
+            if (said.contains("Success")) return done("ثبّتنا «إضافات تلفزيونك».");
+            return failed("لم يقبل التلفزيون تثبيت «إضافات تلفزيونك»: " + firstLine(said));
+        } finally {
+            apk.delete.run();
+        }
+    }
+
     static String firstLine(String s) {
         for (String l : s.replace("\r", "").split("\n")) if (!l.trim().isEmpty()) return l.trim().length() > 120 ? l.trim().substring(0, 120) : l.trim();
         return "(لا جواب)";

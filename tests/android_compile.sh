@@ -86,4 +86,17 @@ if [ -n "$err" ] && echo "$err" | grep -q 'error'; then
 else
   echo "PASS android compile: the extras module compiles against $KIND"
 fi
+# 4.4 «إنقاذ تلفزيونك» (android/rescue): its own sources and the setup's files its build.gradle copies in (sharedSetup, sharedHome)
+mkdir -p "$W/out_rescue"
+incs=$(grep "^def sharedSetup = " "$ROOT/android/rescue/build.gradle" | grep -o "'[A-Za-z]*\.java'" | tr -d "'")
+inch=$(grep "^def sharedHome = " "$ROOT/android/rescue/build.gradle" | grep -o "'[A-Za-z]*\.java'" | tr -d "'")
+files=$(find "$ROOT/android/rescue/src/main/java" -name '*.java')
+for f in $incs; do files="$files $ROOT/android/launcher/src/main/java/sa/urtv/home/setup/$f"; done
+for f in $inch; do files="$files $ROOT/android/launcher/src/main/java/sa/urtv/home/$f"; done
+err=$(javac -encoding UTF-8 -proc:none -cp "$JAR" -d "$W/out_rescue" $files 2>&1 | grep -v '^Picked up\|^Note:')
+if [ -n "$err" ] && echo "$err" | grep -q 'error'; then
+  echo "FAIL android compile: the rescue module does not compile against $KIND"; echo "$err"; bad=1
+else
+  echo "PASS android compile: the rescue module compiles against $KIND"
+fi
 exit $bad

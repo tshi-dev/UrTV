@@ -20,7 +20,9 @@ public final class ExtrasWords {
     // the add-on's calls (the home asks)
     public static final String STATUS = "status", TYPE = "type", PRESS = "press", SLEEP = "sleep", GO_HOME = "go_home", WATCH = "watch";
     // the home's calls (the add-on asks)
-    public static final String TYPE_CHECK = "type_check", SETTINGS_PIN = "settings_pin", KEY = "key";
+    public static final String TYPE_CHECK = "type_check", SETTINGS_PIN = "settings_pin", KEY = "key", LEDGER = "ledger";
+    /** 4.4 «إنقاذ تلفزيونك» (UrTV Rescue): its package and release file */
+    public static final String RESCUE_PACKAGE = "sa.urtv.rescue", RESCUE_URL = "https://github.com/tshi-dev/UrTV/releases/download/apk-latest/urtv-rescue.apk";
     // the bundle's keys
     public static final String RESULT = "result", ON = "on", APPEND = "append", SEARCH = "search", NEEDS_PIN = "needs_pin", HIDDEN = "hidden", SYSTEM_SCREEN = "system_screen",
         CODE = "code", ACTION = "action", REPEAT = "repeat", DOWN_TIME = "down_time", EVENT_TIME = "event_time", SCAN = "scan", META = "meta", SOURCE = "source", DEVICE = "device";

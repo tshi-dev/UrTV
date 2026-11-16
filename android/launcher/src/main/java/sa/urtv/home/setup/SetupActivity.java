@@ -155,6 +155,8 @@ public class SetupActivity extends Activity {
         add(text(S.t("يجهّز التلفزيون نفسه، بدون كمبيوتر ولا جوال. اضغط «جهّز كل شي»: يسألك التلفزيون مرة واحدة «السماح بتصحيح USB؟»، ثم نعرض عليك ما سنفعله بالضبط قبل أي تغيير."), 15, "Regular", TEXT), dp(12));
         add(text(S.t("قبل البدء: فعّل «تصحيح USB» (الإعدادات ← تفضيلات الجهاز ← حول ← اضغط «Build» سبع مرات ← خيارات المطوّر ← تصحيح USB). وخلك عند التلفزيون: لما تطلع الرسالة اختر «السماح دائماً»."), 13, "Regular", GOLD), dp(16));
         if (SetupRunner.resumable(new FileStore(this))) add(text(S.t("إعداد سابق ما اكتمل: «جهّز كل شي» يكمله من حيث توقف."), 14, "Regular", TEXT), dp(12));
+        rescueFirst();   // 4.4: the way back with no computer, before anything is started
+        computerHelp();   // 4.4: the switch failed twice here: the computer's way (the rest of «جهّز كل شي» still runs, without the home step)
         start = button(S.t("جهّز كل شي"));
         start.setOnClickListener(new View.OnClickListener() { public void onClick(View v) { go(false); } });
         add(start, dp(12));
@@ -206,6 +208,10 @@ public class SetupActivity extends Activity {
     }
 
     /** the on/off look (OnOff): the focus fill while focused, else the panel; the one in use has the green triangles and its words in green */
+    /**
+     * 4.4 (HomeFails): where the home switch was tried twice and did not make UrTV the home, the in-app path is not offered any more; this says the one way that works
+     * on such a TV, an AI helper on a computer with docs/SETUP-PROMPT.md, and a QR to that guide. Nothing when the switch has not failed twice.
+     */
     private void paintLang(TextView t, boolean on, boolean focused) {
         t.setBackground(focused ? sa.urtv.home.GlassPaint.focused(this, look, 14) : sa.urtv.home.GlassPaint.panel(this, look, 14));
         int green = sa.urtv.home.OnOff.green(focused ? look.focus : look.light ? 0xFFFFFFFF : 0xFF000000);
@@ -277,6 +283,65 @@ public class SetupActivity extends Activity {
         add(no, dp(12));
         begin.post(new Runnable() { @Override public void run() { begin.requestFocus(); } });
         say("", GOLD);
+    }
+
+    /** 4.4 «قبل ما نبدأ: لو صار شيء» (RescueInfo): three steps to «إنقاذ تلفزيونك», a QR to docs/RESCUE.md, and a photo of the screen asked for */
+    private void rescueFirst() {
+        add(text(S.tv(RescueInfo.TITLE), 17, "Medium", GOLD), dp(4));
+        add(text(digits(S.tv(RescueInfo.STEP1)), 14, "Regular", TEXT), dp(4));
+        add(text(RescueInfo.hasCode() ? S.tv(RescueInfo.STEP2_CODE, RescueInfo.DOWNLOADER_CODE) : digits(S.tv(RescueInfo.STEP2_DOC)), 14, "Regular", TEXT), dp(4));   // the code in Latin digits, as Downloader asks it
+        add(text(digits(S.tv(RescueInfo.STEP3)), 14, "Regular", TEXT), dp(8));
+        add(text(S.tv(RescueInfo.PHOTO), 13, "Regular", GOLD), dp(8));
+        try {
+            QrView qr = new QrView(this);
+            qr.setCode(QrCode.encodeLarge(RescueInfo.DOC_URL));
+            LinearLayout card = new LinearLayout(this);
+            card.setGravity(Gravity.CENTER);
+            card.setPadding(dp(12), dp(12), dp(12), dp(12));
+            android.graphics.drawable.GradientDrawable white = new android.graphics.drawable.GradientDrawable();
+            white.setColor(0xFFFFFFFF);
+            white.setCornerRadius(dp(14));
+            card.setBackground(white);
+            card.addView(qr, new LinearLayout.LayoutParams(dp(120), dp(120)));
+            LinearLayout.LayoutParams cp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+            cp.gravity = Dir.start();
+            cp.bottomMargin = dp(16);
+            body.addView(card, cp);
+        } catch (IllegalArgumentException ignored) { }
+    }
+
+    /** RescueInfo's words, said in «اللغة» (S.tv above) */
+    @SuppressWarnings("unused") private static final String[] RESCUE_WORDS = {
+        S.n("قبل ما نبدأ: لو صار شيء"), S.n("1. اضغط زر الإعدادات في الريموت ← التطبيقات ← Downloader ← فتح."), S.n("2. اكتب الكود %s وثبّت «إنقاذ تلفزيونك»."),
+        S.n("2. ثبّت «إنقاذ تلفزيونك» برابطه في الدليل (امسح الرمز)."), S.n("3. افتحه واضغط «رجّع التلفزيون كما كان»."), S.n("صوّر هذه الشاشة بجوالك الحين، عشان تكون عندك لو احتجتها."),
+    };
+
+    /** HomeFails' words, said in «اللغة» (S.tv above) */
+    @SuppressWarnings("unused") private static final String[] HOME_FAILS_WORDS = {
+        S.n("جرّب الإعداد بمساعد ذكي من الكمبيوتر"),
+        S.n("على هذا التلفزيون ما نجح تبديل الشاشة الرئيسية من هنا مرتين. افتح على الكمبيوتر مساعداً ذكياً (مثل Claude Code) في مجلد UrTV وقل له: «اقرأ docs/SETUP-PROMPT.md وجهّز تلفزيوني». امسح الرمز لترى الدليل."),
+    };
+
+    private void computerHelp() {
+        if (!HomeFails.givenUp(new FileStore(this).get(HomeFails.FILE))) return;
+        add(text(S.tv(HomeFails.LINE), 18, "Medium", GOLD), dp(4));
+        add(text(S.tv(HomeFails.GUIDE), 14, "Regular", TEXT), dp(8));
+        try {
+            QrView qr = new QrView(this);
+            qr.setCode(QrCode.encodeLarge(HomeFails.GUIDE_URL));
+            LinearLayout card = new LinearLayout(this);
+            card.setGravity(Gravity.CENTER);
+            card.setPadding(dp(12), dp(12), dp(12), dp(12));
+            android.graphics.drawable.GradientDrawable white = new android.graphics.drawable.GradientDrawable();
+            white.setColor(0xFFFFFFFF);
+            white.setCornerRadius(dp(16));
+            card.setBackground(white);
+            card.addView(qr, new LinearLayout.LayoutParams(dp(140), dp(140)));
+            LinearLayout.LayoutParams cp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+            cp.gravity = Dir.start();
+            cp.bottomMargin = dp(16);
+            body.addView(card, cp);
+        } catch (IllegalArgumentException ignored) { }
     }
 
     private void buildProgress(SetupRunner r) {
@@ -504,6 +569,7 @@ public class SetupActivity extends Activity {
                 } catch (IllegalArgumentException ignored) { }
             }
         }
+        computerHelp();
         add(text(S.t("بعد الإعداد أطفئ التصحيح:"), 15, "Medium", TEXT), dp(4));
         add(text(digits(S.t("1. الإعدادات ← تفضيلات الجهاز ← خيارات المطوّر.")), 14, "Regular", TEXT), dp(4));
         add(text(digits(S.t("2. اختر «إلغاء تراخيص تصحيح USB».")), 14, "Regular", TEXT), dp(4));

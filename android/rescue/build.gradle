@@ -1,0 +1,57 @@
+plugins {
+    id 'com.android.application'
+}
+
+// «إنقاذ تلفزيونك» (UrTV Rescue, 4.4): a tiny app with one button that puts the TV back as it was, over the TV's own adb (the same way as «إعداد تلفزيوني»), for a
+// person with no computer: installed with Downloader even when the home is gone. Signed with the same key as the others (it asks the home what the setup turned off).
+android {
+    namespace 'sa.urtv.rescue'
+    compileSdk 34
+
+    defaultConfig {
+        applicationId 'sa.urtv.rescue'
+        minSdk 21
+        targetSdk 34
+        versionCode((System.getenv('GITHUB_RUN_NUMBER') ?: '1') as int)
+        versionName file('../../VERSION').text.trim()
+    }
+
+    signingConfigs {
+        if (System.getenv('ANDROID_KEYSTORE')) {
+            release {
+                storeFile file(System.getenv('ANDROID_KEYSTORE'))
+                storePassword System.getenv('ANDROID_KEYSTORE_PASSWORD')
+                keyAlias 'urtv'
+                keyPassword System.getenv('ANDROID_KEYSTORE_PASSWORD')
+            }
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            signingConfig signingConfigs.findByName('release') ?: signingConfigs.debug
+        }
+    }
+
+    sourceSets {
+        main { java.srcDirs += ["$buildDir/generated/shared"] }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    lint { abortOnError false }
+}
+
+// the setup's own files the rescue uses as they are (its adb client and key, the plan of what to turn back on)
+def sharedSetup = ['AdbClient.java', 'AdbKeys.java', 'SetupLists.java', 'WatchList.java', 'RescuePlan.java']
+def sharedHome = ['ExtrasWords.java']
+def copyShared = tasks.register('copyShared', Copy) {
+    from('../launcher/src/main/java/sa/urtv/home/setup') { include sharedSetup; into 'sa/urtv/home/setup' }
+    from('../launcher/src/main/java/sa/urtv/home') { include sharedHome; into 'sa/urtv/home' }
+    into "$buildDir/generated/shared"
+}
+preBuild.dependsOn copyShared

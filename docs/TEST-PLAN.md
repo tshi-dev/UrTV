@@ -313,6 +313,46 @@ Install the branch's home first (`adb install -r urtv-home.apk`). The add-on: `a
 | X11 | «تحديث تلفزيونك» on a TV with the add-on installed (a newer build in apk-next with `saver.sh updatechannel next`) | The steps show «تحديث إضافات تلفزيونك» between the screensaver and the home; all three update |
 | X12 | `optimize/reset.sh` | sa.urtv.extras is removed with the others, its entry leaves enabled_accessibility_services |
 
+
+## 15. 4.4 «update notice, the home switch not pushed, the add-on's bind» (branch work/44-update)
+
+Builds: `adb shell dumpsys package sa.urtv.home | grep versionCode` (and sa.urtv.screensaver, sa.urtv.extras). To force a fresh release check: `adb shell pm clear sa.urtv.home` is NOT allowed (it wipes the person's settings); instead wait 6 h, or install a build older than apk-latest.
+
+| ID | Do | Expect |
+|---|---|---|
+| U1 | Install this branch's home and an OLDER screensaver (e.g. apk-latest's, if older), open the home | The top bar: «في تحديث لـ شاشة التوقف» with «حدّث الآن» and «لاحقاً»; the «تحديث» pill in the top row. OK opens «تحديث تلفزيوني» |
+| U2 | Back to the home again (no update done) | The card does not come back (one-time); the pill stays |
+| U3 | All three apps the same build, apk-latest newer (or `optimize/saver.sh updatechannel next` with a newer apk-next) | Within 6 h of the last check (or at the next start of the home after it): «في تحديث لـ الشاشة الرئيسية وشاشة التوقف وإضافات تلفزيونك» (the add-on only if installed) |
+| U4 | Play a surah («تلاوة») and wait for U1/U3's condition, or start the adhan preview | No card while it plays; it appears on the next return to the home after |
+| U5 | Kids mode on | No card, no pill |
+| U6 | Wi-Fi off, open the home | Nothing said, no error |
+| U7 | Uninstall the screensaver app (test TV only) and open «تلفزيونك» | «ثبّت الجزء الثاني» as before; no «في تحديث» card for it |
+| H1 | On a TV where UrTV is NOT the home: open the home | No bar «خلّ تلفزيونك يفتح على UrTV» any more, ever. The settings' row «اجعل UrTV الشاشة الرئيسية» is still there |
+| H2 | A TV where the switch fails (Home keeps opening the stock home): «إعداد تلفزيوني» → «جهّز كل شي» twice | Each home step fails; after the second, the start screen (and the done screen) show «جرّب الإعداد بمساعد ذكي من الكمبيوتر», the guide line and a QR to docs/SETUP-PROMPT.md; a third run skips the home step with that line (the rest still runs) |
+| H3 | After H2 (test TV): `adb shell run-as sa.urtv.home cat files/setup/home-fails.txt` is not possible on a release build; instead make the switch succeed once (e.g. on another TV) | A successful switch starts the count again (no QR) |
+| E1 | TCL (TclAppBoot): install the add-on, `optimize/dock.sh extras-setup` | It says «Android runs it (Bound services).»; if the TV refused the first bind, one or two lines «… the list was turned off and on again (n)» before it. `adb shell dumpsys accessibility \| grep -i ExtrasA11yService` is in Bound services |
+| E2 | Then `adb shell am force-stop sa.urtv.extras`, wait 2 minutes, open the home | The bar says «إضافات تلفزيونك مفعّلة لكن التلفزيون ما شغّلها: أطفئها وشغّلها من جديد…» with «أصلحها». OK: where UrTV holds WRITE_SECURE_SETTINGS (Family DNS set up) it re-binds by itself (toast «شغّلنا…»), else the TV's accessibility settings open; turn it off and on there. Bound again afterwards |
+| E3 | E2's state, then «أطفئ الآن» in «مركز التحكم» | The offer screen says the same one fix (not «ثبّت») |
+| E4 | `optimize/dock.sh extras-setup` on E2's state | It turns the list off and on itself and confirms «Android runs it» |
+
+
+### 15b. 4.4 the home switch on a Google TV, and the ways back (from a FRESH state: UrTV removed, `optimize/reset.sh` or uninstall all sa.urtv.* by hand)
+
+Install only the branch's home (`adb install -r urtv-home.apk`); the setup downloads the screensaver and «إضافات تلفزيونك» itself (from apk-latest; apk-next while apk-latest has no urtv-extras.apk yet: for the test, push the branch build to apk-next or install urtv-extras.apk by adb first).
+
+| ID | Do | Expect |
+|---|---|---|
+| G1 | «إعداد تلفزيوني» → the start screen | «قبل ما نبدأ: لو صار شيء», three steps, a QR (scan it: docs/RESCUE.md opens), «صوّر هذه الشاشة بجوالك…» |
+| G2 | «جهّز كل شي» on a Google TV (launcherx) | The home step: if Home already opens UrTV, done; else the line «زر الرئيسية ما زال يفتح الشاشة الأصلية…: نجرّب «إضافات تلفزيونك»…», the add-on installed (Play Protect: «تثبيت على أي حال»), «إضافات تلفزيونك» شغّالة (or «…أطفأناها وشغّلناها من جديد» on a TCL), then «زر الرئيسية يفتح تلفزيونك الآن…». `adb shell dumpsys accessibility \| grep -i ExtrasA11yService` in Bound services; `pm list packages -d` has NO launcherx / setupwraith |
+| G3 | After G2: open YouTube, press Home on the remote (5 times, a few seconds apart) | UrTV every time (Google TV's home may flash first: write down how long) |
+| G4 | The report (QR on the done screen) | «Home: sa.urtv.home/.MainActivity» only if G3 is true; on a TV where it did not work, the stock home's component (never a false pass) |
+| G5 | A TV where it does not work (or the add-on's service turned off right before the check) | «ما قدرنا نخلي زر الرئيسية يفتح تلفزيونك على هذا التلفزيون…»; Home = the stock home; everything else of the setup done. A second «جهّز كل شي» with the same result: the start screen then shows «جرّب الإعداد بمساعد ذكي من الكمبيوتر» + QR, and a third run skips the home step |
+| G6 | «تراجع» after G2 | The role back to the stock home, «إضافات تلفزيونك» out of enabled_accessibility_services (the list and accessibility_enabled as before the setup) |
+| R1 | Install urtv-rescue.apk (`adb install -r`, or Downloader with its URL) and open «إنقاذ تلفزيونك» from the apps row (with UrTV still the home after G2) | One big button. Press it: the TV asks «السماح بتصحيح USB؟» → «السماح دائماً»; it says what it turned on, «زر الرئيسية يفتح الشاشة الأصلية الآن», «أطفأنا «إضافات تلفزيونك»». Home now opens the stock home; nothing uninstalled |
+| R2 | Turn launcherx off by hand (`adb shell pm disable-user --user 0 com.google.android.apps.tv.launcherx`, test TV only), uninstall sa.urtv.home, reach Downloader with the remote's Settings key → Apps → Downloader → Open, install and run the rescue app | launcherx back on, Home opens it (no ledger: it says it turned on what it knows) |
+| R3 | The phone route of docs/RESCUE.md (Bugjaeger or Remote ADB Shell), the one line pasted | No error that stops it; Home opens the stock home |
+| R4 | The home's own check: hard to force; on a test TV, make our home crash at start twice in a row after a restart (not possible on a release build) — at least check that after two normal restarts no bar «رجّع الواجهة الأصلية» appears | No false offer |
+
 ## Report format
 
 ```

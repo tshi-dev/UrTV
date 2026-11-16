@@ -65,15 +65,38 @@ public final class SetupHook {
     }
 
     /** the stock interface is off by us («تخلّص من واجهة المصنع» is on): the settings' row says so through the provider (read only) */
+    /** 4.4 «إنقاذ تلفزيونك»: what our setup turned off (the ledger and the community list's record), one package per line, for the rescue app (ExtrasBridge, our key only) */
+    public static String ledger(Context c) {
+        try {
+            FileStore f = new FileStore(c);
+            String a = f.get("disabled-by-us.txt"), b = f.get("community-applied.txt");
+            return (a == null ? "" : a) + "\n" + (b == null ? "" : b);
+        } catch (RuntimeException e) { return ""; }
+    }
+
     public static boolean factoryOff(Context c) {
         try { String f = new FileStore(c).get(SetupEngine.FACTORY); return f != null && f.startsWith("on"); }
         catch (RuntimeException e) { return false; }
     }
 
-    /** Our home reached the screen (MainActivity.onResume): while the stock interface is off, this boot is fine and BootGuard's count starts again. One small read; a write only when it changes. */
+    /** 4.4: the home's own check after a bad boot (SetupBootReceiver.homeGuard): our home is the TV's Home and did not come up twice in a row with a crash; the home offers «رجّع الواجهة الأصلية» first */
+    static final String HOME_GUARD = "home-guard.txt", STOCK_OFFER = "home-offer.txt";
+
+    public static boolean stockBackOffered(Context c) {
+        try { String f = new FileStore(c).get(STOCK_OFFER); return f != null && f.startsWith("1"); } catch (RuntimeException e) { return false; }
+    }
+
+    /** the person answered the offer (or «لاحقاً»): it goes, and the count starts again */
+    public static void clearStockBackOffer(Context c) {
+        try { FileStore f = new FileStore(c); f.put(STOCK_OFFER, ""); f.put(HOME_GUARD, BootGuard.fresh(System.currentTimeMillis()).text()); } catch (Exception ignored) { }
+    }
+
+    /** Our home reached the screen (MainActivity.onResume): this boot is fine and BootGuard's count starts again (the factory step's, and 4.4 the home's own). One small read; a write only when it changes. */
     public static void homeUp(Context c) {
         try {
             FileStore store = new FileStore(c.getApplicationContext());
+            BootGuard.State g = BootGuard.State.parse(store.get(HOME_GUARD));
+            if (!g.up || g.failed != 0) store.put(HOME_GUARD, BootGuard.homeUp(g).text());
             String f = store.get(SetupEngine.FACTORY);
             if (f == null || !f.startsWith("on")) return;
             BootGuard.State s = BootGuard.State.parse(store.get(BootGuard.FILE));

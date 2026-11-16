@@ -64,6 +64,12 @@ public final class A11yHeal extends BroadcastReceiver {
         return A11yList.has(list, TYPE) && !Extras.enabled();
     }
 
+    /** 4.4: «إضافات تلفزيونك» is in the TV's list (turned on), bound or not */
+    static boolean listed(Context c) { return A11yList.has(read(c, LIST), TYPE); }
+
+    /** 4.4: we may write the list (WRITE_SECURE_SETTINGS, granted with Family DNS): then a refused or lost bind is healed by us, else the person turns it off and on */
+    static boolean canHeal(Context c) { return c.checkSelfPermission(android.Manifest.permission.WRITE_SECURE_SETTINGS) == PackageManager.PERMISSION_GRANTED; }
+
     /** Our service is in the list AND Android runs it (bound): the carry's accessibility stage is done only then. */
     static boolean listedAndBound(Context c) {
         String list = read(c, LIST);
@@ -71,7 +77,7 @@ public final class A11yHeal extends BroadcastReceiver {
     }
 
     static void check(Context c, String why) {
-        if (!"boot".equals(why)) {   // our own update: the mute and our entry as they were right before it (UpdateCarry), before the check below
+        if (!"boot".equals(why) && !why.startsWith("fix")) {   // (4.4: «fix-…», the add-on's bind healed from the offer or the bar, is no update) our own update: the mute and our entry as they were right before it (UpdateCarry), before the check below
             try { UpdateCarry.after(c, why); } catch (RuntimeException e) { Log.w(TAG, "carry " + why + " failed: " + e.getClass().getSimpleName()); }
         }
         try {

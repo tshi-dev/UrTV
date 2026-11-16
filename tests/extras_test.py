@@ -85,4 +85,16 @@ check("install.sh addon installs it (Play Protect line for the person), dock.sh 
       "push_install urtv-extras.apk sa.urtv.extras" in ins and "تثبيت على أي حال" in ins.split('if [ "$what" = addon ]; then')[1][:600]
       and 'svc="sa.urtv.extras/sa.urtv.home.ExtrasA11yService"' in dock)
 check("tests/android_compile.sh compiles the add-on too", "the extras module compiles" in text(ROOT / "tests/android_compile.sh"))
+# 4.4 (the tester's TCL): turned on in the TV's list but not run by Android (TclAppBoot refused the bind; a force-stop): detected and said, never assumed to work
+heal = text(HOME / "A11yHeal.java")
+check("4.4: «turned on but not running» = listed and not bound (Extras.enabled is the service's own answer)", "static boolean listed(Context c) { return A11yList.has(read(c, LIST), TYPE); }" in heal
+      and "return A11yList.has(list, TYPE) && !Extras.enabled();" in heal)
+check("4.4: the offer screen says the one fix (off and on again in «تسهيل الاستخدام»), after our own heal where we may write the list",
+      "if (A11yHeal.listed(this))" in act and 'A11yHeal.check(getApplicationContext(), "fix-offer")' in act and "state.setText(S.tv(STUCK_FIX));" in act and "أطفئها وشغّلها من جديد" in act)
+check("4.4: the home's bar says it too (after the TV has been up 90 s, never in kids mode, its own «لاحقاً»), OK heals it or opens the accessibility settings behind the sleep lock",
+      "A11yHeal.stuck(this)" in main and "elapsedRealtime() > 90_000" in main and '"extras_later_until"' in main and 'A11yHeal.check(getApplicationContext(), "fix-nudge")' in main
+      and "if (nudgeIsExtras) {" in main and "ParentalPolicy.SLEEP_ACCESSIBILITY, new Intent(android.provider.Settings.ACTION_ACCESSIBILITY_SETTINGS)" in main)
+check("4.4: a heal from the offer or the bar is not taken for our own update (UpdateCarry is not run for «fix-…»)", '!"boot".equals(why) && !why.startsWith("fix")' in heal)
+check("4.4: dock.sh extras-setup reads Android's Bound services after writing the list, turns the list off and on while ours is not bound (twice), says the person's fix if it still is not, and allows TCL's AUTO_START",
+      "Bound services:" in dock and "the list was turned off and on again" in dock and "أطفئها وشغّلها من جديد" in dock and "appops set sa.urtv.extras AUTO_START allow" in dock)
 sys.exit(1 if failed else 0)
