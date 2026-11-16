@@ -140,9 +140,12 @@ public class MainActivity extends Activity {
     private int lastFocusedId = View.NO_ID;
     private boolean firstShow = true;
     private int packageSeq;
+    /** the settings the clock last drew with (null before the first) */
+    private ConfigSnapshot lastCfg;
     private PopupWindow inputsPopup;
     private HomeCard homeCard;
     private NowCard nowCard;   // «يُتلى الآن»: at the right end of the pills row while a surah or a station is on
+    private Pill searchPill;   // 4.3.3 «بحث»: the TV's own search inside the apps (GlobalSearch), off until the settings turn it on
     private Pill marketsPill, matchesPill, phonePill, updatePill;   // «تحديث»: an update is worth opening the update screen for (UpdateNotice)   // «الجوال» (C14): the phone remote's page
     private ImageView netIcon;   // C15: the connection in the top row (Wi-Fi, none)   // «الأسواق» and «المباريات»: they take the look like the others («رملي»: they stayed grey, step 28)
     private Pill centerPill;   // «مركز التحكم»: gold while the sleep timer runs; in the row except in kids mode (applyCenterPill)
@@ -855,6 +858,12 @@ public class MainActivity extends Activity {
         // «الجوال» (C14): a round button to the phone remote's page (the QR and the pairing), after «المباريات»
         phonePill = pill(S.t("الجوال"), R.drawable.ic_phone);
         phonePill.setOnClickListener(v -> launchGuarded(ParentalPolicy.OUR_SETTINGS, new Intent(this, PhoneActivity.class), "الجوال"));
+        // 4.3.3 «بحث»: in the row only while the settings' «زر البحث» is on and the TV has a search inside the apps (applyQuickPill)
+        searchPill = pill(S.t("بحث"), R.drawable.ic_search);
+        searchPill.setOnClickListener(v -> {
+            Intent s = GlobalSearch.intent(getPackageManager());
+            if (s != null && !Parental.state(this).kids) launchGuarded(ParentalPolicy.TILE, s, "بحث");   // locked as the search app's own tile
+        });
         // 4.3: the update screen's pill, in the row only while UpdateNotice says so (the screensaver is older than this home, or a newer build is out)
         updatePill = pill(S.t("تحديث جديد"), R.drawable.ic_update);
         updatePill.setAccent(true);
@@ -1150,6 +1159,18 @@ public class MainActivity extends Activity {
             @Override public void openUpdate() { launchGuarded(ParentalPolicy.PILL_UPDATES, new Intent(MainActivity.this, UpdateActivity.class), "تحديث تلفزيوني"); }
             @Override public void openSleep(View anchor) { guarded(ParentalPolicy.PILL_SLEEP, null, S.t("مؤقت النوم"), () -> showSleep(anchor)); }
             @Override public boolean saverInstalled() { return isInstalled(SAVER_PKG); }
+            @Override public long[] adhanTimes() {   // 4.3.3 «الأذان والإقامة»: the adhan bar's own times
+                if (lastCfg == null) return null;
+                try {
+                    sa.urtv.home.tilawah.DayParts d = sa.urtv.home.tilawah.DayParts.now(MainActivity.this, lastCfg.placeFragment(), lastCfg.placeTicket());
+                    return new long[] {d.fajr, d.dhuhr, d.asr, d.maghrib, d.isha, d.friday ? 1 : 0};
+                } catch (RuntimeException e) { return null; }
+            }
+            @Override public String clock(long ms) {
+                String[] zone = lastCfg == null ? null : lastCfg.cityZone();
+                Calendar at = ClockZone.at(ms, zone == null ? java.util.TimeZone.getDefault().getID() : zone[1]);
+                return ClockText.time(at.get(Calendar.HOUR_OF_DAY), at.get(Calendar.MINUTE), Digits.clock24(), Digits.latin());
+            }
             @Override public Typeface font(String family) { return MainActivity.this.font(family); }
         };
     }
@@ -2760,6 +2781,10 @@ public class MainActivity extends Activity {
                 toast(now ? S.t("فُتح القفل") : S.t("قُفل، ويطلب الرمز"));
             }, null);
         };
+        if (kids) {   // 4.3.3: in kids mode a lock per app means nothing (only the allowed apps show): the slot is the way out, «الرقابة الأبوية» behind the PIN
+            o.lockLabel = KIDS_EXIT;
+            o.lock = this::openParental;
+        }
         o.favouriteNow = inDock;
         o.favourite = () -> {
             if (inDock) {
@@ -2783,6 +2808,16 @@ public class MainActivity extends Activity {
         if (!kids && shop != null) o.store = () -> guarded(ParentalPolicy.MENU_APP, pkg, S.t("صفحته في المتجر"), () -> launch(shop));
         if (appOptions != null) appOptions.dismiss();
         appOptions = AppOptions.show(this, anchor, inDock ? 1.12f : 1.1f, homeGlass(), font("sans-serif-medium"), o);
+    }
+
+    static final String KIDS_EXIT = S.n("الرقابة الأبوية");
+
+    /**
+     * 4.3.3: kids mode always has a way out on the TV: «الرقابة الأبوية» (ParentalActivity asks the PIN itself, and «الخروج من وضع الأطفال» there asks
+     * it again), from the long OK's box on any app, the Menu key, the star key, and a long Settings key where the screensaver app (its other door) is missing.
+     */
+    private void openParental() {
+        launchGuarded(ParentalPolicy.PARENTAL_SCREEN, new Intent(this, ParentalActivity.class), "الرقابة الأبوية");
     }
 
     // ---- the hint beside a favourite's name: «اضغط مطوّلاً للخيارات», the first few times only (OPTIONS_HINT_TIMES), never after the box was opened
@@ -2932,6 +2967,8 @@ public class MainActivity extends Activity {
         }
         if (liveTvPkg != null) rows.add(inputRow(S.t("البث التلفزيوني"), () -> openLiveTv()));
         if (inputs.isEmpty() && inputPickerPkg != null) rows.add(inputRow(S.t("كل المصادر"), () -> guarded(ParentalPolicy.INPUT_PICKER, TvVendor.pkg(inputPickerPkg), "كل المصادر", () -> openPackage(inputPickerPkg))));
+        Intent panel = inputPickerPkg == null ? systemInputs() : null;   // #54: no picker of the TV's own: the system's inputs panel, when it answers
+        if (panel != null) rows.add(inputRow(S.t("كل المصادر"), () -> launchGuarded(ParentalPolicy.INPUT_PICKER, panel, "كل المصادر")));
 
         if (rows.isEmpty()) rows.add(inputRow(S.t("الإعدادات"), () -> launchGuarded(ParentalPolicy.PILL_TV_SETTINGS, new Intent(Settings.ACTION_SETTINGS), "إعدادات التلفزيون")));
         for (TextView r : rows) {
@@ -3161,6 +3198,7 @@ public class MainActivity extends Activity {
     }
 
     private void updateClock(ConfigSnapshot cfg) {
+        lastCfg = cfg;   // «مركز التحكم»'s «الأذان والإقامة» reads the times from it
         long ms = System.currentTimeMillis();
         clockDrawnAt = ms;
         String tvTz = java.util.TimeZone.getDefault().getID();
@@ -3181,7 +3219,7 @@ public class MainActivity extends Activity {
         lookNow = cfg.look();
         applyLook(Look.light(cfg.appearance(), dayBySun(cfg), h * 60 + now.get(Calendar.MINUTE)));
         GlassStyle.Look glassNow = homeGlass();
-        for (Pill p : new Pill[] {inputsPill, tasksPill, tilawahPill, centerPill, marketsPill, matchesPill, phonePill, updatePill, bellPill}) if (p != null) p.look(glassNow);   // «رملي»: its own buttons
+        for (Pill p : new Pill[] {inputsPill, tasksPill, tilawahPill, centerPill, marketsPill, matchesPill, searchPill, phonePill, updatePill, bellPill}) if (p != null) p.look(glassNow);   // «رملي»: its own buttons
         if (pillBar != null) pillBar.look(GlassStyle.material(glassNow, lookNow, GlassStyle.QUICK));
         for (View v : pills) if (v instanceof Pill) ((Pill) v).look(glassNow);   // and every pill of the row, whatever else is added to it: six buttons, one style (step 28: two stayed grey circles)
         boolean h24 = cfg.clock24();   // «ساعة ٢٤»: off (12-hour with the ص or م) unless the owner turned it on
@@ -3193,7 +3231,7 @@ public class MainActivity extends Activity {
         zoneLine.setVisibility(other ? View.VISIBLE : View.GONE);
         if (other) zoneLine.setText(ClockZone.label(zone[0], cal));
         if (gregFormat == null) {
-            gregFormat = new SimpleDateFormat("d MMMM", new Locale("ar"));
+            gregFormat = new SimpleDateFormat("d MMMM y", new Locale("ar"));   // 4.3.3: with the year, as the screensaver's line
             try {
                 hijriFormat = new android.icu.text.SimpleDateFormat("EEEE، d MMMM y", new android.icu.util.ULocale("ar_SA@calendar=islamic-umalqura"));
                 hijriDay = new android.icu.text.SimpleDateFormat("d MMMM y", new android.icu.util.ULocale("ar_SA@calendar=islamic-umalqura"));
@@ -3216,8 +3254,12 @@ public class MainActivity extends Activity {
             }
         } catch (Exception ignored) { }
         String greg = MonthNames.of(gregFormat.format(now.getTime()), MonthNames.levant(cfg.fragment));   // «تشرين الأول» when chosen
+        if (DateNum.on(cfg.fragment)) {   // 4.3.3 «التاريخ بالأرقام»: 06/06/1448 هـ and 16/11/2026, in the digits chosen
+            String n = numericDates(now, tz, HijriShift.fromFragment(cfg.fragment));
+            if (n != null) { hijri = ""; greg = n; }
+        }
         date.setText(arabicDigits(hijri.isEmpty() ? greg : hijri + "  –  " + greg));
-        if (S.en()) date.setText(arabicDigits(englishDate(now, tz, HijriShift.fromFragment(cfg.fragment))));   // the same line in English (MonthNames.hijriEn)
+        if (S.en()) date.setText(arabicDigits(englishDate(now, tz, HijriShift.fromFragment(cfg.fragment), DateNum.on(cfg.fragment))));   // the same line in English (MonthNames.hijriEn)
         updateAdhanBar(cfg);
         updatePrayerLine();
         applyListenPill(cfg.listenPillOn);
@@ -3230,6 +3272,7 @@ public class MainActivity extends Activity {
         applyQuickPill(marketsPill, !hiddenQuick.contains("markets"), matchesPill, phonePill, updatePill, tilawahPill);
         applyQuickPill(matchesPill, !hiddenQuick.contains("matches"), phonePill, updatePill, tilawahPill);
         applyQuickPill(phonePill, !hiddenQuick.contains("phone"), updatePill, tilawahPill);
+        applyQuickPill(searchPill, GlobalSearch.wanted(cfg.fragment, Parental.state(this).kids, cleanShown) && GlobalSearch.intent(getPackageManager()) != null, phonePill, updatePill, tilawahPill);   // 4.3.3 «زر البحث»: before «الجوال»
         applyQuickPill(updatePill, !Parental.state(this).kids && UpdateNotice.wanted(this), tilawahPill);
         UpdateNotice.checkIfDue(getApplicationContext(), () -> runOnUiThread(() -> applyQuickPill(updatePill, !Parental.state(this).kids && UpdateNotice.wanted(this), tilawahPill)));
         updateNetIcon();
@@ -3357,12 +3400,43 @@ public class MainActivity extends Activity {
      * The date line in English, as the English page writes it: «Monday, 22 Jumada al-Awwal 1448 AH  –  2 November». The Hijri day comes
      * from the TV's Umm al-Qura calendar, moved by «فرق التاريخ الهجري» as the Arabic line; without that calendar, the Gregorian day alone.
      */
-    private static String englishDate(Calendar now, String tz, int shift) {
+    /**
+     * 4.3.3 «التاريخ بالأرقام»: «الاثنين، 06/06/1448 هـ  –  16/11/2026», day/month/year in Latin digits (arabicDigits turns them to the digits chosen);
+     * null when the TV's ICU has no Umm al-Qura calendar (the line stays in words).
+     */
+    private String numericDates(Calendar now, String tz, int shift) {
+        String n = numericParts(now, tz, shift);
+        if (n == null) return null;
+        SimpleDateFormat day = new SimpleDateFormat("EEEE", new Locale("ar"));
+        day.setTimeZone(ZoneFix.zone(tz));
+        return DateNum.line(day.format(now.getTime()), n, true);
+    }
+
+    /** "06/06/1448|16/11/2026" (Hijri moved by the offset), or null without an Umm al-Qura calendar */
+    private static String numericParts(Calendar now, String tz, int shift) {
+        try {
+            android.icu.util.Calendar h = android.icu.util.Calendar.getInstance(ZoneIcu.of(tz), new android.icu.util.ULocale("en@calendar=islamic-umalqura"));
+            if (!"islamic-umalqura".equals(h.getType())) return null;
+            h.setTime(shift == 0 ? now.getTime() : HijriShift.date(now, shift));
+            Calendar g = Calendar.getInstance(ZoneFix.zone(tz));
+            g.setTimeInMillis(now.getTimeInMillis());
+            return DateNum.ddmmyyyy(h.get(android.icu.util.Calendar.DAY_OF_MONTH), h.get(android.icu.util.Calendar.MONTH) + 1, h.get(android.icu.util.Calendar.YEAR))
+                    + "|" + DateNum.ddmmyyyy(g.get(Calendar.DAY_OF_MONTH), g.get(Calendar.MONTH) + 1, g.get(Calendar.YEAR));
+        } catch (RuntimeException e) {
+            return null;
+        }
+    }
+
+    private static String englishDate(Calendar now, String tz, int shift, boolean numeric) {
         java.util.TimeZone zone = ZoneFix.zone(tz);
-        SimpleDateFormat greg = new SimpleDateFormat("d MMMM", Locale.ENGLISH), day = new SimpleDateFormat("EEEE", Locale.ENGLISH);
+        SimpleDateFormat greg = new SimpleDateFormat("d MMMM yyyy", Locale.ENGLISH), day = new SimpleDateFormat("EEEE", Locale.ENGLISH);   // 4.3.3: with the year
         greg.setTimeZone(zone);
         day.setTimeZone(zone);
         String g = greg.format(now.getTime());
+        if (numeric) {
+            String n = numericParts(now, tz, shift);
+            if (n != null) return DateNum.line(day.format(now.getTime()), n, false);
+        }
         try {
             android.icu.util.Calendar h = android.icu.util.Calendar.getInstance(ZoneIcu.of(tz),
                     new android.icu.util.ULocale("en@calendar=islamic-umalqura"));
@@ -3809,11 +3883,25 @@ public class MainActivity extends Activity {
                 if (launch(explicit)) return;
             }
         }
+        Intent panel = systemInputs();
+        String step = TvVendor.inputFallback(inputPickerPkg != null, panel != null, liveTvPkg != null);   // #54: Skyworth, MediaTek: no app took the link
         String fallback = inputPickerPkg != null ? inputPickerPkg : liveTvPkg;
-        if (fallback != null) {
+        if ("inputs".equals(step)) {
+            launchGuarded(ParentalPolicy.INPUT_PICKER, panel, "كل المصادر");
+        } else if (fallback != null) {
             guarded(ParentalPolicy.INPUT_PICKER, TvVendor.pkg(fallback), "كل المصادر", () -> openPackage(fallback));
         } else {
             launchGuarded(ParentalPolicy.PILL_TV_SETTINGS, new Intent(Settings.ACTION_SETTINGS), "إعدادات التلفزيون");
+        }
+    }
+
+    /** The TV system's own inputs panel (TvVendor.SYSTEM_INPUTS), or null when nothing on this TV answers it. */
+    private Intent systemInputs() {
+        Intent i = new Intent(TvVendor.SYSTEM_INPUTS);
+        try {
+            return getPackageManager().resolveActivity(i, PackageManager.MATCH_DEFAULT_ONLY) != null ? i : null;
+        } catch (RuntimeException e) {
+            return null;
         }
     }
 
@@ -3823,8 +3911,10 @@ public class MainActivity extends Activity {
      */
     private void openLiveTv() {
         findTvApps();
-        String step = TvVendor.tvStep(TvVendor.pkg(liveTvPkg), inputPickerPkg != null, liveTvPkg != null);
-        if ("live".equals(step)) guarded(ParentalPolicy.INPUT_LIVE_TV, TvVendor.pkg(liveTvPkg), "البث التلفزيوني", () -> openPackage(liveTvPkg));
+        Intent panel = systemInputs();
+        String step = TvVendor.tvStep(TvVendor.pkg(liveTvPkg), inputPickerPkg != null, liveTvPkg != null, panel != null);
+        if ("inputs".equals(step)) launchGuarded(ParentalPolicy.INPUT_PICKER, panel, "كل المصادر");
+        else if ("live".equals(step)) guarded(ParentalPolicy.INPUT_LIVE_TV, TvVendor.pkg(liveTvPkg), "البث التلفزيوني", () -> openPackage(liveTvPkg));
         else if ("picker".equals(step)) guarded(ParentalPolicy.INPUT_PICKER, TvVendor.pkg(inputPickerPkg), "كل المصادر", () -> openPackage(inputPickerPkg));
         else launchGuarded(ParentalPolicy.PILL_TV_SETTINGS, new Intent(Settings.ACTION_SETTINGS), "إعدادات التلفزيون");
     }
@@ -4056,6 +4146,10 @@ public class MainActivity extends Activity {
             showInputs(pills.get(0), ParentalPolicy.MENU_KEY);
             return true;
         }
+        if (e.getKeyCode() == KeyEvent.KEYCODE_MENU && e.getAction() == KeyEvent.ACTION_UP && Parental.state(this).kids) {
+            openParental();   // 4.3.3: kids mode has no pills, and maybe no app left to hold OK on: the Menu key is always a way out (the PIN first)
+            return true;
+        }
         // On the «يُتلى الآن» card ◀ is the previous surah and ▶ the next (a station has none: ◀ goes back to the pills as on any pill)
         if (e.getAction() == KeyEvent.ACTION_DOWN && nowCard != null && getCurrentFocus() == nowCard
                 && (e.getKeyCode() == KeyEvent.KEYCODE_DPAD_LEFT || e.getKeyCode() == KeyEvent.KEYCODE_DPAD_RIGHT)) {
@@ -4141,7 +4235,8 @@ public class MainActivity extends Activity {
                 guarded(ParentalPolicy.REMOTE_APP, key.pkg, labelOf(key.pkg), () -> openPackage(key.pkg));
                 break;
             case RemoteKeys.OPEN_OUR_SETTINGS:   // a long press of the Settings key: OUR settings (the TV's own if our app is missing)
-                openOurSettings(true);
+                if (Parental.state(this).kids && !isInstalled(SAVER_PKG)) openParental();   // 4.3.3: kids mode with no screensaver app: its «الرقابة الأبوية» row is missing, so the screen itself
+                else openOurSettings(true);
                 break;
             case RemoteKeys.OPEN_SETTINGS: {   // a short press of the Settings / Quick Settings key: the TV's own quick panel when it has one (behind @tvsettings), else OUR Control Center (#51), else the TV's settings
                 Intent panel = new Intent(SettingsKey.NOTIFICATION_PANEL_ACTION);
@@ -4154,6 +4249,7 @@ public class MainActivity extends Activity {
             }
             case RemoteKeys.OPEN_INPUTS:
                 if (!pills.isEmpty()) showInputs(pills.get(0), ParentalPolicy.MENU_KEY);
+                else if (Parental.state(this).kids) openParental();   // 4.3.3: the star key in kids mode: the way out, as the Menu key
                 break;
             case RemoteKeys.OPEN_LIVE_TV:   // the TV button (TCL's 4001): the tuner, as «البث التلفزيوني» opens it
                 openLiveTv();

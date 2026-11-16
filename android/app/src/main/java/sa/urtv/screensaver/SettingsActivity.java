@@ -301,6 +301,9 @@ public class SettingsActivity extends Activity {
         row("الأرقام", Prefs.digitsLabel(prefs.digits()), R.drawable.ic_language,
             new Runnable() { public void run() { pickDigits(); } });
         noConv = false;
+        // 4.3.3 «التاريخ بالأرقام»: the Hijri and the Gregorian as day/month/year on the screensaver and the home, in the digits above
+        row("التاريخ بالأرقام", prefs.dateNum() ? "مفعّل" : "متوقف", R.drawable.ic_language,
+            new Runnable() { public void run() { prefs.setDateNum(!prefs.dateNum()); render(); } });
         row("تنبيه قبل الأذان", prefs.adhanBar() ? "يعمل · شريط في أعلى الشاشة آخر ١٠ دقائق، ثم حتى الإقامة" : "متوقف", R.drawable.ic_eye,
             new Runnable() { public void run() { prefs.setAdhanBar(!prefs.adhanBar()); render(); } });
         // from PR #28 and the requests: each off until chosen, OK flips it
@@ -431,6 +434,9 @@ public class SettingsActivity extends Activity {
             new Runnable() { public void run() { prefs.setPillHidden("matches", !prefs.pillHidden("matches")); render(); } });
         row("زر الجوال", prefs.pillHidden("phone") ? "مخفي" : "ظاهر", R.drawable.ic_eye,
             new Runnable() { public void run() { prefs.setPillHidden("phone", !prefs.pillHidden("phone")); render(); } });
+        // 4.3.3 «زر البحث»: the TV's own search inside the apps, a round button before «الجوال»; off by default, and only on a TV that has that search
+        row("زر البحث", prefs.searchPill() ? "ظاهر" : "مخفي", R.drawable.ic_eye,
+            new Runnable() { public void run() { prefs.setSearchPill(!prefs.searchPill()); render(); } });
         row("زر مركز التحكم", prefs.pillHidden("center") ? "مخفي  •  يفتح من زر الإعدادات السريعة في الريموت" : "ظاهر", R.drawable.ic_eye,
             new Runnable() { public void run() { prefs.setPillHidden("center", !prefs.pillHidden("center")); render(); } });
         // hiding removes only the button: the list stays in the «المهام» card and on the phone
@@ -439,6 +445,10 @@ public class SettingsActivity extends Activity {
         // Back on our home (nothing to go back to) starts the screensaver; the home takes it on its next tick or return (Dock.followBackSaver)
         row("الرجوع يفتح شاشة التوقف", prefs.backSaver() ? "مفعّل" : "متوقف", R.drawable.ic_eye,
             new Runnable() { public void run() { prefs.setBackSaver(!prefs.backSaver()); render(); } });
+        // 4.3.3 «المباريات المنتهية»: on the football home only; hidden, today's list keeps the games still to come (or the next day's)
+        if ("football".equals(prefs.homeLayout()))
+            row("إخفاء المباريات المنتهية", prefs.fbHideDone() ? "مفعّل" : "متوقف", R.drawable.ic_eye,
+                new Runnable() { public void run() { prefs.setFbHideDone(!prefs.fbHideDone()); render(); } });
         // «الخروج من تلفزيونك»: only where the TV keeps its own home (ours opened from its tile); one Back as always, a long Back or three
         row("الخروج من تلفزيونك", HomeExit.label(prefs.homeExit()), R.drawable.ic_eye,
             new Runnable() { public void run() { pickHomeExit(); } });

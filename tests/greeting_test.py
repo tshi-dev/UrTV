@@ -24,7 +24,7 @@ with tempfile.TemporaryDirectory() as tmp:
 got = out.decode("utf-8").split("\n")
 failed = 0
 for c, g in zip(cases, got):
-    n = {"part": 6, "weather": 6, "sun": 4, "seen": 3}[c[0]]   # the kind and its inputs; then what is expected, then a note
+    n = {"part": 6, "weather": 6, "sun": 4, "seen": 3, "icon": 3}[c[0]]   # the kind and its inputs; then what is expected, then a note
     want, note = c[n], c[n + 1]
     ok = g == want
     print(("PASS " if ok else "FAIL ") + f"greeting {c[0]}: {note}" + ("" if ok else f"  -> {g!r}, wanted {want!r}"))
@@ -32,4 +32,10 @@ for c, g in zip(cases, got):
 if len(got) < len(cases):
     print("FAIL fewer answers than cases")
     failed += 1
+home = ROOT / "android/launcher/src/main/java/sa/urtv/home"
+g = (home / "Greeting.java").read_text(encoding="utf-8")
+drawn = all((ROOT / f"android/launcher/src/main/res/drawable/wx_{k}.xml").is_file() for k in ("sun", "moon", "part", "partnight", "cloud", "fog", "rain", "snow", "storm"))
+wired = 'showIcon(GreetingText.icon(sp.getInt("code", -1), "الشروق".equals(d.sunLabel)));' in g and "weather.setCompoundDrawablesRelative(icon, null, null, null);" in g and "icon.setTint(weather.getCurrentTextColor());" in g
+print(("PASS " if drawn and wired else "FAIL ") + "4.3.3: the weather line has its drawing (res/drawable/wx_*.xml, the page's WX_SVG), at its start, in the line's colour")
+failed += not (drawn and wired)
 sys.exit(1 if failed else 0)

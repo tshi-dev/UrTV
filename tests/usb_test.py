@@ -26,8 +26,9 @@ check("the app's setup has them in its KEEP list (generated from keep.txt): neve
 check("TCL's media center, Xiaomi's media explorer and MediaTek's USB player are among them", {"com.tcl.ui_mediaCenter", "com.xiaomi.mitv.mediaexplorer", "com.mediatek.wwtv.mediaplayer"} <= usb_app)
 check("no USB updater or screen-share service is kept by this rule (they are not viewers)", not any(re.search(r"usbupgrade|usbota|usbcast|screenshare", p) for p in usb_app))
 dock = (ROOT / "android/launcher/src/main/java/sa/urtv/home/Dock.java").read_text(encoding="utf-8")
+rule = (ROOT / "android/launcher/src/main/java/sa/urtv/home/AppRule.java").read_text(encoding="utf-8")   # #57: Dock's rule moved to AppRule
 check("the apps row shows a USB viewer even next to a Google home (unless the person hid it)",
-      ': UsbViewers.is(p) ? null' in dock and dock.index('hidden.contains(p) ? "hidden with dock.sh hide') < dock.index("UsbViewers.is(p)") < dock.index('googleHome && category.equals(Intent.CATEGORY_LAUNCHER)'))
+      "UsbViewers.is(p)" in dock and rule.index("if (hidden) return HIDDEN;") < rule.index("if (usbViewer) return null;") < rule.index("if (googleHome && launcherOnly"))
 doc = (ROOT / "docs/USB.md").read_text(encoding="utf-8") if (ROOT / "docs/USB.md").exists() else ""
 check("docs/USB.md: what to do when a USB stick is not read (the format, the port, the viewer app, keep.sh)", all(w in doc for w in ("FAT32", "exFAT", "optimize/keep.sh", "NTFS")), doc[:100])
 sys.exit(1 if failed else 0)

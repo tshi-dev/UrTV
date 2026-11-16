@@ -311,6 +311,7 @@
 عربية 123	Western (123)
 كل يوم	Every day
 كل ٣ دقائق	Every 3 minutes
+كل ١٠ دقائق	Every 10 minutes
 آية وحديث	Verse and hadith
 آية فقط	Verse only
 حديث فقط	Hadith only
@@ -463,6 +464,7 @@
 لا توجد مجموعات للتنزيل الآن.	No packs to download right now.
 بلا أشخاص، وكل صورة بمصدرها ورخصتها في «حقوق الصور».	No people, and every photo with its source and licence in “Photo credits”.
 المساحة الفاضية: %s	Free space: %s
+النسبة: %s	Share: %s
 %s صورة · %s م.ب	%s photos · %s MB
 فعّل مجموعة منزّلة أولاً، وبعدها تقدر توقف صورنا	Turn on a downloaded pack first, then you can turn off ours
 تم التنزيل، والمجموعة مفعّلة	Downloaded, and the pack is on
@@ -483,6 +485,9 @@
 كرة القدم	Football
 مباريات اليوم	Today’s matches
 المباريات القادمة	Upcoming matches
+إخفاء المباريات المنتهية	Hide finished matches
+التاريخ بالأرقام	Dates in numbers
+زر البحث	Search button
 الأيام والدوريات، وفرقك أولاً	Days and leagues, your teams first
 تطبيقات في الشريط	Apps in the bar
 كل المفضلة	All favourites

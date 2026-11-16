@@ -67,6 +67,7 @@ final class Greeting {
                     + "\n" + GreetingText.sun(S.tv(d.sunLabel), d.sunClock, s.latin, s.clock24);   // «الشروق» / «الغروب»: DayParts keeps the Arabic (MainActivity compares it)
             weather.setText(line);
             weather.setVisibility(android.view.View.VISIBLE);
+            showIcon(GreetingText.icon(sp.getInt("code", -1), "الشروق".equals(d.sunLabel)));   // the next sun is the sunrise: it is night
         } else {
             weather.setVisibility(android.view.View.GONE);   // offline, or not asked yet: the greeting alone
         }
@@ -142,6 +143,29 @@ final class Greeting {
         } catch (Exception e) {
             return -1;   // no answer: the caller keeps the last good reading
         }
+    }
+
+    /** 4.3.3: the sky's drawing beside the weather line (GreetingText.icon), in the line's own colour; none for a code we do not know */
+    private void showIcon(String key) {
+        android.graphics.drawable.Drawable icon = null;
+        try {
+            int id = key == null ? 0 : ICONS.getOrDefault(key, 0);
+            if (id != 0) {
+                icon = context.getDrawable(id).mutate();
+                int size = Math.round(weather.getTextSize() * 1.6f);
+                icon.setBounds(0, 0, size, size);
+                icon.setTint(weather.getCurrentTextColor());
+            }
+        } catch (RuntimeException ignored) { icon = null; }   // a TV that cannot draw the vector: the line alone, as before
+        weather.setCompoundDrawablesRelative(icon, null, null, null);
+        weather.setCompoundDrawablePadding(icon == null ? 0 : Math.round(weather.getTextSize() * .5f));
+    }
+
+    private static final java.util.Map<String, Integer> ICONS = new java.util.HashMap<>();
+    static {
+        ICONS.put("sun", R.drawable.wx_sun); ICONS.put("moon", R.drawable.wx_moon); ICONS.put("part", R.drawable.wx_part);
+        ICONS.put("partnight", R.drawable.wx_partnight); ICONS.put("cloud", R.drawable.wx_cloud); ICONS.put("fog", R.drawable.wx_fog);
+        ICONS.put("rain", R.drawable.wx_rain); ICONS.put("snow", R.drawable.wx_snow); ICONS.put("storm", R.drawable.wx_storm);
     }
 
     private SharedPreferences prefs() {

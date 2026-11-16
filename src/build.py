@@ -336,6 +336,9 @@ function enDate(d, o){
     const wd = EN_DAYS[enDay(now, CONFIG.timezone).wd];
     const hm = HIJRI_EN[parseInt(hp.month, 10) - 1];
     if(hm) setText(document.getElementById('hijri'), wd + ', ' + ar(parseInt(hp.day, 10)) + ' ' + hm + ' ' + ar(parseInt(hp.year, 10)) + ' AH');""", 1),
+    # «التاريخ بالأرقام» (#datenum=1): the weekday's comma and the Hijri mark in English
+    ("const wd = new Intl.DateTimeFormat(GREG, {timeZone: CONFIG.timezone, weekday:'long'}).format(now) + '، ';\n    setText(document.getElementById('hijri'), wd + n('islamic-umalqura', hijriAt(now)) + ' هـ');",
+     "const wd = EN_DAYS[enDay(now, CONFIG.timezone).wd] + ', ';\n    setText(document.getElementById('hijri'), wd + n('islamic-umalqura', hijriAt(now)) + ' AH');", 1),
     ("if(nat) setText(nl, nat.name + ' ' + ar(nat.n) + nat.unit);", "if(nat) setText(nl, nat.name + ' · ' + ar(nat.n) + ' years');", 1),
     # one day, 2 days; «2 hours, 15 min» (the parts are joined with ' و ' → ', ', which the code also splits on)
     ("""const UNIT = {

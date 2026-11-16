@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <!-- the build: UTC time (YYYYMMDDHHMMSS) of the newest commit of the page's sources, put in by src/build.py. The app loads the page with the newer stamp (its own
      copy or a downloaded one), never by file time, and does not keep a download whose stamp is older than its own (Updater, PageStamp). -->
-<meta name="urtv-build" content="20261116034607">
+<meta name="urtv-build" content="20261116052458">
 <title>Your TV Screen</title>
 <style>
   @font-face{font-family:'Thmanyah';font-weight:300;font-style:normal;font-display:block;src:url("https://raw.githubusercontent.com/tshi-dev/UrTV/master/assets/fonts/Thmanyah-Light.woff2") format("woff2")}
@@ -176,7 +176,8 @@
   .week li.hrs{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:.3em;white-space:normal;border-bottom:none;padding:1.2vh 0 .5vh;align-items:start;text-align:center}
   .week li.hrs .hc{display:flex;flex-direction:column;align-items:center;gap:.4em;min-width:0}
   .week li.hrs .hc b{font-weight:400;font-size:.78em;color:#B9AE96;white-space:nowrap}
-  .week li.hrs .hc svg{width:1.9em;height:1.9em;fill:none;stroke:var(--gold-3);stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+  .week li.hrs .hc svg,.wxi svg{width:1.9em;height:1.9em;fill:none;stroke:var(--gold-3);stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+  .wxi{align-self:center}.wxi svg{width:1em;height:1em}
   .week li.hrs .hc i{font-style:normal;font-variant-numeric:tabular-nums;font-size:1.05em;white-space:nowrap}
   
   .week li.prow{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:.3em;white-space:normal;border-bottom:none;padding:.9vh 0 .3vh;text-align:center;align-items:stretch}
@@ -516,7 +517,7 @@
   .wxsrc:empty{display:none}
   .wxsub{margin-top:.55vh;font-size:clamp(12px,1.06vw,21px);font-weight:300;color:var(--dim);white-space:nowrap}
   .wxr:not(:empty)::before{content:'  ·  ';white-space:pre;color:rgba(214,175,107,.7)}
-  .wxt:empty,.wxd:empty,.wxr:empty,.wxdust:empty{display:none}
+  .wxt:empty,.wxd:empty,.wxr:empty,.wxdust:empty,.wxi:empty{display:none}
   .rule.l{margin-right:0;margin-left:auto;background:linear-gradient(270deg,var(--gold),rgba(var(--gold-rgb),0))}
   .mk{margin-top:1.2vh;display:flex;justify-content:flex-end;gap:1.6em;white-space:nowrap;
     font-size:clamp(12px,1.06vw,21px);font-weight:400;color:#D8CDB6}
@@ -771,7 +772,7 @@ html.lowram .photo.settle, html.lowram .week ul.flip li, html.lowram .mrow.flip 
     </div>
 
     <div class="markets">
-      <div class="wxline"><span class="wxt" id="wx-temp"></span><span class="wxd" id="wx-desc"></span><span class="wxdust" id="wx-dust"></span></div>
+      <div class="wxline"><span class="wxi" id="wx-ico"></span><span class="wxt" id="wx-temp"></span><span class="wxd" id="wx-desc"></span><span class="wxdust" id="wx-dust"></span></div>
       <div class="wxsub"><span id="wx-city">Riyadh</span><span class="wxr" id="wx-range"></span></div>
       <div class="wxsrc" id="wx-src"></div>
       <div class="rule l"></div>
@@ -937,8 +938,8 @@ const CONFIG = {
   // suhoor; the place stays, so nothing else moves) and #nightdim=0 keeps the night as bright as the day (no dimmer)
   occasion: _Q.get('occasion') !== '0',
   nightDim: _Q.get('nightdim') !== '0',
-  // «تبديل الآية والحديث»: #versemin=3 a new verse or hadith every 3 minutes
-  verseMin: _Q.get('versemin') === '3' ? 3 : 0,
+  // «تبديل الآية والحديث»: #versemin=3 or 10 minutes
+  verseMin: ({3:3, 10:10})[_Q.get('versemin')] || 0,
   // «الآية والحديث»: #versekind=verse only verses, #versekind=hadith only hadith
   verseKind: (v => v === 'verse' || v === 'hadith' ? v : 'both')(_Q.get('versekind')),
   // «إظهار الثواني»: #seconds=1 the seconds on the screensaver's clock, small beside the minutes
@@ -978,6 +979,8 @@ const CONFIG = {
   // #football=1 (with #widget=1): the launcher's football home, the weather, the prayers and today's games
   // #matchpage=1: «المباريات», the launcher's page of the games
   football: _Q.get('football') === '1' && _Q.get('widget') === '1',
+  fbHide: _Q.get('fbhide') === '1',
+  dateNum: _Q.get('datenum') === '1',   // dd/mm/yyyy
   matchPage: _Q.get('matchpage') === '1',
   // #pagedark=1 with #matchpage=1: the dark theme
   pageDark: _Q.get('pagedark') === '1',
@@ -1033,7 +1036,7 @@ if(CONFIG.clear){
   const st = document.querySelector('style'), dark = '#FFFFFF', ink = '#1B1F1D';
   if(st) st.textContent = st.textContent
     .replace(/(--fs:)(?:#4B514D|#5E635F)/g, '$1' + ink).replace(/(--fs:)(?:rgba\(255,255,255,\.74\)|#DADCE0)/g, '$1' + dark)
-    .replace(/(--dim:)#C3B8A2/g, '$1' + dark).replace(/(?<![-\w])(color:)#(?:B9AE96|A79C85|9C9279|8F8670|CFC5AD|D8CDB6|E6DCC4|9FB8A8)\b/gi, '$1' + dark);
+    .replace(/(--dim:)#C3B8A2/g, '$1' + dark).replace(/(^|[^-\w])(color:)#(?:B9AE96|A79C85|9C9279|8F8670|CFC5AD|D8CDB6|E6DCC4|9FB8A8)\b/gi, '$1$2' + dark);
 }
 const SNAP_LOOK = ['citynote', 'cardstyle', 'panel', 'panel2', 'week', 'clocksize', 'adhanbar', 'yearstrip', 'national', 'photos', 'adj', 'own', 'ownmode', 'packs', 'ours', 'gap'];
 function snapLink(){
@@ -1153,7 +1156,7 @@ function nationalNow(){
   const p = riyadhParts();
   for(const e of NATIONAL){
     const diff = Math.round((Date.UTC(p.y, p.mo-1, p.d) - Date.UTC(p.y, e.mo-1, e.d)) / 86400000);
-    if(Math.abs(diff) <= 2) return {...e, today: diff === 0, n: p.y - e.since};
+    if(Math.abs(diff) <= 2) return Object.assign({}, e, {today: diff === 0, n: p.y - e.since});
   }
   return null;
 }
@@ -1187,6 +1190,13 @@ function tickDates(){
     setText(document.getElementById('greg'), gregFmt({
       timeZone: CONFIG.timezone, weekday:'long', day:'numeric', month:'long', year:'numeric'
     }).format(now));
+  }catch(e){}
+  if(CONFIG.dateNum) try{
+    const n = (c, d) => { const p = new Intl.DateTimeFormat('en-u-ca-' + c + '-nu-latn', {timeZone: CONFIG.timezone, day:'2-digit', month:'2-digit', year:'numeric'})
+      .formatToParts(d).reduce((a, x) => (a[x.type] = x.value, a), {}); return ar(p.day + '/' + p.month + '/' + parseInt(p.year)); };
+    const wd = EN_DAYS[enDay(now, CONFIG.timezone).wd] + ', ';
+    setText(document.getElementById('hijri'), wd + n('islamic-umalqura', hijriAt(now)) + ' AH');
+    setText(document.getElementById('greg'), wd + n('gregory', now));
   }catch(e){}
 }
 
@@ -2309,13 +2319,12 @@ function renderMatches(turn){
 // the row steps down in size until every game fits
 // form (only then); still too long, renderMatches shows the two games one to a page
 // resort for a single game. Both games keep one size.
-const TEAM_SHORT = {
+const TEAM_SHORT = Object.assign({
   'Manchester City':'Man City', 'Manchester United':'Man United', 'Real Madrid':'Real', 'Atlético Madrid':'Atletico',
   'Paris SG':'PSG', 'Bayern Munich':'Bayern', 'Borussia Dortmund':'Dortmund', 'Borussia Mönchengladbach':'Gladbach',
   'Bayer Leverkusen':'Leverkusen', 'Eintracht Frankfurt':'Frankfurt', 'Nottingham Forest':'Forest', 'Crystal Palace':'Palace',
   'Wolverhampton Wanderers':'Wolves', 'Sporting CP':'Sporting', 'LA Galaxy':'Galaxy', 'National Bank of Egypt':'NBE',
-  ...{"Atlanta Hawks":"Hawks","Boston Celtics":"Celtics","Brooklyn Nets":"Nets","Charlotte Hornets":"Hornets","Chicago Bulls":"Bulls","Cleveland Cavaliers":"Cavaliers","Dallas Mavericks":"Mavericks","Denver Nuggets":"Nuggets","Detroit Pistons":"Pistons","Golden State Warriors":"Warriors","Houston Rockets":"Rockets","Indiana Pacers":"Pacers","Los Angeles Clippers":"Clippers","Los Angeles Lakers":"Lakers","Memphis Grizzlies":"Grizzlies","Miami Heat":"Heat","Milwaukee Bucks":"Bucks","Minnesota Timberwolves":"Timberwolves","New Orleans Pelicans":"Pelicans","New York Knicks":"Knicks","Oklahoma City Thunder":"Thunder","Orlando Magic":"Magic","Philadelphia 76ers":"76ers","Phoenix Suns":"Suns","Portland Trail Blazers":"Trail Blazers","Sacramento Kings":"Kings","San Antonio Spurs":"Spurs","Toronto Raptors":"Raptors","Utah Jazz":"Jazz","Washington Wizards":"Wizards","Arizona Cardinals":"Cardinals","Atlanta Falcons":"Falcons","Baltimore Ravens":"Ravens","Buffalo Bills":"Bills","Carolina Panthers":"Panthers","Chicago Bears":"Bears","Cincinnati Bengals":"Bengals","Cleveland Browns":"Browns","Dallas Cowboys":"Cowboys","Denver Broncos":"Broncos","Detroit Lions":"Lions","Green Bay Packers":"Packers","Houston Texans":"Texans","Indianapolis Colts":"Colts","Jacksonville Jaguars":"Jaguars","Kansas City Chiefs":"Chiefs","Las Vegas Raiders":"Raiders","Los Angeles Chargers":"Chargers","Los Angeles Rams":"Rams","Miami Dolphins":"Dolphins","Minnesota Vikings":"Vikings","New England Patriots":"Patriots","New Orleans Saints":"Saints","New York Giants":"Giants","New York Jets":"Jets","Philadelphia Eagles":"Eagles","Pittsburgh Steelers":"Steelers","San Francisco 49ers":"49ers","Seattle Seahawks":"Seahawks","Tampa Bay Buccaneers":"Buccaneers","Tennessee Titans":"Titans","Washington Commanders":"Commanders"},   // NBA and NFL: the nickname without the city («ليكرز»), made by src/build.py from teams.json
-};
+}, {"Atlanta Hawks":"Hawks","Boston Celtics":"Celtics","Brooklyn Nets":"Nets","Charlotte Hornets":"Hornets","Chicago Bulls":"Bulls","Cleveland Cavaliers":"Cavaliers","Dallas Mavericks":"Mavericks","Denver Nuggets":"Nuggets","Detroit Pistons":"Pistons","Golden State Warriors":"Warriors","Houston Rockets":"Rockets","Indiana Pacers":"Pacers","Los Angeles Clippers":"Clippers","Los Angeles Lakers":"Lakers","Memphis Grizzlies":"Grizzlies","Miami Heat":"Heat","Milwaukee Bucks":"Bucks","Minnesota Timberwolves":"Timberwolves","New Orleans Pelicans":"Pelicans","New York Knicks":"Knicks","Oklahoma City Thunder":"Thunder","Orlando Magic":"Magic","Philadelphia 76ers":"76ers","Phoenix Suns":"Suns","Portland Trail Blazers":"Trail Blazers","Sacramento Kings":"Kings","San Antonio Spurs":"Spurs","Toronto Raptors":"Raptors","Utah Jazz":"Jazz","Washington Wizards":"Wizards","Arizona Cardinals":"Cardinals","Atlanta Falcons":"Falcons","Baltimore Ravens":"Ravens","Buffalo Bills":"Bills","Carolina Panthers":"Panthers","Chicago Bears":"Bears","Cincinnati Bengals":"Bengals","Cleveland Browns":"Browns","Dallas Cowboys":"Cowboys","Denver Broncos":"Broncos","Detroit Lions":"Lions","Green Bay Packers":"Packers","Houston Texans":"Texans","Indianapolis Colts":"Colts","Jacksonville Jaguars":"Jaguars","Kansas City Chiefs":"Chiefs","Las Vegas Raiders":"Raiders","Los Angeles Chargers":"Chargers","Los Angeles Rams":"Rams","Miami Dolphins":"Dolphins","Minnesota Vikings":"Vikings","New England Patriots":"Patriots","New Orleans Saints":"Saints","New York Giants":"Giants","New York Jets":"Jets","Philadelphia Eagles":"Eagles","Pittsburgh Steelers":"Steelers","San Francisco 49ers":"49ers","Seattle Seahawks":"Seahawks","Tampa Bay Buccaneers":"Buccaneers","Tennessee Titans":"Titans","Washington Commanders":"Commanders"});   // NBA and NFL nicknames («ليكرز»), from teams.json by src/build.py
 const FIT_STEPS = [1, .92, .85, .78, .72];
 const FIT_RANGE = document.createRange();
 function fits(sp){   // to the fraction of a pixel: scrollWidth rounds, and a name short by 0.4 px still got «…»
@@ -3449,7 +3458,7 @@ function matchRows(card){
       const dateEl = date ? `<i class="mwhen" data-s="${esc(matchWhenShort(d, now, done))}">${date}</i>` : '';
       const club = (id, name, home) => `<span class="tm">${home ? '' : crestOrGap(ev, 'Away')}<span class="nm">${esc(teamAr(name, id))}</span>${home ? crestOrGap(ev, 'Home') : ''}</span>`;
       return {t, r, html: `<li class="mg"><span class="mr">${club(ev.idHomeTeam, ev.strHomeTeam, true)} ${mid} ${club(ev.idAwayTeam, ev.strAwayTeam, false)} ${dateEl} <span class="dt">${when}</span></span></li>`};
-    }), ...others.map(o => ({...o, r: o.t <= now ? 1 : 2}))].sort(byRank).map(x => x.html);
+    }), ...others.map(o => (Object.assign({}, o, {r: o.t <= now ? 1 : 2})))].sort(byRank).map(x => x.html);
 }
 
 // ---- «الأسهم»: the watchlist card. A Tadawul code
@@ -3660,7 +3669,7 @@ try{ WX = Object.assign(WX, JSON.parse(localStorage.getItem(LS.wx) || '{}')); }c
 const saveWx = () => { try{ localStorage.setItem(LS.wx, JSON.stringify(WX)); }catch(e){} };
 function wxExpire(){
   if(Date.now() - WX.at < WX_STALE_MS) return;
-  ['wx-temp', 'wx-desc', 'wx-dust', 'wx-range', 'wx-src'].forEach(id => { const el = document.getElementById(id); if(el) setText(el, ''); });
+  ['wx-ico', 'wx-temp', 'wx-desc', 'wx-dust', 'wx-range', 'wx-src'].forEach(id => { const el = document.getElementById(id); if(el) setText(el, ''); });
 }
 // «Open-Meteo · قبل ١٥ د»: where the weather comes from and how old the reading is
 function wxAgeText(ms){
@@ -3697,6 +3706,7 @@ async function loadWeather(){
     WX.wind = CONFIG.wxMore && typeof j.current.wind_speed_10m === 'number' ? j.current.wind_speed_10m : null;
     saveWx();
     setText(document.getElementById('wx-temp'), ar(Math.round(j.current.temperature_2m)) + '°');
+    setHTML(document.getElementById('wx-ico'), wxIcon(j.current.weather_code, isNight(hourKey())));
     const d = document.getElementById('wx-desc');
     setText(d, WX_CODES[j.current.weather_code] || '');
     wxSource();
@@ -4220,7 +4230,7 @@ const FB_GLYPH = {
 };
 const fbGlyph = k => `<span class="fg">${FB_GLYPH[k]}</span>`;
 function fbHome(now){   // today's games, the followed teams' first; with none today, the next day that has games
-  const all = fbGames(), today = cityToday(now);
+  const all = fbGames().filter(ev => !CONFIG.fbHide || !fbDone(ev, now)), today = cityToday(now);
   let list = all.filter(ev => fbDayOf(fbKick(ev)) === today);
   if(!list.length){
     const next = all.filter(ev => fbKick(ev) > now).sort((a, b) => fbKick(a) - fbKick(b))[0];

@@ -503,6 +503,23 @@ const TOUR = { updated: '2026-11-04T03:00:00Z', names: { '4490': 'دوري ال�
   check('English football home: the row\'s fade is at its right end (to right), the first card starts at the row\'s left edge, not shifted', /to right/.test(g.mask) && !/to left/.test(g.mask) && Math.abs(g.first - g.view) < 1, JSON.stringify(g));
   await ctx.close();
 }
+{
+  // 4.3.3 «المباريات المنتهية» (#fbhide=1): the football home leaves out the games that ended; with none left today it shows the next day's
+  const { p, ctx, errors } = await open('teams=136013&widget=1&football=1&fbhide=1', { rows: ROWS });
+  const r = await p.evaluate(() => {
+    const ids = now => fbHome(now).map(e => e.idEvent).sort().join(',');
+    const evening = Date.parse('2026-11-04T17:30:00Z'), night = Date.parse('2026-11-04T20:40:00Z');
+    const on = CONFIG.fbHide, hidden = [ids(evening), ids(night)];
+    CONFIG.fbHide = false;
+    const shown = [ids(evening), ids(night)];
+    CONFIG.fbHide = on;
+    return { on, hidden, shown };
+  });
+  check('#fbhide=1 is read; the games that ended leave the football home (17:30: 1 and 3 ended, 2 live, 4 to come), and with all of today\'s ended the next day\'s show',
+    r.on === true && r.hidden[0] === '2,4' && r.hidden[1] === '5' && !errors.length, JSON.stringify(r) + errors.join(' | '));
+  check('without it the football home is as it was: today\'s games, ended ones too', r.shown[0] === '1,2,3,4' && r.shown[1] === '1,2,3,4', JSON.stringify(r));
+  await ctx.close();
+}
 await browser.close();
 console.log(failed ? `${failed} failed` : 'all football page tests passed');
 process.exit(failed ? 1 : 0);
