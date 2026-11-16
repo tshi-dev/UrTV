@@ -70,31 +70,33 @@ public class InstallSaverActivity extends Activity {
         col.setOrientation(LinearLayout.VERTICAL);
         col.setGravity(Gravity.CENTER);
         col.setBackgroundColor(0xF0101216);
-        int pad = Math.round(getResources().getDisplayMetrics().widthPixels * 0.05f);   // the 5 % safe area
-        col.setPadding(pad, pad, pad, pad);
-        col.addView(text(S.t("ثبّت الجزء الثاني"), 34, 0xFFFFFFFF, "Thmanyah-Medium"));
-        TextView why = text(S.t("الإعدادات والمدينة والفرق وشاشة التوقف في الجزء الثاني من UrTV، وهو غير مثبّت على هذا التلفزيون."), 20, 0xCCFFFFFF, "Thmanyah-Regular");
+        int sw = getResources().getDisplayMetrics().widthPixels, pad = Math.round(sw * 0.05f);   // the 5 % safe area
+        int side = Math.max(pad, (sw - dp(Compact.WINDOW_DP)) / 2);   // 4.4 compact: the words in a column 560 dp wide in the middle
+        col.setPadding(side, pad, side, pad);
+        col.addView(text(S.t("ثبّت الجزء الثاني"), 24, 0xFFFFFFFF, "Thmanyah-Medium"));
+        TextView why = text(S.t("الإعدادات والمدينة والفرق وشاشة التوقف في الجزء الثاني من UrTV، وهو غير مثبّت على هذا التلفزيون."), 17, 0xCCFFFFFF, "Thmanyah-Regular");
         LinearLayout.LayoutParams wp = new LinearLayout.LayoutParams(-2, -2);
         wp.topMargin = dp(16);
         col.addView(why, wp);
-        button = text(S.t("نزّل وثبّت"), 24, 0xFF101216, "Thmanyah-Medium");
+        button = text(S.t("نزّل وثبّت"), 18, 0xFF101216, "Thmanyah-Medium");
         button.setBackgroundColor(0xFFD6AF6B);
-        button.setPadding(dp(40), dp(16), dp(40), dp(16));
+        button.setPadding(dp(32), dp(8), dp(32), dp(8));
+        button.setMinHeight(dp(Compact.BUTTON_DP));   // 4.4 compact: 44 dp
         button.setFocusable(true);
         button.setClickable(true);
         button.setOnClickListener(v -> start());
         button.setOnFocusChangeListener((v, has) -> button.setBackgroundColor(has ? 0xFFFFFFFF : 0xFFD6AF6B));
         LinearLayout.LayoutParams bp = new LinearLayout.LayoutParams(-2, -2);
-        bp.topMargin = dp(32);
+        bp.topMargin = dp(20);
         col.addView(button, bp);
-        state = text("", 18, 0xFFD6AF6B, "Thmanyah-Regular");
+        state = text("", 17, 0xFFD6AF6B, "Thmanyah-Regular");
         LinearLayout.LayoutParams sp = new LinearLayout.LayoutParams(-2, -2);
-        sp.topMargin = dp(24);
+        sp.topMargin = dp(16);
         col.addView(state, sp);
         LinearLayout.LayoutParams dp0 = new LinearLayout.LayoutParams(-2, -2);
-        dp0.topMargin = dp(32);
-        col.addView(text(S.t("أو من تطبيق Downloader: اكتب الكود"), 18, 0x99FFFFFF, "Thmanyah-Regular"), dp0);
-        TextView code = text(SaverInstallRule.DOWNLOADER_CODE, 30, 0xFFFFFFFF, "Thmanyah-Medium");   // Latin digits, as Downloader asks them
+        dp0.topMargin = dp(20);
+        col.addView(text(S.t("أو من تطبيق Downloader: اكتب الكود"), 17, 0x99FFFFFF, "Thmanyah-Regular"), dp0);
+        TextView code = text(SaverInstallRule.DOWNLOADER_CODE, 24, 0xFFFFFFFF, "Thmanyah-Medium");   // Latin digits, as Downloader asks them
         col.addView(code);
         setContentView(col);
         button.requestFocus();

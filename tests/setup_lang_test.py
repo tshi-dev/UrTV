@@ -50,8 +50,8 @@ check("the switch is the first row of the start screen", start.index("add(langTo
 check("«العربية» and «English», each in its own language, Arabic first", '{SetupLang.AR, "العربية"}, {SetupLang.EN, "English"}' in tog)
 check("the one in use is the language now (Arabic until the person says else), marked as every on/off is (triangles, green words)",
       "code.equals(S.lang())" in tog and "ic_on" in tog and "OnOff.green" in tog)
-check("laid out by Dir, 24 px apart, buttons 160 dp wide, as tall as their text needs plus 24 px above and below, the buttons' 14 radius (no pills)", "row.setLayoutDirection(Dir.layout());" in tog and "p.setMarginStart(dp(12))" in tog
-      and "dp(160), -2" in tog and "b.setPadding(dp(16), dp(12), dp(16), dp(12));" in tog and "panel(this, look, 14)" in act and "setCornerRadius" not in tog)
+check("laid out by Dir, 24 px apart, buttons 160 dp wide, as tall as their text needs plus 16 px above and below and 44 dp at least (4.4 compact), the buttons' 14 radius (no pills)", "row.setLayoutDirection(Dir.layout());" in tog and "p.setMarginStart(dp(12))" in tog
+      and "dp(160), -2" in tog and "b.setPadding(dp(16), dp(8), dp(16), dp(8));" in tog and "b.setMinHeight(dp(sa.urtv.home.Compact.BUTTON_DP));" in tog and "panel(this, look, 14)" in act and "setCornerRadius" not in tog)
 check("both are focusable by the D-pad (the button style) and a press chooses", "SetupLang.choose(SetupActivity.this, code)" in tog and "button(opts[i][1])" in tog)
 sl = text(HOME / "setup/SetupLang.java")
 check("choosing keeps the language here, tells the screensaver (phone_set lang, as saver.sh lang does) and builds the screen again",

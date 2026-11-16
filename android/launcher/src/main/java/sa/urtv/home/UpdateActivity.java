@@ -87,9 +87,9 @@ public class UpdateActivity extends Activity {
         col = new LinearLayout(this);
         col.setOrientation(LinearLayout.VERTICAL);
         col.setLayoutDirection(Dir.layout());
-        col.setPadding(dp(40), dp(32), dp(40), dp(32));
+        col.setPadding(dp(24), dp(20), dp(24), dp(20));   // 4.4 the owner: «toooo much»: a compact window (docs/mockups/compact-setup)
         col.setBackground(GlassPaint.fill(this, GlassStyle.over(look.dialog, look.base), 22, look.line));   // a solid surface, like the page's dialogs
-        frame.addView(col, new FrameLayout.LayoutParams(Math.min(dp(760), w - 2 * Math.round(w * 0.05f)), -2, Gravity.CENTER));
+        frame.addView(col, new FrameLayout.LayoutParams(Math.min(dp(Compact.WINDOW_DP), w - 2 * Math.round(w * 0.05f)), -2, Gravity.CENTER));
         setContentView(scroll);
         // the record of an update that replaced the launcher: shown here once, then removed
         UpdateRecords.Outcome o = UpdateRecords.take(new UpdateStore(this), PhoneUpdater.installedCode(this, getPackageName()));
@@ -125,7 +125,7 @@ public class UpdateActivity extends Activity {
 
     private void render() {
         col.removeAllViews();
-        col.addView(text(S.tv(UpdateText.TITLE), 28, "Medium", TEXT, Dir.start()), right(dp(8)));
+        col.addView(text(S.tv(UpdateText.TITLE), 24, "Medium", TEXT, Dir.start()), right(dp(8)));
         col.addView(text(UpdateText.installed(PhoneUpdater.installedName(this), S::tv), 16, "Regular", DIM, Dir.start()), right(dp(24)));
         View focus;
         if (result != null) {
@@ -142,11 +142,11 @@ public class UpdateActivity extends Activity {
     private View renderRecord() {
         if (result.kind == UpdateRecords.Kind.SUCCESS) {
             steps(4);
-            col.addView(text(UpdateText.done(UpdateText.versionOf(BuildConfig.MARKETING, result.target), S::tv), 22, "Medium", GOLD, Dir.start()), right(dp(8)));
+            col.addView(text(UpdateText.done(UpdateText.versionOf(BuildConfig.MARKETING, result.target), S::tv), 18, "Medium", GOLD, Dir.start()), right(dp(8)));
             return doneButton();
         } else {
-            col.addView(text(S.tv(UpdateText.NOT_DONE), 22, "Medium", RED, Dir.start()), right(dp(6)));
-            col.addView(text(UpdateText.failedStep(S.tv(UpdateOrder.label(result.step)), S::tv), 15, "Regular", DIM, Dir.start()), right(dp(14)));
+            col.addView(text(S.tv(UpdateText.NOT_DONE), 18, "Medium", RED, Dir.start()), right(dp(6)));
+            col.addView(text(UpdateText.failedStep(S.tv(UpdateOrder.label(result.step)), S::tv), 14, "Regular", DIM, Dir.start()), right(dp(14)));
             aiMessage();
         }
         return checkButton();
@@ -161,17 +161,17 @@ public class UpdateActivity extends Activity {
         String newest = UpdateText.versionOf(BuildConfig.MARKETING, b == null ? 0 : ((Long) b).intValue());
         switch (s) {
             case "checking":
-                col.addView(text(S.tv(UpdateText.WORKING), 18, "Medium", GOLD, Dir.start()), right(dp(8)));
+                col.addView(text(S.tv(UpdateText.WORKING), 17, "Medium", GOLD, Dir.start()), right(dp(8)));
                 return null;
             case "downloading": {
                 long[] pr = progress();
                 steps(pr[2] == 1 ? 1 : 0);
-                col.addView(text(S.tv(UpdateText.DOWNLOADING), 18, "Medium", GOLD, Dir.start()), right(dp(16)));
+                col.addView(text(S.tv(UpdateText.DOWNLOADING), 17, "Medium", GOLD, Dir.start()), right(dp(16)));
                 bar(pr[0], pr[1]);
                 return null;
             }
             case "uptodate":
-                col.addView(text(UpdateText.upToDate(PhoneUpdater.installedName(this), S::tv), 20, "Medium", GOLD, Dir.start()), right(dp(16)));
+                col.addView(text(UpdateText.upToDate(PhoneUpdater.installedName(this), S::tv), 17, "Medium", GOLD, Dir.start()), right(dp(16)));
                 return checkButton();
             case "found":       // the phone page only read version.txt: pressing downloads, checks, then installs
             case "available":
@@ -187,8 +187,8 @@ public class UpdateActivity extends Activity {
                 });
             case "waiting_owner":
                 steps(2);
-                col.addView(text(S.tv(UpdateText.CONFIRM), 20, "Medium", GOLD, Dir.start()), right(dp(6)));
-                if (!detail.isEmpty()) col.addView(text(S.tv(UpdateOrder.label(detail)), 15, "Regular", DIM, Dir.start()), right(dp(14)));
+                col.addView(text(S.tv(UpdateText.CONFIRM), 17, "Medium", GOLD, Dir.start()), right(dp(6)));
+                if (!detail.isEmpty()) col.addView(text(S.tv(UpdateOrder.label(detail)), 14, "Regular", DIM, Dir.start()), right(dp(14)));
                 if (PhoneUpdater.confirmWaiting()) {
                     getWindow().getDecorView().post(new Runnable() { @Override public void run() { if (PhoneUpdater.confirmWaiting()) PhoneUpdater.showConfirm(UpdateActivity.this); } });
                 }
@@ -200,7 +200,7 @@ public class UpdateActivity extends Activity {
                 return null;
             case "done":
                 steps(4);
-                col.addView(text(UpdateText.done(newest, S::tv), 22, "Medium", GOLD, Dir.start()), right(dp(8)));
+                col.addView(text(UpdateText.done(newest, S::tv), 18, "Medium", GOLD, Dir.start()), right(dp(8)));
                 return doneButton();
             case "error":
                 return renderError(why, detail);
@@ -212,10 +212,10 @@ public class UpdateActivity extends Activity {
     private View renderError(String why, String detail) {
         switch (why) {
             case "offline":
-                col.addView(text(S.tv(UpdateText.OFFLINE), 20, "Medium", RED, Dir.start()), right(dp(16)));
+                col.addView(text(S.tv(UpdateText.OFFLINE), 17, "Medium", RED, Dir.start()), right(dp(16)));
                 return checkButton();
             case "need_permission":
-                col.addView(text(S.tv(UpdateText.NEED_PERMISSION), 18, "Medium", TEXT, Dir.start()), right(dp(14)));
+                col.addView(text(S.tv(UpdateText.NEED_PERMISSION), 17, "Medium", TEXT, Dir.start()), right(dp(14)));
                 return button(S.tv(UpdateText.OPEN_PERMISSION), GOLD, new View.OnClickListener() {
                     @Override public void onClick(View v) {
                         if (PhoneUpdater.openPermissionScreen(UpdateActivity.this)) askedPermission = true;
@@ -223,12 +223,12 @@ public class UpdateActivity extends Activity {
                     }
                 });
             case "declined":
-                col.addView(text(S.tv(UpdateText.NOT_DONE), 22, "Medium", RED, Dir.start()), right(dp(6)));
-                col.addView(text(S.tv(UpdateText.DECLINED), 15, "Regular", DIM, Dir.start()), right(dp(16)));
+                col.addView(text(S.tv(UpdateText.NOT_DONE), 18, "Medium", RED, Dir.start()), right(dp(6)));
+                col.addView(text(S.tv(UpdateText.DECLINED), 14, "Regular", DIM, Dir.start()), right(dp(16)));
                 return checkButton();
             case "failed":
-                col.addView(text(S.tv(UpdateText.NOT_DONE), 22, "Medium", RED, Dir.start()), right(dp(6)));
-                col.addView(text(UpdateText.failedStep(S.tv(UpdateOrder.label(detail)), S::tv), 15, "Regular", DIM, Dir.start()), right(dp(14)));
+                col.addView(text(S.tv(UpdateText.NOT_DONE), 18, "Medium", RED, Dir.start()), right(dp(6)));
+                col.addView(text(UpdateText.failedStep(S.tv(UpdateOrder.label(detail)), S::tv), 14, "Regular", DIM, Dir.start()), right(dp(14)));
                 aiMessage();
                 return checkButton();
             default:   // "cannot", and anything this screen doesn't know: the same message
@@ -239,8 +239,8 @@ public class UpdateActivity extends Activity {
 
     /** The message that sends the owner to their AI assistant, with the repository address small under it. */
     private void aiMessage() {
-        col.addView(text(S.tv(UpdateText.AI_MESSAGE), 20, "Medium", TEXT, Dir.start()), right(dp(8)));
-        TextView repo = text("⁦" + UpdateText.REPO + "⁩", 12, "Regular", DIM, Dir.start());
+        col.addView(text(S.tv(UpdateText.AI_MESSAGE), 17, "Medium", TEXT, Dir.start()), right(dp(8)));
+        TextView repo = text("⁦" + UpdateText.REPO + "⁩", 13, "Regular", DIM, Dir.start());
         col.addView(repo, right(dp(18)));
     }
 
@@ -302,7 +302,7 @@ public class UpdateActivity extends Activity {
         col.addView(track, new LinearLayout.LayoutParams(-1, dp(8)));
         String mb = S.t("%s من %s م.ب", MarketData.show(MarketData.num(done / 1e6, 1), Digits.latin()), MarketData.show(MarketData.num(total / 1e6, 1), Digits.latin()));
         String pct = Digits.of(String.valueOf(Math.round(share * 100))) + (Digits.latin() ? "%" : "٪");
-        TextView t = text(pct + " · " + mb, 15, "Regular", DIM, Dir.start());
+        TextView t = text(pct + " · " + mb, 14, "Regular", DIM, Dir.start());
         t.setTextDirection(View.TEXT_DIRECTION_FIRST_STRONG);
         col.addView(t, right(0));
     }
@@ -325,7 +325,7 @@ public class UpdateActivity extends Activity {
             medium = m;
         }
 
-        @Override protected void onMeasure(int w, int h) { setMeasuredDimension(MeasureSpec.getSize(w), dp(56)); }
+        @Override protected void onMeasure(int w, int h) { setMeasuredDimension(MeasureSpec.getSize(w), dp(52)); }   // 4.4 compact
 
         @Override protected void onDraw(Canvas c) {
             int n = names.length;
@@ -372,8 +372,8 @@ public class UpdateActivity extends Activity {
         p.setClickable(true);
         GlassPaint.card(p, look, 14);   // the panel, the solid focus fill and its ink while focused
         p.setOnClickListener(click);
-        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(-1, dp(56));   // the one button of a state: 56 dp, full width, 24 dp below what it answers
-        lp.topMargin = dp(24);
+        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(-1, dp(Compact.BUTTON_DP));   // the one button of a state: 44 dp (4.4 compact), full width, 16 dp below what it answers
+        lp.topMargin = dp(16);
         col.addView(p, lp);
         return p;
     }

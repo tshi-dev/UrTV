@@ -48,7 +48,7 @@ check("tests/android_compile.sh compiles it", "the rescue module compiles" in te
 sa = text(SETUP / "SetupActivity.java"); info = text(SETUP / "RescueInfo.java")
 start = sa[sa.index("private void buildStart("):sa.index('start = button(S.t("جهّز كل شي"));')]
 check("«قبل ما نبدأ: لو صار شيء» on the setup's start screen, before «جهّز كل شي»: three steps to «إنقاذ تلفزيونك», a QR to docs/RESCUE.md, a photo asked for",
-      "rescueFirst();" in start and "qrBeside(words, RescueInfo.DOC_URL, 120);" in sa and "QrCode.encodeLarge(url)" in sa and 'DOC_URL = "https://github.com/tshi-dev/UrTV/blob/master/docs/RESCUE.md"' in info
+      "rescueFirst();" in start and "qrBeside(words, RescueInfo.DOC_URL, sa.urtv.home.Compact.QR_DP);" in sa and "QrCode.encodeLarge(url)" in sa and 'DOC_URL = "https://github.com/tshi-dev/UrTV/blob/master/docs/RESCUE.md"' in info
       and all(w in info for w in ("زر الإعدادات في الريموت ← التطبيقات ← Downloader ← فتح", "إنقاذ تلفزيونك", "رجّع التلفزيون كما كان", "صوّر هذه الشاشة بجوالك")))
 check("the Downloader code is shown in Latin digits once there is one (until then the guide's link)", "RescueInfo.hasCode() ? S.tv(RescueInfo.STEP2_CODE, RescueInfo.DOWNLOADER_CODE)" in sa and 'matches("[0-9]{4,10}")' in info)
 doc = text(ROOT / "docs/RESCUE.md")
