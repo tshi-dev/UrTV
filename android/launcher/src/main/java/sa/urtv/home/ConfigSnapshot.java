@@ -146,6 +146,8 @@ final class ConfigSnapshot {
                 if (pz >= 0 && cur.getString(pz) != null) ZoneFix.report(cur.getString(pz));
                 int cc = cur.getColumnIndex("city_chosen");
                 if (cc >= 0 && "0".equals(cur.getString(cc))) cityChosen = false;
+                int li = cur.getColumnIndex("lite");   // A14 «الوضع الخفيف»; an older screensaver says nothing: auto, as before
+                if (li >= 0) Ram.lite(c, cur.getString(li));
                 int fb = cur.getColumnIndex("fav_bar");   // an older screensaver does not say: 5
                 if (fb >= 0 && cur.getString(fb) != null) favBar = cur.getString(fb);
             }

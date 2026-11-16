@@ -328,6 +328,9 @@ public class SettingsActivity extends Activity {
         // «توهّج لون التطبيق»: the wash behind the focused app on the home; off until the person turns it on
         row("توهّج لون التطبيق", "on".equals(prefs.glowMode()) ? "مفعّل" : "light".equals(prefs.glowMode()) ? "خفيف" : "مطفأ", R.drawable.ic_eye,
             new Runnable() { public void run() { prefs.setGlowMode("off".equals(prefs.glowMode()) ? "light" : "light".equals(prefs.glowMode()) ? "on" : "off"); render(); } });
+        // A14 «الوضع الخفيف»: auto (a weak TV: little memory or few cores) by default; on and off are the person's. Less motion, slower refresh, smaller photos, no blur
+        row("الوضع الخفيف", Prefs.liteLabel(prefs.lite(), Prefs.lowRam(this)), R.drawable.ic_eye,
+            new Runnable() { public void run() { String v = prefs.lite(); prefs.setLite("auto".equals(v) ? "on" : "on".equals(v) ? "off" : "auto"); render(); } });
         // «نص أوضح»: the grey words and numbers of the home and the screensaver in the look's full text colour (white; the dark ink in a light look)
         row("نص أوضح", prefs.clearText() ? "مفعّل الكلام الرمادي بلون النص الكامل" : "متوقف", R.drawable.ic_eye,
             new Runnable() { public void run() { prefs.setClearText(!prefs.clearText()); render(); } });

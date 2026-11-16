@@ -3860,7 +3860,7 @@ function cardRelease(){
 function cardBlurLater(url){
   CARD.url = url; CARD.since = Date.now();
   cardRelease();
-  if(!CARD_FILTER[CONFIG.cardStyle]) return;
+  if(!CARD_FILTER[CONFIG.cardStyle] || CONFIG.lowram) return;   // A14 «خفيف»: no blurred copy behind the card
   const calm = !window.matchMedia || matchMedia('(prefers-reduced-motion: no-preference)').matches;   // else it never drifts
   CARD.t = setTimeout(cardBlurNow, calm ? 61000 : 0);
 }
