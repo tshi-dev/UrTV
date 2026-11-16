@@ -424,11 +424,20 @@ final class SetupEngine {
     }
 
     /**
+     * 4.3.2: the home switch keeps the stock home, the setup wizard and the stock home's helpers ON: it makes ours the HOME role and the home activity and nothing
+     * else. A TV whose stock home or wizard was turned off could not start (a blank screen and a restart loop on some Google TVs: couch-tv's 0.10 findings, and the
+     * setup that stopped at 20 to 26 %), and the wizard owning the saved Wi-Fi made the switch stop altogether. «تخلّص من واجهة المصنع» (the factory step, factoryOff)
+     * is the one place that still turns the stock home off, only when the person asks for it. false = the old switch (kept for the tests of its rules).
+     */
+    static boolean KEEP_STOCK_ON = true;   // not final: the tests of the old switch's rules (the safe order, the wizard asked about the Wi-Fi) set it false
+
+    /**
      * install.sh's step 0, before anything is changed: the setup wizard answers Home and owns the saved Wi-Fi (TCL G08/G10/G14, Google TV sets), so the
      * person is asked ONCE to forget the network and join it again in the TV's Settings (wifi-ask.txt says it was asked; never twice). True: ask now
      * (the run pauses; nothing was changed). We never forget, delete or change a network ourselves.
      */
     boolean askWifi() throws IOException {
+        if (KEEP_STOCK_ON) return false;   // nothing is turned off by the switch any more, so the Wi-Fi is never at risk: no question
         String asked = store.get(WIFI_ASK);
         if (asked != null && !asked.trim().isEmpty()) return false;
         Set<String> pk = packages("pm list packages");
@@ -464,7 +473,9 @@ final class SetupEngine {
         boolean wizardListed = false, safeOrder = false;
         String wifiBefore = null, asked = store.get(WIFI_ASK);
         boolean wasAsked = asked != null && !asked.trim().isEmpty();
-        if (castKeepsWizard()) {
+        if (KEEP_STOCK_ON) {
+            // the wizard, the stock home and its helpers stay on (KEEP_STOCK_ON): nothing to decide about the Wi-Fi
+        } else if (castKeepsWizard()) {
             out.line("وسيط الإعداد في هذا الجهاز يحمل شهادة البث (Chromecast)، فنتركه شغّالاً كي يشتغل البث من الجوال وريموت Google Home، ونحاول نخلي تلفزيونك الشاشة الرئيسية.");
         } else if (wraithAnswersHome()) {
             String owner = wifiOwner();
@@ -520,6 +531,12 @@ final class SetupEngine {
         AdbClient.Result setHome = sh.run("cmd package set-home-activity --user 0 " + q(HOME_ACTIVITY));
         boolean roleOk = role.code == 0 || (sdk > 0 && sdk < 29);    // Android 9 and older have no `cmd role`
         if (!roleOk || setHome.code != 0) return abort(stock, stockPkg, holder, "ما قبل التلفزيون تعيين شاشتنا شاشةً رئيسية، فما عطّلنا الأصلية.", false);
+        if (KEEP_STOCK_ON) {   // ours holds Home; the stock home and the wizard are left as they are
+            sh.run("cmd package set-home-activity --user 0 " + q(HOME_ACTIVITY));
+            sh.run("am force-stop com.android.tv.settings");
+            sh.run("input keyevent KEYCODE_HOME");
+            return verifyAndFinish(stock, stockPkg, holder, pk, false);
+        }
         if (wizardListed) sh.run("pm disable-user --user 0 " + WRAITH);
         AdbClient.Result disable = sh.run("pm disable-user --user 0 " + stockPkg);
         if (disable.output.toLowerCase().contains("illegal")) {   // Nokia Streaming Box 8000: no switch there
@@ -579,6 +596,30 @@ final class SetupEngine {
         return null;
     }
 
+    /**
+     * 4.3.2 (StockMigration): a TV switched the old way gets back, once, what that switch turned off (the stock home, the wizard, the stock home's helpers), by what the journal
+     * says; ours stays the HOME role. null: nothing to do (or the TV did not answer: tried again at the next start); a result: what was done, in one line.
+     */
+    Result migrateStockHome() throws IOException {
+        if (!KEEP_STOCK_ON) return null;
+        String j = store.get("home-switch.json");
+        if (j == null || !StockMigration.due(journal("state"), journal("stock_before"), journal("wizard_before"), store.get(FACTORY), store.get(StockMigration.MARK))) return null;
+        String stock = journal("stock");
+        if (stock.isEmpty() || !COMPONENT.matcher(stock).matches()) return null;
+        String stockPkg = stock.substring(0, stock.indexOf('/'));
+        Set<String> off = packages("pm list packages -d"), pk = packages("pm list packages");
+        if (off == null || pk == null) return null;   // the TV did not say: the next start asks again
+        List<String> turn = StockMigration.toEnable(journal("stock_before"), stockPkg, journal("wizard_before"), WRAITH, off, java.util.Arrays.asList(SetupLists.HOME_HELPERS), pk);
+        if (turn.isEmpty()) { store.put(StockMigration.MARK, "none " + stamp + "\n"); return null; }   // nothing of ours was off: nothing to say
+        for (String p : turn) sh.run("pm enable " + p);
+        Set<String> after = packages("pm list packages -d");
+        if (after == null) return null;
+        for (String p : turn) if (after.contains(p)) return failed("ما قبل التلفزيون تشغيل بعض ما أوقفه الإعداد القديم؛ نجرّب مرة ثانية عند التشغيل القادم.");
+        sh.run("cmd role add-role-holder --user 0 android.app.role.HOME " + SELF);   // ours stays Home
+        store.put(StockMigration.MARK, "done " + stamp + "\n");
+        return done(StockMigration.NOTICE);
+    }
+
     /** Step 4 of the switch: Home really opens ours (two rounds), then the safety switch is disarmed; else everything is put back. */
     private Result verifyAndFinish(String stock, String stockPkg, String holder, Set<String> pk, boolean safeOrder) throws IOException {
         journalStep("verify");
@@ -595,7 +636,7 @@ final class SetupEngine {
         clearDeadline();
         journalState("done");
         store.put(WIFI_ASK, "");   // done: a later run starts afresh (install.sh removes wifi-ask.txt here)
-        for (String h : SetupLists.HOME_HELPERS) if (pk.contains(h)) sh.run("pm disable-user --user 0 " + h);   // only now: the stock home's helpers are dead weight
+        if (!KEEP_STOCK_ON) for (String h : SetupLists.HOME_HELPERS) if (pk.contains(h)) sh.run("pm disable-user --user 0 " + h);   // only now: the stock home's helpers are dead weight
         if (safeOrder) out.line("وسيط الإعداد موقوف، والواي فاي بقي متصلاً وشبكته محفوظة (تأكدنا بعد إيقاف الوسيط وقبل إيقاف الشاشة الأصلية).");
         return done("تلفزيونك الآن هو الشاشة الرئيسية. اضغط زر الرئيسية في الريموت للتأكد.");
     }

@@ -250,6 +250,24 @@ in «كل التطبيقات». Full reference: [TILAWAH.md](TILAWAH.md).
 | Y21 | `optimize/saver.sh home-card matches`, `teams 136013:Al-Hilal`, look at the card (with and without a score) | One line per game: «الهلال [شعار] ٢ - ١ [شعار] النصر», or «الأهلي [شعار] × [شعار] الاتحاد», the crests close to the names; then the date and «بعد …» (a finished game: «انتهت» and its day); space above and below each row; no «…» |
 | Y22 | The same with three cards on the home screen, and the screensaver's card (`saver.sh panel matches`, which shows the crests too) | Still one line per game; a long line first loses its crests (that row only, the full names stay), then takes the clubs' short names, then the short date («الجمعة ٩:٠٠ م» / «٢٤ أكتوبر»), then a slightly smaller size, never «…»; a live game stays big, with the crests in the same order |
 
+## 13. 4.3.2 «the stock home stays on» (branch work/432-stockhome; the owner's TCL Google TV, launcherx)
+
+The home switch of «إعداد تلفزيوني» now makes UrTV the HOME role and turns NOTHING off: the stock home (launcherx), the setup wizard (setupwraith) and the stock home's
+helpers stay on, because a Google TV with them off can fail to start (a blank screen, a restart loop) and the wizard owning the Wi-Fi stopped the switch. «تخلّص من واجهة المصنع»
+is the one place that still turns the stock home off, only when the person asks. A TV switched the old way gets what that switch turned off back, once, at the first start of the home
+(one toast). The scripts (`optimize/install.sh launcher`) are NOT changed in this build. Check with ADB before and after: `adb shell pm list packages -d` (what is off),
+`adb shell cmd role get-role-holders android.app.role.HOME`, `adb shell cmd package resolve-activity --brief -c android.intent.category.HOME -a android.intent.action.MAIN`.
+
+| ID | Do | Expect |
+|---|---|---|
+| S1 | A TV switched the old way (launcherx and setupwraith in `pm list packages -d`): install this build, open the home | One toast: «رجّعنا تشغيل الشاشة الأصلية ووسيط الإعداد…»; afterwards launcherx, setupwraith and the helpers are NOT in `pm list packages -d` (packages the TV had off by itself, e.g. com.tcl.bi, stay off); the HOME role is still sa.urtv.home. Open the home again: no second toast |
+| S2 | On a TV never switched: «إعداد تلفزيوني» → the home step | No Wi-Fi question (even where the wizard owns the Wi-Fi), the step says UrTV is the home; `pm list packages -d` shows NO launcherx / setupwraith / helpers; role = sa.urtv.home. Write down what the Home key opens now (UrTV or Google's home) and what it opens from an app |
+| S3 | After S2: reboot with `optimize/venv/bin/python -I optimize/tv.py --reboot` | The TV starts normally (no blank screen, no restart loop); write down which home is in front after the start; the TV's own settings and the Wi-Fi are as before |
+| S4 | Start the home step and cut the connection (unplug the network cable / turn the Wi-Fi off) while it runs | After 5 minutes the safety switch puts the stock home back by itself (journal «restored», Home = launcherx); nothing was turned off in between |
+| S5 | «تراجع» (the setup's undo) after S2 | The role goes back to launcherx, Home opens Google's home, the journal says «restored»; nothing is left off except what the TV had off itself |
+| S6 | «تخلّص من واجهة المصنع» (still explicit), then «رجّع واجهة المصنع» | The first turns the stock home off (with its two confirmations) and the second turns it back on and gives it Home; the migration of S1 does NOT turn the stock home on while the factory step is on |
+| S7 | A TV that had launcherx off BEFORE UrTV (a hotel/operator TV): install, open the home | Nothing is turned on, no toast (the journal says it was off before) |
+
 ## Report format
 
 ```

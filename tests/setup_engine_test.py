@@ -152,4 +152,23 @@ check("the setup screen is not in the home screen's own app grid (Dock.catalogue
 check("the engine runs only fixed commands: none is built from text the TV sent, except package names that matched [A-Za-z0-9_.]+",
       "PKG.matcher" in engine_src and "COMPONENT.matcher" in engine_src, "")
 check("the engine's lines name no network, serial or address (it never prints what dumpsys wifi or getprop said)", not re.search(r'out\.line\([^;]*(wifi|ssid|serial)', engine_src, re.I), "")
+# ---- 4.3.2: the home switch keeps the stock home, the wizard and the helpers ON (no TV can fail to start because of it), and a TV switched the old way gets them back once
+check("S1: the switch makes ours the HOME role and turns NOTHING off (no stock home, no wizard even where it owns the Wi-Fi, no helpers), no Wi-Fi question, the journal says done, the safety switch armed and disarmed",
+      (got.get("S1") or "").startswith("S1 DONE asked=false role=sa.urtv.home home=sa.urtv.home/.MainActivity stockOff=false wizardOff=false helperOff=false disables=0 journal=done armed=1 disarmed=1"), got.get("S1"))
+check("S1: «تراجع» gives the stock home its role and Home back", got.get("S1_undo") == "S1_undo DONE role=com.google.android.apps.tv.launcherx home=com.google.android.apps.tv.launcherx/.home.HomeActivity", got.get("S1_undo"))
+check("S2: a TV switched the old way: the stock home, the wizard and the helper are turned on again by the journal (what the TV had off itself, com.tcl.bi, stays off), ours stays Home, the notice is the one line, the mark is written",
+      "status=DONE notice=true off=[com.tcl.bi] role=sa.urtv.home home=sa.urtv.home/.MainActivity mark=true" in (got.get("S2") or ""), got.get("S2"))
+check("S2: only once: a second start turns nothing on and says nothing", got.get("S2_twice") == "S2_twice true extra_enables=0", got.get("S2_twice"))
+check("S3: «تخلّص من واجهة المصنع» is on (the person's choice): the migration turns nothing on", got.get("S3_factory") == "S3_factory true enables=0 stockOff=true", got.get("S3_factory"))
+check("S4: what the TV had off before UrTV (the journal says «disabled») is never turned on", got.get("S4_off_before_us") == "S4_off_before_us true off=[com.google.android.apps.tv.launcherx, com.google.android.tungsten.setupwraith, com.tcl.bi] enables=0", got.get("S4_off_before_us"))
+check("S5: a switch still «switching» is the recovery's, not the migration's", got.get("S5_switching") == "S5_switching true enables=0", got.get("S5_switching"))
+check("S6: the pure rule: due only for a finished switch of ours that is not migrated, with no factory step on, and with something that was on before",
+      got.get("S6") == "S6 true false false false false true", got.get("S6"))
+src = (SETUP / "SetupEngine.java").read_text(encoding="utf-8")
+hook = (SETUP / "SetupHook.java").read_text(encoding="utf-8")
+check("the switch's code: KEEP_STOCK_ON leaves the wizard, the stock home and the helpers alone (no pm disable-user before it returns), and the factory step is the one that still disables the stock home",
+      "if (KEEP_STOCK_ON) {   // ours holds Home" in src and src.index("if (KEEP_STOCK_ON) {   // ours holds Home") < src.index('if (wizardListed) sh.run("pm disable-user --user 0 " + WRAITH);') and "if (!KEEP_STOCK_ON) for (String h : SetupLists.HOME_HELPERS)" in src
+      and "Result factoryOff() throws IOException" in src)
+check("the migration runs at a start of the home when nothing is being recovered, behind the files' own check, on a background thread, and tells the person with a toast",
+      "if (!SetupRecovery.pending(app)) { migrate(app); return; }" in hook and "StockMigration.due(" in hook and 'new Thread(' in hook and "Toast.makeText(app, StockMigration.NOTICE" in hook)
 sys.exit(1 if failed else 0)

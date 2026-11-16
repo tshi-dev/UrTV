@@ -168,6 +168,7 @@ public class SetupRunnerRun {
     }
 
     public static void main(String[] a) throws Exception {
+        SetupEngine.KEEP_STOCK_ON = false;   // these scenarios are the OLD switch's rules (the safe order, the wizard asked about the Wi-Fi); 4.3.2's keep-the-stock-home switch has its own scenarios (stockhome_test.py)
         line("PLAN " + String.join(",", SetupRunner.ids(SetupRunner.plan(SetupRunner.Kind.FULL))));
         // 1. the TV's button on a healthy TV: the five steps, in order, done; the end is the screen's old sentence; the key is let go once
         SetupRunner r = new SetupRunner();
