@@ -52,7 +52,7 @@ sys.modules["adb_shell.auth.sign_pythonrsa"].PythonRSASigner = lambda a, b: None
 sys.modules["adb_shell"].constants = const
 for k in ("OKAY", "WRTE", "CLSE"): setattr(sys.modules["adb_shell.constants"], k, getattr(const, k))
 sys.modules["adb_shell.adb_message"].AdbMessage = Msg
-os.environ.update(TV_HOST="10.0.0.9", TV_PORT="5555", URTV_HOME=tempfile.mkdtemp())
+os.environ.update(TV_HOST="192.0.2.20", TV_PORT="5555", URTV_HOME=tempfile.mkdtemp())
 sys.path.insert(0, str(ROOT / "optimize"))
 import tv
 tv.time.sleep = lambda s: None
@@ -90,9 +90,9 @@ check("Wireless debugging: the same command through the adb program", tv.install
 import wireless
 calls = []
 def fake_run(argv, **kw): calls.append((argv, kw.get("stdin").read() if kw.get("stdin") else None)); return types.SimpleNamespace(stdout=b"Success\n", stderr=b"", returncode=0)
-c = wireless.AdbCli.__new__(wireless.AdbCli); c.host, c.state, c.timeout, c.run, c.adb = "10.0.0.9", {"port": 41000}, 60, fake_run, "adb"
+c = wireless.AdbCli.__new__(wireless.AdbCli); c.host, c.state, c.timeout, c.run, c.adb = "192.0.2.20", {"port": 41000}, 60, fake_run, "adb"
 check("wireless.AdbCli.install_stream: adb -s <tv> exec-in <command>, the APK as its standard input", c.install_stream("cmd package install -S 50000 -r", str(apk), 60) == "Success\n"
-      and calls[0][0] == ["adb", "-s", "10.0.0.9:41000", "exec-in", "cmd package install -S 50000 -r"] and calls[0][1] == data, calls)
+      and calls[0][0] == ["adb", "-s", "192.0.2.20:41000", "exec-in", "cmd package install -S 50000 -r"] and calls[0][1] == data, calls)
 
 # ---- install.sh: the stream is taken only on a clear answer; else the file goes up and is installed as before
 src = (ROOT / "optimize/install.sh").read_text(encoding="utf-8")
