@@ -1213,10 +1213,11 @@ public class SettingsActivity extends Activity {
         return rows;
     }
 
-    /** The first list: «الأشهر» (the hand-named ones), then each country. */
+    /** The first list: «الأشهر» (the hand-named ones), 4.3.3 «كل الدول» (every league of the catalogue), then each country. */
     private void catalogueGroups(final List<String[]> rows) {
         final List<String[]> groups = new ArrayList<>();
         groups.add(new String[] {"", "الأشهر"});
+        groups.add(new String[] {"*", "كل الدول"});
         groups.addAll(CatalogueLeagues.countries(rows, S.en()));
         String[] labels = new String[groups.size()];
         for (int i = 0; i < labels.length; i++) labels[i] = groups.get(i)[1];
@@ -1224,7 +1225,7 @@ public class SettingsActivity extends Activity {
         new Dlg(this).setTitle("كل الدوريات")
             .setItems(labels, (d, i) -> {
                 List<String[]> in = new ArrayList<>();
-                for (String[] r : rows) if (i == 0 ? !r[6].isEmpty() : r[3].equalsIgnoreCase(groups.get(i)[0])) in.add(r);
+                for (String[] r : rows) if (i == 0 ? !r[6].isEmpty() : i == 1 || r[3].equalsIgnoreCase(groups.get(i)[0])) in.add(r);
                 nextList[0] = true;
                 catalogueLeagues(labels[i], in);
             })
