@@ -34,20 +34,36 @@ if shutil.which("javac"):
     with tempfile.TemporaryDirectory() as tmp:
         subprocess.run(["javac", "-encoding", "UTF-8", "-d", tmp, str(HOME / "ScenePlan.java"), str(ROOT / "tests/ScenePlanRun.java")], check=True, capture_output=True)
         small = []
-        try:   # the first scene's cut-out made small as the home does (SceneHome.skylineOf): 96 wide nearest, 384 wide smoothed
+        try:   # the clock's glyphs drawn with its font (SceneClock.glyphs), and each cut-out made small as the home does (SceneHome.skylineOf, cutOf)
             import struct
-            from PIL import Image as _I
-            first = [l.split("\t")[0] for l in read(PACK / "scenes.tsv").splitlines() if l and not l.startswith("#")][0]
-            fg = _I.open(PACK / f"{first}-fg.webp").convert("RGBA")
-            for sw, how in ((96, _I.NEAREST), (384, _I.BILINEAR)):
-                im = fg.resize((sw, max(1, round(sw * fg.height / fg.width))), how)
-                raw = im.tobytes()
+            from PIL import Image as _I, ImageFont as _F
+            font = _F.truetype(str(ROOT / "assets/fonts/ThmanyahDisplay-Bold.woff2"), 100)
+            l, t, r, b = font.getbbox("٤٥٨", anchor="ls")
+            font = _F.truetype(str(ROOT / "assets/fonts/ThmanyahDisplay-Bold.woff2"), 100 * 64 / (b - t))
+            chars = "٠١٢٣٤٥٦٧٨٩0123456789:"
+            blob = struct.pack(">i", len(chars))
+            for c in chars:
+                l, t, r, b = font.getbbox(c, anchor="ls")
+                w, h = max(1, r - l + 2), max(1, b - t + 2)
+                im = _I.new("L", (w, h), 0)
+                from PIL import ImageDraw as _D
+                _D.Draw(im).text((1 - l, 1 - t), c, font=font, fill=255, anchor="ls")
+                blob += struct.pack(">6i", ord(c), l - 1, t - 1, w, h, round(font.getlength(c) * 1000)) + bytes(1 if v >= 128 else 0 for v in im.tobytes())
+            (Path(tmp) / "glyphs.bin").write_bytes(blob)
+
+            def put(img, name):
+                raw = img.tobytes()
                 px = [(raw[i + 3] << 24 | raw[i] << 16 | raw[i + 1] << 8 | raw[i + 2]) - ((1 << 32) if raw[i + 3] >= 128 else 0) for i in range(0, len(raw), 4)]
-                p = Path(tmp) / f"fg{sw}.bin"
-                p.write_bytes(struct.pack(">ii", im.width, im.height) + struct.pack(f">{len(px)}i", *px))
-                small.append(str(p))
+                (Path(tmp) / name).write_bytes(struct.pack(">ii", img.width, img.height) + struct.pack(f">{len(px)}i", *px))
+            for l in read(PACK / "scenes.tsv").splitlines():
+                f = l.split("\t")
+                if not l or l.startswith("#") or len(f) < 6 or f[5].strip() == "-": continue
+                fg = _I.open(PACK / f"{f[0]}-fg.webp").convert("RGBA")
+                for sw, how, name in ((96, _I.NEAREST, "48"), (384, _I.BILINEAR, "192"), (480, _I.BILINEAR, "cut")):
+                    put(fg.resize((sw, max(1, round(sw * fg.height / fg.width))), how), f"{f[0]}-{name}.bin")
+            small.append(tmp)
         except ImportError:
-            print("SKIP the cut-out's legibility: no Pillow here")
+            print("SKIP the ink rule's glyphs: no Pillow here")
         out = subprocess.run(["java", "-Dfile.encoding=UTF-8", "-cp", tmp, "sa.urtv.home.ScenePlanRun", str(PACK / "scenes.tsv"), *small],
                              check=True, capture_output=True).stdout.decode("utf-8").splitlines()
     rows = [l.split("\t") for l in out]
@@ -90,18 +106,39 @@ if shutil.which("javac"):
           tw[0] == "false" and float(tw[1]) == 0 and float(tw[2]) == 1, tw)
     zm = [r for r in rows if r[0] == "zoomed"][0][1:]
     check("a broad block a little over 25 %: the picture is zoomed (MAX_ZOOM at most) until it is under, the cut-out kept", zm == ["true", "true"], zm)
+    ink = {r[1]: r[2:] for r in rows if r[0] == "ink"}
+    if ink:
+        check("the clock's glyphs drawn with its font: ٠-٩, 0-9 and the colon", [r for r in rows if r[0] == "glyphs"][0][1] == "true")
+        free = int([r for r in rows if r[0] == "free"][0][1])
+        check("4.4 the clock behind the towers (the owner), measured on the ink: a tower where no digit (any of ٠-٩ in any place, «١٢:٣٠» and «٤:٥٨») "
+              "nor the colon has ink reads" + ("" if free >= 0 else " (this font leaves no such column: nothing to try)"), free < 0 or ink["free"][1] == "true", ink)
+        check("a tower through the colon never reads (none of the colon's ink may go)", ink["colon"][1] == "false" and float(ink["colon"][0].split(",")[2]) > 0, ink)
+        check("nor scenery over the digits' top (their upper part tells ٢ from ٣, ٧ from ٨)", ink["top"][1] == "false" and float(ink["top"][0].split(",")[1]) > 0.05, ink)
+        check("scenery over the digits' base: a sliver (2 % of their height) takes little of their ink; 40 % takes more than a quarter (never reads)",
+              float(ink["base2"][0].split(",")[0]) < 0.25 and ink["base40"][1] == "false" and float(ink["base40"][0].split(",")[0]) > 0.25, ink)
     dp = {(r[1], r[2], r[3]): r[4:] for r in rows if r[0] == "depth"}
-    if dp:
-        check("every scene of the bundled pack: with no cards its clock keeps its depth, every digit and the colon legible (the gate's place)",
-              all(float(v[0]) > 0 and v[2] == "true" for (sid, cards, _), v in dp.items() if cards == "false") and len({k[0] for k in dp}) == len(scenes), dp)
-        check("and wherever the cards put it: legible, or the cut-out off (the clock in front), never a digit cut unreadable", all(v[2] == "true" for v in dp.values()), dp)
-    check("the home uses the rule: SceneHome and PhotoGlass take ScenePlan.depth, and a 0 hides the cut-out (the clock in front, at its usual place)",
-          "ScenePlan.depth(" in scene and "depth == 0f ? null : cut" in scene and "ScenePlan.depth(line, fine, digits, w, h)" in read(HOME / "PhotoGlass.java")
+    masked = [l.split("\t")[0] for l in read(PACK / "scenes.tsv").splitlines() if l and not l.startswith("#") and l.split("\t")[5].strip() != "-"]
+    if ink:
+        check("every bundled scene with a cut-out is measured at every place (none today: Riyadh's towers stand under the colon, the clock in front)",
+              {k[0] for k in dp} == set(masked), (dp, masked))
+        check("wherever the clock is: every digit and the colon read on the ink, or the cut-out is off (the clock in front)", all(v[2] == "true" for v in dp.values()), dp)
+    check("the home uses the rule: SceneHome and PhotoGlass take ScenePlan.depthInk with the clock's own glyphs, and a 0 hides the cut-out (the clock in front, at its usual place)",
+          "ScenePlan.depthInk(" in scene and "SceneClock.glyphs(face)" in scene and "depth == 0f ? null : cut" in scene
+          and "ScenePlan.depthInk(line, fine, SceneClock.glyphs(face), SceneHome.latin(time), cutPx, digits, w, h)" in read(HOME / "PhotoGlass.java")
           and "PhotoGlassPlan.box(null, w, h, cardsShown, rtl, row)" in read(HOME / "PhotoGlass.java"))
     dx = {r[1]: r[2:] for r in rows if r[0] == "digitsx"}
     check("4.4 digits_x (scenes.tsv's 10th column, from the masks gate): with no cards the digits centre there (scaled to the screen); \"-\" or none is the "
           "middle; out of 480..1440 is held to it; with the cards beside the clock it is the start half as before",
           dx == {"aa": ["1200", "1200", "1402", "800"], "bb": ["960", "960", "1402", "640"], "cc": ["960", "960", "1402", "640"], "dd": ["1440", "1440", "1402", "960"]}, dx)
+    al = {r[1]: r[2] for r in rows if r[0] == "aligned"}
+    check("4.4 never a misaligned cut-out (the owner's doubled buildings): one cut from its own photo at its place is drawn; the same 2 px off, or "
+          "another picture, is not (the clock in front)", al == {"own": "true", "off2": "false", "other": "false"}, al)
+    ok = [r for r in rows if r[0] == "ownerok"][0][1:]
+    check("«owner_ok» (a tag in scenes.tsv: the owner saw the placement and reads it) is read beside the other tags; the bundled scene has none",
+          ok == ["true", "true", "false"], ok)
+    check("an «owner_ok» scene keeps its cut-out where the owner saw it (no legibility drop, no zoom), but never one off its own pixels",
+          "!alignedTo(photo, cut, sc.mask) ? 0f" in scene and "sc.is(ScenePlan.OWNER_OK) ? 1f : zoomOf(cut, sc)" in scene
+          and scene.index("!alignedTo(photo, cut, sc.mask)") < scene.index("sc.is(ScenePlan.OWNER_OK)"))
     check("ScenePlan's tiers are Ram's numbers", [r for r in rows if r[0] == "tiers"][0][1] == "0,1,2"
           and "public static final int LOW = 0, MID = 1, NORMAL = 2;" in ram)
 else:

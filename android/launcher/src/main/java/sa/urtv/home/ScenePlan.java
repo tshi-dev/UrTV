@@ -8,7 +8,8 @@ import java.util.List;
  * A scene is a photo, a blurred and brightened copy of it (the clock's glass) and, for depth, the scenery cut out of it with the sky
  * transparent (the mask), drawn over the clock. A pack's scenes are listed in its scenes.tsv, one line each:
  * id, Arabic name, English name, the digits' top and bottom (px of a 1080 screen), the mask's box "x,y,w,h" (px of 1080p) or "-",
- * dark ("1": a dark clock, for a pale scene), the photo's credit, (4.3.3, may be missing) its tags, and (4.4, may be missing or "-") digits_x, the
+ * dark ("1": a dark clock, for a pale scene), the photo's credit, (4.3.3, may be missing) its tags ("owner_ok", 4.4: the owner's placement is
+ * kept as it is, ScenePlan.OWNER_OK), and (4.4, may be missing or "-") digits_x, the
  * digits' centre in px of 1920 with no cards beside the clock (480..1440; the middle by default). Tags: "night" (shown from Maghrib to Fajr when
  * «الأفق يتبع الوقت» is on), "fog" (shown in fog when «الأفق يتبع الطقس» is on), comma between.
  */
@@ -180,6 +181,154 @@ final class ScenePlan {
         float k = zoom(sky48, box, w, h);
         while (!legible(f, box, w, h, k) && k < MAX_ZOOM) k = Math.round((k + 0.01f) * 100) / 100f;
         return legible(f, box, w, h, k) ? k : 0f;
+    }
+
+    /**
+     * 4.4 the owner: the clock may stand behind the towers, as long as every digit reads (rule v2, the same as the masks gate,
+     * .github/tools/photo_masks.py). Measured on the ink: the clock's own glyphs (its typeface, a digit GLYPH_H px tall, alpha 128 or more) placed
+     * as SceneClock draws them, under the cut-out's own pixels (alpha over 128), the picture zoomed by k about the top centre. Each digit may lose
+     * at most INK_LOST of its ink and CRITICAL_LOST of its critical ink (the upper TOP_PART of its ink for ١٢٣٤٦٧٨٩, where ٢ and ٣, ٤, ٧ and ٨ are
+     * told apart; the whole of ٥ and ٠, a loop and a dot); the colon at most COLON_LOST. Every digit that can stand in a place is tried there, centred
+     * in it (the time changes: the clock must read at any minute).
+     */
+    static final int GLYPH_H = 64;
+    static final float INK_LOST = 0.25f, CRITICAL_LOST = 0.05f, COLON_LOST = 0.01f, TOP_PART = 0.40f;
+
+    /** the clock's glyphs as its typeface draws them, a digit GLYPH_H px tall (SceneClock.glyphs on the TV; the test renders the same with the font) */
+    static final class Glyphs {
+        final java.util.Map<Character, int[]> box = new java.util.HashMap<>();       // x0, y0 (the ink's top left from the pen and the baseline), w, h
+        final java.util.Map<Character, boolean[]> ink = new java.util.HashMap<>();
+        final java.util.Map<Character, Float> advance = new java.util.HashMap<>();
+
+        void put(char c, int x0, int y0, int w, int h, float adv, boolean[] in) { box.put(c, new int[] {x0, y0, w, h}); ink.put(c, in); advance.put(c, adv); }
+
+        boolean has(String s) { for (int i = 0; i < s.length(); i++) if (!box.containsKey(s.charAt(i))) return false; return true; }
+    }
+
+    /** the cut-out as the home places it: its alpha (cw x ch, 0..255) over the box place (x, y, w, h in px of 1080p) */
+    static final class Cut {
+        final int[] alpha; final int cw, ch; final int[] place;
+        Cut(int[] alpha, int cw, int ch, int[] place) { this.alpha = alpha; this.cw = cw; this.ch = ch; this.place = place; }
+
+        /** covered at the screen's point (x, y) of a w x h screen, the picture zoomed by k about the top centre */
+        boolean at(float x, float y, int w, int h, float k) {
+            float s = 1080f / h, sx = (w / 2f + (x - w / 2f) / k) * s, sy = y / k * s;
+            int px = (int) Math.floor((sx - place[0]) * cw / place[2]), py = (int) Math.floor((sy - place[1]) * ch / place[3]);
+            return px >= 0 && py >= 0 && px < cw && py < ch && alpha[py * cw + px] > 128;
+        }
+    }
+
+    /** the two shapes of the time and the digits each of their places can hold: «١٢:٣٠» (10 to 12 o'clock) and «٤:٥٨» (1 to 9) */
+    static final String[] CLOCKS = {"١٢:٣٠", "٤:٥٨"}, CLOCKS_LATIN = {"12:30", "4:58"};
+    static final String[][] CAN = {{"١", "٠١٢", ":", "٠١٢٣٤٥", "٠١٢٣٤٥٦٧٨٩"}, {"١٢٣٤٥٦٧٨٩", ":", "٠١٢٣٤٥", "٠١٢٣٤٥٦٧٨٩"}},
+            CAN_LATIN = {{"1", "012", ":", "012345", "0123456789"}, {"123456789", ":", "012345", "0123456789"}};
+
+    /** a digit read by its whole ink (a loop, a dot), not its upper part */
+    static boolean whole(char c) { return c == '٥' || c == '٠' || c == '0'; }
+
+    /**
+     * the worst glyph of the clock in the digits' box: {ink lost, critical ink lost, colon ink lost} (0..1), every digit that can stand in each
+     * place tried there; null when the glyphs or the cut-out are missing (then legible() on the skyline decides)
+     */
+    static float[] inkLost(Glyphs g, boolean latin, Cut cut, int[] box, int w, int h, float k) {
+        if (g == null || cut == null || box == null || box[3] <= box[1]) return null;
+        float[] worst = new float[3];
+        String[] clocks = latin ? CLOCKS_LATIN : CLOCKS;
+        String[][] can = latin ? CAN_LATIN : CAN;
+        for (int n = 0; n < clocks.length; n++) {
+            String text = clocks[n];
+            for (String c : can[n]) if (!g.has(c)) return null;
+            // SceneClock.onDraw: the string's ink as tall as the box (narrower if too wide), centred, on the box's bottom line
+            float pen = 0, left = Float.MAX_VALUE, right = -Float.MAX_VALUE, top = Float.MAX_VALUE, bottom = -Float.MAX_VALUE;
+            float[] pens = new float[text.length()];
+            for (int i = 0; i < text.length(); i++) {
+                char c = text.charAt(i);
+                int[] b = g.box.get(c);
+                pens[i] = pen;
+                left = Math.min(left, pen + b[0]); right = Math.max(right, pen + b[0] + b[2]);
+                top = Math.min(top, b[1]); bottom = Math.max(bottom, b[1] + b[3]);
+                pen += g.advance.get(c);
+            }
+            float scale = (box[3] - box[1]) / (bottom - top);
+            if ((right - left) * scale > box[2] - box[0]) scale = (box[2] - box[0]) / (right - left);
+            float ox = box[0] + ((box[2] - box[0]) - (right - left) * scale) / 2f - left * scale, oy = box[3] - bottom * scale;
+            for (int i = 0; i < text.length(); i++) {
+                String tries = can[n][i];
+                float slot = g.advance.get(text.charAt(i));
+                for (int t = 0; t < tries.length(); t++) {
+                    char c = tries.charAt(t);
+                    int[] b = g.box.get(c);
+                    boolean[] in = g.ink.get(c);
+                    float at = pens[i] + (slot - g.advance.get(c)) / 2f;   // centred in its place
+                    int y0 = b[3], y1 = -1;   // the glyph's own ink height
+                    for (int y = 0; y < b[3]; y++) for (int x = 0; x < b[2]; x++) if (in[y * b[2] + x]) { y0 = Math.min(y0, y); y1 = Math.max(y1, y); }
+                    int topEnd = y0 + Math.round((y1 - y0 + 1) * TOP_PART);
+                    boolean allCritical = whole(c);
+                    int all = 0, lost = 0, crit = 0, critLost = 0;
+                    for (int y = 0; y < b[3]; y++) for (int x = 0; x < b[2]; x++) {
+                        if (!in[y * b[2] + x]) continue;
+                        boolean gone = cut.at(ox + (at + b[0] + x + 0.5f) * scale, oy + (b[1] + y + 0.5f) * scale, w, h, k);
+                        all++; if (gone) lost++;
+                        if (allCritical || y < topEnd) { crit++; if (gone) critLost++; }
+                    }
+                    if (all == 0) continue;
+                    if (c == ':') worst[2] = Math.max(worst[2], lost / (float) all);
+                    else {
+                        worst[0] = Math.max(worst[0], lost / (float) all);
+                        if (crit > 0) worst[1] = Math.max(worst[1], critLost / (float) crit);
+                    }
+                }
+            }
+        }
+        return worst;
+    }
+
+    /** the ink rule: true when every digit and the colon read (inkLost within INK_LOST, CRITICAL_LOST and COLON_LOST) */
+    static boolean readable(float[] lost) { return lost != null && lost[0] <= INK_LOST + 1e-4f && lost[1] <= CRITICAL_LOST + 1e-4f && lost[2] <= COLON_LOST + 1e-4f; }
+
+    /**
+     * depth() on the ink: zoom() (the owner's bands), then more (MAX_ZOOM at most) until every glyph reads; 0 when none does (the cut-out is not
+     * drawn); with no glyphs or no cut-out pixels, depth() on the skyline
+     */
+    static float depthInk(int[] sky48, int[] fine, Glyphs g, boolean latin, Cut cut, int[] box, int w, int h) {
+        if (inkLost(g, latin, cut, box, w, h, 1f) == null) return depth(sky48, fine, box, w, h);
+        float k = zoom(sky48, box, w, h);
+        while (!readable(inkLost(g, latin, cut, box, w, h, k)) && k < MAX_ZOOM) k = Math.round((k + 0.01f) * 100) / 100f;
+        return readable(inkLost(g, latin, cut, box, w, h, k)) ? k : 0f;
+    }
+
+    /** 4.4 the owner saw this scene's placement and reads it (scenes.tsv tag "owner_ok"): its cut-out stays, with no legibility drop and no zoom */
+    static final String OWNER_OK = "owner_ok";
+
+    /**
+     * 4.4 never a misaligned cut-out (the owner's doubled buildings): the cut-out's solid pixels (alpha 250 or more) against the photo's under
+     * them, both made small (photo pw x ph for the 1920 x 1080 frame; cut cw x ch over place, px of 1080p): the mean RGB difference at its own
+     * place at most ALIGN_DIFF, and no shift of up to ALIGN_SHIFT px matching better. ARGB ints.
+     */
+    static final float ALIGN_DIFF = 16f;
+    static final int ALIGN_SHIFT = 3;
+
+    static boolean aligned(int[] photo, int pw, int ph, int[] cut, int cw, int ch, int[] place) {
+        if (photo == null || cut == null || place == null || pw <= 0 || ph <= 0 || cw <= 0 || ch <= 0) return false;
+        float best = Float.MAX_VALUE, here = Float.MAX_VALUE;
+        for (int dy = -ALIGN_SHIFT; dy <= ALIGN_SHIFT; dy++) for (int dx = -ALIGN_SHIFT; dx <= ALIGN_SHIFT; dx++) {
+            long sum = 0, n = 0;
+            for (int y = 0; y < ch; y += 2) for (int x = 0; x < cw; x += 2) {
+                int c = cut[y * cw + x];
+                if ((c >>> 24) < 250) continue;
+                int px = Math.round((place[0] + (x + 0.5f) * place[2] / cw) * pw / 1920f - 0.5f) + dx;
+                int py = Math.round((place[1] + (y + 0.5f) * place[3] / ch) * ph / 1080f - 0.5f) + dy;
+                if (px < 0 || py < 0 || px >= pw || py >= ph) continue;
+                int p = photo[py * pw + px];
+                sum += Math.abs(((c >> 16) & 255) - ((p >> 16) & 255)) + Math.abs(((c >> 8) & 255) - ((p >> 8) & 255)) + Math.abs((c & 255) - (p & 255));
+                n++;
+            }
+            if (n == 0) continue;
+            float d = sum / (3f * n);
+            best = Math.min(best, d);
+            if (dx == 0 && dy == 0) here = d;
+        }
+        return here <= ALIGN_DIFF && here <= best + 0.5f;
     }
 
     /**

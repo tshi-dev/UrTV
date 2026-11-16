@@ -41,10 +41,15 @@ final class PhotoGlass extends FrameLayout {
 
     void onZoom(Zoom z) { zoomTo = z; }
 
+    private final Typeface face;   // the clock's typeface (its glyphs for the ink rule)
+    private CharSequence time = "";
+    private ScenePlan.Cut cutPx;   // the cut-out's alpha for the ink rule
+
     PhotoGlass(Context c, int tier, Typeface digits) {
         super(c);
         app = c.getApplicationContext();
         this.tier = tier;
+        face = digits;
         clock = new SceneClock(c);
         clock.setTypeface(digits);
         mask = new ImageView(c);
@@ -55,7 +60,7 @@ final class PhotoGlass extends FrameLayout {
         setImportantForAccessibility(IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS);
     }
 
-    void setTime(CharSequence t) { clock.setTime(t); }
+    void setTime(CharSequence t) { time = t == null ? "" : t; clock.setTime(t); }
 
     /** where the digits go follows the cards (beside the clock, or in «كنبة»'s strip under it) and the direction; a change moves them at once */
     void place(boolean cards, boolean rightToLeft, boolean cardsInRow) {
@@ -78,7 +83,7 @@ final class PhotoGlass extends FrameLayout {
      */
     private void depth(int w, int h) {
         int[] digits = PhotoGlassPlan.box(line, w, h, cardsShown, rtl, row);
-        float z = ScenePlan.depth(line, fine, digits, w, h);
+        float z = ScenePlan.depthInk(line, fine, SceneClock.glyphs(face), SceneHome.latin(time), cutPx, digits, w, h);
         if (z == 0f) {
             mask.setVisibility(GONE);
             digits = PhotoGlassPlan.box(null, w, h, cardsShown, rtl, row);
@@ -113,6 +118,7 @@ final class PhotoGlass extends FrameLayout {
         glass.getPixels(glassPx, 0, 160, 0, 0, 160, 90);
         line = null;
         fine = null;
+        cutPx = null;
         mask.setVisibility(GONE);
         mask.setImageDrawable(null);
         clock.setZoom(1f);
@@ -126,7 +132,7 @@ final class PhotoGlass extends FrameLayout {
         new Thread(() -> {
             final Object[] got = own > 0 ? loadOwn(own, photo, sw, sh) : load(key[0], key[1], net);
             if (got == null) return;
-            final Object[] got4 = {got[0], got[1], got[2], fineOf((Bitmap) got[0], (int[]) got[1])};
+            final Object[] got4 = {got[0], got[1], got[2], fineOf((Bitmap) got[0], (int[]) got[1]), SceneHome.cutOf((Bitmap) got[0], (int[]) got[1])};
             ui.post(() -> {
                 if (g != gen || !alive) return;
                 int[] box = (int[]) got4[1];
@@ -138,6 +144,7 @@ final class PhotoGlass extends FrameLayout {
                 mask.setLayoutParams(lp);
                 mask.setImageBitmap((Bitmap) got4[0]);
                 fine = (int[]) got4[3];
+                cutPx = (ScenePlan.Cut) got4[4];
                 mask.setPivotX(w / 2f - lp.leftMargin);
                 mask.setPivotY(-lp.topMargin);
                 depth(w, h);   // the owner: the clock where it is, the photo a little lower: more of the digits above the scenery, never a digit cut unreadable
