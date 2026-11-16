@@ -14,6 +14,8 @@ page's key, «مركز التحكم» the control centre's row that opens it; «
    صفحة الجوال: lang
 —— الأرقام: هندية ١٢٣ / عربية 123 (الأصل: هندية ١٢٣)
    الوكيل: optimize/saver.sh digits latin
+—— التاريخ بالأرقام
+   الوكيل: optimize/saver.sh datenum on
 —— أسماء الأشهر الميلادية
    الوكيل: optimize/saver.sh months levant
 —— نظام الساعة
@@ -106,6 +108,8 @@ page's key, «مركز التحكم» the control centre's row that opens it; «
 —— مركز التحكم
 —— زر مركز التحكم
 —— زر الجوال
+—— زر البحث
+   الوكيل: optimize/saver.sh searchpill on
 —— زر المهام
    الوكيل: optimize/saver.sh taskspill off
 —— زر الأسواق
@@ -138,6 +142,8 @@ page's key, «مركز التحكم» the control centre's row that opens it; «
 ——— الدوريات كاملة
 ——— رياضات أخرى
     الوكيل: optimize/saver.sh events f1,ufc,boxing
+——— إخفاء المباريات المنتهية
+    الوكيل: optimize/saver.sh fbhide on
 —— صفحة الأسواق
 ——— صفحة الأسواق
 ——— شريط الأسواق
@@ -160,9 +166,11 @@ page's key, «مركز التحكم» the control centre's row that opens it; «
 —— بدء شاشة التوقف بعد
    الوكيل: optimize/saver.sh idle <1, 2, 5, 10, 15, 30>
    صفحة الجوال: saver_idle
+—— الوضع الخفيف
+   الوكيل: optimize/saver.sh lite on
 —— بجانب الساعة
 ——— المحتوى
-    الوكيل: optimize/saver.sh card <verse, wisdom, adhkar, stocks, tasks, year, shows, prayers, forecast, hourly, prayerrow, matches, none>
+    الوكيل: optimize/saver.sh card <verse, wisdom, adhkar, stocks, tasks, year, shows, prayers, forecast, hourly, prayerrow, matches, nextmatch, none>
 ——— بطاقة ثانية
     الوكيل: optimize/saver.sh card2 <any choice of card but nextprayer and the first card>
 ——— تبديل الآية والحديث

@@ -42,7 +42,7 @@ check("the home: the same order in Ram.tier(c)",
 check("a change of the choice is read again at once (the cached tier forgotten) in both", "void setLite(String v) {" in pf and "ramTier = -1; }" in pf.split("void setLite(String v) {")[1].split("\n")[0] and "tier = -1;" in ram.split("static void lite(Context c, String v)")[1].split("/** a forced")[0])
 cp, cs = text(SAVER / "ConfigProvider.java"), text(HOME / "ConfigSnapshot.java")
 check("the provider says «lite» (last column: an older home reads its columns by name), the home passes it to Ram",
-      '"city_chosen", "lite", "scene_packs"});' in cp and 'p.cityChosen() ? "1" : "0", p.lite(),' in cp and 'int li = cur.getColumnIndex("lite");' in cs and "if (li >= 0) Ram.lite(c, cur.getString(li));" in cs)
+      '"city_chosen", "lite", "scene_packs",' in cp and 'p.cityChosen() ? "1" : "0", p.lite(),' in cp and 'int li = cur.getColumnIndex("lite");' in cs and "if (li >= 0) Ram.lite(c, cur.getString(li));" in cs)
 st = text(SAVER / "SettingsActivity.java")
 check("the settings row «الوضع الخفيف» cycles auto, on, off, and says whether auto is on here (no «·»)",
       'row("الوضع الخفيف", Prefs.liteLabel(prefs.lite(), Prefs.lowRam(this))' in st and 'prefs.setLite("auto".equals(v) ? "on" : "on".equals(v) ? "off" : "auto")' in st

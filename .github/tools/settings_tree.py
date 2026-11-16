@@ -39,7 +39,7 @@ PHONE = {"city": "المدينة", "home_cards": "البطاقة الأولى", 
          "adhan_fajr_voice": "الأذان", "adhan_volume": "الأذان", "sleep_minutes": None, "saver_idle": "بدء شاشة التوقف بعد", "lang": "اللغة",
          "fav_bar": "تطبيقات في الشريط"}
 # the control centre's rows (ControlCenter.ROWS) that open a setting's row; the others are actions or screens of their own
-CONTROL = {"net": None, "sound": None, "speed": None, "ours": None, "games": None, "city": "المدينة", "tv": None, "saver": None}
+CONTROL = {"net": None, "sound": None, "speed": None, "ours": None, "games": None, "city": "المدينة", "tv": None, "saver": None, "adhan": None}
 YES, NO = "مفعّل", "متوقف"
 
 
