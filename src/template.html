@@ -1981,7 +1981,7 @@ function archLoad(path){
   const u = archUrl(path), c = ARCH_C[u] || (ARCH_C[u] = {at: 0});
   if(c.p) return c.p;
   if(Date.now() - c.at < 15 * 60000) return Promise.resolve(c.j);
-  return c.p = fetchT(u, 12000).then(r => r.ok ? r.json() : r.status === 404 ? null : c.j).catch(() => c.j).then(j => {
+  return c.p = fetchData(u, 12000).then(r => r.ok ? r.json() : r.status === 404 ? null : c.j).catch(() => c.j).then(j => {
     c.j = j && typeof j === 'object' && (j.v === 1 || !u.startsWith(ARCH_BASE)) ? j : null;   // a failed ask keeps the copy it had
     c.at = Date.now(); c.p = null;
     if(c.j && u === ARCH_BASE + 'index.json' && c.j.leagues) Object.entries(c.j.leagues).forEach(([id, l]) => { if(l && l.ar && !CONFIG.leagueNames[id]) CONFIG.leagueNames[id] = String(l.ar).slice(0, 60); });
