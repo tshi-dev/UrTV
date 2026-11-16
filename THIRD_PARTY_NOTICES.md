@@ -4,6 +4,13 @@ Code and ideas taken from other projects, with their licenses. Fonts, photos and
 `assets/fonts/*-NOTICE.txt` and `*-OFL.txt`, `docs/PHOTO-CREDITS.md`, `optimize/lists/community/LICENSE-CleanYourTV.txt`, and the
 launcher's origin in `android/launcher/LICENSE-tv-home`.
 
+## couch-tv
+
+The 4.3.3 scene home proposal (`docs/mockups/`) follows couch-tv's design (https://github.com/Seagey/couch-tv: scenes with a glass
+clock behind the scenery, settings with side sections), and its mockups use couch-tv's five scene photos, their cut-outs and glass
+copies (`tv-home/web/backgrounds/scene-*`, made for couch-tv with an AI image model, "use them however you like"), under the MIT
+License, Copyright (c) 2026 Seagey, the same text as below.
+
 ## talkies
 
 The home screen's spring motion (`android/launcher/src/main/java/sa/urtv/home/Spring.java`) and the ideas for the channel and

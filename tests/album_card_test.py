@@ -48,7 +48,7 @@ check("saver: albummode (seconds, ten, minute), albumdate, albumtitle, albumfit 
 settings = text(SAVER / "SettingsActivity.java")
 check("settings: a row for each (speed, date, title, shape, size) in the screensaver's settings, mapped to its category, each name and value in the English table",
       all(f'row("{n}"' in settings for n in ("سرعة ألبوم صوري", "تاريخ الصورة في ألبوم صوري", "عنوان ألبوم صوري", "شكل صورة ألبوم صوري", "حجم ألبوم صوري"))
-      and all(f'{{"{n}", SAVER}}' in text(SAVER / "SettingsHub.java") for n in ("سرعة ألبوم صوري", "عنوان ألبوم صوري", "شكل صورة ألبوم صوري", "حجم ألبوم صوري"))
+      and all(f'{{"{n}", LOOK}}' in text(SAVER / "SettingsHub.java") for n in ("سرعة ألبوم صوري", "عنوان ألبوم صوري", "شكل صورة ألبوم صوري", "حجم ألبوم صوري"))
       and all(f"{n}\t" in text(ROOT / "i18n/en/saver.tsv") for n in ("سرعة ألبوم صوري", "عنوان ألبوم صوري", "شكل صورة ألبوم صوري", "حجم ألبوم صوري", "كل ١٠ ثوانٍ", "طويل بضعف الارتفاع")))
 check("settings: no «·» or «•» in the new rows' words", all(c not in s_ for s_ in ("ظاهر تحت الصورة", "ظاهر فوق الصورة", "تملأ البطاقة وأعلاها يبقى", "طويل بضعف الارتفاع", "كل ١٠ ثوانٍ") for c in "·•"))
 check("photos mode «album» (4.3.1): the photos are the album card's alone: Own.ALBUM, the page leaves them out of the rotation (#ownmode=album), the home's wallpaper follows as «off», photos.sh and the receiver accept it, the tile and the dialog offer it",

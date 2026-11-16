@@ -107,6 +107,7 @@ public class MainActivity extends Activity {
     private GradientDrawable glowDrawable;   // the one gradient, its colours changed in place (no allocation per move)
     private float glowAlphaTo = -1f, shadeTo = 0f;
     private ImageView wallBack, wallFront;
+    private SceneHome sceneHome;   // 4.3.3 «المشاهد»: the scene backdrop with the glass clock behind its scenery; null until built, hidden unless chosen
     private View gridShade;
     private String[] wallpapers = new String[0];
     private int wallIndex = -1;
@@ -284,6 +285,7 @@ public class MainActivity extends Activity {
     @Override
     protected void onResume() {
         super.onResume();
+        if (sceneHome != null) sceneHome.start();
         resumed = true;
         if (resumeAt == 0) resumeAt = SystemClock.elapsedRealtime();
         firstFrameWallpaper();   // (a return that did not restart: the photo may have been let go by onTrimMemory)
@@ -340,6 +342,7 @@ public class MainActivity extends Activity {
     @Override
     protected void onPause() {
         super.onPause();
+        if (sceneHome != null) sceneHome.stop();   // no timer and no fade while another screen is in front
         resumed = false;
         noticeOnScreen = null;   // 4.3.3: a notice was seen on this visit; it does not come back
         UpdateCarry.homeShown = false;   // a slow photo check that answers now must not start the 10-minute rotation again
@@ -370,6 +373,7 @@ public class MainActivity extends Activity {
         android.util.Log.i("UrTVHome", "trim level " + level + " (resumed=" + resumed + ", ram tier " + Ram.tier(this) + ")");
         if (resumed || !Ram.trimNow(Ram.tier(this), level)) return;   // only when the system really asks (LOW: behind another app; MID: MODERATE and worse; NORMAL: never)
         homeCard.destroy();
+        if (sceneHome != null) sceneHome.trim();   // the scene not showing lets its pictures go
         thinWallpaper();   // the photos go, one tiny stand-in stays so the way back is not black until the next photo decodes
         wallTrimmed = true;
         firstWallpaper = true;   // the short fade when it comes back
@@ -579,6 +583,8 @@ public class MainActivity extends Activity {
         wallFront = wallpaperLayer();
         backdrop.addView(wallBack, new FrameLayout.LayoutParams(-1, -1));
         backdrop.addView(wallFront, new FrameLayout.LayoutParams(-1, -1));
+        sceneHome = new SceneHome(this, Ram.tier(this), font("display"));   // over the photos, under the dimming and the scrims; shown only with «الواجهة ← المشاهد»
+        backdrop.addView(sceneHome, new FrameLayout.LayoutParams(-1, -1));
         // Scrim: darker at the top (clock, pills) and bottom (dock) so text stays readable.
         scrim = new View(this);
         scrim.setBackground(new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM,
@@ -3246,6 +3252,22 @@ public class MainActivity extends Activity {
         }, "home-config").start();
     }
 
+    /**
+     * 4.3.3 «المشاهد» (the owner's choice in «الشكل والمشاهد ← الواجهة»): the scene and its big glass clock take the place of the photo and of the
+     * header's clock (the greeting, the date and the rest of the home stay as they are); any other layout: the home as it was.
+     */
+    private void sceneTick(ConfigSnapshot cfg) {
+        if (sceneHome == null) return;
+        boolean on = "scenes".equals(cfg.homeLayout);
+        sceneHome.set(on, cfg.scenePacks, ScenePlan.STAY_S, homeCard != null && homeCard.shownCards() > 0, Dir.rtl());
+        int show = on ? View.INVISIBLE : View.VISIBLE;   // INVISIBLE: the header keeps its size, nothing under it moves
+        clock.setVisibility(show);
+        if (on) ampm.setVisibility(View.INVISIBLE);
+        wallBack.setVisibility(show);
+        wallFront.setVisibility(show);
+        if (on) { sceneHome.setTime(clock.getText()); if (resumed) sceneHome.start(); }
+    }
+
     private void updateClock(ConfigSnapshot cfg) {
         lastCfg = cfg;   // «مركز التحكم»'s «الأذان والإقامة» reads the times from it
         long ms = System.currentTimeMillis();
@@ -3275,6 +3297,7 @@ public class MainActivity extends Activity {
         clock.setText(ClockText.face(h, now.get(Calendar.MINUTE), h24, Digits.latin()));
         ampm.setText(ClockText.suffix(h, h24));
         ampm.setVisibility(h24 ? View.GONE : View.VISIBLE);
+        sceneTick(cfg);
         String cal = zone == null ? "" : ClockZone.calendar(zone[1], zone[2]);
         boolean other = zone != null && ClockZone.showLine(ClockZone.differs(tvTz, tz, ms), cal);
         zoneLine.setVisibility(other ? View.VISIBLE : View.GONE);
