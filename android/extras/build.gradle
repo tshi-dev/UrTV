@@ -35,13 +35,9 @@ android {
         }
     }
 
-    // the home's pure rules are used as they are (one copy of each rule): only these files of the launcher are compiled in
+    // the home's pure rules are used as they are (one copy of each rule): only these files of the launcher are copied in (copyShared below)
     sourceSets {
-        main {
-            java.srcDirs += ['../launcher/src/main/java']
-            java.include 'sa/urtv/home/ExtrasA11yService.java', 'sa/urtv/home/ExtrasCallProvider.java', 'sa/urtv/home/HomeWatch.java', 'sa/urtv/home/ExtrasWords.java',
-                'sa/urtv/home/TypeInto.java', 'sa/urtv/home/RemoteNav.java', 'sa/urtv/home/RemoteTrace.java', 'sa/urtv/home/AppSearch.java', 'sa/urtv/home/SettingsKey.java', 'sa/urtv/home/Ram.java'
-        }
+        main { java.srcDirs += ["$buildDir/generated/shared"] }
     }
 
     compileOptions {
@@ -51,3 +47,11 @@ android {
 
     lint { abortOnError false }
 }
+
+// the launcher's files the add-on shares with the home (copied, not compiled from the launcher's folder: the rest of it needs the home's R)
+def shared = ['ExtrasWords.java', 'HomeWatch.java', 'TypeInto.java', 'RemoteNav.java', 'RemoteTrace.java', 'AppSearch.java', 'SettingsKey.java', 'Ram.java']
+def copyShared = tasks.register('copyShared', Copy) {
+    from('../launcher/src/main/java/sa/urtv/home') { include shared }
+    into "$buildDir/generated/shared/sa/urtv/home"
+}
+preBuild.dependsOn copyShared

@@ -48,7 +48,7 @@ check("both apps declare sa.urtv.permission.EXTRAS as a signature permission, an
       and re.search(r'android:name="sa\.urtv\.home\.ExtrasCallProvider"\s+android:authorities="sa\.urtv\.extras\.bridge"\s+android:exported="true"\s+android:permission="sa\.urtv\.permission\.EXTRAS"', xman)
       and re.search(r'android:name="\.ExtrasBridge"\s+android:authorities="sa\.urtv\.home\.extras"\s+android:exported="true"\s+android:permission="sa\.urtv\.permission\.EXTRAS"', man))
 check("the names both sides use are one file, compiled into both", 'EXTRAS_AUTHORITY = "sa.urtv.extras.bridge", HOME_AUTHORITY = "sa.urtv.home.extras"' in words
-      and "'sa/urtv/home/ExtrasWords.java'" in gradle and 'SERVICE = "sa.urtv.extras/sa.urtv.home.ExtrasA11yService"' in words)
+      and "'ExtrasWords.java'" in gradle.split("def shared = ")[1].split("\n")[0] and "srcDirs += ['../launcher" not in gradle and 'SERVICE = "sa.urtv.extras/sa.urtv.home.ExtrasA11yService"' in words)
 check("Android 11+ package visibility: each app names the other in <queries>", '<package android:name="sa.urtv.extras" />' in man and '<package android:name="sa.urtv.home" />' in xman)
 check("the add-on's provider answers only its fixed calls (status, type, press, sleep, go_home, watch), no rows",
       all(f"case ExtrasWords.{m}:" in prov for m in ("STATUS", "TYPE", "PRESS", "SLEEP", "GO_HOME", "WATCH")) and "query(Uri u, String[] p, String s, String[] a, String o) { return null; }" in prov)
