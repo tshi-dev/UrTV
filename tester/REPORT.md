@@ -2846,3 +2846,19 @@ Ask for the build: the switch must survive leaving the page (or say clearly «ا
 - Reboot (`tv.py --reboot`): the TV started normally (no blank screen, no loop), our screensaver was showing after ~40 s; role still launcherx; Home from YouTube → Google TV; `logcat -s UrTVWatch` empty (the add-on never brought UrTV forward). Wi-Fi fine.
 Why: the HOME role that the setup gave UrTV at 19:55 did not stay (back to launcherx within ~2 min; the 300 s SetupRevertReceiver alarm was still armed), and the add-on's Home watch does nothing on this TV.
 TV muted. Waiting for the next build.
+
+## step 87 plan — Home doctor (work/44-homedoctor 2ee948bd), `homedoctor.py --dry-run --reboot`
+Note: on Windows it needs `python -X utf8` (else UnicodeEncodeError printing the Arabic plan).
+```
+The Home doctor, the plan (nothing is sent with --dry-run):
+1. snapshot of the TV before (role, resolve, dumpsys-role, preferred, accessibility, alarm, activities, disabled, a11y-list, a11y-switch, the log, a screenshot)
+2. angle A: the HOME role to UrTV (cmd role add-role-holder --flags 1); then the test (YouTube, Home ×3 at 2 s and 6 s, two minutes, Home again); the snapshot again; the TV put back
+2. angle B: the home activity to UrTV (cmd package set-home-activity), the role untouched; then the test (YouTube, Home ×3 at 2 s and 6 s, two minutes, Home again); the snapshot again; the TV put back
+2. angle C: launcherx's claim cleared (remove-role-holder, its preferred activities), then A; then the test (YouTube, Home ×3 at 2 s and 6 s, two minutes, Home again); the snapshot again; the TV put back
+2. angle D: A + «إضافات تلفزيونك»'s Home watch (on, bound, wanted); then the test (YouTube, Home ×3 at 2 s and 6 s, two minutes, Home again); the snapshot again; the TV put back
+2. angle E: the TV's own default-home screen, for the tester (manual); then the test (YouTube, Home ×3 at 2 s and 6 s, two minutes, Home again); the snapshot again; the TV put back
+2. angle F: A + wanted, then a restart: the home re-applies the role at boot; then the test (YouTube, Home ×3 at 2 s and 6 s, two minutes, Home again); the snapshot again; the TV put back
+3. stop at the first angle that passes and check it after a restart; report.md and report.json
+never: a disable of launcherx or setupwraith, a factory reset, the family PIN
+```
+State before: HOME role launcherx, UrTV 4.4 (349) + screensaver + extras installed, extras bound, 18 packages off (from the owner's setup run). TV muted.
