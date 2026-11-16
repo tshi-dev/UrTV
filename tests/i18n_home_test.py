@@ -49,6 +49,8 @@ KEEP = {
     "GlassStyle.java": "the looks' names the screensaver's settings show (its own copy of GlassStyle: phase 1)",
     "tilawah/Adhan.java": "the muezzins' and places' names in Arabic: data, with NAMES_EN / PLACES_EN beside them",
     "tilawah/ReciterOrder.java": "the Arabic alphabet of the reciters tab's letter index (English uses the Latin one beside it)",
+    "SceneClock.java": "the clock's digits measured on the ink (Arabic-Indic samples, no word): numbers, not text a person reads",
+    "ScenePlan.java": "the sample clocks and digit sets the scene rule measures (Arabic-Indic and Latin digits, no word)",
     "ClockZone.java": "the prayer calculations' names: the page's words (i18n/en/page.tsv), said with S.tv in label()",
 }
 KEEP_LINES = {
