@@ -221,6 +221,7 @@ public class MainActivity extends Activity {
         FamilyDnsAndroid.status(this);   // first use in this process: undoes a Family DNS check that a crash cut short
         sa.urtv.home.setup.SetupHook.atHomeStart(this);   // a home switch that was cut off is put back (it never throws)
         Digits.init(this);   // the screensaver's «الأرقام» setting, for every number this screen writes
+        DeviceDefaults.apply(getApplicationContext());   // 4.3.3: this model's published defaults, only where nothing is set (devices.json)
         langBuilt = S.lang();   // the language this screen is built in (updateClock rebuilds it when «اللغة» changes)
         dockApps = loadDock();
         // G4: the TV's live TV app and source picker are not looked for here (a dozen package manager calls on the main thread before the first frame): the inputs list and «التلفزيون» ask each time they open
@@ -340,6 +341,7 @@ public class MainActivity extends Activity {
     protected void onPause() {
         super.onPause();
         resumed = false;
+        noticeOnScreen = null;   // 4.3.3: a notice was seen on this visit; it does not come back
         UpdateCarry.homeShown = false;   // a slow photo check that answers now must not start the 10-minute rotation again
         sa.urtv.home.tilawah.AdhanFront.home(false);
         TypeService.homeFront(false);   // another app is coming to the front: the service answers the Settings key there (SettingsKey)
@@ -2023,6 +2025,7 @@ public class MainActivity extends Activity {
         nudgeCard.setClickable(true);
         nudgeCard.setId(View.generateViewId());
         nudgeCard.setOnClickListener(v -> {
+            if (nudgeIsNotice) { dismissNotice(); return; }   // 4.3.3: «تم» on a notice
             if (nudgeIsUpdate) { launchGuarded(ParentalPolicy.PILL_UPDATES, new Intent(this, UpdateActivity.class), "تحديث تلفزيوني"); return; }   // 4.3.1: the builds differ
             if (nudgeIsCity) { openCity(); return; }   // 4.3.1: the same bar asks for the city while it is due
             try { guarded(ParentalPolicy.WIDGET_MATCHES, null, S.t("إعداد تلفزيوني"), () -> launch(new Intent(this, sa.urtv.home.setup.SetupActivity.class))); } catch (RuntimeException ignored) { }
@@ -2052,6 +2055,7 @@ public class MainActivity extends Activity {
 
     /** «لاحقاً» (or Back on the bar): hidden for 7 days, then 30 after a second press, then never; the number of presses is kept */
     private void snoozeNudge() {
+        if (nudgeIsNotice) { if (!noticeFixed) dismissNotice(); return; }   // 4.3.3: Back on a notice is «تم»
         android.content.SharedPreferences sp = getSharedPreferences(NUDGE_PREFS, MODE_PRIVATE);
         String k = nudgeIsUpdate ? "ver_" : nudgeIsCity ? "city_" : "";   // the city question waits on its own count
         int presses = sp.getInt(k + "later_count", 0);
@@ -2061,6 +2065,30 @@ public class MainActivity extends Activity {
 
     private boolean nudgeIsCity;      // the bar is asking for the city (CityAskRule), not for «إعداد تلفزيوني»
     private boolean nudgeIsUpdate;    // 4.3.1: the bar says the two apps are not the same build (VersionMismatchRule); OK opens «تحديث تلفزيوني»
+    private boolean nudgeIsNotice, noticeFixed;   // 4.3.3: the bar shows a published notice (NoticeRule); fixed: one that is not dismissible (no button)
+    private String noticeOnScreen;   // the notice's id while this visit shows it; null once the home goes behind (it was seen) or «تم»
+
+    /** 4.3.3 the notice due now (NoticeRule), never while our tilawah or adhan plays; its id is marked seen as it first appears */
+    private NoticeRule.Notice dueNotice() {
+        if (sa.urtv.home.tilawah.MusicService.carryOurPlaying()) return null;   // never over playback
+        ContentFile.refresh(getApplicationContext(), NoticeRule.PATH, NoticeRule.NAME, 3 * 3600_000L);
+        android.content.SharedPreferences np = getSharedPreferences(NUDGE_PREFS, MODE_PRIVATE);
+        java.util.Set<String> seen = np.getStringSet("notice_seen", java.util.Collections.<String>emptySet());
+        String day = new java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.ROOT).format(new java.util.Date());
+        NoticeRule.Notice n = NoticeRule.pick(ContentFile.read(this, NoticeRule.NAME), day, BuildConfig.VERSION_NAME, seen, noticeOnScreen);
+        if (n != null && !n.id.equals(noticeOnScreen)) {
+            noticeOnScreen = n.id;
+            java.util.Set<String> s = new java.util.HashSet<>(seen);
+            s.add(n.id);
+            np.edit().putStringSet("notice_seen", s).apply();   // once per id: this visit only
+        }
+        return n;
+    }
+
+    private void dismissNotice() {
+        noticeOnScreen = null;
+        updateHomeNudge(false);
+    }
 
     /** the build (versionCode) of the screensaver app, 0 when it is not installed */
     private long saverBuild() {
@@ -2085,7 +2113,7 @@ public class MainActivity extends Activity {
      */
     private void wireNudge() {
         if (nudge == null || pills == null || pills.isEmpty()) return;
-        boolean on = nudge.getVisibility() == View.VISIBLE;
+        boolean on = nudge.getVisibility() == View.VISIBLE && !noticeFixed;   // a notice without a button: nothing up there to reach
         for (View p : pills) p.setNextFocusUpId(on ? nudgeCard.getId() : p.getId());
         int pill0 = pills.get(0).getId();
         nudgeCard.setNextFocusUpId(nudgeCard.getId());
@@ -2110,12 +2138,19 @@ public class MainActivity extends Activity {
         boolean askUpdate = mismatch != null && HomeNudgeRule.show(false, false, np.getLong("ver_later_until", 0), nowMs);   // the builds first: the city's chooser needs the new screensaver
         boolean askCity = !askUpdate && mismatch == null && CityAskRule.show(isInstalled(SAVER_PKG), cityChosenNow, java.util.TimeZone.getDefault().getID(), kids, np.getLong("city_later_until", 0), nowMs);
         boolean show = askUpdate || askCity || HomeNudgeRule.show(isDefaultHome(), kids, np.getLong("later_until", 0), nowMs);   // never two at once: the builds, then the city, then the nudge
+        NoticeRule.Notice notice = show || kids ? null : dueNotice();   // 4.3.3: a notice only when the bar has nothing else to say
+        show |= notice != null;
         boolean was = nudge.getVisibility() == View.VISIBLE;
         nudgeIsCity = askCity;
         nudgeIsUpdate = askUpdate;
-        nudgeCard.setText(askUpdate ? S.t("حدّث الآن") : askCity ? S.t("اختر المدينة") : S.t("خلّ تلفزيونك يفتح على UrTV"));
-        if (askUpdate) nudgeAsk.setText(mismatch); else if (askCity) nudgeAsk.setText(S.t("وين أنت؟ اختر مدينتك عشان الطقس والصلاة"));
-        nudgeAsk.setVisibility(askUpdate || askCity ? View.VISIBLE : View.GONE);
+        nudgeIsNotice = notice != null;
+        noticeFixed = notice != null && !notice.dismissible;
+        nudgeCard.setText(notice != null ? S.t("تم") : askUpdate ? S.t("حدّث الآن") : askCity ? S.t("اختر المدينة") : S.t("خلّ تلفزيونك يفتح على UrTV"));
+        if (notice != null) nudgeAsk.setText(notice.text(S.en()));
+        else if (askUpdate) nudgeAsk.setText(mismatch); else if (askCity) nudgeAsk.setText(S.t("وين أنت؟ اختر مدينتك عشان الطقس والصلاة"));
+        nudgeAsk.setVisibility(askUpdate || askCity || notice != null ? View.VISIBLE : View.GONE);
+        nudgeCard.setVisibility(noticeFixed ? View.GONE : View.VISIBLE);
+        nudgeLater.setVisibility(notice != null ? View.GONE : View.VISIBLE);
         if (show && !was) {
             GlassStyle.Look l = homeGlass();
             nudgeAsk.setBackground(opaqueTile(18));   // its words sit on the glass too, over any photo
@@ -2127,7 +2162,7 @@ public class MainActivity extends Activity {
         }
         nudge.setVisibility(show ? View.VISIBLE : View.GONE);
         wireNudge();
-        if (show && takeFocus && !nudgeFocused) nudge.post(() -> { if (nudge.getVisibility() == View.VISIBLE && !nudgeFocused) { nudgeFocused = true; nudgeCard.requestFocus(); } });
+        if (show && takeFocus && !nudgeFocused && notice == null) nudge.post(() -> { if (nudge.getVisibility() == View.VISIBLE && !nudgeFocused) { nudgeFocused = true; nudgeCard.requestFocus(); } });
         else if (!show && was && (nudgeCard.hasFocus() || nudgeLater.hasFocus()) && !dockCards.isEmpty()) dockCards.get(0).requestFocus();
     }
 

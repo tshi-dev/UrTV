@@ -92,14 +92,14 @@ final class QuizBank {
     /** the published build number, or -1 */
     static long fetchRev() {
         try {
-            Net.Reply r = Net.get(URL_REV, null, 8000, 10000, 64);
+            Net.Reply r = DataHost.get(URL_REV, 8000, 10000, 64);   // urtv-data, then the old branch (DataHost)
             return r.status == 200 ? QuizBankCheck.parseRev(r.body) : -1;
         } catch (Exception e) { return -1; }
     }
     /** one download, read with a size cap and checked whole; the bytes, or null when anything is wrong */
     private static byte[] fetch(String url) {
         try {
-            Net.Reply r = Net.get(url, null, 15000, 20000, QuizBankCheck.BYTES_MAX);   // no redirect, a size cap, IPv4 first (Net)
+            Net.Reply r = DataHost.get(url, 15000, 20000, QuizBankCheck.BYTES_MAX);   // urtv-data, then the old branch (DataHost); no redirect, a size cap, IPv4 first (Net)
             if (r.status != 200) return null;
             List<QuizPick.Item> v = QuizBankCheck.parse(r.body);
             return v == null || v.size() < QuizPick.MIN_ITEMS ? null : r.body;

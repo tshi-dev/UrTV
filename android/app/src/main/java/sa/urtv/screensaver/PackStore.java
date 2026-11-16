@@ -57,6 +57,12 @@ final class PackStore {
 
     /** the packs of the index: the network's answer (kept for next time), else the kept copy, else none; valid ones only */
     static List<PhotoPacks.Pack> index(Context c) {
+        ContentFile.refresh(c, Seasonal.PATH, Seasonal.NAME, 12 * 3600_000L);   // 4.3.3 the seasonal packs (Seasonal): today's first, from the kept copy
+        java.text.SimpleDateFormat f = new java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.ROOT);
+        return Seasonal.merge(Seasonal.packs(ContentFile.read(c, Seasonal.NAME), f.format(new java.util.Date())), indexOnly(c));
+    }
+
+    private static List<PhotoPacks.Pack> indexOnly(Context c) {
         File keep = new File(root(c), "index.json");
         String json = null;
         try {
@@ -84,6 +90,7 @@ final class PackStore {
             List<PhotoPacks.Pack> v = parse(new String(Bounded.readAll(in, Bounded.JSON_MAX), "UTF-8"));
             if (v != null) for (PhotoPacks.Pack p : v) out.put(p.id, S.en() ? p.nameEn : p.name);
         } catch (IOException | RuntimeException ignored) { }
+        for (PhotoPacks.Pack p : Seasonal.packs(ContentFile.read(c, Seasonal.NAME), null)) if (!out.containsKey(p.id)) out.put(p.id, S.en() ? p.nameEn : p.name);   // a seasonal pack kept after its days
         return out;
     }
 

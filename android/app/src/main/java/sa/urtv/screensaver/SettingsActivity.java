@@ -279,6 +279,8 @@ public class SettingsActivity extends Activity {
         row("تعديل وقت الصلاة", prefs.prayerAdjOn() ? "يعمل · لكل صلاة دقائقها، من −٢٠ إلى +٢٠ (الشروق لا يتغيّر)" : "متوقف · الأوقات كما تُحسب", R.drawable.ic_eye,
             new Runnable() { public void run() { prefs.setPrayerAdjOn(!prefs.prayerAdjOn()); render(); } });
         if (prefs.prayerAdjOn()) for (int k = 0; k < PrayerAdj.COUNT; k++) adjRow(k);
+        String fixed = PrayerFix.applied(prefs.prayerAdjOn(), prefs.prayerAdj(), prefs.prayerFix());   // 4.3.3: never silent
+        if (!fixed.isEmpty()) { line("تصحيح منشور لأوقات اليوم، وتعديلك لأي صلاة يبقى هو المعتمد", look.sub, 0); line(fixed, look.sub, 0); }
         if (on(SettingsHub.PLACE)) line(Location.HELP, look.sub, 0);
 
         header("المباريات");
@@ -1230,7 +1232,7 @@ public class SettingsActivity extends Activity {
     static String fetchCatalogue(java.io.File cache) {
         String body = null;
         try {
-            Net.Reply r = Net.cached(new java.io.File(cache.getParentFile(), "net"), CatalogueLeagues.URL, 15000, 12000, Bounded.JSON_MAX, 0, false);   // IPv4 first, 4 s per address, 12 s in all (Net); G3: with the copy's ETag
+            Net.Reply r = DataHost.cached(new java.io.File(cache.getParentFile(), "net"), CatalogueLeagues.URL, 15000, 12000, Bounded.JSON_MAX, 0, false);   // urtv-data, then the old branch (DataHost); IPv4 first, 4 s per address, 12 s in all (Net); G3: with the copy's ETag
             if (r.status != 200) throw new java.io.IOException("status " + r.status);
             body = r.text();
             new JSONObject(body).getJSONArray("leagues");   // a whole answer before it replaces the copy

@@ -637,6 +637,21 @@ final class Prefs {
 
     /** «تعديل وقت الصلاة» (default off): the five prayers moved by their own minutes, −20..20 (PrayerAdj); sent to the page and the home screen as #adj=. */
     boolean prayerAdjOn() { return sp.getBoolean("prayerAdjOn", false); }
+
+    /** 4.3.3 today's published prayer corrections for the city (PrayerFix), from the kept copy; fetched again in the background twice a day */
+    int[] prayerFix() {
+        ContentFile.refresh(ctx, PrayerFix.PATH, PrayerFix.NAME, 12 * 3600_000L);
+        java.text.SimpleDateFormat f = new java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.ROOT);
+        f.setTimeZone(java.util.TimeZone.getTimeZone(cityTz()));
+        return PrayerFix.forDay(ContentFile.read(ctx, PrayerFix.NAME), cityCountry(), city()[0], f.format(new java.util.Date()));
+    }
+
+    /** the adj= of the fragment: the person's own minutes where set, the published correction elsewhere; nothing when both are none */
+    String prayerAdjFragment() {
+        int[] fix = prayerFix(), own = prayerAdj();
+        boolean on = prayerAdjOn();
+        return PrayerAdj.fragment(on || PrayerAdj.any(fix), PrayerFix.combine(on, own, fix));
+    }
     void setPrayerAdjOn(boolean v) { sp.edit().putBoolean("prayerAdjOn", v).apply(); }
     int[] prayerAdj() { return PrayerAdj.decode(sp.getString("prayerAdj", "")); }
     void setPrayerAdj(int[] v) { sp.edit().putString("prayerAdj", PrayerAdj.encode(v)).apply(); }
@@ -728,7 +743,7 @@ final class Prefs {
             + "&yearstrip=" + (yearStrip() ? "1" : "0")
             + (sunrise() ? "&sunrise=1" : "") + (prayerBar() ? "&prayerbar=1" : "") + (wxMore() ? "&wxmore=1" : "")
             + ("levant".equals(months()) ? "&months=levant" : "")
-            + PrayerAdj.fragment(prayerAdjOn(), prayerAdj())
+            + prayerAdjFragment()   // 4.3.3: the person's own minutes, and a published correction where they set none (PrayerFix)
             + PrayerMethod.fragment(prayerMethod(), cityCountry(), cityTz())
             + HijriOffset.fragment(hijriOffset())
             + "&national=" + national()

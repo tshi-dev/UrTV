@@ -32,8 +32,8 @@ uses = [m.start() for m in re.finditer(r"CatalogueLeagues\.URL", st)]
 check("the catalogue is read in one place only: openCatalogue, from the picker's «كل الدوريات…»", len(uses) == 1
       and st.rfind("private void openCatalogue()", 0, uses[0]) > st.rfind("\n    private void ", 0, uses[0]) - 1
       and 'setNeutralButton("كل الدوريات…", (d, w) -> { prefs.setList("leagues", ticked(keys, on)); render(); openCatalogue(); })' in st)
-check("nothing else in the apps reads the catalogue", not any("data-catalogue" in read(p) for p in (ROOT / "android").rglob("*.java") if p.name != "CatalogueLeagues.java")
-      and read(ROOT / "src/template.html").count("data-catalogue") == 1 and read(ROOT / "src/template.html").count("archWant(CATALOGUE)") == 1
+check("nothing else in the apps reads the catalogue", not any("data-catalogue" in read(p) for p in (ROOT / "android").rglob("*.java") if p.name not in ("CatalogueLeagues.java", "DataHost.java"))
+      and read(ROOT / "src/template.html").replace("['data-catalogue/catalogue/', 'football/catalogue/']", "").count("data-catalogue") == 1 and read(ROOT / "src/template.html").count("archWant(CATALOGUE)") == 1
       and "const catRows = () => { const c = archWant(CATALOGUE);" in read(ROOT / "src/template.html"))   # 4.3.3 the matches page's chooser, only when it opens
 check("4.3.3 the picker's first list: «الأشهر», «كل الدول» (every league of the catalogue), then each country",
       'groups.add(new String[] {"", "الأشهر"});\n        groups.add(new String[] {"*", "كل الدول"});' in st and "i == 0 ? !r[6].isEmpty() : i == 1 || r[3].equalsIgnoreCase(groups.get(i)[0])" in st

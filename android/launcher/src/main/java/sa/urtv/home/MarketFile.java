@@ -181,8 +181,8 @@ final class MarketFile {
     /** the file's text, or null (offline, a timeout, not 200, the back-off after a failure) */
     private static String download(Context c, String url) {
         try {
-            // IPv4 first, 4 s per address, a deadline; G3: with the copy's ETag (an unchanged file is a 304), the markets page and the card asking at once make one request
-            Net.Reply r = Net.cached(new File(c.getCacheDir(), "net"), url, TIMEOUT_MS, 2 * TIMEOUT_MS, 4 << 20, 0, true);
+            // urtv-data, then the old branch (DataHost); IPv4 first, 4 s per address, a deadline; G3: with the copy's ETag (an unchanged file is a 304), the markets page and the card asking at once make one request
+            Net.Reply r = DataHost.cached(new File(c.getCacheDir(), "net"), url, TIMEOUT_MS, 2 * TIMEOUT_MS, 4 << 20, 0, true);
             return r.status == 200 ? r.text() : null;
         } catch (Exception e) {
             return null;
