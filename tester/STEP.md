@@ -1,4 +1,23 @@
-«✅ GO — step 75 now (the owner's week plan started 2026-11-16; he allowed testing couch-tv and Clean your TV on his TV). After 75: wait for step 76 (4.3.2 checks) when it appears.»
+«✅ GO — step 75 now (the owner's week plan started 2026-11-16; he allowed testing couch-tv and Clean your TV on his TV). Then step 76 (4.3.2 release check) right after 75.»
+
+## step 76 — 4.3.2 release check (apk-next build from next 59188ee4, the newest; TV muted)
+Update both apps from the app on channel next (About must say 4.3.2). Report each line OK / problem with numbers and pictures.
+1. Release smoke like step 73: Home on return 5× (never black/blurry), cold start, favourites after standby and a restart, matches page + «فرقي», radio 3 min, hub, games, control panel, screensaver starts by itself, adhan off.
+2. Teams: follow 3 different teams (settings, «الفرق المتابعة»), open the matches page and «فرقي»: all three teams and their games must show. Picture. Then put the owner's teams back exactly.
+3. Markets «قائمتي»: add 4164, 4002, 4349: name shown? price shown (or «-» until CI's next price run: write the time)? Remove them after.
+4. Radio: the station «الشيخ عبدالله خياط» plays 2 min.
+5. Prayer: city and the prayer card present after the update; kill the screensaver app (`am force-stop sa.urtv.screensaver`) then Home: the card must still show times (marked old is fine), never empty.
+6. Settings «قبل ما تحذف التطبيق…» row present and readable; its button opens the factory-home page (do NOT confirm).
+7. The settings footer: screenshot every settings page of UrTV's settings, write the bottom y of the lowest text on each (the 5% safe area ends at 1026). Name the page if anything is below 1026.
+8. Numbers for A14/A11: (a) `dumpsys gfxinfo sa.urtv.home reset`, 40 keys along the apps tray, janky % and p50/p90/p99 (compare 19% on 292); (b) CPU idle and free RAM with OUR screensaver showing for 2 min vs the TV's own screensaver for 2 min.
+9. Scripts T1–T5 from the UI session (run from the PC in the UrTV folder):
+ T1 `optimize/dock.sh set <3 packages from dock.sh apps>` then `optimize/dock.sh show`: exactly those three on the home and in show. Then `optimize/dock.sh reset`: back to the default row. Finally put the owner's own row back as it was (write it down first).
+ T2 set the row with only a package that is not installed: the row is filled (5), no empty bar. Then put the owner's row back.
+ T3 `optimize/install.sh extras` with SmartTube already installed: «already on the TV», nothing downloaded.
+ T4 `optimize/install.sh saver`: if «reached the TV with another size» shows, it re-sends once and continues; no !! at the end.
+ T5 `optimize/share.sh --preview --problem --owner "x" "y"`: apps the TV had off before setup say «were already off before UrTV». Do NOT send it.
+10. Data: on the PC open https://mp3quran.net/api/v3/reciters?language=ar and find «أحمد طالب بن حميد» (server cdn.mp3quran.net/audio/ahmad-humaid/r1/): copy his `surah_list` (the surah numbers he has) into the report.
+End: TV muted and asleep, the owner's settings as before.
 
 ## step 75 — study couch-tv and Clean your TV on the owner's TV (pictures + numbers, then put everything back)
 TV muted all the time. Never the family PIN. Nothing may stay changed at the end: UrTV stays the home.
