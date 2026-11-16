@@ -426,6 +426,9 @@ the phone page's key, «مركز التحكم» the control centre's row that op
    الأصل: هندية ١٢٣
    مثال للوكيل: optimize/saver.sh digits latin  (`hindi` = ١٢٣, the default)
      القيم المقبولة: hindi|latin
+—— التاريخ بالأرقام [الرئيسية وشاشة التوقف]
+   مثال للوكيل: optimize/saver.sh datenum on  (`off`, the default: in words)
+     القيم المقبولة: on|off
 —— أسماء الأشهر الميلادية [الرئيسية وشاشة التوقف]
    مثال للوكيل: optimize/saver.sh months levant  (`default` = يناير، فبراير… as always)
      القيم المقبولة: default|levant
@@ -450,6 +453,9 @@ the phone page's key, «مركز التحكم» the control centre's row that op
 —— شاشة التوقف
 ——— معاينة الشاشة [شاشة التوقف]
     مثال للوكيل: optimize/shot.sh screensaver
+——— الوضع الخفيف [الرئيسية وشاشة التوقف]
+    مثال للوكيل: optimize/saver.sh lite on
+      القيم المقبولة: auto|on|off
 ——— العرض
 ———— تنبيه قبل الأذان [الرئيسية وشاشة التوقف]
      مثال للوكيل: optimize/saver.sh adhanbar off  (or `on`)
@@ -581,6 +587,9 @@ the phone page's key, «مركز التحكم» the control centre's row that op
 ———— زر الجوال [الرئيسية]
      مثال للوكيل: optimize/saver.sh pillshidden phone
        القيم المقبولة: markets,matches,center,phone | none
+———— زر البحث [الرئيسية]
+     مثال للوكيل: optimize/saver.sh searchpill on  (`off`, the default)
+       القيم المقبولة: on|off
 ———— زر مركز التحكم [الرئيسية]
      مثال للوكيل: optimize/saver.sh pillshidden center
        القيم المقبولة: markets,matches,center,phone | none
@@ -696,6 +705,9 @@ the phone page's key, «مركز التحكم» the control centre's row that op
 ———— رياضات أخرى [الرئيسية وشاشة التوقف]
      مثال للوكيل: optimize/saver.sh events f1,ufc,boxing  (`""` = none)
        القيم المقبولة: f1,ufc,boxing ('' = none)
+———— إخفاء المباريات المنتهية [الرئيسية]
+     مثال للوكيل: optimize/saver.sh fbhide on  (`off`, the default: an ended game stays with its score)
+       القيم المقبولة: on|off
 ——— صفحة الأسواق
 ———— افتح صفحة الأسواق [الرئيسية]
      إجراء أو شاشة من التلفزيون (ما فيه قيمة يضبطها أمر)
