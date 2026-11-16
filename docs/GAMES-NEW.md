@@ -13,3 +13,6 @@ Two to ten phones. A question whose answer is a whole number («كم ثانية 
 
 ## واحد يكذب (who's lying)
 Four to ten phones. Each round the TV names three players (the ones who have told the fewest times) and a topic («رحلة ما تنساها»). Each of the three sees a secret on their own phone: two are told «احكِ قصة حقيقية», one «اكذب: اخترع قصة». They tell their stories (60, 90 or 120 seconds) and the others question them. Then everyone who did not tell votes on their phone who lied. Finding the liar scores 2; the liar scores 1 for every voter fooled. 3, 5 or 6 rounds. The bank is 82 topics we wrote (`assets/games/liar.gb`); nothing repeats on this TV. The TV never shows who the liar is before the reveal.
+
+## اقرأ الإيموجي (read the emoji)
+Two to ten phones. A line of emoji stands for a word (🍚🍗 is «كبسة»); everyone picks the right one of four on their phone; the first right answer scores 3, the second 2, every other right answer 1. 10, 15 or 20 puzzles, 10, 15 or 20 seconds each. The bank is 151 puzzles (food, animals, places, things, nature, jobs, phrases) bundled as `assets/games/emoji.gb`; the wrong options are other answers of the same category; no film or cartoon titles. Nothing repeats on this TV. The emoji are drawn by the TV's own emoji font.

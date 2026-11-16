@@ -151,6 +151,8 @@ final class GamePhoneRoom implements PhoneRoom {
     }
     /** the id of the card `seat` shows now (a test and the TV's own bookkeeping) */
     synchronized int stateId(int seat) { return seats.get(seat).cardId; }
+    /** when the phone of `seat` first answered its current card (the clock's ms), 0 when it has not */
+    synchronized long repliedAt(int seat) { Seat s = seats.get(seat); return s.inbox.isEmpty() ? 0 : s.firstAt; }
     synchronized boolean replied(int seat) { return !seats.get(seat).inbox.isEmpty(); }
     synchronized int repliedCount() { int n = 0; for (Seat s : seats) if (!s.left && !s.inbox.isEmpty()) n++; return n; }
     /** every answer sent for the current card since the last call, oldest first (an actor's buttons) */

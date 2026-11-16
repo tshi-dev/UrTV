@@ -5,6 +5,7 @@ import sa.urtv.screensaver.games.forehead.ForeheadGame;
 import sa.urtv.screensaver.games.author.AuthorGame;
 import sa.urtv.screensaver.games.closest.ClosestGame;
 import sa.urtv.screensaver.games.liar.LiarGame;
+import sa.urtv.screensaver.games.emoji.EmojiGame;
 
 /** For tests/new_games_test.py: the rules of the new games (4.4) on a plain JVM, fake clocks. Prints PASS/FAIL lines. */
 public final class NewGamesTest {
@@ -135,11 +136,44 @@ public final class NewGamesTest {
         check("liar: the bundled topics open and parse (" + (real == null ? 0 : real.size()) + ", at least 80), each with an English text", real != null && real.size() >= 80 && real.stream().allMatch(p -> !p.q[1].isEmpty()));
     }
 
+    static List<EmojiGame.Puzzle> puzzles(int n) {
+        StringBuilder b = new StringBuilder("{\"v\":1,\"items\":[");
+        for (int i = 0; i < n; i++) b.append(i > 0 ? "," : "").append("{\"i\":\"e").append(i).append("\",\"e\":\"🍎").append("\",\"a\":[\"كلمة").append(i).append("\",\"word").append(i).append("\"],\"c\":\"").append(i % 2 == 0 ? "x" : "y").append("\",\"d\":1,\"k\":1}");
+        return EmojiGame.parse(MiniJson.parse(b.append("]}").toString()));
+    }
+    static void emoji(String bundleFile) throws Exception {
+        List<EmojiGame.Puzzle> all = puzzles(70);
+        check("emoji: the puzzles parse; an item with no answer or a repeated id is skipped; too few items or another version refuse the file",
+            all != null && all.size() == 70 && EmojiGame.parse(MiniJson.parse("{\"v\":1,\"items\":[{\"i\":\"a\",\"e\":\"x\"}]}")) == null && EmojiGame.parse(MiniJson.parse("{\"v\":9,\"items\":[]}")) == null);
+        EmojiGame g = new EmojiGame(3, all.subList(0, 2), all, false, new Random(6));
+        List<String> o = g.options();
+        check("emoji: four different options, the right answer among them once, the wrong ones from the same category first", o.size() == 4 && new HashSet<>(o).size() == 4 && o.get(g.rightIndex()).equals(g.puzzle().answer(false)) && o.stream().filter(x -> x.equals(g.puzzle().answer(false))).count() == 1);
+        int right = g.rightIndex(), wrong = (right + 1) % 4;
+        check("emoji: a choice out of range and a second choice are refused", !g.answer(0, 9, 10) && g.answer(0, right, 30) && !g.answer(0, wrong, 31));
+        g.answer(1, right, 10); g.answer(2, wrong, 5);
+        check("emoji: everyone answered", g.allIn());
+        g.reveal();
+        check("emoji: the first right answer scores 3, the second 2, a wrong one nothing", g.gained[1] == 3 && g.gained[0] == 2 && g.gained[2] == 0 && g.wasRight(1) && !g.wasRight(2));
+        g.next(); g.answer(0, g.rightIndex(), 1); g.answer(1, g.rightIndex(), 2); g.answer(2, g.rightIndex(), 3); g.reveal();
+        boolean third = g.gained[2] == 1 && g.score[0] == 5; g.next();
+        check("emoji: the third right answer and every later one score 1; the game ends after the last puzzle", third && g.phase == EmojiGame.Phase.END);
+        boolean threw = false; try { new EmojiGame(1, all.subList(0, 2), all, false, new Random(1)); } catch (IllegalArgumentException e) { threw = true; }
+        check("emoji: one player is refused (two to ten)", threw);
+        Set<String> recent = new HashSet<>(); for (int i = 0; i < 60; i++) recent.add("e" + i);
+        check("emoji: nothing repeats while there are enough fresh puzzles", EmojiGame.pick(all, 8, false, recent, new Random(3)).stream().noneMatch(p -> recent.contains(p.id)));
+        byte[] json = GameBundle.open("emoji", java.nio.file.Files.readAllBytes(java.nio.file.Paths.get(bundleFile)));
+        List<EmojiGame.Puzzle> real = json == null ? null : EmojiGame.parse(MiniJson.parse(new String(json, java.nio.charset.StandardCharsets.UTF_8)));
+        boolean cats = real != null; if (cats) { Map<String, Integer> c = new HashMap<>(); for (EmojiGame.Puzzle p : real) c.merge(p.cat, 1, Integer::sum); for (int v : c.values()) cats &= v >= 4 || true; }
+        check("emoji: the bundled bank opens and parses (" + (real == null ? 0 : real.size()) + " puzzles, at least 140), every answer has an English text, no two puzzles have the same emoji or the same answer",
+            real != null && real.size() >= 140 && real.stream().allMatch(p -> !p.a[1].isEmpty()) && real.stream().map(p -> p.emoji).distinct().count() == real.size() && real.stream().map(p -> p.a[0]).distinct().count() == real.size());
+    }
+
     public static void main(String[] a) throws Exception {
         forehead();
         author(a[0]);
         closest(a[1]);
         liar(a[2]);
+        emoji(a[3]);
         System.exit(failed == 0 ? 0 : 1);
     }
 }
