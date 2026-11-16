@@ -12,19 +12,19 @@ def check(what, ok, extra=""):
     print(("PASS " if ok else "FAIL ") + what + ("" if ok else "  -> " + str(extra)))
     if not ok: failed += 1
 if not shutil.which("javac"): print("SKIP: no javac"); sys.exit(1)
-ENGINES = [G / "forehead/ForeheadGame.java", G / "author/AuthorGame.java", G / "closest/ClosestGame.java", G / "liar/LiarGame.java", G / "emoji/EmojiGame.java", APP / "GameBundle.java", APP / "MiniJson.java"]
+ENGINES = [G / "forehead/ForeheadGame.java", G / "author/AuthorGame.java", G / "closest/ClosestGame.java", G / "liar/LiarGame.java", G / "emoji/EmojiGame.java", G / "link/LinkGame.java", APP / "GameBundle.java", APP / "MiniJson.java"]
 with tempfile.TemporaryDirectory() as t:
     c = subprocess.run(["javac", "-nowarn", "-encoding", "UTF-8", "-d", t, *map(str, ENGINES), str(ROOT / "tests/NewGamesTest.java")], capture_output=True, text=True)
     check("the new games' rules compile on a plain JVM (no Android)", c.returncode == 0, c.stderr[-500:])
     if c.returncode == 0:
-        r = subprocess.run(["java", "-cp", t, "sa.urtv.screensaver.NewGamesTest", str(ROOT / "assets/games/author.gb"), str(ROOT / "assets/games/closest.gb"), str(ROOT / "assets/games/liar.gb"), str(ROOT / "assets/games/emoji.gb")], capture_output=True, text=True, timeout=120)
+        r = subprocess.run(["java", "-cp", t, "sa.urtv.screensaver.NewGamesTest", str(ROOT / "assets/games/author.gb"), str(ROOT / "assets/games/closest.gb"), str(ROOT / "assets/games/liar.gb"), str(ROOT / "assets/games/emoji.gb"), str(ROOT / "assets/games/link.gb")], capture_output=True, text=True, timeout=120)
         for l in r.stdout.splitlines():
             if l.startswith(("PASS", "FAIL")): print(l); failed += l.startswith("FAIL")
         check("the JVM test ran to the end", r.returncode == 0 or "FAIL" in r.stdout, r.stderr[-400:])
 def src(n): return (APP / n).read_text(encoding="utf-8")
 reg, gl, room, page = src("GameRegistry.java"), src("QuizGamesActivity.java"), src("GamePhoneRoom.java"), (ROOT / "assets/quiz/game.html").read_text(encoding="utf-8")
 manifest = (ROOT / "android/app/src/main/AndroidManifest.xml").read_text(encoding="utf-8")
-GAMES = {"forehead": "ForeheadActivity", "author": "AuthorActivity", "closest": "ClosestActivity", "liar": "LiarActivity", "emoji": "EmojiActivity"}
+GAMES = {"forehead": "ForeheadActivity", "author": "AuthorActivity", "closest": "ClosestActivity", "liar": "LiarActivity", "emoji": "EmojiActivity", "link": "LinkActivity"}
 for gid, act in GAMES.items():
     a = src(act + ".java")
     check(f"{gid}: in the registry (needs phones), in the filter's list, in the manifest (not exported, landscape), and a GameActivity",
@@ -54,4 +54,10 @@ em = src("EmojiActivity.java")
 check("emoji: the puzzles come from the bundled bank, nothing repeats on this TV; the options are a pick card of four, the time of each answer is the room's own clock (repliedAt)",
       'GameBundles.load(this, "emoji")' in em and "GamePrefs.remember(this, id(), r)" in em and "GamePhoneRoom.PICK" in em and "phones.room.repliedAt(p)" in em and "synchronized long repliedAt(int seat)" in room)
 check("the bundled emoji bank is a bundle", (ROOT / "assets/games/emoji.gb").read_bytes()[:3] == b"GB1" and "كبسة".encode() not in (ROOT / "assets/games/emoji.gb").read_bytes())
+lk = src("LinkActivity.java")
+check("link: the key goes only to the two captains' phones (a key card), the rest get the words to touch or a wait line; the TV shows the key only on the end screen; nothing repeats on this TV",
+      "GamePhoneRoom.KEY" in lk and "if (captain(s))" in lk and "boolean shown = game.shown[i] || end;" in lk and "keep(); screen = Screen.PLAY" in lk and 'GameBundles.load(this, "link")' in lk)
+check("the phone page and room: a key card is a grid of the words coloured by the key, with number buttons only when the card offers them; it takes answers only for those numbers",
+      "c.kind === 'key'" in page and ".kc{" in page and "case KEY:" in room)
+check("the bundled link words are a bundle", (ROOT / "assets/games/link.gb").read_bytes()[:3] == b"GB1" and "بحر".encode() not in (ROOT / "assets/games/link.gb").read_bytes())
 sys.exit(1 if failed else 0)

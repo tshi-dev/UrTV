@@ -37,6 +37,7 @@ public class QuizGamesActivity extends Activity {
         S.n("أقرب رقم"), S.n("خمّنوا الرقم، والأقرب يكسب"),
         S.n("واحد يكذب"), S.n("ثلاثة يحكون وواحد منهم يكذب، فمن هو؟"),
         S.n("اقرأ الإيموجي"), S.n("إيموجي يدل على كلمة، والأسرع يعرفها"),
+        S.n("اربط الكلمات"), S.n("تلميح بكلمة واحدة يربط كلمات فريقك على اللوحة"),
         S.n("حزم المحتوى"), S.n("حجم ما حمّلتموه من الألعاب، واحتفظوا به أو احذفوه"),
     };
     /** the night switch's words, marked for the English table: «وضع ليلي» with its three states, and the three night palettes */

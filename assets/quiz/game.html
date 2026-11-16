@@ -88,6 +88,8 @@ button.stamp:active{transform:scale(.97)}
 .vb i{width:26px;height:26px;border:3px solid var(--bd);flex:none}
 .secret{font-size:56px;font-weight:700;line-height:1.15;text-align:center;overflow-wrap:anywhere;padding:28px 12px;background:var(--saff);color:#16140F;border:4px solid var(--bd)}
 .actw{font-size:64px;font-weight:700;line-height:1.1;text-align:center;overflow-wrap:anywhere;padding:28px 12px;border:4px solid var(--bd);background:var(--tile)}
+.keyg{display:grid;grid-template-columns:repeat(5,1fr);gap:4px;direction:rtl}.kc{border:3px solid var(--bd);padding:8px 2px;min-height:58px;font-size:15px;font-weight:700;text-align:center;overflow-wrap:anywhere;display:flex;align-items:center;justify-content:center}.k1{background:#5AA9F0;color:#16140F}.k2{background:#F2705A;color:#16140F}.kn{background:var(--tile)}.kx{background:#16140F;color:#EFE8DA;outline:3px solid var(--saff)}
+.nrow{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}.nb{justify-content:center;min-height:56px;font-size:26px}
 .row3{display:grid;grid-template-columns:1fr;gap:12px}
 .btn.alt{background:var(--tile)}
 </style>
@@ -249,6 +251,16 @@ function cardScreen() {
     var names = [S.ok, S.skip, S.foul, S.buzz, S.ready], row = h('div', 'row3');
     c.acts.forEach(function (a) { var b = h('button', 'btn' + (a === 0 ? '' : ' alt'), names[a], { type: 'button', 'data-a': a }); b.addEventListener('click', function () { api('/api/answer', { c: code, t: token, q: c.id, a: a }).then(function () {}, function () {}); }); row.appendChild(b); });
     kids.push(row);
+  } else if (c.kind === 'key') {
+    kids = [h('div', 'dim', c.title), c.note ? h('div', 'big', c.note) : null];
+    var kg = h('div', 'keyg');
+    for (var ki = 0; ki < c.opts.length; ki++) { var kc = (c.text || '').charAt(ki); kg.appendChild(h('div', 'kc k' + kc, c.opts[ki])); }
+    kids.push(kg);
+    if (c.acts.length && got == null) {
+      var nr = h('div', 'nrow');
+      c.acts.forEach(function (n) { var nb = h('button', 'vb nb', String(n), { type: 'button', 'data-n': n }); nb.addEventListener('click', tap(function () { send(n); })); nr.appendChild(nb); });
+      kids.push(nr);
+    } else if (got != null) kids.push(h('div', 'dim', S.sent));
   } else if (c.kind === 'tilt') {
     kids = [h('div', 'dim', c.title), h('div', 'secret', c.text), h('div', 'dim', S.tiltHint)];
     var row2 = h('div', 'row3');

@@ -6,6 +6,7 @@ import sa.urtv.screensaver.games.author.AuthorGame;
 import sa.urtv.screensaver.games.closest.ClosestGame;
 import sa.urtv.screensaver.games.liar.LiarGame;
 import sa.urtv.screensaver.games.emoji.EmojiGame;
+import sa.urtv.screensaver.games.link.LinkGame;
 
 /** For tests/new_games_test.py: the rules of the new games (4.4) on a plain JVM, fake clocks. Prints PASS/FAIL lines. */
 public final class NewGamesTest {
@@ -168,12 +169,50 @@ public final class NewGamesTest {
             real != null && real.size() >= 140 && real.stream().allMatch(p -> !p.a[1].isEmpty()) && real.stream().map(p -> p.emoji).distinct().count() == real.size() && real.stream().map(p -> p.a[0]).distinct().count() == real.size());
     }
 
+    static List<String[]> linkWords(int n) {
+        StringBuilder b = new StringBuilder("{\"v\":1,\"words\":[");
+        for (int i = 0; i < n; i++) b.append(i > 0 ? "," : "").append("[\"كلمة").append(i).append("\",\"word").append(i).append("\"]");
+        return LinkGame.parse(MiniJson.parse(b.append("]}").toString()));
+    }
+    static void link(String bundleFile) throws Exception {
+        List<String[]> all = linkWords(130);
+        check("link: the words parse; a repeated word and an incomplete pair are skipped; too few words or another version refuse the file",
+            all != null && all.size() == 130 && LinkGame.parse(MiniJson.parse("{\"v\":1,\"words\":[[\"a\",\"b\"]]}")) == null && LinkGame.parse(MiniJson.parse("{\"v\":2,\"words\":[]}")) == null);
+        LinkGame g = new LinkGame(LinkGame.pick(all, new HashSet<>(), new Random(4)), new Random(4));
+        int[] c = new int[4]; for (int k : g.key) c[k]++;
+        check("link: the key has 9 words for the team that starts, 8 for the other, 7 neutral, 1 ending word; the key string says the same", c[g.starter] == 9 && c[g.other(g.starter)] == 8 && c[LinkGame.NONE] == 7 && c[LinkGame.END] == 1 && g.keyString().length() == 25 && g.keyString().chars().filter(ch -> ch == 'x').count() == 1);
+        check("link: the starting team plays first; a clue needs a number from 1 to 9; no touching before the clue", g.turn == g.starter && g.phase == LinkGame.Phase.CLUE && !g.guess(0) && !g.clue(0) && !g.clue(10) && g.clue(2) && g.guessesLeft == 3);
+        int mine = -1, neutral = -1, theirs = -1;
+        for (int i = 0; i < 25; i++) { if (g.key[i] == g.turn && mine < 0) mine = i; else if (g.key[i] == LinkGame.NONE && neutral < 0) neutral = i; else if (g.key[i] == g.other(g.turn) && theirs < 0) theirs = i; }
+        int team = g.turn;
+        check("link: the team's own word goes on (a guess less); a word touched twice does not count", g.guess(mine) && g.turn == team && g.guessesLeft == 2 && !g.guess(mine));
+        check("link: a neutral word ends the turn, the other team's clue is next", g.guess(neutral) && g.turn == g.other(team) && g.phase == LinkGame.Phase.CLUE);
+        g.clue(1); int foreign = -1; for (int i = 0; i < 25; i++) if (g.key[i] == team && !g.shown[i]) { foreign = i; break; } int left = g.remaining(team); boolean hit = g.guess(foreign) && g.remaining(team) == left - 1;
+        check("link: the other team's word ends the turn and counts for that team", hit && g.turn == team);
+        LinkGame h = new LinkGame(LinkGame.pick(all, new HashSet<>(), new Random(8)), new Random(8));
+        int endCell = -1; for (int i = 0; i < 25; i++) if (h.key[i] == LinkGame.END) endCell = i;
+        int t0 = h.turn; h.clue(1); h.guess(endCell);
+        check("link: the ending word loses the game for the team that touched it", h.phase == LinkGame.Phase.END && h.lostByEnd && h.winner == h.other(t0));
+        LinkGame k = new LinkGame(LinkGame.pick(all, new HashSet<>(), new Random(11)), new Random(11));
+        int st = k.turn; k.clue(9);
+        for (int i = 0; i < 25 && k.phase != LinkGame.Phase.END; i++) { if (k.key[i] == st && !k.shown[i]) { if (k.phase == LinkGame.Phase.CLUE) k.clue(9); k.guess(i); } }
+        check("link: uncovering all of a team's words wins it the game", k.phase == LinkGame.Phase.END && k.winner == st && !k.lostByEnd && k.remaining(st) == 0);
+        Set<String> recent = new HashSet<>(); for (int i = 0; i < 100; i++) recent.add("كلمة" + i);
+        check("link: nothing repeats: the 25 are words this TV has not had, while there are enough", LinkGame.pick(all, recent, new Random(2)).stream().noneMatch(w -> recent.contains(w[0])));
+        boolean threw = false; try { new LinkGame(all.subList(0, 24), new Random(1)); } catch (IllegalArgumentException e) { threw = true; }
+        check("link: a board of 24 words is refused", threw);
+        byte[] json = GameBundle.open("link", java.nio.file.Files.readAllBytes(java.nio.file.Paths.get(bundleFile)));
+        List<String[]> real = json == null ? null : LinkGame.parse(MiniJson.parse(new String(json, java.nio.charset.StandardCharsets.UTF_8)));
+        check("link: the bundled list opens and parses (" + (real == null ? 0 : real.size()) + " words, at least 300), no word twice in either language", real != null && real.size() >= 300 && real.stream().map(w -> w[1]).distinct().count() == real.size());
+    }
+
     public static void main(String[] a) throws Exception {
         forehead();
         author(a[0]);
         closest(a[1]);
         liar(a[2]);
         emoji(a[3]);
+        link(a[4]);
         System.exit(failed == 0 ? 0 : 1);
     }
 }

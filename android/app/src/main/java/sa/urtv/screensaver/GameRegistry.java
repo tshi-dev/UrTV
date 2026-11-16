@@ -29,11 +29,12 @@ final class GameRegistry {
         new Game("closest", "أقرب رقم", "خمّنوا الرقم، والأقرب يكسب", "ClosestActivity", true, true),
         new Game("liar", "واحد يكذب", "ثلاثة يحكون وواحد منهم يكذب، فمن هو؟", "LiarActivity", true, true),
         new Game("emoji", "اقرأ الإيموجي", "إيموجي يدل على كلمة، والأسرع يعرفها", "EmojiActivity", true, true),
+        new Game("link", "اربط الكلمات", "تلميح بكلمة واحدة يربط كلمات فريقك على اللوحة", "LinkActivity", true, true),
         new Game("packs", "حزم المحتوى", "حجم ما حمّلتموه من الألعاب، واحتفظوا به أو احذفوه", "GamePacksActivity", false, true),
     };
 
     /** the games that can be played with the phones: the list shows them under ONE «بالجوالات» tile (the first of them, «الأسرع», stands for it); the others also stay in the list, played with one remote */
-    static final String[] PHONE_GAMES = {"quiz", "khanat", "missing-word", "letter-hive", "word5", "odd-one", "charades", "domino", "forehead", "author", "closest", "liar", "emoji"};
+    static final String[] PHONE_GAMES = {"quiz", "khanat", "missing-word", "letter-hive", "word5", "odd-one", "charades", "domino", "forehead", "author", "closest", "liar", "emoji", "link"};
     static boolean inPhones(String id) { for (String g : PHONE_GAMES) if (g.equals(id)) return true; return false; }
 
     static Game byId(String id) { for (Game g : ALL) if (g.id.equals(id)) return g; return null; }
