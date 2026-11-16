@@ -1,7 +1,7 @@
-«▶ GO step 87 — the «Home doctor» (owner's request). Get optimize/homedoctor.py from branch work/44-homedoctor (git fetch origin work/44-homedoctor; if the branch is not there yet, wait for it and check again in 10 minutes). Then do step 87 below. Step 86 B rerun comes after, when its build is on apk-next. TV muted.»
+«▶ GO step 87 — the «Home doctor» (owner's request). The Home doctor needs a home build with HOME_WANTED: WAIT for the next GO line naming the apk-next build, install it, then do step 87 (script from branch work/44-homedoctor 2ee948bd, file optimize/homedoctor.py, doc docs/HOMEDOCTOR.md). Step 86 B rerun comes after, when its build is on apk-next. TV muted.»
 
 ## step 87 — «Home doctor»: find why UrTV does not stay the HOME on this TV
-1. `git fetch origin work/44-homedoctor && git checkout origin/work/44-homedoctor -- optimize/homedoctor.py docs/HOME-DOCTOR.md` (read the doc first).
+1. `git fetch origin work/44-homedoctor && git checkout origin/work/44-homedoctor -- optimize/homedoctor.py docs/HOMEDOCTOR.md` (read the doc first). Run it with `optimize/venv/bin/python -I optimize/homedoctor.py …`. Each angle takes ~3 min; leave the TV alone except at angle E.
 2. `python3 optimize/homedoctor.py --dry-run` → push the printed plan to work/tester-report as «step 87 plan».
 3. Run it for real: `python3 optimize/homedoctor.py --reboot`. Angle E is by hand: when it asks, open the TV's default-home screen with the remote, picture each screen, say what it offers, press Enter.
 4. Push run/homedoctor/<time>/report.md + report.json (+ the screencaps; logs are text) to work/tester-report as «step 87 result: <winning angle or NONE>».
