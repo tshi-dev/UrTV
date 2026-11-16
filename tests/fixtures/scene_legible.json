@@ -1,17 +1,17 @@
 {
- "v": 1,
- "rule": "v1: each digit and the colon at most 0.25 covered from the base, after the zoom; owner_ok: at the scene's own place only, no zoom, drawn anyway",
+ "v": 2,
+ "rule": "the clock fixed at one box (clean = couch = [601,266,1319,542]; the cards beside it: the start half, never a cut-out); the photo framed instead (frame [x,y,w] or null: the whole photo, never upscaled); v1: each digit and the colon at most 0.25 covered from the base at the frame, no zoom; owner_ok: at the clean place only, drawn anyway",
  "rows": [
   {
    "scene": "riyadh",
-   "place": "nocards",
+   "place": "clean",
+   "frame": null,
    "box": [
     601,
     266,
     1319,
     542
    ],
-   "k": 1.0,
    "digit_cover": 0.362,
    "colon_cover": 0.315,
    "verdict": "FIT",
@@ -19,32 +19,47 @@
   },
   {
    "scene": "riyadh",
+   "place": "couch",
+   "frame": null,
+   "box": [
+    601,
+    266,
+    1319,
+    542
+   ],
+   "digit_cover": 0.362,
+   "colon_cover": 0.315,
+   "verdict": "FRONT-ONLY",
+   "owner_ok": false
+  },
+  {
+   "scene": "riyadh",
    "place": "cards-rtl",
+   "frame": null,
    "box": [
     1043,
     266,
     1761,
     542
    ],
-   "k": 1.32,
    "digit_cover": 1.0,
-   "colon_cover": 0.0,
+   "colon_cover": 0.152,
    "verdict": "FRONT-ONLY",
    "owner_ok": false
   },
   {
    "scene": "riyadh",
    "place": "cards-ltr",
+   "frame": null,
    "box": [
     159,
     266,
     877,
     542
    ],
-   "k": 1.0,
    "digit_cover": 0.0,
    "colon_cover": 0.0,
-   "verdict": "FIT",
+   "verdict": "FRONT-ONLY",
    "owner_ok": false
   }
  ]
