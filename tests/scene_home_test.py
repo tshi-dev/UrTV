@@ -158,11 +158,11 @@ check("off: the scenes' memory tier, font and pictures are asked for only when t
       main.count("new SceneHome(this, Ram.tier(this), font(\"display\"))") == 1)
 
 # ---- the settings
-check("4.4 three choices: «التخطيط» (تلفزيونك, the default, or كرة القدم), «الخلفية» (photos, the default, or scenes), «الساعة» (plain, the default, or glass)",
-      'HOME_LAYOUTS = {"classic", "football"};' in prefs and '{"تلفزيونك", "كرة القدم"}' in prefs and 'HOME_BGS = {"photos", "scenes"};' in prefs
+check("4.4 three choices: «التخطيط» (تلفزيونك, the default, كنبة or كرة القدم), «الخلفية» (photos, the default, or scenes), «الساعة» (plain, the default, or glass)",
+      'HOME_LAYOUTS = {"classic", "couch", "football"};' in prefs and '{"تلفزيونك", "كنبة", "كرة القدم"}' in prefs and 'HOME_BGS = {"photos", "scenes"};' in prefs
       and 'HOME_CLOCKS = {"plain", "glass"};' in prefs and 'sp.getString("homeBg", oldScenes() ? "scenes" : "photos")' in prefs and 'sp.getString("homeClock", oldScenes() ? "glass" : "plain")' in prefs)
-check("the presets set the three at once: «شكل تلفزيونك» (photos, plain clock; the default) and «شكل كنبة» (scenes, glass clock); any other mix reads «مخصّص»",
-      '{{"urtv", "شكل تلفزيونك", "classic", "photos", "plain"}, {"couch", "شكل كنبة", "classic", "scenes", "glass"}}' in prefs and 'return "مخصّص";' in prefs
+check("the presets set the three at once: «شكل تلفزيونك» (our layout, photos, plain clock; the default) and «شكل كنبة» (the couch layout, scenes, glass clock); any other mix reads «مخصّص»",
+      '{{"urtv", "شكل تلفزيونك", "classic", "photos", "plain"}, {"couch", "شكل كنبة", "couch", "scenes", "glass"}}' in prefs and 'return "مخصّص";' in prefs
       and 'row("الشكل الجاهز", Prefs.look3Label(prefs.look3())' in st and 'row("التخطيط"' in st and 'row("الخلفية"' in st and 'row("الساعة"' in st)
 check("the home: «الخلفية ← المشاهد» shows the scenes on any layout; the glass clock and the cut-out only with «الساعة ← زجاجية», else the header's clock stays",
       'boolean on = "scenes".equals(cfg.homeBg);' in tick and 'boolean glass = "glass".equals(cfg.homeClock);' in tick and "boolean bigClock = glass;" in tick

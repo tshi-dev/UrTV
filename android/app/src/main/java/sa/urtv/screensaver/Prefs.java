@@ -83,7 +83,7 @@ final class Prefs {
 
     // look of the card beside the clock (sent to the page as #cardstyle=; current is the plain card it always had)
     static final String[][] CARD_STYLES = {{"current", "الحالية"}, {"dark1", "داكنة"}, {"glass1", "زجاجية"},
-        {"dark3", "داكنة بإطار"}, {"glass3", "زجاجية بإطار"}};
+        {"dark3", "داكنة بإطار"}, {"glass3", "زجاجية بإطار"}, {"boxes", "مربعات"}};
 
     // markets at the top left (sent to the page as #markets=, up to MAX_MARKETS, in this order of choice; tasi,spx,btc is what it always showed)
     static final String[][] MARKETS = {
@@ -316,6 +316,7 @@ final class Prefs {
         {"glass1", "زجاجية ضبابية فوق الصورة"},
         {"dark3", "داكنة بإطار ذهبي داخلي ومعيّن على الحافتين"},
         {"glass3", "زجاجية بإطار ذهبي داخلي ومعيّن على الحافتين"},
+        {"boxes", "مواقيت اليوم مربعات في صف، والصلاة القادمة مضيئة وتحتها كم باقي"},
     };
 
     static String about(String[][] table, String v) {
@@ -1069,14 +1070,14 @@ final class Prefs {
      * or the scenes) and «الساعة» (plain, or glass behind the photo's scenery). The presets «شكل تلفزيونك» (the default) and «شكل كنبة» set the three.
      * A layout «scenes» kept by a test build of 4.3.3 reads as our layout with the scenes and the glass clock.
      */
-    static final String[] HOME_LAYOUTS = {"classic", "football"};
-    static final String[] HOME_LAYOUT_NAMES = {"تلفزيونك", "كرة القدم"};
+    static final String[] HOME_LAYOUTS = {"classic", "couch", "football"};
+    static final String[] HOME_LAYOUT_NAMES = {"تلفزيونك", "كنبة", "كرة القدم"};
     static final String[] HOME_BGS = {"photos", "scenes"};
     static final String[] HOME_BG_NAMES = {"صوري وحزم الصور", "المشاهد"};
     static final String[] HOME_CLOCKS = {"plain", "glass"};
     static final String[] HOME_CLOCK_NAMES = {"عادية", "زجاجية خلف الصورة"};
     /** the presets: name, layout, background, clock */
-    static final String[][] LOOKS = {{"urtv", "شكل تلفزيونك", "classic", "photos", "plain"}, {"couch", "شكل كنبة", "classic", "scenes", "glass"}};
+    static final String[][] LOOKS = {{"urtv", "شكل تلفزيونك", "classic", "photos", "plain"}, {"couch", "شكل كنبة", "couch", "scenes", "glass"}};
     private boolean oldScenes() { return "scenes".equals(sp.getString("homeLayout", "")); }
     String homeLayout() { String v = sp.getString("homeLayout", HOME_LAYOUTS[0]); return java.util.Arrays.asList(HOME_LAYOUTS).contains(v) ? v : HOME_LAYOUTS[0]; }
     void setHomeLayout(String v) {

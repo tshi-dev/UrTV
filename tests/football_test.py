@@ -16,12 +16,12 @@ def check(name, ok, detail=""):
 read = lambda p: p.read_text(encoding="utf-8")
 
 prefs, recv, prov, st = read(APP / "Prefs.java"), read(APP / "SaverReceiver.java"), read(APP / "ConfigProvider.java"), read(APP / "SettingsActivity.java")
-check("the setting «التخطيط» (4.4): classic (the default, the home as it always was) or football, nothing else kept",
-      'static final String[] HOME_LAYOUTS = {"classic", "football"};' in prefs and 'sp.getString("homeLayout", HOME_LAYOUTS[0])' in prefs
+check("the setting «التخطيط» (4.4): classic (the default, the home as it always was), couch or football, nothing else kept",
+      'static final String[] HOME_LAYOUTS = {"classic", "couch", "football"};' in prefs and 'sp.getString("homeLayout", HOME_LAYOUTS[0])' in prefs
       and "if (!java.util.Arrays.asList(HOME_LAYOUTS).contains(v)) return;" in prefs and 'sp.edit().putString("homeLayout", v).apply();' in prefs)
-check("saver.sh homelayout: refused unless classic or football (4.3.3's scenes is the couch preset), saved, and said by show",
+check("saver.sh homelayout: refused unless classic, couch or football (4.3.3's scenes is the couch preset), saved, and said by show",
       'return "error: homelayout is one of "' in recv and "if (homeLayout != null) p.setHomeLayout(homeLayout);" in recv
-      and '"\\nhomelayout: " + p.homeLayout()' in recv and 'homelayout) set1 homelayout "${2:?usage: optimize/saver.sh homelayout classic|football}" ;;' in read(ROOT / "optimize/saver.sh"))
+      and '"\\nhomelayout: " + p.homeLayout()' in recv and 'homelayout) set1 homelayout "${2:?usage: optimize/saver.sh homelayout classic|couch|football}" ;;' in read(ROOT / "optimize/saver.sh"))
 check("the home reads it as a column of its own after the others (an older screensaver has none: classic)",
       '"watch_next", "look", "home_layout", "fav_bar", "pages_dark", "pills_hidden", "look_tweaks", "match_app", "page_zone", "city_chosen", "scene_packs", "scene_stay", "scene_time", "scene_weather", "home_bg", "home_clock"});' in prov and "p.look(), p.homeLayout()," in prov and "p.favBar(), p.pagesDark()" in prov
       and 'layout = l >= 0 && c.getString(l) != null ? c.getString(l) : "classic";' in read(HOME / "HomeCard.java"))

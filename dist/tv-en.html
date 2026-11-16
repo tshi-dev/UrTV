@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <!-- the build: UTC time (YYYYMMDDHHMMSS) of the newest commit of the page's sources, put in by src/build.py. The app loads the page with the newer stamp (its own
      copy or a downloaded one), never by file time, and does not keep a download whose stamp is older than its own (Updater, PageStamp). -->
-<meta name="urtv-build" content="20261116034607">
+<meta name="urtv-build" content="20261116094520">
 <title>Your TV Screen</title>
 <style>
   @font-face{font-family:'Thmanyah';font-weight:300;font-style:normal;font-display:block;src:url("https://raw.githubusercontent.com/tshi-dev/UrTV/master/assets/fonts/Thmanyah-Light.woff2") format("woff2")}
@@ -44,6 +44,11 @@
   html.widget .mid{display:grid;grid-template-columns:minmax(0,1fr);gap:var(--cg,clamp(8px,2vw,22px));align-items:start}
   html.widget .mid.n2,html.widget .mid.n3{grid-template-columns:minmax(0,560fr) minmax(0,540fr)}
   html.widget .mid .week.w3{grid-column:1/-1}
+  
+  html.row .mid.n2{grid-template-columns:1fr 1fr}html.row .mid.n3{grid-template-columns:1fr 1fr 1fr}
+  html.row .mid{align-items:stretch}html.row .mid .week.w3{grid-column:auto}
+  html.row .week ul.pgrid{grid-template-columns:repeat(6,minmax(0,1fr));gap:.5em}
+  html.row .week ul.pgrid li{padding:.6em .2em;font-size:calc(clamp(16px,1.2vw,26px)*var(--z,1))}
   html.widget .week{width:100%}
   
   html.hcard .week{background:var(--hpanel)!important;border-color:var(--hline)!important}
@@ -172,6 +177,16 @@
   .week ul.pgrid li.past .dt{color:#8A826D}
   .week ul.pgrid li.next{background:rgba(var(--gold-rgb),.18);border-color:rgba(var(--gold-rgb),.55);color:var(--gold-hi)}
   .week ul.pgrid li.next .dt{color:var(--gold-3)}
+  
+  html.pbx .week.boxes,html.pbx .week.boxes::before{background:none!important;border:0!important;box-shadow:none!important;padding:0!important}
+  html.pbx .week.boxes::after,html.pbx .week.boxes .hd,html.pbx .week.boxes .frm,html.pbx .week.boxes .dia{display:none!important}
+  html.pbx .week ul.pgrid{display:flex;flex-direction:row;gap:.45em;padding:.3em}
+  html.pbx .week ul.pgrid li{flex:1 1 0;min-width:0}html.pbx .week ul.pgrid li.next{flex-grow:1.7}
+  html.pbx .week ul.pgrid li{background:var(--hpanel,rgba(22,18,14,.62));border-color:var(--hline,rgba(255,255,255,.16));padding:.7em .15em;gap:.2em;font-size:calc(clamp(14px,1.45vw,28px)*var(--z,1))}
+  html.pbx .week ul.pgrid li.past{opacity:.8}
+  html.pbx .week ul.pgrid li.next{background:#F6EAD2;border-color:#F6EAD2;color:#2A1D0E!important;transform:scale(1.06)}
+  html.pbx .week ul.pgrid li.next .dt,html.pbx .week li .cd{color:#6B4A1E!important}
+  html.pbx .week li .cd{font-size:.68em;white-space:nowrap}
   
   .week li.hrs{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:.3em;white-space:normal;border-bottom:none;padding:1.2vh 0 .5vh;align-items:start;text-align:center}
   .week li.hrs .hc{display:flex;flex-direction:column;align-items:center;gap:.4em;min-width:0}
@@ -891,7 +906,7 @@ const CONFIG = {
   digits: _Q.get('digits') === 'hindi' ? 'hindi' : 'latin',
   clock24: _Q.get('clock') === '24',
   clockSize: (v => ['medium','small'].includes(v) ? v : 'large')(_Q.get('clocksize')),
-  cardStyle: (v => ['dark1','glass1','dark3','glass3'].includes(v) ? v : 'current')(_Q.get('cardstyle')),
+  cardStyle: (v => ['dark1','glass1','dark3','glass3','boxes'].includes(v) ? v : 'current')(_Q.get('cardstyle')),
   markets: (l => l.length ? l : ['tasi','spx','btc'])(
     _list('markets').filter((k, i, a) => ['tasi','aramco','spx','btc','gold','silver','oil','xrp'].includes(k) && a.indexOf(k) === i).slice(0, 4)),
   mkStyle: _Q.get('mkstyle') === 'prices' ? 'prices' : 'arrows',
@@ -2955,7 +2970,8 @@ function prayerRows(){
   return Object.keys(names).filter(k => DAY_TIMES[k]).map(k => {
     const [h, mi] = String(DAY_TIMES[k]).split(':').map(Number);
     const cls = k === lit ? 'next' : at(k) <= mins && !(tomorrow && k === lit) ? 'past' : '';
-    return `<li class="${cls}"><span>${names[k]}</span><span class="dt">${fmtTime(h, mi)}</span></li>`;
+    const cd = cls === 'next' && CONFIG.cardStyle === 'boxes' && !cur ? '<span class="cd">' + 'In ' + shortHM(Math.max(60, Math.round((at(k) + (tomorrow ? 1440 : 0) - mins) * 60))) + '</span>' : '';
+    return `<li class="${cls}"><span>${names[k]}</span><span class="dt">${fmtTime(h, mi)}</span>${cd}</li>`;
   });
 }
 
@@ -4223,7 +4239,7 @@ function boot(){
   if(CONFIG.slot === 'none') document.documentElement.classList.add('slot-none');
   if(!CONFIG.occasion) document.documentElement.classList.add('occ-off');
   if(!SLOT_MATCHES) document.getElementById('match-row').textContent = '';
-  if(CONFIG.cardStyle !== 'current') document.documentElement.classList.add('cs-' + CONFIG.cardStyle);
+  addCardStyle();
   if(CONFIG.clockSize !== 'large') document.documentElement.classList.add('ck-' + CONFIG.clockSize);
   if(CONFIG.clockSize === 'small') document.documentElement.style.setProperty('--ckk', ((LATIN ? 3.26 : 2.62) + (CONFIG.seconds ? .44 : 0)).toFixed(2));
   if(CONFIG.seconds && !CONFIG.widget) document.getElementById('ck-m').insertAdjacentHTML('afterend', '<span class="sec" id="ck-s"><i></i><i></i></span>');
@@ -4292,10 +4308,15 @@ function boot(){
   }, 60*1000);
 }
 
+function addCardStyle(){
+  if(CONFIG.cardStyle !== 'current') document.documentElement.classList.add(CONFIG.cardStyle === 'boxes' ? 'pbx' : 'cs-' + CONFIG.cardStyle);
+}
+
 function bootWidget(){
   document.documentElement.classList.add('widget');
+  if(_Q.get('row') === '1') document.documentElement.classList.add('row');
   if(CONFIG.lowram) document.documentElement.classList.add('lowram');
-  if(CONFIG.cardStyle !== 'current') document.documentElement.classList.add('cs-' + CONFIG.cardStyle);
+  addCardStyle();
   buildCards();
   restoreSnap();
   setTimeout(saveSnap, 15*1000);

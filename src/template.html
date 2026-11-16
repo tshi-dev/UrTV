@@ -46,6 +46,11 @@
   html.widget .mid{display:grid;grid-template-columns:minmax(0,1fr);gap:var(--cg,clamp(8px,2vw,22px));align-items:start}
   html.widget .mid.n2,html.widget .mid.n3{grid-template-columns:minmax(0,560fr) minmax(0,540fr)}
   html.widget .mid .week.w3{grid-column:1/-1}
+  /* 4.4 «التخطيط: كنبة» (#row=1): the cards side by side in one low strip above the apps tray, the same height; today's prayers in one row */
+  html.row .mid.n2{grid-template-columns:1fr 1fr}html.row .mid.n3{grid-template-columns:1fr 1fr 1fr}
+  html.row .mid{align-items:stretch}html.row .mid .week.w3{grid-column:auto}
+  html.row .week ul.pgrid{grid-template-columns:repeat(6,minmax(0,1fr));gap:.5em}
+  html.row .week ul.pgrid li{padding:.6em .2em;font-size:calc(clamp(16px,1.2vw,26px)*var(--z,1))}
   html.widget .week{width:100%}
   /* the home's cards take the apps tray's glass (#hpanel= and #hline= from the launcher: FavBar's fill and line, as thin as «شفافية الشريط» says): one family in every look, no per-card tint */
   html.hcard .week{background:var(--hpanel)!important;border-color:var(--hline)!important}
@@ -177,6 +182,17 @@
   .week ul.pgrid li.past .dt{color:#8A826D}
   .week ul.pgrid li.next{background:rgba(var(--gold-rgb),.18);border-color:rgba(var(--gold-rgb),.55);color:var(--gold-hi)}
   .week ul.pgrid li.next .dt{color:var(--gold-3)}
+  /* 4.4 «شكل البطاقة: مربعات» (html.pbx): today's prayers as separate boxes in one row, no card round them; each box the launcher's glass
+     (#hpanel=) or a dark one, so it reads over any photo; the next one light with its countdown under it */
+  html.pbx .week.boxes,html.pbx .week.boxes::before{background:none!important;border:0!important;box-shadow:none!important;padding:0!important}
+  html.pbx .week.boxes::after,html.pbx .week.boxes .hd,html.pbx .week.boxes .frm,html.pbx .week.boxes .dia{display:none!important}
+  html.pbx .week ul.pgrid{display:flex;flex-direction:row;gap:.45em;padding:.3em}
+  html.pbx .week ul.pgrid li{flex:1 1 0;min-width:0}html.pbx .week ul.pgrid li.next{flex-grow:1.7}
+  html.pbx .week ul.pgrid li{background:var(--hpanel,rgba(22,18,14,.62));border-color:var(--hline,rgba(255,255,255,.16));padding:.7em .15em;gap:.2em;font-size:calc(clamp(14px,1.45vw,28px)*var(--z,1))}
+  html.pbx .week ul.pgrid li.past{opacity:.8}
+  html.pbx .week ul.pgrid li.next{background:#F6EAD2;border-color:#F6EAD2;color:#2A1D0E!important;transform:scale(1.06)}
+  html.pbx .week ul.pgrid li.next .dt,html.pbx .week li .cd{color:#6B4A1E!important}
+  html.pbx .week li .cd{font-size:.68em;white-space:nowrap}
   /* «الساعات القادمة»: the next six hours in one row, the earliest on the right */
   .week li.hrs{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:.3em;white-space:normal;border-bottom:none;padding:1.2vh 0 .5vh;align-items:start;text-align:center}
   .week li.hrs .hc{display:flex;flex-direction:column;align-items:center;gap:.4em;min-width:0}
@@ -940,7 +956,7 @@ const CONFIG = {
   // the look of the card beside the clock: #cardstyle=current|dark1|glass1|dark3|glass3
   // the size of the clock: #clocksize=large|medium|small (anything else = large)
   clockSize: (v => ['medium','small'].includes(v) ? v : 'large')(_Q.get('clocksize')),
-  cardStyle: (v => ['dark1','glass1','dark3','glass3'].includes(v) ? v : 'current')(_Q.get('cardstyle')),
+  cardStyle: (v => ['dark1','glass1','dark3','glass3','boxes'].includes(v) ? v : 'current')(_Q.get('cardstyle')),
   // the markets at the top left: #markets=tasi,spx,btc
   // and #mkstyle=arrows (a ▲/▼ only, the default) or prices (the price and the day's change)
   markets: (l => l.length ? l : ['tasi','spx','btc'])(
@@ -3261,7 +3277,8 @@ function prayerRows(){
   return Object.keys(names).filter(k => DAY_TIMES[k]).map(k => {
     const [h, mi] = String(DAY_TIMES[k]).split(':').map(Number);
     const cls = k === lit ? 'next' : at(k) <= mins && !(tomorrow && k === lit) ? 'past' : '';
-    return `<li class="${cls}"><span>${names[k]}</span><span class="dt">${fmtTime(h, mi)}</span></li>`;
+    const cd = cls === 'next' && CONFIG.cardStyle === 'boxes' && !cur ? '<span class="cd">' + 'بعد ' + shortHM(Math.max(60, Math.round((at(k) + (tomorrow ? 1440 : 0) - mins) * 60))) + '</span>' : '';   // «مربعات»: the countdown under the next one
+    return `<li class="${cls}"><span>${names[k]}</span><span class="dt">${fmtTime(h, mi)}</span>${cd}</li>`;
   });
 }
 
@@ -4641,7 +4658,7 @@ function boot(){
   if(CONFIG.slot === 'none') document.documentElement.classList.add('slot-none');
   if(!CONFIG.occasion) document.documentElement.classList.add('occ-off');
   if(!SLOT_MATCHES) document.getElementById('match-row').textContent = '';   // not «لا شيء هذا الأسبوع»: that is the matches slot's
-  if(CONFIG.cardStyle !== 'current') document.documentElement.classList.add('cs-' + CONFIG.cardStyle);
+  addCardStyle();
   if(CONFIG.clockSize !== 'large') document.documentElement.classList.add('ck-' + CONFIG.clockSize);
   // the small clock's column: its widest time of day in ems, every minute measured in Thmanyah Display
   // in Latin digits 3.25), so the cards beside it and the panels under it never move
@@ -4716,11 +4733,17 @@ function boot(){
   }, 60*1000);
 }
 
+// «شكل البطاقة»: html.cs-<style>; «مربعات» is html.pbx (the prayers card's own look: the other cards stay as they are)
+function addCardStyle(){
+  if(CONFIG.cardStyle !== 'current') document.documentElement.classList.add(CONFIG.cardStyle === 'boxes' ? 'pbx' : 'cs-' + CONFIG.cardStyle);
+}
+
 // The launcher's cards: the chosen ones only
 function bootWidget(){
   document.documentElement.classList.add('widget');
+  if(_Q.get('row') === '1') document.documentElement.classList.add('row');   // 4.4 «التخطيط: كنبة»: the cards in one row above the apps tray
   if(CONFIG.lowram) document.documentElement.classList.add('lowram');
-  if(CONFIG.cardStyle !== 'current') document.documentElement.classList.add('cs-' + CONFIG.cardStyle);   // «شكل البطاقة» applies to each of them
+  addCardStyle();   // «شكل البطاقة» applies to each of them
   buildCards();
   restoreSnap();
   setTimeout(saveSnap, 15*1000);

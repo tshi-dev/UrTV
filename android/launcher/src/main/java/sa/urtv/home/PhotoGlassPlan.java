@@ -14,6 +14,8 @@ final class PhotoGlassPlan {
     static final float DIGITS = 0.26f, TOP = 0.16f;
     /** the scenery crosses at most this share of the digits, and is used only between these heights (a skyline too high or too low: no overlap) */
     static final float CROSS = 0.3f, LOWEST = 0.62f, HIGHEST = 0.25f;
+    /** 4.4 «التخطيط: كنبة»: the cards' strip starts about here; the digits end above it */
+    static final float ROW_TOP = 0.55f;
 
     /**
      * {set, name} of the cut-out for the home's key of a photo: "pack:<id>:<n>" (a photo pack's), "photo:<file>" (our hosted set),
@@ -35,8 +37,9 @@ final class PhotoGlassPlan {
     /**
      * {left, top, right, bottom} of the digits on a screen of w x h. With the cards on the screen (left in Arabic) the clock takes the start half,
      * else the middle. {@code skyline}: the scenery's top in each of 48 columns (px of a 1080 screen), null for a photo with no cut-out.
+     * {@code row}: «كنبة»'s cards are in a strip under the clock: the digits never reach it (a scenery that low: the usual place).
      */
-    static int[] box(int[] skyline, int w, int h, boolean cardsShown, boolean rtl) {
+    static int[] box(int[] skyline, int w, int h, boolean cardsShown, boolean rtl, boolean row) {
         int digitH = Math.round(h * DIGITS);
         int width = Math.min(Math.round(digitH * 2.6f), cardsShown ? Math.round(w * 0.44f) : Math.round(w * 0.7f));
         int centre = !cardsShown ? w / 2 : rtl ? Math.round(w * 0.73f) : Math.round(w * 0.27f);
@@ -50,6 +53,7 @@ final class PhotoGlassPlan {
                 bottom = y + Math.round(digitH * CROSS);
                 top = bottom - digitH;
                 if (top < Math.round(h * 0.1f)) { top = Math.round(h * 0.1f); bottom = top + digitH; }
+                if (row && bottom > h * ROW_TOP) { top = Math.round(h * TOP); bottom = top + digitH; }
             }
         }
         return new int[] {left, top, right, bottom};

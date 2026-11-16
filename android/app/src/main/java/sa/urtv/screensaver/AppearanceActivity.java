@@ -507,6 +507,14 @@ public class AppearanceActivity extends Activity {
                 paint.setColor(l.line);
                 c.drawRoundRect(box, dp(8), dp(8), paint);
                 paint.setStyle(Paint.Style.FILL);
+            } else if (kind == CARD && "boxes".equals(key)) {   // «مربعات»: six boxes in a row, the next one light, no card round them
+                paint.setColor(0xFF1C2A24);
+                c.drawRoundRect(all, r, r, paint);
+                float bw = (w - dp(16)) / 6f;
+                for (int i = 0; i < 6; i++) {
+                    paint.setColor(i == 3 ? 0xFFF6EAD2 : 0x9E16120E);
+                    c.drawRoundRect(new RectF(dp(8) + i * bw + dp(2), h * 0.3f, dp(8) + (i + 1) * bw - dp(2), h * 0.7f), dp(6), dp(6), paint);
+                }
             } else if (kind == CARD) {
                 paint.setColor(0xFF1C2A24);
                 c.drawRoundRect(all, r, r, paint);   // the photo

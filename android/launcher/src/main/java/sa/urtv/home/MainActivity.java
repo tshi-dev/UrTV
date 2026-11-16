@@ -764,7 +764,7 @@ public class MainActivity extends Activity {
      * card goes under the pair. The box ends above the dock, or above the app title when the longest title of the favourites
      * would reach into it. Before the screen is laid out the numbers come from the screen's size alone.
      */
-    private int[] homeCardBox(int cards) {
+    private int[] homeCardBox(int cards, boolean row) {
         android.util.DisplayMetrics dm = getResources().getDisplayMetrics();
         int clockLeft = 0, titleTop = 0, dockTop = 0, wide = 0;
         if (clockBlock != null && clockBlock.getWidth() > 0) clockLeft = ((View) clockBlock.getParent()).getLeft() + clockBlock.getLeft();
@@ -775,6 +775,7 @@ public class MainActivity extends Activity {
             dockTop = titleTop + tray.getTop();   // the tray's top (FavBar): the cards above end before it
             for (View c : dockCards) wide = Math.max(wide, Math.round(title.getPaint().measureText(((App) c.getTag()).label)));
         }
+        if (row) return CardBox.row(dm.widthPixels, dm.heightPixels, dm.density, titleTop);
         return CardBox.box(cards, dm.widthPixels, dm.heightPixels, dm.density, clockLeft, titleTop, dockTop, wide);
     }
 
@@ -3184,7 +3185,7 @@ public class MainActivity extends Activity {
             sceneBackdrop.addView(sceneHome, sceneBackdrop.indexOfChild(wallFront) + 1, new FrameLayout.LayoutParams(-1, -1));
         }
         if (on) {
-            sceneHome.set(true, cfg.scenePacks, ScenePlan.stay(cfg.sceneStay), homeCard != null && homeCard.shownCards() > 0, Dir.rtl(), glass);
+            sceneHome.set(true, cfg.scenePacks, ScenePlan.stay(cfg.sceneStay), homeCard != null && homeCard.shownCards() > 0 && !homeCard.inRow(), Dir.rtl(), glass);   // «كنبة»: the cards are under it, the clock in the middle
             boolean night = false, fog = false;
             if (cfg.sceneByTime) try {   // the city's Maghrib to its Fajr (the same prayer times as the adhan)
                 sa.urtv.home.tilawah.DayParts d = sa.urtv.home.tilawah.DayParts.now(this, cfg.placeFragment(), cfg.placeTicket());
@@ -3231,14 +3232,15 @@ public class MainActivity extends Activity {
             clock.setVisibility(View.VISIBLE);   // the header clock back (sceneTick sets it again when the scenes are on)
             return;
         }
-        boolean cards = homeCard != null && homeCard.shownCards() > 0;
+        boolean cards = homeCard != null && homeCard.shownCards() > 0 && !homeCard.inRow();   // «كنبة»: the cards are in the strip under it, the clock in the middle
+        boolean row = homeCard != null && homeCard.inRow();
         if (photoGlass == null) {   // over the two photo layers (showWallpaper keeps them at 0 and 1), under the dimming and the scrims
             photoGlass = new PhotoGlass(this, Ram.tier(this), font("display"));
             sceneBackdrop.addView(photoGlass, sceneBackdrop.indexOfChild(wallFront) + 1, new FrameLayout.LayoutParams(-1, -1));
-            photoGlass.place(cards, Dir.rtl());
+            photoGlass.place(cards, Dir.rtl(), row);
             Drawable d = wallFront.getDrawable();
             if (d instanceof BitmapDrawable && ((BitmapDrawable) d).getBitmap() != null) photoGlass.show(((BitmapDrawable) d).getBitmap(), wallShownKey, NetGate.allowed(resumed, NetGateAndroid.displayOn(this)));
-        } else photoGlass.place(cards, Dir.rtl());
+        } else photoGlass.place(cards, Dir.rtl(), row);
         photoGlass.setTime(clock.getText());
         clock.setVisibility(View.INVISIBLE);
         ampm.setVisibility(View.INVISIBLE);

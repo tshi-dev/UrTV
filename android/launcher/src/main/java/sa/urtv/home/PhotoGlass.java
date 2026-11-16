@@ -29,7 +29,7 @@ final class PhotoGlass extends FrameLayout {
     private final SceneClock clock;
     private final ImageView mask;
     private final Handler ui = new Handler(Looper.getMainLooper());
-    private boolean cardsShown, rtl = true;
+    private boolean cardsShown, rtl = true, row;
     private Bitmap glass;   // the photo on the screen at 160x90, and its scenery's skyline (null: no cut-out), to place the digits again
     private int[] line;
     private int gen;
@@ -51,12 +51,13 @@ final class PhotoGlass extends FrameLayout {
 
     void setTime(CharSequence t) { clock.setTime(t); }
 
-    /** where the digits go follows the cards (shown or not) and the direction; a change moves them at once */
-    void place(boolean cards, boolean rightToLeft) {
-        if (cards == cardsShown && rightToLeft == rtl) return;
+    /** where the digits go follows the cards (beside the clock, or in «كنبة»'s strip under it) and the direction; a change moves them at once */
+    void place(boolean cards, boolean rightToLeft, boolean cardsInRow) {
+        if (cards == cardsShown && rightToLeft == rtl && cardsInRow == row) return;
         cardsShown = cards;
         rtl = rightToLeft;
-        if (glass != null) clock.setScene(glass, PhotoGlassPlan.box(line, width(), height(), cardsShown, rtl), false);
+        row = cardsInRow;
+        if (glass != null) clock.setScene(glass, PhotoGlassPlan.box(line, width(), height(), cardsShown, rtl, row), false);
     }
 
     private int width() { return getWidth() > 0 ? getWidth() : getResources().getDisplayMetrics().widthPixels; }
@@ -75,7 +76,7 @@ final class PhotoGlass extends FrameLayout {
         line = null;
         mask.setVisibility(GONE);
         mask.setImageDrawable(null);
-        clock.setScene(glass, PhotoGlassPlan.box(null, w, h, cardsShown, rtl), false);
+        clock.setScene(glass, PhotoGlassPlan.box(null, w, h, cardsShown, rtl, row), false);
         final String[] key = PhotoGlassPlan.key(wallKey);
         if (key == null || !ScenePlan.mask(tier)) return;   // the person's own photo, «الحرمين», or a weak TV: the clock in front
         final Bitmap shown = glass;
@@ -93,7 +94,7 @@ final class PhotoGlass extends FrameLayout {
                 mask.setLayoutParams(lp);
                 mask.setImageBitmap((Bitmap) got[0]);
                 mask.setVisibility(VISIBLE);
-                clock.setScene(shown, PhotoGlassPlan.box(line, w, h, cardsShown, rtl), false);
+                clock.setScene(shown, PhotoGlassPlan.box(line, w, h, cardsShown, rtl, row), false);
             });
         }, "photo-mask").start();
     }

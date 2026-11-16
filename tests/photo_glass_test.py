@@ -43,6 +43,8 @@ if shutil.which("javac"):
           m[1] < 540 < m[3] and abs((m[3] - 540) - round((m[3] - m[1]) * 0.3)) <= 1, m)
     check("a skyline too high or too low (or no skyline of 48): the digits at their usual place, never squeezed",
           box["high"] == box["low"] == box["short"] == box["none-nocards"], box)
+    check("«كنبة» (the cards in a strip under the clock): the digits never reach the strip; a scenery that low leaves them at their usual place",
+          box["lowish"][3] > 1080 * 0.55 and box["lowish-row"] == box["mid-row"] == box["none-nocards"], box)
     check("a 720 screen: the same place, scaled", all(abs(a * 2 / 3 - b) <= 2 for a, b in zip(m, box["mid720"])), box["mid720"])
 else:
     print("SKIP photo glass rules: no javac here")

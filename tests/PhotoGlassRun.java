@@ -11,14 +11,19 @@ public final class PhotoGlassRun {
         }
         int[] flat = new int[48], high = new int[48], low = new int[48];
         for (int i = 0; i < 48; i++) { flat[i] = 540; high[i] = 100; low[i] = 900; }
-        print("none-nocards", PhotoGlassPlan.box(null, 1920, 1080, false, true));
-        print("none-cards-rtl", PhotoGlassPlan.box(null, 1920, 1080, true, true));
-        print("none-cards-ltr", PhotoGlassPlan.box(null, 1920, 1080, true, false));
-        print("mid", PhotoGlassPlan.box(flat, 1920, 1080, false, true));
-        print("high", PhotoGlassPlan.box(high, 1920, 1080, false, true));
-        print("low", PhotoGlassPlan.box(low, 1920, 1080, false, true));
-        print("mid720", PhotoGlassPlan.box(flat, 1280, 720, false, true));
-        print("short", PhotoGlassPlan.box(new int[5], 1920, 1080, false, true));
+        print("none-nocards", PhotoGlassPlan.box(null, 1920, 1080, false, true, false));
+        print("none-cards-rtl", PhotoGlassPlan.box(null, 1920, 1080, true, true, false));
+        print("none-cards-ltr", PhotoGlassPlan.box(null, 1920, 1080, true, false, false));
+        print("mid", PhotoGlassPlan.box(flat, 1920, 1080, false, true, false));
+        print("high", PhotoGlassPlan.box(high, 1920, 1080, false, true, false));
+        print("low", PhotoGlassPlan.box(low, 1920, 1080, false, true, false));
+        print("mid720", PhotoGlassPlan.box(flat, 1280, 720, false, true, false));
+        int[] lowish = new int[48];
+        for (int i = 0; i < 48; i++) lowish[i] = 640;
+        print("lowish", PhotoGlassPlan.box(lowish, 1920, 1080, false, true, false));
+        print("lowish-row", PhotoGlassPlan.box(lowish, 1920, 1080, false, true, true));
+        print("mid-row", PhotoGlassPlan.box(flat, 1920, 1080, false, true, true));
+        print("short", PhotoGlassPlan.box(new int[5], 1920, 1080, false, true, false));
     }
 
     private static void print(String name, int[] b) { System.out.println("box\t" + name + "\t" + b[0] + "," + b[1] + "," + b[2] + "," + b[3]); }
