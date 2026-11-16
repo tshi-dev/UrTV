@@ -60,6 +60,8 @@ async function open(hash, { archive = ARCHIVE, host = false } = {}) {
     if (l) return LEAGUES[l[1]] ? json(r, LEAGUES[l[1]]) : r.fulfill({ status: 404, body: '' });
     if (u.endsWith('/data-catalogue/catalogue/catalogue.json')) return json(r, CATALOGUE);
     if (/search_all_teams\.php\?l=English%20League%201$/.test(u)) return json(r, { teams: [{ idTeam: '134000', strTeam: 'Wigan Athletic' }, { idTeam: '134001', strTeam: 'Bolton Wanderers' }] });
+    if (/lookuptable\.php\?l=4668&s=2026-2027$/.test(u)) { asked.push('table4668'); return json(r, { table: [{ idTeam: '136013', strTeam: 'Al-Hilal', intRank: '1', intPoints: '30' }, { idTeam: '136011', strTeam: 'Al-Fateh', intRank: '9', intPoints: '14' }] }); }
+    if (/lookuptable\.php/.test(u) && !/l=4328&/.test(u)) return json(r, { table: null });
     if (/lookuptable\.php\?l=4328&s=2026-2027$/.test(u)) { asked.push('table'); return json(r, TABLE); }
     const n = /eventsnext\.php\?id=(\d+)/.exec(u);
     if (n) return json(r, { events: SERVER_NEXT[n[1]] || null });
@@ -286,6 +288,20 @@ const ids = (p, key) => p.evaluate(k => ((MP.leagues.find(x => x.key === k) || {
   await p.waitForTimeout(300);
   check('form: on the club\'s page, beside its name', await p.textContent('#mp-age') === 'آخر ٥فت', await p.textContent('#mp-age'));
   check('form: no script error', !errors.length, errors.join(' | '));
+  await ctx.close();
+}
+
+// ---- 4.3.3 the league table's place beside each club's name on a game's card, when the league has a table
+{
+  const { p, ctx, errors, asked } = await open('teams=136013&matchpage=1');
+  await p.evaluate(() => mpOpen(fbGames().find(e => e.idEvent === '11')));
+  await p.waitForTimeout(400);
+  const rk = await p.$$eval('#mp-detail .mdt', ts => ts.map(t => (t.querySelector('.rk') || {}).textContent || ''));
+  check('table: each club\'s place under its name', rk.join() === 'المركز ١,المركز ٩', rk.join());
+  check('table: one request for the league\'s season', asked.filter(a => a === 'table4668').length === 1, asked.join());
+  await p.evaluate(() => mpOpen(Object.assign({}, fbGames().find(e => e.idEvent === '11'), { idLeague: '4339' })));
+  await p.waitForTimeout(300);
+  check('table: a league with no table: no place shown, no error', !(await p.$$eval('#mp-detail .rk', r => r.length)) && !errors.length, errors.join(' | '));
   await ctx.close();
 }
 

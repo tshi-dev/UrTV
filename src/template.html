@@ -736,6 +736,7 @@
   .fm-d{color:var(--fs)}
   .fm-l{color:var(--flo)}
   .fmh{margin-inline-end:calc(var(--u)*12)}
+  .mdt .rk{color:var(--fs);font-size:calc(var(--u)*24)}
   #mp-q{font:inherit;color:var(--fi);background:var(--fbg);border:1px solid var(--fln);border-radius:calc(var(--u)*12);padding:calc(var(--u)*4) calc(var(--u)*16);width:calc(var(--u)*560);outline:none}
   #mp .fnote{font-size:calc(var(--u)*22)}
   #mp .fmk{opacity:1;color:var(--fs);border-color:var(--fln);background:var(--chip)}
@@ -4184,7 +4185,7 @@ const FB_W = {
   myLeagues:'دورياتي', add:'أضف دوريًا أو فريقًا', manage:'إعدادات فرقي', noTeams:'ما تتابع فريقًا بعد', noLeagues:'ما تتابع دوريًا بعد', allLands:'كل الدول',
   lgTeams:'فرق هذا الدوري', lgOpen:'الترتيب والنتائج', followedL:'أُضيف %s إلى دورياتك', unfollowedL:'أُزيل %s من دورياتك', on:'متابَع', find:'ابحث عن فريق', found:'نتائج البحث', typeName:'اكتب اسم الفريق', full:'وصلت للحد: ٨ دوريات', choose:'اختر دوريًا',
   h2hSum:'%s: %s %s فوز، %s تعادل، %s %s', h2h1:'آخر مواجهة', h2h2:'آخر مواجهتين', h2hN:'آخر %s مواجهات', meet:'المواجهات',
-  marks:'فتخ', form:'آخر ٥',
+  marks:'فتخ', form:'آخر ٥', rank:'المركز %s',
   club:'صفحة الفريقين', last:'آخر النتائج', h2h:'المواجهات مع %s', see:'صفحة %s', loading:'جارٍ التحميل…', noData:'لا شيء هنا بعد', followT:'تابع %s', unfollowT:'ألغِ متابعة %s',
 };
 const fw = (s, ...a) => { let i = 0; return String(s).replace(/%(\d)\$s|%s|%%/g, (m, n) => m === '%%' ? '%' : String(n ? a[+n - 1] : a[i++])); };
@@ -4485,7 +4486,7 @@ function mpLeagueView(v){
   } else {   // TheSportsDB's table of the season the league's games say (one request, when this tab is open)
     const g = fbGames().find(ev => String(ev.idLeague) === id && ev.strSeason), r0 = res && res.results && res.results[0];
     const season = String((g && g.strSeason) || (r0 && r0.s) || '');
-    const t = /^\d{4}(-\d{4})?$/.test(season) ? archWant(`https://www.thesportsdb.com/api/v1/json/${CONFIG.sportsKey}/lookuptable.php?l=${id}&s=${season}`) : res === undefined ? undefined : null;
+    const t = tableUrl(id, season) ? archWant(tableUrl(id, season)) : res === undefined ? undefined : null;
     const rows = ((t && Array.isArray(t.table) && t.table) || []).filter(x => x && /^\d+$/.test(String(x.idTeam)))
       .map(x => mpItem(ar(+x.intRank || 0) + '. ' + teamAr(x.strTeam, String(x.idTeam)), fw(FB_W.pts, ar(+x.intPoints || 0)), () => mpGo({k: 'club', id: String(x.idTeam)})));
     groups.push({key: 't', name: FB_W.table, games: rows, none: t === undefined ? FB_W.loading : FB_W.noTable});
@@ -4514,6 +4515,13 @@ function h2hOf(a, b){
   const r = {n: ms.length, a: 0, d: 0, b: 0};
   ms.forEach(m => { const hs = +m.hs, as = +m.as; if(hs === as) r.d++; else if((hs > as) === (String(m.h) === a)) r.a++; else r.b++; });
   return r;
+}
+// 4.3.3 TheSportsDB's table of a league's season (asked once while something shows it), and a club's place in it ('' when none)
+const tableUrl = (lg, season) => /^\d{1,6}$/.test(String(lg)) && /^\d{4}(-\d{4})?$/.test(String(season)) ? `https://www.thesportsdb.com/api/v1/json/${CONFIG.sportsKey}/lookuptable.php?l=${lg}&s=${season}` : '';
+function rankOf(ev, id){
+  const u = tableUrl(ev.idLeague, ev.strSeason), t = u && archWant(u);
+  const row = t && Array.isArray(t.table) && t.table.find(x => x && String(x.idTeam) === String(id));
+  return row && +row.intRank > 0 ? +row.intRank : '';
 }
 // 4.3.3 a club's form: its last 5 results, newest first, 'w' 'd' 'l' (the page's own and its archive file's)
 function formOf(id){
@@ -4677,7 +4685,7 @@ const mpHasClub = ev => /^\d+$/.test(String(ev.idHomeTeam)) && /^\d+$/.test(Stri
 function mpDetailRender(){
   const ev = MP.detail, now = Date.now(), m = markOf(ev), k = fbKick(ev);
   const big = side => { const c = crestOf(ev, side), id = ev['id' + side + 'Team']; return `<div class="mdt">${c ? `<img class="mdc" src="${esc(c.u)}" alt="">` : '<span class="mdc"></span>'}<b>${esc(nbName(teamAr(ev['str' + side + 'Team'], id)))}</b>`
-    + `${/^\d+$/.test(String(id)) ? formHtml(formOf(id)) : ''}</div>`; };   // 4.3.3 its form under the name
+    + (rankOf(ev, id) ? `<small class="rk">${fw(FB_W.rank, ar(rankOf(ev, id)))}</small>` : '') + `${/^\d+$/.test(String(id)) ? formHtml(formOf(id)) : ''}</div>`; };   // 4.3.3 its place in the league's table and its form under the name
   const mid = (fbLive(ev, now) || fbDone(ev, now)) && fbScored(ev) ? `<b>${ar(+ev.intHomeScore)} - ${ar(+ev.intAwayScore)}</b><i>${fbWhen(ev, now)}</i>`
     : `<b>${fbClock(k)}</b><i>${fbDayWord(fbDayOf(k))}</i>`;
   const meet = !fbLive(ev, now) && !fbDone(ev, now) && h2hLine(ev);   // 4.3.3 a coming game: the two clubs' last meetings
