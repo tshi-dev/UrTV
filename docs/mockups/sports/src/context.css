@@ -1,0 +1,76 @@
+/* The four places a sports card is seen, drawn approximately (the card is the subject): 960x540 dp, shot at 2x = 1920x1080 */
+@font-face{font-family:Plex;font-weight:400;src:url(FONT/ibm-plex-sans-arabic-arabic-400-normal.woff2)}
+@font-face{font-family:Plex;font-weight:500;src:url(FONT/ibm-plex-sans-arabic-arabic-500-normal.woff2)}
+@font-face{font-family:Plex;font-weight:700;src:url(FONT/ibm-plex-sans-arabic-arabic-700-normal.woff2)}
+@font-face{font-family:Plex;font-weight:400;src:url(FONT/ibm-plex-sans-arabic-latin-400-normal.woff2);unicode-range:U+0000-024F}
+@font-face{font-family:Plex;font-weight:700;src:url(FONT/ibm-plex-sans-arabic-latin-700-normal.woff2);unicode-range:U+0000-024F}
+*{margin:0;padding:0;box-sizing:border-box}
+html{direction:rtl;font-family:Plex,sans-serif;color:#fff;--gold:#E9C46A;--gold-3:#F0D48E;--sub:#CFC6B2;--line:rgba(255,255,255,.14);--glass:rgba(255,255,255,.10);--floor:rgba(10,12,16,.52)}
+body{width:960px;height:540px;overflow:hidden;position:relative;background:#111}
+.bg{position:absolute;inset:0;background:center/cover no-repeat}
+.shade{position:absolute;inset:0}
+/* ---- شكل تلفزيونك: the screensaver «معلومات» */
+.s-tv .shade{background:linear-gradient(90deg,rgba(0,0,0,.5),rgba(0,0,0,.15) 55%,rgba(0,0,0,.35)),linear-gradient(0deg,rgba(0,0,0,.75),transparent 40%)}
+.s-tv .date{position:absolute;top:24px;right:32px;text-align:right}
+.s-tv .date b{display:block;font-size:20px;font-weight:700}.s-tv .date i{font-style:normal;font-size:12px;color:var(--sub)}
+.s-tv .date:after{content:"";display:block;width:95px;height:1px;background:var(--gold);margin:8px 0 0 auto;opacity:.8}
+.s-tv .wx{position:absolute;top:22px;left:38px}.s-tv .wx b{font-size:20px}.s-tv .wx i{display:block;font-style:normal;font-size:11px;color:var(--sub);margin-top:6px}
+.s-tv .clock{position:absolute;right:90px;top:200px;font-size:110px;font-weight:700;line-height:1;letter-spacing:0}
+.s-tv .clock small{font-size:30px;color:var(--gold);vertical-align:top;margin-left:6px}
+.s-tv .zone{position:absolute;right:200px;top:338px;font-size:11px;color:var(--sub)}
+.s-tv .card{position:absolute;left:39px;top:118px;width:458px;min-height:200px}
+.s-tv .card.wide{left:39px;right:39px;width:auto;top:100px;min-height:290px;padding-top:16px}
+.s-tv .card.wide > .row{gap:70px!important}.s-tv .card.wide .huge{font-size:64px}.s-tv .card.wide .big{font-size:30px}.s-tv .card.wide .boxes{margin-top:22px!important}.s-tv .card.wide .box b{font-size:18px}
+.s-tv .clock.top{top:24px;right:auto;left:50%;transform:translateX(-50%);font-size:40px}
+.s-tv .bar{position:absolute;left:38px;right:32px;top:418px;border-top:1px solid rgba(255,255,255,.18);display:flex;justify-content:space-between;padding-top:20px}
+.s-tv .bar div{font-size:11px;color:var(--gold)}.s-tv .bar b{display:block;font-size:19px;color:#fff;margin-top:6px}.s-tv .bar i{display:block;font-style:normal;font-size:10px;color:var(--sub);margin-top:6px}
+/* ---- شكل تلفزيونك: the home */
+.h-tv .shade{background:linear-gradient(90deg,rgba(0,0,0,.05),rgba(0,0,0,.55)),linear-gradient(0deg,rgba(0,0,0,.6),transparent 35%)}
+.h-tv .clock{position:absolute;right:48px;top:70px;font-size:64px;font-weight:700;line-height:1}
+.h-tv .clock small{font-size:22px;margin-left:4px}
+.h-tv .greet{position:absolute;right:48px;top:150px;text-align:right;font-size:13px;color:var(--sub)}
+.h-tv .greet b{display:block;font-size:18px;color:var(--gold);margin-bottom:4px}
+.h-tv .pills{position:absolute;right:48px;top:30px;display:flex;gap:10px}
+.h-tv .pills span{width:26px;height:26px;border-radius:50%;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.18)}
+.h-tv .card{position:absolute;left:48px;top:84px;width:461px;min-height:250px}
+.tray{position:absolute;left:48px;right:48px;bottom:30px;display:flex;flex-direction:row;gap:9px}
+.tray span{flex:1;height:58px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700}
+.tray span:first-child{outline:3px solid #fff;outline-offset:2px}
+/* ---- شكل كنبة: the home */
+.h-couch .shade{background:linear-gradient(0deg,rgba(0,0,0,.6),transparent 45%),linear-gradient(180deg,rgba(0,0,0,.35),transparent 30%)}
+.h-couch .greet{position:absolute;right:48px;top:36px;text-align:right}.h-couch .greet b{font-size:20px;color:var(--gold)}.h-couch .greet i{display:block;font-style:normal;font-size:11px;color:#eee;margin-top:6px}
+.h-couch .date{position:absolute;left:0;right:0;top:56px;text-align:center;font-size:15px}
+.h-couch .clock{position:absolute;left:0;right:0;top:120px;text-align:center;font-size:120px;font-weight:700;line-height:1;color:rgba(255,255,255,.92)}
+.h-couch .row{position:absolute;right:48px;left:48px;top:320px;display:flex;gap:12px;justify-content:flex-start}
+.h-couch .mini{width:200px;height:75px;border-radius:14px;background:linear-gradient(var(--glass),var(--glass)),rgba(10,12,16,.42);border:1px solid rgba(255,255,255,.16);padding:10px 14px;text-align:right}
+.h-couch .mini i{display:block;font-style:normal;font-size:10px;color:var(--sub)}.h-couch .mini b{display:block;font-size:17px;margin-top:4px;white-space:nowrap}.h-couch .mini em{display:block;font-style:normal;font-size:10px;color:var(--sub);margin-top:4px}
+.h-couch .mini.sport{width:250px;border-color:rgba(233,196,106,.55)}
+.h-couch .tray{bottom:22px;padding:14px;border-radius:20px;background:rgba(0,0,0,.35);border:1px solid rgba(255,255,255,.12)}
+/* ---- شكل كنبة: the screensaver «نظيفة» with the bar */
+.s-couch .shade{background:linear-gradient(0deg,rgba(0,0,0,.45),transparent 40%)}
+.s-couch .clock{position:absolute;left:0;right:0;top:80px;text-align:center;font-size:130px;font-weight:700;line-height:1;color:rgba(255,255,255,.55);-webkit-text-stroke:1.2px rgba(255,255,255,.9);text-shadow:0 0 30px rgba(255,255,255,.25)}
+.s-couch .date{position:absolute;left:0;right:0;top:252px;text-align:center;font-size:16px;text-shadow:0 1px 6px rgba(0,0,0,.5)}
+.s-couch .next{position:absolute;left:0;right:0;top:282px;text-align:center;font-size:12px;color:#eee;text-shadow:0 1px 6px rgba(0,0,0,.5)}
+.s-couch .sbar{position:absolute;left:50%;transform:translateX(-50%);bottom:38px;min-width:365px;max-width:880px;border-radius:16px;background:rgba(10,12,16,.55);border:1px solid rgba(255,255,255,.14);padding:12px 22px;display:flex;align-items:center;justify-content:center;gap:16px;white-space:nowrap}
+.s-couch .sbar i{font-style:normal;font-size:11px;color:var(--gold)}.s-couch .sbar b{font-size:18px}.s-couch .sbar em{font-style:normal;font-size:12px;color:var(--sub)}
+.s-couch .sbar.tall{flex-direction:column;gap:8px;padding:14px 26px}
+/* ---- the card itself: the cards session's look (dark floor under the glass, gold title over a thin line, centred, «مربعات») */
+.card{border-radius:14px;background:linear-gradient(var(--glass),var(--glass)),var(--floor);border:1px solid rgba(255,255,255,.16);padding:12px 14px 14px;text-align:center}
+.card > h3{font-size:11px;font-weight:500;color:var(--gold-3);text-align:right;padding-bottom:7px;border-bottom:1px solid rgba(233,196,106,.45);margin-bottom:10px;display:flex;justify-content:space-between}
+.card > h3 span{color:var(--sub);font-weight:400}
+.card > h3 span.live{color:#FF6B5E;font-weight:700}
+.boxes{display:grid;gap:8px}
+.box{border:1px solid rgba(255,255,255,.16);border-radius:10px;background:rgba(255,255,255,.05);padding:8px 6px;text-align:center}
+.box.on{background:#EBC77F;color:#1A1712;border-color:#EBC77F}
+.box.on .s{color:#4A3F2A}
+.s{font-size:10px;color:var(--sub)}
+.big{font-size:22px;font-weight:700}
+.huge{font-size:40px;font-weight:700;line-height:1.1}
+.team{display:flex;flex-direction:column;align-items:center;gap:5px}
+.sw{display:inline-block;width:10px;height:10px;border-radius:2px;vertical-align:middle;background:linear-gradient(90deg,var(--a) 50%,var(--b) 50%)}
+.band{height:5px;border-radius:3px;width:56px;background:linear-gradient(90deg,var(--a) 50%,var(--b) 50%)}
+.form{display:inline-flex;gap:3px;direction:rtl}
+.form i{width:9px;height:9px;border-radius:2px;display:inline-block}
+.form .w{background:#3BB273}.form .d{background:#9A9A9A}.form .l{background:#E05A4F}
+.row{display:flex;align-items:center;justify-content:center;gap:10px}
+.live{color:#FF6B5E;font-weight:700}
