@@ -2862,3 +2862,11 @@ The Home doctor, the plan (nothing is sent with --dry-run):
 never: a disable of launcherx or setupwraith, a factory reset, the family PIN
 ```
 State before: HOME role launcherx, UrTV 4.4 (349) + screensaver + extras installed, extras bound, 18 packages off (from the owner's setup run). TV muted.
+
+## step 87 — partial run on build 4.4 (349) before the HOLD line (angles A–C), then stopped
+I had started `homedoctor.py --reboot` (needs `PY=…/venv/Scripts/python.exe` and `-X utf8` on Windows: it picks `venv/bin/python`, a Linux file, and fails with WinError 193). When the GO line changed to «wait for the build with HOME_WANTED» I let angle C finish and stopped the run during angle D (after its first Home press).
+- **A (role to UrTV): FAILED** — Home from YouTube ×3: launcherx at 2 s and 6 s each time; 2 min later Home → launcherx; **the role went back to launcherx within two minutes**.
+- **B (set-home-activity, role untouched): FAILED** — launcherx at 2 s and 6 s ×3, and 2 min later.
+- **C (launcherx's role and preferred activities cleared, then A): FAILED** — same, and the role went back to launcherx within two minutes.
+- D: stopped after press 1 (launcherx). E, F: not run.
+State after: role launcherx (as before), 18 packages off (as before), accessibility list as before (Key Mapper + extras). Raw output in optimize/run/homedoctor/20261116-234258/ (local). I will run step 87 in full when the GO line names the new build.
