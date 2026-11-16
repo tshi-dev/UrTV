@@ -71,7 +71,8 @@ public class PhoneActivity extends Activity implements PrivateScreen {
         scroll.addView(frame);
         col = new LinearLayout(this);
         col.setOrientation(LinearLayout.VERTICAL);
-        col.setPadding(0, dp(28), 0, dp(16));
+        int safe = Math.round(getResources().getDisplayMetrics().heightPixels * 0.05f);   // 4.3.2: the 5 % safe area (the title's top was at y 40 of 1080)
+        col.setPadding(0, Math.max(dp(28), safe), 0, Math.max(dp(16), safe));
         // wide enough for the code's two columns (the QR beside the address and the code) on one TV screen, no scrolling
         int wide = Math.min(Math.round(getResources().getDisplayMetrics().widthPixels / getResources().getDisplayMetrics().density) - 96, 1000);
         frame.addView(col, new FrameLayout.LayoutParams(dp(wide), -2, Gravity.CENTER_HORIZONTAL));
