@@ -1181,7 +1181,7 @@ public class SettingsActivity extends Activity {
     static String fetchCatalogue(java.io.File cache) {
         String body = null;
         try {
-            Net.Reply r = Net.get(CatalogueLeagues.URL, null, 15000, 12000, Bounded.JSON_MAX);   // IPv4 first, 4 s per address, 12 s in all (Net)
+            Net.Reply r = Net.cached(new java.io.File(cache.getParentFile(), "net"), CatalogueLeagues.URL, 15000, 12000, Bounded.JSON_MAX, 0, false);   // IPv4 first, 4 s per address, 12 s in all (Net); G3: with the copy's ETag
             if (r.status != 200) throw new java.io.IOException("status " + r.status);
             body = r.text();
             new JSONObject(body).getJSONArray("leagues");   // a whole answer before it replaces the copy

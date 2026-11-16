@@ -72,6 +72,146 @@ final class Net {
         throw last;
     }
 
+    // ---- G3 (4.3.3): a GET with a copy on the disk (the apps' data files: the markets, the next match, the leagues list)
+
+    /** the copies' folder holds at most this much; the oldest go first */
+    static final long CACHE_CAP = 8L << 20;
+    /** after a failed connection the next background call to that host waits this long (doubled at each failure, at most BACKOFF_MAX_MS); any answer ends it */
+    static final long BACKOFF_MS = 15_000L, BACKOFF_MAX_MS = 5 * 60_000L;
+    /** a call that waited for the same file being fetched takes its answer when it is at most this old (two screens asking at once: one request) */
+    static final long MERGE_MS = 5_000L;
+
+    private static final Map<String, Object> LOCKS = new HashMap<>();
+    private static final Map<String, long[]> BACKOFF = new HashMap<>();   // host -> {failures, until (ms)}
+
+    /**
+     * GET `url` with the copy kept in `dir`: the request carries the copy's ETag (If-None-Match) and date (If-Modified-Since), and a 304 hands back the copy
+     * as a 200 (header "x-urtv-cache: 304"), so an unchanged file costs no body. A copy younger than `freshMs` (at least MERGE_MS: a call that waited while the
+     * same file was being fetched) is handed back without asking ("x-urtv-cache: fresh"). Calls for the same URL run one at a time, so two at once make one
+     * request. `backOff` (background calls): after a failed connection to a host, calls to it fail at once ("back-off") for 15 s, doubled at each failure up
+     * to 5 minutes; a call the person waits for passes false. A reply other than 200 or 304 is handed back as it is and keeps no copy.
+     */
+    static Reply cached(java.io.File dir, String url, int readMs, int deadlineMs, int maxBytes, long freshMs, boolean backOff) throws IOException {
+        String key = key(url), host = new URL(url).getHost();
+        Object lock;
+        synchronized (LOCKS) { lock = LOCKS.get(key); if (lock == null) LOCKS.put(key, lock = new Object()); }
+        synchronized (lock) {
+            java.io.File body = new java.io.File(dir, key + ".body"), meta = new java.io.File(dir, key + ".meta");
+            String[] m = readMeta(meta);   // {etag, last-modified, at}
+            long now = System.currentTimeMillis(), at = m == null ? 0 : parseLong(m[2]);
+            boolean have = m != null && body.isFile();
+            if (have && now - at >= 0 && now - at < Math.max(freshMs, MERGE_MS)) {
+                byte[] b = readFile(body, maxBytes);
+                if (b != null) return new Reply(200, b, one("x-urtv-cache", "fresh"));
+            }
+            if (backOff) {
+                synchronized (BACKOFF) { long[] f = BACKOFF.get(host); if (f != null && now < f[1]) throw new IOException("back-off"); }
+            }
+            Map<String, String> h = new java.util.LinkedHashMap<>();
+            if (have && !m[0].isEmpty()) h.put("If-None-Match", m[0]);
+            if (have && !m[1].isEmpty()) h.put("If-Modified-Since", m[1]);
+            Reply r;
+            try {
+                r = get(url, h, readMs, deadlineMs, maxBytes);
+            } catch (IOException e) {
+                synchronized (BACKOFF) {
+                    long[] f = BACKOFF.get(host);
+                    long n = f == null ? 1 : f[0] + 1;
+                    BACKOFF.put(host, new long[] {n, System.currentTimeMillis() + Math.min(BACKOFF_MAX_MS, BACKOFF_MS << Math.min(10, n - 1))});
+                }
+                throw e;
+            }
+            synchronized (BACKOFF) { BACKOFF.remove(host); }   // an answer: the network is there
+            if (r.status == 304 && have) {
+                byte[] b = readFile(body, maxBytes);
+                if (b != null) {
+                    writeMeta(meta, m[0], m[1], System.currentTimeMillis());
+                    body.setLastModified(System.currentTimeMillis());   // used now: the last to be pruned
+                    Map<String, String> rh = new HashMap<>(r.headers);
+                    rh.put("x-urtv-cache", "304");
+                    return new Reply(200, b, rh);
+                }
+            }
+            if (r.status == 200) {
+                String etag = clean(r.headers.get("etag")), lm = clean(r.headers.get("last-modified"));
+                if (dir.isDirectory() || dir.mkdirs()) {
+                    if (writeFile(body, r.body)) { writeMeta(meta, etag, lm, System.currentTimeMillis()); prune(dir, CACHE_CAP); }
+                }
+            }
+            return r;
+        }
+    }
+
+    /** a test: no host waits */
+    static void forgetBackOff() { synchronized (BACKOFF) { BACKOFF.clear(); } }
+
+    private static Map<String, String> one(String k, String v) { Map<String, String> m = new HashMap<>(); m.put(k, v); return m; }
+    private static String clean(String v) { return v == null ? "" : v.replace("\r", "").replace("\n", "").trim(); }
+    private static long parseLong(String s) { try { return Long.parseLong(s.trim()); } catch (RuntimeException e) { return 0; } }
+
+    static String key(String url) {
+        try {
+            byte[] d = java.security.MessageDigest.getInstance("SHA-1").digest(url.getBytes(StandardCharsets.UTF_8));
+            StringBuilder s = new StringBuilder();
+            for (byte b : d) s.append(String.format(Locale.ROOT, "%02x", b & 0xff));
+            return s.toString();
+        } catch (java.security.NoSuchAlgorithmException e) {
+            return Integer.toHexString(url.hashCode());
+        }
+    }
+
+    private static String[] readMeta(java.io.File f) {
+        byte[] b = readFile(f, 4096);
+        if (b == null) return null;
+        String[] l = new String(b, StandardCharsets.UTF_8).split("\n", -1);
+        return l.length >= 3 ? new String[] {l[0], l[1], l[2]} : null;
+    }
+
+    private static void writeMeta(java.io.File f, String etag, String lm, long at) { writeFile(f, (etag + "\n" + lm + "\n" + at + "\n").getBytes(StandardCharsets.UTF_8)); }
+
+    private static byte[] readFile(java.io.File f, int max) {
+        if (!f.isFile() || f.length() > max) return null;
+        try (java.io.FileInputStream in = new java.io.FileInputStream(f)) {
+            ByteArrayOutputStream o = new ByteArrayOutputStream((int) f.length());
+            byte[] buf = new byte[8192];
+            for (int n; (n = in.read(buf)) > 0; ) { o.write(buf, 0, n); if (o.size() > max) return null; }
+            return o.toByteArray();
+        } catch (IOException e) {
+            return null;
+        }
+    }
+
+    /** written whole or not at all (a temporary file, then renamed) */
+    private static boolean writeFile(java.io.File f, byte[] b) {
+        java.io.File tmp = new java.io.File(f.getPath() + ".tmp");
+        try (java.io.FileOutputStream out = new java.io.FileOutputStream(tmp)) {
+            out.write(b);
+        } catch (IOException e) {
+            tmp.delete();
+            return false;
+        }
+        if (tmp.renameTo(f)) return true;
+        tmp.delete();
+        return false;
+    }
+
+    /** the folder back under cap bytes: the copies used longest ago go first (a copy and its meta together) */
+    static void prune(java.io.File dir, long cap) {
+        java.io.File[] all = dir.listFiles((d, n) -> n.endsWith(".body"));
+        if (all == null) return;
+        long total = 0;
+        for (java.io.File f : all) total += f.length();
+        if (total <= cap) return;
+        java.util.Arrays.sort(all, (a, b) -> Long.compare(a.lastModified(), b.lastModified()));
+        for (java.io.File f : all) {
+            if (total <= cap) break;
+            total -= f.length();
+            String k = f.getName().substring(0, f.getName().length() - 5);
+            f.delete();
+            new java.io.File(dir, k + ".meta").delete();
+        }
+    }
+
     private static Socket tls(Socket plain, String host, int port, int timeoutMs) throws IOException {
         plain.setSoTimeout(timeoutMs);
         javax.net.ssl.SSLSocket ssl = (javax.net.ssl.SSLSocket) ((javax.net.ssl.SSLSocketFactory) javax.net.ssl.SSLSocketFactory.getDefault()).createSocket(plain, host, port, true);

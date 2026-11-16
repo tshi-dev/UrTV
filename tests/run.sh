@@ -27,6 +27,7 @@ python3 tests/ram_tier_test.py   # the three memory tiers (LOW under 2000 MB, MI
 python3 tests/lowram_test.py   # a weak TV (Ram.low): no key filter, the clock off the UI thread, pictures let go behind apps, markets «عادي» and 60 s, #lowram=1
 python3 tests/netlog_test.py   # G3: the request log (NetLog: requests by host, one UrTVNet line per 10 minutes with the bytes)
 python3 tests/page_cache_test.py   # G3: the page revalidates its data (ETag, 304) through the WebView cache, and skips periodic loads while offline
+python3 tests/net_cache_test.py   # G3: Net.cached: ETag and date revalidation, calls merged, the offline back-off, the size cap; the markets, next match and leagues list use it
 python3 tests/deadman_test.py
 python3 tests/run_lock_test.py
 python3 tests/run_identity_test.py

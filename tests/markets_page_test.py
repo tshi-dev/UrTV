@@ -154,7 +154,7 @@ check("step 182: the app's own FX_CODES are CI's, in the same order (a TV asks Y
 mf182 = text(HOME / "MarketFile.java")
 lf = mf182[mf182.index("static void loadFx("):mf182.index("private static String fxFromYahoo(")]
 check("step 182: CI's fx.json first; Yahoo asked only when it is missing, empty or older than 48 h, once a day (the copy of today returns first), not again for 30 min after a failure; only today's rates are saved",
-      "DAY_OF_YEAR" in lf and lf.index("download(MarketData.FX_URL)") < lf.index("MarketData.fxNeedsOwn(text, t) && t - fxOwnAskedAt >= FX_OWN_PAUSE_MS") < lf.index("fxFromYahoo()")
+      "DAY_OF_YEAR" in lf and lf.index("download(c, MarketData.FX_URL)") < lf.index("MarketData.fxNeedsOwn(text, t) && t - fxOwnAskedAt >= FX_OWN_PAUSE_MS") < lf.index("fxFromYahoo()")
       and "FX_OWN_PAUSE_MS = 30 * 60_000L" in mf182 and "FX_STALE_MS = 48 * 3600_000L" in text(HOME / "MarketData.java")
       and "if (!MarketData.fxNeedsOwn(text, t)) { save(c, FX, text); fxText = text; }" in lf and "fxText == null ||" not in lf)
 peg_doc = text(HOME / "MarketData.java")
