@@ -140,7 +140,8 @@ final class SetupProgressView extends LinearLayout {
             r.setGravity(Gravity.CENTER_VERTICAL);
             boolean aboveDone = i > 0 && ph.get(i - 1).state == DONE;
             r.addView(new Mark(getContext(), p.state, i == 0, i == ph.size() - 1, aboveDone), new LayoutParams(dp(36), dp(64)));
-            TextView t = text(p.state == NOW ? 24 : 21, p.state == NOW, p.state == WAIT ? look.sub : p.state == FAILED ? look.warn : look.text);
+            // 4.4 (the owner: no pills): plain words, the step now in the accent (gold) and bold, the others dim; a failed one in red
+            TextView t = text(p.state == NOW ? 24 : 21, p.state == NOW, p.state == NOW ? look.accent : p.state == FAILED ? look.warn : look.sub);
             t.setAlpha(p.state == WAIT ? 0.7f : 1f);
             t.setText(p.name);
             LayoutParams tp = new LayoutParams(0, -2, 1f);
@@ -163,7 +164,7 @@ final class SetupProgressView extends LinearLayout {
         } else if (m.finished) {
             badge.set(!m.bad);
             resultText.setText(m.result);
-            resultSub.setText(m.counts + (m.elapsed.isEmpty() ? "" : " · " + m.elapsed));
+            resultSub.setText(m.counts + (m.elapsed.isEmpty() ? "" : "، " + m.elapsed));   // no «·» between them (the owner's rule)
             breath.stop();
             art.pulse(false);
         } else {

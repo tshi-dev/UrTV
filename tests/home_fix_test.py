@@ -81,5 +81,8 @@ qb = act[act.index("private void qrBeside("):act.index("private void qrBeside(")
 check("5. the QR on the LEFT of the screen in both languages, beside its words (the rescue block and the computer's way)",
       "row.setLayoutDirection(View.LAYOUT_DIRECTION_LTR);" in qb and qb.index("row.addView(card") < qb.index("row.addView(words")
       and "qrBeside(words, RescueInfo.DOC_URL, 120);" in act and "qrBeside(words, HomeFails.GUIDE_URL, 120);" in act)
+pv = text(SETUP / "SetupProgressView.java")
+check("5. the steps are plain words (no pills): the step now in the accent and bold, the others dim; no «·» between the counts and the time",
+      "p.state == NOW ? look.accent : p.state == FAILED ? look.warn : look.sub" in pv and '" · "' not in pv)
 check("5. the mockup the owner sees is in docs/mockups/", (ROOT / "docs/mockups/setup-window-44.png").is_file())
 sys.exit(1 if failed else 0)
