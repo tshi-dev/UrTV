@@ -86,7 +86,8 @@ check("the home screen hands its own AdhanKeys to the keypad", "Parental.guard(t
 dispatch = "\n".join(main).split("private boolean dispatchKey(KeyEvent e) {")[1]
 check("the home screen still asks the adhan first of everything", dispatch.lstrip().startswith("// while the adhan plays") and "if (adhanTakes(e)) return true;" in dispatch[:400])
 check("adhanTakes is the adhan's old rule, unchanged: AdhanKeys.decide, then stopAdhan",
-      "adhanKeys.decide(e.getKeyCode(), e.getAction(), e.getRepeatCount(), adhan, adhanBar.getVisibility() == View.VISIBLE," in "\n".join(main)
+      # 4.4: a dua's card counts as the bar (its «إيقاف» focused is the bar focused); the rule itself is AdhanKeys' unchanged
+      "adhanKeys.decide(e.getKeyCode(), e.getAction(), e.getRepeatCount(), adhan, adhanBar.getVisibility() == View.VISIBLE || card," in "\n".join(main)
       and "if (stop == AdhanKeys.STOP) NowPlaying.stopAdhan(this);" in "\n".join(main))
 for n in ("ParentalActivity.java", "DockActivity.java"):
     check(f"{n}: its PIN keypad has the adhan's rule too", "Parental.adhanFirst(this)" in src(n) or "adhan = Parental.adhanFirst(this)" in src(n))
