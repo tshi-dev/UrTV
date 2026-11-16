@@ -621,11 +621,19 @@ final class Prefs {
      * «أزرار الريموت»: the app each of the remote's YouTube, Netflix and Prime Video keys opens ("" = the key's own app). The home keeps its own
      * copy (Dock.key_app_*, the one `dock.sh key` sets) and takes this one when it changes (Dock.followKeyApps), through ConfigProvider's key_apps.
      */
-    /** This TV's remote (RemoteButtons, the home's same table): the buttons that get a row */
+    /** This TV's remote (RemoteButtons, the home's same table): the buttons that get a row. Read once; NONE (no rows) if the build's fields cannot be read */
     static int remoteTv() {
-        return RemoteButtons.tv(android.os.Build.MANUFACTURER, android.os.Build.BRAND, android.os.Build.MODEL, android.os.Build.DEVICE,
-                android.os.Build.VERSION.SDK_INT);
+        if (remoteTv == -1) {
+            try {
+                remoteTv = RemoteButtons.tv(android.os.Build.MANUFACTURER, android.os.Build.BRAND, android.os.Build.MODEL, android.os.Build.DEVICE,
+                    android.os.Build.VERSION.SDK_INT);
+            } catch (RuntimeException | LinkageError e) {
+                remoteTv = RemoteButtons.NONE;   // never on a TV; the settings' test run on a computer has no Build
+            }
+        }
+        return remoteTv;
     }
+    private static int remoteTv = -1;
     static boolean remoteKeyOk(String key) { return key != null && RemoteButtons.byId(remoteTv(), key) != null; }
     static boolean keyAppOk(String pkg) { return pkg != null && (pkg.isEmpty() || pkg.length() <= 200 && pkg.matches("[A-Za-z][A-Za-z0-9_]*(\\.[A-Za-z0-9_]+)+")); }
     String keyApp(String key) { String v = sp.getString("keyApp_" + key, ""); return keyAppOk(v) ? v : ""; }
