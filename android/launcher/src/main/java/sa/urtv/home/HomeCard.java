@@ -364,7 +364,7 @@ final class HomeCard {
         // same as the screensaver: the page calls its data APIs directly from file://
         s.setAllowFileAccessFromFileURLs(true);
         s.setAllowUniversalAccessFromFileURLs(true);
-        s.setCacheMode(WebSettings.LOAD_NO_CACHE);
+        s.setCacheMode(WebSettings.LOAD_DEFAULT);   // G3: the HTTP cache (the page revalidates its data: fetchT, cache:'no-cache')
         // The page sizes its text to the screen; the TV's font size setting (Android scales WebView text by it) made
         // it larger than its boxes, so the left column spilled off screen and moved as the clock and the matches changed.
         s.setTextZoom(100);

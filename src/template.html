@@ -1775,7 +1775,10 @@ const JITTER_MS = (()=>{
 // the offset never exceeds the task's own period
 // keeps the whole 0-29 (scaled, so TVs stay spread over the period)
 const spread = ms => Math.floor(JITTER_MS * Math.min(ms, 30*60000) / (30*60000));
-const periodic = (fn, ms) => setTimeout(() => { fn(); setInterval(fn, ms); }, ms + spread(ms));   // the first periodic run is late by the offset
+// G3: while the TV says it is offline a periodic load is not tried; each one skipped runs once when the network is back
+const OFF = new Set();
+addEventListener('online', () => { OFF.forEach(f => f()); OFF.clear(); });
+const periodic = (fn, ms) => { const g = () => navigator.onLine === false ? OFF.add(fn) : fn(); setTimeout(() => { g(); setInterval(g, ms); }, ms + spread(ms)); };   // the first periodic run is late by the offset
 const later = fn => setTimeout(fn, JITTER_MS);   // the same offset for the refresh at midnight
 const fmtAgo = ms => { const p = riyadhParts(new Date(ms)); return 'آخر تحديث ' + fmtTime(p.h, p.mi); };
 
@@ -2629,7 +2632,7 @@ function paintMkUp(){
 async function fetchT(url, ms){
   const c = new AbortController(); const id = setTimeout(()=>c.abort(), ms||12000);
   let r;
-  try{ r = await fetch(url,{cache:'no-store', signal:c.signal}); }
+  try{ r = await fetch(url,{cache:'no-cache', signal:c.signal}); }   // G3: asked again each time, with the ETag or date of the copy: an unchanged file is a 304
   catch(e){ clearTimeout(id); throw e; }
   if(!r.ok) clearTimeout(id);   // nobody reads the body of an error
   const body = kind => async () => { try{ return await r[kind](); }finally{ clearTimeout(id); } };

@@ -75,7 +75,7 @@ final class ScreenView {
         // lets the page call Yahoo and other APIs directly, without a CORS gateway
         s.setAllowFileAccessFromFileURLs(true);
         s.setAllowUniversalAccessFromFileURLs(true);
-        s.setCacheMode(WebSettings.LOAD_NO_CACHE);   // photos are cached by PhotoCache, data must be fresh
+        s.setCacheMode(WebSettings.LOAD_DEFAULT);   // G3: the HTTP cache: the page asks for its data with cache:'no-cache' (fetchT), so each fetch is sent again with the copy's ETag or date and an unchanged file is a 304 (fresh data, fewer bytes); photos are cached by PhotoCache
         // The page sizes its text to the screen; the TV's font size setting (Android scales WebView text by it) made
         // it larger than its boxes, so the left column spilled off screen and moved as the clock and the matches changed.
         s.setTextZoom(100);
