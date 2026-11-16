@@ -12,7 +12,7 @@
 #   optimize/saver.sh find-team الهلال             a club's id (Arabic or English name): id:Name | league
 #   optimize/saver.sh teams 136013:Al-Hilal 150643:Al-Zulfi    followed teams in order (up to 20; more are left out and listed);
 #                                                  `teams none` (or `teams ""`) follows no team: the defaults (الهلال، المنتخب السعودي) go
-#   optimize/saver.sh card prayers                 beside the clock: shows prayers forecast hourly prayerrow matches nextmatch verse wisdom adhkar stocks tasks year smart today album none
+#   optimize/saver.sh card prayers                 beside the clock: shows prayers forecast hourly prayerrow matches nextmatch matchday livenow minitable nextmatches yesterday weekend cuppath formula national verse wisdom adhkar stocks tasks year smart today album none
 #   optimize/saver.sh card2 hourly                 a second card beside the clock, shown only while the clock is small (clocksize small):
 #                                                  the same choices but nextprayer and the first card; card2 none = one card (default)
 #   optimize/saver.sh home-card verse,hourly,year  on the home screen (launcher): up to 3 cards, same choices and nextprayer (home only), in this order
