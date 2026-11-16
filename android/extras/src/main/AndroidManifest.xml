@@ -14,6 +14,9 @@
         <intent><action android:name="android.settings.SETTINGS" /></intent>
         <intent><action android:name="android.app.action.TOGGLE_NOTIFICATION_HANDLER_PANEL" /></intent>
         <intent><action android:name="android.intent.action.SEARCH" /></intent>
+        <!-- «أزرار الريموت»: the app a remote button was given, opened by its launcher entry -->
+        <intent><action android:name="android.intent.action.MAIN" /><category android:name="android.intent.category.LEANBACK_LAUNCHER" /></intent>
+        <intent><action android:name="android.intent.action.MAIN" /><category android:name="android.intent.category.LAUNCHER" /></intent>
     </queries>
 
     <application

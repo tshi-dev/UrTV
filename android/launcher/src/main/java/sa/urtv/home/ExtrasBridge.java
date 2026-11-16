@@ -45,6 +45,15 @@ public class ExtrasBridge extends ContentProvider {
                 if (SettingsKey.isSettingsKey(e.getKeyCode())) new Handler(Looper.getMainLooper()).post(() -> MainActivity.keyFromService(e));   // the Settings key only
                 break;
             }
+            case ExtrasWords.KEY_APPS:   // «أزرار الريموت»: the add-on starts and asks the owner's choices
+                out.putString(ExtrasWords.RESULT, Dock.keyAppsLine(c));
+                break;
+            case ExtrasWords.KEY_APP_CHECK: {   // a button over another app opens this one: kids mode hides it, or the family PIN keeps it (as its tile)
+                String pkg = arg;
+                out.putBoolean(ExtrasWords.HIDDEN, pkg == null || !ParentalPolicy.visible(Parental.state(c), pkg));
+                out.putBoolean(ExtrasWords.NEEDS_PIN, pkg == null || Parental.needsPin(c, ParentalPolicy.targets(ParentalPolicy.REMOTE_APP, pkg)));
+                break;
+            }
             case ExtrasWords.LEDGER:   // 4.4: «إنقاذ تلفزيونك» asks what our setup turned off (it turns those back on)
                 out.putString(ExtrasWords.RESULT, sa.urtv.home.setup.SetupHook.ledger(c));
                 break;
