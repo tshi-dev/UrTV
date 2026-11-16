@@ -8,7 +8,8 @@ import java.util.List;
  * A scene is a photo, a blurred and brightened copy of it (the clock's glass) and, for depth, the scenery cut out of it with the sky
  * transparent (the mask), drawn over the clock. A pack's scenes are listed in its scenes.tsv, one line each:
  * id, Arabic name, English name, the digits' top and bottom (px of a 1080 screen), the mask's box "x,y,w,h" (px of 1080p) or "-",
- * dark ("1": a dark clock, for a pale scene), the photo's credit, and (4.3.3, may be missing) its tags: "night" (shown from Maghrib to Fajr when
+ * dark ("1": a dark clock, for a pale scene), the photo's credit, (4.3.3, may be missing) its tags, and (4.4, may be missing or "-") digits_x, the
+ * digits' centre in px of 1920 with no cards beside the clock (480..1440; the middle by default). Tags: "night" (shown from Maghrib to Fajr when
  * «الأفق يتبع الوقت» is on), "fog" (shown in fog when «الأفق يتبع الطقس» is on), comma between.
  */
 final class ScenePlan {
@@ -26,6 +27,7 @@ final class ScenePlan {
     static final class Scene {
         final String pack, id, name, nameEn, credit, tags;
         final int digitsTop, digitsBottom;   // px of a 1080-line screen
+        int digitsX = 960;                   // 4.4 the digits' centre, px of 1920 (scenes.tsv's 10th column), with no cards beside the clock
         final int[] mask;                    // x, y, w, h of the cut-out in px of 1080p; null: no cut-out (the clock is drawn over the photo)
         final boolean dark;
 
@@ -55,7 +57,9 @@ final class ScenePlan {
                     mask = new int[] {Integer.parseInt(m[0]), Integer.parseInt(m[1]), Integer.parseInt(m[2]), Integer.parseInt(m[3])};
                     if (mask[0] < 0 || mask[1] < 0 || mask[2] <= 0 || mask[3] <= 0 || mask[0] + mask[2] > 1920 || mask[1] + mask[3] > 1080) continue;
                 }
-                out.add(new Scene(pack, f[0], f[1], f[2], top, bottom, mask, "1".equals(f[6].trim()), f[7], f.length > 8 ? f[8] : ""));
+                Scene sc = new Scene(pack, f[0], f[1], f[2], top, bottom, mask, "1".equals(f[6].trim()), f[7], f.length > 8 ? f[8] : "");
+                if (f.length > 9 && f[9].trim().matches("[0-9]{3,4}")) sc.digitsX = Math.max(480, Math.min(1440, Integer.parseInt(f[9].trim())));   // "-" or absent: the middle
+                out.add(sc);
             } catch (NumberFormatException e) {
                 // left out
             }
@@ -208,7 +212,8 @@ final class ScenePlan {
             top = bottom - nh;
             width = max;
         }
-        int centre = !cardsShown ? w / 2 : rtl ? Math.round(w * 0.73f) : Math.round(w * 0.27f);
+        int centre = !cardsShown ? Math.max(width / 2, Math.min(w - width / 2, Math.round(s.digitsX * w / 1920f)))   // the scene's own centre, inside the screen
+                : rtl ? Math.round(w * 0.73f) : Math.round(w * 0.27f);   // the cards beside it: the start half (legible() decides the depth there)
         return new int[] {centre - width / 2, top, centre + width / 2, bottom};
     }
 

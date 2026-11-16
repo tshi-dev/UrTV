@@ -72,6 +72,11 @@ public final class ScenePlanRun {
                    .append(String.format("%.2f", ScenePlan.cover(l192, b2, 1920, 1080, 1f))).append('\t').append(d == 0f || ScenePlan.legible(l192, b2, 1920, 1080, d)).append('\n');
             }
         }
+        java.util.List<ScenePlan.Scene> xs = ScenePlan.parse("x", "aa\tx\tx\t100\t400\t-\t0\tc\t\t1200\nbb\tx\tx\t100\t400\t-\t0\tc\tnight\t-\ncc\tx\tx\t100\t400\t-\t0\tc\ndd\tx\tx\t100\t400\t-\t0\tc\t\t1900");
+        for (ScenePlan.Scene x : xs) {
+            int[] c0 = ScenePlan.clockBox(x, 1920, 1080, false, true), c1 = ScenePlan.clockBox(x, 1920, 1080, true, true), c7 = ScenePlan.clockBox(x, 1280, 720, false, true);
+            out.append("digitsx\t").append(x.id).append('\t').append(x.digitsX).append('\t').append((c0[0] + c0[2]) / 2).append('\t').append((c1[0] + c1[2]) / 2).append('\t').append((c7[0] + c7[2]) / 2).append('\n');
+        }
         System.out.print(out);
     }
 }

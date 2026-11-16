@@ -97,6 +97,10 @@ if shutil.which("javac"):
     check("the home uses the rule: SceneHome and PhotoGlass take ScenePlan.depth, and a 0 hides the cut-out (the clock in front, at its usual place)",
           "ScenePlan.depth(" in scene and "depth == 0f ? null : cut" in scene and "ScenePlan.depth(line, fine, digits, w, h)" in read(HOME / "PhotoGlass.java")
           and "PhotoGlassPlan.box(null, w, h, cardsShown, rtl, row)" in read(HOME / "PhotoGlass.java"))
+    dx = {r[1]: r[2:] for r in rows if r[0] == "digitsx"}
+    check("4.4 digits_x (scenes.tsv's 10th column, from the masks gate): with no cards the digits centre there (scaled to the screen); \"-\" or none is the "
+          "middle; out of 480..1440 is held to it; with the cards beside the clock it is the start half as before",
+          dx == {"aa": ["1200", "1200", "1402", "800"], "bb": ["960", "960", "1402", "640"], "cc": ["960", "960", "1402", "640"], "dd": ["1440", "1440", "1402", "960"]}, dx)
     check("ScenePlan's tiers are Ram's numbers", [r for r in rows if r[0] == "tiers"][0][1] == "0,1,2"
           and "public static final int LOW = 0, MID = 1, NORMAL = 2;" in ram)
 else:
