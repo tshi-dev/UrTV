@@ -122,13 +122,24 @@ final class ControlCenter {
      * settings, which every TV has, and never the sound screen again (no crash loop). The mark is kept on this TV.
      */
     static final long SOUND_FAIL_MS = 3500;
+    /** 4.3.3: where the crash leaves its «keeps stopping» window up for a moment the return is later: two returns in a row within this are the crash too */
+    static final long SOUND_SLOW_FAIL_MS = 10_000;
 
     private void soundReturned() {
         long t = prefs().getLong("sound_t", 0);
         if (t == 0) return;
+        long away = System.currentTimeMillis() - t;
+        int quick = prefs().getInt("sound_quick", 0);
         SharedPreferences.Editor e = prefs().edit().remove("sound_t");
-        if (System.currentTimeMillis() - t < SOUND_FAIL_MS) e.putBoolean("sound_bad", true);
+        if (soundBroken(away, quick)) e.putBoolean("sound_bad", true);
+        e.putInt("sound_quick", away >= 0 && away < SOUND_SLOW_FAIL_MS ? quick + 1 : 0);
         e.apply();
+    }
+
+    /** the sound screen crashed: back within SOUND_FAIL_MS, or within SOUND_SLOW_FAIL_MS for the second time in a row (quickBefore: such returns just before) */
+    static boolean soundBroken(long away, int quickBefore) {
+        if (away < 0) return false;   // the clock moved back
+        return away < SOUND_FAIL_MS || (away < SOUND_SLOW_FAIL_MS && quickBefore >= 1);
     }
 
     /** one thing the panel can show: a round toggle or a row */
@@ -169,8 +180,10 @@ final class ControlCenter {
                 Intent sound = soundIntent();
                 if (Settings.ACTION_SOUND_SETTINGS.equals(sound.getAction())) prefs().edit().putLong("sound_t", System.currentTimeMillis()).apply();   // soundReturned reads it
                 host.launchGuarded(ParentalPolicy.PILL_TV_SETTINGS, sound, S.t("إعدادات الصوت"));
-            } catch (RuntimeException e) {   // A6: the TCL G07 crashed here: the tile must never take the home down; the log says what it was
+            } catch (RuntimeException | LinkageError e) {   // A6: the TCL G07 crashed here: the tile must never take the home down; the log says what it was
                 android.util.Log.w("UrTVControl", "sound tile failed " + e.getClass().getSimpleName());
+                try { host.launchGuarded(ParentalPolicy.PILL_TV_SETTINGS, new Intent(Settings.ACTION_SETTINGS), S.t("إعدادات التلفزيون")); }   // the TV's settings instead of nothing
+                catch (RuntimeException | LinkageError ignored) { }
             }
         });
         Item test = tile("speed", S.t("اختبار السرعة"), S.t("اضغط اختيار للبدء"), R.drawable.ic_speed, null);

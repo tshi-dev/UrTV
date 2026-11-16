@@ -70,6 +70,12 @@ check("the panel opens on the tile used last while the home is in front (the fir
 check("«حرّر الذاكرة» is gone: no tile, no kill call, no permission (Android 14 gives a normal app nothing useful to do there)",
       "killBackgroundProcesses" not in center and "freeMemory" not in center and "ic_memory" not in center and "killable" not in text
       and "KILL_BACKGROUND_PROCESSES" not in manifest and not (ROOT / "android/launcher/src/main/res/drawable/ic_memory.xml").exists())
+sb = center.split("static boolean soundBroken(long away, int quickBefore) {")[1].split("\n    }\n")[0]
+check("4.3.3 TCL G07: a slower crash (its «keeps stopping» window) counts too: a second return within 10 s in a row marks the sound screen bad; a clock that moved back never does",
+      "SOUND_SLOW_FAIL_MS = 10_000" in center and "if (away < 0) return false;" in sb and "away < SOUND_FAIL_MS || (away < SOUND_SLOW_FAIL_MS && quickBefore >= 1)" in sb
+      and 'e.putInt("sound_quick", away >= 0 && away < SOUND_SLOW_FAIL_MS ? quick + 1 : 0);' in center)
+check("the sound tile never fails silently: an error opening it (or an old class) opens the TV's settings instead, itself guarded",
+      "catch (RuntimeException | LinkageError e) {   // A6" in center and "catch (RuntimeException | LinkageError ignored) { }" in center)
 check("the sound tile reads the real devices with their product names", "d[i].getProductName()" in center and "ControlText.outputs(types, products)" in center)
 check("the remote's Settings key opens our settings with a fallback to the TV's own", "OPEN_OUR_SETTINGS" in keys and "case RemoteKeys.OPEN_OUR_SETTINGS:" in main and "openOurSettings(true)" in main
       and "orTvSettings" in main and "ParentalPolicy.REMOTE_SETTINGS" in main.split("private void openOurSettings")[2].split("\n    }\n")[0])
