@@ -8,6 +8,7 @@ import json
 import re
 import sys
 import tempfile
+import urllib.error
 from pathlib import Path
 from types import SimpleNamespace
 
@@ -225,7 +226,7 @@ def fake_tsdb(capped=2):
 
 
 fetch, asked = fake_tsdb()
-sys.modules["team_ids"] = SimpleNamespace(API="x/", STATS={"thesportsdb": 0}, PAID=False, fetch=fetch, team_key=lambda n: n.lower(),
+sys.modules["team_ids"] = SimpleNamespace(API="x/", STATS={"thesportsdb": 0}, PAID=False, redact=str, fetch=fetch, team_key=lambda n: n.lower(),
                                          same_team=lambda a, b: a.lower() == b.lower())
 saved = ma.HISTORY
 ma.HISTORY = [("4668", "Saudi Pro League", 4)]
@@ -243,6 +244,17 @@ n1 = len(asked)
 ma.history(hargs())
 again = [u for u in asked[n1:] if "s=2024-2025" in u]
 check("history: a complete past season is not asked again; the current one is", again == [] and any("s=2026-2027" in u for u in asked[n1:]))
+def fetch404(url, pause=0):
+    if "eventsround" in url:
+        raise urllib.error.HTTPError(url, 404, "Not Found", {}, None)
+    return fetch(url, pause)
+sys.modules["team_ids"].fetch = fetch404
+ma.history(SimpleNamespace(out=str(tmp / "h404.json"), report=str(tmp / "r404.json"), state=None, leagues="", seasons=3, budget=1000, pace=0,
+                           days=False, check=False))
+r404 = json.loads((tmp / "r404.json").read_text())
+check("history: a 404 from a round is an empty answer, counted, not a failed league", r404["requests"]["errors"].get("eventsround.php", 0) > 0
+      and "4668" in r404, r404.get("requests"))
+sys.modules["team_ids"].fetch = fetch
 check("history: the second run gives the current season only", {e["strSeason"] for e in json.loads((tmp / "h.json").read_text())["events"]} == {"2026-2027"})
 oH = build(leagues_dir([]), o9, history=str(first), history_state=str(tmp / "state.json"), history_report=str(tmp / "r.json"))
 check("history's games land in the store and its files are kept", len([e for e in store_events(oH).values() if e["lg"] == "4668"]) == 36

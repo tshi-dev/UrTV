@@ -690,14 +690,16 @@ def history(args):
     state = json.loads(Path(args.state).read_text(encoding="utf-8")) if args.state and Path(args.state).is_file() else {}
     only = set(args.leagues.split(",")) if args.leagues else None
     budget = args.budget
-    got_all, report = [], {}
+    got_all, report, errors = [], {}, {}
 
     def ask(path):
         if ti.STATS["thesportsdb"] >= budget:
             raise TimeoutError("budget")
         try:
             return ti.fetch(ti.API + path, pause=pace) or {}
-        except RuntimeError:
+        except Exception as e:   # noqa: BLE001 - a 404 or no answer is an empty answer, counted; never the key (redact)
+            errors[path.split("?")[0]] = errors.get(path.split("?")[0], 0) + 1
+            print(ti.redact(f"{path.split('?')[0]}: {type(e).__name__} {getattr(e, 'code', '')}"), flush=True)
             return {}
 
     def keep(evs, lg, season, into):
@@ -771,7 +773,7 @@ def history(args):
         report["stopped"] = f"the request budget ({budget}) ran out: the next run goes on from here"
     if args.check:
         report["check"] = wiki_check(got_all, ask_ok=True)
-    report["requests"] = ti.STATS
+    report["requests"] = dict(ti.STATS, errors=errors)
     Path(args.out).write_text(json.dumps({"events": got_all}, ensure_ascii=False) + "\n", encoding="utf-8")
     if args.state:
         Path(args.state).write_text(json.dumps(state, ensure_ascii=False, indent=1, sort_keys=True) + "\n", encoding="utf-8")
