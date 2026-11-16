@@ -187,8 +187,8 @@ final class SceneHome extends FrameLayout {
                 // the scene's framing (its frame), the same for the photo, its cut-out and the glass; the clock stays in its one place
                 float[] f = ScenePlan.frame(sc.frame, w, h, zoom);
                 for (View v : new View[] {back.photo, back.mask}) {
-                    LayoutParams at = (LayoutParams) v.getLayoutParams();
-                    float l = v == back.mask && at != null ? at.leftMargin : 0, t = v == back.mask && at != null ? at.topMargin : 0;
+                    LayoutParams lpv = (LayoutParams) v.getLayoutParams();
+                    float l = v == back.mask && lpv != null ? lpv.leftMargin : 0, t = v == back.mask && lpv != null ? lpv.topMargin : 0;
                     v.setPivotX(0);
                     v.setPivotY(0);
                     v.setScaleX(f[0]);
