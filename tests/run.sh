@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Every check in one go: static checks, then the screen in a real browser. See tests/check.py and page.test.mjs.
-#   pip install fonttools brotli pillow -r .github/tools/cities-world/requirements.txt && npm install --no-save playwright@1.56.1 && npx playwright install chromium
+#   pip install fonttools brotli pillow -r .github/tools/cities-world/requirements.txt && npm install --no-save playwright@1.56.1 acorn@8.14.0 && npx playwright install chromium
 set -euo pipefail
 cd "$(dirname "$0")/.."
 python3 tests/check.py
@@ -262,6 +262,7 @@ python3 tests/webview_guard_test.py   # 4.3.5: no WebView on the TV: the home dr
 python3 tests/crash_loop_test.py   # 4.3.5 (R7): two crashes right after start open SafeActivity (the TV's own home one press away), never a black screen
 python3 tests/api28_compile_test.py   # 4.3.5: the home compiles against Android 9 with every newer API behind a Build.VERSION check; the reports name the WebView
 python3 tests/black_video_test.py   # 4.3.5: no page of ours keeps working behind another app (the screensaver activity, every WebView owner, the page's hidden gate)
+node tests/es2017_parse.test.mjs   # #19: the built pages parse as ES2017 (Android 9 TVs stuck on WebView 66)
 node tests/i18n_page_test.mjs   # dist/tv-en.html in a browser: left to right, no Arabic in its own words on any card
 #
 # English phase 3 (the home app): its new tests go right under this line
