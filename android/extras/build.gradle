@@ -1,0 +1,53 @@
+plugins {
+    id 'com.android.application'
+}
+
+// «إضافات تلفزيونك» (UrTV Extras), 4.3.3: the optional add-on that holds the accessibility service the home no longer has (Play Protect blocks an app with
+// one as «بيانات حساسة»): the sleep timer's screen-off, the phone remote's keys and typing in other apps, the remote's Settings key outside our home (GitHub #37),
+// and the Home-button watch on a Google TV. Signed with the same key as the other two (the home and this talk only through signature-level permissions).
+android {
+    namespace 'sa.urtv.extras'
+    compileSdk 34
+
+    defaultConfig {
+        applicationId 'sa.urtv.extras'
+        minSdk 26
+        targetSdk 34
+        versionCode((System.getenv('GITHUB_RUN_NUMBER') ?: '1') as int)
+        versionName file('../../VERSION').text.trim()
+    }
+
+    signingConfigs {
+        if (System.getenv('ANDROID_KEYSTORE')) {
+            release {
+                storeFile file(System.getenv('ANDROID_KEYSTORE'))
+                storePassword System.getenv('ANDROID_KEYSTORE_PASSWORD')
+                keyAlias 'urtv'
+                keyPassword System.getenv('ANDROID_KEYSTORE_PASSWORD')
+            }
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            signingConfig signingConfigs.findByName('release') ?: signingConfigs.debug
+        }
+    }
+
+    // the home's pure rules are used as they are (one copy of each rule): only these files of the launcher are compiled in
+    sourceSets {
+        main {
+            java.srcDirs += ['../launcher/src/main/java']
+            java.include 'sa/urtv/home/ExtrasA11yService.java', 'sa/urtv/home/ExtrasCallProvider.java', 'sa/urtv/home/HomeWatch.java', 'sa/urtv/home/ExtrasWords.java',
+                'sa/urtv/home/TypeInto.java', 'sa/urtv/home/RemoteNav.java', 'sa/urtv/home/RemoteTrace.java', 'sa/urtv/home/AppSearch.java', 'sa/urtv/home/SettingsKey.java', 'sa/urtv/home/Ram.java'
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    lint { abortOnError false }
+}

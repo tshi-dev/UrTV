@@ -157,7 +157,7 @@ Updating a TV where the service is already on: the enabled list (`enabled_access
 re-reads the service's xml when the package is replaced, so the new capability comes with the update; **no one turns the service on
 again** (only touch exploration has a grant list of its own; the consent dialog with its capability list is shown only when the service is
 turned on in the TV's settings). What the update does need is the rebind Android sometimes skips after replacing a package: `A11yHeal`
-(with `WRITE_SECURE_SETTINGS`, granted with Family DNS) or the next restart. Where the service was never on: `optimize/dock.sh type-setup`
+(with `WRITE_SECURE_SETTINGS`, granted with Family DNS) or the next restart. Where the service was never on: `optimize/dock.sh extras-setup`
 once, or the person in the TV's accessibility settings.
 
 What is not known yet (needs the TV): whether a TCL lets the accessibility filter see 83 while `com.tcl.tv` / the HDMI input is in front

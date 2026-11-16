@@ -37,9 +37,9 @@ check("the sound output opens an intent that resolves, falling back to the TV's 
       "resolveActivity(sound, 0) != null ? sound : new Intent(Settings.ACTION_SETTINGS)" in center)
 check("the sleep timer's tile and «أطفئ الآن» end the same way (SleepTimer.turnOff: the service, else sound off and the screensaver)",
       "SleepTimer.turnOff(act)" in center and "static String turnOff(Context c)" in src("SleepTimer.java") and "String done = turnOff(c);" in src("SleepTimer.java")
-      and "SleepService.sleepNow()" in src("SleepTimer.java").split("static String turnOff")[1])
-check("«أطفئ الآن» with the service off: the tile says «يحتاج تفعيل، اضغط للتفعيل», OK opens the TV's accessibility settings behind the sleep lock (ParentalPolicy.SLEEP_ACCESSIBILITY) with a line «فعّل «تلفزيونك: إطفاء الشاشة»»; no silent fallback to sound off and the screensaver, no notice and no delay; a long OK does the same",
-      "SleepService.enabled()" in center and "ParentalPolicy.SLEEP_ACCESSIBILITY" in center and 'S.t("يحتاج تفعيل، اضغط للتفعيل")' in center and 'S.t("فعّل «%s»", act.getString(R.string.sleep_service_label))' in center
+      and "Extras.sleepNow()" in src("SleepTimer.java").split("static String turnOff")[1])
+check("«أطفئ الآن» without «إضافات تلفزيونك» (4.3.3): the tile says «يحتاج تفعيل، اضغط للتفعيل», OK opens its offer (install it, or turn it on) behind the sleep lock (ParentalPolicy.SLEEP_ACCESSIBILITY); no silent fallback to sound off and the screensaver, no notice and no delay; a long OK does the same",
+      "Extras.enabled()" in center and "ParentalPolicy.SLEEP_ACCESSIBILITY" in center and 'S.t("يحتاج تفعيل، اضغط للتفعيل")' in center and center.count('Extras.intent(act, "sleep")') == 2
       and "SLEEP_OFF_NOTICE" not in center and "SLEEP_OFF_NOTICE" not in text and "offPending" not in center and "ui.postDelayed(" not in center.split("private void turnOffNow()")[1].split("// ------")[0] and "مو شغّالة" not in text)
 check("«إعدادات تلفزيونك» opens our settings (the screensaver app's SettingsActivity) through «قفل الإعدادات» (@urtv), the tile only when that app is there",
       "host.openOurSettings()" in center and "ParentalPolicy.OUR_SETTINGS, null" in main and 'SAVER_PKG + ".SettingsActivity"' in main
@@ -140,11 +140,11 @@ check("the speed test is bounded: a few MB, a measuring time, connect and read t
 check("nothing is uploaded: no output stream, no POST", "getOutputStream" not in speed and "setDoOutput" not in speed and "POST" not in speed)
 check("the talkies credit headers are in the files that adapt it", all("rajupp/talkies" in s.split("*/")[0] for s in (speed, center)))
 check("the manifest asks for no QUERY_ALL_PACKAGES and adds no accessibility capability",
-      "QUERY_ALL_PACKAGES" not in manifest and manifest.count("android.accessibilityservice.AccessibilityService") == 2)   # the sleep service and the phone remote's typing service; the Control Center adds none
+      "QUERY_ALL_PACKAGES" not in manifest and manifest.count("android.accessibilityservice.AccessibilityService") == 0)   # 4.3.3: none in the home (the one service is the add-on «إضافات تلفزيونك»s); the Control Center adds none
 check("every number goes through Digits.of (no String.valueOf of a number into a label), every format has Locale.ROOT",
       "String.valueOf" not in center and all("Locale.ROOT" in l for l in (text + speed).split("\n") if "String.format" in l))
 check("no new receiver, service or alarm for it", not re.search(r"registerReceiver|startService|AlarmManager|JobScheduler", center))
-check("the phone remote and the accessibility service are untouched by it (the service's name is only read for the line that says which one to turn on)", "PhoneApi" not in center and "sleep_service" not in center.replace("R.string.sleep_service_label", ""))
+check("the phone remote and the accessibility service are untouched by it (the service's name is only read for the line that says which one to turn on)", "PhoneApi" not in center and "sleep_service" not in center)
 
 # ---- the logic
 if not shutil.which("javac"):

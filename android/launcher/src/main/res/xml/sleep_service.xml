@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!-- «مؤقت النوم»: asks for no events and no window content; the service exists only to be allowed to turn the screen off
-     (GLOBAL_ACTION_LOCK_SCREEN, see SleepService.java) and to press Back for the phone remote (GLOBAL_ACTION_BACK) -->
-<accessibility-service xmlns:android="http://schemas.android.com/apk/res/android"
-    android:description="@string/sleep_service_desc"
-    android:accessibilityFeedbackType="feedbackGeneric"
-    android:canRetrieveWindowContent="false" />

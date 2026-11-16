@@ -76,4 +76,14 @@ for m in launcher app; do
     echo "PASS android compile: the $m module compiles against $KIND"
   fi
 done
+# 4.3.3 «إضافات تلفزيونك» (android/extras): its own sources and the launcher's files its build.gradle includes (java.include), nothing else of the launcher
+mkdir -p "$W/out_extras"
+inc=$(sed -n "/java.include/,/^ *}/p" "$ROOT/android/extras/build.gradle" | grep -o "'sa/urtv/home/[A-Za-z]*\.java'" | tr -d "'")
+files=$(find "$ROOT/android/extras/src/main/java" -name '*.java'); for f in $inc; do [ -f "$ROOT/android/launcher/src/main/java/$f" ] && files="$files $ROOT/android/launcher/src/main/java/$f"; done
+err=$(javac -encoding UTF-8 -proc:none -cp "$JAR" -d "$W/out_extras" $files 2>&1 | grep -v '^Picked up\|^Note:')
+if [ -n "$err" ] && echo "$err" | grep -q 'error'; then
+  echo "FAIL android compile: the extras module does not compile against $KIND"; echo "$err"; bad=1
+else
+  echo "PASS android compile: the extras module compiles against $KIND"
+fi
 exit $bad

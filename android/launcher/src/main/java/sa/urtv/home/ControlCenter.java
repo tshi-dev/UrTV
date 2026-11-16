@@ -176,12 +176,12 @@ final class ControlCenter {
         Item test = tile("speed", S.t("اختبار السرعة"), S.t("اضغط اختيار للبدء"), R.drawable.ic_speed, null);
         test.action = () -> speedTest(test);
         tile("sleep", S.t("مؤقت النوم"), sleepLine(), R.drawable.ic_sleep, () -> { dismiss(); host.openSleep(anchor); });
-        Item off = tile("off", S.t("أطفئ الآن"), SleepService.enabled() ? S.t("تُطفأ الشاشة فورًا") : S.t("يحتاج تفعيل، اضغط للتفعيل"),
+        Item off = tile("off", S.t("أطفئ الآن"), Extras.enabled() ? S.t("تُطفأ الشاشة فورًا") : S.t("يحتاج تفعيل، اضغط للتفعيل"),
                 R.drawable.ic_power, null);
         off.action = () -> turnOffNow();
-        off.hold = () -> {   // a long OK: where the sleep service is turned on, behind the same lock as the sleep timer's own line
+        off.hold = () -> {   // a long OK: «إضافات تلفزيونك» (install it, or turn its service on), behind the same lock as the sleep timer's own line
             dismiss();
-            host.launchGuarded(ParentalPolicy.SLEEP_ACCESSIBILITY, new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS), "إعدادات التلفزيون");
+            host.launchGuarded(ParentalPolicy.SLEEP_ACCESSIBILITY, Extras.intent(act, "sleep"), "إعدادات التلفزيون");
         };
         // «انعكاس الشاشة»: the TV's own mirroring app (ControlText.MIRROR_APPS), only when one is installed; locked as that app's own tile is
         final Intent mirror = mirrorIntent();
@@ -305,7 +305,7 @@ final class ControlCenter {
     // ---------------------------------------------------------------- the main view
 
     /** «أطفئ الآن» while the sleep service is off: its round toggle says so under the name */
-    private static boolean needsOn(Item it) { return it != null && it.key.equals("off") && !SleepService.enabled(); }
+    private static boolean needsOn(Item it) { return it != null && it.key.equals("off") && !Extras.enabled(); }
 
     private Item tile(String key, String title, String value, int icon, Runnable action) {
         Item it = new Item(key, S.tv(title), S.tv(value), icon);   // a name or line given as our Arabic words (ControlText's) is said in «اللغة»; one already said stays
@@ -886,10 +886,9 @@ final class ControlCenter {
      * lock as the sleep timer's own line) with a line saying which service to turn on; there is no silent fallback here any more («شاشة التوقف» next to it starts the screensaver).
      */
     private void turnOffNow() {
-        if (SleepService.enabled()) { dismiss(); SleepTimer.turnOff(act); return; }
+        if (Extras.enabled()) { dismiss(); SleepTimer.turnOff(act); return; }
         dismiss();
-        android.widget.Toast.makeText(act, S.t("فعّل «%s»", act.getString(R.string.sleep_service_label)), android.widget.Toast.LENGTH_LONG).show();
-        host.launchGuarded(ParentalPolicy.SLEEP_ACCESSIBILITY, new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS), "إعدادات التلفزيون");
+        host.launchGuarded(ParentalPolicy.SLEEP_ACCESSIBILITY, Extras.intent(act, "sleep"), "إعدادات التلفزيون");   // 4.3.3: the offer of «إضافات تلفزيونك»
     }
 
     // ---------------------------------------------------------------- «اختبار السرعة»

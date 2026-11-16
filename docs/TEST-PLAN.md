@@ -285,6 +285,26 @@ Before and after each: `adb shell pm list packages -d`, `adb shell cmd role get-
 | T9 | «جهّز كل شي», and at ~20–30 % pull the TV's power for 10 s, plug in | After the start the setup screen comes back by itself and goes on from the step it was on (a cut home switch is put back first); a second power cut does the same; a third does not resume by itself (press «جهّز كل شي») |
 | T10 | Chromecast/Google TV paired by Wireless debugging (`optimize/find-tv.sh pair`): `optimize/venv/bin/python -I optimize/tv.py --reboot`, then `optimize/run.sh` | It finds the TV's new port by itself («TV is back») and goes on from its step; if Wireless debugging is off after the start, the !! line says to read «IP address & Port» and `optimize/find-tv.sh connect` |
 
+
+### 14b. «إضافات تلفزيونك» (UrTV Extras, the add-on; branch work/433-setup, its CI artifact «apks» has urtv-extras.apk)
+
+Install the branch's home first (`adb install -r urtv-home.apk`). The add-on: `adb install -r urtv-extras.apk` (or `optimize/install.sh addon` once it is in a release; Play Protect may ask: «تثبيت على أي حال»). Turn its service on: `optimize/dock.sh extras-setup`, or by hand: `adb shell settings put secure enabled_accessibility_services sa.urtv.extras/sa.urtv.home.ExtrasA11yService` (keep any entry already there, joined with «:») and `adb shell settings put secure accessibility_enabled 1`. Check it runs: `adb shell dumpsys accessibility | grep -i ExtrasA11yService` (in «Bound services»).
+
+| ID | Do | Expect |
+|---|---|---|
+| X1 | Install the branch's home on a TV where Play Protect blocked 4.3.x («بيانات حساسة») | It installs with no «sensitive data» block; `adb shell dumpsys package sa.urtv.home \| grep -i accessibility` shows no service |
+| X2 | Without the add-on: «مركز التحكم» → «أطفئ الآن» | The tile says «يحتاج تفعيل، اضغط للتفعيل»; OK opens «إضافات تلفزيونك» (the screen of the mockup: title, three numbered lines, the Play Protect box, «ثبّت الإضافة» focused, «ليس الآن»). «ليس الآن» closes it |
+| X3 | On that screen: «ثبّت الإضافة» (the TV online; the release must have urtv-extras.apk, else install it with adb and go to X4) | «ينزّل…», «يثبّت…», Android's install screen (and Play Protect's, press «تثبيت على أي حال»); back on the screen the button says «شغّلها في «تسهيل الاستخدام»» |
+| X4 | Press it, turn «إضافات تلفزيونك» on in the TV's accessibility settings, come back | The screen closes with «إضافات تلفزيونك» شغّالة; «أطفئ الآن» now turns the screen off |
+| X5 | «مؤقت النوم» 15 min (or `optimize/dock.sh sleep 1` if allowed) | At the end the screen turns off (not the screensaver) |
+| X6 | Phone page («تحكم من الجوال») with YouTube or Netflix in front: arrows, OK, Back, Home, then type text in a search field | They act in that app; the text lands in the field. With the add-on off: the phone says to turn on «إضافات تلفزيونك» and the TV shows the offer (at most once in 2 minutes) |
+| X7 | GitHub #37: play a video (HDR if you have one) in an app, press the remote's Settings key | The TV's settings open over the video (picture/brightness can be changed) — on the owner's TCL with the stock home on, the TV's own handler may answer first: write down which |
+| X8 | Google TV (launcherx installed), UrTV the Home app: open an app, press Home | UrTV comes to the front (if Google TV's home flashes first, write down how long). `adb logcat -s UrTVWatch` shows «home=brought» |
+| X9 | X8 but press Home 4 times quickly while Google TV keeps winning | After the third bring within 20 s it stops for 5 minutes (Google TV's home stays) — no loop |
+| X10 | `adb shell am force-stop sa.urtv.extras` then use the phone keys | Android restarts the service by itself (Bound services); if not, a home start or `optimize/dock.sh extras-setup` binds it again |
+| X11 | «تحديث تلفزيونك» on a TV with the add-on installed (a newer build in apk-next with `saver.sh updatechannel next`) | The steps show «تحديث إضافات تلفزيونك» between the screensaver and the home; all three update |
+| X12 | `optimize/reset.sh` | sa.urtv.extras is removed with the others, its entry leaves enabled_accessibility_services |
+
 ## Report format
 
 ```

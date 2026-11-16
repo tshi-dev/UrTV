@@ -20,8 +20,9 @@
 #   optimize/dock.sh message overapps on|off «فوق التطبيقات»: also over a film or a match (on by default); off = only on our home and the screensaver
 #   optimize/dock.sh familydns on|off|status|grant   «حماية العائلة (DNS)»: Private DNS to AdGuard Family, checked and undone by optimize/familydns.sh
 #   optimize/dock.sh cast on|off|status    «البث من الجوال» on a Chromecast with Google TV: casting and the Google Home remote kept (on, the default) or our home first (off); optimize/cast.sh
-#   optimize/dock.sh sleep-setup           turn on the sleep service (an accessibility service, once) so the end turns the screen off
-#   optimize/dock.sh type-setup            turn on the remote-and-typing service (a second accessibility service, once) so the phone remote can press keys and type in other apps
+#   optimize/dock.sh extras-setup          turn on «إضافات تلفزيونك» (UrTV Extras, optimize/install.sh addon first; once): the sleep timer's screen-off, the phone remote's
+#                                          keys and typing in other apps, the Settings key outside the home, the Home button on a Google TV
+#                                          (sleep-setup and type-setup: the old names, the same step)
 #   optimize/dock.sh pin set 1234         «الرقابة الأبوية»: the master PIN (4 digits), set or changed from here without the old one; never printed back
 #   optimize/dock.sh pin lock PKG          lock one app (its package, e.g. com.netflix.ninja), a pill (@inputs @wifi @tvsettings @tasks @saver @listen @sleep @center) or @urtv (our settings); `pin unlock PKG` opens it again
 #   optimize/dock.sh pin status            what is set: PIN or not, what is locked, kids mode, wrong tries (never the PIN)
@@ -90,10 +91,16 @@ case "${1:-}:$#" in
       *) minutes=$2; [ "$minutes" -le 600 ] || { echo "minutes: 1 to 600"; exit 1; } ;;
     esac
     send SLEEP_TV "--ei minutes $minutes" ;;
-  sleep-setup:1|type-setup:1)
-    # two accessibility services of ours, each turned on on its own (typing is a separate service: it can read the screen to find a text field, the sleep one cannot)
-    if [ "$1" = type-setup ]; then svc="sa.urtv.home/sa.urtv.home.TypeService"; what="the typing service"; done_msg="the typing service is on (remote and typing): the phone remote can press the arrows, OK, Back and Home in the app in front and type into its text field"
-    else svc="sa.urtv.home/sa.urtv.home.SleepService"; what="the sleep service"; done_msg="the sleep service is on: the end of «مؤقت النوم» turns the screen off"; fi
+  extras-setup:1|sleep-setup:1|type-setup:1)
+    # 4.3.3: the home has no accessibility service any more; the one service is in the optional add-on «إضافات تلفزيونك» (sa.urtv.extras, optimize/install.sh addon):
+    # the sleep timer's screen-off, the phone remote's keys and typing in other apps, the Settings key outside our home, the Home-button watch on a Google TV.
+    # sleep-setup and type-setup are the old names of the same step.
+    svc="sa.urtv.extras/sa.urtv.home.ExtrasA11yService"; what="«إضافات تلفزيونك» (UrTV Extras)"
+    done_msg="«إضافات تلفزيونك» is on: the end of «مؤقت النوم» turns the screen off, the phone remote presses keys and types in the app in front, the Settings key works in other apps, and on a Google TV the Home button comes back to UrTV"
+    if ! "$PY" -I optimize/tv.py "pm list packages sa.urtv.extras" | tr -d '\r' | grep -qx "package:sa.urtv.extras"; then
+      echo "!! «إضافات تلفزيونك» (sa.urtv.extras) is not installed on the TV: optimize/install.sh addon first, then the same command again. (Play Protect may ask: the person presses «تثبيت على أي حال».)"
+      exit 1
+    fi
     cur=$("$PY" -I optimize/tv.py "settings get secure enabled_accessibility_services; settings get secure accessibility_enabled" | tr -d '\r')
     now=$(sed -n 1p <<< "$cur")
     # only the word «null» means no service is on; an empty answer is «the TV did not say», and the person's own list must not be overwritten
@@ -122,7 +129,8 @@ case "${1:-}:$#" in
         else echo "$what was already on"; fi ;;
       null|"") "$PY" -I optimize/tv.py "settings put secure enabled_accessibility_services '$svc'" >/dev/null ;;
       *) if [[ "$now" =~ ^[A-Za-z0-9_.\$/:]+$ ]]; then
-           "$PY" -I optimize/tv.py "settings put secure enabled_accessibility_services '$now:$svc'" >/dev/null
+           now=$(tr ':' '\n' <<< "$now" | grep -v '^sa\.urtv\.home/' | grep . | paste -sd: - || true)   # the home's own services of 4.3.2 and before are gone: their dead entries leave
+           "$PY" -I optimize/tv.py "settings put secure enabled_accessibility_services '${now:+$now:}$svc'" >/dev/null
          else echo "!! enabled_accessibility_services: the list on this TV has a character this script does not send, so $what was not added"; exit 1; fi ;;
     esac
     "$PY" -I optimize/tv.py "settings put secure accessibility_enabled 1" >/dev/null

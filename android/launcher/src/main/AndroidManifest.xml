@@ -74,7 +74,13 @@
     <uses-feature android:name="android.software.leanback" android:required="false" />
     <uses-feature android:name="android.hardware.touchscreen" android:required="false" />
 
+    <!-- 4.3.3 «إضافات تلفزيونك»: the home and the add-on call each other's provider only with this; signature: only an app signed with our key holds it -->
+    <permission android:name="sa.urtv.permission.EXTRAS" android:protectionLevel="signature" />
+    <uses-permission android:name="sa.urtv.permission.EXTRAS" />
+
     <queries>
+        <!-- 4.3.3 «إضافات تلفزيونك»: the add-on the home calls (its provider) -->
+        <package android:name="sa.urtv.extras" />
         <!-- 4.3 «شاهد المباراة»: UrTV Player (its certificate is checked before it is told a game) -->
         <package android:name="com.urtv.player" />
         <!-- «صفحته في المتجر» only when the Play Store is on the TV -->
@@ -421,33 +427,18 @@
             </intent-filter>
         </receiver>
 
-        <!-- «مؤقت النوم»: the alarm at the end of the timer (ours only), and the accessibility service that turns the
-             screen off then. It listens to nothing: see SleepService. The person (or optimize/dock.sh sleep-setup) turns it on. -->
+        <!-- «مؤقت النوم»: the alarm at the end of the timer (ours only); the screen goes off through «إضافات تلفزيونك» when it is on (Extras.sleepNow) -->
         <receiver android:name=".SleepReceiver" android:exported="false" />
-        <service
-            android:name=".SleepService"
+        <!-- 4.3.3: no accessibility service in the home any more (Play Protect blocked the home for them, «بيانات حساسة»). They are in the optional add-on
+             «إضافات تلفزيونك» (sa.urtv.extras, ExtrasA11yService); the home asks it through its provider (Extras) and answers it here (ExtrasBridge), both
+             guarded by the signature permission sa.urtv.permission.EXTRAS. -->
+        <provider
+            android:name=".ExtrasBridge"
+            android:authorities="sa.urtv.home.extras"
             android:exported="true"
-            android:label="@string/sleep_service_label"
-            android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE">
-            <intent-filter>
-                <action android:name="android.accessibilityservice.AccessibilityService" />
-            </intent-filter>
-            <meta-data android:name="android.accessibilityservice" android:resource="@xml/sleep_service" />
-        </service>
-
-        <!-- The phone remote's typing into other apps: a second accessibility service, on only when the owner turns it on (or
-             optimize/dock.sh type-setup). It reads no event (it only asks Android for window changes, to know which app is in front) and looks at the screen only when a phone sends text: see TypeService.
-             It also answers the remote's Settings key while another app is in front (SettingsKey): no other key is kept or logged. -->
-        <service
-            android:name=".TypeService"
-            android:exported="true"
-            android:label="@string/type_service_label"
-            android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE">
-            <intent-filter>
-                <action android:name="android.accessibilityservice.AccessibilityService" />
-            </intent-filter>
-            <meta-data android:name="android.accessibilityservice" android:resource="@xml/type_service" />
-        </service>
+            android:permission="sa.urtv.permission.EXTRAS" />
+        <!-- the offer: install «إضافات تلفزيونك» or turn its service on (opened only when a feature that needs it was asked for) -->
+        <activity android:name=".ExtrasActivity" android:exported="false" android:screenOrientation="landscape" android:theme="@android:style/Theme.Material.NoActionBar" />
 
         <!-- the «تلاوة» screens: the Quran recitations and the radio, inside the home screen (the «تلاوة» pill).
              Not exported and with no launcher category on purpose: it must not show up among the apps. -->

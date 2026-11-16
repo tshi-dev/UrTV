@@ -71,42 +71,40 @@ check("Home goes through the service when one is on (right from any app), else t
       'PhoneApps.keysEverywhere() && RemoteNav.DONE.equals(PhoneApps.pressKey("home"))' in key and "Intent.CATEGORY_HOME" in key)
 check("the state tells the page whether the arrows reach other apps too", '"dpad_everywhere", PhoneApps.dpadEverywhere()' in act and '"keys_everywhere", PhoneApps.keysEverywhere()' in act)
 
-ts, ss, pa = text(HOME + "TypeService.java"), text(HOME + "SleepService.java"), text(HOME + "PhoneApps.java")
+ts, pa = text("android/extras/src/main/java/sa/urtv/home/ExtrasA11yService.java"), text(HOME + "PhoneApps.java")   # 4.3.3: one service, in the add-on «إضافات تلفزيونك»
+ss = ""
 check("the typing/remote service presses a key: a global action, else a focus move or a click on the window in front",
       "static String press(String key)" in ts and "s.performGlobalAction(st.code)" in ts and "cur.focusSearch(direction)" in ts and "AccessibilityNodeInfo.ACTION_FOCUS" in ts and "AccessibilityNodeInfo.ACTION_CLICK" in ts
       and "RemoteNav.plan(key, Build.VERSION.SDK_INT, true)" in ts)
-check("the sleep service presses only global actions (it may not read the window): no node is touched there",
-      "static String press(String key)" in ss and "RemoteNav.plan(key, Build.VERSION.SDK_INT, false)" in ss and "AccessibilityNodeInfo" not in ss and "getRootInActiveWindow" not in ss)
-check("whichever of our services is connected is used: the typing/remote one first, then the sleep one",
-      "String r = TypeService.press(key);" in pa and "SleepService.press(key)" in pa and "SleepService.enabled() || TypeService.enabled()" in pa)
+check("the home asks the add-on (Extras.press); without it the key is «service_off» and the TV offers the add-on, not at every key",
+      "String r = Extras.press(key);" in pa and 'Extras.offerOnce("keys")' in pa and "return Extras.enabled();" in pa and "now - lastOffer < 120_000" in text(HOME + "Extras.java"))
 check("the node walks are bounded (a count and a depth)", "new int[] {500}" in ts and "depth >= 40" in ts and "up < 6" in ts)
 # privacy: the log
 trace = text(HOME + "RemoteTrace.java")
 check("the remote's log (tag UrTVRemote) is one line with the key's word, the route and the answer, written in one place",
       'Log.i("UrTVRemote", "key=" + key + " route=" + route.name().toLowerCase(Locale.ROOT) + " result=" + result)' in trace
-      and "UrTVRemote" not in ts + ss + act + pa and ts.count("RemoteTrace.line(key, st.route, r);") == 1 and ss.count("RemoteTrace.line(key, st.route, r);") == 1)
-code = ts[ts.index("static String press(String key)"):ts.index("private static String done(")]
+      and "UrTVRemote" not in ts + ss + act + pa and ts.count("RemoteTrace.line(key, st.route, r);") == 1)
+code = ts[ts.index("static String press(String key)"):ts.index("    private static AccessibilityNodeInfo firstFocusable(")]
 check("no window content is read into a string, logged or returned by a key press", not re.search(r"getText\(|getContentDescription\(|getPackageName\(|getClassName\(|toString\(\)", code))
 # no new capability
 man = text("android/launcher/src/main/AndroidManifest.xml")
-check("no permission was added (the launcher declares the same ones)", man.count("<uses-permission") == 21)   # 19 since REQUEST_DELETE_PACKAGES («حذف التطبيق» in the app menu); 21 since targetSdk 34: FOREGROUND_SERVICE_SPECIAL_USE (SetupService must name its type) and USE_EXACT_ALARM (the adhan stays exact on a new install)
-for xml in ("android/launcher/src/main/res/xml/type_service.xml", "android/launcher/src/main/res/xml/sleep_service.xml"):
+check("no permission was added (the launcher declares the same ones)", man.count("<uses-permission") == 22)   # 22 since 4.3.3: sa.urtv.permission.EXTRAS, our own signature permission to call «إضافات تلفزيونك»; 19 since REQUEST_DELETE_PACKAGES («حذف التطبيق» in the app menu); 21 since targetSdk 34: FOREGROUND_SERVICE_SPECIAL_USE (SetupService must name its type) and USE_EXACT_ALARM (the adhan stays exact on a new install)
+for xml in ("android/extras/src/main/res/xml/extras_service.xml",):
     x = re.sub(r"<!--.*?-->", "", text(xml), flags=re.S)
-    # the typing service may ASK for key events (the Settings key outside our home, SettingsKey: tests/settings_key_test.py); the flag is set
-    # at run time only, never in the xml, and the sleep service may not even ask
-    keyfilter = "flagRequestFilterKeyEvents" if xml.endswith("type_service.xml") else "canRequestFilterKeyEvents|flagRequestFilterKeyEvents"
+    # the service may ASK for key events (the Settings key outside our home, SettingsKey: tests/settings_key_test.py); the flag is set at run time only, never in the xml
+    keyfilter = "flagRequestFilterKeyEvents"
     check(f"{Path(xml).name}: no gestures, no key-event filter set in the xml, no interactive windows, no touch exploration",
           not re.search(r"canPerformGestures|" + keyfilter + r"|flagRetrieveInteractiveWindows|canRequestTouchExplorationMode|canTakeScreenshot|accessibilityEventTypes=\"[^\"]*(Content|Text|Click|Focus)", x), x)
-check("the typing service still declares one event type", len(re.findall(r'accessibilityEventTypes="typeWindowStateChanged"', text("android/launcher/src/main/res/xml/type_service.xml"))) == 1)
-strings = text("android/launcher/src/main/res/values/strings.xml")
-check("the typing service is now «تلفزيونك: التحكم والكتابة من الجوال» and its description says arrows, OK, Back and Home",
-      '<string name="type_service_label">تلفزيونك: التحكم والكتابة من الجوال</string>' in strings and "الأسهم والاختيار والرجوع والرئيسية" in strings)
+check("the service still declares one event type", len(re.findall(r'accessibilityEventTypes="typeWindowStateChanged"', text("android/extras/src/main/res/xml/extras_service.xml"))) == 1)
+strings = text("android/extras/src/main/res/values/strings.xml")
+check("the add-on is «إضافات تلفزيونك» and its description says it presses the phone's keys and types",
+      '<string name="service_label">إضافات تلفزيونك</string>' in strings and "ويضغط الأزرار ويكتب ما ترسله من جوالك" in strings)
 for d in ("docs/FEATURES.md", "docs/SETTINGS.md"):
     t = text(d)
-    check(f"{d} says the service presses the keys too, the log, and the adhan rule", "UrTVRemote" in t and "التحكم والكتابة من الجوال" in t)
-check("dock.sh type-setup says what the service is for now", "remote and typing" in text("optimize/dock.sh") and "press the arrows, OK, Back and Home" in text("optimize/dock.sh"))
+    check(f"{d} says the service presses the keys too, the log, and the adhan rule", "UrTVRemote" in t and "إضافات تلفزيونك" in t)
+check("dock.sh extras-setup says what the add-on's service is for", "extras-setup:1|sleep-setup:1|type-setup:1)" in text("optimize/dock.sh") and "the phone remote presses keys and types in the app in front" in text("optimize/dock.sh"))
 page = text("android/launcher/src/main/assets/phone/index.html")
 check("the page: a note with the service's name when it is off, a short one when it reaches everything, and a clear word when nothing could be moved",
-      "s.dpad_everywhere ?" in page and "فعّل خدمة «تلفزيونك: التحكم والكتابة من الجوال»" in page and "other_app_limited:" in page and "تحتاج أندرويد ١٣" in page)
+      "s.dpad_everywhere ?" in page and "فعّل خدمة «إضافات تلفزيونك»" in page and "other_app_limited:" in page and "تحتاج أندرويد ١٣" in page)
 print("ALL PASS" if not failed else f"{failed} FAILED")
 sys.exit(1 if failed else 0)

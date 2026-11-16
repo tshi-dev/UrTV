@@ -7,6 +7,8 @@
 #                                  github.com/truefedex/tv-bro) and SmartTube (YouTube without ads,
 #                                  github.com/yuliskov/SmartTube), the build that fits the TV's processor
 #   optimize/install.sh all        both (saver, launcher)
+#   optimize/install.sh addon      «إضافات تلفزيونك» (UrTV Extras, 4.3.3): the optional add-on with the accessibility service the home no longer has;
+#                                  then optimize/dock.sh extras-setup turns its service on
 # launcher can stop once with exit 5 and an Arabic line for the person, BEFORE anything is changed: the TV's setup wizard owns
 # the saved Wi-Fi network (it would be deleted with the wizard). The person forgets the network and joins it again in the TV's
 # Settings, says «كمّل», and the same command (or optimize/run.sh) reads the owner again and goes on (see «wifi-ask» below).
@@ -16,8 +18,8 @@ set -euo pipefail
 cd "$(dirname "$0")/.."
 PY="${PY:-optimize/venv/bin/python}"
 REL=https://github.com/tshi-dev/UrTV/releases/download/${APK_TAG:-apk-latest}   # APK_TAG=v4.0.N: that numbered build (v3.N for the old ones)
-what="${1:?usage: optimize/install.sh saver|launcher|extras|all}"
-case "$what" in saver|launcher|extras|all) ;; *) echo "usage: optimize/install.sh saver|launcher|extras|all" >&2; exit 2;; esac
+what="${1:?usage: optimize/install.sh saver|launcher|extras|addon|all}"
+case "$what" in saver|launcher|extras|addon|all) ;; *) echo "usage: optimize/install.sh saver|launcher|extras|addon|all" >&2; exit 2;; esac
 . optimize/home-journal.sh   # the journal of the home switch (what the switch changed, to undo it after a restart)
 failed=0   # an extra that did not install: the rest are still tried, then run.sh must not count the step as done
 
@@ -279,6 +281,12 @@ if [ "$what" = extras ]; then
   from_github truefedex/tv-bro com.phlox.tvwebbrowser 'tvbro-[0-9.]+-generic-geckoExcluded\.apk'   # light: the TV's WebView
   from_github yuliskov/SmartTube org.smarttube.stable 'SmartTube_stable_[0-9.]+_{abi}\.apk'
   [ "$failed" = 0 ] || exit 1
+fi
+
+if [ "$what" = addon ]; then
+  echo "للشخص: بعد لحظات ممكن تطلع على التلفزيون رسالة من Play Protect («يطلب بيانات حساسة»)؛ إذا طلعت اضغط «تثبيت على أي حال» (Install anyway). الإضافة تعرف أي تطبيق قدامك فقط ولا ترسل شيئاً."
+  push_install urtv-extras.apk sa.urtv.extras
+  echo "«إضافات تلفزيونك» is installed. Turn its service on: optimize/dock.sh extras-setup"
 fi
 
 if [ "$what" = saver ] || [ "$what" = all ]; then

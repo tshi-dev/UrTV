@@ -14,8 +14,8 @@ public final class UpdateRules {
     public static final String BASE = RELEASES + "apk-latest/";
     /** The test channel (agents only, `saver.sh updatechannel next`): the same files from the apk-next release, with the same checks. */
     public static final String NEXT_BASE = RELEASES + "apk-next/";
-    /** package, file: the screensaver first, the home screen last (installing it restarts this app). */
-    public static final String[][] APKS = {{"sa.urtv.screensaver", "urtv-screensaver.apk"}, {"sa.urtv.home", "urtv-home.apk"}};
+    /** package, file: the screensaver first, «إضافات تلفزيونك» (4.3.3, only where it is installed), the home screen last (installing it restarts this app). */
+    public static final String[][] APKS = {{"sa.urtv.screensaver", "urtv-screensaver.apk"}, {"sa.urtv.extras", "urtv-extras.apk"}, {"sa.urtv.home", "urtv-home.apk"}};
     public static final long MAX_APK_BYTES = 80_000_000L;
 
     private UpdateRules() { }
@@ -23,7 +23,7 @@ public final class UpdateRules {
     /** Where the files are for a channel: "next" is the test release, anything else (nothing, an unknown word) the latest. */
     public static String baseFor(String channel) { return "next".equals(channel) ? NEXT_BASE : BASE; }
 
-    /** Exactly version.txt or one of our two APKs, in one of our two releases, nothing else (the check every download goes through). */
+    /** Exactly version.txt or one of our APKs, in one of our two releases, nothing else (the check every download goes through). */
     public static boolean isReleaseUrl(String url) {
         if (url == null) return false;
         for (String base : new String[] {BASE, NEXT_BASE}) {
