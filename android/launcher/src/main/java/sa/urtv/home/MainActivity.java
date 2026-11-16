@@ -280,8 +280,8 @@ public class MainActivity extends Activity {
     @Override
     protected void onResume() {
         super.onResume();
-        if (sceneHome != null) sceneHome.start();
         resumed = true;
+        if (sceneHome != null) sceneHome.start();
         if (resumeAt == 0) resumeAt = SystemClock.elapsedRealtime();
         firstFrameWallpaper();   // (a return that did not restart: the photo may have been let go by onTrimMemory)
         handler.postDelayed(snapTick, HomeSnapshot.IDLE_MS);
@@ -336,8 +336,8 @@ public class MainActivity extends Activity {
     @Override
     protected void onPause() {
         super.onPause();
-        if (sceneHome != null) sceneHome.stop();   // no timer and no fade while another screen is in front
         resumed = false;
+        if (sceneHome != null) sceneHome.stop();   // no timer and no fade while another screen is in front
         UpdateCarry.homeShown = false;   // a slow photo check that answers now must not start the 10-minute rotation again
         sa.urtv.home.tilawah.AdhanFront.home(false);
         TypeService.homeFront(false);   // another app is coming to the front: the service answers the Settings key there (SettingsKey)
