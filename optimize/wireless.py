@@ -375,6 +375,18 @@ class AdbCli:
             raise ConnectionError(out.strip().splitlines()[0])
         return out
 
+    def install_stream(self, command, local, timeout):
+        """`adb exec-in <command>` with the APK as its standard input (tv.py --install-stream): no file on the TV."""
+        with open(local, "rb") as f:
+            try:
+                r = self.run([self.adb, "-s", self.serial, "exec-in", command], stdin=f, capture_output=True, timeout=timeout)
+            except subprocess.TimeoutExpired as e:
+                raise TimeoutError("adb exec-in timed out") from e
+        out = ((r.stdout or b"") + (r.stderr or b"")).decode("utf-8", "replace")
+        if re.match(r"\s*error: (device|closed|no devices|protocol|more than one)", out) or "device offline" in out[:80]:
+            raise ConnectionError(out.strip().splitlines()[0])
+        return out
+
     def pull(self, remote, local):
         r = self.run([self.adb, "-s", self.serial, "pull", remote, local], capture_output=True, text=True,
                      timeout=self.timeout * 4, errors="replace")

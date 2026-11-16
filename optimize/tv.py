@@ -6,6 +6,7 @@
     tv.py --batch < cmds.txt                 one command per line, same connection
     tv.py --pull /sdcard/x.png x.png
     tv.py --push-b64 local.apk /data/local/tmp/x.apk   chunked base64 upload with md5 check
+    tv.py --install-stream local.apk [pm options]      stream the APK to `cmd package install -S` (no file on the TV); exit 3: not possible here
     tv.py --shot out.png                     screenshot from the TV
     tv.py --bg NAME 'cmd'                    a long command, run in the background on the TV and polled (no 60 s silence)
     tv.py --reboot                           restart the TV (sent once, never retried) and wait until it is back from a new boot
@@ -505,6 +506,63 @@ def push_sync(tv, local, remote):
     return True
 
 
+STREAM_NOT_HERE = 3   # --install-stream's exit code: this TV or this connection cannot stream an install; the caller uploads the file as before
+
+
+def stream_exec_tcp(dev, command, local, read_timeout_s):
+    """adb_shell (pinned 0.4.4, optimize/requirements.txt) has no `exec:` with a standard input, so this speaks ADB's stream the way `adb install`
+    does and the TV-side setup's AdbClient.exec does: OPEN exec:<command>, then the file in pieces of the TV's message size, each one only after the
+    TV's OKAY for the last (ADB's flow control), then its answer until it closes. Raises on anything unexpected."""
+    from adb_shell import constants
+    from adb_shell.adb_message import AdbMessage
+    info = dev._open(b"exec:" + command.encode(), None, read_timeout_s, None)
+    piece = max(1024, min(getattr(dev, "_maxdata", 4096) or 4096, 256 * 1024))
+    out = bytearray()
+    with open(local, "rb") as f:
+        while True:
+            data = f.read(piece)
+            if not data:
+                break
+            dev._io_manager.send(AdbMessage(constants.WRTE, info.local_id, info.remote_id, data), info)
+            while True:   # the OKAY for this piece; the TV may say something meanwhile
+                cmd, _, _, got = dev._io_manager.read([constants.OKAY, constants.WRTE, constants.CLSE], info)
+                if cmd == constants.OKAY:
+                    break
+                if cmd == constants.WRTE:
+                    out += got; dev._okay(info)
+                    continue
+                dev._io_manager.send(AdbMessage(constants.CLSE, info.local_id, info.remote_id), info)
+                raise ConnectionError("the TV closed the stream early: " + out.decode("utf-8", "replace").strip())
+    for got in dev._read_until_close(info):
+        out += got
+    return out.decode("utf-8", "replace")
+
+
+def install_stream(tv, local, opts):
+    """`pm install` without a file on the TV: the bytes go straight to `cmd package install -S <size>` (Android 7, SDK 24, and newer; what `adb
+    install` does). The answer of pm, or None when it cannot be done here (an older Android, a client without the stream, a connection that
+    dropped): the caller then uploads the file and installs it as before (an install -r of the same file twice is harmless)."""
+    sdk = tv.shell("getprop ro.build.version.sdk").strip()
+    if not sdk.isdigit() or int(sdk) < 24:
+        return None
+    size = Path(local).stat().st_size
+    command = "cmd package install -S %d %s" % (size, " ".join(shlex.quote(o) for o in opts))
+    try:
+        if tv.dev is None:
+            tv._open()
+        if hasattr(tv.dev, "install_stream"):   # the adb program (Wireless debugging)
+            return tv.dev.install_stream(command, local, SLOW_READ_S * 4)
+        if not hasattr(tv.dev, "_io_manager"):
+            return None
+        return stream_exec_tcp(tv.dev, command, local, SLOW_READ_S * 4)
+    except SystemExit:
+        raise
+    except Exception as e:  # noqa: BLE001
+        tv.close()
+        print(f"   (the streamed install did not go through: {type(e).__name__}; uploading the file instead)", file=sys.stderr)
+        return None
+
+
 def push_b64(tv, local, remote, chunk=None):   # one argument may not exceed 128 KB on Android (32 KB on a Windows command line)
     """Upload: adb's sync push first (push_sync); else in base64 pieces, and on a retry, pieces already on the TV are kept (resumes, not restarts)."""
     folder = remote.rsplit("/", 1)[0] or "/"
@@ -715,11 +773,11 @@ def main():
         changes = not all(is_read_only(l) for l in batch)
     elif a[:1] in (["--pull"], ["--shot"]):
         changes = False
-    elif a[:1] in (["--bg"], ["--push-b64"]):
+    elif a[:1] in (["--bg"], ["--push-b64"], ["--install-stream"]):
         changes = True
     else:
         changes = bool(a) and a != ["--probe"] and not is_read_only(shell_line(a))
-    slow = a[:1] in (["--bg"], ["--push-b64"])
+    slow = a[:1] in (["--bg"], ["--push-b64"], ["--install-stream"])
     tv = TV(guard=changes, tries=LONG_TRIES if slow else None, transport_s=SLOW_READ_S if slow else 60.0)   # uploads and installs get the longer patience
     if not a or a == ["--probe"]:
         for p in ("ro.product.manufacturer", "ro.product.brand", "ro.product.model", "ro.product.device",
@@ -741,6 +799,15 @@ def main():
         sys.exit(code)
     elif a[0] == "--push-b64":
         push_b64(tv, a[1], tv_path(a[2]))
+    elif a[0] == "--install-stream":   # prints pm's answer; exit 3 (STREAM_NOT_HERE) when it cannot be done here
+        if len(a) < 2 or not os.path.isfile(a[1]) or any(not re.fullmatch(r"-[a-zA-Z]|[A-Za-z0-9_.]+", o) for o in a[2:]):
+            sys.exit("usage: tv.py --install-stream local.apk [-r] [-i installer.package]")
+        out = install_stream(tv, a[1], a[2:])
+        tv.close()
+        if out is None:
+            sys.exit(STREAM_NOT_HERE)
+        print(out.rstrip())
+        sys.exit(0 if "Success" in out else 1)
     elif a[0] == "--shot":
         tv.shell("screencap -p /sdcard/_shot.png")
         tv.call("pull", "/sdcard/_shot.png", a[1])

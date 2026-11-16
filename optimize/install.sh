@@ -81,6 +81,26 @@ pm_install() {   # $1 file name in /data/local/tmp, $2 package: pm's answer. A b
   printf '%s\n' "$out"
 }
 
+# 4.3.3: the APK streamed straight to `cmd package install -S` (tv.py --install-stream, as `adb install` does): no copy in /data/local/tmp, so no
+# «Unable to open file», no full TV storage from a second copy, one step instead of three. Only a clear answer is taken: Success (and the app still
+# there 3 s later), a newer build already on the TV, or another signature. Anything else (an Android older than 7, a dropped connection, Play Protect,
+# no answer) prints nothing and the caller goes on the way it always did: upload the file, install it (an install -r of the same file twice is harmless).
+# URTV_STREAM=0 turns it off.
+stream_install() {   # $1 file name in optimize/, $2 package: pm's answer, or nothing (then the file is uploaded as before)
+  local out
+  [ "${URTV_STREAM:-1}" = 1 ] || return 0
+  out=$("$PY" -I optimize/tv.py --install-stream "optimize/$1" -r 2> /dev/null) || true
+  if grep -q Success <<< "$out"; then
+    sleep 3
+    "$PY" -I optimize/tv.py "pm list packages $2" 2> /dev/null | tr -d '\r' | grep -qx "package:$2" || return 0   # removed again: the file way has the Play Store retry
+    echo "Installed $1 by streaming it (no copy on the TV)." >&2
+    printf '%s\n' "$out"
+  elif grep -qE 'INSTALL_FAILED_VERSION_DOWNGRADE|UPDATE_INCOMPATIBLE|signatures do not match' <<< "$out"; then
+    printf '%s\n' "$out"
+  fi
+  return 0
+}
+
 pushed_whole() {   # $1 file name: is the file on the TV (in /data/local/tmp) as big as ours? A TV that does not answer the size counts as «yes»: the install says if it is not
   local want got
   want=$(wc -c < "optimize/$1" | tr -d ' ')
@@ -100,13 +120,15 @@ push_install() {   # $1 apk name, $2 package
   if ! curl_get -fsSL -o "optimize/$1" "$REL/$1"; then
     echo "!! Could not download $REL/$1 (tag ${APK_TAG:-apk-latest}): no such build, or no internet"; exit 1
   fi
+  local out
+  out=$(stream_install "$1" "$2")
+  if [ -z "$out" ]; then
   "$PY" -I optimize/tv.py --push-b64 "optimize/$1" "/data/local/tmp/$1"
   if ! pushed_whole "$1"; then   # 4.3.2: a file that arrived short (a dropped upload) is sent again before pm is asked to read it
     echo "$1 reached the TV with another size than ours: sending it again."
     "$PY" -I optimize/tv.py "rm -f /data/local/tmp/$1" > /dev/null 2>&1 || true
     "$PY" -I optimize/tv.py --push-b64 "optimize/$1" "/data/local/tmp/$1"
   fi
-  local out
   out=$(pm_install "$1" "$2")
   if grep -q "Unable to open file" <<< "$out"; then   # 4.3.2 (Nokia Streaming Box 8000, TCL BeyondTV4): the file did not reach /data/local/tmp whole, or the TV could not read it: sent again, installed once more
     echo "$1 did not reach the TV whole (pm said: Unable to open file): sending it again and installing once more."
@@ -114,6 +136,7 @@ push_install() {   # $1 apk name, $2 package
     "$PY" -I optimize/tv.py --push-b64 "optimize/$1" "/data/local/tmp/$1"
     out=$(pm_install "$1" "$2")
   fi
+  fi   # (the streamed install answered: no file was uploaded)
   if grep -q INSTALL_FAILED_VERIFICATION_FAILURE <<< "$out"; then
     verifier_old=$("$PY" -I optimize/tv.py "settings get global $VERIFIER" | tr -d '\r\n' || true)
     if [ -z "$verifier_old" ]; then   # only the word «null» means «not set»; an empty answer is «the TV did not say»
@@ -227,7 +250,9 @@ from_github() {   # $1 owner/repo, $2 package, $3 asset pattern ({abi} = the TV'
   # An optional app never holds the setup up: the upload and the install are tried twice (an upload resumes where it stopped),
   # and a TV that did not answer both times means this app is skipped with one line and the setup goes on.
   local try
-  for try in 1 2; do
+  out=$(stream_install "$name" "$2")
+  [ -z "$out" ] || try=streamed
+  [ "${try:-}" = streamed ] || for try in 1 2; do
     if "$PY" -I optimize/tv.py --push-b64 "optimize/$name" "/data/local/tmp/$name"; then out=$(pm_install "$name" "$2"); else out=NO_ANSWER; fi
     [ "$out" = NO_ANSWER ] || break
     # the install may even have finished while the TV was silent
