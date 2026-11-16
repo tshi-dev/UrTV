@@ -876,3 +876,8 @@
 إعداد تلفزيوني	Your TV setup
 شغّل الإعداد من جديد، أو تراجع عن تغييراته	Run the setup again, or undo its changes
 تغيير المدينة	Change city
+قبل ما تحذف التطبيق…	Before you delete the app…
+واجهة المصنع معطّلة الحين: ارجعها قبل ما تحذف UrTV	The factory interface is off now: turn it back on before deleting UrTV
+اقرأ هذا قبل ما تحذف UrTV من التلفزيون	Read this before you delete UrTV from the TV
+واجهة المصنع معطّلة الحين، وUrTV هو الشاشة الرئيسية. إذا حذفت UrTV وهي معطّلة يبقى التلفزيون بلا شاشة رئيسية، وتطلع شاشة سوداء. اضغط «رجّع واجهة المصنع» أولاً، ثم احذف.	The factory interface is off now and UrTV is the home screen. If you delete UrTV while it is off, the TV is left with no home screen and shows a black screen. Press «Bring back the factory interface» first, then delete.
+إذا شغّلت «تخلّص من واجهة المصنع» ثم حذفت UrTV، يبقى التلفزيون بلا شاشة رئيسية وتطلع شاشة سوداء. لا تحذفه قبل «رجّع واجهة المصنع» من هنا، أو «إعداد تلفزيوني» ثم «تراجع».	If you turned on «Get rid of the factory interface» and then delete UrTV, the TV is left with no home screen and shows a black screen. Do not delete it before «Bring back the factory interface», from here, or «TV setup» then «Undo».

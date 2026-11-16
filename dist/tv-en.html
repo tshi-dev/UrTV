@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <!-- the build: UTC time (YYYYMMDDHHMMSS) of the newest commit of the page's sources, put in by src/build.py. The app loads the page with the newer stamp (its own
      copy or a downloaded one), never by file time, and does not keep a download whose stamp is older than its own (Updater, PageStamp). -->
-<meta name="urtv-build" content="20261113151316">
+<meta name="urtv-build" content="20261116034607">
 <title>Your TV Screen</title>
 <style>
   @font-face{font-family:'Thmanyah';font-weight:300;font-style:normal;font-display:block;src:url("https://raw.githubusercontent.com/tshi-dev/UrTV/master/assets/fonts/Thmanyah-Light.woff2") format("woff2")}
@@ -662,7 +662,7 @@
   html.mpage,html.mpage body{background:#F4F2EC}
   #mp,#mp-detail{--fi:#1B1F1D;--fs:#5E635F;--fgr:#1B8354;--fam:#8A5600;--fring:#1B8354;--fln:#E4E1D8;--fbg:#fff;--chip:#fff;--rowf:#EEF6F1;--dlg:#F7F6F1;--btn:#fff;--pri:#21915F;--veil:rgba(244,242,236,.72);--shd:rgba(40,36,24,.18)}
   #mp{position:fixed;inset:0;padding:calc(var(--u)*64) calc(var(--u)*120) calc(var(--u)*56);color:var(--fi);display:flex;flex-direction:column;font-size:calc(var(--u)*28)}
-  #mp header{display:flex;justify-content:space-between;align-items:baseline}
+  #mp header{display:flex;justify-content:space-between;align-items:baseline;gap:calc(var(--u)*24);flex-wrap:wrap}   
   #mp h1{font-size:calc(var(--u)*64);font-weight:700}
   #mp-age{color:var(--fs);font-size:calc(var(--u)*24)}
   #mp-teams{font:inherit;font-size:calc(var(--u)*26);color:var(--fg);background:transparent;border:calc(var(--u)*2) solid var(--fgr);border-radius:calc(var(--u)*30);padding:calc(var(--u)*6) calc(var(--u)*30);margin-inline:calc(var(--u)*24);margin-inline-start:auto}
@@ -3460,8 +3460,12 @@ const TADAWUL = {   // Arabic short names of the 30 largest companies; any other
   '2350':'Kayan', '4013':'Al Habib', '4190':'Jarir', '7020':'Mobily', '7030':'Zain', '7203':'Elm', '4030':'Bahri',
   '1810':'Seera', '8010':'Tawuniya', '4300':'Dar Al Arkan',
 };
+// 4.3.2 (GitHub #60): more codes people asked for, kept apart from TADAWUL (the home's markets page counts the 30 largest, MarketData.TADAWUL): a name here, and the symbol is in the price file CI keeps
+const TADAWUL_MORE = {
+    '4164':'Nahdi', '4002':'Mouwasat', '4349':'Alinma Hospitality REIT', '4161':'BinDawood', '4003':'Extra', '4004':'Dallah Health', '4005':'Care', '4001':'Othaim', '4007':'Al Hammadi', '4240':'Alhokair', '2060':'Tasnee', '2250':'SIIG', '2223':'Luberef', '1111':'Tadawul Group', '1030':'SAIB',
+};
 const isSA = k => /^\d/.test(k);
-const stockName = k => isSA(k) ? (TADAWUL[k] || ar(k)) : k;
+const stockName = k => isSA(k) ? (TADAWUL[k] || TADAWUL_MORE[k] || ar(k)) : k;
 // The exchanges keep their own hours whatever the city
 const NY_CLOCK = new Intl.DateTimeFormat('en-US', {timeZone:'America/New_York', weekday:'short', hour:'2-digit', minute:'2-digit', hourCycle:'h23'});
 function marketOpen(sa, ms = Date.now()){

@@ -28,7 +28,7 @@ page = (ROOT / "src/template.html").read_text(encoding="utf-8")
 check("Stocks is pure: no android import", "import android" not in stocks)
 rows = [re.findall(r'"([^"]*)"', r) for r in re.findall(r"^\s*\{(\"\d{4}\".*)\},$", stocks, re.M)]
 blk = page[page.index("const TADAWUL = {"):]
-blk = blk[:blk.index("};")]
+blk = blk[:blk.index("};")] + page[page.index("const TADAWUL_MORE = {"):][:page[page.index("const TADAWUL_MORE = {"):].index("};")]   # the 30 largest, then the codes people asked for (4.3.2)
 web = re.findall(r"'(\d{4})':'([^']+)'", blk)
 check("the names are the page's, code for code and in its order", [(r[0], r[1]) for r in rows] == web, [(r[0], r[1]) for r in rows])
 tsv = {}

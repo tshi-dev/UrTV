@@ -103,7 +103,9 @@ public class MatchesActivity extends Activity {
     /** «فرقي»: the screensaver's settings open the teams chooser at once; coming back, the page is made again with the new teams */
     void openTeams() {
         android.content.Intent i = new android.content.Intent(android.content.Intent.ACTION_MAIN).setClassName("sa.urtv.screensaver", "sa.urtv.screensaver.SettingsActivity").putExtra("manageTeams", true);
-        if (Parental.state(this).kids || getPackageManager().resolveActivity(i, 0) == null) return;   // kids mode: the settings are behind the PIN, not here
+        if (Parental.state(this).kids) return;   // kids mode: the settings are behind the PIN, not here
+        // 4.3.2: the second app (it holds the teams and the leagues) is not installed: «ثبّت الجزء الثاني» opens, never nothing; back here the page is made again
+        if (getPackageManager().resolveActivity(i, 0) == null) i = new android.content.Intent(this, InstallSaverActivity.class);
         teamsOpened = true;
         try { startActivity(i); } catch (RuntimeException e) { teamsOpened = false; }
     }

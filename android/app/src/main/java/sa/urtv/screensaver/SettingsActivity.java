@@ -394,6 +394,10 @@ public class SettingsActivity extends Activity {
         final Runnable factoryGo = new Runnable() { public void run() { openFactory(); } };
         if (factoryOn) row("رجّع واجهة المصنع", "مفعّل واجهة المصنع معطّلة، وبضغطة ترجع", R.drawable.ic_eye, factoryGo);
         else row("تخلّص من واجهة المصنع", "عطّل واجهة المصنع وخلّ UrTV هو الأساس، وبضغطة ترجع", R.drawable.ic_eye, factoryGo);
+        // 4.3.2 «قبل ما تحذف التطبيق…»: «تخلّص من واجهة المصنع» turns the TV's own home off; deleting UrTV after it left a black screen (no home at all). The row says so and
+        // where the undo is, and opens «رجّع واجهة المصنع» from its own button.
+        row("قبل ما تحذف التطبيق…", factoryOn ? "واجهة المصنع معطّلة الحين: ارجعها قبل ما تحذف UrTV" : "اقرأ هذا قبل ما تحذف UrTV من التلفزيون", R.drawable.ic_eye,
+            new Runnable() { public void run() { uninstallWarning(factoryOn); } });
         // «UrTV النظيف»: the essentials only; the launcher's CleanActivity says what it does first and asks for the confirmation (and the family PIN)
         // the line says «مفعّل» (the on/off rule: the value starts with the state word) while the mask is on; the home answers (read once per visit, the last answer kept)
         row("\u2066UrTV\u2069 النظيف", Boolean.TRUE.equals(homeCleanSeen()) ? "مفعّل الأساسيات فقط، وبضغطة ترجع الشاشة الكاملة" : "الأساسيات فقط، وبضغطة ترجع الشاشة الكاملة", R.drawable.ic_eye, new Runnable() { public void run() { openClean(); } });
@@ -1495,6 +1499,17 @@ public class SettingsActivity extends Activity {
         } catch (RuntimeException e) {
             toast("حدّث الواجهة الرئيسية «تلفزيونك» أو ثبّتها أولاً");
         }
+    }
+
+    /** 4.3.2: why UrTV is not deleted while the TV's own home is off, and how to undo it (the screen opens from «رجّع واجهة المصنع» too). */
+    private void uninstallWarning(boolean factoryOff) {
+        AlertDialog.Builder d = new Dlg(this).setTitle("قبل ما تحذف التطبيق…")
+            .setMessage(factoryOff
+                ? "واجهة المصنع معطّلة الحين، وUrTV هو الشاشة الرئيسية. إذا حذفت UrTV وهي معطّلة يبقى التلفزيون بلا شاشة رئيسية، وتطلع شاشة سوداء. اضغط «رجّع واجهة المصنع» أولاً، ثم احذف."
+                : "إذا شغّلت «تخلّص من واجهة المصنع» ثم حذفت UrTV، يبقى التلفزيون بلا شاشة رئيسية وتطلع شاشة سوداء. لا تحذفه قبل «رجّع واجهة المصنع» من هنا، أو «إعداد تلفزيوني» ثم «تراجع».")
+            .setNegativeButton("إغلاق", null);
+        if (factoryOff) d.setPositiveButton("رجّع واجهة المصنع", (x, w) -> openFactory());
+        d.show();
     }
 
     private void openClean() {

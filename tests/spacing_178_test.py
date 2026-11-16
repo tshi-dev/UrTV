@@ -58,8 +58,8 @@ setup = text(HOME / "setup/SetupActivity.java")
 sg = {int(n) for n in re.findall(r"(?:add\([^\n]*,\s|right\()dp\((\d+)\)\)", setup)}
 check("setup screens: every gap is 8, 16, 24 or 32 px (4 to 16 dp, multiples of 4 dp)", sg and all(n % 4 == 0 for n in sg), sorted(sg))
 phone = text(HOME / "PhoneActivity.java")
-m = re.search(r"col\.setPadding\(0, dp\((\d+)\), 0, dp\(\d+\)\);", phone)
-check("«تحكم من الجوال»: the title starts at y >= 54 (28 dp = 56 px)", m is not None and int(m.group(1)) >= 27, m and m.group(1))
+m = re.search(r"col\.setPadding\(0, Math\.max\(dp\((\d+)\), safe\), 0, Math\.max\(dp\(\d+\), safe\)\);", phone)
+check("«تحكم من الجوال»: the title starts at y >= 54 (28 dp = 56 px, and never above the 5 % safe area)", m is not None and int(m.group(1)) >= 27 and "heightPixels * 0.05f" in phone, m and m.group(1))
 check("the phone's allow/deny buttons: 24 px apart", "p.setMarginEnd(dp(12));" in phone)
 
 # the month line is shown whole

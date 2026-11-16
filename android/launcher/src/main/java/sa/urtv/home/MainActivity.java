@@ -1258,9 +1258,10 @@ public class MainActivity extends Activity {
         cardByPkg.clear();
         List<App> rest = new ArrayList<>(byPkg.values());   // by name, then in the owner's order (inSavedOrder)
         Collections.sort(rest, (x, y) -> x.label.compareToIgnoreCase(y.label));
-        // Fewer than MIN_DOCK of the chosen apps installed: top the dock up from the rest, in the order of their package names, never of their labels: a
+        // None of the chosen apps installed: top the dock up from the rest, in the order of their package names, never of their labels: a
         // label follows the screen's language (Downloader in Arabic where English said Apple TV, build 180), the dock must not.
-        {
+        // 4.3.2: only when none of the person's choice is on the TV (nothing saved, or all of it gone): three chosen apps stay three, they are never padded with games
+        if (dock.isEmpty()) {
             List<String> have = new ArrayList<>(), other = new ArrayList<>();
             for (App d : dock) have.add(d.pkg);
             for (App x : rest) other.add(x.pkg);
@@ -3905,6 +3906,12 @@ public class MainActivity extends Activity {
     private void openCity() {
         Intent i = new Intent(Intent.ACTION_MAIN).setComponent(new ComponentName(SAVER_PKG, SAVER_PKG + ".SettingsActivity")).putExtra("pickCity", true);
         if (getPackageManager().resolveActivity(i, 0) != null) guarded(ParentalPolicy.OUR_SETTINGS, null, S.t("المدينة"), () -> launch(i));
+        else openSaverInstall();   // 4.3.2: the second app is not here: «ثبّت الجزء الثاني», never nothing
+    }
+
+    /** 4.3.2 «ثبّت الجزء الثاني»: the screen that installs the screensaver app (the settings) when a TV has only the home (SaverInstallRule) */
+    void openSaverInstall() {
+        guarded(ParentalPolicy.OUR_SETTINGS, null, S.t("ثبّت الجزء الثاني"), () -> launch(new Intent(this, InstallSaverActivity.class)));
     }
 
     private void openOurSettings(boolean orTvSettings) { openOurSettings(orTvSettings, null); }
@@ -3922,6 +3929,8 @@ public class MainActivity extends Activity {
             guarded(ParentalPolicy.OUR_SETTINGS, null, S.t("تلفزيونك"), () -> launch(i));
         } else if (orTvSettings) {
             launchGuarded(ParentalPolicy.REMOTE_SETTINGS, new Intent(Settings.ACTION_SETTINGS), "إعدادات التلفزيون");
+        } else {
+            openSaverInstall();   // 4.3.2: «تلفزيونك», the clean home's button, the pill: the second app is missing, so it is offered, never nothing
         }
     }
 

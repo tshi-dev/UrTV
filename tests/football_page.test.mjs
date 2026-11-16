@@ -175,6 +175,23 @@ for (const [why, rows] of [['the shipped table', null], ['medium confidence', [{
   check('score: one event in three sources (stale «not played» copy, an older game from eventslast, the league\'s final 1-2): shown once, as the final with its score', JSON.stringify(got) === '[["FT","1","2"]]', JSON.stringify(got));
   await ctx.close();
 }
+// ---- 4.3.2 «فرقي», a report: three followed teams, the page showed one team's games. The chain was read end to end (Prefs.teams -> fragment &teams= -> the page's CONFIG.teamIds
+// -> matchEvents -> «فرقك» in mpGroups) and carries every team; not reproduced. Pinned here: a team the server refused the first time arrives with the retry (20 s later),
+// and the page of the games is drawn with it (renderPanel draws it after every run of loadMatches), three more games than the first run had.
+{
+  const { p, ctx } = await open('teams=136013,136137,136020&matchpage=1', { rows: ROWS, height: 1080 });
+  await p.waitForSelector('#mp-list', { timeout: 15000 }).catch(() => {});
+  await p.waitForTimeout(500);
+  const before = await p.$$eval('#mp-list .mpg', r => r.length);   // the first run: the server gave nothing for these teams
+  const GAME = { '136013': ['Al-Hilal', '136011', 'Al-Fateh'], '136137': ['Al-Nassr', '136017', 'Al-Shabab'], '136020': ['Al-Ettifaq', '147445', 'Al-Riyadh'] };
+  await ctx.route(/eventsnext\.php\?id=\d+/, r => {   // the retry: now it answers, a game for each team
+    const id = r.request().url().match(/id=(\d+)/)[1], g = GAME[id];
+    return r.fulfill({ json: { events: g ? [ev('70' + id.slice(-2), g[0], id, g[2], g[1], '2026-11-04T17:00:00')] : null }, headers: { 'Access-Control-Allow-Origin': '*' } });
+  });
+  const after = await p.evaluate(async () => { await loadMatches(); return document.querySelectorAll('#mp-list .mpg').length; });   // no mpRender() by hand
+  check('«المباريات» is drawn again when a run of loadMatches ends: the games of all three followed teams are on the page (three more than the first run had)', after === before + 3, [before, after]);
+  await ctx.close();
+}
 // ---- 4.3.1 «البطولات الكبرى»: leagues/tournaments.json, one request, after the person's own rows; the 36 h rule; off = no request; unticked ones left out; the card's cap
 const tev = (id, home, hid, away, aid, iso, lid, extra = {}) => ev(id, home, hid, away, aid, iso, { idLeague: lid, strLeague: 'UEFA Nations League', intRound: '', ...extra });
 const TOUR = { updated: '2026-11-04T03:00:00Z', names: { '4490': 'دوري الأمم الأوروبية', '4480': 'دوري أبطال أوروبا' }, events: [

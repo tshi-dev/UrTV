@@ -86,11 +86,13 @@ STATIONS = [
     ("عبدالباسط عبدالصمد", "radio/abdulbasit_abdulsamad"),
     ("محمد صديق المنشاوي", "radio/mohammed_siddiq_alminshawi"),
     ("أحمد العجمي", "radio/ahmad_alajmy"),
+    # 4.3.2: Sheikh Abdullah Khayyat, a live station of quran-uni.com (MP3 128, https, checked ok by the stations CI: data-stations candidates); mp3quran has no recitation of his in our candidates
+    ("الشيخ عبدالله خياط", "https://serverkw.quran-uni.com:8152/"),
 ]
 
 
 # English names of the stations the committed stations.json does not have yet
-EN_STATIONS = {"إذاعة القرآن الكريم - مصر": "Quran Radio, Egypt"}
+EN_STATIONS = {"إذاعة القرآن الكريم - مصر": "Quran Radio, Egypt", "الشيخ عبدالله خياط": "Sheikh Abdullah Khayyat"}
 
 
 def get_json(url):

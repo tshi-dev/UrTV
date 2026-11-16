@@ -25,7 +25,7 @@ def text(p):
 
 
 ver = text("VERSION")
-check("VERSION is one line, major.minor, ending in a newline (the one source of the name)", re.fullmatch(r"\d+\.\d+\n", ver) is not None, repr(ver))
+check("VERSION is one line, major.minor or major.minor.patch (4.3.2), ending in a newline (the one source of the name)", re.fullmatch(r"\d+\.\d+(\.\d+)?\n", ver) is not None, repr(ver))
 name = ver.strip()
 
 for mod in ("app", "launcher"):
@@ -68,8 +68,8 @@ wf = text(".github/workflows/android.yml")
 check("version.txt is written exactly as before: \"3.<run>\" (an installed 3.142 reads the newest build from it)", 'echo "3.${{ github.run_number }}" > version.txt' in wf and wf.count("> version.txt") == 1)
 check("version.txt goes to apk-latest and apk-next as before, and not to the numbered release",
       wf.count("            version.txt\n") == 2)
-check("the Version step validates VERSION (major.minor); the numbered release is tagged v<name>.<run> (only the URL shows it) and titled exactly «UrTV <name>»",
-      "id: ver" in wf and "grep -Eq '^[0-9]+\\.[0-9]+$'" in wf and "tag_name: v${{ steps.ver.outputs.name }}.${{ github.run_number }}" in wf
+check("the Version step validates VERSION (major.minor, or with a patch: 4.3.2); the numbered release is tagged v<major.minor>.<run> (only the URL shows it; the tag keeps its two-part shape) and titled exactly «UrTV <name>» («UrTV 4.3.2»)",
+      "id: ver" in wf and "grep -Eq '^[0-9]+\\.[0-9]+(\\.[0-9]+)?$'" in wf and "tag_name: v${{ steps.ver.outputs.tag }}.${{ github.run_number }}" in wf and 'echo "tag=$(echo "$name" | cut -d. -f1-2)"' in wf
       and "name: UrTV ${{ steps.ver.outputs.name }}\n" in wf and "UrTV ${{ steps.ver.outputs.name }} (build" not in wf)
 check("the bodies say the version and the build", wf.count('body: "Both apps at version ${{ steps.ver.outputs.name }} (build ${{ github.run_number }}), built from') == 3)
 check("apk-latest is still published from master with make_latest, apk-next from next", "tag_name: apk-latest" in wf and "make_latest: true" in wf and "tag_name: apk-next" in wf)

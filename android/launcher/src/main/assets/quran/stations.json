@@ -72,6 +72,12 @@
    "en": "Ahmad Al-Ajmi",
    "url": "https://backup.qurango.net/radio/ahmad_alajmy",
    "live": true
+  },
+  {
+   "name": "الشيخ عبدالله خياط",
+   "en": "Sheikh Abdullah Khayyat",
+   "url": "https://serverkw.quran-uni.com:8152/",
+   "live": true
   }
  ]
 }

@@ -334,14 +334,17 @@ def packages(lines, before=None):   # what our lists turned off, what they left 
         if m:
             state.setdefault((m.group(1), m.group(3)), []).append(m.group(2))
     out = []
+    before = off_before() if before is None else before   # off before UrTV touched the TV: not ours to flag, and never «turned off by the setup» (Nokia, TCL BeyondTV reports)
     for lst in ("tcl-safe", "tcl-optional", "community", "home-replaced"):
-        off, on = state.get(("off", lst), []), state.get(("on", lst), [])
+        every, on = state.get(("off", lst), []), state.get(("on", lst), [])
+        off = [p for p in every if p not in before]
+        already = [p for p in every if p in before]
         absent = len(state.get(("absent", lst), []))
-        if off or on or absent:
-            out.append(f"{lst}: {len(off)} off, {len(on)} still on, {absent} not on this TV")
+        if every or on or absent:
+            out.append(f"{lst}: {len(off)} off, {len(on)} still on, {absent} not on this TV" + (f", {len(already)} were already off before UrTV (not ours)" if already else ""))
             out += [f"  off: {', '.join(off)}"] if off else []
+            out += [f"  already off before UrTV: {', '.join(already)}"] if already else []
             out += [f"  on: {', '.join(on)}"] if on else []
-    before = off_before() if before is None else before   # off before UrTV touched the TV: not ours to flag
     protected = [p for p in state.get(("off", "keep"), []) if p not in OFF_BY_DESIGN and p not in before]
     if protected:
         out.append(f"!! protected but off: {', '.join(protected)}")

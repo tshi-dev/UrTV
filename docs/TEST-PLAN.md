@@ -162,7 +162,7 @@ Use the TV's clock or wait for the real moment; take a screenshot at each.
 | L16 | OK on «انعكاس الشاشة»; then on an Android phone: «Smart View» / «عرض الشاشة» / «Screen cast», choose the TV | TCL's screen-mirroring app opens and waits; the phone's screen shows on the TV. Back to the home: the focus on the pill |
 | L17 | On a TV with none of those apps (a Chromecast with Google TV), or any TV where `optimize/venv/bin/python -I optimize/tv.py pm list packages -e` lists none of com.tcl.miracast, com.softwinner.miracastReceiver, com.homwee.mmp.screenshare, com.xiaomi.mitv.smartshare, com.mediatek.wfd: Home › «مركز التحكم» | No «انعكاس الشاشة» tile; the eight tiles as before, in the same places |
 | L18 | `optimize/dock.sh pin lock com.tcl.miracast` (PIN set), then OK on «انعكاس الشاشة» | The PIN is asked, as on that app's own tile; `pin unlock` to undo |
-| L5 | `optimize/dock.sh apps`, then `optimize/dock.sh set <3 packages from that list>`, then `optimize/dock.sh show` | Home screen redraws at once with those three first, topped up to 5; `show` lists them |
+| L5 | `optimize/dock.sh apps`, then `optimize/dock.sh set <3 packages from that list>`, then `optimize/dock.sh show` | Home screen redraws at once with exactly those three (a choice of three stays three, never padded with other apps); `show` lists them |
 | L6 | `optimize/dock.sh set com.not.installed` | `error: none of these apps are on this TV's home screen`; row unchanged |
 | L7 | `optimize/dock.sh reset` | Row back to the defaults |
 | L4 | Open any app with the card on, then `adb shell top -n 1 \| grep urtv.home` | Launcher idle while the app is in front (card paused) |
