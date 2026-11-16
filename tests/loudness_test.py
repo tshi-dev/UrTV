@@ -39,7 +39,7 @@ check("the lift is setTargetGain on our session only: no volume, no mute, no glo
 up = service.split("private void adhanVolumeUp(")[1].split("\n    }\n")[0]
 check("the adhan's own level is still the person's choice, never above it", "int want = Math.round(max * prefs.adhanVolume() / 100f);" in up
       and "Math.max(1, Math.min(max, want))" in up)
-check("ducking and the fades still work through setVolume (the limiter is behind them)", "player.setVolume(0.2f, 0.2f)" in service and "AdhanVoices.gain(" in service)
+check("ducking and the fades still work through setVolume (the limiter is behind them)", "player.setVolume(FocusRule.DUCK, FocusRule.DUCK)" in service and "DUCK = 0.2f;" in (ROOT / "android/launcher/src/main/java/sa/urtv/home/tilawah/FocusRule.java").read_text(encoding="utf-8") and "AdhanVoices.gain(" in service)
 check("tests/run.sh runs this test", "tests/loudness_test.py" in (ROOT / "tests/run.sh").read_text(encoding="utf-8"))
 
 if not shutil.which("javac"):

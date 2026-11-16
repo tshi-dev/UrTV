@@ -267,6 +267,8 @@ public class MusicReceiver extends BroadcastReceiver {
                 + "|radio_fault=" + MusicService.radioFaultRecord().replace(' ', ';')
                 + "|buffering=" + (MusicService.isBuffering() ? 1 : 0)
                 + "|player=" + MusicService.playerKind()
-                + "|stall_restarts=" + MusicService.stallRestartCount();
+                + "|stall_restarts=" + MusicService.stallRestartCount()
+                + "|foreground=" + (MusicService.inForeground() ? 1 : 0)   // 4.3.3 G1: 1 while it plays = Android keeps it over the screensaver and the TV's settings
+                + "|focus_wait=" + (MusicService.waitingFocus() ? 1 : 0);   // 4.3.3 G1: paused by another sound, goes on when it ends
     }
 }

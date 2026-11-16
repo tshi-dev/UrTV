@@ -80,6 +80,7 @@ public class PlayerActivity extends Activity {
 
     @Override protected void onResume() {
         super.onResume();
+        MusicService.keepForeground(this);   // 4.3.3 G1: the player in front may ask for the foreground notice Android refused earlier
         handler.removeCallbacks(refresh);
         handler.post(refresh);
     }
