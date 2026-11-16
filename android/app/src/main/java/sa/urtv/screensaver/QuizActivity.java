@@ -88,6 +88,7 @@ public class QuizActivity extends Activity {
         scale = getResources().getDisplayMetrics().widthPixels / 1920f;
         bank = QuizPick.forLang(QuizBank.load(this), S.en());   // an English room plays only the items whose English text is really English
         QuizBank.refresh(this);
+        useMeta();   // games/meta.json: the chips' names and groups from the data (the built-in lists are the offline default)
         cat = QuizBank.category(this); level = QuizBank.level(this); countIdx = QuizBank.count(this); kids = QuizBank.kids(this); sound = QuizBank.sound(this);
         root = new FrameLayout(this);
         root.setLayoutDirection(Dir.layout());
@@ -283,9 +284,21 @@ public class QuizActivity extends Activity {
         root.addView(go, at(640, 104, 96, 856));
         hints("▲ ▼", S.t("السطر"), "◀ ▶", S.t("الاختيار"), S.t("اختيار"), S.t("ابدأ"));
     }
-    private String[] catLabels() { String[] v = new String[QuizPick.CATEGORIES.length]; for (int i = 0; i < v.length; i++) v[i] = S.tv(QuizPick.CATEGORIES[i][1]); return v; }
+    /** the category chips: «مزيج» and the built-in ones, or, when games/meta.json is on the TV, the groups and categories it names (the data's names in UrTV's language) */
+    private String[][] cats = QuizPick.CATEGORIES;
+    private void useMeta() {
+        GamesMeta meta = GameData.load(this, "meta", GamesMeta::parse, GamesMeta::parse);
+        GameData.refresh(this, "meta", GamesMeta::parse, GamesMeta.BYTES_MAX);
+        if (meta == null) return;
+        List<String[]> v = new ArrayList<>();
+        v.add(QuizPick.CATEGORIES[0]);
+        for (GamesMeta.Chip c : meta.quizChips()) v.add(new String[] {c.key, c.ar, c.en});
+        cats = v.toArray(new String[0][]);
+        QuizPick.GROUPS = meta.quizGroups();
+    }
+    private String[] catLabels() { String[] v = new String[cats.length]; for (int i = 0; i < v.length; i++) v[i] = cats[i].length > 2 ? (en ? cats[i][2] : cats[i][1]) : S.tv(cats[i][1]); return v; }
     private String[] levelLabels() { String[] v = new String[QuizPick.LEVELS.length]; for (int i = 0; i < v.length; i++) v[i] = S.tv(QuizPick.LEVELS[i]); return v; }
-    private int catIndex() { for (int i = 0; i < QuizPick.CATEGORIES.length; i++) if (QuizPick.CATEGORIES[i][0].equals(cat)) return i; return 0; }
+    private int catIndex() { for (int i = 0; i < cats.length; i++) if (cats[i][0].equals(cat)) return i; return 0; }
 
     /** one row of chips: the label above (the first row, long) or at the start; selected = saffron, the focus = ink, not offered = dashed.
      *  The chips are as wide as their words (measured), and the font shrinks a little when a row would not fit the 1728 px of the design. */
@@ -302,7 +315,7 @@ public class QuizActivity extends Activity {
         } while (total > avail && f > 26);
         float x = cx;
         for (int i = 0; i < opts.length; i++) {
-            boolean off = row == 0 && !catOffered(QuizPick.CATEGORIES[i][0]);
+            boolean off = row == 0 && !catOffered(cats[i][0]);
             boolean focus = selRow == row && sel == i;
             boolean isSel = i == picked;
             int fill = focus ? INK : isSel ? SAFF : off ? PAPER : TILE;
@@ -325,11 +338,11 @@ public class QuizActivity extends Activity {
         if (dx != 0) { sel = Math.max(0, Math.min(n - 1, sel + dx)); show(Screen.SETUP); return; }
         if (ok) choose(selRow, sel);
     }
-    private int rowSize(int r) { return r == 0 ? QuizPick.CATEGORIES.length : r == 1 ? QuizPick.LEVELS.length : r == 2 ? 3 : 2; }
+    private int rowSize(int r) { return r == 0 ? cats.length : r == 1 ? QuizPick.LEVELS.length : r == 2 ? 3 : 2; }
     private int selRowPick(int r) { return r == 0 ? catIndex() : r == 1 ? level : r == 2 ? countIdx : r == 3 ? (kids ? 1 : 0) : r == 4 ? (sound ? 0 : 1) : 0; }
     private int clampSel(int r, int v) { return Math.max(0, Math.min(Math.max(0, rowSize(Math.min(r, 4)) - 1), v)); }
     private void choose(int row, int i) {
-        if (row == 0) { if (!catOffered(QuizPick.CATEGORIES[i][0])) { Toast.makeText(this, S.t("قريبًا"), Toast.LENGTH_SHORT).show(); return; } cat = QuizPick.CATEGORIES[i][0]; }
+        if (row == 0) { if (!catOffered(cats[i][0])) { Toast.makeText(this, S.t("قريبًا"), Toast.LENGTH_SHORT).show(); return; } cat = cats[i][0]; }
         else if (row == 1) { level = i; fixCat(); }
         else if (row == 2) { countIdx = i; fixCat(); }
         else if (row == 3) { kids = i == 1; fixCat(); }

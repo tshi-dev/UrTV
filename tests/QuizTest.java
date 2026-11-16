@@ -236,20 +236,47 @@ public final class QuizTest {
         check("bank: an HTML page, an error message, an object, an empty body or null is refused",
             QuizBankCheck.parse("<!doctype html><html><body>404</body></html>".getBytes()) == null && QuizBankCheck.parse("{\"error\":1}".getBytes()) == null && QuizBankCheck.parse(new byte[0]) == null
             && QuizBankCheck.parse(null) == null && QuizBankCheck.parse("  <html>[{}]".getBytes()) == null);
-        check("bank: over 1.5 MB is refused, so is anything followed by more text or cut short",
+        check("bank: over 6 MB is refused, so is anything followed by more text or cut short",
             QuizBankCheck.parse(new byte[QuizBankCheck.BYTES_MAX + 1]) == null && QuizBankCheck.parse(("[" + item("a1", "") + "] x").getBytes(StandardCharsets.UTF_8)) == null && QuizBankCheck.parse(("[" + item("a1", "")).getBytes(StandardCharsets.UTF_8)) == null);
         StringBuilder many = new StringBuilder("[");
         for (int i = 0; i < QuizBankCheck.ITEMS_MAX + 1; i++) many.append(i > 0 ? "," : "").append(item("id" + i, ""));
-        check("bank: more than 5,000 items is refused", QuizBankCheck.parse((many + "]").getBytes(StandardCharsets.UTF_8)) == null);
-        check("bank: one bad item rejects the file (an extra key, a missing key, difficulty 4, a duplicate option, a duplicate id, an id with odd characters, a text of 201 characters, a control character)",
-            QuizBankCheck.parse(("[" + item("a1", ",\"x\":1") + "]").getBytes(StandardCharsets.UTF_8)) == null
-            && QuizBankCheck.parse("[{\"i\":\"a\"}]".getBytes()) == null
-            && QuizBankCheck.parse(("[" + item("a1", "").replace("\"d\":2", "\"d\":4") + "]").getBytes(StandardCharsets.UTF_8)) == null
-            && QuizBankCheck.parse(("[" + item("a1", "").replace("[\"ب\",\"B\"]", "[\"أ\",\"A\"]") + "]").getBytes(StandardCharsets.UTF_8)) == null
-            && QuizBankCheck.parse(("[" + item("a1", "") + "," + item("a1", "") + "]").getBytes(StandardCharsets.UTF_8)) == null
-            && QuizBankCheck.parse(("[" + item("a/../1", "") + "]").getBytes(StandardCharsets.UTF_8)) == null
-            && QuizBankCheck.parse(("[" + item("a1", "").replace("\"Q\"", "\"" + "x".repeat(201) + "\"") + "]").getBytes(StandardCharsets.UTF_8)) == null
-            && QuizBankCheck.parse(("[" + item("a1", "").replace("\"Q\"", "\"a\\u0007b\"") + "]").getBytes(StandardCharsets.UTF_8)) == null);
+        check("bank: more than 20,000 items is refused", QuizBankCheck.parse((many + "]").getBytes(StandardCharsets.UTF_8)) == null);
+        String ok1 = item("ok1", ""), ok2 = item("ok2", "");
+        String[] bad = {item("a1", "").replace("\"d\":2", "\"d\":4"), "{\"i\":\"a\"}", item("a1", "").replace("[\"ب\",\"B\"]", "[\"أ\",\"A\"]"), ok1, item("a/../1", ""),
+            item("a1", "").replace("\"Q\"", "\"" + "x".repeat(201) + "\""), item("a1", "").replace("\"Q\"", "\"a\\u0007b\"")};
+        List<QuizPick.Item> kept = QuizBankCheck.parse(("[" + ok1 + "," + String.join(",", bad) + "," + ok2 + "]").getBytes(StandardCharsets.UTF_8));
+        check("bank (tolerant): an item that cannot be used is SKIPPED, not the file (difficulty 4, a missing field, a repeated option, a duplicate id, an odd id, a text of 201 characters, a control character): the good ones stay",
+            kept != null && kept.size() == 2 && kept.get(0).id.equals("ok1") && kept.get(1).id.equals("ok2")
+            && QuizBankCheck.parse(("[" + String.join(",", bad[0], bad[1]) + "]").getBytes(StandardCharsets.UTF_8)) == null);
+        List<QuizPick.Item> extra = QuizBankCheck.parse(("[" + item("a1", ",\"x\":1,\"t\":\"capitals\"") + "]").getBytes(StandardCharsets.UTF_8));
+        check("bank (tolerant): an item with fields this app does not know is kept and the fields are ignored", extra != null && extra.size() == 1 && extra.get(0).id.equals("a1"));
+        List<QuizPick.Item> v2 = QuizBankCheck.parse(("{\"v\":2,\"note\":\"x\",\"items\":[" + item("b1", ",\"t\":\"elements\"") + "," + item("b2", "") + ",{\"i\":\"broken\"}]}").getBytes(StandardCharsets.UTF_8));
+        check("bank v2: the versioned object {v:2, items} is read (unknown top-level fields ignored, a broken item skipped); another version, no items, or items that are not a list are refused",
+            v2 != null && v2.size() == 2 && QuizBankCheck.parse(("{\"v\":3,\"items\":[" + ok1 + "]}").getBytes(StandardCharsets.UTF_8)) == null
+            && QuizBankCheck.parse("{\"v\":2}".getBytes()) == null && QuizBankCheck.parse("{\"v\":2,\"items\":5}".getBytes()) == null && QuizBankCheck.parse("{\"v\":2,\"items\":[]}".getBytes()) == null);
+        StringBuilder grown = new StringBuilder("{\"v\":2,\"items\":[");
+        for (int i = 0; i < 15000; i++) grown.append(i > 0 ? "," : "").append(item("g" + i, ",\"t\":\"x\"").replace("geography", i % 3 == 0 ? "science" : "history"));
+        long t0 = System.nanoTime(); byte[] big = (grown + "]}").getBytes(StandardCharsets.UTF_8);
+        List<QuizPick.Item> g15 = QuizBankCheck.parse(big);
+        check("bank: a synthetic 15,000-item bank (" + big.length / 1000 + " KB) loads whole in under 5 seconds (" + (System.nanoTime() - t0) / 1_000_000 + " ms) and the picking still works",
+            g15 != null && g15.size() == 15000 && big.length < QuizBankCheck.BYTES_MAX && (System.nanoTime() - t0) < 5_000_000_000L
+            && QuizPick.pick(g15, "science", 0, false, 10, null, new Random(1)).size() == 10);
+        // games/meta.json: the chips from the data
+        String meta = "{\"v\":1,\"min_items\":40,\"future\":{\"x\":1},\"groups\":[{\"id\":\"science\",\"ar\":\"علوم\",\"en\":\"Science\",\"cats\":[\"science\",\"animals\"],\"color\":\"red\"},{\"id\":\"nameless\",\"cats\":[\"x\"]},{\"id\":\"sports\",\"ar\":\"رياضة\",\"en\":\"Sports\",\"cats\":[\"sports\"]}],"
+            + "\"games\":{\"quiz\":{\"cats\":[{\"id\":\"science\",\"ar\":\"علوم\",\"en\":\"Science\",\"n\":[1,2,3]},{\"id\":\"cinema\",\"ar\":\"سينما\",\"en\":\"Cinema\",\"n\":[1,2,3]},{\"id\":\"bad\",\"n\":[1]}],\"extra\":5},\"new-game\":{}}}";
+        GamesMeta gm = GamesMeta.parse(meta.getBytes(StandardCharsets.UTF_8));
+        check("meta: the chips come from the data in the file's order (the groups, then a category that is in no group under its own name); unknown fields and games, a nameless group and a nameless category are skipped",
+            gm != null && gm.quizChips().size() == 3 && gm.quizChips().get(0).key.equals("science") && gm.quizChips().get(1).key.equals("sports") && gm.quizChips().get(2).key.equals("cinema") && gm.quizChips().get(2).en.equals("Cinema")
+            && gm.quizGroups().get("science").contains("animals") && gm.minItems == 40);
+        check("meta: another version, an HTML page, a broken file, an empty file and a file with no usable chip are refused (the app keeps its built-in lists)",
+            GamesMeta.parse("{\"v\":2,\"groups\":[]}".getBytes()) == null && GamesMeta.parse("<html>".getBytes()) == null && GamesMeta.parse("{".getBytes()) == null && GamesMeta.parse(new byte[0]) == null && GamesMeta.parse(null) == null
+            && GamesMeta.parse("{\"v\":1,\"groups\":[{\"id\":\"a\"}],\"games\":{}}".getBytes()) == null);
+        QuizPick.GROUPS = gm.quizGroups();
+        List<QuizPick.Item> mixed = new ArrayList<>();
+        for (int i = 0; i < 50; i++) { mixed.add(new QuizPick.Item("s" + i, "science", 2, false, new String[] {"س", "Q"}, new String[] {"أ", "A"}, new String[][] {{"ب", "B"}, {"ج", "C"}, {"د", "D"}})); mixed.add(new QuizPick.Item("a" + i, "animals", 2, false, new String[] {"س", "Q"}, new String[] {"أ", "A"}, new String[][] {{"ب", "B"}, {"ج", "C"}, {"د", "D"}})); }
+        boolean grp = QuizPick.available(mixed, "science", 0, false) == 100 && QuizPick.offered(mixed, "science", 0, false, 10) && !QuizPick.offered(mixed, "sports", 0, false, 10);
+        QuizPick.GROUPS = java.util.Collections.emptyMap();
+        check("meta: a group chip covers all its categories in the picking (science + animals = 100 items); with no meta a key is one category (50), so the built-in chips still work", grp && QuizPick.available(mixed, "science", 0, false) == 50);
         check("bank: nesting deeper than 8 levels is refused without an error", QuizBankCheck.parse(("[".repeat(50) + "]".repeat(50)).getBytes()) == null);
     }
 

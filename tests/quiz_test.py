@@ -15,7 +15,7 @@ def check(what, ok, extra=""):
 if not shutil.which("javac"):
     print("SKIP quiz: no javac"); sys.exit(1)
 with tempfile.TemporaryDirectory() as tmp:
-    c = subprocess.run(["javac", "-nowarn", "-d", tmp, *(str(APP / f"Quiz{n}.java") for n in ("Room", "Pick", "Server", "BankCheck")), str(APP / "MiniJson.java"), str(APP / "DigitsText.java"), str(ROOT / "tests/QuizTest.java")], capture_output=True, text=True)
+    c = subprocess.run(["javac", "-nowarn", "-d", tmp, *(str(APP / f"Quiz{n}.java") for n in ("Room", "Pick", "Server", "BankCheck")), str(APP / "MiniJson.java"), str(APP / "DigitsText.java"), str(APP / "GamesMeta.java"), str(APP / "GameDataCheck.java"), str(ROOT / "tests/QuizTest.java")], capture_output=True, text=True)
     check("the quiz compiles on a plain JVM (no Android in the rules, the picking or the server)", c.returncode == 0, c.stderr[-600:])
     if c.returncode == 0:
         r = subprocess.run(["java", "-cp", tmp, "sa.urtv.screensaver.QuizTest", str(ROOT / "assets/quiz/starter.json")], capture_output=True, text=True, timeout=240)
@@ -42,7 +42,7 @@ with tempfile.TemporaryDirectory() as t2:
           and bad(lambda d: d[0].__setitem__("d", 4), "c.json") and bad(lambda d: d[0].__setitem__("x", 1), "d.json") and bad(lambda d: d.__delitem__(slice(10, None)), "e.json"))
 bank_src = (APP / "QuizBank.java").read_text(encoding="utf-8")
 check("the app checks what it downloads before it keeps it: through Net (a size cap, no redirect), the whole-file check, a temporary file renamed, the last good copy kept; no org.json in the quiz",
-      "QuizBankCheck.parse(b)" in bank_src and "Net.get(URL, null, 15000, 20000, QuizBankCheck.BYTES_MAX)" in bank_src and "r.status != 200" in bank_src and "tmp.renameTo(f)" in bank_src
+      "QuizBankCheck.parse(r.body)" in bank_src and "Net.get(url, null, 15000, 20000, QuizBankCheck.BYTES_MAX)" in bank_src and "r.status != 200" in bank_src and "tmp.renameTo(f)" in bank_src and "fetch(URL_V2)" in bank_src and "fetch(URL)" in bank_src
       and "org.json" not in bank_src + (APP / "QuizBankCheck.java").read_text(encoding="utf-8"))
 check("the room code and the tokens come from a SecureRandom", "new java.security.SecureRandom()" in (APP / "QuizActivity.java").read_text(encoding="utf-8"))
 
@@ -104,7 +104,7 @@ check("phone: «gone» keeps the token and says «خرجت من الغرفة، �
       "e === 'gone'" in page and "e_gone: 'خرجت من الغرفة، ادخل من جديد'" in page and "function roomLabel()" in page and "QuizRoom.isolateMath(" in act)
 check("language: the TV shows the question and the four answers in UrTV's language (q.text(en), q.opt(i, en)); the letters are A B C D in English and أ ب ج د in Arabic on the TV; the setup page's chips follow it (S.tv)",
       "String qText = q.text(en);" in act and "String a = q.opt(i, en);" in act and 'LETTERS_AR = {"أ", "ب", "ج", "د"}, LETTERS_EN = {"A", "B", "C", "D"}' in act and "private String letter(int i) { return en ? LETTERS_EN[i] : LETTERS_AR[i]; }" in act
-      and "S.tv(QuizPick.CATEGORIES[i][1])" in act and "S.tv(QuizPick.LEVELS[i])" in act and "QuizPick.forLang(QuizBank.load(this), S.en())" in act)
+      and "S.tv(cats[i][1])" in act and "S.tv(QuizPick.LEVELS[i])" in act and "QuizPick.forLang(QuizBank.load(this), S.en())" in act)
 check("language: each phone gets its own page's language (the state poll sends &l=, the room answers in it), the letters on the phone are أ ب ج د in Arabic and A B C D in English, the digits fixing touches the Arabic text only",
       "'&l=' + L, null, 4000)" in page and 'room.stateFor(p.get("t"), "en".equals(p.get("l")))' in srv and "letters: ['أ', 'ب', 'ج', 'د']" in page and "letters: ['A', 'B', 'C', 'D']" in page
       and "q.texts[1]};   // the English text is left as it is" in act)

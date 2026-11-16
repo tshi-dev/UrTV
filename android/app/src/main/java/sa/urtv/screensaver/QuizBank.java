@@ -22,7 +22,7 @@ import java.util.Set;
 final class QuizBank {
     private QuizBank() {}
 
-    static final String URL = "https://raw.githubusercontent.com/tshi-dev/UrTV/data-games/quiz/quiz.json";
+    static final String URL = "https://raw.githubusercontent.com/tshi-dev/UrTV/data-games/quiz/quiz.json", URL_V2 = "https://raw.githubusercontent.com/tshi-dev/UrTV/data-games/quiz/quiz-v2.json";
     static final long REFRESH_MS = 3L * 24 * 3600 * 1000;
     private static final String FILE = "quiz-bank.json", PREFS = "quiz";
     private static volatile boolean fetching;
@@ -54,11 +54,9 @@ final class QuizBank {
         fetching = true;
         new Thread(() -> {
             try {
-                Net.Reply r = Net.get(URL, null, 15000, 20000, QuizBankCheck.BYTES_MAX);   // no redirect, a size cap, IPv4 first (Net)
-                if (r.status != 200) return;
-                byte[] b = r.body;
-                List<QuizPick.Item> v = QuizBankCheck.parse(b);
-                if (v == null || v.size() < QuizPick.MIN_ITEMS) return;   // never replace a good file with a bad one
+                byte[] b = fetch(URL_V2);                    // the versioned file first; an app that finds none (or a bad one) takes the old array
+                if (b == null) b = fetch(URL);
+                if (b == null) return;                       // never replace a good file with a bad one
                 File tmp = new File(app.getFilesDir(), FILE + ".tmp");
                 try (FileOutputStream o = new FileOutputStream(tmp)) { o.write(b); }
                 if (!tmp.renameTo(f)) tmp.delete();
@@ -68,6 +66,16 @@ final class QuizBank {
                 fetching = false;
             }
         }, "quiz-bank").start();
+    }
+
+    /** one download, read with a size cap and checked whole; the bytes, or null when anything is wrong */
+    private static byte[] fetch(String url) {
+        try {
+            Net.Reply r = Net.get(url, null, 15000, 20000, QuizBankCheck.BYTES_MAX);   // no redirect, a size cap, IPv4 first (Net)
+            if (r.status != 200) return null;
+            List<QuizPick.Item> v = QuizBankCheck.parse(r.body);
+            return v == null || v.size() < QuizPick.MIN_ITEMS ? null : r.body;
+        } catch (Exception e) { return null; }
     }
 
     // ---------------------------------------------------------------- what is remembered
