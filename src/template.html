@@ -736,7 +736,11 @@
   .fm-d{color:var(--fs)}
   .fm-l{color:var(--flo)}
   .fmh{margin-inline-end:calc(var(--u)*12)}
+  .mdf{display:flex;align-items:baseline;gap:calc(var(--u)*16)}
   .mdt .rk{color:var(--fs);font-size:calc(var(--u)*24)}
+  .mdv{text-align:center;color:var(--fs);margin:calc(var(--u)*-8) 0 calc(var(--u)*20)}   /* the clubs' last meetings, one line under them */
+  .mdx.tight{padding-top:calc(var(--u)*36);padding-bottom:calc(var(--u)*36)}   /* a place or a form under the names: the card stays inside the screen */
+  .mdx.tight .mdt{gap:calc(var(--u)*10)}
   #mp-q{font:inherit;color:var(--fi);background:var(--fbg);border:1px solid var(--fln);border-radius:calc(var(--u)*12);padding:calc(var(--u)*4) calc(var(--u)*16);width:calc(var(--u)*560);outline:none}
   #mp .fnote{font-size:calc(var(--u)*22)}
   #mp .fmk{opacity:1;color:var(--fs);border-color:var(--fln);background:var(--chip)}
@@ -4184,7 +4188,7 @@ const FB_W = {
   table:'جدول الترتيب', results:'النتائج', noTable:'الترتيب غير متاح الآن', pts:'%s نقطة',
   myLeagues:'دورياتي', add:'أضف دوريًا أو فريقًا', manage:'إعدادات فرقي', noTeams:'ما تتابع فريقًا بعد', noLeagues:'ما تتابع دوريًا بعد', allLands:'كل الدول',
   lgTeams:'فرق هذا الدوري', lgOpen:'الترتيب والنتائج', followedL:'أُضيف %s إلى دورياتك', unfollowedL:'أُزيل %s من دورياتك', on:'متابَع', find:'ابحث عن فريق', found:'نتائج البحث', typeName:'اكتب اسم الفريق', full:'وصلت للحد: ٨ دوريات', choose:'اختر دوريًا',
-  h2hSum:'%s: %s %s فوز، %s تعادل، %s %s', h2h1:'آخر مواجهة', h2h2:'آخر مواجهتين', h2hN:'آخر %s مواجهات', meet:'المواجهات',
+  h2hSum:'%s: %s %s فوز، %s تعادل، %s %s', h2h1:'آخر مواجهة', h2h2:'آخر مواجهتين', h2hN:'آخر %s مواجهات',
   marks:'فتخ', form:'آخر ٥', rank:'المركز %s',
   club:'صفحة الفريقين', last:'آخر النتائج', h2h:'المواجهات مع %s', see:'صفحة %s', loading:'جارٍ التحميل…', noData:'لا شيء هنا بعد', followT:'تابع %s', unfollowT:'ألغِ متابعة %s',
 };
@@ -4681,21 +4685,22 @@ function mpButtons(ev, now){   // «شاهد على …» (the broadcaster's app
   else if(drop) out.push({k: 'unfollow', side: drop, t: fw(FB_W.unfollow, teamAr(ev['str' + drop + 'Team'], ev['id' + drop + 'Team']))});
   return out;
 }
+const mdfLine = (rk, fm) => rk || fm ? `<div class="mdf">${rk}${fm}</div>` : '';   // 4.3.3 one line under a club's name: its place, its form
 const mpHasClub = ev => /^\d+$/.test(String(ev.idHomeTeam)) && /^\d+$/.test(String(ev.idAwayTeam)) ? 1 : 0;   // 4.3.3 the two clubs' page: their games and their meetings
 function mpDetailRender(){
   const ev = MP.detail, now = Date.now(), m = markOf(ev), k = fbKick(ev);
   const big = side => { const c = crestOf(ev, side), id = ev['id' + side + 'Team']; return `<div class="mdt">${c ? `<img class="mdc" src="${esc(c.u)}" alt="">` : '<span class="mdc"></span>'}<b>${esc(nbName(teamAr(ev['str' + side + 'Team'], id)))}</b>`
-    + (rankOf(ev, id) ? `<small class="rk">${fw(FB_W.rank, ar(rankOf(ev, id)))}</small>` : '') + `${/^\d+$/.test(String(id)) ? formHtml(formOf(id)) : ''}</div>`; };   // 4.3.3 its place in the league's table and its form under the name
+    + mdfLine(rankOf(ev, id) ? `<small class="rk">${fw(FB_W.rank, ar(rankOf(ev, id)))}</small>` : '', /^\d+$/.test(String(id)) ? formHtml(formOf(id)) : '') + '</div>'; };   // 4.3.3 its place in the league's table and its form under the name
   const mid = (fbLive(ev, now) || fbDone(ev, now)) && fbScored(ev) ? `<b>${ar(+ev.intHomeScore)} - ${ar(+ev.intAwayScore)}</b><i>${fbWhen(ev, now)}</i>`
     : `<b>${fbClock(k)}</b><i>${fbDayWord(fbDayOf(k))}</i>`;
   const meet = !fbLive(ev, now) && !fbDone(ev, now) && h2hLine(ev);   // 4.3.3 a coming game: the two clubs' last meetings
   const rows = [ev.strVenue ? `<li><span>${FB_W.venue}</span><i>${esc(venueName(ev.strVenue))}</i></li>` : '', m ? `<li><span>${FB_W.channel}</span><i>${esc(m.detail)}</i></li>` : '',
-    meet ? `<li><span>${FB_W.meet}</span><i>${esc(meet)}</i></li>` : '',
     `<li class="mdp"><div><span>${FB_W.withPrayer}</span><i class="mds">${esc(fbLive(ev, now) ? fbStatus(ev, now) : fbDone(ev, now) ? FB_W.ended : fbSentence(ev))}</i></div>${mpLine(ev)}</li>`].join('');
   const btns = mpButtons(ev, now), club = mpHasClub(ev);
   MP.btn = Math.max(-1, Math.min(MP.btn, btns.length + club));   // btns.length is «رجوع», the row under the actions; 4.3.3 beside it «صفحة الفريقين»
-  setHTML(document.getElementById('mp-detail'), `<div class="mdx${MP.btn < 0 ? ' f' : ''}"><div class="mdh"><span>${fbRoundHtml(ev)}</span>${fbMarkChip(ev)}</div>`
-    + `<div class="mdm">${big('Home')}<div class="mdk">${mid}</div>${big('Away')}</div><ul class="mdr">${rows}</ul>`
+  const hb = big('Home'), ab = big('Away'), tight = hb.includes('class="mdf"') || ab.includes('class="mdf"');
+  setHTML(document.getElementById('mp-detail'), `<div class="mdx${MP.btn < 0 ? ' f' : ''}${tight ? ' tight' : ''}"><div class="mdh"><span>${fbRoundHtml(ev)}</span>${fbMarkChip(ev)}</div>`
+    + `<div class="mdm">${hb}<div class="mdk">${mid}</div>${ab}</div>${meet ? `<div class="mdv">${esc(meet)}</div>` : ''}<ul class="mdr">${rows}</ul>`
     + `<div class="mdb">${btns.map((b, i) => `<button tabindex="-1" class="${i === 0 ? 'pri' : ''}${i === MP.btn ? ' f' : ''}" data-k="${b.k}">${b.icon ? fbGlyph('bell') : ''}<span>${esc(b.t)}</span></button>`).join('')}</div>`
     + `<div class="mdq"><button tabindex="-1" class="${MP.btn === btns.length ? 'f' : ''}" data-k="back"><span>${FB_W.back}</span></button>`
     + (club ? `<button tabindex="-1" class="${MP.btn === btns.length + 1 ? 'f' : ''}" data-k="club"><span>${FB_W.club}</span></button>` : '') + '</div>'

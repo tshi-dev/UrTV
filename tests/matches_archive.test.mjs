@@ -265,14 +265,15 @@ const ids = (p, key) => p.evaluate(k => ((MP.leagues.find(x => x.key === k) || {
   const { p, ctx, errors } = await open('teams=136013&matchpage=1', { archive: { ...ARCHIVE, 'h2h/136011-136013.json': { v: 1, pair: '136011-136013', meetings: six } } });
   await p.evaluate(() => mpOpen(fbGames().find(e => e.idEvent === '11')));
   await p.waitForTimeout(400);
-  const rows = await p.$$eval('#mp-detail .mdr li', ls => ls.map(l => l.textContent));
-  const line = rows.find(t => t.startsWith('المواجهات')) || '';
-  check('h2h: the card of a coming game says the last 5 meetings: the home club\'s wins, the draws, the other\'s wins (the 6th older one left out)', /^المواجهاتآخر ٥ مواجهات: الهلال ٣ فوز، ١ تعادل، .+ ١$/.test(line), rows.join(' / '));
+  const line = await p.$eval('#mp-detail .mdv', d => d.textContent).catch(() => '');
+  check('h2h: the card of a coming game says the last 5 meetings in one line under the clubs: the home club\'s wins, the draws, the other\'s wins (the 6th older one left out)', /^آخر ٥ مواجهات: الهلال ٣ فوز، ١ تعادل، .+ ١$/.test(line), line);
+  const box = await p.$eval('#mp-detail .mdx', d => { const b = d.getBoundingClientRect(); return [b.top, b.bottom]; });
+  check('h2h: with the meetings, the places and the forms the card stays inside the screen', box[0] >= 0 && box[1] <= 1080, box.join());
   await p.evaluate(() => mpOpen(Object.assign({}, fbGames().find(e => e.idEvent === '11'), { strStatus: 'FT', intHomeScore: '1', intAwayScore: '0', strTimestamp: '2026-11-03T17:00:00' })));
-  check('h2h: not on a finished game\'s card', !(await p.$$eval('#mp-detail .mdr li', ls => ls.some(l => l.textContent.startsWith('المواجهات')))));
+  check('h2h: not on a finished game\'s card', !(await p.$$eval('#mp-detail .mdv', d => d.length)));
   await p.evaluate(() => mpOpen(Object.assign({}, fbGames().find(e => e.idEvent === '11'), { idAwayTeam: '136017' })));
   await p.waitForTimeout(300);
-  check('h2h: two clubs with no meeting known: no line', !(await p.$$eval('#mp-detail .mdr li', ls => ls.some(l => l.textContent.startsWith('المواجهات')))) && !errors.length, errors.join(' | '));
+  check('h2h: two clubs with no meeting known: no line', !(await p.$$eval('#mp-detail .mdv', d => d.length)) && !errors.length, errors.join(' | '));
   await ctx.close();
 }
 
