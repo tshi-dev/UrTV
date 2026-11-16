@@ -23,6 +23,8 @@ public final class ExtrasWords {
     public static final String KEY_APPS = "key_apps";
     /** 4.4: WATCH's other two arguments: the person's chosen home is ours (the setup confirmed it) or not any more («تراجع»); WANTED is also the bundle's key */
     public static final String WANTED = "wanted", UNWANTED = "unwanted";
+    /** 4.4 (step 88, R3, a test switch, off by default): the add-on catches the remote's Home key itself and opens our home; WATCH's arguments, HOME_KEY the bundle's key */
+    public static final String HOME_KEY_ON = "homekey_on", HOME_KEY_OFF = "homekey_off", HOME_KEY = "home_key";
     // the home's calls (the add-on asks)
     public static final String TYPE_CHECK = "type_check", SETTINGS_PIN = "settings_pin", KEY = "key", LEDGER = "ledger";
     /** «أزرار الريموت» over another app: the family lock's answer for the app a button opens (NEEDS_PIN, HIDDEN) */

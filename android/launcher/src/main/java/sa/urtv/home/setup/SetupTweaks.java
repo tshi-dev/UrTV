@@ -219,7 +219,7 @@ final class SetupTweaks {
         for (String c : cmds) tv.run(c);
         boolean bad = readBack(want, psWant);
         compileOurs();
-        if (bad) return new SetupEngine.Result(SetupEngine.Status.FAILED, "سرّعنا التلفزيون، لكنه لم يقبل بعض القيم (التفاصيل فوق). «تراجع» يرجع ما تغيّر.");
+        if (bad) return new SetupEngine.Result(SetupEngine.Status.FAILED, "سرّعنا التلفزيون، لكنه لم يقبل بعض القيم. «تراجع» يرجع ما تغيّر.");
         return new SetupEngine.Result(SetupEngine.Status.DONE, "سرّعنا التلفزيون: حركات أقصر، ومتجر Play لا يعمل في الخلفية. «تراجع» يرجعها كما كانت.");
     }
 

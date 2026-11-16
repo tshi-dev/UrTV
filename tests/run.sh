@@ -23,6 +23,7 @@ python3 tests/install_retry_test.py
 python3 tests/install_stream_test.py   # 4.3.3: the APK streamed to `cmd package install -S`, else the file as before
 python3 tests/rescue_test.py   # 4.4 «إنقاذ تلفزيونك» and the other ways back with no computer
 python3 tests/homedoctor_test.py   # 4.4 the Home doctor (optimize/homedoctor.py): parsing, verdicts, a fake Google TV run
+python3 tests/home_fix2_test.py   # 4.4 steps 87-88: the watch counts one bring per press, wanted, the dialog, the language, R3 off
 python3 tests/home_fix_test.py   # 4.4 step 86 B: the switch survives, the Home watch, one ADB key, «إلغاء» on the prompt, the small setup window
 python3 tests/extras_test.py   # 4.3.3 «إضافات تلفزيونك»: the add-on with the accessibility service, the home without one
 python3 tests/stock_kept_test.py   # 4.3.3: the computer's home switch keeps the stock home and the wizard on; the factory provider

@@ -657,17 +657,28 @@ final class SetupEngine {
     /** the switch waits for the add-on's Home watch (SetupRunner sets it up, then finishWatch) */
     boolean watchPending() { return watchFor != null; }
 
-    /** the real check: the TV's settings in front, then the Home key (up to three presses, 3 s apart): true only when our home is in front */
+    /**
+     * the real check: the TV's settings in front, then the Home key (up to three presses, 3 s apart): true only when our home is in front. On a Google TV
+     * the Home key always goes to its own home whatever the role says (the Home doctor, step 87): what brings ours is the add-on's watch, so this is
+     * also the check of the watch. 4.4 (step 88): the setup page is brought back at once after it (the TV's settings had stayed over it).
+     */
     boolean homeKeyOpensOurs() throws IOException {
         sh.run("am start -a android.settings.SETTINGS");
         sleeper.sleep(3000);
-        for (int i = 0; i < 3; i++) {
+        boolean ok = false;
+        for (int i = 0; i < 3 && !ok; i++) {
             sh.run("input keyevent KEYCODE_HOME");
             sleeper.sleep(3000);
-            if (ours(lastLine(text("dumpsys activity activities | grep -E 'mResumedActivity|topResumedActivity' | head -n 1")))) return true;
+            ok = ours(lastLine(text("dumpsys activity activities | grep -E 'mResumedActivity|topResumedActivity' | head -n 1")));
         }
-        return false;
+        backToSetup();
+        return ok;
     }
+
+    /** 4.4 (step 88): the setup page in front again after a check put another screen over it (the TV's settings, the Home key) */
+    void backToSetup() throws IOException { sh.run("am start --activity-reorder-to-front -n " + SETUP_ACTIVITY); }
+
+    static final String SETUP_ACTIVITY = SELF + "/.setup.SetupActivity";
 
     /** the switch is confirmed: the safety switch off, the journal done, the count of failed tries starts again */
     private Result finishHome(Set<String> pk, String said) throws IOException {
@@ -733,7 +744,7 @@ final class SetupEngine {
         // 4.4 (step 86 B): Home still opening the stock home is not a broken TV. Our home holds the role and opens from its tile, so nothing is put back
         // (that undid the owner's switch two minutes later); the switch is confirmed and the person told plainly. Only a TV left with no home is put back.
         Result r;
-        if (watchOk && homeKeyOpensOurs()) r = finishHome(null, "زر الرئيسية يفتح تلفزيونك الآن (عن طريق «إضافات تلفزيونك»). اضغط زر الرئيسية في الريموت للتأكد.");
+        if (watchOk && homeKeyOpensOurs()) r = finishHome(null, WATCH_OK);
         else {
             confirmOurs();
             r = failed(WATCH_FAILED);
@@ -741,6 +752,9 @@ final class SetupEngine {
         try { store.put(HomeFails.FILE, HomeFails.after(store.get(HomeFails.FILE), true, r.status == Status.DONE)); } catch (IOException ignored) { }
         return r;
     }
+
+    /** 4.4 (step 87): on a Google TV the Home key is the TV's own whatever the role says; the add-on's watch is what brings ours, so it must stay on */
+    static final String WATCH_OK = "زر الرئيسية يفتح تلفزيونك الآن عن طريق «إضافات تلفزيونك»: هذا التلفزيون يرسل زر الرئيسية لشاشته الأصلية دائماً، و«إضافات تلفزيونك» ترجّعك لتلفزيونك. خلّها مفعّلة. اضغط زر الرئيسية في الريموت للتأكد.";
 
     /** 4.4: Home still opens the stock home after the add-on was set up; our home stays the TV's home for everything else */
     static final String WATCH_FAILED = "ما قدرنا نخلي زر الرئيسية يفتح تلفزيونك على هذا التلفزيون، وكل شيء غيره يشتغل: افتح تلفزيونك من أيقونته في صف التطبيقات. تلفزيونك بقي الشاشة الرئيسية، و«تراجع» يرجّع الأصلية.";

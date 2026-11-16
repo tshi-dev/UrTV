@@ -39,6 +39,8 @@ public class ExtrasCallProvider extends ContentProvider {
                 if (ExtrasWords.WANTED.equals(arg) || ExtrasWords.UNWANTED.equals(arg)) ExtrasA11yService.setWanted(getContext(), ExtrasWords.WANTED.equals(arg));   // 4.4
                 out.putBoolean(ExtrasWords.WATCH, ExtrasA11yService.watchOn(getContext()));
                 out.putBoolean(ExtrasWords.WANTED, ExtrasA11yService.wanted(getContext()));
+                if (ExtrasWords.HOME_KEY_ON.equals(arg) || ExtrasWords.HOME_KEY_OFF.equals(arg)) ExtrasA11yService.setHomeKey(getContext(), ExtrasWords.HOME_KEY_ON.equals(arg));   // 4.4 R3
+                out.putBoolean(ExtrasWords.HOME_KEY, ExtrasA11yService.homeKey(getContext()));
                 break;
             case ExtrasWords.KEY_APPS:   // «أزرار الريموت»: the home's choices changed
                 ExtrasA11yService.keyApps(getContext(), arg);

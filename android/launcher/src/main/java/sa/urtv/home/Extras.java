@@ -92,6 +92,17 @@ public final class Extras {
         }
     }
 
+    /** 4.4 R3 (a test switch): the add-on catches the Home key itself; "on", "off" or null to read; null when the add-on did not answer */
+    static Boolean homeKey(Context c, String set) {
+        try {
+            Bundle b = c.getContentResolver().call(Uri.parse("content://" + ExtrasWords.EXTRAS_AUTHORITY), ExtrasWords.WATCH,
+                "on".equals(set) ? ExtrasWords.HOME_KEY_ON : "off".equals(set) ? ExtrasWords.HOME_KEY_OFF : null, null);
+            return b == null ? null : b.getBoolean(ExtrasWords.HOME_KEY);
+        } catch (RuntimeException e) {
+            return null;
+        }
+    }
+
     /** the Home-button watch: "on", "off", or null to only read it; null back when the add-on did not answer */
     static Boolean watch(String set) {
         Bundle b = call(ExtrasWords.WATCH, set, null);

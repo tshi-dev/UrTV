@@ -24,6 +24,8 @@ public class SetupRunnerRun {
         final List<Runnable> laters = new ArrayList<>();
         SetupRunner.Preview seen;   // the start screen's plan, as the person saw it
         String dropOn;              // 4.3.3: the first command containing this drops the connection (IOException), while drops are left
+        final List<Boolean> wanted = new ArrayList<>();   // 4.4: what the add-on was told (homeWanted)
+        public void homeWanted(boolean w) { wanted.add(w); }
         int drops;
 
         Host(SetupEngineRun.FakeTv tv, SetupEngineRun.Mem store) { this.tv = tv; this.store = store; }
@@ -255,6 +257,23 @@ public class SetupRunnerRun {
         r5d.resetForTest();
         boolean d5 = r5d.promptCancelled(40_000);            // the wait is over
         line("R5d " + d1 + " " + d2 + " " + d3 + " " + d4 + " " + d5);
+        // 5e. 4.4 (step 88): the dialog never came (nothing covered the screen for 30 s): the wait ends with «ما ظهرت رسالة السماح؟…»; covered: it waits on
+        SetupRunner r5e = new SetupRunner();
+        r5e.promptStartedForTest(1_000);
+        boolean e1 = r5e.promptCancelled(30_000), e2 = r5e.promptCancelled(31_000);
+        String why5e = r5e.promptAbort();
+        SetupRunner r5f = new SetupRunner();
+        r5f.promptStartedForTest(1_000);
+        r5f.promptCoveredNow();
+        boolean f1 = r5f.promptCancelled(60_000);
+        line("R5e " + e1 + " " + e2 + " " + SetupRunner.NO_DIALOG_TEXT.equals(why5e) + " covered=" + f1 + " retry=" + new SetupRunner.End(SetupRunner.NO_DIALOG_TEXT, true).retry);
+        // the end sentence names what did not finish (no «التفاصيل فوق»)
+        java.util.List<SetupRunner.Step> ends = new java.util.ArrayList<>();
+        SetupRunner.Step sA = new SetupRunner.Step("home"); sA.state = SetupRunner.State.FAILED; sA.reason = "ما قدرنا.";
+        SetupRunner.Step sB = new SetupRunner.Step("extras"); sB.state = SetupRunner.State.SKIPPED; sB.reason = "";
+        SetupRunner.Step sC = new SetupRunner.Step("tweaks"); sC.state = SetupRunner.State.DONE;
+        ends.add(sA); ends.add(sB); ends.add(sC);
+        line("R5g " + SetupRunner.because(ends));
         // 6. the undo through the runner: one step, the old sentence
         SetupRunner r6 = new SetupRunner();
         SetupEngineRun.FakeTv t6 = SetupEngineRun.tv(); SetupEngineRun.Mem m6 = new SetupEngineRun.Mem(); Host h6 = new Host(t6, m6);
@@ -658,6 +677,7 @@ public class SetupRunnerRun {
         go(r35b, h35b, SetupRunner.Kind.FULL, new SetupRunner.Options());
         String st35b = states(r35b);
         line("R35b " + st35b.substring(st35b.indexOf("home:"), st35b.indexOf(",", st35b.indexOf("home:"))) + " puts=" + t35b.extrasListPuts);
+        line("R35w told=" + h35b.wanted + " back=" + t35b.count("am start --activity-reorder-to-front -n sa.urtv.home/.setup.SetupActivity"));
         // 35c. it never binds: said plainly, the stock home given Home back (never turned off), counted; the rest of the run done
         SetupEngineRun.FakeTv t35c = SetupEngineRun.tv(); t35c.refuseSwitch = true; t35c.refuseBinds = 99; SetupEngineRun.Mem m35c = new SetupEngineRun.Mem(); Host h35c = new Host(t35c, m35c);
         SetupRunner r35c = new SetupRunner();

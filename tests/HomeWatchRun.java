@@ -35,6 +35,18 @@ public final class HomeWatchRun {
         check("a …HomeActivity of ANOTHER app is never a stock home screen", !HomeWatch.homeScreen("com.example.tv", "com.example.tv.HomeActivity", stock));
         check("a view's class (not an activity of the stock home) is not its home screen", !HomeWatch.homeScreen(lx, "android.widget.FrameLayout", stock));
         check("the stock homes' packages", HomeWatch.packages(alias).equals(Collections.singleton(lx)));
+        // 4.4 (step 88): two stock-home windows per Home press: the second within 1.5 s is brought, not counted; 20 presses 10 s apart all bring ours
+        HomeWatch p = new HomeWatch();
+        boolean all = true;
+        for (int i = 0; i < 20; i++) { long t = 100_000 + i * 10_000L; all &= p.decide(true, lx, home, stock, true, t) && p.decide(true, lx, home, stock, true, t + 400); }
+        check("one Home press = two stock windows (the second 0.4 s later): 20 presses 10 s apart all bring ours, never paused", all && !p.paused(400_000));
+        HomeWatch q = new HomeWatch();
+        boolean first = q.decide(true, lx, home, stock, true, 1_000), second = q.decide(true, lx, home, stock, true, 1_900), third = q.decide(true, lx, home, stock, true, 2_600);
+        check("the second window is brought (0.9 s after), a later one counts again (1.6 s after the counted bring)", first && second && third);
+        HomeWatch loop = new HomeWatch();
+        boolean tripped = false;
+        for (int i = 0; i < 40 && !tripped; i++) { loop.decide(true, lx, home, stock, true, 1_000 + i * 500L); tripped = loop.paused(1_000 + i * 500L); }
+        check("a true loop (the stock home back every 0.5 s) still trips the guard within seconds: the same-press window never extends itself", tripped);
         System.out.println(bad == 0 ? "ALL PASS" : bad + " FAILED");
         System.exit(bad == 0 ? 0 : 1);
     }

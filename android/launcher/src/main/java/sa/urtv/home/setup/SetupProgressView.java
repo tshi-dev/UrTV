@@ -44,7 +44,7 @@ final class SetupProgressView extends LinearLayout {
         String stepName = "", doing = "", counts = "", elapsed = "", restart = "";
         int percent;
         boolean prompt, promptLate, finished, bad;
-        String artOk = "", promptTitle = "", promptHint = "", promptLateText = "", artTitle = "", artCancel = "", artAllow = "", result = "";
+        String artOk = "", artAlways = "", promptTitle = "", promptHint = "", promptLateText = "", artTitle = "", artCancel = "", artAllow = "", result = "";
     }
 
     private final GlassStyle.Look look;
@@ -108,7 +108,7 @@ final class SetupProgressView extends LinearLayout {
         promptTitle = text(28, true, look.text);
         promptCard.addView(promptTitle, margin(0, 0));
         art = new DialogArt(c);
-        promptCard.addView(art, margin(dp(16), 0, dp(236)));
+        promptCard.addView(art, margin(dp(16), 0, dp(264)));   // 4.4: the dialog and the four keys under it
         promptHint = text(24, true, look.accent);
         promptCard.addView(promptHint, margin(dp(16), 0));
         promptLate = text(18, false, look.warn);
@@ -156,7 +156,7 @@ final class SetupProgressView extends LinearLayout {
         if (showPrompt) {
             promptTitle.setText(m.promptTitle);
             promptHint.setText(m.promptHint);
-            art.set(m.artTitle, m.artCancel, m.artAllow, m.artOk);
+            art.set(m.artTitle, m.artCancel, m.artAllow, m.artOk, m.artAlways);
             promptLate.setVisibility(m.promptLate ? VISIBLE : GONE);
             promptLate.setText(m.promptLateText);
             breath.stop();
@@ -318,18 +318,19 @@ final class SetupProgressView extends LinearLayout {
     }
 
     /**
-     * The picture of what the TV is showing: its dialog («السماح بتصحيح USB؟») with the two buttons, «السماح دائماً» lit with a ring that breathes, and an «OK» key under it. It is a drawing
-     * made for this screen, not the TV's own dialog (that one is the system's and looks different on each TV).
+     * The picture of what the TV is showing: its dialog («السماح بتصحيح USB؟») with the box «السماح دائماً من هذا الكمبيوتر» and its two buttons, and under
+     * it the four keys of the remote in order. 4.4 (step 88): on the TV the focus starts on the box, and DOWN from it lands on «إلغاء», so the way is
+     * اختيار (the box) ← تحت ← يسار ← اختيار («السماح», lit, with a ring that breathes). It is a drawing made for this screen, not the TV's own dialog.
      */
     private final class DialogArt extends View {
         private final Paint p = new Paint(Paint.ANTI_ALIAS_FLAG);
-        private String title = "", cancel = "", allow = "", ok = "";
+        private String title = "", cancel = "", allow = "", ok = "", always = "";
         private ValueAnimator anim;
         private float t;
 
         DialogArt(Context c) { super(c); }
 
-        void set(String title, String cancel, String allow, String ok) { this.title = title; this.cancel = cancel; this.allow = allow; this.ok = ok; invalidate(); }
+        void set(String title, String cancel, String allow, String ok, String always) { this.title = title; this.cancel = cancel; this.allow = allow; this.ok = ok; this.always = always; invalidate(); }
 
         void pulse(boolean on) {
             if (!on) { if (anim != null) { anim.cancel(); anim = null; } return; }
@@ -351,8 +352,20 @@ final class SetupProgressView extends LinearLayout {
             c.drawText(s, cx, cy - (p.ascent() + p.descent()) / 2f, p);
         }
 
+        /** one key of the remote: its word in a thin outline (a keycap, not a button of this screen) and its number above */
+        private void key(Canvas c, String word, int n, float cx, float cy, float w) {
+            float h = dp(36);
+            RectF k = new RectF(cx - w / 2f, cy - h / 2f, cx + w / 2f, cy + h / 2f);
+            p.setStyle(Paint.Style.STROKE);
+            p.setStrokeWidth(dp(2));
+            p.setColor(look.accent);
+            c.drawRoundRect(k, dp(6), dp(6), p);
+            label(c, word, cx, cy, 17, look.text, true);
+            label(c, String.valueOf(n), cx, k.top - dp(12), 13, look.sub, false);
+        }
+
         @Override protected void onDraw(Canvas c) {
-            float w = getWidth(), h = getHeight(), dw = Math.min(w, dp(520)), left = (w - dw) / 2f, top = dp(4), dh = h - dp(60);
+            float w = getWidth(), h = getHeight(), dw = Math.min(w, dp(520)), left = (w - dw) / 2f, top = dp(4), dh = h - dp(84);
             RectF box = new RectF(left, top, left + dw, top + dh);
             p.setStyle(Paint.Style.FILL);
             p.setColor(0xFF2A2C31);
@@ -361,11 +374,31 @@ final class SetupProgressView extends LinearLayout {
             p.setStrokeWidth(dp(1));
             p.setColor(0x33FFFFFF);
             c.drawRoundRect(box, dp(18), dp(18), p);
-            label(c, title, box.centerX(), box.top + dh * 0.28f, 22, 0xFFF1F1F3, true);
-            float bw = (dw - dp(72)) / 2f, bh = dp(54), by = box.bottom - dp(24) - bh;
-            boolean rtl = Dir.rtl();
-            RectF a = new RectF(rtl ? box.right - dp(24) - bw : box.left + dp(24), by, rtl ? box.right - dp(24) : box.left + dp(24) + bw, by + bh);   // «السماح دائماً» at the start
-            RectF b = new RectF(rtl ? box.left + dp(24) : box.right - dp(24) - bw, by, rtl ? box.left + dp(24) + bw : box.right - dp(24), by + bh);
+            label(c, title, box.centerX(), box.top + dh * 0.2f, 22, 0xFFF1F1F3, true);
+            // the box «السماح دائماً من هذا الكمبيوتر», ticked (step 1)
+            float cy = box.top + dh * 0.45f, bs = dp(22), bx = box.left + dp(32);
+            RectF tick = new RectF(bx, cy - bs / 2f, bx + bs, cy + bs / 2f);
+            p.setStyle(Paint.Style.FILL);
+            p.setColor(look.accent);
+            c.drawRoundRect(tick, dp(4), dp(4), p);
+            Path v = new Path();
+            v.moveTo(tick.left + bs * .22f, tick.centerY());
+            v.lineTo(tick.left + bs * .42f, tick.bottom - bs * .25f);
+            v.lineTo(tick.right - bs * .2f, tick.top + bs * .25f);
+            p.setStyle(Paint.Style.STROKE);
+            p.setStrokeWidth(dp(3));
+            p.setColor(look.light ? 0xFFFFFFFF : 0xFF14161A);
+            c.drawPath(v, p);
+            p.setTextAlign(Paint.Align.LEFT);
+            p.setStyle(Paint.Style.FILL);
+            p.setColor(0xFFE1E2E6);
+            p.setTypeface(regular);
+            p.setTextSize(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 17, getResources().getDisplayMetrics()));
+            c.drawText(always, tick.right + dp(12), cy - (p.ascent() + p.descent()) / 2f, p);
+            // the two buttons as the TV places them: «السماح» on the LEFT (step 4), «إلغاء» on the right (where DOWN lands, step 2)
+            float bw = (dw - dp(72)) / 2f, bh = dp(48), by = box.bottom - dp(20) - bh;
+            RectF a = new RectF(box.left + dp(24), by, box.left + dp(24) + bw, by + bh);
+            RectF b = new RectF(box.right - dp(24) - bw, by, box.right - dp(24), by + bh);
             p.setStyle(Paint.Style.FILL);
             p.setColor(0x14FFFFFF);
             c.drawRoundRect(b, dp(12), dp(12), p);
@@ -380,19 +413,16 @@ final class SetupProgressView extends LinearLayout {
             p.setColor(look.accent);
             c.drawRoundRect(a, dp(12), dp(12), p);
             label(c, allow, a.centerX(), a.centerY(), 20, look.light ? 0xFFFFFFFF : 0xFF14161A, true);
-            // the remote's OK key, under the lit button
-            float kw = dp(84), kh = dp(36), kx = a.centerX() - kw / 2f, ky = box.bottom + dp(12);
-            p.setStyle(Paint.Style.FILL);
-            p.setColor(0x26FFFFFF);
-            c.drawRoundRect(new RectF(kx, ky, kx + kw, ky + kh), dp(10), dp(10), p);
-            label(c, ok, kx + kw / 2f, ky + kh / 2f, 17, look.text, true);
-            Path arrow = new Path();   // a small arrow from the key up to the button
-            arrow.moveTo(a.centerX(), ky - dp(2));
-            arrow.lineTo(a.centerX() - dp(6), ky - dp(9));
-            arrow.lineTo(a.centerX() + dp(6), ky - dp(9));
-            arrow.close();
-            p.setColor(look.accent);
-            c.drawPath(arrow, p);
+            // the remote's four keys in order, in the reading direction of the screen: اختيار، تحت (▼)، يسار (◀)، اختيار
+            String[] keys = {ok, "▼", "◀", ok};
+            float kw = dp(84), gap = dp(28), total = 4 * kw + 3 * gap, ky = box.bottom + dp(48);
+            boolean rtl = Dir.rtl();
+            for (int i = 0; i < 4; i++) {
+                int slot = rtl ? 3 - i : i;
+                float kx = (w - total) / 2f + slot * (kw + gap) + kw / 2f;
+                key(c, keys[i], i + 1, kx, ky, kw);
+                if (i < 3) label(c, rtl ? "←" : "→", kx + (rtl ? -1 : 1) * (kw / 2f + gap / 2f), ky, 16, look.sub, false);
+            }
         }
     }
 }

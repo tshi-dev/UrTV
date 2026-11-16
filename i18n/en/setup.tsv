@@ -13,7 +13,7 @@
 تراجع (يرجّع التلفزيون كما كان)	Undo (puts the TV back as it was)
 تم	Done
 تم الرجوع. أطفئ «تصحيح USB» من خيارات المطوّر، واختر «إلغاء تراخيص تصحيح USB» لتنظيف التلفزيون.	Undone. Turn “USB debugging” off in Developer options, and choose “Revoke USB debugging authorizations” to clean the TV up.
-انتهى الرجوع مع ملاحظات (فوق).	The undo finished with notes (above).
+انتهى الرجوع مع ملاحظات	The undo finished with notes
 توقّفنا قبل أي تغيير.	We stopped before changing anything.
 انتهى الإعداد. اضغط زر الرئيسية في الريموت. ثم أطفئ «تصحيح USB» من خيارات المطوّر واختر «إلغاء تراخيص تصحيح USB» إن لم تحتجهما (التراجع من هنا يحتاجهما).	The setup is done. Press the Home button on the remote. Then turn “USB debugging” off in Developer options and choose “Revoke USB debugging authorizations” if you do not need them (Undo here needs them).
 # the start, plan, wait and Wi-Fi screens (build 179): SetupActivity and the fixed sentences of SetupRunner (SetupActivity.WORDS)
@@ -79,8 +79,6 @@ TV Bro و SmartTube مثبّتان من قبل: نتركهما.	TV Bro and Smart
 استغرق %s	Took %s
 %s من %s خطوة	%s of %s steps
 السماح بتصحيح USB؟	Allow USB debugging?
-السماح دائماً	Always allow
-اضغط «اختيار» بالريموت على «السماح دائماً»	Press Select on the remote on “Always allow”
 نجهّز تلفزيونك	Setting up your TV
 نرجّع التلفزيون كما كان	Putting your TV back as it was
 اختيار	OK
@@ -124,3 +122,6 @@ TV Bro و SmartTube مثبّتان من قبل: نتركهما.	TV Bro and Smart
 2. ثبّت «إنقاذ تلفزيونك» برابطه في الدليل (امسح الرمز).	2. Install “UrTV Rescue” with its link in the guide (scan the code).
 3. افتحه واضغط «رجّع التلفزيون كما كان».	3. Open it and press “Put the TV back as it was”.
 صوّر هذه الشاشة بجوالك الحين، عشان تكون عندك لو احتجتها.	Take a photo of this screen with your phone now, so you have it if you need it.
+على الريموت: اختيار (يعلّم «السماح دائماً») ← تحت ← يسار ← اختيار (على «السماح»)	On the remote: Select (ticks «Always allow») → Down → Left → Select (on «Allow»)
+السماح دائماً من هذا الكمبيوتر	Always allow from this computer
+السماح	Allow

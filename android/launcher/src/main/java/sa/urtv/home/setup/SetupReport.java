@@ -203,7 +203,15 @@ final class SetupReport {
         tv.text("input keyevent KEYCODE_HOME");
         tv.text("sleep 4");
         java.util.regex.Matcher m = java.util.regex.Pattern.compile(" ([A-Za-z0-9_.]+/[A-Za-z0-9_.$]+)").matcher(tv.tail1("dumpsys activity activities | grep -E 'mResumedActivity|topResumedActivity' | head -n 1"));
+        tv.text("am start --activity-reorder-to-front -n " + SetupEngine.SETUP_ACTIVITY);   // 4.4 (step 88): the setup page in front again
         return m.find() ? m.group(1) : "?";
+    }
+
+    /** 4.4 (step 87): on a Google TV the role does not decide the Home key; the report says both, and whether the add-on's watch is bound (it is what brings ours) */
+    private String homeHow() throws IOException {
+        String role = tv.tail1("cmd role get-role-holders --user 0 android.app.role.HOME").trim();
+        boolean watch = tv.text("dumpsys accessibility | grep -m1 'Bound services:'").contains(sa.urtv.home.ExtrasWords.SERVICE);
+        return "Home role: " + (role.isEmpty() ? "?" : role) + "; Home watch («إضافات تلفزيونك»): " + (watch ? "bound" : "not bound");
     }
 
     private List<String> checks() throws IOException {
@@ -220,6 +228,7 @@ final class SetupReport {
         // 4.4: «Home:» is what the Home key really opens (the person's way: another app in front, the key, then who is in front), never what the role resolves to: on a
         // Google TV launcherx keeps the key whatever the role says, and the old line said «sa.urtv.home» there (16 runs, a false pass on every Google TV)
         out.add("Home: " + homeKeyOpens());
+        out.add(homeHow());
         String saver = tv.tail1("settings get secure screensaver_components").trim();
         out.add("Screensaver: " + (saver.matches("[A-Za-z0-9_.$/,]+") ? saver : "?"));
         String vs = appver(SetupEngine.SAVER), vh = appver(SetupEngine.SELF);

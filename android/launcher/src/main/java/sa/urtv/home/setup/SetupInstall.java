@@ -269,7 +269,7 @@ final class SetupInstall {
                 apk.delete.run();
             }
         }
-        if (bad) return new SetupEngine.Result(SetupEngine.Status.FAILED, "لم نثبّت كل التطبيقات الإضافية (التفاصيل فوق). بقية الإعداد تمّت.");
+        if (bad) return new SetupEngine.Result(SetupEngine.Status.FAILED, "لم نثبّت كل التطبيقات الإضافية. بقية الإعداد تمّت.");
         return new SetupEngine.Result(SetupEngine.Status.DONE, got.isEmpty() ? "لا تطبيقات إضافية تناسب هذا التلفزيون." : "التطبيقات الإضافية: " + String.join(" و", got) + ".");
     }
 
