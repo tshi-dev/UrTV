@@ -16,7 +16,7 @@ public final class Schema {
     public static final String[] KEYS = {"up", "down", "left", "right", "ok", "back", "home", "vol_up", "vol_down", "mute", "play_pause"};
     public static final String[] QURAN_OPS = {"play", "pause", "resume", "toggle", "next", "prev", "stop", "sleep"};
     /** 4.4 «صوتياتي»: what a file may be used for ("dua" comes with «الأدعية والتذكيرات») */
-    public static final String[] AUDIO_USES = {"own", "own_fajr", "none"};
+    public static final String[] AUDIO_USES = {"own", "own_fajr", "dua", "none"};
     public static final int MAX_TEXT = 120, MAX_CITY = 40, MAX_QUERY = 30, MAX_HOME_CARDS = 3, SURAHS = 114;
     /** AdhanVoices.COUNT: the number of adhan recordings of ours (tests/phone_test.py checks they agree) */
     public static final int ADHAN_VOICES = 21;

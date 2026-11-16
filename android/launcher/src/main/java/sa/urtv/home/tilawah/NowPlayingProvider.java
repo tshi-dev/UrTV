@@ -47,8 +47,10 @@ public class NowPlayingProvider extends ContentProvider {
             return a;
         }
         if (uri != null && "adhan".equals(uri.getLastPathSegment())) {
-            MatrixCursor a = new MatrixCursor(new String[]{"prayer", "any_key"});
-            if (MusicService.adhanLive()) a.addRow(new Object[]{MusicService.adhanPrayer(), new Prefs(getContext()).adhanStopKey() ? 1 : 0});
+            // 4.4: a third column, the dua's name while a dua or reminder plays ("" for an adhan): an older screensaver reads the first two only
+            MatrixCursor a = new MatrixCursor(new String[]{"prayer", "any_key", "name"});
+            String dua = MusicService.duaName();
+            if (MusicService.adhanLive()) a.addRow(new Object[]{MusicService.adhanPrayer(), new Prefs(getContext()).adhanStopKey() ? 1 : 0, dua == null ? "" : dua});
             return a;
         }
         MatrixCursor out = new MatrixCursor(new String[]{"playing", "title", "who"});

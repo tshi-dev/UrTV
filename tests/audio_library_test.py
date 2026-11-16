@@ -49,7 +49,7 @@ check("the phone: the name comes percent-encoded and is cleaned before it is sho
 check("the phone: a new upload is checked for room before its first piece is kept, then piece by piece in order",
       "String why = mayAdd(c, total);" in store and "AudioRules.nextChunk(part.length(), offset, data.length, upTotal)" in store)
 check("the phone: /api/audio and the piece need the session", '"/api/audio", PhoneServer.AUDIO_PATH' in api)
-check("the phone: use and delete are allow-listed (op, id, as)", 'case "audio": {' in schema and 'only(body, "op", "id", "as")' in schema and 'AUDIO_USES = {"own", "own_fajr", "none"}' in schema)
+check("the phone: use and delete are allow-listed (op, id, as)", 'case "audio": {' in schema and 'only(body, "op", "id", "as")' in schema and 'AUDIO_USES = {"own", "own_fajr", "dua", "none"}' in schema)
 check("the phone page: builds no HTML from data, one script with the nonce, the session as the other pages",
       not re.search(r"innerHTML|outerHTML|insertAdjacentHTML|document\.write|\beval\(", page) and page.count("<script") == 1
       and '<script nonce="__NONCE__">' in page and "'X-UrTV-Session'" in page and "credentials: 'same-origin'" in page)

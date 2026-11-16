@@ -12,8 +12,15 @@ final class AudioUse {
 
     private static SharedPreferences sp(Context c) { return c.getApplicationContext().getSharedPreferences("audio_lib", Context.MODE_PRIVATE); }
 
-    /** "own", "own_fajr" or "" */
+    /** "own", "own_fajr", "dua" (a dua or reminder plays it) or "" */
     static String of(Context c, int id) {
+        String adhan = adhanOf(c, id);
+        if (!adhan.isEmpty()) return adhan;
+        for (DuaStore.Dua d : DuaStore.list(c)) if (("a:" + id).equals(d.sound)) return "dua";
+        return "";
+    }
+
+    private static String adhanOf(Context c, int id) {
         if (sp(c).getInt("own_from", -1) == id && OwnAdhan.exists(c)) return "own";
         if (sp(c).getInt("own_fajr_from", -1) == id && OwnAdhan.fajrExists(c)) return "own_fajr";
         return "";
@@ -33,8 +40,17 @@ final class AudioUse {
             AdhanScheduler.schedule(c);
             return null;
         }
+        if ("dua".equals(as)) {   // a new dua for this sound, off until its time is set on the TV («الأدعية والتذكيرات»)
+            for (DuaStore.Dua d : DuaStore.list(c)) if (("a:" + it.id).equals(d.sound)) return null;   // one is there already
+            DuaStore.Dua d = new DuaStore.Dua();
+            d.name = it.name;
+            d.sound = "a:" + it.id;
+            d.on = false;
+            d.rule.at = DuaRule.AFTER; d.rule.prayer = PrayerTimes.FAJR; d.rule.offset = 15;
+            return DuaStore.put(c, d) ? null : "too_many";
+        }
         if ("none".equals(as)) {   // the adhan goes back to the muezzin it had; the recording itself stays in the list
-            String now = of(c, it.id);
+            String now = adhanOf(c, it.id);
             if ("own".equals(now)) { OwnAdhan.clear(c); prefs.setOwnChosen(false); prefs.setFajrOwn(false); prefs.setFajrOwnSecond(false); }
             if ("own_fajr".equals(now)) { OwnAdhan.clearFajr(c); prefs.setFajrOwnSecond(false); }
             forget(c, it.id);

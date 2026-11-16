@@ -154,6 +154,8 @@ final class AudioStore {
             if (it.id == id) file(c, it).delete(); else keep.add(it);
         }
         save(c, keep);
+        DuaStore.soundGone(c, id);   // 4.4: the duas that played it are turned off (they stay; the person picks another sound)
+        DuaScheduler.schedule(c);
     }
 
     static synchronized void rename(Context c, int id, String name) {

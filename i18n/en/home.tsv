@@ -732,3 +732,66 @@ mp3 أو m4a أو ogg أو wav	mp3, m4a, ogg or wav
 وصلت الحد: %s ملفًا	The limit is reached: %s files
 الملف فارغ	The file is empty
 حسنًا للاختيار، ومطوّلًا لخيارات أكثر، ورجوع للعودة	OK: choose, hold: more, Back: return
+الأدعية والتذكيرات	Duas and reminders
+أصوات تختارها تُشغَّل في وقتها، مثل الأذان	Sounds you pick, played at their time like the adhan
+%s مفعّلة	%s on
+تُشغَّل فوق الرئيسية وشاشة التوقف، وتوقف التلاوة ثم تعيدها	They play over the home and the screensaver, pausing the recitation and bringing it back
+إضافة دعاء أو تذكير	Add a dua or reminder
+صوت من «صوتياتي»	A sound from «My sounds»
+حسنًا للفتح والتعديل، ومطوّلًا للاستماع الآن	OK: open and edit, hold: listen now
+وصلت الحد: %s	The limit is reached: %s
+الملف محذوف: اختر صوتًا آخر	The file was deleted: pick another sound
+المرة القادمة: %s	Next time: %s
+الاسم	Name
+الأيام	Days
+مستوى الصوت	Volume
+فوق تطبيق آخر يشغّل صوتًا	Over another app’s sound
+نعم: يوقفه ويشتغل	Yes: it pauses it and plays
+لا: إذا كان تطبيق آخر يشغّل صوتًا يُترك	No: when another app plays sound, it is left alone
+استمع الآن	Listen now
+الملف يبقى في «صوتياتي»	The file stays in «My sounds»
+كل سنة	Every year
+كل أسبوع	Every week
+اليوم %s	Today %s
+غدًا %s	Tomorrow %s
+أيام من الأسبوع	Days of the week
+تاريخ ميلادي	Gregorian date
+تاريخ هجري	Hijri date
+يبقى يوم واحد على الأقل	At least one day stays
+الشهر	Month
+يتكرر كل سنة	Every year
+يمين ويسار يغيّران اليوم والشهر	Left and right change the day and the month
+متى يُشغَّل؟	When does it play?
+في ساعة محددة	At a set time
+قبل صلاة	Before a prayer
+بعد صلاة	After a prayer
+الدقائق	Minutes
+يمين ويسار يغيّران الوقت	Left and right change the time
+الصلاة	Prayer
+بعدها بـ	After it by
+عند الأذان	At the adhan
+، %s	, %s
+الملف محذوف	The file was deleted
+سورة %1$s، %2$s	Surah %1$s, %2$s
+السبت	Saturday
+محرم	Muharram
+صفر	Safar
+ربيع الأول	Rabi al-Awwal
+ربيع الآخر	Rabi al-Akhir
+جمادى الأولى	Jumada al-Ula
+جمادى الآخرة	Jumada al-Akhira
+رجب	Rajab
+شعبان	Shaban
+شوال	Shawwal
+ذو القعدة	Dhu al-Qadah
+ذو الحجة	Dhu al-Hijjah
+ و	 and 
+كل %s	Every %s
+كل سنة في %s	Every year on %s
+عند %s	At %s
+قبل %1$s بـ %2$s	%2$s before %1$s
+بعد %1$s بـ %2$s	%2$s after %1$s
+%s ساعات	%s hours
+%s، مرة واحدة	%s, once
+تذكير	Reminder
+اختيار يوقفه، والتلاوة تعود بعده	OK stops it; the recitation comes back after

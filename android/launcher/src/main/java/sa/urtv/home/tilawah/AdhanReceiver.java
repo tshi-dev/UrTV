@@ -26,6 +26,7 @@ public class AdhanReceiver extends BroadcastReceiver {
         if (!alarm) {
             // boot, clock or timezone change, or the app was just updated: set the next alarm, and ask Aladhan for today
             AdhanScheduler.schedule(context);
+            DuaScheduler.schedule(context);   // 4.4: the duas' alarm too (a reboot, a clock or time-zone change, an update)
             PrayerTimes.refresh(context, null);
             return;
         }

@@ -56,12 +56,12 @@ a{color:var(--acc)}
     caps: 'mp3, m4a, ogg or wav, up to {f} each; {u} of {t} used', sending: 'Sending… {p}%', done: 'It is on the TV ✓',
     too_big: 'The file is bigger than {f}.', full: 'No room left: all sounds together are up to {t}.', too_many: 'The TV holds as many sounds as it can.',
     format: 'This is not a sound the TV can play.', too_long: 'An adhan is at most 5 minutes.', failed: 'Not sent: check the Wi-Fi and try again.',
-    no_session: 'The session ended.', own: 'My adhan', own_fajr: 'Fajr adhan', none: 'Not used', del: 'Delete', ask: 'Delete «{n}» from the TV?'
+    no_session: 'The session ended.', own: 'My adhan', own_fajr: 'Fajr adhan', dua: 'Dua or reminder', none: 'Not used', dua_set: 'Set its time on the TV: Adhan, Duas and reminders.', del: 'Delete', ask: 'Delete «{n}» from the TV?'
   } : {
     caps: 'mp3 أو m4a أو ogg أو wav، حتى {f} للملف، والمستخدم {u} من {t}', sending: 'يرسل… {p}٪', done: 'وصل للتلفزيون ✓',
     too_big: 'الملف أكبر من {f}.', full: 'ما بقي مكان: الحد لكل الصوتيات {t}.', too_many: 'التلفزيون فيه أكثر عدد يقدر عليه من الصوتيات.',
     format: 'هذا ليس ملفًا صوتيًا يشتغل على التلفزيون.', too_long: 'الأذان خمس دقائق على الأكثر.', failed: 'ما انرسل: تأكد من الواي فاي وجرّب مرة ثانية.',
-    no_session: 'انتهت الجلسة.', own: 'أذاني الخاص', own_fajr: 'أذان الفجر', none: 'بلا استخدام', del: 'حذف', ask: 'تحذف «{n}» من التلفزيون؟'
+    no_session: 'انتهت الجلسة.', own: 'أذاني الخاص', own_fajr: 'أذان الفجر', dua: 'دعاء أو تذكير', none: 'بلا استخدام', dua_set: 'اضبط وقته من التلفزيون: الأذان، ثم الأدعية والتذكيرات.', del: 'حذف', ask: 'تحذف «{n}» من التلفزيون؟'
   };
   var $ = function (id) { return document.getElementById(id); };
   if (EN) ['t1', 't2', 't3', 't4', 't5'].forEach(function (k) { $(k).textContent = W[k]; });
@@ -84,7 +84,7 @@ a{color:var(--acc)}
   }
   function op(body) {
     return call('/api/audio', { method: 'POST', credentials: 'same-origin', headers: hdr({ 'Content-Type': 'application/json' }), body: JSON.stringify(body), cache: 'no-store' })
-      .then(function (j) { if (!j || !j.ok) say(word(j && j.error)); load(); });
+      .then(function (j) { if (!j || !j.ok) say(word(j && j.error)); return load(); });
   }
   function draw() {
     var box = $('list'); box.textContent = '';
@@ -93,10 +93,10 @@ a{color:var(--acc)}
       var b = document.createElement('b'); b.textContent = it.name; d.appendChild(b);
       var s = document.createElement('small'); s.textContent = it.size; d.appendChild(s);
       var u = document.createElement('div'); u.className = 'use';
-      ['own', 'own_fajr', 'none'].forEach(function (k) {
+      ['dua', 'own', 'own_fajr', 'none'].forEach(function (k) {
         var x = document.createElement('button'); x.type = 'button'; x.textContent = W[k];
         if ((it.use || 'none') === k) x.className = 'on';
-        x.onclick = function () { op({ op: 'use', id: it.id, as: k }); };
+        x.onclick = function () { op({ op: 'use', id: it.id, as: k }).then(function () { if (k === 'dua') say(W.dua_set); }); };
         u.appendChild(x);
       });
       var del = document.createElement('button'); del.type = 'button'; del.className = 'del'; del.textContent = W.del;
