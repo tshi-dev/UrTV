@@ -92,3 +92,5 @@ The look at 3 m with the real fonts (the kit loads `fonts/ThmanyahDisplay-Bold.o
 
 ## Names written by the people playing (4.3.3)
 Every game with teams or named players (`namesKind()`: "teams" or "players", `namesCount()`) shows a «الأسماء» button beside «ابدأ». It opens the list of names (one field per team or player, the game's suggestion shown dim when empty) and, on OK, an on-screen keyboard (Arabic and English, letters, digits, space, delete, «تم»). A name is at most 14 characters: letters, digits and single spaces, nothing that reads as a link (`GameNames.clean`). The names are kept on this TV only (`GamePrefs.names`, kind "teams" or "players"), used everywhere the game says a team or a player (`teamNames`, `playerNames`), and «أسماء جديدة» forgets them. An empty slot keeps the suggestion («الصقور»، «لاعب 1»); two the same get a number. With the phones on, the players' names are their phones' names (docs/GAMES-PHONES.md).
+
+The night colours start on **dim beige** (the third palette, the owner's choice); warm charcoal and blue night stay selectable («ألوان الليل»). A TV that already picked one keeps it.
