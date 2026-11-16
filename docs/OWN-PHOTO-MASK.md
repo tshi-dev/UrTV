@@ -1,6 +1,6 @@
 # الساعة خلف صورتك: كيف تصنع القناع
 
-مع «الساعة: زجاجية خلف الصورة» (الإعدادات ← الشكل والمشاهد ← الساعة) تظهر ساعة كبيرة زجاجية على الصورة. في صورنا اللي سماؤها واضحة، المباني أو الجبال
+مع «الساعة: زجاجية خلف الصورة» (الإعدادات ← المظهر ← الساعة) تظهر ساعة كبيرة زجاجية على الصورة. في صورنا اللي سماؤها واضحة، المباني أو الجبال
 تكون قدّام الأرقام كأن الساعة ورا المشهد. صورك أنت تقدر تصير كذا بعد، إذا أرسلت معها **قناعًا**: صورة بالأبيض والأسود بنفس مقاسها.
 
 - **الأبيض:** اللي يكون قدّام الساعة (المباني، الجبال، الناس، الأشجار).
@@ -52,7 +52,7 @@ mask-venv/bin/python optimize/photo_mask.py صورتي.jpg
 
 # The clock behind your photo: making the mask
 
-With «الساعة: زجاجية خلف الصورة» (Settings ← الشكل والمشاهد ← الساعة) a big glass clock sits on the photo. On our photos with a clear sky, the buildings or
+With «الساعة: زجاجية خلف الصورة» (Settings ← المظهر ← الساعة) a big glass clock sits on the photo. On our photos with a clear sky, the buildings or
 mountains stand in front of the digits. Your own photo can do the same if you send a **mask** with it: a black-and-white image of the same size.
 
 - **White:** what stands in front of the clock (buildings, mountains, people, trees).
