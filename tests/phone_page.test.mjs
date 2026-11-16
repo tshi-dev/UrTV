@@ -250,13 +250,13 @@ await T('text other apps', async () => {
     check(`result ${r}: message and the field is cleared`, await until(async () => (await W.p.textContent('#msg')).includes(msg)) && await until(async () => (await W.p.inputValue('#txt')) === ''), await W.p.textContent('#msg'));
     await W.ctx.close();
   }
-  for (const [e, msg] of [['service_off', 'فعّل خدمة "تلفزيونك: التحكم والكتابة من الجوال"'], ['refused', 'ما أقدر أكتب في هذا التطبيق'], ['locked', 'مقفول بالرقم السري، افتحه على التلفزيون'], ['password_field', 'ما أكتب في حقل كلمة المرور'], ['failed', 'ما نجحت']]) {
+  for (const [e, msg] of [['service_off', 'فعّل خدمة "إضافات تلفزيونك"'], ['refused', 'ما أقدر أكتب في هذا التطبيق'], ['locked', 'مقفول بالرقم السري، افتحه على التلفزيون'], ['password_field', 'ما أكتب في حقل كلمة المرور'], ['failed', 'ما نجحت']]) {
     const W = await boot({ cfg: { textAnswer: { ok: false, error: e } } });
     await W.p.fill('#txt', 'نص'); await W.p.click('#txtSearch');
     check(`error ${e}: message and the text is kept`, await until(async () => (await W.p.textContent('#msg')).includes(msg)) && (await W.p.inputValue('#txt')) === 'نص', await W.p.textContent('#msg'));
     if (e === 'service_off') {
       const n = await W.p.textContent('#svcNote');
-      check('service_off: the permanent note with the path, visible after the toast is gone', n.includes('الإعدادات ← إمكانية الوصول ← تلفزيونك: التحكم والكتابة من الجوال') && await W.p.isVisible('#svcNote'));
+      check('service_off: the permanent note with the path, visible after the toast is gone', n.includes('الإعدادات ← إمكانية الوصول ← إضافات تلفزيونك') && await W.p.isVisible('#svcNote'));
       await sleep(3800);
       check('the note stays', await W.p.isVisible('#svcNote'));
     }
@@ -275,11 +275,11 @@ await T('note', async () => {
   const c = await mk({ foreground: 'other', keys_everywhere: true, dpad_everywhere: false });
   check('no note while our screen is in front', !own.shown);
   check('other app + a service on that reaches everything: the short note', a.shown && a.t === 'الأسهم والاختيار والرجوع والرئيسية تعمل في التطبيق الذي أمامك' && !a.warn, a.t);
-  check('other app, service on but the arrows not reaching it (before Android 13, no typing/remote service): Back and Home, and what the arrows need', c.shown && c.t.includes('الرجوع والرئيسية تعمل في كل التطبيقات') && c.t.includes('أندرويد ١٣') && c.t.includes('تلفزيونك: التحكم والكتابة من الجوال') && !c.warn, c.t);
-  check('other app, no service: the warning with the service\'s name and where to turn it on', b.shown && b.t.includes('فعّل خدمة «تلفزيونك: التحكم والكتابة من الجوال»') && b.t.includes('إمكانية الوصول') && b.warn, b.t);
+  check('other app, service on but the arrows not reaching it (before Android 13, no typing/remote service): Back and Home, and what the arrows need', c.shown && c.t.includes('الرجوع والرئيسية تعمل في كل التطبيقات') && c.t.includes('أندرويد ١٣') && c.t.includes('إضافات تلفزيونك') && !c.warn, c.t);
+  check('other app, no service: the warning with the service\'s name and where to turn it on', b.shown && b.t.includes('فعّل خدمة «إضافات تلفزيونك»') && b.t.includes('إمكانية الوصول') && b.warn, b.t);
   const S = await boot({ state: OLD({ foreground: 'other' }) });
   const o = OLD(); o.foreground = 'other'; S.cfg.state = o; await tab(S, 'now'); await tab(S, 'remote');
-  check('old state with another app in front: the warning with the service\'s name', (await S.p.textContent('#foreNote')).includes('فعّل خدمة «تلفزيونك: التحكم والكتابة من الجوال»'));
+  check('old state with another app in front: the warning with the service\'s name', (await S.p.textContent('#foreNote')).includes('فعّل خدمة «إضافات تلفزيونك»'));
   await S.ctx.close();
 });
 
@@ -569,7 +569,7 @@ await T('cards', async () => {
 });
 
 await T('key answers', async () => {
-  for (const [e, msg] of [['other_app_limited', 'ما قدرنا نحرك التركيز'], ['other_app', 'فعّل خدمة «تلفزيونك: التحكم والكتابة من الجوال»']]) {
+  for (const [e, msg] of [['other_app_limited', 'ما قدرنا نحرك التركيز'], ['other_app', 'فعّل خدمة «إضافات تلفزيونك»']]) {
     const S = await boot({ cfg: { keyAnswer: { ok: false, error: e } } });
     await S.p.click('[data-k=ok]');
     check(`key answered ${e}: the toast says what to do`, await until(async () => (await S.p.textContent('#msg')).includes(msg)), await S.p.textContent('#msg'));
