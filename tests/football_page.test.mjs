@@ -129,7 +129,7 @@ const checkLineGeo = (label, g, sel) => {
   check('football home: three games, the followed team first, live with its score and minute', lines.length === 3 && /الهلال/.test(lines[0]) && /٢ - ١/.test(lines[0]) && /الدقيقة ٦٧/.test(lines[0]), lines.join(' / '));
   checkLineGeo('football home: the match line', await lineGeo(p, '#fb-mt-c .fln'));
   check('football home: a game during a prayer says which, in amber', await p.$$eval('#fb-mt-c .fnote', ns => ns.some(n => /المغرب/.test(n.textContent) && getComputedStyle(n).color !== 'rgb(255, 255, 255)')), lines.join(' / '));
-  check('football home: the count and the source over the games', /TheSportsDB · ٤ مباريات/.test(await p.textContent('#fb-mt h3')), await p.textContent('#fb-mt h3'));
+  check('football home: the count and the source over the games', /TheSportsDB، ٤ مباريات/.test(await p.textContent('#fb-mt h3')), await p.textContent('#fb-mt h3'));
   check('football home: the weather (city, temperature, feels-like, humidity, wind)', await p.evaluate(() => { const t = document.getElementById('fb-wx').textContent; return /الرياض/.test(t) && /٢٨°/.test(t) && /٣٠°/.test(t) && /١٨/.test(t) && /١٢ كم\/س/.test(t); }), await p.textContent('#fb-wx'));
   check('football home: five prayers, the next one lit, its time left under them', await p.$$eval('#fb-pr li', l => l.length === 5 && l.filter(x => x.classList.contains('nx')).length === 1) && /بعد/.test(await p.textContent('.fpn')));
   await shot(p, 'football-home.png');

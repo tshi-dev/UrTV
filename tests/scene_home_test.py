@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
-"""4.3.3 «المشاهد» (docs/mockups, docs/mockups/PERFORMANCE.md): a second home style, chosen in «الشكل والمشاهد ← الواجهة»; the home as it was stays the
-default. A scene's photo, its big glass clock and the scenery cut out over the clock; «مشاهد السعودية» in the app, «مشاهد Couch TV» downloaded once from
+"""4.3.3 «الآفاق» (docs/mockups, docs/mockups/PERFORMANCE.md): a second home style, chosen in «المظهر ← الواجهة»; the home as it was stays the
+default. A scene's photo, its big glass clock and the scenery cut out over the clock; «آفاق السعودية» in the app, «آفاق عالمية» downloaded once from
 urtv-data with its sha256; on a weak TV (LOW) a still photo at 1280, no cut-out, no fade.
 
     python3 tests/scene_home_test.py      (ScenePlan runs on a JVM: needs javac; Pillow for the files' sizes)
@@ -63,7 +63,7 @@ if shutil.which("javac"):
           and ch["falsefalsetruetrue"][0] == "bb" and ch["truetruetruetrue"][0] == "bb" and ch["falsefalsetruefalse"][0] == "aabbcc", ch)
     check("the app's scene: Riyadh is a night scene; by day, with no day scene yet, and in fog, with no fog scene, the rules let go (never an empty home)",
           ch["truetruefalsefalse"][1] == "riyadh" and ch["truefalsefalsefalse"][1] == "riyadh" and ch["falsefalsetruetrue"][1] == "riyadh", ch)
-    check("«بقاء كل مشهد»: 10, 20, 60 or 300 s, anything else 20; fog is Open-Meteo's 45 and 48",
+    check("«بقاء كل أفق»: 10, 20, 60 or 300 s, anything else 20; fog is Open-Meteo's 45 and 48",
           [r for r in rows if r[0] == "stay"][0][1] == "10,300,20,20" and [r for r in rows if r[0] == "fog"][0][1] == "true,true,false")
     check("ScenePlan's tiers are Ram's numbers", [r for r in rows if r[0] == "tiers"][0][1] == "0,1,2"
           and "public static final int LOW = 0, MID = 1, NORMAL = 2;" in ram)
@@ -135,7 +135,7 @@ check("the scene sits over the photos and under the dimming and the scrims (put 
 check("the home reads the layout and the packs from the screensaver (an older one says nothing: classic, saudi)",
       'String homeLayout = "classic", scenePacks = "saudi", sceneStay = "20";' in snap and 'cur.getColumnIndex("scene_packs")' in snap and "int shownCards() { return cards; }" in card)
 
-# ---- 4.4 the owner: «العادية» is the default and costs nothing of the scenes; «المشاهد» costs no ordinary photo
+# ---- 4.4 the owner: «العادية» is the default and costs nothing of the scenes; «الآفاق» costs no ordinary photo
 import glob
 body = tick.split("\n", 1)[1]
 first = [l.strip() for l in body.splitlines() if l.strip() and not l.strip().startswith("//")]
@@ -163,17 +163,18 @@ check("4.4 three choices: «التخطيط» (تلفزيونك, the default, ك�
       and 'HOME_CLOCKS = {"plain", "glass"};' in prefs and 'sp.getString("homeBg", oldScenes() ? "scenes" : "photos")' in prefs and 'sp.getString("homeClock", oldScenes() ? "glass" : "plain")' in prefs)
 check("the presets set the three at once: «شكل تلفزيونك» (our layout, photos, plain clock; the default) and «شكل كنبة» (the couch layout, scenes, glass clock); any other mix reads «مخصّص»",
       '{{"urtv", "شكل تلفزيونك", "classic", "photos", "plain", "frame"}, {"couch", "شكل كنبة", "couch", "scenes", "glass", "zoom"}}' in prefs and 'return "مخصّص";' in prefs
-      and 'row("الشكل الجاهز", Prefs.look3Label(prefs.look3())' in st and 'row("التخطيط"' in st and 'row("الخلفية"' in st and 'row("الساعة"' in st)
-check("the home: «الخلفية ← المشاهد» shows the scenes on any layout; the glass clock and the cut-out only with «الساعة ← زجاجية», else the header's clock stays",
+      and 'row("شكل كنبة", prefs.couchLabel()' in st and 'prefs.setCouch(!prefs.couchOn())' in st and 'row("التخطيط"' in st and 'row("الخلفية"' in st and 'row("الساعة"' in st)
+check("the home: «الخلفية ← الآفاق» shows the scenes on any layout; the glass clock and the cut-out only with «الساعة ← زجاجية», else the header's clock stays",
       'boolean on = "scenes".equals(cfg.homeBg);' in tick and 'boolean glass = "glass".equals(cfg.homeClock);' in tick and "boolean bigClock = glass;" in tick
       and "final Bitmap glass = withClock ? decode(" in scene and "final Bitmap mask = withClock && sc.mask != null" in scene
       and 'if ("scenes".equals(homeLayout)) { homeLayout = "classic"; homeBg = "scenes"; homeClock = "glass"; }' in snap)
-check("«حزم المشاهد»: the Saudi pack and the Couch TV pack, none chosen is the Saudi one; both rows in «الشكل والمشاهد», first",
-      '{"saudi", "مشاهد السعودية"}, {"couch", "مشاهد Couch TV"}' in prefs and 'if (out.isEmpty()) out.add("saudi");' in prefs
-      and 'row("حزم المشاهد"' in st
-      and '{LOOK, "الشكل الجاهز", "التخطيط", "الخلفية", "الساعة", "شكل التطبيقات", H + "المشاهد", "حزم المشاهد",' in hub and '{"الساعة", LOOK}, {"شكل التطبيقات", LOOK}, {"حزم المشاهد", LOOK}' in hub)
-check("«بقاء كل مشهد», «المشهد يتبع الوقت», «المشهد يتبع الطقس»: rows in «الشكل والمشاهد», off by default (20 s), given to the home, which picks night by the prayer times and fog by the greeting's weather",
-      'row("بقاء كل مشهد"' in st and 'row("المشهد يتبع الوقت"' in st and 'row("المشهد يتبع الطقس"' in st and 'sp.getBoolean("sceneByTime", false)' in prefs
+check("«حزم الآفاق» (the owner's «الآفاق», was «المشاهد»): «آفاق السعودية» and «آفاق عالمية» (the Couch TV pack), none chosen is the Saudi one; in «المظهر» ← «الخلفية والآفاق»",
+      '{"saudi", "آفاق السعودية"}, {"couch", "آفاق عالمية"}' in prefs and 'if (out.isEmpty()) out.add("saudi");' in prefs
+      and 'row("حزم الآفاق"' in st
+      and '{LOOK, H + "شكل كنبة والتخطيط", "شكل كنبة", "التخطيط", "وضع الألوان", "صفحات الأسهم والمباريات داكنة",' in hub
+      and 'H + "الخلفية والآفاق", "الخلفية", "حزم الآفاق", "بقاء كل أفق", "الأفق يتبع الوقت", "الأفق يتبع الطقس",' in hub and '{"الساعة", LOOK}, {"شكل التطبيقات", LOOK}, {"حزم الآفاق", LOOK}' in hub)
+check("«بقاء كل أفق», «الأفق يتبع الوقت», «الأفق يتبع الطقس»: rows in «المظهر», off by default (20 s), given to the home, which picks night by the prayer times and fog by the greeting's weather",
+      'row("بقاء كل أفق"' in st and 'row("الأفق يتبع الوقت"' in st and 'row("الأفق يتبع الطقس"' in st and 'sp.getBoolean("sceneByTime", false)' in prefs
       and 'sp.getBoolean("sceneByWeather", false)' in prefs and 'sp.getString("sceneStay", "20")' in prefs and '"scene_stay", "scene_time", "scene_weather"' in prov
       and "night = t >= d.maghrib || t < d.fajr;" in main and 'ScenePlan.fog(g.getInt("code", -1))' in main and "sceneHome.mood(" in main and "ScenePlan.stay(cfg.sceneStay)" in main)
 check("the ordinary photos are not decoded while the scene home shows (memory): no rotation, a photo on its way not shown, the two layers emptied; back to classic, a photo again",
@@ -181,8 +182,16 @@ check("the ordinary photos are not decoded while the scene home shows (memory): 
       and "for (ImageView w : new ImageView[] {wallBack, wallFront}) w.setImageDrawable(null);" in tick and "} else nextWallpaper();" in tick)
 check("the provider gives scene_packs, home_bg and home_clock; saver.sh scenepacks, look, background, clock (and 4.3.3's homelayout scenes = the couch preset); `show` says them",
       '"scene_packs"' in prov and '"home_bg", "home_clock"' in prov and 'Prefs.join(p.scenePacks(), ",")' in prov and 'getStringExtra("scenepacks")' in recv and '"\\nscenepacks: "' in recv
-      and 'if ("scenes".equals(homeLayout)) { homeLayout = null; look3 = "couch"; }' in recv and '"\\nbackground: " + p.homeBg()' in recv
-      and all(f"{c}) " in read(ROOT / "optimize/saver.sh") for c in ("scenepacks", "look", "background", "clock")))
+      and 'if ("scenes".equals(homeLayout)) { homeLayout = null; couch = "on"; }' in recv and '"\\nbackground: " + p.homeBg()' in recv
+      and all(f"{c}) " in read(ROOT / "optimize/saver.sh") for c in ("scenepacks", "couch", "background", "clock")))
+sh = read(ROOT / "optimize/saver.sh")
+check("«شكل كنبة» has its own command (saver.sh couch on|off, the extra «couch»); «look» stays the screens' look (glass, graphite…): one look) case, one reader of the extra each",
+      sh.count("\n  look)") == 1 and "usage: optimize/saver.sh look glass|graphite|navy|clean|sand" in sh and 'set1 couch "${2:?usage: optimize/saver.sh couch on|off}"' in sh
+      and recv.count('i.getStringExtra("look")') == 1 and 'String couch = i.getStringExtra("couch")' in recv and '"\\ncouch: "' in recv and 'p.setCouch("on".equals(couch));' in recv)
+cset = prefs[prefs.index("    void setCouch(boolean on) {"):].split("\n    }\n")[0]
+check("4.4 the owner: «شكل كنبة» is one switch, off by default; on keeps the person's four values and applies the preset, off puts them back exactly; a row changed while on reads «مخصّص»",
+      'sp.contains("couchOn") ? sp.getBoolean("couchOn", false)' in prefs and 'putString("couchBefore", homeLayout() + "," + homeBg() + "," + homeClock() + "," + appsStyle())' in cset
+      and 'setLook3("couch");' in cset and "setHomeLayout(b[0]); setHomeBg(b[1]); setHomeClock(b[2]); setAppsStyle(b[3]);" in cset and '"مفعّل (مخصّص' in prefs)
 main_tile = main[main.index("card.setOnFocusChangeListener((v, has) -> {"):main.index("card.setOnLongClickListener(")]
 check("4.4 «شكل التطبيقات»: إطار (the default: the ring, the name above the tray) or تكبير وظل (larger with a soft shadow, no ring, the name under the tile); «شكل كنبة» turns it on",
       'HOME_APPS = {"frame", "zoom"};' in prefs and '{"إطار", "تكبير وظل"}' in prefs and 'sp.getString("appsStyle", "frame")' in prefs and 'row("شكل التطبيقات"' in st

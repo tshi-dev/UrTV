@@ -214,7 +214,7 @@ def hadith_for_screen():
             continue
         if any(k == "q" for k, _ in parts) and words <= HADITH_MAX_WORDS:
             grade = tirmidhi_grade(full["text"]) or albani_grade(full.get("grades"))
-            source = f"{full['book']} · {str(full['number']).translate(digits)}" + (f" · {grade}" if grade else "")
+            source = f"{full['book']}، {str(full['number']).translate(digits)}" + (f"، {grade}" if grade else "")   # 4.4: «،», never «·»
             out.append({"parts": parts, "source": source})
     return out
 
@@ -286,6 +286,8 @@ HIJRI_EN = ["Muharram", "Safar", "Rabi al-Awwal", "Rabi al-Thani", "Jumada al-Aw
 EN_CODE = [
     # Latin digits unless Arabic-Indic ones are asked for; the dates and numbers in English
     ("digits: _Q.get('digits') === 'latin' ? 'latin' : 'hindi',", "digits: _Q.get('digits') === 'hindi' ? 'hindi' : 'latin',", 1),
+    # 4.4: the Arabic page joins two parts with «، » (never «·»); the English one keeps its « · »
+    ("const SEP = '، ';", "const SEP = ' · ';", 1),
     # the Gregorian words from fixed English names, never from Intl's en-GB (its commas and order differ between ICU versions, so between
     # WebViews): Intl gives only the numbers of the day in the zone. «Monday, 2 November 2026», «Monday 2 November», «2 November», «Mon»
     ("const GREG = 'ar-SA-u-ca-gregory-nu-' + NU;", """const GREG = 'en-u-ca-gregory-nu-latn';
@@ -343,45 +345,44 @@ function enDate(d, o){
     ("if(nat) setText(nl, nat.name + ' ' + ar(nat.n) + nat.unit);", "if(nat) setText(nl, nat.name + ' · ' + ar(nat.n) + ' years');", 1),
     # one day, 2 days; «2 hours, 15 min» (the parts are joined with ' و ' → ', ', which the code also splits on)
     ("""const UNIT = {
-  day: {one:'يوم', two:'يومين', few:'أيام', many:'يوم'},
+  day: {one:'يوم', two:'يومين', few:'أيام', many:'يوم', mid:'يومًا'},
   hour:{one:'ساعة', two:'ساعتين', few:'ساعات', many:'ساعة'},
   min: {one:'دقيقة', two:'دقيقتين', few:'دقائق', many:'دقيقة'}
 };
+// the counted noun as Arabic says it: «يوم», «يومين», «٥ أيام», «١١ يومًا», «١٠٠ يوم», «١٠٥ أيام» (by the last two digits)
+const unitOf = (n, u) => { const r = n % 100; return r >= 3 && r <= 10 ? u.few : r >= 11 && u.mid || u.many; };
 function qty(n,u){
+  if(n === 1) return u.one;
   if(n === 2) return u.two;
-  if(n >= 3 && n <= 10) return `${ar(n)} ${u.few}`;
-  return `${ar(n)} ${u.many}`;
+  return `${ar(n)} ${unitOf(n, u)}`;
 }""", """const UNIT = {day: {one:'day', many:'days'}, hour: {one:'hour', many:'hours'}, min: {one:'min', many:'min'}};
-const qty = (n, u) => `${ar(n)} ${n === 1 ? u.one : u.many}`;""", 1),
+const unitOf = (n, u) => n === 1 ? u.one : u.many;
+const qty = (n, u) => `${ar(n)} ${unitOf(n, u)}`;""", 1),
     # «Maghrib adhan in 8 min», «Maghrib iqama in 12 min», «Maghrib adhan · Any button stops the adhan»
-    ("return (n ? 'أذان ' + n : 'الأذان') + '  ·  '", "return (n ? n + ' adhan' : 'Adhan') + '  ·  '", 1),
+    ("return (n ? 'أذان ' + n : 'الأذان') + SEP", "return (n ? n + ' adhan' : 'Adhan') + SEP", 1),
     ("return 'أذان ' + prayerName(x) + ' بعد ' + untilAdhan(toAdhan);", "return prayerName(x) + ' adhan in ' + untilAdhan(toAdhan);", 1),
     ("return 'إقامة ' + prayerName(x) + ' بعد ' + humanRemaining(", "return prayerName(x) + ' iqama in ' + humanRemaining(", 1),
     ("'الإقامة بعد <b>'", "'Iqama in <b>'", 1),
     ("'بعد <b>'", "'in <b>'", 3),
     ("'قبل <b>' + humanRemaining(Math.max(60, Math.floor(ago) * 60)) + '</b>'", "'<b>' + humanRemaining(Math.max(60, Math.floor(ago) * 60)) + '</b> ago'", 1),
-    ("setHTML(elD, ar(oc.days) + ' <span class=\"unit\">' + OCC_TEXT.unit + '</span>');",
-     "setHTML(elD, ar(oc.days) + ' <span class=\"unit\">' + (oc.days === 1 ? 'day' : OCC_TEXT.unit) + '</span>');", 1),
-    ("""'<span class="num">' + ar(n) + '</span> <span class="unit">يوم</span>', name);""",
-     """'<span class="num">' + ar(n) + '</span> <span class="unit">' + (n === 1 ? 'day' : 'days') + '</span>', name);""", 1),
     ("ramadanDay:n => 'اليوم ' + ar(n) + ' من رمضان',", "ramadanDay:n => 'Ramadan day ' + ar(n),", 1),
     # team and people's names as the data has them, in English (no Arabic table, no transliteration, no Wikidata lookup)
     ("const teamAr = (s, id) => arName(s, 'team', id);", "const teamAr = (s, id) => String(s || '').trim();", 1),
     ("function translit(en){\n", "function translit(en){ return String(en || ''); }\nfunction translitAr(en){\n", 1),
     ("'morocco':'المغرب'}", "'morocco':'Morocco'}", 1),
     # the games
-    ("`<div class=\"sub\">النتيجة النهائية · ${day}</div></div>`", "`<div class=\"sub\">Final · ${day}</div></div>`", 1),
+    ("`<div class=\"sub\">النتيجة النهائية${SEP}${day}</div></div>`", "`<div class=\"sub\">Final${SEP}${day}</div></div>`", 1),
     ("`بعد ${shortRemaining(diff)}</div>", "`In ${shortRemaining(diff)}</div>", 1),
     ("`بدأت ${clk}` : `الدقيقة ${ar(m)}`", "`Since ${clk}` : `${ar(m)}'`", 1),
-    ("· بدأ ${clk}`", "· started ${clk}`", 1),
+    ("${SEP}بدأ ${clk}`", "${SEP}started ${clk}`", 1),
     # «Saudi Arabian Grand Prix», short «Saudi Arabian GP»: the event's own name
     ("const gpName = gp ? 'جائزة ' + (GP_AR[place] || trl(gp[1].trim())) + ' الكبرى' : trl(name);",
      "const gpName = gp ? gp[1].replace(/\\bformula\\s*1\\b/i,'').replace(/\\b20\\d\\d\\b/,'').trim() + ' Grand Prix' : name;", 1),
     ("gpName.replace(/ الكبرى$/, '')", "gpName.replace(/ Grand Prix$/, ' GP')", 1),
     # the cards
-    ("`الموسم ${ar(e.season)}` : `الموسم ${ar(e.season)} · ح ${ar(e.number)}`", "`Season ${ar(e.season)}` : `S${ar(e.season)} E${ar(e.number)}`", 1),
-    ("`اليوم <b>${ar(day)}</b> من ${ar(total)} · ", "`Day <b>${ar(day)}</b> of ${ar(total)} · ", 1),
-    ("${fmtTime(n.h, n.mi)}،</span><span class=\"r\">بعد ${left}</span>", "${fmtTime(n.h, n.mi)},</span><span class=\"r\">in ${left}</span>", 1),
+    ("`الموسم ${ar(e.season)}` : `الموسم ${ar(e.season)}${SEP}ح ${ar(e.number)}`", "`Season ${ar(e.season)}` : `S${ar(e.season)} E${ar(e.number)}`", 1),
+    ("`اليوم <b>${ar(day)}</b> من ${ar(total)}${SEP}", "`Day <b>${ar(day)}</b> of ${ar(total)}${SEP}", 1),
+    ("${fmtTime(n.h, n.mi)}</span><span class=\"r\">بعد ${left}</span>", "${fmtTime(n.h, n.mi)}</span><span class=\"r\">in ${left}</span>", 1),
     ("`${prayerName(n)} بعد ${shortHM(", "`${prayerName(n)} in ${shortHM(", 1),
     ("return m < 1 ? 'الآن' : m < 60 ? 'قبل ' + ar(m) + ' د' : 'قبل ' + ar(Math.floor(m / 60)) + ' س';",
      "return m < 1 ? 'now' : m < 60 ? ar(m) + ' min ago' : ar(Math.floor(m / 60)) + ' h ago';", 1),

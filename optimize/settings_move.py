@@ -53,7 +53,7 @@ ALLOWED_TOP = ("schema", "city", "digits", "prayer", "hijri_offset", "clock24", 
 # reads that file and fails if these drift from it).
 DIGITS = ("hindi", "latin")
 PRAYER_METHODS = ("auto", "gulf")   # 4.3 A4: an older file's «jafari» is imported as «auto» (no longer offered)
-CARD_STYLES = ("current", "dark1", "glass1", "dark3", "glass3", "boxes")
+CARD_STYLES = ("current", "dark1", "glass1", "dark3", "glass3", "boxes", "classic")
 CLOCK_SIZES = ("large", "medium", "small")
 MK_STYLES = ("arrows", "prices")
 MONTHS = ("default", "levant")

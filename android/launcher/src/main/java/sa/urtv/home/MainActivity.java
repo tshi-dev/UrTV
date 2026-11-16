@@ -108,7 +108,7 @@ public class MainActivity extends Activity {
     private float glowAlphaTo = -1f, shadeTo = 0f;
     private ImageView wallBack, wallFront;
     private boolean scenesOn;   // 4.3.3: the scene home is showing: the ordinary photos are not decoded (their memory is the scene's)
-    private SceneHome sceneHome;   // 4.4 «المشاهد»: the scene backdrop with the glass clock behind its scenery; made only while chosen (null otherwise: nothing of it exists)
+    private SceneHome sceneHome;   // 4.4 «الآفاق»: the scene backdrop with the glass clock behind its scenery; made only while chosen (null otherwise: nothing of it exists)
     private PhotoGlass photoGlass;   // 4.4 «الساعة: زجاجية» over the home's own photos: made only while chosen (null otherwise: no cut-out is read or downloaded)
     private String wallShownKey;   // the home's key of the photo on the screen (pack:, photo:, bundled:, own:), for its cut-out
     private FrameLayout sceneBackdrop;   // where it goes when chosen: over the photos, under the dimming and the scrims
@@ -588,7 +588,7 @@ public class MainActivity extends Activity {
         wallFront = wallpaperLayer();
         backdrop.addView(wallBack, new FrameLayout.LayoutParams(-1, -1));
         backdrop.addView(wallFront, new FrameLayout.LayoutParams(-1, -1));
-        sceneBackdrop = backdrop;   // 4.4: the scene layer is made in sceneTick only when «المشاهد» is chosen
+        sceneBackdrop = backdrop;   // 4.4: the scene layer is made in sceneTick only when «الآفاق» is chosen
         // Scrim: darker at the top (clock, pills) and bottom (dock) so text stays readable.
         scrim = new View(this);
         scrim.setBackground(new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM,
@@ -3290,11 +3290,11 @@ public class MainActivity extends Activity {
     }
 
     /**
-     * 4.3.3 «المشاهد» (the owner's choice in «الشكل والمشاهد ← الواجهة»): the scene and its big glass clock take the place of the photo and of the
+     * 4.3.3 «الآفاق» (the owner's choice in «المظهر ← الواجهة»): the scene and its big glass clock take the place of the photo and of the
      * header's clock (the greeting, the date and the rest of the home stay as they are); any other layout: the home as it was.
      */
     private void sceneTick(ConfigSnapshot cfg) {
-        boolean on = "scenes".equals(cfg.homeBg);   // 4.4 «الخلفية ← المشاهد» (any layout); the glass clock is «الساعة»'s own choice
+        boolean on = "scenes".equals(cfg.homeBg);   // 4.4 «الخلفية ← الآفاق» (any layout); the glass clock is «الساعة»'s own choice
         boolean glass = "glass".equals(cfg.homeClock);
         photoGlassTick(cfg, !on && glass);
         if (!on && sceneHome == null && !scenesOn) return;   // the home as it was (the default): nothing of the scenes is made, read, timed or downloaded
@@ -3847,7 +3847,7 @@ public class MainActivity extends Activity {
     /** Decode the next photo off the main thread, then crossfade it in over the current one. */
     private void nextWallpaper() {
         handler.removeCallbacks(rotateWallpaper);
-        if (scenesOn) return;   // 4.3.3 «المشاهد»: no ordinary photo is decoded while the scene home shows
+        if (scenesOn) return;   // 4.3.3 «الآفاق»: no ordinary photo is decoded while the scene home shows
         if (wallpapers.length == 0) return;
         final int gen = ++wallGen;   // a photo that arrives after a newer request is not shown
         new Thread(() -> {

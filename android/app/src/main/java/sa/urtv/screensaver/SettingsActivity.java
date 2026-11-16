@@ -372,7 +372,7 @@ public class SettingsActivity extends Activity {
 
         // «الأسواق»: the home's own page (docs/PROPOSALS-NOV2.md §6, §7): TASI, the watchlist, gold and the pegs, and «محفظتي» on this TV only
         header("صفحة الأسواق");
-        row("صفحة الأسواق", "تاسي وقائمتك والذهب والعملات، ومحفظتك", R.drawable.ic_trophy,
+        row("افتح صفحة الأسواق", "تاسي وقائمتك والذهب والعملات، ومحفظتك", R.drawable.ic_trophy,
             new Runnable() { public void run() { openMarkets(); } });
 
         header("الأسواق (أعلى اليسار)");
@@ -420,9 +420,9 @@ public class SettingsActivity extends Activity {
         // the line says «مفعّل» (the on/off rule: the value starts with the state word) while the mask is on; the home answers (read once per visit, the last answer kept)
         row("\u2066UrTV\u2069 النظيف", Boolean.TRUE.equals(homeCleanSeen()) ? "مفعّل الأساسيات فقط، وبضغطة ترجع الشاشة الكاملة" : "الأساسيات فقط، وبضغطة ترجع الشاشة الكاملة", R.drawable.ic_eye, new Runnable() { public void run() { openClean(); } });
         // «المظهر»: one page for everything about the look of both apps (AppearanceActivity), each choice with its picture
-        // 4.3.3 «الواجهة»: the home as it was (the default), the football home, or «المشاهد» (a scene with the glass clock behind its scenery); and the scene packs
-        // 4.4 the look: a preset, or its three parts one by one (the owner: mix and match)
-        row("الشكل الجاهز", Prefs.look3Label(prefs.look3()), R.drawable.ic_eye, new Runnable() { public void run() { pickLook3(); } });
+        // 4.3.3 «الواجهة»: the home as it was (the default), the football home, or «الآفاق» (a scene with the glass clock behind its scenery); and the scene packs
+        // 4.4 the owner: one switch; on applies the Couch preset and keeps the person's own values, off puts them back (Prefs.setCouch)
+        row("شكل كنبة", prefs.couchLabel(), R.drawable.ic_eye, new Runnable() { public void run() { prefs.setCouch(!prefs.couchOn()); render(); } });
         row("التخطيط", Prefs.homeLayoutLabel(prefs.homeLayout()), R.drawable.ic_eye, new Runnable() { public void run() { pickHomeLayout(); } });
         row("الخلفية", Prefs.homeBgLabel(prefs.homeBg()), R.drawable.ic_eye, new Runnable() { public void run() {
             pickOne("الخلفية", Prefs.HOME_BG_NAMES, java.util.Arrays.asList(Prefs.HOME_BGS).indexOf(prefs.homeBg()), i -> prefs.setHomeBg(Prefs.HOME_BGS[i])); } });
@@ -430,14 +430,14 @@ public class SettingsActivity extends Activity {
             pickOne("الساعة", Prefs.HOME_CLOCK_NAMES, java.util.Arrays.asList(Prefs.HOME_CLOCKS).indexOf(prefs.homeClock()), i -> prefs.setHomeClock(Prefs.HOME_CLOCKS[i])); } });
         row("شكل التطبيقات", Prefs.appsStyleLabel(prefs.appsStyle()), R.drawable.ic_eye, new Runnable() { public void run() {
             pickOne("شكل التطبيقات", Prefs.HOME_APPS_NAMES, java.util.Arrays.asList(Prefs.HOME_APPS).indexOf(prefs.appsStyle()), i -> prefs.setAppsStyle(Prefs.HOME_APPS[i])); } });
-        row("حزم المشاهد", labels(Prefs.SCENE_PACKS, prefs.scenePacks(), "مشاهد السعودية"), R.drawable.ic_eye,
-            new Runnable() { public void run() { pickMany("scenePacks", "حزم المشاهد", Prefs.SCENE_PACKS, "بدون اختيار = مشاهد السعودية"); } });
-        row("بقاء كل مشهد", Prefs.sceneStayLabel(prefs.sceneStay()), R.drawable.ic_eye, new Runnable() { public void run() { pickSceneStay(); } });
-        row("المشهد يتبع الوقت", prefs.sceneByTime() ? "مفعّل (مشهد الليل من المغرب إلى الفجر)" : "متوقف", R.drawable.ic_eye,
+        row("حزم الآفاق", labels(Prefs.SCENE_PACKS, prefs.scenePacks(), "آفاق السعودية"), R.drawable.ic_eye,
+            new Runnable() { public void run() { pickMany("scenePacks", "حزم الآفاق", Prefs.SCENE_PACKS, "بدون اختيار = آفاق السعودية"); } });
+        row("بقاء كل أفق", Prefs.sceneStayLabel(prefs.sceneStay()), R.drawable.ic_eye, new Runnable() { public void run() { pickSceneStay(); } });
+        row("الأفق يتبع الوقت", prefs.sceneByTime() ? "مفعّل (أفق الليل من المغرب إلى الفجر)" : "متوقف", R.drawable.ic_eye,
             new Runnable() { public void run() { prefs.setSceneByTime(!prefs.sceneByTime()); render(); } });
-        row("المشهد يتبع الطقس", prefs.sceneByWeather() ? "مفعّل (مشهد الضباب وقت الضباب)" : "متوقف", R.drawable.ic_eye,
+        row("الأفق يتبع الطقس", prefs.sceneByWeather() ? "مفعّل (أفق الضباب وقت الضباب)" : "متوقف", R.drawable.ic_eye,
             new Runnable() { public void run() { prefs.setSceneByWeather(!prefs.sceneByWeather()); render(); } });
-        row("المظهر", Prefs.lookLabel(prefs.look()) + " · " + Prefs.appearanceLabel(prefs.appearance()), R.drawable.ic_eye,
+        row("وضع الألوان", "الشكل: " + Prefs.lookLabel(prefs.look()) + "، والإضاءة: " + Prefs.appearanceLabel(prefs.appearance()), R.drawable.ic_eye,
             new Runnable() { public void run() { startActivity(new Intent(SettingsActivity.this, AppearanceActivity.class)); } });
         row("صفحات الأسهم والمباريات داكنة", prefs.pagesDark() ? "مفعّل · بالمظهر الداكن دائمًا" : "متوقف · تتبع مظهر الرئيسية", R.drawable.ic_eye,
             new Runnable() { public void run() { prefs.setPagesDark(!prefs.pagesDark()); render(); } });
@@ -507,7 +507,7 @@ public class SettingsActivity extends Activity {
             new Runnable() { public void run() { openDockEdit(); } });
         // first in «الجوال والتحديث» (TV6 row 21: a tester did not find it, and phone control stayed on). This app cannot see the home's
         // switch, so the line never says «متوقف»: the screen it opens shows the real state, with «إيقاف التحكم من الجوال» on it
-        row("تحكم من الجوال", "تشغيله وإيقافه وربط جوال، وفي الشاشة حالته الآن", R.drawable.ic_settings,
+        row("الجوالات المسموح لها", "التحكم من الجوال: تشغيله وإيقافه وربط جوال، وفي الشاشة حالته الآن", R.drawable.ic_settings,
             new Runnable() { public void run() { openPhoneControl(); } });
         // «كل التطبيقات»: the home screen's «تعديل التطبيقات», or the order by name again (what is hidden stays hidden)
         row("ترتيب كل التطبيقات", "تحريكها وإخفاؤها على الشاشة الرئيسية، أو الرجوع للترتيب الأصلي", R.drawable.ic_star,
@@ -2260,13 +2260,6 @@ public class SettingsActivity extends Activity {
             .show();
     }
 
-    /** «الشكل الجاهز»: «شكل تلفزيونك» (the default) or «شكل كنبة», each setting the three parts at once */
-    private void pickLook3() {
-        String[] labels = new String[Prefs.LOOKS.length];
-        int at = -1;
-        for (int k = 0; k < labels.length; k++) { labels[k] = Prefs.LOOKS[k][1]; if (Prefs.LOOKS[k][0].equals(prefs.look3())) at = k; }
-        pickOne("الشكل الجاهز", labels, at, k -> prefs.setLook3(Prefs.LOOKS[k][0]));
-    }
 
     /** one of a few choices, saved at once, the list drawn again */
     private void pickOne(String title, String[] labels, int at, java.util.function.IntConsumer save) {
@@ -2276,9 +2269,9 @@ public class SettingsActivity extends Activity {
             .show();
     }
 
-    /** «بقاء كل مشهد»: 10 s, 20 s (the default), a minute or 5 minutes; a weak TV changes at most every 5 minutes whatever is chosen */
+    /** «بقاء كل أفق»: 10 s, 20 s (the default), a minute or 5 minutes; a weak TV changes at most every 5 minutes whatever is chosen */
     private void pickSceneStay() {
-        new Dlg(this).setTitle("بقاء كل مشهد")
+        new Dlg(this).setTitle("بقاء كل أفق")
             .setSingleChoiceItems(Prefs.SCENE_STAY_NAMES, java.util.Arrays.asList(Prefs.SCENE_STAYS).indexOf(prefs.sceneStay()), (d, i) -> {
                 prefs.setSceneStay(Prefs.SCENE_STAYS[i]);
                 d.dismiss();
@@ -2288,7 +2281,7 @@ public class SettingsActivity extends Activity {
             .show();
     }
 
-    /** «الواجهة»: the home's layout, «العادية» (the default), «كرة القدم» (the weather, the prayers and today's games over the same favourites bar) or «المشاهد» (4.3.3). */
+    /** «الواجهة»: the home's layout, «العادية» (the default), «كرة القدم» (the weather, the prayers and today's games over the same favourites bar) or «الآفاق» (4.3.3). */
     private void pickHomeLayout() {
         final String[] labels = new String[Prefs.HOME_LAYOUTS.length];
         for (int i = 0; i < labels.length; i++) labels[i] = Prefs.HOME_LAYOUT_NAMES[i];
@@ -2745,6 +2738,19 @@ public class SettingsActivity extends Activity {
         tp.setMarginStart(dp(18));
         card.addView(texts, tp);
 
+        String where = SettingsHub.scopeWords(FocusKey.key(label));   // 4.4 the owner: where the row shows (the home, the screensaver, both, the whole TV)
+        if (!where.isEmpty()) {
+            TextView scope = new TextView(this);
+            scope.setText(noConv ? Words.of(where) : conv(where));
+            scope.setTextColor(look.sub);
+            scope.setAlpha(0.8f);
+            scope.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12);
+            scope.setTypeface(font("Thmanyah-Regular"));
+            scope.setSingleLine(true);
+            LinearLayout.LayoutParams sp = new LinearLayout.LayoutParams(-2, -2);
+            sp.setMarginEnd(dp(12));
+            card.addView(scope, sp);
+        }
         final TextView chevron = new TextView(this);
         chevron.setText("›");   // shown mirrored (‹) in the RTL row
         chevron.setTextColor(look.sub);

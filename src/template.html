@@ -60,6 +60,11 @@
   html.hcard .week:not(.lf){box-shadow:none!important}   /* the card styles' soft drop shadow (0 24px 60px) is cut at the card's box on the home: a straight-edged dark patch under the glass (step 52); the focus ring (.lf) stays */
   html.hcard[class*="cs-"] .week{background:none!important}
   html.hcard[class*="cs-"] .week::before{background:var(--hpanel)!important}
+  /* 4.4 card review: a dark floor under the glass, so a bright photo (sky, sand) never washes the words out; the glass itself unchanged.
+     Not with «توحيد المظهر» (html.hsync: the cards are the tray's one material, exactly) */
+  html.hcard:not(.hsync) .week{background:linear-gradient(var(--hpanel),var(--hpanel)),rgba(10,12,16,.52)!important}
+  html.hcard:not(.hsync)[class*="cs-"] .week{background:none!important}
+  html.hcard:not(.hsync)[class*="cs-"] .week::before{background:linear-gradient(var(--hpanel),var(--hpanel)),rgba(10,12,16,.52)!important}
   html.hsync .week::after,html.hsync .week .frm,html.hsync .week .dia{display:none!important}   /* «توحيد المظهر» on: the one material, no sheen and no bright rim of the card styles */
   /* «توحيد المظهر» on (#hink=, #hsub=, #hacc= beside the two above): the cards' words are the look's too, its text, second text and accent; on a light look (html.hlt) the muted and the up/down colours written for dark glass become ones that read on white */
   html.hsync .week{--sand:var(--hink);--dim:var(--hsub);--gold:var(--hacc);--gold-2:var(--hacc);--gold-3:var(--hacc);--gold-hi:var(--hacc);--gold-rgb:var(--haccrgb);color:var(--hink)}
@@ -67,6 +72,11 @@
   html.hlt .week li{color:var(--hink)}html.hlt .week .past{opacity:.72}
   html.hlt .week .next,html.hlt .week .next .dt,html.hlt .week .next i,html.hlt .week .yt b{color:var(--hacc)!important}
   html.hlt .week .up{color:#166A45!important}html.hlt .week .down{color:#8E2A10!important}
+  /* the 4.4 cards' own light words, on a light look the look's ink; the next prayer a tint of its accent */
+  html.hlt .week .hc i,html.hlt .week .fc .hi,html.hlt .week li.np .t,html.hlt .week li.np .r,html.hlt .week ul.pgrid li:not(.next):not(.past) span,html.hlt .week li.prow .pc:not(.next):not(.past) b,html.hlt .week li.prow .pc:not(.next):not(.past) i,html.hlt .week .mg .mwhen{color:var(--hink)!important}
+  html.hlt .week li.src,html.hlt .week li.np .iq,html.hlt .week .fc .lo,html.hlt .week .past *{color:var(--hsub)!important}
+  html.hlt .week ul.pgrid li.next,html.hlt .week li.prow .pc.next{background:rgba(var(--haccrgb,0,0,0),.14)!important;border-color:var(--hacc)!important}
+  html.hlt .week .next *{color:var(--hacc)!important}
   html.widget .week.boxes{padding:max(1.7vh,10px) max(1.4vw,14px)}   /* the prayer boxes keep a clear, even distance from the card's edge */
   html,body{
     height:100%;overflow:hidden;background:#040E09;color:var(--sand);
@@ -132,7 +142,7 @@
   }
   .week .hd{
     display:flex;align-items:center;gap:.7em;margin-bottom:1vh;
-    font-size:calc(clamp(12px,1vw,18px)*var(--z,1));font-weight:500;letter-spacing:0;color:var(--gold-2);
+    font-size:calc(clamp(12px,1vw,18px)*var(--z,1));font-weight:500;letter-spacing:0;color:var(--gold-3);
   }
   .week .hd::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,rgba(var(--gold-rgb),.5),transparent)}
   .week ul{list-style:none;display:flex;flex-direction:column;gap:0}
@@ -144,7 +154,7 @@
   }
   .week li:last-child{border-bottom:none}
   .week li span:first-child{flex:0 1 auto;max-width:68%;overflow:hidden;text-overflow:ellipsis;padding-bottom:.3em;margin-bottom:-.3em}
-  .week li .ep{flex:0 0 auto;color:#9FB8A8;font-size:.74em;font-variant-numeric:tabular-nums}
+  .week li .ep{flex:0 0 auto;color:#CFC6B2;font-size:.74em;font-variant-numeric:tabular-nums}
   .week li .rt{flex:0 0 auto;color:var(--gold-3);font-size:.74em;font-variant-numeric:tabular-nums}
   .week li .mwhen{display:block;font-style:normal;margin-top:.15em;font-size:.68em;font-weight:300;color:#A79C85;overflow:hidden;text-overflow:ellipsis}
   /* a game is one line, on the launcher's card and the screensaver's: the clubs with their crests beside the score, then the date, then
@@ -160,7 +170,15 @@
   .week li .tm .nm{max-width:none;overflow:visible;text-overflow:clip;padding:0;margin:0}   /* a name is never cut by the first-name rule above */
   .week li.mg .tm .cr{margin:0}
   .week li.mg .sc{font-variant-numeric:tabular-nums;color:var(--gold-hi);font-weight:600}
-  .week li .dt{flex:1 1 auto;color:#9C9279;font-size:.72em;min-width:3.2em;text-align:left}
+  html:not(.cso) .week li.mg .mr .mwhen{color:#E2DACA;text-align:center;align-self:center;line-height:1.3}
+  html:not(.cso) .week li.mg .mr .dt{color:var(--gold-3)}
+  html:not(.cso) .week li.mg.done{color:#CFC6B2}html:not(.cso) .week li.mg.done .mr .dt{color:#B9B09C}
+  html:not(.cso) .week.nm1 li.mg .mr{flex-wrap:wrap;row-gap:.3em;white-space:normal}
+  html:not(.cso) .week.nm1 li.mg .mr .tm .nm,html:not(.cso) .week.nm1 li.mg .mr .x,html:not(.cso) .week.nm1 li.mg .sc{font-size:1.7em;font-weight:500}
+  html:not(.cso) .week.nm1 li.mg .mr .mwhen{order:5;flex:0 0 auto;text-align:start;font-size:1em;color:#F1E7D0}
+  html:not(.cso) .week.nm1 li.mg .mr .dt{order:6;flex:1 0 auto;font-size:1em}
+  html:not(.cso) .week.nm1 li.mg .mr::after{content:'';order:4;flex:0 0 100%}
+  .week li .dt{flex:1 1 auto;color:#CFC6B2;font-size:.72em;min-width:3.2em;text-align:left}
   .week li .tm .cr{width:1.25em;height:1.25em;object-fit:contain;vertical-align:middle;margin-block:-.25em}
   .week li .tm .crgap{display:inline-block;flex:0 0 auto;width:1.25em;height:1.25em}   /* a club with no crest, beside clubs that have one */
   .week li .tm .cr:not([src]){visibility:hidden}   /* a restored row waits for its picture: the same room */
@@ -175,16 +193,17 @@
   /* «مواقيت اليوم»: the six times as boxes, three and three, larger than a list's rows; the next one lit, the past ones dimmed. Even room
      round every box and round the grid, so it sits symmetrical in the card (renderCard puts .pgrid on the list) */
   .week ul.pgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:calc(1.2vh + 6px) calc(.9vw + 6px);padding:calc(.5vh + 2px) 0 calc(.3vh + 2px)}
-  .week ul.pgrid li{flex-direction:column;align-items:center;justify-content:center;gap:.3em;white-space:nowrap;text-align:center;
-    padding:calc(1.7vh + 6px) .5em;border:1px solid rgba(var(--gold-rgb),.24);border-radius:calc(10px + .5vw);background:rgba(255,255,255,.045);
+  .week ul.pgrid li{flex-direction:column;align-items:center;justify-content:center;gap:.15em;white-space:nowrap;text-align:center;
+    padding:calc(1.7vh + 6px) .5em;border:1px solid rgba(255,255,255,.14);border-radius:calc(10px + .5vw);background:rgba(255,255,255,.04);
     font-size:calc(clamp(18px,1.7vw,32px)*var(--z,1))}
-  .week ul.pgrid li:last-child{border-bottom:1px solid rgba(var(--gold-rgb),.24)}
-  .week ul.pgrid li span:first-child{max-width:none;overflow:visible;padding:0;margin:0;font-weight:500}
-  .week ul.pgrid li .dt{flex:none;min-width:0;text-align:center;font-size:.82em;color:#CFC5AD;font-variant-numeric:tabular-nums}
-  .week ul.pgrid li.past{color:#8F8670;background:rgba(255,255,255,.02);border-color:rgba(var(--gold-rgb),.12)}
-  .week ul.pgrid li.past .dt{color:#8A826D}
-  .week ul.pgrid li.next{background:rgba(var(--gold-rgb),.18);border-color:rgba(var(--gold-rgb),.55);color:var(--gold-hi)}
-  .week ul.pgrid li.next .dt{color:var(--gold-3)}
+  .week ul.pgrid li:last-child{border-bottom:1px solid rgba(255,255,255,.14)}
+  .week ul.pgrid li span:first-child{max-width:none;overflow:visible;padding:0;margin:0;font-weight:400;font-size:.9em;color:#E9E1CE}
+  .week ul.pgrid li .dt{flex:none;min-width:0;text-align:center;font-size:1.06em;font-weight:500;color:#FFF;font-variant-numeric:tabular-nums}
+  .week ul.pgrid li.past{background:none;border-color:rgba(255,255,255,.08)}
+  .week ul.pgrid li.past span:first-child,.week ul.pgrid li.past .dt{color:#B9B09C;font-weight:400}
+  .week ul.pgrid li.next{background:#EBC67D;border-color:#EBC67D}
+  .week ul.pgrid li.next span:first-child,.week ul.pgrid li.next .dt{color:#1A1409}
+  .week ul.pgrid li .cd{font-size:.7em;color:#3A2C10;white-space:nowrap}
   /* 4.4 «شكل البطاقة: مربعات» (html.pbx): today's prayers as separate boxes in one row, no card round them; each box the launcher's glass
      (#hpanel=) or a dark one, so it reads over any photo; the next one light with its countdown under it */
   html.pbx .week.boxes,html.pbx .week.boxes::before{background:none!important;border:0!important;box-shadow:none!important;padding:0!important}
@@ -193,16 +212,20 @@
   html.pbx .week ul.pgrid li{flex:1 1 0;min-width:0}html.pbx .week ul.pgrid li.next{flex-grow:1.7}
   html.pbx .week ul.pgrid li{background:var(--hpanel,rgba(22,18,14,.62));border-color:var(--hline,rgba(255,255,255,.16));padding:.7em .15em;gap:.2em;font-size:calc(clamp(14px,1.45vw,28px)*var(--z,1))}
   html.pbx .week ul.pgrid li.past{opacity:.8}
+  html.pbx .week ul.pgrid li span:first-child{font-weight:500;font-size:1em;color:inherit}
+  html.pbx .week ul.pgrid li .dt{font-size:.82em;font-weight:400;color:#CFC5AD}
+  html.pbx .week ul.pgrid li.past span:first-child{color:#8F8670}html.pbx .week ul.pgrid li.past .dt{color:#8A826D}
+  html.pbx .week ul.pgrid li.next span:first-child{color:inherit}
   html.pbx .week ul.pgrid li.next{background:#F6EAD2;border-color:#F6EAD2;color:#2A1D0E!important;transform:scale(1.06)}
   html.pbx .week ul.pgrid li.next .dt,html.pbx .week li .cd{color:#6B4A1E!important}
   html.pbx .week li .cd{font-size:.68em;white-space:nowrap}
   /* «الساعات القادمة»: the next six hours in one row, the earliest on the right */
-  .week li.hrs{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:.3em;white-space:normal;border-bottom:none;padding:1.2vh 0 .5vh;align-items:start;text-align:center}
-  .week li.hrs .hc{display:flex;flex-direction:column;align-items:center;gap:.4em;min-width:0}
-  .week li.hrs .hc b{font-weight:400;font-size:.78em;color:#B9AE96;white-space:nowrap}
-  .week li.hrs .hc svg,.wxi svg{width:1.9em;height:1.9em;fill:none;stroke:var(--gold-3);stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+  .week li.hrs{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px;white-space:normal;border-bottom:none;padding:8px 0 4px;align-items:start;text-align:center}
+  .week li.hrs .hc{display:flex;flex-direction:column;align-items:center;gap:.35em;min-width:0}
+  .week li.hrs .hc b{font-weight:400;font-size:.84em;color:#E2DACA;white-space:nowrap}
+  .week li.hrs .hc svg,.week li.fc .wxi svg{width:1.7em;height:1.7em;fill:none;stroke:var(--gold-3);stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+  .week li.hrs .hc i{font-style:normal;font-variant-numeric:tabular-nums;font-size:1.2em;font-weight:500;color:#FFF;white-space:nowrap}
   .wxi{align-self:center}.wxi svg{width:1em;height:1em}
-  .week li.hrs .hc i{font-style:normal;font-variant-numeric:tabular-nums;font-size:1.05em;white-space:nowrap}
   /* «الصلوات في صف»: the five prayers side by side, the next one lit */
   .week li.prow{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:.3em;white-space:normal;border-bottom:none;padding:.9vh 0 .3vh;text-align:center;align-items:stretch}
   .week li.prow .pc{display:flex;flex-direction:column;align-items:center;gap:.3em;padding:.55em .1em;border-radius:.7em;min-width:0}
@@ -212,6 +235,12 @@
   .week li.prow .pc.past i{color:#7F775F}
   .week li.prow .pc.next{background:rgba(var(--gold-rgb),.18);box-shadow:inset 0 0 0 1px rgba(var(--gold-rgb),.45);color:var(--gold-hi)}
   .week li.prow .pc.next i{color:var(--gold-3)}
+  html:not(.cso) .week li.prow .pc{gap:.15em}
+  html:not(.cso) .week li.prow .pc b{font-weight:400;font-size:.88em;color:#E9E1CE}
+  html:not(.cso) .week li.prow .pc i{font-size:.9em;color:#FFF;font-weight:500}
+  html:not(.cso) .week li.prow .pc.past b,html:not(.cso) .week li.prow .pc.past i{color:#B9B09C;font-weight:400}
+  html:not(.cso) .week li.prow .pc.next{background:#EBC67D;box-shadow:none}
+  html:not(.cso) .week li.prow .pc.next b,html:not(.cso) .week li.prow .pc.next i{color:#1A1409}
   /* the same game in the card: «مباشر · الدقيقة ٦٧» over the two names with the score between, one line (fitLive) */
   .week li.lv{display:block;white-space:normal;text-align:center;border-bottom:none;padding:.5vh 0 .2vh}
   .week li.lv .lvm{font-size:.8em;color:#E6DCC4;margin-bottom:.35em}
@@ -225,10 +254,24 @@
   .week li.lv .sc{color:var(--gold-hi);font-size:1.25em;font-weight:700;font-variant-numeric:tabular-nums;padding:0 .1em}
   /* «الصلاة القادمة»: the name lit, its time, and the time left (as large and as bright as the time: the most useful part); the line
      may wrap between them, never inside one */
-  .week li.np{display:flex;flex-wrap:wrap;align-items:baseline;gap:.15em .5em;white-space:normal;border-bottom:none;padding:1.2vh 0 .6vh}
-  .week li.np > *{flex:0 0 auto;max-width:none;overflow:visible;text-overflow:clip;padding:0;margin:0;white-space:nowrap}
-  .week li.np b{font-weight:500;color:var(--gold-hi)}
-  .week li.np .t{font-variant-numeric:tabular-nums}
+  /* «الأيام القادمة» (4.4): the day, its icon and words, then the low, a bar of the days' range from cool to warm in the reading direction, the high */
+  .week li.fc{display:grid;grid-template-columns:4.2em 1.5em minmax(0,1fr) 2em 5.5em 2em;align-items:center;gap:0 .6em}
+  .week li.fc > span{max-width:none;overflow:hidden;text-overflow:ellipsis;padding:0;margin:0}
+  .week li.fc .wxi svg{width:1.35em;height:1.35em;display:block;fill:none;stroke:var(--gold-3);stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+  .week li.fc .ep{font-size:.8em}
+  .week li.fc .lo,.week li.fc .hi{text-align:center;font-variant-numeric:tabular-nums}
+  .week li.fc .lo{color:#CFC6B2}.week li.fc .hi{color:#FFF;font-weight:500}
+  .week li.fc .rg{position:relative;height:5px;border-radius:3px;background:rgba(255,255,255,.14)}
+  .week li.fc .rg i{position:absolute;top:0;bottom:0;border-radius:3px;background:linear-gradient(to left,#8FC3C9,var(--gold-3) 60%,#F0975F)}
+  html[dir=ltr] .week li.fc .rg i{background:linear-gradient(to right,#8FC3C9,var(--gold-3) 60%,#F0975F)}
+  .week li.np{display:grid;grid-template-columns:auto 1fr auto;align-items:baseline;gap:.35em .6em;white-space:normal;border-bottom:none;padding:.4em 0 .2em}
+  .week li.np > *{max-width:none;overflow:visible;text-overflow:clip;padding:0;margin:0;white-space:nowrap}
+  .week li.np b{grid-column:1;font-size:2em;line-height:1.1;font-weight:500;color:var(--gold-hi)}
+  .week li.np .t{grid-column:2;font-size:2em;line-height:1.1;color:#FFF;font-variant-numeric:tabular-nums}
+  .week li.np .r{grid-column:1/3;font-size:1.05em;color:#F1E7D0}
+  .week li.np .iq{grid-column:3;grid-row:2;font-size:.86em;color:#CFC6B2}
+  .week li.np .pb{grid-column:1/-1;height:4px;border-radius:2px;background:rgba(255,255,255,.16);overflow:hidden;margin-top:.3em}
+  .week li.np .pb i{display:block;height:100%;background:var(--gold-3);border-radius:2px}
   /* «يومك»: a small name, then the thing itself (it may wrap, never «…»), then when */
   .week li.td{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:.1em .8em;align-items:baseline;white-space:normal}
   .week li.td > span{max-width:none;overflow:visible;text-overflow:clip;padding:0;margin:0}   /* not the list rows' first-name rule */
@@ -241,8 +284,9 @@
   .week li.quote{white-space:normal;display:block;font-size:calc(clamp(17px,1.5vw,29px)*var(--z,1));line-height:1.75;
     border-bottom:none;padding:.4vh 0 0;color:#FFF7E6}
   /* Thmanyah draws ﴿﴾ as small angle marks: they come from the NotoMarks subset */
-  .week li.quote .orn{font-family:'NotoMarks','Noto Naskh Arabic',serif;color:var(--gold-2);
-    font-size:1.05em;padding:0 .15em}
+  .week li.quote .orn{font-family:'NotoMarks','Noto Naskh Arabic',serif;color:var(--gold-3);
+    font-size:1.5em;line-height:1;vertical-align:-.12em;padding:0 .12em}
+  .week li.quote,.week li.src{text-align:center}   /* 4.4: the verse and the hadith as on a plaque */
   /* ﷺ is not in Thmanyah either: NotoMarks, in gold like the verse brackets so it reads as ornament */
   .week li.quote .saw{font-family:'NotoMarks','Noto Naskh Arabic',serif;color:var(--gold-2);font-size:1.6em;line-height:1;vertical-align:-.1em}
   /* the Uthmanic Hafs face is small for its size and its marks stack high: larger, with more leading */
@@ -266,7 +310,7 @@
   .week li.quote.hadith.q3{font-size:calc(clamp(12px,.94vw,18px)*var(--z,1))}
   .week li.quote .nar{font-size:.66em;color:#B9AE96}
   .week li.quote .nar .saw{font-size:1.45em}
-  .week li.src{border-bottom:none;padding:.6vh 0 0;font-size:calc(clamp(12px,.95vw,18px)*var(--z,1));color:var(--gold-2)}
+  .week li.src{border-bottom:none;padding:.9vh 0 0;font-size:calc(clamp(12px,.95vw,18px)*var(--z,1));color:#CFC6B2}
   /* «أذكار الصباح والمساء»: the header takes a line icon and the window's end; the footer holds source, count and dots */
   .week .hd::after{order:1}
   .week .hd svg{flex:0 0 auto;width:1.5em;height:1.5em;fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
@@ -276,8 +320,9 @@
   .week li.stk{align-items:center;gap:.8em}
   .week li.stk .nm{flex:1 1 auto;min-width:0;max-width:none;overflow:hidden;text-overflow:ellipsis;padding-bottom:.3em;margin-bottom:-.3em}
   .week li.stk.old{opacity:.6}
-  .week li.stk .cl{font-size:.64em;color:#9C9279;margin-inline-start:.6em}
-  .week li.stk svg{flex:0 0 auto;width:4.4em;height:1.1em;fill:none;stroke:currentColor;stroke-width:1.5;stroke-linejoin:round;stroke-linecap:round;vector-effect:non-scaling-stroke}
+  .week li.stk .cl{font-size:.74em;color:#B9B09C;margin-inline-start:.6em}
+  .week li.stk .up,.week li.stk .down{font-size:.9em;font-weight:500}
+  .week li.stk svg{flex:0 0 auto;width:4.4em;height:1.1em;fill:none;stroke:currentColor;stroke-width:2;stroke-linejoin:round;stroke-linecap:round;vector-effect:non-scaling-stroke}
   .week li.stk svg polyline{vector-effect:non-scaling-stroke}
   .week li.stk .px{flex:0 0 auto;min-width:3.6em;text-align:left;font-variant-numeric:tabular-nums;direction:ltr}
   .week li.stk .chg{flex:0 0 auto;min-width:4.9em;text-align:left;font-size:.74em;font-variant-numeric:tabular-nums}
@@ -559,13 +604,13 @@
   .wxt{font-family:'ThmanyahDisplay','Thmanyah',serif;font-weight:700;color:#FFFCF2;direction:ltr;
     font-variant-numeric:tabular-nums}
   .wxdust{color:#E8B86A;font-size:.82em}   /* the dust, beside the condition and not instead of it */
-  .wxdust:not(:empty)::before{content:'·';margin-inline-end:.5em;color:rgba(214,175,107,.7)}
+  .wxdust:not(:empty)::before{content:'،';margin-inline-end:.5em;color:rgba(214,175,107,.7)}
   .wxmore{margin-top:.3vh;font-size:clamp(11px,.92vw,18px);font-weight:300;color:var(--dim);white-space:nowrap}
   .wxmore[hidden]{display:none}
   .wxsrc{margin-top:.3vh;font-size:clamp(10px,.86vw,17px);font-weight:300;color:var(--dim);opacity:.8;white-space:nowrap}
   .wxsrc:empty{display:none}
   .wxsub{margin-top:.55vh;font-size:clamp(12px,1.06vw,21px);font-weight:300;color:var(--dim);white-space:nowrap}
-  .wxr:not(:empty)::before{content:'  ·  ';white-space:pre;color:rgba(214,175,107,.7)}
+  .wxr:not(:empty)::before{content:'، ';white-space:pre;color:rgba(214,175,107,.7)}
   .wxt:empty,.wxd:empty,.wxr:empty,.wxdust:empty,.wxi:empty{display:none}
   .rule.l{margin-left:0;margin-right:auto;background:linear-gradient(90deg,var(--gold),rgba(var(--gold-rgb),0))}
   .mk{margin-top:1.2vh;display:flex;justify-content:flex-end;gap:1.6em;white-space:nowrap;
@@ -896,7 +941,7 @@ html.lowram .photo.settle, html.lowram .week ul.flip li, html.lowram .mrow.flip 
   <!-- «يُتلى الآن»: while the Quran or a radio station plays in the launcher (nowPlayingTick), in the style of the card beside the clock -->
   <div class="week np" id="np" hidden>
     <span class="frm"></span><span class="dia t"></span><span class="dia b"></span>
-    <div class="npl" id="np-l"><span class="npe"><i></i><i></i><i></i></span><span class="npk">يُتلى الآن</span><span class="nps">·</span><b id="np-t"></b><span class="nps" id="np-s">·</span><span class="npw" id="np-w"></span></div>
+    <div class="npl" id="np-l"><span class="npe"><i></i><i></i><i></i></span><span class="npk">يُتلى الآن</span><span class="nps">،</span><b id="np-t"></b><span class="nps" id="np-s">،</span><span class="npw" id="np-w"></span></div>
   </div>
 
 </main>
@@ -910,6 +955,8 @@ __BG_SET__
 const _Q = new URLSearchParams((location.hash || '').replace(/^#/, ''));
 if(_Q.get('clean'))document.documentElement.classList.add('clean','cl'+_Q.get('clean'));
 const _list = k => (_Q.get(k) || '').split(',').map(x=>x.trim()).filter(Boolean);
+// 4.4: the one separator between two parts of a line («سورة المؤمنون، الآية ٩٧»), never «·»; the English page has its own
+const SEP = '، ';
 const _num = (k, d) => { const v = parseFloat(_Q.get(k)); return isNaN(v) ? d : v; };
 // the city's time zone, #tz=: the clock, prayers, matches and dates all go by it
 const _tzOk = z => { try{ new Intl.DateTimeFormat('en',{timeZone:z}); return true; }catch(e){ return false; } };
@@ -979,10 +1026,10 @@ const CONFIG = {
   digits: _Q.get('digits') === 'latin' ? 'latin' : 'hindi',
   // «ساعة ٢٤»: #clock=24 shows every time of day as 24-hour
   clock24: _Q.get('clock') === '24',
-  // the look of the card beside the clock: #cardstyle=current|dark1|glass1|dark3|glass3
+  // the look of the card beside the clock: #cardstyle=current|dark1|glass1|dark3|glass3|boxes|classic («الشكل السابق»: the 4.3 prayer row, games and countdown)
   // the size of the clock: #clocksize=large|medium|small (anything else = large)
   clockSize: (v => ['medium','small'].includes(v) ? v : 'large')(_Q.get('clocksize')),
-  cardStyle: (v => ['dark1','glass1','dark3','glass3','boxes'].includes(v) ? v : 'current')(_Q.get('cardstyle')),
+  cardStyle: (v => ['dark1','glass1','dark3','glass3','boxes','classic'].includes(v) ? v : 'current')(_Q.get('cardstyle')),
   // the markets at the top left: #markets=tasi,spx,btc
   // and #mkstyle=arrows (a ▲/▼ only, the default) or prices (the price and the day's change)
   markets: (l => l.length ? l : ['tasi','spx','btc'])(
@@ -1052,6 +1099,7 @@ const CONFIG = {
   // #pagedark=1 with #matchpage=1: the dark theme
   pageDark: _Q.get('pagedark') === '1',
 };
+const OLD_LOOK = CONFIG.cardStyle === 'classic';   // «شكل البطاقة: الشكل السابق»
 document.documentElement.style.setProperty('--walldim', (CONFIG.wallDim / 100).toFixed(2));
 (() => {   // the home's cards in the tray's glass (see html.hcard); nothing without the two values, so every other page is as it was
   const ok = v => /^rgba\(\d{1,3},\d{1,3},\d{1,3},(0|1|0?\.\d{1,3})\)$/.test(v || '');
@@ -1082,7 +1130,7 @@ CONFIG.prayerMethod = _Q.get('pm') === 'gulf' ? 8
   : RESOLVED_METHOD !== null ? RESOLVED_METHOD : ({'Asia/Kuwait':9, 'Asia/Qatar':10, 'Asia/Dubai':16, 'Asia/Bahrain':8, 'Asia/Muscat':100, 'Africa/Cairo':5, 'Asia/Amman':23, 'Asia/Damascus':5, 'Asia/Beirut':5, 'Asia/Gaza':5, 'Asia/Hebron':5, 'Asia/Jerusalem':5, 'Africa/Casablanca':21, 'Africa/El_Aaiun':21, 'Africa/Algiers':19, 'Africa/Tunis':18})[CONFIG.timezone] || 4;
 // the calculation's name under the clock, none for Umm al-Qura (ClockZone.calendar says the same on the home screen)
 const CAL_LABEL = {1:'جامعة العلوم الإسلامية بكراتشي',2:'الجمعية الإسلامية لأمريكا الشمالية',3:'رابطة العالم الإسلامي',11:'المجلس الإسلامي السنغافوري',12:'اتحاد المنظمات الإسلامية في فرنسا',13:'رئاسة الشؤون الدينية التركية',14:'الإدارة الدينية لمسلمي روسيا',15:'لجنة رصد الهلال العالمية',17:'إدارة التنمية الإسلامية الماليزية',20:'وزارة الشؤون الدينية الإندونيسية', 8:'حساب الخليج', 100:'حساب عُمان', 9:'حساب الكويت', 10:'حساب قطر', 16:'حساب الإمارات', 5:'حساب الهيئة المصرية', 23:'حساب الأردن', 21:'حساب المغرب', 19:'حساب الجزائر', 18:'حساب تونس'};
-const clockSubText = () => 'بتوقيت ' + CONFIG.city + (CAL_LABEL[CONFIG.prayerMethod] ? ' · ' + CAL_LABEL[CONFIG.prayerMethod] : '');
+const clockSubText = () => 'بتوقيت ' + CONFIG.city + (CAL_LABEL[CONFIG.prayerMethod] ? SEP + CAL_LABEL[CONFIG.prayerMethod] : '');
 // «بطاقة ثانية» (#panel2=): a second card beside the small clock only
 // or when it is the first card again or the next prayer
 CONFIG.panel2 = (p => CARD_KINDS.includes(p) && p !== 'nextprayer' && p !== CONFIG.panel ? p : 'none')(_Q.get('panel2') || '');
@@ -1458,14 +1506,16 @@ async function loadPrayers(){
 }
 
 const UNIT = {
-  day: {one:'يوم', two:'يومين', few:'أيام', many:'يوم'},
+  day: {one:'يوم', two:'يومين', few:'أيام', many:'يوم', mid:'يومًا'},
   hour:{one:'ساعة', two:'ساعتين', few:'ساعات', many:'ساعة'},
   min: {one:'دقيقة', two:'دقيقتين', few:'دقائق', many:'دقيقة'}
 };
+// the counted noun as Arabic says it: «يوم», «يومين», «٥ أيام», «١١ يومًا», «١٠٠ يوم», «١٠٥ أيام» (by the last two digits)
+const unitOf = (n, u) => { const r = n % 100; return r >= 3 && r <= 10 ? u.few : r >= 11 && u.mid || u.many; };
 function qty(n,u){
+  if(n === 1) return u.one;
   if(n === 2) return u.two;
-  if(n >= 3 && n <= 10) return `${ar(n)} ${u.few}`;
-  return `${ar(n)} ${u.many}`;
+  return `${ar(n)} ${unitOf(n, u)}`;
 }
 function humanRemaining(sec){
   const h = Math.floor(sec/3600), m = Math.floor((sec%3600)/60), out = [];
@@ -1502,7 +1552,7 @@ function adhanLiveText(){
   if(!ADHAN_LIVE) return '';
   if(ADHAN_LIVE.name) return ADHAN_LIVE.name + '، ' + (ADHAN_LIVE.any ? 'أي زر يوقفه' : 'اختيار يوقفه');   // 4.4: a dua or reminder (its own name)
   const n = ADHAN_LIVE.prayer === 2 && isFriday() ? 'الجمعة' : ADHAN_PRAYER_NAMES[ADHAN_LIVE.prayer];
-  return (n ? 'أذان ' + n : 'الأذان') + '  ·  ' + (ADHAN_LIVE.any ? 'أي زر يوقف الأذان' : 'اختيار: إيقاف الأذان');
+  return (n ? 'أذان ' + n : 'الأذان') + SEP + (ADHAN_LIVE.any ? 'أي زر يوقف الأذان' : 'اختيار: إيقاف الأذان');
 }
 function adhanLiveTick(){
   if(CONFIG.widget || !CONFIG.adhanBar || !(window.UrtvNative && window.UrtvNative.adhan)) return;
@@ -1781,9 +1831,9 @@ function tickOccasion(){
     setText(elS, '');
     return;
   }
-  setHTML(elD, ar(oc.days) + ' <span class="unit">' + OCC_TEXT.unit + '</span>');
+  setHTML(elD, ar(oc.days) + ' <span class="unit">' + unitOf(oc.days, UNIT.day) + '</span>');   // «١٠٩ أيام», «٥٧ يومًا»
   setHTML(elS, esc(gregFmt({timeZone:'UTC',weekday:'long',day:'numeric',month:'long'})
-      .format(new Date(Date.UTC(oc.y, oc.mo-1, oc.d, 12))).replace('،','') + ' · ' + OCC_TEXT.expected)
+      .format(new Date(Date.UTC(oc.y, oc.mo-1, oc.d, 12))).replace('،','') + SEP + OCC_TEXT.expected)
     + (o.note ? '<div class="note">' + esc(o.note) + '</div>' : ''));
 }
 
@@ -2049,9 +2099,15 @@ const teamNext = (id, lg = leagueMap()) => { const own = [MATCHES[id], ...(NEXT_
 function matchWhen(d){
   const p = hmParts(d);
   return FMT_DAY_MONTH.format(d).replace('،','')
-    + ' · ' + fmtTime(+p.hour % 24, +p.minute);
+    + SEP + fmtTime(+p.hour % 24, +p.minute);
 }
 
+// 4.4, the card's line: «اليوم ٩:٠٠ م», «غداً ٤:٣٠ م», «الجمعة ٦:٣٠ م» within the week, the full date further on («الشكل السابق»: always the full date)
+function matchNear(d, now){
+  if(OLD_LOOK) return matchWhen(d);
+  const p = hmParts(d), k = cityToday(+d), t = fmtTime(+p.hour % 24, +p.minute);
+  return k === cityToday(now) ? 'اليوم' + ' ' + t : k === cityToday(now + DAY_MS) ? 'غداً' + ' ' + t : d - now < 6 * DAY_MS ? FMT_WEEKDAY.format(d) + ' ' + t : matchWhen(d);
+}
 // «الخميس ٢٢ أكتوبر»: the day of a finished game
 const matchDay = d => FMT_DAY_MONTH.format(d).replace('،','');
 const FMT_DM = gregFmt({timeZone:CONFIG.timezone,day:'numeric',month:'long'});
@@ -2066,7 +2122,7 @@ function resultBlock(done){
   const day = FMT_WEEKDAY.format(toDate(done));
   return `<div class="mblock">`
     + `<div class="big"><span><span class="tm">${esc(teamAr(done.strHomeTeam, done.idHomeTeam))}</span> <span class="sc">${ar(+done.intHomeScore)} - ${ar(+done.intAwayScore)}</span> <span class="tm">${esc(teamAr(done.strAwayTeam, done.idAwayTeam))}</span></span></div>`
-    + `<div class="sub">النتيجة النهائية · ${day}</div></div>`;
+    + `<div class="sub">النتيجة النهائية${SEP}${day}</div></div>`;
 }
 // a game under way or due within the week; '' for any other
 function gameBlock(ev, now, big){
@@ -2074,7 +2130,7 @@ function gameBlock(ev, now, big){
   const d = toDate(ev), diff = d - now;
   if(calledOff(ev))   // 4.3 A1: postponed, cancelled, abandoned: said so, for a day after its date, never «مباشر»
     return diff < -86400000 || diff > CONFIG.weekWindowDays * 86400000 ? ''
-      : `<div class="mblock"><div class="big"><span><span class="tm">${home}</span> × <span class="tm">${away}</span></span></div><div class="sub">${offWord(ev)} · ${matchDay(d)}</div></div>`;
+      : `<div class="mblock"><div class="big"><span><span class="tm">${home}</span> × <span class="tm">${away}</span></span></div><div class="sub">${offWord(ev)}${SEP}${matchDay(d)}</div></div>`;
   if(timeTbd(ev))   // the time is not set: the day only
     return diff < -86400000 || diff > CONFIG.weekWindowDays * 86400000 ? ''
       : `<div class="mblock"><div class="big"><span><span class="tm">${home}</span> × <span class="tm">${away}</span></span></div><div class="sub">${matchDay(d)}</div></div>`;
@@ -2089,7 +2145,7 @@ function gameBlock(ev, now, big){
   const live = diff <= 0 && ev.intHomeScore != null && ev.intAwayScore != null;
   // «بعد ٣ أيام» and under it the date and time, small
   const dateLine = matchWhen(d);
-  const sub = diff > 0 ? `بعد ${shortRemaining(diff)}</div><div class="sub when">${dateLine}` : `<span class="live">مباشر</span> · ${liveStatus(ev, clk)}`;
+  const sub = diff > 0 ? `بعد ${shortRemaining(diff)}</div><div class="sub when">${dateLine}` : `<span class="live">مباشر</span>${SEP}${liveStatus(ev, clk)}`;
   const mid = live ? ` <span class="sc">${ar(+ev.intHomeScore)} - ${ar(+ev.intAwayScore)}</span> ` : ' × ';
   return `<div class="mblock${big ? ' lvb' : ''}">`
        + `<div class="big"><span><span class="tm">${home}</span>${mid}<span class="tm">${away}</span></span></div>`
@@ -2296,24 +2352,24 @@ function eventInfo(key, ev){
     }
     if(!session) session = 'السباق';
     const gpName = gp ? 'جائزة ' + (GP_AR[place] || trl(gp[1].trim())) + ' الكبرى' : trl(name);
-    title = gpName + ' · ' + session;
+    title = gpName + SEP + session;
     // the session goes under it, so the big line stays short
     head = gp ? `<span class="tm" data-short="${esc(gpName.replace(/ الكبرى$/, ''))}">${esc(gpName)}</span>` : esc(gpName);
     pre = session;
-    card = head + ' · ' + esc(session);
+    card = head + SEP + esc(session);
   }else{
     let prefix = '', rest = name;
     const u = key === 'ufc' ? name.match(/^UFC(\s+Fight\s+Night)?\s*(\d+)?\s*[:\-]?\s*(.*)$/i) : null;
     if(u){ prefix = 'UFC' + (u[1] ? ' فايت نايت' : '') + (u[2] ? ' ' + arDigits(u[2]) : ''); rest = u[3]; }
     let pair = ev.strHomeTeam && ev.strAwayTeam ? [ev.strHomeTeam, ev.strAwayTeam] : rest.split(/\s+vs\.?\s+/i);
     const body = pair.length === 2 ? trl(pair[0]) + ' × ' + trl(pair[1]) : trl(rest);
-    title = arDigits([prefix, body].filter(Boolean).join(' · '));
+    title = arDigits([prefix, body].filter(Boolean).join(SEP));
     // the fighters on the big line, each with the family name as the short form fitMatches may need
     const who = n => { const w = trl(n).trim(), last = w.split(/\s+/).pop();
       return `<span class="tm"${last !== w ? ` data-short="${esc(last)}"` : ''}>${esc(w)}</span>`; };
     head = arDigits(pair.length === 2 ? who(pair[0]) + ' × ' + who(pair[1]) : esc(body));
     pre = arDigits(prefix);
-    card = [pre && esc(pre), head].filter(Boolean).join(' · ');
+    card = [pre && esc(pre), head].filter(Boolean).join(SEP);
   }
   const c = foldKey(ev.strCountry);
   const country = COUNTRY_AR[c] || (c ? trl(ev.strCountry) : '');
@@ -2337,14 +2393,14 @@ function eventWhen(i, now){
   const sameDay = FMT_DATE.format(new Date(i.t + (i.dateOnly ? 3600000 : 0))) === FMT_DATE.format(new Date(now));
   const dayName = sameDay ? 'اليوم' : FMT_WEEKDAY.format(new Date(i.t + (i.dateOnly ? 3600000 : 0)));
   if(i.dateOnly) return {live:false, text: sameDay ? 'اليوم' : dayName, row: dayName};
-  if(now >= i.t) return {live:true, text: `<span class="live">مباشر</span> · بدأ ${clk}`, row: '<span class="live">مباشر</span>'};
-  return {live:false, text: `${dayName} · ${clk}`, row: `${dayName} ${clk}`};
+  if(now >= i.t) return {live:true, text: `<span class="live">مباشر</span>${SEP}بدأ ${clk}`, row: '<span class="live">مباشر</span>'};
+  return {live:false, text: `${dayName}${SEP}${clk}`, row: `${dayName} ${clk}`};
 }
 function eventSlot(key, now){
   const x = eventsOf(key, now)[0];
   if(!x) return '';
   const w = eventWhen(x.i, now);
-  const about = [x.i.pre, x.i.tag, x.i.country].filter(Boolean).map(esc).join(' · ');
+  const about = [x.i.pre, x.i.tag, x.i.country].filter(Boolean).map(esc).join(SEP);
   return `<div class="mblock"><div class="big"><span>${x.i.head}</span></div>`
        + (about ? `<div class="sub">${about}</div><div class="sub when">${w.text}</div>` : `<div class="sub">${w.text}</div>`) + `</div>`;
 }
@@ -2491,6 +2547,23 @@ function shortenRows(ul){
     shorten(sp);
     if(!fits(sp)) sp.querySelectorAll('img.cr').forEach(i => i.remove());
     if(!fits(sp)) FIT_STEPS.slice(1).find(k => { sp.style.fontSize = k + 'em'; return fits(sp); });
+  });
+}
+
+// 4.4: the games' day and time in one column, centred: each row's date starts where the widest clubs of the card end, and «بعد …» has one
+// width, so every date is centred in the same place (in em, so the card's size steps keep it); a row it would push out keeps its own
+function alignGames(card){
+  const rows = OLD_LOOK || card.el.classList.contains('nm1') ? [] : [...card.ul.querySelectorAll('li.mg > .mr')].filter(r => r.querySelector('.mwhen'));
+  rows.forEach(r => { r.children[2].style.marginInlineEnd = ''; r.lastElementChild.style.minWidth = ''; });
+  if(rows.length < 2) return;
+  const rtl = getComputedStyle(rows[0]).direction === 'rtl', edge = (r, e) => { const a = r.getBoundingClientRect(), b = e.getBoundingClientRect(); return rtl ? a.right - b.left : b.right - a.left; };
+  const clubs = rows.map(r => edge(r, r.children[2])), when = rows.map(r => r.lastElementChild.getBoundingClientRect().width);
+  const W = Math.max(...clubs), D = Math.max(...when);
+  rows.forEach((r, i) => {
+    const em = parseFloat(getComputedStyle(r).fontSize) || 16;
+    r.children[2].style.marginInlineEnd = ((W - clubs[i]) / em).toFixed(3) + 'em';
+    r.lastElementChild.style.minWidth = (D / parseFloat(getComputedStyle(r.lastElementChild).fontSize || em)).toFixed(3) + 'em';
+    if(r.scrollWidth > r.clientWidth + 1){ r.children[2].style.marginInlineEnd = ''; r.lastElementChild.style.minWidth = ''; }
   });
 }
 
@@ -2670,21 +2743,22 @@ function slotHTML(s){
     return known.map(t => { const v = MK_LAST[t.key];
       return slotBlock(esc(t.name) + (v.price ? ' <span class="num">' + num(v.price, t.dec) + '</span>' : ''),
         (v.pct === null ? '' : `<span class="${v.pct >= 0 ? 'up' : 'down'}">${v.pct >= 0 ? '▲' : '▼'} ${num(Math.abs(v.pct), 2)}${LATIN ? '%' : '٪'}</span>`)
-        + (staleMark(v) ? `${v.pct === null ? '' : ' · '}<span class="old">${staleMark(v)}</span>` : '')); }).join('');
+        + (staleMark(v) ? `${v.pct === null ? '' : SEP}<span class="old">${staleMark(v)}</span>` : '')); }).join('');
   }
   if(s === 'countdown'){
-    const n = countdownDays();
-    const name = CONFIG.cdName ? esc(CONFIG.cdName)
-      : gregFmt({timeZone:'UTC', day:'numeric', month:'long'}).format(new Date(CONFIG.cd + 'T12:00:00Z'));
-    return slotBlock(n === 0 ? 'اليوم' : '<span class="num">' + ar(n) + '</span> <span class="unit">يوم</span>', name);
+    const n = countdownDays(), cd = new Date(CONFIG.cd + 'T12:00:00Z');
+    const days = '<span class="num">' + ar(n) + '</span> <span class="unit">' + unitOf(n, UNIT.day) + '</span>';
+    if(OLD_LOOK) return slotBlock(n === 0 ? 'اليوم' : days, CONFIG.cdName ? esc(CONFIG.cdName) : gregFmt({timeZone:'UTC', day:'numeric', month:'long'}).format(cd));
+    // 4.4: the name is the label (renderSlot), the days in words, the date under them
+    return slotBlock(n === 0 ? 'اليوم' : n === 1 ? 'غداً' : days, gregFmt({timeZone:'UTC', weekday:'long', day:'numeric', month:'long'}).format(cd).replace('،', ''));
   }
   return null;
 }
 function renderSlot(){
   const s = slotNow();
   if(s === 'none') return;
-  setText(document.getElementById('slot-label'), SLOT_LABEL[s]);
-  if(s === 'matches'){ renderMatches(); setText(document.getElementById('slot-label'), SLOT_LABEL.matches + (matchesStaleNote() ? ' · ' + matchesStaleNote() : '')); return; }
+  setText(document.getElementById('slot-label'), s === 'countdown' && CONFIG.cdName && !OLD_LOOK ? CONFIG.cdName : SLOT_LABEL[s]);
+  if(s === 'matches'){ renderMatches(); setText(document.getElementById('slot-label'), SLOT_LABEL.matches + (matchesStaleNote() ? SEP + matchesStaleNote() : '')); return; }
   const row = document.getElementById('match-row'), h = slotHTML(s);
   if(h !== null && setHTML(row, h)) fitMatches(row);
 }
@@ -2723,7 +2797,7 @@ function paintMkUp(){
   const stale = known.filter(t => staleMark(MK_LAST[t.key])).map(t => MK_LAST[t.key]).sort((a, b) => (a.at || 0) - (b.at || 0));
   up.hidden = false;
   up.classList.toggle('old', stale.length > 0);
-  setText(up, stale.length ? staleMark(stale[0]) : fmtAgo(Math.max(...known.map(t => MK_LAST[t.key].at || 0))) + (known.some(t => sesOpen(t.fk) && Date.now() - MK_LAST[t.key].at > LATE_MS) ? ' · ' + 'متأخر' : ''));
+  setText(up, stale.length ? staleMark(stale[0]) : fmtAgo(Math.max(...known.map(t => MK_LAST[t.key].at || 0))) + (known.some(t => sesOpen(t.fk) && Date.now() - MK_LAST[t.key].at > LATE_MS) ? SEP + 'متأخر' : ''));
 }
 
 // The deadline covers the answer's headers and its body
@@ -2889,7 +2963,7 @@ const loadWeek = guarded('week', async function(){
     const prem = e.number === 1;
     out.push({
       name: s.name,
-      ep: e.season ? (prem ? `الموسم ${ar(e.season)}` : `الموسم ${ar(e.season)} · ح ${ar(e.number)}`) : '',
+      ep: e.season ? (prem ? `الموسم ${ar(e.season)}` : `الموسم ${ar(e.season)}${SEP}ح ${ar(e.number)}`) : '',
       date: e.airdate || '',
       rating: (s.rating && s.rating.average) || 0,
       prem, picked
@@ -3037,7 +3111,7 @@ function todayCard(){
     const p = riyadhParts(), mins = p.h * 60 + p.mi + p.s / 60;
     let n = PRAYERS.find(x => x.h * 60 + x.mi > mins), tomorrow = false;
     if(!n){ n = PRAYERS[0]; tomorrow = true; }
-    rows.push(tdRow('الصلاة القادمة', `${prayerName(n)} · ${fmtTime(n.h, n.mi)}`, 'بعد ' + shortHM(Math.max(0, Math.round((n.h * 60 + n.mi + (tomorrow ? 1440 : 0) - mins) * 60)))));
+    rows.push(tdRow('الصلاة القادمة', `${prayerName(n)}${SEP}${fmtTime(n.h, n.mi)}`, 'بعد ' + shortHM(Math.max(0, Math.round((n.h * 60 + n.mi + (tomorrow ? 1440 : 0) - mins) * 60)))));
   }
   const g = nextFollowedGame(now);
   if(g){
@@ -3058,7 +3132,7 @@ function todayCard(){
 // show it alone, with both crests where there are crests
 function liveWhen(ev){   // «مباشر» and «الدقيقة ٦٧» / «استراحة» / «بدأت ٦:٣٠ م»
   const p = hmParts(toDate(ev));
-  return `<span class="live">مباشر</span> · ${liveStatus(ev, ar(fmtTime(+p.hour % 24, +p.minute)))}`;
+  return `<span class="live">مباشر</span>${SEP}${liveStatus(ev, ar(fmtTime(+p.hour % 24, +p.minute)))}`;
 }
 const liveScore = ev => ev.intHomeScore != null && ev.intAwayScore != null ? `<span class="sc">${ar(+ev.intHomeScore)} - ${ar(+ev.intAwayScore)}</span>` : '<span class="sc">×</span>';
 // 4.3.3 the followed teams' next game (or the one under way): the soonest that is not over nor called off
@@ -3148,6 +3222,7 @@ function renderCard(card, animate, keepSize){
     renderWeekPage(card, animate); return;
   }
   card.el.classList.toggle('stocks', P === 'stocks');   // 24 px of its own inside
+  card.el.classList.toggle('nm1', card.kind === 'nextmatch' && !OLD_LOOK);   // 4.4 «مباراة فريقك القادمة»: one game, read big
   let rows = [];
   if(P === 'prayers') rows = prayerRows();
   else if(P === 'forecast') rows = forecastRows();
@@ -3189,7 +3264,7 @@ function renderCard(card, animate, keepSize){
   }
   const wrote = setHTML(ul, rows.join(''), animate);
   if(!keepSize){ card.base = rows.length; card.len0 = card.len || 0; }   // what full size holds: the rows of a page, the length of the text
-  if(P === 'matches'){ fillCrests(ul); if(wrote){ shortenRows(ul); fitLive(ul); } }
+  if(P === 'matches'){ fillCrests(ul); if(wrote){ shortenRows(ul); fitLive(ul); } alignGames(card); }
   fitQuote(ul);
   if(CONFIG.tafsir) fitTafsir(ul);
   ul.classList.remove('flip');
@@ -3284,7 +3359,7 @@ function yearFacts(){
   const total = (y % 4 === 0 && y % 100 !== 0) || y % 400 === 0 ? 366 : 365;
   const day = Math.round((Date.UTC(y, p.mo - 1, p.d) - Date.UTC(y, 0, 1)) / 864e5) + 1;
   const pct = Math.round(100 * day / total);
-  return {y, total, day, pct, text: `اليوم <b>${ar(day)}</b> من ${ar(total)} · ${ar(pct)}${LATIN ? '%' : '٪'}`};
+  return {y, total, day, pct, text: `اليوم <b>${ar(day)}</b> من ${ar(total)}${SEP}${ar(pct)}${LATIN ? '%' : '٪'}`};
 }
 
 // ---- «السنة»: a dot for every day of this Gregorian year
@@ -3389,7 +3464,7 @@ function prayerRows(){
   return Object.keys(names).filter(k => DAY_TIMES[k]).map(k => {
     const [h, mi] = String(DAY_TIMES[k]).split(':').map(Number);
     const cls = k === lit ? 'next' : at(k) <= mins && !(tomorrow && k === lit) ? 'past' : '';
-    const cd = cls === 'next' && CONFIG.cardStyle === 'boxes' && !cur ? '<span class="cd">' + 'بعد ' + shortHM(Math.max(60, Math.round((at(k) + (tomorrow ? 1440 : 0) - mins) * 60))) + '</span>' : '';   // «مربعات»: the countdown under the next one
+    const cd = cls === 'next' && !cur ? '<span class="cd">' + 'بعد ' + shortHM(Math.max(60, Math.round((at(k) + (tomorrow ? 1440 : 0) - mins) * 60))) + '</span>' : '';   // the countdown in the next one (4.4: every style, not only «مربعات»)
     return `<li class="${cls}"><span>${names[k]}</span><span class="dt">${fmtTime(h, mi)}</span>${cd}</li>`;
   });
 }
@@ -3402,11 +3477,13 @@ function forecastRows(){
   const today = cityToday(), tomorrow = new Date(Date.parse(today + 'T12:00:00Z') + DAY_MS).toISOString().slice(0, 10);
   const days = FORECAST.filter(d => d.date >= today).slice(0, 5);
   if(!days.some(d => d.date === today)) return [];
+  const lo = Math.min(...days.map(d => d.lo)), span = Math.max(1, Math.max(...days.map(d => d.hi)) - lo);   // the bar's scale: the days shown
   return days.map(d => {
     const day = d.date === today ? 'اليوم' : d.date === tomorrow ? 'غداً'
       : new Intl.DateTimeFormat(GREG, {timeZone:'UTC', weekday:'long'}).format(new Date(d.date + 'T12:00:00Z'));
-    return `<li><span>${day}</span><span class="ep">${WX_CODES[d.code] || ''}</span>`
-         + `<span class="dt">${ar(Math.round(d.hi))}° / ${ar(Math.round(d.lo))}°</span></li>`;
+    const a = (d.lo - lo) / span * 100, b = (d.hi - d.lo) / span * 100;
+    return `<li class="fc"><span>${day}</span><span class="wxi">${wxIcon(d.code, false)}</span><span class="ep">${WX_CODES[d.code] || ''}</span>`
+         + `<span class="lo">${ar(Math.round(d.lo))}°</span><span class="rg"><i style="inset-inline-start:${a.toFixed(0)}%;width:${b.toFixed(0)}%"></i></span><span class="hi">${ar(Math.round(d.hi))}°</span></li>`;
   });
 }
 
@@ -3493,14 +3570,19 @@ function shortHM(sec){   // «١ س و ٥ د», «٢ س», «٥ د»
   return [h ? ar(h) + ' س' : '', m || !h ? ar(Math.max(m, 1)) + ' د' : ''].filter(Boolean).join(' و ');
 }
 // ---- «الصلاة القادمة»: one line, «المغرب ٥:٢١ م، بعد ١ ساعة و ٩ دقائق», the calm one of the prayer cards
+// 4.4: the name and the time big, under them the time left and the iqama, and a bar from the last prayer to this one (it fills from the start)
 function nextPrayerRows(){
   if(!PRAYERS.length) return [];
   const p = riyadhParts(), mins = p.h * 60 + p.mi + p.s / 60;
-  let n = PRAYERS.find(x => x.h * 60 + x.mi > mins), tomorrow = false;
-  if(!n){ n = PRAYERS[0]; tomorrow = true; }
+  let i = PRAYERS.findIndex(x => x.h * 60 + x.mi > mins), tomorrow = false;
+  if(i < 0){ i = 0; tomorrow = true; }
+  const n = PRAYERS[i], at = n.h * 60 + n.mi + (tomorrow ? 1440 : 0), pr = PRAYERS[(i + PRAYERS.length - 1) % PRAYERS.length];
+  const from = pr.h * 60 + pr.mi - (i === 0 && !tomorrow ? 1440 : 0), done = Math.max(0, Math.min(100, (mins - from) / Math.max(1, at - from) * 100));
+  const iq = n.key === 'Dhuhr' && isFriday() ? 0 : CONFIG.iqama[n.key] || 0, q = n.h * 60 + n.mi + iq;
   // in the words of the bar and of the screensaver's own «الصلاة القادمة»
-  const left = untilAdhan(n.h * 60 + n.mi + (tomorrow ? 1440 : 0) - mins);
-  return [`<li class="np"><b>${prayerName(n)}</b><span class="t">${fmtTime(n.h, n.mi)}،</span><span class="r">بعد ${left}</span></li>`];   // «،», not «·»: beside «م» it reads as «٠»
+  const left = untilAdhan(at - mins);
+  return [`<li class="np"><b>${prayerName(n)}</b><span class="t">${fmtTime(n.h, n.mi)}</span><span class="r">بعد ${left}</span>`
+    + (iq ? '<span class="iq">' + 'الإقامة' + ' ' + fmtTime(Math.floor(q / 60) % 24, q % 60) + '</span>' : '') + `<span class="pb"><i style="width:${done.toFixed(1)}%"></i></span></li>`];
 }
 
 function prayerRowCard(){
@@ -3597,10 +3679,10 @@ function matchRows(card){
         : now >= t ? '<span class="live">مباشر</span>'
         : 'بعد ' + shortRemaining(t - now).split(' و ')[0];   // one unit: the date says the rest
       // the date is always there but for a game under way
-      const date = upcoming || pending ? matchWhen(d) : done ? matchDay(d) : '';
+      const date = upcoming || pending ? matchNear(d, now) : done ? (OLD_LOOK || cityToday(t) !== cityToday(now) ? matchDay(d) : 'اليوم') : '';
       const dateEl = date ? `<i class="mwhen" data-s="${esc(matchWhenShort(d, now, done))}">${date}</i>` : '';
       const club = (id, name, home) => `<span class="tm">${home ? '' : crestOrGap(ev, 'Away')}<span class="nm">${esc(teamAr(name, id))}</span>${home ? crestOrGap(ev, 'Home') : ''}</span>`;
-      return {t, r, html: `<li class="mg"><span class="mr">${club(ev.idHomeTeam, ev.strHomeTeam, true)} ${mid} ${club(ev.idAwayTeam, ev.strAwayTeam, false)} ${dateEl} <span class="dt">${when}</span></span></li>`};
+      return {t, r, html: `<li class="mg${done ? ' done' : ''}"><span class="mr">${club(ev.idHomeTeam, ev.strHomeTeam, true)} ${mid} ${club(ev.idAwayTeam, ev.strAwayTeam, false)} ${dateEl} <span class="dt">${when}</span></span></li>`};
     }), ...others.map(o => (Object.assign({}, o, {r: o.t <= now ? 1 : 2})))].sort(byRank).map(x => x.html);
 }
 
@@ -3648,7 +3730,7 @@ function stocksCard(){
       + (pct === null ? '' : `<span class="chg ${cls}">${pct >= 0 ? '▲' : '▼'} ${CONFIG.stkChg === 'amount'
           ? num(Math.abs(d.p - v), 2) : num(Math.abs(pct), 2) + (LATIN ? '%' : '٪')}</span>`) + '</li>';
   });
-  const note = [allClosed ? 'السوق مغلق' : '', stale.length ? staleMark(stale[0]) : shown.some(k => marketOpen(isSA(k)) && Date.now() - STOCKS[k].at > LATE_MS) ? 'متأخر' : ''].filter(Boolean).join(' · ');   // the oldest price that is not current
+  const note = [allClosed ? 'السوق مغلق' : '', stale.length ? staleMark(stale[0]) : shown.some(k => marketOpen(isSA(k)) && Date.now() - STOCKS[k].at > LATE_MS) ? 'متأخر' : ''].filter(Boolean).join(SEP);   // the oldest price that is not current
   return {hd: '<span>الأسهم</span>' + (note ? `<span class="until near">${note}</span>` : ''), rows};
 }
 
@@ -3714,7 +3796,7 @@ function quoteOfDay(card){
   const n = quoteTurn(), kind = CONFIG.verseKind, half = kind === 'both' ? Math.floor(n / 2) : n;
   if(VERSES.length && (kind === 'verse' || (kind === 'both' && n % 2 === 0))){
     const v = pickShort(VERSES, half, x => x.text.length, card);
-    return {title:CONFIG.verseMin ? 'آية كريمة' : 'آية اليوم', rows:[`<li class="quote quran${v.text.length > 330 ? ' q4' : quoteSize(v.text.length)}"><span class="orn">﴿</span><span class="qt">${esc(v.text)}</span><span class="orn">﴾</span></li>`, `<li class="src">${esc(v.surah)} · ${ar(v.ayah)}</li>`]
+    return {title:CONFIG.verseMin ? 'آية كريمة' : 'آية اليوم', rows:[`<li class="quote quran${v.text.length > 330 ? ' q4' : quoteSize(v.text.length)}"><span class="orn">﴿</span><span class="qt">${esc(v.text)}</span><span class="orn">﴾</span></li>`, '<li class="src">' + esc(v.surah) + SEP + 'الآية' + ' ' + ar(v.ayah) + '</li>']
       .concat(CONFIG.tafsir && v.tafsir ? [`<li class="tafsir">${esc(v.tafsir)}</li>`] : [])};
   }
   const h = pickShort(HADITH, half, x => x.parts.reduce((m, [, t]) => m + t.length, 0), card);
@@ -3791,7 +3873,7 @@ function adhkarCard(card){
     title,
     hd: `${ADHKAR_ICON[icon] || ''}<span>${title}</span><span class="until">${esc(until)}</span>`,
     rows: [`<li class="quote${d.quran ? ' quran' : ''}${d.text.length > 560 ? ' q4' : quoteSize(d.text.length)}">${text}</li>`,
-           `<li class="adf"><span class="s">${esc(ar(d.virtue ? `${d.virtue.text} · ${d.virtue.source.replace(' · ', ' ')}` : d.source))}</span><span class="c">${ADHKAR_COUNT[d.count] || ar(d.count) + ' مرة'}</span>`
+           `<li class="adf"><span class="s">${esc(ar(d.virtue ? `${d.virtue.text}${SEP}${d.virtue.source.replace(' · ', ' ')}` : d.source.replace(/ · /g, SEP)))}</span><span class="c">${ADHKAR_COUNT[d.count] || ar(d.count) + ' مرة'}</span>`
            + `<span class="d">${Array.from({length: dots}, (_, k) => k === on ? '<i class="on"></i>' : '<i></i>').join('')}</span></li>`],
   };
 }
@@ -3823,7 +3905,7 @@ function wxSource(){
   const el = document.getElementById('wx-src');
   if(!el) return;
   const fresh = WX.at && Date.now() - WX.at < WX_STALE_MS;
-  setText(el, fresh ? 'Open-Meteo · ' + wxAgeText(Date.now() - WX.at) : '');
+  setText(el, fresh ? 'Open-Meteo' + SEP + wxAgeText(Date.now() - WX.at) : '');
   // #wxmore=1: «رطوبة ٤٥٪، رياح ١٢ كم/س» («،», not «·»: beside «٪» it reads as «٠») from the same reading (none of it when the reading is stale or did not have it)
   const more = document.getElementById('wx-more');
   if(!more) return;
@@ -4432,7 +4514,7 @@ function fbCard(ev, now, i){
 }
 function fbAllOn(list){   // «كلها على ثمانية» when every game has the same mark
   const m = list.map(ev => (markOf(ev) || {}).mark);
-  return m.length && m[0] && m.every(x => x === m[0]) ? ' · ' + fw(FB_W.allOn, m[0]) : '';
+  return m.length && m[0] && m.every(x => x === m[0]) ? SEP + fw(FB_W.allOn, m[0]) : '';
 }
 function fbRender(){
   const root = document.getElementById('fb');
@@ -4441,7 +4523,7 @@ function fbRender(){
   FB.at = Math.max(0, Math.min(FB.at, list.length - 1));
   setHTML(document.getElementById('fb-wx-c'), fbWeatherHtml());
   setHTML(document.getElementById('fb-pr-c'), fbPrayersHtml());
-  const count = list.length ? 'TheSportsDB · ' + fbCount(list.length) : '';
+  const count = list.length ? 'TheSportsDB' + SEP + fbCount(list.length) : '';
   const upcoming = list.length && !list.some(ev => fbDayOf(fbKick(ev)) === cityToday(now));   // none today: the next day's, titled so
   for(const id of ['fb-mt', 'fb-row']){
     const h = document.querySelector('#' + id + ' h3'), t = h && h.firstChild;
@@ -4666,7 +4748,7 @@ function mpAge(){
   const at = Math.max(MATCH_OK_AT || 0, ...Object.values(LEAGUE_DATA).map(d => Date.parse(d && d.updated) || 0));
   if(!at) return 'TheSportsDB';
   const m = Math.round((Date.now() - at) / 60000);
-  return 'TheSportsDB · ' + (m < 60 ? fw(FB_W.ago, qty(Math.max(1, m), UNIT.min)) : fmtAgo(at));
+  return 'TheSportsDB' + SEP + (m < 60 ? fw(FB_W.ago, qty(Math.max(1, m), UNIT.min)) : fmtAgo(at));
 }
 function mpRender(){
   if(!document.getElementById('mp')) return;
@@ -5101,7 +5183,7 @@ function boot(){
 
 // «شكل البطاقة»: html.cs-<style>; «مربعات» is html.pbx (the prayers card's own look: the other cards stay as they are)
 function addCardStyle(){
-  if(CONFIG.cardStyle !== 'current') document.documentElement.classList.add(CONFIG.cardStyle === 'boxes' ? 'pbx' : 'cs-' + CONFIG.cardStyle);
+  if(CONFIG.cardStyle !== 'current') document.documentElement.classList.add(CONFIG.cardStyle === 'boxes' ? 'pbx' : OLD_LOOK ? 'cso' : 'cs-' + CONFIG.cardStyle);
 }
 
 // The launcher's cards: the chosen ones only

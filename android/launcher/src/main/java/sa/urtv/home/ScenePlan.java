@@ -4,12 +4,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 4.3.3 «المشاهد» (the scene home, docs/mockups/PERFORMANCE.md): the rules, with no Android in them (tests/ScenePlanRun.java runs them).
+ * 4.3.3 «الآفاق» (the scene home, docs/mockups/PERFORMANCE.md): the rules, with no Android in them (tests/ScenePlanRun.java runs them).
  * A scene is a photo, a blurred and brightened copy of it (the clock's glass) and, for depth, the scenery cut out of it with the sky
  * transparent (the mask), drawn over the clock. A pack's scenes are listed in its scenes.tsv, one line each:
  * id, Arabic name, English name, the digits' top and bottom (px of a 1080 screen), the mask's box "x,y,w,h" (px of 1080p) or "-",
  * dark ("1": a dark clock, for a pale scene), the photo's credit, and (4.3.3, may be missing) its tags: "night" (shown from Maghrib to Fajr when
- * «المشهد يتبع الوقت» is on), "fog" (shown in fog when «المشهد يتبع الطقس» is on), comma between.
+ * «الأفق يتبع الوقت» is on), "fog" (shown in fog when «الأفق يتبع الطقس» is on), comma between.
  */
 final class ScenePlan {
     private ScenePlan() { }
@@ -17,7 +17,7 @@ final class ScenePlan {
     /** the memory tiers, Ram's numbers (Ram itself needs Android; tests/scene_home_test.py keeps the two the same) */
     static final int LOW = 0, MID = 1, NORMAL = 2;
 
-    /** the two packs: «مشاهد السعودية» is in the app; «مشاهد Couch TV» is downloaded when chosen (SceneDownload) */
+    /** the two packs: «آفاق السعودية» is in the app; «آفاق عالمية» is downloaded when chosen (SceneDownload) */
     static final String SAUDI = "saudi", COUCH = "couch";
 
     /** how long a scene stays (s), as the settings say; LOW changes at most every 5 minutes, with no fade */
@@ -162,7 +162,7 @@ final class ScenePlan {
     }
 
     /**
-     * The scenes to take turns now: with «المشهد يتبع الطقس» and fog in the city, the fog scenes; with «المشهد يتبع الوقت», the night scenes from Maghrib
+     * The scenes to take turns now: with «الأفق يتبع الطقس» and fog in the city, the fog scenes; with «الأفق يتبع الوقت», the night scenes from Maghrib
      * to Fajr and the others by day. A rule that would leave none is let go (the packs on may have no night or no fog scene): never an empty home.
      */
     static List<Scene> choose(List<Scene> all, boolean byTime, boolean night, boolean byWeather, boolean fog) {
@@ -182,7 +182,7 @@ final class ScenePlan {
     /** Open-Meteo's weather codes for fog (45 fog, 48 rime fog) */
     static boolean fog(int wmo) { return wmo == 45 || wmo == 48; }
 
-    /** «بقاء كل مشهد» as the screensaver gives it (10, 20, 60 or 300 s); anything else: 20 */
+    /** «بقاء كل أفق» as the screensaver gives it (10, 20, 60 or 300 s); anything else: 20 */
     static int stay(String v) {
         try { int s = Integer.parseInt(v); return s == 10 || s == 20 || s == 60 || s == 300 ? s : STAY_S; } catch (RuntimeException e) { return STAY_S; }
     }

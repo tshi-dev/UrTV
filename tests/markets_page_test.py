@@ -82,8 +82,8 @@ check("the page: the stocks card gets the ring and no mic mark; with no kind, bo
       "c.kind === 'stocks' ? c.el.classList.add('tap')" in page and "function setLiveFocus(on, kind = 'tasks')" in page
       and "function liveRect(kind = 'tasks')" in page and "html.widget .week.tap.lf{" in page)
 st = text(APP / "SettingsActivity.java")
-check("the settings: «صفحة الأسواق» in «المباريات والأسواق» opens it", 'row("صفحة الأسواق"' in st and '"sa.urtv.home.MarketsActivity"' in st
-      and '{"صفحة الأسواق", CONTENT}' in text(APP / "SettingsHub.java"))
+check("the settings: «افتح صفحة الأسواق» in «المباريات والأسواق» opens it", 'row("افتح صفحة الأسواق"' in st and '"sa.urtv.home.MarketsActivity"' in st
+      and '{"افتح صفحة الأسواق", CONTENT}' in text(APP / "SettingsHub.java"))
 cp = text(APP / "ConfigProvider.java")
 check("the stock card's buttons change the watchlist and the bar through the screensaver's own checks (phone_set -> SaverReceiver.set)",
       'new String[] {"stocks", "markets"}' in cp and 'getContentResolver().call(SAVER, "phone_set", null, e)' in act)

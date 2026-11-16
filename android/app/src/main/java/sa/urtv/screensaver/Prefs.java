@@ -83,7 +83,7 @@ final class Prefs {
 
     // look of the card beside the clock (sent to the page as #cardstyle=; current is the plain card it always had)
     static final String[][] CARD_STYLES = {{"current", "الحالية"}, {"dark1", "داكنة"}, {"glass1", "زجاجية"},
-        {"dark3", "داكنة بإطار"}, {"glass3", "زجاجية بإطار"}, {"boxes", "مربعات"}};
+        {"dark3", "داكنة بإطار"}, {"glass3", "زجاجية بإطار"}, {"boxes", "مربعات"}, {"classic", "الشكل السابق"}};
 
     // markets at the top left (sent to the page as #markets=, up to MAX_MARKETS, in this order of choice; tasi,spx,btc is what it always showed)
     static final String[][] MARKETS = {
@@ -348,6 +348,7 @@ final class Prefs {
         {"dark3", "داكنة بإطار ذهبي داخلي ومعيّن على الحافتين"},
         {"glass3", "زجاجية بإطار ذهبي داخلي ومعيّن على الحافتين"},
         {"boxes", "مواقيت اليوم مربعات في صف، والصلاة القادمة مضيئة وتحتها كم باقي"},
+        {"classic", "مواقيت اليوم في صف والمباريات والعدّ التنازلي كما كانت قبل ٤٫٤"},
     };
 
     static String about(String[][] table, String v) {
@@ -1157,7 +1158,7 @@ final class Prefs {
     static final String[] HOME_LAYOUTS = {"classic", "couch", "football"};
     static final String[] HOME_LAYOUT_NAMES = {"تلفزيونك", "كنبة", "كرة القدم"};
     static final String[] HOME_BGS = {"photos", "scenes"};
-    static final String[] HOME_BG_NAMES = {"صوري وحزم الصور", "المشاهد"};
+    static final String[] HOME_BG_NAMES = {"صوري وحزم الصور", "الآفاق"};
     static final String[] HOME_CLOCKS = {"plain", "glass"};
     static final String[] HOME_CLOCK_NAMES = {"عادية", "زجاجية خلف الصورة"};
     /** 4.4 «شكل التطبيقات»: how the focused app of the tray shows: a ring in the look's colour and its name above the tray (as always), or larger with a soft shadow, its name under it */
@@ -1191,12 +1192,34 @@ final class Prefs {
     void setLook3(String key) {
         for (String[] l : LOOKS) if (l[0].equals(key)) { sp.edit().putString("homeLayout", l[2]).putString("homeBg", l[3]).putString("homeClock", l[4]).putString("appsStyle", l[5]).apply(); return; }
     }
+    /**
+     * 4.4 the owner: «شكل كنبة» is one switch (off by default). On: the Couch preset at once, and the person's own four values kept; off: those put
+     * back exactly. A row changed while on leaves it on, and its line says «مخصّص». A TV that has the couch values with no switch stored reads on.
+     */
+    boolean couchOn() { return sp.contains("couchOn") ? sp.getBoolean("couchOn", false) : "couch".equals(look3()); }
+    void setCouch(boolean on) {
+        if (on == couchOn() && sp.contains("couchOn")) return;
+        if (on) {
+            sp.edit().putString("couchBefore", homeLayout() + "," + homeBg() + "," + homeClock() + "," + appsStyle()).putBoolean("couchOn", true).apply();
+            setLook3("couch");
+            return;
+        }
+        String[] b = sp.getString("couchBefore", "").split(",");
+        if (b.length == 4) { setHomeLayout(b[0]); setHomeBg(b[1]); setHomeClock(b[2]); setAppsStyle(b[3]); } else setLook3("urtv");
+        sp.edit().putBoolean("couchOn", false).remove("couchBefore").apply();
+    }
+    /** the switch's line: off, on as the preset, or on with a row changed since («مخصّص») */
+    String couchLabel() {
+        if (!couchOn()) return "متوقف";
+        return "couch".equals(look3()) ? "مفعّل (التخطيط كنبة، الخلفية الآفاق، الساعة زجاجية، التطبيقات تكبير وظل؛ إيقافه يرجّع اختياراتك)"
+            : "مفعّل (مخصّص: غيّرت صفًا من الأربعة؛ إيقافه يرجّع اختياراتك قبل التشغيل)";
+    }
     static String look3Label(String key) {
         for (String[] l : LOOKS) if (l[0].equals(key)) return l[1];
         return "مخصّص";
     }
-    /** 4.3.3 «حزم المشاهد» (the scene home): «مشاهد السعودية» is in the app, «مشاهد Couch TV» is downloaded when chosen; none chosen is the Saudi pack */
-    static final String[][] SCENE_PACKS = {{"saudi", "مشاهد السعودية"}, {"couch", "مشاهد Couch TV"}};
+    /** 4.3.3 «حزم الآفاق» (the scene home): «آفاق السعودية» is in the app, «آفاق عالمية» is downloaded when chosen; none chosen is the Saudi pack */
+    static final String[][] SCENE_PACKS = {{"saudi", "آفاق السعودية"}, {"couch", "آفاق عالمية"}};
     List<String> scenePacks() {
         List<String> out = new ArrayList<>();
         for (String s : list("scenePacks")) for (String[] k : SCENE_PACKS) if (k[0].equals(s) && !out.contains(s)) out.add(s);
@@ -1204,7 +1227,7 @@ final class Prefs {
         return out;
     }
     void setScenePacks(List<String> v) { setList("scenePacks", v); }
-    /** «بقاء كل مشهد» in seconds (20 the default); «المشهد يتبع الوقت» (the night scenes from Maghrib to Fajr) and «المشهد يتبع الطقس» (the fog scenes in fog): off by default */
+    /** «بقاء كل أفق» in seconds (20 the default); «الأفق يتبع الوقت» (the night scenes from Maghrib to Fajr) and «الأفق يتبع الطقس» (the fog scenes in fog): off by default */
     static final String[] SCENE_STAYS = {"10", "20", "60", "300"};
     static final String[] SCENE_STAY_NAMES = {"١٠ ثوانٍ", "٢٠ ثانية", "دقيقة واحدة", "خمس دقائق"};
     String sceneStay() { String v = sp.getString("sceneStay", "20"); return java.util.Arrays.asList(SCENE_STAYS).contains(v) ? v : "20"; }

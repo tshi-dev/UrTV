@@ -40,7 +40,7 @@ rows = [(f[1], f[2], int(f[3])) for f in (l.split("\t") for l in out) if f[0] ==
 
 check("the sections (4.3.3): the search, then the ten in the owner's list; no shortcut beside them, none is deeper",
       re.findall(r'\{(?:SEARCH|LANG|PLACE|LOOK|APPS|BUTTONS|PRAY|CONTENT|SAVER|FAMILY|UPDATE), "([^"]+)"', hub[hub.index("CATEGORIES"):hub.index("OLD")])
-      == ["بحث في الإعدادات", "اللغة", "الموقع والطقس", "الشكل والمشاهد", "التطبيقات", "الأزرار السريعة", "الصلاة والأذان", "المباريات والأسواق", "شاشة التوقف",
+      == ["بحث في الإعدادات", "اللغة", "الموقع والطقس", "المظهر", "التطبيقات", "الأزرار السريعة", "الصلاة والأذان", "المباريات والأسواق", "شاشة التوقف",
           "العائلة والأمان", "حول"])
 # every row of the hub is in the order of its own section, once; only the two shortcut rows (no screen of their own) are not
 ranked = [r for r in rows if r[2] >= 0]
@@ -56,18 +56,18 @@ for n, c, _ in rows: by.setdefault(c, []).append(n)
 check("ORDER holds each row of its section exactly once (and its headers), nothing stale, nothing left out",
       all(sorted(v) == sorted(by.get(k, [])) for k, v in orders.items()) and set(orders) == set(by) - {"search"},
       {k: sorted(set(by.get(k, [])) ^ set(v)) for k, v in orders.items()})
-check("the places the owner asked for (4.3.3): the clock's look and the photos in «الشكل والمشاهد», the language, digits, months and 12/24 in «اللغة», the city and the weather in «الموقع والطقس», the favourites in «التطبيقات»",
+check("the places the owner asked for (4.3.3): the clock's look and the photos in «المظهر», the language, digits, months and 12/24 in «اللغة», the city and the weather in «الموقع والطقس», the favourites in «التطبيقات»",
       all(n in by["look"] for n in ("حجم الساعة", "إظهار الثواني", "نص أوضح", "توهّج لون التطبيق", "صوري", "البطاقة الأولى"))
       and all(n in by["lang"] for n in ("اللغة", "الأرقام", "أسماء الأشهر الميلادية", "نظام الساعة")) and sorted(by["place"]) == sorted(["المدينة", "الدولة", "التحية والطقس", "الرطوبة والرياح"])
       and all(n in by["content"] for n in ("التصنيفات", "اللغات", "مسلسلات مختارة", "أقل تقييم"))
       and all(n in by["apps"] for n in ("تطبيقات في الشريط", "ترتيب كل التطبيقات", "قفل التطبيقات"))
-      and sorted(by["family"]) == sorted(["الرقابة الأبوية", "تصفية المواقع", "تحكم من الجوال"]), {k: len(v) for k, v in by.items()})
+      and sorted(by["family"]) == sorted(["الرقابة الأبوية", "تصفية المواقع", "الجوالات المسموح لها"]), {k: len(v) for k, v in by.items()})
 check("the Hijri shift is a row (it was a shell command only), in «اللغة»", 'row("فرق التاريخ الهجري"' in st and "فرق التاريخ الهجري" in by["lang"])
 check("search: a typed word finds the row by its name (الأذان first), by an alias (صوت → الأذان), by its section's name",
-      search["الأذان"][0][0] == "الأذان" and ["الأذان", "pray"] in search["صوت"] and ["تحكم من الجوال", "family"] in search["جوال"] and ["فرق التاريخ الهجري", "lang"] in search["هجري"]
+      search["الأذان"][0][0] == "الأذان" and ["الأذان", "pray"] in search["صوت"] and ["الجوالات المسموح لها", "family"] in search["جوال"] and ["فرق التاريخ الهجري", "lang"] in search["هجري"]
       and ["مركز التحكم", "buttons"] in search["نوم"] and ["إظهار الثواني", "look"] in search["ثواني"])
 check("search: letters are folded (الاذان = الأذان, اسواق finds الأسواق), an alias works in Latin letters (pin), nothing for a word nobody knows or for nothing",
-      search["الاذان"] == search["الأذان"] and any(r[0] == "صفحة الأسواق" for r in search["اسواق"]) and ["الرقابة الأبوية", "family"] in search["pin"]
+      search["الاذان"] == search["الأذان"] and any(r[0] == "افتح صفحة الأسواق" for r in search["اسواق"]) and ["الرقابة الأبوية", "family"] in search["pin"]
       and search["zzzz"] == [] and search[""] == [])
 check("search: never answers with the search's own row, and «مدينة» finds the one city row", all(r[0] != "بحث في الإعدادات" for v in search.values() for r in v)
       and search["مدينه"][0] == ["المدينة", "place"] and all(r[0] != "تغيير المدينة" for r in search["مدينه"]))
