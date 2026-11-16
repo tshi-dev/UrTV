@@ -1,4 +1,15 @@
-«✅ GO — ONLY step 74 now (owner's request; everything else stays paused until Monday). Push the video as soon as it is done.»
+«✅ GO — step 75 now (the owner's week plan started 2026-11-16; he allowed testing couch-tv and Clean your TV on his TV). After 75: wait for step 76 (4.3.2 checks) when it appears.»
+
+## step 75 — study couch-tv and Clean your TV on the owner's TV (pictures + numbers, then put everything back)
+TV muted all the time. Never the family PIN. Nothing may stay changed at the end: UrTV stays the home.
+A. couch-tv (github.com/Seagey/couch-tv, MIT, release 0.12):
+ 1. Download couch-tv-home.apk from its latest release and `adb install` it AS AN APP ONLY. Do NOT run its apply.sh, do NOT make it the home, do NOT disable anything.
+ 2. Open it from the apps list. Go through its first-run questions with demo values (city Riyadh). Take pictures (screencap, 1920x1080) of: the home with each scene (Night, Golden hour, Waterline, Fog, Rainforest dawn…), the glass clock in front of/behind the picture, the moving background (record a 15 s screenrecord of one scene to show the motion and the clock depth), the apps row/dock, Keep watching, Home settings (every section: Language, Location, Weather, Look and scenes, Apps, People, Quick buttons, About) and the focus movement (a 15 s screenrecord moving through the settings).
+ 3. Numbers, same way as our checks: `dumpsys meminfo` of its package after 2 min on the home; `dumpsys gfxinfo <pkg> reset` then 40 D-pad presses on the home and in settings → janky %, p50/p90/p99; CPU idle from `top -n 1` while a scene animates. Then the SAME three numbers for UrTV's home (build on the TV now) for comparison.
+ 4. Note: how fast it opens (cold start), how settings feel (animation, focus, speed), anything we do better.
+ 5. `adb uninstall` it. Check Home opens UrTV.
+B. Clean your TV (https://cleanyour.tv): open the site on the PC and read what it does (is it a debloat tool? which apps does it switch off? reversible?). Screenshot its pages. Do NOT run it on the TV if it would switch off or remove anything; if it only lists/recommends, run its list mode and save the list. Compare its list with our tcl-safe/safe lists and write the differences (packages it turns off that we keep, and the reverse).
+C. Push pictures/videos to work/marketing under marketing/study/couch-tv/ and marketing/study/cleanyourtv/, and write REPORT.md «step 75» with the numbers table (couch-tv vs UrTV), the list differences, and your notes. TV muted and asleep at the end.
 
 ## step 74 — a short how-to video: from the home to «رجّع واجهة المصنع» and «تراجع»
 For a user who wants his old TV home back. TV muted. Record with `adb shell screenrecord --size 1920x1080 --bit-rate 6000000 /sdcard/undo.mp4` (max 180 s; two clips is fine), slow and clear, about 1.5 s per key press so a viewer can follow:
