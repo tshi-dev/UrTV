@@ -21,3 +21,9 @@ html.sd-low .sd-bar{background:rgba(12,14,18,.62)}
 .sd-wx.at-clock{left:0;right:0;text-align:center;font-size:16px}
 .sd-wx.at-corner{top:22px;left:28px;font-size:15px}
 html.sd-wx-usual .top{display:flex!important}html.sd-wx-usual .top .dates,html.sd-wx-usual .top .mk,html.sd-wx-usual .top .rule{visibility:hidden}
+.clock .sep.sd-dots{position:relative;display:inline-block;align-self:stretch;width:.3em;font-size:inherit;transform:none;padding:0;opacity:1}
+.clock .sep.sd-dots::before,.clock .sep.sd-dots::after{content:'';position:absolute;left:50%;width:.12em;height:.12em;margin-left:-.06em;border-radius:50%;background:#fff}
+.clock .sep.sd-dots::before{top:34%}.clock .sep.sd-dots::after{top:60%}
+html.sd-glass .clock .sep.sd-dots::before,html.sd-glass .clock .sep.sd-dots::after{background:rgba(255,255,255,.9);box-shadow:0 1px 4px rgba(0,0,0,.3)}
+html.sd-big .clock .sep.sd-dots::before,html.sd-big .clock .sep.sd-dots::after{width:.07em;height:.07em;margin-left:-.035em}
+html.sd-glass.sd-dark .clock .sep.sd-dots::before,html.sd-glass.sd-dark .clock .sep.sd-dots::after{background:rgba(64,64,68,.94)}   /* the dark glass's own colour */

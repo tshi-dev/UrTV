@@ -27,7 +27,7 @@ function net(route) {
 const SCENES = {   // the photo, its frosted glass (SceneClock.frost), its cut-out cropped to its box (scenes.tsv / masks index.json) and the digits' place, in dp
   riyadh: { photo: 'riyadh.jpg', glass: 'riyadh-frost.jpg', fg: 'riyadh-fg.webp', fgTop: 67.5, fgH: 321.5, top: 110, size: 190 },
   night: { photo: 'night.jpg', glass: 'night-frost.jpg', fg: 'night-fg.webp', fgTop: 77.5, fgH: 311.5, top: 113, size: 196 },
-  nature7: { photo: 'nature16.jpg', glass: 'nature16-dark.jpg', fg: 'nature16-fg.webp', fgTop: 171, fgH: 218, top: 71, size: 200 },
+  nature7: { dark: 1, photo: 'nature16.jpg', glass: 'nature16-dark.jpg', fg: 'nature16-fg.webp', fgTop: 171, fgH: 218, top: 71, size: 200 },
 };
 const SHOTS = [
   ['01-clean-riyadh', 'clean', 'riyadh'], ['02-clean-night', 'clean', 'night'], ['03-clean-photo', 'clean', 'nature7'], ['04-clean-nonext-night', 'clean', 'night', 'nonext'],
@@ -61,7 +61,7 @@ for (const [name, design, scene, opt, ex = {}] of SHOTS) {
     const css = readFileSync(HERE + '/' + design + '.css', 'utf8') + readFileSync(HERE + '/bar.css', 'utf8');
     const js = readFileSync(HERE + '/_common.js', 'utf8') + '\n' + (existsSync(HERE + '/' + design + '.js') ? readFileSync(HERE + '/' + design + '.js', 'utf8') : '');
     await p.addStyleTag({ content: css });
-    await p.evaluate(([js, sc, opt, ex]) => { window.SD = { ...ex,  glass: sc.glass && 'https://bg.local/' + sc.glass, fg: sc.fg && 'https://bg.local/' + sc.fg, fgTop: sc.fgTop, fgH: sc.fgH, top: sc.top, size: sc.size, opt }; (0, eval)('{' + js + '}'); }, [js + '\n' + BARJS, sc, opt || '', ex]);
+    await p.evaluate(([js, sc, opt, ex]) => { window.SD = { ...ex,  glass: sc.glass && 'https://bg.local/' + sc.glass, fg: sc.fg && 'https://bg.local/' + sc.fg, fgTop: sc.fgTop, fgH: sc.fgH, top: sc.top, size: sc.size, dark: sc.dark, opt }; (0, eval)('{' + js + '}'); }, [js + '\n' + BARJS, sc, opt || '', ex]);
   }
   await p.waitForTimeout(900);
   writeFileSync(OUTD + '/' + name + '.png', await p.screenshot());

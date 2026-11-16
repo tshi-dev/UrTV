@@ -6,3 +6,5 @@ const dayLine = () => [txt('hijri'), txt('greg').replace(/^[^،]+،\s*/, '')].fi
 const nextLine = () => txt('prayer-name') && [txt('prayer-name') + ' ' + txt('prayer-time'), txt('prayer-count')].filter(Boolean).join(SEP);
 // the clock out of the stage's grid (a photo's settle movement makes the stage a containing block): placed on the screen itself
 const lift = () => document.body.appendChild(document.querySelector('.clockwrap'));
+// the clock's colon as two round dots (the app's Thmanyah has round ones; the stand-in font here draws squares)
+document.querySelectorAll('.clock .sep').forEach(s => { s.classList.add('sd-dots'); s.textContent = ''; });

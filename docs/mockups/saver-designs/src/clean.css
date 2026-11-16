@@ -14,3 +14,5 @@ html.sd-clean.sd-glass .clock *{color:transparent!important;text-shadow:none!imp
 .sd-line .d{font-size:18px;font-weight:500;letter-spacing:0}
 .sd-line .n{margin-top:6px;font-size:15px;color:#F1E7D0}
 .sd-line .n b{font-weight:500;color:#FFE9B8}
+/* the photo holds still under the cut-out: no settle drift, no 1.03 scale (the scenery over the digits must stay on its own pixels) */
+html.sd-clean .photo{transform:none!important;animation:none!important}
