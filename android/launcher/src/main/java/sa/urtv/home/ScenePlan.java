@@ -131,15 +131,66 @@ final class ScenePlan {
     }
 
     /**
+     * 4.4 the owner: depth never makes a digit unreadable (the night lake's trees made its ٤ a ٢, the golden tower made a ٤ an ع) or hides the colon.
+     * Each glyph of the clock as the digits' box holds it (digits 0.56 of its height wide, the colon 0.24, centred: «١٢:٣٠», and «٤:٥٨» either way
+     * round) may be covered by the scenery for at most COVER of its height, from its base, the picture zoomed by k about the top centre. The same rule
+     * as the masks gate (.github/tools/photo_masks.py), which places a pack's clocks by it; here it holds wherever the clock really is (the cards or
+     * the apps row move it). sky: the scenery's top in columns (any number, px of 1080), as skyline() gives it, read with smoothing so a spike a few
+     * px wide does not count.
+     */
+    static final float COVER = 0.25f;
+    static final float[][] GLYPHS = {{0.56f, 0.56f, -0.24f, 0.56f, 0.56f}, {0.56f, -0.24f, 0.56f, 0.56f}, {0.56f, 0.56f, -0.24f, 0.56f}};
+
+    /** the most of any glyph's height the scenery covers (0..1) */
+    static float cover(int[] sky, int[] box, int w, int h, float k) {
+        if (sky == null || sky.length == 0 || box == null || box[3] <= box[1] || w <= 0) return 0f;
+        float dh = box[3] - box[1], cx = (box[0] + box[2]) / 2f, most = 0f;
+        for (float[] layout : GLYPHS) {
+            float total = 0;
+            for (float g : layout) total += Math.abs(g);
+            float x0 = cx - total * dh / 2;
+            for (float g : layout) {
+                float gw = Math.abs(g) * dh;
+                for (float x = x0; x <= x0 + gw; x += Math.max(1f, w / 960f)) {
+                    float src = w / 2f + (x - w / 2f) / k;
+                    int c = (int) Math.floor(src * sky.length / w);
+                    if (c < 0 || c >= sky.length) continue;
+                    float top = sky[c] * h / 1080f * k;
+                    most = Math.max(most, Math.min(1f, (box[3] - top) / dh));
+                }
+                x0 += gw;
+            }
+        }
+        return most;
+    }
+
+    static boolean legible(int[] sky, int[] box, int w, int h, float k) { return cover(sky, box, w, h, k) <= COVER + 1e-4f; }
+
+    /**
+     * The zoom for a scene's picture with its cut-out: zoom() (the owner's bands), then more (MAX_ZOOM at most) until every glyph is legible; 0 when
+     * no zoom makes it so: then the cut-out is not drawn (the clock in front of the picture, «FRONT-ONLY»). sky48: zoom()'s 48 columns; fine: the
+     * finer skyline legible() reads (null: sky48).
+     */
+    static float depth(int[] sky48, int[] fine, int[] box, int w, int h) {
+        int[] f = fine != null ? fine : sky48;
+        float k = zoom(sky48, box, w, h);
+        while (!legible(f, box, w, h, k) && k < MAX_ZOOM) k = Math.round((k + 0.01f) * 100) / 100f;
+        return legible(f, box, w, h, k) ? k : 0f;
+    }
+
+    /**
      * the scenery's top in each of 48 columns (px of 1080) of a scene's cut-out: px, its pixels made small (sw x sh), placed at the scene's mask box
      * (x, y, w, h in px of 1920 x 1080); a column with none of it: 1080
      */
-    static int[] skyline(int[] px, int sw, int sh, int[] place) {
-        int[] line = new int[48];
+    static int[] skyline(int[] px, int sw, int sh, int[] place) { return skyline(px, sw, sh, place, 48); }
+
+    /** the same in n columns (legible() reads 192: a narrow tower is not lost between two of 48) */
+    static int[] skyline(int[] px, int sw, int sh, int[] place, int n) {
+        int[] line = new int[n];
         java.util.Arrays.fill(line, 1080);
         if (place == null || sw <= 0 || sh <= 0) return line;
-        for (int c = 0; c < 48; c++) {
-            float x = (c + 0.5f) * 40;
+        for (int c = 0; c < n; c++) {
+            float x = (c + 0.5f) * 1920f / n;
             if (x < place[0] || x >= place[0] + place[2]) continue;
             int mx = Math.min(sw - 1, (int) ((x - place[0]) * sw / place[2]));
             for (int y = 0; y < sh; y++) if (((px[y * sw + mx] >>> 24) & 255) > 127) { line[c] = Math.round(place[1] + y * place[3] / (float) sh); break; }

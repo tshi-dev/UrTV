@@ -161,8 +161,11 @@ final class SceneHome extends FrameLayout {
             final Bitmap photo = decode(sc, ".jpg", ScenePlan.decodeWidth(tier, w), tier != ScenePlan.NORMAL);
             final boolean withClock = this.glass;   // «الساعة: عادية»: no glass copy, no cut-out (the header's clock shows)
             final Bitmap glass = withClock ? decode(sc, "-glass.jpg", 960, true) : null;
-            final Bitmap mask = withClock && sc.mask != null && ScenePlan.mask(tier) ? decode(sc, "-fg.webp", 1920, false) : null;
-            final float zoom = mask == null ? 1f : zoomOf(mask, sc);   // the owner: more of the digits above the scenery, the clock where it is
+            final Bitmap cut = withClock && sc.mask != null && ScenePlan.mask(tier) ? decode(sc, "-fg.webp", 1920, false) : null;
+            final float depth = cut == null ? 1f : zoomOf(cut, sc);   // the owner: more of the digits above the scenery, the clock where it is
+            if (depth == 0f && cut != null) cut.recycle();   // no zoom keeps every digit and the colon legible here: the clock in front
+            final Bitmap mask = depth == 0f ? null : cut;
+            final float zoom = depth == 0f ? 1f : depth;
             ui.post(() -> {
                 if (g != gen || !on) return;
                 if (photo == null || (withClock && glass == null)) { index = at; schedule(); return; }   // a missing file: the next one, never a blank home
@@ -202,18 +205,27 @@ final class SceneHome extends FrameLayout {
         });
     }
 
-    /** the zoom for this scene: its cut-out's skyline (made small first) against where its clock is (ScenePlan.zoom); 1 when it cannot be read */
+    /**
+     * the zoom for this scene: its cut-out's skyline (made small first) against where its clock is (ScenePlan.depth); 0: no zoom keeps the digits
+     * and the colon legible there, the cut-out is not drawn; 1 when it cannot be read
+     */
     private float zoomOf(Bitmap mask, ScenePlan.Scene sc) {
         try {
-            int sw = 96, sh = Math.max(1, Math.round(96f * mask.getHeight() / mask.getWidth()));
-            Bitmap small = Bitmap.createScaledBitmap(mask, sw, sh, false);
-            int[] px = new int[sw * sh];
-            small.getPixels(px, 0, sw, 0, 0, sw, sh);
-            if (small != mask) small.recycle();
-            return ScenePlan.zoom(ScenePlan.skyline(px, sw, sh, sc.mask), ScenePlan.clockBox(sc, 1920, 1080, cardsShown, rtl), 1920, 1080);
+            int[] box = ScenePlan.clockBox(sc, 1920, 1080, cardsShown, rtl);
+            return ScenePlan.depth(skylineOf(mask, sc.mask, 96, false, 48), skylineOf(mask, sc.mask, 384, true, 192), box, 1920, 1080);
         } catch (RuntimeException | OutOfMemoryError e) {
             return 1f;
         }
+    }
+
+    /** a cut-out's skyline in n columns, read from it made sw wide (smooth: averaged, so a spike a few px wide does not count) */
+    static int[] skylineOf(Bitmap mask, int[] place, int sw, boolean smooth, int n) {
+        int sh = Math.max(1, Math.round((float) sw * mask.getHeight() / mask.getWidth()));
+        Bitmap small = Bitmap.createScaledBitmap(mask, sw, sh, smooth);
+        int[] px = new int[sw * sh];
+        small.getPixels(px, 0, sw, 0, 0, sw, sh);
+        if (small != mask) small.recycle();
+        return ScenePlan.skyline(px, sw, sh, place, n);
     }
 
     /**

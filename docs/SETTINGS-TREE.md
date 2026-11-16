@@ -126,9 +126,9 @@ the phone page's key, «مركز التحكم» the control centre's row that op
       القيم المقبولة: off|light|on
 —— البطاقات
 ——— شكل البطاقة [الرئيسية وشاشة التوقف]
-    الخيارات: الحالية / داكنة / زجاجية / داكنة بإطار / زجاجية بإطار / مربعات
+    الخيارات: الحالية / داكنة / زجاجية / داكنة بإطار / زجاجية بإطار / مربعات / الشكل السابق
     الأصل: الحالية
-    مثال للوكيل: optimize/saver.sh cardstyle <current, dark1, glass1, dark3, glass3, boxes>
+    مثال للوكيل: optimize/saver.sh cardstyle <current, dark1, glass1, dark3, glass3, boxes, classic>
 ——— البطاقة الأولى [الرئيسية]
     مثال للوكيل: optimize/saver.sh home-card prayers,hourly,verse  (a comma list, up to 3, in this order; one value works; `none` or `""` = no card)
     مثال للوكيل: optimize/saver.sh home-card prayers,hourly,verse
@@ -502,9 +502,9 @@ the phone page's key, «مركز التحكم» the control centre's row that op
 ———— بطاقة ثانية [شاشة التوقف]
      مثال للوكيل: optimize/saver.sh card2 <the same list as card, but never the card that is already first>  (`card2 none` = one card, the default; the second card can't repeat the first, and needs a first card: `card verse` first)
 ———— شكل البطاقة [الرئيسية وشاشة التوقف]
-     الخيارات: الحالية / داكنة / زجاجية / داكنة بإطار / زجاجية بإطار / مربعات
+     الخيارات: الحالية / داكنة / زجاجية / داكنة بإطار / زجاجية بإطار / مربعات / الشكل السابق
      الأصل: الحالية
-     مثال للوكيل: optimize/saver.sh cardstyle <current, dark1, glass1, dark3, glass3, boxes>
+     مثال للوكيل: optimize/saver.sh cardstyle <current, dark1, glass1, dark3, glass3, boxes, classic>
 ———— تبديل الآية والحديث [الرئيسية وشاشة التوقف]
      مثال للوكيل: optimize/saver.sh verse 3  (`day` = the default: one a day as always)
        القيم المقبولة: day|3 (day = one a day; 3 = every 3 minutes)

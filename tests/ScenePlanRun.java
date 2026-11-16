@@ -1,7 +1,17 @@
 package sa.urtv.home;
 
-/** For tests/scene_home_test.py: ScenePlan's rules on a plain JVM. Args: the bundled pack's scenes.tsv. One line per answer. */
+/** For tests/scene_home_test.py: ScenePlan's rules on a plain JVM. Args: the bundled pack's scenes.tsv, then (may be missing) its first scene's cut-out made 96 and 384 wide (pixels()). One line per answer. */
 public final class ScenePlanRun {
+    /** a picture the test wrote: its width and height, then its ARGB ints (big-endian) */
+    static int[][] pixels(String path) throws java.io.IOException {
+        try (java.io.DataInputStream in = new java.io.DataInputStream(new java.io.BufferedInputStream(new java.io.FileInputStream(path)))) {
+            int w = in.readInt(), h = in.readInt();
+            int[] px = new int[w * h];
+            for (int i = 0; i < px.length; i++) px[i] = in.readInt();
+            return new int[][] {{w, h}, px};
+        }
+    }
+
     public static void main(String[] args) throws Exception {
         StringBuilder out = new StringBuilder();
         String tsv = new String(java.nio.file.Files.readAllBytes(java.nio.file.Paths.get(args[0])), "UTF-8");
@@ -33,6 +43,35 @@ public final class ScenePlanRun {
         out.append("stay\t").append(ScenePlan.stay("10")).append(',').append(ScenePlan.stay("300")).append(',').append(ScenePlan.stay("7")).append(',').append(ScenePlan.stay(null)).append('\n');
         out.append("fog\t").append(ScenePlan.fog(45)).append(',').append(ScenePlan.fog(48)).append(',').append(ScenePlan.fog(3)).append('\n');
         out.append("tiers\t").append(ScenePlan.LOW).append(',').append(ScenePlan.MID).append(',').append(ScenePlan.NORMAL).append('\n');
+        // 4.4 legibility (ScenePlan.cover/legible/depth): a box 280 tall at the middle, 1920 x 1080
+        int[] box = {960 - 364, 300, 960 + 364, 580};
+        for (int lift : new int[] {56, 84}) {   // a flat scenery 20 % and 30 % up the digits
+            int[] flat = new int[192];
+            java.util.Arrays.fill(flat, 580 - lift);
+            out.append("flat\t").append(lift).append('\t').append(String.format("%.2f", ScenePlan.cover(flat, box, 1920, 1080, 1f))).append('\t').append(ScenePlan.legible(flat, box, 1920, 1080, 1f)).append('\n');
+        }
+        int[] tower = new int[192];
+        java.util.Arrays.fill(tower, 1080);
+        tower[96] = tower[97] = 320;   // a narrow tower at the colon, over the digits' top: 2 of 192 columns, inside one of 48
+        int[] tower48 = new int[48];
+        java.util.Arrays.fill(tower48, 1080);
+        out.append("tower\t").append(ScenePlan.legible(tower, box, 1920, 1080, 1f)).append('\t').append(ScenePlan.depth(tower48, tower, box, 1920, 1080)).append('\t')
+           .append(ScenePlan.depth(tower48, null, box, 1920, 1080)).append('\n');
+        int[] low = new int[192];
+        java.util.Arrays.fill(low, 1080);
+        for (int c = 60; c < 132; c++) low[c] = 500;   // a broad block 29 % up: a little zoom brings it under 25 %
+        float z = ScenePlan.depth(tower48, low, box, 1920, 1080);
+        out.append("zoomed\t").append(z > 1f && z <= ScenePlan.MAX_ZOOM).append('\t').append(ScenePlan.legible(low, box, 1920, 1080, z)).append('\n');
+        if (args.length >= 3) {   // the bundled scene's cut-out, made small by the test (96 nearest, as zoom() reads it; 384 smoothed, as legible() does)
+            int[][] n = pixels(args[1]), f = pixels(args[2]);
+            int[] l48 = ScenePlan.skyline(n[1], n[0][0], n[0][1], s.mask), l192 = ScenePlan.skyline(f[1], f[0][0], f[0][1], s.mask, 192);
+            for (boolean cards : new boolean[] {false, true}) for (boolean rtl : new boolean[] {true, false}) {
+                int[] b2 = ScenePlan.clockBox(s, 1920, 1080, cards, rtl);
+                float d = ScenePlan.depth(l48, l192, b2, 1920, 1080);
+                out.append("depth\t").append(s.id).append('\t').append(cards).append('\t').append(rtl).append('\t').append(String.format("%.2f", d)).append('\t')
+                   .append(String.format("%.2f", ScenePlan.cover(l192, b2, 1920, 1080, 1f))).append('\t').append(d == 0f || ScenePlan.legible(l192, b2, 1920, 1080, d)).append('\n');
+            }
+        }
         System.out.print(out);
     }
 }

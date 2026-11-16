@@ -33,7 +33,22 @@ ram = read(HOME / "Ram.java")
 if shutil.which("javac"):
     with tempfile.TemporaryDirectory() as tmp:
         subprocess.run(["javac", "-encoding", "UTF-8", "-d", tmp, str(HOME / "ScenePlan.java"), str(ROOT / "tests/ScenePlanRun.java")], check=True, capture_output=True)
-        out = subprocess.run(["java", "-Dfile.encoding=UTF-8", "-cp", tmp, "sa.urtv.home.ScenePlanRun", str(PACK / "scenes.tsv")],
+        small = []
+        try:   # the first scene's cut-out made small as the home does (SceneHome.skylineOf): 96 wide nearest, 384 wide smoothed
+            import struct
+            from PIL import Image as _I
+            first = [l.split("\t")[0] for l in read(PACK / "scenes.tsv").splitlines() if l and not l.startswith("#")][0]
+            fg = _I.open(PACK / f"{first}-fg.webp").convert("RGBA")
+            for sw, how in ((96, _I.NEAREST), (384, _I.BILINEAR)):
+                im = fg.resize((sw, max(1, round(sw * fg.height / fg.width))), how)
+                raw = im.tobytes()
+                px = [(raw[i + 3] << 24 | raw[i] << 16 | raw[i + 1] << 8 | raw[i + 2]) - ((1 << 32) if raw[i + 3] >= 128 else 0) for i in range(0, len(raw), 4)]
+                p = Path(tmp) / f"fg{sw}.bin"
+                p.write_bytes(struct.pack(">ii", im.width, im.height) + struct.pack(f">{len(px)}i", *px))
+                small.append(str(p))
+        except ImportError:
+            print("SKIP the cut-out's legibility: no Pillow here")
+        out = subprocess.run(["java", "-Dfile.encoding=UTF-8", "-cp", tmp, "sa.urtv.home.ScenePlanRun", str(PACK / "scenes.tsv"), *small],
                              check=True, capture_output=True).stdout.decode("utf-8").splitlines()
     rows = [l.split("\t") for l in out]
     scenes = [r for r in rows if r[0] == "scene"]
@@ -65,6 +80,23 @@ if shutil.which("javac"):
           ch["truetruefalsefalse"][1] == "riyadh" and ch["truefalsefalsefalse"][1] == "riyadh" and ch["falsefalsetruetrue"][1] == "riyadh", ch)
     check("«بقاء كل أفق»: 10, 20, 60 or 300 s, anything else 20; fog is Open-Meteo's 45 and 48",
           [r for r in rows if r[0] == "stay"][0][1] == "10,300,20,20" and [r for r in rows if r[0] == "fog"][0][1] == "true,true,false")
+    flat = {r[1]: r[2:] for r in rows if r[0] == "flat"}
+    check("4.4 never a digit misread (the owner: the night lake's ٤ read ٢, the golden tower made a ٤ an ع): the scenery may cover a digit or the colon "
+          "for 25 % of its height from its base, no more", flat == {"56": ["0.20", "true"], "84": ["0.30", "false"]}, flat)
+    tw = [r for r in rows if r[0] == "tower"][0][1:]
+    check("a narrow tower is seen (192 columns, not lost inside one of 48): the colon covered to its top is not legible, and no zoom brings it under 25 %, "
+          "so the cut-out is not drawn there (depth 0, the clock in front); read on 48 columns alone it would have been missed",
+          tw[0] == "false" and float(tw[1]) == 0 and float(tw[2]) == 1, tw)
+    zm = [r for r in rows if r[0] == "zoomed"][0][1:]
+    check("a broad block a little over 25 %: the picture is zoomed (MAX_ZOOM at most) until it is under, the cut-out kept", zm == ["true", "true"], zm)
+    dp = {(r[1], r[2], r[3]): r[4:] for r in rows if r[0] == "depth"}
+    if dp:
+        check("every scene of the bundled pack: with no cards its clock keeps its depth, every digit and the colon legible (the gate's place)",
+              all(float(v[0]) > 0 and v[2] == "true" for (sid, cards, _), v in dp.items() if cards == "false") and len({k[0] for k in dp}) == len(scenes), dp)
+        check("and wherever the cards put it: legible, or the cut-out off (the clock in front), never a digit cut unreadable", all(v[2] == "true" for v in dp.values()), dp)
+    check("the home uses the rule: SceneHome and PhotoGlass take ScenePlan.depth, and a 0 hides the cut-out (the clock in front, at its usual place)",
+          "ScenePlan.depth(" in scene and "depth == 0f ? null : cut" in scene and "ScenePlan.depth(line, fine, digits, w, h)" in read(HOME / "PhotoGlass.java")
+          and "PhotoGlassPlan.box(null, w, h, cardsShown, rtl, row)" in read(HOME / "PhotoGlass.java"))
     check("ScenePlan's tiers are Ram's numbers", [r for r in rows if r[0] == "tiers"][0][1] == "0,1,2"
           and "public static final int LOW = 0, MID = 1, NORMAL = 2;" in ram)
 else:
@@ -171,7 +203,7 @@ check("the presets set the three at once: «شكل تلفزيونك» (our layou
       and 'row("شكل كنبة", prefs.couchLabel()' in st and 'prefs.setCouch(!prefs.couchOn())' in st and 'row("التخطيط"' in st and 'row("الخلفية"' in st and 'row("الساعة"' in st)
 check("the home: «الخلفية ← الآفاق» shows the scenes on any layout; the glass clock and the cut-out only with «الساعة ← زجاجية», else the header's clock stays",
       'boolean on = "scenes".equals(cfg.homeBg);' in tick and 'boolean glass = "glass".equals(cfg.homeClock);' in tick and "boolean bigClock = glass;" in tick
-      and "final Bitmap glass = withClock ? decode(" in scene and "final Bitmap mask = withClock && sc.mask != null" in scene
+      and "final Bitmap glass = withClock ? decode(" in scene and "final Bitmap cut = withClock && sc.mask != null" in scene
       and 'if ("scenes".equals(homeLayout)) { homeLayout = "classic"; homeBg = "scenes"; homeClock = "glass"; }' in snap)
 check("«حزم الآفاق» (the owner's «الآفاق», was «المشاهد»): «آفاق السعودية» and «آفاق عالمية» (the Couch TV pack), none chosen is the Saudi one; in «المظهر» ← «الخلفية والآفاق»",
       '{"saudi", "آفاق السعودية"}, {"couch", "آفاق عالمية"}' in prefs and 'if (out.isEmpty()) out.add("saudi");' in prefs
