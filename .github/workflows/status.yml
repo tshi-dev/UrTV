@@ -1,0 +1,33 @@
+name: Status
+
+# status/status.json (tools/status.py): each dataset's last update and its writer's last good run, red when late. Hourly at :53 and by hand.
+# The page docs/index.html (GitHub Pages: Settings > Pages > Deploy from a branch > main, /docs) shows it.
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '53 * * * *'
+
+permissions:
+  contents: write
+  actions: read
+
+concurrency:
+  group: status
+  cancel-in-progress: true
+
+jobs:
+  status:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build and publish status/
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          git fetch -q --depth=1 origin +refs/heads/data:refs/remotes/origin/data
+          git show origin/data:index.json > index.json
+          python3 tools/status.py index.json status
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          python3 tools/publish.py --put status:status -m "Status"

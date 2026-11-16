@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>UrTV data status</title>
+<style>
+:root{--bg:#fafaf7;--fg:#1d1d1b;--mute:#6b6b66;--line:#e2e2dc;--ok:#1f7a3d;--late:#c62828;--card:#fff}
+@media (prefers-color-scheme:dark){:root{--bg:#141413;--fg:#ecece8;--mute:#9a9a94;--line:#2c2c2a;--ok:#5cc27f;--late:#ff6b6b;--card:#1c1c1a}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif}
+main{max-width:920px;margin:0 auto;padding:24px 16px}
+h1{font-size:22px;margin:0 0 4px}
+p{color:var(--mute);margin:0 0 16px}
+.wrap{overflow-x:auto;background:var(--card);border:1px solid var(--line);border-radius:10px}
+table{border-collapse:collapse;width:100%;min-width:560px}
+th,td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--line);white-space:nowrap}
+th{font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:var(--mute)}
+tr:last-child td{border-bottom:0}
+.dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:8px;vertical-align:middle}
+.ok{background:var(--ok)}.late{background:var(--late)}.na{background:var(--line)}
+.lateText{color:var(--late);font-weight:600}
+a{color:inherit}
+</style>
+</head>
+<body>
+<main>
+<h1>UrTV data status · حالة البيانات</h1>
+<p id="sum">Loading…</p>
+<div class="wrap"><table>
+<thead><tr><th>Dataset</th><th>Updated</th><th>Writer's last good run</th><th>Files</th><th>Size</th></tr></thead>
+<tbody id="rows"></tbody>
+</table></div>
+<p style="margin-top:16px">Files: <code>https://raw.githubusercontent.com/tshi-dev/urtv-data/data/</code> · <a href="https://github.com/tshi-dev/urtv-data">source and docs</a></p>
+</main>
+<script>
+const URL_STATUS = 'https://raw.githubusercontent.com/tshi-dev/urtv-data/data/status/status.json';
+const ago = s => { if(!s) return '—'; const m = Math.round((Date.now() - Date.parse(s)) / 60000);
+  return m < 60 ? m + ' min ago' : m < 2880 ? Math.round(m / 60) + ' h ago' : Math.round(m / 1440) + ' days ago'; };
+const size = b => b == null ? '—' : b < 1e6 ? Math.round(b / 1e3) + ' KB' : (b / 1e6).toFixed(1) + ' MB';
+const cell = t => { const td = document.createElement('td'); td.textContent = t; return td; };
+fetch(URL_STATUS, {cache: 'no-store'}).then(r => r.json()).then(s => {
+  const rows = document.getElementById('rows');
+  Object.entries(s.datasets).forEach(([name, d]) => {
+    const tr = document.createElement('tr'), first = document.createElement('td'), dot = document.createElement('span');
+    dot.className = 'dot ' + (d.late ? 'late' : d.late_after_h == null ? 'na' : 'ok');
+    first.append(dot, name + (d.late ? ' ' : ''));
+    if(d.late){ const l = document.createElement('span'); l.className = 'lateText'; l.textContent = 'late'; first.append(l); }
+    const run = document.createElement('td');
+    if(d.run){ const a = document.createElement('a'); a.href = d.run; a.textContent = ago(d.last_good_run); run.append(a); } else run.textContent = ago(d.last_good_run);
+    tr.append(first, cell(ago(d.updated)), run, cell(d.count ?? '—'), cell(size(d.bytes)));
+    rows.append(tr);
+  });
+  document.getElementById('sum').textContent = (s.late.length ? s.late.length + ' late: ' + s.late.join(', ') : 'All writers on time') + ' · checked ' + ago(s.updated);
+}).catch(() => { document.getElementById('sum').textContent = 'status.json could not be read.'; });
+</script>
+</body>
+</html>
