@@ -302,7 +302,7 @@ public class SettingsActivity extends Activity {
             new Runnable() { public void run() { pickDigits(); } });
         noConv = false;
         // 4.3.3 «التاريخ بالأرقام»: the Hijri and the Gregorian as day/month/year on the screensaver and the home, in the digits above
-        row("شكل التاريخ", prefs.dateNum() ? "بالأرقام" : "بالحروف", R.drawable.ic_language,
+        row("التاريخ بالأرقام", prefs.dateNum() ? "مفعّل" : "متوقف", R.drawable.ic_language,
             new Runnable() { public void run() { prefs.setDateNum(!prefs.dateNum()); render(); } });
         row("تنبيه قبل الأذان", prefs.adhanBar() ? "يعمل · شريط في أعلى الشاشة آخر ١٠ دقائق، ثم حتى الإقامة" : "متوقف", R.drawable.ic_eye,
             new Runnable() { public void run() { prefs.setAdhanBar(!prefs.adhanBar()); render(); } });
@@ -444,7 +444,7 @@ public class SettingsActivity extends Activity {
             new Runnable() { public void run() { prefs.setBackSaver(!prefs.backSaver()); render(); } });
         // 4.3.3 «المباريات المنتهية»: on the football home only; hidden, today's list keeps the games still to come (or the next day's)
         if ("football".equals(prefs.homeLayout()))
-            row("المباريات المنتهية", prefs.fbHideDone() ? "مخفية" : "ظاهرة", R.drawable.ic_eye,
+            row("إخفاء المباريات المنتهية", prefs.fbHideDone() ? "مفعّل" : "متوقف", R.drawable.ic_eye,
                 new Runnable() { public void run() { prefs.setFbHideDone(!prefs.fbHideDone()); render(); } });
         // «الخروج من تلفزيونك»: only where the TV keeps its own home (ours opened from its tile); one Back as always, a long Back or three
         row("الخروج من تلفزيونك", HomeExit.label(prefs.homeExit()), R.drawable.ic_eye,

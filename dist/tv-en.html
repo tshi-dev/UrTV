@@ -1194,7 +1194,7 @@ function tickDates(){
   if(CONFIG.dateNum) try{
     const n = (c, d) => { const p = new Intl.DateTimeFormat('en-u-ca-' + c + '-nu-latn', {timeZone: CONFIG.timezone, day:'2-digit', month:'2-digit', year:'numeric'})
       .formatToParts(d).reduce((a, x) => (a[x.type] = x.value, a), {}); return ar(p.day + '/' + p.month + '/' + parseInt(p.year)); };
-    const wd = new Intl.DateTimeFormat(GREG, {timeZone: CONFIG.timezone, weekday:'long'}).format(now) + ', ';
+    const wd = EN_DAYS[enDay(now, CONFIG.timezone).wd] + ', ';
     setText(document.getElementById('hijri'), wd + n('islamic-umalqura', hijriAt(now)) + ' AH');
     setText(document.getElementById('greg'), wd + n('gregory', now));
   }catch(e){}

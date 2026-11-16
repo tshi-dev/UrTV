@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""4.3.3: the home's Gregorian date has its year, and «التاريخ بالأرقام» (#datenum=1, `saver.sh datenum on`, the settings' «شكل التاريخ») writes
+"""4.3.3: the home's Gregorian date has its year, and «التاريخ بالأرقام» (#datenum=1, `saver.sh datenum on`, the settings' row) writes
 the Hijri and the Gregorian as day/month/year on the home and the screensaver, in the digits «الأرقام» chose. DateNum runs on a plain JVM; the
 wiring is read from the source (the page in a browser: tests/date_num.test.mjs).   Run: python3 tests/date_num_test.py"""
 import shutil, subprocess, sys, tempfile
@@ -24,7 +24,7 @@ check("the Hijri numbers move with «فرق التاريخ الهجري», its m
       "h.setTime(shift == 0 ? now.getTime() : HijriShift.date(now, shift));" in main and "h.get(android.icu.util.Calendar.MONTH) + 1" in main)
 check("the setting: off by default, #datenum=1 only while on, saver.sh datenum on|off, saver.sh show, the settings row under «الأرقام»",
       'sp.getBoolean("dateNum", false)' in prefs and '(dateNum() ? "&datenum=1" : "")' in prefs and 'p.setDateNum("on".equals(dateNum));' in recv
-      and '"\\ndatenum: "' in recv and 'set1 datenum' in saver and st.index('row("الأرقام"') < st.index('row("شكل التاريخ", prefs.dateNum() ? "بالأرقام" : "بالحروف"'))
+      and '"\\ndatenum: "' in recv and 'set1 datenum' in saver and st.index('row("الأرقام"') < st.index('row("التاريخ بالأرقام", prefs.dateNum() ? "مفعّل" : "متوقف"'))
 check("the page: #datenum=1 writes both lines as day/month/year through ar() (the digits chosen)",
       "dateNum: _Q.get('datenum') === '1'," in tpl and "if(CONFIG.dateNum) try{" in tpl and "return ar(p.day + '/' + p.month + '/' + parseInt(p.year));" in tpl)
 check("tests/run.sh runs this test and the page's", all(t in src(ROOT / "tests/run.sh") for t in ("tests/date_num_test.py", "tests/date_num.test.mjs")))

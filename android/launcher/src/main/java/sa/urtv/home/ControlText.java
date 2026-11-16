@@ -69,7 +69,7 @@ final class ControlText {
 
     /** «العصر ٣:١٥ م، الإقامة ٣:٣٥ م»; with no iqama time (a Friday's Dhuhr) the adhan's alone: «الظهر ١٢:٠٢ م». No «·»: a comma, as the other lines. */
     static String adhanLine(String prayer, String adhan, String iqama) {
-        return iqama == null || iqama.isEmpty() ? S.t("%s %s", prayer, adhan) : S.t("%s %s، الإقامة %s", prayer, adhan, iqama);
+        return iqama == null || iqama.isEmpty() ? prayer + " " + adhan : S.t("%s %s، الإقامة %s", prayer, adhan, iqama);
     }
 
     /** The action the tile opens: the first of BLUETOOTH_ACTIONS this TV can open, or null (then there is no tile). */
