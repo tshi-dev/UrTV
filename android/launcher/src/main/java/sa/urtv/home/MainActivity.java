@@ -3172,14 +3172,15 @@ public class MainActivity extends Activity {
      * header's clock (the greeting, the date and the rest of the home stay as they are); any other layout: the home as it was.
      */
     private void sceneTick(ConfigSnapshot cfg) {
-        boolean on = "scenes".equals(cfg.homeLayout);
+        boolean on = "scenes".equals(cfg.homeBg);   // 4.4 «الخلفية ← المشاهد» (any layout); the glass clock is «الساعة»'s own choice
+        boolean glass = "glass".equals(cfg.homeClock);
         if (!on && sceneHome == null && !scenesOn) return;   // the home as it was (the default): nothing of the scenes is made, read, timed or downloaded
         if (on && sceneHome == null) {   // chosen: the layer is made now, over the photos and under the dimming and the scrims
             sceneHome = new SceneHome(this, Ram.tier(this), font("display"));
             sceneBackdrop.addView(sceneHome, sceneBackdrop.indexOfChild(wallFront) + 1, new FrameLayout.LayoutParams(-1, -1));
         }
         if (on) {
-            sceneHome.set(true, cfg.scenePacks, ScenePlan.stay(cfg.sceneStay), homeCard != null && homeCard.shownCards() > 0, Dir.rtl());
+            sceneHome.set(true, cfg.scenePacks, ScenePlan.stay(cfg.sceneStay), homeCard != null && homeCard.shownCards() > 0, Dir.rtl(), glass);
             boolean night = false, fog = false;
             if (cfg.sceneByTime) try {   // the city's Maghrib to its Fajr (the same prayer times as the adhan)
                 sa.urtv.home.tilawah.DayParts d = sa.urtv.home.tilawah.DayParts.now(this, cfg.placeFragment(), cfg.placeTicket());
@@ -3205,8 +3206,9 @@ public class MainActivity extends Activity {
             } else nextWallpaper();   // back to the home as it was: its photo again
         }
         int show = on ? View.INVISIBLE : View.VISIBLE;   // INVISIBLE: the header keeps its size, nothing under it moves
-        clock.setVisibility(show);
-        if (on) ampm.setVisibility(View.INVISIBLE);
+        boolean bigClock = on && glass;   // the scene's glass clock takes the header clock's place; with «الساعة: عادية» the header clock stays
+        clock.setVisibility(bigClock ? View.INVISIBLE : View.VISIBLE);
+        if (bigClock) ampm.setVisibility(View.INVISIBLE);
         wallBack.setVisibility(show);
         wallFront.setVisibility(show);
         if (on) { sceneHome.setTime(clock.getText()); if (resumed) sceneHome.start(); }

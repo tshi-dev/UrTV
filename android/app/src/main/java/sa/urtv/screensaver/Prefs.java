@@ -1064,8 +1064,46 @@ final class Prefs {
     boolean updateBell() { return sp.getBoolean("updateBell", true); }
     /** «أكمل المشاهدة» under the home screen's favourites (default on; it shows only once the home app may read the TV's Watch Next list). */
     /** «المظهر ← الواجهة»: the home's layout, classic (the default, the home as it always was) or football (docs/PROPOSALS-NOV2.md §1) */
-    static final String[] HOME_LAYOUTS = {"classic", "football", "scenes"};
-    static final String[] HOME_LAYOUT_NAMES = {"العادية", "كرة القدم", "المشاهد"};
+    /**
+     * 4.4 the look in three independent choices (the owner): «التخطيط» (our layout, the default, or the football home), «الخلفية» (the photos as always,
+     * or the scenes) and «الساعة» (plain, or glass behind the photo's scenery). The presets «شكل تلفزيونك» (the default) and «شكل كنبة» set the three.
+     * A layout «scenes» kept by a test build of 4.3.3 reads as our layout with the scenes and the glass clock.
+     */
+    static final String[] HOME_LAYOUTS = {"classic", "football"};
+    static final String[] HOME_LAYOUT_NAMES = {"تلفزيونك", "كرة القدم"};
+    static final String[] HOME_BGS = {"photos", "scenes"};
+    static final String[] HOME_BG_NAMES = {"صوري وحزم الصور", "المشاهد"};
+    static final String[] HOME_CLOCKS = {"plain", "glass"};
+    static final String[] HOME_CLOCK_NAMES = {"عادية", "زجاجية خلف الصورة"};
+    /** the presets: name, layout, background, clock */
+    static final String[][] LOOKS = {{"urtv", "شكل تلفزيونك", "classic", "photos", "plain"}, {"couch", "شكل كنبة", "classic", "scenes", "glass"}};
+    private boolean oldScenes() { return "scenes".equals(sp.getString("homeLayout", "")); }
+    String homeLayout() { String v = sp.getString("homeLayout", HOME_LAYOUTS[0]); return java.util.Arrays.asList(HOME_LAYOUTS).contains(v) ? v : HOME_LAYOUTS[0]; }
+    void setHomeLayout(String v) {
+        if (!java.util.Arrays.asList(HOME_LAYOUTS).contains(v)) return;
+        boolean was = oldScenes();
+        if (was) sp.edit().putString("homeBg", homeBg()).putString("homeClock", homeClock()).apply();   // the old value's scenes and clock kept as their own choices
+        sp.edit().putString("homeLayout", v).apply();
+    }
+    static String homeLayoutLabel(String v) { int i = java.util.Arrays.asList(HOME_LAYOUTS).indexOf(v); return HOME_LAYOUT_NAMES[Math.max(0, i)]; }
+    String homeBg() { String v = sp.getString("homeBg", oldScenes() ? "scenes" : "photos"); return java.util.Arrays.asList(HOME_BGS).contains(v) ? v : "photos"; }
+    void setHomeBg(String v) { if (java.util.Arrays.asList(HOME_BGS).contains(v)) sp.edit().putString("homeBg", v).apply(); }
+    static String homeBgLabel(String v) { int i = java.util.Arrays.asList(HOME_BGS).indexOf(v); return HOME_BG_NAMES[Math.max(0, i)]; }
+    String homeClock() { String v = sp.getString("homeClock", oldScenes() ? "glass" : "plain"); return java.util.Arrays.asList(HOME_CLOCKS).contains(v) ? v : "plain"; }
+    void setHomeClock(String v) { if (java.util.Arrays.asList(HOME_CLOCKS).contains(v)) sp.edit().putString("homeClock", v).apply(); }
+    static String homeClockLabel(String v) { int i = java.util.Arrays.asList(HOME_CLOCKS).indexOf(v); return HOME_CLOCK_NAMES[Math.max(0, i)]; }
+    /** the preset the three choices match ("urtv", "couch"), or "" (custom) */
+    String look3() {
+        for (String[] l : LOOKS) if (l[2].equals(homeLayout()) && l[3].equals(homeBg()) && l[4].equals(homeClock())) return l[0];
+        return "";
+    }
+    void setLook3(String key) {
+        for (String[] l : LOOKS) if (l[0].equals(key)) { sp.edit().putString("homeLayout", l[2]).putString("homeBg", l[3]).putString("homeClock", l[4]).apply(); return; }
+    }
+    static String look3Label(String key) {
+        for (String[] l : LOOKS) if (l[0].equals(key)) return l[1];
+        return "مخصّص";
+    }
     /** 4.3.3 «حزم المشاهد» (the scene home): «مشاهد السعودية» is in the app, «مشاهد Couch TV» is downloaded when chosen; none chosen is the Saudi pack */
     static final String[][] SCENE_PACKS = {{"saudi", "مشاهد السعودية"}, {"couch", "مشاهد Couch TV"}};
     List<String> scenePacks() {
@@ -1085,9 +1123,6 @@ final class Prefs {
     void setSceneByTime(boolean on) { sp.edit().putBoolean("sceneByTime", on).apply(); }
     boolean sceneByWeather() { return sp.getBoolean("sceneByWeather", false); }
     void setSceneByWeather(boolean on) { sp.edit().putBoolean("sceneByWeather", on).apply(); }
-    String homeLayout() { String v = sp.getString("homeLayout", HOME_LAYOUTS[0]); return java.util.Arrays.asList(HOME_LAYOUTS).contains(v) ? v : HOME_LAYOUTS[0]; }
-    void setHomeLayout(String v) { if (java.util.Arrays.asList(HOME_LAYOUTS).contains(v)) sp.edit().putString("homeLayout", v).apply(); }
-    static String homeLayoutLabel(String v) { int i = java.util.Arrays.asList(HOME_LAYOUTS).indexOf(v); return HOME_LAYOUT_NAMES[Math.max(0, i)]; }
     /** «تطبيقات في الشريط»: how many favourites the home's tray shows whole at once, 5 (the default, as always) to 10, or "all" (up to 10, never a scroll) */
     static final String[] FAV_BARS = {"5", "6", "7", "8", "9", "10", "all"};
     /** 9 and 10 were taken as 8 for a while (step 28); the owner wants them whole again (4.3.1), so a saved word stays as it is */

@@ -16,14 +16,14 @@ def check(name, ok, detail=""):
 read = lambda p: p.read_text(encoding="utf-8")
 
 prefs, recv, prov, st = read(APP / "Prefs.java"), read(APP / "SaverReceiver.java"), read(APP / "ConfigProvider.java"), read(APP / "SettingsActivity.java")
-check("the setting: classic (the default, the home as it always was), football or scenes (4.3.3), nothing else kept",
-      'static final String[] HOME_LAYOUTS = {"classic", "football", "scenes"};' in prefs and 'sp.getString("homeLayout", HOME_LAYOUTS[0])' in prefs
-      and "if (java.util.Arrays.asList(HOME_LAYOUTS).contains(v)) sp.edit().putString(\"homeLayout\", v).apply();" in prefs)
-check("saver.sh homelayout: refused unless classic, football or scenes, saved, and said by show",
+check("the setting «التخطيط» (4.4): classic (the default, the home as it always was) or football, nothing else kept",
+      'static final String[] HOME_LAYOUTS = {"classic", "football"};' in prefs and 'sp.getString("homeLayout", HOME_LAYOUTS[0])' in prefs
+      and "if (!java.util.Arrays.asList(HOME_LAYOUTS).contains(v)) return;" in prefs and 'sp.edit().putString("homeLayout", v).apply();' in prefs)
+check("saver.sh homelayout: refused unless classic or football (4.3.3's scenes is the couch preset), saved, and said by show",
       'return "error: homelayout is one of "' in recv and "if (homeLayout != null) p.setHomeLayout(homeLayout);" in recv
-      and '"\\nhomelayout: " + p.homeLayout()' in recv and 'homelayout) set1 homelayout "${2:?usage: optimize/saver.sh homelayout classic|football|scenes}" ;;' in read(ROOT / "optimize/saver.sh"))
+      and '"\\nhomelayout: " + p.homeLayout()' in recv and 'homelayout) set1 homelayout "${2:?usage: optimize/saver.sh homelayout classic|football}" ;;' in read(ROOT / "optimize/saver.sh"))
 check("the home reads it as a column of its own after the others (an older screensaver has none: classic)",
-      '"watch_next", "look", "home_layout", "fav_bar", "pages_dark", "pills_hidden", "look_tweaks", "match_app", "page_zone", "city_chosen", "scene_packs", "scene_stay", "scene_time", "scene_weather"});' in prov and "p.look(), p.homeLayout()," in prov and "p.favBar(), p.pagesDark()" in prov
+      '"watch_next", "look", "home_layout", "fav_bar", "pages_dark", "pills_hidden", "look_tweaks", "match_app", "page_zone", "city_chosen", "scene_packs", "scene_stay", "scene_time", "scene_weather", "home_bg", "home_clock"});' in prov and "p.look(), p.homeLayout()," in prov and "p.favBar(), p.pagesDark()" in prov
       and 'layout = l >= 0 && c.getString(l) != null ? c.getString(l) : "classic";' in read(HOME / "HomeCard.java"))
 appr = read(ROOT / "android/app/src/main/java/sa/urtv/screensaver/AppearanceActivity.java")
 check("on the TV: «المظهر» (its one page, since design/43) has the «الواجهة» choice, and «المباريات والأسواق» a row that opens the page of the games",

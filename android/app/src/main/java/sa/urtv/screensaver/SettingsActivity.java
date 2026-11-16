@@ -413,7 +413,13 @@ public class SettingsActivity extends Activity {
         row("\u2066UrTV\u2069 النظيف", Boolean.TRUE.equals(homeCleanSeen()) ? "مفعّل الأساسيات فقط، وبضغطة ترجع الشاشة الكاملة" : "الأساسيات فقط، وبضغطة ترجع الشاشة الكاملة", R.drawable.ic_eye, new Runnable() { public void run() { openClean(); } });
         // «المظهر»: one page for everything about the look of both apps (AppearanceActivity), each choice with its picture
         // 4.3.3 «الواجهة»: the home as it was (the default), the football home, or «المشاهد» (a scene with the glass clock behind its scenery); and the scene packs
-        row("الواجهة", Prefs.homeLayoutLabel(prefs.homeLayout()), R.drawable.ic_eye, new Runnable() { public void run() { pickHomeLayout(); } });
+        // 4.4 the look: a preset, or its three parts one by one (the owner: mix and match)
+        row("الشكل الجاهز", Prefs.look3Label(prefs.look3()), R.drawable.ic_eye, new Runnable() { public void run() { pickLook3(); } });
+        row("التخطيط", Prefs.homeLayoutLabel(prefs.homeLayout()), R.drawable.ic_eye, new Runnable() { public void run() { pickHomeLayout(); } });
+        row("الخلفية", Prefs.homeBgLabel(prefs.homeBg()), R.drawable.ic_eye, new Runnable() { public void run() {
+            pickOne("الخلفية", Prefs.HOME_BG_NAMES, java.util.Arrays.asList(Prefs.HOME_BGS).indexOf(prefs.homeBg()), i -> prefs.setHomeBg(Prefs.HOME_BGS[i])); } });
+        row("الساعة", Prefs.homeClockLabel(prefs.homeClock()), R.drawable.ic_eye, new Runnable() { public void run() {
+            pickOne("الساعة", Prefs.HOME_CLOCK_NAMES, java.util.Arrays.asList(Prefs.HOME_CLOCKS).indexOf(prefs.homeClock()), i -> prefs.setHomeClock(Prefs.HOME_CLOCKS[i])); } });
         row("حزم المشاهد", labels(Prefs.SCENE_PACKS, prefs.scenePacks(), "مشاهد السعودية"), R.drawable.ic_eye,
             new Runnable() { public void run() { pickMany("scenePacks", "حزم المشاهد", Prefs.SCENE_PACKS, "بدون اختيار = مشاهد السعودية"); } });
         row("بقاء كل مشهد", Prefs.sceneStayLabel(prefs.sceneStay()), R.drawable.ic_eye, new Runnable() { public void run() { pickSceneStay(); } });
@@ -2200,6 +2206,22 @@ public class SettingsActivity extends Activity {
             .show();
     }
 
+    /** «الشكل الجاهز»: «شكل تلفزيونك» (the default) or «شكل كنبة», each setting the three parts at once */
+    private void pickLook3() {
+        String[] labels = new String[Prefs.LOOKS.length];
+        int at = -1;
+        for (int k = 0; k < labels.length; k++) { labels[k] = Prefs.LOOKS[k][1]; if (Prefs.LOOKS[k][0].equals(prefs.look3())) at = k; }
+        pickOne("الشكل الجاهز", labels, at, k -> prefs.setLook3(Prefs.LOOKS[k][0]));
+    }
+
+    /** one of a few choices, saved at once, the list drawn again */
+    private void pickOne(String title, String[] labels, int at, java.util.function.IntConsumer save) {
+        new Dlg(this).setTitle(title)
+            .setSingleChoiceItems(labels, at, (d, k) -> { save.accept(k); d.dismiss(); render(); })
+            .setNegativeButton("إلغاء", null)
+            .show();
+    }
+
     /** «بقاء كل مشهد»: 10 s, 20 s (the default), a minute or 5 minutes; a weak TV changes at most every 5 minutes whatever is chosen */
     private void pickSceneStay() {
         new Dlg(this).setTitle("بقاء كل مشهد")
@@ -2216,7 +2238,7 @@ public class SettingsActivity extends Activity {
     private void pickHomeLayout() {
         final String[] labels = new String[Prefs.HOME_LAYOUTS.length];
         for (int i = 0; i < labels.length; i++) labels[i] = Prefs.HOME_LAYOUT_NAMES[i];
-        new Dlg(this).setTitle("الشكل والمشاهد: الواجهة")
+        new Dlg(this).setTitle("التخطيط")
             .setSingleChoiceItems(labels, java.util.Arrays.asList(Prefs.HOME_LAYOUTS).indexOf(prefs.homeLayout()), (d, i) -> {
                 prefs.setHomeLayout(Prefs.HOME_LAYOUTS[i]);
                 d.dismiss();

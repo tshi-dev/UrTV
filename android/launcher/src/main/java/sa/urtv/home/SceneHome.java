@@ -36,7 +36,7 @@ final class SceneHome extends FrameLayout {
     private List<ScenePlan.Scene> all = new ArrayList<>(), scenes = new ArrayList<>();   // all: the packs' scenes; scenes: the ones taking turns now (ScenePlan.choose)
     private boolean byTime, night, byWeather, fog;
     private int index = -1, staySeconds = ScenePlan.STAY_S, gen = 0;
-    private boolean on, running, cardsShown, rtl = true;
+    private boolean on, running, cardsShown, rtl = true, glass = true;   // glass: «الساعة: زجاجية» (the clock and the cut-out); plain: the photo only
     private String packs = "";
     private CharSequence time = "";
 
@@ -77,8 +77,9 @@ final class SceneHome extends FrameLayout {
     }
 
     /** The settings, from the home's config read: the scene home on or off, the packs that are on, how long each scene stays, whether the cards are shown. */
-    void set(boolean wanted, String packSetting, int seconds, boolean cards, boolean rightToLeft) {
-        boolean changed = wanted != on || !String.valueOf(packSetting).equals(packs) || seconds != staySeconds || cards != cardsShown || rightToLeft != rtl;
+    void set(boolean wanted, String packSetting, int seconds, boolean cards, boolean rightToLeft, boolean glassClock) {
+        boolean changed = wanted != on || !String.valueOf(packSetting).equals(packs) || seconds != staySeconds || cards != cardsShown || rightToLeft != rtl || glassClock != glass;
+        glass = glassClock;
         on = wanted;
         packs = String.valueOf(packSetting);
         staySeconds = seconds;
@@ -93,7 +94,7 @@ final class SceneHome extends FrameLayout {
             ui.post(() -> { if (g != gen) return; this.all = all; scenes = ScenePlan.choose(all, byTime, night, byWeather, fog); index = -1; if (running) show(); });
         });
         for (String p : ScenePlan.packs(packs))   // the files not in the app, once; when they arrive the scenes are read again
-            SceneDownload.fetchIfNeeded(app, p, () -> ui.post(() -> { if (on) { String keep = packs; packs = ""; set(true, keep, staySeconds, cardsShown, rtl); } }));
+            SceneDownload.fetchIfNeeded(app, p, () -> ui.post(() -> { if (on) { String keep = packs; packs = ""; set(true, keep, staySeconds, cardsShown, rtl, glass); } }));
     }
 
     boolean on() { return on; }
@@ -158,14 +159,15 @@ final class SceneHome extends FrameLayout {
         final Slot back = index < 0 ? slots[front] : slots[1 - front];
         io.execute(() -> {
             final Bitmap photo = decode(sc, ".jpg", ScenePlan.decodeWidth(tier, w), tier != ScenePlan.NORMAL);
-            final Bitmap glass = decode(sc, "-glass.jpg", 960, true);
-            final Bitmap mask = sc.mask != null && ScenePlan.mask(tier) ? decode(sc, "-fg.webp", 1920, false) : null;
+            final boolean withClock = this.glass;   // «الساعة: عادية»: no glass copy, no cut-out (the header's clock shows)
+            final Bitmap glass = withClock ? decode(sc, "-glass.jpg", 960, true) : null;
+            final Bitmap mask = withClock && sc.mask != null && ScenePlan.mask(tier) ? decode(sc, "-fg.webp", 1920, false) : null;
             ui.post(() -> {
                 if (g != gen || !on) return;
-                if (photo == null || glass == null) { index = at; schedule(); return; }   // a missing file: the next one, never a blank home
+                if (photo == null || (withClock && glass == null)) { index = at; schedule(); return; }   // a missing file: the next one, never a blank home
                 back.photoBm = photo; back.glassBm = glass; back.maskBm = mask;
                 back.photo.setImageBitmap(photo);
-                back.clock.setScene(glass, ScenePlan.clockBox(sc, w, h, cardsShown, rtl), sc.dark);
+                back.clock.setScene(glass, withClock ? ScenePlan.clockBox(sc, w, h, cardsShown, rtl) : null, sc.dark);
                 back.clock.setTime(time);
                 if (mask != null) {
                     float k = h / 1080f;

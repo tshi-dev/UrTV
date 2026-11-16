@@ -127,8 +127,8 @@ check("no timer while another screen is in front; a running timer is not reset b
 
 # ---- the home: an option, the home as it was by default
 tick = main[main.index("private void sceneTick(ConfigSnapshot cfg)"):].split("\n    }\n")[0]
-check("the home: «المشاهد» only when chosen; then the scene and its clock replace the photo and the header's clock (the rest stays)",
-      'boolean on = "scenes".equals(cfg.homeLayout);' in tick and "clock.setVisibility(show);" in tick and "wallFront.setVisibility(show);" in tick
+check("the home: the scenes only when chosen; then the scene replaces the photo, and with the glass clock the header's clock (the rest stays)",
+      'boolean on = "scenes".equals(cfg.homeBg);' in tick and "clock.setVisibility(bigClock ? View.INVISIBLE : View.VISIBLE);" in tick and "wallFront.setVisibility(show);" in tick
       and "sceneHome.setTime(clock.getText());" in tick and "sceneTick(cfg);" in main and "homeCard.shownCards() > 0" in tick)
 check("the scene sits over the photos and under the dimming and the scrims (put just after the front photo when made)",
       "sceneBackdrop.addView(sceneHome, sceneBackdrop.indexOfChild(wallFront) + 1," in main and main.index("sceneBackdrop = backdrop;") < main.index("backdrop.addView(wallDimView"))
@@ -140,8 +140,8 @@ import glob
 body = tick.split("\n", 1)[1]
 first = [l.strip() for l in body.splitlines() if l.strip() and not l.strip().startswith("//")]
 check("off (the default): sceneTick's first step after reading the layout returns when the scenes are off and nothing of them exists",
-      first[0] == 'boolean on = "scenes".equals(cfg.homeLayout);'
-      and first[1].startswith("if (!on && sceneHome == null && !scenesOn) return;"), first[:2])
+      first[0].startswith('boolean on = "scenes".equals(cfg.homeBg);') and first[1] == 'boolean glass = "glass".equals(cfg.homeClock);'
+      and first[2].startswith("if (!on && sceneHome == null && !scenesOn) return;"), first[:3])
 check("off: the scene layer is not made at the home's start, only in sceneTick when chosen; turned off, it is shut down and removed whole",
       main.count("new SceneHome(") == 1 and "if (on && sceneHome == null) {" in tick and tick.index("if (on && sceneHome == null) {") < tick.index("new SceneHome(")
       and "sceneHome.shutdown();" in tick and "sceneBackdrop.removeView(sceneHome);" in tick and "sceneHome = null;" in tick
@@ -158,11 +158,20 @@ check("off: the scenes' memory tier, font and pictures are asked for only when t
       main.count("new SceneHome(this, Ram.tier(this), font(\"display\"))") == 1)
 
 # ---- the settings
-check("«الواجهة»: classic (the default), football, scenes", 'HOME_LAYOUTS = {"classic", "football", "scenes"};' in prefs and '"العادية", "كرة القدم", "المشاهد"' in prefs)
+check("4.4 three choices: «التخطيط» (تلفزيونك, the default, or كرة القدم), «الخلفية» (photos, the default, or scenes), «الساعة» (plain, the default, or glass)",
+      'HOME_LAYOUTS = {"classic", "football"};' in prefs and '{"تلفزيونك", "كرة القدم"}' in prefs and 'HOME_BGS = {"photos", "scenes"};' in prefs
+      and 'HOME_CLOCKS = {"plain", "glass"};' in prefs and 'sp.getString("homeBg", oldScenes() ? "scenes" : "photos")' in prefs and 'sp.getString("homeClock", oldScenes() ? "glass" : "plain")' in prefs)
+check("the presets set the three at once: «شكل تلفزيونك» (photos, plain clock; the default) and «شكل كنبة» (scenes, glass clock); any other mix reads «مخصّص»",
+      '{{"urtv", "شكل تلفزيونك", "classic", "photos", "plain"}, {"couch", "شكل كنبة", "classic", "scenes", "glass"}}' in prefs and 'return "مخصّص";' in prefs
+      and 'row("الشكل الجاهز", Prefs.look3Label(prefs.look3())' in st and 'row("التخطيط"' in st and 'row("الخلفية"' in st and 'row("الساعة"' in st)
+check("the home: «الخلفية ← المشاهد» shows the scenes on any layout; the glass clock and the cut-out only with «الساعة ← زجاجية», else the header's clock stays",
+      'boolean on = "scenes".equals(cfg.homeBg);' in tick and 'boolean glass = "glass".equals(cfg.homeClock);' in tick and "boolean bigClock = on && glass;" in tick
+      and "final Bitmap glass = withClock ? decode(" in scene and "final Bitmap mask = withClock && sc.mask != null" in scene
+      and 'if ("scenes".equals(homeLayout)) { homeLayout = "classic"; homeBg = "scenes"; homeClock = "glass"; }' in snap)
 check("«حزم المشاهد»: the Saudi pack and the Couch TV pack, none chosen is the Saudi one; both rows in «الشكل والمشاهد», first",
       '{"saudi", "مشاهد السعودية"}, {"couch", "مشاهد Couch TV"}' in prefs and 'if (out.isEmpty()) out.add("saudi");' in prefs
-      and 'row("الواجهة", Prefs.homeLayoutLabel(prefs.homeLayout())' in st and 'row("حزم المشاهد"' in st
-      and '{LOOK, "الواجهة", "حزم المشاهد", "بقاء كل مشهد", "المشهد يتبع الوقت", "المشهد يتبع الطقس", "المظهر",' in hub and '{"الواجهة", LOOK}, {"حزم المشاهد", LOOK}' in hub)
+      and 'row("حزم المشاهد"' in st
+      and '{LOOK, "الشكل الجاهز", "التخطيط", "الخلفية", "الساعة", H + "المشاهد", "حزم المشاهد",' in hub and '{"الساعة", LOOK}, {"حزم المشاهد", LOOK}' in hub)
 check("«بقاء كل مشهد», «المشهد يتبع الوقت», «المشهد يتبع الطقس»: rows in «الشكل والمشاهد», off by default (20 s), given to the home, which picks night by the prayer times and fog by the greeting's weather",
       'row("بقاء كل مشهد"' in st and 'row("المشهد يتبع الوقت"' in st and 'row("المشهد يتبع الطقس"' in st and 'sp.getBoolean("sceneByTime", false)' in prefs
       and 'sp.getBoolean("sceneByWeather", false)' in prefs and 'sp.getString("sceneStay", "20")' in prefs and '"scene_stay", "scene_time", "scene_weather"' in prov
@@ -170,7 +179,8 @@ check("«بقاء كل مشهد», «المشهد يتبع الوقت», «ال�
 check("the ordinary photos are not decoded while the scene home shows (memory): no rotation, a photo on its way not shown, the two layers emptied; back to classic, a photo again",
       "if (scenesOn) return;" in main and main.index("if (scenesOn) return;") < main.index("final int gen = ++wallGen;")
       and "for (ImageView w : new ImageView[] {wallBack, wallFront}) w.setImageDrawable(null);" in tick and "} else nextWallpaper();" in tick)
-check("the provider gives scene_packs; saver.sh scenepacks and homelayout scenes; `show` says them",
-      '"scene_packs"' in prov and 'Prefs.join(p.scenePacks(), ",")' in prov and 'getStringExtra("scenepacks")' in recv and '"\\nscenepacks: "' in recv
-      and "scenepacks) set1 scenepacks" in read(ROOT / "optimize/saver.sh") and "homelayout classic|football|scenes" in read(ROOT / "optimize/saver.sh"))
+check("the provider gives scene_packs, home_bg and home_clock; saver.sh scenepacks, look, background, clock (and 4.3.3's homelayout scenes = the couch preset); `show` says them",
+      '"scene_packs"' in prov and '"home_bg", "home_clock"' in prov and 'Prefs.join(p.scenePacks(), ",")' in prov and 'getStringExtra("scenepacks")' in recv and '"\\nscenepacks: "' in recv
+      and 'if ("scenes".equals(homeLayout)) { homeLayout = null; look3 = "couch"; }' in recv and '"\\nbackground: " + p.homeBg()' in recv
+      and all(f"{c}) " in read(ROOT / "optimize/saver.sh") for c in ("scenepacks", "look", "background", "clock")))
 sys.exit(1 if failed else 0)
