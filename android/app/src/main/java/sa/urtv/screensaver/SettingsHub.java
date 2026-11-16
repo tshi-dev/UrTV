@@ -42,8 +42,8 @@ final class SettingsHub {
     /** A category key as of today: a current one as it is, an old one as its section, anything else null. */
     static String canon(String key) {
         if (key == null) return null;
-        for (String[] c : CATEGORIES) if (c[0].equals(key)) return key;
-        for (String[] o : OLD) if (o[0].equals(key)) return o[1];
+        for (String[] c : cats()) if (c[0].equals(key)) return key;
+        for (String[] o : classic ? OLD_432 : OLD) if (o[0].equals(key)) return o[1];
         return null;
     }
 
@@ -108,16 +108,122 @@ final class SettingsHub {
         {UPDATE, "تحديث تلفزيوني", "التحديث التلقائي للصفحة", "تحديث صفحة شاشة التوقف", "إعداد تلفزيوني", "مسح الملفات المؤقتة", "أرسل تقرير"},
     };
 
+
+    // ---- 4.4 the owner: «شكل كنبة» off = the 4.3.2 settings screen (master's hub of big buttons, «البطاقات» and «المزيد» screens of buttons), on = the side list
+    // above. The same rows (SettingsActivity.render builds each once); only where they sit differs. Made from master's SettingsHub and render() order by
+    // a script (each 4.3.2 row where 4.3.2 had it, its headers where 4.3.2 drew them); the 4.4 rows in their natural 4.3.2 section (the switch and the
+    // look's rows first in «المظهر والخلفيات», the Hijri shift in «الساعة والأرقام», the caches in «تحديث تلفزيوني», the search on the first screen).
+
+    /** key, name, its line, the screen its button is on (null: the first), the row a DIRECT button runs ("" when it opens a screen); 4.3.2's */
+    static final String[][] CATEGORIES_432 = {
+        {"city", "المدينة", "", null, "المدينة"},
+        {"adhan", "الأذان", "", null, "الأذان"},
+        {"place", "الموقع والصلاة", "مدينتك تحدد الوقت والطقس، وطريقة الحساب تحدد مواقيت الصلاة.", null, ""},
+        {"clock", "الساعة والأرقام", "نظام الساعة ١٢ أو ٢٤، والأرقام عربية أو إنجليزية، وأسماء الأشهر الميلادية.", null, ""},
+        {"listen", "تلاوة وأذان", "شاشة التلاوة والأذان، وزرها في الشاشة الرئيسية.", null, ""},
+        {"cards", "البطاقات", "ما يظهر على شاشة التوقف وعلى الشاشة الرئيسية.", null, ""},
+        {"look", "المظهر والخلفيات", "الشكل والصور لشاشة التوقف وللشاشة الرئيسية.", null, ""},
+        {"control", "مركز التحكم", "", null, "مركز التحكم"},
+        {"phone", "التحكم من الجوال", "", null, "الجوالات المسموح لها"},
+        {"update", "تحديث تلفزيوني", "تحديث التطبيقين وإصدارهما، وتحديث صفحة شاشة التوقف.", null, ""},
+        {"report", "أرسل تقرير", "", null, "أرسل تقرير"},
+        {"more", "المزيد", "المباريات والأسواق، والتطبيقات والمفضلة، وجديد المسلسلات، والرقابة الأبوية، وتصفية المواقع.", null, ""},
+        {"saver", "شاشة التوقف", "ما يظهر على شاشة التوقف: الساعة والبطاقة بجانبها، والصور، ومتى تبدأ.", "cards", ""},
+        {"home", "الشاشة الرئيسية", "بطاقات الشاشة الرئيسية الثلاث، والتحية والطقس، والأزرار.", "cards", ""},
+        {"content", "المباريات والأسواق", "ما تعرضه البطاقات: فرقك ودورياتك، والأسواق، والأسهم.", "more", ""},
+        {"apps", "التطبيقات والمفضلة", "ترتيب التطبيقات المفضلة وتعديلها، وترتيب كل التطبيقات، وأسماء مصادر التلفزيون مثل PS5.", "more", ""},
+        {"shows", "جديد المسلسلات", "ما تعرضه بطاقة المسلسلات: التصنيفات واللغات والمسلسلات المختارة.", "more", ""},
+        {"parental", "الرقابة الأبوية", "", "more", "الرقابة الأبوية"},
+        {"family", "تصفية المواقع", "", "more", "تصفية المواقع"},
+        {"lang", "اللغة", "", "more", "اللغة"},
+        {"search", "بحث في الإعدادات", "", null, "بحث في الإعدادات"},   // 4.4: the search, as in the side list
+    };
+
+    /** each row and its 4.3.2 section */
+    static final String[][] ROWS_432 = {
+        {"الأذان", "adhan"}, {"الدولة", "place"}, {"المدينة", "place"}, {"طريقة الحساب", "place"}, {"تعديل وقت الصلاة", "place"},
+        {"الأرقام", "clock"}, {"أسماء الأشهر الميلادية", "clock"}, {"نظام الساعة", "clock"}, {"إظهار الثواني", "clock"}, {"فرق التاريخ الهجري", "clock"},
+        {"افتح تلاوة وأذان", "listen"}, {"زر تلاوة وأذان", "listen"}, {"شكل كنبة", "look"}, {"التخطيط", "look"}, {"الخلفية", "look"},
+        {"الساعة", "look"}, {"شكل التطبيقات", "look"}, {"حزم الآفاق", "look"}, {"بقاء كل أفق", "look"}, {"الأفق يتبع الوقت", "look"},
+        {"الأفق يتبع الطقس", "look"}, {"وضع الألوان", "look"}, {"مركز التحكم", "control"}, {"الجوالات المسموح لها", "phone"}, {"تحديث تلفزيوني", "update"},
+        {"التحديث التلقائي للصفحة", "update"}, {"تحديث صفحة شاشة التوقف", "update"}, {"مسح الملفات المؤقتة", "update"}, {"أرسل تقرير", "report"}, {"معاينة الشاشة", "saver"},
+        {"تنبيه قبل الأذان", "saver"}, {"الشروق بعد الفجر", "saver"}, {"شريط الوقت بين الصلاتين", "saver"}, {"الرطوبة والرياح", "saver"}, {"شريط السنة تحت الساعة", "saver"},
+        {"سرعة ألبوم صوري", "saver"}, {"تاريخ الصورة في ألبوم صوري", "saver"}, {"عنوان ألبوم صوري", "saver"}, {"شكل صورة ألبوم صوري", "saver"}, {"حجم ألبوم صوري", "saver"},
+        {"توهّج لون التطبيق", "saver"}, {"نص أوضح", "saver"}, {"المناسبة القادمة", "saver"}, {"تعتيم الليل", "saver"}, {"المناسبات الوطنية", "saver"},
+        {"حجم الساعة", "saver"}, {"الخانة اليسرى", "saver"}, {"العدّ التنازلي", "saver"}, {"المحتوى", "saver"}, {"بطاقة ثانية", "saver"},
+        {"شكل البطاقة", "saver"}, {"تبديل الآية والحديث", "saver"}, {"الآية والحديث", "saver"}, {"تبديل الصورة كل", "saver"}, {"صور شاشة التوقف", "saver"},
+        {"صوري", "saver"}, {"بدء شاشة التوقف بعد", "saver"}, {"اجعل UrTV الشاشة الرئيسية", "home"}, {"إعداد تلفزيوني", "home"}, {"رجّع واجهة المصنع", "home"},
+        {"تخلّص من واجهة المصنع", "home"}, {"قبل ما تحذف التطبيق…", "home"}, {"\u2066UrTV\u2069 النظيف", "home"}, {"صفحات الأسهم والمباريات داكنة", "home"}, {"البطاقة الأولى", "home"},
+        {"البطاقة الثانية", "home"}, {"البطاقة الثالثة", "home"}, {"التحية والطقس", "home"}, {"زر الأسواق", "home"}, {"زر المباريات", "home"},
+        {"زر الجوال", "home"}, {"زر مركز التحكم", "home"}, {"زر المهام", "home"}, {"الرجوع يفتح شاشة التوقف", "home"}, {"الخروج من تلفزيونك", "home"},
+        {"جرس التحديثات", "home"}, {"أكمل المشاهدة", "home"}, {"مباريات اليوم", "content"}, {"الفرق المتابعة", "content"}, {"تطبيق المباريات", "content"},
+        {"الدوريات كاملة", "content"}, {"رياضات أخرى", "content"}, {"افتح صفحة الأسواق", "content"}, {"شريط الأسواق", "content"}, {"الأسواق", "content"},
+        {"عرض الأسواق", "content"}, {"قائمة الأسهم", "content"}, {"تغيّر الأسهم", "content"}, {"تطبيقات في الشريط", "apps"}, {"ترتيب التطبيقات المفضلة", "apps"},
+        {"تطبيقات مقترحة", "apps"}, {"أسماء المصادر", "apps"}, {"تعديل المفضلة", "apps"}, {"ترتيب كل التطبيقات", "apps"}, {"قفل التطبيقات", "apps"},
+        {"تفاصيل التطبيقات", "apps"}, {"التصنيفات", "shows"}, {"اللغات", "shows"}, {"مسلسلات مختارة", "shows"}, {"أقل تقييم", "shows"},
+        {"الرقابة الأبوية", "parental"}, {"تصفية المواقع", "family"}, {"اللغة", "lang"}, {"بحث في الإعدادات", "search"},
+    };
+
+    /** 4.3.2's group headers and their section */
+    static final String[][] HEADERS_432 = {
+        {"الموقع", "place"},
+        {"المباريات", "content"},
+        {"العرض", "saver"},
+        {"صفحة الأسواق", "content"},
+        {"الأسواق (أعلى اليسار)", "content"},
+        {"بجانب الساعة", "saver"},
+        {"الشاشة الرئيسية (تلفزيونك)", "home"},
+        {"جديد المسلسلات", "shows"},
+        {"الأسهم", "content"},
+        {"التوقيت", "saver"},
+        {"التطبيق", "update"},
+    };
+
+    /** each 4.3.2 section's rows in the order 4.3.2 showed them, with its headers */
+    static final String[][] ORDER_432 = {
+        {"adhan", "الأذان"},
+        {"place", H + "الموقع", "الدولة", "المدينة", "طريقة الحساب", "تعديل وقت الصلاة"},
+        {"clock", "الأرقام", "أسماء الأشهر الميلادية", "نظام الساعة", "إظهار الثواني", "فرق التاريخ الهجري"},
+        {"listen", "افتح تلاوة وأذان", "زر تلاوة وأذان"},
+        {"look", "شكل كنبة", "التخطيط", "الخلفية", "الساعة", "شكل التطبيقات", "حزم الآفاق", "بقاء كل أفق", "الأفق يتبع الوقت", "الأفق يتبع الطقس", "وضع الألوان"},
+        {"control", "مركز التحكم"},
+        {"phone", "الجوالات المسموح لها"},
+        {"update", "تحديث تلفزيوني", H + "التطبيق", "التحديث التلقائي للصفحة", "تحديث صفحة شاشة التوقف", "مسح الملفات المؤقتة"},
+        {"report", "أرسل تقرير"},
+        {"saver", "معاينة الشاشة", H + "العرض", "تنبيه قبل الأذان", "الشروق بعد الفجر", "شريط الوقت بين الصلاتين", "الرطوبة والرياح", "شريط السنة تحت الساعة", "سرعة ألبوم صوري", "تاريخ الصورة في ألبوم صوري", "عنوان ألبوم صوري", "شكل صورة ألبوم صوري", "حجم ألبوم صوري", "توهّج لون التطبيق", "نص أوضح", "المناسبة القادمة", "تعتيم الليل", "المناسبات الوطنية", "حجم الساعة", "الخانة اليسرى", "العدّ التنازلي", H + "بجانب الساعة", "المحتوى", "بطاقة ثانية", "شكل البطاقة", "تبديل الآية والحديث", "الآية والحديث", H + "التوقيت", "تبديل الصورة كل", "صور شاشة التوقف", "صوري", "بدء شاشة التوقف بعد"},
+        {"home", H + "الشاشة الرئيسية (تلفزيونك)", "اجعل UrTV الشاشة الرئيسية", "إعداد تلفزيوني", "رجّع واجهة المصنع", "تخلّص من واجهة المصنع", "قبل ما تحذف التطبيق…", "\u2066UrTV\u2069 النظيف", "صفحات الأسهم والمباريات داكنة", "البطاقة الأولى", "البطاقة الثانية", "البطاقة الثالثة", "التحية والطقس", "زر الأسواق", "زر المباريات", "زر الجوال", "زر مركز التحكم", "زر المهام", "الرجوع يفتح شاشة التوقف", "الخروج من تلفزيونك", "جرس التحديثات", "أكمل المشاهدة"},
+        {"content", H + "المباريات", "مباريات اليوم", "الفرق المتابعة", "تطبيق المباريات", "الدوريات كاملة", "رياضات أخرى", H + "صفحة الأسواق", "افتح صفحة الأسواق", H + "الأسواق (أعلى اليسار)", "شريط الأسواق", "الأسواق", "عرض الأسواق", H + "الأسهم", "قائمة الأسهم", "تغيّر الأسهم"},
+        {"apps", "تطبيقات في الشريط", "ترتيب التطبيقات المفضلة", "تطبيقات مقترحة", "أسماء المصادر", "تعديل المفضلة", "ترتيب كل التطبيقات", "قفل التطبيقات", "تفاصيل التطبيقات"},
+        {"shows", H + "جديد المسلسلات", "التصنيفات", "اللغات", "مسلسلات مختارة", "أقل تقييم"},
+        {"parental", "الرقابة الأبوية"},
+        {"family", "تصفية المواقع"},
+        {"lang", "اللغة"},
+        {"search", "بحث في الإعدادات"},
+    };
+
+    /** a section key of the side list, as the 4.3.2 screen has it (a link or a stored key that names a 4.4 section still lands somewhere right) */
+    static final String[][] OLD_432 = {
+        {"pray", "place"}, {"buttons", "home"}, {"cards", "cards"}, {"more", "more"},
+    };
+
+    /** 4.4: the 4.3.2 screen is the one shown (Prefs.couchOn() false); SettingsActivity sets it before it builds anything */
+    static volatile boolean classic;
+    static void classic(boolean on) { classic = on; }
+    private static String[][] cats() { return classic ? CATEGORIES_432 : CATEGORIES; }
+    private static String[][] rows() { return classic ? ROWS_432 : ROWS; }
+    private static String[][] order() { return classic ? ORDER_432 : ORDER; }
+    private static String[][] heads() { return classic ? HEADERS_432 : HEADERS; }
+
     /** A row's place in its section's order: its index in {@link #ORDER}, -1 for none; a header is looked up as H + text. */
     static int rank(String category, String key) {
-        for (String[] o : ORDER) if (o[0].equals(category)) for (int i = 1; i < o.length; i++) if (o[i].equals(key)) return i;
+        for (String[] o : order()) if (o[0].equals(category)) for (int i = 1; i < o.length; i++) if (o[i].equals(key)) return i;
         return -1;
     }
 
     /** The headers of a section, in its order. */
     static java.util.List<String> headers(String category) {
         java.util.List<String> out = new java.util.ArrayList<>();
-        for (String[] o : ORDER) if (o[0].equals(category)) for (int i = 1; i < o.length; i++) if (o[i].startsWith(H)) out.add(o[i].substring(1));
+        for (String[] o : order()) if (o[0].equals(category)) for (int i = 1; i < o.length; i++) if (o[i].startsWith(H)) out.add(o[i].substring(1));
         return out;
     }
 
@@ -193,7 +299,7 @@ final class SettingsHub {
         java.util.List<String[]> out = new java.util.ArrayList<>();
         if (q.isEmpty()) return out;
         java.util.List<String[]> starts = new java.util.ArrayList<>(), holds = new java.util.ArrayList<>(), sect = new java.util.ArrayList<>(), alias = new java.util.ArrayList<>();
-        for (String[] r : ROWS) {
+        for (String[] r : rows()) {
             if (SEARCH.equals(r[1])) continue;
             String name = fold(r[0]);
             String[] hit = {r[0], r[1]};
@@ -212,18 +318,18 @@ final class SettingsHub {
 
     /** The category of a row (its FocusKey.key); one not named goes with its group's ({@code group}, a header's category), else «شاشة التوقف». */
     static String of(String key, String group) {
-        for (String[] r : ROWS) if (r[0].equals(key)) return r[1];
+        for (String[] r : rows()) if (r[0].equals(key)) return r[1];
         return group != null ? group : SAVER;
     }
 
     /** The category of a group header, null for one not named. */
     static String ofHeader(String text) {
-        for (String[] h : HEADERS) if (h[0].equals(text)) return h[1];
+        for (String[] h : heads()) if (h[0].equals(text)) return h[1];
         return null;
     }
 
     private static String[] find(String category) {
-        for (String[] c : CATEGORIES) if (c[0].equals(category)) return c;
+        for (String[] c : cats()) if (c[0].equals(category)) return c;
         return null;
     }
 
@@ -254,14 +360,14 @@ final class SettingsHub {
     /** A screen of buttons (the first, «البطاقات», «المزيد»): a category some others are in. */
     static boolean hasTiles(String category) {
         if (category == null) return true;
-        for (String[] c : CATEGORIES) if (category.equals(c[3])) return true;
+        for (String[] c : cats()) if (category.equals(c[3])) return true;
         return false;
     }
 
     /** The buttons of a screen (null: the first one), in order. */
     static String[] tiles(String screen) {
         java.util.List<String> out = new java.util.ArrayList<>();
-        for (String[] c : CATEGORIES) if ((screen == null ? c[3] == null : screen.equals(c[3]))) out.add(c[0]);
+        for (String[] c : cats()) if ((screen == null ? c[3] == null : screen.equals(c[3]))) out.add(c[0]);
         return out.toArray(new String[0]);
     }
 
