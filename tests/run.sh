@@ -4,6 +4,7 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."
 python3 tests/check.py
+python3 tests/build_strip_test.py   # the build drops the script's whole-line // comments, never a line of a string, template or regex
 python3 tests/arabic_spacing_test.py   # Arabic letters stay joined: no letter-spacing on anything that can hold Arabic
 python3 tests/tilawah_test.py
 python3 tests/prayer_math_test.py

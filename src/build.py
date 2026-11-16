@@ -477,6 +477,82 @@ def strip_css_comments(html):
     return re.sub(r"(<style[^>]*>)(.*?)(</style>)", lambda m: m.group(1) + re.sub(r"/\*.*?\*/", "", m.group(2), flags=re.S) + m.group(3), html, flags=re.S)
 
 
+_RX_BEFORE = set("(,=:[!&|?{};+-*%<>~^")
+_RX_WORDS = {"return", "typeof", "case", "in", "of", "delete", "void", "throw", "new", "else", "do", "yield", "await"}
+
+
+def js_line_comments(js):
+    """The lines of a script that are a // comment and nothing else, outside every string, template and regex: [(start, end)].
+
+    A small lexer (strings, `templates` with ${} nested, regex literals, comments). It must end where it began (no open string,
+    template or brace): a script it cannot follow stops the build instead of losing a line of code."""
+    out, i, n = [], 0, len(js)
+    stack = []   # '{' for a brace of code, '`' for an open template
+    prev = ""    # the last significant character of code (regex or division?)
+    word = ""
+    line_start = True
+    while i < n:
+        c = js[i]
+        in_tpl = stack and stack[-1] == "`"
+        if in_tpl:
+            if c == "\\": i += 2; continue
+            if c == "`": stack.pop(); prev = "`"; i += 1; continue
+            if c == "$" and js.startswith("${", i): stack.append("{"); prev = "{"; i += 2; continue
+            line_start = c == "\n"; i += 1; continue
+        if c == "\n": line_start = True; i += 1; continue
+        if c in " \t\r": i += 1; continue
+        if c == "/" and js.startswith("//", i):
+            e = js.find("\n", i)
+            e = n if e < 0 else e
+            if line_start:
+                s = js.rfind("\n", 0, i) + 1
+                out.append((s, e + 1 if e < n else e))
+            i = e; continue
+        at_start, line_start = line_start, False
+        if c == "/" and js.startswith("/*", i):
+            e = js.find("*/", i + 2)
+            if e < 0: raise ValueError("an open /* comment")
+            i = e + 2; line_start = at_start; continue
+        if c in "'\"":
+            j = i + 1
+            while j < n and js[j] != c:
+                if js[j] == "\n": raise ValueError("a string open at the end of a line: " + js[i:i + 40])
+                j += 2 if js[j] == "\\" else 1
+            i = j + 1; prev = c; word = ""; continue
+        if c == "`": stack.append("`"); i += 1; continue
+        if c == "/" and (prev == "" or prev in _RX_BEFORE or word in _RX_WORDS):
+            j, cls = i + 1, False
+            while j < n and (cls or js[j] != "/"):
+                if js[j] == "\n": raise ValueError("a regex open at the end of a line: " + js[i:i + 40])
+                if js[j] == "\\": j += 1
+                elif js[j] == "[": cls = True
+                elif js[j] == "]": cls = False
+                j += 1
+            i = j + 1; prev = "/r"; word = ""; continue
+        if c == "{": stack.append("{")
+        elif c == "}":
+            if not stack: raise ValueError("a } with no {")
+            stack.pop()
+        if c.isalnum() or c in "_$":
+            j = i
+            while j < n and (js[j].isalnum() or js[j] in "_$"): j += 1
+            word = js[i:j]; prev = "w"; i = j; continue
+        prev = c; word = ""; i += 1
+    if stack: raise ValueError("the script ends inside " + "".join(stack))
+    return out
+
+
+def strip_js_comments(html):
+    """The page's <script> without the lines that are only a // comment (about 36 KB of the 746 KB budget; the template keeps them)"""
+    def one(m):
+        js, keep, at = m.group(2), [], 0
+        for s, e in js_line_comments(js):
+            keep.append(js[at:s]); at = e
+        keep.append(js[at:])
+        return m.group(1) + "".join(keep) + m.group(3)
+    return re.sub(r"(<script>)(.*?)(</script>)", one, html, flags=re.S)
+
+
 def main():
     template = (ROOT / "src/template.html").read_text(encoding="utf-8").replace("__BUILD__", build_stamp())
     clubs = json.loads((ROOT / "assets/shared/teams.json").read_text(encoding="utf-8"))
@@ -499,7 +575,7 @@ def main():
             entries.append(f'  {{u:"{u}", c:{js_json(bg["credit"])}, d:{bg["brightness"]}}}')
         out = ROOT / "dist" / name
         out.parent.mkdir(exist_ok=True)
-        out.write_text(strip_css_comments(page.replace("__BG_SET__", ",\n".join(entries))), encoding="utf-8")
+        out.write_text(strip_js_comments(strip_css_comments(page.replace("__BG_SET__", ",\n".join(entries)))), encoding="utf-8")
         print(f"wrote {out.relative_to(ROOT)} ({out.stat().st_size / 1e6:.1f} MB)")
 
 if __name__ == "__main__":
