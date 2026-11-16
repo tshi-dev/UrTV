@@ -553,6 +553,14 @@
             android:exported="true"
             android:permission="sa.urtv.home.READ_GLASS" />
 
+        <!-- 4.3.3: is «تخلّص من واجهة المصنع» on? content://sa.urtv.home.setupstate/factory, one row {off}, read only; DUMP = only the
+             shell (install.sh launcher asks it before it turns back on what an older home switch turned off) -->
+        <provider
+            android:name=".setup.SetupStateProvider"
+            android:authorities="sa.urtv.home.setupstate"
+            android:exported="true"
+            android:permission="android.permission.DUMP" />
+
         <provider
             android:name=".tilawah.OwnAdhanProvider"
             android:authorities="sa.urtv.home.adhan"

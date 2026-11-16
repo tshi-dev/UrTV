@@ -20,6 +20,7 @@ python3 tests/install_extras_test.py
 python3 tests/share_test.py
 python3 tests/install_versions_test.py
 python3 tests/install_retry_test.py
+python3 tests/stock_kept_test.py   # 4.3.3: the computer's home switch keeps the stock home and the wizard on; the factory provider
 python3 tests/cast_test.py   # «البث من الجوال»: a Chromecast keeps its setup wizard (the cast credentials); dock.sh cast on|off|status
 python3 tests/step52_test.py   # the tester's step 52 findings in the source: the saver's first frame, the debug switches, the top row's layout, the dark patch, the clean row
 python3 tests/party_games_test.py   # «واحد مو معنا» and «بدون كلام / وصّف»: the rules on a plain JVM, the bundled word files
