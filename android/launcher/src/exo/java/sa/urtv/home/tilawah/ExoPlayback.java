@@ -26,7 +26,11 @@ import androidx.media3.exoplayer.upstream.DefaultLoadErrorHandlingPolicy;
  * the live window starts again at the live edge quietly; the buffer starts after 2.5 s and keeps as much as the window holds.
  */
 public final class ExoPlayback extends Playback {
-    static final int MIN_BUFFER_MS = 15_000, MAX_BUFFER_MS = 60_000, START_MS = 2_500, RESTART_MS = 5_000, RETRIES = 8;
+    /**
+     * 4.4 (the owner: a bigger buffer for live audio, and a pre-buffer before it plays): it starts once START_MS is in (5 s, was 2.5 s), and after a
+     * rebuffer once RESTART_MS is (10 s); it keeps 30 to 120 s ahead when the stream gives it (an audio stream of 128 kbps: about 2 MB at most).
+     */
+    static final int MIN_BUFFER_MS = 30_000, MAX_BUFFER_MS = 120_000, START_MS = 5_000, RESTART_MS = 10_000, RETRIES = 8;
     static final String UA = "UrTV (Android TV)";
 
     private final ExoPlayer exo;

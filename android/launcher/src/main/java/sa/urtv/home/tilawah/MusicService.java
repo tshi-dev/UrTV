@@ -103,6 +103,8 @@ public class MusicService extends Service implements AudioManager.OnAudioFocusCh
     /** which player plays now ("exo" for a live HLS station, else "mediaplayer") and how many quiet restarts the stall watchdog made */
     private static volatile String playerKind = "";
     private static volatile int stallRestarts;
+    /** 4.4: joins made because the network came back */
+    private static volatile int reconnects;
     /** 4.3 A2: a station that stalls is restarted quietly (StallWatch), at most three times in two minutes */
     private final StallWatch stall = new StallWatch();
 
@@ -260,6 +262,8 @@ public class MusicService extends Service implements AudioManager.OnAudioFocusCh
     static String playerKind() { return playerKind; }
     /** quiet restarts of a stalled station since the app started (4.3 A2) */
     static int stallRestartCount() { return stallRestarts; }
+    /** 4.4: joins made because the network came back, since the app started */
+    static int reconnectCount() { return reconnects; }
     static int errorCount() { return errors; }
     static long rebufferMillis() { return rebufferMs; }
     static String lastErrorCode() { return lastError; }
@@ -351,6 +355,7 @@ public class MusicService extends Service implements AudioManager.OnAudioFocusCh
         });
         session.setActive(true);
         registerReceiver(screenOff, new IntentFilter(Intent.ACTION_SCREEN_OFF));
+        watchNetwork();   // 4.4: join again the moment the network is back
     }
 
     @Override public int onStartCommand(Intent intent, int flags, int startId) {
@@ -401,6 +406,10 @@ public class MusicService extends Service implements AudioManager.OnAudioFocusCh
         stopTick();
         handler.removeCallbacksAndMessages(null);
         try { unregisterReceiver(screenOff); } catch (IllegalArgumentException ignored) {}
+        if (netBack != null) {
+            try { ((android.net.ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE)).unregisterNetworkCallback(netBack); } catch (RuntimeException ignored) { }
+            netBack = null;
+        }
         adhanVolumeBack();
         releasePlayer();
         abandonFocus();
@@ -468,12 +477,14 @@ public class MusicService extends Service implements AudioManager.OnAudioFocusCh
         if (tries == 0) radioDirectTried = false;
         final int gen = wish.newPlayer();
         currentUrl = url;
-        error = tries > 0 ? Ui.str(this, R.string.retrying) : null;
+        error = tries > 0 ? Ui.str(this, R.string.retrying) : reconnecting ? RECONNECTING : null;   // 4.4: a quiet restart says it, never silence
+        reconnecting = false;
         buffering = true;
         playing = false;
         prepared = false;
         position = 0;
         duration = 0;
+        acquireWifi();   // 4.4: the Wi-Fi stays awake while it joins again too, not only while it plays
         foreground();
         updateSession();
         updateNotification();
@@ -819,6 +830,51 @@ public class MusicService extends Service implements AudioManager.OnAudioFocusCh
      * 4.3 A2: a live station that ran dry for 12 s, or stands still for 15 s while it says it plays, is started again quietly from its own address
      * (the person hears it come back, no error is shown); a fourth stall in two minutes is a failure, said as before. True when it acted.
      */
+    /** 4.4: the line the screens show while a station joins again (a quiet restart, the network back) */
+    static final String RECONNECTING = sa.urtv.home.S.n("يعيد الاتصال…");
+    /** the next startRadio is a reconnect: it says RECONNECTING */
+    private boolean reconnecting;
+    /** 4.4: when the last reconnect for a network that came back was made (NetReconnect.MIN_GAP_MS) */
+    private long lastNetReconnect;
+    private android.net.ConnectivityManager.NetworkCallback netBack;
+
+    /** 4.4: the network came back (or another one took over): a station that went quiet joins again at once, a surah goes on from its place */
+    private void onNetworkBack() {
+        long now = SystemClock.elapsedRealtime();
+        NetReconnect.Act act = NetReconnect.onNetworkBack(source, wish.wants(), playing, error != null || buffering,
+                lastNetReconnect == 0 ? Long.MAX_VALUE : now - lastNetReconnect);
+        if (act == NetReconnect.Act.NOTHING) return;
+        lastNetReconnect = now;
+        reconnects++;
+        Log.i(TAG, "network back: " + act + " joins again");
+        if (act == NetReconnect.Act.RADIO && radioAddress != null) {
+            stall.reset();
+            reconnecting = true;
+            startRadio(radioAddress, 0);
+        } else if (act == NetReconnect.Act.SURAH && reciter >= 0) {
+            playSurah(reciter, surah, Math.max(position, pendingSeek));
+        }
+    }
+
+    private void watchNetwork() {
+        try {
+            android.net.ConnectivityManager cm = (android.net.ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+            if (cm == null) return;
+            netBack = new android.net.ConnectivityManager.NetworkCallback() {
+                private boolean lost;
+                @Override public void onLost(android.net.Network n) { lost = true; }
+                @Override public void onCapabilitiesChanged(android.net.Network n, android.net.NetworkCapabilities c) {
+                    if (!lost || !c.hasCapability(android.net.NetworkCapabilities.NET_CAPABILITY_VALIDATED)) return;   // only a network that came BACK, and works
+                    lost = false;
+                    handler.post(MusicService.this::onNetworkBack);
+                }
+            };
+            cm.registerDefaultNetworkCallback(netBack);
+        } catch (RuntimeException e) {   // a TV that refuses it: the timed tries of RadioPolicy stay, as before
+            netBack = null;
+        }
+    }
+
     private boolean watchStall() {
         boolean live = source == Prefs.SOURCE_RADIO && radioAddress != null && wish.wants();
         StallWatch.Verdict v = stall.check(SystemClock.elapsedRealtime(), live, prepared, playing, rebufferStart, position);
@@ -829,6 +885,7 @@ public class MusicService extends Service implements AudioManager.OnAudioFocusCh
             if (rebufferStart > 0) rebufferMs += SystemClock.elapsedRealtime() - rebufferStart;
             rebufferStart = 0;
             ticking = false;
+            reconnecting = true;   // 4.4: «يعيد الاتصال…» on the screens while it joins again
             startRadio(radioAddress, 0);
             return true;
         }
