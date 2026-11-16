@@ -59,3 +59,16 @@
   الإشعار في `THIRD_PARTY_NOTICES.md`.
 - خط النماذج IBM Plex Sans Arabic (رخصة SIL OFL) للرسم فقط؛ لا ملف خط في المستودع، والتطبيق يبقى بخطه (Thmanyah).
 - رُسمت النماذج بـChromium من صفحات HTML مؤقتة. أسماء التطبيقات والفرق والأوقات أمثلة.
+
+## الساعة الزجاجية على كل صورة (للمالك: احذف اللي ما يعجبك)
+
+كل صورة مرشّحة بالساعة الزجاجية كما تظهر في التلفزيون، مجمّعة حسب الحزمة. «خلف المشهد»: لها قناع والمشهد قدّام الأرقام. «في الأمام»: بلا قناع والساعة قدّامها.
+
+| الملف | ما فيه |
+|---|---|
+| [clock-sheet-photos.jpg](clock-sheet-photos.jpg) | الصور المرفقة (٨٥) |
+| [clock-sheet-nature.jpg](clock-sheet-nature.jpg) | الطبيعة (١٦) |
+| [clock-sheet-sea.jpg](clock-sheet-sea.jpg) | البحر (١٩) |
+| [clock-sheet-ksa-cities.jpg](clock-sheet-ksa-cities.jpg) | مدن السعودية (١٣) |
+| [clock-sheet-space.jpg](clock-sheet-space.jpg) | الفضاء (١٢) |
+| [clock-sheet-scenes.jpg](clock-sheet-scenes.jpg) | المشاهد: السعودية وCouch TV (١٠) |
