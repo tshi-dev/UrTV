@@ -439,6 +439,10 @@ public class SettingsActivity extends Activity {
         // Back on our home (nothing to go back to) starts the screensaver; the home takes it on its next tick or return (Dock.followBackSaver)
         row("الرجوع يفتح شاشة التوقف", prefs.backSaver() ? "مفعّل" : "متوقف", R.drawable.ic_eye,
             new Runnable() { public void run() { prefs.setBackSaver(!prefs.backSaver()); render(); } });
+        // 4.3.3 «المباريات المنتهية»: on the football home only; hidden, today's list keeps the games still to come (or the next day's)
+        if ("football".equals(prefs.homeLayout()))
+            row("المباريات المنتهية", prefs.fbHideDone() ? "مخفية" : "ظاهرة", R.drawable.ic_eye,
+                new Runnable() { public void run() { prefs.setFbHideDone(!prefs.fbHideDone()); render(); } });
         // «الخروج من تلفزيونك»: only where the TV keeps its own home (ours opened from its tile); one Back as always, a long Back or three
         row("الخروج من تلفزيونك", HomeExit.label(prefs.homeExit()), R.drawable.ic_eye,
             new Runnable() { public void run() { pickHomeExit(); } });

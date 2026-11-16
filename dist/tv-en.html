@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <!-- the build: UTC time (YYYYMMDDHHMMSS) of the newest commit of the page's sources, put in by src/build.py. The app loads the page with the newer stamp (its own
      copy or a downloaded one), never by file time, and does not keep a download whose stamp is older than its own (Updater, PageStamp). -->
-<meta name="urtv-build" content="20261116051004">
+<meta name="urtv-build" content="20261116051734">
 <title>Your TV Screen</title>
 <style>
   @font-face{font-family:'Thmanyah';font-weight:300;font-style:normal;font-display:block;src:url("https://raw.githubusercontent.com/tshi-dev/UrTV/master/assets/fonts/Thmanyah-Light.woff2") format("woff2")}
@@ -978,6 +978,7 @@ const CONFIG = {
   // #football=1 (with #widget=1): the launcher's football home, the weather, the prayers and today's games
   // #matchpage=1: «المباريات», the launcher's page of the games
   football: _Q.get('football') === '1' && _Q.get('widget') === '1',
+  fbHide: _Q.get('fbhide') === '1',   // the football home without the games that ended
   matchPage: _Q.get('matchpage') === '1',
   // #pagedark=1 with #matchpage=1: the dark theme
   pageDark: _Q.get('pagedark') === '1',
@@ -4219,7 +4220,7 @@ const FB_GLYPH = {
 };
 const fbGlyph = k => `<span class="fg">${FB_GLYPH[k]}</span>`;
 function fbHome(now){   // today's games, the followed teams' first; with none today, the next day that has games
-  const all = fbGames(), today = cityToday(now);
+  const all = fbGames().filter(ev => !CONFIG.fbHide || !fbDone(ev, now)), today = cityToday(now);
   let list = all.filter(ev => fbDayOf(fbKick(ev)) === today);
   if(!list.length){
     const next = all.filter(ev => fbKick(ev) > now).sort((a, b) => fbKick(a) - fbKick(b))[0];

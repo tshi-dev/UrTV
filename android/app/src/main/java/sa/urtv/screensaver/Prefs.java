@@ -553,6 +553,9 @@ final class Prefs {
      * the one `dock.sh backsaver` sets) and moves it when this one changes (Dock.followBackSaver); #backsaver=1 only while on.
      */
     boolean backSaver() { return sp.getBoolean("backSaver", false); }
+    /** 4.3.3 «المباريات المنتهية» on the football home: shown (the default, as always) or hidden; #fbhide=1 only while hidden */
+    boolean fbHideDone() { return sp.getBoolean("fbHideDone", false); }
+    void setFbHideDone(boolean v) { sp.edit().putBoolean("fbHideDone", v).apply(); }
     void setBackSaver(boolean v) { sp.edit().putBoolean("backSaver", v).apply(); }
 
     /** «تبديل الآية والحديث»: the verse-or-hadith card once a day (default, as always) or every 3 minutes (QuoteEvery); #versemin=3 only then. */
@@ -662,6 +665,7 @@ final class Prefs {
             + HomeExit.fragment(homeExit())
             + (occasion() ? "" : "&occasion=0") + (nightDim() ? "" : "&nightdim=0") + (tasksPill() ? "" : "&taskspill=0")
             + (backSaver() ? "&backsaver=1" : "")
+            + (fbHideDone() ? "&fbhide=1" : "")   // the football home without the games that ended
             + "&cardstyle=" + cardStyle()
             + "&adhanbar=" + (adhanBar() ? "1" : "0")
             + "&yearstrip=" + (yearStrip() ? "1" : "0")
