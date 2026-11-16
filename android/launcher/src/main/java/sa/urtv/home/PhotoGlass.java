@@ -63,8 +63,13 @@ final class PhotoGlass extends FrameLayout {
         cardsShown = cards;
         rtl = rightToLeft;
         row = cardsInRow;
-        if (glass != null) clock.setScene(glass, PhotoGlassPlan.box(line, width(), height(), cardsShown, rtl, row), false);
+        if (glass != null) { int[] b = PhotoGlassPlan.box(line, width(), height(), cardsShown, rtl, row); clock.setScene(glass, b, pale(b)); }
     }
+
+    private int[] glassPx;
+
+    /** a pale photo behind the digits: the dark glass (PhotoGlassPlan.pale) */
+    private boolean pale(int[] digits) { return PhotoGlassPlan.pale(glassPx, 160, 90, digits, width(), height()); }
 
     private int width() { return getWidth() > 0 ? getWidth() : getResources().getDisplayMetrics().widthPixels; }
 
@@ -79,12 +84,15 @@ final class PhotoGlass extends FrameLayout {
         final int g = ++gen;
         final int w = width(), h = height();
         try { glass = Bitmap.createScaledBitmap(photo, 160, 90, true); } catch (RuntimeException | OutOfMemoryError e) { return; }
+        glassPx = new int[160 * 90];
+        glass.getPixels(glassPx, 0, 160, 0, 0, 160, 90);
         line = null;
         mask.setVisibility(GONE);
         mask.setImageDrawable(null);
         clock.setZoom(1f);
         zoomTo.zoom(1f);
-        clock.setScene(glass, PhotoGlassPlan.box(null, w, h, cardsShown, rtl, row), false);
+        int[] first = PhotoGlassPlan.box(null, w, h, cardsShown, rtl, row);
+        clock.setScene(glass, first, pale(first));
         final String[] key = PhotoGlassPlan.key(wallKey);
         final int own = PhotoGlassPlan.own(wallKey);
         if ((key == null && own == 0) || !ScenePlan.mask(tier)) return;   // «الحرمين», an own photo with no mask, or a weak TV: the clock in front
@@ -110,7 +118,7 @@ final class PhotoGlass extends FrameLayout {
                 mask.setScaleX(z);
                 mask.setScaleY(z);
                 mask.setVisibility(VISIBLE);
-                clock.setScene(shown, digits, false);
+                clock.setScene(shown, digits, pale(digits));
                 clock.setZoom(z);
                 zoomTo.zoom(z);
             });

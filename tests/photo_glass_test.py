@@ -52,6 +52,9 @@ if shutil.which("javac"):
     crop = [r for r in rows if r[0] == "crop"][0]
     check("an own photo and its mask are cropped to the screen's shape about the centre, as the home shows the photo",
           crop[1] == "[0, 375, 4000, 2625]" and crop[2] == "[0, 656, 1080, 1263]" and crop[3] == "[0, 0, 1920, 1080]", crop)
+    pl = [r for r in rows if r[0] == "pale"][0][1]
+    check("4.4 a pale photo behind the digits (white sky, snow) gets the dark glass; a dusk sky or the dark half under them the light one",
+          pl == "true,false,false,true,false", pl)
     sk = [r for r in rows if r[0] == "skyline"][0]
     check("the mask's skyline: the first light row of each of 48 columns, in px of 1080", sk[1] == "200,200,540,540" and sk[2] == "48", sk)
     with tempfile.TemporaryDirectory() as tmp:
@@ -123,4 +126,6 @@ check("the workflow runs the tool and puts its output on a data branch for urtv-
 acts, page = read(HOME / "phone/PhoneActions.java"), read(HOME.parents[3] / "assets/phone/photos.html")
 check("a refused mask says why on the phone: too little or too much scenery, or a ragged edge (Arabic and English)",
       '"mask_cover"' in acts and '"mask_edge"' in acts and page.count("m_cover:") == 2 and page.count("m_edge:") == 2 and "W.m_cover" in page and "W.m_edge" in page)
+check("…the home uses it on every place of the digits (the photo shown, its cut-out, the cards moved)",
+      glass.count(", pale(") == 3 and "glass.getPixels(glassPx, 0, 160, 0, 0, 160, 90);" in glass)
 sys.exit(1 if failed else 0)
