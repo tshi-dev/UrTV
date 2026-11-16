@@ -196,7 +196,8 @@ public class QuizGamesActivity extends Activity {
             GameRegistry.Game g = shown().get(sel);
             boolean opened = false;
             if (g.ready) {
-                try { Intent go = new Intent().setClassName(this, getClass().getPackage().getName() + "." + g.activity); if (filter == 1 && !g.id.equals("quiz")) go.putExtra("phones", true);   // chosen from the «بالجوالات» view: the phones switch starts on startActivity(go); GamePrefs.setLast(this, g.id); opened = true; }
+                try { Intent go = new Intent().setClassName(this, getClass().getPackage().getName() + "." + g.activity); if (filter == 1 && !g.id.equals("quiz")) go.putExtra("phones", true); startActivity(go);   // from the «بالجوالات» view the phones switch starts on
+                     GamePrefs.setLast(this, g.id); opened = true; }
                 catch (RuntimeException notThere) { /* a game marked ready whose screen is not in this build: «قريبًا» */ }
             }
             if (!opened) Toast.makeText(this, S.t("قريبًا"), Toast.LENGTH_SHORT).show();
