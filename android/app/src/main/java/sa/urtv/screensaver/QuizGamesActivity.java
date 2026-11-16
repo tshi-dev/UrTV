@@ -33,6 +33,7 @@ public class QuizGamesActivity extends Activity {
         S.n("خمّن الكلمة"), S.n("كلمة من خمسة حروف في ست محاولات"),
         S.n("دومينو"), S.n("الدومينو كما تعرفونه، بالريموت"),
         S.n("على جبيني"), S.n("الجوال على جبينك، والفريق يوصف لك الكلمة"),
+        S.n("من كاتبها؟"), S.n("الكل يكتب إجابة، وتخمّنون من كتبها"),
         S.n("حزم المحتوى"), S.n("حجم ما حمّلتموه من الألعاب، واحتفظوا به أو احذفوه"),
     };
     /** the night switch's words, marked for the English table: «وضع ليلي» with its three states, and the three night palettes */
@@ -41,7 +42,7 @@ public class QuizGamesActivity extends Activity {
     /** the filter at the top: all the games, or only the ones that can be played with phones (the choice is kept) */
     static final String[] FILTER_WORDS = {S.n("الكل"), S.n("بالجوالات"), S.n("عرض")};
     static final int COLS = 4;
-    private FrameLayout root; private float scale; private int sel, head, filter, top;   // top: the first row of tiles on the screen (two rows show; the list scrolls by row) private Typeface display, medium; private GameLook L;   // head: 0 the tiles have the focus, 1 the night switch, 2 the night colours, 3 the filter
+    private FrameLayout root; private float scale; private int sel, head, filter, top; private Typeface display, medium; private GameLook L;   // head: 0 the tiles have the focus, 1 the night switch, 2 the night colours, 3 the filter; top: the first row of tiles on the screen (two rows show, the list scrolls by row)
 
     @Override protected void attachBaseContext(Context base) {
         Context e = S.wrap(base);
