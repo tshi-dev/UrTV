@@ -2,7 +2,7 @@
 # The home screen's favourites row, for agents and scripts: no remote, no long-press.
 #   optimize/dock.sh show                  the current order, left to right
 #   optimize/dock.sh apps                  every app that can go in it: package | name
-#   optimize/dock.sh set PKG1 PKG2 ...     a new order, left to right (up to 10; the choice is kept as it is, 3 stay 3; only an empty choice is filled with the first apps)
+#   optimize/dock.sh set PKG1 PKG2 ...     a new order, left to right (up to 10; fewer than 5 is topped up)
 #   optimize/dock.sh reset                 back to the defaults in android/launcher/.../config.xml
 #   optimize/dock.sh hidden                apps left off the home screen, and why: package | reason
 #   optimize/dock.sh hide PKG ...          take these off the home screen (all its lists)

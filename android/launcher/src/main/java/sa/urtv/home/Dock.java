@@ -184,14 +184,14 @@ final class Dock {
         return out;
     }
 
-    /** The row as the home screen shows it: saved apps still installed; with none of them there, the first MIN alphabetically (4.3.2: a choice of 3 is never padded). */
+    /** The row as the home screen shows it: saved apps still installed, topped up to MIN alphabetically. */
     static List<String> shown(Context c, Map<String, String> apps) {
         List<String> row = new ArrayList<>();
         for (String p : saved(c)) if (apps.containsKey(p) && !row.contains(p) && row.size() < MAX) row.add(p);
         List<String> rest = new ArrayList<>(apps.keySet());
         rest.removeAll(row);
         Collections.sort(rest, (x, y) -> apps.get(x).compareToIgnoreCase(apps.get(y)));
-        if (row.isEmpty()) while (row.size() < MIN && !rest.isEmpty()) row.add(rest.remove(0));   // 4.3.2: only when nothing of the person's choice is installed: a choice of 3 stays 3
+        while (row.size() < MIN && !rest.isEmpty()) row.add(rest.remove(0));
         return row;
     }
 
