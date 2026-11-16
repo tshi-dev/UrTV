@@ -1469,17 +1469,18 @@ public class MainActivity extends Activity {
                 .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED))));
         card.setOnFocusChangeListener((v, has) -> {
             final int dbg = dbgFocus;   // 0 normally: every switch below is off (dock.sh debug nolift|noglow|noshine|noscale|notitle|plainfocus)
-            float s = has ? (inDock ? FavBar.FOCUS_SCALE : 1.1f) : 1f;
+            final boolean zoom = inDock && appsZoom;   // 4.4 «شكل التطبيقات: تكبير وظل»: larger with a soft shadow, no ring, the name under it
+            float s = has ? (inDock ? (zoom ? FavBar.ZOOM_SCALE : FavBar.FOCUS_SCALE) : 1.1f) : 1f;
             // from the games of the football home: the tray goes back to its resting place (y 768) first, then the tile lifts (FavBar.DROP_MS)
             long wait = inDock && has && trayLowered ? FavBar.DROP_MS : 0;
             if (inDock && has) lowerTray(false);
             if ((dbg & DebugFlags.SCALE) == 0) { if (wait > 0) v.postDelayed(() -> { if (v.hasFocus()) scaleTo(v, s); }, wait); else scaleTo(v, s); }   // a spring: a held arrow keeps its speed from card to card
-            float z = (dbg & DebugFlags.LIFT) != 0 ? 0 : has ? dp(GlowLook.LIFT_DP) : 0;
+            float z = (dbg & DebugFlags.LIFT) != 0 ? 0 : has ? dp(zoom ? 2 * GlowLook.LIFT_DP : GlowLook.LIFT_DP) : 0;
             if ((dbg & DebugFlags.PLAIN) == 0) {
                 if (inDock) v.animate().translationY(has ? -lift() : 0).translationZ(z)
                         .setInterpolator(new DecelerateInterpolator()).setStartDelay(wait).setDuration(FavBar.MS).start();
                 else v.animate().translationZ(z).setInterpolator(new DecelerateInterpolator()).setDuration(has ? 320 : 200).start();
-                if ((dbg & DebugFlags.SHINE) == 0) shine.animate().alpha(has ? 1f : 0f).setDuration(160).start();
+                if ((dbg & DebugFlags.SHINE) == 0) shine.animate().alpha(has && !zoom ? 1f : 0f).setDuration(160).start();
                 label.animate().alpha(has ? 1f : 0f).translationY(has ? dp(4) : 0).setDuration(200).start();
             } else if ((dbg & DebugFlags.SHINE) == 0) shine.animate().alpha(has ? 1f : 0f).setDuration(160).start();
             if (!has) return;
@@ -2837,11 +2838,41 @@ public class MainActivity extends Activity {
         if (nameRow == null || nameRow.getWidth() == 0) return;
         View f = getCurrentFocus();
         boolean inBar = f != null && dockCards.contains(f) && edit == null;
+        placeZoomName(appsZoom && inBar ? f : null);
+        if (appsZoom) inBar = false;   // «تكبير وظل»: the name is under the tile, not above the tray
         // this runs on every step of the tray's scroll: a new animator each step (cancel and restart, an invalidation each) is exactly what makes a scroll janky;
         // the name's fade starts only when it has to change
         if (nameShown != inBar) { nameShown = inBar; nameRow.animate().alpha(inBar ? 1f : 0f).setDuration(FavBar.MS).start(); }
         if (!inBar || nameCard == null) return;
         nameRow.setTranslationX(0);   // the name has ONE place: above the tray at its start edge (right in Arabic, left in English), never following a tile (build 180)
+    }
+
+    /** 4.4 «شكل التطبيقات: تكبير وظل»: the focused app's name under the tray, centred on its tile (null: hidden); made the first time it is needed */
+    private TextView zoomName;
+    private volatile boolean appsZoom;
+
+    private void placeZoomName(View f) {
+        if (f == null) { if (zoomName != null && zoomName.getAlpha() > 0f) zoomName.animate().alpha(0f).setDuration(FavBar.MS).start(); return; }
+        if (zoomName == null) {
+            zoomName = text(24, "sans-serif-medium", Color.WHITE);
+            zoomName.setTextSize(TypedValue.COMPLEX_UNIT_PX, bar(FavBar.NAME_PX) * 0.8f);
+            zoomName.setShadowLayer(dp(12), 0, 0, 0x99000000);
+            zoomName.setSingleLine(true);
+            zoomName.setAlpha(0f);
+            zoomName.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO);   // the tile says its name itself
+            hero.addView(zoomName, new FrameLayout.LayoutParams(-2, -2, Gravity.TOP | Gravity.LEFT));
+        }
+        Object tag = f.getTag();
+        if (tag instanceof App) zoomName.setText(((App) tag).label);
+        zoomName.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
+        int[] a = new int[2], h = new int[2], t = new int[2];
+        f.getLocationInWindow(a);
+        hero.getLocationInWindow(h);
+        tray.getLocationInWindow(t);
+        float centre = a[0] + f.getWidth() * f.getScaleX() / 2f;   // the tile grows about its centre
+        zoomName.setTranslationX(centre - h[0] - zoomName.getMeasuredWidth() / 2f);
+        zoomName.setTranslationY(t[1] - h[1] + tray.getHeight() + bar(8));
+        if (zoomName.getAlpha() < 1f) zoomName.animate().alpha(1f).setDuration(200).start();
     }
 
     /**
@@ -3275,6 +3306,12 @@ public class MainActivity extends Activity {
         ampm.setText(ClockText.suffix(h, h24));
         ampm.setVisibility(h24 ? View.GONE : View.VISIBLE);
         sceneTick(cfg);
+        if (appsZoom != "zoom".equals(cfg.appsStyle)) {   // «شكل التطبيقات» changed: the focused tile takes the new look now
+            appsZoom = "zoom".equals(cfg.appsStyle);
+            View f = getCurrentFocus();
+            if (f != null && dockCards.contains(f) && f.getOnFocusChangeListener() != null) f.getOnFocusChangeListener().onFocusChange(f, true);
+            placeName();
+        }
         String cal = zone == null ? "" : ClockZone.calendar(zone[1], zone[2]);
         boolean other = zone != null && ClockZone.showLine(ClockZone.differs(tvTz, tz, ms), cal);
         zoneLine.setVisibility(other ? View.VISIBLE : View.GONE);
