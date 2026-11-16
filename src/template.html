@@ -1936,13 +1936,58 @@ function fresher(ev, lg){
 }
 // a followed team's games in the league files it is in (a result there that eventslast does not have yet)
 const leagueOf = (id, lg) => [...lg.values()].filter(e => String(e.idHomeTeam) === String(id) || String(e.idAwayTeam) === String(id));
-function resultsFor(id, lg = leagueMap()){
+// 4.3.3 the match archive (docs/MATCH-ARCHIVE.md, branch data-archive): small files CI keeps. A 404, an unreadable answer or a `v` this page
+// does not know is «no data», never a wrong value. Each address is asked at most every 15 minutes (ARCH_C: j undefined until the first answer)
+const ARCH_BASE = 'https://raw.githubusercontent.com/tshi-dev/UrTV/data-archive/';
+const ARCH_C = {};
+const archUrl = path => /^https:/.test(path) ? path : ARCH_BASE + path;
+function archLoad(path){
+  const u = archUrl(path), c = ARCH_C[u] || (ARCH_C[u] = {at: 0});
+  if(c.p) return c.p;
+  if(Date.now() - c.at < 15 * 60000) return Promise.resolve(c.j);
+  return c.p = fetchT(u, 12000).then(r => r.ok ? r.json() : r.status === 404 ? null : c.j).catch(() => c.j).then(j => {
+    c.j = j && typeof j === 'object' && (j.v === 1 || !u.startsWith(ARCH_BASE)) ? j : null;   // a failed ask keeps the copy it had
+    c.at = Date.now(); c.p = null;
+    if(c.j && u === ARCH_BASE + 'index.json' && c.j.leagues) Object.entries(c.j.leagues).forEach(([id, l]) => { if(l && l.ar && !CONFIG.leagueNames[id]) CONFIG.leagueNames[id] = String(l.ar).slice(0, 60); });
+    return c.j;
+  });
+}
+// a game of the archive in the page's own shape (TheSportsDB's names); team: the team file it comes from (its games say `home` and `vs`)
+function archEv(g, team){
+  if(!g || !g.id || !/^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\dZ$/.test(String(g.t))) return null;
+  const me = team && [team.id, team.en, g.gf], them = team && [g.vs, g.vsn, g.ga];
+  const [h, a] = team ? (g.home ? [me, them] : [them, me]) : [[g.h, g.hn, g.hs], [g.a, g.an, g.as]];
+  const ix = ARCH_C[ARCH_BASE + 'index.json'], lg = ix && ix.j && ix.j.leagues && ix.j.leagues[g.lg];
+  const sc = x => x == null || x === '' ? null : String(x), badge = id => (CRESTS[id] && CRESTS[id].u) || '';
+  return {idEvent: String(g.id), idLeague: String(g.lg || ''), strLeague: lg ? String(lg.en || '') : '', strSeason: String(g.s || ''), strTimestamp: g.t.slice(0, 19),
+    dateEvent: g.t.slice(0, 10), strTime: g.t.slice(11, 19), idHomeTeam: String(h[0]), strHomeTeam: String(h[1] || ''), intHomeScore: sc(h[2]),
+    idAwayTeam: String(a[0]), strAwayTeam: String(a[1] || ''), intAwayScore: sc(a[2]), strStatus: String(g.st || ''), intRound: String(g.r || ''), strSport: 'Soccer',
+    strHomeTeamBadge: badge(h[0]), strAwayTeamBadge: badge(a[0])};
+}
+// 4.3.3 A3: a followed team's games from its archive file too (home and away; the free key's own answer may hold fewer), kept like the server's
+let ARCH_T = (()=>{ try{ return JSON.parse(localStorage.getItem('archTeams') || '{}') || {}; }catch(e){ return {}; } })();   // team id -> {next, last}
+async function archTeam(id){
+  const j = await archLoad('teams/' + id + '.json');
+  if(!j || String(j.id) !== String(id)) return 0;
+  ARCH_T[id] = {next: (j.next || []).map(g => archEv(g, j)).filter(Boolean), last: (j.last || []).map(g => archEv(g, j)).filter(Boolean)};
+  return 1;
+}
+const archOf = (id, k) => (ARCH_T[id] && ARCH_T[id][k]) || [];
+// the archive's games a list does not have yet (the same id, or the same day and teams)
+function archNew(own, arch){
+  if(!arch.length) return arch;
   const seen = new Set();
-  return [...(RESULTS[id] || []), ...(KEPT[id] || []), MATCHES[id], ...leagueOf(id, lg)]
+  own.forEach(ev => { if(ev){ seen.add(String(ev.idEvent)); seen.add(evKey(ev)); } });
+  return arch.filter(ev => !seen.has(ev.idEvent) && !seen.has(evKey(ev)));
+}
+function resultsFor(id, lg = leagueMap()){
+  const seen = new Set(), own = [...(RESULTS[id] || []), ...(KEPT[id] || []), MATCHES[id], ...leagueOf(id, lg)];
+  return own.concat(archNew(own, archOf(id, 'last')))
     .filter(ev => ev && ev.idEvent && !seen.has(ev.idEvent) && seen.add(ev.idEvent)).map(ev => fresher(ev, lg));
 }
-// a followed team's coming games, each the newer copy
-const teamNext = (id, lg = leagueMap()) => [MATCHES[id], ...(NEXT_LIST[id] || [])].map(ev => fresher(ev, lg));
+// a followed team's coming games, each the newer copy (with the archive's: all in time order)
+const teamNext = (id, lg = leagueMap()) => { const own = [MATCHES[id], ...(NEXT_LIST[id] || [])], more = archNew(own, archOf(id, 'next'));
+  return (more.length ? own.concat(more).filter(Boolean).sort((a, b) => toDate(a) - toDate(b)) : own).map(ev => fresher(ev, lg)); };
 
 // «السبت ٢٤ أكتوبر · ٩:١٦ م»: the small line under an upcoming game, in the slot and in the card beside the clock
 function matchWhen(d){
@@ -2409,6 +2454,7 @@ const loadMatches = guarded('matches', async function(){
   let teamsDone, leagues = 0;
   const teamsAsked = new Promise(r => { teamsDone = r; });
   if(CONFIG.leagues.length) leagues = loadLeagues(step, teamsAsked);
+  const arch = Promise.all(CONFIG.teamIds.map(id => archTeam(id).catch(() => 0)));   // GitHub, not the sports server: beside its queue
   const failed = [];
   for(const id of CONFIG.teamIds){
     let got = 0;
@@ -2427,6 +2473,8 @@ const loadMatches = guarded('matches', async function(){
   teamsDone();
   if(failed.length && !MATCH_RETRIED){ MATCH_RETRIED = true; setTimeout(loadMatches, 20000); }   // a team the server refused is asked again once
   answered += await leagues;
+  answered += (await arch).reduce((a, b) => a + b, 0);
+  try{ localStorage.setItem('archTeams', JSON.stringify(Object.fromEntries(CONFIG.teamIds.filter(i => ARCH_T[i]).map(i => [i, ARCH_T[i]])))); }catch(e){}
   if(!answered && (CONFIG.teamIds.length || CONFIG.leagues.length)){   // no answer: keep what is shown, and say so when there is nothing else
     MATCH_FAIL_AT = Date.now();
     if(!MATCHES_LOADED) setTimeout(loadMatches, CONFIG.retryMs);   // a first load that failed tries again soon, then the normal period
@@ -3429,7 +3477,7 @@ function matchEvents(){
   const seen = new Set(), evs = [], lg = leagueMap();
   const take = ev => ev && ev.idEvent && !seen.has(ev.idEvent) && !seen.has(evKey(ev)) && seen.add(ev.idEvent) && seen.add(evKey(ev));
   CONFIG.teamIds.forEach(id => {
-    const next = NEXT_LIST[id] || (MATCHES[id] ? [MATCHES[id]] : []);
+    const next = (NEXT_LIST[id] || (MATCHES[id] ? [MATCHES[id]] : [])).concat(archOf(id, 'next'));
     next.forEach(ev => { if(take(ev)){ const e = fresher(MATCHES[id] && MATCHES[id].idEvent === ev.idEvent ? MATCHES[id] : ev, lg); if(!calledOff(e)) evs.push(e); } });
     resultsFor(id, lg).forEach(ev => { if(take(ev) && !calledOff(ev)) evs.push(ev); });
   });
