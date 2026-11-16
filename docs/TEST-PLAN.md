@@ -268,6 +268,23 @@ is the one place that still turns the stock home off, only when the person asks.
 | S6 | «تخلّص من واجهة المصنع» (still explicit), then «رجّع واجهة المصنع» | The first turns the stock home off (with its two confirmations) and the second turns it back on and gives it Home; the migration of S1 does NOT turn the stock home on while the factory step is on |
 | S7 | A TV that had launcherx off BEFORE UrTV (a hotel/operator TV): install, open the home | Nothing is turned on, no toast (the journal says it was off before) |
 
+## 14. 4.3.3 «setup and system robustness» (branch work/433-setup)
+
+Before and after each: `adb shell pm list packages -d`, `adb shell cmd role get-role-holders android.app.role.HOME`, `adb shell cmd package resolve-activity --brief -c android.intent.category.HOME -a android.intent.action.MAIN`. The app needs this branch's home build (CI apk of the branch) for T3, T6–T9.
+
+| ID | Do | Expect |
+|---|---|---|
+| T1 | A TV never switched: `optimize/install.sh launcher` | No «Home switch paused», no Wi-Fi or cast question; ends «Launcher is home; the stock home and the setup wizard stay on…»; `pm list packages -d` has NO launcherx / tvlauncher / setupwraith / helpers; role = sa.urtv.home |
+| T2 | A TV switched by an OLD install.sh (launcherx and setupwraith in `pm list packages -d`, `optimize/run/home-switch.json` says state done): `optimize/install.sh launcher` | «Turned back on what an older home switch turned off (…)»; afterwards both are on; Home still UrTV; run it again: the line does not come back (`optimize/run/stock-migrated.txt` exists) |
+| T3 | As T2 but first «تخلّص من واجهة المصنع» in the app; check `adb shell content query --uri content://sa.urtv.home.setupstate/factory` says `off=1`; then `optimize/install.sh launcher` | The wizard comes back on, launcherx stays off, the line names «تخلّص من واجهة المصنع» |
+| T4 | After T1: `optimize/venv/bin/python -I optimize/tv.py --reboot` | The TV starts normally, Wi-Fi as before; write down which home is in front |
+| T5 | `optimize/disable.sh` with a list that names the TV's own home package (copy a community list and add it) | «Left on, the TV starts with them (they answer Home): …»; that package not in `pm list packages -d` |
+| T6 | A TV whose setup wizard owns the saved Wi-Fi (TCL G08/G10/G14): «إعداد تلفزيوني» → «جهّز كل شي» | The start screen does NOT say we will ask to forget the Wi-Fi; no Wi-Fi question at the home step; «تخلّص من واجهة المصنع» is offered (not refused for the Wi-Fi); the Wi-Fi stays connected after a restart |
+| T7 | `optimize/install.sh saver` (and `extras`) on Android 7+ | «Installed urtv-screensaver.apk by streaming it (no copy on the TV)»; `adb shell ls /data/local/tmp` has no urtv apk. Again with `URTV_STREAM=0`: the old upload (percent lines) and install, same result |
+| T8 | «جهّز كل شي» and, while the precheck or the backup runs, turn the TV's Wi-Fi off for ~20 s then on (TV-side setup over 127.0.0.1 does not need Wi-Fi; to cut its adb instead: `adb shell setprop ctl.restart adbd` from the computer) | A line «انقطع الاتصال بالتلفزيون؛ نعيد الاتصال ونعيد هذه الخطوة.», the step runs again and the run goes on; steps.log in the report has «reconnect …» |
+| T9 | «جهّز كل شي», and at ~20–30 % pull the TV's power for 10 s, plug in | After the start the setup screen comes back by itself and goes on from the step it was on (a cut home switch is put back first); a second power cut does the same; a third does not resume by itself (press «جهّز كل شي») |
+| T10 | Chromecast/Google TV paired by Wireless debugging (`optimize/find-tv.sh pair`): `optimize/venv/bin/python -I optimize/tv.py --reboot`, then `optimize/run.sh` | It finds the TV's new port by itself («TV is back») and goes on from its step; if Wireless debugging is off after the start, the !! line says to read «IP address & Port» and `optimize/find-tv.sh connect` |
+
 ## Report format
 
 ```
