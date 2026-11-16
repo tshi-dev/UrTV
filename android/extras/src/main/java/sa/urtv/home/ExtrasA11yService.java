@@ -211,6 +211,7 @@ public class ExtrasA11yService extends AccessibilityService {
             if (homeKeyLost == null) homeKeyLost = homeKeyLost(this);
             boolean want = SettingsKey.filterWanted(front, stockHome, lowRam, homeKeyLost)
                 || KeyApps.filterWanted(front, KeyApps.anyChosen(keyChoices), KeyButton.filterSafe());   // «أزرار الريموت»: only for a button given an app
+            want = true;   // tester-exp (step 88 R3): the key filter always on, to see the Home key
             AccessibilityServiceInfo info = getServiceInfo();
             if (info == null) return;
             boolean has = (info.flags & AccessibilityServiceInfo.FLAG_REQUEST_FILTER_KEY_EVENTS) != 0;
@@ -229,6 +230,18 @@ public class ExtrasA11yService extends AccessibilityService {
     }
 
     @Override protected boolean onKeyEvent(KeyEvent e) {
+        // tester-exp (step 88 R3, NOT for release): catch the Home key here and open our home instead of the TV's
+        if (e.getKeyCode() == KeyEvent.KEYCODE_HOME) {
+            Log.i("UrTVKey", "home action=" + e.getAction() + " repeat=" + e.getRepeatCount() + " front=" + homeFront + " src=" + e.getSource());
+            if (e.getAction() == KeyEvent.ACTION_UP) {
+                try {
+                    startActivity(new Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_HOME).setComponent(new ComponentName(HOME_PKG, HOME_PKG + ".MainActivity"))
+                        .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED));
+                    Log.i("UrTVKey", "home=opened ours");
+                } catch (RuntimeException ex) { Log.i("UrTVKey", "home=failed"); }
+            }
+            return true;
+        }
         if (appKey(e)) return true;   // «أزرار الريموت»: a button the owner gave an app; every other key goes on below, untouched
         Boolean lost = homeKeyLost;
         int d = settingsKey.decide(e.getKeyCode(), e.getAction(), e.getRepeatCount(), homeFront, stockHome, lost != null && lost);
