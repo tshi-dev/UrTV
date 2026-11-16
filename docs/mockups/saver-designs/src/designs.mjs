@@ -25,7 +25,7 @@ function net(route) {
   return route.abort();
 }
 const SCENES = {   // the photo, its frosted glass (SceneClock.frost), its cut-out cropped to its box (scenes.tsv / masks index.json) and the digits' place, in dp
-  riyadh: { photo: 'riyadh1.jpg', glass: 'riyadh1-frost.jpg', top: 60, size: 190 },   // ksa-cities 1 (KAFD at dusk): its cut-out is FRONT-ONLY, the clock in front
+  riyadh: { photo: 'riyadh.jpg', glass: 'riyadh-frost.jpg', fg: 'riyadh-fg.webp', fgTop: 67, fgH: 322, top: 110, size: 192 },   // the app's Riyadh (owner_ok): digits 266-542 centred, its clean cut-out (0,134,1920,644) over them
   night: { photo: 'night.jpg', glass: 'night-frost.jpg', fg: 'night-fg.webp', fgTop: 77, fgH: 312, top: 45, size: 196, x: 1080 },   // scenes v4: digits 137-419, centre x 1080 (digits_x): every digit and the colon legible
   nature7: { dark: 1, photo: 'ksa9.jpg', glass: 'ksa9-dark.jpg', fg: 'ksa9-fg.webp', fgTop: 168, fgH: 221, top: 48.5, size: 195 },   // ksa-cities 9 (palms; nature/16 is no longer published): digits 144-425 (PhotoGlassPlan, CROSS 0.22), luma 206 behind them: the dark glass
 };
