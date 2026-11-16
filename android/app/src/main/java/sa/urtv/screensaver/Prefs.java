@@ -736,6 +736,13 @@ final class Prefs {
     /** «صور شاشة التوقف»: the packs that are on (ids), and whether our own set («صورنا», on by default) is. Sent as #packs=id:count,... and #ours=0 only when set, so the fragment is as before. */
     java.util.Set<String> packsOn() { return PhotoPacks.parseOn(sp.getString("packsOn", "")); }
     void setPacksOn(java.util.Set<String> v) { sp.edit().putString("packsOn", PhotoPacks.joinOn(v)).apply(); }
+    /** 4.3.3 «النسبة»: each pack's share of the packs' turns in percent (none: by its size, as always) */
+    java.util.Map<String, Integer> packShares() { return PhotoPacks.parseShares(sp.getString("packShares", "")); }
+    void setPackShare(String id, int pct) {
+        java.util.Map<String, Integer> m = packShares();
+        if (pct > 0) m.put(id, pct); else m.remove(id);
+        sp.edit().putString("packShares", PhotoPacks.joinShares(m)).apply();
+    }
     boolean oursOn() { return sp.getBoolean("oursOn", true); }
     void setOursOn(boolean v) { sp.edit().putBoolean("oursOn", v).apply(); }
 
@@ -761,7 +768,7 @@ final class Prefs {
         java.util.Map<String, Integer> have = PackStore.installed(ctx);
         // «صورنا» off counts only while a pack that is on is on the TV: a pack deleted meanwhile brings ours back (nothing is left blank)
         boolean ours = oursOn() || !PhotoPacks.mayTurnOursOff(packsOn(), have);
-        return PhotoPacks.fragment(packsOn(), have) + (ours ? "" : "&ours=0");
+        return PhotoPacks.fragment(packsOn(), have, packShares()) + (ours ? "" : "&ours=0");
     }
 
     /** the home's own choice for «صوري»: "mix" (with ours), "only", "off"; null (never chosen) follows the screensaver's own mode, as before */

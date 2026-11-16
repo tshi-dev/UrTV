@@ -48,7 +48,7 @@ check("the app answers the page's ID/N.jpg and ID/credits.json only for ids and 
       and "[1-9][0-9]{0,2}" in cache and "f.isFile() ? jpeg(" in cache)
 check("«صورنا» is on by default, and off counts only while a pack that is on is on the TV",
       'sp.getBoolean("oursOn", true)' in prefs and "PhotoPacks.mayTurnOursOff(packsOn(), have)" in prefs)
-check("the fragment carries #packs= and #ours=0 only when set", 'return PhotoPacks.fragment(packsOn(), have) + (ours ? "" : "&ours=0");' in prefs and "+ packsParam();" in prefs)
+check("the fragment carries #packs= and #ours=0 only when set (4.3.3: with each pack's share, «النسبة»)", 'return PhotoPacks.fragment(packsOn(), have, packShares()) + (ours ? "" : "&ours=0");' in prefs and "+ packsParam();" in prefs)
 check("the settings row opens the picker, and it is a row of the hub", 'row("صور شاشة التوقف", packsLabel()' in st and "PhotoPacksActivity.class" in st
       and '{"صور شاشة التوقف", SAVER}' in src("SettingsHub.java"))
 check("the picker: OK downloads a pack that is not on the TV, else turns it on or off, deletes it; the credits are one button",
