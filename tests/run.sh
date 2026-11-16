@@ -221,6 +221,7 @@ python3 tests/fav_bar_test.py   # the favourites bar: the tray, five tiles, the 
 python3 tests/called_off_test.py   # 4.3 A1-A3: a called-off game is never live or upcoming; a team's game read from the copy further on
 python3 tests/usb_test.py   # 4.3 B8: the USB viewers are never off and always in the apps row (issue #50)
 python3 tests/sideload_apps_test.py   # #57: a sideloaded app shows on the home next to a Google home (only the TV's own phone-only helpers stay out)
+python3 tests/kids_exit_test.py   # 4.3.3: kids mode always has a way out to «الرقابة الأبوية» (the long OK box, Menu, star, a long Settings key), behind the PIN
 python3 tests/report_words_test.py   # 4.3 B10: the report page asks what happened, required
 python3 tests/phone_message_test.py   # 4.3 #53: a short message from a paired phone on the TV's screen
 python3 tests/photos_phone_test.py   # 4.3 «صوري»: 50, and from a paired phone (no camera data)

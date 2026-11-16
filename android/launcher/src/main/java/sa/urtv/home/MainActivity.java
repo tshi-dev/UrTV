@@ -2760,6 +2760,10 @@ public class MainActivity extends Activity {
                 toast(now ? S.t("فُتح القفل") : S.t("قُفل، ويطلب الرمز"));
             }, null);
         };
+        if (kids) {   // 4.3.3: in kids mode a lock per app means nothing (only the allowed apps show): the slot is the way out, «الرقابة الأبوية» behind the PIN
+            o.lockLabel = KIDS_EXIT;
+            o.lock = this::openParental;
+        }
         o.favouriteNow = inDock;
         o.favourite = () -> {
             if (inDock) {
@@ -2783,6 +2787,16 @@ public class MainActivity extends Activity {
         if (!kids && shop != null) o.store = () -> guarded(ParentalPolicy.MENU_APP, pkg, S.t("صفحته في المتجر"), () -> launch(shop));
         if (appOptions != null) appOptions.dismiss();
         appOptions = AppOptions.show(this, anchor, inDock ? 1.12f : 1.1f, homeGlass(), font("sans-serif-medium"), o);
+    }
+
+    static final String KIDS_EXIT = S.n("الرقابة الأبوية");
+
+    /**
+     * 4.3.3: kids mode always has a way out on the TV: «الرقابة الأبوية» (ParentalActivity asks the PIN itself, and «الخروج من وضع الأطفال» there asks
+     * it again), from the long OK's box on any app, the Menu key, the star key, and a long Settings key where the screensaver app (its other door) is missing.
+     */
+    private void openParental() {
+        launchGuarded(ParentalPolicy.PARENTAL_SCREEN, new Intent(this, ParentalActivity.class), "الرقابة الأبوية");
     }
 
     // ---- the hint beside a favourite's name: «اضغط مطوّلاً للخيارات», the first few times only (OPTIONS_HINT_TIMES), never after the box was opened
@@ -4074,6 +4088,10 @@ public class MainActivity extends Activity {
             showInputs(pills.get(0), ParentalPolicy.MENU_KEY);
             return true;
         }
+        if (e.getKeyCode() == KeyEvent.KEYCODE_MENU && e.getAction() == KeyEvent.ACTION_UP && Parental.state(this).kids) {
+            openParental();   // 4.3.3: kids mode has no pills, and maybe no app left to hold OK on: the Menu key is always a way out (the PIN first)
+            return true;
+        }
         // On the «يُتلى الآن» card ◀ is the previous surah and ▶ the next (a station has none: ◀ goes back to the pills as on any pill)
         if (e.getAction() == KeyEvent.ACTION_DOWN && nowCard != null && getCurrentFocus() == nowCard
                 && (e.getKeyCode() == KeyEvent.KEYCODE_DPAD_LEFT || e.getKeyCode() == KeyEvent.KEYCODE_DPAD_RIGHT)) {
@@ -4159,7 +4177,8 @@ public class MainActivity extends Activity {
                 guarded(ParentalPolicy.REMOTE_APP, key.pkg, labelOf(key.pkg), () -> openPackage(key.pkg));
                 break;
             case RemoteKeys.OPEN_OUR_SETTINGS:   // a long press of the Settings key: OUR settings (the TV's own if our app is missing)
-                openOurSettings(true);
+                if (Parental.state(this).kids && !isInstalled(SAVER_PKG)) openParental();   // 4.3.3: kids mode with no screensaver app: its «الرقابة الأبوية» row is missing, so the screen itself
+                else openOurSettings(true);
                 break;
             case RemoteKeys.OPEN_SETTINGS: {   // a short press of the Settings / Quick Settings key: the TV's own quick panel when it has one (behind @tvsettings), else OUR Control Center (#51), else the TV's settings
                 Intent panel = new Intent(SettingsKey.NOTIFICATION_PANEL_ACTION);
@@ -4172,6 +4191,7 @@ public class MainActivity extends Activity {
             }
             case RemoteKeys.OPEN_INPUTS:
                 if (!pills.isEmpty()) showInputs(pills.get(0), ParentalPolicy.MENU_KEY);
+                else if (Parental.state(this).kids) openParental();   // 4.3.3: the star key in kids mode: the way out, as the Menu key
                 break;
             case RemoteKeys.OPEN_LIVE_TV:   // the TV button (TCL's 4001): the tuner, as «البث التلفزيوني» opens it
                 openLiveTv();
