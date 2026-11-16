@@ -479,6 +479,13 @@
             android:configChanges="keyboard|keyboardHidden|navigation|orientation|screenSize|screenLayout|uiMode|density" />
 
         <activity
+            android:name=".tilawah.QuietActivity"
+            android:exported="false"
+            android:screenOrientation="landscape"
+            android:theme="@style/App"
+            android:configChanges="keyboard|keyboardHidden|navigation|orientation|screenSize|screenLayout|uiMode|density" />
+
+        <activity
             android:name=".tilawah.PrayerSoundActivity"
             android:exported="false"
             android:screenOrientation="landscape"

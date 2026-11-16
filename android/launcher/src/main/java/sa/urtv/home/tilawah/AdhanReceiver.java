@@ -44,7 +44,8 @@ public class AdhanReceiver extends BroadcastReceiver {
             int prayer = intent.getIntExtra(AdhanScheduler.EXTRA_PRAYER, -1);   // an alarm of an older version has none: the usual voice
             int front = AdhanFront.now(context);
             int voice = prayer < 0 ? prefs.playVoiceFor(context, false) : prefs.playFor(context, prayer);   // 4.4 «أذان كل صلاة»
-            boolean silent = voice == PrayerSound.SILENT;
+            boolean silent = voice == PrayerSound.SILENT
+                    || QuietHours.silencesAdhan(prefs.quietOn(), prefs.quietNow(context), prefs.quietAdhan(), prayer);   // 4.4 «ساعات الهدوء»
             boolean play = prefs.adhanOn() && AdhanPlan.mayPlay(prefs.adhanSaverOnly(), front) && !silent;
             boolean notice = prefs.adhanNotice();
             if (play) MusicService.adhan(context, voice, null, 0, prayer);

@@ -81,6 +81,13 @@ public class MusicReceiver extends BroadcastReceiver {
                 prefs.setAdhanShort(intent.getBooleanExtra("on", false));
                 setResultData("saved\nshort=" + (prefs.adhanShort() ? "on" : "off"));
                 return;
+            case "sa.urtv.home.QUIET": {   // 4.4 optimize/music.sh adhan quiet off | <from-minute> <to-minute> <heard|fajr|silent>
+                int a = intent.getIntExtra("adhan", prefs.quietAdhan());
+                prefs.setQuiet(intent.getBooleanExtra("on", false), intent.getIntExtra("from", prefs.quietFrom()), intent.getIntExtra("to", prefs.quietTo()),
+                        a < 0 || a > 2 ? QuietHours.ADHAN_HEARD : a);
+                setResultData("saved\nquiet=" + quietText(prefs));
+                return;
+            }
             case "sa.urtv.home.PRAYER_SOUND": {   // 4.4 optimize/music.sh adhan prayer <name> <general|silent|own|own_fajr|N>
                 int p = intent.getIntExtra("prayer", -1);
                 String choice = intent.getStringExtra("choice");
@@ -208,6 +215,12 @@ public class MusicReceiver extends BroadcastReceiver {
     private static int catalogIndex(Context c, String id) { return Catalog.get(c).reciterIndex(id); }
 
     /** 4.4 «أذان كل صلاة»: "fajr:,dhuhr:silent,asr:,maghrib:own,isha:v3" ("" = like the general adhan) */
+    /** 4.4 «ساعات الهدوء»: "off", or "1380-300 adhan=heard|fajr|silent" (minutes of the day) */
+    private static String quietText(Prefs prefs) {
+        if (!prefs.quietOn()) return "off";
+        return prefs.quietFrom() + "-" + prefs.quietTo() + " adhan=" + new String[]{"heard", "fajr", "silent"}[prefs.quietAdhan()];
+    }
+
     private static String prayerSounds(Prefs prefs) {
         String[] names = {"fajr", "", "dhuhr", "asr", "maghrib", "isha"};
         StringBuilder b = new StringBuilder();
@@ -262,6 +275,7 @@ public class MusicReceiver extends BroadcastReceiver {
                 + "|voice=" + (prefs.playVoice(context) == Prefs.OWN ? "own" : String.valueOf(prefs.voice()))
                 + "|fajr_voice=" + (prefs.playFajrVoice(context) == Prefs.OWN_FAJR ? "own_fajr" : prefs.playFajrVoice(context) == Prefs.OWN ? "own" : String.valueOf(prefs.fajrVoice()))
                 + "|prayer_sound=" + prayerSounds(prefs)
+                + "|quiet=" + quietText(prefs)
                 + "|adhan_short=" + (prefs.adhanShort() ? "on" : "off")
                 + "|adhan_takbir=" + (prefs.adhanTakbir() ? "on" : "off")
                 + "|adhan_stopkey=" + (prefs.adhanStopKey() ? "on" : "off")

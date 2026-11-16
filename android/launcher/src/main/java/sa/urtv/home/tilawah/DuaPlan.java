@@ -7,7 +7,13 @@ final class DuaPlan {
     /** an alarm later than this is a missed one: never made up */
     static final long LATE_MS = 3 * 60_000L;
 
-    enum Go { PLAY, SKIP_LATE, SKIP_STANDBY, SKIP_ADHAN, SKIP_OTHER_APP, SKIP_NO_SOUND }
+    enum Go { PLAY, SKIP_LATE, SKIP_STANDBY, SKIP_ADHAN, SKIP_OTHER_APP, SKIP_NO_SOUND, SKIP_QUIET }
+
+    /** 4.4 «ساعات الهدوء»: nothing plays inside them; otherwise as decide() */
+    static Go decide(long due, long now, boolean screenOn, boolean adhanPlaying, boolean otherAppSounds, boolean overOthers, boolean hasSound, boolean quiet) {
+        Go g = decide(due, now, screenOn, adhanPlaying, otherAppSounds, overOthers, hasSound);
+        return g == Go.PLAY && quiet ? Go.SKIP_QUIET : g;
+    }
 
     static Go decide(long due, long now, boolean screenOn, boolean adhanPlaying, boolean otherAppSounds, boolean overOthers, boolean hasSound) {
         if (now - due > LATE_MS) return Go.SKIP_LATE;
