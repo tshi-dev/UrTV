@@ -1,0 +1,5 @@
+/* «المباريات»: the day in words (اليوم، غدًا، الجمعة) and the time, no «·»; a game played quiet, its score in gold; «بعد …» the accent */
+.week li.mg .mr .mwhen{color:#E2DACA}
+.week li.mg .mr .dt{color:var(--gold-3)}
+.week li.mg.done{color:#CFC6B2}
+.week li.mg.done .mr .dt{color:#B9B09C}

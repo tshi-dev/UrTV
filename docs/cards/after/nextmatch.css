@@ -1,0 +1,6 @@
+/* «مباراة فريقك القادمة»: one game, so it is read big: the clubs on the first line, the day, time and time left under them */
+.week.nm1 li.mg .mr{flex-wrap:wrap;row-gap:.3em;white-space:normal}
+.week.nm1 li.mg .mr .tm .nm,.week.nm1 li.mg .mr .x,.week.nm1 li.mg .sc{font-size:1.7em;font-weight:500}
+.week.nm1 li.mg .mr .mwhen{order:5;flex:0 0 auto;text-align:start;font-size:1em;color:#F1E7D0}
+.week.nm1 li.mg .mr .dt{order:6;flex:1 0 auto;font-size:1em;text-align:left;color:var(--gold-3)}
+.week.nm1 li.mg .mr::after{content:'';order:4;flex:0 0 100%}

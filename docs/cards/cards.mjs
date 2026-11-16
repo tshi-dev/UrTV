@@ -8,4 +8,9 @@ export const CARDS = [
   { nn: '03', id: 'verse', hash: 'panel=verse', looks: [...SAVER, ...H('home-')] },
   { nn: '04', id: 'forecast', hash: 'panel=forecast', looks: [...SAVER, ...H('home-')] },
   { nn: '05', id: 'hourly', hash: 'panel=hourly', looks: [...SAVER, ...H('home-')] },
+  { nn: '06', id: 'prayerrow', hash: 'panel=prayerrow', looks: [...SAVER, ...H('home-')] },
+  { nn: '07', id: 'matches', hash: 'panel=matches&teams=136013&leagues=' + encodeURIComponent('Saudi-Arabian Pro League'), looks: [...SAVER, ...H('home-')], wait: 2500 },
+  { nn: '08', id: 'nextmatch', hash: 'panel=nextmatch&teams=136013', looks: [...SAVER, ...H('home-')], wait: 2500 },
+  { nn: '09', id: 'stocks', hash: 'panel=stocks&stocks=2222,1120,AAPL,NVDA&mkstyle=prices', looks: [...SAVER, ...H('home-')], wait: 2500 },
+  { nn: '10', id: 'countdown', hash: 'panel=verse&slot=countdown&cd=2026-12-18&cdname=' + encodeURIComponent('إجازة نهاية الفصل'), looks: SAVER },
 ];

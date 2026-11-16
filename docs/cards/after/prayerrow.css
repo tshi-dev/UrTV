@@ -1,0 +1,8 @@
+/* «مواقيت اليوم» in a row (the regular style): the approved 02 ideas, the next one solid gold, the time the strong line, the past quiet */
+.week li.prow{gap:8px}
+.week li.prow .pc{gap:.15em;padding:.5em .1em}
+.week li.prow .pc b{font-weight:400;font-size:.9em;color:#E9E1CE}
+.week li.prow .pc i{font-size:1.06em;color:#FFF;font-weight:500}
+.week li.prow .pc.past b,.week li.prow .pc.past i{color:#B9B09C;font-weight:400}
+.week li.prow .pc.next{background:#EBC67D;box-shadow:none}
+.week li.prow .pc.next b,.week li.prow .pc.next i{color:#1A1409}
