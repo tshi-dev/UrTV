@@ -167,6 +167,16 @@ check("a backfill name maps through teams.json", nm.id("FC Bayern München", "43
 check("a shared common word is not a match (Luton Town is not Ipswich Town)", nm.id("Luton Town FC", "4328") is None)
 check("a European cup's names are matched exactly only", nm.id("FC Red Bull Salzburg (AUT)", "4480") is None and nm.id("AC Sparta Praha (CZE)", "4480") is None)
 check("the hand file comes first", nm.id("FC Internazionale Milano (ITA)", "4480") == "133681")
+calls_ = []
+nm2 = ma.Names(None, online=True)
+nm2.search = lambda name, lg: calls_.append(name)
+for _ in range(5):
+    nm2.id("Nowhere United FC", "4328")
+check("a name not found is searched once a run, not once a game", len(calls_) == 1, calls_)
+nm2.cache = {"Nowhere United": ""}
+nm2.asked = set()
+nm2.id("Nowhere United FC", "4328")
+check("a miss of an earlier run is searched again (once)", len(calls_) == 2, calls_)
 names = json.loads((ROOT / ".github/tools/archive_names.json").read_text())
 check("archive_names.json maps names to TheSportsDB ids", isinstance(names, dict) and all(re.fullmatch(r"\d{1,7}|", str(v)) for v in names.values()))
 

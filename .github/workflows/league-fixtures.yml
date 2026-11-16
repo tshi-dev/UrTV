@@ -145,6 +145,19 @@ jobs:
             --check ${LEAGUES:+--leagues "$LEAGUES"} ${{ inputs.days && '--days --budget 9000' || '' }}
         env:
           LEAGUES: ${{ inputs.leagues }}
+      - name: The history's counts (in the run's summary)
+        if: always() && env.HISTORY == 'true'
+        run: |
+          python3 - <<'PY' | tee -a "$GITHUB_STEP_SUMMARY"
+          import json
+          r = json.load(open("history-report.json"))
+          print("| league | season | games | finished | expected | how |\n|---|---|---|---|---|---|")
+          for lg, v in r.items():
+              if isinstance(v, dict) and "seasons" in v:
+                  for s, x in v["seasons"].items():
+                      print(f"| {lg} {v['name']} | {s} | {x.get('games')} | {x.get('finished')} | {x.get('expected')} | {x.get('how', x.get('asked', ''))} |")
+          print("\n" + json.dumps({k: r[k] for k in ("check", "stopped", "requests") if k in r}, ensure_ascii=False, indent=1))
+          PY
       - name: The live window (exits at once when nothing is live)
         id: live
         if: env.LIVE == 'true'

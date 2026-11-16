@@ -425,6 +425,7 @@ class Names:
 
     def __init__(self, cache_file, online=True):
         self.online = online
+        self.asked = set()   # the names looked up in this run (a miss is not searched twice)
         sys.path.insert(0, str(HERE))
         import team_ids as ti
         self.ti = ti
@@ -442,8 +443,9 @@ class Names:
         for src in (self.hand.get(raw), self.hand.get(name)):
             if src is not None:
                 return src or None   # the hand file may say "" (no club of ours): not searched
-        if self.cache.get(name):
-            return self.cache[name]   # a miss ("") is searched again: TheSportsDB may know it by now
+        if self.cache.get(name) or name in self.asked:
+            return self.cache.get(name) or None   # a miss ("") of an earlier run is searched again, once a run: TheSportsDB may know it by now
+        self.asked.add(name)
         i = self.by_norm.get(norm(name))
         if not i:
             league = LEAGUE_EN.get(lg)
