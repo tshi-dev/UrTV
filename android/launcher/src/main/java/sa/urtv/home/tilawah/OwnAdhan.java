@@ -73,6 +73,15 @@ final class OwnAdhan {
         return why.isEmpty() ? null : why;
     }
 
+    /**
+     * 4.4: a file of «صوتياتي» (USB or the phone; already checked there: mp3, m4a, Ogg or wav, a length Android read) as the recording. Only
+     * its length is held to the adhan's 5 minutes here; its size is the library's cap, not MAX_BYTES (that one is for the computer's way,
+     * which makes the file small first). The library's file stays where it is: this is a copy.
+     */
+    static synchronized String keepFromLibrary(Context c, File src, boolean fajr) {
+        return SafeReplace.replace(src, fajr ? fajrFile(c) : file(c), false, SafeReplace.FILES).isEmpty() ? null : "no room to keep it";
+    }
+
     static synchronized void clear(Context c) {
         file(c).delete();
         new File(c.getFilesDir(), "adhan-own.m4a.new").delete();

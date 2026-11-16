@@ -81,6 +81,28 @@ public class MusicReceiver extends BroadcastReceiver {
                 prefs.setAdhanShort(intent.getBooleanExtra("on", false));
                 setResultData("saved\nshort=" + (prefs.adhanShort() ? "on" : "off"));
                 return;
+            case "sa.urtv.home.QUIET": {   // 4.4 optimize/music.sh adhan quiet off | <from-minute> <to-minute> <heard|fajr|silent>
+                int a = intent.getIntExtra("adhan", prefs.quietAdhan());
+                prefs.setQuiet(intent.getBooleanExtra("on", false), intent.getIntExtra("from", prefs.quietFrom()), intent.getIntExtra("to", prefs.quietTo()),
+                        a < 0 || a > 2 ? QuietHours.ADHAN_HEARD : a);
+                setResultData("saved\nquiet=" + quietText(prefs));
+                return;
+            }
+            case "sa.urtv.home.FRIDAY_DHUHR":   // 4.4 optimize/music.sh adhan friday on|off
+                prefs.setFridayDhuhr(intent.getBooleanExtra("on", true));
+                setResultData("saved\nfriday_dhuhr=" + (prefs.fridayDhuhr() ? "on" : "off"));
+                return;
+            case "sa.urtv.home.PRAYER_SOUND": {   // 4.4 optimize/music.sh adhan prayer <name> <general|silent|own|own_fajr|N>
+                int p = intent.getIntExtra("prayer", -1);
+                String choice = intent.getStringExtra("choice");
+                if (choice == null) choice = "";
+                boolean known = p == 0 || p == 2 || p == 3 || p == 4 || p == 5;
+                boolean fajrOnly = choice.matches("v[0-9]{1,3}") && AdhanVoices.isFajr(Integer.parseInt(choice.substring(1))) && p != 0;
+                if (!known || !PrayerSound.valid(choice) || fajrOnly) { setResultData("error: prayer is 0,2,3,4,5 and choice is \"\", silent, own, own_fajr or vN"); return; }
+                prefs.setPrayerSound(p, choice);
+                setResultData("saved\nprayer_sound=" + prayerSounds(prefs));
+                return;
+            }
             case "sa.urtv.home.ADHAN_TAKBIR":   // optimize/music.sh adhan takbir on|off
                 prefs.setAdhanTakbir(intent.getBooleanExtra("on", false));
                 setResultData("saved\ntakbir=" + (prefs.adhanTakbir() ? "on" : "off") + "\nshort=" + (prefs.adhanShort() ? "on" : "off"));
@@ -196,6 +218,20 @@ public class MusicReceiver extends BroadcastReceiver {
 
     private static int catalogIndex(Context c, String id) { return Catalog.get(c).reciterIndex(id); }
 
+    /** 4.4 «أذان كل صلاة»: "fajr:,dhuhr:silent,asr:,maghrib:own,isha:v3" ("" = like the general adhan) */
+    /** 4.4 «ساعات الهدوء»: "off", or "1380-300 adhan=heard|fajr|silent" (minutes of the day) */
+    private static String quietText(Prefs prefs) {
+        if (!prefs.quietOn()) return "off";
+        return prefs.quietFrom() + "-" + prefs.quietTo() + " adhan=" + new String[]{"heard", "fajr", "silent"}[prefs.quietAdhan()];
+    }
+
+    private static String prayerSounds(Prefs prefs) {
+        String[] names = {"fajr", "", "dhuhr", "asr", "maghrib", "isha"};
+        StringBuilder b = new StringBuilder();
+        for (int p : PrayerTimes.PRAYERS) b.append(b.length() > 0 ? "," : "").append(names[p]).append(':').append(prefs.prayerSound(p));
+        return b.toString();
+    }
+
     private String status(Context context) {
         Catalog cat = Catalog.get(context);
         Prefs prefs = new Prefs(context);
@@ -242,6 +278,9 @@ public class MusicReceiver extends BroadcastReceiver {
                 + "|adhan=" + (prefs.adhanOn() ? "on" : "off")
                 + "|voice=" + (prefs.playVoice(context) == Prefs.OWN ? "own" : String.valueOf(prefs.voice()))
                 + "|fajr_voice=" + (prefs.playFajrVoice(context) == Prefs.OWN_FAJR ? "own_fajr" : prefs.playFajrVoice(context) == Prefs.OWN ? "own" : String.valueOf(prefs.fajrVoice()))
+                + "|prayer_sound=" + prayerSounds(prefs)
+                + "|quiet=" + quietText(prefs)
+                + "|friday_dhuhr=" + (prefs.fridayDhuhr() ? "on" : "off")
                 + "|adhan_short=" + (prefs.adhanShort() ? "on" : "off")
                 + "|adhan_takbir=" + (prefs.adhanTakbir() ? "on" : "off")
                 + "|adhan_stopkey=" + (prefs.adhanStopKey() ? "on" : "off")

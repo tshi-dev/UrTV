@@ -80,6 +80,9 @@ public final class NowPlaying {
     /** an adhan for a prayer is playing (not a preview, not a surah): the home's bar says so and how to stop it */
     public static boolean adhanLive() { return MusicService.adhanLive(); }
 
+    /** 4.4: the dua or reminder playing now (the home's card names it), null when none */
+    public static String duaName() { return MusicService.duaName(); }
+
     /** PrayerTimes' number of the prayer that adhan is for, -1 when none is named */
     public static int adhanPrayer() { return MusicService.adhanPrayer(); }
 

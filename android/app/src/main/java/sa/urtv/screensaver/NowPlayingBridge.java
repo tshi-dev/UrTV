@@ -29,6 +29,8 @@ final class NowPlayingBridge {
                 boolean any = cur.getInt(cur.getColumnIndexOrThrow("any_key")) == 1;
                 o.put("prayer", prayer);
                 o.put("any", any);
+                int named = cur.getColumnIndex("name");   // 4.4: a dua's name (a launcher before 4.4 has no such column)
+                if (named >= 0 && cur.getString(named) != null && !cur.getString(named).isEmpty()) o.put("name", cur.getString(named));
                 o.put("live", true);   // last: nothing half read counts as an adhan
             }
         } catch (Exception ignored) {

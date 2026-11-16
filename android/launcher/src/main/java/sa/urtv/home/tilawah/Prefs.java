@@ -86,6 +86,37 @@ final class Prefs {
     /** What plays at a prayer: Fajr has its own voice. */
     int playVoiceFor(Context c, boolean fajr) { return fajr ? playFajrVoice(c) : playVoice(c); }
 
+    /** 4.4 «أذان كل صلاة»: this prayer's choice (PrayerSound), "" when the general adhan plays as before */
+    String prayerSound(int prayer) { String c = sp.getString("pp_" + prayer, ""); return PrayerSound.valid(c) ? c : ""; }
+    void setPrayerSound(int prayer, String choice) { sp.edit().putString("pp_" + prayer, PrayerSound.valid(choice) ? choice : "").apply(); }
+
+    /** 4.4 «ساعات الهدوء»: off by default; 23:00 to 05:00 when first turned on; the adhan in it heard by default */
+    boolean quietOn() { return sp.getBoolean("quiet_on", false); }
+    int quietFrom() { return Math.floorMod(sp.getInt("quiet_from", 23 * 60), 1440); }
+    int quietTo() { return Math.floorMod(sp.getInt("quiet_to", 5 * 60), 1440); }
+    int quietAdhan() { int v = sp.getInt("quiet_adhan", QuietHours.ADHAN_HEARD); return v < 0 || v > 2 ? QuietHours.ADHAN_HEARD : v; }
+    void setQuiet(boolean on, int from, int to, int adhan) {
+        sp.edit().putBoolean("quiet_on", on).putInt("quiet_from", Math.floorMod(from, 1440)).putInt("quiet_to", Math.floorMod(to, 1440)).putInt("quiet_adhan", adhan).apply();
+    }
+
+    /** the quiet hours hold now, in the city's own time */
+    boolean quietNow(Context c) {
+        if (!quietOn()) return false;
+        java.util.Calendar now = java.util.Calendar.getInstance(sa.urtv.home.ZoneFix.zone(Place.get(c).tz), java.util.Locale.US);
+        return QuietHours.inside(now.get(java.util.Calendar.HOUR_OF_DAY) * 60 + now.get(java.util.Calendar.MINUTE), quietFrom(), quietTo());
+    }
+
+    /** 4.4: what plays at this prayer now: a voice (Prefs.OWN…, 1..COUNT) or PrayerSound.SILENT */
+    int playFor(Context c, int prayer) {
+        boolean friday = fridayDhuhr()
+                && java.util.Calendar.getInstance(sa.urtv.home.ZoneFix.zone(Place.get(c).tz), java.util.Locale.US).get(java.util.Calendar.DAY_OF_WEEK) == java.util.Calendar.FRIDAY;
+        return PrayerSound.voice(prayerSound(prayer), prayer, playVoiceFor(c, prayer == PrayerTimes.FAJR), OwnAdhan.exists(c), OwnAdhan.fajrExists(c), friday);
+    }
+
+    /** 4.4 touch «أذان الجمعة»: on by default: a Dhuhr set silent is still heard on Fridays (it matters only when Dhuhr is silent) */
+    boolean fridayDhuhr() { return sp.getBoolean("friday_dhuhr", true); }
+    void setFridayDhuhr(boolean on) { sp.edit().putBoolean("friday_dhuhr", on).apply(); }
+
     /**
      * Writes down what Fajr is using now before one of the two choices changes, so a change to the other prayers' voice never moves the one
      * for Fajr (nothing is written when the TV starts; the old single voice is read as it is until then).

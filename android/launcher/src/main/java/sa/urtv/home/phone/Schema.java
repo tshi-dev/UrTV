@@ -15,6 +15,8 @@ import java.util.Map;
 public final class Schema {
     public static final String[] KEYS = {"up", "down", "left", "right", "ok", "back", "home", "vol_up", "vol_down", "mute", "play_pause"};
     public static final String[] QURAN_OPS = {"play", "pause", "resume", "toggle", "next", "prev", "stop", "sleep"};
+    /** 4.4 «صوتياتي»: what a file may be used for ("dua" comes with «الأدعية والتذكيرات») */
+    public static final String[] AUDIO_USES = {"own", "own_fajr", "dua", "none"};
     public static final int MAX_TEXT = 120, MAX_CITY = 40, MAX_QUERY = 30, MAX_HOME_CARDS = 3, SURAHS = 114;
     /** AdhanVoices.COUNT: the number of adhan recordings of ours (tests/phone_test.py checks they agree) */
     public static final int ADHAN_VOICES = 21;
@@ -105,6 +107,15 @@ public final class Schema {
                 return c;
             }
             case "logout": return only(body);
+            case "audio": {   // 4.4 «صوتياتي»: {"op":"use","id":3,"as":"own"} or {"op":"delete","id":3}
+                Clean c = only(body, "op", "id", "as");
+                if (!c.ok()) return c;
+                if (!"use".equals(body.get("op")) && !"delete".equals(body.get("op"))) return no("bad op");
+                if (!range(body.get("id"), 1, 1_000_000)) return no("bad id");
+                if ("use".equals(body.get("op")) != body.containsKey("as")) return no("as goes with use");
+                if (body.containsKey("as") && !Arrays.asList(AUDIO_USES).contains(body.get("as"))) return no("bad as");
+                return c;
+            }
             case "message": {   // 4.3 #53: a short message for the TV's screen (up to 200 characters, a few lines)
                 Clean c = only(body, "text");
                 if (!c.ok()) return c;

@@ -104,7 +104,8 @@ check("the page's one script carries the nonce the server fills in", page.count(
 check("the page sends the session in X-UrTV-Session and the cookie goes with it", "'X-UrTV-Session'" in page and "credentials: 'same-origin'" in page, "")
 check("the page takes the token out of the address bar at once", "history.replaceState" in page and page.index("history.replaceState") < page.index("pair({ token: h })"), "")
 api = text(PHONE / "PhoneApi.java")
-served = set(re.findall(r'case "(/api/[a-z_/]+)"', api)) | {"/api/state"} | ({"/api/icon/"} if 'startsWith("/api/icon/")' in api else set())
+served = set(re.findall(r'case "(/api/[a-z_/]+)"', api)) | {"/api/state"} | ({"/api/icon/"} if 'startsWith("/api/icon/")' in api else set()) \
+    | ({"/api/audio_piece"} if "r.path.equals(PhoneServer.AUDIO_PATH)" in api and 'AUDIO_PATH = "/api/audio_piece"' in text(PHONE / "PhoneServer.java") else set())
 # «محفظتي»'s own page (/m): the same rules as the main page
 pf = text(ROOT / "android/launcher/src/main/assets/phone/portfolio.html")
 check("portfolio.html builds no HTML from data, has one script with the nonce, sends the session the same way",
@@ -112,8 +113,9 @@ check("portfolio.html builds no HTML from data, has one script with the nonce, s
       and pf.count("<script") == 1 and '<script nonce="__NONCE__">' in pf and "'X-UrTV-Session'" in pf and "credentials: 'same-origin'" in pf, "")
 check("portfolio.html takes the token out of the address bar before pairing, and keeps no holding (no localStorage write, the form cleared after saving)",
       pf.index("history.replaceState") < pf.index("pairToken(m[1])") and "localStorage.setItem" not in pf and "$('buys').textContent = '';" in pf, "")
-used = set(re.findall(r"['\"](/api/[a-z_/]+)['\"]", page)) | set(re.findall(r"['\"](/api/[a-z_/]+)['\"]", pf))
-check("every call of the page (and of portfolio.html) is an endpoint the server has, and the reverse", used == served, (used ^ served))
+au = text(ROOT / "android/launcher/src/main/assets/phone/audio.html")   # 4.4 «صوتياتي» (/a)
+used = set(re.findall(r"['\"](/api/[a-z_/]+)['\"]", page)) | set(re.findall(r"['\"](/api/[a-z_/]+)['\"]", pf)) | set(re.findall(r"['\"](/api/[a-z_/]+)['\"]", au))
+check("every call of the page (and of portfolio.html and audio.html) is an endpoint the server has, and the reverse", used == served, (used ^ served))
 check("the page says plainly what it cannot do: keys to other apps, and text outside our screens",
       "فعّل خدمة «إضافات تلفزيونك»" in page and "تحتاج أندرويد ١٣" in page and "يُكتب في حقلها بعد تفعيل خدمة إمكانية الوصول" in page and "/api/text" in page, "")
 check("the page has no reset, uninstall, ADB or PIN-changing control", not re.search(r"reset|uninstall|adb|إعادة ضبط|حذف التطبيق", page, re.I), "")

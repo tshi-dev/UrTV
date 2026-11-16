@@ -1500,6 +1500,7 @@ let ADHAN_LIVE = null;
 const ADHAN_PRAYER_NAMES = {0:'الفجر', 2:'الظهر', 3:'العصر', 4:'المغرب', 5:'العشاء'};
 function adhanLiveText(){
   if(!ADHAN_LIVE) return '';
+  if(ADHAN_LIVE.name) return ADHAN_LIVE.name + '، ' + (ADHAN_LIVE.any ? 'أي زر يوقفه' : 'اختيار يوقفه');   // 4.4: a dua or reminder (its own name)
   const n = ADHAN_LIVE.prayer === 2 && isFriday() ? 'الجمعة' : ADHAN_PRAYER_NAMES[ADHAN_LIVE.prayer];
   return (n ? 'أذان ' + n : 'الأذان') + '  ·  ' + (ADHAN_LIVE.any ? 'أي زر يوقف الأذان' : 'اختيار: إيقاف الأذان');
 }
@@ -1508,7 +1509,7 @@ function adhanLiveTick(){
   // asked every 3 s whenever the app answers (a call to the app's provider, about a millisecond)
   let s = null;
   try{ const raw = window.UrtvNative.adhan(); s = raw ? JSON.parse(raw) : null; }catch(e){}
-  ADHAN_LIVE = s && s.live && typeof s.prayer === 'number' && isFinite(s.prayer) ? {prayer: +s.prayer, any: !!s.any} : null;
+  ADHAN_LIVE = s && s.live && typeof s.prayer === 'number' && isFinite(s.prayer) ? {prayer: +s.prayer, any: !!s.any, name: typeof s.name === 'string' ? s.name.slice(0, 60) : ''} : null;
   tickAdhanBar();
 }
 function adhanBarText(){

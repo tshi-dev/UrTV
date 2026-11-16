@@ -155,7 +155,9 @@ public class MainActivity extends Activity {
     private ImageView netIcon;   // C15: the connection in the top row (Wi-Fi, none)   // «الأسواق» and «المباريات»: they take the look like the others («رملي»: they stayed grey, step 28)
     private Pill centerPill;   // «مركز التحكم»: gold while the sleep timer runs; in the row except in kids mode (applyCenterPill)
     private ControlCenter control;   // the panel it opens
-    private TextView adhanBar;   // «أذان المغرب بعد ٨ دقائق», over the top edge; while the adhan plays «أذان المغرب · أي زر يوقف الأذان»
+    private TextView adhanBar;
+    /** 4.4: the card while a dua or reminder plays: its name and «إيقاف» (DuaCard) */
+    private DuaCard duaCard;   // «أذان المغرب بعد ٨ دقائق», over the top edge; while the adhan plays «أذان المغرب · أي زر يوقف الأذان»
     private final AdhanKeys adhanKeys = new AdhanKeys();
     private ReminderCard reminder;   // the card of a task with a time, over the home; the alarm (ReminderReceiver) and a return to the home bring it
     private final BroadcastReceiver reminderDue = new BroadcastReceiver() {
@@ -631,6 +633,8 @@ public class MainActivity extends Activity {
         });
         adhanBar.setVisibility(View.GONE);
         root.addView(adhanBar, new FrameLayout.LayoutParams(-1, dp(26), Gravity.TOP));
+        duaCard = new DuaCard(this);
+        root.addView(duaCard.view, duaCard.place(this));
         buildEditViews(root);
         buildHomeNudge(root);
 
@@ -3468,6 +3472,7 @@ public class MainActivity extends Activity {
         if (words != null) adhanBar.setText(words);
         // any key stops the adhan (AdhanKeys) and the focus stays where it was; with «إيقاف الأذان بأي زر» off the bar is focusable (UP reaches it) and OK on it stops it
         adhanBar.setFocusable(words != null && AdhanBar.playing(cfg));
+        if (duaCard != null) duaCard.show(NowPlaying.duaName(), getCurrentFocus());   // 4.4: a dua's card, with the focus on «إيقاف»
     }
 
     /**
@@ -4274,8 +4279,9 @@ public class MainActivity extends Activity {
     /** The adhan's rule for a key; the PIN keypad (a dialog, with a key path of its own) asks it first too, so nothing in the family lock can hold the adhan. */
     private boolean adhanTakes(KeyEvent e) {
         boolean adhan = NowPlaying.adhanLive();
-        int stop = adhanKeys.decide(e.getKeyCode(), e.getAction(), e.getRepeatCount(), adhan, adhanBar.getVisibility() == View.VISIBLE,
-                getCurrentFocus() == adhanBar, adhan && NowPlaying.adhanStopKey(this));
+        boolean card = duaCard != null && duaCard.showing();   // 4.4: a dua's card is the bar for the keys: OK on its «إيقاف» stops it
+        int stop = adhanKeys.decide(e.getKeyCode(), e.getAction(), e.getRepeatCount(), adhan, adhanBar.getVisibility() == View.VISIBLE || card,
+                getCurrentFocus() == adhanBar || (card && getCurrentFocus() == duaCard.stop), adhan && NowPlaying.adhanStopKey(this));
         if (stop == AdhanKeys.STOP) NowPlaying.stopAdhan(this);
         return stop != AdhanKeys.PASS;
     }

@@ -178,6 +178,13 @@ python3 tests/player_logic_test.py
 python3 tests/stall_watch_test.py   # 4.3 A2: the live station's stall watchdog and ExoPlayer for HLS
 python3 tests/focus_rule_test.py   # 4.3.3 G1: the player keeps on behind the screensaver and the TV's settings; another sound pauses it and it comes back
 python3 tests/surah_set_test.py   # 4.3.3: a reciter with «missing» surahs; the player steps over them
+python3 tests/audio_library_test.py   # 4.4 «صوتياتي»: sound files from a USB stick or the phone, kept in the app; the caps; the own adhan from them
+python3 tests/dua_test.py   # 4.4 «الأدعية والتذكيرات»: the rule (days, both calendars, prayer times), the alarm, playing like the adhan, the card
+python3 tests/prayer_sound_test.py   # 4.4 «أذان كل صلاة»: silent prayers, a muezzin or own recording per prayer
+python3 tests/quiet_hours_test.py   # 4.4 touch «ساعات الهدوء»
+python3 tests/kahf_template_test.py   # 4.4 touch: the Friday Kahf, ready
+python3 tests/fade_in_test.py   # 4.4 touch «يبدأ بهدوء»
+python3 tests/friday_dhuhr_test.py   # 4.4 touch «أذان الجمعة»
 python3 tests/loudness_test.py   # the recitation and the adhan lifted inside the player (LoudnessEnhancer), never the TV volume or mute
 python3 tests/seek_burst_test.py
 python3 tests/pill_text_test.py

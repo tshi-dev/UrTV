@@ -28,14 +28,16 @@ check("the provider: only through phone_ (PHONE_SETTINGS, signature), a JPEG of 
       and prov.index('throw new SecurityException("phone control only")') < prov.index('case "phone_photo_add"')
       and "jpeg.length > Own.MAX_BYTES" in call and "Own.cameraData(jpeg)" in call and "Own.count(c) >= Own.max(c)" in call and "Own.add(c, Own.incoming(c))" in call)
 srv, api = read(P / "PhoneServer.java"), read(P / "PhoneApi.java")
-check("the server: a body over 4 KB only for POST /api/photo as image/jpeg, at most 1 MB, kept as bytes",
+check("the server: a body over 4 KB only for POST /api/photo as image/jpeg (at most 1 MB) and, 4.4, a piece of a sound file (at most 512 KB), kept as bytes",
       'boolean photo = target.equals(PHOTO_PATH) && "image/jpeg".equals(' in srv and "MAX_PHOTO_BODY = 1_000_000" in srv
-      and "if (n > (photo ? MAX_PHOTO_BODY : MAX_BODY)) fail(413);" in srv and "return new Request(p[0], target, h, \"\", s.getInetAddress().getHostAddress(), buf);" in srv)
+      and 'boolean audio = target.equals(AUDIO_PATH) && "application/octet-stream".equals(' in srv and "MAX_AUDIO_BODY = 512 * 1024" in srv
+      and "if (n > (photo ? MAX_PHOTO_BODY : audio ? MAX_AUDIO_BODY : MAX_BODY)) fail(413);" in srv
+      and "if (photo || audio) return new Request(p[0], target, h, \"\", s.getInetAddress().getHostAddress(), buf);" in srv)
 ph = api[api.index("if (r.path.equals(PhoneServer.PHOTO_PATH))"):]
-ph = ph[:ph.index("}\n            if (type == null")]
-check("the API: the origin checks first, then a session (401 without), then the photo; nothing but the photo and (4.4) its mask takes raw bytes",
+ph = ph[:ph.index("}\n            if (r.path.equals(PhoneServer.AUDIO_PATH))")]   # 4.4: the sound piece is the next block
+check("the API: the origin checks first, then a session (401 without), then the photo; nothing but the photo, (4.4) its mask and the sound pieces take raw bytes",
       api.index("Guard.originOk") < api.index("if (r.path.equals(PhoneServer.PHOTO_PATH))") and "if (secret == null) return json(401, err(\"no_session\"));" in ph
-      and "control.actions().photoAdd(r.raw)" in ph and "control.actions().photoMask(r.raw)" in ph and api.count("r.raw") == 4
+      and "control.actions().photoAdd(r.raw)" in ph and "control.actions().photoMask(r.raw)" in ph and api.count("r.raw") == 6   # the other two: the sound piece (tests/audio_library_test.py)
       and api.index("Guard.originOk") < api.index("if (r.path.equals(PhoneServer.MASK_PATH))"))
 page = read(L / "assets/phone/photos.html")
 check("/u: re-drawn at 1920 px at most and sent as a new JPEG (no camera data), under 900 KB, with the session; English words when the TV says lang=en",
