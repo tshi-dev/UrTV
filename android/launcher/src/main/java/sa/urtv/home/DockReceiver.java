@@ -32,6 +32,8 @@ import java.util.Map;
  *   am broadcast -n sa.urtv.home/.DockReceiver -a sa.urtv.home.PIN_STATUS            what is set
  *   am broadcast -n sa.urtv.home/.DockReceiver -a sa.urtv.home.PIN_OFF               no PIN: nothing asks, kids mode ends, the choices stay
  *   am broadcast -n sa.urtv.home/.DockReceiver -a sa.urtv.home.PIN_RESET             a forgotten PIN: everything parental back to nothing
+ *   am broadcast -n sa.urtv.home/.DockReceiver -a sa.urtv.home.HOME_WANTED --es mode on|off|status   4.4: «the person's home is ours» for the add-on's watch
+ *      and the home's re-apply of the role (optimize/homedoctor.py); answers "home-wanted: yes|no"
  *   am broadcast -n sa.urtv.home/.DockReceiver -a sa.urtv.home.BACK_SAVER --es mode on|off|status   «الرجوع يفتح شاشة التوقف» (off by default)
  *   am broadcast -n sa.urtv.home/.DockReceiver -a sa.urtv.home.KEY_APP [--es key youtube|netflix|prime --es app PKG|default]   «أزرار الريموت»:
  *      the app a remote key opens (on our home and, with the typing service on, over other apps); answers "key-apps: youtube=…, netflix=…, prime=…"
@@ -141,6 +143,12 @@ public class DockReceiver extends BroadcastReceiver {
                     b.append(' ').append(x.id).append('=').append(v.isEmpty() ? "default" : v).append(x == all.get(all.size() - 1) ? "" : ",");
                 }
                 setResultData(b.toString());
+                return;
+            }
+            case "sa.urtv.home.HOME_WANTED": {   // 4.4 the Home doctor (optimize/homedoctor.py, angles D and F): --es mode on|off|status, the person's chosen home is ours
+                String m = String.valueOf(i.getStringExtra("mode"));
+                if (!m.equals("on") && !m.equals("off") && !m.equals("status")) { setResultData("error: add --es mode on|off|status"); return; }
+                setResultData("home-wanted: " + sa.urtv.home.setup.SetupHook.homeWanted(c, m));
                 return;
             }
             case "sa.urtv.home.BACK_SAVER": {   // «الرجوع يفتح شاشة التوقف»: on | off | status; read at each Back, nothing to redraw
