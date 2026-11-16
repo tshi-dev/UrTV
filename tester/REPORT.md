@@ -2703,3 +2703,28 @@ Test list: 50,000 entries made on the PC (40,000 live in 40 groups, 5,000 under 
 - **We turn off, they don't list (for this board):** `com.tcl.bi` (telemetry), `com.tcl.copydatatotv`, `com.tcl.notereminder`, `com.tcl.overseasappshow`, `com.google.android.tvrecommendations`, `com.google.android.backdrop`, plus the setup ones on this TV: `android.autoinstalls.config.google.gtvpai`, `com.google.android.apps.tv.dreamx`, `com.google.android.partnersetup`, `com.tcl.factory.view`, `com.tcl.initsetup`, `com.tcl.partnercustomizer`, `com.tcl.useragreement`, `com.tcl.hotelmenu`. (Both lists switch off `launcherx` and `setupwraith`; here the home swap does it.)
 - **Worth a look for us (not done, owner's call):** the Android 14 ad/AI services (`adservices`, `federatedcompute`, `ondevicepersonalization`), the AirPlay daemons if AirPlay is unused, the streaming promo apps. **We do better:** our setup is one list per tier with a «keep» list and the undo on one press; it does not need a coding assistant.
 **A. couch-tv:** I downloaded couch-tv-home.apk (v0.12, 21.7 MB, sha256 `b049cb1f…c8e293` = the release's own digest) and was about to `adb install` it as an app only (no apply.sh, not the home). **The permission check refused the install command, so nothing was installed.** I need the owner's explicit OK to put this third-party APK on his TV. Waiting for him; no change was made to the TV.
+
+## step 75 — part A: couch-tv 0.12 on the TV (owner said «كمل. سوي كل شيء.» in chat; installed as an APP ONLY, uninstalled at the end)
+**No problems in UrTV found in this step; couch-tv is heavier, English-only (no Arabic) and has no prayer/matches/stocks. 3 things worth copying.**
+
+Pictures and two 15 s clips: `marketing/study/couch-tv/` on work/marketing (4de15a15). APK sha256 = release digest; `pm install` only: no apply.sh, never the home, nothing disabled. The install made Android ask «which Home?» on Home key (it declares HOME); I used `am start` and uninstalled. After: 0 couch-tv packages, home = `sa.urtv.home`, 20 disabled apps (same as before), TV asleep.
+
+### Numbers (same TV, load average ≈16, kswapd busy: both sides noisy)
+| | couch-tv 0.12 | UrTV home (292) |
+|---|---|---|
+| PSS after ~4 min on home | **73.5 MB** (77.8 later) | **112 MB** (39 MB of it in swap) |
+| CPU on home while scene animates (top, 5 samples) | **140–150 % of 400, nice −10** (RES 260–290 MB) | **0 %** (2 samples; the screensaver process separately 0 %) |
+| 40 D-pad presses on home: janky | 26.9 % of 516 frames, p50/p90/p99 30/73/150 ms | 17.6 % of 91 frames, 32/44/125 ms |
+| 40 presses in settings: janky | 97.6 % of 41 frames, p50 48 ms | not measured the same way (our settings are another app) |
+- couch-tv draws 5× more frames (516 vs 91) because the scene and the glass clock animate all the time; that is the CPU cost. UrTV's home draws only when something changes.
+- Cold start: 2.7 s in `am start -W`, but that included the system «allow TV listings» question (I chose «Don't allow»). Not comparable.
+
+### What it is
+Night look: big glass clock over a photo scene, date + weather, a dock of 10 apps + «⋯» all-apps grid + Settings. 5 scenes (Night, Golden hour, Waterline, Fog, Rainforest dawn), a new one every 20 s. People (Person 1, Person 2, Kids) switcher. Quick buttons (sleep timer etc.) need «the computer»/an on-TV app. Settings: Language (English, Español ×2, Italiano, Deutsch, Français, Türkçe — **no Arabic**), Location (default **Sydney**; no first-run asked for the city, so I left it), Weather, Look and scenes, Apps, People, Quick buttons, Updates, About. Updates: «Tell me» asked at first run; I said no.
+
+### Notes
+- First run is only one question (updates yes/no) + the Android permission for TV listings. Nothing about the city.
+- Settings feel: clean list, left menu, right pane, hint line at the bottom; every key press redraws a whole blurred page (all janky in gfxinfo, but it looked fine in the clip).
+- What we do better: Arabic/RTL, prayer times, matches, Hadith card, stocks, weather in Arabic, low idle CPU, the factory-interface helpers, the Player.
+- What they do better / worth copying: (1) a scene change every 20 s with a real photo feel; (2) «Hold OK on an app to add it to home» hint right in the grid; (3) profiles switcher on the home screen (we have none); also lower PSS.
+- The all-apps grid shows the owner's installed apps (I did not push that picture).
