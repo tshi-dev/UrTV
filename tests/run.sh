@@ -302,6 +302,7 @@ node tests/prayer_crosscheck_page.mjs
 node tests/prayer_crosscheck_world_page.mjs
 node tests/hijri_crosscheck_page.mjs
 node tests/page.test.mjs
+node tests/tafsir.test.mjs   # «التفسير الميسر» (#tafsir=1): every verse of the deck has its tafsir, whole, in pages of three lines at most, never «…»
 node tests/football_page.test.mjs   # the football home's widgets and «المباريات» in a browser, on fixed games
 node tests/matches_archive.test.mjs   # «المباريات» with the match archive (data-archive): every followed team, yesterday's results, a club, a league, the chooser
 node tests/phone_page.test.mjs

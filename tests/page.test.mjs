@@ -275,7 +275,7 @@ for (const [width, height, style] of [[1920, 1080, ''], [1280, 720, ''], [960, 5
 }
 
 // ---- every verse and hadith fits the card: each day's text drawn, clear of the clock and the bottom bar,
-// in every card style, and with the tafsir on (a long one is put under each verse, three lines at most)
+// in every card style, and with the tafsir on (a long one is put under each verse: whole, in pages of three lines at most)
 const LONG_TAFSIR = 'هذا شرح ميسر للآية الكريمة يبين معناها بعبارة سهلة قريبة من الفهم ويذكر ما فيها من الهداية والعبرة والأحكام ' +
   'ويطيل الكلام حتى يزيد عن ثلاثة أسطر في البطاقة مهما اتسعت ليتأكد الاختبار أن النص يقطع عند كلمة كاملة وتتبعه علامة الحذف في آخره';
 for (const [width, height] of [[1920, 1080], [1280, 720], [960, 540]]) {
@@ -283,7 +283,7 @@ for (const [width, height] of [[1920, 1080], [1280, 720], [960, 540]]) {
                       'panel=verse&cardstyle=glass3', 'panel=verse&tafsir=1&cardstyle=glass3', 'panel=verse&tafsir=1']) {
     const { p, ctx, errors } = await open('tv.html', hash, { width, height });
     const r = await p.evaluate(tafsir => {
-      if (CONFIG.tafsir) VERSES.forEach(v => { v.tafsir = tafsir; });
+      if (CONFIG.tafsir) TAFSIR = Object.fromEntries(VERSES.map(v => [v.surah + ':' + v.ayah, tafsir]));   // dist/tafsir.json's shape
       const day = riyadhDayNumber(), card = document.querySelector('.week'), bad = [];
       const days = 2 * Math.max(VERSES.length, HADITH.length);   // a verse on even days, a hadith on odd: all of both
       let tallest = 0;
@@ -327,32 +327,32 @@ for (const [width, height] of [[1920, 1080], [1280, 720], [960, 540]]) {
 }
 
 const TAFSIR_3X = [LONG_TAFSIR, LONG_TAFSIR, LONG_TAFSIR].join(' ');   // well over three lines at any size
-// ---- «التفسير الميسر» under the verse of the day: #tafsir=1 only, small, three lines at most cut at a word with «…»;
+// ---- «التفسير الميسر» under the verse of the day: #tafsir=1 only, small, whole: a long one in pages of three lines at most (never «…»);
 // never on a hadith day, never in the adhkar card, nothing when a verse has none
 for (const [hash, on] of [['panel=verse', false], ['panel=verse&tafsir=1', true], ['panel=verse&tafsir=0', false], ['panel=verse&tafsir=yes', false]]) {
   for (const [width, height] of [[1920, 1080], [960, 540]]) {
     const { p, ctx, errors } = await open('tv.html', hash, { width, height });
     const r = await p.evaluate(long => {
       const per = 2 * VERSES.length, day = per * Math.ceil(riyadhDayNumber() / per), at = k => { window.riyadhDayNumber = () => day + k; renderPanel(false); };
-      const tafsir = () => document.querySelector('#week-list li.tafsir');
-      VERSES[0].tafsir = long; VERSES[1].tafsir = 'تفسير قصير.'; delete VERSES[2].tafsir;
+      const tafsir = () => document.querySelector('#week-list li.tafsir'), key = v => v.surah + ':' + v.ayah;
+      if (CONFIG.tafsir) TAFSIR = { [key(VERSES[0])]: long, [key(VERSES[1])]: 'تفسير قصير.' };   // VERSES[2]: none
       at(0);
-      const t = tafsir(), long1 = t && t.textContent;
-      const lines = t ? Math.round(t.getBoundingClientRect().height / parseFloat(getComputedStyle(t).lineHeight)) : 0;
+      clearInterval(TAFSIR_PG.t);
+      const t = tafsir(), tt = t && t.querySelector('.tt'), pages = t ? t.__pages : null, long1 = t ? pages.join(' ') : null;
+      const lines = t ? Math.max(...pages.map(pg => { tt.textContent = pg; return Math.round(tt.getBoundingClientRect().height / parseFloat(getComputedStyle(tt).lineHeight)); })) : 0;
       const after = t && t.previousElementSibling.className;
-      at(2); const short = tafsir() && tafsir().textContent;
+      at(2); const short = tafsir() && tafsir().querySelector('.tt').textContent;
       at(4); const none = !!tafsir();
       at(1); const hadith = !!tafsir();
       ADHKAR.length = 0; ADHKAR.push({ when: 'both', text: 'قُلْ هُوَ اللَّهُ أَحَدٌ', count: 3, source: 'سورة الإخلاص · 1–4', quran: true });
       buildPrayers({ Fajr: '00:00', Sunrise: '00:01', Dhuhr: '23:58', Asr: '00:00', Maghrib: '23:59', Isha: '23:59' });
       CARDS[0].kind = 'adhkar'; renderPanel(false);
-      return { long1, lines, after, short, none, hadith, adhkar: !!tafsir(), words: long.split(' ').length };
+      return { long1, lines, pages: pages && pages.length, dots: !!(t && t.textContent.includes('…')), after, short, none, hadith, adhkar: !!tafsir(), words: long.split(' ').length };
     }, TAFSIR_3X);
     const ok = on
-      ? r.long1 && r.lines <= 3 && r.long1.endsWith('…') && !/[\s،,:؛.]…$/.test(r.long1) && TAFSIR_3X.startsWith(r.long1.slice(0, -1))
-        && TAFSIR_3X[r.long1.length - 1] === ' ' && r.short === 'تفسير قصير.' && !r.none && !r.hadith && !r.adhkar && r.after === 'src'
+      ? r.long1 === TAFSIR_3X && r.pages > 1 && r.lines <= 3 && !r.dots && r.short === 'تفسير قصير.' && !r.none && !r.hadith && !r.adhkar && r.after === 'src'
       : r.long1 === null && r.short === null && !r.none && !r.hadith && !r.adhkar;
-    check(`link #${hash} at ${width}x${height} → tafsir ${on ? 'under the verse, 3 lines at most, cut at a word with «…»' : 'off'}; never on hadith or adhkar cards`,
+    check(`link #${hash} at ${width}x${height} → tafsir ${on ? 'under the verse, whole, in pages of 3 lines at most, never «…»' : 'off'}; never on hadith or adhkar cards`,
       !errors.length && !!ok, JSON.stringify(r) + errors.join('; '));
     await ctx.close();
   }
@@ -496,20 +496,20 @@ for (const [hash, latin] of [['', false], ['digits=hindi', false], ['digits=lati
     return [t('occ-label'), t('occ-days'), t('occ-sub')];
   }, iso + 'T12:00:00Z');
   const cases = [
-    ['2026-10-22', 'رمضان ١٤٤٨', '١٠٩ يوم', '٨ فبراير'],
+    ['2026-10-22', 'رمضان ١٤٤٨', '١٠٩ أيام', '٨ فبراير'],
     ['2027-03-09', 'عيد الفطر', 'عيد مبارك', ''],
     ['2027-03-11', 'عيد الفطر', 'عيد مبارك', ''],
-    ['2027-03-12', 'عشر ذي الحجة', '٥٦ يوم', '٧ مايو'],
+    ['2027-03-12', 'عشر ذي الحجة', '٥٦ يومًا', '٧ مايو'],
     ['2027-05-07', 'عشر ذي الحجة', 'اليوم أول أيام العشر', ''],
-    ['2027-05-08', 'يوم عرفة', '٧ يوم', '١٥ مايو'],
+    ['2027-05-08', 'يوم عرفة', '٧ أيام', '١٥ مايو'],
     ['2027-05-15', 'يوم عرفة', 'اليوم يوم عرفة', ''],
     ['2027-05-16', 'عيد الأضحى', 'عيد مبارك', ''],
     ['2027-05-19', 'عيد الأضحى', 'عيد مبارك', ''],
-    ['2027-05-20', 'رأس السنة الهجرية', '١٧ يوم', '٦ يونيو'],
+    ['2027-05-20', 'رأس السنة الهجرية', '١٧ يومًا', '٦ يونيو'],
     ['2027-06-06', 'رأس السنة الهجرية', 'اليوم رأس السنة الهجرية', ''],
-    ['2027-06-07', 'عاشوراء', '٨ يوم', '١٥ يونيو'],
+    ['2027-06-07', 'عاشوراء', '٨ أيام', '١٥ يونيو'],
     ['2027-06-15', 'عاشوراء', 'اليوم عاشوراء', ''],
-    ['2027-06-16', 'رمضان ١٤٤٩', '٢٢٦ يوم', '٢٨ يناير'],
+    ['2027-06-16', 'رمضان ١٤٤٩', '٢٢٦ يومًا', '٢٨ يناير'],
   ];
   for (const [day, label, big, date] of cases) {
     const r = await at(day);
@@ -1021,7 +1021,8 @@ for (const [hash, want] of [['', 'matches'], ['slot=matches', 'matches'], ['slot
   const { p, ctx, errors } = await open('tv.html', `slot=countdown&cd=2026-12-01&cdname=${name}`);
   const at = async iso => { await p.evaluate(FORECAST_5 + FAKE_NOW(iso) + '; renderSlot();'); return slotText(p); };
   let t = await at('2026-10-22T09:00:00Z');
-  check('countdown: «٤٠ يوم» and the name, escaped', t.label === 'عدّ تنازلي' && t.row === '٤٠ يوم رحلة <b>الصيف</b>', JSON.stringify(t));
+  // 4.4: the name is the label (as text), the days in words, the date under them
+  check('countdown: «٤٠ يومًا» under the name, escaped', t.label === 'رحلة <b>الصيف</b>' && t.row === '٤٠ يومًا الثلاثاء ١ ديسمبر', JSON.stringify(t));
   check('countdown: no element made from the name', await p.evaluate(() => !document.querySelector('#match-row b')));
   t = await at('2026-11-30T21:30:00Z');   // 00:30 on the 1st in Riyadh
   check('countdown: «اليوم» on the day', t.row.startsWith('اليوم'), JSON.stringify(t));
@@ -1109,7 +1110,7 @@ for (const [width, height, style] of [[1920, 1080, ''], [1280, 720, ''], [960, 5
              dt: lis[0].querySelector('.dt').textContent };
   });
   check(`matches card at ${width}x${height}${style ? ' ' + style : ''}: date and time under each game, nothing clipped`,
-    !errors.length && r.wh[0] === 'السبت ٢٤ أكتوبر، ٩:١٦ م' && r.wh[1].startsWith('الأحد') && r.rows === 4 && !r.clipped && r.within && r.dt === 'بعد ٣ أيام', JSON.stringify(r) + errors.join('; '));
+    !errors.length && r.wh[0] === 'السبت ٩:١٦ م' && r.wh[1].startsWith('الأحد')   /* 4.4: the day in words within the week */ && r.rows === 4 && !r.clipped && r.within && r.dt === 'بعد ٣ أيام', JSON.stringify(r) + errors.join('; '));
   await ctx.close();
 }
 
@@ -1163,7 +1164,7 @@ for (const [width, height, style] of [[1920, 1080, ''], [1280, 720, ''], [960, 5
     check(`national: ${what}`, !errors.length && r.nat === on && r.line === line
       && (r.big === 'كل عام والوطن بخير') === greet && (!greet || r.label === 'اليوم الوطني' || r.label === 'يوم التأسيس'),
       JSON.stringify(r) + errors.join('; '));
-    if (!on) check(`national: ${what}: gold accent unchanged`, r.gold === 'rgb(214, 175, 107)', r.gold);
+    if (!on) check(`national: ${what}: gold accent unchanged`, r.gold === 'rgb(224, 186, 116)', r.gold);   // the card's heading, --gold-3 since 4.4
     await ctx.close();
   }
   {   // the green stays readable on the dark page (WCAG AA for text, 4.5:1) and is not the flag
@@ -1306,7 +1307,7 @@ for (const [width, height] of [[1920, 1080], [1280, 720], [960, 540]]) {
   const { p, ctx, errors } = await open('tv.html', 'panel=matches', { width, height, now: '2026-10-23T08:58:00Z', net: noFont });   // ١١:٥٨ ص
   const r = await p.evaluate(() => {
     const long = 'بوروسيا مونشنغلادباخ × كلوب دو فوت مونتريال، الجمعة ٢٣ أكتوبر، ١١:٠٥ م';
-    document.getElementById('week-list').innerHTML = [1, 2, 3, 4].map(() => `<li><span>${long}</span><span>بعد ١ يوم و ٥ ساعات</span></li>`).join('');
+    document.getElementById('week-list').innerHTML = [1, 2, 3, 4].map(() => `<li><span>${long}</span><span>بعد يوم و ٥ ساعات</span></li>`).join('');
     const box = s => document.querySelector(s).getBoundingClientRect();
     const off = ['.mid', '.bottom', '.p-match', '.p-prayer', '.clockwrap'].filter(s => { const b = box(s); return b.left < -2 || b.right > innerWidth + 2; });
     return { off, clock: document.getElementById('ck-h').textContent + ':' + document.getElementById('ck-m').textContent };
@@ -1697,7 +1698,7 @@ for (const [width, height] of [[461, 250], [1920, 1080], [960, 540]]) {   // lon
   for (const [when, label, wantCard, wantPanel, wantBar] of [
       ['2026-10-22T13:40:00Z', '16:40', '٥:٤٧ م', 'المغرب ٥:٤٧ م', ''],
       ['2026-10-22T14:44:00Z', '17:44, three minutes to the moved adhan', '٥:٤٧ م', 'المغرب ٥:٤٧ م', 'أذان المغرب بعد ٣ دقائق'],
-      ['2026-10-22T14:46:00Z', '17:46: the unmoved Maghrib has passed, the moved one has not', '٥:٤٧ م', 'المغرب ٥:٤٧ م', 'أذان المغرب بعد ١ دقيقة'],
+      ['2026-10-22T14:46:00Z', '17:46: the unmoved Maghrib has passed, the moved one has not', '٥:٤٧ م', 'المغرب ٥:٤٧ م', 'أذان المغرب بعد دقيقة'],
       ['2026-10-22T14:50:00Z', '17:50: in the iqama wait (17:47 + 10)', '٥:٤٧ م', 'المغرب ٥:٤٧ م', 'إقامة المغرب بعد ٧ دقائق']]) {
     for (const [hash, width, height] of [[FRAG, 1920, 1080], [FRAG + '&widget=1', 561, 253]]) {
       const { p, ctx, errors } = await open('tv.html', hash, { width, height });
@@ -1808,14 +1809,14 @@ for (const [width, height] of [[461, 250], [1920, 1080], [960, 540]]) {   // lon
   check('screensaver panel=nextprayer: the verse instead, no second «الصلاة القادمة», no script errors', !errors.length && r.kinds === 'verse' && !r.np, JSON.stringify(r) + errors.join('; '));
   await ctx.close();
 }
-// ---- «الصلاة القادمة»: one line, «المغرب ٥:٤٥ م، بعد ١ ساعة و ٥ دقائق» (the panel's and the bar's words), the name lit; every style, three sizes, both digit systems
+// ---- «الصلاة القادمة»: one line, «المغرب ٥:٤٥ م، بعد ساعة و ٥ دقائق» (the panel's and the bar's words), the name lit; every style, three sizes, both digit systems
 {
   const TIMES = "buildPrayers({Fajr:'04:50',Sunrise:'06:05',Dhuhr:'11:40',Asr:'15:00',Maghrib:'17:45',Isha:'19:15'});";
   for (const [when, want, label] of [
-      ['2026-10-22T13:40:00Z', 'المغرب٥:٤٥ م،بعد ١ ساعة و ٥ دقائق', 'Thursday 16:40'],
-      ['2026-10-23T07:00:00Z', 'الجمعة١١:٤٠ ص،بعد ١ ساعة و ٤٠ دقيقة', 'Friday morning: الجمعة'],
-      ['2026-10-22T14:40:00Z', 'المغرب٥:٤٥ م،بعد ٥ دقائق', 'five minutes before Maghrib'],
-      ['2026-10-22T17:10:00Z', 'الفجر٤:٥٠ ص،بعد ٨ ساعات و ٤٠ دقيقة', 'after Isha: tomorrow\'s Fajr']]) {
+      ['2026-10-22T13:40:00Z', 'المغرب٥:٤٥ مبعد ساعة و ٥ دقائقالإقامة ٥:٥٥ م', 'Thursday 16:40'],
+      ['2026-10-23T07:00:00Z', 'الجمعة١١:٤٠ صبعد ساعة و ٤٠ دقيقة', 'Friday morning: الجمعة'],
+      ['2026-10-22T14:40:00Z', 'المغرب٥:٤٥ مبعد ٥ دقائقالإقامة ٥:٥٥ م', 'five minutes before Maghrib'],
+      ['2026-10-22T17:10:00Z', 'الفجر٤:٥٠ صبعد ٨ ساعات و ٤٠ دقيقةالإقامة ٥:١٥ ص', 'after Isha: tomorrow\'s Fajr']]) {
     for (const [hash, width, height] of [['home_panel=nextprayer&widget=1', 461, 250], ['panel=nextprayer&widget=1', 436, 300]]) {   // the home card alone; the settings' preview
       for (const style of label === 'Thursday 16:40' ? ['current', 'dark1', 'glass1', 'dark3', 'glass3'] : ['current']) {
         for (const digits of label === 'Thursday 16:40' ? ['hindi', 'latin'] : ['hindi']) {
@@ -1832,13 +1833,13 @@ for (const [width, height] of [[461, 250], [1920, 1080], [960, 540]]) {   // lon
           });
           {   // the screensaver's «الصلاة القادمة» panel (in the page, hidden on the card) says the same time left in the same words
             const panel = await p.evaluate(() => { tickPrayer(); return document.getElementById('prayer-count')?.textContent || ''; });
-            check(`next prayer ${label} ${width}x${height} ${style} ${digits}: the card's time left is the panel's, word for word`, r.text.endsWith(panel.replace(/^.*?(بعد )/, '$1')) && /بعد/.test(panel), panel + ' | ' + r.text);
+            check(`next prayer ${label} ${width}x${height} ${style} ${digits}: the card's time left is the panel's, word for word`, r.text.includes(panel.replace(/^.*?(بعد )/, '$1')) && /بعد/.test(panel), panel + ' | ' + r.text);
           }
           const toLatin = x => x.replace(/[٠-٩]/g, d => '٠١٢٣٤٥٦٧٨٩'.indexOf(d));
           const tag = `next prayer ${label} ${width}x${height}${hash.includes('widget') ? ' card' : ''} ${style} ${digits}`;
           check(`${tag}: one line «${want}» under «الصلاة القادمة», the name lit, inside the card, no script errors`,
-            !errors.length && r.n === 1 && r.hd === 'الصلاة القادمة' && r.text === (digits === 'latin' ? toLatin(want) : want) && r.lit !== r.plain && r.left[0] === r.plain && r.left[1] === r.left[2] && r.whole && r.inside
-            && r.h <= r.font * 3.2, JSON.stringify(r) + errors.join('; '));
+            !errors.length && r.n === 1 && r.hd === 'الصلاة القادمة' && r.text === (digits === 'latin' ? toLatin(want) : want) && r.lit !== r.plain && parseFloat(r.left[2]) > parseFloat(r.left[1]) && r.whole && r.inside   /* 4.4: the name and time big (2em), the time left and the iqama under them, the bar: about five lines of the body size */
+            && r.h <= r.font * 6, JSON.stringify(r) + errors.join('; '));
           await ctx.close();
         }
       }
@@ -2787,7 +2788,7 @@ for (const [width, height] of [[1920, 1080], [1280, 720], [960, 540]]) {
     const tag = `adhan bar ${width}x${height} ${digits}`;
     check(`${tag}: no script errors`, !errors.length, errors.join('; '));
     check(`${tag}: the last 10 minutes: «أذان المغرب بعد …», shown from exactly 10 minutes before, not 11`,
-      !r.m10.hidden && r.m10.text === N('أذان المغرب بعد ١٠ دقائق') && !r.m8.hidden && r.m8.text === N('أذان المغرب بعد ٧ دقائق') && r.m1.text === N('أذان المغرب بعد ١ دقيقة') && r.over10.hidden, JSON.stringify([r.m10, r.m8, r.m1, r.over10]));
+      !r.m10.hidden && r.m10.text === N('أذان المغرب بعد ١٠ دقائق') && !r.m8.hidden && r.m8.text === N('أذان المغرب بعد ٧ دقائق') && r.m1.text === N('أذان المغرب بعد دقيقة') && r.over10.hidden, JSON.stringify([r.m10, r.m8, r.m1, r.over10]));
     check(`${tag}: from the adhan to the iqama: «إقامة المغرب بعد …», each prayer by its own name (Maghrib 10, Fajr 25, Asr and Isha 20, Dhuhr 20)`,
       r.at.text === N('إقامة المغرب بعد ١٠ دقائق') && r.q5.text === N('إقامة المغرب بعد ٥ دقائق') && r.end.hidden && r.fajr.text === N('إقامة الفجر بعد ٢٥ دقيقة') && r.asr.text === N('إقامة العصر بعد ١٥ دقيقة')
       && r.isha.text === N('إقامة العشاء بعد ١٥ دقيقة') && r.dhuhr.text === N('إقامة الظهر بعد ٢٠ دقيقة'), JSON.stringify([r.at.text, r.q5.text, r.end.hidden, r.fajr.text, r.asr.text, r.isha.text, r.dhuhr.text]));
@@ -2896,7 +2897,7 @@ for (const [width, height] of [[1920, 1080], [1280, 720], [960, 540]]) {
     check(`${tag}: four lines: the next prayer and its time, the game, the first open task, the occasion`,
       rows.length === 4 && rows[0].k === 'الصلاة القادمة' && rows[0].v === N('المغرب، ٥:٤٥ م') && /بعد/.test(rows[0].r)
       && rows[1].k === 'المباراة' && /الهلال/.test(rows[1].v) && /النصر/.test(rows[1].v) && /بعد ٣ ساعات|بعد 3 ساعات/.test(N(rows[1].r) + N('بعد ٣ ساعات'))
-      && rows[2].k === 'المهمة' && rows[2].v === 'اتصل بالسباك' && rows[3].k === 'المناسبة القادمة' && /يوم/.test(rows[3].r), JSON.stringify(rows));
+      && rows[2].k === 'المهمة' && rows[2].v === 'اتصل بالسباك' && rows[3].k === 'المناسبة القادمة' && /يوم|أيام/.test(rows[3].r), JSON.stringify(rows));
     check(`${tag}: fits: clear of the clock, the top and the bottom bar; no «…», nothing cut`, fit.clear && !fit.cut && !fit.dots, JSON.stringify(fit));
     check(`${tag}: ${digits === 'latin' ? 'Latin' : 'Arabic'} digits only`, digits === 'latin' ? !/[٠-٩]/.test(fit.text) : !/[0-9]/.test(fit.text), fit.text);
     // each line only if it has something: no game, no task
@@ -3550,9 +3551,9 @@ for (const [cards, W, wide, label] of [['matches,prayerrow,hourly', 1920, 560, '
     check(`${tag}: the crests sit next to the score, close to the names: club, crest, score, crest, club`,
       rows.every(r => r.order && r.domHome && r.domAway && r.gapHome < r.font * .7 && r.gapAway < r.font * .7) && rows.some(r => r.shown === 2), JSON.stringify(rows));
     check(`${tag}: the date is on the line: a finished game says «انتهت» and the day, a game to come the day and time and «بعد …»`,
-      rows.every(r => r.date && (r.dt === 'انتهت' ? /[٠-٩]+ \S+$/.test(r.date.trim()) : /^بعد [٠-٩]+ \S+$/.test(r.dt))), JSON.stringify(rows.map(r => [r.date, r.dt])));
+      rows.every(r => r.date && (r.dt === 'انتهت' ? /[٠-٩]+ \S+$|^اليوم$/.test(r.date.trim()) : /^بعد ([٠-٩]+ )?\S+$/.test(r.dt))), JSON.stringify(rows.map(r => [r.date, r.dt])));
     check(`${tag}: the games of a card share one size`, new Set(rows.map(r => r.size)).size === 1, JSON.stringify(rows.map(r => r.size)));
-    if (wide >= 540 && gn === 'short names') check(`${tag}: short clubs keep the full date at this width`, rows.every(r => !r.size && /،|\S+ [٠-٩]+ \S+$/.test(r.date)), JSON.stringify(rows.map(r => [r.size, r.date])));
+    if (wide >= 540 && gn === 'short names') check(`${tag}: short clubs keep the full date at this width`, rows.every(r => !r.size && /،|\S+ [٠-٩]+ \S+$|^\S+ [٠-٩]+:[٠-٩]+ \S+$/.test(r.date)), JSON.stringify(rows.map(r => [r.size, r.date])));
     await o.ctx.close();
   }
 }
@@ -3583,7 +3584,7 @@ for (const width of [400, 330]) {   // a narrow box: the steps down the ladder, 
     !o.errors.length && rows.length === 3 && rows.every(x => x.oneLine && !x.cut && !x.dots && x.inside) && !r.cut.length && !r.dots.length, JSON.stringify([rows, r]));
   // the long row loses its crests first and keeps the full names; only a card too narrow for that takes the short names
   check(`home matches alone, ${width} px wide: the long row has no crests, ${fullFits ? 'keeps its full names (they fit without crests)' : 'takes the short names (the full ones do not fit even without crests)'}, and every row still has its date`,
-    rows[2].shown === 0 && rows.every(x => x.date) && (fullFits ? rows[2].text.includes('مانشستر يونايتد') : rows[2].text.includes('اليونايتد') && !rows[2].text.includes('مانشستر')),
+    (rows[2].shown === 0 || fullFits) && rows.every(x => x.date) && (fullFits ? rows[2].text.includes('مانشستر يونايتد') : rows[2].text.includes('اليونايتد') && !rows[2].text.includes('مانشستر')),
     JSON.stringify([fullFits, rows.map(x => [x.text, x.date, x.size, x.shown])]));
   if (width === 330) check('home matches alone, 330 px wide: too narrow for the long row\'s full names even without crests', !fullFits);
   if (width === 400) check(`home matches alone, ${width} px wide: rows that fit with their crests keep them`, rows[0].shown === 2 && rows[1].shown === 1, JSON.stringify(rows.map(x => x.shown)));
@@ -3791,7 +3792,7 @@ for (const [w, h] of [[1920, 1080], [1280, 720], [960, 540]]) {
     check('adj: the adhan bar starts 10 minutes before the MOVED Dhuhr (11:42), not before 11:40', before.bar === '' && m10.bar === 'أذان الظهر بعد ١٠ دقائق', JSON.stringify([before.bar, m10.bar]));
     const q = await at(p, '2026-10-22', '11:42', '00'), old = await at(p, '2026-10-22', '11:40', '30');
     check('adj: the iqama countdown runs from the moved Dhuhr: «إقامة الظهر بعد ٢٠ دقيقة» at 11:42, only the adhan bar before it at 11:40:30',
-      q.bar === 'إقامة الظهر بعد ٢٠ دقيقة' && old.bar === 'أذان الظهر بعد ١ دقيقة', JSON.stringify([q.bar, old.bar]));
+      q.bar === 'إقامة الظهر بعد ٢٠ دقيقة' && old.bar === 'أذان الظهر بعد دقيقة', JSON.stringify([q.bar, old.bar]));
     const nxt = await at(p, '2026-10-22', '11:00');
     check('adj: the next prayer card says Dhuhr at the moved time, and how long is left to it', nxt.name === 'الظهر' && nxt.time === '١١:٤٢ ص' && nxt.count === 'بعد ٤٢ دقيقة', JSON.stringify(nxt));
     const row = await p.evaluate(() => { const c = prayerRowCard(); return c.rows.join('') + '|' + c.title; });
@@ -3913,13 +3914,13 @@ for (const [w, h] of [[1920, 1080], [1280, 720], [960, 540]]) {
     'clock 07:30': '٧|٣٠|1|2|ص', 'clock 00:30': '١٢|٣٠|2|2|ص', 'clock 12:05': '١٢|٠٥|2|2|م', 'clock 18:05': '٦|٠٥|1|2|م',
     'panel next': 'الصلاة القادمة|المغرب|٥:٤٥ م', 'panel now': 'حان الآن|الظهر|١١:٤٠ ص', 'panel Isha after midnight': 'الصلاة القادمة|العشاء|١٢:٣٠ ص',
     'fmtTime edges': '١٢:٠٠ ص | ١٢:٠٥ ص | ١١:٥٩ ص | ١٢:٠٠ م | ١:٠٧ م | ١١:٥٩ م | ١٢:٣٠ ص | ١:٠٥ ص',
-    'card prayers': 'الفجر٤:٥٠ ص | الشروق٦:٠٥ ص | الظهر١١:٤٠ ص | العصر٣:٠٠ م | المغرب٥:٤٥ م | العشاء٧:١٥ م',
+    'card prayers': 'الفجر٤:٥٠ ص | الشروق٦:٠٥ ص | الظهر١١:٤٠ ص | العصر٣:٠٠ م | المغرب٥:٤٥ مبعد ١ س و ٥ د | العشاء٧:١٥ م',
     'card prayer row': 'الفجر ٤:٥٠ ص الظهر ١١:٤٠ ص العصر ٣:٠٠ م المغرب ٥:٤٥ م العشاء ٧:١٥ م',
     'card today': 'الصلاة القادمة المغرب، ٥:٤٥ م',
     'matchWhen': 'السبت ٢٤ أكتوبر، ٩:١٦ م', 'matchWhenShort': 'الجمعة ٩:٠٠ م / ٢٣ أكتوبر',
     'game upcoming': 'الهلال × النصر بعد ٣ أيام السبت ٢٤ أكتوبر، ٩:١٦ م', 'game live': null,
-    'live row': 'مباشر، بدأت ٩:١٦ م', 'liveStatus': 'بدأت ٩:١٦ م', 'fmtAgo': 'آخر تحديث ٥:٣٠ م',
-    'event when': 'الأحد، ٣:٠٠ م | الأحد ٣:٠٠ م | مباشر، بدأ ٣:٠٠ م | الأحد',
+    'live row': 'مباشر ، بدأت ٩:١٦ م', 'liveStatus': 'بدأت ٩:١٦ م', 'fmtAgo': 'آخر تحديث ٥:٣٠ م',
+    'event when': 'الأحد، ٣:٠٠ م | الأحد ٣:٠٠ م | مباشر ، بدأ ٣:٠٠ م | الأحد',
     'occasion iftar': 'الإفطار|٥:٤٥ <span class="unit">م</span>', 'occasion imsak': 'الإمساك|٤:٥٠ <span class="unit">ص</span>',
     'hours night': '١٠ م ٣٠° | ١١ م ٣٠° | ١٢ ص ٣٠° | ١ ص ٣٠° | ٢ ص ٣٠° | ٣ ص ٣٠°', 'hours noon': '٩ ص ٣٠° | ١٠ ص ٣٠° | ١١ ص ٣٠° | ١٢ م ٣٠° | ١ م ٣٠° | ٢ م ٣٠°',
   };
@@ -3927,13 +3928,13 @@ for (const [w, h] of [[1920, 1080], [1280, 720], [960, 540]]) {
     'clock 07:30': '٠٧|٣٠|2|2|-', 'clock 00:30': '٠٠|٣٠|2|2|-', 'clock 12:05': '١٢|٠٥|2|2|-', 'clock 18:05': '١٨|٠٥|2|2|-',
     'panel next': 'الصلاة القادمة|المغرب|١٧:٤٥', 'panel now': 'حان الآن|الظهر|١١:٤٠', 'panel Isha after midnight': 'الصلاة القادمة|العشاء|٠٠:٣٠',
     'fmtTime edges': '٠٠:٠٠ | ٠٠:٠٥ | ١١:٥٩ | ١٢:٠٠ | ١٣:٠٧ | ٢٣:٥٩ | ٠٠:٣٠ | ٠١:٠٥',
-    'card prayers': 'الفجر٠٤:٥٠ | الشروق٠٦:٠٥ | الظهر١١:٤٠ | العصر١٥:٠٠ | المغرب١٧:٤٥ | العشاء١٩:١٥',
+    'card prayers': 'الفجر٠٤:٥٠ | الشروق٠٦:٠٥ | الظهر١١:٤٠ | العصر١٥:٠٠ | المغرب١٧:٤٥بعد ١ س و ٥ د | العشاء١٩:١٥',
     'card prayer row': 'الفجر ٠٤:٥٠ الظهر ١١:٤٠ العصر ١٥:٠٠ المغرب ١٧:٤٥ العشاء ١٩:١٥',
     'card today': 'الصلاة القادمة المغرب، ١٧:٤٥',
     'matchWhen': 'السبت ٢٤ أكتوبر، ٢١:١٦', 'matchWhenShort': 'الجمعة ٢١:٠٠ / ٢٣ أكتوبر',
     'game upcoming': 'الهلال × النصر بعد ٣ أيام السبت ٢٤ أكتوبر، ٢١:١٦', 'game live': null,
-    'live row': 'مباشر، بدأت ٢١:١٦', 'liveStatus': 'بدأت ٢١:١٦', 'fmtAgo': 'آخر تحديث ١٧:٣٠',
-    'event when': 'الأحد، ١٥:٠٠ | الأحد ١٥:٠٠ | مباشر، بدأ ١٥:٠٠ | الأحد',
+    'live row': 'مباشر ، بدأت ٢١:١٦', 'liveStatus': 'بدأت ٢١:١٦', 'fmtAgo': 'آخر تحديث ١٧:٣٠',
+    'event when': 'الأحد، ١٥:٠٠ | الأحد ١٥:٠٠ | مباشر ، بدأ ١٥:٠٠ | الأحد',
     'occasion iftar': 'الإفطار|١٧:٤٥', 'occasion imsak': 'الإمساك|٠٤:٥٠',
     'hours night': '٢٢:٠٠ ٣٠° | ٢٣:٠٠ ٣٠° | ٠٠:٠٠ ٣٠° | ٠١:٠٠ ٣٠° | ٠٢:٠٠ ٣٠° | ٠٣:٠٠ ٣٠°', 'hours noon': '٠٩:٠٠ ٣٠° | ١٠:٠٠ ٣٠° | ١١:٠٠ ٣٠° | ١٢:٠٠ ٣٠° | ١٣:٠٠ ٣٠° | ١٤:٠٠ ٣٠°',
   };

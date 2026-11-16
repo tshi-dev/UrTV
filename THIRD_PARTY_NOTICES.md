@@ -4,6 +4,14 @@ Code and ideas taken from other projects, with their licenses. Fonts, photos and
 `assets/fonts/*-NOTICE.txt` and `*-OFL.txt`, `docs/PHOTO-CREDITS.md`, `optimize/lists/community/LICENSE-CleanYourTV.txt`, and the
 launcher's origin in `android/launcher/LICENSE-tv-home`.
 
+## التفسير الميسر
+
+«التفسير الميسر» under the verse of the day (only with «التفسير الميسر» on, `#tafsir=1`): نخبة من العلماء، مجمع الملك فهد لطباعة المصحف الشريف
+(King Fahd Glorious Quran Printing Complex), fetched by `.github/tools/fetch_verses.py` from api.alquran.cloud (edition `ar.muyassar`) into
+`assets/shared/verses.json`, and shipped as `dist/tafsir.json`. The text is shown whole and unchanged (never shortened, nothing added),
+with its name above it; QuranEnc.com publishes the same tafsir on these terms (re-publication allowed with no modification, addition or
+deletion, the publisher and source named).
+
 ## couch-tv
 
 The 4.3.3 scene home proposal (`docs/mockups/`) follows couch-tv's design (https://github.com/Seagey/couch-tv: scenes with a glass
