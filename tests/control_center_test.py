@@ -50,7 +50,7 @@ check("the side panel: 560 px of 1920 wide inside the 5 % safe area, a clear ful
       and "panel.animate().translationX(0).setDuration(SLIDE_MS).setInterpolator(new DecelerateInterpolator())" in center and "Dir.start() | Gravity.TOP" in center
       and "new ScrollView(act)" in center and "ControlLayout" not in center and not (HOME / "ControlLayout.java").exists())
 check("four round toggles on top (Bluetooth, mirroring, the sleep timer, «أطفئ الآن»), then rows with a short value each (network, sound, speed, the TV's settings, ours); ellipsized one-line values",
-      'TOGGLES = {"bluetooth", "mirror", "sleep", "off"}' in center and 'ROWS = {"net", "sound", "speed", "ours", "games", "city", "tv", "saver"}' in center and "GradientDrawable.OVAL" in center
+      'TOGGLES = {"bluetooth", "mirror", "sleep", "off"}' in center and 'ROWS = {"net", "sound", "speed", "ours", "games", "city", "tv", "saver", "black"}' in center and "GradientDrawable.OVAL" in center
       and "t.setSingleLine(true);" in center and "TruncateAt.END" in center and "ControlText.networkDetail" not in center)
 check("the focus: a solid fill in the look's colours with its ink, coming in over 170 ms (ease-out)",
       "FOCUS_MS = 170" in center and "ValueAnimator.ofArgb(shown, target)" in center and "anim.setDuration(FOCUS_MS)" in center and "int target = f ? FOCUSED : " in center and "ON_SUB" in center)
@@ -126,8 +126,8 @@ check("the tile is there only when one resolves, opens it behind the TV's settin
 check("Wi-Fi and Bluetooth side by side, first (docs/UX-REVIEW.md): the network tile, then Bluetooth, then the rest",
       center.index('tile("net"') < center.index('tile("bluetooth"') < center.index('tile("sound"') < center.index('tile("speed"')
       < center.index('tile("sleep"') < center.index('tile("off"') < center.index('tile("mirror"') < center.index('tile("saver"'))
-check("at most thirteen tiles: sleep, off, network, speed, sound, mirroring, Bluetooth, screensaver, the city, the games, ours, the build line, the TV's settings",
-      len(re.findall(r'tile\("[a-z]+"', center)) == 13, re.findall(r'tile\("[a-z]+"', center))
+check("at most fourteen tiles: sleep, off, network, speed, sound, mirroring, Bluetooth, screensaver, the city, the games, ours, the build line, the TV's settings, and (4.4 #62, only while something plays) the black screen",
+      len(re.findall(r'tile\("[a-z]+"', center)) == 14, re.findall(r'tile\("[a-z]+"', center))
 # ---- no traffic before OK
 check("the only network code is the speed test's, and it is started by the tile's OK on a worker thread",
       "new SpeedTest()" in center and "HttpURLConnection" not in center and "new Thread(" in center.split("private void speedTest")[1]

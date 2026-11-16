@@ -213,12 +213,12 @@ public class PlayerActivity extends Activity {
         LinearLayout items = dialog.findViewById(R.id.sleep_items);
         final String[] labels = {
                 Ui.digits(Ui.str(this, R.string.sleep_30)), Ui.digits(Ui.str(this, R.string.sleep_60)), Ui.digits(Ui.str(this, R.string.sleep_90)),
-                Ui.str(this, R.string.sleep_off), Ui.str(this, R.string.stop_now)
+                Ui.str(this, R.string.sleep_off), sa.urtv.home.S.t("شاشة سوداء"), Ui.str(this, R.string.stop_now)   // 4.4 #62: the picture off, the sound on
         };
         for (int i = 0; i < labels.length; i++) {
             TextView row = (TextView) getLayoutInflater().inflate(R.layout.item_sleep, items, false);
             row.setText(labels[i]);
-            Ui.text(row, "Thmanyah-Medium.otf", 20, i == 4 ? R.color.red : R.color.sand);
+            Ui.text(row, "Thmanyah-Medium.otf", 20, i == labels.length - 1 ? R.color.red : R.color.sand);
             final int which = i;
             row.setOnClickListener(v -> {
                 applySleep(which);
@@ -248,7 +248,10 @@ public class PlayerActivity extends Activity {
             case 3:
                 MusicService.sleep(this, 0);
                 break;
-            case 4:
+            case 4:   // 4.4 #62 «شاشة سوداء»: the player is already behind the «تلاوة وأذان» lock
+                startActivity(new android.content.Intent(this, BlackScreenActivity.class));
+                break;
+            case 5:
                 MusicService.stopAction(this);
                 finish();
                 break;

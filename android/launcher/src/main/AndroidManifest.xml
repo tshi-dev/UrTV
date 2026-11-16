@@ -478,6 +478,15 @@
             android:theme="@style/App"
             android:configChanges="keyboard|keyboardHidden|navigation|orientation|screenSize|screenLayout|uiMode|density" />
 
+        <!-- 4.4 #62 «شاشة سوداء»: black over everything while the recitation plays; any key closes it -->
+        <activity
+            android:name=".tilawah.BlackScreenActivity"
+            android:exported="false"
+            android:excludeFromRecents="true"
+            android:screenOrientation="landscape"
+            android:theme="@android:style/Theme.Black.NoTitleBar.Fullscreen"
+            android:configChanges="keyboard|keyboardHidden|navigation|orientation|screenSize|screenLayout|uiMode|density" />
+
         <activity
             android:name=".tilawah.QuietActivity"
             android:exported="false"
