@@ -2890,3 +2890,12 @@ Next: try 2 after a reboot (does adbd then show the dialog?). If not, the fix is
 - **Result: HOME role = launcherx; Home from YouTube ×5 (2 s and 6 s): Google TV every time.** 18 packages off (unchanged), no SetupRevert alarm.
 - **`logcat -s UrTVWatch`: «role stock wanted no» → «decision ours not chosen»** on every Home. So after a completed setup the «wanted» flag is NO: the add-on's watch thinks the person did not choose UrTV, and never brings it.
 Pictures: step86c/t2/ (s*, r*, report-top.png).
+
+## step 86 B rerun on 376 — the rest: Undo, Cancel, leaving the page, reboot — **HOME DOES NOT WORK in any of them**
+- **«Undo» from the report page:** works: back to Google TV, `pm list packages -d` = 0, «إضافات تلفزيونك» off (accessibility list = Key Mapper only), role launcherx.
+- **Try 3 (clean, after Undo):** no debugging dialog at all this time (the app's key was remembered from try 2's «Always allow»), straight to «Suggested apps / Start». Start → 86 % («13 of 15») within 15 s.
+- **Cancel on purpose: NOT TESTED** — there is no dialog any more once the key is remembered, and «Revoke USB debugging authorizations» would also cut my own adb link to the TV. Needs a person at the TV (or a TV where the key is new).
+- **Leaving the page mid-setup:** at 86 % I pressed Home: Google TV came; the setup still went on in the background (the TV's own Settings opened by itself 9 s later — `START act=android.settings.SETTINGS … from uid 2000`, i.e. sent by the setup's adb link — then Google TV again); 18 packages off again. **The role never became UrTV** (checked every 9 s for 1 m 40 s), and no revert alarm.
+- **Reboot:** starts normally (our screensaver in front after 40 s), role launcherx, Home from YouTube → Google TV.
+- **Role after 10 min:** not needed — it was never ours in this build.
+So on 376 the setup finishes «15 of 15» but never makes UrTV the home on this TV, and the add-on's watch says «wanted no → ours not chosen». Next: step 87 (Home doctor) now, on this build.
