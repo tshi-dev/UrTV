@@ -181,6 +181,78 @@ check("build asks no network", "urlopen" not in src.split("def build(")[1].split
 check(f"the live run asks at most {ma.LIVE_MAX}, {ma.LIVE_GAP} s apart (the free key's 30 a minute)", ma.LIVE_MAX <= 40 and 60 / ma.LIVE_GAP <= 30)
 check("no Israel, no Western Sahara in the archive's names", not re.search(r"israel|western sahara|إسرائيل|الصحراء الغربية", src + wf, re.I))
 
+
+# 11. history: TheSportsDB mocked (a season of 4 clubs = 12 games, 2 a round); the season list capped, the rounds fill it; a complete past
+# season is not asked again; the Wikipedia check compares the scores
+def fake_tsdb(capped=2):
+    games = {}
+    clubs = ["1", "2", "3", "4"]
+    n = 0
+    for season in ("2024-2025", "2025-2026", "2026-2027"):
+        for i, h in enumerate(clubs):
+            for j, a in enumerate(clubs):
+                if h != a:
+                    n += 1
+                    rnd = (n - 1) % 6 + 1
+                    games.setdefault(season, []).append({"idEvent": f"{season[:4]}{n}", "idLeague": "4668", "strSeason": season,
+                        "idHomeTeam": h, "idAwayTeam": a, "strHomeTeam": "Al-" + h, "strAwayTeam": "Al-" + a, "intHomeScore": "1",
+                        "intAwayScore": "0", "strStatus": "FT", "dateEvent": f"{season[:4]}-09-{rnd:02d}", "strTimestamp": f"{season[:4]}-09-{rnd:02d}T18:00:00",
+                        "intRound": str(rnd), "strSport": "Soccer"})
+    asked = []
+
+    def fetch(url, pause=0):
+        asked.append(url)
+        q = dict(x.split("=", 1) for x in url.split("?", 1)[1].split("&"))
+        if "search_all_seasons" in url:
+            return {"seasons": [{"strSeason": s} for s in games]}
+        evs = games.get(q.get("s"), [])
+        if "eventsseason" in url:
+            return {"events": evs[:capped]}
+        if "eventsround" in url:
+            return {"events": [e for e in evs if e["intRound"] == q["r"]] or None}
+        return {}
+    return fetch, asked
+
+
+fetch, asked = fake_tsdb()
+sys.modules["team_ids"] = SimpleNamespace(API="x/", STATS={"thesportsdb": 0}, fetch=fetch, team_key=lambda n: n.lower(),
+                                         same_team=lambda a, b: a.lower() == b.lower())
+saved = ma.HISTORY
+ma.HISTORY = [("4668", "Saudi Pro League", 4)]
+tmp = Path(tempfile.mkdtemp())
+hargs = lambda: SimpleNamespace(out=str(tmp / "h.json"), report=str(tmp / "r.json"), state=str(tmp / "state.json"), leagues="", seasons=3,
+                                budget=1000, pace=0, days=False, check=False)
+ma.history(hargs())
+rep_ = json.loads((tmp / "r.json").read_text())
+check("history: every season read in full through the rounds (12 of 12)", all(v["games"] == 12 and v["finished"] == 12 and v["expected"] == 12
+      for v in rep_["4668"]["seasons"].values()), rep_)
+check("history: the rounds stop once the season is full", max(int(u.split("r=")[1].split("&")[0]) for u in asked if "eventsround" in u) <= 6, asked)
+first = tmp / "first.json"
+first.write_text((tmp / "h.json").read_text())
+n1 = len(asked)
+ma.history(hargs())
+again = [u for u in asked[n1:] if "s=2024-2025" in u]
+check("history: a complete past season is not asked again; the current one is", again == [] and any("s=2026-2027" in u for u in asked[n1:]))
+check("history: the second run gives the current season only", {e["strSeason"] for e in json.loads((tmp / "h.json").read_text())["events"]} == {"2026-2027"})
+oH = build(leagues_dir([]), o9, history=str(first), history_state=str(tmp / "state.json"), history_report=str(tmp / "r.json"))
+check("history's games land in the store and its files are kept", len([e for e in store_events(oH).values() if e["lg"] == "4668"]) == 36
+      and (oH / "history.json").is_file() and (oH / "history-report.json").is_file())
+check("history: results/4668.json, the Saudi league's last results", len(json.loads((oH / "results" / "4668.json").read_text())["results"]) == 30)
+table = {("Al-1", "Al-2"): ("1", "0"), ("Al-2", "Al-1"): ("2", "2")}
+ma.wiki_results = lambda title: (table, None)
+games = json.loads(first.read_text())["events"]
+chk = ma.wiki_check([e for e in games if e["strSeason"] == "2024-2025"])
+c = chk["4668 2024-2025"]
+check("the Wikipedia check: same, different and missing scores counted", c["same"] == 1 and c["differ"] == 1 and c["not_in_wiki"] == 10, c)
+check("the Wikipedia check names the page", c["page"] == "2024–25 Saudi Pro League")
+ma.HISTORY = saved
+check("HISTORY puts Saudi first and expects 306 games a season since 2023-24",
+      ma.HISTORY[0][0] == "4668" and ma.expected(ma.HISTORY[0][2], "2024-2025") == 306 and ma.expected(ma.HISTORY[0][2], "2022-2023") == 240)
+check("openfootball's rounds: a number from «Matchday 7», a knockout's words kept", ma.round_of("League, Matchday 7") == "7"
+      and ma.round_of("Quarter-finals") == "Quarter-finals")
+check("calendar-year leagues (MLS) read by year", ma.calendar_years(["2024-25", "2025-26"]) == ["2024", "2025", "2026"])
+del sys.modules["team_ids"]
+
 doc = (ROOT / "docs/MATCH-ARCHIVE.md").read_text()
 check("docs/MATCH-ARCHIVE.md describes every file a client reads", all(x in doc for x in ("index.json", "teams/&lt;teamId&gt;.json",
       "h2h/&lt;lowId&gt;-&lt;highId&gt;.json", "results/&lt;leagueId&gt;.json", "store/&lt;leagueId&gt;/&lt;season&gt;.json")))

@@ -10,17 +10,26 @@ name: League fixtures
 # call, seconds); every 15 minutes the live window (only the games in play or ended in the last 30 minutes are asked again, one request each,
 # at most 40; nothing live = done in seconds, no request); Mondays the clean-up (seasons past 8 dropped, every derived file made again).
 # By hand: mode «archive», «live» or «backfill» (openfootball's past seasons, public domain; seasons like 2021-22,2022-23).
+# Mode «history»: the last seasons of the followed leagues from TheSportsDB (free key: the season list, then round by round), Saudi first,
+# checked against Wikipedia's results tables, then openfootball's; it starts from the archive published in tshi-dev/urtv-data (data branch).
 on:
   workflow_dispatch:
     inputs:
       mode:
-        description: 'fixtures (and then the archive), archive, live or backfill'
+        description: 'fixtures (and then the archive), archive, live, backfill or history'
         default: fixtures
         type: choice
-        options: [fixtures, archive, live, backfill]
+        options: [fixtures, archive, live, backfill, history]
       seasons:
-        description: 'backfill only: openfootball seasons, comma-separated (empty: 2021-22 to 2025-26)'
+        description: 'backfill and history: openfootball seasons, comma-separated (empty: 2021-22 to 2026-27)'
         default: ''
+      leagues:
+        description: 'history only: TheSportsDB league ids, comma-separated (empty: every followed league, Saudi first)'
+        default: ''
+      days:
+        description: 'history only: a season still short after its rounds is asked day by day (slow: about 300 requests a season)'
+        type: boolean
+        default: false
   schedule:
     - cron: '23 */6 * * *'
     - cron: '41 2,5,8,11,14,17,20,23 * * *'   # 4.3.1 the big tournaments only (their own job below): every 3 hours
@@ -102,13 +111,14 @@ jobs:
     needs: [fixtures, tournaments]
     if: always() && needs.fixtures.result != 'cancelled' && needs.tournaments.result != 'cancelled'
     runs-on: ubuntu-24.04
-    timeout-minutes: 30
+    timeout-minutes: ${{ inputs.mode == 'history' && 330 || 30 }}
     concurrency:   # one writer of data-archive at a time
       group: data-archive
       cancel-in-progress: false
     env:
       LIVE: ${{ github.event.schedule == '*/15 * * * *' || inputs.mode == 'live' }}
-      BACKFILL: ${{ inputs.mode == 'backfill' }}
+      BACKFILL: ${{ inputs.mode == 'backfill' || inputs.mode == 'history' }}
+      HISTORY: ${{ inputs.mode == 'history' }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -120,6 +130,21 @@ jobs:
         run: |
           mkdir -p prev dl out
           git fetch --depth=1 origin data-archive 2>/dev/null && git archive FETCH_HEAD | tar -x -C prev || echo "no data-archive yet: a new one"
+      - name: History starts from the published archive (tshi-dev/urtv-data, football/archive)
+        if: env.HISTORY == 'true'
+        run: |
+          t=$(mktemp -d)
+          if git fetch -q --depth=1 https://github.com/tshi-dev/urtv-data data && git archive FETCH_HEAD football/archive | tar -x -C "$t" && [ -f "$t/football/archive/health.json" ]; then
+            rm -rf prev && mkdir prev && cp -r "$t/football/archive/." prev/ && echo "prev: urtv-data football/archive"
+          fi
+      - name: The seasons' history (TheSportsDB, then the Wikipedia check)
+        if: env.HISTORY == 'true'
+        run: |
+          cp prev/history.json history.json 2>/dev/null || echo '{}' > history.json
+          python3 -u .github/tools/match_archive.py history --out history-games.json --report history-report.json --state history.json \
+            --check ${LEAGUES:+--leagues "$LEAGUES"} ${{ inputs.days && '--days --budget 9000' || '' }}
+        env:
+          LEAGUES: ${{ inputs.leagues }}
       - name: The live window (exits at once when nothing is live)
         id: live
         if: env.LIVE == 'true'
@@ -141,7 +166,8 @@ jobs:
         run: |
           python3 -u .github/tools/match_archive.py build --leagues dl/leagues --prev prev --out out \
             ${{ env.LIVE == 'true' && '--live live.json --live-note live-note.json' || '' }} \
-            ${{ env.BACKFILL == 'true' && '--backfill backfill.json --names names.json --backfill-report backfill-report.json' || '' }}
+            ${{ env.BACKFILL == 'true' && '--backfill backfill.json --names names.json --backfill-report backfill-report.json' || '' }} \
+            ${{ env.HISTORY == 'true' && '--history history-games.json --history-state history.json --history-report history-report.json' || '' }}
       - name: Push to data-archive
         if: steps.live.outputs.skip != 'true'
         run: |

@@ -114,3 +114,18 @@ For tools and for building new derived files; a screen should not read it (it is
   by hand in `.github/tools/archive_names.json` (`"openfootball name": "TheSportsDB id"`) and dispatch again.
 - Requests: the archive build asks nothing; the live run asks one `lookupevent` per game in its window (at most 40 a run, 2.5 s apart)
   and nothing when no game is live.
+
+## Sources
+
+| Source | What | Licence / terms |
+|---|---|---|
+| [TheSportsDB](https://www.thesportsdb.com) (free key) | every game of the current seasons (fixtures, live window) and the last seasons of the followed leagues (`mode=history`: the season list, then round by round, then day by day where a season is still short) | free API key, about 30 requests a minute; credited as the source |
+| [openfootball/football.json](https://github.com/openfootball/football.json) | past seasons of the big European leagues, the Champions League (only the seasons it has) and the MLS | public domain (CC0) |
+| [Wikipedia](https://en.wikipedia.org) season pages | **not stored**: each Saudi Pro League season is checked against the page's results table (`history-report.json`, `check`) | CC BY-SA; read only to compare scores |
+
+History (`mode=history`, by hand; `leagues` and `days` inputs): the leagues and their expected games a season are `HISTORY` in the tool
+(Saudi Pro League first: 306 a season since 2023-24, 240 before). `history.json` on the branch lists each league's seasons with the games
+read, the finished ones, the expected count and whether the season is complete (a complete past season is not asked again);
+`history-report.json` says how each season was read and the Wikipedia check (same scores, different, not in Wikipedia).
+`r` (the round) is a number for a league's matchday; a knockout round may be TheSportsDB's code (125 quarter-finals, 150 semi-finals,
+200 final) or openfootball's words ("Quarter-finals").
