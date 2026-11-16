@@ -54,7 +54,7 @@ final class QuizBank {
         fetching = true;
         new Thread(() -> {
             try {
-                Net.Reply r = Net.get(URL, null, 15000, 20000, QuizBankCheck.BYTES_MAX);   // no redirect, a size cap, IPv4 first (Net)
+                Net.Reply r = DataHost.get(URL, 15000, 20000, QuizBankCheck.BYTES_MAX);   // urtv-data, then the old branch (DataHost); no redirect, a size cap, IPv4 first (Net)
                 if (r.status != 200) return;
                 byte[] b = r.body;
                 List<QuizPick.Item> v = QuizBankCheck.parse(b);

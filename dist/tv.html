@@ -2025,14 +2025,14 @@ async function loadLeagues(step, ready){
   const cat = (async () => { await ready; for(const name of CONFIG.leagues.filter(catId)) got += await loadCatalogueLeague(name, step); })();
   await Promise.all([cat, ...CONFIG.leagues.filter(n => !catId(n)).map(async name => {
     try{
-      const r = await fetchT(LEAGUE_BASE + leagueSlug(name) + '.json', 12000);
+      const r = await fetchData(LEAGUE_BASE + leagueSlug(name) + '.json', 12000);
       if(!r.ok) return;
       const j = await r.json();
       if(j && Array.isArray(j.events)){ LEAGUE_DATA[name] = {updated: j.updated, events: j.events}; got++; }
     }catch(e){}
   })]);
   if(CONFIG.tour) try{
-    const r = await fetchT(LEAGUE_BASE + 'tournaments.json', 12000), j = r.ok && await r.json();
+    const r = await fetchData(LEAGUE_BASE + 'tournaments.json', 12000), j = r.ok && await r.json();
     if(j && Array.isArray(j.events)){ LEAGUE_DATA.tournaments = {updated: j.updated, events: j.events, names: j.names || {}}; got++; }
   }catch(e){}
   try{ localStorage.setItem('leagueData', JSON.stringify(LEAGUE_DATA)); }catch(e){}
@@ -2608,6 +2608,22 @@ async function fetchT(url, ms){
   return {ok:r.ok, status:r.status, json:body('json'), text:body('text'), blob:body('blob')};
 }
 
+// 4.3.3 data: urtv-data first, the old branch second (docs/DATA-HOST.md, the apps' DataHost)
+const DATA_OLD = 'https://raw.githubusercontent.com/tshi-dev/UrTV/', DATA_NEW = 'https://raw.githubusercontent.com/tshi-dev/urtv-data/data/';
+const DATA_MAP = [['data-leagues/leagues/', 'football/leagues/'], ['data-catalogue/catalogue/', 'football/catalogue/'], ['data-archive/', 'football/archive/'],
+  ['data-games/quiz/', 'games/quiz/'], ['data-games/games/', 'games/'], ['data-markets/markets/', 'markets/'], ['data-stations/stations/', 'stations/']];
+function dataUrls(u){
+  const r = u.slice(DATA_OLD.length), m = u.startsWith(DATA_OLD) && DATA_MAP.find(m => r.startsWith(m[0]));
+  return m ? [DATA_NEW + m[1] + r.slice(m[0].length), u] : [u];
+}
+// the first ok answer, else the last answer or error
+async function fetchData(url, ms){
+  let r, e;
+  for(const u of dataUrls(url)){ try{ r = await fetchT(u, ms); if(r.ok) return r; }catch(x){ e = x; } }
+  if(r) return r;
+  throw e;
+}
+
 // ---- prices. First the file CI keeps (.github/tools/market_prices.py, branch data-markets)
 // common stocks, so the TVs do not each ask Yahoo
 const MARKET_URL = 'https://raw.githubusercontent.com/tshi-dev/UrTV/data-markets/markets/markets.json';
@@ -2615,7 +2631,7 @@ const MARKET_TRUST_MS = 3*3600000;
 let MARKET_FILE = null;   // {updated, quotes: {symbol: {p, v, c, t}}}
 async function loadMarketFile(){
   try{
-    const r = await fetchT(MARKET_URL, 12000);
+    const r = await fetchData(MARKET_URL, 12000);
     if(r.ok){ const j = await r.json(); if(j && j.quotes && Date.parse(j.updated)) MARKET_FILE = j; }
   }catch(e){}                                  // offline: the copy from before, which fileQuote() trusts for 3 hours only
 }

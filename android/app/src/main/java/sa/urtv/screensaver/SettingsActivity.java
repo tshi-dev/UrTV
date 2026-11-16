@@ -1181,7 +1181,7 @@ public class SettingsActivity extends Activity {
     static String fetchCatalogue(java.io.File cache) {
         String body = null;
         try {
-            Net.Reply r = Net.get(CatalogueLeagues.URL, null, 15000, 12000, Bounded.JSON_MAX);   // IPv4 first, 4 s per address, 12 s in all (Net)
+            Net.Reply r = DataHost.get(CatalogueLeagues.URL, 15000, 12000, Bounded.JSON_MAX);   // urtv-data, then the old branch (DataHost); IPv4 first, 4 s per address, 12 s in all (Net)
             if (r.status != 200) throw new java.io.IOException("status " + r.status);
             body = r.text();
             new JSONObject(body).getJSONArray("leagues");   // a whole answer before it replaces the copy

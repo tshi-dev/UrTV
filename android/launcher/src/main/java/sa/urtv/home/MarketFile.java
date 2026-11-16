@@ -180,7 +180,7 @@ final class MarketFile {
     /** the file's text, or null (offline, a timeout, not 200) */
     private static String download(String url) {
         try {
-            Net.Reply r = Net.get(url, null, TIMEOUT_MS, 2 * TIMEOUT_MS, 4 << 20);   // IPv4 first, 4 s per address, a deadline (Net)
+            Net.Reply r = DataHost.get(url, TIMEOUT_MS, 2 * TIMEOUT_MS, 4 << 20);   // urtv-data, then the old branch (DataHost); IPv4 first, 4 s per address, a deadline (Net)
             return r.status == 200 ? r.text() : null;
         } catch (Exception e) {
             return null;

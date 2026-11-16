@@ -72,8 +72,8 @@ check("the sounds are the existing tones (QuizSound), behind the one sound switc
 check("one look, two sets (PAPER, NIGHT), decided in one place; a game writes no colour of its own",
       "static final GameLook PAPER" in look and "NIGHT = new GameLook(true" in look and "static GameLook of(Context c)" in look
       and all(not re.search(r"0xFF[0-9A-Fa-f]{6}", code(src(f"{g[3]}.java"))) for g in games if g[5] == "true" and g[4] == "false"))
-check("data: the kept copy must pass the published check, the starter its own; a download goes through Net with a size cap, is checked whole, written beside and renamed, the last good copy stays",
-      "published.parse(Bounded.readAll(in, GameDataCheck.BYTES_MAX))" in data and "starter.parse(Bounded.readAll(in, GameDataCheck.BYTES_MAX))" in data and "Net.get(BASE + name + \".json\", null, 15000, 20000, Math.min(maxBytes, GameDataCheck.BYTES_MAX))" in data
+check("data: the kept copy must pass the published check, the starter its own; a download goes through Net with a size cap (urtv-data first, DataHost), is checked whole, written beside and renamed, the last good copy stays",
+      "published.parse(Bounded.readAll(in, GameDataCheck.BYTES_MAX))" in data and "starter.parse(Bounded.readAll(in, GameDataCheck.BYTES_MAX))" in data and "DataHost.get(BASE + name + \".json\", 15000, 20000, Math.min(maxBytes, GameDataCheck.BYTES_MAX))" in data
       and "r.status != 200" in data and "if (published.parse(b) == null) return;" in data and "tmp.renameTo(f)" in data and "data-games/games/" in data and "org.json" not in data)
 check("nothing about the people playing is stored: only chips, the last game, the sound switch and item ids", set(re.findall(r'put\w+\("([\w.]+)"', prefs)) == {"chips.", "last", "sound", "recent."} and "FileOutputStream" not in base)
 lim = json.loads(json.dumps({"khanat": 200_000, "missing-word": 300_000}))
