@@ -17,7 +17,8 @@ The gate, for every photo (OUT/gate.json, one line each, and the verdict):
   people: a face or a person the edge cuts through.
   FIT: clean and crossing well: published. FRONT-ONLY: clean, but the scenery does not cross the digits well (or never: «الحرمين»): the clock in
   front. REJECT: a fringe, a jagged or broken edge, a cut through a face or a person, or no sky found: the clock in front.
-«الحرمين» is never cut (the owner: no clock behind the Kaaba or the Prophet's Mosque), and the person's own photos are not ours to cut.
+The owner's own places (scenes.tsv tag owner_ok, photos in photo_masks_owner_ok.txt) keep the clock where he put it: only the edge, halo and
+alignment are checked there. «الحرمين» is never cut (the owner: no clock behind the Kaaba or the Prophet's Mosque), and the person's own photos are not ours to cut.
 
     python3 .github/tools/photo_masks.py OUT [--sets photos,nature,sea,space,ksa-cities] [--work DIR] [--all] [--only set/name,...]
     python3 .github/tools/photo_masks.py OUT --scenes DIR      (a horizons pack: DIR/scenes.tsv and DIR/<id>.jpg; writes OUT/<id>-fg.webp)
@@ -41,6 +42,7 @@ NEVER = {"haramain"}            # the owner: never behind the Kaaba or the Proph
 W, H, COLS = 1920, 1080, 48     # the work size (the TV's), and the skyline's columns (40 px each)
 MAX_FG = 180 * 1024
 REVIEWED = Path(__file__).with_name("photo_masks_ok.txt")
+OWNER_OK = Path(__file__).with_name("photo_masks_owner_ok.txt")   # photos whose place the owner chose: the legibility rule is waived for them only
 MODEL_URL = "https://github.com/fabio-sim/Depth-Anything-ONNX/releases/download/v2.0.0/depth_anything_v2_vits_dynamic.onnx"
 MODEL_SHA256 = "46c4e8eeda3a27f34701831b6a2ec7753d7b38779b215acb5633424703deed8f"
 # the gate's limits (looked at on every photo of our sets: docs/mockups/masks/)
@@ -111,15 +113,20 @@ def sky_prob(rgb, d):
     if n:
         sizes = np.bincount(lab.ravel())
         ids = np.flatnonzero(sizes > h * w * 0.0004)
-        smooth = cv2.cvtColor(cv2.GaussianBlur(rgb, (0, 0), 1.2), cv2.COLOR_RGB2LAB)
-        for i in ids[ids > 0]:          # the whole opening, grown over its own colour
-            m = lab == i
+        lab_s = cv2.cvtColor(cv2.GaussianBlur(rgb, (0, 0), 1.0), cv2.COLOR_RGB2LAB).astype(np.float32)
+        for i in ids[ids > 0]:          # the whole opening (a tower's arch): every pixel near the colour of the sky seen through it, joined to it,
+            m = lab == i                # inside the opening's own box a little grown; its edge then follows the arch, not a blob
             ys, xs = np.nonzero(m)
-            ff = np.zeros((h + 2, w + 2), np.uint8)
-            cv2.floodFill(smooth.copy(), ff, (int(xs[len(xs) // 2]), int(ys[len(ys) // 2])), (0, 0, 0), (6, 4, 4), (6, 4, 4),
-                          cv2.FLOODFILL_FIXED_RANGE | cv2.FLOODFILL_MASK_ONLY | (255 << 8))
-            grown = ff[1:-1, 1:-1] > 0
-            if grown.sum() < m.sum() * 4: far |= grown | m
+            y0, y1, x0, x1 = ys.min(), ys.max() + 1, xs.min(), xs.max() + 1
+            gy, gx = int((y1 - y0) * 0.25) + 4, int((x1 - x0) * 0.25) + 4
+            y0, y1, x0, x1 = max(0, y0 - gy), min(h, y1 + gy), max(0, x0 - gx), min(w, x1 + gx)
+            ref = np.median(lab_s[m], axis=0)
+            de = np.sqrt(((lab_s[y0:y1, x0:x1] - ref) ** 2).sum(-1))
+            near = de < 14
+            lab_c, _ = label(near)
+            seeds = np.unique(lab_c[m[y0:y1, x0:x1]]); seeds = seeds[seeds > 0]
+            grown = np.zeros_like(m); grown[y0:y1, x0:x1] = np.isin(lab_c, seeds)
+            if grown.sum() < m.sum() * 6: far |= grown | m
     far = cv2.erode(far.astype(np.uint8), np.ones((9, 9), np.uint8)) > 0                  # a band on the sky's side (thin spires)
     near = cv2.erode((d > t + 0.012).astype(np.uint8), np.ones((21, 21), np.uint8)) > 0    # and on the scenery's
     p = np.where(far, 1.0, np.where(near, 0.0, 0.5)).astype(np.float32)
@@ -396,7 +403,7 @@ def place_ok(alpha, digits):
     return legible(alpha, f["box"], f["zoom"])[0]
 
 
-def judge(rgb, alpha, F, digits=None):
+def judge(rgb, alpha, F, digits=None, owner_ok=False):
     sky = float((alpha < 0.5).mean())
     e = edge_scores(rgb, alpha, F)
     f = fit(alpha, digits)
@@ -406,11 +413,16 @@ def judge(rgb, alpha, F, digits=None):
     if e["halo"] > HALO_MAX: return "REJECT", f"a fringe along the edge ({e['halo']} > {HALO_MAX})", s, f.get("box")
     if e["jagged"] > JAGGED_MAX: return "REJECT", f"a jagged edge ({e['jagged']} > {JAGGED_MAX})", s, f.get("box")
     if e["islands"] > ISLANDS_MAX or e["holes"] > HOLES_MAX: return "REJECT", f"a broken edge ({e['islands']} islands, {e['holes']} holes)", s, f.get("box")
+    ok, s["shift"], s["diff"] = aligned(rgb, alpha, F)
+    if not ok: return "REJECT", f"the cut-out does not sit on the photo (shift {s['shift']} px, difference {s['diff']})", s, f.get("box")
+    if owner_ok:                     # the owner chose this place himself (his ad picture): the clean cut-out is all that is checked
+        s["owner_ok"] = True
+        if f["crossing"]: _, s["digit_cover"], s["colon_cover"] = legible(alpha, f["box"], f["zoom"])
+        return "FIT", "the owner's own place (owner_ok): only the edge, halo and alignment checked", s, f.get("box")
     if not f["crossing"]: return "FRONT-ONLY", "the scenery is too high or too low to cross the digits", s, f.get("box")
     if f["cross"] < CROSS_MIN or f["cols"] < COLS_MIN: return "FRONT-ONLY", f"only a sliver crosses the digits (cross {f['cross']}, columns {f['cols']})", s, f.get("box")
     if f["visible"] < VISIBLE_MIN: return "FRONT-ONLY", f"the scenery covers too much of the digits even zoomed ({f['visible']})", s, f.get("box")
-    ok, s["shift"], s["diff"] = aligned(rgb, alpha, F)
-    if not ok: return "REJECT", f"the cut-out does not sit on the photo (shift {s['shift']} px, difference {s['diff']})", s, f.get("box")
+
     ok, s["digit_cover"], s["colon_cover"] = legible(alpha, f["box"], f["zoom"])
     if not ok: return "FRONT-ONLY", f"the scenery hides too much of a digit or the colon (digit {s['digit_cover']}, colon {s['colon_cover']})", s, f.get("box")
     return "FIT", "clean, and the scenery crosses the digits' lower part", s, f.get("box")
@@ -498,8 +510,9 @@ def scenes(o, work):
         alpha = matte(rgb, work); F = scenery_colour(rgb, alpha)
         top, bottom = int(r[3]), int(r[4])
         x0 = int(r[9]) if len(r) > 9 and r[9].strip().isdigit() else W // 2
-        verdict, why, s, b = judge(rgb, alpha, F, (top, bottom, x0))
-        if verdict == "FRONT-ONLY" and ("hides too much" in why or "sliver" in why):   # the clock's place moved (scenes.tsv digits_top, digits_bottom,
+        owner = "owner_ok" in [t.strip() for t in (r[8] if len(r) > 8 else "").split(",")]   # scenes.tsv tags: the owner's own place, kept
+        verdict, why, s, b = judge(rgb, alpha, F, (top, bottom, x0), owner)
+        if not owner and verdict == "FRONT-ONLY" and ("hides too much" in why or "sliver" in why):   # the clock's place moved (scenes.tsv digits_top, digits_bottom,
             for dx in sorted(range(-480, 481, 40), key=abs):                            # digits_x): sideways, then up; never smaller (the owner)
                 hit = None
                 for up in sorted(range(-240, 321, 8), key=abs):      # up (positive) or down, nearest first
@@ -544,6 +557,7 @@ def main():
     work = Path(o.work); work.mkdir(parents=True, exist_ok=True)
     if o.scenes: return scenes(o, work)
     ok = None if o.all else reviewed()
+    owner_list = {l.strip() for l in OWNER_OK.read_text(encoding="utf-8").splitlines() if l.strip() and not l.startswith("#")} if OWNER_OK.is_file() else set()
     only = {s for s in o.only.split(",") if s}
     sheet, gate, counts = [], {}, {}
     want = [s for s in o.sets.split(",") if s and s not in NEVER]
@@ -559,7 +573,8 @@ def main():
             if rgb is None:
                 gate[f"{name}/{stem}"] = {"verdict": "FRONT-ONLY", "why": "not 16:9: the TV crops it", "scores": {}}; n["FRONT-ONLY"] += 1; continue
             alpha = matte(rgb, work); F = scenery_colour(rgb, alpha)
-            verdict, why, s, b = judge(rgb, alpha, F)
+            owner = f"{name}/{stem}" in owner_list
+            verdict, why, s, b = judge(rgb, alpha, F, None, owner)
             gate[f"{name}/{stem}"] = {"verdict": verdict, "why": why, "scores": s}; n[verdict] += 1
             print(f"{name}/{stem}: {verdict} ({why})", flush=True)
             if o.all:
@@ -572,6 +587,7 @@ def main():
             if not data: continue
             (d / f"{stem}-fg.webp").write_bytes(data)
             files[stem] = {"sha256": hashlib.sha256(data).hexdigest(), "bytes": len(data), "box": bb, "skyline": skyline(alpha)}
+            if owner: files[stem]["owner_ok"] = True   # the app draws it without its own legibility drop (PhotoGlass)
             cut_n += 1
         (d / "index.json").write_text(json.dumps({"v": 1, "set": name, "files": files}, indent=0, sort_keys=True) + "\n", encoding="utf-8")
         print(f"{name}: {n['FIT']} FIT, {n['FRONT-ONLY']} FRONT-ONLY, {n['REJECT']} REJECT; {len(files)} published", flush=True)

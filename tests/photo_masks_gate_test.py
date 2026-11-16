@@ -75,6 +75,12 @@ tex = rgb.copy(); tex[(alpha > 0.5) & ((xx.astype(int) // 7 + yy.astype(int) // 
 Ft = T.scenery_colour(tex, alpha)
 check("…a cut-out a few px off the photo (a doubled edge): refused", not T.aligned(tex, alpha, np.roll(Ft, 3, axis=1))[0] and T.aligned(tex, alpha, Ft)[0],
       (T.aligned(tex, alpha, np.roll(Ft, 3, axis=1)), T.aligned(tex, alpha, Ft)))
+tall = ((yy > 640) | ((np.abs(xx - 1400) < 25) & (yy > 350))).astype(np.float32)   # ground and a tower up through the digits
+r2 = rgb.copy(); r2[tall > 0.5] = (60, 40, 30)
+check("owner_ok (the owner's own place: scenes.tsv tag, photo_masks_owner_ok.txt): the legibility rule is waived there, nowhere else",
+      T.judge(r2, tall, T.scenery_colour(r2, tall), (300, 580, 1400), True)[0] == "FIT"
+      and T.judge(r2, tall, T.scenery_colour(r2, tall), (300, 580, 1400), False)[0] == "FRONT-ONLY")
+check("…the alignment and edge checks still apply to it", not T.judge(tex, alpha, np.roll(Ft, 3, axis=1), (300, 580, 960), True)[0] == "FIT")
 T.people_cut = lambda rgb, alpha: True
 check("…the edge through a face or a person: REJECT", v(*scene(560)) == ("REJECT", "the edge cuts through a face or a person"))
 
