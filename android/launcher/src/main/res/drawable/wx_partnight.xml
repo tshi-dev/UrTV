@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- the home's weather line (Greeting): the screensaver page's WX_SVG.partnight, the same drawing; tinted in code -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <path
+        android:fillColor="#00000000"
+        android:strokeColor="#FFFFFFFF"
+        android:strokeWidth="1.5"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"
+        android:pathData="M10.5 3.5a4.6 4.6 0 0 0 5.6 6.6 4.6 4.6 0 1 1-5.6-6.6z" />
+    <path
+        android:fillColor="#00000000"
+        android:strokeColor="#FFFFFFFF"
+        android:strokeWidth="1.5"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"
+        android:pathData="M8 20.5h9.5a3.6 3.6 0 0 0 .5-7.2A5 5 0 0 0 8.6 12.5 4 4 0 0 0 8 20.5z" />
+</vector>

@@ -34,3 +34,14 @@ seen	2466	4000	399	4 km: at most «غبار»
 seen	2466	800	2466	800 m: «غبار كثيف» possible
 seen	220	-1	220	no visibility known: the level as before
 seen	220	6000	220	6 km and 220: «غبار»
+# icon: code day|night -> the drawing beside the weather line (as the page's wxIcon)
+icon	0	day	sun	clear day: the sun
+icon	1	night	moon	mainly clear night: the moon
+icon	2	day	part	partly cloudy by day
+icon	2	night	partnight	partly cloudy at night
+icon	3	day	cloud	overcast
+icon	45	day	fog	fog
+icon	63	day	rain	rain
+icon	75	night	snow	snow
+icon	95	day	storm	thunderstorm
+icon	-1	day	null	no reading: no drawing
