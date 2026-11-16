@@ -2728,3 +2728,28 @@ Night look: big glass clock over a photo scene, date + weather, a dock of 10 app
 - What we do better: Arabic/RTL, prayer times, matches, Hadith card, stocks, weather in Arabic, low idle CPU, the factory-interface helpers, the Player.
 - What they do better / worth copying: (1) a scene change every 20 s with a real photo feel; (2) «Hold OK on an app to add it to home» hint right in the grid; (3) profiles switcher on the home screen (we have none); also lower PSS.
 - The all-apps grid shows the owner's installed apps (I did not push that picture).
+
+## step 76 — 4.3.2 release check (PARTLY done: 12 of the 40+ checks; the rest listed at the end)
+**Updated both apps from the app on channel next: About says 4.3.2 (build 300) for home and screensaver. 4 problems found, many lines not run.**
+
+### Done
+- **Update:** page showed «تحديث جديد 4.3 · اضغط للتحديث», two «Update» system questions, ended «تم التحديث ✓ 4.3.2». `dumpsys`: both versionName 4.3.2, versionCode 300.
+- **2 Teams:** followed Al-Nassr, Al-Ahli, Barcelona. The «فرقي» dialog (control center) lists all three, ticked. Matches page: only one game in the 7-day window is shown, **الأهلي × النصر (Fri 20, 8:30 pm, under «فرقك 1»)**; every other day «لا مباريات»; Barcelona has no game in the window (the data source's list; I could not check it elsewhere). So «all three teams and their games» = 3 teams yes, 1 game (the only one existing, as far as I can tell). Owner's four teams put back exactly (`teams: الهلال, السعودية, الزلفي, ريال مدريد`).
+- **5 Prayer:** home card set to «prayers», `force-stop sa.urtv.screensaver`, Home: the card «مواقيت اليوم» shows all six times (Dhuhr marked). The screensaver process restarted by itself (pid seen). Card put back to stocks.
+- **8a Tray jank (Home, 40 keys left/right along the favourites row):** 9.3 % / 8.8 % / 8.5 % (194–199 frames), p50 32–34, p90 48, p99 53–65 ms. **Better than 19 % on 292** and as on 286. (Note: one DOWN first lands in «كل التطبيقات»; 40 keys in that grid: 52 % janky, p50 57–61 ms; the grid is the slow part.)
+- **8b Screensaver, 2 min each (top idle of 400 %, MemAvailable):** ours (preview, `start-saver.sh` said «not started» at first, «dream» with --preview): idle 303–352 (avg ≈340), MemAvailable ≈735–750 MB. The stock Android one (com.android.dreams.basic Colors: this is what `saver.sh off` gives; not TCL's own): idle 306–313 (avg ≈309), MemAvailable ≈860–900 MB. So ours uses a bit **less CPU (≈15 % busy vs ≈23 %) but ≈150 MB more RAM**. Files: `step75/saver-ours.txt`, `saver-tv.txt`. Put back: ours is the screensaver.
+- **9 Scripts:**
+  - T1 ✓ `dock.sh set` 3 packages → `show` returns exactly them; the home shows Spotify, YouTube, Netflix. **Small: the bar keeps its full width, so a 3-app row leaves a big empty dark area on the left** (picture in `ct/dock3.png`, local). `reset` → default row of 5 ✓. Owner's 9-app row put back, `show` identical to before.
+  - T2 ✗/different: a row with only a not-installed package is **refused** («error: none of these apps are on this TV's home screen»); the row stays the default 5, no empty bar. Fine, but not «filled».
+  - T3 ✓ both extras said «already on the TV: left as it is».
+  - T4: `install.sh saver` kept the newer installed build («the TV already has a newer build than apk-latest's…»), selected ours as screensaver, no !!. **The «another size, re-send» path was not triggered, so not tested.**
+  - T5: preview printed, not sent. **«Setup results: not on this computer», so no «were already off before UrTV» lines could appear: not testable on this PC.**
+- **10 Data:** أحمد طالب بن حميد (id 137, `cdn.mp3quran.net/audio/ahmad-humaid/r1/`) `surah_list` (107 surahs): 1,2,3,4,5,6,7,8,10,11,12,13,15,18,19,20,21,22,25,26,27,28,29,30,31,32,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99,100,101,102,103,104,105,106,107,108,109,110,111,112,113,114 (missing 9, 14, 16, 17, 23, 24, 33).
+  Note: the API answers 301 on mp3quran.net; use `www.mp3quran.net`.
+- **7 Settings footer (only 3 pages measured, the walker stopped after the second card):** hub hint text bottom y=**1026** (on the line, not below); «المدينة» list reaches 1080 (a scrolling list, its last visible item is cut by the screen edge; no footer measured); «الأذان» hint y=**1024**. The other pages: **not measured**.
+
+### Not done (time; the supervisor can re-queue)
+1 smoke test (Home on return ×5, cold start, favourites after standby/restart, radio 3 min, games, control panel, screensaver by itself, adhan), 3 markets «قائمتي» (4164/4002/4349), 4 radio «الشيخ عبدالله خياط», 6 the «قبل ما تحذف التطبيق…» row (I wandered into the «تحكم من الجوال» page while looking for it; I did not press OK there, backed out; nothing changed), 7 the remaining pages, 11 a–d (baselines).
+
+### Z
+Settings lists, dock, photos, DNS, disabled apps (20) and Home are identical to before this step (`step47/before76` vs `after76`, only a timestamp differs). Teams, home card, dock, screensaver restored; channel `next`, build 300. TV muted and asleep. No stream or token kept.
