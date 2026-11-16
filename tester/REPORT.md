@@ -2899,3 +2899,18 @@ Pictures: step86c/t2/ (s*, r*, report-top.png).
 - **Reboot:** starts normally (our screensaver in front after 40 s), role launcherx, Home from YouTube → Google TV.
 - **Role after 10 min:** not needed — it was never ours in this build.
 So on 376 the setup finishes «15 of 15» but never makes UrTV the home on this TV, and the add-on's watch says «wanted no → ours not chosen». Next: step 87 (Home doctor) now, on this build.
+
+## step 87 result: NONE (Home doctor on 4.4 build 376, all six angles; full report in tester/step87/report.md + report.json)
+| angle | Home ×3 from YouTube | 2 min later | role after 2 min | note |
+|---|---|---|---|---|
+| A role to UrTV | GTV, GTV, GTV | (YouTube) | launcherx | role taken back within 2 min |
+| B set-home-activity | GTV ×3 | GTV | **sa.urtv.home** | role stayed ours, **Home still opened Google TV** |
+| C clear launcherx claim + A | GTV ×3 | GTV | launcherx | taken back within 2 min |
+| D A + add-on watch, wanted=yes | **UrTV, UrTV**, GTV | GTV | sa.urtv.home | add-on bound; the watch **brought UrTV twice, then «decision paused»** (UrTVWatch) |
+| E TV's own «Default home app» screen | GTV ×3 | GTV | launcherx after 2 min | the screen offers **Google TV (selected), Setup Wizard, تلفزيونك**; I chose تلفزيونك → role became sa.urtv.home at once, yet Home still opened Google TV (pictures step87/E-*.png) |
+| F A + wanted + restart | GTV ×3 | GTV | launcherx | taken back within 2 min |
+**What this shows:**
+1. **On this Google TV the Home key goes to launcherx whatever the HOME role says** (B and E: role = UrTV, Home = Google TV). So no role/default-home method can work here; Google TV handles the Home key itself.
+2. Google TV also **takes the role back within ~2 minutes** (A, C, F), even after the TV's own settings screen chose UrTV (E).
+3. **Only the add-on's window watch ever brought UrTV forward (D, 2 of 3)**; it then stopped because of its own anti-loop pause («decision paused») — the presses here were ~14 s apart, so the «3 brings in 20 s → pause 5 min» guard trips on normal use.
+→ The way forward is the add-on (window watch and/or catching KEYCODE_HOME), with a gentler loop guard. That is step 88 R2/R3, which I start now.
