@@ -194,6 +194,8 @@ yet»), or an old UrTV folder is there without a working `.git`, delete that fol
   `optimize/share.sh --send`. Never open a GitHub issue, discussion, comment or pull request for me, never use `gh`
   or the GitHub website on my behalf: the developer reads the form, and a GitHub post is public and can carry my
   details. If the TV doesn't answer, send it anyway: the report says so.
+  A problem report also carries what the screen shows (the front activity, the windows that dim, the WebView, the brightness setting). For a dark or black
+  screen ask me «أقيس سطوع الصورة؟» and only if I say yes add `--screencap`: the picture is measured on this computer, one line of numbers is sent, the picture is deleted.
 - Ask me before anything not in this prompt. If something fails twice, and the table's fix didn't help, stop,
   show me the output and propose a fix.
 - Never tell me something worked without its proof: the script's own success line, or a screenshot you looked at.

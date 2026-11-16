@@ -211,6 +211,16 @@ print("share: " + ("the allowlist keeps «UrTV Player problem report, …» and 
 page = (Path(here).parent / "docs/share/index.html").read_text(encoding="utf-8")
 page_ok = ("function isRequest(t) { return /^UrTV Player feature request, /.test(t); }" in page and "اكتب طلبك أولاً" in page and "وش تبي نضيف أو نغيّر؟" in page and "MIN_WORDS = 5" in page)
 print("share: " + ("the page asks for a request in the person's own words (the Player sends none), with the same required minimum as a problem" if page_ok else "WRONG: the page's request wording"))
-_extra = not (not net_leaks and own and allowed and send_ok and free_ok and ip_ok and wifi_ok and ask_ok and player_ok and page_ok)
+# ---- 4.4 a dark screen names its own cause: the top resumed activity, the windows that dim, the WebView, the brightness setting (component names and numbers only)
+_r = "  topResumedActivity=ActivityRecord{1a2b u0 sa.urtv.home/.MainActivity t12}\n"
+_w = "  Window #0 Window{3f u0 sa.urtv.home/sa.urtv.home.PinPrompt}:\n    mAttrs={(0,0)(fillxfill) dimAmount=0.72}\n  Window #1 Window{9 u0 StatusBar}:\n    mAttrs={dimAmount=0.0}\n"
+_v = "Current WebView package (name, version): (com.google.android.webview, 114.0.5735.131)\n"
+_scr = share.screen_lines(_r, _w, _v, "128\n")
+_none = share.screen_lines("", "", "", "x; rm -rf /")
+screen_ok = (_scr[0].startswith("Screen: front ") and "PinPrompt 0.72" in _scr[1] and _scr[2].startswith("WebView: com.google.android.webview ") and _scr[3] == "Screen: brightness setting 128"
+             and _none[3] == "Screen: brightness setting unknown" and "rm -rf" not in " ".join(_none) and "StatusBar" not in _scr[1]
+             and all(share.restrict("UrTV problem report, 2026-01-01, UrTV abc\n\nTV: Test TV\n" + l + "\n").count(l) == 1 for l in _scr))
+print("share: " + ("a dark-screen report carries the front activity, the dimming windows, the WebView and the brightness setting, nothing else; --screencap (only with the owner's yes) adds one measured line" if screen_ok else "WRONG: the screen lines"))
+_extra = not (not net_leaks and own and allowed and send_ok and free_ok and ip_ok and wifi_ok and ask_ok and player_ok and page_ok and screen_ok)
 if _extra: sys.exit(1)
 sys.exit(1 if leaks or not counts or not alarm or not ok or bad_win or not versions_ok else 0)

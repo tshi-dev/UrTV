@@ -59,7 +59,7 @@ PACKED = "z."   # a packed text after the # (pack()); docs/share/ still reads a 
 FREE_HEADINGS = ("Notes from the agent:", "From the owner:")
 ALLOWED_LINE = re.compile(
     r"UrTV (problem|setup) report, |UrTV Player (problem report|feature request), |TV: |Computer: |Steps, minutes:seconds:$|Memory:$|Checks:$|Setup results: |ADB: "
-    r"|Protected features on: |(Device|WebView|Home|Home switch|Screensaver|Versions|Extras):|Auto-start|Optional picks|!! |- |  (off|on): "
+    r"|Protected features on: |(Device|WebView|Home|Home switch|Screensaver|Versions|Extras|Screen|Screen picture):|Auto-start|Optional picks|!! |- |  (off|on): "
     r"|home hides|[\w-]+: \d+ off, |\(no steps\.log: an older run\.sh\)$|\(not measured\)$|\(no report\.md yet: the setup didn't finish\)$|\d+ min in all$|\[\d+:\d\d until it was run again\]$"
     r"|[A-Za-z0-9_.-]+ \d+:\d\d( STOPPED.*)?(, [A-Za-z0-9_.-]+ \d+:\d\d( STOPPED.*)?)*(, \[.*\])?$")
 MAX_LINE = 400
@@ -252,6 +252,75 @@ def live_radio():
     return radio_line(out.stdout) if out.returncode == 0 else None
 
 
+def screen_lines(resumed, windows, webview, brightness):
+    """The dark-screen facts, as short report lines, from what the TV said: «Screen: front sa.urtv.home/.MainActivity», «Screen: dimming windows
+    sa.urtv.home/.PinPrompt 0.72», «WebView: com.google.android.webview 114.0», «Screen: brightness setting 128». Component names, numbers and
+    nothing else (a name outside [\\w./$-] is dropped). Plain text in, lines out: tests/share_test.py runs it."""
+    word = r"[\w.$-]+"
+    out = []
+    m = re.search(r"(?:topResumedActivity|mResumedActivity)=\S*\{\S+ \S+ (" + word + r"/" + word + r")", resumed or "")
+    out.append("Screen: front " + (m.group(1) if m else "unknown"))
+    dims, name = [], None
+    for line in (windows or "").splitlines():
+        w = re.search(r"Window\{\S+ \S+ (" + word + r"(?:/" + word + r")?)\}", line)
+        if w and "Window #" in line:
+            name = w.group(1)
+            continue
+        d = re.search(r"\bdim(?:Amount)?=([0-9.]+)", line)
+        if d and name and float(d.group(1)) > 0 and (name, d.group(1)) not in dims:
+            dims.append((name, d.group(1)))
+    out.append("Screen: dimming windows " + (", ".join(f"{n} {a}" for n, a in dims[:6]) if dims else "none"))
+    v = re.search(r"Current WebView package \(name, version\): \((" + word + r"), (" + word + r")\)", webview or "")
+    out.append("WebView: " + (f"{v.group(1)} {v.group(2)}" if v else "unknown"))
+    b = re.search(r"^(\d{1,3})$", (brightness or "").strip())
+    out.append("Screen: brightness setting " + (b.group(1) if b else "unknown"))
+    return out
+
+
+def live_screen():
+    """What the TV shows now, from four read-only questions (the top resumed activity, the windows with their dimming, the WebView, the brightness setting);
+    [] when the TV does not answer. For the report of a dark or black screen: it names its own cause."""
+    tv_py = Path(__file__).resolve().parent / "tv.py"
+
+    def ask(cmd):
+        try:
+            r = subprocess.run([sys.executable, "-I", str(tv_py), cmd], capture_output=True, text=True, timeout=60, env={**os.environ, "TV_TRIES": "1"})
+        except Exception:  # noqa: BLE001
+            return None
+        return r.stdout if r.returncode == 0 else None
+
+    resumed = ask("dumpsys activity activities 2> /dev/null | grep -E 'topResumedActivity|mResumedActivity' | sed -n 1,2p")
+    if resumed is None:
+        return []
+    windows = ask("dumpsys window windows 2> /dev/null | grep -E 'Window #|dimAmount|[ {]dim=' | sed -n 1,80p")
+    webview = ask("dumpsys webviewupdate 2> /dev/null | grep 'Current WebView package'")
+    brightness = ask("settings get system screen_brightness")
+    return screen_lines(resumed, windows, webview, brightness)
+
+
+def screen_picture():
+    """ONLY when the owner agreed (--screencap): the TV's picture, taken and measured here; the picture itself never leaves this computer, nothing is kept.
+    One line: «Screen picture: mean 12/255, 97 % of the pixels under 40, 1920x1080»; None when it cannot be taken or measured."""
+    import tempfile
+    tv_py = Path(__file__).resolve().parent / "tv.py"
+    with tempfile.TemporaryDirectory() as d:
+        shot = Path(d) / "shot.png"
+        try:
+            r = subprocess.run([sys.executable, "-I", str(tv_py), "--shot", str(shot)], capture_output=True, text=True, timeout=90, env={**os.environ, "TV_TRIES": "1"})
+            if r.returncode != 0 or not shot.is_file():
+                return None
+            from PIL import Image
+            im = Image.open(shot).convert("L")
+            size = im.size
+            im = im.resize((160, 90))
+            px = list(im.getdata())
+        except Exception:  # noqa: BLE001
+            return None
+    mean = sum(px) // len(px)
+    under = 100 * sum(p < 40 for p in px) // len(px)
+    return f"Screen picture: mean {mean}/255, {under} % of the pixels under 40, {size[0]}x{size[1]}"
+
+
 def steps():
     log = RUN / "steps.log"
     if not log.exists():
@@ -378,6 +447,7 @@ def main():
     a = argparse.ArgumentParser(description="Send the author how the setup went, or a problem (nothing personal).")
     a.add_argument("--problem", action="store_true", help="a problem report, any time; needs no setup results here")
     a.add_argument("--agent", default="", help="which agent ran the setup, and its model")
+    a.add_argument("--screencap", action="store_true", help="ONLY if the owner agreed: measure the TV's picture (its brightness, as one line); the picture stays on this computer and is deleted")
     a.add_argument("--owner", default="", help="the owner's own words for the author, if they gave any")
     a.add_argument("notes", nargs="*", help="the agent's notes: what failed or was slow, and what fixed it")
     mode = a.add_mutually_exclusive_group()
@@ -409,6 +479,10 @@ def main():
         parts += ["", "Setup results: not on this computer", *([live] if (live := live_versions()) else [])]
     if (radio := live_radio()):
         parts += ["", radio]
+    if args.problem and (screen := live_screen()):   # a dark or black screen names its own cause
+        parts += ["", *screen]
+        if args.screencap and (pic := screen_picture()):
+            parts += [pic]
     if notes:
         parts += ["", "Notes from the agent:", notes]
     if args.owner.strip():
