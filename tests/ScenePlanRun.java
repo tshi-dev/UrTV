@@ -74,9 +74,12 @@ public final class ScenePlanRun {
                 int[] l48 = ScenePlan.skyline(n[1], n[0][0], n[0][1], sc.mask), l192 = ScenePlan.skyline(f[1], f[0][0], f[0][1], sc.mask, 192);
                 for (boolean cards : new boolean[] {false, true}) for (boolean rtl : new boolean[] {true, false}) {
                     int[] b2 = ScenePlan.clockBox(sc, 1920, 1080, cards, rtl);
-                    float d = ScenePlan.depth(l48, l192, b2, 1920, 1080);
+                    boolean ok = sc.is(ScenePlan.OWNER_OK) && !cards;   // SceneHome: the owner's own place, kept as it is
+                    float d = ok ? 1f : ScenePlan.depth(l48, l192, b2, 1920, 1080), at = d == 0f ? ScenePlan.zoom(l48, b2, 1920, 1080) : d;
                     out.append("depth\t").append(sc.id).append('\t').append(cards).append('\t').append(rtl).append('\t').append(String.format("%.2f", d)).append('\t')
-                       .append(String.format("%.2f", ScenePlan.cover(l192, b2, 1920, 1080, 1f))).append('\t').append(d == 0f || ScenePlan.legible(l192, b2, 1920, 1080, d)).append('\n');
+                       .append(String.format("%.3f", ScenePlan.cover(l192, b2, 1920, 1080, at))).append('\t').append(ok || d == 0f || ScenePlan.legible(l192, b2, 1920, 1080, d)).append('\t')
+                       .append(String.format("%.3f", ScenePlan.cover(l192, b2, 1920, 1080, at, true))).append('\t').append(b2[0]).append(',').append(b2[1]).append(',').append(b2[2]).append(',').append(b2[3])
+                       .append('\t').append(String.format("%.2f", at)).append('\t').append(ok).append('\n');
                 }
             }
         }

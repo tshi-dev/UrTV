@@ -100,9 +100,24 @@ if shutil.which("javac"):
     dp = {(r[1], r[2], r[3]): r[4:] for r in rows if r[0] == "depth"}
     masked = [l.split("\t")[0] for l in read(PACK / "scenes.tsv").splitlines() if l and not l.startswith("#") and l.split("\t")[5].strip() != "-"]
     if small:
-        check("every bundled scene with a cut-out is measured at every place (none today: Riyadh's clock is in front)", {k[0] for k in dp} == set(masked), (dp, masked))
+        check("every bundled scene with a cut-out is measured at every place (Riyadh: no cards, the cards on the right, the cards on the left)", {k[0] for k in dp} == set(masked), (dp, masked))
         check("wherever the clock is: every digit at most a quarter covered from its base and the colon not at all, or the cut-out is off (the clock in front)",
               all(v[2] == "true" for v in dp.values()), dp)
+    fx = ROOT / "tests/fixtures/scene_legible.json"
+    if small and fx.is_file():   # the app and the masks gate agree (.github/tools/photo_masks.py wrote the fixture)
+        import json
+        names = {"nocards": ("false", "true"), "cards-rtl": ("true", "true"), "cards-ltr": ("true", "false")}
+        bad = []
+        for r in json.loads(fx.read_text(encoding="utf-8"))["rows"]:
+            v = dp.get((r["scene"],) + names[r["place"]])
+            if v is None: bad.append((r, "not measured")); continue
+            k, digit, colon, box, ok = float(v[0]), float(v[1]), float(v[3]), [int(x) for x in v[4].split(",")], v[6] == "true"
+            verdict = "FIT" if k > 0 else "FRONT-ONLY"
+            if (verdict != r["verdict"] or box != r["box"] or ok != r["owner_ok"] or abs(digit - r["digit_cover"]) > 0.01 or (verdict == "FRONT-ONLY" and digit < 0.25)
+                    or (verdict == "FIT" and (abs(k - r["k"]) > 0.01 or abs(colon - r["colon_cover"]) > 0.01))):
+                bad.append((r, v))
+        check("the app and the masks gate agree on every bundled scene and place (tests/fixtures/scene_legible.json): the box, the verdict, owner_ok, "
+              "the zoom and how much of the digits and the colon the scenery covers (within 0.01)", not bad, bad)
     check("the home uses the rule: SceneHome and PhotoGlass take ScenePlan.depth, and a 0 hides the cut-out (the clock in front, at its usual place)",
           "ScenePlan.depth(" in scene and "depth == 0f ? null : cut" in scene and "ScenePlan.depth(line, fine, digits, w, h)" in read(HOME / "PhotoGlass.java") and 'rec.optBoolean(ScenePlan.OWNER_OK, false)' in read(HOME / "PhotoGlass.java")
           and "PhotoGlassPlan.box(null, w, h, cardsShown, rtl, row)" in read(HOME / "PhotoGlass.java"))
@@ -110,8 +125,8 @@ if shutil.which("javac"):
     check("4.4 never a misaligned cut-out (the owner's doubled buildings): one cut from its own photo at its place is drawn; the same 2 px off, or "
           "another picture, is not (the clock in front)", al == {"own": "true", "off2": "false", "other": "false"}, al)
     ok = [r for r in rows if r[0] == "ownerok"][0][1:]
-    check("«owner_ok» (a tag in scenes.tsv: the owner saw the placement and reads it) is read beside the other tags; the bundled scene has none",
-          ok == ["true", "true", "false"], ok)
+    check("«owner_ok» (a tag in scenes.tsv: the owner saw the placement and reads it) is read beside the other tags; the bundled Riyadh has it (night,owner_ok)",
+          ok == ["true", "true", "true"], ok)
     check("an «owner_ok» scene keeps its cut-out where the owner saw it, at its own place with no cards beside the clock (no legibility drop, no zoom); with the cards beside it the rule decides; never one off its own pixels",
           "!alignedTo(photo, cut, sc.mask) ? 0f" in scene and "sc.is(ScenePlan.OWNER_OK) && !cardsShown ? 1f" in scene
           and scene.index("!alignedTo(photo, cut, sc.mask)") < scene.index("sc.is(ScenePlan.OWNER_OK)"))
