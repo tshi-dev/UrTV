@@ -795,3 +795,14 @@ mp3 أو m4a أو ogg أو wav	mp3, m4a, ogg or wav
 %s، مرة واحدة	%s, once
 تذكير	Reminder
 اختيار يوقفه، والتلاوة تعود بعده	OK stops it; the recitation comes back after
+%s، صامت	%s, silent
+أذان كل صلاة	Adhan per prayer
+الصلاة الصامتة يبقى وقتها وبطاقتها وتنبيهها، بلا صوت	A silent prayer keeps its time, card and notice, with no sound
+حسنًا للاختيار: صامت، أو مثل الأذان العام، أو مؤذن، أو تسجيلي	OK: choose silent, like the general adhan, a muezzin or my recording
+مثل الأذان العام (%s)	Like the general adhan (%s)
+مثل الأذان العام	Like the general adhan
+الوقت والبطاقة يبقون، بلا صوت	The time and the card stay, with no sound
+مؤذن	Muezzin
+الخمس بصوت	All five with sound
+الخمس صامتة	All five silent
+صامت: %s	Silent: %s

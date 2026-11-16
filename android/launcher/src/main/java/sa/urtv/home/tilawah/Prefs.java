@@ -86,6 +86,15 @@ final class Prefs {
     /** What plays at a prayer: Fajr has its own voice. */
     int playVoiceFor(Context c, boolean fajr) { return fajr ? playFajrVoice(c) : playVoice(c); }
 
+    /** 4.4 «أذان كل صلاة»: this prayer's choice (PrayerSound), "" when the general adhan plays as before */
+    String prayerSound(int prayer) { String c = sp.getString("pp_" + prayer, ""); return PrayerSound.valid(c) ? c : ""; }
+    void setPrayerSound(int prayer, String choice) { sp.edit().putString("pp_" + prayer, PrayerSound.valid(choice) ? choice : "").apply(); }
+
+    /** 4.4: what plays at this prayer now: a voice (Prefs.OWN…, 1..COUNT) or PrayerSound.SILENT */
+    int playFor(Context c, int prayer) {
+        return PrayerSound.voice(prayerSound(prayer), prayer, playVoiceFor(c, prayer == PrayerTimes.FAJR), OwnAdhan.exists(c), OwnAdhan.fajrExists(c));
+    }
+
     /**
      * Writes down what Fajr is using now before one of the two choices changes, so a change to the other prayers' voice never moves the one
      * for Fajr (nothing is written when the TV starts; the old single voice is read as it is until then).
