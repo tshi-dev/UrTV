@@ -286,6 +286,8 @@ HIJRI_EN = ["Muharram", "Safar", "Rabi al-Awwal", "Rabi al-Thani", "Jumada al-Aw
 EN_CODE = [
     # Latin digits unless Arabic-Indic ones are asked for; the dates and numbers in English
     ("digits: _Q.get('digits') === 'latin' ? 'latin' : 'hindi',", "digits: _Q.get('digits') === 'hindi' ? 'hindi' : 'latin',", 1),
+    # 4.4: the Arabic page joins two parts with «، » (never «·»); the English one keeps its « · »
+    ("const SEP = '، ';", "const SEP = ' · ';", 1),
     # the Gregorian words from fixed English names, never from Intl's en-GB (its commas and order differ between ICU versions, so between
     # WebViews): Intl gives only the numbers of the day in the zone. «Monday, 2 November 2026», «Monday 2 November», «2 November», «Mon»
     ("const GREG = 'ar-SA-u-ca-gregory-nu-' + NU;", """const GREG = 'en-u-ca-gregory-nu-latn';

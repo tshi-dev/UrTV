@@ -24,7 +24,7 @@ async function page(file, w, h, q) {
     const cards = [...document.querySelectorAll('.week')].filter(e => e.getClientRects().length);
     const pr = cards.find(c => c.classList.contains('boxes'));
     const lis = pr ? [...pr.querySelectorAll('ul.pgrid > li')] : [];
-    return { cls: document.documentElement.className, cards: cards.map(box), bgs: cards.map(c => getComputedStyle(c).backgroundColor + '|' + getComputedStyle(c, '::before').backgroundColor),
+    return { cls: document.documentElement.className, cards: cards.map(box), bgs: cards.map(c => getComputedStyle(c).backgroundColor + '|' + getComputedStyle(c).backgroundImage + '|' + getComputedStyle(c, '::before').backgroundColor),
       lis: lis.map(box), next: lis.filter(l => l.classList.contains('next')).map(l => ({ cd: (l.querySelector('.cd') || {}).textContent || '', bg: getComputedStyle(l).backgroundColor })),
       cds: document.querySelectorAll('.cd').length, prBg: pr ? getComputedStyle(pr).backgroundColor : '' };
   });
@@ -47,7 +47,8 @@ for (const file of ['tv.html', 'tv-en.html']) {
   check(`${file} «مربعات»: the next one is light with its countdown under it`, bx.next.length === 1 && (file === "tv.html" ? /^بعد / : /^In /).test(bx.next[0].cd.trim()) && bx.next[0].bg === 'rgb(246, 234, 210)', JSON.stringify(bx.next));
   check(`${file} «مربعات»: the verse card beside it keeps its glass`, bx.bgs.length === 2 && bx.bgs.some(b => /rgba\(28, 24, 20, 0\.45\)/.test(b)), JSON.stringify(bx.bgs));
   const cur = await page(file, 461, 250, 'panel=prayers&home_panel=prayers');
-  check(`${file} any other style: no countdown in the boxes, no pbx`, cur.cds === 0 && !cur.cls.includes('pbx'), JSON.stringify([cur.cds, cur.cls]));
+  // 4.4 card review: every style has the countdown in the next box (solid gold); only «مربعات» is pbx
+  check(`${file} any other style: the countdown in the next box only, it solid gold, no pbx`, cur.cds === 1 && cur.next.length === 1 && cur.next[0].cd.trim() && cur.next[0].bg === 'rgb(235, 198, 125)' && !cur.cls.includes('pbx'), JSON.stringify([cur.cds, cur.next, cur.cls]));
 }
 await browser.close();
 if (failed) { console.log(`\n${failed} failed`); process.exit(1); }

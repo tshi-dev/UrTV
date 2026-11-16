@@ -133,7 +133,7 @@ import re as _re
 check("34-A: the English page's radial gradients go with their side (the top veil's centre at 100% 0% in English), checked by pixels in page.test",
       "radial-gradient\\(" in text(ROOT / "src/build.py") and "100 - int(m.group(2))" in text(ROOT / "src/build.py") and "top veil, ${file}: no hard edge" in text(ROOT / "tests/page.test.mjs"))
 check("34-B: while a symbol's exchange is open a market file older than 20 minutes is not trusted (Yahoo is asked, the older file only when Yahoo refuses), and a quiet «متأخر» shows beside the time",
-      "LATE_MS = 20*60000" in tp and "(!lax && sesOpen(sym) ? LATE_MS : MARKET_TRUST_MS)" in tp and "directQuote(j) || fileQuote(j.key, 1)" in tp and "' · ' + 'متأخر'" in tp and "? 'متأخر' : ''" in tp)
+      "LATE_MS = 20*60000" in tp and "(!lax && sesOpen(sym) ? LATE_MS : MARKET_TRUST_MS)" in tp and "directQuote(j) || fileQuote(j.key, 1)" in tp and "SEP + 'متأخر'" in tp and "? 'متأخر' : ''" in tp)
 
 # step 35 (release)
 check("35-1: LiveFeed and LiveProxy are gone, cleartext is for radiojar.com only (4.3.1: Egypt's radio is back at 1, played by ExoPlayer, and a number saved before moves up once)",

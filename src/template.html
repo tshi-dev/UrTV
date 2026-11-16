@@ -57,10 +57,11 @@
   html.hcard .week:not(.lf){box-shadow:none!important}   /* the card styles' soft drop shadow (0 24px 60px) is cut at the card's box on the home: a straight-edged dark patch under the glass (step 52); the focus ring (.lf) stays */
   html.hcard[class*="cs-"] .week{background:none!important}
   html.hcard[class*="cs-"] .week::before{background:var(--hpanel)!important}
-  /* 4.4 card review: a dark floor under the glass, so a bright photo (sky, sand) never washes the words out; the glass itself unchanged */
-  html.hcard:not(.hlt) .week{background:linear-gradient(var(--hpanel),var(--hpanel)),rgba(10,12,16,.52)!important}
-  html.hcard:not(.hlt)[class*="cs-"] .week{background:none!important}
-  html.hcard:not(.hlt)[class*="cs-"] .week::before{background:linear-gradient(var(--hpanel),var(--hpanel)),rgba(10,12,16,.52)!important}
+  /* 4.4 card review: a dark floor under the glass, so a bright photo (sky, sand) never washes the words out; the glass itself unchanged.
+     Not with «توحيد المظهر» (html.hsync: the cards are the tray's one material, exactly) */
+  html.hcard:not(.hsync) .week{background:linear-gradient(var(--hpanel),var(--hpanel)),rgba(10,12,16,.52)!important}
+  html.hcard:not(.hsync)[class*="cs-"] .week{background:none!important}
+  html.hcard:not(.hsync)[class*="cs-"] .week::before{background:linear-gradient(var(--hpanel),var(--hpanel)),rgba(10,12,16,.52)!important}
   html.hsync .week::after,html.hsync .week .frm,html.hsync .week .dia{display:none!important}   /* «توحيد المظهر» on: the one material, no sheen and no bright rim of the card styles */
   /* «توحيد المظهر» on (#hink=, #hsub=, #hacc= beside the two above): the cards' words are the look's too, its text, second text and accent; on a light look (html.hlt) the muted and the up/down colours written for dark glass become ones that read on white */
   html.hsync .week{--sand:var(--hink);--dim:var(--hsub);--gold:var(--hacc);--gold-2:var(--hacc);--gold-3:var(--hacc);--gold-hi:var(--hacc);--gold-rgb:var(--haccrgb);color:var(--hink)}
@@ -68,6 +69,11 @@
   html.hlt .week li{color:var(--hink)}html.hlt .week .past{opacity:.72}
   html.hlt .week .next,html.hlt .week .next .dt,html.hlt .week .next i,html.hlt .week .yt b{color:var(--hacc)!important}
   html.hlt .week .up{color:#166A45!important}html.hlt .week .down{color:#8E2A10!important}
+  /* the 4.4 cards' own light words, on a light look the look's ink; the next prayer a tint of its accent */
+  html.hlt .week .hc i,html.hlt .week .fc .hi,html.hlt .week li.np .t,html.hlt .week li.np .r,html.hlt .week ul.pgrid li:not(.next):not(.past) span,html.hlt .week li.prow .pc:not(.next):not(.past) b,html.hlt .week li.prow .pc:not(.next):not(.past) i,html.hlt .week .mg .mwhen{color:var(--hink)!important}
+  html.hlt .week li.src,html.hlt .week li.np .iq,html.hlt .week .fc .lo,html.hlt .week .past *{color:var(--hsub)!important}
+  html.hlt .week ul.pgrid li.next,html.hlt .week li.prow .pc.next{background:rgba(var(--haccrgb,0,0,0),.14)!important;border-color:var(--hacc)!important}
+  html.hlt .week .next *{color:var(--hacc)!important}
   html.widget .week.boxes{padding:max(1.7vh,10px) max(1.4vw,14px)}   /* the prayer boxes keep a clear, even distance from the card's edge */
   html,body{
     height:100%;overflow:hidden;background:#040E09;color:var(--sand);
