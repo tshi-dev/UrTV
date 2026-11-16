@@ -7,7 +7,7 @@ are slow and rate-limited, and each of N TVs repeats the same requests. One run 
 downloads one file (about 20 kB) from raw.githubusercontent.com, branch data-markets.
 
 The symbols are built from what the page offers (src/template.html): the MARKETS list, the TADAWUL table of the
-30 largest companies (a 4-digit code is asked of Yahoo as CODE.SR) and COMMON_US below for the free-text US tickers.
+30 largest companies and TADAWUL_MORE (the codes people asked for) (a 4-digit code is asked of Yahoo as CODE.SR) and COMMON_US below for the free-text US tickers.
 A symbol that is not in the file is still asked by the page itself (direct, then the proxies).
 
 Out: markets/markets.json = {"updated", "quotes": {SYMBOL: {"p": price, "v": the close before, "c": [the day's
@@ -92,7 +92,7 @@ def symbols():
     for m in re.finditer(r"(\w+):\s*\{[^}]*?(?:sym:'([^']+)'|cg:'(\w+)')", block):
         sym = m.group(2) or CG_TO_YAHOO[m.group(3)]
         out[sym] = "sa" if sym.endswith(".SR") else "always" if sym in ALWAYS_ON else "us"
-    tad = re.search(r"const TADAWUL = \{(.*?)\n\};", src, re.S).group(1)
+    tad = re.search(r"const TADAWUL = \{(.*?)\n\};", src, re.S).group(1) + re.search(r"const TADAWUL_MORE = \{(.*?)\n\};", src, re.S).group(1)   # the 30 largest, then the codes people asked for (4.3.2)
     for code in re.findall(r"'(\d{4})'\s*:", tad):
         out[code + ".SR"] = "sa"
     for t in COMMON_US:
