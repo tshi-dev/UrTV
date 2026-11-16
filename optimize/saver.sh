@@ -60,6 +60,7 @@
 #   optimize/saver.sh occasion off                 «المناسبة القادمة» at the bottom middle of the screensaver (the countdown to Ramadan and the feasts, the iftar and
 #                                                  suhoor in Ramadan): on (default) or off (the place stays empty)
 #   optimize/saver.sh nightdim off                 «تعتيم الليل», the screensaver darker at night (from 21:00, most 23:00-05:00, normal at 07:00): on (default) or off
+#   optimize/saver.sh datenum on                  the dates as day/month/year, Hijri and Gregorian, on the screensaver and the home (off = the default: in words); the digits stay `digits`
 #   optimize/saver.sh fbhide on                   the football home: hide the games that ended (off = the default: they show with their score)
 #   optimize/saver.sh taskspill off                home screen: the «المهام» button: on (default) or off. Off removes only the button: the tasks stay, in the «المهام» card and on the phone
 #   optimize/saver.sh verse 3                      the verse-or-hadith card (card verse): day (default: a verse one day, a hadith the next), 3 or 10 (a new one every 3 or 10 minutes)
@@ -273,6 +274,7 @@ case "${1:-}" in
   nightdim) set1 nightdim "${2:?usage: optimize/saver.sh nightdim on|off}" ;;
   taskspill) set1 taskspill "${2:?usage: optimize/saver.sh taskspill on|off}" ;;
   fbhide)   set1 fbhide "${2:?usage: optimize/saver.sh fbhide on|off}" ;;
+  datenum)  set1 datenum "${2:?usage: optimize/saver.sh datenum on|off}" ;;
   verse)    set1 verse "${2:?usage: optimize/saver.sh verse day|3|10}" ;;
   versekind) case "${2:-}" in both|verse|hadith) set1 versekind "$2" ;; *) echo "usage: optimize/saver.sh versekind both|verse|hadith"; exit 1 ;; esac ;;
   seconds)  case "${2:-}" in on|off) set1 seconds "$2" ;; *) echo "usage: optimize/saver.sh seconds on|off"; exit 1 ;; esac ;;

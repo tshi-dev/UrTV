@@ -555,6 +555,9 @@ final class Prefs {
     boolean backSaver() { return sp.getBoolean("backSaver", false); }
     /** 4.3.3 «المباريات المنتهية» on the football home: shown (the default, as always) or hidden; #fbhide=1 only while hidden */
     boolean fbHideDone() { return sp.getBoolean("fbHideDone", false); }
+    /** 4.3.3 «التاريخ بالأرقام»: the dates in words (the default, as always) or as day/month/year, Hijri and Gregorian; #datenum=1 only while on. The digits stay «الأرقام»'s. */
+    boolean dateNum() { return sp.getBoolean("dateNum", false); }
+    void setDateNum(boolean v) { sp.edit().putBoolean("dateNum", v).apply(); }
     void setFbHideDone(boolean v) { sp.edit().putBoolean("fbHideDone", v).apply(); }
     void setBackSaver(boolean v) { sp.edit().putBoolean("backSaver", v).apply(); }
 
@@ -665,7 +668,7 @@ final class Prefs {
             + HomeExit.fragment(homeExit())
             + (occasion() ? "" : "&occasion=0") + (nightDim() ? "" : "&nightdim=0") + (tasksPill() ? "" : "&taskspill=0")
             + (backSaver() ? "&backsaver=1" : "")
-            + (fbHideDone() ? "&fbhide=1" : "")   // the football home without the games that ended
+            + (fbHideDone() ? "&fbhide=1" : "") + (dateNum() ? "&datenum=1" : "")   // the football home without the games that ended
             + "&cardstyle=" + cardStyle()
             + "&adhanbar=" + (adhanBar() ? "1" : "0")
             + "&yearstrip=" + (yearStrip() ? "1" : "0")

@@ -3209,7 +3209,7 @@ public class MainActivity extends Activity {
         zoneLine.setVisibility(other ? View.VISIBLE : View.GONE);
         if (other) zoneLine.setText(ClockZone.label(zone[0], cal));
         if (gregFormat == null) {
-            gregFormat = new SimpleDateFormat("d MMMM", new Locale("ar"));
+            gregFormat = new SimpleDateFormat("d MMMM y", new Locale("ar"));   // 4.3.3: with the year, as the screensaver's line
             try {
                 hijriFormat = new android.icu.text.SimpleDateFormat("EEEE، d MMMM y", new android.icu.util.ULocale("ar_SA@calendar=islamic-umalqura"));
                 hijriDay = new android.icu.text.SimpleDateFormat("d MMMM y", new android.icu.util.ULocale("ar_SA@calendar=islamic-umalqura"));
@@ -3232,8 +3232,12 @@ public class MainActivity extends Activity {
             }
         } catch (Exception ignored) { }
         String greg = MonthNames.of(gregFormat.format(now.getTime()), MonthNames.levant(cfg.fragment));   // «تشرين الأول» when chosen
+        if (DateNum.on(cfg.fragment)) {   // 4.3.3 «التاريخ بالأرقام»: 06/06/1448 هـ and 16/11/2026, in the digits chosen
+            String n = numericDates(now, tz, HijriShift.fromFragment(cfg.fragment));
+            if (n != null) { hijri = ""; greg = n; }
+        }
         date.setText(arabicDigits(hijri.isEmpty() ? greg : hijri + "  –  " + greg));
-        if (S.en()) date.setText(arabicDigits(englishDate(now, tz, HijriShift.fromFragment(cfg.fragment))));   // the same line in English (MonthNames.hijriEn)
+        if (S.en()) date.setText(arabicDigits(englishDate(now, tz, HijriShift.fromFragment(cfg.fragment), DateNum.on(cfg.fragment))));   // the same line in English (MonthNames.hijriEn)
         updateAdhanBar(cfg);
         updatePrayerLine();
         applyListenPill(cfg.listenPillOn);
@@ -3373,12 +3377,43 @@ public class MainActivity extends Activity {
      * The date line in English, as the English page writes it: «Monday, 22 Jumada al-Awwal 1448 AH  –  2 November». The Hijri day comes
      * from the TV's Umm al-Qura calendar, moved by «فرق التاريخ الهجري» as the Arabic line; without that calendar, the Gregorian day alone.
      */
-    private static String englishDate(Calendar now, String tz, int shift) {
+    /**
+     * 4.3.3 «التاريخ بالأرقام»: «الاثنين، 06/06/1448 هـ  –  16/11/2026», day/month/year in Latin digits (arabicDigits turns them to the digits chosen);
+     * null when the TV's ICU has no Umm al-Qura calendar (the line stays in words).
+     */
+    private String numericDates(Calendar now, String tz, int shift) {
+        String n = numericParts(now, tz, shift);
+        if (n == null) return null;
+        SimpleDateFormat day = new SimpleDateFormat("EEEE", new Locale("ar"));
+        day.setTimeZone(ZoneFix.zone(tz));
+        return DateNum.line(day.format(now.getTime()), n, true);
+    }
+
+    /** "06/06/1448|16/11/2026" (Hijri moved by the offset), or null without an Umm al-Qura calendar */
+    private static String numericParts(Calendar now, String tz, int shift) {
+        try {
+            android.icu.util.Calendar h = android.icu.util.Calendar.getInstance(ZoneIcu.of(tz), new android.icu.util.ULocale("en@calendar=islamic-umalqura"));
+            if (!"islamic-umalqura".equals(h.getType())) return null;
+            h.setTime(shift == 0 ? now.getTime() : HijriShift.date(now, shift));
+            Calendar g = Calendar.getInstance(ZoneFix.zone(tz));
+            g.setTimeInMillis(now.getTimeInMillis());
+            return DateNum.ddmmyyyy(h.get(android.icu.util.Calendar.DAY_OF_MONTH), h.get(android.icu.util.Calendar.MONTH) + 1, h.get(android.icu.util.Calendar.YEAR))
+                    + "|" + DateNum.ddmmyyyy(g.get(Calendar.DAY_OF_MONTH), g.get(Calendar.MONTH) + 1, g.get(Calendar.YEAR));
+        } catch (RuntimeException e) {
+            return null;
+        }
+    }
+
+    private static String englishDate(Calendar now, String tz, int shift, boolean numeric) {
         java.util.TimeZone zone = ZoneFix.zone(tz);
-        SimpleDateFormat greg = new SimpleDateFormat("d MMMM", Locale.ENGLISH), day = new SimpleDateFormat("EEEE", Locale.ENGLISH);
+        SimpleDateFormat greg = new SimpleDateFormat("d MMMM yyyy", Locale.ENGLISH), day = new SimpleDateFormat("EEEE", Locale.ENGLISH);   // 4.3.3: with the year
         greg.setTimeZone(zone);
         day.setTimeZone(zone);
         String g = greg.format(now.getTime());
+        if (numeric) {
+            String n = numericParts(now, tz, shift);
+            if (n != null) return DateNum.line(day.format(now.getTime()), n, false);
+        }
         try {
             android.icu.util.Calendar h = android.icu.util.Calendar.getInstance(ZoneIcu.of(tz),
                     new android.icu.util.ULocale("en@calendar=islamic-umalqura"));

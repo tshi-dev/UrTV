@@ -1004,7 +1004,8 @@ const CONFIG = {
   // #football=1 (with #widget=1): the launcher's football home, the weather, the prayers and today's games
   // #matchpage=1: «المباريات», the launcher's page of the games
   football: _Q.get('football') === '1' && _Q.get('widget') === '1',
-  fbHide: _Q.get('fbhide') === '1',   // the football home without the games that ended
+  fbHide: _Q.get('fbhide') === '1',
+  dateNum: _Q.get('datenum') === '1',   // dd/mm/yyyy
   matchPage: _Q.get('matchpage') === '1',
   // #pagedark=1 with #matchpage=1: the dark theme
   pageDark: _Q.get('pagedark') === '1',
@@ -1202,6 +1203,13 @@ function tickDates(){
     setText(document.getElementById('greg'), gregFmt({
       timeZone: CONFIG.timezone, weekday:'long', day:'numeric', month:'long', year:'numeric'
     }).format(now));
+  }catch(e){}
+  if(CONFIG.dateNum) try{
+    const n = (c, d) => { const p = new Intl.DateTimeFormat('en-u-ca-' + c + '-nu-latn', {timeZone: CONFIG.timezone, day:'2-digit', month:'2-digit', year:'numeric'})
+      .formatToParts(d).reduce((a, x) => (a[x.type] = x.value, a), {}); return ar(p.day + '/' + p.month + '/' + parseInt(p.year)); };
+    const wd = new Intl.DateTimeFormat(GREG, {timeZone: CONFIG.timezone, weekday:'long'}).format(now) + '، ';
+    setText(document.getElementById('hijri'), wd + n('islamic-umalqura', hijriAt(now)) + ' هـ');
+    setText(document.getElementById('greg'), wd + n('gregory', now));
   }catch(e){}
 }
 

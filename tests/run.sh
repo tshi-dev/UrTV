@@ -222,6 +222,7 @@ python3 tests/called_off_test.py   # 4.3 A1-A3: a called-off game is never live 
 python3 tests/usb_test.py   # 4.3 B8: the USB viewers are never off and always in the apps row (issue #50)
 python3 tests/sideload_apps_test.py   # #57: a sideloaded app shows on the home next to a Google home (only the TV's own phone-only helpers stay out)
 python3 tests/kids_exit_test.py   # 4.3.3: kids mode always has a way out to «الرقابة الأبوية» (the long OK box, Menu, star, a long Settings key), behind the PIN
+python3 tests/date_num_test.py   # the home's date with its year; «التاريخ بالأرقام» on the home and the screensaver
 python3 tests/report_words_test.py   # 4.3 B10: the report page asks what happened, required
 python3 tests/phone_message_test.py   # 4.3 #53: a short message from a paired phone on the TV's screen
 python3 tests/photos_phone_test.py   # 4.3 «صوري»: 50, and from a paired phone (no camera data)
@@ -242,6 +243,7 @@ python3 tests/i18n_saver_test.py   # the settings in English (Words, WordMatch, 
 # English phase 2 (the page): its new tests go right under this line
 python3 tests/i18n_page_test.py   # dist/tv-en.html: built beside tv.html (byte for byte), current, under budget; the app and the home card pick it
 node tests/es2017_parse.test.mjs   # #19: the built pages parse as ES2017 (Android 9 TVs stuck on WebView 66)
+node tests/date_num.test.mjs   # «التاريخ بالأرقام» on the screensaver page: day/month/year in the digits chosen
 node tests/i18n_page_test.mjs   # dist/tv-en.html in a browser: left to right, no Arabic in its own words on any card
 #
 # English phase 3 (the home app): its new tests go right under this line

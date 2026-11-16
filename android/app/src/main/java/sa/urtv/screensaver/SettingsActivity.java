@@ -301,6 +301,9 @@ public class SettingsActivity extends Activity {
         row("الأرقام", Prefs.digitsLabel(prefs.digits()), R.drawable.ic_language,
             new Runnable() { public void run() { pickDigits(); } });
         noConv = false;
+        // 4.3.3 «التاريخ بالأرقام»: the Hijri and the Gregorian as day/month/year on the screensaver and the home, in the digits above
+        row("شكل التاريخ", prefs.dateNum() ? "بالأرقام" : "بالحروف", R.drawable.ic_language,
+            new Runnable() { public void run() { prefs.setDateNum(!prefs.dateNum()); render(); } });
         row("تنبيه قبل الأذان", prefs.adhanBar() ? "يعمل · شريط في أعلى الشاشة آخر ١٠ دقائق، ثم حتى الإقامة" : "متوقف", R.drawable.ic_eye,
             new Runnable() { public void run() { prefs.setAdhanBar(!prefs.adhanBar()); render(); } });
         // from PR #28 and the requests: each off until chosen, OK flips it
