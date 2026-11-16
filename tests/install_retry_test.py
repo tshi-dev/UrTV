@@ -27,6 +27,7 @@ case "$1" in
         case "$in" in *"touch /data/local/tmp/home_ok."*) log supersede ;; esac ;;
       *"am force-stop com.android.tv.settings"*)
         log switch; log "switch@$(step)"; rm -f "$T/front"
+        case "$in" in *"disable-user"*) log any-disable ;; esac
         case "$in" in "pm disable-user --user 0 com.google.android.apps.tv.launcherx"*"add-role-holder --user 0 android.app.role.HOME sa.urtv.home"*) log stock-before-role ;; esac
         case "$in" in *"disable-user --user 0 com.google.android.tungsten.setupwraith"*) log wraith-off ;; esac
         n=$(( $(cat "$T/switches" 2>/dev/null || echo 0) + 1 )); echo $n > "$T/switches"
@@ -49,6 +50,8 @@ case "$1" in
         case "$in" in *"add-role-holder --user 0 android.app.role.HOME other.launcher"*) log holder-other ;; esac
         case "$in" in *"pm enable com.old.helper"*) log helpers ;; esac
         case "$in" in *"pm enable other.launcher"*) log enable-holder ;; esac ;;
+      *"pm disable-user"*) log disable-batch ;;
+      "pm enable "*) log enable-back; for p in $(echo "$in" | sed -n 's/^pm enable //p'); do log "on-$p"; [ "$STUCK" = "$p" ] || { grep -vx "$p" "$T/off" > "$T/off.n" 2> /dev/null; mv "$T/off.n" "$T/off"; }; done ;;
       *) log other-batch ;;
     esac
     exit 0 ;;
@@ -113,7 +116,8 @@ case "$1" in
        [ "$RESOLVE" = stockpkg ] && ! ls "$T"/marker.* > /dev/null 2>&1 && { echo "com.google.android.apps.tv.launcherx/.home.HomeActivity"; exit 0; }
        [ "$(cat "$T/home" 2>/dev/null)" = ours ] && echo sa.urtv.home/.MainActivity || echo stock/.Home ;;
   "cmd role get-role-holders"*) echo "$ROLE" ;;
-  "pm list packages -d; echo D_END") [ "$DISABLED" = none ] && exit 0; [ "$DISABLED" = stock ] && echo "package:com.google.android.apps.tv.launcherx"; echo D_END ;;
+  "content query --uri content://sa.urtv.home.setupstate/factory"*) log factory-read; case "$FACTORY" in on) echo "Row: 0 off=1" ;; off) echo "Row: 0 off=0" ;; esac ;;
+  "pm list packages -d; echo D_END") [ "$DISABLED" = none ] && exit 0; [ -f "$T/off" ] && sed 's/^/package:/' "$T/off"; [ "$DISABLED" = stock ] && echo "package:com.google.android.apps.tv.launcherx"; echo D_END ;;
   "getprop ro.product.manufacturer; getprop ro.product.device; dumpsys package com.google.android.tungsten.setupwraith"*) log cast-read
        # CAST=yes: the wizard holds the cast provider; MAKER/DEVICE: who made it (a Chromecast by default; a TCL G07 has the provider too)
        echo "${MAKER:-Google}"; echo "${DEVICE:-sabrina}"
@@ -150,7 +154,7 @@ while [ $# -gt 0 ]; do [ "$1" = -o ] && : > "$2"; shift; done
 
 def run(name, fail_switches, first_drop, down_polls=0, verify="", verifier=None, curl_mode="", vanish="", illegal="", wraith_home="", wifi="", nohome="", install_mode="",
         watchdog="", restore_fail="", tcltv="", dialog="", verifier_empty="", pkgs="", stockless="", pkgextra="", query_extra="", seed=None, seed_nostock=False, seed_home="", seed_marker=False, role="", resolve="", script="install.sh", args=("launcher",),
-        seed_ask="", wifi_after="", wifi_read="", start="", front="", drop_at="", seed_step=False, disabled="", cast="", cast_wiz="", seed_cast="", wifi_wait=None, maker="", device=""):
+        seed_ask="", wifi_after="", wifi_read="", start="", front="", drop_at="", seed_step=False, disabled="", cast="", cast_wiz="", seed_cast="", wifi_wait=None, maker="", device="", keep=False, seed_off="", factory="", seed_mig=""):
     t = Path(tempfile.mkdtemp())
     tree, bin_ = t / "tree", t / "bin"
     (tree / "optimize" / "lists").mkdir(parents=True); bin_.mkdir()
@@ -174,6 +178,11 @@ def run(name, fail_switches, first_drop, down_polls=0, verify="", verifier=None,
         (tree / "optimize" / "run" / "cast.txt").write_text(seed_cast + "\n")
     if seed_home:
         (t / "home").write_text(seed_home + "\n")
+    if seed_off:   # packages an older home switch turned off (the TV says them in «pm list packages -d»)
+        (t / "off").write_text("\n".join(seed_off.split()) + "\n")
+    if seed_mig:
+        (tree / "optimize" / "run").mkdir(exist_ok=True)
+        (tree / "optimize" / "run" / "stock-migrated.txt").write_text(seed_mig + "\n")
     if seed_marker:
         (t / "marker.old1").write_text("")
     for f, body in (("py", STUB_PY), ("curl", STUB_CURL),
@@ -183,7 +192,7 @@ def run(name, fail_switches, first_drop, down_polls=0, verify="", verifier=None,
         (t / "verifier").write_text(verifier + "\n")
     env = dict(os.environ, QUERY_EXTRA=query_extra, PKGS=pkgs, STOCKLESS=stockless, PKGEXTRA=pkgextra, VERIFIER_EMPTY=verifier_empty, DIALOG=dialog, TCLTV=tcltv, RESTORE_FAIL=restore_fail, WATCHDOG=watchdog, ROLE=role, RESOLVE=resolve, INSTALL_MODE=install_mode, NOHOME=nohome, WRAITH_HOME=wraith_home, WIFI=wifi, ILLEGAL=illegal, VERIFY=verify, VANISH=vanish, CURL_MODE=curl_mode, PATH=f"{bin_}:{os.environ['PATH']}", PY=str(bin_ / "py"), T=str(t),
                FAIL_SWITCHES=str(fail_switches), FIRST_DROP=first_drop, DOWN_POLLS=str(down_polls),
-               WIFI_AFTER=wifi_after, WIFI_READ=wifi_read, START=start, FRONT=front, DROP_AT=drop_at, DISABLED=disabled, CAST=cast, CAST_WIZ=cast_wiz, MAKER=maker, DEVICE=device, **({"URTV_WIFI_WAIT": wifi_wait} if wifi_wait is not None else {}), J=str(tree / "optimize" / "run" / "home-switch.json"))
+               WIFI_AFTER=wifi_after, WIFI_READ=wifi_read, START=start, FRONT=front, DROP_AT=drop_at, DISABLED=disabled, CAST=cast, CAST_WIZ=cast_wiz, MAKER=maker, DEVICE=device, **({"URTV_WIFI_WAIT": wifi_wait} if wifi_wait is not None else {}), URTV_KEEP_STOCK="1" if keep else "0", FACTORY=factory, J=str(tree / "optimize" / "run" / "home-switch.json"))
     r = subprocess.run(["bash", str(tree / "optimize" / script), *args], env=env, capture_output=True, text=True)
     log = (t / "log").read_text().split() if (t / "log").exists() else []
     af = tree / "optimize" / "run" / "wifi-ask.txt"
@@ -499,6 +508,42 @@ cases += [
      lambda c, o, l: c == 5 and "run.sh: paused at launcher" in o and "«كمّل»" in o and "stopped" not in o and "paused" in l),
     ("run.sh: an exit 5 of another step is a plain stop", run_finish(5, "extras"),
      lambda c, o, l: c == 5 and "run.sh: stopped at extras" in o),
+]
+
+# 4.3.3: the switch keeps the stock home, the setup wizard and the helpers ON (URTV_KEEP_STOCK, the default); a rerun turns back on what an older run turned off
+WZ = "com.google.android.tungsten.setupwraith"; LX = "com.google.android.apps.tv.launcherx"
+NO_OFF = lambda l: "any-disable" not in l and "disable-batch" not in l and "wraith-off" not in l
+cases += [
+    ("keep: a plain switch turns NOTHING off (no pm disable-user at all), Home is ours, the journal done", run("k1", 0, "", keep=True),
+     lambda c, o, l: c == 0 and NO_OFF(l) and "Launcher is home; the stock home and the setup wizard stay on" in o and "journal-done" in l and l.count("arm") == 1),
+    ("keep: the wizard answers Home and owns the Wi-Fi: no question, no pause, no wizard off, the switch goes on", run("k2", 0, "", keep=True, wraith_home="yes", wifi="owned"),
+     lambda c, o, l: c == 0 and NO_OFF(l) and "paused" not in o and "انسَ" not in o and "ask-none" in l and "wifi-owner-read" not in l),
+    ("keep: an old «asked» file is let go, nothing asked", run("k3", 0, "", keep=True, wraith_home="yes", wifi="owned", seed_ask="asked x"),
+     lambda c, o, l: c == 0 and NO_OFF(l) and "ask-none" in l),
+    ("keep: a Chromecast: no cast question, the wizard stays on", run("k4", 0, "", keep=True, cast="yes", wraith_home="yes"),
+     lambda c, o, l: c == 0 and NO_OFF(l) and "cast-read" not in l),
+    ("keep: an older run turned the stock home, the wizard and a helper off (journal done, both enabled before): all three back on, once, Home stays ours",
+     run("k5", 0, "", keep=True, seed=("done", LX), seed_home="ours", seed_off=f"{LX} {WZ} com.old.helper other.app", factory="off"),
+     lambda c, o, l: c == 0 and f"on-{WZ}" in l and f"on-{LX}" in l and "on-other.app" not in l and "Turned back on what an older home switch turned off" in o and "Home is already the new launcher" in o and NO_OFF(l)),
+    ("keep: the person chose «تخلّص من واجهة المصنع»: only the wizard comes back, the stock home stays off and it says why",
+     run("k6", 0, "", keep=True, seed=("done", LX), seed_home="ours", seed_off=f"{LX} {WZ}", factory="on"),
+     lambda c, o, l: c == 0 and f"on-{WZ}" in l and f"on-{LX}" not in l and "تخلّص من واجهة المصنع" in o),
+    ("keep: the app does not say about the factory step: the stock home is left off, the wizard back, asked again next run (no mark)",
+     run("k7", 0, "", keep=True, seed=("done", LX), seed_home="ours", seed_off=f"{LX} {WZ}"),
+     lambda c, o, l: c == 0 and f"on-{WZ}" in l and f"on-{LX}" not in l and "did not say whether" in o),
+    ("keep: a package the TV had off itself (journal: disabled before) is never turned on",
+     run("k8", 0, "", keep=True, seed=("done", LX), seed_home="ours", seed_off=f"other.app", factory="off"),
+     lambda c, o, l: c == 0 and "enable-back" not in l and "Turned back on" not in o),
+    ("keep: already migrated (the mark): nothing read, nothing turned on",
+     run("k9", 0, "", keep=True, seed=("done", LX), seed_home="ours", seed_off=f"{LX} {WZ}", factory="off", seed_mig="done x"),
+     lambda c, o, l: c == 0 and "enable-back" not in l and "factory-read" not in l),
+    ("keep: no journal (never switched by us): nothing turned on even if the wizard is off",
+     run("k10", 0, "", keep=True, seed_off=f"{WZ}", factory="off"),
+     lambda c, o, l: c == 0 and "enable-back" not in l),
+    ("keep: Home stays with the firmware's launcher: one plain «skipped», the stock home back as Home, nothing was ever off", run("k11", 0, "", keep=True, nohome="yes"),
+     lambda c, o, l: c == 0 and "Home switch skipped" in o and "with them off some TVs cannot start" in o and NO_OFF(l)),
+    ("keep: ADB drops in the switch: the TV back, switched again, still nothing off", run("k12", 1, "stock", keep=True),
+     lambda c, o, l: c == 0 and AGAIN in o and NO_OFF(l) and "Launcher is home" in o),
 ]
 bad = [n for n, (c, o, l), ok in cases if not ok(c, o, l)]
 for n, (c, o, l), ok in cases:

@@ -14,7 +14,11 @@ public class SetupBootReceiver extends BroadcastReceiver {
     @Override public void onReceive(Context context, Intent intent) {
         final Context app = context.getApplicationContext();
         factoryGuard(app);
-        if (SetupRunner.awaitingRestart(new FileStore(app))) SetupRunner.get().resume(new SetupHost(app));   // its own thread; it waits for a pending home first
+        try {   // a planned restart, or (4.3.3) one nobody asked for in the middle of the run: it goes on from its pointer (its own thread; it waits for a pending home first)
+            if (SetupRunner.resumeAtBoot(new FileStore(app))) SetupRunner.get().resume(new SetupHost(app));
+        } catch (java.io.IOException | RuntimeException ignored) {
+            // the boot must not be broken by this: «جهّز كل شي» still goes on from the pointer
+        }
         if (!SetupRecovery.pending(app)) return;
         SetupRecovery.rearmFromDisk(app);
         final PendingResult pending = goAsync();

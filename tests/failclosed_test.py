@@ -40,6 +40,7 @@ case "$1" in
     echo package:android; printf 'package:%s\\n' $INSTALLED; echo END_OF_LIST ;;
   "pm list packages "*) echo "package:${1##* }" ;;
   *"dumpsys package"*) echo END_OF_LIST ;;   # disable.sh's input guard: no input driver here
+  *"query-activities"*) echo "Activity #0:"; for h in $HOMES; do echo "    $h/.Home"; done ;;   # the apps that answer Home
 esac
 exit 0
 ''')
@@ -47,7 +48,7 @@ exit 0
     return t, tr
 
 def sh(t, tr, script, *args, **env):
-    e = dict(os.environ, T=str(t), PY=str(t / "py"), URTV_HOME=str(t / "home"), URTV_RUN_DIR=str(tr / "optimize/run"), PACKAGE_SETTLE_S="0", OFF="", OFF_FAILS="", OFF_EMPTY="", BATCH_FAILS="", INSTALLED_FAILS="",
+    e = dict(os.environ, T=str(t), PY=str(t / "py"), URTV_HOME=str(t / "home"), URTV_RUN_DIR=str(tr / "optimize/run"), PACKAGE_SETTLE_S="0", OFF="", OFF_FAILS="", OFF_EMPTY="", BATCH_FAILS="", INSTALLED_FAILS="", HOMES="",
              INSTALLED="com.a.one com.a.two com.a.already com.a.new", AFTER="com.a.one com.a.two com.a.new")
     e.update({k.upper(): v for k, v in env.items()})
     r = subprocess.run(["bash", str(tr / "optimize" / script), *args], env=e, capture_output=True, text=True, cwd=tr)
@@ -85,6 +86,16 @@ check("disable.sh: a batch that dies half way still leaves the intended packages
 t, tr = tree(); (tr / "list.txt").write_text("com.a.one\n")
 rc, out, batch = sh(t, tr, "disable.sh", "list.txt", after="")
 check("disable.sh: a package that is still on after the batch is taken back out of the ledger", (tr / "optimize/run/disabled-by-us.txt").read_text().split() == [], (tr / "optimize/run/disabled-by-us.txt").read_text())
+
+# disable.sh (4.3.3): an app that answers Home on this TV (a maker's home, the setup wizard) stays on whatever the list says; ours is never counted
+t, tr = tree(); (tr / "list.txt").write_text("com.a.one\ncom.a.two\n")
+rc, out, batch = sh(t, tr, "disable.sh", "list.txt", homes="com.a.two sa.urtv.home")
+check("disable.sh: a package that answers Home is left on and said; the others go; it is not in the ledger",
+      rc == 0 and "Left on, the TV starts with them (they answer Home): com.a.two" in out and "disable-user --user 0 com.a.two" not in batch
+      and "disable-user --user 0 com.a.one" in batch and "com.a.two" not in (tr / "optimize/run/disabled-by-us.txt").read_text(), f"{rc} {out} {batch}")
+t, tr = tree(); (tr / "list.txt").write_text("com.a.two\n")
+rc, out, batch = sh(t, tr, "disable.sh", "list.txt", homes="com.a.two")
+check("disable.sh: a list of only home apps turns nothing off", rc == 0 and "pm disable-user" not in batch, f"{rc} {out} {batch}")
 
 # keep.sh unkeep: the same refusals as disable.sh
 t, tr = tree(); (t / "home").mkdir()

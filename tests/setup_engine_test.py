@@ -159,6 +159,8 @@ check("S1: «تراجع» gives the stock home its role and Home back", got.get(
 check("S2: a TV switched the old way: the stock home, the wizard and the helper are turned on again by the journal (what the TV had off itself, com.tcl.bi, stays off), ours stays Home, the notice is the one line, the mark is written",
       "status=DONE notice=true off=[com.tcl.bi] role=sa.urtv.home home=sa.urtv.home/.MainActivity mark=true" in (got.get("S2") or ""), got.get("S2"))
 check("S2: only once: a second start turns nothing on and says nothing", got.get("S2_twice") == "S2_twice true extra_enables=0", got.get("S2_twice"))
+check("S7 (4.3.3, A17): the wizard owns the saved Wi-Fi: the start screen does not ask about it, «تخلّص من واجهة المصنع» is offered and never names the wizard",
+      got.get("S7") == "S7 owns=false refusal=none wizardInPlan=false wizardOff=false", got.get("S7"))
 check("S3: «تخلّص من واجهة المصنع» is on (the person's choice): the migration turns nothing on", got.get("S3_factory") == "S3_factory true enables=0 stockOff=true", got.get("S3_factory"))
 check("S4: what the TV had off before UrTV (the journal says «disabled») is never turned on", got.get("S4_off_before_us") == "S4_off_before_us true off=[com.google.android.apps.tv.launcherx, com.google.android.tungsten.setupwraith, com.tcl.bi] enables=0", got.get("S4_off_before_us"))
 check("S5: a switch still «switching» is the recovery's, not the migration's", got.get("S5_switching") == "S5_switching true enables=0", got.get("S5_switching"))

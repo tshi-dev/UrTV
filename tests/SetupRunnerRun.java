@@ -23,6 +23,8 @@ public class SetupRunnerRun {
         long clock;                 // added to now()
         final List<Runnable> laters = new ArrayList<>();
         SetupRunner.Preview seen;   // the start screen's plan, as the person saw it
+        String dropOn;              // 4.3.3: the first command containing this drops the connection (IOException), while drops are left
+        int drops;
 
         Host(SetupEngineRun.FakeTv tv, SetupEngineRun.Mem store) { this.tv = tv; this.store = store; }
 
@@ -39,10 +41,14 @@ public class SetupRunnerRun {
                 lateLines = said.toString();
                 throw new IOException("debugging permission was not accepted on the TV");
             }
-            final SetupEngine e = new SetupEngine(tv, store, out, dead, ms -> { }, "2026-10-29 12:00:00");
+            final SetupEngine.Shell sh = cmd -> {
+                if (dropOn != null && drops > 0 && cmd.contains(dropOn)) { drops--; throw new IOException("Connection reset"); }
+                return tv.run(cmd);
+            };
+            final SetupEngine e = new SetupEngine(sh, store, out, dead, ms -> { }, "2026-10-29 12:00:00");
             return new SetupRunner.Session() {
                 public SetupEngine engine() { return e; }
-                public SetupEngine.Shell shell() { return tv; }
+                public SetupEngine.Shell shell() { return sh; }
                 public String exec(String command, java.io.InputStream data, long size) throws IOException {
                     execs.add(command);
                     long n = 0;
@@ -576,6 +582,42 @@ public class SetupRunnerRun {
         String st32 = states(r32b);
         line("R32 resumesAtBoot=" + resumes + " saidBeforeWait=" + saidFirst[0] + " resumed=" + resumed + " " + st32.substring(0, st32.indexOf(",grants"))
             + " kinds=[" + (after32.get("measure-kinds.txt") == null ? "" : after32.get("measure-kinds.txt").trim().split("\n")[0]) + "]");
+        // 33 (4.3.3). the TV's adb drops in the precheck (a Skyworth on Android 14, three times): a new connection, the step again, the run goes on to the end
+        SetupEngineRun.FakeTv t33 = SetupEngineRun.tv(); SetupEngineRun.Mem m33 = new SetupEngineRun.Mem(); Host h33 = new Host(t33, m33);
+        h33.dropOn = "getprop"; h33.drops = 1;
+        SetupRunner r33 = new SetupRunner();
+        go(r33, h33, SetupRunner.Kind.FULL, new SetupRunner.Options());
+        StringBuilder said33 = new StringBuilder(); for (SetupRunner.Line l : r33.linesSince(0)) said33.append(l.text).append('\n');
+        line("R33 opens=" + h33.opens + " done=" + states(r33).equals(FULLDONE(r33)) + " said=" + said33.toString().contains(SetupRunner.RECONNECT_LINE)
+            + " stamped=" + (m33.get(SetupReport.STEPS) != null && m33.get(SetupReport.STEPS).contains("reconnect precheck (the connection)")) + " bad=" + r33.end().bad);
+        // 33b. it keeps dropping: twice again at most, then it stops as before (the pointer kept for «جهّز كل شي», no boot resumes it by itself)
+        SetupEngineRun.Mem m33b = new SetupEngineRun.Mem(); Host h33b = new Host(SetupEngineRun.tv(), m33b); h33b.dropOn = "getprop"; h33b.drops = 99;
+        SetupRunner r33b = new SetupRunner();
+        go(r33b, h33b, SetupRunner.Kind.FULL, new SetupRunner.Options());
+        line("R33b opens=" + h33b.opens + " bad=" + r33b.end().bad + " pointer=" + SetupRunner.resumable(m33b) + " boot=" + SetupRunner.cutByRestart(m33b));
+        // 33c. a drop in the home switch (not a step to run twice) is never run again by itself
+        SetupEngineRun.FakeTv t33c = SetupEngineRun.tv(); SetupEngineRun.Mem m33c = new SetupEngineRun.Mem(); Host h33c = new Host(t33c, m33c);
+        h33c.dropOn = "cmd role add-role-holder --user 0 android.app.role.HOME sa.urtv.home"; h33c.drops = 1;
+        SetupRunner r33c = new SetupRunner();
+        go(r33c, h33c, SetupRunner.Kind.FULL, new SetupRunner.Options());
+        line("R33c " + !states(r33c).contains("home:DONE") + " reconnects=" + (m33c.get(SetupReport.STEPS) != null && m33c.get(SetupReport.STEPS).contains("reconnect home")));
+        // 34 (4.3.3). a restart nobody asked for cut a run in the middle (live=1, no await): the boot resumes it, twice at most; a run that ended is never resumed by a boot
+        SetupEngineRun.Mem m34 = new SetupEngineRun.Mem();
+        m34.put(SetupRunner.STATE_FILE, "kind=FULL\nextras=1\nat=tweaks\nphase=started\ntime=" + System.currentTimeMillis() + "\nlive=1\ns.precheck=DONE\t\ns.backup=DONE\t\n");
+        boolean b1 = SetupRunner.resumeAtBoot(m34), b2 = SetupRunner.resumeAtBoot(m34), b3 = SetupRunner.resumeAtBoot(m34);
+        SetupEngineRun.Mem m34e = new SetupEngineRun.Mem();
+        m34e.put(SetupRunner.STATE_FILE, "kind=FULL\nextras=1\nat=tweaks\nphase=started\ntime=" + System.currentTimeMillis() + "\ns.precheck=DONE\t\n");
+        SetupEngineRun.Mem m34w = new SetupEngineRun.Mem();
+        m34w.put(SetupRunner.STATE_FILE, "kind=FULL\nextras=1\nat=home\nphase=paused\ntime=" + System.currentTimeMillis() + "\nawait=wifi\n");
+        line("R34 " + b1 + " " + b2 + " " + b3 + " keyKept=" + SetupRunner.awaiting(m34e) + "/" + SetupRunner.awaiting(new SetupEngineRun.Mem()) + " ended=" + SetupRunner.resumeAtBoot(m34e) + " wifi=" + SetupRunner.resumeAtBoot(m34w));
+        // 34b. the resumed run goes on from its pointer to the end
+        SetupEngineRun.FakeTv t34 = SetupEngineRun.tv(); SetupEngineRun.Mem m34r = new SetupEngineRun.Mem(); Host h34 = new Host(t34, m34r);
+        m34r.put(SetupRunner.STATE_FILE, "kind=FULL\nextras=0\nat=tweaks\nphase=started\ntime=" + System.currentTimeMillis() + "\nlive=1\nauto=1\ns.precheck=DONE\t\ns.backup=DONE\t\ns.keep=DONE\t\ns.before=DONE\t\ns.grants=DONE\t\ns.safe=DONE\t\ns.community=DONE\t\n");
+        boolean at34 = SetupRunner.resumeAtBoot(m34r);
+        SetupRunner r34 = new SetupRunner();
+        boolean res34 = resume(r34, h34);
+        String st34 = states(r34);
+        line("R34b " + at34 + " " + res34 + " " + st34.substring(st34.indexOf("tweaks:"), st34.indexOf(",", st34.indexOf("tweaks:"))) + " home=" + st34.substring(st34.indexOf("home:"), st34.indexOf(",", st34.indexOf("home:"))) + " cleared=" + m34r.get(SetupRunner.STATE_FILE).isEmpty());
         line("R12 " + states(r12) + " backup=" + m12.get("backup.txt") + " changes=" + (t12.count("pm disable-user") + t12.count("settings put") + t12.count("cmd role add") + t12.count("appops set") + t12.count("pm grant") + t12.count("pm enable"))
             + " " + r12.end().bad + " " + r12.end().text);
     }

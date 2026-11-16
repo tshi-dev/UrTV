@@ -454,6 +454,7 @@ final class SetupEngine {
 
     /** For the start screen: will the home switch ask the person about the Wi-Fi first? (the same reads as askWifi, nothing written) */
     boolean wizardOwnsWifi() throws IOException {
+        if (KEEP_STOCK_ON) return false;   // 4.3.3 (A17): the wizard is never turned off (the switch, the factory step), so its Wi-Fi is never at risk: no word on the start screen, no refusal of «تخلّص من واجهة المصنع»
         String asked = store.get(WIFI_ASK);
         if (asked != null && !asked.trim().isEmpty()) return false;
         String res = resolveHome();
