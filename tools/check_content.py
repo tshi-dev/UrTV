@@ -92,8 +92,20 @@ def seasonal(d):
         nm = p.get("name") or {}
         if not (isinstance(nm.get("ar"), str) and ARABIC.search(nm["ar"]) and isinstance(nm.get("en"), str) and nm["en"]):
             bad(w, "name: ar and en")
-        if not (isinstance(p.get("url"), str) and p["url"].startswith("https://github.com/tshi-dev/UrTV/releases/download/")):
-            bad(w, "url: a release of tshi-dev/UrTV")
+        pid = p.get("id") if isinstance(p.get("id"), str) else ""
+        if not re.fullmatch(r"[a-z][a-z0-9-]{1,30}", pid):
+            bad(w, "id: a pack id (a letter, then letters, digits, dashes; 31 at most): the app's PhotoPacks.validId")
+        if p.get("url") != f"https://github.com/tshi-dev/UrTV/releases/download/photos-{pid}/{pid}.zip":
+            bad(w, "url: https://github.com/tshi-dev/UrTV/releases/download/photos-<id>/<id>.zip, the address the app accepts")
+        if len(nm.get("ar") or "") > 40 or len(nm.get("en") or "") > 40:
+            bad(w, "name: 40 characters at most")
+        src = p.get("source") or {}
+        if not (isinstance(src.get("ar"), str) and isinstance(src.get("en"), str) and src["ar"] and len(src["ar"]) <= 80 and len(src["en"]) <= 80):
+            bad(w, "source: ar and en, 80 characters at most (the picker's credit line)")
+        if not (isinstance(p.get("count"), int) and 1 <= p["count"] <= 200 and isinstance(p.get("bytes"), int) and 1 <= p["bytes"] <= 80 << 20):
+            bad(w, "count 1..200 photos and bytes up to 80 MB")
+        if "cover" in p and not (isinstance(p["cover"], str) and p["cover"].startswith("https://")):
+            bad(w, "cover: an https address")
         if not (isinstance(p.get("sha256"), str) and re.fullmatch(r"[0-9a-f]{64}", p["sha256"])):
             bad(w, "sha256 of the zip")
         lic = p.get("license") or {}
@@ -104,17 +116,17 @@ def seasonal(d):
 
 
 def prayer(d):
-    names = {"fajr", "sunrise", "dhuhr", "asr", "maghrib", "isha"}
+    names = {"fajr", "dhuhr", "asr", "maghrib", "isha"}   # the sunrise is never moved by the apps
     for w, a in ids("prayer-adjustments.adjustments", d.get("adjustments", [])):
         where = a.get("where") or {}
         if not (isinstance(where.get("country"), str) and re.fullmatch(r"[A-Z]{2}", where["country"])):
             bad(w, "where.country: an ISO code like SA")
         if "city" in where and not (isinstance(where["city"], str) and where["city"]):
-            bad(w, "where.city: the app's city id")
+            bad(w, "where.city: the city's name as the app saves it")
         span(w, a)
         mins = a.get("minutes") or {}
-        if not mins or not set(mins) <= names or not all(isinstance(v, int) and -30 <= v <= 30 and v for v in mins.values()):
-            bad(w, "minutes: {prayer: -30..30, not 0} for fajr, sunrise, dhuhr, asr, maghrib, isha")
+        if not mins or not set(mins) <= names or not all(isinstance(v, int) and not isinstance(v, bool) and -20 <= v <= 20 and v for v in mins.values()):
+            bad(w, "minutes: {prayer: -20..20, not 0} for fajr, dhuhr, asr, maghrib, isha (what the page and the home accept)")
         if not (isinstance(a.get("source"), str) and a["source"]):
             bad(w, "source: who announced it")
 

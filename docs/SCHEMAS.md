@@ -52,21 +52,23 @@ Rules the apps keep for all four: a file that cannot be read or has another `v` 
 dates are over is ignored; what the person chose on the TV always wins.
 
 ### notices/announcements.json (v 1)
-`{v, notices: [{id, text: {ar, en} (≤ 140 characters, no links), from, to (YYYY-MM-DD, Riyadh's day), min_app?, max_app? ("4.3.3"),
+`{v, notices: [{id, text: {ar, en} (≤ 140 characters, no links), from, to (YYYY-MM-DD, the TV's day), min_app?, max_app? ("4.3.3"),
 dismissible (true)}]}` — the home shows at most one notice at a time, never over playback, and each id once.
 
 ### devices/devices.json (v 1)
 `{v, devices: [{id, match: {brand?, model?, device?, sdk_min?, sdk_max?} (Build.BRAND/MODEL/DEVICE, case-insensitive; at least one
 of brand, model, device), defaults: {<setting>: <value>}, why}]}` — read at start; a default is applied only to a setting the person has
-not set. Known settings: `sound_opens_general_settings` (bool), `lite` (bool: the weak-TV profile).
+not set. Known settings: `sound_opens_general_settings` (bool; the home's «مخرج الصوت» opens the general settings). Any other is ignored by
+the apps of today (a later app may read it); the weak-TV profile is decided by each app from the TV's memory, not from here.
 
 ### seasonal/seasonal.json (v 1)
-`{v, packs: [{id, name: {ar, en}, from, to, url (a tshi-dev/UrTV release zip), sha256, license: {name, credit?}}]}` — like the photo packs,
+`{v, packs: [{id, name: {ar, en} (≤ 40), source: {ar, en} (≤ 80), from, to, url (https://github.com/tshi-dev/UrTV/releases/download/photos-<id>/<id>.zip),
+sha256, count (1..200), bytes (≤ 80 MB), cover? (https), license: {name, credit?}}]}` — like the photo packs,
 offered between `from` and `to`; licensed pictures only (Unsplash, Pexels, CC0, CC BY with credit, or our own).
 
 ### prayer/adjustments.json (v 1)
-`{v, adjustments: [{id, where: {country (ISO), city? (the app's city id)}, from, to, minutes: {fajr|sunrise|dhuhr|asr|maghrib|isha: -30..30},
-source}]}` — added on top of the method's times on those days (a city's entry wins over its country's); never over the person's own
+`{v, adjustments: [{id, where: {country (ISO), city? (the city's saved name)}, from, to, minutes: {fajr|dhuhr|asr|maghrib|isha: -20..20} (the sunrise is never moved; ±20 is what the page and the home accept),
+source}]}` — `city` is the city's name as the app saves it (e.g. «الرياض»). Added on top of the method's times on those days, the TV's city day (a city's entry wins over its country's); never over the person's own
 adjustment of that prayer, and the times screen says that a published correction is applied.
 
 ## status/status.json (v 1)

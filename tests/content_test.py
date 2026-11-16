@@ -33,9 +33,10 @@ good = {
     "devices.json": {"v": 1, "devices": [{"id": "tcl-g07", "match": {"brand": "TCL", "device": "G07"}, "defaults": {"lite": True}, "why": "weak"}]},
     "seasonal.json": {"v": 1, "packs": [{"id": "ramadan", "name": {"ar": "رمضان", "en": "Ramadan"}, "from": "2027-02-08", "to": "2027-03-09",
                                           "url": "https://github.com/tshi-dev/UrTV/releases/download/photos-ramadan/ramadan.zip", "sha256": "a" * 64,
+                                          "source": {"ar": "أنسبلاش", "en": "Unsplash"}, "count": 30, "bytes": 9000000,
                                           "license": {"name": "Unsplash License"}}]},
     "prayer-adjustments.json": {"v": 1, "adjustments": [{"id": "sa-isha-ramadan", "where": {"country": "SA"}, "from": "2027-02-08", "to": "2027-03-09",
-                                                          "minutes": {"isha": 30}, "source": "Umm al-Qura calendar"}]},
+                                                          "minutes": {"isha": 5}, "source": "Umm al-Qura calendar"}]},
 }
 check("a full example passes", run(good).returncode == 0, run(good).stdout)
 
@@ -58,7 +59,10 @@ broken("devices.json", ["devices", 0, "match"], {"sdk_min": 30}, "never every TV
 broken("seasonal.json", ["packs", 0, "license"], {"name": "found on Google"}, "license.name")
 broken("seasonal.json", ["packs", 0, "license"], {"name": "CC-BY-4.0"}, "license.credit")
 broken("seasonal.json", ["packs", 0, "url"], "https://example.com/x.zip", "url")
-broken("prayer-adjustments.json", ["adjustments", 0, "minutes"], {"isha": 90}, "minutes")
+broken("prayer-adjustments.json", ["adjustments", 0, "minutes"], {"isha": 30}, "minutes")
+broken("prayer-adjustments.json", ["adjustments", 0, "minutes"], {"sunrise": 2}, "minutes")
+broken("seasonal.json", ["packs", 0, "url"], "https://github.com/tshi-dev/UrTV/releases/download/photos-x/x.zip", "url")
+broken("seasonal.json", ["packs", 0, "count"], 0, "count")
 broken("prayer-adjustments.json", ["adjustments", 0, "where"], {"country": "Saudi"}, "where.country")
 broken("prayer-adjustments.json", ["v"], 2, '"v": 1')
 d = copy.deepcopy(good)
