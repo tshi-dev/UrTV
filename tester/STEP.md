@@ -1,5 +1,7 @@
 «✅ GO — step 86 now (owner's order: start the TV fresh). Do PART A now; PART B when the next GO line gives you the build.»
 
+**OWNER'S WORD (2026-11-16): the tester may do EVERYTHING needed on this TV for these steps without asking**: remove and reinstall UrTV and its apps, run «تراجع»/restore/reset, reboot, enable/disable packages and accessibility services, change the HOME role, type pairing codes, install test builds, uninstall to allow older builds. Still: keep a backup first and put the owner's settings back at the end; never the family PIN; never a factory reset of the TV.
+
 ## step 86 — fresh start on the owner's TV, then «جهّز كل شي» the way a user does it, repeated until it works
 PART A (now), the owner allowed removing UrTV fully from his TV. NOT a factory reset.
 1. Back up first: `optimize/saver.sh show`, `optimize/dock.sh show`, `optimize/music.sh adhan`, teams, leagues, stocks, city, photos list, family DNS, locked apps, `pm list packages -d`, the HOME role holder, accessibility services. Save it all as tester/backup-86/ (text) and push it (no personal data beyond what you already store).
