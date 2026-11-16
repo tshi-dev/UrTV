@@ -1,6 +1,6 @@
-# id	name	name_en	digits_top	digits_bottom	mask x,y,w,h	dark	credit
-riyadh	الرياض	Riyadh	266	542	0,128,1920,952	0	Riyadh Skyline, B.alotaby, CC BY-SA 4.0, Wikimedia Commons
-alula	العلا	AlUla	150	382	0,338,1920,742	0	Landscape at al-Ula (15), Richard Mortel, CC BY 2.0, Wikimedia Commons
-dunes	الرمال	The dunes	74	287	0,184,1920,896	0	NEOM, Unsplash License
-redsea	البحر الأحمر	The Red Sea	40	250	0,156,1920,924	0	NEOM, Unsplash License
-hisma	حسمى	Hisma	200	470	0,0,1920,1080	0	NEOM, Unsplash License
+# id	name	name_en	digits_top	digits_bottom	mask x,y,w,h	dark	credit	tags
+riyadh	الرياض	Riyadh	266	542	0,128,1920,952	0	Riyadh Skyline, B.alotaby, CC BY-SA 4.0, Wikimedia Commons	night
+alula	العلا	AlUla	150	382	0,338,1920,742	0	Landscape at al-Ula (15), Richard Mortel, CC BY 2.0, Wikimedia Commons	
+dunes	الرمال	The dunes	74	287	0,184,1920,896	0	NEOM, Unsplash License	
+redsea	البحر الأحمر	The Red Sea	40	250	0,156,1920,924	0	NEOM, Unsplash License	
+hisma	حسمى	Hisma	200	470	0,0,1920,1080	0	NEOM, Unsplash License	

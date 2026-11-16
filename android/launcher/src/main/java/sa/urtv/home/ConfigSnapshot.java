@@ -22,7 +22,8 @@ final class ConfigSnapshot {
     String favBar = "5";
     String pillsHidden = "";   // the quick buttons hidden in the settings (#52): markets, matches, center
     /** 4.3.3 «الواجهة» (classic, football, scenes) and «حزم المشاهد» ("saudi", "couch" or both); an older screensaver says nothing: classic, saudi */
-    String homeLayout = "classic", scenePacks = "saudi";
+    String homeLayout = "classic", scenePacks = "saudi", sceneStay = "20";
+    boolean sceneByTime, sceneByWeather;   // «المشهد يتبع الوقت», «المشهد يتبع الطقس»: off unless the screensaver says on
     boolean cityChosen = true;   // 4.3.1: a city was ever set (an older screensaver does not say: yes, so nobody is asked)
     String matchApp = "auto";   // 4.3 «تطبيق المباريات»: auto (UrTV Player when installed), none, or a package
     boolean pillHidden(String key) { return ("," + pillsHidden + ",").contains("," + key + ","); }
@@ -51,7 +52,7 @@ final class ConfigSnapshot {
     }
 
     /** The same values with another fragment (the one kept on disk). */
-    private ConfigSnapshot withFragment(String f) { ConfigSnapshot c = new ConfigSnapshot(f, greetingOn, adhanBarOn, listenPillOn, updateBellOn, appearance, watchNextOn, look, stale, placeTicket); c.favBar = favBar; c.tweaks = tweaks; c.pagesDark = pagesDark; c.pillsHidden = pillsHidden; c.matchApp = matchApp; c.cityChosen = cityChosen; c.homeLayout = homeLayout; c.scenePacks = scenePacks; return c; }
+    private ConfigSnapshot withFragment(String f) { ConfigSnapshot c = new ConfigSnapshot(f, greetingOn, adhanBarOn, listenPillOn, updateBellOn, appearance, watchNextOn, look, stale, placeTicket); c.favBar = favBar; c.tweaks = tweaks; c.pagesDark = pagesDark; c.pillsHidden = pillsHidden; c.matchApp = matchApp; c.cityChosen = cityChosen; c.homeLayout = homeLayout; c.scenePacks = scenePacks; c.sceneStay = sceneStay; c.sceneByTime = sceneByTime; c.sceneByWeather = sceneByWeather; return c; }
 
     private static volatile String savedFragment;   // what this process last wrote (or read) of the kept fragment
 
@@ -66,7 +67,7 @@ final class ConfigSnapshot {
     }
 
     /** The same values, marked as an old copy. */
-    ConfigSnapshot asStale() { ConfigSnapshot c = new ConfigSnapshot(fragment, greetingOn, adhanBarOn, listenPillOn, updateBellOn, appearance, watchNextOn, look, true, placeTicket); c.favBar = favBar; c.tweaks = tweaks; c.pagesDark = pagesDark; c.pillsHidden = pillsHidden; c.matchApp = matchApp; c.cityChosen = cityChosen; c.homeLayout = homeLayout; c.scenePacks = scenePacks; return c; }
+    ConfigSnapshot asStale() { ConfigSnapshot c = new ConfigSnapshot(fragment, greetingOn, adhanBarOn, listenPillOn, updateBellOn, appearance, watchNextOn, look, true, placeTicket); c.favBar = favBar; c.tweaks = tweaks; c.pagesDark = pagesDark; c.pillsHidden = pillsHidden; c.matchApp = matchApp; c.cityChosen = cityChosen; c.homeLayout = homeLayout; c.scenePacks = scenePacks; c.sceneStay = sceneStay; c.sceneByTime = sceneByTime; c.sceneByWeather = sceneByWeather; return c; }
 
     /**
      * The settings fragment for the PRAYER PLACE (Place, the adhan alarm, the day parts): null when this is an old copy, so that only a real
@@ -119,7 +120,8 @@ final class ConfigSnapshot {
         boolean pagesDark = true;
         String pillsHidden = "", matchApp = "auto";
         boolean cityChosen = true;
-        String homeLayout = "classic", scenePacks = "saudi";
+        String homeLayout = "classic", scenePacks = "saudi", sceneStay = "20";
+        boolean sceneByTime = false, sceneByWeather = false;
         try (Cursor cur = c.getContentResolver().query(URI, null, null, null, null)) {
             if (cur != null && cur.moveToFirst()) {
                 fragment = cur.getString(0);
@@ -153,6 +155,12 @@ final class ConfigSnapshot {
                 if (hl >= 0 && cur.getString(hl) != null) homeLayout = cur.getString(hl);
                 int sp = cur.getColumnIndex("scene_packs");
                 if (sp >= 0 && cur.getString(sp) != null) scenePacks = cur.getString(sp);
+                int ss = cur.getColumnIndex("scene_stay");
+                if (ss >= 0 && cur.getString(ss) != null) sceneStay = cur.getString(ss);
+                int st = cur.getColumnIndex("scene_time");
+                sceneByTime = st >= 0 && "1".equals(cur.getString(st));
+                int sw = cur.getColumnIndex("scene_weather");
+                sceneByWeather = sw >= 0 && "1".equals(cur.getString(sw));
                 int fb = cur.getColumnIndex("fav_bar");   // an older screensaver does not say: 5
                 if (fb >= 0 && cur.getString(fb) != null) favBar = cur.getString(fb);
             }
@@ -170,6 +178,9 @@ final class ConfigSnapshot {
         made.cityChosen = cityChosen;
         made.homeLayout = homeLayout;
         made.scenePacks = scenePacks;
+        made.sceneStay = sceneStay;
+        made.sceneByTime = sceneByTime;
+        made.sceneByWeather = sceneByWeather;
         return made;
     }
 

@@ -1075,6 +1075,16 @@ final class Prefs {
         return out;
     }
     void setScenePacks(List<String> v) { setList("scenePacks", v); }
+    /** «بقاء كل مشهد» in seconds (20 the default); «المشهد يتبع الوقت» (the night scenes from Maghrib to Fajr) and «المشهد يتبع الطقس» (the fog scenes in fog): off by default */
+    static final String[] SCENE_STAYS = {"10", "20", "60", "300"};
+    static final String[] SCENE_STAY_NAMES = {"١٠ ثوانٍ", "٢٠ ثانية", "دقيقة واحدة", "خمس دقائق"};
+    String sceneStay() { String v = sp.getString("sceneStay", "20"); return java.util.Arrays.asList(SCENE_STAYS).contains(v) ? v : "20"; }
+    void setSceneStay(String v) { if (java.util.Arrays.asList(SCENE_STAYS).contains(v)) sp.edit().putString("sceneStay", v).apply(); }
+    static String sceneStayLabel(String v) { int i = java.util.Arrays.asList(SCENE_STAYS).indexOf(v); return SCENE_STAY_NAMES[Math.max(0, i)]; }
+    boolean sceneByTime() { return sp.getBoolean("sceneByTime", false); }
+    void setSceneByTime(boolean on) { sp.edit().putBoolean("sceneByTime", on).apply(); }
+    boolean sceneByWeather() { return sp.getBoolean("sceneByWeather", false); }
+    void setSceneByWeather(boolean on) { sp.edit().putBoolean("sceneByWeather", on).apply(); }
     String homeLayout() { String v = sp.getString("homeLayout", HOME_LAYOUTS[0]); return java.util.Arrays.asList(HOME_LAYOUTS).contains(v) ? v : HOME_LAYOUTS[0]; }
     void setHomeLayout(String v) { if (java.util.Arrays.asList(HOME_LAYOUTS).contains(v)) sp.edit().putString("homeLayout", v).apply(); }
     static String homeLayoutLabel(String v) { int i = java.util.Arrays.asList(HOME_LAYOUTS).indexOf(v); return HOME_LAYOUT_NAMES[Math.max(0, i)]; }

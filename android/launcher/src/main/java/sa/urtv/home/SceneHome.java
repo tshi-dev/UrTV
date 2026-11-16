@@ -33,7 +33,8 @@ final class SceneHome extends FrameLayout {
     private final ExecutorService io = Executors.newSingleThreadExecutor();
     private final Slot[] slots = new Slot[2];
     private int front = 0;
-    private List<ScenePlan.Scene> scenes = new ArrayList<>();
+    private List<ScenePlan.Scene> all = new ArrayList<>(), scenes = new ArrayList<>();   // all: the packs' scenes; scenes: the ones taking turns now (ScenePlan.choose)
+    private boolean byTime, night, byWeather, fog;
     private int index = -1, staySeconds = ScenePlan.STAY_S, gen = 0;
     private boolean on, running, cardsShown, rtl = true;
     private String packs = "";
@@ -84,17 +85,31 @@ final class SceneHome extends FrameLayout {
         cardsShown = cards;
         rtl = rightToLeft;
         if (!changed) return;
-        if (!on) { stop(); setVisibility(GONE); for (Slot s : slots) s.release(); scenes = new ArrayList<>(); return; }
+        if (!on) { stop(); setVisibility(GONE); for (Slot s : slots) s.release(); all = new ArrayList<>(); scenes = all; return; }
         setVisibility(VISIBLE);
         final int g = ++gen;
         io.execute(() -> {
             final List<ScenePlan.Scene> all = load(packs);
-            ui.post(() -> { if (g != gen) return; scenes = all; index = -1; if (running) show(); });
+            ui.post(() -> { if (g != gen) return; this.all = all; scenes = ScenePlan.choose(all, byTime, night, byWeather, fog); index = -1; if (running) show(); });
         });
         if (ScenePlan.packs(packs).contains(ScenePlan.COUCH)) SceneDownload.fetchIfNeeded(app);
     }
 
     boolean on() { return on; }
+
+    /**
+     * «المشهد يتبع الوقت» and «المشهد يتبع الطقس», with the time of day (night: Maghrib to Fajr) and the city's weather (fog): when the scenes to show
+     * change (Maghrib came, the fog lifted), the new set starts at once; else the turns go on as they were.
+     */
+    void mood(boolean followTime, boolean isNight, boolean followWeather, boolean isFog) {
+        byTime = followTime; night = isNight; byWeather = followWeather; fog = isFog;
+        if (!on || all.isEmpty()) return;
+        List<ScenePlan.Scene> now = ScenePlan.choose(all, byTime, night, byWeather, fog);
+        if (now.equals(scenes)) return;
+        scenes = now;
+        index = -1;
+        if (running) { ui.removeCallbacksAndMessages(null); show(); }
+    }
 
     /** the time as the home's clock shows it */
     void setTime(CharSequence t) {

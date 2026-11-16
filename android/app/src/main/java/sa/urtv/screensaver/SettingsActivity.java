@@ -419,6 +419,11 @@ public class SettingsActivity extends Activity {
         row("الواجهة", Prefs.homeLayoutLabel(prefs.homeLayout()), R.drawable.ic_eye, new Runnable() { public void run() { pickHomeLayout(); } });
         row("حزم المشاهد", labels(Prefs.SCENE_PACKS, prefs.scenePacks(), "مشاهد السعودية"), R.drawable.ic_eye,
             new Runnable() { public void run() { pickMany("scenePacks", "حزم المشاهد", Prefs.SCENE_PACKS, "بدون اختيار = مشاهد السعودية"); } });
+        row("بقاء كل مشهد", Prefs.sceneStayLabel(prefs.sceneStay()), R.drawable.ic_eye, new Runnable() { public void run() { pickSceneStay(); } });
+        row("المشهد يتبع الوقت", prefs.sceneByTime() ? "مفعّل، مشهد الليل من المغرب إلى الفجر" : "متوقف", R.drawable.ic_eye,
+            new Runnable() { public void run() { prefs.setSceneByTime(!prefs.sceneByTime()); render(); } });
+        row("المشهد يتبع الطقس", prefs.sceneByWeather() ? "مفعّل، مشهد الضباب وقت الضباب" : "متوقف", R.drawable.ic_eye,
+            new Runnable() { public void run() { prefs.setSceneByWeather(!prefs.sceneByWeather()); render(); } });
         row("المظهر", Prefs.lookLabel(prefs.look()) + " · " + Prefs.appearanceLabel(prefs.appearance()), R.drawable.ic_eye,
             new Runnable() { public void run() { startActivity(new Intent(SettingsActivity.this, AppearanceActivity.class)); } });
         row("صفحات الأسهم والمباريات داكنة", prefs.pagesDark() ? "مفعّل · بالمظهر الداكن دائمًا" : "متوقف · تتبع مظهر الرئيسية", R.drawable.ic_eye,
@@ -500,6 +505,9 @@ public class SettingsActivity extends Activity {
             new Runnable() { public void run() { openHome("center"); } });
         // the first screen's last button (SettingsHub.SEARCH): type a word, pick the row, land on it in its section
         row("بحث في الإعدادات", "اكتب كلمة، مثل: صوت، لون، مدينة", R.drawable.ic_search, new Runnable() { public void run() { searchSettings(); } });
+        // 4.3.3 «مسح الملفات المؤقتة»: the two apps' caches only (CacheSweep): never the settings, your photos, the packs or the adhan's sounds
+        row("مسح الملفات المؤقتة", "الصور والبيانات المؤقتة للتطبيقين؛ الإعدادات وصورك والحزم تبقى", R.drawable.ic_sync,
+            new Runnable() { public void run() { clearCaches(); } });
         row("أرسل تقرير", "رمز QR يفتح صفحة الإرسال في جوالك", R.drawable.ic_settings,
             new Runnable() { public void run() { openReport(); } });
 
@@ -1512,6 +1520,41 @@ public class SettingsActivity extends Activity {
     }
 
     /** «أرسل تقرير»: the home's report screen (a QR code to docs/share with a few lines, nothing personal; ReportActivity). */
+    /** this app's caches: its cache folder and the hosted photos kept for the screensaver (PhotoCache); the person's own photos (Own) and the packs (PackStore) are elsewhere */
+    private java.io.File[] ownCaches() { return new java.io.File[] {getCacheDir(), new java.io.File(getFilesDir(), "photos")}; }
+
+    /** the home's cache folder, through its provider (same key): its size, or the sweep; -1 when the home cannot say (not installed, or older) */
+    private long homeCache(String method) {
+        try {
+            Bundle b = getContentResolver().call(Uri.parse("content://sa.urtv.home.nowplaying"), method, null, null);
+            return b == null ? -1 : b.getLong("bytes", -1);
+        } catch (RuntimeException e) {
+            return -1;
+        }
+    }
+
+    /** «مسح الملفات المؤقتة»: says how much the two apps' caches hold, asks, then clears them and says what was freed. The sizes are read off the UI thread. */
+    private void clearCaches() {
+        new Thread(() -> {
+            final long mine = CacheSweep.size(ownCaches()), home = homeCache("cache_size");
+            runOnUiThread(() -> {
+                if (isFinishing()) return;
+                final long all = mine + Math.max(0, home);
+                new Dlg(this).setTitle("مسح الملفات المؤقتة")
+                    .setMessage(conv("تُمسح " + megabytes(all) + " ميغابايت من الصور والبيانات المؤقتة، وتنزل من جديد وقت الحاجة. الإعدادات وصورك وحزم الصور والمشاهد وصوت الأذان تبقى."))
+                    .setPositiveButton("امسح", (d, w) -> new Thread(() -> {
+                        final long freed = CacheSweep.clear(ownCaches()) + Math.max(0, homeCache("clear_cache"));
+                        runOnUiThread(() -> { if (!isFinishing()) new Dlg(this).setTitle("مسح الملفات المؤقتة").setMessage(conv("مُسح " + megabytes(freed) + " ميغابايت.")).setPositiveButton("تم", null).show(); });
+                    }).start())
+                    .setNegativeButton("إلغاء", null)
+                    .show();
+            });
+        }).start();
+    }
+
+    /** megabytes with one decimal, «12.5» (conv gives the digits the setting asks for) */
+    static String megabytes(long bytes) { return String.format(java.util.Locale.ROOT, "%.1f", Math.max(0, bytes) / (1024.0 * 1024.0)); }
+
     private void openReport() {
         try {
             startActivity(new Intent().setClassName("sa.urtv.home", "sa.urtv.home.ReportActivity"));
@@ -2200,6 +2243,18 @@ public class SettingsActivity extends Activity {
         new Dlg(this).setTitle("تطبيقات في الشريط")
             .setSingleChoiceItems(labels, java.util.Arrays.asList(Prefs.FAV_BARS).indexOf(prefs.favBar()), (d, i) -> {
                 prefs.setFavBar(Prefs.FAV_BARS[i]);
+                d.dismiss();
+                render();
+            })
+            .setNegativeButton("إلغاء", null)
+            .show();
+    }
+
+    /** «بقاء كل مشهد»: 10 s, 20 s (the default), a minute or 5 minutes; a weak TV changes at most every 5 minutes whatever is chosen */
+    private void pickSceneStay() {
+        new Dlg(this).setTitle("بقاء كل مشهد")
+            .setSingleChoiceItems(Prefs.SCENE_STAY_NAMES, java.util.Arrays.asList(Prefs.SCENE_STAYS).indexOf(prefs.sceneStay()), (d, i) -> {
+                prefs.setSceneStay(Prefs.SCENE_STAYS[i]);
                 d.dismiss();
                 render();
             })

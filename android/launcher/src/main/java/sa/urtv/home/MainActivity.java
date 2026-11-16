@@ -107,6 +107,7 @@ public class MainActivity extends Activity {
     private GradientDrawable glowDrawable;   // the one gradient, its colours changed in place (no allocation per move)
     private float glowAlphaTo = -1f, shadeTo = 0f;
     private ImageView wallBack, wallFront;
+    private boolean scenesOn;   // 4.3.3: the scene home is showing: the ordinary photos are not decoded (their memory is the scene's)
     private SceneHome sceneHome;   // 4.3.3 «المشاهد»: the scene backdrop with the glass clock behind its scenery; null until built, hidden unless chosen
     private View gridShade;
     private String[] wallpapers = new String[0];
@@ -3173,7 +3174,29 @@ public class MainActivity extends Activity {
     private void sceneTick(ConfigSnapshot cfg) {
         if (sceneHome == null) return;
         boolean on = "scenes".equals(cfg.homeLayout);
-        sceneHome.set(on, cfg.scenePacks, ScenePlan.STAY_S, homeCard != null && homeCard.shownCards() > 0, Dir.rtl());
+        sceneHome.set(on, cfg.scenePacks, ScenePlan.stay(cfg.sceneStay), homeCard != null && homeCard.shownCards() > 0, Dir.rtl());
+        if (on && (cfg.sceneByTime || cfg.sceneByWeather)) {
+            boolean night = false, fog = false;
+            if (cfg.sceneByTime) try {   // the city's Maghrib to its Fajr (the same prayer times as the adhan)
+                sa.urtv.home.tilawah.DayParts d = sa.urtv.home.tilawah.DayParts.now(this, cfg.placeFragment(), cfg.placeTicket());
+                long t = System.currentTimeMillis();
+                night = t >= d.maghrib || t < d.fajr;
+            } catch (RuntimeException ignored) { }
+            if (cfg.sceneByWeather) {   // the greeting's last weather answer (kept 30 minutes; none while the greeting is off)
+                android.content.SharedPreferences g = getSharedPreferences("greeting", MODE_PRIVATE);
+                fog = System.currentTimeMillis() - g.getLong("at", 0) < 2 * 60 * 60 * 1000L && ScenePlan.fog(g.getInt("code", -1));
+            }
+            sceneHome.mood(cfg.sceneByTime, night, cfg.sceneByWeather, fog);
+        } else sceneHome.mood(false, false, false, false);
+        if (on != scenesOn) {
+            scenesOn = on;
+            if (on) {   // the ordinary photos let go: no rotation, a photo on its way is not shown, the two layers emptied
+                handler.removeCallbacks(rotateWallpaper);
+                wallGen++;
+                wallBack.setImageDrawable(null);
+                wallFront.setImageDrawable(null);
+            } else nextWallpaper();   // back to the home as it was: its photo again
+        }
         int show = on ? View.INVISIBLE : View.VISIBLE;   // INVISIBLE: the header keeps its size, nothing under it moves
         clock.setVisibility(show);
         if (on) ampm.setVisibility(View.INVISIBLE);
@@ -3611,6 +3634,7 @@ public class MainActivity extends Activity {
     /** Decode the next photo off the main thread, then crossfade it in over the current one. */
     private void nextWallpaper() {
         handler.removeCallbacks(rotateWallpaper);
+        if (scenesOn) return;   // 4.3.3 «المشاهد»: no ordinary photo is decoded while the scene home shows
         if (wallpapers.length == 0) return;
         final int gen = ++wallGen;   // a photo that arrives after a newer request is not shown
         new Thread(() -> {

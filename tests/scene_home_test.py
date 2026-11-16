@@ -57,6 +57,14 @@ if shutil.which("javac"):
     b720 = [int(x) for x in [r for r in rows if r[0] == "box720"][0][1].split(",")]
     check("a 720 screen: the same place, scaled", b720[3] == round(bottom * 720 / 1080) and b720[0] >= 640 and b720[2] <= 1280, b720)
     check("the scenes take turns in order, the first first; none: nothing", [r for r in rows if r[0] == "next"][0][1] == "0,0,-1")
+    ch = {r[1]: (r[2], r[3] if len(r) > 3 else "") for r in rows if r[0] == "choose"}
+    check("the scenes now (ScenePlan.choose): both rules off, all; «يتبع الوقت» at night the night scenes, by day the others; «يتبع الطقس» in fog the fog scenes (it wins); no fog: as the time says",
+          ch["falsefalsefalsefalse"][0] == "aabbcc" and ch["truetruefalsefalse"][0] == "aa" and ch["truefalsefalsefalse"][0] == "bbcc"
+          and ch["falsefalsetruetrue"][0] == "bb" and ch["truetruetruetrue"][0] == "bb" and ch["falsefalsetruefalse"][0] == "aabbcc", ch)
+    check("the Saudi pack: Riyadh is its night scene; with no fog scene the weather rule lets go (never an empty home)",
+          ch["truetruefalsefalse"][1] == "riyadh" and ch["truefalsefalsefalse"][1] == "alula dunes redsea hisma" and ch["falsefalsetruetrue"][1] == "riyadh alula dunes redsea hisma", ch)
+    check("«بقاء كل مشهد»: 10, 20, 60 or 300 s, anything else 20; fog is Open-Meteo's 45 and 48",
+          [r for r in rows if r[0] == "stay"][0][1] == "10,300,20,20" and [r for r in rows if r[0] == "fog"][0][1] == "true,true,false")
     check("ScenePlan's tiers are Ram's numbers", [r for r in rows if r[0] == "tiers"][0][1] == "0,1,2"
           and "public static final int LOW = 0, MID = 1, NORMAL = 2;" in ram)
 else:
@@ -123,14 +131,21 @@ check("the home: «المشاهد» only when chosen; then the scene and its clo
       and "sceneHome.setTime(clock.getText());" in tick and "sceneTick(cfg);" in main and "homeCard.shownCards() > 0" in tick)
 check("the scene sits over the photos and under the dimming and the scrims", main.index("backdrop.addView(sceneHome") < main.index("backdrop.addView(wallDimView"))
 check("the home reads the layout and the packs from the screensaver (an older one says nothing: classic, saudi)",
-      'String homeLayout = "classic", scenePacks = "saudi";' in snap and 'cur.getColumnIndex("scene_packs")' in snap and "int shownCards() { return cards; }" in card)
+      'String homeLayout = "classic", scenePacks = "saudi", sceneStay = "20";' in snap and 'cur.getColumnIndex("scene_packs")' in snap and "int shownCards() { return cards; }" in card)
 
 # ---- the settings
 check("«الواجهة»: classic (the default), football, scenes", 'HOME_LAYOUTS = {"classic", "football", "scenes"};' in prefs and '"العادية", "كرة القدم", "المشاهد"' in prefs)
 check("«حزم المشاهد»: the Saudi pack and the Couch TV pack, none chosen is the Saudi one; both rows in «الشكل والمشاهد», first",
       '{"saudi", "مشاهد السعودية"}, {"couch", "مشاهد Couch TV"}' in prefs and 'if (out.isEmpty()) out.add("saudi");' in prefs
       and 'row("الواجهة", Prefs.homeLayoutLabel(prefs.homeLayout())' in st and 'row("حزم المشاهد"' in st
-      and '{LOOK, "الواجهة", "حزم المشاهد", "المظهر",' in hub and '{"الواجهة", LOOK}, {"حزم المشاهد", LOOK}' in hub)
+      and '{LOOK, "الواجهة", "حزم المشاهد", "بقاء كل مشهد", "المشهد يتبع الوقت", "المشهد يتبع الطقس", "المظهر",' in hub and '{"الواجهة", LOOK}, {"حزم المشاهد", LOOK}' in hub)
+check("«بقاء كل مشهد», «المشهد يتبع الوقت», «المشهد يتبع الطقس»: rows in «الشكل والمشاهد», off by default (20 s), given to the home, which picks night by the prayer times and fog by the greeting's weather",
+      'row("بقاء كل مشهد"' in st and 'row("المشهد يتبع الوقت"' in st and 'row("المشهد يتبع الطقس"' in st and 'sp.getBoolean("sceneByTime", false)' in prefs
+      and 'sp.getBoolean("sceneByWeather", false)' in prefs and 'sp.getString("sceneStay", "20")' in prefs and '"scene_stay", "scene_time", "scene_weather"' in prov
+      and "night = t >= d.maghrib || t < d.fajr;" in main and 'ScenePlan.fog(g.getInt("code", -1))' in main and "sceneHome.mood(" in main and "ScenePlan.stay(cfg.sceneStay)" in main)
+check("the ordinary photos are not decoded while the scene home shows (memory): no rotation, a photo on its way not shown, the two layers emptied; back to classic, a photo again",
+      "if (scenesOn) return;" in main and main.index("if (scenesOn) return;") < main.index("final int gen = ++wallGen;")
+      and "wallFront.setImageDrawable(null);" in tick and "} else nextWallpaper();" in tick)
 check("the provider gives scene_packs; saver.sh scenepacks and homelayout scenes; `show` says them",
       '"scene_packs"' in prov and 'Prefs.join(p.scenePacks(), ",")' in prov and 'getStringExtra("scenepacks")' in recv and '"\\nscenepacks: "' in recv
       and "scenepacks) set1 scenepacks" in read(ROOT / "optimize/saver.sh") and "homelayout classic|football|scenes" in read(ROOT / "optimize/saver.sh"))

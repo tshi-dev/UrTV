@@ -21,6 +21,17 @@ public final class ScenePlanRun {
         int[] b = ScenePlan.clockBox(s, 1280, 720, true, true);
         out.append("box720\t").append(b[0]).append(',').append(b[1]).append(',').append(b[2]).append(',').append(b[3]).append('\n');
         out.append("next\t").append(ScenePlan.next(-1, 5)).append(',').append(ScenePlan.next(4, 5)).append(',').append(ScenePlan.next(0, 0)).append('\n');
+        java.util.List<ScenePlan.Scene> all = ScenePlan.parse("saudi", tsv);
+        java.util.List<ScenePlan.Scene> some = ScenePlan.parse("x", "aa\tx\tx\t100\t400\t-\t0\tc\tnight\nbb\tx\tx\t100\t400\t-\t0\tc\tfog\ncc\tx\tx\t100\t400\t-\t0\tc");
+        for (boolean[] m : new boolean[][] {{false, false, false, false}, {true, true, false, false}, {true, false, false, false}, {false, false, true, true}, {true, true, true, true}, {false, false, true, false}}) {
+            StringBuilder ids = new StringBuilder();
+            for (ScenePlan.Scene x : ScenePlan.choose(some, m[0], m[1], m[2], m[3])) ids.append(x.id);
+            StringBuilder sa = new StringBuilder();
+            for (ScenePlan.Scene x : ScenePlan.choose(all, m[0], m[1], m[2], m[3])) sa.append(x.id).append(' ');
+            out.append("choose\t").append(m[0]).append(m[1]).append(m[2]).append(m[3]).append('\t').append(ids).append('\t').append(sa.toString().trim()).append('\n');
+        }
+        out.append("stay\t").append(ScenePlan.stay("10")).append(',').append(ScenePlan.stay("300")).append(',').append(ScenePlan.stay("7")).append(',').append(ScenePlan.stay(null)).append('\n');
+        out.append("fog\t").append(ScenePlan.fog(45)).append(',').append(ScenePlan.fog(48)).append(',').append(ScenePlan.fog(3)).append('\n');
         out.append("tiers\t").append(ScenePlan.LOW).append(',').append(ScenePlan.MID).append(',').append(ScenePlan.NORMAL).append('\n');
         System.out.print(out);
     }
