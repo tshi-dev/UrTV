@@ -16,18 +16,21 @@ final class AfterFrame {
     static void run(final View v, final Runnable work) {
         final boolean[] done = {false};
         final Runnable once = () -> { if (done[0]) return; done[0] = true; work.run(); };
-        final ViewTreeObserver.OnPreDrawListener[] l = new ViewTreeObserver.OnPreDrawListener[1];
-        l[0] = () -> {
-            ViewTreeObserver o = v.getViewTreeObserver();
-            if (o.isAlive()) o.removeOnPreDrawListener(l[0]);
-            v.post(once);
-            return true;
+        final ViewTreeObserver.OnPreDrawListener l = new ViewTreeObserver.OnPreDrawListener() {
+            @Override public boolean onPreDraw() {
+                ViewTreeObserver o = v.getViewTreeObserver();
+                if (o.isAlive()) o.removeOnPreDrawListener(this);
+                v.post(once);
+                return true;
+            }
         };
-        v.getViewTreeObserver().addOnPreDrawListener(l[0]);
-        v.postDelayed(() -> {
-            ViewTreeObserver o = v.getViewTreeObserver();
-            if (o.isAlive()) o.removeOnPreDrawListener(l[0]);
-            once.run();
+        v.getViewTreeObserver().addOnPreDrawListener(l);
+        v.postDelayed(new Runnable() {
+            @Override public void run() {
+                ViewTreeObserver o = v.getViewTreeObserver();
+                if (o.isAlive()) o.removeOnPreDrawListener(l);
+                once.run();
+            }
         }, LATE_MS);
     }
 }

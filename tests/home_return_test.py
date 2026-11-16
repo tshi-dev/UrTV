@@ -41,5 +41,5 @@ check("onResume: the changed-packages check runs after the first frame (AfterFra
       and "if (getPackageManager().getChangedPackages(packageSeq) != null) buildApps();" not in resume)
 af = text(HOME / "AfterFrame.java")
 check("AfterFrame: once, after the next pre-draw (posted, so after the draw; the frame is not held), or after LATE_MS when no frame comes",
-      "v.post(once);\n            return true;" in af and "postDelayed(" in af and "LATE_MS = 1000" in af and "if (done[0]) return; done[0] = true;" in af and "removeOnPreDrawListener" in af)
+      "v.post(once);\n                return true;" in af and "postDelayed(" in af and "LATE_MS = 1000" in af and "if (done[0]) return; done[0] = true;" in af and "removeOnPreDrawListener" in af)
 sys.exit(1 if failed else 0)
