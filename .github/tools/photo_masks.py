@@ -12,20 +12,24 @@ photo). The TV draws it as 8-bit alpha, filtered, at the photo's size.
 The gate, for every photo (OUT/gate.json, one line each, and the verdict):
   edge:  halo (the edge's light or dark fringe over a dark plate, against the scenery's own colour), jagged (the edge's length at 2x against the
          same edge smoothed), islands (scenery floating in the sky) and holes (small sky holes in the scenery);
-  fit:   the digits as the TV places them (PhotoGlassPlan.box, ScenePlan.zoom), the share of the digits visible after the zoom rule, and how much
-         of their lower part the scenery crosses, over how many of their columns (not a sliver);
+  fit:   the owner: «the clock always has the same position across our images». The clock is a fixed box (CLOCK: the clean one is the owner's
+         Riyadh place, digits 266 to 542, centred); the photo moves instead: a frame [x, y, w] (the part of the photo shown full-screen,
+         h = w 9/16, zoom 1 to 1.4, the photo and its cut-out alike) is searched, the least zoom first, so that the scenery crosses the digits'
+         lower part (not a sliver) and covers at most a quarter of any digit from its base, never the colon (the owner's rule);
   people: a face or a person the edge cuts through.
   FIT: clean and crossing well: published. FRONT-ONLY: clean, but the scenery does not cross the digits well (or never: «الحرمين»): the clock in
   front. REJECT: a fringe, a jagged or broken edge, a cut through a face or a person, or no sky found: the clock in front.
-The owner's own places (scenes.tsv tag owner_ok, photos in photo_masks_owner_ok.txt) keep the clock where he put it: only the edge, halo and
-alignment are checked there. «الحرمين» is never cut (the owner: no clock behind the Kaaba or the Prophet's Mosque), and the person's own photos are not ours to cut.
+The owner's own pictures (scenes.tsv tag owner_ok, photos in photo_masks_owner_ok.txt) keep their depth at the fixed clock, through their own
+frame if scenes.tsv gives one: only the edge, halo and alignment are checked there. «الحرمين» is never cut (the owner: no clock behind the Kaaba or the Prophet's Mosque), and the person's own photos are not ours to cut.
 
     python3 .github/tools/photo_masks.py OUT [--sets photos,nature,sea,space,ksa-cities] [--work DIR] [--all] [--only set/name,...]
     python3 .github/tools/photo_masks.py OUT --scenes DIR      (a horizons pack: DIR/scenes.tsv and DIR/<id>.jpg; writes OUT/<id>-fg.webp)
 
 Only FIT cut-outs named in photo_masks_ok.txt (checked by eye) are written; --all writes every FIT one and OUT/sheet.jpg and OUT/edges/ to look at.
 Writes OUT/<set>/<name>-fg.webp (cropped to its box, at most 180 KB at 1080), OUT/<set>/index.json:
-{"v": 1, "set": ..., "files": {"<name>": {"sha256", "bytes", "box": [x, y, w, h], "skyline": [48 ints: the scenery's top in each 40 px column, px of 1080]}}}
+{"v": 1, "set": ..., "files": {"<name>": {"sha256", "bytes", "box": [x, y, w, h], "skyline": [48 ints: the scenery's top in each 40 px column, px of 1080],
+"frame": [x, y, w] (absent: the whole photo), "depth": [the layouts whose fixed clock it is drawn behind]}}}; a horizons pack's scenes.tsv gets
+digits_top, digits_bottom and digits_x "-" (not read), and the columns "frame x,y,w" and "depth".
 and OUT/gate.json: {"v": 1, "photos": {"<set>/<name>": {"verdict", "why", "scores"}}, "counts": {"<set>": {"FIT", "FRONT-ONLY", "REJECT"}}}.
 The packs' zips come from this repository's releases (photos/packs.json, their sha256 checked); "photos" is the hosted set in photos/.
 Needs numpy, scipy, opencv-python-headless<5, Pillow and onnxruntime; the model is downloaded once into --work."""
@@ -48,6 +52,9 @@ MODEL_SHA256 = "46c4e8eeda3a27f34701831b6a2ec7753d7b38779b215acb5633424703deed8f
 # the gate's limits (looked at on every photo of our sets: docs/mockups/masks/)
 HALO_MAX, JAGGED_MAX, ISLANDS_MAX, HOLES_MAX = 3.0, 0.33, 2, 6
 CROSS_MIN, COLS_MIN, VISIBLE_MIN = 0.08, 0.25, 0.6
+# the owner: «the clock always has the same position across our images»: fixed boxes (1920x1080 screen px), the photo is framed instead
+CLOCK = {"clean": [601, 266, 1319, 542]}    # digits 266-542, 718 wide (2.6 x their height), centred: the owner's Riyadh place
+FRAME_MAX = 1.4                             # a frame zooms 1.0 to 1.4, never smaller than the screen
 _model = None
 
 
@@ -225,57 +232,38 @@ def skyline(alpha):
     return out
 
 
-def box(line, cards, rtl=True, row=False):
-    """PhotoGlassPlan.box: the digits as the home places them on a photo with this skyline"""
-    digit_h = round(H * 0.26)
-    width = min(round(digit_h * 2.6), round(W * 0.44) if cards else round(W * 0.7))
-    centre = W // 2 if not cards else (round(W * 0.73) if rtl else round(W * 0.27))
-    left, right = centre - width // 2, centre + width // 2
-    top = round(H * 0.16); bottom = top + digit_h
-    sy = min(line[c] for c in range(max(0, left * 48 // W), min(47, right * 48 // W) + 1))
-    if H * 0.25 <= sy <= H * 0.62:
-        bottom = sy + round(digit_h * 0.22); top = bottom - digit_h
-        if top < round(H * 0.1): top = round(H * 0.1); bottom = top + digit_h
-        if row and bottom > H * 0.55: top = round(H * 0.16); bottom = top + digit_h
-        return [left, top, right, bottom], True
-    return [left, top, right, bottom], False
+def frame_of(fr):
+    """a frame [x, y, w] (the part of the 1920x1080 photo shown full-screen, h = w 9/16) or None (the whole photo): (x, y, w, h)"""
+    if not fr: return 0, 0, W, H
+    x, y, w = fr
+    return x, y, w, round(w * 9 / 16)
 
 
-def visible(line, b, k):
-    """ScenePlan.visible: the share of the digits above the scenery, the picture zoomed by k about the top centre"""
-    cover, n = 0.0, 0
-    for x in range(b[0], b[2], max(1, W // 192)):
-        src = W / 2 + (x - W / 2) / k
-        c = max(0, min(47, int(src * 48 / W)))
-        top = line[c] * k
-        cover += max(0.0, min(1.0, (b[3] - top) / (b[3] - b[1]))); n += 1
-    return 1 - cover / n if n else 1.0
+def framed(img, fr):
+    """the picture as the TV shows it through the frame (the photo and its cut-out the same way)"""
+    x, y, w, h = frame_of(fr)
+    if (x, y, w) == (0, 0, W): return img
+    return cv2.resize(img[y:y + h, x:x + w], (W, H), interpolation=cv2.INTER_AREA if img.ndim == 3 else cv2.INTER_LINEAR)
 
 
-def zoom(line, b):
-    """ScenePlan.zoom: the owner's bands (under 60 % visible to 75 %, 60-70 to 80, 70-85 to 85), at most 1.4"""
-    v0 = visible(line, b, 1.0)
-    target = next((t for lim, t in ((0.60, 0.75), (0.70, 0.80), (0.85, 0.85)) if v0 < lim), v0)
-    k = 1.0
-    while visible(line, b, k) < target - 1e-4 and k < 1.4: k = round(k + 0.01, 2)
-    return k
+def screen_tops(t, fr, x0=0, x1=W):
+    """the scenery's top (tops()) in screen columns x0..x1 through the frame, px of 1080 (H or more: none)"""
+    x, y, w, h = frame_of(fr)
+    s = W / w
+    src = np.clip((x + (np.arange(x0, x1) + 0.5) / s).astype(int), 0, W - 1)
+    v = t[src].astype(np.float32)
+    return np.where(v >= H, 2 * H, (v - y) * s)
 
 
-def fit(alpha, digits=None):
-    """how the scenery meets the digits: for a photo the home's place (cards shown, Arabic), for a horizon its own digits (top, bottom)"""
-    line = skyline(alpha)
-    if digits:
-        top, bottom = digits[:2]; dh = bottom - top; width = min(round(dh * 2.6), round(W * 0.7))
-        cx = min(max(min(max(digits[2] if len(digits) > 2 else W // 2, 480), 1440), width // 2), W - width // 2)   # scenes.tsv digits_x (480..1440), as ScenePlan.clockBox
-        b, crossing = [cx - width // 2, top, cx + width // 2, bottom], True
-    else:
-        b, crossing = box(line, cards=True)
-    if not crossing: return {"crossing": False, "zoom": 1.0, "visible": 1.0, "cross": 0.0, "cols": 0.0}
-    k = zoom(line, b)
-    vis = visible(line, b, k)
-    cols = [x for x in range(b[0], b[2], 20)]
-    hit = sum(1 for x in cols if line[max(0, min(47, int((W / 2 + (x - W / 2) / k) * 48 / W)))] * k < b[3] - (b[3] - b[1]) * 0.05)
-    return {"crossing": True, "zoom": k, "visible": round(vis, 3), "cross": round(1 - vis, 3), "cols": round(hit / max(1, len(cols)), 3), "box": b}
+def fit(t, b, fr=None):
+    """how the scenery meets the fixed clock box b through the frame: the share of the digits visible, how much of their lower part it crosses,
+    over how many of their columns (not a sliver)"""
+    ts = screen_tops(t, fr, b[0], b[2])
+    h = b[3] - b[1]
+    if not (ts < b[3]).any(): return {"crossing": False, "visible": 1.0, "cross": 0.0, "cols": 0.0}
+    cover = np.clip((b[3] - ts[::10]) / h, 0, 1)
+    hit = ts[::20] < b[3] - h * 0.05
+    return {"crossing": True, "visible": round(1 - float(cover.mean()), 3), "cross": round(float(cover.mean()), 3), "cols": round(float(hit.mean()), 3)}
 
 
 def staircase(alpha):
@@ -354,6 +342,9 @@ def tops(alpha):
     return np.where(s.any(axis=0), np.argmax(s, axis=0), H)
 
 
+COVER_MAX, COLON_MAX = 0.25, 0.25   # the owner: the scenery covers at most about a quarter of any digit, from its base, and never the colon
+
+
 def glyphs(b):
     """where the digits and the colon stand in the box, for «١٢:٣٠» (4 digits) and «٤:٥٨» (3), the text centred, left to right: [(x0, x1, colon)]"""
     h = b[3] - b[1]; dw, cw = 0.56 * h, 0.24 * h; cx = (b[0] + b[2]) / 2
@@ -367,16 +358,14 @@ def glyphs(b):
     return out
 
 
-def legible(alpha, b, k):
-    """the owner's rule at the clock's real digits, the picture zoomed by k about the top centre: the most any digit is covered from its base
-    (a spike narrower than 3 px aside) and the most the colon is; ok when within COVER_MAX and COLON_MAX"""
-    t = tops(alpha)
+def legible(t, b, fr=None):
+    """the owner's rule at the clock's real digits, through the frame: the most any digit is covered from its base (a spike narrower than 3 px
+    aside) and the most the colon is; ok when within COVER_MAX and COLON_MAX"""
     h = b[3] - b[1]
     def cover(x0, x1):
-        xs = np.arange(max(0, x0), min(W, x1))
-        if not len(xs): return 0.0
-        src = np.clip((W / 2 + (xs - W / 2) / k).astype(int), 0, W - 1)
-        c = np.clip((b[3] - t[src] * k) / h, 0, 1)
+        x0, x1 = max(0, x0), min(W, x1)
+        if x1 <= x0: return 0.0
+        c = np.clip((b[3] - screen_tops(t, fr, x0, x1)) / h, 0, 1)
         return float(np.sort(c)[-3]) if len(c) >= 3 else float(c.max())
     dig = max(cover(x0, x1) for x0, x1, colon in glyphs(b) if not colon)
     col = max(cover(x0, x1) for x0, x1, colon in glyphs(b) if colon)
@@ -396,48 +385,72 @@ def aligned(rgb, alpha, F):
     return shift < 0.5 and diff < 2.0, round(shift, 2), round(diff, 2)
 
 
-def place_ok(alpha, digits):
-    """the clock at this place: the scenery crosses its lower part well and the owner's legibility rule holds (no edge checks: those do not move)"""
-    f = fit(alpha, digits)
+def place_ok(t, b, fr):
+    """the fixed clock b through the frame fr: the scenery crosses its lower part well and the owner's legibility rule holds"""
+    f = fit(t, b, fr)
     if not f["crossing"] or f["cross"] < CROSS_MIN or f["cols"] < COLS_MIN or f["visible"] < VISIBLE_MIN: return False
-    return legible(alpha, f["box"], f["zoom"])[0]
+    return legible(t, b, fr)[0]
 
 
-def judge(rgb, alpha, F, digits=None, owner_ok=False):
+def frames():
+    """every frame the gate may give a photo, the least zoom first, then the nearest the centre: zoom 1 to FRAME_MAX, x and y even"""
+    out = []
+    for k in np.arange(1.0, FRAME_MAX + 1e-6, 0.02):
+        w = int(round(W / k / 2) * 2); h = round(w * 9 / 16)
+        xs = sorted(range(0, W - w + 1, 16) if w < W else [0], key=lambda x: abs(x - (W - w) / 2))
+        ys = sorted(range(0, H - h + 1, 8) if h < H else [0], key=lambda y: abs(y - (H - h) / 2))
+        out += sorted(([x, y, w] for x in xs for y in ys), key=lambda f: abs(f[0] - (W - w) / 2) + abs(f[1] - (H - h) / 2))
+    return [None if f == [0, 0, W] else f for f in out]
+
+
+def search(t, b):
+    """the frame that puts the scenery under the fixed clock by the owner's rule (the clock never moves: the photo does), or None"""
+    return next((fr for fr in frames() if place_ok(t, b, fr)), False)
+
+
+def judge(rgb, alpha, F, owner_ok=False, frame=None):
+    """(verdict, why, scores, frame, depth): the edge checks, then a frame for the fixed clean clock (CLOCK); depth = the layouts drawn behind"""
     sky = float((alpha < 0.5).mean())
     e = edge_scores(rgb, alpha, F)
-    f = fit(alpha, digits)
-    s = {**e, **{k: v for k, v in f.items() if k != "box"}, "sky": round(sky, 3)}
-    if sky < 0.05 or alpha[0].mean() > 0.5: return "REJECT", "no sky found along the top", s, f.get("box")
-    if people_cut(rgb, alpha): return "REJECT", "the edge cuts through a face or a person", s, f.get("box")
-    if e["halo"] > HALO_MAX: return "REJECT", f"a fringe along the edge ({e['halo']} > {HALO_MAX})", s, f.get("box")
-    if e["jagged"] > JAGGED_MAX: return "REJECT", f"a jagged edge ({e['jagged']} > {JAGGED_MAX})", s, f.get("box")
-    if e["islands"] > ISLANDS_MAX or e["holes"] > HOLES_MAX: return "REJECT", f"a broken edge ({e['islands']} islands, {e['holes']} holes)", s, f.get("box")
+    t = tops(alpha)
+    b = CLOCK["clean"]
+    f = fit(t, b, frame)
+    s = {**e, **f, "sky": round(sky, 3)}
+    if sky < 0.05 or alpha[0].mean() > 0.5: return "REJECT", "no sky found along the top", s, None, []
+    if people_cut(rgb, alpha): return "REJECT", "the edge cuts through a face or a person", s, None, []
+    if e["halo"] > HALO_MAX: return "REJECT", f"a fringe along the edge ({e['halo']} > {HALO_MAX})", s, None, []
+    if e["jagged"] > JAGGED_MAX: return "REJECT", f"a jagged edge ({e['jagged']} > {JAGGED_MAX})", s, None, []
+    if e["islands"] > ISLANDS_MAX or e["holes"] > HOLES_MAX: return "REJECT", f"a broken edge ({e['islands']} islands, {e['holes']} holes)", s, None, []
     ok, s["shift"], s["diff"] = aligned(rgb, alpha, F)
-    if not ok: return "REJECT", f"the cut-out does not sit on the photo (shift {s['shift']} px, difference {s['diff']})", s, f.get("box")
-    if owner_ok:                     # the owner chose this place himself (his ad picture): the clean cut-out is all that is checked
+    if not ok: return "REJECT", f"the cut-out does not sit on the photo (shift {s['shift']} px, difference {s['diff']})", s, None, []
+    depth = lambda fr, first: first + [n for n, bb in CLOCK.items() if n not in first and place_ok(t, bb, fr)]
+    if owner_ok:                     # the owner chose this picture at the clean place himself (his ad picture): the clean cut-out is all that is checked
         s["owner_ok"] = True
-        if f["crossing"]: _, s["digit_cover"], s["colon_cover"] = legible(alpha, f["box"], f["zoom"])
-        return "FIT", "the owner's own place (owner_ok): only the edge, halo and alignment checked", s, f.get("box")
-    if not f["crossing"]: return "FRONT-ONLY", "the scenery is too high or too low to cross the digits", s, f.get("box")
-    if f["cross"] < CROSS_MIN or f["cols"] < COLS_MIN: return "FRONT-ONLY", f"only a sliver crosses the digits (cross {f['cross']}, columns {f['cols']})", s, f.get("box")
-    if f["visible"] < VISIBLE_MIN: return "FRONT-ONLY", f"the scenery covers too much of the digits even zoomed ({f['visible']})", s, f.get("box")
-
-    ok, s["digit_cover"], s["colon_cover"] = legible(alpha, f["box"], f["zoom"])
-    if not ok: return "FRONT-ONLY", f"the scenery hides too much of a digit or the colon (digit {s['digit_cover']}, colon {s['colon_cover']})", s, f.get("box")
-    return "FIT", "clean, and the scenery crosses the digits' lower part", s, f.get("box")
+        if f["crossing"]: _, s["digit_cover"], s["colon_cover"] = legible(t, b, frame)
+        return "FIT", "the owner's own place (owner_ok): only the edge, halo and alignment checked", s, frame, depth(frame, ["clean"])
+    fr = search(t, b)
+    if fr is False:
+        if not f["crossing"] and not fit(t, b, [0, 0, int(round(W / FRAME_MAX / 2) * 2)])["crossing"]:
+            return "FRONT-ONLY", "the scenery is too low to reach the clock at any frame", s, None, []
+        return "FRONT-ONLY", "no frame puts the scenery under the clock by the owner's rule (a quarter of a digit, never the colon)", s, None, []
+    f = fit(t, b, fr)
+    s.update(f); _, s["digit_cover"], s["colon_cover"] = legible(t, b, fr)
+    x, y, w, h = frame_of(fr); s["zoom"] = round(W / w, 3)
+    return "FIT", "clean, and framed so the scenery crosses the clock's lower part" + (f" (frame {x},{y},{w})" if fr else ""), s, fr, depth(fr, ["clean"])
 
 
 # ---------------------------------------------------------------- the files
-def encode(F, alpha):
+def encode(F, alpha, fr=None):
     a8 = (alpha * 255 + 0.5).astype(np.uint8)
     rgba = Image.fromarray(np.dstack([F, a8]), "RGBA")
     bb = Image.fromarray(a8).point(lambda v: 255 if v > 8 else 0).getbbox()
     if bb is None: return None, None
-    # the digits' bottom is at most 70 % down (PhotoGlassPlan: LOWEST 0.62 and 30 % of a digit under it), and the zoom is about the top, so below
-    # 72 % the cut-out would only cover the same photo under it: it stops there (smaller, the same picture)
-    if bb[3] > round(H * 0.72):
-        bb = (bb[0], bb[1], bb[2], round(H * 0.72))
+    # the fixed clock's bottom is well above 72 % of the screen, so below 72 % of the frame the cut-out would only cover the same photo under it:
+    # it stops there (smaller, the same picture)
+    fx, fy, fw, fh = frame_of(fr)
+    low = fy + round(fh * 0.72)
+    if bb[3] > low:
+        bb = (bb[0], bb[1], bb[2], low)
         a8 = a8.copy()                                   # the last 24 px fade out: no seam where it ends, whatever the TV scales
         ramp = np.linspace(1, 0, 24, dtype=np.float32)[:, None]
         a8[bb[3] - 24:bb[3]] = (a8[bb[3] - 24:bb[3]] * ramp + 0.5).astype(np.uint8)
@@ -455,9 +468,11 @@ def encode(F, alpha):
     return None, None
 
 
-def render(rgb, alpha, F, b, out):
-    """the check render: the glass digits on the photo, the cut-out over them (1920x1080), and 2x crops of the edge across the digits"""
+def render(rgb, alpha, F, b, out, fr=None):
+    """the check render through the frame: the glass digits at the fixed clock, the cut-out over them (1920x1080), and 2x crops of the edge
+    across the digits"""
     from PIL import ImageDraw, ImageFilter, ImageFont
+    rgb, alpha, F = framed(rgb, fr), framed(alpha, fr), framed(F, fr)
     base = Image.fromarray(rgb)
     if b:
         glass = base.filter(ImageFilter.GaussianBlur(28)).point(lambda v: min(255, int(v * 1.25 + 30)))
@@ -508,38 +523,26 @@ def scenes(o, work):
         if r[0].startswith("#") or len(r) < 6: continue
         rgb = photo(src / f"{r[0]}.jpg")
         alpha = matte(rgb, work); F = scenery_colour(rgb, alpha)
-        top, bottom = int(r[3]), int(r[4])
-        x0 = int(r[9]) if len(r) > 9 and r[9].strip().isdigit() else W // 2
-        owner = "owner_ok" in [t.strip() for t in (r[8] if len(r) > 8 else "").split(",")]   # scenes.tsv tags: the owner's own place, kept
-        verdict, why, s, b = judge(rgb, alpha, F, (top, bottom, x0), owner)
-        if not owner and verdict == "FRONT-ONLY" and ("hides too much" in why or "sliver" in why):   # the clock's place moved (scenes.tsv digits_top, digits_bottom,
-            for dx in sorted(range(-480, 481, 40), key=abs):                            # digits_x): sideways, then up; never smaller (the owner)
-                hit = None
-                for up in sorted(range(-240, 321, 8), key=abs):      # up (positive) or down, nearest first
-                    if top - up < 40 or bottom - up > round(H * 0.7): continue
-                    if place_ok(alpha, (top - up, bottom - up, x0 + dx)):
-                        hit = up; break
-                if hit is None: continue
-                v2, w2, s2, b2 = judge(rgb, alpha, F, (top - hit, bottom - hit, x0 + dx))
-                if v2 == "FIT":
-                    how = ", ".join(x for x in (f"{'up' if hit > 0 else 'down'} {abs(hit)} px" if hit else "", f"{'right' if dx > 0 else 'left'} {abs(dx)} px" if dx else "") if x)
-                    verdict, why, s, b = v2, f"{w2} (the clock {how})", s2, b2
-                    r[3], r[4] = str(top - hit), str(bottom - hit)
-                    while len(r) < 10: r.append("")
-                    r[9] = str(x0 + dx) if x0 + dx != W // 2 else "-"
-                    break
+        owner = "owner_ok" in [t.strip() for t in (r[8] if len(r) > 8 else "").split(",")]   # scenes.tsv tags: the owner's own picture, kept
+        given = r[10].strip() if len(r) > 10 else "-"
+        fr0 = [int(v) for v in given.split(",")] if owner and given not in ("", "-") else None   # the owner's own frame, kept
+        verdict, why, s, fr, depth = judge(rgb, alpha, F, owner, fr0)
+        r += [""] * (9 - len(r))                     # the tags column may be empty
+        while len(r) < 12: r.append("-")
+        r[3] = r[4] = r[9] = "-"                     # the clock never moves (the owner): the old per-scene place is not read any more
+        r[10] = ",".join(map(str, fr)) if fr else "-"
+        r[11] = ",".join(depth) if verdict == "FIT" and depth else "-"
         gate[r[0]] = {"verdict": verdict, "why": why, "scores": s}
         print(f"{r[0]}: {verdict} ({why})")
-        base, crops = render(rgb, alpha, F, b, out / f"{r[0]}-check.jpg")
+        base, crops = render(rgb, alpha, F, CLOCK["clean"], out / f"{r[0]}-check.jpg", fr)
         sheet.append((r[0], verdict, base, crops))
         if verdict == "FIT":
-            data, bb = encode(F, alpha)
+            data, bb = encode(F, alpha, fr)
             if data:
                 (out / f"{r[0]}-fg.webp").write_bytes(data); r[5] = ",".join(map(str, bb))
         else:
             r[5] = "-"
-    if any(len(r) > 9 for r in rows if not r[0].startswith("#")):
-        rows = [(r + [""] * (9 - len(r)))[:9] + ["digits_x"] if r[0].startswith("# id") and "digits_x" not in r else r for r in rows]
+    rows = [(r + [""] * 9)[:9] + ["digits_x", "frame x,y,w", "depth"] if r[0].startswith("# id") else r for r in rows]
     (out / "scenes.tsv").write_text("\n".join("\t".join(r) for r in rows) + "\n", encoding="utf-8")
     (out / "gate.json").write_text(json.dumps({"v": 1, "photos": gate}, indent=1, sort_keys=True, ensure_ascii=False) + "\n", encoding="utf-8")
     review_sheet(sheet, out / "sheet.jpg")
@@ -574,19 +577,21 @@ def main():
                 gate[f"{name}/{stem}"] = {"verdict": "FRONT-ONLY", "why": "not 16:9: the TV crops it", "scores": {}}; n["FRONT-ONLY"] += 1; continue
             alpha = matte(rgb, work); F = scenery_colour(rgb, alpha)
             owner = f"{name}/{stem}" in owner_list
-            verdict, why, s, b = judge(rgb, alpha, F, None, owner)
+            verdict, why, s, fr, depth = judge(rgb, alpha, F, owner)
             gate[f"{name}/{stem}"] = {"verdict": verdict, "why": why, "scores": s}; n[verdict] += 1
             print(f"{name}/{stem}: {verdict} ({why})", flush=True)
             if o.all:
                 (Path(o.out) / "edges").mkdir(exist_ok=True)
-                base, crops = render(rgb, alpha, F, b, Path(o.out) / "edges" / f"{name}-{stem}.jpg")
+                base, crops = render(rgb, alpha, F, CLOCK["clean"], Path(o.out) / "edges" / f"{name}-{stem}.jpg", fr)
                 sheet.append((f"{name}/{stem}", verdict, base, crops))
             if verdict != "FIT": continue
             if ok is not None and f"{name}/{stem}" not in ok: continue
-            data, bb = encode(F, alpha)
+            data, bb = encode(F, alpha, fr)
             if not data: continue
             (d / f"{stem}-fg.webp").write_bytes(data)
             files[stem] = {"sha256": hashlib.sha256(data).hexdigest(), "bytes": len(data), "box": bb, "skyline": skyline(alpha)}
+            if fr: files[stem]["frame"] = fr                 # the part of the photo shown full-screen (the photo and its cut-out alike)
+            files[stem]["depth"] = depth                     # the layouts that draw it behind the clock (their fixed boxes: CLOCK)
             if owner: files[stem]["owner_ok"] = True   # the app draws it without its own legibility drop (PhotoGlass)
             cut_n += 1
         (d / "index.json").write_text(json.dumps({"v": 1, "set": name, "files": files}, indent=0, sort_keys=True) + "\n", encoding="utf-8")

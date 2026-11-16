@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """4.4 the gate every cut-out passes before it is published (.github/tools/photo_masks.py), on made-up cut-outs (no model, no photo): a light fringe
-and a blown-up stair-stepped edge are refused, a clean soft one passes; the digits' fit follows the TV's own rules (PhotoGlassPlan.box, ScenePlan.zoom);
+and a blown-up stair-stepped edge are refused, a clean soft one passes; the clock is fixed (CLOCK) and the photo gets a frame that puts its scenery under it by the owner's rule;
 floating pieces and a cut through a person are refused; only FIT is published, and the reviewed list is kept honest."""
 import importlib.util, sys
 from pathlib import Path
@@ -47,13 +47,18 @@ check("…three pieces floating in the sky: a broken edge", T.edge_scores(rgb, i
 
 line = T.skyline(alpha)
 check("the skyline: the scenery's top in each of the 48 columns, px of 1080", len(line) == 48 and abs(line[24] - 520) <= 8 and line[0] < line[47], line[:3])
-b, crossing = T.box([1080] * 48, cards=True)
-check("the digits as the home places them: no scenery, the start half (right in Arabic) at their usual height, not crossing",
-      not crossing and b[0] >= 960 and b[1] == round(H * 0.16), b)
-b, crossing = T.box([500] * 48, cards=True)
-check("…a skyline at mid-height: the digits' bottom 22 % under it", crossing and b[3] == 500 + round(H * 0.26 * 0.22), b)
-check("the zoom rule: a skyline covering half the digits zooms toward 75 % visible, at most 1.4",
-      1.0 < T.zoom([440] * 48, [1000, 300, 1800, 580]) <= 1.4 and T.zoom([1080] * 48, [1000, 300, 1800, 580]) == 1.0)
+tool = (ROOT / ".github/tools/photo_masks.py").read_text(encoding="utf-8")
+B = T.CLOCK["clean"]
+check("the owner: the clock always has the same place; the clean one is his Riyadh place (digits 266 to 542, 718 wide, centred)",
+      B == [601, 266, 1319, 542] and 'r[3] = r[4] = r[9] = "-"' in tool, B)
+fr = T.search(T.tops((yy > 440).astype(np.float32)), B)
+check("the photo moves instead: a skyline over half the digits gets a frame (zoom 1 to 1.4) that puts it under them by the rule",
+      fr and 1372 <= fr[2] < W and fr[2] % 2 == 0 and fr[0] % 2 == 0 and fr[1] % 2 == 0 and T.place_ok(T.tops((yy > 440).astype(np.float32)), B, fr), fr)
+check("…one already under them keeps the whole photo; one the frame cannot lift to the digits finds none",
+      T.search(T.tops((yy > 510).astype(np.float32)), B) is None and T.search(T.tops((yy > 1000).astype(np.float32)), B) is False)
+x_, y_, w_, h_ = T.frame_of([100, 60, 1600])
+check("…a frame is the part of the photo shown full-screen: h = w 9/16, the photo and its cut-out the same", (w_, h_) == (1600, 900)
+      and T.framed(np.zeros((H, W), np.float32), [100, 60, 1600]).shape == (H, W) and T.screen_tops(np.full(W, 600), [100, 60, 1600], 0, 1)[0] == 648)
 
 T.people_cut = lambda rgb, alpha: False   # the finders are OpenCV's own; a made-up picture has no person
 v = lambda r, a: T.judge(r, a, T.scenery_colour(r, a))[:2]
@@ -66,21 +71,21 @@ T.people_cut = lambda rgb, alpha: True
 T.people_cut = lambda rgb, alpha: False
 tower = ((yy > 600) | ((xx > 1395) & (xx < 1415) & (yy > 300))).astype(np.float32)   # ground under the digits, a tower up through one of them
 r, _ = scene(560, 0.05)
-b = T.box(T.skyline(tower), cards=True)[0]
+tower = ((yy > 560) | ((xx > 955) & (xx < 975) & (yy > 300))).astype(np.float32)   # ground under the digits, a tower up through the clock's middle
 check("the owner's rule: a tower through a digit (more than a quarter of it) or up to the colon: not behind the clock",
-      not T.legible(tower, b, 1.0)[0] and T.legible(scene(600, 0.0)[1], T.box(T.skyline(scene(600, 0.0)[1]), cards=True)[0], 1.0)[0])
+      not T.legible(T.tops(tower), B)[0] and T.legible(T.tops(scene(600, 0.0)[1]), B)[0])
 g = T.glyphs([1000, 300, 1720, 580])
 check("…the colon is looked at where «١٢:٣٠» and «٤:٥٨» put it", sum(1 for x in g if x[2]) == 2 and len(g) == 9)
 tex = rgb.copy(); tex[(alpha > 0.5) & ((xx.astype(int) // 7 + yy.astype(int) // 5) % 3 == 0)] = (200, 160, 120)   # a scenery with detail
 Ft = T.scenery_colour(tex, alpha)
 check("…a cut-out a few px off the photo (a doubled edge): refused", not T.aligned(tex, alpha, np.roll(Ft, 3, axis=1))[0] and T.aligned(tex, alpha, Ft)[0],
       (T.aligned(tex, alpha, np.roll(Ft, 3, axis=1)), T.aligned(tex, alpha, Ft)))
-tall = ((yy > 640) | ((np.abs(xx - 1400) < 25) & (yy > 350))).astype(np.float32)   # ground and a tower up through the digits
+tall = ((yy > 1000) | ((np.abs(xx - 960) < 60) & (yy > 300))).astype(np.float32)   # low ground and a wide tower up through the clock
 r2 = rgb.copy(); r2[tall > 0.5] = (60, 40, 30)
-check("owner_ok (the owner's own place: scenes.tsv tag, photo_masks_owner_ok.txt): the legibility rule is waived there, nowhere else",
-      T.judge(r2, tall, T.scenery_colour(r2, tall), (300, 580, 1400), True)[0] == "FIT"
-      and T.judge(r2, tall, T.scenery_colour(r2, tall), (300, 580, 1400), False)[0] == "FRONT-ONLY")
-check("…the alignment and edge checks still apply to it", not T.judge(tex, alpha, np.roll(Ft, 3, axis=1), (300, 580, 960), True)[0] == "FIT")
+own = T.judge(r2, tall, T.scenery_colour(r2, tall), True)
+check("owner_ok (the owner's own picture: scenes.tsv tag, photo_masks_owner_ok.txt): the legibility rule is waived at the clean place, nowhere else",
+      own[0] == "FIT" and own[4] == ["clean"] and T.judge(r2, tall, T.scenery_colour(r2, tall), False)[0] == "FRONT-ONLY", (own[:2], own[4]))
+check("…the alignment and edge checks still apply to it", not T.judge(tex, alpha, np.roll(Ft, 3, axis=1), True)[0] == "FIT")
 T.people_cut = lambda rgb, alpha: True
 check("…the edge through a face or a person: REJECT", v(*scene(560)) == ("REJECT", "the edge cuts through a face or a person"))
 
