@@ -1503,7 +1503,7 @@ public class SettingsActivity extends Activity {
 
     /** 4.3.2: why UrTV is not deleted while the TV's own home is off, and how to undo it (the screen opens from «رجّع واجهة المصنع» too). */
     private void uninstallWarning(boolean factoryOff) {
-        Dlg d = new Dlg(this).setTitle("قبل ما تحذف التطبيق…")
+        AlertDialog.Builder d = new Dlg(this).setTitle("قبل ما تحذف التطبيق…")
             .setMessage(factoryOff
                 ? "واجهة المصنع معطّلة الحين، وUrTV هو الشاشة الرئيسية. إذا حذفت UrTV وهي معطّلة يبقى التلفزيون بلا شاشة رئيسية، وتطلع شاشة سوداء. اضغط «رجّع واجهة المصنع» أولاً، ثم احذف."
                 : "إذا شغّلت «تخلّص من واجهة المصنع» ثم حذفت UrTV، يبقى التلفزيون بلا شاشة رئيسية وتطلع شاشة سوداء. لا تحذفه قبل «رجّع واجهة المصنع» من هنا، أو «إعداد تلفزيوني» ثم «تراجع».")
