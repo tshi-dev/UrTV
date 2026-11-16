@@ -31,12 +31,14 @@ const KSA = { v: 1, id: '136137', en: 'Saudi Arabia', ar: 'السعودية', ne
 // the state of today's game: before (in 3 h), live (the 60th minute), after (ended an hour ago)
 const TODAY = { before: ev('d1', ...T.hilal, ...T.nassr, NOW + 3 * H, { strVenue: 'Kingdom Arena' }),
   live: ev('d1', ...T.hilal, ...T.nassr, NOW - 60 * 60000, { strStatus: '2H', intHomeScore: '2', intAwayScore: '1', strProgress: '60', strHomeGoalDetails: "12':Salem;55':Fahad;", strAwayGoalDetails: "38':Majed;" }),
-  after: ev('d1', ...T.hilal, ...T.nassr, NOW - 3 * H, { strStatus: 'FT', intHomeScore: '3', intAwayScore: '1' }) };
+  after: ev('d1', ...T.hilal, ...T.nassr, NOW - 3 * H, { strStatus: 'FT', intHomeScore: '3', intAwayScore: '1' }),
+  soon: ev('2100001', ...T.hilal, ...T.nassr, NOW + 10 * 60000) };
 
 const browser = await chromium.launch();
 const json = (r, j) => r.fulfill({ json: j, headers: { 'Access-Control-Allow-Origin': '*' } });
-async function open(hash, { state = 'before', size = [461, 250], sportsJs = null } = {}) {
+async function open(hash, { state = 'before', size = [461, 250], sportsJs = null, init = null } = {}) {
   const ctx = await browser.newContext({ viewport: { width: size[0], height: size[1] }, timezoneId: 'Asia/Riyadh' });
+  if (init) await ctx.addInitScript(init);
   const asked = [];
   await ctx.route(/^https?:/, r => {
     const u = r.request().url();
@@ -123,6 +125,47 @@ for (const [kind, state, expect] of [
   await o.p.clock.runFor(10 * 60000);
   check('the league\'s sports file is asked once in 10 minutes (the games\' 30-minute pace)', o.asked.filter(u => u.includes('/data-archive/sports/4668.json')).length === 1, o.asked.filter(u => u.includes('sports/')).join());
   await o.ctx.close();
+}
+
+// 4.4 the kick-off alert, the page's side
+const SPY = `window.__kicks = []; new MutationObserver(m => m.forEach(r => r.addedNodes.forEach(n => { if (n.id === 'spkick') window.__kicks.push(n.textContent); })))
+  .observe(document, { childList: true, subtree: true });`;
+{   // the home: the launcher reads the followed club's coming games with spKickList() (no JavaScript interface), the time as a string of digits
+  const { p, ctx, errors } = await open(home('matchday'), { state: 'soon', init: SPY });
+  const h = await p.evaluate(() => typeof spKickList === 'function' ? JSON.parse(spKickList() || '[]') : []);
+  check('home: the coming games of the followed club are ready for the launcher', !errors.length && h.length === 1 && h[0].id === '2100001' && /^\d{13}$/.test(h[0].t) && +h[0].t === Date.parse('2026-11-05T14:10:00Z')
+    && /الهلال/.test(h[0].h) && /النصر/.test(h[0].a) && Array.isArray(h[0].hc), JSON.stringify(h) + errors.join('|'));
+  await p.clock.runFor(11 * 60000);
+  check('home: the page draws no notice by itself (the launcher asks for it)', !(await p.evaluate(() => window.__kicks.length)));
+  // the launcher's ask: the notice in the top-right corner, cream text on dark glass, gone after 8 s
+  const k = await p.evaluate(() => { spKick(JSON.stringify({ kind: 'start', h: 'الهلال', a: 'النصر', lg: 'دوري روشن السعودي' })); const e = document.getElementById('spkick'), r = e.getBoundingClientRect(), cs = getComputedStyle(e);
+    return { t: e.textContent, right: innerWidth - r.right, top: r.top, w: innerWidth, bg: cs.backgroundColor, fg: getComputedStyle(e.querySelector('.km')).color }; });
+  check('the notice: the two clubs and «بدأت المباراة», top right', /بدأت المباراة/.test(k.t) && /الهلال/.test(k.t) && /النصر/.test(k.t) && k.right < k.w * 0.25 && k.top < 120 && !/[·•«»]/.test(k.t), JSON.stringify(k));
+  check('the notice: light text on dark glass', /rgba?\((\d+), (\d+), (\d+)/.test(k.bg) && +RegExp.$1 < 40 && /rgb\((2[2-5]\d)/.test(k.fg), k.bg + ' / ' + k.fg);
+  await p.clock.runFor(9000);
+  check('the notice goes away after 8 s', !(await p.evaluate(() => document.getElementById('spkick'))));
+  await ctx.close();
+}
+{   // the screensaver (no launcher hand-off there): its own notice at the kick-off, once
+  const { p, ctx, errors } = await open('panel=verse&teams=136013&leagues=Saudi-Arabian Pro League', { state: 'soon', size: [1920, 1080], init: SPY });
+  check('screensaver: nothing before the kick-off', !(await p.evaluate(() => window.__kicks.length)));
+  await p.clock.runFor(10 * 60000 + 2000);
+  const ks = await p.evaluate(() => window.__kicks);
+  check('screensaver: its own notice at the kick-off, once', !errors.length && ks.length === 1 && /بدأت المباراة/.test(ks[0]), JSON.stringify(ks) + errors.join('|'));
+  await ctx.close();
+  const o = await open('panel=verse&teams=136013&ko=0', { state: 'soon', size: [1920, 1080], init: SPY });
+  await o.p.clock.runFor(11 * 60000);
+  check('screensaver with the alert off (&ko=0): no notice', !(await o.p.evaluate(() => window.__kicks.length)));
+  await o.ctx.close();
+}
+{   // a goal (&kogoal=1): only when the score of a followed club's live game goes up since the last look; never at the first look
+  for (const [flag, want] of [['&kogoal=1', 1], ['', 0]]) {
+    const { p, ctx } = await open(home('livenow', flag), { state: 'live', init: SPY });
+    const n0 = await p.evaluate(() => window.__kicks.length);
+    const ks = await p.evaluate(async () => { SP.score.d1 = { hs: 1, as: 1, live: true, done: false }; spScoreWatch(Date.now()); await new Promise(r => setTimeout(r, 0)); return window.__kicks; });
+    check(`goal notice ${flag || 'off (the default)'}: ${want ? 'the score in the corner' : 'nothing'}`, n0 === 0 && ks.length === want && (!want || /٢ - ١/.test(ks[0])), JSON.stringify(ks));
+    await ctx.close();
+  }
 }
 await browser.close();
 if (failed) { console.log(failed + ' failed'); process.exit(1); }

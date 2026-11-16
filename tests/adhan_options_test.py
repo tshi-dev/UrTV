@@ -48,7 +48,8 @@ check("the alarm is set for the notice alone (adhan off), and cancelled only whe
 check("the adhan itself still needs its own switch: the notice never plays it", "boolean play = prefs.adhanOn() && AdhanPlan.mayPlay(" in receiver)
 check("the notice is shown whether the adhan plays or not, when the option is on", "if (notice) AdhanNotice.show(context, prayer);" in receiver and "boolean notice = prefs.adhanNotice();" in receiver)
 check("the notice is a text toast (no permission, no focus), never throws, logs", "Toast.makeText(" in notice and "catch (RuntimeException" in notice and "UrTVAdhan" in notice)
-check("no overlay permission was added for it", "SYSTEM_ALERT_WINDOW" not in manifest and "TYPE_APPLICATION_OVERLAY" not in notice)
+check("no overlay was added for it (the manifest's overlay permission is the kick-off alert's alone, 4.4)", "TYPE_APPLICATION_OVERLAY" not in notice
+      and manifest.count("SYSTEM_ALERT_WINDOW") <= 1)
 check("the last alarm is written down for the status", "setLastAlarmNote(AdhanPlan.note(" in receiver and "adhan_alarm_last=" in music)
 check("the tab has the row with one plain label", "KIND_NOTICE" in tmain and '<string name="adhan_notice">تنبيه عند الأذان</string>' in strings)
 check("the switch re-sets the alarm (screen and agent)", tmain.split("row.kind == KIND_NOTICE")[1].split("KIND_SAVER_AT")[0].count("AdhanScheduler.schedule(this)") == 1
@@ -75,7 +76,7 @@ check("the screensaver starts only through AdhanPlan.startSaver (our home in fro
       "AdhanPlan.startSaver(prefs.adhanSaverAt(), front) && AdhanSaver.start(context)" in receiver and receiver.index("AdhanNotice.show") < receiver.index("AdhanSaver.start"))
 check("the front is read once, before anything starts (the saver itself would change it)", receiver.count("AdhanFront.now(context)") == 1 and receiver.index("AdhanFront.now(context)") < receiver.index("MusicService.adhan("))
 check("it starts the screensaver app's preview the way the home's button does, with no new permission and never throws",
-      'PKG + ".MainActivity"' in saver and "FLAG_ACTIVITY_CLEAR_TASK" in saver and "catch (RuntimeException" in saver and "resolveActivity" in saver and "SYSTEM_ALERT_WINDOW" not in manifest)
+      'PKG + ".MainActivity"' in saver and "FLAG_ACTIVITY_CLEAR_TASK" in saver and "catch (RuntimeException" in saver and "resolveActivity" in saver and manifest.count("SYSTEM_ALERT_WINDOW") <= 1)
 check("the tab has the row with one plain label", "KIND_SAVER_AT" in tmain and '<string name="adhan_saver_at">شاشة التوقف وقت الأذان</string>' in strings)
 check("the switch re-sets the alarm (screen and agent)", tmain.split("row.kind == KIND_SAVER_AT")[1].split("KIND_EXACT")[0].count("AdhanScheduler.schedule(this)") == 1
       and music.split('"sa.urtv.home.ADHAN_SAVERAT"')[1].split("return;")[0].count("AdhanScheduler.schedule(context)") == 1)

@@ -69,7 +69,7 @@ html[dir=ltr] #spkick.out{transform:translateX(calc(-100% - 4vw))}
 })();
 
 // ---- the data: one file per league (sports/<id>.json, the archive's), the F1 file, the national team's file; at the games' pace
-const SP = {lg: {}, f1: null, nat: null};
+const SP = {lg: {}, f1: null, nat: null, told: new Set(), score: {}};
 const spUses = k => CARDS.some(c => c.kind === k);
 function spLeagueIds(){   // the followed leagues, then the leagues of the followed teams' games (at most 6)
   const ids = [];
@@ -84,6 +84,8 @@ async function spLoad(){
   if(spUses('national')) SP.nat = await archLoad('teams/' + SP_KSA + '.json').catch(() => null) || SP.nat;
   renderPanel(false, ...SPORT_KINDS);
   spHandOff();
+  spSaverKick();
+  spScoreWatch(Date.now());
 }
 // a game of a sports file in the page's shape (archEv), its league's names on it
 const spEv = g => archEv(g);
@@ -257,22 +259,24 @@ function spNational(now){
 
 // ---- the kick-off alert, the page's side. The launcher keeps the times and decides (the sound, the rules, over another app): the page
 // hands it the followed clubs' coming games each time its games load, and draws the corner notice when the launcher asks (spKick)
+// the launcher asks for them (spKickList) with evaluateJavascript: the page is given no JavaScript interface
+let spHanded = '';
 function spHandOff(){
-  const host = window.UrtvHome || window.UrtvNative;
-  if(!host || typeof host.kickoffs !== 'function' || _Q.get('ko') === '0') return;
+  if(!CONFIG.widget || _Q.get('ko') === '0') return;
   const now = Date.now(), seen = new Set();
   const list = matchEvents().filter(ev => fbMine(ev) && !calledOff(ev) && fbKick(ev) > now && fbKick(ev) - now < 8 * 86400000 && /^\d+$/.test(String(ev.idEvent)) && !seen.has(ev.idEvent) && seen.add(ev.idEvent))
-    .slice(0, 12).map(ev => ({id: String(ev.idEvent), t: fbKick(ev), h: spName(ev, 'Home'), a: spName(ev, 'Away'), hc: spCol(ev.idHomeTeam), ac: spCol(ev.idAwayTeam),
+    .slice(0, 12).map(ev => ({id: String(ev.idEvent), t: String(fbKick(ev)), h: spName(ev, 'Home'), a: spName(ev, 'Away'), hc: spCol(ev.idHomeTeam), ac: spCol(ev.idAwayTeam),
       lg: fbRound(ev)}));
-  try{ host.kickoffs(JSON.stringify(list)); }catch(e){}
+  spHanded = JSON.stringify(list);
 }
+function spKickList(){ return spHanded; }
 // the launcher's ask: {kind: 'start'|'goal'|'end', h, a, hc, ac, lg, hs, as, min}; the notice for 8 s, then it slides away
 function spKick(json){
   let d; try{ d = typeof json === 'string' ? JSON.parse(json) : json; }catch(e){ return false; }
   if(!d || !d.h || !d.a) return false;
   const old = document.getElementById('spkick'); if(old) old.remove();
   const sw = c => `<i class="spsw" style="--a:${esc((c || [])[0] || '#888')};--b:${esc((c || [])[1] || '#555')}"></i>`;
-  const top = d.kind === 'goal' ? fw(SPW.minute, ar(d.min || '')) : d.kind === 'end' ? SPW.ended : SPW.kickoff;
+  const top = d.kind === 'goal' ? (d.min ? fw(SPW.minute, ar(d.min)) : SPW.live) : d.kind === 'end' ? SPW.ended : SPW.kickoff;
   const mid = d.kind === 'start' || !d.kind ? '×' : `${ar(+d.hs || 0)} - ${ar(+d.as || 0)}`;
   document.body.insertAdjacentHTML('beforeend', `<div id="spkick" class="out${d.kind === 'goal' ? ' goal' : ''}"><div class="kt"><span>${esc(top)}</span><i>${esc(d.lg || '')}</i></div>`
     + `<div class="km"><span>${sw(d.hc)}${esc(d.h)}</span><span>${mid}</span><span>${esc(d.a)}${sw(d.ac)}</span></div><div class="kb"></div></div>`);
@@ -282,6 +286,38 @@ function spKick(json){
   return true;
 }
 SPW.kickoff = 'بدأت المباراة';
+
+// the screensaver's own notice at a followed club's kick-off (the home app has no hand-off there: it plays the whistle itself);
+// one timer for the next kick-off within the hour, checked again at its time: not called off, the network up; else nothing
+let spSaverT = 0;
+function spSaverKick(){
+  if(CONFIG.widget || _Q.get('ko') === '0' || _Q.get('matchpage') === '1') return;
+  clearTimeout(spSaverT);
+  const now = Date.now();
+  const ev = matchEvents().filter(e => fbMine(e) && !calledOff(e) && !timeTbd(e) && fbKick(e) > now - 30000 && fbKick(e) - now < 3600000).sort((a, b) => fbKick(a) - fbKick(b))[0];
+  if(!ev) return;
+  const id = String(ev.idEvent);
+  spSaverT = setTimeout(() => {
+    const now2 = Date.now(), e2 = matchEvents().find(e => String(e.idEvent) === id) || ev;
+    if(SP.told.has('s' + id) || calledOff(e2) || navigator.onLine === false || Math.abs(fbKick(e2) - now2) > 900000) return;
+    SP.told.add('s' + id);
+    spKick({kind: 'start', h: spName(e2, 'Home'), a: spName(e2, 'Away'), hc: spCol(e2.idHomeTeam), ac: spCol(e2.idAwayTeam), lg: fbRound(e2)});
+  }, Math.max(0, fbKick(ev) - now));
+}
+// a goal and the final whistle of a followed club (&kogoal=1, &koend=1): from the scores the page already reloads; never on the first look
+function spScoreWatch(now){
+  const goal = _Q.get('kogoal') === '1', end = _Q.get('koend') === '1';
+  if(!goal && !end || _Q.get('ko') === '0') return;
+  matchEvents().filter(fbMine).forEach(ev => {
+    const id = String(ev.idEvent), hs = +ev.intHomeScore || 0, as = +ev.intAwayScore || 0, live = fbLive(ev, now), done = fbDone(ev, now) && ev.intHomeScore != null && ev.intHomeScore !== '';
+    const was = SP.score[id];
+    SP.score[id] = {hs, as, live, done};
+    if(!was || calledOff(ev)) return;
+    const base = {h: spName(ev, 'Home'), a: spName(ev, 'Away'), hc: spCol(ev.idHomeTeam), ac: spCol(ev.idAwayTeam), lg: fbRound(ev), hs, as};
+    if(end && done && !was.done && was.live) spKick({...base, kind: 'end'});
+    else if(goal && live && (hs + as) > (was.hs + was.as)) spKick({...base, kind: 'goal', min: String(ev.strProgress || '').replace(/\D/g, '')});
+  });
+}
 
 SPORTS = {
   stamp: SP_STAMP,
