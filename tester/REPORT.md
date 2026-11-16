@@ -2925,3 +2925,8 @@ Test: `optimize/run/step88/rel.py` (local): Home from YouTube, Netflix, Settings
 | R3 key interception (test add-on 380: onKeyEvent catches KEYCODE_HOME and opens ours; key filter forced on) | **not measurable with adb** | `dumpsys accessibility` shows the filter active (`KeyboardInterceptor`), but `input keyevent KEYCODE_HOME` never reached `onKeyEvent` (no `UrTVKey` line; same for KEYCODE_SETTINGS). A hardware-like press via `sendevent /dev/input/event1` (the IR receiver) is refused by SELinux. **Needs the real remote**: the owner presses Home 3× from YouTube while I read `logcat -s UrTVKey`. |
 Not done yet: R4 (start at boot), combos, the 3 reboots and 30-min idle per angle — waiting for R3's answer, because if the remote's Home reaches the add-on, R3 (+R2 with a fixed guard) is the candidate.
 State now: role sa.urtv.home (Google TV takes it back), add-on 380 (test) installed and bound, wanted=yes, 18 packages off. TV muted.
+
+## step 88 — round 2: **R1+R2b = 20/20 (100 %)** — the add-on's window watch with ONE bring counted per Home press
+Test add-on build **381** (work/tester-exp **7e5bbb12**: `HomeWatch.decide` brings again but does not count a 2nd stock-home window within 1.5 s of a bring; plus the R3 key catch from f25d95ff, which adb cannot trigger). Role to UrTV + wanted=yes, add-on bound.
+Home from YouTube 5/5, Netflix 5/5, Settings 5/5, HDMI 1 (TCL TV app) 5/5 → **UrTV in front at 2 s AND 6 s every time (20/20)**. Compare R1+R2 with the 376 add-on: 2/20.
+**Recommendation: put this one-line guard fix into the add-on (HomeWatch) for 4.4.** Still to measure: 3 reboots (running now), 30 min idle, the flash of Google TV in ms (screenrecord), R3 with the real remote, side effects (Settings/Assistant/voice).
