@@ -582,7 +582,7 @@ final class Prefs {
     int[] prayerFix() {
         ContentFile.refresh(ctx, PrayerFix.PATH, PrayerFix.NAME, 12 * 3600_000L);
         java.text.SimpleDateFormat f = new java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.ROOT);
-        f.setTimeZone(java.util.TimeZone.getTimeZone(cityTz()));
+        f.setTimeZone(ZoneFix.zone(cityTz()));   // the city's day (ZoneFix: every native zone goes through it)
         return PrayerFix.forDay(ContentFile.read(ctx, PrayerFix.NAME), cityCountry(), city()[0], f.format(new java.util.Date()));
     }
 

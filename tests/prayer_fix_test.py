@@ -24,7 +24,7 @@ st = (APP / "SettingsActivity.java").read_text(encoding="utf-8")
 cf = (APP / "ContentFile.java").read_text(encoding="utf-8")
 check("the fragment's adj= is the combined one, and only one adj= is made", "+ prayerAdjFragment()" in prefs and "PrayerAdj.fragment(prayerAdjOn(), prayerAdj())" not in prefs
       and "PrayerAdj.fragment(on || PrayerAdj.any(fix), PrayerFix.combine(on, own, fix))" in prefs)
-check("today is the city's day, the city is the saved one, the country the saved one", 'getTimeZone(cityTz())' in prefs and "cityCountry(), city()[0]" in prefs)
+check("today is the city's day, the city is the saved one, the country the saved one", 'ZoneFix.zone(cityTz())' in prefs and "cityCountry(), city()[0]" in prefs)
 check("the file: the kept copy at once, fetched in the background at most twice a day, a bad answer never replaces it",
       "ContentFile.refresh(ctx, PrayerFix.PATH, PrayerFix.NAME, 12 * 3600_000L)" in prefs and "valid(MiniJson.parse(r.text())) == null) return;" in cf
       and "tmp.renameTo(f)" in cf and 'DataHost.NEW + path' in cf and "new Thread(" in cf)
