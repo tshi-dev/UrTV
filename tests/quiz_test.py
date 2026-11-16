@@ -15,7 +15,7 @@ def check(what, ok, extra=""):
 if not shutil.which("javac"):
     print("SKIP quiz: no javac"); sys.exit(1)
 with tempfile.TemporaryDirectory() as tmp:
-    c = subprocess.run(["javac", "-nowarn", "-d", tmp, *(str(APP / f"Quiz{n}.java") for n in ("Room", "Pick", "Server", "BankCheck")), str(APP / "MiniJson.java"), str(APP / "DigitsText.java"), str(APP / "GamesMeta.java"), str(APP / "GameDataCheck.java"), str(ROOT / "tests/QuizTest.java")], capture_output=True, text=True)
+    c = subprocess.run(["javac", "-nowarn", "-d", tmp, *(str(APP / f"Quiz{n}.java") for n in ("Room", "Pick", "Server", "BankCheck")), str(APP / "MiniJson.java"), str(APP / "PhoneRoom.java"), str(APP / "DigitsText.java"), str(APP / "GamesMeta.java"), str(APP / "GameDataCheck.java"), str(ROOT / "tests/QuizTest.java")], capture_output=True, text=True)
     check("the quiz compiles on a plain JVM (no Android in the rules, the picking or the server)", c.returncode == 0, c.stderr[-600:])
     if c.returncode == 0:
         r = subprocess.run(["java", "-cp", tmp, "sa.urtv.screensaver.QuizTest", str(ROOT / "assets/quiz/starter.json")], capture_output=True, text=True, timeout=240)

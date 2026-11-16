@@ -47,8 +47,8 @@ for gid, name, line, act, phones, ready in games:
         check(f"{gid}: ready, so its activity {act} exists, is in the manifest, not exported, landscape", (APP / f"{act}.java").is_file() and re.search(r'android:name="\.%s"\s+android:exported="false"\s+android:screenOrientation="landscape"' % act, manifest) is not None)
         if phones == "false":
             check(f"{gid}: played with one remote: it extends GameActivity and opens no server and no socket", f"class {act} extends GameActivity" in src(f"{act}.java") and not re.search(r"ServerSocket|QuizServer|QuizRoom|java\.net\.", src(f"{act}.java")))
-check("the list reads the registry: tiles four to a line, «قريبًا» for a game that is not ready, «بالجوالات» only for a game that needs phones, the default way said in the header",
-      "GameRegistry.ALL" in hub and "COLS = 4" in hub and '!live ? S.t("قريبًا") : g.phones ? S.t("بالجوالات") : ""' in hub and 'S.t("بدون جوالات: ريموت واحد يدور بينكم")' in hub and "GameRegistry.firstFocus(GamePrefs.last(this))" in hub)
+check("the list reads the registry: tiles four to a line, «قريبًا» for a game that is not ready, «بالجوالات» only on the phones' own page, the default way said in the header",
+      "GameRegistry.ALL" in hub and "COLS = 4" in hub and '!live ? S.t("قريبًا") : phonePage ? S.t("بالجوالات") : ""' in hub and 'S.t("بدون جوالات: ريموت واحد يدور بينكم")' in hub and "GameRegistry.firstFocus(GamePrefs.last(this))" in hub)
 check("the list opens a ready game by its registry line, and a game whose screen is missing says «قريبًا» instead of stopping the app", 'setClassName(this, getClass().getPackage().getName() + "." + g.activity)' in hub and "catch (RuntimeException notThere)" in hub)
 shown = code(hub + base + "".join(src(f"{g[3]}.java") for g in games if g[5] == "true" and g[4] == "false"))
 check("no «·» or «•» separator in what the games show, no rounded (pill) shape", not re.search("[·•]", shown) and "setCornerRadius" not in shown and "setCornerRadii" not in shown)

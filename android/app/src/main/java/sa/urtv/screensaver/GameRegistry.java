@@ -26,6 +26,10 @@ final class GameRegistry {
         new Game("domino", "دومينو", "الدومينو كما تعرفونه، بالريموت", "DominoActivity", false, true),
     };
 
+    /** the games that can be played with the phones: the list shows them under ONE «بالجوالات» tile (the first of them, «الأسرع», stands for it); the others also stay in the list, played with one remote */
+    static final String[] PHONE_GAMES = {"quiz", "odd-one", "charades"};
+    static boolean inPhones(String id) { for (String g : PHONE_GAMES) if (g.equals(id)) return true; return false; }
+
     static Game byId(String id) { for (Game g : ALL) if (g.id.equals(id)) return g; return null; }
 
     /** where the list's focus starts: the game played last when it is still ready, else the first ready game played with no phones (the default way), else the first */

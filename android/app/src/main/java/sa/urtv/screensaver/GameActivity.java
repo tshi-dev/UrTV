@@ -128,7 +128,10 @@ public abstract class GameActivity extends Activity {
             return;
         }
         if (hand == 3) { if (now - handAt >= HAND_HIDE_MS) { hand = 1; redraw(); } return; }   // a secret left on the screen hides by itself
-        if (hand == 0) onTick(now);
+        if (hand == 0) {
+            if (phoneLobby && phones != null && phones.room.version() != phoneSeen) redraw();   // someone joined or left: the list is drawn again
+            onTick(now);
+        }
     }
 
     /** draw again: the pause card, the hand-over, or the game's own screen */
@@ -558,5 +561,49 @@ public abstract class GameActivity extends Activity {
     protected final int keyButtons(int sel, int n, boolean ok, int d) {
         if (ok) return -1 - sel;
         return Math.max(0, Math.min(n - 1, sel + d));
+    }
+
+    // ---------------------------------------------------------------- «اللعب بالجوالات» (docs/GAMES-PHONES.md)
+
+    /** the phone room, while a game uses one (null = the remote plays alone, the default of every game) */
+    protected PhonePlay phones; protected boolean phoneLobby; private int phoneSeen = -1;
+    /** opens the room and its server; false (with a word on the screen) when the TV has no local network */
+    protected final boolean openPhones() {
+        if (phones != null) return true;
+        if (QuizActivity.lanAddress() == null) { toast(S.t("لا توجد شبكة محلية. وصّل التلفزيون بالواي فاي")); return false; }
+        phones = PhonePlay.open(this);
+        if (phones == null) { toast(S.t("تعذّر فتح الغرفة")); return false; }
+        return true;
+    }
+    protected final void closePhones() { phoneLobby = false; if (phones != null) { phones.close(); phones = null; } }
+    @Override protected void onDestroy() { closePhones(); super.onDestroy(); }
+
+    /** the lobby: the QR and the address at the start side, the phones that came in at the end, the start button (needs `min` phones) */
+    protected final void drawPhoneLobby(int min, int max) {
+        phoneSeen = phones.room.version();
+        title(S.t("اللعب بالجوالات"), S.t("امسح الرمز بكاميرا الجوال، أو افتح العنوان"));
+        FrameLayout qrBox = stamp(0xFFFFFFFF, L.ink, 6, false);
+        FrameLayout.LayoutParams qp = new FrameLayout.LayoutParams(-1, -1); qp.setMargins(px(14), px(14), px(14), px(14));
+        qrBox.addView(new QuizActivity.QrView(this, QrCode.encode(phones.url + (en ? "?l=en" : ""))), qp);
+        root.addView(qrBox, at(360, 360, 96, 250));
+        FrameLayout codeBox = stamp(L.saff, L.ink, 6, false);
+        codeBox.addView(centered(DigitsText.convert(phones.code, latin), 120, L.onSaff, true), new FrameLayout.LayoutParams(-1, -1));
+        root.addView(codeBox, at(360, 150, 96, 630));
+        TextView addr = text("\u2066" + phones.url.replace("http://", "") + "\u2069", 36, L.ink, true); addr.setTextDirection(View.TEXT_DIRECTION_LTR); addr.setSingleLine(true);
+        root.addView(addr, at(560, 56, 96, 800));
+        java.util.List<String> names = phones.room.names();
+        for (int i = 0; i < names.size(); i++) {
+            FrameLayout st = stamp(L.tile, L.ink, 6, false);
+            TextView nm = text(clip(names.get(i), 44, 300), 44, L.ink, true); nm.setSingleLine(true);
+            FrameLayout.LayoutParams np = new FrameLayout.LayoutParams(-1, -2, Gravity.START | Gravity.CENTER_VERTICAL); np.setMarginStart(px(24)); np.setMarginEnd(px(12));
+            st.addView(nm, np);
+            if (!phones.room.connected(i)) st.setAlpha(.45f);
+            root.addView(st, atEnd(360, 84, 96 + (i % 2) * 384, 250 + (i / 2) * 100));
+        }
+        boolean can = names.size() >= min;
+        TextView go = button(can ? S.t("ابدأ") : S.t("لازم %s لاعبين على الأقل", num(min)), can);
+        if (!can) go.setAlpha(.55f);
+        root.addView(go, at(640, 104, 96, 856));
+        hints(S.t("اختيار"), can ? S.t("ابدأ") : S.t("لازم %s لاعبين على الأقل", num(min)), S.t("رجوع"), S.t("أغلق الغرفة"));
     }
 }
