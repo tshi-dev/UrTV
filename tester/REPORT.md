@@ -2914,3 +2914,14 @@ So on 376 the setup finishes «15 of 15» but never makes UrTV the home on this 
 2. Google TV also **takes the role back within ~2 minutes** (A, C, F), even after the TV's own settings screen chose UrTV (E).
 3. **Only the add-on's window watch ever brought UrTV forward (D, 2 of 3)**; it then stopped because of its own anti-loop pause («decision paused») — the presses here were ~14 s apart, so the «3 brings in 20 s → pause 5 min» guard trips on normal use.
 → The way forward is the add-on (window watch and/or catching KEYCODE_HOME), with a gentler loop guard. That is step 88 R2/R3, which I start now.
+
+## step 88 — round 1 (owner's TV, 4.4 build 376; test add-on build 380 from work/tester-exp f25d95ff)
+Test: `optimize/run/step88/rel.py` (local): Home from YouTube, Netflix, Settings and HDMI 1 (TCL's TV app), 5 each, front app 2 s and 6 s after `input keyevent KEYCODE_HOME`.
+| angle | Home → UrTV (6 s) | notes |
+|---|---|---|
+| R0 nothing (Google TV the home) | 0/4 | script check |
+| R1 role only (= step 87 A) | 0/3 | role taken back within 2 min |
+| **R1+R2** role + the add-on's window watch, wanted=yes (376 add-on) | **2/20 (10 %)** | YouTube #1 and #2 → UrTV, then Google TV for the other 18. `UrTVWatch` logs **«decision bring ours» TWICE per Home press** (two stock-home window events per press), so the loop guard («3 brings in 20 s → 5 min pause») trips on the 2nd press → «decision paused». **Fix suggestion: count one bring per Home press (ignore a second stock-home window within ~1.5 s of a bring), and/or raise the guard** — with that, R2 would likely be near 100 % here: when it brings, UrTV is in front at 2 s and 6 s. |
+| R3 key interception (test add-on 380: onKeyEvent catches KEYCODE_HOME and opens ours; key filter forced on) | **not measurable with adb** | `dumpsys accessibility` shows the filter active (`KeyboardInterceptor`), but `input keyevent KEYCODE_HOME` never reached `onKeyEvent` (no `UrTVKey` line; same for KEYCODE_SETTINGS). A hardware-like press via `sendevent /dev/input/event1` (the IR receiver) is refused by SELinux. **Needs the real remote**: the owner presses Home 3× from YouTube while I read `logcat -s UrTVKey`. |
+Not done yet: R4 (start at boot), combos, the 3 reboots and 30-min idle per angle — waiting for R3's answer, because if the remote's Home reaches the add-on, R3 (+R2 with a fixed guard) is the candidate.
+State now: role sa.urtv.home (Google TV takes it back), add-on 380 (test) installed and bound, wanted=yes, 18 packages off. TV muted.
