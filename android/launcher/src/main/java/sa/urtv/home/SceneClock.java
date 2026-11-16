@@ -53,7 +53,19 @@ final class SceneClock extends View {
     /** 4.4 the picture behind is zoomed by k about the screen's top centre (ScenePlan.zoom): the glass in the digits follows it */
     private float zoom = 1f;
 
-    void setZoom(float k) { if (k == zoom) return; zoom = k; shaderFor(getWidth(), getHeight()); invalidate(); }
+    void setZoom(float k) { setFrame(crop, k); }
+
+    /** 4.4 the picture's framing (ScenePlan.frame: its crop, then the zoom k): the glass in the digits follows it; the digits never move */
+    private int[] crop = ScenePlan.WHOLE;
+
+    void setFrame(int[] c, float k) {
+        int[] cc = c == null ? ScenePlan.WHOLE : c;
+        if (k == zoom && java.util.Arrays.equals(cc, crop)) return;
+        zoom = k;
+        crop = cc;
+        shaderFor(getWidth(), getHeight());
+        invalidate();
+    }
 
     void setScene(Bitmap glassCopy, int[] digits, boolean darkClock) {
         glass = glassCopy;
@@ -70,7 +82,9 @@ final class SceneClock extends View {
         BitmapShader sh = new BitmapShader(glass, Shader.TileMode.CLAMP, Shader.TileMode.CLAMP);
         Matrix m = new Matrix();
         m.setScale(w / (float) glass.getWidth(), h / (float) glass.getHeight());   // the glass copy is half size: stretched over the screen
-        m.postScale(zoom, zoom, w / 2f, 0);
+        float[] f = ScenePlan.frame(crop, w, h, zoom);   // the picture's crop and zoom, as the photo under it has them
+        m.postScale(f[0], f[0]);
+        m.postTranslate(f[1], f[2]);
         sh.setLocalMatrix(m);
         fill.setShader(sh);
         fill.setColorFilter(new ColorMatrixColorFilter(frost(dark)));

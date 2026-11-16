@@ -55,31 +55,33 @@ public final class ScenePlanRun {
         tower[96] = tower[97] = 320;   // a narrow tower at the colon, over the digits' top: 2 of 192 columns, inside one of 48
         int[] tower48 = new int[48];
         java.util.Arrays.fill(tower48, 1080);
-        out.append("tower\t").append(ScenePlan.legible(tower, box, 1920, 1080, 1f)).append('\t').append(ScenePlan.depth(tower48, tower, box, 1920, 1080)).append('\t')
-           .append(ScenePlan.depth(tower48, null, box, 1920, 1080)).append('\n');
+        out.append("tower\t").append(ScenePlan.legible(tower, box, 1920, 1080, 1f)).append('\t').append(ScenePlan.draws(null, ScenePlan.CLEAN, false, tower48, tower, box, 1920, 1080))
+           .append('\t').append(ScenePlan.draws(null, ScenePlan.CLEAN, false, tower48, null, box, 1920, 1080)).append('\n');
+        // the layouts: the gate's list (depth) and the place; with the cards beside the clock never; the owner's word waives the rule, not the list
+        String[][] ds = {{null, "clean"}, {",clean,", "clean"}, {",clean,", "couch"}, {",clean,couch,", "couch"}, {",-,", "clean"}, {null, null}};
+        StringBuilder dw = new StringBuilder();
+        for (String[] d : ds) dw.append(ScenePlan.draws(d[0], d[1], false, null, null, box, 1920, 1080) ? 1 : 0);
+        dw.append(' ').append(ScenePlan.draws(",clean,", "clean", true, tower48, tower, box, 1920, 1080) ? 1 : 0).append(ScenePlan.draws(",clean,", "couch", true, tower48, tower, box, 1920, 1080) ? 1 : 0);
+        out.append("draws\t").append(dw).append('\t').append(ScenePlan.layout(false, false)).append(',').append(ScenePlan.layout(false, true)).append(',').append(ScenePlan.layout(true, false)).append('\n');
         int[] dot = new int[192];
         java.util.Arrays.fill(dot, 1080);
         dot[95] = dot[96] = 580 - 98;   // a narrow tower at the colon of «١٢:٣٠» (the middle), 35 % of the digits' height: up to its lower dot (30 %)
         out.append("colon\t").append(String.format("%.2f", ScenePlan.cover(dot, box, 1920, 1080, 1f, true))).append('\t').append(ScenePlan.legible(dot, box, 1920, 1080, 1f)).append('\n');
-        int[] low = new int[192];
-        java.util.Arrays.fill(low, 1080);
-        for (int c = 60; c < 132; c++) low[c] = 500;   // a broad block 29 % up: a little zoom brings it under 25 %
-        float z = ScenePlan.depth(tower48, low, box, 1920, 1080);
-        out.append("zoomed\t").append(z > 1f && z <= ScenePlan.MAX_ZOOM).append('\t').append(ScenePlan.legible(low, box, 1920, 1080, z)).append('\n');
         if (args.length >= 2) {   // a folder the test filled: per scene with a cut-out <id>-48.bin and <id>-192.bin (SceneHome.skylineOf)
             java.io.File dir = new java.io.File(args[1]);
             for (ScenePlan.Scene sc : ScenePlan.parse("saudi", tsv)) {
                 if (sc.mask == null || !new java.io.File(dir, sc.id + "-48.bin").isFile()) continue;
                 int[][] n = pixels(new java.io.File(dir, sc.id + "-48.bin").getPath()), f = pixels(new java.io.File(dir, sc.id + "-192.bin").getPath());
-                int[] l48 = ScenePlan.skyline(n[1], n[0][0], n[0][1], sc.mask), l192 = ScenePlan.skyline(f[1], f[0][0], f[0][1], sc.mask, 192);
-                for (boolean cards : new boolean[] {false, true}) for (boolean rtl : new boolean[] {true, false}) {
+                int[] l48 = ScenePlan.framed(ScenePlan.skyline(n[1], n[0][0], n[0][1], sc.mask), sc.frame), l192 = ScenePlan.framed(ScenePlan.skyline(f[1], f[0][0], f[0][1], sc.mask, 192), sc.frame);
+                out.append("sceneframe\t").append(sc.id).append('\t').append(sc.frame[0]).append(',').append(sc.frame[1]).append(',').append(sc.frame[2]).append('\n');
+                for (String place : new String[] {"clean", "couch", "cards-rtl", "cards-ltr"}) {
+                    boolean cards = place.startsWith("cards"), rtl = !place.equals("cards-ltr");
                     int[] b2 = ScenePlan.clockBox(sc, 1920, 1080, cards, rtl);
-                    boolean ok = sc.is(ScenePlan.OWNER_OK) && !cards;   // SceneHome: the owner's own place, kept as it is
-                    float d = ok ? 1f : ScenePlan.depth(l48, l192, b2, 1920, 1080), at = d == 0f ? ScenePlan.zoom(l48, b2, 1920, 1080) : d;
-                    out.append("depth\t").append(sc.id).append('\t').append(cards).append('\t').append(rtl).append('\t').append(String.format("%.2f", d)).append('\t')
-                       .append(String.format("%.3f", ScenePlan.cover(l192, b2, 1920, 1080, at))).append('\t').append(ok || d == 0f || ScenePlan.legible(l192, b2, 1920, 1080, d)).append('\t')
-                       .append(String.format("%.3f", ScenePlan.cover(l192, b2, 1920, 1080, at, true))).append('\t').append(b2[0]).append(',').append(b2[1]).append(',').append(b2[2]).append(',').append(b2[3])
-                       .append('\t').append(String.format("%.2f", at)).append('\t').append(ok).append('\n');
+                    boolean draw = ScenePlan.draws(sc.depth, ScenePlan.layout(cards, place.equals("couch")), sc.is(ScenePlan.OWNER_OK), l48, l192, b2, 1920, 1080);
+                    out.append("depth\t").append(sc.id).append('\t').append(place).append('\t').append(draw ? "FIT" : "FRONT-ONLY").append('\t')
+                       .append(String.format("%.3f", ScenePlan.cover(l192, b2, 1920, 1080, 1f))).append('\t').append(String.format("%.3f", ScenePlan.cover(l192, b2, 1920, 1080, 1f, true))).append('\t')
+                       .append(b2[0]).append(',').append(b2[1]).append(',').append(b2[2]).append(',').append(b2[3]).append('\t').append(sc.is(ScenePlan.OWNER_OK) && !cards).append('\t')
+                       .append(!draw || sc.is(ScenePlan.OWNER_OK) || ScenePlan.legible(l192, b2, 1920, 1080, 1f)).append('\n');
                 }
             }
         }
@@ -99,11 +101,25 @@ public final class ScenePlanRun {
         }
         ScenePlan.Scene ok = ScenePlan.parse("x", "aa\tx\tx\t100\t400\t0,10,1920,600\t0\tc\tnight,owner_ok").get(0);
         out.append("ownerok\t").append(ok.is(ScenePlan.OWNER_OK)).append('\t').append(ok.is("night")).append('\t').append(s.is(ScenePlan.OWNER_OK)).append('\n');
-        java.util.List<ScenePlan.Scene> xs = ScenePlan.parse("x", "aa\tx\tx\t100\t400\t-\t0\tc\t\t1200\nbb\tx\tx\t100\t400\t-\t0\tc\tnight\t-\ncc\tx\tx\t100\t400\t-\t0\tc\ndd\tx\tx\t100\t400\t-\t0\tc\t\t1900");
-        for (ScenePlan.Scene x : xs) {
-            int[] c0 = ScenePlan.clockBox(x, 1920, 1080, false, true), c1 = ScenePlan.clockBox(x, 1920, 1080, true, true), c7 = ScenePlan.clockBox(x, 1280, 720, false, true);
-            out.append("digitsx\t").append(x.id).append('\t').append(x.digitsX).append('\t').append((c0[0] + c0[2]) / 2).append('\t').append((c1[0] + c1[2]) / 2).append('\t').append((c7[0] + c7[2]) / 2).append('\n');
+        // 4.4 the clock in one place: scenes with other digits_top/bottom/x get the same box; the crop (11th column) frames the picture only
+        java.util.List<ScenePlan.Scene> xs = ScenePlan.parse("x", "aa\tx\tx\t100\t400\t-\t0\tc\t\t1200\t120,60,1600\nbb\tx\tx\t300\t560\t-\t0\tc\tnight\t-\t-\n"
+            + "cc\tx\tx\t40\t250\t-\t0\tc\ndd\tx\tx\t100\t400\t-\t0\tc\t\t\t500,100,1600");
+        java.util.Set<String> boxes = new java.util.TreeSet<>();
+        for (ScenePlan.Scene x : xs) for (boolean cards : new boolean[] {false, true}) for (boolean rtl : new boolean[] {true, false}) {
+            int[] c = ScenePlan.clockBox(x, 1920, 1080, cards, rtl);
+            boxes.add(cards + "" + rtl + ":" + c[0] + "," + c[1] + "," + c[2] + "," + c[3]);
         }
+        out.append("samebox\t").append(boxes.size()).append('\n');
+        for (ScenePlan.Scene x : xs) out.append("crop\t").append(x.id).append('\t').append(x.frame[0]).append(',').append(x.frame[1]).append(',').append(x.frame[2]).append('\n');
+        float[] f1 = ScenePlan.frame(null, 1920, 1080, 1f), f2 = ScenePlan.frame(null, 1920, 1080, 1.2f), f3 = ScenePlan.frame(new int[] {120, 60, 1600}, 1920, 1080, 1f);
+        out.append("frame\t").append(String.format("%.3f,%.1f,%.1f;%.3f,%.1f,%.1f;%.3f,%.1f,%.1f", f1[0], f1[1], f1[2], f2[0], f2[1], f2[2], f3[0], f3[1], f3[2])).append('\n');
+        int[] src = new int[48];
+        java.util.Arrays.fill(src, 1080);
+        src[24] = 500;   // a tower at x 960-1000 of the photo, its top at 500
+        int[] fr = ScenePlan.framed(src, new int[] {120, 60, 1600});
+        StringBuilder at = new StringBuilder();
+        for (int c = 0; c < 48; c++) if (fr[c] < 1080) at.append(c).append(':').append(fr[c]).append(' ');
+        out.append("framed\t").append(at.toString().trim()).append('\t').append(ScenePlan.framed(src, ScenePlan.WHOLE) == src).append('\n');
         System.out.print(out);
     }
 }

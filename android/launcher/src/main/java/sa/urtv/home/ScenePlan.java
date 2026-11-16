@@ -7,7 +7,7 @@ import java.util.List;
  * 4.3.3 «الآفاق» (the scene home, docs/mockups/PERFORMANCE.md): the rules, with no Android in them (tests/ScenePlanRun.java runs them).
  * A scene is a photo, a blurred and brightened copy of it (the clock's glass) and, for depth, the scenery cut out of it with the sky
  * transparent (the mask), drawn over the clock. A pack's scenes are listed in its scenes.tsv, one line each:
- * id, Arabic name, English name, the digits' top and bottom (px of a 1080 screen), the mask's box "x,y,w,h" (px of 1080p) or "-",
+ * id, Arabic name, English name, the digits' top and bottom (px of a 1080 screen; 4.4: read for old data only, the clock stands at fixedBox), the mask's box "x,y,w,h" (px of 1080p) or "-",
  * dark ("1": a dark clock, for a pale scene), the photo's credit, (4.3.3, may be missing) its tags ("owner_ok", 4.4: the owner's placement is
  * kept as it is, ScenePlan.OWNER_OK), and (4.4, may be missing or "-") digits_x, the
  * digits' centre in px of 1920 with no cards beside the clock (480..1440; the middle by default). Tags: "night" (shown from Maghrib to Fajr when
@@ -28,7 +28,9 @@ final class ScenePlan {
     static final class Scene {
         final String pack, id, name, nameEn, credit, tags;
         final int digitsTop, digitsBottom;   // px of a 1080-line screen
-        int digitsX = 960;                   // 4.4 the digits' centre, px of 1920 (scenes.tsv's 10th column), with no cards beside the clock
+        int digitsX = 960;                   // 4.4 scenes.tsv's 10th column, read for old data only: the clock no longer moves per scene (fixedBox)
+        int[] frame = WHOLE;                 // 4.4 the part of the photo shown full screen, x, y, w in px of 1920 x 1080 (scenes.tsv's 11th column)
+        String depth;                        // 4.4 the layouts the cut-out is drawn in (12th column: clean, couch); null: old data, the rule decides anywhere
         final int[] mask;                    // x, y, w, h of the cut-out in px of 1080p; null: no cut-out (the clock is drawn over the photo)
         final boolean dark;
 
@@ -60,6 +62,8 @@ final class ScenePlan {
                 }
                 Scene sc = new Scene(pack, f[0], f[1], f[2], top, bottom, mask, "1".equals(f[6].trim()), f[7], f.length > 8 ? f[8] : "");
                 if (f.length > 9 && f[9].trim().matches("[0-9]{3,4}")) sc.digitsX = Math.max(480, Math.min(1440, Integer.parseInt(f[9].trim())));   // "-" or absent: the middle
+                if (f.length > 10) sc.frame = frameOf(f[10]);
+                if (f.length > 11) sc.depth = "," + f[11].trim() + ",";
                 out.add(sc);
             } catch (NumberFormatException e) {
                 // left out
@@ -245,19 +249,74 @@ final class ScenePlan {
         return line;
     }
 
-    static int[] clockBox(Scene s, int w, int h, boolean cardsShown, boolean rtl) {
-        float k = h / 1080f;
-        int top = Math.round(s.digitsTop * k), bottom = Math.round(s.digitsBottom * k);
-        int width = Math.round((bottom - top) * 2.6f);   // «١٢:٣٠» is about 2.6 digit-heights wide
-        int max = cardsShown ? Math.round(w * 0.44f) : Math.round(w * 0.7f);
-        if (width > max) {   // narrower: the digits shrink about their bottom line, so the scenery still crosses them
-            int nh = Math.round(max / 2.6f);
-            top = bottom - nh;
-            width = max;
+    static int[] clockBox(Scene s, int w, int h, boolean cardsShown, boolean rtl) { return fixedBox(w, h, cardsShown, rtl); }
+
+    /**
+     * 4.4 the owner: «the clock always in the same place across our images». The digits' box on a w x h screen, the same for every scene and photo
+     * and for the clean and couch layouts (where the owner approved Riyadh: DIGITS tall from TOP, 266-542 at 1080, [601,266,1319,542]); with the
+     * cards beside the clock (on the left of an Arabic home) in the start half. Only the picture's framing changes per image (its frame, frame()).
+     */
+    static final float DIGITS = 276 / 1080f, TOP = 266 / 1080f;   // Riyadh's digits as the owner saw them: 266-542 at 1080
+
+    static int[] fixedBox(int w, int h, boolean cardsShown, boolean rtl) {
+        int digitH = Math.round(h * DIGITS);
+        int width = Math.min(Math.round(digitH * 2.6f), cardsShown ? Math.round(w * 0.44f) : Math.round(w * 0.7f));
+        int centre = !cardsShown ? w / 2 : rtl ? Math.round(w * 0.73f) : Math.round(w * 0.27f);
+        int top = Math.round(h * TOP);
+        return new int[] {centre - width / 2, top, centre + width / 2, top + digitH};
+    }
+
+    /** 4.4 the layouts a cut-out can be drawn in (the masks gate's names): the clock with no cards and no apps row, and «كنبة»'s apps row under it */
+    static final String CLEAN = "clean", COUCH_HOME = "couch";
+
+    /** the layout of the home now: clean, couch, or null with the cards beside the clock (never a cut-out there: the clock in front) */
+    static String layout(boolean cardsBeside, boolean appsRow) { return cardsBeside ? null : appsRow ? COUCH_HOME : CLEAN; }
+
+    /** a picture's cut-out in a layout: one its gate lists (depth; none listed: old data, any), and the digits legible there unless the owner approved it */
+    static boolean draws(String depth, String layout, boolean ownerOk, int[] sky48, int[] fine, int[] box, int w, int h) {
+        if (layout == null) return false;
+        if (depth != null && !depth.contains("," + layout + ",")) return false;
+        if (ownerOk) return true;
+        int[] f = fine != null ? fine : sky48;
+        return f == null || legible(f, box, w, h, 1f);
+    }
+
+    /** no framing: the whole photo */
+    static final int[] WHOLE = {0, 0, 1920};
+
+    /** a frame "x,y,w" (px of the 1920 x 1080 photo; its height w x 9/16, inside the photo; w 1372 to 1920, a zoom of 1.4 at most); anything else: the whole photo */
+    static int[] frameOf(String v) {
+        if (v == null || !v.trim().matches("[0-9]{1,4},[0-9]{1,4},[0-9]{3,4}")) return WHOLE;
+        String[] p = v.trim().split(",");
+        int x = Integer.parseInt(p[0]), y = Integer.parseInt(p[1]), cw = Integer.parseInt(p[2]);
+        if (cw < 1372 || cw > 1920 || x + cw > 1920 || y + Math.round(cw * 9 / 16f) > 1080) return WHOLE;
+        return new int[] {x, y, cw};
+    }
+
+    /**
+     * the picture's framing on a w x h screen: its crop shown full screen, then zoomed by z about the screen's top centre (the legibility zoom);
+     * {scale, translate x, translate y} of a full-screen view with its pivot at 0, 0 (the photo, the glass in the digits); a view placed at L, T
+     * takes translate + L x (scale - 1), translate + T x (scale - 1)
+     */
+    static float[] frame(int[] crop, int w, int h, float z) {
+        int[] c = crop == null ? WHOLE : crop;
+        float k = 1920f / c[2], s1 = h / 1080f;
+        return new float[] {k * z, w / 2f * (1 - z) - c[0] * s1 * k * z, -c[1] * s1 * k * z};
+    }
+
+    /** a skyline (n columns, px of 1080, 1080: none) of the photo as the crop shows it on the screen */
+    static int[] framed(int[] src, int[] crop) {
+        if (src == null) return null;
+        int[] c = crop == null ? WHOLE : crop;
+        if (c[0] == 0 && c[1] == 0 && c[2] == 1920) return src;
+        int n = src.length;
+        int[] out = new int[n];
+        for (int i = 0; i < n; i++) {
+            float x = c[0] + (i + 0.5f) * 1920f / n * c[2] / 1920f;
+            int col = Math.max(0, Math.min(n - 1, (int) Math.floor(x * n / 1920f)));
+            out[i] = src[col] >= 1080 ? 1080 : Math.max(0, Math.round((src[col] - c[1]) * 1920f / c[2]));
         }
-        int centre = !cardsShown ? Math.max(width / 2, Math.min(w - width / 2, Math.round(s.digitsX * w / 1920f)))   // the scene's own centre, inside the screen
-                : rtl ? Math.round(w * 0.73f) : Math.round(w * 0.27f);   // the cards beside it: the start half (legible() decides the depth there)
-        return new int[] {centre - width / 2, top, centre + width / 2, bottom};
+        return out;
     }
 
     /**

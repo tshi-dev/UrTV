@@ -72,10 +72,12 @@ if shutil.which("javac"):
     top, bottom = int(scenes[0][3]), int(scenes[0][4])
     check("the clock: in the middle with no cards; with the cards (on the left of an Arabic home) on the right half, on the left in English",
           box[("false", "true")][0] + box[("false", "true")][2] == 1920 and box[("true", "true")][0] >= 960 and box[("true", "false")][2] <= 960, box)
-    check("the clock stands on the scene's own bottom line (its scenery crosses the digits there), and fits the screen",
-          all(b[3] == bottom and b[1] >= top and 0 <= b[0] < b[2] <= 1920 for b in box.values()), box)
+    check("4.4 the owner: the clock always in the same place across our images: the digits at 266-542 of 1080 (where the owner approved Riyadh) "
+          "on every scene and photo, whatever a scene's digits_top and digits_bottom say; with the cards beside it, the start half",
+          all(b[1] == 266 and b[3] == 542 and 0 <= b[0] < b[2] <= 1920 for b in box.values()) and box[("false", "true")] == [601, 266, 1319, 542]
+          and box[("true", "true")] == [1043, 266, 1761, 542] and box[("true", "false")] == [159, 266, 877, 542], box)
     b720 = [int(x) for x in [r for r in rows if r[0] == "box720"][0][1].split(",")]
-    check("a 720 screen: the same place, scaled", b720[3] == round(bottom * 720 / 1080) and b720[0] >= 640 and b720[2] <= 1280, b720)
+    check("a 720 screen: the same place, scaled", b720 == [695, 177, 1173, 361], b720)
     check("the scenes take turns in order, the first first; none: nothing", [r for r in rows if r[0] == "next"][0][1] == "0,0,-1")
     ch = {r[1]: (r[2], r[3] if len(r) > 3 else "") for r in rows if r[0] == "choose"}
     check("the scenes now (ScenePlan.choose): both rules off, all; «يتبع الوقت» at night the night scenes, by day the others; «يتبع الطقس» in fog the fog scenes (it wins); no fog: as the time says",
@@ -89,38 +91,41 @@ if shutil.which("javac"):
     check("4.4 never a digit misread (the owner: the night lake's ٤ read ٢, the golden tower made a ٤ an ع): the scenery may cover a digit "
           "for 25 % of its height from its base, no more (and never reach the colon's lower dot)", flat == {"56": ["0.20", "true"], "84": ["0.30", "false"]}, flat)
     tw = [r for r in rows if r[0] == "tower"][0][1:]
-    check("a narrow tower is seen (192 columns, not lost inside one of 48): the colon covered to its top is not legible, and no zoom brings it under 25 %, "
-          "so the cut-out is not drawn there (depth 0, the clock in front); read on 48 columns alone it would have been missed",
-          tw[0] == "false" and float(tw[1]) == 0 and float(tw[2]) == 1, tw)
-    zm = [r for r in rows if r[0] == "zoomed"][0][1:]
-    check("a broad block a little over 25 %: the picture is zoomed (MAX_ZOOM at most) until it is under, the cut-out kept", zm == ["true", "true"], zm)
+    check("a narrow tower is seen (192 columns, not lost inside one of 48): the colon covered to its top is not legible, so the cut-out is not drawn "
+          "there (the clock in front); read on 48 columns alone it would have been missed", tw == ["false", "false", "true"], tw)
+    dw = [r for r in rows if r[0] == "draws"][0][1:]
+    check("4.4 the gate's «depth» (scenes.tsv's 12th column, the photos' index): the cut-out only in the layouts it lists (clean, couch); none listed "
+          "(old data) any; never with the cards beside the clock; owner_ok waives the rule, never the list", dw == ["110100 10", "clean,couch,null"], dw)
     co = [r for r in rows if r[0] == "colon"][0][1:]
     check("the colon is never covered: a narrow tower under it may rise a quarter of the digits' height (its lower dot starts about 30 % up), not more",
           co[1] == "false" and float(co[0]) > 0.25, co)
-    dp = {(r[1], r[2], r[3]): r[4:] for r in rows if r[0] == "depth"}
+    dp = {(r[1], r[2]): r[3:] for r in rows if r[0] == "depth"}
     masked = [l.split("\t")[0] for l in read(PACK / "scenes.tsv").splitlines() if l and not l.startswith("#") and l.split("\t")[5].strip() != "-"]
     if small:
-        check("every bundled scene with a cut-out is measured at every place (Riyadh: no cards, the cards on the right, the cards on the left)", {k[0] for k in dp} == set(masked), (dp, masked))
-        check("wherever the clock is: every digit at most a quarter covered from its base and the colon not at all, or the cut-out is off (the clock in front)",
-              all(v[2] == "true" for v in dp.values()), dp)
+        check("every bundled scene with a cut-out is measured in every place (clean, couch, the cards on the right, on the left)", {k[0] for k in dp} == set(masked), (dp, masked))
+        check("wherever the clock is: a cut-out drawn leaves every digit and the colon at most a quarter covered from the base (unless the owner approved it), "
+              "else the clock in front; with the cards beside the clock never", all(v[5] == "true" for v in dp.values())
+              and all(v[0] == "FRONT-ONLY" for (sid, place), v in dp.items() if place.startswith("cards")), dp)
     fx = ROOT / "tests/fixtures/scene_legible.json"
     if small and fx.is_file():   # the app and the masks gate agree (.github/tools/photo_masks.py wrote the fixture)
         import json
-        names = {"nocards": ("false", "true"), "cards-rtl": ("true", "true"), "cards-ltr": ("true", "false")}
+        frames = {r2[1]: [int(x) for x in r2[2].split(",")] for r2 in rows if r2[0] == "sceneframe"}
         bad = []
         for r in json.loads(fx.read_text(encoding="utf-8"))["rows"]:
-            v = dp.get((r["scene"],) + names[r["place"]])
+            v = dp.get((r["scene"], {"nocards": "clean"}.get(r["place"], r["place"])))
             if v is None: bad.append((r, "not measured")); continue
-            k, digit, colon, box, ok = float(v[0]), float(v[1]), float(v[3]), [int(x) for x in v[4].split(",")], v[6] == "true"
-            verdict = "FIT" if k > 0 else "FRONT-ONLY"
-            if (verdict != r["verdict"] or box != r["box"] or ok != r["owner_ok"] or abs(digit - r["digit_cover"]) > 0.01 or (verdict == "FRONT-ONLY" and digit < 0.25)
-                    or (verdict == "FIT" and (abs(k - r["k"]) > 0.01 or abs(colon - r["colon_cover"]) > 0.01))):
+            verdict, digit, colon, box, ok = v[0], float(v[1]), float(v[2]), [int(x) for x in v[3].split(",")], v[4] == "true"
+            frame = r.get("frame") or [0, 0, 1920]
+            if (verdict != r["verdict"] or box != r["box"] or ok != r["owner_ok"] or frames.get(r["scene"]) != frame
+                    or abs(digit - r["digit_cover"]) > 0.01 or abs(colon - r["colon_cover"]) > 0.01):
                 bad.append((r, v))
-        check("the app and the masks gate agree on every bundled scene and place (tests/fixtures/scene_legible.json): the box, the verdict, owner_ok, "
-              "the zoom and how much of the digits and the colon the scenery covers (within 0.01)", not bad, bad)
-    check("the home uses the rule: SceneHome and PhotoGlass take ScenePlan.depth, and a 0 hides the cut-out (the clock in front, at its usual place)",
-          "ScenePlan.depth(" in scene and "depth == 0f ? null : cut" in scene and "ScenePlan.depth(line, fine, digits, w, h)" in read(HOME / "PhotoGlass.java") and 'rec.optBoolean(ScenePlan.OWNER_OK, false)' in read(HOME / "PhotoGlass.java")
-          and "PhotoGlassPlan.box(null, w, h, cardsShown, rtl, row)" in read(HOME / "PhotoGlass.java"))
+        check("the app and the masks gate agree on every bundled scene and place (tests/fixtures/scene_legible.json): the frame, the clock's box, the verdict, "
+              "owner_ok, and how much of the digits and the colon the scenery covers (within 0.01)", not bad, bad)
+    check("the home uses the rule: SceneHome and PhotoGlass take ScenePlan.draws at the clock's one place on the framed picture, and no draw hides the "
+          "cut-out (the clock in front); no zoom at runtime (the frame is it)",
+          "ScenePlan.draws(sc.depth, layout," in scene and "final Bitmap mask = draw ? cut : null;" in scene and "final float zoom = 1f;" in scene
+          and "ScenePlan.draws(depthIn, ScenePlan.layout(cardsShown, row), ownerOk, ScenePlan.framed(line, crop), ScenePlan.framed(fine, crop), digits, w, h)" in read(HOME / "PhotoGlass.java") and 'rec.optBoolean(ScenePlan.OWNER_OK, false)' in read(HOME / "PhotoGlass.java")
+          and "ScenePlan.fixedBox(w, h, cardsShown, rtl)" in read(HOME / "PhotoGlass.java") and "PhotoGlassPlan.box(" not in read(HOME / "PhotoGlass.java"))
     al = {r[1]: r[2] for r in rows if r[0] == "aligned"}
     check("4.4 never a misaligned cut-out (the owner's doubled buildings): one cut from its own photo at its place is drawn; the same 2 px off, or "
           "another picture, is not (the clock in front)", al == {"own": "true", "off2": "false", "other": "false"}, al)
@@ -128,8 +133,18 @@ if shutil.which("javac"):
     check("«owner_ok» (a tag in scenes.tsv: the owner saw the placement and reads it) is read beside the other tags; the bundled Riyadh has it (night,owner_ok)",
           ok == ["true", "true", "true"], ok)
     check("an «owner_ok» scene keeps its cut-out where the owner saw it, at its own place with no cards beside the clock (no legibility drop, no zoom); with the cards beside it the rule decides; never one off its own pixels",
-          "!alignedTo(photo, cut, sc.mask) ? 0f" in scene and "sc.is(ScenePlan.OWNER_OK) && !cardsShown ? 1f" in scene
-          and scene.index("!alignedTo(photo, cut, sc.mask)") < scene.index("sc.is(ScenePlan.OWNER_OK)"))
+          "cut != null && alignedTo(photo, cut, sc.mask) && drawsOf(cut, sc)" in scene and "sc.is(ScenePlan.OWNER_OK)" in scene)
+    check("the clock's place is the same for every scene, whatever its digits_top, digits_bottom or digits_x say (one box per layout and direction: no cards, cards on the right, on the left)",
+          [r for r in rows if r[0] == "samebox"][0][1] == "4")
+    cr = {r[1]: r[2] for r in rows if r[0] == "crop"}
+    check("4.4 per scene only the picture's framing: scenes.tsv's 11th column «frame» x,y,w (px of the 1920 x 1080 photo, its height w x 9/16, inside it); "
+          "\"-\", missing or out of the photo: the whole photo", cr == {"aa": "120,60,1600", "bb": "0,0,1920", "cc": "0,0,1920", "dd": "0,0,1920"}, cr)
+    fr = [r for r in rows if r[0] == "frame"][0][1]
+    check("the framing: no crop and no zoom leaves the picture as it is; a zoom of 1.2 is about the screen's top centre; a crop of 1600 from 120, 60 "
+          "scales by 1.2 and moves the picture up and left by its corner", fr == "1.000,0.0,0.0;1.200,-192.0,0.0;1.200,-144.0,-72.0", fr)
+    fd = [r for r in rows if r[0] == "framed"][0][1:]
+    check("the cut-out's skyline is read through the crop (a tower at 960-1000 of the photo, its top at 500, stands in "
+          "the screen's column at 1000-1040, its top at 528); no crop: the skyline itself", fd == ["25:528", "true"], fd)
     check("ScenePlan's tiers are Ram's numbers", [r for r in rows if r[0] == "tiers"][0][1] == "0,1,2"
           and "public static final int LOW = 0, MID = 1, NORMAL = 2;" in ram)
 else:

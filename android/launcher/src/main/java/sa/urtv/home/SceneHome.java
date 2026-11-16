@@ -36,7 +36,7 @@ final class SceneHome extends FrameLayout {
     private List<ScenePlan.Scene> all = new ArrayList<>(), scenes = new ArrayList<>();   // all: the packs' scenes; scenes: the ones taking turns now (ScenePlan.choose)
     private boolean byTime, night, byWeather, fog;
     private int index = -1, staySeconds = ScenePlan.STAY_S, gen = 0;
-    private boolean on, running, cardsShown, rtl = true, glass = true;   // glass: «الساعة: زجاجية» (the clock and the cut-out); plain: the photo only
+    private boolean on, running, cardsShown, appsRow, rtl = true, glass = true;   // appsRow: «كنبة»'s apps row under the clock (the couch layout)   // glass: «الساعة: زجاجية» (the clock and the cut-out); plain: the photo only
     private String packs = "";
     private CharSequence time = "";
 
@@ -77,8 +77,9 @@ final class SceneHome extends FrameLayout {
     }
 
     /** The settings, from the home's config read: the scene home on or off, the packs that are on, how long each scene stays, whether the cards are shown. */
-    void set(boolean wanted, String packSetting, int seconds, boolean cards, boolean rightToLeft, boolean glassClock) {
-        boolean changed = wanted != on || !String.valueOf(packSetting).equals(packs) || seconds != staySeconds || cards != cardsShown || rightToLeft != rtl || glassClock != glass;
+    void set(boolean wanted, String packSetting, int seconds, boolean cards, boolean row, boolean rightToLeft, boolean glassClock) {
+        boolean changed = wanted != on || !String.valueOf(packSetting).equals(packs) || seconds != staySeconds || cards != cardsShown || row != appsRow || rightToLeft != rtl || glassClock != glass;
+        appsRow = row;
         glass = glassClock;
         on = wanted;
         packs = String.valueOf(packSetting);
@@ -94,7 +95,7 @@ final class SceneHome extends FrameLayout {
             ui.post(() -> { if (g != gen) return; this.all = all; scenes = ScenePlan.choose(all, byTime, night, byWeather, fog); index = -1; if (running) show(); });
         });
         for (String p : ScenePlan.packs(packs))   // the files not in the app, once; when they arrive the scenes are read again
-            SceneDownload.fetchIfNeeded(app, p, () -> ui.post(() -> { if (on) { String keep = packs; packs = ""; set(true, keep, staySeconds, cardsShown, rtl, glass); } }));
+            SceneDownload.fetchIfNeeded(app, p, () -> ui.post(() -> { if (on) { String keep = packs; packs = ""; set(true, keep, staySeconds, cardsShown, appsRow, rtl, glass); } }));
     }
 
     boolean on() { return on; }
@@ -162,12 +163,11 @@ final class SceneHome extends FrameLayout {
             final boolean withClock = this.glass;   // «الساعة: عادية»: no glass copy, no cut-out (the header's clock shows)
             final Bitmap glass = withClock ? decode(sc, "-glass.jpg", 960, true) : null;
             final Bitmap cut = withClock && sc.mask != null && ScenePlan.mask(tier) ? decode(sc, "-fg.webp", 1920, false) : null;
-            final float depth = cut == null ? 1f : !alignedTo(photo, cut, sc.mask) ? 0f   // never a cut-out off its own pixels: the clock in front
-                    : sc.is(ScenePlan.OWNER_OK) && !cardsShown ? 1f   // the owner saw it at its own place (no cards beside the clock): kept as it is
-                    : zoomOf(cut, sc);   // the owner: more of the digits above the scenery, the clock where it is; elsewhere the rule
-            if (depth == 0f && cut != null) cut.recycle();   // no zoom keeps every digit and the colon legible here: the clock in front
-            final Bitmap mask = depth == 0f ? null : cut;
-            final float zoom = depth == 0f ? 1f : depth;
+            // the cut-out only on its own pixels (never off them), in a layout its gate lists, the digits legible there (or the owner approved it)
+            final boolean draw = cut != null && alignedTo(photo, cut, sc.mask) && drawsOf(cut, sc);
+            if (!draw && cut != null) cut.recycle();   // the clock in front
+            final Bitmap mask = draw ? cut : null;
+            final float zoom = 1f;   // the scene's frame is its zoom (the masks gate chose it); the clock never moves
             ui.post(() -> {
                 if (g != gen || !on) return;
                 if (photo == null || (withClock && glass == null)) { index = at; schedule(); return; }   // a missing file: the next one, never a blank home
@@ -183,13 +183,20 @@ final class SceneHome extends FrameLayout {
                     back.mask.setLayoutParams(lp);
                     back.mask.setImageBitmap(mask);
                     back.mask.setVisibility(VISIBLE);
-                    back.mask.setPivotX(w / 2f - lp.leftMargin);   // the same zoom as the photo's: about the screen's top centre
-                    back.mask.setPivotY(-lp.topMargin);
                 } else back.mask.setVisibility(GONE);
-                for (View v : new View[] {back.photo, back.mask}) { v.setScaleX(zoom); v.setScaleY(zoom); }
-                back.photo.setPivotX(w / 2f);
-                back.photo.setPivotY(0);
-                back.clock.setZoom(zoom);
+                // the scene's framing (its frame), the same for the photo, its cut-out and the glass; the clock stays in its one place
+                float[] f = ScenePlan.frame(sc.frame, w, h, zoom);
+                for (View v : new View[] {back.photo, back.mask}) {
+                    LayoutParams at = (LayoutParams) v.getLayoutParams();
+                    float l = v == back.mask && at != null ? at.leftMargin : 0, t = v == back.mask && at != null ? at.topMargin : 0;
+                    v.setPivotX(0);
+                    v.setPivotY(0);
+                    v.setScaleX(f[0]);
+                    v.setScaleY(f[0]);
+                    v.setTranslationX(f[1] + l * (f[0] - 1));
+                    v.setTranslationY(f[2] + t * (f[0] - 1));
+                }
+                back.clock.setFrame(sc.frame, zoom);
                 final Slot was = slots[front];
                 boolean first = index < 0;
                 index = at;
@@ -208,15 +215,17 @@ final class SceneHome extends FrameLayout {
     }
 
     /**
-     * the zoom for this scene: its cut-out's skyline (made small first) against where its clock is (ScenePlan.depth); 0: no zoom keeps the digits
-     * and the colon legible there, the cut-out is not drawn; 1 when it cannot be read
+     * this scene's cut-out here (ScenePlan.draws): its gate lists the layout (clean, couch; never with the cards beside the clock), and its scenery as
+     * the scene's frame shows it leaves the clock's fixed place legible (unless the owner approved it); true when it cannot be read (the gate's word)
      */
-    private float zoomOf(Bitmap mask, ScenePlan.Scene sc) {
+    private boolean drawsOf(Bitmap mask, ScenePlan.Scene sc) {
+        String layout = ScenePlan.layout(cardsShown, appsRow);
         try {
             int[] box = ScenePlan.clockBox(sc, 1920, 1080, cardsShown, rtl);
-            return ScenePlan.depth(skylineOf(mask, sc.mask, 96, false, 48), skylineOf(mask, sc.mask, 384, true, 192), box, 1920, 1080);
+            return ScenePlan.draws(sc.depth, layout, sc.is(ScenePlan.OWNER_OK), ScenePlan.framed(skylineOf(mask, sc.mask, 96, false, 48), sc.frame),
+                    ScenePlan.framed(skylineOf(mask, sc.mask, 384, true, 192), sc.frame), box, 1920, 1080);
         } catch (RuntimeException | OutOfMemoryError e) {
-            return 1f;
+            return layout != null;
         }
     }
 
