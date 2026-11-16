@@ -465,7 +465,7 @@ public class MusicService extends Service implements AudioManager.OnAudioFocusCh
         wish.ask();
         prefs.save(source, "", surah, station, 0);
         Catalog.Station st = cat.stations.get(index);   // 4.4: every source of the station, in turn (StationSources)
-        radioSources = StationSources.of(st.url, st.alt, st.mirrors, null);
+        radioSources = StationSources.of(st.url, st.alt, st.mirrors, StationStatus.mirrors(sa.urtv.home.StationFeed.status(this), st.key, System.currentTimeMillis()));
         radioSource = 0;
         radioAddress = radioSources.isEmpty() ? st.url : radioSources.get(0);
         radioAlt = radioSources.size() > 1 ? radioSources.get(1) : null;
@@ -1024,10 +1024,17 @@ public class MusicService extends Service implements AudioManager.OnAudioFocusCh
         if (source == Prefs.SOURCE_SURAH && reciter >= 0) {
             playSurahAgain(reciter, SurahSet.next(surah, cat.reciters.get(reciter).missing));   // after 114 from 1; a missing surah stepped over
         } else if (source == Prefs.SOURCE_RADIO && station >= 0) {
-            playRadio((station + 1) % cat.stations.size());
+            playRadio(StationStatus.step(station, 1, hiddenStations()));   // 4.4: a station the check found dead is stepped over
         } else {
             resumeLastInternal();
         }
+    }
+
+    /** 4.4: the stations the check found dead (StationStatus), never the one in use */
+    private boolean[] hiddenStations() {
+        java.util.List<String> keys = new java.util.ArrayList<>();
+        for (Catalog.Station s : cat.stations) keys.add(s.key);
+        return StationStatus.hidden(sa.urtv.home.StationFeed.status(this), keys, station, System.currentTimeMillis());
     }
 
     void prev() {
@@ -1036,7 +1043,7 @@ public class MusicService extends Service implements AudioManager.OnAudioFocusCh
             if (position > 5000) { seekTo(0); return; }
             playSurahAgain(reciter, SurahSet.prev(surah, cat.reciters.get(reciter).missing));
         } else if (source == Prefs.SOURCE_RADIO && station >= 0) {
-            playRadio((station - 1 + cat.stations.size()) % cat.stations.size());
+            playRadio(StationStatus.step(station, -1, hiddenStations()));
         }
     }
 

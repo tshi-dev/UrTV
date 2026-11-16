@@ -554,7 +554,13 @@ public class MainActivity extends Activity {
                     rows.add(new Row(false, KIND_RESUME, getString(R.string.continue_listening),
                             cat.stations.get(prefs.station()).name, -1));
                 }
+                // 4.4: a station the stations check found dead is left out (StationStatus), never the one in use
+                java.util.List<String> keys = new java.util.ArrayList<>();
+                for (Catalog.Station s : cat.stations) keys.add(s.key);
+                boolean[] gone = StationStatus.hidden(sa.urtv.home.StationFeed.status(MainActivity.this), keys,
+                        prefs.source() == Prefs.SOURCE_RADIO ? prefs.station() : -1, System.currentTimeMillis());
                 for (int i = 0; i < cat.stations.size(); i++) {
+                    if (gone[i]) continue;
                     rows.add(new Row(false, KIND_STATION, cat.stations.get(i).name, getString(R.string.live), i));
                 }
                 // «البث المباشر من الحرم»: a link out to the broadcaster's own page, only once its official link is filled in (HaramLive)
