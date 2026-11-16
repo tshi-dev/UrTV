@@ -18,7 +18,9 @@ OK = re.compile(r"^CC BY(-SA)? \d\.\d$")
 
 def get(params):
     q = urllib.request.Request(API + "?" + urllib.parse.urlencode({**params, "format": "json"}), headers=UA)
-    return json.load(urllib.request.urlopen(q, timeout=60))
+    d = json.load(urllib.request.urlopen(q, timeout=60))
+    if "error" in d or "warnings" in d: print("API:", json.dumps({k: d[k] for k in ("error", "warnings") if k in d})[:400])
+    return d
 
 
 def info(titles):
@@ -44,11 +46,14 @@ def search(out, words, cats):
         cont = {}
         while True:
             d = get({"action": "query", "list": "categorymembers", "cmtitle": c, "cmtype": "file", "cmlimit": 200, **cont})
-            titles |= {m["title"] for m in d["query"]["categorymembers"]}
+            titles |= {m["title"] for m in d.get("query", {}).get("categorymembers", [])}
             if "continue" not in d: break
             cont = d["continue"]
-    d = get({"action": "query", "list": "search", "srsearch": words + " filetype:bitmap", "srnamespace": 6, "srlimit": 100})
-    titles |= {m["title"] for m in d["query"]["search"]}
+        print(f"{c}: {len(titles)} so far")
+    for w in words.split("|"):                       # several searches: | between them
+        d = get({"action": "query", "list": "search", "srsearch": w.strip(), "srnamespace": 6, "srlimit": 200})
+        got = {m["title"] for m in d.get("query", {}).get("search", [])}
+        print(f"search {w.strip()!r}: {len(got)}"); titles |= got
     cands = info(sorted(titles))
     out.mkdir(parents=True, exist_ok=True)
     (out / "candidates.json").write_text(json.dumps(cands, indent=1, ensure_ascii=False) + "\n", encoding="utf-8")
