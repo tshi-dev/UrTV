@@ -356,6 +356,11 @@ wf2 = (ROOT / ".github/workflows/league-fixtures.yml").read_text()
 check("data-archive copies urtv-data's archive unchanged (builds only when it cannot be read)", "mirror=true" in wf2 and "steps.src.outputs.mirror != 'true'" in wf2)
 check("the workflow's actions are pinned to a commit and run on ubuntu-24.04", not re.search(r"uses: actions/\w+@v\d", wf2) and "ubuntu-latest" not in wf2)
 
+wf3 = (ROOT / ".github/workflows/archive-mirror.yml").read_text()
+check("Archive mirror: its own timer, off the quarter hours, not behind the fixtures job", "'7,22,37,52 * * * *'" in wf3 and "needs:" not in wf3)
+check("Archive mirror: one writer of data-archive with League fixtures' archive job", "group: data-archive" in wf3 and "group: data-archive" in wf2)
+check("Archive mirror: copies urtv-data unchanged, then the count check and the one issue", "tshi-dev/urtv-data data" in wf3
+      and "archive_health.py --issue" in wf3 and not re.search(r"uses: actions/\w+@v\d", wf3) and "ubuntu-24.04" in wf3)
 doc = (ROOT / "docs/MATCH-ARCHIVE.md").read_text()
 check("docs/MATCH-ARCHIVE.md describes every file a client reads", all(x in doc for x in ("index.json", "teams/&lt;teamId&gt;.json",
       "h2h/&lt;lowId&gt;-&lt;highId&gt;.json", "results/&lt;leagueId&gt;.json", "store/&lt;leagueId&gt;/&lt;season&gt;.json")))

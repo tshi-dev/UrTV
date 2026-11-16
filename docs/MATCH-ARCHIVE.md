@@ -132,7 +132,7 @@ key (3 seasons, round by round); it is never printed. `history.json` lists each 
 `r` (the round) is a number for a league's matchday; a knockout round may be TheSportsDB's code (125 quarter-finals, 150 semi-finals,
 200 final) or openfootball's words ("Quarter-finals").
 
-One archive, two addresses: urtv-data's `football/archive` is where it is made; UrTV's league-fixtures.yml (job «archive») copies it to
+One archive, two addresses: urtv-data's `football/archive` is where it is made; UrTV's archive-mirror.yml (every 15 minutes, on its own) and league-fixtures.yml (job «archive») copy it to
 `data-archive` unchanged for the apps up to 4.3.2, checks both hold the same games (`archive_health.py`) and keeps one issue labelled
 `data-health` open while there is a problem: a followed league in its season with no result in 10 days, a past season short of its sure
 expected count, the two copies differing. It closes itself when healthy again.
