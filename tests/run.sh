@@ -163,6 +163,7 @@ python3 tests/audio_library_test.py   # 4.4 «صوتياتي»: sound files from
 python3 tests/dua_test.py   # 4.4 «الأدعية والتذكيرات»: the rule (days, both calendars, prayer times), the alarm, playing like the adhan, the card
 python3 tests/prayer_sound_test.py   # 4.4 «أذان كل صلاة»: silent prayers, a muezzin or own recording per prayer
 python3 tests/quiet_hours_test.py   # 4.4 touch «ساعات الهدوء»
+python3 tests/kahf_template_test.py   # 4.4 touch: the Friday Kahf, ready
 python3 tests/loudness_test.py   # the recitation and the adhan lifted inside the player (LoudnessEnhancer), never the TV volume or mute
 python3 tests/seek_burst_test.py
 python3 tests/pill_text_test.py

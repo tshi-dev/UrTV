@@ -23,6 +23,8 @@ public class DuaActivity extends RowScreen {
             @Override public String tagline() { return S.t("تُشغَّل فوق الرئيسية وشاشة التوقف، وتوقف التلاوة ثم تعيدها"); }
             @Override public void rows(List<Row> out) {
                 out.add(Row.of(S.t("إضافة دعاء أو تذكير"), S.t("صوت من «صوتياتي»"), DuaActivity.this::add));
+                // touch: a ready one that needs no file: «سورة الكهف» by a reciter of «تلاوة», every Friday an hour after Fajr
+                if (!hasKahf()) out.add(Row.of(S.t("سورة الكهف يوم الجمعة"), S.t("جاهز: قارئ من «تلاوة»، الجمعة بعد الفجر بساعة"), DuaActivity.this::addKahf));
                 for (DuaStore.Dua d : DuaStore.list(DuaActivity.this)) {
                     String state = d.on ? S.t("مفعّل") : S.t("متوقف");
                     out.add(Row.of(d.name, state + ": " + DuaWords.line(d.rule), () -> openDua(d.id)).onLong(() -> listen(d)));
@@ -44,6 +46,52 @@ public class DuaActivity extends RowScreen {
         d.rule.offset = 15;
         edit = d;
         pickSound();
+    }
+
+    /** the Friday Kahf, ready: the reciter last listened to (else the first), Friday an hour after Fajr, on; every part can be changed after */
+    private void addKahf() {
+        if (DuaStore.list(this).size() >= DuaStore.MAX) { toast(S.t("وصلت الحد: %s", Ui.arabic(DuaStore.MAX))); return; }
+        DuaStore.Dua d = new DuaStore.Dua();
+        d.name = S.t("سورة الكهف");
+        d.sound = "q:" + reciterId(new Prefs(this).reciter()) + ":18";
+        d.rule.day = DuaRule.WEEKDAYS;
+        d.rule.weekdays = 1 << 5;   // Friday
+        d.rule.at = DuaRule.AFTER;
+        d.rule.prayer = PrayerTimes.FAJR;
+        d.rule.offset = 60;
+        edit = d;
+        keep();
+        openDua(edit.id);
+    }
+
+    private boolean hasKahf() {
+        for (DuaStore.Dua d : DuaStore.list(this)) if (d.sound.startsWith("q:") && d.sound.endsWith(":18")) return true;
+        return false;
+    }
+
+    private String reciterId(String wanted) {
+        Catalog cat = Catalog.get(this);
+        return cat.reciterIndex(wanted) >= 0 ? wanted : cat.reciters.get(0).id;
+    }
+
+    /** the sound: a file of «صوتياتي», or a reciter of «تلاوة» for the surah it plays */
+    private void chooseSound() {
+        if (!edit.sound.startsWith("q:")) { pickSound(); return; }
+        ask(S.t("الصوت"), null, false, new String[]{S.t("قارئ من «تلاوة»"), S.t("ملف من «صوتياتي»")},
+                new Runnable[]{this::chooseReciter, this::pickSound});
+    }
+
+    private void chooseReciter() {
+        open(new Page() {
+            @Override public String title() { return S.t("القارئ"); }
+            @Override public String tagline() { return DuaStore.soundName(DuaActivity.this, edit); }
+            @Override public void rows(List<Row> out) {
+                Catalog cat = Catalog.get(DuaActivity.this);
+                String[] p = edit.sound.split(":");
+                String surah = p.length == 3 ? p[2] : "18";
+                for (Catalog.Reciter r : cat.reciters) out.add(Row.of(r.name, "", () -> { edit.sound = "q:" + r.id + ":" + surah; keep(); back(); }));
+            }
+        });
     }
 
     private void pickSound() {
@@ -87,7 +135,7 @@ public class DuaActivity extends RowScreen {
             }
             @Override public void rows(List<Row> out) {
                 out.add(Row.of(S.t("الاسم"), edit.name, DuaActivity.this::rename));
-                out.add(Row.of(S.t("الصوت"), DuaStore.soundName(DuaActivity.this, edit), DuaActivity.this::pickSound));
+                out.add(Row.of(S.t("الصوت"), DuaStore.soundName(DuaActivity.this, edit), DuaActivity.this::chooseSound));
                 out.add(Row.of(S.t("الأيام"), DuaWords.day(edit.rule), DuaActivity.this::chooseDay));
                 out.add(Row.of(S.t("الوقت"), DuaWords.time(edit.rule), DuaActivity.this::chooseTime));
                 out.add(Row.of(S.t("يتكرر"), repeatWord(), () -> { edit.rule.repeat = !edit.rule.repeat; fixYear(); keep(); refresh(); }));
