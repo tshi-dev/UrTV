@@ -12,6 +12,7 @@ last good copy, or the bundled starter, stays). Formats:
   charades.json       {"v":1,"c":[category ids],"w":[[ar,en,category index,d,kids 0|1,modes bits: 1 act, 2 describe],...]}
   letter-hive.json    {"v":1,"L":28 letters,"S":short letters,"a":{letter:[quiz ids]},"e":{"A":[quiz ids]}}   (ids of items in quiz/quiz.json; the bundled starter also has "T" (the
                        threshold for S, 6) and "q": {id: compact quiz item} for the ids that are not in assets/quiz/starter.json, so it works offline on its own)
+  meta.json           {"v":1,"min_items":40,"groups":[{"id","ar","en","cats"}],"games":{"quiz":{"cats":[{"id","ar","en","n","kids"}],...},...}}   (the names the setup chips are built from; the reader is tolerant)
   word5-answers.json  {"v":1,"w":[[word,display,en,d,kids 0|1],...]}   (word: 5 normalized letters; en may be "" for dictionary words)
   word5-guesses.json  {"v":1,"A":alphabet,"n":count,"w":string}   (sorted five-letter words packed as one string, 5 characters each, character k = a..z,0,1 for the k-th letter of A:
                        look a word up by binary search on the string, no table in memory)"""
@@ -23,7 +24,8 @@ TEXT_MAX = 200
 #            game file            max bytes   min items  max items
 LIMITS = {"khanat": (200_000, 200, 4000), "missing-word": (300_000, 100, 5000), "odd-one": (150_000, 8, 200),
           "charades": (250_000, 200, 10000), "letter-hive": (250_000, 200, 12000),
-          "word5-answers": (120_000, 100, 5000), "word5-guesses": (700_000, 2000, 120000)}
+          "word5-answers": (120_000, 100, 5000), "word5-guesses": (700_000, 2000, 120000),
+          "meta": (200_000, 1, 200)}   # meta.json: made by games/tools/build_meta.py (work/games-data), games/SCHEMA.md; the items are its groups
 
 def norm(s):
     s = re.sub(r"[ً-ٰٟـۖ-ۭ]", "", s)
@@ -205,6 +207,12 @@ def verify_file(name, path, answers=None, quiz=None, minimum=True):
                 if not _id(i) or (quiz is not None and i not in quiz and i not in emb): bad.append(str(i))
         t = d.get("T", 12)
         if sorted(l for l in d["L"] if len(a.get(l, [])) < t) != sorted(d.get("S", "")): bad.append("S does not match the index")
+    elif name == "meta":
+        g = d.get("groups")
+        if not (isinstance(g, list) and isinstance(d.get("games"), dict) and isinstance(d["games"].get("quiz", {}).get("cats", []), list)): return ["shape"]
+        count(len(g))
+        for x in g:
+            if not (isinstance(x, dict) and _id(x.get("id")) and _t(x.get("ar", "")) and _t(x.get("en", "")) and isinstance(x.get("cats"), list)): bad.append(str(x))
     elif name == "word5-answers":
         w = d.get("w")
         if not isinstance(w, list): return ["no list"]

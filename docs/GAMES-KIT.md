@@ -67,6 +67,9 @@ Colours come only from `L` (`L.paper`, `L.ink`, `L.deep`, `L.saff`…): a game w
 5. **The registry**: set `ready` to true on the game's line in `GameRegistry` (the name and the line are already there and already marked for English in `QuizGamesActivity.WORDS`; change both places together).
 6. **The tests**: add the engine to `ENGINES` in `tests/games_kit_test.py` and its checks to `tests/GamesKitTest.java` (or a test of its own, listed in `tests/run.sh` under the games block). `KhanatActivity` and `MissingWordActivity` are the two examples: one with a clock and marking, one with items, turns and a verdict.
 
+## Night mode (4.3.3)
+A switch at the top of the games list, «وضع ليلي»: off (the default), on, or «تلقائي بعد المغرب» (on while the sun is below the horizon at the TV's city, from the prayer-times city; `SunPos`, plain Java, no network), and «ألوان الليل»: three palettes (A «فحم دافئ» the default, B «ليل أزرق», C «بيج خافت»; games/design/night-4-palettes.png). It is remembered per TV (`GamePrefs`: `night`, `palette`). `GameLook.of` decides in one place and every game, the list, the podium and the TV side of «الأسرع» read the colours from `GameLook` (the shared views through `QuizActivity.applyLook`); a phone's page follows the phone's own setting. `tests/games_kit_test.py` pins the contrast floors of every set (words 7:1; words on the green block and on saffron 4.5:1; the ten dimmed team colours 5:1 on every night ground) and `SunPos` against Riyadh and Mecca sunsets.
+
 ## Two rules the games share since 4.3.2
 
 - **«خلية الحروف»**: after «اكشف الجواب» the host chooses WHO answered (team 1, team 2, or «ما أحد»); the hexagon and the point go to that team. «من يختار الحرف»: by default the team that answered right picks the next letter (nobody answered: the turn passes to the other team); «بالتناوب» keeps the old alternation.
@@ -86,3 +89,6 @@ Colours come only from `L` (`L.paper`, `L.ink`, `L.deep`, `L.saff`…): a game w
 ## What needs a real TV
 
 The look at 3 m with the real fonts (the kit loads `fonts/ThmanyahDisplay-Bold.otf` and `fonts/Thmanyah-Medium.otf`); the focus on every screen with the remote; the hand-over's timing with real people; the tick and the fanfare through the TV's speakers; a 1.5 GB TV (no animation) and a 2.4 GB one (no confetti).
+
+## Names written by the people playing (4.3.3)
+Every game with teams or named players (`namesKind()`: "teams" or "players", `namesCount()`) shows a «الأسماء» button beside «ابدأ». It opens the list of names (one field per team or player, the game's suggestion shown dim when empty) and, on OK, an on-screen keyboard (Arabic and English, letters, digits, space, delete, «تم»). A name is at most 14 characters: letters, digits and single spaces, nothing that reads as a link (`GameNames.clean`). The names are kept on this TV only (`GamePrefs.names`, kind "teams" or "players"), used everywhere the game says a team or a player (`teamNames`, `playerNames`), and «أسماء جديدة» forgets them. An empty slot keeps the suggestion («الصقور»، «لاعب 1»); two the same get a number. With the phones on, the players' names are their phones' names (docs/GAMES-PHONES.md).

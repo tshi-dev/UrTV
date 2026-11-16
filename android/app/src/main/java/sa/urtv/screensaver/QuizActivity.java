@@ -39,8 +39,15 @@ import java.util.Random;
  * Low-RAM TVs: no animation, no confetti, no sounds' extra copies; the same screens otherwise.
  */
 public class QuizActivity extends Activity {
-    static final int PAPER = 0xFFEFE8DA, DEEP = 0xFF0E5A45, SAFF = 0xFFF2A93B, INK = 0xFF16140F, TILE = 0xFFFBF8F1, OKB = 0xFF17A673, PINK = 0xFFE4572E, TICKOFF = 0xFF0A4A39;
-    static final int[] PLAYER = {0xFF5AA9F0, 0xFFF2705A, 0xFF7BD88F, 0xFFC28BFF, 0xFFFFD15C, 0xFF4FD1C5, 0xFFFFB86B, 0xFF8FD6FF};
+    /** the colours of this screen: the day paper until applyLook gives the night look (GameLook, one place); the nested views (check mark, confetti, ink letters) and the other games read them too */
+    static int PAPER = 0xFFEFE8DA, DEEP = 0xFF0E5A45, SAFF = 0xFFF2A93B, INK = 0xFF16140F, TILE = 0xFFFBF8F1, OKB = 0xFF17A673, PINK = 0xFFE4572E, TICKOFF = 0xFF0A4A39, ONDEEP = 0xFFFFFFFF;
+    static int[] PLAYER = {0xFF5AA9F0, 0xFFF2705A, 0xFF7BD88F, 0xFFC28BFF, 0xFFFFD15C, 0xFF4FD1C5, 0xFFFFB86B, 0xFF8FD6FF};
+    static void applyLook(GameLook l) {
+        PAPER = l.paper; DEEP = l.deep; SAFF = l.saff; INK = l.ink; TILE = l.tile; OKB = l.ok; PINK = l.pink; TICKOFF = l.tickOff; ONDEEP = l.onDeep;
+        PLAYER = java.util.Arrays.copyOf(l.sides, 8);   // the quiz's eight player colours: the first eight of the ten
+    }
+    /** the ink at an alpha 0..255 */
+    static int inkA(int alpha) { return (INK & 0x00FFFFFF) | (alpha << 24); }
     /** one string: the game's working name (the owner has not confirmed it) */
     static final String NAME = S.n("الأسرع");
     static final String[] LETTERS_AR = {"أ", "ب", "ج", "د"}, LETTERS_EN = {"A", "B", "C", "D"};
@@ -78,6 +85,7 @@ public class QuizActivity extends Activity {
         super.onCreate(b);
         getWindow().setWindowAnimations(0);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);   // no screensaver and no sleep from the lobby to the podium
+        applyLook(GameLook.of(this));   // the day paper or the night look the person chose on the games list
         prefs = new Prefs(this);
         latin = DigitsText.isLatin(prefs.digits()); en = S.en(); rtl = Dir.rtl();
         ActivityManager am = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
@@ -88,6 +96,7 @@ public class QuizActivity extends Activity {
         scale = getResources().getDisplayMetrics().widthPixels / 1920f;
         bank = QuizPick.forLang(QuizBank.load(this), S.en());   // an English room plays only the items whose English text is really English
         QuizBank.refresh(this);
+        useMeta();   // games/meta.json: the chips' names and groups from the data (the built-in lists are the offline default)
         cat = QuizBank.category(this); level = QuizBank.level(this); countIdx = QuizBank.count(this); kids = QuizBank.kids(this); sound = QuizBank.sound(this);
         root = new FrameLayout(this);
         root.setLayoutDirection(Dir.layout());
@@ -208,13 +217,13 @@ public class QuizActivity extends Activity {
     private void band(float h2) { root.addView(rect(DEEP), at(-1, h2, 0, 0)); }
     private void title(String big, String small) {
         band(200);
-        root.addView(text(big, 96, 0xFFFFFFFF, true), at(1100, 120, 96, 54));
+        root.addView(text(big, 96, ONDEEP, true), at(1100, 120, 96, 54));
         if (small != null) { TextView s = text(small, 40, SAFF, false); s.setGravity(Gravity.END); s.setTextAlignment(View.TEXT_ALIGNMENT_VIEW_END); root.addView(s, atEnd(700, 56, 96, 84)); }
     }
     private void hints(String... kv) {
         LinearLayout row = new LinearLayout(this); row.setOrientation(LinearLayout.HORIZONTAL); row.setLayoutDirection(Dir.layout());
         for (int i = 0; i + 1 < kv.length; i += 2) {
-            TextView key = centered(kv[i], 30, INK, false); key.setBackgroundColor(0x24161410); key.setPadding(px(16), 0, px(16), 0); key.setMinWidth(px(64));
+            TextView key = centered(kv[i], 30, INK, false); key.setBackgroundColor(inkA(0x24)); key.setPadding(px(16), 0, px(16), 0); key.setMinWidth(px(64));
             TextView w = text(kv[i + 1], 32, INK, false); w.setAlpha(.85f);
             LinearLayout.LayoutParams kp = new LinearLayout.LayoutParams(-2, px(48)); kp.setMarginEnd(px(12));
             row.addView(key, kp);
@@ -283,9 +292,21 @@ public class QuizActivity extends Activity {
         root.addView(go, at(640, 104, 96, 856));
         hints("▲ ▼", S.t("السطر"), "◀ ▶", S.t("الاختيار"), S.t("اختيار"), S.t("ابدأ"));
     }
-    private String[] catLabels() { String[] v = new String[QuizPick.CATEGORIES.length]; for (int i = 0; i < v.length; i++) v[i] = S.tv(QuizPick.CATEGORIES[i][1]); return v; }
+    /** the category chips: «مزيج» and the built-in ones, or, when games/meta.json is on the TV, the groups and categories it names (the data's names in UrTV's language) */
+    private String[][] cats = QuizPick.CATEGORIES;
+    private void useMeta() {
+        GamesMeta meta = GameData.load(this, "meta", GamesMeta::parse, GamesMeta::parse);
+        GameData.refresh(this, "meta", GamesMeta::parse, GamesMeta.BYTES_MAX);
+        if (meta == null) return;
+        List<String[]> v = new ArrayList<>();
+        v.add(QuizPick.CATEGORIES[0]);
+        for (GamesMeta.Chip c : meta.quizChips()) v.add(new String[] {c.key, c.ar, c.en});
+        cats = v.toArray(new String[0][]);
+        QuizPick.GROUPS = meta.quizGroups();
+    }
+    private String[] catLabels() { String[] v = new String[cats.length]; for (int i = 0; i < v.length; i++) v[i] = cats[i].length > 2 ? (en ? cats[i][2] : cats[i][1]) : S.tv(cats[i][1]); return v; }
     private String[] levelLabels() { String[] v = new String[QuizPick.LEVELS.length]; for (int i = 0; i < v.length; i++) v[i] = S.tv(QuizPick.LEVELS[i]); return v; }
-    private int catIndex() { for (int i = 0; i < QuizPick.CATEGORIES.length; i++) if (QuizPick.CATEGORIES[i][0].equals(cat)) return i; return 0; }
+    private int catIndex() { for (int i = 0; i < cats.length; i++) if (cats[i][0].equals(cat)) return i; return 0; }
 
     /** one row of chips: the label above (the first row, long) or at the start; selected = saffron, the focus = ink, not offered = dashed.
      *  The chips are as wide as their words (measured), and the font shrinks a little when a row would not fit the 1728 px of the design. */
@@ -302,12 +323,12 @@ public class QuizActivity extends Activity {
         } while (total > avail && f > 26);
         float x = cx;
         for (int i = 0; i < opts.length; i++) {
-            boolean off = row == 0 && !catOffered(QuizPick.CATEGORIES[i][0]);
+            boolean off = row == 0 && !catOffered(cats[i][0]);
             boolean focus = selRow == row && sel == i;
             boolean isSel = i == picked;
             int fill = focus ? INK : isSel ? SAFF : off ? PAPER : TILE;
-            int txt = focus ? (isSel ? SAFF : PAPER) : off ? 0x88161410 : INK;   // standing on the picked one: saffron words and a saffron frame; on another: paper words
-            FrameLayout chip = stamp(fill, focus && isSel ? SAFF : off ? 0x88161410 : INK, focus && isSel ? 12 : 6, off);
+            int txt = focus ? (isSel ? SAFF : PAPER) : off ? inkA(0x88) : INK;   // standing on the picked one: saffron words and a saffron frame; on another: paper words
+            FrameLayout chip = stamp(fill, focus && isSel ? SAFF : off ? inkA(0x88) : INK, focus && isSel ? 12 : 6, off);
             TextView tv = centered(opts[i], f, txt, true); tv.setSingleLine(true);
             chip.addView(tv, new FrameLayout.LayoutParams(-1, -1));
             root.addView(chip, at(w[i], 88, x, cy));
@@ -325,11 +346,11 @@ public class QuizActivity extends Activity {
         if (dx != 0) { sel = Math.max(0, Math.min(n - 1, sel + dx)); show(Screen.SETUP); return; }
         if (ok) choose(selRow, sel);
     }
-    private int rowSize(int r) { return r == 0 ? QuizPick.CATEGORIES.length : r == 1 ? QuizPick.LEVELS.length : r == 2 ? 3 : 2; }
+    private int rowSize(int r) { return r == 0 ? cats.length : r == 1 ? QuizPick.LEVELS.length : r == 2 ? 3 : 2; }
     private int selRowPick(int r) { return r == 0 ? catIndex() : r == 1 ? level : r == 2 ? countIdx : r == 3 ? (kids ? 1 : 0) : r == 4 ? (sound ? 0 : 1) : 0; }
     private int clampSel(int r, int v) { return Math.max(0, Math.min(Math.max(0, rowSize(Math.min(r, 4)) - 1), v)); }
     private void choose(int row, int i) {
-        if (row == 0) { if (!catOffered(QuizPick.CATEGORIES[i][0])) { Toast.makeText(this, S.t("قريبًا"), Toast.LENGTH_SHORT).show(); return; } cat = QuizPick.CATEGORIES[i][0]; }
+        if (row == 0) { if (!catOffered(cats[i][0])) { Toast.makeText(this, S.t("قريبًا"), Toast.LENGTH_SHORT).show(); return; } cat = cats[i][0]; }
         else if (row == 1) { level = i; fixCat(); }
         else if (row == 2) { countIdx = i; fixCat(); }
         else if (row == 3) { kids = i == 1; fixCat(); }
@@ -383,13 +404,14 @@ public class QuizActivity extends Activity {
         } catch (java.net.SocketException e) { return null; }
     }
     private void closeRoom() {
+        QuizBank.playing = false;
         if (server != null) { server.stop(); server = null; }
         if (room != null) { room.close(); room = null; }
     }
 
     private void drawLobby() {
         band(300);
-        root.addView(text(S.tv(NAME), 128, 0xFFFFFFFF, true), at(1200, 160, 96, 54));
+        root.addView(text(S.tv(NAME), 128, ONDEEP, true), at(1200, 160, 96, 54));
         root.addView(text(S.t("الكل يجاوب من جواله، والأسرع يكسب"), 40, SAFF, false), at(1300, 56, 96, 214));
         FrameLayout count = stamp(SAFF, 0, 0, false);
         count.addView(centered(num(room.activeCount()), 112, INK, true), new FrameLayout.LayoutParams(-1, px(140), Gravity.TOP));
@@ -405,7 +427,7 @@ public class QuizActivity extends Activity {
         FrameLayout.LayoutParams qp = new FrameLayout.LayoutParams(-1, -1); qp.setMargins(px(14), px(14), px(14), px(14));
         qrBox.addView(qr, qp);
         root.addView(qrBox, at(288, 288, 96, 562));
-        TextView hint = text(S.t("امسح الرمز بكاميرا الجوال، أو افتح العنوان"), 34, 0xCC161410, false);
+        TextView hint = text(S.t("امسح الرمز بكاميرا الجوال، أو افتح العنوان"), 34, inkA(0xCC), false);
         hint.setMaxLines(3);
         root.addView(hint, at(310, 130, 410, 562));
         // the whole address, host:port/code, left to right and isolated (a right-to-left line drops the last part), big, under the QR
@@ -479,7 +501,7 @@ public class QuizActivity extends Activity {
     private void beginIntro() { screen = Screen.INTRO; introAt = System.currentTimeMillis(); show(Screen.INTRO); }
     private void drawIntro() {
         root.setBackgroundColor(DEEP);
-        TextView big = centered(S.t("جاهزين؟"), 200, 0xFFFFFFFF, true);
+        TextView big = centered(S.t("جاهزين؟"), 200, ONDEEP, true);
         root.addView(big, new FrameLayout.LayoutParams(-1, -1));
         TextView n = centered(S.tv(NAME), 56, SAFF, true);
         FrameLayout.LayoutParams p = new FrameLayout.LayoutParams(-1, px(80), Gravity.BOTTOM); p.bottomMargin = px(200);
@@ -503,6 +525,7 @@ public class QuizActivity extends Activity {
         if (qs.isEmpty() || !room.start(qs)) { Toast.makeText(this, S.t("ابدأ (لاعبان على الأقل)"), Toast.LENGTH_SHORT).show(); show(Screen.LOBBY); return; }
         asked = picks;
         QuizBank.remember(this, picks);
+        QuizBank.playing = true;   // a round is on: the background bank download waits
         shownPhase = null;   // step() draws the first question
     }
 
@@ -515,7 +538,7 @@ public class QuizActivity extends Activity {
         TextView mt = text(S.t("السؤال %s من %s", num(room.index + 1), num(room.total())), 40, SAFF, true);
         meta.addView(mt);
         if (reveal && room.endedEarly) {   // everyone answered before the 20 s: said in the header, whoever was fastest is on the line below
-            TextView all = text(S.t("جاوب الجميع"), 40, 0xFFFFFFFF, true);
+            TextView all = text(S.t("جاوب الجميع"), 40, ONDEEP, true);
             LinearLayout.LayoutParams alp = new LinearLayout.LayoutParams(-2, -2); alp.setMarginStart(px(32));
             meta.addView(all, alp);
         }
@@ -532,7 +555,7 @@ public class QuizActivity extends Activity {
         root.addView(tm, atEnd(232, 200, 96, 54));
         String qText = q.text(en);   // the TV's own language: English UrTV, English question
         int len = qText.length();
-        TextView qt = text(qText, chooseFont(qText, 104, 88, 72, 40, 70) - (len > 110 ? 12 : 0), 0xFFFFFFFF, true);
+        TextView qt = text(qText, chooseFont(qText, 104, 88, 72, 40, 70) - (len > 110 ? 12 : 0), ONDEEP, true);
         qt.setMaxLines(3); qt.setLineSpacing(0, .98f); qt.setEllipsize(android.text.TextUtils.TruncateAt.END);
         root.addView(qt, at(1330, 300, 96, 128));
         if (!reveal) {
@@ -552,13 +575,13 @@ public class QuizActivity extends Activity {
         List<QuizRoom.Player> ps = room.players();
         for (int i = 0; i < 4; i++) {
             boolean right = reveal && i == q.correct, wrong = reveal && !right;
-            FrameLayout st = stamp(right ? OKB : wrong ? PAPER : TILE, wrong ? 0x59161410 : INK, wrong ? 4 : 6, wrong);
-            View tab = rect(wrong ? 0x99161410 : INK);
+            FrameLayout st = stamp(right ? OKB : wrong ? PAPER : TILE, wrong ? inkA(0x59) : INK, wrong ? 4 : 6, wrong);
+            View tab = rect(wrong ? inkA(0x99) : INK);
             st.addView(tab, new FrameLayout.LayoutParams(px(96), px(96), Gravity.START | Gravity.TOP));
             InkLetter lt = new InkLetter(this, letter(i), 64 * scale, PAPER, font("ThmanyahDisplay-Bold")); lt.setAlpha(wrong ? .6f : 1f);   // centred on the glyph's ink, not the font's line box
             st.addView(lt, new FrameLayout.LayoutParams(px(96), px(96), Gravity.START | Gravity.TOP));
             String a = q.opt(i, en);
-            TextView at = text(a, chooseFont(a, 68, 56, 44, 16, 30) - (a.length() > 50 ? 6 : 0), right ? 0xFFFFFFFF : wrong ? 0x73161410 : INK, true);
+            TextView at = text(a, chooseFont(a, 68, 56, 44, 16, 30) - (a.length() > 50 ? 6 : 0), right ? ONDEEP : wrong ? inkA(0x73) : INK, true);
             at.setMaxLines(3); at.setEllipsize(android.text.TextUtils.TruncateAt.END);
             FrameLayout.LayoutParams tp = new FrameLayout.LayoutParams(-1, -2, Gravity.START | Gravity.CENTER_VERTICAL); tp.setMarginStart(px(136)); tp.setMarginEnd(px(reveal ? 28 + 56 * Math.max(1, countChose(ps, i)) : 28));
             st.addView(at, tp);
@@ -587,7 +610,7 @@ public class QuizActivity extends Activity {
         for (QuizRoom.Player p : room.players()) {
             if (p.left || p.waiting) continue;
             boolean done = p.answer >= 0;
-            View v = done ? box(PLAYER[p.color % 8], 0, 0, false) : box(0, 0x80EFE8DA, 4, false);
+            View v = done ? box(PLAYER[p.color % 8], 0, 0, false) : box(0, ((PAPER & 0x00FFFFFF) | 0x80000000), 4, false);
             LinearLayout.LayoutParams vp = new LinearLayout.LayoutParams(px(28), px(28)); vp.setMarginEnd(px(8));
             answeredSquares.addView(v, vp);
             if (done) n++;
@@ -627,7 +650,7 @@ public class QuizActivity extends Activity {
         if (withDelta) {
             TextView ar = centered(p.score > 0 && p.lastDelta > 0 ? "▲" : p.score > 0 && p.lastDelta < 0 ? "▼" : "", 44, p.lastDelta > 0 ? OKB : PINK, false);
             row.addView(ar, new LinearLayout.LayoutParams(px(70), -2));
-            TextView d = centered(signed(p.lastPoints), 44, 0x99161410, false); d.setTextDirection(View.TEXT_DIRECTION_LTR); d.setText("\u2066" + signed(p.lastPoints) + "\u2069");   // «+591», the plus on the left in both languages
+            TextView d = centered(signed(p.lastPoints), 44, inkA(0x99), false); d.setTextDirection(View.TEXT_DIRECTION_LTR); d.setText("\u2066" + signed(p.lastPoints) + "\u2069");   // «+591», the plus on the left in both languages
             row.addView(d, new LinearLayout.LayoutParams(px(150), -2));
         }
         TextView sc = text(num(p.score), 88, INK, true); sc.setTextDirection(View.TEXT_DIRECTION_LTR); sc.setGravity(Gravity.END | Gravity.CENTER_VERTICAL); sc.setTextAlignment(View.TEXT_ALIGNMENT_VIEW_END);

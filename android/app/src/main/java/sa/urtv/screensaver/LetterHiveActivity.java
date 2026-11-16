@@ -24,7 +24,7 @@ import sa.urtv.screensaver.games.hive.HiveGame;
  * two sides wins. The rules are HiveGame (plain Java, tests/HiveTest.java); this class only draws and passes the keys on.
  */
 public class LetterHiveActivity extends GameActivity {
-    private enum Screen { SETUP, BOARD, ASK, WON }
+    private enum Screen { SETUP, LOBBY, BOARD, ASK, WON }
     private static final int BOARD_W = 1232, BOARD_H = 864, PANEL_W = 448;
 
     private Screen screen = Screen.SETUP;
@@ -36,6 +36,7 @@ public class LetterHiveActivity extends GameActivity {
     private TickTimer timer;
     private HiveGame.Phase drawn;
     private boolean drawnUp;
+    private int buzzed = -1;   // with phones: the seat whose phone buzzed first on this question
     // the game's clock stands still while the pause card is up
     private long pausedAt, pausedFor;
 
@@ -57,7 +58,9 @@ public class LetterHiveActivity extends GameActivity {
         chips.add("options", S.t("زر الخيارات"), new String[] {S.tv(ON_OFF[1]), S.tv(ON_OFF[0])}, 0);
         chips.add("steal", S.t("فرصة للفريق الآخر"), new String[] {S.tv(ON_OFF[0]), S.tv(ON_OFF[1])}, 0);
         chips.add("next", S.t("من يختار الحرف"), new String[] {S.t("من يجاوب صح يختار الحرف"), S.t("بالتناوب")}, 0);
+        chips.add("phones", S.t("اللعب بالجوالات"), new String[] {S.tv(ON_OFF[0]), S.tv(ON_OFF[1])}, 0);
         remembered(soundChip(chips));
+        chips.get("phones").picked = getIntent().getBooleanExtra("phones", false) ? 1 : 0;   // off unless the «بالجوالات» view opened this game; never kept from last time
     }
 
     private long clock() { return (pausedAt != 0 ? pausedAt : System.currentTimeMillis()) - pausedFor; }
@@ -65,7 +68,25 @@ public class LetterHiveActivity extends GameActivity {
         if (paused) pausedAt = now; else if (pausedAt != 0) { pausedFor += now - pausedAt; pausedAt = 0; }
     }
 
+    @Override protected String namesKind() { return "teams"; }
+    @Override protected int namesCount() { return 2; }
+
+    private boolean onPhones() { return phones != null && phones.room.phase() == GamePhoneRoom.Phase.PLAY; }
+    /** a phone's team: the phones take the two teams in turn (first phone team 1, second team 2, third team 1 ...) */
+    private int teamOf(int seat) { return seat % 2; }
+    private void startWithPhones() {
+        if (phones.room.count() < 2) return;
+        phones.room.start(); phoneLobby = false;
+        begin();
+    }
     private void start() {
+        if (chips.picked("phones") == 1) {
+            if (!onPhones()) { if (!openPhones()) return; screen = Screen.LOBBY; phoneLobby = true; redraw(); return; }
+        } else closePhones();   // the switch is off: the remote plays alone, as it always did
+        begin();
+    }
+    private void begin() {
+        names = teamNames(2);   // what the people wrote on the ready screen, else the suggestions
         if (bank == null) { toast(S.t("قريبًا")); return; }
         HiveGame.Settings s = new HiveGame.Settings();
         s.level = chips.picked("level"); s.kids = chips.picked("kids") == 1; s.seconds = HiveGame.SECONDS[chips.picked("time")];
@@ -75,9 +96,22 @@ public class LetterHiveActivity extends GameActivity {
         game.avoid(GamePrefs.recent(this, id()));
         focus = HiveBoard.cell(2, 2); pausedAt = 0; pausedFor = 0;
         screen = Screen.BOARD;
+        toBoardPhones();
         redraw();
     }
 
+    /** between questions every phone looks at the TV; its title says whose team it is */
+    private void toBoardPhones() {
+        buzzed = -1;
+        if (!onPhones()) return;
+        for (int i = 0; i < phones.room.count(); i++) phones.room.card(i, GamePhoneRoom.WAIT, names[teamOf(i)], S.t("اختاروا حرفًا من الخلية"), "", null, null, -1);
+    }
+    /** a question is open: every phone has the buzzer, the first tap is who answers */
+    private void toAskPhones() {
+        buzzed = -1;
+        if (!onPhones()) return;
+        for (int i = 0; i < phones.room.count(); i++) phones.room.card(i, GamePhoneRoom.ACT, names[teamOf(i)], S.t("حرف %s", String.valueOf(game.question().letter)), "", null, new int[] {GamePhoneRoom.ACT_BUZZ}, -1);
+    }
     private void leaveGame() {
         if (game != null) GamePrefs.remember(this, id(), new ArrayList<>(game.asked()));
     }
@@ -90,10 +124,13 @@ public class LetterHiveActivity extends GameActivity {
             case SETUP:
                 if (keySetup(chips, back, ok, dx, dy)) start();
                 break;
+            case LOBBY:
+                if (back) { closePhones(); screen = Screen.SETUP; redraw(); } else if (ok) startWithPhones();
+                break;
             case BOARD:
                 if (back) { openPause(); return; }
                 if (ok) {
-                    if (game.pick(focus)) { screen = Screen.ASK; sel = 0; play(QuizSound.CHIME); } else play(QuizSound.LOW);   // a taken hexagon
+                    if (game.pick(focus)) { screen = Screen.ASK; sel = 0; play(QuizSound.CHIME); toAskPhones(); } else play(QuizSound.LOW);   // a taken hexagon
                 } else {   // the focus moved: only the honeycomb is painted again (the whole screen was rebuilt per key: 19 % janky frames)
                     focus = HiveBoard.move(focus, dx > 0 ? HiveBoard.NEXT : dx < 0 ? HiveBoard.PREV : dy < 0 ? HiveBoard.UP : HiveBoard.DOWN);
                     if (hexBoard != null) { hexBoard.invalidate(); return; }
@@ -110,11 +147,11 @@ public class LetterHiveActivity extends GameActivity {
                     int who = chosen == 2 ? 0 : chosen == 0 ? HiveBoard.TEAM_SIDES : HiveBoard.TEAM_TOP;   // the buttons: team 1, team 2, nobody
                     game.judge(who);
                     play(who != 0 ? QuizSound.CHIME : QuizSound.LOW);
-                    if (game.phase() == HiveGame.Phase.WON) { leaveGame(); screen = Screen.WON; sel = 0; play(QuizSound.FANFARE); }
-                    else { screen = Screen.BOARD; if (who != 0) focus = nearestFree(focus); }
+                    if (game.phase() == HiveGame.Phase.WON) { leaveGame(); screen = Screen.WON; sel = 0; play(QuizSound.FANFARE); if (onPhones()) phones.room.waitAll(S.t("شوفوا التلفزيون")); }
+                    else { screen = Screen.BOARD; if (who != 0) focus = nearestFree(focus); toBoardPhones(); }
                 } else if (chosen == 1) game.showOptions();
                 else game.reveal();
-                sel = game.phase() == HiveGame.Phase.JUDGE ? game.answering() - 1 : 0;   // «من جاوب؟» starts on the team that was answering
+                sel = game.phase() == HiveGame.Phase.JUDGE ? (buzzed >= 0 && onPhones() ? teamOf(buzzed) : game.answering() - 1) : 0;   // «من جاوب؟» starts on the team of the phone that buzzed, else the team that was answering
                 redraw();
                 break;
             default:
@@ -134,6 +171,14 @@ public class LetterHiveActivity extends GameActivity {
     }
 
     @Override protected void onTick(long now) {
+        if (screen == Screen.ASK && game != null && onPhones() && buzzed < 0 && !game.timeUp() && game.phase() != HiveGame.Phase.JUDGE) {
+            int b = phones.room.firstReplied();
+            if (b >= 0) {   // the first phone to buzz: its team answers; the other phones are told
+                buzzed = b; play(QuizSound.CHIME);
+                for (int i = 0; i < phones.room.count(); i++) phones.room.card(i, GamePhoneRoom.WAIT, names[teamOf(i)], i == b ? S.t("أنت أول واحد! جاوب بصوت عالٍ") : S.t("%s ضغط أولًا", phones.room.name(b)), "", null, null, -1);
+                redraw();
+            }
+        }
         if (screen != Screen.ASK || game == null) return;
         game.tick();
         if (game.phase() != drawn || game.timeUp() != drawnUp) { if (game.timeUp()) play(QuizSound.LOW); redraw(); return; }
@@ -145,6 +190,7 @@ public class LetterHiveActivity extends GameActivity {
     @Override protected void draw() {
         timer = null;
         if (screen == Screen.SETUP) { setup(chips, S.t("ابدأ")); return; }
+        if (screen == Screen.LOBBY) { drawPhoneLobby(2, 12); return; }
         if (screen == Screen.ASK) { drawAsk(); return; }
         boolean won = screen == Screen.WON;
         hexBoard = new HexBoard(this);
@@ -154,7 +200,7 @@ public class LetterHiveActivity extends GameActivity {
         for (int t = 0; t < 2; t++) {
             boolean on = !won && game.turn() == t + 1 || won && game.winner() == t + 1;
             FrameLayout tile = stamp(on ? L.ink : L.tile, L.ink, 6, false);
-            tile.addView(box(GameLook.SIDES[t], on ? L.onInk : L.ink, 3, false), tileAt(48, 48, 24, 24));
+            tile.addView(box(L.sides[t], on ? L.onInk : L.ink, 3, false), tileAt(48, 48, 24, 24));
             tile.addView(text(clip(names[t], 44, 250), 44, on ? L.onInk : L.ink, true), tileAt(260, 60, 92, 16));
             tile.addView(text(t == 0 ? S.t("من اليمين إلى اليسار") : S.t("من الأعلى إلى الأسفل"), 30, on ? L.saff : L.ink(0xCC), false), tileAt(400, 44, 24, 84));
             int cells = 0;
@@ -205,7 +251,7 @@ public class LetterHiveActivity extends GameActivity {
         } else if (judge && q.kind == HiveGame.Kind.BANK) {
             root.addView(answer(letter, digits(q.item.a[en ? 1 : 0]), STAMP_RIGHT), at(1728, 200, 96, 544));
         } else {
-            String line = !judge ? S.t("جاوبوا بصوت مسموع") : S.t("الحكم لكم: أي جواب صحيح يُحسب");
+            String line = !judge ? (buzzed >= 0 && onPhones() ? S.t("%s ضغط أولًا: %s", phones.room.name(buzzed), names[teamOf(buzzed)]) : S.t("جاوبوا بصوت مسموع")) : S.t("الحكم لكم: أي جواب صحيح يُحسب");
             root.addView(text(line, 64, L.ink, true), at(1728, 96, 96, 536));
             if (judge && q.kind == HiveGame.Kind.CATEGORY) {
                 TextView ex = text(S.t("أمثلة: %s", android.text.TextUtils.join(en ? ", " : "، ", q.hints)), 48, L.ink(0xCC), false); ex.setMaxLines(2);
@@ -231,8 +277,8 @@ public class LetterHiveActivity extends GameActivity {
         @Override protected void onDraw(Canvas cv) {
             float w = getWidth(), h = getHeight(), m = px(28), cw = (w - 2 * m) / (HiveBoard.COLS + .5f), hw = cw / 2, r = (h - 2 * m) / (1.5f * (HiveBoard.ROWS - 1) + 2);
             // the sides: team 1 right and left, team 2 top and bottom
-            fill.setColor(GameLook.SIDES[0]); cv.drawRect(0, m, px(16), h - m, fill); cv.drawRect(w - px(16), m, w, h - m, fill);
-            fill.setColor(GameLook.SIDES[1]); cv.drawRect(m, 0, w - m, px(16), fill); cv.drawRect(m, h - px(16), w - m, h, fill);
+            fill.setColor(L.sides[0]); cv.drawRect(0, m, px(16), h - m, fill); cv.drawRect(w - px(16), m, w, h - m, fill);
+            fill.setColor(L.sides[1]); cv.drawRect(m, 0, w - m, px(16), fill); cv.drawRect(m, h - px(16), w - m, h, fill);
             boolean won = game.phase() == HiveGame.Phase.WON;
             int[] chain = won ? game.chain() : null;
             for (int pass = 0; pass < 2; pass++) for (int i = 0; i < HiveBoard.CELLS; i++) {
@@ -244,7 +290,7 @@ public class LetterHiveActivity extends GameActivity {
                 if (rtl) x = w - x;
                 path.rewind();
                 path.moveTo(x, y - b); path.lineTo(x + a, y - b / 2); path.lineTo(x + a, y + b / 2); path.lineTo(x, y + b); path.lineTo(x - a, y + b / 2); path.lineTo(x - a, y - b / 2); path.close();
-                fill.setColor(owner != HiveBoard.FREE ? GameLook.SIDES[owner - 1] : focused ? L.saff : L.tile);
+                fill.setColor(owner != HiveBoard.FREE ? L.sides[owner - 1] : focused ? L.saff : L.tile);
                 fill.setAlpha(won && !lit ? 0x66 : 0xFF);
                 cv.drawPath(path, fill);
                 line.setColor(L.ink); line.setStrokeWidth(px(focused || lit ? 14 : 5)); line.setAlpha(won && !lit ? 0x66 : 0xFF);

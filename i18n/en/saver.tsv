@@ -827,6 +827,12 @@
 الحكم لكم: أي جواب صحيح يُحسب	You are the judge: any correct answer counts
 أمثلة: %s	Examples: %s
 اكشف الجواب	Show the answer
+وضع ليلي	Night mode
+تلقائي بعد المغرب	Auto after Maghrib
+ألوان الليل	Night colours
+فحم دافئ	Warm charcoal
+ليل أزرق	Blue-black
+بيج خافت	Dim sepia
 حرف %s، من جاوب؟	Letter %s, who answered?
 ما أحد	Nobody
 خيارات	Options
@@ -893,3 +899,49 @@
 اقرأ هذا قبل ما تحذف UrTV من التلفزيون	Read this before you delete UrTV from the TV
 واجهة المصنع معطّلة الحين، وUrTV هو الشاشة الرئيسية. إذا حذفت UrTV وهي معطّلة يبقى التلفزيون بلا شاشة رئيسية، وتطلع شاشة سوداء. اضغط «رجّع واجهة المصنع» أولاً، ثم احذف.	The factory interface is off now and UrTV is the home screen. If you delete UrTV while it is off, the TV is left with no home screen and shows a black screen. Press «Bring back the factory interface» first, then delete.
 إذا شغّلت «تخلّص من واجهة المصنع» ثم حذفت UrTV، يبقى التلفزيون بلا شاشة رئيسية وتطلع شاشة سوداء. لا تحذفه قبل «رجّع واجهة المصنع» من هنا، أو «إعداد تلفزيوني» ثم «تراجع».	If you turned on «Get rid of the factory interface» and then delete UrTV, the TV is left with no home screen and shows a black screen. Do not delete it before «Bring back the factory interface», from here, or «TV setup» then «Undo».
+اللعب بالجوالات	Phone play
+شوفوا التلفزيون	Look at the TV
+شوفوا كلماتكم في جوالاتكم	Look at your word on your phone
+كل واحد يشوف كلمته	Everyone sees their own word
+اللعبة تتسع لعشرة لاعبين	The game has room for ten players
+الممثل يشوف الكلمة في جواله	The actor sees the word on their phone
+الوقت يبدأ لما تضغط شفتها	The time starts when you tap Got it
+ابدأ الوقت	Start the time
+صوّتوا من جوالاتكم	Vote on your phones
+احسب الأصوات	Count the votes
+اختيار الأصوات أو الأصابع	Count the votes or the fingers
+كل واحد بجواله، والريموت للمضيف	Everyone on their phone, the remote for the host
+شافوا %s من %s	%s of %s have seen it
+لازم %s لاعبين على الأقل	At least %s players needed
+صوّت %s من %s	%s of %s voted
+عرض	Show
+أسماء الفرق	Team names
+أسماء اللاعبين	Player names
+أسماء جديدة	New names
+اكتب الاسم	Write the name
+اكتبوها أنتم	You write them
+الأسماء	Names
+الحروف	Letters
+مسافة	Space
+اكتبوا الكلمة الناقصة	Type the missing word
+اللعبة تتسع لأربعة فرق	The game has room for four teams
+%s يكتب الكلمة في جواله	%s is typing the word on their phone
+كتب %s: %s	%s typed: %s
+اختاروا حرفًا من الخلية	Pick a letter on the board
+أنت أول واحد! جاوب بصوت عالٍ	You were first! Answer out loud
+%s ضغط أولًا	%s buzzed first
+%s ضغط أولًا: %s	%s buzzed first: %s
+حرف %s	Letter %s
+خمسة حروف	Five letters
+%s: الكلمة خمسة حروف	%s: the word has five letters
+%s: ما نعرف هذي الكلمة	%s: we don't know that word
+خمّن الكلمة: %s من %s	Guess the word: %s of %s
+%s خلّص، باقي الباقين ثواني	%s is done, the others have a few seconds
+كلمة لكل خانة تبدأ بحرف %s	A word for every box starting with %s
+أي طرف؟	Which end?
+العب من جوالك	Play from your phone
+اللعبة تتسع لأربعة لاعبين	The game has room for four players
+دورك: اختر حجرًا	Your turn: pick a tile
+ضع أي حجر	Play any tile
+الطرفان: %s و %s	The ends: %s and %s
+طرف %s	End %s

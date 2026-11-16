@@ -13,14 +13,14 @@ import java.util.Random;
  * word aloud, OK shows it, and the host says how it went: «صح», «خطأ», or, with «الخطف» on, the next team that said it right before the reveal.
  */
 public class MissingWordActivity extends GameActivity {
-    enum Screen { SETUP, ASK, SHOWN, END }
+    enum Screen { SETUP, LOBBY, ASK, SHOWN, END }
 
     static final int[] TEAMS = {1, 2, 3, 4};
     /** the kinds' names, marked for the English table (MissingWord has no S in it) */
     static final String[] DECK_WORDS = {S.n("مزيج"), S.n("حكمة ومثل"), S.n("معلومة")};
 
     private List<MissingWord.Item> all = new ArrayList<>(); private GameChips chips; private MissingWord.Engine game; private String[] names = new String[0];
-    private Screen screen = Screen.SETUP; private int sel; private boolean timeUp;
+    private Screen screen = Screen.SETUP; private int sel; private boolean timeUp; private String typed;   // typed: what the team's phone sent for this statement
     private final GameClock clock = new GameClock(); private TickTimer timer; private final Random rnd = new Random();
 
     @Override protected String id() { return "missing-word"; }
@@ -36,8 +36,10 @@ public class MissingWordActivity extends GameActivity {
             .add("count", S.t("الأسئلة"), new String[]{num(5), num(10), num(15)}, 1)
             .add("time", S.t("الوقت"), new String[]{S.t("%s ثانية", num(10)), S.t("%s ثانية", num(15)), S.t("%s ثانية", num(30))}, 1)
             .add("kids", S.t("للأطفال"), new String[]{S.tv(ON_OFF[0]), S.tv(ON_OFF[1])}, 0)
-            .add("steal", S.t("الخطف"), new String[]{S.tv(ON_OFF[0]), S.tv(ON_OFF[1])}, 0);
+            .add("steal", S.t("الخطف"), new String[]{S.tv(ON_OFF[0]), S.tv(ON_OFF[1])}, 0)
+            .add("phones", S.t("اللعب بالجوالات"), new String[]{S.tv(ON_OFF[0]), S.tv(ON_OFF[1])}, 0);
         remembered(soundChip(chips));
+        chips.get("phones").picked = getIntent().getBooleanExtra("phones", false) ? 1 : 0;   // off unless the «بالجوالات» view opened this game; never kept from last time
         onChips(chips);
     }
 
@@ -49,26 +51,62 @@ public class MissingWordActivity extends GameActivity {
     }
 
     @Override protected boolean inPlay() { return screen == Screen.ASK || screen == Screen.SHOWN; }
+    private boolean onPhones() { return phones != null && phones.room.phase() == GamePhoneRoom.Phase.PLAY; }
+    @Override protected String namesKind() { return "teams"; }
+    @Override protected int namesCount() { return TEAMS[chips.picked("teams")]; }
     @Override protected void onPauseChanged(boolean paused, long now) { if (paused) clock.pause(now); else clock.resume(now); }
     @Override protected void onEndRound() { if (game != null) { game.finish(); clock.stop(); go(Screen.END); play(QuizSound.FANFARE); } }
 
     private void go(Screen s) { screen = s; sel = 0; redraw(); }
 
+    /** with phones every phone is a team (1 to 4), its name is the team's name; a team's phone types the word on its turn */
     private void start() {
+        if (chips.picked("phones") == 1) {
+            if (!onPhones()) { if (!openPhones()) return; screen = Screen.LOBBY; phoneLobby = true; redraw(); return; }
+            begin(phones.room.count(), phones.room.names().toArray(new String[0]));
+            return;
+        }
+        closePhones();   // the switch is off: the remote plays alone, as it always did
+        begin(TEAMS[chips.picked("teams")], null);
+    }
+    private void startWithPhones() {
+        int n = phones.room.count();
+        if (n < 1) return;
+        if (n > TEAMS[TEAMS.length - 1]) { toast(S.t("اللعبة تتسع لأربعة فرق")); return; }
+        phones.room.start(); phoneLobby = false;
+        begin(n, phones.room.names().toArray(new String[0]));
+    }
+    private void begin(int teams, String[] phoneNames) {
         boolean kids = chips.picked("kids") == 1;
         List<MissingWord.Item> picks = MissingWord.pick(all, MissingWord.DECKS[chips.picked("deck")], kids, en, MissingWord.COUNTS[chips.picked("count")], GamePrefs.recent(this, id()), rnd);
         if (picks.isEmpty()) { toast(S.t("قريبًا")); return; }
         List<String> ids = new ArrayList<>();
         for (MissingWord.Item it : picks) ids.add(it.id);
         GamePrefs.remember(this, id(), ids);
-        int teams = TEAMS[chips.picked("teams")];
-        names = teamNames(teams);
+        names = phoneNames != null ? phoneNames : teamNames(teams);
         game = new MissingWord.Engine(teams, picks, chips.picked("steal") == 1);
         ask();
     }
-    private void ask() { timeUp = false; clock.start(MissingWord.SECONDS[chips.picked("time")] * 1000L, System.currentTimeMillis()); go(Screen.ASK); }
+    private void ask() {
+        timeUp = false; typed = null; clock.start(MissingWord.SECONDS[chips.picked("time")] * 1000L, System.currentTimeMillis()); go(Screen.ASK);
+        if (onPhones() && game.current() != null) {   // the statement goes to the phone of the team whose turn it is; the others wait
+            for (int i = 0; i < phones.room.count(); i++) {
+                if (i == game.turn) phones.room.card(i, GamePhoneRoom.TEXT, "", digits(game.current().text(en)).replace(MissingWord.BLANK, "_____"), S.t("اكتبوا الكلمة الناقصة"), new String[]{S.t("الكلمة")}, null, -1);
+                else phones.room.hold(i, S.t("دور %s", names[game.turn]));
+            }
+        }
+    }
+    /** the team's phone sent a word: the right one (spellings meet) is marked right at once, any other goes to the host with what was typed */
+    private void fromPhone(String word) {
+        typed = word; clock.stop(); game.reveal();
+        if (MissingWord.sameWord(word, game.current().word(en))) {
+            game.judge(MissingWord.Engine.CORRECT);
+            if (game.phase == MissingWord.Engine.Phase.END) { go(Screen.END); play(QuizSound.FANFARE); } else { play(QuizSound.CHIME); ask(); }
+        } else go(Screen.SHOWN);
+    }
 
     @Override protected void onTick(long now) {
+        if (screen == Screen.ASK && onPhones() && game.turn < phones.room.count()) { String[] t = phones.room.typed(game.turn); if (t != null) { fromPhone(t[0]); return; } }
         if (screen != Screen.ASK || !clock.running()) return;
         if (timer != null) timer.set(clock.leftSeconds(now));
         if (clock.over(now)) { clock.stop(); timeUp = true; play(QuizSound.LOW); redraw(); }   // the word is not shown by the clock: the host presses OK
@@ -79,6 +117,7 @@ public class MissingWordActivity extends GameActivity {
     @Override protected void onKey(boolean back, boolean ok, int dx, int dy) {
         switch (screen) {
             case SETUP: if (keySetup(chips, back, ok, dx, dy)) start(); return;
+            case LOBBY: if (back) { closePhones(); go(Screen.SETUP); } else if (ok) startWithPhones(); return;
             case ASK: {
                 if (back) { openPause(); return; }
                 int v = keyButtons(sel, 2, ok, dx);
@@ -116,6 +155,7 @@ public class MissingWordActivity extends GameActivity {
         timer = null;
         switch (screen) {
             case SETUP: setup(chips, S.t("ابدأ")); break;
+            case LOBBY: drawPhoneLobby(1, TEAMS[TEAMS.length - 1]); break;
             case ASK: drawTurn(false); break;
             case SHOWN: drawTurn(true); break;
             case END: podium(game.score, names, sel); break;
@@ -136,7 +176,7 @@ public class MissingWordActivity extends GameActivity {
             TextView hint = button(game.hinted ? S.t("أول حرف ظاهر") : S.t("تلميح بنصف النقاط"), sel == 1);
             if (game.hinted) hint.setAlpha(.5f);
             root.addView(hint, at(560, 104, 96 + 560 + 24, 572));
-            String line = timeUp ? S.t("انتهى الوقت") : game.score.n == 1 ? S.t("قولوا الكلمة بصوت عالٍ") : S.t("دور %s: قولوا الكلمة بصوت عالٍ", team);
+            String line = onPhones() ? (timeUp ? S.t("انتهى الوقت") : S.t("%s يكتب الكلمة في جواله", team)) : timeUp ? S.t("انتهى الوقت") : game.score.n == 1 ? S.t("قولوا الكلمة بصوت عالٍ") : S.t("دور %s: قولوا الكلمة بصوت عالٍ", team);
             root.addView(text(line, 56, timeUp ? L.pink : L.ink, true), at(1728, 80, 96, 712));
             hints("◀ ▶", S.t("الاختيار"), S.t("اختيار"), sel == 0 ? S.t("اكشف الكلمة") : S.t("تلميح"), S.t("رجوع"), S.t("إيقاف مؤقت"));
         } else {
@@ -146,6 +186,7 @@ public class MissingWordActivity extends GameActivity {
             buttons(labels, sel, game.canSteal() ? 480 : 560, 572);
             String line = game.score.n == 1 ? S.t("هل قلتم الكلمة؟ صح بـ %s نقاط", num(game.worth())) : S.t("هل قالها %s؟ صح بـ %s نقاط", team, num(game.worth()));
             root.addView(text(line, 56, L.ink, true), at(1728, 80, 96, 712));
+            if (typed != null) root.addView(text(S.t("كتب %s: %s", team, typed), 44, L.ink(0xCC), false), at(1728, 56, 96, 792));
             hints("◀ ▶", S.t("الاختيار"), S.t("اختيار"), S.t("تأكيد"), S.t("رجوع"), S.t("إيقاف مؤقت"));
         }
         sidesBar(game.score, names, game.turn, 836);
