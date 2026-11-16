@@ -45,6 +45,9 @@ public class ExtrasBridge extends ContentProvider {
                 if (SettingsKey.isSettingsKey(e.getKeyCode())) new Handler(Looper.getMainLooper()).post(() -> MainActivity.keyFromService(e));   // the Settings key only
                 break;
             }
+            case ExtrasWords.LEDGER:   // 4.4: «إنقاذ تلفزيونك» asks what our setup turned off (it turns those back on)
+                out.putString(ExtrasWords.RESULT, sa.urtv.home.setup.SetupHook.ledger(c));
+                break;
             default:
                 break;
         }

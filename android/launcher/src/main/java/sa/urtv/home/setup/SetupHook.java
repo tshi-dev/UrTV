@@ -65,6 +65,15 @@ public final class SetupHook {
     }
 
     /** the stock interface is off by us («تخلّص من واجهة المصنع» is on): the settings' row says so through the provider (read only) */
+    /** 4.4 «إنقاذ تلفزيونك»: what our setup turned off (the ledger and the community list's record), one package per line, for the rescue app (ExtrasBridge, our key only) */
+    public static String ledger(Context c) {
+        try {
+            FileStore f = new FileStore(c);
+            String a = f.get("disabled-by-us.txt"), b = f.get("community-applied.txt");
+            return (a == null ? "" : a) + "\n" + (b == null ? "" : b);
+        } catch (RuntimeException e) { return ""; }
+    }
+
     public static boolean factoryOff(Context c) {
         try { String f = new FileStore(c).get(SetupEngine.FACTORY); return f != null && f.startsWith("on"); }
         catch (RuntimeException e) { return false; }
