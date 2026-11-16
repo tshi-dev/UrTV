@@ -138,7 +138,11 @@ if shutil.which("javac"):
           [r for r in rows if r[0] == "samebox"][0][1] == "4")
     cr = {r[1]: r[2] for r in rows if r[0] == "crop"}
     check("4.4 per scene only the picture's framing: scenes.tsv's 11th column «frame» x,y,w (px of the 1920 x 1080 photo, its height w x 9/16, inside it); "
-          "\"-\", missing or out of the photo: the whole photo", cr == {"aa": "120,60,1600", "bb": "0,0,1920", "cc": "0,0,1920", "dd": "0,0,1920"}, cr)
+          "\"-\", missing or out of the photo: the whole photo; and never an upscale (the owner): the pack's photos are 1920 wide, so a frame of 1600 is "
+          "not used", cr == {"aa": "0,0,1920", "bb": "0,0,1920", "cc": "0,0,1920", "dd": "0,0,1920"}, cr)
+    up = [r for r in rows if r[0] == "upscale"][0][1]
+    check("never upscaled nor stretched: a frame keeps the photo's own pixels at least one to one (1600 of a 1920 photo: not used; of a 2560 one: used); "
+          "the whole photo always", up == "1920,1600,1920,1920", up)
     fr = [r for r in rows if r[0] == "frame"][0][1]
     check("the framing: no crop and no zoom leaves the picture as it is; a zoom of 1.2 is about the screen's top centre; a crop of 1600 from 120, 60 "
           "scales by 1.2 and moves the picture up and left by its corner", fr == "1.000,0.0,0.0;1.200,-192.0,0.0;1.200,-144.0,-72.0", fr)

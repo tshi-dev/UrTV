@@ -111,6 +111,8 @@ public final class ScenePlanRun {
         }
         out.append("samebox\t").append(boxes.size()).append('\n');
         for (ScenePlan.Scene x : xs) out.append("crop\t").append(x.id).append('\t').append(x.frame[0]).append(',').append(x.frame[1]).append(',').append(x.frame[2]).append('\n');
+        out.append("upscale\t").append(ScenePlan.noUpscale(new int[] {120, 60, 1600}, 1920)[2]).append(',').append(ScenePlan.noUpscale(new int[] {120, 60, 1600}, 2560)[2]).append(',')
+           .append(ScenePlan.noUpscale(new int[] {0, 0, 1920}, 1920)[2]).append(',').append(ScenePlan.noUpscale(new int[] {0, 0, 1920}, 1280)[2]).append('\n');
         float[] f1 = ScenePlan.frame(null, 1920, 1080, 1f), f2 = ScenePlan.frame(null, 1920, 1080, 1.2f), f3 = ScenePlan.frame(new int[] {120, 60, 1600}, 1920, 1080, 1f);
         out.append("frame\t").append(String.format("%.3f,%.1f,%.1f;%.3f,%.1f,%.1f;%.3f,%.1f,%.1f", f1[0], f1[1], f1[2], f2[0], f2[1], f2[2], f3[0], f3[1], f3[2])).append('\n');
         int[] src = new int[48];

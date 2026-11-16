@@ -62,7 +62,7 @@ final class ScenePlan {
                 }
                 Scene sc = new Scene(pack, f[0], f[1], f[2], top, bottom, mask, "1".equals(f[6].trim()), f[7], f.length > 8 ? f[8] : "");
                 if (f.length > 9 && f[9].trim().matches("[0-9]{3,4}")) sc.digitsX = Math.max(480, Math.min(1440, Integer.parseInt(f[9].trim())));   // "-" or absent: the middle
-                if (f.length > 10) sc.frame = frameOf(f[10]);
+                if (f.length > 10) sc.frame = noUpscale(frameOf(f[10]), 1920);   // the pack's photos are 1920 x 1080 (scene_home_test)
                 if (f.length > 11) sc.depth = "," + f[11].trim() + ",";
                 out.add(sc);
             } catch (NumberFormatException e) {
@@ -291,6 +291,15 @@ final class ScenePlan {
         int x = Integer.parseInt(p[0]), y = Integer.parseInt(p[1]), cw = Integer.parseInt(p[2]);
         if (cw < 1372 || cw > 1920 || x + cw > 1920 || y + Math.round(cw * 9 / 16f) > 1080) return WHOLE;
         return new int[] {x, y, cw};
+    }
+
+    /**
+     * 4.4 the owner: a photo is never upscaled nor stretched. A frame that shows fewer of the photo's own pixels than a 1080p screen has (its w x the
+     * photo's width / 1920 under 1920) is not used: the whole photo. Our photos and horizons are 1920 x 1080, so today only the whole photo passes.
+     */
+    static int[] noUpscale(int[] frame, int sourceWidth) {
+        if (frame == null || sourceWidth <= 0) return WHOLE;
+        return (long) frame[2] * sourceWidth >= 1920L * 1920 ? frame : WHOLE;
     }
 
     /**

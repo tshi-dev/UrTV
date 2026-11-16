@@ -195,7 +195,7 @@ final class PhotoGlass extends FrameLayout {
             for (int i = 0; i < line.length; i++) line[i] = s.getInt(i);
             Bitmap bm = BitmapFactory.decodeByteArray(data, 0, data.length);
             org.json.JSONArray fr = rec.optJSONArray("frame"), dp = rec.optJSONArray("depth");
-            int[] frame = fr != null && fr.length() == 3 ? ScenePlan.frameOf(fr.getInt(0) + "," + fr.getInt(1) + "," + fr.getInt(2)) : ScenePlan.WHOLE;
+            int[] frame = fr != null && fr.length() == 3 ? ScenePlan.noUpscale(ScenePlan.frameOf(fr.getInt(0) + "," + fr.getInt(1) + "," + fr.getInt(2)), 1920) : ScenePlan.WHOLE;   // our photos are 1920 wide: never upscaled
             String depth = null;
             if (dp != null) { StringBuilder d = new StringBuilder(","); for (int i = 0; i < dp.length(); i++) d.append(dp.getString(i)).append(','); depth = d.toString(); }
             return bm == null ? null : new Object[] {bm, box, line, rec.optBoolean(ScenePlan.OWNER_OK, false), frame, depth};
