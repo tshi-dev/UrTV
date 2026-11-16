@@ -6,10 +6,14 @@ Write down the owner's city first. Settings → the city → «بحث عن مد�
 ## step 83 — matches and clubs (branch work/433-matches 707f4066; its Build APKs artifact)
 Write down the owner's teams and leagues first (`optimize/saver.sh show`). Then run the session's steps 1–7: (1) `optimize/saver.sh teams 136013:Al-Hilal 136020:Al-Ettifaq 136015:Al-Ittihad`, open the matches page, every day any of the three plays shows under «فرقك» (home and away); (2) «أمس»: finished games only, «فرقك» first; (3) a game card → «صفحة الفريقين» → club page (rounds, «آخر النتائج», «المواجهات مع …», switch club, Back Back returns to the day); (4) `optimize/saver.sh leagues 'English Premier League'`: starred at the top of the side list, OK → three tabs, «جدول الترتيب» fills; (5) «فرقي» → «أضف دوريًا أو فريقًا» → «كل الدول» → a country → a league → «فرق هذا الدوري» → «تابع» OK twice; `saver.sh show` lists it once; same for a team from its club page; (6) search «نصر» → «النصر» opens its page; (7) screensaver settings leagues picker: «الأشهر», «كل الدول», then countries. Pictures of each screen. Then put the owner's teams and leagues back exactly, reinstall apk-next.
 
-## step 82 — games: data, night mode, phones (branch work/433-games adca2db7; its Build APKs artifact; if that build failed, report it and stop)
+## step 82 — games: data, night mode, phones (branch work/433-games 9f507265, CI run #308 green; its Build APKs artifact; if that build failed, report it and stop)
 1. Online, «الأسرع» setup: the category chips match games/meta.json (docs/GAMES-DATA.md).
 2. Night mode: Up from the first row of the games list → «وضع ليلي» إيقاف/تشغيل/تلقائي بعد المغرب; «ألوان الليل» A/B/C. Pictures of the games list, a hive board and a question in each palette; any hard-to-read text? Back to إيقاف.
 3. Phones: use 3 browser windows on the PC (or phones on the Wi-Fi) as players. «بالجوالات» tile → «واحد مو معنا»: each window sees only its own word, the outsider sees «أنت برا السالفة», the vote counts (no self-vote). «بدون كلام»: the actor's window shows the word, «شفتها» starts the clock, صح/تخطّي change the score, the TV never shows the word. Then the same two games from the main list with the chip off: the old flow, no QR.
+4. Offline bank: Wi-Fi off, start «سؤال وجواب» and «الأسرع»: questions load, no error; no lag between questions (time the gap).
+5. Filter «عرض: الكل / بالجوالات» beside the night switch: «بالجوالات» lists 8 games; kept after leaving.
+6. «الأسماء» beside «ابدأ»: type two team names with the TV keyboard, they show in the score, turns and result; «أسماء جديدة» resets.
+7. Phones (3 browser windows) in each: «الكلمة المفقودة» (typed word marked), «خلية الحروف» (buzzer: first press wins, host still marks), «خمّن الكلمة» (guess from the window), «خمس خانات» (forms, 8 s grace, first-guess marks), دومينو (hand only in its window; a tile fitting both ends asks which end). The TV never shows a private word or hand.
 Reinstall apk-next at the end.
 
 ## step 81 — small features (branch work/433-features 8c98fb9e; install its Build APKs artifact)
