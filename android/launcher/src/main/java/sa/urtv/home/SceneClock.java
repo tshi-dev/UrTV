@@ -16,8 +16,8 @@ import android.view.View;
 
 /**
  * 4.3.3 «الآفاق»: the big glass clock of a scene (docs/mockups). The digits are filled with the scene's glass copy (blurred and brightened, the
- * same trick as couch-tv's CSS background-clip: text, here a BitmapShader), lifted brighter, with a light edge and a soft dark shadow so they read on
- * any scene; a pale scene has a dark fill instead. The view covers the whole screen, so the glass lines up with the photo under it. It draws only
+ * same trick as couch-tv's CSS background-clip: text, here a BitmapShader), frosted (less colour, a white veil, a little see-through: frost()), with a
+ * thin bright rim and a soft dark shadow so they read on any scene; a pale scene has a dark fill instead. The view covers the whole screen, so the glass lines up with the photo under it. It draws only
  * when the time changes (once a minute); nothing animates.
  */
 final class SceneClock extends View {
@@ -34,7 +34,7 @@ final class SceneClock extends View {
         super(c);
         density = c.getResources().getDisplayMetrics().density;
         edge.setStyle(Paint.Style.STROKE);
-        edge.setStrokeWidth(1.2f * density);   // 2.4 px at 1080p
+        edge.setStrokeWidth(0.8f * density);   // 1.6 px at 1080p: thin and bright
         shadow.setColor(0x00000000);
         setWillNotDraw(false);
         setFocusable(false);
@@ -73,13 +73,25 @@ final class SceneClock extends View {
         m.postScale(zoom, zoom, w / 2f, 0);
         sh.setLocalMatrix(m);
         fill.setShader(sh);
+        fill.setColorFilter(new ColorMatrixColorFilter(frost(dark)));
+        fill.setAlpha(dark ? 0xF0 : 0xE0);   // a little see-through: the scene shows faintly through the frost
+        edge.setColor(0xE6FFFFFF);   // a thin bright rim, on a dark clock too (the fog scene's)
+        shadow.setColor(0x33000000);
+        shadow.setShadowLayer(12 * density, 0, 3 * density, 0x59000000);   // soft: the digits read on a bright sky and a dark one
+    }
+
+    /**
+     * 4.4 the frost (the owner: lighter, crisp, never a pink or washed cast): the glass copy's colour taken 40 % toward grey, then a white veil
+     * (out = in x 0.72 + 30 %); a pale scene's dark clock: the copy darkened instead.
+     */
+    static ColorMatrix frost(boolean dark) {
         ColorMatrix cm = new ColorMatrix();
-        float k = dark ? 0.42f : 1.45f;   // brighter glass (the owner: the clock must be easy to see); a pale scene: a dark one
-        cm.setScale(k, k, k, 1f);
-        fill.setColorFilter(new ColorMatrixColorFilter(cm));
-        edge.setColor(0xD9FFFFFF);   // the light edge, on a dark clock too (the fog scene's)
-        shadow.setColor(0x4D000000);
-        shadow.setShadowLayer(10 * density, 0, 2 * density, 0x66000000);
+        cm.setSaturation(0.6f);
+        ColorMatrix lift = new ColorMatrix();
+        if (dark) lift.setScale(0.42f, 0.42f, 0.42f, 1f);
+        else lift.set(new float[] {0.72f, 0, 0, 0, 76, 0, 0.72f, 0, 0, 76, 0, 0, 0.72f, 0, 76, 0, 0, 0, 1, 0});
+        cm.postConcat(lift);
+        return cm;
     }
 
     @Override protected void onDraw(Canvas c) {

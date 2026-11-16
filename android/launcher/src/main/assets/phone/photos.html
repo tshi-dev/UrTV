@@ -80,14 +80,18 @@ button.main{background:var(--acc);color:var(--ink);border:0}button.sec{backgroun
     k_shape: 'Same shape as the photo', k_tones: 'Black and white', k_size: 'At most 1 MB',
     x_shape: 'The mask is not the photo\'s shape: ask the tool for «exactly the same size».', x_tones: 'Too much grey or colour: ask for «black and white only, no grey».', x_size: 'The mask is over 1 MB: ask for a smaller PNG.',
     x_bad: 'This file is not an image.', preview: 'How it will look on the TV:', m_done: 'The photo and its mask are on the TV ✓', m_late: 'The photo is on the TV, but its mask came too late: send them again together.',
-    m_refused: 'The photo is on the TV, but it did not take the mask: the photo shows with the clock in front.'
+    m_refused: 'The photo is on the TV, but it did not take the mask: the photo shows with the clock in front.',
+    m_cover: 'The photo is on the TV, but not its mask: the white must be the scenery at the bottom and the sky along the top black. The clock shows in front.',
+    m_edge: 'The photo is on the TV, but not its mask: its top edge is ragged. Ask for «a clean edge along the skyline». The clock shows in front.'
   } : {
     sending: 'يرسل {n} من {all}…', done: 'وصلت {n} صور للتلفزيون ✓', full: 'التلفزيون فيه أكثر عدد يقدر عليه من الصور. احذف بعضها من التلفزيون أولاً.',
     camera: 'هذه الصورة فيها بيانات الكاميرا، فما أرسلناها.', refused: 'التلفزيون ما قبل صورة.', failed: 'ما انرسلت: تأكد من الواي فاي وجرّب مرة ثانية.', no_session: 'انتهت الجلسة.',
     k_shape: 'نفس شكل الصورة', k_tones: 'أبيض وأسود', k_size: '١ م.ب بالأكثر',
     x_shape: 'القناع مو بنفس شكل الصورة: اطلب من الأداة «بنفس المقاس بالضبط».', x_tones: 'فيه رمادي أو ألوان كثير: اطلب «أبيض وأسود فقط، بدون رمادي».', x_size: 'القناع أكبر من ١ م.ب: اطلب PNG أصغر.',
     x_bad: 'هذا الملف مو صورة.', preview: 'كذا بتطلع على التلفزيون:', m_done: 'وصلت الصورة وقناعها للتلفزيون ✓', m_late: 'وصلت الصورة، لكن القناع تأخر: أرسلهما مرة ثانية مع بعض.',
-    m_refused: 'وصلت الصورة، لكن التلفزيون ما قبل القناع: تظهر الصورة والساعة قدّامها.'
+    m_refused: 'وصلت الصورة، لكن التلفزيون ما قبل القناع: تظهر الصورة والساعة قدّامها.',
+    m_cover: 'وصلت الصورة بدون قناعها: لازم الأبيض يكون المشهد تحت، والسماء فوق سوداء. تظهر الساعة قدّام الصورة.',
+    m_edge: 'وصلت الصورة بدون قناعها: حافته العلوية متقطعة. اطلب «حافة نظيفة على خط الأفق». تظهر الساعة قدّام الصورة.'
   };
   var $ = function (id) { return document.getElementById(id); };
   if (EN) ['t1', 't2', 't3', 't4', 't5', 'm1', 'm2', 'm3', 'm4', 'm5', 'm6', 'm7', 'm8', 'm9', 'm10', 'msend', 'mbare'].forEach(function (k) { $(k).textContent = W[k]; });
@@ -203,7 +207,8 @@ button.main{background:var(--acc);color:var(--ink);border:0}button.sec{backgroun
       .then(function (j) {
         if (!(j && j.ok)) { var e = j && j.error; say(e === 'photo_full' ? W.full : e === 'photo_camera' ? W.camera : e === 'no_session' ? W.no_session : e === 'photo_refused' ? W.refused : W.failed, 1, 1); return; }
         if (!withMask) { say(W.done, 1, 1); return; }
-        return sendMask().then(function (m) { say(m && m.ok ? W.m_done : m && m.error === 'mask_late' ? W.m_late : W.m_refused, 1, 1); });
+        return sendMask().then(function (m) { say(m && m.ok ? W.m_done : m && m.error === 'mask_late' ? W.m_late : m && m.error === 'mask_cover' ? W.m_cover
+          : m && m.error === 'mask_edge' ? W.m_edge : W.m_refused, 1, 1); });
       });
   }
   $('msend').onclick = function () { sendOne(true); };

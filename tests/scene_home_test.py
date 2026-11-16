@@ -107,6 +107,9 @@ check("the downloaded packs (couch, and the Saudi pack's four others): from urtv
       'HOSTS = {"https://raw.githubusercontent.com/tshi-dev/urtv-data/data/scenes/", "https://cdn.jsdelivr.net/gh/tshi-dev/urtv-data@data/scenes/"}' in dl
       and 'get(pack + ".json", 16 * 1024)' in dl and 'get(pack + ".zip", MAX_BYTES)' in dl and "static boolean known(String pack) { return ScenePlan.SAUDI.equals(pack) || ScenePlan.COUCH.equals(pack); }" in dl
       and "SceneDownload.fetchIfNeeded(app, p, () ->" in scene)
+check("…kept in scenes/<pack>.<DATA> (2: the cut-outs made again with the depth model and the gate), so a TV with an older pack takes the new one once and the old folder goes",
+      "static final int DATA = 2;" in dl and 'new File(c.getFilesDir(), "scenes/" + pack + "." + DATA)' in dl
+      and 'delete(new File(app.getFilesDir(), v == 0 ? "scenes/" + pack : "scenes/" + pack + "." + v));' in dl)
 check("…its size and sha256 from the index checked before the zip is opened; a name that is not a scene file, nothing kept; 12 MB at most; moved into place whole",
       "zip.length != Integer.parseInt(want[1])" in dl and 'hex(MessageDigest.getInstance("SHA-256").digest(zip)).equals(want[0])' in dl
       and dl.index("MessageDigest.getInstance") < dl.index("new ZipInputStream") and "if (e.isDirectory() || !allowed(e.getName())) { delete(work); return false; }" in dl
@@ -115,8 +118,10 @@ check("…a failure waits a day; the Saudi pack shows meanwhile", "RETRY_MS = 24
       and "if (all.isEmpty()) all.addAll(ScenePlan.parse(ScenePlan.SAUDI" in scene)
 
 # ---- the clock and the layers
-check("the glass clock: the scene's glass copy as a BitmapShader in the digits, brighter, a light edge and a soft dark shadow; a pale scene a dark fill",
-      "new BitmapShader(glass" in clock and "float k = dark ? 0.42f : 1.45f;" in clock and "edge.setStyle(Paint.Style.STROKE);" in clock
+check("the glass clock: the scene's glass copy as a BitmapShader in the digits, frosted (40 % less colour, a white veil, a little see-through: no pink "
+      "or washed cast), a thin bright rim and a soft dark shadow; a pale scene a dark fill",
+      "new BitmapShader(glass" in clock and "cm.setSaturation(0.6f);" in clock and "0.72f, 0, 0, 0, 76," in clock and "lift.setScale(0.42f, 0.42f, 0.42f, 1f);" in clock
+      and "fill.setAlpha(dark ? 0xF0 : 0xE0);" in clock and "edge.setStrokeWidth(0.8f * density);" in clock and "edge.setStyle(Paint.Style.STROKE);" in clock
       and "shadow.setShadowLayer(" in clock and clock.index("c.drawText(text, x, y, shadow);") < clock.index("c.drawText(text, x, y, fill);"))
 check("the layers: the photo, the clock, then the cut-out over the clock; decoded off the UI thread; only the showing and the next scene in memory",
       "box.addView(photo" in scene and scene.index("box.addView(photo") < scene.index("box.addView(clock") < scene.index("box.addView(mask")

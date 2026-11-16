@@ -33,16 +33,19 @@
 | القناع مو بنفس مقاس الصورة | اطلب من الأداة: «بنفس مقاس الصورة بالضبط، لا تقصّها ولا تغيّر أبعادها». |
 | فيه ألوان أو رمادي كثير | اطلب: «اجعله أبيض وأسود فقط، بدون رمادي». |
 | القناع أكبر من ١ م.ب | اطلب PNG أصغر، أو أرسل الصورة بدون قناع. |
+| لازم الأبيض يكون المشهد تحت، والسماء فوق سوداء | القناع مقلوب أو كله أبيض: اطلب «المقدّمة بيضاء والسماء سوداء». |
+| حافته العلوية متقطعة | اطلب «حافة نظيفة على خط الأفق، بدون نقاط متفرقة». |
 
 الصفحة تقبل قناعًا بنفس شكل الصورة (الفرق ٢٪ بالأكثر)، أغلبه أبيض وأسود، و١ م.ب بالأكثر. أي مقاس يصلح ما دام الشكل نفسه: الصفحة تكبّره أو تصغّره.
 
 ## بالكمبيوتر (لوكيل يشتغل على كمبيوتر الشخص)
 
-نفس الأداة اللي نصنع بها أقنعة صورنا، تشتغل على الكمبيوتر بدون إنترنت، وما ترسل الصورة لأي مكان. تنجح فقط مع صورة سماؤها واضحة الحد (سماء صافية أو بلون
-واحد فوق المشهد)؛ غير كذا تقول إنها ما قدرت، ولا تكتب شيئًا.
+نفس الأداة اللي نصنع بها أقنعة صورنا: نموذج عمق صغير يشتغل على الكمبيوتر نفسه (يُنزَّل مرة وحدة من GitHub، نحو ١٠٠ م.ب)، وما ترسل الصورة لأي
+مكان. حافة القناع ناعمة وتتبع الأشجار والأبراج، وتمرّ على نفس الفحص اللي تمرّ عليه صورنا: إذا طلعت الحافة بهالة أو متقطعة أو تقطع وجهًا، ما تكتب
+شيئًا وتقول السبب.
 
 ```
-python3 -m venv mask-venv && mask-venv/bin/pip install numpy scipy opencv-python-headless Pillow
+python3 -m venv mask-venv && mask-venv/bin/pip install numpy scipy "opencv-python-headless<5" Pillow onnxruntime
 mask-venv/bin/python optimize/photo_mask.py صورتي.jpg
 ```
 
@@ -80,15 +83,18 @@ machine).
 5. The page checks the mask and shows how the clock will look; then «أرسلها مع القناع».
 
 If the page refuses the mask: ask the tool for "exactly the same size as the photo, not cropped", or "pure black and white, no grey", or a smaller PNG
-(1 MB at most). Any size works as long as the shape is the photo's (2 % at most apart).
+(1 MB at most). Any size works as long as the shape is the photo's (2 % at most apart). The TV checks it again in a light form of our photos' gate:
+the white must be the scenery at the bottom with the sky black along the top, and its top edge must not be ragged; otherwise the photo shows with the
+clock in front and the phone says why.
 
 ## With a computer (for an agent on the person's computer)
 
-The same offline tool we make our photos' masks with; nothing leaves the machine. It works only on a photo whose sky has a clean edge (a clear or evenly
-coloured sky above the scenery); otherwise it says so and writes nothing.
+The same tool we make our photos' masks with: a small depth model run on the computer itself (downloaded once from GitHub, about 100 MB); the photo
+never leaves the machine. The edge is soft and follows trees and towers, and it passes the same gate as our photos: a fringe, a ragged edge or a cut
+through a face, and it writes nothing and says why.
 
 ```
-python3 -m venv mask-venv && mask-venv/bin/pip install numpy scipy opencv-python-headless Pillow
+python3 -m venv mask-venv && mask-venv/bin/pip install numpy scipy "opencv-python-headless<5" Pillow onnxruntime
 mask-venv/bin/python optimize/photo_mask.py myphoto.jpg
 ```
 
