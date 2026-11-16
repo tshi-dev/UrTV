@@ -59,7 +59,7 @@ KEEP_LINES = {
     ("tilawah/PrayerTimes.java", " ساعة"): "the same",
     ("tilawah/PrayerTimes.java", " دقائق"): "the Arabic count of minutes: English counts in its own branch",
     ("tilawah/PrayerTimes.java", " دقيقة"): "the same",
-    ("Dock.java", "hidden with dock.sh hide or the × of «تعديل التطبيقات»"): "a line for the computer's log",
+    ("AppRule.java", "hidden with dock.sh hide or the × of «تعديل التطبيقات»"): "a line for the computer's log",
     ("DockReceiver.java", "error: add --es names 'pkg|الاسم;pkg2|الاسم'"): "an answer for the computer (optimize/dock.sh)",
 }
 
