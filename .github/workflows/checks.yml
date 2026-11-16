@@ -15,5 +15,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - run: python3 tests/publish_test.py
+      - run: python3 tests/content_test.py
+      - run: python3 tools/check_content.py content
       - run: python3 -m py_compile .github/tools/*.py tools/*.py tests/*.py
       - run: bash -n tools/*.sh
