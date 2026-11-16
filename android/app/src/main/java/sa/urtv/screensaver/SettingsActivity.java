@@ -628,16 +628,58 @@ public class SettingsActivity extends Activity {
      * «بحث»: a word typed on the TV's keyboard (or from the phone page, which types into the field in front: «على الشاشة»), the rows that answer it
      * (SettingsHub.search), and the choice opens the row's section with the focus on that row.
      */
+    /**
+     * «بحث في الإعدادات»: the rows found as the words are typed (SettingsHub.search is in memory: a list, no file, no network), shown once the
+     * typing rests SEARCH_MS; OK on one opens its section on that row. «بحث» still shows the list of every row found.
+     */
     private void searchSettings() {
+        final LinearLayout box = new LinearLayout(this);
+        box.setOrientation(LinearLayout.VERTICAL);
         final EditText in = new EditText(this);
         in.setHint(Words.of("اكتب كلمة، مثل: صوت، لون، مدينة"));
         in.setSingleLine(true);
         in.setInputType(InputType.TYPE_CLASS_TEXT);
-        new Dlg(this).setTitle("بحث في الإعدادات").setView(in)
+        box.addView(in);
+        final android.widget.ListView found = new android.widget.ListView(this);
+        found.setDividerHeight(0);
+        found.setSelector(GlassPaint.focused(this, look, 12));
+        final List<String[]> rows = new ArrayList<>();
+        final android.widget.ArrayAdapter<String> adapter = new android.widget.ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, new ArrayList<>()) {
+            @Override public View getView(int i, View old, android.view.ViewGroup parent) {
+                TextView t = (TextView) super.getView(i, old, parent);   // recycled: the list makes only the lines it shows
+                t.setTextColor(focusColors(look.text, look.onFocus));
+                t.setTypeface(font("Thmanyah-Regular"));
+                return t;
+            }
+        };
+        found.setAdapter(adapter);
+        box.addView(found, new LinearLayout.LayoutParams(-1, dp(260)));
+        final android.os.Handler h = new android.os.Handler(android.os.Looper.getMainLooper());
+        final Runnable look_ = () -> {
+            rows.clear();
+            rows.addAll(SettingsHub.search(in.getText().toString().trim()));
+            adapter.clear();
+            for (int i = 0; i < Math.min(rows.size(), 12); i++) adapter.add(conv(rows.get(i)[0]) + "  •  " + conv(SettingsHub.name(rows.get(i)[1])));
+        };
+        in.addTextChangedListener(new android.text.TextWatcher() {
+            @Override public void beforeTextChanged(CharSequence c, int a, int b, int d) { }
+            @Override public void onTextChanged(CharSequence c, int a, int b, int d) { }
+            @Override public void afterTextChanged(android.text.Editable e) { h.removeCallbacks(look_); h.postDelayed(look_, SEARCH_MS); }
+        });
+        final AlertDialog dialog = new Dlg(this).setTitle("بحث في الإعدادات").setView(box)
             .setPositiveButton("بحث", (d, w) -> showFound(in.getText().toString().trim()))
-            .setNegativeButton("إلغاء", null).show();
+            .setNegativeButton("إلغاء", null).create();
+        found.setOnItemClickListener((p, v, i, id) -> {
+            dialog.dismiss();
+            hubAt = rows.get(i)[1];
+            forceWant = rows.get(i)[0];
+            open(rows.get(i)[1]);
+        });
+        dialog.setOnDismissListener(d -> h.removeCallbacks(look_));
+        dialog.show();
         in.requestFocus();
     }
+    static final long SEARCH_MS = 120;
 
     private void showFound(String query) {
         final List<String[]> found = SettingsHub.search(query);
@@ -968,11 +1010,17 @@ public class SettingsActivity extends Activity {
         });
         card.setOnFocusChangeListener((x, has) -> {
             x.setAlpha(has || cat.equals(screen) ? 1f : 0.82f);
-            if (has && !SettingsHub.SEARCH.equals(cat) && !cat.equals(screen)) {   // the section's rows at once, the focus kept on the list
-                View f = focusedRow();
-                if (f != null && screen != null) lastRow.put(screen, (String) f.getTag());
-                sideFocus = true;
-                open(cat);
+            side.removeCallbacks(sideOpen);
+            if (has && !SettingsHub.SEARCH.equals(cat) && !cat.equals(screen)) {   // the section's rows, the focus kept on the list
+                // 4.4 smoother: once the focus rests on the item (SIDE_MS): holding the arrow went through every section, each built whole
+                sideOpen = () -> {
+                    if (!x.hasFocus() || cat.equals(screen)) return;
+                    View f = focusedRow();
+                    if (f != null && screen != null) lastRow.put(screen, (String) f.getTag());
+                    sideFocus = true;
+                    open(cat);
+                };
+                side.postDelayed(sideOpen, SIDE_MS);
             }
         });
         glassCard(card);
@@ -980,6 +1028,8 @@ public class SettingsActivity extends Activity {
     }
 
     private static final Object SIDE = new Object();
+    static final long SIDE_MS = 120;
+    private Runnable sideOpen = () -> { };
 
     /** Each button's icon. */
     private static int hubIcon(String cat) {
@@ -1113,15 +1163,29 @@ public class SettingsActivity extends Activity {
 
     /** An on/off value's word in the green that reads on what is under it (the panel at rest, the focus fill while focused), and its mark the same. */
     private void paintState(TextView v, ImageView mark, String text, int state, boolean focused) {
-        if (state < 0) { if (!text.isEmpty()) v.setText(text); return; }
+        // 4.4 smoother: the text is set once; a focus change only recolours (a new text on each move made the row measured and laid out again)
+        if (state < 0) { if (!text.isEmpty() && !text.contentEquals(v.getText())) v.setText(text); return; }
         int bg = focused ? look.focus : (look.light ? 0xFFFFFFFF : 0xFF000000);
         int green = OnOff.green(bg);
         if (mark.getDrawable() != null) mark.getDrawable().setTint(green);
-        if (state == 0) { v.setText(text); return; }
+        if (state == 0) { if (!text.contentEquals(v.getText())) v.setText(text); return; }
+        CharSequence now = v.getText();
+        Green[] g = now instanceof android.text.Spanned && text.contentEquals(now) ? ((android.text.Spanned) now).getSpans(0, now.length(), Green.class) : null;
+        if (g != null && g.length == 1) { if (g[0].color != green) { g[0].color = green; v.invalidate(); } return; }
         android.text.SpannableString sp = new android.text.SpannableString(text);
-        sp.setSpan(new android.text.style.ForegroundColorSpan(green), 0, OnOff.wordEnd(text), android.text.Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        sp.setSpan(new Green(green), 0, OnOff.wordEnd(text), android.text.Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         v.setText(sp);
     }
+
+    /** the on/off word's green: its colour changed in place (drawn again, not laid out again) */
+    private static final class Green extends android.text.style.CharacterStyle implements android.text.style.UpdateAppearance {
+        int color;
+        Green(int color) { this.color = color; }
+        @Override public void updateDrawState(android.text.TextPaint p) { p.setColor(color); }
+    }
+
+    static final float FOCUS_SCALE = 1.02f;
+    static final long FOCUS_MS = 120;
 
     /** The rows of the list now (the views row() made: their tag is their FocusKey; the categories' tiles, two to a line), in order. */
     private List<View> rows() {
@@ -3029,8 +3093,9 @@ public class SettingsActivity extends Activity {
         card.setFocusable(true);
         card.setClickable(true);
         card.setTag(FocusKey.key(label));   // which row it is when the list is built again (render keeps the focus on it)
-        final String cat = SettingsHub.of(FocusKey.key(label), groupCat);   // made on every screen, added only on its own
+        final String cat = SettingsHub.of(FocusKey.key(label), groupCat);   // its action on every screen (the search runs it), its views only on its own
         if (onClick != null) actions.put(FocusKey.key(label), onClick);
+        if (!on(cat)) return offscreen();   // 4.4 smoother: a row of another section is not built (a section shows about 12 of the 135)
 
         final int state = OnOff.state(value);
         final ImageView mark = onMark(state);
@@ -3091,8 +3156,11 @@ public class SettingsActivity extends Activity {
         if (onClick != null) card.setOnClickListener(v -> { launchedRow = (String) card.getTag(); onClick.run(); });   // the row that was pressed: the focus comes back to it after another screen
         paintState(val, mark, shown, state, false);
         card.setOnFocusChangeListener((v, has) -> {
-            // No scaling: a scaled rounded card overlapped its neighbours and blurred the text. The glass changes by itself (glassCard).
+            // The glass changes by itself (glassCard). 4.4 smoother: a short scale (FOCUS_SCALE in FOCUS_MS), lifted over its neighbours so it never
+            // goes under them; small enough that the text stays sharp. No layout: paintState only recolours.
             paintState(val, mark, shown, state, has);
+            v.setTranslationZ(has ? dp(4) : 0);
+            v.animate().scaleX(has ? FOCUS_SCALE : 1f).scaleY(has ? FOCUS_SCALE : 1f).setDuration(FOCUS_MS).start();
             if (has) topWhenFirst(v);
         });
         glassCard(card);
@@ -3104,6 +3172,22 @@ public class SettingsActivity extends Activity {
         list.addView(card, lp);
         return card;
     }
+
+    /**
+     * What row() gives for a row of another section: one view, never added, with the «name» text adjRow looks for. Building every row of every
+     * section on each render made about 1,080 views for the 12 or so shown (and the side list rebuilt them on each focus move).
+     */
+    private View offscreen() {
+        if (offscreenRow == null) {
+            LinearLayout v = new LinearLayout(this);
+            TextView n = new TextView(this);
+            n.setTag("name");
+            v.addView(n);
+            offscreenRow = v;
+        }
+        return offscreenRow;
+    }
+    private View offscreenRow;
 
     interface Text { void got(String s); }
     interface Json { void got(String json) throws Exception; }

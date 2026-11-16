@@ -140,8 +140,9 @@ sidepane = st[st.index("    private void sidePane() {"):].split("\n    }\n")[0]
 check("4.3.3 the side list (the mockup): «الإعدادات», then the search and the ten sections in SettingsHub's order, built once, the section shown marked",
       "for (String cat : SettingsHub.tiles(null)) {" in sidepane and "if (sideItems.isEmpty()) {" in sidepane and 'findViewWithTag("bar")' in sidepane
       and 't.setText(conv("الإعدادات"));' in sidepane)
-check("moving the focus along the list shows each section's rows at once and keeps the focus on the list; OK goes into the rows (the one last focused); the search item opens the search",
-      "if (has && !SettingsHub.SEARCH.equals(cat) && !cat.equals(screen)) {" in sidefn and "sideFocus = true;\n                open(cat);" in sidefn
+check("moving the focus along the list shows each section's rows once the focus rests on it (SIDE_MS: holding the arrow builds none on the way) and keeps the focus on the list; OK goes into the rows (the one last focused); the search item opens the search",
+      "if (has && !SettingsHub.SEARCH.equals(cat) && !cat.equals(screen)) {" in sidefn and "sideFocus = true;\n                    open(cat);" in sidefn
+      and "side.removeCallbacks(sideOpen);" in sidefn and "side.postDelayed(sideOpen, SIDE_MS);" in sidefn and "if (!x.hasFocus() || cat.equals(screen)) return;" in sidefn
       and "if (SettingsHub.SEARCH.equals(cat)) { searchSettings(); return; }" in sidefn and "restoreFocus(lastRow.get(screen), 0, scroll.getScrollY());" in sidefn
       and "if (sideFocus) {" in render and "item.post(item::requestFocus);" in render)
 check("a row's key toward the list goes to its own section's item, never to the one beside it",
