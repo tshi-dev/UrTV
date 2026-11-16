@@ -174,6 +174,10 @@ Every feature: [docs/FEATURES.md](docs/FEATURES.md) (Arabic). Every setting with
 - Download the apps: [apk-latest](https://github.com/tshi-dev/UrTV/releases/tag/apk-latest). Every build is also a numbered release `v<version>.<build>` (v4.0.N, v4.3.N…); `version.txt` stays `3.<build>` for older apps.
 - [CHANGELOG.md](CHANGELOG.md) · [CONTRIBUTING.md](CONTRIBUTING.md)
 
+## License
+
+The code is MIT. The games' content (the banks, prompts, puzzles and packs of the family games) is **all rights reserved**, kept in a private repository and shipped to TVs only as compiled, compressed, encrypted bundles: see [docs/LICENSE-CONTENT.md](docs/LICENSE-CONTENT.md).
+
 ## Credits
 
 Photos: Unsplash photographers, listed in [docs/PHOTO-CREDITS.md](docs/PHOTO-CREDITS.md). Fonts: Thmanyah, and
