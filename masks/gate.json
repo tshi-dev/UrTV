@@ -6,18 +6,18 @@
    "REJECT": 0
   },
   "ksa-cities": {
-   "FIT": 2,
-   "FRONT-ONLY": 9,
+   "FIT": 1,
+   "FRONT-ONLY": 10,
    "REJECT": 2
   },
   "nature": {
-   "FIT": 7,
-   "FRONT-ONLY": 8,
+   "FIT": 3,
+   "FRONT-ONLY": 12,
    "REJECT": 1
   },
   "photos": {
-   "FIT": 15,
-   "FRONT-ONLY": 64,
+   "FIT": 11,
+   "FRONT-ONLY": 68,
    "REJECT": 6
   },
   "sea": {
@@ -36,18 +36,18 @@
    "published": false,
    "scores": {
     "cols": 0.216,
-    "cross": 0.065,
+    "cross": 0.048,
     "crossing": true,
     "halo": 0.66,
     "holes": 0,
     "islands": 0,
     "jagged": 0.0915,
     "sky": 0.66,
-    "visible": 0.935,
+    "visible": 0.952,
     "zoom": 1.0
    },
    "verdict": "FRONT-ONLY",
-   "why": "only a sliver crosses the digits (cross 0.065, columns 0.216)"
+   "why": "only a sliver crosses the digits (cross 0.048, columns 0.216)"
   },
   "ksa-cities/10": {
    "published": false,
@@ -135,21 +135,21 @@
    "why": "the scenery is too high or too low to cross the digits"
   },
   "ksa-cities/3": {
-   "published": true,
+   "published": false,
    "scores": {
-    "cols": 0.514,
-    "cross": 0.116,
+    "cols": 0.459,
+    "cross": 0.076,
     "crossing": true,
     "halo": 0.92,
     "holes": 0,
     "islands": 0,
     "jagged": 0.0734,
     "sky": 0.373,
-    "visible": 0.884,
+    "visible": 0.924,
     "zoom": 1.0
    },
-   "verdict": "FIT",
-   "why": "clean, and the scenery crosses the digits' lower part"
+   "verdict": "FRONT-ONLY",
+   "why": "only a sliver crosses the digits (cross 0.076, columns 0.459)"
   },
   "ksa-cities/4": {
    "published": false,
@@ -239,16 +239,20 @@
   "ksa-cities/9": {
    "published": true,
    "scores": {
-    "cols": 0.946,
-    "cross": 0.145,
+    "colon_cover": 0.082,
+    "cols": 0.73,
+    "cross": 0.084,
     "crossing": true,
+    "diff": 0.0,
+    "digit_cover": 0.217,
     "halo": 1.46,
     "holes": 0,
     "islands": 0,
     "jagged": 0.1562,
+    "shift": 0.0,
     "sky": 0.406,
-    "visible": 0.855,
-    "zoom": 1.01
+    "visible": 0.916,
+    "zoom": 1.0
    },
    "verdict": "FIT",
    "why": "clean, and the scenery crosses the digits' lower part"
@@ -271,21 +275,21 @@
    "why": "the scenery is too high or too low to cross the digits"
   },
   "nature/10": {
-   "published": true,
+   "published": false,
    "scores": {
-    "cols": 0.514,
-    "cross": 0.104,
+    "cols": 0.351,
+    "cross": 0.065,
     "crossing": true,
     "halo": 0.34,
     "holes": 0,
     "islands": 0,
     "jagged": 0.0026,
     "sky": 0.365,
-    "visible": 0.896,
+    "visible": 0.935,
     "zoom": 1.0
    },
-   "verdict": "FIT",
-   "why": "clean, and the scenery crosses the digits' lower part"
+   "verdict": "FRONT-ONLY",
+   "why": "only a sliver crosses the digits (cross 0.065, columns 0.351)"
   },
   "nature/11": {
    "published": false,
@@ -325,15 +329,19 @@
    "eye": "by eye: white fog, the digits cannot be read",
    "published": false,
    "scores": {
-    "cols": 0.514,
-    "cross": 0.122,
+    "colon_cover": 0.142,
+    "cols": 0.459,
+    "cross": 0.081,
     "crossing": true,
+    "diff": 0.0,
+    "digit_cover": 0.221,
     "halo": 0.1,
     "holes": 0,
     "islands": 0,
     "jagged": 0.088,
+    "shift": 0.0,
     "sky": 0.388,
-    "visible": 0.878,
+    "visible": 0.919,
     "zoom": 1.0
    },
    "verdict": "FIT",
@@ -359,47 +367,55 @@
   "nature/15": {
    "published": true,
    "scores": {
-    "cols": 0.784,
-    "cross": 0.138,
+    "colon_cover": 0.167,
+    "cols": 0.703,
+    "cross": 0.126,
     "crossing": true,
+    "diff": 0.0,
+    "digit_cover": 0.221,
     "halo": 0.09,
     "holes": 0,
     "islands": 0,
     "jagged": 0.0045,
+    "shift": 0.0,
     "sky": 0.562,
-    "visible": 0.862,
-    "zoom": 1.03
+    "visible": 0.874,
+    "zoom": 1.0
    },
    "verdict": "FIT",
    "why": "clean, and the scenery crosses the digits' lower part"
   },
   "nature/16": {
-   "published": true,
+   "published": false,
    "scores": {
-    "cols": 0.432,
-    "cross": 0.084,
+    "cols": 0.324,
+    "cross": 0.046,
     "crossing": true,
     "halo": 0.79,
     "holes": 0,
     "islands": 0,
     "jagged": 0.0299,
     "sky": 0.453,
-    "visible": 0.916,
+    "visible": 0.954,
     "zoom": 1.0
    },
-   "verdict": "FIT",
-   "why": "clean, and the scenery crosses the digits' lower part"
+   "verdict": "FRONT-ONLY",
+   "why": "only a sliver crosses the digits (cross 0.046, columns 0.324)"
   },
   "nature/2": {
    "published": true,
    "scores": {
+    "colon_cover": 0.218,
     "cols": 1.0,
     "cross": 0.199,
     "crossing": true,
+    "diff": 0.0,
+    "digit_cover": 0.226,
     "halo": 0.3,
     "holes": 0,
     "islands": 0,
     "jagged": 0.0501,
+    "shift": 0.0,
     "sky": 0.277,
     "visible": 0.801,
     "zoom": 1.15
@@ -408,21 +424,21 @@
    "why": "clean, and the scenery crosses the digits' lower part"
   },
   "nature/3": {
-   "published": true,
+   "published": false,
    "scores": {
-    "cols": 0.378,
-    "cross": 0.084,
+    "cols": 0.27,
+    "cross": 0.054,
     "crossing": true,
     "halo": 0.54,
     "holes": 0,
     "islands": 0,
     "jagged": 0.0311,
     "sky": 0.479,
-    "visible": 0.916,
+    "visible": 0.946,
     "zoom": 1.0
    },
-   "verdict": "FIT",
-   "why": "clean, and the scenery crosses the digits' lower part"
+   "verdict": "FRONT-ONLY",
+   "why": "only a sliver crosses the digits (cross 0.054, columns 0.27)"
   },
   "nature/4": {
    "published": false,
@@ -445,19 +461,23 @@
    "eye": "by eye: the far mountains taken for sky",
    "published": false,
    "scores": {
+    "colon_cover": 0.116,
     "cols": 1.0,
     "cross": 0.143,
     "crossing": true,
+    "diff": 0.0,
+    "digit_cover": 0.295,
     "halo": 0.94,
     "holes": 0,
     "islands": 1,
     "jagged": 0.198,
+    "shift": 0.0,
     "sky": 0.287,
     "visible": 0.857,
     "zoom": 1.07
    },
-   "verdict": "FIT",
-   "why": "clean, and the scenery crosses the digits' lower part"
+   "verdict": "FRONT-ONLY",
+   "why": "the scenery hides too much of a digit or the colon (digit 0.295, colon 0.116)"
   },
   "nature/6": {
    "published": false,
@@ -479,19 +499,19 @@
   "nature/7": {
    "published": false,
    "scores": {
-    "cols": 0.459,
-    "cross": 0.072,
+    "cols": 0.243,
+    "cross": 0.036,
     "crossing": true,
     "halo": 0.09,
     "holes": 0,
     "islands": 0,
     "jagged": 0.0048,
     "sky": 0.487,
-    "visible": 0.928,
+    "visible": 0.964,
     "zoom": 1.0
    },
    "verdict": "FRONT-ONLY",
-   "why": "only a sliver crosses the digits (cross 0.072, columns 0.459)"
+   "why": "only a sliver crosses the digits (cross 0.036, columns 0.243)"
   },
   "nature/8": {
    "published": false,
@@ -528,35 +548,39 @@
    "why": "a fringe along the edge (13.37 > 3.0)"
   },
   "photos/-RlktmDy3Ec": {
-   "published": true,
+   "published": false,
    "scores": {
-    "cols": 0.595,
-    "cross": 0.127,
+    "cols": 0.541,
+    "cross": 0.077,
     "crossing": true,
     "halo": 0.15,
     "holes": 0,
     "islands": 0,
     "jagged": 0.0081,
     "sky": 0.414,
-    "visible": 0.873,
+    "visible": 0.923,
     "zoom": 1.0
    },
-   "verdict": "FIT",
-   "why": "clean, and the scenery crosses the digits' lower part"
+   "verdict": "FRONT-ONLY",
+   "why": "only a sliver crosses the digits (cross 0.077, columns 0.541)"
   },
   "photos/01u4zLK54tE": {
    "published": true,
    "scores": {
+    "colon_cover": 0.123,
     "cols": 1.0,
     "cross": 0.133,
     "crossing": true,
+    "diff": 0.0,
+    "digit_cover": 0.156,
     "halo": 0.52,
     "holes": 0,
     "islands": 0,
     "jagged": 0.1231,
+    "shift": 0.0,
     "sky": 0.388,
     "visible": 0.867,
-    "zoom": 1.07
+    "zoom": 1.03
    },
    "verdict": "FIT",
    "why": "clean, and the scenery crosses the digits' lower part"
@@ -615,33 +639,37 @@
   "photos/207NEuFvjlg": {
    "published": false,
    "scores": {
-    "cols": 0.378,
-    "cross": 0.075,
+    "cols": 0.216,
+    "cross": 0.044,
     "crossing": true,
     "halo": 0.15,
     "holes": 0,
     "islands": 0,
     "jagged": 0.0233,
     "sky": 0.431,
-    "visible": 0.925,
+    "visible": 0.956,
     "zoom": 1.0
    },
    "verdict": "FRONT-ONLY",
-   "why": "only a sliver crosses the digits (cross 0.075, columns 0.378)"
+   "why": "only a sliver crosses the digits (cross 0.044, columns 0.216)"
   },
   "photos/2gVgVf5CNAE": {
    "published": true,
    "scores": {
-    "cols": 0.865,
-    "cross": 0.14,
+    "colon_cover": 0.142,
+    "cols": 0.892,
+    "cross": 0.141,
     "crossing": true,
+    "diff": 0.0,
+    "digit_cover": 0.2,
     "halo": 0.51,
     "holes": 0,
     "islands": 0,
     "jagged": 0.068,
+    "shift": 0.0,
     "sky": 0.557,
-    "visible": 0.86,
-    "zoom": 1.05
+    "visible": 0.859,
+    "zoom": 1.01
    },
    "verdict": "FIT",
    "why": "clean, and the scenery crosses the digits' lower part"
@@ -700,16 +728,20 @@
   "photos/7EkyXZYeYsw": {
    "published": true,
    "scores": {
-    "cols": 0.811,
-    "cross": 0.144,
+    "colon_cover": 0.171,
+    "cols": 0.73,
+    "cross": 0.119,
     "crossing": true,
+    "diff": 0.0,
+    "digit_cover": 0.221,
     "halo": 0.9,
     "holes": 0,
     "islands": 0,
     "jagged": 0.0405,
+    "shift": 0.0,
     "sky": 0.485,
-    "visible": 0.856,
-    "zoom": 1.03
+    "visible": 0.881,
+    "zoom": 1.0
    },
    "verdict": "FIT",
    "why": "clean, and the scenery crosses the digits' lower part"
@@ -717,16 +749,20 @@
   "photos/7vOpzRF33Zo": {
    "published": true,
    "scores": {
-    "cols": 1.0,
-    "cross": 0.148,
+    "colon_cover": 0.068,
+    "cols": 0.73,
+    "cross": 0.085,
     "crossing": true,
+    "diff": 0.0,
+    "digit_cover": 0.192,
     "halo": 1.23,
     "holes": 0,
     "islands": 0,
     "jagged": 0.1146,
+    "shift": 0.0,
     "sky": 0.38,
-    "visible": 0.852,
-    "zoom": 1.01
+    "visible": 0.915,
+    "zoom": 1.0
    },
    "verdict": "FIT",
    "why": "clean, and the scenery crosses the digits' lower part"
@@ -802,16 +838,20 @@
   "photos/9hWJs7iblh8": {
    "published": true,
    "scores": {
-    "cols": 1.0,
-    "cross": 0.146,
+    "colon_cover": 0.05,
+    "cols": 0.892,
+    "cross": 0.114,
     "crossing": true,
+    "diff": 0.0,
+    "digit_cover": 0.196,
     "halo": 0.1,
     "holes": 0,
     "islands": 0,
     "jagged": 0.006,
+    "shift": 0.0,
     "sky": 0.543,
-    "visible": 0.854,
-    "zoom": 1.02
+    "visible": 0.886,
+    "zoom": 1.0
    },
    "verdict": "FIT",
    "why": "clean, and the scenery crosses the digits' lower part"
@@ -819,16 +859,20 @@
   "photos/AC3T7tvwPrY": {
    "published": true,
    "scores": {
-    "cols": 1.0,
-    "cross": 0.143,
+    "colon_cover": 0.085,
+    "cols": 0.73,
+    "cross": 0.081,
     "crossing": true,
+    "diff": 0.0,
+    "digit_cover": 0.196,
     "halo": 0.38,
     "holes": 0,
     "islands": 0,
     "jagged": 0.1825,
+    "shift": 0.0,
     "sky": 0.352,
-    "visible": 0.857,
-    "zoom": 1.01
+    "visible": 0.919,
+    "zoom": 1.0
    },
    "verdict": "FIT",
    "why": "clean, and the scenery crosses the digits' lower part"
@@ -836,19 +880,19 @@
   "photos/AGZgrNeq7Kg": {
    "published": false,
    "scores": {
-    "cols": 0.297,
-    "cross": 0.057,
+    "cols": 0.243,
+    "cross": 0.035,
     "crossing": true,
     "halo": 1.64,
     "holes": 0,
     "islands": 0,
     "jagged": 0.0714,
     "sky": 0.582,
-    "visible": 0.943,
+    "visible": 0.965,
     "zoom": 1.0
    },
    "verdict": "FRONT-ONLY",
-   "why": "only a sliver crosses the digits (cross 0.057, columns 0.297)"
+   "why": "only a sliver crosses the digits (cross 0.035, columns 0.243)"
   },
   "photos/ARpmY5qq7Lk": {
    "published": false,
@@ -888,18 +932,18 @@
    "published": false,
    "scores": {
     "cols": 0.243,
-    "cross": 0.061,
+    "cross": 0.054,
     "crossing": true,
     "halo": 1.01,
     "holes": 0,
     "islands": 0,
     "jagged": 0.0286,
     "sky": 0.609,
-    "visible": 0.939,
+    "visible": 0.946,
     "zoom": 1.0
    },
    "verdict": "FRONT-ONLY",
-   "why": "only a sliver crosses the digits (cross 0.061, columns 0.243)"
+   "why": "only a sliver crosses the digits (cross 0.054, columns 0.243)"
   },
   "photos/HbixalFpY1w": {
    "published": false,
@@ -922,18 +966,18 @@
    "published": false,
    "scores": {
     "cols": 0.162,
-    "cross": 0.038,
+    "cross": 0.03,
     "crossing": true,
     "halo": 0.66,
     "holes": 0,
     "islands": 0,
     "jagged": 0.0816,
     "sky": 0.345,
-    "visible": 0.962,
+    "visible": 0.97,
     "zoom": 1.0
    },
    "verdict": "FRONT-ONLY",
-   "why": "only a sliver crosses the digits (cross 0.038, columns 0.162)"
+   "why": "only a sliver crosses the digits (cross 0.03, columns 0.162)"
   },
   "photos/Iogsh4Cbdjs": {
    "published": false,
@@ -955,16 +999,20 @@
   "photos/Iy59i0M7oP4": {
    "published": true,
    "scores": {
+    "colon_cover": 0.148,
     "cols": 0.946,
-    "cross": 0.143,
+    "cross": 0.14,
     "crossing": true,
+    "diff": 0.0,
+    "digit_cover": 0.2,
     "halo": 0.46,
     "holes": 1,
     "islands": 0,
     "jagged": 0.1536,
+    "shift": 0.0,
     "sky": 0.318,
-    "visible": 0.857,
-    "zoom": 1.05
+    "visible": 0.86,
+    "zoom": 1.04
    },
    "verdict": "FIT",
    "why": "clean, and the scenery crosses the digits' lower part"
@@ -1007,19 +1055,23 @@
    "eye": "by eye: half underwater, the digits wash out",
    "published": false,
    "scores": {
+    "colon_cover": 0.101,
     "cols": 0.946,
     "cross": 0.148,
     "crossing": true,
+    "diff": 0.0,
+    "digit_cover": 0.299,
     "halo": 0.68,
     "holes": 0,
     "islands": 0,
     "jagged": 0.0068,
+    "shift": 0.0,
     "sky": 0.265,
     "visible": 0.852,
     "zoom": 1.03
    },
-   "verdict": "FIT",
-   "why": "clean, and the scenery crosses the digits' lower part"
+   "verdict": "FRONT-ONLY",
+   "why": "the scenery hides too much of a digit or the colon (digit 0.299, colon 0.101)"
   },
   "photos/QOGeYSi11-w": {
    "published": false,
@@ -1126,16 +1178,20 @@
   "photos/WpOMM4uE-F8": {
    "published": true,
    "scores": {
+    "colon_cover": 0.143,
     "cols": 1.0,
     "cross": 0.15,
     "crossing": true,
+    "diff": 0.0,
+    "digit_cover": 0.201,
     "halo": 0.14,
     "holes": 0,
     "islands": 0,
     "jagged": 0.1085,
+    "shift": 0.0,
     "sky": 0.503,
     "visible": 0.85,
-    "zoom": 1.05
+    "zoom": 1.01
    },
    "verdict": "FIT",
    "why": "clean, and the scenery crosses the digits' lower part"
@@ -1245,16 +1301,20 @@
   "photos/anozjF6uqI0": {
    "published": true,
    "scores": {
-    "cols": 0.919,
-    "cross": 0.144,
+    "colon_cover": 0.221,
+    "cols": 0.865,
+    "cross": 0.139,
     "crossing": true,
+    "diff": 0.0,
+    "digit_cover": 0.221,
     "halo": 0.11,
     "holes": 0,
     "islands": 0,
     "jagged": 0.0543,
+    "shift": 0.0,
     "sky": 0.466,
-    "visible": 0.856,
-    "zoom": 1.04
+    "visible": 0.861,
+    "zoom": 1.0
    },
    "verdict": "FIT",
    "why": "clean, and the scenery crosses the digits' lower part"
@@ -1263,18 +1323,18 @@
    "published": false,
    "scores": {
     "cols": 0.081,
-    "cross": 0.016,
+    "cross": 0.01,
     "crossing": true,
     "halo": 1.47,
     "holes": 0,
     "islands": 0,
     "jagged": 0.0704,
     "sky": 0.487,
-    "visible": 0.984,
+    "visible": 0.99,
     "zoom": 1.0
    },
    "verdict": "FRONT-ONLY",
-   "why": "only a sliver crosses the digits (cross 0.016, columns 0.081)"
+   "why": "only a sliver crosses the digits (cross 0.01, columns 0.081)"
   },
   "photos/ckfXPMb2_BI": {
    "published": false,
@@ -1330,19 +1390,19 @@
   "photos/e5UUZcgQ5IU": {
    "published": false,
    "scores": {
-    "cols": 0.324,
-    "cross": 0.074,
+    "cols": 0.27,
+    "cross": 0.048,
     "crossing": true,
     "halo": 0.53,
     "holes": 0,
     "islands": 0,
     "jagged": 0.0893,
     "sky": 0.572,
-    "visible": 0.926,
+    "visible": 0.952,
     "zoom": 1.0
    },
    "verdict": "FRONT-ONLY",
-   "why": "only a sliver crosses the digits (cross 0.074, columns 0.324)"
+   "why": "only a sliver crosses the digits (cross 0.048, columns 0.27)"
   },
   "photos/eOWabmCNEdg": {
    "published": false,
@@ -1466,19 +1526,19 @@
   "photos/gOqBe7ropxM": {
    "published": false,
    "scores": {
-    "cols": 0.135,
-    "cross": 0.025,
+    "cols": 0.081,
+    "cross": 0.015,
     "crossing": true,
     "halo": 0.29,
     "holes": 0,
     "islands": 0,
     "jagged": 0.0364,
     "sky": 0.613,
-    "visible": 0.975,
+    "visible": 0.985,
     "zoom": 1.0
    },
    "verdict": "FRONT-ONLY",
-   "why": "only a sliver crosses the digits (cross 0.025, columns 0.135)"
+   "why": "only a sliver crosses the digits (cross 0.015, columns 0.081)"
   },
   "photos/iQR2jzuw9m8": {
    "published": false,
@@ -1670,33 +1730,37 @@
   "photos/rVC6O_gDE0Q": {
    "published": false,
    "scores": {
-    "cols": 0.27,
-    "cross": 0.051,
+    "cols": 0.216,
+    "cross": 0.027,
     "crossing": true,
     "halo": 0.33,
     "holes": 0,
     "islands": 0,
     "jagged": 0.0556,
     "sky": 0.714,
-    "visible": 0.949,
+    "visible": 0.973,
     "zoom": 1.0
    },
    "verdict": "FRONT-ONLY",
-   "why": "only a sliver crosses the digits (cross 0.051, columns 0.27)"
+   "why": "only a sliver crosses the digits (cross 0.027, columns 0.216)"
   },
   "photos/rkRYbmPuhOE": {
    "published": true,
    "scores": {
+    "colon_cover": 0.149,
     "cols": 1.0,
-    "cross": 0.139,
+    "cross": 0.145,
     "crossing": true,
+    "diff": 0.0,
+    "digit_cover": 0.153,
     "halo": 0.57,
     "holes": 0,
     "islands": 0,
     "jagged": 0.0443,
+    "shift": 0.0,
     "sky": 0.44,
-    "visible": 0.861,
-    "zoom": 1.09
+    "visible": 0.855,
+    "zoom": 1.04
    },
    "verdict": "FIT",
    "why": "clean, and the scenery crosses the digits' lower part"
@@ -1736,21 +1800,25 @@
    "why": "the scenery is too high or too low to cross the digits"
   },
   "photos/seX13AzLqls": {
-   "published": true,
+   "published": false,
    "scores": {
+    "colon_cover": 0.293,
     "cols": 0.757,
     "cross": 0.149,
     "crossing": true,
+    "diff": 0.0,
+    "digit_cover": 0.331,
     "halo": 0.19,
     "holes": 0,
     "islands": 0,
     "jagged": 0.055,
+    "shift": 0.0,
     "sky": 0.383,
     "visible": 0.851,
     "zoom": 1.05
    },
-   "verdict": "FIT",
-   "why": "clean, and the scenery crosses the digits' lower part"
+   "verdict": "FRONT-ONLY",
+   "why": "the scenery hides too much of a digit or the colon (digit 0.331, colon 0.293)"
   },
   "photos/t3dlLOhdEzs": {
    "published": false,
@@ -1806,16 +1874,20 @@
   "photos/uqAUg1zvMXQ": {
    "published": true,
    "scores": {
+    "colon_cover": 0.133,
     "cols": 0.973,
-    "cross": 0.14,
+    "cross": 0.132,
     "crossing": true,
+    "diff": 0.0,
+    "digit_cover": 0.198,
     "halo": 0.15,
     "holes": 0,
     "islands": 0,
     "jagged": 0.0424,
+    "shift": 0.0,
     "sky": 0.58,
-    "visible": 0.86,
-    "zoom": 1.04
+    "visible": 0.868,
+    "zoom": 1.01
    },
    "verdict": "FIT",
    "why": "clean, and the scenery crosses the digits' lower part"
@@ -1840,19 +1912,19 @@
   "photos/w-yuRFSkbVw": {
    "published": false,
    "scores": {
-    "cols": 0.054,
-    "cross": 0.006,
+    "cols": 0.0,
+    "cross": 0.0,
     "crossing": true,
     "halo": 0.34,
     "holes": 1,
     "islands": 0,
     "jagged": 0.1317,
     "sky": 0.534,
-    "visible": 0.994,
+    "visible": 1.0,
     "zoom": 1.0
    },
    "verdict": "FRONT-ONLY",
-   "why": "only a sliver crosses the digits (cross 0.006, columns 0.054)"
+   "why": "only a sliver crosses the digits (cross 0.0, columns 0.0)"
   },
   "photos/wMHauMZiQjg": {
    "published": false,
@@ -1872,21 +1944,25 @@
    "why": "the scenery is too high or too low to cross the digits"
   },
   "photos/wSJmlKMecHU": {
-   "published": true,
+   "published": false,
    "scores": {
+    "colon_cover": 0.117,
     "cols": 0.486,
     "cross": 0.133,
     "crossing": true,
+    "diff": 0.0,
+    "digit_cover": 0.345,
     "halo": 0.8,
     "holes": 1,
     "islands": 0,
     "jagged": 0.1006,
+    "shift": 0.0,
     "sky": 0.244,
     "visible": 0.867,
     "zoom": 1.0
    },
-   "verdict": "FIT",
-   "why": "clean, and the scenery crosses the digits' lower part"
+   "verdict": "FRONT-ONLY",
+   "why": "the scenery hides too much of a digit or the colon (digit 0.345, colon 0.117)"
   },
   "photos/wTmGtmGQCjQ": {
    "published": false,
@@ -1976,13 +2052,17 @@
   "sea/1": {
    "published": true,
    "scores": {
+    "colon_cover": 0.153,
     "cols": 1.0,
     "cross": 0.142,
     "crossing": true,
+    "diff": 0.0,
+    "digit_cover": 0.161,
     "halo": 0.3,
     "holes": 0,
     "islands": 0,
     "jagged": 0.0914,
+    "shift": 0.0,
     "sky": 0.283,
     "visible": 0.858,
     "zoom": 1.12
@@ -2027,16 +2107,20 @@
   "sea/12": {
    "published": true,
    "scores": {
+    "colon_cover": 0.144,
     "cols": 1.0,
-    "cross": 0.127,
+    "cross": 0.142,
     "crossing": true,
+    "diff": 0.0,
+    "digit_cover": 0.152,
     "halo": 0.11,
     "holes": 0,
     "islands": 0,
     "jagged": 0.0,
+    "shift": 0.0,
     "sky": 0.601,
-    "visible": 0.873,
-    "zoom": 1.07
+    "visible": 0.858,
+    "zoom": 1.03
    },
    "verdict": "FIT",
    "why": "clean, and the scenery crosses the digits' lower part"
@@ -2078,16 +2162,20 @@
   "sea/15": {
    "published": true,
    "scores": {
+    "colon_cover": 0.121,
     "cols": 1.0,
-    "cross": 0.145,
+    "cross": 0.138,
     "crossing": true,
+    "diff": 0.0,
+    "digit_cover": 0.15,
     "halo": 0.9,
     "holes": 0,
     "islands": 0,
     "jagged": 0.0245,
+    "shift": 0.0,
     "sky": 0.602,
-    "visible": 0.855,
-    "zoom": 1.06
+    "visible": 0.862,
+    "zoom": 1.03
    },
    "verdict": "FIT",
    "why": "clean, and the scenery crosses the digits' lower part"
@@ -2095,16 +2183,20 @@
   "sea/16": {
    "published": true,
    "scores": {
+    "colon_cover": 0.141,
     "cols": 1.0,
-    "cross": 0.14,
+    "cross": 0.139,
     "crossing": true,
+    "diff": 0.0,
+    "digit_cover": 0.141,
     "halo": 0.16,
     "holes": 0,
     "islands": 0,
     "jagged": 0.0,
+    "shift": 0.0,
     "sky": 0.498,
-    "visible": 0.86,
-    "zoom": 1.08
+    "visible": 0.861,
+    "zoom": 1.04
    },
    "verdict": "FIT",
    "why": "clean, and the scenery crosses the digits' lower part"
@@ -2197,19 +2289,19 @@
   "sea/4": {
    "published": false,
    "scores": {
-    "cols": 0.108,
-    "cross": 0.017,
+    "cols": 0.054,
+    "cross": 0.008,
     "crossing": true,
     "halo": 1.14,
     "holes": 0,
     "islands": 0,
     "jagged": 0.0718,
     "sky": 0.533,
-    "visible": 0.983,
+    "visible": 0.992,
     "zoom": 1.0
    },
    "verdict": "FRONT-ONLY",
-   "why": "only a sliver crosses the digits (cross 0.017, columns 0.108)"
+   "why": "only a sliver crosses the digits (cross 0.008, columns 0.054)"
   },
   "sea/5": {
    "published": false,
@@ -2231,16 +2323,20 @@
   "sea/6": {
    "published": true,
    "scores": {
+    "colon_cover": 0.15,
     "cols": 1.0,
-    "cross": 0.139,
+    "cross": 0.146,
     "crossing": true,
+    "diff": 0.0,
+    "digit_cover": 0.15,
     "halo": 1.18,
     "holes": 0,
     "islands": 0,
     "jagged": 0.125,
+    "shift": 0.0,
     "sky": 0.361,
-    "visible": 0.861,
-    "zoom": 1.11
+    "visible": 0.854,
+    "zoom": 1.05
    },
    "verdict": "FIT",
    "why": "clean, and the scenery crosses the digits' lower part"
