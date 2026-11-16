@@ -49,13 +49,13 @@ check("1. the re-apply only gives the role and the home activity to ours; nothin
 check("1. «تراجع» and a stock home put back clear HOME_WANTED (nothing brings ours back after the person's own choice)",
       "clearFile(HOME_WANTED);" in eng[eng.index("Result undo()"):] and eng.count('store.put(HOME_WANTED, "");') >= 2)
 # 2. the watch
-ev = svc[svc.index("public void onAccessibilityEvent(AccessibilityEvent e)"):svc.index("static boolean wanted(Context c)")]
+ev = svc[svc.index("public void onAccessibilityEvent(AccessibilityEvent e)"):svc.index("private static void watchLog(int what)")]
 check("2. the watch acts on the stock home's home screen also when the role went back (the setup's WANTED word), and logs each decision on a stock home's window",
-      "watch.decide(on, pkg, cls, stockHomes, chosen || wantedNow, now)" in ev and 'Log.i("UrTVWatch", "stock window "' in ev
-      and all(w in ev for w in ('"bring ours"', '"not its home screen"', '"watch off"', '"ours not chosen"', '"paused (it kept coming back)"'))
+      "watch.decide(on, pkg, cls, stockHomes, chosen || wantedNow, now)" in ev and ev.count("watchLog(") == 3
+      and all(w in svc for w in ('"stock window its home activity"', '"decision bring ours"', '"decision not its home screen"', '"decision watch off"', '"decision ours not chosen"', '"decision paused"', '"role stock wanted yes"'))
       and "if (!stockPackages.contains(pkg)) return;" in ev)
 check("2. the alias's real activity and launcherx's …HomeActivity count as its home screen; the service logs what it knows when it starts",
-      "ri.activityInfo.targetActivity" in svc and 'simple.endsWith("HomeActivity")' in watch and 'Log.i("UrTVWatch", "service on: watch "' in svc)
+      "ri.activityInfo.targetActivity" in svc and 'simple.endsWith("HomeActivity")' in watch and '"service on watch on wanted yes"' in svc)
 check("2. the home tells the add-on WANTED / UNWANTED (on its start and at boot, again until the add-on answers); the provider keeps it",
       "sa.urtv.home.Extras.homeWanted(app, wanted)" in hook and "SetupHook.tellWatch(app);" in boot and "tellWatch(c);" in hook
       and "ExtrasA11yService.setWanted(getContext(), ExtrasWords.WANTED.equals(arg))" in prov)

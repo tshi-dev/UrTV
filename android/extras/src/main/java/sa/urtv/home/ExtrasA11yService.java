@@ -60,7 +60,8 @@ public class ExtrasA11yService extends AccessibilityService {
         running = this;
         stockHomes = stockHomeActivities(this);
         stockPackages = HomeWatch.packages(stockHomes);
-        Log.i("UrTVWatch", "service on: watch " + (watchOn(this) ? "on" : "off") + ", wanted " + (wanted(this) ? "yes" : "no") + ", stock homes " + stockHomes);
+        watchLog(watchOn(this) ? (wanted(this) ? 1 : 2) : 3);
+        watchLog(stockHomes.isEmpty() ? 4 : 5);
         filterKeys();
     }
     @Override public boolean onUnbind(Intent i) { running = null; return super.onUnbind(i); }
@@ -82,8 +83,10 @@ public class ExtrasA11yService extends AccessibilityService {
         boolean on = watchOn(this), chosen = oursChosen(), wantedNow = wanted(this), homeScreen = HomeWatch.homeScreen(pkg, cls, stockHomes);
         long now = System.currentTimeMillis();
         boolean bring = homeScreen && watch.decide(on, pkg, cls, stockHomes, chosen || wantedNow, now);
-        Log.i("UrTVWatch", "stock window " + pkg + "/" + cls + ": " + (bring ? "bring ours" : !homeScreen ? "not its home screen" : !on ? "watch off"
-            : !(chosen || wantedNow) ? "ours not chosen" : watch.paused(now) ? "paused (it kept coming back)" : "left") + " (role " + (chosen ? "ours" : "stock") + ", wanted " + (wantedNow ? "yes" : "no") + ")");
+        // fixed words only (the log never names a package or a class): which rule matched, then the decision
+        watchLog(stockHomes.contains(pkg + "/" + cls) ? 6 : homeScreen ? 7 : 8);
+        watchLog(chosen ? (wantedNow ? 9 : 10) : (wantedNow ? 11 : 12));
+        watchLog(bring ? 13 : !homeScreen ? 14 : !on ? 15 : !(chosen || wantedNow) ? 16 : watch.paused(now) ? 17 : 18);
         if (bring) {
             try {
                 startActivity(new Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_HOME).setComponent(new ComponentName(HOME_PKG, HOME_PKG + ".MainActivity"))
@@ -95,12 +98,40 @@ public class ExtrasA11yService extends AccessibilityService {
         }
     }
 
+    /**
+     * 4.4 (step 86 B): the watch's decisions for the tester, in fixed words only (never a package or a class name of any window): `logcat -s UrTVWatch`.
+     */
+    private static void watchLog(int what) {
+        switch (what) {
+            case 1: Log.i("UrTVWatch", "service on watch on wanted yes"); break;
+            case 2: Log.i("UrTVWatch", "service on watch on wanted no"); break;
+            case 3: Log.i("UrTVWatch", "service on watch off"); break;
+            case 4: Log.i("UrTVWatch", "stock home none"); break;
+            case 5: Log.i("UrTVWatch", "stock home found"); break;
+            case 6: Log.i("UrTVWatch", "stock window its home activity"); break;
+            case 7: Log.i("UrTVWatch", "stock window a home activity by name"); break;
+            case 8: Log.i("UrTVWatch", "stock window another screen"); break;
+            case 9: Log.i("UrTVWatch", "role ours wanted yes"); break;
+            case 10: Log.i("UrTVWatch", "role ours wanted no"); break;
+            case 11: Log.i("UrTVWatch", "role stock wanted yes"); break;
+            case 12: Log.i("UrTVWatch", "role stock wanted no"); break;
+            case 13: Log.i("UrTVWatch", "decision bring ours"); break;
+            case 14: Log.i("UrTVWatch", "decision not its home screen"); break;
+            case 15: Log.i("UrTVWatch", "decision watch off"); break;
+            case 16: Log.i("UrTVWatch", "decision ours not chosen"); break;
+            case 17: Log.i("UrTVWatch", "decision paused"); break;
+            case 18: Log.i("UrTVWatch", "decision left"); break;
+            case 19: Log.i("UrTVWatch", "wanted=yes"); break;
+            default: Log.i("UrTVWatch", "wanted=no"); break;
+        }
+    }
+
     /** 4.4: the setup's word that the person's home is ours (WANTED from the home); off by «تراجع» (UNWANTED) */
     static boolean wanted(Context c) { return c.getSharedPreferences("extras", MODE_PRIVATE).getBoolean(ExtrasWords.WANTED, false); }
 
     static void setWanted(Context c, boolean on) {
         c.getSharedPreferences("extras", MODE_PRIVATE).edit().putBoolean(ExtrasWords.WANTED, on).apply();
-        Log.i("UrTVWatch", "wanted=" + (on ? "yes" : "no"));
+        watchLog(on ? 19 : 20);
     }
 
     /** the watch's switch (the home turns it with WATCH; on by default on a TV whose stock home is Google TV's) */
