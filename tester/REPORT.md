@@ -2766,3 +2766,15 @@ Settings lists, dock, photos, DNS, disabled apps (20) and Home are identical to 
 - Skipped as told: 7 remaining settings pages, 11 baselines.
 - Small note: `music.sh stations` lists 12 while station 12 (Khayyat) exists – the listing seems to hide it.
 - State at the end: owner's teams, stocks, dock, markets, city, idle as before; radio stopped; TV muted, asleep, UrTV home.
+
+## step 77 — NOT RUN: the branch build cannot be installed (verdict: NO VERDICT — BLOCKED)
+Run 301 of work/432-stockhome has versionCode **301**; the TV has apk-next **322**. `pm install -r -d` on both APKs: `INSTALL_FAILED_VERSION_DOWNGRADE: Update version code 301 is older than current 322` (release builds ignore -d). The only way is to uninstall UrTV first, which on this TV (launcherx and setupwraith are OFF from the old switch) leaves it with no home screen, so I did NOT do it. Nothing was changed (pushed APKs deleted from /data/local/tmp).
+- For the record, the TV's state before: HOME role = `sa.urtv.home`, Home opens `sa.urtv.home/.MainActivity`; `pm list packages -d` has 20 entries incl. `com.google.android.apps.tv.launcherx` and `com.google.android.tungsten.setupwraith` (so this TV IS the «switched the old way» case S1 wants).
+- **The same applies to every step whose build is older than 322**: versionCode = the CI run number. Newer than 322 and usable: work/433-setup run 323 (step 85), work/433-design 324–329, work/44-audio 328. Not usable: 78A (433-media, no run found), 81 (433-features), 82 (433-games run 315), 83 (433-matches), 84 (433-cities) unless they are rebuilt/merged so their run number is above 322 (a rebuild of the branch gets a new, higher number).
+
+## step 78 part B — Player 0.9.16-beta9 (partial: the owner's account/list is not on the TV and I never type an account)
+- Installed from the release URL, `versionName 0.9.16-beta9`, versionCode 151. Cold `am start -W`: 589 ms; `UrTVPerf: cold_start_first_frame 870 ms`, `tab_open_Home 85 ms`. Home shows «ما عندك قائمة بعد» + «إضافة قائمة» (from phone / M3U / Xtream with a code page).
+- Not done (needs a list): `list_build`, first channels before the full list, «أُضيف حديثًا» / «الأكثر مشاهدة», the 20 min `memory:` lines, the commentary card.
+- «سجل الأداء والأخطاء»: I did not find it in «عام» or «عن التطبيق» (that page shows the description, «الإصدار 0.9.16-beta9», «تقرير أو اقتراح», «نسخة رسمية ✓»); I did not walk every section. Please say where it is.
+- Cleaned up: `pm clear` + uninstall (the Player was not on the TV before).
+- Step 78A: skipped (branch build not installable, see above).
