@@ -14,7 +14,8 @@ Nothing here is built yet. The numbers are budgets for the build, checked by tes
 | `scene-<id>-fg.webp` | the subject mask: everything in front of the sky, the sky transparent, drawn over the clock | ≤ 180 KB, lossy WebP with alpha | ≤ 700 KB |
 | `scene-<id>.json` | clock box (top, size, x), date line, ink colours, the mask's bounding box | < 1 KB | |
 
-Five scenes at 1080 are about 2.4 MB in the APK (the couch-tv set measures 2.3 MB). They ship in the launcher APK; the 4K copies
+Each pack of five scenes at 1080 is about 2.4 MB (the couch-tv set measures 2.3 MB). The default pack ships in the launcher APK and the
+other is downloaded when chosen, the same way as the photo packs (`photos/packs.json`, sha256 checked); the 4K copies
 are fetched on first use by a 4K NORMAL TV only and cached, never bundled.
 
 The subject masks are made once, offline, never on the TV (no segmentation model in the app). Only the pixels of the photo are kept;
@@ -24,7 +25,7 @@ the mask's bounding box lets the TV draw only that rectangle instead of a full s
 
 1. Photo: one `Bitmap`, decoded at the screen's size (`inSampleSize`, `RGB_565` on LOW and MID: half the memory, no alpha needed).
 2. Clock: a custom view drawing the time as text with a `BitmapShader` of the glass copy (the same trick as couch-tv's CSS
-   `background-clip: text`), plus a stroke and a sheen gradient. It redraws once a minute (once a second only if «إظهار الثواني» is on,
+   `background-clip: text`), brightened, plus a light 2 px edge, a soft dark shadow so it reads on any scene, and a sheen gradient. It redraws once a minute (once a second only if «إظهار الثواني» is on,
    and then only the seconds' box is invalidated).
 3. Subject mask: one `ARGB_8888` bitmap, cropped to its bounding box, drawn over the clock.
 4. Cards and the app row: glass panels filled with the matching crop of the glass copy plus a translucent tint. **No live blur**
