@@ -27,13 +27,22 @@ CHARADE_CATS = {k: (v[0], v[1]) for k, v in curated.T.items()}
 def load(p): return json.load(open(p, encoding="utf-8"))
 def dumps(o): return json.dumps(o, ensure_ascii=False, separators=(",", ":"), sort_keys=True)
 
-def compact(items):
+# topic tag of an item by the start of its id: a game may cap the share of one topic (e.g. 25 percent) so a category is not one template
+TOPICS = [("geo-cap", "capitals"), ("geo-rev", "capitals-reverse"), ("geo-cont", "continents"), ("geo-cur", "currencies"), ("geo-lang", "languages"), ("el-", "elements"),
+          ("qu-next", "surah-order"), ("qu-num", "surah-order"), ("qu-cnt", "surah-verses"), ("mt-", "arithmetic"), ("an-class", "animal-classes")]
+def topic(i):
+    for pre, t in TOPICS:
+        if i.startswith(pre): return t
+    return "facts"
+
+def compact(items, tags=False):
     out = []
     for it in items:
         if it.get("type") != "quiz" or not it.get("verified"): continue
         q, a, w = it["question"], it["answer"], it["wrong"]
         if len(w) != 3: continue
         out.append({"i": it["id"], "c": it["category"], "d": int(it["difficulty"]), "k": 1 if it["age"] == "kids" else 0, "q": [q["ar"], q["en"]], "a": [a["ar"], a["en"]], "w": [[x["ar"], x["en"]] for x in w]})
+        if tags: out[-1]["t"] = topic(it["id"])
     return sorted(out, key=lambda x: x["i"])
 
 def named(table, key, where):
@@ -43,11 +52,11 @@ def named(table, key, where):
 def build(g, out):
     bank = compact(load(f"{g}/data/quiz.json"))
     ids = [x["i"] for x in bank]
-    by = collections.defaultdict(lambda: [0, 0, 0]); kids = collections.Counter()
+    by = collections.defaultdict(lambda: [0, 0, 0]); kids = collections.Counter(); tp = collections.defaultdict(collections.Counter)
     for x in bank:
         by[x["c"]][x["d"] - 1] += 1
-        kids[x["c"]] += x["k"]
-    cats = [{"id": c, **named(CATS, c, "quiz"), "n": by[c], "kids": kids[c]} for c in sorted(by)]
+        kids[x["c"]] += x["k"]; tp[x["c"]][topic(x["i"])] += 1
+    cats = [{"id": c, **named(CATS, c, "quiz"), "n": by[c], "kids": kids[c], "topics": dict(sorted(tp[c].items()))} for c in sorted(by)]
     mw = load(f"{g}/missing-word/items.json"); d = collections.defaultdict(lambda: [0, 0, 0])
     for x in mw: d[x["deck"]][x["difficulty"] - 1] += 1
     odd = load(f"{g}/odd-one/topics.json")["topics"]
@@ -74,7 +83,7 @@ def build(g, out):
         "variants": []}
     os.makedirs(out, exist_ok=True)
     open(f"{out}/meta.json", "w", encoding="utf-8").write(dumps(meta))
-    open(f"{out}/quiz-v2.json", "w", encoding="utf-8").write(dumps({"v": 2, "items": bank}))
+    open(f"{out}/quiz-v2.json", "w", encoding="utf-8").write(dumps({"v": 2, "items": compact(load(f"{g}/data/quiz.json"), tags=True)}))
     print("meta.json", os.path.getsize(f"{out}/meta.json"), "bytes;", "quiz-v2.json", os.path.getsize(f"{out}/quiz-v2.json"), "bytes;", len(bank), "items")
 
 def verify(out):

@@ -6,7 +6,7 @@ Built by `games/tools/build_meta.py`; the reference reader is `games/tools/meta_
 | Path | Form | For |
 |---|---|---|
 | `quiz/quiz.json` | the old bare array of compact items, unchanged | apps up to 4.3.1 (they reject any file that is not exactly this) |
-| `quiz/quiz-v2.json` | `{"v":2,"items":[compact item,...]}` | new apps; extra fields in an item are ignored |
+| `quiz/quiz-v2.json` | `{"v":2,"items":[compact item,...]}`; an item also has `t`, its topic tag (`capitals`, `elements`, `surah-order`...) | new apps; extra fields in an item are ignored. A game may cap one topic's share of a round (for example 25 percent) so a category is not one template; `meta.json` counts the topics per category |
 | `games/meta.json` | below | the setup chips of every game |
 | `games/<game>.json` | `{"v":1,...}` (docs/GAMES-DATA.md) | each game's data |
 
