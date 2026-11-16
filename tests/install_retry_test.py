@@ -70,6 +70,9 @@ case "$1" in
   "pm list packages com.tcl.tv") [ "$TCLTV" = yes ] && { log tcl-listed; echo "package:com.tcl.tv"; echo "package:com.tcl.tvinput"; } ;;
   "am force-stop com.tcl.tv") log force-stop ;;
   "pm uninstall"*) log uninstall ;;
+  "wc -c < /data/local/tmp/"*)   # the file's size on the TV: INSTALL_MODE short = the first answer is another number (the upload dropped), then ours
+    name=${1##*/}; log wc
+    if [ "$INSTALL_MODE" = short ] && [ ! -f "$T/shorted" ]; then touch "$T/shorted"; echo 1; else wc -c < "optimize/$name" | tr -d ' '; fi ;;
   "pm install"*)
     [ "$INSTALL_MODE" = silent ] && { log silent; exit 1; }   # tv.py --bg gave up: no output at all
     [ "$INSTALL_MODE" = unopen_once ] && [ ! -f "$T/unopened" ] && { touch "$T/unopened"; log unopen; echo "Failure [Unable to open file: /data/local/tmp/urtv-home.apk]"; exit 1; }
@@ -294,6 +297,10 @@ cases = [
      lambda c, o, l: c == 0 and "sending it again" in o and l.count("unopen") == 1 and "!!" not in o and "installed" in l),
     ("«Unable to open file» twice: a clear stop with what to do (free space), never a silent end", run("uo2", 0, "", install_mode="unopen_always"),
      lambda c, o, l: c == 1 and l.count("unopen") == 2 and "!! Install of" in o and "Free some space" in o),
+    ("the file reached the TV with another size: sent again before pm reads it (install goes on and succeeds)", run("sh1", 0, "", install_mode="short"),
+     lambda c, o, l: c == 0 and "another size than ours: sending it again" in o and l.count("wc") == 1 and "!!" not in o),
+    ("the file's size matches: nothing is sent twice", run("sh2", 0, ""),
+     lambda c, o, l: c == 0 and "another size" not in o),
     ("the TV never answers during the install: a clear line, exit 1", run("v", 0, "", install_mode="silent"),
      lambda c, o, l: c == 1 and "stopped answering while urtv-home.apk was installing" in o and "uninstall" not in l),
     ("no refusal: the setting is never touched", run("i", 0, "", verifier="1"),

@@ -81,6 +81,14 @@ pm_install() {   # $1 file name in /data/local/tmp, $2 package: pm's answer. A b
   printf '%s\n' "$out"
 }
 
+pushed_whole() {   # $1 file name: is the file on the TV (in /data/local/tmp) as big as ours? A TV that does not answer the size counts as «yes»: the install says if it is not
+  local want got
+  want=$(wc -c < "optimize/$1" | tr -d ' ')
+  got=$("$PY" -I optimize/tv.py "wc -c < /data/local/tmp/$1" 2> /dev/null | tr -d '\r\n ' || true)
+  [[ "$got" =~ ^[0-9]+$ ]] || return 0
+  [ "$got" = "$want" ]
+}
+
 push_install() {   # $1 apk name, $2 package
   if [ "$2" = sa.urtv.home ]; then   # the home app targets an older SDK than Play Protect likes (seen on Android 12-14)
     echo "للشخص: بعد لحظات ممكن تطلع على التلفزيون رسالة من Play Protect؛ إذا طلعت اضغط «تثبيت على أي حال» (Install anyway)."
@@ -93,6 +101,11 @@ push_install() {   # $1 apk name, $2 package
     echo "!! Could not download $REL/$1 (tag ${APK_TAG:-apk-latest}): no such build, or no internet"; exit 1
   fi
   "$PY" -I optimize/tv.py --push-b64 "optimize/$1" "/data/local/tmp/$1"
+  if ! pushed_whole "$1"; then   # 4.3.2: a file that arrived short (a dropped upload) is sent again before pm is asked to read it
+    echo "$1 reached the TV with another size than ours: sending it again."
+    "$PY" -I optimize/tv.py "rm -f /data/local/tmp/$1" > /dev/null 2>&1 || true
+    "$PY" -I optimize/tv.py --push-b64 "optimize/$1" "/data/local/tmp/$1"
+  fi
   local out
   out=$(pm_install "$1" "$2")
   if grep -q "Unable to open file" <<< "$out"; then   # 4.3.2 (Nokia Streaming Box 8000, TCL BeyondTV4): the file did not reach /data/local/tmp whole, or the TV could not read it: sent again, installed once more
@@ -158,6 +171,21 @@ for abi in [a for a in sys.argv[2].split(",") if a] + ["universal", ""]:
 ' "$1" "$2" <<< "$3"
 }
 
+pick_asset_older() {   # $1 asset pattern, $2 the TV's processor types, $3 the releases list JSON (newest first): "url size" of the best build in the newest full release that has one
+  "$PY" -I -c '
+import json, re, sys
+for rel in json.load(sys.stdin):
+    if rel.get("draft") or rel.get("prerelease"):
+        continue
+    assets = {a["name"]: (a["browser_download_url"], a.get("size", 0)) for a in rel.get("assets", [])}
+    for abi in [a for a in sys.argv[2].split(",") if a] + ["universal", ""]:
+        pat = re.compile(sys.argv[1].replace("{abi}", re.escape(abi)) + "$")
+        hit = sorted(n for n in assets if pat.search(n))
+        if hit:
+            print(assets[hit[0]][0], assets[hit[0]][1]); sys.exit(0)
+' "$1" "$2" <<< "$3"
+}
+
 from_github() {   # $1 owner/repo, $2 package, $3 asset pattern ({abi} = the TV's processor types, best first)
   local abis url name out code body size attempt prop
   # an extra that an earlier try already installed is not downloaded or uploaded again: a flaky Wi-Fi that dropped on the second
@@ -184,6 +212,12 @@ from_github() {   # $1 owner/repo, $2 package, $3 asset pattern ({abi} = the TV'
     [ -z "$url" ] || break
     [ "$attempt" = 3 ] || sleep 3
   done
+  if [ -z "$url" ] && [ -n "$abis" ]; then   # 4.3.2: the newest release may not carry this processor's file (yet): the newest full release that does
+    local older
+    older=$(curl_get -sSL "https://api.github.com/repos/$1/releases?per_page=10") || older=""
+    [ -z "$older" ] || url=$(pick_asset_older "$3" "$abis" "$older") || url=""
+    [ -z "$url" ] || echo "The newest release of $1 has no build for this TV ($abis): using the newest one that has."
+  fi
   if [ -z "$url" ]; then echo "!! No build of $1 for this TV (${abis:-no answer about its processor}): skipped"; return 0; fi
   size=${url##* }; url=${url% *}
   name=$(basename "$url")

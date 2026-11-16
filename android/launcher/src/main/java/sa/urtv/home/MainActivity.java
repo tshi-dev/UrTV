@@ -1258,9 +1258,10 @@ public class MainActivity extends Activity {
         cardByPkg.clear();
         List<App> rest = new ArrayList<>(byPkg.values());   // by name, then in the owner's order (inSavedOrder)
         Collections.sort(rest, (x, y) -> x.label.compareToIgnoreCase(y.label));
-        // Fewer than MIN_DOCK of the chosen apps installed: top the dock up from the rest, in the order of their package names, never of their labels: a
+        // None of the chosen apps installed: top the dock up from the rest, in the order of their package names, never of their labels: a
         // label follows the screen's language (Downloader in Arabic where English said Apple TV, build 180), the dock must not.
-        {
+        // 4.3.2: only when none of the person's choice is on the TV (nothing saved, or all of it gone): three chosen apps stay three, they are never padded with games
+        if (dock.isEmpty()) {
             List<String> have = new ArrayList<>(), other = new ArrayList<>();
             for (App d : dock) have.add(d.pkg);
             for (App x : rest) other.add(x.pkg);
