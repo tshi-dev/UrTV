@@ -214,6 +214,7 @@ public class MainActivity extends Activity {
         super.onCreate(b);
         if (DebugFlags.on(this, "keytrace")) KeyTrace.install();
         dbgFocus = DebugFlags.focusMask(this);   // a tester's switches for the tile's focus animation (dock.sh debug plainfocus ...)
+        if (Ram.low(this)) dbgFocus |= DebugFlags.LIFT | DebugFlags.SHINE;   // A14 «الوضع الخفيف»: the focused tile without its elevation shadow and its shine (the scale and the highlight stay)
         FamilyDnsAndroid.status(this);   // first use in this process: undoes a Family DNS check that a crash cut short
         sa.urtv.home.setup.SetupHook.atHomeStart(this);   // a home switch that was cut off is put back (it never throws)
         Digits.init(this);   // the screensaver's «الأرقام» setting, for every number this screen writes

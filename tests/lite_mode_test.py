@@ -54,4 +54,6 @@ check("docs/SETTINGS.md has the row with its command", "optimize/saver.sh lite" 
 tpl = text(ROOT / "src/template.html")
 check("the page: no blurred copy behind the card in the light profile", "if(!CARD_FILTER[CONFIG.cardStyle] || CONFIG.lowram) return;" in tpl)
 check("what LOW already does stays: no transitions, slower timers, one photo layer", "html.lowram *, html.lowram *::before, html.lowram *::after { transition: none !important; }" in tpl and "CONFIG.lowram ? 15000 : 3000" in tpl and "CONFIG.lowram || !imgs[0].classList.contains('on')" in tpl)
+check("the home in the light profile: the focused tile without its elevation shadow and shine (the scale and the highlight stay)",
+      "if (Ram.low(this)) dbgFocus |= DebugFlags.LIFT | DebugFlags.SHINE;" in text(HOME / "MainActivity.java"))
 sys.exit(1 if failed else 0)
