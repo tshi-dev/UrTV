@@ -4,6 +4,7 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."
 python3 tests/check.py
+python3 tests/build_strip_test.py   # the build drops the script's whole-line // comments, never a line of a string, template or regex
 python3 tests/arabic_spacing_test.py   # Arabic letters stay joined: no letter-spacing on anything that can hold Arabic
 python3 tests/tilawah_test.py
 python3 tests/prayer_math_test.py
@@ -237,6 +238,8 @@ python3 tests/phone_message_test.py   # 4.3 #53: a short message from a paired p
 python3 tests/photos_phone_test.py   # 4.3 «صوري»: 50, and from a paired phone (no camera data)
 python3 tests/own_adhan_fajr_test.py   # 4.3 C16: a second own adhan, for Fajr
 python3 tests/football_test.py   # the football home and «المباريات»: the setting, the pages, the widgets' focus, the tray's move, the broadcast table (docs/PROPOSALS-NOV2.md §1)
+python3 tests/three_teams_test.py   # 4.3.3 A3: three followed teams through every step (saver Prefs, the provider, the launcher's link, the page)
+python3 tests/follow_store_test.py   # 4.3.3 following from «المباريات» with the screensaver app missing or older: the home keeps it, joins it, hands it over
 python3 tests/settings_report_test.py   # «أرسل تقرير»: share.py's allowlist, nothing personal
 python3 tests/dialog_fit_test.py
 python3 tests/second_card_test.py
@@ -278,6 +281,7 @@ node tests/prayer_crosscheck_world_page.mjs
 node tests/hijri_crosscheck_page.mjs
 node tests/page.test.mjs
 node tests/football_page.test.mjs   # the football home's widgets and «المباريات» in a browser, on fixed games
+node tests/matches_archive.test.mjs   # «المباريات» with the match archive (data-archive): every followed team, yesterday's results, a club, a league, the chooser
 node tests/phone_page.test.mjs
 node tests/sync_cards.test.mjs   # «توحيد المظهر» on the page: the cards in the material's fill, line and ink, readable on a light look
 node tests/reminder_page.test.mjs   # the screensaver's reminder card: its time, «الآن», «تم», the snooze, the keys, the adhan, English

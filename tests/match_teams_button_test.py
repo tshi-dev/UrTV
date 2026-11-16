@@ -22,7 +22,9 @@ saver = (ROOT / "android/app/src/main/java/sa/urtv/screensaver/SettingsActivity.
 tsv = (ROOT / "i18n/en/page.tsv").read_text(encoding="utf-8")
 check("the header has «فرقي» only where the app can open it (the bridge has openTeams), ▲ from the days reaches it, OK opens it, ▼ goes back to the days",
       "teams:'فرقي'" in page and "window.UrtvMatches.openTeams ?" in page and "k === 'ArrowUp' && document.getElementById('mp-teams')) MP.zone = 'head'" in page
-      and "MP.zone === 'head'" in page and "window.UrtvMatches.openTeams()" in page and "MP.zone = 'days'; e.preventDefault(); return mpRender();" in page)
+      and "MP.zone === 'head'" in page and "MP.zone = 'days'; e.preventDefault(); return mpRender();" in page)
+check("4.3.3: OK on «فرقي» opens the page's own «فرقي» (the followed teams and leagues, «أضف»); the settings' chooser is its action «إعدادات فرقي»",
+      "if(ok){ e.preventDefault(); return mpGo({k: 'mine'}); }" in page and "if(host && host.openTeams) tabs.push({t: FB_W.manage, act: () => { try{ host.openTeams(); }catch(e){} }});" in page)
 check("in the page's zone 'head' the days do not also show the focus when a day has no games", "(!MP.rows.length && MP.zone !== 'head')" in page)
 check("its English word is in the table", "فرقي\tMy teams" in tsv)
 check("the app opens the screensaver's settings on the teams chooser, never in kids mode, and makes the page again on return (the new teams)",

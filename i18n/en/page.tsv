@@ -310,6 +310,7 @@
 الأيام القادمة	Coming days
 الساعات القادمة	Coming hours
 مباريات فرقك	Your teams
+مباراة فريقك القادمة	Your team’s next match
 المهام	Tasks
 السنة	Year
 المباراة	Match
@@ -463,6 +464,40 @@
 و%s دقائق	%s min
 و%s دقيقة	%s min
 مباراة %s، تبدأ %s	Match %s, starts %s
+دورياتي	My leagues
+أضف دوريًا أو فريقًا	Add a league or a team
+إعدادات فرقي	My teams settings
+ما تتابع فريقًا بعد	No team followed yet
+ما تتابع دوريًا بعد	No league followed yet
+كل الدول	All countries
+فرق هذا الدوري	Teams of this league
+الترتيب والنتائج	Table and results
+أُضيف %s إلى دورياتك	%s added to your leagues
+أُزيل %s من دورياتك	%s removed from your leagues
+متابَع	Followed
+ابحث عن فريق	Find a team
+نتائج البحث	Search results
+اكتب اسم الفريق	Type a team name
+وصلت للحد: ٨ دوريات	Limit reached: 8 leagues
+اختر دوريًا	Choose a league
+صفحة الفريقين	Both clubs
+جدول الترتيب	Table
+النتائج	Results
+الترتيب غير متاح الآن	No table right now
+%s نقطة	%s points
+آخر النتائج	Last results
+المواجهات مع %s	Meetings with %s
+%s: %s %s فوز، %s تعادل، %s %s	%s: %s %s wins, %s draws, %s %s
+فتخ	WDL
+آخر ٥	Last 5
+المركز %s	Place %s
+آخر مواجهة	Last meeting
+آخر مواجهتين	Last 2 meetings
+آخر %s مواجهات	Last %s meetings
+صفحة %s	%s page
+لا شيء هنا بعد	Nothing here yet
+تابع %s	Follow %s
+ألغِ متابعة %s	Unfollow %s
 دوري روشن	Roshn League
 دوري نجوم العراق	Iraq Stars League
 أبطال آسيا للنخبة	AFC Champions League Elite

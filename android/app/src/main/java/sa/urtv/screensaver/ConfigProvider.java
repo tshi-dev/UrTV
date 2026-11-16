@@ -162,6 +162,16 @@ public class ConfigProvider extends ContentProvider {
                 out.putBoolean("ok", arg != null && arg.matches("\\d{1,9}") && p.removeTeam(arg));
                 return out;
             }
+            case "phone_follow_league": {   // 4.3.3 «تابع» a league on «المباريات» (or the home's kept one): arg "id|ar|en"; false when there already or full
+                String[] kv = arg == null ? new String[0] : arg.split("\\|", -1);
+                out.putBoolean("ok", kv.length == 3 && p.addLeague(kv[0], kv[1], kv[2]));
+                return out;
+            }
+            case "phone_unfollow_league": {   // 4.3.3 its «ألغِ متابعة»: arg "id|en"
+                String[] kv = arg == null ? new String[0] : arg.split("\\|", -1);
+                out.putBoolean("ok", kv.length == 2 && p.removeLeague(kv[0], kv[1]));
+                return out;
+            }
             case "phone_cities": {
                 ArrayList<String> names = new ArrayList<>();
                 for (String[] city : CityMatch.find(arg == null ? "" : arg)) if (names.size() < 20) names.add(city[0]);
