@@ -114,6 +114,7 @@ python3 tests/catalogue_leagues_test.py   # 4.3 «كل الدوريات» on the
 python3 tests/data_host_test.py   # 4.3.3 the data files: tshi-dev/urtv-data first, the old data branch second, one map in both apps and the page
 python3 tests/prayer_fix_test.py   # 4.3.3 published prayer corrections: by country and city, by date, never over the person's own minutes, through adj=
 python3 tests/seasonal_test.py   # 4.3.3 seasonal photo packs: only between their days, first in the picker, licensed, the same checks as every pack
+python3 tests/device_rule_test.py   # 4.3.3 per-model defaults: matched by brand, model, device and SDK, applied only where nothing is set
 python3 tests/market_prices_test.py
 python3 tests/markets_page_test.py   # «الأسواق»: the data and the sums on a JVM, only the sources we have, «الأخبار» off, the ways in
 python3 tests/portfolio_privacy_test.py   # «محفظتي» stays on the TV: share.py, Report, settings_move, ConfigProvider, the commands

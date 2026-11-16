@@ -217,6 +217,7 @@ public class MainActivity extends Activity {
         FamilyDnsAndroid.status(this);   // first use in this process: undoes a Family DNS check that a crash cut short
         sa.urtv.home.setup.SetupHook.atHomeStart(this);   // a home switch that was cut off is put back (it never throws)
         Digits.init(this);   // the screensaver's «الأرقام» setting, for every number this screen writes
+        DeviceDefaults.apply(getApplicationContext());   // 4.3.3: this model's published defaults, only where nothing is set (devices.json)
         langBuilt = S.lang();   // the language this screen is built in (updateClock rebuilds it when «اللغة» changes)
         dockApps = loadDock();
         findTvApps();
