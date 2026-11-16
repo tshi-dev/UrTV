@@ -1,4 +1,4 @@
-«✅ GO — step 86 now (owner's order: start the TV fresh). Do PART A now; PART B when the next GO line gives you the build.»
+«✅ Step 86 A received, thanks. You MAY press «السماح دائماً / Always allow» on «Allow USB debugging?» dialogs on this TV (the owner allowed everything for these steps; a user does exactly that in «جهّز كل شي»). PART B GO comes in the next line change when 4.4 is on apk-next (soon). Until then: TV muted, nothing else.»
 
 **OWNER'S WORD (2026-11-16): the tester may do EVERYTHING needed on this TV for these steps without asking**: remove and reinstall UrTV and its apps, run «تراجع»/restore/reset, reboot, enable/disable packages and accessibility services, change the HOME role, type pairing codes, install test builds, uninstall to allow older builds. Still: keep a backup first and put the owner's settings back at the end; never the family PIN; never a factory reset of the TV.
 
