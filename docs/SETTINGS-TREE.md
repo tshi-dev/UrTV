@@ -292,6 +292,24 @@ the phone page's key, «مركز التحكم» the control centre's row that op
 ——— إخفاء المباريات المنتهية [الرئيسية]
     مثال للوكيل: optimize/saver.sh fbhide on  (`off`, the default: an ended game stays with its score)
       القيم المقبولة: on|off
+——— تنبيه بداية المباراة [الرئيسية وشاشة التوقف]
+    مثال للوكيل: optimize/saver.sh kickoff off  (`on`, the default; `silent` = on with no sound, `whistle` = on with the short whistle)
+      القيم المقبولة: on|off|silent|whistle
+——— صوت التنبيه [الرئيسية وشاشة التوقف]
+    مثال للوكيل: optimize/saver.sh kickoff silent  (no sound)
+      القيم المقبولة: on|off|silent|whistle
+    مثال للوكيل: optimize/saver.sh kickoff whistle  (the short whistle, the default)
+      القيم المقبولة: on|off|silent|whistle
+——— عند الهدف [الرئيسية وشاشة التوقف]
+    مثال للوكيل: optimize/saver.sh kickoffgoal on  (`off`, the default)
+      القيم المقبولة: on|off
+——— صافرة النهاية [الرئيسية وشاشة التوقف]
+    مثال للوكيل: optimize/saver.sh kickoffend on  (`off`, the default)
+      القيم المقبولة: on|off
+——— فوق تطبيق آخر [كل التلفزيون]
+    مثال للوكيل: optimize/saver.sh kickoffover on  (`off`, the default)
+      القيم المقبولة: on|off
+    مثال للوكيل: optimize/dock.sh overlay on  (= `appops set sa.urtv.home SYSTEM_ALERT_WINDOW allow`; `overlay off`, `overlay status`)
 —— صفحة الأسواق
 ——— افتح صفحة الأسواق [الرئيسية]
     إجراء أو شاشة من التلفزيون (ما فيه قيمة يضبطها أمر)
@@ -708,6 +726,24 @@ the phone page's key, «مركز التحكم» the control centre's row that op
 ———— إخفاء المباريات المنتهية [الرئيسية]
      مثال للوكيل: optimize/saver.sh fbhide on  (`off`, the default: an ended game stays with its score)
        القيم المقبولة: on|off
+———— تنبيه بداية المباراة [الرئيسية وشاشة التوقف]
+     مثال للوكيل: optimize/saver.sh kickoff off  (`on`, the default; `silent` = on with no sound, `whistle` = on with the short whistle)
+       القيم المقبولة: on|off|silent|whistle
+———— صوت التنبيه [الرئيسية وشاشة التوقف]
+     مثال للوكيل: optimize/saver.sh kickoff silent  (no sound)
+       القيم المقبولة: on|off|silent|whistle
+     مثال للوكيل: optimize/saver.sh kickoff whistle  (the short whistle, the default)
+       القيم المقبولة: on|off|silent|whistle
+———— عند الهدف [الرئيسية وشاشة التوقف]
+     مثال للوكيل: optimize/saver.sh kickoffgoal on  (`off`, the default)
+       القيم المقبولة: on|off
+———— صافرة النهاية [الرئيسية وشاشة التوقف]
+     مثال للوكيل: optimize/saver.sh kickoffend on  (`off`, the default)
+       القيم المقبولة: on|off
+———— فوق تطبيق آخر [كل التلفزيون]
+     مثال للوكيل: optimize/saver.sh kickoffover on  (`off`, the default)
+       القيم المقبولة: on|off
+     مثال للوكيل: optimize/dock.sh overlay on  (= `appops set sa.urtv.home SYSTEM_ALERT_WINDOW allow`; `overlay off`, `overlay status`)
 ——— صفحة الأسواق
 ———— افتح صفحة الأسواق [الرئيسية]
      إجراء أو شاشة من التلفزيون (ما فيه قيمة يضبطها أمر)

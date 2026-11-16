@@ -252,6 +252,10 @@ public class SaverReceiver extends BroadcastReceiver {
         String months = i.getStringExtra("months");
         if (months != null && !"default".equals(months) && !"levant".equals(months)) return "error: months is one of default levant";
         String occasion = i.getStringExtra("occasion"), nightDim = i.getStringExtra("nightdim"), tasksPill = i.getStringExtra("taskspill");
+        String kickoffOn = i.getStringExtra("kickoff"), kickoffGoal = i.getStringExtra("kickoffgoal"), kickoffEnd = i.getStringExtra("kickoffend"), kickoffOver = i.getStringExtra("kickoffover");
+        if (kickoffOn != null && !kickoffOn.matches("on|off|silent|whistle")) return "error: kickoff is one of on off silent whistle";
+        for (String[] x : new String[][] {{"kickoffgoal", kickoffGoal}, {"kickoffend", kickoffEnd}, {"kickoffover", kickoffOver}})
+            if (x[1] != null && !"on".equals(x[1]) && !"off".equals(x[1])) return "error: " + x[0] + " is one of on off";
         String backSaver = i.getStringExtra("backsaver"), fbHide = i.getStringExtra("fbhide"), dateNum = i.getStringExtra("datenum"), searchPill = i.getStringExtra("searchpill");
         for (String[] x : new String[][] {{"occasion", occasion}, {"nightdim", nightDim}, {"taskspill", tasksPill}, {"backsaver", backSaver}, {"fbhide", fbHide}, {"datenum", dateNum}, {"searchpill", searchPill}})
             if (x[1] != null && !"on".equals(x[1]) && !"off".equals(x[1])) return "error: " + x[0] + " is one of on off";
@@ -507,6 +511,10 @@ public class SaverReceiver extends BroadcastReceiver {
         if (tasksPill != null) p.setTasksPill("on".equals(tasksPill));
         if (backSaver != null) p.setBackSaver("on".equals(backSaver));
         if (fbHide != null) p.setFbHideDone("on".equals(fbHide));
+        if (kickoffOn != null) { if (kickoffOn.equals("on") || kickoffOn.equals("off")) p.setKickoff("on".equals(kickoffOn)); else { p.setKickoff(true); p.setKickoffWhistle("whistle".equals(kickoffOn)); } }
+        if (kickoffGoal != null) p.setKickoffGoal("on".equals(kickoffGoal));
+        if (kickoffEnd != null) p.setKickoffEnd("on".equals(kickoffEnd));
+        if (kickoffOver != null) p.setKickoffOver("on".equals(kickoffOver));
         if (dateNum != null) p.setDateNum("on".equals(dateNum));
         if (searchPill != null) p.setSearchPill("on".equals(searchPill));
         if (prayerMethod != null) p.setPrayerMethod(PrayerMethod.parse(prayerMethod));
@@ -688,7 +696,7 @@ public class SaverReceiver extends BroadcastReceiver {
             + "\nwxmore: " + (p.wxMore() ? "on" : "off") + "\nmonths: " + p.months() + "\nverse: " + p.quoteEvery()
             + "\nversekind: " + p.verseKind() + "\nseconds: " + (p.seconds() ? "on" : "off") + "\nbackexit: " + p.homeExit()
             + "\noccasion: " + (p.occasion() ? "on" : "off") + "\nnightdim: " + (p.nightDim() ? "on" : "off") + "\ntaskspill: " + (p.tasksPill() ? "on" : "off")
-            + "\nbacksaver: " + (p.backSaver() ? "on" : "off") + "\nfbhide: " + (p.fbHideDone() ? "on" : "off") + "\ndatenum: " + (p.dateNum() ? "on" : "off") + "\nsearchpill: " + (p.searchPill() ? "on" : "off")
+            + "\nbacksaver: " + (p.backSaver() ? "on" : "off") + "\nfbhide: " + (p.fbHideDone() ? "on" : "off") + "\nkickoff: " + (!p.kickoff() ? "off" : p.kickoffWhistle() ? "on (whistle)" : "on (silent)") + "\nkickoffgoal: " + (p.kickoffGoal() ? "on" : "off") + "\nkickoffend: " + (p.kickoffEnd() ? "on" : "off") + "\nkickoffover: " + (p.kickoffOver() ? "on" : "off") + "\ndatenum: " + (p.dateNum() ? "on" : "off") + "\nsearchpill: " + (p.searchPill() ? "on" : "off")
             + "\nprayermethod: " + p.prayerMethod()
             + "\nprayeradj: " + (p.prayerAdjOn() ? "on" : "off") + " " + PrayerAdj.describe(p.prayerAdj())
             + "\nhijrioffset: " + HijriOffset.describe(p.hijriOffset())

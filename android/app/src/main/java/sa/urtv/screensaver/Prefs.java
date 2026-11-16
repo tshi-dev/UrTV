@@ -624,6 +624,20 @@ final class Prefs {
     void setSearchPill(boolean v) { sp.edit().putBoolean("searchPill", v).apply(); }
     void setDateNum(boolean v) { sp.edit().putBoolean("dateNum", v).apply(); }
     void setFbHideDone(boolean v) { sp.edit().putBoolean("fbHideDone", v).apply(); }
+    /** 4.4 «تنبيه بداية المباراة»: at a followed club's kick-off a short whistle and a small notice (on, the default); its sound (the whistle or
+     *  «بدون صوت»), a goal and the final whistle (off), and «فوق تطبيق آخر» (off: the home and the screensaver only) */
+    boolean kickoff() { return sp.getBoolean("kickoff", true); }
+    void setKickoff(boolean v) { sp.edit().putBoolean("kickoff", v).apply(); }
+    boolean kickoffWhistle() { return sp.getBoolean("kickoffWhistle", true); }
+    void setKickoffWhistle(boolean v) { sp.edit().putBoolean("kickoffWhistle", v).apply(); }
+    boolean kickoffGoal() { return sp.getBoolean("kickoffGoal", false); }
+    void setKickoffGoal(boolean v) { sp.edit().putBoolean("kickoffGoal", v).apply(); }
+    boolean kickoffEnd() { return sp.getBoolean("kickoffEnd", false); }
+    void setKickoffEnd(boolean v) { sp.edit().putBoolean("kickoffEnd", v).apply(); }
+    boolean kickoffOver() { return sp.getBoolean("kickoffOver", false); }
+    void setKickoffOver(boolean v) { sp.edit().putBoolean("kickoffOver", v).apply(); }
+    /** what the launcher reads (the provider's column "kickoff"): "on|whistle|over", e.g. "1|whistle|0" */
+    String kickoffColumn() { return (kickoff() ? "1" : "0") + "|" + (kickoffWhistle() ? "whistle" : "none") + "|" + (kickoffOver() ? "1" : "0"); }
     void setBackSaver(boolean v) { sp.edit().putBoolean("backSaver", v).apply(); }
 
     /** «تبديل الآية والحديث»: the verse-or-hadith card once a day (default, as always) or every 3 minutes (QuoteEvery); #versemin=3 only then. */
@@ -749,7 +763,7 @@ final class Prefs {
             + HomeExit.fragment(homeExit())
             + (occasion() ? "" : "&occasion=0") + (nightDim() ? "" : "&nightdim=0") + (tasksPill() ? "" : "&taskspill=0")
             + (backSaver() ? "&backsaver=1" : "")
-            + (fbHideDone() ? "&fbhide=1" : "") + (dateNum() ? "&datenum=1" : "") + (searchPill() ? "&searchpill=1" : "")   // the football home without the games that ended
+            + (fbHideDone() ? "&fbhide=1" : "") + (kickoff() ? "" : "&ko=0") + (kickoffGoal() ? "&kogoal=1" : "") + (kickoffEnd() ? "&koend=1" : "") + (dateNum() ? "&datenum=1" : "") + (searchPill() ? "&searchpill=1" : "")   // the football home without the games that ended
             + "&cardstyle=" + cardStyle()
             + "&adhanbar=" + (adhanBar() ? "1" : "0")
             + "&yearstrip=" + (yearStrip() ? "1" : "0")

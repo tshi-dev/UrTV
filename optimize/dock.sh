@@ -18,6 +18,7 @@
 #   optimize/dock.sh backsaver on|off        «الرجوع يفتح شاشة التوقف»: Back on our home starts the screensaver (off by default; the TV row in «الشاشة الرئيسية» is set too); no argument says how it stands
 #   optimize/dock.sh message on|off          «رسائل الجوال» (4.3 #53): a paired phone's short message shown on the screen for 20 s (on by default); no argument says how it stands
 #   optimize/dock.sh message overapps on|off «فوق التطبيقات»: also over a film or a match (on by default); off = only on our home and the screensaver
+#   optimize/dock.sh overlay on|off|status   4.4 «فوق تطبيق آخر» of the kick-off alert: lets the home draw its corner notice over another app (SYSTEM_ALERT_WINDOW; off by default)
 #   optimize/dock.sh familydns on|off|status|grant   «حماية العائلة (DNS)»: Private DNS to AdGuard Family, checked and undone by optimize/familydns.sh
 #   optimize/dock.sh cast on|off|status    «البث من الجوال» on a Chromecast with Google TV: casting and the Google Home remote kept (on, the default) or our home first (off); optimize/cast.sh
 #   optimize/dock.sh extras-setup          turn on «إضافات تلفزيونك» (UrTV Extras, optimize/install.sh addon first; once): the sleep timer's screen-off, the phone remote's
@@ -83,6 +84,15 @@ case "${1:-}:$#" in
   message:3)
     [ "$2" = overapps ] || { echo "usage: optimize/dock.sh message overapps on|off"; exit 1; }
     case "$3" in on|off) send PHONE_MESSAGE "--es mode status --es overapps $3" ;; *) echo "usage: optimize/dock.sh message overapps on|off"; exit 1 ;; esac ;;
+  overlay:2)
+    # 4.4: the appop behind «الظهور فوق التطبيقات» for the home app; on some TVs the Settings screen for it is hidden, so the person's choice is set from here
+    case "$2" in
+      on) "$PY" -I optimize/tv.py "appops set sa.urtv.home SYSTEM_ALERT_WINDOW allow" > /dev/null; echo "overlay: on (the kick-off notice may show over another app when «فوق تطبيق آخر» is نعم)" ;;
+      off) "$PY" -I optimize/tv.py "appops set sa.urtv.home SYSTEM_ALERT_WINDOW default" > /dev/null; echo "overlay: off" ;;
+      status) "$PY" -I optimize/tv.py "appops get sa.urtv.home SYSTEM_ALERT_WINDOW" | tr -d '\r' ;;
+      *) echo "usage: optimize/dock.sh overlay on|off|status"; exit 1 ;;
+    esac ;;
+  overlay:*) echo "usage: optimize/dock.sh overlay on|off|status"; exit 1 ;;
   sleep:1) send SLEEP_TV ;;
   sleep:2)
     case "$2" in
@@ -200,5 +210,5 @@ case "${1:-}:$#" in
     esc=$(printf '%s' "$3" | sed "s/'/'\\\\''/g")   # an apostrophe inside the quotes, as optimize/type.sh does; the app decides whether the name is kept
     send SET_INPUT_NAME "--es id '$2' --es name '$esc'" ;;
   input-name:*) echo "usage: optimize/dock.sh input-name ID 'الاسم'   (ID from: optimize/dock.sh input-names; '' = the TV's own name)"; exit 1 ;;
-  *) sed -n '2,30p' "$0"; exit 1 ;;
+  *) sed -n '2,/^# The home screen redraws/p' "$0"; exit 1 ;;
 esac

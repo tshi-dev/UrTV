@@ -325,6 +325,18 @@ public class SettingsActivity extends Activity {
         row("رياضات أخرى", labels(Prefs.EVENTS, prefs.list("events"), "بدون"), R.drawable.ic_trophy,
             new Runnable() { public void run() { pickMany("events", "رياضات أخرى", Prefs.EVENTS, "بدون اختيار = بدون"); } });
 
+        // 4.4 «تنبيه بداية المباراة» (the home app plays the whistle and draws the notice; this app keeps the choices)
+        row("تنبيه بداية المباراة", prefs.kickoff() ? "يعمل لفرقك" : "متوقف", R.drawable.ic_trophy,
+            new Runnable() { public void run() { prefs.setKickoff(!prefs.kickoff()); render(); } });
+        row("صوت التنبيه", prefs.kickoffWhistle() ? "يعمل" : "متوقف", R.drawable.ic_trophy,
+            new Runnable() { public void run() { prefs.setKickoffWhistle(!prefs.kickoffWhistle()); render(); } });
+        row("عند الهدف", prefs.kickoffGoal() ? "يعمل" : "متوقف", R.drawable.ic_trophy,
+            new Runnable() { public void run() { prefs.setKickoffGoal(!prefs.kickoffGoal()); render(); } });
+        row("صافرة النهاية", prefs.kickoffEnd() ? "يعمل" : "متوقف", R.drawable.ic_trophy,
+            new Runnable() { public void run() { prefs.setKickoffEnd(!prefs.kickoffEnd()); render(); } });
+        row("فوق تطبيق آخر", prefs.kickoffOver() ? "يعمل" : "متوقف", R.drawable.ic_trophy,
+            new Runnable() { public void run() { prefs.setKickoffOver(!prefs.kickoffOver()); render(); if (prefs.kickoffOver()) askOverlay(); } });
+
         header("العرض");
         noConv = true;
         row("الأرقام", Prefs.digitsLabel(prefs.digits()), R.drawable.ic_language,
@@ -1255,6 +1267,15 @@ public class SettingsActivity extends Activity {
     }
 
     /** Followed teams: untick to remove, or add one (presets, league browsing, search). Up to 20. */
+    /** 4.4 «فوق تطبيق آخر»: the TV's own «الظهور فوق التطبيقات» screen for the home app; a TV that hides it: the computer's command, said once */
+    private void askOverlay() {
+        Intent i = new Intent("android.settings.action.MANAGE_OVERLAY_PERMISSION", Uri.parse("package:sa.urtv.home"));
+        try {
+            if (getPackageManager().resolveActivity(i, 0) != null) { startActivity(i); return; }
+        } catch (RuntimeException ignored) { }
+        toast("هذا التلفزيون يخفي هذا الإذن، فيُعطى من الكمبيوتر");
+    }
+
     private void manageTeams() {
         final List<String> cur = prefs.teams();
         String[] labels = new String[cur.size()];
