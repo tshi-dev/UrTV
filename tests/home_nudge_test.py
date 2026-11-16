@@ -35,7 +35,7 @@ check("4.4: the bar is built and asked from onResume, but it NEVER asks to make 
       "buildHomeNudge(root);" in main and "updateHomeNudge(true);" in main and "HomeNudgeRule.show(isDefaultHome()" not in main and "isDefaultHome(), kids" not in main
       and "sa.urtv.home.setup.SetupActivity.class" in main.split("private void buildHomeNudge", 1)[1][:2500] and "HomeNudgeRule.laterUntil(System.currentTimeMillis(), presses)" in main)
 check("its words are in the English table, and the bar is ONE short line in the top-centre slot (it never covers a card: the first version was a two-line card with a button under it)",
-      all(w in tsv for w in ("خلّ تلفزيونك يفتح على UrTV\t", "لاحقاً\t")) and "lp(-2, -2, Gravity.TOP | Gravity.CENTER_HORIZONTAL, 0, dp(30), 0, 0));" in main.split("private void buildHomeNudge", 1)[1][:3500]
+      all(w in tsv for w in ("خلّ تلفزيونك يفتح على UrTV\t", "لاحقاً\t")) and "lp(-2, -2, Gravity.TOP | Gravity.CENTER_HORIZONTAL, 0, dp(30), 0, 0));" in main.split("private void buildHomeNudge", 1)[1][:6000]
       and "nudgeCard.setSingleLine(true);" in main and "nudge.setOrientation(LinearLayout.HORIZONTAL);" in main and "dp(48)" not in main.split("private void buildHomeNudge", 1)[1][:2000])
 wire = main.split("private void wireNudge()", 1)[1].split("private void updateHomeNudge", 1)[0]
 check("reachable with the remote (hotfix 4.3): UP from every top-row button reaches the bar while it shows (the buttons' own UP was themselves), DOWN goes back, the two buttons are side by side in the screen's direction (RTL and LTR)",
@@ -69,7 +69,7 @@ if shutil.which("javac") and shutil.which("java"):
                     failed += line.startswith("FAIL ")
             check("every city rule ran", "ALL PASS" in out, out[-200:])
 check("the question is the nudge's bar: due only while no city was chosen (the screensaver's city_chosen), never together with the nudge (the city first), its own snooze count, OK opens the chooser",
-      "CityAskRule.show(isInstalled(SAVER_PKG), cityChosenNow, java.util.TimeZone.getDefault().getID(), kids" in tail and "boolean show = askUpdate || askExtras || askCity;" in tail
+      "CityAskRule.show(isInstalled(SAVER_PKG), cityChosenNow, java.util.TimeZone.getDefault().getID(), kids" in tail and "boolean show = askStock || askUpdate || askExtras || askCity;" in tail
       and "nudgeIsCity = askCity;" in tail and 'String k = nudgeIsCity ? "city_" : nudgeIsExtras ? "extras_" : "";' in main and "if (nudgeIsCity) { openCity(); return; }" in main
       and "cfg.cityChosen != cityChosenNow" in main)
 check("the home asks the screensaver (city_chosen column; an older one says nothing = chosen, nobody is asked), and its words are in the English table",

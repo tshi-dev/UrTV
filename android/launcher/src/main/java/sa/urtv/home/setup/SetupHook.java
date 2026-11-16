@@ -79,10 +79,24 @@ public final class SetupHook {
         catch (RuntimeException e) { return false; }
     }
 
-    /** Our home reached the screen (MainActivity.onResume): while the stock interface is off, this boot is fine and BootGuard's count starts again. One small read; a write only when it changes. */
+    /** 4.4: the home's own check after a bad boot (SetupBootReceiver.homeGuard): our home is the TV's Home and did not come up twice in a row with a crash; the home offers «رجّع الواجهة الأصلية» first */
+    static final String HOME_GUARD = "home-guard.txt", STOCK_OFFER = "home-offer.txt";
+
+    public static boolean stockBackOffered(Context c) {
+        try { String f = new FileStore(c).get(STOCK_OFFER); return f != null && f.startsWith("1"); } catch (RuntimeException e) { return false; }
+    }
+
+    /** the person answered the offer (or «لاحقاً»): it goes, and the count starts again */
+    public static void clearStockBackOffer(Context c) {
+        try { FileStore f = new FileStore(c); f.put(STOCK_OFFER, ""); f.put(HOME_GUARD, BootGuard.fresh(System.currentTimeMillis()).text()); } catch (Exception ignored) { }
+    }
+
+    /** Our home reached the screen (MainActivity.onResume): this boot is fine and BootGuard's count starts again (the factory step's, and 4.4 the home's own). One small read; a write only when it changes. */
     public static void homeUp(Context c) {
         try {
             FileStore store = new FileStore(c.getApplicationContext());
+            BootGuard.State g = BootGuard.State.parse(store.get(HOME_GUARD));
+            if (!g.up || g.failed != 0) store.put(HOME_GUARD, BootGuard.homeUp(g).text());
             String f = store.get(SetupEngine.FACTORY);
             if (f == null || !f.startsWith("on")) return;
             BootGuard.State s = BootGuard.State.parse(store.get(BootGuard.FILE));

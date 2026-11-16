@@ -2032,6 +2032,13 @@ public class MainActivity extends Activity {
             if (nudgeIsNotice) { dismissNotice(); return; }   // 4.3.3: «تم» on a notice
             if (nudgeIsUpdate) { launchGuarded(ParentalPolicy.PILL_UPDATES, new Intent(this, UpdateActivity.class), "تحديث تلفزيوني"); return; }   // 4.3.1: the builds differ
             if (nudgeIsCity) { openCity(); return; }   // 4.3.1: the same bar asks for the city while it is due
+            if (nudgeIsStock) {   // 4.4: the TV's own «Home app» choice (no adb needed); where the TV has none, «إعداد تلفزيوني» and its «تراجع»
+                sa.urtv.home.setup.SetupHook.clearStockBackOffer(this);
+                Intent hs = new Intent(android.provider.Settings.ACTION_HOME_SETTINGS);
+                if (getPackageManager().resolveActivity(hs, 0) != null) launchGuarded(ParentalPolicy.PILL_TV_SETTINGS, hs, "إعدادات التلفزيون");
+                else guarded(ParentalPolicy.WIDGET_MATCHES, null, S.t("إعداد تلفزيوني"), () -> launch(new Intent(this, sa.urtv.home.setup.SetupActivity.class)));
+                return;
+            }
             if (nudgeIsExtras) {   // 4.4: we heal it where we may write the list; else the TV's accessibility settings, behind the sleep lock
                 if (A11yHeal.canHeal(this)) { A11yHeal.check(getApplicationContext(), "fix-nudge"); android.widget.Toast.makeText(this, S.t("شغّلنا «إضافات تلفزيونك» من جديد"), android.widget.Toast.LENGTH_LONG).show(); handler.postDelayed(() -> updateHomeNudge(false), 4000); return; }
                 android.widget.Toast.makeText(this, S.tv(ExtrasActivity.STUCK_FIX), android.widget.Toast.LENGTH_LONG).show();
@@ -2067,6 +2074,7 @@ public class MainActivity extends Activity {
     private void snoozeNudge() {
         if (nudgeIsNotice) { if (!noticeFixed) dismissNotice(); return; }   // 4.3.3: Back on a notice is «تم»
         android.content.SharedPreferences sp = getSharedPreferences(NUDGE_PREFS, MODE_PRIVATE);
+        if (nudgeIsStock) { sa.urtv.home.setup.SetupHook.clearStockBackOffer(this); updateHomeNudge(false); return; }   // 4.4: «لاحقاً»: not asked again until two more bad boots
         if (nudgeIsUpdate) { updateCardOnScreen = -1; updateHomeNudge(false); return; }   // 4.4: the card was shown once; «لاحقاً» hides it (it comes back for a newer build or after 3 days)
         String k = nudgeIsCity ? "city_" : nudgeIsExtras ? "extras_" : "";   // the city question and the add-on's fix wait on their own counts
         int presses = sp.getInt(k + "later_count", 0);
@@ -2076,6 +2084,7 @@ public class MainActivity extends Activity {
 
     private boolean nudgeIsCity;      // the bar is asking for the city (CityAskRule), not for «إعداد تلفزيوني»
     private boolean nudgeIsUpdate;    // 4.4: the bar is the card «في تحديث لـ …» (UpdateNotice.card); OK opens «تحديث تلفزيوني»
+    private boolean nudgeIsStock;     // 4.4: the bar offers «رجّع الواجهة الأصلية» after two bad boots of ours (SetupHook.stockBackOffered)
     private boolean nudgeIsExtras;    // 4.4: the bar says «إضافات تلفزيونك» is on but not running (A11yHeal.stuck), OK fixes it
     private long updateCardOnScreen = -1;   // 4.4: the build the card asks for while this visit shows it (-1: none); it stays up for the visit, then it was seen
     private boolean nudgeIsNotice, noticeFixed;   // 4.3.3: the bar shows a published notice (NoticeRule); fixed: one that is not dismissible (no button)
@@ -2151,27 +2160,31 @@ public class MainActivity extends Activity {
         // 4.4: «في تحديث لـ …», always on: any of our apps behind another or the person's channel (UpdateNotice), once (again for a newer build or after 3 days), never
         // in kids mode, never over our recitation or the adhan
         boolean quiet = sa.urtv.home.tilawah.MusicService.carryOurPlaying() || sa.urtv.home.tilawah.NowPlaying.adhanLive();
-        UpdateNotice.Card card = kids || quiet ? null : UpdateNotice.card(this, updateCardOnScreen, nowMs);
+        // 4.4: after two bad boots of ours in a row (SetupBootReceiver.homeGuard) «رجّع الواجهة الأصلية» comes first, before anything else the bar has to say
+        boolean askStock = sa.urtv.home.setup.SetupHook.stockBackOffered(this);
+        UpdateNotice.Card card = kids || quiet || askStock ? null : UpdateNotice.card(this, updateCardOnScreen, nowMs);
         boolean askUpdate = card != null;
         if (card != null && updateCardOnScreen != card.target) { updateCardOnScreen = card.target; UpdateNotice.shown(this, card.target, nowMs); }
         // 4.4: «إضافات تلفزيونك» turned on but Android does not run it (a TCL refused the bind; a force-stop): the one-line fix, once the TV has been up a while
-        boolean askExtras = !askUpdate && !kids && android.os.SystemClock.elapsedRealtime() > 90_000 && A11yHeal.stuck(this)
+        boolean askExtras = !askStock && !askUpdate && !kids && android.os.SystemClock.elapsedRealtime() > 90_000 && A11yHeal.stuck(this)
             && HomeNudgeRule.show(false, false, np.getLong("extras_later_until", 0), nowMs);
-        boolean askCity = !askUpdate && !askExtras && mismatch == null && CityAskRule.show(isInstalled(SAVER_PKG), cityChosenNow, java.util.TimeZone.getDefault().getID(), kids, np.getLong("city_later_until", 0), nowMs);
+        boolean askCity = !askStock && !askUpdate && !askExtras && mismatch == null && CityAskRule.show(isInstalled(SAVER_PKG), cityChosenNow, java.util.TimeZone.getDefault().getID(), kids, np.getLong("city_later_until", 0), nowMs);
         // 4.4: no bar asks to make UrTV the home any more (it is not pushed: the settings' row «اجعل UrTV الشاشة الرئيسية» is the way in for whoever wants it)
-        boolean show = askUpdate || askExtras || askCity;   // never two at once: the update, the add-on, then the city
+        boolean show = askStock || askUpdate || askExtras || askCity;   // never two at once: the stock home back, the update, the add-on, then the city
         NoticeRule.Notice notice = show || kids ? null : dueNotice();   // 4.3.3: a notice only when the bar has nothing else to say
         show |= notice != null;
         boolean was = nudge.getVisibility() == View.VISIBLE;
         nudgeIsCity = askCity;
         nudgeIsUpdate = askUpdate;
         nudgeIsExtras = askExtras;
+        nudgeIsStock = askStock;
         nudgeIsNotice = notice != null;
         noticeFixed = notice != null && !notice.dismissible;
-        nudgeCard.setText(notice != null ? S.t("تم") : askUpdate ? S.t("حدّث الآن") : askExtras ? S.t("أصلحها") : askCity ? S.t("اختر المدينة") : S.t("خلّ تلفزيونك يفتح على UrTV"));
+        nudgeCard.setText(notice != null ? S.t("تم") : askStock ? S.t("رجّع الواجهة الأصلية") : askUpdate ? S.t("حدّث الآن") : askExtras ? S.t("أصلحها") : askCity ? S.t("اختر المدينة") : S.t("خلّ تلفزيونك يفتح على UrTV"));
         if (notice != null) nudgeAsk.setText(notice.text(S.en()));
+        else if (askStock) nudgeAsk.setText(S.t("تلفزيونك ما فتح بعد آخر تشغيلين للتلفزيون"));
         else if (askUpdate) nudgeAsk.setText(card.line); else if (askExtras) nudgeAsk.setText(S.tv(ExtrasActivity.STUCK_FIX)); else if (askCity) nudgeAsk.setText(S.t("وين أنت؟ اختر مدينتك عشان الطقس والصلاة"));
-        nudgeAsk.setVisibility(askUpdate || askExtras || askCity || notice != null ? View.VISIBLE : View.GONE);
+        nudgeAsk.setVisibility(askStock || askUpdate || askExtras || askCity || notice != null ? View.VISIBLE : View.GONE);
         nudgeCard.setVisibility(noticeFixed ? View.GONE : View.VISIBLE);
         nudgeLater.setVisibility(notice != null ? View.GONE : View.VISIBLE);
         if (show && !was) {
