@@ -2,6 +2,12 @@
 
 Newest first. `next` is where changes land first; a release is what was tested there.
 
+## 4.3.2
+
+A light release of fixes only; nothing in it changes the design.
+
+- **The version is named 4.3.2:** the apps' own version shows `4.3.2` (4.3.1 showed «4.3»), and the release is titled «UrTV 4.3.2». The VERSION file may now have a patch number; the numbered release's tag keeps its two-part shape (`v4.3.<build>`), so the updater and the scripts read it as before.
+
 ## 4.3.1
 
 **بالعربي، باختصار:**

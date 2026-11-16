@@ -44,8 +44,10 @@ jobs:
         id: ver
         run: |
           name=$(tr -d '[:space:]' < VERSION)
-          echo "$name" | grep -Eq '^[0-9]+\.[0-9]+$' || { echo "::error::VERSION must be like 4.0 (major.minor)"; exit 1; }
+          echo "$name" | grep -Eq '^[0-9]+\.[0-9]+(\.[0-9]+)?$' || { echo "::error::VERSION must be like 4.0 or 4.3.2 (major.minor, or major.minor.patch)"; exit 1; }
           echo "name=$name" >> "$GITHUB_OUTPUT"
+          # the tag keeps the two-part shape the updater and the scripts read (v4.3.<build>); only the name people read has the patch (4.3.2)
+          echo "tag=$(echo "$name" | cut -d. -f1-2)" >> "$GITHUB_OUTPUT"
 
       - name: Build the page
         run: python3 src/build.py
@@ -119,7 +121,7 @@ jobs:
         if: github.ref_name == 'master'
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: v${{ steps.ver.outputs.name }}.${{ github.run_number }}
+          tag_name: v${{ steps.ver.outputs.tag }}.${{ github.run_number }}
           name: UrTV ${{ steps.ver.outputs.name }}
           body: "Both apps at version ${{ steps.ver.outputs.name }} (build ${{ github.run_number }}), built from ${{ github.sha }}"
           fail_on_unmatched_files: true   # a name that matches nothing (a typo) must stop the publish, not publish without it
