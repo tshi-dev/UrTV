@@ -1,0 +1,127 @@
+name: Football
+
+# UrTV's league-fixtures.yml, the same tools and schedules, writing the data branch of this repository (docs/INVENTORY.md):
+# - fixtures: every 6 hours, each league's coming week and last day (football/leagues/<league>.json, report.json); 45-50 minutes at the free API's pace
+# - tournaments: every 3 hours, and after each fixtures run (football/leagues/tournaments.json)
+# - archive: after every fixtures run; every 15 minutes the live window (exits in seconds when nothing is live, no request); Mondays 03:41 the
+#   weekly clean-up (football/archive/)
+# By hand: mode fixtures (then tournaments and the archive), tournaments, archive, live or backfill.
+# The inputs (the leagues the app offers, its teams, the tournaments) come from tshi-dev/UrTV at APP_REF (tools/inputs.sh).
+on:
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: 'fixtures (then tournaments and the archive), tournaments, archive, live or backfill'
+        default: fixtures
+        type: choice
+        options: [fixtures, tournaments, archive, live, backfill]
+      seasons:
+        description: 'backfill only: openfootball seasons, comma-separated (empty: 2021-22 to 2025-26)'
+        default: ''
+  schedule:
+    - cron: '23 */6 * * *'
+    - cron: '41 2,5,8,11,14,17,20,23 * * *'
+    - cron: '*/15 * * * *'
+    - cron: '41 3 * * 1'
+
+permissions:
+  contents: write
+
+env:
+  APP_REF: master
+  INPUTS: android/app/src/main/java/sa/urtv/screensaver/Prefs.java assets/shared/teams.json assets/shared/teams-ar.json assets/shared/tournaments.json
+
+concurrency:   # fixtures runs one at a time; the archive's own runs (live, clean-up, by hand) in a group of their own; publish.py keeps writers apart
+  group: ${{ (github.event.schedule == '*/15 * * * *' || github.event.schedule == '41 3 * * 1' || (inputs.mode != '' && inputs.mode != 'fixtures' && inputs.mode != 'tournaments')) && 'football-archive' || 'football-fixtures' }}
+  cancel-in-progress: false
+
+jobs:
+  fixtures:
+    if: github.event.schedule == '23 */6 * * *' || (github.event_name == 'workflow_dispatch' && (inputs.mode == '' || inputs.mode == 'fixtures'))
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+      - run: tools/inputs.sh $INPUTS
+      - name: The files of the last run, kept if a league answers nothing this time
+        run: tools/prev.sh football/leagues data-leagues leagues prev/leagues
+      - run: python3 -u .github/tools/league_fixtures.py
+        env:
+          LEAGUES_PREV: prev/leagues
+      - name: Publish football/leagues
+        if: always()
+        run: |
+          test -f leagues/report.json
+          cp prev/leagues/tournaments.json prev/leagues/tournaments-report.json leagues/ 2>/dev/null || true   # the tournaments job's files stay
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          python3 tools/publish.py --put leagues:football/leagues -m "League fixtures"
+
+  tournaments:
+    needs: fixtures
+    if: always() && needs.fixtures.result != 'cancelled' && (github.event.schedule == '23 */6 * * *' || github.event.schedule == '41 2,5,8,11,14,17,20,23 * * *' || (github.event_name == 'workflow_dispatch' && (inputs.mode == '' || inputs.mode == 'fixtures' || inputs.mode == 'tournaments')))
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - run: tools/inputs.sh $INPUTS
+      - name: The files of the folder, kept
+        run: |
+          tools/prev.sh football/leagues data-leagues leagues prev/leagues
+          mkdir -p leagues && cp -r prev/leagues/. leagues/
+      - run: python3 -u .github/tools/tournaments_fixtures.py
+        env:
+          TOURNAMENTS_PREV: prev/leagues
+      - name: Publish football/leagues
+        if: always()
+        run: |
+          test -f leagues/tournaments.json
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          python3 tools/publish.py --put leagues:football/leagues -m "Tournaments"
+
+  archive:   # after every fixtures run (red or green), or alone on its schedules; red only when the archive itself breaks
+    needs: [fixtures, tournaments]
+    if: always() && needs.fixtures.result != 'cancelled' && needs.tournaments.result != 'cancelled'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    concurrency:   # one writer of football/archive at a time
+      group: football-archive-write
+      cancel-in-progress: false
+    env:
+      LIVE: ${{ github.event.schedule == '*/15 * * * *' || inputs.mode == 'live' }}
+      BACKFILL: ${{ inputs.mode == 'backfill' }}
+    steps:
+      - uses: actions/checkout@v4
+      - run: tools/inputs.sh assets/shared/teams.json android/app/src/main/java/sa/urtv/screensaver/Prefs.java
+      - name: The archive so far
+        run: mkdir -p dl out && tools/prev.sh football/archive data-archive "" prev
+      - name: The live window (exits at once when nothing is live)
+        id: live
+        if: env.LIVE == 'true'
+        run: |
+          python3 -u .github/tools/match_archive.py live --prev prev --out live.json --note live-note.json | tee live.txt
+          if grep -q '^nothing live' live.txt; then echo "skip=true" >> "$GITHUB_OUTPUT"; fi
+      - name: The leagues' files
+        if: steps.live.outputs.skip != 'true'
+        run: tools/prev.sh football/leagues data-leagues leagues dl/leagues
+      - name: The past seasons (openfootball)
+        if: env.BACKFILL == 'true'
+        run: |
+          cp prev/names.json names.json 2>/dev/null || echo '{}' > names.json
+          python3 -u .github/tools/match_archive.py backfill --out backfill.json --report backfill-report.json --names names.json ${SEASONS:+--seasons "$SEASONS"}
+        env:
+          SEASONS: ${{ inputs.seasons }}
+      - name: Build
+        if: steps.live.outputs.skip != 'true'
+        run: |
+          python3 -u .github/tools/match_archive.py build --leagues dl/leagues --prev prev --out out \
+            ${{ env.LIVE == 'true' && '--live live.json --live-note live-note.json' || '' }} \
+            ${{ env.BACKFILL == 'true' && '--backfill backfill.json --names names.json --backfill-report backfill-report.json' || '' }}
+      - name: Publish football/archive
+        if: steps.live.outputs.skip != 'true'
+        run: |
+          test -f out/health.json
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          python3 tools/publish.py --put out:football/archive -m "Match archive"

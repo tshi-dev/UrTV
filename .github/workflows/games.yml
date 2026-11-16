@@ -1,0 +1,46 @@
+name: Games data
+
+# UrTV's quiz-bank.yml: the verified quiz bank (games/quiz/quiz.json) and every game's word lists (games/<id>.json), from the games data of
+# tshi-dev/UrTV at GAMES_REF, checked (fails closed: the branch keeps its last good files), built and verified again with the app's own rules,
+# then published. UrTV ran it on a push of games/**; here daily at 04:13 and by hand (nothing is pushed when no file changed).
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '13 4 * * *'
+
+permissions:
+  contents: write
+
+env:
+  GAMES_REF: work/games-data
+
+concurrency:
+  group: games
+  cancel-in-progress: true
+
+jobs:
+  bank:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: The games data
+        run: git clone -q --depth 1 --branch "$GAMES_REF" https://github.com/tshi-dev/UrTV gd
+      - name: Check the data (fails closed)
+        run: |
+          python3 gd/games/check.py gd/games/data
+          python3 gd/games/check_words.py gd/games
+      - name: Build and verify the compact bank
+        run: |
+          mkdir -p out/quiz
+          python3 .github/tools/make_quiz_bank.py gd/games/data/quiz.json out/quiz/quiz.json
+          python3 .github/tools/make_quiz_bank.py --verify out/quiz/quiz.json
+          python3 .github/tools/make_games_data.py build gd/games out
+          python3 .github/tools/make_games_data.py --verify out out/quiz/quiz.json
+          echo "GAMES_SHA=$(git -C gd rev-parse --short HEAD)" >> "$GITHUB_ENV"
+      - name: Publish games
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          mkdir -p pub && cp -r out/games/. pub/ && mkdir -p pub/quiz && cp out/quiz/quiz.json pub/quiz/
+          python3 tools/publish.py --put pub:games -m "Games data from UrTV@${GAMES_REF} ${GAMES_SHA}"

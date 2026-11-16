@@ -1,0 +1,38 @@
+name: League catalogue
+
+# UrTV's league-catalogue.yml: every competition TheSportsDB lists, with the free key, gently, going on next week where it stopped
+# (football/catalogue/). Wednesdays 02:41 and by hand. The content rules (tests/league_catalogue_test.py) run before anything is published.
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '41 2 * * 3'
+
+permissions:
+  contents: write
+
+env:
+  APP_REF: master
+
+concurrency:
+  group: football-catalogue
+  cancel-in-progress: false
+
+jobs:
+  catalogue:
+    runs-on: ubuntu-latest
+    timeout-minutes: 300
+    steps:
+      - uses: actions/checkout@v4
+      - run: tools/inputs.sh android/app/src/main/java/sa/urtv/screensaver/Places.java android/app/src/main/java/sa/urtv/screensaver/Prefs.java .github/tools/cities-world/cities-world.json
+      - name: Where the last run stopped
+        run: tools/prev.sh football/catalogue data-catalogue catalogue prev/catalogue
+      - run: python3 -u .github/tools/league_catalogue.py
+        env:
+          CATALOGUE_PREV: prev/catalogue
+      - name: The content rules on what is published
+        run: python3 tests/league_catalogue_test.py catalogue/catalogue.json
+      - name: Publish football/catalogue
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          python3 tools/publish.py --put catalogue:football/catalogue -m "League catalogue"

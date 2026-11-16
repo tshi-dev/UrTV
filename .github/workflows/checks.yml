@@ -1,0 +1,19 @@
+name: Checks
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - run: python3 tests/publish_test.py
+      - run: python3 -m py_compile .github/tools/*.py tools/*.py tests/*.py
+      - run: bash -n tools/*.sh

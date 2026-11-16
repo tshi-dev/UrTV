@@ -1,0 +1,38 @@
+name: Markets
+
+# UrTV's market-prices.yml: every 5 minutes while an exchange is open (a run started at :00, :20 or :40 stays alive and fetches every 5 minutes
+# until two minutes before the next hour, tools/market_loop.sh), and twice an hour otherwise (markets/). The symbols are the page's
+# (src/template.html of tshi-dev/UrTV at APP_REF). Only the fields the page reads; no key.
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0,20,40 7-11 * * 0-4'
+    - cron: '0 12 * * 0-4'
+    - cron: '0,20,40 13-20 * * 1-5'
+    - cron: '0 21 * * 1-5'
+    - cron: '7,37 * * * *'
+
+permissions:
+  contents: write
+
+env:
+  APP_REF: master
+
+concurrency:
+  group: markets
+  cancel-in-progress: false
+
+jobs:
+  prices:
+    runs-on: ubuntu-latest
+    timeout-minutes: 65
+    steps:
+      - uses: actions/checkout@v4
+      - run: tools/inputs.sh src/template.html
+      - name: Fetch and publish (a loop of fetches in the open hours, one fetch otherwise)
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          bash tools/market_loop.sh
+        env:
+          MARKETS_PROVIDERS: yahoo

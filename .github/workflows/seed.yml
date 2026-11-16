@@ -1,0 +1,31 @@
+name: Seed from UrTV
+
+# By hand only: copies datasets as they are now on tshi-dev/UrTV's old data branches into the data branch, unchanged. For the first fill (so
+# the apps that read urtv-data first never see a gap), and for the photo packs' metadata, which no workflow makes (UrTV's make_pack.py, by hand).
+on:
+  workflow_dispatch:
+    inputs:
+      datasets:
+        description: 'space-separated: leagues archive catalogue games markets stations photos'
+        default: 'leagues archive catalogue games markets stations photos'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: seed
+  cancel-in-progress: false
+
+jobs:
+  seed:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Copy and publish
+        env:
+          SETS: ${{ inputs.datasets }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          tools/seed.sh $SETS
