@@ -27,3 +27,7 @@ Six to ten phones. Each phone gets a secret role: villager, wolf (1 for 6 player
 - Rules: `games/night/NightGame.java` (no Android), tested in `tests/NewGamesTest.java`.
 - Screen: `NightActivity`. The TV shows a role only when its player leaves or at the end. The wording is family-safe: someone «leaves the village», nobody is killed.
 - No content bank, so nothing is bundled.
+
+## كم تقدر؟ (How Many?)
+
+Two to ten phones. A topic is shown («فواكه»); each phone bids a number from 1 to 10 (at most half the list): how many things of the topic they can name. The highest bid (a tie is settled by chance) types the names on their phone; every name is checked against the topic's list (spelling is forgiving: marks, alef and taa marbuta forms and «ال» do not matter; a name twice counts once). Naming the bid or more scores the bid; naming fewer scores nothing and every other player gets 1. Points only. 6, 8 or 10 topics; 45, 60 or 90 seconds to type. The bank is 22 closed topics (fruit, vegetables, wild animals, Arab countries, world capitals, Saudi cities, dishes, car makers, months...) in `assets/games/guess.gb`; answers are typed in Arabic. Nothing repeats on this TV.

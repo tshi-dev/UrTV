@@ -6,6 +6,7 @@ import sa.urtv.screensaver.games.author.AuthorGame;
 import sa.urtv.screensaver.games.closest.ClosestGame;
 import sa.urtv.screensaver.games.liar.LiarGame;
 import sa.urtv.screensaver.games.night.NightGame;
+import sa.urtv.screensaver.games.guess.GuessGame;
 import sa.urtv.screensaver.games.emoji.EmojiGame;
 import sa.urtv.screensaver.games.link.LinkGame;
 
@@ -240,6 +241,36 @@ public final class NewGamesTest {
         check("night: with nobody voted out the wolves take the village, and the game ends with a winner", k.phase == NightGame.Phase.END && (k.winner == NightGame.WOLVES_WIN || k.winner == NightGame.VILLAGE_WINS));
     }
 
+    static void guess(String bundleFile) throws Exception {
+        byte[] json = GameBundle.open("guess", java.nio.file.Files.readAllBytes(java.nio.file.Paths.get(bundleFile)));
+        List<GuessGame.Topic> all = json == null ? null : GuessGame.parse(MiniJson.parse(new String(json, java.nio.charset.StandardCharsets.UTF_8)));
+        check("guess: the bundled topics open and parse (" + (all == null ? 0 : all.size()) + ", at least 15), each list at least 12 answers", all != null && all.size() >= 15 && all.stream().allMatch(t -> t.size() >= 12 && !t.t[1].isEmpty()));
+        check("guess: the spelling is forgiving (marks, alef and taa marbuta forms, the article) and still exact otherwise",
+            GuessGame.norm("الأَرْنَب").equals(GuessGame.norm("ارنب")) && GuessGame.norm("مَدِينَة").equals("مدينه") && !GuessGame.norm("تفاح").equals(GuessGame.norm("تفاحه x")));
+        GuessGame.Topic fruit = null; for (GuessGame.Topic t : all) if (t.id.equals("gs-fruit")) fruit = t;
+        List<GuessGame.Topic> one = new java.util.ArrayList<>(); one.add(fruit); one.add(all.get(1));
+        GuessGame g = new GuessGame(3, one, new java.util.Random(1));
+        check("guess: a bid is a number from 1 to the cap (ten at most, half the list at most), once per player", !g.bid(0, 0) && !g.bid(0, 11) && g.bid(0, 3) && !g.bid(0, 4) && g.bid(1, 5) && g.cap() == 10 && g.bidsIn() == 2 && !g.allBid());
+        g.bid(2, 5); g.endBids();
+        check("guess: the highest bid names the things (a tie is settled by chance, between the tied only)", g.phase == GuessGame.Phase.ANSWER && g.topBid == 5 && (g.winner == 1 || g.winner == 2));
+        int n = g.answer(java.util.Arrays.asList("تفاحة", "الموز", "برتقال", "موز", "xx"));
+        check("guess: the same name twice counts once, a name outside the list counts nothing; 3 of 5 fails: everybody else gets 1", n == 3 && !g.valid(3) && !g.valid(4) && !g.succeeded() && g.score[g.winner] == 0 && g.score[(g.winner + 1) % 3] == 1 && g.phase == GuessGame.Phase.REVEAL);
+        check("guess: the reveal shows names the bidder missed", g.examples(3).size() == 3 && !g.examples(3).contains("تفاح"));
+        g.next();
+        g.bid(0, 2); g.bid(1, 1); g.bid(2, 1); g.endBids(); g.answer(java.util.Arrays.asList(all.get(1).names.get(0), all.get(1).names.get(1), "extra"));
+        check("guess: naming the bid or more scores the bid for the bidder; the game ends after the last topic", g.winner == 0 && g.succeeded() && g.gained[0] == 2 && (g.phase == GuessGame.Phase.REVEAL) && endsAfter(g));
+        GuessGame e = new GuessGame(2, one, new java.util.Random(2)); e.endBids();
+        check("guess: nobody bidding passes the round with no points", e.phase == GuessGame.Phase.REVEAL && e.winner < 0 && e.score[0] == 0 && e.score[1] == 0);
+        boolean threw = false; try { new GuessGame(1, one, new java.util.Random(1)); } catch (IllegalArgumentException x) { threw = true; }
+        check("guess: one player is refused (two to ten)", threw);
+        java.util.Set<String> seen = new java.util.HashSet<>(); for (GuessGame.Topic t : all) seen.add(t.id);
+        List<GuessGame.Topic> p1 = GuessGame.pick(all, 6, false, new java.util.HashSet<>(), new java.util.Random(3));
+        java.util.Set<String> used = new java.util.HashSet<>(); for (GuessGame.Topic t : p1) used.add(t.id);
+        List<GuessGame.Topic> p2 = GuessGame.pick(all, 6, false, used, new java.util.Random(4));
+        check("guess: the topics kept in memory are not asked again while others remain", p1.size() == 6 && p2.stream().noneMatch(t -> used.contains(t.id)));
+    }
+    static boolean endsAfter(GuessGame g) { g.next(); return g.phase == GuessGame.Phase.END; }
+
     public static void main(String[] a) throws Exception {
         forehead();
         author(a[0]);
@@ -248,6 +279,7 @@ public final class NewGamesTest {
         emoji(a[3]);
         link(a[4]);
         night();
+        guess(a[5]);
         System.exit(failed == 0 ? 0 : 1);
     }
 }

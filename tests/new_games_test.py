@@ -12,19 +12,19 @@ def check(what, ok, extra=""):
     print(("PASS " if ok else "FAIL ") + what + ("" if ok else "  -> " + str(extra)))
     if not ok: failed += 1
 if not shutil.which("javac"): print("SKIP: no javac"); sys.exit(1)
-ENGINES = [G / "forehead/ForeheadGame.java", G / "author/AuthorGame.java", G / "closest/ClosestGame.java", G / "liar/LiarGame.java", G / "emoji/EmojiGame.java", G / "link/LinkGame.java", G / "night/NightGame.java", APP / "GameBundle.java", APP / "MiniJson.java"]
+ENGINES = [G / "forehead/ForeheadGame.java", G / "author/AuthorGame.java", G / "closest/ClosestGame.java", G / "liar/LiarGame.java", G / "emoji/EmojiGame.java", G / "link/LinkGame.java", G / "night/NightGame.java", G / "guess/GuessGame.java", APP / "GameBundle.java", APP / "MiniJson.java"]
 with tempfile.TemporaryDirectory() as t:
     c = subprocess.run(["javac", "-nowarn", "-encoding", "UTF-8", "-d", t, *map(str, ENGINES), str(ROOT / "tests/NewGamesTest.java")], capture_output=True, text=True)
     check("the new games' rules compile on a plain JVM (no Android)", c.returncode == 0, c.stderr[-500:])
     if c.returncode == 0:
-        r = subprocess.run(["java", "-cp", t, "sa.urtv.screensaver.NewGamesTest", str(ROOT / "assets/games/author.gb"), str(ROOT / "assets/games/closest.gb"), str(ROOT / "assets/games/liar.gb"), str(ROOT / "assets/games/emoji.gb"), str(ROOT / "assets/games/link.gb")], capture_output=True, text=True, timeout=120)
+        r = subprocess.run(["java", "-cp", t, "sa.urtv.screensaver.NewGamesTest", str(ROOT / "assets/games/author.gb"), str(ROOT / "assets/games/closest.gb"), str(ROOT / "assets/games/liar.gb"), str(ROOT / "assets/games/emoji.gb"), str(ROOT / "assets/games/link.gb"), str(ROOT / "assets/games/guess.gb")], capture_output=True, text=True, timeout=120)
         for l in r.stdout.splitlines():
             if l.startswith(("PASS", "FAIL")): print(l); failed += l.startswith("FAIL")
         check("the JVM test ran to the end", r.returncode == 0 or "FAIL" in r.stdout, r.stderr[-400:])
 def src(n): return (APP / n).read_text(encoding="utf-8")
 reg, gl, room, page = src("GameRegistry.java"), src("QuizGamesActivity.java"), src("GamePhoneRoom.java"), (ROOT / "assets/quiz/game.html").read_text(encoding="utf-8")
 manifest = (ROOT / "android/app/src/main/AndroidManifest.xml").read_text(encoding="utf-8")
-GAMES = {"forehead": "ForeheadActivity", "author": "AuthorActivity", "closest": "ClosestActivity", "liar": "LiarActivity", "emoji": "EmojiActivity", "link": "LinkActivity", "night": "NightActivity"}
+GAMES = {"forehead": "ForeheadActivity", "author": "AuthorActivity", "closest": "ClosestActivity", "liar": "LiarActivity", "emoji": "EmojiActivity", "link": "LinkActivity", "night": "NightActivity", "guess": "GuessActivity"}
 for gid, act in GAMES.items():
     a = src(act + ".java")
     check(f"{gid}: in the registry (needs phones), in the filter's list, in the manifest (not exported, landscape), and a GameActivity",
@@ -63,4 +63,8 @@ check("the bundled link words are a bundle", (ROOT / "assets/games/link.gb").rea
 ni = src("NightActivity.java")
 check("night: roles go only to each phone as a secret card, the TV names a role only when its player leaves or at the end; the night, the vote and the seer's answer are cards; nothing is killed in the wording",
       "GamePhoneRoom.SECRET, names[i]" in ni and "GamePhoneRoom.PICK" in ni and ni.count("roleName(game.role[") == 3 and "game.endNight()" in ni and "game.vote(p, a)" in ni and "game.seer(p, a)" in ni)
+gu = src("GuessActivity.java")
+check("guess: every phone bids on a number pad (a text card, self = 1), only the top bid gets the typing fields, the others wait; the topics come from the bundled bank and nothing repeats on this TV; points only",
+      "GamePhoneRoom.TEXT" in gu and ", null, 1)" in gu and "phones.room.hold(i," in gu and 'GameBundles.load(this, "guess")' in gu and "GamePrefs.remember(this, id(), r)" in gu and "money" not in gu.lower())
+check("the bundled guess topics are a bundle", (ROOT / "assets/games/guess.gb").read_bytes()[:3] == b"GB1" and "فواكه".encode() not in (ROOT / "assets/games/guess.gb").read_bytes())
 sys.exit(1 if failed else 0)
