@@ -226,6 +226,7 @@ public class SetupEngineRun {
     static void line(String s) { System.out.println(s); }
 
     public static void main(String[] a) throws Exception {
+        SetupEngine.KEEP_STOCK_ON = false;   // these scenarios are the OLD switch's rules (the safe order, the wizard asked about the Wi-Fi); 4.3.2's keep-the-stock-home switch has its own scenarios (stockhome_test.py)
         // A: a healthy TV, the whole run, then the undo puts everything back
         FakeTv t = tv(); Mem m = new Mem(); Dead d = new Dead(); List<String> said = new ArrayList<>();
         String before = snapshot(t);
@@ -403,5 +404,46 @@ public class SetupEngineRun {
         // K: parsing
         line("K " + (SetupEngine.packagesOf("package:a\npackage:b\n") == null) + " " + (SetupEngine.packagesOf("package:a\r\nEND_OF_LIST\r\n").size()) + " " + (SetupEngine.packagesOf("") == null)
             + " " + SetupEngine.webviewMajor("Current WebView package (name, version): (com.google.android.webview, 120.0.6099.144)") + " " + SetupEngine.webviewMajor("nothing") + " " + SetupEngine.ledgerNames("a.b\n# no\na.b\n\nc d\ne.f\r\n"));
+        // ---- 4.3.2 (tests/stockhome_test.py): the switch keeps the stock home, the wizard and the helpers ON; a TV switched the old way gets them back once
+        SetupEngine.KEEP_STOCK_ON = true;
+        String WR = "com.google.android.tungsten.setupwraith", LX = "com.google.android.apps.tv.launcherx", HELP = "com.google.android.leanbacklauncher.recommendations";
+        FakeTv s1 = tv(); s1.wizardAnswersHome = true; s1.wizardOwnsWifi = true; Mem sm1 = new Mem(); Dead sd1 = new Dead(); List<String> ss1 = new ArrayList<>();
+        SetupEngine se1 = engine(s1, sm1, sd1, ss1);
+        boolean asked = se1.askWifi();
+        SetupEngine.Result sr1 = se1.home();
+        line("S1 " + sr1.status + " asked=" + asked + " role=" + s1.roleHolder + " home=" + s1.home() + " stockOff=" + s1.off.contains(LX) + " wizardOff=" + s1.off.contains(WR)
+            + " helperOff=" + s1.off.contains(HELP) + " disables=" + s1.count("pm disable-user") + " journal=" + se1.journal("state") + " armed=" + sd1.armed + " disarmed=" + sd1.disarmed);
+        SetupEngine.Result su1 = se1.undo();
+        line("S1_undo " + su1.status + " role=" + s1.roleHolder + " home=" + s1.home());
+        // S2: the old switch happened (the stock home, the helpers and the wizard off): the migration turns on what the journal says we turned off, once; ours stays Home
+        SetupEngine.KEEP_STOCK_ON = false;
+        FakeTv s2 = tv(); Mem sm2 = new Mem(); SetupEngine se2 = engine(s2, sm2, new Dead(), new ArrayList<>());
+        se2.home();
+        s2.off.add(WR);   // the old switch also turned the wizard off (on a TV where it answered Home and the Wi-Fi was not its)
+        SetupEngine.KEEP_STOCK_ON = true;
+        String offBefore = new TreeSet<>(s2.off).toString();
+        SetupEngine.Result m2a = se2.migrateStockHome();
+        line("S2 before=" + offBefore + " status=" + (m2a == null ? "null" : m2a.status) + " notice=" + (m2a != null && m2a.message.equals(StockMigration.NOTICE)) + " off=" + new TreeSet<>(s2.off) + " role=" + s2.roleHolder + " home=" + s2.home()
+            + " mark=" + (sm2.get(StockMigration.MARK) != null && sm2.get(StockMigration.MARK).startsWith("done")));
+        int enables = s2.count("pm enable");
+        SetupEngine.Result m2b = se2.migrateStockHome();
+        line("S2_twice " + (m2b == null) + " extra_enables=" + (s2.count("pm enable") - enables));
+        // S3: «تخلّص من واجهة المصنع» is on: the person's own choice, nothing is turned on; a switch still «switching» is the recovery's; a TV that had them off itself: untouched
+        SetupEngine.KEEP_STOCK_ON = false;
+        FakeTv s3 = tv(); Mem sm3 = new Mem(); SetupEngine se3 = engine(s3, sm3, new Dead(), new ArrayList<>());
+        se3.home(); sm3.put(SetupEngine.FACTORY, "on 2026-11-16 10:00\n");
+        SetupEngine.KEEP_STOCK_ON = true;
+        int en3 = s3.count("pm enable");
+        SetupEngine.Result mig3 = se3.migrateStockHome();
+        line("S3_factory " + (mig3 == null) + " enables=" + (s3.count("pm enable") - en3) + " stockOff=" + s3.off.contains(LX));
+        FakeTv s4 = tv(); s4.off.add(LX); s4.off.add(WR); Mem sm4 = new Mem(); SetupEngine se4 = engine(s4, sm4, new Dead(), new ArrayList<>());
+        sm4.put("home-switch.json", "{\n  \"nonce\": \"app\",\n  \"state\": \"done\",\n  \"stock\": \"" + LX + "/.home.HomeActivity\",\n  \"role_holder_before\": \"" + LX + "\",\n  \"wizard_before\": \"disabled\",\n  \"stock_before\": \"disabled\",\n  \"safety_switch\": \"armed\"\n}\n");
+        line("S4_off_before_us " + (se4.migrateStockHome() == null) + " off=" + new TreeSet<>(s4.off) + " enables=" + s4.count("pm enable"));
+        FakeTv s5 = tv(); s5.off.add(LX); Mem sm5 = new Mem(); SetupEngine se5 = engine(s5, sm5, new Dead(), new ArrayList<>());
+        sm5.put("home-switch.json", "{\n  \"state\": \"switching\",\n  \"stock\": \"" + LX + "/.home.HomeActivity\",\n  \"wizard_before\": \"enabled\",\n  \"stock_before\": \"enabled\"\n}\n");
+        line("S5_switching " + (se5.migrateStockHome() == null) + " enables=" + s5.count("pm enable"));
+        // the pure rules
+        line("S6 " + StockMigration.due("done", "enabled", "enabled", null, null) + " " + StockMigration.due("done", "enabled", "enabled", "on x", null) + " " + StockMigration.due("done", "enabled", "enabled", null, "done x")
+            + " " + StockMigration.due("switching", "enabled", "enabled", null, null) + " " + StockMigration.due("done", "disabled", "absent", null, null) + " " + StockMigration.due("done", "absent", "enabled", "off x", null));
     }
 }

@@ -10,6 +10,7 @@ public final class FactoryRun {
     static String joined(List<String> l) { return String.join(",", new TreeSet<>(l)); }
 
     public static void main(String[] a) throws Exception {
+        SetupEngine.KEEP_STOCK_ON = false;   // these scenarios are the OLD switch's rules (the safe order, the wizard asked about the Wi-Fi); 4.3.2's keep-the-stock-home switch has its own scenarios (stockhome_test.py)
         String stock = "com.google.android.apps.tv.launcherx";
         // F1: a healthy TV: it may go on; the plan is the stock home first, then the safe list installed and not off already; nothing changed; the safety switch tested and let go
         SetupEngineRun.FakeTv t1 = SetupEngineRun.tv(); SetupEngineRun.Mem m1 = new SetupEngineRun.Mem(); SetupEngineRun.Dead d1 = new SetupEngineRun.Dead();

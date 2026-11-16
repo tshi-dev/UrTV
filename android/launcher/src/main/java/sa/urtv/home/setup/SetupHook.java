@@ -15,7 +15,7 @@ public final class SetupHook {
     public static void atHomeStart(final Context c) {
         try {
             final Context app = c.getApplicationContext();
-            if (!SetupRecovery.pending(app)) return;
+            if (!SetupRecovery.pending(app)) { migrate(app); return; }
             SetupRecovery.rearmFromDisk(app);
             if (SetupRecovery.gaveUp(app)) {
                 Toast.makeText(app, SetupRecovery.GAVE_UP_NOTICE, Toast.LENGTH_LONG).show();
@@ -31,6 +31,37 @@ public final class SetupHook {
         } catch (RuntimeException ignored) {
             // the home screen comes first
         }
+    }
+
+    /**
+     * 4.3.2: a TV switched the old way (the stock home, the wizard and its helpers turned off) gets them back ONCE (StockMigration, SetupEngine.migrateStockHome), by the journal.
+     * The files say first whether there is anything to look at; only then the TV is asked (a short ADB session on a background thread), and the person is told in one line.
+     */
+    static void migrate(final Context app) {
+        try {
+            FileStore store = new FileStore(app);
+            String j = store.get("home-switch.json");
+            if (j == null || !StockMigration.due(field(j, "state"), field(j, "stock_before"), field(j, "wizard_before"), store.get(SetupEngine.FACTORY), store.get(StockMigration.MARK))) return;
+            new Thread(new Runnable() {
+                @Override public void run() {
+                    try (SetupSession s = SetupSession.open(app, 5000, null, new SetupEngine.Out() { @Override public void line(String text) { } })) {
+                        final SetupEngine.Result r = s.engine.migrateStockHome();
+                        if (r != null && r.status == SetupEngine.Status.DONE) {
+                            new android.os.Handler(android.os.Looper.getMainLooper()).post(new Runnable() { @Override public void run() { Toast.makeText(app, StockMigration.NOTICE, Toast.LENGTH_LONG).show(); } });
+                        }
+                    } catch (Exception ignored) {
+                        // the TV did not answer: the next start tries again
+                    }
+                }
+            }, "stock-migration").start();
+        } catch (RuntimeException ignored) {
+            // the home screen comes first
+        }
+    }
+
+    private static String field(String json, String key) {
+        java.util.regex.Matcher m = java.util.regex.Pattern.compile("^  \"" + java.util.regex.Pattern.quote(key) + "\": \"(.*)\",?$", java.util.regex.Pattern.MULTILINE).matcher(json);
+        return m.find() ? m.group(1) : "";
     }
 
     /** the stock interface is off by us («تخلّص من واجهة المصنع» is on): the settings' row says so through the provider (read only) */
