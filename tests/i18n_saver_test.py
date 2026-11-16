@@ -209,8 +209,8 @@ else:
     check("…and no English place name has an Arabic letter", not arabic, arabic[:5])
 
 # ---- 5. «اللغة»
-check("«اللغة»: a row in «المدينة واللغة والوقت» (4.3.2: the old «المزيد» button is gone)",
-      '{"اللغة", PLACE}' in hub and 'LANG_TILE' not in hub and '{"lang", PLACE}' in hub)
+check("«اللغة»: a row of its own section «اللغة» (4.3.3; the old «المزيد» button is gone)",
+      '{"اللغة", LANG}' in hub and 'LANG_TILE' not in hub and 'LANG = "lang"' in hub)
 check("«اللغة»: its row and what it says (English beside العربية, to be found)",
       'row("اللغة", langLabel(), R.drawable.ic_language, new Runnable() { public void run() { pickLang(); } });' in st
       and 'return Tr.EN.equals(prefs.lang()) ? "English" : "العربية · English";' in st)
@@ -253,10 +253,10 @@ else:
     side = round(page * 0.36) - 36
     tile_text = (page - 12) / 2 - (16 + 26) - 10 - (36 + 8) - 18
     row_text = page - side - 36 - (24 + 20) - 9 - (28 + 6) - 18 - 14
-    cat = dict(re.findall(r'\{(?:ADHAN|CITY|PLACE|PRAY|SEARCH|LOOK|CONTROL|UPDATE|SAVER|HOME|CONTENT), "([^"]+)", "([^"]*)"', hub))
+    cat = dict(re.findall(r'\{(?:SEARCH|LANG|PLACE|LOOK|APPS|BUTTONS|PRAY|CONTENT|SAVER|FAMILY|UPDATE), "([^"]+)", "([^"]*)"', hub))
     over = [f"{table[n]} {width(table[n], 24):.0f}>{tile_text:.0f}" for n in cat if width(table[n], 24) > tile_text]
     check(f"every button's name fits on its one line in English (24 sp, {tile_text:.0f} dp)", not over, over)
-    names = set(re.findall(r'\brow\("([^"]+)"', st)) | set(re.findall(r'\{"([^"]+)", (?:ADHAN|CITY|PLACE|PRAY|SEARCH|LOOK|CONTROL|UPDATE|SAVER|HOME|CONTENT)\}', hub))
+    names = set(re.findall(r'\brow\("([^"]+)"', st)) | set(re.findall(r'\{"([^"]+)", (?:SEARCH|LANG|PLACE|LOOK|APPS|BUTTONS|PRAY|CONTENT|SAVER|FAMILY|UPDATE)\}', hub))
     over = [f"{table[n]} {width(table[n] + ' (20/20)', 21):.0f}>{row_text:.0f}" for n in names if n in table and width(table[n] + " (20/20)", 21) > row_text]
     check(f"every row's name fits on its one line in English, with a count after it (21 sp, {row_text:.0f} dp)", not over, over)
 

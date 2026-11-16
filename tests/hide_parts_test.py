@@ -39,7 +39,7 @@ check("rows «المناسبة القادمة» and «تعتيم الليل» in
       and '{"المناسبة القادمة", SAVER}' in hub and '{"تعتيم الليل", LOOK}' in hub)
 check("row «زر المهام» in «الشاشة الرئيسية», after «زر تلاوة وأذان», saying where the tasks are while it is hidden",
       render.index('row("زر تلاوة وأذان"') < render.index('row("زر المهام"') < render.index('row("جرس التحديثات"')
-      and "prefs.setTasksPill(!prefs.tasksPill()); render();" in render and "بطاقة «المهام» ومن الجوال" in render and '{"زر المهام", HOME}' in hub)
+      and "prefs.setTasksPill(!prefs.tasksPill()); render();" in render and "بطاقة «المهام» ومن الجوال" in render and '{"زر المهام", BUTTONS}' in hub)
 
 check("page: #occasion=0 and #nightdim=0 only; anything else as always",
       "occasion: _Q.get('occasion') !== '0'," in tpl and "nightDim: _Q.get('nightdim') !== '0'," in tpl)

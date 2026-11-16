@@ -87,8 +87,9 @@ public class SettingsActivity extends Activity {
         prefs = new Prefs(this);
         if (getIntent().hasExtra("hubAt")) { screen = SettingsHub.canon(getIntent().getStringExtra("screen")); hubAt = SettingsHub.canon(getIntent().getStringExtra("hubAt")); }   // pickLang: back on its button
         UpdateJob.schedule(this);
-        final boolean askCity = getIntent().getBooleanExtra("pickCity", false);   // 4.3.1: the home's «المدينة» (control center, the question bar) opens the chooser at once
+        final boolean askCity = getIntent().getBooleanExtra("pickCity", false);   // the home's «المدينة» (control center, the question bar): 4.3.3 the one city row, its chooser open
         getIntent().removeExtra("pickCity");
+        if (askCity) cityRow();
         final boolean askTeams = getIntent().getBooleanExtra("manageTeams", false);   // 4.3.1: the matches page's «فرقي»
         getIntent().removeExtra("manageTeams");
         // the glass look of all our screens: the home's photo, small and blurred once (GlassSource), under its veil; glass tiles and rows
@@ -144,8 +145,19 @@ public class SettingsActivity extends Activity {
 
     @Override protected void onNewIntent(Intent in) {   // 4.3.1: «المدينة» of the home again while the settings are already open
         super.onNewIntent(in);
-        if (in.getBooleanExtra("pickCity", false)) { in.removeExtra("pickCity"); pickCity(); }
+        if (in.getBooleanExtra("pickCity", false)) { in.removeExtra("pickCity"); cityRow(); render(); pickCity(); }
         if (in.getBooleanExtra("manageTeams", false)) { in.removeExtra("manageTeams"); manageTeams(); }
+    }
+
+    /**
+     * 4.3.3: the city is chosen in one place, «الموقع والطقس» ← «المدينة»; every way to it (the home's «المدينة», the control center, the question bar,
+     * an old link) lands on that row, the focus on it, and its chooser opens over it. The phone page sets the same choice (SaverReceiver).
+     */
+    private void cityRow() {
+        screen = SettingsHub.PLACE;
+        hubAt = SettingsHub.PLACE;
+        entering = true;
+        forceWant = "المدينة";
     }
 
     /** A picker's live preview (a WebView running the page) is let go while another app is in front, and drawn again on return; null when no picker is open. */
@@ -269,7 +281,6 @@ public class SettingsActivity extends Activity {
 
         // the place, then how its times are worked out, then the minutes of one's own mosque; the line under them says which is which
         header("الموقع");
-        row("تغيير المدينة", Words.city(prefs.city()), R.drawable.ic_place, new Runnable() { public void run() { pickCity(); } });   // the first button of the first screen runs this one (SettingsHub.CITY)
         row("الدولة", Location.countryLabel(prefs.cityCountry(), prefs.cityTz()), R.drawable.ic_place, new Runnable() { public void run() { pickCountry(); } });
         row("المدينة", Words.city(prefs.city()), R.drawable.ic_place, new Runnable() { public void run() { pickCity(); } });
 
@@ -278,7 +289,7 @@ public class SettingsActivity extends Activity {
         row("تعديل وقت الصلاة", prefs.prayerAdjOn() ? "يعمل · لكل صلاة دقائقها، من −٢٠ إلى +٢٠ (الشروق لا يتغيّر)" : "متوقف · الأوقات كما تُحسب", R.drawable.ic_eye,
             new Runnable() { public void run() { prefs.setPrayerAdjOn(!prefs.prayerAdjOn()); render(); } });
         if (prefs.prayerAdjOn()) for (int k = 0; k < PrayerAdj.COUNT; k++) adjRow(k);
-        if (on(SettingsHub.PLACE)) line(Location.HELP, look.sub, 0);
+        if (on(SettingsHub.PLACE) || on(SettingsHub.PRAY)) line(Location.HELP, look.sub, 0);
 
         header("المباريات");
         // «المباريات»: the home app's page of the games (docs/PROPOSALS-NOV2.md §1), the days and the leagues, the followed teams first
@@ -613,17 +624,17 @@ public class SettingsActivity extends Activity {
     /** Each button's icon. */
     private static int hubIcon(String cat) {
         switch (cat) {
-            case SettingsHub.CITY: return R.drawable.ic_place;
-            case SettingsHub.ADHAN: return R.drawable.ic_bell;
-            case SettingsHub.PLACE: return R.drawable.ic_place;
-            case SettingsHub.PRAY: return R.drawable.ic_listen;
-            case SettingsHub.LOOK: return R.drawable.ic_eye;
-            case SettingsHub.CONTROL: return R.drawable.ic_center;
-            case SettingsHub.UPDATE: return R.drawable.ic_sync;
-            case SettingsHub.SAVER: return R.drawable.ic_screensaver;
-            case SettingsHub.HOME: return R.drawable.ic_star;
-            case SettingsHub.CONTENT: return R.drawable.ic_trophy;
             case SettingsHub.SEARCH: return R.drawable.ic_search;
+            case SettingsHub.LANG: return R.drawable.ic_language;
+            case SettingsHub.PLACE: return R.drawable.ic_place;
+            case SettingsHub.LOOK: return R.drawable.ic_eye;
+            case SettingsHub.APPS: return R.drawable.ic_star;
+            case SettingsHub.BUTTONS: return R.drawable.ic_center;
+            case SettingsHub.PRAY: return R.drawable.ic_listen;
+            case SettingsHub.CONTENT: return R.drawable.ic_trophy;
+            case SettingsHub.SAVER: return R.drawable.ic_screensaver;
+            case SettingsHub.FAMILY: return R.drawable.ic_lock;
+            case SettingsHub.UPDATE: return R.drawable.ic_sync;
             default: return R.drawable.ic_settings;
         }
     }
@@ -671,24 +682,21 @@ public class SettingsActivity extends Activity {
     /** What is set now in a category, on one line under its name ("" for nothing to say). */
     private String hubSummary(String cat) {
         switch (cat) {
-            case SettingsHub.ADHAN: {
-                Boolean on = homeAdhanSeen();   // the home's switch as last known; null when the home cannot say (not installed, or older)
-                return on == null ? "تشغيله وصوته ومؤذن الفجر" : on ? OnOff.ON_WORD : OnOff.OFF_WORD;
-            }
-            case SettingsHub.CITY: return Words.city(prefs.city());
-            case SettingsHub.PLACE: return Words.city(prefs.city()) + " · " + langLabel() + " · " + ClockSetting.label(prefs.clock24());
-            case SettingsHub.PRAY: return PrayerMethod.label(prefs.prayerMethod(), prefs.cityCountry(), prefs.cityTz());
             case SettingsHub.SEARCH: return "اكتب كلمة وانتقل إلى الصف";
-            case SettingsHub.LOOK: return Prefs.lookLabel(prefs.look()) + " · " + Prefs.appearanceLabel(prefs.appearance());
-            case SettingsHub.CONTROL: return "مركز التحكم والجوال والرقابة الأبوية";
-            case SettingsHub.UPDATE: return Updater.versionLines(this)[0];
-            case SettingsHub.SAVER: return (Prefs.idleMs(this) <= 0 ? "يبدأ وقت ما يحدده التلفاز" : "تبدأ بعد " + idleLabel()) + " · " + Prefs.panelLabel(prefs.panel());
-            case SettingsHub.HOME: {
-                List<String> cards = new ArrayList<>();
-                for (String k : prefs.homePanels()) cards.add(Prefs.panelLabel(k, "بدون"));
-                return cards.isEmpty() ? "بدون بطاقات · التحية والطقس" : Prefs.join(cards, "، ");
+            case SettingsHub.LANG: return langLabel() + "، " + ClockSetting.label(prefs.clock24());
+            case SettingsHub.PLACE: return Words.city(prefs.city());
+            case SettingsHub.LOOK: return Prefs.lookLabel(prefs.look()) + "، " + Prefs.appearanceLabel(prefs.appearance());
+            case SettingsHub.APPS: return "شريط التطبيقات وترتيبه وأقفاله";
+            case SettingsHub.BUTTONS: return "أزرار الرئيسية ومركز التحكم";
+            case SettingsHub.PRAY: {
+                Boolean on = homeAdhanSeen();   // the home's switch as last known; null when the home cannot say (not installed, or older)
+                String m = PrayerMethod.label(prefs.prayerMethod(), prefs.cityCountry(), prefs.cityTz());
+                return on == null ? m : "الأذان " + (on ? OnOff.ON_WORD : OnOff.OFF_WORD) + "، " + m;
             }
-            case SettingsHub.CONTENT: return "الفرق " + arabicNum(prefs.teams().size()) + " · الأسواق " + (prefs.marketsOn() ? arabicNum(prefs.markets().size()) : "مخفية");
+            case SettingsHub.CONTENT: return "الفرق " + arabicNum(prefs.teams().size()) + "، الأسواق " + (prefs.marketsOn() ? arabicNum(prefs.markets().size()) : "مخفية");
+            case SettingsHub.SAVER: return Prefs.idleMs(this) <= 0 ? "يبدأ وقت ما يحدده التلفاز" : "تبدأ بعد " + idleLabel();
+            case SettingsHub.FAMILY: return "الرقابة الأبوية وتصفية المواقع والجوالات";
+            case SettingsHub.UPDATE: return Updater.versionLines(this)[0];
             default: return "";
         }
     }

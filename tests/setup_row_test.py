@@ -18,5 +18,5 @@ def check(name, ok, detail=""):
 read = lambda p: Path(p).read_text(encoding="utf-8")
 st, hub, words = read(S / "SettingsActivity.java"), read(S / "SettingsHub.java"), read(S / "Words.java")
 check("the row opens the setup whatever the home is (not `if (!isHome)`), and is listed in the hub and the words", 'row("إعداد تلفزيوني"' in st and "openSetup()" in st.split('row("إعداد تلفزيوني"')[1][:200]
-      and '{"إعداد تلفزيوني", HOME}' in hub and 'S.n("إعداد تلفزيوني")' in words and 'S.n("شغّل الإعداد من جديد، أو تراجع عن تغييراته")' in words)
+      and '{"إعداد تلفزيوني", UPDATE}' in hub and 'S.n("إعداد تلفزيوني")' in words and 'S.n("شغّل الإعداد من جديد، أو تراجع عن تغييراته")' in words)
 sys.exit(1 if failed else 0)
