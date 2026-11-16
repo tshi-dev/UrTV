@@ -1,8 +1,8 @@
 {
- "v": 3,
+ "v": 4,
  "pack": "saudi",
  "name": "مشاهد السعودية (العلا، الرمال، البحر الأحمر، حسمى)",
- "sha256": "89808247ed625a7ca24d41ef9f50e87535c8e2302649a4a14918dfd49a802824",
- "bytes": 1866474,
+ "sha256": "eb5793d89ca87735b0215e6c868eff2313a018e77c2dcdacec339cf4dd82ac11",
+ "bytes": 1722878,
  "credits": "AlUla: Richard Mortel, CC BY 2.0, Wikimedia Commons; the dunes, the Red Sea, Hisma: NEOM, Unsplash License (see CREDITS.txt in the zip)"
 }
