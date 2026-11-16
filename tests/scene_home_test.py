@@ -141,15 +141,15 @@ body = tick.split("\n", 1)[1]
 first = [l.strip() for l in body.splitlines() if l.strip() and not l.strip().startswith("//")]
 check("off (the default): sceneTick's first step after reading the layout returns when the scenes are off and nothing of them exists",
       first[0].startswith('boolean on = "scenes".equals(cfg.homeBg);') and first[1] == 'boolean glass = "glass".equals(cfg.homeClock);'
-      and first[2].startswith("if (!on && sceneHome == null && !scenesOn) return;"), first[:3])
+      and first[2] == "photoGlassTick(cfg, !on && glass);" and first[3].startswith("if (!on && sceneHome == null && !scenesOn) return;"), first[:4])
 check("off: the scene layer is not made at the home's start, only in sceneTick when chosen; turned off, it is shut down and removed whole",
       main.count("new SceneHome(") == 1 and "if (on && sceneHome == null) {" in tick and tick.index("if (on && sceneHome == null) {") < tick.index("new SceneHome(")
       and "sceneHome.shutdown();" in tick and "sceneBackdrop.removeView(sceneHome);" in tick and "sceneHome = null;" in tick
       and "new SceneHome(" not in main[main.index("private View buildUi()") if "private View buildUi()" in main else 0:main.index("private void sceneTick(")])
 check("off: every other use of the layer waits for it to exist (start, stop, trim)", main.count("if (sceneHome != null) sceneHome.") == 3)
 users = sorted(Path(f).name for f in glob.glob(str(HOME / "**/*.java"), recursive=True)
-               if re.search(r"\b(SceneHome|SceneDownload|SceneClock)\b", read(Path(f))) and Path(f).name not in ("SceneHome.java", "SceneDownload.java", "SceneClock.java", "ScenePlan.java"))
-check("off: only the home's screen knows the scene classes (nothing else can start a read, a download or a timer)", users == ["MainActivity.java"], users)
+               if re.search(r"\b(SceneHome|SceneDownload|SceneClock)\b", read(Path(f))) and Path(f).name not in ("SceneHome.java", "SceneDownload.java", "SceneClock.java", "ScenePlan.java", "PhotoGlass.java"))
+check("off: only the home's screen (and 4.4's glass clock over the photos, made only while chosen: tests/photo_glass_test.py) knows the scene classes (nothing else can start a read, a download or a timer)", users == ["MainActivity.java"], users)
 seth = scene[scene.index("    void set(boolean wanted"):].split("\n    }\n")[0]
 check("off: the scene files are read and the Couch TV pack is downloaded only after «on» is checked; shut down, the thread, the timer and the pictures go",
       seth.index("if (!on) {") < seth.index("io.execute(") < seth.index("SceneDownload.fetchIfNeeded(app, p,") and "assets" not in main.split("private void sceneTick(")[0][-400:]
@@ -165,7 +165,7 @@ check("the presets set the three at once: «شكل تلفزيونك» (photos, p
       '{{"urtv", "شكل تلفزيونك", "classic", "photos", "plain"}, {"couch", "شكل كنبة", "classic", "scenes", "glass"}}' in prefs and 'return "مخصّص";' in prefs
       and 'row("الشكل الجاهز", Prefs.look3Label(prefs.look3())' in st and 'row("التخطيط"' in st and 'row("الخلفية"' in st and 'row("الساعة"' in st)
 check("the home: «الخلفية ← المشاهد» shows the scenes on any layout; the glass clock and the cut-out only with «الساعة ← زجاجية», else the header's clock stays",
-      'boolean on = "scenes".equals(cfg.homeBg);' in tick and 'boolean glass = "glass".equals(cfg.homeClock);' in tick and "boolean bigClock = on && glass;" in tick
+      'boolean on = "scenes".equals(cfg.homeBg);' in tick and 'boolean glass = "glass".equals(cfg.homeClock);' in tick and "boolean bigClock = glass;" in tick
       and "final Bitmap glass = withClock ? decode(" in scene and "final Bitmap mask = withClock && sc.mask != null" in scene
       and 'if ("scenes".equals(homeLayout)) { homeLayout = "classic"; homeBg = "scenes"; homeClock = "glass"; }' in snap)
 check("«حزم المشاهد»: the Saudi pack and the Couch TV pack, none chosen is the Saudi one; both rows in «الشكل والمشاهد», first",

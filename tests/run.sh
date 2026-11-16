@@ -25,6 +25,7 @@ python3 tests/step52_test.py   # the tester's step 52 findings in the source: th
 python3 tests/party_games_test.py   # «واحد مو معنا» and «بدون كلام / وصّف»: the rules on a plain JVM, the bundled word files
 python3 tests/ram_tier_test.py   # the three memory tiers (LOW under 2000 MB, MID under 2600, NORMAL), one rule per app, the test switch
 python3 tests/scene_home_test.py   # 4.3.3 «المشاهد»: the scene rules per tier on a JVM, the Saudi pack's files and sizes, the Couch TV download checks, the wiring
+python3 tests/photo_glass_test.py   # 4.4 «الساعة: زجاجية» over our photos: which cut-out, where the digits go (on a JVM), made only while chosen, never «الحرمين»
 python3 tests/cache_sweep_test.py   # 4.3.3 «مسح الملفات المؤقتة»: the caches only, on a JVM over made-up folders
 python3 tests/lowram_test.py   # a weak TV (Ram.low): no key filter, the clock off the UI thread, pictures let go behind apps, markets «عادي» and 60 s, #lowram=1
 python3 tests/deadman_test.py

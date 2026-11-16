@@ -109,6 +109,8 @@ public class MainActivity extends Activity {
     private ImageView wallBack, wallFront;
     private boolean scenesOn;   // 4.3.3: the scene home is showing: the ordinary photos are not decoded (their memory is the scene's)
     private SceneHome sceneHome;   // 4.4 «المشاهد»: the scene backdrop with the glass clock behind its scenery; made only while chosen (null otherwise: nothing of it exists)
+    private PhotoGlass photoGlass;   // 4.4 «الساعة: زجاجية» over the home's own photos: made only while chosen (null otherwise: no cut-out is read or downloaded)
+    private String wallShownKey;   // the home's key of the photo on the screen (pack:, photo:, bundled:, own:), for its cut-out
     private FrameLayout sceneBackdrop;   // where it goes when chosen: over the photos, under the dimming and the scrims
     private View gridShade;
     private String[] wallpapers = new String[0];
@@ -512,6 +514,7 @@ public class MainActivity extends Activity {
         tvLoader.shutdownNow();
         clockReads.shutdownNow();
         homeCard.destroy();
+        if (photoGlass != null) photoGlass.shutdown();
         super.onDestroy();
     }
 
@@ -3174,6 +3177,7 @@ public class MainActivity extends Activity {
     private void sceneTick(ConfigSnapshot cfg) {
         boolean on = "scenes".equals(cfg.homeBg);   // 4.4 «الخلفية ← المشاهد» (any layout); the glass clock is «الساعة»'s own choice
         boolean glass = "glass".equals(cfg.homeClock);
+        photoGlassTick(cfg, !on && glass);
         if (!on && sceneHome == null && !scenesOn) return;   // the home as it was (the default): nothing of the scenes is made, read, timed or downloaded
         if (on && sceneHome == null) {   // chosen: the layer is made now, over the photos and under the dimming and the scrims
             sceneHome = new SceneHome(this, Ram.tier(this), font("display"));
@@ -3206,12 +3210,38 @@ public class MainActivity extends Activity {
             } else nextWallpaper();   // back to the home as it was: its photo again
         }
         int show = on ? View.INVISIBLE : View.VISIBLE;   // INVISIBLE: the header keeps its size, nothing under it moves
-        boolean bigClock = on && glass;   // the scene's glass clock takes the header clock's place; with «الساعة: عادية» the header clock stays
+        boolean bigClock = glass;   // the glass clock (the scene's, or the photo's) takes the header clock's place; with «الساعة: عادية» the header clock stays
         clock.setVisibility(bigClock ? View.INVISIBLE : View.VISIBLE);
         if (bigClock) ampm.setVisibility(View.INVISIBLE);
         wallBack.setVisibility(show);
         wallFront.setVisibility(show);
         if (on) { sceneHome.setTime(clock.getText()); if (resumed) sceneHome.start(); }
+    }
+
+    /**
+     * 4.4 «الساعة: زجاجية خلف الصورة» with «الخلفية: صوري وحزم الصور»: the big glass clock over the photo, and the photo's scenery over the clock when
+     * it is one of ours with a cut-out (never «الحرمين», never the person's own). With «الساعة: عادية» (the default) nothing of it exists.
+     */
+    private void photoGlassTick(ConfigSnapshot cfg, boolean want) {
+        if (!want) {
+            if (photoGlass == null) return;   // the default: nothing made, read or downloaded
+            photoGlass.shutdown();
+            sceneBackdrop.removeView(photoGlass);
+            photoGlass = null;
+            clock.setVisibility(View.VISIBLE);   // the header clock back (sceneTick sets it again when the scenes are on)
+            return;
+        }
+        boolean cards = homeCard != null && homeCard.shownCards() > 0;
+        if (photoGlass == null) {   // over the two photo layers (showWallpaper keeps them at 0 and 1), under the dimming and the scrims
+            photoGlass = new PhotoGlass(this, Ram.tier(this), font("display"));
+            sceneBackdrop.addView(photoGlass, sceneBackdrop.indexOfChild(wallFront) + 1, new FrameLayout.LayoutParams(-1, -1));
+            photoGlass.place(cards, Dir.rtl());
+            Drawable d = wallFront.getDrawable();
+            if (d instanceof BitmapDrawable && ((BitmapDrawable) d).getBitmap() != null) photoGlass.show(((BitmapDrawable) d).getBitmap(), wallShownKey, NetGate.allowed(resumed, NetGateAndroid.displayOn(this)));
+        } else photoGlass.place(cards, Dir.rtl());
+        photoGlass.setTime(clock.getText());
+        clock.setVisibility(View.INVISIBLE);
+        ampm.setVisibility(View.INVISIBLE);
     }
 
     private void updateClock(ConfigSnapshot cfg) {
@@ -3699,7 +3729,7 @@ public class MainActivity extends Activity {
                 try { bm = decode(() -> getAssets().open(fallback)); key = "bundled:" + fallback; }
                 catch (java.io.IOException ignored) { }
             }
-            showWallpaperIfCurrent(bm, gen);
+            showWallpaperIfCurrent(bm, gen, key);
             if (gen == wallGen) GlassSource.update(this, bm, key);   // the glass look's backdrop: made again only for another photo
             if (only) return;   // no network while only the owner's photos show
             if (!NetGate.allowed(resumed, NetGateAndroid.displayOn(this))) return;   // another app came up, or standby: no network; the next rotation on return asks
@@ -3721,7 +3751,7 @@ public class MainActivity extends Activity {
                 }
                 final java.io.File got = f;
                 Bitmap fresh = got.isFile() ? decode(() -> new java.io.FileInputStream(got)) : null;
-                showWallpaperIfCurrent(fresh, gen);
+                showWallpaperIfCurrent(fresh, gen, "photo:" + got.getName());
                 if (gen == wallGen) GlassSource.update(this, fresh, "photo:" + got.getName());
             } catch (java.io.IOException | RuntimeException ignored) { }
         }).start();
@@ -3731,12 +3761,14 @@ public class MainActivity extends Activity {
     private int wallGen;   // counts the requests for a wallpaper (main thread)
 
     /** From the loading thread: shown only if no newer request has been made since this one started. */
-    private void showWallpaperIfCurrent(Bitmap bm, int gen) {
-        if (bm != null) runOnUiThread(() -> { if (gen == wallGen) showWallpaper(bm); });
+    private void showWallpaperIfCurrent(Bitmap bm, int gen, String key) {
+        if (bm != null) runOnUiThread(() -> { if (gen == wallGen) showWallpaper(bm, key); });
     }
 
-    private void showWallpaper(Bitmap bm) {
+    private void showWallpaper(Bitmap bm, String key) {
         if (bm == null || isDestroyed()) return;
+        wallShownKey = key;
+        if (photoGlass != null) photoGlass.show(bm, key, NetGate.allowed(resumed, NetGateAndroid.displayOn(this)));
         // Swap roles: the old front becomes the back, the new photo fades in on top.
         final ImageView old = wallFront;
         wallFront = wallBack;
