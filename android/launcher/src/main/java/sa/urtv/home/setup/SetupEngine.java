@@ -473,7 +473,9 @@ final class SetupEngine {
     Result home() throws IOException {
         if (HomeFails.givenUp(store.get(HomeFails.FILE))) return skipped(HomeFails.LINE + ": " + HomeFails.GUIDE);
         homeAttempted = false;
+        watchFor = null;
         Result r = homeSwitch();
+        if (watchFor != null) return r;   // the Home watch is being set up (SetupRunner): finishWatch counts it
         if (homeAttempted || r.status == Status.DONE) {   // nothing tried (the TV did not say, no stock home known): nothing written
             try { store.put(HomeFails.FILE, HomeFails.after(store.get(HomeFails.FILE), homeAttempted, r.status == Status.DONE)); } catch (IOException ignored) { }
         }
@@ -554,7 +556,14 @@ final class SetupEngine {
             sh.run("cmd package set-home-activity --user 0 " + q(HOME_ACTIVITY));
             sh.run("am force-stop com.android.tv.settings");
             sh.run("input keyevent KEYCODE_HOME");
-            return verifyAndFinish(stock, stockPkg, holder, pk, false);
+            // 4.4: the check is the person's: another app in front, the Home key, then who is in front. With the stock home on, Google TV's launcherx keeps the Home key
+            // whatever the role says (16 TV-side runs: it «passed» on the role, and Home opened launcherx on every Google TV): then the setup sets up the add-on's
+            // Home watch (SetupRunner: «إضافات تلفزيونك», installed and turned on over this adb) and checks again (finishWatch). The role stays ours meanwhile.
+            journalStep("verify");
+            if (homeKeyOpensOurs()) return finishHome(pk, "تلفزيونك الآن هو الشاشة الرئيسية. اضغط زر الرئيسية في الريموت للتأكد.");
+            watchFor = new String[] {stock, stockPkg, holder};
+            out.line("زر الرئيسية ما زال يفتح الشاشة الأصلية في هذا التلفزيون: نجرّب «إضافات تلفزيونك» التي ترجّعك لتلفزيونك.");
+            return new Result(Status.FAILED, "watch needed");
         }
         if (wizardListed) sh.run("pm disable-user --user 0 " + WRAITH);
         AdbClient.Result disable = sh.run("pm disable-user --user 0 " + stockPkg);
@@ -637,6 +646,98 @@ final class SetupEngine {
         sh.run("cmd role add-role-holder --user 0 android.app.role.HOME " + SELF);   // ours stays Home
         store.put(StockMigration.MARK, "done " + stamp + "\n");
         return done(StockMigration.NOTICE);
+    }
+
+    // ---- 4.4: the Home key, checked the person's way; the add-on's Home watch where the stock home keeps the key ------------------
+
+    static final String EXTRAS_A11Y = "extras-a11y.txt";
+    /** stock, stockPkg, holder while the Home watch is being set up (the switch is armed, the role is ours, the stock home still wins the key) */
+    private String[] watchFor;
+
+    /** the switch waits for the add-on's Home watch (SetupRunner sets it up, then finishWatch) */
+    boolean watchPending() { return watchFor != null; }
+
+    /** the real check: the TV's settings in front, then the Home key (up to three presses, 3 s apart): true only when our home is in front */
+    boolean homeKeyOpensOurs() throws IOException {
+        sh.run("am start -a android.settings.SETTINGS");
+        sleeper.sleep(3000);
+        for (int i = 0; i < 3; i++) {
+            sh.run("input keyevent KEYCODE_HOME");
+            sleeper.sleep(3000);
+            if (ours(lastLine(text("dumpsys activity activities | grep -E 'mResumedActivity|topResumedActivity' | head -n 1")))) return true;
+        }
+        return false;
+    }
+
+    /** the switch is confirmed: the safety switch off, the journal done, the count of failed tries starts again */
+    private Result finishHome(Set<String> pk, String said) throws IOException {
+        deadman.disarm();
+        clearDeadline();
+        journalState("done");
+        store.put(WIFI_ASK, "");
+        return done(said);
+    }
+
+    /**
+     * After the add-on's watch was set up (watchOk: installed, turned on and bound): the Home key is checked again the person's way. Ours in front: done. Else the stock
+     * home is given Home back and checked (abort), the person is told plainly, and the try counts (HomeFails: after two the in-app switch is not offered any more).
+     */
+    Result finishWatch(boolean watchOk) throws IOException {
+        String[] w = watchFor;
+        watchFor = null;
+        if (w == null) return failed("ما بدأ تبديل الشاشة الرئيسية.");
+        Result r = watchOk && homeKeyOpensOurs()
+            ? finishHome(null, "زر الرئيسية يفتح تلفزيونك الآن (عن طريق «إضافات تلفزيونك»). اضغط زر الرئيسية في الريموت للتأكد.")
+            : abort(w[0], w[1], w[2], "ما قدرنا نخلي زر الرئيسية يفتح تلفزيونك على هذا التلفزيون، وكل شيء غيره يشتغل: افتح تلفزيونك من أيقونته في صف التطبيقات.", false);
+        try { store.put(HomeFails.FILE, HomeFails.after(store.get(HomeFails.FILE), true, r.status == Status.DONE)); } catch (IOException ignored) { }
+        return r;
+    }
+
+    /**
+     * The add-on's service on, over this adb: what the TV had is kept once (EXTRAS_A11Y, «تراجع» puts it back), our entry added (the home's own entries of 4.3.2 and before
+     * leave the list), the switch on; then Android's own answer (Bound services) is read, and while ours is not in it the list goes off and on again (a TCL's TclAppBoot
+     * refused the first bind), twice at most. DONE only when it is bound.
+     */
+    Result enableWatch() throws IOException {
+        String svc = sa.urtv.home.ExtrasWords.SERVICE;
+        String list = lastLine(text("settings get secure enabled_accessibility_services")).trim(), sw = lastLine(text("settings get secure accessibility_enabled")).trim();
+        if (list.isEmpty() || sw.isEmpty()) return failed("التلفزيون لم يقل أي خدمات «تسهيل الاستخدام» مشغّلة، فما غيّرنا شيئاً.");
+        String had = store.get(EXTRAS_A11Y);
+        if (had == null || had.trim().isEmpty()) store.put(EXTRAS_A11Y, "list=" + list + "\nswitch=" + sw + "\n");
+        String now = WatchList.with(list, svc);
+        if (now == null) return failed("قائمة «تسهيل الاستخدام» في هذا التلفزيون فيها ما لا نرسله، فما غيّرناها.");
+        sh.run("settings put secure enabled_accessibility_services '" + now + "'");
+        sh.run("settings put secure accessibility_enabled 1");
+        sh.run("appops set " + sa.urtv.home.ExtrasWords.PACKAGE + " AUTO_START allow");   // TCL's boot manager
+        for (int i = 0; i < 3; i++) {
+            sleeper.sleep(2500);
+            String bound = text("dumpsys accessibility | grep -m1 'Bound services:'");
+            if (bound.contains(svc)) return done("«إضافات تلفزيونك» شغّالة.");
+            if (i == 2) break;
+            String rest = WatchList.without(now, svc);
+            if (rest.isEmpty()) sh.run("settings delete secure enabled_accessibility_services");
+            else sh.run("settings put secure enabled_accessibility_services '" + rest + "'");
+            sh.run("settings put secure enabled_accessibility_services '" + now + "'");
+            out.line("التلفزيون ما شغّل «إضافات تلفزيونك» أول مرة: أطفأناها وشغّلناها من جديد.");
+        }
+        return failed("التلفزيون ما شغّل «إضافات تلفزيونك». افتح إعدادات التلفزيون ← تسهيل الاستخدام ← إضافات تلفزيونك، وأطفئها وشغّلها من جديد.");
+    }
+
+    /** «تراجع»: our entry leaves the list, and the switch goes back to what the TV had when nothing else is on (EXTRAS_A11Y) */
+    private void undoWatch() throws IOException {
+        String had = store.get(EXTRAS_A11Y);
+        if (had == null || had.trim().isEmpty()) return;
+        String list = lastLine(text("settings get secure enabled_accessibility_services")).trim();
+        if (list.isEmpty()) return;   // the TV did not say: left for the next «تراجع»
+        String rest = WatchList.without(list, sa.urtv.home.ExtrasWords.SERVICE);
+        if (!rest.equals(WatchList.without(list, ""))) {
+            if (rest.isEmpty()) sh.run("settings delete secure enabled_accessibility_services");
+            else sh.run("settings put secure enabled_accessibility_services '" + rest + "'");
+        }
+        String sw = WatchList.field(had, "switch");
+        if (rest.isEmpty() && sw.matches("[0-9]+")) sh.run("settings put secure accessibility_enabled " + sw);
+        else if (rest.isEmpty() && "null".equals(sw)) sh.run("settings delete secure accessibility_enabled");
+        store.put(EXTRAS_A11Y, "");
     }
 
     /** Step 4 of the switch: Home really opens ours (two rounds), then the safety switch is disarmed; else everything is put back. */
@@ -783,6 +884,7 @@ final class SetupEngine {
         } else {
             problems.add("ما عرفنا الشاشة الرئيسية الأصلية، فاضغط زر الرئيسية؛ وإن لم يفتح شيء فاختر الشاشة من إعدادات التلفزيون (التطبيقات، التطبيقات الافتراضية).");
         }
+        undoWatch();   // 4.4: the add-on's service, turned on by the setup, is turned off again (the list as the TV had it)
         // the apps our run turned off: the ledger, and the community list's own record (optimize/reset.sh hands community-applied.txt to restore.sh)
         List<String> ledger = ledgerNames(store.get("disabled-by-us.txt"));
         for (String p : ledgerNames(store.get("community-applied.txt"))) if (!ledger.contains(p)) ledger.add(p);
