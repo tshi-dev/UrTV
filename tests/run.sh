@@ -30,6 +30,7 @@ python3 tests/page_cache_test.py   # G3: the page revalidates its data (ETag, 30
 python3 tests/net_cache_test.py   # G3: Net.cached: ETag and date revalidation, calls merged, the offline back-off, the size cap; the markets, next match and leagues list use it
 python3 tests/photo_size_test.py   # G3: photos kept at the TV's own screen size (1280 on a 720p screen or a weak TV)
 python3 tests/lite_mode_test.py   # A14: «الوضع الخفيف» auto (low memory or 2 cores) / on / off in both apps, its row and command
+python3 tests/home_return_test.py   # G4: less before the home's first frame: no live TV lookup at a cold start; the provider, update record and changed packages off the return's path
 python3 tests/deadman_test.py
 python3 tests/run_lock_test.py
 python3 tests/run_identity_test.py

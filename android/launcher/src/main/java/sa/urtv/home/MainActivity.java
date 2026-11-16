@@ -219,7 +219,7 @@ public class MainActivity extends Activity {
         Digits.init(this);   // the screensaver's «الأرقام» setting, for every number this screen writes
         langBuilt = S.lang();   // the language this screen is built in (updateClock rebuilds it when «اللغة» changes)
         dockApps = loadDock();
-        findTvApps();
+        // G4: the TV's live TV app and source picker are not looked for here (a dozen package manager calls on the main thread before the first frame): the inputs list and «التلفزيون» ask each time they open
         cols = getResources().getInteger(R.integer.columns);
         getWindow().getDecorView().setSystemUiVisibility(
                 View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
@@ -317,8 +317,8 @@ public class MainActivity extends Activity {
         if (last != null) last.requestFocus();
         if ("open".equals(getIntent().getStringExtra("bar")) && pillBar != null) { barHeld = true; pillBar.focusInside(true); }   // a picture of the open row (DebugBarShot); nothing else sets it
         updateHomeNudge(true);   // not the TV's Home yet: one card says so, and OK opens «إعداد تلفزيوني»
-        // Catch installs/removals that happened while another app was in front.
-        if (getPackageManager().getChangedPackages(packageSeq) != null) buildApps();
+        // Catch installs/removals that happened while another app was in front. G4: asked after the return's first frame (a package manager call), not before it
+        AfterFrame.run(getWindow().getDecorView(), () -> { if (resumed && !isDestroyed() && getPackageManager().getChangedPackages(packageSeq) != null) buildApps(); });
         if (firstShow) {   // the entrance plays once the favourites are on screen (they come from the loader thread)
             firstShow = false;
             if (appsShown) playEntrance(); else entranceDue = true;
@@ -1701,13 +1701,14 @@ public class MainActivity extends Activity {
     /** The rows' words first (quick), shown; then their pictures as they come, within TV_PICTURES_MS. */
     private void loadTvRows() {
         if (tvRowsBox == null || cleanShown) return;   // «UrTV النظيف»: no extra rows
-        if (!TvRows.allowed(this) || !ConfigSnapshot.read(this).watchNextOn) {   // not allowed, or turned off in the settings: no row
-            if (tvRowsBox.getChildCount() > 0) { tvShownSig = ""; showTvRows(new ArrayList<>()); }
-            return;
-        }
         final int gen = ++tvRowsGen;
         if (tvLoader.isShutdown()) return;
         tvLoader.execute(() -> {
+            // G4: the setting is read here, on the row's own thread: a return no longer waits on the main thread for the screensaver's provider (a cross-process query)
+            if (!TvRows.allowed(this) || !ConfigSnapshot.read(getApplicationContext()).watchNextOn) {   // not allowed, or turned off in the settings: no row
+                runOnUiThread(() -> { if (gen == tvRowsGen && !isDestroyed() && tvRowsBox.getChildCount() > 0) { tvShownSig = ""; showTvRows(new ArrayList<>()); } });
+                return;
+            }
             List<TvRows.Row> rows = TvRows.load(this);
             String sig = tvSignature(rows);
             final List<TvRows.Row>[] on = new List[1];
@@ -1906,16 +1907,27 @@ public class MainActivity extends Activity {
     private static long updateResultAt;   // when the update screen was last opened from here (the singleTop UpdateActivity is the other half: step 47 saw two within 0.16 s)
 
     private void showUpdateResult() {
-        try {
-            if (android.os.SystemClock.elapsedRealtime() - updateResultAt < 3000) return;   // asked twice in a row (a resume and the one after it): once
-            if (sa.urtv.home.phone.PhoneUpdater.isBusy()) return;   // an update running in this very process: its own screen says how it goes
-            if (sa.urtv.home.phone.PhoneUpdater.confirmKnown()) return;   // an install confirm is still pending: the record stays unread until it is answered
-            long mine = sa.urtv.home.phone.PhoneUpdater.installedCode(this, getPackageName());
-            if (sa.urtv.home.phone.UpdateRecords.peek(new sa.urtv.home.phone.UpdateStore(this), mine).kind != sa.urtv.home.phone.UpdateRecords.Kind.NONE) {
-                updateResultAt = android.os.SystemClock.elapsedRealtime();
-                launchGuarded(ParentalPolicy.UPDATE_SCREEN, new Intent(this, UpdateActivity.class).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), S.t("تحديث تلفزيوني"));   // the result of an update: behind «قفل الإعدادات» like the rest of the screen
+        if (android.os.SystemClock.elapsedRealtime() - updateResultAt < 3000) return;   // asked twice in a row (a resume and the one after it): once
+        final android.content.Context app = getApplicationContext();
+        // G4: the package manager and the update record are read off the main thread (every return asked them before its first frame); the screen opens after, on it
+        new Thread(() -> {
+            boolean due;
+            try {
+                if (sa.urtv.home.phone.PhoneUpdater.isBusy()) return;   // an update running in this very process: its own screen says how it goes
+                if (sa.urtv.home.phone.PhoneUpdater.confirmKnown()) return;   // an install confirm is still pending: the record stays unread until it is answered
+                long mine = sa.urtv.home.phone.PhoneUpdater.installedCode(app, app.getPackageName());
+                due = sa.urtv.home.phone.UpdateRecords.peek(new sa.urtv.home.phone.UpdateStore(app), mine).kind != sa.urtv.home.phone.UpdateRecords.Kind.NONE;
+            } catch (RuntimeException e) {
+                return;
             }
-        } catch (RuntimeException ignored) { }
+            if (due) runOnUiThread(() -> {
+                if (!resumed || isDestroyed() || android.os.SystemClock.elapsedRealtime() - updateResultAt < 3000) return;
+                updateResultAt = android.os.SystemClock.elapsedRealtime();
+                try {
+                    launchGuarded(ParentalPolicy.UPDATE_SCREEN, new Intent(this, UpdateActivity.class).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), S.t("تحديث تلفزيوني"));   // the result of an update: behind «قفل الإعدادات» like the rest of the screen
+                } catch (RuntimeException ignored) { }
+            });
+        }, "home-update-result").start();
     }
 
     /** The launcher's settings file, shared with DockReceiver. */

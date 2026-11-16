@@ -62,7 +62,7 @@ check("the setting: on by default, in the provider after the other columns, --es
       and 'p.watchNext() ? "1" : "0"' in provider and 'i.getStringExtra("watchnext")' in recv and '"\\nwatchnext: "' in recv
       and 'watchnext) set1 watchnext' in saver)
 check("the home reads it (an older screensaver says nothing: on) and shows no row when it is off", 'cur.getColumnIndex("watch_next")' in snap
-      and "if (!TvRows.allowed(this) || !ConfigSnapshot.read(this).watchNextOn) {" in load)
+      and "if (!TvRows.allowed(this) || !ConfigSnapshot.read(getApplicationContext()).watchNextOn) {" in load)
 row = settings[settings.index('row("أكمل المشاهدة"'):settings.index('render(); } });', settings.index('row("أكمل المشاهدة"'))]
 check("the settings row: OK turns it on or off; on and not allowed yet, OK asks the one question (the home app's WatchNextActivity)",
       "prefs.setWatchNext(!prefs.watchNext());" in row and "if (prefs.watchNext() && !homeMayReadWatchNext()) { openWatchNextPermission(); return; }" in row
