@@ -54,18 +54,28 @@ html.row .week li.spf{display:none}html.row .week li.spc{display:block;text-alig
 html.sptake:not(.widget) .mid .clockwrap{display:none}
 html.sptake:not(.widget) .mid .week.sptk{grid-column:1/-1;font-size:1.25em}
 .spclk{font-weight:400;opacity:.85}
-/* the kick-off notice (the launcher asks for it at kick-off: spKick): the top right, 8 s, cream text on dark glass */
-#spkick{position:fixed;top:4.5vh;inset-inline-end:2.5vw;width:min(36vw,700px);z-index:60;border-radius:1.4vh;background:rgba(12,14,18,.9);
-  border:1px solid rgba(233,196,106,.6);box-shadow:0 1.2vh 3.2vh rgba(0,0,0,.5);color:#F4EBD8;padding:1.2vh 1.5vw 0;font-size:2.1vh;overflow:hidden;
+/* the notice (spKick): the top right of the screensaver, 8 s, cream text on nearly solid dark glass (nothing reads through it) */
+#spkick{position:fixed;top:4.5vh;right:2.5vw;width:min(36vw,700px);z-index:60;border-radius:1.4vh;background:rgba(12,14,18,.97);
+  border:1px solid rgba(233,196,106,.6);box-shadow:0 1.2vh 3.2vh rgba(0,0,0,.5);color:#F4EBD8;padding:1.3vh 1.5vw 0;font-size:max(2.5vh,13px);line-height:1.45;overflow:hidden;
   transition:transform .45s ease,opacity .45s ease;text-align:center}
-#spkick.out{transform:translateX(calc(100% + 4vw));opacity:0}
-html[dir=ltr] #spkick.out{transform:translateX(calc(-100% - 4vw))}
+#spkick.out{transform:translateX(calc(100% + 4vw));opacity:0}   /* the top right in both languages (the owner's corner), so it leaves to the right */
 #spkick .kt{display:flex;justify-content:space-between;gap:1em;color:#F0D48E;font-weight:500}#spkick .kt i{font-style:normal;color:#E5DCC8;font-weight:400}
 #spkick .km{display:flex;align-items:center;justify-content:center;gap:1.1em;margin:1vh 0 1.2vh;font-size:1.55em;font-weight:700;color:#FFF8EC}
 #spkick .km .spsw{width:.7em;height:.7em}
 #spkick .kb{height:.35vh;margin:0 -1.5vw;background:#E9C46A;transform-origin:inline-end;animation:spkb 8s linear forwards}
 @keyframes spkb{to{transform:scaleX(0)}}
-#spkick.goal{border-color:#3BB273}`;
+#spkick.goal{border-color:#3BB273}
+/* on the home the page is only the card's own window: the goal and the final score (the kick-off is the launcher's own, at the screen's corner)
+   as a band over the card's top, the card's size; in the couch strip one line, the clubs and the score */
+html.widget #spkick{top:.45em;left:.45em;right:.45em;width:auto;font-size:13px;border-radius:.7em;padding:.45em .9em 0}
+html.widget #spkick .km{margin:.3em 0 .45em}html.widget #spkick .kb{margin:0 -.9em;height:3px}
+html.widget #spkick.out{transform:translateY(-130%)}
+html.row #spkick{top:0;bottom:0;left:0;right:0;border-radius:inherit;display:flex;flex-direction:column;justify-content:center;padding:0 1em}
+html.row #spkick .kt{display:none}html.row #spkick .km{margin:0}html.row #spkick .kb{position:absolute;bottom:0;inset-inline:0;margin:0}
+/* a light look on the home («نظيف»، «رملي»، «شفق»: html.hlt): the boxes, the time bar and a white half of a club's colours keep an edge on white, the live minute a darker red */
+html.hlt .week .spbox{border-color:rgba(0,0,0,.14);background:rgba(0,0,0,.035)}html.hlt .week .spbox.on{background:#EBC77F;border-color:#D4A94F}
+html.hlt .week .spbar{background:rgba(0,0,0,.1)}html.hlt .week .splive{color:#B3261E}
+html.hlt .week .spband,html.hlt .week .spsw,html.hlt .week .spfm i{box-shadow:0 0 0 1px rgba(0,0,0,.22)}`;
   document.head.appendChild(st);
 })();
 
@@ -134,7 +144,7 @@ function spMatchday(card, now){
     rows.push(`<li class="spr spf"><div class="spbx" style="grid-template-columns:repeat(3,1fr)"><div class="spbox"><span class="sps">${SPW.kick}</span><b>${fbClock(k)}</b></div>`
       + `<div class="spbox"><span class="sps">${SPW.venue}</span><b>${esc(ev.strVenue ? venueName(ev.strVenue) : '—')}</b></div><div class="spbox"><span class="sps">${SPW.channel}</span><b>${esc(m ? m.mark : '—')}</b></div></div></li>`);
     const meet = h2hLine(ev);
-    if(meet) rows.push(`<li class="spr spf sps">${esc(meet)}</li>`);
+    if(meet) rows.push(`<li class="spr spf"><span class="sps">${esc(meet)}</span></li>`);
   } else {
     const g = [['Home', ev.strHomeGoalDetails], ['Away', ev.strAwayGoalDetails]].filter(x => spGoals(x[1]));
     if(g.length) rows.push(`<li class="spr spf"><div class="spbx" style="grid-template-columns:repeat(${g.length},1fr)">${g.map(([s, d]) => `<div class="spbox"><span class="sps">${esc(fw(SPW.goals, spName(ev, s)))}</span><b>${esc(spGoals(d))}</b></div>`).join('')}</div></li>`);
@@ -146,7 +156,7 @@ function spMatchday(card, now){
   const take = !CONFIG.widget && now >= k - 3 * 3600000 && now <= k + FB_DUR + 3600000;
   document.documentElement.classList.toggle('sptake', take);
   card.el.classList.toggle('sptk', take);
-  return {title: take ? `${PANEL_TITLE.matchday}  <span class="spclk">${fbClock(now)}</span>` : '', titleHtml: take, rows};
+  return {title: take ? `<span>${esc(PANEL_TITLE.matchday)}</span><span class="spclk">${esc(fbClock(now))}</span>` : '', titleHtml: take, rows};
 }
 
 // ---- 2 «مباشر الآن»: the games under way of the followed teams and leagues (at most 4), the person's own first and gold
@@ -304,7 +314,7 @@ function spHandOff(){
   spHanded = JSON.stringify(list);
 }
 function spKickList(){ return spHanded; }
-// the launcher's ask: {kind: 'start'|'goal'|'end', h, a, hc, ac, lg, hs, as, min}; the notice for 8 s, then it slides away
+// the notice: {kind: 'start'|'goal'|'end', h, a, hc, ac, lg, hs, as, min} for 8 s, then it slides away (the screensaver's kick-off; a goal or the final score on the home and the screensaver)
 function spKick(json){
   let d; try{ d = typeof json === 'string' ? JSON.parse(json) : json; }catch(e){ return false; }
   if(!d || !d.h || !d.a) return false;

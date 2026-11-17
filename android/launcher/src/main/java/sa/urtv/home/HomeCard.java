@@ -326,13 +326,6 @@ final class HomeCard {
         if (resumed) idle.postDelayed(this, KICK_PULL_MS);
     } };
 
-    /** 4.4 the kick-off notice on the home's page (spKick); false when there is no page to draw it */
-    boolean kick(String json) {
-        if (web == null || json == null) return false;
-        web.evaluateJavascript("typeof spKick==='function'&&spKick(" + org.json.JSONObject.quote(json) + ")", null);
-        return true;
-    }
-
     @SuppressLint("SetJavaScriptEnabled")
     @SuppressWarnings("deprecation")
     private void create(String u) {

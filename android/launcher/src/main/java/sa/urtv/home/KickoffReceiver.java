@@ -85,7 +85,7 @@ public class KickoffReceiver extends BroadcastReceiver {
 
     private static void show(Context app, KickoffPlan.Game g, int where) {
         S.init(app);
-        if (where == KickoffPlan.HOME) app.sendBroadcast(new Intent(SHOW).setPackage(app.getPackageName()).putExtra("json", g.noticeJson()).putExtra("line", g.line(S.t("بدأت المباراة"))));
+        if (where == KickoffPlan.HOME) app.sendBroadcast(new Intent(SHOW).setPackage(app.getPackageName()).putExtra("game", g.json()).putExtra("json", g.noticeJson()).putExtra("line", g.line(S.t("بدأت المباراة"))));
         else if (where == KickoffPlan.OVERLAY && KickoffOverlay.show(app, g)) return;
         else if (where == KickoffPlan.OVERLAY || where == KickoffPlan.TOAST) {
             try { Toast.makeText(app, g.line(S.t("بدأت المباراة")), Toast.LENGTH_LONG).show(); } catch (RuntimeException ignored) { }

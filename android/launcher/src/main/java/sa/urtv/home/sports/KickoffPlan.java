@@ -26,6 +26,12 @@ public final class KickoffPlan {
         public final String[] hc, ac;
         Game(String id, long t, String h, String a, String[] hc, String[] ac, String lg) { this.id = id; this.t = t; this.h = h; this.a = a; this.hc = hc; this.ac = ac; this.lg = lg; }
 
+        /** the game again in the form parse() reads (the home's notice gets it in a broadcast and draws it itself) */
+        public String json() {
+            return "{\"id\":" + q(id) + ",\"t\":" + q(String.valueOf(t)) + ",\"h\":" + q(h) + ",\"a\":" + q(a) + ",\"hc\":[" + q(hc[0]) + "," + q(hc[1]) + "],\"ac\":["
+                + q(ac[0]) + "," + q(ac[1]) + "],\"lg\":" + q(lg) + "}";
+        }
+
         /** what spKick draws: {"kind":"start","h":…,"a":…,"hc":[…],"ac":[…],"lg":…} */
         public String noticeJson() {
             return "{\"kind\":\"start\",\"h\":" + q(h) + ",\"a\":" + q(a) + ",\"hc\":[" + q(hc[0]) + "," + q(hc[1]) + "],\"ac\":[" + q(ac[0]) + "," + q(ac[1]) + "],\"lg\":" + q(lg) + "}";

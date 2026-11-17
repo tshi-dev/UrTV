@@ -47,7 +47,7 @@ const TODAY = { before: ev('d1', ...T.hilal, ...T.nassr, NOW + 3 * H, { strVenue
 const browser = await chromium.launch();
 const json = (r, j) => r.fulfill({ json: j, headers: { 'Access-Control-Allow-Origin': '*' } });
 async function open(hash, { state = 'before', size = [461, 250], sportsJs = null, init = null } = {}) {
-  const ctx = await browser.newContext({ viewport: { width: size[0], height: size[1] }, timezoneId: 'Asia/Riyadh' });
+  const ctx = await browser.newContext({ viewport: { width: size[0], height: size[1] }, deviceScaleFactor: 2, timezoneId: 'Asia/Riyadh' });
   if (init) await ctx.addInitScript(init);
   const asked = [];
   await ctx.route(/^https?:/, r => {
@@ -190,6 +190,82 @@ const SPY = `window.__kicks = []; new MutationObserver(m => m.forEach(r => r.add
     const n0 = await p.evaluate(() => window.__kicks.length);
     const ks = await p.evaluate(async () => { SP.score.d1 = { hs: 1, as: 1, live: true, done: false }; spScoreWatch(Date.now()); await new Promise(r => setTimeout(r, 0)); return window.__kicks; });
     check(`goal notice ${flag || 'off (the default)'}: ${want ? 'the score in the corner' : 'nothing'}`, n0 === 0 && ks.length === want && (!want || /٢ - ١/.test(ks[0])), JSON.stringify(ks));
+    await ctx.close();
+  }
+}
+
+// 4.4 polish: every sports card at 1080p (a 1080p TV is 960x540 CSS px at 2x), on the screensaver, the home's card (461x250) and the couch strip
+// (864x108), the home also on a light look («نظيف»: the launcher's #hpanel/#hink…): no glyph box cut by its box or the card (an Arabic
+// descender is in it), no two texts on each other, one font family, every small label one size, the words readable on their background
+const AUDIT = () => {
+  const root = CARDS[0].el, cb = root.getBoundingClientRect(), res = { clip: [], overlap: [], fonts: new Set(), sps: new Set(), low: [] };
+  const vis = e => { const cs = getComputedStyle(e); return cs.display !== 'none' && cs.visibility !== 'hidden' && e.getClientRects().length; };
+  const leaves = [...root.querySelectorAll('*')].filter(e => vis(e) && [...e.childNodes].some(n => n.nodeType === 3 && n.textContent.trim()));
+  const lum = c => { const m = (c.match(/[\d.]+/g) || []).map(Number); const f = v => { v /= 255; return v <= .03928 ? v / 12.92 : ((v + .055) / 1.055) ** 2.4; };
+    return [.2126 * f(m[0]) + .7152 * f(m[1]) + .0722 * f(m[2]), m[3] == null ? 1 : m[3]]; };
+  const bgOf = e => { for (let a = e; a; a = a.parentElement) { const c = getComputedStyle(a).backgroundColor; if (c && lum(c)[1] > .5) return c; } return 'rgb(20,20,20)'; };
+  const boxes = [];
+  for (const e of leaves) {
+    const cs = getComputedStyle(e);
+    res.fonts.add(cs.fontFamily.split(',')[0].replace(/["']/g, '').trim());
+    if (e.classList.contains('sps') && !e.closest('li.spc')) res.sps.add(cs.fontSize);
+    const fg = lum(cs.color), bg = lum(bgOf(e)), cr = (Math.max(fg[0], bg[0]) + .05) / (Math.min(fg[0], bg[0]) + .05);
+    if (cr < 3.5) res.low.push(e.textContent.trim().slice(0, 20) + ' ' + cr.toFixed(1));
+    for (const n of e.childNodes) if (n.nodeType === 3 && n.textContent.trim()) {
+      const r = document.createRange(); r.selectNodeContents(n);
+      for (const x of r.getClientRects()) {
+        boxes.push({ e, x, t: n.textContent.trim().slice(0, 20) });
+        for (let a = e; a && a !== document.body; a = a.parentElement) { const st = getComputedStyle(a);
+          if (st.overflowX === 'visible' && st.overflowY === 'visible') continue;
+          const b = a.getBoundingClientRect();
+          if (x.bottom > b.bottom + .5 || x.top < b.top - .5 || x.left < b.left - .5 || x.right > b.right + .5) res.clip.push(n.textContent.trim().slice(0, 20) + ' in .' + a.className); }
+        if (x.bottom > cb.bottom + .5 || x.right > cb.right + .5 || x.left < cb.left - .5) res.clip.push(n.textContent.trim().slice(0, 20) + ' out of the card');
+      }
+    }
+  }
+  for (let i = 0; i < boxes.length; i++) for (let j = i + 1; j < boxes.length; j++) {
+    const A = boxes[i], B = boxes[j];
+    if (A.e === B.e || A.e.contains(B.e) || B.e.contains(A.e)) continue;
+    if (Math.min(A.x.right, B.x.right) - Math.max(A.x.left, B.x.left) > 1 && Math.min(A.x.bottom, B.x.bottom) - Math.max(A.x.top, B.x.top) > 2) res.overlap.push(A.t + ' / ' + B.t);
+  }
+  return { clip: res.clip, overlap: res.overlap, fonts: [...res.fonts], sps: [...res.sps], low: res.low };
+};
+const LIGHT = '&hpanel=rgba(255,255,255,0.980)&hline=rgba(20,24,30,0.078)&hink=rgba(27,29,33,1)&hsub=rgba(80,85,94,1)&hacc=rgba(11,94,81,1)';   // «نظيف» (GlassStyle.CLEAN_LIGHT)
+const lg = '&leagues=Saudi-Arabian Pro League';
+const PLACES = [['the home', k => home(k, lg), [461, 250]], ['the home, light', k => home(k, lg + LIGHT), [461, 250]], ['the couch strip', k => home(k, lg + '&row=1'), [864, 108]],
+  ['the couch strip, light', k => home(k, lg + '&row=1' + LIGHT), [864, 108]], ['the screensaver', k => `panel=${k}&teams=136013${lg}`, [960, 540]]];
+let polished = 0;
+const polishBad = [];
+for (const [kind, state] of [['matchday', 'before'], ['matchday', 'live'], ['matchday', 'after'], ['livenow', 'live'], ['minitable', 'before'], ['nextmatches', 'before'],
+  ['yesterday', 'before'], ['weekend', 'before'], ['cuppath', 'before'], ['formula', 'before'], ['national', 'before']]) for (const [place, url, size] of PLACES) {
+  const { p, ctx, errors } = await open(url(kind), { state, size });
+  const a = await p.evaluate(AUDIT);
+  const bad = [a.clip.length && 'cut: ' + a.clip.slice(0, 2).join(' | '), a.overlap.length && 'overlap: ' + a.overlap.slice(0, 2).join(' | '), a.fonts.length !== 1 && 'fonts: ' + a.fonts,
+    a.sps.length > 1 && 'small labels in ' + a.sps.join(' and '), a.low.length && 'hard to read: ' + a.low.slice(0, 2).join(' | '), errors.length && errors[0]].filter(Boolean);
+  if (bad.length) polishBad.push(`${kind} (${state}) on ${place}: ${bad.join('; ')}`);
+  polished++;
+  await ctx.close();
+}
+check(`polish: ${polished} cards at 1080p, nothing cut, nothing on top of another, one font, one size of small label, readable (light look too)`, !polishBad.length, polishBad.slice(0, 6).join('\n   '));
+{   // the takeover's heading is the card's name and the time, as words (the page once painted its markup as text, longer at each redraw)
+  const { p, ctx } = await open('panel=matchday&teams=136013' + lg, { state: 'before', size: [960, 540] });
+  await p.evaluate(() => { renderPanel(false, 'matchday'); renderPanel(false, 'matchday'); });
+  const hd = await p.evaluate(() => CARDS[0].hd.textContent);
+  check('the takeover\'s heading: «مباراة اليوم» once and the time, no markup', !/[<>]|span/.test(hd) && (hd.match(/مباراة اليوم/g) || []).length === 1 && /٥:٠٠/.test(hd), hd);
+  // the screensaver's notice: the top right in Arabic too, nearly solid, a readable size
+  const k = await p.evaluate(async () => { spKick({ kind: 'goal', h: 'الهلال', a: 'النصر', hs: 2, as: 1, min: '67', lg: 'دوري روشن السعودي' }); await new Promise(r => setTimeout(r, 800)); const e = document.getElementById('spkick'), cs = getComputedStyle(e);
+    return { right: innerWidth - e.getBoundingClientRect().right, left: e.getBoundingClientRect().left, w: innerWidth, a: +(cs.backgroundColor.match(/[\d.]+/g) || [])[3], fs: parseFloat(getComputedStyle(e.querySelector('.km')).fontSize) }; });
+  check('the screensaver\'s notice: the top right in Arabic, nearly solid glass, the clubs at 20 CSS px or more (40 on a 1080p TV)', k.right < k.w * .05 && k.left > k.w / 2 && k.a >= .95 && k.fs >= 20, JSON.stringify(k));
+  await ctx.close();
+}
+{   // on the home's card (the goal, the final score) and in the couch strip: inside the card's own window, over all of it, nothing cut
+  for (const [where, q, size] of [['the home\'s card', '', [461, 250]], ['the couch strip', '&row=1', [864, 108]]]) {
+    const { p, ctx } = await open(home('livenow', q), { state: 'live', size });
+    const k = await p.evaluate(async () => { spKick({ kind: 'goal', h: 'الهلال', a: 'النصر', hs: 2, as: 1, min: '67', lg: 'دوري روشن السعودي' }); await new Promise(r => setTimeout(r, 800));   // once it has slid in
+      const e = document.getElementById('spkick'), b = e.getBoundingClientRect(); let cut = 0;
+      for (const x of e.querySelectorAll('span,b')) { const r = x.getBoundingClientRect(); if (r.width && (r.bottom > b.bottom + .5 || r.top < b.top - .5 || r.right > b.right + .5 || r.left < b.left - .5)) cut++; }
+      return { inside: b.left >= 0 && b.top >= 0 && b.right <= innerWidth + .5 && b.bottom <= innerHeight + .5, cut, text: e.textContent }; });
+    check(`the notice on ${where}: inside the card's window, nothing cut, the score`, k.inside && !k.cut && /٢ - ١/.test(k.text), JSON.stringify(k));
     await ctx.close();
   }
 }

@@ -51,6 +51,27 @@ final class KickoffOverlay {
         return true;
     }
 
+    /** on our own home: the same notice in the home's window (no permission), the top right, never focused; false when it could not be added */
+    static boolean showIn(android.app.Activity a, KickoffPlan.Game g) {
+        final android.view.ViewGroup root;
+        try { root = (android.view.ViewGroup) a.getWindow().getDecorView(); } catch (RuntimeException e) { return false; }
+        DisplayMetrics dm = a.getResources().getDisplayMetrics();
+        final View box = view(a, g, dm);
+        box.setFocusable(false);
+        android.widget.FrameLayout.LayoutParams p = new android.widget.FrameLayout.LayoutParams((int) (dm.widthPixels * 0.36f),
+            android.view.ViewGroup.LayoutParams.WRAP_CONTENT, Gravity.TOP | Dir.start(true));
+        p.rightMargin = (int) (dm.widthPixels * 0.025f);
+        p.topMargin = (int) (dm.heightPixels * 0.045f);
+        try { root.addView(box, p); } catch (RuntimeException e) { return false; }
+        final float away = dm.widthPixels * 0.4f;
+        box.setTranslationX(away);
+        box.animate().translationX(0).setDuration(450).start();
+        new Handler(Looper.getMainLooper()).postDelayed(() -> box.animate().translationX(away).setDuration(450).withEndAction(() -> {
+            if (box.getParent() == root) root.removeView(box);
+        }).start(), SHOW_MS);
+        return true;
+    }
+
     private static View view(Context c, KickoffPlan.Game g, DisplayMetrics dm) {
         float u = dm.heightPixels / 1080f;
         LinearLayout box = new LinearLayout(c);
