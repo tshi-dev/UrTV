@@ -2,24 +2,24 @@ Performing Streamed Install
 Success
 Performing Streamed Install
 Success
-shot home-00-idle 1806253
-shot home-01-top 1805934
-shot home-pill-1 1805220
-shot home-pill-2 1808547
-shot home-pill-3 1809060
-shot home-pill-4 1810455
-shot home-pill-5 1810588
-shot home-pill-6 1810588
-shot home-pill-7 1810588
-shot home-pill-8 1810588
-shot home-pill-left-1 1803985
-shot home-pill-left-2 1803985
-shot home-pill-left-3 1803985
-shot home-pill-left-4 1804098
-shot home-tasks-card-focused 2117662
+shot home-00-idle 1782379
+shot home-01-top 1790067
+shot home-pill-1 1790067
+shot home-pill-2 1790067
+shot home-pill-3 1782379
+shot home-pill-4 1780597
+shot home-pill-5 1783427
+shot home-pill-6 1785125
+shot home-pill-7 1786271
+shot home-pill-8 1786812
+shot home-pill-left-1 1782006
+shot home-pill-left-2 1781893
+shot home-pill-left-3 1781893
+shot home-pill-left-4 1781893
+shot home-tasks-card-focused 2105134
 
 Exception occurred while executing 'start':
-java.lang.SecurityException: Permission Denial: starting Intent { flg=0x10008000 cmp=sa.urtv.home/.tilawah.MainActivity } from null (pid=5086, uid=2000) not exported from uid 10077
+java.lang.SecurityException: Permission Denial: starting Intent { flg=0x10008000 cmp=sa.urtv.home/.tilawah.MainActivity } from null (pid=4991, uid=2000) not exported from uid 10077
 	at com.android.server.wm.ActivityStackSupervisor.checkStartAnyActivityPermission(ActivityStackSupervisor.java:1032)
 	at com.android.server.wm.ActivityStarter.executeRequest(ActivityStarter.java:1001)
 	at com.android.server.wm.ActivityStarter.execute(ActivityStarter.java:671)
@@ -36,14 +36,14 @@ java.lang.SecurityException: Permission Denial: starting Intent { flg=0x10008000
 	at com.android.server.am.ActivityManagerService.onTransact(ActivityManagerService.java:2883)
 	at android.os.Binder.execTransactInternal(Binder.java:1159)
 	at android.os.Binder.execTransact(Binder.java:1123)
-shot tilawah-01-readers 2117662
-shot tilawah-02-readers-down 2129698
+shot tilawah-01-readers 2100829
+shot tilawah-02-readers-down 2106014
 shot tilawah-03-surah-grid 158871
 shot tilawah-04-surah-grid-focus 158871
-shot tilawah-05-player 109397
+shot tilawah-05-player 109148
 
 Exception occurred while executing 'start':
-java.lang.SecurityException: Permission Denial: starting Intent { flg=0x10008000 cmp=sa.urtv.home/.tilawah.MainActivity } from null (pid=5439, uid=2000) not exported from uid 10077
+java.lang.SecurityException: Permission Denial: starting Intent { flg=0x10008000 cmp=sa.urtv.home/.tilawah.MainActivity } from null (pid=5302, uid=2000) not exported from uid 10077
 	at com.android.server.wm.ActivityStackSupervisor.checkStartAnyActivityPermission(ActivityStackSupervisor.java:1032)
 	at com.android.server.wm.ActivityStarter.executeRequest(ActivityStarter.java:1001)
 	at com.android.server.wm.ActivityStarter.execute(ActivityStarter.java:671)
@@ -65,7 +65,7 @@ shot tilawah-07-adhan-tab 158871
 shot tilawah-08-adhan-volume-row 158871
 
 Exception occurred while executing 'start':
-java.lang.SecurityException: Permission Denial: starting Intent { flg=0x10008000 cmp=sa.urtv.home/.tilawah.AdhanActivity } from null (pid=5603, uid=2000) not exported from uid 10077
+java.lang.SecurityException: Permission Denial: starting Intent { flg=0x10008000 cmp=sa.urtv.home/.tilawah.AdhanActivity } from null (pid=5517, uid=2000) not exported from uid 10077
 	at com.android.server.wm.ActivityStackSupervisor.checkStartAnyActivityPermission(ActivityStackSupervisor.java:1032)
 	at com.android.server.wm.ActivityStarter.executeRequest(ActivityStarter.java:1001)
 	at com.android.server.wm.ActivityStarter.execute(ActivityStarter.java:671)
@@ -84,23 +84,23 @@ java.lang.SecurityException: Permission Denial: starting Intent { flg=0x10008000
 	at android.os.Binder.execTransact(Binder.java:1123)
 shot tilawah-09-adhan-voices 158871
 shot tilawah-10-adhan-voices-focus 158871
-shot home-now-playing 1633333
-shot home-now-playing-card-focused 1633436
-shot saver-now-playing 2051664
-shot settings-00-classic-hub 295140
-shot settings-00-classic-look 324908
-shot settings-01-lang 183101
-shot settings-02-place 182468
-shot settings-03-look 182207
-shot settings-04-look-further 247028
-shot settings-05-apps 1749623
-shot settings-06-buttons 1749623
-shot settings-07-prayer 1749623
-shot settings-08-matches-and-markets 1738262
-shot settings-09-saver 1738262
-shot settings-10-family 1744790
-shot settings-11-about 1751694
-shot settings-12-search 183005
+shot home-now-playing 1619822
+shot home-now-playing-card-focused 1621382
+shot saver-now-playing 2349324
+shot settings-00-classic-hub 297004
+shot settings-00-classic-look 326186
+shot settings-01-lang 183043
+shot settings-02-place 182406
+shot settings-03-look 182146
+shot settings-04-look-further 249585
+shot settings-05-apps 1734542
+shot settings-06-buttons 1734542
+shot settings-07-prayer 1734542
+shot settings-08-matches-and-markets 1723133
+shot settings-09-saver 1729931
+shot settings-10-family 1736103
+shot settings-11-about 1736103
+shot settings-12-search 181732
 crashes.txt
 home-00-idle.png
 home-01-top.png
