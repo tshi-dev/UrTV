@@ -163,6 +163,11 @@
             android:screenOrientation="landscape"
             android:configChanges="keyboard|keyboardHidden|navigation|orientation|screenSize|uiMode" />
         <activity
+            android:name=".MathActivity"
+            android:exported="false"
+            android:screenOrientation="landscape"
+            android:configChanges="keyboard|keyboardHidden|navigation|orientation|screenSize|uiMode" />
+        <activity
             android:name=".GamePacksActivity"
             android:exported="false"
             android:screenOrientation="landscape" />

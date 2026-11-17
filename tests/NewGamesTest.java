@@ -9,6 +9,7 @@ import sa.urtv.screensaver.games.night.NightGame;
 import sa.urtv.screensaver.games.guess.GuessGame;
 import sa.urtv.screensaver.games.draw.DrawGame;
 import sa.urtv.screensaver.games.quran.QuranItems;
+import sa.urtv.screensaver.games.maths.MathGame;
 import sa.urtv.screensaver.games.emoji.EmojiGame;
 import sa.urtv.screensaver.games.link.LinkGame;
 
@@ -307,6 +308,35 @@ public final class NewGamesTest {
         check("quran: the reciter options are four reciters' names, the right one among them", c.options().size() == 4 && new java.util.HashSet<>(c.options()).size() == 4 && c.options().get(c.rightIndex()).equals(cs.get(0).a[0]));
     }
 
+    static long eval(String e) {   // an independent check of the generated questions: evaluate the expression text on its own
+        e = e.replace("−", "-").replace("×", "*").replace("÷", "/");
+        if (e.contains("□")) { String[] p = e.split("="); long total = Long.parseLong(p[1].trim()); long known = Long.parseLong(p[0].replace("□", "").replace("+", "").trim()); return total - known; }
+        if (e.contains("?")) { String[] t = e.replace("?", "").split(","); long[] v = new long[4]; for (int i = 0; i < 4; i++) v[i] = Long.parseLong(t[i].trim()); long d = v[1] - v[0], q = v[1] / v[0];
+            if (v[2] - v[1] == d && v[3] - v[2] == d) return v[3] + d; return v[3] * q; }
+        if (e.contains("%")) { String[] p = e.split("%\\s*\\*"); return Long.parseLong(p[1].trim()) * Long.parseLong(p[0].trim()) / 100; }
+        final String f = e.replace("²", "^2");
+        return new Object() { int pos; String s = f.replace(" ", ""); long expr() { long v = term(); while (pos < s.length() && (s.charAt(pos) == '+' || s.charAt(pos) == '-')) { char o = s.charAt(pos++); long r = term(); v = o == '+' ? v + r : v - r; } return v; }
+            long term() { long v = pow(); while (pos < s.length() && (s.charAt(pos) == '*' || s.charAt(pos) == '/')) { char o = s.charAt(pos++); long r = pow(); v = o == '*' ? v * r : v / r; } return v; }
+            long pow() { long v = atom(); if (pos < s.length() && s.charAt(pos) == '^') { pos++; atom(); v = v * v; } return v; }
+            long atom() { if (s.charAt(pos) == '(') { pos++; long v = expr(); pos++; return v; } int st = pos; while (pos < s.length() && Character.isDigit(s.charAt(pos))) pos++; return Long.parseLong(s.substring(st, pos)); } }.expr();
+    }
+    static void maths() {
+        boolean allRight = true, whole = true; int n = 0; java.util.Random r = new java.util.Random(11);
+        for (int lvl = 1; lvl <= 3; lvl++) for (MathGame.Question q : MathGame.generate(lvl, 200, r)) { n++; allRight &= eval(q.expr) == q.answer; whole &= q.answer >= 0 && !q.expr.contains(".") && !q.ar.isEmpty() && !q.en.isEmpty(); }
+        check("maths: " + n + " generated questions of the three levels all have the right answer (checked by an independent evaluator), whole and not negative, in two languages", allRight && whole && n >= 400);
+        List<MathGame.Question> qs = MathGame.generate(2, 20, new java.util.Random(2)); java.util.Set<String> ex = new java.util.HashSet<>(); for (MathGame.Question q : qs) ex.add(q.expr);
+        check("maths: a round never asks the same question twice", ex.size() == qs.size() && qs.size() == 20);
+        MathGame g = new MathGame(3, MathGame.generate(1, 2, new java.util.Random(4))); long a = g.question().answer;
+        g.submit(2, String.valueOf(a), 1000); g.submit(0, "x" , 1100); g.submit(1, String.valueOf(a + 1), 1200); g.submit(0, String.valueOf(a), 1300); g.submit(0, "999", 1400);
+        check("maths: a word is not an answer, a second answer is refused, everyone in ends the question", g.gave(2) && g.gave(0) && !g.right(1) && g.right(0) && g.allIn() && g.givenBy(0) == a);
+        g.reveal();
+        check("maths: the first right answer scores 3, the next 2, a wrong one 0", g.gained[2] == 3 && g.gained[0] == 2 && g.gained[1] == 0);
+        g.next(); g.reveal(); g.next();
+        check("maths: after the last question the game ends", g.phase == MathGame.Phase.END);
+        boolean threw = false; try { new MathGame(9, MathGame.generate(1, 1, r)); } catch (IllegalArgumentException e) { threw = true; }
+        check("maths: nine players are refused (two to eight)", threw);
+    }
+
     public static void main(String[] a) throws Exception {
         forehead();
         author(a[0]);
@@ -318,6 +348,7 @@ public final class NewGamesTest {
         guess(a[5]);
         draw();
         quran(a[6], a[7]);
+        maths();
         System.exit(failed == 0 ? 0 : 1);
     }
 }

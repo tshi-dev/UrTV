@@ -12,7 +12,7 @@ def check(what, ok, extra=""):
     print(("PASS " if ok else "FAIL ") + what + ("" if ok else "  -> " + str(extra)))
     if not ok: failed += 1
 if not shutil.which("javac"): print("SKIP: no javac"); sys.exit(1)
-ENGINES = [G / "forehead/ForeheadGame.java", G / "author/AuthorGame.java", G / "closest/ClosestGame.java", G / "liar/LiarGame.java", G / "emoji/EmojiGame.java", G / "link/LinkGame.java", G / "night/NightGame.java", G / "guess/GuessGame.java", G / "draw/DrawGame.java", G / "quran/QuranItems.java", APP / "GameBundle.java", APP / "MiniJson.java"]
+ENGINES = [G / "forehead/ForeheadGame.java", G / "author/AuthorGame.java", G / "closest/ClosestGame.java", G / "liar/LiarGame.java", G / "emoji/EmojiGame.java", G / "link/LinkGame.java", G / "night/NightGame.java", G / "guess/GuessGame.java", G / "draw/DrawGame.java", G / "quran/QuranItems.java", G / "maths/MathGame.java", APP / "GameBundle.java", APP / "MiniJson.java"]
 with tempfile.TemporaryDirectory() as t:
     c = subprocess.run(["javac", "-nowarn", "-encoding", "UTF-8", "-d", t, *map(str, ENGINES), str(ROOT / "tests/NewGamesTest.java")], capture_output=True, text=True)
     check("the new games' rules compile on a plain JVM (no Android)", c.returncode == 0, c.stderr[-500:])
@@ -24,7 +24,7 @@ with tempfile.TemporaryDirectory() as t:
 def src(n): return (APP / n).read_text(encoding="utf-8")
 reg, gl, room, page = src("GameRegistry.java"), src("QuizGamesActivity.java"), src("GamePhoneRoom.java"), (ROOT / "assets/quiz/game.html").read_text(encoding="utf-8")
 manifest = (ROOT / "android/app/src/main/AndroidManifest.xml").read_text(encoding="utf-8")
-GAMES = {"forehead": "ForeheadActivity", "author": "AuthorActivity", "closest": "ClosestActivity", "liar": "LiarActivity", "emoji": "EmojiActivity", "link": "LinkActivity", "night": "NightActivity", "draw": "DrawActivity", "quran-verse": "QuranVerseActivity"}
+GAMES = {"forehead": "ForeheadActivity", "author": "AuthorActivity", "closest": "ClosestActivity", "liar": "LiarActivity", "emoji": "EmojiActivity", "link": "LinkActivity", "night": "NightActivity", "draw": "DrawActivity", "quran-verse": "QuranVerseActivity", "maths": "MathActivity"}
 for gid, act in GAMES.items():
     a = src(act + ".java")
     check(f"{gid}: in the registry (needs phones), in the filter's list, in the manifest (not exported, landscape), and a GameActivity",
@@ -80,4 +80,7 @@ check("quran-verse: the text comes only from the verified mushaf file (shared/ve
       'getAssets().open("shared/verses.json")' in qv and "QuranItems.verses(" in qv and "GamePrefs.remember(this, id(), r)" in qv and "QuizSound.LOW" not in qv and ".replace(" not in qv.split("QuranItems.verses(")[1])
 check("reciter: built but HIDDEN: an activity in the manifest, no registry entry and no filter entry until the terms of mp3quran are read (docs/GAMES-QURAN.md); it streams a short clip at play time and stores nothing",
       "QuranReciterActivity" in manifest and "QuranReciterActivity" not in reg and '"reciter"' not in reg and "setDataSource(url)" in qr and "CLIP_SECONDS * 1000L" in qr and "FileOutputStream" not in qr and "DownloadManager" not in qr)
+ma = src("MathActivity.java")
+check("maths: made by code, no bank; the numbers are typed on a number pad (a text card, self = 1); the TV shows both languages together; the phones show the same question",
+      "MathGame.generate(" in ma and ", null, 1)" in ma and "q.ar + " in ma and "q.en" in ma and "GameBundles" not in ma)
 sys.exit(1 if failed else 0)

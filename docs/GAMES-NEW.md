@@ -42,3 +42,7 @@ The phone server grows its body limit for this one route only:
 - Strokes are shown by the TV as lines on a canvas; nothing the phone sends is ever read as text, a link or a picture. The page builds no HTML from them.
 
 **«كم تقدر؟» is hidden for now:** its topic lists were written from common knowledge and are not yet checked against sources. `GuessActivity` stays in the manifest; to show it, add `new Game("guess", "كم تقدر؟", "من يسمّي أكثر في الموضوع؟", "GuessActivity", true, true)` to `GameRegistry` before the «packs» entry, `"guess"` to `PHONE_GAMES`, and the name and line to `QuizGamesActivity.WORDS`.
+
+## سباق الحساب (Math Race)
+
+Two to eight phones. Quick mental arithmetic made by code, so it is always right and never runs out (no bank). Everyone types the answer on a number pad; the first right answer scores 3, the second 2, every other right answer 1; a wrong answer costs nothing. Three levels (easy: sums, differences and tables up to 10; medium: bigger products, division, brackets, a missing number; hard: two-digit products, squares, percentages, sums of products, sequences, a difference of squares). 10, 15 or 20 questions, 15, 25 or 40 seconds each. The TV shows the question in both languages together (an instruction line in Arabic and in English), and the phones show the same question; the digits follow the person's digit setting. The tests evaluate 600 generated questions with an independent evaluator.
