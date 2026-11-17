@@ -41,7 +41,7 @@ check("the person's own values kept once (the first look chosen), put back befor
       'if (before == null) { before = presetNow(); sp.edit().putString("presetBefore", before).apply(); }' in sp and "else presetPut(before);" in sp
       and 'if (before != null) presetPut(before);' in sp and '.remove("preset").remove("presetBefore").remove("presetApplied")' in sp)
 check("a row changed after reads «مخصّص» (what the look set is kept, compared row by row); the city, the adhan, the teams and the locks are not fields",
-      '.putString("presetApplied", presetNow())' in sp and "String.format(\"مخصّص (%s، وتغيّر: %s)\"" in prefs
+      '.putString("presetApplied", presetNow())' in sp and "String.format(java.util.Locale.ROOT, \"مخصّص (%s، وتغيّر: %s)\"" in prefs
       and not any(f in fields for f in ("city", "adhan", "teams", "pin", "lock")))
 check("a TV that had «شكل كنبة» on reads «منظر وساعة», its four values kept as the person's own", 'if (!sp.contains("preset") && sp.getBoolean("couchOn", false))' in prefs
       and 'putString("preset", "couch").putString("presetBefore", before)' in prefs and 'if (PRESETS_REPLACE_COUCH) return "couch".equals(preset());' in prefs)
