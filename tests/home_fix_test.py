@@ -72,15 +72,15 @@ check("4. the screen sees the prompt close (its focus back) and the runner count
 check("4. the setup page never closes by itself: its only finish() is «تم»", act.count("finish();") == 1 and act.index("finish();") > act.index('button(S.t("تم"))'))
 # 5. the window
 oc = act[act.index("protected void onCreate(Bundle b)"):act.index("setContentView(frame);") + 30]
-check("5. a small window in the middle: 640 dp (800 for progress and result), at most 80 % of the screen's height, centred in the 5 % safe area",
-      "WINDOW_DP = 640, WINDOW_WIDE_DP = 800" in act and "WINDOW_HEIGHT = 0.80f" in act and "new WindowColumn(this, windowMaxHeight(sh))" in oc
+check("5. a small window in the middle: 560 dp for every page (4.4 compact, Compact.WINDOW_DP), at most 80 % of the screen's height, centred in the 5 % safe area",
+      "WINDOW_DP = sa.urtv.home.Compact.WINDOW_DP" in act and "WINDOW_HEIGHT = 0.80f" in act and "new WindowColumn(this, windowMaxHeight(sh))" in oc
       and "Gravity.CENTER" in oc and "Math.round(sw * 0.05f), Math.round(sh * 0.05f)" in oc and "MeasureSpec.AT_MOST" in act)
 check("5. the title stays at the top of the window and only what is under it scrolls, inside the window (no page-wide scroll that cut the card's top off)",
       "setContentView(frame);" in oc and "setContentView(scroll)" not in act and oc.index('S.t("إعداد تلفزيوني")') < oc.index("new ScrollView(this)") and "inner.addView(body" in oc)
 qb = act[act.index("private void qrBeside("):act.index("private void qrBeside(") + 1600]
 check("5. the QR on the LEFT of the screen in both languages, beside its words (the rescue block and the computer's way)",
       "row.setLayoutDirection(View.LAYOUT_DIRECTION_LTR);" in qb and qb.index("row.addView(card") < qb.index("row.addView(words")
-      and "qrBeside(words, RescueInfo.DOC_URL, 120);" in act and "qrBeside(words, HomeFails.GUIDE_URL, 120);" in act)
+      and "qrBeside(words, RescueInfo.DOC_URL, sa.urtv.home.Compact.QR_DP);" in act and "qrBeside(words, HomeFails.GUIDE_URL, sa.urtv.home.Compact.QR_DP);" in act)
 pv = text(SETUP / "SetupProgressView.java")
 check("5. the steps are plain words (no pills): the step now in the accent and bold, the others dim; no «·» between the counts and the time",
       "p.state == NOW ? look.accent : p.state == FAILED ? look.warn : look.sub" in pv and '" · "' not in pv)

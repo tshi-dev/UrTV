@@ -172,7 +172,7 @@ check("4.4 (step 88): the home step never skips for HomeFails; the count is clea
 check("HF2 (4.4): a switch that worked starts the count again; two is the limit; nothing tried writes nothing", got.get("HF2") == "HF2 DONE count=0 true false false true", got.get("HF2"))
 act = (ROOT / "android/launcher/src/main/java/sa/urtv/home/setup/SetupActivity.java").read_text(encoding="utf-8")
 check("4.4: the setup screen shows the computer's way with a QR to docs/SETUP-PROMPT.md once the switch failed twice (start and done screens)",
-      act.count("computerHelp();") == 2 and "qrBeside(words, HomeFails.GUIDE_URL, 120);" in act and "if (!HomeFails.givenUp(new FileStore(this).get(HomeFails.FILE))) return;" in act
+      act.count("computerHelp();") == 2 and "qrBeside(words, HomeFails.GUIDE_URL, sa.urtv.home.Compact.QR_DP);" in act and "if (!HomeFails.givenUp(new FileStore(this).get(HomeFails.FILE))) return;" in act
       and 'GUIDE_URL = "https://github.com/tshi-dev/UrTV/blob/master/docs/SETUP-PROMPT.md"' in (ROOT / "android/launcher/src/main/java/sa/urtv/home/setup/HomeFails.java").read_text(encoding="utf-8"))
 check("S7 (4.3.3, A17): the wizard owns the saved Wi-Fi: the start screen does not ask about it, «تخلّص من واجهة المصنع» is offered and never names the wizard",
       got.get("S7") == "S7 owns=false refusal=none wizardInPlan=false wizardOff=false", got.get("S7"))
