@@ -6,6 +6,21 @@
 
 <p align="center">An Arabic home screen and a Saudi screensaver for Android TV / Google TV, and a safe speed-up.<br>Set it up from the TV itself with one button, or from your phone or computer.</p>
 
+<p align="center">
+  <a href="https://github.com/tshi-dev/UrTV/releases/latest"><img src="https://img.shields.io/badge/Download-APK-2ea043?style=for-the-badge&logo=android&logoColor=white" alt="Download APK" height="40"></a>
+  &nbsp;
+  <img src="https://img.shields.io/badge/Downloader_code-9378345-c9a227?style=for-the-badge" alt="Downloader code 9378345" height="40">
+</p>
+
+<p align="center">
+  <a href="https://github.com/tshi-dev/UrTV/releases/latest"><img src="https://img.shields.io/github/v/release/tshi-dev/UrTV?display_name=release&label=release" alt="Latest release"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/github/license/tshi-dev/UrTV" alt="MIT licence"></a>
+  <a href="https://github.com/tshi-dev/UrTV/stargazers"><img src="https://img.shields.io/github/stars/tshi-dev/UrTV?style=flat" alt="Stars"></a>
+  <img src="https://img.shields.io/badge/Android_TV-8%2B-3ddc84?logo=android&logoColor=white" alt="Android TV 8 and newer">
+</p>
+
+<p align="center"><a href="#التثبيت-اختر-طريقة">العربية</a> | <a href="#install-pick-a-way">English</a></p>
+
 <p align="center"><img src=".github/screens/before-after-home.jpg" alt="Before: Google TV home. After: the تلفزيونك home screen" width="100%"></p>
 <p align="center"><img src=".github/screens/before-after-screensaver.jpg" alt="Before: the Google screensaver. After: شاشة تلفزيونك" width="100%"></p>
 
@@ -91,33 +106,7 @@
 
 > **Important:** installing the app alone does **not** make it the Home screen. The **setup** («جهّز كل شي», or the commands) switches the TV over and speeds it up, and you can put everything back as it was at any time.
 
-### ① The TV alone
-1. **Turn on debugging:** Settings → Device Preferences → About → press OK on **Build** 7 times, then **Developer options** → turn on **USB debugging**.
-2. **Install the Downloader app** from the TV's store, type the code **9378345** → **Install** (allow it to install apps if it asks).
-3. **Open «إعداد تلفزيوني»** from the apps row → press **«جهّز كل شي»** (Set up everything).
-4. The TV asks «Allow USB debugging?» → **Always allow**. The plan with this TV's own numbers shows before anything changes → **«ابدأ»** (Start), then let it run (it restarts twice and carries on by itself).
-
-The screens are shown above (start, the plan, done).
-
-### ② From an Android phone or an iPhone
-- **The TV:** turn on debugging as in step 1 above.
-- **Android:** install **Termux** and run the same commands as on a computer, from the phone.
-- **iPhone / iPad:** install **iSH** (slower).
-- All the steps: [`docs/PHONE-SETUP.md`](docs/PHONE-SETUP.md).
-
-### ③ From a computer (with an AI agent)
-1. **The TV:** turn on debugging as in step 1 above.
-2. **A computer** on the same Wi-Fi, with one of these:
-
-| **Codex** (OpenAI) | **Claude Code** (Anthropic) |
-|---|---|
-| Free with a ChatGPT account | Needs Claude Pro ($20/month) |
-| Download the Codex app | Download the Claude app → **Code** tab |
-| Approvals: choose **«Approve for me»** | Approvals: **Allow** for the whole task |
-
-<sub>Windows: install Git and Python first (`winget install --source winget Git.Git Python.Python.3.12`). Gemini CLI is free and reported to work; not tested by us.</sub>
-
-3. **Paste this:**
+The full steps for each way, with pictures, are in [the Arabic guide above](#التثبيت-اختر-طريقة). In short: turn on USB debugging, install the Downloader app and type **9378345**, then open «إعداد تلفزيوني» and press «جهّز كل شي». From a phone, see [docs/PHONE-SETUP.md](docs/PHONE-SETUP.md). From a computer, paste this into your AI agent:
 
 > Set up my TV with https://github.com/tshi-dev/UrTV: clone it and follow `docs/SETUP-PROMPT.md` step by step. You are on a computer on the same Wi-Fi as the TV.
 
@@ -149,19 +138,12 @@ The screens are shown above (start, the plan, done).
 
 Every feature: [docs/FEATURES.md](docs/FEATURES.md) (Arabic). Every setting with its command: [docs/SETTINGS.md](docs/SETTINGS.md)
 
-### New in 4.3
+### Latest additions
 
 | | | |
 |---|---|---|
 | <img src="docs/screenshots/43/home-football.jpg" alt="The home with the day's matches, the prayers and the weather" width="100%"> | <img src="docs/screenshots/43/match-sheet.jpg" alt="A match's card with «Watch the match» and the prayer timeline" width="100%"> | <img src="docs/screenshots/43/screensaver.jpg" alt="The screensaver: the clock, the verse of the day, the prayers and the matches" width="100%"> |
 | **The home with the day's matches** | **A match's card** | **The screensaver** |
-
-<!-- IMAGE SLOTS for real photos of 4.3 (a photo of the TV screen, nothing personal in it: no city, no names, no Wi-Fi):
-     docs/screenshots/43/hub.jpg      «تلفزيونك»: the four windows
-     docs/screenshots/43/games.jpg    the games list, or a round of one game
-     docs/screenshots/43/clean.jpg    «UrTV النظيف» with the prayer card
-     docs/screenshots/43/phone.jpg    the redesigned phone page
-     Add them as another row of the table above (the same width="100%" img style). -->
 
 ## Help
 - **Something went wrong?** «أرسل تقرير» in the settings (a QR code, nothing personal), or `optimize/share.sh --problem`.
@@ -171,10 +153,12 @@ Every feature: [docs/FEATURES.md](docs/FEATURES.md) (Arabic). Every setting with
 - AI agents: read [AGENTS.md](AGENTS.md) first, then [docs/SETUP-PROMPT.md](docs/SETUP-PROMPT.md) or [docs/SETTINGS.md](docs/SETTINGS.md).
 - Scripts, the screen's settings, the data and the build: [docs/DEVELOPERS.md](docs/DEVELOPERS.md).
 - What the apps send over the network: [docs/NETWORK.md](docs/NETWORK.md) · TV models: [docs/TVS.md](docs/TVS.md) · what we learned on real TVs: [docs/OPTIMIZE.md](docs/OPTIMIZE.md).
-- Download the apps: [apk-latest](https://github.com/tshi-dev/UrTV/releases/tag/apk-latest). Every build is also a numbered release `v<version>.<build>` (v4.0.N, v4.3.N…); `version.txt` stays `3.<build>` for older apps.
+- Download the apps: [the latest release](https://github.com/tshi-dev/UrTV/releases/latest). Release tags and build numbers: [docs/DEVELOPERS.md](docs/DEVELOPERS.md#releases-and-build-numbers).
 - [CHANGELOG.md](CHANGELOG.md) · [CONTRIBUTING.md](CONTRIBUTING.md)
 
 ## Credits
+
+UrTV is MIT-licensed; the launcher is adapted from tv-home (MIT).
 
 Photos: Unsplash photographers, listed in [docs/PHOTO-CREDITS.md](docs/PHOTO-CREDITS.md). Fonts: Thmanyah, and
 Noto Naskh Arabic for ﷺ ﴿﴾ (OFL, `assets/fonts/`). Quran text: KFGQPC Uthmanic Hafs 3.0 font and text, King Fahd Glorious Quran Printing Complex (free to use and distribute unmodified, [notice](assets/fonts/UthmanicHafs-NOTICE.txt)); «التفسير الميسر» (King Fahd Complex) via api.alquran.cloud.

@@ -1,0 +1,45 @@
+name: "Bug in the app or a script · مشكلة في التطبيق أو أداة"
+description: "Something in UrTV does not work as described · شي في تلفزيونك ما يشتغل مثل الموصوف"
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **أرسل «أرسل تقرير» أول:** الإعدادات ← «أرسل تقرير» (رمز QR، بدون أي معلومة شخصية)، أو `optimize/share.sh --problem` من الكمبيوتر. التقرير يوصلنا بموديل التلفزيون وخطوات الإعداد، وغالباً يكفي.
+        **Send «أرسل تقرير» first:** Settings → «أرسل تقرير» (a QR code, nothing personal), or `optimize/share.sh --problem` from a computer. The report carries the TV model and the setup steps, and is often all we need.
+
+        No personal data here: no IP address, serial, Wi-Fi name, user name or file path. A security problem goes through [SECURITY.md](../../SECURITY.md), not an issue.
+        لا تكتب هنا أي معلومة شخصية: عنوان IP، رقم تسلسلي، اسم الواي فاي، اسم مستخدم أو مسار ملف.
+  - type: checkboxes
+    id: report
+    attributes:
+      label: "Report · التقرير"
+      options:
+        - label: "I sent «أرسل تقرير» (or optimize/share.sh --problem) first · أرسلت «أرسل تقرير» أول"
+          required: true
+  - type: input
+    id: tv
+    attributes:
+      label: "TV model · موديل التلفزيون"
+      description: "Brand and model, e.g. TCL 55C745 · الماركة والموديل"
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: "UrTV version · إصدار تلفزيونك"
+      description: "«الإصدار الحالي» in «تحديث تلفزيوني», e.g. 4.3.2 (332) · يطلع في «تحديث تلفزيوني»"
+    validations:
+      required: true
+  - type: textarea
+    id: what
+    attributes:
+      label: "What happened · وش صار"
+      description: "What you did, what you expected, what you saw · وش سويت، ووش توقعت، ووش طلع لك"
+    validations:
+      required: true
+  - type: textarea
+    id: extra
+    attributes:
+      label: "Anything else · شي ثاني"
+      description: "A photo of the screen helps (nothing personal on it) · صورة للشاشة تساعد"

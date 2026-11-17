@@ -101,14 +101,44 @@ jobs:
             urtv-screensaver.apk
             urtv-home.apk
 
+      # the notes of apk-latest and of the numbered release: the top of this version's CHANGELOG section (about 15 lines), the build,
+      # and each APK's SHA-256. Only the notes and the titles are for people: the tags, the asset names and version.txt stay as they are
+      # (the updater reads version.txt and the tag /releases/latest points to, never a title or a body).
+      - name: Release notes
+        if: github.ref_name == 'master'
+        env:
+          NAME: ${{ steps.ver.outputs.name }}
+        run: |
+          {
+            echo "## What's new in ${NAME}"
+            echo
+            # this version's section of the CHANGELOG (or the newest one if it has none yet), without its heading, cut to 15 lines
+            awk -v v="$NAME" '
+              /^## / { n++; if (want == "" && $2 == v) want = n }
+              { sec[n] = sec[n] $0 "\n" }
+              END { k = (want != "" ? want : 1); printf "%s", sec[k] }' CHANGELOG.md \
+              | sed '1d' | sed '/./,$!d' | head -n 15
+            echo
+            echo "All the changes: [CHANGELOG.md](https://github.com/${GITHUB_REPOSITORY}/blob/${GITHUB_SHA}/CHANGELOG.md)"
+            echo
+            echo "Both apps at version ${NAME} (build ${GITHUB_RUN_NUMBER}), built from ${GITHUB_SHA}."
+            echo
+            echo "**SHA-256**"
+            echo
+            echo '```'
+            sha256sum urtv-screensaver.apk urtv-home.apk
+            echo '```'
+          } > release-notes.md
+          cat release-notes.md
+
       # fixed download links: .../releases/download/apk-latest/urtv-screensaver.apk and urtv-home.apk
       - name: Publish to the apk-latest release
         if: github.ref_name == 'master'
         uses: softprops/action-gh-release@v2
         with:
           tag_name: apk-latest
-          name: Latest APKs
-          body: "Both apps at version ${{ steps.ver.outputs.name }} (build ${{ github.run_number }}), built from ${{ github.sha }}"
+          name: UrTV ${{ steps.ver.outputs.name }} (latest)
+          body_path: release-notes.md
           fail_on_unmatched_files: true   # a name that matches nothing (a typo) must stop the publish, not publish without it
           files: |
             urtv-screensaver.apk
@@ -116,14 +146,14 @@ jobs:
             version.txt
           make_latest: true
 
-      # and every build kept under its own tag (v4.0.N: the version and the build, only in the URL; the release is titled «UrTV 4.0», the build is in the body): APK_TAG=v4.0.N optimize/install.sh all (the older ones are v3.N)
+      # and every build kept under its own tag (v4.3.N: the version and the build; the release is titled «UrTV 4.3.2 (build N)», so no two titles match): APK_TAG=v4.3.N optimize/install.sh all (the older ones are v3.N)
       - name: Publish to the numbered release
         if: github.ref_name == 'master'
         uses: softprops/action-gh-release@v2
         with:
           tag_name: v${{ steps.ver.outputs.tag }}.${{ github.run_number }}
-          name: UrTV ${{ steps.ver.outputs.name }}
-          body: "Both apps at version ${{ steps.ver.outputs.name }} (build ${{ github.run_number }}), built from ${{ github.sha }}"
+          name: UrTV ${{ steps.ver.outputs.name }} (build ${{ github.run_number }})
+          body_path: release-notes.md
           fail_on_unmatched_files: true   # a name that matches nothing (a typo) must stop the publish, not publish without it
           files: |
             urtv-screensaver.apk
