@@ -1,0 +1,13 @@
+---ROLE
+com.google.android.apps.tv.launcherx
+com.google.android.apps.tv.launcherx/.home.HomeActivity
+---A11Y
+io.github.sds100.keymapper/.system.accessibility.MyAccessibilityService
+---SAVER
+sa.urtv.screensaver/.ScreenDream
+sa.urtv.screensaver/.ScreenDream
+45000
+1
+---
+0
+mWifiInfo SSID: "ATS5G", BSSID: 9c:73:70:19:7d:b4, MAC: d0:7

@@ -3062,3 +3062,20 @@ The artifact «apks» has urtv-home.apk, urtv-screensaver.apk and **urtv-rescue.
 **Verdict: step 93 PASS for the rescue (home, packages, launcherx/setupwraith, Wi-Fi), with the screensaver note.**
 TV after the step: Google TV home, 4.3.3 apps installed — putting the owner's 4.4 setup back next.
 Back to the owner's setup after step 93: 4.3.3 (448) uninstalled, 4.4/427 + extras + rescue installed, `saver.sh show` and the dock **identical to the backup**, TV rebooted, «جهّز كل شي» again (key dialog: Select, Down, Left, Select): role sa.urtv.home, wanted yes, HOME_KEY on, add-on bound, 18 packages off, Home from YouTube → UrTV. TV asleep, muted.
+
+## step 93 (FINAL 4.3.3: run 44102716233 = #458, work/rel-433-3 cd3a4a0f) — rescue app: **PASS**
+Pictures and system lists in tester/step93b/. Backup first; the 4.4 setup undone with «تراجع» (0 off); home, screensaver and rescue **all from the same artifact** (458, the add-on uninstalled); 4.3.3 «جهّز كل شي» (Select, Down, Left, Select on the debugging dialog).
+- **After the 4.3.3 setup:** role sa.urtv.home; **21 packages off, launcherx and setupwraith among them**; screensaver ours; **`screen_off_timeout` 45000 → 1800000** (the setup changed it); accessibility = Key Mapper only; Wi-Fi ATS5G.
+- **Rescue** (opened as a family would, via its own LEANBACK launcher entry; its own «Allow USB debugging?» came once: key, Down, Left, Select): the page «إنقاذ تلفزيونك» with the explanation, the TCL/شاومي/سوني/سكاي ورث hints and one button «رجّع التلفزيون كما كان». About 15 s after Allow: **Google TV's home in front.**
+- **Checks:**
+  - launcherx and setupwraith **on**, `pm list packages -d` = **0** ✓
+  - HOME role = launcherx, `resolve-activity HOME` = `launcherx/.home.HomeActivity` ✓
+  - the 21 packages the setup turned off are **all back on** ✓ (it read them from the home's provider; the TV had no off packages of its own to keep off in this sequence)
+  - **`screen_off_timeout` restored to 45000** ✓ (what the setup changed)
+  - screensaver component: still ours (`sa.urtv.screensaver/.ScreenDream`) — it was already ours before the setup, nothing to go back to (same note as the first run)
+  - accessibility unchanged ✓; Wi-Fi ✓
+  - **Reboot**: starts normally, role launcherx, 0 packages off, Home → Google TV, Wi-Fi ✓
+  - «nothing else changed»: city and some prefs differ in `saver.sh show` only because **I uninstalled/reinstalled the home** between the runs (that wipes its settings); not the rescue.
+- **Beta fix (4.3.3):** with the beta on and no newer beta, «تحقق من التحديث» now says **«تلفزيونك محدّث: 4.3.3»** (picture 20-b2) — no more «التحديث من التلفزيون ما يشتغل». The text is «تلفزيونك محدّث», not «لا يوجد أحدث» as the step names it.
+- **Screensaver bottom strip (matches on, default look, 14 screenshots over 2 min):** text rows y 897–1026 in **every** frame, separator at the same y; the matches item changed content (e.g. «بعد ٥٠ دقيقة» → …, prayer card «العشاء ٦:٣٥») and the strip never moved ✓ (strip-start.png / strip-later.png).
+Next: the owner's 4.4 setup back on the TV.
