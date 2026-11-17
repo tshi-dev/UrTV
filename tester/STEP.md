@@ -1,10 +1,10 @@
-«▶ NOW (owner, 2026-11-17): step 91 PASSED, thank you. The owner said GO on putting the rescue app into 4.3.3. Next is step 94 (real README screenshots, quick), then step 93: check the rescue app on a TV set up by 4.3.3, as soon as the release session gives a 4.3.3 build that has urtv-rescue.apk (its run ID will be added here). Then step 90 (the Downloader code) once 4.3.3 is on apk-latest with urtv-rescue.apk. Then step 92. Step 89 stays ON HOLD. TV muted.»
+«▶ NOW (owner, 2026-11-17): step 91 PASSED, thank you. The owner said GO on putting the rescue app into 4.3.3. Next is step 93: check the rescue app on a TV set up by 4.3.3, as soon as the release session gives a 4.3.3 build that has urtv-rescue.apk (its run ID will be added here). Then step 90 (the Downloader code) once 4.3.3 is on apk-latest with urtv-rescue.apk. Then step 92. Step 89 stays ON HOLD. TV muted.»
 
 
 
 
 
-## step 94 — real screenshots for the README picture (owner: «the old pic had character, it looks real»). Do it at the first pause, before step 93 if 93 is still waiting for its build.
+## step 94 — CANCELLED (the owner keeps the old picture); do not run. Was: real screenshots for the README picture (owner: «the old pic had character, it looks real»). Do it at the first pause, before step 93 if 93 is still waiting for its build.
 The README picture is getting real screens from the TV again, but with NO MovieBox anywhere (MovieBoxPro is a piracy app). Use full 1920×1080 screencaps (`adb exec-out screencap -p`), not a photo of the screen.
 A. AFTER: the 4.4 home on the TV in «شكلك المعتاد», evening if possible.
    - The focused tile is YouTube (or Shahid).
