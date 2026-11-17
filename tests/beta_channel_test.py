@@ -60,8 +60,9 @@ check("the engine passes the beta flag, so no apk-beta release says «uptodate»
 # the workflow
 wf = text(".github/workflows/promote-beta.yml")
 check("promote-beta is by hand only, with the build as input", re.search(r"^on:\n  workflow_dispatch:\n    inputs:\n      build:", wf, re.M) is not None and "push:" not in wf and "schedule:" not in wf and "workflow_run" not in wf)
-check("it copies apk-next's files as they are (no build, no signing step)", "gh release download apk-next" in wf and "gradle" not in wf.lower() and "apksigner" not in wf and "keystore" not in wf.lower())
-check("it refuses when apk-next holds another build than the one asked for", "apk-next holds build" in wf and "exit 1" in wf)
+check("it copies the source release's files as they are (no build, no signing step)", 'gh release download "$SRC"' in wf and "gradle" not in wf.lower() and "apksigner" not in wf and "keystore" not in wf.lower())
+check("it refuses when the source holds another build than the one asked for", "$SRC holds build" in wf and "exit 1" in wf)
+check("the source is apk-next (default) or apk-latest, nothing else (4.3.4: so beta TVs also get what everyone gets)", "default: apk-next" in wf and "- apk-latest" in wf and 'case "$SRC" in apk-next|apk-latest)' in wf)
 check("it publishes the two APKs and version.txt to apk-beta, version.txt last", "urtv-screensaver.apk" in wf and "urtv-home.apk" in wf and wf.rindex("next/version.txt") > wf.rindex("next/urtv-home.apk") and "apk-beta" in wf)
 check("the apk-beta release is a pre-release and never the repository's latest", "--prerelease" in wf and "--latest=false" in wf)
 check("nothing else promotes: no other workflow writes apk-beta", not any(re.search(r"tag_name:\s*apk-beta|release\s+(edit|create|upload|delete)\s+apk-beta|--tag\s+apk-beta", p.read_text(encoding="utf-8")) for p in (ROOT / ".github/workflows").glob("*.yml") if p.name != "promote-beta.yml"))

@@ -53,6 +53,9 @@ final class ConfigSnapshot {
 
     private static volatile String savedFragment;   // what this process last wrote (or read) of the kept fragment
 
+    /** 4.3.4 follow-up: the fragment as this process last knew it, never a query (a key on the UI thread: Back): memory, else the copy on disk */
+    static String lastFragment(Context c) { String f = savedFragment; return f != null ? f : keptFragment(c); }
+
     private static String keptFragment(Context c) {
         try { return savedFragment = c.getSharedPreferences("config_last", Context.MODE_PRIVATE).getString("fragment", null); } catch (RuntimeException e) { return null; }
     }

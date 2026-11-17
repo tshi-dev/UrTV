@@ -61,7 +61,7 @@ final class UpdateNotice {
                         sp.edit().putInt("newest", build).putString("channel", channel).apply();
                         if (done != null) done.run();
                     }
-                } catch (java.io.IOException | RuntimeException ignored) {
+                } catch (RuntimeException ignored) {   // newestAt answers its own IOException (-1)
                 }
             }
         }, "update-notice").start();
