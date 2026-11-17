@@ -60,9 +60,8 @@ public final class ClosestGame {
         StringBuilder b = new StringBuilder();
         for (int i = 0; i < raw.length(); i++) {
             char c = raw.charAt(i);
-            if (c >= '٠' && c <= '٩') b.append((char) ('0' + c - '٠'));
-            else if (c >= '۰' && c <= '۹') b.append((char) ('0' + c - '۰'));
-            else if (c >= '0' && c <= '9') b.append(c);
+            int d = Character.digit(c, 10);   // Latin, Arabic-Indic and Persian digits alike: no conversion by hand
+            if (d >= 0 && c < 0x1000) b.append((char) ('0' + d));
             else if (c == ' ' || c == ',' || c == '٬' || c == '،') continue;
             else return null;
         }
