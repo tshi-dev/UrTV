@@ -2,6 +2,10 @@
 
 **Final: option 3, layered depth** (the owner's choice). `urtv-4.3.3.png` is a copy of `urtv-4.3.3-3.png`; the other files are the options that were not chosen.
 
+The same design comes in two more sizes, with the same content:
+- `urtv-4.3.3-wide.png`, 3200×1800 (16:9, shown uncropped in X's timeline): the number and the headline on the right, the three items and the update box on the left. Source: `poster-433-wide.html`.
+- `urtv-4.3.3-tall.png`, 2160×3840 (9:16, the 4.3.1 size, for stories and WhatsApp): the same vertical layout with more space. Source: `poster-433-tall.html`.
+
 `urtv-4.3.3.png` is 2160×2700 (4:5). It is in the 4.3.1 family: dark green with a gold glow, the UrTV icon at the top right, and the Downloader code at the bottom. The hero is one big gold «4.3.3» with a light sweep across it.
 
 The source is `poster-433.html`. To render it, put the IBM Plex Sans Arabic woff2 files (OFL, from `@fontsource/ibm-plex-sans-arabic`) in `a/` and screenshot the page at 2160×2700. The page names Thmanyah first, so a machine that has the app's private fonts renders it in Thmanyah; this PNG is in IBM Plex Sans Arabic because the fonts are not in this repository. The Downloader icon is cropped from the approved 4.3.1 poster.

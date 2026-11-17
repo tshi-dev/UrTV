@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<title>UrTV 4.3.3</title>
+<style>
+@font-face{font-family:'P';font-weight:400;src:url(a/ibm-plex-sans-arabic-arabic-400-normal.woff2);unicode-range:U+0600-06FF,U+0750-077F,U+FB50-FDFF,U+FE70-FEFF,U+200C-200F}
+@font-face{font-family:'P';font-weight:400;src:url(a/ibm-plex-sans-arabic-latin-400-normal.woff2);unicode-range:U+0000-00FF,U+2000-206F,U+2190-21FF}
+@font-face{font-family:'P';font-weight:500;src:url(a/ibm-plex-sans-arabic-arabic-500-normal.woff2);unicode-range:U+0600-06FF,U+0750-077F,U+FB50-FDFF,U+FE70-FEFF,U+200C-200F}
+@font-face{font-family:'P';font-weight:500;src:url(a/ibm-plex-sans-arabic-latin-500-normal.woff2);unicode-range:U+0000-00FF,U+2000-206F,U+2190-21FF}
+@font-face{font-family:'P';font-weight:600;src:url(a/ibm-plex-sans-arabic-arabic-600-normal.woff2);unicode-range:U+0600-06FF,U+0750-077F,U+FB50-FDFF,U+FE70-FEFF,U+200C-200F}
+@font-face{font-family:'P';font-weight:600;src:url(a/ibm-plex-sans-arabic-latin-600-normal.woff2);unicode-range:U+0000-00FF,U+2000-206F,U+2190-21FF}
+@font-face{font-family:'P';font-weight:700;src:url(a/ibm-plex-sans-arabic-arabic-700-normal.woff2);unicode-range:U+0600-06FF,U+0750-077F,U+FB50-FDFF,U+FE70-FEFF,U+200C-200F}
+@font-face{font-family:'P';font-weight:700;src:url(a/ibm-plex-sans-arabic-latin-700-normal.woff2);unicode-range:U+0000-00FF,U+2000-206F,U+2190-21FF}
+/* the app's fonts first (Thmanyah, where installed), IBM Plex Sans Arabic otherwise */
+:root{--gold:#E9C77F;--gold2:#C99A4A;--ink:#F4EEE2;--dim:rgba(244,238,226,.72);--line:rgba(233,199,127,.22)}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:2160px;height:2700px;overflow:hidden}
+body{direction:rtl;color:var(--ink);font-family:'Thmanyah','P',sans-serif;position:relative;
+  background:
+    radial-gradient(1400px 1000px at 18% 98%,rgba(201,154,74,.30),rgba(201,154,74,0) 70%),
+    radial-gradient(1500px 1100px at 55% 34%,rgba(233,199,127,.16),rgba(233,199,127,0) 62%),
+    linear-gradient(180deg,#123323 0%,#0C2418 42%,#081A11 100%)}
+.disp{font-family:'Thmanyah Display','P',sans-serif}
+.top{position:absolute;top:100px;right:150px;left:150px;display:flex;align-items:center;gap:36px}
+.top img{width:150px;height:150px;border-radius:34px;box-shadow:0 18px 50px rgba(0,0,0,.45)}
+.brand b{display:block;font-size:92px;font-weight:700;line-height:1}
+.brand span{display:block;font-size:40px;letter-spacing:.32em;color:var(--gold);direction:ltr;text-align:right;margin-top:12px}
+.hero{position:absolute;top:310px;left:0;right:0;text-align:center}
+.kick{font-size:56px;font-weight:600;color:var(--gold)}
+.ver{position:relative;display:inline-block;direction:ltr;font-size:420px;font-weight:700;line-height:1;letter-spacing:.02em;margin-top:0;
+  color:transparent;-webkit-background-clip:text;background-clip:text;
+  /* 4.3.3 as one even gold: a faint sheen from the top (light gold #EBCD8C at most), the same on every digit, no digit white */
+  background-image:linear-gradient(180deg,#EBCD8C 8%,#E2BC6E 46%,#CFA457 92%);
+  filter:drop-shadow(0 18px 60px rgba(233,199,127,.28))}
+.glow{position:absolute;left:50%;top:520px;width:1500px;height:420px;transform:translateX(-50%);
+  background:radial-gradient(closest-side,rgba(233,199,127,.20),rgba(233,199,127,0));pointer-events:none}
+h1{font-size:92px;font-weight:700;line-height:1.22;margin-top:24px}
+h1 em{font-style:normal;color:var(--gold)}
+.items{position:absolute;top:1150px;right:150px;left:150px}
+.it{display:flex;gap:40px;align-items:flex-start;padding:30px 0;border-top:2px solid var(--line)}
+.it:first-child{border-top:0;padding-top:0}
+.n{flex:none;width:84px;height:84px;border-radius:50%;border:3px solid var(--gold2);color:var(--gold);display:flex;align-items:center;justify-content:center;font-size:48px;font-weight:600;margin-top:4px}
+.t{font-size:60px;font-weight:700;line-height:1.3}
+.s{font-size:42px;color:var(--dim);line-height:1.45;margin-top:6px}
+.fix{font-size:42px;color:var(--dim);line-height:1.55;margin-top:6px}
+.how{position:absolute;bottom:220px;right:150px;left:150px;border-radius:40px;padding:34px 50px;display:flex;align-items:center;gap:46px;
+  background:rgba(255,255,255,.045);box-shadow:inset 0 0 0 2px rgba(233,199,127,.18)}
+.how .dl{flex:none;width:180px;height:180px;border-radius:42px;overflow:hidden}
+.how .dl img{width:198px;height:198px;margin:-9px}
+.how .q{font-size:46px;font-weight:700;color:var(--gold)}
+.how .p{font-size:40px;color:var(--dim);margin-top:4px}
+.how .code{direction:ltr;text-align:right;font-size:104px;font-weight:700;line-height:1.05;letter-spacing:4px;color:var(--gold);margin-top:12px}
+.foot{position:absolute;bottom:80px;right:150px;left:150px;display:flex;justify-content:space-between;font-size:40px;color:var(--dim);
+  border-top:2px solid var(--line);padding-top:34px}
+.foot .l{direction:ltr}
+bdi{unicode-bidi:isolate}
+
+@font-face{font-family:'BSD';font-weight:900;src:url(a/big-shoulders-display-latin-900-normal.woff2)}
+@font-face{font-family:'BSD';font-weight:800;src:url(a/big-shoulders-display-latin-800-normal.woff2)}
+@font-face{font-family:'Bebas';font-weight:400;src:url(a/bebas-neue-latin-400-normal.woff2)}
+#num{display:block;margin:0 auto;direction:ltr;unicode-bidi:isolate}
+.hero h1{margin-top:20px}
+.tvglow{position:absolute;left:50%;top:470px;width:1540px;height:640px;transform:translateX(-50%);border-radius:60px;
+  background:radial-gradient(closest-side,rgba(233,199,127,.26),rgba(233,199,127,.08) 70%,rgba(233,199,127,0));filter:blur(30px)}
+.glow{display:none}
+html,body{width:3200px;height:1800px}
+.top{top:90px;right:150px;left:auto}
+.hero{top:330px;right:120px;left:auto;width:1500px}
+.tvglow{left:auto;right:100px;top:360px;width:1540px;transform:none}
+.items{top:150px;left:150px;right:auto;width:1380px}
+.how{bottom:200px;left:150px;right:auto;width:1380px}
+.foot{bottom:70px}
+body{background:
+    radial-gradient(1400px 1000px at 10% 100%,rgba(201,154,74,.28),rgba(201,154,74,0) 70%),
+    radial-gradient(1500px 1100px at 74% 42%,rgba(233,199,127,.16),rgba(233,199,127,0) 62%),
+    linear-gradient(180deg,#123323 0%,#0C2418 42%,#081A11 100%)}
+</style>
+</head>
+<body>
+<div class="top">
+  <img src="a/urtv.png" alt="">
+  <div class="brand"><b class="disp">تلفزيونك</b><span>UrTV</span></div>
+</div>
+
+<div class="glow"></div><div class="tvglow"></div>
+<div class="hero">
+  <div class="kick">تحديث جديد</div>
+  <div style="transform:perspective(1600px) rotateX(16deg);transform-origin:50% 70%"><svg id="num" direction="ltr" width="1700" height="490" viewBox="0 0 1700 490" overflow="visible"><defs>
+<linearGradient id="face" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F6DC9C"/><stop offset=".55" stop-color="#E2BC6E"/><stop offset="1" stop-color="#C9994A"/></linearGradient>
+<linearGradient id="side" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7A5A22"/><stop offset="1" stop-color="#1F3A28"/></linearGradient>
+<filter id="soft" x="-10%" y="-10%" width="120%" height="150%"><feDropShadow dx="0" dy="22" stdDeviation="22" flood-color="#000" flood-opacity=".5"/></filter>
+</defs></svg></div>
+  <h1 class="disp">نسخة تجريبية؟<br><em>شغّلها من تلفزيونك</em></h1>
+</div>
+
+<div class="items">
+  <div class="it"><div class="n">١</div><div>
+    <div class="t">النسخ التجريبية</div>
+    <div class="s">صف جديد في تحديث تلفزيوني: الجديد يجيك قبل الكل،<br>وملاحظاتك ترسلها من التلفزيون. توقفها متى ما تبي،<br>وما يرجع تلفزيونك لنسخة أقدم.</div>
+  </div></div>
+  <div class="it"><div class="n">٢</div><div>
+    <div class="t">إنقاذ تلفزيونك</div>
+    <div class="s">تطبيق صغير، وزر واحد يرجّع التلفزيون كما كان.</div>
+  </div></div>
+  <div class="it"><div class="n">٣</div><div>
+    <div class="t">إصلاحات</div>
+    <div class="fix">أسماء الأسهم في الأسواق: النهدي، المواساة وغيرها<br>صورة شاشة التوقف ما عادت تطلع سوداء<br>الخط السفلي في شاشة التوقف ثابت ما يتحرك مع المباريات<br>تحقق من التحديث يقول بوضوح: تلفزيونك محدّث</div>
+  </div></div>
+</div>
+
+<div class="how">
+  <div class="dl"><img src="a/downloader.png" alt=""></div>
+  <div>
+    <div class="q">كيف تحدّث؟</div>
+    <div class="p">عندك التطبيق؟ الإعدادات ← تحديث تلفزيوني</div>
+    <div class="code"><bdi>9378345</bdi></div>
+    <div class="p">تركيب جديد: افتح <bdi>Downloader</bdi> واكتب الكود</div>
+  </div>
+</div>
+
+<div class="foot"><div>شاشة تلفزيونك، الواجهة الرئيسية، تلاوة وأذان</div><div class="l">github.com/tshi-dev/UrTV</div></div>
+<script>window.NUM={family:'BSD',weight:900,size:500,diamond:60,gap:24,W:1700,draw:(svg, mk, xs, ds, w) => {
+  const g = mk('g', {filter: 'url(#soft)'}); svg.appendChild(g); const y = 420, N = 30;
+  const glyph = (d, x, dy, fill, extra) => { const t = mk('text', Object.assign({x, y: y + dy, 'text-anchor': 'start', direction: 'ltr', 'font-family': 'BSD', 'font-weight': 900, 'font-size': 500, fill}, extra || {})); t.textContent = d; g.appendChild(t); };
+  const dia = (cx, dy, fill, extra) => { const s = 30, cy = y - s + dy; g.appendChild(mk('path', Object.assign({d: `M${cx} ${cy-s} L${cx+s} ${cy} L${cx} ${cy+s} L${cx-s} ${cy} Z`, fill}, extra || {}))); };
+  for (let k = N; k >= 1; k--) { const f = k === N ? '#16301F' : 'url(#side)'; ['4','3','3'].forEach((d, i) => glyph(d, xs[i], k, f)); ds.forEach(cx => dia(cx, k, f)); }
+  ['4','3','3'].forEach((d, i) => glyph(d, xs[i], 0, 'url(#face)', {stroke: '#FFF1C9', 'stroke-opacity': .5, 'stroke-width': 2}));
+  ds.forEach(cx => dia(cx, 0, 'url(#face)'));
+}};</script>
+<script>
+document.fonts.ready.then(() => {
+  const svg = document.getElementById('num'), NS = 'http://www.w3.org/2000/svg';
+  const cfg = window.NUM;
+  const mk = (t, a) => { const e = document.createElementNS(NS, t); for (const k in a) e.setAttribute(k, a[k]); return e; };
+  // measure one digit in the face
+  const probe = mk('text', {x: 0, y: 0, 'text-anchor': 'start', direction: 'ltr', 'font-family': cfg.family, 'font-weight': cfg.weight, 'font-size': cfg.size}); probe.textContent = '4';
+  svg.appendChild(probe);
+  const w4 = probe.getBBox().width; probe.textContent = '3'; const w3 = probe.getBBox().width; probe.remove();
+  const widths = [w4, w3, w3], D = cfg.diamond, G = cfg.gap;
+  const total = widths.reduce((a, b) => a + b, 0) + 2 * (D + 2 * G);
+  let x = (cfg.W - total) / 2; const xs = [], ds = [];
+  widths.forEach((w, i) => { xs.push(x); x += w; if (i < 2) { ds.push(x + G + D / 2); x += D + 2 * G; } });
+  cfg.draw(svg, mk, xs, ds, widths);
+});
+</script></body>
+</html>
