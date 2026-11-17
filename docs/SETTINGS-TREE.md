@@ -52,7 +52,7 @@ the phone page's key, «مركز التحكم» the control centre's row that op
 ——— شكل كنبة [الرئيسية]
     الخيارات: مفعّل / متوقف
     الأصل: متوقف
-    تشغيله يضبط مرة وحدة: التخطيط كنبة، الخلفية الآفاق، الساعة زجاجية، شكل التطبيقات تكبير وظل، ويحفظ اختياراتك؛ وإيقافه يرجّعها كما كانت. وتغيير أي واحد منها وهو مفعّل يبقيه مفعّلًا ويقول «مخصّص»
+    تشغيله يضبط مرة وحدة: التخطيط كنبة، الخلفية الآفاق، الساعة زجاجية، شكل التطبيقات أيقونات، ويحفظ اختياراتك؛ وإيقافه يرجّعها كما كانت. وتغيير أي واحد منها وهو مفعّل يبقيه مفعّلًا ويقول «مخصّص»
     مثال للوكيل: optimize/saver.sh couch on
       القيم المقبولة: on|off
 ——— التخطيط [الرئيسية]
@@ -133,10 +133,10 @@ the phone page's key, «مركز التحكم» the control centre's row that op
       القيم المقبولة: on|off
 —— التطبيقات
 ——— شكل التطبيقات [الرئيسية]
-    الخيارات: إطار / تكبير وظل
-    الأصل: إطار
-    مثال للوكيل: optimize/saver.sh appsstyle frame  (the default: a ring in the look's colour, the name above the tray)
-      القيم المقبولة: frame|zoom
+    الخيارات: بنرات / أيقونات / مربعات ملونة
+    الأصل: مربعات ملونة
+    مثال للوكيل: optimize/saver.sh appsstyle tiles  («مربعات ملونة», the default: today's tray of tiles, its focus as it was: the ring, or `zoom` where that was chosen)
+      القيم المقبولة: tiles|banners|icons
 ——— توهّج لون التطبيق [الرئيسية]
     مثال للوكيل: optimize/saver.sh glow light  (`off` = the default, `light` = a third of the strength, `on` = full)
       القيم المقبولة: off|light|on
@@ -626,7 +626,7 @@ the phone page's key, «مركز التحكم» the control centre's row that op
 —— شكل كنبة [الرئيسية]
    الخيارات: مفعّل / متوقف
    الأصل: متوقف
-   تشغيله يضبط مرة وحدة: التخطيط كنبة، الخلفية الآفاق، الساعة زجاجية، شكل التطبيقات تكبير وظل، ويحفظ اختياراتك؛ وإيقافه يرجّعها كما كانت. وتغيير أي واحد منها وهو مفعّل يبقيه مفعّلًا ويقول «مخصّص»
+   تشغيله يضبط مرة وحدة: التخطيط كنبة، الخلفية الآفاق، الساعة زجاجية، شكل التطبيقات أيقونات، ويحفظ اختياراتك؛ وإيقافه يرجّعها كما كانت. وتغيير أي واحد منها وهو مفعّل يبقيه مفعّلًا ويقول «مخصّص»
    مثال للوكيل: optimize/saver.sh couch on
      القيم المقبولة: on|off
 —— التخطيط [الرئيسية]
@@ -645,10 +645,10 @@ the phone page's key, «مركز التحكم» the control centre's row that op
    مثال للوكيل: optimize/saver.sh clock plain
      القيم المقبولة: plain|glass
 —— شكل التطبيقات [الرئيسية]
-   الخيارات: إطار / تكبير وظل
-   الأصل: إطار
-   مثال للوكيل: optimize/saver.sh appsstyle frame  (the default: a ring in the look's colour, the name above the tray)
-     القيم المقبولة: frame|zoom
+   الخيارات: بنرات / أيقونات / مربعات ملونة
+   الأصل: مربعات ملونة
+   مثال للوكيل: optimize/saver.sh appsstyle tiles  («مربعات ملونة», the default: today's tray of tiles, its focus as it was: the ring, or `zoom` where that was chosen)
+     القيم المقبولة: tiles|banners|icons
 —— حزم الآفاق [الرئيسية]
    الخيارات: آفاق السعودية / آفاق عالمية
    الأصل: آفاق السعودية

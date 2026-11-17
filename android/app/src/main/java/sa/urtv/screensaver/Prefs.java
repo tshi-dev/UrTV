@@ -1125,11 +1125,19 @@ final class Prefs {
     static final String[] HOME_BG_NAMES = {"صوري وحزم الصور", "الآفاق"};
     static final String[] HOME_CLOCKS = {"plain", "glass"};
     static final String[] HOME_CLOCK_NAMES = {"عادية", "زجاجية خلف الصورة"};
-    /** 4.4 «شكل التطبيقات»: how the focused app of the tray shows: a ring in the look's colour and its name above the tray (as always), or larger with a soft shadow, its name under it */
-    static final String[] HOME_APPS = {"frame", "zoom"};
-    static final String[] HOME_APPS_NAMES = {"إطار", "تكبير وظل"};
+    /**
+     * 4.4 «شكل التطبيقات», the row's three ways (the owner approved them): «بنرات» each app's TV banner, «أيقونات» each app's icon in a
+     * rounded square (the two with «تكبير وظل» and the name under the focused one, no tray), «مربعات ملونة» today's tray. Stored as
+     * "banners", "icons", or, for the tray, 4.4's first values: "frame" (the ring, the default) or "zoom" (bigger with a shadow), which
+     * the person keeps (a TV that had «تكبير وظل» keeps it on its tiles). The launcher reads the stored value (FavBar.look, FavBar.zoom).
+     */
+    static final String[] HOME_APPS = {"banners", "icons", "tiles"};
+    static final String[] HOME_APPS_NAMES = {"بنرات", "أيقونات", "مربعات ملونة"};
+    static final String[] APPS_STORED = {"banners", "icons", "frame", "zoom"};
     /** the presets: name, layout, background, clock, the apps' focus */
-    static final String[][] LOOKS = {{"urtv", "شكل تلفزيونك", "classic", "photos", "plain", "frame"}, {"couch", "شكل كنبة", "couch", "scenes", "glass", "zoom"}};
+    static final String[][] LOOKS = {{"urtv", "شكل تلفزيونك", "classic", "photos", "plain", "frame"}, {"couch", "شكل كنبة", "couch", "scenes", "glass", "icons"}};
+    /** the apps' value of a preset as stored: the same, or Couch's before «أيقونات» ("zoom": a TV set to Couch then is still on Couch) */
+    private static boolean presetApps(String want, String have) { return want.equals(have) || ("icons".equals(want) && "zoom".equals(have)); }
     private boolean oldScenes() { return "scenes".equals(sp.getString("homeLayout", "")); }
     String homeLayout() { String v = sp.getString("homeLayout", HOME_LAYOUTS[0]); return java.util.Arrays.asList(HOME_LAYOUTS).contains(v) ? v : HOME_LAYOUTS[0]; }
     void setHomeLayout(String v) {
@@ -1146,12 +1154,19 @@ final class Prefs {
     String homeClock() { String v = sp.getString("homeClock", oldScenes() ? "glass" : "plain"); return java.util.Arrays.asList(HOME_CLOCKS).contains(v) ? v : "plain"; }
     void setHomeClock(String v) { if (java.util.Arrays.asList(HOME_CLOCKS).contains(v)) sp.edit().putString("homeClock", v).apply(); }
     static String homeClockLabel(String v) { int i = java.util.Arrays.asList(HOME_CLOCKS).indexOf(v); return HOME_CLOCK_NAMES[Math.max(0, i)]; }
-    String appsStyle() { String v = sp.getString("appsStyle", "frame"); return java.util.Arrays.asList(HOME_APPS).contains(v) ? v : "frame"; }
-    void setAppsStyle(String v) { if (java.util.Arrays.asList(HOME_APPS).contains(v)) sp.edit().putString("appsStyle", v).apply(); }
-    static String appsStyleLabel(String v) { int i = java.util.Arrays.asList(HOME_APPS).indexOf(v); return HOME_APPS_NAMES[Math.max(0, i)]; }
+    /** the stored value (APPS_STORED), sent to the launcher as it is */
+    String appsStyle() { String v = sp.getString("appsStyle", "frame"); return java.util.Arrays.asList(APPS_STORED).contains(v) ? v : "frame"; }
+    /** the way it is (HOME_APPS): "banners", "icons" or "tiles" */
+    static String appsWay(String stored) { return "banners".equals(stored) || "icons".equals(stored) ? stored : "tiles"; }
+    /** a way (HOME_APPS) or a stored value (APPS_STORED); «مربعات ملونة» keeps the tiles' own focus when it is already the way */
+    void setAppsStyle(String v) {
+        if ("tiles".equals(v)) { if (!"tiles".equals(appsWay(appsStyle()))) sp.edit().putString("appsStyle", "frame").apply(); return; }
+        if (java.util.Arrays.asList(APPS_STORED).contains(v)) sp.edit().putString("appsStyle", v).apply();
+    }
+    static String appsStyleLabel(String v) { int i = java.util.Arrays.asList(HOME_APPS).indexOf(appsWay(v)); return HOME_APPS_NAMES[Math.max(0, i)]; }
     /** the preset the three choices match ("urtv", "couch"), or "" (custom) */
     String look3() {
-        for (String[] l : LOOKS) if (l[2].equals(homeLayout()) && l[3].equals(homeBg()) && l[4].equals(homeClock()) && l[5].equals(appsStyle())) return l[0];
+        for (String[] l : LOOKS) if (l[2].equals(homeLayout()) && l[3].equals(homeBg()) && l[4].equals(homeClock()) && presetApps(l[5], appsStyle())) return l[0];
         return "";
     }
     void setLook3(String key) {
@@ -1176,7 +1191,7 @@ final class Prefs {
     /** the switch's line: off, on as the preset, or on with a row changed since («مخصّص») */
     String couchLabel() {
         if (!couchOn()) return "متوقف";
-        return "couch".equals(look3()) ? "مفعّل (التخطيط كنبة، الخلفية الآفاق، الساعة زجاجية، التطبيقات تكبير وظل؛ إيقافه يرجّع اختياراتك)"
+        return "couch".equals(look3()) ? "مفعّل (التخطيط كنبة، الخلفية الآفاق، الساعة زجاجية، التطبيقات أيقونات؛ إيقافه يرجّع اختياراتك)"
             : "مفعّل (مخصّص: غيّرت صفًا من الأربعة؛ إيقافه يرجّع اختياراتك قبل التشغيل)";
     }
     static String look3Label(String key) {

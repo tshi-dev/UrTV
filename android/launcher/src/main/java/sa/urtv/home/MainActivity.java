@@ -80,6 +80,7 @@ public class MainActivity extends Activity {
         String pkg, label, category;   // category: the one it was found with, LEANBACK_LAUNCHER or LAUNCHER
         ComponentName component;
         Drawable art;
+        Drawable icon;   // 4.4 «شكل التطبيقات: أيقونات»: the launcher icon, read only for that way (art is the banner when there is one)
         boolean isBanner;
         int color;
     }
@@ -709,7 +710,7 @@ public class MainActivity extends Activity {
         // show, the first on the right, and more scroll inside it; the row never leaves it
         dockRow = new LinearLayout(this);
         dockRow.setOrientation(LinearLayout.HORIZONTAL);
-        dockRow.setGravity(Gravity.CENTER_VERTICAL | Dir.start());
+        dockRow.setGravity(Gravity.CENTER);   // 4.4 (the owner): the row centred in every way; a long one fills the tray and scrolls with the focus
         dockRow.setLayoutDirection(Dir.layout());   // the first favourite on the right in Arabic, on the left in English (tester step 20)
         dockRow.setClipChildren(false);
         dockRow.setClipToPadding(false);
@@ -1254,6 +1255,13 @@ public class MainActivity extends Activity {
             a.art = artCache.get("i:" + a.pkg);
             if (a.art == null) artCache.put("i:" + a.pkg, a.art = fitted(ri.loadIcon(pm), false));
         }
+        if (FavBar.ICONS.equals(appsLook)) {   // B: the launcher icon even where there is a banner, cached and sized as the art (fitted)
+            if (!a.isBanner) a.icon = a.art;
+            else {
+                a.icon = artCache.get("i:" + a.pkg);
+                if (a.icon == null) artCache.put("i:" + a.pkg, a.icon = fitted(ri.loadIcon(pm), false));
+            }
+        }
         a.color = sampleColor(a.pkg, a.art);
         return a;
     }
@@ -1351,13 +1359,16 @@ public class MainActivity extends Activity {
      * under the start of «كل التطبيقات» (left and right margins put the outer gap inside and the row a step off, the owner's photo).
      */
     /** A favourite's cell (FavBar): 304 wide (its 16:9 banner 170 high), 24 between two, none at the row's two ends. */
-    private LinearLayout.LayoutParams dockCell(int i, int n) { return dockCell(i, n, n); }
+    private LinearLayout.LayoutParams dockCell(int i, int n) { return dockCell(i, n, n, appsLook); }
 
     /** cell {@code i} of {@code n} in a row whose tiles are as wide as the tray's when {@code favs} favourites are shown (the watch-next rows share the tray's cells) */
-    private LinearLayout.LayoutParams dockCell(int i, int n, int favs) {
-        LinearLayout.LayoutParams p = new LinearLayout.LayoutParams(FavBar.tileW(getResources().getDisplayMetrics().heightPixels, FavBar.shown(barSetting, favs), i), -2);
-        p.setMarginStart(i == 0 ? 0 : bar(FavBar.GAP) / 2);
-        p.setMarginEnd(i == n - 1 ? 0 : bar(FavBar.GAP) - bar(FavBar.GAP) / 2);
+    private LinearLayout.LayoutParams dockCell(int i, int n, int favs) { return dockCell(i, n, favs, FavBar.TILES); }   // «أكمل المشاهدة»: the tray's cells, whatever the way
+
+    private LinearLayout.LayoutParams dockCell(int i, int n, int favs, String way) {
+        int h = getResources().getDisplayMetrics().heightPixels, gap = FavBar.gap(way, h);   // 4.4 «شكل التطبيقات»: each way its own cell
+        LinearLayout.LayoutParams p = new LinearLayout.LayoutParams(FavBar.cellW(way, h, FavBar.shown(barSetting, favs), i), -2);
+        p.setMarginStart(i == 0 ? 0 : gap / 2);
+        p.setMarginEnd(i == n - 1 ? 0 : gap - gap / 2);
         return p;
     }
 
@@ -1371,7 +1382,7 @@ public class MainActivity extends Activity {
     /** the tray is as high as its tiles with the same 24 above and below them (FavBar.trayH): its bottom stays where it was, its top follows */
     private void applyTrayHeight() {
         if (tray == null) return;
-        int h = FavBar.trayH(getResources().getDisplayMetrics().heightPixels, barShown());
+        int h = FavBar.rowH(appsLook, getResources().getDisplayMetrics().heightPixels, barShown());
         android.view.ViewGroup.LayoutParams lp = tray.getLayoutParams();
         if (lp != null && lp.height != h) { lp.height = h; tray.setLayoutParams(lp); }
     }
@@ -1412,7 +1423,10 @@ public class MainActivity extends Activity {
         box.setClipChildren(false);
         box.setClipToPadding(false);
 
-        FrameLayout card = new AspectFrame(this);
+        AspectFrame card = new AspectFrame(this);
+        final boolean icons = inDock && FavBar.ICONS.equals(appsLook) && app.icon != null;   // B: the icon's rounded square
+        if (icons) card.ratio = FavBar.aspect(FavBar.ICONS);
+        final int corner = inDock ? FavBar.radius(icons ? FavBar.ICONS : FavBar.TILES, getResources().getDisplayMetrics().heightPixels) : dp(10);
         card.setId(View.generateViewId());
         card.setFocusable(true);
         card.setClickable(true);
@@ -1420,16 +1434,20 @@ public class MainActivity extends Activity {
         card.setClipToOutline(true);
         card.setOutlineProvider(new ViewOutlineProvider() {
             @Override public void getOutline(View v, Outline o) {
-                o.setRoundRect(0, 0, v.getWidth(), v.getHeight(), inDock ? bar(FavBar.TILE_RADIUS) : dp(10));
+                o.setRoundRect(0, 0, v.getWidth(), v.getHeight(), corner);
             }
         });
         GradientDrawable bg = new GradientDrawable();
-        bg.setColor(app.isBanner ? 0xFF1C1C1E : darken(app.color, 0.45f));
+        bg.setColor(app.isBanner && !icons ? 0xFF1C1C1E : darken(app.color, 0.45f));
         card.setBackground(bg);
 
         ImageView img = new ImageView(this);
-        img.setImageDrawable(app.art);
-        if (app.isBanner) {
+        img.setImageDrawable(icons ? app.icon : app.art);
+        if (icons) {   // B: the icon filling its square, a little inside
+            img.setScaleType(ImageView.ScaleType.FIT_CENTER);
+            card.addView(img, new FrameLayout.LayoutParams(-1, -1));
+            img.setPadding(dp(10), dp(10), dp(10), dp(10));
+        } else if (app.isBanner) {
             img.setScaleType(ImageView.ScaleType.CENTER_CROP);
             card.addView(img, new FrameLayout.LayoutParams(-1, -1));
         } else {
@@ -1440,7 +1458,7 @@ public class MainActivity extends Activity {
 
         // Focus ring and sheen, drawn above the art.
         GradientDrawable ring = new GradientDrawable();
-        ring.setCornerRadius(inDock ? bar(FavBar.TILE_RADIUS) : dp(10));
+        ring.setCornerRadius(corner);
         ring.setStroke(inDock ? trayRingW() : dp(2), inDock ? trayRing() : 0xE6FFFFFF);
         ring.setOrientation(GradientDrawable.Orientation.TL_BR);
         ring.setColors(inDock && !lightNow ? new int[]{(trayRing() & 0x00FFFFFF) | 0x38000000, trayRing() & 0x00FFFFFF, trayRing() & 0x00FFFFFF} : new int[]{0x26FFFFFF, 0x00FFFFFF, 0x00FFFFFF});   // a soft glow of the ring's own colour inside it on the dark looks
@@ -2850,6 +2868,17 @@ public class MainActivity extends Activity {
     /** 4.4 «شكل التطبيقات: تكبير وظل»: the focused app's name under the tray, centred on its tile (null: hidden); made the first time it is needed */
     private TextView zoomName;
     private volatile boolean appsZoom;
+    /** 4.4 «شكل التطبيقات»: FavBar.BANNERS, ICONS or TILES (today's tray); read off the main thread by appOf */
+    private volatile String appsLook = FavBar.TILES;
+
+    /** A and B have no tray (the row stands on the photo); C wears the home's material as always; the row's height is the way's own */
+    private void applyAppsLook() {
+        if (tray == null) return;
+        tray.setBackground(FavBar.TILES.equals(appsLook) ? dockBand : null);
+        int side = FavBar.padSide(appsLook, getResources().getDisplayMetrics().heightPixels);
+        if (dockRow != null) dockRow.setPadding(side, dockRow.getPaddingTop(), side, dockRow.getPaddingBottom());
+        applyTrayHeight();
+    }
 
     private void placeZoomName(View f) {
         if (f == null) { if (zoomName != null && zoomName.getAlpha() > 0f) zoomName.animate().alpha(0f).setDuration(FavBar.MS).start(); return; }
@@ -3338,8 +3367,14 @@ public class MainActivity extends Activity {
         ampm.setText(ClockText.suffix(h, h24));
         ampm.setVisibility(h24 ? View.GONE : View.VISIBLE);
         sceneTick(cfg);
-        if (appsZoom != "zoom".equals(cfg.appsStyle)) {   // «شكل التطبيقات» changed: the focused tile takes the new look now
-            appsZoom = "zoom".equals(cfg.appsStyle);
+        String wayNow = FavBar.look(cfg.appsStyle);
+        if (!wayNow.equals(appsLook)) {   // 4.4 «شكل التطبيقات»: another way of the row: its tray, its cells and their art made again
+            appsLook = wayNow;
+            appsZoom = FavBar.zoom(cfg.appsStyle);
+            applyAppsLook();
+            buildApps();
+        } else if (appsZoom != FavBar.zoom(cfg.appsStyle)) {   // «شكل التطبيقات» changed: the focused tile takes the new look now
+            appsZoom = FavBar.zoom(cfg.appsStyle);
             View f = getCurrentFocus();
             if (f != null && dockCards.contains(f) && f.getOnFocusChangeListener() != null) f.getOnFocusChangeListener().onFocusChange(f, true);
             placeName();
@@ -4390,10 +4425,11 @@ public class MainActivity extends Activity {
 
     /** 16:9 container. */
     static final class AspectFrame extends FrameLayout {
+        float ratio = 9f / 16f;   // its height over its width: 16:9, or 1 for «أيقونات»' square
         AspectFrame(Context c) { super(c); }
         @Override protected void onMeasure(int w, int h) {
             int width = MeasureSpec.getSize(w);
-            super.onMeasure(w, MeasureSpec.makeMeasureSpec(width * 9 / 16, MeasureSpec.EXACTLY));
+            super.onMeasure(w, MeasureSpec.makeMeasureSpec(Math.round(width * ratio), MeasureSpec.EXACTLY));
         }
     }
 

@@ -328,7 +328,8 @@ public class SaverReceiver extends BroadcastReceiver {
         if (couch != null && !"on".equals(couch) && !"off".equals(couch)) return "error: couch is on or off";
         if (homeBg != null && !Arrays.asList(Prefs.HOME_BGS).contains(homeBg)) return "error: background is photos or scenes";
         if (homeClock != null && !Arrays.asList(Prefs.HOME_CLOCKS).contains(homeClock)) return "error: clock is plain or glass";
-        if (appsStyle != null && !Arrays.asList(Prefs.HOME_APPS).contains(appsStyle)) return "error: appsstyle is frame or zoom";
+        if (appsStyle != null && !Arrays.asList(Prefs.HOME_APPS).contains(appsStyle) && !Arrays.asList(Prefs.APPS_STORED).contains(appsStyle))
+            return "error: appsstyle is banners, icons or tiles (frame or zoom: tiles with that focus)";
         if (homeLayout != null && !Arrays.asList(Prefs.HOME_LAYOUTS).contains(homeLayout))
             return "error: homelayout is one of " + Prefs.join(Arrays.asList(Prefs.HOME_LAYOUTS), " ");
         String scenePacks = i.getStringExtra("scenepacks");   // 4.3.3 «حزم الآفاق»: saudi, couch, or both (comma between)

@@ -976,7 +976,7 @@
 شكل كنبة والتخطيط، والخلفية والآفاق، والساعة والنص، والتطبيقات، والبطاقات، والصور.	Couch look and layout, background and horizons, clock and text, apps, cards, and photos.
 التحكم من الجوال: تشغيله وإيقافه وربط جوال، وفي الشاشة حالته الآن	Control from the phone: turn it on or off and pair a phone; the screen shows its state now
 الشكل: %s، والإضاءة: %s	Look: %s, lighting: %s
-مفعّل (التخطيط كنبة، الخلفية الآفاق، الساعة زجاجية، التطبيقات تكبير وظل؛ إيقافه يرجّع اختياراتك)	On (layout Couch, background horizons, glass clock, apps larger with a shadow; turning it off brings your own choices back)
+مفعّل (التخطيط كنبة، الخلفية الآفاق، الساعة زجاجية، التطبيقات أيقونات؛ إيقافه يرجّع اختياراتك)	On (layout Couch, background horizons, glass clock, apps as icons; turning it off brings your own choices back)
 مفعّل (مخصّص: غيّرت صفًا من الأربعة؛ إيقافه يرجّع اختياراتك قبل التشغيل)	On (custom: you changed one of the four rows; turning it off brings back your choices from before)
 # ---- 4.4 the screensaver designs
 تصميم شاشة التوقف	Screensaver design
@@ -1021,3 +1021,6 @@
 حسب شروط الموقع: thesportsdb.com/documentation	Under the site's terms: thesportsdb.com/documentation
 بيانات للعرض فقط، حسب شروط الموقعين: coingecko.com/en/api_terms	For display only, under the two sites' terms: coingecko.com/en/api_terms
 ترخيص CC BY-SA 4.0، واسمه صغيرًا على بطاقة المسلسلات: tvmaze.com	CC BY-SA 4.0 licence, its name small on the series card: tvmaze.com
+بنرات	Banners
+أيقونات	Icons
+مربعات ملونة	Coloured tiles

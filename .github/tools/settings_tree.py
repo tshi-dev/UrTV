@@ -68,7 +68,7 @@ ACTIONS = {"اجعل UrTV الشاشة الرئيسية", "تخلّص من وا�
 # rows the code gives no command (no saver.sh case, no receiver extra): set from the TV only
 TV_ONLY = {"مسلسلات مختارة", "التحديث التلقائي للصفحة"}
 # what a row's choices cannot say by themselves
-NOTES = {"شكل كنبة": "تشغيله يضبط مرة وحدة: التخطيط كنبة، الخلفية الآفاق، الساعة زجاجية، شكل التطبيقات تكبير وظل، ويحفظ اختياراتك؛ وإيقافه يرجّعها كما كانت. وتغيير أي واحد منها وهو مفعّل يبقيه مفعّلًا ويقول «مخصّص»"}
+NOTES = {"شكل كنبة": "تشغيله يضبط مرة وحدة: التخطيط كنبة، الخلفية الآفاق، الساعة زجاجية، شكل التطبيقات أيقونات، ويحفظ اختياراتك؛ وإيقافه يرجّعها كما كانت. وتغيير أي واحد منها وهو مفعّل يبقيه مفعّلًا ويقول «مخصّص»"}
 
 
 def read(p):
@@ -118,6 +118,10 @@ def default(prefs, getter):
     return array(prefs, c.group(1))[0] if c else None
 
 
+# a stored value that means one of the choices (4.4 «شكل التطبيقات»: "frame" and "zoom", its first values, are the tiles' way: Prefs.appsWay)
+STORED_AS = {("شكل التطبيقات", "frame"): "tiles", ("شكل التطبيقات", "zoom"): "tiles"}
+
+
 def choices(prefs, row):
     if row not in CHOICES:
         return None
@@ -133,6 +137,7 @@ def choices(prefs, row):
     else:
         pairs = [(v, v) for v in rows]
     d = default(prefs, getter) if getter else pairs[0][0]
+    d = STORED_AS.get((row, d), d)
     names = [n for _, n in pairs]
     dn = next((n for v, n in pairs if v == d), None)
     return names, dn

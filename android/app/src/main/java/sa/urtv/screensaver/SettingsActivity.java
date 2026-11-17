@@ -453,7 +453,7 @@ public class SettingsActivity extends Activity {
         row("الساعة", Prefs.homeClockLabel(prefs.homeClock()), R.drawable.ic_eye, new Runnable() { public void run() {
             pickOne("الساعة", Prefs.HOME_CLOCK_NAMES, java.util.Arrays.asList(Prefs.HOME_CLOCKS).indexOf(prefs.homeClock()), i -> prefs.setHomeClock(Prefs.HOME_CLOCKS[i])); } });
         row("شكل التطبيقات", Prefs.appsStyleLabel(prefs.appsStyle()), R.drawable.ic_eye, new Runnable() { public void run() {
-            pickOne("شكل التطبيقات", Prefs.HOME_APPS_NAMES, java.util.Arrays.asList(Prefs.HOME_APPS).indexOf(prefs.appsStyle()), i -> prefs.setAppsStyle(Prefs.HOME_APPS[i])); } });
+            pickOne("شكل التطبيقات", Prefs.HOME_APPS_NAMES, java.util.Arrays.asList(Prefs.HOME_APPS).indexOf(Prefs.appsWay(prefs.appsStyle())), i -> prefs.setAppsStyle(Prefs.HOME_APPS[i])); } });
         row("حزم الآفاق", labels(Prefs.SCENE_PACKS, prefs.scenePacks(), "آفاق السعودية"), R.drawable.ic_eye,
             new Runnable() { public void run() { pickMany("scenePacks", "حزم الآفاق", Prefs.SCENE_PACKS, "بدون اختيار = آفاق السعودية"); } });
         row("بقاء كل أفق", Prefs.sceneStayLabel(prefs.sceneStay()), R.drawable.ic_eye, new Runnable() { public void run() { pickSceneStay(); } });

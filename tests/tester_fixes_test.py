@@ -119,7 +119,7 @@ check("E15/E18: the home is built again when «اللغة» changes (the heading
       and main.index("Digits.remember(this, cfg);") < main.index("if (langBuilt != null && !langBuilt.equals(S.lang()))"))
 check("E15: the apps grid heading is said in «اللغة»", 'appsLabel.setText(S.t("كل التطبيقات"));' in main and home_tsv.get("كل التطبيقات") == "All apps")
 check("E18: the favourites row is laid out by Dir (first tile on the left in English), and ◀ ▶ follow the row as drawn",
-      "dockRow.setLayoutDirection(Dir.layout());" in main and "dockRow.setGravity(Gravity.CENTER_VERTICAL | Dir.start());" in main
+      "dockRow.setLayoutDirection(Dir.layout());" in main and "dockRow.setGravity(Gravity.CENTER);" in main   # 4.4 (the owner): centred; a full row starts at its start side as before
       and "boolean rtl = row.getLayoutDirection() == View.LAYOUT_DIRECTION_RTL;" in main and "FavBar.sideStep(index, row.getChildCount(), right, rtl)" in main
       and "else if (!dockCards.isEmpty()) dockCards.get(0).requestFocus();" in main)
 

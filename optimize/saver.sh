@@ -49,7 +49,7 @@
 #   optimize/saver.sh homelayout football         the home's layout («التخطيط»): classic (our layout, the default), couch (the cards in a row above the apps, the big clock centred) or football (weather, prayers, today's games)
 #   optimize/saver.sh background scenes           the home's background («الخلفية»): photos (the photos and photo packs, the default) or scenes
 #   optimize/saver.sh clock glass                 the home's clock («الساعة»): plain (the default) or glass (behind the photo's scenery where the photo has a cut-out)
-#   optimize/saver.sh appsstyle zoom              «شكل التطبيقات»: frame (the default: a ring, the name above the tray) or zoom (the focused app larger with a soft shadow, its name under it)
+#   optimize/saver.sh appsstyle icons             «شكل التطبيقات»: tiles (the default: today's tray), banners (each app's TV banner) or icons (each app's icon); A and B no tray, centred
 #   optimize/saver.sh scenepacks saudi,couch      the scene home's packs («المظهر ← حزم الآفاق»): saudi (default, in the app), couch (downloaded once), or both
 #   optimize/saver.sh scenestay 60                how long each scene stays («بقاء كل أفق»): 10, 20 (default), 60 or 300 seconds
 #   optimize/saver.sh scenetime on                «الأفق يتبع الوقت»: the night scenes from Maghrib to Fajr, the others by day (off by default)
@@ -268,7 +268,7 @@ case "${1:-}" in
   couch)      set1 couch "${2:?usage: optimize/saver.sh couch on|off}" ;;
   background) set1 background "${2:?usage: optimize/saver.sh background photos|scenes}" ;;
   clock)      set1 clock "${2:?usage: optimize/saver.sh clock plain|glass}" ;;
-  appsstyle)  set1 appsstyle "${2:?usage: optimize/saver.sh appsstyle frame|zoom}" ;;
+  appsstyle)  set1 appsstyle "${2:?usage: optimize/saver.sh appsstyle tiles|banners|icons}" ;;
   scenepacks) set1 scenepacks "${2:?usage: optimize/saver.sh scenepacks saudi|couch|saudi,couch}" ;;
   scenestay)  set1 scenestay "${2:?usage: optimize/saver.sh scenestay 10|20|60|300}" ;;
   scenetime)  set1 scenetime "${2:?usage: optimize/saver.sh scenetime on|off}" ;;
