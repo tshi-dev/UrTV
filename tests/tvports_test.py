@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""The LG (webos/) and Samsung (tizen/) packages build, and what is in them is what the TVs need. No TV, no network.
+"""The LG (ports/webos/) and Samsung (ports/tizen/) packages build, and what is in them is what the TVs need. No TV, no network.
 
     python3 tests/tvports_test.py                 # build both, check the manifests, the files, the sizes
     python3 tests/tvports_test.py --extract DIR   # also leave each package's files in DIR/webos and DIR/tizen (tests/tvports_page.test.mjs)
@@ -18,7 +18,7 @@ import zipfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-sys.path.insert(0, str(ROOT))
+sys.path.insert(0, str(ROOT / "ports"))
 from tvports import common  # noqa: E402
 import importlib.util  # noqa: E402
 
@@ -104,14 +104,14 @@ def size_checks(label, files, package_bytes):
 extract = sys.argv[sys.argv.index("--extract") + 1] if "--extract" in sys.argv else None
 
 # ---- LG webOS
-webos = load("webos/build.py", "webos_build")
+webos = load("ports/webos/build.py", "webos_build")
 ipk = webos.build()
 members = ar_members(ipk.read_bytes())
 check("webOS: the .ipk is an ar archive of debian-binary, control.tar.gz, data.tar.gz",
       [n for n, _ in members] == ["debian-binary", "control.tar.gz", "data.tar.gz"], [n for n, _ in members])
 control = tar_files(dict(members)["control.tar.gz"]).get("control", b"").decode()
 data_tar = tar_files(dict(members)["data.tar.gz"])
-info = json.loads((ROOT / "webos/appinfo.json").read_text(encoding="utf-8"))
+info = json.loads((ROOT / "ports/webos/appinfo.json").read_text(encoding="utf-8"))
 base = f"usr/palm/applications/{info['id']}/"
 wfiles = {p[len(base):]: d for p, d in data_tar.items() if p.startswith(base)}
 check("webOS appinfo.json: id, version, type, title, main, icons, resolution",
@@ -129,7 +129,7 @@ data_checks("webOS", wfiles)
 size_checks("webOS", wfiles, ipk.stat().st_size)
 
 # ---- Samsung Tizen
-tizen = load("tizen/build.py", "tizen_build")
+tizen = load("ports/tizen/build.py", "tizen_build")
 wgt = tizen.build()
 with zipfile.ZipFile(wgt) as z:
     check("Tizen: the .wgt is a valid zip", z.testzip() is None)
@@ -153,16 +153,16 @@ check("Tizen: icon is a PNG within 117x117", (png_size(tfiles["icon.png"]) or (9
 page_checks("Tizen", tfiles)
 data_checks("Tizen", tfiles)
 size_checks("Tizen", tfiles, wgt.stat().st_size)
-check("Tizen: not signed here (the TV only takes a signed one: tizen/build.py --sign, or TizenBrew)", "author-signature.xml" not in tfiles)
+check("Tizen: not signed here (the TV only takes a signed one: ports/tizen/build.py --sign, or TizenBrew)", "author-signature.xml" not in tfiles)
 check("both packages carry the same page", wfiles["index.html"] == tfiles["index.html"] and wfiles["shell.js"] == tfiles["shell.js"])
 
 # ---- the shell runs on a browser too old for the page, to say so
-shell = (ROOT / "tvports/shell.js").read_text(encoding="utf-8")
+shell = (ROOT / "ports/tvports/shell.js").read_text(encoding="utf-8")
 code = re.sub(r"/\*.*?\*/|//[^\n]*", "", shell, flags=re.S)
 code = re.sub(r"'(?:[^'\\\n]|\\.)*'|\"(?:[^\"\\\n]|\\.)*\"", "''", code)   # the strings: new Function('... => ...') is not syntax of this file
 es6 = re.findall(r"=>|\blet\b|\bconst\b|`|\bclass\b|\.\.\.", code)
 check("shell.js is plain ES5 (it must run where the page cannot, to say so)", not es6, es6[:5])
-node = subprocess.run(["node", "--check", str(ROOT / "tvports/shell.js")], capture_output=True, text=True)
+node = subprocess.run(["node", "--check", str(ROOT / "ports/tvports/shell.js")], capture_output=True, text=True)
 check("shell.js: node --check", node.returncode == 0, node.stderr)
 
 # ---- the key codes the shell maps
@@ -170,21 +170,21 @@ for needle, why in (("461", "LG Back"), ("10009", "Samsung Back"), ("registerKey
     check(f"shell.js maps {why}", needle in shell)
 
 # ---- the installers: usage on a bad call, and they only take what they are given
-for script in ("webos/install.py", "tizen/install.py"):
+for script in ("ports/webos/install.py", "ports/tizen/install.py"):
     r = subprocess.run([sys.executable, "-I", str(ROOT / script)], capture_output=True, text=True)
     check(f"{script}: no address -> usage, exit 1, nothing tried", r.returncode == 1 and "BETA" in (r.stderr + r.stdout), r.stdout + r.stderr)
-r = subprocess.run([sys.executable, "-I", str(ROOT / "webos/install.py"), "not-an-ip"], capture_output=True, text=True)
-check("webos/install.py: something that is not an address -> usage", r.returncode == 1)
+r = subprocess.run([sys.executable, "-I", str(ROOT / "ports/webos/install.py"), "not-an-ip"], capture_output=True, text=True)
+check("ports/webos/install.py: something that is not an address -> usage", r.returncode == 1)
 
 # ---- credit and no private data
 notices = (ROOT / "THIRD_PARTY_NOTICES.md").read_text(encoding="utf-8") if (ROOT / "THIRD_PARTY_NOTICES.md").is_file() else ""
 check("THIRD_PARTY_NOTICES.md credits Free My TV (MIT) with its licence", "Free My TV" in notices and "simbasjungles/free-my-tv" in notices and "MIT" in notices
       and "Permission is hereby granted" in notices)
-for f in ("webos/build.py", "webos/install.py", "tizen/build.py", "tizen/install.py", "tvports/common.py"):
+for f in ("ports/webos/build.py", "ports/webos/install.py", "ports/tizen/build.py", "ports/tizen/install.py", "ports/tvports/common.py"):
     check(f"{f}: its header credits Free My TV", "free-my-tv" in (ROOT / f).read_text(encoding="utf-8")[:2500])
 ip = re.compile(r"\b(?:\d{1,3}\.){3}\d{1,3}\b")
-mine = [ROOT / p for p in ("tvports/shell.js", "tvports/common.py", "webos/build.py", "webos/install.py", "webos/appinfo.json", "tizen/build.py",
-                           "tizen/install.py", "tizen/config.xml", "docs/LG-SAMSUNG.md", "tests/tvports_test.py", "tests/tvports_page.test.mjs")]
+mine = [ROOT / p for p in ("ports/tvports/shell.js", "ports/tvports/common.py", "ports/webos/build.py", "ports/webos/install.py", "ports/webos/appinfo.json", "ports/tizen/build.py",
+                           "ports/tizen/install.py", "ports/tizen/config.xml", "docs/LG-SAMSUNG.md", "tests/tvports_test.py", "tests/tvports_page.test.mjs")]
 leaks = [f"{p.name}: {m}" for p in mine if p.is_file() for m in ip.findall(p.read_text(encoding="utf-8"))]
 check("no IP address in the code, the docs or the tests", not leaks, leaks)
 

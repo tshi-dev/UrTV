@@ -340,7 +340,7 @@ def go_home():
 def shots(out, report, failures):
     """the owner's question (more apps in the tray): the home at 1080p in the sand look and the dark glass look with the bar size 5, 7, 10 and all (12 apps),
     each measured with the same rules as above (inside the safe area, a 24 inset, whole tiles 24 apart, the focused tile's ring inside the tray) and with no «…» in
-    the name above; the 8 pictures are in OUT_DIR/shots for docs/shots/tray. Arabic, the focus on the first favourite."""
+    the name above; the 8 pictures are in OUT_DIR/shots (tray.yml publishes them to the data-screens branch, tray/<branch>/). Arabic, the focus on the first favourite."""
     d = out / "shots"
     d.mkdir(parents=True, exist_ok=True)
     shell("wm density 320")

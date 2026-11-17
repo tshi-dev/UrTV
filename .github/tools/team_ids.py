@@ -58,7 +58,18 @@ import urllib.request
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
-API = "https://www.thesportsdb.com/api/v1/json/123/"
+# The key: the repository secret THESPORTSDB_KEY when a workflow passes it (a paid month for the archive's history), else the free key 123.
+# It is part of every request's address, so an address is never printed or written as it is: redact() takes the key out.
+KEY = (os.environ.get("THESPORTSDB_KEY") or "").strip() or "123"
+PAID = KEY != "123"
+API = "https://www.thesportsdb.com/api/v1/json/" + KEY + "/"
+
+
+def redact(text):
+    """text with the key replaced by «KEY» (an error, a report, a log line)"""
+    return str(text).replace(KEY, "KEY") if PAID else str(text)
+
+
 WIKIDATA = "https://www.wikidata.org/w/api.php"
 SPARQL = "https://query.wikidata.org/sparql"
 ENWIKI = "https://en.wikipedia.org/w/api.php"
@@ -180,7 +191,7 @@ def fetch(url, data=None, headers=None, pause=PACE, tries=6, count="thesportsdb"
         except (urllib.error.URLError, TimeoutError):
             STATS["retried"] += 1
             time.sleep(10 * (attempt + 1))
-    raise RuntimeError("no answer: " + url[:200])
+    raise RuntimeError("no answer: " + redact(url)[:200])
 
 
 def get(path):

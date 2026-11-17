@@ -275,6 +275,10 @@ python3 tests/phone_draw_test.py   # 4.3 #53 «ارسم»: live strokes from the
 python3 tests/lang_provider_test.py   # 4.3: «اللغة» read only for UrTV Player (content://sa.urtv.home.lang/lang)
 python3 tests/match_app_test.py   # 4.3 «شاهد المباراة»: the match app and the FIND_MATCH contract
 python3 tests/update_channel_test.py
+python3 tests/beta_channel_test.py   # 4.3.3: «النسخ التجريبية», apk-beta, promote-beta.yml
+python3 tests/beta_report_test.py   # 4.3.3: «channel: beta|latest» in the report
+python3 tests/beta_notes_test.py   # 4.3.3: the one-time beta line and the crash question
+python3 tests/beta_pill_test.py   # 4.3.3: the home update pill follows the channel
 python3 tests/android_compile_test.py
 bash tests/android_compile.sh   # both apps against android-all API 34; SKIP (not a failure) when offline or the jar is not cached
 python3 tests/countdown_text_test.py

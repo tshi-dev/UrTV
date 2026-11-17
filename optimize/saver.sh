@@ -61,7 +61,7 @@
 #   optimize/saver.sh sceneweather on             «الأفق يتبع الطقس»: the fog scenes while the city is foggy (off by default)
 #   optimize/saver.sh adhanbar off                 the slim bar before the adhan (last 10 minutes, then until the iqama) on the screensaver and the home screen: on (default) or off
 #   optimize/saver.sh updatechannel next          TESTING ONLY (agents; no screen shows it): «تحديث تلفزيوني» reads the version and the APKs from the apk-next release instead
-#                                                  of apk-latest: next or latest (default). Same signature, newer-version and permission checks. Put it back to latest after
+#                                                  of apk-latest: next or latest (default). `beta` is the same as the row «النسخ التجريبية» (the apk-beta release). Same signature, newer-version and permission checks. Put it back to latest after
 #   optimize/saver.sh reciter-fav add sudais      the ★ of a reciter in «تلاوة وأذان ← القرّاء» (`remove` takes it off): favourites are listed first under «المفضلون»; ids are `optimize/music.sh reciters`'s
 #   optimize/saver.sh pagesdark off               «صفحات الأسهم والمباريات داكنة» (الشاشة الرئيسية): the home's markets and matches pages in the dark look (on, the default) or in the home's look (off)
 #   optimize/saver.sh favbar 7                    the favourites bar's size («التطبيقات والمفضلة ← تطبيقات في الشريط»): how many apps show whole at once, 5 (default) to 10, or all (every favourite, 8 in view and the rest scroll); 9 and 10 are taken as 8
@@ -288,7 +288,7 @@ case "${1:-}" in
   scenetime)  set1 scenetime "${2:?usage: optimize/saver.sh scenetime on|off}" ;;
   sceneweather) set1 sceneweather "${2:?usage: optimize/saver.sh sceneweather on|off}" ;;
   adhanbar) set1 adhanbar "${2:?usage: optimize/saver.sh adhanbar on|off}" ;;
-  updatechannel) set1 updatechannel "${2:?usage: optimize/saver.sh updatechannel next|latest   (testing only)}" ;;
+  updatechannel) set1 updatechannel "${2:?usage: optimize/saver.sh updatechannel beta|latest|next   (next is testing only)}" ;;
   reciter-fav)
     op="${2:?usage: optimize/saver.sh reciter-fav add|remove <reciter id>}"; id="${3:?usage: optimize/saver.sh reciter-fav add|remove <reciter id>}"
     case "$op" in add|remove) ;; *) echo "usage: optimize/saver.sh reciter-fav add|remove <reciter id>" >&2; exit 2 ;; esac

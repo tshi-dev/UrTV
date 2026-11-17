@@ -1,0 +1,68 @@
+name: Tidy the releases (one-off)
+
+# Run once by hand (Actions > Tidy the releases > Run workflow). With dry_run (the default) it only prints what it would do.
+#  - numbered releases (v<major>.<minor>.<build>) that share a title with another one get the form android.yml now uses:
+#    «UrTV <version> (build <build>)», the version and build read from the release's own body ("Both apps at version X (build N)");
+#  - apk-latest is titled «UrTV <version> (latest)», as android.yml titles it from the next build on;
+#  - the apk-test pre-release (a one-off Play Protect test) and its tag are deleted.
+# Only titles change: no tag, no asset, no body, no Latest flag. apk-latest, apk-next and apk-beta keep every asset, and only
+# apk-latest's title is edited. The updater reads version.txt and the tag /releases/latest points to, never a title.
+on:
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Only print what would change"
+        type: boolean
+        default: true
+
+permissions:
+  contents: write
+
+jobs:
+  tidy:
+    runs-on: ubuntu-24.04
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: ${{ github.repository }}
+      DRY_RUN: ${{ inputs.dry_run }}
+    steps:
+      - name: Plan and apply
+        run: |
+          set -euo pipefail
+          do_it() { if [ "$DRY_RUN" = "true" ]; then echo "  (dry run) $*"; else echo "  $*"; "$@" < /dev/null; fi; }
+          gh api --paginate "repos/$GH_REPO/releases?per_page=100" \
+            --jq '.[] | [.tag_name, .name, (.body // "" | gsub("[\r\n]+"; " "))] | @tsv' > releases.tsv
+          echo "$(wc -l < releases.tsv) releases"
+
+          echo "== Numbered releases whose title is shared with another one"
+          cut -f2 releases.tsv | sort | uniq -d > dup-titles.txt
+          while IFS=$'\t' read -r tag name body; do
+            [[ "$tag" =~ ^v[0-9]+\.[0-9]+\.([0-9]+)$ ]] || continue
+            grep -qxF -- "$name" dup-titles.txt || continue
+            build=${BASH_REMATCH[1]}
+            ver=$(sed -nE 's/.*Both apps at version ([0-9]+(\.[0-9]+)+) \(build [0-9]+\).*/\1/p' <<< "$body")
+            [ -n "$ver" ] || ver=${name#UrTV }
+            new="UrTV $ver (build $build)"
+            [ "$new" = "$name" ] && continue
+            echo "$tag: «$name» -> «$new»"
+            do_it gh release edit "$tag" --title "$new"
+          done < releases.tsv
+
+          echo "== apk-latest"
+          line=$(awk -F'\t' '$1 == "apk-latest"' releases.tsv)
+          if [ -n "$line" ]; then
+            name=$(cut -f2 <<< "$line"); body=$(cut -f3 <<< "$line")
+            ver=$(sed -nE 's/.*Both apps at version ([0-9]+(\.[0-9]+)+) \(build [0-9]+\).*/\1/p' <<< "$body")
+            if [ -z "$ver" ]; then echo "apk-latest: no version in its body, title left as «$name»"
+            elif [ "$name" != "UrTV $ver (latest)" ]; then
+              echo "apk-latest: «$name» -> «UrTV $ver (latest)» (title only; assets and the Latest flag stay)"
+              do_it gh release edit apk-latest --title "UrTV $ver (latest)"
+            else echo "apk-latest: already «$name»"; fi
+          fi
+
+          echo "== apk-test"
+          if awk -F'\t' '$1 == "apk-test"' releases.tsv | grep -q .; then
+            echo "apk-test: delete the release and its tag"
+            do_it gh release delete apk-test --cleanup-tag --yes
+          else echo "apk-test: already gone"; fi
+          echo "Done. apk-next and apk-beta were not touched."

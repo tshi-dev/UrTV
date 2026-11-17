@@ -49,6 +49,7 @@
     <uses-permission android:name="android.permission.REQUEST_DELETE_PACKAGES" />
 
     <!-- the screensaver (same signing key) asks what is playing, for its «يُتلى الآن» card -->
+    <permission android:name="sa.urtv.permission.RESCUE" android:protectionLevel="signature" />
     <permission
         android:name="sa.urtv.home.READ_NOW_PLAYING"
         android:protectionLevel="signature" />
@@ -624,6 +625,13 @@
             android:authorities="sa.urtv.home.lang"
             android:exported="true"
             android:permission="sa.urtv.permission.READ_LANG" />
+
+        <!-- 4.3.3 «إنقاذ تلفزيونك» (android/rescue): what our setup turned off, package names only, to the rescue app signed with our key only -->
+        <provider
+            android:name=".setup.RescueLedger"
+            android:authorities="sa.urtv.home.rescue"
+            android:exported="true"
+            android:permission="sa.urtv.permission.RESCUE" />
 
         <!-- the glass backdrop for the screensaver app's settings: read only, signature permission -->
         <provider

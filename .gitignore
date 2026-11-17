@@ -33,7 +33,7 @@ android/launcher/src/main/assets/fonts/Thmanyah*.otf
 dist/urtv.html
 .fonts-private/
 
-# the LG / Samsung packages (webos/build.py, tizen/build.py) and what the tests extract from them
+# the LG / Samsung packages (ports/webos/build.py, ports/tizen/build.py) and what the tests extract from them
 /UrTV-webos.ipk
 /UrTV-tizen.wgt
 /out/

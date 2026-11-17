@@ -61,7 +61,7 @@ public final class GlassStyle {
 
     public static Look of(boolean light) { return clearer(light ? LIGHT : DARK); }
 
-    // ---------------------------------------------------------------- the other looks («المظهر ← الشكل»; the mockups in SPEC.md)
+    // ---------------------------------------------------------------- the other looks («المظهر ← الشكل»; the mockups in docs/dev/BACKLOG.md)
     // Each keeps the same backdrop under a strong veil of its own colour, so every look reads by the same rules over every photo.
 
     /** أ · فحمي: charcoal with an amber accent; the focused tile is solid amber */

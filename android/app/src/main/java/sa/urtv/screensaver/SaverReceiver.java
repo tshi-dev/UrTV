@@ -36,7 +36,7 @@ import java.util.Locale;
  *   am broadcast -n sa.urtv.screensaver/.SaverReceiver -a sa.urtv.screensaver.PHOTOS
  *       --es op list | add --ei size BYTES | add --ei size BYTES --es path /data/local/tmp/urtv-own/in.jpg | del --ei n 1 | clear | mode --es mode mix|only
  *
- * updatechannel = latest (the default) or next: where «تحديث تلفزيوني» (the TV's screen and the phone page) and the newest-version line read the
+ * updatechannel = latest (the default), beta («النسخ التجريبية») or next: where «تحديث تلفزيوني» (the TV's screen and the phone page) and the newest-version line read the
  * version and the APKs, the apk-latest or the apk-next release. For TESTING an update only, set by agents; no screen shows it, the settings export leaves
  * it out, and every signature, newer-version and permission check is the same.
  * leagues = whole leagues (Prefs.LEAGUES, up to Prefs.MAX_LEAGUES; the English or the Arabic name; "" = none): every game of every
@@ -224,8 +224,8 @@ public class SaverReceiver extends BroadcastReceiver {
         if (adhanBar != null && !"on".equals(adhanBar) && !"off".equals(adhanBar))
             return "error: adhanbar is one of on off";
         String updateChannel = i.getStringExtra("updatechannel");
-        if (updateChannel != null && !"latest".equals(updateChannel) && !"next".equals(updateChannel))
-            return "error: updatechannel is one of latest next";
+        if (updateChannel != null && !"latest".equals(updateChannel) && !"next".equals(updateChannel) && !"beta".equals(updateChannel))
+            return "error: updatechannel is one of latest beta next";
         String prayerAdj = i.getStringExtra("prayeradj");
         if (prayerAdj != null && !"on".equals(prayerAdj) && !"off".equals(prayerAdj))
             return "error: prayeradj is one of on off";
@@ -698,7 +698,7 @@ public class SaverReceiver extends BroadcastReceiver {
         String latest = p.latestVersion();   // what Updater last saw on the release of the current channel
         int newest = Versions.buildOf(latest);
         return "version: " + Versions.displayEn(BuildConfig.MARKETING, BuildConfig.VERSION_CODE)
-            + (newest >= 0 ? " (newest: " + Versions.otherEn(BuildConfig.MARKETING, newest) + ("next".equals(p.updateChannel()) ? ", on the next channel" : "") + ")" : "")
+            + (newest >= 0 ? " (newest: " + Versions.otherEn(BuildConfig.MARKETING, newest) + ("next".equals(p.updateChannel()) ? ", on the next channel" : p.betaOn() ? ", on the beta channel" : "") + ")" : "")
             + "\ncity: " + city[0] + " (" + city[1] + ", " + city[2] + ")"
             + "\ntimezone: " + p.cityTz()
             + "\ncountry: " + p.cityCountry()

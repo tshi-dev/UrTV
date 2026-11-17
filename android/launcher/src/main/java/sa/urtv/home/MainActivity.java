@@ -317,6 +317,7 @@ public class MainActivity extends Activity {
         sa.urtv.home.phone.PhoneUpdater.homeIsUp(getApplicationContext());   // an update cover waiting in front for this home closes now
         sa.urtv.home.setup.SetupHook.homeUp(this);   // «تخلّص من واجهة المصنع»: this boot's home came up (BootGuard)
         UpdateCarry.homeShown = true;   // the carry-over after our update asks whether our home is in front
+        if (!Parental.state(this).kids) BetaNotes.maybeAsk(this);   // 4.3.3: only on the beta channel, once: after a beta update, or after a crash
         front = new java.lang.ref.WeakReference<>(this);   // TypeService's key hand-over (keyFromService)
         backExit.reset(); backGuarded = false;   // «الخروج من تلفزيونك»: a new visit, its count and its hint start again
         sa.urtv.home.tilawah.AdhanFront.home(true);   // «الأذان على شاشة التوقف فقط»: the adhan's alarm asks what is in front

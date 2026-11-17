@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: "A problem with your TV · مشكلة في تلفزيونك"
+    url: https://github.com/tshi-dev/UrTV#help
+    about: "Use «أرسل تقرير» in the settings, or optimize/share.sh --problem: anonymous, no account · استخدم «أرسل تقرير» في الإعدادات"
+  - name: "Security problem · مشكلة أمنية"
+    url: https://github.com/tshi-dev/UrTV/blob/master/SECURITY.md
+    about: "Never as a public issue: follow SECURITY.md · لا تفتح issue علني، اتبع SECURITY.md"
