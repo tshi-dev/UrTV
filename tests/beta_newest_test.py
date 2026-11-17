@@ -22,8 +22,8 @@ up = (APP / "Updater.java").read_text(encoding="utf-8")
 prep = pu.split("private static void prepare(Context c, boolean download) throws Exception {")[1].split("\n    }\n")[0]
 check("the update screen on beta reads apk-latest too and keeps the newer (the release it downloads from follows)",
       'Version latest = readVersion(UpdateRules.BASE + "version.txt");' in prep
-      and "if (!UpdateRules.betaWins(builtOf(ver), builtOf(latest))) { ver = latest; base = UpdateRules.BASE; }" in prep
-      and prep.index("betaWins") < prep.index("releaseBase = base;"))
+      and "if (!UpdateRules.betaOffered(builtOf(ver), builtOf(latest), betaDeclined(c))) { ver = latest; base = UpdateRules.BASE; }" in prep
+      and prep.index("betaOffered") < prep.index("releaseBase = base;"))
 check("…a 404 is «nothing newer» only when the chosen release is the beta one", "UpdateRules.BETA_BASE.equals(base))" in prep)
 check("the home's pill on beta: the newer of both", 'if ("beta".equals(channel)) { int latest = newestAt(UpdateRules.BASE); if (!UpdateRules.betaWins(build, latest)) build = latest; }' in un)
 check("the screensaver's version line on beta: the newer of both", "v = Versions.newerOf(v, l);" in up and "String l = latestFromAsset(VERSION_URL);" in up)

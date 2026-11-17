@@ -138,6 +138,40 @@ public class UpdateActivity extends Activity {
         }
     }
 
+    /** 4.3.4: «نسخة تجريبية»: the found update is a beta build. «حمّل» downloads and installs it; «لاحقاً» skips this build (an official one is still offered) */
+    static final String BETA_TITLE = S.n("نسخة تجريبية"), BETA_TEXT = S.n("هذا التحديث نسخة تجريبية: فيها مزايا جديدة وقد تكون فيها أخطاء. تبي تحمّلها؟"),
+            BETA_YES = S.n("حمّل"), BETA_LATER = S.n("لاحقاً");
+
+    private void askBeta() {
+        if (isFinishing() || isDestroyed()) return;
+        new android.app.AlertDialog.Builder(this)
+            .setTitle(S.tv(BETA_TITLE))
+            .setMessage(S.tv(BETA_TEXT))
+            .setPositiveButton(S.tv(BETA_YES), (d, w) -> { PhoneUpdater.betaAnswer(this, true); installGuarded(); })
+            .setNegativeButton(S.tv(BETA_LATER), (d, w) -> {
+                PhoneUpdater.betaAnswer(this, false);
+                result = null;
+                PhoneUpdater.reset();
+                PhoneUpdater.check(this);   // again without this build: an official update, or «لا يوجد أحدث»
+                render();
+            })
+            .show();
+    }
+
+    /** with a family PIN set and «قفل الإعدادات» on, an install from the TV's own screen asks for it too (the phone's does, PhoneApi) */
+    private void installGuarded() {
+        Parental.guard(UpdateActivity.this, Parental.adhanFirst(UpdateActivity.this), "تحديث تلفزيوني",
+                ParentalPolicy.targets(ParentalPolicy.UPDATE_SCREEN, null), new Runnable() {
+                    @Override public void run() { PhoneUpdater.install(UpdateActivity.this, false); }
+                }, new Runnable() { @Override public void run() { } });
+    }
+
+    @Override protected void onNewIntent(android.content.Intent i) {   // singleTop: the phone page's «ثبّت» while this screen is up
+        super.onNewIntent(i);
+        setIntent(i);
+        render();
+    }
+
     private View renderRecord() {
         if (result.kind == UpdateRecords.Kind.SUCCESS) {
             steps(4);
@@ -175,13 +209,14 @@ public class UpdateActivity extends Activity {
             case "found":       // the phone page only read version.txt: pressing downloads, checks, then installs
             case "available":
                 steps(-1);
+                if (getIntent().getBooleanExtra("ask_beta", false)) {   // 4.3.4: the phone page's «ثبّت» on a beta build: the question here, once
+                    getIntent().removeExtra("ask_beta");
+                    if (PhoneUpdater.betaQuestion()) col.post(new Runnable() { @Override public void run() { askBeta(); } });
+                }
                 return button(UpdateText.available(newest, S::tv), GOLD, new View.OnClickListener() {
                     @Override public void onClick(View v) {
-                        // with a family PIN set and «قفل الإعدادات» on, an install from the TV's own screen asks for it too (the phone's does, PhoneApi)
-                        Parental.guard(UpdateActivity.this, Parental.adhanFirst(UpdateActivity.this), "تحديث تلفزيوني",
-                                ParentalPolicy.targets(ParentalPolicy.UPDATE_SCREEN, null), new Runnable() {
-                                    @Override public void run() { PhoneUpdater.install(UpdateActivity.this, false); }
-                                }, new Runnable() { @Override public void run() { } });
+                        if (PhoneUpdater.betaQuestion()) { askBeta(); return; }   // 4.3.4: a beta build asks first (BETA_TITLE)
+                        installGuarded();
                     }
                 });
             case "waiting_owner":
