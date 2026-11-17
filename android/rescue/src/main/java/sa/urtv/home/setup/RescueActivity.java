@@ -43,36 +43,35 @@ public class RescueActivity extends Activity {
 
     @Override protected void onCreate(Bundle b) {
         super.onCreate(b);
-        LinearLayout col = new LinearLayout(this);
-        col.setOrientation(LinearLayout.VERTICAL);
-        col.setLayoutDirection(View.LAYOUT_DIRECTION_RTL);
-        col.setBackgroundColor(0xFF151619);
-        int pad = Math.round(getResources().getDisplayMetrics().widthPixels * 0.06f);
-        col.setPadding(pad, pad / 2, pad, pad / 2);
-        col.addView(text("إنقاذ تلفزيونك", 34, 0xFFECEFF3, true));
-        col.addView(text("يرجّع التلفزيون كما كان قبل UrTV: يشغّل الشاشة الأصلية ووسيط الإعداد وكل ما أوقفه إعدادنا، ويرجّع زر الرئيسية للشاشة الأصلية، ويطفي «إضافات تلفزيونك». ما يحذف شيئاً.", 18, 0xFFD6DAE0, false));
-        col.addView(text("يحتاج «تصحيح USB» مفعّلاً (الإعدادات ← تفضيلات الجهاز ← حول ← اضغط «Build» سبع مرات ← خيارات المطوّر ← تصحيح USB). لما يسألك التلفزيون «السماح بتصحيح USB؟» اختر «السماح دائماً».", 15, 0xFFD6AF6B, false));
-        button = text("رجّع التلفزيون كما كان", 26, 0xFF151619, true);
+        // 4.4 (the owner: «ONE BOX for everything»): the same box as UrTV's setup (sa.urtv.home.Box, copied in), its words read before the button
+        GradientDrawable face = new GradientDrawable();
+        face.setColor(0xFF1A1C20);
+        face.setCornerRadius(dp(22));
+        sa.urtv.home.Box page = sa.urtv.home.Box.make(this, face, 0xFFECEFF3, 0xFF9AA1AB, Typeface.DEFAULT_BOLD, View.LAYOUT_DIRECTION_RTL);
+        page.page.setBackgroundColor(0xFF151619);
+        page.title.setText("إنقاذ تلفزيونك");
+        LinearLayout col = page.content;
+        col.addView(text("يرجّع التلفزيون كما كان قبل UrTV: يشغّل الشاشة الأصلية ووسيط الإعداد وكل ما أوقفه إعدادنا، ويرجّع زر الرئيسية للشاشة الأصلية، ويطفي «إضافات تلفزيونك». ما يحذف شيئاً.", 17, 0xFFD6DAE0, false));
+        col.addView(text("يحتاج «تصحيح USB» مفعّلاً (الإعدادات ← تفضيلات الجهاز ← حول ← اضغط «Build» سبع مرات ← خيارات المطوّر ← تصحيح USB). لما يسألك التلفزيون «السماح بتصحيح USB؟» اختر «السماح دائماً».", 14, 0xFFD6AF6B, false));
+        button = text("رجّع التلفزيون كما كان", 17, 0xFF151619, true);
         button.setGravity(Gravity.CENTER);
         button.setFocusable(true);
         button.setClickable(true);
         GradientDrawable g = new GradientDrawable();
         g.setColor(0xFFF2F2F2);
-        g.setCornerRadius(dp(18));
+        g.setCornerRadius(dp(12));
         button.setBackground(g);
         button.setOnFocusChangeListener((v, has) -> { g.setStroke(has ? dp(4) : 0, 0xFF7FB2FF); });
         button.setOnClickListener(v -> start());
-        LinearLayout.LayoutParams bp = new LinearLayout.LayoutParams(-1, dp(84));
-        bp.topMargin = dp(24);
+        LinearLayout.LayoutParams bp = new LinearLayout.LayoutParams(-1, dp(44));   // 4.4 compact: 44 dp, 18 sp
+        bp.topMargin = dp(16);
         col.addView(button, bp);
         state = text("", 17, 0xFFECEFF3, false);
         LinearLayout.LayoutParams sp = new LinearLayout.LayoutParams(-1, -2);
-        sp.topMargin = dp(20);
+        sp.topMargin = dp(12);
         col.addView(state, sp);
-        ScrollView sv = new ScrollView(this);
-        sv.addView(col);
-        setContentView(sv);
-        button.requestFocus();
+        setContentView(page.page);
+        page.focusFirst(button);
     }
 
     private void say(final String s) { runOnUiThread(() -> state.setText(s)); }

@@ -156,8 +156,9 @@ case "${1:-}:$#" in
     case "$after" in *"$svc"*) ;; *) echo "!! enabled_accessibility_services: this TV did not take $what (it says ${after:-nothing})" ;; esac
     # 4.4: in the list is not running. A TCL's TclAppBoot refused the first bind («forbid bind service sa.urtv.extras/…»), and a force-stopped add-on is not bound
     # again by itself: Android's own answer (Bound services) is read, and while ours is not in it the list goes off and on again (a change Android listens to),
-    # twice at most. A TV that does not say what is bound is left as it is (nothing guessed). TCL's boot manager is also told the add-on may start (AUTO_START).
-    "$PY" -I optimize/tv.py "appops set sa.urtv.extras AUTO_START allow" > /dev/null 2>&1 || true
+    # twice at most. A TV that does not say what is bound is left as it is (nothing guessed). TCL's boot manager is also told the add-on may start and be
+    # bound at boot (AUTO_START, ASSOC_START), written to disk at once (appops write-settings: AppOps flushes 30 min later, a restart before lost it; 4.4 T3).
+    "$PY" -I optimize/tv.py "appops set sa.urtv.extras AUTO_START allow 2> /dev/null; appops set sa.urtv.extras ASSOC_START allow 2> /dev/null; appops write-settings 2> /dev/null" > /dev/null 2>&1 || true
     bound=unknown
     for try in 1 2 3; do
       sleep 2

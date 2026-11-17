@@ -23,13 +23,13 @@ def text(p):
 
 
 ua, pu = text(HOME / "UpdateActivity.java"), text(HOME / "phone/PhoneUpdater.java")
-check("the card: a solid surface of the look's dialog fill, 760 dp at most and inside the 5 % safe area plus 16 dp",
-      "GlassPaint.fill(this, GlassStyle.over(look.dialog, look.base), 22, look.line)" in ua and "Math.min(dp(760)" in ua and "Math.round(h * 0.05f) + dp(16)" in ua)
+check("the card: a solid surface of the look's dialog fill, the one box of the setup and install screens (4.4: Box, the same size always, in the 5 % safe area)",
+      "GlassPaint.fill(this, GlassStyle.over(look.dialog, look.base), 22, look.line)" in ua and "box = Box.make(this," in ua and "setContentView(box.page);" in ua)
 check("the steps «تنزيل · تحقق · تثبيت · تم» are a line and four dots (a custom view), laid out the way the language reads, with no pill",
       'S.t("تنزيل"), S.t("تحقق"), S.t("تثبيت"), S.t("تم")' in ua and "private final class Stepper extends View" in ua and "boolean rtl = Dir.rtl();" in ua and "setBackground" not in ua.split("class Stepper")[1].split("// ----")[0])
 check("the bar: an 8 dp track with the share in the accent colour, «٤٥٪ · ١٢٫٦ من ٢٨٫٠ م.ب» under it; nothing when the size is unknown",
       "new CalmBar(this, look.line, GOLD)" in ua and 'S.t("%s من %s م.ب"' in ua and "if (total <= 0) return;" in ua)
-check("the one button of a state is 56 dp high, full width, 24 dp below what it answers", "new LinearLayout.LayoutParams(-1, dp(56))" in ua and "lp.topMargin = dp(24);" in ua)
+check("the one button of a state is 44 dp high (4.4 compact), full width, 16 dp below what it answers", "new LinearLayout.LayoutParams(-1, dp(Compact.BUTTON_DP))" in ua and "lp.topMargin = dp(16);" in ua)
 check("every state and button is still there (checking, downloading, uptodate, found/available, waiting_owner, done, error with its reasons, the record of an earlier update)",
       all(w in ua for w in ('case "checking":', 'case "downloading"', 'case "uptodate":', 'case "found":', 'case "available":', 'case "waiting_owner":', 'case "done":', 'case "error":',
                             'case "offline":', 'case "need_permission":', 'case "declined":', 'case "failed":', "renderRecord()", "doneButton()", "checkButton()", "aiMessage()")))
@@ -49,11 +49,11 @@ check("the pictures workflow: this branch and master with the hook, glass and sa
 
 # the setup screen in the same language (4.3)
 sa_ = text(HOME / "setup/SetupActivity.java")
-check("setup: one card on a solid surface in the safe area (4.4 the owner: a small window, 640 dp, 800 for the progress and the result; tests/home_fix_test.py), the steps a vertical rail (done tick, now ring with its line under it, next hollow), «٧ من ١٥» with the calm bar",
-      "GlassPaint.fill(this, sa.urtv.home.GlassStyle.over(look.dialog, look.base), 22, look.line)" in sa_ and "WINDOW_DP = 640, WINDOW_WIDE_DP = 800" in sa_ and "new SetupProgressView(this, look" in sa_
+check("setup: one card on a solid surface in the safe area (4.4: the one box, Box; tests/compact_test.py), the steps one row of plain words, «٧ من ١٥» with the calm bar",
+      "GlassPaint.fill(this, sa.urtv.home.GlassStyle.over(look.dialog, look.base), 22, look.line)" in sa_ and "page = sa.urtv.home.Box.make(this," in sa_ and "new SetupProgressView(this, look" in sa_
       and 'S.t("%s من %s خطوة"' in sa_ and "new CalmBar(c, look.line, look.accent)" in (HOME / "setup/SetupProgressView.java").read_text(encoding="utf-8"))
-check("setup: the restart notice is said before the TV restarts (the measuring steps, on a TV that survives it), one primary button of 56 dp and the other choices quiet",
-      'S.t("سيعيد التلفزيون التشغيل الآن، وسيكمل بنفسه.")' in sa_ and "pv.restarts" in sa_ and "t.setMinHeight(dp(56));" in sa_ and sa_.count("quiet(S.t(") >= 4)
+check("setup: the restart notice is said before the TV restarts (the measuring steps, on a TV that survives it), one primary button of 44 dp (4.4 compact) and the other choices quiet",
+      'S.t("سيعيد التلفزيون التشغيل الآن، وسيكمل بنفسه.")' in sa_ and "pv.restarts" in sa_ and "t.setMinHeight(dp(sa.urtv.home.Compact.BUTTON_DP));" in sa_ and sa_.count("quiet(S.t(") >= 4)
 check("setup: the behaviour is the runner's, untouched: the same go/confirm/cancel calls", all(w in sa_ for w in ("SetupRunner.get().confirm(new java.util.ArrayList<>(picks))", "SetupRunner.get().cancel()", "go(false)", "go(true)", "dismissed = e;")))
 dbg = text(ROOT / "android/launcher/src/debug/java/sa/urtv/home/setup/DebugSetupShot.java")
 check("setup: the picture hook is debug only (src/debug), and sets the runner's fields, nothing runs", "SetupRunner.class.getDeclaredField(name)" in dbg and "DebugSetupShot" not in text(ROOT / "android/launcher/src/main/AndroidManifest.xml"))

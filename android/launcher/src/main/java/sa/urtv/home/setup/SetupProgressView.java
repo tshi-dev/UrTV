@@ -62,32 +62,33 @@ final class SetupProgressView extends LinearLayout {
         this.look = look;
         this.medium = medium;
         this.regular = regular;
-        setOrientation(HORIZONTAL);
+        // 4.4 compact (the owner: «toooo much»): in the 560 dp window the five steps are ONE row of plain words above the work (no side rail)
+        setOrientation(VERTICAL);
         setLayoutDirection(Dir.layout());
         stepper = new LinearLayout(c);
-        stepper.setOrientation(VERTICAL);
+        stepper.setOrientation(HORIZONTAL);
         stepper.setLayoutDirection(Dir.layout());
-        addView(stepper, new LayoutParams(dp(232), -2));
+        addView(stepper, new LayoutParams(-1, -2));
 
         FrameLayout main = new FrameLayout(c);
-        LayoutParams mp = new LayoutParams(0, -2, 1f);
-        mp.setMarginStart(dp(32));
+        LayoutParams mp = new LayoutParams(-1, -2);
+        mp.topMargin = dp(16);
         addView(main, mp);
 
         running = panel();
         breath = new Breath(c);
         running.addView(breath, new LayoutParams(dp(96), dp(24)));
-        stepName = text(34, true, look.text);
+        stepName = text(22, true, look.text);
         running.addView(stepName, margin(dp(20), 0));
-        doing = text(19, false, look.sub);
+        doing = text(17, false, look.sub);
         doing.setMinLines(2);
         running.addView(doing, margin(dp(8), 0));
         LinearLayout row = new LinearLayout(c);
         row.setLayoutDirection(Dir.layout());
         row.setGravity(Gravity.BOTTOM);
-        percent = text(64, true, look.accent);
+        percent = text(22, true, look.accent);
         row.addView(percent, new LayoutParams(-2, -2));
-        counts = text(19, false, look.sub);
+        counts = text(14, false, look.sub);
         LayoutParams cp = new LayoutParams(0, -2, 1f);
         cp.setMarginStart(dp(24));
         cp.bottomMargin = dp(10);
@@ -95,23 +96,23 @@ final class SetupProgressView extends LinearLayout {
         running.addView(row, margin(dp(32), 0));
         bar = new CalmBar(c, look.line, look.accent);
         running.addView(bar, margin(dp(8), 0));
-        elapsed = text(17, false, look.sub);
+        elapsed = text(14, false, look.sub);
         running.addView(elapsed, margin(dp(16), 0));
-        restart = text(18, true, look.text);
-        restart.setPadding(dp(16), dp(12), dp(16), dp(12));
+        restart = text(17, true, look.text);
+        restart.setPadding(dp(12), dp(8), dp(12), dp(8));
         restart.setBackground(GlassPaint.fill(c, GlassStyle.over(look.dialog, look.base), 14, look.accent));
         restart.setVisibility(GONE);
         running.addView(restart, margin(dp(16), 0));
         main.addView(running);
 
         promptCard = panel();
-        promptTitle = text(28, true, look.text);
+        promptTitle = text(17, true, look.text);
         promptCard.addView(promptTitle, margin(0, 0));
         art = new DialogArt(c);
-        promptCard.addView(art, margin(dp(16), 0, dp(264)));   // 4.4: the dialog and the four keys under it
-        promptHint = text(24, true, look.accent);
+        promptCard.addView(art, margin(dp(12), 0, dp(220)));   // 4.4: the dialog and the four keys under it
+        promptHint = text(17, true, look.accent);
         promptCard.addView(promptHint, margin(dp(16), 0));
-        promptLate = text(18, false, look.warn);
+        promptLate = text(14, false, look.warn);
         promptLate.setVisibility(GONE);
         promptCard.addView(promptLate, margin(dp(12), 0));
         promptCard.setVisibility(GONE);
@@ -120,10 +121,10 @@ final class SetupProgressView extends LinearLayout {
         resultCard = panel();
         resultCard.setGravity(Gravity.CENTER_VERTICAL | Dir.start());
         badge = new CheckBadge(c);
-        resultCard.addView(badge, new LayoutParams(dp(88), dp(88)));
-        resultText = text(32, true, look.text);
+        resultCard.addView(badge, new LayoutParams(dp(56), dp(56)));
+        resultText = text(22, true, look.text);
         resultCard.addView(resultText, margin(dp(24), 0));
-        resultSub = text(19, false, look.sub);
+        resultSub = text(14, false, look.sub);
         resultCard.addView(resultSub, margin(dp(8), 0));
         resultCard.setVisibility(GONE);
         main.addView(resultCard);
@@ -134,20 +135,22 @@ final class SetupProgressView extends LinearLayout {
         List<Phase> ph = m.phases;
         for (int i = 0; i < ph.size(); i++) {
             Phase p = ph.get(i);
-            LinearLayout r = new LinearLayout(getContext());
-            r.setOrientation(HORIZONTAL);
-            r.setLayoutDirection(Dir.layout());
-            r.setGravity(Gravity.CENTER_VERTICAL);
-            boolean aboveDone = i > 0 && ph.get(i - 1).state == DONE;
-            r.addView(new Mark(getContext(), p.state, i == 0, i == ph.size() - 1, aboveDone), new LayoutParams(dp(36), dp(64)));
-            // 4.4 (the owner: no pills): plain words, the step now in the accent (gold) and bold, the others dim; a failed one in red
-            TextView t = text(p.state == NOW ? 24 : 21, p.state == NOW, p.state == NOW ? look.accent : p.state == FAILED ? look.warn : look.sub);
+            // 4.4 (the owner: no pills; compact): plain words in one row, the step now in the accent (gold), bold, with a thin line under it; the others dim,
+            // a failed one in red; nothing rounded behind them
+            LinearLayout w = new LinearLayout(getContext());
+            w.setOrientation(VERTICAL);
+            TextView t = text(17, p.state == NOW, p.state == NOW ? look.accent : p.state == FAILED ? look.warn : look.sub);
             t.setAlpha(p.state == WAIT ? 0.7f : 1f);
             t.setText(p.name);
-            LayoutParams tp = new LayoutParams(0, -2, 1f);
-            tp.setMarginStart(dp(12));
-            r.addView(t, tp);
-            stepper.addView(r, new LayoutParams(-1, dp(64)));
+            w.addView(t, new LayoutParams(-2, -2));
+            View line = new View(getContext());
+            line.setBackgroundColor(p.state == NOW ? look.accent : 0x00000000);
+            LayoutParams lp = new LayoutParams(-1, dp(2));
+            lp.topMargin = dp(4);
+            w.addView(line, lp);
+            LayoutParams wp = new LayoutParams(-2, -2);
+            if (i > 0) wp.setMarginStart(dp(20));
+            stepper.addView(w, wp);
         }
         boolean showPrompt = m.prompt && !m.finished;
         promptCard.setVisibility(showPrompt ? VISIBLE : GONE);
@@ -192,9 +195,8 @@ final class SetupProgressView extends LinearLayout {
         LinearLayout p = new LinearLayout(getContext());
         p.setOrientation(VERTICAL);
         p.setLayoutDirection(Dir.layout());
-        p.setPadding(dp(32), dp(28), dp(32), dp(28));
+        p.setPadding(dp(20), dp(16), dp(20), dp(16));
         p.setBackground(GlassPaint.panel(getContext(), look, 20));
-        p.setMinimumHeight(dp(400));
         return p;
     }
 
@@ -354,18 +356,18 @@ final class SetupProgressView extends LinearLayout {
 
         /** one key of the remote: its word in a thin outline (a keycap, not a button of this screen) and its number above */
         private void key(Canvas c, String word, int n, float cx, float cy, float w) {
-            float h = dp(36);
+            float h = dp(32);
             RectF k = new RectF(cx - w / 2f, cy - h / 2f, cx + w / 2f, cy + h / 2f);
             p.setStyle(Paint.Style.STROKE);
             p.setStrokeWidth(dp(2));
             p.setColor(look.accent);
             c.drawRoundRect(k, dp(6), dp(6), p);
-            label(c, word, cx, cy, 17, look.text, true);
-            label(c, String.valueOf(n), cx, k.top - dp(12), 13, look.sub, false);
+            label(c, word, cx, cy, 14, look.text, true);
+            label(c, String.valueOf(n), cx, k.top - dp(12), 14, look.sub, false);
         }
 
         @Override protected void onDraw(Canvas c) {
-            float w = getWidth(), h = getHeight(), dw = Math.min(w, dp(520)), left = (w - dw) / 2f, top = dp(4), dh = h - dp(84);
+            float w = getWidth(), h = getHeight(), dw = Math.min(w, dp(440)), left = (w - dw) / 2f, top = dp(4), dh = h - dp(80);
             RectF box = new RectF(left, top, left + dw, top + dh);
             p.setStyle(Paint.Style.FILL);
             p.setColor(0xFF2A2C31);
@@ -374,7 +376,7 @@ final class SetupProgressView extends LinearLayout {
             p.setStrokeWidth(dp(1));
             p.setColor(0x33FFFFFF);
             c.drawRoundRect(box, dp(18), dp(18), p);
-            label(c, title, box.centerX(), box.top + dh * 0.2f, 22, 0xFFF1F1F3, true);
+            label(c, title, box.centerX(), box.top + dh * 0.2f, 17, 0xFFF1F1F3, true);
             // the box «السماح دائماً من هذا الكمبيوتر», ticked (step 1)
             float cy = box.top + dh * 0.45f, bs = dp(22), bx = box.left + dp(32);
             RectF tick = new RectF(bx, cy - bs / 2f, bx + bs, cy + bs / 2f);
@@ -393,16 +395,16 @@ final class SetupProgressView extends LinearLayout {
             p.setStyle(Paint.Style.FILL);
             p.setColor(0xFFE1E2E6);
             p.setTypeface(regular);
-            p.setTextSize(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 17, getResources().getDisplayMetrics()));
+            p.setTextSize(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 14, getResources().getDisplayMetrics()));
             c.drawText(always, tick.right + dp(12), cy - (p.ascent() + p.descent()) / 2f, p);
             // the two buttons as the TV places them: «السماح» on the LEFT (step 4), «إلغاء» on the right (where DOWN lands, step 2)
-            float bw = (dw - dp(72)) / 2f, bh = dp(48), by = box.bottom - dp(20) - bh;
+            float bw = (dw - dp(72)) / 2f, bh = dp(40), by = box.bottom - dp(16) - bh;
             RectF a = new RectF(box.left + dp(24), by, box.left + dp(24) + bw, by + bh);
             RectF b = new RectF(box.right - dp(24) - bw, by, box.right - dp(24), by + bh);
             p.setStyle(Paint.Style.FILL);
             p.setColor(0x14FFFFFF);
             c.drawRoundRect(b, dp(12), dp(12), p);
-            label(c, cancel, b.centerX(), b.centerY(), 18, 0xFFB9BBC2, false);
+            label(c, cancel, b.centerX(), b.centerY(), 14, 0xFFB9BBC2, false);
             float grow = dp(4) + dp(4) * t;
             p.setStyle(Paint.Style.STROKE);
             p.setStrokeWidth(dp(3));
@@ -412,16 +414,16 @@ final class SetupProgressView extends LinearLayout {
             p.setStyle(Paint.Style.FILL);
             p.setColor(look.accent);
             c.drawRoundRect(a, dp(12), dp(12), p);
-            label(c, allow, a.centerX(), a.centerY(), 20, look.light ? 0xFFFFFFFF : 0xFF14161A, true);
+            label(c, allow, a.centerX(), a.centerY(), 17, look.light ? 0xFFFFFFFF : 0xFF14161A, true);
             // the remote's four keys in order, in the reading direction of the screen: اختيار، تحت (▼)، يسار (◀)، اختيار
             String[] keys = {ok, "▼", "◀", ok};
-            float kw = dp(84), gap = dp(28), total = 4 * kw + 3 * gap, ky = box.bottom + dp(48);
+            float kw = dp(72), gap = dp(20), total = 4 * kw + 3 * gap, ky = box.bottom + dp(44);
             boolean rtl = Dir.rtl();
             for (int i = 0; i < 4; i++) {
                 int slot = rtl ? 3 - i : i;
                 float kx = (w - total) / 2f + slot * (kw + gap) + kw / 2f;
                 key(c, keys[i], i + 1, kx, ky, kw);
-                if (i < 3) label(c, rtl ? "←" : "→", kx + (rtl ? -1 : 1) * (kw / 2f + gap / 2f), ky, 16, look.sub, false);
+                if (i < 3) label(c, rtl ? "←" : "→", kx + (rtl ? -1 : 1) * (kw / 2f + gap / 2f), ky, 14, look.sub, false);
             }
         }
     }

@@ -50,6 +50,10 @@ public class ExtrasA11yService extends AccessibilityService {
     private final Handler main = new Handler(Looper.getMainLooper());
     private final SettingsKey settingsKey = new SettingsKey();
     private final HomeWatch watch = new HomeWatch();
+    /** 4.4 R2g: the last app in front that is not a stock home (to tell a Home press over an app from a fight over ours), the one Home was pressed over, our last bring */
+    private String prevPkg, pressedOver;
+    private long broughtAt;
+    private boolean broughtAgain;
     /** our home is in front (from the windows that come to the front) */
     private volatile boolean homeFront;
     /** a stock home answers HOME (it then answers the Settings key itself) */
@@ -97,6 +101,14 @@ public class ExtrasA11yService extends AccessibilityService {
         if (e == null || e.getEventType() != AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED || e.getPackageName() == null) return;
         String pkg = e.getPackageName().toString(), cls = e.getClassName() == null ? null : e.getClassName().toString();
         if (pkg.equals("com.android.systemui") || pkg.equals("android")) return;   // a volume bar or a system dialog over the app: the app in front did not change
+        String before = prevPkg;   // 4.4 R2g: the app in front before this window (kept in memory only, never logged)
+        if (!stockPackages.contains(pkg)) prevPkg = pkg;
+        long t = System.currentTimeMillis();
+        if (!pkg.equals(HOME_PKG) && !stockPackages.contains(pkg) && HomeWatch.bringAgain(pkg, pressedOver, broughtAt, broughtAgain, t)) {
+            broughtAgain = true;   // the app Home was pressed over put its own screen back right after our bring (YouTube): ours once more, once
+            bringOurs(22);
+            return;
+        }
         boolean front = pkg.equals(HOME_PKG);
         if (front != homeFront) {
             homeFront = front;
@@ -108,19 +120,30 @@ public class ExtrasA11yService extends AccessibilityService {
         // brings ours while the person's home is ours: Android's default (the role), or the setup's word (WANTED) when the TV took the role back
         boolean on = watchOn(this), chosen = oursChosen(), wantedNow = wanted(this), homeScreen = HomeWatch.homeScreen(pkg, cls, stockHomes);
         long now = System.currentTimeMillis();
-        boolean bring = homeScreen && watch.decide(on, pkg, cls, stockHomes, chosen || wantedNow, now);
+        boolean fight = before == null || before.equals(HOME_PKG);   // 4.4 R2g: the stock home over OUR home is a fight; over another app, the person's press
+        boolean bring = homeScreen && watch.decide(on, pkg, cls, stockHomes, chosen || wantedNow, now, fight);
+        watchLog(fight ? 23 : 24);
         // fixed words only (the log never names a package or a class): which rule matched, then the decision
         watchLog(stockHomes.contains(pkg + "/" + cls) ? 6 : homeScreen ? 7 : 8);
         watchLog(chosen ? (wantedNow ? 9 : 10) : (wantedNow ? 11 : 12));
         watchLog(bring ? 13 : !homeScreen ? 14 : !on ? 15 : !(chosen || wantedNow) ? 16 : watch.paused(now) ? 17 : 18);
-        if (bring) {
-            try {
-                startActivity(new Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_HOME).setComponent(new ComponentName(HOME_PKG, HOME_PKG + ".MainActivity"))
-                    .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED));
-                Log.i("UrTVWatch", "home=brought");
-            } catch (RuntimeException ex) {
-                Log.i("UrTVWatch", "home=failed");
-            }
+        if (bring && bringOurs(21)) {
+            broughtAt = System.currentTimeMillis();
+            broughtAgain = false;
+            pressedOver = before != null && !before.equals(HOME_PKG) ? before : null;
+        }
+    }
+
+    /** our home in front; {@code said}: the watchLog line on success */
+    private boolean bringOurs(int said) {
+        try {
+            startActivity(new Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_HOME).setComponent(new ComponentName(HOME_PKG, HOME_PKG + ".MainActivity"))
+                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED));
+            watchLog(said);
+            return true;
+        } catch (RuntimeException ex) {
+            Log.i("UrTVWatch", "home=failed");
+            return false;
         }
     }
 
@@ -148,6 +171,10 @@ public class ExtrasA11yService extends AccessibilityService {
             case 17: Log.i("UrTVWatch", "decision paused"); break;
             case 18: Log.i("UrTVWatch", "decision left"); break;
             case 19: Log.i("UrTVWatch", "wanted=yes"); break;
+            case 21: Log.i("UrTVWatch", "home=brought"); break;
+            case 22: Log.i("UrTVWatch", "the app came back after our bring brought again"); break;
+            case 23: Log.i("UrTVWatch", "came over ours counted"); break;
+            case 24: Log.i("UrTVWatch", "came over an app a press not counted"); break;
             default: Log.i("UrTVWatch", "wanted=no"); break;
         }
     }

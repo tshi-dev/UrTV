@@ -162,12 +162,17 @@ check("S2: a TV switched the old way: the stock home, the wizard and the helper 
 check("S2: only once: a second start turns nothing on and says nothing", got.get("S2_twice") == "S2_twice true extra_enables=0", got.get("S2_twice"))
 check("HF0 (4.4): the Home key still opens the stock home after the role is ours (Google TV): the switch waits for the add-on's watch, not counted yet, the stock home NOT given the role back yet",
       (got.get("HF0") or "").startswith("HF0 FAILED pending=true role=sa.urtv.home fails_after_first=null"), got.get("HF0"))
-check("HF (4.4): the home switch failed twice on this TV: the third try is not made (SKIPPED with «جرّب الإعداد بمساعد ذكي من الكمبيوتر», not one role asked)",
-      got.get("HF") == "HF FAILED FAILED SKIPPED count=2 third_line=true third_asked=0", got.get("HF"))
+check("HF (4.4, step 88 T1): the home switch failed twice on this TV: the third run STILL tries (never skipped for old failures: on Google TV the add-on is the way), the count stays for the start screen's guide",
+      got.get("HF") == "HF FAILED FAILED FAILED count=2 third_line=false third_asked=1", got.get("HF"))
+eng_src = (ROOT / "android/launcher/src/main/java/sa/urtv/home/setup/SetupEngine.java").read_text(encoding="utf-8")
+hook_src2 = (ROOT / "android/launcher/src/main/java/sa/urtv/home/setup/SetupHook.java").read_text(encoding="utf-8")
+check("4.4 (step 88): the home step never skips for HomeFails; the count is cleared by «تراجع» and once after an update (another versionCode)",
+      "HomeFails.givenUp" not in eng_src and "clearFile(HomeFails.FILE);" in eng_src[eng_src.index("Result undo()"):]
+      and "clearOldFails(app);" in hook_src2 and "sa.urtv.home.BuildConfig.VERSION_CODE" in hook_src2)
 check("HF2 (4.4): a switch that worked starts the count again; two is the limit; nothing tried writes nothing", got.get("HF2") == "HF2 DONE count=0 true false false true", got.get("HF2"))
 act = (ROOT / "android/launcher/src/main/java/sa/urtv/home/setup/SetupActivity.java").read_text(encoding="utf-8")
 check("4.4: the setup screen shows the computer's way with a QR to docs/SETUP-PROMPT.md once the switch failed twice (start and done screens)",
-      act.count("computerHelp();") == 2 and "qrBeside(words, HomeFails.GUIDE_URL, 120);" in act and "if (!HomeFails.givenUp(new FileStore(this).get(HomeFails.FILE))) return;" in act
+      act.count("computerHelp();") == 2 and "qrBeside(words, HomeFails.GUIDE_URL, sa.urtv.home.Compact.QR_DP);" in act and "if (!HomeFails.givenUp(new FileStore(this).get(HomeFails.FILE))) return;" in act
       and 'GUIDE_URL = "https://github.com/tshi-dev/UrTV/blob/master/docs/SETUP-PROMPT.md"' in (ROOT / "android/launcher/src/main/java/sa/urtv/home/setup/HomeFails.java").read_text(encoding="utf-8"))
 check("S7 (4.3.3, A17): the wizard owns the saved Wi-Fi: the start screen does not ask about it, «تخلّص من واجهة المصنع» is offered and never names the wizard",
       got.get("S7") == "S7 owns=false refusal=none wizardInPlan=false wizardOff=false", got.get("S7"))

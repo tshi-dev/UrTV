@@ -82,7 +82,7 @@ check("every branch has its sentence: up to date, offline, available, permission
       all(w in act for w in ["UpdateText.upToDate(", "UpdateText.OFFLINE", "UpdateText.available(", "UpdateText.NEED_PERMISSION", "UpdateText.AI_MESSAGE", "UpdateText.NOT_DONE", "UpdateText.done("]), "")
 check("the permission button opens the system screen, and if it can't be opened the message about the AI assistant follows",
       "openPermissionScreen(" in act and "permissionScreenFailed()" in act, "")
-check("the repository address is small, under the message", re.search(r'UpdateText\.REPO,? ?[^;]*12,', act.replace('"⁦" + ', "").replace(' + "⁩"', "")) is not None, "")
+check("the repository address is small (14 sp: 4.4 the one secondary style), under the message", re.search(r'UpdateText\.REPO,? ?[^;]*14,', act.replace('"⁦" + ', "").replace(' + "⁩"', "")) is not None, "")
 check("the screen reads the record once at its start (take) and an update running in this process is not mistaken for a leftover",
       "UpdateRecords.take(" in act and "isBusy()" in text(JAVA / "MainActivity.java"), "")
 main = text(JAVA / "MainActivity.java")

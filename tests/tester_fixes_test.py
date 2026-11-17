@@ -95,7 +95,7 @@ home_tsv = dict(l.split("\t", 1) for l in text(ROOT / "i18n/en/home.tsv").splitl
 fixed = re.findall(r'(?:text|button|quiet)\((?:digits\()?S\.t\("([^"]+)"\)', done)
 check("E17: the done screen's 13 fixed lines go through S.t (none left as a bare Arabic literal)", len(fixed) == 12 and 'add(text("' not in done and 'button("' not in done, (len(fixed), fixed))
 check("E17: every one has its English in i18n/en/setup.tsv (the title in home.tsv)", all(f in setup_tsv for f in fixed) and "إعداد تلفزيوني" in home_tsv
-      and 'text(S.t("إعداد تلفزيوني")' in act, [f for f in fixed if f not in setup_tsv])
+      and 'page.title.setText(S.t("إعداد تلفزيوني"));' in act, [f for f in fixed if f not in setup_tsv])
 runner = text(HOME / "setup/SetupRunner.java")
 endof = runner[runner.index("static End endOf("):runner.index("A cut connection said")]
 ends = re.findall(r'S\.n\("([^"]+)"\)', act[act.index("static final String[] ENDS"):act.index("private void buildDone(")])

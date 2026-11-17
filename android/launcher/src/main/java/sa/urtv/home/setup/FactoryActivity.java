@@ -47,21 +47,13 @@ public class FactoryActivity extends Activity {
     protected void onCreate(Bundle b) {
         super.onCreate(b);
         getWindow().addFlags(android.view.WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);   // a screen that sleeps mid-wait shows no «Allow USB debugging?» (the tester's build 266)
-        ScrollView scroll = new ScrollView(this);
-        look = GlassSource.page(this, scroll);
-        scroll.setVerticalScrollBarEnabled(false);
-        scroll.setFillViewport(true);
-        FrameLayout frame = new FrameLayout(this);
-        scroll.addView(frame, new FrameLayout.LayoutParams(-1, -1));
-        int w = getResources().getDisplayMetrics().widthPixels, h = getResources().getDisplayMetrics().heightPixels;
-        frame.setPadding(Math.round(w * 0.05f), Math.round(h * 0.05f) + dp(16), Math.round(w * 0.05f), Math.round(h * 0.05f) + dp(16));
-        col = new LinearLayout(this);
-        col.setOrientation(LinearLayout.VERTICAL);
-        col.setLayoutDirection(Dir.layout());
-        col.setPadding(dp(40), dp(32), dp(40), dp(32));
-        col.setBackground(GlassPaint.fill(this, GlassStyle.over(look.dialog, look.base), 22, look.line));
-        frame.addView(col, new FrameLayout.LayoutParams(Math.min(dp(980), w - 2 * Math.round(w * 0.05f)), -2, Gravity.CENTER));
-        setContentView(scroll);
+        // 4.4 (the owner: «ONE BOX for everything»): the same box as the setup's (sa.urtv.home.Box): one size, the page's title fixed, the rest scrolls inside
+        FrameLayout probe = new FrameLayout(this);
+        look = GlassSource.page(this, probe);
+        box = sa.urtv.home.Box.make(this, GlassPaint.fill(this, GlassStyle.over(look.dialog, look.base), 22, look.line), look.text, look.sub, null, Dir.layout());
+        box.page.setBackground(probe.getBackground());
+        col = box.content;
+        setContentView(box.page);
         if (new FileStore(this).get(SetupEngine.FACTORY) != null && new FileStore(this).get(SetupEngine.FACTORY).startsWith("on")) showOn();
         else intro();
     }
@@ -74,11 +66,11 @@ public class FactoryActivity extends Activity {
     /** one OK on the settings' row lands here, not on a check: a plain description and two buttons, the focus on «رجوع»; nothing starts until «ابدأ» */
     private void intro() {
         col.removeAllViews();
-        col.addView(text(S.t("تخلّص من واجهة المصنع"), 30, "Medium", look.text), lp(dp(12)));
-        col.addView(text(S.t("هذي الخطوة تعطّل (ما تحذف) تطبيقات واجهة المصنع في تلفزيونك، ويصير UrTV هو الأساس."), 20, "Regular", look.sub), lp(dp(8)));
-        col.addView(text(S.t("أول شيء نفحص التلفزيون ونعرض لك بالضبط وش بيتعطّل، وما نغيّر شيء قبل ما تتأكد مرتين."), 20, "Regular", look.sub), lp(dp(8)));
-        col.addView(text(S.t("قد يظهر على الشاشة سؤال «السماح بتصحيح USB؟»: اضغط «سماح»."), 20, "Regular", look.sub), lp(dp(8)));
-        col.addView(text(S.t("وتقدر ترجّع كل شيء بضغطة وحدة."), 20, "Regular", look.sub), lp(dp(16)));
+        page(S.t("تخلّص من واجهة المصنع"), look.text);
+        col.addView(text(S.t("هذي الخطوة تعطّل (ما تحذف) تطبيقات واجهة المصنع في تلفزيونك، ويصير UrTV هو الأساس."), 17, "Regular", look.sub), lp(dp(8)));
+        col.addView(text(S.t("أول شيء نفحص التلفزيون ونعرض لك بالضبط وش بيتعطّل، وما نغيّر شيء قبل ما تتأكد مرتين."), 17, "Regular", look.sub), lp(dp(8)));
+        col.addView(text(S.t("قد يظهر على الشاشة سؤال «السماح بتصحيح USB؟»: اضغط «سماح»."), 17, "Regular", look.sub), lp(dp(8)));
+        col.addView(text(S.t("وتقدر ترجّع كل شيء بضغطة وحدة."), 17, "Regular", look.sub), lp(dp(16)));
         LinearLayout row = row();
         View back = button(S.t("رجوع"), v -> finish());
         row.addView(back, bw(false));
@@ -140,12 +132,12 @@ public class FactoryActivity extends Activity {
 
     private void plan() {
         col.removeAllViews();
-        col.addView(text(S.t("تخلّص من واجهة المصنع"), 30, "Medium", look.text), lp(dp(8)));
-        col.addView(text(S.t("تعطيل لا حذف: ما يُحذف شيء، وكل ما نعطّله يرجع بضغطة وحدة."), 20, "Medium", look.accent), lp(dp(12)));
-        col.addView(text(S.t("هذا اللي بنعطّله في هذا التلفزيون بالضبط:"), 20, "Regular", look.sub), lp(dp(8)));
-        col.addView(text(names(offer.packages), 18, "Regular", look.text), lp(dp(12)));
-        col.addView(text(S.t("يبقى محميًّا ولا نلمسه: الواي فاي والبلوتوث والصوت والبث (Chromecast وAirPlay) ومداخل HDMI ولوحات المفاتيح وكل ما في قائمة الخصائص المحمية."), 18, "Regular", look.sub), lp(dp(12)));
-        col.addView(text(S.t("للتراجع: «رجّع واجهة المصنع» في هذي الشاشة نفسها، ويرجع تلقائيًا لو توقف تلفزيونك مرتين عند التشغيل. اترك تصحيح USB شغّالًا ما دام هذا مفعّلًا."), 18, "Regular", look.sub), lp(dp(16)));
+        page(S.t("تخلّص من واجهة المصنع"), look.text);
+        col.addView(text(S.t("تعطيل لا حذف: ما يُحذف شيء، وكل ما نعطّله يرجع بضغطة وحدة."), 17, "Medium", look.accent), lp(dp(12)));
+        col.addView(text(S.t("هذا اللي بنعطّله في هذا التلفزيون بالضبط:"), 17, "Regular", look.sub), lp(dp(8)));
+        col.addView(text(names(offer.packages), 17, "Regular", look.text), lp(dp(12)));
+        col.addView(text(S.t("يبقى محميًّا ولا نلمسه: الواي فاي والبلوتوث والصوت والبث (Chromecast وAirPlay) ومداخل HDMI ولوحات المفاتيح وكل ما في قائمة الخصائص المحمية."), 17, "Regular", look.sub), lp(dp(12)));
+        col.addView(text(S.t("للتراجع: «رجّع واجهة المصنع» في هذي الشاشة نفسها، ويرجع تلقائيًا لو توقف تلفزيونك مرتين عند التشغيل. اترك تصحيح USB شغّالًا ما دام هذا مفعّلًا."), 17, "Regular", look.sub), lp(dp(16)));
         LinearLayout row = row();
         View cancel = button(S.t("إلغاء"), v -> finish());
         row.addView(cancel, bw(false));
@@ -156,8 +148,8 @@ public class FactoryActivity extends Activity {
     /** the second step: «متأكد؟», again with the focus on «إلغاء»; only «نعم، عطّل» goes on (with the PIN when one is set) */
     private void sure() {
         col.removeAllViews();
-        col.addView(text(S.t("متأكد؟"), 34, "Medium", look.warn), lp(dp(12)));
-        col.addView(text(S.t("بنعطّل %s من تطبيقات واجهة المصنع في هذا التلفزيون ونفتح على تلفزيونك مباشرة. تقدر ترجّعها بضغطة وحدة.", Integer.toString(offer.packages.size())), 22, "Regular", look.text), lp(dp(16)));
+        page(S.t("متأكد؟"), look.warn);
+        col.addView(text(S.t("بنعطّل %s من تطبيقات واجهة المصنع في هذا التلفزيون ونفتح على تلفزيونك مباشرة. تقدر ترجّعها بضغطة وحدة.", Integer.toString(offer.packages.size())), 17, "Regular", look.text), lp(dp(16)));
         LinearLayout row = row();
         View cancel = button(S.t("إلغاء"), v -> finish());
         row.addView(cancel, bw(false));
@@ -185,10 +177,10 @@ public class FactoryActivity extends Activity {
 
     private void showOn() {
         col.removeAllViews();
-        col.addView(text(S.t("واجهة المصنع معطّلة"), 30, "Medium", look.text), lp(dp(8)));
-        col.addView(text(S.t("اللي عطّلناه (تعطيل لا حذف):"), 20, "Regular", look.sub), lp(dp(8)));
+        page(S.t("واجهة المصنع معطّلة"), look.text);
+        col.addView(text(S.t("اللي عطّلناه (تعطيل لا حذف):"), 17, "Regular", look.sub), lp(dp(8)));
         List<String> ledger = SetupEngine.ledgerNames(new FileStore(this).get("disabled-by-us.txt"));
-        col.addView(text(names(ledger), 18, "Regular", look.text), lp(dp(16)));
+        col.addView(text(names(ledger), 17, "Regular", look.text), lp(dp(16)));
         LinearLayout row = row();
         View back = button(S.t("رجّع واجهة المصنع"), v -> pin(this::restore));
         row.addView(back, bw(false));
@@ -233,8 +225,8 @@ public class FactoryActivity extends Activity {
 
     private void message(String title, String body, String[] buttons) {
         col.removeAllViews();
-        col.addView(text(title, 30, "Medium", look.text), lp(dp(12)));
-        if (!body.isEmpty()) col.addView(text(body, 20, "Regular", look.sub), lp(dp(16)));
+        page(title, look.text);
+        if (!body.isEmpty()) col.addView(text(body, 17, "Regular", look.sub), lp(dp(16)));
         if (buttons != null) {
             LinearLayout row = row();
             View first = button(buttons[0], v -> finish());
@@ -243,7 +235,16 @@ public class FactoryActivity extends Activity {
         }
     }
 
-    private void focus(final View v) { v.post(v::requestFocus); }
+    private void focus(final View v) { box.focusFirst(v); }   // 4.4: long words read before the focus goes to a button (Box)
+
+    /** a new page in the same box: its title (in the box's fixed title), the words from the top */
+    private void page(String title, int color) {
+        box.title.setText(title);
+        box.title.setTextColor(color);
+        box.scroll.scrollTo(0, 0);
+    }
+
+    private sa.urtv.home.Box box;
 
     private LinearLayout row() {
         LinearLayout r = new LinearLayout(this);
@@ -256,9 +257,10 @@ public class FactoryActivity extends Activity {
     }
 
     private TextView button(String label, View.OnClickListener click) {
-        TextView t = text(label, 22, "Medium", look.text);
+        TextView t = text(label, 17, "Medium", look.text);
         t.setGravity(Gravity.CENTER_VERTICAL | Dir.start());
-        t.setPadding(dp(24), dp(16), dp(24), dp(16));
+        t.setPadding(dp(20), dp(8), dp(20), dp(8));
+        t.setMinHeight(dp(sa.urtv.home.Compact.BUTTON_DP));   // 4.4 compact: 44 dp
         t.setFocusable(true);
         t.setClickable(true);
         t.setId(View.generateViewId());

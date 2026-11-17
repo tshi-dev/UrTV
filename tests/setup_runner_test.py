@@ -196,5 +196,7 @@ check("R35w (4.4, step 88): once the add-on is bound it is told «wanted» BEFOR
 check("R35c: it never binds: «ما قدرنا نخلي زر الرئيسية يفتح تلفزيونك على هذا التلفزيون»; 4.4 (step 86 B): our home KEEPS the role (nothing put back: that undid the owner's switch), the stock home never off, the switch confirmed (the safety switch off), counted once, the rest done, the report honest (Home opens the stock home)",
       (got.get("R35c") or "").startswith("R35c home:FAILED said=true role=sa.urtv.home stockOff=false fails=1 after=true reportHome=com.google.android.apps.tv.launcherx/")
       and (got.get("R35c") or "").endswith(" safety=1/1"), got.get("R35c"))
+check("R35e (4.4, step 88 T8): «تراجع» takes the add-on out of the list even when it was turned on elsewhere (nothing recorded), keeps the TV's other service and the switch, and clears «wanted»",
+      got.get("R35e") == "R35e listed=com.example.keys/.Svc switch=1 wanted=", got.get("R35e"))
 check("R35d: «تراجع» turns the add-on's service off again (the TV had none: the list and the switch as they were)", got.get("R35d") == "R35d undo:DONE listed=none switch=none", got.get("R35d"))
 sys.exit(1 if failed else 0)

@@ -48,7 +48,7 @@ android {
 
 // the setup's own files the rescue uses as they are (its adb client and key, the plan of what to turn back on)
 def sharedSetup = ['AdbClient.java', 'AdbKeys.java', 'SetupLists.java', 'WatchList.java', 'RescuePlan.java']
-def sharedHome = ['ExtrasWords.java']
+def sharedHome = ['ExtrasWords.java', 'Box.java', 'Compact.java']
 def copyShared = tasks.register('copyShared', Copy) {
     from('../launcher/src/main/java/sa/urtv/home/setup') { include sharedSetup; into 'sa/urtv/home/setup' }
     from('../launcher/src/main/java/sa/urtv/home') { include sharedHome; into 'sa/urtv/home' }

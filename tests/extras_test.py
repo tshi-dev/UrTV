@@ -74,7 +74,7 @@ check("the activity is not exported", re.search(r'android:name="\.ExtrasActivity
 # the watch
 ev = svc.split("public void onAccessibilityEvent(AccessibilityEvent e) {")[1].split("\n    }\n")[0]
 check("the Home watch reads of a window only its package and class, and asks HomeWatch",
-      "if (!stockPackages.contains(pkg)) return;" in ev and "watch.decide(on, pkg, cls, stockHomes, chosen || wantedNow, now)" in ev and not re.search(r"getText|getSource|getContentDescription", ev))
+      "if (!stockPackages.contains(pkg)) return;" in ev and "watch.decide(on, pkg, cls, stockHomes, chosen || wantedNow, now, fight)" in ev and not re.search(r"getText|getSource|getContentDescription", ev))
 check("the watch is on by default only on a Google TV home (launcherx), and the home can switch it", 'return installed(c, "com.google.android.apps.tv.launcherx");' in svc and "case ExtrasWords.WATCH:" in prov)
 check("the stock homes the watch knows are never ours, the setup wizard or a settings app", "SettingsKey.stockHomeOn(java.util.Collections.singletonList(ri.activityInfo.packageName), HOME_PKG)" in svc)
 # scripts and CI

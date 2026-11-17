@@ -86,37 +86,36 @@ public class ExtrasActivity extends Activity {
         return S.t("%s تحتاج إضافة صغيرة منّا اسمها «إضافات تلفزيونك». فيها ثلاث ميزات:", f);
     }
 
+    private Typeface font(String f) { try { return Typeface.createFromAsset(getAssets(), "fonts/" + f + ".otf"); } catch (RuntimeException e) { return null; } }
+
     @Override protected void onCreate(Bundle b) {
         super.onCreate(b);
         int start = Dir.start();
-        LinearLayout col = new LinearLayout(this);
-        col.setOrientation(LinearLayout.VERTICAL);
-        col.setBackgroundColor(0xF0151619);
-        int padX = Math.round(getResources().getDisplayMetrics().widthPixels * 0.09f), padY = Math.round(getResources().getDisplayMetrics().heightPixels * 0.05f);
-        col.setPadding(padX, padY, padX, padY);
-        col.addView(text(S.t("إضافات تلفزيونك"), 34, 0xFFECEFF3, "Thmanyah-Medium", start));
-        col.addView(text(lead(getIntent() == null ? null : getIntent().getStringExtra(EXTRA_FOR)), 20, 0xFFECEFF3, "Thmanyah-Medium", start), lp(10));
+        // 4.4 (the owner: «ONE BOX for everything»): the same box as the setup's (Box), the offer's words scrolling inside it, read before the buttons
+        Box page = Box.make(this, box(0xFF1A1C20, 0xFF3A3D44, dp(22)), 0xFFECEFF3, 0xFF9AA1AB, font("Thmanyah-Medium"), Dir.layout());
+        page.page.setBackgroundColor(0xF0151619);
+        page.title.setText(S.t("إضافات تلفزيونك"));
+        LinearLayout col = page.content;
+        col.addView(text(lead(getIntent() == null ? null : getIntent().getStringExtra(EXTRA_FOR)), 17, 0xFFECEFF3, "Thmanyah-Medium", start), lp(10));
         col.addView(text(S.t("١. زر الرئيسية يرجّعك لتلفزيونك لو فتح التلفزيون شاشته الأصلية (أجهزة Google TV).") + "\n"
             + S.t("٢. الكتابة من الجوال داخل التطبيقات الثانية، ومؤقت النوم يطفي الشاشة.") + "\n"
-            + S.t("٣. زر الإعدادات في الريموت يشتغل وأنت تشاهد فيديو HDR."), 18, 0xFFD6DAE0, "Thmanyah-Regular", start), lp(10));
+            + S.t("٣. زر الإعدادات في الريموت يشتغل وأنت تشاهد فيديو HDR."), 17, 0xFFD6DAE0, "Thmanyah-Regular", start), lp(10));
         TextView warn = text(S.t("عند التثبيت ممكن يقول Play Protect إن التطبيق «يطلب بيانات حساسة». هذا لأن الإضافة تستخدم «تسهيل الاستخدام» لتعرف أي تطبيق قدامك فقط: ما تقرأ اللي تكتبه ولا ترسل شيئاً. اضغط «تثبيت على أي حال»."),
             17, 0xFFD6DAE0, "Thmanyah-Regular", start);
         warn.setBackground(box(0xFF1C1E22, 0xFF3A3D44, dp(16)));
-        warn.setPadding(dp(22), dp(14), dp(22), dp(14));
+        warn.setPadding(dp(16), dp(10), dp(16), dp(10));
         col.addView(warn, lp(16));
-        col.addView(text(S.t("بعد التثبيت نفتح لك «تسهيل الاستخدام» لتشغّل «إضافات تلفزيونك». تقدر تحذفها متى ما تبي، وتلفزيونك يشتغل بدونها."), 16, 0xFF9AA1AB, "Thmanyah-Regular", start), lp(10));
+        col.addView(text(S.t("بعد التثبيت نفتح لك «تسهيل الاستخدام» لتشغّل «إضافات تلفزيونك». تقدر تحذفها متى ما تبي، وتلفزيونك يشتغل بدونها."), 17, 0xFF9AA1AB, "Thmanyah-Regular", start), lp(10));
         state = text("", 17, 0xFFD6AF6B, "Thmanyah-Regular", start);
         col.addView(state, lp(10));
-        View spacer = new View(this);
-        col.addView(spacer, new LinearLayout.LayoutParams(-1, 0, 1f));
         LinearLayout row = new LinearLayout(this);
         row.setOrientation(LinearLayout.HORIZONTAL);
-        button = text(S.t("ثبّت الإضافة"), 22, 0xFF151619, "Thmanyah-Medium", Gravity.CENTER);
-        TextView later = text(S.t("ليس الآن"), 22, 0xFFECEFF3, "Thmanyah-Medium", Gravity.CENTER);
+        button = text(S.t("ثبّت الإضافة"), 17, 0xFF151619, "Thmanyah-Medium", Gravity.CENTER);
+        TextView later = text(S.t("ليس الآن"), 17, 0xFFECEFF3, "Thmanyah-Medium", Gravity.CENTER);
         for (TextView t : new TextView[] {button, later}) {
             t.setFocusable(true);
             t.setClickable(true);
-            LinearLayout.LayoutParams p = new LinearLayout.LayoutParams(0, dp(64), 1f);
+            LinearLayout.LayoutParams p = new LinearLayout.LayoutParams(0, dp(Compact.BUTTON_DP), 1f);   // 4.4 compact: 44 dp
             p.setMargins(dp(8), 0, dp(8), 0);
             row.addView(t, p);
         }
@@ -126,10 +125,11 @@ public class ExtrasActivity extends Activity {
         later.setBackground(box(0x00000000, 0xFF3A3D44, dp(16)));
         button.setOnClickListener(v -> act());
         later.setOnClickListener(v -> finish());
-        col.addView(row, new LinearLayout.LayoutParams(-1, -2));
-        col.setLayoutDirection(Dir.layout());
-        setContentView(col);
-        button.requestFocus();
+        LinearLayout.LayoutParams rp = new LinearLayout.LayoutParams(-1, -2);
+        rp.topMargin = dp(8);
+        col.addView(row, rp);
+        setContentView(page.page);
+        page.focusFirst(button);
         InternalReceivers.register(this, result, new IntentFilter(RESULT));
         registered = true;
     }

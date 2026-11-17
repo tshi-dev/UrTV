@@ -40,7 +40,8 @@ public class SetupActivity extends Activity {
     private sa.urtv.home.GlassStyle.Look look;
 
     private LinearLayout body, col;
-    private FrameLayout.LayoutParams colLp;
+    /** 4.4: the one box (sa.urtv.home.Box) */
+    private sa.urtv.home.Box page;
     private int screenW;
     private TextView status, detail, start, undo;
     private boolean running;     // a run is shown as going (this screen's thread only)
@@ -53,7 +54,7 @@ public class SetupActivity extends Activity {
     private boolean ticking;
     private static SetupRunner.End dismissed;
     /** the done screen's QR code: a multiple of 8 dp (the packed report needs a small code, tester step 18) */
-    static final int QR_DP = 224;   // a done screen the person closed with «تم»: the start screen again
+    static final int QR_DP = 160;   // 4.4 compact: smaller, but the packed report is a dense code: not under 160 dp so a phone still reads it   // a done screen the person closed with «تم»: the start screen again
 
     /** «اللغة» (docs/ENGLISH.md): the done screen's own words in English when it is set (i18n/en/setup.tsv) */
     @Override protected void attachBaseContext(android.content.Context b) {
@@ -69,35 +70,24 @@ public class SetupActivity extends Activity {
         // in the middle of the screen, inside the 5 % safe area, never taller than it; its title stays, and what is under it scrolls INSIDE the
         // window. Before, the whole page scrolled and the card was centred in it: a card taller than the screen began above its top edge (the title
         // cut off) and «جهّز كل شي» sat at the bottom edge.
-        FrameLayout frame = new FrameLayout(this);
-        glass(frame);   // the glass look: the home's photo, small and blurred once, under its veil
-        int sw = getResources().getDisplayMetrics().widthPixels, sh = getResources().getDisplayMetrics().heightPixels;
-        frame.setPadding(Math.round(sw * 0.05f), Math.round(sh * 0.05f), Math.round(sw * 0.05f), Math.round(sh * 0.05f));
-        LinearLayout col = new WindowColumn(this, windowMaxHeight(sh));
-        col.setOrientation(LinearLayout.VERTICAL);
-        col.setLayoutDirection(Dir.layout());
-        col.setPadding(dp(32), dp(24), dp(32), dp(24));
-        col.setBackground(sa.urtv.home.GlassPaint.fill(this, sa.urtv.home.GlassStyle.over(look.dialog, look.base), 22, look.line));
+        // 4.4 (the owner: «ONE BOX for everything»): the same box as every setup, update, install and rescue screen (sa.urtv.home.Box): one size always,
+        // the title fixed at its top, the page under it scrolling inside with a scroll bar and «⌄»; long words are read before the focus goes to a button
+        FrameLayout probe = new FrameLayout(this);
+        glass(probe);   // the glass look's colours (the home's photo under its veil)
+        int sw = getResources().getDisplayMetrics().widthPixels;
         screenW = sw;
-        colLp = new FrameLayout.LayoutParams(windowWidth("start"), -2, Gravity.CENTER);
-        this.col = col;
-        frame.addView(col, colLp);
-        col.addView(text(S.t("إعداد تلفزيوني"), 24, "Medium", TEXT), right(dp(12)));
-        ScrollView scroll = new ScrollView(this);   // inside the window: the title above stays
-        scroll.setVerticalScrollBarEnabled(true);
-        scroll.setScrollbarFadingEnabled(false);
-        scroll.setFillViewport(false);
-        LinearLayout inner = new LinearLayout(this);
-        inner.setOrientation(LinearLayout.VERTICAL);
-        scroll.addView(inner, new FrameLayout.LayoutParams(-1, -2));
-        col.addView(scroll, new LinearLayout.LayoutParams(-1, -2));
+        page = sa.urtv.home.Box.make(this, sa.urtv.home.GlassPaint.fill(this, sa.urtv.home.GlassStyle.over(look.dialog, look.base), 22, look.line), TEXT, DIM, typeface("Medium"), Dir.layout());
+        page.page.setBackground(probe.getBackground());
+        page.title.setText(S.t("إعداد تلفزيوني"));
+        this.col = page.box;
         body = new LinearLayout(this);
         body.setOrientation(LinearLayout.VERTICAL);
-        inner.addView(body, right(0));
-        status = text("", 16, "Medium", GOLD);
-        inner.addView(status, right(dp(8)));
-        detail = text("", 13, "Regular", DIM);
-        inner.addView(detail, right(0));
+        page.content.addView(body, right(0));
+        status = text("", 17, "Medium", GOLD);
+        page.content.addView(status, right(dp(8)));
+        detail = text("", 14, "Regular", DIM);
+        page.content.addView(detail, right(0));
+        FrameLayout frame = page.page;
         setContentView(frame);
         show();
         if (SetupRecovery.pending(this) && SetupRecovery.gaveUp(this)) {
@@ -131,8 +121,7 @@ public class SetupActivity extends Activity {
             progress = null;
             clock.removeCallbacks(secondTick);
             ticking = false;
-            colLp.width = windowWidth(want);   // 4.4: a small window; the progress and the result a little wider
-            col.setLayoutParams(colLp);
+            page.scroll.scrollTo(0, 0);   // 4.4: the box never changes its size (Box); a new page starts at its top
             detail.setText("");
             if (want.equals("plan")) buildPlan(r);
             else if (want.equals("progress")) buildProgress(r);
@@ -161,8 +150,8 @@ public class SetupActivity extends Activity {
 
     private void buildStart(SetupRunner r) {
         add(langToggle(), dp(12));
-        add(text(S.t("يجهّز التلفزيون نفسه، بدون كمبيوتر ولا جوال. اضغط «جهّز كل شي»: يسألك التلفزيون مرة واحدة «السماح بتصحيح USB؟»، ثم نعرض عليك ما سنفعله بالضبط قبل أي تغيير."), 15, "Regular", TEXT), dp(12));
-        add(text(S.t("قبل البدء: فعّل «تصحيح USB» (الإعدادات ← تفضيلات الجهاز ← حول ← اضغط «Build» سبع مرات ← خيارات المطوّر ← تصحيح USB). وخلك عند التلفزيون: لما تطلع الرسالة اختر «السماح دائماً»."), 13, "Regular", GOLD), dp(16));
+        add(text(S.t("يجهّز التلفزيون نفسه، بدون كمبيوتر ولا جوال. اضغط «جهّز كل شي»: يسألك التلفزيون مرة واحدة «السماح بتصحيح USB؟»، ثم نعرض عليك ما سنفعله بالضبط قبل أي تغيير."), 17, "Regular", TEXT), dp(12));
+        add(text(S.t("قبل البدء: فعّل «تصحيح USB» (الإعدادات ← تفضيلات الجهاز ← حول ← اضغط «Build» سبع مرات ← خيارات المطوّر ← تصحيح USB). وخلك عند التلفزيون: لما تطلع الرسالة اختر «السماح دائماً»."), 14, "Regular", GOLD), dp(16));
         if (SetupRunner.resumable(new FileStore(this))) add(text(S.t("إعداد سابق ما اكتمل: «جهّز كل شي» يكمله من حيث توقف."), 14, "Regular", TEXT), dp(12));
         rescueFirst();   // 4.4: the way back with no computer, before anything is started
         computerHelp();   // 4.4: the switch failed twice here: the computer's way (the rest of «جهّز كل شي» still runs, without the home step)
@@ -176,7 +165,7 @@ public class SetupActivity extends Activity {
         final TextView again = refocusLang == null ? null : langButtons.get(refocusLang);
         refocusLang = null;
         final TextView first = again != null ? again : start;
-        first.post(new Runnable() { @Override public void run() { first.requestFocus(); } });
+        page.focusFirst(first);   // 4.4: long words are read first (Box)
         SetupRunner.End e = r.end();
         if (e != null && e != dismissed) say(S.tv(e.text), e.bad ? RED : GOLD);
         else say("", GOLD);
@@ -206,8 +195,8 @@ public class SetupActivity extends Activity {
             paintLang(b, on, false);
             b.setOnFocusChangeListener(new View.OnFocusChangeListener() { public void onFocusChange(View v, boolean has) { paintLang(b, on, has); } });
             b.setOnClickListener(new View.OnClickListener() { public void onClick(View v) { if (!code.equals(S.lang())) refocusLang = code; SetupLang.choose(SetupActivity.this, code); } });
-            b.setPadding(dp(16), dp(12), dp(16), dp(12));   // the whole word inside: 24 px above and below (the 88 px box cut «English» in half, build 180)
-            b.setMinHeight(dp(52));
+            b.setPadding(dp(16), dp(8), dp(16), dp(8));   // the whole word inside: 24 px above and below (the 88 px box cut «English» in half, build 180)
+            b.setMinHeight(dp(sa.urtv.home.Compact.BUTTON_DP));
             langButtons.put(code, b);
             LinearLayout.LayoutParams p = new LinearLayout.LayoutParams(dp(160), -2);
             if (i > 0) p.setMarginStart(dp(12));
@@ -238,7 +227,7 @@ public class SetupActivity extends Activity {
     private void buildPlan(SetupRunner r) {
         SetupRunner.Preview p = r.preview();
         if (p == null) p = new SetupRunner.Preview();
-        add(text(S.t("هذا ما سنفعله في تلفزيونك، بالترتيب. ما تغيّر شيء بعد:"), 20, "Medium", TEXT), dp(12));
+        add(text(S.t("هذا ما سنفعله في تلفزيونك، بالترتيب. ما تغيّر شيء بعد:"), 17, "Medium", TEXT), dp(12));
         // design/43: the plan in one glass panel, each line numbered by a quiet accent number, not a wall of plain lines
         List<String> plan = SetupRunner.planLines(p, TR);
         LinearLayout planBox = new LinearLayout(this);
@@ -250,15 +239,15 @@ public class SetupActivity extends Activity {
             LinearLayout line = new LinearLayout(this);
             line.setOrientation(LinearLayout.HORIZONTAL);
             line.setLayoutDirection(Dir.layout());
-            TextView n = text(digits(String.valueOf(i + 1)), 16, "Medium", GOLD);
+            TextView n = text(digits(String.valueOf(i + 1)), 17, "Medium", GOLD);
             n.setMinWidth(dp(32));
             line.addView(n, new LinearLayout.LayoutParams(-2, -2));
-            line.addView(text(digits(plan.get(i)), 15, "Regular", TEXT), new LinearLayout.LayoutParams(0, -2, 1f));
+            line.addView(text(digits(plan.get(i)), 17, "Regular", TEXT), new LinearLayout.LayoutParams(0, -2, 1f));
             planBox.addView(line, right(dp(8)));
         }
         add(planBox, dp(16));
         // 4.3: a box per suggested app the setup can install (OK ticks or unticks it); one already on the TV says so and is left
-        add(text(S.t("تطبيقات مقترحة: علّم ما تبي نثبّته معها"), 15, "Medium", TEXT), dp(8));
+        add(text(S.t("تطبيقات مقترحة: علّم ما تبي نثبّته معها"), 14, "Medium", TEXT), dp(8));
         final TextView summary = text("", 14, "Regular", DIM);
         final java.util.Set<String> haveIds = new java.util.HashSet<>(p.have);
         for (final sa.urtv.home.SuggestedApps.App a : sa.urtv.home.SuggestedApps.forSetup(android.os.Build.VERSION.SDK_INT)) {
@@ -291,8 +280,19 @@ public class SetupActivity extends Activity {
         TextView no = quiet(S.t("إلغاء"));
         no.setOnClickListener(new View.OnClickListener() { public void onClick(View v) { SetupRunner.get().cancel(); } });
         add(no, dp(12));
-        begin.post(new Runnable() { @Override public void run() { begin.requestFocus(); } });
+        page.focusFirst(begin);
         say("", GOLD);
+    }
+
+    /** «إضافات تلفزيونك» is running now: Android's list of running accessibility services has it (read only) */
+    private boolean extrasBound() {
+        try {
+            android.view.accessibility.AccessibilityManager am = (android.view.accessibility.AccessibilityManager) getSystemService(ACCESSIBILITY_SERVICE);
+            if (am == null) return false;
+            for (android.accessibilityservice.AccessibilityServiceInfo i : am.getEnabledAccessibilityServiceList(android.accessibilityservice.AccessibilityServiceInfo.FEEDBACK_ALL_MASK))
+                if (i.getId() != null && i.getId().startsWith(sa.urtv.home.ExtrasWords.PACKAGE + "/")) return true;
+        } catch (RuntimeException ignored) { }
+        return false;
     }
 
     /** the boxes that are ticked: picked AND not already on the TV (those show an empty box and are left) */
@@ -311,8 +311,8 @@ public class SetupActivity extends Activity {
         words.addView(text(digits(S.tv(RescueInfo.STEP1)), 14, "Regular", TEXT), right(dp(4)));
         words.addView(text(RescueInfo.hasCode() ? S.tv(RescueInfo.STEP2_CODE, RescueInfo.DOWNLOADER_CODE) : digits(S.tv(RescueInfo.STEP2_DOC)), 14, "Regular", TEXT), right(dp(4)));   // the code in Latin digits, as Downloader asks it
         words.addView(text(digits(S.tv(RescueInfo.STEP3)), 14, "Regular", TEXT), right(dp(8)));
-        words.addView(text(S.tv(RescueInfo.PHOTO), 13, "Regular", GOLD), right(0));
-        qrBeside(words, RescueInfo.DOC_URL, 120);
+        words.addView(text(S.tv(RescueInfo.PHOTO), 14, "Regular", GOLD), right(0));
+        qrBeside(words, RescueInfo.DOC_URL, sa.urtv.home.Compact.QR_DP);
     }
 
     /**
@@ -360,9 +360,9 @@ public class SetupActivity extends Activity {
         LinearLayout words = new LinearLayout(this);
         words.setOrientation(LinearLayout.VERTICAL);
         words.setLayoutDirection(Dir.layout());
-        words.addView(text(S.tv(HomeFails.LINE), 18, "Medium", GOLD), right(dp(4)));
+        words.addView(text(S.tv(HomeFails.LINE), 17, "Medium", GOLD), right(dp(4)));
         words.addView(text(S.tv(HomeFails.GUIDE), 14, "Regular", TEXT), right(0));
-        qrBeside(words, HomeFails.GUIDE_URL, 120);
+        qrBeside(words, HomeFails.GUIDE_URL, sa.urtv.home.Compact.QR_DP);
     }
 
     private void buildProgress(SetupRunner r) {
@@ -488,15 +488,15 @@ public class SetupActivity extends Activity {
     private static String why(String reason) { return reason == null || reason.isEmpty() ? "" : " — " + reason; }
 
     private void buildWifi() {
-        add(text(S.t("خطوة منك قبل الشاشة الرئيسية"), 18, "Medium", TEXT), dp(8));
-        add(text(S.tv(SetupRunner.WIFI_ASK_TEXT), 15, "Regular", TEXT), dp(16));
+        add(text(S.t("خطوة منك قبل الشاشة الرئيسية"), 17, "Medium", TEXT), dp(8));
+        add(text(S.tv(SetupRunner.WIFI_ASK_TEXT), 17, "Regular", TEXT), dp(16));
         final TextView more = button(S.t("كمّل"));
         more.setOnClickListener(new View.OnClickListener() { public void onClick(View v) { go(false); } });
         add(more, dp(12));
         undo = quiet(S.t("تراجع (يرجّع التلفزيون كما كان)"));
         undo.setOnClickListener(new View.OnClickListener() { public void onClick(View v) { go(true); } });
         add(undo, dp(16));
-        more.post(new Runnable() { @Override public void run() { more.requestFocus(); } });
+        page.focusFirst(more);
         say("", GOLD);
     }
 
@@ -560,7 +560,7 @@ public class SetupActivity extends Activity {
             final TextView again = button(undoAgain ? S.t("تراجع (يرجّع التلفزيون كما كان)") : S.t("جهّز كل شي"));
             again.setOnClickListener(new View.OnClickListener() { public void onClick(View v) { dismissed = e; go(undoAgain); } });
             add(again, dp(12));
-            again.post(new Runnable() { @Override public void run() { again.requestFocus(); } });
+            page.focusFirst(again);
             return;
         }
         if (r.kind() == SetupRunner.Kind.FULL) {
@@ -568,6 +568,11 @@ public class SetupActivity extends Activity {
             body.addView(progress, right(dp(24)));
             progress.show(modelOf(r, true));
             say("", GOLD);
+            // 4.4 (step 88 T4): how Home works on this TV, said on the page itself, in the person's language
+            add(text(SetupHook.oursIsDefault(this) ? S.t("دور الشاشة الرئيسية: تلفزيونك") : S.t("دور الشاشة الرئيسية: الشاشة الأصلية للتلفزيون"), 17, "Medium", TEXT), dp(4));
+            add(text(extrasBound() ? S.t("مراقبة زر الرئيسية («إضافات تلفزيونك»): شغّالة، وهي اللي ترجّعك لتلفزيونك")
+                : sa.urtv.home.Extras.installed(this) ? S.t("مراقبة زر الرئيسية («إضافات تلفزيونك»): مثبّتة لكنها ما هي شغّالة")
+                : S.t("مراقبة زر الرئيسية («إضافات تلفزيونك»): غير مثبّتة"), 17, "Medium", extrasBound() ? GOLD : TEXT), dp(16));
             String report = new FileStore(this).get(SetupReport.FILE);
             String url = report == null || report.isEmpty() ? null : SetupRunner.shareUrl(report);
             if (url != null) {
@@ -589,7 +594,7 @@ public class SetupActivity extends Activity {
                     cp.gravity = Gravity.CENTER_HORIZONTAL;
                     cp.topMargin = dp(16);
                     body.addView(card, cp);
-                    TextView caption = text(S.t("امسح الرمز بجوالك لترى تقرير الإعداد وترسله للمطوّر إن أردت (بلا أي معلومة شخصية)."), 13, "Regular", DIM);
+                    TextView caption = text(S.t("امسح الرمز بجوالك لترى تقرير الإعداد وترسله للمطوّر إن أردت (بلا أي معلومة شخصية)."), 14, "Regular", DIM);
                     caption.setGravity(Gravity.CENTER_HORIZONTAL);
                     caption.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
                     LinearLayout.LayoutParams tp = new LinearLayout.LayoutParams(dp(QR_DP + 32 + 96), LinearLayout.LayoutParams.WRAP_CONTENT);
@@ -601,11 +606,11 @@ public class SetupActivity extends Activity {
             }
         }
         computerHelp();
-        add(text(S.t("بعد الإعداد أطفئ التصحيح:"), 15, "Medium", TEXT), dp(4));
+        add(text(S.t("بعد الإعداد أطفئ التصحيح:"), 17, "Medium", TEXT), dp(4));
         add(text(digits(S.t("1. الإعدادات ← تفضيلات الجهاز ← خيارات المطوّر.")), 14, "Regular", TEXT), dp(4));
         add(text(digits(S.t("2. اختر «إلغاء تراخيص تصحيح USB».")), 14, "Regular", TEXT), dp(4));
         add(text(digits(S.t("3. أطفئ «تصحيح USB». («تراجع» من هنا يحتاجه مفعّلاً.)")), 14, "Regular", TEXT), dp(12));
-        add(text(S.t("لو صار شي:"), 15, "Medium", TEXT), dp(4));
+        add(text(S.t("لو صار شي:"), 17, "Medium", TEXT), dp(4));
         add(text(digits(S.t("• الشاشة الرئيسية ما فتحت تلفزيونك: انتظر 5 دقائق ترجع الأصلية وحدها، أو اضغط «تراجع».")), 14, "Regular", TEXT), dp(4));
         add(text(S.t("• تطبيق تحتاجه صار موقوفاً: «تراجع» يرجّع كل ما أوقفناه."), 14, "Regular", TEXT), dp(4));
         add(text(S.t("• انقطع الواي فاي: اتصل به من إعدادات التلفزيون ← الشبكة."), 14, "Regular", TEXT), dp(4));
@@ -623,7 +628,7 @@ public class SetupActivity extends Activity {
         undo = quiet(S.t("تراجع (يرجّع التلفزيون كما كان)"));
         undo.setOnClickListener(new View.OnClickListener() { public void onClick(View v) { go(true); } });
         add(undo, dp(12));
-        ok.post(new Runnable() { @Override public void run() { ok.requestFocus(); } });
+        page.focusFirst(ok);
     }
 
     // ---- the buttons --------------------------------------------------------------------------------------------------------------
@@ -719,10 +724,10 @@ public class SetupActivity extends Activity {
 
     /** a button in the glass look: the panel, the solid focus fill and its ink while focused; another window over this screen cannot press it */
     private TextView button(String label) {
-        TextView t = text(label, 18, "Medium", TEXT);
+        TextView t = text(label, 17, "Medium", TEXT);
         t.setGravity(Gravity.CENTER);
-        t.setPadding(dp(16), dp(14), dp(16), dp(14));
-        t.setMinHeight(dp(56));   // 56 dp: the main button of a screen
+        t.setPadding(dp(16), dp(8), dp(16), dp(8));
+        t.setMinHeight(dp(sa.urtv.home.Compact.BUTTON_DP));   // 4.4 compact: 44 dp, the main button of a screen
         t.setFocusable(true);
         t.setClickable(true);
         t.setFilterTouchesWhenObscured(true);
@@ -789,29 +794,6 @@ public class SetupActivity extends Activity {
         t.setTextColor(DIM);
         t.setOnFocusChangeListener(new View.OnFocusChangeListener() { public void onFocusChange(View v, boolean has) { t.setTextColor(has ? INK : DIM); } });
         return t;
-    }
-
-    /** 4.4: the window's width: 640 dp for the start, the plan and the Wi-Fi (two thirds of a 1080p screen); 800 dp for the progress and the result; never wider than the safe area */
-    private int windowWidth(String mode) {
-        int safe = screenW - 2 * Math.round(screenW * 0.05f);
-        return Math.min(mode.equals("progress") || mode.equals("done") ? dp(WINDOW_WIDE_DP) : dp(WINDOW_DP), safe);
-    }
-
-    static final int WINDOW_DP = 640, WINDOW_WIDE_DP = 800;
-    /** the window is at most this share of the screen's height (inside the 5 % safe area: 90 %); what does not fit scrolls inside it */
-    static final float WINDOW_HEIGHT = 0.80f;
-
-    private static int windowMaxHeight(int screenH) { return Math.round(screenH * WINDOW_HEIGHT); }
-
-    /** The window: as tall as its content, never taller than maxH (its scroll then takes what is left under the title). */
-    private static final class WindowColumn extends LinearLayout {
-        private final int maxH;
-        WindowColumn(android.content.Context c, int maxH) { super(c); this.maxH = maxH; }
-        @Override protected void onMeasure(int w, int h) {
-            int size = MeasureSpec.getSize(h), mode = MeasureSpec.getMode(h);
-            int cap = mode == MeasureSpec.UNSPECIFIED ? maxH : Math.min(size, maxH);
-            super.onMeasure(w, MeasureSpec.makeMeasureSpec(cap, MeasureSpec.AT_MOST));
-        }
     }
 
     private LinearLayout.LayoutParams right(int bottom) {
