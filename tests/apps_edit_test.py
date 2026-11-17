@@ -57,7 +57,7 @@ check("full favourites say so", 'case AppsEdit.FAVOURITES_FULL:' in main and 'S.
 check("«انقل» in the options of an app of «كل التطبيقات» starts «تعديل التطبيقات» on it (a favourite: «تعديل المفضلة»); not in kids mode",
       "if (!kids) {\n            o.move = () -> { if (inDock) beginEdit(pkg); else beginAppsEdit(pkg); };" in main)
 check("the mode asks the settings' lock first, as «تعديل المفضلة» (ParentalPolicy.MENU_ARRANGE, «قفل الإعدادات»); kids mode never starts it",
-      re.search(r'private void beginAppsEdit\(String pkg\) \{\s*if \(kidsNoEdit\(\)\) return;\s*guarded\(ParentalPolicy\.MENU_ARRANGE, null, S\.t\("تعديل التطبيقات"\), \(\) -> startAppsEdit\(pkg\)\);', main) is not None)
+      re.search(r'private void beginAppsEdit\(String pkg\) \{\s*(?:if \(pkg != null\) wantHiddenList = false;[^\n]*\s*)?if \(kidsNoEdit\(\)\) return;\s*guarded\(ParentalPolicy\.MENU_ARRANGE, null, S\.t\("تعديل التطبيقات"\), \(\) -> startAppsEdit\(pkg\)\);', main) is not None)
 check("startAppsEdit is reached only through beginAppsEdit", len(re.findall(r"startAppsEdit\(", main)) == 2)
 check("kids mode: no «تعديل المفضلة» either (it saved a row of the allowed apps only), the same rule (AppsEdit.allowed)",
       "if (!kids) {\n            o.move = " in main and "if (AppsEdit.allowed(Parental.state(this).kids)) return false;" in main)

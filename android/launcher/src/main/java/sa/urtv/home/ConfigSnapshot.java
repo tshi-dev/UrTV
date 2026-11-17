@@ -90,6 +90,9 @@ final class ConfigSnapshot {
 
     private static final LastGood<ConfigSnapshot> LAST = new LastGood<>();
 
+    /** 4.3.4 QA-1: the last answer this process had, never a query (the UI thread's first draw); null when it has none yet */
+    static ConfigSnapshot known() { return LAST.peek(); }
+
     static ConfigSnapshot read(final Context c) {
         final ConfigSnapshot[] none = {null};
         LastGood.Read<ConfigSnapshot> r = LAST.read(android.os.SystemClock.elapsedRealtime(), SHARE_MS, new LastGood.Query<ConfigSnapshot>() {
