@@ -16,9 +16,9 @@ The source is `poster-433.html`. To render it, put the IBM Plex Sans Arabic woff
 - Fixes:
   - stock names on the home's markets page (4164 النهدي, 4002 المواساة, GitHub #60);
   - the photo no longer goes black (`--pdim`);
-  - «تحقق من التحديث» now says «لا يوجد أحدث» instead of an error.
+  - the screensaver's bottom strip stays still with the matches (work/433-strip, merged into rel-433-3 and on master; the CHANGELOG line is missing, and the supervisor is adding it);
+  - «تحقق من التحديث» says «تلفزيونك محدّث» (`UpdateActivity`, «تلفزيونك محدّث: %s»; the tester's 4.3.3 run, picture 20-b2).
 - Left out:
-  - «the screensaver's bottom line no longer jumps with the matches»: not in 4.3.3.
   - «after a crash it offers to send a report»: in 4.3.3, but only for people who turned on «النسخ التجريبية».
   - The «بدء شاشة التوقف بعد» fix: true, but too small for this poster.
 
@@ -26,7 +26,7 @@ The source is `poster-433.html`. To render it, put the IBM Plex Sans Arabic woff
 
 Arabic (60 words):
 
-وصل تلفزيونك 4.3.3. الجديد «النسخ التجريبية» في تحديث تلفزيوني: تجيك المزايا قبل الكل، وترسل ملاحظاتك من التلفزيون نفسه، وتوقفها متى ما تبي وما يرجع تلفزيونك لنسخة أقدم. ومعها تطبيق «إنقاذ تلفزيونك» يرجّع التلفزيون كما كان بزر واحد، وإصلاحات: أسماء الأسهم في الأسواق، وصورة شاشة التوقف ما عادت تطلع سوداء. حدّث من الإعدادات ← تحديث تلفزيوني، أو بكود Downloader ‏9378345.
+وصل تلفزيونك 4.3.3. الجديد «النسخ التجريبية» في تحديث تلفزيوني: تجيك المزايا قبل الكل، وترسل ملاحظاتك من التلفزيون، وتوقفها متى ما تبي وما يرجع تلفزيونك لنسخة أقدم. وتطبيق «إنقاذ تلفزيونك» يرجّع التلفزيون كما كان بزر واحد، وإصلاحات: أسماء الأسهم في الأسواق، وصورة شاشة التوقف ما عادت تسودّ، وخطها السفلي ثابت. حدّث من الإعدادات ← تحديث تلفزيوني، أو بكود Downloader ‏9378345.
 github.com/tshi-dev/UrTV
 
 English:
