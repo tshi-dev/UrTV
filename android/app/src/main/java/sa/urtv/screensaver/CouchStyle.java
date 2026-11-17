@@ -32,7 +32,7 @@ final class CouchStyle {
     static final float SEC_H = 4.75f, SEC_TEXT = 1.75f, SEC_ICON_BOX = 3.25f, SEC_ICON = 1.875f, SEC_GAP = 0.375f, SEC_RADIUS = 1.5f, SEC_ICON_RADIUS = 1f;
     static final float CRUMB = 1.3125f, CRUMB_H = 2f, HEAD = 2.375f, HEAD_LINE = 3f, PAD = 1.75f;
     static final float ROW_H = 4.75f, ROW_TEXT = 1.75f, ROW_SUB = 1.25f, ROW_GAP = 0.5f, ROW_RADIUS = 1.5f, ROW_PAD_Y = 0.75f;
-    static final float SHEAD = 1.25f, SHEAD_TOP = 1.125f, HINT = 1.25f, BOX = 2.25f, MARK = 1.875f, THUMB_W = 5.5f, THUMB_H = 3.125f, THUMB_RADIUS = 0.625f;
+    static final float SHEAD = 1.25f, SHEAD_TOP = 1.125f, HINT = 1.4375f, BOX = 2.25f, MARK = 1.875f, THUMB_W = 5.5f, THUMB_H = 3.125f, THUMB_RADIUS = 0.625f;
     static final float TYPE_TEXT = 2.25f, TYPE_LABEL = 1.3125f;
     // colours
     static final int WHITE = 0xFFFFFFFF, INK = 0xFF111111, TEXT = 0xEBFFFFFF, SEC = 0xC2FFFFFF, VALUE = 0x9EFFFFFF, SUB = 0x99FFFFFF, DIM = 0x80FFFFFF,

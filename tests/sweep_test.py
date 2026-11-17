@@ -49,7 +49,7 @@ check("sweep2, the control centre: «تخصيص», «شكل اللوحة», «إ
 bar = (HOME / "PillBar.java").read_text(encoding="utf-8")
 check("sweep2, the top row: its bar never rounder than 8 dp, a labelled button 6 dp (no capsule round «الجوال»)",
       "static final float MAX_RADIUS = 8f;" in bar and "Math.min(m.radius / 2f, MAX_RADIUS) * dp" in bar and "bg.setCornerRadius(dp(6));" in (HOME / "Pill.java").read_text(encoding="utf-8"))
-check("sweep2, the settings hint: the rows' secondary size (14 sp; couch-tv ROW_SUB) in the secondary colour, no longer 12 sp",
+check("sweep2, the settings hint: the rows' secondary size (14 sp; couch-tv its info line, 1.4375 rem) in the secondary colour, no longer 12 sp",
       "static final int HINT_SP = 14;" in s and "hint.setTextSize(TypedValue.COMPLEX_UNIT_SP, HINT_SP);" in s and "hint.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12);" not in s
-      and "hint.setTextColor(CouchStyle.SUB);" in s)
+      and "hint.setTextColor(CouchStyle.SUB);" in s and "HINT = 1.4375f," in (APP / "CouchStyle.java").read_text(encoding="utf-8"))
 sys.exit(1 if failed else 0)

@@ -165,7 +165,7 @@ public class SettingsActivity extends Activity {
         hint.setTextDirection(Dir.text());
         // 4.4 the owner (build 413): the hint took the whole band under the list; it is small, on the title's line at the far end, and the list
         // has the band
-        // 4.4 the sweep: it was the smallest text on the screen; now the rows' secondary size and colour (HINT_SP, CouchStyle.HINT = ROW_SUB)
+        // 4.4 the sweep: it was the smallest text on the screen; now the rows' secondary size and colour (HINT_SP; couch-tv HINT, its info line's 1.4375 rem)
         hint.setTextSize(TypedValue.COMPLEX_UNIT_SP, HINT_SP);
         if (cs != null) { hint.setTextSize(TypedValue.COMPLEX_UNIT_PX, cs.px(CouchStyle.HINT)); hint.setTextColor(CouchStyle.SUB); }
         hint.setGravity(Gravity.END);
