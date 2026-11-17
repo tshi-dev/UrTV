@@ -19,6 +19,14 @@ final class GameBundles {
         try (InputStream in = c.getAssets().open("games/" + name + ".gb")) { return parse(GameBundle.open(name, Bounded.readAll(in, 8_000_000))); }
         catch (Exception e) { return null; }
     }
+    /** the decrypted JSON bytes of the bank `name` (a newer pack first, then the bundled file), or null: for a reader that has its own parser (the quiz bank) */
+    static byte[] bytes(Context c, String name) {
+        byte[] pack = GamePackStore.open(c, name);
+        byte[] v = pack == null ? null : GameBundle.open(name, pack);
+        if (v != null) return v;
+        try (InputStream in = c.getAssets().open("games/" + name + ".gb")) { return GameBundle.open(name, Bounded.readAll(in, 8_000_000)); }
+        catch (Exception e) { return null; }
+    }
     private static Object parse(byte[] json) {
         if (json == null) return null;
         try { return MiniJson.parse(new String(json, java.nio.charset.StandardCharsets.UTF_8)); } catch (RuntimeException e) { return null; }

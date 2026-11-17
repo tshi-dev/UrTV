@@ -41,7 +41,22 @@ final class QuizBank {
         if (f.isFile() && sp(c).getLong("rev", 0) >= BUNDLED_REV) v = QuizBankCheck.parse(read(f));
         if (v == null || v.size() < QuizPick.MIN_ITEMS) v = asset(c, "quiz/bank.json");
         if (v == null || v.size() < QuizPick.MIN_ITEMS) v = asset(c, "quiz/starter.json");
-        return v == null ? new ArrayList<>() : v;
+        return v == null ? new ArrayList<>() : addExtra(c, v);
+    }
+
+    /** the questions that are not in the public bank (assets/games/bank-extra.gb, encrypted; a newer one may come as a pack) are added to whatever bank was chosen: an id the bank already has is kept as it is, and a missing or bad file adds nothing */
+    static List<QuizPick.Item> addExtra(Context c, List<QuizPick.Item> base) {
+        try {
+            byte[] raw = GameBundles.bytes(c, "bank-extra");
+            List<QuizPick.Item> extra = raw == null ? null : QuizBankCheck.parse(raw);
+            return extra == null ? base : merge(base, extra);
+        } catch (RuntimeException e) { return base; }
+    }
+    static List<QuizPick.Item> merge(List<QuizPick.Item> base, List<QuizPick.Item> extra) {
+        java.util.Set<String> ids = new java.util.HashSet<>(); for (QuizPick.Item it : base) ids.add(it.id);
+        List<QuizPick.Item> out = new ArrayList<>(base);
+        for (QuizPick.Item it : extra) if (ids.add(it.id)) out.add(it);
+        return out;
     }
 
     private static List<QuizPick.Item> asset(Context c, String name) {
