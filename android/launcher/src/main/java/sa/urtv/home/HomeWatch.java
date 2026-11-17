@@ -33,8 +33,6 @@ final class HomeWatch {
         if (!on || !oursChosen || pkg == null || cls == null || stockHomes == null) return false;
         if (!homeScreen(pkg, cls, stockHomes)) return false;
         if (now < pausedUntil) return false;
-        // tester-exp (step 88): one Home press gives two stock-home windows; the second one within 1.5 s is brought again but not counted
-        if (lastBring > 0 && now - lastBring < SAME_PRESS_MS) { lastBring = now; return true; }
         if (!fight) { lastBring = now; return true; }
         // tester-exp (step 88 R2d): over ours, only a FAST return (within FIGHT_MS of our last bring) is the firmware fighting back; later it is
         // the person pressing Home on our home: brought, not counted
