@@ -79,7 +79,8 @@ check("the old v3.N tag form is gone from the workflow (new builds are v<name>.<
 cl = text("CHANGELOG.md")
 check("the CHANGELOG has a section for this release (the VERSION file's name) and 4.0's names the version.txt rule",
       re.search(r"^## " + re.escape(ver.strip()) + r"\b", cl, re.M) is not None and re.search(r"^## 4\.0\b", cl, re.M) is not None and "version.txt` is still exactly `3.<build>`" in cl)
-check("the README names the release v4.0.N and says version.txt stays 3.<build>", "v4.0.N" in text("README.md") and "`3.<build>`" in text("README.md"))
+check("docs/DEVELOPERS.md (linked from the README) names the release v4.0.N and says version.txt stays 3.<build>",
+      "v4.0.N" in text("docs/DEVELOPERS.md") and "`3.<build>`" in text("docs/DEVELOPERS.md") and "docs/DEVELOPERS.md" in text("README.md"))
 # the screens
 page = text("android/launcher/src/main/assets/phone/index.html")
 check("the phone page shows the installed version and the newest as the TV words them (u.version, s.version)", "s.version ? 'إصدار تلفزيونك: ' + s.version" in page and "(u.version || 'الإصدار ' + u.build)" in page and 'id="ver"' in page)
