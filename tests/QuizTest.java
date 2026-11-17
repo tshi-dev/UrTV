@@ -19,6 +19,10 @@ public final class QuizTest {
 
     static boolean tickReveal(QuizRoom r) { r.tick(); return r.phase == QuizRoom.Phase.REVEAL; }
 
+    static List<QuizPick.Item> merged(List<QuizPick.Item> base, List<QuizPick.Item> extra) {   // the same rule as QuizBank.merge: an id the base has is kept as it is
+        Set<String> ids = new HashSet<>(); for (QuizPick.Item it : base) ids.add(it.id);
+        List<QuizPick.Item> out = new java.util.ArrayList<>(base); for (QuizPick.Item it : extra) if (ids.add(it.id)) out.add(it); return out;
+    }
     public static void main(String[] a) throws Exception {
         // scoring
         check("scoring: an instant right answer is 1000, one at the last second about 500, a late one never below 500",
@@ -230,6 +234,20 @@ public final class QuizTest {
             Set<String> cats = new HashSet<>(); for (QuizPick.Item it : all) cats.add(it.cat);
             check("bundled bank: at least five categories, every level present", cats.size() >= 5 && all.stream().map(it -> it.diff).distinct().count() >= 3);
             check("bundled bank: a 10-question game of every chip picks from it with no repeat", QuizPick.pick(all, QuizPick.MIX, 0, false, 10, new HashSet<>(), new Random(5)).size() == 10);
+        }
+        if (a.length > 2) {   // the questions that are not in the public bank: an encrypted file, opened and parsed as the app does
+            byte[] json = GameBundle.open("bank-extra", Files.readAllBytes(Paths.get(a[2])));
+            List<QuizPick.Item> extra = json == null ? null : QuizBankCheck.parse(json);
+            check("extra bank: the encrypted file opens and parses whole (" + (extra == null ? 0 : extra.size()) + " questions, at least 500)", extra != null && extra.size() >= 500);
+            List<QuizPick.Item> base = QuizBankCheck.parse(Files.readAllBytes(Paths.get(a[1])));
+            Set<String> baseIds = new HashSet<>(); for (QuizPick.Item it : base) baseIds.add(it.id);
+            Set<String> baseQ = new HashSet<>(); for (QuizPick.Item it : base) baseQ.add(it.q[0]);
+            check("extra bank: no id and no Arabic question text is also in the public bank (nothing doubled, nothing public)", extra.stream().noneMatch(it -> baseIds.contains(it.id) || baseQ.contains(it.q[0])));
+            Set<String> ec = new HashSet<>(); for (QuizPick.Item it : extra) ec.add(it.cat);
+            check("extra bank: the categories are the bank's own names plus «technology», every level and kids questions are there, and a game of every kind picks from base + extra with no repeat",
+                ec.containsAll(java.util.Arrays.asList("geography", "science", "islamic", "saudi-gulf", "sports", "language", "technology")) && extra.stream().map(it -> it.diff).distinct().count() == 3 && extra.stream().anyMatch(it -> it.kids)
+                && QuizPick.pick(merged(base, extra), QuizPick.MIX, 0, false, 15, new HashSet<>(), new Random(8)).size() == 15);
+            check("extra bank: the encrypted bundle shows none of its questions in clear (the text is not readable in the file)", !new String(Files.readAllBytes(Paths.get(a[2])), java.nio.charset.StandardCharsets.ISO_8859_1).contains("ويكيبيديا") && Files.readAllBytes(Paths.get(a[2]))[0] == 'G');
         }
         check("rev.txt: digits only, a line end allowed; HTML, empty, signs and a long file are refused",
             QuizBankCheck.parseRev("2026111600\n".getBytes()) == 2026111600L && QuizBankCheck.parseRev("<html>".getBytes()) == -1 && QuizBankCheck.parseRev(new byte[0]) == -1
