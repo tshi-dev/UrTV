@@ -86,3 +86,23 @@ Their HTML is in `mockups/src/`, rendered with `node mockups/src/render.js`.
 3. **One settings form** (couch-tv's compact rows for every look; the classic hub's tiles go): yes or no?
 4. **«رجّع الشكل السابق»** as the first row of «المظهر», only after a change: yes or no?
 5. **The budgets** in 07 as CI checks: yes or no?
+
+## Agreed with the cards session (for phase 3)
+
+The cards session owns `FavBar`'s geometry (look, zoom, cellW, aspect, gap, radius, rowH, padSide, centredStart) and the coming glass way.
+This work adds `FavBar.restyle(cells, way)` on top of it, plus `HomeLook.apply`. An in-place restyle must:
+
+1. **Load each app's icon off the main thread before the swap** (`artCache "i:"+pkg`, `fitted(ri.loadIcon(pm), false)`). Today that happens only
+   inside `loadApps`, and only for «أيقونات».
+2. **Reset every per-tile value that `tile()` captures:**
+   - the outline's and the ring's corner;
+   - `AspectFrame.ratio` (1 for icons, 9/16 otherwise);
+   - the image's padding and scale type;
+   - the card's background colour.
+3. **Swap the tray:**
+   - its background (`dockBand` for tiles, none for banners or icons);
+   - `dockRow`'s side padding (`FavBar.padSide`);
+   - its height (`applyTrayHeight` → `FavBar.rowH`).
+4. **Keep the rest as it is:**
+   - «أكمل المشاهدة» stays on `dockCell(i, n, favs)`, the tiles' geometry, whatever the way;
+   - focus is kept by package (`cardByPkg`).
