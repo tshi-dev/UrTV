@@ -842,6 +842,76 @@ html.lowram .photo.settle, html.lowram .week ul.flip li, html.lowram .mrow.flip 
   /* «UrTV النظيف» (#clean=1 the photo and the clock; =2 and the next-prayer line): a mask, the rest of the page is as it was */
   html.clean .top,html.clean .week,html.clean .p-mid,html.clean .p-match,html.clean .ystrip,html.clean .grain,html.clean .adbar,html.clean #fb,html.clean #mp,html.clean .mkup,html.clean #np{display:none!important}
   html.clean:not(.cl2) .p-prayer{display:none!important}
+  /* ===== 4.4 the screensaver's designs (#design=; the owner approved them: docs/mockups/saver-designs): «معلومات» (info, the default: the page as it
+     always was), «نظيفة» (clean: the clock and the day only), «ساعة كبيرة» (big), «لوحة» (frame: the photo as a framed picture), «خط اليوم» (dayline);
+     with any of them a centred bar (#bar=) and the weather's place (#wx=). Sizes in vh: the same place on every screen. ===== */
+  html.sd-clean .top,html.sd-clean .week,html.sd-clean .bottom,html.sd-clean .bottom-veil,html.sd-clean .top-veil,html.sd-clean .veil,html.sd-clean .grain,html.sd-clean .subline,html.sd-clean .ystrip,html.sd-clean #credit{display:none!important}
+  html.sd-clean .clockwrap{position:fixed;left:0;right:0;top:20.4vh;display:flex;justify-content:center;z-index:6;margin:0;padding:0}
+  html.sd-clean .clock{font-family:'ThmanyahDisplay','Thmanyah',sans-serif;font-weight:700;font-size:35.6vh;line-height:.9;direction:ltr;color:#fff;text-shadow:0 2px 18px rgba(0,0,0,.28)}
+  html.sd-clean .clock .ampm{display:none}
+  html.sd-glass .clock{background:var(--sd-glass) 0 0/100vw 100vh fixed;-webkit-background-clip:text;background-clip:text;text-shadow:none;-webkit-text-stroke:.15vh rgba(255,255,255,.9);filter:drop-shadow(0 .55vh 2.2vh rgba(0,0,0,.35))}
+  html.sd-glass .clock *{color:transparent!important;text-shadow:none!important}
+  .sd-line{position:fixed;left:0;right:0;top:55.3vh;z-index:7;text-align:center;color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.55),0 0 18px rgba(0,0,0,.35)}
+  .sd-line .d{font-size:3.35vh;font-weight:500}
+  .sd-line .n{margin-top:1.1vh;font-size:2.8vh;color:#F1E7D0}
+  .sd-line .n b{font-weight:500;color:#FFE9B8}
+  /* the prayer's name and its time never touch (the owner): the time is its own isolated run, a real gap before it */
+  .pt{unicode-bidi:isolate;direction:rtl;margin-inline-start:.3em}
+  html.sd-big .top,html.sd-big .week,html.sd-big .bottom,html.sd-big .subline,html.sd-big .ystrip,html.sd-big #credit{display:none!important}
+  html.sd-big .clockwrap{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;z-index:6;margin:0}
+  html.sd-big .clock{font-family:'Thmanyah',sans-serif;font-weight:300;font-size:55.5vh;line-height:1;direction:ltr;color:#fff;text-shadow:0 2px 30px rgba(0,0,0,.3)}
+  html.sd-big .clock .ampm{display:none}
+  html.sd-big .bottom-veil{display:block;height:100vh;background:radial-gradient(ellipse at 50% 50%,rgba(0,0,0,.30),rgba(0,0,0,.12) 70%)}
+  .sd-big-d{position:fixed;left:0;right:0;bottom:11.9vh;z-index:7;text-align:center;font-size:3.15vh;color:rgba(255,255,255,.85);text-shadow:0 1px 3px rgba(0,0,0,.5)}
+  html.sd-frame .top,html.sd-frame .week,html.sd-frame .bottom,html.sd-frame .bottom-veil,html.sd-frame .subline,html.sd-frame .ystrip,html.sd-frame #credit{display:none!important}
+  .sd-vig{position:fixed;inset:0;z-index:6;pointer-events:none;background:radial-gradient(ellipse 75% 70% at 50% 45%,rgba(0,0,0,0) 55%,rgba(0,0,0,.55) 100%)}
+  .sd-vig::after{content:'';position:absolute;inset:3.7vh;border:1px solid rgba(255,240,210,.35);border-radius:2px}
+  html.sd-frame .clockwrap{position:fixed;right:8.1vh;bottom:6.7vh;z-index:7;margin:0}
+  html.sd-frame .clock{font-size:8.1vh;font-weight:500;line-height:1;color:#fff;text-shadow:0 1px 6px rgba(0,0,0,.5)}
+  html.sd-frame .clock .ampm{font-size:.42em}
+  .sd-fdate{position:fixed;right:8.1vh;bottom:16.3vh;z-index:7;font-size:2.6vh;color:rgba(255,255,255,.85);text-shadow:0 1px 3px rgba(0,0,0,.6)}
+  .sd-verse{position:fixed;left:0;right:0;top:8.1vh;z-index:7;text-align:center;color:#FFF7E6;text-shadow:0 1px 4px rgba(0,0,0,.6)}
+  .sd-verse .q{font-family:'UthmanicHafs','Thmanyah',serif;font-size:4.8vh;line-height:1.6}
+  .sd-verse .o{font-family:'NotoMarks',serif;color:#E0BA74;font-size:1.3em;vertical-align:-.1em;padding:0 .15em}
+  .sd-verse .s{margin-top:.4vh;font-size:2.4vh;color:rgba(255,240,210,.8)}
+  html.sd-day .week,html.sd-day .bottom,html.sd-day .subline{display:none!important}
+  html.sd-day .mid{grid-template-columns:1fr}
+  html.sd-day .clockwrap{justify-self:center;align-self:center;text-align:center}
+  html.sd-day .bottom-veil{display:block!important;height:38vh}
+  .sd-dl{position:fixed;left:11.9vh;right:11.9vh;bottom:6.7vh;height:21vh;z-index:6;direction:rtl}
+  .sd-dl::before{content:'';position:absolute;left:0;right:0;top:8.1vh;height:.75vh;border-radius:.4vh;background:rgba(255,255,255,.22)}
+  .sd-dl .done{position:absolute;right:0;top:8.1vh;height:.75vh;border-radius:.4vh;background:linear-gradient(to left,rgba(224,186,116,.45),#E0BA74)}
+  .sd-dl .now{position:absolute;top:7.05vh;width:3vh;height:3vh;margin-right:-1.5vh;border-radius:50%;background:#FFE9B8;box-shadow:0 0 0 .75vh rgba(255,233,184,.25),0 0 3vh rgba(255,233,184,.6)}
+  /* the name above the line, the time well under it: the «now» dot (on the line) never sits on a time */
+  .sd-dl .p{position:absolute;top:0;transform:translateX(50%);text-align:center;white-space:nowrap;color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.6)}
+  .sd-dl .p b{display:block;font-size:3vh;font-weight:500;line-height:4.4vh}
+  .sd-dl .p i{display:block;margin-top:7.4vh;font-style:normal;font-size:2.6vh;color:#E2DACA;unicode-bidi:isolate}
+  .sd-dl .p::after{content:'';position:absolute;left:50%;top:7.4vh;width:2px;height:2.2vh;margin-left:-1px;background:rgba(255,255,255,.55)}
+  .sd-dl .p.past{opacity:.6}
+  .sd-dl .p.next b,.sd-dl .p.next i{color:#FFE9B8}
+  .sd-dl .p.next::after{background:#FFE9B8;width:3px}
+  .sd-dl .left{position:absolute;top:17.2vh;transform:translateX(50%);font-size:2.4vh;color:#FFE9B8;white-space:nowrap;text-shadow:0 1px 3px rgba(0,0,0,.6)}
+  /* the centred bar: the day's prayers (the next one lit), or one item (the slot's match, countdown or markets; the weather); no capsule, no «·» */
+  .sd-bar{position:fixed;left:50%;transform:translateX(-50%);z-index:7;display:flex;align-items:stretch;gap:1.1vh;padding:1.5vh;border-radius:3vh;
+    background:rgba(12,14,18,.6);border:1px solid rgba(255,255,255,.16);color:#fff;white-space:nowrap}
+  .sd-bar.at-bottom{bottom:6.7vh}
+  .sd-bar .c{display:flex;flex-direction:column;align-items:center;justify-content:center;min-width:16vh;padding:1.5vh 1.9vh;border-radius:1.9vh}
+  .sd-bar .c b{font-size:2.6vh;font-weight:400;color:#E9E1CE}
+  .sd-bar .c i{font-style:normal;font-size:3.5vh;font-weight:500;margin-top:.4vh;unicode-bidi:isolate}
+  .sd-bar .c.past b,.sd-bar .c.past i{color:#B9B09C;font-weight:400}
+  .sd-bar .c.next{background:#EBC67D}.sd-bar .c.next b,.sd-bar .c.next i{color:#1A1409}
+  .sd-bar .c.next em{font-style:normal;font-size:2.2vh;color:#3A2C10;margin-top:.2vh}
+  .sd-bar .one{display:flex;align-items:center;gap:3vh;padding:1.1vh 3vh}
+  .sd-bar .one .k{font-size:2.6vh;color:#E0BA74}
+  .sd-bar .one .v{font-size:3.9vh;font-weight:500}
+  .sd-bar .one .r{font-size:2.8vh;color:#E2DACA}
+  .sd-wx{position:fixed;z-index:7;color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.55),0 0 14px rgba(0,0,0,.3);white-space:nowrap}
+  .sd-wx b{font-weight:500}.sd-wx span{color:#E2DACA;margin-inline-start:.3em}
+  .sd-wx.at-clock{left:0;right:0;text-align:center;font-size:3vh}
+  .sd-wx.at-corner{top:4.1vh;left:5.2vh;font-size:2.8vh}
+  html.sd-wx-usual .top{display:flex!important}html.sd-wx-usual .top .dates,html.sd-wx-usual .top .mk,html.sd-wx-usual .top .rule{visibility:hidden}
+  html.sd-wx-off .top .wx,html.sd-wx-off .top .wxline,html.sd-wx-off .top .wxsub{visibility:hidden}
+
 </style>
 </head>
 <body>
@@ -1041,6 +1111,12 @@ const CONFIG = {
   // #lowram=1: the app says this TV is weak (Ram tier LOW: Android's low-RAM flag, or under 2000 MB; a user report on 4.1, lag): no seconds, slower timers
   // (the markets every 15 minutes, the adhan check every 15 s, the reminders' countdown every 5 s), no CSS transitions
   lowram: _Q.get('lowram') === '1',
+  // 4.4 the screensaver's design (the owner approved them): info (the default, the page as it always was), clean, big, frame, dayline; the centred bar
+  // (none, prayers, slot: the slot's match, countdown or markets, weather) at the bottom or under the clock; the weather's place (auto: as the design has it)
+  design: (v => ['clean', 'big', 'frame', 'dayline'].includes(v) ? v : 'info')(_Q.get('design')),
+  bar: (v => ['prayers', 'slot', 'weather'].includes(v) ? v : 'none')(_Q.get('bar')),
+  barAt: _Q.get('barat') === 'clock' ? 'clock' : 'bottom',
+  wxAt: (v => ['usual', 'clock', 'corner', 'off'].includes(v) ? v : 'auto')(_Q.get('wx')),
   midram: _Q.get('midram') === '1',   // a middle TV (2.0 to 2.6 GB): only the markets a little slower; the rest as on any TV
   seconds: _Q.get('seconds') === '1' && _Q.get('lowram') !== '1',
   // «التفسير الميسر» under the verse of the day: #tafsir=1 (anything else = off)
@@ -4159,6 +4235,116 @@ function restoreSnap(){
   }catch(e){}
 }
 
+
+// 4.4 the screensaver's designs (CONFIG.design, .bar, .wxAt; docs/mockups/saver-designs): built once, their words drawn again with the 15 s tick.
+// The page's own elements give the words (the date, the next prayer, the weather, the slot), so a design shows what the usual page would.
+const SD_NAMES = {Fajr: 'الفجر', Sunrise: 'الشروق', Dhuhr: 'الظهر', Asr: 'العصر', Maghrib: 'المغرب', Isha: 'العشاء'};
+const sdText = id => ((document.getElementById(id) || {}).textContent || '').trim();
+const sdNode = (cls) => { let e = document.querySelector('body > .' + cls.split(' ')[0]); if(!e){ e = document.createElement('div'); document.body.appendChild(e); } e.className = cls; return e; };
+const sdDay = () => [sdText('hijri'), sdText('greg').replace(/^[^،]+،\s*/, '')].filter(Boolean).join(SEP);
+const sdMins = k => { const v = DAY_TIMES && DAY_TIMES[k]; if(!v) return null; const [h, m] = String(v).split(':').map(Number); return h * 60 + m; };
+// the next prayer as «<b>name</b> <time>، in N minutes»: the time its own isolated run with a gap (never touching the name), as every design prints it
+function sdNext(){
+  const name = sdText('prayer-name'), time = sdText('prayer-time'), left = sdText('prayer-count');
+  if(!name || name === '—') return '';
+  return '<b>' + esc(name) + '</b>' + (time ? '<span class="pt">' + esc(time) + '</span>' : '') + (left ? SEP + esc(left) : '');
+}
+function sdWeather(){ return sdText('wx-temp') ? '<b>' + esc(sdText('wx-temp')) + '</b> ' + esc(sdText('wx-desc')) + '<span>' + esc(sdText('wx-range').replace(/^[،\s]+/, '')) + '</span>' : ''; }
+// «نظيفة»'s glass: the photo on the screen made small and drawn again over the screen (a soft blur, as the app's glass copy), frosted (less colour, a
+// white veil); a photo the page cannot read back (another origin without CORS), or a weak TV: plain white digits, never the photo sharp in them
+let SD_GLASS_OF = '';
+function sdGlass(){
+  const H = document.documentElement, ph = document.querySelector('.photo'), bg = ph && ph.style.backgroundImage, m = bg && /url\(["']?(.*?)["']?\)$/.exec(bg);
+  if(CONFIG.lowram || !m || m[1] === SD_GLASS_OF) return;
+  SD_GLASS_OF = m[1];
+  const img = new Image();
+  img.crossOrigin = 'anonymous';
+  img.onload = () => {
+    try{
+      if(SD_GLASS_OF !== m[1]) return;
+      const c = document.createElement('canvas');
+      c.width = 96; c.height = 54;
+      const g = c.getContext('2d');
+      g.filter = 'saturate(60%)';
+      g.drawImage(img, 0, 0, 96, 54);
+      g.filter = 'none';
+      g.fillStyle = 'rgba(255,255,255,.28)';
+      g.fillRect(0, 0, 96, 54);
+      H.style.setProperty('--sd-glass', "url('" + c.toDataURL('image/jpeg', .8) + "')");
+      H.classList.add('sd-glass');
+    }catch(e){ H.classList.remove('sd-glass'); }   // tainted: the plain digits
+  };
+  img.onerror = () => H.classList.remove('sd-glass');
+  img.src = m[1];
+}
+function designInit(){
+  if(CONFIG.widget) return;
+  const H = document.documentElement, d = CONFIG.design;
+  if(d !== 'info') H.classList.add('sd-' + (d === 'dayline' ? 'day' : d));
+  const wx = CONFIG.wxAt === 'auto' ? (d === 'info' || d === 'dayline' ? 'usual-page' : 'off') : CONFIG.wxAt;
+  if(wx === 'usual' && d !== 'info' && d !== 'dayline') H.classList.add('sd-wx-usual');
+  if(wx === 'off' && (d === 'info' || d === 'dayline')) H.classList.add('sd-wx-off');
+  H.dataset.sdwx = wx;
+  if((d === 'clean' || d === 'big' || d === 'frame') && document.querySelector('.clockwrap')) document.body.appendChild(document.querySelector('.clockwrap'));   // out of the stage's grid
+  designTick();
+}
+function designTick(){
+  if(CONFIG.widget) return;
+  const d = CONFIG.design, H = document.documentElement;
+  if(d === 'clean'){
+    sdGlass();
+    const nx = CONFIG.bar === 'prayers' ? '' : sdNext();
+    setHTML(sdNode('sd-line'), '<div class="d">' + esc(sdDay()) + '</div>' + (nx ? '<div class="n">' + nx + '</div>' : ''));
+  } else if(d === 'big') setHTML(sdNode('sd-big-d'), esc(sdDay()));
+  else if(d === 'frame'){
+    sdNode('sd-vig');
+    setHTML(sdNode('sd-fdate'), esc(sdDay()));
+    const v = VERSES.length ? VERSES[riyadhDayNumber() % VERSES.length] : null;
+    if(v && v.text.length < 90) setHTML(sdNode('sd-verse'), '<div class="q"><span class="o">﴿</span>' + esc(v.text) + '<span class="o">﴾</span></div><div class="s">' + esc(v.surah) + SEP + 'الآية' + ' ' + ar(v.ayah) + '</div>');
+  } else if(d === 'dayline' && DAY_TIMES){
+    const p = riyadhParts(), now = p.h * 60 + p.mi, a = sdMins('Fajr') - 30, b = sdMins('Isha') + 30, x = t => Math.max(0, Math.min(100, (t - a) / (b - a) * 100));
+    const nk = Object.keys(SD_NAMES).find(k => k !== 'Sunrise' && sdMins(k) > now);
+    let h = '<div class="done" style="width:' + x(now).toFixed(1) + '%"></div>';
+    for(const k of Object.keys(SD_NAMES)){
+      const t = sdMins(k);
+      if(t == null) continue;
+      h += '<div class="p' + (t <= now ? ' past' : k === nk ? ' next' : '') + '" style="right:' + x(t).toFixed(1) + '%"><b>' + (k === 'Dhuhr' && isFriday() ? 'الجمعة' : SD_NAMES[k]) + '</b><i>' + fmtTime(Math.floor(t / 60), t % 60) + '</i></div>';
+    }
+    h += '<div class="now" style="right:' + x(now).toFixed(1) + '%"></div>';
+    if(nk) h += '<div class="left" style="right:' + x(sdMins(nk)).toFixed(1) + '%">' + esc(sdText('prayer-count')) + '</div>';
+    setHTML(sdNode('sd-dl'), h);
+  }
+  const under = () => { const c = document.querySelector('.sd-line'); return c ? c.getBoundingClientRect().bottom + innerHeight * .02 : innerHeight * .62; };
+  if(CONFIG.bar !== 'none'){
+    let h = '';
+    if(CONFIG.bar === 'prayers' && DAY_TIMES){
+      const p = riyadhParts(), now = p.h * 60 + p.mi, nk = Object.keys(SD_NAMES).find(k => k !== 'Sunrise' && sdMins(k) > now);
+      for(const k of Object.keys(SD_NAMES)){
+        const t = sdMins(k);
+        if(t == null) continue;
+        h += '<div class="c' + (k === nk ? ' next' : t <= now ? ' past' : '') + '"><b>' + (k === 'Dhuhr' && isFriday() ? 'الجمعة' : SD_NAMES[k]) + '</b><i>' + fmtTime(Math.floor(t / 60), t % 60) + '</i>' + (k === nk ? '<em>' + esc(sdText('prayer-count')) + '</em>' : '') + '</div>';
+      }
+    } else if(CONFIG.bar === 'weather'){
+      if(sdText('wx-temp')) h = '<div class="one"><span class="k">الطقس</span><span class="v">' + esc(sdText('wx-temp') + ' ' + sdText('wx-desc')) + '</span><span class="r">' + esc(sdText('wx-range').replace(/^[،\s]+/, '')) + '</span></div>';
+    } else {
+      const blk = document.querySelector('#match-row .mblock') || document.querySelector('#match-row');
+      const big = blk && blk.querySelector('.big'), sub = blk && blk.querySelector('.sub');
+      if(big) h = '<div class="one"><span class="k">' + esc(sdText('slot-label')) + '</span><span class="v">' + big.innerHTML + '</span><span class="r">' + (sub ? sub.innerHTML : '') + '</span></div>';
+    }
+    const e = sdNode('sd-bar ' + (CONFIG.barAt === 'clock' ? 'at-clock' : 'at-bottom'));
+    setHTML(e, h);
+    e.hidden = !h;
+    if(CONFIG.barAt === 'clock') e.style.top = Math.round(under()) + 'px';
+  }
+  const wx = H.dataset.sdwx;
+  if(wx === 'clock' || wx === 'corner'){
+    const e = sdNode('sd-wx at-' + wx), w = sdWeather();
+    setHTML(e, w);
+    e.hidden = !w;
+    if(wx === 'clock') e.style.top = Math.round(under()) + 'px';
+  }
+}
+
 // What the cards need to be redrawn on, one place for the screensaver and the launcher
 // every 15 s (prayers, the row, the hours, the smart card, «يومك»), the windows and markets every minute.
 function cardTimers(){
@@ -4835,7 +5021,7 @@ function boot(){
     const onSecond = () => { tickClock(); setTimeout(onSecond, 1000 - Date.now() % 1000 + 15); };
     setTimeout(onSecond, 1000 - Date.now() % 1000 + 15);
   } else setInterval(tickClock, 1000);
-  setInterval(()=>{ tickDates(); tickPrayer(); tickOccasion(); wxExpire(); wxSource(); if(!SLOT_MATCHES) renderSlot(); }, 15000);
+  setInterval(()=>{ tickDates(); tickPrayer(); tickOccasion(); wxExpire(); wxSource(); if(!SLOT_MATCHES) renderSlot(); designTick(); }, 15000);
   if(SLOT_MATCHES){   // the matches timers run only while the slot shows matches
     setInterval(() => renderMatches(false), 60000);
     // 15 s a page (two games), 10 s once a league makes more than 3 pages
@@ -4848,6 +5034,8 @@ function boot(){
   if(USES('shows')) periodic(loadWeek, 6*3600*1000);
   periodic(loadWeather, 30*60*1000);
   cardTimers();
+  designInit();   // 4.4 the screensaver's design (info: nothing changes)
+  setTimeout(designTick, 2500);   // once the first prayers, weather and slot are in
   setInterval(applyNight, 60*1000);
   setInterval(pixelShift, 4*60*1000);
   let lastDay = FMT_DATE.format(new Date());

@@ -93,6 +93,14 @@ final class Prefs {
     static final int MAX_MARKETS = 4;
     static final String DEFAULT_MARKETS = "tasi,spx,btc";
 
+    // 4.4 the screensaver's design (#design=; the owner approved them, docs/mockups/saver-designs): «معلومات» is the page as it always was
+    static final String[][] SAVER_DESIGNS = {{"info", "معلومات"}, {"clean", "نظيفة"}, {"big", "ساعة كبيرة"}, {"frame", "لوحة"}, {"dayline", "خط اليوم"}};
+    // a centred bar with any design (#bar=): the day's prayers, the left slot's item (a match, the countdown or the markets), or the weather
+    static final String[][] SAVER_BARS = {{"none", "بدون"}, {"prayers", "الصلوات"}, {"slot", "الخانة اليسرى"}, {"weather", "الطقس"}};
+    static final String[][] BAR_PLACES = {{"bottom", "أسفل الشاشة"}, {"clock", "تحت الساعة"}};
+    // where the weather goes (#wx=): auto is as the design has it (its place at the top in «معلومات» and «خط اليوم», hidden in the others)
+    static final String[][] WX_PLACES = {{"auto", "كما في التصميم"}, {"usual", "مكانه المعتاد"}, {"clock", "تحت الساعة"}, {"corner", "في الزاوية"}, {"off", "مخفي"}};
+
     // how the markets are shown (#mkstyle=; arrows is what it always showed)
     static final String[][] MK_STYLES = {{"arrows", "الاتجاه فقط ▲▼"}, {"prices", "السعر والنسبة"}};
     // how the stocks card shows every stock's change (#stkchg=amount; the percentage is what it always showed).
@@ -416,6 +424,22 @@ final class Prefs {
         return MK_STYLES[0][1];
     }
 
+    /** the label of a choice of one of the tables above; the first one when the value is not in it */
+    static String labelOf(String[][] table, String v) {
+        for (String[] c : table) if (c[0].equals(v)) return c[1];
+        return table[0][1];
+    }
+
+    // the values are checked where they are set (the settings' lists, SaverReceiver); the page takes anything else as the default
+    String design() { return sp.getString("design", "info"); }
+    void setDesign(String v) { sp.edit().putString("design", v).apply(); }
+    String bar() { return sp.getString("bar", "none"); }
+    void setBar(String v) { sp.edit().putString("bar", v).apply(); }
+    String barAt() { return sp.getString("barAt", "bottom"); }
+    void setBarAt(String v) { sp.edit().putString("barAt", v).apply(); }
+    String wxAt() { return sp.getString("wxAt", "auto"); }
+    void setWxAt(String v) { sp.edit().putString("wxAt", v).apply(); }
+
     String national() { return "off".equals(sp.getString("national", "auto")) ? "off" : "auto"; }
     void setNational(String v) { sp.edit().putString("national", v).apply(); }
 
@@ -665,6 +689,7 @@ final class Prefs {
             + (occasion() ? "" : "&occasion=0") + (nightDim() ? "" : "&nightdim=0") + (tasksPill() ? "" : "&taskspill=0")
             + (backSaver() ? "&backsaver=1" : "")
             + "&cardstyle=" + cardStyle()
+            + "&design=" + design() + "&bar=" + bar() + "&barat=" + barAt() + "&wx=" + wxAt()
             + "&adhanbar=" + (adhanBar() ? "1" : "0")
             + "&yearstrip=" + (yearStrip() ? "1" : "0")
             + (sunrise() ? "&sunrise=1" : "") + (prayerBar() ? "&prayerbar=1" : "") + (wxMore() ? "&wxmore=1" : "")

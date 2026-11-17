@@ -365,6 +365,16 @@ public class SettingsActivity extends Activity {
             new Runnable() { public void run() { prefs.setNightDim(!prefs.nightDim()); render(); } });
         row("المناسبات الوطنية", Prefs.nationalLabel(prefs.national()), R.drawable.ic_eye,
             new Runnable() { public void run() { pickNational(); } });
+        // 4.4 the screensaver's design, its centred bar and the weather's place (the owner approved them)
+        row("تصميم شاشة التوقف", Prefs.labelOf(Prefs.SAVER_DESIGNS, prefs.design()), R.drawable.ic_eye,
+            new Runnable() { public void run() { pickChoice("تصميم شاشة التوقف", Prefs.SAVER_DESIGNS, prefs.design(), v -> prefs.setDesign(v)); } });
+        row("الشريط في الوسط", Prefs.labelOf(Prefs.SAVER_BARS, prefs.bar()), R.drawable.ic_eye,
+            new Runnable() { public void run() { pickChoice("الشريط في الوسط", Prefs.SAVER_BARS, prefs.bar(), v -> prefs.setBar(v)); } });
+        if (!"none".equals(prefs.bar()))   // where the bar goes: only with a bar
+            row("مكان الشريط", Prefs.labelOf(Prefs.BAR_PLACES, prefs.barAt()), R.drawable.ic_eye,
+                new Runnable() { public void run() { pickChoice("مكان الشريط", Prefs.BAR_PLACES, prefs.barAt(), v -> prefs.setBarAt(v)); } });
+        row("مكان الطقس", Prefs.labelOf(Prefs.WX_PLACES, prefs.wxAt()), R.drawable.ic_eye,
+            new Runnable() { public void run() { pickChoice("مكان الطقس", Prefs.WX_PLACES, prefs.wxAt(), v -> prefs.setWxAt(v)); } });
         row("حجم الساعة", Prefs.clockSizeLabel(prefs.clockSize()), R.drawable.ic_eye,
             new Runnable() { public void run() { pickClockSize(); } });
         // «نظام الساعة»: 12 or 24 hours, the same setting as `saver.sh clock24`; the page (screensaver and the home's cards) and the home's clock follow it
@@ -2061,6 +2071,19 @@ public class SettingsActivity extends Activity {
             })
             .setNegativeButton("إلغاء", null).show();
         in.requestFocus();
+    }
+
+    /** one choice of a table (Prefs' {value, label} lists): the current one marked; picking saves it and draws the list again */
+    private void pickChoice(String title, final String[][] table, String current, final Pick onPick) {
+        String[] labels = new String[table.length];
+        int sel = 0;
+        for (int i = 0; i < labels.length; i++) {
+            labels[i] = table[i][1];
+            if (table[i][0].equals(current)) sel = i;
+        }
+        new Dlg(this).setTitle(title)
+            .setSingleChoiceItems(labels, sel, (d, i) -> { onPick.on(table[i][0]); d.dismiss(); render(); })
+            .show();
     }
 
     private void pickMkStyle() {

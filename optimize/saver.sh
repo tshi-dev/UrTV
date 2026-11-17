@@ -82,6 +82,10 @@
 #   optimize/saver.sh idle 10                      the TV starts the screensaver after N idle minutes: 1 2 5 10 15 30
 #                                                  (the TV's own timer; left alone unless you run this)
 #   optimize/saver.sh cardstyle glass1             look of the card beside the clock: current dark1 glass1 dark3 glass3 boxes classic
+#   optimize/saver.sh design clean                 the screensaver's design: info (default, as it always was) clean big frame dayline
+#   optimize/saver.sh bar prayers                  a centred bar: none (default) prayers slot (the left slot's item) weather
+#   optimize/saver.sh barat clock                  where the bar goes: bottom (default) clock (under the clock)
+#   optimize/saver.sh wx corner                    the weather's place: auto (default, as the design has it) usual clock corner off
 #   optimize/saver.sh national off                 the quiet green look on National Day (21-25 Sep) and Founding Day (20-24 Feb): auto (default) or off
 #   optimize/saver.sh digits latin                 numbers: hindi = ١٢٣ (default), latin = 123
 #   optimize/saver.sh hijrioffset -1               the Hijri date moved by whole days, -2..2 (default 0 = Umm al-Qura as it is): where the month
@@ -302,6 +306,10 @@ case "${1:-}" in
   minrating)set1 minrating "${2:?usage: optimize/saver.sh minrating 7}" ;;
   photos)   set1 photos "${2:?usage: optimize/saver.sh photos 30s|1|5|10|15|30|60 (minutes; 30s = every 30 seconds)}" ;;
   cardstyle)set1 cardstyle "${2:?usage: optimize/saver.sh cardstyle current|dark1|glass1|dark3|glass3|boxes}" ;;
+  design)   set1 design "${2:?usage: optimize/saver.sh design info|clean|big|frame|dayline}" ;;
+  bar)      set1 bar "${2:?usage: optimize/saver.sh bar none|prayers|slot|weather}" ;;
+  barat)    set1 barat "${2:?usage: optimize/saver.sh barat bottom|clock}" ;;
+  wx)       set1 wx "${2:?usage: optimize/saver.sh wx auto|usual|clock|corner|off}" ;;
   markets)  case "${2:?usage: optimize/saver.sh markets tasi,gold,btc | off | on}" in
               off|on) set1 mkbar "$2" ;;
               *) set1 markets "$2" && set1 mkbar on > /dev/null ;;   # choosing markets shows the line

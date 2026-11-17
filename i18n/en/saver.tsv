@@ -977,3 +977,19 @@
 الشكل: %s، والإضاءة: %s	Look: %s, lighting: %s
 مفعّل (التخطيط كنبة، الخلفية الآفاق، الساعة زجاجية، التطبيقات تكبير وظل؛ إيقافه يرجّع اختياراتك)	On (layout Couch, background horizons, glass clock, apps larger with a shadow; turning it off brings your own choices back)
 مفعّل (مخصّص: غيّرت صفًا من الأربعة؛ إيقافه يرجّع اختياراتك قبل التشغيل)	On (custom: you changed one of the four rows; turning it off brings back your choices from before)
+# ---- 4.4 the screensaver designs
+تصميم شاشة التوقف	Screensaver design
+الشريط في الوسط	Centre bar
+مكان الشريط	Bar position
+مكان الطقس	Weather position
+معلومات	Info
+نظيفة	Clean
+ساعة كبيرة	Big clock
+لوحة	Frame
+خط اليوم	Day line
+الصلوات	Prayers
+أسفل الشاشة	Bottom of the screen
+تحت الساعة	Under the clock
+كما في التصميم	As the design has it
+مكانه المعتاد	Its usual place
+في الزاوية	In the corner

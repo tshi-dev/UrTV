@@ -104,6 +104,22 @@ the phone page's key, «مركز التحكم» the control centre's row that op
     الخيارات: كبيرة / متوسطة / صغيرة
     الأصل: كبيرة
     مثال للوكيل: optimize/saver.sh clocksize <large, medium, small>  (`large` is the default and today's look, unchanged)
+——— تصميم شاشة التوقف [شاشة التوقف]
+    الخيارات: معلومات / نظيفة / ساعة كبيرة / لوحة / خط اليوم
+    الأصل: معلومات
+    مثال للوكيل: optimize/saver.sh design <info, clean, big, frame, dayline>  (`info` = «معلومات», the screensaver as it always was, the default)
+——— الشريط في الوسط [شاشة التوقف]
+    الخيارات: بدون / الصلوات / الخانة اليسرى / الطقس
+    الأصل: بدون
+    مثال للوكيل: optimize/saver.sh bar <none, prayers, slot, weather>  (`none` is the default)
+——— مكان الشريط [شاشة التوقف]
+    الخيارات: أسفل الشاشة / تحت الساعة
+    الأصل: أسفل الشاشة
+    مثال للوكيل: optimize/saver.sh barat <bottom, clock>  (`bottom` of the screen is the default; `clock` = under the clock)
+——— مكان الطقس [شاشة التوقف]
+    الخيارات: كما في التصميم / مكانه المعتاد / تحت الساعة / في الزاوية / مخفي
+    الأصل: كما في التصميم
+    مثال للوكيل: optimize/saver.sh wx <auto, usual, clock, corner, off>  (`auto` = as the design has it, the default: its place at the top in `info` and `dayline`, hidden in the others)
 ——— إظهار الثواني [الرئيسية وشاشة التوقف]
     مثال للوكيل: optimize/saver.sh seconds on  (`off` = the default, the clock as always)
       القيم المقبولة: on|off
@@ -484,6 +500,22 @@ the phone page's key, «مركز التحكم» the control centre's row that op
      الأصل: تلقائي
      مثال للوكيل: optimize/saver.sh national off  (`auto` is the default)
        القيم المقبولة: auto|off
+———— تصميم شاشة التوقف [شاشة التوقف]
+     الخيارات: معلومات / نظيفة / ساعة كبيرة / لوحة / خط اليوم
+     الأصل: معلومات
+     مثال للوكيل: optimize/saver.sh design <info, clean, big, frame, dayline>  (`info` = «معلومات», the screensaver as it always was, the default)
+———— الشريط في الوسط [شاشة التوقف]
+     الخيارات: بدون / الصلوات / الخانة اليسرى / الطقس
+     الأصل: بدون
+     مثال للوكيل: optimize/saver.sh bar <none, prayers, slot, weather>  (`none` is the default)
+———— مكان الشريط [شاشة التوقف]
+     الخيارات: أسفل الشاشة / تحت الساعة
+     الأصل: أسفل الشاشة
+     مثال للوكيل: optimize/saver.sh barat <bottom, clock>  (`bottom` of the screen is the default; `clock` = under the clock)
+———— مكان الطقس [شاشة التوقف]
+     الخيارات: كما في التصميم / مكانه المعتاد / تحت الساعة / في الزاوية / مخفي
+     الأصل: كما في التصميم
+     مثال للوكيل: optimize/saver.sh wx <auto, usual, clock, corner, off>  (`auto` = as the design has it, the default: its place at the top in `info` and `dayline`, hidden in the others)
 ———— حجم الساعة [شاشة التوقف]
      الخيارات: كبيرة / متوسطة / صغيرة
      الأصل: كبيرة
