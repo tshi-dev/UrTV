@@ -1,0 +1,17 @@
+[s[999C[999B[6n[u[H[J[?25l[H[J[s[999C[999B[6n[uTasks: 387 total,   3 running, 384 sleeping,   0 stopped,   0 zombie
+  Mem:  2451284K total,  2276200K used,   175084K free,    12532K buffers
+ Swap:   917500K total,   459564K used,   457936K free,   904776K cached
+400%cpu  39%user  10%nice  55%sys 226%idle  65%iow   0%irq   6%sirq   0%host
+[7m  PID USER         PR  NI VIRT  RES  SHR S[%CPU] %MEM     TIME+ ARGS            [0m
+[1m32720 shell        20   0  17M 4.2M 3.4M R 22.5   0.1   0:00.08 top -n 1 -m 12[m
+  696 system       18  -2 2.5G 314M 246M S 22.5  13.1   6:11.65 system_server
+ 1657 u0_a43       20   0 1.5G 182M 129M S 19.3   7.5   0:47.83 com.google.andr+
+ 2006 u0_a35       20   0 2.0G 123M  87M S 16.1   5.1  45:47.39 com.google.andr+
+26904 root          0 -20    0    0    0 I  3.2   0.0   0:00.73 [kworker/u9:0-b+
+19955 root          0 -20    0    0    0 I  3.2   0.0   0:01.76 [kworker/u9:4-m+
+19783 root          0 -20    0    0    0 I  3.2   0.0   0:01.54 [kworker/u9:3-k+
+ 2267 u0_a107      20   0 1.9G 133M  89M S  3.2   5.5   3:59.48 com.spotify.tv.+
+  857 root         RT   0    0    0    0 D  3.2   0.0   0:13.06 [sync status mo+
+  602 mdnsr        20   0  17M 2.5M 2.3M S  3.2   0.1   0:04.46 mdnsd
+  530 audioserver  20   0  95M  14M  12M S  3.2   0.5   3:05.25 audioserver
+  477 audioserver  RT   0 103M 8.1M 6.7M S  3.2   0.3   5:10.21 vendor.mediatek+[?25h[0m[999H[K[?25h[?25h[0m[999H[K

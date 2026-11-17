@@ -1,0 +1,17 @@
+[s[999C[999B[6n[u[H[J[?25l[H[J[s[999C[999B[6n[uTasks: 385 total,   1 running, 384 sleeping,   0 stopped,   0 zombie
+  Mem:  2451284K total,  2274720K used,   176564K free,    22736K buffers
+ Swap:   917500K total,   446244K used,   471256K free,   945292K cached
+400%cpu  26%user   3%nice  23%sys 348%idle   0%iow   0%irq   0%sirq   0%host
+[7m  PID USER         PR  NI VIRT  RES  SHR S[%CPU] %MEM     TIME+ ARGS            [0m
+[1m 4320 shell        20   0  17M 4.2M 3.4M R 19.3   0.1   0:00.08 top -n 1 -m 12[m
+ 2006 u0_a35       20   0 2.0G 123M  86M S 16.1   5.1  46:54.71 com.google.andr+
+ 2267 u0_a107      20   0 1.9G 133M  88M S  3.2   5.5   4:04.55 com.spotify.tv.+
+  543 audioserver  20   0  36M 3.3M 2.5M S  3.2   0.1   7:51.35 voicesdk_server
+  489 system       -3 -10 113M 6.5M 5.5M S  3.2   0.2   6:38.77 hwcomposer.merak
+  446 mediacodec   20   0 116M 4.3M 4.3M S  3.2   0.1   1:58.59 android.hardwar+
+  435 system       20   0  25M 3.1M 3.1M S  3.2   0.1   0:51.22 android.hardwar+
+  416 root         20   0    0    0    0 S  3.2   0.0   0:21.15 [triggen vsync]
+  394 root         20   0    0    0    0 S  3.2   0.0   0:20.88 [pqu_low_pri]
+ 4123 root         20   0    0    0    0 I  0.0   0.0   0:00.02 [kworker/0:1-ev+
+ 3989 root         20   0    0    0    0 I  0.0   0.0   0:00.03 [kworker/2:2-ev+
+ 3285 root          0 -20    0    0    0 I  0.0   0.0   0:00.00 [kworker/1:2H-k+[?25h[0m[999H[K[?25h[?25h[0m[999H[K

@@ -3079,3 +3079,18 @@ Pictures and system lists in tester/step93b/. Backup first; the 4.4 setup undone
 - **Beta fix (4.3.3):** with the beta on and no newer beta, «تحقق من التحديث» now says **«تلفزيونك محدّث: 4.3.3»** (picture 20-b2) — no more «التحديث من التلفزيون ما يشتغل». The text is «تلفزيونك محدّث», not «لا يوجد أحدث» as the step names it.
 - **Screensaver bottom strip (matches on, default look, 14 screenshots over 2 min):** text rows y 897–1026 in **every** frame, separator at the same y; the matches item changed content (e.g. «بعد ٥٠ دقيقة» → …, prayer card «العشاء ٦:٣٥») and the strip never moved ✓ (strip-start.png / strip-later.png).
 Next: the owner's 4.4 setup back on the TV.
+
+## step 98 — «remote freezes on TCL» (4.3.3 vs 4.3.2 vs 4.3.4 candidate)  [tester, 17 Nov]
+**Result: freeze NO on all three. I could not reproduce a freeze/lag.** (TCL Smart TV Pro G08, Android 14; Wi-Fi: connected)
+
+| build | run | janky frames (home) | p50 / p90 / p99 frame | longest frame in last 120 | Missed Vsync | `Start proc sa.urtv.screensaver` | ANR / crash | stalls >300 ms |
+|---|---|---|---|---|---|---|---|---|
+| 4.3.3 (460) | 10 min | 7.7 % (283/3684) | 21 / 46 / 69 ms | 149 ms | 82 | 0 | none | 0 |
+| 4.3.2 (v4.3.332) | 5 min | 7.7 % (142) | 21 / 44 / 65 ms | 30 ms | 18 | 0 | none | 0 |
+| 4.3.4 cand. (469, run 44152887538) | 5 min | 6.9 % (153) | 21 / – / 65 ms | 30 ms | 25 | 0 | none | 0 |
+
+Run = family-style keys (favourites walk, YouTube out and Home pressed at second 58 = minute change, settings in/out, volume), repeated. Raw gfxinfo/top/keys in `tester/step98/`.
+- Input→frame latency from framestats: p99 ≈ 27–30 ms, max ≈ 32 ms; nothing over 300 ms. No Choreographer «Skipped N frames», no `Davey`, no ANR line, `logcat -b crash` empty, `/data/anr` has no files from today (`dumpsys activity anr` doesn't exist on this TV). Idle CPU ≈ 350 % free (4 cores), 104 MB RAM free.
+- Suspect check 4b: in 4.3.3 there was **no** screensaver cold start at any minute change or return Home (the screensaver process was already alive). So the ConfigProvider-on-UI-thread theory is **not shown on this TV**; it may need a TV with low RAM or the screensaver killed (not tried: I did not force-kill it). 4.3.3 jank = 4.3.2 jank (same 7.7 %), so 4.3.3 is not worse here.
+- Not measured: `getevent -lt` raw latency (adb-injected keys only; a real remote needs the owner). Steps 4c (a–e user reports) NOT done yet.
+- TV left on 4.3.4 candidate (469) for now; restoring the owner's 4.4 setup next.
