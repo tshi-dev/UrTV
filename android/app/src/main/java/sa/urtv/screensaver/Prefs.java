@@ -1470,7 +1470,7 @@ final class Prefs {
         String name = mix.isEmpty() ? presetName(key) : combo(mix)[1];
         List<String> ch = presetChanged();
         if (ch.isEmpty()) return name;
-        return ch.size() == 1 ? String.format("مخصّص (%s، وتغيّر: %s)", name, ch.get(0)) : String.format("مخصّص (%s، وتغيّر أكثر من صف)", name);
+        return ch.size() == 1 ? String.format(java.util.Locale.ROOT, "مخصّص (%s، وتغيّر: %s)", name, ch.get(0)) : String.format(java.util.Locale.ROOT, "مخصّص (%s، وتغيّر أكثر من صف)", name);
     }
     /** saver.sh show: "family" or "family (custom)" */
     String presetShow() { return (presetCombo().isEmpty() ? preset() : presetCombo()) + (presetChanged().isEmpty() ? "" : " (custom)"); }

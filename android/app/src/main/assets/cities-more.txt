@@ -173,6 +173,7 @@
 =17.6333	43.0833	0	Ar Rayth	
 =17.2333	43.1000	0	Al Eidabi	
 =16.8000	43.1167	0	Al Harth	
+=16.7079	42.9552	0		
 =17.4933	44.1277	505652	Najrān	مدينة نجران السعودية|EAM|Nacran|Nadzhran
 =17.7556	44.4680	23252	Al Mash‘ilīyah	Al-Mish'aliah
 =17.8472	44.0208	12738	Ḩabūnā	hbwna

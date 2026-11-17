@@ -4734,7 +4734,7 @@ function mpRender(){
   MP.rows = []; shown.forEach(g => g.games.forEach(ev => MP.rows.push(ev)));
   MP.r = Math.max(0, Math.min(MP.r, MP.rows.length - 1));
   setText(document.getElementById('mp-h'), V ? V.title : FB_W.title);
-  if(V) setHTML(document.getElementById('mp-age'), MP.note ? esc(MP.note) : V.sub || '', true); else setText(document.getElementById('mp-age'), mpAge());
+  if(V) setHTML(document.getElementById('mp-age'), MP.note ? esc(MP.note) : V.sub || '', true); else setHTML(document.getElementById('mp-age'), mpAge());
   const tb = document.getElementById('mp-teams'); if(tb){ tb.classList.toggle('f', MP.zone === 'head'); tb.hidden = !!V; }
   const ring = i => (MP.zone === 'days' || (!MP.rows.length && MP.zone !== 'head')) && i === MP.d ? ' f' : '';
   setHTML(document.getElementById('mp-days'), V ? V.tabs.map((x, i) => `<li class="${x.on ? 'on' : ''}${ring(i)}">${x.input ? '<input id="mp-q" type="search" autocomplete="off" tabindex="-1">' : esc(x.t)}</li>`).join('')
