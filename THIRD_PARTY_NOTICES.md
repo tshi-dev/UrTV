@@ -9,7 +9,9 @@ launcher's origin in `android/launcher/LICENSE-tv-home`.
 The 4.3.3 scene home proposal (`docs/mockups/`) follows couch-tv's design (https://github.com/Seagey/couch-tv: scenes with a glass
 clock behind the scenery, settings with side sections), and its mockups use couch-tv's five scene photos, their cut-outs and glass
 copies (`tv-home/web/backgrounds/scene-*`, made for couch-tv with an AI image model, "use them however you like"), under the MIT
-License, Copyright (c) 2026 Seagey, the same text as below.
+License, Copyright (c) 2026 Seagey, the same text as below. The settings of the look «منظر وساعة» (proposal, `docs/mockups/settings-couchtv/`)
+follow couch-tv's settings screen (`tv-home/web/app.css`, «Home settings»: its sizes, colours and kinds of row), and that folder shows
+couch-tv's own screenshot `docs/screens/home-settings.jpg`, under the same license.
 
 ## talkies
 
