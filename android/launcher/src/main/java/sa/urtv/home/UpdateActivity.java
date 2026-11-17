@@ -51,7 +51,7 @@ public class UpdateActivity extends Activity {
         S.n("ألغيت التثبيت."),
         S.n("الإصدار المثبّت %s"),
         S.n("تلفزيونك محدّث: %s"),
-        S.n("تحديث جديد %s · اضغط للتحديث"),
+        S.n("تحديث جديد %s، اضغط للتحديث"),
         S.n("تم التحديث ✓ %s"),
         S.n("الخطوة: %s"),
         S.n("تحديث تطبيق الحافظة"),
@@ -295,7 +295,7 @@ public class UpdateActivity extends Activity {
         col.addView(track, new LinearLayout.LayoutParams(-1, dp(8)));
         String mb = S.t("%s من %s م.ب", MarketData.show(MarketData.num(done / 1e6, 1), Digits.latin()), MarketData.show(MarketData.num(total / 1e6, 1), Digits.latin()));
         String pct = Digits.of(String.valueOf(Math.round(share * 100))) + (Digits.latin() ? "%" : "٪");
-        TextView t = text(pct + " · " + mb, 14, "Regular", DIM, Dir.start());
+        TextView t = text(pct + S.sep() + mb, 14, "Regular", DIM, Dir.start());
         t.setTextDirection(View.TEXT_DIRECTION_FIRST_STRONG);
         col.addView(t, right(0));
     }

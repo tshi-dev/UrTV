@@ -125,14 +125,15 @@ check("E18: the favourites row is laid out by Dir (first tile on the left in Eng
 
 # E16: the Tilawah and adhan footers (XML strings whose runs of spaces the build makes one)
 sjava = text(HOME / "S.java")
-check("E16: the table finds an entry by its one-space form too (aapt makes «  •  » into « • » in getString)", "spaced(m);" in sjava
+check("E16: the table finds an entry by its one-space form too (aapt makes «, » into «, » in getString)", "spaced(m);" in sjava
       and 'String one = e.getKey().replaceAll(" {2,}", " ");' in sjava and sjava.index("spaced(m);") < sjava.index("table = m;"))
 xml = text(ROOT / "android/launcher/src/main/res/values/strings.xml")
 spaced = [v for v in re.findall(r"<string name=\"[^\"]+\"[^>]*>(.*?)</string>", xml, re.S) if re.search(r"\S  +\S", v)]
 one_space = {re.sub(" {2,}", " ", k): v for k, v in home_tsv.items()}
-check("E16: every XML string with a run of spaces (the footers, «متوقف  •  الأذان كاملًا»…) is found in its one-space form", spaced
-      and all(re.sub(" {2,}", " ", v) in one_space for v in spaced) and "يمين/يسار بين الأقسام  •  اختيار للفتح  •  رجوع للواجهة" in spaced
-      and "متوقف  •  الأذان كاملًا" in spaced, [v for v in spaced if re.sub(" {2,}", " ", v) not in one_space])
+# 4.4: the footers' «  •  » became «، » (one space, no run left); any run of spaces that comes back is still found in its one-space form
+check("E16: every XML string with a run of spaces is found in its one-space form, and the footers (now «، ») are in the table",
+      all(re.sub(" {2,}", " ", v) in one_space for v in spaced) and "يمين/يسار بين الأقسام، اختيار للفتح، رجوع للواجهة" in one_space
+      and "متوقف، الأذان كاملًا" in one_space, [v for v in spaced if re.sub(" {2,}", " ", v) not in one_space])
 til = text(HOME / "tilawah/MainActivity.java")
 check("E16: the rows keep their Arabic line (OnOff reads it) and say it through Ui.line, which now finds the one-space form whole",
       "Ui.line(" in til and "String whole = sa.urtv.home.S.tv(s);" in text(HOME / "tilawah/Ui.java"))

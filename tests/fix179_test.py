@@ -59,9 +59,9 @@ check("the setup's ongoing notification is in the person's language (review R12)
 md = text(HOME / "MarketData.java")
 check("market data (owner): the TV asks the file every 5 minutes (the open page too), a late file shows its own time «آخر تحديث», no error",
       "FRESH_MS = 5 * 60_000L" in text(HOME / "MarketFile.java") and "if (++ticks % 5 == 0) refreshPrices();" in mk and "periodic(loadMarkets, (CONFIG.lowram ? 15 : CONFIG.midram ? 10 : 5)*60*1000);" in tpl and "15*60*1000);" not in tpl[tpl.index("const loadStocks = loadMarkets"):][:6000])
-check("market data: «الأسعار متأخرة · المصدر: Yahoo Finance» under every tab of the markets page and on the stock card, small, in the file's own provider name",
-      'S.t("الأسعار متأخرة · المصدر: %s", name)' in mk and "content.addView(sourceNote(), gap(16));" in mk and "cardNote = (TextView) sourceNote();" in mk and 'return "stooq".equals(src)' in md
-      and "الأسعار متأخرة · المصدر: %s\tDelayed prices · Source: %s" in text(ROOT / "i18n/en/home.tsv"))
+check("market data: «الأسعار متأخرة، المصدر: Yahoo Finance» under every tab of the markets page and on the stock card, small, in the file's own provider name",
+      'S.t("الأسعار متأخرة، المصدر: %s", name)' in mk and "content.addView(sourceNote(), gap(16));" in mk and "cardNote = (TextView) sourceNote();" in mk and 'return "stooq".equals(src)' in md
+      and "الأسعار متأخرة، المصدر: %s\tDelayed prices, Source: %s" in text(ROOT / "i18n/en/home.tsv"))
 # ---- build 180's final test (work/fix-180)
 ml = text(RES / "layout/activity_main.xml")
 check("B3: the Tilawah tabs are 24 px apart (12 dp)", ml.count('android:layout_marginStart="12dp"') >= 2 and 'android:layout_marginStart="10dp"' not in ml)

@@ -16,6 +16,10 @@ class WordsBuilder extends AlertDialog.Builder {
 
     WordsBuilder own() { own = true; return this; }
 
+    /** the words as the dialog shows them (Words, unless own()): a page in place of the dialog shows the same (SettingsActivity.Page) */
+    CharSequence[] shown(CharSequence[] t) { return w(t); }
+    CharSequence shown(CharSequence t) { return w(t); }
+
     private CharSequence w(CharSequence t) { return own || t == null ? t : Words.of(t.toString()); }
     private CharSequence[] w(CharSequence[] t) { return own ? t : Words.of(t); }
 

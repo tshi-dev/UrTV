@@ -23,7 +23,7 @@ public final class UpdateText {
     private static String isolate(String s) { return "⁧" + s + "⁩"; }
 
     /** The sentences with the version in them (and the failed step's): the Arabic templates, one %s each (Tr.format, as «اللغة» writes them). */
-    public static final String INSTALLED = "الإصدار المثبّت %s", UP_TO_DATE = "تلفزيونك محدّث: %s", AVAILABLE = "تحديث جديد %s · اضغط للتحديث",
+    public static final String INSTALLED = "الإصدار المثبّت %s", UP_TO_DATE = "تلفزيونك محدّث: %s", AVAILABLE = "تحديث جديد %s، اضغط للتحديث",
             DONE = "تم التحديث ✓ %s", FAILED_STEP = "الخطوة: %s";
 
     /**

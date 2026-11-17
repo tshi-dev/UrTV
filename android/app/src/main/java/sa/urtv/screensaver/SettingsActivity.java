@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.content.DialogInterface;
 import android.graphics.BitmapFactory;
 import android.graphics.Outline;
 import android.graphics.PorterDuff;
@@ -42,6 +43,10 @@ public class SettingsActivity extends Activity {
     private LinearLayout list;
     private ScrollView scroll;
     private int sideWidth, pageWidth;   // px, fixed in onCreate: the side pane and the whole page
+    private int gapPx;                  // px between the side and the rows
+    private CouchStyle cs;              // 4.4 with «منظر وساعة» (the side list): couch-tv's settings, exactly (CouchStyle); null on the 4.3.2 screen
+    private Page page;                  // a picker shown in place of the rows (couch-tv's choice pages), or null
+    private EditText searchIn;          // the search's typing box (couch-tv's), kept while the search is shown
 
     /** The settings' scroll: up and down only; nothing can move the page sideways (scrollTo keeps x at 0). */
     static final class UpDownScroll extends ScrollView {
@@ -93,6 +98,7 @@ public class SettingsActivity extends Activity {
         prefs = new Prefs(this);
         classic = !prefs.couchOn();
         SettingsHub.classic(classic);
+        if (!classic) cs = new CouchStyle(this);
         if (getIntent().hasExtra("hubAt")) { screen = SettingsHub.canon(getIntent().getStringExtra("screen")); hubAt = SettingsHub.canon(getIntent().getStringExtra("hubAt")); }   // pickLang: back on its button
         if (getIntent().hasExtra("want")) { forceWant = getIntent().getStringExtra("want"); getIntent().removeExtra("want"); }   // 4.4: back on «شكل كنبة» after it flipped the layout
         UpdateJob.schedule(this);
@@ -105,7 +111,7 @@ public class SettingsActivity extends Activity {
         // the glass look of all our screens: the home's photo, small and blurred once (GlassSource), under its veil; glass tiles and rows
         root = new FrameLayout(this);
         root.setLayoutDirection(Dir.layout());
-        look = GlassSource.page(this, root);
+        look = GlassSource.page(this, root); couchVeil();
         scroll = new UpDownScroll(this);
         scroll.setVerticalScrollBarEnabled(false);
         scroll.setHorizontalScrollBarEnabled(false);
@@ -115,6 +121,12 @@ public class SettingsActivity extends Activity {
         list.setLayoutDirection(Dir.layout());
         list.setPadding(dp(8), dp(32), dp(8), dp(16));   // 64 px above the first line: with the group header (32 + its text) the first row is not 124 px down
         int width = Math.min(getResources().getDisplayMetrics().widthPixels - dp(144), dp(1100));
+        gapPx = dp(36);
+        if (cs != null) {   // couch-tv: the whole screen within its safe area, a 36 rem side, a 4 rem gap; the rows' box 1.75 rem wider each side (the focus scales in it)
+            width = getResources().getDisplayMetrics().widthPixels - 2 * cs.px(CouchStyle.SAFE_X);
+            gapPx = cs.px(CouchStyle.GAP) - cs.px(CouchStyle.PAD);
+            list.setPadding(cs.px(CouchStyle.PAD), cs.px(1f), cs.px(CouchStyle.PAD), cs.px(3f));
+        }
         frame.addView(list, new FrameLayout.LayoutParams(-1, -2));
         scroll.addView(frame);
         LinearLayout panes = new LinearLayout(this);   // right to left: the side (a category's title), then the rows
@@ -124,6 +136,7 @@ public class SettingsActivity extends Activity {
         side.setOrientation(LinearLayout.VERTICAL);
         side.setLayoutDirection(Dir.layout());
         side.setPadding(dp(4), dp(24), dp(4), dp(16));
+        if (cs != null) side.setPadding(0, 0, 0, cs.px(1f));
         ScrollView sideScroll = new ScrollView(this);   // eleven items: on a small screen the list scrolls with the focus
         sideScroll.setVerticalScrollBarEnabled(false);
         sideScroll.setClipToPadding(false);
@@ -131,27 +144,37 @@ public class SettingsActivity extends Activity {
         sideBox = sideScroll;
         // fixed widths, worked out once (no weights): the side and the rows never move sideways (the TV test of 3.147: after 5 down and
         // 5 up the list went from the left half to the right half and back); the rows' width changes only between the categories and a category
-        sideWidth = Math.round(width * 0.36f) - dp(36);
+        sideWidth = cs != null ? cs.px(CouchStyle.SIDE) : Math.round(width * 0.36f) - dp(36);
         pageWidth = width;
         LinearLayout.LayoutParams sideLp = new LinearLayout.LayoutParams(sideWidth, -1);
-        sideLp.setMarginEnd(dp(36));
+        sideLp.setMarginEnd(gapPx);
         panes.addView(sideScroll, sideLp);
-        panes.addView(scroll, new LinearLayout.LayoutParams(width - sideWidth - dp(36), -1));
+        panes.addView(scroll, new LinearLayout.LayoutParams(width - sideWidth - gapPx + (cs != null ? cs.px(CouchStyle.PAD) : 0), -1));
         LinearLayout column = new LinearLayout(this);
         column.setOrientation(LinearLayout.VERTICAL);
         LinearLayout.LayoutParams panesLp = new LinearLayout.LayoutParams(width, 0, 1f);
         panesLp.gravity = Gravity.CENTER_HORIZONTAL;
+        if (cs != null) panesLp.topMargin = cs.px(CouchStyle.SAFE_Y);
+        panesLp.bottomMargin = Math.round(getResources().getDisplayMetrics().heightPixels * 0.03f);   // the list down to the 3 % safe area (the hint is on top now)
         column.addView(panes, panesLp);
         hint = new TextView(this);
         hint.setTextColor(look.sub);
         hint.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
         hint.setTypeface(font("Thmanyah-Regular"));
-        hint.setGravity(Gravity.CENTER);
-        hint.setPadding(dp(72), dp(10), dp(72), dp(8));
-        LinearLayout.LayoutParams hintLp = new LinearLayout.LayoutParams(-1, -2);
-        hintLp.bottomMargin = Math.round(getResources().getDisplayMetrics().heightPixels * 0.05f);   // the 5 % safe area: the hint ends at y 1026 of 1080
-        column.addView(hint, hintLp);
+        if (cs != null) hint.setTextColor(CouchStyle.DIM);
+        hint.setTextDirection(Dir.text());
+        // 4.4 the owner (build 413): the hint took the whole band under the list; it is small, on the title's line at the far end, and the list
+        // has the band
+        // 4.4 the sweep: it was the smallest text on the screen; now the rows' secondary size and colour (HINT_SP; couch-tv HINT, its info line's 1.4375 rem)
+        hint.setTextSize(TypedValue.COMPLEX_UNIT_SP, HINT_SP);
+        if (cs != null) { hint.setTextSize(TypedValue.COMPLEX_UNIT_PX, cs.px(CouchStyle.HINT)); hint.setTextColor(CouchStyle.SUB); }
+        hint.setGravity(Gravity.END);
+        hint.setPadding(0, 0, 0, 0);
         root.addView(column, new FrameLayout.LayoutParams(-1, -1));
+        FrameLayout.LayoutParams hintAt = new FrameLayout.LayoutParams(-2, -2, Gravity.TOP | Gravity.END);
+        hintAt.topMargin = cs != null ? cs.px(CouchStyle.SAFE_Y) + cs.px(0.75f) : dp(16);
+        hintAt.setMarginEnd(cs != null ? cs.px(CouchStyle.SAFE_X) : dp(36));
+        root.addView(hint, hintAt);
         setContentView(root);
         render();
         if (askCity) root.post(new Runnable() { public void run() { pickCity(); } });
@@ -197,7 +220,7 @@ public class SettingsActivity extends Activity {
         launchedRow = null;
         adhanAsked = false;
         cleanAsked = false;   // asked again each time the settings come to the front (it was asked once per visit: the row said «مفعّل» only after reopening)
-        look = GlassSource.page(this, root);   // the home's photo or «المظهر» may have changed meanwhile
+        look = GlassSource.page(this, root); couchVeil();   // the home's photo or «المظهر» may have changed meanwhile
         hint.setTextColor(look.sub);
         if (back != null) { returnWant = back; returnUntil = System.currentTimeMillis() + 4000; }   // the home answers a moment later and the list is built again: that build keeps the focus on this row too, until a key is pressed (it landed on the row above)
         forceWant = back;   // back from another screen: the focus goes to the row or button that opened it, in the SAME render that builds the list again (it landed on the one above)
@@ -223,6 +246,13 @@ public class SettingsActivity extends Activity {
             open(SettingsHub.parent(screen));
             return;
         }
+        if (page != null) { closePage(true); return; }   // couch-tv: a picker's page back to its section, on the row that opened it
+        if (cs != null && SettingsHub.SEARCH.equals(screen)) {   // the search: back to its button, the typing kept until another section opens
+            View b = sideItems.get(SettingsHub.SEARCH);
+            if (b != null && !b.hasFocus()) { b.requestFocus(); return; }
+            super.onBackPressed();
+            return;
+        }
         View f = focusedRow();
         if (f == null || screen == null || sideItems.get(screen) == null) { super.onBackPressed(); return; }
         lastRow.put(screen, (String) f.getTag());   // the way back in starts there
@@ -231,6 +261,7 @@ public class SettingsActivity extends Activity {
 
     /** Shows a section's rows, from the top. */
     private void open(String category) {
+        if (category == null || !category.equals(screen)) page = null;
         screen = category;
         entering = true;
         scroll.scrollTo(0, 0);   // the new screen from its top at once, never drawn at the old one's place first
@@ -276,6 +307,7 @@ public class SettingsActivity extends Activity {
         list.removeAllViews();
         if (classic) classicHead(tiles); else {
         sidePane();
+        if (cs != null) couchHead(); else {
         // the pane's head: the section's name, its line, and what is set in it now (the mockup)
         TextView title = new TextView(this);
         title.setText(conv(SettingsHub.name(screen)));
@@ -288,6 +320,11 @@ public class SettingsActivity extends Activity {
         line(SettingsHub.about(screen), look.sub, 0);
         String now = hubSummary(screen);
         if (!now.isEmpty()) line(now, look.accent, dp(8));
+        }
+        }
+        if (cs != null && (page != null || SettingsHub.SEARCH.equals(screen))) {   // a picker or the search in place of the rows
+            if (page != null) pageRows(); else searchRows();
+            return;
         }
         if (screen == null || on(SettingsHub.PLACE))   // on the categories and on «الموقع والصلاة»
             if (prefs.cityNoteDue()) line(Location.note(Words.city(prefs.city())), look.accent, dp(14));   // still the install's Riyadh: say where to change it
@@ -303,7 +340,7 @@ public class SettingsActivity extends Activity {
 
         row("طريقة الحساب", PrayerMethod.label(prefs.prayerMethod(), prefs.cityCountry(), prefs.cityTz()), R.drawable.ic_place,
             new Runnable() { public void run() { pickPrayerMethod(); } });
-        row("تعديل وقت الصلاة", prefs.prayerAdjOn() ? "يعمل · لكل صلاة دقائقها، من −٢٠ إلى +٢٠ (الشروق لا يتغيّر)" : "متوقف · الأوقات كما تُحسب", R.drawable.ic_eye,
+        row("تعديل وقت الصلاة", prefs.prayerAdjOn() ? "يعمل، لكل صلاة دقائقها، من −٢٠ إلى +٢٠ (الشروق لا يتغيّر)" : "متوقف، الأوقات كما تُحسب", R.drawable.ic_eye,
             new Runnable() { public void run() { prefs.setPrayerAdjOn(!prefs.prayerAdjOn()); render(); } });
         if (prefs.prayerAdjOn()) for (int k = 0; k < PrayerAdj.COUNT; k++) adjRow(k);
         String fixed = PrayerFix.applied(prefs.prayerAdjOn(), prefs.prayerAdj(), prefs.prayerFix());   // 4.3.3: never silent
@@ -347,18 +384,18 @@ public class SettingsActivity extends Activity {
         // 4.3.3 «التاريخ بالأرقام»: the Hijri and the Gregorian as day/month/year on the screensaver and the home, in the digits above
         row("التاريخ بالأرقام", prefs.dateNum() ? "مفعّل" : "متوقف", R.drawable.ic_language,
             new Runnable() { public void run() { prefs.setDateNum(!prefs.dateNum()); render(); } });
-        row("تنبيه قبل الأذان", prefs.adhanBar() ? "يعمل · شريط في أعلى الشاشة آخر ١٠ دقائق، ثم حتى الإقامة" : "متوقف", R.drawable.ic_eye,
+        row("تنبيه قبل الأذان", prefs.adhanBar() ? "يعمل، شريط في أعلى الشاشة آخر ١٠ دقائق، ثم حتى الإقامة" : "متوقف", R.drawable.ic_eye,
             new Runnable() { public void run() { prefs.setAdhanBar(!prefs.adhanBar()); render(); } });
         // from PR #28 and the requests: each off until chosen, OK flips it
-        row("الشروق بعد الفجر", prefs.sunrise() ? "يعمل · بعد إقامة الفجر: كم باقي على الشروق، ثم نصف ساعة بعده" : "متوقف", R.drawable.ic_eye,
+        row("الشروق بعد الفجر", prefs.sunrise() ? "يعمل، بعد إقامة الفجر: كم باقي على الشروق، ثم نصف ساعة بعده" : "متوقف", R.drawable.ic_eye,
             new Runnable() { public void run() { prefs.setSunrise(!prefs.sunrise()); render(); } });
-        row("شريط الوقت بين الصلاتين", prefs.prayerBar() ? "يعمل · خط رفيع تحت الصلاة القادمة يمتلئ حتى وقتها" : "متوقف", R.drawable.ic_eye,
+        row("شريط الوقت بين الصلاتين", prefs.prayerBar() ? "يعمل، خط رفيع تحت الصلاة القادمة يمتلئ حتى وقتها" : "متوقف", R.drawable.ic_eye,
             new Runnable() { public void run() { prefs.setPrayerBar(!prefs.prayerBar()); render(); } });
-        row("الرطوبة والرياح", prefs.wxMore() ? "يعمل · تحت المدينة أعلى اليسار" : "متوقف", R.drawable.ic_eye,
+        row("الرطوبة والرياح", prefs.wxMore() ? "يعمل، تحت المدينة أعلى اليسار" : "متوقف", R.drawable.ic_eye,
             new Runnable() { public void run() { prefs.setWxMore(!prefs.wxMore()); render(); } });
         row("أسماء الأشهر الميلادية", Prefs.monthsLabel(prefs.months()), R.drawable.ic_language,
             new Runnable() { public void run() { prefs.setMonths("levant".equals(prefs.months()) ? "default" : "levant"); render(); } });
-        row("شريط السنة تحت الساعة", prefs.yearStrip() ? "يعمل · نقاط السنة تحت الساعة، واليوم يلمع" : "متوقف", R.drawable.ic_eye,
+        row("شريط السنة تحت الساعة", prefs.yearStrip() ? "يعمل، نقاط السنة تحت الساعة، واليوم يلمع" : "متوقف", R.drawable.ic_eye,
             new Runnable() { public void run() { prefs.setYearStrip(!prefs.yearStrip()); render(); } });
         // «ألبوم صوري» (the card): how fast the photos change, and the date under each
         row("سرعة ألبوم صوري", "minute".equals(prefs.albumMode()) ? "كل دقيقة" : "ten".equals(prefs.albumMode()) ? "كل ١٠ ثوانٍ" : "كل ٤ ثوانٍ", R.drawable.ic_eye,
@@ -381,9 +418,9 @@ public class SettingsActivity extends Activity {
         row("نص أوضح", prefs.clearText() ? "مفعّل الكلام الرمادي بلون النص الكامل" : "متوقف", R.drawable.ic_eye,
             new Runnable() { public void run() { prefs.setClearText(!prefs.clearText()); render(); } });
         // shown by default as always; OK hides it (and shows it again)
-        row("المناسبة القادمة", prefs.occasion() ? "ظاهرة · أسفل الشاشة في الوسط: كم باقي على رمضان والأعياد، والإفطار والإمساك في رمضان" : "مخفية", R.drawable.ic_eye,
+        row("المناسبة القادمة", prefs.occasion() ? "ظاهرة، أسفل الشاشة في الوسط: كم باقي على رمضان والأعياد، والإفطار والإمساك في رمضان" : "مخفية", R.drawable.ic_eye,
             new Runnable() { public void run() { prefs.setOccasion(!prefs.occasion()); render(); } });
-        row("تعتيم الليل", prefs.nightDim() ? "يعمل · تغمق الشاشة من ٩ مساءً، وأغمق من ١١ إلى ٥ الفجر، وترجع ٧ الصباح" : "متوقف · نفس الإضاءة طول الليل", R.drawable.ic_eye,
+        row("تعتيم الليل", prefs.nightDim() ? "يعمل، تغمق الشاشة من ٩ مساءً، وأغمق من ١١ إلى ٥ الفجر، وترجع ٧ الصباح" : "متوقف، نفس الإضاءة طول الليل", R.drawable.ic_eye,
             new Runnable() { public void run() { prefs.setNightDim(!prefs.nightDim()); render(); } });
         row("المناسبات الوطنية", Prefs.nationalLabel(prefs.national()), R.drawable.ic_eye,
             new Runnable() { public void run() { pickNational(); } });
@@ -410,7 +447,7 @@ public class SettingsActivity extends Activity {
             new Runnable() { public void run() { openMarkets(); } });
 
         header("الأسواق (أعلى اليسار)");
-        row("شريط الأسواق", prefs.marketsOn() ? "يعمل" : "مخفي · يبقى طقس اليوم فقط", R.drawable.ic_eye,
+        row("شريط الأسواق", prefs.marketsOn() ? "يعمل" : "مخفي، يبقى طقس اليوم فقط", R.drawable.ic_eye,
             new Runnable() { public void run() { prefs.setMarketsOn(!prefs.marketsOn()); render(); } });
         row("الأسواق (" + arabicNum(prefs.markets().size()) + "/" + arabicNum(Prefs.MAX_MARKETS) + ")", marketsLabel(),
             R.drawable.ic_trophy, new Runnable() { public void run() { pickMarkets(); } });
@@ -475,7 +512,7 @@ public class SettingsActivity extends Activity {
             new Runnable() { public void run() { prefs.setSceneByWeather(!prefs.sceneByWeather()); render(); } });
         row("وضع الألوان", "الشكل: " + Prefs.lookLabel(prefs.look()) + "، والإضاءة: " + Prefs.appearanceLabel(prefs.appearance()), R.drawable.ic_eye,
             new Runnable() { public void run() { startActivity(new Intent(SettingsActivity.this, AppearanceActivity.class)); } });
-        row("صفحات الأسهم والمباريات داكنة", prefs.pagesDark() ? "مفعّل · بالمظهر الداكن دائمًا" : "متوقف · تتبع مظهر الرئيسية", R.drawable.ic_eye,
+        row("صفحات الأسهم والمباريات داكنة", prefs.pagesDark() ? "مفعّل، بالمظهر الداكن دائمًا" : "متوقف، تتبع مظهر الرئيسية", R.drawable.ic_eye,
             new Runnable() { public void run() { prefs.setPagesDark(!prefs.pagesDark()); render(); } });
         // up to three cards left of the clock; each place takes any card, or «بدون» (the ones after it move up)
         for (int k = 0; k < Prefs.HOME_CARDS; k++) {
@@ -493,7 +530,7 @@ public class SettingsActivity extends Activity {
         row("افتح تلاوة وأذان", "القرآن والإذاعات ومواقيت الأذان", R.drawable.ic_play,
             new Runnable() { public void run() { openHome("listen"); } });
         // hiding removes only the button; the help line says where the screen opens from then
-        row("زر تلاوة وأذان", prefs.listenPill() ? "ظاهر" : "مخفي  •  الأذان والتلاوة تعمل، وتفتح الشاشة من «افتح تلاوة وأذان» هنا أو من بطاقة «يُتلى الآن»", R.drawable.ic_eye,
+        row("زر تلاوة وأذان", prefs.listenPill() ? "ظاهر" : "مخفي، الأذان والتلاوة تعمل، وتفتح الشاشة من «افتح تلاوة وأذان» هنا أو من بطاقة «يُتلى الآن»", R.drawable.ic_eye,
             new Runnable() { public void run() { prefs.setListenPill(!prefs.listenPill()); render(); } });
         // #52: the other quick buttons of the home can be hidden too; a hidden one only leaves the row (its page opens from elsewhere: the markets and games by the phone, the Control Center by the Quick Settings key)
         row("زر المصادر", prefs.pillHidden("inputs") ? "مخفي  •  المصادر تفتح من زر المصادر في الريموت ومن مركز التحكم" : "ظاهر", R.drawable.ic_eye,
@@ -507,10 +544,10 @@ public class SettingsActivity extends Activity {
         // 4.3.3 «زر البحث»: the TV's own search inside the apps, a round button before «الجوال»; off by default, and only on a TV that has that search
         row("زر البحث", prefs.searchPill() ? "ظاهر" : "مخفي", R.drawable.ic_eye,
             new Runnable() { public void run() { prefs.setSearchPill(!prefs.searchPill()); render(); } });
-        row("زر مركز التحكم", prefs.pillHidden("center") ? "مخفي  •  يفتح من زر الإعدادات السريعة في الريموت" : "ظاهر", R.drawable.ic_eye,
+        row("زر مركز التحكم", prefs.pillHidden("center") ? "مخفي، يفتح من زر الإعدادات السريعة في الريموت" : "ظاهر", R.drawable.ic_eye,
             new Runnable() { public void run() { prefs.setPillHidden("center", !prefs.pillHidden("center")); render(); } });
         // hiding removes only the button: the list stays in the «المهام» card and on the phone
-        row("زر المهام", prefs.tasksPill() ? "ظاهر" : "مخفي  •  المهام تبقى في بطاقة «المهام» ومن الجوال", R.drawable.ic_eye,
+        row("زر المهام", prefs.tasksPill() ? "ظاهر" : "مخفي، المهام تبقى في بطاقة «المهام» ومن الجوال", R.drawable.ic_eye,
             new Runnable() { public void run() { prefs.setTasksPill(!prefs.tasksPill()); render(); } });
         // Back on our home (nothing to go back to) starts the screensaver; the home takes it on its next tick or return (Dock.followBackSaver)
         row("الرجوع يفتح شاشة التوقف", prefs.backSaver() ? "مفعّل" : "متوقف", R.drawable.ic_eye,
@@ -618,12 +655,12 @@ public class SettingsActivity extends Activity {
             new Runnable() { public void run() { pickIdle(); } });
 
         header("التطبيق");
-        View autoRow = row("التحديث التلقائي للصفحة", prefs.autoUpdate() ? "يعمل · عند بدء الشاشة، كل ٦ ساعات" : "متوقف", R.drawable.ic_sync, new Runnable() { public void run() {
+        View autoRow = row("التحديث التلقائي للصفحة", prefs.autoUpdate() ? "يعمل، عند بدء الشاشة، كل ٦ ساعات" : "متوقف", R.drawable.ic_sync, new Runnable() { public void run() {
             prefs.setAutoUpdate(!prefs.autoUpdate()); render(); } });
         // a switch that flips with one OK sat right under the «تحديث تلفزيوني» action (the tester flipped it by mistake): a clear gap of 32 above it
         if (autoRow != null && autoRow.getLayoutParams() instanceof android.view.ViewGroup.MarginLayoutParams) ((android.view.ViewGroup.MarginLayoutParams) autoRow.getLayoutParams()).topMargin += dp(32);
         // the page only, never the apps: people took it for the app update (rows 421, 441), so its line points to «تحديث تلفزيوني»
-        View last = row("تحديث صفحة شاشة التوقف", "ينزّل أحدث صفحة للشاشة فقط · لتحديث التطبيقين: «تحديث تلفزيوني» في نفس القسم", R.drawable.ic_sync, new Runnable() { public void run() { updateNow(); } });
+        View last = row("تحديث صفحة شاشة التوقف", "ينزّل أحدث صفحة للشاشة فقط، لتحديث التطبيقين: «تحديث تلفزيوني» في نفس القسم", R.drawable.ic_sync, new Runnable() { public void run() { updateNow(); } });
         if (last.getParent() == list) note(last, Updater.versionLines(this));
         arrange();   // the rows in their section's order, with its headers
         if (tiles) { hub(want, wasIndex); return; }   // 4.3.2: a screen of buttons, after the rows were made (none of them is shown on it)
@@ -643,6 +680,7 @@ public class SettingsActivity extends Activity {
      * typing rests SEARCH_MS; OK on one opens its section on that row. «بحث» still shows the list of every row found.
      */
     private void searchSettings() {
+        if (cs != null) { openSearch(); return; }
         final LinearLayout box = new LinearLayout(this);
         box.setOrientation(LinearLayout.VERTICAL);
         final EditText in = new EditText(this);
@@ -669,7 +707,7 @@ public class SettingsActivity extends Activity {
             rows.clear();
             rows.addAll(SettingsHub.search(in.getText().toString().trim()));
             adapter.clear();
-            for (int i = 0; i < Math.min(rows.size(), 12); i++) adapter.add(conv(rows.get(i)[0]) + "  •  " + conv(SettingsHub.name(rows.get(i)[1])));
+            for (int i = 0; i < Math.min(rows.size(), 12); i++) adapter.add(conv(rows.get(i)[0]) + S.sep() + conv(SettingsHub.name(rows.get(i)[1])));
         };
         in.addTextChangedListener(new android.text.TextWatcher() {
             @Override public void beforeTextChanged(CharSequence c, int a, int b, int d) { }
@@ -696,7 +734,7 @@ public class SettingsActivity extends Activity {
         if (found.isEmpty()) { toast("لا يوجد صف بهذا الاسم"); return; }
         int n = Math.min(found.size(), 12);
         String[] labels = new String[n];
-        for (int i = 0; i < n; i++) labels[i] = conv(found.get(i)[0]) + "  •  " + conv(SettingsHub.name(found.get(i)[1]));
+        for (int i = 0; i < n; i++) labels[i] = conv(found.get(i)[0]) + S.sep() + conv(SettingsHub.name(found.get(i)[1]));
         new Dlg(this).setTitle("بحث في الإعدادات").setItems(labels, (d, i) -> {
             d.dismiss();
             hubAt = found.get(i)[1];
@@ -1145,23 +1183,23 @@ public class SettingsActivity extends Activity {
                 return on == null ? "تشغيله وصوته ومؤذن الفجر" : on ? OnOff.ON_WORD : OnOff.OFF_WORD;
             }
             case "city": return Words.city(prefs.city());
-            case "place": return Words.city(prefs.city()) + " · " + PrayerMethod.label(prefs.prayerMethod(), prefs.cityCountry(), prefs.cityTz());
-            case "clock": return ClockSetting.label(prefs.clock24()) + " · " + Prefs.digitsLabel(prefs.digits());
+            case "place": return Words.city(prefs.city()) + S.sep() + PrayerMethod.label(prefs.prayerMethod(), prefs.cityCountry(), prefs.cityTz());
+            case "clock": return ClockSetting.label(prefs.clock24()) + S.sep() + Prefs.digitsLabel(prefs.digits());
             case "listen": return "زرها " + (prefs.listenPill() ? "ظاهر" : "مخفي");
-            case "cards": return "شاشة التوقف · الشاشة الرئيسية";
-            case "look": return Prefs.lookLabel(prefs.look()) + " · " + Prefs.appearanceLabel(prefs.appearance());
+            case "cards": return "شاشة التوقف، الشاشة الرئيسية";
+            case "look": return Prefs.lookLabel(prefs.look()) + S.sep() + Prefs.appearanceLabel(prefs.appearance());
             case "control": return "مؤقت النوم والشبكة والصوت";
             case "phone": return "تشغيله وإيقافه وربط جوال";
             case "update": return Updater.versionLines(this)[0];
             case "report": return "";
             case "more": return "";
-            case "saver": return idleSummary() + " · " + Prefs.panelLabel(prefs.panel());
+            case "saver": return idleSummary() + S.sep() + Prefs.panelLabel(prefs.panel());
             case "home": {
                 List<String> cards = new ArrayList<>();
                 for (String k : prefs.homePanels()) cards.add(Prefs.panelLabel(k, "بدون"));
-                return cards.isEmpty() ? "بدون بطاقات · التحية والطقس" : Prefs.join(cards, "، ");
+                return cards.isEmpty() ? "بدون بطاقات، التحية والطقس" : Prefs.join(cards, "، ");
             }
-            case "content": return "الفرق " + arabicNum(prefs.teams().size()) + " · الأسواق " + (prefs.marketsOn() ? arabicNum(prefs.markets().size()) : "مخفية");
+            case "content": return "الفرق " + arabicNum(prefs.teams().size()) + "، الأسواق " + (prefs.marketsOn() ? arabicNum(prefs.markets().size()) : "مخفية");
             case "apps": return "ترتيب المفضلة وتعديلها، وأسماء المصادر";
             case "shows": return labels(Prefs.GENRES, prefs.list("genres"), "الكل");
             case "parental": return "الرمز والتطبيقات المقفلة";
@@ -1208,11 +1246,12 @@ public class SettingsActivity extends Activity {
      * on the list); OK or the arrow toward the rows goes into them; Back from a row comes back to its section's item.
      */
     private void sidePane() {
-        int rowsWidth = pageWidth - sideWidth - dp(36);
+        int rowsWidth = pageWidth - sideWidth - gapPx + (cs != null ? cs.px(CouchStyle.PAD) : 0);
         if (scroll.getLayoutParams() != null && scroll.getLayoutParams().width != rowsWidth) {
             scroll.getLayoutParams().width = rowsWidth;
             scroll.requestLayout();
         }
+        if (sideItems.isEmpty() && cs != null) { couchSide(); } else
         if (sideItems.isEmpty()) {
             side.removeAllViews();
             TextView t = new TextView(this);
@@ -1232,6 +1271,7 @@ public class SettingsActivity extends Activity {
             }
         }
         for (java.util.Map.Entry<String, View> e : sideItems.entrySet()) {   // the section shown: its bar, and its item a little brighter
+            if (cs != null) { e.getValue().setSelected(e.getKey().equals(screen)); continue; }   // couch-tv: the shown section's own fill
             View bar = e.getValue().findViewWithTag("bar");
             boolean shown = e.getKey().equals(screen);
             if (bar != null) bar.setVisibility(shown ? View.VISIBLE : View.INVISIBLE);
@@ -1279,11 +1319,13 @@ public class SettingsActivity extends Activity {
             if (!cat.equals(screen)) open(cat);
             else restoreFocus(lastRow.get(screen), 0, scroll.getScrollY());   // into the rows: the one last focused there, else the first
         });
+        if (cs != null) couchSection(card, bar, ic, n);
         card.setOnFocusChangeListener((x, has) -> {
+            if (cs != null) CouchStyle.focus(x, has, CouchStyle.SEC_SCALE); else
             x.setAlpha(has || cat.equals(screen) ? 1f : 0.82f);
             side.removeCallbacks(sideOpen);
             if (has && !SettingsHub.SEARCH.equals(cat) && !cat.equals(screen)) {   // the section's rows, the focus kept on the list
-                // 4.4 smoother: once the focus rests on the item (SIDE_MS): holding the arrow went through every section, each built whole
+                // 4.4 smoother: once the focus rests on the item (SIDE_MS): a held arrow went through every section, each built whole
                 sideOpen = () -> {
                     if (!x.hasFocus() || cat.equals(screen)) return;
                     View f = focusedRow();
@@ -1294,8 +1336,335 @@ public class SettingsActivity extends Activity {
                 side.postDelayed(sideOpen, SIDE_MS);
             }
         });
-        glassCard(card);
+        if (cs == null) glassCard(card);
         return card;
+    }
+
+    // ---- 4.4 «منظر وساعة»: the settings in couch-tv's style (CouchStyle; docs/mockups/settings-couchtv/, approved by the owner) ----
+
+    /** the veil over the home under the settings: couch-tv's rgba(10,8,12,.8) over the blurred home; nearly solid on a weak TV («الوضع الخفيف») */
+    private void couchVeil() {
+        if (cs == null || root == null) return;
+        boolean lite = "on".equals(prefs.lite()) || ("auto".equals(prefs.lite()) && Prefs.lowRam(this));
+        android.graphics.drawable.Drawable bg = root.getBackground();
+        android.graphics.drawable.Drawable veil = new android.graphics.drawable.ColorDrawable(lite ? CouchStyle.VEIL_LITE : CouchStyle.VEIL);
+        root.setBackground(bg == null ? veil : new android.graphics.drawable.LayerDrawable(new android.graphics.drawable.Drawable[] {bg, veil}));
+    }
+
+    /** couch-tv's side: «الإعدادات», the round search button beside it (couch-tv has no search), then the sections */
+    private void couchSide() {
+        side.removeAllViews();
+        LinearLayout top = new LinearLayout(this);
+        top.setOrientation(LinearLayout.HORIZONTAL);
+        top.setLayoutDirection(Dir.layout());
+        top.setGravity(Gravity.CENTER_VERTICAL);
+        top.setPaddingRelative(cs.px(CouchStyle.TITLE_SIDE), cs.px(CouchStyle.TITLE_TOP), 0, cs.px(CouchStyle.TITLE_BOTTOM));
+        TextView t = new TextView(this);
+        t.setText(conv("الإعدادات"));
+        t.setTextColor(CouchStyle.WHITE);
+        t.setTextSize(TypedValue.COMPLEX_UNIT_PX, cs.px(CouchStyle.TITLE));
+        t.setTypeface(font("ThmanyahDisplay-Bold"));
+        t.setTextDirection(Dir.text());
+        t.setSingleLine(true);
+        top.addView(t, new LinearLayout.LayoutParams(0, -2, 1f));
+        final ImageView find = new ImageView(this);
+        find.setId(View.generateViewId());
+        find.setFocusable(true);
+        find.setClickable(true);
+        find.setTag(SIDE);
+        find.setImageDrawable(getDrawable(R.drawable.ic_search).mutate());
+        find.setImageTintList(CouchStyle.ink(CouchStyle.TEXT, CouchStyle.WHITE, CouchStyle.INK));
+        int pad = (cs.px(CouchStyle.FIND) - cs.px(CouchStyle.SEC_ICON)) / 2;
+        find.setPadding(pad, pad, pad, pad);
+        find.setBackground(cs.card(CouchStyle.ICON_BOX, CouchStyle.SEC_ON, CouchStyle.FIND / 2));
+        find.setOnClickListener(v -> openSearch());
+        find.setOnFocusChangeListener((v, has) -> CouchStyle.focus(v, has, CouchStyle.SEC_SCALE));
+        top.addView(find, new LinearLayout.LayoutParams(cs.px(CouchStyle.FIND), cs.px(CouchStyle.FIND)));
+        side.addView(top);
+        sideItems.put(SettingsHub.SEARCH, find);
+        for (String cat : SettingsHub.tiles(null)) {
+            if (SettingsHub.SEARCH.equals(cat)) continue;
+            View item = sideItem(cat);
+            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(-1, -2);
+            lp.bottomMargin = cs.px(CouchStyle.SEC_GAP);
+            side.addView(item, lp);
+            sideItems.put(cat, item);
+        }
+    }
+
+    /** one section of the side in couch-tv's look: its icon in a rounded box, its name; white when focused, lit while it is the one shown */
+    private void couchSection(LinearLayout card, View bar, ImageView ic, TextView n) {
+        bar.setVisibility(View.GONE);
+        card.setMinimumHeight(cs.px(CouchStyle.SEC_H));
+        card.setPaddingRelative(cs.px(0.875f), cs.px(0.5f), cs.px(1.5f), cs.px(0.5f));
+        card.setBackground(cs.card(0, CouchStyle.SEC_ON, CouchStyle.SEC_RADIUS));
+        ic.setDuplicateParentStateEnabled(true);
+        ic.setImageTintList(CouchStyle.ink(CouchStyle.SEC, CouchStyle.WHITE, CouchStyle.INK));
+        android.graphics.drawable.StateListDrawable box = new android.graphics.drawable.StateListDrawable();
+        box.addState(new int[] {android.R.attr.state_focused}, cs.round(CouchStyle.ICON_BOX_FOCUS, CouchStyle.SEC_ICON_RADIUS));
+        box.addState(new int[] {}, cs.round(CouchStyle.ICON_BOX, CouchStyle.SEC_ICON_RADIUS));
+        ic.setBackground(box);
+        int pad = (cs.px(CouchStyle.SEC_ICON_BOX) - cs.px(CouchStyle.SEC_ICON)) / 2;
+        ic.setPadding(pad, pad, pad, pad);
+        LinearLayout.LayoutParams ip = new LinearLayout.LayoutParams(cs.px(CouchStyle.SEC_ICON_BOX), cs.px(CouchStyle.SEC_ICON_BOX));
+        ic.setLayoutParams(ip);
+        n.setDuplicateParentStateEnabled(true);
+        n.setTextColor(CouchStyle.ink(CouchStyle.SEC, CouchStyle.WHITE, CouchStyle.INK));
+        n.setTextSize(TypedValue.COMPLEX_UNIT_PX, cs.px(CouchStyle.SEC_TEXT));
+        LinearLayout.LayoutParams tp = (LinearLayout.LayoutParams) n.getLayoutParams();
+        tp.setMarginStart(cs.px(1.25f));
+    }
+
+    /** couch-tv's head of the rows: a breadcrumb (a picker's section) over the title */
+    private void couchHead() {
+        boolean search = SettingsHub.SEARCH.equals(screen);
+        TextView crumb = new TextView(this);
+        crumb.setText(page != null ? conv(SettingsHub.name(screen)) : "");
+        crumb.setTextColor(CouchStyle.DIM);
+        crumb.setTextSize(TypedValue.COMPLEX_UNIT_PX, cs.px(CouchStyle.CRUMB));
+        crumb.setTypeface(font("Thmanyah-Medium"));
+        crumb.setTextDirection(Dir.text());
+        crumb.setGravity(Gravity.CENTER_VERTICAL | Gravity.START);
+        crumb.setPaddingRelative(cs.px(CouchStyle.PAD), cs.px(0.75f), cs.px(CouchStyle.PAD), 0);
+        list.addView(crumb, new LinearLayout.LayoutParams(-1, cs.px(CouchStyle.CRUMB_H + 0.75f)));
+        TextView head = new TextView(this);
+        head.setText(page != null ? page.title : conv(search ? "بحث في الإعدادات" : SettingsHub.name(screen)));
+        head.setTextColor(CouchStyle.WHITE);
+        head.setTextSize(TypedValue.COMPLEX_UNIT_PX, cs.px(CouchStyle.HEAD));
+        head.setTypeface(font("ThmanyahDisplay-Bold"));
+        head.setTextDirection(Dir.text());
+        head.setPaddingRelative(cs.px(CouchStyle.PAD), cs.px(0.25f), cs.px(CouchStyle.PAD), cs.px(1.5f));
+        list.addView(head);
+    }
+
+    private CharSequence tx(String s) { return noConv ? Words.of(s) : conv(s); }
+
+    /**
+     * One row in couch-tv's look: the name (its line under it when there is one), and at its far end the value, the toggle's ring (green with a
+     * tick when on), a choice's tick or a link's chevron; a thumbnail at its start for a scene pack. White with dark words when focused, x1.02.
+     * mark: 0 none, or CouchStyle.Mark's kind.
+     */
+    private LinearLayout couchCard(CharSequence label, CharSequence sub, CharSequence value, int mark, String thumb, String tag) {
+        final LinearLayout card = new LinearLayout(this);
+        card.setOrientation(LinearLayout.HORIZONTAL);
+        card.setGravity(Gravity.CENTER_VERTICAL);
+        card.setLayoutDirection(Dir.layout());
+        card.setMinimumHeight(cs.px(CouchStyle.ROW_H));
+        card.setPaddingRelative(cs.px(CouchStyle.PAD), cs.px(CouchStyle.ROW_PAD_Y), cs.px(CouchStyle.PAD), cs.px(CouchStyle.ROW_PAD_Y));
+        card.setFocusable(true);
+        card.setClickable(true);
+        card.setTag(tag);
+        card.setBackground(cs.card(CouchStyle.ROW, CouchStyle.ROW, CouchStyle.ROW_RADIUS));
+        int gap = cs.px(1.25f);
+        if (thumb != null) {
+            ImageView th = new ImageView(this);
+            th.setScaleType(ImageView.ScaleType.CENTER_CROP);
+            try (InputStream in = getAssets().open(thumb)) { th.setImageBitmap(BitmapFactory.decodeStream(in)); } catch (java.io.IOException | RuntimeException e) { }
+            th.setClipToOutline(true);
+            th.setOutlineProvider(new ViewOutlineProvider() {
+                @Override public void getOutline(View v, Outline o) { o.setRoundRect(0, 0, v.getWidth(), v.getHeight(), cs.px(CouchStyle.THUMB_RADIUS)); }
+            });
+            LinearLayout.LayoutParams tl = new LinearLayout.LayoutParams(cs.px(CouchStyle.THUMB_W), cs.px(CouchStyle.THUMB_H));
+            tl.setMarginEnd(gap);
+            card.addView(th, tl);
+        }
+        LinearLayout texts = new LinearLayout(this);
+        texts.setOrientation(LinearLayout.VERTICAL);
+        texts.setDuplicateParentStateEnabled(true);
+        TextView name = new TextView(this);
+        name.setTag("name");   // adjRow changes it in place
+        name.setText(label);
+        name.setDuplicateParentStateEnabled(true);
+        name.setTextColor(CouchStyle.ink(CouchStyle.TEXT, CouchStyle.TEXT, CouchStyle.INK));
+        name.setTextSize(TypedValue.COMPLEX_UNIT_PX, cs.px(CouchStyle.ROW_TEXT));
+        name.setTypeface(font("Thmanyah-Medium"));
+        name.setTextDirection(Dir.text());
+        texts.addView(name);
+        if (sub != null && sub.length() > 0) {
+            TextView sm = new TextView(this);
+            sm.setText(sub);
+            sm.setDuplicateParentStateEnabled(true);
+            sm.setTextColor(CouchStyle.ink(CouchStyle.SUB, CouchStyle.SUB, CouchStyle.INK_SUB));
+            sm.setTextSize(TypedValue.COMPLEX_UNIT_PX, cs.px(CouchStyle.ROW_SUB));
+            sm.setTypeface(font("Thmanyah-Regular"));
+            sm.setTextDirection(Dir.text());
+            sm.setMaxLines(2);
+            sm.setEllipsize(android.text.TextUtils.TruncateAt.END);
+            texts.addView(sm);
+        }
+        card.addView(texts, new LinearLayout.LayoutParams(0, -2, 1f));
+        if (value != null && value.length() > 0) {
+            TextView v = new TextView(this);
+            v.setText(value);
+            v.setDuplicateParentStateEnabled(true);
+            v.setTextColor(CouchStyle.ink(CouchStyle.VALUE, CouchStyle.VALUE, CouchStyle.INK_SUB));
+            v.setTextSize(TypedValue.COMPLEX_UNIT_PX, cs.px(CouchStyle.ROW_TEXT));
+            v.setTypeface(font("Thmanyah-Regular"));
+            v.setMaxWidth(Math.round((pageWidth - sideWidth) * 0.48f));
+            v.setMaxLines(2);   // a long value wraps at the far end (tester S7), the row stays one size
+            v.setEllipsize(android.text.TextUtils.TruncateAt.END);
+            v.setTextDirection(Dir.text());
+            LinearLayout.LayoutParams vl = new LinearLayout.LayoutParams(-2, -2);
+            vl.setMarginStart(gap);
+            card.addView(v, vl);
+        }
+        if (mark != 0) {
+            CouchStyle.Mark m = new CouchStyle.Mark(this, mark, Dir.rtl());
+            int size = mark == CouchStyle.Mark.RING_ON || mark == CouchStyle.Mark.RING_OFF ? cs.px(CouchStyle.BOX) : cs.px(CouchStyle.MARK);
+            LinearLayout.LayoutParams ml = new LinearLayout.LayoutParams(size, size);
+            ml.setMarginStart(gap);
+            card.addView(m, ml);
+        }
+        card.setOnFocusChangeListener((x, has) -> {
+            CouchStyle.focus(x, has, CouchStyle.ROW_SCALE);
+            if (has && x.getTag() instanceof String) topWhenFirst(x);
+        });
+        return card;
+    }
+
+    /** a registry row in couch-tv's look: an on/off value is a toggle (its words after «مفعّل» under the name), a short value at the far end, a long one under the name; a row with no value a link */
+    private LinearLayout couchRow(String label, String value, Runnable onClick, String key) {
+        int state = OnOff.state(value), mark = 0;
+        String sub = null, val = null;
+        // one line, one size (the owner, build 413): the value at the far end (a long one wraps there), a toggle's words before its ring
+        if (value != null && state >= 0) { mark = state > 0 ? CouchStyle.Mark.RING_ON : CouchStyle.Mark.RING_OFF; val = CouchText.after(value, OnOff.wordEnd(value)); }
+        else if (value != null && !value.isEmpty()) val = value;
+        if (mark == 0 && !CouchText.short_(val) && onClick != null) mark = CouchStyle.Mark.CHEVRON;
+        String where = SettingsHub.scopeWords(key);   // 4.4 the owner: where the row shows, after its value
+        if (!where.isEmpty()) val = val == null || val.isEmpty() ? where : val + "، " + where;
+        if (val != null && val.isEmpty()) val = null;
+        final LinearLayout card = couchCard(tx(label), sub == null ? null : tx(sub), val == null ? null : tx(val), mark, null, key);
+        if (onClick != null) card.setOnClickListener(v -> { launchedRow = key; onClick.run(); });
+        return card;
+    }
+
+    /** a picker that opens in place of the rows (Dlg.show with the Couch look): its choices as rows under the section's breadcrumb */
+    static final class Page {
+        CharSequence title; CharSequence[] labels; int checked = -1; boolean[] checks; String[] thumbs;
+        DialogInterface.OnClickListener one, item; DialogInterface.OnMultiChoiceClickListener many; Runnable save; String back; int at = -1;
+    }
+
+    void showPage(Page p) {
+        p.back = launchedRow;
+        if (Prefs.SCENE_PACKS.length == p.labels.length && String.valueOf(p.title).equals(String.valueOf(Words.of("حزم الآفاق"))))
+            p.thumbs = new String[] {"scene-thumbs/saudi.jpg", "scene-thumbs/couch.jpg"};   // couch-tv's scene rows: a thumbnail each
+        page = p;
+        scroll.scrollTo(0, 0);
+        render();
+    }
+
+    /** the page left: by its choice, or by Back (a list of ticks is saved by Back, as its dialog is) */
+    private void closePage(boolean back) {
+        Page p = page;
+        if (p == null) return;
+        page = null;
+        if (back && p.save != null) p.save.run();
+        forceWant = p.back;
+        render();
+    }
+
+    private void pageRows() {
+        final Page p = page;
+        final DialogInterface d = new DialogInterface() {
+            @Override public void cancel() { if (page == p) closePage(true); }
+            @Override public void dismiss() { if (page == p) { page = null; forceWant = p.back; } }
+        };
+        View first = null;
+        for (int i = 0; i < p.labels.length; i++) {
+            final int k = i;
+            int mark = p.checks != null ? (p.checks[i] ? CouchStyle.Mark.RING_ON : CouchStyle.Mark.RING_OFF)
+                : p.one != null ? (i == p.checked ? CouchStyle.Mark.TICK : 0) : CouchStyle.Mark.CHEVRON;
+            LinearLayout card = couchCard(p.labels[i], null, null, mark, p.thumbs != null && i < p.thumbs.length ? p.thumbs[i] : null, "page:" + i);
+            card.setOnClickListener(v -> {
+                if (p.checks != null) {   // a tick list: each one flips where it is, saved by Back
+                    p.checks[k] = !p.checks[k];
+                    p.at = k;
+                    if (p.many != null) p.many.onClick(d, k, p.checks[k]);
+                    if (page == p) render();
+                    return;
+                }
+                if (p.one != null) p.one.onClick(d, k); else if (p.item != null) p.item.onClick(d, k);
+                if (page == p) closePage(false); else render();
+            });
+            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(-1, -2);
+            lp.bottomMargin = cs.px(CouchStyle.ROW_GAP);
+            list.addView(card, lp);
+            if (i == (p.at >= 0 ? p.at : Math.max(0, p.checked))) first = card;
+        }
+        final View f = first;
+        if (f != null) f.post(f::requestFocus);
+    }
+
+    /** couch-tv has no search: ours opens from the round button, in its typing box, the rows found as the words are typed */
+    private void openSearch() {
+        searchIn = null;
+        page = null;
+        open(SettingsHub.SEARCH);
+    }
+
+    private LinearLayout searchFound;
+    private final android.os.Handler searchH = new android.os.Handler(android.os.Looper.getMainLooper());
+    private final Runnable searchNow = this::searchList;
+
+    private void searchRows() {
+        boolean fresh = searchIn == null;
+        if (fresh) {
+            searchIn = new EditText(this);
+            searchIn.setSingleLine(true);
+            searchIn.setInputType(InputType.TYPE_CLASS_TEXT);
+            searchIn.setBackground(null);
+            searchIn.setPadding(0, 0, 0, 0);
+            searchIn.setTextColor(CouchStyle.WHITE);
+            searchIn.setHintTextColor(CouchStyle.DIM);
+            searchIn.setTextSize(TypedValue.COMPLEX_UNIT_PX, cs.px(CouchStyle.TYPE_TEXT));
+            searchIn.setTypeface(font("Thmanyah-Medium"));
+            searchIn.setTextDirection(Dir.text());
+            searchIn.addTextChangedListener(new android.text.TextWatcher() {
+                @Override public void beforeTextChanged(CharSequence c, int a, int b, int e) { }
+                @Override public void onTextChanged(CharSequence c, int a, int b, int e) { }
+                @Override public void afterTextChanged(android.text.Editable e) { searchH.removeCallbacks(searchNow); searchH.postDelayed(searchNow, SEARCH_MS); }
+            });
+        }
+        if (searchIn.getParent() instanceof android.view.ViewGroup) ((android.view.ViewGroup) searchIn.getParent()).removeView(searchIn);
+        LinearLayout box = new LinearLayout(this);   // couch-tv's typing box: a light ground, a white edge
+        box.setOrientation(LinearLayout.VERTICAL);
+        android.graphics.drawable.GradientDrawable g = cs.round(CouchStyle.TYPE_BG, CouchStyle.ROW_RADIUS);
+        g.setStroke(cs.px(0.1875f), CouchStyle.WHITE);
+        box.setBackground(g);
+        box.setPaddingRelative(cs.px(CouchStyle.PAD), cs.px(0.875f), cs.px(CouchStyle.PAD), cs.px(1f));
+        TextView label = new TextView(this);
+        label.setText(conv("اكتب كلمة، مثل: صوت، لون، مدينة"));
+        label.setTextColor(0xB3FFFFFF);
+        label.setTextSize(TypedValue.COMPLEX_UNIT_PX, cs.px(CouchStyle.TYPE_LABEL));
+        label.setTypeface(font("Thmanyah-Medium"));
+        label.setTextDirection(Dir.text());
+        box.addView(label);
+        box.addView(searchIn, new LinearLayout.LayoutParams(-1, -2));
+        LinearLayout.LayoutParams bl = new LinearLayout.LayoutParams(-1, -2);
+        bl.bottomMargin = cs.px(1.25f);
+        list.addView(box, bl);
+        searchFound = new LinearLayout(this);
+        searchFound.setOrientation(LinearLayout.VERTICAL);
+        list.addView(searchFound, new LinearLayout.LayoutParams(-1, -2));
+        searchList();
+        if (fresh) searchIn.post(searchIn::requestFocus);
+    }
+
+    /** the rows found now, each saying its section; OK opens that section on that row */
+    private void searchList() {
+        if (searchFound == null || searchIn == null) return;
+        searchFound.removeAllViews();
+        String q = searchIn.getText().toString().trim();
+        if (q.isEmpty()) return;
+        List<String[]> found = SettingsHub.search(q);
+        for (int i = 0; i < Math.min(found.size(), 12); i++) {
+            final String[] r = found.get(i);
+            LinearLayout card = couchCard(tx(r[0]), null, tx(SettingsHub.name(r[1])), CouchStyle.Mark.CHEVRON, null, "found:" + r[0]);
+            card.setOnClickListener(v -> { searchIn = null; hubAt = r[1]; forceWant = r[0]; open(r[1]); });
+            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(-1, -2);
+            lp.bottomMargin = cs.px(CouchStyle.ROW_GAP);
+            searchFound.addView(card, lp);
+        }
     }
 
     private static final Object SIDE = new Object();
@@ -1456,7 +1825,11 @@ public class SettingsActivity extends Activity {
     }
 
     static final float FOCUS_SCALE = 1.02f;
-    static final long FOCUS_MS = 120;
+    /** a row's one text size and its padding (the owner, build 413: one line, at most about 80 px at 1080p, so 5 or 6 rows show) */
+    static final int ROW_SP = 18, ROW_PAD = 8;
+    /** the hint at the top: the size of a row's secondary line (its value), not smaller */
+    static final int HINT_SP = 14;
+    static final long FOCUS_MS = Motion.MS;   // 4.4 the same easing everywhere (Motion)
 
     /** The rows of the list now (the views row() made: their tag is their FocusKey; the categories' tiles, two to a line), in order. */
     private List<View> rows() {
@@ -1522,7 +1895,7 @@ public class SettingsActivity extends Activity {
         if (country > 0 && regions.length == 1) { pickCityIn(regions[0], country); return; }   // any other country is one region: its cities
         String[] labels = new String[regions.length + 1];
         labels[0] = "بحث عن مدينة أو قرية";
-        for (int i = 0; i < regions.length; i++) labels[i + 1] = regions[i].name + "  (" + regions[i].cities.length + ")";
+        for (int i = 0; i < regions.length; i++) labels[i + 1] = regions[i].name + "  (" + DigitsText.convert(String.valueOf(regions[i].cities.length), latinDigits) + ")";   // the counts in the digits of the setting
         new Dlg(this).setTitle(country < 0 ? "المنطقة" : Location.COUNTRIES[country][1])
             .setItems(labels, (d, i) -> { if (i == 0) searchCity(country); else pickCityIn(regions[i - 1], country); })
             .show();
@@ -1577,8 +1950,8 @@ public class SettingsActivity extends Activity {
     /** a row of the offline results: «أبها · Abha  ·  السعودية», with English «Abha  ·  Saudi Arabia» */
     private static String placeRow(String[] c) {
         String land = S.en() ? Places.country(c[5]) : Location.countryLabel(c[5], c[3]);
-        if (S.en()) return (c[4] != null && !c[4].isEmpty() ? c[4] : c[0]) + (land == null ? "" : "  ·  " + land);
-        return c[0] + (c[4] != null && !c[4].isEmpty() ? " · " + c[4] : "") + (land == null ? "" : "  ·  " + land);
+        if (S.en()) return (c[4] != null && !c[4].isEmpty() ? c[4] : c[0]) + (land == null ? "" : S.sep() + land);
+        return c[0] + (c[4] != null && !c[4].isEmpty() ? S.sep() + c[4] : "") + (land == null ? "" : S.sep() + land);
     }
 
     // Any searchable country, or the one country picked, from Open-Meteo's GeoNames search.
@@ -1601,7 +1974,7 @@ public class SettingsActivity extends Activity {
                 zones[i] = c.optString("timezone", "");   // the place's own; empty: the TV's (Prefs.cityTz)
                 String region = c.optString("admin1", "");
                 String land = c.optString("country", "");   // several countries now: the row says which
-                rows[i] = names[i] + (region.isEmpty() ? "" : "  ·  " + region) + (land.isEmpty() ? "" : "  ·  " + land);
+                rows[i] = names[i] + (region.isEmpty() ? "" : S.sep() + region) + (land.isEmpty() ? "" : S.sep() + land);
             }
             new Dlg(this).setTitle("اختر المكان")
                 .setItems(rows, (d, i) -> { prefs.setCity(names[i], lats[i], lons[i], zones[i], countries[i]); render(); }).show();
@@ -1689,7 +2062,7 @@ public class SettingsActivity extends Activity {
             TeamSearch.Team t = clubs.get(i);
             rows[i] = Teams.label(this, t);
             if (withLeague && t.leagues.length > 0)
-                rows[i] += "  ·  " + (Teams.NATIONAL.equals(t.leagues[0]) ? "منتخب" : leagueAr(t.leagues[0]));
+                rows[i] += S.sep() + (Teams.NATIONAL.equals(t.leagues[0]) ? "منتخب" : leagueAr(t.leagues[0]));
         }
         new Dlg(this).setTitle(title)
             .setItems(rows, (d, i) -> {
@@ -1725,7 +2098,7 @@ public class SettingsActivity extends Activity {
             names[i] = t.optString("strTeam");
             ours[i] = Teams.byId(this, ids[i]);
             rows[i] = (ours[i] != null ? Teams.label(this, ours[i]) : Arabic.team(this, names[i]))
-                + "  ·  " + leagueAr(t.optString("strLeague", ""));
+                + S.sep() + leagueAr(t.optString("strLeague", ""));
         }
         new Dlg(this).setTitle(title)
             .setItems(rows, (d, i) -> {
@@ -1904,7 +2277,7 @@ public class SettingsActivity extends Activity {
         for (int i = 0; i < labels.length; i++) {
             String[] r = rows.get(i);
             String n = S.en() || r[2].isEmpty() ? r[1] : r[2];
-            labels[i] = r[6].isEmpty() || r[4].isEmpty() && r[3].isEmpty() ? n : n + "  ·  " + (S.en() || r[4].isEmpty() ? r[3] : r[4]);
+            labels[i] = r[6].isEmpty() || r[4].isEmpty() && r[3].isEmpty() ? n : n + S.sep() + (S.en() || r[4].isEmpty() ? r[3] : r[4]);
             for (String s : cur) on[i] |= CatalogueLeagues.same(s, "id" + r[0]);
         }
         new Dlg(this).multi(() -> {
@@ -2058,7 +2431,7 @@ public class SettingsActivity extends Activity {
 
     private String watchNextLabel() {
         if (!prefs.watchNext()) return "متوقف";
-        return homeMayReadWatchNext() ? "يعمل · ما وقفته في نصه، تحت المفضلة" : "يعمل · يحتاج السماح مرة واحدة: اختيار";
+        return homeMayReadWatchNext() ? "يعمل، ما وقفته في نصه، تحت المفضلة" : "يعمل، يحتاج السماح مرة واحدة: اختيار";
     }
 
     /** The home app's one question for the TV's list («السماح»); it closes by itself when that is allowed already. */
@@ -2587,7 +2960,7 @@ public class SettingsActivity extends Activity {
     }
 
     /** «اللغة» as its row and button say it: the language in use, in its own words; with Arabic, English beside it to be found */
-    private String langLabel() { return Tr.EN.equals(prefs.lang()) ? "English" : "العربية · English"; }
+    private String langLabel() { return Tr.EN.equals(prefs.lang()) ? "English" : "العربية، English"; }
 
     /**
      * «اللغة»: العربية or English, each in its own language. The choice is kept (Prefs.setLang: the page and the home follow it at their
@@ -2595,7 +2968,7 @@ public class SettingsActivity extends Activity {
      */
     private void pickLang() {
         final String[] values = {Tr.AR, Tr.EN};
-        new Dlg(this).raw().own().setTitle(S.en() ? "Language · اللغة" : "اللغة · Language")
+        new Dlg(this).raw().own().setTitle(S.en() ? "Language، اللغة" : "اللغة، Language")
             .setSingleChoiceItems(new String[] {"العربية", "English"}, Tr.EN.equals(prefs.lang()) ? 1 : 0, (d, i) -> {
                 d.dismiss();
                 if (values[i].equals(prefs.lang())) return;
@@ -2659,11 +3032,11 @@ public class SettingsActivity extends Activity {
         int n = 0;
         java.util.Map<String, Integer> have = PackStore.installed(this);
         for (String id : prefs.packsOn()) if (have.containsKey(id)) n++;
-        return n == 0 ? "صورنا" : n == 1 ? "صورنا · مجموعة واحدة" : n == 2 ? "صورنا · مجموعتان" : "صورنا · " + n + (n <= 10 ? " مجموعات" : " مجموعة");
+        return n == 0 ? "صورنا" : n == 1 ? "صورنا، مجموعة واحدة" : n == 2 ? "صورنا، مجموعتان" : "صورنا، " + n + (n <= 10 ? " مجموعات" : " مجموعة");
     }
 
     private String ownLabel() {
-        if (Own.count(this) == 0) return "لا توجد صور · يضيفها مساعدك الذكي";
+        if (Own.count(this) == 0) return "لا توجد صور، يضيفها مساعدك الذكي";
         return Own.ONLY.equals(Own.mode(this)) ? "صوري فقط" : Own.ALBUM.equals(Own.mode(this)) ? "للألبوم فقط" : "تُضاف إلى صور التطبيق";
     }
 
@@ -3001,7 +3374,7 @@ public class SettingsActivity extends Activity {
     private void pickLookPart(final boolean shape) {
         final String[] values = shape ? GlassStyle.LOOKS : Prefs.APPEARANCES;
         final String[] labels = new String[values.length];
-        for (int i = 0; i < values.length; i++) labels[i] = Words.of(shape ? GlassStyle.LOOK_NAMES[i] : Prefs.appearanceLabel(values[i]).split(" · ")[0]);
+        for (int i = 0; i < values.length; i++) labels[i] = Words.of(shape ? GlassStyle.LOOK_NAMES[i] : Prefs.appearanceLabel(values[i]).split("، ")[0]);
         final String current = shape ? prefs.look() : prefs.appearance();
         final LinearLayout box = new LinearLayout(this);
         box.setOrientation(LinearLayout.HORIZONTAL);
@@ -3049,7 +3422,7 @@ public class SettingsActivity extends Activity {
         lv.setOnItemClickListener((p, v, pos, id) -> {
             if (shape) prefs.setLook(values[pos]); else prefs.setAppearance(values[pos]);
             dialog.dismiss();
-            look = GlassSource.page(this, root);   // this screen at once; the home and the others as they come up
+            look = GlassSource.page(this, root); couchVeil();   // this screen at once; the home and the others as they come up
             hint.setTextColor(look.sub);
             render();
         });
@@ -3102,7 +3475,7 @@ public class SettingsActivity extends Activity {
         }
         col.addView(tiles, llp(-1, -2, dp(8)));
         TextView row = new TextView(this);
-        row.setText(Words.of("المدينة · الرياض"));
+        row.setText(Words.of("المدينة، الرياض"));
         row.setTextSize(TypedValue.COMPLEX_UNIT_SP, 11);
         row.setTypeface(font("Thmanyah-Regular"));
         row.setTextColor(l.sub);
@@ -3129,6 +3502,35 @@ public class SettingsActivity extends Activity {
         Dlg raw() { raw = true; return this; }
 
         @Override Dlg own() { super.own(); return this; }
+
+        // 4.4 «منظر وساعة»: a plain list (one choice, ticks, or a list) opens as couch-tv's page in place of the rows, not as a dialog
+        private CharSequence title;
+        private CharSequence[] items;
+        private int checked = -1;
+        private boolean[] checks;
+        private DialogInterface.OnClickListener one, item;
+        private DialogInterface.OnMultiChoiceClickListener many;
+        private boolean plain = true;   // no view, message or button of its own (then it stays a dialog)
+        @Override public AlertDialog.Builder setTitle(CharSequence t) { title = shown(t); return super.setTitle(t); }
+        @Override public AlertDialog.Builder setSingleChoiceItems(CharSequence[] t, int c, DialogInterface.OnClickListener l) { items = shown(t); checked = c; one = l; return super.setSingleChoiceItems(t, c, l); }
+        @Override public AlertDialog.Builder setItems(CharSequence[] t, DialogInterface.OnClickListener l) { items = shown(t); item = l; return super.setItems(t, l); }
+        @Override public AlertDialog.Builder setMultiChoiceItems(CharSequence[] t, boolean[] c, DialogInterface.OnMultiChoiceClickListener l) { items = shown(t); checks = c; many = l; return super.setMultiChoiceItems(t, c, l); }
+        @Override public AlertDialog.Builder setView(View v) { plain = false; return super.setView(v); }
+        @Override public AlertDialog.Builder setMessage(CharSequence t) { plain = false; return super.setMessage(t); }
+        @Override public AlertDialog.Builder setPositiveButton(CharSequence t, DialogInterface.OnClickListener l) { if (save == null) plain = false; return super.setPositiveButton(t, l); }
+        @Override public AlertDialog.Builder setNeutralButton(CharSequence t, DialogInterface.OnClickListener l) { plain = false; return super.setNeutralButton(t, l); }
+        @Override public AlertDialog.Builder setOnDismissListener(DialogInterface.OnDismissListener l) { plain = false; return super.setOnDismissListener(l); }
+        @Override public AlertDialog.Builder setOnCancelListener(DialogInterface.OnCancelListener l) { if (save == null) plain = false; return super.setOnCancelListener(l); }
+        @Override public AlertDialog show() {
+            if (owner.cs != null && plain && !raw && items != null && (checks == null || save != null)) {
+                Page p = new Page();
+                p.title = title == null ? "" : title;
+                p.labels = items; p.checked = checked; p.checks = checks; p.one = one; p.item = item; p.many = many; p.save = save;
+                owner.showPage(p);
+                return null;
+            }
+            return super.show();
+        }
 
         private Runnable save;   // multi(): a list of choices with «حفظ»
 
@@ -3260,6 +3662,18 @@ public class SettingsActivity extends Activity {
     }
 
     private View headerView(String text) {
+        if (cs != null) {   // couch-tv's group heading: small, dim, above its rows
+            TextView t = new TextView(this);
+            t.setText(conv(text));
+            t.setTextColor(CouchStyle.DIM);
+            t.setTextSize(TypedValue.COMPLEX_UNIT_PX, cs.px(CouchStyle.SHEAD));
+            t.setTypeface(font("Thmanyah-Medium"));
+            t.setTextDirection(Dir.text());
+            t.setPaddingRelative(cs.px(CouchStyle.PAD), cs.px(CouchStyle.SHEAD_TOP), cs.px(CouchStyle.PAD), cs.px(0.125f));
+            t.setTag(HEADER);
+            t.setLayoutParams(new LinearLayout.LayoutParams(-1, -2));
+            return t;
+        }
         TextView t = new TextView(this);
         t.setText(conv(text));
         t.setTextColor(look.accent);
@@ -3323,8 +3737,9 @@ public class SettingsActivity extends Activity {
     private void line(String text, int color, int bottom) {
         TextView t = new TextView(this);
         t.setText(conv(text));
-        t.setTextColor(color);
+        t.setTextColor(cs != null ? 0xADFFFFFF : color);   // couch-tv's info line: 68 %
         t.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
+        if (cs != null) t.setTextSize(TypedValue.COMPLEX_UNIT_PX, cs.px(1.4375f));
         t.setTypeface(font("Thmanyah-Regular"));
         t.setGravity(Gravity.START);
         t.setTextDirection(Dir.text());
@@ -3358,7 +3773,7 @@ public class SettingsActivity extends Activity {
      * screen runs leftwards; an English one rightwards: Dir.forwardKey), from −20 to +20; OK puts it back to zero. The text changes where it is, so the focus and the scroll stay.
      */
     private void adjRow(final int k) {
-        final View card = row(PrayerAdj.label(k, prefs.prayerAdj()[k]), "يسار + · يمين − · موافق للتصفير", R.drawable.ic_eye, null);
+        final View card = row(PrayerAdj.label(k, prefs.prayerAdj()[k]), "يسار +، يمين −، موافق للتصفير", R.drawable.ic_eye, null);
         final TextView name = (TextView) card.findViewWithTag("name");
         final Runnable show = new Runnable() { public void run() { name.setText(conv(PrayerAdj.label(k, prefs.prayerAdj()[k]))); } };
         card.setOnClickListener(v -> { int[] a = prefs.prayerAdj(); a[k] = 0; prefs.setPrayerAdj(a); show.run(); });
@@ -3384,13 +3799,22 @@ public class SettingsActivity extends Activity {
         card.setOrientation(LinearLayout.HORIZONTAL);
         card.setGravity(Gravity.CENTER_VERTICAL);
         card.setLayoutDirection(Dir.layout());
-        card.setPadding(dp(24), dp(14), dp(20), dp(14));
+        card.setPadding(dp(20), dp(ROW_PAD), dp(16), dp(ROW_PAD));   // 4.4 the owner (build 413): rows of one line, 5 or 6 on the screen (they were 180 px)
         card.setFocusable(true);
         card.setClickable(true);
         card.setTag(FocusKey.key(label));   // which row it is when the list is built again (render keeps the focus on it)
         final String cat = SettingsHub.of(FocusKey.key(label), groupCat);   // its action on every screen (the search runs it), its views only on its own
         if (onClick != null) actions.put(FocusKey.key(label), onClick);
         if (!on(cat)) return offscreen();   // 4.4 smoother: a row of another section is not built (a section shows about 12 of the 135)
+        if (cs != null) {   // «منظر وساعة»: couch-tv's row, the same registry row (its key, its action, its section)
+            final LinearLayout couch = couchRow(label, value, onClick, FocusKey.key(label));
+            View toSide = sideItems.get(screen);
+            if (toSide != null) { if (Dir.rtl()) couch.setNextFocusRightId(toSide.getId()); else couch.setNextFocusLeftId(toSide.getId()); }
+            LinearLayout.LayoutParams clp = new LinearLayout.LayoutParams(-1, -2);
+            clp.bottomMargin = cs.px(CouchStyle.ROW_GAP);
+            list.addView(couch, clp);
+            return couch;
+        }
 
         final int state = OnOff.state(value);
         final ImageView mark = onMark(state);
@@ -3400,53 +3824,51 @@ public class SettingsActivity extends Activity {
         d.setTint(look.accent);
         ic.setImageDrawable(d);
         ic.setTag(GlassPaint.ICON);
-        LinearLayout.LayoutParams ip = new LinearLayout.LayoutParams(dp(28), dp(28));
+        LinearLayout.LayoutParams ip = new LinearLayout.LayoutParams(dp(24), dp(24));
         ip.setMarginStart(dp(6));
         card.addView(ic, ip);
 
+        // one line, one size (the owner, build 413): the name at the start, the value at the far end (a long one wraps there, tester S7), then
+        // where the row shows (4.4 the owner) after it in the same line
         LinearLayout texts = new LinearLayout(this);
-        texts.setOrientation(LinearLayout.VERTICAL);
+        texts.setOrientation(LinearLayout.HORIZONTAL);
+        texts.setGravity(Gravity.CENTER_VERTICAL);
         final TextView name = new TextView(this);
         name.setTag("name");   // adjRow changes it in place
         name.setText(noConv ? Words.of(label) : conv(label));
         name.setTextColor(look.text);
-        name.setTextSize(TypedValue.COMPLEX_UNIT_SP, 21);
+        name.setTextSize(TypedValue.COMPLEX_UNIT_SP, ROW_SP);
         name.setTypeface(font("Thmanyah-Medium"));
         name.setSingleLine(true);
-        texts.addView(name);
+        name.setEllipsize(android.text.TextUtils.TruncateAt.END);
+        texts.addView(name, new LinearLayout.LayoutParams(0, -2, 1f));
+        String where = SettingsHub.scopeWords(FocusKey.key(label));   // 4.4 the owner: where the row shows (the home, the screensaver, both, the whole TV)
+        String full = value == null ? (where.isEmpty() ? null : where) : where.isEmpty() ? value : value + "، " + where;
         final TextView val = new TextView(this);
-        final String shown = value == null ? "" : noConv ? Words.of(value) : conv(value);
-        if (value != null) {
+        final String shown = full == null ? "" : noConv ? Words.of(full) : conv(full);
+        if (full != null) {
             val.setText(shown);
             val.setTextColor(look.sub);
-            val.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
+            val.setTextSize(TypedValue.COMPLEX_UNIT_SP, ROW_SP);
             val.setTypeface(font("Thmanyah-Regular"));
             val.setMaxLines(2);   // a long line wraps to a second one instead of being cut with «..» (tester S7); only a third is cut
             val.setEllipsize(android.text.TextUtils.TruncateAt.END);
-            texts.addView(val);
+            val.setMaxWidth(Math.round((pageWidth - sideWidth) * 0.5f));
+            val.setGravity(Gravity.END | Gravity.CENTER_VERTICAL);
+            LinearLayout.LayoutParams vp = new LinearLayout.LayoutParams(-2, -2);
+            vp.setMarginStart(dp(16));
+            texts.addView(val, vp);
         }
         LinearLayout.LayoutParams tp = new LinearLayout.LayoutParams(0, -2, 1f);
-        tp.setMarginStart(dp(18));
+        tp.setMarginStart(dp(14));
         card.addView(texts, tp);
-
-        String where = SettingsHub.scopeWords(FocusKey.key(label));   // 4.4 the owner: where the row shows (the home, the screensaver, both, the whole TV)
-        if (!where.isEmpty()) {
-            TextView scope = new TextView(this);
-            scope.setText(noConv ? Words.of(where) : conv(where));
-            scope.setTextColor(look.sub);
-            scope.setAlpha(0.8f);
-            scope.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12);
-            scope.setTypeface(font("Thmanyah-Regular"));
-            scope.setSingleLine(true);
-            LinearLayout.LayoutParams sp = new LinearLayout.LayoutParams(-2, -2);
-            sp.setMarginEnd(dp(12));
-            card.addView(scope, sp);
-        }
         final TextView chevron = new TextView(this);
         chevron.setText("›");   // shown mirrored (‹) in the RTL row
         chevron.setTextColor(look.sub);
-        chevron.setTextSize(TypedValue.COMPLEX_UNIT_SP, 22);
-        card.addView(chevron);
+        chevron.setTextSize(TypedValue.COMPLEX_UNIT_SP, ROW_SP);
+        LinearLayout.LayoutParams chp = new LinearLayout.LayoutParams(-2, -2);
+        chp.setMarginStart(dp(10));
+        card.addView(chevron, chp);
 
         if (onClick != null) card.setOnClickListener(v -> { launchedRow = (String) card.getTag(); onClick.run(); });   // the row that was pressed: the focus comes back to it after another screen
         paintState(val, mark, shown, state, false);
@@ -3455,7 +3877,7 @@ public class SettingsActivity extends Activity {
             // goes under them; small enough that the text stays sharp. No layout: paintState only recolours.
             paintState(val, mark, shown, state, has);
             v.setTranslationZ(has ? dp(4) : 0);
-            v.animate().scaleX(has ? FOCUS_SCALE : 1f).scaleY(has ? FOCUS_SCALE : 1f).setDuration(FOCUS_MS).start();
+            v.animate().scaleX(has ? FOCUS_SCALE : 1f).scaleY(has ? FOCUS_SCALE : 1f).setDuration(Motion.lite(SettingsActivity.this) ? 0 : FOCUS_MS).setInterpolator(Motion.ease()).start();
             if (has) topWhenFirst(v);
         });
         glassCard(card);

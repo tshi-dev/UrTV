@@ -20,7 +20,7 @@
 HDMI ARC (مضخم أو ساوند بار)	HDMI ARC (amplifier or soundbar)
 لا يُعرف	Unknown
 ، 	, 
-شاشة التوقف · مطوّلًا: الإعدادات	Screensaver · hold OK: settings
+شاشة التوقف، مطوّلًا: الإعدادات	Screensaver, hold OK: settings
 مؤقت النوم	Sleep timer
 مؤقت النوم %s د	Sleep timer %s min
 شبكة سلكية	Wired network
@@ -63,15 +63,15 @@ HDMI ARC (مضخم أو ساوند بار)	HDMI ARC (amplifier or soundbar)
 %s في %s	%s in %s
 ص	AM
 م	PM
- · وضع الاستعداد	 · standby
+، وضع الاستعداد	, standby
 أكمل المشاهدة	Continue watching
 الموسم %s	Season %s
 الحلقة %s	Episode %s
 تفاصيل التطبيق	App info
 حذف التطبيق	Uninstall
-اختر تطبيقًا لتحريكه · × للإخفاء · ارفعه للمفضلة · رجوع للإنهاء	Pick an app to move it · × to hide · up to Favorites · Back when done
+اختر تطبيقًا لتحريكه، × للإخفاء، ارفعه للمفضلة، رجوع للإنهاء	Pick an app to move it, × to hide, up to Favorites, Back when done
 المخفية	Hidden
-اختر تطبيقًا لتحريكه · × للحذف · رجوع للإنهاء	Pick an app to move it · × to remove · Back when done
+اختر تطبيقًا لتحريكه، × للحذف، رجوع للإنهاء	Pick an app to move it, × to remove, Back when done
 أرسل تقرير	Send a report
 امسح الرمز بكاميرا الجوال: تفتح صفحة فيها هذا التقرير، ولا يوصلنا شيء إلا إذا ضغطت «أرسل» فيها. اكتب فيها المشكلة بكلماتك.	Scan the code with your phone’s camera: it opens a page with this report, and nothing reaches us unless you press “Send” there. Describe the problem there in your own words.
 ما في التقرير:	What the report contains:
@@ -127,7 +127,7 @@ HDMI ARC (مضخم أو ساوند بار)	HDMI ARC (amplifier or soundbar)
 ابدأها الآن	Start it now
 يعمل: باقي %s د	On: %s min left
 ١٥ إلى ٩٠ دقيقة	15 to 90 minutes
-أُلغي · اضغط اختيار للبدء	Cancelled · press OK to start
+أُلغي، اضغط اختيار للبدء	Cancelled, press OK to start
 جارٍ القياس…	Measuring…
 تعذّر القياس: تأكد من الشبكة	Couldn’t measure: check the network
 اختيار على مهمة لإنجازها. اكتب مهمة جديدة في الخانة ثم «إضافة». أو اضغط «تكلّم» وقل المهمة، أو: خلصت … / احذف …	Press OK on a task to mark it done. Type a new task in the box, then “Add”. Or press “Speak” and say the task, or, in Arabic: done or delete
@@ -263,9 +263,9 @@ HDMI ARC (مضخم أو ساوند بار)	HDMI ARC (amplifier or soundbar)
 تعذّر تشغيل السورة	Couldn’t play the surah
 بث مباشر	Live
 جارٍ التحميل…	Loading…
-%s  ·  نوم %s د	%s  ·  sleep %s min
-اختيار: إيقاف/تشغيل  ·  مطولًا: فتح	OK: pause/play  ·  hold: open
-اختيار: إيقاف/تشغيل  ·  يمين/يسار: السورة  ·  مطولًا: فتح	OK: pause/play  ·  left/right: surah  ·  hold: open
+%s، نوم %s د	%s, sleep %s min
+اختيار: إيقاف/تشغيل، مطولًا: فتح	OK: pause/play, hold: open
+اختيار: إيقاف/تشغيل، يمين/يسار: السورة، مطولًا: فتح	OK: pause/play, left/right: surah, hold: open
 الآن	Now
 بعد %s	in %s
 القرآن الكريم، بلا إعلانات	The Holy Quran, with no ads
@@ -288,9 +288,9 @@ HDMI ARC (مضخم أو ساوند بار)	HDMI ARC (amplifier or soundbar)
 ٩٠ دقيقة	90 min
 إيقاف التشغيل الآن	Stop now
 يتوقف بعد %1$s دقيقة	Stops in %1$s min
-يمين/يسار بين الأقسام  •  اختيار للفتح  •  رجوع للواجهة	Left/right: sections  •  OK: open  •  Back: home
-اختيار: تشغيل/إيقاف  •  يمين/يسار: ١٠ ثوانٍ  •  أسفل مؤقت النوم  •  رجوع للقائمة	OK: play/pause  •  Left/right: 10 seconds  •  Down: sleep timer  •  Back: list
-اختيار: إيقاف/تشغيل  •  أسفل مؤقت النوم  •  رجوع للقائمة	OK: stop/play  •  Down: sleep timer  •  Back: list
+يمين/يسار بين الأقسام، اختيار للفتح، رجوع للواجهة	Left/right: sections, OK: open, Back: home
+اختيار: تشغيل/إيقاف، يمين/يسار: ١٠ ثوانٍ، أسفل مؤقت النوم، رجوع للقائمة	OK: play/pause, Left/right: 10 seconds, Down: sleep timer, Back: list
+اختيار: إيقاف/تشغيل، أسفل مؤقت النوم، رجوع للقائمة	OK: stop/play, Down: sleep timer, Back: list
 رجوع	Back
 تشغيل أو إيقاف	Play or pause
 السابق	Previous
@@ -304,20 +304,20 @@ HDMI ARC (مضخم أو ساوند بار)	HDMI ARC (amplifier or soundbar)
 مؤذن الفجر	Fajr muezzin
 اختر مؤذن الفجر	Choose the Fajr muezzin
 أذان مختصر	Short adhan
-مفعّل  •  يتوقف بعد دقيقة	On  •  stops after a minute
-متوقف  •  الأذان كاملًا	Off  •  the whole adhan
+مفعّل، يتوقف بعد دقيقة	On, stops after a minute
+متوقف، الأذان كاملًا	Off, the whole adhan
 تكبير فقط	Takbir only
 إيقاف الأذان بأي زر	Any button stops the adhan
-مفعّل  •  أي زر يوقف الأذان (ما عدا الصوت والطاقة)	On  •  any button stops it (not volume or power)
-متوقف  •  «اختيار» على شريط الأذان يوقفه	Off  •  OK on the adhan bar stops it
+مفعّل، أي زر يوقف الأذان (ما عدا الصوت والطاقة)	On, any button stops it (not volume or power)
+متوقف، «اختيار» على شريط الأذان يوقفه	Off, OK on the adhan bar stops it
 الأذان على شاشة التوقف فقط	Adhan on the screensaver only
 تنبيه عند الأذان	Notice at adhan time
 شاشة التوقف وقت الأذان	Screensaver at adhan time
 صوت الأذان	Adhan volume
 قد يتأخر الأذان دقائق	The adhan may be minutes late
-فعّل المنبّهات الدقيقة  •  اختيار يفتح الإعداد	Allow exact alarms  •  OK opens the setting
-%1$s  •  الصوت المختار	%1$s  •  chosen voice
-اختيار يجرّب ١٢ ثانية ويحفظ الاختيار  •  التسجيلات: أرشيف الإنترنت، ملكية عامة  •  رجوع	OK plays 12 seconds and keeps the choice  •  Recordings: Internet Archive, public domain  •  Back
+فعّل المنبّهات الدقيقة، اختيار يفتح الإعداد	Allow exact alarms, OK opens the setting
+%1$s، الصوت المختار	%1$s, chosen voice
+اختيار يجرّب ١٢ ثانية ويحفظ الاختيار، التسجيلات: أرشيف الإنترنت، ملكية عامة، رجوع	OK plays 12 seconds and keeps the choice, Recordings: Internet Archive, public domain, Back
 بتوقيت %s	Time in %s
 المدينة	City
 تحجب المواقع غير المناسبة للعائلة على كل التلفزيون. قبل التفعيل نتأكد أن الخدمة تشتغل، وإذا وقف الإنترنت نرجّع الإعداد القديم تلقائياً.	Blocks sites not suitable for the family on the whole TV. Before turning it on we check that the service works, and if the internet stops we bring back the old setting by itself.
@@ -334,7 +334,7 @@ HDMI ARC (مضخم أو ساوند بار)	HDMI ARC (amplifier or soundbar)
 ألغيت التثبيت.	You cancelled the install.
 الإصدار المثبّت %s	Installed version %s
 تلفزيونك محدّث: %s	Your TV is up to date: %s
-تحديث جديد %s · اضغط للتحديث	New update %s · press to update
+تحديث جديد %s، اضغط للتحديث	New update %s, press to update
 تم التحديث ✓ %s	Updated ✓ %s
 الخطوة: %s	Step: %s
 تحديث تطبيق الحافظة	Updating the screensaver app
@@ -373,8 +373,8 @@ HDMI ARC (مضخم أو ساوند بار)	HDMI ARC (amplifier or soundbar)
 للخروج من تلفزيونك اضغط رجوع ثلاث مرات	To leave Your TV, press Back three times
 للخروج من تلفزيونك اضغط رجوع مطوّلًا	To leave Your TV, hold Back
 بعد التحديث توقفت خدمة الكتابة من الجوال. شغّلها من إعدادات التلفزيون: إمكانية الوصول، تلفزيونك.	After the update, typing from the phone stopped. Turn it on in the TV settings: Accessibility, Your TV.
-مكة المكرمة · قناة القرآن الكريم	Makkah · Quran channel
-المدينة المنورة · قناة السنة النبوية	Madinah · Sunnah channel
+مكة المكرمة، قناة القرآن الكريم	Makkah, Quran channel
+المدينة المنورة، قناة السنة النبوية	Madinah, Sunnah channel
 مهمة	Task
 ذكّرني	Remind me
 التاريخ	Date
@@ -405,7 +405,7 @@ HDMI ARC (مضخم أو ساوند بار)	HDMI ARC (amplifier or soundbar)
 يغلق بعد %s	closes in %s
 يفتح %s %s	Opens %s %s
 لا أسعار بعد: يلزم اتصال بالإنترنت	No prices yet: the TV needs the internet
-آخر تحديث %s · أسعار متأخرة	Updated %s · delayed prices
+آخر تحديث %s، أسعار متأخرة	Updated %s, delayed prices
 الأحد	Sunday
 الاثنين	Monday
 الثلاثاء	Tuesday
@@ -420,7 +420,7 @@ HDMI ARC (مضخم أو ساوند بار)	HDMI ARC (amplifier or soundbar)
 %s منخفضة	%s down
 الجلسة	Session
 الأحد إلى الخميس	Sunday to Thursday
-%s · مزاد الإغلاق إلى %s	%s · closing auction to %s
+%s، مزاد الإغلاق إلى %s	%s, closing auction to %s
 الأكثر ارتفاعًا وانخفاضًا	Top gainers and losers
 لا تغيير بعد اليوم	No change yet today
 الأكثر نشاطًا	Most active
@@ -455,10 +455,10 @@ HDMI ARC (مضخم أو ساوند بار)	HDMI ARC (amplifier or soundbar)
 القيمة	Value
 الربح	Gain
 الأسهم الأمريكية بالدولار، والمجموع بالريال على سعر الربط %s	US stocks in dollars; the total in riyals at the %s peg
-%s · بالدولار	%s · in dollars
+%s، بالدولار	%s, in dollars
 تبقى في هذا التلفزيون فقط، ولا تُرسل في أي تقرير ولا تنتقل مع الإعدادات	Kept on this TV only: never in a report, never moved with the settings
-مؤشر السوق الرئيسية · تداول	Main market index · Tadawul
-%s · تداول · ر.س	%s · Tadawul · SAR
+مؤشر السوق الرئيسية، تداول	Main market index, Tadawul
+%s، تداول، ر.س	%s, Tadawul, SAR
 الافتتاح	Open
 نطاق اليوم	Day’s range
 نطاق ٥٢ أسبوعًا	52-week range
@@ -479,15 +479,15 @@ HDMI ARC (مضخم أو ساوند بار)	HDMI ARC (amplifier or soundbar)
 ما حُفظ: حدّث تطبيق «شاشة تلفزيونك»	Not saved: update the UrTV screensaver app
 أسهم أكبر %s شركة في تداول. لسهم أمريكي أو رمز آخر: «أسهل من الجوال».	The largest %s companies on Tadawul. For a US stock or another code: “Easier from the phone”.
 أسهل من الجوال	Easier from the phone
-%s · ر.س	%s · SAR
+%s، ر.س	%s, SAR
 احفظ	Save
 اكتب الكمية ومتوسط التكلفة	Type the quantity and the average cost
 المحفظة ممتلئة: %s سهمًا	The portfolio is full: %s stocks
 ما حُفظ	Not saved
 ما قدرنا نفتح «التحكم من الجوال»	Could not open “Phone control”
 اقفل محفظتي	Lock my portfolio
-مفعّل · تسأل عن الرقم السري قبل فتحها	On · asks for the PIN before it opens
-متوقف · ضع رقمًا سريًا من الرقابة الأبوية أولًا	Off · set a PIN in parental controls first
+مفعّل، تسأل عن الرقم السري قبل فتحها	On, asks for the PIN before it opens
+متوقف، ضع رقمًا سريًا من الرقابة الأبوية أولًا	Off, set a PIN in parental controls first
 ضع رقمًا سريًا من الرقابة الأبوية أولًا	Set a PIN in parental controls first
 احذف المحفظة	Delete the portfolio
 كل الأسهم وعمليات الشراء، من هذا التلفزيون	Every stock and buy, from this TV
@@ -500,9 +500,9 @@ HDMI ARC (مضخم أو ساوند بار)	HDMI ARC (amplifier or soundbar)
 قبل أسبوع	A week ago
 قبل شهر	A month ago
 الخط المتقطع: أول الفترة	Dashed line: the start of the range
-الأسعار متأخرة · المصدر: %s	Delayed prices · Source: %s
+الأسعار متأخرة، المصدر: %s	Delayed prices, Source: %s
 عادي	Normal
-مباشر · المصدر: %s	Live · Source: %s
+مباشر، المصدر: %s	Live, Source: %s
 متأخرة ~%s د	~%s min delayed
 صرف العملات	Currency exchange
 الأسعار مقابل الريال السعودي	Rates against the Saudi riyal
@@ -512,7 +512,7 @@ HDMI ARC (مضخم أو ساوند بار)	HDMI ARC (amplifier or soundbar)
 حوّل العملات	Convert currencies
 اختر العملات	Choose currencies
 اختر العملة	Choose a currency
-أسعار يومية · المصدر: Yahoo Finance. الريال والدرهم والريال القطري والدينار البحريني والريال العماني والدينار الأردني مربوطة بالدولار.	Daily rates · Source: Yahoo Finance. The riyal, dirham, Qatari riyal, Bahraini dinar, Omani rial and Jordanian dinar are pegged to the dollar.
+أسعار يومية، المصدر: Yahoo Finance. الريال والدرهم والريال القطري والدينار البحريني والريال العماني والدينار الأردني مربوطة بالدولار.	Daily rates, Source: Yahoo Finance. The riyal, dirham, Qatari riyal, Bahraini dinar, Omani rial and Jordanian dinar are pegged to the dollar.
 دولار أمريكي	US dollar
 ريال سعودي	Saudi riyal
 دينار كويتي	Kuwaiti dinar
@@ -566,7 +566,7 @@ HDMI ARC (مضخم أو ساوند بار)	HDMI ARC (amplifier or soundbar)
 المفضلون	Favorites
 اسمح بالإشعارات ليظهر ما يُتلى في إشعارات التلفزيون. وإن رفضت، تبقى التلاوة كما هي.	Allow notifications to see what is playing in the TV's notifications. If you say no, playback works the same.
 السوق الأمريكي مفتوح	US market open
-%s · نيويورك	%s · New York
+%s، نيويورك	%s, New York
 ناسداك	Nasdaq
 داو جونز	Dow Jones
 تنزيل	Download
@@ -577,7 +577,7 @@ HDMI ARC (مضخم أو ساوند بار)	HDMI ARC (amplifier or soundbar)
 صفحته في المتجر	Its store page
 الجوال	Phone
 الاتصال بالشبكة	Network connection
-الأسعار غير مباشرة · المصدر: %s	Prices not live · Source: %s
+الأسعار غير مباشرة، المصدر: %s	Prices not live, Source: %s
 غير مباشرة	Not live
 تحديث جديد	New update
 تطبيقات مقترحة	Suggested apps

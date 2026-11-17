@@ -43,6 +43,9 @@ public final class S {
     public static String lang() { return lang; }
     public static boolean en() { return Tr.EN.equals(lang); }
 
+    /** Between two parts of one line: «، » with Arabic, ", " with English (4.4: no «·» or «•» on a screen) */
+    public static String sep() { return en() ? ", " : "، "; }
+
     /** the kept setting (no cross-process read): for a service or receiver that shows words, before t */
     public static void init(Context c) {
         Context a = c.getApplicationContext() != null ? c.getApplicationContext() : c;

@@ -42,7 +42,7 @@ final class AdhanBarText {
      */
     static String playing(int prayer, boolean friday, boolean stopAny) {
         String name = prayer == 0 ? "الفجر" : prayer == 2 ? (friday ? S.n("الجمعة") : "الظهر") : prayer == 3 ? "العصر" : prayer == 4 ? "المغرب" : prayer == 5 ? "العشاء" : null;
-        return (name == null ? S.t("الأذان") : S.t("أذان %s", S.tv(name))) + "  ·  " + S.tv(stopAny ? STOP_ANY : STOP_OK);
+        return (name == null ? S.t("الأذان") : S.t("أذان %s", S.tv(name))) + S.sep() + S.tv(stopAny ? STOP_ANY : STOP_OK);
     }
 
     /** «١ دقيقة», «دقيقتين», «٨ دقائق», «١٢ دقيقة»: as the page says them. */

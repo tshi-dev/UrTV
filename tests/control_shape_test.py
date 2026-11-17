@@ -31,7 +31,7 @@ if shutil.which("javac") and shutil.which("java"):
 cc = (HOME / "ControlCenter.java").read_text(encoding="utf-8")
 tsv = (ROOT / "i18n/en/home.tsv").read_text(encoding="utf-8")
 check("the panel is sized and its rows are moved by ControlShape, the wide page fades in where it stands and the tall one slides, and the choice is read when the panel opens (the next time after a change)",
-      "ControlShape.size(W, H, wideNow)" in cc and "ControlShape.go(i, rowCells.size(), wideNow, Dir.rtl())" in cc and "if (wideNow) panel.setAlpha(0f);" in cc
+      "ControlShape.size(W, H, wideNow)" in cc and "ControlShape.go(i, rowCells.size(), wideNow, Dir.rtl())" in cc and "final boolean fade = wideNow || Ram.low(anchor.getContext());" in cc and "if (fade) panel.setAlpha(0f);" in cc
       and 'wideNow = isWide(prefs().getString("layout", LAYOUT_TALL));' in cc.split("final int[] sz", 1)[0][-200:])
 check("«تخصيص» has the choice «شكل اللوحة»: «طولي» (default) / «عريض» (a button between the hint and the rows, in the focus walk, Back still goes to the panel), with English words",
       'S.t("شكل اللوحة") + ": "' in cc and 'putString("layout"' in cc and "walk.add(shape);" in cc and all(w in tsv for w in ("شكل اللوحة\t", "عريض\t", "طولي\t")))

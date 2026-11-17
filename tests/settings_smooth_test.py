@@ -35,9 +35,9 @@ paint = st[st.index("    private void paintState(TextView v"):].split("\n    }\n
 check("a focus change only recolours the on/off word (the span's colour, drawn again): no new text, no layout",
       "if (g != null && g.length == 1) { if (g[0].color != green) { g[0].color = green; v.invalidate(); } return; }" in paint
       and "!text.contentEquals(v.getText())" in paint and "implements android.text.style.UpdateAppearance" in st)
-check("the focused row: a short scale (120 ms, 1.02), lifted over its neighbours, instead of anything laid out again",
-      "static final float FOCUS_SCALE = 1.02f;" in st and "static final long FOCUS_MS = 120;" in st
-      and "v.animate().scaleX(has ? FOCUS_SCALE : 1f).scaleY(has ? FOCUS_SCALE : 1f).setDuration(FOCUS_MS).start();" in rowfn and "v.setTranslationZ(has ? dp(4) : 0);" in rowfn)
+check("the focused row: a short scale (1.02) on the one motion (Motion: 200 ms, couch-tv's curve; none with «الوضع الخفيف»), lifted over its neighbours, instead of anything laid out again",
+      "static final float FOCUS_SCALE = 1.02f;" in st and "static final long FOCUS_MS = Motion.MS;" in st
+      and "v.animate().scaleX(has ? FOCUS_SCALE : 1f).scaleY(has ? FOCUS_SCALE : 1f).setDuration(Motion.lite(SettingsActivity.this) ? 0 : FOCUS_MS).setInterpolator(Motion.ease()).start();" in rowfn and "v.setTranslationZ(has ? dp(4) : 0);" in rowfn)
 search = st[st.index("    private void searchSettings() {"):].split("\n    }\n")[0]
 check("the search: the rows found as the words are typed, once the typing rests, from the list in memory, in a recycled list",
       "h.postDelayed(look_, SEARCH_MS);" in search and "SettingsHub.search(in.getText().toString().trim())" in search

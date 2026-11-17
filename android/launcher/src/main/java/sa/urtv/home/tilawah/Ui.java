@@ -99,9 +99,9 @@ final class Ui {
         if (s == null || !sa.urtv.home.S.en()) return s;
         String whole = sa.urtv.home.S.tv(s);
         if (!whole.equals(s)) return whole;
-        String[] parts = s.split("  •  ", -1);
+        String[] parts = s.split("، ", -1);
         for (int i = 0; i < parts.length; i++) parts[i] = sa.urtv.home.S.tv(parts[i]);
-        return String.join("  •  ", parts);
+        return String.join(sa.urtv.home.S.sep(), parts);
     }
 
     /** 1:05, 12:40, 1:02:03 */

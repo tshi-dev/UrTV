@@ -119,7 +119,7 @@ check("live mode: one batched request for the symbols on screen and the open car
       and "save(" not in text(HOME / "MarketFile.java").split("static java.util.Map<String, MarketData.Live> live")[1].split("static MarketData cached")[0])
 check("live mode: it falls back to the 5-minute file: «عادي» puts the file's prices back (MarketFile.last), a failed ask leaves the data and the footer returns to «الأسعار متأخرة»",
       "MarketData file = MarketFile.last();" in act2 and "shownLive = liveOn && MarketData.liveFresh(liveOkAt, System.currentTimeMillis());" in act2
-      and 'S.t("الأسعار متأخرة · المصدر: %s", name)' in act2 and 'S.t("مباشر · المصدر: %s", name)' in act2)
+      and 'S.t("الأسعار متأخرة، المصدر: %s", name)' in act2 and 'S.t("مباشر، المصدر: %s", name)' in act2)
 check("live mode: labels: Tadawul «متأخرة ~١٥ د», any other the quote's time; the footer says «مباشر» while live", 'S.t("متأخرة ~%s د", digits(15))' in act2 and "MarketData.liveKind(code)" in act2
       and "clock(k.get(Calendar.HOUR_OF_DAY), k.get(Calendar.MINUTE))" in act2)
 check("step 27: live mode keeps the screen awake while the page is in front (FLAG_KEEP_SCREEN_ON set when live and resumed, cleared otherwise)", "FLAG_KEEP_SCREEN_ON" in act2 and "if (liveOn && resumed) getWindow().addFlags" in act2
@@ -161,7 +161,7 @@ peg_doc = text(HOME / "MarketData.java")
 check("step 182: FX_PEGS keeps its own doc (no two docs stacked over FX_CODES)", "«مربوط بالدولار». */\n    static final String[][] FX_PEGS" in peg_doc and "*/\n    /** the currencies the page" not in peg_doc)
 check("4.1 reports: each currency of «صرف العملات» shows a gram of gold in it (KWD, BHD…) when the gold price and its rate are known",
       "MarketData.goldGram(gq == null ? Double.NaN : gq.p, code, rates)" in act2 and 'S.t("غرام الذهب %s"' in act2 and "if (!Double.isNaN(gram))" in act2)
-check("currencies: a missing rate shows «—» (MarketData.fxNumber of NaN), never 0; the pegs say «مربوط بالدولار»", 'MarketData.pegged(code) ? code + " · " + S.t("مربوط بالدولار")' in act2 and 'return "—"' in text(HOME / "MarketData.java"))
+check("currencies: a missing rate shows «—» (MarketData.fxNumber of NaN), never 0; the pegs say «مربوط بالدولار»", 'MarketData.pegged(code) ? code + S.sep() + S.t("مربوط بالدولار")' in act2 and 'return "—"' in text(HOME / "MarketData.java"))
 check("step 28 (the owner's photo): the pad's zero is a Latin-style 0 in Arabic (the Arabic one is a dot beside the separator), the separator key is large, and ⌫ is mirrored in RTL",
       'if (key.equals("0") && !Digits.latin()) return "0";' in act2 and 'sp + 10' in act2 and 'key.equals("⌫") && Dir.rtl()) b.setScaleX(-1f)' in act2
       and act2.count("padStyle((TextView) b,") == 2 and act2.count("button(padLabel(") == 2)

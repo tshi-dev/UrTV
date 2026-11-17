@@ -829,6 +829,7 @@ public class MainActivity extends Activity {
         weatherLine.setMaxLines(2);
         weatherLine.setVisibility(View.GONE);
         left.addView(weatherLine, sideLlp(-2, -2, dp(4), dp(1), 0, 0));
+        weatherLine.addOnLayoutChangeListener((nv, n1, n2, n3, n4, n5, n6, n7, n8) -> keepNudgeClear());   // 4.4: the nudge strip keeps NUDGE_CLEAR_PX from it
         greetingLine = new Greeting(this, greeting, weatherLine, () -> resumed);
 
         LinearLayout clockRow = new LinearLayout(this);
@@ -863,6 +864,7 @@ public class MainActivity extends Activity {
 
         final PillBar right = new PillBar(this);   // the top row: one bar behind its buttons (design/43)
         pillBar = right;
+        right.addOnLayoutChangeListener((nv, n1, n2, n3, n4, n5, n6, n7, n8) -> keepNudgeClear());   // 4.4: the nudge strip keeps NUDGE_CLEAR_PX from the opening row
         right.setGravity(Gravity.CENTER_VERTICAL);
         right.setClipChildren(false);
         Pill inputs = pill(S.t("المصادر"), R.drawable.ic_input);
@@ -1538,11 +1540,11 @@ public class MainActivity extends Activity {
             float z = (dbg & DebugFlags.LIFT) != 0 ? 0 : has ? dp(zoom ? 2 * GlowLook.LIFT_DP : GlowLook.LIFT_DP) : 0;
             if ((dbg & DebugFlags.PLAIN) == 0) {
                 if (inDock) v.animate().translationY(has ? -lift() : 0).translationZ(z)
-                        .setInterpolator(new DecelerateInterpolator()).setStartDelay(wait).setDuration(FavBar.MS).start();
-                else v.animate().translationZ(z).setInterpolator(new DecelerateInterpolator()).setDuration(has ? 320 : 200).start();
-                if ((dbg & DebugFlags.SHINE) == 0) shine.animate().alpha(has && !zoom ? 1f : 0f).setDuration(160).start();
-                label.animate().alpha(has ? 1f : 0f).translationY(has ? dp(4) : 0).setDuration(200).start();
-            } else if ((dbg & DebugFlags.SHINE) == 0) shine.animate().alpha(has ? 1f : 0f).setDuration(160).start();
+                        .setInterpolator(Motion.ease()).setStartDelay(wait).setDuration(Motion.move(MainActivity.this)).start();
+                else v.animate().translationZ(z).setInterpolator(Motion.ease()).setDuration(Motion.move(MainActivity.this)).start();
+                if ((dbg & DebugFlags.SHINE) == 0) shine.animate().alpha(has && !zoom ? 1f : 0f).setDuration(Motion.MS).setInterpolator(Motion.ease()).start();
+                label.animate().alpha(has ? 1f : 0f).translationY(has ? dp(4) : 0).setDuration(Motion.MS).setInterpolator(Motion.ease()).start();
+            } else if ((dbg & DebugFlags.SHINE) == 0) shine.animate().alpha(has ? 1f : 0f).setDuration(Motion.MS).setInterpolator(Motion.ease()).start();
             if (!has) return;
             lastFocusedId = v.getId();
             optionsHint(inDock);
@@ -1551,13 +1553,13 @@ public class MainActivity extends Activity {
                 if ((dbg & DebugFlags.TITLE) == 0) {
                     title.setText(app.label);
                     placeName();
-                    title.animate().alpha(1f).setDuration(200).start();
+                    title.animate().alpha(1f).setDuration(Motion.MS).setInterpolator(Motion.ease()).start();
                 }
                 if ((dbg & DebugFlags.GLOW) == 0) { animateGlow(app.color); fadeGlow(1f); }
                 if ((dbg & DebugFlags.PLAIN) == 0) glideTo(0);
             } else {
                 if ((dbg & DebugFlags.GLOW) == 0) fadeGlow(0.35f);
-                if ((dbg & DebugFlags.TITLE) == 0) title.animate().alpha(0f).setDuration(200).start();
+                if ((dbg & DebugFlags.TITLE) == 0) title.animate().alpha(0f).setDuration(Motion.MS).setInterpolator(Motion.ease()).start();
                 scrollToRow(box);
             }
         });
@@ -1933,14 +1935,14 @@ public class MainActivity extends Activity {
         card.setOnClickListener(v -> guarded(ParentalPolicy.GRID, it.pkg, it.title, () -> TvRows.open(this, it)));   // the app's own lock first
         card.setOnFocusChangeListener((v, has) -> {
             scaleTo(v, has ? 1.12f : 1f);   // as a favourite
-            v.animate().translationZ(has ? dp(GlowLook.LIFT_DP) : 0).setInterpolator(new DecelerateInterpolator()).setDuration(has ? 320 : 200).start();
-            shine.animate().alpha(has ? 1f : 0f).setDuration(160).start();
+            v.animate().translationZ(has ? dp(GlowLook.LIFT_DP) : 0).setInterpolator(Motion.ease()).setDuration(Motion.move(MainActivity.this)).start();
+            shine.animate().alpha(has ? 1f : 0f).setDuration(Motion.MS).setInterpolator(Motion.ease()).start();
             if (!has) return;
             lastFocusedId = v.getId();
             fadeGlow(1f);
             View line = (View) box.getParent();
             int at = tvRowsBox.indexOfChild(line) / 2;   // the box holds each row's name, then its cards
-            if (at >= 0 && at < tvNames.size()) tvNames.get(at).setText(S.tv(TvRowsPick.WATCH_NEXT_TITLE) + "  ·  " + (it.meta.isEmpty() ? it.title : it.title + "  ·  " + it.meta));
+            if (at >= 0 && at < tvNames.size()) tvNames.get(at).setText(S.tv(TvRowsPick.WATCH_NEXT_TITLE) + S.sep() + (it.meta.isEmpty() ? it.title : it.title + S.sep() + it.meta));
             scrollToTvRow(line);   // below the first screen: the home slides up to the row; ▲ to the tray slides it back (glideTo(0))
         });
         return box;
@@ -2066,7 +2068,7 @@ public class MainActivity extends Activity {
         nudgeCard.setText(S.t("خلّ تلفزيونك يفتح على UrTV"));
         nudgeCard.setGravity(Gravity.CENTER);
         nudgeCard.setSingleLine(true);
-        nudgeCard.setPadding(dp(24), dp(9), dp(24), dp(9));
+        nudgeCard.setPadding(dp(16), dp(9), dp(16), dp(9));
         nudgeCard.setMaxWidth(dp(420));
         nudgeCard.setFocusable(true);
         nudgeCard.setClickable(true);
@@ -2093,7 +2095,7 @@ public class MainActivity extends Activity {
         nudgeLater = text(14, "sans-serif-medium", 0xFFFFFFFF);
         nudgeLater.setText(S.t("لاحقاً"));
         nudgeLater.setGravity(Gravity.CENTER);
-        nudgeLater.setPadding(dp(22), dp(9), dp(22), dp(9));
+        nudgeLater.setPadding(dp(16), dp(9), dp(16), dp(9));
         nudgeLater.setFocusable(true);
         nudgeLater.setClickable(true);
         nudgeLater.setId(View.generateViewId());
@@ -2101,16 +2103,63 @@ public class MainActivity extends Activity {
         nudgeAsk = text(16, "sans-serif-medium", 0xFFFFFFFF);
         nudgeAsk.setText(S.t("وين أنت؟ اختر مدينتك عشان الطقس والصلاة"));
         nudgeAsk.setSingleLine(true);
-        nudgeAsk.setPadding(dp(24), dp(9), dp(24), dp(9));
+        nudgeAsk.setEllipsize(android.text.TextUtils.TruncateAt.END);   // 4.4: where the top row and the weather line leave too little room (keepNudgeClear)
+        nudgeAsk.setPadding(dp(18), dp(9), dp(12), dp(9));
         nudgeAsk.setGravity(Gravity.CENTER);
         nudgeAsk.setVisibility(View.GONE);
         nudge.addView(nudgeAsk, new LinearLayout.LayoutParams(-2, -2));
         nudge.addView(nudgeCard, new LinearLayout.LayoutParams(-2, -2));
         LinearLayout.LayoutParams lp2 = new LinearLayout.LayoutParams(-2, -2);
-        lp2.setMarginStart(dp(8));
+        lp2.setMarginStart(dp(4));
         nudge.addView(nudgeLater, lp2);
+        nudge.setPadding(dp(6), dp(4), dp(6), dp(4));
         nudge.setVisibility(View.GONE);
         root.addView(nudge, lp(-2, -2, Gravity.TOP | Gravity.CENTER_HORIZONTAL, 0, dp(30), 0, 0));
+        nudge.addOnLayoutChangeListener((nv, n1, n2, n3, n4, n5, n6, n7, n8) -> keepNudgeClear());   // and the weather line's own (where it is made)
+    }
+
+    /** 4.4 the sweep: px at 1080p between the nudge strip and what stands beside it (the weather line under «صباح الخير», the top row of buttons as it opens) */
+    static final int NUDGE_CLEAR_PX = 16;
+
+    /** The strip moves sideways, away from the weather line and the top row, when it shares a band of the screen with them and stands closer than NUDGE_CLEAR_PX. */
+    private void keepNudgeClear() {
+        if (nudge == null) return;
+        if (nudge.getTranslationX() != 0f) nudge.setTranslationX(0f);
+        if (nudge.getVisibility() != View.VISIBLE || nudge.getWidth() == 0) return;
+        int[] n = new int[2];
+        nudge.getLocationInWindow(n);
+        int gap = Math.round(NUDGE_CLEAR_PX * getResources().getDisplayMetrics().widthPixels / 1920f);
+        int lo = Integer.MIN_VALUE, hi = Integer.MAX_VALUE;
+        for (View o : new View[] {weatherLine, pillBar}) {
+            if (o == null || o.getVisibility() != View.VISIBLE || o.getWidth() == 0) continue;
+            int[] w = new int[2];
+            o.getLocationInWindow(w);
+            if (n[1] >= w[1] + o.getHeight() || w[1] >= n[1] + nudge.getHeight()) continue;   // not side by side
+            if (w[0] + o.getWidth() / 2 >= n[0] + nudge.getWidth() / 2) hi = Math.min(hi, w[0] - gap);   // on its right: the strip ends before it
+            else lo = Math.max(lo, w[0] + o.getWidth() + gap);                                         // on its left: the strip starts after it
+        }
+        int room = lo != Integer.MIN_VALUE && hi != Integer.MAX_VALUE ? hi - lo : Integer.MAX_VALUE;
+        if (room < nudge.getWidth() && nudgeAsk.getVisibility() == View.VISIBLE) {   // no room for both gaps: the question gives way (ends in «…»), never an overlap
+            int fit = Math.max(dp(120), nudgeAsk.getWidth() - (nudge.getWidth() - room));
+            if (fit < nudgeAsk.getWidth()) { nudgeAsk.setMaxWidth(fit); nudge.requestLayout(); return; }   // laid out again, then placed
+        } else if (room >= nudge.getWidth() + dp(40) && nudgeAsk.getMaxWidth() != NUDGE_ASK_MAX) {   // room again: the whole question
+            nudgeAsk.setMaxWidth(NUDGE_ASK_MAX);
+            nudge.requestLayout();
+            return;
+        }
+        float shift = nudgeShift(n[0], nudge.getWidth(), lo, hi);
+        if (shift != 0f) nudge.setTranslationX(shift);
+    }
+
+    /** the question's widest: Integer.MAX_VALUE, TextView's own «no limit» */
+    static final int NUDGE_ASK_MAX = Integer.MAX_VALUE;
+
+    /** how far the strip [n, n+nw) moves to stand inside [lo, hi): not at all when it does; centred between the two when it is wider than the room */
+    static float nudgeShift(int n, int nw, int lo, int hi) {
+        if (lo != Integer.MIN_VALUE && hi != Integer.MAX_VALUE && nw > hi - lo) return lo + (hi - lo - nw) / 2f - n;
+        if (hi != Integer.MAX_VALUE && n + nw > hi) return hi - (n + nw);
+        if (lo != Integer.MIN_VALUE && n < lo) return lo - n;
+        return 0f;
     }
 
     /** «لاحقاً» (or Back on the bar): hidden for 7 days, then 30 after a second press, then never; the number of presses is kept */
@@ -2232,11 +2281,13 @@ public class MainActivity extends Activity {
         nudgeLater.setVisibility(notice != null ? View.GONE : View.VISIBLE);
         if (show && !was) {
             GlassStyle.Look l = homeGlass();
-            nudgeAsk.setBackground(opaqueTile(18));   // its words sit on the glass too, over any photo
+            // 4.4 the owner (no pills): ONE glass strip, plain words in it; only the focused choice has a fill (the focus ring), none a capsule
+            nudge.setBackground(GlassPaint.fill(this, opaque(l.dialog), NUDGE_RADIUS, l.line));
+            nudgeAsk.setBackground(null);
             nudgeAsk.setTextColor(l.text);
-            nudgeCard.setBackground(opaqueTile(18));
+            nudgeCard.setBackground(focusOnly(NUDGE_FOCUS_RADIUS));
             nudgeCard.setTextColor(GlassPaint.focusColors(l.text, l.onFocus));
-            nudgeLater.setBackground(opaqueTile(20));
+            nudgeLater.setBackground(focusOnly(NUDGE_FOCUS_RADIUS));
             nudgeLater.setTextColor(GlassPaint.focusColors(l.text, l.onFocus));
         }
         nudge.setVisibility(show ? View.VISIBLE : View.GONE);
@@ -2277,6 +2328,18 @@ public class MainActivity extends Activity {
         return s;
     }
 
+    /** 4.4: the nudge strip's corners and its choices' focus fill: a rounded panel, never a capsule (half its height) */
+    static final float NUDGE_RADIUS = 12, NUDGE_FOCUS_RADIUS = 8;
+
+    /** a plain word's background: nothing at rest, the solid focus fill while focused (its focus ring) */
+    private android.graphics.drawable.StateListDrawable focusOnly(float radiusDp) {
+        GlassStyle.Look l = homeGlass();
+        android.graphics.drawable.StateListDrawable s = new android.graphics.drawable.StateListDrawable();
+        s.addState(new int[] {android.R.attr.state_focused}, GlassPaint.focused(this, l, GlassStyle.over(l.focus, opaque(l.dialog)), radiusDp));
+        s.addState(new int[] {}, new android.graphics.drawable.ColorDrawable(0));
+        return s;
+    }
+
     /** As a mode starts: the hint line, the two «تراجع» and «المخفية» in the look of now. */
     private void paintEditChrome() {
         GlassStyle.Look l = homeGlass();
@@ -2304,7 +2367,7 @@ public class MainActivity extends Activity {
         x.setOnFocusChangeListener((v, has) -> {
             xb.setColor(has ? CORAL : 0xB3000000);
             xb.setStroke(dp(2), has ? 0xFFFFD9CF : 0x66FFFFFF);
-            x.animate().scaleX(has ? 1.3f : 1f).scaleY(has ? 1.3f : 1f).setDuration(120).start();
+            x.animate().scaleX(has ? 1.3f : 1f).scaleY(has ? 1.3f : 1f).setDuration(Motion.move(MainActivity.this)).setInterpolator(Motion.ease()).start();
         });
         x.getOnFocusChangeListener().onFocusChange(x, false);
         card.addView(x, lp(dp(26), dp(26), Gravity.TOP | Gravity.START, dp(6), dp(6), dp(6), 0));
@@ -2498,12 +2561,12 @@ public class MainActivity extends Activity {
         if (shine != null && lifted) shine.setAlpha(1f);
         if (lifted) {
             scaleTo(card, fav ? FavBar.LIFTED_SCALE : 1.25f);   // a favourite stays inside its tray
-            card.animate().translationY(fav ? -lift() : -dp(10)).translationZ(dp(GlowLook.LIFT_DP)).setDuration(160).start();
+            card.animate().translationY(fav ? -lift() : -dp(10)).translationZ(dp(GlowLook.LIFT_DP)).setDuration(Motion.move(MainActivity.this)).setInterpolator(Motion.ease()).start();
         } else {
             boolean has = card.isFocused();
             float s = has ? focusScale : 1f;
             scaleTo(card, s);
-            card.animate().translationY(has && fav ? -lift() : 0).translationZ(has ? dp(GlowLook.LIFT_DP) : 0).setDuration(160).start();
+            card.animate().translationY(has && fav ? -lift() : 0).translationZ(has ? dp(GlowLook.LIFT_DP) : 0).setDuration(Motion.move(MainActivity.this)).setInterpolator(Motion.ease()).start();
             if (shine != null) shine.setAlpha(has ? 1f : 0f);
         }
     }
@@ -2968,13 +3031,13 @@ public class MainActivity extends Activity {
         boolean on = show && seen < OPTIONS_HINT_TIMES && edit == null && appsEdit == null;
         if (on) prefs().edit().putInt(hintKey(), seen + 1).apply();
         optionsHint.setTextColor(palette().text);
-        optionsHint.animate().alpha(on ? 1f : 0f).setDuration(200).start();
+        optionsHint.animate().alpha(on ? 1f : 0f).setDuration(Motion.MS).setInterpolator(Motion.ease()).start();
     }
 
     /** the box was opened: the hint has done its job */
     private void optionsHintUsed() {
         prefs().edit().putInt("options_hint", OPTIONS_HINT_TIMES).putInt("options_hint_en", OPTIONS_HINT_TIMES).apply();   // the box was opened, in either language: the person knows
-        if (optionsHint != null) optionsHint.animate().alpha(0f).setDuration(150).start();
+        if (optionsHint != null) optionsHint.animate().alpha(0f).setDuration(Motion.MS).setInterpolator(Motion.ease()).start();
     }
 
     // ---- the favourites bar (FavBar): its tray, the name over the focused tile, and the one move it may make
@@ -3023,7 +3086,7 @@ public class MainActivity extends Activity {
         float centre = a[0] + f.getWidth() * f.getScaleX() / 2f;   // the tile grows about its centre
         zoomName.setX(centre - h[0] - zoomName.getMeasuredWidth() / 2f);   // its place on the screen, whichever side it starts from
         zoomName.setTranslationY(t[1] - h[1] + tray.getHeight() + bar(8));
-        if (zoomName.getAlpha() < 1f) zoomName.animate().alpha(1f).setDuration(200).start();
+        if (zoomName.getAlpha() < 1f) zoomName.animate().alpha(1f).setDuration(Motion.MS).setInterpolator(Motion.ease()).start();
     }
 
     /**
@@ -3034,8 +3097,8 @@ public class MainActivity extends Activity {
     void lowerTray(boolean down) {
         if (tray == null || down == trayLowered) return;
         trayLowered = down;
-        tray.animate().translationY(down ? bar(FavBar.WIDGET_DROP) : 0).setInterpolator(new android.view.animation.AccelerateDecelerateInterpolator())
-                .setDuration(FavBar.DROP_MS).start();
+        tray.animate().translationY(down ? bar(FavBar.WIDGET_DROP) : 0).setInterpolator(Motion.ease())
+                .setDuration(Motion.move(MainActivity.this)).start();   // 4.4 the same easing everywhere (Motion)
     }
 
     /** the app's options while they show (closed when the home goes) */
@@ -3749,10 +3812,10 @@ public class MainActivity extends Activity {
 
     private void fadeGlow(float alpha) {
         // each move between tiles asks again for the same values: an animator is started only when the target changes (a held arrow started two every step)
-        if (glow != null && glowAlphaTo != alpha) { glowAlphaTo = alpha; glow.animate().alpha(alpha).setDuration(300).start(); }
+        if (glow != null && glowAlphaTo != alpha) { glowAlphaTo = alpha; glow.animate().alpha(alpha).setDuration(Motion.MS).setInterpolator(Motion.ease()).start(); }
         // The grid sits over the photo's busiest middle part, so dim it while browsing apps.
         float shade = alpha < 1f ? 1f : 0f;
-        if (shadeTo != shade) { shadeTo = shade; gridShade.animate().alpha(shade).setDuration(300).start(); }
+        if (shadeTo != shade) { shadeTo = shade; gridShade.animate().alpha(shade).setDuration(Motion.MS).setInterpolator(Motion.ease()).start(); }
     }
 
     // ---------------------------------------------------------------- wallpaper

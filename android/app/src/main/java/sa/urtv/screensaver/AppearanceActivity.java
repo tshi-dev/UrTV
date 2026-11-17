@@ -136,7 +136,7 @@ public class AppearanceActivity extends Activity {
             case "look": {
                 for (int i = 0; i < GlassStyle.LOOKS.length; i++) {
                     final String key = GlassStyle.LOOKS[i];
-                    cells.add(tile("look:" + key, new Mock(Mock.HOME, key, GlassStyle.of(key, light)), w(GlassStyle.LOOK_NAMES[i]) + (i == 0 ? " · " + w("الافتراضي") : ""), key.equals(prefs.look()), v -> { prefs.setLook(key); render(); }));
+                    cells.add(tile("look:" + key, new Mock(Mock.HOME, key, GlassStyle.of(key, light)), w(GlassStyle.LOOK_NAMES[i]) + (i == 0 ? S.sep() + w("الافتراضي") : ""), key.equals(prefs.look()), v -> { prefs.setLook(key); render(); }));
                 }
                 grid(cells, 5);
                 col.addView(text(w("الواجهة"), 16, "Regular", look.sub), line(dp(8)));
@@ -311,7 +311,7 @@ public class AppearanceActivity extends Activity {
         Set<String> on = prefs.packsOn();
         int active = 0;
         for (String id : on) if (have.containsKey(id)) active++;
-        row.addView(tile("packs", new Mock(Mock.PHOTOS, "", look), w("مجموعات الصور") + " · " + conv(String.valueOf(active)), active > 0, v -> startActivity(new Intent(this, PhotoPacksActivity.class))), tileParams());
+        row.addView(tile("packs", new Mock(Mock.PHOTOS, "", look), w("مجموعات الصور") + S.sep() + conv(String.valueOf(active)), active > 0, v -> startActivity(new Intent(this, PhotoPacksActivity.class))), tileParams());
         final boolean ours = prefs.oursOn() || !PhotoPacks.mayTurnOursOff(on, have);
         row.addView(tile("ours", new Mock(Mock.PHOTOS, "ours", look), w("صورنا"), ours, v -> {
             if (ours && !PhotoPacks.mayTurnOursOff(on, have)) { toast(w("فعّل مجموعة منزّلة أولاً، وبعدها تقدر توقف صورنا")); return; }

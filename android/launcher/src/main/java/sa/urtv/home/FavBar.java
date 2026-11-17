@@ -22,7 +22,7 @@ final class FavBar {
     static final float FOCUS_SCALE = 1.08f, LIFTED_SCALE = 1.12f;
     /** 4.4 «شكل التطبيقات: تكبير وظل»: the focused app's size (the ring's look is FOCUS_SCALE) */
     static final float ZOOM_SCALE = 1.14f;
-    static final int LIFT = 6, RING = 3, MS = 150;
+    static final int LIFT = 6, RING = 3, MS = 200;   // 4.4 the same easing everywhere: Motion.MS (plain Java here, tests/fav_bar_test.py runs it)
     /** the app's name: 30 px, its box 56 above the tray's top (about 16 px between its baseline and the tray) */
     static final int NAME_PX = 30, NAME_GAP = 16;
     /** the one move: 40 px down in 250 ms while a scrolling widget has the focus */

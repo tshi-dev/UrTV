@@ -14,7 +14,7 @@ import java.util.List;
  */
 final class AppsEdit {
     /** the line at the top of the screen while the mode is on */
-    static final String HINT = S.n("اختر تطبيقًا لتحريكه · × للإخفاء · ارفعه للمفضلة · رجوع للإنهاء");
+    static final String HINT = S.n("اختر تطبيقًا لتحريكه، × للإخفاء، ارفعه للمفضلة، رجوع للإنهاء");
 
     /** «المخفية»: the last place of the grid while something is hidden */
     static final String HIDDEN_TITLE = S.n("المخفية");

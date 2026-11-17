@@ -31,7 +31,7 @@ check("nothing plays in our app: the opener never touches the player, and the li
       and "HaramLive" not in text(TIL / "Catalog.java"))
 check("the words: where it opens, and the line when it cannot; the titles marked for the table",
       "في تطبيقها أو المتصفح" in strings and '<string name="haram_live_none">' in strings
-      and 'S.n("مكة المكرمة · قناة القرآن الكريم")' in main and 'S.n("المدينة المنورة · قناة السنة النبوية")' in main)
+      and 'S.n("مكة المكرمة، قناة القرآن الكريم")' in main and 'S.n("المدينة المنورة، قناة السنة النبوية")' in main)
 check("the links are SBA's two official /live channel pages (no aggregator, no stream address, no video id)",
       '"https://www.youtube.com/@SaudiQuranTv/live"' in live and '"https://www.youtube.com/@SaudiSunnahTv/live"' in live
       and "m3u8" not in live.lower() and "makkahlive" not in live.lower() and "watch?v=" not in live)

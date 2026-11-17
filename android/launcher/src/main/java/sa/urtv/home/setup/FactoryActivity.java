@@ -218,7 +218,7 @@ public class FactoryActivity extends Activity {
         for (String p : pkgs) {
             String label = p;
             try { label = String.valueOf(pm.getApplicationLabel(pm.getApplicationInfo(p, PackageManager.MATCH_DISABLED_COMPONENTS))); } catch (Exception ignored) { }
-            b.append(b.length() > 0 ? "\n" : "").append("•  ").append(label.equals(p) ? p : label + "  (" + p + ")");
+            b.append(b.length() > 0 ? "\n" : "").append(label.equals(p) ? p : label + "  (" + p + ")");
         }
         return b.length() == 0 ? S.t("لا شيء يحتاج تعطيل") : b.toString();
     }

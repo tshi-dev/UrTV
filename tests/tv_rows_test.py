@@ -120,7 +120,7 @@ r = dict(l.split(" = ", 1) for l in out.split("\n") if " = " in l)
 check("«أكمل المشاهدة» is called so", r["watchnext_title"] == "أكمل المشاهدة", r["watchnext_title"])
 check("«أكمل المشاهدة»: what one is in the middle of, and the next episode; not a new season or a watchlist; not hidden, not of an app that is gone",
       (r["wn_continue"], r["wn_next"], r["wn_new"], r["wn_watchlist"], r["wn_hidden"], r["wn_no_app"]) == ("true", "true", "false", "false", "false", "false"))
-check("the line under a card: «الموسم ٢ · الحلقة ١ · Netflix», digits as the setting says", r["meta_episode"] == "الموسم ٢ · الحلقة ١ · Netflix" and r["meta_latin"] == "الموسم 2 · الحلقة 10 · Netflix",
+check("the line under a card: «الموسم ٢، الحلقة ١، Netflix», digits as the setting says", r["meta_episode"] == "الموسم ٢، الحلقة ١، Netflix" and r["meta_latin"] == "الموسم 2، الحلقة 10، Netflix",
       (r["meta_episode"], r["meta_latin"]))
 check("…else the episode's name, else the description; «null» from an app is nothing",
       r["meta_eptitle"] == "The Long Night" and r["meta_same_title"] == "desc here" and r["meta_nulls"] == "", (r["meta_eptitle"], r["meta_same_title"], r["meta_nulls"]))
@@ -152,7 +152,7 @@ r = dict(l.split(" = ", 1) for l in out.split("\n") if " = " in l)
 check("«أكمل المشاهدة» is called so", r["watchnext_title"] == "أكمل المشاهدة", r["watchnext_title"])
 check("«أكمل المشاهدة»: what one is in the middle of, and the next episode; not a new season or a watchlist; not hidden, not of an app that is gone",
       (r["wn_continue"], r["wn_next"], r["wn_new"], r["wn_watchlist"], r["wn_hidden"], r["wn_no_app"]) == ("true", "true", "false", "false", "false", "false"))
-check("the line under a card: «الموسم ٢ · الحلقة ١ · Netflix», digits as the setting says", r["meta_episode"] == "الموسم ٢ · الحلقة ١ · Netflix" and r["meta_latin"] == "الموسم 2 · الحلقة 10 · Netflix",
+check("the line under a card: «الموسم ٢، الحلقة ١، Netflix», digits as the setting says", r["meta_episode"] == "الموسم ٢، الحلقة ١، Netflix" and r["meta_latin"] == "الموسم 2، الحلقة 10، Netflix",
       (r["meta_episode"], r["meta_latin"]))
 check("…else the episode's name, else the description; «null» from an app is nothing",
       r["meta_eptitle"] == "The Long Night" and r["meta_same_title"] == "desc here" and r["meta_nulls"] == "", (r["meta_eptitle"], r["meta_same_title"], r["meta_nulls"]))

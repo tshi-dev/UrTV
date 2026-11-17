@@ -101,7 +101,7 @@ check(f"the patterns ({len(pats_l)}) are the entries with a value (%s), and only
 SOURCES = ["SettingsActivity.java", "SettingsHub.java", "Prefs.java", "OnOff.java", "PrayerMethod.java", "PhotoInterval.java", "ClockSetting.java",
            "QuoteEvery.java", "VerseKind.java", "HomeExit.java", "GlassStyle.java", "Location.java", "Updater.java", "CountdownText.java", "PrayerAdj.java", "PhotoPacksActivity.java"]
 # what is not a word of a screen: a club or a city (data, which has its own English), the bilingual title of «اللغة», a pattern of the code
-NOT_WORDS = {"الهلال", "المنتخب السعودي", "الرياض", "العربية · English", "اللغة · Language", "Language · اللغة", "[\\s,،]+", "العربية", "منطقة"}
+NOT_WORDS = {"الهلال", "المنتخب السعودي", "الرياض", "العربية, English", "اللغة, Language", "Language, اللغة", "[\\s,،]+", "العربية", "منطقة"}
 
 # the search's alias words (SettingsHub.ALIASES) are typed by people, never shown
 NOT_WORDS |= {w for w in re.findall(r'\{"([^"]+)", "[^"]+"\}', src("SettingsHub.java")[src("SettingsHub.java").index("ALIASES = {"):]) if AR.search(w)}
@@ -130,9 +130,9 @@ CASES = [  # what the screen builds, and its English (the digits are turned afte
     ("تمت متابعة الهلال", "Following الهلال"),
     ("رجوع إلى المزيد", "Back to More"),
     ("زرها ظاهر", "Button: Shown"),
-    ("الفرق ٣ · الأسواق مخفية", "Teams: ٣ · Markets: Hidden"),
-    ("الفرق ٣ · الأسواق ٥", "Teams: ٣ · Markets: ٥"),
-    ("تلقائي · أم القرى", "Auto · Umm al-Qura"),
+    ("الفرق ٣، الأسواق مخفية", "Teams: ٣, Markets: Hidden"),
+    ("الفرق ٣، الأسواق ٥", "Teams: ٣, Markets: ٥"),
+    ("تلقائي، أم القرى", "Auto, Umm al-Qura"),
     ("الدوريات كاملة (حتى ٨، بدون اختيار = بدون)", "Whole leagues (up to ٨, none picked = none)"),
     ("رياضات أخرى (بدون اختيار = بدون)", "Other sports (none picked = none)"),
     ("التصنيفات (بدون اختيار = الكل)", "Genres (none picked = all)"),
@@ -150,14 +150,14 @@ CASES = [  # what the screen builds, and its English (the digits are turned afte
     ("رمز غير صالح: XYZ!", "Invalid code: XYZ!"),
     ("الأسهم: Aramco 2222, Al Rajhi 1120", "Stocks: Aramco 2222, Al Rajhi 1120"),
     ("رحلة (٣١ ديسمبر ٢٠٢٦)", "رحلة (٣١ December ٢٠٢٦)"),
-    ("تبدأ بعد ٥ دقائق · آية أو حديث اليوم", "Starts after ٥ min · Verse or hadith of the day"),
+    ("تبدأ بعد ٥ دقائق، آية أو حديث اليوم", "Starts after ٥ min, Verse or hadith of the day"),
     ("جديد المسلسلات، مواقيت الصلاة اليوم", "New episodes, Today’s prayer times"),
     ("الشكل: زجاجي", "Style: Glass"),
-    ("الإضاءة: تلقائي · فاتح من الشروق إلى المغرب، وداكن بعده", "Brightness: Auto · Light from sunrise to Maghrib, dark after"),
-    ("المدينة · الرياض", "City · Riyadh"),
-    ("زجاجي · داكن", "Glass · Dark"),
-    ("Real Madrid  ·  الدوري الإسباني", "Real Madrid  ·  La Liga"),
-    ("الخرطوم  ·  ولاية الخرطوم  ·  السودان", "Khartoum  ·  ولاية الخرطوم  ·  Sudan"),
+    ("الإضاءة: تلقائي، فاتح من الشروق إلى المغرب، وداكن بعده", "Brightness: Auto, Light from sunrise to Maghrib, dark after"),
+    ("المدينة، الرياض", "City, Riyadh"),
+    ("زجاجي، داكن", "Glass, Dark"),
+    ("Real Madrid، الدوري الإسباني", "Real Madrid, La Liga"),
+    ("الخرطوم، ولاية الخرطوم، السودان", "Khartoum, ولاية الخرطوم, Sudan"),
     ("نادي أول", "نادي أول"),   # data with no entry stays as it is
     ("الدولة", "Country"),
     ("الإمارات", "UAE"),          # the table first (the prayer method's name), then the places
@@ -212,7 +212,7 @@ check("«اللغة»: a row of its own section «اللغة» (4.3.3; the old �
       '{"اللغة", LANG}' in hub and 'LANG_TILE' not in hub and 'LANG = "lang"' in hub)
 check("«اللغة»: its row and what it says (English beside العربية, to be found)",
       'row("اللغة", langLabel(), R.drawable.ic_language, new Runnable() { public void run() { pickLang(); } });' in st
-      and 'return Tr.EN.equals(prefs.lang()) ? "English" : "العربية · English";' in st)
+      and 'return Tr.EN.equals(prefs.lang()) ? "English" : "العربية، English";' in st)
 pick = fn(st, "private void pickLang()")
 check("«اللغة»: العربية and English in their own words (no translation, no digit change), saved, and the screen started again on its section",
       "new Dlg(this).raw().own()" in pick and '{"العربية", "English"}' in pick and "prefs.setLang(values[i]);" in pick

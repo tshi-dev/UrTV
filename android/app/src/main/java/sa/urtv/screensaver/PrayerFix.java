@@ -60,7 +60,7 @@ final class PrayerFix {
         StringBuilder b = new StringBuilder();
         for (int k = 0; k < PrayerAdj.COUNT; k++) {
             if (fix[k] == 0 || (ownOn && own[k] != 0)) continue;
-            b.append(b.length() == 0 ? "" : " · ").append(PrayerAdj.label(k, fix[k]));
+            b.append(b.length() == 0 ? "" : "، ").append(PrayerAdj.label(k, fix[k]));
         }
         return b.toString();
     }

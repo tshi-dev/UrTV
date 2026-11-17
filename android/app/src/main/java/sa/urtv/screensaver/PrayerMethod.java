@@ -76,13 +76,13 @@ final class PrayerMethod {
     }
 
     static String label(String saved, String tz) {
-        return GULF.equals(saved) ? "الخليج" : "تلقائي · " + authority(tz);
+        return GULF.equals(saved) ? "الخليج" : "تلقائي، " + authority(tz);
     }
 
     static String authority(String country, String tz) { return authority(methodId(country, tz)); }
 
     static String label(String saved, String country, String tz) {
-        return GULF.equals(saved) ? label(saved, tz) : "تلقائي · " + authority(country, tz);
+        return GULF.equals(saved) ? label(saved, tz) : "تلقائي، " + authority(country, tz);
     }
 
     static String authority(int method) {

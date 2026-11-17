@@ -21,7 +21,6 @@ import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
-import android.view.animation.DecelerateInterpolator;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -70,7 +69,7 @@ final class ControlCenter {
     /** the panel: 560 px of 1920 wide, inside the 5 % safe area (x from 96, y from 54 to 1026 at 1080p) */
     static final float PANEL_W = 560f / 1920f, SAFE = 0.05f;
     /** the slide-in, and the focus fill coming in (ms) */
-    static final int SLIDE_MS = 220, FOCUS_MS = 170;
+    static final int SLIDE_MS = (int) Motion.MS, FOCUS_MS = (int) Motion.MS;   // 4.4 the same easing everywhere (Motion)
     /** the most rows the panel shows; the four round toggles are not counted */
     static final int MAX_ROWS = 8;   // 4.3.1: ours, the games and the city joined the six
     /** the round toggles, in this order; every other item is a row */
@@ -289,11 +288,12 @@ final class ControlCenter {
             if (start != null) lastKey = start;
             showMain();
         }
-        // the slide: from beyond its own edge to its place in 220 ms
-        if (wideNow) panel.setAlpha(0f); else panel.setTranslationX((rtl ? 1 : -1) * (panelW + margin));
+        // the slide: from beyond its own edge to its place in Motion.MS on the one curve; a weak TV («الوضع الخفيف») and the wide page fade in where they stand
+        final boolean fade = wideNow || Ram.low(anchor.getContext());
+        if (fade) panel.setAlpha(0f); else panel.setTranslationX((rtl ? 1 : -1) * (panelW + margin));
         pw.showAtLocation(anchor.getRootView(), Gravity.NO_GRAVITY, 0, 0);   // the whole screen, from its corner
-        panel.post(() -> { if (wideNow) panel.animate().alpha(1f).setDuration(SLIDE_MS).start();   // the wide page comes in where it stands
-            else panel.animate().translationX(0).setDuration(SLIDE_MS).setInterpolator(new DecelerateInterpolator()).start(); });
+        panel.post(() -> { if (fade) panel.animate().alpha(1f).setDuration(SLIDE_MS).setInterpolator(Motion.ease()).start();
+            else panel.animate().translationX(0).setDuration(SLIDE_MS).setInterpolator(Motion.ease()).start(); });
     }
 
     // ---------------------------------------------------------------- what is kept on this TV
@@ -647,6 +647,8 @@ final class ControlCenter {
     /** One focusable thing in the panel; its fill comes in over FOCUS_MS when it has the focus, solid, with the look's ink over it. */
     private final class Cell extends LinearLayout {
         static final int TOGGLE = 0, ROW = 1, CHECK = 2, PILL = 3, PRIMARY = 4, BACK = 5;
+        /** 4.4: «تخصيص», «شكل لوحة التحكم», «إعادة الترتيب», «تم»: plain words at rest (no outline), an 8 dp rounded fill on focus, never a capsule */
+        static final int WORD_RADIUS = 8;
         final int kind;
         final Item item;
         boolean ticked;
@@ -664,7 +666,7 @@ final class ControlCenter {
             setFocusable(true);
             setClickable(true);
             setId(View.generateViewId());
-            fill.setCornerRadius(dp(kind == PILL || kind == PRIMARY ? 16 : 12));
+            fill.setCornerRadius(dp(kind == PILL || kind == PRIMARY ? WORD_RADIUS : 12));   // 4.4 the owner (no pills): a word, its focus a rounded square
             if (kind == TOGGLE) buildToggle();
             else if (kind == ROW) buildRow();
             else if (kind == CHECK) buildCheck();
@@ -793,14 +795,13 @@ final class ControlCenter {
             if (animate) {
                 anim = ValueAnimator.ofArgb(shown, target);
                 anim.setDuration(FOCUS_MS);
-                anim.setInterpolator(new DecelerateInterpolator());
+                anim.setInterpolator(Motion.ease());
                 anim.addUpdateListener(a -> shape.setColor((Integer) a.getAnimatedValue()));
                 anim.start();
             } else shape.setColor(target);
             shown = target;
-            if (RING != 0) shape.setStroke(f ? dp(3) : kind == TOGGLE || kind == PILL ? Math.max(1, dp(1)) : 0, f ? RING : LINE);   // «رملي»: a calm focus, a green line round a soft fill
+            if (RING != 0) shape.setStroke(f ? dp(3) : kind == TOGGLE ? Math.max(1, dp(1)) : 0, f ? RING : LINE);   // «رملي»: a calm focus, a green line round a soft fill
             else if (kind == TOGGLE && !f) shape.setStroke(Math.max(1, dp(1)), SleepTimer.minutesLeft(act) > 0 && item.key.equals("sleep") ? ACCENT : LINE);
-            else if (kind == PILL && !f) shape.setStroke(Math.max(1, dp(1)), LINE);
             else shape.setStroke(0, 0);
             if (name != null) name.setTextColor(kind == TOGGLE ? TEXT : ink);
             if (value != null) value.setTextColor(f ? ON_SUB : SUB);
@@ -936,7 +937,7 @@ final class ControlCenter {
         if (speed != null) {
             speed.cancel();
             speed = null;
-            t.setValue(S.t("أُلغي · اضغط اختيار للبدء"));
+            t.setValue(S.t("أُلغي، اضغط اختيار للبدء"));
             return;
         }
         final SpeedTest test = new SpeedTest();

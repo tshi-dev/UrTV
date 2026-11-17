@@ -3,7 +3,7 @@ shown	مؤقت النوم	0			a pill nobody is on: its icon only
 shown	مؤقت النوم	1		مؤقت النوم	the focused pill: its name
 shown	المصادر	0			the sources pill, icon only
 shown	تلاوة	1		تلاوة	the Quran pill, focused
-saver				شاشة التوقف · مطوّلًا: الإعدادات	OK starts the screensaver; the focused pill says a long OK opens its settings
+saver				شاشة التوقف، مطوّلًا: الإعدادات	OK starts the screensaver; the focused pill says a long OK opens its settings
 sleep	0			مؤقت النوم	no timer: the name alone
 sleep	-3			مؤقت النوم	a timer that has run out
 sleep	23			مؤقت النوم ٢٣ د	23 minutes left, in Arabic digits
