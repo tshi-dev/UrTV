@@ -4,7 +4,7 @@ name: Checks
 # in a real browser. The Android apps are compiled by android.yml.
 on:
   push:
-    branches: [master, next, content]
+    branches: [master, next, content, 'work/rel-*']
   pull_request:
   workflow_dispatch:
   workflow_call:   # android.yml runs it before publishing to apk-latest
