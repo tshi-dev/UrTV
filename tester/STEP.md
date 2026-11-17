@@ -1,4 +1,4 @@
-«▶ NOW (owner, 2026-11-17): step 91 PASSED, thank you. The owner said GO on putting the rescue app into 4.3.3. Next is step 93: check the rescue app on a TV set up by 4.3.3, as soon as the release session gives a 4.3.3 build that has urtv-rescue.apk (its run ID will be added here). Then step 90 (the Downloader code) once 4.3.3 is on apk-latest with urtv-rescue.apk. Then step 92. Step 89 stays ON HOLD. TV muted.»
+«▶ NOW (owner, 2026-11-17): step 91 PASSED, thank you. The owner said GO on putting the rescue app into 4.3.3. Player beta17 READY (step 95 can run now, at any pause). Next is step 93: check the rescue app on a TV set up by 4.3.3, as soon as the release session gives a 4.3.3 build that has urtv-rescue.apk (its run ID will be added here). Then step 90 (the Downloader code) once 4.3.3 is on apk-latest with urtv-rescue.apk. Then step 92. Step 89 stays ON HOLD. TV muted.»
 
 
 
