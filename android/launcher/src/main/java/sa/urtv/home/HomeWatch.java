@@ -11,11 +11,11 @@ import java.util.Set;
  * keeps coming back (three times within 20 s: five minutes off, the stock home stays). No Android in here (tests/HomeWatchRun.java runs it).
  */
 final class HomeWatch {
-    static final long WINDOW_MS = 15_000, PAUSE_MS = 30_000, FIGHT_MS = 2_000;   // tester-exp (step 88 R2d)
+    static final long WINDOW_MS = 4_000, PAUSE_MS = 30_000, BURST_MS = 700;   // tester-exp (step 88 R2d)
     static final int MAX_BRINGS = 6;
 
     private final long[] brings = new long[MAX_BRINGS];
-    private long pausedUntil, lastBring;
+    private long pausedUntil, lastBring, lastBurst;
     static final long SAME_PRESS_MS = 1_500;
 
     /**
@@ -34,9 +34,10 @@ final class HomeWatch {
         if (!homeScreen(pkg, cls, stockHomes)) return false;
         if (!fight) { lastBring = now; return true; }   // tester-exp (R2e): a Home press over another app is always honoured, even in a pause
         if (now < pausedUntil) return false;
-        // tester-exp (step 88 R2d): over ours, only a FAST return (within FIGHT_MS of our last bring) is the firmware fighting back; later it is
-        // the person pressing Home on our home: brought, not counted
-        if (lastBring == 0 || now - lastBring > FIGHT_MS) { lastBring = now; return true; }
+        // tester-exp (step 88 R2f): one Home press makes the stock home show 2-3 windows within ~0.5 s: one burst = one count. A person mashing
+        // Home (about one a second) makes ~4 bursts in 4 s; a firmware that keeps putting its home back makes more: 6 bursts in 4 s = a fight
+        if (lastBurst > 0 && now - lastBurst < BURST_MS) { lastBring = now; return true; }
+        lastBurst = now;
         int recent = 0, oldest = 0;
         for (int i = 0; i < brings.length; i++) {
             if (brings[i] > 0 && now - brings[i] < WINDOW_MS) recent++;
