@@ -1175,6 +1175,17 @@ final class Prefs {
     /** The greeting and the weather line on the launcher's home screen (default on). Off: the plain good-morning it had. */
     boolean greeting() { return sp.getBoolean("greeting", true); }
     void setGreeting(boolean v) { sp.edit().putBoolean("greeting", v).apply(); }
+    /** Based on PR #45 by AlaaAlmasri: a name after the home's greeting («صباح الخير، علاء»); empty (the default) is the greeting as it always was. At most NAME_MAX letters, one line. */
+    static final int NAME_MAX = 30;
+    String greetingName() { return sp.getString("greeting_name", ""); }
+    void setGreetingName(String v) { sp.edit().putString("greeting_name", cleanName(v)).apply(); }
+    /** the name as it is kept: the spaces folded, no line breaks or control characters, at most NAME_MAX characters (a bidi isolate is added where it is shown, not here) */
+    static String cleanName(String v) {
+        if (v == null) return "";
+        String n = v.replaceAll("[\\p{Cntrl}\\u2066-\\u2069\\u202A-\\u202E\\u200E\\u200F]", " ").replaceAll("\\s+", " ").trim();
+        if (n.length() > NAME_MAX) n = n.substring(0, NAME_MAX).trim();
+        return n;
+    }
 
     /**
      * «زر تلاوة وأذان» on the launcher's home screen (default shown). Hidden removes only the button: the adhan, its alarm and bar, the

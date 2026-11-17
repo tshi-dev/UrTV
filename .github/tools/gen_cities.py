@@ -172,7 +172,7 @@ ARAB = [
 
 METHOD_IDS = {"MWL": 3, "ISNA": 2, "KARACHI": 1, "KEMENAG": 20, "JAKIM": 17,
               "SINGAPORE": 11, "DIYANET": 13, "FRANCE_UOIF": 12, "RUSSIA": 14,
-              "MOONSIGHTING": 15, "EGYPT": 5, "MOROCCO": 21}
+              "MOONSIGHTING": 15, "EGYPT": 5, "MOROCCO": 21, "LIBYA": 101}
 
 
 def world_regions(root):
@@ -180,6 +180,8 @@ def world_regions(root):
     out = []
     for cc, iterator in groupby(data, key=lambda c: c['country']):
         cities = list(iterator)
+        if cc == 'LY':   # Libya's own calculation (id 101, fitted to the Benghazi 2026 table of PR #23), not Egypt's
+            for c in cities: c['method'] = 'LIBYA'
         assert len({c['method'] for c in cities}) == 1
         # Packed strings avoid the JVM's 64 KB initializer limit. Each chunk is
         # comfortably below the 65535-byte modified-UTF8 string-constant limit.

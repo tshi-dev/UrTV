@@ -124,12 +124,27 @@
         <intent>
             <action android:name="com.google.android.intent.action.CONNECT_INPUT" />
         </intent>
+        <!-- «إدارة التطبيقات» in «مركز التحكم» (ControlText.APPS_ACTIONS, PR #18): the tile is there only when one of these resolves -->
+        <intent>
+            <action android:name="android.settings.MANAGE_ALL_APPLICATIONS_SETTINGS" />
+        </intent>
+        <intent>
+            <action android:name="android.settings.MANAGE_APPLICATIONS_SETTINGS" />
+        </intent>
+        <intent>
+            <action android:name="android.settings.APPLICATION_SETTINGS" />
+        </intent>
         <intent>
             <action android:name="android.settings.SETTINGS" />
         </intent>
         <!-- «المصادر» (#54): the TV system's own inputs panel, the fallback where no app takes an input's passthrough link (TvVendor.SYSTEM_INPUTS) -->
         <intent>
             <action android:name="com.android.tv.action.VIEW_INPUTS" />
+        </intent>
+        <!-- «المصادر» (PR #17): a CVTE board's own source screen (TvVendor.CVTE_SIGNAL) -->
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+            <data android:scheme="alliance" />
         </intent>
         <!-- «بحث» (4.3.3, GlobalSearch.ACTIONS): the TV's own search inside the apps, the button only when one of these resolves -->
         <intent>

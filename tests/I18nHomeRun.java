@@ -12,6 +12,7 @@ public final class I18nHomeRun {
         p("control.name", S.tv(ControlText.NAME));
         p("control.mirror", S.tv(ControlText.MIRROR) + " / " + S.tv(ControlText.MIRROR_HINT));
         p("control.bluetooth", S.tv(ControlText.BLUETOOTH) + " / " + S.tv(ControlText.BLUETOOTH_HINT));
+        p("control.apps", S.tv(ControlText.APPS) + " / " + S.tv(ControlText.APPS_HINT));
         p("control.mbps", ControlText.mbps(12.34) + " / " + ControlText.mbps(150));
         for (int i = 0; i <= 4; i++) p("control.signal." + i, ControlText.signal(i));
         p("control.net.wired", ControlText.networkDetail(true, false, 0));

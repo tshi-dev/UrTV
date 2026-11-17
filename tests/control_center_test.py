@@ -50,7 +50,7 @@ check("the side panel: 560 px of 1920 wide inside the 5 % safe area, a clear ful
       and "panel.animate().translationX(0).setDuration(SLIDE_MS).setInterpolator(Motion.ease())" in center and "final boolean fade = wideNow || Ram.low(anchor.getContext());" in center and "Dir.start() | Gravity.TOP" in center
       and "new ScrollView(act)" in center and "ControlLayout" not in center and not (HOME / "ControlLayout.java").exists())
 check("four round toggles on top (Bluetooth, mirroring, the sleep timer, «أطفئ الآن»), then rows with a short value each (network, sound, speed, the TV's settings, ours); ellipsized one-line values",
-      'TOGGLES = {"bluetooth", "mirror", "sleep", "off"}' in center and 'ROWS = {"net", "sound", "speed", "ours", "games", "city", "adhan", "tv", "saver", "black"}' in center and "GradientDrawable.OVAL" in center
+      'TOGGLES = {"bluetooth", "mirror", "sleep", "off"}' in center and 'ROWS = {"net", "sound", "speed", "ours", "games", "city", "adhan", "tv", "apps", "saver", "black"}' in center and "GradientDrawable.OVAL" in center
       and "t.setSingleLine(true);" in center and "TruncateAt.END" in center and "ControlText.networkDetail" not in center)
 check("the focus: a solid fill in the look's colours with its ink, coming in over the one motion (Motion: 200 ms, couch-tv's curve)",
       "FOCUS_MS = (int) Motion.MS" in center and "anim.setInterpolator(Motion.ease());" in center and "ValueAnimator.ofArgb(shown, target)" in center and "anim.setDuration(FOCUS_MS)" in center and "int target = f ? FOCUSED : " in center and "ON_SUB" in center)
@@ -59,7 +59,7 @@ check("«تخصيص»: a tick per item, the arrows move a row (Left/Right by the
       and 'getSharedPreferences("control"' in center and "if (code == KeyEvent.KEYCODE_BACK) { if (e.getAction() == KeyEvent.ACTION_UP) showMain(); return true; }" in center
       and all(f'"{w}"' in center for w in ("تخصيص", "تم", "إعادة الضبط", "اختر ما يظهر ورتّبه بالأسهم")))
 check("«شاشة التوقف» is unticked until asked for (its pill is on the home); a toggle or a row that does not exist on this TV is not in the list",
-      'DEFAULT_OFF = {"saver"}' in center and "for (String k : TOGGLES) { Item it = find(k); if (it != null) out.add(it); }" in center)
+      'DEFAULT_OFF = {"saver", "apps"}' in center and "for (String k : TOGGLES) { Item it = find(k); if (it != null) out.add(it); }" in center)
 check("the Wi-Fi status is next to the greeting (a small icon on its line, no focus, no press), not in the quick-button bar",
       "greetRow.addView(netIcon, sideLlp(dp(NET_ICON), dp(NET_ICON), dp(8), 0, 0, 0));" in main and "NET_ICON = 22" in main and "right.member(netIcon)" not in main
       and "right.addView(netIcon" not in main and "int ink = online ? palette().soft : NET_OFFLINE;" in main and "netIcon.setColorFilter(ink);" in main and "setFocusable" not in main.split("netIcon = new ImageView(this);")[1].split("left.addView(greetRow")[0])
@@ -129,11 +129,17 @@ check("the tile is there only when one resolves, opens it behind the TV's settin
       and "host.launchGuarded(ParentalPolicy.PILL_TV_SETTINGS, bluetooth, ControlText.BLUETOOTH)" in center
       and 'BLUETOOTH = S.n("البلوتوث")' in text and 'BLUETOOTH_HINT = S.n("الريموت والملحقات")' in text
       and (ROOT / "android/launcher/src/main/res/drawable/ic_bluetooth.xml").exists())
+apps_block = text[text.index("static final String[] APPS_ACTIONS = {"):text.index("};", text.index("static final String[] APPS_ACTIONS = {"))]
+check("PR #18 «إدارة التطبيقات»: the apps actions in order, each in the manifest's <queries>, the tile only when one resolves, behind the TV settings' lock, unticked by default and for anyone who saved the editor before it existed",
+      re.findall(r'"([A-Za-z0-9_.]+)"', apps_block) == ["android.settings.MANAGE_ALL_APPLICATIONS_SETTINGS", "android.settings.MANAGE_APPLICATIONS_SETTINGS", "android.settings.APPLICATION_SETTINGS"]
+      and all(f'<action android:name="{a}" />' in manifest.split("<queries>")[1].split("</queries>")[0] for a in re.findall(r'"([A-Za-z0-9_.]+)"', apps_block))
+      and "final Intent apps = appsIntent();" in center and "if (apps != null)" in center and "host.launchGuarded(ParentalPolicy.PILL_TV_SETTINGS, apps, ControlText.APPS)" in center
+      and 'DEFAULT_OFF = {"saver", "apps"}' in center and 'LATE_OFF = {"apps"}' in center and 'putString("known"' in center)
 check("Wi-Fi and Bluetooth side by side, first (docs/UX-REVIEW.md): the network tile, then Bluetooth, then the rest",
       center.index('tile("net"') < center.index('tile("bluetooth"') < center.index('tile("sound"') < center.index('tile("speed"')
       < center.index('tile("sleep"') < center.index('tile("off"') < center.index('tile("mirror"') < center.index('tile("saver"'))
-check("at most fifteen tiles: sleep, off, network, speed, sound, «الأذان والإقامة» (4.3.3), mirroring, Bluetooth, screensaver, the city, the games, ours, the build line, the TV's settings, and (4.4 #62, only while something plays) the black screen",
-      len(re.findall(r'tile\("[a-z]+"', center)) == 15, re.findall(r'tile\("[a-z]+"', center))
+check("at most sixteen tiles: «إدارة التطبيقات» (PR #18, unticked until asked for), sleep, off, network, speed, sound, «الأذان والإقامة» (4.3.3), mirroring, Bluetooth, screensaver, the city, the games, ours, the build line, the TV's settings, and (4.4 #62, only while something plays) the black screen",
+      len(re.findall(r'tile\("[a-z]+"', center)) == 16, re.findall(r'tile\("[a-z]+"', center))
 # ---- no traffic before OK
 check("the only network code is the speed test's, and it is started by the tile's OK on a worker thread",
       "new SpeedTest()" in center and "HttpURLConnection" not in center and "new Thread(" in center.split("private void speedTest")[1]

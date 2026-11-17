@@ -47,6 +47,11 @@ the phone page's key, «مركز التحكم» the control centre's row that op
 ——— التحية والطقس [الرئيسية]
     مثال للوكيل: optimize/saver.sh greeting off
       القيم المقبولة: on|off
+——— اسمك في التحية [الرئيسية]
+    مثال للوكيل: optimize/saver.sh greetingname علاء  (a name of at most 30 letters on one line; the name is isolated, so Latin letters sit right in an Arabic line)
+      القيم المقبولة: NAME|off   (the name after the greeting on the home, at most 30 letters)
+    مثال للوكيل: optimize/saver.sh greetingname off
+      القيم المقبولة: NAME|off   (the name after the greeting on the home, at most 30 letters)
 ——— الرطوبة والرياح [شاشة التوقف]
     مثال للوكيل: optimize/saver.sh wxmore on  (`off` = the default)
       القيم المقبولة: on|off
@@ -664,6 +669,11 @@ the phone page's key, «مركز التحكم» the control centre's row that op
 ———— التحية والطقس [الرئيسية]
      مثال للوكيل: optimize/saver.sh greeting off
        القيم المقبولة: on|off
+———— اسمك في التحية [الرئيسية]
+     مثال للوكيل: optimize/saver.sh greetingname علاء  (a name of at most 30 letters on one line; the name is isolated, so Latin letters sit right in an Arabic line)
+       القيم المقبولة: NAME|off   (the name after the greeting on the home, at most 30 letters)
+     مثال للوكيل: optimize/saver.sh greetingname off
+       القيم المقبولة: NAME|off   (the name after the greeting on the home, at most 30 letters)
 ———— زر المصادر [الرئيسية]
      مثال للوكيل: optimize/saver.sh pillshidden inputs
        القيم المقبولة: markets,matches,center,phone,inputs | none

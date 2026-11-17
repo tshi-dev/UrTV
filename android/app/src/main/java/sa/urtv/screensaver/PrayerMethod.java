@@ -71,6 +71,7 @@ final class PrayerMethod {
             case "Africa/Casablanca": case "Africa/El_Aaiun": return "وزارة الأوقاف المغربية";
             case "Africa/Algiers": return "وزارة الشؤون الدينية الجزائرية";
             case "Africa/Tunis": return "وزارة الشؤون الدينية التونسية";
+            case "Africa/Tripoli": return "ليبيا";
             default: return "أم القرى";
         }
     }
@@ -107,6 +108,7 @@ final class PrayerMethod {
             case 20: return "وزارة الشؤون الدينية الإندونيسية";
             case 21: return "وزارة الأوقاف المغربية";
             case 23: return "وزارة الأوقاف الأردنية";
+            case 101: return "ليبيا";
             case 100: return "وزارة الأوقاف والشؤون الدينية العُمانية";
             default: return "رابطة العالم الإسلامي";
         }

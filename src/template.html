@@ -1129,11 +1129,11 @@ if(MP_MORE) CONFIG.leagues = CONFIG.leagues.concat(MP_TOP);
 // an older launcher sends the one card as #panel=). Each kind once, in order.
 // the prayer calculation (Aladhan's id; 100 = Oman's ministry, ours)
 // (launcher) and PrayerMethod (app) say the same, tests/prayer_method_test.py compares them
-const RESOLVED_METHOD = [1,2,3,4,5,8,9,10,11,12,13,14,15,16,17,18,19,20,21,23,100].includes(+_Q.get('pm')) ? +_Q.get('pm') : null;
+const RESOLVED_METHOD = [1,2,3,4,5,8,9,10,11,12,13,14,15,16,17,18,19,20,21,23,100,101].includes(+_Q.get('pm')) ? +_Q.get('pm') : null;
 CONFIG.prayerMethod = _Q.get('pm') === 'gulf' ? 8
-  : RESOLVED_METHOD !== null ? RESOLVED_METHOD : ({'Asia/Kuwait':9, 'Asia/Qatar':10, 'Asia/Dubai':16, 'Asia/Bahrain':8, 'Asia/Muscat':100, 'Africa/Cairo':5, 'Asia/Amman':23, 'Asia/Damascus':5, 'Asia/Beirut':5, 'Asia/Gaza':5, 'Asia/Hebron':5, 'Asia/Jerusalem':5, 'Africa/Casablanca':21, 'Africa/El_Aaiun':21, 'Africa/Algiers':19, 'Africa/Tunis':18})[CONFIG.timezone] || 4;
+  : RESOLVED_METHOD !== null ? RESOLVED_METHOD : ({'Asia/Kuwait':9, 'Asia/Qatar':10, 'Asia/Dubai':16, 'Asia/Bahrain':8, 'Asia/Muscat':100, 'Africa/Cairo':5, 'Asia/Amman':23, 'Asia/Damascus':5, 'Asia/Beirut':5, 'Asia/Gaza':5, 'Asia/Hebron':5, 'Asia/Jerusalem':5, 'Africa/Casablanca':21, 'Africa/El_Aaiun':21, 'Africa/Algiers':19, 'Africa/Tunis':18, 'Africa/Tripoli':101})[CONFIG.timezone] || 4;
 // the calculation's name under the clock, none for Umm al-Qura (ClockZone.calendar says the same on the home screen)
-const CAL_LABEL = {1:'جامعة العلوم الإسلامية بكراتشي',2:'الجمعية الإسلامية لأمريكا الشمالية',3:'رابطة العالم الإسلامي',11:'المجلس الإسلامي السنغافوري',12:'اتحاد المنظمات الإسلامية في فرنسا',13:'رئاسة الشؤون الدينية التركية',14:'الإدارة الدينية لمسلمي روسيا',15:'لجنة رصد الهلال العالمية',17:'إدارة التنمية الإسلامية الماليزية',20:'وزارة الشؤون الدينية الإندونيسية', 8:'حساب الخليج', 100:'حساب عُمان', 9:'حساب الكويت', 10:'حساب قطر', 16:'حساب الإمارات', 5:'حساب الهيئة المصرية', 23:'حساب الأردن', 21:'حساب المغرب', 19:'حساب الجزائر', 18:'حساب تونس'};
+const CAL_LABEL = {1:'جامعة العلوم الإسلامية بكراتشي',2:'الجمعية الإسلامية لأمريكا الشمالية',3:'رابطة العالم الإسلامي',11:'المجلس الإسلامي السنغافوري',12:'اتحاد المنظمات الإسلامية في فرنسا',13:'رئاسة الشؤون الدينية التركية',14:'الإدارة الدينية لمسلمي روسيا',15:'لجنة رصد الهلال العالمية',17:'إدارة التنمية الإسلامية الماليزية',20:'وزارة الشؤون الدينية الإندونيسية', 8:'حساب الخليج', 100:'حساب عُمان', 9:'حساب الكويت', 10:'حساب قطر', 16:'حساب الإمارات', 5:'حساب الهيئة المصرية', 23:'حساب الأردن', 21:'حساب المغرب', 19:'حساب الجزائر', 18:'حساب تونس', 101:'حساب ليبيا'};
 const clockSubText = () => 'بتوقيت ' + CONFIG.city + (CAL_LABEL[CONFIG.prayerMethod] ? SEP + CAL_LABEL[CONFIG.prayerMethod] : '');
 // «بطاقة ثانية» (#panel2=): a second card beside the small clock only
 // or when it is the first card again or the next prayer
@@ -1467,6 +1467,8 @@ const PRAYER_METHODS = {
   18:  {fajr:18, isha:18, ishaMin:0, maghrib:.833, tune:[0,0,0,0]},  // Tunisia (Ministry of Religious Affairs)
   // 100 is ours (Aladhan has none): Oman's ministry, fitted to its 2026 timetable
   100: {fajr:18, isha:18, ishaMin:0, maghrib:.833, tune:[0,5,5,5]},
+  // 101 is ours too: Libya, fitted to the Benghazi 2026 table (Fajr 18, Isha 17, Dhuhr a minute later)
+  101: {fajr:18, isha:17, ishaMin:0, maghrib:.833, tune:[0,1,0,0]},
 };
 function computePrayers(forDay){
   const p = forDay || riyadhParts(), lng = CONFIG.longitude;

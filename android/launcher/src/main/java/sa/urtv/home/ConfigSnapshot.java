@@ -28,6 +28,8 @@ final class ConfigSnapshot {
     boolean sceneByTime, sceneByWeather;   // «الأفق يتبع الوقت», «الأفق يتبع الطقس»: off unless the screensaver says on
     /** «أزرار الريموت»: "youtube=PKG,netflix=,prime=" from the screensaver's settings; null = an older screensaver said nothing */
     String keyApps;
+    /** PR #45: the name after the greeting; "" (also an older screensaver, which says nothing) is the greeting alone */
+    String greetingName = "";
     boolean cityChosen = true;   // 4.3.1: a city was ever set (an older screensaver does not say: yes, so nobody is asked)
     String matchApp = "auto";   // 4.3 «تطبيق المباريات»: auto (UrTV Player when installed), none, or a package
     boolean pillHidden(String key) { return ("," + pillsHidden + ",").contains("," + key + ","); }
@@ -56,7 +58,7 @@ final class ConfigSnapshot {
     }
 
     /** The same values with another fragment (the one kept on disk). */
-    private ConfigSnapshot withFragment(String f) { ConfigSnapshot c = new ConfigSnapshot(f, greetingOn, adhanBarOn, listenPillOn, updateBellOn, appearance, watchNextOn, look, stale, placeTicket); c.favBar = favBar; c.tweaks = tweaks; c.pagesDark = pagesDark; c.pillsHidden = pillsHidden; c.matchApp = matchApp; c.cityChosen = cityChosen; c.homeLayout = homeLayout; c.scenePacks = scenePacks; c.sceneStay = sceneStay; c.sceneByTime = sceneByTime; c.sceneByWeather = sceneByWeather; c.homeBg = homeBg; c.homeClock = homeClock; c.appsStyle = appsStyle; return c; }
+    private ConfigSnapshot withFragment(String f) { ConfigSnapshot c = new ConfigSnapshot(f, greetingOn, adhanBarOn, listenPillOn, updateBellOn, appearance, watchNextOn, look, stale, placeTicket); c.favBar = favBar; c.tweaks = tweaks; c.pagesDark = pagesDark; c.pillsHidden = pillsHidden; c.matchApp = matchApp; c.cityChosen = cityChosen; c.homeLayout = homeLayout; c.scenePacks = scenePacks; c.sceneStay = sceneStay; c.sceneByTime = sceneByTime; c.sceneByWeather = sceneByWeather; c.homeBg = homeBg; c.homeClock = homeClock; c.appsStyle = appsStyle; c.greetingName = greetingName; return c; }
 
     private static volatile String savedFragment;   // what this process last wrote (or read) of the kept fragment
 
@@ -71,7 +73,7 @@ final class ConfigSnapshot {
     }
 
     /** The same values, marked as an old copy. */
-    ConfigSnapshot asStale() { ConfigSnapshot c = new ConfigSnapshot(fragment, greetingOn, adhanBarOn, listenPillOn, updateBellOn, appearance, watchNextOn, look, true, placeTicket); c.favBar = favBar; c.tweaks = tweaks; c.pagesDark = pagesDark; c.pillsHidden = pillsHidden; c.matchApp = matchApp; c.cityChosen = cityChosen; c.homeLayout = homeLayout; c.scenePacks = scenePacks; c.sceneStay = sceneStay; c.sceneByTime = sceneByTime; c.sceneByWeather = sceneByWeather; c.homeBg = homeBg; c.homeClock = homeClock; c.appsStyle = appsStyle; c.keyApps = keyApps; return c; }
+    ConfigSnapshot asStale() { ConfigSnapshot c = new ConfigSnapshot(fragment, greetingOn, adhanBarOn, listenPillOn, updateBellOn, appearance, watchNextOn, look, true, placeTicket); c.favBar = favBar; c.tweaks = tweaks; c.pagesDark = pagesDark; c.pillsHidden = pillsHidden; c.matchApp = matchApp; c.cityChosen = cityChosen; c.homeLayout = homeLayout; c.scenePacks = scenePacks; c.sceneStay = sceneStay; c.sceneByTime = sceneByTime; c.sceneByWeather = sceneByWeather; c.homeBg = homeBg; c.homeClock = homeClock; c.appsStyle = appsStyle; c.keyApps = keyApps; c.greetingName = greetingName; return c; }
 
     /**
      * The settings fragment for the PRAYER PLACE (Place, the adhan alarm, the day parts): null when this is an old copy, so that only a real
@@ -122,7 +124,7 @@ final class ConfigSnapshot {
         boolean greeting = true, bar = true, listenPill = true, updateBell = true, watchNext = true;
         String appearance = null, look = null, favBar = "5", tweaks = "";
         boolean pagesDark = true;
-        String pillsHidden = "", matchApp = "auto", keyApps = null;
+        String pillsHidden = "", matchApp = "auto", keyApps = null, greetingName = "";
         boolean cityChosen = true;
         String homeLayout = "classic", scenePacks = "saudi", sceneStay = "20";
         boolean sceneByTime = false, sceneByWeather = false;
@@ -154,6 +156,8 @@ final class ConfigSnapshot {
                 if (ma >= 0 && cur.getString(ma) != null) matchApp = cur.getString(ma);
                 int kk = cur.getColumnIndex("key_apps");   // «أزرار الريموت»; an older screensaver says nothing (null: the home's own stays)
                 if (kk >= 0) keyApps = cur.getString(kk);
+                int gn = cur.getColumnIndex("greeting_name");   // PR #45; an older screensaver says nothing: no name
+                if (gn >= 0 && cur.getString(gn) != null) greetingName = cur.getString(gn);
                 int pz = cur.getColumnIndex("page_zone");   // 4.3 (issue #55): the page's offset for the city's zone; an older screensaver says nothing
                 if (pz >= 0 && cur.getString(pz) != null) ZoneFix.report(cur.getString(pz));
                 int cc = cur.getColumnIndex("city_chosen");
@@ -201,6 +205,7 @@ final class ConfigSnapshot {
         made.homeClock = homeClock;
         made.appsStyle = appsStyle;
         made.keyApps = keyApps;
+        made.greetingName = greetingName;
         return made;
     }
 

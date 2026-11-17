@@ -228,6 +228,7 @@ python3 tests/now_playing_test.py
 python3 tests/digits_text_test.py
 python3 tests/page_stamp_test.py
 python3 tests/greeting_test.py
+python3 tests/greeting_name_test.py
 python3 tests/netgate_test.py
 python3 tests/clock_text_test.py
 python3 tests/clock_setting_test.py

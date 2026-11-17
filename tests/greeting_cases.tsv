@@ -45,3 +45,6 @@ icon	63	day	rain	rain
 icon	75	night	snow	snow
 icon	95	day	storm	thunderstorm
 icon	-1	day	null	no reading: no drawing
+named	صباح الخير	علاء	صباح الخير، ⁨علاء⁩	PR #45: «صباح الخير، علاء», the name isolated
+named	مساء الخير		مساء الخير	no name: the greeting alone, as before
+named	مساء الخير	   	مساء الخير	a name of spaces is no name

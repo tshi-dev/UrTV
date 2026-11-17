@@ -40,7 +40,7 @@ PHONE = {"city": "المدينة", "home_cards": "البطاقة الأولى", 
          "adhan_fajr_voice": "الأذان", "adhan_volume": "الأذان", "sleep_minutes": None, "saver_idle": "بدء شاشة التوقف بعد", "lang": "اللغة",
          "fav_bar": "تطبيقات في الشريط"}
 # the control centre's rows (ControlCenter.ROWS) that open a setting's row; the others are actions or screens of their own
-CONTROL = {"net": None, "sound": None, "speed": None, "ours": None, "games": None, "city": "المدينة", "tv": None, "saver": None, "adhan": None, "black": None}
+CONTROL = {"net": None, "sound": None, "speed": None, "ours": None, "games": None, "city": "المدينة", "tv": None, "apps": None, "saver": None, "adhan": None, "black": None}
 YES, NO = "مفعّل", "متوقف"
 # a row's command where docs/SETTINGS.md names its place another way: an example each (the subcommand must be a case of optimize/saver.sh: checked)
 MORE_CMDS = {

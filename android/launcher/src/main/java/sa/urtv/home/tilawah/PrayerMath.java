@@ -46,6 +46,9 @@ final class PrayerMath {
      *      Aladhan. The ministry publishes no parameters: these are the ones egyjs/afnon-android-tv-launcher (MIT, Method.OMAN_AWQAF) fitted to the
      *      ministry's own 2026 timetable (Muscat, Sohar, Nizwa, Salalah) to within about two minutes. The older Gulf method (8) stays available
      *      for Oman as the settings' {@code pm=gulf}.
+     * 101  Libya (Tripoli, Benghazi: Africa/Tripoli): Fajr 18°, Isha 17°, Dhuhr a minute later, sunrise, Asr and Maghrib untouched. **Ours too** (Aladhan has
+     *      none; before this Libya was given the Egyptian method, whose Fajr is 8 minutes early there). The figures are fitted to the Benghazi 2026 prayer
+     *      table of pull request 23 (all 365 days): Fajr, Asr, Maghrib and Isha within a minute every day, Dhuhr exactly a minute later than the sun's noon.
      * Asr is the shadow-length-one (Shafi'i) Asr for all of them; Maghrib is sunset (0.833°) except for the Ja'fari.
      */
     static final class Method {
@@ -64,6 +67,8 @@ final class PrayerMath {
     static final int UMM_AL_QURA = 4, GULF = 8, KUWAIT = 9, QATAR = 10, DUBAI = 16, EGYPT = 5, JORDAN = 23, MOROCCO = 21, ALGERIA = 19, TUNISIA = 18;
     /** our own id for Oman's ministry: Aladhan has none, so ids from here up are never sent to it (see {@link #aladhanKnows}) */
     static final int OMAN = 100;
+    /** our own id for Libya (Aladhan has none, so it is computed here only, as Oman's is): Fajr 18°, Isha 17°, Dhuhr a minute later; see the comment above */
+    static final int LIBYA = 101;
     static final int KARACHI = 1, ISNA = 2, MWL = 3, SINGAPORE = 11, FRANCE_UOIF = 12,
             DIYANET = 13, RUSSIA = 14, MOONSIGHTING = 15, JAKIM = 17, KEMENAG = 20;
     private static final Method[] METHODS = {
@@ -78,6 +83,7 @@ final class PrayerMath {
         new Method(ALGERIA, 18, 17, 0, .833),
         new Method(TUNISIA, 18, 18, 0, .833),
         new Method(OMAN, 18, 18, 0, .833, 0, 5, 5, 5),
+        new Method(LIBYA, 18, 17, 0, .833, 0, 1, 0, 0),
         new Method(KARACHI, 18, 18, 0, .833),
         new Method(ISNA, 15, 15, 0, .833),
         new Method(MWL, 18, 17, 0, .833),
@@ -125,6 +131,7 @@ final class PrayerMath {
             case "Africa/Casablanca": case "Africa/El_Aaiun": return MOROCCO;
             case "Africa/Algiers": return ALGERIA;
             case "Africa/Tunis": return TUNISIA;
+            case "Africa/Tripoli": return LIBYA;
             default: return UMM_AL_QURA;
         }
     }

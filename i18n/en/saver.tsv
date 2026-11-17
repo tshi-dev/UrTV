@@ -229,6 +229,10 @@
 بطاقة واحدة بجانب الساعة	One card beside the clock
 إلغاء	Cancel
 حفظ	Save
+اسمك في التحية	Your name in the greeting
+بدون اسم	No name
+مثال: علاء	For example: Sarah
+اسمك في التحية (حتى %s حرفًا)	Your name in the greeting (up to %s letters)
 اختر من سوق إلى %s أسواق	Pick 1 to %s markets
 الأسواق (حتى %s)	Markets (up to %s)
 مثال: ⁦2222 1120 AAPL NVDA⁩	Example: 2222 1120 AAPL NVDA
@@ -302,6 +306,7 @@
 وزارة الأوقاف المغربية	Morocco Ministry of Habous
 وزارة الشؤون الدينية الجزائرية	Algeria Ministry of Religious Affairs
 وزارة الشؤون الدينية التونسية	Tunisia Ministry of Religious Affairs
+ليبيا	Libya
 جامعة العلوم الإسلامية بكراتشي	University of Islamic Sciences, Karachi
 الجمعية الإسلامية لأمريكا الشمالية	ISNA
 رابطة العالم الإسلامي	Muslim World League

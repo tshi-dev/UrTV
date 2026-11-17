@@ -57,7 +57,7 @@ check("TCL's live TV app is the one that resumes the last input", '"com.tcl.tv"'
 check("the system's inputs panel is asked by its action, and only used when something resolves it",
       'SYSTEM_INPUTS = "com.android.tv.action.VIEW_INPUTS"' in vendor and "resolveActivity(i, PackageManager.MATCH_DEFAULT_ONLY) != null ? i : null" in main)
 check("an input nobody took: the picker, then the system's inputs panel, then the live TV app, then Settings (TvVendor.inputFallback), behind the picker's lock",
-      "TvVendor.inputFallback(inputPickerPkg != null, panel != null, liveTvPkg != null)" in op and 'launchGuarded(ParentalPolicy.INPUT_PICKER, panel, "كل المصادر")' in op)
+      "TvVendor.inputFallback(inputPickerPkg != null, panel != null, signal != null, liveTvPkg != null)" in op and 'launchGuarded(ParentalPolicy.INPUT_PICKER, panel, "كل المصادر")' in op)
 check("«المصادر» with no picker of the TV's own lists «كل المصادر» for the system's inputs panel when it answers",
       "Intent panel = inputPickerPkg == null ? systemInputs() : null;" in main)
 check("the panel's action is in the manifest's <queries> (Android 11 would hide it)",
@@ -107,14 +107,17 @@ with tempfile.TemporaryDirectory() as tmp:
     check("TCL G10 shape (tuner and 3 HDMI, last used an HDMI): the tuner is found by its type (index 3), never the last input; none or an empty list gives -1",
           got.split("|")[:5] == ["3", "true", "0", "-1", "-1"], got)
     run = ('package sa.urtv.home; public final class TvPanel { public static void main(String[] a) { System.out.println('
-           'TvVendor.inputFallback(true, true, true) + "|" + TvVendor.inputFallback(false, true, true) + "|" + TvVendor.inputFallback(false, false, true) + "|" + '
-           'TvVendor.inputFallback(false, false, false) + "|" + TvVendor.tvStep("", false, false, true) + "|" + TvVendor.tvStep("", false, false, false) + "|" + '
+           'TvVendor.inputFallback(true, true, true, true) + "|" + TvVendor.inputFallback(false, true, true, true) + "|" + TvVendor.inputFallback(false, false, false, true) + "|" + '
+           'TvVendor.inputFallback(false, false, false, false) + "|" + TvVendor.inputFallback(false, false, true, true) + "|" + TvVendor.tvStep("", false, false, true) + "|" + TvVendor.tvStep("", false, false, false) + "|" + '
            'TvVendor.tvStep("com.mediatek.wwtv.tvcenter", false, true, true) + "|" + TvVendor.tvStep("com.tcl.tv", true, true, true)); } }')
     (Path(tmp) / "TvPanel.java").write_text(run)
     subprocess.run(["javac", "-d", tmp, "-cp", tmp, str(Path(tmp) / "TvPanel.java")], check=True, capture_output=True)
     panel = subprocess.run(["java", "-cp", tmp, "sa.urtv.home.TvPanel"], check=True, capture_output=True, text=True).stdout.strip()
     check("#54 Skyworth/MediaTek: an input nobody took goes to the picker, else the inputs panel, else the live TV app, else Settings; «the TV» with neither app nor picker: the panel before Settings",
-          panel == "picker|inputs|live|settings|inputs|settings|live|picker", panel)
+          panel == "picker|inputs|live|settings|signal|inputs|settings|live|picker", panel)
+    check("PR #17 (CVTE): a CVTE board's own source screen (alliance://start_signal) comes after the picker and the inputs panel, before the live TV app, and is only used where something resolves it, behind the picker's lock",
+          'CVTE_SIGNAL = "alliance://start_signal"' in vendor and "resolveActivity(i, PackageManager.MATCH_DEFAULT_ONLY) != null ? i : null" in main.split("private Intent cvteSignal()")[1].split("\n    }\n")[0]
+          and 'launchGuarded(ParentalPolicy.INPUT_PICKER, signal, "كل المصادر")' in op)
     check("the plan: TCL's app with a picker on the TV: the picker; TCL's app with no picker: the app; the other vendors' apps unchanged; no app: the picker, else Settings",
           got.split("|")[5:] == ["picker", "live", "live", "live", "picker", "settings"], got)
 
