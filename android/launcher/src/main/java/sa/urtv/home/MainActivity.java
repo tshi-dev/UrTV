@@ -2102,6 +2102,7 @@ public class MainActivity extends Activity {
         nudgeAsk = text(16, "sans-serif-medium", 0xFFFFFFFF);
         nudgeAsk.setText(S.t("وين أنت؟ اختر مدينتك عشان الطقس والصلاة"));
         nudgeAsk.setSingleLine(true);
+        nudgeAsk.setEllipsize(android.text.TextUtils.TruncateAt.END);   // 4.4: where the top row and the weather line leave too little room (keepNudgeClear)
         nudgeAsk.setPadding(dp(18), dp(9), dp(12), dp(9));
         nudgeAsk.setGravity(Gravity.CENTER);
         nudgeAsk.setVisibility(View.GONE);
@@ -2136,9 +2137,21 @@ public class MainActivity extends Activity {
             if (w[0] + o.getWidth() / 2 >= n[0] + nudge.getWidth() / 2) hi = Math.min(hi, w[0] - gap);   // on its right: the strip ends before it
             else lo = Math.max(lo, w[0] + o.getWidth() + gap);                                         // on its left: the strip starts after it
         }
+        int room = lo != Integer.MIN_VALUE && hi != Integer.MAX_VALUE ? hi - lo : Integer.MAX_VALUE;
+        if (room < nudge.getWidth() && nudgeAsk.getVisibility() == View.VISIBLE) {   // no room for both gaps: the question gives way (ends in «…»), never an overlap
+            int fit = Math.max(dp(120), nudgeAsk.getWidth() - (nudge.getWidth() - room));
+            if (fit < nudgeAsk.getWidth()) { nudgeAsk.setMaxWidth(fit); nudge.requestLayout(); return; }   // laid out again, then placed
+        } else if (room >= nudge.getWidth() + dp(40) && nudgeAsk.getMaxWidth() != NUDGE_ASK_MAX) {   // room again: the whole question
+            nudgeAsk.setMaxWidth(NUDGE_ASK_MAX);
+            nudge.requestLayout();
+            return;
+        }
         float shift = nudgeShift(n[0], nudge.getWidth(), lo, hi);
         if (shift != 0f) nudge.setTranslationX(shift);
     }
+
+    /** the question's widest: Integer.MAX_VALUE, TextView's own «no limit» */
+    static final int NUDGE_ASK_MAX = Integer.MAX_VALUE;
 
     /** how far the strip [n, n+nw) moves to stand inside [lo, hi): not at all when it does; centred between the two when it is wider than the room */
     static float nudgeShift(int n, int nw, int lo, int hi) {

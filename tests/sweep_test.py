@@ -29,6 +29,9 @@ check("sweep2, the city prompt: ONE glass strip (12 dp corners) with plain words
 check("sweep2, the weather line and the top row: the strip keeps 16 px (at 1080p) from both, moved sideways after each layout of any of the three",
       "static final int NUDGE_CLEAR_PX = 16;" in main and main.count("keepNudgeClear())") == 3 and "for (View o : new View[] {weatherLine, pillBar})" in main
       and "Math.round(NUDGE_CLEAR_PX * getResources().getDisplayMetrics().widthPixels / 1920f)" in main)
+check("sweep2, too little room for both gaps (Screens run 10: the open row and the weather line): the question ends in «…», never an overlap; the whole of it again when there is room",
+      "nudgeAsk.setEllipsize(android.text.TextUtils.TruncateAt.END);" in main and "nudgeAsk.setMaxWidth(fit); nudge.requestLayout(); return;" in main
+      and "nudgeAsk.setMaxWidth(NUDGE_ASK_MAX);" in main and "room >= nudge.getWidth() + dp(40)" in main)
 
 MIN, MAX = -2**31, 2**31 - 1
 
