@@ -49,3 +49,7 @@ adhan	900	0			العصر @920، الإقامة @940	before Asr: Asr, iqama 20 mi
 adhan	1100	0			العشاء @1155، الإقامة @1175	after Maghrib: Isha
 adhan	600	1			الجمعة @720	a Friday's Dhuhr: «الجمعة», no iqama (the khutba first)
 adhan	1200	0			none	after Isha: none today (the row keeps its hint; OK plays Fajr's muezzin)
+apps	android.settings.MANAGE_ALL_APPLICATIONS_SETTINGS,android.settings.APPLICATION_SETTINGS				android.settings.MANAGE_ALL_APPLICATIONS_SETTINGS	PR #18: both resolve: the all-apps screen first
+apps	android.settings.APPLICATION_SETTINGS				android.settings.APPLICATION_SETTINGS	only the older apps action
+apps	android.settings.SETTINGS				none	none resolves: no tile (the TV's settings have their own)
+apps					none	nothing resolves: no tile

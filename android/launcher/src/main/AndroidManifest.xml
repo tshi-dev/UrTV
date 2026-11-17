@@ -124,6 +124,16 @@
         <intent>
             <action android:name="com.google.android.intent.action.CONNECT_INPUT" />
         </intent>
+        <!-- «إدارة التطبيقات» in «مركز التحكم» (ControlText.APPS_ACTIONS, PR #18): the tile is there only when one of these resolves -->
+        <intent>
+            <action android:name="android.settings.MANAGE_ALL_APPLICATIONS_SETTINGS" />
+        </intent>
+        <intent>
+            <action android:name="android.settings.MANAGE_APPLICATIONS_SETTINGS" />
+        </intent>
+        <intent>
+            <action android:name="android.settings.APPLICATION_SETTINGS" />
+        </intent>
         <intent>
             <action android:name="android.settings.SETTINGS" />
         </intent>

@@ -76,10 +76,12 @@ final class ControlCenter {
     /** the round toggles, in this order; every other item is a row */
     static final String[] TOGGLES = {"bluetooth", "mirror", "sleep", "off"};
     /** the rows' order before the person moves any; «شاشة التوقف» is unticked until they ask for it (its own pill is on the home) */
-    static final String[] ROWS = {"net", "sound", "speed", "ours", "games", "city", "adhan", "tv", "saver", "black"};   // 4.3.1: ours before the TV's, the city beside it; 4.3.3: «الأذان والإقامة»; 4.4 #62: the black screen
+    static final String[] ROWS = {"net", "sound", "speed", "ours", "games", "city", "adhan", "tv", "apps", "saver", "black"};   // 4.3.1: ours before the TV's, the city beside it; 4.3.3: «الأذان والإقامة»; 4.4 #62: the black screen
     /** the order before 4.3.1 (ours after the TV's): saved by anyone who opened the editor, never a choice, so it follows the new default */
     static final String OLD_DEFAULT = "net,sound,speed,tv,ours,saver";
-    static final String[] DEFAULT_OFF = {"saver"};
+    static final String[] DEFAULT_OFF = {"saver", "apps"};
+    /** rows added after 4.4 that stay unticked for anyone who saved the editor before they existed (their `known` list lacks them): PR #18's «إدارة التطبيقات» */
+    static final String[] LATE_OFF = {"apps"};
 
     // the glass look the home shows (GlassSource.look, when the panel opens): the panel opaque over the look's solid colour (it sits over the
     // home's photo as it is), the rows a glass panel on it, the focused one the solid focus fill; GlassStyle checks each of them
@@ -237,6 +239,11 @@ final class ControlCenter {
         if (upd != null) tile("update", upd, "", R.drawable.ic_update, () -> { dismiss(); host.openUpdate(); });
         tile("tv", S.t("الإعدادات"), S.t("إعدادات التلفزيون"), R.drawable.ic_settings,
                 () -> { dismiss(); host.launchGuarded(ParentalPolicy.PILL_TV_SETTINGS, new Intent(Settings.ACTION_SETTINGS), "إعدادات التلفزيون"); });
+        // PR #18 «إدارة التطبيقات»: the TV's own apps screen (remove, stop, permissions); unticked until asked for, only when one of the actions resolves
+        final Intent apps = appsIntent();
+        if (apps != null)
+            tile("apps", ControlText.APPS, ControlText.APPS_HINT, R.drawable.ic_store,
+                    () -> { dismiss(); host.launchGuarded(ParentalPolicy.PILL_TV_SETTINGS, apps, ControlText.APPS); });
 
         android.util.DisplayMetrics dm = act.getResources().getDisplayMetrics();
         final int W = dm.widthPixels, H = dm.heightPixels;
@@ -302,7 +309,12 @@ final class ControlCenter {
 
     private Set<String> unticked() {
         String v = prefs().getString("off", null);
-        return new HashSet<>(Arrays.asList(v == null ? DEFAULT_OFF : v.isEmpty() ? new String[0] : v.split(",")));
+        Set<String> off = new HashSet<>(Arrays.asList(v == null ? DEFAULT_OFF : v.isEmpty() ? new String[0] : v.split(",")));
+        if (v != null) {   // saved before a late row existed: it joins unticked, not on top of what they chose
+            String known = prefs().getString("known", "");
+            for (String k : LATE_OFF) if (!Arrays.asList(known.split(",")).contains(k)) off.add(k);
+        }
+        return off;
     }
 
     /** the rows this TV can show, in the person's order (the default order for any they have not placed) */
@@ -335,7 +347,7 @@ final class ControlCenter {
         StringBuilder r = new StringBuilder(), o = new StringBuilder();
         for (Item it : rows) r.append(r.length() > 0 ? "," : "").append(it.key);
         for (String k : off) o.append(o.length() > 0 ? "," : "").append(k);
-        prefs().edit().putString("rows", r.toString()).putString("off", o.toString()).apply();
+        prefs().edit().putString("rows", r.toString()).putString("off", o.toString()).putString("known", android.text.TextUtils.join(",", LATE_OFF)).apply();
     }
 
     private void reset() { prefs().edit().remove("rows").remove("off").apply(); }
@@ -901,6 +913,15 @@ final class ControlCenter {
     private Intent bluetoothIntent() {
         android.content.pm.PackageManager pm = act.getPackageManager();
         String action = ControlText.bluetoothAction(a -> {
+            try { return pm.resolveActivity(new Intent(a), 0) != null; } catch (RuntimeException e) { return false; }
+        });
+        return action == null ? null : new Intent(action);
+    }
+
+    /** the first apps screen this TV can open (ControlText.appsAction), or null when none resolves */
+    private Intent appsIntent() {
+        android.content.pm.PackageManager pm = act.getPackageManager();
+        String action = ControlText.appsAction(a -> {
             try { return pm.resolveActivity(new Intent(a), 0) != null; } catch (RuntimeException e) { return false; }
         });
         return action == null ? null : new Intent(action);

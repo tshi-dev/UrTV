@@ -16,8 +16,10 @@ Newest first. `next` is where changes land first; a release is what was tested t
 - **«المصادر» على أجهزة CVTE:** لو ما أخذ أي تطبيق رابط المنفذ وما عند التلفزيون شاشة مصادر نعرفها، نفتح شاشة المصادر الخاصة بلوحة CVTE قبل تطبيق البث (وبس لو التلفزيون يردّ عليها).
 
 - **أوقات الصلاة في ليبيا:** ليبيا صار لها حساب خاص (الفجر ١٨° والعشاء ١٧° والظهر بعد دقيقة) بدل حساب مصر الذي كان فجره يسبق بنغازي بثماني دقائق. ضبطناه على جدول بنغازي ٢٠٢٦، وكل أوقاته اليومية تطابقه بدقيقة. يظهر تحت الساعة «حساب ليبيا».
+- **«إدارة التطبيقات» في مركز التحكم:** صف اختياري يفتح شاشة تطبيقات التلفزيون نفسها (حذف وإيقاف وصلاحيات)، مطفأ إلى أن تفعّله من «تخصيص»، بنفس قفل إعدادات التلفزيون، وما يظهر لو التلفزيون ما عنده هذي الشاشة.
 
 **Thanks (GitHub handles, with the pull request number):**
+- The TV's apps screen as a quick «إدارة التطبيقات» row: alihaydaralmossa22-png (#18).
 - The Benghazi 2026 prayer table that Libya's own prayer method is fitted to: ALMAJBRY (#23).
 - The CVTE source screen (`alliance://start_signal`) as the «المصادر» fallback: alihaydaralmossa22-png (#17).
 

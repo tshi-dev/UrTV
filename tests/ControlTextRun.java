@@ -57,6 +57,12 @@ public final class ControlTextRun {
                     out.append(a == null ? "none" : a);
                     break;
                 }
+                case "apps": {
+                    final java.util.Set<String> has = new java.util.HashSet<>(java.util.Arrays.asList(f[1].split(",")));
+                    String a = ControlText.appsAction(has::contains);
+                    out.append(a == null ? "none" : a);
+                    break;
+                }
                 default: throw new IllegalArgumentException(f[0]);
             }
             out.append('\n');
