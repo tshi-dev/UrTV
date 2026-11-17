@@ -26,6 +26,15 @@ import java.util.Set;
  */
 public class RescueActivity extends Activity {
     private TextView state, button;
+    /** where the build number is, per brand (the same lines as SetupActivity.DEV_HELP; tests/dev_help_test.py holds them equal) */
+    static final String[] DEV_HELP = {
+        "خيارات المطوّر ما تفتح؟ اضغط سبع مرات على رقم الإصدار، ومكانه حسب التلفزيون:",
+        "TCL: الإعدادات ← النظام ← حول ← «إصدار نظام Android TV» (الأقدم: تفضيلات الجهاز ← حول ← Build)",
+        "شاومي: الإعدادات ← تفضيلات الجهاز ← حول ← Build (بنظام Google TV: النظام ← حول ← «إصدار نظام Android TV»)",
+        "سوني: الإعدادات ← النظام ← حول ← «إصدار نظام Android TV» (الأقدم: تفضيلات الجهاز ← حول ← Build)",
+        "سكاي ورث: الإعدادات ← تفضيلات الجهاز ← حول ← Build (بنظام Google TV: النظام ← حول ← «إصدار نظام Android TV»)",
+        "بعدها تلقى «خيارات المطوّر» تحت النظام أو تفضيلات الجهاز، وفيها «تصحيح USB».",
+    };
     private volatile boolean working;
 
     private TextView text(String s, int sp, int color, boolean bold) {
@@ -53,6 +62,7 @@ public class RescueActivity extends Activity {
         LinearLayout col = page.content;
         col.addView(text("يرجّع التلفزيون كما كان قبل UrTV: يشغّل الشاشة الأصلية ووسيط الإعداد وكل ما أوقفه إعدادنا، ويرجّع زر الرئيسية للشاشة الأصلية، ويطفي «إضافات تلفزيونك». ما يحذف شيئاً.", 17, 0xFFD6DAE0, false));
         col.addView(text("يحتاج «تصحيح USB» مفعّلاً (الإعدادات ← تفضيلات الجهاز ← حول ← اضغط «Build» سبع مرات ← خيارات المطوّر ← تصحيح USB). لما يسألك التلفزيون «السماح بتصحيح USB؟» اختر «السماح دائماً».", 14, 0xFFD6AF6B, false));
+        col.addView(text(String.join("\n", DEV_HELP), 14, 0xFFD6DAE0, false));   // 4.4: where the build number is, per brand (the setup screen has the same lines)
         button = text("رجّع التلفزيون كما كان", 17, 0xFF151619, true);
         button.setGravity(Gravity.CENTER);
         button.setFocusable(true);

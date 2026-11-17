@@ -76,6 +76,14 @@ app's preview of the same page and `measure.sh` writes «not measured»). Times 
 
 Chromecast with Google TV (sabrina, boreal) and the Google TV Streamer (kirkwood): the cast receiver reads its device credentials from the setup wizard (setupwraith). Setups before 4.2 turned the wizard off with the home switch, and after the next restart casting from a phone and the Google Home remote said «جهاز غير موثوق فيه» (untrusted device): the earlier «works» rows were never checked with a cast after a restart. From 4.2 the wizard stays on there; `optimize/dock.sh cast on|off` chooses between casting and our home as Home when the wizard keeps Home. Such a device is told by the wizard's cast provider AND a Google maker (`ro.product.manufacturer` Google, or the codename sabrina, boreal or kirkwood): other makers' Google TV builds share the wizard and its provider (a TCL G07 has it), and there the setup turns the wizard off as before.
 
+## Google TV: Home works through the add-on
+
+User reports (and the tester's own TV) since 4.3: on TCL G10/G08, Changhong (Android 14), Sony BRAVIA VH21, Xiaomi MiTV-AFMU0/1 the home switch fails: the HOME role
+is ours, yet the Home key opens Google TV's home (`launcherx`), which the firmware starts by name. The add-on «إضافات تلفزيونك» is the
+answer: its Home watch brings UrTV forward after each Home press («the person's home is ours», set by «جهّز كل شي» or
+`optimize/dock.sh home-watch on`). The in-TV setup's report says `Google TV: Home works through the add-on's watch…` (or that the
+watch is NOT bound). Never turn `launcherx` off (some Google TVs then cannot start).
+
 ## When the setup wizard owns the Wi-Fi (TCL G08/G10/G14, Google TV sets)
 
 On many TCL sets (G08, G10, G14; Android 12–14) and other Google TV sets (a G7max), the Wi-Fi network was saved during the

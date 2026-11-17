@@ -511,6 +511,12 @@ public class SettingsActivity extends Activity {
         // Back on our home (nothing to go back to) starts the screensaver; the home takes it on its next tick or return (Dock.followBackSaver)
         row("الرجوع يفتح شاشة التوقف", prefs.backSaver() ? "مفعّل" : "متوقف", R.drawable.ic_eye,
             new Runnable() { public void run() { prefs.setBackSaver(!prefs.backSaver()); render(); } });
+        // 4.4 (build 413, T9): «إضافات تلفزيونك» catches the remote's Home key and opens this home directly (Google TV's home never starts); on by
+        // default on a Google TV. Shown only when the add-on answers (installed and on)
+        final Boolean homeKey = NowPlayingBridge.homeKey(this, null);
+        if (homeKey != null)
+            row("زر الرئيسية يفتح تلفزيونك مباشرة", homeKey ? "مفعّل" : "متوقف", R.drawable.ic_eye,
+                new Runnable() { public void run() { NowPlayingBridge.homeKey(SettingsActivity.this, homeKey ? "off" : "on"); render(); } });
         // 4.3.3 «المباريات المنتهية»: on the football home only; hidden, today's list keeps the games still to come (or the next day's)
         if ("football".equals(prefs.homeLayout()))
             row("إخفاء المباريات المنتهية", prefs.fbHideDone() ? "مفعّل" : "متوقف", R.drawable.ic_eye,
@@ -842,7 +848,7 @@ public class SettingsActivity extends Activity {
             case "update": return Updater.versionLines(this)[0];
             case "report": return "";
             case "more": return "";
-            case "saver": return (Prefs.idleMs(this) <= 0 ? "يبدأ وقت ما يحدده التلفاز" : "تبدأ بعد " + idleLabel()) + " · " + Prefs.panelLabel(prefs.panel());
+            case "saver": return idleSummary() + " · " + Prefs.panelLabel(prefs.panel());
             case "home": {
                 List<String> cards = new ArrayList<>();
                 for (String k : prefs.homePanels()) cards.add(Prefs.panelLabel(k, "بدون"));
@@ -1014,7 +1020,7 @@ public class SettingsActivity extends Activity {
                 return on == null ? m : "الأذان " + (on ? OnOff.ON_WORD : OnOff.OFF_WORD) + "، " + m;
             }
             case SettingsHub.CONTENT: return "الفرق " + arabicNum(prefs.teams().size()) + "، الأسواق " + (prefs.marketsOn() ? arabicNum(prefs.markets().size()) : "مخفية");
-            case SettingsHub.SAVER: return Prefs.idleMs(this) <= 0 ? "يبدأ وقت ما يحدده التلفاز" : "تبدأ بعد " + idleLabel();
+            case SettingsHub.SAVER: return idleSummary();
             case SettingsHub.FAMILY: return "الرقابة الأبوية وتصفية المواقع والجوالات";
             case SettingsHub.UPDATE: return Updater.versionLines(this)[0];
             default: return "";
@@ -2357,13 +2363,11 @@ public class SettingsActivity extends Activity {
             .show();
     }
 
-    /** The TV's own idle delay. Writing it needs WRITE_SETTINGS, which TVs rarely grant: then its own screen opens. */
+    /**
+     * The TV's own idle delay. This app writes it where it may (WRITE_SETTINGS, which TVs rarely grant); otherwise the home writes it over its
+     * own adb link (NowPlayingBridge.setIdle). Without that link: one line that says how, never the maker's settings (they have no such timer).
+     */
     private void pickIdle() {
-        if (!Prefs.canWriteSettings(this)) {
-            toast("غيّرها من إعدادات التلفاز، أو بأمر من مساعدك");
-            openDreamSettings();
-            return;
-        }
         String[] labels = new String[Prefs.IDLE_MINUTES.length];
         int sel = -1;
         long now = Prefs.idleMs(this);
@@ -2373,23 +2377,57 @@ public class SettingsActivity extends Activity {
         }
         new Dlg(this).setTitle("بدء شاشة التوقف بعد")
             .setSingleChoiceItems(labels, sel, (d, i) -> {
-                try {
-                    Settings.System.putInt(getContentResolver(), Settings.System.SCREEN_OFF_TIMEOUT,
-                        Integer.parseInt(Prefs.IDLE_MINUTES[i]) * 60000);
-                } catch (SecurityException e) {
-                    toast("غيّرها من إعدادات التلفاز، أو بأمر من مساعدك");
-                }
                 d.dismiss();
-                render();
+                setIdle(Prefs.IDLE_MINUTES[i]);
             })
             .show();
     }
 
+    private void setIdle(final String minutes) {
+        if (Prefs.canWriteSettings(this)) {
+            try {
+                Settings.System.putInt(getContentResolver(), Settings.System.SCREEN_OFF_TIMEOUT, Integer.parseInt(minutes) * 60000);
+                render();
+                return;
+            } catch (SecurityException e) {
+                // the home's adb link below
+            }
+        }
+        toast("جارٍ الضبط…");
+        new Thread(() -> {
+            final String r = NowPlayingBridge.setIdle(getApplicationContext(), minutes);
+            runOnUiThread(() -> {
+                if (isFinishing()) return;
+                if ("ok".equals(r)) toast("تم");
+                else if ("busy".equals(r)) toast("إعداد التلفزيون شغّال الحين، جرّب بعده");
+                else new Dlg(this).setTitle("بدء شاشة التوقف بعد").setMessage(IDLE_NO_LINK).setPositiveButton("تم", null).show();
+                render();
+            });
+        }, "idle-set").start();
+    }
+
+    /** no adb link from the home: the one line that says how (the setup makes the link; the TV's own settings have no such timer) */
+    static final String IDLE_NO_LINK = "نحتاج نضبطها من الرئيسية: شغّل «إعداد تلفزيوني» من إعدادات الرئيسية مرة ووافق على سؤال تصحيح USB، ثم اختر الوقت هنا من جديد.";
+
+    /** «أبداً» when the TV turned its screensaver off (2147483647 ms: IdleRule.NEVER), never the raw number */
+    static final String IDLE_NEVER = "أبداً (التلفزيون أوقف شاشة التوقف)";
+
+    /** the hub's line under «شاشة التوقف»: when it starts, or that the TV turned it off */
+    private String idleSummary() {
+        int k = IdleRule.kind(Prefs.idleMs(this));
+        if (k == IdleRule.UNKNOWN) return "يبدأ وقت ما يحدده التلفاز";
+        if (k == IdleRule.NEVER) return "لا تبدأ: التلفزيون أوقف شاشة التوقف";
+        return "تبدأ بعد " + idleLabel();
+    }
+
     private String idleLabel() {
         long ms = Prefs.idleMs(this);
-        if (ms <= 0) return "يحدده التلفاز";
-        if (ms % 60000 != 0) return arabicNum((int) (ms / 1000)) + " ثانية";
-        return minutesLabel((int) (ms / 60000));
+        switch (IdleRule.kind(ms)) {
+            case IdleRule.UNKNOWN: return "يحدده التلفاز";
+            case IdleRule.NEVER: return IDLE_NEVER;
+            case IdleRule.SECONDS: return arabicNum((int) (ms / 1000)) + " ثانية";
+            default: return minutesLabel((int) (ms / 60000));
+        }
     }
 
     /** دقيقة واحدة · دقيقتان · ٥ دقائق · ١٥ دقيقة */
@@ -2405,14 +2443,6 @@ public class SettingsActivity extends Activity {
             final String msg = Updater.check(getApplicationContext(), true);
             runOnUiThread(() -> { toast(msg); if (!isFinishing()) render(); });
         }).start();
-    }
-
-    private void openDreamSettings() {
-        try {
-            startActivity(new Intent(Settings.ACTION_DREAM_SETTINGS));
-        } catch (ActivityNotFoundException e) {
-            startActivity(new Intent(Settings.ACTION_SETTINGS));
-        }
     }
 
     // ---------- labels ----------

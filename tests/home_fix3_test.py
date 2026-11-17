@@ -24,14 +24,14 @@ def text(p):
 watch, eng, hook, act = text(SETUP.parent / "HomeWatch.java"), text(SETUP / "SetupEngine.java"), text(SETUP / "SetupHook.java"), text(SETUP / "SetupActivity.java")
 svc = text(ROOT / "android/extras/src/main/java/sa/urtv/home/ExtrasA11yService.java")
 ev = svc[svc.index("public void onAccessibilityEvent(AccessibilityEvent e)"):svc.index("private static void watchLog(int what)")]
-check("1. R2g: a press over another app always brought (even paused); over ours one count per 0.7 s burst, the 6th in 6 s pauses 30 s",
-      "if (!fight) return true;" in watch and "BURST_MS = 700" in watch and "WINDOW_MS = 6_000, PAUSE_MS = 30_000" in watch and "recent >= MAX_BRINGS - 1" in watch
+check("1. R2g: a press over another app always brought (even paused); over ours one count per 0.7 s burst, the 6th in 4 s pauses 30 s (build 413 T2)",
+      "if (!fight) return true;" in watch and "BURST_MS = 700" in watch and "WINDOW_MS = 4_000, PAUSE_MS = 30_000" in watch and "recent >= MAX_BRINGS - 1" in watch
       and "boolean fight = before == null || before.equals(HOME_PKG);" in ev)
 check("1. R2g: the app Home was pressed over, back within 1.5 s of our bring, gets ours once more (once); the app is kept in memory only, never logged",
       "COME_BACK_MS = 1_500" in watch and "HomeWatch.bringAgain(pkg, pressedOver, broughtAt, broughtAgain, t)" in ev and "broughtAgain = true;" in ev
       and 'Log.i("UrTVWatch", "the app came back after our bring brought again")' in svc)
-check("1. not shipped from the tester's build: the forced key filter and the Home-key catch (R3 stays behind its switch, off by default)",
-      "want = true;" not in svc and "UrTVKey" not in svc and "if (e.getKeyCode() == KeyEvent.KEYCODE_HOME && homeKey(this)) return homeKeyCaught(e);" in svc
+check("1. not shipped from the tester's build: the forced key filter (R3 is a switch: on by default on a Google TV from build 413, tests/build413_test.py)",
+      "want = true;" not in svc and "UrTVKey" not in svc and "if (e.getKeyCode() == KeyEvent.KEYCODE_HOME && homeKeyActive()) return homeKeyCaught(e);" in svc
       and 'getBoolean(ExtrasWords.HOME_KEY, false)' in svc)
 check("2. the home step is never skipped for old failures; «تراجع» and an update clear the count",
       "HomeFails.givenUp" not in eng and "clearFile(HomeFails.FILE);" in eng[eng.index("Result undo()"):] and "clearOldFails(app);" in hook

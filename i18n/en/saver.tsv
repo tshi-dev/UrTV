@@ -251,7 +251,12 @@
 حذف كل صوري	Delete all my photos
 حذف كل صوري؟	Delete all my photos?
 حذف	Delete
-غيّرها من إعدادات التلفاز، أو بأمر من مساعدك	Change it in the TV’s settings, or ask your assistant
+جارٍ الضبط…	Setting it…
+زر الرئيسية يفتح تلفزيونك مباشرة	Home key opens UrTV directly
+إعداد التلفزيون شغّال الحين، جرّب بعده	The TV setup is running now; try after it
+نحتاج نضبطها من الرئيسية: شغّل «إعداد تلفزيوني» من إعدادات الرئيسية مرة ووافق على سؤال تصحيح USB، ثم اختر الوقت هنا من جديد.	The home has to set it: run “Your TV setup” once from the home’s settings and accept the USB debugging question, then choose the time here again.
+أبداً (التلفزيون أوقف شاشة التوقف)	Never (the TV turned the screensaver off)
+لا تبدأ: التلفزيون أوقف شاشة التوقف	Does not start: the TV turned the screensaver off
 يحدده التلفاز	Set by the TV
 %s ثانية	%s sec
 دقيقة واحدة	1 minute

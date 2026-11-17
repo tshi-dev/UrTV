@@ -179,13 +179,23 @@ public class ExtrasA11yService extends AccessibilityService {
         }
     }
 
-    // ---------------------------------------------------------------- 4.4 R3 (step 88, the tester's f25d95ff): the Home key caught here, a test switch
+    // ---------------------------------------------------------------- 4.4 R3: the Home key caught here (on by default on a Google TV from build 413's T9)
 
     /**
-     * Off by default; the home's DockReceiver HOME_KEY turns it on over adb (docs/HOMEDOCTOR.md) so the owner can try it with the real remote (adb's own
-     * key presses do not come through the filter). While on, every Home key event is ours: its release opens our home; the TV's own Home never sees it.
+     * 4.4 (build 413, T9 with the owner's real remote: 3 of 3 presses caught, long press and Home in a YouTube video too, Google TV never started, the
+     * Settings and Assistant keys untouched): ON by default on a TV whose stock home is Google TV's (launcherx), off elsewhere; the person's switch
+     * («زر الرئيسية يفتح تلفزيونك مباشرة», or the home's DockReceiver HOME_KEY over adb) wins once set. While on, the Home key's events are ours only
+     * when the person's home is ours (homeKeyActive): its release opens our home and the TV's own Home never sees it. The window watch stays as the
+     * fallback for remotes and TVs whose Home never reaches the filter (adb's own key presses never do).
      */
-    static boolean homeKey(Context c) { return c.getSharedPreferences("extras", MODE_PRIVATE).getBoolean(ExtrasWords.HOME_KEY, false); }
+    static boolean homeKey(Context c) {
+        SharedPreferences sp = c.getSharedPreferences("extras", MODE_PRIVATE);
+        if (sp.contains(ExtrasWords.HOME_KEY)) return sp.getBoolean(ExtrasWords.HOME_KEY, false);
+        return installed(c, "com.google.android.apps.tv.launcherx");
+    }
+
+    /** the catch acts: on, and the person's home is ours (the setup's word, or Android's default home); never over a home the person kept */
+    private boolean homeKeyActive() { return homeKey(this) && (wanted(this) || oursChosen()); }
 
     static void setHomeKey(Context c, boolean on) {
         c.getSharedPreferences("extras", MODE_PRIVATE).edit().putBoolean(ExtrasWords.HOME_KEY, on).apply();
@@ -213,6 +223,8 @@ public class ExtrasA11yService extends AccessibilityService {
     static void setWanted(Context c, boolean on) {
         c.getSharedPreferences("extras", MODE_PRIVATE).edit().putBoolean(ExtrasWords.WANTED, on).apply();
         watchLog(on ? 19 : 20);
+        ExtrasA11yService s = running;
+        if (s != null) s.main.post(s::filterKeys);   // the Home key catch follows the person's home
     }
 
     /** the watch's switch (the home turns it with WATCH; on by default on a TV whose stock home is Google TV's) */
@@ -266,7 +278,7 @@ public class ExtrasA11yService extends AccessibilityService {
             if (homeKeyLost == null) homeKeyLost = homeKeyLost(this);
             boolean want = SettingsKey.filterWanted(front, stockHome, lowRam, homeKeyLost)
                 || KeyApps.filterWanted(front, KeyApps.anyChosen(keyChoices), KeyButton.filterSafe())   // «أزرار الريموت»: only for a button given an app
-                || homeKey(this);   // 4.4 R3 (a test switch, off by default): the Home key caught here
+                || homeKeyActive();   // 4.4 R3: the Home key caught here (on by default on a Google TV, only while the person's home is ours)
             AccessibilityServiceInfo info = getServiceInfo();
             if (info == null) return;
             boolean has = (info.flags & AccessibilityServiceInfo.FLAG_REQUEST_FILTER_KEY_EVENTS) != 0;
@@ -285,7 +297,7 @@ public class ExtrasA11yService extends AccessibilityService {
     }
 
     @Override protected boolean onKeyEvent(KeyEvent e) {
-        if (e.getKeyCode() == KeyEvent.KEYCODE_HOME && homeKey(this)) return homeKeyCaught(e);   // 4.4 R3, only while the test switch is on
+        if (e.getKeyCode() == KeyEvent.KEYCODE_HOME && homeKeyActive()) return homeKeyCaught(e);   // 4.4 R3: on by default on a Google TV, the person's home ours
         if (appKey(e)) return true;   // «أزرار الريموت»: a button the owner gave an app; every other key goes on below, untouched
         Boolean lost = homeKeyLost;
         int d = settingsKey.decide(e.getKeyCode(), e.getAction(), e.getRepeatCount(), homeFront, stockHome, lost != null && lost);

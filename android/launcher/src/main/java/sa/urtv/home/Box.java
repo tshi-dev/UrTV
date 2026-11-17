@@ -95,7 +95,7 @@ public final class Box {
     public void focusFirst(final View button) {
         scroll.post(() -> {
             scroll.hint();
-            if (scroll.overflows()) { scroll.scrollTo(0, 0); scroll.requestFocus(); }
+            if (scroll.overflows()) { scroll.scrollTo(0, 0); scroll.focusSelf(); }
             else if (button != null) button.requestFocus();
         });
     }
@@ -110,6 +110,17 @@ public final class Box {
             super(c);
             setFocusable(true);
             setFocusableInTouchMode(false);
+            setDescendantFocusability(FOCUS_AFTER_DESCENDANTS);
+        }
+
+        /**
+         * 4.4 (build 413, T5): the reading area itself takes the focus. A plain requestFocus() on it gave the focus to its first focusable child
+         * (FOCUS_AFTER_DESCENDANTS: the setup's «English» button, so one OK switched the language and the first DOWN skipped the words). The children
+         * stay reachable with DOWN at the end of the words, as before.
+         */
+        void focusSelf() {
+            setDescendantFocusability(FOCUS_BEFORE_DESCENDANTS);
+            requestFocus();
             setDescendantFocusability(FOCUS_AFTER_DESCENDANTS);
         }
 

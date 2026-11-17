@@ -148,10 +148,27 @@ public class SetupActivity extends Activity {
         return false;
     }
 
+    /** 4.4 (user report «ماهو راضي يفعل تصحيح USB»): Developer options open from the build number, whose place differs per brand; one line each */
+    static final String[] DEV_HELP = {
+        S.n("خيارات المطوّر ما تفتح؟ اضغط سبع مرات على رقم الإصدار، ومكانه حسب التلفزيون:"),
+        S.n("TCL: الإعدادات ← النظام ← حول ← «إصدار نظام Android TV» (الأقدم: تفضيلات الجهاز ← حول ← Build)"),
+        S.n("شاومي: الإعدادات ← تفضيلات الجهاز ← حول ← Build (بنظام Google TV: النظام ← حول ← «إصدار نظام Android TV»)"),
+        S.n("سوني: الإعدادات ← النظام ← حول ← «إصدار نظام Android TV» (الأقدم: تفضيلات الجهاز ← حول ← Build)"),
+        S.n("سكاي ورث: الإعدادات ← تفضيلات الجهاز ← حول ← Build (بنظام Google TV: النظام ← حول ← «إصدار نظام Android TV»)"),
+        S.n("بعدها تلقى «خيارات المطوّر» تحت النظام أو تفضيلات الجهاز، وفيها «تصحيح USB»."),
+    };
+
+    static String devHelp() {
+        StringBuilder b = new StringBuilder();
+        for (String line : DEV_HELP) b.append(b.length() == 0 ? "" : "\n").append(S.tv(line));
+        return b.toString();
+    }
+
     private void buildStart(SetupRunner r) {
         add(langToggle(), dp(12));
         add(text(S.t("يجهّز التلفزيون نفسه، بدون كمبيوتر ولا جوال. اضغط «جهّز كل شي»: يسألك التلفزيون مرة واحدة «السماح بتصحيح USB؟»، ثم نعرض عليك ما سنفعله بالضبط قبل أي تغيير."), 17, "Regular", TEXT), dp(12));
         add(text(S.t("قبل البدء: فعّل «تصحيح USB» (الإعدادات ← تفضيلات الجهاز ← حول ← اضغط «Build» سبع مرات ← خيارات المطوّر ← تصحيح USB). وخلك عند التلفزيون: لما تطلع الرسالة اختر «السماح دائماً»."), 14, "Regular", GOLD), dp(16));
+        add(text(devHelp(), 14, "Regular", TEXT), dp(16));   // 4.4: where the build number is, per brand (DEV_HELP)
         if (SetupRunner.resumable(new FileStore(this))) add(text(S.t("إعداد سابق ما اكتمل: «جهّز كل شي» يكمله من حيث توقف."), 14, "Regular", TEXT), dp(12));
         rescueFirst();   // 4.4: the way back with no computer, before anything is started
         computerHelp();   // 4.4: the switch failed twice here: the computer's way (the rest of «جهّز كل شي» still runs, without the home step)
@@ -282,6 +299,21 @@ public class SetupActivity extends Activity {
         add(no, dp(12));
         page.focusFirst(begin);
         say("", GOLD);
+    }
+
+    static final int RESULT_RECHECK = 10;
+
+    /** the result page's two Home lines, as they are now; again in a second while either is not yet fine and {@code left} seconds remain */
+    private void homeLines(final TextView roleLine, final TextView watchLine, final int left) {
+        if (isFinishing() || isDestroyed()) return;
+        boolean ours = SetupHook.oursIsDefault(this), bound = extrasBound();
+        roleLine.setText(ours ? S.t("دور الشاشة الرئيسية: تلفزيونك") : S.t("دور الشاشة الرئيسية: الشاشة الأصلية للتلفزيون"));
+        watchLine.setText(bound ? S.t("مراقبة زر الرئيسية («إضافات تلفزيونك»): شغّالة، وهي اللي ترجّعك لتلفزيونك")
+            : sa.urtv.home.Extras.installed(this) ? S.t("مراقبة زر الرئيسية («إضافات تلفزيونك»): مثبّتة لكنها ما هي شغّالة")
+            : S.t("مراقبة زر الرئيسية («إضافات تلفزيونك»): غير مثبّتة"));
+        watchLine.setTextColor(bound ? GOLD : TEXT);
+        if ((ours && bound) || left <= 0 || !sa.urtv.home.Extras.installed(this)) return;
+        watchLine.postDelayed(new Runnable() { public void run() { homeLines(roleLine, watchLine, left - 1); } }, 1000);
     }
 
     /** «إضافات تلفزيونك» is running now: Android's list of running accessibility services has it (read only) */
@@ -541,7 +573,7 @@ public class SetupActivity extends Activity {
         S.n("التلفزيون يسأل «السماح بتصحيح USB؟»: اختر «السماح دائماً» بالريموت."),
         S.n("ما ظهرت الرسالة؟ أعد تشغيل التلفزيون وافتح «إعداد تلفزيوني» واضغط «جهّز كل شي» وخلك عند التلفزيون"),
         S.n("ما بدأنا الإعداد، وما تغيّر شيء في التلفزيون."),
-        S.n("قبل تبديل الشاشة الرئيسية: شبكة الواي فاي محفوظة باسم «وسيط الإعداد» في هذا التلفزيون، وإيقافه يمسحها. افتح إعدادات التلفزيون ← الشبكة، واختر «انسَ الشبكة»، ثم اتصل بها من جديد بنفس كلمة المرور (خلّها قدامك قبل). بعدها ارجع هنا واضغط «كمّل». ما تبي؟ اضغط «كمّل» بدونها، ونكمل والوسيط شغّال."),
+        S.n("قبل تبديل الشاشة الرئيسية: شبكة الواي فاي محفوظة باسم «وسيط الإعداد» في هذا التلفزيون، وإيقافه يمسحها. افتح إعدادات التلفزيون ← الشبكة، واختر «انسَ الشبكة»، ثم اتصل بها من جديد بنفس كلمة المرور (خلّها قدامك قبل). ما ظهر «انسَ الشبكة» أو ما رضي (مجرّبة على شاومي)؟ اتصل أول بنقطة اتصال من جوالك، بعدها انسَ شبكة البيت وارجع اتصل بها من الإعدادات. بعدها ارجع هنا واضغط «كمّل». ما تبي؟ اضغط «كمّل» بدونها، ونكمل والوسيط شغّال."),
     };
 
     /** The ends SetupRunner.endOf says in fixed words, marked for the table (the done screen shows them with S.tv; tests/tester_fixes_test.py). */
@@ -569,10 +601,12 @@ public class SetupActivity extends Activity {
             progress.show(modelOf(r, true));
             say("", GOLD);
             // 4.4 (step 88 T4): how Home works on this TV, said on the page itself, in the person's language
-            add(text(SetupHook.oursIsDefault(this) ? S.t("دور الشاشة الرئيسية: تلفزيونك") : S.t("دور الشاشة الرئيسية: الشاشة الأصلية للتلفزيون"), 17, "Medium", TEXT), dp(4));
-            add(text(extrasBound() ? S.t("مراقبة زر الرئيسية («إضافات تلفزيونك»): شغّالة، وهي اللي ترجّعك لتلفزيونك")
-                : sa.urtv.home.Extras.installed(this) ? S.t("مراقبة زر الرئيسية («إضافات تلفزيونك»): مثبّتة لكنها ما هي شغّالة")
-                : S.t("مراقبة زر الرئيسية («إضافات تلفزيونك»): غير مثبّتة"), 17, "Medium", extrasBound() ? GOLD : TEXT), dp(16));
+            final TextView roleLine = text("", 17, "Medium", TEXT), watchLine = text("", 17, "Medium", TEXT);
+            add(roleLine, dp(4));
+            add(watchLine, dp(16));
+            // 4.4 (build 413, T1): read right after the run they said «الشاشة الأصلية» and «ما هي شغّالة» while both were fine a moment later:
+            // read again once a second for up to RESULT_RECHECK seconds, until the add-on is bound and ours is the default home
+            homeLines(roleLine, watchLine, RESULT_RECHECK);
             String report = new FileStore(this).get(SetupReport.FILE);
             String url = report == null || report.isEmpty() ? null : SetupRunner.shareUrl(report);
             if (url != null) {

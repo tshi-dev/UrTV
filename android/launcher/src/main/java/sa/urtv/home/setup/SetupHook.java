@@ -157,6 +157,33 @@ public final class SetupHook {
         } catch (RuntimeException ignored) { }
     }
 
+    /**
+     * 4.4 «بدء شاشة التوقف بعد» from the screensaver's settings (NowPlayingProvider call("set_idle"), same key only): the TV's idle delay over this
+     * app's own adb, because the screensaver app may not write system settings on most TVs (a user's TV said 2147483647: its screensaver off).
+     * Runs on the caller's thread (the screensaver calls from its own background thread). Answers "ok", "no_link" (no kept key, adb did not
+     * answer, or the TV refused), "busy" (a setup is running) or "bad" (not one of IdleSetRule.MINUTES).
+     */
+    public static String setIdle(Context c, String minutes) {
+        long ms = IdleSetRule.ms(minutes);
+        if (ms <= 0) return "bad";
+        try {
+            final Context app = c.getApplicationContext();
+            if (SetupRunner.get().running()) return "busy";
+            if (!AdbKeys.exists(app)) { android.util.Log.i(TAG, "idle: no adb key (the setup never ran here)"); return "no_link"; }
+            try (SetupSession s = SetupSession.open(app, 5000, null, new SetupEngine.Out() { @Override public void line(String text) { } })) {
+                String probe = s.adb.run(IdleSetRule.PROBE).output;
+                for (String cmd : IdleSetRule.commands(ms, probe)) {
+                    if (s.adb.run(cmd).code != 0) { android.util.Log.i(TAG, "idle: the TV refused a setting"); return "no_link"; }
+                }
+            }
+            android.util.Log.i(TAG, "idle: set over adb");
+            return "ok";
+        } catch (Exception e) {
+            android.util.Log.i(TAG, "idle: adb did not answer");
+            return "no_link";
+        }
+    }
+
     /** 4.4 the Home doctor (DockReceiver HOME_WANTED, adb only): «on» / «off» set HOME_WANTED and tell the add-on; «status» reads it. Answers yes or no. */
     public static String homeWanted(Context c, String mode) {
         try {

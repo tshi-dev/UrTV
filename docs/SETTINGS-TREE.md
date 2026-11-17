@@ -247,6 +247,8 @@ the phone page's key, «مركز التحكم» the control centre's row that op
      القيم المقبولة: on|off
 —— الرجوع يفتح شاشة التوقف [الرئيسية]
    مثال للوكيل: optimize/dock.sh backsaver on  (`off` = the default: Back does nothing at the top of the home, as always; no argument says `back-saver: on|off`)
+—— زر الرئيسية يفتح تلفزيونك مباشرة [الرئيسية]
+   مثال للوكيل: optimize/dock.sh home-key on\|off\|status
 —— زر يوتيوب في الريموت [الرئيسية]
    مثال للوكيل: optimize/dock.sh key youtube org.smarttube.stable
    مثال للوكيل: optimize/dock.sh key youtube default
@@ -675,6 +677,8 @@ the phone page's key, «مركز التحكم» the control centre's row that op
        القيم المقبولة: on|off
 ———— الرجوع يفتح شاشة التوقف [الرئيسية]
      مثال للوكيل: optimize/dock.sh backsaver on  (`off` = the default: Back does nothing at the top of the home, as always; no argument says `back-saver: on|off`)
+———— زر الرئيسية يفتح تلفزيونك مباشرة [الرئيسية]
+     مثال للوكيل: optimize/dock.sh home-key on\|off\|status
 ———— زر يوتيوب في الريموت [الرئيسية]
      مثال للوكيل: optimize/dock.sh key youtube org.smarttube.stable
      مثال للوكيل: optimize/dock.sh key youtube default

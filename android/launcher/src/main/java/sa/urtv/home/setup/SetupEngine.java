@@ -749,13 +749,28 @@ final class SetupEngine {
         // 4.4 (step 86 B): Home still opening the stock home is not a broken TV. Our home holds the role and opens from its tile, so nothing is put back
         // (that undid the owner's switch two minutes later); the switch is confirmed and the person told plainly. Only a TV left with no home is put back.
         Result r;
-        if (watchOk && homeKeyOpensOurs()) r = finishHome(null, WATCH_OK);
+        if (watchOk && boundWithin(BOUND_WAIT_MS) && homeKeyOpensOurs()) r = finishHome(null, WATCH_OK);
         else {
             confirmOurs();
             r = failed(WATCH_FAILED);
         }
         try { store.put(HomeFails.FILE, HomeFails.after(store.get(HomeFails.FILE), true, r.status == Status.DONE)); } catch (IOException ignored) { }
         return r;
+    }
+
+    /**
+     * 4.4 (build 413, the tester's T1): the result said the Home step failed while it worked: it was judged before Android had bound the add-on. Android's
+     * own answer (Bound services) is read once a second, up to BOUND_WAIT_MS, before the Home key is tried; false when it never said ours.
+     */
+    static final int BOUND_WAIT_MS = 10_000;
+
+    boolean boundWithin(int ms) throws IOException {
+        String svc = sa.urtv.home.ExtrasWords.SERVICE;
+        for (int waited = 0; ; waited += 1000) {
+            if (text("dumpsys accessibility | grep -m1 'Bound services:'").contains(svc)) return true;
+            if (waited >= ms) return false;
+            sleeper.sleep(1000);
+        }
     }
 
     /** 4.4 (step 87): on a Google TV the Home key is the TV's own whatever the role says; the add-on's watch is what brings ours, so it must stay on */
