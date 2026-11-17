@@ -2954,3 +2954,18 @@ Installed all four APKs (my test add-on 409 had to be uninstalled first: 386 is 
 | T7 «٠ تطبيقات مختارة» | **PASS** | |
 | T8 «تراجع» | **PASS** with a note | home-wanted: no, 0 packages off, Home from YouTube → Google TV. Note: the add-on stayed in the accessibility list after «تراجع» |
 Still owed on this build: 30-min idle, flash (expected the same ~0.8 s), side effects — I will run them after the guard fix lands; R3/T9 left for the owner's remote.
+
+## 4.4 build 413 (next 7e606088 = work/44-compact2 842768ad): T1–T6 + step 88 items (pictures: tester/box413/)
+Clean start with «إنقاذ تلفزيونك» (0 packages off, add-on off, Google TV), all four APKs 413.
+| T | result | detail |
+|---|---|---|
+| T1 fresh «جهّز كل شي» | **PASS in fact, but the result page says FAIL** | No «تُركت» ✓ (the old-failure skip is gone), 18 packages off, add-on installed + in the list + **bound**, appops AUTO_START/ASSOC_START **allow**, wanted = **yes**, role = **sa.urtv.home** ✓. **But the page says «انتهى الإعداد مع 1 خطوة لم تتم: الشاشة الرئيسية (ما قدرنا نخلي زر الرئيسية يفتح تلفزيونك…)» and «مراقبة زر الرئيسية («إضافات تلفزيونك»): مثبّتة لكنها ما هي شغّالة», «دور الشاشة الرئيسية: الشاشة الأصلية للتلفزيون»** — the setup's own Home test (Google TV seen at s+32) ran before the add-on was bound; it should wait for `Bound services` (or retry once a few seconds later) before judging. 15/15 steps in 02:03. The TV's Settings opened by itself at s+68 for ~9 s, then the page came back (not left over it ✓). No debugging dialog (key kept). |
+| T2 Home ×20 | **PASS 20/20** | YouTube/Netflix/Settings/HDMI at 2 s and 6 s |
+| T2 stress (Home every 6 s from YouTube ×10) | **PASS 10/10** | presses over apps never paused ✓ |
+| T2 Home on our home every 3 s ×8 | **PASS 8/8** | |
+| T2 mash on our home (1/s ×10, then 0.5 s ×10) | **FAIL**: Google TV left in front, «decision paused» ×2 | the build pauses at **6 bursts in 6 s**; mashing once a second makes 6 in 6 s. My R2f used **6 in 4 s** (passed both mashes on 405). It recovers on the next Home over an app or after 30 s. Suggest 6 in 4 s (or 8 in 6 s). |
+| T3 3 reboots | **PASS 3/3** | role sa.urtv.home, add-on bound, first Home = UrTV, Home from YouTube = UrTV (appops written ✓) |
+| T5 the box | mostly PASS | same box (x 402–1518, y 55–1025) on intro, plan, apps and result pages ✓; «⌄» while more ✓; content scrolls inside ✓; **but on the intro the first focus is the «English» button**, not the reading area: one OK switches the page to English. The first DOWN jumps straight to «جهّز كل شي» (the reading area is skipped) |
+| T6 no text bigger than the title | PASS | title is the largest text on every page I saw |
+| Flash | ~0.6–0.7 s Google TV fully shown, 0.9–1.1 s from YouTube to UrTV (3 recordings, 50 fps) | same as 409 |
+T8 «تراجع» and the 30-min idle: running now.
