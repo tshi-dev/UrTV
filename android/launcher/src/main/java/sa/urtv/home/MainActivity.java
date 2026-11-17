@@ -4425,13 +4425,13 @@ public class MainActivity extends Activity {
             openParental();   // 4.3.3: kids mode has no pills, and maybe no app left to hold OK on: the Menu key is always a way out (the PIN first)
             return true;
         }
-        // On the «يُتلى الآن» card ◀ is the previous surah and ▶ the next (a station has none: ◀ goes back to the pills as on any pill)
+        // On the «يُتلى الآن» card the back key (Dir: ▶ in Arabic, ◀ in English) is the previous surah and the forward key the next (a station has none: ◀ goes back to the pills as on any pill)
         if (e.getAction() == KeyEvent.ACTION_DOWN && nowCard != null && getCurrentFocus() == nowCard
                 && (e.getKeyCode() == KeyEvent.KEYCODE_DPAD_LEFT || e.getKeyCode() == KeyEvent.KEYCODE_DPAD_RIGHT)) {
             NowPlaying.State s = NowPlaying.read(this);
             if (s.show && !s.radio) {
                 if (e.getRepeatCount() == 0) {
-                    if (e.getKeyCode() == KeyEvent.KEYCODE_DPAD_LEFT) NowPlaying.prev(this); else NowPlaying.next(this);
+                    if (e.getKeyCode() == Dir.backKey()) NowPlaying.prev(this); else NowPlaying.next(this);   // 4.4: as the surah grid and the tabs (Arabic: ▶ back)
                 }
                 return true;
             }

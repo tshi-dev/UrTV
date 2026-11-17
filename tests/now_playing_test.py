@@ -39,8 +39,8 @@ check("MainActivity: OK pauses or plays, a long OK opens the player",
       "nowCard.setOnClickListener(v -> NowPlaying.toggle(this))" in main
       and ("nowCard.setOnLongClickListener(v -> { startActivity(NowPlaying.player(this)); return true; })" in main
            or "nowCard.setOnLongClickListener(v -> { launchGuarded(ParentalPolicy.PILL_LISTEN, NowPlaying.player(this)" in main))   # the second once the family lock is in
-check("MainActivity: ◀ is the previous surah and ▶ the next while the card has the focus, for a surah only (a station: ◀ goes on to the pills)",
-      "NowPlaying.prev(this); else NowPlaying.next(this)" in main and "if (s.show && !s.radio) {" in main and "KEYCODE_DPAD_LEFT) NowPlaying.prev" in main)
+check("MainActivity: the back key (4.4: Dir, ▶ in Arabic) is the previous surah and the forward key the next while the card has the focus, for a surah only (a station: ◀ goes on to the pills)",
+      "NowPlaying.prev(this); else NowPlaying.next(this)" in main and "if (s.show && !s.radio) {" in main and "if (e.getKeyCode() == Dir.backKey()) NowPlaying.prev(this); else NowPlaying.next(this);" in main)
 check("MainActivity: it is the first child of the pills row, hung evenly over its top and bottom so the row stays a pill's height,"
       " hidden until something plays: the pills do not move",
       "int hang = dp((NowCard.HEIGHT - Pill.HEIGHT) / 2f);" in main and "right.addView(nowCard, 0, sideLlp(-2, dp(NowCard.HEIGHT), 0, -hang, dp(Pill.GAP), -hang))" in main

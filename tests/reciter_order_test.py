@@ -33,7 +33,7 @@ check("long OK on a reciter toggles ★ (the repeat that follows and the OK that
 check("the letter column is at the list's start edge (first child of a row with the list), 40 dp wide, hidden on the other tabs, built from the alphabet of the language", 'android:id="@+id/letters"' in lay and lay.index("@+id/letters") < lay.index("@+id/list")
       and "ReciterOrder.alphabet(sa.urtv.home.S.en())" in act and "letters.setVisibility(tab == TAB_RECITERS ? View.VISIBLE : View.GONE);" in act)
 check("a letter no reciter starts with is dimmed and cannot take the focus (the D-pad skips it); focusing or OK on a lit one jumps the list to the first reciter with it", "setFocusable(letterLit[i])" in act and "setAlpha(letterLit[i] ? 1f : 0.3f)" in act
-      and "if (has) jumpToLetter(which);" in act and "list.setSelectionFromTop(reciterOffset + at, 0)" in act)
+      and "if (has && !enteringLetters) jumpToLetter(which);" in act and "enteringLetters = true;" in act and "list.setSelectionFromTop(reciterOffset + at, 0)" in act)
 check("the key toward the column enters it from the list, the other key leaves it; the column keeps the safe area (a 40 dp column, 28 letters sharing the list's height)", "keyCode == sa.urtv.home.Dir.backKey() && enterLetters()" in act
       and "keyCode == sa.urtv.home.Dir.forwardKey()) focusList(" in act and "new LinearLayout.LayoutParams(-1, 0, 1f)" in act)
 check("the home app's receiver: RECITER_FAV add|remove one id and RECITER_FAVS a whole list (\"-\" none), both only for ids the catalogue has; the status line carries reciter_favs", '"sa.urtv.home.RECITER_FAV"' in rcv and '"sa.urtv.home.RECITER_FAVS"' in rcv

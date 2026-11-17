@@ -30,6 +30,10 @@ final class Prefs {
     static final int STATION_ORDER = 2;
     int position() { return sp.getInt("position", 0); }
 
+    /** 4.4 «متابعة السورة»: each surah's place (SurahPlaces) */
+    String surahPlaces() { return sp.getString("surah_places", ""); }
+    void setSurahPlaces(String r) { sp.edit().putString("surah_places", r).apply(); }
+
     void save(int source, String reciter, int surah, int station, int position) {
         sp.edit().putInt("source", source).putString("reciter", reciter).putInt("surah", surah)
                 .putInt("station", station).putInt("station_order", STATION_ORDER).putInt("position", position).apply();

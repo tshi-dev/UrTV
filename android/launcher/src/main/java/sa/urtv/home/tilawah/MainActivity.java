@@ -472,7 +472,7 @@ public class MainActivity extends Activity {
             t.setOnFocusChangeListener((v, has) -> {
                 v.setBackgroundResource(has ? R.drawable.tab_bg : 0);
                 v.setSelected(has);
-                if (has) jumpToLetter(which);   // just focusing it jumps the list
+                if (has && !enteringLetters) jumpToLetter(which);   // just focusing it jumps the list; 4.4: not the focus that only enters the column (the row stays)
             });
             t.setOnClickListener(v -> jumpToLetter(which));
             letters.addView(t, new LinearLayout.LayoutParams(-1, 0, 1f));
@@ -509,9 +509,12 @@ public class MainActivity extends Activity {
         }
         for (int i = 0; target < 0 && i < letterLit.length; i++) if (letterLit[i]) target = i;
         if (target < 0) return false;
-        letterViews[target].requestFocus();
+        enteringLetters = true;   // 4.4: entering the column keeps the list where the person was; moving to another letter jumps
+        try { letterViews[target].requestFocus(); } finally { enteringLetters = false; }
         return true;
     }
+
+    private boolean enteringLetters;
 
     private boolean lettersHaveFocus() {
         if (letters == null) return false;

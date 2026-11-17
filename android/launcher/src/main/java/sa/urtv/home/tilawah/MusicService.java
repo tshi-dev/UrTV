@@ -189,8 +189,10 @@ public class MusicService extends Service implements AudioManager.OnAudioFocusCh
                     position = player.getCurrentPosition();
                     int d = player.getDuration();
                     if (d > 0) duration = d;
-                    updateSession();   // (the place is saved when it stops or pauses, not every few seconds: the disk is flash)
+                    updateSession();
                 } catch (IllegalStateException ignored) {}
+                // 4.4: and every 30 s while it plays (two small writes a minute; before, only a pause or a stop saved it)
+                if (playing && source != Prefs.SOURCE_ADHAN && SystemClock.elapsedRealtime() - lastSaved >= SAVE_EVERY_MS) save();
             }
             if (watchStall()) return;   // a stalled station was restarted (its own tick starts again with it)
             handler.postDelayed(this, 1000);
@@ -203,7 +205,11 @@ public class MusicService extends Service implements AudioManager.OnAudioFocusCh
     };
 
     private final Runnable sleepStart = new Runnable() {
-        @Override public void run() { fadeStep = 0; fadeOut(); }
+        @Override public void run() {
+            if (source == Prefs.SOURCE_ADHAN) { handler.postDelayed(this, 5_000); return; }   // 4.4: never cut an adhan: the recitation it brings back fades after it
+            fadeStep = 0;
+            fadeOut();
+        }
     };
     /** the sleep timer's fade is one Runnable, so cancelling the timer can stop it half way */
     private final Runnable fade = new Runnable() {
@@ -371,9 +377,12 @@ public class MusicService extends Service implements AudioManager.OnAudioFocusCh
         foreground();
 
         switch (action) {
-            case ACTION_PLAY_SURAH:
-                playSurahById(intent.getStringExtra(EXTRA_RECITER), intent.getIntExtra(EXTRA_SURAH, 1), 0);
+            case ACTION_PLAY_SURAH: {   // 4.4: a surah heard half way goes on from its place (SurahPlaces); the next surah after an end starts at 0
+                String rid = intent.getStringExtra(EXTRA_RECITER);
+                int n = intent.getIntExtra(EXTRA_SURAH, 1);
+                playSurahById(rid, n, SurahPlaces.get(prefs.surahPlaces(), rid, n));
                 break;
+            }
             case ACTION_PLAY_RADIO:
                 playRadio(intent.getIntExtra(EXTRA_STATION, 0));
                 break;
@@ -421,6 +430,11 @@ public class MusicService extends Service implements AudioManager.OnAudioFocusCh
         if (session != null) { session.release(); session = null; }
         inForeground = false;
         waitingFocus = false;
+        source = Prefs.SOURCE_NONE;   // 4.4: the home's card reads these: a service Android ended is not «يُتلى الآن» any more
+        playing = false;
+        buffering = false;
+        sleepUntil = 0;
+        announce();
         super.onDestroy();
     }
 
@@ -799,7 +813,7 @@ public class MusicService extends Service implements AudioManager.OnAudioFocusCh
         });
         player.setOnCompletionListener(mp -> {
             if (!wish.current(gen)) return;
-            if (source == Prefs.SOURCE_SURAH) next();
+            if (source == Prefs.SOURCE_SURAH) { forgetPlace(); next(); }   // 4.4: an ended surah has no place left
             else if (source == Prefs.SOURCE_ADHAN) finishAdhan();
             else if (source == Prefs.SOURCE_RADIO) onPlaybackError(MediaPlayer.MEDIA_ERROR_UNKNOWN, PlayerFault.IO);   // a live stream has no end: the server closed it, joined again
             else { playing = false; updateSession(); updateNotification(); }
@@ -1119,6 +1133,7 @@ public class MusicService extends Service implements AudioManager.OnAudioFocusCh
     }
 
     void toggle() {
+        if (fadeStep > 0) { setSleep(0); return; }   // 4.4: OK (or play) in the sleep timer's fade is «I am awake»: the timer ends, the sound back to full, it plays on
         if (player == null) { resumeLastInternal(); return; }
         if (playing || (buffering && wish.wants())) pause(); else resume();
     }
@@ -1261,6 +1276,17 @@ public class MusicService extends Service implements AudioManager.OnAudioFocusCh
         if (source == Prefs.SOURCE_ADHAN) return;   // «متابعة» must still point at the surah, not the adhan
         String id = reciter >= 0 && reciter < cat.reciters.size() ? cat.reciters.get(reciter).id : "";
         prefs.save(source, id, surah, station, position);
+        if (source == Prefs.SOURCE_SURAH && !id.isEmpty() && prepared) prefs.setSurahPlaces(SurahPlaces.put(prefs.surahPlaces(), id, surah, position, duration));   // 4.4
+        lastSaved = SystemClock.elapsedRealtime();
+    }
+
+    /** 4.4: the place is saved every SAVE_EVERY_MS while it plays too (a power cut or a killed app kept only the last pause) */
+    private static final long SAVE_EVERY_MS = 30_000;
+    private long lastSaved;
+
+    private void forgetPlace() {
+        String id = reciter >= 0 && reciter < cat.reciters.size() ? cat.reciters.get(reciter).id : "";
+        if (!id.isEmpty()) prefs.setSurahPlaces(SurahPlaces.forget(prefs.surahPlaces(), id, surah));
     }
 
     // ---- sleep timer: a 15-second gentle fade, then stop ----
@@ -1398,7 +1424,7 @@ public class MusicService extends Service implements AudioManager.OnAudioFocusCh
     /** The home screen's «يُتلى الآن» card hears about it when what it shows may have changed: once per change, never on the clock's tick. */
     private String announced = "";
     private void announce() {
-        String now = source + "|" + playing + "|" + buffering + "|" + reciter + "|" + surah + "|" + station + "|" + error + "|" + (sleepUntil > 0);
+        String now = source + "|" + playing + "|" + buffering + "|" + reciter + "|" + surah + "|" + station + "|" + error + "|" + (sleepUntil / 60_000);   // 4.4: a new sleep time is said at once (the card)
         if (now.equals(announced)) return;
         announced = now;
         sendBroadcast(new Intent(NowPlaying.CHANGED).setPackage(getPackageName()));
