@@ -74,7 +74,7 @@ check("the question is the nudge's bar: due only while no city was chosen (the s
       and "cfg.cityChosen != cityChosenNow" in main)
 check("the home asks the screensaver (city_chosen column; an older one says nothing = chosen, nobody is asked), and its words are in the English table",
       '"city_chosen"' in (ROOT / "android/app/src/main/java/sa/urtv/screensaver/ConfigProvider.java").read_text(encoding="utf-8") and "boolean cityChosen = true;" in (HOME / "ConfigSnapshot.java").read_text(encoding="utf-8")
-      and all(w in tsv for w in ("وين أنت؟ اختر مدينتك عشان الطقس والصلاة\t", "اختر المدينة\t", "للطقس والصلاة\t")))
+      and all(w in tsv for w in ("اختر مدينتك للطقس والصلاة\t", "اختر المدينة\t", "للطقس والصلاة\t")))
 check("the screensaver app opens the chooser on the extra (onCreate and onNewIntent), on the one city row (4.3.3: «الموقع والطقس», whose button shows the current city)",
       'getBooleanExtra("pickCity", false)' in saver and "onNewIntent" in saver and "pickCity();" in saver.split("onNewIntent", 1)[1][:300]
       and (SAVER_HUB := (ROOT / "android/app/src/main/java/sa/urtv/screensaver/SettingsHub.java").read_text(encoding="utf-8")).split("CATEGORIES = {", 1)[1].count("{PLACE, \"الموقع والطقس\"") == 1
