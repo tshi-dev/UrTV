@@ -3003,3 +3003,19 @@ I turned the switch on (`am broadcast -n sa.urtv.home/.DockReceiver -a sa.urtv.h
 
 ## step 90 — rescue code: WAITING (owner's choice)
 go.aftvnews.com refused the link as unreachable: `https://github.com/tshi-dev/UrTV/releases/download/apk-latest/urtv-rescue.apk` is **404** — the apk-latest release has only urtv-home.apk, urtv-screensaver.apk and version.txt; urtv-rescue.apk (and urtv-extras.apk) exist only in apk-next. The owner chose to wait: make the code once 4.4 is released to apk-latest **with urtv-rescue.apk in it**. (The site has a reCAPTCHA; the owner ticks it himself, I fill the link.)
+
+## step 91 — 4.3.3 (run 44027737085, work/rel-433-3 ad0c44b3, versionCode 426) on the owner's TV
+Backup first (saver.sh show, dock, disabled list, role, accessibility, screen_off_timeout 45000). Home + screensaver 426 installed over 4.4/413.
+| item | result | detail |
+|---|---|---|
+| 1 beta row | **PASS** | settings ← «تحديث تلفزيوني»: «النسخ التجريبية — متوقفة · تجيك التحديثات قبل الكل…» (off by default); OK → «تعمل», `updatechannel: beta`, and the row «أرسل ملاحظة عن النسخة التجريبية» appears. Note: there is **no apk-beta release yet**, so with the beta on «تحقق من التحديث» says «التحديث من التلفزيون ما يشتغل على هذا الجهاز. اطلب من مساعد الذكاء الاصطناعي…» — the wrong reason (should say no beta build found / nothing newer) |
+| 2 off while ahead | **PASS** | beta off → `updatechannel: latest`, still 426 (no downgrade); the version note says «الإصدار المتاح: لا يوجد أحدث · بترجع للنسخة العادية لما تو…» (the toast was gone before my picture) |
+| 3 report channel | **PASS** | the report's QR decodes to «UrTV problem report… Versions: home 4.3.3, screensaver 4.3.3 … channel: beta» |
+| 4 one-time line after a newer beta build | **not run** | needs a newer beta build (no apk-beta, no rebuilt artifact) |
+| 5 crash prompt | **PASS** | `am crash <home pid>` (kill -9 is not allowed to the shell; `am crash sa.urtv.home` by package hit the WebView sandbox process instead) → next Home: «صار خطأ، تبي ترسل تقرير؟ [أرسل تقرير] [لا]» |
+| 7 saver.sh updatechannel beta/latest | **PASS** | show follows: `updatechannel: beta` / `latest`, version line `newest: … (build 332)` on latest |
+| 8a idle «أبداً» | **PASS** | `screen_off_timeout 2147483647` → cards hub «لا تبدأ: التلفزيون أوقف شاشة التوقف», the row «بدء شاشة التوقف بعد: أبداً (التلفزيون أوقف شاشة التوقف)»; OK stays in our settings (no maker settings). Put back to 45000 |
+| 8b screensaver photo not black | **PASS** | preview shows the photo |
+| 8c market names 4164/4002/4349 | **PASS** | home card: «النهدي», «المواساة», «إنماء ريت الفندقي» |
+| other | note | the 4.3.3 home shows the pill «خلّ تلفزيونك يفتح على UrTV / لاحقاً» on a TV where 4.4 had already made UrTV the home |
+Then back to 4.4/413: **uninstall** home + screensaver (413 < 426), install 413, owner's settings put back (`show` identical to the backup), «جهّز كل شي» again. **New finding (again): right after a fresh install the setup's key is refused by adbd (`E adbd: Invalid base64 key` right after «key offered»), no «Allow USB debugging?» ever shows, the page waits 3 min. A reboot fixed it** (then the dialog came, Down = Cancel, Left = Allow, the 4-key hint «اختيار ← تحت ← يسار ← اختيار» is on the page ✓). After the setup: role sa.urtv.home, wanted yes, add-on bound, appops allow; HOME_KEY on; Home from YouTube → UrTV. TV asleep, muted.
