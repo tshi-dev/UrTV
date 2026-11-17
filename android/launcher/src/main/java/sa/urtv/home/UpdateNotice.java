@@ -8,6 +8,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 import sa.urtv.home.phone.PhoneUpdater;
+import sa.urtv.home.phone.UpdateChannel;
 import sa.urtv.home.phone.UpdateRules;
 
 /**
@@ -24,22 +25,30 @@ final class UpdateNotice {
     static boolean wanted(Context c) {
         long home = PhoneUpdater.installedCode(c, c.getPackageName());
         return UpdateNoticeRule.older(PhoneUpdater.installedCode(c, "sa.urtv.screensaver"), home)
-                || UpdateNoticeRule.newer(c.getSharedPreferences(PREFS, Context.MODE_PRIVATE).getInt("newest", 0), home);
+                || UpdateNoticeRule.newer(newestFor(c, UpdateChannel.read(c)), home);
+    }
+
+    /** 4.3.3: the newest build read from the release of THIS channel (apk-beta while «النسخ التجريبية» is on); one read from another channel counts for nothing */
+    static int newestFor(Context c, String channel) {
+        SharedPreferences sp = c.getSharedPreferences(PREFS, Context.MODE_PRIVATE);
+        return channel.equals(sp.getString("channel", "latest")) ? sp.getInt("newest", 0) : 0;
     }
 
     /** reads version.txt when one is due (off the main thread; {@code done} runs on that thread after a good read) */
     static void checkIfDue(final Context app, final Runnable done) {
         final SharedPreferences sp = app.getSharedPreferences(PREFS, Context.MODE_PRIVATE);
-        if (!UpdateNoticeRule.due(sp.getLong("at", 0), System.currentTimeMillis())) return;
+        final String channel = UpdateChannel.read(app);
+        boolean sameChannel = channel.equals(sp.getString("channel", "latest"));   // another channel than the last read: asked again now, not in 12 hours
+        if (sameChannel && !UpdateNoticeRule.due(sp.getLong("at", 0), System.currentTimeMillis())) return;
         sp.edit().putLong("at", System.currentTimeMillis()).apply();   // asked: the next try is in 12 hours, a failure included
         new Thread(new Runnable() {
             @Override public void run() {
                 try {
-                    Net.Reply r = Net.get(UpdateRules.BASE + "version.txt", null, 10000, 12000, 64);   // IPv4 first, 4 s per address, 12 s in all (Net)
+                    Net.Reply r = Net.get(UpdateRules.baseFor(channel) + "version.txt", null, 10000, 12000, 64);   // IPv4 first, 4 s per address, 12 s in all (Net)
                     if (r.status != 200) return;
                     int build = UpdateRules.buildOf(r.text());
                     if (build > 0) {
-                        sp.edit().putInt("newest", build).apply();
+                        sp.edit().putInt("newest", build).putString("channel", channel).apply();
                         if (done != null) done.run();
                     }
                 } catch (java.io.IOException | RuntimeException ignored) {
