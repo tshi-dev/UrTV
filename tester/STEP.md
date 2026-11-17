@@ -31,7 +31,12 @@ This is the first full 4.4 build with everything merged:
    - a match card with scorers;
    - the F1 card if shown;
    - the Riyadh style clock.
-4. A full-size 1:1 screenshot of the home clock (`optimize/shot.sh`): is the big clock sharp, with no pixelation (the 4.4 clock fix)?
+4. CLOCK PIXELATION (owner asks: «is the clock never pixelated?»). Take full-size 1:1 screencaps (`adb exec-out screencap -p`) of:
+   - the home clock in «شكلك المعتاد»;
+   - «منظر وساعة»;
+   - the Riyadh glass clock;
+   - the screensaver clock.
+   Take each at two times with different digits (e.g. 1:16 and 10:30). Crop each clock and zoom it to 400% with nearest-neighbour. Report for each: sharp edges or stair-steps/blur, and whether the digit edges are anti-aliased. Push the crops to tester/clock/.
 5. Look for any «·» or «•», any capsule/pill, any text cut or overlapping (like the prayer name and time).
 6. Report «step 96» with a PASS/FAIL list and the pictures, then put the owner's settings back. TV muted.
 
