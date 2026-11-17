@@ -2969,3 +2969,7 @@ Clean start with «إنقاذ تلفزيونك» (0 packages off, add-on off, Go
 | T6 no text bigger than the title | PASS | title is the largest text on every page I saw |
 | Flash | ~0.6–0.7 s Google TV fully shown, 0.9–1.1 s from YouTube to UrTV (3 recordings, 50 fps) | same as 409 |
 T8 «تراجع» and the 30-min idle: running now.
+- **T8 «تراجع»: PASS** — home-wanted no, 0 packages off, **the add-on removed from the accessibility list (Key Mapper kept)**, role launcherx, Home from YouTube → Google TV.
+- **30-min idle (07:01 → 07:32): PASS 4/4** — add-on bound, role sa.urtv.home; first Home and 3× Home from YouTube → UrTV.
+- Afterwards I ran «جهّز كل شي» again so the owner keeps UrTV as the main screen: role sa.urtv.home, wanted yes, add-on bound, 18 packages off, Home from YouTube → UrTV. Owner's city/teams/stocks/lang (ar) unchanged. TV asleep, muted.
+**Summary for 4.4 (413): Home works 100 % in normal use (20/20, stress 10/10, on-our-home 8/8, 3/3 reboots, 30-min idle 4/4). To fix: (1) the result page says the Home step failed while it worked (judge after the add-on is bound); (2) mash guard 6-in-6 s → 6-in-4 s; (3) first focus on the intro is «English».**
