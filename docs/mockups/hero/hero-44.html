@@ -1,0 +1,102 @@
+<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><style>
+@font-face{font-family:P;font-weight:400;src:url(plex-400.ttf)}@font-face{font-family:P;font-weight:500;src:url(plex-500.ttf)}
+@font-face{font-family:P;font-weight:600;src:url(plex-600.ttf)}@font-face{font-family:P;font-weight:700;src:url(plex-700.ttf)}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:2400px;height:1350px;overflow:hidden;font-family:P,sans-serif;color:#f4efe4;
+ background:radial-gradient(1400px 900px at 85% 0%,#1f4a36 0,transparent 70%),radial-gradient(900px 700px at 0% 100%,#4a3418 0,transparent 70%),linear-gradient(160deg,#173b2c,#0c2219 60%,#0b1a14)}
+.abs{position:absolute}
+.icon{right:96px;top:104px;width:144px;height:144px;border-radius:34px;background:#0e2a1f;box-shadow:inset 0 0 0 2px rgba(231,194,125,.35);display:grid;place-items:center}
+h1{right:290px;top:70px;font-size:132px;font-weight:700;line-height:1.1;letter-spacing:-1px}
+h1 .g{color:#e7c27d}
+.sub{right:292px;top:228px;font-size:44px;font-weight:400;color:#e9e1d1}
+.brand{left:96px;top:130px;direction:ltr;text-align:left}.brand b{display:block;font-size:44px;font-weight:600;color:#e7c27d;letter-spacing:1px}.brand span{font-size:28px;color:#b9c8bf}
+.tv{border-radius:30px;overflow:hidden;background:#000}
+.after{left:96px;top:432px;width:1200px;height:675px;box-shadow:0 0 0 6px #c9a35d,0 30px 80px rgba(0,0,0,.5)}
+.before{right:96px;top:612px;width:896px;height:504px;box-shadow:0 0 0 6px #1b1d22,0 24px 60px rgba(0,0,0,.45)}
+/* the 4.4 home, «شكلك المعتاد», drawn at 1200x675 */
+.after img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:brightness(.92)}
+.after .veil{position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.35),rgba(0,0,0,0) 35%,rgba(0,0,0,0) 60%,rgba(0,0,0,.55))}
+.greet{right:56px;top:44px;font-size:24px;font-weight:500;color:#e7c27d}
+.clock{right:52px;top:70px;font-size:104px;font-weight:600;line-height:1.05;color:#fff;text-shadow:0 4px 18px rgba(0,0,0,.4)}
+.date{right:56px;top:192px;font-size:22px;color:#f1ece2}
+.btns{left:48px;top:44px;display:flex;gap:14px;direction:ltr}
+.btn{width:54px;height:54px;border-radius:27px;background:rgba(20,20,24,.5);box-shadow:inset 0 0 0 1px rgba(255,255,255,.18);display:grid;place-items:center}
+.btn svg{width:26px;height:26px;stroke:#f4efe4;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.card{right:52px;top:250px;width:300px;padding:16px 22px;border-radius:18px;background:rgba(14,14,18,.5);box-shadow:inset 0 0 0 1px rgba(255,255,255,.14)}
+.card small{display:block;font-size:17px;color:#d8d2c6}.card b{display:block;font-size:30px;font-weight:600;margin-top:2px}.card span{font-size:16px;color:#cfc9bd}
+.name{right:64px;bottom:150px;font-size:30px;font-weight:600;color:#fff}
+.bar{left:40px;right:40px;bottom:36px;height:104px;border-radius:26px;background:rgba(12,12,16,.62);box-shadow:inset 0 0 0 1px rgba(255,255,255,.1);display:flex;align-items:center;gap:14px;padding:0 18px}
+.t{flex:1;height:68px;border-radius:12px;display:grid;place-items:center;font-size:22px;font-weight:700;white-space:nowrap}
+.t.f{height:80px;flex:1.15;box-shadow:0 0 0 4px #fff,0 10px 26px rgba(0,0,0,.5)}
+/* Google TV, as it looks, with stand-ins (no film's poster, no app's logo) */
+.gtv{position:absolute;inset:0;background:#15171c;direction:ltr;font-family:P,sans-serif}
+.gtop{position:absolute;left:44px;top:30px;right:44px;display:flex;align-items:center;gap:22px;font-size:20px;color:#c9ccd3}
+.av{width:38px;height:38px;border-radius:19px;background:linear-gradient(135deg,#c8a37a,#6b7aa1)}
+.gtop .on{color:#fff;font-weight:600;border-bottom:3px solid #fff;padding-bottom:2px}
+.gtop .clk{margin-left:auto;font-size:19px}
+.lab{position:absolute;left:44px;font-size:16px;color:#9aa0aa}
+.posters{position:absolute;left:44px;top:126px;display:flex;gap:16px}
+.po{width:190px;height:107px;border-radius:12px}
+.icons{position:absolute;left:44px;top:300px;display:flex;gap:16px}
+.ic{width:74px;height:74px;border-radius:37px;display:grid;place-items:center}
+.ic i{width:28px;height:28px;border-radius:6px;background:rgba(255,255,255,.85)}
+.cont{position:absolute;left:44px;top:430px;display:flex;gap:16px}.cont div{width:190px;height:80px;border-radius:12px}
+.cap{font-size:46px;font-weight:600;color:#f4efe4}.cap .g{color:#e7c27d;font-weight:700;margin-inline-end:18px}
+.capA{left:96px;width:1200px;top:1150px;text-align:center}
+.capB{right:96px;width:896px;top:1150px;text-align:center}
+.arrow{left:1330px;top:720px;font-size:70px;color:#e7c27d}
+.foot{right:96px;bottom:46px;font-size:34px;color:#d9d2c3}
+.url{left:96px;bottom:46px;font-size:34px;font-weight:600;color:#e7c27d;direction:ltr}
+</style></head><body>
+<div class="abs icon"><svg width="86" height="86" viewBox="0 0 24 24" fill="none" stroke="#e7c27d" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="12" rx="2.5"/><path d="M8 20h8M12 16v4"/><circle cx="14.5" cy="9.5" r="2.2"/><path d="M6 13c1.5-2 3-2 4.5-.5"/></svg></div>
+<h1 class="abs">تلفزيونك <span class="g">صار يشبهك</span></h1>
+<div class="abs sub">واجهة عربية بمفضلاتك وساعتك وتاريخك الهجري</div>
+<div class="abs brand"><b>UrTV</b><span>Android TV و Google TV</span></div>
+
+<div class="abs tv after">
+ <img src="bg.jpg"><div class="veil"></div>
+ <div class="abs greet">مساء الخير</div>
+ <div class="abs clock">٥:٤٢</div>
+ <div class="abs date">الاثنين ٢٦ جمادى الأولى ١٤٤٨ هـ، ١٧ نوفمبر</div>
+ <div class="abs card"><small>الصلاة القادمة</small><b>العشاء ٦:٤٨ م</b><span>بعد ساعة</span></div>
+ <div class="abs btns">
+  <div class="btn"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2.5"/><path d="M10 9l3 3-3 3M3 12h10"/></svg></div>
+  <div class="btn"><svg viewBox="0 0 24 24"><path d="M2.5 9a14 14 0 0 1 19 0M5.5 12.3a9.5 9.5 0 0 1 13 0M8.6 15.5a5 5 0 0 1 6.8 0"/><circle cx="12" cy="19" r="1"/></svg></div>
+  <div class="btn"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 3v2.5M12 18.5V21M3 12h2.5M18.5 12H21M5.6 5.6l1.8 1.8M16.6 16.6l1.8 1.8M5.6 18.4l1.8-1.8M16.6 7.4l1.8-1.8"/></svg></div>
+  <div class="btn"><svg viewBox="0 0 24 24"><path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a7 7 0 0 0 10.5 10.5z"/></svg></div>
+ </div>
+ <div class="abs name">يوتيوب</div>
+ <div class="abs bar">
+  <div class="t f" style="background:#e2241e;color:#fff">يوتيوب</div>
+  <div class="t" style="background:#16805c;color:#fff">شاهد</div>
+  <div class="t" style="background:#1a1a1c;color:#e50914">نتفليكس</div>
+  <div class="t" style="background:#1a73e8;color:#fff">برايم فيديو</div>
+  <div class="t" style="background:#2a2016;color:#e8c478">تلاوة وأذان</div>
+  <div class="t" style="background:#232a52;color:#c9b8ff">Jellyfin</div>
+  <div class="t" style="background:#f47521;color:#fff">Crunchyroll</div>
+  <div class="t" style="background:#3e3e4c;color:#fff">المتصفح</div>
+ </div>
+</div>
+
+<div class="abs tv before"><div class="gtv">
+ <div class="gtop"><div class="av"></div><span>Search</span><span class="on">Home</span><span>Apps</span><span>Library</span><span class="clk">17:42  Google TV</span></div>
+ <div class="lab" style="top:98px">Top picks for you</div>
+ <div class="posters">
+  <div class="po" style="background:linear-gradient(135deg,#3b4a5e,#8a6f52)"></div><div class="po" style="background:linear-gradient(135deg,#5a2f3c,#c58a6a)"></div>
+  <div class="po" style="background:linear-gradient(135deg,#2f5547,#b9a46d)"></div><div class="po" style="background:linear-gradient(135deg,#43355e,#9a7fb8)"></div>
+ </div>
+ <div class="lab" style="top:270px">Your apps</div>
+ <div class="icons">
+  <div class="ic" style="background:#3a3f4a"><i></i></div><div class="ic" style="background:#b8322b"><i></i></div><div class="ic" style="background:#1f6f52"><i></i></div>
+  <div class="ic" style="background:#1d2a5a"><i></i></div><div class="ic" style="background:#c86a2a"><i></i></div><div class="ic" style="background:#2a7a3e"><i></i></div>
+  <div class="ic" style="background:#2c5fb0"><i></i></div><div class="ic" style="background:#55606e"><i></i></div><div class="ic" style="background:#3f4b5c"><i></i></div>
+ </div>
+ <div class="lab" style="top:402px">Continue watching</div>
+ <div class="cont"><div style="background:linear-gradient(135deg,#2c3340,#6d5a48)"></div><div style="background:linear-gradient(135deg,#3a2d3d,#77607a)"></div><div style="background:linear-gradient(135deg,#2d3d33,#6f8063)"></div></div>
+</div></div>
+<div class="abs arrow">←</div>
+<div class="abs cap capA"><span class="g">بعد</span>واجهة تلفزيونك</div>
+<div class="abs cap capB"><span class="g">قبل</span>واجهة Google TV</div>
+<div class="abs url">github.com/tshi-dev/UrTV</div>
+<div class="abs foot">مجاني ومفتوح المصدر، ويجهّز نفسه من التلفزيون</div>
+</body></html>
