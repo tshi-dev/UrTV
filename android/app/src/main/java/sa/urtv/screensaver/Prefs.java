@@ -270,7 +270,7 @@ final class Prefs {
     // The card beside the clock: value sent to the page (#panel=), Arabic label
     static final String[][] PANELS = {
         {"shows", "جديد المسلسلات"}, {"prayers", "مواقيت الصلاة اليوم"}, {"forecast", "طقس الأيام القادمة"}, {"hourly", "طقس الساعات القادمة"}, {"prayerrow", "الصلوات في صف"}, {"nextprayer", "الصلاة القادمة"},
-        {"matches", "مباريات فرقك القادمة"}, {"verse", "آية أو حديث اليوم"}, {"wisdom", "حكمة اليوم"},
+        {"matches", "مباريات فرقك القادمة"}, {"verse", "آية أو حديث اليوم"}, {"hadith", "حديث اليوم"}, {"wisdom", "حكمة اليوم"},
         {"adhkar", "أذكار الصباح والمساء"}, {"stocks", "الأسهم"}, {"tasks", "المهام"}, {"year", "السنة"},
         {"smart", "البطاقة الذكية"}, {"today", "يومك"}, {"album", "ألبوم صوري"},
         {"none", "لا شيء"},
@@ -308,6 +308,7 @@ final class Prefs {
         {"nextprayer", "سطر واحد: الصلاة الجاية ووقتها وكم باقي لها"},
         {"matches", "مباريات الأسبوع ونتائج آخر يوم لفرقك، وكل مباراة بسطر واحد"},
         {"verse", "آية يوم، وحديث صحيح من الكتب الستة اليوم اللي بعده، ومعه مصدره"},
+        {"hadith", "حديث اليوم وحده؛ مع بطاقة «آية أو حديث اليوم» تبقى تلك للآية"},
         {"wisdom", "مثل أو قول عربي معروف مع مصدره"},
         {"adhkar", "من الفجر للظهر أذكار الصباح، ومن العصر للمغرب أذكار المساء"},
         {"stocks", "أسهمك بالسعر والتغيّر"},
@@ -466,6 +467,9 @@ final class Prefs {
 
     /** the countdown's date (YYYY-MM-DD, "" = none) and its name; sent to the page as #cd= and #cdname= */
     String countdownDate() { return sp.getString("cd", ""); }
+    /** 4.4 «إجازات المدارس»: cd=school, the page counts to the next school break of the official calendar (urtv-data), with its name */
+    static final String SCHOOL = "school";
+    static final String SCHOOL_LABEL = "إجازات المدارس";
     String countdownName() { return sp.getString("cdName", ""); }
     void setCountdown(String date, String name) { sp.edit().putString("cd", date).putString("cdName", name).apply(); }
 
@@ -994,7 +998,26 @@ final class Prefs {
     /** The card in place i (0 to 2) of the home screen, or "none". */
     String homePanelAt(int i) { List<String> v = homePanels(); return i < v.size() ? v.get(i) : "none"; }
     /** Place i gets that card ("none" empties it and the ones after it move up); a card already in another place moves here. */
+    /**
+     * 4.4 the owner: the look changed (layout, preset): each home card that does not suit it is swapped for the nearest of its kind (CardFit), the
+     * person's own cards kept to come back when the look suits them again; the note for the toast is kept until the settings take it (takeFitNote)
+     */
+    void fitHomeCards() {
+        List<String> mine = sp.contains("homePanelMine") ? parseHomePanels(sp.getString("homePanelMine", "none")) : homePanels();
+        List<String[]> swaps = new ArrayList<>();
+        List<String> fit = CardFit.fitted(mine, homeLayout(), swaps);
+        if (swaps.isEmpty()) {   // nothing to swap: the person's own cards, as they picked them
+            if (sp.contains("homePanelMine")) { setHomePanels(mine); sp.edit().remove("homePanelMine").apply(); }
+            return;
+        }
+        sp.edit().putString("homePanelMine", mine.isEmpty() ? "none" : join(mine, ",")).putString("fitNote", CardFit.toast(swaps, PANELS)).apply();
+        setHomePanels(fit);
+    }
+    /** the swap's note, once (the settings show it as a toast) */
+    String takeFitNote() { String n = sp.getString("fitNote", null); if (n != null) sp.edit().remove("fitNote").apply(); return n; }
+
     void setHomePanelAt(int i, String card) {
+        sp.edit().remove("homePanelMine").apply();   // the person's own pick: theirs now, never swapped (an unsuited one only gets its note)
         List<String> now = homePanels();
         String[] slot = new String[HOME_CARDS];
         for (int k = 0; k < slot.length && k < now.size(); k++) slot[k] = now.get(k);
@@ -1114,6 +1137,7 @@ final class Prefs {
         boolean was = oldScenes();
         if (was) sp.edit().putString("homeBg", homeBg()).putString("homeClock", homeClock()).apply();   // the old value's scenes and clock kept as their own choices
         sp.edit().putString("homeLayout", v).apply();
+        fitHomeCards();
     }
     static String homeLayoutLabel(String v) { int i = java.util.Arrays.asList(HOME_LAYOUTS).indexOf(v); return HOME_LAYOUT_NAMES[Math.max(0, i)]; }
     String homeBg() { String v = sp.getString("homeBg", oldScenes() ? "scenes" : "photos"); return java.util.Arrays.asList(HOME_BGS).contains(v) ? v : "photos"; }
@@ -1131,7 +1155,7 @@ final class Prefs {
         return "";
     }
     void setLook3(String key) {
-        for (String[] l : LOOKS) if (l[0].equals(key)) { sp.edit().putString("homeLayout", l[2]).putString("homeBg", l[3]).putString("homeClock", l[4]).putString("appsStyle", l[5]).apply(); return; }
+        for (String[] l : LOOKS) if (l[0].equals(key)) { sp.edit().putString("homeLayout", l[2]).putString("homeBg", l[3]).putString("homeClock", l[4]).putString("appsStyle", l[5]).apply(); fitHomeCards(); return; }
     }
     /**
      * 4.4 the owner: «شكل كنبة» is one switch (off by default). On: the Couch preset at once, and the person's own four values kept; off: those put

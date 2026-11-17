@@ -775,7 +775,7 @@ public class MainActivity extends Activity {
             dockTop = titleTop + tray.getTop();   // the tray's top (FavBar): the cards above end before it
             for (View c : dockCards) wide = Math.max(wide, Math.round(title.getPaint().measureText(((App) c.getTag()).label)));
         }
-        if (row) return CardBox.row(dm.widthPixels, dm.heightPixels, dm.density, titleTop);
+        if (row) return CardBox.row(dm.widthPixels, dm.heightPixels, dm.density, titleTop, bigClockOn ? ScenePlan.fixedBox(dm.widthPixels, dm.heightPixels, false, Dir.rtl())[3] : -1);
         return CardBox.box(cards, dm.widthPixels, dm.heightPixels, dm.density, clockLeft, titleTop, dockTop, wide);
     }
 
@@ -3285,7 +3285,10 @@ public class MainActivity extends Activity {
      * 4.4 the owner (the date ran into the big clock's «2»): while the big glass clock takes the header clock's place, the lines under the header
      * clock (the date, the zone, the prayer) move up into its empty row, clear of the big digits; the header keeps its size (nothing else moves)
      */
+    private boolean bigClockOn;   // the big glass clock is on the screen (the scenes' or the photo's): the cards' strip stays clear of its digits
+
     private void liftDate(boolean up) {
+        if (up != bigClockOn) { bigClockOn = up; if (homeCard != null) handler.post(homeCard::fit); }   // the strip moves clear of the digits (or back)
         if (clock == null || date == null) return;
         Runnable apply = () -> {
             float dy = up ? -(date.getTop() - clock.getTop()) : 0f;

@@ -342,7 +342,7 @@ the phone page's key, «مركز التحكم» the control centre's row that op
    صفحة الجوال: saver_idle
 —— بجانب الساعة
 ——— المحتوى [شاشة التوقف]
-    مثال للوكيل: optimize/saver.sh card <shows, prayers, forecast, hourly, prayerrow, matches, verse, wisdom, adhkar, stocks, tasks, year, smart, today, album, none>  (the app's own list, Prefs.SAVER_PANELS; `nextprayer` is a home-screen card only: `home-card`)
+    مثال للوكيل: optimize/saver.sh card <shows, prayers, forecast, hourly, prayerrow, matches, verse, hadith, wisdom, adhkar, stocks, tasks, year, smart, today, album, none>  (the app's own list, Prefs.SAVER_PANELS; `nextprayer` is a home-screen card only: `home-card`)
 ——— بطاقة ثانية [شاشة التوقف]
     مثال للوكيل: optimize/saver.sh card2 <the same list as card, but never the card that is already first>  (`card2 none` = one card, the default; the second card can't repeat the first, and needs a first card: `card verse` first)
 ——— تبديل الآية والحديث [الرئيسية وشاشة التوقف]
@@ -530,7 +530,7 @@ the phone page's key, «مركز التحكم» the control centre's row that op
        القيم المقبولة: fasting
 ——— بجانب الساعة
 ———— المحتوى [شاشة التوقف]
-     مثال للوكيل: optimize/saver.sh card <shows, prayers, forecast, hourly, prayerrow, matches, verse, wisdom, adhkar, stocks, tasks, year, smart, today, album, none>  (the app's own list, Prefs.SAVER_PANELS; `nextprayer` is a home-screen card only: `home-card`)
+     مثال للوكيل: optimize/saver.sh card <shows, prayers, forecast, hourly, prayerrow, matches, verse, hadith, wisdom, adhkar, stocks, tasks, year, smart, today, album, none>  (the app's own list, Prefs.SAVER_PANELS; `nextprayer` is a home-screen card only: `home-card`)
 ———— بطاقة ثانية [شاشة التوقف]
      مثال للوكيل: optimize/saver.sh card2 <the same list as card, but never the card that is already first>  (`card2 none` = one card, the default; the second card can't repeat the first, and needs a first card: `card verse` first)
 ———— شكل البطاقة [الرئيسية وشاشة التوقف]

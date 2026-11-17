@@ -588,6 +588,14 @@
   .mblock .big > span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%;
     padding-bottom:.3em;margin-bottom:-.3em;    /* room for the dots under ي, ج… */
     padding-inline:.15em;margin-inline:-.15em;max-width:calc(100% + .3em)}  /* and for a final ر or ن past the ends */
+  /* 4.4 (the owner): the strip never moved for the prayer or the occasion, only as the slot turned (a game in a week with its date under
+     it, one under way, two, none, the weather). The slot's row is one box now, as tall as the clubs' line and one line under it (no taller
+     than the strip already is, so the screen with nothing in it stays as it was); each item hangs from its top, a second small line
+     below it in the room under the strip, its lines one each (cut with «…», as the clubs already are), a score under way a size smaller. */
+  #match-row{height:calc(clamp(22px,2vw,42px)*1.1 + .85vh + clamp(11px,.88vw,17px)*1.4);align-items:flex-start}
+  .p-match .sub{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .mblock.lvb .big{font-size:clamp(26px,2.6vw,54px)}
+  .mblock.lvb .sub{font-size:clamp(14px,1.2vw,25px)}
   .none-week{font-size:clamp(26px,2.5vw,54px);font-weight:700;font-family:'ThmanyahDisplay','Thmanyah',serif;color:#A79C85}
 
   /* A new photo settles in over a minute, then holds still: an endless drift kept the TV redrawing
@@ -1017,7 +1025,7 @@ const _num = (k, d) => { const v = parseFloat(_Q.get(k)); return isNaN(v) ? d : 
 // the city's time zone, #tz=: the clock, prayers, matches and dates all go by it
 const _tzOk = z => { try{ new Intl.DateTimeFormat('en',{timeZone:z}); return true; }catch(e){ return false; } };
 // the cards a slot can show (Prefs.PANELS in the app is the same list); «none» is the absence of one
-const CARD_KINDS = ['shows','prayers','forecast','hourly','prayerrow','nextprayer','matches','verse','wisdom','adhkar','stocks','tasks','year','smart','today','album'];
+const CARD_KINDS = ['shows','prayers','forecast','hourly','prayerrow','nextprayer','matches','verse','hadith','wisdom','adhkar','stocks','tasks','year','smart','today','album'];
 const CONFIG = {
   city: _Q.get('city') || 'الرياض',
   latitude: _num('lat', 24.7136),
@@ -1104,6 +1112,8 @@ const CONFIG = {
   // #cd=YYYY-MM-DD&cdname=...: the date and name for slot=countdown (a bad date = none)
   cd: (v => /^\d{4}-\d{2}-\d{2}$/.test(v) && !isNaN(Date.parse(v + 'T00:00:00Z')) && new Date(v + 'T00:00:00Z').toISOString().slice(0, 10) === v ? v : '')(_Q.get('cd') || ''),
   cdName: (_Q.get('cdname') || '').trim().slice(0, 40),
+  // #cd=school (4.4, a user report): the next Saudi school break from the official calendar (urtv-data calendar/sa-school.json), named
+  cdSchool: _Q.get('cd') === 'school',
   // shown as always unless hidden in the settings
   // suhoor; the place stays, so nothing else moves) and #nightdim=0 keeps the night as bright as the day (no dimmer)
   occasion: _Q.get('occasion') !== '0',
@@ -2703,6 +2713,30 @@ function fastingNext(now){
   return null;
 }
 
+// 4.4 «إجازات المدارس»: the official calendar of the Ministry of Education's school breaks, a small yearly file in urtv-data (its source in it, never in
+// the app): {source, breaks: [{name, from: YYYY-MM-DD, to}]}. The countdown goes to the next break's first day, with its name; kept a day.
+const SCHOOL_URL = 'https://raw.githubusercontent.com/tshi-dev/urtv-data/data/calendar/sa-school.json';
+let SCHOOL = null;
+function schoolNext(){
+  if(!SCHOOL || !Array.isArray(SCHOOL.breaks)) return;
+  const p = riyadhParts(), today = `${p.y}-${String(p.mo).padStart(2, '0')}-${String(p.d).padStart(2, '0')}`;
+  const b = SCHOOL.breaks.filter(x => x && /^\d{4}-\d{2}-\d{2}$/.test(x.from) && x.from >= today).sort((x, y) => x.from < y.from ? -1 : 1)[0];
+  CONFIG.cd = b ? b.from : '';
+  CONFIG.cdName = b ? String(b.name || '').trim().slice(0, 40) : '';
+}
+async function loadSchool(){
+  if(!CONFIG.cdSchool) return;
+  try{ const c = JSON.parse(localStorage.getItem('school') || 'null'); if(c && c.at > Date.now() - DAY_MS && c.j){ SCHOOL = c.j; schoolNext(); renderSlot(); return; } }catch(e){}
+  try{
+    const r = await fetchT(SCHOOL_URL, 15000);
+    if(!r.ok) return;
+    SCHOOL = await r.json();
+    try{ localStorage.setItem('school', JSON.stringify({at: Date.now(), j: SCHOOL})); }catch(e){}
+    schoolNext();
+    renderSlot();
+  }catch(e){}
+}
+
 // days from today (Riyadh) to the countdown's date, or null: none set, or it has passed
 function countdownDays(){
   if(!CONFIG.cd) return null;
@@ -3216,7 +3250,8 @@ function renderCard(card, animate, keepSize){
   else if(P === 'album') rows = [albumCard(card)];
   else if(P === 'today'){ const q = todayCard(); paintHd(hd, q.title); rows = q.rows; }
   else if(P === 'tasks') rows = CONFIG.tasks.map(t => `<li class="task"><span>${esc(t)}</span></li>`);
-  else if(P === 'verse'){ const q = quoteOfDay(card); paintHd(hd, q.title); rows = q.rows; }
+  // 4.4 (a user report): «حديث اليوم» as its own card, so a verse and a hadith can show together; with it beside, «آية…» keeps to the verse
+  else if(P === 'verse' || P === 'hadith'){ const q = quoteOfDay(card, P === 'hadith' ? 'hadith' : CONFIG.cards.includes('hadith') ? 'verse' : CONFIG.verseKind); paintHd(hd, q.title); rows = q.rows; }
   else if(P === 'wisdom'){ const q = wisdomOfDay(); paintHd(hd, q.title); rows = q.rows; }
   else if(P === 'adhkar'){ const q = adhkarCard(card); paintHd(hd, q.title, q.hd); rows = q.rows; }
   else if(P === 'stocks'){ const q = stocksCard(); paintHd(hd, '', q.hd); rows = q.rows; }
@@ -3281,7 +3316,7 @@ function shrinkCard(c, tooWide){   // false when there is no step left
       if(!ok) return shrinkByContent(c);
     }else return shrinkByContent(c);
   }
-  const list = LISTS.includes(c.eff), quote = c.eff === 'verse' || c.eff === 'adhkar', zLeft = c.zi < Z_STEPS.length - 1;
+  const list = LISTS.includes(c.eff), quote = c.eff === 'verse' || c.eff === 'hadith' || c.eff === 'adhkar', zLeft = c.zi < Z_STEPS.length - 1;
   if(tooWide){ if(!zLeft) return false; c.zi++; }
   else if(list && c.ri < c.base - 1) c.ri++;
   else if(quote && c.zi < 3) c.zi++;
@@ -3297,7 +3332,7 @@ function shrinkCard(c, tooWide){   // false when there is no step left
 }
 // at the pair's floor: fewer rows of a list, a shorter verse or dhikr
 function shrinkByContent(c){
-  const list = LISTS.includes(c.eff), quote = c.eff === 'verse' || c.eff === 'adhkar';
+  const list = LISTS.includes(c.eff), quote = c.eff === 'verse' || c.eff === 'hadith' || c.eff === 'adhkar';
   if(list && c.ri < c.base - 1) c.ri++;
   else if(quote && c.ri < 6) c.ri++;
   else return false;
@@ -3804,9 +3839,9 @@ function pickShort(list, at, len, card){
 }
 // The verse card's turn: the day as always, or with #versemin=3 the 3-minute slot of the clock
 const quoteTurn = () => CONFIG.verseMin ? Math.floor(Date.now() / (CONFIG.verseMin * 60000)) : riyadhDayNumber();
-function quoteOfDay(card){
+function quoteOfDay(card, kind = CONFIG.verseKind){
   // both (the default): even turns a verse, odd a hadith, each list a step every two turns
-  const n = quoteTurn(), kind = CONFIG.verseKind, half = kind === 'both' ? Math.floor(n / 2) : n;
+  const n = quoteTurn(), half = kind === 'both' ? Math.floor(n / 2) : n;
   if(VERSES.length && (kind === 'verse' || (kind === 'both' && n % 2 === 0))){
     const v = pickShort(VERSES, half, x => x.text.length, card);
     return {title:CONFIG.verseMin ? 'آية كريمة' : 'آية اليوم', rows:[`<li class="quote quran${v.text.length > 330 ? ' q4' : quoteSize(v.text.length)}"><span class="orn">﴿</span><span class="qt">${esc(v.text)}</span><span class="orn">﴾</span></li>`, '<li class="src">' + esc(v.surah) + SEP + 'الآية' + ' ' + ar(v.ayah) + '</li>']
@@ -4463,7 +4498,7 @@ function cardTimers(){
     setInterval(() => {
       if(quoteTurn() === turn) return;
       turn = quoteTurn();
-      CARDS.forEach(c => { if(c.kind === 'verse') renderCard(c, true); });   // only the verse cards: the others keep their own pace
+      CARDS.forEach(c => { if(c.kind === 'verse' || c.kind === 'hadith') renderCard(c, true); });   // only the verse cards: the others keep their own pace
       fitCards();
     }, 10*1000);
   }
@@ -5131,6 +5166,7 @@ function boot(){
   periodic(loadWeather, 30*60*1000);
   cardTimers();
   designInit();   // 4.4 the screensaver's design (info: nothing changes)
+  loadSchool();   // «إجازات المدارس»: only with #cd=school
   setTimeout(designTick, 2500);   // once the first prayers, weather and slot are in
   setInterval(applyNight, 60*1000);
   setInterval(pixelShift, 4*60*1000);
@@ -5138,7 +5174,7 @@ function boot(){
   setInterval(()=>{
     const d = FMT_DATE.format(new Date());
     if(d !== lastDay){
-      lastDay = d; tickDates(); tickOccasion(); renderPanel(false);
+      lastDay = d; tickDates(); tickOccasion(); renderPanel(false); schoolNext();   // a break that began today: the next one
       later(() => { loadPhotoIndex().then(() => applyBackground(true)); loadPrayers(); if(NEEDS_MATCHES) loadMatches(); if(USES('shows')) loadWeek(); loadWeather(); });   // each TV at its own minute
     }
   }, 60*1000);

@@ -178,6 +178,7 @@ python3 tests/clock_text_test.py
 python3 tests/clock_setting_test.py
 python3 tests/saver_clock24_test.py
 python3 tests/card_box_test.py
+python3 tests/card_fit_test.py   # 4.4 the owner: a home card that does not suit the look says so, and is swapped within its kind when the look changes
 python3 tests/glow_look_test.py
 python3 tests/unsplash_header_test.py
 python3 tests/bounded_test.py
@@ -274,6 +275,8 @@ node tests/tafsir.test.mjs   # «التفسير الميسر» (#tafsir=1): ever
 node tests/saver_designs.test.mjs   # 4.4 the screensaver's designs (the owner approved them): each shows what it should; a prayer's name and time never touch
 node tests/lone_card_fit.test.mjs   # 4.4 the owner: a lone card on the launcher is fitted to its box, never a row cut at the bottom
 node tests/saver_depth.test.mjs   # 4.4 «نظيفة» with depth on the screensaver: the photo's own cut-out, never off its pixels, never over unreadable digits
+node tests/verse_hadith.test.mjs   # 4.4 «آية» and «حديث» at once: the hadith card beside the verse card, each its own
+node tests/strip_steady.test.mjs   # 4.4 the screensaver's bottom strip stays put as the slot turns (games, scores, weather, markets)
 node tests/football_page.test.mjs   # the football home's widgets and «المباريات» in a browser, on fixed games
 node tests/phone_page.test.mjs
 node tests/sync_cards.test.mjs   # «توحيد المظهر» on the page: the cards in the material's fill, line and ink, readable on a light look

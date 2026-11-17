@@ -262,6 +262,8 @@ public class SettingsActivity extends Activity {
      */
     private void render() {
         latinDigits = DigitsText.isLatin(prefs.digits());
+        String fitNote = prefs.takeFitNote();   // 4.4 a home card swapped for one that suits the new look: say so once
+        if (fitNote != null) toast(fitNote);
         List<View> before = rows();
         View had = entering ? null : focusedRow();
         if (screen == null && !classic) screen = SettingsHub.LANG;
@@ -1839,7 +1841,12 @@ public class SettingsActivity extends Activity {
             if (rows.get(i)[0].equals(current)) sel = i;
         }
         String[] values = new String[labels.length], about = new String[labels.length];
-        for (int i = 0; i < labels.length; i++) { values[i] = rows.get(i)[0]; about[i] = Prefs.about(Prefs.PANEL_ABOUT, values[i]); }
+        for (int i = 0; i < labels.length; i++) {
+            values[i] = rows.get(i)[0];
+            about[i] = Prefs.about(Prefs.PANEL_ABOUT, values[i]);
+            // 4.4 the owner: a card that does not suit the home's look says so, as the plain line under its name (it can still be picked)
+            if (home && !CardFit.suits(values[i], prefs.homeLayout())) about[i] = CardFit.NOTE + "، " + about[i];
+        }
         pickWithPreview(home ? HOME_CARD_NAMES[place] : "بجانب الساعة", values, labels, about, sel,
             v -> prefs.previewUrl(this, v, prefs.cardStyle()),
             v -> { if (home) prefs.setHomePanelAt(place, v); else prefs.setPanel(v); });
@@ -2176,6 +2183,7 @@ public class SettingsActivity extends Activity {
 
     private String countdownLabel() {
         if (prefs.countdownDate().isEmpty()) return "لم يُحدَّد";
+        if (Prefs.SCHOOL.equals(prefs.countdownDate())) return Prefs.SCHOOL_LABEL;
         String name = prefs.countdownName();
         return CountdownText.label(prefs.countdownDate(), name);
     }
@@ -2183,9 +2191,11 @@ public class SettingsActivity extends Activity {
     /** The date is set from the computer (optimize/saver.sh countdown); here it can be cleared. */
     private void manageCountdown() {
         if (prefs.countdownDate().isEmpty()) {
+            // 4.4: the next school break needs no date from anyone (the official calendar comes with the data); another date, from the computer
             new Dlg(this).setTitle("العدّ التنازلي")
-                .setMessage("لم يُحدَّد تاريخ. يحدده المساعد على الكمبيوتر.")
-                .setPositiveButton("حسنًا", null).show();
+                .setMessage("لم يُحدَّد تاريخ. اختر «إجازات المدارس» لأقرب إجازة، أو يحدد المساعد تاريخًا آخر على الكمبيوتر.")
+                .setPositiveButton(Prefs.SCHOOL_LABEL, (d, w) -> { prefs.setCountdown(Prefs.SCHOOL, ""); render(); })
+                .setNegativeButton("إلغاء", null).show();
             return;
         }
         new Dlg(this).setTitle("العدّ التنازلي")

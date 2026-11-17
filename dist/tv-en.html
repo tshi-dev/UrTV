@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <!-- the build: UTC time (YYYYMMDDHHMMSS) of the newest commit of the page's sources, put in by src/build.py. The app loads the page with the newer stamp (its own
      copy or a downloaded one), never by file time, and does not keep a download whose stamp is older than its own (Updater, PageStamp). -->
-<meta name="urtv-build" content="20261117062626">
+<meta name="urtv-build" content="20261117065110">
 <title>Your TV Screen</title>
 <style>
   @font-face{font-family:'Thmanyah';font-weight:300;font-style:normal;font-display:block;src:url("https://raw.githubusercontent.com/tshi-dev/UrTV/master/assets/fonts/Thmanyah-Light.woff2") format("woff2")}
@@ -558,6 +558,11 @@
   .mblock .big > span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%;
     padding-bottom:.3em;margin-bottom:-.3em;    
     padding-inline:.15em;margin-inline:-.15em;max-width:calc(100% + .3em)}  
+  
+  #match-row{height:calc(clamp(22px,2vw,42px)*1.1 + .85vh + clamp(11px,.88vw,17px)*1.4);align-items:flex-start}
+  .p-match .sub{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .mblock.lvb .big{font-size:clamp(26px,2.6vw,54px)}
+  .mblock.lvb .sub{font-size:clamp(14px,1.2vw,25px)}
   .none-week{font-size:clamp(26px,2.5vw,54px);font-weight:700;font-family:'ThmanyahDisplay','Thmanyah',serif;color:#A79C85}
 
   
@@ -980,7 +985,7 @@ const _list = k => (_Q.get(k) || '').split(',').map(x=>x.trim()).filter(Boolean)
 const SEP = ' · ';
 const _num = (k, d) => { const v = parseFloat(_Q.get(k)); return isNaN(v) ? d : v; };
 const _tzOk = z => { try{ new Intl.DateTimeFormat('en',{timeZone:z}); return true; }catch(e){ return false; } };
-const CARD_KINDS = ['shows','prayers','forecast','hourly','prayerrow','nextprayer','matches','verse','wisdom','adhkar','stocks','tasks','year','smart','today','album'];
+const CARD_KINDS = ['shows','prayers','forecast','hourly','prayerrow','nextprayer','matches','verse','hadith','wisdom','adhkar','stocks','tasks','year','smart','today','album'];
 const CONFIG = {
   city: _Q.get('city') || 'Riyadh',
   latitude: _num('lat', 24.7136),
@@ -1040,6 +1045,7 @@ const CONFIG = {
   slot: (v => ['weather','fasting','countdown','markets','none'].includes(v) ? v : 'matches')(_Q.get('slot')),
   cd: (v => /^\d{4}-\d{2}-\d{2}$/.test(v) && !isNaN(Date.parse(v + 'T00:00:00Z')) && new Date(v + 'T00:00:00Z').toISOString().slice(0, 10) === v ? v : '')(_Q.get('cd') || ''),
   cdName: (_Q.get('cdname') || '').trim().slice(0, 40),
+  cdSchool: _Q.get('cd') === 'school',
   occasion: _Q.get('occasion') !== '0',
   nightDim: _Q.get('nightdim') !== '0',
   verseMin: _Q.get('versemin') === '3' ? 3 : 0,
@@ -2449,6 +2455,28 @@ function fastingNext(now){
   return null;
 }
 
+const SCHOOL_URL = 'https://raw.githubusercontent.com/tshi-dev/urtv-data/data/calendar/sa-school.json';
+let SCHOOL = null;
+function schoolNext(){
+  if(!SCHOOL || !Array.isArray(SCHOOL.breaks)) return;
+  const p = riyadhParts(), today = `${p.y}-${String(p.mo).padStart(2, '0')}-${String(p.d).padStart(2, '0')}`;
+  const b = SCHOOL.breaks.filter(x => x && /^\d{4}-\d{2}-\d{2}$/.test(x.from) && x.from >= today).sort((x, y) => x.from < y.from ? -1 : 1)[0];
+  CONFIG.cd = b ? b.from : '';
+  CONFIG.cdName = b ? String(b.name || '').trim().slice(0, 40) : '';
+}
+async function loadSchool(){
+  if(!CONFIG.cdSchool) return;
+  try{ const c = JSON.parse(localStorage.getItem('school') || 'null'); if(c && c.at > Date.now() - DAY_MS && c.j){ SCHOOL = c.j; schoolNext(); renderSlot(); return; } }catch(e){}
+  try{
+    const r = await fetchT(SCHOOL_URL, 15000);
+    if(!r.ok) return;
+    SCHOOL = await r.json();
+    try{ localStorage.setItem('school', JSON.stringify({at: Date.now(), j: SCHOOL})); }catch(e){}
+    schoolNext();
+    renderSlot();
+  }catch(e){}
+}
+
 function countdownDays(){
   if(!CONFIG.cd) return null;
   const p = riyadhParts(), n = (Date.parse(CONFIG.cd + 'T00:00:00Z') - Date.UTC(p.y, p.mo - 1, p.d)) / 86400000;
@@ -2915,7 +2943,7 @@ function renderCard(card, animate, keepSize){
   else if(P === 'album') rows = [albumCard(card)];
   else if(P === 'today'){ const q = todayCard(); paintHd(hd, q.title); rows = q.rows; }
   else if(P === 'tasks') rows = CONFIG.tasks.map(t => `<li class="task"><span>${esc(t)}</span></li>`);
-  else if(P === 'verse'){ const q = quoteOfDay(card); paintHd(hd, q.title); rows = q.rows; }
+  else if(P === 'verse' || P === 'hadith'){ const q = quoteOfDay(card, P === 'hadith' ? 'hadith' : CONFIG.cards.includes('hadith') ? 'verse' : CONFIG.verseKind); paintHd(hd, q.title); rows = q.rows; }
   else if(P === 'wisdom'){ const q = wisdomOfDay(); paintHd(hd, q.title); rows = q.rows; }
   else if(P === 'adhkar'){ const q = adhkarCard(card); paintHd(hd, q.title, q.hd); rows = q.rows; }
   else if(P === 'stocks'){ const q = stocksCard(); paintHd(hd, '', q.hd); rows = q.rows; }
@@ -2973,7 +3001,7 @@ function shrinkCard(c, tooWide){
       if(!ok) return shrinkByContent(c);
     }else return shrinkByContent(c);
   }
-  const list = LISTS.includes(c.eff), quote = c.eff === 'verse' || c.eff === 'adhkar', zLeft = c.zi < Z_STEPS.length - 1;
+  const list = LISTS.includes(c.eff), quote = c.eff === 'verse' || c.eff === 'hadith' || c.eff === 'adhkar', zLeft = c.zi < Z_STEPS.length - 1;
   if(tooWide){ if(!zLeft) return false; c.zi++; }
   else if(list && c.ri < c.base - 1) c.ri++;
   else if(quote && c.zi < 3) c.zi++;
@@ -2988,7 +3016,7 @@ function shrinkCard(c, tooWide){
   return true;
 }
 function shrinkByContent(c){
-  const list = LISTS.includes(c.eff), quote = c.eff === 'verse' || c.eff === 'adhkar';
+  const list = LISTS.includes(c.eff), quote = c.eff === 'verse' || c.eff === 'hadith' || c.eff === 'adhkar';
   if(list && c.ri < c.base - 1) c.ri++;
   else if(quote && c.ri < 6) c.ri++;
   else return false;
@@ -3448,8 +3476,8 @@ function pickShort(list, at, len, card){
   return best;
 }
 const quoteTurn = () => CONFIG.verseMin ? Math.floor(Date.now() / (CONFIG.verseMin * 60000)) : riyadhDayNumber();
-function quoteOfDay(card){
-  const n = quoteTurn(), kind = CONFIG.verseKind, half = kind === 'both' ? Math.floor(n / 2) : n;
+function quoteOfDay(card, kind = CONFIG.verseKind){
+  const n = quoteTurn(), half = kind === 'both' ? Math.floor(n / 2) : n;
   if(VERSES.length && (kind === 'verse' || (kind === 'both' && n % 2 === 0))){
     const v = pickShort(VERSES, half, x => x.text.length, card);
     return {title:CONFIG.verseMin ? 'A verse' : 'Verse of the day', rows:[`<li class="quote quran${v.text.length > 330 ? ' q4' : quoteSize(v.text.length)}"><span class="orn">﴿</span><span class="qt">${esc(v.text)}</span><span class="orn">﴾</span></li>`, '<li class="src">' + esc(v.surah) + SEP + 'verse' + ' ' + ar(v.ayah) + '</li>']
@@ -4049,7 +4077,7 @@ function cardTimers(){
     setInterval(() => {
       if(quoteTurn() === turn) return;
       turn = quoteTurn();
-      CARDS.forEach(c => { if(c.kind === 'verse') renderCard(c, true); });
+      CARDS.forEach(c => { if(c.kind === 'verse' || c.kind === 'hadith') renderCard(c, true); });
       fitCards();
     }, 10*1000);
   }
@@ -4677,6 +4705,7 @@ function boot(){
   periodic(loadWeather, 30*60*1000);
   cardTimers();
   designInit();
+  loadSchool();
   setTimeout(designTick, 2500);
   setInterval(applyNight, 60*1000);
   setInterval(pixelShift, 4*60*1000);
@@ -4684,7 +4713,7 @@ function boot(){
   setInterval(()=>{
     const d = FMT_DATE.format(new Date());
     if(d !== lastDay){
-      lastDay = d; tickDates(); tickOccasion(); renderPanel(false);
+      lastDay = d; tickDates(); tickOccasion(); renderPanel(false); schoolNext();
       later(() => { loadPhotoIndex().then(() => applyBackground(true)); loadPrayers(); if(NEEDS_MATCHES) loadMatches(); if(USES('shows')) loadWeek(); loadWeather(); });
     }
   }, 60*1000);

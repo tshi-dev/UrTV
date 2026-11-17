@@ -1046,6 +1046,26 @@ for (const [hash, want] of [['', 'matches'], ['slot=matches', 'matches'], ['slot
     await r.ctx.close();
   }
 }
+{   // 4.4 «إجازات المدارس» (#cd=school): the next break of the official calendar, by its name; the next one follows by itself
+  const SCHOOL = JSON.stringify({ source: 'test', breaks: [
+    { name: 'إجازة الخريف', from: '2026-11-19', to: '2026-11-22' }, { name: 'إجازة منتصف العام', from: '2027-01-08', to: '2027-01-16' },
+    { name: 'bad', from: 'soon' }] });
+  let asked = 0;
+  const net = r => /calendar\/sa-school\.json$/.test(r.request().url())
+    && (asked++, r.fulfill({ body: SCHOOL, contentType: 'application/json', headers: { 'Access-Control-Allow-Origin': '*' } }), true);
+  const { p, ctx, errors } = await open('tv.html', 'slot=countdown&cd=school', { net, now: new Date('2026-11-17T09:00:00Z') });
+  await p.waitForFunction(() => CONFIG.cd !== '', null, { timeout: 4000 }).catch(() => {});
+  let t = await slotText(p);
+  check('school: the calendar asked once', asked === 1, String(asked));
+  check('school: the next break by its name, days to its first day', t.label === 'إجازة الخريف' && t.row.startsWith('٢ ') && t.row.includes('١٩ نوفمبر'), JSON.stringify(t));
+  t = await p.evaluate(FAKE_NOW('2026-11-20T09:00:00Z') + '; schoolNext(); [CONFIG.cd, CONFIG.cdName]');
+  check('school: once a break began, the next one', t[0] === '2027-01-08' && t[1] === 'إجازة منتصف العام', t.join());
+  check('school: no script errors', !errors.length, errors.join('; '));
+  await ctx.close();
+  const r = await open('tv.html', 'slot=countdown&cd=school');   // no calendar (offline): the weather, as with no date
+  check('school offline: the weather', await r.p.evaluate(() => slotNow()) === 'weather');
+  await r.ctx.close();
+}
 // none: the left panel is gone and the other two share the row, at three sizes
 for (const [width, height] of [[1920, 1080], [1280, 720], [960, 540]]) {
   const { p, ctx, errors } = await open('tv.html', 'slot=none', { width, height });

@@ -29,7 +29,7 @@ import java.util.Locale;
  *       [--es leagues 'Saudi-Arabian Pro League,NBA']
  *       [--es prayermethod gulf|auto]   («طريقة الحساب»: auto = the country's own, gulf = the Gulf method for any place; an old «jafari» is taken as auto, 4.3 A4)
  *       [--es prayeradj on|off] [--es adj_fajr +2 --es adj_dhuhr 0 --es adj_asr 0 --es adj_maghrib -1 --es adj_isha 0]   («تعديل وقت الصلاة», minutes -20..20)
- *       [--es slot matches|weather|fasting|countdown|markets|none] [--es countdown 2026-12-01|clear --es cdname 'رحلة الصيف']
+ *       [--es slot matches|weather|fasting|countdown|markets|none] [--es countdown 2026-12-01|school|clear --es cdname 'رحلة الصيف']
  *   am broadcast -n sa.urtv.screensaver/.SaverReceiver -a sa.urtv.screensaver.UPDATE
  *   am broadcast -n sa.urtv.screensaver/.SaverReceiver -a sa.urtv.screensaver.TASKS
  *       --es op list | add --es text 'نص' | done --ei n 1 | del --ei n 1 | clear
@@ -406,8 +406,8 @@ public class SaverReceiver extends BroadcastReceiver {
         if (slot != null && !isChoice(Prefs.SLOTS, slot))
             return "error: slot is one of " + choices(Prefs.SLOTS);
         String cd = i.getStringExtra("countdown"), cdName = i.getStringExtra("cdname");
-        if (cd != null && !"clear".equals(cd) && !isDate(cd))
-            return "error: countdown is a date like 2026-12-01, or clear";
+        if (cd != null && !"clear".equals(cd) && !Prefs.SCHOOL.equals(cd) && !isDate(cd))
+            return "error: countdown is a date like 2026-12-01, school (the next school break), or clear";
         if (cdName != null && cd == null) return "error: cdname goes with countdown DATE";
         if (cdName != null && cdName.length() > 40) return "error: cdname is at most 40 characters";
         String idle = i.getStringExtra("idle");

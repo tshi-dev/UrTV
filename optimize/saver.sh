@@ -323,7 +323,7 @@ case "${1:-}" in
     set1 stocks "$(IFS=,; echo "$*")" ;;
   slot)     set1 slot "${2:?usage: optimize/saver.sh slot fasting}" ;;
   countdown)
-    [ $# -ge 2 ] && [ $# -le 3 ] || { echo "usage: optimize/saver.sh countdown 2026-12-01 'name' | clear"; exit 1; }
+    [ $# -ge 2 ] && [ $# -le 3 ] || { echo "usage: optimize/saver.sh countdown 2026-12-01 'name' | school | clear"; exit 1; }
     v=$(quote "$2") || exit 1
     extra="--es countdown $v"
     if [ $# -eq 3 ]; then v=$(quote "$3") || exit 1; extra="$extra --es cdname $v"; fi
