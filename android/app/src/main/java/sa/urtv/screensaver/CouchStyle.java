@@ -39,8 +39,8 @@ final class CouchStyle {
         ROW = 0x14FFFFFF, SEC_ON = 0x21FFFFFF, ICON_BOX = 0x1AFFFFFF, ICON_BOX_FOCUS = 0x12000000, INK_SUB = 0x99000000, TYPE_BG = 0x1FFFFFFF,
         GREEN = 0xFF30D158, RING = 0x6BFFFFFF, RING_FOCUS = 0x52000000;
     static final float SEC_SCALE = 1.04f, ROW_SCALE = 1.02f;
-    static final long MS = 200;
-    static android.view.animation.Interpolator ease() { return new android.view.animation.PathInterpolator(0.2f, 0.8f, 0.2f, 1f); }
+    static final long MS = Motion.MS;
+    static android.view.animation.Interpolator ease() { return Motion.ease(); }   // couch-tv's cubic-bezier(.2,.8,.2,1), the same everywhere
 
     /** a card: white when focused, else `rest` (a section: SEC_ON when it is the one shown) */
     Drawable card(int rest, int selected, float radius) {
@@ -60,7 +60,7 @@ final class CouchStyle {
     /** the focus: a short scale over the neighbours, couch-tv's curve */
     static void focus(View v, boolean has, float scale) {
         v.setTranslationZ(has ? 8f : 0f);
-        v.animate().scaleX(has ? scale : 1f).scaleY(has ? scale : 1f).setDuration(MS).setInterpolator(ease()).start();
+        v.animate().scaleX(has ? scale : 1f).scaleY(has ? scale : 1f).setDuration(Motion.lite(v.getContext()) ? 0 : MS).setInterpolator(ease()).start();
     }
 
     /** a toggle's ring (green with a tick when on), a choice's tick, a link's chevron: drawn in its row's colours, mirrored for Arabic */

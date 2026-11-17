@@ -20,7 +20,7 @@ def check(name, ok, detail=""):
 
 pill = (HOME / "Pill.java").read_text(encoding="utf-8")
 main = (HOME / "MainActivity.java").read_text(encoding="utf-8")
-check("Pill: the width animation takes about 150 ms", re.search(r"MS = 150", pill) is not None)
+check("Pill: the width animation takes the one motion's time and curve (Motion: 200 ms, cubic-bezier(.2,.8,.2,1))", "private static final long MS = Motion.MS;" in pill and "anim.setInterpolator(Motion.ease());" in pill)
 check("Pill: the name is the content description (a screen reader hears it though only the icon shows)", "setContentDescription(text)" in pill)
 check("Pill: a focused pill is its own focus target (focusable, children are not)", "setFocusable(true)" in pill and "setFocusable" not in pill.split("setFocusable(true)", 1)[1])
 check("Pill: only the padding and the name's window change; the pill's own size params (its height) are never touched",

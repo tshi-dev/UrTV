@@ -1537,11 +1537,11 @@ public class MainActivity extends Activity {
             float z = (dbg & DebugFlags.LIFT) != 0 ? 0 : has ? dp(zoom ? 2 * GlowLook.LIFT_DP : GlowLook.LIFT_DP) : 0;
             if ((dbg & DebugFlags.PLAIN) == 0) {
                 if (inDock) v.animate().translationY(has ? -lift() : 0).translationZ(z)
-                        .setInterpolator(new DecelerateInterpolator()).setStartDelay(wait).setDuration(FavBar.MS).start();
-                else v.animate().translationZ(z).setInterpolator(new DecelerateInterpolator()).setDuration(has ? 320 : 200).start();
-                if ((dbg & DebugFlags.SHINE) == 0) shine.animate().alpha(has && !zoom ? 1f : 0f).setDuration(160).start();
-                label.animate().alpha(has ? 1f : 0f).translationY(has ? dp(4) : 0).setDuration(200).start();
-            } else if ((dbg & DebugFlags.SHINE) == 0) shine.animate().alpha(has ? 1f : 0f).setDuration(160).start();
+                        .setInterpolator(Motion.ease()).setStartDelay(wait).setDuration(Motion.move(MainActivity.this)).start();
+                else v.animate().translationZ(z).setInterpolator(Motion.ease()).setDuration(Motion.move(MainActivity.this)).start();
+                if ((dbg & DebugFlags.SHINE) == 0) shine.animate().alpha(has && !zoom ? 1f : 0f).setDuration(Motion.MS).setInterpolator(Motion.ease()).start();
+                label.animate().alpha(has ? 1f : 0f).translationY(has ? dp(4) : 0).setDuration(Motion.MS).setInterpolator(Motion.ease()).start();
+            } else if ((dbg & DebugFlags.SHINE) == 0) shine.animate().alpha(has ? 1f : 0f).setDuration(Motion.MS).setInterpolator(Motion.ease()).start();
             if (!has) return;
             lastFocusedId = v.getId();
             optionsHint(inDock);
@@ -1550,13 +1550,13 @@ public class MainActivity extends Activity {
                 if ((dbg & DebugFlags.TITLE) == 0) {
                     title.setText(app.label);
                     placeName();
-                    title.animate().alpha(1f).setDuration(200).start();
+                    title.animate().alpha(1f).setDuration(Motion.MS).setInterpolator(Motion.ease()).start();
                 }
                 if ((dbg & DebugFlags.GLOW) == 0) { animateGlow(app.color); fadeGlow(1f); }
                 if ((dbg & DebugFlags.PLAIN) == 0) glideTo(0);
             } else {
                 if ((dbg & DebugFlags.GLOW) == 0) fadeGlow(0.35f);
-                if ((dbg & DebugFlags.TITLE) == 0) title.animate().alpha(0f).setDuration(200).start();
+                if ((dbg & DebugFlags.TITLE) == 0) title.animate().alpha(0f).setDuration(Motion.MS).setInterpolator(Motion.ease()).start();
                 scrollToRow(box);
             }
         });
@@ -1932,8 +1932,8 @@ public class MainActivity extends Activity {
         card.setOnClickListener(v -> guarded(ParentalPolicy.GRID, it.pkg, it.title, () -> TvRows.open(this, it)));   // the app's own lock first
         card.setOnFocusChangeListener((v, has) -> {
             scaleTo(v, has ? 1.12f : 1f);   // as a favourite
-            v.animate().translationZ(has ? dp(GlowLook.LIFT_DP) : 0).setInterpolator(new DecelerateInterpolator()).setDuration(has ? 320 : 200).start();
-            shine.animate().alpha(has ? 1f : 0f).setDuration(160).start();
+            v.animate().translationZ(has ? dp(GlowLook.LIFT_DP) : 0).setInterpolator(Motion.ease()).setDuration(Motion.move(MainActivity.this)).start();
+            shine.animate().alpha(has ? 1f : 0f).setDuration(Motion.MS).setInterpolator(Motion.ease()).start();
             if (!has) return;
             lastFocusedId = v.getId();
             fadeGlow(1f);
@@ -2303,7 +2303,7 @@ public class MainActivity extends Activity {
         x.setOnFocusChangeListener((v, has) -> {
             xb.setColor(has ? CORAL : 0xB3000000);
             xb.setStroke(dp(2), has ? 0xFFFFD9CF : 0x66FFFFFF);
-            x.animate().scaleX(has ? 1.3f : 1f).scaleY(has ? 1.3f : 1f).setDuration(120).start();
+            x.animate().scaleX(has ? 1.3f : 1f).scaleY(has ? 1.3f : 1f).setDuration(Motion.move(MainActivity.this)).setInterpolator(Motion.ease()).start();
         });
         x.getOnFocusChangeListener().onFocusChange(x, false);
         card.addView(x, lp(dp(26), dp(26), Gravity.TOP | Gravity.START, dp(6), dp(6), dp(6), 0));
@@ -2497,12 +2497,12 @@ public class MainActivity extends Activity {
         if (shine != null && lifted) shine.setAlpha(1f);
         if (lifted) {
             scaleTo(card, fav ? FavBar.LIFTED_SCALE : 1.25f);   // a favourite stays inside its tray
-            card.animate().translationY(fav ? -lift() : -dp(10)).translationZ(dp(GlowLook.LIFT_DP)).setDuration(160).start();
+            card.animate().translationY(fav ? -lift() : -dp(10)).translationZ(dp(GlowLook.LIFT_DP)).setDuration(Motion.move(MainActivity.this)).setInterpolator(Motion.ease()).start();
         } else {
             boolean has = card.isFocused();
             float s = has ? focusScale : 1f;
             scaleTo(card, s);
-            card.animate().translationY(has && fav ? -lift() : 0).translationZ(has ? dp(GlowLook.LIFT_DP) : 0).setDuration(160).start();
+            card.animate().translationY(has && fav ? -lift() : 0).translationZ(has ? dp(GlowLook.LIFT_DP) : 0).setDuration(Motion.move(MainActivity.this)).setInterpolator(Motion.ease()).start();
             if (shine != null) shine.setAlpha(has ? 1f : 0f);
         }
     }
@@ -2967,13 +2967,13 @@ public class MainActivity extends Activity {
         boolean on = show && seen < OPTIONS_HINT_TIMES && edit == null && appsEdit == null;
         if (on) prefs().edit().putInt(hintKey(), seen + 1).apply();
         optionsHint.setTextColor(palette().text);
-        optionsHint.animate().alpha(on ? 1f : 0f).setDuration(200).start();
+        optionsHint.animate().alpha(on ? 1f : 0f).setDuration(Motion.MS).setInterpolator(Motion.ease()).start();
     }
 
     /** the box was opened: the hint has done its job */
     private void optionsHintUsed() {
         prefs().edit().putInt("options_hint", OPTIONS_HINT_TIMES).putInt("options_hint_en", OPTIONS_HINT_TIMES).apply();   // the box was opened, in either language: the person knows
-        if (optionsHint != null) optionsHint.animate().alpha(0f).setDuration(150).start();
+        if (optionsHint != null) optionsHint.animate().alpha(0f).setDuration(Motion.MS).setInterpolator(Motion.ease()).start();
     }
 
     // ---- the favourites bar (FavBar): its tray, the name over the focused tile, and the one move it may make
@@ -3022,7 +3022,7 @@ public class MainActivity extends Activity {
         float centre = a[0] + f.getWidth() * f.getScaleX() / 2f;   // the tile grows about its centre
         zoomName.setX(centre - h[0] - zoomName.getMeasuredWidth() / 2f);   // its place on the screen, whichever side it starts from
         zoomName.setTranslationY(t[1] - h[1] + tray.getHeight() + bar(8));
-        if (zoomName.getAlpha() < 1f) zoomName.animate().alpha(1f).setDuration(200).start();
+        if (zoomName.getAlpha() < 1f) zoomName.animate().alpha(1f).setDuration(Motion.MS).setInterpolator(Motion.ease()).start();
     }
 
     /**
@@ -3033,8 +3033,8 @@ public class MainActivity extends Activity {
     void lowerTray(boolean down) {
         if (tray == null || down == trayLowered) return;
         trayLowered = down;
-        tray.animate().translationY(down ? bar(FavBar.WIDGET_DROP) : 0).setInterpolator(new android.view.animation.AccelerateDecelerateInterpolator())
-                .setDuration(FavBar.DROP_MS).start();
+        tray.animate().translationY(down ? bar(FavBar.WIDGET_DROP) : 0).setInterpolator(Motion.ease())
+                .setDuration(Motion.move(MainActivity.this)).start();   // 4.4 the same easing everywhere (Motion)
     }
 
     /** the app's options while they show (closed when the home goes) */
@@ -3747,10 +3747,10 @@ public class MainActivity extends Activity {
 
     private void fadeGlow(float alpha) {
         // each move between tiles asks again for the same values: an animator is started only when the target changes (a held arrow started two every step)
-        if (glow != null && glowAlphaTo != alpha) { glowAlphaTo = alpha; glow.animate().alpha(alpha).setDuration(300).start(); }
+        if (glow != null && glowAlphaTo != alpha) { glowAlphaTo = alpha; glow.animate().alpha(alpha).setDuration(Motion.MS).setInterpolator(Motion.ease()).start(); }
         // The grid sits over the photo's busiest middle part, so dim it while browsing apps.
         float shade = alpha < 1f ? 1f : 0f;
-        if (shadeTo != shade) { shadeTo = shade; gridShade.animate().alpha(shade).setDuration(300).start(); }
+        if (shadeTo != shade) { shadeTo = shade; gridShade.animate().alpha(shade).setDuration(Motion.MS).setInterpolator(Motion.ease()).start(); }
     }
 
     // ---------------------------------------------------------------- wallpaper

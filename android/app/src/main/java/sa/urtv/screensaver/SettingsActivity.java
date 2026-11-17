@@ -1555,7 +1555,7 @@ public class SettingsActivity extends Activity {
     static final float FOCUS_SCALE = 1.02f;
     /** a row's one text size and its padding (the owner, build 413: one line, at most about 80 px at 1080p, so 5 or 6 rows show) */
     static final int ROW_SP = 18, ROW_PAD = 8;
-    static final long FOCUS_MS = 120;
+    static final long FOCUS_MS = Motion.MS;   // 4.4 the same easing everywhere (Motion)
 
     /** The rows of the list now (the views row() made: their tag is their FocusKey; the categories' tiles, two to a line), in order. */
     private List<View> rows() {
@@ -3579,7 +3579,7 @@ public class SettingsActivity extends Activity {
             // goes under them; small enough that the text stays sharp. No layout: paintState only recolours.
             paintState(val, mark, shown, state, has);
             v.setTranslationZ(has ? dp(4) : 0);
-            v.animate().scaleX(has ? FOCUS_SCALE : 1f).scaleY(has ? FOCUS_SCALE : 1f).setDuration(FOCUS_MS).start();
+            v.animate().scaleX(has ? FOCUS_SCALE : 1f).scaleY(has ? FOCUS_SCALE : 1f).setDuration(Motion.lite(SettingsActivity.this) ? 0 : FOCUS_MS).setInterpolator(Motion.ease()).start();
             if (has) topWhenFirst(v);
         });
         glassCard(card);

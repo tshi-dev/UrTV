@@ -21,7 +21,6 @@ import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
-import android.view.animation.DecelerateInterpolator;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -70,7 +69,7 @@ final class ControlCenter {
     /** the panel: 560 px of 1920 wide, inside the 5 % safe area (x from 96, y from 54 to 1026 at 1080p) */
     static final float PANEL_W = 560f / 1920f, SAFE = 0.05f;
     /** the slide-in, and the focus fill coming in (ms) */
-    static final int SLIDE_MS = 220, FOCUS_MS = 170;
+    static final int SLIDE_MS = (int) Motion.MS, FOCUS_MS = (int) Motion.MS;   // 4.4 the same easing everywhere (Motion)
     /** the most rows the panel shows; the four round toggles are not counted */
     static final int MAX_ROWS = 8;   // 4.3.1: ours, the games and the city joined the six
     /** the round toggles, in this order; every other item is a row */
@@ -289,11 +288,12 @@ final class ControlCenter {
             if (start != null) lastKey = start;
             showMain();
         }
-        // the slide: from beyond its own edge to its place in 220 ms
-        if (wideNow) panel.setAlpha(0f); else panel.setTranslationX((rtl ? 1 : -1) * (panelW + margin));
+        // the slide: from beyond its own edge to its place in Motion.MS on the one curve; a weak TV («الوضع الخفيف») and the wide page fade in where they stand
+        final boolean fade = wideNow || Ram.low(anchor.getContext());
+        if (fade) panel.setAlpha(0f); else panel.setTranslationX((rtl ? 1 : -1) * (panelW + margin));
         pw.showAtLocation(anchor.getRootView(), Gravity.NO_GRAVITY, 0, 0);   // the whole screen, from its corner
-        panel.post(() -> { if (wideNow) panel.animate().alpha(1f).setDuration(SLIDE_MS).start();   // the wide page comes in where it stands
-            else panel.animate().translationX(0).setDuration(SLIDE_MS).setInterpolator(new DecelerateInterpolator()).start(); });
+        panel.post(() -> { if (fade) panel.animate().alpha(1f).setDuration(SLIDE_MS).setInterpolator(Motion.ease()).start();
+            else panel.animate().translationX(0).setDuration(SLIDE_MS).setInterpolator(Motion.ease()).start(); });
     }
 
     // ---------------------------------------------------------------- what is kept on this TV
@@ -793,7 +793,7 @@ final class ControlCenter {
             if (animate) {
                 anim = ValueAnimator.ofArgb(shown, target);
                 anim.setDuration(FOCUS_MS);
-                anim.setInterpolator(new DecelerateInterpolator());
+                anim.setInterpolator(Motion.ease());
                 anim.addUpdateListener(a -> shape.setColor((Integer) a.getAnimatedValue()));
                 anim.start();
             } else shape.setColor(target);

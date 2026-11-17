@@ -25,7 +25,8 @@ check("couch-tv's sizes, in its rem (a 120th of the screen's width): the safe ar
 check("…its colours: the veil rgba(10,8,12,.8), the rows 8 % white, the value 62 %, the focus white with #111, the toggle's green #30d158",
       "VEIL = 0xCC0A080C" in cs and "ROW = 0x14FFFFFF" in cs and "VALUE = 0x9EFFFFFF" in cs and "INK = 0xFF111111" in cs and "GREEN = 0xFF30D158" in cs)
 check("…its focus: a section x1.04, a row x1.02, in 200 ms on cubic-bezier(.2,.8,.2,1)",
-      "SEC_SCALE = 1.04f, ROW_SCALE = 1.02f;" in cs and "static final long MS = 200;" in cs and "new android.view.animation.PathInterpolator(0.2f, 0.8f, 0.2f, 1f)" in cs)
+      "SEC_SCALE = 1.04f, ROW_SCALE = 1.02f;" in cs and "static final long MS = Motion.MS;" in cs and "return Motion.ease();" in cs
+      and "static final long MS = 200;" in (APP / "Motion.java").read_text(encoding="utf-8") and "new PathInterpolator(0.2f, 0.8f, 0.2f, 1f)" in (APP / "Motion.java").read_text(encoding="utf-8"))
 check("only with «منظر وساعة» (the side list): the 4.3.2 screen of every other look keeps its own (CouchStyle made only when not classic)",
       "if (!classic) cs = new CouchStyle(this);" in st and "classic = !prefs.couchOn();" in st)
 check("switching the look switches the settings at once: they open again in the other style", "private void flipCouch()" in st and "finish();" in st[st.index("private void flipCouch()"):][:700])

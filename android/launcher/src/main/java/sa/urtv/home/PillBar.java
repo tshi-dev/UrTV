@@ -7,7 +7,6 @@ import android.graphics.Paint;
 import android.graphics.RectF;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.DecelerateInterpolator;
 import android.widget.LinearLayout;
 
 import java.util.HashMap;
@@ -32,7 +31,7 @@ final class PillBar extends LinearLayout {
     private float open;   // 0 closed .. 1 open
     private ValueAnimator anim;
     private float applied = -1f;   // the openness the children were last shaped for
-    static final long OPEN_MS = 220, CLOSE_DELAY_MS = 160;
+    static final long OPEN_MS = Motion.MS, CLOSE_DELAY_MS = 160;   // 4.4 the same easing everywhere (Motion)
 
     PillBar(Context c) {
         super(c);
@@ -76,7 +75,7 @@ final class PillBar extends LinearLayout {
         if (open == to) { if (applied != to) apply(); return; }   // already there and shaped: no layout, no redraw
         anim = ValueAnimator.ofFloat(open, to);
         anim.setDuration(Math.max(40, Math.round(OPEN_MS * Math.abs(to - open))));
-        anim.setInterpolator(new DecelerateInterpolator(2f));
+        anim.setInterpolator(Motion.ease());
         anim.addUpdateListener(a -> { open = (float) a.getAnimatedValue(); apply(); });
         anim.start();
     }

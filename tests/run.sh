@@ -32,6 +32,7 @@ python3 tests/party_games_test.py   # «واحد مو معنا» and «بدون 
 python3 tests/ram_tier_test.py   # the three memory tiers (LOW under 2000 MB, MID under 2600, NORMAL), one rule per app, the test switch
 python3 tests/scene_home_test.py   # 4.3.3 «المشاهد»: the scene rules per tier on a JVM, the Saudi pack's files and sizes, the Couch TV download checks, the wiring
 python3 tests/settings_smooth_test.py   # 4.4 «smoother» settings: one section built per render, the side list opens on a rest, focus recolours only, 120 ms scale, live search
+python3 tests/motion_test.py   # 4.4 the same easing everywhere (Motion: 200 ms, couch-tv's curve; a fade with «الوضع الخفيف»)
 python3 tests/settings_couch_test.py   # 4.4 «منظر وساعة»: the settings in couch-tv's style (its numbers, row kinds, pages, search, thumbnails), every registry row, Arabic mirrored
 python3 tests/settings_classic_test.py   # 4.4 «شكل كنبة» switches the settings screen too: every row in both layouts (4.3.2 and the side list), search in both, the switch in both
 python3 tests/settings_tree_test.py   # docs/SETTINGS-TREE.md is what the code says now (.github/tools/settings_tree.py)

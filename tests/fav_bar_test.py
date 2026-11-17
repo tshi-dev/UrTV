@@ -35,8 +35,10 @@ check("…and nothing else moves it: no translation or margin of the tray or its
       main.count("tray.animate()") == 1 and "tray.setTranslationY" not in main and "bottomBlock.setTranslationY" not in main
       and "bottomBlock.animate()" not in main)
 check("no tile beside the bar", "optionsTile" not in main)
-check("the only move: 40 px down in 250 ms for a widget, back up the same way", "void lowerTray(boolean down)" in main
-      and "bar(FavBar.WIDGET_DROP)" in main and "setDuration(FavBar.DROP_MS)" in main)
+check("its focus time is the one motion's (FavBar is plain Java: the same number as Motion.MS)", "MS = 200;" in (HOME / "FavBar.java").read_text(encoding="utf-8")
+      and "static final long MS = 200;" in (HOME / "Motion.java").read_text(encoding="utf-8"))
+check("the only move: 40 px down for a widget, back up the same way, on the one motion (Motion: 200 ms, couch-tv's curve; instant with «الوضع الخفيف»)", "void lowerTray(boolean down)" in main
+      and "bar(FavBar.WIDGET_DROP)" in main and ".setInterpolator(Motion.ease())\n                .setDuration(Motion.move(MainActivity.this)).start();" in main)
 if not shutil.which("javac"):
     print("SKIP fav bar: no javac here")
     check("build 180: the tray cuts everything it holds to its rounded outline (a sixth tile was drawn outside it, x 0..128), and the name stays in one place: above the tray at its start edge, in line with the inner padding, never following a tile",

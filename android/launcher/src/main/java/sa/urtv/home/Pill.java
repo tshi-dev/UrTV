@@ -20,7 +20,7 @@ import android.widget.TextView;
  * comes out to its left; PillText says what the name is. The name is always the pill's content description.
  */
 final class Pill extends LinearLayout {
-        private static final long MS = 150;
+        private static final long MS = Motion.MS;   // 4.4 the same easing everywhere (Motion)
     /** the row's height in dp: every pill, the circles and the one with the focus, is this tall, so they share one centre line */
     static final int HEIGHT = 30;
     /** dp between two buttons of the top row (and the now-playing card): 4 dp = 8 px at 1080p, on the 8 px scale (design/43: one bar of squares, 8 px apart) */
@@ -87,6 +87,7 @@ final class Pill extends LinearLayout {
         float to = gained ? 1f : 0f;
         anim = ValueAnimator.ofFloat(open, to);
         anim.setDuration(Math.max(30, Math.round(MS * Math.abs(to - open))));   // what is left of the way, at the same speed
+        anim.setInterpolator(Motion.ease());
         anim.addUpdateListener(a -> { open = (float) a.getAnimatedValue(); apply(); });
         anim.start();
     }

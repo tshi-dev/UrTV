@@ -45,15 +45,15 @@ check("«إعدادات تلفزيونك» opens our settings (the screensaver a
       "host.openOurSettings()" in center and "ParentalPolicy.OUR_SETTINGS, null" in main and 'SAVER_PKG + ".SettingsActivity"' in main
       and "case OUR_SETTINGS:" in policy and "t.add(OWN_SETTINGS)" in policy.split("case OUR_SETTINGS:")[1][:200]
       and center.index("if (host.saverInstalled())") < center.index('"تلفزيونك"') < center.index('"tv", S.t("الإعدادات")'))
-check("the side panel: 560 px of 1920 wide inside the 5 % safe area, a clear full-screen popup it slides across for 220 ms (ease-out), a press outside closes it, what does not fit scrolls",
-      "PANEL_W = 560f / 1920f, SAFE = 0.05f" in center and "SLIDE_MS = 220" in center and "new PopupWindow(root, W, H, true)" in center and "root.setOnClickListener(v -> dismiss());" in center
-      and "panel.animate().translationX(0).setDuration(SLIDE_MS).setInterpolator(new DecelerateInterpolator())" in center and "Dir.start() | Gravity.TOP" in center
+check("the side panel: 560 px of 1920 wide inside the 5 % safe area, a clear full-screen popup it slides across in the one motion (Motion: 200 ms, couch-tv's curve; a fade with «الوضع الخفيف»), a press outside closes it, what does not fit scrolls",
+      "PANEL_W = 560f / 1920f, SAFE = 0.05f" in center and "SLIDE_MS = (int) Motion.MS" in center and "new PopupWindow(root, W, H, true)" in center and "root.setOnClickListener(v -> dismiss());" in center
+      and "panel.animate().translationX(0).setDuration(SLIDE_MS).setInterpolator(Motion.ease())" in center and "final boolean fade = wideNow || Ram.low(anchor.getContext());" in center and "Dir.start() | Gravity.TOP" in center
       and "new ScrollView(act)" in center and "ControlLayout" not in center and not (HOME / "ControlLayout.java").exists())
 check("four round toggles on top (Bluetooth, mirroring, the sleep timer, «أطفئ الآن»), then rows with a short value each (network, sound, speed, the TV's settings, ours); ellipsized one-line values",
       'TOGGLES = {"bluetooth", "mirror", "sleep", "off"}' in center and 'ROWS = {"net", "sound", "speed", "ours", "games", "city", "adhan", "tv", "saver", "black"}' in center and "GradientDrawable.OVAL" in center
       and "t.setSingleLine(true);" in center and "TruncateAt.END" in center and "ControlText.networkDetail" not in center)
-check("the focus: a solid fill in the look's colours with its ink, coming in over 170 ms (ease-out)",
-      "FOCUS_MS = 170" in center and "ValueAnimator.ofArgb(shown, target)" in center and "anim.setDuration(FOCUS_MS)" in center and "int target = f ? FOCUSED : " in center and "ON_SUB" in center)
+check("the focus: a solid fill in the look's colours with its ink, coming in over the one motion (Motion: 200 ms, couch-tv's curve)",
+      "FOCUS_MS = (int) Motion.MS" in center and "anim.setInterpolator(Motion.ease());" in center and "ValueAnimator.ofArgb(shown, target)" in center and "anim.setDuration(FOCUS_MS)" in center and "int target = f ? FOCUSED : " in center and "ON_SUB" in center)
 check("«تخصيص»: a tick per item, the arrows move a row (Left/Right by the reading direction), at most eight rows, «إعادة الضبط» (the defaults), «تم»; Back goes back to the panel's main view; kept on this TV",
       "MAX_ROWS = 8" in center and "tickedRows(now) >= MAX_ROWS" in center and "KeyEvent.KEYCODE_DPAD_RIGHT : KeyEvent.KEYCODE_DPAD_LEFT" in center and "private void reset()" in center
       and 'getSharedPreferences("control"' in center and "if (code == KeyEvent.KEYCODE_BACK) { if (e.getAction() == KeyEvent.ACTION_UP) showMain(); return true; }" in center
