@@ -338,6 +338,7 @@ public class SaverReceiver extends BroadcastReceiver {
         if (surfaceP != null && !(surfaceP.length == 3 && Arrays.asList(GlassStyle.SURFACES).contains(surfaceP[0]) && surfaceP[1].matches("(100|[3-9][0-9])") && Arrays.asList(GlassStyle.FILLS).contains(surfaceP[2])))
             return "error: surface is quick|cards|tray, a number from 30 to 100, and one of look glass graphite";
         String homeLayout = i.getStringExtra("homelayout");
+        String preset = i.getStringExtra("preset");
         String couch = i.getStringExtra("couch"), homeBg = i.getStringExtra("background"), homeClock = i.getStringExtra("clock"), appsStyle = i.getStringExtra("appsstyle");
         if ("scenes".equals(homeLayout)) { homeLayout = null; couch = "on"; }   // 4.3.3's word: the scenes with the glass clock
         if (couch != null && !"on".equals(couch) && !"off".equals(couch)) return "error: couch is on or off";
@@ -491,6 +492,7 @@ public class SaverReceiver extends BroadcastReceiver {
         if (focusX != null) p.setFocusStyle(focusX);
         if (syncX != null) p.setLookSync("on".equals(syncX));
         if (surfaceP != null) { int s = Arrays.asList(GlassStyle.SURFACES).indexOf(surfaceP[0]); p.setSurfacePercent(s, Integer.parseInt(surfaceP[1])); p.setSurfaceFill(s, surfaceP[2]); }
+        if (preset != null) p.setPreset(preset);   // «أشكال جاهزة» before any one row given beside it (that row then makes it «مخصّص»)
         if (couch != null) p.setCouch("on".equals(couch));   // «شكل كنبة» first (it keeps or puts back the four), then any one choice given beside it
         if (homeLayout != null) p.setHomeLayout(homeLayout);
         if (homeBg != null) p.setHomeBg(homeBg);
@@ -694,6 +696,7 @@ public class SaverReceiver extends BroadcastReceiver {
             + "\nlook: " + p.look()
             + "\naccent: " + (p.accent().isEmpty() ? "default" : p.accent()) + "\nbaropacity: " + p.barPercent() + "\nwalldim: " + p.wallDim() + "\nfocusstyle: " + p.focusStyle()
             + "\nlooksync: " + (p.lookSync() ? "on" : "off") + "\nsurface quick: " + p.surfacePercent(0) + " " + p.surfaceFill(0) + "\nsurface cards: " + p.surfacePercent(1) + " " + p.surfaceFill(1) + "\nsurface tray: " + p.surfacePercent(2) + " " + p.surfaceFill(2)
+            + "\npreset: " + p.presetShow()
             + "\ncouch: " + (!p.couchOn() ? "off" : "couch".equals(p.look3()) ? "on" : "on (custom)") + "\nhomelayout: " + p.homeLayout() + "\nbackground: " + p.homeBg() + "\nclock: " + p.homeClock() + "\nappsstyle: " + p.appsStyle()
             + "\nscenepacks: " + Prefs.join(p.scenePacks(), ",") + "\nscenestay: " + p.sceneStay()
             + "\nscenetime: " + (p.sceneByTime() ? "on" : "off") + "\nsceneweather: " + (p.sceneByWeather() ? "on" : "off")

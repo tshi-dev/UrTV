@@ -60,7 +60,7 @@ MONTHS = ("default", "levant")
 LANGS = ("ar", "en")   # «اللغة» (Tr.java: ar, the default, or en)
 RECITER_ID = re.compile(r"[A-Za-z0-9_-]{1,60}")   # a reciter's id in quran/reciters.json
 FAV_BARS = ("5", "6", "7", "8", "9", "10", "all")   # «تطبيقات في الشريط»: how many favourites the home tray shows whole (Prefs.FAV_BARS)
-QUICK_BUTTONS = ("markets", "matches", "center", "phone")   # the home's quick buttons that can be hidden (Prefs.QUICK_BUTTONS)
+QUICK_BUTTONS = ("markets", "matches", "center", "phone", "inputs")   # the home's quick buttons that can be hidden (Prefs.QUICK_BUTTONS)
 ACCENTS = ("default", "amber", "gold", "green", "teal", "sky", "violet", "rose", "coral")   # «لون التمييز» (GlassStyle.ACCENTS; default = the look's own)
 FOCUS_STYLES = ("solid", "frame", "glow")   # «شكل التركيز» (GlassStyle.FOCUS_STYLES)
 BAR_OPACITY = (30, 100)   # «شفافية الشريط»: 100 = as it was

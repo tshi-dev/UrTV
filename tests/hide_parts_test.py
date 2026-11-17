@@ -53,9 +53,9 @@ check("home: an older screensaver (or none) says nothing: the button is shown",
 check("home: the row is built from the setting too (no flash of the button on a TV that hid it)",
       "if (isInstalled(SAVER_PKG) && ConfigSnapshot.read(this).tasksPillOn()) row.add(tasks);" in main)
 apply = main[main.index("private void applyTasksPill(boolean setting) {"):].split("\n    }\n")[0]
-check("home: hiding takes it out of the row and out of the pills, the focus to «المصادر»; showing puts it back right after «المصادر»",
+check("home: hiding takes it out of the row and out of the pills, the focus to «المصادر»; showing puts it back right after «المصادر» (first, after «يُتلى الآن», while «زر المصادر» is hidden)",
       "pills.remove(tasksPill);" in apply and "pillRow.removeView(tasksPill);" in apply and "inputsPill.requestFocus();" in apply
-      and "pillRow.addView(tasksPill, pillRow.indexOfChild(inputsPill) + 1," in apply and "pills.add(pills.indexOf(inputsPill) + 1, tasksPill);" in apply
+      and "pillRow.addView(tasksPill, inputsIn ? pillRow.indexOfChild(inputsPill) + 1 : 1," in apply and "pills.add(inputsIn ? pills.indexOf(inputsPill) + 1 : 0, tasksPill);" in apply
       and "wireFocus();" in apply and "isInstalled(SAVER_PKG)" in apply)
 check("home: the minute tick applies it, beside the «تلاوة وأذان» button", "applyListenPill(cfg.listenPillOn);\n        applyTasksPill(cfg.tasksPillOn());" in main)
 check("home: the phone's and the card's ways into the list do not look at it",

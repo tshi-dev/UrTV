@@ -456,7 +456,9 @@ public class SettingsActivity extends Activity {
         // «المظهر»: one page for everything about the look of both apps (AppearanceActivity), each choice with its picture
         // 4.3.3 «الواجهة»: the home as it was (the default), the football home, or «الآفاق» (a scene with the glass clock behind its scenery); and the scene packs
         // 4.4 the owner: one switch; on applies the Couch preset and keeps the person's own values, off puts them back (Prefs.setCouch)
-        row("شكل كنبة", prefs.couchLabel(), R.drawable.ic_eye, new Runnable() { public void run() { flipCouch(); } });
+        // 4.4 the owner: «أشكال جاهزة», six looks at once (Prefs.setPreset); with PRESETS_REPLACE_COUCH it takes the place of «شكل كنبة»
+        row("أشكال جاهزة", prefs.presetLabel(), R.drawable.ic_eye, new Runnable() { public void run() { pickPreset(); } });
+        if (!Prefs.PRESETS_REPLACE_COUCH) row("شكل كنبة", prefs.couchLabel(), R.drawable.ic_eye, new Runnable() { public void run() { flipCouch(); } });
         row("التخطيط", Prefs.homeLayoutLabel(prefs.homeLayout()), R.drawable.ic_eye, new Runnable() { public void run() { pickHomeLayout(); } });
         row("الخلفية", Prefs.homeBgLabel(prefs.homeBg()), R.drawable.ic_eye, new Runnable() { public void run() {
             pickOne("الخلفية", Prefs.HOME_BG_NAMES, java.util.Arrays.asList(Prefs.HOME_BGS).indexOf(prefs.homeBg()), i -> prefs.setHomeBg(Prefs.HOME_BGS[i])); } });
@@ -494,6 +496,8 @@ public class SettingsActivity extends Activity {
         row("زر تلاوة وأذان", prefs.listenPill() ? "ظاهر" : "مخفي  •  الأذان والتلاوة تعمل، وتفتح الشاشة من «افتح تلاوة وأذان» هنا أو من بطاقة «يُتلى الآن»", R.drawable.ic_eye,
             new Runnable() { public void run() { prefs.setListenPill(!prefs.listenPill()); render(); } });
         // #52: the other quick buttons of the home can be hidden too; a hidden one only leaves the row (its page opens from elsewhere: the markets and games by the phone, the Control Center by the Quick Settings key)
+        row("زر المصادر", prefs.pillHidden("inputs") ? "مخفي  •  المصادر تفتح من زر المصادر في الريموت ومن مركز التحكم" : "ظاهر", R.drawable.ic_eye,
+            new Runnable() { public void run() { prefs.setPillHidden("inputs", !prefs.pillHidden("inputs")); render(); } });
         row("زر الأسواق", prefs.pillHidden("markets") ? "مخفي" : "ظاهر", R.drawable.ic_eye,
             new Runnable() { public void run() { prefs.setPillHidden("markets", !prefs.pillHidden("markets")); render(); } });
         row("زر المباريات", prefs.pillHidden("matches") ? "مخفي" : "ظاهر", R.drawable.ic_eye,
@@ -691,6 +695,267 @@ public class SettingsActivity extends Activity {
      * «شكل كنبة» flipped here: the home's look changes with it (Prefs.setCouch), and so does this screen: the settings open again in the other layout,
      * on its look section with the focus on the switch.
      */
+    /**
+     * «أشكال جاهزة»: the six looks, each with its picture (assets/presets/<key>.jpg, the home with its screensaver small in a corner) and what it
+     * sets; OK applies it (Prefs.setPreset). When the look changes the settings screen's layout (the Couch look's side list), the settings open again
+     * in the other layout on this row, as «شكل كنبة» did.
+     */
+    private void pickPreset() {
+        // the six looks, then «تركيبات مقترحة» (the owner): one tile that opens the four mixes when the focus is on it
+        final int n = Prefs.PRESETS.length, mixAt = n;
+        final String[] names = new String[n + 1], about = new String[n + 1], pics = new String[n + 1];
+        for (int i = 0; i < n; i++) { names[i] = Prefs.PRESET_NAMES[i]; about[i] = Prefs.PRESET_ABOUT[i]; pics[i] = Prefs.PRESETS[i]; }
+        names[mixAt] = "تركيبات مقترحة"; about[mixAt] = "شكل من الستة مع تغيير أو اثنين"; pics[mixAt] = "combos";
+        final FrameLayout frame = new FrameLayout(this);
+        final LinearLayout box = new LinearLayout(this);
+        box.setOrientation(LinearLayout.HORIZONTAL);
+        box.setLayoutDirection(Dir.layout());
+        box.setPadding(dp(12), dp(4), dp(12), dp(4));
+        frame.addView(box, new FrameLayout.LayoutParams(-1, -2));
+        final android.widget.ListView lv = new android.widget.ListView(this);
+        lv.setDividerHeight(0);
+        lv.setSelector(GlassPaint.focused(this, look, 12));
+        lv.setAdapter(new android.widget.BaseAdapter() {
+            @Override public int getCount() { return names.length; }
+            @Override public Object getItem(int i) { return pics[i]; }
+            @Override public long getItemId(int i) { return i; }
+            @Override public View getView(int i, View old, android.view.ViewGroup parent) {
+                LinearLayout r = new LinearLayout(SettingsActivity.this);
+                r.setOrientation(LinearLayout.VERTICAL);
+                r.setPadding(dp(16), dp(8), dp(16), dp(8));
+                TextView t = new TextView(SettingsActivity.this);
+                t.setText(conv(names[i]));
+                t.setTextColor(focusColors(look.text, look.onFocus));
+                t.setTextSize(TypedValue.COMPLEX_UNIT_SP, 19);
+                t.setTypeface(font("Thmanyah-Medium"));
+                r.addView(t);
+                TextView a = new TextView(SettingsActivity.this);
+                a.setText(conv(about[i]));
+                a.setTextColor(focusColors(look.sub, look.onFocusSub));
+                a.setTextSize(TypedValue.COMPLEX_UNIT_SP, 13);
+                a.setTypeface(font("Thmanyah-Regular"));
+                r.addView(a);
+                return r;
+            }
+        });
+        box.addView(lv, new LinearLayout.LayoutParams(0, dp(420), 1f));
+        final ImageView pic = new ImageView(this);
+        pic.setScaleType(ImageView.ScaleType.CENTER_CROP);
+        pic.setOutlineProvider(new ViewOutlineProvider() {
+            @Override public void getOutline(View v, Outline o) { o.setRoundRect(0, 0, v.getWidth(), v.getHeight(), dp(18)); }
+        });
+        pic.setClipToOutline(true);
+        final LinearLayout.LayoutParams pp = new LinearLayout.LayoutParams(dp(480), dp(270));
+        pp.setMarginStart(dp(16));
+        pp.gravity = Gravity.CENTER_VERTICAL;
+        box.addView(pic, pp);
+        final int[] shown = {-1};
+        final Runnable update = () -> {
+            int i = lv.getSelectedItemPosition();
+            if (i < 0) i = Math.max(0, java.util.Arrays.asList(Prefs.PRESETS).indexOf(prefs.preset()));
+            if (i == shown[0]) return;
+            shown[0] = i;
+            setAssetPicture(pic, "presets/" + pics[i] + ".jpg");
+        };
+        final AlertDialog dialog = new Dlg(this).setTitle("أشكال جاهزة").setView(frame).setNegativeButton("إلغاء", null).create();
+        final MixPanel mixes = new MixPanel(frame, lv, dialog);
+        lv.setOnItemSelectedListener(new android.widget.AdapterView.OnItemSelectedListener() {
+            @Override public void onItemSelected(android.widget.AdapterView<?> p, View v, int pos, long id) {
+                update.run();
+                if (pos == mixAt) mixes.open(v);   // the focus on the tile opens it
+            }
+            @Override public void onNothingSelected(android.widget.AdapterView<?> p) { }
+        });
+        lv.setOnItemClickListener((p, v, pos, id) -> {
+            if (pos == mixAt) { mixes.open(v); return; }
+            dialog.dismiss();
+            applyPreset(Prefs.PRESETS[pos]);
+        });
+        dialog.setOnKeyListener((d, code, e) -> code == android.view.KeyEvent.KEYCODE_BACK && e.getAction() == android.view.KeyEvent.ACTION_UP && mixes.close());
+        dialog.setOnShowListener(d -> {
+            dress(dialog);
+            dialog.getWindow().setLayout(Math.min(getResources().getDisplayMetrics().widthPixels - dp(48), dp(940)), android.view.ViewGroup.LayoutParams.WRAP_CONTENT);
+            lv.requestFocus();
+            lv.setSelection(prefs.presetCombo().isEmpty() ? Math.max(0, java.util.Arrays.asList(Prefs.PRESETS).indexOf(prefs.preset())) : mixAt - 1);
+            update.run();
+        });
+        dialog.setOnDismissListener(d -> { pic.setImageDrawable(null); mixes.release(); });
+        dialog.show();
+    }
+
+    /** a picture of the app (assets) into the view, the one before it let go */
+    private void setAssetPicture(ImageView v, String path) {
+        try (InputStream in = getAssets().open(path)) {
+            android.graphics.drawable.Drawable old = v.getDrawable();
+            v.setImageBitmap(android.graphics.BitmapFactory.decodeStream(in));
+            if (old instanceof android.graphics.drawable.BitmapDrawable) ((android.graphics.drawable.BitmapDrawable) old).getBitmap().recycle();
+        } catch (java.io.IOException | RuntimeException e) { v.setImageDrawable(null); }
+    }
+
+    /**
+     * «تركيبات مقترحة» opened (the owner, docs/mockups/presets/combos-*.jpg): a panel over the picker that grows as a circle from the tile while the four
+     * mixes fan out of it, 250 ms, slowing at the end (PresetMotion); Back, or up from the mixes, closes it the same way back into the tile. On a weak TV
+     * («الوضع الخفيف») it only fades in and out. OK on a mix applies it (Prefs.setCombo).
+     */
+    private final class MixPanel {
+        final FrameLayout frame; final android.widget.ListView list; final AlertDialog dialog;
+        LinearLayout panel; final List<View> cards = new ArrayList<>(); final List<ImageView> pics = new ArrayList<>();
+        View from; boolean shown, moving;
+        MixPanel(FrameLayout frame, android.widget.ListView list, AlertDialog dialog) { this.frame = frame; this.list = list; this.dialog = dialog; }
+
+        private void build() {
+            panel = new LinearLayout(SettingsActivity.this);
+            panel.setOrientation(LinearLayout.VERTICAL);
+            panel.setLayoutDirection(Dir.layout());
+            panel.setPadding(dp(22), dp(16), dp(22), dp(18));
+            panel.setBackground(GlassPaint.fill(SettingsActivity.this, 0xF2161210, 22, 0x1FFFFFFF));
+            TextView h = new TextView(SettingsActivity.this);
+            h.setText(conv("تركيبات مقترحة"));
+            h.setTextColor(look.text);
+            h.setTextSize(TypedValue.COMPLEX_UNIT_SP, 21);
+            h.setTypeface(font("Thmanyah-Medium"));
+            panel.addView(h);
+            TextView sub = new TextView(SettingsActivity.this);
+            sub.setText(conv("كل واحدة شكل من الستة مع تغيير أو اثنين؛ اختيارها يضبطها كلها"));
+            sub.setTextColor(look.sub);
+            sub.setTextSize(TypedValue.COMPLEX_UNIT_SP, 13);
+            sub.setTypeface(font("Thmanyah-Regular"));
+            panel.addView(sub);
+            LinearLayout row = new LinearLayout(SettingsActivity.this);
+            row.setOrientation(LinearLayout.HORIZONTAL);
+            row.setLayoutDirection(Dir.layout());
+            for (final String[] c : Prefs.COMBOS) {
+                LinearLayout card = new LinearLayout(SettingsActivity.this);
+                card.setOrientation(LinearLayout.VERTICAL);
+                card.setPadding(dp(7), dp(7), dp(7), dp(9));
+                card.setFocusable(true);
+                card.setBackground(GlassPaint.focused(SettingsActivity.this, look, 14));
+                ImageView im = new ImageView(SettingsActivity.this);
+                im.setScaleType(ImageView.ScaleType.CENTER_CROP);
+                im.setClipToOutline(true);
+                im.setOutlineProvider(new ViewOutlineProvider() {
+                    @Override public void getOutline(View v, Outline o) { o.setRoundRect(0, 0, v.getWidth(), v.getHeight(), dp(10)); }
+                });
+                card.addView(im, new LinearLayout.LayoutParams(dp(192), dp(108)));
+                pics.add(im);
+                TextView t = new TextView(SettingsActivity.this);
+                t.setText(conv(c[1]));
+                t.setTextColor(focusColors(look.text, look.onFocus));
+                t.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
+                t.setTypeface(font("Thmanyah-Medium"));
+                card.addView(t, new LinearLayout.LayoutParams(dp(192), -2));
+                TextView a = new TextView(SettingsActivity.this);
+                a.setText(conv(c[2]));
+                a.setTextColor(focusColors(look.sub, look.onFocusSub));
+                a.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12);
+                a.setTypeface(font("Thmanyah-Regular"));
+                card.addView(a, new LinearLayout.LayoutParams(dp(192), -2));
+                card.setOnClickListener(v -> { dialog.dismiss(); applyCombo(c[0]); });
+                card.setOnKeyListener((v, code, e) -> {   // up from a mix: moving away closes it, the focus back on the tile
+                    if (code == android.view.KeyEvent.KEYCODE_DPAD_UP && e.getAction() == android.view.KeyEvent.ACTION_DOWN) { close(); return true; }
+                    return false;
+                });
+                LinearLayout.LayoutParams cp = new LinearLayout.LayoutParams(-2, -2);
+                cp.setMarginEnd(dp(12));
+                cp.topMargin = dp(12);
+                row.addView(card, cp);
+                cards.add(card);
+            }
+            panel.addView(row);
+            FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(-1, -1);
+            frame.addView(panel, lp);
+            panel.setVisibility(View.INVISIBLE);
+            for (int i = 0; i < cards.size(); i++) setAssetPicture(pics.get(i), "presets/combo-" + Prefs.COMBOS[i][0] + ".jpg");
+        }
+
+        /** the focus reached the tile (or OK on it): the panel grows out of it */
+        void open(View tile) {
+            if (shown || moving) return;
+            if (panel == null) build();
+            from = tile;
+            shown = true;
+            panel.setVisibility(View.VISIBLE);
+            panel.post(() -> {
+                cards.get(0).requestFocus();
+                animate(true, null);
+            });
+        }
+
+        /** Back or up: closed the same way, into the tile; false when it was not open (Back then closes the picker) */
+        boolean close() {
+            if (!shown || panel == null) return false;
+            if (moving) return true;
+            shown = false;
+            animate(false, () -> {
+                panel.setVisibility(View.INVISIBLE);
+                list.requestFocus();
+                list.setSelection(Prefs.PRESETS.length - 1);   // the focus to the look above the tile: it does not open again at once
+            });
+            return true;
+        }
+
+        private void animate(boolean in, Runnable after) {
+            moving = true;
+            final Runnable done = () -> { moving = false; if (after != null) after.run(); };
+            float[] c = tileCentre();
+            if (prefs.liteNow(SettingsActivity.this)) {   // «الوضع الخفيف»: a fade only
+                panel.setAlpha(in ? 0f : 1f);
+                panel.animate().alpha(in ? 1f : 0f).setDuration(PresetMotion.MS).withEndAction(done).start();
+                return;
+            }
+            float r = PresetMotion.radius(c[0], c[1], panel.getWidth(), panel.getHeight());
+            android.animation.Animator reveal = android.view.ViewAnimationUtils.createCircularReveal(panel, (int) c[0], (int) c[1], in ? 0f : r, in ? r : 0f);
+            reveal.setDuration(PresetMotion.MS);
+            reveal.setInterpolator(in ? new android.view.animation.DecelerateInterpolator(PresetMotion.EASE) : new android.view.animation.AccelerateInterpolator(PresetMotion.EASE));
+            reveal.addListener(new android.animation.AnimatorListenerAdapter() {
+                @Override public void onAnimationEnd(android.animation.Animator a) { done.run(); }
+            });
+            for (View card : cards) {   // each mix comes out of the tile's centre: from there, small and clear, to its place
+                float dx = c[0] - (card.getLeft() + ((View) card.getParent()).getLeft() + card.getWidth() / 2f);
+                float dy = c[1] - (card.getTop() + ((View) card.getParent()).getTop() + card.getHeight() / 2f);
+                if (in) { card.setTranslationX(dx); card.setTranslationY(dy); card.setScaleX(PresetMotion.SCALE0); card.setScaleY(PresetMotion.SCALE0); card.setAlpha(0f); }
+                card.animate().translationX(in ? 0 : dx).translationY(in ? 0 : dy).scaleX(in ? 1f : PresetMotion.SCALE0).scaleY(in ? 1f : PresetMotion.SCALE0)
+                    .alpha(in ? 1f : 0f).setDuration(PresetMotion.MS)
+                    .setInterpolator(in ? new android.view.animation.DecelerateInterpolator(PresetMotion.EASE) : new android.view.animation.AccelerateInterpolator(PresetMotion.EASE)).start();
+            }
+            reveal.start();
+        }
+
+        /** the tile's centre in the panel's coordinates */
+        private float[] tileCentre() {
+            if (from == null) return new float[] {panel.getWidth() / 2f, panel.getHeight() / 2f};
+            int[] a = new int[2], b = new int[2];
+            from.getLocationInWindow(a);
+            panel.getLocationInWindow(b);
+            return new float[] {a[0] - b[0] + from.getWidth() / 2f, a[1] - b[1] + from.getHeight() / 2f};
+        }
+
+        void release() {
+            for (ImageView v : pics) v.setImageDrawable(null);
+            if (panel != null) panel.animate().cancel();
+        }
+    }
+
+    /** a mix chosen: applied as a look is (the settings open again in the other layout when it changes) */
+    private void applyCombo(String key) {
+        boolean wasClassic = !prefs.couchOn();
+        prefs.setCombo(key);
+        if (wasClassic == !prefs.couchOn()) { render(); return; }
+        startActivity(new Intent(this, SettingsActivity.class).putExtra("screen", "look").putExtra("hubAt", "look").putExtra("want", "أشكال جاهزة")
+            .addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION));
+        finish();
+    }
+
+    /** a look chosen: applied; the settings open again in the other layout when it changed (the Couch look's side list), else drawn again */
+    private void applyPreset(String key) {
+        boolean wasClassic = !prefs.couchOn();
+        prefs.setPreset(key);
+        if (wasClassic == !prefs.couchOn()) { render(); return; }
+        startActivity(new Intent(this, SettingsActivity.class).putExtra("screen", "look").putExtra("hubAt", "look").putExtra("want", "أشكال جاهزة")
+            .addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION));
+        finish();
+    }
+
     private void flipCouch() {
         prefs.setCouch(!prefs.couchOn());
         startActivity(new Intent(this, SettingsActivity.class).putExtra("screen", "look").putExtra("hubAt", "look").putExtra("want", "شكل كنبة")
