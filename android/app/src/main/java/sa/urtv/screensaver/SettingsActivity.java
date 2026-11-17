@@ -1053,7 +1053,7 @@ public class SettingsActivity extends Activity {
             x.setAlpha(has || cat.equals(screen) ? 1f : 0.82f);
             side.removeCallbacks(sideOpen);
             if (has && !SettingsHub.SEARCH.equals(cat) && !cat.equals(screen)) {   // the section's rows, the focus kept on the list
-                // 4.4 smoother: once the focus rests on the item (SIDE_MS): holding the arrow went through every section, each built whole
+                // 4.4 smoother: once the focus rests on the item (SIDE_MS): a held arrow went through every section, each built whole
                 sideOpen = () -> {
                     if (!x.hasFocus() || cat.equals(screen)) return;
                     View f = focusedRow();
