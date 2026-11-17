@@ -52,6 +52,12 @@ public final class UpdateRules {
      */
     public static boolean betaWins(int betaBuild, int latestBuild) { return betaBuild > 0 && betaBuild > latestBuild; }
 
+    /** 4.3.4: the beta build is offered when it wins and is newer than the one the person answered «لاحقاً» to (an official build is never held back) */
+    public static boolean betaOffered(int betaBuild, int latestBuild, int declined) { return betaWins(betaBuild, latestBuild) && betaBuild > declined; }
+
+    /** 4.3.4: a beta build waits for the TV's question («نسخة تجريبية»): download only once «حمّل» was answered for this very build */
+    public static boolean betaAsks(boolean fromBeta, int newest, int agreed) { return fromBeta && newest != agreed; }
+
     public static int buildOf(String versionText) {
         if (versionText == null) return -1;
         String t = versionText.trim();
