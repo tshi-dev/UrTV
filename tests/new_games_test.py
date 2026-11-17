@@ -12,19 +12,19 @@ def check(what, ok, extra=""):
     print(("PASS " if ok else "FAIL ") + what + ("" if ok else "  -> " + str(extra)))
     if not ok: failed += 1
 if not shutil.which("javac"): print("SKIP: no javac"); sys.exit(1)
-ENGINES = [G / "forehead/ForeheadGame.java", G / "author/AuthorGame.java", G / "closest/ClosestGame.java", G / "liar/LiarGame.java", G / "emoji/EmojiGame.java", G / "link/LinkGame.java", G / "night/NightGame.java", G / "guess/GuessGame.java", G / "draw/DrawGame.java", APP / "GameBundle.java", APP / "MiniJson.java"]
+ENGINES = [G / "forehead/ForeheadGame.java", G / "author/AuthorGame.java", G / "closest/ClosestGame.java", G / "liar/LiarGame.java", G / "emoji/EmojiGame.java", G / "link/LinkGame.java", G / "night/NightGame.java", G / "guess/GuessGame.java", G / "draw/DrawGame.java", G / "quran/QuranItems.java", APP / "GameBundle.java", APP / "MiniJson.java"]
 with tempfile.TemporaryDirectory() as t:
     c = subprocess.run(["javac", "-nowarn", "-encoding", "UTF-8", "-d", t, *map(str, ENGINES), str(ROOT / "tests/NewGamesTest.java")], capture_output=True, text=True)
     check("the new games' rules compile on a plain JVM (no Android)", c.returncode == 0, c.stderr[-500:])
     if c.returncode == 0:
-        r = subprocess.run(["java", "-cp", t, "sa.urtv.screensaver.NewGamesTest", str(ROOT / "assets/games/author.gb"), str(ROOT / "assets/games/closest.gb"), str(ROOT / "assets/games/liar.gb"), str(ROOT / "assets/games/emoji.gb"), str(ROOT / "assets/games/link.gb"), str(ROOT / "assets/games/guess.gb")], capture_output=True, text=True, timeout=120)
+        r = subprocess.run(["java", "-cp", t, "sa.urtv.screensaver.NewGamesTest", str(ROOT / "assets/games/author.gb"), str(ROOT / "assets/games/closest.gb"), str(ROOT / "assets/games/liar.gb"), str(ROOT / "assets/games/emoji.gb"), str(ROOT / "assets/games/link.gb"), str(ROOT / "assets/games/guess.gb"), str(ROOT / "assets/shared/verses.json"), str(ROOT / "android/launcher/src/main/assets/quran/reciters.json")], capture_output=True, text=True, timeout=120)
         for l in r.stdout.splitlines():
             if l.startswith(("PASS", "FAIL")): print(l); failed += l.startswith("FAIL")
         check("the JVM test ran to the end", r.returncode == 0 or "FAIL" in r.stdout, r.stderr[-400:])
 def src(n): return (APP / n).read_text(encoding="utf-8")
 reg, gl, room, page = src("GameRegistry.java"), src("QuizGamesActivity.java"), src("GamePhoneRoom.java"), (ROOT / "assets/quiz/game.html").read_text(encoding="utf-8")
 manifest = (ROOT / "android/app/src/main/AndroidManifest.xml").read_text(encoding="utf-8")
-GAMES = {"forehead": "ForeheadActivity", "author": "AuthorActivity", "closest": "ClosestActivity", "liar": "LiarActivity", "emoji": "EmojiActivity", "link": "LinkActivity", "night": "NightActivity", "guess": "GuessActivity", "draw": "DrawActivity"}
+GAMES = {"forehead": "ForeheadActivity", "author": "AuthorActivity", "closest": "ClosestActivity", "liar": "LiarActivity", "emoji": "EmojiActivity", "link": "LinkActivity", "night": "NightActivity", "guess": "GuessActivity", "draw": "DrawActivity", "quran-verse": "QuranVerseActivity"}
 for gid, act in GAMES.items():
     a = src(act + ".java")
     check(f"{gid}: in the registry (needs phones), in the filter's list, in the manifest (not exported, landscape), and a GameActivity",
@@ -74,4 +74,9 @@ check("draw: only /api/draw may carry more than a kilobyte (8 KB), the room take
       'static final int BODY_MAX = 1024, DRAW_MAX = 8192' in srv and 'rl[1].equals("/api/draw") ? DRAW_MAX : BODY_MAX' in srv and "DRAW_PER_SEC = 8" in room and "DRAW_STROKES = 300" in room and "DRAW_POINTS = 6000" in room and "!DRAW.equals(s.kind)" in room
       and "default String draw(" in src("PhoneRoom.java") and srv.count("DRAW_MAX") == 2)
 check("draw: the phone page sends strokes in small posts to /api/draw and builds nothing from them", "'/api/draw'" in page and "c.kind === 'draw'" in page and "setPointerCapture" in page)
+qv = src("QuranVerseActivity.java"); qr = src("QuranReciterActivity.java")
+check("quran-verse: the text comes only from the verified mushaf file (shared/verses.json), shown as stored; nothing repeats on this TV; no sound for a wrong pick",
+      'getAssets().open("shared/verses.json")' in qv and "QuranItems.verses(" in qv and "GamePrefs.remember(this, id(), r)" in qv and "QuizSound.LOW" not in qv and ".replace(" not in qv.split("QuranItems.verses(")[1])
+check("reciter: built but HIDDEN: an activity in the manifest, no registry entry and no filter entry until the terms of mp3quran are read (docs/GAMES-QURAN.md); it streams a short clip at play time and stores nothing",
+      "QuranReciterActivity" in manifest and "QuranReciterActivity" not in reg and '"reciter"' not in reg and "setDataSource(url)" in qr and "CLIP_SECONDS * 1000L" in qr and "FileOutputStream" not in qr and "DownloadManager" not in qr)
 sys.exit(1 if failed else 0)

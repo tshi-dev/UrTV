@@ -33,11 +33,12 @@ final class GameRegistry {
         new Game("night", "ليل القرية", "ذئاب بين القرويين، من يكشفهم؟", "NightActivity", true, true),
         new Game("guess", "كم تقدر؟", "من يسمّي أكثر في الموضوع؟", "GuessActivity", true, true),
         new Game("draw", "ارسم وخمّن", "ارسم بإصبعك والباقي يخمّن", "DrawActivity", true, true),
+        new Game("quran-verse", "كمّل الآية", "أكمل الآية من أربعة خيارات", "QuranVerseActivity", true, true),
         new Game("packs", "حزم المحتوى", "حجم ما حمّلتموه من الألعاب، واحتفظوا به أو احذفوه", "GamePacksActivity", false, true),
     };
 
     /** the games that can be played with the phones: the list shows them under ONE «بالجوالات» tile (the first of them, «الأسرع», stands for it); the others also stay in the list, played with one remote */
-    static final String[] PHONE_GAMES = {"quiz", "khanat", "missing-word", "letter-hive", "word5", "odd-one", "charades", "domino", "forehead", "author", "closest", "liar", "emoji", "link", "night", "guess", "draw"};
+    static final String[] PHONE_GAMES = {"quiz", "khanat", "missing-word", "letter-hive", "word5", "odd-one", "charades", "domino", "forehead", "author", "closest", "liar", "emoji", "link", "night", "guess", "draw", "quran-verse"};
     static boolean inPhones(String id) { for (String g : PHONE_GAMES) if (g.equals(id)) return true; return false; }
 
     static Game byId(String id) { for (Game g : ALL) if (g.id.equals(id)) return g; return null; }

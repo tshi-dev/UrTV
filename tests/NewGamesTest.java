@@ -8,6 +8,7 @@ import sa.urtv.screensaver.games.liar.LiarGame;
 import sa.urtv.screensaver.games.night.NightGame;
 import sa.urtv.screensaver.games.guess.GuessGame;
 import sa.urtv.screensaver.games.draw.DrawGame;
+import sa.urtv.screensaver.games.quran.QuranItems;
 import sa.urtv.screensaver.games.emoji.EmojiGame;
 import sa.urtv.screensaver.games.link.LinkGame;
 
@@ -287,6 +288,25 @@ public final class NewGamesTest {
         check("draw: two players are refused (three to ten)", threw);
     }
 
+    static void quran(String versesFile, String recitersFile) throws Exception {
+        Object vt = MiniJson.parse(new String(java.nio.file.Files.readAllBytes(java.nio.file.Paths.get(versesFile)), java.nio.charset.StandardCharsets.UTF_8));
+        List<EmojiGame.Puzzle> vs = QuranItems.verses(vt);
+        check("quran: the verses of the verified file become puzzles (" + (vs == null ? 0 : vs.size()) + ", at least 100)", vs != null && vs.size() >= 100);
+        java.util.Map<String, String> full = new java.util.HashMap<>();
+        for (Object o : (List<?>) vt) { java.util.Map<?, ?> m = (java.util.Map<?, ?>) o; full.put((String) m.get("ref"), ((String) m.get("uthmani")).trim()); }
+        boolean intact = true, cutOk = true;
+        for (EmojiGame.Puzzle p : vs) { String f = full.get(p.id); intact &= f != null && f.equals(p.emoji + " " + p.a[0]); cutOk &= p.emoji.split(" ").length >= 3 && p.a[0].split(" ").length >= 2; }
+        check("quran: prompt + space + answer is exactly the stored verse (the text is cut at a space, never changed), the start has 3 words or more and the end 2 or more", intact && cutOk);
+        check("quran: every verse has its place for the reveal", vs.stream().allMatch(p -> QuranItems.where(p.id) != null && QuranItems.where(p.id).contains(" ")));
+        EmojiGame g = new EmojiGame(2, vs.subList(0, 3), vs, false, new java.util.Random(4));
+        check("quran: four different options, the right end among them, the others the ends of other verses", g.options().size() == 4 && new java.util.HashSet<>(g.options()).size() == 4 && g.options().get(g.rightIndex()).equals(vs.get(0).a[0]));
+        Object rt = MiniJson.parse(new String(java.nio.file.Files.readAllBytes(java.nio.file.Paths.get(recitersFile)), java.nio.charset.StandardCharsets.UTF_8));
+        List<EmojiGame.Puzzle> cs = QuranItems.clips(rt);
+        check("quran: the reciter clips are https links to the catalog's own files, one per reciter and short surah, nothing else (" + (cs == null ? 0 : cs.size()) + ")", cs != null && cs.stream().allMatch(p -> p.emoji.startsWith("https://cdn.mp3quran.net/") && p.emoji.matches(".*/\\d{3}\\.mp3")) && QuranItems.CLIP_SECONDS <= 15);
+        EmojiGame c = new EmojiGame(2, cs.subList(0, 2), cs, false, new java.util.Random(5));
+        check("quran: the reciter options are four reciters' names, the right one among them", c.options().size() == 4 && new java.util.HashSet<>(c.options()).size() == 4 && c.options().get(c.rightIndex()).equals(cs.get(0).a[0]));
+    }
+
     public static void main(String[] a) throws Exception {
         forehead();
         author(a[0]);
@@ -297,6 +317,7 @@ public final class NewGamesTest {
         night();
         guess(a[5]);
         draw();
+        quran(a[6], a[7]);
         System.exit(failed == 0 ? 0 : 1);
     }
 }

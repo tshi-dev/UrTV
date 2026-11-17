@@ -23,6 +23,9 @@ public final class EmojiGame {
         public String answer(boolean en) { return en && !a[1].isEmpty() ? a[1] : a[0]; }
     }
 
+    /** a puzzle built in code (the Quran games reuse this engine: a prompt, the right answer, a category that picks look-alike wrong options) */
+    public static Puzzle make(String id, String prompt, String answerAr, String cat) { return new Puzzle(id, prompt, answerAr, "", cat, 1, true); }
+
     public static List<Puzzle> parse(Object tree) {
         if (!(tree instanceof Map)) return null;
         Map<?, ?> m = (Map<?, ?>) tree;
