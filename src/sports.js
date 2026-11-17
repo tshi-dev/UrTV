@@ -19,7 +19,8 @@ const SPW = {noToday:'لا مباراة لفرقك اليوم', next:'القاد
   live:'مباشر', minute:'الدقيقة %s', goals:'أهداف %s', noLive:'لا مباريات جارية الآن', noTable:'الترتيب غير متاح الآن', pts:'%s نقطة', noNext:'لا مباريات قادمة لفرقك',
   home:'على أرضه', away:'خارج أرضه', noYesterday:'لا نتائج أمس', yours:'فرقك', noWeekend:'لا مباريات نهاية هذا الأسبوع', noCup:'لا أدوار إقصائية بعد',
   noF1:'لا بيانات للسباق القادم', race:'السباق', fp1:'التجربة الأولى', fp2:'التجربة الثانية', fp3:'التجربة الثالثة', sq:'تأهيل السبرنت', sprint:'السبرنت', q:'التأهيل',
-  noNat:'لا مباراة قادمة للمنتخب', lastMeet:'آخر مواجهة', place:'المركز %s، %s نقطة', top:'%s الأول بـ%s نقطة', inRound:'%s في %s', countdown:'بعد %s'};
+  noNat:'لا مباراة قادمة للمنتخب', lastMeet:'آخر مواجهة', place:'المركز %s، %s نقطة', top:'%s الأول بـ%s نقطة', inRound:'%s في %s', countdown:'بعد %s',
+  outIn:'%s ودّع من %s', through:'تأهل', out:'ودّع', agg:'مجموع المباراتين', phase:'مرحلة الدوري', matchday:'الجولة %s من %s', placeOf:'المركز %s من %s، %s نقطة'};
 // ---- the look: the cards session's (centred, «مربعات», gold for the person's own), sizes in em of the card's own text
 (() => {
   const st = document.createElement('style');
@@ -75,9 +76,12 @@ function spLeagueIds(){   // the followed leagues, then the leagues of the follo
   const ids = [];
   CONFIG.leagues.forEach(n => { const id = catId(n) || (LEAGUE_DATA[n] && ((LEAGUE_DATA[n].events || []).find(e => e && e.idLeague) || {}).idLeague); if(id) ids.push(String(id)); });
   matchEvents().filter(fbMine).forEach(ev => { if(ev.idLeague) ids.push(String(ev.idLeague)); });
+  const ix = (ARCH_C[ARCH_BASE + 'index.json'] || {}).j, teams = ix && ix.teams || {};
+  CONFIG.teamIds.forEach(id => ((teams[id] || {}).leagues || []).forEach(l => ids.push(String(l))));   // the cups a club plays in, even with no game of them next
   return [...new Set(ids)].slice(0, 6);
 }
 async function spLoad(){
+  if(spUses('cuppath')) await archLoad('index.json').catch(() => null);
   if(CARDS.some(c => SPORT_KINDS.includes(c.kind) && c.kind !== 'formula' && c.kind !== 'national'))
     await Promise.all(spLeagueIds().map(async id => { const j = await archLoad('sports/' + id + '.json').catch(() => null); if(j) SP.lg[id] = j; }));
   if(spUses('formula')) SP.f1 = await archLoad('f1/next.json').catch(() => null) || SP.f1;
@@ -215,17 +219,39 @@ function spWeekend(now){
 
 // ---- 8 «طريق الكأس»: a followed cup's knockout rounds (the archive's), the round's box with the followed club gold
 function spCuppath(){
-  const ids = new Set(CONFIG.teamIds);
-  const t = Object.values(SP.lg).find(x => x.cup && x.cup.rounds.some(r => r.games.some(g => ids.has(g.h) || ids.has(g.a)))) || Object.values(SP.lg).find(x => x.cup);
+  const ids = new Set(CONFIG.teamIds), mineT = t => ids.has(String(t.a)) || ids.has(String(t.b));
+  const cups = Object.values(SP.lg).filter(x => x.cup && ((x.cup.rounds || []).length || x.cup.phase));
+  const ko = cups.find(x => (x.cup.rounds || []).some(r => (r.ties || []).some(mineT)));
+  const ph = !ko && cups.find(x => x.cup.phase && x.cup.phase.groups.some(g => g.some(r => ids.has(String(r.id)))));
+  const t = ko || ph || cups[0];
   if(!t) return {rows: [`<li class="spr spf">${SPW.noCup}</li>`, `<li class="spc">${SPW.noCup}</li>`]};
-  const rounds = t.cup.rounds.slice(-4);
-  const col = r => { const g = r.games.find(x => ids.has(x.h) || ids.has(x.a)), show = g ? [g] : r.games.slice(0, 2);
-    return `<div><div class="sps">${esc(r.ar)}</div>${show.map(x => { const ev = spEv(x); return `<div class="spbox${g ? ' on' : ''}" style="margin-top:.3em"><b>${esc(spName(ev, 'Home'))} ${fbScored(ev) ? ar(+ev.intHomeScore) + ' - ' + ar(+ev.intAwayScore) : '×'} ${esc(spName(ev, 'Away'))}</b><span class="sps">${esc(fbScored(ev) ? '' : spWhen(fbKick(ev)))}</span></div>`; }).join('')}</div>`; };
-  const mine = [...rounds].reverse().find(r => r.games.some(x => ids.has(x.h) || ids.has(x.a)));
-  const club = mine && (() => { const g = mine.games.find(x => ids.has(x.h) || ids.has(x.a)); return ids.has(g.h) ? (spEv(g) && spName(spEv(g), 'Home')) : spName(spEv(g), 'Away'); })();
-  return {title: t.ar || PANEL_TITLE.cuppath,
-    rows: [`<li class="spr spf"><div class="spbx" style="grid-template-columns:repeat(${rounds.length},1fr);align-items:start">${rounds.map(col).join('')}</div></li>`,
-      `<li class="spc"><b>${esc(club ? fw(SPW.inRound, club, mine.ar) : t.ar || '')}</b></li>`]};
+  const title = t.ar || leagueName({idLeague: t.id, strLeague: t.en}) || PANEL_TITLE.cuppath;
+  const nm = (id, en) => teamAr(en, String(id));
+  if(!ko && t.cup.phase && (ph || !(t.cup.rounds || []).length)){   // the league or group phase: the club's group, its place, the matchday
+    const p = t.cup.phase, g = p.groups.find(x => x.some(r => ids.has(String(r.id)))) || p.groups[0], mi = g.findIndex(r => ids.has(String(r.id)));
+    const pick = [...new Set([0, 1, 2, ...(mi > 2 ? [mi - 1, mi] : [3, 4])])].filter(i => i >= 0 && i < g.length).sort((a, b) => a - b);
+    let prev = -1;
+    const rows = pick.map(i => { const r = g[i], gap = prev >= 0 && i > prev + 1 ? '<div class="sps">…</div>' : ''; prev = i;
+      return `${gap}<div class="sptr${i === mi ? ' on' : ''}"><span>${ar(i + 1)}</span><b>${spSw(r.id)}${esc(r.ar || nm(r.id, r.n))}</b>${spForm(r.f)}<b>${ar(r.pts)}</b></div>`; }).join('');
+    const me = mi >= 0 ? g[mi] : null, md = fw(SPW.matchday, ar(p.md), ar(p.of));
+    return {title, rows: [`<li class="spr spf"><div class="sps">${esc(SPW.phase + '، ' + md)}</div>${rows}</li>`,
+      `<li class="spc"><b>${esc(me ? (me.ar || nm(me.id, me.n)) + ' ' + fw(SPW.placeOf, ar(mi + 1), ar(g.length), ar(me.pts)) : SPW.phase)}</b><span class="sps">${esc(md)}</span></li>`]};
+  }
+  // the knockout path: the club's tie in each of the last four rounds it played (the cup's latest ties when no club of yours is in it)
+  const rounds = (t.cup.rounds || []).filter(r => !ko || (r.ties || []).some(mineT)).slice(-4);
+  const side = tie => { const a = ids.has(String(tie.b)) ? 1 : 0, us = a ? [tie.b, tie.bn] : [tie.a, tie.an], them = a ? [tie.a, tie.an] : [tie.b, tie.bn];
+    return {us, them, ag: tie.ag ? [tie.ag[a], tie.ag[1 - a]] : null}; };
+  const col = r => { const tie = (r.ties || []).find(mineT) || (r.ties || [])[0];
+    if(!tie) return `<div class="spbox"><span class="sps">${esc(r.ar)}</span></div>`;
+    const s = side(tie), nxt = tie.legs.find(l => l.hs == null || l.hs === ''), legs = tie.legs.length;
+    const res = s.ag ? `${ar(s.ag[0])} - ${ar(s.ag[1])}` : nxt ? esc(spWhen(Date.parse(nxt.t))) : '×';
+    const verdict = !ko || !s.ag ? '' : s.ag[0] > s.ag[1] ? SPW.through : s.ag[0] < s.ag[1] ? SPW.out : '';
+    return `<div class="spbox${ko ? ' on' : ''}"><span class="sps">${esc(r.ar)}</span><b>× ${esc(nm(s.them[0], s.them[1]))}</b><b>${res}</b>`
+      + `<span class="sps">${esc([legs > 1 && s.ag ? SPW.agg : '', verdict].filter(Boolean).join('، '))}</span></div>`; };
+  const last = rounds[rounds.length - 1], lt = last && ((last.ties || []).find(mineT) || null), club = lt && side(lt).us;
+  const lost = lt && lt.ag && side(lt).ag[0] < side(lt).ag[1];
+  return {title, rows: [`<li class="spr spf"><div class="spbx" style="grid-template-columns:repeat(${rounds.length || 1},1fr);align-items:start">${rounds.map(col).join('')}</div></li>`,
+    `<li class="spc"><b>${esc(club ? fw(lost ? SPW.outIn : SPW.inRound, nm(club[0], club[1]), last.ar) : title)}</b></li>`]};
 }
 
 // ---- 10a «فورمولا ١»: the next race and its sessions in the city's time, the next session gold, the time left

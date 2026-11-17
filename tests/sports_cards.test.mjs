@@ -21,9 +21,19 @@ const SPORTS = { v: 1, id: '4668', en: 'Saudi-Arabian Pro League', ar: 'دوري
   table: [row('hilal', 30, 'wwdww'), row('nassr', 26, 'wdwlw'), row('ittihad', 24, 'wwlwd'), row('ahli', 22, 'dwwlw'), row('qadsiah', 18, 'lwdwl'), row('fateh', 17, 'wlldw'), row('ettifaq', 16, 'dlwdw'), row('shabab', 12, 'llldw')],
   last: [g('y1', ...T.ittihad, ...T.shabab, NOW - 22 * H, '0', '0'), g('y2', ...T.ahli, ...T.ettifaq, NOW - 20 * H, '3', '1')],
   next: [g('w1', ...T.ittihad, ...T.shabab, NOW + 1 * H), g('w2', ...T.ahli, ...T.fateh, NOW + 27 * H), g('w3', ...T.ettifaq, ...T.qadsiah, NOW + 51 * H)] };
-const CUP = { v: 1, id: '4719', en: 'AFC Champions League Elite', ar: 'دوري أبطال آسيا للنخبة', season: '2026-2027', updated: 'x', table: [], last: [], next: [],
-  cup: { rounds: [{ r: '16', ar: 'دور الـ١٦', games: [{ ...g('c1', ...T.hilal, '134000', 'Sepahan', NOW - 200 * H, '3', '1'), lg: '4719' }] },
-    { r: '125', ar: 'ربع النهائي', games: [{ ...g('c2', ...T.hilal, '134001', 'Al-Sadd', NOW + 300 * H), lg: '4719' }] }] } };
+// the cup files as sports_files.cup writes them: the knockout rounds with their ties (two legs, the aggregate), the league phase as groups
+const tie = (a, an, b, bn, legs, ag) => ({ a, b, an, bn, legs, ...(ag ? { ag } : {}) });
+const CUP = { v: 1, id: '4719', en: 'AFC Champions League Elite', ar: 'دوري أبطال آسيا للنخبة', season: '2025-2026', updated: 'x', table: [], last: [], next: [],
+  cup: { rounds: [
+    { r: '16', ar: 'دور الـ١٦', games: [], ties: [tie(T.hilal[0], T.hilal[1], '134000', 'Sepahan', [g('c1', ...T.hilal, '134000', 'Sepahan', NOW - 200 * H, '3', '1'), g('c1b', '134000', 'Sepahan', ...T.hilal, NOW - 30 * H, '1', '1')], [4, 2]),
+      tie('134002', 'Al-Duhail', '134003', 'Persepolis', [], null)] },
+    { r: '125', ar: 'ربع النهائي', games: [], ties: [tie('134001', 'Al-Sadd', T.hilal[0], T.hilal[1], [g('c2', '134001', 'Al-Sadd', ...T.hilal, NOW + 300 * H)], null)] }] } };
+const row2 = (id, n, pts, f) => ({ id, n, ar: '', p: 4, w: 0, d: 0, l: 0, gf: 0, ga: 0, pts, f });
+const PHASE = { v: 1, id: '4480', en: 'UEFA Champions League', ar: 'دوري أبطال أوروبا', season: '2026-2027', updated: 'x', table: [], last: [], next: [],
+  cup: { phase: { md: 4, of: 8, groups: [[row2('1', 'A', 12, 'wwww'), row2('2', 'B', 10, 'wwdw'), row2('3', 'C', 9, 'wwwl'), row2('4', 'D', 9, 'wlww'), row2('5', 'E', 8, 'wwdl'),
+    row2(T.nassr[0], T.nassr[1], 7, 'wdwl'), row2('7', 'G', 6, 'lwlw')], [row2('8', 'H', 12, 'wwww'), row2('9', 'I', 3, 'llwl')]] } } };
+const INDEX = { v: 1, updated: 'x', leagues: { '4719': { en: 'AFC Champions League', ar: 'دوري أبطال آسيا للنخبة' } }, teams: { [T.hilal[0]]: { en: 'Al-Hilal', ar: 'الهلال', leagues: ['4668', '4719'] },
+  [T.nassr[0]]: { en: 'Al-Nassr', ar: 'النصر', leagues: ['4668', '4480'] } } };
 const F1 = { v: 1, updated: 'x', season: '2026', round: '24', name: 'Abu Dhabi Grand Prix', ar: 'جائزة أبوظبي الكبرى', circuit: 'Yas Marina Circuit', country: 'UAE',
   sessions: [{ k: 'fp1', t: '2026-12-04T09:30:00Z' }, { k: 'q', t: '2026-12-05T14:00:00Z' }, { k: 'race', t: '2026-12-06T13:00:00Z' }] };
 const H2H = { v: 1, pair: '136013-136022', meetings: [g('m1', ...T.hilal, ...T.nassr, NOW - 900 * H, '2', '1'), g('m2', ...T.nassr, ...T.hilal, NOW - 1900 * H, '1', '1')] };
@@ -44,7 +54,7 @@ async function open(hash, { state = 'before', size = [461, 250], sportsJs = null
     const u = r.request().url();
     asked.push(u);
     const a = /\/data-archive\/(.+)$/.exec(u);
-    if (a) return a[1] === 'sports/4668.json' ? json(r, SPORTS) : a[1] === 'sports/4719.json' ? json(r, CUP) : a[1] === 'f1/next.json' ? json(r, F1)
+    if (a) return a[1] === 'sports/4668.json' ? json(r, SPORTS) : a[1] === 'sports/4719.json' ? json(r, CUP) : a[1] === 'sports/4480.json' ? json(r, PHASE) : a[1] === 'index.json' ? json(r, INDEX) : a[1] === 'f1/next.json' ? json(r, F1)
       : a[1] === 'h2h/136013-136022.json' ? json(r, H2H) : a[1] === 'teams/136137.json' ? json(r, KSA) : r.fulfill({ status: 404, body: '' });
     if (/eventsnext\.php\?id=136013/.test(u)) return json(r, { events: [TODAY[state]] });
     if (/eventsnext\.php/.test(u)) return json(r, { events: null });
@@ -87,11 +97,22 @@ for (const [kind, state, expect] of [
   await shot(p, `${kind}-${state}-home`);
   await ctx.close();
 }
-{   // the cup path with the cup file
-  const { p, ctx, errors } = await open(home('cuppath', '&leagues=id4719'));
+{   // the cup path: the club's ties round by round, the aggregate and the verdict; AFC found through the archive's index (no AFC game next)
+  const { p, ctx, errors } = await open(home('cuppath'));
   const c = await card(p);
-  check('cuppath: the rounds, the followed club gold in each', !errors.length && /دور الـ١٦/.test(c.full) && /ربع النهائي/.test(c.full) && (c.html.match(/spbox on/g) || []).length === 2, c.full + errors.join('|'));
+  check('cuppath: the club\'s path, its tie in each round with the aggregate, «تأهل», the next leg\'s time', !errors.length && c.hd === 'دوري أبطال آسيا للنخبة'
+    && /دور الـ١٦/.test(c.full) && /× Sepahan|× سباهان/.test(c.full) && /٤ - ٢/.test(c.full) && /مجموع المباراتين، تأهل/.test(c.full) && /ربع النهائي/.test(c.full)
+    && /السد|Al-Sadd/.test(c.full) && !/Duhail|الدحيل/.test(c.full) && (c.html.match(/spbox on/g) || []).length === 2, c.hd + ' :: ' + c.full + errors.join('|'));
+  check('cuppath: the one line says the round the club is in', /الهلال في ربع النهائي/.test(c.line), c.line);
   await shot(p, 'cuppath-home');
+  await ctx.close();
+}
+{   // the league phase: the club's group (not the other region's), its place of how many, the matchday
+  const { p, ctx, errors } = await open('widget=1&home_panel=cuppath&teams=' + T.nassr[0]);
+  const c = await card(p);
+  check('cuppath: the league phase with the club\'s place and the matchday', !errors.length && /مرحلة الدوري، الجولة ٤ من ٨/.test(c.full) && /النصر/.test(c.full)
+    && !/\bH\b|\bI\b/.test(c.full) && /النصر المركز ٦ من ٧، ٧ نقطة/.test(c.line), c.full + ' / ' + c.line + errors.join('|'));
+  await shot(p, 'cuppath-phase-home');
   await ctx.close();
 }
 {   // the couch row: one line per card

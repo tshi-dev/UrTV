@@ -32,7 +32,7 @@ def ev(i, h, a, when, hs=None, as_=None, st="NS", lg="4668", r="1"):
     return {"idEvent": i, "idLeague": lg, "idHomeTeam": h, "idAwayTeam": a, "strHomeTeam": "T" + h, "strAwayTeam": "T" + a, "intHomeScore": hs,
             "intAwayScore": as_, "strStatus": st, "strTimestamp": when, "strSeason": "2026-2027", "strSport": "Soccer", "intRound": r, "strPostponed": "no"}
 games = [ev("1", "10", "20", ts(-20), "2", "0", "FT"), ev("2", "30", "10", ts(-13), "1", "1", "FT"), ev("3", "20", "30", ts(-6), "0", "3", "FT"),
-         ev("4", "10", "30", ts(-1), "3", "1", "FT"), ev("5", "20", "10", ts(2)), ev("6", "30", "20", ts(9)), ev("7", "10", "20", ts(-3), "1", "0", "FT")]
+         ev("4", "10", "30", ts(-1), "3", "1", "FT"), ev("5", "20", "10", ts(2)), ev("6", "30", "20", ts(9), r="16"), ev("6b", "20", "30", ts(30), r="32"), ev("7", "10", "20", ts(-3), "1", "0", "FT", r="11")]
 cupg = [ev("c1", "10", "40", ts(-30), "2", "1", "FT", lg="4719", r="16"), ev("c2", "40", "10", ts(-23), "0", "0", "FT", lg="4719", r="16"),
         ev("c3", "10", "50", ts(5), lg="4719", r="125"), ev("c4", "60", "70", ts(-40), "1", "0", "FT", lg="4719", r="3")]
 lg_dir = Path(tempfile.mkdtemp())
@@ -50,10 +50,38 @@ tab = [(r["id"], r["p"], r["pts"], r["gf"] - r["ga"], r["f"]) for r in s["table"
 check("the table: 3 a win, 1 a draw, by points then goal difference; each club's last 5 newest first", tab == [("10", 4, 10, 5, "wwdw"), ("30", 3, 4, 1, "lwd"), ("20", 3, 0, -6, "lll")], tab)
 check("the last 2 days' results only, newest first", [g["id"] for g in s["last"]] == ["4"], s["last"])
 check("the next 7 days' games only", [g["id"] for g in s["next"]] == ["5"], s["next"])
-check("a league with no knockout round has no cup", "cup" not in s)
+check("a league has no cup, even with its matchdays 16 and 32 (TheSportsDB's knockout numbers)", "cup" not in s)
 c = json.loads((out / "sports/4719.json").read_text())["cup"]["rounds"]
 check("a cup: its knockout games by round, named, in the cup's order (a group game left out)", [(r["r"], r["ar"], [g["id"] for g in r["games"]]) for r in c]
       == [("16", "دور الـ١٦", ["c1", "c2"]), ("125", "ربع النهائي", ["c3"])], c)
+cp = json.loads((out / "sports/4719.json").read_text())["cup"]
+t16 = cp["rounds"][0]["ties"]
+check("a two-legged tie: one tie, its legs in order, the aggregate from each club's side", len(t16) == 1 and t16[0]["a"] == "10" and t16[0]["b"] == "40"
+      and [g["id"] for g in t16[0]["legs"]] == ["c1", "c2"] and t16[0]["ag"] == [2, 1], t16)
+check("a tie still to be played has no aggregate", "ag" not in cp["rounds"][1]["ties"][0], cp["rounds"][1])
+check("the league phase: its group's table and how far it is (matchday 3 of 3)", cp["phase"]["md"] == 3 and cp["phase"]["of"] == 3
+      and [r["id"] for r in cp["phase"]["groups"][0]] == ["60", "70"], cp["phase"])
+
+# the real shapes (urtv-data's store, 2024-25 and 2025-26): UCL's play-off is «160» of 16 games one season and a two-legged «32» the next;
+# AFC Elite's league phase is two groups (west and east) that never meet; a King Cup's «32» is a real round of 32 (one leg)
+def g(i, h, a, d, r, hs="1", as_="0"):
+    return {"id": i, "lg": "x", "t": ts(d), "h": h, "a": a, "hn": h, "an": a, "hs": hs, "as": as_, "st": "FT", "r": r}
+po = [g(f"p{k}{l}", f"A{k}", f"B{k}", -60 + 7 * l + k * .01, "160") for k in range(8) for l in range(2)]
+r16 = [g(f"r{k}{l}", f"A{k}", f"C{k}", -40 + 7 * l + k * .01, "16") for k in range(8) for l in range(2)]
+c1 = sf.cup(po + r16)
+check("UCL 2024-25: a «160» of 16 games is the play-off, before the round of 16", [(r["r"], r["ar"], len(r["ties"])) for r in c1["rounds"]] == [("160", "الملحق", 8), ("16", "دور الـ١٦", 8)], c1["rounds"])
+c2 = sf.cup([dict(x, r="32") for x in po] + r16)
+check("UCL 2025-26: a two-legged «32» of 8 ties is the play-off too", c2["rounds"][0]["ar"] == "الملحق", c2["rounds"][0]["ar"])
+kc = sf.cup([g(f"k{k}", f"A{k}", f"B{k}", -10 + k * .01, "32") for k in range(16)])
+check("a King Cup's «32» of 16 single games stays the round of 32", kc["rounds"][0]["ar"] == "دور الـ٣٢", kc["rounds"][0]["ar"])
+west = [g(f"w{k}", f"W{k}", f"W{(k + 1) % 4}", -20 + k, str(k + 1)) for k in range(4)]
+east = [g(f"e{k}", f"E{k}", f"E{(k + 1) % 4}", -20 + k, str(k + 1), "0", "2") for k in range(4)]
+ph = sf.cup(west + east)["phase"]
+check("AFC Elite: the league phase as two groups that never meet, each with its own table", len(ph["groups"]) == 2
+      and {frozenset(r["id"] for r in t) for t in ph["groups"]} == {frozenset(f"W{k}" for k in range(4)), frozenset(f"E{k}" for k in range(4))}, ph)
+qual = [g(f"q{k}", f"Q{k}", f"W{k}", -80 + k * .01, "1") for k in range(4)]   # UCL's qualifying round «1», in July
+ph2 = sf.cup(west + qual)["phase"]
+check("a qualifying round with the same number (weeks earlier) is not in the league phase", [len(t) for t in ph2["groups"]] == [4] and ph2["md"] == 4, ph2)
 check("the F1 file is carried over by a build that does not ask for it", json.loads((out / "f1/next.json").read_text())["name"] == "Kept GP")
 size = (out / "sports/4668.json").stat().st_size
 check("the file is small", size < 20000, size)

@@ -83,17 +83,89 @@ def table(games, names):
     return sorted(rows.values(), key=lambda r: (-r["pts"], -(r["gf"] - r["ga"]), -r["gf"], r["n"]))
 
 
-def cup(games):
-    """{rounds: [{r, ar, games}]} for the knockout games of a season (TheSportsDB's round numbers), none when it has no knockout round"""
+PHASE_MAX = 8   # a cup's league or group phase: TheSportsDB's rounds 1..8 (UCL's and AFC's league phase 8, the old group stages 6)
+
+
+def _ties(es):
+    """a knockout round's games as ties: the same two clubs (one or two legs), the aggregate once every leg has its score"""
     by = {}
+    for e in sorted(es, key=lambda e: e["t"]):
+        by.setdefault(frozenset((e["h"], e["a"])), []).append(e)
+    out = []
+    for legs in by.values():
+        a, b = legs[0]["h"], legs[0]["a"]
+        tie = {"a": a, "b": b, "an": legs[0].get("hn") or "", "bn": legs[0].get("an") or "", "legs": [_game(e) for e in legs]}
+        if all(_done(e) for e in legs):
+            tie["ag"] = [sum(_num(e["hs"] if e["h"] == x else e["as"]) for e in legs) for x in (a, b)]
+        out.append(tie)
+    return sorted(out, key=lambda t: t["legs"][0]["t"])
+
+
+def _groups(phase):
+    """the phase's games split by who can meet whom (UCL's one league of 36, AFC's west and east, the old groups of 4)"""
+    up = {}
+    def root(x):
+        while up.setdefault(x, x) != x:
+            up[x] = up[up[x]]; x = up[x]
+        return x
+    for e in phase:
+        up[root(e["h"])] = root(e["a"])
+    by = {}
+    for e in phase:
+        by.setdefault(root(e["h"]), []).append(e)
+    return list(by.values())
+
+
+def _last_cluster(phase, gap=dt.timedelta(days=14)):
+    """each matchday's own games: TheSportsDB numbers the qualifying rounds 1, 2, 3 too (UCL's July and August), weeks before the matchday of
+    that number; a matchday's games are a few days apart, so a round's games are cut where two are more than 14 days apart and the last part kept"""
+    by = {}
+    for e in phase:
+        by.setdefault(e["r"], []).append(e)
+    out = []
+    for es in by.values():
+        es = sorted((e for e in es if _t(e)), key=_t)
+        start = 0
+        for i in range(1, len(es)):
+            if _t(es[i]) - _t(es[i - 1]) > gap:
+                start = i
+        out += es[start:]
+    return out
+
+
+def cup(games, names=None):
+    """{rounds: [{r, ar, games, ties}], phase: {groups, md, of}} for a cup's season (TheSportsDB's round numbers), none when it has neither:
+    the knockout rounds in the order they are played, each named (a 16-game «160», or a two-legged «32» of 8 ties, is the play-off), its ties
+    with their aggregate; the league or group phase as each group's table, how many matchdays are played and how many there are"""
+    names = names or {}
+    rs = {str(e.get("r") or "") for e in games}
+    if any(r.isdigit() and PHASE_MAX < int(r) < 400 and r not in KO for r in rs):
+        return None   # a league's matchdays (9, 10, 11…): its «16» and «32» are matchdays, not knockout rounds
+    ko, phase = {}, []
     for e in games:
+        if e.get("pp"):
+            continue
         r = str(e.get("r") or "")
-        if r in KO and not e.get("pp"):
-            by.setdefault(r, []).append(_game(e))
-    if not by:
-        return None
-    order = [r for r in KO_ORDER if r in by] + sorted(r for r in by if r not in KO_ORDER)
-    return {"rounds": [{"r": r, "ar": KO[r], "games": sorted(by[r], key=lambda g: g["t"])} for r in order]}
+        if r in KO:
+            ko.setdefault(r, []).append(e)
+        elif r.isdigit() and 1 <= int(r) <= PHASE_MAX:
+            phase.append(e)
+    phase = _last_cluster(phase)
+    body = {}
+    if ko:
+        rounds = []
+        for r, es in sorted(ko.items(), key=lambda x: min(e["t"] for e in x[1])):
+            ties = _ties(es)
+            two_legged = ties and all(len(t["legs"]) == 2 for t in ties)
+            ar = "الملحق" if (r == "160" and len(ties) > 1) or (r == "32" and len(ties) == 8 and two_legged) else KO[r]
+            rounds.append({"r": r, "ar": ar, "games": [_game(e) for e in sorted(es, key=lambda e: e["t"])], "ties": ties})
+        body["rounds"] = rounds
+    if phase:
+        groups = [table(g, names) for g in _groups(phase)]
+        played = [int(e["r"]) for e in phase if _done(e)]
+        body["phase"] = {"groups": sorted((g for g in groups if g), key=lambda g: -len(g)), "md": max(played) if played else 0,
+                         "of": max(int(e["r"]) for e in phase)}
+    return body or None
 
 
 def league_file(store, lg, now, stamp, names, ar=""):
@@ -106,7 +178,7 @@ def league_file(store, lg, now, stamp, names, ar=""):
     nxt = sorted((e for e in games if not _done(e) and not e.get("pp") and now - dt.timedelta(hours=3) <= (_t(e) or lo) <= hi), key=lambda e: e["t"])
     body = {"v": V, "id": lg, "en": store.name(lg), "ar": ar, "season": season, "updated": stamp,
             "table": table(games, names), "last": [_game(e) for e in last], "next": [_game(e) for e in nxt]}
-    c = cup(games)
+    c = cup(games, names)
     if c:
         body["cup"] = c
     return body
