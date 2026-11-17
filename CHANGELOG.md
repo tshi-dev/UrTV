@@ -310,6 +310,9 @@ numbered release tagged `v4.0.<build>` (only the URL shows it; the title is «Ur
 - The audio-focus fix (the Quran and the adhan no longer stutter or fight other sound): itsAbdulelah (#35); the TV updating itself, earlier: itsAbdulelah (#10).
 - The PIN and kids mode («حماية العائلة»): AbdullahCg (#40).
 - Club crests: samiharthy (#30).
+- NBA and NFL teams and the F1 weekend sessions: iiMihyar (#8); we rebuilt them on TheSportsDB, but the idea and the first version were his.
+- Club badges on the match cards: al3omdh22 (#13) sent them first.
+- The remote's app buttons «أزرار الريموت»: 7odaifa-ab (#59).
 
 ## 23 October 2026 (51b9680)
 
