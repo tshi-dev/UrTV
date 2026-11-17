@@ -71,7 +71,7 @@ check("the picker: the six, then the one tile «تركيبات مقترحة»; t
       and "KEYCODE_DPAD_UP" in pick and "close(); return true;" in pick)
 check("the motion: a circular reveal from the tile's centre, the mixes fanning out of it, 250 ms slowing at the end; closing the same way back",
       "ViewAnimationUtils.createCircularReveal(panel, (int) c[0], (int) c[1], in ? 0f : r, in ? r : 0f)" in pick and "setDuration(PresetMotion.MS)" in pick
-      and "new android.view.animation.DecelerateInterpolator(PresetMotion.EASE)" in pick and "translationX(in ? 0 : dx)" in pick)
+      and "setInterpolator(Motion.ease())" in pick   # the one curve of the settings (tests/motion_test.py): it slows at the end and "translationX(in ? 0 : dx)" in pick)
 check("a weak TV («الوضع الخفيف» on, or auto on a weak TV) only fades", "if (prefs.liteNow(SettingsActivity.this)) {" in pick
       and 'return "on".equals(v) || ("auto".equals(v) && lowRam(c));' in prefs and ".alpha(in ? 1f : 0f).setDuration(PresetMotion.MS)" in pick)
 pics2 = [ROOT / f"android/app/src/main/assets/presets/{k}.jpg" for k in ["combos"] + ["combo-" + c[0] for c in combos]]

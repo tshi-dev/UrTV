@@ -1017,7 +1017,7 @@ public class SettingsActivity extends Activity {
             float r = PresetMotion.radius(c[0], c[1], panel.getWidth(), panel.getHeight());
             android.animation.Animator reveal = android.view.ViewAnimationUtils.createCircularReveal(panel, (int) c[0], (int) c[1], in ? 0f : r, in ? r : 0f);
             reveal.setDuration(PresetMotion.MS);
-            reveal.setInterpolator(in ? new android.view.animation.DecelerateInterpolator(PresetMotion.EASE) : new android.view.animation.AccelerateInterpolator(PresetMotion.EASE));
+            reveal.setInterpolator(Motion.ease());
             reveal.addListener(new android.animation.AnimatorListenerAdapter() {
                 @Override public void onAnimationEnd(android.animation.Animator a) { done.run(); }
             });
@@ -1027,7 +1027,7 @@ public class SettingsActivity extends Activity {
                 if (in) { card.setTranslationX(dx); card.setTranslationY(dy); card.setScaleX(PresetMotion.SCALE0); card.setScaleY(PresetMotion.SCALE0); card.setAlpha(0f); }
                 card.animate().translationX(in ? 0 : dx).translationY(in ? 0 : dy).scaleX(in ? 1f : PresetMotion.SCALE0).scaleY(in ? 1f : PresetMotion.SCALE0)
                     .alpha(in ? 1f : 0f).setDuration(PresetMotion.MS)
-                    .setInterpolator(in ? new android.view.animation.DecelerateInterpolator(PresetMotion.EASE) : new android.view.animation.AccelerateInterpolator(PresetMotion.EASE)).start();
+                    .setInterpolator(Motion.ease()).start();
             }
             reveal.start();
         }
