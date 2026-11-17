@@ -325,6 +325,8 @@
   .week li.tafsir .tk{display:block;font-size:.86em;color:var(--gold-3);line-height:1.4}
   .week li.tafsir .tt{display:block}
   .week li.tafsir .tp{display:block;font-size:.8em;color:#B9B09C;text-align:end;line-height:1.3}
+  /* 4.4 the book and the mushaf page under the text, small (the owner approved it: docs/mockups/tafsir-short/ on work/44-cards) */
+  .week li.tafsir .tk.under{font-size:.72em;color:#B9B09C;text-align:end;margin-top:.5vh;line-height:1.3}
   /* a full hadith: the isnad and the narration small and muted, the Prophet's words ﷺ at full size */
   .week li.quote.hadith{font-size:calc(1.3vw*var(--z,1));font-size:calc(clamp(15px,1.3vw,25px)*var(--z,1));line-height:1.7}
   /* long texts a step smaller (by length, see quoteSize()), so the card never grows past the clock row */
@@ -3972,6 +3974,9 @@ function fitQuote(ul){
 // page), read once and only when it is on: beside the page, the app's own assets (the screensaver's, the launcher's web/), or the repository
 let TAFSIR = null;
 const TAFSIR_NAME = 'التفسير الميسر';
+// 4.4 (the owner: «make it short; the book name and pages is okay»): the book and the verse's mushaf page, small, under the text
+const TAFSIR_PAGE = 'صفحة';
+const tafsirSource = v => TAFSIR_NAME + (v.page ? SEP + TAFSIR_PAGE + ' ' + ar(v.page) : '');
 const tafsirOf = v => TAFSIR && TAFSIR[v.surah + ':' + v.ayah] || '';
 function loadTafsir(){
   if(!CONFIG.tafsir || TAFSIR) return;
@@ -4047,7 +4052,8 @@ function quoteOfDay(card, kind = CONFIG.verseKind){
   if(VERSES.length && (kind === 'verse' || (kind === 'both' && n % 2 === 0))){
     const v = pickShort(VERSES, half, x => x.text.length, card);
     return {title:CONFIG.verseMin ? 'آية كريمة' : 'آية اليوم', rows:[`<li class="quote quran${v.text.length > 330 ? ' q4' : quoteSize(v.text.length)}"><span class="orn">﴿</span><span class="qt">${esc(v.text)}</span><span class="orn">﴾</span></li>`, '<li class="src">' + esc(v.surah) + SEP + 'الآية' + ' ' + ar(v.ayah) + '</li>']
-      .concat(CONFIG.tafsir && tafsirOf(v) ? [`<li class="tafsir"><span class="tk">${TAFSIR_NAME}</span><span class="tt">${esc(tafsirOf(v))}</span><span class="tp"></span></li>`] : [])};
+      .concat(CONFIG.tafsir && tafsirOf(v) ? [OLD_LOOK ? `<li class="tafsir"><span class="tk">${TAFSIR_NAME}</span><span class="tt">${esc(tafsirOf(v))}</span><span class="tp"></span></li>`
+        : `<li class="tafsir"><span class="tt">${esc(tafsirOf(v))}</span><span class="tp"></span><span class="tk under">${tafsirSource(v)}</span></li>`] : [])};
   }
   const h = pickShort(HADITH, half, x => x.parts.reduce((m, [, t]) => m + t.length, 0), card);
   const saw = s => s.replace(/ﷺ/g, '<span class="saw">ﷺ</span>').replace(/[﴿﴾]/g, m => `<span class="orn">${m}</span>`);

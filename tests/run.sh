@@ -390,6 +390,7 @@ node tests/verse_hadith.test.mjs   # 4.4 «آية» and «حديث» at once: th
 node tests/strip_steady.test.mjs   # 4.4 the screensaver's bottom strip stays put as the slot turns (games, scores, weather, markets)
 node tests/sources_rule.test.mjs   # 4.4 the owner's rule: a source on a card is a tiny dim line at most (60%, half the light), never a provider named elsewhere
 node tests/cards_batch3.test.mjs   # 4.4 card review batch 3 (12 adhkar, 13 tasks, 14 now playing, 16 year, 17 today, 18 shows): new look by default, the old one with «الشكل السابق»
+node tests/tafsir_short.test.mjs   # 4.4 the tafsir card short: the Muyassar whole, «التفسير الميسر، صفحة N» under it, the pages stored per verse
 node tests/football_page.test.mjs   # the football home's widgets and «المباريات» in a browser, on fixed games
 node tests/sports_cards.test.mjs   # 4.4 «الرياضة»: the sports cards (dist/sports.js) on the home, the couch row and the screensaver, the takeover, only the page's own build
 node tests/matches_archive.test.mjs   # «المباريات» with the match archive (data-archive): every followed team, yesterday's results, a club, a league, the chooser

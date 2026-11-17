@@ -15,7 +15,7 @@ The reviewed list is integrated into the app. The following files describe the o
 - `requirements.txt` pins GeoNames cache and Babel so regeneration is stable.
 - `sources/capitals-geonames.tsv` preserves the credited GeoNames record for Palau's capital (below the cache cutoff).
 - `merge.py` works from any current directory, restores country names from CLDR, recognizes capital aliases, and recomputes country order.
-- The original 374 cities in the 14 established countries are unchanged. `gen_cities.py` appends packed world regions using `Cities-support.java.txt`; chunks stay below Java's string/initializer limits.
+- The original cities in the 14 established countries are unchanged: 374, and since 4.4 375 («أحد المسارحة», added from a user report and reviewed). `gen_cities.py` appends packed world regions using `Cities-support.java.txt`; chunks stay below Java's string/initializer limits.
 
 Regenerate from the repository root:
 
