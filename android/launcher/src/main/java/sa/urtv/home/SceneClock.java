@@ -21,8 +21,10 @@ import android.view.View;
  * when the time changes (once a minute); nothing animates.
  */
 final class SceneClock extends View {
-    private final Paint fill = new Paint(Paint.ANTI_ALIAS_FLAG), edge = new Paint(Paint.ANTI_ALIAS_FLAG), sheen = new Paint(Paint.ANTI_ALIAS_FLAG),
-            shadow = new Paint(Paint.ANTI_ALIAS_FLAG);
+    // 4.4 the owner (stair-stepped edges on the TV): every layer drawn at the digits' real size, smooth: anti-aliased outlines, the glass copy sampled
+    // with filtering (never its 160 x 90 pixels as blocks), the text laid out at its true size (no hinting to whole pixels), and no bitmap scaled
+    static final int SMOOTH = Paint.ANTI_ALIAS_FLAG | Paint.FILTER_BITMAP_FLAG | Paint.DITHER_FLAG | Paint.LINEAR_TEXT_FLAG | Paint.SUBPIXEL_TEXT_FLAG;
+    private final Paint fill = new Paint(SMOOTH), edge = new Paint(SMOOTH), sheen = new Paint(SMOOTH), shadow = new Paint(SMOOTH);
     private final Rect bounds = new Rect();
     private String text = "";
     private int[] box;            // the digits' box: left, top, right, bottom (ScenePlan.clockBox)

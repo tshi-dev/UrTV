@@ -306,7 +306,7 @@ the phone page's key, «مركز التحكم» the control centre's row that op
     مثال للوكيل: optimize/saver.sh markets off
       القيم المقبولة: tasi,gold,btc | off | on
 ——— الأسواق [شاشة التوقف]
-    مثال للوكيل: optimize/saver.sh markets <up to 4 of tasi, aramco, spx, btc, gold, silver, oil, xrp>  (`oil` = Brent, in dollars per barrel)
+    مثال للوكيل: optimize/saver.sh markets <up to 4 of tasi, aramco, spx, btc, gold, gold21, silver, oil, xrp>  (`oil` = Brent, in dollars per barrel; `gold` = the 24-carat gram in riyals, `gold21` = the 21-carat gram, both can be shown)
     مثال للوكيل: optimize/saver.sh home-card … stocks
     مثال للوكيل: optimize/saver.sh stocks
     مثال للوكيل: optimize/saver.sh markets
@@ -724,7 +724,7 @@ the phone page's key, «مركز التحكم» the control centre's row that op
      مثال للوكيل: optimize/saver.sh markets off
        القيم المقبولة: tasi,gold,btc | off | on
 ———— الأسواق [شاشة التوقف]
-     مثال للوكيل: optimize/saver.sh markets <up to 4 of tasi, aramco, spx, btc, gold, silver, oil, xrp>  (`oil` = Brent, in dollars per barrel)
+     مثال للوكيل: optimize/saver.sh markets <up to 4 of tasi, aramco, spx, btc, gold, gold21, silver, oil, xrp>  (`oil` = Brent, in dollars per barrel; `gold` = the 24-carat gram in riyals, `gold21` = the 21-carat gram, both can be shown)
      مثال للوكيل: optimize/saver.sh home-card … stocks
      مثال للوكيل: optimize/saver.sh stocks
      مثال للوكيل: optimize/saver.sh markets

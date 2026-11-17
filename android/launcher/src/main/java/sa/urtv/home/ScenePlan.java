@@ -225,7 +225,7 @@ final class ScenePlan {
             best = Math.min(best, d);
             if (dx == 0 && dy == 0) here = d;
         }
-        return here <= ALIGN_DIFF && here <= best + 0.5f;
+        return here <= ALIGN_DIFF && here <= best + 0.05f;   // its own place the best match (a dark, even silhouette differs by little, a shifted one is never the best)
     }
 
     /**

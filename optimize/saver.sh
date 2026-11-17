@@ -96,7 +96,7 @@
 #   optimize/saver.sh backexit hold                «الخروج من تلفزيونك», where the TV keeps its own home: press (default: one Back leaves ours), hold (a long Back) or three (three Backs)
 #   optimize/saver.sh lang en                      «اللغة»: ar (default) | en: the screensaver page and its settings in English, left to right
 #                                                  (the home screen and the phone page are still Arabic: docs/SETTINGS.md says when to offer it)
-#   optimize/saver.sh markets tasi,gold,btc        top left, up to 4 in order: tasi aramco spx btc gold silver oil xrp (default tasi,spx,btc)
+#   optimize/saver.sh markets tasi,gold,btc        top left, up to 4 in order: tasi aramco spx btc gold gold21 silver oil xrp (default tasi,spx,btc; gold21 = the 21-carat gram)
 #   optimize/saver.sh markets off                  hide the markets line at the top (only the weather stays; the list is kept and nothing is fetched for it); `markets on` brings it back
 #   optimize/saver.sh clocksize medium             the screensaver's clock: large (default) medium small
 #   optimize/saver.sh mkstyle prices               markets: arrows (▲▼ only, default) or prices (price and day's change)

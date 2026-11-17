@@ -149,6 +149,16 @@ if shutil.which("javac"):
     fd = [r for r in rows if r[0] == "framed"][0][1:]
     check("the cut-out's skyline is read through the crop (a tower at 960-1000 of the photo, its top at 500, stands in "
           "the screen's column at 1000-1040, its top at 528); no crop: the skyline itself", fd == ["25:528", "true"], fd)
+    sclock, mainsrc = read(HOME / "SceneClock.java"), read(HOME / "MainActivity.java")
+    check("4.4 the owner (stair-stepped digits on the TV): the big clock's every layer (glass fill, rim, sheen, shadow) is drawn smooth at the digits' "
+          "real size: anti-aliased, the glass copy sampled with filtering, the text at its true size (LINEAR, SUBPIXEL); no bitmap of it is scaled",
+          "Paint.ANTI_ALIAS_FLAG | Paint.FILTER_BITMAP_FLAG | Paint.DITHER_FLAG | Paint.LINEAR_TEXT_FLAG | Paint.SUBPIXEL_TEXT_FLAG" in sclock
+          and "fill = new Paint(SMOOTH), edge = new Paint(SMOOTH), sheen = new Paint(SMOOTH), shadow = new Paint(SMOOTH)" in sclock
+          and "createScaledBitmap" not in sclock and "setLayerType" not in sclock and "c.drawText(text, x, y, shadow);" in sclock)
+    check("4.4 the owner (the date ran into the big clock's «2»): with the big glass clock the date, zone and prayer lines move up into the header "
+          "clock's empty row (the header keeps its size); back where they were without it",
+          "private void liftDate(boolean up)" in mainsrc and "liftDate(bigClock);" in mainsrc and "liftDate(true);" in mainsrc and "liftDate(false);" in mainsrc
+          and "-(date.getTop() - clock.getTop())" in mainsrc)
     check("ScenePlan's tiers are Ram's numbers", [r for r in rows if r[0] == "tiers"][0][1] == "0,1,2"
           and "public static final int LOW = 0, MID = 1, NORMAL = 2;" in ram)
 else:

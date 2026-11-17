@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <!-- the build: UTC time (YYYYMMDDHHMMSS) of the newest commit of the page's sources, put in by src/build.py. The app loads the page with the newer stamp (its own
      copy or a downloaded one), never by file time, and does not keep a download whose stamp is older than its own (Updater, PageStamp). -->
-<meta name="urtv-build" content="20261116184412">
+<meta name="urtv-build" content="20261117062626">
 <title>شاشة تلفزيونك</title>
 <style>
   @font-face{font-family:'Thmanyah';font-weight:300;font-style:normal;font-display:block;src:url("https://raw.githubusercontent.com/tshi-dev/UrTV/master/assets/fonts/Thmanyah-Light.woff2") format("woff2")}
@@ -820,6 +820,10 @@ html.lowram .photo.settle, html.lowram .week ul.flip li, html.lowram .mrow.flip 
   .sd-line .n b{font-weight:500;color:#FFE9B8}
   
   .pt{unicode-bidi:isolate;direction:rtl;margin-inline-start:.3em}
+  
+  .sd-fg{position:fixed;z-index:6;background:0 0/100% 100% no-repeat;pointer-events:none}
+  html.sd-still .photo{transform:none!important;animation:none!important}
+
   html.sd-big .top,html.sd-big .week,html.sd-big .bottom,html.sd-big .subline,html.sd-big .ystrip,html.sd-big #credit{display:none!important}
   html.sd-big .clockwrap{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;z-index:6;margin:0}
   html.sd-big .clock{font-family:'Thmanyah',sans-serif;font-weight:300;font-size:55.5vh;line-height:1;direction:ltr;color:#fff;text-shadow:0 2px 30px rgba(0,0,0,.3)}
@@ -1025,7 +1029,7 @@ const CONFIG = {
   clockSize: (v => ['medium','small'].includes(v) ? v : 'large')(_Q.get('clocksize')),
   cardStyle: (v => ['dark1','glass1','dark3','glass3','boxes','classic'].includes(v) ? v : 'current')(_Q.get('cardstyle')),
   markets: (l => l.length ? l : ['tasi','spx','btc'])(
-    _list('markets').filter((k, i, a) => ['tasi','aramco','spx','btc','gold','silver','oil','xrp'].includes(k) && a.indexOf(k) === i).slice(0, 4)),
+    _list('markets').filter((k, i, a) => ['tasi','aramco','spx','btc','gold','gold21','silver','oil','xrp'].includes(k) && a.indexOf(k) === i).slice(0, 4)),
   mkStyle: _Q.get('mkstyle') === 'prices' ? 'prices' : 'arrows',
   stkChg: _Q.get('stkchg') === 'amount' ? 'amount' : 'pct',
   mkBar: _Q.get('mkbar') !== 'off',
@@ -2370,6 +2374,7 @@ const MARKETS = {
   spx:    {name:'S&P 500',  sym:'^GSPC',    dec:0},
   btc:    {name:'بيتكوين',  cg:'bitcoin',   dec:0, unit:'$'},
   gold:   {name:'الذهب',    sym:'GC=F',     dec:2, unit:'ر.س', mul:GRAM},
+  gold21: {name:'ذهب ٢١',   sym:'GC=F',     dec:2, unit:'ر.س', mul:GRAM * 0.875},
   silver: {name:'الفضة',    sym:'SI=F',     dec:2, unit:'ر.س', mul:GRAM},
   oil:    {name:'نفط برنت', sym:'BZ=F',     dec:2, unit:'دولار/برميل'},
   xrp:    {name:'ريبل',     cg:'ripple',    dec:2, unit:'$'},
@@ -2985,7 +2990,7 @@ function shrinkByContent(c){
   return true;
 }
 function fitCards(){
-  if(CARDS.length < 2) return;
+  if(CARDS.length < 2 && !CONFIG.widget) return;
   const mid = document.querySelector('.mid');
   const tooTall = CONFIG.widget ? () => mid.getBoundingClientRect().height > innerHeight + .5 : pairTooTall;
   mid.classList.add('fit');
@@ -3847,6 +3852,7 @@ function sdGlass(){
   const H = document.documentElement, ph = document.querySelector('.photo'), bg = ph && ph.style.backgroundImage, m = bg && /url\(["']?(.*?)["']?\)$/.exec(bg);
   if(CONFIG.lowram || !m || m[1] === SD_GLASS_OF) return;
   SD_GLASS_OF = m[1];
+  sdDepth(m[1]);
   const img = new Image();
   img.crossOrigin = 'anonymous';
   img.onload = () => {
@@ -3866,6 +3872,89 @@ function sdGlass(){
   };
   img.onerror = () => H.classList.remove('sd-glass');
   img.src = m[1];
+}
+
+const MASK_BASE = 'https://raw.githubusercontent.com/tshi-dev/urtv-data/data/masks/';
+const MASK_IDX = {};
+const SD_BOX = [601, 266, 1319, 542];
+const SD_GLYPHS = [[.56, .56, -.24, .56, .56], [.56, -.24, .56, .56]];
+function maskKey(url){
+  if(url.startsWith(PHOTO_BASE)){ const m = /^([A-Za-z0-9_-]{4,40})\.jpg/.exec(url.slice(PHOTO_BASE.length)); return m ? ['photos', m[1]] : null; }
+  if(url.startsWith(PACK_BASE)){ const m = /^([a-z][a-z0-9-]{1,30})\/([0-9]{1,3})\.jpg/.exec(url.slice(PACK_BASE.length)); return m && m[1] !== 'haramain' ? [m[1], m[2]] : null; }
+  const b = /wallpapers\/([A-Za-z0-9_-]{4,40})\.jpg$/.exec(url);
+  return b ? ['photos', b[1]] : null;
+}
+function sdCover(sky, colon){
+  const [l, t, r, b] = SD_BOX, dh = b - t, cx = (l + r) / 2;
+  let most = 0;
+  for(const lay of SD_GLYPHS){
+    let x0 = cx - lay.reduce((a, g) => a + Math.abs(g), 0) * dh / 2;
+    for(const g of lay){
+      const gw = Math.abs(g) * dh;
+      if((g < 0) === colon) for(let x = x0; x <= x0 + gw; x += 2){ const c = Math.floor(x * sky.length / 1920); if(c >= 0 && c < sky.length) most = Math.max(most, Math.min(1, (b - sky[c]) / dh)); }
+      x0 += gw;
+    }
+  }
+  return most;
+}
+const sdLegible = sky => sdCover(sky, false) <= .25 + 1e-4 && sdCover(sky, true) <= .25 + 1e-4;
+function sdImage(url){ return new Promise((ok, no) => { const i = new Image(); i.crossOrigin = 'anonymous'; i.onload = () => ok(i); i.onerror = no; i.src = url; }); }
+function sdRead(photo, fg, box){
+  try{
+    const cw = 960, ch = Math.max(1, Math.round(box[3] / 2)), c = document.createElement('canvas'), d = document.createElement('canvas');
+    c.width = cw; c.height = ch; d.width = 960; d.height = 540;
+    const g = c.getContext('2d'), h = d.getContext('2d');
+    g.drawImage(fg, 0, 0, cw, ch); h.drawImage(photo, 0, 0, 960, 540);
+    const a = g.getImageData(0, 0, cw, ch).data, p = h.getImageData(0, 0, 960, 540).data;
+    const sky = new Array(192).fill(1080);
+    for(let k = 0; k < 192; k++){
+      const x = Math.min(cw - 1, Math.floor(((k + .5) * 10 - box[0]) * cw / box[2]));
+      if(x < 0) continue;
+      for(let y = 0; y < ch; y++) if(a[(y * cw + x) * 4 + 3] > 127){ sky[k] = Math.round(box[1] + y * box[3] / ch); break; }
+    }
+    let best = 1e9, here = 1e9;
+    for(let dy = -3; dy <= 3; dy++) for(let dx = -3; dx <= 3; dx++){
+      let sum = 0, n = 0;
+      for(let y = 0; y < ch; y++) for(let x = 0; x < cw; x++){
+        const i = (y * cw + x) * 4;
+        if(a[i + 3] < 250) continue;
+        const px = Math.round((box[0] + (x + .5) * box[2] / cw) / 2 - .5) + dx, py = Math.round((box[1] + (y + .5) * box[3] / ch) / 2 - .5) + dy;
+        if(px < 0 || py < 0 || px >= 960 || py >= 540) continue;
+        const j = (py * 960 + px) * 4;
+        sum += Math.abs(a[i] - p[j]) + Math.abs(a[i + 1] - p[j + 1]) + Math.abs(a[i + 2] - p[j + 2]); n++;
+      }
+      if(!n) continue;
+      const m = sum / (3 * n);
+      best = Math.min(best, m);
+      if(!dx && !dy) here = m;
+    }
+    return {sky, aligned: here <= 16 && here <= best + .05};
+  }catch(e){ return null; }
+}
+let SD_DEPTH_OF = '';
+async function sdDepth(url){
+  const H = document.documentElement, old = document.querySelector('body > .sd-fg');
+  if(old) old.remove();
+  H.classList.remove('sd-still');
+  SD_DEPTH_OF = url;
+  const key = CONFIG.design === 'clean' && !CONFIG.lowram && !CONFIG.widget && url ? maskKey(url) : null;
+  if(!key) return;
+  try{
+    const idx = MASK_IDX[key[0]] || (MASK_IDX[key[0]] = fetchT(MASK_BASE + key[0] + '/index.json', 15000).then(r => r.ok ? r.json() : {}).catch(() => ({})));
+    const rec = ((await idx).files || {})[key[1]];
+    if(!rec || !Array.isArray(rec.box) || rec.box.length !== 4) return;
+    if(Array.isArray(rec.depth) && !rec.depth.includes('clean')) return;
+    const [photo, fg] = await Promise.all([sdImage(url), sdImage(MASK_BASE + key[0] + '/' + key[1] + '-fg.webp')]);
+    if(SD_DEPTH_OF !== url) return;
+    const got = sdRead(photo, fg, rec.box);
+    if(!got || !got.aligned) return;
+    if(!rec.owner_ok && !sdLegible(got.sky)) return;
+    const [x, y, w, h] = rec.box, e = document.createElement('div');
+    e.className = 'sd-fg';
+    e.style.cssText = `left:${x / 19.2}vw;top:${y / 10.8}vh;width:${w / 19.2}vw;height:${h / 10.8}vh;background-image:url('${fg.src}')`;
+    document.body.appendChild(e);
+    H.classList.add('sd-still');
+  }catch(e){}
 }
 function designInit(){
   if(CONFIG.widget) return;

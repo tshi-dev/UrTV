@@ -3245,6 +3245,7 @@ public class MainActivity extends Activity {
         boolean bigClock = glass;   // the glass clock (the scene's, or the photo's) takes the header clock's place; with «الساعة: عادية» the header clock stays
         clock.setVisibility(bigClock ? View.INVISIBLE : View.VISIBLE);
         if (bigClock) ampm.setVisibility(View.INVISIBLE);
+        liftDate(bigClock);
         wallBack.setVisibility(show);
         wallFront.setVisibility(show);
         if (on) { sceneHome.setTime(clock.getText()); if (resumed) sceneHome.start(); }
@@ -3261,6 +3262,7 @@ public class MainActivity extends Activity {
             sceneBackdrop.removeView(photoGlass);
             photoGlass = null;
             clock.setVisibility(View.VISIBLE);   // the header clock back (sceneTick sets it again when the scenes are on)
+            liftDate(false);
             return;
         }
         boolean cards = homeCard != null && homeCard.shownCards() > 0 && !homeCard.inRow();   // «كنبة»: the cards are in the strip under it, the clock in the middle
@@ -3276,6 +3278,20 @@ public class MainActivity extends Activity {
         photoGlass.setTime(clock.getText());
         clock.setVisibility(View.INVISIBLE);
         ampm.setVisibility(View.INVISIBLE);
+        liftDate(true);
+    }
+
+    /**
+     * 4.4 the owner (the date ran into the big clock's «2»): while the big glass clock takes the header clock's place, the lines under the header
+     * clock (the date, the zone, the prayer) move up into its empty row, clear of the big digits; the header keeps its size (nothing else moves)
+     */
+    private void liftDate(boolean up) {
+        if (clock == null || date == null) return;
+        Runnable apply = () -> {
+            float dy = up ? -(date.getTop() - clock.getTop()) : 0f;
+            for (View v : new View[] {date, zoneLine, prayerLine}) if (v != null) v.setTranslationY(dy);
+        };
+        if (up && clock.getHeight() == 0) clock.post(apply); else apply.run();
     }
 
     /** 4.4: the photo on the screen framed as its cut-out over the glass clock is (PhotoGlass: its crop, then the zoom k about the top centre); the one fading out keeps its own */

@@ -72,7 +72,7 @@ HOME_PHOTOS = ("same", "own")   # the home's wallpaper: the screensaver's packs 
 PACK_ID = re.compile(r"[a-z][a-z0-9-]{1,30}")   # a photo pack's id (PhotoPacks.validId)
 MAX_HOME_PACKS = 12   # docs/PHOTO-PACKS.md: at most 12 packs
 SWITCHES = ("greeting", "sunrise", "prayerbar", "wxmore", "pagesdark")   # on/off switches the TV reports as «on» / «off»
-MARKETS = ("tasi", "aramco", "spx", "btc", "gold", "silver", "oil", "xrp")
+MARKETS = ("tasi", "aramco", "spx", "btc", "gold", "gold21", "silver", "oil", "xrp")
 MAX_MARKETS = 4
 PANELS = ("shows", "prayers", "forecast", "hourly", "prayerrow", "nextprayer", "matches", "verse", "wisdom", "adhkar",
           "stocks", "tasks", "year", "smart", "today", "album", "none")

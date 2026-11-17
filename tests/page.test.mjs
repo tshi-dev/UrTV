@@ -769,6 +769,15 @@ const marketNet = state => r => {
 const mk = p => p.evaluate(() => [...document.querySelectorAll('.mk .m')].map(m => ({ n: m.children[0].textContent,
   px: (m.querySelector('.px') || {}).hidden === false ? m.querySelector('.px').textContent + '|' + (m.querySelector('.px').dataset.u || '') : null,
   ch: m.querySelector('.delta').hidden ? null : m.querySelector('.delta').textContent, up: m.querySelector('.delta').classList.contains('up') })));
+{   // 4.4 (a user report): the 21-carat gram alone or beside the 24-carat one, 21/24 of it, from the same gold price (one request)
+  const asked = [];
+  const { p, ctx, errors } = await open('tv.html', 'markets=gold,gold21&mkstyle=prices', { net: r => { if (/chart\//.test(r.request().url())) asked.push(r.request().url()); return marketNet({})(r); } });
+  await p.waitForTimeout(800);
+  const r = await mk(p);
+  check('markets prices: «ذهب ٢١» is the 21-carat gram (0.875 of the 24-carat), in riyals, beside «الذهب»; gold asked for once; no errors',
+    r.map(x => x.n).join() === 'الذهب,ذهب ٢١' && r[0].px === '٤٨٢٫٢٦|ر.س' && r[1].px === '٤٢١٫٩٨|ر.س' && asked.filter(u => /GC%3DF|GC=F/.test(u)).length === 1 && !errors.length, JSON.stringify(r) + asked.join(',') + errors.join('; '));
+  await ctx.close();
+}
 {
   const state = {};
   const { p, ctx, errors } = await open('tv.html', 'markets=tasi,aramco,gold,btc&mkstyle=prices', { net: marketNet(state) });

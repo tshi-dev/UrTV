@@ -272,6 +272,8 @@ node tests/hijri_crosscheck_page.mjs
 node tests/page.test.mjs
 node tests/tafsir.test.mjs   # «التفسير الميسر» (#tafsir=1): every verse of the deck has its tafsir, whole, in pages of three lines at most, never «…»
 node tests/saver_designs.test.mjs   # 4.4 the screensaver's designs (the owner approved them): each shows what it should; a prayer's name and time never touch
+node tests/lone_card_fit.test.mjs   # 4.4 the owner: a lone card on the launcher is fitted to its box, never a row cut at the bottom
+node tests/saver_depth.test.mjs   # 4.4 «نظيفة» with depth on the screensaver: the photo's own cut-out, never off its pixels, never over unreadable digits
 node tests/football_page.test.mjs   # the football home's widgets and «المباريات» in a browser, on fixed games
 node tests/phone_page.test.mjs
 node tests/sync_cards.test.mjs   # «توحيد المظهر» on the page: the cards in the material's fill, line and ink, readable on a light look
