@@ -529,6 +529,11 @@ public class SettingsActivity extends Activity {
         // the page only, never the apps: people took it for the app update (rows 421, 441), so its line points to «تحديث تلفزيوني»
         View last = row("تحديث صفحة شاشة التوقف", "ينزّل أحدث صفحة للشاشة فقط · لتحديث التطبيقين: «تحديث تلفزيوني» في نفس القسم", R.drawable.ic_sync, new Runnable() { public void run() { updateNow(); } });
         if (last.getParent() == list) note(last, Updater.versionLines(this));
+        // «النسخ التجريبية» (4.3.3): the beta release first, off by default. Off again never downgrades: the newer build stays until the normal one reaches its number
+        row("النسخ التجريبية", prefs.betaOn() ? "تعمل · تجيك التحديثات قبل الكل بعد ما نجربها. ممكن يكون فيها أخطاء بسيطة" : "متوقفة · تجيك التحديثات قبل الكل بعد ما نجربها. ممكن يكون فيها أخطاء بسيطة", R.drawable.ic_sync, new Runnable() { public void run() { toggleBeta(); } });
+        // only while it is on: the report screen (its QR code carries «channel: beta» and the versions), the person types their words on the phone page
+        if (prefs.betaOn()) row("أرسل ملاحظة عن النسخة التجريبية", "رمز QR يفتح صفحة الإرسال في جوالك، وتكتب ملاحظتك هناك", R.drawable.ic_settings,
+            new Runnable() { public void run() { openReport(); } });
         if (tiles) { hub(want, wasIndex); return; }   // a screen of buttons: after the rows were made (none of them is shown on it)
         restoreFocus(want, wasIndex, scrollY);   // a screen just opened: its first row
     }
@@ -661,7 +666,7 @@ public class SettingsActivity extends Activity {
             case SettingsHub.UPDATE: return Updater.versionLines(this)[0];
             case SettingsHub.REPORT: return "";
             case SettingsHub.MORE: return "";
-            case SettingsHub.SAVER: return (Prefs.idleMs(this) <= 0 ? "يبدأ وقت ما يحدده التلفاز" : "تبدأ بعد " + idleLabel()) + " · " + Prefs.panelLabel(prefs.panel());
+            case SettingsHub.SAVER: return idleSummary() + " · " + Prefs.panelLabel(prefs.panel());
             case SettingsHub.HOME: {
                 List<String> cards = new ArrayList<>();
                 for (String k : prefs.homePanels()) cards.add(Prefs.panelLabel(k, "بدون"));
@@ -1987,9 +1992,8 @@ public class SettingsActivity extends Activity {
 
     /** The TV's own idle delay. Writing it needs WRITE_SETTINGS, which TVs rarely grant: then its own screen opens. */
     private void pickIdle() {
-        if (!Prefs.canWriteSettings(this)) {
-            toast("غيّرها من إعدادات التلفاز، أو بأمر من مساعدك");
-            openDreamSettings();
+        if (!Prefs.canWriteSettings(this)) {   // never the maker's settings: they have no screensaver timer
+            toast("غيّرها بأمر من مساعدك، إعدادات التلفاز ما فيها مؤقت لها");
             return;
         }
         String[] labels = new String[Prefs.IDLE_MINUTES.length];
@@ -2005,7 +2009,7 @@ public class SettingsActivity extends Activity {
                     Settings.System.putInt(getContentResolver(), Settings.System.SCREEN_OFF_TIMEOUT,
                         Integer.parseInt(Prefs.IDLE_MINUTES[i]) * 60000);
                 } catch (SecurityException e) {
-                    toast("غيّرها من إعدادات التلفاز، أو بأمر من مساعدك");
+                    toast("غيّرها بأمر من مساعدك، إعدادات التلفاز ما فيها مؤقت لها");
                 }
                 d.dismiss();
                 render();
@@ -2013,9 +2017,18 @@ public class SettingsActivity extends Activity {
             .show();
     }
 
+    /** the hub's line under «شاشة التوقف»: when it starts, or that the TV turned it off */
+    private String idleSummary() {
+        int k = IdleRule.kind(Prefs.idleMs(this));
+        if (k == IdleRule.UNKNOWN) return "يبدأ وقت ما يحدده التلفاز";
+        if (k == IdleRule.NEVER) return "لا تبدأ: التلفزيون أوقف شاشة التوقف";
+        return "تبدأ بعد " + idleLabel();
+    }
+
     private String idleLabel() {
         long ms = Prefs.idleMs(this);
         if (ms <= 0) return "يحدده التلفاز";
+        if (IdleRule.kind(ms) == IdleRule.NEVER) return "أبداً (التلفزيون أوقف شاشة التوقف)";   // 2147483647: never the raw number
         if (ms % 60000 != 0) return arabicNum((int) (ms / 1000)) + " ثانية";
         return minutesLabel((int) (ms / 60000));
     }
@@ -2033,14 +2046,6 @@ public class SettingsActivity extends Activity {
             final String msg = Updater.check(getApplicationContext(), true);
             runOnUiThread(() -> { toast(msg); if (!isFinishing()) render(); });
         }).start();
-    }
-
-    private void openDreamSettings() {
-        try {
-            startActivity(new Intent(Settings.ACTION_DREAM_SETTINGS));
-        } catch (ActivityNotFoundException e) {
-            startActivity(new Intent(Settings.ACTION_SETTINGS));
-        }
     }
 
     // ---------- labels ----------
@@ -2640,6 +2645,20 @@ public class SettingsActivity extends Activity {
                 try { then.got(result); } catch (Exception e) { toast("تعذرت قراءة النتائج"); }
             });
         }).start();
+    }
+
+    /** «النسخ التجريبية»: flips the channel; turning it off reads the normal release and, when the TV is ahead of it, says it will wait (never a downgrade) */
+    private void toggleBeta() {
+        final boolean wasOn = prefs.betaOn();
+        prefs.setUpdateChannel(wasOn ? "latest" : "beta");
+        render();
+        final android.content.Context app = getApplicationContext();
+        new Thread(new Runnable() { @Override public void run() {
+            String v = Updater.checkLatest(app);   // the newest version of the release the TV reads now
+            final int newest = Versions.buildOf(v);
+            if (wasOn && newest >= 0 && newest < BuildConfig.VERSION_CODE) runOnUiThread(new Runnable() { public void run() { toast(Updater.BACK_LINE); render(); } });
+            else if (wasOn) runOnUiThread(new Runnable() { public void run() { render(); } });
+        } }).start();
     }
 
     private void toast(String s) { Toast.makeText(this, conv(s), Toast.LENGTH_SHORT).show(); }

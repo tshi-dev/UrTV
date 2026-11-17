@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <!-- the build: UTC time (YYYYMMDDHHMMSS) of the newest commit of the page's sources, put in by src/build.py. The app loads the page with the newer stamp (its own
      copy or a downloaded one), never by file time, and does not keep a download whose stamp is older than its own (Updater, PageStamp). -->
-<meta name="urtv-build" content="20261116034607">
+<meta name="urtv-build" content="20261117054010">
 <title>شاشة تلفزيونك</title>
 <style>
   @font-face{font-family:'Thmanyah';font-weight:300;font-style:normal;font-display:block;src:url("https://raw.githubusercontent.com/tshi-dev/UrTV/master/assets/fonts/Thmanyah-Light.woff2") format("woff2")}
@@ -74,7 +74,7 @@
     transform:scale(1.03);   
   }
   
-  .photo::after{content:'';position:absolute;inset:0;background:#000;opacity:calc(1 - (1 - var(--dim,.05)) * (1 - var(--walldim,0)))}   
+  .photo::after{content:'';position:absolute;inset:0;background:#000;opacity:calc(1 - (1 - var(--pdim,0)) * (1 - var(--walldim,0)))}   
   .veil{
     position:fixed;inset:0;z-index:1;
     background:
@@ -493,6 +493,11 @@
   .mblock .big > span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%;
     padding-bottom:.3em;margin-bottom:-.3em;    
     padding-inline:.15em;margin-inline:-.15em;max-width:calc(100% + .3em)}  
+  
+  #match-row{height:calc(clamp(22px,2vw,42px)*1.1 + .85vh + clamp(11px,.88vw,17px)*1.4);align-items:flex-start}
+  .p-match .sub{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .mblock.lvb .big{font-size:clamp(26px,2.6vw,54px)}
+  .mblock.lvb .sub{font-size:clamp(14px,1.2vw,25px)}
   .none-week{font-size:clamp(26px,2.5vw,54px);font-weight:700;font-family:'ThmanyahDisplay','Thmanyah',serif;color:#A79C85}
 
   
@@ -3806,7 +3811,7 @@ function showBackground(url, b){
   const next = "url('" + url + "')";
   if(ph.style.backgroundImage === next) return;   // same photo: no reload, no new movement
   ph.style.backgroundImage = next;
-  ph.style.setProperty('--dim', (1 - (b.d || 0.95)).toFixed(2));
+  ph.style.setProperty('--pdim', (1 - (b.d || 0.95)).toFixed(2));   // --pdim, never --dim: --dim is a COLOUR on :root, and a colour read as an opacity is invalid, which means 1 (a solid black photo)
   ph.classList.remove('settle'); void ph.offsetWidth; ph.classList.add('settle');
   cardBlurLater(url);
   const cr = document.getElementById('credit');
@@ -3857,7 +3862,7 @@ function cardBlurNow(){
           g.drawImage(img, (W - dw) * .5, (H - dh) * .26, dw, dh);
           g.filter = 'none';
           patch();
-          g.fillStyle = `rgba(0,0,0,${document.querySelector('.photo').style.getPropertyValue('--dim') || .05})`;   // the photo's own darkness
+          g.fillStyle = `rgba(0,0,0,${document.querySelector('.photo').style.getPropertyValue('--pdim') || .05})`;   // the photo's own darkness
           g.fillRect(0, 0, W, H);
           const v = g.createLinearGradient(0, 0, 0, H);   // the vertical part of .veil, the part that reaches the card
           v.addColorStop(0, 'rgba(3,10,7,.62)'); v.addColorStop(.22, 'rgba(3,10,7,.30)'); v.addColorStop(.46, 'rgba(3,10,7,.12)');

@@ -1,0 +1,58 @@
+name: Promote a test build to beta
+
+# The OWNER runs this by hand after approving a build in apk-next: it copies that release's files as they are (already signed, nothing is
+# rebuilt) to the apk-beta release, which «النسخ التجريبية» in «تحديث تلفزيوني» reads. Nothing promotes by itself.
+on:
+  workflow_dispatch:
+    inputs:
+      build:
+        description: 'The apk-next build to promote: its build number (the one in its version.txt, e.g. 512) or the commit sha it was built from'
+        required: true
+        type: string
+
+permissions:
+  contents: write
+
+concurrency:
+  group: promote-beta
+  cancel-in-progress: false
+
+jobs:
+  promote:
+    runs-on: ubuntu-24.04
+    env:
+      GH_TOKEN: ${{ github.token }}
+      WANT: ${{ inputs.build }}
+    steps:
+      - name: Check what apk-next holds is the build asked for
+        run: |
+          set -euo pipefail
+          want="$(printf '%s' "$WANT" | tr -d '[:space:]')"
+          case "$want" in
+            *[!0-9a-fA-F]*|'') echo "::error::the build is a number or a commit sha (hex), nothing else"; exit 1;; esac
+          mkdir -p next
+          gh release download apk-next --repo "$GITHUB_REPOSITORY" --dir next --pattern 'urtv-screensaver.apk' --pattern 'urtv-home.apk' --pattern 'version.txt'
+          for f in urtv-screensaver.apk urtv-home.apk version.txt; do [ -s "next/$f" ] || { echo "::error::apk-next has no $f"; exit 1; }; done
+          ver="$(tr -d '[:space:]' < next/version.txt)"
+          body="$(gh release view apk-next --repo "$GITHUB_REPOSITORY" --json body --jq .body)"
+          echo "apk-next holds $ver"
+          if [[ "$ver" =~ ^[0-9]+\.[0-9]+$ ]] && [ "${ver#*.}" = "$want" ]; then ok=1
+          elif [ ${#want} -ge 7 ] && printf '%s' "$body" | grep -qi "at ${want}"; then ok=1
+          elif [ ${#want} -ge 7 ] && printf '%s' "$body" | grep -qi "${want}"; then ok=1
+          else ok=0; fi
+          [ "$ok" = 1 ] || { echo "::error::apk-next holds build ${ver#*.}, not '$want'. Nothing was promoted: the test build was replaced, or the number is wrong."; exit 1; }
+          echo "NOTE=$(printf '%s' "$body" | head -n1)" >> "$GITHUB_ENV"
+          echo "VER=$ver" >> "$GITHUB_ENV"
+
+      - name: Copy the files as they are to the apk-beta release
+        run: |
+          set -euo pipefail
+          if gh release view apk-beta --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            gh release edit apk-beta --repo "$GITHUB_REPOSITORY" --prerelease --latest=false --title "Beta ${VER}" --notes "Beta build ${VER}, promoted from apk-next by the owner after approving it. The same signed files, not rebuilt. ${NOTE}"
+          else
+            gh release create apk-beta --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" --prerelease --latest=false --title "Beta ${VER}" --notes "Beta build ${VER}, promoted from apk-next by the owner after approving it. The same signed files, not rebuilt. ${NOTE}"
+          fi
+          # version.txt last: a TV that reads it finds the APKs already there
+          gh release upload apk-beta --repo "$GITHUB_REPOSITORY" --clobber next/urtv-screensaver.apk next/urtv-home.apk
+          gh release upload apk-beta --repo "$GITHUB_REPOSITORY" --clobber next/version.txt
+          echo "apk-beta now holds $VER"

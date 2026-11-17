@@ -42,5 +42,5 @@ check("the home: the tray thins by the percent, the wallpaper dims by its own vi
 check("the focus keeps its fill (the words' contrast) and only its line changes", '"frame".equals(style)' in paint and '"glow".equals(style)' in paint and "GradientDrawable d = fill(c, fill, radiusDp, 0);" in paint)
 page = read(ROOT / "src/template.html")
 check("the page: «تعتيم الخلفية» is a CSS variable at 0 by default, so the photo's own dimming is exactly what it was",
-      "opacity:calc(1 - (1 - var(--dim,.05)) * (1 - var(--walldim,0)))" in page and "wallDim: Math.max(0, Math.min(90, parseInt(_Q.get('walldim'), 10) || 0))" in page and '(wallDim() > 0 ? "&walldim=" + wallDim() : "")' in prefs)
+      "opacity:calc(1 - (1 - var(--pdim,0)) * (1 - var(--walldim,0)))" in page and "wallDim: Math.max(0, Math.min(90, parseInt(_Q.get('walldim'), 10) || 0))" in page and '(wallDim() > 0 ? "&walldim=" + wallDim() : "")' in prefs)
 sys.exit(1 if failed else 0)

@@ -30,6 +30,13 @@ Everything is scriptable over ADB, made for slow Wi-Fi (retries, resumable uploa
 What we learned on real TCL sets, and what must stay on: [docs/OPTIMIZE.md](OPTIMIZE.md). Manual test plan:
 [docs/TEST-PLAN.md](TEST-PLAN.md).
 
+## Releases and build numbers
+
+Download the apps from [the latest release](https://github.com/tshi-dev/UrTV/releases/latest) (the `apk-latest` tag).
+Every build is also a numbered release `v<version>.<build>` (v4.0.N, v4.3.N…): the last number is the build (the CI run),
+not a patch version, so `v4.3.332` is version 4.3 build 332. `version.txt` stays `3.<build>` for older apps.
+These lines moved here from the README.
+
 ## Developers
 
 ```

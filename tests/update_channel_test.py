@@ -25,25 +25,25 @@ def text(p):
 APP = "android/app/src/main/java/sa/urtv/screensaver/"
 HOME = "android/launcher/src/main/java/sa/urtv/home/phone/"
 prefs, recv, prov = text(APP + "Prefs.java"), text(APP + "SaverReceiver.java"), text(APP + "ConfigProvider.java")
-check("off by default: anything but next is latest", 'sp.getString("updateChannel", "latest")) ? "next" : "latest"' in prefs and 'setUpdateChannel(String v)' in prefs and '"next".equals(v) ? "next" : "latest"' in prefs)
-check("the receiver takes latest or next only and refuses another word", 'error: updatechannel is one of latest next' in recv and 'p.setUpdateChannel(updateChannel)' in recv)
+check("off by default: anything but next or beta is latest", '"next".equals(v) || "beta".equals(v) ? v : "latest"' in prefs and 'setUpdateChannel(String v)' in prefs)
+check("the receiver takes latest or next only and refuses another word", 'error: updatechannel is one of latest beta next' in recv and 'p.setUpdateChannel(updateChannel)' in recv)
 check("`saver.sh show` says it", '"\\nupdatechannel: " + p.updateChannel()' in recv)
 _cols = re.search(r'new MatrixCursor\(new String\[\] \{("fragment"[^}]*)\}\);', prov)
 check("the provider tells the home app in its own column, after the older ones (a column added later goes after it: none moves)",
       _cols is not None and re.findall(r'"(\w+)"', _cols.group(1))[:7] == ["fragment", "home_panel", "greeting", "home_panels", "adhan_bar", "listen_pill", "update_channel"]
       and 'p.listenPill() ? "1" : "0", p.updateChannel()' in prov, _cols and _cols.group(1))
-check("the home app asks the provider and treats anything but next as latest", '"next".equals(cur.getString(i))' in text(HOME + "UpdateChannel.java") and 'return "latest"' in text(HOME + "UpdateChannel.java"))
+check("the home app asks the provider and treats anything but next or beta as latest", '"next".equals(v) || "beta".equals(v)' in text(HOME + "UpdateChannel.java") and 'return "latest"' in text(HOME + "UpdateChannel.java"))
 pu = text(HOME + "PhoneUpdater.java")
 check("version.txt, the sizes and the files all come from the channel's release (read once)", 'readVersion(base + "version.txt")' in pu and 'sizeOf(base + ' in pu and 'fetch(base + ' in pu and "UpdateRules.BASE +" not in pu and "UpdateRules.VERSION_URL" not in pu)
 check("the channel is read once per run and kept (a flip mid-run cannot mix releases)", pu.count("UpdateChannel.read(c)") == 1 and "final String base = releaseBase;" in pu and "base(c)" not in pu, "")
 check("no unused VERSION_URL in the rules", "VERSION_URL" not in text(HOME + "UpdateRules.java"))
 check("the signature, newer-version and permission checks are untouched (verify still runs on every file, the install permission is still asked)", "verify(c, pkg, f)" in pu and "canInstall(c)" in pu)
 up = text(APP + "Updater.java")
-check("the newest-version line follows the channel, and the next channel never falls back to the latest's redirect", 'latestFromAsset(next ? NEXT_VERSION_URL : VERSION_URL)' in up and 'if (v == null && !next)' in up)
+check("the newest-version line follows the channel, and the next channel never falls back to the latest's redirect", 'latestFromAsset(next ? NEXT_VERSION_URL : beta ? BETA_VERSION_URL : VERSION_URL)' in up and 'if (v == null && !next && !beta)' in up)
 sm = text("optimize/settings_move.py")
 sm_code = "\n".join(l.split("#", 1)[0] for l in sm.splitlines())   # comments may say it is never there (settings_move.py does)
 check("never in export/import (the allow-list does not name it)", "updatechannel" not in sm_code and "update_channel" not in sm_code and "updateChannel" not in sm_code)
-check("no screen row for it", "updatechannel" not in text(APP + "SettingsActivity.java").lower() and "update_channel" not in text(APP + "SettingsActivity.java"))
+check("no screen row for it by word (the beta row is its own: tests/beta_channel_test.py)", '"updatechannel"' not in text(APP + "SettingsActivity.java").lower() and "update_channel" not in text(APP + "SettingsActivity.java"))
 docs = text("docs/SETTINGS.md")
 check("SETTINGS.md documents it as testing only", "updatechannel" in docs and "testing only" in docs)
 check("the apk-next release carries version.txt (CI), or the channel could not read a version", re.search(r"apk-next.*?version\.txt", text(".github/workflows/android.yml"), re.S) is not None)
@@ -67,7 +67,7 @@ for wf in sorted((ROOT / ".github/workflows").glob("*.yml")):
                 check("the apk-next release uploads exactly the two APKs and version.txt", block == ["urtv-screensaver.apk", "urtv-home.apk", "version.txt"], block)
 
 check("the newest version shown is the one of the current channel: it is stored with its channel, a value from before a change is not shown, and a change reads it again",
-      'putString("latestChannel", next ? "next" : "latest")' in up and 'updateChannel().equals(sp.getString("latestChannel", "latest"))' in prefs and "p.latestVersion()" in recv
+      'putString("latestChannel", ch)' in up and 'updateChannel().equals(sp.getString("latestChannel", "latest"))' in prefs and "p.latestVersion()" in recv
       and "Updater.refreshLatestAsync(c);" in recv and "new Prefs(c).latestVersion()" in up)
 check("`saver.sh show` says when the newest number is the next channel's", '", on the next channel"' in recv)
 

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- «إنقاذ تلفزيونك» (UrTV Rescue, 4.3.3): one screen, one button that puts the TV back as it was over its own adb. In the TV's apps list (also on Android TV
+     launchers: LEANBACK_LAUNCHER), so it is reached even with no home of ours. INTERNET: the TV's own adb on 127.0.0.1 (no other address is ever opened). -->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <!-- what our setup turned off is asked of the home through its provider: our key only (both declare it, signature) -->
+    <permission android:name="sa.urtv.permission.RESCUE" android:protectionLevel="signature" />
+    <uses-permission android:name="sa.urtv.permission.RESCUE" />
+    <uses-feature android:name="android.software.leanback" android:required="false" />
+    <uses-feature android:name="android.hardware.touchscreen" android:required="false" />
+
+    <queries>
+        <package android:name="sa.urtv.home" />
+    </queries>
+
+    <application
+        android:allowBackup="false"
+        android:label="@string/app_name"
+        android:icon="@mipmap/ic_rescue"
+        android:banner="@mipmap/ic_rescue">
+        <activity
+            android:name="sa.urtv.home.setup.RescueActivity"
+            android:exported="true"
+            android:screenOrientation="landscape"
+            android:theme="@android:style/Theme.Material.NoActionBar">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+                <category android:name="android.intent.category.LEANBACK_LAUNCHER" />
+            </intent-filter>
+        </activity>
+    </application>
+</manifest>

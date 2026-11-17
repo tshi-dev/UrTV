@@ -60,6 +60,9 @@ python3 tests/update_ui_test.py   # the update screen: card, steps, bar, one but
 python3 tests/album_card_test.py   # «ألبوم صوري»: the card of the own photos (page, saver, home)
 python3 tests/home_nudge_test.py   # «خلّ تلفزيونك يفتح على UrTV»: the card while we are not the Home
 python3 tests/look_tweaks_test.py   # «اللون والتحكم»: accents, tray strength, wallpaper dimming, focus style
+python3 tests/idle_rule_test.py   # 4.3.3: 2147483647 is «أبداً», the row never opens the maker's settings
+python3 tests/rescue_test.py   # 4.3.3: «إنقاذ تلفزيونك», the rescue app
+python3 tests/photo_dim_test.py   # 4.4: the photo's darkness is --pdim, never the colour --dim (an opacity read from a colour is 1: a solid black photo)
 python3 tests/security_43_test.py   # 4.3 security and speed round
 python3 tests/appearance_test.py   # the look and backgrounds page
 python3 tests/sync_look_test.py   # 4.3 «توحيد المظهر»: one material for the home's upper buttons, cards and apps bar in every look; off, each on its own
@@ -113,6 +116,7 @@ python3 tests/league_catalogue_test.py   # 4.3 «كل الدوريات»: the CI
 python3 tests/catalogue_leagues_test.py   # 4.3 «كل الدوريات» on the TV: read only when the picker opens, picked ones only, 8 at most
 python3 tests/market_prices_test.py
 python3 tests/markets_page_test.py   # «الأسواق»: the data and the sums on a JVM, only the sources we have, «الأخبار» off, the ways in
+python3 tests/market_names_test.py   # 4.4 (#60): the home names every code the page names (MarketNames.java is generated from the page's maps)
 python3 tests/portfolio_privacy_test.py   # «محفظتي» stays on the TV: share.py, Report, settings_move, ConfigProvider, the commands
 python3 tests/stocks_search_test.py   # «قائمة الأسهم»: a Tadawul code, ٢٢٢٢ or a company name, and the match shown
 python3 tests/adhkar_tool_test.py
@@ -209,6 +213,10 @@ python3 tests/phone_draw_test.py   # 4.3 #53 «ارسم»: live strokes from the
 python3 tests/lang_provider_test.py   # 4.3: «اللغة» read only for UrTV Player (content://sa.urtv.home.lang/lang)
 python3 tests/match_app_test.py   # 4.3 «شاهد المباراة»: the match app and the FIND_MATCH contract
 python3 tests/update_channel_test.py
+python3 tests/beta_channel_test.py   # 4.3.3: «النسخ التجريبية», apk-beta, promote-beta.yml
+python3 tests/beta_report_test.py   # 4.3.3: «channel: beta|latest» in the report
+python3 tests/beta_notes_test.py   # 4.3.3: the one-time beta line and the crash question
+python3 tests/beta_pill_test.py   # 4.3.3: the home update pill follows the channel
 python3 tests/android_compile_test.py
 bash tests/android_compile.sh   # both apps against android-all API 34; SKIP (not a failure) when offline or the jar is not cached
 python3 tests/countdown_text_test.py
@@ -267,3 +275,4 @@ node tests/phone_page.test.mjs
 node tests/sync_cards.test.mjs   # «توحيد المظهر» on the page: the cards in the material's fill, line and ink, readable on a light look
 node tests/reminder_page.test.mjs   # the screensaver's reminder card: its time, «الآن», «تم», the snooze, the keys, the adhan, English
 node tests/tvports_page.test.mjs   # the packaged page with simulated webOS and Tizen keys
+node tests/strip_steady.test.mjs   # 4.3.3 the screensaver's bottom strip stays put as the slot turns (games, scores, weather, markets)
