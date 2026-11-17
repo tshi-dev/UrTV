@@ -4111,7 +4111,7 @@ public class MainActivity extends Activity {
     private boolean backExitTakes(KeyEvent e) {
         int r;
         if (e.getAction() == KeyEvent.ACTION_DOWN && e.getRepeatCount() == 0) {
-            String mode = BackExit.fromFragment(ConfigSnapshot.read(this).fragment);
+            String mode = BackExit.fromFragment(ConfigSnapshot.lastFragment(this));   // 4.3.4 follow-up: never a query to the screensaver on a key (the UI thread)
             boolean scrolled = scroll.getScrollY() > 0 && !dockCards.isEmpty();
             backGuarded = BackExit.guards(mode, isDefaultHome(), scrolled);
             if (!backGuarded) return false;
