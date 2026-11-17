@@ -124,6 +124,29 @@ public class ConfigProvider extends ContentProvider {
                 out.putInt("max", Own.max(c));
                 return out;
             }
+            case "phone_photo_list": {   // 4.4: the photos on the TV for the phone's «صوري»: each one's pick (OwnPick: its number and file time)
+                int n = Own.count(c);
+                String[] ids = new String[n];
+                for (int i = 1; i <= n; i++) ids[i - 1] = OwnPick.id(i, Own.stamp(c, i));
+                out.putStringArray("ids", ids);
+                out.putInt("count", n);
+                out.putInt("max", Own.max(c));
+                return out;
+            }
+            case "phone_photo_thumb": {   // 4.4: a small JPEG of the picked photo (arg: its pick); nothing when the pick names no photo now
+                OwnPick pick = OwnPick.parse(arg);
+                if (pick != null && pick.same(Own.count(c), Own.stamp(c, pick.n))) {
+                    byte[] jpeg = Own.thumbJpeg(c, pick.n);
+                    if (jpeg != null) out.putByteArray("jpeg", jpeg);
+                }
+                return out;
+            }
+            case "phone_photo_del": {   // 4.4: deletes the picked photo (arg: its pick) and its mask; «photo_moved» when the pick names no photo now
+                boolean done = Own.deletePick(c, OwnPick.parse(arg));
+                out.putString("result", done ? "photo_deleted" : "photo_moved");
+                out.putInt("count", Own.count(c));
+                return out;
+            }
             case "phone_photo_mask": {   // 4.4: the mask of the photo the same phone just added (the launcher's /api/photo-mask), a PNG
                 byte[] png = extras == null ? null : extras.getByteArray("png");
                 String why = png == null || png.length == 0 || png.length > 1_000_000 ? "bad" : Own.addMask(c, png);

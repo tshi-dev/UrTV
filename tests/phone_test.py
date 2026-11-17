@@ -114,7 +114,10 @@ check("portfolio.html builds no HTML from data, has one script with the nonce, s
 check("portfolio.html takes the token out of the address bar before pairing, and keeps no holding (no localStorage write, the form cleared after saving)",
       pf.index("history.replaceState") < pf.index("pairToken(m[1])") and "localStorage.setItem" not in pf and "$('buys').textContent = '';" in pf, "")
 au = text(ROOT / "android/launcher/src/main/assets/phone/audio.html")   # 4.4 «صوتياتي» (/a)
-used = set(re.findall(r"['\"](/api/[a-z_/]+)['\"]", page)) | set(re.findall(r"['\"](/api/[a-z_/]+)['\"]", pf)) | set(re.findall(r"['\"](/api/[a-z_/]+)['\"]", au))
+served |= {"/api/photo_thumb/"} if 'static final String THUMB_PATH = "/api/photo_thumb/";' in api else set()   # 4.4 «صوري»: one photo's small picture
+ph = text(ROOT / "android/launcher/src/main/assets/phone/photos.html")   # 4.4: the photos on the TV and their delete (the page's other calls are raw routes)
+used_ph = {u for u in re.findall(r"['\"](/api/[a-z_/]+)['\"]", ph) if u in ("/api/photos", "/api/photo_del", "/api/photo_thumb/")}
+used = set(re.findall(r"['\"](/api/[a-z_/]+)['\"]", page)) | set(re.findall(r"['\"](/api/[a-z_/]+)['\"]", pf)) | set(re.findall(r"['\"](/api/[a-z_/]+)['\"]", au)) | used_ph
 check("every call of the page (and of portfolio.html and audio.html) is an endpoint the server has, and the reverse", used == served, (used ^ served))
 check("the page says plainly what it cannot do: keys to other apps, and text outside our screens",
       "فعّل خدمة «إضافات تلفزيونك»" in page and "تحتاج أندرويد ١٣" in page and "يُكتب في حقلها بعد تفعيل خدمة إمكانية الوصول" in page and "/api/text" in page, "")
