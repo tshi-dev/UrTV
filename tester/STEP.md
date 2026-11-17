@@ -5,6 +5,7 @@
 2. Use the remote as a family would for 10 minutes: move along the favourites, open and close apps, open settings, go back home, open the screensaver and wake it, and use the volume. Record key latency: `adb shell getevent -lt` together with `logcat -b main -v threadtime` and `dumpsys gfxinfo sa.urtv.home framestats`. Note any freeze >300 ms: when, which screen, which key.
 3. Collect: `dumpsys activity anr`, `/data/anr` traces, `logcat -b crash`, `top -n 1 -m 10` (CPU while idle on home), and `dumpsys cpuinfo`.
 4. Do the same 5-minute run on 4.3.2 (the v4.3.332 release assets) to compare.
+4b. LIKELY CAUSE (setup session): 4.3.3 queries the screensaver's ConfigProvider on the home's UI thread at every minute tick and every return Home; on TCL that cold-starts the screensaver process and blocks. So press keys RIGHT AFTER returning Home and right at each minute change, and watch logcat for `ActivityManager: Start proc ... sa.urtv.screensaver` just before a stall. Then test the fix build: work/433-hotfix (the supervisor will add its Build APKs run ID here) — same test, there should be no stall.
 5. Report «step 98: freeze YES/NO on 4.3.3 vs 4.3.2», with the numbers and the suspect (which process or thread is busy). No Wi-Fi names or MACs.
 6. Put the owner's 4.4 setup back afterwards.
 
