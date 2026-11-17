@@ -58,6 +58,16 @@ pm enable com.google.android.apps.tv.launcherx; pm enable com.google.android.tvl
 2. اضغط **Add** واختر التلفزيون، ووافق على رسالة التلفزيون.
 3. افتح **Shell** والصق السطر نفسه من الطريقة ٣.
 
+## الواي فاي محفوظ عند «وسيط الإعداد» (طريقة مجرّبة)
+
+في بعض التلفزيونات (TCL وشاومي وأجهزة Google TV) شبكة البيت انحفظت وقت معالج التشغيل الأول، فهي ملك «وسيط الإعداد». الإعداد يطلب منك تنساها وترجع تتصل بها من الإعدادات. لو ما ظهر «انسَ الشبكة» أو التلفزيون ما رضي (جرّبها مستخدم على شاومي ونجحت):
+
+1. شغّل **نقطة اتصال** من جوالك، واتصل بها من التلفزيون (الإعدادات ← الشبكة).
+2. وهو على نقطة الاتصال: اختر شبكة البيت ← **«انسَ الشبكة»**.
+3. ارجع اتصل بشبكة البيت من **الإعدادات** بنفس كلمة المرور (خلّها قدامك قبل)، وطفّ نقطة الاتصال.
+
+لا تحذف الشبكة ولا ملفاتها بأي طريقة ثانية، ولا توقف «وسيط الإعداد» بنفسك.
+
 ---
 
 ## English
@@ -69,3 +79,5 @@ UrTV never turns the TV's own home or its setup wizard off (since 4.3.2), so it 
 3. **Android phone** (Bugjaeger or Remote ADB Shell, free on Play): same Wi-Fi, connect to the TV's address on port 5555, accept the prompt, paste the line above.
 4. **iPhone: iSH Shell** (free, App Store), same Wi-Fi, network debugging on the TV (port 5555): `apk update && apk add android-tools`, `adb connect TV_ADDRESS:5555`, accept the prompt, `adb shell`, paste the same line. Slow; keep iSH in front while it runs (iOS pauses it in the background).
 5. **Any computer with Chrome, nothing installed: Tango** (tangoapp.dev, open source, MIT). Needs a USB data cable to the TV: most TVs' USB ports only take a flash drive, so this works on streaming boxes whose port takes a data cable. A browser cannot reach the TV over Wi-Fi without a helper program. Add → pick the TV → accept the prompt → Shell → paste the same line.
+
+**The Wi-Fi network belongs to the setup wizard (a tested route).** On some TVs (TCL, Xiaomi, Google TV sets) the home network was saved during the first-run wizard, so the setup asks you to forget it and join it again in Settings. If «Forget network» is missing or the TV refuses (a user's tested route on a Xiaomi): 1. turn on a **hotspot** on your phone and join it from the TV; 2. while on the hotspot, pick the home network → **Forget network**; 3. join the home network again from **Settings** with the same password, and turn the hotspot off. Never delete the network or its files any other way, and never turn the setup wizard off by hand.
