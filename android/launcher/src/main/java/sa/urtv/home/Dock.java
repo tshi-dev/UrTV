@@ -85,7 +85,10 @@ final class Dock {
     /** every key's choice, for RemoteKeys */
     static Map<String, String> keyApps(Context c) {
         Map<String, String> m = new LinkedHashMap<>();
-        for (RemoteButtons.Button b : RemoteButtons.buttons(remoteTv())) m.put(b.id, keyApp(c, b.id));
+        for (RemoteButtons.Button b : RemoteButtons.buttons(remoteTv())) {
+            m.put(b.id, keyApp(c, b.id));
+            for (String n : new String[]{".2", ".3"}) { String v = keyApp(c, b.id + n); if (!v.isEmpty()) m.put(b.id + n, v); }   // 4.5: two and three presses
+        }
         return m;
     }
     /**

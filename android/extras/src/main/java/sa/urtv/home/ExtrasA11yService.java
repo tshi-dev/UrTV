@@ -320,6 +320,8 @@ public class ExtrasA11yService extends AccessibilityService {
         if (!KeyButton.filterSafe()) return false;   // TCL's Android 11: never (the filter is not asked for there either)
         String id = KeyButton.of(e);
         if (id == null) return false;   // every other key: untouched, nothing read or kept
+        String[] taps = KeyApps.taps(keyChoices, id);
+        if (!homeFront && KeyApps.counted(taps)) return tapKey(id, taps, e);   // 4.5: two and three presses, or the switcher / the control centre
         String choice = keyChoices.get(id);
         if (KeyApps.chosen(choice) && e.getAction() == KeyEvent.ACTION_DOWN && e.getRepeatCount() == 0 && launchIntent(this, choice) == null) choice = "";   // its app was removed: the button's own again (asked once a press)
         int k = keyApps.decide(id, e.getKeyCode(), e.getAction(), e.getRepeatCount(), e.getEventTime(), homeFront, choice, KeyButton.burstMs());
@@ -328,6 +330,47 @@ public class ExtrasA11yService extends AccessibilityService {
             new Thread(() -> openKeyApp(pkg), "extras-key-app").start();
         }
         return k != KeyApps.PASS;
+    }
+
+    // ---------------------------------------------------------------- 4.5: 1×, 2×, 3× per button (KeyApps.Taps; tvOS Launcher's idea, Apache-2.0)
+
+    private final KeyApps.Taps tapper = new KeyApps.Taps();
+    /** the button whose events are ours until its release (the app in front never gets half a press) */
+    private String tapHeld;
+    private final Runnable tapTimeout = () -> { if (tapper.timeout(android.os.SystemClock.uptimeMillis()) == KeyApps.OPEN) tapAct(tapper.target); };
+
+    private boolean tapKey(String id, String[] taps, KeyEvent e) {
+        if (e.getAction() == KeyEvent.ACTION_DOWN && e.getRepeatCount() == 0) {
+            main.removeCallbacks(tapTimeout);
+            if (tapper.pending()) tapTimeout.run();   // another button while one was counting: that one acts now (its window is cut short)
+            String[] live = taps.clone();
+            for (int n = 0; n < 3; n++) if (KeyApps.chosen(live[n]) && launchIntent(this, live[n]) == null) live[n] = "";   // a removed app: that press is nothing
+            int k = tapper.press(id, live, e.getEventTime());
+            tapHeld = id;
+            if (k == KeyApps.OPEN) tapAct(tapper.target);
+            else if (k == KeyApps.WAIT) main.postAtTime(tapTimeout, tapper.deadline);
+            return k != KeyApps.PASS;
+        }
+        if (id.equals(tapHeld)) {   // its repeats and its release
+            if (e.getAction() == KeyEvent.ACTION_UP) tapHeld = null;
+            return true;
+        }
+        return false;
+    }
+
+    /** an app (as a 4.4 button), the switcher or the control centre (the home opens those: open=switcher / open=center, behind their locks) */
+    private void tapAct(String target) {
+        if (KeyApps.SWITCHER.equals(target) || KeyApps.CENTER.equals(target)) {
+            try {
+                startActivity(new Intent(Intent.ACTION_MAIN).setComponent(new ComponentName(HOME_PKG, HOME_PKG + ".MainActivity"))
+                    .putExtra("open", KeyApps.SWITCHER.equals(target) ? "switcher" : "center").addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+                Log.i("UrTVWatch", "key taps home panel opened");
+            } catch (RuntimeException ex) {
+                Log.i("UrTVWatch", "key taps home panel failed");
+            }
+            return;
+        }
+        if (KeyApps.chosen(target)) new Thread(() -> openKeyApp(target), "extras-key-app").start();
     }
 
     private static Intent launchIntent(Context c, String pkg) {

@@ -31,6 +31,7 @@
 #                                          only while the person's home is ours; the window watch stays as the fallback)
 #   optimize/dock.sh key                   «أزرار الريموت»: this remote's app buttons (YouTube, Netflix…: the ones its brand has) and the app each opens
 #   optimize/dock.sh key BUTTON PKG        give one of this remote's buttons (the ids `key` lists: youtube, netflix…) another app; `default` = as before. Over other apps with «إضافات تلفزيونك» (extras-setup)
+#   optimize/dock.sh key BUTTON.2 PKG      4.5: two presses (BUTTON.3: three); PKG may also be @switcher (the open apps) or @center (the control centre). Only a button with a 2x or 3x waits 0.3 s for the next press
 #   optimize/dock.sh pin set 1234         «الرقابة الأبوية»: the master PIN (4 digits), set or changed from here without the old one; never printed back
 #   optimize/dock.sh pin lock PKG          lock one app (its package, e.g. com.netflix.ninja), a pill (@inputs @wifi @tvsettings @tasks @saver @listen @sleep @center) or @urtv (our settings); `pin unlock PKG` opens it again
 #   optimize/dock.sh pin status            what is set: PIN or not, what is locked, kids mode, wrong tries (never the PIN)
@@ -83,10 +84,12 @@ case "${1:-}:$#" in
     send SET_DOCK "--es apps $(IFS=,; echo "$*")" ;;
   key:1) send KEY_APP ;;
   key:3)
-    [[ "$2" =~ ^[a-z]+$ ]] || { echo "usage: optimize/dock.sh key [BUTTON PKG|default] (BUTTON from optimize/dock.sh key)"; exit 1; }
-    [[ "$3" == default || "$3" =~ ^[A-Za-z][A-Za-z0-9_]*(\.[A-Za-z0-9_]+)+$ ]] || { echo "usage: optimize/dock.sh key $2 PKG|default (PKG from optimize/dock.sh apps)"; exit 1; }
+    # 4.5: BUTTON.2 / BUTTON.3 = two and three presses; @switcher (the open apps) and @center (the control centre) besides an app
+    [[ "$2" =~ ^[a-z]+(\.[23])?$ ]] || { echo "usage: optimize/dock.sh key [BUTTON[.2|.3] PKG|@switcher|@center|default] (BUTTON from optimize/dock.sh key)"; exit 1; }
+    [[ "$3" == default || "$3" == @switcher || "$3" == @center || "$3" =~ ^[A-Za-z][A-Za-z0-9_]*(\.[A-Za-z0-9_]+)+$ ]] || { echo "usage: optimize/dock.sh key $2 PKG|@switcher|@center|default (PKG from optimize/dock.sh apps)"; exit 1; }
     send KEY_APP "--es key $2 --es app $3" || exit 1
-    "$PY" -I optimize/tv.py "am broadcast -n sa.urtv.screensaver/.SaverReceiver -a sa.urtv.screensaver.SET --es keyapp $2=$3" > /dev/null 2>&1 || true ;;   # the TV's row says the same
+    # the TV's row says the same (its rows hold one press; 2x/3x and the panels live in the home and the add-on)
+    if [[ "$2" =~ ^[a-z]+$ ]] && [[ "$3" != @* ]]; then "$PY" -I optimize/tv.py "am broadcast -n sa.urtv.screensaver/.SaverReceiver -a sa.urtv.screensaver.SET --es keyapp $2=$3" > /dev/null 2>&1 || true; fi ;;
   backsaver:1) send BACK_SAVER "--es mode status" ;;
   backsaver:2)
     # the home's switch, then the same on the screensaver's row (its settings show it; the home follows that row only when it changes)

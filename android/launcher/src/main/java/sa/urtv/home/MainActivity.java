@@ -4520,6 +4520,7 @@ public class MainActivity extends Activity {
         // hidden app opens nothing; the family PIN as for its tile). A button on its default goes to RemoteKeys below, exactly as before anyone chose.
         String keyId = KeyButton.of(e);
         String keyChoice = keyId == null ? null : Dock.keyApp(this, keyId);
+        if (keyId != null && homeTapKey(keyId, e)) return true;   // 4.5: two and three presses, the switcher, the control centre
         if (KeyApps.chosen(keyChoice) && isInstalled(keyChoice) || homeButtons.holding(e.getKeyCode())) {
             int k = homeButtons.decide(keyId, e.getKeyCode(), e.getAction(), e.getRepeatCount(), e.getEventTime(), false, keyChoice, KeyButton.burstMs());
             if (k == KeyApps.OPEN) {
@@ -4620,6 +4621,41 @@ public class MainActivity extends Activity {
 
     private final RemoteKeys remoteKeys = new RemoteKeys();
     private final KeyApps.Outside homeButtons = new KeyApps.Outside();
+
+    // 4.5: 1×, 2×, 3× per remote button on our home (KeyApps.Taps, as the add-on does over other apps)
+    private final KeyApps.Taps homeTaps = new KeyApps.Taps();
+    private String homeTapHeld;
+    private final Runnable homeTapTimeout = () -> { if (homeTaps.timeout(android.os.SystemClock.uptimeMillis()) == KeyApps.OPEN) homeTapAct(homeTaps.target); };
+
+    /** true when the button counts presses (KeyApps.counted) and this event was taken; false: the 4.4 path as before */
+    private boolean homeTapKey(String id, KeyEvent e) {
+        String[] taps = KeyApps.taps(Dock.keyApps(this), id);
+        if (!KeyApps.counted(taps)) return false;
+        if (e.getAction() == KeyEvent.ACTION_DOWN && e.getRepeatCount() == 0) {
+            handler.removeCallbacks(homeTapTimeout);
+            if (homeTaps.pending()) homeTapTimeout.run();
+            for (int n = 0; n < 3; n++) if (KeyApps.chosen(taps[n]) && !isInstalled(taps[n])) taps[n] = "";
+            int k = homeTaps.press(id, taps, e.getEventTime());
+            homeTapHeld = id;
+            if (k == KeyApps.OPEN) homeTapAct(homeTaps.target);
+            else if (k == KeyApps.WAIT) handler.postAtTime(homeTapTimeout, homeTaps.deadline);
+            return k != KeyApps.PASS;
+        }
+        if (id.equals(homeTapHeld)) {
+            if (e.getAction() == KeyEvent.ACTION_UP) homeTapHeld = null;
+            return true;
+        }
+        return false;
+    }
+
+    private void homeTapAct(String target) {
+        if (KeyApps.CENTER.equals(target) || KeyApps.SWITCHER.equals(target)) {
+            openRequested(new Intent().putExtra("open", KeyApps.CENTER.equals(target) ? "center" : "switcher"));   // behind their locks, as from the settings
+            return;
+        }
+        if (KeyApps.chosen(target) && ParentalPolicy.visible(Parental.state(this), target))
+            guarded(ParentalPolicy.REMOTE_APP, target, labelOf(target), () -> openPackage(target));
+    }
 
     /** The apps a shortcut key opens that are installed, and that kids mode shows (one it hides counts as not there: the key then does nothing). */
     private Set<String> remoteInstalled() {
