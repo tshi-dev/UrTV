@@ -3,6 +3,12 @@
 
 «🔴 FINAL 4.3.4 BUILD (NEWEST): GitHub Actions run 44165441466 (build 476, work/rel-434 6eaf77ed), with ALL fixes incl. the Sony keys, the beta newer-of-both + download confirm, the cards-off fix and the QA UI-thread fixes. Older: run 44156039842 (build 471) (freeze, the update focus skip, two presses, games→settings, the cut-off long-press box, hidden apps). Test the freeze and items (a)–(e) on THIS build (not 469), quickly; release is ~20:15 UTC. Report even partial results at once.» «🔴 URGENT FIRST (owner, 17 Nov evening): a user says since 4.3.3 «the remote freezes/lags on TCL». Do step 98 BEFORE anything else.»
 
+## step 100 — 4.3.5 safe-home (GitHub Actions run 44175740734, work/435-safehome 94ffb8d4), after step 99 items 1–2
+1. Install the 4.3.5 home from the artifact (over 4.3.4/4.4, uninstalling first if lower). Normal use: home OK, no regressions in the step-98 list.
+2. Simulate a broken WebView: `adb shell cmd webviewupdate disable-redundant-packages` is not enough; instead use `pm disable-user` on the TV's WebView provider ONLY if the TV has a fallback, otherwise SKIP and say so. Never leave the WebView disabled; put it back right away. Expected: the home starts without the cards and doesn't crash.
+3. Simulate a crash loop: `adb shell am crash sa.urtv.home` twice within 60 s after starting the home. Expected: the next start shows the safe page («افتح الشاشة الأصلية» / «حاول مرة ثانية»); «افتح الشاشة الأصلية» opens Google TV; «حاول مرة ثانية» brings UrTV back. Take pictures.
+4. Put the owner's setup back (4.4 or 4.3.4 as before), with the TV muted. Report «step 100 PASS/FAIL».
+
 ## step 99 — unsettled items (owner, midnight 18 Nov), AFTER the 4.3.4 check in the NOW line
 1. 4.3.4 confirm (the NOW line): the remote at the minute tick and after Home, settings with a single press, the games route and Back, hidden apps, the long-press menu, the update screen focus, the cards turned off, beta on → the newest of both channels plus the «نسخة تجريبية» confirm.
 2. Step 96: the full 4.4 on the latest apk-next, including the 400% clock pixel check.
