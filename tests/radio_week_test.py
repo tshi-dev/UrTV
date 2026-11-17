@@ -24,28 +24,28 @@ check("the player status says them", '"|radio_week=" + RadioWeek.field(prefs.rad
 
 spec = importlib.util.spec_from_file_location("share_mod", ROOT / "optimize/share.py")
 sm = importlib.util.module_from_spec(spec); spec.loader.exec_module(sm)
-line = sm.radio_week_line('data="state=1|reconnects=0|radio_week=3.1.2.40|foreground=1"')
+line = sm.radio_week_line('data="state=1|reconnects=0|radio_week=3/1/2/40|foreground=1"')
 check("the report's line", line == "Radio, last 7 days: stalls=3 errors=1 reconnects=2 rebuffers=40", line)
 check("no line for nothing, zeros or a malformed field", sm.radio_week_line("") is None and sm.radio_week_line(None) is None
-      and sm.radio_week_line("radio_week=0.0.0.0|") is None and sm.radio_week_line("radio_week=1.2.3|") is None and sm.radio_week_line("radio_week=1.2.3.4.5") is None)
+      and sm.radio_week_line("radio_week=0/0/0/0|") is None and sm.radio_week_line("radio_week=1.2.3|") is None and sm.radio_week_line("radio_week=1/2/3/4/5") is None)
 share = read(ROOT / "optimize/share.py")
 check("the report adds both radio lines when the TV answers", 'parts += ["", *radio]' in share and "radio_week_line(out.stdout)" in share)
 
 if shutil.which("javac"):
     run = r"""package sa.urtv.home.tilawah;
 public class WkRun { static void out(String n, boolean ok) { System.out.println(n + "\t" + (ok ? "ok" : "bad")); }
-static String t(long[] a) { return a[0] + "." + a[1] + "." + a[2] + "." + a[3]; }
+static String t(long[] a) { return a[0] + "/" + a[1] + "/" + a[2] + "/" + a[3]; }
 public static void main(String[] x) {
   String r = "";
   r = RadioWeek.add(r, 100, RadioWeek.STALL); r = RadioWeek.add(r, 100, RadioWeek.STALL); r = RadioWeek.add(r, 101, RadioWeek.ERROR);
   r = RadioWeek.add(r, 103, RadioWeek.RECONNECT); r = RadioWeek.add(r, 103, RadioWeek.REBUFFER);
   out("counted by day and kind", r.equals("100,2,0,0,0;101,0,1,0,0;103,0,0,1,1"));
-  out("the week's totals", t(RadioWeek.totals(r, 103)).equals("2.1.1.1") && RadioWeek.field(r, 103).equals("2.1.1.1"));
-  out("a day more than a week back is not counted", t(RadioWeek.totals(r, 107)).equals("0.1.1.1") && t(RadioWeek.totals(r, 110)).equals("0.0.0.0"));
+  out("the week's totals", t(RadioWeek.totals(r, 103)).equals("2/1/1/1") && RadioWeek.field(r, 103).equals("2/1/1/1"));
+  out("a day more than a week back is not counted", t(RadioWeek.totals(r, 107)).equals("0/1/1/1") && t(RadioWeek.totals(r, 110)).equals("0/0/0/0"));
   out("and dropped on the next count", RadioWeek.add(r, 108, RadioWeek.STALL).equals("103,0,0,1,1;108,1,0,0,0"));
-  out("a day ahead of today (the clock went back) is not counted", t(RadioWeek.totals(r, 101)).equals("2.1.0.0"));
+  out("a day ahead of today (the clock went back) is not counted", t(RadioWeek.totals(r, 101)).equals("2/1/0/0"));
   out("never more than seven entries", RadioWeek.add(RadioWeek.add(RadioWeek.add(RadioWeek.add(RadioWeek.add(RadioWeek.add(RadioWeek.add(RadioWeek.add("", 1, 0), 2, 0), 3, 0), 4, 0), 5, 0), 6, 0), 7, 0), 8, 0).split(";").length == 7);
-  out("a broken record is dropped, not thrown", RadioWeek.add("x;1,2;-1,0,0,0,0;100,a,0,0,0", 100, RadioWeek.ERROR).equals("100,0,1,0,0") && RadioWeek.field(null, 5).equals("0.0.0.0"));
+  out("a broken record is dropped, not thrown", RadioWeek.add("x;1,2;-1,0,0,0,0;100,a,0,0,0", 100, RadioWeek.ERROR).equals("100,0,1,0,0") && RadioWeek.field(null, 5).equals("0/0/0/0"));
   out("an unknown kind changes nothing", RadioWeek.add(r, 103, 9).equals(r));
 } }"""
     with tempfile.TemporaryDirectory() as tmp:

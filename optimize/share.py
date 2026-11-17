@@ -244,7 +244,7 @@ def radio_line(out):
 def radio_week_line(out):
     """«Radio, last 7 days: stalls=… errors=… reconnects=… rebuffers=…» from the player status (its radio_week= field, four numbers, 4.4);
     None when there is none or all are 0."""
-    m = re.search(r"radio_week=(\d{1,9})\.(\d{1,9})\.(\d{1,9})\.(\d{1,9})(?![\d.])", out or "")
+    m = re.search(r"radio_week=(\d{1,9})/(\d{1,9})/(\d{1,9})/(\d{1,9})(?![\d/])", out or "")
     if not m or not any(int(n) for n in m.groups()):
         return None
     return "Radio, last 7 days: stalls=%s errors=%s reconnects=%s rebuffers=%s" % m.groups()

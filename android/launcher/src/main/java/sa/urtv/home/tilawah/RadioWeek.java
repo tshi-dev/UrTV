@@ -36,10 +36,10 @@ final class RadioWeek {
         return t;
     }
 
-    /** the status field: "stalls.errors.reconnects.rebuffers" */
+    /** the status field: "stalls/errors/reconnects/rebuffers" */
     static String field(String record, long today) {
         long[] t = totals(record, today);
-        return t[0] + "." + t[1] + "." + t[2] + "." + t[3];
+        return t[0] + "/" + t[1] + "/" + t[2] + "/" + t[3];
     }
 
     private static java.util.List<long[]> parse(String record) {
