@@ -1,8 +1,21 @@
-«▶ NOW (owner, 2026-11-17): step 91 PASSED, thank you. The owner said GO on putting the rescue app into 4.3.3. Next is step 93: check the rescue app on a TV set up by 4.3.3, as soon as the release session gives a 4.3.3 build that has urtv-rescue.apk (its run ID will be added here). Then step 90 (the Downloader code) once 4.3.3 is on apk-latest with urtv-rescue.apk. Then step 92. Step 89 stays ON HOLD. TV muted.»
+«▶ NOW (owner, 2026-11-17): step 91 PASSED, thank you. The owner said GO on putting the rescue app into 4.3.3. Next is step 94 (real README screenshots, quick), then step 93: check the rescue app on a TV set up by 4.3.3, as soon as the release session gives a 4.3.3 build that has urtv-rescue.apk (its run ID will be added here). Then step 90 (the Downloader code) once 4.3.3 is on apk-latest with urtv-rescue.apk. Then step 92. Step 89 stays ON HOLD. TV muted.»
 
 
 
 
+
+## step 94 — real screenshots for the README picture (owner: «the old pic had character, it looks real»). Do it at the first pause, before step 93 if 93 is still waiting for its build.
+The README picture is getting real screens from the TV again, but with NO MovieBox anywhere (MovieBoxPro is a piracy app). Use full 1920×1080 screencaps (`adb exec-out screencap -p`), not a photo of the screen.
+A. AFTER: the 4.4 home on the TV in «شكلك المعتاد», evening if possible.
+   - The focused tile is YouTube (or Shahid).
+   - The favourites row has only legal apps, e.g. YouTube, Shahid, Netflix, Prime Video, Apple TV, OSN+, Jellyfin, Crunchyroll, «تلاوة وأذان». If MovieBox (or any other unlicensed streaming app) is in the row, move it out of the row for the shot only, and put the owner's order back after. Write the order down first.
+   - A nice background photo. No personal info visible: no Wi-Fi name, no account name or avatar, no family name in the greeting.
+   - Take 3 variants: different focus or a different background.
+B. BEFORE: Google TV's own home. Open it with `am start` on launcherx's home activity; do NOT change the HOME role and do NOT disable anything.
+   - "Your apps" must not show MovieBox. If it does, use the TV's own «Move»/hide on that tile for the shot, then put it back.
+   - Hide the profile avatar if it shows a face or a name; another profile pic or none is fine.
+   - Take 2 variants.
+C. Push the PNGs to work/tester-report under tester/hero/ and report «step 94 done» with the file names. Put everything back exactly (the favourites order, the Google TV apps order) and bring UrTV to the front. TV muted.
 
 ## step 93 — the rescue app on a TV set up by 4.3.3 (before the 4.3.3 master merge)
 Build: the work/rel-433-3 run that has urtv-rescue.apk in its «apks» artifact (the release session gives the run ID; check the artifact lists urtv-rescue.apk).
