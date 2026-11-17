@@ -3,6 +3,8 @@
 #   pip install fonttools brotli pillow -r .github/tools/cities-world/requirements.txt && npm install --no-save playwright@1.56.1 && npx playwright install chromium
 set -euo pipefail
 cd "$(dirname "$0")/.."
+# «regressions»: the release gate's group alone (docs/dev/REGRESSIONS.md, docs/dev/RELEASE.md): bash tests/run.sh regressions
+if [ "${1:-}" = "regressions" ]; then shift; exec python3 tests/regressions/run.py "$@"; fi
 python3 tests/check.py
 python3 tests/arabic_spacing_test.py   # Arabic letters stay joined: no letter-spacing on anything that can hold Arabic
 python3 tests/tilawah_test.py
@@ -283,3 +285,6 @@ node tests/sync_cards.test.mjs   # «توحيد المظهر» on the page: the 
 node tests/reminder_page.test.mjs   # the screensaver's reminder card: its time, «الآن», «تم», the snooze, the keys, the adhan, English
 node tests/tvports_page.test.mjs   # the packaged page with simulated webOS and Tizen keys
 node tests/strip_steady.test.mjs   # 4.3.3 the screensaver's bottom strip stays put as the slot turns (games, scores, weather, markets)
+#
+# «regressions» (docs/dev/REGRESSIONS.md): the gate's own tests, and any guard of the register this file does not run by name above
+python3 tests/regressions/run.py --rest
