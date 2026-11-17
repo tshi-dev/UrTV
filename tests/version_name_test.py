@@ -68,10 +68,14 @@ wf = text(".github/workflows/android.yml")
 check("version.txt is written exactly as before: \"3.<run>\" (an installed 3.142 reads the newest build from it)", 'echo "3.${{ github.run_number }}" > version.txt' in wf and wf.count("> version.txt") == 1)
 check("version.txt goes to apk-latest and apk-next as before, and not to the numbered release",
       wf.count("            version.txt\n") == 2)
-check("the Version step validates VERSION (major.minor, or with a patch: 4.3.2); the numbered release is tagged v<major.minor>.<run> (only the URL shows it; the tag keeps its two-part shape) and titled exactly «UrTV <name>» («UrTV 4.3.2»)",
+check("the Version step validates VERSION (major.minor, or with a patch: 4.3.2); the numbered release is tagged v<major.minor>.<run> (the tag keeps its two-part shape) and titled «UrTV <name> (build <run>)», so no two titles match; apk-latest is «UrTV <name> (latest)»",
       "id: ver" in wf and "grep -Eq '^[0-9]+\\.[0-9]+(\\.[0-9]+)?$'" in wf and "tag_name: v${{ steps.ver.outputs.tag }}.${{ github.run_number }}" in wf and 'echo "tag=$(echo "$name" | cut -d. -f1-2)"' in wf
-      and "name: UrTV ${{ steps.ver.outputs.name }}\n" in wf and "UrTV ${{ steps.ver.outputs.name }} (build" not in wf)
-check("the bodies say the version and the build", wf.count('body: "Both apps at version ${{ steps.ver.outputs.name }} (build ${{ github.run_number }}), built from') == 3)
+      and "name: UrTV ${{ steps.ver.outputs.name }} (build ${{ github.run_number }})\n" in wf and "name: UrTV ${{ steps.ver.outputs.name }} (latest)\n" in wf
+      and "Latest APKs" not in wf and "·" not in wf.split("Publish to the apk-latest release")[1].split("Publish to the apk-next")[0])
+check("the bodies say the version and the build: apk-latest and the numbered release read the notes (the CHANGELOG section, cut to 15 lines, and each APK's SHA-256), apk-next its one line",
+      'echo "Both apps at version ${NAME} (build ${GITHUB_RUN_NUMBER}), built from ${GITHUB_SHA}."' in wf and "head -n 15" in wf and "sha256sum urtv-screensaver.apk urtv-home.apk" in wf
+      and wf.count("body_path: release-notes.md") == 2 and "> release-notes.md" in wf
+      and wf.count('body: "Both apps at version ${{ steps.ver.outputs.name }} (build ${{ github.run_number }}), built from') == 1)
 check("apk-latest is still published from master with make_latest, apk-next from next", "tag_name: apk-latest" in wf and "make_latest: true" in wf and "tag_name: apk-next" in wf)
 check("a change of VERSION alone starts a build", "'VERSION'" in wf.split("paths:")[1].splitlines()[0])
 check("the old v3.N tag form is gone from the workflow (new builds are v<name>.<run>)", "v3.${{" not in wf)
