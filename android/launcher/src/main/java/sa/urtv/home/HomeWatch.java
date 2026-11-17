@@ -24,11 +24,18 @@ final class HomeWatch {
      * default home is ours.
      */
     boolean decide(boolean on, String pkg, String cls, Set<String> stockHomes, boolean oursChosen, long now) {
+        return decide(on, pkg, cls, stockHomes, oursChosen, now, true);
+    }
+
+    /** tester-exp (step 88): {@code fight} false = the stock home came over another app (the person pressed Home there): brought, never counted;
+     *  only the stock home replacing OUR home (or nothing known) counts toward the loop guard */
+    boolean decide(boolean on, String pkg, String cls, Set<String> stockHomes, boolean oursChosen, long now, boolean fight) {
         if (!on || !oursChosen || pkg == null || cls == null || stockHomes == null) return false;
         if (!homeScreen(pkg, cls, stockHomes)) return false;
         if (now < pausedUntil) return false;
         // tester-exp (step 88): one Home press gives two stock-home windows; the second one within 1.5 s is brought again but not counted
         if (lastBring > 0 && now - lastBring < SAME_PRESS_MS) { lastBring = now; return true; }
+        if (!fight) { lastBring = now; return true; }
         int recent = 0, oldest = 0;
         for (int i = 0; i < brings.length; i++) {
             if (brings[i] > 0 && now - brings[i] < WINDOW_MS) recent++;

@@ -50,6 +50,7 @@ public class ExtrasA11yService extends AccessibilityService {
     private final Handler main = new Handler(Looper.getMainLooper());
     private final SettingsKey settingsKey = new SettingsKey();
     private final HomeWatch watch = new HomeWatch();
+    private String prevPkg;   // tester-exp (step 88)
     /** our home is in front (from the windows that come to the front) */
     private volatile boolean homeFront;
     /** a stock home answers HOME (it then answers the Settings key itself) */
@@ -97,6 +98,8 @@ public class ExtrasA11yService extends AccessibilityService {
         if (e == null || e.getEventType() != AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED || e.getPackageName() == null) return;
         String pkg = e.getPackageName().toString(), cls = e.getClassName() == null ? null : e.getClassName().toString();
         if (pkg.equals("com.android.systemui") || pkg.equals("android")) return;   // a volume bar or a system dialog over the app: the app in front did not change
+        String before = prevPkg;   // tester-exp (step 88): the app in front before this window
+        if (!stockPackages.contains(pkg)) prevPkg = pkg;
         boolean front = pkg.equals(HOME_PKG);
         if (front != homeFront) {
             homeFront = front;
@@ -108,7 +111,9 @@ public class ExtrasA11yService extends AccessibilityService {
         // brings ours while the person's home is ours: Android's default (the role), or the setup's word (WANTED) when the TV took the role back
         boolean on = watchOn(this), chosen = oursChosen(), wantedNow = wanted(this), homeScreen = HomeWatch.homeScreen(pkg, cls, stockHomes);
         long now = System.currentTimeMillis();
-        boolean bring = homeScreen && watch.decide(on, pkg, cls, stockHomes, chosen || wantedNow, now);
+        boolean fight = before == null || before.equals(HOME_PKG);   // the stock home over OUR home: a fight; over another app: the person's Home press
+        boolean bring = homeScreen && watch.decide(on, pkg, cls, stockHomes, chosen || wantedNow, now, fight);
+        Log.i("UrTVWatch", fight ? "came over ours (counted)" : "came over an app (a press, not counted)");
         // fixed words only (the log never names a package or a class): which rule matched, then the decision
         watchLog(stockHomes.contains(pkg + "/" + cls) ? 6 : homeScreen ? 7 : 8);
         watchLog(chosen ? (wantedNow ? 9 : 10) : (wantedNow ? 11 : 12));
