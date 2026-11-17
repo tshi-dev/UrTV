@@ -110,6 +110,7 @@ python3 tests/city_match_test.py
 python3 tests/cities_world_test.py
 python3 tests/cities_md_test.py
 python3 tests/home_card_test.py
+python3 tests/football_off_test.py   # 4.3.4: «بدون» turns the football home's widgets off
 python3 tests/home_page_test.py   # the home's cards on the screensaver's newer page (its stocks stayed stale on the APK's own)
 python3 tests/perf_idle_test.py
 python3 tests/league_fixtures_test.py
@@ -256,6 +257,8 @@ python3 tests/options_fit_test.py   # 4.3.4: the app options box is as wide as i
 python3 tests/update_rows_focus_test.py   # 4.3.4: a step down in «تحديث تلفزيوني» no longer skips «تحديث صفحة شاشة التوقف» (fullScroll moved the focus)
 python3 tests/ok_hold_test.py   # 4.3.4: a settings rebuild while OK is held waits for the release (the first press was lost)
 python3 tests/edit_keys_test.py   # the edit modes keep only the keys they use: a remote's app, colour, channel and maker keys go on
+python3 tests/beta_newest_test.py   # 4.3.4: «النسخ التجريبية» takes the newer of apk-beta and apk-latest (a beta user got no update again)
+python3 tests/beta_confirm_test.py   # 4.3.4: a beta build asks «نسخة تجريبية» on the TV before anything is downloaded
 node tests/i18n_page_test.mjs   # dist/tv-en.html in a browser: left to right, no Arabic in its own words on any card
 #
 # English phase 3 (the home app): its new tests go right under this line
