@@ -43,8 +43,10 @@ sh = text(ROOT / ".github/screens/update_shots.sh")
 check("a picture is taken only while UpdateActivity is the resumed activity (else the script fails), and only a successful run commits, and only all 100 pictures (72, 14 of the redesigned setup, 4 of the control center, 2 of the home's stand-in picture, 4 of the «تلفزيونك» entry and 4 of «UrTV النظيف»)",
       'grep -q "$expect"' in sh and "topResumedActivity" in sh and sh.count("exit 1") >= 2 and "sa.urtv.home/.DebugUpdateShot" in sh and "sa.urtv.home/.setup.DebugSetupShot" in sh
       and "if: success() && contains(join(github.event.commits.*.message, ' '), '[shots]')" in wf and "= 100" in wf)
-check("the pictures workflow: this branch and master with the hook, glass and sand, Arabic and English, committed on «[shots]»",
+check("the pictures workflow: this branch and master with the hook, glass and sand, Arabic and English, published to data-screens on «[shots]», never committed to the pushed branch",
       "branches: ['work/update-ui', 'work/fix-182']" in wf and "update_before_patch.py" in wf and "contains(join(github.event.commits.*.message, ' '), '[shots]')" in wf
+      and "publish_shots.sh shots-out" in wf and "git add docs/shots" not in wf and 'HEAD:${GITHUB_REF_NAME}' not in wf
+      and "HEAD:data-screens" in text(ROOT / ".github/screens/publish_shots.sh") and "--force" not in text(ROOT / ".github/screens/publish_shots.sh")
       and "for look in glass sand" in text(ROOT / ".github/screens/update_shots.sh") and "for lang in ar en" in text(ROOT / ".github/screens/update_shots.sh"))
 
 # the setup screen in the same language (4.3)
