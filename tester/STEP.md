@@ -6,6 +6,13 @@
 
 
 
+## step 97 — check the rescue Downloader code 8042301 (after 4.3.3 is on apk-latest, ~19:30 Riyadh on 17 Nov)
+The owner made code 8042301 for https://github.com/tshi-dev/UrTV/releases/download/apk-latest/urtv-rescue.apk. Once `curl -sIL` on that URL gives 200:
+1. On the TV, in Downloader, type 8042301.
+2. Confirm it downloads urtv-rescue.apk (the size about matches the release asset), then CANCEL. Don't install.
+3. Report «step 97: code 8042301 OK/FAIL».
+If it opens a page or an error instead, report exactly what Downloader shows.
+
 ## step 96 — 4.4 on apk-next (next = cd94e6d6, Build APKs run 44114006909), AFTER step 93
 This is the first full 4.4 build with everything merged:
 - presets, «منظر وساعة» settings, the compact setup + setup speed;
