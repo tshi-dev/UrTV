@@ -11,6 +11,16 @@ The first sheen ran across the number and washed the middle «.3» almost white.
 - `urtv-4.3.3-a.png` (also `urtv-4.3.3.png`, source `poster-433.html`): an even gold with a faint sheen from the top, the same on every digit, at most light gold #EBCD8C.
 - `urtv-4.3.3-b.png` (source `poster-433-b.html`): a flat gold #E2BC6E with a soft outer glow only.
 
+## The number, round 2 (the owner: «the font/shape looks plain»)
+
+Three crafted options for the «4.3.3» hero; the rest of the poster is unchanged. In each, the digits are placed from their measured widths (`num.py`), so the spacing is tight and even, and the dots are small diamonds. Every digit has the same light.
+
+1. `urtv-4.3.3-1.png`: **engraved gold.** Big Shoulders Display Black in a metallic gradient (a bright top edge, darker towards the bottom), with a thin bright rim, a dark outline and a soft drop shadow, like a gold plaque.
+2. `urtv-4.3.3-2.png`: **built from light.** Bebas Neue as glowing gold outlines, like a neon or LED sign: the screen idea on the dark green.
+3. `urtv-4.3.3-3.png`: **layered depth.** Big Shoulders Display Black with a 30 px extrusion going from dark gold to green, a slight perspective (16°), and a TV-shaped glow behind it.
+
+The display fonts are OFL (`a/FONTS.md`). The round-1 files (`urtv-4.3.3-a.png`, `urtv-4.3.3-b.png`) stay for comparison.
+
 ## Headline (two options)
 
 1. «نسخة تجريبية؟ شغّلها من تلفزيونك» (on the poster)
