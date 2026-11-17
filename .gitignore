@@ -10,6 +10,7 @@ optimize/adbkey/
 optimize/.tv_host
 optimize/backup-*.txt
 optimize/run/
+optimize/.prefetch/
 optimize/run-*/
 optimize/lists/mine.txt
 *.p12

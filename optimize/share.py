@@ -192,7 +192,11 @@ def trouble():   # from run.log: what the scripts said went wrong, and how often
     errors = list(dict.fromkeys(l for l in lines if l.startswith("!!") or " !! " in l))[:8]
     drops = sum("(connection problem" in l for l in lines)
     resumed = sum(l.startswith("resuming upload") for l in lines)
-    out = [f"ADB: {drops} dropped connections (retried), {resumed} resumed uploads"]
+    rerun = sum(l.startswith("The TV stopped answering during this step") for l in lines)   # 4.4: run.sh ran the step again by itself
+    out = [f"ADB: {drops} dropped connections (retried), {resumed} resumed uploads" + (f", {rerun} steps run again after the TV came back" if rerun else "")]
+    times = list(dict.fromkeys(l[len("timing: "):] for l in lines if l.startswith("timing: ")))[-10:]   # 4.4: where an install's time went
+    if times:
+        out.append("Install times: " + "; ".join(times))
     return out + [f"- {l}" for l in errors]
 
 

@@ -298,6 +298,7 @@ python3 tests/quick_measure_test.py
 python3 tests/dock_exact_test.py
 python3 tests/install_fallback_test.py
 python3 tests/run_resume_test.py
+python3 tests/prefetch_test.py
 node tests/es2017_parse.test.mjs   # #19: the built pages parse as ES2017 (Android 9 TVs stuck on WebView 66)
 node tests/date_num.test.mjs   # «التاريخ بالأرقام» on the screensaver page: day/month/year in the digits chosen
 node tests/wx_icon.test.mjs   # the screensaver's weather line: the condition's icon beside the temperature

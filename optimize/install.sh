@@ -18,8 +18,8 @@ set -euo pipefail
 cd "$(dirname "$0")/.."
 PY="${PY:-optimize/venv/bin/python}"
 REL=https://github.com/tshi-dev/UrTV/releases/download/${APK_TAG:-apk-latest}   # APK_TAG=v4.0.N: that numbered build (v3.N for the old ones)
-what="${1:?usage: optimize/install.sh saver|launcher|extras|addon|all}"
-case "$what" in saver|launcher|extras|addon|all) ;; *) echo "usage: optimize/install.sh saver|launcher|extras|addon|all" >&2; exit 2;; esac
+what="${1:?usage: optimize/install.sh saver|launcher|extras|addon|all|prefetch}"
+case "$what" in saver|launcher|extras|addon|all|prefetch) ;; *) echo "usage: optimize/install.sh saver|launcher|extras|addon|all|prefetch" >&2; exit 2;; esac
 . optimize/home-journal.sh   # the journal of the home switch (what the switch changed, to undo it after a restart)
 failed=0   # an extra that did not install: the rest are still tried, then run.sh must not count the step as done
 
@@ -41,6 +41,31 @@ curl_get() {
   done
   cat "$errf" >&2; rm -f "$errf"
   return "$rc"
+}
+
+# 4.4 setup speed: `install.sh prefetch` (run.sh starts it in the background while the TV is measured) downloads our APKs into optimize/.prefetch
+# ahead of their steps; push_install takes a finished one (same build tag) instead of downloading it again. Nothing on the TV is touched.
+PREFETCH=optimize/.prefetch
+if [ "$what" = prefetch ]; then
+  mkdir -p "$PREFETCH"
+  for f in urtv-screensaver.apk urtv-home.apk; do
+    [ -f "$PREFETCH/$f" ] && [ "$(cat "$PREFETCH/$f.tag" 2> /dev/null)" = "$REL" ] && continue
+    rm -f "$PREFETCH/$f" "$PREFETCH/$f.tag"
+    t0=$(date +%s)
+    if curl_get -fsSL -o "$PREFETCH/$f.part" "$REL/$f"; then
+      mv "$PREFETCH/$f.part" "$PREFETCH/$f" && echo "$REL" > "$PREFETCH/$f.tag"
+      echo "timing: prefetch $f $(( $(date +%s) - t0 )) s"
+    else rm -f "$PREFETCH/$f.part"; fi   # the step downloads it itself, as before
+  done
+  exit 0
+fi
+fetch_apk() {   # $1 apk name: into optimize/, from the prefetch when it has this build, else downloaded
+  if [ -f "$PREFETCH/$1" ] && [ "$(cat "$PREFETCH/$1.tag" 2> /dev/null)" = "$REL" ] && [ -n "$(find "$PREFETCH/$1" -mmin -120 2> /dev/null)" ]; then   # this run's (apk-latest moves)
+    mv "$PREFETCH/$1" "optimize/$1" && rm -f "$PREFETCH/$1.tag" && { echo "timing: download $1 0 s (prefetched)"; return 0; }
+  fi
+  local t0; t0=$(date +%s)
+  curl_get -fsSL -o "optimize/$1" "$REL/$1" || return 1
+  echo "timing: download $1 $(( $(date +%s) - t0 )) s"
 }
 
 # Play Protect can refuse an ADB install (INSTALL_FAILED_VERIFICATION_FAILURE, seen on a TCL Android 14): its ADB
@@ -148,11 +173,12 @@ push_install() {   # $1 apk name, $2 package
   if [ "$2" = sa.urtv.home ] && "$PY" -I optimize/tv.py "pm list packages com.tcl.tv" 2> /dev/null | tr -d '\r' | grep -qx "package:com.tcl.tv"; then
     "$PY" -I optimize/tv.py "am force-stop com.tcl.tv" > /dev/null 2>&1 || true
   fi
-  if ! curl_get -fsSL -o "optimize/$1" "$REL/$1"; then
+  if ! fetch_apk "$1"; then
     echo "!! Could not download $REL/$1 (tag ${APK_TAG:-apk-latest}): no such build, or no internet"; exit 1
   fi
-  local out
+  local out t0; t0=$(date +%s)
   out=$(stream_install "$1" "$2")
+  [ -z "$out" ] || echo "timing: install $1 streamed $(( $(date +%s) - t0 )) s"
   if [ -z "$out" ]; then
   "$PY" -I optimize/tv.py --push-b64 "optimize/$1" "/data/local/tmp/$1"
   if ! pushed_whole "$1"; then   # 4.3.2: a file that arrived short (a dropped upload) is sent again before pm is asked to read it
@@ -206,6 +232,7 @@ push_install() {   # $1 apk name, $2 package
       exit 1
     fi
   fi
+  echo "timing: install $1 $(( $(date +%s) - t0 )) s in all"
   restore_verifier
   "$PY" -I optimize/tv.py "rm -f /data/local/tmp/$1"
 }
@@ -274,10 +301,14 @@ from_github() {   # $1 owner/repo, $2 package, $3 asset pattern ({abi} = the TV'
   name=$(basename "$url")
   if [ -f "optimize/$name" ] && [ "$size" != 0 ] && [ "$(wc -c < "optimize/$name" | tr -d ' ')" = "$size" ]; then
     echo "$name is already downloaded: not downloading it again."
-  elif ! curl_get -fsSL -o "optimize/$name" "$url"; then echo "!! Could not download $url"; failed=1; return 0; fi
+  else
+    local d0; d0=$(date +%s)
+    if ! curl_get -fsSL -o "optimize/$name" "$url"; then echo "!! Could not download $url"; failed=1; return 0; fi
+    echo "timing: download $name $(( $(date +%s) - d0 )) s"
+  fi
   # An optional app never holds the setup up: the upload and the install are tried twice (an upload resumes where it stopped),
   # and a TV that did not answer both times means this app is skipped with one line and the setup goes on.
-  local try
+  local try t0; t0=$(date +%s)
   out=$(stream_install "$name" "$2")
   [ -z "$out" ] || try=streamed
   [ "${try:-}" = streamed ] || for try in 1 2; do
@@ -297,6 +328,7 @@ from_github() {   # $1 owner/repo, $2 package, $3 asset pattern ({abi} = the TV'
   fi
   "$PY" -I optimize/tv.py "rm -f /data/local/tmp/$name" > /dev/null 2>&1 || true
   rm -f "optimize/$name"
+  echo "timing: install $name $(( $(date +%s) - t0 )) s ($([ "${try:-}" = streamed ] && echo streamed || echo "file way, try ${try:-?}"))"
   if [ "$out" = NO_ANSWER ]; then echo "Installed $name (the TV was slow to answer)"
   elif grep -q Success <<< "$out"; then echo "Installed $name"
   elif grep -qE 'UPDATE_INCOMPATIBLE|signatures do not match' <<< "$out"; then

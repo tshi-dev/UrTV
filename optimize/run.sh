@@ -265,6 +265,12 @@ fi
 # A home switch that a restart cut off is undone from its journal first (see optimize/home-journal.sh). Never stops the run.
 jrecover || true
 
+# 4.4 setup speed: our APKs are downloaded in the background while the first steps run (the measure, the lists), so «screensaver» and «launcher»
+# find them ready (install.sh prefetch; a step that comes first downloads its own as before). Only while one of those steps is still to do.
+if [ ! -f "$RUN/.done-screensaver" ] || [ ! -f "$RUN/.done-launcher" ]; then
+  optimize/install.sh prefetch > "$RUN/prefetch.log" 2>&1 &
+fi
+
 # 4.4 (reports: 0-4 ADB drops a run; a Skyworth stopped at «screensaver» and «launcher» and waited 12 and 30 minutes to be run again): a step that
 # stopped ONLY because the TV stopped answering (tv.py gave up after its tries, or an install the TV went silent on) is not left for someone to
 # notice: the run waits for the TV (tv.py --wait, up to 10 minutes; a Wireless-debugging port is looked up again) and runs the same step once more,
