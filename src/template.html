@@ -3442,7 +3442,7 @@ function renderCard(card, animate, keepSize){
     const n = card.kind === 'nextmatch' && rows.length && nextTeamGame(Date.now()), meet = n && !fbLive(n, Date.now()) && h2hLine(n);
     if(meet) rows = rows.concat(`<li class="h2l"><span>${esc(meet)}</span></li>`);   // under it the two clubs' last meetings
   }
-  else if(SPORT_KINDS.includes(P)){ const q = SPORTS ? SPORTS.card(card, P) : {rows: [`<li class="empty">${matchesEmptyText()}</li>`]}; if(q.title) PANEL_TITLE[P] = q.title; rows = q.rows; }
+  else if(SPORT_KINDS.includes(P)){ const q = SPORTS ? SPORTS.card(card, P) : {rows: [`<li class="empty">${matchesEmptyText()}</li>`]}; rows = q.rows; if(q.titleHtml) paintHd(hd, '', q.title); else paintHd(hd, q.title || PANEL_TITLE[P]); }   // its own heading (a league's name, the takeover's time); the table of titles is never changed
   else if(P === 'year') rows = [yearCard(card)];
   else if(P === 'album') rows = [albumCard(card)];
   else if(P === 'today'){ const q = todayCard(); paintHd(hd, q.title); rows = q.rows; }
@@ -3456,7 +3456,7 @@ function renderCard(card, animate, keepSize){
   if(P === 'matches' && matchesStaleNote()) paintHd(hd, '', `<span>${title}</span><span class="until">${matchesStaleNote()}</span>`);
   // 4.4 batch 3, 13: «المهام» says how many beside its title («الشكل السابق»: the title alone)
   else if(P === 'tasks' && !OLD_LOOK && CONFIG.tasks.length) paintHd(hd, '', `<span>${PANEL_TITLE.tasks}</span><span class="until near">${qty(CONFIG.tasks.length, UNIT.task)}</span>`);
-  else if(title) paintHd(hd, title);
+  else if(title && !SPORT_KINDS.includes(P)) paintHd(hd, title);
   if(!rows.length){
     if(P === 'matches' && !MATCHES_LOADED && ul.firstElementChild && !ul.firstElementChild.classList.contains('empty')) return;
     if(P === 'matches' && ul.firstElementChild && ul.firstElementChild.classList.contains('empty') && ul.firstElementChild.textContent === matchesEmptyText()) return;

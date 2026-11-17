@@ -165,9 +165,10 @@ public class MainActivity extends Activity {
     private final BroadcastReceiver kickoffDue = new BroadcastReceiver() {
         @Override public void onReceive(Context c, Intent i) {
             if (!resumed) return;
-            String json = i.getStringExtra("json");
             String line = i.getStringExtra("line");
-            if ((homeCard == null || !homeCard.kick(json)) && line != null) {
+            // 4.4 the home draws the notice itself, at the screen's top right in its own window (the card's page is only the card's size)
+            java.util.List<sa.urtv.home.sports.KickoffPlan.Game> g = sa.urtv.home.sports.KickoffPlan.parse("[" + i.getStringExtra("game") + "]");
+            if ((g.isEmpty() || !KickoffOverlay.showIn(MainActivity.this, g.get(0))) && line != null) {
                 try { android.widget.Toast.makeText(c, line, android.widget.Toast.LENGTH_LONG).show(); } catch (RuntimeException ignored) { }
             }
         }

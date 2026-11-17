@@ -44,6 +44,9 @@ public class KickoffRun {
         String n = g.get(0).noticeJson();
         check("the notice's data for spKick (names, colours, competition), quotes escaped", n.equals("{\"kind\":\"start\",\"h\":\"الهلال\",\"a\":\"النصر\",\"hc\":[\"#1E4FA1\",\"#FFFFFF\"],\"ac\":[\"#F7C600\",\"#1B3A8A\"],\"lg\":\"دوري روشن\"}")
             && KickoffPlan.parse("[{\"id\":\"1\",\"t\":\"" + now + "\",\"h\":\"a\\\"<b>\",\"a\":\"c\"}]").get(0).noticeJson().contains("\"h\":\"a\\\" b\""), n);
+        KickoffPlan.Game back = KickoffPlan.parse("[" + g.get(0).json() + "]").get(0);
+        check("a game's json() is read back by parse() unchanged (the home's broadcast)", back.id.equals(g.get(0).id) && back.t == g.get(0).t && back.h.equals(g.get(0).h)
+            && back.a.equals(g.get(0).a) && back.lg.equals(g.get(0).lg) && back.hc[0].equals(g.get(0).hc[0]) && back.ac[1].equals(g.get(0).ac[1]), g.get(0).json());
         check("the text notice over another app", g.get(0).line("بدأت المباراة").equals("بدأت المباراة: الهلال × النصر"), g.get(0).line("بدأت المباراة"));
         System.exit(failed == 0 ? 0 : 1);
     }

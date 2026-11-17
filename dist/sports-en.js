@@ -1,4 +1,4 @@
-const SP_STAMP = 'SPORTS_BUILD:20261117125410:';
+const SP_STAMP = 'SPORTS_BUILD:20261117125609:';
 const SP_COL = {'136013':['#1E4FA1','#FFFFFF'], '136022':['#F7C600','#1B3A8A'], '136018':['#F2C200','#111111'], '137721':['#0A7A3A','#FFFFFF'],
   '136020':['#FFFFFF','#1A1A1A'], '136017':['#0B8A3E','#D4232B'], '136015':['#C8102E','#F2C200'], '136011':['#1D6B3A','#FFFFFF'], '136012':['#F2C200','#2B5BA8'],
   '139080':['#F2C200','#0A7A3A'], '147445':['#111111','#E2001A'], '136014':['#F28C00','#1A1A1A'], '137852':['#E30613','#111111'], '136200':['#E30613','#FFFFFF'],
@@ -14,7 +14,8 @@ const SPW = {noToday:'No match for your teams today', next:'Next: %s', startsIn:
   live:'Live', minute:'Minute %s', goals:'%s goals', noLive:'No matches live now', noTable:'No table right now', pts:'%s points', noNext:'No coming matches for your teams',
   home:'At home', away:'Away', noYesterday:'No results yesterday', yours:'Your teams', noWeekend:'No matches this weekend', noCup:'No knockout rounds yet',
   noF1:'No data for the next race', race:'Race', fp1:'Practice 1', fp2:'Practice 2', fp3:'Practice 3', sq:'Sprint qualifying', sprint:'Sprint', q:'Qualifying',
-  noNat:'No coming match for the national team', lastMeet:'Last meeting', place:'Place %s, %s points', top:'%s top with %s points', inRound:'%s in %s', countdown:'in %s'};
+  noNat:'No coming match for the national team', lastMeet:'Last meeting', place:'Place %s, %s points', top:'%s top with %s points', inRound:'%s in %s', countdown:'in %s',
+  outIn:'%s went out in the %s', through:'Through', out:'Out', agg:'On aggregate', phase:'League phase', matchday:'Round %s of %s', placeOf:'%s of %s, %s pts', noScorers:'The source does not name the scorers for this game'};
 (() => {
   const st = document.createElement('style');
   st.textContent = `
@@ -47,18 +48,28 @@ html.row .week li.spf{display:none}html.row .week li.spc{display:block;text-alig
 html.sptake:not(.widget) .mid .clockwrap{display:none}
 html.sptake:not(.widget) .mid .week.sptk{grid-column:1/-1;font-size:1.25em}
 .spclk{font-weight:400;opacity:.85}
-/* the kick-off notice (the launcher asks for it at kick-off: spKick): the top right, 8 s, cream text on dark glass */
-#spkick{position:fixed;top:4.5vh;inset-inline-end:2.5vw;width:min(36vw,700px);z-index:60;border-radius:1.4vh;background:rgba(12,14,18,.9);
-  border:1px solid rgba(233,196,106,.6);box-shadow:0 1.2vh 3.2vh rgba(0,0,0,.5);color:#F4EBD8;padding:1.2vh 1.5vw 0;font-size:2.1vh;overflow:hidden;
+/* the notice (spKick): the top right of the screensaver, 8 s, cream text on nearly solid dark glass (nothing reads through it) */
+#spkick{position:fixed;top:4.5vh;right:2.5vw;width:min(36vw,700px);z-index:60;border-radius:1.4vh;background:rgba(12,14,18,.97);
+  border:1px solid rgba(233,196,106,.6);box-shadow:0 1.2vh 3.2vh rgba(0,0,0,.5);color:#F4EBD8;padding:1.3vh 1.5vw 0;font-size:max(2.5vh,13px);line-height:1.45;overflow:hidden;
   transition:transform .45s ease,opacity .45s ease;text-align:center}
-#spkick.out{transform:translateX(calc(100% + 4vw));opacity:0}
-html[dir=ltr] #spkick.out{transform:translateX(calc(-100% - 4vw))}
+#spkick.out{transform:translateX(calc(100% + 4vw));opacity:0}   /* the top right in both languages (the owner's corner), so it leaves to the right */
 #spkick .kt{display:flex;justify-content:space-between;gap:1em;color:#F0D48E;font-weight:500}#spkick .kt i{font-style:normal;color:#E5DCC8;font-weight:400}
 #spkick .km{display:flex;align-items:center;justify-content:center;gap:1.1em;margin:1vh 0 1.2vh;font-size:1.55em;font-weight:700;color:#FFF8EC}
 #spkick .km .spsw{width:.7em;height:.7em}
 #spkick .kb{height:.35vh;margin:0 -1.5vw;background:#E9C46A;transform-origin:inline-end;animation:spkb 8s linear forwards}
 @keyframes spkb{to{transform:scaleX(0)}}
-#spkick.goal{border-color:#3BB273}`;
+#spkick.goal{border-color:#3BB273}
+/* on the home the page is only the card's own window: the goal and the final score (the kick-off is the launcher's own, at the screen's corner)
+   as a band over the card's top, the card's size; in the couch strip one line, the clubs and the score */
+html.widget #spkick{top:.45em;left:.45em;right:.45em;width:auto;font-size:13px;border-radius:.7em;padding:.45em .9em 0}
+html.widget #spkick .km{margin:.3em 0 .45em}html.widget #spkick .kb{margin:0 -.9em;height:3px}
+html.widget #spkick.out{transform:translateY(-130%)}
+html.row #spkick{top:0;bottom:0;left:0;right:0;border-radius:inherit;display:flex;flex-direction:column;justify-content:center;padding:0 1em}
+html.row #spkick .kt{display:none}html.row #spkick .km{margin:0}html.row #spkick .kb{position:absolute;bottom:0;inset-inline:0;margin:0}
+/* a light look on the home («نظيف»، «رملي»، «شفق»: html.hlt): the boxes, the time bar and a white half of a club's colours keep an edge on white, the live minute a darker red */
+html.hlt .week .spbox{border-color:rgba(0,0,0,.14);background:rgba(0,0,0,.035)}html.hlt .week .spbox.on{background:#EBC77F;border-color:#D4A94F}
+html.hlt .week .spbar{background:rgba(0,0,0,.1)}html.hlt .week .splive{color:#B3261E}
+html.hlt .week .spband,html.hlt .week .spsw,html.hlt .week .spfm i{box-shadow:0 0 0 1px rgba(0,0,0,.22)}`;
   document.head.appendChild(st);
 })();
 
@@ -68,9 +79,12 @@ function spLeagueIds(){
   const ids = [];
   CONFIG.leagues.forEach(n => { const id = catId(n) || (LEAGUE_DATA[n] && ((LEAGUE_DATA[n].events || []).find(e => e && e.idLeague) || {}).idLeague); if(id) ids.push(String(id)); });
   matchEvents().filter(fbMine).forEach(ev => { if(ev.idLeague) ids.push(String(ev.idLeague)); });
+  const ix = (ARCH_C[ARCH_BASE + 'index.json'] || {}).j, teams = ix && ix.teams || {};
+  CONFIG.teamIds.forEach(id => ((teams[id] || {}).leagues || []).forEach(l => ids.push(String(l))));
   return [...new Set(ids)].slice(0, 6);
 }
 async function spLoad(){
+  if(spUses('cuppath')) await archLoad('index.json').catch(() => null);
   if(CARDS.some(c => SPORT_KINDS.includes(c.kind) && c.kind !== 'formula' && c.kind !== 'national'))
     await Promise.all(spLeagueIds().map(async id => { const j = await archLoad('sports/' + id + '.json').catch(() => null); if(j) SP.lg[id] = j; }));
   if(spUses('formula')) SP.f1 = await archLoad('f1/next.json').catch(() => null) || SP.f1;
@@ -90,7 +104,13 @@ function spRow(ev, id){
   const t = SP.lg[String(ev.idLeague)], rows = (t && t.table) || [], i = rows.findIndex(r => r.id === String(id));
   return i < 0 ? null : {rank: i + 1, pts: rows[i].pts, f: rows[i].f};
 }
-const spGoals = s => String(s || '').split(';').map(x => x.trim()).filter(Boolean).map(x => { const m = /^(\d+)'?\s*:?\s*(.+)$/.exec(x); return m ? `${m[2].trim()} ${ar(m[1])}` : x; }).join(', ');
+const spGoal = x => {
+  let m = /^(\d+(?:\+\d+)?)'?\s*:?\s*(.+)$/.exec(x);
+  if(m) return `${m[2].trim()} ${ar(m[1])}`;
+  m = /^(.+?)\s+(\d+(?:\+\d+)?)'?$/.exec(x);
+  return m ? `${m[1].trim()} ${ar(m[2])}` : x;
+};
+const spGoals = s => String(s || '').split(';').map(x => x.replace(/\s+/g, ' ').trim()).filter(Boolean).map(spGoal).join(', ');
 function spMatchday(card, now){
   const ev = spToday(now);
   document.documentElement.classList.toggle('sptake', false);
@@ -112,17 +132,18 @@ function spMatchday(card, now){
     rows.push(`<li class="spr spf"><div class="spbx" style="grid-template-columns:repeat(3,1fr)"><div class="spbox"><span class="sps">${SPW.kick}</span><b>${fbClock(k)}</b></div>`
       + `<div class="spbox"><span class="sps">${SPW.venue}</span><b>${esc(ev.strVenue ? venueName(ev.strVenue) : '—')}</b></div><div class="spbox"><span class="sps">${SPW.channel}</span><b>${esc(m ? m.mark : '—')}</b></div></div></li>`);
     const meet = h2hLine(ev);
-    if(meet) rows.push(`<li class="spr spf sps">${esc(meet)}</li>`);
+    if(meet) rows.push(`<li class="spr spf"><span class="sps">${esc(meet)}</span></li>`);
   } else {
     const g = [['Home', ev.strHomeGoalDetails], ['Away', ev.strAwayGoalDetails]].filter(x => spGoals(x[1]));
     if(g.length) rows.push(`<li class="spr spf"><div class="spbx" style="grid-template-columns:repeat(${g.length},1fr)">${g.map(([s, d]) => `<div class="spbox"><span class="sps">${esc(fw(SPW.goals, spName(ev, s)))}</span><b>${esc(spGoals(d))}</b></div>`).join('')}</div></li>`);
-    else if(done){ const t = SP.lg[String(ev.idLeague)], r = t && t.table && t.table[0]; if(r) rows.push(`<li class="spr spf sps">${esc(fw(SPW.top, r.ar || teamAr(r.n, r.id), ar(r.pts)))}</li>`); }
+    else if(+ev.intHomeScore + +ev.intAwayScore > 0) rows.push(`<li class="spr spf"><span class="sps">${SPW.noScorers}</span></li>`);
+    if(!g.length && done){ const t = SP.lg[String(ev.idLeague)], r = t && t.table && t.table[0]; if(r) rows.push(`<li class="spr spf"><span class="sps">${esc(fw(SPW.top, r.ar || teamAr(r.n, r.id), ar(r.pts)))}</span></li>`); }
   }
   rows.push(`<li class="spc"><b>${esc(spName(ev, 'Home'))} ${live || done ? score : '×'} ${esc(spName(ev, 'Away'))}</b><span class="sps">${esc(live ? SPW.live + ', ' + fbStatus(ev, now) : done ? SPW.ended : fbClock(k) + ', ' + fw(SPW.countdown, shortRemaining(k - now)))}</span></li>`);
   const take = !CONFIG.widget && now >= k - 3 * 3600000 && now <= k + FB_DUR + 3600000;
   document.documentElement.classList.toggle('sptake', take);
   card.el.classList.toggle('sptk', take);
-  return {title: take ? `${PANEL_TITLE.matchday}  <span class="spclk">${fbClock(now)}</span>` : '', titleHtml: take, rows};
+  return {title: take ? `<span>${esc(PANEL_TITLE.matchday)}</span><span class="spclk">${esc(fbClock(now))}</span>` : '', titleHtml: take, rows};
 }
 
 function spLivenow(now){
@@ -196,17 +217,38 @@ function spWeekend(now){
 }
 
 function spCuppath(){
-  const ids = new Set(CONFIG.teamIds);
-  const t = Object.values(SP.lg).find(x => x.cup && x.cup.rounds.some(r => r.games.some(g => ids.has(g.h) || ids.has(g.a)))) || Object.values(SP.lg).find(x => x.cup);
+  const ids = new Set(CONFIG.teamIds), mineT = t => ids.has(String(t.a)) || ids.has(String(t.b));
+  const cups = Object.values(SP.lg).filter(x => x.cup && ((x.cup.rounds || []).length || x.cup.phase));
+  const ko = cups.find(x => (x.cup.rounds || []).some(r => (r.ties || []).some(mineT)));
+  const ph = !ko && cups.find(x => x.cup.phase && x.cup.phase.groups.some(g => g.some(r => ids.has(String(r.id)))));
+  const t = ko || ph || cups[0];
   if(!t) return {rows: [`<li class="spr spf">${SPW.noCup}</li>`, `<li class="spc">${SPW.noCup}</li>`]};
-  const rounds = t.cup.rounds.slice(-4);
-  const col = r => { const g = r.games.find(x => ids.has(x.h) || ids.has(x.a)), show = g ? [g] : r.games.slice(0, 2);
-    return `<div><div class="sps">${esc(r.ar)}</div>${show.map(x => { const ev = spEv(x); return `<div class="spbox${g ? ' on' : ''}" style="margin-top:.3em"><b>${esc(spName(ev, 'Home'))} ${fbScored(ev) ? ar(+ev.intHomeScore) + ' - ' + ar(+ev.intAwayScore) : '×'} ${esc(spName(ev, 'Away'))}</b><span class="sps">${esc(fbScored(ev) ? '' : spWhen(fbKick(ev)))}</span></div>`; }).join('')}</div>`; };
-  const mine = [...rounds].reverse().find(r => r.games.some(x => ids.has(x.h) || ids.has(x.a)));
-  const club = mine && (() => { const g = mine.games.find(x => ids.has(x.h) || ids.has(x.a)); return ids.has(g.h) ? (spEv(g) && spName(spEv(g), 'Home')) : spName(spEv(g), 'Away'); })();
-  return {title: t.ar || PANEL_TITLE.cuppath,
-    rows: [`<li class="spr spf"><div class="spbx" style="grid-template-columns:repeat(${rounds.length},1fr);align-items:start">${rounds.map(col).join('')}</div></li>`,
-      `<li class="spc"><b>${esc(club ? fw(SPW.inRound, club, mine.ar) : t.ar || '')}</b></li>`]};
+  const title = t.ar || leagueName({idLeague: t.id, strLeague: t.en}) || PANEL_TITLE.cuppath;
+  const nm = (id, en) => teamAr(en, String(id));
+  if(!ko && t.cup.phase && (ph || !(t.cup.rounds || []).length)){
+    const p = t.cup.phase, g = p.groups.find(x => x.some(r => ids.has(String(r.id)))) || p.groups[0], mi = g.findIndex(r => ids.has(String(r.id)));
+    const pick = [...new Set([0, 1, 2, ...(mi > 2 ? [mi - 1, mi] : [3, 4])])].filter(i => i >= 0 && i < g.length).sort((a, b) => a - b);
+    let prev = -1;
+    const rows = pick.map(i => { const r = g[i], gap = prev >= 0 && i > prev + 1 ? '<div class="sps">…</div>' : ''; prev = i;
+      return `${gap}<div class="sptr${i === mi ? ' on' : ''}"><span>${ar(i + 1)}</span><b>${spSw(r.id)}${esc(r.ar || nm(r.id, r.n))}</b>${spForm(r.f)}<b>${ar(r.pts)}</b></div>`; }).join('');
+    const me = mi >= 0 ? g[mi] : null, md = fw(SPW.matchday, ar(p.md), ar(p.of));
+    return {title, rows: [`<li class="spr spf"><div class="sps">${esc(SPW.phase + ', ' + md)}</div>${rows}</li>`,
+      `<li class="spc"><b>${esc(me ? (me.ar || nm(me.id, me.n)) + ' ' + fw(SPW.placeOf, ar(mi + 1), ar(g.length), ar(me.pts)) : SPW.phase)}</b><span class="sps">${esc(md)}</span></li>`]};
+  }
+  const rounds = (t.cup.rounds || []).filter(r => !ko || (r.ties || []).some(mineT)).slice(-4);
+  const side = tie => { const a = ids.has(String(tie.b)) ? 1 : 0, us = a ? [tie.b, tie.bn] : [tie.a, tie.an], them = a ? [tie.a, tie.an] : [tie.b, tie.bn];
+    return {us, them, ag: tie.ag ? [tie.ag[a], tie.ag[1 - a]] : null}; };
+  const col = r => { const tie = (r.ties || []).find(mineT) || (r.ties || [])[0];
+    if(!tie) return `<div class="spbox"><span class="sps">${esc(r.ar)}</span></div>`;
+    const s = side(tie), nxt = tie.legs.find(l => l.hs == null || l.hs === ''), legs = tie.legs.length;
+    const res = s.ag ? `${ar(s.ag[0])} - ${ar(s.ag[1])}` : nxt ? esc(spWhen(Date.parse(nxt.t))) : '×';
+    const verdict = !ko || !s.ag ? '' : s.ag[0] > s.ag[1] ? SPW.through : s.ag[0] < s.ag[1] ? SPW.out : '';
+    return `<div class="spbox${ko ? ' on' : ''}"><span class="sps">${esc(r.ar)}</span><b>× ${esc(nm(s.them[0], s.them[1]))}</b><b>${res}</b>`
+      + `<span class="sps">${esc([legs > 1 && s.ag ? SPW.agg : '', verdict].filter(Boolean).join(', '))}</span></div>`; };
+  const last = rounds[rounds.length - 1], lt = last && ((last.ties || []).find(mineT) || null), club = lt && side(lt).us;
+  const lost = lt && lt.ag && side(lt).ag[0] < side(lt).ag[1];
+  return {title, rows: [`<li class="spr spf"><div class="spbx" style="grid-template-columns:repeat(${rounds.length || 1},1fr);align-items:start">${rounds.map(col).join('')}</div></li>`,
+    `<li class="spc"><b>${esc(club ? fw(lost ? SPW.outIn : SPW.inRound, nm(club[0], club[1]), last.ar) : title)}</b></li>`]};
 }
 
 function spF1(now){

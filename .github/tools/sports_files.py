@@ -25,12 +25,17 @@ KO = {"32": "دور الـ٣٢", "16": "دور الـ١٦", "125": "ربع ال�
       "170": "الملحق", "180": "نهائي الملحق"}
 KO_ORDER = ["32", "16", "125", "150", "160", "200"]
 F1_URL = "https://api.jolpi.ca/ergast/f1/current/next.json"
+F1_FIRST = "https://api.jolpi.ca/ergast/f1/{season}/1.json"   # after the last race of a season: the next season's first
 F1_EVERY = dt.timedelta(hours=20)
 F1_COUNTRY = {"Bahrain": "البحرين", "Saudi Arabia": "السعودية", "Australia": "أستراليا", "Japan": "اليابان", "China": "الصين", "USA": "الولايات المتحدة",
               "United States": "الولايات المتحدة", "Italy": "إيطاليا", "Monaco": "موناكو", "Spain": "إسبانيا", "Canada": "كندا", "Austria": "النمسا",
               "UK": "بريطانيا", "United Kingdom": "بريطانيا", "Hungary": "المجر", "Belgium": "بلجيكا", "Netherlands": "هولندا", "Azerbaijan": "أذربيجان",
               "Singapore": "سنغافورة", "Mexico": "المكسيك", "Brazil": "البرازيل", "Qatar": "قطر", "UAE": "أبوظبي", "United Arab Emirates": "أبوظبي",
               "Las Vegas": "لاس فيغاس", "Miami": "ميامي"}
+# a race named for a city or region, not its country (three races in the USA, two in Italy): its own name first
+F1_RACE = {"Las Vegas Grand Prix": "لاس فيغاس", "Miami Grand Prix": "ميامي", "United States Grand Prix": "الولايات المتحدة", "Emilia Romagna Grand Prix": "إميليا رومانيا",
+           "Italian Grand Prix": "إيطاليا", "São Paulo Grand Prix": "ساو باولو", "Sao Paulo Grand Prix": "ساو باولو", "Mexico City Grand Prix": "مكسيكو سيتي",
+           "Abu Dhabi Grand Prix": "أبوظبي", "Saudi Arabian Grand Prix": "السعودية", "British Grand Prix": "بريطانيا", "Dutch Grand Prix": "هولندا"}
 SESSIONS = [("FirstPractice", "fp1"), ("SecondPractice", "fp2"), ("ThirdPractice", "fp3"), ("SprintQualifying", "sq"), ("SprintShootout", "sq"),
             ("Sprint", "sprint"), ("Qualifying", "q")]
 
@@ -83,17 +88,89 @@ def table(games, names):
     return sorted(rows.values(), key=lambda r: (-r["pts"], -(r["gf"] - r["ga"]), -r["gf"], r["n"]))
 
 
-def cup(games):
-    """{rounds: [{r, ar, games}]} for the knockout games of a season (TheSportsDB's round numbers), none when it has no knockout round"""
+PHASE_MAX = 8   # a cup's league or group phase: TheSportsDB's rounds 1..8 (UCL's and AFC's league phase 8, the old group stages 6)
+
+
+def _ties(es):
+    """a knockout round's games as ties: the same two clubs (one or two legs), the aggregate once every leg has its score"""
     by = {}
+    for e in sorted(es, key=lambda e: e["t"]):
+        by.setdefault(frozenset((e["h"], e["a"])), []).append(e)
+    out = []
+    for legs in by.values():
+        a, b = legs[0]["h"], legs[0]["a"]
+        tie = {"a": a, "b": b, "an": legs[0].get("hn") or "", "bn": legs[0].get("an") or "", "legs": [_game(e) for e in legs]}
+        if all(_done(e) for e in legs):
+            tie["ag"] = [sum(_num(e["hs"] if e["h"] == x else e["as"]) for e in legs) for x in (a, b)]
+        out.append(tie)
+    return sorted(out, key=lambda t: t["legs"][0]["t"])
+
+
+def _groups(phase):
+    """the phase's games split by who can meet whom (UCL's one league of 36, AFC's west and east, the old groups of 4)"""
+    up = {}
+    def root(x):
+        while up.setdefault(x, x) != x:
+            up[x] = up[up[x]]; x = up[x]
+        return x
+    for e in phase:
+        up[root(e["h"])] = root(e["a"])
+    by = {}
+    for e in phase:
+        by.setdefault(root(e["h"]), []).append(e)
+    return list(by.values())
+
+
+def _last_cluster(phase, gap=dt.timedelta(days=14)):
+    """each matchday's own games: TheSportsDB numbers the qualifying rounds 1, 2, 3 too (UCL's July and August), weeks before the matchday of
+    that number; a matchday's games are a few days apart, so a round's games are cut where two are more than 14 days apart and the last part kept"""
+    by = {}
+    for e in phase:
+        by.setdefault(e["r"], []).append(e)
+    out = []
+    for es in by.values():
+        es = sorted((e for e in es if _t(e)), key=_t)
+        start = 0
+        for i in range(1, len(es)):
+            if _t(es[i]) - _t(es[i - 1]) > gap:
+                start = i
+        out += es[start:]
+    return out
+
+
+def cup(games, names=None):
+    """{rounds: [{r, ar, games, ties}], phase: {groups, md, of}} for a cup's season (TheSportsDB's round numbers), none when it has neither:
+    the knockout rounds in the order they are played, each named (a 16-game «160», or a two-legged «32» of 8 ties, is the play-off), its ties
+    with their aggregate; the league or group phase as each group's table, how many matchdays are played and how many there are"""
+    names = names or {}
+    rs = {str(e.get("r") or "") for e in games}
+    if any(r.isdigit() and PHASE_MAX < int(r) < 400 and r not in KO for r in rs):
+        return None   # a league's matchdays (9, 10, 11…): its «16» and «32» are matchdays, not knockout rounds
+    ko, phase = {}, []
     for e in games:
+        if e.get("pp"):
+            continue
         r = str(e.get("r") or "")
-        if r in KO and not e.get("pp"):
-            by.setdefault(r, []).append(_game(e))
-    if not by:
-        return None
-    order = [r for r in KO_ORDER if r in by] + sorted(r for r in by if r not in KO_ORDER)
-    return {"rounds": [{"r": r, "ar": KO[r], "games": sorted(by[r], key=lambda g: g["t"])} for r in order]}
+        if r in KO:
+            ko.setdefault(r, []).append(e)
+        elif r.isdigit() and 1 <= int(r) <= PHASE_MAX:
+            phase.append(e)
+    phase = _last_cluster(phase)
+    body = {}
+    if ko:
+        rounds = []
+        for r, es in sorted(ko.items(), key=lambda x: min(e["t"] for e in x[1])):
+            ties = _ties(es)
+            two_legged = ties and all(len(t["legs"]) == 2 for t in ties)
+            ar = "الملحق" if (r == "160" and len(ties) > 1) or (r == "32" and len(ties) == 8 and two_legged) else KO[r]
+            rounds.append({"r": r, "ar": ar, "games": [_game(e) for e in sorted(es, key=lambda e: e["t"])], "ties": ties})
+        body["rounds"] = rounds
+    if phase:
+        groups = [table(g, names) for g in _groups(phase)]
+        played = [int(e["r"]) for e in phase if _done(e)]
+        body["phase"] = {"groups": sorted((g for g in groups if g), key=lambda g: -len(g)), "md": max(played) if played else 0,
+                         "of": max(int(e["r"]) for e in phase)}
+    return body or None
 
 
 def league_file(store, lg, now, stamp, names, ar=""):
@@ -106,7 +183,7 @@ def league_file(store, lg, now, stamp, names, ar=""):
     nxt = sorted((e for e in games if not _done(e) and not e.get("pp") and now - dt.timedelta(hours=3) <= (_t(e) or lo) <= hi), key=lambda e: e["t"])
     body = {"v": V, "id": lg, "en": store.name(lg), "ar": ar, "season": season, "updated": stamp,
             "table": table(games, names), "last": [_game(e) for e in last], "next": [_game(e) for e in nxt]}
-    c = cup(games)
+    c = cup(games, names)
     if c:
         body["cup"] = c
     return body
@@ -141,8 +218,35 @@ def f1_file(answer, stamp):
         if s["t"] and s["k"] not in seen:
             seen.add(s["k"]); uniq.append(s)
     return {"v": V, "updated": stamp, "season": r.get("season", ""), "round": r.get("round", ""), "name": r.get("raceName", ""),
-            "ar": "جائزة " + F1_COUNTRY[country] + " الكبرى" if country in F1_COUNTRY else "", "circuit": (r.get("Circuit") or {}).get("circuitName", ""),
+            "ar": "جائزة " + (F1_RACE.get(r.get("raceName", "")) or F1_COUNTRY[country]) + " الكبرى" if r.get("raceName", "") in F1_RACE or country in F1_COUNTRY else "", "circuit": (r.get("Circuit") or {}).get("circuitName", ""),
             "country": country, "sessions": sorted(uniq, key=lambda s: s["t"])}
+
+
+def _f1_get(fetch, url):
+    raw = fetch(url) if fetch else urllib.request.urlopen(urllib.request.Request(url, headers={"User-Agent": "UrTV CI"}), timeout=20).read()
+    return json.loads(raw)
+
+
+def f1_next(fetch, stamp):
+    """the next race; once a season's last race is run (Jolpica's «next» has no race) the next season's first, None when neither is known yet"""
+    ans = _f1_get(fetch, F1_URL)
+    body = f1_file(ans, stamp)
+    if body is None:
+        season = str((((ans or {}).get("MRData") or {}).get("RaceTable") or {}).get("season") or "")
+        if season.isdigit():
+            body = f1_file(_f1_get(fetch, F1_FIRST.format(season=int(season) + 1)), stamp)
+    return body
+
+
+def f1_check(fetch=None):
+    """CI's proof that the real Jolpica answers and parses (tests/f1-check workflow): prints the file it would write, writes nothing"""
+    now = dt.datetime.now(dt.timezone.utc).replace(microsecond=0)
+    body = f1_next(fetch, now.isoformat().replace("+00:00", "Z"))
+    if not body or not body.get("sessions") or not all(x.get("t") for x in body["sessions"]) or not any(x["k"] == "race" for x in body["sessions"]):
+        print("f1 check: no race in Jolpica's answer:", json.dumps(body, ensure_ascii=False))
+        return 1
+    print("f1 check: ok", json.dumps(body, ensure_ascii=False))
+    return 0
 
 
 def f1(args, fetch=None):
@@ -162,8 +266,7 @@ def f1(args, fetch=None):
     body = None
     if not fresh:
         try:
-            raw = fetch() if fetch else urllib.request.urlopen(urllib.request.Request(F1_URL, headers={"User-Agent": "UrTV CI"}), timeout=20).read()
-            body = f1_file(json.loads(raw), now.isoformat().replace("+00:00", "Z"))
+            body = f1_next(fetch, now.isoformat().replace("+00:00", "Z"))
         except Exception as e:   # the network or the answer: the last file stays
             print("f1: no answer:", e)
     if body:
@@ -186,8 +289,9 @@ def main():
     p = sub.add_parser("f1")
     p.add_argument("--prev", required=True)
     p.add_argument("--out", required=True)
+    sub.add_parser("f1check")
     a = ap.parse_args()
-    return f1(a)
+    return f1_check() if a.cmd == "f1check" else f1(a)
 
 
 if __name__ == "__main__":

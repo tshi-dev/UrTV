@@ -55,8 +55,11 @@ check("over another app: only with «فوق تطبيق آخر» and the permissi
       "Settings.canDrawOverlays(app)" in rcv and "TYPE_APPLICATION_OVERLAY" in over and "FLAG_NOT_FOCUSABLE" in over and "FLAG_NOT_TOUCHABLE" in over)
 check("the notice over another app: cream text on dark glass, top right", "CREAM = 0xFFFFF8EC" in over and "0xE60C0E12" in over and "Gravity.TOP | Dir.start(true)" in over, "colour")
 check("the whistle is a notification sound that ducks the TV (never a music stream)", "USAGE_NOTIFICATION_EVENT" in whistle and "AUDIOFOCUS_GAIN_TRANSIENT_MAY_DUCK" in whistle)
-check("the home's card asks the page for its list (no JavaScript interface, only while in front) and draws the notice",
-      "addJavascriptInterface" not in card and "spKickList()" in card and "idle.removeCallbacks(kickPull);   // 4.4" in card and "spKick(" in card and "KickoffReceiver.SHOW" in main)
+check("the home's card asks the page for its list (no JavaScript interface, only while in front)",
+      "addJavascriptInterface" not in card and "spKickList()" in card and "idle.removeCallbacks(kickPull);   // 4.4" in card)
+check("the home draws the kick-off notice itself at the screen's top right in its own window (the card's page is only the card's size); a toast if it cannot",
+      "KickoffReceiver.SHOW" in main and "KickoffOverlay.showIn(MainActivity.this, g.get(0))" in main and 'putExtra("game", g.json())' in rcv
+      and "static boolean showIn(android.app.Activity a, KickoffPlan.Game g)" in over and "getDecorView()" in over.split("showIn(", 1)[1][:400] and "spKick(" not in card)
 
 prefs, prov, srcv, act, hub, sh, dock, rst = (read(APP / "Prefs.java"), read(APP / "ConfigProvider.java"), read(APP / "SaverReceiver.java"), read(APP / "SettingsActivity.java"),
     read(APP / "SettingsHub.java"), read(ROOT / "optimize/saver.sh"), read(ROOT / "optimize/dock.sh"), read(ROOT / "optimize/reset.sh"))
