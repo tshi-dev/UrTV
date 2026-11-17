@@ -11,13 +11,14 @@ import java.util.Set;
  *
  * 4.4 (step 88, the tester's R2g on the owner's Google TV: 64 of 64 Home presses, 3 of 3 boots, 30 minutes idle):
  * - the stock home over ANOTHER app is the person's Home press: always brought, never counted, even while paused;
- * - the stock home over OUR home is a fight: the 2-3 windows of one press (within 0.7 s) count once, and the 6th burst within 6 s pauses the
- *   watch, for 30 s. (The tester's 6 in 4 s could never trip: with one count per 0.7 s burst, a firmware bouncing its home back every 0.3-0.5 s
- *   counts about once a second, 4 in 4 s, and the fight would go on for ever; 6 in 6 s catches it. Presses over apps are never counted, so the
- *   64 of 64 is unchanged.)
+ * - the stock home over OUR home is a fight: the 2-3 windows of one press (within 0.7 s) count once, and the 6th burst within 4 s pauses the
+ *   watch, for 30 s. (Build 413, the tester's T2: 6 in 6 s paused a person mashing Home on our home once a second; 6 in 4 s lets a mash at 1/s or
+ *   0.5/s through, and still stops a firmware that bounces its home back every 0.7 s or faster than a burst apart. A slower bounce is the price;
+ *   with the add-on's Home key catch on (Google TV's default), the stock home does not start on the remote's Home at all. Presses over apps are
+ *   never counted, so the 64 of 64 is unchanged.)
  */
 final class HomeWatch {
-    static final long WINDOW_MS = 6_000, PAUSE_MS = 30_000, BURST_MS = 700;
+    static final long WINDOW_MS = 4_000, PAUSE_MS = 30_000, BURST_MS = 700;
     static final int MAX_BRINGS = 6;
 
     private final long[] brings = new long[MAX_BRINGS];
@@ -45,7 +46,7 @@ final class HomeWatch {
             if (brings[i] > 0 && now - brings[i] < WINDOW_MS) recent++;
             if (brings[i] < brings[oldest]) oldest = i;
         }
-        if (recent >= MAX_BRINGS - 1) {   // this is the 6th burst within 6 s: ours keeps losing to the stock home (a firmware that pins it): step aside
+        if (recent >= MAX_BRINGS - 1) {   // this is the 6th burst within 4 s: ours keeps losing to the stock home (a firmware that pins it): step aside
             pausedUntil = now + PAUSE_MS;
             java.util.Arrays.fill(brings, 0);
             return false;

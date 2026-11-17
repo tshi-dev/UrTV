@@ -27,8 +27,8 @@ def text(p):
 watch, host, hook, eng, rep, runner, act, pv = (text(p) for p in (HOME / "HomeWatch.java", SETUP / "SetupHost.java", SETUP / "SetupHook.java", SETUP / "SetupEngine.java",
                                                                    SETUP / "SetupReport.java", SETUP / "SetupRunner.java", SETUP / "SetupActivity.java", SETUP / "SetupProgressView.java"))
 svc = text(ROOT / "android/extras/src/main/java/sa/urtv/home/ExtrasA11yService.java")
-check("1. the watch (4.4 R2g, step 88): a press over another app always brought, never counted; over ours one count per 0.7 s burst, the 6th in 6 s pauses 30 s; the burst never extends itself",
-      "if (!fight) return true;" in watch and "BURST_MS = 700" in watch and "WINDOW_MS = 6_000, PAUSE_MS = 30_000" in watch
+check("1. the watch (4.4 R2g, step 88): a press over another app always brought, never counted; over ours one count per 0.7 s burst, the 6th in 4 s pauses 30 s (build 413 T2); the burst never extends itself",
+      "if (!fight) return true;" in watch and "BURST_MS = 700" in watch and "WINDOW_MS = 4_000, PAUSE_MS = 30_000" in watch
       and "if (lastBurst > 0 && now - lastBurst < BURST_MS) return true;" in watch and watch.count("lastBurst = now;") == 1 and "recent >= MAX_BRINGS - 1" in watch)
 check("2. «wanted» reaches the add-on: before the Home check once it is bound, after every end of a run, and at the home's start",
       "if (on.status == SetupEngine.Status.DONE) c.host.homeWanted(true);" in runner and runner.index("c.host.homeWanted(true);") < runner.index("r = c.engine.finishWatch(")
