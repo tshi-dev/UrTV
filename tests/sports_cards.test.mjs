@@ -40,7 +40,7 @@ const H2H = { v: 1, pair: '136013-136022', meetings: [g('m1', ...T.hilal, ...T.n
 const KSA = { v: 1, id: '136137', en: 'Saudi Arabia', ar: 'السعودية', next: [{ id: 'n1', lg: '4500', s: '2026', t: iso(NOW + 100 * H) + 'Z', home: true, vs: '140000', vsn: 'Jordan', gf: null, ga: null, st: 'NS', r: '' }], last: [] };
 // the state of today's game: before (in 3 h), live (the 60th minute), after (ended an hour ago)
 const TODAY = { before: ev('d1', ...T.hilal, ...T.nassr, NOW + 3 * H, { strVenue: 'Kingdom Arena' }),
-  live: ev('d1', ...T.hilal, ...T.nassr, NOW - 60 * 60000, { strStatus: '2H', intHomeScore: '2', intAwayScore: '1', strProgress: '60', strHomeGoalDetails: "12':Salem;55':Fahad;", strAwayGoalDetails: "38':Majed;" }),
+  live: ev('d1', ...T.hilal, ...T.nassr, NOW - 60 * 60000, { strStatus: '2H', intHomeScore: '2', intAwayScore: '1', strProgress: '60', strHomeGoalDetails: "12':Salem;45+2':Fahad;", strAwayGoalDetails: "Majed 38'" }),
   after: ev('d1', ...T.hilal, ...T.nassr, NOW - 3 * H, { strStatus: 'FT', intHomeScore: '3', intAwayScore: '1' }),
   soon: ev('2100001', ...T.hilal, ...T.nassr, NOW + 10 * 60000) };
 
@@ -78,8 +78,8 @@ const home = (k, extra = '') => `widget=1&home_panel=${k}&teams=136013${extra}`;
 
 for (const [kind, state, expect] of [
   ['matchday', 'before', c => /الهلال/.test(c.full) && /النصر/.test(c.full) && /تبدأ بعد/.test(c.full) && /المركز ١، ٣٠ نقطة/.test(c.full) && /الانطلاقة/.test(c.full) && /آخر مواجهتين: الهلال ١ فوز، ١ تعادل/.test(c.full)],
-  ['matchday', 'live', c => /٢ - ١/.test(c.full) && /Salem ١٢، Fahad ٥٥/.test(c.full) && /Majed ٣٨/.test(c.full)],
-  ['matchday', 'after', c => /٣ - ١/.test(c.full) && /انتهت/.test(c.full) && /الهلال الأول بـ٣٠ نقطة/.test(c.full)],
+  ['matchday', 'live', c => /٢ - ١/.test(c.full) && /Salem ١٢، Fahad ٤٥\+٢/.test(c.full) && /Majed ٣٨/.test(c.full) && !/المصدر لا يذكر/.test(c.full)],
+  ['matchday', 'after', c => /٣ - ١/.test(c.full) && /انتهت/.test(c.full) && /الهلال الأول بـ٣٠ نقطة/.test(c.full) && /المصدر لا يذكر أسماء الهدّافين لهذه المباراة/.test(c.full)],
   ['livenow', 'live', c => /٢ - ١/.test(c.full) && /الهلال/.test(c.full)],
   ['minitable', 'before', c => c.hd === 'دوري روشن السعودي' && /١الهلال/.test(c.full) && /٣٠/.test(c.full) && /٧الاتفاق/.test(c.full)],
   ['nextmatches', 'before', c => /الهلال/.test(c.full) && /× النصر/.test(c.full) && /على أرضه/.test(c.full)],

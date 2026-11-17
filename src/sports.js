@@ -20,7 +20,7 @@ const SPW = {noToday:'لا مباراة لفرقك اليوم', next:'القاد
   home:'على أرضه', away:'خارج أرضه', noYesterday:'لا نتائج أمس', yours:'فرقك', noWeekend:'لا مباريات نهاية هذا الأسبوع', noCup:'لا أدوار إقصائية بعد',
   noF1:'لا بيانات للسباق القادم', race:'السباق', fp1:'التجربة الأولى', fp2:'التجربة الثانية', fp3:'التجربة الثالثة', sq:'تأهيل السبرنت', sprint:'السبرنت', q:'التأهيل',
   noNat:'لا مباراة قادمة للمنتخب', lastMeet:'آخر مواجهة', place:'المركز %s، %s نقطة', top:'%s الأول بـ%s نقطة', inRound:'%s في %s', countdown:'بعد %s',
-  outIn:'%s ودّع من %s', through:'تأهل', out:'ودّع', agg:'مجموع المباراتين', phase:'مرحلة الدوري', matchday:'الجولة %s من %s', placeOf:'المركز %s من %s، %s نقطة'};
+  outIn:'%s ودّع من %s', through:'تأهل', out:'ودّع', agg:'مجموع المباراتين', phase:'مرحلة الدوري', matchday:'الجولة %s من %s', placeOf:'المركز %s من %s، %s نقطة', noScorers:'المصدر لا يذكر أسماء الهدّافين لهذه المباراة'};
 // ---- the look: the cards session's (centred, «مربعات», gold for the person's own), sizes in em of the card's own text
 (() => {
   const st = document.createElement('style');
@@ -105,7 +105,14 @@ function spRow(ev, id){   // the club's row of its league's table in the sports 
   const t = SP.lg[String(ev.idLeague)], rows = (t && t.table) || [], i = rows.findIndex(r => r.id === String(id));
   return i < 0 ? null : {rank: i + 1, pts: rows[i].pts, f: rows[i].f};
 }
-const spGoals = s => String(s || '').split(';').map(x => x.trim()).filter(Boolean).map(x => { const m = /^(\d+)'?\s*:?\s*(.+)$/.exec(x); return m ? `${m[2].trim()} ${ar(m[1])}` : x; }).join('، ');
+// TheSportsDB's goal lines: «12':Salem;45+2':Fahad;» (its usual form), «Salem 12'», «Salem (OG) 70'»; each as «Salem ١٢»
+const spGoal = x => {
+  let m = /^(\d+(?:\+\d+)?)'?\s*:?\s*(.+)$/.exec(x);
+  if(m) return `${m[2].trim()} ${ar(m[1])}`;
+  m = /^(.+?)\s+(\d+(?:\+\d+)?)'?$/.exec(x);
+  return m ? `${m[1].trim()} ${ar(m[2])}` : x;
+};
+const spGoals = s => String(s || '').split(';').map(x => x.replace(/\s+/g, ' ').trim()).filter(Boolean).map(spGoal).join('، ');
 function spMatchday(card, now){
   const ev = spToday(now);
   document.documentElement.classList.toggle('sptake', false);
@@ -131,7 +138,8 @@ function spMatchday(card, now){
   } else {
     const g = [['Home', ev.strHomeGoalDetails], ['Away', ev.strAwayGoalDetails]].filter(x => spGoals(x[1]));
     if(g.length) rows.push(`<li class="spr spf"><div class="spbx" style="grid-template-columns:repeat(${g.length},1fr)">${g.map(([s, d]) => `<div class="spbox"><span class="sps">${esc(fw(SPW.goals, spName(ev, s)))}</span><b>${esc(spGoals(d))}</b></div>`).join('')}</div></li>`);
-    else if(done){ const t = SP.lg[String(ev.idLeague)], r = t && t.table && t.table[0]; if(r) rows.push(`<li class="spr spf sps">${esc(fw(SPW.top, r.ar || teamAr(r.n, r.id), ar(r.pts)))}</li>`); }
+    else if(+ev.intHomeScore + +ev.intAwayScore > 0) rows.push(`<li class="spr spf"><span class="sps">${SPW.noScorers}</span></li>`);   // the free source names no scorer for this game: said, not left blank
+    if(!g.length && done){ const t = SP.lg[String(ev.idLeague)], r = t && t.table && t.table[0]; if(r) rows.push(`<li class="spr spf"><span class="sps">${esc(fw(SPW.top, r.ar || teamAr(r.n, r.id), ar(r.pts)))}</span></li>`); }
   }
   rows.push(`<li class="spc"><b>${esc(spName(ev, 'Home'))} ${live || done ? score : '×'} ${esc(spName(ev, 'Away'))}</b><span class="sps">${esc(live ? SPW.live + '، ' + fbStatus(ev, now) : done ? SPW.ended : fbClock(k) + '، ' + fw(SPW.countdown, shortRemaining(k - now)))}</span></li>`);
   // the takeover: the screensaver (not the home's cards) from 3 hours before the kick-off to an hour after the end
