@@ -108,6 +108,7 @@ python3 tests/city_match_test.py
 python3 tests/cities_world_test.py
 python3 tests/cities_md_test.py
 python3 tests/home_card_test.py
+python3 tests/football_off_test.py   # 4.3.4: «بدون» turns the football home's widgets off
 python3 tests/home_page_test.py   # the home's cards on the screensaver's newer page (its stocks stayed stale on the APK's own)
 python3 tests/perf_idle_test.py
 python3 tests/league_fixtures_test.py
