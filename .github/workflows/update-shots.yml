@@ -89,7 +89,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ github.token }}
         run: |
-          pip install pillow
+          pip install pillow==13.0.0
           test "$(ls update-out/*.png | wc -l)" = 100 || { echo 'not all 100 pictures: nothing is published'; exit 1; }
           python3 - <<'PY'
           import glob, os

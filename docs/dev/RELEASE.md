@@ -84,7 +84,7 @@ The supervisor's LESSONS.md: 77 problems, 25 rules. A machine checks these, in t
 | R14 no content pack in an APK | `no_bundled_packs_test.py` |
 | R15 apk-latest keeps Latest and its stable names, rescue included | `lessons_test.py` |
 | R16 only master and next publish; a local build is versionCode 1 | `lessons_test.py` |
-| R17 pinned runners, actions, npm and pip | `lessons_test.py` (open: fonttools, brotli and pillow are not pinned yet, printed as a NOTE) |
+| R17 pinned runners, actions, npm and pip | `lessons_test.py` |
 | R18 tv.html under its budget; market names generated | `tests/check.py`, `tests/market_names_test.py` |
 | R21 no Wi-Fi name, MAC, IP, serial or e-mail in tester/ and docs/ | `privacy_test.py` (a PIN or a recovery code cannot be told from a number: AGENTS.md) |
 

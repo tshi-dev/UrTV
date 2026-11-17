@@ -96,8 +96,7 @@ for gr in sorted((ROOT / "android").glob("*/build.gradle")):
           "versionCode((System.getenv('GITHUB_RUN_NUMBER') ?: '1') as int)" in gr.read_text(encoding="utf-8"))
 
 # R17
-KNOWN_UNPINNED = {"fonttools", "brotli", "pillow"}   # checks.yml and regressions.yml at 4.3.4: to pin (then empty this set)
-unpinned, known = [], []
+unpinned = []
 for p in sorted(W.glob("*.yml")):
     t = p.read_text(encoding="utf-8")
     for x in re.findall(r"runs-on:\s*(\S+)", t):
@@ -114,8 +113,6 @@ for p in sorted(W.glob("*.yml")):
             if w.startswith("-") or w.endswith(".txt") or "==" in w or w in ("&&",):
                 continue
             if re.fullmatch(r"[A-Za-z][\w.-]*", w):
-                (known if w in KNOWN_UNPINNED else unpinned).append(f"{p.name}: pip {w} without a version")
+                unpinned.append(f"{p.name}: pip {w} without a version")
 check("R17 runners and actions pinned (no *-latest image, no action at a branch, npm and pip at exact versions)", not unpinned, unpinned)
-if known:
-    print("NOTE R17 open (there before the rule; pin them): " + ", ".join(sorted(set(known))))
 sys.exit(1 if failed else 0)

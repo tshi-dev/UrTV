@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Every check in one go: static checks, then the screen in a real browser. See tests/check.py and page.test.mjs.
-#   pip install fonttools brotli pillow -r .github/tools/cities-world/requirements.txt && npm install --no-save playwright@1.56.1 && npx playwright install chromium
+#   pip install fonttools==4.68.0 brotli==1.2.1 pillow==13.0.0 -r .github/tools/cities-world/requirements.txt && npm install --no-save playwright@1.56.1 && npx playwright install chromium
 set -euo pipefail
 cd "$(dirname "$0")/.."
 # «regressions»: the release gate's group alone (docs/dev/REGRESSIONS.md, docs/dev/RELEASE.md): bash tests/run.sh regressions
