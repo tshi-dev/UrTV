@@ -288,6 +288,13 @@ python3 tests/i18n_saver_test.py   # the settings in English (Words, WordMatch, 
 #
 # English phase 2 (the page): its new tests go right under this line
 python3 tests/i18n_page_test.py   # dist/tv-en.html: built beside tv.html (byte for byte), current, under budget; the app and the home card pick it
+python3 tests/idle_rule_test.py
+python3 tests/google_tv_home_test.py
+python3 tests/wifi_hotspot_test.py
+python3 tests/dev_help_test.py
+python3 tests/build413_test.py
+python3 tests/report_lists_test.py
+python3 tests/quick_measure_test.py
 node tests/es2017_parse.test.mjs   # #19: the built pages parse as ES2017 (Android 9 TVs stuck on WebView 66)
 node tests/date_num.test.mjs   # «التاريخ بالأرقام» on the screensaver page: day/month/year in the digits chosen
 node tests/wx_icon.test.mjs   # the screensaver's weather line: the condition's icon beside the temperature
