@@ -1,7 +1,24 @@
-«▶ NOW (owner): step 90 FIRST — make the Downloader code for the rescue app on go.aftvnews.com in the owner's Chrome (details in step 90 below), check it in Downloader on the TV, push the code to work/tester-report. Also make one for the Player stable link if the owner asks. Then continue: great work on T9 (no flash!) — leave HOME_KEY on. Next build will have: Home step judged after the add-on binds, mash guard 6-in-4 s, intro focus on the reading area, HOME_KEY on by default. Then step 91 (4.3.3). Then step 92: next = 40db2770 (compact2 3b271bd6: HOME_KEY catch ON by default with the watch as fallback, Home judged after the add-on binds, guard 6-in-4 s, intro first focus = reading area) — when apk-next is rebuilt from it, install it and re-run T1 (result page now «شغّالة»), T2 incl. mash 1/s and 0.5 s, T5 intro focus, and Home from YouTube ×5 with the REAL remote via the owner if he is there (no flash). Step 89 stays ON HOLD. TV muted.»
+«▶ NOW (owner, 2026-11-17): step 91 PASSED, thank you. The owner said GO on putting the rescue app into 4.3.3. Next is step 93: check the rescue app on a TV set up by 4.3.3, as soon as the release session gives a 4.3.3 build that has urtv-rescue.apk (its run ID will be added here). Then step 90 (the Downloader code) once 4.3.3 is on apk-latest with urtv-rescue.apk. Then step 92. Step 89 stays ON HOLD. TV muted.»
 
 
 
+
+
+## step 93 — the rescue app on a TV set up by 4.3.3 (before the 4.3.3 master merge)
+Build: the work/rel-433-3 run that has urtv-rescue.apk in its «apks» artifact (the release session gives the run ID; check the artifact lists urtv-rescue.apk).
+1. Back up the owner's settings and lists (as in step 86 A).
+2. Install the 4.3.3 home and screensaver from that artifact, then run «جهّز كل شي». Record the disabled list, the HOME role and the screensaver settings.
+3. Install urtv-rescue.apk and open it, the way a family would (remote only). Picture every screen. Run its restore.
+4. Check:
+   - launcherx and setupwraith are on;
+   - Home opens Google TV;
+   - exactly the packages 4.3.3's setup turned off are back on, and the ones the TV had off itself stay off;
+   - the screensaver is back to the TV's own;
+   - nothing else changed;
+   - the TV still has Wi-Fi.
+   Reboot and check again.
+5. Report «step 93: rescue on 4.3.3 PASS/FAIL», with each item and anything it did not restore.
+6. Put the owner's TV back on 4.4 with the owner's settings («جهّز كل شي»), as at the end of step 91.
 
 ## step 91 — 4.3.3 (small stable release + beta channel), after step 90
 Build: GitHub Actions run 44027737085 (branch work/rel-433-3 ad0c44b3), artifact «apks» (not on apk-next). Back up the owner's settings first; install home + screensaver from the artifact (versionCode 426 > the 4.4 build on the TV, so it installs over it). Run the session's steps 1–5, 7, 8: beta row on/off and the version line + home pill follow apk-beta/apk-latest; off-while-ahead toast and no downgrade; «أرسل ملاحظة عن النسخة التجريبية» → report shows `channel: beta`; one-time line after a newer beta build (install a rebuilt 426+ artifact if needed); crash prompt (kill -9 the home process with beta on: «صار خطأ، تبي ترسل تقرير؟» once); `saver.sh updatechannel beta|latest`; the three fixes (idle row «أبداً» with screen_off_timeout 2147483647 and no maker settings; screensaver photo not black; markets 4164/4002/4349 names). Step 6 (promote-beta) only after it is on master. Then reinstall the newest 4.4 from apk-next and put the owner's settings back. Report «step 91: 4.3.3 PASS/FAIL» per item.
