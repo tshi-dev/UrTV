@@ -2990,3 +2990,8 @@ I turned the switch on (`am broadcast -n sa.urtv.home/.DockReceiver -a sa.urtv.h
 - **Settings key with the Home catch on: one press → the TV's own controls panel; long press → our settings.** As intended ✓ (Home catch does not change it).
 - **New settings layout (picture tester/owner-notes/settings-413.png):** move the hint line «اختيار يفتح، ورجوع يرجّعك خطوة» out of the bottom band (y ≈ 940–1030 is spent on it) so the settings list gets that area; and his earlier note again: the rows are too big — each row card is ~180 px tall (title ~40 px, icon ~50 px), only 3 rows fit on the right side at 1080p, the 4th is cut. Smaller rows / one text size, and the freed hint band, would show 5–6 rows.
 - Assistant at 08:04:25: still asking the owner whether he pressed the mic.
+
+## Owner (games list, build 413; pictures tester/owner-notes/games-*.png)
+1. **«الأسرع»: a letter is cut** — the tail of «ع» (and the bottom of «ر») is cut flat at the bottom of the title's text box (`games-asra-zoom.png`): the title line is too short for Arabic descenders (add bottom padding / don't clip, or a taller line height).
+2. **«كل واحد بجواله، والريموت للمضيف» overlaps the three boxes under it** (the orange line sits on the top edge of «وضع ليلي / ألوان الليل / عرض» boxes, its letters touch their borders: `games-header-overlap.png`).
+3. **The three boxes in the header («عرض: بالجوالات», «ألوان الليل: ليل أزرق», «وضع ليلي: تشغيل») can be icons only** (owner) — e.g. a phone icon, a palette icon, a moon icon with the current state shown by the icon, which also frees the header and fixes the overlap.
