@@ -51,6 +51,8 @@ public class ReportActivity extends Activity {
         long saver = PhoneUpdater.installedCode(this, "sa.urtv.screensaver");   // the build of each app, written as everywhere (UpdateText.versionOf)
         final String homeV = PhoneUpdater.installedName(this), saverV = saver < 0 ? null : UpdateText.versionOf(BuildConfig.MARKETING, (int) saver);
         final List<String> errors = recentErrors();
+        String crashed = getIntent().getStringExtra("error");   // BetaNotes: the class name of the crash that restarted the home (Report.name cleans it again)
+        if (crashed != null && !crashed.isEmpty() && !errors.contains(crashed)) errors.add(crashed);
         // what it is about: one pick from a short list, so a report is never empty (a short row each; OK picks)
         col.addView(text(S.tv(Report.ABOUT), 16, "Medium", look.accent), lp(dp(6)));
         final TextView[] rowsOf = new TextView[Report.TOPICS.length];

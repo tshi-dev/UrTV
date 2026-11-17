@@ -95,7 +95,7 @@ public final class Report {
     }
 
     /** a class name: letters, digits, dots and underscores, at most 64 */
-    static String name(String s) {
+    public static String name(String s) {
         if (s == null) return "?";
         String t = s.replaceAll("[^A-Za-z0-9._]", "");
         return t.isEmpty() ? "?" : t.length() > 64 ? t.substring(t.length() - 64) : t;
