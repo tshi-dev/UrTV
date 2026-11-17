@@ -1,0 +1,8 @@
+# 4.4 sweep 3: the owner's markup on Screens run 11
+
+These are real screens from the CI emulator at 1080p. In each `pair-*.jpg`, the after picture (`work/44-sweep2` at 6df8ffc2, Screens run `run-12-1117-1653`) is on the left and the before picture (`run-11-1117-1020`) is on the right. Both runs are on the `data-screens` branch in full size.
+
+1. **Card titles are no longer cut.** `zoom-card-title.jpg` shows the prayer card's title three times larger. Each card style now has its own corner radius (`--cr`), and on the home the title's start is inset by 0.6 of it, plus a top padding in the couch row. In every style and both layouts, the title is at least 16 px (at 1080p) clear of the rounded corner. The rule stays beside the title, never over it. Test: `tests/card_title.test.mjs`, which checks every card style, with and without the couch row, for three cards, in Arabic and English.
+2. **The city notice is small.** It is one line: «اختر مدينتك للطقس والصلاة», «اختر المدينة», «لاحقاً». It uses the home's secondary size (12 sp), with small plain buttons and 8 dp corners. It sits on the top row, 16 px after the round buttons and centred on their height, and takes at most 40% of the screen. It never covers the weather or the clock, and it is never cut with «…». A longer notice (an update, say) wraps to two lines instead.
+3. **The Riyadh glass clock.** While any card shows, in any layout, the regular clock replaces the glass one (`pair-settings-05-apps.jpg`). The glass clock and its cut-out come back when the cards are off.
+4. **The titles start at the right in every layout**, including the couch row and the dark3 and glass3 styles, which used to centre them. In the couch row, each card's lines stay centred.
