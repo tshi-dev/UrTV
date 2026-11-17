@@ -358,6 +358,7 @@ python3 tests/key_taps_test.py   # 4.5 «أزرار الريموت»: two and th
 python3 tests/switcher_rule_test.py   # 4.5 «التطبيقات المفتوحة»: what it may stop, and how (the home's own ADB, else the background only)
 python3 tests/settings_schema2_test.py   # 4.5: saver.sh import reads the TV's «نسخة الإعدادات» file (schema 2) too
 python3 tests/backup_file_test.py   # 4.5 «نسخة الإعدادات»: the home's part of the file (allow-list, checks, preview)
+python3 tests/saver_file_test.py   # 4.5 «نسخة الإعدادات»: the TV's saver part is byte for byte the computer's schema-1 export
 python3 tests/run_list_test.py   # every test file is run by this script (CI runs nothing else)
 
 node tests/es2017_parse.test.mjs   # #19: the built pages parse as ES2017 (Android 9 TVs stuck on WebView 66)
