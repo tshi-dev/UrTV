@@ -9,8 +9,8 @@ final class RescueInfo {
     private RescueInfo() { }
 
     static final String DOC_URL = "https://github.com/tshi-dev/UrTV/blob/master/docs/RESCUE.md";
-    /** Downloader's short code for urtv-rescue.apk (the owner makes it; empty until then: the screen points to the guide instead) */
-    static final String DOWNLOADER_CODE = "";
+    /** Downloader's short code for urtv-rescue.apk (made by the owner on go.aftvnews.com for the apk-latest link; docs/RESCUE.md says the same) */
+    static final String DOWNLOADER_CODE = "8042301";
 
     static final String TITLE = "قبل ما نبدأ: لو صار شيء";
     static final String STEP1 = "1. اضغط زر الإعدادات في الريموت ← التطبيقات ← Downloader ← فتح.";
