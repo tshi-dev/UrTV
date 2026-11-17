@@ -18,6 +18,13 @@ check("its app-name length is AppNames.MAX_LEN", re.search(r"MAX_LEN = (\d+);", 
 check("its Arabic ranges are AppNames.hasArabic's", "(ch >= 0x0600 && ch <= 0x06FF) || (ch >= 0x0750 && ch <= 0x077F) || (ch >= 0xFB50 && ch <= 0xFEFC)" in an
       and "(ch >= 0x0600 && ch <= 0x06FF) || (ch >= 0x0750 && ch <= 0x077F) || (ch >= 0xFB50 && ch <= 0xFEFC)" in bf)
 check("the PIN, Wi-Fi, keys, tasks and photos are not keys of the home part", not any(k in bf.split("HOME_KEYS = {")[1].split("};")[0] for k in ("pin", "wifi", "adb", "task", "photo")))
+hb = (H / "HomeBackup.java").read_text(encoding="utf-8")
+ap = hb.split("static void apply(Context c, Map<String, Object> part) {")[1].split("\n    }\n")[0]
+check("HomeBackup.apply writes only the allowed keys, in one edit, then tells the home and the add-on once",
+      all(f'part.containsKey("{k}")' in ap for k in ("dock", "dock_exact", "hidden", "app_names", "input_names", "input_hidden", "keys"))
+      and ap.count("e.commit();") == 1 and "Dock.tellExtras(c);" in ap and "sendBroadcast(new Intent(Dock.CHANGED)" in ap)
+check("HomeBackup.apply: remote buttons only this remote's (another remote's left out)", "for (RemoteButtons.Button b : RemoteButtons.buttons(Dock.remoteTv()))" in ap)
+check("HomeBackup.current reads the same keys", all(f'm.put("{k}"' in hb for k in ("dock", "dock_exact", "hidden", "app_names", "input_names", "input_hidden", "keys")))
 if shutil.which("javac"):
     with tempfile.TemporaryDirectory() as tmp:
         subprocess.run(["javac", "-encoding", "UTF-8", "-d", tmp] + [str(H / f) for f in ("BackupFile.java", "KeyApps.java", "InputHide.java", "InputNames.java")]
