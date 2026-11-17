@@ -1,4 +1,4 @@
-«▶ NOW (owner, 2026-11-17): step 91 PASSED, thank you. The owner said GO on putting the rescue app into 4.3.3. Player beta17 READY (step 95 can run now, at any pause). STEP 93 BUILD READY: GitHub Actions run 44087243860 (work/rel-433-3, 4.3.3 with the rescue app), artifact «apks» — check it contains urtv-rescue.apk. Next is step 93: check the rescue app on a TV set up by 4.3.3, as soon as the release session gives a 4.3.3 build that has urtv-rescue.apk (its run ID will be added here). Then step 90 (the Downloader code) once 4.3.3 is on apk-latest with urtv-rescue.apk. Then step 92. Step 89 stays ON HOLD. TV muted.»
+«▶ NOW (owner, 2026-11-17): step 91 PASSED, thank you. The owner said GO on putting the rescue app into 4.3.3. Player beta17 READY (step 95 can run now, at any pause). STEP 93 BUILD READY (FINAL 4.3.3, use this one): GitHub Actions run 44102716233 on cd3a4a0f, which adds the screensaver bottom-strip fix; the older run 44087243860 is superseded (work/rel-433-3, 4.3.3 with the rescue app), artifact «apks» — check it contains urtv-rescue.apk. Next is step 93: check the rescue app on a TV set up by 4.3.3, as soon as the release session gives a 4.3.3 build that has urtv-rescue.apk (its run ID will be added here). Then step 90 (the Downloader code) once 4.3.3 is on apk-latest with urtv-rescue.apk. Then step 92. Step 89 stays ON HOLD. TV muted.»
 
 
 
@@ -29,7 +29,7 @@ B. BEFORE: Google TV's own home. Open it with `am start` on launcherx's home act
 C. Push the PNGs to work/tester-report under tester/hero/ and report «step 94 done» with the file names. Put everything back exactly (the favourites order, the Google TV apps order) and bring UrTV to the front. TV muted.
 
 ## step 93 — the rescue app on a TV set up by 4.3.3 (before the 4.3.3 master merge)
-Build: GitHub Actions run 44087243860 (work/rel-433-3), artifact «apks» (urtv-home.apk, urtv-screensaver.apk, urtv-rescue.apk). The rescue reads what setup turned off from the home's provider sa.urtv.home.rescue (signature permission), so install home + rescue from the SAME artifact. Also re-check the beta fix: with «النسخ التجريبية» on and no newer beta, «تحقق من التحديث» must say «لا يوجد أحدث», not «التحديث من التلفزيون ما يشتغل».
+Build: GitHub Actions run 44102716233 (work/rel-433-3 cd3a4a0f, final 4.3.3), artifact «apks» (urtv-home.apk, urtv-screensaver.apk, urtv-rescue.apk). The rescue reads what setup turned off from the home's provider sa.urtv.home.rescue (signature permission), so install home + rescue from the SAME artifact. Also re-check the beta fix: with «النسخ التجريبية» on and no newer beta, «تحقق من التحديث» must say «لا يوجد أحدث», not «التحديث من التلفزيون ما يشتغل».
 1. Back up the owner's settings and lists (as in step 86 A).
 2. Install the 4.3.3 home and screensaver from that artifact, then run «جهّز كل شي». Record the disabled list, the HOME role and the screensaver settings.
 3. Install urtv-rescue.apk and open it, the way a family would (remote only). Picture every screen. Run its restore.
@@ -40,6 +40,7 @@ Build: GitHub Actions run 44087243860 (work/rel-433-3), artifact «apks» (urtv-
    - the screensaver is back to the TV's own;
    - nothing else changed;
    - the TV still has Wi-Fi.
+   Also on this build: the screensaver bottom strip must not move when the matches item rotates (watch it for 2 minutes with the default look and matches on).
    Reboot and check again.
 5. Report «step 93: rescue on 4.3.3 PASS/FAIL», with each item and anything it did not restore.
 6. Put the owner's TV back on 4.4 with the owner's settings («جهّز كل شي»), as at the end of step 91.
