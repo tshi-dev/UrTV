@@ -60,6 +60,7 @@ python3 tests/update_ui_test.py   # the update screen: card, steps, bar, one but
 python3 tests/album_card_test.py   # «ألبوم صوري»: the card of the own photos (page, saver, home)
 python3 tests/home_nudge_test.py   # «خلّ تلفزيونك يفتح على UrTV»: the card while we are not the Home
 python3 tests/look_tweaks_test.py   # «اللون والتحكم»: accents, tray strength, wallpaper dimming, focus style
+python3 tests/idle_rule_test.py   # 4.3.3: 2147483647 is «أبداً», the row never opens the maker's settings
 python3 tests/photo_dim_test.py   # 4.4: the photo's darkness is --pdim, never the colour --dim (an opacity read from a colour is 1: a solid black photo)
 python3 tests/security_43_test.py   # 4.3 security and speed round
 python3 tests/appearance_test.py   # the look and backgrounds page
@@ -211,6 +212,7 @@ python3 tests/phone_draw_test.py   # 4.3 #53 «ارسم»: live strokes from the
 python3 tests/lang_provider_test.py   # 4.3: «اللغة» read only for UrTV Player (content://sa.urtv.home.lang/lang)
 python3 tests/match_app_test.py   # 4.3 «شاهد المباراة»: the match app and the FIND_MATCH contract
 python3 tests/update_channel_test.py
+python3 tests/beta_channel_test.py   # 4.3.3: «النسخ التجريبية», apk-beta, promote-beta.yml
 python3 tests/android_compile_test.py
 bash tests/android_compile.sh   # both apps against android-all API 34; SKIP (not a failure) when offline or the jar is not cached
 python3 tests/countdown_text_test.py

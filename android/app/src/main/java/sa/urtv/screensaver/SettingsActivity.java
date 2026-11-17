@@ -663,7 +663,7 @@ public class SettingsActivity extends Activity {
             case SettingsHub.UPDATE: return Updater.versionLines(this)[0];
             case SettingsHub.REPORT: return "";
             case SettingsHub.MORE: return "";
-            case SettingsHub.SAVER: return (Prefs.idleMs(this) <= 0 ? "يبدأ وقت ما يحدده التلفاز" : "تبدأ بعد " + idleLabel()) + " · " + Prefs.panelLabel(prefs.panel());
+            case SettingsHub.SAVER: return idleSummary() + " · " + Prefs.panelLabel(prefs.panel());
             case SettingsHub.HOME: {
                 List<String> cards = new ArrayList<>();
                 for (String k : prefs.homePanels()) cards.add(Prefs.panelLabel(k, "بدون"));
@@ -1989,9 +1989,8 @@ public class SettingsActivity extends Activity {
 
     /** The TV's own idle delay. Writing it needs WRITE_SETTINGS, which TVs rarely grant: then its own screen opens. */
     private void pickIdle() {
-        if (!Prefs.canWriteSettings(this)) {
-            toast("غيّرها من إعدادات التلفاز، أو بأمر من مساعدك");
-            openDreamSettings();
+        if (!Prefs.canWriteSettings(this)) {   // never the maker's settings: they have no screensaver timer
+            toast("غيّرها بأمر من مساعدك، إعدادات التلفاز ما فيها مؤقت لها");
             return;
         }
         String[] labels = new String[Prefs.IDLE_MINUTES.length];
@@ -2007,7 +2006,7 @@ public class SettingsActivity extends Activity {
                     Settings.System.putInt(getContentResolver(), Settings.System.SCREEN_OFF_TIMEOUT,
                         Integer.parseInt(Prefs.IDLE_MINUTES[i]) * 60000);
                 } catch (SecurityException e) {
-                    toast("غيّرها من إعدادات التلفاز، أو بأمر من مساعدك");
+                    toast("غيّرها بأمر من مساعدك، إعدادات التلفاز ما فيها مؤقت لها");
                 }
                 d.dismiss();
                 render();
@@ -2015,9 +2014,18 @@ public class SettingsActivity extends Activity {
             .show();
     }
 
+    /** the hub's line under «شاشة التوقف»: when it starts, or that the TV turned it off */
+    private String idleSummary() {
+        int k = IdleRule.kind(Prefs.idleMs(this));
+        if (k == IdleRule.UNKNOWN) return "يبدأ وقت ما يحدده التلفاز";
+        if (k == IdleRule.NEVER) return "لا تبدأ: التلفزيون أوقف شاشة التوقف";
+        return "تبدأ بعد " + idleLabel();
+    }
+
     private String idleLabel() {
         long ms = Prefs.idleMs(this);
         if (ms <= 0) return "يحدده التلفاز";
+        if (IdleRule.kind(ms) == IdleRule.NEVER) return "أبداً (التلفزيون أوقف شاشة التوقف)";   // 2147483647: never the raw number
         if (ms % 60000 != 0) return arabicNum((int) (ms / 1000)) + " ثانية";
         return minutesLabel((int) (ms / 60000));
     }
@@ -2037,12 +2045,6 @@ public class SettingsActivity extends Activity {
         }).start();
     }
 
-    private void openDreamSettings() {
-        try {
-            startActivity(new Intent(Settings.ACTION_DREAM_SETTINGS));
-        } catch (ActivityNotFoundException e) {
-            startActivity(new Intent(Settings.ACTION_SETTINGS));
-        }
     }
 
     // ---------- labels ----------
