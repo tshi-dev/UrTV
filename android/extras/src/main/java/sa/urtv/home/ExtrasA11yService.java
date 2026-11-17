@@ -50,7 +50,9 @@ public class ExtrasA11yService extends AccessibilityService {
     private final Handler main = new Handler(Looper.getMainLooper());
     private final SettingsKey settingsKey = new SettingsKey();
     private final HomeWatch watch = new HomeWatch();
-    private String prevPkg;   // tester-exp (step 88)
+    private String prevPkg, pressedOver;   // tester-exp (step 88)
+    private long lastBroughtAt;
+    private boolean rebrought;
     /** our home is in front (from the windows that come to the front) */
     private volatile boolean homeFront;
     /** a stock home answers HOME (it then answers the Settings key itself) */
@@ -100,6 +102,18 @@ public class ExtrasA11yService extends AccessibilityService {
         if (pkg.equals("com.android.systemui") || pkg.equals("android")) return;   // a volume bar or a system dialog over the app: the app in front did not change
         String before = prevPkg;   // tester-exp (step 88): the app in front before this window
         if (!stockPackages.contains(pkg)) prevPkg = pkg;
+        // tester-exp (step 88 R2g): YouTube can put its own screen back ~0.7 s after we brought ours: the app Home was pressed over, back
+        // within 1.5 s of our bring, gets ours brought once more
+        long t = System.currentTimeMillis();
+        if (!pkg.equals(HOME_PKG) && !stockPackages.contains(pkg) && pkg.equals(pressedOver) && t - lastBroughtAt < 1_500 && !rebrought) {
+            rebrought = true;
+            try {
+                startActivity(new Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_HOME).setComponent(new ComponentName(HOME_PKG, HOME_PKG + ".MainActivity"))
+                    .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED));
+                Log.i("UrTVWatch", "the app came back after our bring: brought again");
+            } catch (RuntimeException ex) { Log.i("UrTVWatch", "home=failed"); }
+            return;
+        }
         boolean front = pkg.equals(HOME_PKG);
         if (front != homeFront) {
             homeFront = front;
@@ -123,6 +137,8 @@ public class ExtrasA11yService extends AccessibilityService {
                 startActivity(new Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_HOME).setComponent(new ComponentName(HOME_PKG, HOME_PKG + ".MainActivity"))
                     .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED));
                 Log.i("UrTVWatch", "home=brought");
+                lastBroughtAt = System.currentTimeMillis(); rebrought = false;
+                if (before != null && !before.equals(HOME_PKG)) pressedOver = before;
             } catch (RuntimeException ex) {
                 Log.i("UrTVWatch", "home=failed");
             }
