@@ -301,6 +301,21 @@ public class SetupActivity extends Activity {
         say("", GOLD);
     }
 
+    static final int RESULT_RECHECK = 10;
+
+    /** the result page's two Home lines, as they are now; again in a second while either is not yet fine and {@code left} seconds remain */
+    private void homeLines(final TextView roleLine, final TextView watchLine, final int left) {
+        if (isFinishing() || isDestroyed()) return;
+        boolean ours = SetupHook.oursIsDefault(this), bound = extrasBound();
+        roleLine.setText(ours ? S.t("دور الشاشة الرئيسية: تلفزيونك") : S.t("دور الشاشة الرئيسية: الشاشة الأصلية للتلفزيون"));
+        watchLine.setText(bound ? S.t("مراقبة زر الرئيسية («إضافات تلفزيونك»): شغّالة، وهي اللي ترجّعك لتلفزيونك")
+            : sa.urtv.home.Extras.installed(this) ? S.t("مراقبة زر الرئيسية («إضافات تلفزيونك»): مثبّتة لكنها ما هي شغّالة")
+            : S.t("مراقبة زر الرئيسية («إضافات تلفزيونك»): غير مثبّتة"));
+        watchLine.setTextColor(bound ? GOLD : TEXT);
+        if ((ours && bound) || left <= 0 || !sa.urtv.home.Extras.installed(this)) return;
+        watchLine.postDelayed(new Runnable() { public void run() { homeLines(roleLine, watchLine, left - 1); } }, 1000);
+    }
+
     /** «إضافات تلفزيونك» is running now: Android's list of running accessibility services has it (read only) */
     private boolean extrasBound() {
         try {
@@ -586,10 +601,12 @@ public class SetupActivity extends Activity {
             progress.show(modelOf(r, true));
             say("", GOLD);
             // 4.4 (step 88 T4): how Home works on this TV, said on the page itself, in the person's language
-            add(text(SetupHook.oursIsDefault(this) ? S.t("دور الشاشة الرئيسية: تلفزيونك") : S.t("دور الشاشة الرئيسية: الشاشة الأصلية للتلفزيون"), 17, "Medium", TEXT), dp(4));
-            add(text(extrasBound() ? S.t("مراقبة زر الرئيسية («إضافات تلفزيونك»): شغّالة، وهي اللي ترجّعك لتلفزيونك")
-                : sa.urtv.home.Extras.installed(this) ? S.t("مراقبة زر الرئيسية («إضافات تلفزيونك»): مثبّتة لكنها ما هي شغّالة")
-                : S.t("مراقبة زر الرئيسية («إضافات تلفزيونك»): غير مثبّتة"), 17, "Medium", extrasBound() ? GOLD : TEXT), dp(16));
+            final TextView roleLine = text("", 17, "Medium", TEXT), watchLine = text("", 17, "Medium", TEXT);
+            add(roleLine, dp(4));
+            add(watchLine, dp(16));
+            // 4.4 (build 413, T1): read right after the run they said «الشاشة الأصلية» and «ما هي شغّالة» while both were fine a moment later:
+            // read again once a second for up to RESULT_RECHECK seconds, until the add-on is bound and ours is the default home
+            homeLines(roleLine, watchLine, RESULT_RECHECK);
             String report = new FileStore(this).get(SetupReport.FILE);
             String url = report == null || report.isEmpty() ? null : SetupRunner.shareUrl(report);
             if (url != null) {
