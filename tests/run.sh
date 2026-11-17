@@ -325,6 +325,7 @@ node tests/matches_archive.test.mjs   # «المباريات» with the match ar
 node tests/phone_page.test.mjs
 node tests/sync_cards.test.mjs   # «توحيد المظهر» on the page: the cards in the material's fill, line and ink, readable on a light look
 node tests/couch_row.test.mjs   # 4.4 the page: «كنبة» (#row=1, the cards in one strip above the tray) and «مربعات» (today's prayers as boxes in a row, the next one lit with its countdown)
+node tests/card_title.test.mjs   # 4.4 the owner: a home card's title clear of its rounded corner and the rule, at the start, in every style and layout
 node tests/photo_mask_page.test.mjs   # 4.4 the phone page «صوري»: a photo with its mask, checked on the phone, previewed, sent after the photo; the page's own CSP
 node tests/reminder_page.test.mjs   # the screensaver's reminder card: its time, «الآن», «تم», the snooze, the keys, the adhan, English
 node tests/tvports_page.test.mjs   # the packaged page with simulated webOS and Tizen keys

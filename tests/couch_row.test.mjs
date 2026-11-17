@@ -24,7 +24,7 @@ async function page(file, w, h, q) {
     const cards = [...document.querySelectorAll('.week')].filter(e => e.getClientRects().length);
     const pr = cards.find(c => c.classList.contains('boxes'));
     const lis = pr ? [...pr.querySelectorAll('ul.pgrid > li')] : [];
-    const centred = cards.every(c => getComputedStyle(c.querySelector('.hd')).justifyContent === 'center' && [...c.querySelectorAll('ul:not(.pgrid) > li')].every(l => getComputedStyle(l).justifyContent === 'center'));
+    const centred = cards.every(c => getComputedStyle(c.querySelector('.hd')).justifyContent === 'flex-start' && [...c.querySelectorAll('ul:not(.pgrid) > li')].every(l => getComputedStyle(l).justifyContent === 'center'));   // 4.4 the owner: the titles at the start (right) like everywhere, the lines centred
     return { centred, cls: document.documentElement.className, cards: cards.map(box), bgs: cards.map(c => getComputedStyle(c).backgroundColor + '|' + getComputedStyle(c).backgroundImage + '|' + getComputedStyle(c, '::before').backgroundColor),
       lis: lis.map(box), next: lis.filter(l => l.classList.contains('next')).map(l => ({ cd: (l.querySelector('.cd') || {}).textContent || '', bg: getComputedStyle(l).backgroundColor })),
       cds: document.querySelectorAll('.cd').length, prBg: pr ? getComputedStyle(pr).backgroundColor : '' };
@@ -37,7 +37,7 @@ for (const file of ['tv.html', 'tv-en.html']) {
   const row = await page(file, 912, 108, 'panel=prayers&home_panel=prayers,verse,tasks&row=1');
   check(`${file} #row=1: three cards side by side in one strip, the same top, inside the box, no error`, row.cls.includes('row') && row.cards.length === 3
     && new Set(row.cards.map(b => b[1])).size === 1 && row.cards.every(b => b[0] >= 0 && b[2] <= 912) && !row.errors.length, JSON.stringify([row.cls, row.cards, row.errors]));
-  check(`${file} #row=1: the cards' words centred (the owner): the heading and each line`, row.centred, '');
+  check(`${file} #row=1: the cards' lines centred, their titles at the start (the owner, sweep 3: right-aligned everywhere)`, row.centred, '');
   check(`${file} without #row: not centred (the cards as they were)`, !(await page(file, 922, 500, 'panel=prayers&home_panel=verse,tasks')).centred, '');
   check(`${file} #row=1: today's six prayers in one row inside their card`, row.lis.length === 6 && new Set(row.lis.map(b => b[1])).size === 1, JSON.stringify(row.lis));
   const plain = await page(file, 922, 500, 'panel=prayers&home_panel=prayers,verse,tasks');

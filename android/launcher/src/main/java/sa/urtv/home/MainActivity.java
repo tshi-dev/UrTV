@@ -2063,11 +2063,11 @@ public class MainActivity extends Activity {
         nudge.setOrientation(LinearLayout.HORIZONTAL);
         nudge.setLayoutDirection(Dir.layout());
         nudge.setGravity(Gravity.CENTER_VERTICAL);
-        nudgeCard = text(16, "sans-serif-medium", 0xFFFFFFFF);
+        nudgeCard = text(NUDGE_SP, "sans-serif-medium", 0xFFFFFFFF);
         nudgeCard.setText(S.t("خلّ تلفزيونك يفتح على UrTV"));
         nudgeCard.setGravity(Gravity.CENTER);
         nudgeCard.setSingleLine(true);
-        nudgeCard.setPadding(dp(16), dp(9), dp(16), dp(9));
+        nudgeCard.setPadding(dp(10), dp(4), dp(10), dp(4));
         nudgeCard.setMaxWidth(dp(420));
         nudgeCard.setFocusable(true);
         nudgeCard.setClickable(true);
@@ -2091,74 +2091,71 @@ public class MainActivity extends Activity {
             }
             try { guarded(ParentalPolicy.WIDGET_MATCHES, null, S.t("إعداد تلفزيوني"), () -> launch(new Intent(this, sa.urtv.home.setup.SetupActivity.class))); } catch (RuntimeException ignored) { }
         });
-        nudgeLater = text(14, "sans-serif-medium", 0xFFFFFFFF);
+        nudgeLater = text(NUDGE_SP, "sans-serif-medium", 0xFFFFFFFF);
         nudgeLater.setText(S.t("لاحقاً"));
         nudgeLater.setGravity(Gravity.CENTER);
-        nudgeLater.setPadding(dp(16), dp(9), dp(16), dp(9));
+        nudgeLater.setPadding(dp(10), dp(4), dp(10), dp(4));
         nudgeLater.setFocusable(true);
         nudgeLater.setClickable(true);
         nudgeLater.setId(View.generateViewId());
         nudgeLater.setOnClickListener(v -> snoozeNudge());
-        nudgeAsk = text(16, "sans-serif-medium", 0xFFFFFFFF);
-        nudgeAsk.setText(S.t("وين أنت؟ اختر مدينتك عشان الطقس والصلاة"));
-        nudgeAsk.setSingleLine(true);
-        nudgeAsk.setEllipsize(android.text.TextUtils.TruncateAt.END);   // 4.4: where the top row and the weather line leave too little room (keepNudgeClear)
-        nudgeAsk.setPadding(dp(18), dp(9), dp(12), dp(9));
+        nudgeAsk = text(NUDGE_SP, "regular", 0xFFFFFFFF);   // 4.4 the owner («make it small»): the home's secondary size
+        nudgeAsk.setText(S.tv(CITY_ASK));
+        nudgeAsk.setMaxLines(2);   // never «…»: the city question is one short line; a longer notice wraps (keepNudgeClear keeps the strip to NUDGE_MAX of the screen)
+        nudgeAsk.setPadding(dp(10), dp(4), dp(6), dp(4));
         nudgeAsk.setGravity(Gravity.CENTER);
         nudgeAsk.setVisibility(View.GONE);
         nudge.addView(nudgeAsk, new LinearLayout.LayoutParams(-2, -2));
         nudge.addView(nudgeCard, new LinearLayout.LayoutParams(-2, -2));
         LinearLayout.LayoutParams lp2 = new LinearLayout.LayoutParams(-2, -2);
-        lp2.setMarginStart(dp(4));
+        lp2.setMarginStart(dp(2));
         nudge.addView(nudgeLater, lp2);
-        nudge.setPadding(dp(6), dp(4), dp(6), dp(4));
+        nudge.setPadding(dp(4), dp(2), dp(4), dp(2));
         nudge.setVisibility(View.GONE);
         root.addView(nudge, lp(-2, -2, Gravity.TOP | Gravity.CENTER_HORIZONTAL, 0, dp(30), 0, 0));
         nudge.addOnLayoutChangeListener((nv, n1, n2, n3, n4, n5, n6, n7, n8) -> keepNudgeClear());   // and the weather line's own (where it is made)
     }
 
-    /** 4.4 the sweep: px at 1080p between the nudge strip and what stands beside it (the weather line under «صباح الخير», the top row of buttons as it opens) */
+    /** 4.4 the sweep: px at 1080p between the nudge strip and what stands beside it (the top row of buttons, the weather line under «صباح الخير») */
     static final int NUDGE_CLEAR_PX = 16;
+    /** 4.4 the owner («the notification, make it small»): the strip's text size (the home's secondary size), its widest share of the screen */
+    static final int NUDGE_SP = 12;
+    static final float NUDGE_MAX = 0.40f;
+    /** the city question, short enough for one line of the compact strip (never cut with «…») */
+    static final String CITY_ASK = S.n("اختر مدينتك للطقس والصلاة");
 
-    /** The strip moves sideways, away from the weather line and the top row, when it shares a band of the screen with them and stands closer than NUDGE_CLEAR_PX. */
+    /**
+     * The compact strip sits on the top row: right after the row of round buttons (on its end side), its middle on the row's middle, NUDGE_CLEAR_PX
+     * from it, at most NUDGE_MAX of the screen wide (a longer notice wraps to two lines), and never over the weather line or the clock beside it.
+     */
     private void keepNudgeClear() {
         if (nudge == null) return;
         if (nudge.getTranslationX() != 0f) nudge.setTranslationX(0f);
+        if (nudge.getTranslationY() != 0f) nudge.setTranslationY(0f);
         if (nudge.getVisibility() != View.VISIBLE || nudge.getWidth() == 0) return;
+        int screenW = getResources().getDisplayMetrics().widthPixels;
+        int askMax = Math.max(dp(120), Math.round(screenW * NUDGE_MAX) - (nudge.getWidth() - nudgeAsk.getWidth()));
+        if (nudgeAsk.getVisibility() == View.VISIBLE && nudgeAsk.getMaxWidth() != askMax) { nudgeAsk.setMaxWidth(askMax); nudge.requestLayout(); return; }   // laid out again, then placed
         int[] n = new int[2];
         nudge.getLocationInWindow(n);
-        int gap = Math.round(NUDGE_CLEAR_PX * getResources().getDisplayMetrics().widthPixels / 1920f);
-        int lo = Integer.MIN_VALUE, hi = Integer.MAX_VALUE;
-        for (View o : new View[] {weatherLine, pillBar}) {
-            if (o == null || o.getVisibility() != View.VISIBLE || o.getWidth() == 0) continue;
+        int gap = Math.round(NUDGE_CLEAR_PX * screenW / 1920f);
+        float dx = 0f, dy = 0f;
+        if (pillBar != null && pillBar.getVisibility() == View.VISIBLE && pillBar.getWidth() > 0) {
+            int[] b = new int[2];
+            pillBar.getLocationInWindow(b);
+            boolean barLeft = b[0] + pillBar.getWidth() / 2 < screenW / 2;
+            dx = barLeft ? b[0] + pillBar.getWidth() + gap - n[0] : b[0] - gap - (n[0] + nudge.getWidth());
+            dy = b[1] + pillBar.getHeight() / 2f - (n[1] + nudge.getHeight() / 2f);
+        }
+        if (weatherLine != null && weatherLine.getVisibility() == View.VISIBLE && weatherLine.getWidth() > 0) {   // never over the weather line (nor the clock block it heads)
             int[] w = new int[2];
-            o.getLocationInWindow(w);
-            if (n[1] >= w[1] + o.getHeight() || w[1] >= n[1] + nudge.getHeight()) continue;   // not side by side
-            if (w[0] + o.getWidth() / 2 >= n[0] + nudge.getWidth() / 2) hi = Math.min(hi, w[0] - gap);   // on its right: the strip ends before it
-            else lo = Math.max(lo, w[0] + o.getWidth() + gap);                                         // on its left: the strip starts after it
+            weatherLine.getLocationInWindow(w);
+            float left = n[0] + dx, right = left + nudge.getWidth();
+            if (w[0] + weatherLine.getWidth() / 2 > right - nudge.getWidth() / 2f) dx += Math.min(0f, w[0] - gap - right);
+            else dx += Math.max(0f, w[0] + weatherLine.getWidth() + gap - left);
         }
-        int room = lo != Integer.MIN_VALUE && hi != Integer.MAX_VALUE ? hi - lo : Integer.MAX_VALUE;
-        if (room < nudge.getWidth() && nudgeAsk.getVisibility() == View.VISIBLE) {   // no room for both gaps: the question gives way (ends in «…»), never an overlap
-            int fit = Math.max(dp(120), nudgeAsk.getWidth() - (nudge.getWidth() - room));
-            if (fit < nudgeAsk.getWidth()) { nudgeAsk.setMaxWidth(fit); nudge.requestLayout(); return; }   // laid out again, then placed
-        } else if (room >= nudge.getWidth() + dp(40) && nudgeAsk.getMaxWidth() != NUDGE_ASK_MAX) {   // room again: the whole question
-            nudgeAsk.setMaxWidth(NUDGE_ASK_MAX);
-            nudge.requestLayout();
-            return;
-        }
-        float shift = nudgeShift(n[0], nudge.getWidth(), lo, hi);
-        if (shift != 0f) nudge.setTranslationX(shift);
-    }
-
-    /** the question's widest: Integer.MAX_VALUE, TextView's own «no limit» */
-    static final int NUDGE_ASK_MAX = Integer.MAX_VALUE;
-
-    /** how far the strip [n, n+nw) moves to stand inside [lo, hi): not at all when it does; centred between the two when it is wider than the room */
-    static float nudgeShift(int n, int nw, int lo, int hi) {
-        if (lo != Integer.MIN_VALUE && hi != Integer.MAX_VALUE && nw > hi - lo) return lo + (hi - lo - nw) / 2f - n;
-        if (hi != Integer.MAX_VALUE && n + nw > hi) return hi - (n + nw);
-        if (lo != Integer.MIN_VALUE && n < lo) return lo - n;
-        return 0f;
+        if (dx != 0f) nudge.setTranslationX(dx);
+        if (dy != 0f) nudge.setTranslationY(dy);
     }
 
     /** «لاحقاً» (or Back on the bar): hidden for 7 days, then 30 after a second press, then never; the number of presses is kept */
@@ -2274,7 +2271,7 @@ public class MainActivity extends Activity {
         nudgeCard.setText(notice != null ? S.t("تم") : askStock ? S.t("رجّع الواجهة الأصلية") : askUpdate ? S.t("حدّث الآن") : askExtras ? S.t("أصلحها") : askCity ? S.t("اختر المدينة") : S.t("خلّ تلفزيونك يفتح على UrTV"));
         if (notice != null) nudgeAsk.setText(notice.text(S.en()));
         else if (askStock) nudgeAsk.setText(S.t("تلفزيونك ما فتح بعد آخر تشغيلين للتلفزيون"));
-        else if (askUpdate) nudgeAsk.setText(card.line); else if (askExtras) nudgeAsk.setText(S.tv(ExtrasActivity.STUCK_FIX)); else if (askCity) nudgeAsk.setText(S.t("وين أنت؟ اختر مدينتك عشان الطقس والصلاة"));
+        else if (askUpdate) nudgeAsk.setText(card.line); else if (askExtras) nudgeAsk.setText(S.tv(ExtrasActivity.STUCK_FIX)); else if (askCity) nudgeAsk.setText(S.tv(CITY_ASK));
         nudgeAsk.setVisibility(askStock || askUpdate || askExtras || askCity || notice != null ? View.VISIBLE : View.GONE);
         nudgeCard.setVisibility(noticeFixed ? View.GONE : View.VISIBLE);
         nudgeLater.setVisibility(notice != null ? View.GONE : View.VISIBLE);
@@ -2328,7 +2325,7 @@ public class MainActivity extends Activity {
     }
 
     /** 4.4: the nudge strip's corners and its choices' focus fill: a rounded panel, never a capsule (half its height) */
-    static final float NUDGE_RADIUS = 12, NUDGE_FOCUS_RADIUS = 8;
+    static final float NUDGE_RADIUS = 8, NUDGE_FOCUS_RADIUS = 6;   // 4.4: the compact strip is about 24 dp tall: 8 dp corners, never a capsule
 
     /** a plain word's background: nothing at rest, the solid focus fill while focused (its focus ring) */
     private android.graphics.drawable.StateListDrawable focusOnly(float radiusDp) {
@@ -3421,14 +3418,15 @@ public class MainActivity extends Activity {
      * 4.3.3 «الآفاق» (the owner's choice in «المظهر ← الواجهة»): the scene and its big glass clock take the place of the photo and of the
      * header's clock (the greeting, the date and the rest of the home stay as they are); any other layout: the home as it was.
      */
-    /** «الساعة: زجاجية» as drawn now: the setting, but never with the cards strip under the clock (the cards would cover its lower half) */
-    static boolean glassClock(String homeClock, boolean cardsRow) { return "glass".equals(homeClock) && !cardsRow; }
+    /** «الساعة: زجاجية» as drawn now: the setting, but never while cards show (in any layout they can cover part of it) */
+    static boolean glassClock(String homeClock, boolean cardsShown) { return "glass".equals(homeClock) && !cardsShown; }
 
     private void sceneTick(ConfigSnapshot cfg) {
         boolean on = "scenes".equals(cfg.homeBg);   // 4.4 «الخلفية ← الآفاق» (any layout); the glass clock is «الساعة»'s own choice
-        // 4.4 the owner (sweep 2, option 2): with «كنبة»'s cards strip under it the glass clock would sit behind the cards, so while the strip shows the
-        // header's regular clock takes its place (the scene stays); the glass clock comes back when the cards are off. Read every minute (updateClock).
-        boolean glass = glassClock(cfg.homeClock, homeCard != null && homeCard.inRow());
+        // 4.4 the owner (sweep 2, option 2; sweep 3: every layout): the cards (the couch strip under the clock, or the box beside it, which can reach
+        // the glass clock's box) would sit over the glass clock, so while any card shows the header's regular clock takes its place (the scene stays);
+        // the glass clock comes back when the cards are off. Read every minute (updateClock).
+        boolean glass = glassClock(cfg.homeClock, homeCard != null && homeCard.shownCards() > 0);
         photoGlassTick(cfg, !on && glass);
         if (!on && sceneHome == null && !scenesOn) return;   // the home as it was (the default): nothing of the scenes is made, read, timed or downloaded
         if (on && sceneHome == null) {   // chosen: the layer is made now, over the photos and under the dimming and the scrims

@@ -50,7 +50,7 @@
   html.row .week ul.pgrid{grid-template-columns:repeat(6,minmax(0,1fr));gap:.5em}
   html.row .week ul.pgrid li{padding:.6em .2em;font-size:calc(1.2vw*var(--z,1));font-size:calc(clamp(16px,1.2vw,26px)*var(--z,1))}
   
-  html.row .week .hd{justify-content:center}html.row .week .hd::after{display:none}
+  html.row .week .hd{justify-content:flex-start;padding-top:calc(12px*.4);padding-top:max(6px,calc(var(--cr,12px)*.4))}html.row .week .hd::after{display:none}   
   html.row .week li{justify-content:center;text-align:center}
   html.widget .week{width:100%}
   
@@ -141,6 +141,8 @@
     font-size:calc(1vw*var(--z,1));font-size:calc(clamp(12px,1vw,18px)*var(--z,1));font-weight:500;letter-spacing:0;color:var(--gold-3);
   }
   .week .hd::after{content:'';flex:1;height:1px;background:linear-gradient(270deg,rgba(var(--gold-rgb),.5),transparent)}
+  
+  html.widget .week .hd{padding-inline-start:calc(var(--cr,12px)*.6)}
   .week ul{list-style:none;display:flex;flex-direction:column;gap:0}
   .week li{
     display:flex;align-items:baseline;gap:1.05em;
@@ -366,11 +368,11 @@
   .week canvas.bl.on{opacity:1}
   .week .frm,.week .dia{display:none}
 
-  html.cs-dark1 .week{border-radius:26px;border-color:rgba(246,239,224,.10)}
+  html.cs-dark1 .week{--cr:26px;border-radius:26px;border-color:rgba(246,239,224,.10)}
   html.cs-dark1 .week::before{background:rgba(8,14,10,.52)}
   html.cs-dark1 .week::after{box-shadow:inset -3px 0 0 var(--gold)}   
 
-  html.cs-glass1 .week{border-radius:34px;border-color:rgba(255,255,255,.22);box-shadow:0 24px 60px rgba(0,0,0,.35)}
+  html.cs-glass1 .week{--cr:34px;border-radius:34px;border-color:rgba(255,255,255,.22);box-shadow:0 24px 60px rgba(0,0,0,.35)}
   html.cs-glass1 .week::before{background:linear-gradient(135deg,rgba(255,255,255,.16),rgba(255,255,255,.04) 45%,rgba(255,255,255,.02) 60%,rgba(255,255,255,.10))}
   html.cs-glass1 .week::after{background:radial-gradient(60% 40% at 15% 0%,rgba(255,255,255,.22),transparent 70%);
     box-shadow:inset 0 1px 0 rgba(255,255,255,.45),inset 0 -1px 0 rgba(255,255,255,.08),inset 1px 0 0 rgba(255,255,255,.12)}
@@ -389,14 +391,14 @@
     pointer-events:none;border:1px solid rgba(var(--gold-rgb),.75)}
   html.cs-dark3 .week .dia.t,html.cs-glass3 .week .dia.t{top:calc(5px + .4vh);transform:translate(-50%,-50%) rotate(45deg)}
   html.cs-dark3 .week .dia.b,html.cs-glass3 .week .dia.b{bottom:calc(5px + .4vh);transform:translate(-50%,50%) rotate(45deg)}
-  html.cs-dark3 .week .hd,html.cs-glass3 .week .hd{justify-content:center}
+  html.cs-dark3 .week .hd,html.cs-glass3 .week .hd{justify-content:flex-start}
   html.cs-dark3 .week .hd::after,html.cs-glass3 .week .hd::after{display:none}
 
-  html.cs-dark3 .week{border-radius:22px;border-color:transparent}
+  html.cs-dark3 .week{--cr:22px;border-radius:22px;border-color:transparent}
   html.cs-dark3 .week::before{background:rgba(7,22,15,.62)}
   html.cs-dark3 .week .dia{background:#07160F}
 
-  html.cs-glass3 .week{border-radius:30px;border-color:rgba(255,255,255,.20);box-shadow:0 24px 60px rgba(0,0,0,.35)}
+  html.cs-glass3 .week{--cr:30px;border-radius:30px;border-color:rgba(255,255,255,.20);box-shadow:0 24px 60px rgba(0,0,0,.35)}
   html.cs-glass3 .week::before{background:linear-gradient(135deg,rgba(120,200,150,.20),rgba(20,60,40,.10) 50%,rgba(var(--gold-rgb),.12))}
   html.cs-glass3 .week::after{box-shadow:inset 0 1px 0 rgba(255,255,255,.40),inset 0 -1px 0 rgba(255,255,255,.06)}
   html.cs-glass3 .week .dia{background:rgb(30,60,44)}
