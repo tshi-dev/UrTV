@@ -70,7 +70,7 @@ check("keys: the adhan rule first, then the remote's shortcut keys (one that act
       and "if (appsEdit != null) leaveAppsEdit();   // and in «تعديل التطبيقات»" in d)
 keyfn = fn(main, "private boolean appsEditKey(KeyEvent e)")
 check("the mode leaves the volume and power keys to Android, eats a release, and steps a held key at the home's pace",
-      "AdhanKeys.reserved(k)) return false" in keyfn and "ACTION_DOWN) return true" in keyfn and "SIDE_REPEAT_MS" in keyfn and keyfn.count("oncePerPress") == 2)
+      "AdhanKeys.reserved(k) || !FavEdit.owns(k)) return false" in keyfn and "ACTION_DOWN) return true" in keyfn and "SIDE_REPEAT_MS" in keyfn and keyfn.count("oncePerPress") == 2)
 check("the arrows' direction comes from the grid's layout direction (FavEdit.step, Arabic)", "FavEdit.step(k, grid.getLayoutDirection() == View.LAYOUT_DIRECTION_RTL)" in keyfn)
 check("another screen (onPause) or Home leaves the mode, saving; a change of the apps under it (buildApps) ends it without saving",
       "if (appsEdit != null) leaveAppsEdit();" in fn(main, "protected void onPause()") and "if (appsEdit != null) leaveAppsEdit();" in fn(main, "protected void onNewIntent(Intent intent)")

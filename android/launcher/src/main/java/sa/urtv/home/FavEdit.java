@@ -10,6 +10,24 @@ import java.util.List;
  * runs it. MainActivity draws what this says and saves {@link #row} through Dock.save, the store «ترتيب المفضلة» and dock.sh share.
  */
 final class FavEdit {
+
+    /**
+     * 4.3.4 follow-up: the keys «تعديل المفضلة» and «تعديل التطبيقات» use (the arrows, OK, Back) and the ones that would move the focus behind
+     * them (Tab, page, home/end, the diagonals). Every other key goes on: the app, colour, channel, media and the maker's own keys (a Sony
+     * remote's Netflix, Input, GUIDE) were swallowed while a mode was on. KeyEvent's codes, so no Android in here (tests/edit_keys_test.py).
+     */
+    static boolean owns(int code) {
+        switch (code) {
+            case 19: case 20: case 21: case 22: case 23:   // DPAD_UP, DOWN, LEFT, RIGHT, CENTER
+            case 66: case 160: case 96:                    // ENTER, NUMPAD_ENTER, BUTTON_A (OK on some remotes)
+            case 4:                                        // BACK
+            case 61: case 92: case 93: case 122: case 123: // TAB, PAGE_UP, PAGE_DOWN, MOVE_HOME, MOVE_END
+            case 268: case 269: case 270: case 271:        // the diagonals
+                return true;
+            default:
+                return false;
+        }
+    }
     // android.view.KeyEvent's values
     static final int KEYCODE_BACK = 4, KEYCODE_DPAD_UP = 19, KEYCODE_DPAD_DOWN = 20, KEYCODE_DPAD_LEFT = 21, KEYCODE_DPAD_RIGHT = 22;
 

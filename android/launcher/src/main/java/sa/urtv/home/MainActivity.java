@@ -2244,10 +2244,10 @@ public class MainActivity extends Activity {
         for (View c : dockCards) liftCard(c, false);
     }
 
-    /** One key while the mode is on. True: it is ours (every key but the volume and power ones). */
+    /** One key while the mode is on. True: it is ours (FavEdit.owns: the arrows, OK, Back and what would move the focus; every other key goes on). */
     private boolean editKey(KeyEvent e) {
         int k = e.getKeyCode();
-        if (AdhanKeys.reserved(k)) return false;
+        if (AdhanKeys.reserved(k) || !FavEdit.owns(k)) return false;
         if (e.getAction() != KeyEvent.ACTION_DOWN) return true;   // a release does nothing; it must not click the tile under the focus
         long now = SystemClock.uptimeMillis();
         int rep = e.getRepeatCount();
@@ -2491,10 +2491,10 @@ public class MainActivity extends Activity {
         else if (!dockCards.isEmpty()) dockCards.get(0).requestFocus();
     }
 
-    /** One key while the mode is on. True: it is ours (every key but the volume and power ones), as in «تعديل المفضلة». */
+    /** One key while the mode is on. True: it is ours (FavEdit.owns), as in «تعديل المفضلة». */
     private boolean appsEditKey(KeyEvent e) {
         int k = e.getKeyCode();
-        if (AdhanKeys.reserved(k)) return false;
+        if (AdhanKeys.reserved(k) || !FavEdit.owns(k)) return false;
         if (e.getAction() != KeyEvent.ACTION_DOWN) return true;   // a release does nothing; it must not click the tile under the focus
         long now = SystemClock.uptimeMillis();
         int rep = e.getRepeatCount();
@@ -4059,7 +4059,7 @@ public class MainActivity extends Activity {
             }
             return true;
         }
-        if (edit != null && editKey(e)) return true;   // «تعديل المفضلة»: every key but the volume and power ones is ours
+        if (edit != null && editKey(e)) return true;   // «تعديل المفضلة»: the keys it uses (FavEdit.owns); the rest go on
         if (appsEdit != null && appsEditKey(e)) return true;   // «تعديل التطبيقات»: the same
         // the Menu key on an app: its options (the long OK's box); anywhere else the Inputs dropdown, as before
         if (e.getKeyCode() == KeyEvent.KEYCODE_MENU && e.getAction() == KeyEvent.ACTION_UP && edit == null && appsEdit == null
