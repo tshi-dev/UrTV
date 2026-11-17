@@ -3421,9 +3421,14 @@ public class MainActivity extends Activity {
      * 4.3.3 «الآفاق» (the owner's choice in «المظهر ← الواجهة»): the scene and its big glass clock take the place of the photo and of the
      * header's clock (the greeting, the date and the rest of the home stay as they are); any other layout: the home as it was.
      */
+    /** «الساعة: زجاجية» as drawn now: the setting, but never with the cards strip under the clock (the cards would cover its lower half) */
+    static boolean glassClock(String homeClock, boolean cardsRow) { return "glass".equals(homeClock) && !cardsRow; }
+
     private void sceneTick(ConfigSnapshot cfg) {
         boolean on = "scenes".equals(cfg.homeBg);   // 4.4 «الخلفية ← الآفاق» (any layout); the glass clock is «الساعة»'s own choice
-        boolean glass = "glass".equals(cfg.homeClock);
+        // 4.4 the owner (sweep 2, option 2): with «كنبة»'s cards strip under it the glass clock would sit behind the cards, so while the strip shows the
+        // header's regular clock takes its place (the scene stays); the glass clock comes back when the cards are off. Read every minute (updateClock).
+        boolean glass = glassClock(cfg.homeClock, homeCard != null && homeCard.inRow());
         photoGlassTick(cfg, !on && glass);
         if (!on && sceneHome == null && !scenesOn) return;   // the home as it was (the default): nothing of the scenes is made, read, timed or downloaded
         if (on && sceneHome == null) {   // chosen: the layer is made now, over the photos and under the dimming and the scrims

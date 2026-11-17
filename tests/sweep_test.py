@@ -61,4 +61,7 @@ check("sweep2, the top row: its bar never rounder than 8 dp, a labelled button 6
 check("sweep2, the settings hint: the rows' secondary size (14 sp; couch-tv its info line, 1.4375 rem) in the secondary colour, no longer 12 sp",
       "static final int HINT_SP = 14;" in s and "hint.setTextSize(TypedValue.COMPLEX_UNIT_SP, HINT_SP);" in s and "hint.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12);" not in s
       and "hint.setTextColor(CouchStyle.SUB);" in s and "HINT = 1.4375f," in (APP / "CouchStyle.java").read_text(encoding="utf-8"))
+check("sweep2 option 2 (the owner): «الساعة: زجاجية» with «كنبة»'s cards strip under it shows the regular clock (the cards would cover the glass one); the glass clock again without the strip",
+      'static boolean glassClock(String homeClock, boolean cardsRow) { return "glass".equals(homeClock) && !cardsRow; }' in main
+      and "boolean glass = glassClock(cfg.homeClock, homeCard != null && homeCard.inRow());" in main and "boolean bigClock = glass;" in main)
 sys.exit(1 if failed else 0)
