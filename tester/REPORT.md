@@ -3061,3 +3061,4 @@ The artifact «apks» has urtv-home.apk, urtv-screensaver.apk and **urtv-rescue.
    - nothing else changed: `saver.sh show` differs only in 4.4-only keys that 4.3.3 does not list (keyapps, couch, homelayout/background/clock/appsstyle, kickoff…, lite); city, teams, stocks, dock identical.
 **Verdict: step 93 PASS for the rescue (home, packages, launcherx/setupwraith, Wi-Fi), with the screensaver note.**
 TV after the step: Google TV home, 4.3.3 apps installed — putting the owner's 4.4 setup back next.
+Back to the owner's setup after step 93: 4.3.3 (448) uninstalled, 4.4/427 + extras + rescue installed, `saver.sh show` and the dock **identical to the backup**, TV rebooted, «جهّز كل شي» again (key dialog: Select, Down, Left, Select): role sa.urtv.home, wanted yes, HOME_KEY on, add-on bound, 18 packages off, Home from YouTube → UrTV. TV asleep, muted.
