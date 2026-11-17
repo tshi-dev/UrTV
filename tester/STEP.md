@@ -13,7 +13,7 @@ The owner made code 8042301 for https://github.com/tshi-dev/UrTV/releases/downlo
 3. Report «step 97: code 8042301 OK/FAIL».
 If it opens a page or an error instead, report exactly what Downloader shows.
 
-## step 96 — 4.4 on apk-next (next = cd94e6d6, Build APKs run 44114006909), AFTER step 93
+## step 96 — 4.4 on apk-next (UPDATED: next = da81cbcf, build 465, Build APKs run 44136994322; it now also has 4.3.3, the beta switch, the tafsir card, Riyadh option 2 and the rescue code 8042301), AFTER step 97
 This is the first full 4.4 build with everything merged:
 - presets, «منظر وساعة» settings, the compact setup + setup speed;
 - the HOME_KEY catch;
@@ -38,6 +38,7 @@ This is the first full 4.4 build with everything merged:
    - the screensaver clock.
    Take each at two times with different digits (e.g. 1:16 and 10:30). Crop each clock and zoom it to 400% with nearest-neighbour. Report for each: sharp edges or stair-steps/blur, and whether the digit edges are anti-aliased. Push the crops to tester/clock/.
 5. Look for any «·» or «•», any capsule/pill, any text cut or overlapping (like the prayer name and time).
+5b. The beta switch on 4.4: «النسخ التجريبية» row present; turn it on and «تحقق من التحديث» says it is up to date (no apk-beta yet). Leave it ON afterwards (the owner wants the first beta on his TV).
 6. Report «step 96» with a PASS/FAIL list and the pictures, then put the owner's settings back. TV muted.
 
 ## step 95 — UrTV Player beta channel (in-app update and the assessment), at any pause
