@@ -40,5 +40,17 @@ final class CrashLoopStore {
 
     static boolean safe(Context c) { return read(c).safe(System.currentTimeMillis()); }
 
+    /** the home screen opened (MainActivity.onCreate, not in safe mode): it must draw within CrashLoop.FRAME_MS */
+    static void opened(Context c) { write(c, read(c).opened(System.currentTimeMillis())); }
+
+    private static volatile boolean drewMarked;
+
+    /** the home screen drew its first frame (once per process) */
+    static void drew(Context c) {
+        if (drewMarked) return;
+        drewMarked = true;
+        write(c, read(c).drewFrame(System.currentTimeMillis()));
+    }
+
     static void clear(Context c) { write(c, read(c).cleared()); }
 }

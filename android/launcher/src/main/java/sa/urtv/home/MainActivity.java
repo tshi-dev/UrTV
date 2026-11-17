@@ -218,6 +218,8 @@ public class MainActivity extends Activity {
             finish();
             return;
         }
+        CrashLoopStore.opened(this);   // 4.3.5: the screen must draw its first frame within 20 s, or the next start counts a hang (CrashLoop)
+        getWindow().getDecorView().getViewTreeObserver().addOnDrawListener(firstDraw);
         if (DebugFlags.on(this, "keytrace")) KeyTrace.install();
         dbgFocus = DebugFlags.focusMask(this);   // a tester's switches for the tile's focus animation (dock.sh debug plainfocus ...)
         FamilyDnsAndroid.status(this);   // first use in this process: undoes a Family DNS check that a crash cut short
@@ -518,6 +520,18 @@ public class MainActivity extends Activity {
     }
 
     private boolean safeRedirect;   // 4.3.5: this instance only opened SafeActivity and finished
+
+    /** 4.3.5: the first frame of the home screen was drawn: marked once (off the draw itself), then the listener goes */
+    private final android.view.ViewTreeObserver.OnDrawListener firstDraw = new android.view.ViewTreeObserver.OnDrawListener() {
+        @Override public void onDraw() {
+            final android.view.ViewTreeObserver.OnDrawListener self = this;
+            handler.post(() -> {
+                CrashLoopStore.drew(MainActivity.this);
+                android.view.ViewTreeObserver o = getWindow().getDecorView().getViewTreeObserver();
+                if (o.isAlive()) o.removeOnDrawListener(self);
+            });
+        }
+    };
 
     /** 4.3.5 (R7): never behind the family lock: a home that keeps dying cannot ask for the PIN, and the page only offers the TV's own home */
     private void openSafePage() {

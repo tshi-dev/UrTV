@@ -32,6 +32,9 @@ mc = main.split("protected void onCreate(Bundle b) {\n        super.onCreate(b);
 check("MainActivity asks first: in safe mode it opens SafeActivity and finishes, building nothing",
       mc.lstrip().startswith("if (CrashLoopStore.safe(this)) {") and "openSafePage();" in mc.split("}")[0] and "private void openSafePage() {\n        launch(new Intent(this, SafeActivity.class));" in main and "finish();\n            return;" in mc.split("if (DebugFlags")[0])
 check("…and its onDestroy then undoes nothing it did not do", "if (safeRedirect) { super.onDestroy(); return; }" in main)
+check("the home screen marks its opening after the safe check, and its first frame (once, then the listener goes)",
+      mc.index("CrashLoopStore.opened(this);") > mc.index("CrashLoopStore.safe(this)") and "addOnDrawListener(firstDraw)" in mc
+      and "CrashLoopStore.drew(MainActivity.this);" in main and "removeOnDrawListener(self)" in main and "if (drewMarked) return;" in store)
 check("SafeActivity: plain views only (no WebView, no provider, no photo)",
       "WebView" not in safe.split("public class SafeActivity")[1] and "getContentResolver" not in safe and "ConfigSnapshot" not in safe and "Bitmap" not in safe)
 check("SafeActivity drops only our own claim as the default home", "clearPackagePreferredActivities(getPackageName())" in safe)
@@ -56,7 +59,15 @@ runs = [
     ([f"s {S}", f"c {S+5000}", f"s {S+8000}", f"c {S+12000}", "x", f"q {S+13000}"], ["home"], "«حاول مرة ثانية» clears it"),
     ([f"c {S}", f"q {S+1}"], ["home"], "a crash with no start known is not counted"),
     (["p garbage|1,x,", f"q {S}"], ["home"], "a damaged file is a clean state"),
-    ([f"s {S}", f"c {S+1000}", f"s {S+2000}", f"c {S+3000}", f"s {S+4000}", f"c {S+5000}", "w"], [f"{S+4000}|{S+3000},{S+5000}|"], "the file keeps the start and the last two quick crashes"),
+    ([f"s {S}", f"c {S+1000}", f"s {S+2000}", f"c {S+3000}", f"s {S+4000}", f"c {S+5000}", "w"], [f"{S+4000}|{S+3000},{S+5000}|0", "0", "1|"], "the file keeps the start, the last two quick crashes, and this start's screen"),
+    # the hang watchdog: a home screen that opened and never drew its first frame within 20 s counts at the next start
+    ([f"s {S}", f"o {S+1000}", f"d {S+2000}", f"s {S+100000}", f"o {S+101000}", f"d {S+102000}", f"s {S+200000}", f"q {S+200001}"], ["home"], "screens that drew in time: the home"),
+    ([f"s {S}", f"o {S+1000}", f"s {S+40000}", f"o {S+41000}", f"s {S+80000}", f"q {S+80001}"], ["safe"], "two screens that never drew (hangs): the safe page"),
+    ([f"s {S}", f"o {S+1000}", f"s {S+40000}", f"q {S+40001}"], ["home"], "one hang: the home again"),
+    ([f"s {S}", f"o {S+1000}", f"d {S+25000}", f"s {S+40000}", f"o {S+41000}", f"d {S+70000}", f"s {S+90000}", f"q {S+90001}"], ["safe"], "a first frame after 20 s is a hang too"),
+    ([f"s {S}", f"o {S+1000}", f"c {S+2000}", f"s {S+5000}", f"q {S+5001}"], ["home"], "a crash before the first frame is counted once, not again as a hang"),
+    ([f"s {S}", f"s {S+40000}", f"s {S+80000}", f"q {S+80001}"], ["home"], "starts with no home screen (a receiver, a service) are never hangs"),
+    ([f"s {S}", f"o {S+1000}", f"s {S+40000}", f"o {S+41000}", "x", f"s {S+80000}", f"q {S+80001}"], ["home"], "«حاول مرة ثانية» also forgives the screen that was open"),
 ]
 with tempfile.TemporaryDirectory() as tmp:
     subprocess.run(["javac", "-encoding", "UTF-8", "-d", tmp, str(HOME / "CrashLoop.java"), str(ROOT / "tests/CrashLoopRun.java")], check=True, capture_output=True)
