@@ -70,7 +70,9 @@ if shutil.which("python3"):
     try:
         import yaml
         doc = yaml.safe_load(wf)
-        check("it is valid YAML with one job", len(doc["jobs"]) == 1)
+        check("it is valid YAML: the release gate on the source build's commit, then the one job that promotes, only after it (docs/dev/RELEASE.md)",
+              set(doc["jobs"]) == {"source", "gate", "promote"} and doc["jobs"]["gate"].get("uses") == "./.github/workflows/regressions.yml"
+              and doc["jobs"]["promote"].get("needs") == "gate")
     except ImportError:
         print("SKIP yaml: not installed")
 

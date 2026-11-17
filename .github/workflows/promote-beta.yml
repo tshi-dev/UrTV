@@ -28,7 +28,34 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  # the release gate (docs/dev/RELEASE.md) on the commit the source release was built from: nothing reaches apk-beta that fails it
+  source:
+    runs-on: ubuntu-24.04
+    outputs:
+      sha: ${{ steps.sha.outputs.sha }}
+    env:
+      GH_TOKEN: ${{ github.token }}
+      SRC: ${{ inputs.source }}
+    steps:
+      - id: sha
+        name: The commit the source release was built from
+        run: |
+          set -euo pipefail
+          case "$SRC" in apk-next|apk-latest) ;; *) echo "::error::source is apk-next or apk-latest"; exit 1;; esac
+          sha="$(gh release view "$SRC" --repo "$GITHUB_REPOSITORY" --json body --jq .body | grep -oE '\b[0-9a-f]{40}\b' | tail -n1 || true)"
+          [ -n "$sha" ] || { echo "::error::$SRC's notes name no commit: nothing to check, nothing promoted"; exit 1; }
+          echo "sha=$sha" >> "$GITHUB_OUTPUT"
+          echo "$SRC was built from $sha"
+
+  gate:
+    needs: source
+    uses: ./.github/workflows/regressions.yml
+    with:
+      ref: ${{ needs.source.outputs.sha }}
+    secrets: inherit
+
   promote:
+    needs: gate
     runs-on: ubuntu-24.04
     env:
       GH_TOKEN: ${{ github.token }}
