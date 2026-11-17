@@ -355,7 +355,7 @@ for name, content, want in (("truncated JSON", text[:len(text) // 2], "not compl
                             ("schema a string", '{"schema": "1"}', 'needs "schema": 1'),
                             ("schema true", '{"schema": true}', 'needs "schema": 1'),
                             ("a key twice", '{"schema": 1, "digits": "latin", "digits": "hindi"}', "given twice"),
-                            ("a future schema", '{"schema": 2, "digits": "latin"}', "newer version")):
+                            ("a future schema", '{"schema": 3, "digits": "latin"}', "newer version")):
     tv = Tv("f", BASE)
     rc, out, err = tv.run("import", write("f.json", content), "--yes")
     check(f"refused: {name}", rc != 0 and want in err and not tv.sent() and not tv.before.exists(), (rc, err, tv.sent()))

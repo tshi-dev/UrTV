@@ -674,6 +674,26 @@ def migrate(d):
     return d
 
 
+# 4.5: the TV's own «نسخة الإعدادات» writes schema 2: {"schema": 2, "app": "urtv", "saver": {the schema-1 keys}, "home": {…}} (docs/BACKUP.md).
+# These tools read its "saver" part as a schema-1 file; the "home" part (favourites, app and input names, hidden inputs, remote buttons)
+# is restored only on the TV, so it is left as it is and said once. Export still writes schema 1.
+TV_FILE_SCHEMA = 2
+
+
+def from_tv_file(d):
+    """(the dict to read as schema 1, a note or ""); a schema-2 file must have a "saver" object; any other schema passes unchanged"""
+    if d.get("schema") != TV_FILE_SCHEMA:
+        return d, ""
+    saver = d.get("saver")
+    if not isinstance(saver, dict):
+        raise Refused('this schema-2 file has no "saver" part (the TV writes one): it cannot be read here')
+    out = dict(saver)
+    out["schema"] = 1
+    note = ("the file's «home» part (favourites, app and input names, hidden inputs, remote buttons) is restored only on the TV "
+            "(الإعدادات ← «نسخة الإعدادات»): it was left as it is") if isinstance(d.get("home"), dict) and d["home"] else ""
+    return out, note
+
+
 def no_constants(name):
     raise ValueError(f"{name} is not allowed")
 
@@ -722,8 +742,11 @@ def load(path):
         raise Refused(f"{path} is not valid: {e}")
     if not isinstance(d, dict):
         raise Refused("this is not a settings file: it must be a JSON object")
+    d, home_note = from_tv_file(d)
     d = migrate(d)
     clean, errs, notes = validate(d)
+    if home_note:
+        notes.append(home_note)
     if errs:
         raise Refused("the file is refused, nothing was sent:\n" + "\n".join("  - " + e for e in errs))
     clean["schema"] = CURRENT_SCHEMA

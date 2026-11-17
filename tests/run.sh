@@ -356,6 +356,7 @@ python3 tests/your_tv_hub_test.py   # «تلفزيونك» (YourTvHubActivity): 
 python3 tests/input_hide_test.py   # 4.5 «المصادر»: an input hidden from the sources popup, kept in the inputs screen
 python3 tests/key_taps_test.py   # 4.5 «أزرار الريموت»: two and three presses per button, the switcher and the control centre as targets
 python3 tests/switcher_rule_test.py   # 4.5 «التطبيقات المفتوحة»: what it may stop, and how (the home's own ADB, else the background only)
+python3 tests/settings_schema2_test.py   # 4.5: saver.sh import reads the TV's «نسخة الإعدادات» file (schema 2) too
 python3 tests/run_list_test.py   # every test file is run by this script (CI runs nothing else)
 
 node tests/es2017_parse.test.mjs   # #19: the built pages parse as ES2017 (Android 9 TVs stuck on WebView 66)
