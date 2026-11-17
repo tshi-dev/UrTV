@@ -516,9 +516,15 @@ public abstract class GameActivity extends Activity {
     /** the ready screen: up to seven rows of chips (tighter from the seventh) and the big start button, which has the focus when the screen opens (OK starts with last time's choices) */
     protected final void setup(GameChips c, String startLabel) {
         title(gameName(), S.t("جهّز اللعبة"));
-        boolean tight = c.rows.size() > 6;
-        float y = tight ? 224 : 232;
-        for (int r = 0; r < c.rows.size(); r++) y = chipRow(c, r, y, tight ? 76 : 88, tight ? 14 : 14);
+        int n = c.rows.size(); boolean tight = n > 6;
+        float y = tight ? 224 : 232, rowH = tight ? 76 : 88, gap = 14, step = rowH + gap;
+        int fit = Math.max(1, (int) ((840 - y) / step));   // the rows that stand above the start button (it begins at 856): nothing hides behind it
+        int ws = c.scroll;
+        if (c.row < n) { if (c.row < ws) ws = c.row; if (c.row >= ws + fit) ws = c.row - fit + 1; }
+        ws = Math.max(0, Math.min(ws, Math.max(0, n - fit))); c.scroll = ws;
+        for (int r = ws; r < Math.min(n, ws + fit); r++) y = chipRow(c, r, y, rowH, gap);
+        if (ws > 0) root.addView(centered("▲", 36, L.ink(0xCC), true), at(64, 48, 1760, 188));            // more rows above
+        if (ws + fit < n) root.addView(centered("▼", 36, L.ink(0xCC), true), at(64, 48, 1760, 806));       // more rows below
         c.names = namesKind() != null;
         root.addView(button(startLabel, c.onButton() && c.btn == 0), at(640, 104, 96, 856));
         if (c.names) root.addView(button(S.t("الأسماء"), c.onButton() && c.btn == 1), at(480, 104, 96 + 640 + 24, 856));
@@ -554,7 +560,11 @@ public abstract class GameActivity extends Activity {
         if (back) { finish(); return false; }
         if (dx != 0 || dy != 0) { if (c.move(dx, dy)) redraw(); return false; }
         if (!ok) return false;
-        if (c.onButton()) { if (c.btn == 1) { openNames(); return false; } return true; }
+        if (c.onButton()) {
+            if (c.btn == 1) { openNames(); return false; }
+            if (namesKind() != null && !GamePrefs.namesAsked(this, namesKind())) { openNames(); return false; }   // the first time on this TV the names are asked for before the game starts; after that they are kept
+            return true;
+        }
         if (!c.pick()) { toast(S.t("قريبًا")); return false; }
         if (c.get("sound") != null) { sound = c.picked("sound") == 0; GamePrefs.setSound(this, sound); }
         onChips(c);
@@ -578,7 +588,7 @@ public abstract class GameActivity extends Activity {
     private int nameN;
 
     private void openNames() {
-        nameKind = namesKind(); nameN = Math.max(1, Math.min(GameNames.SLOTS, namesCount()));
+        nameKind = namesKind(); GamePrefs.setNamesAsked(this, nameKind); nameN = Math.max(1, Math.min(GameNames.SLOTS, namesCount()));
         String[] saved = GamePrefs.names(this, nameKind);
         nameCur = new String[nameN];
         for (int i = 0; i < nameN; i++) nameCur[i] = saved[i];

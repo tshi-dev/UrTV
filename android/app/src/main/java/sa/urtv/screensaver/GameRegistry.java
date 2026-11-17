@@ -38,8 +38,8 @@ final class GameRegistry {
         new Game("packs", "حزم المحتوى", "حجم ما حمّلتموه من الألعاب، واحتفظوا به أو احذفوه", "GamePacksActivity", false, true),
     };
 
-    /** the games that can be played with the phones: the list shows them under ONE «بالجوالات» tile (the first of them, «الأسرع», stands for it); the others also stay in the list, played with one remote */
-    static final String[] PHONE_GAMES = {"quiz", "khanat", "missing-word", "letter-hive", "word5", "odd-one", "charades", "domino", "forehead", "author", "closest", "liar", "emoji", "link", "night", "draw", "quran-verse", "maths", "logic"};
+    /** the games that are played WITH the phones (the phones are the controllers): only these carry the phone tag and only these stay when the list is filtered by «بالجوالات»; the older games stay under «الكل» and have their own phones switch on their setup page */
+    static final String[] PHONE_GAMES = {"quiz", "forehead", "author", "closest", "liar", "emoji", "link", "night", "draw", "quran-verse", "maths", "logic"};
     static boolean inPhones(String id) { for (String g : PHONE_GAMES) if (g.equals(id)) return true; return false; }
 
     static Game byId(String id) { for (Game g : ALL) if (g.id.equals(id)) return g; return null; }

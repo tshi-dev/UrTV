@@ -45,9 +45,9 @@ public class QuizGamesActivity extends Activity {
         S.n("ألغاز المنطق"), S.n("فكّروا قبل أن يسبقكم غيركم"),
         S.n("حزم المحتوى"), S.n("حجم ما حمّلتموه من الألعاب، واحتفظوا به أو احذفوه"),
     };
-    /** the night switch's words, marked for the English table: «وضع ليلي» with its three states, and the three night palettes */
-    static final String[] NIGHT_WORDS = {S.n("وضع ليلي"), S.n("تلقائي بعد المغرب"), S.n("ألوان الليل"), S.n("فحم دافئ"), S.n("ليل أزرق"), S.n("بيج خافت")};
-    static final String[] NIGHT_STATES = {S.n("إيقاف"), S.n("تشغيل"), NIGHT_WORDS[1]}, PALETTE_NAMES = {NIGHT_WORDS[3], NIGHT_WORDS[4], NIGHT_WORDS[5]};
+    /** the words of the three little buttons (spoken by TalkBack, never drawn): «وضع ليلي» is off or on (no automatic state), the three night palettes */
+    static final String[] NIGHT_WORDS = {S.n("وضع ليلي"), S.n("ألوان الليل"), S.n("فحم دافئ"), S.n("ليل أزرق"), S.n("بيج خافت")};
+    static final String[] NIGHT_STATES = {S.n("إيقاف"), S.n("تشغيل")}, PALETTE_NAMES = {NIGHT_WORDS[2], NIGHT_WORDS[3], NIGHT_WORDS[4]};
     /** the filter at the top: all the games, or only the ones that can be played with phones (the choice is kept) */
     static final String[] FILTER_WORDS = {S.n("الكل"), S.n("بالجوالات"), S.n("عرض")};
     static final int COLS = 4;
@@ -105,7 +105,7 @@ public class QuizGamesActivity extends Activity {
     /** the games on the page: all of them, or only the ones that can be played with phones */
     private java.util.List<GameRegistry.Game> shown() {
         java.util.List<GameRegistry.Game> v = new java.util.ArrayList<>();
-        for (GameRegistry.Game g : GameRegistry.ALL) if (filter == 0 || GameRegistry.inPhones(g.id)) v.add(g);
+        for (GameRegistry.Game g : GameRegistry.ALL) if (filter == 0 || (g.phones && g.ready)) v.add(g);
         return v;
     }
     private void draw() {
@@ -113,9 +113,11 @@ public class QuizGamesActivity extends Activity {
         java.util.List<GameRegistry.Game> gs = shown();
         View band = new View(this); band.setBackgroundColor(L.deep);
         root.addView(band, at(-1, 200, 0, 0));
-        root.addView(text(S.t("الألعاب"), 96, L.onDeep, true), at(900, 120, 96, 54));
-        TextView mode = text(filter == 1 ? S.t("كل واحد بجواله، والريموت للمضيف") : S.t("بدون جوالات: ريموت واحد يدور بينكم"), 40, L.saff, false); mode.setGravity(Gravity.END); mode.setTextAlignment(View.TEXT_ALIGNMENT_VIEW_END);
-        FrameLayout.LayoutParams mp = new FrameLayout.LayoutParams(px(820), px(56), Gravity.END | Gravity.TOP); mp.setMarginEnd(px(96)); mp.topMargin = px(84);
+        TextView page = text(S.t("الألعاب"), 96, L.onDeep, true); page.setIncludeFontPadding(true); page.setLineSpacing(0, 1.15f); page.setPadding(0, 0, 0, px(14));   // the tail of «ع» is never cut
+        root.addView(page, at(640, 150, 96, 30));
+        TextView mode = text(filter == 1 ? S.t("كل واحد بجواله، والريموت للمضيف") : S.t("بدون جوالات: ريموت واحد يدور بينكم"), 36, L.saff, false); mode.setGravity(Gravity.CENTER_VERTICAL | Gravity.END); mode.setTextAlignment(View.TEXT_ALIGNMENT_VIEW_END); mode.setSingleLine(true); mode.setEllipsize(android.text.TextUtils.TruncateAt.END);
+        mode.setIncludeFontPadding(true); mode.setPadding(0, 0, 0, px(8));
+        FrameLayout.LayoutParams mp = new FrameLayout.LayoutParams(px(780), px(72), Gravity.END | Gravity.TOP); mp.setMarginEnd(px(96 + 3 * 72 + 2 * 16 + 40)); mp.topMargin = px(64);   // beside the three buttons, never over them
         root.addView(mode, mp);
         headerButtons();
         float w = 408, hgt = 336, gap = 32;
@@ -131,19 +133,22 @@ public class QuizGamesActivity extends Activity {
             GradientDrawable bg = new GradientDrawable(); bg.setColor(focus ? L.ink : live ? L.tile : L.paper);
             if (live || focus) bg.setStroke(px(6), L.ink); else bg.setStroke(px(4), L.ink(0x59), px(14), px(10));
             tile.setBackground(bg);
-            String markWord = !live ? S.t("قريبًا") : g.phones ? S.t("بالجوالات") : "";
-            if (!markWord.isEmpty()) {   // the mark: a small square-cornered label at the top of the tile
-                TextView mark = text(markWord, 30, live ? L.onSaff : words, true); mark.setSingleLine(true);
-                if (live) mark.setBackgroundColor(L.saff);
-                mark.setPadding(px(live ? 14 : 0), px(4), px(live ? 14 : 0), px(4));
+            if (!live) {   // «قريبًا»: a small word at the top of the tile
+                TextView mark = text(S.t("قريبًا"), 30, words, true); mark.setSingleLine(true); mark.setPadding(0, px(4), 0, px(4));
                 LinearLayout.LayoutParams kp = new LinearLayout.LayoutParams(-2, -2); kp.gravity = Gravity.START;
+                tile.addView(mark, kp);
+            } else if (g.phones) {   // plays with phones: a phone picture on a saffron square, no word (TalkBack says «بالجوالات»)
+                GameIcons mark = new GameIcons(this, GameIcons.PHONE).set(true, 0, L.onSaff, L.saff); mark.setBackgroundColor(L.saff); mark.setPadding(px(8), px(6), px(8), px(6));
+                mark.setContentDescription(S.t("بالجوالات"));
+                LinearLayout.LayoutParams kp = new LinearLayout.LayoutParams(px(52), px(52)); kp.gravity = Gravity.START;
                 tile.addView(mark, kp);
             }
             tile.addView(new View(this), new LinearLayout.LayoutParams(1, 0, 1f));
             // the title and the line fit the tile whatever the language: the size comes down (the title may take two lines, the line three) before anything is cut
             float inner = w - 64;
             String title = S.tv(g.name), about = S.tv(g.line);
-            TextView name = text(title, fit(display, title, 56, inner, 120, 2, 1f), words, true); name.setMaxLines(2);
+            TextView name = text(title, fit(display, title, 56, inner - 8, 112, 2, 1.15f), words, true); name.setMaxLines(2);
+            name.setIncludeFontPadding(true); name.setLineSpacing(0, 1.15f); name.setPadding(0, 0, 0, px(10));   // the tail of «ع» and «ر» is never cut
             tile.addView(name, new LinearLayout.LayoutParams(-1, -2));
             TextView line = text(about, fit(medium, about, 30, inner, 96, 3, 1.1f), words, false); line.setMaxLines(3); line.setLineSpacing(0, 1.1f); line.setAlpha(focus ? .9f : .8f);
             LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(-1, px(96)); lp.topMargin = px(8);
@@ -163,20 +168,22 @@ public class QuizGamesActivity extends Activity {
         root.addView(hint, at(-1, 48, 96, 978));
     }
 
-    /** the buttons at the top of the list, on the green band at the end of the line: «وضع ليلي» (off, on, automatic after Maghrib), «ألوان الليل» when it is not off, and the filter «عرض: الكل / بالجوالات» */
+    /** the three little buttons at the top of the list, on the green band at the end of the line, pictures only: the moon (night mode: filled = on), the palette (the night colours: 1 to 3 dots filled; only while the night is on) and the phone (the filter: filled = only the games played with phones). The state is the picture; TalkBack reads it. */
     private void headerButtons() {
         int st = GamePrefs.night(this);
         String[] label = {S.t("وضع ليلي") + ": " + S.tv(NIGHT_STATES[st]), S.t("ألوان الليل") + ": " + S.tv(PALETTE_NAMES[GamePrefs.palette(this)]), S.t("عرض") + ": " + S.tv(FILTER_WORDS[filter])};
-        float[] w = {380, 380, 340};
-        float x1 = 96, gap = 16;                          // from the end edge: the switch first, then the colours, then the filter toward the start
+        float size = 72, x1 = 96, gap = 16;               // from the end edge: the moon first, then the palette, then the phone toward the start
         for (int h : heads()) {
             int i = h - 1; boolean focus = head == h;
-            TextView b = text(label[i], 34, focus ? L.paper : L.ink, true); b.setGravity(Gravity.CENTER); b.setTextAlignment(View.TEXT_ALIGNMENT_CENTER); b.setSingleLine(true);
+            int fg = focus ? L.paper : L.ink;
+            GameIcons b = new GameIcons(this, i == 0 ? GameIcons.MOON : i == 1 ? GameIcons.PALETTE : GameIcons.PHONE)
+                .set(i == 0 ? st == GamePrefs.NIGHT_ON : i == 1 ? true : filter == 1, GamePrefs.palette(this) + 1, fg, focus ? L.saff : L.saff);
+            b.setPadding(px(12), px(10), px(12), px(10)); b.setContentDescription(label[i]);
             GradientDrawable bg = new GradientDrawable(); bg.setColor(focus ? L.ink : L.tile); bg.setStroke(px(focus ? 6 : 4), focus ? L.saff : L.ink);
             b.setBackground(bg);
-            FrameLayout.LayoutParams p = new FrameLayout.LayoutParams(px(w[i]), px(56), Gravity.END | Gravity.TOP); p.setMarginEnd(px(x1)); p.topMargin = px(128);
+            FrameLayout.LayoutParams p = new FrameLayout.LayoutParams(px(size), px(size), Gravity.END | Gravity.TOP); p.setMarginEnd(px(x1)); p.topMargin = px(64);
             root.addView(b, p);
-            x1 += w[i] + gap;
+            x1 += size + gap;
         }
     }
     /** the buttons that are shown, from the end edge toward the start */
@@ -198,7 +205,7 @@ public class QuizGamesActivity extends Activity {
             if (dx != 0) { int to = Math.max(0, Math.min(hs.length - 1, at[0] + (dx < 0 ? 1 : -1))); if (hs[to] != head) { head = hs[to]; draw(); } return true; }
             if (okKey) {
                 if (head == 3) { filter = 1 - filter; GamePrefs.setFilter(this, filter); sel = 0; draw(); return true; }
-                if (head == 1) { int st = (GamePrefs.night(this) + 1) % 3; GamePrefs.setNight(this, st); }
+                if (head == 1) { GamePrefs.setNight(this, GamePrefs.night(this) == GamePrefs.NIGHT_ON ? GamePrefs.NIGHT_OFF : GamePrefs.NIGHT_ON); }
                 else GamePrefs.setPalette(this, (GamePrefs.palette(this) + 1) % GamePrefs.PALETTES);
                 applyNight();
                 return true;
@@ -212,7 +219,7 @@ public class QuizGamesActivity extends Activity {
             GameRegistry.Game g = shown().get(sel);
             boolean opened = false;
             if (g.ready) {
-                try { Intent go = new Intent().setClassName(this, getClass().getPackage().getName() + "." + g.activity); if (filter == 1 && !g.id.equals("quiz")) go.putExtra("phones", true); startActivity(go);   // from the «بالجوالات» view the phones switch starts on
+                try { Intent go = new Intent().setClassName(this, getClass().getPackage().getName() + "." + g.activity); startActivity(go);   // from the «بالجوالات» view the phones switch starts on
                      GamePrefs.setLast(this, g.id); opened = true; }
                 catch (RuntimeException notThere) { /* a game marked ready whose screen is not in this build: «قريبًا» */ }
             }

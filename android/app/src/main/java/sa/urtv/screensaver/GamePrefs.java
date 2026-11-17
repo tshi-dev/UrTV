@@ -26,9 +26,9 @@ final class GamePrefs {
     static boolean sound(Context c) { return sp(c).getBoolean("sound", true); }
     static void setSound(Context c, boolean on) { sp(c).edit().putBoolean("sound", on).apply(); }
 
-    /** the night look: 0 off (the default), 1 on, 2 automatic (after Maghrib until sunrise at the TV's city) */
-    static final int NIGHT_OFF = 0, NIGHT_ON = 1, NIGHT_AUTO = 2, PALETTES = 3;
-    static int night(Context c) { int v = sp(c).getInt("night", NIGHT_OFF); return v < 0 || v > NIGHT_AUTO ? NIGHT_OFF : v; }
+    /** the night look: 0 off (the default), 1 on. There is no automatic state: dark or light, the person chooses (an old «automatic» value reads as off). */
+    static final int NIGHT_OFF = 0, NIGHT_ON = 1, PALETTES = 3;
+    static int night(Context c) { return sp(c).getInt("night", NIGHT_OFF) == NIGHT_ON ? NIGHT_ON : NIGHT_OFF; }
     static void setNight(Context c, int v) { sp(c).edit().putInt("night", v).apply(); }
     /** the filter of the games list: 0 all the games (the default), 1 only the ones that can be played with phones */
     static int filter(Context c) { return sp(c).getInt("filter", 0) == 1 ? 1 : 0; }
@@ -39,18 +39,15 @@ final class GamePrefs {
         String j = GameNames.join(v);
         if (j.replace("\n", "").isEmpty()) sp(c).edit().remove("names." + kind).apply(); else sp(c).edit().putString("names." + kind, j).apply();
     }
+    /** were the names of this kind ever asked for on this TV (the first start asks; after that they are kept and changed with «الأسماء») */
+    static boolean namesAsked(Context c, String kind) { return sp(c).getBoolean("names.asked." + kind, false); }
+    static void setNamesAsked(Context c, String kind) { sp(c).edit().putBoolean("names.asked." + kind, true).apply(); }
     /** which night palette: 0 warm charcoal, 1 blue-black, 2 dim sepia (the default: the owner chose it) */
     static final int PALETTE_DEFAULT = 2;
     static int palette(Context c) { int v = sp(c).getInt("palette", PALETTE_DEFAULT); return v < 0 || v >= PALETTES ? PALETTE_DEFAULT : v; }
     static void setPalette(Context c, int v) { sp(c).edit().putInt("palette", v).apply(); }
-    /** is the night look on right now: on, or automatic and the sun is down at the city the person set for the prayer times (Riyadh until set) */
-    static boolean nightNow(Context c) {
-        int st = night(c);
-        if (st != NIGHT_AUTO) return st == NIGHT_ON;
-        double lat = 24.7136, lon = 46.6753;
-        try { String[] city = new Prefs(c).city(); lat = Double.parseDouble(city[1]); lon = Double.parseDouble(city[2]); } catch (RuntimeException ignored) { /* Riyadh */ }
-        return SunPos.isNight(lat, lon, System.currentTimeMillis());
-    }
+    /** is the night look on right now: only when the person switched it on */
+    static boolean nightNow(Context c) { return night(c) == NIGHT_ON; }
 
     static Set<String> recent(Context c, String id) {
         String s = sp(c).getString("recent." + id, "");
