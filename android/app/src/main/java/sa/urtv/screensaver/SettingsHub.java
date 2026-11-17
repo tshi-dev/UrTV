@@ -239,6 +239,15 @@ final class SettingsHub {
         {"مباراه", "مباريات اليوم"}, {"اسهم", "قائمة الأسهم"}, {"ذهب", "افتح صفحة الأسواق"},
         {"الشاشه الرئيسيه", "اجعل UrTV الشاشة الرئيسية"}, {"واجهه المصنع", "تخلّص من واجهة المصنع"}, {"مشاهد", "حزم الآفاق"}, {"مشهد", "حزم الآفاق"},
         // 4.4: deleting a photo is in «صوري» (one at a time or all); the hidden apps come back in «ترتيب كل التطبيقات» ← «تعديل التطبيقات» ← «المخفية»
+        // 4.5 how people ask (a user: «can I remove the Ramadan countdown?»): the next occasion's line is Ramadan, Eid, iftar and suhoor
+        {"رمضان", "المناسبة القادمة"}, {"العيد", "المناسبة القادمة"}, {"الأعياد", "المناسبة القادمة"}, {"العد التنازلي", "المناسبة القادمة"}, {"كم باقي", "المناسبة القادمة"},
+        {"الإفطار", "المناسبة القادمة"}, {"الإمساك", "المناسبة القادمة"}, {"السحور", "المناسبة القادمة"},
+        {"اليوم الوطني", "المناسبات الوطنية"}, {"يوم التأسيس", "المناسبات الوطنية"},
+        {"الأسهم", "الأسواق"}, {"تاسي", "الأسواق"}, {"tasi", "الأسواق"}, {"البورصة", "الأسواق"}, {"سوق", "الأسواق"}, {"عملات", "الأسواق"}, {"دولار", "الأسواق"},
+        {"سكرين سيفر", "بدء شاشة التوقف بعد"}, {"سكرين سيفر", "تصميم شاشة التوقف"}, {"screensaver", "بدء شاشة التوقف بعد"}, {"screensaver", "تصميم شاشة التوقف"},
+        {"ثيم", "أشكال جاهزة"}, {"theme", "أشكال جاهزة"}, {"ستايل", "أشكال جاهزة"}, {"ثيم", "وضع الألوان"},
+        {"حرارة", "التحية والطقس"}, {"قرآن", "الآية والحديث"}, {"قفل", "الرقابة الأبوية"}, {"رقم سري", "الرقابة الأبوية"},
+        {"سطوع", "تعتيم الليل"}, {"ساعة كبيرة", "حجم الساعة"},
         {"حذف الصور", "صوري"}, {"حذف صوره", "صوري"}, {"صوري", "صوري"},
         {"المخفيه", "ترتيب كل التطبيقات"}, {"اظهار التطبيقات المخفيه", "ترتيب كل التطبيقات"}, {"التطبيقات المخفيه", "ترتيب كل التطبيقات"}, {"تعديل التطبيقات", "ترتيب كل التطبيقات"},
     };
@@ -312,13 +321,34 @@ final class SettingsHub {
             else if (name.contains(q)) holds.add(hit);
             else {
                 boolean al = false;
-                for (String[] a : ALIASES) if (fold(a[0]).startsWith(q) && fold(a[1]).equals(name)) { al = true; break; }
+                for (String[] a : ALIASES) if (aliasHit(a[0], q) && fold(a[1]).equals(name)) { al = true; break; }
                 if (al) alias.add(hit);
                 else if (fold(name(r[1])).contains(q)) sect.add(hit);
             }
         }
         out.addAll(starts); out.addAll(holds); out.addAll(alias); out.addAll(sect);
         return out;
+    }
+
+    /** a word without its «ال» (العيد = عيد), when something is left */
+    static String bare(String w) { return w.startsWith("ال") && w.length() > 3 ? w.substring(2) : w; }
+
+    /**
+     * An alias answers a typed question when it starts with the whole of it (as before), or when a word of the question (three letters or more, with or
+     * without «ال») is one of its words; the last word may be half typed. «كم باقي على رمضان», «عيد» and «الإفطار» find «المناسبة القادمة», while
+     * «تاسي» does not find «يوم التأسيس» (a word inside a question must be whole).
+     */
+    static boolean aliasHit(String alias, String q) {
+        String a = fold(alias);
+        if (a.startsWith(q)) return true;
+        String[] ts = q.split("\\s+"), ws = a.split("\\s+");
+        for (int i = 0; i < ts.length; i++) {
+            String t = bare(ts[i]);
+            if (t.length() < 3) continue;
+            boolean last = i == ts.length - 1 && ts.length > 1;
+            for (String w : ws) if (last ? bare(w).startsWith(t) : bare(w).equals(t)) return true;
+        }
+        return false;
     }
 
     /** The category of a row (its FocusKey.key); one not named goes with its group's ({@code group}, a header's category), else «شاشة التوقف». */

@@ -420,7 +420,7 @@ public class SettingsActivity extends Activity {
         row("نص أوضح", prefs.clearText() ? "مفعّل الكلام الرمادي بلون النص الكامل" : "متوقف", R.drawable.ic_eye,
             new Runnable() { public void run() { prefs.setClearText(!prefs.clearText()); render(); } });
         // shown by default as always; OK hides it (and shows it again)
-        row("المناسبة القادمة", prefs.occasion() ? "ظاهرة، أسفل الشاشة في الوسط: كم باقي على رمضان والأعياد، والإفطار والإمساك في رمضان" : "مخفية", R.drawable.ic_eye,
+        row("المناسبة القادمة", prefs.occasion() ? "ظاهرة، أسفل الشاشة في الوسط: كم باقي على رمضان والأعياد، والإفطار والإمساك في رمضان" : "مخفية، كم باقي على رمضان والأعياد", R.drawable.ic_eye,
             new Runnable() { public void run() { prefs.setOccasion(!prefs.occasion()); render(); } });
         row("تعتيم الليل", prefs.nightDim() ? "يعمل، تغمق الشاشة من ٩ مساءً، وأغمق من ١١ إلى ٥ الفجر، وترجع ٧ الصباح" : "متوقف، نفس الإضاءة طول الليل", R.drawable.ic_eye,
             new Runnable() { public void run() { prefs.setNightDim(!prefs.nightDim()); render(); } });

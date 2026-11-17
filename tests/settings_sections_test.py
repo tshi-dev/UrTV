@@ -25,7 +25,8 @@ hub = (APP / "SettingsHub.java").read_text(encoding="utf-8")
 if not shutil.which("javac"):
     print("SKIP settings sections: no javac here")
     sys.exit(0)
-QUERIES = ["مدينه", "صوت", "جوال", "هجري", "لون", "اسواق", "الأذان", "ثواني", "نوم", "zzzz", "", "الاذان", "pin"]
+QUERIES = ["مدينه", "صوت", "جوال", "هجري", "لون", "اسواق", "الأذان", "ثواني", "نوم", "zzzz", "", "الاذان", "pin",
+           "رمضان", "كم باقي على رمضان", "العيد", "عيد", "العد التنازلي", "الإفطار", "الافطار", "الأسهم", "سكرين سيفر", "screensaver", "تاسي", "ثيم", "على"]
 with tempfile.TemporaryDirectory() as tmp:
     subprocess.run(["javac", "-encoding", "UTF-8", "-d", tmp, str(APP / "SettingsHub.java"), str(APP / "FocusKey.java"), str(ROOT / "tests/SettingsSearchRun.java")],
                    check=True, capture_output=True)
@@ -71,6 +72,18 @@ check("search: letters are folded (الاذان = الأذان, اسواق finds
       and search["zzzz"] == [] and search[""] == [])
 check("search: never answers with the search's own row, and «مدينة» finds the one city row", all(r[0] != "بحث في الإعدادات" for v in search.values() for r in v)
       and search["مدينه"][0] == ["المدينة", "place"] and all(r[0] != "تغيير المدينة" for r in search["مدينه"]))
+occ = ["المناسبة القادمة", "saver"]
+check("4.5 (a user: «can I remove the Ramadan countdown?»): «المناسبة القادمة» is found by رمضان, a whole question, العيد or عيد, العد التنازلي and الإفطار with or without its hamza",
+      all(occ in search[q] for q in ("رمضان", "كم باقي على رمضان", "العيد", "عيد", "العد التنازلي", "الإفطار", "الافطار")), {q: search[q][:3] for q in ("رمضان", "عيد", "الإفطار")})
+check("4.5 the other names people use: الأسهم and تاسي find «الأسواق», سكرين سيفر and screensaver find the screensaver's rows (تاسي not «يوم التأسيس»), ثيم finds «أشكال جاهزة»; a short word (على) finds no alias",
+      ["الأسواق", "content"] in search["الأسهم"] and ["الأسواق", "content"] in search["تاسي"] and ["بدء شاشة التوقف بعد", "saver"] in search["سكرين سيفر"]
+      and ["تصميم شاشة التوقف", "look"] in search["screensaver"] and all(r[0] != "المناسبات الوطنية" for r in search["تاسي"]) and any(r[0] == "أشكال جاهزة" for r in search["ثيم"]) and search["على"] == [],
+      {q: search[q][:3] for q in ("الأسهم", "سكرين سيفر", "ثيم", "على")})
+names = {n for n, _, _ in rows}
+targets = re.findall(r'\{"[^"]+", "([^"]+)"\}', hub[hub.index("ALIASES = {"):hub.index("};", hub.index("ALIASES = {"))])
+check("every alias answers with a row that exists (a renamed row would leave its alias finding nothing)", targets and all(t in names for t in targets), sorted(set(t for t in targets if t not in names)))
+check("the row says what it is even while hidden: «مخفية، كم باقي على رمضان والأعياد», with its English line", '"مخفية، كم باقي على رمضان والأعياد"' in st
+      and "مخفية، كم باقي على رمضان والأعياد\tHidden, days to Ramadan and Eid" in (ROOT / "i18n/en/saver.tsv").read_text(encoding="utf-8"))
 check("the old section keys land in their new section (a stored or passed one keeps working); a current key stays; an unknown one is nothing",
       canon.get("cards") == "saver" and canon.get("more") == "content" and canon.get("clock") == "lang" and canon.get("listen") == "pray" and canon.get("home") == "apps"
       and canon.get("shows") == "content" and canon.get("phone") == "family" and canon.get("parental") == "family" and canon.get("control") == "buttons"
