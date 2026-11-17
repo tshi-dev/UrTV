@@ -2503,8 +2503,9 @@ public class SettingsActivity extends Activity {
         last.setOnFocusChangeListener((v, has) -> {
             if (was != null) was.onFocusChange(v, has);
             if (!has) return;
-            for (android.view.ViewParent p = list.getParent(); p != null; p = p.getParent())   // list sits in a frame in the scroll view
-                if (p instanceof ScrollView) { final ScrollView sv = (ScrollView) p; v.post(() -> sv.fullScroll(View.FOCUS_DOWN)); break; }
+            // 4.3.4: the note in view, the focus left where it is. fullScroll(FOCUS_DOWN) also moves the focus to the lowest row: since 4.3.3 put
+            // «النسخ التجريبية» under this row, a step down onto it jumped straight past it
+            v.post(() -> t.requestRectangleOnScreen(new android.graphics.Rect(0, 0, t.getWidth(), t.getHeight())));
         });
     }
 
