@@ -127,7 +127,74 @@ take ideas only, never code.
 
 ### 2.2 Measured on the emulator
 
-MEASURED
+Android TV emulator, API 30, 1920×1080, software GPU (swiftshader), animations on. The CI run, the script and the frame reader are
+`.github/workflows/ui-measure.yml`, `.github/ui/measure.sh` and `.github/ui/frames.py`. Each case is a `screenrecord`, read frame by frame:
+- **first** is the first changed frame after the change, and **settled** is the last one;
+- **frames** is how many different pictures the person saw in between;
+- **blank** counts frames with almost no picture or a large dark drop;
+- the focus is read with `uiautomator`;
+- the activity events are from logcat's event log.
+
+The emulator draws in software, so its milliseconds are slower than a TV's. The *shape* is what counts: how many in-between pictures there are,
+the blank frames, and what is read when. The run-2 data (sheets, logs, report) is on the branch `data-ui-measure`.
+
+**A. The settings, then Back (the person's own path)**
+
+| Case | first | settled | frames | blank | janky frames (gfxinfo) |
+|---|---|---|---|---|---|
+| «منظر وساعة» chosen, Back | 0.21 s | 1.30 s | 4 | 0 (one at mean 20: a dark dip) | 10 of 10, 90th pct 550 ms |
+| «شكلك المعتاد» chosen, Back | 0.07 s | 0.07 s | 1 | 0 | 12 of 12 (couch-tv's list needed a 2nd Back) |
+| «شكل التطبيقات» → بنرات, Back | 0.19 s | **3.75 s** | **17** | 1 | 44 of 44, 29 slow UI thread |
+| «شكل التطبيقات» → مربعات, Back | 0.20 s | **3.48 s** | **15** | 1 | 43 of 43, 21 slow UI thread |
+
+The «منظر وساعة» case, frame by frame ([sheet](img/measure-20-back-after-couch.jpg)):
+- **+0.21 s:** the *old* look comes back first (the desert photo, the big tiles).
+- **+0.51 s:** the screen dips dark.
+- then the new scene with the icons appears.
+- **+1.3 s:** the cards pop in, and the row moves down.
+
+The apps' way case ([sheet](img/measure-22-back-after-apps-banners.jpg)):
+- the old row comes first (5 big tiles), then the rebuilt row (6 tiles);
+- a new photo crossfades in;
+- **+1.3 s:** one frame is all dark except the city notice;
+- **+1.5 s to +3.3 s:** a **black rectangle where the cards' WebView is being made again**;
+- **+3.6 s:** the cards finally show.
+
+![Back after «شكل التطبيقات»: 17 pictures over 3.7 s, a blank frame and a black card box for 1.8 s](img/measure-22-back-after-apps-banners.jpg)
+
+**B. The home in front, the change from outside (the phone page, `saver.sh`, `dock.sh`)**
+
+| Case | first change | frames | note |
+|---|---|---|---|
+| «شكلك المعتاد» → «منظر وساعة» | 10.0 s | 2 | **only the focus moved: from the apps row to the top button**. The look itself did not come in the 100 s recorded ([sheet](img/measure-01-preset-tv-to-couch.jpg)) |
+| «منظر وساعة» → «شكلك المعتاد» | 4.0 s | **14** | over 2.7 s: the row first, then the background climbs from almost black (mean 23 → 58) ([sheet](img/measure-02-preset-couch-to-tv.jpg)) |
+| photos → «الآفاق» | 49.1 s | 2 | a cut, no fade |
+| «الآفاق» → photos | 35.0 s | **16** | 2.9 s, through the plain colour |
+| apps' way (3 cases) | 6.7 s, 21.0 s, 51.7 s | 2 each | |
+| clock plain ↔ glass | 37.6 s, 23.4 s | 1 each | a cut; the date jumps |
+| layout classic ↔ football | none in 70 s | | |
+
+The change arrives at the home's **minute tick**: from 4 s to 52 s later, and in one case not within 100 s.
+
+**C. Cold start after a look change**
+
+| Case | first | settled | frames | blank |
+|---|---|---|---|---|
+| after «منظر وساعة» | 0.72 s | 2.05 s | 4 | **4** |
+| after «شكلك المعتاد» | 0.0 s | 1.53 s | 6 | **3** |
+
+There is a fully black frame (mean 2) before the stand-in picture. The stand-in is dimmed, and it stays 2.6 s ("snapshot overlay: gone after 2612 ms")
+([sheet](img/measure-40-cold-after-couch.jpg)).
+
+**D. Inside the settings, changed from outside**
+
+The settings screen did not change at all in 10 s: the rows keep the old value until they are drawn again.
+
+**Focus.** In the Back cases the focus came back to the top button, not to the row that opened the settings. In case B1 the focus left the apps row.
+
+**The settings themselves change form** ([today's two forms](img/today-settings-00-classic-hub.jpg)). Under «شكلك المعتاد» the settings open as
+the classic hub (big tiles, «تلفزيونك»). Under «منظر وساعة» they open as couch-tv's side list, and choosing between the two restarts the screen.
+Under couch-tv's list, the first Back steps out of a section, and the second leaves.
 
 ### 2.3 The steps for the person
 
@@ -153,4 +220,22 @@ TVs' quick settings don't).
 
 ## 3. The problems, ranked
 
-RANKED
+Ranked by how much the person feels it × how often, then by the cost to fix. Each item names its evidence.
+
+| # | Problem | Felt as | Evidence | Fix direction (phase 2) |
+|---|---|---|---|---|
+| 1 | **The switch is assembled in front of the person:** after Back the old look shows first, then the pieces change one by one (row, photo, cards) over 1.3–3.7 s and 4–17 pictures | "it flickers and builds itself" | A: 20, 22, 23; B: 02, 04 | apply everything while the settings still cover the home, then reveal it in one crossfade from a snapshot |
+| 2 | **The cards' WebView is destroyed and made again** for a layout, card, look or light change: a black box for ~1.8 s | a black hole on the home | A: 22 (+1.5 → +3.3 s); `HomeCard.applyUrl` | keep the old page until the new one has drawn (`onPageCommitVisible`), or restyle in place (no new URL for look or light) |
+| 3 | **The person chooses blind:** no live preview for the background, clock or apps' way. The presets show a fixed JPEG, and the result is seen only after leaving the settings | "I have to go out and back to see it" | 2.3; `pickOne` | the look choices on a panel over the live home: focus previews, OK keeps, Back reverts |
+| 4 | **A change from outside waits for the minute tick** (4–52 s, once >100 s), and moves focus | the phone says "done" and the TV doesn't change | B | tell the home at once (a protected broadcast) and read fresh, not the 3 s copy |
+| 5 | **Dark dips and blank frames:** photos ↔ «الآفاق» passes through the plain colour; a cold start shows a black frame and a dim stand-in for 2.6 s | flashes | A: 20 (+0.51 s), B: 02/04, C | crossfade old → new with both decoded; the stand-in at full brightness and keyed by the whole look |
+| 6 | **Two settings forms**, switching with the look, and the screen restarts when «منظر وساعة» is chosen | "where did my settings go?" | 2.1, D | one form, couch-tv's compact rows, for every look |
+| 7 | **The apps row is rebuilt from scratch** for a new way: 29 slow UI-thread frames, focus at risk | jank | A: 22/23 gfxinfo; `buildApps` | change the cells' style in place; keep focus by the app's key |
+| 8 | **Focus after a switch:** back on the top button, not on the row the person left; lost from the apps row in B1 | lost place | focus columns | restore by key (the app, the row), Apple's and Couch TV's rule |
+| 9 | **No undo** but «شكلك المعتاد» (only the values from before the *first* preset) | fear of trying | 2.3 | «رجّع الشكل السابق»: one row, the last look by name |
+| 10 | **A preset is 15–20 separate writes**, and the home can read it half done | an in-between look | `Prefs.setPreset` | one `SharedPreferences.Editor`, one `apply()` |
+| 11 | **The preset picture is decoded on the UI thread** at each focus move | a stutter in the picker | `setAssetPicture` | decode once, off thread, cached |
+| 12 | **The settings don't follow a change made elsewhere** while open | stale values | D | re-render on the same broadcast |
+
+The clock: within one layout, it is in the same place on photos and on «الآفاق» (top right on «شكلك المعتاد») in every recording. That is the
+owner's rule, and the proposal keeps it.
