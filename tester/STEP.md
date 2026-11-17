@@ -1,3 +1,13 @@
+«🔴 URGENT FIRST (owner, 17 Nov evening): a user says since 4.3.3 «the remote freezes/lags on TCL». Do step 98 BEFORE anything else.»
+
+## step 98 — reproduce «remote freezes on TCL» with 4.3.3 (build 460, apk-latest)
+1. Back up as always. Install 4.3.3 home and screensaver from apk-latest (uninstall first if 4.4 is higher), run «جهّز كل شي», and leave the add-on off (4.3.3 has none).
+2. Use the remote as a family would for 10 minutes: move along the favourites, open and close apps, open settings, go back home, open the screensaver and wake it, and use the volume. Record key latency: `adb shell getevent -lt` together with `logcat -b main -v threadtime` and `dumpsys gfxinfo sa.urtv.home framestats`. Note any freeze >300 ms: when, which screen, which key.
+3. Collect: `dumpsys activity anr`, `/data/anr` traces, `logcat -b crash`, `top -n 1 -m 10` (CPU while idle on home), and `dumpsys cpuinfo`.
+4. Do the same 5-minute run on 4.3.2 (the v4.3.332 release assets) to compare.
+5. Report «step 98: freeze YES/NO on 4.3.3 vs 4.3.2», with the numbers and the suspect (which process or thread is busy). No Wi-Fi names or MACs.
+6. Put the owner's 4.4 setup back afterwards.
+
 «PRIVACY RULE (owner): never push the Wi-Fi name (SSID), BSSID, MAC or IP addresses, account names or any other personal data to any branch. In system lists write only «Wi-Fi: connected». The step 93 files were redacted in a later commit.»
 
 «▶ NOW (owner, 2026-11-17): step 91 PASSED, thank you. The owner said GO on putting the rescue app into 4.3.3. Player beta17 READY (step 95 can run now, at any pause). STEP 93 BUILD READY (FINAL 4.3.3, use this one): GitHub Actions run 44102716233 on cd3a4a0f, which adds the screensaver bottom-strip fix; the older run 44087243860 is superseded (work/rel-433-3, 4.3.3 with the rescue app), artifact «apks» — check it contains urtv-rescue.apk. 4.3.3 IS LIVE on apk-latest (build 460, 16:21 UTC 17 Nov); urtv-rescue.apk answers 200. DO STEP 97 NOW (Downloader code 8042301), then step 96. Next is step 93: check the rescue app on a TV set up by 4.3.3, as soon as the release session gives a 4.3.3 build that has urtv-rescue.apk (its run ID will be added here). Then step 90 (the Downloader code) once 4.3.3 is on apk-latest with urtv-rescue.apk. Then step 92. Step 89 stays ON HOLD. TV muted.»
