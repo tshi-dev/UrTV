@@ -212,6 +212,12 @@ public class MainActivity extends Activity {
     @Override
     protected void onCreate(Bundle b) {
         super.onCreate(b);
+        if (CrashLoopStore.safe(this)) {   // 4.3.5 (R7): the home died twice right after starting: the safe page, never a black screen
+            safeRedirect = true;
+            openSafePage();
+            finish();
+            return;
+        }
         if (DebugFlags.on(this, "keytrace")) KeyTrace.install();
         dbgFocus = DebugFlags.focusMask(this);   // a tester's switches for the tile's focus animation (dock.sh debug plainfocus ...)
         FamilyDnsAndroid.status(this);   // first use in this process: undoes a Family DNS check that a crash cut short
@@ -495,6 +501,7 @@ public class MainActivity extends Activity {
 
     @Override
     protected void onDestroy() {
+        if (safeRedirect) { super.onDestroy(); return; }   // nothing of the screen was made (CrashLoop)
         unregisterReceiver(packages);
         KeyTrace.release();
         unregisterReceiver(dockChanged);
@@ -508,6 +515,13 @@ public class MainActivity extends Activity {
         clockReads.shutdownNow();
         homeCard.destroy();
         super.onDestroy();
+    }
+
+    private boolean safeRedirect;   // 4.3.5: this instance only opened SafeActivity and finished
+
+    /** 4.3.5 (R7): never behind the family lock: a home that keeps dying cannot ask for the PIN, and the page only offers the TV's own home */
+    private void openSafePage() {
+        launch(new Intent(this, SafeActivity.class));
     }
 
     @Override

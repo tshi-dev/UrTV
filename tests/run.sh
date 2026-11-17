@@ -259,6 +259,7 @@ python3 tests/qa_434_test.py   # 4.3.4: the release gate's findings: the first c
 python3 tests/beta_newest_test.py   # 4.3.4: «النسخ التجريبية» takes the newer of apk-beta and apk-latest (a beta user got no update again)
 python3 tests/beta_confirm_test.py   # 4.3.4: a beta build asks «نسخة تجريبية» on the TV before anything is downloaded
 python3 tests/webview_guard_test.py   # 4.3.5: no WebView on the TV: the home draws without its card, never a crash at start (a CVTE Android 9 black screen)
+python3 tests/crash_loop_test.py   # 4.3.5 (R7): two crashes right after start open SafeActivity (the TV's own home one press away), never a black screen
 node tests/i18n_page_test.mjs   # dist/tv-en.html in a browser: left to right, no Arabic in its own words on any card
 #
 # English phase 3 (the home app): its new tests go right under this line
