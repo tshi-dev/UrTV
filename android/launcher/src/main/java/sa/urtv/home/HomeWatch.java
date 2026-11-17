@@ -11,7 +11,7 @@ import java.util.Set;
  * keeps coming back (three times within 20 s: five minutes off, the stock home stays). No Android in here (tests/HomeWatchRun.java runs it).
  */
 final class HomeWatch {
-    static final long WINDOW_MS = 15_000, PAUSE_MS = 5 * 60_000, FIGHT_MS = 2_000;   // tester-exp (step 88 R2d)
+    static final long WINDOW_MS = 15_000, PAUSE_MS = 30_000, FIGHT_MS = 2_000;   // tester-exp (step 88 R2d)
     static final int MAX_BRINGS = 6;
 
     private final long[] brings = new long[MAX_BRINGS];
@@ -32,8 +32,8 @@ final class HomeWatch {
     boolean decide(boolean on, String pkg, String cls, Set<String> stockHomes, boolean oursChosen, long now, boolean fight) {
         if (!on || !oursChosen || pkg == null || cls == null || stockHomes == null) return false;
         if (!homeScreen(pkg, cls, stockHomes)) return false;
+        if (!fight) { lastBring = now; return true; }   // tester-exp (R2e): a Home press over another app is always honoured, even in a pause
         if (now < pausedUntil) return false;
-        if (!fight) { lastBring = now; return true; }
         // tester-exp (step 88 R2d): over ours, only a FAST return (within FIGHT_MS of our last bring) is the firmware fighting back; later it is
         // the person pressing Home on our home: brought, not counted
         if (lastBring == 0 || now - lastBring > FIGHT_MS) { lastBring = now; return true; }
