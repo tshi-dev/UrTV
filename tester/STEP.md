@@ -4,6 +4,28 @@
 
 
 
+## step 96 — 4.4 on apk-next (next = cd94e6d6, Build APKs run 44114006909), AFTER step 93
+This is the first full 4.4 build with everything merged:
+- presets, «منظر وساعة» settings, the compact setup + setup speed;
+- the HOME_KEY catch;
+- cards batch 3 + card-fit swap note, sports2 (cups, F1, scorers), audio3, the games, the sweeps (no «·», no pills);
+- the bottom-strip fix, the school-breaks countdown, «مصادر البيانات», «شكل التطبيقات» A/B/C.
+1. Back up the owner's settings, then install apk-next's home + screensaver + extras over the 4.3.3 left from step 93. If it's lower, uninstall and reinstall as before.
+2. «جهّز كل شي» once and time it (setup speed); then Home ×5 from YouTube.
+3. Walk the new parts with the remote and take a picture of each:
+   - the presets tile («تركيبات مقترحة») and each preset;
+   - «منظر وساعة» settings;
+   - «شكل التطبيقات» A, B and C;
+   - a card that doesn't suit «منظر وساعة»: the swap note appears, and the original card comes back after switching the look back;
+   - «العدّ التنازلي» → «إجازات المدارس» (shows إجازة الخريف, Friday 20 Nov);
+   - «مصادر البيانات»;
+   - a match card with scorers;
+   - the F1 card if shown;
+   - the Riyadh style clock.
+4. A full-size 1:1 screenshot of the home clock (`optimize/shot.sh`): is the big clock sharp, with no pixelation (the 4.4 clock fix)?
+5. Look for any «·» or «•», any capsule/pill, any text cut or overlapping (like the prayer name and time).
+6. Report «step 96» with a PASS/FAIL list and the pictures, then put the owner's settings back. TV muted.
+
 ## step 95 — UrTV Player beta channel (in-app update and the assessment), at any pause
 1. Back up the Player's settings: its own backup/export, or write down the playlist/source names only, never URLs or logins in the report.
 2. Install `urtv-player-0.9.16-beta16.apk` from https://github.com/tshi-dev/UrTV-Player/releases/tag/v0.9.16-beta16 over the installed Player. It is signed the same, so it updates in place; check that the data is kept.
