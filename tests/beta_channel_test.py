@@ -55,6 +55,8 @@ check("baseFor: beta is apk-beta, next is apk-next, anything else apk-latest", '
 check("the home asks the provider for beta too, an unknown word is the latest", '"next".equals(v) || "beta".equals(v)' in chan and 'return "latest"' in chan)
 check("the checks are untouched: no downgrade, same signature", "isNewer(newest, installed)" in text(HOME + "UpdateFlow.java") and "verify(c, pkg, f)" in pu)
 
+check("the engine passes the beta flag, so no apk-beta release says «uptodate» (not «cannot update»)", 'versionRead(ver.reached, ver.code, newest, "beta".equals(channel))' in pu and 'if (v.result == UpdateFlow.Result.UP_TO_DATE) { set("uptodate", "", ""); return; }' in pu)
+
 # the workflow
 wf = text(".github/workflows/promote-beta.yml")
 check("promote-beta is by hand only, with the build as input", re.search(r"^on:\n  workflow_dispatch:\n    inputs:\n      build:", wf, re.M) is not None and "push:" not in wf and "schedule:" not in wf and "workflow_run" not in wf)
@@ -62,7 +64,7 @@ check("it copies apk-next's files as they are (no build, no signing step)", "gh 
 check("it refuses when apk-next holds another build than the one asked for", "apk-next holds build" in wf and "exit 1" in wf)
 check("it publishes the two APKs and version.txt to apk-beta, version.txt last", "urtv-screensaver.apk" in wf and "urtv-home.apk" in wf and wf.rindex("next/version.txt") > wf.rindex("next/urtv-home.apk") and "apk-beta" in wf)
 check("the apk-beta release is a pre-release and never the repository's latest", "--prerelease" in wf and "--latest=false" in wf)
-check("nothing else promotes: no other workflow writes apk-beta", all("apk-beta" not in p.read_text(encoding="utf-8") for p in (ROOT / ".github/workflows").glob("*.yml") if p.name != "promote-beta.yml"))
+check("nothing else promotes: no other workflow writes apk-beta", not any(re.search(r"tag_name:\s*apk-beta|release\s+(edit|create|upload|delete)\s+apk-beta|--tag\s+apk-beta", p.read_text(encoding="utf-8")) for p in (ROOT / ".github/workflows").glob("*.yml") if p.name != "promote-beta.yml"))
 if shutil.which("python3"):
     try:
         import yaml

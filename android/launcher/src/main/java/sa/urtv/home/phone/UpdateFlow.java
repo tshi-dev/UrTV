@@ -53,6 +53,15 @@ public final class UpdateFlow {
         return of(Result.CONTINUE);
     }
 
+    /**
+     * The same for a release that may not exist yet (the apk-beta release, «النسخ التجريبية»): the server answering 404 means nobody promoted a beta build, so
+     * there is nothing newer, the same as «لا يوجد أحدث» on the latest channel, never «cannot update here». Any other answer is judged as for the latest.
+     */
+    public static Verdict versionRead(boolean reached, int httpCode, int newest, boolean mayBeMissing) {
+        if (reached && mayBeMissing && httpCode == 404) return of(Result.UP_TO_DATE);
+        return versionRead(reached, httpCode, newest);
+    }
+
     /** From the phone page's «افحص التحديث» only version.txt is read: CONTINUE then stops at FOUND (nothing downloaded until «ثبّت»). */
     public static Verdict plan(Verdict first, boolean downloadNow) {
         if (first.result == Result.CONTINUE && !downloadNow) return of(Result.FOUND);
