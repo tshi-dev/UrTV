@@ -2363,6 +2363,9 @@ public class MainActivity extends Activity {
 
     /** The settings' «ترتيب كل التطبيقات» asks the home screen for the mode, or for the order by name again, with these extras. */
     static final String EXTRA_EDIT_APPS = "edit_apps", EXTRA_RESET_APPS = "reset_apps_order";
+    /** 4.3.4, with edit_apps: the settings' «التطبيقات المخفية»: the mode opens on «المخفية» with its list (people found no way back to a hidden app) */
+    static final String EXTRA_APPS_HIDDEN = "apps_hidden";
+    private boolean wantHiddenList;       // asked for with EXTRA_APPS_HIDDEN, waiting for the mode
 
     private AppsEdit appsEdit;            // null: the mode is off
     private boolean wantAppsEdit;         // asked for from the settings, waiting for the whole grid to be on screen
@@ -2389,6 +2392,10 @@ public class MainActivity extends Activity {
         }
         if (!i.getBooleanExtra(EXTRA_EDIT_APPS, false)) return false;
         wantAppsEdit = true;
+        wantHiddenList = i.getBooleanExtra(EXTRA_APPS_HIDDEN, false);
+        // 4.3.4: an app changed while the settings were in front: onResume (after this) would build the grid again and end the mode at once,
+        // so the grid is built now and the mode starts when it is done
+        if (appsStale) { appsStale = false; buildApps(); }
         beginPendingAppsEdit();
         return true;
     }
@@ -2419,11 +2426,17 @@ public class MainActivity extends Activity {
         List<String> order = gridPackages();
         hiddenFound.clear();
         for (ResolveInfo ri : Dock.hiddenApps(this)) hiddenFound.put(ri.activityInfo.packageName, ri);
+        boolean toHidden = wantHiddenList;
+        wantHiddenList = false;
+        if (toHidden && hiddenFound.isEmpty()) {
+            Toast.makeText(this, S.t("ما فيه تطبيقات مخفية"), Toast.LENGTH_SHORT).show();
+            return;
+        }
         if (order.isEmpty() && hiddenFound.isEmpty()) {
             Toast.makeText(this, S.t("كل تطبيقاتك في المفضلة"), Toast.LENGTH_SHORT).show();
             return;
         }
-        int focus = pkg != null ? order.indexOf(pkg) : -1;
+        int focus = toHidden ? order.size() : pkg != null ? order.indexOf(pkg) : -1;   // order.size(): «المخفية» (AppsEdit)
         if (focus < 0) {
             View f = getCurrentFocus();
             for (int i = 0; i < gridCards.size(); i++) if (gridCards.get(i) == f) focus = i;
@@ -2433,6 +2446,7 @@ public class MainActivity extends Activity {
         paintEditChrome();
         editHint.setVisibility(View.VISIBLE);
         paintAppsEdit();
+        if (toHidden) grid.post(() -> { if (appsEdit != null && appsEdit.onHiddenList() && hiddenCard != null) showHiddenList(); });   // its list at once, once laid out
     }
 
     /** Back: the order, what was hidden or shown and the favourites are kept (Dock.saveApps, one broadcast that builds the screen again). */
@@ -2744,7 +2758,7 @@ public class MainActivity extends Activity {
                 if (inDock && dock.size() <= MIN_DOCK) { toast(S.t("المفضلة لا تقل عن %s", arabicDigits(String.valueOf(MIN_DOCK)))); return; }
                 if (inDock) { dock.remove(pkg); saveDock(dock, dock.isEmpty() ? null : dock.get(Math.max(0, i - 1))); }
                 Dock.hideOrShow(this, Collections.singletonList(pkg), true);   // back from «تعديل التطبيقات» ← «المخفية»
-                toast(S.t("أُخفي، ويرجع من «تعديل التطبيقات»"));
+                toast(S.t("أُخفي، ويرجع من الإعدادات: «التطبيقات المخفية»"));   // 4.3.4: the old line named a button the menu does not have
             };
         }
         ParentalPolicy.State family = Parental.state(this);
@@ -3922,7 +3936,10 @@ public class MainActivity extends Activity {
      */
     private void openOurSettings(boolean orTvSettings, String window) {
         Intent hub = new Intent(Intent.ACTION_MAIN).setComponent(new ComponentName(SAVER_PKG, SAVER_PKG + ".YourTvHubActivity"));
-        if (window != null) hub.putExtra("open", window);
+        if (window != null) {   // 4.3.4: a fresh «تلفزيونك»: a screensaver task left open (its settings, its preview) came back as it was, and the games never opened
+            hub.putExtra("open", window);
+            hub.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        }
         Intent i = getPackageManager().resolveActivity(hub, 0) != null ? hub
                 : new Intent(Intent.ACTION_MAIN).setComponent(new ComponentName(SAVER_PKG, SAVER_PKG + ".SettingsActivity"));
         if (getPackageManager().resolveActivity(i, 0) != null) {
