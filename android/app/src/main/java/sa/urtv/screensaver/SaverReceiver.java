@@ -135,7 +135,10 @@ public class SaverReceiver extends BroadcastReceiver {
     }
 
     /** The one place a setting is checked and saved: the ADB receiver and the launcher's phone control (ConfigProvider.call) both come here. */
-    static String set(Context c, Prefs p, Intent i) {
+    static String set(Context c, Prefs p, Intent i) { return set(c, p, i, false); }
+
+    /** dryRun (4.5 «نسخة الإعدادات»' check): every check below, and «checked» instead of saving anything */
+    static String set(Context c, Prefs p, Intent i, boolean dryRun) {
         // check everything first, then save: a typo never leaves half the settings changed
         String[] city = null;
         String name = i.getStringExtra("city"), lat = i.getStringExtra("lat"), lon = i.getStringExtra("lon");
@@ -467,6 +470,8 @@ public class SaverReceiver extends BroadcastReceiver {
             if (leagues.size() > Prefs.MAX_LEAGUES) return "error: at most " + Prefs.MAX_LEAGUES + " leagues";
         }
 
+        if (dryRun) return "checked";   // 4.5: everything was checked; nothing is saved
+
         if (idle != null) {   // first: a refusal here leaves everything else unsaved
             try {
                 if (!Settings.System.putInt(c.getContentResolver(), Settings.System.SCREEN_OFF_TIMEOUT, Integer.parseInt(idle) * 60000))
@@ -693,7 +698,7 @@ public class SaverReceiver extends BroadcastReceiver {
         return b.toString().trim();
     }
 
-    private static String describe(Context c, Prefs p) {
+    static String describe(Context c, Prefs p) {
         String[] city = p.city();
         String latest = p.latestVersion();   // what Updater last saw on the release of the current channel
         int newest = Versions.buildOf(latest);

@@ -94,8 +94,56 @@ public class ConfigProvider extends ContentProvider {
 
     static final String PHONE_PERMISSION = "sa.urtv.screensaver.PHONE_SETTINGS";
 
+    /**
+     * 4.5 «نسخة الإعدادات» (docs/BACKUP.md), only for PHONE_SETTINGS (signature: our home app): backup_export gives the file's "saver" part (SaverFile,
+     * the computer's schema-1 keys) as JSON in "json"; backup_check (arg: that JSON) checks all of it with SaverReceiver.set's own checks and saves
+     * nothing; backup_apply (arg: that JSON) checks again, keeps the current part in "before", applies it all, and puts "before" back if anything is
+     * refused. "ok" true or false, "error" the reason.
+     */
+    private Bundle backup(String method, String arg) {
+        Context c = getContext();
+        if (c.checkCallingPermission(PHONE_PERMISSION) != android.content.pm.PackageManager.PERMISSION_GRANTED) throw new SecurityException("our home only");
+        Prefs p = new Prefs(c);
+        Bundle out = new Bundle();
+        java.util.Map<String, Object> now = SaverFile.fromGet(SaverReceiver.describe(c, p));
+        if (method.equals("backup_export")) {
+            out.putBoolean("ok", now != null);
+            if (now != null) out.putString("json", SaverFile.json(now));
+            return out;
+        }
+        java.util.Map<String, String> ex;
+        try {
+            Object f = SaverFile.parseJson(arg == null ? "" : arg);
+            if (!(f instanceof java.util.Map)) throw new IllegalArgumentException("not a settings part");
+            @SuppressWarnings("unchecked") java.util.Map<String, Object> part = (java.util.Map<String, Object>) f;
+            ex = SaverFile.extras(part);
+        } catch (RuntimeException e) {
+            out.putBoolean("ok", false);
+            out.putString("error", "not a settings part");
+            return out;
+        }
+        String r = SaverReceiver.set(c, p, intentOf(ex), true);
+        if (!r.equals("checked")) { out.putBoolean("ok", false); out.putString("error", r.replaceFirst("^error: ", "")); return out; }
+        if (method.equals("backup_check")) { out.putBoolean("ok", true); return out; }
+        if (!method.equals("backup_apply")) { out.putBoolean("ok", false); out.putString("error", "unknown"); return out; }
+        if (now != null) out.putString("before", SaverFile.json(now));
+        r = SaverReceiver.set(c, p, intentOf(ex));
+        boolean ok = r.startsWith("saved");
+        if (!ok && now != null) SaverReceiver.set(c, p, intentOf(SaverFile.extras(now)));   // put the whole part back
+        out.putBoolean("ok", ok);
+        if (!ok) out.putString("error", r.replaceFirst("^error: ", ""));
+        return out;
+    }
+
+    private static android.content.Intent intentOf(java.util.Map<String, String> ex) {
+        android.content.Intent i = new android.content.Intent();
+        for (java.util.Map.Entry<String, String> e : ex.entrySet()) i.putExtra(e.getKey(), e.getValue());
+        return i;
+    }
+
     @Override
     public Bundle call(String method, String arg, Bundle extras) {
+        if (method != null && method.startsWith("backup_")) return backup(method, arg);   // 4.5 «نسخة الإعدادات» (docs/BACKUP.md): the same permission
         if (method == null || !method.startsWith("phone_")) return super.call(method, arg, extras);
         Context c = getContext();
         if (c.checkCallingPermission(PHONE_PERMISSION) != android.content.pm.PackageManager.PERMISSION_GRANTED)
