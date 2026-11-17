@@ -4,6 +4,13 @@
 
 The source is `poster-433.html`. To render it, put the IBM Plex Sans Arabic woff2 files (OFL, from `@fontsource/ibm-plex-sans-arabic`) in `a/` and screenshot the page at 2160×2700. The page names Thmanyah first, so a machine that has the app's private fonts renders it in Thmanyah; this PNG is in IBM Plex Sans Arabic because the fonts are not in this repository. The Downloader icon is cropped from the approved 4.3.1 poster.
 
+## The number (the owner: «the 4.3.3 in the middle needs fixing»)
+
+The first sheen ran across the number and washed the middle «.3» almost white. «4.3.3» now reads as one even gold, with even spacing (0.02em) and the soft glow behind it kept.
+
+- `urtv-4.3.3-a.png` (also `urtv-4.3.3.png`, source `poster-433.html`): an even gold with a faint sheen from the top, the same on every digit, at most light gold #EBCD8C.
+- `urtv-4.3.3-b.png` (source `poster-433-b.html`): a flat gold #E2BC6E with a soft outer glow only.
+
 ## Headline (two options)
 
 1. «نسخة تجريبية؟ شغّلها من تلفزيونك» (on the poster)

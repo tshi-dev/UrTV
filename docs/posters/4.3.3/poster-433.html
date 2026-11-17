@@ -28,9 +28,10 @@ body{direction:rtl;color:var(--ink);font-family:'Thmanyah','P',sans-serif;positi
 .brand span{display:block;font-size:40px;letter-spacing:.32em;color:var(--gold);direction:ltr;text-align:right;margin-top:12px}
 .hero{position:absolute;top:310px;left:0;right:0;text-align:center}
 .kick{font-size:56px;font-weight:600;color:var(--gold)}
-.ver{position:relative;display:inline-block;direction:ltr;font-size:420px;font-weight:700;line-height:1;letter-spacing:-6px;margin-top:0;
+.ver{position:relative;display:inline-block;direction:ltr;font-size:420px;font-weight:700;line-height:1;letter-spacing:.02em;margin-top:0;
   color:transparent;-webkit-background-clip:text;background-clip:text;
-  background-image:linear-gradient(112deg,#B9883E 0%,#E9C77F 30%,#FFF4D6 44%,#FFFDF5 47%,#F3D79B 52%,#E9C77F 66%,#B9883E 100%);
+  /* 4.3.3 as one even gold: a faint sheen from the top (light gold #EBCD8C at most), the same on every digit, no digit white */
+  background-image:linear-gradient(180deg,#EBCD8C 8%,#E2BC6E 46%,#CFA457 92%);
   filter:drop-shadow(0 18px 60px rgba(233,199,127,.28))}
 .glow{position:absolute;left:50%;top:520px;width:1500px;height:420px;transform:translateX(-50%);
   background:radial-gradient(closest-side,rgba(233,199,127,.20),rgba(233,199,127,0));pointer-events:none}
