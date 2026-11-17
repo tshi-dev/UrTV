@@ -55,8 +55,18 @@ public class AdhanReceiver extends BroadcastReceiver {
             boolean saver = AdhanPlan.startSaver(prefs.adhanSaverAt(), front) && AdhanSaver.start(context);   // after the adhan and the notice: nothing waits for it
             prefs.setLastAlarmNote(AdhanPlan.note(front, play, notice, saver), now);
         }
+        if (late == null && due > 0) iqama(context, prefs, intent.getIntExtra(AdhanScheduler.EXTRA_PRAYER, -1), due);   // 4.4 «الإقامة»: its alarm, from this adhan's time
         AdhanScheduler.schedule(context);
         PrayerTimes.refresh(context, null);
+    }
+
+    /** 4.4 «الإقامة»: the alarm at this prayer's iqama, when its sound or its notice is on (none on a Friday's Dhuhr) */
+    private static void iqama(Context c, Prefs prefs, int prayer, long due) {
+        if (!IqamaPlan.wanted(prefs.iqamaSound(), prefs.iqamaNotice())) return;
+        java.util.Calendar cal = java.util.Calendar.getInstance(sa.urtv.home.ZoneFix.zone(Place.get(c).tz), java.util.Locale.US);
+        cal.setTimeInMillis(due);
+        long at = IqamaPlan.at(prayer, due, cal.get(java.util.Calendar.DAY_OF_WEEK) == java.util.Calendar.FRIDAY);
+        if (at > 0) IqamaScheduler.set(c, prayer, at);
     }
 
     /**

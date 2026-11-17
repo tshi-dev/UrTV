@@ -194,3 +194,9 @@ have not vetted the apps it installs (the line on its tile says so).
 `android/launcher/src/main/res/raw/kickoff_whistle.ogg` (1.2 s, about 10 KB) is not taken from anywhere: it is synthesised by
 `.github/tools/make_whistle.py` (a pea-whistle tone with its trill and a short release, numpy and ffmpeg) and dedicated to the
 public domain under CC0 1.0. Run the script again to make the same file.
+
+## The iqama chime (4.4, not third-party)
+
+`android/launcher/src/main/res/raw/iqama_chime.ogg` (2.4 s, about 9 KB) is not taken from anywhere: it is synthesised by
+`.github/tools/make_iqama_chime.py` (a soft two-note bell, G5 then E5, numpy and ffmpeg) and dedicated to the public domain under CC0 1.0.
+Run the script again to make the same file.

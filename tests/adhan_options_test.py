@@ -44,7 +44,7 @@ notice = text(T / "AdhanNotice.java")
 sched = text(T / "AdhanScheduler.java")
 check("notice is off until it is turned on", 'getBoolean("adhan_notice", false)' in prefs)
 check("the alarm is set for the notice alone (adhan off), and cancelled only when neither is wanted",
-      "boolean alarmWanted() { return adhanOn() || adhanNotice() || adhanSaverAt(); }" in prefs and "alarmWanted()" in sched and sched.count("adhanOn()") == 1)
+      "boolean alarmWanted() { return adhanOn() || adhanNotice() || adhanSaverAt() || IqamaPlan.wanted(iqamaSound(), iqamaNotice()); }" in prefs and "alarmWanted()" in sched and sched.count("adhanOn()") == 1)
 check("the adhan itself still needs its own switch: the notice never plays it", "boolean play = prefs.adhanOn() && AdhanPlan.mayPlay(" in receiver)
 check("the notice is shown whether the adhan plays or not, when the option is on", "if (notice) AdhanNotice.show(context, prayer);" in receiver and "boolean notice = prefs.adhanNotice();" in receiver)
 check("the notice is a text toast (no permission, no focus), never throws, logs", "Toast.makeText(" in notice and "catch (RuntimeException" in notice and "UrTVAdhan" in notice)

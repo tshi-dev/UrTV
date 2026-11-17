@@ -171,7 +171,15 @@ final class Prefs {
     void setAdhanNotice(boolean on) { sp.edit().putBoolean("adhan_notice", on).apply(); }
 
     /** The alarm goes off for the adhan or for any option that acts at the prayer's time (the notice). */
-    boolean alarmWanted() { return adhanOn() || adhanNotice() || adhanSaverAt(); }
+    boolean alarmWanted() { return adhanOn() || adhanNotice() || adhanSaverAt() || IqamaPlan.wanted(iqamaSound(), iqamaNotice()); }   // 4.4: the iqama's alarm is set by the adhan's
+
+    /** 4.4 «الإقامة»: its sound (IqamaPlan: "" none, the default; "chime"; "a<id>" one of «صوتياتي»), its volume (10-100, 30) and «تنبيه الإقامة» (off) */
+    String iqamaSound() { String s = sp.getString("iqama_sound", ""); return IqamaPlan.validSound(s) ? s : ""; }
+    void setIqamaSound(String s) { sp.edit().putString("iqama_sound", IqamaPlan.validSound(s) ? s : "").apply(); }
+    int iqamaVolume() { int v = sp.getInt("iqama_volume", 30); return v < 10 || v > 100 ? 30 : v; }
+    void setIqamaVolume(int v) { sp.edit().putInt("iqama_volume", Math.max(10, Math.min(100, v))).apply(); }
+    boolean iqamaNotice() { return sp.getBoolean("iqama_notice", false); }
+    void setIqamaNotice(boolean on) { sp.edit().putBoolean("iqama_notice", on).apply(); }
 
     /** «شاشة التوقف وقت الأذان»: at the prayer's time the screensaver starts, if our home is in front (never over another app). Off until it is turned on. */
     boolean adhanSaverAt() { return sp.getBoolean("adhan_saver_at", false); }
