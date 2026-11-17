@@ -17,6 +17,14 @@ public final class GamePacksTest {
         check("index: another version, a bare array, text that is not JSON, nothing and a huge file give no packs, never an exception",
             GamePacks.parse(b("{\"v\":2,\"packs\":[]}")).isEmpty() && GamePacks.parse(b("[1]")).isEmpty() && GamePacks.parse(b("<html>")).isEmpty() && GamePacks.parse(null).isEmpty() && GamePacks.parse(new byte[200_000]).isEmpty());
         check("names: the English name when asked and there is one, else the Arabic", v.get(0).name(true).equals("Quran text") && v.get(1).name(true).equals("إيموجي") && v.get(0).name(false).equals("نص القرآن"));
+        List<GamePacks.Pack> q = GamePacks.parse(b("{\"v\":1,\"packs\":[{\"id\":\"q01\",\"ar\":\"أسئلة جديدة\",\"en\":\"New questions\",\"ver\":1,\"bytes\":59000,\"sha\":\"" + sha + "\",\"kind\":\"quiz\",\"date\":\"2026-12-03\",\"n\":580,\"cats\":{\"geography\":80}},"
+            + "{\"id\":\"q02\",\"ar\":\"x\",\"ver\":1,\"bytes\":10,\"sha\":\"" + sha + "\",\"kind\":\"Quiz!\",\"date\":\"soon\"}]}"));
+        long dec3 = GamePacks.epochDay("2026-12-03") * GamePacks.DAY_MS;
+        check("a pack of questions: kind, date and count are read; a bad kind or date is empty (the pack is still listed); an old app's six fields still work",
+            q.size() == 2 && q.get(0).quiz() && q.get(0).count == 580 && q.get(0).date.equals("2026-12-03") && !q.get(1).quiz() && q.get(1).date.isEmpty() && !v.get(0).quiz() && v.get(0).date.isEmpty());
+        check("dates: 1970-01-01 is day 0, 2026-12-03 is day 20790 (a Thursday), a bad date is -1", GamePacks.epochDay("1970-01-01") == 0 && GamePacks.epochDay("2026-12-03") == 20790 && GamePacks.epochDay("2026-13-03") == -1 && GamePacks.epochDay("soon") == -1 && GamePacks.epochDay("2026-12-03") % 7 == 0);
+        check("«جديد»: from the day a pack is published for 21 days, not before its date, not after; no date, no tag",
+            !q.get(0).isNew(dec3 - 1) && q.get(0).isNew(dec3) && q.get(0).isNew(dec3 + 21 * GamePacks.DAY_MS) && !q.get(0).isNew(dec3 + 22 * GamePacks.DAY_MS) && !q.get(1).isNew(dec3));
         long day = 24L * 3600 * 1000, now = 100 * day;
         check("14 days: «تلقائي» goes after 14 days unused, not before; «احتفظ دائمًا» never; a pack never opened (0) is not judged",
             GamePacks.expired(GamePacks.AUTO, now - 15 * day, now) && !GamePacks.expired(GamePacks.AUTO, now - 13 * day, now) && !GamePacks.expired(GamePacks.KEEP, now - 500 * day, now) && !GamePacks.expired(GamePacks.AUTO, 0, now));

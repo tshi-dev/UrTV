@@ -66,7 +66,16 @@ final class GamePackStore {
     }
 
     /** in the background: the newest index, and the pack `id` if it is missing or older and there is room; `done` runs on that thread afterwards (null = nothing). Never while a round is on. */
-    static void ensure(final Context c, final String id, final Runnable done) {
+    static void ensure(final Context c, final String id, final Runnable done) { ensure(c, id, false, done); }
+    /** the same, for EVERY pack of questions (kind «quiz») the index lists: the ones the TV does not have or has older, one after the other, each only when there is room */
+    static void ensureQuiz(final Context c, final Runnable done) { ensure(c, "", true, done); }
+    /** the installed packs of questions, in the index's order (the quiz bank adds them to itself) */
+    static List<GamePacks.Pack> quizPacks(Context c) {
+        List<GamePacks.Pack> out = new ArrayList<>();
+        for (GamePacks.Pack p : index(c)) if (p.quiz() && installed(c, p.id)) out.add(p);
+        return out;
+    }
+    private static void ensure(final Context c, final String id, final boolean allQuiz, final Runnable done) {
         final Context app = c.getApplicationContext();
         if (busy || QuizBank.playing) return;
         busy = true;
@@ -76,15 +85,15 @@ final class GamePackStore {
                 if (r.status != 200 || GamePacks.parse(r.body).isEmpty()) return;
                 try (FileOutputStream o = new FileOutputStream(new File(dir(app), "index.json"))) { o.write(r.body); }
                 for (GamePacks.Pack p : GamePacks.parse(r.body)) {
-                    if (!p.id.equals(id)) continue;
-                    if (installed(app, id) && sp(app).getInt(id + ".ver", 0) >= p.ver) return;
+                    if (!(allQuiz ? p.quiz() : p.id.equals(id))) continue;
+                    if (installed(app, p.id) && sp(app).getInt(p.id + ".ver", 0) >= p.ver) continue;
                     if (!GamePacks.canDownload(app.getFilesDir().getUsableSpace(), p.bytes)) return;   // a TV low on space is left alone
-                    Net.Reply d = Net.get(BASE + id + "/pack.gb", null, 20000, 120000, (int) GamePacks.PACK_MAX);
+                    Net.Reply d = Net.get(BASE + p.id + "/pack.gb", null, 20000, 120000, (int) GamePacks.PACK_MAX);
                     if (d.status != 200 || d.body.length != p.bytes || !GamePacks.shaOk(d.body, p.sha)) return;
-                    File tmp = new File(dir(app), id + ".gb.tmp");
+                    File tmp = new File(dir(app), p.id + ".gb.tmp");
                     try (FileOutputStream o = new FileOutputStream(tmp)) { o.write(d.body); }
-                    if (!tmp.renameTo(file(app, id))) { tmp.delete(); return; }
-                    sp(app).edit().putInt(id + ".ver", p.ver).putLong(id + ".used", System.currentTimeMillis()).apply();
+                    if (!tmp.renameTo(file(app, p.id))) { tmp.delete(); return; }
+                    sp(app).edit().putInt(p.id + ".ver", p.ver).putLong(p.id + ".used", System.currentTimeMillis()).apply();
                 }
             } catch (Exception ignored) {
                 // no network, a bad answer: the games use what they have
