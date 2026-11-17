@@ -1621,7 +1621,7 @@ public class SettingsActivity extends Activity {
         if (country > 0 && regions.length == 1) { pickCityIn(regions[0], country); return; }   // any other country is one region: its cities
         String[] labels = new String[regions.length + 1];
         labels[0] = "بحث عن مدينة أو قرية";
-        for (int i = 0; i < regions.length; i++) labels[i + 1] = regions[i].name + "  (" + regions[i].cities.length + ")";
+        for (int i = 0; i < regions.length; i++) labels[i + 1] = regions[i].name + "  (" + DigitsText.convert(String.valueOf(regions[i].cities.length), latinDigits) + ")";   // the counts in the digits of the setting
         new Dlg(this).setTitle(country < 0 ? "المنطقة" : Location.COUNTRIES[country][1])
             .setItems(labels, (d, i) -> { if (i == 0) searchCity(country); else pickCityIn(regions[i - 1], country); })
             .show();
