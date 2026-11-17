@@ -148,6 +148,8 @@ final class ConfigSnapshot {
                 if (cc >= 0 && "0".equals(cur.getString(cc))) cityChosen = false;
                 int fb = cur.getColumnIndex("fav_bar");   // an older screensaver does not say: 5
                 if (fb >= 0 && cur.getString(fb) != null) favBar = cur.getString(fb);
+                int uc = cur.getColumnIndex("update_channel");   // 4.3.3 hotfix: kept for the UI thread (UpdateChannel.cached), read here off it
+                if (uc >= 0) sa.urtv.home.phone.UpdateChannel.remember(cur.getString(uc));
             }
         } catch (RuntimeException ignored) {
             // the screensaver is missing or signed with another key: the defaults (Riyadh, on)

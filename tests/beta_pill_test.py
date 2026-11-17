@@ -17,6 +17,6 @@ def check(name, ok, detail=""):
 un = (ROOT / "android/launcher/src/main/java/sa/urtv/home/UpdateNotice.java").read_text(encoding="utf-8")
 check("version.txt is read from the chosen channel's release, never the latest's fixed address", "UpdateRules.baseFor(channel) + \"version.txt\"" in un and "UpdateRules.BASE +" not in un)
 check("the number is stored with its channel", 'putInt("newest", build).putString("channel", channel)' in un)
-check("the pill uses only a number read on the current channel", "newestFor(c, UpdateChannel.read(c))" in un and 'channel.equals(sp.getString("channel", "latest")) ? sp.getInt("newest", 0) : 0' in un)
+check("the pill uses only a number read on the current channel", "newestFor(c, UpdateChannel.cached())" in un and 'channel.equals(sp.getString("channel", "latest")) ? sp.getInt("newest", 0) : 0' in un)
 check("a changed channel is asked again at once, not after 12 hours", "if (sameChannel && !UpdateNoticeRule.due(" in un)
 sys.exit(1 if failed else 0)

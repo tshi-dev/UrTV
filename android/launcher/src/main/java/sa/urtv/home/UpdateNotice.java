@@ -25,7 +25,7 @@ final class UpdateNotice {
     static boolean wanted(Context c) {
         long home = PhoneUpdater.installedCode(c, c.getPackageName());
         return UpdateNoticeRule.older(PhoneUpdater.installedCode(c, "sa.urtv.screensaver"), home)
-                || UpdateNoticeRule.newer(newestFor(c, UpdateChannel.read(c)), home);
+                || UpdateNoticeRule.newer(newestFor(c, UpdateChannel.cached()), home);   // 4.3.3 hotfix: no question to the screensaver on the UI thread
     }
 
     /** 4.3.3: the newest build read from the release of THIS channel (apk-beta while «النسخ التجريبية» is on); one read from another channel counts for nothing */
@@ -37,7 +37,7 @@ final class UpdateNotice {
     /** reads version.txt when one is due (off the main thread; {@code done} runs on that thread after a good read) */
     static void checkIfDue(final Context app, final Runnable done) {
         final SharedPreferences sp = app.getSharedPreferences(PREFS, Context.MODE_PRIVATE);
-        final String channel = UpdateChannel.read(app);
+        final String channel = UpdateChannel.cached();   // 4.3.3 hotfix: on the UI thread (the minute tick): the kept word, never a query
         boolean sameChannel = channel.equals(sp.getString("channel", "latest"));   // another channel than the last read: asked again now, not in 12 hours
         if (sameChannel && !UpdateNoticeRule.due(sp.getLong("at", 0), System.currentTimeMillis())) return;
         sp.edit().putLong("at", System.currentTimeMillis()).apply();   // asked: the next try is in 12 hours, a failure included
