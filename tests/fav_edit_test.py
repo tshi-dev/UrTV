@@ -34,7 +34,7 @@ check("startEdit is reached only through beginEdit", len(re.findall(r"startEdit\
 check("the adhan rule is asked before the mode sees a key",
       main.index("if (adhanTakes(e)) return true;") < main.index("if (edit != null && editKey(e)) return true;"))
 keyfn = main.split("private boolean editKey(KeyEvent e)")[1].split("private void applyEdit")[0]
-check("the mode leaves the volume and power keys to Android (AdhanKeys.reserved)", "AdhanKeys.reserved(k)) return false" in keyfn)
+check("the mode leaves the volume and power keys to Android (AdhanKeys.reserved)", "AdhanKeys.reserved(k) || !FavEdit.owns(k)) return false" in keyfn)
 check("a key release is consumed, so OK never clicks the app under it", "ACTION_DOWN) return true" in keyfn)
 check("a held key steps at the pace the home screen already uses (SIDE_REPEAT_MS)", keyfn.count("SIDE_REPEAT_MS") >= 3)
 check("the direction comes from the row's layout direction (FavEdit.step)", "FavEdit.step(k, dockRow.getLayoutDirection() == View.LAYOUT_DIRECTION_RTL)" in keyfn)

@@ -25,4 +25,9 @@ check("the return to the home (BetaNotes.maybeAsk, onResume) uses the kept word"
 check("the report screen uses the kept word", "UpdateChannel.read" not in ra and "UpdateChannel.cached()" in ra)
 check("MainActivity itself never asks the channel", not re.search(r"UpdateChannel\.(read|beta)\(", main))
 check("the minute tick still reads the screensaver's settings off the UI thread (P3)", 'final ConfigSnapshot got = ConfigSnapshot.read(app);' in main and '"home-config").start();' in main)
+back = main.split("private boolean backExitTakes(KeyEvent e) {")[1].split("\n    }\n")[0]
+check("4.3.4 follow-up: Back (every press, on the UI thread) reads its mode from memory, never a query to the screensaver",
+      "ConfigSnapshot.read(" not in back and "ConfigSnapshot.lastFragment(this)" in back)
+lf = cs.split("static String lastFragment(Context c) {")[1].split("}")[0] if "static String lastFragment(Context c) {" in cs else ""
+check("…lastFragment is memory, else the copy on disk: no content resolver", lf and "getContentResolver" not in lf and "query(" not in lf, lf)
 sys.exit(1 if failed else 0)
