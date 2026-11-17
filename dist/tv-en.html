@@ -1037,10 +1037,10 @@ const MP_MORE = CONFIG.matchPage && !CONFIG.leagues.length;
 CONFIG.ownLeagues = CONFIG.leagues.slice();
 if((CONFIG.football || CONFIG.matchPage) && !CONFIG.leagues.length) CONFIG.leagues = ['Saudi-Arabian Pro League'];
 if(MP_MORE) CONFIG.leagues = CONFIG.leagues.concat(MP_TOP);
-const RESOLVED_METHOD = [1,2,3,4,5,8,9,10,11,12,13,14,15,16,17,18,19,20,21,23,100].includes(+_Q.get('pm')) ? +_Q.get('pm') : null;
+const RESOLVED_METHOD = [1,2,3,4,5,8,9,10,11,12,13,14,15,16,17,18,19,20,21,23,100,101].includes(+_Q.get('pm')) ? +_Q.get('pm') : null;
 CONFIG.prayerMethod = _Q.get('pm') === 'gulf' ? 8
-  : RESOLVED_METHOD !== null ? RESOLVED_METHOD : ({'Asia/Kuwait':9, 'Asia/Qatar':10, 'Asia/Dubai':16, 'Asia/Bahrain':8, 'Asia/Muscat':100, 'Africa/Cairo':5, 'Asia/Amman':23, 'Asia/Damascus':5, 'Asia/Beirut':5, 'Asia/Gaza':5, 'Asia/Hebron':5, 'Asia/Jerusalem':5, 'Africa/Casablanca':21, 'Africa/El_Aaiun':21, 'Africa/Algiers':19, 'Africa/Tunis':18})[CONFIG.timezone] || 4;
-const CAL_LABEL = {1:'University of Islamic Sciences, Karachi',2:'ISNA',3:'Muslim World League',11:'MUIS Singapore',12:'UOIF France',13:'Diyanet Turkey',14:'Spiritual Administration of Muslims of Russia',15:'Moonsighting Committee',17:'JAKIM Malaysia',20:'Kemenag Indonesia', 8:'Gulf method', 100:'Oman method', 9:'Kuwait method', 10:'Qatar method', 16:'UAE method', 5:'Egyptian method', 23:'Jordan method', 21:'Morocco method', 19:'Algeria method', 18:'Tunisia method'};
+  : RESOLVED_METHOD !== null ? RESOLVED_METHOD : ({'Asia/Kuwait':9, 'Asia/Qatar':10, 'Asia/Dubai':16, 'Asia/Bahrain':8, 'Asia/Muscat':100, 'Africa/Cairo':5, 'Asia/Amman':23, 'Asia/Damascus':5, 'Asia/Beirut':5, 'Asia/Gaza':5, 'Asia/Hebron':5, 'Asia/Jerusalem':5, 'Africa/Casablanca':21, 'Africa/El_Aaiun':21, 'Africa/Algiers':19, 'Africa/Tunis':18, 'Africa/Tripoli':101})[CONFIG.timezone] || 4;
+const CAL_LABEL = {1:'University of Islamic Sciences, Karachi',2:'ISNA',3:'Muslim World League',11:'MUIS Singapore',12:'UOIF France',13:'Diyanet Turkey',14:'Spiritual Administration of Muslims of Russia',15:'Moonsighting Committee',17:'JAKIM Malaysia',20:'Kemenag Indonesia', 8:'Gulf method', 100:'Oman method', 9:'Kuwait method', 10:'Qatar method', 16:'UAE method', 5:'Egyptian method', 23:'Jordan method', 21:'Morocco method', 19:'Algeria method', 18:'Tunisia method', 101:'Libya method'};
 const clockSubText = () => 'Time in ' + CONFIG.city + (CAL_LABEL[CONFIG.prayerMethod] ? SEP + CAL_LABEL[CONFIG.prayerMethod] : '');
 CONFIG.panel2 = (p => CARD_KINDS.includes(p) && p !== 'nextprayer' && p !== CONFIG.panel ? p : 'none')(_Q.get('panel2') || '');
 const PAIR = !CONFIG.widget && CONFIG.clockSize === 'small' && CONFIG.panel !== 'none' && CONFIG.panel2 !== 'none';
@@ -1297,6 +1297,7 @@ const PRAYER_METHODS = {
   19:  {fajr:18, isha:17, ishaMin:0, maghrib:.833, tune:[0,0,0,0]},
   18:  {fajr:18, isha:18, ishaMin:0, maghrib:.833, tune:[0,0,0,0]},
   100: {fajr:18, isha:18, ishaMin:0, maghrib:.833, tune:[0,5,5,5]},
+  101: {fajr:18, isha:17, ishaMin:0, maghrib:.833, tune:[0,1,0,0]},
 };
 function computePrayers(forDay){
   const p = forDay || riyadhParts(), lng = CONFIG.longitude;

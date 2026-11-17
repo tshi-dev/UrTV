@@ -106,6 +106,7 @@ final class ClockZone {
             case "Africa/Casablanca": case "Africa/El_Aaiun": return "حساب المغرب";
             case "Africa/Algiers": return "حساب الجزائر";
             case "Africa/Tunis": return "حساب تونس";
+            case "Africa/Tripoli": return "حساب ليبيا";
             default: return "";
         }
     }

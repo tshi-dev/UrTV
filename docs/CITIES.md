@@ -104,7 +104,7 @@
 
 مقديشو · Mogadishu، بورمة · Borama، هرجيسة · Hargeysa، بربرة · Berbera، كسمايو · Kismayo، مركة · Marka، الدبير · El Dibir، روقي · Ruqi، بيدوا · Baidoa، عابدواق · Cabudwaaq، برعو · Burao، كامبوني · Kaambooni، جبيلي · Gebiley، بوساسو · Bosaso، بلد حوا · Beled Hawo، بالانبالي · Balanbale، أفغوي · Afgooye، جالكعيو · Gaalkacyo، لاس عانود · Laascaanood، غروي · Garoowe، بلدوين · Beledweyne، قوريولي · Qoryooley
 
-## ليبيا (٢٦) · حساب الهيئة المصرية للمساحة
+## ليبيا (٢٦) · حساب ليبيا
 
 طرابلس · Tripoli، بنغازي · Benghazi، مصراتة · Misratah، زليتن · Zliten، الخمس · Al Khums، الزاوية · Az Zāwīyah، جنزور · Janzūr، سبها · Sabha، طبرق · Tobruk، أجدابيا · Ajdabiya، العجيلات · Al Ajaylat، البيضاء · Al Bayḑā’، الجديد · Al Jadīd، سرت · Sirte، درنة · Darnah، الجميل · Al Jumayl، قصر بن غشير · Qaşr Bin Ghashīr، تاجوراء · Tājūrā’، المرج · Al Marj، صبراتة · Şabrātah، الحرشة · Al Ḩurshah، صرمان · Şurmān، مسلاتة · Msalātah، السوّاني · As Sawānī، ترهونة · Tarhuna، العزيزية · Al ‘Azīzīyah
 
