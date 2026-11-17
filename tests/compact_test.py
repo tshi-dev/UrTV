@@ -80,7 +80,7 @@ check("the box's title is fixed above the words, which scroll inside it with a s
       and "more.setVisibility(canScrollVertically(1) ? View.VISIBLE : View.INVISIBLE)" in box)
 rs = box[box.index("public boolean dispatchKeyEvent(KeyEvent e)"):box.index("View firstButtonInView()")]
 check("READ BEFORE FOCUS: with the words longer than the box, the reading area takes the focus first; DOWN scrolls them; only at their end does DOWN go to the button",
-      "if (scroll.overflows()) { scroll.scrollTo(0, 0); scroll.requestFocus(); }" in box and "else if (button != null) button.requestFocus();" in box
+      "if (scroll.overflows()) { scroll.scrollTo(0, 0); scroll.focusSelf(); }" in box and "else if (button != null) button.requestFocus();" in box
       and "if (canScrollVertically(1)) { smoothScrollBy(0," in rs and rs.index("canScrollVertically(1)") < rs.index("firstButtonInView()") and "b.requestFocus();" in rs)
 check("every screen's first focus goes through the box (read before focus)",
       srcs["SetupActivity"].count("page.focusFirst(") >= 5 and "box.focusFirst(focus);" in srcs["UpdateActivity"] and "box.focusFirst(v);" in srcs["FactoryActivity"]
