@@ -46,6 +46,12 @@ public final class UpdateRules {
         return installing != null && !installing.isEmpty() && installing.equals(pkg) && (installerSaid == null || installerSaid.equals(pkg));
     }
 
+    /**
+     * 4.3.4: «النسخ التجريبية» reads BOTH releases and takes the newer: the beta build only when it is above the latest one. A 404 on apk-beta
+     * (nobody promoted a beta) or an older beta: the latest, so a beta user is never left behind an official release. Builds: -1 when not read.
+     */
+    public static boolean betaWins(int betaBuild, int latestBuild) { return betaBuild > 0 && betaBuild > latestBuild; }
+
     public static int buildOf(String versionText) {
         if (versionText == null) return -1;
         String t = versionText.trim();

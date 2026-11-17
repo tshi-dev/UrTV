@@ -254,6 +254,7 @@ python3 tests/options_fit_test.py   # 4.3.4: the app options box is as wide as i
 python3 tests/update_rows_focus_test.py   # 4.3.4: a step down in «تحديث تلفزيوني» no longer skips «تحديث صفحة شاشة التوقف» (fullScroll moved the focus)
 python3 tests/ok_hold_test.py   # 4.3.4: a settings rebuild while OK is held waits for the release (the first press was lost)
 python3 tests/edit_keys_test.py   # the edit modes keep only the keys they use: a remote's app, colour, channel and maker keys go on
+python3 tests/beta_newest_test.py   # 4.3.4: «النسخ التجريبية» takes the newer of apk-beta and apk-latest (a beta user got no update again)
 node tests/i18n_page_test.mjs   # dist/tv-en.html in a browser: left to right, no Arabic in its own words on any card
 #
 # English phase 3 (the home app): its new tests go right under this line
