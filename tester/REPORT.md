@@ -2981,3 +2981,7 @@ I turned the switch on (`am broadcast -n sa.urtv.home/.DockReceiver -a sa.urtv.h
 - **Google TV was never started**: the only HOME start after each press is `cmp=sa.urtv.home/.MainActivity`, ~150–210 ms after the key (no launcherx START, no window watch needed) → **no Google TV flash at all**.
 - UrTV in front afterwards.
 **Recommendation: turn the HOME_KEY catch ON by default for Google TV** (with the window watch kept as the fallback for TVs/remotes whose Home does not reach the filter). Still to check with the owner later: long-press Home, Home while a video plays in full screen, and that Assistant/Settings keys are untouched with the catch on. I left the switch ON on the owner's TV.
+- **Long press Home (owner, ~08:04:06): caught → UrTV opened** (`home key caught ours opened`; only our MainActivity started, no Google TV).
+- **Home during a YouTube video (YouTube started 08:04:17, Home 08:04:24.3, a 0.2 s press): caught → UrTV in front at 08:04:24.6**, no Google TV.
+- About 1 s after that press Google Assistant (katniss) started listening with UrTV in front (`Foreground app … sa.urtv.home`) — either the owner pressed the mic, or the system's own long-press handling; asked the owner what he saw.
+- While the owner explored afterwards: the remote's Settings key opened Google TV's own panel (`TOGGLE_NOTIFICATION_HANDLER_PANEL`) twice ✓, our hub and our settings opened normally ✓ — the catch does not touch other keys.
