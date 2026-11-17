@@ -3000,3 +3000,6 @@ I turned the switch on (`am broadcast -n sa.urtv.home/.DockReceiver -a sa.urtv.h
 6. **Night mode: no «auto»** (owner) — only dark or light (drop «تلقائي بعد المغرب»).
 7. **Game setup page («خمس خانات → جهّز اللعبة», picture game-setup-khanat.png): a row is hidden behind «ابدأ»** — the 8th row **«الصوت: يعمل / صامت»** is under the «ابدأ / الأسماء» buttons (only its top edges show above «ابدأ», `game-setup-hidden-row.png`). 8 rows (الجولات، الوقت، نوع اللعب، العدد، الخانات، حروف صعبة، اللعب بالجوالات، الصوت) don't fit above the buttons at 1080p: the list must scroll, or the rows be shorter, or the buttons move.
 8. **«الأسماء» (owner): it should be the TEAM names, with nothing automatic.** The first time, ask for them; after that reuse the same names on this TV (kept per device), and let them be changed any time (the «الأسماء» button).
+
+## step 90 — rescue code: WAITING (owner's choice)
+go.aftvnews.com refused the link as unreachable: `https://github.com/tshi-dev/UrTV/releases/download/apk-latest/urtv-rescue.apk` is **404** — the apk-latest release has only urtv-home.apk, urtv-screensaver.apk and version.txt; urtv-rescue.apk (and urtv-extras.apk) exist only in apk-next. The owner chose to wait: make the code once 4.4 is released to apk-latest **with urtv-rescue.apk in it**. (The site has a reCAPTCHA; the owner ticks it himself, I fill the link.)
