@@ -71,12 +71,11 @@ check("4. the screen sees the prompt close (its focus back) and the runner count
       and 'CANCELLED_TEXT = "ضغطت «إلغاء». اضغط «جهّز كل شي» مرة ثانية واختر «السماح دائماً».' in runner and "if (e.retry)" in act)
 check("4. the setup page never closes by itself: its only finish() is «تم»", act.count("finish();") == 1 and act.index("finish();") > act.index('button(S.t("تم"))'))
 # 5. the window
-oc = act[act.index("protected void onCreate(Bundle b)"):act.index("setContentView(frame);") + 30]
-check("5. a small window in the middle: 560 dp for every page (4.4 compact, Compact.WINDOW_DP), at most 80 % of the screen's height, centred in the 5 % safe area",
-      "WINDOW_DP = sa.urtv.home.Compact.WINDOW_DP" in act and "WINDOW_HEIGHT = 0.80f" in act and "new WindowColumn(this, windowMaxHeight(sh))" in oc
-      and "Gravity.CENTER" in oc and "Math.round(sw * 0.05f), Math.round(sh * 0.05f)" in oc and "MeasureSpec.AT_MOST" in act)
-check("5. the title stays at the top of the window and only what is under it scrolls, inside the window (no page-wide scroll that cut the card's top off)",
-      "setContentView(frame);" in oc and "setContentView(scroll)" not in act and oc.index('S.t("إعداد تلفزيوني")') < oc.index("new ScrollView(this)") and "inner.addView(body" in oc)
+oc = act[act.index("protected void onCreate(Bundle b)"):act.index("FrameLayout frame = page.page;") + 40]
+check("5. one box in the middle of the safe area for every page (4.4: sa.urtv.home.Box, the same size always, tests/compact_test.py)",
+      "page = sa.urtv.home.Box.make(this," in oc and "FrameLayout frame = page.page;" in oc)
+check("5. the title stays at the top of the box and only what is under it scrolls, inside the box (no page-wide scroll that cut the card's top off)",
+      'page.title.setText(S.t("إعداد تلفزيوني"));' in oc and "setContentView(scroll)" not in act and "page.content.addView(body" in oc)
 qb = act[act.index("private void qrBeside("):act.index("private void qrBeside(") + 1600]
 check("5. the QR on the LEFT of the screen in both languages, beside its words (the rescue block and the computer's way)",
       "row.setLayoutDirection(View.LAYOUT_DIRECTION_LTR);" in qb and qb.index("row.addView(card") < qb.index("row.addView(words")

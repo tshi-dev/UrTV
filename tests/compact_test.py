@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""4.4 compact (the owner: «It's good to have big stuff, but they're just toooo much»): every text size of the setup, update, install, rescue and
+"""4.4 compact, then ONE BOX and ONE TEXT STYLE (the owner): every text size of the setup, update, install, rescue and
 add-on screens, read from the source, against android/launcher/.../Compact.java: titles 24 sp, rows and buttons 16-18 sp, second lines 13-14 sp, never
 under 13; buttons 44 dp; a window 560 dp wide; the QR of a setup page 88 dp. Before/after pictures: docs/mockups/compact-setup/.
     python3 tests/compact_test.py"""
@@ -49,38 +49,51 @@ def sizes(src, arg=1):
     return out
 
 
-compact = text(HOME / "Compact.java")
-check("Compact: a 560 dp window, 44 dp buttons, a 24 sp title, 18 sp buttons and rows at most, 13 sp at least, an 88 dp QR",
-      "WINDOW_DP = 560, BUTTON_DP = 44, TITLE_SP = 24, BUTTON_SP = 18, BODY_MAX_SP = 18, MIN_SP = 13" in compact and "QR_DP = 88" in compact)
+compact, box = text(HOME / "Compact.java"), text(HOME / "Box.java")
+check("Compact: ONE box (560 x 600 dp), ONE text style (22 title, 17 body, 14 secondary), 44 dp buttons, an 88 dp QR",
+      "BOX_W_DP = 560, BOX_H_DP = 600" in compact and "TITLE_SP = 22, BODY_SP = 17, SECONDARY_SP = 14" in compact and "BUTTON_DP = 44" in compact and "QR_DP = 88" in compact)
 SCREENS = {
     "UpdateActivity": HOME / "UpdateActivity.java", "InstallSaverActivity": HOME / "InstallSaverActivity.java", "ExtrasActivity": HOME / "ExtrasActivity.java",
     "FactoryActivity": HOME / "setup/FactoryActivity.java", "SetupActivity": HOME / "setup/SetupActivity.java",
     "RescueActivity": ROOT / "android/rescue/src/main/java/sa/urtv/home/setup/RescueActivity.java", "UpdateCover": ROOT / "android/app/src/main/java/sa/urtv/screensaver/UpdateCover.java",
 }
+ALLOWED = {22, 17, 14}
 for name, path in SCREENS.items():
     got = sizes(text(path))
-    bad = [(sp, ln) for sp, ln in got if sp < 13 or sp > 24 or (18 < sp < 24)]
-    check(f"{name}: every text 13 to 18 sp, a title 24 sp, nothing between (no 20, 22, 28, 30, 34)", got and not bad, bad)
+    bad = [(sp, ln) for sp, ln in got if sp not in ALLOWED]
+    check(f"{name}: ONE text style: every size is 22, 17 or 14 sp", got and not bad, bad)
 pv = text(HOME / "setup/SetupProgressView.java")
 got = sizes(pv, arg=0)
-bad = [(sp, ln) for sp, ln in got if sp < 13 or (sp > 20 and sp != 36)]
-check("the setup's progress: 13 to 20 sp (the step's name 20), the percentage the one big number (36 sp, was 64)", got and not bad, bad)
+check("the setup's progress: only 22, 17 and 14 sp (the percentage in the title style, no 64 or 36 sp number)", got and all(sp in ALLOWED for sp, _ in got), [x for x in got if x[0] not in ALLOWED])
 draw = re.findall(r"label\(c, [^;]*?, (\d+), (?:look|0x)", pv)
-check("the dialog's drawing: its words 13 to 17 sp", draw and all(13 <= int(x) <= 17 for x in draw), draw)
-check("the setup's steps are one row of words above the work (no 232 dp rail beside it in a 560 dp window)",
-      "stepper.setOrientation(HORIZONTAL);" in pv and "dp(232)" not in pv and "setOrientation(VERTICAL);\n        setLayoutDirection(Dir.layout());\n        stepper" in pv)
-sa, ua, fa, ia, ea = (text(SCREENS[n]) for n in ("SetupActivity", "UpdateActivity", "FactoryActivity", "InstallSaverActivity", "ExtrasActivity"))
-ra = text(SCREENS["RescueActivity"])
+check("the dialog's drawing: its words 17 or 14 sp", draw and all(int(x) in (17, 14) for x in draw), draw)
+check("the setup's steps are one row of words above the work (no 232 dp rail beside it)", "stepper.setOrientation(HORIZONTAL);" in pv and "dp(232)" not in pv)
+srcs = {n: text(p) for n, p in SCREENS.items()}
+check("ONE BOX: the setup, update, factory, install, add-on and rescue screens all are a Box (none sets its own window or full-screen column)",
+      all("Box.make(" in srcs[n] for n in ("SetupActivity", "UpdateActivity", "FactoryActivity", "InstallSaverActivity", "ExtrasActivity", "RescueActivity"))
+      and "WindowColumn" not in srcs["SetupActivity"] and "WINDOW_DP" not in "".join(srcs[n] for n in ("UpdateActivity", "FactoryActivity", "InstallSaverActivity", "ExtrasActivity")))
+check("the box is always the same size: Compact.BOX_W_DP x BOX_H_DP (the safe area caps it), set once, never from its content",
+      "new FrameLayout.LayoutParams(width(c), height(c), Gravity.CENTER)" in box and "Compact.BOX_W_DP * " in box and "Compact.BOX_H_DP * " in box
+      and "box.addView(scroll, new LinearLayout.LayoutParams(-1, 0, 1f));" in box and "colLp" not in srcs["SetupActivity"])
+check("the box's title is fixed above the words, which scroll inside it with a scroll bar that stays, and «⌄» while there is more",
+      "title.setTextSize(TypedValue.COMPLEX_UNIT_SP, Compact.TITLE_SP);" in box and "scroll.setScrollbarFadingEnabled(false);" in box and 'more.setText("⌄");' in box
+      and "more.setVisibility(canScrollVertically(1) ? View.VISIBLE : View.INVISIBLE)" in box)
+rs = box[box.index("public boolean dispatchKeyEvent(KeyEvent e)"):box.index("View firstButtonInView()")]
+check("READ BEFORE FOCUS: with the words longer than the box, the reading area takes the focus first; DOWN scrolls them; only at their end does DOWN go to the button",
+      "if (scroll.overflows()) { scroll.scrollTo(0, 0); scroll.requestFocus(); }" in box and "else if (button != null) button.requestFocus();" in box
+      and "if (canScrollVertically(1)) { smoothScrollBy(0," in rs and rs.index("canScrollVertically(1)") < rs.index("firstButtonInView()") and "b.requestFocus();" in rs)
+check("every screen's first focus goes through the box (read before focus)",
+      srcs["SetupActivity"].count("page.focusFirst(") >= 5 and "box.focusFirst(focus);" in srcs["UpdateActivity"] and "box.focusFirst(v);" in srcs["FactoryActivity"]
+      and "box.focusFirst(button);" in srcs["InstallSaverActivity"] and "page.focusFirst(button);" in srcs["ExtrasActivity"] and "page.focusFirst(button);" in srcs["RescueActivity"])
+check("the rescue app gets the box and its sizes from the home's own files (copied in)", "'Box.java', 'Compact.java'" in text(ROOT / "android/rescue/build.gradle"))
+sa, ua, fa, ia, ea, ra = (srcs[n] for n in ("SetupActivity", "UpdateActivity", "FactoryActivity", "InstallSaverActivity", "ExtrasActivity", "RescueActivity"))
 check("buttons 44 dp: the setup's, the language's, the update's, the factory step's, the install's, the add-on's, the rescue app's",
       "t.setMinHeight(dp(sa.urtv.home.Compact.BUTTON_DP));" in sa and "b.setMinHeight(dp(sa.urtv.home.Compact.BUTTON_DP));" in sa and "dp(Compact.BUTTON_DP)" in ua
       and "t.setMinHeight(dp(sa.urtv.home.Compact.BUTTON_DP));" in fa and "button.setMinHeight(dp(Compact.BUTTON_DP));" in ia and "new LinearLayout.LayoutParams(0, dp(Compact.BUTTON_DP), 1f)" in ea
-      and "new LinearLayout.LayoutParams(-1, dp(44))" in ra and "dp(56)" not in sa + ua and "dp(64)" not in ea and "dp(84)" not in ra)
-check("windows 560 dp wide in the safe area: the setup's every page, the update's, the factory step's; the install, add-on and rescue words in a 560 dp column",
-      "WINDOW_DP = sa.urtv.home.Compact.WINDOW_DP, WINDOW_WIDE_DP = sa.urtv.home.Compact.WINDOW_DP" in sa and "Math.min(dp(Compact.WINDOW_DP)" in ua
-      and "Math.min(dp(sa.urtv.home.Compact.WINDOW_DP)" in fa and "(sw - dp(Compact.WINDOW_DP)) / 2" in ia and "(sw - dp(Compact.WINDOW_DP)) / 2" in ea and "(sw - dp(560)) / 2" in ra)
+      and "new LinearLayout.LayoutParams(-1, dp(44))" in ra)
 check("the QR of the setup's start (rescue, the computer's way) 88 dp on the left; the done screen's packed report not under 160 dp (a dense code a phone must read)",
       sa.count("sa.urtv.home.Compact.QR_DP);") == 2 and "static final int QR_DP = 160;" in sa)
 check("the focus ring stays: the setup's and the update's buttons keep GlassPaint.card, the rescue app its 4 dp ring",
       "sa.urtv.home.GlassPaint.card(t, look, 14);" in sa and "GlassPaint.card(p, look, 14);" in ua and "g.setStroke(has ? dp(4) : 0, 0xFF7FB2FF)" in ra)
-check("the before/after pictures are in docs/mockups/compact-setup/", len(list((ROOT / "docs/mockups/compact-setup").glob("*.png"))) >= 6 if (ROOT / "docs/mockups/compact-setup").is_dir() else False)
+check("the pictures of every page are in docs/mockups/compact-setup-v2/", len(list((ROOT / "docs/mockups/compact-setup-v2").glob("*.png"))) >= 8 if (ROOT / "docs/mockups/compact-setup-v2").is_dir() else False)
 sys.exit(1 if failed else 0)

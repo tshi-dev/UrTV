@@ -66,7 +66,8 @@ public class UpdateActivity extends Activity {
     private int GOLD, INK, TEXT, DIM, RED;   // from the glass look (glass(), before anything is drawn)
     private GlassStyle.Look look;
 
-    private LinearLayout col;              // the card: title, steps, progress, the message, one button
+    private LinearLayout col;              // the box's content: steps, progress, the message, one button (the title is the box's own)
+    private Box box;                       // 4.4: the one box
     private String preview;                // debug builds only: draw a state without the network (CI's pictures of this screen)
     private UpdateRecords.Outcome result;   // what the record of an earlier update says, until the owner checks again
     private boolean askedPermission;
@@ -76,21 +77,14 @@ public class UpdateActivity extends Activity {
         super.onCreate(b);
         Digits.init(this);
         if (BuildConfig.DEBUG) preview = getIntent().getStringExtra("preview");
-        ScrollView scroll = new ScrollView(this);
-        glass(scroll);   // the glass look: the home's photo, small and blurred once, under its veil
-        scroll.setVerticalScrollBarEnabled(false);
-        scroll.setFillViewport(true);
-        FrameLayout frame = new FrameLayout(this);
-        scroll.addView(frame, new FrameLayout.LayoutParams(-1, -1));
-        int w = getResources().getDisplayMetrics().widthPixels, h = getResources().getDisplayMetrics().heightPixels;
-        frame.setPadding(Math.round(w * 0.05f), Math.round(h * 0.05f) + dp(16), Math.round(w * 0.05f), Math.round(h * 0.05f) + dp(16));   // inside the 5 % safe area, 16 dp more
-        col = new LinearLayout(this);
-        col.setOrientation(LinearLayout.VERTICAL);
-        col.setLayoutDirection(Dir.layout());
-        col.setPadding(dp(24), dp(20), dp(24), dp(20));   // 4.4 the owner: «toooo much»: a compact window (docs/mockups/compact-setup)
-        col.setBackground(GlassPaint.fill(this, GlassStyle.over(look.dialog, look.base), 22, look.line));   // a solid surface, like the page's dialogs
-        frame.addView(col, new FrameLayout.LayoutParams(Math.min(dp(Compact.WINDOW_DP), w - 2 * Math.round(w * 0.05f)), -2, Gravity.CENTER));
-        setContentView(scroll);
+        // 4.4 (the owner: «ONE BOX for everything»): the same box as the setup and install screens (Box): one size, the title fixed, the rest scrolls inside
+        FrameLayout probe = new FrameLayout(this);
+        glass(probe);   // the glass look: the home's photo, small and blurred once, under its veil
+        box = Box.make(this, GlassPaint.fill(this, GlassStyle.over(look.dialog, look.base), 22, look.line), TEXT, DIM, face("Medium"), Dir.layout());
+        box.page.setBackground(probe.getBackground());
+        box.title.setText(S.tv(UpdateText.TITLE));
+        col = box.content;
+        setContentView(box.page);
         // the record of an update that replaced the launcher: shown here once, then removed
         UpdateRecords.Outcome o = UpdateRecords.take(new UpdateStore(this), PhoneUpdater.installedCode(this, getPackageName()));
         if (o.kind != UpdateRecords.Kind.NONE) result = o;
@@ -125,8 +119,8 @@ public class UpdateActivity extends Activity {
 
     private void render() {
         col.removeAllViews();
-        col.addView(text(S.tv(UpdateText.TITLE), 24, "Medium", TEXT, Dir.start()), right(dp(8)));
-        col.addView(text(UpdateText.installed(PhoneUpdater.installedName(this), S::tv), 16, "Regular", DIM, Dir.start()), right(dp(24)));
+        box.scroll.scrollTo(0, 0);
+        col.addView(text(UpdateText.installed(PhoneUpdater.installedName(this), S::tv), 17, "Regular", DIM, Dir.start()), right(dp(24)));
         View focus;
         if (result != null) {
             focus = renderRecord();
@@ -134,18 +128,17 @@ public class UpdateActivity extends Activity {
             focus = renderState();
         }
         if (focus != null) {
-            final View f = focus;
-            f.post(new Runnable() { @Override public void run() { f.requestFocus(); } });
+            box.focusFirst(focus);   // 4.4: long words read before the focus goes to the button (Box)
         }
     }
 
     private View renderRecord() {
         if (result.kind == UpdateRecords.Kind.SUCCESS) {
             steps(4);
-            col.addView(text(UpdateText.done(UpdateText.versionOf(BuildConfig.MARKETING, result.target), S::tv), 18, "Medium", GOLD, Dir.start()), right(dp(8)));
+            col.addView(text(UpdateText.done(UpdateText.versionOf(BuildConfig.MARKETING, result.target), S::tv), 17, "Medium", GOLD, Dir.start()), right(dp(8)));
             return doneButton();
         } else {
-            col.addView(text(S.tv(UpdateText.NOT_DONE), 18, "Medium", RED, Dir.start()), right(dp(6)));
+            col.addView(text(S.tv(UpdateText.NOT_DONE), 17, "Medium", RED, Dir.start()), right(dp(6)));
             col.addView(text(UpdateText.failedStep(S.tv(UpdateOrder.label(result.step)), S::tv), 14, "Regular", DIM, Dir.start()), right(dp(14)));
             aiMessage();
         }
@@ -200,7 +193,7 @@ public class UpdateActivity extends Activity {
                 return null;
             case "done":
                 steps(4);
-                col.addView(text(UpdateText.done(newest, S::tv), 18, "Medium", GOLD, Dir.start()), right(dp(8)));
+                col.addView(text(UpdateText.done(newest, S::tv), 17, "Medium", GOLD, Dir.start()), right(dp(8)));
                 return doneButton();
             case "error":
                 return renderError(why, detail);
@@ -223,11 +216,11 @@ public class UpdateActivity extends Activity {
                     }
                 });
             case "declined":
-                col.addView(text(S.tv(UpdateText.NOT_DONE), 18, "Medium", RED, Dir.start()), right(dp(6)));
+                col.addView(text(S.tv(UpdateText.NOT_DONE), 17, "Medium", RED, Dir.start()), right(dp(6)));
                 col.addView(text(S.tv(UpdateText.DECLINED), 14, "Regular", DIM, Dir.start()), right(dp(16)));
                 return checkButton();
             case "failed":
-                col.addView(text(S.tv(UpdateText.NOT_DONE), 18, "Medium", RED, Dir.start()), right(dp(6)));
+                col.addView(text(S.tv(UpdateText.NOT_DONE), 17, "Medium", RED, Dir.start()), right(dp(6)));
                 col.addView(text(UpdateText.failedStep(S.tv(UpdateOrder.label(detail)), S::tv), 14, "Regular", DIM, Dir.start()), right(dp(14)));
                 aiMessage();
                 return checkButton();
@@ -240,7 +233,7 @@ public class UpdateActivity extends Activity {
     /** The message that sends the owner to their AI assistant, with the repository address small under it. */
     private void aiMessage() {
         col.addView(text(S.tv(UpdateText.AI_MESSAGE), 17, "Medium", TEXT, Dir.start()), right(dp(8)));
-        TextView repo = text("⁦" + UpdateText.REPO + "⁩", 13, "Regular", DIM, Dir.start());
+        TextView repo = text("⁦" + UpdateText.REPO + "⁩", 14, "Regular", DIM, Dir.start());
         col.addView(repo, right(dp(18)));
     }
 
@@ -367,7 +360,7 @@ public class UpdateActivity extends Activity {
     // ---------------------------------------------------------------- helpers
 
     private View button(String label, final int accent, View.OnClickListener click) {
-        final TextView p = text(label, 18, "Medium", accent == RED ? RED : TEXT, Gravity.CENTER);   // the warning colour for RED
+        final TextView p = text(label, 17, "Medium", accent == RED ? RED : TEXT, Gravity.CENTER);   // the warning colour for RED
         p.setFocusable(true);
         p.setClickable(true);
         GlassPaint.card(p, look, 14);   // the panel, the solid focus fill and its ink while focused
@@ -376,6 +369,10 @@ public class UpdateActivity extends Activity {
         lp.topMargin = dp(16);
         col.addView(p, lp);
         return p;
+    }
+
+    private Typeface face(String weight) {
+        try { return Typeface.createFromAsset(getAssets(), "fonts/Thmanyah-" + weight + ".otf"); } catch (RuntimeException e) { return null; }
     }
 
     private TextView text(String s, float sp, String weight, int color, int gravity) {

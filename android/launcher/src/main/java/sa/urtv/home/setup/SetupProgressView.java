@@ -78,15 +78,15 @@ final class SetupProgressView extends LinearLayout {
         running = panel();
         breath = new Breath(c);
         running.addView(breath, new LayoutParams(dp(96), dp(24)));
-        stepName = text(20, true, look.text);
+        stepName = text(22, true, look.text);
         running.addView(stepName, margin(dp(20), 0));
-        doing = text(16, false, look.sub);
+        doing = text(17, false, look.sub);
         doing.setMinLines(2);
         running.addView(doing, margin(dp(8), 0));
         LinearLayout row = new LinearLayout(c);
         row.setLayoutDirection(Dir.layout());
         row.setGravity(Gravity.BOTTOM);
-        percent = text(36, true, look.accent);
+        percent = text(22, true, look.accent);
         row.addView(percent, new LayoutParams(-2, -2));
         counts = text(14, false, look.sub);
         LayoutParams cp = new LayoutParams(0, -2, 1f);
@@ -98,7 +98,7 @@ final class SetupProgressView extends LinearLayout {
         running.addView(bar, margin(dp(8), 0));
         elapsed = text(14, false, look.sub);
         running.addView(elapsed, margin(dp(16), 0));
-        restart = text(16, true, look.text);
+        restart = text(17, true, look.text);
         restart.setPadding(dp(12), dp(8), dp(12), dp(8));
         restart.setBackground(GlassPaint.fill(c, GlassStyle.over(look.dialog, look.base), 14, look.accent));
         restart.setVisibility(GONE);
@@ -106,7 +106,7 @@ final class SetupProgressView extends LinearLayout {
         main.addView(running);
 
         promptCard = panel();
-        promptTitle = text(18, true, look.text);
+        promptTitle = text(17, true, look.text);
         promptCard.addView(promptTitle, margin(0, 0));
         art = new DialogArt(c);
         promptCard.addView(art, margin(dp(12), 0, dp(220)));   // 4.4: the dialog and the four keys under it
@@ -122,7 +122,7 @@ final class SetupProgressView extends LinearLayout {
         resultCard.setGravity(Gravity.CENTER_VERTICAL | Dir.start());
         badge = new CheckBadge(c);
         resultCard.addView(badge, new LayoutParams(dp(56), dp(56)));
-        resultText = text(20, true, look.text);
+        resultText = text(22, true, look.text);
         resultCard.addView(resultText, margin(dp(24), 0));
         resultSub = text(14, false, look.sub);
         resultCard.addView(resultSub, margin(dp(8), 0));
@@ -139,7 +139,7 @@ final class SetupProgressView extends LinearLayout {
             // a failed one in red; nothing rounded behind them
             LinearLayout w = new LinearLayout(getContext());
             w.setOrientation(VERTICAL);
-            TextView t = text(p.state == NOW ? 18 : 16, p.state == NOW, p.state == NOW ? look.accent : p.state == FAILED ? look.warn : look.sub);
+            TextView t = text(17, p.state == NOW, p.state == NOW ? look.accent : p.state == FAILED ? look.warn : look.sub);
             t.setAlpha(p.state == WAIT ? 0.7f : 1f);
             t.setText(p.name);
             w.addView(t, new LayoutParams(-2, -2));
@@ -363,7 +363,7 @@ final class SetupProgressView extends LinearLayout {
             p.setColor(look.accent);
             c.drawRoundRect(k, dp(6), dp(6), p);
             label(c, word, cx, cy, 14, look.text, true);
-            label(c, String.valueOf(n), cx, k.top - dp(12), 13, look.sub, false);
+            label(c, String.valueOf(n), cx, k.top - dp(12), 14, look.sub, false);
         }
 
         @Override protected void onDraw(Canvas c) {
@@ -414,7 +414,7 @@ final class SetupProgressView extends LinearLayout {
             p.setStyle(Paint.Style.FILL);
             p.setColor(look.accent);
             c.drawRoundRect(a, dp(12), dp(12), p);
-            label(c, allow, a.centerX(), a.centerY(), 16, look.light ? 0xFFFFFFFF : 0xFF14161A, true);
+            label(c, allow, a.centerX(), a.centerY(), 17, look.light ? 0xFFFFFFFF : 0xFF14161A, true);
             // the remote's four keys in order, in the reading direction of the screen: اختيار، تحت (▼)، يسار (◀)، اختيار
             String[] keys = {ok, "▼", "◀", ok};
             float kw = dp(72), gap = dp(20), total = 4 * kw + 3 * gap, ky = box.bottom + dp(44);

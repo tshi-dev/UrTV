@@ -64,21 +64,24 @@ public class InstallSaverActivity extends Activity {
         return t;
     }
 
+    private Typeface font(String f) { try { return Typeface.createFromAsset(getAssets(), "fonts/" + f + ".otf"); } catch (RuntimeException e) { return null; } }
+
     @Override protected void onCreate(Bundle b) {
         super.onCreate(b);
-        LinearLayout col = new LinearLayout(this);
-        col.setOrientation(LinearLayout.VERTICAL);
-        col.setGravity(Gravity.CENTER);
-        col.setBackgroundColor(0xF0101216);
-        int sw = getResources().getDisplayMetrics().widthPixels, pad = Math.round(sw * 0.05f);   // the 5 % safe area
-        int side = Math.max(pad, (sw - dp(Compact.WINDOW_DP)) / 2);   // 4.4 compact: the words in a column 560 dp wide in the middle
-        col.setPadding(side, pad, side, pad);
-        col.addView(text(S.t("ثبّت الجزء الثاني"), 24, 0xFFFFFFFF, "Thmanyah-Medium"));
+        // 4.4 (the owner: «ONE BOX for everything»): the same box as the setup's (Box), in the 5 % safe area
+        android.graphics.drawable.GradientDrawable face = new android.graphics.drawable.GradientDrawable();
+        face.setColor(0xFF1A1C20);
+        face.setCornerRadius(dp(22));
+        Box box = Box.make(this, face, 0xFFFFFFFF, 0x99FFFFFF, font("Thmanyah-Medium"), Dir.layout());
+        box.page.setBackgroundColor(0xF0101216);
+        box.title.setText(S.t("ثبّت الجزء الثاني"));
+        LinearLayout col = box.content;
+        col.setGravity(Gravity.CENTER_HORIZONTAL);
         TextView why = text(S.t("الإعدادات والمدينة والفرق وشاشة التوقف في الجزء الثاني من UrTV، وهو غير مثبّت على هذا التلفزيون."), 17, 0xCCFFFFFF, "Thmanyah-Regular");
         LinearLayout.LayoutParams wp = new LinearLayout.LayoutParams(-2, -2);
         wp.topMargin = dp(16);
         col.addView(why, wp);
-        button = text(S.t("نزّل وثبّت"), 18, 0xFF101216, "Thmanyah-Medium");
+        button = text(S.t("نزّل وثبّت"), 17, 0xFF101216, "Thmanyah-Medium");
         button.setBackgroundColor(0xFFD6AF6B);
         button.setPadding(dp(32), dp(8), dp(32), dp(8));
         button.setMinHeight(dp(Compact.BUTTON_DP));   // 4.4 compact: 44 dp
@@ -96,10 +99,10 @@ public class InstallSaverActivity extends Activity {
         LinearLayout.LayoutParams dp0 = new LinearLayout.LayoutParams(-2, -2);
         dp0.topMargin = dp(20);
         col.addView(text(S.t("أو من تطبيق Downloader: اكتب الكود"), 17, 0x99FFFFFF, "Thmanyah-Regular"), dp0);
-        TextView code = text(SaverInstallRule.DOWNLOADER_CODE, 24, 0xFFFFFFFF, "Thmanyah-Medium");   // Latin digits, as Downloader asks them
+        TextView code = text(SaverInstallRule.DOWNLOADER_CODE, 22, 0xFFFFFFFF, "Thmanyah-Medium");   // Latin digits, as Downloader asks them
         col.addView(code);
-        setContentView(col);
-        button.requestFocus();
+        setContentView(box.page);
+        box.focusFirst(button);
         InternalReceivers.register(this, result, new IntentFilter(RESULT));
         registered = true;
     }

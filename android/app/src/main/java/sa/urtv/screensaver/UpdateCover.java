@@ -60,7 +60,7 @@ public class UpdateCover extends Activity {
         TextView t = new TextView(this);
         t.setText(S.t("يكمّل التحديث… ترجع الشاشة الرئيسية بعد لحظات"));
         t.setTextColor(Color.WHITE);
-        t.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18);   // 4.4 compact (the owner: «toooo much»)
+        t.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);   // 4.4 compact (the owner: «toooo much»)
         t.setGravity(Gravity.CENTER);
         t.setBackgroundColor(Color.BLACK);
         t.setLayoutDirection(Dir.layout());
