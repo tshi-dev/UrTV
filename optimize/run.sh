@@ -277,7 +277,7 @@ fi
 # as «run the same command again» would. Every step is safe to repeat (each checks what is done already). Any other stop, a !! line that asks for
 # something, the Wi-Fi pause (5), a command that may or may not have run: stops as before.
 DROPPED='^!! TV not answering after [0-9]+ tries|^!! The TV stopped answering while [^ ]+ was installing'
-run_step() {   # $1 step: its exit code; what it printed is also kept in $RUN/.step-out
+run_step() {   # $1 step: its exit code; what it printed is also kept in the run folder's .step-out
   local rc=0
   set +e
   ( set -e; do_step "$1" ) 2>&1 | tee "$RUN/.step-out"
