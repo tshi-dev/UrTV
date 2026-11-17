@@ -19,7 +19,7 @@ often describe the same bug in two ways, and both rows are kept when their guard
 |---|---|---|---|---|---|---|
 | R-001 | TCL: the remote froze for seconds every minute and at each return to the home | UpdateChannel.read: a provider query on the home's UI thread (tick, onResume) restarted the killed screensaver process | 4.3.4 | `tests/ui_thread_channel_test.py`, `tests/regressions/ui_thread_ipc_test.py` | launcher (TCL) | Y |
 | R-002 | Back on the home was slow on a TCL | backExitTakes read ConfigSnapshot (a provider query) on every Back press | 4.3.4 | `tests/ui_thread_channel_test.py`, `tests/regressions/ui_thread_ipc_test.py` | launcher (TCL) | Y |
-| R-003 | TVs on the beta channel got no update when a release went to everyone | promote-beta copied only from apk-next; apk-beta lagged behind apk-latest | 4.3.4 | `tests/beta_channel_test.py`, `tests/regressions/release_gate_ci_test.py` | CI / updater | Y |
+| R-003 | TVs on the beta channel got no update when a release went to everyone | promote-beta copied only from apk-next, and the TV read apk-beta alone; now the newer of apk-beta and apk-latest | 4.3.4 | `tests/beta_channel_test.py`, `tests/beta_newest_test.py`, `tests/regressions/release_gate_ci_test.py` | CI / updater | Y |
 | R-004 | «تحديث تلفزيوني»: Down skipped «تحديث صفحة شاشة التوقف» | the release note's fullScroll moved the focus to the last row | 4.3.4 | `tests/update_rows_focus_test.py` | saver-app | Y |
 | R-005 | The long-press app menu cut its words («صفحته في المتجر», «إلغاء التثبيت») | the options box was exactly the tile's width | 4.3.4 | `tests/options_fit_test.py` | launcher | Y |
 | R-006 | A settings row needed two presses | a late reply rebuilt the list while OK was held; the first press was lost | 4.3.4 | `tests/ok_hold_test.py` | saver-app (TCL) | Y |
@@ -267,6 +267,8 @@ often describe the same bug in two ways, and both rows are kept when their guard
 | R-248 | «إعداد تلفزيوني» could not be found in apps or settings | no visible entry on this TV | build 286 (settings row) | `tests/setup_row_test.py` | saver-app | Y |
 | R-249 | Live match card said «تبدأ بعد العشاء…»; «Shabab Al-/Ahli» split | upcoming wording for live games; breakable hyphen | build 181+ (not re-checked) | `tests/football_page.test.mjs` | page | Y |
 | R-251 | Beta on with no beta build: update said it cannot update from the TV | a 404 on apk-beta read as CANNOT | 4.3.3 (build 458) | `tests/update_test.py` | launcher | Y |
+| R-252 | «بدون» left the football home's weather, prayers and games widgets on | HomeCardChoice.football did not ask whether the cards were on | 4.3.4 | `tests/football_off_test.py` | launcher | Y |
+| R-253 | The tester's report carried a Wi-Fi name, its BSSID and MAC addresses | device details pasted from a diagnosis into a tracked report | 4.3.3 (report fixed in f49cf8eb) | `tests/regressions/privacy_test.py` | docs / tester | N |
 
 ## Open findings of the gate (QA-n)
 
@@ -274,16 +276,20 @@ Paths the UI-thread rule (`tests/regressions/ui_thread_ipc_test.py`) found alrea
 passes today, each with its QA number; none is fixed by the gate. A fix removes the line from `tests/regressions/ui_thread_baseline.txt`
 and adds a row above.
 
-- **QA-1** `MainActivity.onResume -> updateClock`: the first draw after the home starts reads `ConfigSnapshot.read` on the UI thread (one
-  answer shared for 3 s). On a TV that killed the screensaver's process this is the shape of the TCL freeze, right after Home.
+- **QA-1** `MainActivity.onResume -> updateClock`: the first draw read `ConfigSnapshot.read` on the UI thread. **Fixed in 4.3.4**
+  (`work/434-qa`, `tests/qa_434_test.py`): a home made again draws from the process's last answer; only a cold process's very first draw
+  still reads (nothing on screen yet), and that one line stays in the baseline.
 - **QA-2** the screensaver (`ScreenDream` / its `MainActivity`) `dispatchKeyEvent -> NowPlayingBridge.adhanState`: a cross-process query
-  to the home on a key.
-- **QA-3** `MainActivity.onResume` and a key on the reminder card `-> ReminderCard.refresh -> ReminderStore.read`: a query to the
-  screensaver's tasks provider on the UI thread.
-- **QA-4** `MainActivity.onResume`/the tick `-> updateClock -> AdhanSync.onConfig -> Place.get`: a query to the screensaver's config on the
-  UI thread (how often: to measure).
-- **QA-5** `DockActivity.dispatchKeyEvent` («ترتيب المفضلة»): while an app is being moved every key is taken, the shape of the 4.3.4
-  edit-mode bug (`tests/regressions/key_handlers_test.py`, KEEPS_ALL).
+  to the home on a key. **Open, for 4.4:** a cached state could make OK miss an adhan that just started; it needs the home's adhan
+  broadcast feeding the cache. The query goes to the home's own process (rarely killed).
+- **QA-3** the reminder card's refresh, the return's reschedule and OK on the card read and wrote the screensaver's tasks provider on the
+  UI thread. **Fixed in 4.3.4** (`work/434-qa`, `tests/qa_434_test.py`).
+- **QA-4** `updateClock -> AdhanSync.onConfig -> Place.get`: **not a bug.** onConfig calls the 3-argument `Place.get`, which never
+  queries; the graph mixed up the overloads and took `AdhanScheduler.schedule(c, p)` for an executor. Both fixed in `javagraph.py`.
+- **QA-5** `DockActivity.dispatchKeyEvent` («ترتيب المفضلة»): while an app was moved every key was taken. **Fixed in 4.3.4**
+  (`work/434-qa`: FavEdit.owns, `tests/qa_434_test.py`); `key_handlers_test.py`'s KEEPS_ALL entry goes when it lands.
+
+The rows for QA-1, QA-3, QA-5 and the 4.3.4 review's F1/F2 are added when `work/434-qa` is on the release line.
 
 ## Fixed on next (4.4), guarded there: rows to add when 4.4 reaches master
 

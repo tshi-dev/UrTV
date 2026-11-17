@@ -63,7 +63,9 @@ def match_paren(s, i):
     return len(s)
 
 
-_OFF = re.compile(r"\bnew\s+Thread\s*\(|\.\s*(execute|submit|schedule|scheduleAtFixedRate|scheduleWithFixedDelay)\s*\(")
+# an executor is a field or a call's result (`clockReads.execute(`, `Executors.newX().submit(`), never one of our classes
+# (`AdhanScheduler.schedule(c, p)` is a plain call)
+_OFF = re.compile(r"\bnew\s+Thread\s*\(|(?:\b[a-z_]\w*|\))\s*\.\s*(execute|submit|schedule|scheduleAtFixedRate|scheduleWithFixedDelay)\s*\(")
 _BACK = re.compile(r"\brunOnUiThread\s*\(|\.\s*(post|postDelayed|postAtFrontOfQueue)\s*\(")
 
 
@@ -95,6 +97,21 @@ _BEFORE = re.compile(r"([\w>\]])\s+$")
 _PREV = re.compile(r"(\w+)\s*$")
 
 
+def arity(args):
+    """how many arguments (or parameters) a bracket's text holds, counting only its top-level commas"""
+    if not args.strip():
+        return 0
+    depth, n = 0, 1
+    for ch in args:
+        if ch in "([{<":
+            depth += 1
+        elif ch in ")]}>":
+            depth -= 1
+        elif ch == "," and depth == 0:
+            n += 1
+    return n
+
+
 def _heads(s):
     """(name, start of name, index of the body's brace) for every method or constructor header"""
     for m in _NAME.finditer(s):
@@ -111,7 +128,7 @@ def _heads(s):
         w = _PREV.search(pre.rstrip())
         if w and w.group(1) in _NOT:
             continue
-        yield name, m.start(1), a.end() - 1
+        yield name, m.start(1), a.end() - 1, arity(s[m.end():close - 1])
 
 
 # a file whose class is a screen (an Activity, a View, a Dialog): its ENTRY methods and its own receivers run on the UI thread while the
@@ -122,11 +139,11 @@ _CLASS = re.compile(r"\b(?:class|interface|enum|record)\s+(\w+)")
 
 
 class Method:
-    __slots__ = ("cls", "name", "file", "line", "body", "sinks", "calls", "ui")
+    __slots__ = ("cls", "name", "file", "line", "body", "sinks", "calls", "ui", "arity")
 
     def __init__(self, cls, name, file, line, body):
         self.cls, self.name, self.file, self.line, self.body = cls, name, file, line, body
-        self.sinks, self.calls, self.ui = [], [], False
+        self.sinks, self.calls, self.ui, self.arity = [], [], False, -1
 
     @property
     def key(self):
@@ -139,10 +156,11 @@ def methods_of(path, rel):
     top = _CLASS.search(s)
     cls = top.group(1) if top else path.stem
     out = []
-    for name, at, b0 in _heads(s):
+    for name, at, b0, n in _heads(s):
         b1 = match_paren(s, b0)
         line = s.count("\n", 0, at) + 1
         out.append(Method(cls, name, rel, line, s[b0:b1]))
+        out[-1].arity = n
     ui = bool(_UI.search(s))
     for m in out:
         m.ui = ui
@@ -189,6 +207,10 @@ def load(apps=tuple(SRC), root=None):
                 targets = [x for x in byname.get(n, []) if x.file == m.file]
             elif q in typesof[m.file] and typesof[m.file][q] in byclass:
                 targets = [x for x in byclass[typesof[m.file][q]] if x.name == n]
+            if len(targets) > 1:   # overloads: the ones taking as many arguments as the call gives (Place.get(c) is not Place.get(c, f, t))
+                n_args = arity(m.body[c.end():match_paren(m.body, c.end() - 1) - 1])
+                same = [t for t in targets if t.arity == n_args]
+                targets = same or targets
             for t in targets:
                 if t is not m and id(t) not in seen:
                     seen.add(id(t))

@@ -45,9 +45,6 @@ disk:prefs.commit | launcher:ParentalActivity.onResume | Parental.turnOff | base
 disk:prefs.commit | launcher:PhoneActivity.onResume | Parental.pin | baseline 4.3.4: prefs written with commit() on a click or a return (small file, the app's own)
 disk:prefs.commit | launcher:PhoneActivity.onResume | Parental.put | baseline 4.3.4: prefs written with commit() on a click or a return (small file, the app's own)
 disk:prefs.commit | launcher:PhoneActivity.onResume | Parental.remove | baseline 4.3.4: prefs written with commit() on a click or a return (small file, the app's own)
-disk:prefs.commit | launcher:PlayerActivity.onKeyDown | Prefs.setAdhanLevel | baseline 4.3.4: prefs written with commit() on a click or a return (small file, the app's own)
-disk:prefs.commit | launcher:PlayerActivity.onKeyDown | Prefs.setSavedTvMuted | baseline 4.3.4: prefs written with commit() on a click or a return (small file, the app's own)
-disk:prefs.commit | launcher:PlayerActivity.onKeyDown | Prefs.setSavedTvVolume | baseline 4.3.4: prefs written with commit() on a click or a return (small file, the app's own)
 disk:prefs.commit | launcher:SetupActivity.onClick | Parental.pin | baseline 4.3.4: prefs written with commit() on a click or a return (small file, the app's own)
 disk:prefs.commit | launcher:SetupActivity.onClick | Parental.put | baseline 4.3.4: prefs written with commit() on a click or a return (small file, the app's own)
 disk:prefs.commit | launcher:SetupActivity.onClick | Parental.remove | baseline 4.3.4: prefs written with commit() on a click or a return (small file, the app's own)
@@ -145,15 +142,12 @@ ipc:ContentResolver.query | launcher:DockActivity.onResume | ConfigSnapshot.quer
 ipc:ContentResolver.query | launcher:InputNamesActivity.onResume | ConfigSnapshot.query | ConfigSnapshot.read: one cross-process answer shared for 3 s (SHARE_MS); QA-1 open: the first read after Home can still start the screensaver's process on a TCL
 ipc:ContentResolver.query | launcher:MainActivity.dispatchKeyEvent | ConfigSnapshot.query | ConfigSnapshot.read: one cross-process answer shared for 3 s (SHARE_MS); QA-1 open: the first read after Home can still start the screensaver's process on a TCL
 ipc:ContentResolver.query | launcher:MainActivity.dispatchKeyEvent | HomeCard.ownPhoto | over-reach: inside the card WebView's shouldInterceptRequest (WebView's own IO thread), not the UI thread
-ipc:ContentResolver.query | launcher:MainActivity.dispatchKeyEvent | Place.get | QA-4 open: AdhanSync.onConfig asks the screensaver's provider for the place on the UI thread
 ipc:ContentResolver.query | launcher:MainActivity.dispatchKeyEvent | ReminderStore.read | QA-3 open: the reminder card's refresh reads the screensaver's tasks provider on the UI thread (a return to the home, a key on the card)
 ipc:ContentResolver.query | launcher:MainActivity.onReceive | ConfigSnapshot.query | ConfigSnapshot.read: one cross-process answer shared for 3 s (SHARE_MS); QA-1 open: the first read after Home can still start the screensaver's process on a TCL
 ipc:ContentResolver.query | launcher:MainActivity.onReceive | HomeCard.ownPhoto | over-reach: inside the card WebView's shouldInterceptRequest (WebView's own IO thread), not the UI thread
-ipc:ContentResolver.query | launcher:MainActivity.onReceive | Place.get | QA-4 open: AdhanSync.onConfig asks the screensaver's provider for the place on the UI thread
 ipc:ContentResolver.query | launcher:MainActivity.onReceive | ReminderStore.read | QA-3 open: the reminder card's refresh reads the screensaver's tasks provider on the UI thread (a return to the home, a key on the card)
 ipc:ContentResolver.query | launcher:MainActivity.onResume | ConfigSnapshot.query | ConfigSnapshot.read: one cross-process answer shared for 3 s (SHARE_MS); QA-1 open: the first read after Home can still start the screensaver's process on a TCL
 ipc:ContentResolver.query | launcher:MainActivity.onResume | HomeCard.ownPhoto | over-reach: inside the card WebView's shouldInterceptRequest (WebView's own IO thread), not the UI thread
-ipc:ContentResolver.query | launcher:MainActivity.onResume | Place.get | QA-4 open: AdhanSync.onConfig asks the screensaver's provider for the place on the UI thread
 ipc:ContentResolver.query | launcher:MainActivity.onResume | ReminderStore.read | QA-3 open: the reminder card's refresh reads the screensaver's tasks provider on the UI thread (a return to the home, a key on the card)
 ipc:ContentResolver.query | launcher:ParentalActivity.onResume | ConfigSnapshot.query | ConfigSnapshot.read: one cross-process answer shared for 3 s (SHARE_MS); QA-1 open: the first read after Home can still start the screensaver's process on a TCL
 ipc:ContentResolver.query | launcher:PhoneActivity.onResume | ConfigSnapshot.query | ConfigSnapshot.read: one cross-process answer shared for 3 s (SHARE_MS); QA-1 open: the first read after Home can still start the screensaver's process on a TCL

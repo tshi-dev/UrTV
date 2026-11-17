@@ -50,7 +50,8 @@ the same network. Note the build in the report's first line.
   an off card is not drawn; the prayer card and adhan times there; the greeting fits the hour; the city's clock right; the stocks card
   without a dark box or bright rim; clean mode on then off: the quick-buttons box as wide as before, the prayer card centred; the
   «خلّ تلفزيونك يفتح على UrTV» line never over a card; the quick buttons all in the look's fill; adhkar digits as set.
-  Rows: R-022, R-029, R-050, R-085, R-123, R-199, R-233, R-242, R-243, R-225, R-188, R-196, R-035, R-082, R-087, R-205.
+  On the football home, «بدون» turns its weather, prayers and games widgets off too.
+  Rows: R-252, R-022, R-029, R-050, R-085, R-123, R-199, R-233, R-242, R-243, R-225, R-188, R-196, R-035, R-082, R-087, R-205.
 - **S-09 Screensaver.** Start it (`optimize/saver.sh` preview or wait): no black/blank second, the photo visible (never solid black),
   photos of several packs mixed, the bottom strip steady across two slot turns, weather and prices current, Arabic joined, «حقوق الصور»
   names readable and «إغلاق» visible; the English page with no dark patch.
