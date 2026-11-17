@@ -86,6 +86,13 @@ public class NowPlayingProvider extends ContentProvider {
             b.putLong("bytes", "clear_cache".equals(method) ? sa.urtv.home.CacheSweep.clear(cache) : sa.urtv.home.CacheSweep.size(cache));
             return b;
         }
+        // 4.4 «بدء شاشة التوقف بعد» in the screensaver's settings (same key only): the TV's idle delay over our adb (SetupHook.setIdle), the answer in "result"
+        if ("set_idle".equals(method) && getContext() != null
+                && getContext().checkCallingPermission("sa.urtv.home.READ_NOW_PLAYING") == PackageManager.PERMISSION_GRANTED) {
+            Bundle b = new Bundle();
+            b.putString("result", sa.urtv.home.setup.SetupHook.setIdle(getContext(), arg));
+            return b;
+        }
         return null;
     }
 

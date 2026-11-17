@@ -93,6 +93,18 @@ final class NowPlayingBridge {
         } catch (Exception ignored) { return false; }
     }
 
+    /**
+     * 4.4 «بدء شاشة التوقف بعد»: the launcher sets the TV's idle delay over its own adb (it checks our signature, and takes only the minutes we
+     * offer). Blocks for the adb link: call it off the UI thread. "ok", "no_link", "busy" or "bad"; "no_link" too when the launcher could not be asked.
+     */
+    static String setIdle(Context c, String minutes) {
+        try {
+            android.os.Bundle b = c.getApplicationContext().getContentResolver().call(Uri.parse("content://sa.urtv.home.nowplaying"), "set_idle", minutes, null);
+            String r = b == null ? null : b.getString("result");
+            return r == null ? "no_link" : r;
+        } catch (Exception ignored) { return "no_link"; }
+    }
+
     /** Ends the adhan that is playing in the launcher (it checks our signature, and stops only an adhan). */
     static void stopAdhan(Context c) {
         try {
