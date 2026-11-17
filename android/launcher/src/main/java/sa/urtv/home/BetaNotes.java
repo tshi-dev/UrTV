@@ -46,13 +46,13 @@ final class BetaNotes {
             final boolean crashed = "crash".equals(what);
             final String error = crash;
             new AlertDialog.Builder(a)
-                .setMessage(S.t(crashed ? "صار خطأ، تبي ترسل تقرير؟" : "انت على النسخة التجريبية، إذا شفت شي غريب أرسل ملاحظة"))
-                .setPositiveButton(S.t(crashed ? "أرسل تقرير" : "أرسل ملاحظة"), (d, w) -> {
+                .setMessage(crashed ? S.t("صار خطأ، تبي ترسل تقرير؟") : S.t("انت على النسخة التجريبية، إذا شفت شي غريب أرسل ملاحظة"))
+                .setPositiveButton(crashed ? S.t("أرسل تقرير") : S.t("أرسل ملاحظة"), (d, w) -> {
                     Intent i = new Intent(a, ReportActivity.class);
                     if (crashed) i.putExtra("error", error);
                     a.startActivity(i);
                 })
-                .setNegativeButton(S.t(crashed ? "لا" : "تمام"), null)
+                .setNegativeButton(crashed ? S.t("لا") : S.t("تمام"), null)
                 .show();
         } catch (RuntimeException ignored) { }
     }
