@@ -67,6 +67,42 @@ end to the new sha. `review_gate.py` fails while app code changed after the revi
 `tester/RELEASE-SMOKE.md`: 15 minutes on a TCL with the `apk-next` build of the sha; every row of the register a person can see is under
 one of its 19 checks. The supervisor sends it to the tester session and keeps the report with the review.
 
+## The LESSONS rules (R1–R25)
+
+The supervisor's LESSONS.md: 77 problems, 25 rules. A machine checks these, in the regressions group:
+
+| Rule | Checked by |
+|---|---|
+| R1 nothing that waits on the UI thread (onCreate, onResume, the tick, keys; subprocesses too) | `ui_thread_ipc_test.py` |
+| R3 a key handler gives back keys it does not use | `key_handlers_test.py`, `tests/edit_keys_test.py` |
+| R4 no focus listener scrolls by itself | `lessons_test.py` |
+| R5 menus fit (partly: the app options box, dialogs) | `tests/options_fit_test.py`, `tests/dialog_fit_test.py`; the rest is smoke S-03/S-06 at 720p |
+| R9 target API 34; no new accessibility service in the home | `lessons_test.py` |
+| R10 the page's WebView 66 CSS never grows without a fallback; ES2017; no letter-spacing on Arabic | `lessons_test.py`, `tests/check.py`, `tests/arabic_spacing_test.py` |
+| R11 a missing beta falls back; the newer of beta and latest | `tests/beta_channel_test.py`, `tests/beta_newest_test.py` |
+| R12 no clean-up list touches keep.txt or the core | `keep_list_test.py`, `lessons_test.py` |
+| R14 no content pack in an APK | `no_bundled_packs_test.py` |
+| R15 apk-latest keeps Latest and its stable names, rescue included | `lessons_test.py` |
+| R16 only master and next publish; a local build is versionCode 1 | `lessons_test.py` |
+| R17 pinned runners, actions, npm and pip | `lessons_test.py` (open: fonttools, brotli and pillow are not pinned yet, printed as a NOTE) |
+| R18 tv.html under its budget; market names generated | `tests/check.py`, `tests/market_names_test.py` |
+| R21 no Wi-Fi name, MAC, IP, serial or e-mail in tester/ and docs/ | `privacy_test.py` (a PIN or a recovery code cannot be told from a number: AGENTS.md) |
+
+The rest are this checklist; the reviewer (step 3) and the supervisor confirm each in the review file under «Rules»:
+
+- [ ] **R2** no silent no-op: a feature that needs something missing says so on screen and offers the fix; a failed read keeps the last real answer.
+- [ ] **R5** every hidden or special item keeps a reachable way in; every new menu checked at 720p and the large font (5 % safe area, 8 px scale).
+- [ ] **R6** Google TV home: the add-on's HOME_KEY catch and the window watch; one bring per press; never a stock home over another app (4.4).
+- [ ] **R7** never without a home: a rescue path, a warning before uninstall, a journal outside the app's data.
+- [ ] **R8** the setup never turns off the stock home or the wizard that holds the Wi-Fi or cast credentials; protected packages stay on; a skip with a note, not `!!`.
+- [ ] **R13** Checks ran on every head that reaches next or master (a green «Build APKs» only means it compiled).
+- [ ] **R19** parallel branches merged in one integration worktree, both sides kept in shared registries (run.sh, the register, keep.txt); check.py with the real fonts and every test before a push to next.
+- [ ] **R20** no push to master, branch delete or GitHub reply without the owner (signed «— فريق UrTV»); commits as tshi-dev, no AI lines.
+- [ ] **R22** no tester or person names in branch names; merged branches deleted.
+- [ ] **R23** a session stopped by its usage limit left one line of state in STEP.md.
+- [ ] **R24** spend: Sonnet workers, one fix round per batch, no polling.
+- [ ] **R25** tester: the TV muted; never the owner's PIN or accounts; no reboot or factory step while the owner uses the TV.
+
 ## When a bug is fixed (any time, not only at release)
 
 In the same commit as the fix: a row in `docs/dev/REGRESSIONS.md` with the test that fails when the fix is reverted (revert it once and

@@ -33,7 +33,8 @@ check("«on TV» is Y or N", not yn, yn)
 named = {g for _, c in rows for g in reg.guards(c)}
 # rules that guard against a class of mistake before any bug of it reached a TV (a lesson, not a row): each says why it is here
 PREVENTIVE = {"tests/regressions/no_bundled_packs_test.py": "the photo packs are downloaded, never shipped in an APK (supervisor's rule, 4.3.4)",
-              "tests/regressions/regressions_index_test.py": "this file", "tests/regressions/release_gate_ci_test.py": "the gate's own wiring"}
+              "tests/regressions/regressions_index_test.py": "this file",
+              "tests/regressions/lessons_test.py": "the LESSONS rules (R4, R9, R10, R12, R15, R16, R17): rules, not one bug each", "tests/regressions/release_gate_ci_test.py": "the gate's own wiring"}
 orphan = [str(p.relative_to(ROOT)) for p in sorted((ROOT / "tests/regressions").glob("*_test.py"))
           if str(p.relative_to(ROOT)) not in named and str(p.relative_to(ROOT)) not in PREVENTIVE]
 check("every gate test of tests/regressions guards at least one row", not orphan, orphan)

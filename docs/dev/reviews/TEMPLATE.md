@@ -9,6 +9,11 @@ Regressions group: <PASS/FAIL>
 
 Summary: <blocker n, high n, medium n, low n; one sentence on the release's risk>
 
+## Rules
+
+The checklist rules of docs/dev/RELEASE.md («The LESSONS rules»): each `ok`, `n/a` or a finding below.
+R2: · R5: · R6: · R7: · R8: · R13: · R19: · R20: · R22: · R23: · R24: · R25:
+
 ## Findings
 
 ### F1 [high] [open] <one-line title>

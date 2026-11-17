@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Regression gate R-UI (4.3.3/4.3.4: the TCL remote froze): no NEW cross-process call (a ContentResolver query/call/insert, ConfigSnapshot.read,
-UpdateChannel.read) and no NEW disk work (streams, Files, prefs commit(), decodeFile) on a path the UI thread takes for a key, a click, a
+UpdateChannel.read) and no NEW disk work (streams, Files, prefs commit(), decodeFile) on a path the UI thread takes for a key, a click, onCreate, a
 return to the screen (onResume/onStart), a receiver of a screen (the minute tick) — in every app under android/ (the home, the
 screensaver app, the rescue app, and the extras when they come). The call graph is tests/regressions/javagraph.py (code handed to a thread or an executor is not counted; what it posts back is).
 

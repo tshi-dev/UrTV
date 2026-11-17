@@ -291,6 +291,14 @@ and adds a row above.
 
 The rows for QA-1, QA-3, QA-5 and the 4.3.4 review's F1/F2 are added when `work/434-qa` is on the release line.
 
+## Watch
+
+- **Sony: the remote's APPS and GUIDE buttons after the clean-up.** Four Sony packages are turned off by community lists and are not in
+  `keep.txt` (the supervisor's call for 4.3.4: they customise Sony's own home, which the clean-up is meant to remove, and none is a known
+  key handler): `com.sony.dtv.tvlaunchercustomizer` (and `.overlay.apporder`), `com.sony.dtv.launcherxcustomizer`, `com.sony.dtv.moreapps`,
+  `com.sony.dtv.sonyshelf`. If a Sony owner reports a dead APPS or GUIDE button, these are the candidates: add the one that answers it to
+  `keep.txt` and a row here. Smoke S-20 checks it whenever a Sony TV is at hand.
+
 ## Fixed on next (4.4), guarded there: rows to add when 4.4 reaches master
 
 Their guards exist only on `next`; each becomes a row above in the merge that brings 4.4 to master.

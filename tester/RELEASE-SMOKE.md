@@ -93,6 +93,12 @@ the same network. Note the build in the report's first line.
   Rows: R-226, R-227, R-228, R-229, R-230, R-231, R-232, R-237, R-238, R-239, R-241.
 - **S-19 UrTV Player tile.** «تطبيقات مقترحة»: its real icon. Rows: R-245.
 
+## When a Sony TV is at hand
+
+- **S-20 Sony remote after the setup.** After «جهّز كل شي» with the clean-up: APPS, GUIDE, Netflix, YouTube, Input, the mic and the colour
+  keys each do what they did before the setup. A dead one is a FAIL naming the button (docs/dev/REGRESSIONS.md «Watch»: the candidates).
+  Rows: R-009.
+
 ## The report
 
 ```
