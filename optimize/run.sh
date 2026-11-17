@@ -265,16 +265,39 @@ fi
 # A home switch that a restart cut off is undone from its journal first (see optimize/home-journal.sh). Never stops the run.
 jrecover || true
 
+# 4.4 (reports: 0-4 ADB drops a run; a Skyworth stopped at «screensaver» and «launcher» and waited 12 and 30 minutes to be run again): a step that
+# stopped ONLY because the TV stopped answering (tv.py gave up after its tries, or an install the TV went silent on) is not left for someone to
+# notice: the run waits for the TV (tv.py --wait, up to 10 minutes; a Wireless-debugging port is looked up again) and runs the same step once more,
+# as «run the same command again» would. Every step is safe to repeat (each checks what is done already). Any other stop, a !! line that asks for
+# something, the Wi-Fi pause (5), a command that may or may not have run: stops as before.
+DROPPED='^!! TV not answering after [0-9]+ tries|^!! The TV stopped answering while [^ ]+ was installing'
+run_step() {   # $1 step: its exit code; what it printed is also kept in $RUN/.step-out
+  local rc=0
+  set +e
+  ( set -e; do_step "$1" ) 2>&1 | tee "$RUN/.step-out"
+  rc=${PIPESTATUS[0]}
+  set -e
+  return "$rc"
+}
 for s in "${STEPS[@]}"; do
   [ -f "$RUN/.done-$s" ] && continue
   current=$s
   echo
   echo "▶ $(title "$s")"
   stamp "start $s"
-  do_step "$s"
+  rc=0; run_step "$s" || rc=$?
+  if [ "$rc" = 1 ] && grep -qE "$DROPPED" "$RUN/.step-out"; then
+    stamp "dropped $s (waiting for the TV, then the step again)"
+    echo "The TV stopped answering during this step: waiting for it (up to 10 minutes), then the same step again."
+    if tv --wait; then
+      rc=0; run_step "$s" || rc=$?
+    fi
+  fi
+  [ "$rc" = 0 ] || exit "$rc"
   touch "$RUN/.done-$s"
   stamp "done $s"
 done
+rm -f "$RUN/.step-out"
 # the heavy-screensaver line is advice for the owner, not a failure: it is shown but does not stop the run
 ADVICE='the screensaver may slow this TV'
 if grep '!!' "$RUN/report.md" | grep -qv "$ADVICE"; then

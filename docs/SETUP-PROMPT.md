@@ -394,7 +394,8 @@ TV Bro and SmartTube (from their own GitHub releases, the build for this TV's pr
 measures again and writes `optimize/run/report.md`. `optimize/run.sh --measure` is the full measure (a restart and 3 minutes before and after, and both screensavers): only when I ask for exact numbers. Before the optional picks, on a TV whose model our own lists do not
 know (a Sony, Hisense, Haier, Xiaomi…), `optimize/community.sh` applies the tested list for exactly that model from
 CleanYourTV (MIT, `optimize/lists/community/`) if there is one: never a list for another model, never anything in
-`keep.txt`, a launcher or a setup wizard; `report.md` shows them («Community list: …») and `optimize/keep.sh off` names them. If it stops for any reason: `optimize/run.sh` again (it
+`keep.txt`, a launcher or a setup wizard; `report.md` shows them («Community list: …») and `optimize/keep.sh off` names them. A step that stopped only because the TV stopped answering is run once more by itself after waiting for the TV (up to 10 minutes; a
+Wireless-debugging port that changed is looked up again). If it stops for any other reason: `optimize/run.sh` again (it
 continues), and `optimize/run.sh status` shows where it is.
 
 If the home-screen step says `Home switch paused`, it is waiting for me while it keeps running: send me its Arabic line
