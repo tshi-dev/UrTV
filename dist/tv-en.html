@@ -74,7 +74,7 @@
     transform:scale(1.03);   
   }
   
-  .photo::after{content:'';position:absolute;inset:0;background:#000;opacity:calc(1 - (1 - var(--dim,.05)) * (1 - var(--walldim,0)))}   
+  .photo::after{content:'';position:absolute;inset:0;background:#000;opacity:calc(1 - (1 - var(--pdim,0)) * (1 - var(--walldim,0)))}   
   .veil{
     position:fixed;inset:0;z-index:1;
     background:
@@ -3813,7 +3813,7 @@ function showBackground(url, b){
   const next = "url('" + url + "')";
   if(ph.style.backgroundImage === next) return;   // same photo: no reload, no new movement
   ph.style.backgroundImage = next;
-  ph.style.setProperty('--dim', (1 - (b.d || 0.95)).toFixed(2));
+  ph.style.setProperty('--pdim', (1 - (b.d || 0.95)).toFixed(2));   // --pdim, never --dim: --dim is a COLOUR on :root, and a colour read as an opacity is invalid, which means 1 (a solid black photo)
   ph.classList.remove('settle'); void ph.offsetWidth; ph.classList.add('settle');
   cardBlurLater(url);
   const cr = document.getElementById('credit');
@@ -3864,7 +3864,7 @@ function cardBlurNow(){
           g.drawImage(img, (W - dw) * .5, (H - dh) * .26, dw, dh);
           g.filter = 'none';
           patch();
-          g.fillStyle = `rgba(0,0,0,${document.querySelector('.photo').style.getPropertyValue('--dim') || .05})`;   // the photo's own darkness
+          g.fillStyle = `rgba(0,0,0,${document.querySelector('.photo').style.getPropertyValue('--pdim') || .05})`;   // the photo's own darkness
           g.fillRect(0, 0, W, H);
           const v = g.createLinearGradient(0, 0, 0, H);   // the vertical part of .veil, the part that reaches the card
           v.addColorStop(0, 'rgba(3,10,7,.62)'); v.addColorStop(.22, 'rgba(3,10,7,.30)'); v.addColorStop(.46, 'rgba(3,10,7,.12)');
