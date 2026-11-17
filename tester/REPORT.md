@@ -2985,3 +2985,8 @@ I turned the switch on (`am broadcast -n sa.urtv.home/.DockReceiver -a sa.urtv.h
 - **Home during a YouTube video (YouTube started 08:04:17, Home 08:04:24.3, a 0.2 s press): caught → UrTV in front at 08:04:24.6**, no Google TV.
 - About 1 s after that press Google Assistant (katniss) started listening with UrTV in front (`Foreground app … sa.urtv.home`) — either the owner pressed the mic, or the system's own long-press handling; asked the owner what he saw.
 - While the owner explored afterwards: the remote's Settings key opened Google TV's own panel (`TOGGLE_NOTIFICATION_HANDLER_PANEL`) twice ✓, our hub and our settings opened normally ✓ — the catch does not touch other keys.
+
+## Owner (08:10), build 413
+- **Settings key with the Home catch on: one press → the TV's own controls panel; long press → our settings.** As intended ✓ (Home catch does not change it).
+- **New settings layout (picture tester/owner-notes/settings-413.png):** move the hint line «اختيار يفتح، ورجوع يرجّعك خطوة» out of the bottom band (y ≈ 940–1030 is spent on it) so the settings list gets that area; and his earlier note again: the rows are too big — each row card is ~180 px tall (title ~40 px, icon ~50 px), only 3 rows fit on the right side at 1080p, the 4th is cut. Smaller rows / one text size, and the freed hint band, would show 5–6 rows.
+- Assistant at 08:04:25: still asking the owner whether he pressed the mic.
