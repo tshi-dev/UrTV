@@ -17,6 +17,9 @@ public final class LastGood<T> {
     private T last;
     private long lastAt;
 
+    /** the last good value, never a query (null when there was none) */
+    public synchronized T peek() { return last; }
+
     public synchronized Read<T> read(long now, long shareMs, Query<T> query) {
         if (last != null && now - lastAt >= 0 && now - lastAt < shareMs) return new Read<>(last, false);
         T v = query.ask();

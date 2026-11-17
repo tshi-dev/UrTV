@@ -308,7 +308,7 @@ public class MainActivity extends Activity {
         updateNowPlaying();
         homeCard.refresh();
         applyClean();   // «UrTV النظيف» changed while another screen was in front (after the card refresh: applyClean may hide the card)
-        if (reminder != null) { reminder.refresh(); ReminderScheduler.schedule(this); }   // a card that came due while another app was in front; the alarm follows the tasks
+        if (reminder != null) reminder.refresh(true);   // a card that came due while another app was in front; the alarm follows the tasks (both off the UI thread: QA-3)
         readAnimationScale();
         loadTvRows();   // what one watched since: «أكمل المشاهدة» moves on
         showUpdateResult();
@@ -2402,6 +2402,7 @@ public class MainActivity extends Activity {
 
     /** «تعديل التطبيقات» from the long-press menu (on the app that was pressed) or from the settings (pkg null). The family lock asks first. */
     private void beginAppsEdit(String pkg) {
+        if (pkg != null) wantHiddenList = false;   // 4.3.4 review F1: a settings ask for the hidden list that a PIN or kids mode stopped is not the long press's
         if (kidsNoEdit()) return;
         guarded(ParentalPolicy.MENU_ARRANGE, null, S.t("تعديل التطبيقات"), () -> startAppsEdit(pkg));
     }
@@ -3157,7 +3158,14 @@ public class MainActivity extends Activity {
     private boolean clockReading, clockFirstDone;
 
     private void updateClock() {
-        if (!clockFirstDone) { clockFirstDone = true; updateClock(ConfigSnapshot.read(this)); return; }
+        if (!clockFirstDone) {
+            clockFirstDone = true;
+            // 4.3.4 QA-1: a home made again (a language change, recreate) draws at once from the answer this process already has, and the
+            // fresh read below goes off the UI thread; only the process's very first draw asks the screensaver here (nothing is on screen yet)
+            ConfigSnapshot known = ConfigSnapshot.known();
+            if (known == null) { updateClock(ConfigSnapshot.read(this)); return; }
+            updateClock(known);
+        }
         if (clockReading) return;
         clockReading = true;
         final android.content.Context app = getApplicationContext();
@@ -4069,7 +4077,7 @@ public class MainActivity extends Activity {
             showAppMenu(f, ((App) f.getTag()).pkg, dockCards.contains(f));
             return true;
         }
-        if (e.getKeyCode() == KeyEvent.KEYCODE_MENU && e.getAction() == KeyEvent.ACTION_UP && !pills.isEmpty()) {
+        if (e.getKeyCode() == KeyEvent.KEYCODE_MENU && e.getAction() == KeyEvent.ACTION_UP && edit == null && appsEdit == null && !pills.isEmpty()) {   // 4.3.4 review F2: not over an edit mode
             showInputs(pills.get(0), ParentalPolicy.MENU_KEY);
             return true;
         }
