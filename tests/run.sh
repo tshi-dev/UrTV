@@ -31,6 +31,7 @@ python3 tests/scene_zoom_test.py   # 4.4 the owner: the clock where it is, the p
 python3 tests/photo_masks_gate_test.py   # 4.4 the gate every cut-out passes before it is published: fringe, stairs, floating pieces, the digits' fit (FIT / FRONT-ONLY / REJECT)
 python3 tests/photo_glass_test.py   # 4.4 «الساعة: زجاجية» over our photos: which cut-out, where the digits go (on a JVM), made only while chosen, never «الحرمين»
 python3 tests/cache_sweep_test.py   # 4.3.3 «مسح الملفات المؤقتة»: the caches only, on a JVM over made-up folders
+python3 tests/sources_rule_test.py   # 4.4 «مصادر البيانات» under «حول»: each source, its terms, its row; the page's 60%-and-half-the-light rule
 python3 tests/lowram_test.py   # a weak TV (Ram.low): no key filter, the clock off the UI thread, pictures let go behind apps, markets «عادي» and 60 s, #lowram=1
 python3 tests/deadman_test.py
 python3 tests/run_lock_test.py
@@ -277,6 +278,7 @@ node tests/lone_card_fit.test.mjs   # 4.4 the owner: a lone card on the launcher
 node tests/saver_depth.test.mjs   # 4.4 «نظيفة» with depth on the screensaver: the photo's own cut-out, never off its pixels, never over unreadable digits
 node tests/verse_hadith.test.mjs   # 4.4 «آية» and «حديث» at once: the hadith card beside the verse card, each its own
 node tests/strip_steady.test.mjs   # 4.4 the screensaver's bottom strip stays put as the slot turns (games, scores, weather, markets)
+node tests/sources_rule.test.mjs   # 4.4 the owner's rule: a source on a card is a tiny dim line at most (60%, half the light), never a provider named elsewhere
 node tests/football_page.test.mjs   # the football home's widgets and «المباريات» in a browser, on fixed games
 node tests/phone_page.test.mjs
 node tests/sync_cards.test.mjs   # «توحيد المظهر» on the page: the cards in the material's fill, line and ink, readable on a light look

@@ -547,6 +547,8 @@ public class SettingsActivity extends Activity {
             new Runnable() { public void run() { clearCaches(); } });
         row("أرسل تقرير", "رمز QR يفتح صفحة الإرسال في جوالك", R.drawable.ic_settings,
             new Runnable() { public void run() { openReport(); } });
+        // 4.4 «مصادر البيانات»: where the data comes from, once, here (Sources); on the cards a source is a tiny dim line at most
+        row("مصادر البيانات", "من أين تأتي البيانات، وترخيص كل مصدر", R.drawable.ic_report, new Runnable() { public void run() { showSources(); } });
 
         // «الرقابة الأبوية» (docs/UX-REVIEW.md): the home's own page (the PIN, the locked apps, kids mode); it asks for the PIN itself
         row("الرقابة الأبوية", "رمز يقفل التطبيقات والإعدادات، ووضع الأطفال", R.drawable.ic_lock,
@@ -615,6 +617,20 @@ public class SettingsActivity extends Activity {
             .setPositiveButton("بحث", (d, w) -> showFound(in.getText().toString().trim()))
             .setNegativeButton("إلغاء", null).show();
         in.requestFocus();
+    }
+
+    /** 4.4 «مصادر البيانات»: each source and what it gives; OK on one says its terms, and «الإعداد» lands on the row of what it gives */
+    private void showSources() {
+        String[] labels = new String[Sources.LIST.length];
+        for (int i = 0; i < labels.length; i++) labels[i] = conv(Sources.LIST[i][0]) + "\n" + conv(Sources.LIST[i][1]);
+        new Dlg(this).setTitle("مصادر البيانات").setItems(labels, (d, i) -> { d.dismiss(); showSource(Sources.LIST[i]); })
+            .setNegativeButton("رجوع", null).show();
+    }
+
+    private void showSource(final String[] src) {
+        new Dlg(this).setTitle(conv(src[0])).setMessage(conv(src[1]) + "\n\n" + conv(src[2]))
+            .setPositiveButton("الإعداد", (d, w) -> { hubAt = SettingsHub.of(src[3], null); forceWant = src[3]; open(hubAt); })
+            .setNegativeButton("رجوع", (d, w) -> showSources()).show();
     }
 
     private void showFound(String query) {
