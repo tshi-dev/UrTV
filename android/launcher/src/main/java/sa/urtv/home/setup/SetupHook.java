@@ -184,6 +184,40 @@ public final class SetupHook {
         }
     }
 
+    /**
+     * 4.5 «التطبيقات المفتوحة»: stop these apps for good over this app's own adb (`am force-stop`, only the commands SwitcherRule.stopCommands
+     * makes: never ours, the system, a home, an input or a keyboard). On the caller's thread (the switcher calls from its own). "ok", "no_link"
+     * (no kept key, adb did not answer: the switcher then stops the background only, and says so) or "busy" (a setup is running).
+     */
+    public static String forceStop(Context c, java.util.List<String> cmds) {
+        try {
+            final Context app = c.getApplicationContext();
+            if (SetupRunner.get().running()) return "busy";
+            if (!AdbKeys.exists(app)) return "no_link";
+            try (SetupSession s = SetupSession.open(app, 5000, null, new SetupEngine.Out() { @Override public void line(String text) { } })) {
+                for (String cmd : cmds) if (cmd.matches("am force-stop [A-Za-z][A-Za-z0-9_]*(\\.[A-Za-z0-9_]+)+")) s.adb.run(cmd);
+            }
+            android.util.Log.i(TAG, "switcher: stopped over adb");
+            return "ok";
+        } catch (Exception e) {
+            android.util.Log.i(TAG, "switcher: adb did not answer");
+            return "no_link";
+        }
+    }
+
+    /** 4.5: «التطبيقات المفتوحة» needs usage access to list the apps; given once over this app's adb (GET_USAGE_STATS), never during a setup. True when given now. */
+    public static boolean grantUsage(Context c) {
+        try {
+            final Context app = c.getApplicationContext();
+            if (SetupRunner.get().running() || !AdbKeys.exists(app)) return false;
+            try (SetupSession s = SetupSession.open(app, 5000, null, new SetupEngine.Out() { @Override public void line(String text) { } })) {
+                return s.adb.run("appops set " + SetupEngine.SELF + " GET_USAGE_STATS allow").code == 0;
+            }
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
     /** 4.4 the Home doctor (DockReceiver HOME_WANTED, adb only): «on» / «off» set HOME_WANTED and tell the add-on; «status» reads it. Answers yes or no. */
     public static String homeWanted(Context c, String mode) {
         try {

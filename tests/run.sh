@@ -355,6 +355,7 @@ python3 tests/wifi_hotspot_test.py   # A user's tested route (Xiaomi): when the 
 python3 tests/your_tv_hub_test.py   # «تلفزيونك» (YourTvHubActivity): what opening the app shows: four windows (the markets, the matches, the games,
 python3 tests/input_hide_test.py   # 4.5 «المصادر»: an input hidden from the sources popup, kept in the inputs screen
 python3 tests/key_taps_test.py   # 4.5 «أزرار الريموت»: two and three presses per button, the switcher and the control centre as targets
+python3 tests/switcher_rule_test.py   # 4.5 «التطبيقات المفتوحة»: what it may stop, and how (the home's own ADB, else the background only)
 python3 tests/run_list_test.py   # every test file is run by this script (CI runs nothing else)
 
 node tests/es2017_parse.test.mjs   # #19: the built pages parse as ES2017 (Android 9 TVs stuck on WebView 66)
