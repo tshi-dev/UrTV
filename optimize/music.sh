@@ -25,7 +25,7 @@
 #   optimize/music.sh adhan saver-at on|off   «شاشة التوقف وقت الأذان» (off by default): at the prayer's time the screensaver starts, but only when our home is in
 #                                          front (idle), never over another app or an input; the status's adhan_alarm_last= says saver=1 when it did
 #   optimize/music.sh adhan stop           stop the adhan that is playing (nothing else)
-#   optimize/music.sh adhan volume 60      the adhan's own volume, 10-100 (percent of the TV's maximum)
+#   optimize/music.sh adhan volume 60      the adhan's own volume, 0-100 (percent of the TV's maximum), or tv (the TV's volume as it is)
 #   optimize/music.sh adhan add FILE       the person's own recording as the adhan («أذان من ملفي»): made small here (mono AAC, about
 #                                          48 kbps, at most 5 minutes; needs ffmpeg on this computer), put on the TV, and made the voice.
 #                                          One file only: a new one replaces it. It stays on the TV; nothing bundled, nothing sent anywhere
@@ -129,7 +129,11 @@ Usage: optimize/music.sh <command> [arguments]
   adhan quiet off | <HH:MM> <HH:MM> [heard|fajr|silent]   «ساعات الهدوء»: no dua or reminder then; the adhan in it (default heard)
   adhan stopkey on | off  any key stops the adhan while it plays (default on; off: only OK on the adhan bar)
   adhan stop              stop the adhan that is playing
-  adhan volume <10-100>
+  adhan volume <0-100|tv> «مستوى صوت الأذان»: percent of the TV's maximum, or tv (the TV's volume as it is)
+  adhan prayer-volume <fajr|dhuhr|asr|maghrib|isha> <general|tv|0-100>   that prayer's own level (default general)
+  adhan iqama <off|chime|aN>    «صوت الإقامة» at the iqama (default off; aN: a sound of «صوتياتي», its number in audio_ids= of music.sh adhan)
+  adhan iqama-volume <10-100>   its volume (default 30)
+  adhan iqama-notice on | off   «تنبيه الإقامة»: a notice at the iqama, over other apps as the kick-off one (default off)
   adhan add <file>        your own recording as the adhan (needs ffmpeg here); adhan own-clear removes it
 EOF
   exit 2
@@ -219,7 +223,7 @@ PY
         out=$(tv "am broadcast -n sa.urtv.home/.tilawah.MusicReceiver -a sa.urtv.home.GET_PLAYER")
         data=$(printf '%s\n' "$out" | sed -n 's/.*data="\(.*\)"/\1/p' | tail -n 1)
         [ -n "$data" ] || { echo "No status from sa.urtv.home. Is the app installed and the TV reachable?" >&2; exit 1; }
-        printf '%s\n' "$data" | tr '|' '\n' | grep -E '^(adhan=|voice=|fajr_voice=|prayer_sound=|quiet=|friday_dhuhr=|adhan_short=|adhan_takbir=|adhan_stopkey=|adhan_saver_only=|adhan_saver_at=|adhan_notice=|adhan_alarm_last=|adhan_live=|adhan_volume=|adhan_exact=|adhan_next|adhan_last|source=|playing=)'
+        printf '%s\n' "$data" | tr '|' '\n' | grep -E '^(adhan=|voice=|fajr_voice=|prayer_sound=|quiet=|friday_dhuhr=|adhan_short=|adhan_takbir=|adhan_stopkey=|adhan_saver_only=|adhan_saver_at=|adhan_notice=|adhan_alarm_last=|adhan_live=|adhan_volume=|adhan_volume_tv=|prayer_volume=|iqama=|audio_ids=|adhan_exact=|adhan_next|adhan_last|source=|playing=)'
         own=$(printf '%s\n' "$data" | tr '|' '\n' | sed -n 's/^own_bytes=//p')
         if [ "${own:-0}" -gt 0 ] 2> /dev/null; then
           echo "own=$((own / 1024)) KB (your own recording; adhan voice own uses it, adhan own-clear removes it)"
@@ -355,10 +359,36 @@ PY
       volume)
         [ $# -eq 2 ] || usage
         percent=$2
-        case "$percent" in ''|*[!0-9]*) usage;; esac
-        { [ "$percent" -ge 10 ] && [ "$percent" -le 100 ]; } || { echo "The adhan volume is 10-100." >&2; exit 2; }
-        tv "am broadcast -n sa.urtv.home/.tilawah.MusicReceiver -a sa.urtv.home.ADHAN_VOLUME --ei percent $percent" > /dev/null
-        echo "Adhan volume $percent%."
+        if [ "$percent" = tv ]; then
+          tv "am broadcast -n sa.urtv.home/.tilawah.MusicReceiver -a sa.urtv.home.ADHAN_VOLUME --ez tv true" > /dev/null
+          echo "Adhan volume: the TV's volume as it is."
+        else
+          case "$percent" in ''|*[!0-9]*) usage;; esac
+          { [ "$percent" -ge 0 ] && [ "$percent" -le 100 ]; } || { echo "The adhan volume is 0-100, or tv." >&2; exit 2; }
+          tv "am broadcast -n sa.urtv.home/.tilawah.MusicReceiver -a sa.urtv.home.ADHAN_VOLUME --ei percent $percent" > /dev/null
+          echo "Adhan volume $percent%."
+        fi
+        ;;
+      iqama|iqama-volume|iqama-notice)
+        [ $# -eq 2 ] || usage
+        case "$1:$2" in
+          iqama:off) extra="--es sound ''";;
+          iqama:chime) extra="--es sound chime";;
+          iqama:a[0-9]*) case "${2#a}" in *[!0-9]*) usage;; esac; extra="--es sound $2";;
+          iqama-volume:*) case "$2" in ''|*[!0-9]*) usage;; esac; extra="--ei volume $2";;
+          iqama-notice:on) extra="--ez notice true";;
+          iqama-notice:off) extra="--ez notice false";;
+          *) usage;;
+        esac
+        out=$(tv "am broadcast -n sa.urtv.home/.tilawah.MusicReceiver -a sa.urtv.home.IQAMA $extra")
+        case "$out" in *saved*) printf '%s\n' "$out" | grep '^iqama=';; *) echo "Refused: the home app is older than 4.4, or $2 is not a choice for $1 (aN must be in audio_ids=; the volume is 10-100)." >&2; exit 1;; esac
+        ;;
+      prayer-volume)
+        [ $# -eq 3 ] || usage
+        case "$2" in fajr) p=0;; dhuhr) p=2;; asr) p=3;; maghrib) p=4;; isha) p=5;; *) usage;; esac
+        case "$3" in general) c="";; tv) c=tv;; *[!0-9]*|'') usage;; *) [ "$3" -le 100 ] || usage; c="$3";; esac
+        out=$(tv "am broadcast -n sa.urtv.home/.tilawah.MusicReceiver -a sa.urtv.home.PRAYER_VOLUME --ei prayer $p --es choice '$c'")
+        case "$out" in *saved*) echo "$2: ${3}.";; *) echo "Refused: the home app is older than 4.4, or $3 is not general, tv or 0-100." >&2; exit 1;; esac
         ;;
       *)
         usage

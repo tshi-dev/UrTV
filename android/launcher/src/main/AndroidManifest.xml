@@ -508,6 +508,20 @@
             android:configChanges="keyboard|keyboardHidden|navigation|orientation|screenSize|screenLayout|uiMode|density" />
 
         <activity
+            android:name=".tilawah.AdhanVolumeActivity"
+            android:exported="false"
+            android:screenOrientation="landscape"
+            android:theme="@style/App"
+            android:configChanges="keyboard|keyboardHidden|navigation|orientation|screenSize|screenLayout|uiMode|density" />
+
+        <activity
+            android:name=".tilawah.IqamaActivity"
+            android:exported="false"
+            android:screenOrientation="landscape"
+            android:theme="@style/App"
+            android:configChanges="keyboard|keyboardHidden|navigation|orientation|screenSize|screenLayout|uiMode|density" />
+
+        <activity
             android:name=".tilawah.DuaActivity"
             android:exported="false"
             android:screenOrientation="landscape"
@@ -516,6 +530,7 @@
 
         <!-- 4.4: the duas' own alarm (DuaScheduler); nothing outside the app can send it -->
         <receiver android:name=".tilawah.DuaReceiver" android:exported="false" />
+        <receiver android:name=".tilawah.IqamaReceiver" android:exported="false" />
 
         <activity
             android:name=".tilawah.AudioActivity"

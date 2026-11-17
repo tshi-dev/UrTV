@@ -323,7 +323,7 @@ refused("team name too long", lambda d: d.update(teams=[{"id": "1", "name": "x" 
 refused("team twice", lambda d: d.update(teams=[{"id": "1", "name": "a"}, {"id": "1", "name": "b"}]), "teams has a club twice")
 refused("21 teams", lambda d: d.update(teams=[{"id": str(i), "name": "t"} for i in range(21)]), "up to 20 teams")
 refused("teams not a list", lambda d: d.update(teams="136013"), "teams must be a list")
-refused("adhan volume 9", lambda d: d["adhan"].update(volume=9), "adhan.volume must be a whole number from 10 to 100")
+refused("adhan volume -1 (4.4: 0-100)", lambda d: d["adhan"].update(volume=-1), "adhan.volume must be a whole number from 0 to 100")
 refused("adhan volume 101", lambda d: d["adhan"].update(volume=101), "adhan.volume")
 refused("adhan volume a string", lambda d: d["adhan"].update(volume="50"), "adhan.volume")
 refused("adhan voice 0", lambda d: d["adhan"].update(voice=0), "adhan.voice")
@@ -332,8 +332,8 @@ refused("adhan voice a Fajr recording", lambda d: d["adhan"].update(voice=10), "
 refused("adhan fajr voice 22", lambda d: d["adhan"].update(fajr_voice=22), "adhan.fajr_voice")
 refused("adhan short not a boolean", lambda d: d["adhan"].update(short="on"), "adhan.short must be true or false")
 refused("a section that is not an object", lambda d: d.update(prayer=[1]), "prayer must be an object")
-refused("all errors are listed together", lambda d: (d.update(digits="x"), d["adhan"].update(volume=1)), "digits must be")
-d = copy.deepcopy(GOOD); d["digits"] = "x"; d["adhan"]["volume"] = 1
+refused("all errors are listed together", lambda d: (d.update(digits="x"), d["adhan"].update(volume=101)), "digits must be")
+d = copy.deepcopy(GOOD); d["digits"] = "x"; d["adhan"]["volume"] = 101
 rc, out, err = Tv("v2", BASE).run("import", write("two.json", d))
 check("both errors are in one message", "digits must" in err and "adhan.volume" in err, err)
 for name, content in (("NaN", '{"schema":1,"city":{"name":"x","lat":NaN,"lon":1,"tz":"UTC"}}'),

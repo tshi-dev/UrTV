@@ -31,8 +31,8 @@ public final class ReciterOrderRun {
         int ain = Arrays.asList(ReciterOrder.ARABIC).indexOf("ع"), mim = Arrays.asList(ReciterOrder.ARABIC).indexOf("م"), sin = Arrays.asList(ReciterOrder.ARABIC).indexOf("س"), ba = Arrays.asList(ReciterOrder.ARABIC).indexOf("ب");
         check("the letters that start a name are lit, the others dimmed", pres[ain] && pres[mim] && pres[sin] && !pres[ba] && ReciterOrder.ARABIC.length == 28 && ReciterOrder.LATIN.length == 26);
         List<ReciterOrder.Item> rows = ReciterOrder.order(ids, two);   // H 0* 3* 1 2 4
-        check("the jump goes to the first row that starts with the letter (favourites are rows too), -1 for a dimmed letter", ReciterOrder.jump(rows, ar, "ع") == 1 && ReciterOrder.jump(rows, ar, "م") == 2
-            && ReciterOrder.jump(rows, ar, "س") == 3 && ReciterOrder.jump(rows, ar, "ب") == -1);
+        check("the jump goes to the first of the rest that starts with the letter (4.4: a ★ «م» no longer hides the other م reciters), the ★ one only when the rest has none, -1 for a dimmed letter",
+            ReciterOrder.jump(rows, ar, "ع") == 1 && ReciterOrder.jump(rows, ar, "م") == 4 && ReciterOrder.jump(rows, ar, "س") == 3 && ReciterOrder.jump(rows, ar, "ب") == -1);
         check("the next lit letter is found each way, dimmed ones are skipped, and the end stays put", ReciterOrder.nextPresent(pres, sin, 1) == ain && ReciterOrder.nextPresent(pres, ain, 1) == mim && ReciterOrder.nextPresent(pres, mim, -1) == ain
             && ReciterOrder.nextPresent(pres, mim, 1) == mim && ReciterOrder.nextPresent(pres, Arrays.asList(ReciterOrder.ARABIC).indexOf("ا"), -1) == 0);
         check("English: the English names have their Latin letters lit", ReciterOrder.present(ReciterOrder.LATIN, Arrays.asList("Abdulrahman Al-Sudais", "Saud Al-Shuraim", "Maher Al-Muaiqly"))[0]

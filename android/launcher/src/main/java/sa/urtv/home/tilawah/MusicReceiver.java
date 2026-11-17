@@ -64,9 +64,37 @@ public class MusicReceiver extends BroadcastReceiver {
             case "sa.urtv.home.ADHAN_OFF":
                 AdhanSettings.on(context, prefs, "sa.urtv.home.ADHAN_ON".equals(action));
                 return;
-            case "sa.urtv.home.ADHAN_VOLUME":   // optimize/music.sh adhan volume 60
-                AdhanSettings.volume(prefs, intent.getIntExtra("percent", -1));
+            case "sa.urtv.home.ADHAN_VOLUME":   // optimize/music.sh adhan volume 60 | tv
+                if (intent.getBooleanExtra("tv", false)) AdhanSettings.volumeTv(prefs);
+                else if (!AdhanSettings.volume(prefs, intent.getIntExtra("percent", -1))) { setResultData("error: the adhan volume is 0-100 or tv"); return; }
+                setResultData("saved\nadhan_volume=" + volumeText(prefs));
                 return;
+            case "sa.urtv.home.IQAMA": {   // 4.4 optimize/music.sh adhan iqama <off|chime|aN> | iqama-volume <10-100> | iqama-notice on|off
+                if (intent.hasExtra("sound")) {
+                    String s = intent.getStringExtra("sound");
+                    if (!IqamaPlan.validSound(s) || (s.startsWith("a") && AudioStore.get(context, Integer.parseInt(s.substring(1))) == null)) { setResultData("error: the iqama sound is off, chime or aN (one of audio_ids=)"); return; }
+                    prefs.setIqamaSound(s);
+                }
+                if (intent.hasExtra("volume")) {
+                    int v = intent.getIntExtra("volume", -1);
+                    if (v < 10 || v > 100) { setResultData("error: the iqama volume is 10-100"); return; }
+                    prefs.setIqamaVolume(v);
+                }
+                if (intent.hasExtra("notice")) prefs.setIqamaNotice(intent.getBooleanExtra("notice", false));
+                AdhanScheduler.schedule(context);   // the adhan's alarm sets the iqama's
+                setResultData("saved\niqama=" + iqamaText(prefs));
+                return;
+            }
+            case "sa.urtv.home.PRAYER_VOLUME": {   // 4.4 optimize/music.sh adhan prayer-volume <name> <general|tv|0-100>
+                int p = intent.getIntExtra("prayer", -1);
+                String choice = intent.getStringExtra("choice");
+                if (choice == null) choice = "";
+                boolean known = p == 0 || p == 2 || p == 3 || p == 4 || p == 5;
+                if (!known || !AdhanLevel.valid(choice)) { setResultData("error: prayer is 0,2,3,4,5 and choice is \"\", tv or 0-100"); return; }
+                prefs.setPrayerVolume(p, choice);
+                setResultData("saved\nprayer_volume=" + prayerVolumes(prefs));
+                return;
+            }
             case "sa.urtv.home.VOICE": {
                 String error = AdhanSettings.voice(context, prefs, intent.getIntExtra(MusicService.EXTRA_VOICE, prefs.voice()));
                 setResultData(error != null ? error : "saved\n" + ownListing(context, prefs));
@@ -225,6 +253,28 @@ public class MusicReceiver extends BroadcastReceiver {
         return prefs.quietFrom() + "-" + prefs.quietTo() + " adhan=" + new String[]{"heard", "fajr", "silent"}[prefs.quietAdhan()];
     }
 
+    private static String audioIds(Context c) {
+        StringBuilder b = new StringBuilder();
+        for (AudioStore.Item it : AudioStore.list(c)) b.append(b.length() > 0 ? "," : "").append('a').append(it.id);
+        return b.toString();
+    }
+
+    /** 4.4 «الإقامة»: sound:<none|chime|aN>;volume:<n>;notice:<0|1> */
+    static String iqamaText(Prefs prefs) {
+        return "sound:" + (prefs.iqamaSound().isEmpty() ? "none" : prefs.iqamaSound()) + ";volume:" + prefs.iqamaVolume() + ";notice:" + (prefs.iqamaNotice() ? 1 : 0);
+    }
+
+    /** 4.4: «tv» or the percent */
+    static String volumeText(Prefs prefs) { return AdhanLevel.choice(prefs.adhanVolumeLevel()); }
+
+    /** 4.4: each prayer's own level ("" the general one) */
+    private static String prayerVolumes(Prefs prefs) {
+        String[] names = {"fajr", "", "dhuhr", "asr", "maghrib", "isha"};
+        StringBuilder b = new StringBuilder();
+        for (int p : PrayerTimes.PRAYERS) b.append(b.length() > 0 ? "," : "").append(names[p]).append(':').append(prefs.prayerVolume(p));
+        return b.toString();
+    }
+
     private static String prayerSounds(Prefs prefs) {
         String[] names = {"fajr", "", "dhuhr", "asr", "maghrib", "isha"};
         StringBuilder b = new StringBuilder();
@@ -290,6 +340,10 @@ public class MusicReceiver extends BroadcastReceiver {
                 + "|adhan_alarm_last=" + prefs.lastAlarmNoteAt() + (prefs.lastAlarmNote().isEmpty() ? "" : " " + prefs.lastAlarmNote().replace('|', '/'))
                 + "|adhan_live=" + (MusicService.adhanLive() ? 1 : 0)
                 + "|adhan_volume=" + prefs.adhanVolume()
+                + "|adhan_volume_tv=" + (prefs.adhanVolumeTv() ? 1 : 0)   // 4.4 «مثل صوت التلفزيون»
+                + "|prayer_volume=" + prayerVolumes(prefs)
+                + "|iqama=" + iqamaText(prefs)   // 4.4 «الإقامة»
+                + "|audio_ids=" + audioIds(context)   // 4.4: the numbers of «صوتياتي» (no names), for adhan iqama aN
                 + "|adhan_exact=" + (AdhanScheduler.exactAllowed(context) ? 1 : 0)
                 + "|own_bytes=" + (OwnAdhan.exists(context) ? OwnAdhan.bytes(context) : 0)
                 + "|reciter_favs=" + prefs.reciterFavs()
@@ -307,6 +361,8 @@ public class MusicReceiver extends BroadcastReceiver {
                 + "|buffering=" + (MusicService.isBuffering() ? 1 : 0)
                 + "|player=" + MusicService.playerKind()
                 + "|stall_restarts=" + MusicService.stallRestartCount()
+                + "|reconnects=" + MusicService.reconnectCount()   // 4.4: joins made because the network came back
+                + "|radio_week=" + RadioWeek.field(prefs.radioWeek(), MusicService.weekDay(context))   // 4.4: stalls/errors/reconnects/rebuffers, the last 7 days
                 + "|foreground=" + (MusicService.inForeground() ? 1 : 0)   // 4.3.3 G1: 1 while it plays = Android keeps it over the screensaver and the TV's settings
                 + "|focus_wait=" + (MusicService.waitingFocus() ? 1 : 0);   // 4.3.3 G1: paused by another sound, goes on when it ends
     }

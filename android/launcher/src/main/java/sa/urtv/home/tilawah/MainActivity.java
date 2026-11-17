@@ -38,7 +38,7 @@ public class MainActivity extends Activity {
     private static final int TAB_RECITERS = 0, TAB_STATIONS = 1, TAB_ADHAN = 2;
 
     private static final int KIND_RESUME = 0, KIND_RECITER = 1, KIND_STATION = 2,
-            KIND_PRAYER = 3, KIND_ADHAN_TOGGLE = 4, KIND_VOICE = 5, KIND_VOLUME = 6, KIND_EXACT = 7, KIND_FAJR_VOICE = 8, KIND_SHORT = 9, KIND_STOPKEY = 10, KIND_SAVER_ONLY = 11, KIND_NOTICE = 12, KIND_TAKBIR = 13, KIND_SAVER_AT = 14, KIND_LINK = 15, KIND_AUDIO = 16, KIND_DUAS = 17, KIND_PRAYER_SOUND = 18, KIND_QUIET = 19;
+            KIND_PRAYER = 3, KIND_ADHAN_TOGGLE = 4, KIND_VOICE = 5, KIND_VOLUME = 6, KIND_EXACT = 7, KIND_FAJR_VOICE = 8, KIND_SHORT = 9, KIND_STOPKEY = 10, KIND_SAVER_ONLY = 11, KIND_NOTICE = 12, KIND_TAKBIR = 13, KIND_SAVER_AT = 14, KIND_LINK = 15, KIND_AUDIO = 16, KIND_DUAS = 17, KIND_PRAYER_SOUND = 18, KIND_QUIET = 19, KIND_IQAMA = 20;
 
     private Catalog cat;
     private Prefs prefs;
@@ -108,8 +108,8 @@ public class MainActivity extends Activity {
             } else if (row.kind == KIND_PRAYER) {
                 int voice = prefs.playFor(this, row.index);   // Fajr has its own muezzin; 4.4: the prayer's own choice (a silent one: its general voice, to hear it)
                 if (voice == PrayerSound.SILENT) voice = prefs.playVoiceFor(this, row.index == PrayerTimes.FAJR);
-                MusicService.adhan(this, voice, Adhan.name(voice), 0);
-                openPlayer();
+                MusicService.adhan(this, voice, Adhan.name(voice), WHOLE_PREVIEW_S, row.index);   // 4.4: heard whole, at that prayer's level, as a preview: a real
+                openPlayer();                                                                    // adhan that comes meanwhile takes its place (it used to be swallowed)
             } else if (row.kind == KIND_ADHAN_TOGGLE) {
                 prefs.setAdhanOn(!prefs.adhanOn());
                 AdhanScheduler.schedule(this);
@@ -149,6 +149,8 @@ public class MainActivity extends Activity {
                 openHaramLive(row.index);
             } else if (row.kind == KIND_QUIET) {
                 startActivity(new Intent(this, QuietActivity.class));
+            } else if (row.kind == KIND_IQAMA) {   // 4.4 «الإقامة»: its sound and its notice
+                startActivity(new Intent(this, IqamaActivity.class));
             } else if (row.kind == KIND_PRAYER_SOUND) {
                 startActivity(new Intent(this, PrayerSoundActivity.class));
             } else if (row.kind == KIND_DUAS) {
@@ -157,7 +159,9 @@ public class MainActivity extends Activity {
                 startActivity(new Intent(this, AudioActivity.class));
             } else if (row.kind == KIND_EXACT) {
                 openExactAlarmSettings();
-            }   // «صوت الأذان» is set with left/right (changeVolume); OK on it does nothing
+            } else if (row.kind == KIND_VOLUME) {   // 4.4 «مستوى صوت الأذان»: every level, «مثل صوت التلفزيون», and each prayer's own
+                startActivity(new Intent(this, AdhanVolumeActivity.class));
+            }   // left/right on «صوت الأذان» still step it (changeVolume)
         });
 
         tabs = findViewById(R.id.tabs);
@@ -296,7 +300,7 @@ public class MainActivity extends Activity {
         // on «صوت الأذان» left/right are the volume: left louder, right quieter (the bar fills from the right, like the page); English mirrored
         if ((keyCode == KeyEvent.KEYCODE_DPAD_LEFT || keyCode == KeyEvent.KEYCODE_DPAD_RIGHT) && list.hasFocus()
                 && tab == TAB_ADHAN && selectedKind() == KIND_VOLUME) {
-            changeVolume(keyCode == sa.urtv.home.Dir.forwardKey() ? 10 : -10);
+            changeVolume(keyCode == sa.urtv.home.Dir.forwardKey() ? 1 : -1);
             return true;
         }
         // the letter index: the key toward the column (the start edge: right in Arabic, left in English) enters it from the list, the other key leaves it
@@ -367,23 +371,27 @@ public class MainActivity extends Activity {
         if (cursor != null) cursor.setVisibility(View.INVISIBLE);
     }
 
+    /** 4.4: a prayer's row plays its adhan whole as a preview (no adhan is longer than this) */
+    static final int WHOLE_PREVIEW_S = 600;
+
     private int selectedKind() {
         int at = list.getSelectedItemPosition();
         return at >= 0 && at < adapter.rows.size() ? adapter.rows.get(at).kind : -1;
     }
 
-    /** The adhan's volume in steps of 10 (10 to 100, no wrapping), heard for two seconds at the new level. */
-    private void changeVolume(int step) {
-        int was = prefs.adhanVolume(), now = Math.max(10, Math.min(100, was + step));
+    /** 4.4: the adhan's volume in steps of 5 (AdhanLevel: «مثل صوت التلفزيون», 0 to 100, no wrapping), heard for two seconds at the new level. */
+    private void changeVolume(int dir) {
+        int was = prefs.adhanVolumeLevel(), now = AdhanLevel.step(was, dir);
         if (now == was) return;
-        prefs.setAdhanVolume(now);
+        prefs.setAdhanVolumeLevel(now);
         adapter.rebuild();
         focusList(list.getSelectedItemPosition());
         MusicService.adhan(this, prefs.voice(), Adhan.name(prefs.voice()), 2);
     }
 
-    /** ٣٠٪ and a bar of ten: the filled part starts at the right, as the page does */
-    private static String volumeText(int value) {
+    /** ٣٠٪ and a bar of ten: the filled part starts at the right, as the page does; 4.4: «مثل صوت التلفزيون» for AdhanLevel.TV */
+    static String volumeText(int value) {
+        if (value == AdhanLevel.TV) return sa.urtv.home.S.t("مثل صوت التلفزيون");
         int filled = Math.max(0, Math.min(10, value / 10));
         StringBuilder bar = new StringBuilder();
         for (int i = 0; i < 10; i++) bar.append(i < filled ? '█' : '░');
@@ -467,7 +475,7 @@ public class MainActivity extends Activity {
             t.setOnFocusChangeListener((v, has) -> {
                 v.setBackgroundResource(has ? R.drawable.tab_bg : 0);
                 v.setSelected(has);
-                if (has) jumpToLetter(which);   // just focusing it jumps the list
+                if (has && !enteringLetters) jumpToLetter(which);   // just focusing it jumps the list; 4.4: not the focus that only enters the column (the row stays)
             });
             t.setOnClickListener(v -> jumpToLetter(which));
             letters.addView(t, new LinearLayout.LayoutParams(-1, 0, 1f));
@@ -504,9 +512,12 @@ public class MainActivity extends Activity {
         }
         for (int i = 0; target < 0 && i < letterLit.length; i++) if (letterLit[i]) target = i;
         if (target < 0) return false;
-        letterViews[target].requestFocus();
+        enteringLetters = true;   // 4.4: entering the column keeps the list where the person was; moving to another letter jumps
+        try { letterViews[target].requestFocus(); } finally { enteringLetters = false; }
         return true;
     }
+
+    private boolean enteringLetters;
 
     private boolean lettersHaveFocus() {
         if (letters == null) return false;
@@ -554,7 +565,13 @@ public class MainActivity extends Activity {
                     rows.add(new Row(false, KIND_RESUME, getString(R.string.continue_listening),
                             cat.stations.get(prefs.station()).name, -1));
                 }
+                // 4.4: a station the stations check found dead is left out (StationStatus), never the one in use
+                java.util.List<String> keys = new java.util.ArrayList<>();
+                for (Catalog.Station s : cat.stations) keys.add(s.key);
+                boolean[] gone = StationStatus.hidden(sa.urtv.home.StationFeed.status(MainActivity.this), keys,
+                        prefs.source() == Prefs.SOURCE_RADIO ? prefs.station() : -1, System.currentTimeMillis());
                 for (int i = 0; i < cat.stations.size(); i++) {
+                    if (gone[i]) continue;
                     rows.add(new Row(false, KIND_STATION, cat.stations.get(i).name, getString(R.string.live), i));
                 }
                 // «البث المباشر من الحرم»: a link out to the broadcaster's own page, only once its official link is filled in (HaramLive)
@@ -591,6 +608,7 @@ public class MainActivity extends Activity {
                         duasOn == 0 ? sa.urtv.home.S.t("أصوات تختارها تُشغَّل في وقتها، مثل الأذان") : sa.urtv.home.S.t("%s مفعّلة", Ui.arabic(duasOn)), -1));
                 // 4.4 «ساعات الهدوء»: no dua at night; the adhan in it as the person chose
                 rows.add(new Row(false, KIND_QUIET, sa.urtv.home.S.t("ساعات الهدوء"), QuietActivity.summary(prefs), -1));
+                rows.add(new Row(false, KIND_IQAMA, sa.urtv.home.S.t("الإقامة"), IqamaActivity.summary(MainActivity.this, prefs), -1));   // 4.4: a sound and a notice at the iqama
                 // 4.4: the person's own sound files (USB or the phone), and from them «أذاني الخاص» and the Fajr one
                 rows.add(new Row(false, KIND_AUDIO, sa.urtv.home.S.t("صوتياتي وأذاني الخاص"), sa.urtv.home.S.t("من فلاشة USB أو من الجوال"), -1));
                 rows.add(new Row(false, KIND_FAJR_VOICE, getString(R.string.adhan_fajr_voice), Adhan.label(prefs.playFajrVoice(MainActivity.this)), -1));
@@ -607,7 +625,7 @@ public class MainActivity extends Activity {
                 rows.add(new Row(false, KIND_SAVER_AT, getString(R.string.adhan_saver_at),
                         getString(prefs.adhanSaverAt() ? R.string.adhan_on : R.string.adhan_off), -1));
                 rows.add(new Row(false, KIND_VOLUME, getString(R.string.adhan_volume),
-                        volumeText(prefs.adhanVolume()), -1));
+                        volumeText(prefs.adhanVolumeLevel()), -1));
             }
             notifyDataSetChanged();
         }

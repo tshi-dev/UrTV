@@ -103,8 +103,12 @@ public class MusicService extends Service implements AudioManager.OnAudioFocusCh
     /** which player plays now ("exo" for a live HLS station, else "mediaplayer") and how many quiet restarts the stall watchdog made */
     private static volatile String playerKind = "";
     private static volatile int stallRestarts;
+    /** 4.4: joins made because the network came back */
+    private static volatile int reconnects;
     /** 4.3 A2: a station that stalls is restarted quietly (StallWatch), at most three times in two minutes */
     private final StallWatch stall = new StallWatch();
+    /** 4.4: a surah that failed goes on from its place after a growing wait, and is said only after SurahRecover.MAX_FAILS in ten minutes */
+    private final SurahRecover surahRecover = new SurahRecover();
 
     private Catalog cat;
     private Prefs prefs;
@@ -138,7 +142,10 @@ public class MusicService extends Service implements AudioManager.OnAudioFocusCh
     private boolean ticking;
     private String currentUrl;
     private String radioAddress;   // the station's own address (StreamUrl resolves it again for every try: a redirect's address may not last)
-    private String radioAlt;   // 4.3: its second address (stations.json «alt»), null when none or already in use
+    private String radioAlt;   // the source tried after the one in use (4.4: the next of radioSources), null when there is only one
+    /** 4.4: all of the station's sources and the one in use (StationSources) */
+    private java.util.List<String> radioSources = new java.util.ArrayList<>();
+    private int radioSource;
     private final RadioPolicy.State radioState = new RadioPolicy.State();   // 4.3: what the pick has been through (RadioPolicy)
 
     // what was on when the adhan started, so it comes back afterwards
@@ -182,8 +189,10 @@ public class MusicService extends Service implements AudioManager.OnAudioFocusCh
                     position = player.getCurrentPosition();
                     int d = player.getDuration();
                     if (d > 0) duration = d;
-                    updateSession();   // (the place is saved when it stops or pauses, not every few seconds: the disk is flash)
+                    updateSession();
                 } catch (IllegalStateException ignored) {}
+                // 4.4: and every 30 s while it plays (two small writes a minute; before, only a pause or a stop saved it)
+                if (playing && source != Prefs.SOURCE_ADHAN && SystemClock.elapsedRealtime() - lastSaved >= SAVE_EVERY_MS) save();
             }
             if (watchStall()) return;   // a stalled station was restarted (its own tick starts again with it)
             handler.postDelayed(this, 1000);
@@ -196,7 +205,11 @@ public class MusicService extends Service implements AudioManager.OnAudioFocusCh
     };
 
     private final Runnable sleepStart = new Runnable() {
-        @Override public void run() { fadeStep = 0; fadeOut(); }
+        @Override public void run() {
+            if (source == Prefs.SOURCE_ADHAN) { handler.postDelayed(this, 5_000); return; }   // 4.4: never cut an adhan: the recitation it brings back fades after it
+            fadeStep = 0;
+            fadeOut();
+        }
     };
     /** the sleep timer's fade is one Runnable, so cancelling the timer can stop it half way */
     private final Runnable fade = new Runnable() {
@@ -260,6 +273,8 @@ public class MusicService extends Service implements AudioManager.OnAudioFocusCh
     static String playerKind() { return playerKind; }
     /** quiet restarts of a stalled station since the app started (4.3 A2) */
     static int stallRestartCount() { return stallRestarts; }
+    /** 4.4: joins made because the network came back, since the app started */
+    static int reconnectCount() { return reconnects; }
     static int errorCount() { return errors; }
     static long rebufferMillis() { return rebufferMs; }
     static String lastErrorCode() { return lastError; }
@@ -351,6 +366,7 @@ public class MusicService extends Service implements AudioManager.OnAudioFocusCh
         });
         session.setActive(true);
         registerReceiver(screenOff, new IntentFilter(Intent.ACTION_SCREEN_OFF));
+        watchNetwork();   // 4.4: join again the moment the network is back
     }
 
     @Override public int onStartCommand(Intent intent, int flags, int startId) {
@@ -361,9 +377,12 @@ public class MusicService extends Service implements AudioManager.OnAudioFocusCh
         foreground();
 
         switch (action) {
-            case ACTION_PLAY_SURAH:
-                playSurahById(intent.getStringExtra(EXTRA_RECITER), intent.getIntExtra(EXTRA_SURAH, 1), 0);
+            case ACTION_PLAY_SURAH: {   // 4.4: a surah heard half way goes on from its place (SurahPlaces); the next surah after an end starts at 0
+                String rid = intent.getStringExtra(EXTRA_RECITER);
+                int n = intent.getIntExtra(EXTRA_SURAH, 1);
+                playSurahById(rid, n, SurahPlaces.get(prefs.surahPlaces(), rid, n));
                 break;
+            }
             case ACTION_PLAY_RADIO:
                 playRadio(intent.getIntExtra(EXTRA_STATION, 0));
                 break;
@@ -401,12 +420,21 @@ public class MusicService extends Service implements AudioManager.OnAudioFocusCh
         stopTick();
         handler.removeCallbacksAndMessages(null);
         try { unregisterReceiver(screenOff); } catch (IllegalArgumentException ignored) {}
+        if (netBack != null) {
+            try { ((android.net.ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE)).unregisterNetworkCallback(netBack); } catch (RuntimeException ignored) { }
+            netBack = null;
+        }
         adhanVolumeBack();
         releasePlayer();
         abandonFocus();
         if (session != null) { session.release(); session = null; }
         inForeground = false;
         waitingFocus = false;
+        source = Prefs.SOURCE_NONE;   // 4.4: the home's card reads these: a service Android ended is not «يُتلى الآن» any more
+        playing = false;
+        buffering = false;
+        sleepUntil = 0;
+        announce();
         super.onDestroy();
     }
 
@@ -436,6 +464,7 @@ public class MusicService extends Service implements AudioManager.OnAudioFocusCh
         station = -1;
         retries = 0;
         pendingSeek = Math.max(0, startAt);
+        surahRecover.reset();   // a pick (or the network back): nothing held against it
         wish.ask();
         prefs.save(source, r.id, surah, station, pendingSeek);
         startUrl(r.server + String.format(Locale.US, "%03d", n) + ".mp3");
@@ -452,8 +481,11 @@ public class MusicService extends Service implements AudioManager.OnAudioFocusCh
         pendingSeek = 0;
         wish.ask();
         prefs.save(source, "", surah, station, 0);
-        radioAddress = cat.stations.get(index).url;
-        radioAlt = cat.stations.get(index).alt;
+        Catalog.Station st = cat.stations.get(index);   // 4.4: every source of the station, in turn (StationSources)
+        radioSources = StationSources.of(st.url, st.alt, st.mirrors, StationStatus.mirrors(sa.urtv.home.StationFeed.status(this), st.key, System.currentTimeMillis()));
+        radioSource = 0;
+        radioAddress = radioSources.isEmpty() ? st.url : radioSources.get(0);
+        radioAlt = radioSources.size() > 1 ? radioSources.get(1) : null;
         resetRadioState();
         stall.reset();   // the person's pick: no quiet restart of an earlier one is held against it
         startRadio(radioAddress, 0);
@@ -468,12 +500,14 @@ public class MusicService extends Service implements AudioManager.OnAudioFocusCh
         if (tries == 0) radioDirectTried = false;
         final int gen = wish.newPlayer();
         currentUrl = url;
-        error = tries > 0 ? Ui.str(this, R.string.retrying) : null;
+        error = tries > 0 ? Ui.str(this, R.string.retrying) : reconnecting ? RECONNECTING : null;   // 4.4: a quiet restart says it, never silence
+        reconnecting = false;
         buffering = true;
         playing = false;
         prepared = false;
         position = 0;
         duration = 0;
+        acquireWifi();   // 4.4: the Wi-Fi stays awake while it joins again too, not only while it plays
         foreground();
         updateSession();
         updateNotification();
@@ -536,15 +570,15 @@ public class MusicService extends Service implements AudioManager.OnAudioFocusCh
         final boolean mutedBefore = tvMuted();
         boolean wasAdhan = source == Prefs.SOURCE_ADHAN;
         if (wasAdhan && playing) {
-            if (adhanPreview && previewSeconds > 0) {   // the volume row again: the new level, and the same few seconds again
-                volumePercent = prefs.adhanVolume();
+            if (adhanPreview && previewSeconds > 0 && wanted == adhanVoice) {   // the volume row again: the new level, and the same few seconds again (4.4: the same muezzin only)
+                volumePercent = prefs.volumeFor(prayer);   // 4.4: the prayer's own level, or the general one
                 adhanVolumeUp();
                 handler.postDelayed(previewStop, previewSeconds * 1000L);
                 return;
             }
             // a second adhan on top of the first is ignored (two alarms); a preview gives way to the real one; 4.4: a dua gives way to an adhan,
-            // and a second dua takes the place of the first
-            if (duaNow == null && (!adhanPreview || previewSeconds > 0)) return;
+            // a second dua takes the place of the first, and a preview of another muezzin takes the place of the first preview (it kept playing)
+            if (duaNow == null && !adhanPreview) return;
         }
         final boolean gone = OwnAdhan.isOwn(wanted) && !OwnAdhan.existsOf(this, wanted);   // the recording was removed: a numbered voice
         final int voice = gone ? prefs.voice() : wanted;
@@ -552,7 +586,7 @@ public class MusicService extends Service implements AudioManager.OnAudioFocusCh
         adhanCutMs = duaUrl != null ? 0 : AdhanVoices.cutMs(length, voice);   // a dua plays whole
         adhanFadeMs = duaUrl != null ? 0 : AdhanVoices.fadeMs(length);
         if (gone && duaUrl == null) name = null;
-        volumePercent = duaUrl != null ? duaVolume : prefs.adhanVolume();
+        volumePercent = duaUrl != null ? duaVolume : prefs.volumeFor(prayer);   // 4.4 «مستوى صوت الأذان»: the prayer's own, or the general (TV: left as it is)
         Log.i("UrTVAdhan", "adhan start: prayer=" + prayer + (previewSeconds > 0 ? " preview=" + previewSeconds + "s" : " live") + " tv_muted_before=" + mutedBefore);   // before the unmute: the first read
         adhanVolumeUp();
         boolean comeBack = prepareAdhanPause();   // false when an adhan was already on
@@ -670,9 +704,11 @@ public class MusicService extends Service implements AudioManager.OnAudioFocusCh
             prefs.setSavedTvMuted(muted);
             prefs.setSavedTvVolume(savedVolume);
         }
-        int want = Math.round(max * volumePercent / 100f);   // the adhan's own level, or a dua's (4.4)
-        audio.setStreamVolume(AudioManager.STREAM_MUSIC, Math.max(1, Math.min(max, want)), 0);
-        sa.urtv.home.MuteKeep.ours(this, "adhan_volume_set");   // a volume set can end a mute by itself on some TVs: the state after it is in the log
+        int want = AdhanLevel.index(volumePercent, max);   // the adhan's own level, or a dua's (4.4); -1 «مثل صوت التلفزيون»: left as it is
+        if (want >= 0) {
+            audio.setStreamVolume(AudioManager.STREAM_MUSIC, want, 0);
+            sa.urtv.home.MuteKeep.ours(this, "adhan_volume_set");   // a volume set can end a mute by itself on some TVs: the state after it is in the log
+        }
         adhanLevel = audio.getStreamVolume(AudioManager.STREAM_MUSIC);   // what it took, which can differ from what was asked
         prefs.setAdhanLevel(adhanLevel);
     }
@@ -712,7 +748,7 @@ public class MusicService extends Service implements AudioManager.OnAudioFocusCh
         duration = 0;
         foreground();
 
-        player = Playback.create(this, url, source == Prefs.SOURCE_RADIO);
+        player = Playback.create(this, url, source == Prefs.SOURCE_RADIO, source == Prefs.SOURCE_SURAH);   // 4.4: a surah through ExoPlayer too (its file buffer)
         playerKind = player.kind();
         stall.newPlayer();
         player.setAudioAttributes(MEDIA_ATTRS);   // minSdk 26; USAGE_MEDIA is STREAM_MUSIC, the stream the adhan's own volume (adhanVolumeUp) sets
@@ -761,6 +797,7 @@ public class MusicService extends Service implements AudioManager.OnAudioFocusCh
             if (!wish.current(gen)) return true;
             if (what == MediaPlayer.MEDIA_INFO_BUFFERING_START && prepared && playing) {   // it ran dry while playing: a rebuffer
                 rebuffers++;
+                if (source == Prefs.SOURCE_RADIO) week(RadioWeek.REBUFFER);
                 rebufferStart = SystemClock.elapsedRealtime();
                 buffering = true;
                 updateSession();
@@ -776,7 +813,7 @@ public class MusicService extends Service implements AudioManager.OnAudioFocusCh
         });
         player.setOnCompletionListener(mp -> {
             if (!wish.current(gen)) return;
-            if (source == Prefs.SOURCE_SURAH) next();
+            if (source == Prefs.SOURCE_SURAH) { forgetPlace(); next(); }   // 4.4: an ended surah has no place left
             else if (source == Prefs.SOURCE_ADHAN) finishAdhan();
             else if (source == Prefs.SOURCE_RADIO) onPlaybackError(MediaPlayer.MEDIA_ERROR_UNKNOWN, PlayerFault.IO);   // a live stream has no end: the server closed it, joined again
             else { playing = false; updateSession(); updateNotification(); }
@@ -819,16 +856,64 @@ public class MusicService extends Service implements AudioManager.OnAudioFocusCh
      * 4.3 A2: a live station that ran dry for 12 s, or stands still for 15 s while it says it plays, is started again quietly from its own address
      * (the person hears it come back, no error is shown); a fourth stall in two minutes is a failure, said as before. True when it acted.
      */
+    /** 4.4: the line the screens show while a station joins again (a quiet restart, the network back) */
+    static final String RECONNECTING = sa.urtv.home.S.n("يعيد الاتصال…");
+    /** the next startRadio is a reconnect: it says RECONNECTING */
+    private boolean reconnecting;
+    /** 4.4: when the last reconnect for a network that came back was made (NetReconnect.MIN_GAP_MS) */
+    private long lastNetReconnect;
+    private android.net.ConnectivityManager.NetworkCallback netBack;
+
+    /** 4.4: the network came back (or another one took over): a station that went quiet joins again at once, a surah goes on from its place */
+    private void onNetworkBack() {
+        long now = SystemClock.elapsedRealtime();
+        NetReconnect.Act act = NetReconnect.onNetworkBack(source, wish.wants(), playing, error != null || buffering,
+                lastNetReconnect == 0 ? Long.MAX_VALUE : now - lastNetReconnect);
+        if (act == NetReconnect.Act.NOTHING) return;
+        lastNetReconnect = now;
+        reconnects++;
+        week(RadioWeek.RECONNECT);
+        Log.i(TAG, "network back: " + act + " joins again");
+        if (act == NetReconnect.Act.RADIO && radioAddress != null) {
+            stall.reset();
+            reconnecting = true;
+            startRadio(radioAddress, 0);
+        } else if (act == NetReconnect.Act.SURAH && reciter >= 0) {
+            playSurah(reciter, surah, Math.max(position, pendingSeek));
+        }
+    }
+
+    private void watchNetwork() {
+        try {
+            android.net.ConnectivityManager cm = (android.net.ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+            if (cm == null) return;
+            netBack = new android.net.ConnectivityManager.NetworkCallback() {
+                private boolean lost;
+                @Override public void onLost(android.net.Network n) { lost = true; }
+                @Override public void onCapabilitiesChanged(android.net.Network n, android.net.NetworkCapabilities c) {
+                    if (!lost || !c.hasCapability(android.net.NetworkCapabilities.NET_CAPABILITY_VALIDATED)) return;   // only a network that came BACK, and works
+                    lost = false;
+                    handler.post(MusicService.this::onNetworkBack);
+                }
+            };
+            cm.registerDefaultNetworkCallback(netBack);
+        } catch (RuntimeException e) {   // a TV that refuses it: the timed tries of RadioPolicy stay, as before
+            netBack = null;
+        }
+    }
+
     private boolean watchStall() {
         boolean live = source == Prefs.SOURCE_RADIO && radioAddress != null && wish.wants();
         StallWatch.Verdict v = stall.check(SystemClock.elapsedRealtime(), live, prepared, playing, rebufferStart, position);
         if (v == StallWatch.Verdict.OK) return false;
         if (v == StallWatch.Verdict.RESTART) {
             stallRestarts++;
+            week(RadioWeek.STALL);
             Log.w(TAG, "station stalled (" + (rebufferStart > 0 ? "dry " + (SystemClock.elapsedRealtime() - rebufferStart) / 1000 + " s" : "position still") + ", " + playerKind + ", host " + hostOf(currentUrl) + "): started again quietly");
             if (rebufferStart > 0) rebufferMs += SystemClock.elapsedRealtime() - rebufferStart;
             rebufferStart = 0;
             ticking = false;
+            reconnecting = true;   // 4.4: «يعيد الاتصال…» on the screens while it joins again
             startRadio(radioAddress, 0);
             return true;
         }
@@ -878,8 +963,20 @@ public class MusicService extends Service implements AudioManager.OnAudioFocusCh
         }
     }
 
+    /** 4.4: one more of `kind` in the stations' last seven days (RadioWeek), kept across restarts */
+    private void week(int kind) {
+        prefs.radioWeek(RadioWeek.add(prefs.radioWeek(), weekDay(this), kind));
+    }
+
+    /** today in days since 1970 in the TV's place (ZoneFix, as every clock of the app), for RadioWeek */
+    static long weekDay(android.content.Context c) {
+        long now = System.currentTimeMillis();
+        return Math.floorDiv(now + sa.urtv.home.ZoneFix.offset(Place.get(c).tz, now), 86_400_000L);
+    }
+
     private void onPlaybackError(int what, int extra) {
         errors++;
+        if (source == Prefs.SOURCE_RADIO) week(RadioWeek.ERROR);
         lastError = (source == Prefs.SOURCE_RADIO ? "radio" : source == Prefs.SOURCE_ADHAN ? "adhan" : "surah")
                 + " " + PlayerFault.code(what, extra) + " (what=" + what + ", extra=" + extra + ")";
         lastErrorAt = System.currentTimeMillis() / 1000;
@@ -906,10 +1003,10 @@ public class MusicService extends Service implements AudioManager.OnAudioFocusCh
                 return;
             }
             if (step == RadioPolicy.Step.ALT) {
-                Log.i(TAG, "station failed every try at " + hostOf(radioAddress) + ": its second source " + hostOf(radioAlt));
-                String other = radioAlt;
-                radioAlt = radioAddress;   // both kept: the sources are taken in turn
-                radioAddress = other;
+                radioSource = StationSources.next(radioSource, radioSources.size());   // 4.4: the next source, round and round
+                Log.i(TAG, "station failed every try at " + hostOf(radioAddress) + ": source " + (radioSource + 1) + " of " + radioSources.size() + ", " + hostOf(radioSources.get(radioSource)));
+                radioAddress = radioSources.get(radioSource);
+                radioAlt = radioSources.get(StationSources.next(radioSource, radioSources.size()));
             }
             error = RadioFault.retryMessage(RadioFault.reason(online(), faultCode, httpCode, radioState.played, radioState.formatEveryTime, radioState.failures));
             updateSession();
@@ -932,6 +1029,31 @@ public class MusicService extends Service implements AudioManager.OnAudioFocusCh
                 return;
             }
             finishAdhan();
+            return;
+        }
+        if (source == Prefs.SOURCE_SURAH && failed != null) {   // 4.4: from its place after a growing wait, never a loop of prepares
+            long wait = surahRecover.after(SystemClock.elapsedRealtime());
+            if (wait >= 0) {
+                Log.i(TAG, "surah failed (" + PlayerFault.code(what, extra) + ", " + playerKind + ", host " + hostOf(failed) + "): on from " + pendingSeek / 1000 + " s in " + wait / 1000 + " s");
+                error = RECONNECTING;
+                updateSession();
+                updateNotification();
+                save();
+                final int gen = wish.currentGeneration();
+                handler.postDelayed(() -> {
+                    if (!wish.retry(gen, playing) || source != Prefs.SOURCE_SURAH || !failed.equals(currentUrl)) return;   // not after a stop, a pause or another pick
+                    startUrl(failed);   // pendingSeek: the place it stopped at
+                    error = RECONNECTING;   // until it plays again (onPrepared clears it)
+                    updateSession();
+                    updateNotification();
+                }, wait);
+                return;
+            }
+            Log.w(TAG, "surah failed " + SurahRecover.MAX_FAILS + " times in " + SurahRecover.WINDOW_MS / 60_000 + " min: said");
+            error = PlayerFault.message(false, what, extra);
+            updateSession();
+            updateNotification();
+            save();
             return;
         }
         if (failed != null && retries < 2) {
@@ -961,10 +1083,17 @@ public class MusicService extends Service implements AudioManager.OnAudioFocusCh
         if (source == Prefs.SOURCE_SURAH && reciter >= 0) {
             playSurahAgain(reciter, SurahSet.next(surah, cat.reciters.get(reciter).missing));   // after 114 from 1; a missing surah stepped over
         } else if (source == Prefs.SOURCE_RADIO && station >= 0) {
-            playRadio((station + 1) % cat.stations.size());
+            playRadio(StationStatus.step(station, 1, hiddenStations()));   // 4.4: a station the check found dead is stepped over
         } else {
             resumeLastInternal();
         }
+    }
+
+    /** 4.4: the stations the check found dead (StationStatus), never the one in use */
+    private boolean[] hiddenStations() {
+        java.util.List<String> keys = new java.util.ArrayList<>();
+        for (Catalog.Station s : cat.stations) keys.add(s.key);
+        return StationStatus.hidden(sa.urtv.home.StationFeed.status(this), keys, station, System.currentTimeMillis());
     }
 
     void prev() {
@@ -973,7 +1102,7 @@ public class MusicService extends Service implements AudioManager.OnAudioFocusCh
             if (position > 5000) { seekTo(0); return; }
             playSurahAgain(reciter, SurahSet.prev(surah, cat.reciters.get(reciter).missing));
         } else if (source == Prefs.SOURCE_RADIO && station >= 0) {
-            playRadio((station - 1 + cat.stations.size()) % cat.stations.size());
+            playRadio(StationStatus.step(station, -1, hiddenStations()));
         }
     }
 
@@ -1004,6 +1133,7 @@ public class MusicService extends Service implements AudioManager.OnAudioFocusCh
     }
 
     void toggle() {
+        if (fadeStep > 0) { setSleep(0); return; }   // 4.4: OK (or play) in the sleep timer's fade is «I am awake»: the timer ends, the sound back to full, it plays on
         if (player == null) { resumeLastInternal(); return; }
         if (playing || (buffering && wish.wants())) pause(); else resume();
     }
@@ -1146,6 +1276,17 @@ public class MusicService extends Service implements AudioManager.OnAudioFocusCh
         if (source == Prefs.SOURCE_ADHAN) return;   // «متابعة» must still point at the surah, not the adhan
         String id = reciter >= 0 && reciter < cat.reciters.size() ? cat.reciters.get(reciter).id : "";
         prefs.save(source, id, surah, station, position);
+        if (source == Prefs.SOURCE_SURAH && !id.isEmpty() && prepared) prefs.setSurahPlaces(SurahPlaces.put(prefs.surahPlaces(), id, surah, position, duration));   // 4.4
+        lastSaved = SystemClock.elapsedRealtime();
+    }
+
+    /** 4.4: the place is saved every SAVE_EVERY_MS while it plays too (a power cut or a killed app kept only the last pause) */
+    private static final long SAVE_EVERY_MS = 30_000;
+    private long lastSaved;
+
+    private void forgetPlace() {
+        String id = reciter >= 0 && reciter < cat.reciters.size() ? cat.reciters.get(reciter).id : "";
+        if (!id.isEmpty()) prefs.setSurahPlaces(SurahPlaces.forget(prefs.surahPlaces(), id, surah));
     }
 
     // ---- sleep timer: a 15-second gentle fade, then stop ----
@@ -1283,7 +1424,7 @@ public class MusicService extends Service implements AudioManager.OnAudioFocusCh
     /** The home screen's «يُتلى الآن» card hears about it when what it shows may have changed: once per change, never on the clock's tick. */
     private String announced = "";
     private void announce() {
-        String now = source + "|" + playing + "|" + buffering + "|" + reciter + "|" + surah + "|" + station + "|" + error + "|" + (sleepUntil > 0);
+        String now = source + "|" + playing + "|" + buffering + "|" + reciter + "|" + surah + "|" + station + "|" + error + "|" + (sleepUntil / 60_000);   // 4.4: a new sleep time is said at once (the card)
         if (now.equals(announced)) return;
         announced = now;
         sendBroadcast(new Intent(NowPlaying.CHANGED).setPackage(getPackageName()));

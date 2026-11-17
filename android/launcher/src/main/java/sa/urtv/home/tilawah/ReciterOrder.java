@@ -68,11 +68,16 @@ final class ReciterOrder {
         return out;
     }
 
-    /** the position (in the rows) of the first reciter whose name starts with the letter, else -1 */
+    /**
+     * the position (in the rows) of the first reciter whose name starts with the letter, else -1. 4.4: among the rest first, the ★ section only
+     * when none of the rest has it (a favourite «ماهر» made every «م» land on it, the other م reciters out of reach by a letter)
+     */
     static int jump(List<Item> rows, List<String> names, String letter) {
-        for (int p = 0; p < rows.size(); p++) {
-            Item it = rows.get(p);
-            if (!it.header && letter.equals(letterOf(names.get(it.reciter)))) return p;
+        for (int pass = 0; pass < 2; pass++) {
+            for (int p = 0; p < rows.size(); p++) {
+                Item it = rows.get(p);
+                if (!it.header && it.fav == (pass == 1) && letter.equals(letterOf(names.get(it.reciter)))) return p;
+            }
         }
         return -1;
     }

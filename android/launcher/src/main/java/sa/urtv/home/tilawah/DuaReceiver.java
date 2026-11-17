@@ -20,8 +20,8 @@ public class DuaReceiver extends BroadcastReceiver {
         DuaDays days = new DuaDays(c);
         for (DuaStore.Dua d : DuaStore.list(c)) {
             if (!d.on || d.lastDue >= due) continue;
-            long t = d.rule.next(due - 1, days);   // its own moment is this alarm's
-            if (t != due) continue;
+            long t = d.rule.next(due - DuaPlan.SAME_MS - 1, days);   // its own moment is this alarm's: 4.4 within SAME_MS (the prayer times may have been
+            if (!DuaPlan.same(t, due)) continue;                         // corrected since the alarm was set: Aladhan's, a new city, «تعديل وقت الصلاة»)
             d.lastDue = due;
             if (!d.rule.repeat) d.on = false;
             DuaStore.put(c, d);

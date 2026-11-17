@@ -24,7 +24,7 @@ man, page, index = read(L / "AndroidManifest.xml"), read(L / "assets/phone/audio
 check("AudioRules is plain Java", "import android" not in rules and "sa.urtv.home.S" not in rules)
 check("the store keeps the files in the app's own folder, under its own names (a<N>.<ext>), never the stick's path",
       'new File(c.getFilesDir(), "audio")' in store and '"a" + it.id + "." + it.ext' in store)
-add = store[store.index("static synchronized Added add(Context c, InputStream in"):]
+add = store[store.index("static Added add(Context c, InputStream in"):]   # 4.4: no longer synchronized (the copy runs outside the lock)
 add = add[:add.index("\n    }\n")]
 check("an add is refused before a byte is written, stops past the cap while copying, and is judged by its bytes and by Android's reader",
       add.index("mayAdd(c, size)") < add.index("new FileOutputStream(tmp)") and "if (wrote > cap)" in add and "AudioRules.kind(head, headN)" in add and "length(tmp)" in add)

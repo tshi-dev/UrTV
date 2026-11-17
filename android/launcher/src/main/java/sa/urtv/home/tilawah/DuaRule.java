@@ -34,12 +34,15 @@ final class DuaRule {
         final int gy, gm, gd, hy, hm, hd;
         final long midnight;   // this day's 00:00 in the city's zone
         final long[] prayers;   // the six times of that day (PrayerTimes.at), 0 when not known
-        Day(int weekday, int gy, int gm, int gd, int hy, int hm, int hd, long midnight, long[] prayers) {
-            this.weekday = weekday; this.gy = gy; this.gm = gm; this.gd = gd; this.hy = hy; this.hm = hm; this.hd = hd; this.midnight = midnight; this.prayers = prayers;
+        /** 4.4: the moment of a clock time (minutes from midnight) on this day, as the city's clock reads it (a DST day too); null: midnight + minutes */
+        final java.util.function.IntToLongFunction wall;
+        Day(int weekday, int gy, int gm, int gd, int hy, int hm, int hd, long midnight, long[] prayers) { this(weekday, gy, gm, gd, hy, hm, hd, midnight, prayers, null); }
+        Day(int weekday, int gy, int gm, int gd, int hy, int hm, int hd, long midnight, long[] prayers, java.util.function.IntToLongFunction wall) {
+            this.weekday = weekday; this.gy = gy; this.gm = gm; this.gd = gd; this.hy = hy; this.hm = hm; this.hd = hd; this.midnight = midnight; this.prayers = prayers; this.wall = wall;
         }
     }
 
-    /** today is 0, tomorrow 1, … */
+    /** yesterday is -1 (4.4: a time after a prayer of yesterday may fall after midnight), today 0, tomorrow 1, … ; null when not known */
     interface Days { Day day(int fromToday); }
 
     /** the rule is whole: a weekday picked, a real date, a time in range */
@@ -65,7 +68,7 @@ final class DuaRule {
 
     /** the moment on that day, 0 when that day's prayer time is not known */
     long time(Day d) {
-        if (at == AT_CLOCK) return d.midnight + clock * 60_000L;
+        if (at == AT_CLOCK) return d.wall != null ? d.wall.applyAsLong(clock) : d.midnight + clock * 60_000L;   // 4.4: the wall clock, an hour right on a DST day
         long p = d.prayers == null || prayer >= d.prayers.length ? 0 : d.prayers[prayer];
         if (p <= 0) return 0;
         return at == BEFORE ? p - offset * 60_000L : p + offset * 60_000L;
@@ -74,9 +77,9 @@ final class DuaRule {
     /** The next moment strictly after `after`, or 0 when there is none within HORIZON days (a date that does not come, a broken rule). */
     long next(long after, Days days) {
         if (!valid()) return 0;
-        for (int k = 0; k <= HORIZON; k++) {
+        for (int k = -1; k <= HORIZON; k++) {   // 4.4: from yesterday: «بعد العشاء بساعتين» of yesterday may be after midnight today (it belongs to the prayer's day)
             Day d = days.day(k);
-            if (d == null) return 0;
+            if (d == null) { if (k < 0) continue; return 0; }
             if (!on(d)) continue;
             long t = time(d);
             if (t > after) return t;
