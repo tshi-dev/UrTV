@@ -1,0 +1,34 @@
+# UrTV 4.3.3 poster for X (for the owner's approval)
+
+`urtv-4.3.3.png` is 2160×2700 (4:5). It is in the 4.3.1 family: dark green with a gold glow, the UrTV icon at the top right, and the Downloader code at the bottom. The hero is one big gold «4.3.3» with a light sweep across it.
+
+The source is `poster-433.html`. To render it, put the IBM Plex Sans Arabic woff2 files (OFL, from `@fontsource/ibm-plex-sans-arabic`) in `a/` and screenshot the page at 2160×2700. The page names Thmanyah first, so a machine that has the app's private fonts renders it in Thmanyah; this PNG is in IBM Plex Sans Arabic because the fonts are not in this repository. The Downloader icon is cropped from the approved 4.3.1 poster.
+
+## Headline (two options)
+
+1. «نسخة تجريبية؟ شغّلها من تلفزيونك» (on the poster)
+2. «جرّب الجديد قبل الكل، من تلفزيونك»
+
+## Every line checked against CHANGELOG 4.3.3
+
+- «النسخ التجريبية»: a new row in «تحديث تلفزيوني»; notes are sent from the TV. Turning it off never installs an older build.
+- «إنقاذ تلفزيونك»: a small separate app whose one button, «رجّع التلفزيون كما كان», brings the TV back.
+- Fixes:
+  - stock names on the home's markets page (4164 النهدي, 4002 المواساة, GitHub #60);
+  - the photo no longer goes black (`--pdim`);
+  - «تحقق من التحديث» now says «لا يوجد أحدث» instead of an error.
+- Left out:
+  - «the screensaver's bottom line no longer jumps with the matches»: not in 4.3.3.
+  - «after a crash it offers to send a report»: in 4.3.3, but only for people who turned on «النسخ التجريبية».
+  - The «بدء شاشة التوقف بعد» fix: true, but too small for this poster.
+
+## X post
+
+Arabic (60 words):
+
+وصل تلفزيونك 4.3.3. الجديد «النسخ التجريبية» في تحديث تلفزيوني: تجيك المزايا قبل الكل، وترسل ملاحظاتك من التلفزيون نفسه، وتوقفها متى ما تبي وما يرجع تلفزيونك لنسخة أقدم. ومعها تطبيق «إنقاذ تلفزيونك» يرجّع التلفزيون كما كان بزر واحد، وإصلاحات: أسماء الأسهم في الأسواق، وصورة شاشة التوقف ما عادت تطلع سوداء. حدّث من الإعدادات ← تحديث تلفزيوني، أو بكود Downloader ‏9378345.
+github.com/tshi-dev/UrTV
+
+English:
+
+UrTV 4.3.3: opt-in beta updates straight from your TV, a one-button Rescue app, and fixes. Update in Settings → Update your TV, or Downloader code 9378345.
