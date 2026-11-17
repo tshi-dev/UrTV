@@ -32,6 +32,7 @@ import java.util.Map;
  *   am broadcast -n sa.urtv.home/.DockReceiver -a sa.urtv.home.PIN_STATUS            what is set
  *   am broadcast -n sa.urtv.home/.DockReceiver -a sa.urtv.home.PIN_OFF               no PIN: nothing asks, kids mode ends, the choices stay
  *   am broadcast -n sa.urtv.home/.DockReceiver -a sa.urtv.home.PIN_RESET             a forgotten PIN: everything parental back to nothing
+ *   am broadcast -n sa.urtv.home/.DockReceiver -a sa.urtv.home.INPUT_HIDE --es id <input id> --es mode hide|show   4.5: leave an input out of the sources popup
  *   am broadcast -n sa.urtv.home/.DockReceiver -a sa.urtv.home.HOME_WANTED --es mode on|off|status   4.4: «the person's home is ours» for the add-on's watch
  *      and the home's re-apply of the role (optimize/homedoctor.py); answers "home-wanted: yes|no"
  *   am broadcast -n sa.urtv.home/.DockReceiver -a sa.urtv.home.HOME_KEY --es mode on|off|status   4.4 R3 (on by default on a Google TV): the add-on catches
@@ -108,9 +109,20 @@ public class DockReceiver extends BroadcastReceiver {
                     b.append(InputLabels.key(t)).append(" | ").append(InputLabels.label(c, t, given)).append(" | ").append(InputLabels.own(c, t))
                      .append(" | ").append(ours == null ? "" : ours)
                      .append(" | ").append(InputDisplay.cecName(InputLabels.cecRaw(c, t)))   // the CEC device's own name, "" when none
-                     .append(" | ").append(InputLabels.stateWord(InputLabels.state(c, t))).append('\n');
+                     .append(" | ").append(InputLabels.stateWord(InputLabels.state(c, t)))
+                     .append(" | ").append(InputLabels.hidden(c).contains(InputLabels.key(t)) ? "hidden" : "shown").append('\n');   // 4.5
                 }
                 setResultData(b.length() == 0 ? "no inputs reported" : b.toString().trim());
+                return;
+            }
+            case "sa.urtv.home.INPUT_HIDE": {   // 4.5: --es id <input id> --es mode hide|show: the sources popup leaves it out (the inputs screen keeps it)
+                String id = i.getStringExtra("id"), m = String.valueOf(i.getStringExtra("mode"));
+                if (id == null || !InputHide.validId(id) || (!m.equals("hide") && !m.equals("show"))) { setResultData("error: add --es id <input id> --es mode hide|show"); return; }
+                boolean known = false;
+                for (android.media.tv.TvInputInfo t : InputLabels.reported(c)) known |= id.equals(InputLabels.key(t));
+                if (!known && m.equals("hide")) { setResultData("error: this TV does not report that input (optimize/dock.sh input-names)"); return; }
+                InputLabels.setHidden(c, id, m.equals("hide"));
+                setResultData("input: " + (m.equals("hide") ? "hidden from the sources list" : "shown again"));
                 return;
             }
             case "sa.urtv.home.SET_INPUT_NAME": {

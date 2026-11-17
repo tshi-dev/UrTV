@@ -885,3 +885,8 @@ mp3 أو m4a أو ogg أو wav	mp3, m4a, ogg or wav
 مفعّل: فوق التطبيقات الأخرى أيضًا، إلا في وضع الأطفال	On: over other apps too, except in kids mode
 نغمة قصيرة	Short chime
 حان وقت إقامة صلاة %s	It is time for the %s iqama
+«إخفاء» يشيل المصدر من قائمة «المصادر»، ويبقى هنا ترجعه متى ما تبي.	“Hide” takes the input out of the “Inputs” list; it stays here to bring back any time.
+إظهار	Show
+إخفاء	Hide
+رجع المصدر لقائمة «المصادر»	The input is back in the “Inputs” list
+انشال المصدر من قائمة «المصادر»	The input is out of the “Inputs” list

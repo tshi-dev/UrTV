@@ -53,7 +53,8 @@ public class InputNamesActivity extends Activity {
         col.setPadding(0, dp(36), 0, dp(48));
         frame.addView(col, new FrameLayout.LayoutParams(dp(600), -2, Gravity.CENTER_HORIZONTAL));
         col.addView(text(S.t("أسماء المصادر"), 26, "Medium", TEXT, false), right(0));
-        col.addView(text(S.t("اختيار على مصدر لتغيير اسمه في قائمة «المصادر» (مثل PS5). اترك الاسم فارغاً لرجوع اسم التلفزيون."), 14, "Regular", DIM, false), right(dp(24)));
+        col.addView(text(S.t("اختيار على مصدر لتغيير اسمه في قائمة «المصادر» (مثل PS5). اترك الاسم فارغاً لرجوع اسم التلفزيون."), 14, "Regular", DIM, false), right(dp(4)));
+        col.addView(text(S.t("«إخفاء» يشيل المصدر من قائمة «المصادر»، ويبقى هنا ترجعه متى ما تبي."), 14, "Regular", DIM, false), right(dp(24)));   // 4.5
         list = new LinearLayout(this);
         list.setOrientation(LinearLayout.VERTICAL);
         col.addView(list, new LinearLayout.LayoutParams(-1, -2));
@@ -98,11 +99,34 @@ public class InputNamesActivity extends Activity {
         list.removeAllViews();
         List<TvInputInfo> inputs = InputLabels.reported(this);
         Map<String, String> given = InputLabels.given(this);
-        List<View> cards = new ArrayList<>();
+        List<View> cards = new ArrayList<>(), hides = new ArrayList<>();
+        java.util.Set<String> hidden = InputLabels.hidden(this);
         for (TvInputInfo t : inputs) {
-            View c = card(InputLabels.fallback(this, t), given.get(InputLabels.key(t)), v -> edit(t));
+            final String id = InputLabels.key(t);
+            final boolean off = hidden.contains(id);
+            View c = card(InputLabels.fallback(this, t), given.get(id), v -> edit(t));
+            // 4.5 «إخفاء» / «إظهار» beside the card (mockup docs/mockups/tools-45/01-inputs.png): a hidden input stays here, dimmed, and leaves the sources popup
+            TextView h = text(off ? S.t("إظهار") : S.t("إخفاء"), 15, "Medium", TEXT, false);
+            h.setGravity(Gravity.CENTER);
+            h.setPadding(dp(14), dp(10), dp(14), dp(10));
+            h.setFocusable(true);
+            h.setClickable(true);
+            h.setId(View.generateViewId());
+            GlassPaint.card(h, look, 12);
+            final int at = cards.size();
+            h.setOnClickListener(v -> { InputLabels.setHidden(this, id, !off); toast(off ? S.t("رجع المصدر لقائمة «المصادر»") : S.t("انشال المصدر من قائمة «المصادر»")); render(at); });
+            if (off) c.setAlpha(0.5f);
+            LinearLayout row = new LinearLayout(this);
+            row.setOrientation(LinearLayout.HORIZONTAL);
+            row.setGravity(Gravity.CENTER_VERTICAL);
+            LinearLayout.LayoutParams cp = new LinearLayout.LayoutParams(0, -2, 1f);
+            LinearLayout.LayoutParams hp = new LinearLayout.LayoutParams(-2, -2);
+            hp.setMarginStart(dp(8));
+            row.addView(c, cp);
+            row.addView(h, hp);
             cards.add(c);
-            list.addView(c, rowParams());
+            hides.add(h);
+            list.addView(row, rowParams());
         }
         if (cards.isEmpty()) {
             list.addView(text(S.t("التلفزيون ما أبلغ عن مصادر (HDMI أو غيرها)."), 15, "Medium", DIM, false), right(0));
@@ -111,6 +135,8 @@ public class InputNamesActivity extends Activity {
         for (int i = 0; i < cards.size(); i++) {
             cards.get(i).setNextFocusUpId(cards.get(Math.max(0, i - 1)).getId());
             cards.get(i).setNextFocusDownId(cards.get(Math.min(cards.size() - 1, i + 1)).getId());
+            hides.get(i).setNextFocusUpId(hides.get(Math.max(0, i - 1)).getId());
+            hides.get(i).setNextFocusDownId(hides.get(Math.min(hides.size() - 1, i + 1)).getId());
         }
         View f = cards.get(Math.max(0, Math.min(focus, cards.size() - 1)));
         f.post(f::requestFocus);

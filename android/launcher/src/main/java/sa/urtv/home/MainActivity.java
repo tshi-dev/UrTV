@@ -3210,7 +3210,7 @@ public class MainActivity extends Activity {
         List<TextView> rows = new ArrayList<>();
 
         findTvApps();   // asked again each time: the TV's own apps can arrive with an update
-        List<TvInputInfo> inputs = InputLabels.reported(this);   // in the TV's own names' order, so a name the owner gave moves nothing
+        List<TvInputInfo> inputs = InputLabels.shown(this);   // in the TV's own names' order, so a name the owner gave moves nothing; 4.5: without the ones the owner hid
         Map<String, String> given = InputLabels.given(this);
         for (TvInputInfo t : inputs) {
             // the tuner is not an HDMI input: opened as a passthrough link it ended on the last HDMI (TCL G10), so «the TV» has its own way (openLiveTv)

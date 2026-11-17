@@ -10,7 +10,8 @@
 #   optimize/dock.sh names                 every app's name: package | shown | its own | from (agent, own, table)
 #   optimize/dock.sh name PKG 'الاسم' ...   give apps an Arabic name on this TV (pairs; '' = its usual name again)
 #   optimize/dock.sh names-clear           every app back to its usual name
-#   optimize/dock.sh input-names           the TV's inputs: id | shown | the TV's own name | ours | CEC device name | state (connected/standby/disconnected)
+#   optimize/dock.sh input-names           the TV's inputs: id | shown | the TV's own name | ours | CEC device name | state (connected/standby/disconnected) | hidden/shown
+#   optimize/dock.sh input-hide ID | input-show ID   4.5: leave an input out of the sources list (an HDMI port nothing is plugged into); the inputs screen keeps it
 #   optimize/dock.sh input-name ID 'PS5'   name an input in the sources list on this TV (ID from input-names; '' = the TV's own name again)
 #   optimize/dock.sh sleep 30              «مؤقت النوم» for the whole TV: 15 30 60 90, or any 1 to 600 minutes; then the TV goes to sleep
 #   optimize/dock.sh sleep                 how the timer stands: minutes left, and what its end will do
@@ -223,6 +224,10 @@ case "${1:-}:$#" in
     done
     send SET_NAMES "--es names '$pairs'" ;;
   input-names:1) send INPUT_NAMES ;;
+  input-hide:2|input-show:2)
+    [[ "$2" =~ ^[A-Za-z0-9._/%:\$-]+$ ]] || { echo "not an input id (use one from: optimize/dock.sh input-names)"; exit 1; }
+    send INPUT_HIDE "--es id '$2' --es mode $([ "$1" = input-hide ] && echo hide || echo show)" ;;
+  input-hide:*|input-show:*) echo "usage: optimize/dock.sh input-hide|input-show ID   (ID from: optimize/dock.sh input-names)"; exit 1 ;;
   input-name:3)
     # the id goes to the TV's shell in single quotes, so a $ in it (com.x/.Svc$Inner/HDMI1) is not expanded there
     id_ok='^[A-Za-z0-9._/%:\$-]+$'

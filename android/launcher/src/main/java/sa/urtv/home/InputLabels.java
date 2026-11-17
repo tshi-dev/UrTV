@@ -112,6 +112,24 @@ final class InputLabels {
         return InputNames.parse(Dock.prefs(c).getString(KEY, ""));
     }
 
+    private static final String HIDDEN = "input_hidden";
+
+    /** 4.5: the inputs the owner hid from the sources popup (InputHide) */
+    static java.util.Set<String> hidden(Context c) { return InputHide.parse(Dock.prefs(c).getString(HIDDEN, "")); }
+
+    static void setHidden(Context c, String id, boolean hide) {
+        Dock.prefs(c).edit().putString(HIDDEN, InputHide.serialize(InputHide.with(hidden(c), id, hide))).apply();
+    }
+
+    /** the reported inputs the sources popup shows: the hidden ones left out (the inputs screen still lists them all) */
+    static List<TvInputInfo> shown(Context c) {
+        List<TvInputInfo> all = reported(c), out = new ArrayList<>();
+        List<String> keys = new ArrayList<>();
+        for (TvInputInfo t : all) keys.add(key(t));
+        for (int i : InputHide.shown(keys, hidden(c))) out.add(all.get(i));
+        return out;
+    }
+
     static void set(Context c, String id, String name) {
         Dock.prefs(c).edit().putString(KEY, InputNames.serialize(InputNames.with(given(c), id, name))).apply();
     }

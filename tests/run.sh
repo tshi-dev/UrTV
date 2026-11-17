@@ -353,6 +353,7 @@ python3 tests/vector_drawables_test.py   # Every vector drawable's pathData must
 python3 tests/wall_first_frame_test.py   # Hotfix 4.3: the home never shows black on the way back (a user's Mi Box on 4.3: the cards on black for a few s
 python3 tests/wifi_hotspot_test.py   # A user's tested route (Xiaomi): when the setup wizard owns the saved Wi-Fi and the TV shows no «انسَ الشبكة» o
 python3 tests/your_tv_hub_test.py   # «تلفزيونك» (YourTvHubActivity): what opening the app shows: four windows (the markets, the matches, the games,
+python3 tests/input_hide_test.py   # 4.5 «المصادر»: an input hidden from the sources popup, kept in the inputs screen
 python3 tests/run_list_test.py   # every test file is run by this script (CI runs nothing else)
 
 node tests/es2017_parse.test.mjs   # #19: the built pages parse as ES2017 (Android 9 TVs stuck on WebView 66)
