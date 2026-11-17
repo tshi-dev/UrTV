@@ -145,6 +145,7 @@
     font-size:calc(clamp(12px,1vw,18px)*var(--z,1));font-weight:500;letter-spacing:0;color:var(--gold-3);
   }
   .week .hd::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,rgba(var(--gold-rgb),.5),transparent)}
+  .week .hd .srcl{order:2;font-weight:400;white-space:nowrap}   /* a source's credit after the line, at its end */
   .week ul{list-style:none;display:flex;flex-direction:column;gap:0}
   .week li{
     display:flex;align-items:baseline;gap:1.05em;
@@ -236,6 +237,28 @@
   .week li.prow .pc.next i{color:var(--gold-3)}
   html:not(.cso) .week li.prow .pc{gap:.15em}
   html:not(.cso) .week li.prow .pc b{font-weight:400;font-size:.88em;color:#E9E1CE}
+  /* 4.4 card review, batch 3 (the owner approved 12, 13, 14, 16, 17, 18: docs/cards/REVIEW.md; «الشكل السابق» keeps the old) */
+  /* 12 «الأذكار» and the quotes: a long text (two lines or more) reads from the line's start again; centring stays for a short one */
+  html:not(.cso) .week li.quote.q2,html:not(.cso) .week li.quote.q3,html:not(.cso) .week li.quote.q4{text-align:start}
+  html:not(.cso) .week li.adf .c{color:#E2DACA}
+  /* 13 «المهام»: an open ring before each (a thing to do, not a list dot), the text a step larger; the count on the header (renderCard) */
+  html:not(.cso) .week li.task::before{width:.62em;height:.62em;background:none;border:2px solid var(--gold-3);box-sizing:border-box}
+  html:not(.cso) .week li.task{font-size:calc(clamp(15px,1.25vw,24px)*var(--z,1))}
+  /* 14 «يُتلى الآن»: the «،» on the word before it, the reciter readable, a little more room inside */
+  html:not(.cso) .stage > .week.np{padding:1.2vh 1.6vw}
+  html:not(.cso) .np .npl{gap:.45em}
+  html:not(.cso) .np .nps{margin-inline-start:-.45em;color:var(--gold-3)}
+  html:not(.cso) .np .npw{color:#E2DACA;font-weight:400}
+  /* 16 «السنة»: the year and its line readable from the sofa; the dots stay */
+  html:not(.cso) .week li.yr .yn{font-size:1.5em}
+  html:not(.cso) .week li.yr .yt{font-size:.92em;color:#E2DACA}
+  /* 17 «يومك»: the small names readable, «بعد …» the accent at the row's end */
+  html:not(.cso) .week li.td .k{font-size:.8em;color:#CFC6B2}
+  html:not(.cso) .week li.td .r{font-size:.86em;color:var(--gold-3)}
+  /* 18 «هذا الأسبوع»: the rating says it is one (a star), the season and episode readable */
+  html:not(.cso) .week li .rt::before{content:'★ ';font-size:.9em}
+  html:not(.cso) .week li .rt{color:var(--gold-3)}
+  html:not(.cso) .week li .ep{font-size:.8em}
   html:not(.cso) .week li.prow .pc i{font-size:.9em;color:#FFF;font-weight:500}
   html:not(.cso) .week li.prow .pc.past b,html:not(.cso) .week li.prow .pc.past i{color:#B9B09C;font-weight:400}
   html:not(.cso) .week li.prow .pc.next{background:#EBC67D;box-shadow:none}
@@ -1574,7 +1597,8 @@ async function loadPrayers(){
 const UNIT = {
   day: {one:'يوم', two:'يومين', few:'أيام', many:'يوم', mid:'يومًا'},
   hour:{one:'ساعة', two:'ساعتين', few:'ساعات', many:'ساعة'},
-  min: {one:'دقيقة', two:'دقيقتين', few:'دقائق', many:'دقيقة'}
+  min: {one:'دقيقة', two:'دقيقتين', few:'دقائق', many:'دقيقة'},
+  task:{one:'مهمة', two:'مهمتان', few:'مهام', many:'مهمة', mid:'مهمة'}
 };
 // the counted noun as Arabic says it: «يوم», «يومين», «٥ أيام», «١١ يومًا», «١٠٠ يوم», «١٠٥ أيام» (by the last two digits)
 const unitOf = (n, u) => { const r = n % 100; return r >= 3 && r <= 10 ? u.few : r >= 11 && u.mid || u.many; };
@@ -3237,8 +3261,10 @@ function renderCard(card, animate, keepSize){
   }
   if(!keepSize){ card.z = 1; card.cap = 0; card.maxLen = 0; card.zi = 0; card.ri = 0; card.el.style.removeProperty('--z'); }
   if(P === 'shows'){
-    if(WEEK_OK_AT && WEEK_FAIL_AT > WEEK_OK_AT) paintHd(hd, '', `<span>${PANEL_TITLE.shows}</span><span class="until">${fmtAgo(WEEK_OK_AT)}</span>`);
-    else paintHd(hd, PANEL_TITLE.shows);
+    // TVmaze's data is CC BY-SA 4.0, credited on the card: tiny, at the end of the header's line (the rule of «مصادر البيانات»)
+    const by = '<span class="srcl">TVmaze</span>';
+    if(WEEK_OK_AT && WEEK_FAIL_AT > WEEK_OK_AT) paintHd(hd, '', `<span>${PANEL_TITLE.shows}</span><span class="until">${fmtAgo(WEEK_OK_AT)}</span>${by}`);
+    else paintHd(hd, '', `<span>${PANEL_TITLE.shows}</span>${by}`);
     renderWeekPage(card, animate); return;
   }
   card.el.classList.toggle('stocks', P === 'stocks');   // 24 px of its own inside
@@ -3260,6 +3286,8 @@ function renderCard(card, animate, keepSize){
   else if(P === 'adhkar'){ const q = adhkarCard(card); paintHd(hd, q.title, q.hd); rows = q.rows; }
   else if(P === 'stocks'){ const q = stocksCard(); paintHd(hd, '', q.hd); rows = q.rows; }
   if(P === 'matches' && matchesStaleNote()) paintHd(hd, '', `<span>${PANEL_TITLE.matches}</span><span class="until">${matchesStaleNote()}</span>`);
+  // 4.4 batch 3, 13: «المهام» says how many beside its title («الشكل السابق»: the title alone)
+  else if(P === 'tasks' && !OLD_LOOK && CONFIG.tasks.length) paintHd(hd, '', `<span>${PANEL_TITLE.tasks}</span><span class="until near">${qty(CONFIG.tasks.length, UNIT.task)}</span>`);
   else if(PANEL_TITLE[P]) paintHd(hd, PANEL_TITLE[P]);
   if(!rows.length){
     if(P === 'matches' && !MATCHES_LOADED && ul.firstElementChild && !ul.firstElementChild.classList.contains('empty')) return;

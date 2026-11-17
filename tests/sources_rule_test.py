@@ -41,4 +41,12 @@ check("settings: OK on a source lands on its row (the search's way: hubAt, force
       re.search(r"hubAt = SettingsHub\.of\(src\[3\], null\); forceWant = src\[3\]; open\(hubAt\);", st) is not None)
 check("page: a source line is 60% of its line and half its light (.srcl)", ".srcl{font-size:.6em;opacity:.5;" in tpl)
 check("page: the weather's and the markets' lines follow it", re.search(r"\.wxsrc\{[^}]*\*\.6\)[^}]*opacity:\.5", tpl) and re.search(r"\.mkup\{[^}]*\*\.6\)[^}]*opacity:\.5", tpl))
+tv = next((r for r in rows if r[0] == "TVmaze"), None)
+check("Sources: TVmaze's CC BY-SA 4.0 with its link, and its credit on the series card", tv and "CC BY-SA 4.0" in tv[2] and "tvmaze.com" in tv[2])
+terms = [r for r in rows if "حسب شروط" in r[2]]
+check("Sources: each «حسب شروط الموقع» says where the terms are (a checkable address)", terms and all(re.search(r"[a-z0-9-]+\.(com|org|io)", r[2]) for r in terms), terms)
+check("Sources: Yahoo's prices «بيانات للعرض فقط»", any("Yahoo" in r[0] and "بيانات للعرض فقط" in r[2] for r in rows))
+check("page: the series card credits TVmaze, tiny (.srcl), in its header", "const by = '<span class=\"srcl\">TVmaze</span>';" in tpl)
+notices = (ROOT / "THIRD_PARTY_NOTICES.md").read_text(encoding="utf-8")
+check("THIRD_PARTY_NOTICES: TVmaze and its CC BY-SA 4.0", "## TVmaze" in notices and "CC BY-SA 4.0" in notices)
 sys.exit(1 if failed else 0)

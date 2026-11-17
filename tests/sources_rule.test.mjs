@@ -63,6 +63,22 @@ for (const [w, h] of [[1920, 1080], [960, 540]]) {
   check('matches page: no script errors', !errors.length, errors.join('; '));
   await ctx.close();
 }
+for (const [hash, w, h, what] of [['#gap=0&panel=shows', 1920, 1080, 'the screensaver'], ['#widget=1&home_panel=shows', 461, 250, 'the home card']]) {
+  // «جديد المسلسلات»: TVmaze's CC BY-SA credit on the card, tiny and dim at the end of the header's line
+  const ctx = await browser.newContext({ viewport: { width: w, height: h } });
+  await ctx.route(/^https?:/, r => r.abort());
+  const p = await ctx.newPage(); const errors = []; p.on('pageerror', e => errors.push(e.message));
+  await p.goto('file://' + path.join(ROOT, 'dist/tv.html') + hash);
+  await p.waitForFunction(() => typeof CARDS !== 'undefined' && CARDS.length, null, { timeout: 8000 }).catch(() => errors.push('no cards'));
+  await p.evaluate(() => { WEEK_POOL = [{ name: 'مسلسل', ep: 3, rating: 8.1, date: '2026-11-18' }]; WEEK_LOADED = true; renderPanel(false, 'shows'); });
+  const r = await p.evaluate(measure);
+  const s = r.out.filter(x => x.text === 'TVmaze');
+  check(`series card, ${what}: «TVmaze» there, tiny and dim`, s.length === 1 && s[0].k <= K && s[0].o <= LIGHT, JSON.stringify(r.out));
+  check(`series card, ${what}: after the title, at the line's end`, await p.evaluate(() => { const hd = CARDS.find(c => c.kind === 'shows').hd, t = hd.firstElementChild, s = hd.querySelector('.srcl');
+    return !!s && (getComputedStyle(document.documentElement).direction === 'rtl' ? s.getBoundingClientRect().right < t.getBoundingClientRect().left : s.getBoundingClientRect().left > t.getBoundingClientRect().right); }));
+  check(`series card, ${what}: no script errors`, !errors.length, errors.join('; '));
+  await ctx.close();
+}
 await browser.close();
 if (failed) { console.log(failed + ' failed'); process.exit(1); }
 console.log('all passed');

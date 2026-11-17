@@ -346,7 +346,8 @@ function enDate(d, o){
     ("""const UNIT = {
   day: {one:'يوم', two:'يومين', few:'أيام', many:'يوم', mid:'يومًا'},
   hour:{one:'ساعة', two:'ساعتين', few:'ساعات', many:'ساعة'},
-  min: {one:'دقيقة', two:'دقيقتين', few:'دقائق', many:'دقيقة'}
+  min: {one:'دقيقة', two:'دقيقتين', few:'دقائق', many:'دقيقة'},
+  task:{one:'مهمة', two:'مهمتان', few:'مهام', many:'مهمة', mid:'مهمة'}
 };
 // the counted noun as Arabic says it: «يوم», «يومين», «٥ أيام», «١١ يومًا», «١٠٠ يوم», «١٠٥ أيام» (by the last two digits)
 const unitOf = (n, u) => { const r = n % 100; return r >= 3 && r <= 10 ? u.few : r >= 11 && u.mid || u.many; };
@@ -354,7 +355,7 @@ function qty(n,u){
   if(n === 1) return u.one;
   if(n === 2) return u.two;
   return `${ar(n)} ${unitOf(n, u)}`;
-}""", """const UNIT = {day: {one:'day', many:'days'}, hour: {one:'hour', many:'hours'}, min: {one:'min', many:'min'}};
+}""", """const UNIT = {day: {one:'day', many:'days'}, hour: {one:'hour', many:'hours'}, min: {one:'min', many:'min'}, task: {one:'task', many:'tasks'}};
 const unitOf = (n, u) => n === 1 ? u.one : u.many;
 const qty = (n, u) => `${ar(n)} ${unitOf(n, u)}`;""", 1),
     # «Maghrib adhan in 8 min», «Maghrib iqama in 12 min», «Maghrib adhan · Any button stops the adhan»

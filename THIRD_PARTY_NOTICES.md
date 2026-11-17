@@ -12,6 +12,12 @@ launcher's origin in `android/launcher/LICENSE-tv-home`.
 with its name above it; QuranEnc.com publishes the same tafsir on these terms (re-publication allowed with no modification, addition or
 deletion, the publisher and source named).
 
+## TVmaze
+
+«جديد المسلسلات» (the series card, and the settings' series search) reads the TVmaze API (api.tvmaze.com), whose data is licensed under
+CC BY-SA 4.0 (https://www.tvmaze.com/api). The card credits it with a tiny «TVmaze» at the end of its header line, and the settings' «مصادر
+البيانات» (حول) names the licence with its link (tvmaze.com).
+
 ## couch-tv
 
 The 4.3.3 scene home proposal (`docs/mockups/`) follows couch-tv's design (https://github.com/Seagey/couch-tv: scenes with a glass

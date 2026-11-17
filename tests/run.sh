@@ -279,6 +279,7 @@ node tests/saver_depth.test.mjs   # 4.4 «نظيفة» with depth on the screens
 node tests/verse_hadith.test.mjs   # 4.4 «آية» and «حديث» at once: the hadith card beside the verse card, each its own
 node tests/strip_steady.test.mjs   # 4.4 the screensaver's bottom strip stays put as the slot turns (games, scores, weather, markets)
 node tests/sources_rule.test.mjs   # 4.4 the owner's rule: a source on a card is a tiny dim line at most (60%, half the light), never a provider named elsewhere
+node tests/cards_batch3.test.mjs   # 4.4 card review batch 3 (12 adhkar, 13 tasks, 14 now playing, 16 year, 17 today, 18 shows): new look by default, the old one with «الشكل السابق»
 node tests/football_page.test.mjs   # the football home's widgets and «المباريات» in a browser, on fixed games
 node tests/phone_page.test.mjs
 node tests/sync_cards.test.mjs   # «توحيد المظهر» on the page: the cards in the material's fill, line and ink, readable on a light look

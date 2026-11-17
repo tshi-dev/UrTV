@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <!-- the build: UTC time (YYYYMMDDHHMMSS) of the newest commit of the page's sources, put in by src/build.py. The app loads the page with the newer stamp (its own
      copy or a downloaded one), never by file time, and does not keep a download whose stamp is older than its own (Updater, PageStamp). -->
-<meta name="urtv-build" content="20261117090519">
+<meta name="urtv-build" content="20261117093525">
 <title>شاشة تلفزيونك</title>
 <style>
   @font-face{font-family:'Thmanyah';font-weight:300;font-style:normal;font-display:block;src:url("https://raw.githubusercontent.com/tshi-dev/UrTV/master/assets/fonts/Thmanyah-Light.woff2") format("woff2")}
@@ -141,6 +141,7 @@
     font-size:calc(clamp(12px,1vw,18px)*var(--z,1));font-weight:500;letter-spacing:0;color:var(--gold-3);
   }
   .week .hd::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,rgba(var(--gold-rgb),.5),transparent)}
+  .week .hd .srcl{order:2;font-weight:400;white-space:nowrap}   
   .week ul{list-style:none;display:flex;flex-direction:column;gap:0}
   .week li{
     display:flex;align-items:baseline;gap:1.05em;
@@ -229,6 +230,28 @@
   .week li.prow .pc.next i{color:var(--gold-3)}
   html:not(.cso) .week li.prow .pc{gap:.15em}
   html:not(.cso) .week li.prow .pc b{font-weight:400;font-size:.88em;color:#E9E1CE}
+  
+  
+  html:not(.cso) .week li.quote.q2,html:not(.cso) .week li.quote.q3,html:not(.cso) .week li.quote.q4{text-align:start}
+  html:not(.cso) .week li.adf .c{color:#E2DACA}
+  
+  html:not(.cso) .week li.task::before{width:.62em;height:.62em;background:none;border:2px solid var(--gold-3);box-sizing:border-box}
+  html:not(.cso) .week li.task{font-size:calc(clamp(15px,1.25vw,24px)*var(--z,1))}
+  
+  html:not(.cso) .stage > .week.np{padding:1.2vh 1.6vw}
+  html:not(.cso) .np .npl{gap:.45em}
+  html:not(.cso) .np .nps{margin-inline-start:-.45em;color:var(--gold-3)}
+  html:not(.cso) .np .npw{color:#E2DACA;font-weight:400}
+  
+  html:not(.cso) .week li.yr .yn{font-size:1.5em}
+  html:not(.cso) .week li.yr .yt{font-size:.92em;color:#E2DACA}
+  
+  html:not(.cso) .week li.td .k{font-size:.8em;color:#CFC6B2}
+  html:not(.cso) .week li.td .r{font-size:.86em;color:var(--gold-3)}
+  
+  html:not(.cso) .week li .rt::before{content:'★ ';font-size:.9em}
+  html:not(.cso) .week li .rt{color:var(--gold-3)}
+  html:not(.cso) .week li .ep{font-size:.8em}
   html:not(.cso) .week li.prow .pc i{font-size:.9em;color:#FFF;font-weight:500}
   html:not(.cso) .week li.prow .pc.past b,html:not(.cso) .week li.prow .pc.past i{color:#B9B09C;font-weight:400}
   html:not(.cso) .week li.prow .pc.next{background:#EBC67D;box-shadow:none}
@@ -1431,7 +1454,8 @@ async function loadPrayers(){
 const UNIT = {
   day: {one:'يوم', two:'يومين', few:'أيام', many:'يوم', mid:'يومًا'},
   hour:{one:'ساعة', two:'ساعتين', few:'ساعات', many:'ساعة'},
-  min: {one:'دقيقة', two:'دقيقتين', few:'دقائق', many:'دقيقة'}
+  min: {one:'دقيقة', two:'دقيقتين', few:'دقائق', many:'دقيقة'},
+  task:{one:'مهمة', two:'مهمتان', few:'مهام', many:'مهمة', mid:'مهمة'}
 };
 const unitOf = (n, u) => { const r = n % 100; return r >= 3 && r <= 10 ? u.few : r >= 11 && u.mid || u.many; };
 function qty(n,u){
@@ -2922,8 +2946,9 @@ function renderCard(card, animate, keepSize){
   }
   if(!keepSize){ card.z = 1; card.cap = 0; card.maxLen = 0; card.zi = 0; card.ri = 0; card.el.style.removeProperty('--z'); }
   if(P === 'shows'){
-    if(WEEK_OK_AT && WEEK_FAIL_AT > WEEK_OK_AT) paintHd(hd, '', `<span>${PANEL_TITLE.shows}</span><span class="until">${fmtAgo(WEEK_OK_AT)}</span>`);
-    else paintHd(hd, PANEL_TITLE.shows);
+    const by = '<span class="srcl">TVmaze</span>';
+    if(WEEK_OK_AT && WEEK_FAIL_AT > WEEK_OK_AT) paintHd(hd, '', `<span>${PANEL_TITLE.shows}</span><span class="until">${fmtAgo(WEEK_OK_AT)}</span>${by}`);
+    else paintHd(hd, '', `<span>${PANEL_TITLE.shows}</span>${by}`);
     renderWeekPage(card, animate); return;
   }
   card.el.classList.toggle('stocks', P === 'stocks');
@@ -2944,6 +2969,7 @@ function renderCard(card, animate, keepSize){
   else if(P === 'adhkar'){ const q = adhkarCard(card); paintHd(hd, q.title, q.hd); rows = q.rows; }
   else if(P === 'stocks'){ const q = stocksCard(); paintHd(hd, '', q.hd); rows = q.rows; }
   if(P === 'matches' && matchesStaleNote()) paintHd(hd, '', `<span>${PANEL_TITLE.matches}</span><span class="until">${matchesStaleNote()}</span>`);
+  else if(P === 'tasks' && !OLD_LOOK && CONFIG.tasks.length) paintHd(hd, '', `<span>${PANEL_TITLE.tasks}</span><span class="until near">${qty(CONFIG.tasks.length, UNIT.task)}</span>`);
   else if(PANEL_TITLE[P]) paintHd(hd, PANEL_TITLE[P]);
   if(!rows.length){
     if(P === 'matches' && !MATCHES_LOADED && ul.firstElementChild && !ul.firstElementChild.classList.contains('empty')) return;

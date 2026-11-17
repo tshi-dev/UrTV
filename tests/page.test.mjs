@@ -102,7 +102,8 @@ for (const [panel, [rows, title]] of Object.entries(EXPECT)) {
   const { p, ctx, errors } = await open('tv.html', 'teams=136013&panel=' + panel);
   if (SAMPLE[panel]) await p.evaluate(`(${SAMPLE[panel]})(); renderPanel(false);`);
   const r = await p.evaluate(() => ({ n: document.querySelectorAll('#week-list li').length,
-    hd: document.getElementById('week-hd').textContent, shown: getComputedStyle(document.querySelector('.week')).display !== 'none' }));
+    // the title without a source's tiny credit beside it (TVmaze on the series card: the rule of «مصادر البيانات», tests/sources_rule.test.mjs)
+    hd: (h => { const c = h.cloneNode(true); c.querySelectorAll('.srcl').forEach(e => e.remove()); return c.textContent; })(document.getElementById('week-hd')), shown: getComputedStyle(document.querySelector('.week')).display !== 'none' }));
   check(`card ${panel}: no errors`, !errors.length, errors.join('; '));
   check(`card ${panel}: ${rows} rows, title right`, r.shown && r.n === rows && (!title || r.hd === title)
     && (title || ['آية اليوم', 'حديث اليوم'].includes(r.hd)), JSON.stringify(r));
@@ -568,13 +569,14 @@ for (const [width, height] of [[1920, 1080], [1280, 720], [960, 540]]) {
     const ul = document.getElementById('week-list'), card = document.querySelector('.week');
     const bar = document.querySelector('.bottom').getBoundingClientRect(), clock = document.querySelector('.clockwrap').getBoundingClientRect();
     const top = document.querySelector('.top').getBoundingClientRect();
-    const dot = (cs => ({ backgroundColor: cs.backgroundColor, borderRadius: cs.borderRadius }))(getComputedStyle(ul.querySelector('li'), '::before'));
+    const dot = (cs => ({ backgroundColor: cs.backgroundColor, borderRadius: cs.borderRadius, border: cs.borderTopWidth + ' ' + cs.borderTopColor }))(getComputedStyle(ul.querySelector('li'), '::before'));
     const rows = () => [...ul.querySelectorAll('li')].map(li => li.textContent);
     const page1 = rows();
     CARDS[0].page++; renderPanel(false);
     const c = card.getBoundingClientRect();
-    return { hd: document.getElementById('week-hd').textContent, page1, page2: rows(), html: ul.innerHTML,
-             injected: !!ul.querySelector('b, [onclick]'), dotBg: dot.backgroundColor, dotRadius: dot.borderRadius,
+    // the title (4.4 batch 3: the count «٥ مهام» beside it, tests/cards_batch3.test.mjs)
+    return { hd: (h => h.firstElementChild ? h.firstElementChild.textContent : h.textContent)(document.getElementById('week-hd')), page1, page2: rows(), html: ul.innerHTML,
+             injected: !!ul.querySelector('b, [onclick]'), dotBg: dot.backgroundColor, dotRadius: dot.borderRadius, dotBorder: dot.border,
              tooWide: [...ul.querySelectorAll('li')].filter(li => li.scrollWidth > li.clientWidth + 1).length,
              fits: c.top >= top.bottom && c.bottom <= bar.top - 4 && c.right <= clock.left - 4 && c.height <= 0.42 * innerHeight };
   });
@@ -582,7 +584,8 @@ for (const [width, height] of [[1920, 1080], [1280, 720], [960, 540]]) {
   check(`card tasks ${tag}: title, five rows a page, text kept`, !errors.length && r.hd === 'المهام' && r.page1.length === 5
     && r.page1[0] === TASKS[0] && r.page1[1] === TASKS[1] && r.page1[2] === TASKS[2].slice(0, 60), JSON.stringify(r.page1) + errors.join('; '));
   check(`card tasks ${tag}: special characters escaped, none run as HTML`, !r.injected && r.html.includes('&lt;b onclick'), r.html.slice(0, 200));
-  check(`card tasks ${tag}: gold dot on every row`, r.dotBg === 'rgb(220, 184, 111)' && r.dotRadius !== '0px', r.dotBg + ' ' + r.dotRadius);
+  // 4.4 batch 3, 13 (the owner approved it): an open gold ring before each row (a thing to do), not the filled dot of «الشكل السابق»
+  check(`card tasks ${tag}: an open gold ring on every row`, r.dotBg === 'rgba(0, 0, 0, 0)' && r.dotRadius !== '0px' && /^2px rgb\(/.test(r.dotBorder), r.dotBg + ' ' + r.dotRadius + ' ' + r.dotBorder);
   check(`card tasks ${tag}: next page shows the rest`, r.page2.length === 5 && r.page2[2] === TASKS[7] && r.page2[3] === TASKS[0], JSON.stringify(r.page2));
   check(`card tasks ${tag}: clear of the clock and the bottom bar`, r.fits);
   await ctx.close();
