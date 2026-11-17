@@ -81,7 +81,7 @@ check("item 10: after a holding is saved, deleted or the portfolio wiped the pag
       mk.count("redraw();") >= 6 and "tab == 2 && actions.getChildCount() > 0 ? actions.getChildAt(0)" in mk and "liveButtons.contains(getCurrentFocus())" in mk
       and "show(2, false);\n        });\n        save.setBackground" not in mk)
 check("item 11: the dock is topped up from the other apps in the order of their package names, never of their labels (labels follow the language: Downloader in Arabic, Apple TV in English)",
-      "AppsEdit.topUp(have, other, MIN_DOCK)" in main and "java.util.Collections.sort(pool);" in text(HOME / "AppsEdit.java"))
+      "AppsEdit.topUp(have, other, AppsEdit.floor(Dock.exact(this), have.size(), MIN_DOCK))" in main and "java.util.Collections.sort(pool);" in text(HOME / "AppsEdit.java"))
 tpl2 = text(ROOT / "src/template.html")
 check("item 9: the matches page opens on the day the widget shows (today's games, else the next day that has games, in the city's zone) until the person picks a day",
       "if(!V && !MP.picked){" in tpl2 and "const next = fbGames().filter(ev => fbKick(ev) > now).sort((a, b) => fbKick(a) - fbKick(b))[0];" in tpl2 and "MP.picked = true;" in tpl2)

@@ -245,17 +245,27 @@ final class Dock {
         List<String> rest = new ArrayList<>(apps.keySet());
         rest.removeAll(row);
         Collections.sort(rest, (x, y) -> apps.get(x).compareToIgnoreCase(apps.get(y)));
-        while (row.size() < MIN && !rest.isEmpty()) row.add(rest.remove(0));
+        int floor = AppsEdit.floor(exact(c), row.size(), MIN);
+        while (row.size() < floor && !rest.isEmpty()) row.add(rest.remove(0));
         return row;
     }
 
+    /** the home's own editors (the row never below MIN): an exact row set from the computer is a normal one again */
     static void save(Context c, List<String> row) {
-        prefs(c).edit().putString("dock", String.join(",", row)).apply();
+        prefs(c).edit().putString("dock", String.join(",", row)).putBoolean("dock_exact", false).apply();
         c.sendBroadcast(new Intent(CHANGED).setPackage(c.getPackageName()));
     }
 
+    /** 4.4 (cause 11): `dock.sh set`: exactly these apps, fewer than MIN too (AppsEdit.floor) */
+    static void saveExact(Context c, List<String> row) {
+        prefs(c).edit().putString("dock", String.join(",", row)).putBoolean("dock_exact", true).apply();
+        c.sendBroadcast(new Intent(CHANGED).setPackage(c.getPackageName()));
+    }
+
+    static boolean exact(Context c) { return prefs(c).getBoolean("dock_exact", false); }
+
     static void reset(Context c) {
-        prefs(c).edit().remove("dock").apply();
+        prefs(c).edit().remove("dock").remove("dock_exact").apply();
         c.sendBroadcast(new Intent(CHANGED).setPackage(c.getPackageName()));
     }
 }

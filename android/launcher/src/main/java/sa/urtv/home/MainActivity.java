@@ -1335,7 +1335,7 @@ public class MainActivity extends Activity {
             List<String> have = new ArrayList<>(), other = new ArrayList<>();
             for (App d : dock) have.add(d.pkg);
             for (App x : rest) other.add(x.pkg);
-            for (String p : AppsEdit.topUp(have, other, MIN_DOCK)) for (App x : new ArrayList<>(rest)) if (x.pkg.equals(p)) { rest.remove(x); dock.add(x); }   // AppsEdit.topUp: by package, not by label
+            for (String p : AppsEdit.topUp(have, other, AppsEdit.floor(Dock.exact(this), have.size(), MIN_DOCK))) for (App x : new ArrayList<>(rest)) if (x.pkg.equals(p)) { rest.remove(x); dock.add(x); }   // AppsEdit.topUp: by package, not by label
         }
         rest = inSavedOrder(rest);   // «تعديل التطبيقات»: the owner's order, new apps at the end; nothing saved, by name as always
 

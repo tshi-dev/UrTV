@@ -85,6 +85,12 @@ final class AppsEdit {
         return add;
     }
 
+    /**
+     * 4.4 (reports, cause 11): `dock.sh set` with 3 apps showed 5, topped up with games. A row the owner set exactly (Dock.saveExact) is not topped
+     * up, unless none of it is on this TV (never an empty row); every other row keeps the floor of {@code min}.
+     */
+    static int floor(boolean exact, int chosenHere, int min) { return exact && chosenHere > 0 ? 0 : min; }
+
     /** (the favourites' top-up, above) the order the grid shows */
     static List<String> arrange(List<String> byName, String saved) {
         List<String> out = new ArrayList<>();

@@ -259,7 +259,7 @@ public class DockReceiver extends BroadcastReceiver {
                     if (apps.containsKey(p) && row.size() < Dock.MAX) row.add(p); else skipped.add(p);
                 }
                 if (row.isEmpty()) { setResultData("error: none of these apps are on this TV's home screen"); return; }
-                Dock.save(c, row);
+                Dock.saveExact(c, row);   // 4.4 (cause 11): exactly these, never topped up to five
                 setResultData("dock: " + String.join(",", Dock.shown(c, apps))
                     + (skipped.isEmpty() ? "" : "  skipped (not installed, hidden or over " + Dock.MAX + "): "
                        + String.join(",", skipped)));
