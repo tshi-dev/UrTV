@@ -92,6 +92,9 @@ answer = {"MRData": {"RaceTable": {"Races": [{"season": "2026", "round": "24", "
 f = sf.f1_file(answer, "2026-11-16T00:00:00Z")
 check("f1: the race, its Arabic name and its sessions in time order (UTC)", f["name"] == "Abu Dhabi Grand Prix" and f["ar"] == "جائزة أبوظبي الكبرى"
       and [(x["k"], x["t"]) for x in f["sessions"]] == [("fp1", "2026-12-04T09:30:00Z"), ("q", "2026-12-05T14:00:00Z"), ("race", "2026-12-06T13:00:00Z")], f)
+lv = sf.f1_file({"MRData": {"RaceTable": {"Races": [dict(answer["MRData"]["RaceTable"]["Races"][0], raceName="Las Vegas Grand Prix",
+     Circuit={"circuitName": "Las Vegas Strip Street Circuit", "Location": {"country": "USA", "locality": "Las Vegas"}})]}}}, "x")
+check("f1: a race named for its city keeps it (Las Vegas, Jolpica's real answer of 2026-11-17), not its country's name", lv["ar"] == "جائزة لاس فيغاس الكبرى", lv["ar"])
 check("f1: no race in the answer: none", sf.f1_file({"MRData": {"RaceTable": {"Races": []}}}, "x") is None)
 asked = []
 fetch = lambda url: (asked.append(url), json.dumps(answer).encode())[1]

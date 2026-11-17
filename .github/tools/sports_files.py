@@ -32,6 +32,10 @@ F1_COUNTRY = {"Bahrain": "البحرين", "Saudi Arabia": "السعودية", "
               "UK": "بريطانيا", "United Kingdom": "بريطانيا", "Hungary": "المجر", "Belgium": "بلجيكا", "Netherlands": "هولندا", "Azerbaijan": "أذربيجان",
               "Singapore": "سنغافورة", "Mexico": "المكسيك", "Brazil": "البرازيل", "Qatar": "قطر", "UAE": "أبوظبي", "United Arab Emirates": "أبوظبي",
               "Las Vegas": "لاس فيغاس", "Miami": "ميامي"}
+# a race named for a city or region, not its country (three races in the USA, two in Italy): its own name first
+F1_RACE = {"Las Vegas Grand Prix": "لاس فيغاس", "Miami Grand Prix": "ميامي", "United States Grand Prix": "الولايات المتحدة", "Emilia Romagna Grand Prix": "إميليا رومانيا",
+           "Italian Grand Prix": "إيطاليا", "São Paulo Grand Prix": "ساو باولو", "Sao Paulo Grand Prix": "ساو باولو", "Mexico City Grand Prix": "مكسيكو سيتي",
+           "Abu Dhabi Grand Prix": "أبوظبي", "Saudi Arabian Grand Prix": "السعودية", "British Grand Prix": "بريطانيا", "Dutch Grand Prix": "هولندا"}
 SESSIONS = [("FirstPractice", "fp1"), ("SecondPractice", "fp2"), ("ThirdPractice", "fp3"), ("SprintQualifying", "sq"), ("SprintShootout", "sq"),
             ("Sprint", "sprint"), ("Qualifying", "q")]
 
@@ -214,7 +218,7 @@ def f1_file(answer, stamp):
         if s["t"] and s["k"] not in seen:
             seen.add(s["k"]); uniq.append(s)
     return {"v": V, "updated": stamp, "season": r.get("season", ""), "round": r.get("round", ""), "name": r.get("raceName", ""),
-            "ar": "جائزة " + F1_COUNTRY[country] + " الكبرى" if country in F1_COUNTRY else "", "circuit": (r.get("Circuit") or {}).get("circuitName", ""),
+            "ar": "جائزة " + (F1_RACE.get(r.get("raceName", "")) or F1_COUNTRY[country]) + " الكبرى" if r.get("raceName", "") in F1_RACE or country in F1_COUNTRY else "", "circuit": (r.get("Circuit") or {}).get("circuitName", ""),
             "country": country, "sessions": sorted(uniq, key=lambda s: s["t"])}
 
 
