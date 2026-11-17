@@ -39,6 +39,32 @@ com.google.android.gsf
 com.android.vending                    # Play Store: restrict it (optimize/tweaks.sh), never disable
 com.android.location.fused
 
+# The remote's own buttons (a Sony RMF-TX520P report: only the numbers, Home, volume and Settings worked). A dedicated button
+# (Netflix, YouTube, Prime Video, the mic, the colour keys, Input/TV for a set-top box) is answered by the maker's package or opens
+# the app itself: off, the button does nothing. Community lists turned some of these off; keep.sh turns them back on.
+com.sony.dtv.netflixmanager            # Sony: the remote's Netflix button
+com.netflix.partner.ncm                # Netflix's partner service behind the Netflix button
+com.netflix.tokenmanager               # the same, on other sets
+com.mstar.netflixobserver              # MStar sets: the Netflix button
+com.netflix.ninja                      # Netflix: the remote has a button for it
+com.google.android.youtube.tv          # YouTube: the remote has a button for it
+com.amazon.amazonvideo.livingroom      # Prime Video: the remote has a button for it
+com.amazon.aiv.us                      # Prime Video (US build)
+com.sony.dtv.voicesearch               # Sony: the remote's mic
+com.sony.dtv.assistantadapter          # Sony: the mic to Google Assistant
+com.google.android.speech.pumpkin      # voice commands from the remote's mic
+com.xiaomi.voicecontrol                # Xiaomi: the remote's mic
+com.xiaomi.mitv.remotecontroller.service   # Xiaomi: the remote's buttons
+com.uei.quicksetsdk.sony               # Sony: the remote's Input/TV/CH keys for a set-top box (QuickSet)
+com.sony.dtv.irblaster                 # Sony: the IR blaster those keys use
+com.sony.dtv.hbbtvlauncher             # Sony: the colour keys on a broadcast (HbbTV)
+com.sony.dtv.hbbtvplayer               # the same
+com.sony.dtv.discovery                 # Sony: the remote's DISCOVER button (older remotes)
+com.sony.dtv.recapp                    # Sony: the remote's REC key
+com.sony.dtv.tvxlauncher.titlelist     # Sony: the remote's TITLE LIST key
+com.sony.dtv.youview                   # Sony (UK): the remote's YouView button
+com.amazon.device_remote_config_sync_service   # Fire TV: the remote's button settings
+
 # Home screens: only optimize/install.sh launcher may disable these, behind the safety switch
 com.google.android.apps.tv.launcherx   # Google TV home
 com.google.android.tvlauncher          # Android TV home (older sets)
