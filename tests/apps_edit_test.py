@@ -79,9 +79,9 @@ check("a rewiring while the mode is on ends with the mode's own wiring", fn(main
 check("a step of the carried app builds again only the rows that differ", "if (same) continue;" in fn(main, "private void syncGrid(List<String> order, boolean withHidden)"))
 
 # ---- the settings
-check("Settings → «التطبيقات والمفضلة» has «ترتيب كل التطبيقات», with «تعديل التطبيقات» and «رجوع للترتيب الأصلي»",
-      'row("ترتيب كل التطبيقات"' in settings and '{"تعديل التطبيقات", "رجوع للترتيب الأصلي"}' in settings and '{"ترتيب كل التطبيقات", APPS}' in hub)
-check("…which ask the home screen with the extras it reads", '.putExtra(reset ? "reset_apps_order" : "edit_apps", true)' in settings
+check("Settings → «التطبيقات والمفضلة» has «ترتيب كل التطبيقات», with «تعديل التطبيقات», «التطبيقات المخفية» (4.3.4) and «رجوع للترتيب الأصلي»",
+      'row("ترتيب كل التطبيقات"' in settings and '{"تعديل التطبيقات", "التطبيقات المخفية", "رجوع للترتيب الأصلي"}' in settings and '{"ترتيب كل التطبيقات", APPS}' in hub)
+check("…which ask the home screen with the extras it reads", '.putExtra(reset ? "reset_apps_order" : "edit_apps", true).putExtra("apps_hidden", hidden)' in settings
       and 'EXTRA_EDIT_APPS = "edit_apps", EXTRA_RESET_APPS = "reset_apps_order"' in main)
 check("…and «رجوع للترتيب الأصلي» asks the settings' lock too, and nothing in kids mode",
       'if (kidsNoEdit()) return true;\n            guarded(ParentalPolicy.MENU_ARRANGE, null, S.t("ترتيب كل التطبيقات")' in main)

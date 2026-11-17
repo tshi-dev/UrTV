@@ -468,7 +468,7 @@ public class SettingsActivity extends Activity {
         row("تحكم من الجوال", "تشغيله وإيقافه وربط جوال، وفي الشاشة حالته الآن", R.drawable.ic_settings,
             new Runnable() { public void run() { openPhoneControl(); } });
         // «كل التطبيقات»: the home screen's «تعديل التطبيقات», or the order by name again (what is hidden stays hidden)
-        row("ترتيب كل التطبيقات", "تحريكها وإخفاؤها على الشاشة الرئيسية، أو الرجوع للترتيب الأصلي", R.drawable.ic_star,
+        row("ترتيب كل التطبيقات", "تحريكها وإخفاؤها وإرجاع المخفية، أو الرجوع للترتيب الأصلي", R.drawable.ic_star,
             new Runnable() { public void run() { pickAppsOrder(); } });
         // what an app's options box does (a long OK or Menu on the app, docs/UX-REVIEW.md) is here too: move, hide and the favourites
         // above, the locks and the app's details here
@@ -1443,14 +1443,15 @@ public class SettingsActivity extends Activity {
     /** «ترتيب كل التطبيقات»: the mode on the home screen, or «رجوع للترتيب الأصلي»; both are the launcher's (it owns the grid). */
     private void pickAppsOrder() {
         new Dlg(this).setTitle("ترتيب كل التطبيقات")
-            .setItems(new String[] {"تعديل التطبيقات", "رجوع للترتيب الأصلي"}, (d, i) -> openAppsOrder(i == 1))
+            .setItems(new String[] {"تعديل التطبيقات", "التطبيقات المخفية", "رجوع للترتيب الأصلي"}, (d, i) -> openAppsOrder(i == 2, i == 1))
             .show();
     }
 
-    private void openAppsOrder(boolean reset) {
+    /** hidden (4.3.4): the mode on «المخفية» with its list; a home older than 4.3.4 opens the mode, where «المخفية» is the last place */
+    private void openAppsOrder(boolean reset, boolean hidden) {
         try {
             startActivity(new Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_HOME).setClassName("sa.urtv.home", "sa.urtv.home.MainActivity")
-                .putExtra(reset ? "reset_apps_order" : "edit_apps", true).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+                .putExtra(reset ? "reset_apps_order" : "edit_apps", true).putExtra("apps_hidden", hidden).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
         } catch (RuntimeException e) {
             toast("ثبّت الواجهة الرئيسية «تلفزيونك» أولاً");
         }
