@@ -319,9 +319,17 @@ def pick_connect(found, instance="", host=""):
     return None
 
 
-def rediscover(state, browse_fn=browse):
-    """After a restart the port is new: look the TV up by name or address. Returns the hit or None."""
-    return pick_connect(browse_fn(SERVICE_CONNECT, 3.0), state.get("instance", ""), state.get("host", ""))
+def rediscover(state, browse_fn=browse, waits=(3.0,)):
+    """After a restart the port is new: look the TV up by name or address. Returns the hit or None. 4.4 (reports, cause 5: Chromecast/Google TV
+    lost after a restart): a TV that has just come back announces itself late, so the look is repeated with longer listens (`waits`)."""
+    for wait in waits:
+        hit = pick_connect(browse_fn(SERVICE_CONNECT, wait), state.get("instance", ""), state.get("host", ""))
+        if hit:
+            return hit
+    return None
+
+
+REDISCOVER_WAITS = (3.0, 5.0, 8.0)   # about 16 s of listening at most, only when the remembered port does not answer
 
 
 # ---------------------------------------------------------------------------------------------------- the device
@@ -344,19 +352,37 @@ class AdbCli:
     def serial(self):
         return f"{self.host}:{self.state['port']}"
 
+    def _alive(self):
+        """4.4 (reports, cause 5): `adb connect` says «already connected» to a link that went stale when the TV dropped Wi-Fi or restarted, and every
+        command then answered «device offline» until the run gave up. A connection counts only when a harmless command answers."""
+        try:
+            r = self.run([self.adb, "-s", self.serial, "shell", "echo urtv-ok"], capture_output=True, text=True, timeout=15, errors="replace")
+        except (subprocess.TimeoutExpired, OSError):
+            return False
+        return "urtv-ok" in ((r.stdout or "") + (r.stderr or ""))
+
+    def _forget(self):
+        """the stale link is dropped from adb's own list, so the next `adb connect` really connects"""
+        try:
+            self.run([self.adb, "disconnect", self.serial], capture_output=True, text=True, timeout=15)
+        except (subprocess.TimeoutExpired, OSError):
+            pass
+
     def connect(self, **_ignored):   # rsa_keys / auth_timeout_s: adb has its own key, made when the TV was paired
-        if connect(self.adb, self.serial, self.run, min(self.timeout, 30)):
+        if connect(self.adb, self.serial, self.run, min(self.timeout, 30)) and self._alive():
             self.connected = True
             return
-        hit = rediscover(self.state, self.browse)
-        if hit and hit["port"] != self.state["port"]:
-            self.state["port"], self.state["host"] = hit["port"], hit["host"]
-            self.host = hit["host"]
-            try:
-                save_state(dict(load_state(), **{"host": self.host, "port": hit["port"], "mode": "tls"}))
-            except OSError:
-                pass
-            if connect(self.adb, self.serial, self.run, min(self.timeout, 30)):
+        self._forget()
+        hit = rediscover(self.state, self.browse, REDISCOVER_WAITS)
+        if hit:   # a new port (or address) after a restart, or the same one once the stale link is gone
+            if hit["port"] != self.state["port"] or hit["host"] != self.host:
+                self.state["port"], self.state["host"] = hit["port"], hit["host"]
+                self.host = hit["host"]
+                try:
+                    save_state(dict(load_state(), **{"host": self.host, "port": hit["port"], "mode": "tls"}))
+                except OSError:
+                    pass
+            if connect(self.adb, self.serial, self.run, min(self.timeout, 30)) and self._alive():
                 self.connected = True
                 return
         raise ConnectionError(
