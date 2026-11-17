@@ -1,6 +1,7 @@
 package sa.urtv.home;
 
 import android.app.Activity;
+import android.graphics.Paint;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
@@ -27,7 +28,7 @@ final class AppOptions {
     private AppOptions() {}
 
     /** dp: the grid (the owner's v5 at 1080p, halved) */
-    static final int PAD = 8, GAP = 4, BUTTON_H = 36, RADIUS = 6, BOX_RADIUS = 14, ICON = 18, ABOVE = 12;
+    static final int PAD = 8, GAP = 4, BUTTON_H = 36, RADIUS = 6, BOX_RADIUS = 14, ICON = 18, ABOVE = 12, TEXT_SP = 15;
 
     /** the words: the rows, and the two icon buttons' names for a screen reader */
     static final String MOVE = S.n("انقل"), HIDE = S.n("أخفِ"), LOCK = S.n("اقفل"), UNLOCK = S.n("افتح القفل"),
@@ -66,13 +67,19 @@ final class AppOptions {
 
         final PopupWindow[] pw = new PopupWindow[1];
         List<View> rows = new ArrayList<>();
+        // 4.3.4 (OptionsFit): a row as tall as its line needs with a bigger TV font, the box as wide as its widest row
+        TextView probe = new TextView(a);
+        probe.setTextSize(TypedValue.COMPLEX_UNIT_SP, TEXT_SP);
+        probe.setTypeface(medium);
+        Paint.FontMetricsInt fm = probe.getPaint().getFontMetricsInt();
+        final int rowH = OptionsFit.rowHeight(px(BUTTON_H, d), fm.descent - fm.ascent, px(8, d));
         if (s.move != null) rows.add(row(a, d, l, dialog, medium, R.drawable.ic_move, MOVE, s.move, pw));
         if (s.hide != null) rows.add(row(a, d, l, dialog, medium, R.drawable.ic_hide, HIDE, s.hide, pw));
         if (s.lock != null) rows.add(row(a, d, l, dialog, medium, R.drawable.ic_lock, s.lockLabel != null ? s.lockLabel : s.locked ? UNLOCK : LOCK, s.lock, pw));
         if (s.store != null) rows.add(row(a, d, l, dialog, medium, R.drawable.ic_store, STORE, s.store, pw));
         if (s.uninstall != null) rows.add(row(a, d, l, dialog, medium, R.drawable.ic_delete, UNINSTALL, s.uninstall, pw));
         for (int i = 0; i < rows.size(); i++) {
-            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(-1, px(BUTTON_H, d));
+            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(-1, rowH);
             if (i > 0) lp.topMargin = px(GAP, d);
             box.addView(rows.get(i), lp);
         }
@@ -82,12 +89,12 @@ final class AppOptions {
         View star = icon(a, d, l, dialog, s.favouriteNow ? R.drawable.ic_star_filled : R.drawable.ic_star, s.favouriteNow ? REMOVE_FAV : ADD_FAV,
                 s.favouriteNow, s.favourite, pw);
         View info = icon(a, d, l, dialog, R.drawable.ic_info, INFO, false, s.info, pw);
-        LinearLayout.LayoutParams sp = new LinearLayout.LayoutParams(0, px(BUTTON_H, d), 1f);
-        LinearLayout.LayoutParams ip = new LinearLayout.LayoutParams(0, px(BUTTON_H, d), 1f);
+        LinearLayout.LayoutParams sp = new LinearLayout.LayoutParams(0, rowH, 1f);
+        LinearLayout.LayoutParams ip = new LinearLayout.LayoutParams(0, rowH, 1f);
         ip.setMarginStart(px(GAP, d));
         icons.addView(star, sp);
         icons.addView(info, ip);
-        LinearLayout.LayoutParams rp = new LinearLayout.LayoutParams(-1, px(BUTTON_H, d));
+        LinearLayout.LayoutParams rp = new LinearLayout.LayoutParams(-1, rowH);
         if (!rows.isEmpty()) rp.topMargin = px(GAP, d);
         box.addView(icons, rp);
 
@@ -107,7 +114,16 @@ final class AppOptions {
         info.setNextFocusRightId(Dir.rtl() ? star.getId() : info.getId());
         info.setNextFocusLeftId(Dir.rtl() ? info.getId() : star.getId());
 
-        int w = Math.round(card.getWidth() * scale), h = px(heightDp(rows.size()), d);
+        int widest = 0;
+        for (View r : rows) {   // a row: its pads, the icon and its gap, the words (never cut: the box grows instead)
+            TextView t = (TextView) ((LinearLayout) r).getChildAt(1);
+            widest = Math.max(widest, Math.round(t.getPaint().measureText(t.getText().toString())) + px(12 + 12 + ICON + 8 + 4, d));
+        }
+        int screenW = a.getWindow().getDecorView().getWidth();
+        if (screenW <= 0) screenW = a.getResources().getDisplayMetrics().widthPixels;
+        int margin = px(16, d);
+        int w = OptionsFit.width(Math.round(card.getWidth() * scale), widest + 2 * pad, screenW, margin);
+        int h = 2 * pad + (rows.size() + 1) * rowH + rows.size() * px(GAP, d);
         PopupWindow p = new PopupWindow(box, w, h, true);
         pw[0] = p;
         p.setOutsideTouchable(true);
@@ -118,7 +134,7 @@ final class AppOptions {
         int top = cy - Math.round(card.getHeight() * scale / 2f), bottom = cy + Math.round(card.getHeight() * scale / 2f);
         int gap = px(ABOVE, d);
         int y = top - gap - h >= px(8, d) ? top - gap - h : bottom + gap;   // above the app; under it when the app is at the top
-        p.showAtLocation(card, Gravity.NO_GRAVITY, cx - w / 2, y);   // x and y from the window's top left corner
+        p.showAtLocation(card, Gravity.NO_GRAVITY, OptionsFit.left(cx, w, screenW, margin), y);   // x and y from the window's top left corner
         (column.isEmpty() ? star : column.get(0)).requestFocus();
         return p;
     }
@@ -137,7 +153,7 @@ final class AppOptions {
         r.addView(g, gp);
         TextView t = new TextView(a);
         t.setText(S.tv(label));
-        t.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
+        t.setTextSize(TypedValue.COMPLEX_UNIT_SP, TEXT_SP);
         t.setTypeface(medium);
         t.setSingleLine(true);
         t.setGravity(Gravity.CENTER_VERTICAL | Gravity.START);

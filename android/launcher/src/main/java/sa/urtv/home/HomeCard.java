@@ -278,7 +278,7 @@ final class HomeCard {
         // Unreadable settings (the screensaver is missing, too old, or signed with another key, e.g. reinstalled
         // before this app): keep the last cards chosen, «بدون» included. Only with nothing remembered, the prayers.
         String[] choice = HomeCardChoice.pick(frag, panel, sp.getString("frag", null), sp.getString("panel", null));
-        football = "football".equals(layout) && footballHost != null && choice != null;
+        football = HomeCardChoice.football(layout, choice) && footballHost != null;   // 4.3.4: «بدون» turns the football home's widgets off too
         footballShown = football;   // «أرسل تقرير» says which layout the home had
         if (football) { cards = 0; tasks = false; stocks = false; stocksFirst = false; row = false; return withGlass(HomePage.fresh(activity, HomeCardChoice.footballUrl(choice))); }
         row = "couch".equals(layout);

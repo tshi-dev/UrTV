@@ -336,7 +336,7 @@ public class MainActivity extends Activity {
         updateNowPlaying();
         homeCard.refresh();
         applyClean();   // «UrTV النظيف» changed while another screen was in front (after the card refresh: applyClean may hide the card)
-        if (reminder != null) { reminder.refresh(); ReminderScheduler.schedule(this); }   // a card that came due while another app was in front; the alarm follows the tasks
+        if (reminder != null) reminder.refresh(true);   // a card that came due while another app was in front; the alarm follows the tasks (both off the UI thread: QA-3)
         readAnimationScale();
         loadTvRows();   // what one watched since: «أكمل المشاهدة» moves on
         showUpdateResult();
@@ -2473,10 +2473,10 @@ public class MainActivity extends Activity {
         for (View c : dockCards) liftCard(c, false);
     }
 
-    /** One key while the mode is on. True: it is ours (every key but the volume and power ones). */
+    /** One key while the mode is on. True: it is ours (FavEdit.owns: the arrows, OK, Back and what would move the focus; every other key goes on). */
     private boolean editKey(KeyEvent e) {
         int k = e.getKeyCode();
-        if (AdhanKeys.reserved(k)) return false;
+        if (AdhanKeys.reserved(k) || !FavEdit.owns(k)) return false;
         if (e.getAction() != KeyEvent.ACTION_DOWN) return true;   // a release does nothing; it must not click the tile under the focus
         long now = SystemClock.uptimeMillis();
         int rep = e.getRepeatCount();
@@ -2592,6 +2592,9 @@ public class MainActivity extends Activity {
 
     /** The settings' «ترتيب كل التطبيقات» asks the home screen for the mode, or for the order by name again, with these extras. */
     static final String EXTRA_EDIT_APPS = "edit_apps", EXTRA_RESET_APPS = "reset_apps_order";
+    /** 4.3.4, with edit_apps: the settings' «التطبيقات المخفية»: the mode opens on «المخفية» with its list (people found no way back to a hidden app) */
+    static final String EXTRA_APPS_HIDDEN = "apps_hidden";
+    private boolean wantHiddenList;       // asked for with EXTRA_APPS_HIDDEN, waiting for the mode
 
     private AppsEdit appsEdit;            // null: the mode is off
     private boolean wantAppsEdit;         // asked for from the settings, waiting for the whole grid to be on screen
@@ -2618,12 +2621,17 @@ public class MainActivity extends Activity {
         }
         if (!i.getBooleanExtra(EXTRA_EDIT_APPS, false)) return false;
         wantAppsEdit = true;
+        wantHiddenList = i.getBooleanExtra(EXTRA_APPS_HIDDEN, false);
+        // 4.3.4: an app changed while the settings were in front: onResume (after this) would build the grid again and end the mode at once,
+        // so the grid is built now and the mode starts when it is done
+        if (appsStale) { appsStale = false; buildApps(); }
         beginPendingAppsEdit();
         return true;
     }
 
     /** «تعديل التطبيقات» from the long-press menu (on the app that was pressed) or from the settings (pkg null). The family lock asks first. */
     private void beginAppsEdit(String pkg) {
+        if (pkg != null) wantHiddenList = false;   // 4.3.4 review F1: a settings ask for the hidden list that a PIN or kids mode stopped is not the long press's
         if (kidsNoEdit()) return;
         guarded(ParentalPolicy.MENU_ARRANGE, null, S.t("تعديل التطبيقات"), () -> startAppsEdit(pkg));
     }
@@ -2648,11 +2656,17 @@ public class MainActivity extends Activity {
         List<String> order = gridPackages();
         hiddenFound.clear();
         for (ResolveInfo ri : Dock.hiddenApps(this)) hiddenFound.put(ri.activityInfo.packageName, ri);
+        boolean toHidden = wantHiddenList;
+        wantHiddenList = false;
+        if (toHidden && hiddenFound.isEmpty()) {
+            Toast.makeText(this, S.t("ما فيه تطبيقات مخفية"), Toast.LENGTH_SHORT).show();
+            return;
+        }
         if (order.isEmpty() && hiddenFound.isEmpty()) {
             Toast.makeText(this, S.t("كل تطبيقاتك في المفضلة"), Toast.LENGTH_SHORT).show();
             return;
         }
-        int focus = pkg != null ? order.indexOf(pkg) : -1;
+        int focus = toHidden ? order.size() : pkg != null ? order.indexOf(pkg) : -1;   // order.size(): «المخفية» (AppsEdit)
         if (focus < 0) {
             View f = getCurrentFocus();
             for (int i = 0; i < gridCards.size(); i++) if (gridCards.get(i) == f) focus = i;
@@ -2662,6 +2676,7 @@ public class MainActivity extends Activity {
         paintEditChrome();
         editHint.setVisibility(View.VISIBLE);
         paintAppsEdit();
+        if (toHidden) grid.post(() -> { if (appsEdit != null && appsEdit.onHiddenList() && hiddenCard != null) showHiddenList(); });   // its list at once, once laid out
     }
 
     /** Back: the order, what was hidden or shown and the favourites are kept (Dock.saveApps, one broadcast that builds the screen again). */
@@ -2706,10 +2721,10 @@ public class MainActivity extends Activity {
         else if (!dockCards.isEmpty()) dockCards.get(0).requestFocus();
     }
 
-    /** One key while the mode is on. True: it is ours (every key but the volume and power ones), as in «تعديل المفضلة». */
+    /** One key while the mode is on. True: it is ours (FavEdit.owns), as in «تعديل المفضلة». */
     private boolean appsEditKey(KeyEvent e) {
         int k = e.getKeyCode();
-        if (AdhanKeys.reserved(k)) return false;
+        if (AdhanKeys.reserved(k) || !FavEdit.owns(k)) return false;
         if (e.getAction() != KeyEvent.ACTION_DOWN) return true;   // a release does nothing; it must not click the tile under the focus
         long now = SystemClock.uptimeMillis();
         int rep = e.getRepeatCount();
@@ -2973,7 +2988,7 @@ public class MainActivity extends Activity {
                 if (inDock && dock.size() <= MIN_DOCK) { toast(S.t("المفضلة لا تقل عن %s", arabicDigits(String.valueOf(MIN_DOCK)))); return; }
                 if (inDock) { dock.remove(pkg); saveDock(dock, dock.isEmpty() ? null : dock.get(Math.max(0, i - 1))); }
                 Dock.hideOrShow(this, Collections.singletonList(pkg), true);   // back from «تعديل التطبيقات» ← «المخفية»
-                toast(S.t("أُخفي، ويرجع من «تعديل التطبيقات»"));
+                toast(S.t("أُخفي، ويرجع من الإعدادات: «التطبيقات المخفية»"));   // 4.3.4: the old line named a button the menu does not have
             };
         }
         ParentalPolicy.State family = Parental.state(this);
@@ -3429,7 +3444,14 @@ public class MainActivity extends Activity {
     private boolean clockReading, clockFirstDone;
 
     private void updateClock() {
-        if (!clockFirstDone) { clockFirstDone = true; updateClock(ConfigSnapshot.read(this)); return; }
+        if (!clockFirstDone) {
+            clockFirstDone = true;
+            // 4.3.4 QA-1: a home made again (a language change, recreate) draws at once from the answer this process already has, and the
+            // fresh read below goes off the UI thread; only the process's very first draw asks the screensaver here (nothing is on screen yet)
+            ConfigSnapshot known = ConfigSnapshot.known();
+            if (known == null) { updateClock(ConfigSnapshot.read(this)); return; }
+            updateClock(known);
+        }
         if (clockReading) return;
         clockReading = true;
         final android.content.Context app = getApplicationContext();
@@ -4411,7 +4433,10 @@ public class MainActivity extends Activity {
      */
     private void openOurSettings(boolean orTvSettings, String window) {
         Intent hub = new Intent(Intent.ACTION_MAIN).setComponent(new ComponentName(SAVER_PKG, SAVER_PKG + ".YourTvHubActivity"));
-        if (window != null) hub.putExtra("open", window);
+        if (window != null) {   // 4.3.4: a fresh «تلفزيونك»: a screensaver task left open (its settings, its preview) came back as it was, and the games never opened
+            hub.putExtra("open", window);
+            hub.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        }
         Intent i = getPackageManager().resolveActivity(hub, 0) != null ? hub
                 : new Intent(Intent.ACTION_MAIN).setComponent(new ComponentName(SAVER_PKG, SAVER_PKG + ".SettingsActivity"));
         if (getPackageManager().resolveActivity(i, 0) != null) {
@@ -4544,7 +4569,7 @@ public class MainActivity extends Activity {
             }
             return true;
         }
-        if (edit != null && editKey(e)) return true;   // «تعديل المفضلة»: every key but the volume and power ones is ours
+        if (edit != null && editKey(e)) return true;   // «تعديل المفضلة»: the keys it uses (FavEdit.owns); the rest go on
         if (appsEdit != null && appsEditKey(e)) return true;   // «تعديل التطبيقات»: the same
         // the Menu key on an app: its options (the long OK's box); anywhere else the Inputs dropdown, as before
         if (e.getKeyCode() == KeyEvent.KEYCODE_MENU && e.getAction() == KeyEvent.ACTION_UP && edit == null && appsEdit == null
@@ -4554,7 +4579,7 @@ public class MainActivity extends Activity {
             showAppMenu(f, ((App) f.getTag()).pkg, dockCards.contains(f));
             return true;
         }
-        if (e.getKeyCode() == KeyEvent.KEYCODE_MENU && e.getAction() == KeyEvent.ACTION_UP && !pills.isEmpty()) {
+        if (e.getKeyCode() == KeyEvent.KEYCODE_MENU && e.getAction() == KeyEvent.ACTION_UP && edit == null && appsEdit == null && !pills.isEmpty()) {   // 4.3.4 review F2: not over an edit mode
             showInputs(pills.get(0), ParentalPolicy.MENU_KEY);
             return true;
         }
@@ -4600,7 +4625,7 @@ public class MainActivity extends Activity {
     private boolean backExitTakes(KeyEvent e) {
         int r;
         if (e.getAction() == KeyEvent.ACTION_DOWN && e.getRepeatCount() == 0) {
-            String mode = BackExit.fromFragment(ConfigSnapshot.read(this).fragment);
+            String mode = BackExit.fromFragment(ConfigSnapshot.lastFragment(this));   // 4.3.4 follow-up: never a query to the screensaver on a key (the UI thread)
             boolean scrolled = scroll.getScrollY() > 0 && !dockCards.isEmpty();
             backGuarded = BackExit.guards(mode, isDefaultHome(), scrolled);
             if (!backGuarded) return false;

@@ -349,7 +349,8 @@ HDMI ARC (مضخم أو ساوند بار)	HDMI ARC (amplifier or soundbar)
 افتح القفل	Unlock
 أضف للمفضلة	Add to favorites
 أزل من المفضلة	Remove from favorites
-أُخفي، ويرجع من «تعديل التطبيقات»	Hidden. Bring it back from “Edit apps”
+أُخفي، ويرجع من الإعدادات: «التطبيقات المخفية»	Hidden. Bring it back from Settings: “Hidden apps”
+ما فيه تطبيقات مخفية	No hidden apps
 فُتح القفل	Unlocked
 قُفل، ويطلب الرمز	Locked: it asks for the PIN
 الرقابة الأبوية متوقفة	Parental controls are off
@@ -889,3 +890,6 @@ mp3 أو m4a أو ogg أو wav	mp3, m4a, ogg or wav
 انت على النسخة التجريبية، إذا شفت شي غريب أرسل ملاحظة	You are on the beta. If you see anything odd, send a note
 أرسل ملاحظة	Send a note
 تمام	OK
+نسخة تجريبية	Beta version
+هذا التحديث نسخة تجريبية: فيها مزايا جديدة وقد تكون فيها أخطاء. تبي تحمّلها؟	This update is a beta: it has new features and may have bugs. Download it?
+حمّل	Download

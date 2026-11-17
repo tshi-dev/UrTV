@@ -181,6 +181,11 @@ final class Updater {
         boolean next = "next".equals(ch), beta = "beta".equals(ch);   // beta and next: their own release's version.txt, never the latest's redirect
         String v = latestFromAsset(next ? NEXT_VERSION_URL : beta ? BETA_VERSION_URL : VERSION_URL);
         if (v == null && !next && !beta) v = latestFromRedirect();
+        if (beta) {   // 4.3.4: the newer of apk-beta and apk-latest; a beta user is never left behind an official release (a 404 on beta: the latest)
+            String l = latestFromAsset(VERSION_URL);
+            if (l == null) l = latestFromRedirect();
+            v = Versions.newerOf(v, l);
+        }
         if (v == null) return null;
         new Prefs(c).raw().edit().putString("latestVersion", v).putString("latestChannel", ch).putLong("latestCheck", System.currentTimeMillis()).apply();
         return v;

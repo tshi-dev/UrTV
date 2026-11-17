@@ -62,6 +62,9 @@ final class ConfigSnapshot {
 
     private static volatile String savedFragment;   // what this process last wrote (or read) of the kept fragment
 
+    /** 4.3.4 follow-up: the fragment as this process last knew it, never a query (a key on the UI thread: Back): memory, else the copy on disk */
+    static String lastFragment(Context c) { String f = savedFragment; return f != null ? f : keptFragment(c); }
+
     private static String keptFragment(Context c) {
         try { return savedFragment = c.getSharedPreferences("config_last", Context.MODE_PRIVATE).getString("fragment", null); } catch (RuntimeException e) { return null; }
     }
@@ -95,6 +98,9 @@ final class ConfigSnapshot {
     static final long SHARE_MS = 3000;
 
     private static final LastGood<ConfigSnapshot> LAST = new LastGood<>();
+
+    /** 4.3.4 QA-1: the last answer this process had, never a query (the UI thread's first draw); null when it has none yet */
+    static ConfigSnapshot known() { return LAST.peek(); }
 
     static ConfigSnapshot read(final Context c) {
         final ConfigSnapshot[] none = {null};
