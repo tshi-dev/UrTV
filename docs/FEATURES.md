@@ -475,7 +475,7 @@
 - **تبي الكامل؟** وصّل بالتلفزيون جهاز Android TV / Google TV بـ HDMI (Chromecast with Google TV، Google TV Streamer، جهاز Xiaomi) وركّبه مثل أي تلفزيون أندرويد.
 
 ### التركيب باختصار
-LG: وضع المطوّر (Developer Mode) + Key Server ثم `python3 webos/build.py` و`python3 webos/install.py <عنوان التلفزيون>`. Samsung: وضع المطوّر مع عنوان الكمبيوتر (Host PC IP) ثم `python3 tizen/build.py --sign <profile>` و`python3 tizen/install.py <عنوان التلفزيون>`، أو TizenBrew Installer. **الوكيل:** هذي مو من إعدادات `optimize/saver.sh`؛ ما فيه أمر لها، ويقول لك بصراحة إنها تجريبية.
+LG: وضع المطوّر (Developer Mode) + Key Server ثم `python3 ports/webos/build.py` و`python3 ports/webos/install.py <عنوان التلفزيون>`. Samsung: وضع المطوّر مع عنوان الكمبيوتر (Host PC IP) ثم `python3 ports/tizen/build.py --sign <profile>` و`python3 ports/tizen/install.py <عنوان التلفزيون>`، أو TizenBrew Installer. **الوكيل:** هذي مو من إعدادات `optimize/saver.sh`؛ ما فيه أمر لها، ويقول لك بصراحة إنها تجريبية.
 
 ## التلفزيون نفسه (الإعداد)
 

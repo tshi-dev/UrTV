@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 """Builds UrTV for LG webOS: UrTV-webos.ipk, the app package the TV's Developer Mode installs. BETA: not tested on a real LG TV.
 
-    python3 webos/build.py            # -> UrTV-webos.ipk
-    python3 webos/build.py --preview  # also leaves the files in out/webos/ to open index.html in a browser
+    python3 ports/webos/build.py            # -> UrTV-webos.ipk
+    python3 ports/webos/build.py --preview  # also leaves the files in out/webos/ to open index.html in a browser
 
-The page is dist/tv.html with its fonts and photos (tvports/common.py), webos/appinfo.json and the icons, packed the way LG's
+The page is dist/tv.html with its fonts and photos (ports/tvports/common.py), ports/webos/appinfo.json and the icons, packed the way LG's
 ares-package does (an ar archive with control.tar.gz and data.tar.gz), so no LG tools are needed. Python 3 only.
 
 Adapted from Free My TV's webos/build.py (https://github.com/simbasjungles/free-my-tv, MIT; see THIRD_PARTY_NOTICES.md).
@@ -16,8 +16,8 @@ import tarfile
 import time
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[1]
-sys.path.insert(0, str(ROOT))
+ROOT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(ROOT / "ports"))
 from tvports import common  # noqa: E402
 
 OUT = ROOT / "out" / "webos"
@@ -60,7 +60,7 @@ def app_files():
     """{path in the app: bytes}: the page and its files, appinfo.json and the icons."""
     app = common.files()
     for name in ("appinfo.json", "icon.png", "largeIcon.png"):
-        app[name] = (ROOT / "webos" / name).read_bytes()
+        app[name] = (ROOT / "ports" / "webos" / name).read_bytes()
     return app
 
 

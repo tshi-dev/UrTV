@@ -2,10 +2,10 @@
 """Installs UrTV on a Samsung TV in Developer Mode, over your Wi-Fi, without Samsung's sdb. BETA: not tested on a real Samsung TV
 (docs/LG-SAMSUNG.md).
 
-    python3 tizen/install.py <TV-IP>              # install or update, then open it
-    python3 tizen/install.py <TV-IP> --uninstall  # remove it
+    python3 ports/tizen/install.py <TV-IP>              # install or update, then open it
+    python3 ports/tizen/install.py <TV-IP> --uninstall  # remove it
 
-First build and sign it: python3 tizen/build.py --sign <profile> (docs/LG-SAMSUNG.md). Before the first install, on the
+First build and sign it: python3 ports/tizen/build.py --sign <profile> (docs/LG-SAMSUNG.md). Before the first install, on the
 TV: open Apps, type 1 2 3 4 5 on the remote, turn Developer mode on with this computer's IP as Host PC IP, and
 restart the TV. (Or install the .wgt with TizenBrew Installer, which signs it for you on 2023 and newer TVs.)
 
@@ -25,7 +25,7 @@ import sys
 import time
 import zipfile
 
-ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 WGT = os.path.join(ROOT, 'UrTV-tizen.wgt')
 PORT = 26101
 MAX_DATA = 4096   # what this side announces; sdbd keeps each packet within both sides' maximum
@@ -150,15 +150,15 @@ def main():
     uninstall = '--uninstall' in sys.argv
     if uninstall:
         # Removing needs only the app's ids: the manifest the package is built from has them, so no build is needed.
-        with open(os.path.join(ROOT, 'tizen', 'config.xml'), encoding='utf-8') as f:
+        with open(os.path.join(ROOT, 'ports', 'tizen', 'config.xml'), encoding='utf-8') as f:
             manifest = f.read()
     else:
         if not os.path.exists(WGT):
-            sys.exit('Build and sign it first: python3 tizen/build.py --sign <profile>')
+            sys.exit('Build and sign it first: python3 ports/tizen/build.py --sign <profile>')
         with zipfile.ZipFile(WGT) as z:
             if 'author-signature.xml' not in z.namelist():
                 sys.exit('UrTV-tizen.wgt isn\'t signed, and the TV only installs signed apps: '
-                         'python3 tizen/build.py --sign <profile>')
+                         'python3 ports/tizen/build.py --sign <profile>')
             manifest = z.read('config.xml').decode('utf-8')
     tag = re.search(r'<tizen:application[^>]*>', manifest).group(0)
     app_id = re.search(r'\bid="([^"]+)"', tag).group(1)

@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Installs UrTV on an LG TV in Developer Mode, over your Wi-Fi. BETA: not tested on a real LG TV (docs/LG-SAMSUNG.md).
 
-    python3 webos/install.py <TV-IP>              # install or update, then open it
-    python3 webos/install.py <TV-IP> --uninstall  # remove it
+    python3 ports/webos/install.py <TV-IP>              # install or update, then open it
+    python3 ports/webos/install.py <TV-IP> --uninstall  # remove it
 
 Before the first install, on the TV: install "Developer Mode" from the LG Content Store, sign in with a free LG
 developer account (webostv.developer.lge.com), turn on Dev Mode Status (the TV restarts), then turn on Key Server.
@@ -26,9 +26,9 @@ import sys
 import tempfile
 import urllib.request
 
-ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 IPK = os.path.join(ROOT, 'UrTV-webos.ipk')
-with open(os.path.join(ROOT, 'webos', 'appinfo.json'), encoding='utf-8') as f:
+with open(os.path.join(ROOT, 'ports', 'webos', 'appinfo.json'), encoding='utf-8') as f:
     APP_ID = json.load(f)['id']
 TEMP = '/media/developer/temp/urtv.ipk'
 SSH_OPTS = ['-o', 'StrictHostKeyChecking=no', '-o', 'UserKnownHostsFile=' + os.devnull, '-o', 'LogLevel=ERROR',
@@ -113,7 +113,7 @@ def main():
         return
 
     if not os.path.exists(IPK):
-        subprocess.run([sys.executable, os.path.join(ROOT, 'webos', 'build.py')], check=True)
+        subprocess.run([sys.executable, os.path.join(ROOT, 'ports', 'webos', 'build.py')], check=True)
     print('Copying the app to the TV ...')
     with open(IPK, 'rb') as f:
         copy = ssh(ip, key, 'mkdir -p /media/developer/temp && cat > ' + TEMP, stdin=f)

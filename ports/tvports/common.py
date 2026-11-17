@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
-"""What the LG (webos/build.py) and Samsung (tizen/build.py) packages share: the page, its files and the data the settings screen needs.
+"""What the LG (ports/webos/build.py) and Samsung (ports/tizen/build.py) packages share: the page, its files and the data the settings screen needs.
 
 BETA: not tested on a real LG or Samsung TV. See docs/LG-SAMSUNG.md.
 
 The page is dist/tv.html, the one the Android screensaver shows, unchanged except for two things done here and nowhere else:
   - the fonts and the five bundled photos, which that page asks GitHub for, are packaged with the app and asked for by their own path;
-  - tvports/shell.js (and the data it needs) is the first script of <head>: the settings, the remote's keys and the adhan.
+  - ports/tvports/shell.js (and the data it needs) is the first script of <head>: the settings, the remote's keys and the adhan.
 The private Thmanyah fonts are read from assets/fonts if they are there (a machine that has them); otherwise the page falls back to the
 system's Arabic font, exactly as dist/urtv.html does on a machine without them. They are never committed.
 
@@ -17,7 +17,7 @@ import subprocess
 import sys
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[1]
+ROOT = Path(__file__).resolve().parents[2]
 REPO = "https://raw.githubusercontent.com/tshi-dev/UrTV/master/"
 FONT_NAMES = ["Thmanyah-Light.woff2", "Thmanyah-Regular.woff2", "Thmanyah-Medium.woff2", "ThmanyahDisplay-Bold.woff2", "UthmanicHafs-v30.woff2"]
 VERSION = "0.1.0"   # the apps' own version (appinfo.json, config.xml); not the page's
@@ -96,11 +96,11 @@ def files(extra=None):
             html = html.replace(url, "bg/" + src.name)
     head = '<meta charset="utf-8">'
     if head not in html:
-        raise SystemExit("dist/tv.html has no <meta charset> to put the app's scripts after: was the page changed? tvports/common.py needs updating.")
+        raise SystemExit("dist/tv.html has no <meta charset> to put the app's scripts after: was the page changed? ports/tvports/common.py needs updating.")
     html = html.replace(head, head + '\n<script src="data.js"></script>\n<script src="shell.js"></script>', 1)
     out["index.html"] = html.encode("utf-8")
     out["data.js"] = data_js().encode("utf-8")
-    out["shell.js"] = (ROOT / "tvports" / "shell.js").read_bytes()
+    out["shell.js"] = (ROOT / "ports" / "tvports" / "shell.js").read_bytes()
     out.update(extra or {})
     return out
 

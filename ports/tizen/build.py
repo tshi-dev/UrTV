@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 """Builds UrTV for Samsung TVs (Tizen): UrTV-tizen.wgt, the app package the TV installs. BETA: not tested on a real Samsung TV.
 
-    python3 tizen/build.py                 # -> UrTV-tizen.wgt, not signed yet
-    python3 tizen/build.py --sign PROFILE  # signed with a certificate profile of Samsung's Tizen tools
-    python3 tizen/build.py --preview       # also leaves the files in out/tizen/ to open index.html in a browser
+    python3 ports/tizen/build.py                 # -> UrTV-tizen.wgt, not signed yet
+    python3 ports/tizen/build.py --sign PROFILE  # signed with a certificate profile of Samsung's Tizen tools
+    python3 ports/tizen/build.py --preview       # also leaves the files in out/tizen/ to open index.html in a browser
 
-The same page as on LG (tvports/common.py), with tizen/config.xml and tizen/icon.png, in a zip as Tizen Studio makes it.
+The same page as on LG (ports/tvports/common.py), with ports/tizen/config.xml and ports/tizen/icon.png, in a zip as Tizen Studio makes it.
 TVs only install signed packages. TizenBrew Installer signs it with the person's Samsung certificate on 2023 and newer TVs;
 --sign uses `tizen package` (Tizen Studio) with a profile made there. Nothing signs it for you and no key is kept here.
 
@@ -20,8 +20,8 @@ import tempfile
 import zipfile
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[1]
-sys.path.insert(0, str(ROOT))
+ROOT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(ROOT / "ports"))
 from tvports import common  # noqa: E402
 
 OUT = ROOT / "out" / "tizen"
@@ -62,7 +62,7 @@ def app_files():
     """{path in the app: bytes}: the page and its files, config.xml and the icon."""
     app = common.files()
     for name in ("config.xml", "icon.png"):
-        app[name] = (ROOT / "tizen" / name).read_bytes()
+        app[name] = (ROOT / "ports" / "tizen" / name).read_bytes()
     return app
 
 
