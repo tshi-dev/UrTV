@@ -13,7 +13,7 @@ The owner made code 8042301 for https://github.com/tshi-dev/UrTV/releases/downlo
 3. Report «step 97: code 8042301 OK/FAIL».
 If it opens a page or an error instead, report exactly what Downloader shows.
 
-## step 96 — 4.4 on apk-next (UPDATED: next = da81cbcf, build 465, Build APKs run 44136994322; it now also has 4.3.3, the beta switch, the tafsir card, Riyadh option 2 and the rescue code 8042301), AFTER step 97
+## step 96 — 4.4 on apk-next (UPDATED AGAIN: use the LATEST apk-next, now next = b8d74d35, build 467, run 44149385021, which adds the owner's sweep 3: card titles not cut, the small city notice, the regular clock whenever cards show; earlier: da81cbcf build 465; it now also has 4.3.3, the beta switch, the tafsir card, Riyadh option 2 and the rescue code 8042301), AFTER step 97
 This is the first full 4.4 build with everything merged:
 - presets, «منظر وساعة» settings, the compact setup + setup speed;
 - the HOME_KEY catch;
