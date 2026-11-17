@@ -4146,14 +4146,27 @@ public class MainActivity extends Activity {
             }
         }
         Intent panel = systemInputs();
-        String step = TvVendor.inputFallback(inputPickerPkg != null, panel != null, liveTvPkg != null);   // #54: Skyworth, MediaTek: no app took the link
+        Intent signal = cvteSignal();
+        String step = TvVendor.inputFallback(inputPickerPkg != null, panel != null, signal != null, liveTvPkg != null);   // #54: Skyworth, MediaTek: no app took the link
         String fallback = inputPickerPkg != null ? inputPickerPkg : liveTvPkg;
         if ("inputs".equals(step)) {
             launchGuarded(ParentalPolicy.INPUT_PICKER, panel, "كل المصادر");
+        } else if ("signal".equals(step)) {
+            launchGuarded(ParentalPolicy.INPUT_PICKER, signal, "كل المصادر");   // a CVTE board's own source screen (PR #17)
         } else if (fallback != null) {
             guarded(ParentalPolicy.INPUT_PICKER, TvVendor.pkg(fallback), "كل المصادر", () -> openPackage(fallback));
         } else {
             launchGuarded(ParentalPolicy.PILL_TV_SETTINGS, new Intent(Settings.ACTION_SETTINGS), "إعدادات التلفزيون");
+        }
+    }
+
+    /** A CVTE board's own source screen (TvVendor.CVTE_SIGNAL), or null when nothing on this TV answers it. */
+    private Intent cvteSignal() {
+        Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse(TvVendor.CVTE_SIGNAL));
+        try {
+            return getPackageManager().resolveActivity(i, PackageManager.MATCH_DEFAULT_ONLY) != null ? i : null;
+        } catch (RuntimeException e) {
+            return null;
         }
     }
 

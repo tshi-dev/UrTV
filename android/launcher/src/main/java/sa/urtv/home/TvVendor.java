@@ -47,12 +47,19 @@ final class TvVendor {
     static final String SYSTEM_INPUTS = "com.android.tv.action.VIEW_INPUTS";
 
     /**
+     * The link of a CVTE board's own source screen (alliance://start_signal): on those TVs no app takes the passthrough link and there is no picker we know or
+     * inputs panel, but its home answers this one. Asked only where something resolves it. Based on PR #17 by alihaydaralmossa22-png.
+     */
+    static final String CVTE_SIGNAL = "alliance://start_signal";
+
+    /**
      * Where an input goes when no app took its passthrough link: "picker" (the TV's own source picker), "inputs" (the system's inputs
      * panel), "live" (the live TV app: it may show the last input, but it is the TV), else "settings".
      */
-    static String inputFallback(boolean havePicker, boolean haveInputs, boolean haveLive) {
+    static String inputFallback(boolean havePicker, boolean haveInputs, boolean haveSignal, boolean haveLive) {
         if (havePicker) return "picker";
         if (haveInputs) return "inputs";
+        if (haveSignal) return "signal";
         return haveLive ? "live" : "settings";
     }
 

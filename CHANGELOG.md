@@ -13,6 +13,11 @@ Newest first. `next` is where changes land first; a release is what was tested t
 - **التثبيت بالبث:** `install.sh` يرسل ملف التطبيق مباشرة إلى مثبّت أندرويد (`cmd package install -S`، مثل `adb install`) بدل ما ينسخه أولًا إلى التلفزيون ثم يثبّته؛ فلا نسخة ثانية تملأ التخزين ولا «Unable to open file». لو ما نفع (أندرويد أقدم من 7، اتصال انقطع، Play Protect) يرجع للطريقة القديمة كما هي.
 - **«شاشة سوداء» (GitHub #62):** تسمع التلاوة أو الإذاعة والصورة مطفأة: من خيارات المشغّل (سهم تحت)، أو زر القائمة على بطاقة «يُتلى الآن»، أو مركز التحكم وقت التشغيل. الشاشة تبقى شغّالة ما دام الصوت شغّال، وأي زر يقفلها ويرجعك للمشغّل (إلا الصوت والكتم)، وإذا وقف الصوت أو انتهى مؤقت النوم تقفل لحالها ويقدر التلفزيون ينام. مثل باقي الأزرار مع الرقم السري ووضع الأطفال. فكرة واقتراح: @nasaa1nasaa-crypto (#62)
 
+- **«المصادر» على أجهزة CVTE:** لو ما أخذ أي تطبيق رابط المنفذ وما عند التلفزيون شاشة مصادر نعرفها، نفتح شاشة المصادر الخاصة بلوحة CVTE قبل تطبيق البث (وبس لو التلفزيون يردّ عليها).
+
+**Thanks (GitHub handles, with the pull request number):**
+- The CVTE source screen (`alliance://start_signal`) as the «المصادر» fallback: alihaydaralmossa22-png (#17).
+
 ## 4.3.2
 
 A light release of fixes only; nothing in it changes the design.
