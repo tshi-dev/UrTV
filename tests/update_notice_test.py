@@ -34,7 +34,7 @@ un = (HOME / "UpdateNotice.java").read_text(encoding="utf-8")
 check("a pill «تحديث جديد» opens the update screen (behind its lock) and is in the row only while UpdateNotice says so, never in kids mode",
       'new Intent(this, UpdateActivity.class)' in main and "UpdateNotice.wanted(this)" in main and "!Parental.state(this).kids && UpdateNotice.wanted(this)" in main)
 check("the release of the person's channel (apk-latest, or apk-next for a tester) is read off the main thread, at most every 6 hours, only its first 64 bytes, never during playback or the adhan; nothing is installed from the notice",
-      "new Thread(" in un and "Net.get(UpdateRules.baseFor(ch) + \"version.txt\", null, 10000, 12000, 64)" in un and "UpdateChannel.read(c)" in un
+      "new Thread(" in un and "Net.get(UpdateRules.baseFor(ch) + \"version.txt\", null, 10000, 12000, 64)" in un and "UpdateChannel.cached()" in un
       and "MusicService.carryOurPlaying() || sa.urtv.home.tilawah.NowPlaying.adhanLive()" in un and "UpdateNoticeRule.due(" in un and "PackageInstaller" not in un and "ACTION_VIEW" not in un)
 check("4.4: all three apps are compared (the home, the screensaver app, «إضافات تلفزيونك» where it is installed); a missing screensaver keeps «ثبّت الجزء الثاني»",
       "UpdateNoticeRule.behind(code(c, c.getPackageName()), code(c, SAVER), code(c, ExtrasWords.PACKAGE), newest(c))" in un and "k < 0 ? 0 : k" in un)

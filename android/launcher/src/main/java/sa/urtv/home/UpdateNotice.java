@@ -33,7 +33,7 @@ final class UpdateNotice {
     private static long code(Context c, String pkg) { long k = PhoneUpdater.installedCode(c, pkg); return k < 0 ? 0 : k; }
 
     private static String channel(Context c) {
-        try { return UpdateChannel.read(c); } catch (RuntimeException e) { return "latest"; }
+        return UpdateChannel.cached();   // 4.3.3 hotfix: this runs on the UI thread (the pill, the card, the minute tick): the kept word, never a query to the screensaver
     }
 
     private static int newest(Context c) { return c.getSharedPreferences(PREFS, Context.MODE_PRIVATE).getInt("newest_" + channel(c), 0); }

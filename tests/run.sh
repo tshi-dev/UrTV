@@ -364,6 +364,7 @@ node tests/es2017_parse.test.mjs   # #19: the built pages parse as ES2017 (Andro
 node tests/date_num.test.mjs   # «التاريخ بالأرقام» on the screensaver page: day/month/year in the digits chosen
 node tests/wx_icon.test.mjs   # the screensaver's weather line: the condition's icon beside the temperature
 node tests/js_strip_test.mjs   # the pages ship without the script's comments: the same program (acorn trees), 50 KB smaller
+python3 tests/ui_thread_channel_test.py   # 4.3.3 hotfix: no query to the screensaver on the home's UI thread (the TCL remote froze)
 node tests/i18n_page_test.mjs   # dist/tv-en.html in a browser: left to right, no Arabic in its own words on any card
 #
 # English phase 3 (the home app): its new tests go right under this line
