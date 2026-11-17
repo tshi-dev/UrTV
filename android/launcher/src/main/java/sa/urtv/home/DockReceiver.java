@@ -34,7 +34,7 @@ import java.util.Map;
  *   am broadcast -n sa.urtv.home/.DockReceiver -a sa.urtv.home.PIN_RESET             a forgotten PIN: everything parental back to nothing
  *   am broadcast -n sa.urtv.home/.DockReceiver -a sa.urtv.home.HOME_WANTED --es mode on|off|status   4.4: «the person's home is ours» for the add-on's watch
  *      and the home's re-apply of the role (optimize/homedoctor.py); answers "home-wanted: yes|no"
- *   am broadcast -n sa.urtv.home/.DockReceiver -a sa.urtv.home.HOME_KEY --es mode on|off|status   4.4 R3, a test switch (off by default): the add-on catches
+ *   am broadcast -n sa.urtv.home/.DockReceiver -a sa.urtv.home.HOME_KEY --es mode on|off|status   4.4 R3 (on by default on a Google TV): the add-on catches
  *      the remote's Home key itself and opens our home (docs/HOMEDOCTOR.md); answers "home-key: on|off"
  *   am broadcast -n sa.urtv.home/.DockReceiver -a sa.urtv.home.BACK_SAVER --es mode on|off|status   «الرجوع يفتح شاشة التوقف» (off by default)
  *   am broadcast -n sa.urtv.home/.DockReceiver -a sa.urtv.home.KEY_APP [--es key youtube|netflix|prime --es app PKG|default]   «أزرار الريموت»:
@@ -153,7 +153,7 @@ public class DockReceiver extends BroadcastReceiver {
                 setResultData("home-wanted: " + sa.urtv.home.setup.SetupHook.homeWanted(c, m));
                 return;
             }
-            case "sa.urtv.home.HOME_KEY": {   // 4.4 R3 (step 88), a test switch, off by default: «إضافات تلفزيونك» catches the remote's Home key itself
+            case "sa.urtv.home.HOME_KEY": {   // 4.4 R3 (step 88; on by default on a Google TV from build 413): «إضافات تلفزيونك» catches the remote's Home key itself
                 String m = String.valueOf(i.getStringExtra("mode"));
                 if (!m.equals("on") && !m.equals("off") && !m.equals("status")) { setResultData("error: add --es mode on|off|status"); return; }
                 Boolean on = Extras.homeKey(c, m.equals("status") ? null : m);

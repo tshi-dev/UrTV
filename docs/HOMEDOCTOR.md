@@ -37,7 +37,9 @@ RoleController, ActivityTaskManager's HOME starts, UrTVSetup, UrTVWatch and laun
 per angle applied, result and why (with the log lines that explain it), and the winner. No address, serial or name of the TV is written;
 send the report only with `optimize/share.sh` (AGENTS.md).
 
-**R3, a test switch (4.4, off by default):** «إضافات تلفزيونك» can catch the remote's Home key itself and open UrTV. adb's own key presses do not
-go through it, so only the real remote can test it: turn it on with
-`optimize/venv/bin/python -I optimize/tv.py "am broadcast -n sa.urtv.home/.DockReceiver -a sa.urtv.home.HOME_KEY --es mode on"`, press Home on
-the remote from a few apps (`logcat -s UrTVWatch`: «home key caught ours opened»), then the same with `--es mode off`.
+**R3, the Home key catch (4.4; ON by default on a Google TV from build 413):** «إضافات تلفزيونك» catches the remote's Home key itself and opens
+UrTV, only while the person's home is ours; Google TV's home then never starts (no flash). The tester's T9 with the owner's real remote: 3 of 3
+presses, a long press and Home in a YouTube video caught, the Settings and Assistant keys untouched. The window watch stays as the fallback for
+remotes and TVs whose Home never reaches the filter. adb's own key presses never go through it, so only the real remote tests it
+(`logcat -s UrTVWatch`: «home key caught ours opened»). The switch: «زر الرئيسية يفتح تلفزيونك مباشرة» in the settings, or
+`optimize/dock.sh home-key on|off|status`.

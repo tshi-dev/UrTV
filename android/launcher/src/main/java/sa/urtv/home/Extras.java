@@ -92,8 +92,8 @@ public final class Extras {
         }
     }
 
-    /** 4.4 R3 (a test switch): the add-on catches the Home key itself; "on", "off" or null to read; null when the add-on did not answer */
-    static Boolean homeKey(Context c, String set) {
+    /** 4.4 R3 (on by default on a Google TV): the add-on catches the Home key itself; "on", "off" or null to read; null when the add-on did not answer */
+    public static Boolean homeKey(Context c, String set) {
         try {
             Bundle b = c.getContentResolver().call(Uri.parse("content://" + ExtrasWords.EXTRAS_AUTHORITY), ExtrasWords.WATCH,
                 "on".equals(set) ? ExtrasWords.HOME_KEY_ON : "off".equals(set) ? ExtrasWords.HOME_KEY_OFF : null, null);

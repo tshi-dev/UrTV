@@ -48,8 +48,8 @@ check("6. the setup page asks the screensaver's language before its configuratio
 check("7. after a Home check the setup page is brought back at once (the TV's settings had stayed over it), in the engine and the report",
       "backToSetup();" in eng and 'SETUP_ACTIVITY = SELF + "/.setup.SetupActivity"' in eng and "am start --activity-reorder-to-front -n " in rep)
 hk = svc[svc.index("static boolean homeKey(Context c)"):svc.index("/** 4.4: the setup's word")]
-check("8. R3 (the Home key caught by the add-on) is a switch that is OFF by default, set only through the home's adb-only receiver; fixed-word logs",
-      'getBoolean(ExtrasWords.HOME_KEY, false)' in hk and "if (e.getKeyCode() == KeyEvent.KEYCODE_HOME && homeKey(this)) return homeKeyCaught(e);" in svc
-      and "|| homeKey(this);" in svc and 'case "sa.urtv.home.HOME_KEY":' in text(HOME / "DockReceiver.java")
-      and 'android:name="sa.urtv.home.HOME_KEY"' in text(ROOT / "android/launcher/src/main/AndroidManifest.xml") and "HOME_KEY --es mode on" in text(ROOT / "docs/HOMEDOCTOR.md"))
+check("8. R3 (the Home key caught by the add-on): a switch, on by default on a Google TV from build 413 (tests/build413_test.py), set through the home's adb-only receiver; fixed-word logs",
+      'getBoolean(ExtrasWords.HOME_KEY, false)' in hk and "if (e.getKeyCode() == KeyEvent.KEYCODE_HOME && homeKeyActive()) return homeKeyCaught(e);" in svc
+      and "|| homeKeyActive();" in svc and 'case "sa.urtv.home.HOME_KEY":' in text(HOME / "DockReceiver.java")
+      and 'android:name="sa.urtv.home.HOME_KEY"' in text(ROOT / "android/launcher/src/main/AndroidManifest.xml") and "`optimize/dock.sh home-key on|off|status`" in text(ROOT / "docs/HOMEDOCTOR.md"))
 sys.exit(1 if failed else 0)

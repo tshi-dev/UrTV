@@ -105,6 +105,14 @@ final class NowPlayingBridge {
         } catch (Exception ignored) { return "no_link"; }
     }
 
+    /** 4.4 «زر الرئيسية يفتح تلفزيونك مباشرة»: the add-on's Home key catch through the launcher ("on", "off" or null to read); null when either did not answer */
+    static Boolean homeKey(Context c, String set) {
+        try {
+            android.os.Bundle b = c.getApplicationContext().getContentResolver().call(Uri.parse("content://sa.urtv.home.nowplaying"), "home_key", set, null);
+            return b == null || !b.containsKey("on") ? null : b.getBoolean("on");
+        } catch (Exception ignored) { return null; }
+    }
+
     /** Ends the adhan that is playing in the launcher (it checks our signature, and stops only an adhan). */
     static void stopAdhan(Context c) {
         try {

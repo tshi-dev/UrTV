@@ -86,6 +86,15 @@ public class NowPlayingProvider extends ContentProvider {
             b.putLong("bytes", "clear_cache".equals(method) ? sa.urtv.home.CacheSweep.clear(cache) : sa.urtv.home.CacheSweep.size(cache));
             return b;
         }
+        // 4.4 «زر الرئيسية يفتح تلفزيونك مباشرة» in the screensaver's settings (same key only): the add-on's Home key catch, arg "on", "off" or null to read;
+        // no "on" in the answer when the add-on did not answer (the row is then not shown)
+        if ("home_key".equals(method) && getContext() != null
+                && getContext().checkCallingPermission("sa.urtv.home.READ_NOW_PLAYING") == PackageManager.PERMISSION_GRANTED) {
+            Boolean on = sa.urtv.home.Extras.homeKey(getContext(), "on".equals(arg) || "off".equals(arg) ? arg : null);
+            Bundle b = new Bundle();
+            if (on != null) b.putBoolean("on", on);
+            return b;
+        }
         // 4.4 «بدء شاشة التوقف بعد» in the screensaver's settings (same key only): the TV's idle delay over our adb (SetupHook.setIdle), the answer in "result"
         if ("set_idle".equals(method) && getContext() != null
                 && getContext().checkCallingPermission("sa.urtv.home.READ_NOW_PLAYING") == PackageManager.PERMISSION_GRANTED) {

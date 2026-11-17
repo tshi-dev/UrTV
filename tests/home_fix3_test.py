@@ -30,8 +30,8 @@ check("1. R2g: a press over another app always brought (even paused); over ours 
 check("1. R2g: the app Home was pressed over, back within 1.5 s of our bring, gets ours once more (once); the app is kept in memory only, never logged",
       "COME_BACK_MS = 1_500" in watch and "HomeWatch.bringAgain(pkg, pressedOver, broughtAt, broughtAgain, t)" in ev and "broughtAgain = true;" in ev
       and 'Log.i("UrTVWatch", "the app came back after our bring brought again")' in svc)
-check("1. not shipped from the tester's build: the forced key filter and the Home-key catch (R3 stays behind its switch, off by default)",
-      "want = true;" not in svc and "UrTVKey" not in svc and "if (e.getKeyCode() == KeyEvent.KEYCODE_HOME && homeKey(this)) return homeKeyCaught(e);" in svc
+check("1. not shipped from the tester's build: the forced key filter (R3 is a switch: on by default on a Google TV from build 413, tests/build413_test.py)",
+      "want = true;" not in svc and "UrTVKey" not in svc and "if (e.getKeyCode() == KeyEvent.KEYCODE_HOME && homeKeyActive()) return homeKeyCaught(e);" in svc
       and 'getBoolean(ExtrasWords.HOME_KEY, false)' in svc)
 check("2. the home step is never skipped for old failures; «تراجع» and an update clear the count",
       "HomeFails.givenUp" not in eng and "clearFile(HomeFails.FILE);" in eng[eng.index("Result undo()"):] and "clearOldFails(app);" in hook

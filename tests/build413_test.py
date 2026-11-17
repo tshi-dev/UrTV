@@ -17,6 +17,27 @@ def check(name, ok, detail=""):
     failed += not ok
 
 def read(p): return (ROOT / p).read_text(encoding="utf-8")
+svc = read("android/extras/src/main/java/sa/urtv/home/ExtrasA11yService.java")
+hk = svc.split("static boolean homeKey(Context c) {")[1].split("\n    }\n")[0]
+check("1. the catch: the person's switch wins once set, else on where Google TV's home is installed",
+      "if (sp.contains(ExtrasWords.HOME_KEY)) return sp.getBoolean(ExtrasWords.HOME_KEY, false);" in hk and 'return installed(c, "com.google.android.apps.tv.launcherx");' in hk)
+check("1. it acts only while the person's home is ours", "private boolean homeKeyActive() { return homeKey(this) && (wanted(this) || oursChosen()); }" in svc
+      and "if (e.getKeyCode() == KeyEvent.KEYCODE_HOME && homeKeyActive()) return homeKeyCaught(e);" in svc and "|| homeKeyActive();" in svc)
+check("1. the key filter follows when the person's home changes", "if (s != null) s.main.post(s::filterKeys);   // the Home key catch follows the person's home" in svc)
+check("1. the window watch is still there as the fallback", "watch.decide(on, pkg, cls, stockHomes, chosen || wantedNow, now, fight)" in svc)
+dock = read("optimize/dock.sh")
+check("1. dock.sh home-key sends HOME_KEY on|off|status", 'on|off|status) send HOME_KEY "--es mode $2" ;;' in dock)
+out = subprocess.run(["bash", str(ROOT / "optimize/dock.sh"), "home-key", "maybe"], capture_output=True, text=True, cwd=ROOT)
+check("1. a wrong word is refused before the TV is asked", out.returncode == 1 and "usage: optimize/dock.sh home-key" in out.stdout, out.stdout + out.stderr)
+act, bridge = read("android/app/src/main/java/sa/urtv/screensaver/SettingsActivity.java"), read("android/app/src/main/java/sa/urtv/screensaver/NowPlayingBridge.java")
+prov = read("android/launcher/src/main/java/sa/urtv/home/tilawah/NowPlayingProvider.java")
+check("1. the settings switch: shown when the add-on answers, flips through the home", 'final Boolean homeKey = NowPlayingBridge.homeKey(this, null);\n        if (homeKey != null)' in act
+      and 'row("زر الرئيسية يفتح تلفزيونك مباشرة", homeKey ? "مفعّل" : "متوقف"' in act and 'NowPlayingBridge.homeKey(SettingsActivity.this, homeKey ? "off" : "on")' in act)
+check("1. the bridge and the provider (same key only)", '"home_key", set, null' in bridge and 'if ("home_key".equals(method)' in prov
+      and "sa.urtv.home.Extras.homeKey(getContext()" in prov.split('if ("home_key".equals(method)')[1].split("return b;")[0]
+      and 'checkCallingPermission("sa.urtv.home.READ_NOW_PLAYING")' in prov.split('if ("home_key".equals(method)')[1].split("return b;")[0])
+check("1. its English and marker", "\nزر الرئيسية يفتح تلفزيونك مباشرة\t" in read("i18n/en/saver.tsv") and 'S.n("زر الرئيسية يفتح تلفزيونك مباشرة")' in read("android/app/src/main/java/sa/urtv/screensaver/Words.java"))
+check("1. the docs say on by default on a Google TV", "**On by default on a Google TV**" in read("docs/SETTINGS.md") and "ON by default on a Google TV from build 413" in read("docs/HOMEDOCTOR.md"))
 eng = read("android/launcher/src/main/java/sa/urtv/home/setup/SetupEngine.java")
 fw = eng.split("Result finishWatch(boolean watchOk) throws IOException {")[1].split("\n    }\n")[0]
 check("2. the Home step is judged after the add-on is bound (up to 10 s), then the key", "if (watchOk && boundWithin(BOUND_WAIT_MS) && homeKeyOpensOurs())" in fw and "BOUND_WAIT_MS = 10_000;" in eng)
