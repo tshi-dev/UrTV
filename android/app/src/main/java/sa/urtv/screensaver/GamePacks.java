@@ -56,7 +56,7 @@ final class GamePacks {
         try {
             byte[] d = MessageDigest.getInstance("SHA-256").digest(data);
             StringBuilder b = new StringBuilder();
-            for (byte x : d) b.append(String.format("%02x", x));
+            for (byte x : d) b.append(String.format(java.util.Locale.ROOT, "%02x", x));
             return b.toString().equals(hex);
         } catch (java.security.NoSuchAlgorithmException e) { return false; }
     }
