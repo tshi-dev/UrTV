@@ -36,7 +36,7 @@ CASES = [
 
 # HomeCard.pause()/refresh() call pauseTimers()/resumeTimers(), which are process-wide: safe only while this card is the launcher's only WebView
 launcher = list((ROOT / "android/launcher/src/main/java").rglob("*.java"))
-makers = [p.name for p in launcher if "new WebView(" in p.read_text(encoding="utf-8")]
+makers = [p.name for p in launcher if p.name != "WebViews.java" and ("new WebView(" in p.read_text(encoding="utf-8") or "WebViews.make(" in p.read_text(encoding="utf-8"))]   # 4.3.5: through WebViews.make
 timers = [p.name for p in launcher if "pauseTimers" in p.read_text(encoding="utf-8").replace("pauseTimers()/resumeTimers()", "")]
 # «المباريات» (MatchesActivity, docs/PROPOSALS-NOV2.md §1) is the second: never in front with the home, it resumes the timers in its onResume
 # and pauses them in its onPause, so whichever of the two comes in front last leaves them running

@@ -117,6 +117,17 @@ final class SetupEngine {
         return out;
     }
 
+    /**
+     * 4.3.5: the setup report's «WebView:» line: the package and its version as `dumpsys webviewupdate` names them («com.android.webview 66.0.3359.158»),
+     * or «none» when the TV says it has none, «?» when it does not say. Only package-name and version characters are kept.
+     */
+    static String webviewLine(String dump) {
+        if (dump == null || dump.trim().isEmpty()) return "?";
+        Matcher m = Pattern.compile("Current WebView package \\(name, version\\): \\(([\\w.]+), ([\\w.\\-]+)\\)").matcher(dump);
+        if (m.find()) return m.group(1) + " " + m.group(2);
+        return dump.contains("Current WebView package: null") || dump.toLowerCase(java.util.Locale.ROOT).contains("no webview") ? "none" : "?";
+    }
+
     /** The WebView major version from `dumpsys webviewupdate`, or -1 when the TV does not say. */
     static int webviewMajor(String dump) {
         if (dump == null) return -1;

@@ -33,7 +33,7 @@ def guarded_near(lines, i, back=3):
     return any("guarded(" in lines[k] or "launchGuarded(" in lines[k] for k in range(max(0, i - back), i + 1))
 
 # ---- 1. every way in asks
-sites = {"launch": {"launchGuarded", "openPackage", "startSaver", "openPassthroughInput", "openUpdates"},   # the helpers a guarded call reaches (openUpdates: the bell, which calls it only from guarded(...))
+sites = {"launch": {"launchGuarded", "openPackage", "startSaver", "openPassthroughInput", "openUpdates", "openSafePage"},   # the helpers a guarded call reaches (openUpdates: the bell, which calls it only from guarded(...)); openSafePage (4.3.5): the crash-loop page, which a dying home cannot put behind a PIN
          "openPackage": {"startSaver", "openPassthroughInput"}, "startSaver": set(), "openPassthroughInput": {"showInputsNow"},
          "showSleep": set(), "openUpdates": set(), "showInputsNow": set(), "showAppMenuNow": set()}
 for fn, inner in sites.items():

@@ -26,6 +26,14 @@ Newest first. `next` is where changes land first; a release is what was tested t
 - The Benghazi 2026 prayer table that Libya's own prayer method is fitted to: ALMAJBRY (#23).
 - The CVTE source screen (`alliance://start_signal`) as the «المصادر» fallback: alihaydaralmossa22-png (#17).
 
+## 4.3.5
+
+A hotfix of 4.3.4: a TV whose home kept failing at start (an LG-branded CVTE Android 9 set) was left on a black screen.
+
+- **إذا طاحت الواجهة عند التشغيل ما تبقى الشاشة سوداء، ترجع للواجهة الأصلية:** إذا توقفت الواجهة أو علّقت (ما رسمت أول صورة خلال ٢٠ ثانية) مرتين بعد التشغيل خلال ١٠ دقائق، تفتح بدلها صفحة بسيطة فيها «افتح الشاشة الأصلية» و«حاول مرة ثانية»، وتترك اختيار الشاشة الرئيسية للتلفزيون من جديد. الصفحة بدون رمز الرقابة (الواجهة اللي تطيح ما تقدر تسأل عنه). صورتها: docs/mockups/safe-page.png.
+- **تلفزيون بدون متصفح النظام (WebView):** كانت بطاقة الشاشة الرئيسية تنشئ WebView عند كل تشغيل، وإذا ما كان في التلفزيون WebView شغّال تطيح الواجهة كلها. صارت الواجهة تشتغل بدون البطاقة، و«المباريات» تقول إن الصفحة ما تفتح وتقفل.
+- **تقارير أوضح:** سطر «WebView:» في تقرير الإعداد وتقرير «أرسل تقرير» صار فيه اسم الحزمة ونسختها («none» إذا ما فيه). واختبار جديد يبني الواجهة على Android 9 ويتأكد إن كل شيء أحدث منه محمي بفحص النسخة.
+
 ## 4.3.4
 
 A hotfix of 4.3.3: fixes only, from users' reports; nothing in it changes the design.

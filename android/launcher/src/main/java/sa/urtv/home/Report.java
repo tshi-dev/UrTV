@@ -31,7 +31,7 @@ public final class Report {
         l.add("UrTV problem report, settings");
         l.add("Versions: home " + safe(home) + ", screensaver " + safe(saver));
         l.add("Device: Android " + safe(release) + ", API " + sdk);
-        l.add("WebView: " + safe(webView));
+        l.add("WebView: " + safe(webView, 64));   // 4.3.5: «package-build», longer than the other values
         return l;
     }
 
@@ -102,9 +102,11 @@ public final class Report {
     }
 
     /** a version or release word: letters, digits, dots and dashes only, at most 24 ("?" for none) */
-    static String safe(String s) {
+    static String safe(String s) { return safe(s, 24); }
+
+    static String safe(String s, int max) {
         if (s == null) return "?";
         String t = s.replaceAll("[^A-Za-z0-9.-]", "");
-        return t.isEmpty() ? "?" : t.length() > 24 ? t.substring(0, 24) : t;
+        return t.isEmpty() ? "?" : t.length() > max ? t.substring(0, max) : t;
     }
 }
