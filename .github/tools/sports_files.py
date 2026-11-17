@@ -25,6 +25,7 @@ KO = {"32": "دور الـ٣٢", "16": "دور الـ١٦", "125": "ربع ال�
       "170": "الملحق", "180": "نهائي الملحق"}
 KO_ORDER = ["32", "16", "125", "150", "160", "200"]
 F1_URL = "https://api.jolpi.ca/ergast/f1/current/next.json"
+F1_FIRST = "https://api.jolpi.ca/ergast/f1/{season}/1.json"   # after the last race of a season: the next season's first
 F1_EVERY = dt.timedelta(hours=20)
 F1_COUNTRY = {"Bahrain": "البحرين", "Saudi Arabia": "السعودية", "Australia": "أستراليا", "Japan": "اليابان", "China": "الصين", "USA": "الولايات المتحدة",
               "United States": "الولايات المتحدة", "Italy": "إيطاليا", "Monaco": "موناكو", "Spain": "إسبانيا", "Canada": "كندا", "Austria": "النمسا",
@@ -217,6 +218,33 @@ def f1_file(answer, stamp):
             "country": country, "sessions": sorted(uniq, key=lambda s: s["t"])}
 
 
+def _f1_get(fetch, url):
+    raw = fetch(url) if fetch else urllib.request.urlopen(urllib.request.Request(url, headers={"User-Agent": "UrTV CI"}), timeout=20).read()
+    return json.loads(raw)
+
+
+def f1_next(fetch, stamp):
+    """the next race; once a season's last race is run (Jolpica's «next» has no race) the next season's first, None when neither is known yet"""
+    ans = _f1_get(fetch, F1_URL)
+    body = f1_file(ans, stamp)
+    if body is None:
+        season = str((((ans or {}).get("MRData") or {}).get("RaceTable") or {}).get("season") or "")
+        if season.isdigit():
+            body = f1_file(_f1_get(fetch, F1_FIRST.format(season=int(season) + 1)), stamp)
+    return body
+
+
+def f1_check(fetch=None):
+    """CI's proof that the real Jolpica answers and parses (tests/f1-check workflow): prints the file it would write, writes nothing"""
+    now = dt.datetime.now(dt.timezone.utc).replace(microsecond=0)
+    body = f1_next(fetch, now.isoformat().replace("+00:00", "Z"))
+    if not body or not body.get("sessions") or not all(x.get("t") for x in body["sessions"]) or not any(x["k"] == "race" for x in body["sessions"]):
+        print("f1 check: no race in Jolpica's answer:", json.dumps(body, ensure_ascii=False))
+        return 1
+    print("f1 check: ok", json.dumps(body, ensure_ascii=False))
+    return 0
+
+
 def f1(args, fetch=None):
     """f1/next.json: asked at most once in F1_EVERY; a failed or empty answer keeps the last file"""
     prev, out = Path(args.prev), Path(args.out)
@@ -234,8 +262,7 @@ def f1(args, fetch=None):
     body = None
     if not fresh:
         try:
-            raw = fetch() if fetch else urllib.request.urlopen(urllib.request.Request(F1_URL, headers={"User-Agent": "UrTV CI"}), timeout=20).read()
-            body = f1_file(json.loads(raw), now.isoformat().replace("+00:00", "Z"))
+            body = f1_next(fetch, now.isoformat().replace("+00:00", "Z"))
         except Exception as e:   # the network or the answer: the last file stays
             print("f1: no answer:", e)
     if body:
@@ -258,8 +285,9 @@ def main():
     p = sub.add_parser("f1")
     p.add_argument("--prev", required=True)
     p.add_argument("--out", required=True)
+    sub.add_parser("f1check")
     a = ap.parse_args()
-    return f1(a)
+    return f1_check() if a.cmd == "f1check" else f1(a)
 
 
 if __name__ == "__main__":

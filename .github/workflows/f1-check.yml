@@ -1,0 +1,25 @@
+name: F1 check
+
+# 4.4 the «فورمولا ١» card's data: proof that GitHub's runners reach Jolpica-F1 (api.jolpi.ca) and that today's real answer parses into
+# the file the archive job publishes (f1/next.json). It writes nothing: no push, a read-only token. It runs when the F1 code changes on
+# any branch, and by hand. The archive job itself (league-fixtures.yml) asks Jolpica at most once a day and runs from master.
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/tools/sports_files.py'
+      - '.github/workflows/f1-check.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  f1:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: .github/tools
+      - name: Ask Jolpica as the archive job does, and check the answer
+        run: python3 -u .github/tools/sports_files.py f1check

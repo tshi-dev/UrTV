@@ -94,19 +94,34 @@ check("f1: the race, its Arabic name and its sessions in time order (UTC)", f["n
       and [(x["k"], x["t"]) for x in f["sessions"]] == [("fp1", "2026-12-04T09:30:00Z"), ("q", "2026-12-05T14:00:00Z"), ("race", "2026-12-06T13:00:00Z")], f)
 check("f1: no race in the answer: none", sf.f1_file({"MRData": {"RaceTable": {"Races": []}}}, "x") is None)
 asked = []
-fetch = lambda: (asked.append(1), json.dumps(answer).encode())[1]
+fetch = lambda url: (asked.append(url), json.dumps(answer).encode())[1]
 o2 = Path(tempfile.mkdtemp())
 sf.f1(SimpleNamespace(prev=str(out), out=str(o2)), fetch)
 n1 = json.loads((o2 / "f1/next.json").read_text())
-check("f1: a stale file is asked again and replaced", asked == [1] and n1["name"] == "Abu Dhabi Grand Prix" and n1.get("asked"), n1)
+check("f1: a stale file is asked again and replaced (Jolpica's «current/next»)", asked == [sf.F1_URL] and n1["name"] == "Abu Dhabi Grand Prix" and n1.get("asked"), n1)
 o3 = Path(tempfile.mkdtemp())
 sf.f1(SimpleNamespace(prev=str(o2), out=str(o3)), fetch)
-check("f1: asked at most once a day (a fresh file is kept, no request)", asked == [1] and json.loads((o3 / "f1/next.json").read_text())["name"] == "Abu Dhabi Grand Prix")
-def boom():
+check("f1: asked at most once a day (a fresh file is kept, no request)", asked == [sf.F1_URL] and json.loads((o3 / "f1/next.json").read_text())["name"] == "Abu Dhabi Grand Prix")
+def boom(url):
     raise OSError("no network")
 o4 = Path(tempfile.mkdtemp())
 sf.f1(SimpleNamespace(prev=str(out), out=str(o4)), boom)
 check("f1: no answer keeps the last file", json.loads((o4 / "f1/next.json").read_text())["name"] == "Kept GP")
+# after the season's last race Jolpica's «next» is empty: the next season's first race
+over = {"MRData": {"RaceTable": {"season": "2026", "round": "24", "Races": []}}}
+first = {"MRData": {"RaceTable": {"season": "2027", "Races": [dict(answer["MRData"]["RaceTable"]["Races"][0], season="2027", round="1", raceName="Australian Grand Prix",
+         date="2027-03-14", time="05:00:00Z", Circuit={"circuitName": "Albert Park", "Location": {"country": "Australia"}}, FirstPractice={"date": "2027-03-12", "time": "01:30:00Z"},
+         Qualifying={"date": "2027-03-13", "time": "05:00:00Z"})]}}}
+urls = []
+two = lambda url: (urls.append(url), json.dumps(over if url == sf.F1_URL else first).encode())[1]
+nx = sf.f1_next(two, "x")
+check("f1: after the season's last race, the next season's first race (Jolpica's 2027/1)", urls == [sf.F1_URL, "https://api.jolpi.ca/ergast/f1/2027/1.json"]
+      and nx["name"] == "Australian Grand Prix" and nx["ar"] == "جائزة أستراليا الكبرى" and nx["sessions"][-1]["t"] == "2027-03-14T05:00:00Z", (urls, nx))
+check("f1check: ok on a real-shaped answer, refused (exit 1) on none", sf.f1_check(lambda url: json.dumps(answer).encode()) == 0
+      and sf.f1_check(lambda url: json.dumps({"MRData": {"RaceTable": {"Races": []}}}).encode()) == 1)
+fc = (ROOT / ".github/workflows/f1-check.yml").read_text(encoding="utf-8")
+check("CI checks the real Jolpica when the F1 code changes, and writes nothing (no push, read-only token)", "sports_files.py f1check" in fc and "contents: read" in fc
+      and "git push" not in fc and "sports_files.py" in fc.split("paths:", 1)[1])
 wf = (ROOT / ".github/workflows/league-fixtures.yml").read_text(encoding="utf-8")
 check("the workflow asks for F1 after the build, before the push, and a failure never fails the run",
       wf.index("match_archive.py build") < wf.index("sports_files.py f1 --prev prev --out out || echo") < wf.index("Push to data-archive"))
