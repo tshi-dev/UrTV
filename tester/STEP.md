@@ -4,6 +4,17 @@
 
 
 
+## step 95 — UrTV Player beta channel (in-app update and the assessment), at any pause
+1. Back up the Player's settings: its own backup/export, or write down the playlist/source names only, never URLs or logins in the report.
+2. Install `urtv-player-0.9.16-beta16.apk` from https://github.com/tshi-dev/UrTV-Player/releases/tag/v0.9.16-beta16 over the installed Player. It is signed the same, so it updates in place; check that the data is kept.
+3. Settings › About:
+   - «النسخ التجريبية» is off by default.
+   - Turn it on, then «التحقق من التحديثات».
+   - Once beta17 is on the rolling `beta` release (the supervisor will add «beta17 ready» to the NOW line), it offers beta17. Download, then install via the system prompt, then confirm the data is kept and the version shows 0.9.16-beta17, reading left to right.
+4. Turn the switch off → check again: no older stable is offered (no downgrade), and the reason is shown.
+5. «تقييم الأداء»: use the Player for 15 minutes (zap 20 channels, open the EPG, play one VOD). Open the screen and take a picture. Check that the numbers look plausible against what you saw, e.g. that the zap time roughly matches your stopwatch on 3 zaps. «أرسل تقرير»: decode the QR and check it has `Channel: beta` and NO URL, playlist name, IP or login.
+6. Report «step 95: Player beta PASS/FAIL» per item, with the timings. Leave the Player on the beta, with the switch ON.
+
 ## step 94 — CANCELLED (the owner keeps the old picture); do not run. Was: real screenshots for the README picture (owner: «the old pic had character, it looks real»). Do it at the first pause, before step 93 if 93 is still waiting for its build.
 The README picture is getting real screens from the TV again, but with NO MovieBox anywhere (MovieBoxPro is a piracy app). Use full 1920×1080 screencaps (`adb exec-out screencap -p`), not a photo of the screen.
 A. AFTER: the 4.4 home on the TV in «شكلك المعتاد», evening if possible.
