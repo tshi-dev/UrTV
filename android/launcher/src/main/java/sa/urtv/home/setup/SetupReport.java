@@ -211,7 +211,21 @@ final class SetupReport {
     private String homeHow() throws IOException {
         String role = tv.tail1("cmd role get-role-holders --user 0 android.app.role.HOME").trim();
         boolean watch = tv.text("dumpsys accessibility | grep -m1 'Bound services:'").contains(sa.urtv.home.ExtrasWords.SERVICE);
+        watchBound = watch;
         return "Home role: " + (role.isEmpty() ? "?" : role) + "; Home watch («إضافات تلفزيونك»): " + (watch ? "bound" : "not bound");
+    }
+
+    private boolean watchBound;
+
+    /**
+     * 4.4 (user reports, the tester's finding): since 4.3 the role alone never moves the Home key on a Google TV (TCL G10/G08, Changhong Android 14,
+     * Sony BRAVIA VH21, Xiaomi MiTV-AFMU0/1): launcherx gets it by name. The add-on's watch is how Home works there; the report says so in words
+     * an agent reads, so nobody chases the role or turns launcherx off.
+     */
+    static String googleTvLine(boolean watch) {
+        return watch
+            ? "Google TV: Home works through the add-on's watch («إضافات تلفزيونك», bound); here the Home key goes to Google TV's home whatever the role says, and the watch brings ours. This is how it works on Google TV: do not chase the role, never turn launcherx off"
+            : "Google TV: the add-on's watch («إضافات تلفزيونك») is NOT bound, so Home stays with Google TV's home: on Google TV the add-on is the only way Home opens ours (the role alone never moves the key here). Turn the add-on on («جهّز كل شي» again); never turn launcherx off";
     }
 
     private List<String> checks() throws IOException {
@@ -229,6 +243,7 @@ final class SetupReport {
         // Google TV launcherx keeps the key whatever the role says, and the old line said «sa.urtv.home» there (16 runs, a false pass on every Google TV)
         out.add("Home: " + homeKeyOpens());
         out.add(homeHow());
+        if (installed != null && installed.contains(RescuePlan.LAUNCHERX)) out.add(googleTvLine(watchBound));
         String saver = tv.tail1("settings get secure screensaver_components").trim();
         out.add("Screensaver: " + (saver.matches("[A-Za-z0-9_.$/,]+") ? saver : "?"));
         String vs = appver(SetupEngine.SAVER), vh = appver(SetupEngine.SELF);

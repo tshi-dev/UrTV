@@ -24,6 +24,8 @@
 #   optimize/dock.sh extras-setup          turn on «إضافات تلفزيونك» (UrTV Extras, optimize/install.sh addon first; once): the sleep timer's screen-off, the phone remote's
 #                                          keys and typing in other apps, the Settings key outside the home, the Home button on a Google TV
 #                                          (sleep-setup and type-setup: the old names, the same step)
+#   optimize/dock.sh home-watch on|off|status   4.4 Google TV: «the person's home is ours» for the add-on's Home watch (the role alone never moves
+#                                          the Home key there: TCL G10/G08, Changhong Android 14, Sony BRAVIA VH21, Xiaomi MiTV-AFMU0/1); after extras-setup
 #   optimize/dock.sh key                   «أزرار الريموت»: this remote's app buttons (YouTube, Netflix…: the ones its brand has) and the app each opens
 #   optimize/dock.sh key BUTTON PKG        give one of this remote's buttons (the ids `key` lists: youtube, netflix…) another app; `default` = as before. Over other apps with «إضافات تلفزيونك» (extras-setup)
 #   optimize/dock.sh pin set 1234         «الرقابة الأبوية»: the master PIN (4 digits), set or changed from here without the old one; never printed back
@@ -181,6 +183,12 @@ case "${1:-}:$#" in
     fi
     [ "$bound" = yes ] && echo "Android runs it (Bound services)."
     echo "$done_msg" ;;
+  home-watch:2)
+    case "$2" in
+      on|off|status) send HOME_WANTED "--es mode $2" ;;
+      *) echo "usage: optimize/dock.sh home-watch on|off|status"; exit 1 ;;
+    esac ;;
+  home-watch:*) echo "usage: optimize/dock.sh home-watch on|off|status"; exit 1 ;;
   pin:*)
     shift
     case "${1:-}:$#" in
