@@ -46,6 +46,10 @@ check("Prefs: the swap when the layout or the preset changes; the person's own c
       prefs.count("fitHomeCards();") >= 2 and 'putString("homePanelMine"' in prefs and 'setHomePanels(mine); sp.edit().remove("homePanelMine")' in prefs)
 check("a card the person picks is theirs: their pick clears the kept list (no swap of it later; the note says it does not suit)",
       'sp.edit().remove("homePanelMine").apply();   // the person\'s own pick' in prefs)
-check("the settings: the note as the plain line under the card's name in the home cards' picker; the toast once after a swap",
+check("the settings: the note as the plain line under the card's name in the home cards' picker; the swap said once after it",
       "if (home && !CardFit.suits(values[i], prefs.homeLayout())) about[i] = CardFit.NOTE" in st and "String fitNote = prefs.takeFitNote();" in st)
+note = st[st.index("    private void notice(String s) {"):].split("\n    }\n")[0]
+check("the swap's note is the app's own notice, not the system Toast (a capsule on some TVs: the owner's no-pills rule): bottom-centre, a small-radius rectangle, gone after 4 s, no key",
+      "if (fitNote != null) notice(fitNote);" in st and "toast(fitNote)" not in st and "Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL" in note
+      and "bg.setCornerRadius(dp(8));" in note and "postDelayed(hideNotice, 4000)" in note and "setFocusable(false)" in note)
 sys.exit(1 if failed else 0)

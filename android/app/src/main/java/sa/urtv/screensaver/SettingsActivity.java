@@ -263,7 +263,7 @@ public class SettingsActivity extends Activity {
     private void render() {
         latinDigits = DigitsText.isLatin(prefs.digits());
         String fitNote = prefs.takeFitNote();   // 4.4 a home card swapped for one that suits the new look: say so once
-        if (fitNote != null) toast(fitNote);
+        if (fitNote != null) notice(fitNote);
         List<View> before = rows();
         View had = entering ? null : focusedRow();
         if (screen == null && !classic) screen = SettingsHub.LANG;
@@ -3069,6 +3069,41 @@ public class SettingsActivity extends Activity {
     }
 
     private void toast(String s) { Toast.makeText(this, conv(s), Toast.LENGTH_SHORT).show(); }
+
+    /**
+     * 4.4 the app's own one-line notice, for a note that needs no answer (the home card swapped for one that suits the look): bottom-centre,
+     * a small-radius rectangle (never a capsule: the owner's rule; the system Toast is one on some TVs), it fades out after 4 s and takes no key.
+     */
+    private TextView noticeView;
+    private final Runnable hideNotice = () -> { if (noticeView != null) noticeView.animate().alpha(0f).setDuration(300).start(); };
+    private void notice(String s) {
+        if (root == null) return;
+        if (noticeView == null) {
+            noticeView = new TextView(this);
+            noticeView.setSingleLine(true);
+            noticeView.setEllipsize(android.text.TextUtils.TruncateAt.END);
+            noticeView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16);
+            noticeView.setTypeface(font("Thmanyah-Regular"));
+            noticeView.setTextColor(0xFFF1EBDD);
+            noticeView.setPadding(dp(22), dp(12), dp(22), dp(12));
+            android.graphics.drawable.GradientDrawable bg = new android.graphics.drawable.GradientDrawable();
+            bg.setCornerRadius(dp(8));
+            bg.setColor(0xF02B2E36);
+            noticeView.setBackground(bg);
+            noticeView.setFocusable(false);
+            noticeView.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_YES);
+            noticeView.setAlpha(0f);
+            FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(-2, -2, Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL);
+            lp.bottomMargin = dp(36);
+            root.addView(noticeView, lp);
+        }
+        noticeView.setText(conv(s));
+        noticeView.bringToFront();
+        noticeView.removeCallbacks(hideNotice);
+        noticeView.animate().cancel();
+        noticeView.animate().alpha(1f).setDuration(200).start();
+        noticeView.postDelayed(hideNotice, 4000);
+    }
 
     private int dp(int v) { return Math.round(v * getResources().getDisplayMetrics().density); }
 }

@@ -1010,7 +1010,7 @@ final class Prefs {
             if (sp.contains("homePanelMine")) { setHomePanels(mine); sp.edit().remove("homePanelMine").apply(); }
             return;
         }
-        sp.edit().putString("homePanelMine", mine.isEmpty() ? "none" : join(mine, ",")).putString("fitNote", CardFit.toast(swaps, PANELS)).apply();
+        sp.edit().putString("homePanelMine", mine.isEmpty() ? "none" : join(mine, ",")).putString("fitNote", CardFit.swapNote(swaps, PANELS)).apply();
         setHomePanels(fit);
     }
     /** the swap's note, once (the settings show it as a toast) */

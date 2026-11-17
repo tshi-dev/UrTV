@@ -47,8 +47,8 @@ final class CardFit {
         return out;
     }
 
-    /** the toast for the swaps (names from Prefs.PANELS), or null */
-    static String toast(List<String[]> swaps, String[][] names) {
+    /** the note for the swaps (shown as the settings' own notice, SettingsActivity.notice) (names from Prefs.PANELS), or null */
+    static String swapNote(List<String[]> swaps, String[][] names) {
         if (swaps == null || swaps.isEmpty()) return null;
         StringBuilder b = new StringBuilder("بدّلنا ");
         for (int i = 0; i < swaps.size(); i++) {

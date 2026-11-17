@@ -16,7 +16,7 @@ public final class CardFitRun {
             List<String> f = CardFit.fitted(Arrays.asList(k[0].split(",")), "couch", swaps);
             List<String> back = CardFit.fitted(Arrays.asList(k[0].split(",")), "classic", null);
             out.append("fit\t").append(k[0]).append('\t').append(String.join(",", f)).append('\t').append(swaps.size()).append('\t').append(String.join(",", back))
-               .append('\t').append(CardFit.toast(swaps, new String[][] {{"prayers", "مواقيت الصلاة اليوم"}, {"prayerrow", "الصلوات في صف"}, {"forecast", "طقس الأيام القادمة"}, {"hourly", "طقس الساعات القادمة"}})).append('\n');
+               .append('\t').append(CardFit.swapNote(swaps, new String[][] {{"prayers", "مواقيت الصلاة اليوم"}, {"prayerrow", "الصلوات في صف"}, {"forecast", "طقس الأيام القادمة"}, {"hourly", "طقس الساعات القادمة"}})).append('\n');
         }
         System.out.print(out);
     }
