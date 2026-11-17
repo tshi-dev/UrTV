@@ -149,7 +149,7 @@ public class PhotoPacksActivity extends Activity {
         boolean there = have.containsKey(p.id), active = there && on.contains(p.id);
         String state = busy.contains(p.id) ? "downloading" : failed.contains(p.id) && !there ? "failed" : there ? (active ? "on" : "off") : "get";
         String name = S.en() ? p.nameEn : p.name, source = S.en() ? p.sourceEn : p.source;
-        String meta = conv(w("%s صورة · %s م.ب", String.valueOf(p.count), String.valueOf(PhotoPacks.megabytes(p.bytes))));
+        String meta = conv(w("%s صورة، %s م.ب", String.valueOf(p.count), String.valueOf(PhotoPacks.megabytes(p.bytes))));
         return card("pack:" + p.id, p, name, active, meta, source, state, v -> {
             if (busy.contains(p.id)) return;
             if (!there) { download(p); return; }
@@ -294,7 +294,7 @@ public class PhotoPacksActivity extends Activity {
             List<String[]> rows = PackStore.creditRows(this, p.id);
             if (rows.isEmpty()) continue;
             sb.append(S.en() ? p.nameEn : p.name).append('\n');
-            for (String[] r : rows) sb.append("  ").append(PhotoPacks.isolate(r[0])).append(" · ").append(PhotoPacks.creditLine(r[1], r[2])).append(" · ").append(r[3]).append('\n');
+            for (String[] r : rows) sb.append("  ").append(PhotoPacks.isolate(r[0])).append(S.sep()).append(PhotoPacks.creditLine(r[1], r[2])).append(S.sep()).append(r[3]).append('\n');
             sb.append('\n');
         }
         sb.append(w("صورنا: Unsplash، وكل صورة في docs/PHOTO-CREDITS.md"));

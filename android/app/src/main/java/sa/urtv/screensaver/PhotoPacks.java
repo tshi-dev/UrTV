@@ -241,9 +241,9 @@ final class PhotoPacks {
     /** the size a person reads: megabytes, rounded up so a pack is never bigger than it says */
     static long megabytes(long bytes) { return Math.max(1, (bytes + (1L << 20) - 1) >> 20); }
 
-    /** «author · licence» for the credits line of a photo */
+    /** «author، licence» for the credits line of a photo */
     static String creditLine(String author, String licence) {
         String a = author == null ? "" : author.trim(), l = licence == null ? "" : licence.trim();
-        return a.isEmpty() ? l : l.isEmpty() ? a : a + " · " + l;
+        return a.isEmpty() ? l : l.isEmpty() ? a : a + ((a + l).matches("(?s).*[\\u0600-\\u06ff].*") ? "، " : ", ") + l;   // 4.4: «، » between Arabic words, ", " between Latin ones (most credits)
     }
 }

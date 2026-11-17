@@ -18,15 +18,15 @@ label	دبي	بتوقيت دبي	as the screensaver's
 # line: city, zone, pm, the clocks differ (1/0) -> the home screen's line under the clock ("-" = not shown)
 line	الرياض	Asia/Riyadh		0	-	Riyadh, Umm al-Qura: no line, today's look (the greeting is not asked)
 line	الرياض	Asia/Riyadh		1	بتوقيت الرياض	a TV on another zone: as before
-line	المنامة	Asia/Bahrain		0	بتوقيت المنامة · حساب الخليج	Bahrain: its calculation named
-line	الدوحة	Asia/Qatar		0	بتوقيت الدوحة · حساب قطر	Qatar
-line	مدينة الكويت	Asia/Kuwait		0	بتوقيت مدينة الكويت · حساب الكويت	Kuwait
-line	دبي	Asia/Dubai		1	بتوقيت دبي · حساب الإمارات	the UAE, another zone
-line	مسقط	Asia/Muscat		0	بتوقيت مسقط · حساب عُمان	Oman
+line	المنامة	Asia/Bahrain		0	بتوقيت المنامة، حساب الخليج	Bahrain: its calculation named
+line	الدوحة	Asia/Qatar		0	بتوقيت الدوحة، حساب قطر	Qatar
+line	مدينة الكويت	Asia/Kuwait		0	بتوقيت مدينة الكويت، حساب الكويت	Kuwait
+line	دبي	Asia/Dubai		1	بتوقيت دبي، حساب الإمارات	the UAE, another zone
+line	مسقط	Asia/Muscat		0	بتوقيت مسقط، حساب عُمان	Oman
 line	القطيف	Asia/Riyadh	jafari	0	-	4.3 A4: an old pm=jafari is the country's own (Umm al-Qura: nothing named)
-line	القاهرة	Africa/Cairo		0	بتوقيت القاهرة · حساب الهيئة المصرية	Egypt: the Egyptian Authority's, named
-line	بيروت	Asia/Beirut		1	بتوقيت بيروت · حساب الهيئة المصرية	Lebanon: the Egyptian method too
-line	عمان	Asia/Amman		1	بتوقيت عمان · حساب الأردن	Jordan
-line	الرباط	Africa/Casablanca		1	بتوقيت الرباط · حساب المغرب	Morocco
-line	الجزائر	Africa/Algiers		1	بتوقيت الجزائر · حساب الجزائر	Algeria
-line	تونس	Africa/Tunis		1	بتوقيت تونس · حساب تونس	Tunisia
+line	القاهرة	Africa/Cairo		0	بتوقيت القاهرة، حساب الهيئة المصرية	Egypt: the Egyptian Authority's, named
+line	بيروت	Asia/Beirut		1	بتوقيت بيروت، حساب الهيئة المصرية	Lebanon: the Egyptian method too
+line	عمان	Asia/Amman		1	بتوقيت عمان، حساب الأردن	Jordan
+line	الرباط	Africa/Casablanca		1	بتوقيت الرباط، حساب المغرب	Morocco
+line	الجزائر	Africa/Algiers		1	بتوقيت الجزائر، حساب الجزائر	Algeria
+line	تونس	Africa/Tunis		1	بتوقيت تونس، حساب تونس	Tunisia

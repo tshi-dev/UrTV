@@ -26,7 +26,7 @@ final class WordMatch {
     private static final Pattern ARABIC = Pattern.compile("[\\u0600-\\u065f\\u066a-\\u06ef\\u06fa-\\u06ff]");
     private static final Pattern BRACKET = Pattern.compile("(.+?) +\\(([^()]+)\\)");
     /** Arabic separators and their English, the widest first */
-    private static final String[][] PARTS = {{"  •  ", "  •  "}, {"  ·  ", "  ·  "}, {" · ", " · "}, {"؛ ", "; "}, {"، ", ", "}};
+    private static final String[][] PARTS = {{"  •  ", "  •  "}, {"  ·  ", "  ·  "}, {" · ", " · "}, {"؛ ", "; "}, {"، ", ", "}, {", ", ", "}};   // ", ": parts joined by S.sep() with English
     /** a value inside a pattern: any text (put into English itself), but never one that starts with a bracket («الأسواق (٢/٤)» is a name) */
     private static final String VALUE = "((?!\\().+?)";
 

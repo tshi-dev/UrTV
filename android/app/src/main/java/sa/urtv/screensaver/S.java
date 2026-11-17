@@ -36,6 +36,9 @@ final class S {
     static String lang() { return lang; }
     static boolean en() { return Tr.EN.equals(lang); }
 
+    /** Between two parts of one line: «، » with Arabic, ", " with English (4.4: no «·» or «•» on a screen) */
+    static String sep() { return en() ? ", " : "، "; }
+
     /** the setting as it is saved now (a service or receiver that shows words calls it before t) */
     static void init(Context c) {
         app = c.getApplicationContext() != null ? c.getApplicationContext() : c;

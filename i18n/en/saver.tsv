@@ -1,9 +1,9 @@
 # Phase 1: the screensaver app (android/app): settings, hub, labels
 # arabic<TAB>english, one per line, as docs/ENGLISH.md says. tests/i18n_test.py checks every entry.
 # ---- the settings screen: hints, titles
-الأسهم بين الأقسام  •  اختيار لفتح القسم  •  رجوع للخروج	Arrows to move  •  OK to open  •  Back to exit
-الأسهم بين الأقسام  •  اختيار لفتح القسم  •  رجوع	Arrows to move  •  OK to open  •  Back
-أعلى/أسفل بين الصفوف  •  اختيار لفتح الصف  •  رجوع للأقسام	Up/Down to move  •  OK to open  •  Back to sections
+الأسهم بين الأقسام، اختيار لفتح القسم، رجوع للخروج	Arrows to move, OK to open, Back to exit
+الأسهم بين الأقسام، اختيار لفتح القسم، رجوع	Arrows to move, OK to open, Back
+أعلى/أسفل بين الصفوف، اختيار لفتح الصف، رجوع للأقسام	Up/Down to move, OK to open, Back to sections
 تلفزيونك	Your TV
 الإعدادات	Settings
 رجوع إلى الأقسام	Back to sections
@@ -48,12 +48,12 @@
 # ---- the tiles' summaries
 تشغيله وصوته ومؤذن الفجر	On/off, voice, Fajr muezzin
 زرها %s	Button: %s
-شاشة التوقف · الشاشة الرئيسية	Screensaver · Home screen
+شاشة التوقف، الشاشة الرئيسية	Screensaver, Home screen
 مؤقت النوم والشبكة والصوت	Sleep timer, network, sound
 تشغيله وإيقافه وربط جوال	Turn on/off, pair a phone
 يبدأ وقت ما يحدده التلفاز	Starts when the TV says
 تبدأ بعد %s	Starts after %s
-بدون بطاقات · التحية والطقس	No cards · Greeting and weather
+بدون بطاقات، التحية والطقس	No cards, Greeting and weather
 الفرق %s	Teams: %s
 الأسواق %s	Markets: %s
 ترتيب المفضلة وتعديلها، وأسماء المصادر	Favorites order and edits, input names
@@ -66,8 +66,8 @@
 المدينة	City
 طريقة الحساب	Calculation method
 تعديل وقت الصلاة	Adjust prayer times
-يعمل · لكل صلاة دقائقها، من −٢٠ إلى +٢٠ (الشروق لا يتغيّر)	On · Minutes per prayer, −20 to +20 (sunrise stays)
-متوقف · الأوقات كما تُحسب	Off · Times as calculated
+يعمل، لكل صلاة دقائقها، من −٢٠ إلى +٢٠ (الشروق لا يتغيّر)	On, Minutes per prayer, −20 to +20 (sunrise stays)
+متوقف، الأوقات كما تُحسب	Off, Times as calculated
 تصحيح منشور لأوقات اليوم، وتعديلك لأي صلاة يبقى هو المعتمد	A published correction applies to today's times; your own adjustment of a prayer always wins
 المباريات	Matches
 الفرق المتابعة	Followed teams
@@ -77,21 +77,21 @@
 العرض	Display
 الأرقام	Digits
 تنبيه قبل الأذان	Adhan alert
-يعمل · شريط في أعلى الشاشة آخر ١٠ دقائق، ثم حتى الإقامة	On · A bar at the top for the last 10 minutes, then until iqama
+يعمل، شريط في أعلى الشاشة آخر ١٠ دقائق، ثم حتى الإقامة	On, A bar at the top for the last 10 minutes, then until iqama
 الشروق بعد الفجر	Sunrise after Fajr
-يعمل · بعد إقامة الفجر: كم باقي على الشروق، ثم نصف ساعة بعده	On · After Fajr iqama: time left to sunrise, then half an hour after
+يعمل، بعد إقامة الفجر: كم باقي على الشروق، ثم نصف ساعة بعده	On, After Fajr iqama: time left to sunrise, then half an hour after
 شريط الوقت بين الصلاتين	Prayer progress bar
-يعمل · خط رفيع تحت الصلاة القادمة يمتلئ حتى وقتها	On · A thin line under the next prayer fills until its time
+يعمل، خط رفيع تحت الصلاة القادمة يمتلئ حتى وقتها	On, A thin line under the next prayer fills until its time
 الرطوبة والرياح	Humidity & wind
-يعمل · تحت المدينة أعلى اليسار	On · Under the city, top left
+يعمل، تحت المدينة أعلى اليسار	On, Under the city, top left
 أسماء الأشهر الميلادية	Gregorian month names
 شريط السنة تحت الساعة	Year strip under the clock
-يعمل · نقاط السنة تحت الساعة، واليوم يلمع	On · A dot for each day under the clock, today glowing
+يعمل، نقاط السنة تحت الساعة، واليوم يلمع	On, A dot for each day under the clock, today glowing
 المناسبة القادمة	Next occasion
-ظاهرة · أسفل الشاشة في الوسط: كم باقي على رمضان والأعياد، والإفطار والإمساك في رمضان	Shown · Bottom center: days to Ramadan and Eid, and iftar and suhoor in Ramadan
+ظاهرة، أسفل الشاشة في الوسط: كم باقي على رمضان والأعياد، والإفطار والإمساك في رمضان	Shown, Bottom center: days to Ramadan and Eid, and iftar and suhoor in Ramadan
 تعتيم الليل	Night dimming
-يعمل · تغمق الشاشة من ٩ مساءً، وأغمق من ١١ إلى ٥ الفجر، وترجع ٧ الصباح	On · Dims from 9 pm, darkest 11 pm to 5 am, back at 7 am
-متوقف · نفس الإضاءة طول الليل	Off · Same brightness all night
+يعمل، تغمق الشاشة من ٩ مساءً، وأغمق من ١١ إلى ٥ الفجر، وترجع ٧ الصباح	On, Dims from 9 pm, darkest 11 pm to 5 am, back at 7 am
+متوقف، نفس الإضاءة طول الليل	Off, Same brightness all night
 المناسبات الوطنية	National days
 حجم الساعة	Clock size
 نظام الساعة	Clock format
@@ -103,7 +103,7 @@
 تاسي وقائمتك والذهب والعملات، ومحفظتك	TASI, your list, gold, currencies and your portfolio
 حدّث الواجهة الرئيسية «تلفزيونك» لتظهر صفحة الأسواق	Update the UrTV home screen to get the markets page
 شريط الأسواق	Markets bar
-مخفي · يبقى طقس اليوم فقط	Hidden · Today’s weather only
+مخفي، يبقى طقس اليوم فقط	Hidden, Today’s weather only
 الأسواق	Markets
 عرض الأسواق	Markets style
 بجانب الساعة	Beside the clock
@@ -119,9 +119,9 @@
 افتح تلاوة وأذان	Open Quran and Adhan
 القرآن والإذاعات ومواقيت الأذان	Quran, radio, and adhan times
 زر تلاوة وأذان	Quran and Adhan button
-مخفي  •  الأذان والتلاوة تعمل، وتفتح الشاشة من «افتح تلاوة وأذان» هنا أو من بطاقة «يُتلى الآن»	Hidden  •  Adhan and Quran still play; open the screen from “Open Quran and Adhan” here or the Now Playing card
+مخفي، الأذان والتلاوة تعمل، وتفتح الشاشة من «افتح تلاوة وأذان» هنا أو من بطاقة «يُتلى الآن»	Hidden, Adhan and Quran still play; open the screen from “Open Quran and Adhan” here or the Now Playing card
 زر المهام	Tasks button
-مخفي  •  المهام تبقى في بطاقة «المهام» ومن الجوال	Hidden  •  Tasks stay in the Tasks card and on the phone
+مخفي، المهام تبقى في بطاقة «المهام» ومن الجوال	Hidden, Tasks stay in the Tasks card and on the phone
 الرجوع يفتح شاشة التوقف	Back starts screensaver
 الخروج من تلفزيونك	Leaving Your TV
 جرس التحديثات	Updates bell
@@ -154,14 +154,14 @@
 بدء شاشة التوقف بعد	Start screensaver after
 التطبيق	App
 التحديث التلقائي للصفحة	Auto-update the page
-يعمل · عند بدء الشاشة، كل ٦ ساعات	On · When the screensaver starts, every 6 hours
+يعمل، عند بدء الشاشة، كل ٦ ساعات	On, When the screensaver starts, every 6 hours
 تحديث صفحة شاشة التوقف	Update screensaver page
-ينزّل أحدث صفحة للشاشة فقط · لتحديث التطبيقين: «تحديث تلفزيوني» في نفس القسم	Gets the latest page only · To update the apps: “Update Your TV” in this section
+ينزّل أحدث صفحة للشاشة فقط، لتحديث التطبيقين: «تحديث تلفزيوني» في نفس القسم	Gets the latest page only, To update the apps: “Update Your TV” in this section
 البطاقة الأولى	First card
 البطاقة الثانية	Second card
 البطاقة الثالثة	Third card
-يعمل · ما وقفته في نصه، تحت المفضلة	On · What you stopped halfway, under the favorites
-يعمل · يحتاج السماح مرة واحدة: اختيار	On · Needs your OK once: press OK
+يعمل، ما وقفته في نصه، تحت المفضلة	On, What you stopped halfway, under the favorites
+يعمل، يحتاج السماح مرة واحدة: اختيار	On, Needs your OK once: press OK
 لا شيء	None
 بدون	None
 # ---- on and off (OnOff)
@@ -244,7 +244,7 @@
 حسنًا	OK
 مسح	Clear
 # ---- photos and timing
-لا توجد صور · يضيفها مساعدك الذكي	No photos · Your AI assistant adds them
+لا توجد صور، يضيفها مساعدك الذكي	No photos, Your AI assistant adds them
 صوري فقط	My photos only
 تُضاف إلى صور التطبيق	Mixed with the app’s photos
 اطلب من مساعدك الذكي إضافة صورك (حتى ١٠)	Ask your AI assistant to add your photos (up to 10)
@@ -269,17 +269,17 @@
 الواجهة: %s	Home layout: %s
 المظهر: الشكل	Appearance: Style
 المظهر: الإضاءة	Appearance: Brightness
-المدينة · الرياض	City · Riyadh
+المدينة، الرياض	City, Riyadh
 فاتح	Light
 داكن	Dark
-تلقائي · فاتح من الشروق إلى المغرب، وداكن بعده	Auto · Light from sunrise to Maghrib, dark after
+تلقائي، فاتح من الشروق إلى المغرب، وداكن بعده	Auto, Light from sunrise to Maghrib, dark after
 زجاجي	Glass
 فحمي	Graphite
 كحلي	Navy
 نظيف	Clean
 رملي	Sand
 # ---- prayer times
-يسار + · يمين − · موافق للتصفير	Right + · Left − · OK to reset
+يسار +، يمين −، موافق للتصفير	Right +, Left −, OK to reset
 الفجر %s د	Fajr %s min
 الظهر %s د	Dhuhr %s min
 العصر %s د	Asr %s min
@@ -488,7 +488,7 @@
 بلا أشخاص، وكل صورة بمصدرها ورخصتها في «حقوق الصور».	No people, and every photo with its source and licence in “Photo credits”.
 المساحة الفاضية: %s	Free space: %s
 النسبة: %s	Share: %s
-%s صورة · %s م.ب	%s photos · %s MB
+%s صورة، %s م.ب	%s photos, %s MB
 فعّل مجموعة منزّلة أولاً، وبعدها تقدر توقف صورنا	Turn on a downloaded pack first, then you can turn off ours
 تم التنزيل، والمجموعة مفعّلة	Downloaded, and the pack is on
 الملف لم يطابق بصمته فلم يُستخدم	The file did not match its checksum, so it was not used
@@ -496,10 +496,10 @@
 المجموعة غير صالحة	The pack is not valid
 تعذّر التنزيل، تحقق من الإنترنت	Could not download; check the internet
 صورنا: Unsplash، وكل صورة في docs/PHOTO-CREDITS.md	Ours: Unsplash, and every photo in docs/PHOTO-CREDITS.md
-صورنا · مجموعة واحدة	Our photos · 1 pack
-صورنا · مجموعتان	Our photos · 2 packs
-صورنا · %s مجموعات	Our photos · %s packs
-صورنا · %s مجموعة	Our photos · %s packs
+صورنا، مجموعة واحدة	Our photos, 1 pack
+صورنا، مجموعتان	Our photos, 2 packs
+صورنا، %s مجموعات	Our photos, %s packs
+صورنا، %s مجموعة	Our photos, %s packs
 %s ج.ب	%s GB
 %s م.ب	%s MB
 # ---- «الواجهة» (the football home) and «مباريات اليوم» (docs/PROPOSALS-NOV2.md §1)
@@ -515,14 +515,14 @@
 تطبيقات في الشريط	Apps in the bar
 كل المفضلة	All favourites
 صفحات الأسهم والمباريات داكنة	Dark stocks & matches pages
-مفعّل · بالمظهر الداكن دائمًا	On · always dark
-متوقف · تتبع مظهر الرئيسية	Off · follows the home's look
+مفعّل، بالمظهر الداكن دائمًا	On, always dark
+متوقف، تتبع مظهر الرئيسية	Off, follows the home's look
 بلا أشخاص	No people
 بلا أشخاص في الواجهة	No people in the front
 زر الأسواق	Markets button
 زر المباريات	Matches button
 زر مركز التحكم	Control Center button
-مخفي  •  يفتح من زر الإعدادات السريعة في الريموت	Hidden  •  opens from the remote's Quick Settings key
+مخفي، يفتح من زر الإعدادات السريعة في الريموت	Hidden, opens from the remote's Quick Settings key
 زر الجوال	Phone button
 المظهر والخلفيات	Look and backgrounds
 شكل شاشة التوقف وشكل الشاشة الرئيسية وصورهما، كلٌّ على حدة.	The screensaver's and the home's look and photos, each on its own.
@@ -666,7 +666,7 @@
 اسم حيوان نبات	Name, animal, plant
 واحد مو معنا	Odd One Out
 بدون كلام	Without words
-الأسهم بين الألعاب  •  اختيار لفتح اللعبة  •  رجوع للأقسام	Arrows between games  •  OK opens a game  •  Back for the sections
+الأسهم بين الألعاب، اختيار لفتح اللعبة، رجوع للأقسام	Arrows between games, OK opens a game, Back for the sections
 انقطعت الشبكة، أُغلقت الغرفة	The network is gone, the room is closed
 جارٍ تنزيل قائمة الدوريات…	Downloading the list of leagues…
 مفعّل الأساسيات فقط، وبضغطة ترجع الشاشة الكاملة	On: the essentials only, one press brings the full screen back

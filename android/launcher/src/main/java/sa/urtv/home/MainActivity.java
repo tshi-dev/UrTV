@@ -829,6 +829,7 @@ public class MainActivity extends Activity {
         weatherLine.setMaxLines(2);
         weatherLine.setVisibility(View.GONE);
         left.addView(weatherLine, sideLlp(-2, -2, dp(4), dp(1), 0, 0));
+        weatherLine.addOnLayoutChangeListener((nv, n1, n2, n3, n4, n5, n6, n7, n8) -> keepNudgeClear());   // 4.4: the nudge strip keeps NUDGE_CLEAR_PX from it
         greetingLine = new Greeting(this, greeting, weatherLine, () -> resumed);
 
         LinearLayout clockRow = new LinearLayout(this);
@@ -1939,7 +1940,7 @@ public class MainActivity extends Activity {
             fadeGlow(1f);
             View line = (View) box.getParent();
             int at = tvRowsBox.indexOfChild(line) / 2;   // the box holds each row's name, then its cards
-            if (at >= 0 && at < tvNames.size()) tvNames.get(at).setText(S.tv(TvRowsPick.WATCH_NEXT_TITLE) + "  ·  " + (it.meta.isEmpty() ? it.title : it.title + "  ·  " + it.meta));
+            if (at >= 0 && at < tvNames.size()) tvNames.get(at).setText(S.tv(TvRowsPick.WATCH_NEXT_TITLE) + S.sep() + (it.meta.isEmpty() ? it.title : it.title + S.sep() + it.meta));
             scrollToTvRow(line);   // below the first screen: the home slides up to the row; ▲ to the tray slides it back (glideTo(0))
         });
         return box;
@@ -2065,7 +2066,7 @@ public class MainActivity extends Activity {
         nudgeCard.setText(S.t("خلّ تلفزيونك يفتح على UrTV"));
         nudgeCard.setGravity(Gravity.CENTER);
         nudgeCard.setSingleLine(true);
-        nudgeCard.setPadding(dp(24), dp(9), dp(24), dp(9));
+        nudgeCard.setPadding(dp(16), dp(9), dp(16), dp(9));
         nudgeCard.setMaxWidth(dp(420));
         nudgeCard.setFocusable(true);
         nudgeCard.setClickable(true);
@@ -2092,7 +2093,7 @@ public class MainActivity extends Activity {
         nudgeLater = text(14, "sans-serif-medium", 0xFFFFFFFF);
         nudgeLater.setText(S.t("لاحقاً"));
         nudgeLater.setGravity(Gravity.CENTER);
-        nudgeLater.setPadding(dp(22), dp(9), dp(22), dp(9));
+        nudgeLater.setPadding(dp(16), dp(9), dp(16), dp(9));
         nudgeLater.setFocusable(true);
         nudgeLater.setClickable(true);
         nudgeLater.setId(View.generateViewId());
@@ -2100,16 +2101,42 @@ public class MainActivity extends Activity {
         nudgeAsk = text(16, "sans-serif-medium", 0xFFFFFFFF);
         nudgeAsk.setText(S.t("وين أنت؟ اختر مدينتك عشان الطقس والصلاة"));
         nudgeAsk.setSingleLine(true);
-        nudgeAsk.setPadding(dp(24), dp(9), dp(24), dp(9));
+        nudgeAsk.setPadding(dp(18), dp(9), dp(12), dp(9));
         nudgeAsk.setGravity(Gravity.CENTER);
         nudgeAsk.setVisibility(View.GONE);
         nudge.addView(nudgeAsk, new LinearLayout.LayoutParams(-2, -2));
         nudge.addView(nudgeCard, new LinearLayout.LayoutParams(-2, -2));
         LinearLayout.LayoutParams lp2 = new LinearLayout.LayoutParams(-2, -2);
-        lp2.setMarginStart(dp(8));
+        lp2.setMarginStart(dp(4));
         nudge.addView(nudgeLater, lp2);
+        nudge.setPadding(dp(6), dp(4), dp(6), dp(4));
         nudge.setVisibility(View.GONE);
         root.addView(nudge, lp(-2, -2, Gravity.TOP | Gravity.CENTER_HORIZONTAL, 0, dp(30), 0, 0));
+        nudge.addOnLayoutChangeListener((nv, n1, n2, n3, n4, n5, n6, n7, n8) -> keepNudgeClear());   // and the weather line's own (where it is made)
+    }
+
+    /** 4.4 the sweep: px at 1080p between the nudge strip and the weather line under «صباح الخير» (they nearly touched) */
+    static final int NUDGE_CLEAR_PX = 16;
+
+    /** The strip moves sideways, away from the weather line, when the two share a band of the screen and stand closer than NUDGE_CLEAR_PX. */
+    private void keepNudgeClear() {
+        if (nudge == null || weatherLine == null) return;
+        if (nudge.getTranslationX() != 0f) nudge.setTranslationX(0f);
+        if (nudge.getVisibility() != View.VISIBLE || weatherLine.getVisibility() != View.VISIBLE || weatherLine.getWidth() == 0 || nudge.getWidth() == 0) return;
+        int[] n = new int[2], w = new int[2];
+        nudge.getLocationInWindow(n);
+        weatherLine.getLocationInWindow(w);
+        if (n[1] >= w[1] + weatherLine.getHeight() || w[1] >= n[1] + nudge.getHeight()) return;   // not side by side
+        int gap = Math.round(NUDGE_CLEAR_PX * getResources().getDisplayMetrics().widthPixels / 1920f);
+        float shift = nudgeShift(n[0], nudge.getWidth(), w[0], weatherLine.getWidth(), gap);
+        if (shift != 0f) nudge.setTranslationX(shift);
+    }
+
+    /** how far the strip [n, n+nw) moves so that gap px stand between it and the line [w, w+ww): to the left of a line on its right, else to the right */
+    static float nudgeShift(int n, int nw, int w, int ww, int gap) {
+        if (w + ww / 2 >= n + nw / 2) { int over = n + nw + gap - w; return over > 0 ? -over : 0; }
+        int over = w + ww + gap - n;
+        return over > 0 ? over : 0;
     }
 
     /** «لاحقاً» (or Back on the bar): hidden for 7 days, then 30 after a second press, then never; the number of presses is kept */
@@ -2231,11 +2258,13 @@ public class MainActivity extends Activity {
         nudgeLater.setVisibility(notice != null ? View.GONE : View.VISIBLE);
         if (show && !was) {
             GlassStyle.Look l = homeGlass();
-            nudgeAsk.setBackground(opaqueTile(18));   // its words sit on the glass too, over any photo
+            // 4.4 the owner (no pills): ONE glass strip, plain words in it; only the focused choice has a fill (the focus ring), none a capsule
+            nudge.setBackground(GlassPaint.fill(this, opaque(l.dialog), NUDGE_RADIUS, l.line));
+            nudgeAsk.setBackground(null);
             nudgeAsk.setTextColor(l.text);
-            nudgeCard.setBackground(opaqueTile(18));
+            nudgeCard.setBackground(focusOnly(NUDGE_FOCUS_RADIUS));
             nudgeCard.setTextColor(GlassPaint.focusColors(l.text, l.onFocus));
-            nudgeLater.setBackground(opaqueTile(20));
+            nudgeLater.setBackground(focusOnly(NUDGE_FOCUS_RADIUS));
             nudgeLater.setTextColor(GlassPaint.focusColors(l.text, l.onFocus));
         }
         nudge.setVisibility(show ? View.VISIBLE : View.GONE);
@@ -2273,6 +2302,18 @@ public class MainActivity extends Activity {
         android.graphics.drawable.StateListDrawable s = new android.graphics.drawable.StateListDrawable();
         s.addState(new int[] {android.R.attr.state_focused}, GlassPaint.focused(this, l, GlassStyle.over(l.focus, opaque(l.dialog)), radiusDp));
         s.addState(new int[] {}, GlassPaint.fill(this, opaque(l.dialog), radiusDp, l.line));
+        return s;
+    }
+
+    /** 4.4: the nudge strip's corners and its choices' focus fill: a rounded panel, never a capsule (half its height) */
+    static final float NUDGE_RADIUS = 12, NUDGE_FOCUS_RADIUS = 8;
+
+    /** a plain word's background: nothing at rest, the solid focus fill while focused (its focus ring) */
+    private android.graphics.drawable.StateListDrawable focusOnly(float radiusDp) {
+        GlassStyle.Look l = homeGlass();
+        android.graphics.drawable.StateListDrawable s = new android.graphics.drawable.StateListDrawable();
+        s.addState(new int[] {android.R.attr.state_focused}, GlassPaint.focused(this, l, GlassStyle.over(l.focus, opaque(l.dialog)), radiusDp));
+        s.addState(new int[] {}, new android.graphics.drawable.ColorDrawable(0));
         return s;
     }
 

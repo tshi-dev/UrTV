@@ -217,7 +217,7 @@ public class MainActivity extends Activity {
      * player and the radio are not touched.
      */
     /** HaramLive.LIVE's titles, marked for the table (HaramLive is plain Java; the rows say them with Ui.line) */
-    static final String[] LIVE_WORDS = {sa.urtv.home.S.n("مكة المكرمة · قناة القرآن الكريم"), sa.urtv.home.S.n("المدينة المنورة · قناة السنة النبوية")};
+    static final String[] LIVE_WORDS = {sa.urtv.home.S.n("مكة المكرمة، قناة القرآن الكريم"), sa.urtv.home.S.n("المدينة المنورة، قناة السنة النبوية")};
 
     /** One live channel (HaramLive.LIVE[which]): in the YouTube app, else SmartTube, else the browser (HaramLive.openOrder). */
     private void openHaramLive(int which) {
@@ -568,7 +568,7 @@ public class MainActivity extends Activity {
                 PrayerTimes.Next next = PrayerTimes.next(MainActivity.this);
                 String toggle = prefs.adhanOn() ? getString(R.string.adhan_on) : getString(R.string.adhan_off);
                 if (prefs.adhanOn() && next != null) {
-                    toggle += "  •  " + sa.urtv.home.S.tv(next.name()) + " " + PrayerTimes.remaining(next.at - System.currentTimeMillis());
+                    toggle += sa.urtv.home.S.sep() + sa.urtv.home.S.tv(next.name()) + " " + PrayerTimes.remaining(next.at - System.currentTimeMillis());
                 }
                 rows.add(new Row(false, KIND_ADHAN_TOGGLE, getString(R.string.adhan_auto), toggle, -1));
                 if (prefs.adhanOn() && !AdhanScheduler.exactAllowed(MainActivity.this)) {   // the alarm may be minutes late
@@ -577,7 +577,7 @@ public class MainActivity extends Activity {
                 for (int prayer : PrayerTimes.PRAYERS) {
                     boolean isNext = next != null && next.index == prayer;
                     String detail = PrayerTimes.clockText(times.clock[prayer]);
-                    if (isNext) detail += "  •  " + PrayerTimes.remaining(next.at - System.currentTimeMillis());
+                    if (isNext) detail += sa.urtv.home.S.sep() + PrayerTimes.remaining(next.at - System.currentTimeMillis());
                     if ("silent".equals(prefs.prayerSound(prayer))) detail = sa.urtv.home.S.t("%s، صامت", detail);   // 4.4 «أذان كل صلاة»
                     rows.add(new Row(false, KIND_PRAYER, PrayerTimes.NAMES[prayer], detail, prayer, isNext));
                 }

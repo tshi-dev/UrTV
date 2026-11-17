@@ -647,6 +647,8 @@ final class ControlCenter {
     /** One focusable thing in the panel; its fill comes in over FOCUS_MS when it has the focus, solid, with the look's ink over it. */
     private final class Cell extends LinearLayout {
         static final int TOGGLE = 0, ROW = 1, CHECK = 2, PILL = 3, PRIMARY = 4, BACK = 5;
+        /** 4.4: «تخصيص», «شكل لوحة التحكم», «إعادة الترتيب», «تم»: plain words at rest (no outline), an 8 dp rounded fill on focus, never a capsule */
+        static final int WORD_RADIUS = 8;
         final int kind;
         final Item item;
         boolean ticked;
@@ -664,7 +666,7 @@ final class ControlCenter {
             setFocusable(true);
             setClickable(true);
             setId(View.generateViewId());
-            fill.setCornerRadius(dp(kind == PILL || kind == PRIMARY ? 16 : 12));
+            fill.setCornerRadius(dp(kind == PILL || kind == PRIMARY ? WORD_RADIUS : 12));   // 4.4 the owner (no pills): a word, its focus a rounded square
             if (kind == TOGGLE) buildToggle();
             else if (kind == ROW) buildRow();
             else if (kind == CHECK) buildCheck();
@@ -798,9 +800,8 @@ final class ControlCenter {
                 anim.start();
             } else shape.setColor(target);
             shown = target;
-            if (RING != 0) shape.setStroke(f ? dp(3) : kind == TOGGLE || kind == PILL ? Math.max(1, dp(1)) : 0, f ? RING : LINE);   // «رملي»: a calm focus, a green line round a soft fill
+            if (RING != 0) shape.setStroke(f ? dp(3) : kind == TOGGLE ? Math.max(1, dp(1)) : 0, f ? RING : LINE);   // «رملي»: a calm focus, a green line round a soft fill
             else if (kind == TOGGLE && !f) shape.setStroke(Math.max(1, dp(1)), SleepTimer.minutesLeft(act) > 0 && item.key.equals("sleep") ? ACCENT : LINE);
-            else if (kind == PILL && !f) shape.setStroke(Math.max(1, dp(1)), LINE);
             else shape.setStroke(0, 0);
             if (name != null) name.setTextColor(kind == TOGGLE ? TEXT : ink);
             if (value != null) value.setTextColor(f ? ON_SUB : SUB);
@@ -936,7 +937,7 @@ final class ControlCenter {
         if (speed != null) {
             speed.cancel();
             speed = null;
-            t.setValue(S.t("أُلغي · اضغط اختيار للبدء"));
+            t.setValue(S.t("أُلغي، اضغط اختيار للبدء"));
             return;
         }
         final SpeedTest test = new SpeedTest();

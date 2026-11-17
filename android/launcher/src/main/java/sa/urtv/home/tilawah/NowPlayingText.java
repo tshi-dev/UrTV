@@ -25,7 +25,7 @@ final class NowPlayingText {
      */
     static String sub(boolean radio, String reciter, int sleepMinutes, String note) {
         String plain = sub(radio, reciter, sleepMinutes);
-        return note == null || note.isEmpty() ? plain : note + "  ·  " + plain;
+        return note == null || note.isEmpty() ? plain : note + sa.urtv.home.S.sep() + plain;
     }
 
     /** the note: what failed first, else that it is loading, else none */
@@ -37,13 +37,13 @@ final class NowPlayingText {
      *  «يُتلى الآن» are the card's spoken name (NowCard's content description), not a line: the line is for who recites. */
     static String sub(boolean radio, String reciter, int sleepMinutes) {
         String s = radio ? sa.urtv.home.S.t("بث مباشر") : reciter;
-        return sleepMinutes > 0 ? sa.urtv.home.S.t("%s  ·  نوم %s د", s, digits(String.valueOf(sleepMinutes))) : s;
+        return sleepMinutes > 0 ? sa.urtv.home.S.t("%s، نوم %s د", s, digits(String.valueOf(sleepMinutes))) : s;
     }
 
     /** What the keys do while the card has the focus: OK pauses or plays, a long OK opens the player, ◀ ▶ the previous and next surah (not for a station) */
     static String hint(boolean radio) {
-        return radio ? sa.urtv.home.S.t("اختيار: إيقاف/تشغيل  ·  مطولًا: فتح")
-                : sa.urtv.home.S.t("اختيار: إيقاف/تشغيل  ·  يمين/يسار: السورة  ·  مطولًا: فتح");
+        return radio ? sa.urtv.home.S.t("اختيار: إيقاف/تشغيل، مطولًا: فتح")
+                : sa.urtv.home.S.t("اختيار: إيقاف/تشغيل، يمين/يسار: السورة، مطولًا: فتح");
     }
 
     /** 0-9 as ٠-٩ */

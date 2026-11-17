@@ -37,7 +37,7 @@ final class Cities {
     }
 
     static String country(String[] city) { return city.length > 5 ? city[5] : legacy(city.length > 3 ? city[3] : "Asia/Riyadh")[0]; }
-    static String display(String[] city) { return city[0] + (city.length > 4 ? " · " + city[4] : ""); }
+    static String display(String[] city) { return city[0] + (city.length > 4 ? "، " + city[4] : ""); }
 
     /**
      * The built-in city with exactly this name and place, or null. A map built once, on the first ask: with 3,679 cities a scan of the whole list on

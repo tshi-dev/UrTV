@@ -54,7 +54,7 @@ with tempfile.TemporaryDirectory() as temp:
     expected = [(r['country'], r['name_ar'], r['lat'], r['lon'], r['tz'], r['name_en'], ids[r['method']]) for r in rows]
     check('all 3305 packed app rows decode exactly to the reviewed data', actual == expected)
     check('all 6610 Arabic/English world names find their city within its country', 'MATCHED\t6610' in result)
-    check('world picker labels show both complete names', all(r[8] == r[2] + ' · ' + r[6] for r in world))
+    check('world picker labels show both complete names', all(r[8] == r[2] + '، ' + r[6] for r in world))
     countries = [line.split('\t') for line in result if line.startswith('COUNTRY\t')]
     check('242 app countries resolve a numeric method and Arabic authority', len(countries) == 242 and all(r[4] == '&pm=' + r[3] and merge.arabic(r[5]) for r in countries))
     # Regenerate in a temporary tree: the test never edits the checked-out file.

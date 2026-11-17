@@ -29,8 +29,8 @@ name	-	-	HDMI 2		HDMI 2	no CEC device: the TV's own, as today
 name	-		HDMI 2		HDMI 2	an empty CEC name falls back
 name	-	a\nb	HDMI 2		HDMI 2	an unusable CEC name falls back to the TV's own
 name	PS5	-	HDMI 2		PS5	custom without CEC
-label	-	FireTV	HDMI 2	standby	FireTV · وضع الاستعداد	the CEC name and the standby mark
+label	-	FireTV	HDMI 2	standby	FireTV، وضع الاستعداد	the CEC name and the standby mark
 label	-	FireTV	HDMI 2	on	FireTV	connected: no mark
-label	PS5	FireTV	HDMI 2	standby	PS5 · وضع الاستعداد	a custom name gets the mark too
-label	-	-	HDMI 2	standby	HDMI 2 · وضع الاستعداد	the TV's own name gets the mark too
+label	PS5	FireTV	HDMI 2	standby	PS5، وضع الاستعداد	a custom name gets the mark too
+label	-	-	HDMI 2	standby	HDMI 2، وضع الاستعداد	the TV's own name gets the mark too
 label	-	-	HDMI 2	on	HDMI 2	nothing changes from today with no CEC and not in standby

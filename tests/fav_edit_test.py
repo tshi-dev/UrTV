@@ -38,7 +38,7 @@ check("the mode leaves the volume and power keys to Android (AdhanKeys.reserved)
 check("a key release is consumed, so OK never clicks the app under it", "ACTION_DOWN) return true" in keyfn)
 check("a held key steps at the pace the home screen already uses (SIDE_REPEAT_MS)", keyfn.count("SIDE_REPEAT_MS") >= 3)
 check("the direction comes from the row's layout direction (FavEdit.step)", "FavEdit.step(k, dockRow.getLayoutDirection() == View.LAYOUT_DIRECTION_RTL)" in keyfn)
-check("the hint line is the one asked for", "اختر تطبيقًا لتحريكه · × للحذف · رجوع للإنهاء" in edit)
+check("the hint line is the one asked for", "اختر تطبيقًا لتحريكه، × للحذف، رجوع للإنهاء" in edit)
 check("«تراجع» lasts 5 seconds", "UNDO_MS = 5000" in edit)
 check("the row changing under the mode (an app installed, dock.sh) ends it without saving: buildApps abandons it",
       "if (edit != null) abandonEdit();" in main.split("private void buildApps()")[1][:200])

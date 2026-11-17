@@ -23,7 +23,7 @@ fn = lambda text, name: text.split(name)[1].split("\n    }\n")[0]
 
 # ---- the model
 check("AppsEdit has no Android in it (the test runs it without the SDK)", "import android" not in edit)
-check("the hint line, in the style of «تعديل المفضلة»", 'HINT = S.n("اختر تطبيقًا لتحريكه · × للإخفاء · ارفعه للمفضلة · رجوع للإنهاء")' in edit)
+check("the hint line, in the style of «تعديل المفضلة»", 'HINT = S.n("اختر تطبيقًا لتحريكه، × للإخفاء، ارفعه للمفضلة، رجوع للإنهاء")' in edit)
 check("«تراجع» lasts as long as in «تعديل المفضلة» (FavEdit.UNDO_MS)", "undoUntil = now + FavEdit.UNDO_MS;" in edit)
 
 # ---- the order «كل التطبيقات» shows

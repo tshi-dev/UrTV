@@ -38,7 +38,7 @@ final class PillBar extends LinearLayout {
         dp = c.getResources().getDisplayMetrics().density;
         line.setStyle(Paint.Style.STROKE);
         line.setStrokeWidth(Math.max(1f, dp));
-        radius = GlassStyle.RADIUS_OUTER / 2f * dp;
+        radius = Math.min(GlassStyle.RADIUS_OUTER / 2f, MAX_RADIUS) * dp;
         setWillNotDraw(false);
         setClipChildren(false);
     }
@@ -113,11 +113,13 @@ final class PillBar extends LinearLayout {
         boolean none = DebugFlags.on(getContext(), "nopillpanel");   // a tester's switch (dock.sh debug nopillpanel): no panel behind the buttons
         fill.setColor(none ? 0 : m.fill);
         line.setColor(none ? 0 : m.line);
-        radius = m.radius / 2f * dp;   // the material's px at 1080p, where 1 dp is 2 px
+        radius = Math.min(m.radius / 2f, MAX_RADIUS) * dp;   // the material's px at 1080p, where 1 dp is 2 px; 4.4 never rounder than a panel (no pills)
         invalidate();
     }
 
     private float radius;
+    /** 4.4 the owner (no pills): the bar is a panel with rounded corners, never a capsule round the row (its height is about 30 dp) */
+    static final float MAX_RADIUS = 8f;
 
     @Override protected void dispatchDraw(Canvas c) {
         float l = Float.MAX_VALUE, t = Float.MAX_VALUE, rt = -Float.MAX_VALUE, b = -Float.MAX_VALUE;

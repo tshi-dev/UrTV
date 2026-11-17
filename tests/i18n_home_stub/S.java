@@ -24,6 +24,7 @@ public final class S {
     public static String tv(String ar, Object... args) { return t(ar, args); }
     public static String lang() { return LANG; }
     public static boolean en() { return Tr.EN.equals(LANG); }
+    public static String sep() { return en() ? ", " : "، "; }
 
     private static synchronized Map<String, String> table() {
         if (table != null) return table;

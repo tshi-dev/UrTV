@@ -1121,7 +1121,7 @@ final class Prefs {
     String appearance() { String v = sp.getString("appearance", "dark"); return java.util.Arrays.asList(APPEARANCES).contains(v) ? v : "dark"; }
     void setAppearance(String v) { if (java.util.Arrays.asList(APPEARANCES).contains(v)) sp.edit().putString("appearance", v).apply(); }
     static String appearanceLabel(String v) {
-        return "light".equals(v) ? "فاتح" : "auto".equals(v) ? "تلقائي · فاتح من الشروق إلى المغرب، وداكن بعده" : "داكن";
+        return "light".equals(v) ? "فاتح" : "auto".equals(v) ? "تلقائي، فاتح من الشروق إلى المغرب، وداكن بعده" : "داكن";
     }
 
     /** «المظهر ← الشكل» of all our screens: glass (the default), graphite, navy or clean (GlassStyle.LOOKS); anything else is glass. */

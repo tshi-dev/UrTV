@@ -165,8 +165,9 @@ public class SettingsActivity extends Activity {
         hint.setTextDirection(Dir.text());
         // 4.4 the owner (build 413): the hint took the whole band under the list; it is small, on the title's line at the far end, and the list
         // has the band
-        hint.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12);
-        if (cs != null) hint.setTextSize(TypedValue.COMPLEX_UNIT_PX, cs.px(CouchStyle.HINT));
+        // 4.4 the sweep: it was the smallest text on the screen; now the rows' secondary size and colour (HINT_SP, CouchStyle.HINT = ROW_SUB)
+        hint.setTextSize(TypedValue.COMPLEX_UNIT_SP, HINT_SP);
+        if (cs != null) { hint.setTextSize(TypedValue.COMPLEX_UNIT_PX, cs.px(CouchStyle.HINT)); hint.setTextColor(CouchStyle.SUB); }
         hint.setGravity(Gravity.END);
         hint.setPadding(0, 0, 0, 0);
         root.addView(column, new FrameLayout.LayoutParams(-1, -1));
@@ -339,7 +340,7 @@ public class SettingsActivity extends Activity {
 
         row("طريقة الحساب", PrayerMethod.label(prefs.prayerMethod(), prefs.cityCountry(), prefs.cityTz()), R.drawable.ic_place,
             new Runnable() { public void run() { pickPrayerMethod(); } });
-        row("تعديل وقت الصلاة", prefs.prayerAdjOn() ? "يعمل · لكل صلاة دقائقها، من −٢٠ إلى +٢٠ (الشروق لا يتغيّر)" : "متوقف · الأوقات كما تُحسب", R.drawable.ic_eye,
+        row("تعديل وقت الصلاة", prefs.prayerAdjOn() ? "يعمل، لكل صلاة دقائقها، من −٢٠ إلى +٢٠ (الشروق لا يتغيّر)" : "متوقف، الأوقات كما تُحسب", R.drawable.ic_eye,
             new Runnable() { public void run() { prefs.setPrayerAdjOn(!prefs.prayerAdjOn()); render(); } });
         if (prefs.prayerAdjOn()) for (int k = 0; k < PrayerAdj.COUNT; k++) adjRow(k);
         String fixed = PrayerFix.applied(prefs.prayerAdjOn(), prefs.prayerAdj(), prefs.prayerFix());   // 4.3.3: never silent
@@ -383,18 +384,18 @@ public class SettingsActivity extends Activity {
         // 4.3.3 «التاريخ بالأرقام»: the Hijri and the Gregorian as day/month/year on the screensaver and the home, in the digits above
         row("التاريخ بالأرقام", prefs.dateNum() ? "مفعّل" : "متوقف", R.drawable.ic_language,
             new Runnable() { public void run() { prefs.setDateNum(!prefs.dateNum()); render(); } });
-        row("تنبيه قبل الأذان", prefs.adhanBar() ? "يعمل · شريط في أعلى الشاشة آخر ١٠ دقائق، ثم حتى الإقامة" : "متوقف", R.drawable.ic_eye,
+        row("تنبيه قبل الأذان", prefs.adhanBar() ? "يعمل، شريط في أعلى الشاشة آخر ١٠ دقائق، ثم حتى الإقامة" : "متوقف", R.drawable.ic_eye,
             new Runnable() { public void run() { prefs.setAdhanBar(!prefs.adhanBar()); render(); } });
         // from PR #28 and the requests: each off until chosen, OK flips it
-        row("الشروق بعد الفجر", prefs.sunrise() ? "يعمل · بعد إقامة الفجر: كم باقي على الشروق، ثم نصف ساعة بعده" : "متوقف", R.drawable.ic_eye,
+        row("الشروق بعد الفجر", prefs.sunrise() ? "يعمل، بعد إقامة الفجر: كم باقي على الشروق، ثم نصف ساعة بعده" : "متوقف", R.drawable.ic_eye,
             new Runnable() { public void run() { prefs.setSunrise(!prefs.sunrise()); render(); } });
-        row("شريط الوقت بين الصلاتين", prefs.prayerBar() ? "يعمل · خط رفيع تحت الصلاة القادمة يمتلئ حتى وقتها" : "متوقف", R.drawable.ic_eye,
+        row("شريط الوقت بين الصلاتين", prefs.prayerBar() ? "يعمل، خط رفيع تحت الصلاة القادمة يمتلئ حتى وقتها" : "متوقف", R.drawable.ic_eye,
             new Runnable() { public void run() { prefs.setPrayerBar(!prefs.prayerBar()); render(); } });
-        row("الرطوبة والرياح", prefs.wxMore() ? "يعمل · تحت المدينة أعلى اليسار" : "متوقف", R.drawable.ic_eye,
+        row("الرطوبة والرياح", prefs.wxMore() ? "يعمل، تحت المدينة أعلى اليسار" : "متوقف", R.drawable.ic_eye,
             new Runnable() { public void run() { prefs.setWxMore(!prefs.wxMore()); render(); } });
         row("أسماء الأشهر الميلادية", Prefs.monthsLabel(prefs.months()), R.drawable.ic_language,
             new Runnable() { public void run() { prefs.setMonths("levant".equals(prefs.months()) ? "default" : "levant"); render(); } });
-        row("شريط السنة تحت الساعة", prefs.yearStrip() ? "يعمل · نقاط السنة تحت الساعة، واليوم يلمع" : "متوقف", R.drawable.ic_eye,
+        row("شريط السنة تحت الساعة", prefs.yearStrip() ? "يعمل، نقاط السنة تحت الساعة، واليوم يلمع" : "متوقف", R.drawable.ic_eye,
             new Runnable() { public void run() { prefs.setYearStrip(!prefs.yearStrip()); render(); } });
         // «ألبوم صوري» (the card): how fast the photos change, and the date under each
         row("سرعة ألبوم صوري", "minute".equals(prefs.albumMode()) ? "كل دقيقة" : "ten".equals(prefs.albumMode()) ? "كل ١٠ ثوانٍ" : "كل ٤ ثوانٍ", R.drawable.ic_eye,
@@ -417,9 +418,9 @@ public class SettingsActivity extends Activity {
         row("نص أوضح", prefs.clearText() ? "مفعّل الكلام الرمادي بلون النص الكامل" : "متوقف", R.drawable.ic_eye,
             new Runnable() { public void run() { prefs.setClearText(!prefs.clearText()); render(); } });
         // shown by default as always; OK hides it (and shows it again)
-        row("المناسبة القادمة", prefs.occasion() ? "ظاهرة · أسفل الشاشة في الوسط: كم باقي على رمضان والأعياد، والإفطار والإمساك في رمضان" : "مخفية", R.drawable.ic_eye,
+        row("المناسبة القادمة", prefs.occasion() ? "ظاهرة، أسفل الشاشة في الوسط: كم باقي على رمضان والأعياد، والإفطار والإمساك في رمضان" : "مخفية", R.drawable.ic_eye,
             new Runnable() { public void run() { prefs.setOccasion(!prefs.occasion()); render(); } });
-        row("تعتيم الليل", prefs.nightDim() ? "يعمل · تغمق الشاشة من ٩ مساءً، وأغمق من ١١ إلى ٥ الفجر، وترجع ٧ الصباح" : "متوقف · نفس الإضاءة طول الليل", R.drawable.ic_eye,
+        row("تعتيم الليل", prefs.nightDim() ? "يعمل، تغمق الشاشة من ٩ مساءً، وأغمق من ١١ إلى ٥ الفجر، وترجع ٧ الصباح" : "متوقف، نفس الإضاءة طول الليل", R.drawable.ic_eye,
             new Runnable() { public void run() { prefs.setNightDim(!prefs.nightDim()); render(); } });
         row("المناسبات الوطنية", Prefs.nationalLabel(prefs.national()), R.drawable.ic_eye,
             new Runnable() { public void run() { pickNational(); } });
@@ -446,7 +447,7 @@ public class SettingsActivity extends Activity {
             new Runnable() { public void run() { openMarkets(); } });
 
         header("الأسواق (أعلى اليسار)");
-        row("شريط الأسواق", prefs.marketsOn() ? "يعمل" : "مخفي · يبقى طقس اليوم فقط", R.drawable.ic_eye,
+        row("شريط الأسواق", prefs.marketsOn() ? "يعمل" : "مخفي، يبقى طقس اليوم فقط", R.drawable.ic_eye,
             new Runnable() { public void run() { prefs.setMarketsOn(!prefs.marketsOn()); render(); } });
         row("الأسواق (" + arabicNum(prefs.markets().size()) + "/" + arabicNum(Prefs.MAX_MARKETS) + ")", marketsLabel(),
             R.drawable.ic_trophy, new Runnable() { public void run() { pickMarkets(); } });
@@ -509,7 +510,7 @@ public class SettingsActivity extends Activity {
             new Runnable() { public void run() { prefs.setSceneByWeather(!prefs.sceneByWeather()); render(); } });
         row("وضع الألوان", "الشكل: " + Prefs.lookLabel(prefs.look()) + "، والإضاءة: " + Prefs.appearanceLabel(prefs.appearance()), R.drawable.ic_eye,
             new Runnable() { public void run() { startActivity(new Intent(SettingsActivity.this, AppearanceActivity.class)); } });
-        row("صفحات الأسهم والمباريات داكنة", prefs.pagesDark() ? "مفعّل · بالمظهر الداكن دائمًا" : "متوقف · تتبع مظهر الرئيسية", R.drawable.ic_eye,
+        row("صفحات الأسهم والمباريات داكنة", prefs.pagesDark() ? "مفعّل، بالمظهر الداكن دائمًا" : "متوقف، تتبع مظهر الرئيسية", R.drawable.ic_eye,
             new Runnable() { public void run() { prefs.setPagesDark(!prefs.pagesDark()); render(); } });
         // up to three cards left of the clock; each place takes any card, or «بدون» (the ones after it move up)
         for (int k = 0; k < Prefs.HOME_CARDS; k++) {
@@ -527,7 +528,7 @@ public class SettingsActivity extends Activity {
         row("افتح تلاوة وأذان", "القرآن والإذاعات ومواقيت الأذان", R.drawable.ic_play,
             new Runnable() { public void run() { openHome("listen"); } });
         // hiding removes only the button; the help line says where the screen opens from then
-        row("زر تلاوة وأذان", prefs.listenPill() ? "ظاهر" : "مخفي  •  الأذان والتلاوة تعمل، وتفتح الشاشة من «افتح تلاوة وأذان» هنا أو من بطاقة «يُتلى الآن»", R.drawable.ic_eye,
+        row("زر تلاوة وأذان", prefs.listenPill() ? "ظاهر" : "مخفي، الأذان والتلاوة تعمل، وتفتح الشاشة من «افتح تلاوة وأذان» هنا أو من بطاقة «يُتلى الآن»", R.drawable.ic_eye,
             new Runnable() { public void run() { prefs.setListenPill(!prefs.listenPill()); render(); } });
         // #52: the other quick buttons of the home can be hidden too; a hidden one only leaves the row (its page opens from elsewhere: the markets and games by the phone, the Control Center by the Quick Settings key)
         row("زر الأسواق", prefs.pillHidden("markets") ? "مخفي" : "ظاهر", R.drawable.ic_eye,
@@ -539,10 +540,10 @@ public class SettingsActivity extends Activity {
         // 4.3.3 «زر البحث»: the TV's own search inside the apps, a round button before «الجوال»; off by default, and only on a TV that has that search
         row("زر البحث", prefs.searchPill() ? "ظاهر" : "مخفي", R.drawable.ic_eye,
             new Runnable() { public void run() { prefs.setSearchPill(!prefs.searchPill()); render(); } });
-        row("زر مركز التحكم", prefs.pillHidden("center") ? "مخفي  •  يفتح من زر الإعدادات السريعة في الريموت" : "ظاهر", R.drawable.ic_eye,
+        row("زر مركز التحكم", prefs.pillHidden("center") ? "مخفي، يفتح من زر الإعدادات السريعة في الريموت" : "ظاهر", R.drawable.ic_eye,
             new Runnable() { public void run() { prefs.setPillHidden("center", !prefs.pillHidden("center")); render(); } });
         // hiding removes only the button: the list stays in the «المهام» card and on the phone
-        row("زر المهام", prefs.tasksPill() ? "ظاهر" : "مخفي  •  المهام تبقى في بطاقة «المهام» ومن الجوال", R.drawable.ic_eye,
+        row("زر المهام", prefs.tasksPill() ? "ظاهر" : "مخفي، المهام تبقى في بطاقة «المهام» ومن الجوال", R.drawable.ic_eye,
             new Runnable() { public void run() { prefs.setTasksPill(!prefs.tasksPill()); render(); } });
         // Back on our home (nothing to go back to) starts the screensaver; the home takes it on its next tick or return (Dock.followBackSaver)
         row("الرجوع يفتح شاشة التوقف", prefs.backSaver() ? "مفعّل" : "متوقف", R.drawable.ic_eye,
@@ -644,12 +645,12 @@ public class SettingsActivity extends Activity {
             new Runnable() { public void run() { pickIdle(); } });
 
         header("التطبيق");
-        View autoRow = row("التحديث التلقائي للصفحة", prefs.autoUpdate() ? "يعمل · عند بدء الشاشة، كل ٦ ساعات" : "متوقف", R.drawable.ic_sync, new Runnable() { public void run() {
+        View autoRow = row("التحديث التلقائي للصفحة", prefs.autoUpdate() ? "يعمل، عند بدء الشاشة، كل ٦ ساعات" : "متوقف", R.drawable.ic_sync, new Runnable() { public void run() {
             prefs.setAutoUpdate(!prefs.autoUpdate()); render(); } });
         // a switch that flips with one OK sat right under the «تحديث تلفزيوني» action (the tester flipped it by mistake): a clear gap of 32 above it
         if (autoRow != null && autoRow.getLayoutParams() instanceof android.view.ViewGroup.MarginLayoutParams) ((android.view.ViewGroup.MarginLayoutParams) autoRow.getLayoutParams()).topMargin += dp(32);
         // the page only, never the apps: people took it for the app update (rows 421, 441), so its line points to «تحديث تلفزيوني»
-        View last = row("تحديث صفحة شاشة التوقف", "ينزّل أحدث صفحة للشاشة فقط · لتحديث التطبيقين: «تحديث تلفزيوني» في نفس القسم", R.drawable.ic_sync, new Runnable() { public void run() { updateNow(); } });
+        View last = row("تحديث صفحة شاشة التوقف", "ينزّل أحدث صفحة للشاشة فقط، لتحديث التطبيقين: «تحديث تلفزيوني» في نفس القسم", R.drawable.ic_sync, new Runnable() { public void run() { updateNow(); } });
         if (last.getParent() == list) note(last, Updater.versionLines(this));
         arrange();   // the rows in their section's order, with its headers
         if (tiles) { hub(want, wasIndex); return; }   // 4.3.2: a screen of buttons, after the rows were made (none of them is shown on it)
@@ -696,7 +697,7 @@ public class SettingsActivity extends Activity {
             rows.clear();
             rows.addAll(SettingsHub.search(in.getText().toString().trim()));
             adapter.clear();
-            for (int i = 0; i < Math.min(rows.size(), 12); i++) adapter.add(conv(rows.get(i)[0]) + "  •  " + conv(SettingsHub.name(rows.get(i)[1])));
+            for (int i = 0; i < Math.min(rows.size(), 12); i++) adapter.add(conv(rows.get(i)[0]) + S.sep() + conv(SettingsHub.name(rows.get(i)[1])));
         };
         in.addTextChangedListener(new android.text.TextWatcher() {
             @Override public void beforeTextChanged(CharSequence c, int a, int b, int d) { }
@@ -723,7 +724,7 @@ public class SettingsActivity extends Activity {
         if (found.isEmpty()) { toast("لا يوجد صف بهذا الاسم"); return; }
         int n = Math.min(found.size(), 12);
         String[] labels = new String[n];
-        for (int i = 0; i < n; i++) labels[i] = conv(found.get(i)[0]) + "  •  " + conv(SettingsHub.name(found.get(i)[1]));
+        for (int i = 0; i < n; i++) labels[i] = conv(found.get(i)[0]) + S.sep() + conv(SettingsHub.name(found.get(i)[1]));
         new Dlg(this).setTitle("بحث في الإعدادات").setItems(labels, (d, i) -> {
             d.dismiss();
             hubAt = found.get(i)[1];
@@ -911,23 +912,23 @@ public class SettingsActivity extends Activity {
                 return on == null ? "تشغيله وصوته ومؤذن الفجر" : on ? OnOff.ON_WORD : OnOff.OFF_WORD;
             }
             case "city": return Words.city(prefs.city());
-            case "place": return Words.city(prefs.city()) + " · " + PrayerMethod.label(prefs.prayerMethod(), prefs.cityCountry(), prefs.cityTz());
-            case "clock": return ClockSetting.label(prefs.clock24()) + " · " + Prefs.digitsLabel(prefs.digits());
+            case "place": return Words.city(prefs.city()) + S.sep() + PrayerMethod.label(prefs.prayerMethod(), prefs.cityCountry(), prefs.cityTz());
+            case "clock": return ClockSetting.label(prefs.clock24()) + S.sep() + Prefs.digitsLabel(prefs.digits());
             case "listen": return "زرها " + (prefs.listenPill() ? "ظاهر" : "مخفي");
-            case "cards": return "شاشة التوقف · الشاشة الرئيسية";
-            case "look": return Prefs.lookLabel(prefs.look()) + " · " + Prefs.appearanceLabel(prefs.appearance());
+            case "cards": return "شاشة التوقف، الشاشة الرئيسية";
+            case "look": return Prefs.lookLabel(prefs.look()) + S.sep() + Prefs.appearanceLabel(prefs.appearance());
             case "control": return "مؤقت النوم والشبكة والصوت";
             case "phone": return "تشغيله وإيقافه وربط جوال";
             case "update": return Updater.versionLines(this)[0];
             case "report": return "";
             case "more": return "";
-            case "saver": return (Prefs.idleMs(this) <= 0 ? "يبدأ وقت ما يحدده التلفاز" : "تبدأ بعد " + idleLabel()) + " · " + Prefs.panelLabel(prefs.panel());
+            case "saver": return (Prefs.idleMs(this) <= 0 ? "يبدأ وقت ما يحدده التلفاز" : "تبدأ بعد " + idleLabel()) + S.sep() + Prefs.panelLabel(prefs.panel());
             case "home": {
                 List<String> cards = new ArrayList<>();
                 for (String k : prefs.homePanels()) cards.add(Prefs.panelLabel(k, "بدون"));
-                return cards.isEmpty() ? "بدون بطاقات · التحية والطقس" : Prefs.join(cards, "، ");
+                return cards.isEmpty() ? "بدون بطاقات، التحية والطقس" : Prefs.join(cards, "، ");
             }
-            case "content": return "الفرق " + arabicNum(prefs.teams().size()) + " · الأسواق " + (prefs.marketsOn() ? arabicNum(prefs.markets().size()) : "مخفية");
+            case "content": return "الفرق " + arabicNum(prefs.teams().size()) + "، الأسواق " + (prefs.marketsOn() ? arabicNum(prefs.markets().size()) : "مخفية");
             case "apps": return "ترتيب المفضلة وتعديلها، وأسماء المصادر";
             case "shows": return labels(Prefs.GENRES, prefs.list("genres"), "الكل");
             case "parental": return "الرمز والتطبيقات المقفلة";
@@ -1555,6 +1556,8 @@ public class SettingsActivity extends Activity {
     static final float FOCUS_SCALE = 1.02f;
     /** a row's one text size and its padding (the owner, build 413: one line, at most about 80 px at 1080p, so 5 or 6 rows show) */
     static final int ROW_SP = 18, ROW_PAD = 8;
+    /** the hint at the top: the size of a row's secondary line (its value), not smaller */
+    static final int HINT_SP = 14;
     static final long FOCUS_MS = Motion.MS;   // 4.4 the same easing everywhere (Motion)
 
     /** The rows of the list now (the views row() made: their tag is their FocusKey; the categories' tiles, two to a line), in order. */
@@ -1676,8 +1679,8 @@ public class SettingsActivity extends Activity {
     /** a row of the offline results: «أبها · Abha  ·  السعودية», with English «Abha  ·  Saudi Arabia» */
     private static String placeRow(String[] c) {
         String land = S.en() ? Places.country(c[5]) : Location.countryLabel(c[5], c[3]);
-        if (S.en()) return (c[4] != null && !c[4].isEmpty() ? c[4] : c[0]) + (land == null ? "" : "  ·  " + land);
-        return c[0] + (c[4] != null && !c[4].isEmpty() ? " · " + c[4] : "") + (land == null ? "" : "  ·  " + land);
+        if (S.en()) return (c[4] != null && !c[4].isEmpty() ? c[4] : c[0]) + (land == null ? "" : S.sep() + land);
+        return c[0] + (c[4] != null && !c[4].isEmpty() ? S.sep() + c[4] : "") + (land == null ? "" : S.sep() + land);
     }
 
     // Any searchable country, or the one country picked, from Open-Meteo's GeoNames search.
@@ -1700,7 +1703,7 @@ public class SettingsActivity extends Activity {
                 zones[i] = c.optString("timezone", "");   // the place's own; empty: the TV's (Prefs.cityTz)
                 String region = c.optString("admin1", "");
                 String land = c.optString("country", "");   // several countries now: the row says which
-                rows[i] = names[i] + (region.isEmpty() ? "" : "  ·  " + region) + (land.isEmpty() ? "" : "  ·  " + land);
+                rows[i] = names[i] + (region.isEmpty() ? "" : S.sep() + region) + (land.isEmpty() ? "" : S.sep() + land);
             }
             new Dlg(this).setTitle("اختر المكان")
                 .setItems(rows, (d, i) -> { prefs.setCity(names[i], lats[i], lons[i], zones[i], countries[i]); render(); }).show();
@@ -1788,7 +1791,7 @@ public class SettingsActivity extends Activity {
             TeamSearch.Team t = clubs.get(i);
             rows[i] = Teams.label(this, t);
             if (withLeague && t.leagues.length > 0)
-                rows[i] += "  ·  " + (Teams.NATIONAL.equals(t.leagues[0]) ? "منتخب" : leagueAr(t.leagues[0]));
+                rows[i] += S.sep() + (Teams.NATIONAL.equals(t.leagues[0]) ? "منتخب" : leagueAr(t.leagues[0]));
         }
         new Dlg(this).setTitle(title)
             .setItems(rows, (d, i) -> {
@@ -1824,7 +1827,7 @@ public class SettingsActivity extends Activity {
             names[i] = t.optString("strTeam");
             ours[i] = Teams.byId(this, ids[i]);
             rows[i] = (ours[i] != null ? Teams.label(this, ours[i]) : Arabic.team(this, names[i]))
-                + "  ·  " + leagueAr(t.optString("strLeague", ""));
+                + S.sep() + leagueAr(t.optString("strLeague", ""));
         }
         new Dlg(this).setTitle(title)
             .setItems(rows, (d, i) -> {
@@ -2003,7 +2006,7 @@ public class SettingsActivity extends Activity {
         for (int i = 0; i < labels.length; i++) {
             String[] r = rows.get(i);
             String n = S.en() || r[2].isEmpty() ? r[1] : r[2];
-            labels[i] = r[6].isEmpty() || r[4].isEmpty() && r[3].isEmpty() ? n : n + "  ·  " + (S.en() || r[4].isEmpty() ? r[3] : r[4]);
+            labels[i] = r[6].isEmpty() || r[4].isEmpty() && r[3].isEmpty() ? n : n + S.sep() + (S.en() || r[4].isEmpty() ? r[3] : r[4]);
             for (String s : cur) on[i] |= CatalogueLeagues.same(s, "id" + r[0]);
         }
         new Dlg(this).multi(() -> {
@@ -2157,7 +2160,7 @@ public class SettingsActivity extends Activity {
 
     private String watchNextLabel() {
         if (!prefs.watchNext()) return "متوقف";
-        return homeMayReadWatchNext() ? "يعمل · ما وقفته في نصه، تحت المفضلة" : "يعمل · يحتاج السماح مرة واحدة: اختيار";
+        return homeMayReadWatchNext() ? "يعمل، ما وقفته في نصه، تحت المفضلة" : "يعمل، يحتاج السماح مرة واحدة: اختيار";
     }
 
     /** The home app's one question for the TV's list («السماح»); it closes by itself when that is allowed already. */
@@ -2686,7 +2689,7 @@ public class SettingsActivity extends Activity {
     }
 
     /** «اللغة» as its row and button say it: the language in use, in its own words; with Arabic, English beside it to be found */
-    private String langLabel() { return Tr.EN.equals(prefs.lang()) ? "English" : "العربية · English"; }
+    private String langLabel() { return Tr.EN.equals(prefs.lang()) ? "English" : "العربية، English"; }
 
     /**
      * «اللغة»: العربية or English, each in its own language. The choice is kept (Prefs.setLang: the page and the home follow it at their
@@ -2694,7 +2697,7 @@ public class SettingsActivity extends Activity {
      */
     private void pickLang() {
         final String[] values = {Tr.AR, Tr.EN};
-        new Dlg(this).raw().own().setTitle(S.en() ? "Language · اللغة" : "اللغة · Language")
+        new Dlg(this).raw().own().setTitle(S.en() ? "Language، اللغة" : "اللغة، Language")
             .setSingleChoiceItems(new String[] {"العربية", "English"}, Tr.EN.equals(prefs.lang()) ? 1 : 0, (d, i) -> {
                 d.dismiss();
                 if (values[i].equals(prefs.lang())) return;
@@ -2758,11 +2761,11 @@ public class SettingsActivity extends Activity {
         int n = 0;
         java.util.Map<String, Integer> have = PackStore.installed(this);
         for (String id : prefs.packsOn()) if (have.containsKey(id)) n++;
-        return n == 0 ? "صورنا" : n == 1 ? "صورنا · مجموعة واحدة" : n == 2 ? "صورنا · مجموعتان" : "صورنا · " + n + (n <= 10 ? " مجموعات" : " مجموعة");
+        return n == 0 ? "صورنا" : n == 1 ? "صورنا، مجموعة واحدة" : n == 2 ? "صورنا، مجموعتان" : "صورنا، " + n + (n <= 10 ? " مجموعات" : " مجموعة");
     }
 
     private String ownLabel() {
-        if (Own.count(this) == 0) return "لا توجد صور · يضيفها مساعدك الذكي";
+        if (Own.count(this) == 0) return "لا توجد صور، يضيفها مساعدك الذكي";
         return Own.ONLY.equals(Own.mode(this)) ? "صوري فقط" : Own.ALBUM.equals(Own.mode(this)) ? "للألبوم فقط" : "تُضاف إلى صور التطبيق";
     }
 
@@ -3076,7 +3079,7 @@ public class SettingsActivity extends Activity {
     private void pickLookPart(final boolean shape) {
         final String[] values = shape ? GlassStyle.LOOKS : Prefs.APPEARANCES;
         final String[] labels = new String[values.length];
-        for (int i = 0; i < values.length; i++) labels[i] = Words.of(shape ? GlassStyle.LOOK_NAMES[i] : Prefs.appearanceLabel(values[i]).split(" · ")[0]);
+        for (int i = 0; i < values.length; i++) labels[i] = Words.of(shape ? GlassStyle.LOOK_NAMES[i] : Prefs.appearanceLabel(values[i]).split("، ")[0]);
         final String current = shape ? prefs.look() : prefs.appearance();
         final LinearLayout box = new LinearLayout(this);
         box.setOrientation(LinearLayout.HORIZONTAL);
@@ -3177,7 +3180,7 @@ public class SettingsActivity extends Activity {
         }
         col.addView(tiles, llp(-1, -2, dp(8)));
         TextView row = new TextView(this);
-        row.setText(Words.of("المدينة · الرياض"));
+        row.setText(Words.of("المدينة، الرياض"));
         row.setTextSize(TypedValue.COMPLEX_UNIT_SP, 11);
         row.setTypeface(font("Thmanyah-Regular"));
         row.setTextColor(l.sub);
@@ -3475,7 +3478,7 @@ public class SettingsActivity extends Activity {
      * screen runs leftwards; an English one rightwards: Dir.forwardKey), from −20 to +20; OK puts it back to zero. The text changes where it is, so the focus and the scroll stay.
      */
     private void adjRow(final int k) {
-        final View card = row(PrayerAdj.label(k, prefs.prayerAdj()[k]), "يسار + · يمين − · موافق للتصفير", R.drawable.ic_eye, null);
+        final View card = row(PrayerAdj.label(k, prefs.prayerAdj()[k]), "يسار +، يمين −، موافق للتصفير", R.drawable.ic_eye, null);
         final TextView name = (TextView) card.findViewWithTag("name");
         final Runnable show = new Runnable() { public void run() { name.setText(conv(PrayerAdj.label(k, prefs.prayerAdj()[k]))); } };
         card.setOnClickListener(v -> { int[] a = prefs.prayerAdj(); a[k] = 0; prefs.setPrayerAdj(a); show.run(); });

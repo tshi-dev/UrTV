@@ -39,10 +39,10 @@ final class TvRowsPick {
     static String meta(String season, String episode, String episodeTitle, String title, String description, String app, boolean latin) {
         StringBuilder m = new StringBuilder();
         if (!blank(season)) m.append(S.t("الموسم %s", DigitsText.convert(season.trim(), latin)));
-        if (!blank(episode)) m.append(m.length() > 0 ? " · " : "").append(S.t("الحلقة %s", DigitsText.convert(episode.trim(), latin)));
+        if (!blank(episode)) m.append(m.length() > 0 ? S.sep() : "").append(S.t("الحلقة %s", DigitsText.convert(episode.trim(), latin)));
         if (m.length() == 0 && !blank(episodeTitle) && !episodeTitle.trim().equals(title == null ? "" : title.trim())) m.append(episodeTitle.trim());
         if (m.length() == 0 && !blank(description)) m.append(description.trim());
-        if (!blank(app)) m.append(m.length() > 0 ? " · " : "").append(app.trim());
+        if (!blank(app)) m.append(m.length() > 0 ? S.sep() : "").append(app.trim());
         return m.toString();
     }
 

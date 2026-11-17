@@ -43,7 +43,7 @@ final class Pill extends LinearLayout {
         setOrientation(HORIZONTAL);
         setGravity(Gravity.CENTER_VERTICAL);
         setFocusable(true);
-        bg.setCornerRadius(dp(8));   // a rounded square of 60 px at 1080p, no longer a circle; the bar behind the row is PillBar's
+        bg.setCornerRadius(dp(6));   // a rounded square of 60 px at 1080p, no longer a circle; the bar behind the row is PillBar's; 4.4 a labelled one too is a square-cornered word, not a capsule
         setBackground(bg);
 
         glyph = c.getDrawable(iconRes).mutate();

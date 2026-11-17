@@ -61,12 +61,12 @@ key	22	0	1	1	0	0	1	EAT	a held key's repeats are consumed (no seek, no focus move
 key	22	0	2	0	0	0	1	EAT	and after the adhan is over, until it is released
 key	22	1	0	0	0	0	1	EAT	the release
 key	22	0	0	0	0	0	1	PASS	the next press, with no adhan playing, is an ordinary key: tomorrow's adhan is not touched
-bar	4	0	1	أذان المغرب  ·  أي زر يوقف الأذان	Maghrib, any key (the default)
-bar	4	0	0	أذان المغرب  ·  اختيار: إيقاف الأذان	Maghrib, only OK (the setting off)
-bar	0	0	1	أذان الفجر  ·  أي زر يوقف الأذان	Fajr
-bar	2	1	1	أذان الجمعة  ·  أي زر يوقف الأذان	a Friday's Dhuhr
-bar	2	0	1	أذان الظهر  ·  أي زر يوقف الأذان	Dhuhr
-bar	3	0	1	أذان العصر  ·  أي زر يوقف الأذان	Asr
-bar	5	0	0	أذان العشاء  ·  اختيار: إيقاف الأذان	Isha, only OK
-bar	-1	0	1	الأذان  ·  أي زر يوقف الأذان	from the computer: no prayer named
-bar	1	0	1	الأذان  ·  أي زر يوقف الأذان	sunrise has no adhan
+bar	4	0	1	أذان المغرب، أي زر يوقف الأذان	Maghrib, any key (the default)
+bar	4	0	0	أذان المغرب، اختيار: إيقاف الأذان	Maghrib, only OK (the setting off)
+bar	0	0	1	أذان الفجر، أي زر يوقف الأذان	Fajr
+bar	2	1	1	أذان الجمعة، أي زر يوقف الأذان	a Friday's Dhuhr
+bar	2	0	1	أذان الظهر، أي زر يوقف الأذان	Dhuhr
+bar	3	0	1	أذان العصر، أي زر يوقف الأذان	Asr
+bar	5	0	0	أذان العشاء، اختيار: إيقاف الأذان	Isha, only OK
+bar	-1	0	1	الأذان، أي زر يوقف الأذان	from the computer: no prayer named
+bar	1	0	1	الأذان، أي زر يوقف الأذان	sunrise has no adhan

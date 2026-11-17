@@ -83,7 +83,7 @@ public final class PhotoPacksRun {
         check("«صورنا» can go off only while a pack that is on is on the TV", PhotoPacks.mayTurnOursOff(on, have) && !PhotoPacks.mayTurnOursOff(on, new HashMap<>())
             && !PhotoPacks.mayTurnOursOff(new LinkedHashSet<>(), have), "");
         check("size in MB rounds up, never 0", PhotoPacks.megabytes(1) == 1 && PhotoPacks.megabytes(1 << 20) == 1 && PhotoPacks.megabytes((1 << 20) + 1) == 2, "");
-        check("credit line", PhotoPacks.creditLine("NASA", "Public domain").equals("NASA · Public domain") && PhotoPacks.creditLine("", "CC0").equals("CC0")
+        check("credit line", PhotoPacks.creditLine("NASA", "Public domain").equals("NASA, Public domain") && PhotoPacks.creditLine("", "CC0").equals("CC0")
             && PhotoPacks.creditLine("X", "").equals("X"), "");
         // 4.3.3 «النسبة»: a pack named more often takes more of the packs' turns
         check("reps: no shares, or one pack: once each (the fragment as it was)", java.util.Arrays.equals(PhotoPacks.reps(new int[] {16, 13}, new int[] {0, 0}, 12), new int[] {1, 1})
