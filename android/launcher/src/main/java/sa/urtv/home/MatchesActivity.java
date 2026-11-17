@@ -46,7 +46,12 @@ public class MatchesActivity extends Activity {
         ConfigSnapshot cfg = ConfigSnapshot.read(this);
         final int ground = cfg.pagesDark ? Color.rgb(0x17, 0x18, 0x1B) : Color.rgb(0xF4, 0xF2, 0xEC);   // the page's own ground (dark, or sand), before its first frame
         getWindow().setBackgroundDrawable(new android.graphics.drawable.ColorDrawable(ground));   // and the window's, so no other colour shows while the view is not yet drawn
-        web = new WebView(this);
+        web = WebViews.make(this);
+        if (web == null) {   // 4.3.5: no WebView on this TV: say so and go back, never a crash
+            android.widget.Toast.makeText(this, S.t("هذا التلفزيون ما فيه متصفح النظام، فالصفحة ما تفتح"), android.widget.Toast.LENGTH_LONG).show();
+            finish();
+            return;
+        }
         web.setBackgroundColor(ground);
         web.setAlpha(0f);   // not shown (alpha, not INVISIBLE: a view that is not drawn gets no visual-state callback) until the page has painted its first frame
         final Runnable reveal = () -> { if (web != null) web.setAlpha(1f); };

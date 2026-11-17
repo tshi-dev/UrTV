@@ -202,7 +202,7 @@ final class HomeCard {
         if (want.equals(url)) return;
         destroy();
         if (!guard.mayCreate(android.os.SystemClock.elapsedRealtime())) return;   // its renderer keeps dying: the cards stay off for now
-        create(want);
+        if (!create(want)) return;   // 4.3.5: no WebView on this TV: the home without its card, never a crash (WebViews)
         web.onResume();
         web.resumeTimers();
     }
@@ -299,8 +299,10 @@ final class HomeCard {
 
     @SuppressLint("SetJavaScriptEnabled")
     @SuppressWarnings("deprecation")
-    private void create(String u) {
-        web = new WebView(activity);
+    private boolean create(String u) {
+        WebView made = WebViews.make(activity);
+        if (made == null) return false;
+        web = made;
         web.setBackgroundColor(Color.TRANSPARENT);
         web.setFocusable(false);
         web.setFocusableInTouchMode(false);
@@ -386,6 +388,7 @@ final class HomeCard {
         url = u;
         loading = true;   // HomeSnapshot's picture stays until the page has painted (onPageFinished)
         web.loadUrl(u);
+        return true;
     }
 
     /** The transparent button over the «المهام» card: it takes the focus like a pill, and OK opens the list. */
