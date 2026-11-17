@@ -23,10 +23,12 @@ public final class AdhanSync {
         SharedPreferences sp = c.getSharedPreferences("tilawah", Context.MODE_PRIVATE);
         if (!SchedIdentity.due(sp.getString("sched_identity", ""), p.identity())) return;
         AdhanScheduler.schedule(c, p);   // records the identity of the place it is set from
+        DuaScheduler.schedule(c);   // 4.4: a new city, method or minutes move the duas' prayer times too
     }
 
     /** The shell asks: whatever the settings say now, set the alarm for it. */
     static void reschedule(Context c) {
         AdhanScheduler.schedule(c, Place.get(c));
+        DuaScheduler.schedule(c);
     }
 }

@@ -108,8 +108,8 @@ public class MainActivity extends Activity {
             } else if (row.kind == KIND_PRAYER) {
                 int voice = prefs.playFor(this, row.index);   // Fajr has its own muezzin; 4.4: the prayer's own choice (a silent one: its general voice, to hear it)
                 if (voice == PrayerSound.SILENT) voice = prefs.playVoiceFor(this, row.index == PrayerTimes.FAJR);
-                MusicService.adhan(this, voice, Adhan.name(voice), 0);
-                openPlayer();
+                MusicService.adhan(this, voice, Adhan.name(voice), WHOLE_PREVIEW_S, row.index);   // 4.4: heard whole, at that prayer's level, as a preview: a real
+                openPlayer();                                                                    // adhan that comes meanwhile takes its place (it used to be swallowed)
             } else if (row.kind == KIND_ADHAN_TOGGLE) {
                 prefs.setAdhanOn(!prefs.adhanOn());
                 AdhanScheduler.schedule(this);
@@ -370,6 +370,9 @@ public class MainActivity extends Activity {
         View cursor = view.findViewById(R.id.cursor);
         if (cursor != null) cursor.setVisibility(View.INVISIBLE);
     }
+
+    /** 4.4: a prayer's row plays its adhan whole as a preview (no adhan is longer than this) */
+    static final int WHOLE_PREVIEW_S = 600;
 
     private int selectedKind() {
         int at = list.getSelectedItemPosition();

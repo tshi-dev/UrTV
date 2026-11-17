@@ -201,7 +201,7 @@ final class ControlCenter {
         final Item adhan = tile("adhan", ControlText.ADHAN, adhanValue, R.drawable.ic_listen, null);
         adhan.action = () -> {
             try {
-                sa.urtv.home.tilawah.AdhanPreview.play(act, next <= 0);   // Fajr's own muezzin for Fajr, today's or tomorrow's
+                sa.urtv.home.tilawah.AdhanPreview.play(act, sa.urtv.home.tilawah.AdhanPreview.prayerOf(next));   // 4.4: that prayer's own muezzin and level (Fajr's for Fajr, today's or tomorrow's)
                 adhan.setValue(S.t("يُسمع الآن"));
             } catch (RuntimeException e) {
                 android.util.Log.w("UrTVControl", "adhan preview failed " + e.getClass().getSimpleName());

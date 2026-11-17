@@ -2,6 +2,11 @@ package sa.urtv.home.tilawah;
 
 /** 4.4: does a dua whose alarm came play now? No Android in it (tests/DuaRuleRun.java runs it). */
 final class DuaPlan {
+    /** 4.4: an alarm and a dua's moment within this are the same (the prayer times may move by a minute or two after the alarm was set) */
+    static final long SAME_MS = 3 * 60_000L;
+
+    static boolean same(long t, long due) { return t > 0 && due > 0 && Math.abs(t - due) <= SAME_MS; }
+
     private DuaPlan() { }
 
     /** an alarm later than this is a missed one: never made up */

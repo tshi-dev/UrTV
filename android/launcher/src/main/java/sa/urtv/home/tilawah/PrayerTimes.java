@@ -257,6 +257,7 @@ final class PrayerTimes {
             edit.putString(key, out.toString()).putBoolean("fetched_" + key, true).apply();
             forgetToday();
             AdhanScheduler.schedule(c);   // the alarm was set for the computed times: the new ones may differ by minutes
+            DuaScheduler.schedule(c);   // 4.4: the duas' too (one «بعد الظهر بـ ١٠ دقائق» was set from the computed Dhuhr)
             return true;
         } catch (Exception ignored) {
             // offline or Aladhan is down: the computed times are already right

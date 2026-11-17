@@ -570,15 +570,15 @@ public class MusicService extends Service implements AudioManager.OnAudioFocusCh
         final boolean mutedBefore = tvMuted();
         boolean wasAdhan = source == Prefs.SOURCE_ADHAN;
         if (wasAdhan && playing) {
-            if (adhanPreview && previewSeconds > 0) {   // the volume row again: the new level, and the same few seconds again
+            if (adhanPreview && previewSeconds > 0 && wanted == adhanVoice) {   // the volume row again: the new level, and the same few seconds again (4.4: the same muezzin only)
                 volumePercent = prefs.volumeFor(prayer);   // 4.4: the prayer's own level, or the general one
                 adhanVolumeUp();
                 handler.postDelayed(previewStop, previewSeconds * 1000L);
                 return;
             }
             // a second adhan on top of the first is ignored (two alarms); a preview gives way to the real one; 4.4: a dua gives way to an adhan,
-            // and a second dua takes the place of the first
-            if (duaNow == null && (!adhanPreview || previewSeconds > 0)) return;
+            // a second dua takes the place of the first, and a preview of another muezzin takes the place of the first preview (it kept playing)
+            if (duaNow == null && !adhanPreview) return;
         }
         final boolean gone = OwnAdhan.isOwn(wanted) && !OwnAdhan.existsOf(this, wanted);   // the recording was removed: a numbered voice
         final int voice = gone ? prefs.voice() : wanted;

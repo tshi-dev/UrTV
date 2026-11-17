@@ -194,6 +194,7 @@ python3 tests/adhan_level_test.py        # 4.4 «مستوى صوت الأذان�
 python3 tests/iqama_test.py             # 4.4 «الإقامة»: a sound and a notice at the iqama (off by default; never in kids mode over other apps)
 python3 tests/audio_upload_test.py      # 4.4 «صوتياتي»: one upload at a time, no lock held over a copy, the iqama on delete, the page's words
 python3 tests/surah_places_test.py      # 4.4 «تلاوة وأذان»: each surah its place, saved while it plays, the sleep timer and the adhan, the letters, the card
+python3 tests/dua_time_test.py         # 4.4 the duas after midnight, on a DST day, the Hijri shift; the adhan's previews
 python3 tests/focus_rule_test.py   # 4.3.3 G1: the player keeps on behind the screensaver and the TV's settings; another sound pauses it and it comes back
 python3 tests/surah_set_test.py   # 4.3.3: a reciter with «missing» surahs; the player steps over them
 python3 tests/audio_library_test.py   # 4.4 «صوتياتي»: sound files from a USB stick or the phone, kept in the app; the caps; the own adhan from them

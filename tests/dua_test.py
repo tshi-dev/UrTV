@@ -40,7 +40,7 @@ check("the dua plays through the adhan's path: the recitation paused and brought
       and "prepareAdhanPause()" in pa)
 check("its own volume, and the TV's volume put back after (the adhan's way)", "volumePercent = duaUrl != null ? duaVolume : prefs.volumeFor(prayer);" in pa
       and "int want = AdhanLevel.index(volumePercent, max);" in svc)
-check("an adhan takes the place of a dua; a dua never cuts an adhan", "if (duaNow == null && (!adhanPreview || previewSeconds > 0)) return;" in pa)
+check("an adhan takes the place of a dua; a dua never cuts an adhan", "if (duaNow == null && !adhanPreview) return;" in pa)
 check("a dua plays whole (no short adhan cut) and is not the «last adhan»", "adhanCutMs = duaUrl != null ? 0 :" in pa and pa.index("if (duaUrl != null) {") < pa.index("prefs.setLastAdhan("))
 check("every way an adhan ends clears the dua's name", svc.count("adhanName = null; adhanLive = false; adhanPrayer = -1; duaNow = null;") == 3)
 check("the home: the card with the name and «إيقاف» (focused), OK on it stops it like the adhan's bar; no adhan bar for a dua",
