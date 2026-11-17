@@ -39,8 +39,10 @@ public class GamePacksActivity extends GameActivity {
             boolean on = GamePackStore.installed(this, p.id), keep = GamePackStore.mode(this, p.id) == GamePacks.KEEP;
             float y = 232 + i * 120;
             long bytes = GamePackStore.size(this, p.id) > 0 ? GamePackStore.size(this, p.id) : p.bytes;
-            root.addView(text(clip(p.name(en), 52, 900), 52, L.ink, true), at(960, 64, 96, y));
-            root.addView(text((on ? S.t("محمّلة") : S.t("غير محمّلة")) + ": " + num(Math.max(1, Math.round(bytes / 1000f))) + " KB", 36, L.ink(0xCC), false), at(960, 48, 96, y + 62));
+            boolean fresh = p.isNew(System.currentTimeMillis());
+            root.addView(text(clip(p.name(en), 52, fresh ? 700 : 900), 52, L.ink, true), at(fresh ? 760 : 960, 64, 96, y));
+            if (fresh) { TextView tag = centered(S.t("جديد"), 34, L.onSaff, true); tag.setBackgroundColor(L.saff); root.addView(tag, at(120, 48, 96 + 780, y + 8)); }
+            root.addView(text((on ? S.t("محمّلة") : S.t("غير محمّلة")) + ": " + num(Math.max(1, Math.round(bytes / 1000f))) + " KB" + (p.count > 0 ? "   " + S.t("%s سؤال", num(p.count)) : ""), 36, L.ink(0xCC), false), at(960, 48, 96, y + 62));
             root.addView(button(keep ? S.t("احتفظ دائمًا") : S.t("تلقائي"), sel == i && col == 0), at(360, 88, 1100, y));
             root.addView(button(S.t("حذف الآن"), sel == i && col == 1), at(300, 88, 1480, y));
         }
