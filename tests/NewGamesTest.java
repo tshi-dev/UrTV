@@ -7,6 +7,7 @@ import sa.urtv.screensaver.games.closest.ClosestGame;
 import sa.urtv.screensaver.games.liar.LiarGame;
 import sa.urtv.screensaver.games.night.NightGame;
 import sa.urtv.screensaver.games.guess.GuessGame;
+import sa.urtv.screensaver.games.draw.DrawGame;
 import sa.urtv.screensaver.games.emoji.EmojiGame;
 import sa.urtv.screensaver.games.link.LinkGame;
 
@@ -271,6 +272,21 @@ public final class NewGamesTest {
     }
     static boolean endsAfter(GuessGame g) { g.next(); return g.phase == GuessGame.Phase.END; }
 
+    static void draw() {
+        DrawGame g = new DrawGame(4, 2);
+        check("draw: each player draws turns times, the drawer goes round", g.rounds() == 8 && g.drawer() == 0);
+        g.setWord("وردة", "Rose");
+        check("draw: the drawer cannot guess; a wrong guess is refused; the spelling is forgiving; the English word counts too", !g.guess(0, "وردة") && !g.guess(1, "نخلة") && g.guess(1, "الوَرْدَه") && g.guess(2, "rose") && !g.guess(1, "وردة"));
+        g.guess(3, "وردة"); check("draw: everyone right ends the round early", g.allRight());
+        g.endRound();
+        check("draw: first right scores 3, second 2, the rest 1; the drawer one for each", g.gained[1] == 3 && g.gained[2] == 2 && g.gained[3] == 1 && g.gained[0] == 3 && g.phase == DrawGame.Phase.REVEAL);
+        g.next(); check("draw: the next round is the next drawer, with a clean slate", g.drawer() == 1 && g.correct == 0 && !g.isRight(1) && g.phase == DrawGame.Phase.DRAW && g.word.isEmpty());
+        for (int i = 0; i < 7; i++) { g.setWord("x", ""); g.endRound(); g.next(); }
+        check("draw: after players x turns rounds the game is over", g.phase == DrawGame.Phase.END);
+        boolean threw = false; try { new DrawGame(2, 1); } catch (IllegalArgumentException e) { threw = true; }
+        check("draw: two players are refused (three to ten)", threw);
+    }
+
     public static void main(String[] a) throws Exception {
         forehead();
         author(a[0]);
@@ -280,6 +296,7 @@ public final class NewGamesTest {
         link(a[4]);
         night();
         guess(a[5]);
+        draw();
         System.exit(failed == 0 ? 0 : 1);
     }
 }

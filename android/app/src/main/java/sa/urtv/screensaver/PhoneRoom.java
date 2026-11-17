@@ -13,4 +13,6 @@ interface PhoneRoom {
     /** `q` is the card or question the phone answers, `a` its choice, `x` free text (unused by most); null = taken, else the short error */
     String answer(String token, int q, int a, String x);
     void leave(String token);
+    /** a drawing card's strokes (only the drawing game's room takes them, at /api/draw): null = taken, else the short error */
+    default String draw(String token, int q, String x) { return "route"; }
 }

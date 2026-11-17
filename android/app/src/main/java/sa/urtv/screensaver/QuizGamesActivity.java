@@ -40,6 +40,7 @@ public class QuizGamesActivity extends Activity {
         S.n("اربط الكلمات"), S.n("تلميح بكلمة واحدة يربط كلمات فريقك على اللوحة"),
         S.n("ليل القرية"), S.n("ذئاب بين القرويين، من يكشفهم؟"),
         S.n("كم تقدر؟"), S.n("من يسمّي أكثر في الموضوع؟"),
+        S.n("ارسم وخمّن"), S.n("ارسم بإصبعك والباقي يخمّن"),
         S.n("حزم المحتوى"), S.n("حجم ما حمّلتموه من الألعاب، واحتفظوا به أو احذفوه"),
     };
     /** the night switch's words, marked for the English table: «وضع ليلي» with its three states, and the three night palettes */

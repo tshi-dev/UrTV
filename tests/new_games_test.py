@@ -12,7 +12,7 @@ def check(what, ok, extra=""):
     print(("PASS " if ok else "FAIL ") + what + ("" if ok else "  -> " + str(extra)))
     if not ok: failed += 1
 if not shutil.which("javac"): print("SKIP: no javac"); sys.exit(1)
-ENGINES = [G / "forehead/ForeheadGame.java", G / "author/AuthorGame.java", G / "closest/ClosestGame.java", G / "liar/LiarGame.java", G / "emoji/EmojiGame.java", G / "link/LinkGame.java", G / "night/NightGame.java", G / "guess/GuessGame.java", APP / "GameBundle.java", APP / "MiniJson.java"]
+ENGINES = [G / "forehead/ForeheadGame.java", G / "author/AuthorGame.java", G / "closest/ClosestGame.java", G / "liar/LiarGame.java", G / "emoji/EmojiGame.java", G / "link/LinkGame.java", G / "night/NightGame.java", G / "guess/GuessGame.java", G / "draw/DrawGame.java", APP / "GameBundle.java", APP / "MiniJson.java"]
 with tempfile.TemporaryDirectory() as t:
     c = subprocess.run(["javac", "-nowarn", "-encoding", "UTF-8", "-d", t, *map(str, ENGINES), str(ROOT / "tests/NewGamesTest.java")], capture_output=True, text=True)
     check("the new games' rules compile on a plain JVM (no Android)", c.returncode == 0, c.stderr[-500:])
@@ -24,7 +24,7 @@ with tempfile.TemporaryDirectory() as t:
 def src(n): return (APP / n).read_text(encoding="utf-8")
 reg, gl, room, page = src("GameRegistry.java"), src("QuizGamesActivity.java"), src("GamePhoneRoom.java"), (ROOT / "assets/quiz/game.html").read_text(encoding="utf-8")
 manifest = (ROOT / "android/app/src/main/AndroidManifest.xml").read_text(encoding="utf-8")
-GAMES = {"forehead": "ForeheadActivity", "author": "AuthorActivity", "closest": "ClosestActivity", "liar": "LiarActivity", "emoji": "EmojiActivity", "link": "LinkActivity", "night": "NightActivity", "guess": "GuessActivity"}
+GAMES = {"forehead": "ForeheadActivity", "author": "AuthorActivity", "closest": "ClosestActivity", "liar": "LiarActivity", "emoji": "EmojiActivity", "link": "LinkActivity", "night": "NightActivity", "guess": "GuessActivity", "draw": "DrawActivity"}
 for gid, act in GAMES.items():
     a = src(act + ".java")
     check(f"{gid}: in the registry (needs phones), in the filter's list, in the manifest (not exported, landscape), and a GameActivity",
@@ -67,4 +67,11 @@ gu = src("GuessActivity.java")
 check("guess: every phone bids on a number pad (a text card, self = 1), only the top bid gets the typing fields, the others wait; the topics come from the bundled bank and nothing repeats on this TV; points only",
       "GamePhoneRoom.TEXT" in gu and ", null, 1)" in gu and "phones.room.hold(i," in gu and 'GameBundles.load(this, "guess")' in gu and "GamePrefs.remember(this, id(), r)" in gu and "money" not in gu.lower())
 check("the bundled guess topics are a bundle", (ROOT / "assets/games/guess.gb").read_bytes()[:3] == b"GB1" and "فواكه".encode() not in (ROOT / "assets/games/guess.gb").read_bytes())
+dr = src("DrawActivity.java"); srv = src("QuizServer.java")
+check("draw: the strokes of the drawer's card (a draw card) are shown on the TV, the others type guesses; the words are the charades bank and nothing repeats on this TV",
+      "GamePhoneRoom.DRAW" in dr and "phones.room.strokes(d)" in dr and "game.guess(p, t[0])" in dr and "GamePrefs.remember(this, id(), r)" in dr and "CharadesActivity.PUBLISHED" in dr)
+check("draw: only /api/draw may carry more than a kilobyte (8 KB), the room takes it only for a draw card of that phone, at most 8 posts a second, 300 strokes, 6000 points, every coordinate 0 to 1000; the other routes keep 1 KB",
+      'static final int BODY_MAX = 1024, DRAW_MAX = 8192' in srv and 'rl[1].equals("/api/draw") ? DRAW_MAX : BODY_MAX' in srv and "DRAW_PER_SEC = 8" in room and "DRAW_STROKES = 300" in room and "DRAW_POINTS = 6000" in room and "!DRAW.equals(s.kind)" in room
+      and "default String draw(" in src("PhoneRoom.java") and srv.count("DRAW_MAX") == 2)
+check("draw: the phone page sends strokes in small posts to /api/draw and builds nothing from them", "'/api/draw'" in page and "c.kind === 'draw'" in page and "setPointerCapture" in page)
 sys.exit(1 if failed else 0)

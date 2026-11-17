@@ -62,6 +62,28 @@ public final class PhoneRoomTest {
         now[0] += 60000;
         check("join: 12 phones at most", "full".equals(full.join("4321", "late", -1, null).error) && full.count() == 12);
 
+        {   // the drawing card
+            GamePhoneRoom d = room(); QuizRoom.Player a0 = join(d, "A"), a1 = join(d, "B"); d.start();
+            int dc = d.card(0, GamePhoneRoom.DRAW, "ارسم", "وردة", "", null, null, -1); d.card(1, GamePhoneRoom.WAIT, "", "w", "", null, null, -1);
+            check("draw: strokes arrive (a stroke, a continuation), and the TV reads them as flat arrays", d.draw(a0.token, dc, "10,20 30,40;5,5 6,6") == null && d.draw(a0.token, dc, "+7,8 9,10") == null && d.strokes(0).size() == 2 && d.strokes(0).get(1).length == 8);
+            now[0] += 1100;
+            check("draw: a phone without a draw card, a stale card, a wrong token are refused", "stale".equals(d.draw(a1.token, d.stateIdOf(1), "1,1 2,2")) && "stale".equals(d.draw(a0.token, dc + 5, "1,1 2,2")) && "token".equals(d.draw("zz", dc, "1,1 2,2")));
+            now[0] += 1100;
+            check("draw: a coordinate outside 0 to 1000, a word instead of a number, an empty point: the whole post is refused", "card".equals(d.draw(a0.token, dc, "1,1 1001,2")) && "card".equals(d.draw(a0.token, dc, "1,1 a,2")) && "card".equals(d.draw(a0.token, dc, "1,1  ,2")) && d.strokes(0).size() == 2);
+            now[0] += 1100;
+            check("draw: «C» clears the drawing", d.draw(a0.token, dc, "C;3,3 4,4") == null && d.strokes(0).size() == 1);
+            StringBuilder big = new StringBuilder(); for (int i = 0; i < 501; i++) big.append(i % 1000).append(',').append(i % 1000).append(' ');
+            now[0] += 1100;
+            check("draw: a post of more than 500 points is refused", "card".equals(d.draw(a0.token, dc, big.toString().trim())));
+            int ok = 0; String last = null; for (int i = 0; i < 12; i++) { last = d.draw(a0.token, dc, "1,1 2,2"); if (last == null) ok++; }
+            check("draw: at most 8 posts a second per phone", ok <= 8 && "rate".equals(last));
+            now[0] += 1100; d.card(0, GamePhoneRoom.DRAW, "ارسم", "نخلة", "", null, null, -1);
+            check("draw: a new card starts with a clean board", d.strokes(0).isEmpty());
+            GamePhoneRoom q = room(); QuizRoom.Player b0 = join(q, "A"); q.start(); int qc = q.card(0, GamePhoneRoom.DRAW, "", "x", "", null, null, -1); int posts = 0, tot = 0;
+            for (int i = 0; i < 400 && tot < 7000; i++) { if (i % 8 == 0) now[0] += 1100; StringBuilder st = new StringBuilder(); for (int k = 0; k < 40; k++) st.append(k).append(',').append(k).append(' '); String e = q.draw(b0.token, qc, st.toString().trim() + ";"); if (e == null) tot += 40; }
+            check("draw: 6000 points and 300 strokes are the most one card keeps", q.strokes(0).size() <= 300 && tot <= 6000);
+        }
+
         r = room(); p0 = join(r, "A"); p1 = join(r, "B"); p2 = join(r, "C");
         String lobby = r.stateFor(p0.token, false);
         check("state: in the lobby the phone sees its name and the number of players, no card text", lobby.contains("\"ph\":\"lobby\"") && lobby.contains("\"pl\":3") && lobby.contains("\"text\":\"\""));

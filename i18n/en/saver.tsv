@@ -1238,3 +1238,18 @@
 ما نجح: كل البقية +%s	Missed: everyone else +%s
 من الجواب: %s	From the list: %s
 نجح: +%s	Made it: +%s
+أدوار كل لاعب	Turns each
+ارسم	Draw
+ارسم بإصبعك والباقي يخمّن	Draw with a finger, the rest guess
+ارسم وخمّن	Draw & Guess
+تخمينك	Your guess
+خمّن الرسمة	Guess the drawing
+خمّنوا من جوالاتكم	Guess on your phones
+لا تكتب حروفًا ولا أرقامًا	No letters or numbers
+ليست هذه، جرّب غيرها	Not that one, try another
+ما أحد خمّن	Nobody guessed
+ما أحد خمّن بعد	Nobody has guessed yet
+%s يرسم، والباقي يخمّن	%s draws, the rest guess
+الدور %s من %s	Turn %s of %s
+خمّنوا: %s	Guessed: %s
+صح! %s	Right! %s

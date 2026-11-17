@@ -334,6 +334,10 @@ public final class QuizTest {
             check("server: the state of a player in the lobby, and «token» for a stranger", s1.contains("\"ph\":\"lobby\"") && http(port, "GET", "/api/state?c=4321&t=zzz", null).contains("\"e\":\"token\"") && http(port, "GET", "/api/state?c=1&t=" + tok, null).contains("\"e\":\"code\""));
             StringBuilder big = new StringBuilder("c=4321&n="); for (int i = 0; i < 2000; i++) big.append('a');
             check("server: a body over 1 KB is refused", http(port, "POST", "/api/join", big.toString()).contains("413"));
+            StringBuilder mid = new StringBuilder("c=4321&t=zz&q=1&x="); for (int i = 0; i < 4000; i++) mid.append('1');
+            StringBuilder huge = new StringBuilder("c=4321&t=zz&q=1&x="); for (int i = 0; i < 9000; i++) huge.append('1');
+            check("server: only /api/draw takes more than 1 KB (up to 8 KB); the quiz's room has no drawing, and every other route still refuses it",
+                http(port, "POST", "/api/draw", mid.toString()).contains("\"e\":\"route\"") && http(port, "POST", "/api/draw", huge.toString()).contains("413") && http(port, "POST", "/api/answer", mid.toString()).contains("413") && http(port, "POST", "/api/leave", mid.toString()).contains("413"));
             String j2 = http(port, "POST", "/api/join", "c=4321&n=Ben&k=1&t=");
             check("server: a second phone joins; answers are validated by the TV (closed before the game, bad index, bad token)",
                 j2.contains("\"ok\":true") && http(port, "POST", "/api/answer", "c=4321&t=" + tok + "&q=0&a=1&x=" + r.nonce()).contains("\"e\":\"closed\"") && http(port, "POST", "/api/answer", "c=4321&t=nope&q=0&a=1&x=" + r.nonce()).contains("\"e\":\"token\""));

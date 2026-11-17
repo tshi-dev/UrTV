@@ -31,3 +31,12 @@ Six to ten phones. Each phone gets a secret role: villager, wolf (1 for 6 player
 ## كم تقدر؟ (How Many?)
 
 Two to ten phones. A topic is shown («فواكه»); each phone bids a number from 1 to 10 (at most half the list): how many things of the topic they can name. The highest bid (a tie is settled by chance) types the names on their phone; every name is checked against the topic's list (spelling is forgiving: marks, alef and taa marbuta forms and «ال» do not matter; a name twice counts once). Naming the bid or more scores the bid; naming fewer scores nothing and every other player gets 1. Points only. 6, 8 or 10 topics; 45, 60 or 90 seconds to type. The bank is 22 closed topics (fruit, vegetables, wild animals, Arab countries, world capitals, Saudi cities, dishes, car makers, months...) in `assets/games/guess.gb`; answers are typed in Arabic. Nothing repeats on this TV.
+
+## ارسم وخمّن (Draw & Guess)
+
+Three to ten phones. One phone draws a word (the charades bank) with a finger; the TV shows the strokes as they arrive; the others type guesses on their phones (spelling is forgiving; the English word counts too). The first right guess scores 3, the second 2, the rest 1; the drawer gets 1 for each right guess. Each player draws once or twice. 60, 90 or 120 seconds a round, sooner when everyone is right. Nothing repeats on this TV.
+
+The phone server grows its body limit for this one route only:
+- `POST /api/draw` takes up to 8 KB (every other route still 1 KB, anything bigger is refused with 413 before it is read).
+- The room takes it only from the phone whose current card is a draw card, with the card's id (a stale card is refused), at most 8 posts a second, 500 points in a post, 300 strokes and 6000 points a card, every coordinate a whole number from 0 to 1000; a post with anything else in it is refused whole. The server stays on the local network only, with its code and rate limits as before.
+- Strokes are shown by the TV as lines on a canvas; nothing the phone sends is ever read as text, a link or a picture. The page builds no HTML from them.
