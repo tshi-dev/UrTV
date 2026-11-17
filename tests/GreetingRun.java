@@ -25,6 +25,7 @@ public final class GreetingRun {
                 case "seen": r = String.valueOf((int) GreetingText.seenDust(Double.parseDouble(f[1]), Double.parseDouble(f[2]))); break;
                 case "icon": r = String.valueOf(GreetingText.icon(Integer.parseInt(f[1]), "night".equals(f[2]))); break;   // 4.3.3: the drawing beside the line
                 case "sun": r = GreetingText.sun(f[1], f[2], "latin".equals(f[3]), false); break;
+                case "named": r = GreetingText.withName(f[1], f[2]); break;   // PR #45: the greeting and a name
                 default: r = "?";
             }
             out.append(r).append('\n');

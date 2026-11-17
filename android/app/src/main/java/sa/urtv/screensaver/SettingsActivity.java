@@ -483,6 +483,9 @@ public class SettingsActivity extends Activity {
         }
         row("التحية والطقس", prefs.greeting() ? "تعمل" : "متوقفة", R.drawable.ic_eye,
             new Runnable() { public void run() { prefs.setGreeting(!prefs.greeting()); render(); } });
+        // PR #45 «اسمك في التحية»: a name after the greeting, empty (the default) is the greeting alone
+        row("اسمك في التحية", prefs.greetingName().isEmpty() ? "بدون اسم" : prefs.greetingName(), R.drawable.ic_eye,
+            new Runnable() { public void run() { askGreetingName(); } });
         // the adhan's settings (on or off, the voice, the Fajr voice, short, any key stops it, the volume): the same screen as the player's adhan tab,
         // opened through the home (behind its family lock), so they are reachable with the «تلاوة وأذان» button hidden too
         row("الأذان", "تشغيله وصوته وصوت الفجر والمختصر والإيقاف بأي زر والمستوى", R.drawable.ic_settings,
@@ -2115,6 +2118,20 @@ public class SettingsActivity extends Activity {
     }
 
     /** Codes (2222 = أرامكو, also ٢٢٢٢), company names (الراجحي) and US tickers (AAPL), separated by spaces or commas (Stocks). */
+    private void askGreetingName() {
+        final EditText in = new EditText(this);
+        in.setHint(Words.of("مثال: علاء"));
+        in.setText(prefs.greetingName());
+        in.setSingleLine(true);
+        in.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_WORDS);
+        new Dlg(this).setTitle("اسمك في التحية (حتى " + arabicNum(Prefs.NAME_MAX) + " حرفًا)")
+            .setView(in)
+            .setPositiveButton("حفظ", (d, w) -> { prefs.setGreetingName(in.getText().toString()); render(); })
+            .setNeutralButton("بدون اسم", (d, w) -> { prefs.setGreetingName(""); render(); })
+            .setNegativeButton("إلغاء", null).show();
+        in.requestFocus();
+    }
+
     private void askStocks() {
         final EditText in = new EditText(this);
         in.setHint(Words.of("مثال: \u20662222 1120 AAPL NVDA\u2069"));

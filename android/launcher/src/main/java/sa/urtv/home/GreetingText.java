@@ -29,6 +29,12 @@ final class GreetingText {
         }
     }
 
+    /** PR #45 (AlaaAlmasri): the greeting with the person's name after it, «صباح الخير، علاء»; no name (the default) is the greeting alone. The name is isolated (it may be Latin letters in an Arabic line). */
+    static String withName(String greeting, String name) {
+        String clean = name == null ? "" : name.trim();
+        return clean.isEmpty() ? greeting : S.t("%s، %s", greeting, "\u2068" + clean + "\u2069");
+    }
+
     /** Open-Meteo's WMO weather code, as a short phrase that goes before «في المدينة». */
     static String sky(int code) {
         switch (code) {

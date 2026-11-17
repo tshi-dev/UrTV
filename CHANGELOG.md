@@ -17,8 +17,10 @@ Newest first. `next` is where changes land first; a release is what was tested t
 
 - **أوقات الصلاة في ليبيا:** ليبيا صار لها حساب خاص (الفجر ١٨° والعشاء ١٧° والظهر بعد دقيقة) بدل حساب مصر الذي كان فجره يسبق بنغازي بثماني دقائق. ضبطناه على جدول بنغازي ٢٠٢٦، وكل أوقاته اليومية تطابقه بدقيقة. يظهر تحت الساعة «حساب ليبيا».
 - **«إدارة التطبيقات» في مركز التحكم:** صف اختياري يفتح شاشة تطبيقات التلفزيون نفسها (حذف وإيقاف وصلاحيات)، مطفأ إلى أن تفعّله من «تخصيص»، بنفس قفل إعدادات التلفزيون، وما يظهر لو التلفزيون ما عنده هذي الشاشة.
+- **اسمك في التحية:** صف اختياري في «الموقع والطقس» يضيف اسمك بعد تحية الشاشة الرئيسية («صباح الخير، علاء»)، حتى ٣٠ حرفًا. مطفأ في الأصل: بدون اسم تبقى التحية كما كانت. **الوكيل:** `optimize/saver.sh greetingname علاء` (و`greetingname off` للمسح).
 
 **Thanks (GitHub handles, with the pull request number):**
+- The name after the greeting: AlaaAlmasri (#45).
 - The TV's apps screen as a quick «إدارة التطبيقات» row: alihaydaralmossa22-png (#18).
 - The Benghazi 2026 prayer table that Libya's own prayer method is fitted to: ALMAJBRY (#23).
 - The CVTE source screen (`alliance://start_signal`) as the «المصادر» fallback: alihaydaralmossa22-png (#17).

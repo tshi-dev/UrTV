@@ -17,6 +17,7 @@
 #                                                  the same choices but nextprayer and the first card; card2 none = one card (default)
 #   optimize/saver.sh home-card verse,hourly,year  on the home screen (launcher): up to 3 cards, same choices and nextprayer (home only), in this order
 #                                                  (one value works too; none = off). Two sit side by side, a third under them
+#   optimize/saver.sh greetingname علاء|off         home screen: a name after the greeting, «صباح الخير، علاء» (off, the default: the greeting alone)
 #   optimize/saver.sh greeting off                 home screen: the greeting (by prayer time) and the weather line under it: on (default) or off
 #   optimize/saver.sh listenpill off               home screen: the «تلاوة وأذان» button: on (default) or off. Off removes only the button: the adhan, its alarm and bar, the
 #                                                  any-key stop, the «يُتلى الآن» card and the Quran stay; the screen opens from the app menu (long OK on an app) or the card
@@ -242,6 +243,7 @@ case "${1:-}" in
   card2)    [ "${2:-}" = nextprayer ] && { echo "!! nextprayer is a home-screen card only (the screensaver's bottom-right panel already shows the next prayer): pick another card2, or card2 none"; exit 1; }
             set1 panel2 "${2:?usage: optimize/saver.sh card2 hourly | none   (shown beside the small clock: optimize/saver.sh clocksize small)}" ;;
   home-card)set1 home_panel "${2?usage: optimize/saver.sh home-card verse,hourly,year | none}" ;;
+  greetingname) set1 greetingname "${2:?usage: optimize/saver.sh greetingname NAME|off   (the name after the greeting on the home, at most 30 letters)}" ;;
   greeting) set1 greeting "${2:?usage: optimize/saver.sh greeting on|off}" ;;
   listenpill) set1 listenpill "${2:?usage: optimize/saver.sh listenpill on|off}" ;;
   updatebell) set1 updatebell "${2:?usage: optimize/saver.sh updatebell on|off}" ;;

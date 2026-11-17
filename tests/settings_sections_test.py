@@ -58,7 +58,7 @@ check("ORDER holds each row of its section exactly once (and its headers), nothi
       {k: sorted(set(by.get(k, [])) ^ set(v)) for k, v in orders.items()})
 check("the places the owner asked for (4.3.3): the clock's look and the photos in «المظهر», the language, digits, months and 12/24 in «اللغة», the city and the weather in «الموقع والطقس», the favourites in «التطبيقات»",
       all(n in by["look"] for n in ("حجم الساعة", "إظهار الثواني", "نص أوضح", "توهّج لون التطبيق", "صوري", "البطاقة الأولى"))
-      and all(n in by["lang"] for n in ("اللغة", "الأرقام", "أسماء الأشهر الميلادية", "نظام الساعة")) and sorted(by["place"]) == sorted(["المدينة", "الدولة", "التحية والطقس", "الرطوبة والرياح"])
+      and all(n in by["lang"] for n in ("اللغة", "الأرقام", "أسماء الأشهر الميلادية", "نظام الساعة")) and sorted(by["place"]) == sorted(["المدينة", "الدولة", "التحية والطقس", "اسمك في التحية", "الرطوبة والرياح"])
       and all(n in by["content"] for n in ("التصنيفات", "اللغات", "مسلسلات مختارة", "أقل تقييم"))
       and all(n in by["apps"] for n in ("تطبيقات في الشريط", "ترتيب كل التطبيقات", "قفل التطبيقات"))
       and sorted(by["family"]) == sorted(["الرقابة الأبوية", "تصفية المواقع", "الجوالات المسموح لها"]), {k: len(v) for k, v in by.items()})

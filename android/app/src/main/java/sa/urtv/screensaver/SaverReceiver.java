@@ -20,7 +20,7 @@ import java.util.Locale;
  *   am broadcast -n sa.urtv.screensaver/.SaverReceiver -a sa.urtv.screensaver.CITIES
  *   am broadcast -n sa.urtv.screensaver/.SaverReceiver -a sa.urtv.screensaver.SET
  *       [--es city 'الرس'] [--es lat 25.86 --es lon 43.49 --es tz Asia/Kuwait]   (tz is needed for a place that is not in the list) [--es teams '136013:Al-Hilal,150643:Al-Zulfi']
- *       [--es panel prayers] [--es panel2 hourly|none] [--es home_panel prayers,hourly,verse|none] [--es greeting on|off] [--es homephotos same|own] [--es homepacks id,id|none] [--es homeours on|off] [--es albummode seconds|ten|minute] [--es albumtitle on|off] [--es albumfit fit|fill] [--es albumsize normal|tall] [--es cleartext on|off] [--es looksync on|off] [--es surface quick|cards|tray:30..100:look|glass|graphite] [--es accent amber|gold|green|teal|sky|violet|rose|coral|default] [--es baropacity 30..100] [--es walldim 0..90] [--es focusstyle solid|frame|glow] [--es albummode seconds|minute] [--es albumdate on|off] [--es pillshidden markets,matches,center|none] [--es listenpill on|off] [--es updatebell on|off] [--es watchnext on|off] [--es appearance dark|light|auto] [--es look glass|graphite|navy|clean] [--es homelayout classic|couch|football] [--es favbar 5|6|7|8|all] [--es pagesdark on|off] [--es adhanbar on|off] [--es yearstrip on|off] [--es minrating 7]
+ *       [--es panel prayers] [--es panel2 hourly|none] [--es home_panel prayers,hourly,verse|none] [--es greeting on|off] [--es greetingname NAME|off] [--es homephotos same|own] [--es homepacks id,id|none] [--es homeours on|off] [--es albummode seconds|ten|minute] [--es albumtitle on|off] [--es albumfit fit|fill] [--es albumsize normal|tall] [--es cleartext on|off] [--es looksync on|off] [--es surface quick|cards|tray:30..100:look|glass|graphite] [--es accent amber|gold|green|teal|sky|violet|rose|coral|default] [--es baropacity 30..100] [--es walldim 0..90] [--es focusstyle solid|frame|glow] [--es albummode seconds|minute] [--es albumdate on|off] [--es pillshidden markets,matches,center|none] [--es listenpill on|off] [--es updatebell on|off] [--es watchnext on|off] [--es appearance dark|light|auto] [--es look glass|graphite|navy|clean] [--es homelayout classic|couch|football] [--es favbar 5|6|7|8|all] [--es pagesdark on|off] [--es adhanbar on|off] [--es yearstrip on|off] [--es minrating 7]
  *       [--es sunrise on|off] [--es prayerbar on|off] [--es wxmore on|off] [--es months default|levant] [--es verse day|3|10] [--es versekind both|verse|hadith] [--es seconds on|off] [--es backexit press|hold|three] [--es occasion on|off] [--es nightdim on|off] [--es taskspill on|off] [--es backsaver on|off] [--es genres Drama,Comedy] [--es langs English]
  *       [--es photos 30] [--es idle 10] [--es digits hindi|latin] [--es hijrioffset -2..2] [--es clock24 on|off] [--es ramtier low|mid|normal|auto] [--es lite auto|on|off] [--es lang ar|en]
  *       [--es cardstyle current|dark1|glass1|dark3|glass3|boxes] [--es national auto|off] [--es scenepacks saudi,couch] [--es scenestay 10|20|60|300] [--es scenetime on|off] [--es sceneweather on|off] [--es background photos|scenes] [--es clock plain|glass] [--es appsstyle frame|zoom] [--es couch on|off]
@@ -49,6 +49,7 @@ import java.util.Locale;
  * pagesdark = the home's markets and matches pages in the dark look (on, the default) or in the home's look (off).
  * watchnext = «أكمل المشاهدة» under the home screen's favourites (on, the default, or off); it needs the home app's TV listings permission.
  * updatebell = the «جرس التحديثات» on the home screen (on, the default, or off: only the bell goes; it shows only while the Play Store has updates waiting).
+ * greetingname = a name after the home's greeting («صباح الخير، علاء»), at most 30 letters on one line, or off (the default: the greeting alone).
  * greeting = the greeting and the weather line above the home screen's clock (on, the default, or off: the plain good-morning).
  * favbar = how many favourites the home's tray shows whole at once: 5 (the default) to 10, or all (every favourite, up to 10, all whole: no scrolling). 4.3.1: 9 and 10 are whole sizes again (smaller tiles).
  * yearstrip = the slim year strip under the screensaver's clock (on, or off, the default).
@@ -270,6 +271,10 @@ public class SaverReceiver extends BroadcastReceiver {
         String greeting = i.getStringExtra("greeting");
         if (greeting != null && !"on".equals(greeting) && !"off".equals(greeting))
             return "error: greeting is one of on off";
+        String greetingName = i.getStringExtra("greetingname");   // PR #45: the name after the greeting; off clears it
+        if (greetingName != null && !"off".equals(greetingName)
+                && (Prefs.cleanName(greetingName).isEmpty() || Prefs.cleanName(greetingName).length() > Prefs.NAME_MAX || !Prefs.cleanName(greetingName).equals(greetingName.trim().replaceAll("\\s+", " "))))
+            return "error: greetingname is a name of at most " + Prefs.NAME_MAX + " letters on one line, or off";
         String matchApp = i.getStringExtra("matchapp");   // 4.3 «تطبيق المباريات»: auto, none or an app's package
         if (matchApp != null && !Prefs.matchAppOk(matchApp)) return "error: matchapp is auto, none or an app's package name";
         String keyApp = i.getStringExtra("keyapp");   // «أزرار الريموت»: BUTTON=PKG or BUTTON=default (this remote's buttons: RemoteButtons)
@@ -466,6 +471,7 @@ public class SaverReceiver extends BroadcastReceiver {
         if (panel2 != null) p.setPanel2(panel2);
         if (homeCards != null) p.setHomePanels(homeCards);
         if (greeting != null) p.setGreeting("on".equals(greeting));
+        if (greetingName != null) p.setGreetingName("off".equals(greetingName) ? "" : greetingName);
         if (listenPill != null) p.setListenPill("on".equals(listenPill));
         if (pillsHidden != null) p.setPillsHidden(pillsHidden);
         if (matchApp != null) p.setMatchApp(matchApp);
@@ -685,6 +691,7 @@ public class SaverReceiver extends BroadcastReceiver {
             + "\npanel: " + p.panel() + "\npanel2: " + p.panel2()
             + "\nhome_panel: " + p.homePanel()
             + "\ngreeting: " + (p.greeting() ? "on" : "off")
+            + "\ngreetingname: " + (p.greetingName().isEmpty() ? "off" : p.greetingName())
             + "\nlistenpill: " + (p.listenPill() ? "on" : "off")
             + "\nhomephotos: " + (p.homePhotosSame() ? "same" : "own") + "\nhomepacks: " + (p.homePacksOn().isEmpty() ? "none" : PhotoPacks.joinOn(p.homePacksOn())) + "\nhomeours: " + (p.homeOursOn() ? "on" : "off") + "\nhomemine: " + (p.homeMine() == null ? "same" : p.homeMine()) + "\nalbummode: " + p.albumMode() + "\nalbumdate: " + (p.albumDate() ? "on" : "off") + "\nalbumtitle: " + (p.albumTitle() ? "on" : "off") + "\nalbumfit: " + p.albumFit() + "\nalbumsize: " + p.albumSize() + "\ncleartext: " + (p.clearText() ? "on" : "off") + "\nglow: " + p.glowMode()
             + "\npillshidden: " + (p.pillsHidden().isEmpty() ? "none" : p.pillsHidden()) + "\nmatchapp: " + p.matchApp() + "\nkeyapps: " + p.keyApps()
