@@ -151,12 +151,14 @@ public final class PhoneUpdater {
 
     private static void prepare(Context c, boolean download) throws Exception {
         clearReady();
-        final String base = UpdateRules.baseFor(UpdateChannel.read(c));
+        final String channel = UpdateChannel.read(c);
+        final String base = UpdateRules.baseFor(channel);
         releaseBase = base;
         Version ver = readVersion(base + "version.txt");
         int newest = UpdateRules.buildOf(ver.text);
         synchronized (PhoneUpdater.class) { if (newest > 0) build = newest; }
-        UpdateFlow.Verdict v = UpdateFlow.versionRead(ver.reached, ver.code, newest);
+        UpdateFlow.Verdict v = UpdateFlow.versionRead(ver.reached, ver.code, newest, "beta".equals(channel));   // no apk-beta release yet: nothing newer, not «cannot»
+        if (v.result == UpdateFlow.Result.UP_TO_DATE) { set("uptodate", "", ""); return; }
         if (v.result == UpdateFlow.Result.OFFLINE) { set("error", "offline", ""); return; }
         if (v.result == UpdateFlow.Result.CANNOT) { cannot(v.reason); return; }
         v = UpdateFlow.first(newest, lowestInstalled(c), canInstall(c));

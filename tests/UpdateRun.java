@@ -176,6 +176,11 @@ public final class UpdateRun {
         check("version.txt answered with an error (404, 500) is «CANNOT» (download), not offline", UpdateFlow.versionRead(true, 404, -1).result == UpdateFlow.Result.CANNOT
             && "download".equals(UpdateFlow.versionRead(true, 404, -1).reason) && "download".equals(UpdateFlow.versionRead(true, 503, 52).reason), "");
         check("version.txt that is a page instead of the file is «CANNOT» (download)", UpdateFlow.versionRead(true, 200, UpdateRules.buildOf("<html>")).result == UpdateFlow.Result.CANNOT, "");
+        check("beta channel (4.3.3): no apk-beta release (404) is «UP_TO_DATE», never «CANNOT»; the latest channel's 404 stays «CANNOT»",
+            UpdateFlow.versionRead(true, 404, -1, true).result == UpdateFlow.Result.UP_TO_DATE && UpdateFlow.versionRead(true, 404, -1, false).result == UpdateFlow.Result.CANNOT, "");
+        check("beta channel: only a 404 is «nothing newer» (a 500, a page, no network keep their own answers)",
+            UpdateFlow.versionRead(true, 500, -1, true).result == UpdateFlow.Result.CANNOT && UpdateFlow.versionRead(true, 200, -1, true).result == UpdateFlow.Result.CANNOT
+            && UpdateFlow.versionRead(false, 0, -1, true).result == UpdateFlow.Result.OFFLINE && UpdateFlow.versionRead(true, 200, 52, true).result == UpdateFlow.Result.CONTINUE, "");
         check("version.txt read well goes on", UpdateFlow.versionRead(true, 200, 52).result == UpdateFlow.Result.CONTINUE, "");
         check("a file that can't be fetched is «CANNOT» (download), never «OFFLINE»", UpdateFlow.fetchFailed().result == UpdateFlow.Result.CANNOT
             && "download".equals(UpdateFlow.fetchFailed().reason), "");

@@ -1,0 +1,20 @@
+name: "Idea or request · فكرة أو طلب"
+description: "Something UrTV could do · شي ودّك تلفزيونك يسويه"
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: idea
+    attributes:
+      label: "The idea · الفكرة"
+      description: "What you would like and why · وش تبي ولماذا"
+    validations:
+      required: true
+  - type: input
+    id: where
+    attributes:
+      label: "Where · وين"
+      description: "Home screen, screensaver, «تلاوة وأذان», games, phone page, setup… · الرئيسية، شاشة التوقف، …"
+  - type: input
+    id: tv
+    attributes:
+      label: "TV model (optional) · موديل التلفزيون (اختياري)"

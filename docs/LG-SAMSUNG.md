@@ -96,18 +96,18 @@ You need: the TV and a computer on the **same Wi-Fi**, Python 3 and OpenSSH (`ss
 
    ```
    git clone https://github.com/tshi-dev/UrTV && cd UrTV
-   python3 webos/build.py
-   python3 webos/install.py <TV-IP>
+   python3 ports/webos/build.py
+   python3 ports/webos/install.py <TV-IP>
    ```
 
    The first time, `install.py` fetches the TV's key from the Key Server and asks for the passphrase (typed here, not stored); the
    unlocked key stays in your home folder's `.ssh` directory so updates need neither. It copies the package over SSH (port 9922), installs it
    with the TV's own installer and opens it.
-3. The app is named «تلفزيونك» in the TV's app list. To remove it: `python3 webos/install.py <TV-IP> --uninstall`.
+3. The app is named «تلفزيونك» in the TV's app list. To remove it: `python3 ports/webos/install.py <TV-IP> --uninstall`.
 
 **The 40 days.** Developer Mode keeps its apps only for a limited time (about 40 days, and the Developer Mode app shows the time left).
 Before it ends, open the **Developer Mode** app and press **EXTEND**; if it already ran out, turn Dev Mode Status on again and run
-`webos/install.py` again. This is LG's rule, not ours; the only way around it is an app from the LG store, which this is not.
+`ports/webos/install.py` again. This is LG's rule, not ours; the only way around it is an app from the LG store, which this is not.
 
 ## Install on Samsung (Tizen)
 
@@ -116,21 +116,21 @@ Samsung TVs only install **signed** apps. Two ways:
 **A. Signed build, this computer to the TV (needs Tizen Studio).**
 
 1. In Samsung's **Tizen Studio**, make a certificate profile (Certificate Manager: a Samsung certificate for a TV, with the TV's DUID
-   added). `tizen/build.py` does not make or keep any key.
+   added). `ports/tizen/build.py` does not make or keep any key.
 2. **On the TV:** open **Apps**, type **1 2 3 4 5** on the remote, turn **Developer mode** on, type **this computer's IP** as **Host PC
    IP**, and restart the TV.
 3. **On the computer:**
 
    ```
-   python3 tizen/build.py --sign <profile>
-   python3 tizen/install.py <TV-IP>
+   python3 ports/tizen/build.py --sign <profile>
+   python3 ports/tizen/install.py <TV-IP>
    ```
 
    `install.py` talks Samsung's SDB (port 26101) itself, so Tizen Studio is only needed for the signing. To remove the app:
-   `python3 tizen/install.py <TV-IP> --uninstall`, or on the TV: Apps, Settings, UrTV, Delete.
+   `python3 ports/tizen/install.py <TV-IP> --uninstall`, or on the TV: Apps, Settings, UrTV, Delete.
 
 **B. TizenBrew Installer.** A third-party tool that signs and installs a `.wgt` with your own Samsung certificate on 2023 and newer
-TVs. Build the package with `python3 tizen/build.py` (it is not signed; the installer signs it) and follow that tool's own
+TVs. Build the package with `python3 ports/tizen/build.py` (it is not signed; the installer signs it) and follow that tool's own
 instructions. We have not tried it.
 
 To make the TV start into UrTV: turn on **Autorun Last App** in the TV's settings (General, Smart Features; where it is changes by
@@ -138,11 +138,11 @@ model year).
 
 ## Build notes
 
-- `python3 webos/build.py` writes `UrTV-webos.ipk`; `python3 tizen/build.py` writes `UrTV-tizen.wgt`. Both take `--preview` to leave the
+- `python3 ports/webos/build.py` writes `UrTV-webos.ipk`; `python3 ports/tizen/build.py` writes `UrTV-tizen.wgt`. Both take `--preview` to leave the
   files in `out/webos` or `out/tizen`, to open `index.html` in a desktop browser (open it from a small web server if the browser
   blocks local files).
 - The page is `dist/tv.html` (built by `python3 src/build.py`), with its fonts and bundled photos packaged instead of fetched from
-  GitHub, plus `tvports/shell.js` (settings, keys, adhan) and `tvports/data.js` (the city list and the adhan voices, made from the
+  GitHub, plus `ports/tvports/shell.js` (settings, keys, adhan) and `ports/tvports/data.js` (the city list and the adhan voices, made from the
   Android apps' own lists at build time). The package is about 2 MB.
 - **Fonts are private.** If `assets/fonts/Thmanyah*.woff2` are on your machine they are packaged; if not, the page uses the TV's
   Arabic system font. Never commit them.

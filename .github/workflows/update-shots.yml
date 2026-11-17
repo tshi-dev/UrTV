@@ -2,7 +2,8 @@ name: Update screen (rendered, before and after)
 
 # «تحديث تلفزيوني» and «إعداد تلفزيوني» drawn by the real launcher on an Android TV emulator (1920x1080), master's layout and this branch's, in the glass and sand looks, Arabic and English,
 # in four states (update: available, downloading, waiting for the install's confirmation, done) and five (setup: start, plan, progress, restart, done), 72 pictures; and, from this branch only, the redesigned setup in the glass look, dark and light, Arabic, in seven states (start, plan, progress, restart, prompt, promptlate, done), 14 more, and 4 of «مركز التحكم» (rest, focus, «تخصيص», light), and 2 of the home's stand-in picture: 100 in all. Debug builds only (the activities DebugUpdateShot and DebugSetupShot draw a state without the network). A picture is taken only while the screen is on top, and only pictures of a run that succeeded are committed. The pictures
-# are committed to docs/shots/update/{before,after} when the pushed commit's message says «[shots]» (the artifact is a zip not every reader can fetch).
+# are published to the data-screens branch (shots/<branch>/{update,setup}/{before,after}, never the pushed branch) when the pushed commit's message says «[shots]»
+# (the artifact is a zip not every reader can fetch); .github/screens/publish_shots.sh says how.
 on:
   push:
     branches: ['work/update-ui', 'work/fix-182']
@@ -83,22 +84,21 @@ jobs:
         with:
           name: update-shots
           path: update-out
-      - name: Commit the pictures
+      - name: Publish the pictures to data-screens
         if: success() && contains(join(github.event.commits.*.message, ' '), '[shots]')
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
         run: |
           pip install pillow
-          test "$(ls update-out/*.png | wc -l)" = 100 || { echo 'not all 100 pictures: nothing is committed'; exit 1; }
+          test "$(ls update-out/*.png | wc -l)" = 100 || { echo 'not all 100 pictures: nothing is published'; exit 1; }
           python3 - <<'PY'
           import glob, os
           from PIL import Image
           for f in sorted(glob.glob('update-out/*.png')):
               which, screen, rest = os.path.basename(f).split('-', 2)
-              os.makedirs(f'docs/shots/{screen}/{which}', exist_ok=True)
+              os.makedirs(f'shots-out/{screen}/{which}', exist_ok=True)
               im = Image.open(f).convert('RGB')
-              im.resize((1280, 720), Image.LANCZOS).save(f'docs/shots/{screen}/{which}/{rest}', optimize=True)
+              im.resize((1280, 720), Image.LANCZOS).save(f'shots-out/{screen}/{which}/{rest}', optimize=True)
           PY
-          git config user.name tshi-dev
-          git config user.email 272740088+tshi-dev@users.noreply.github.com
-          git add docs/shots/update docs/shots/setup
-          git commit -m "Update screen pictures from CI: before (master) and after, glass and sand, Arabic and English [skip ci]" || exit 0
-          git push origin "HEAD:${GITHUB_REF_NAME}"
+          bash .github/screens/publish_shots.sh shots-out "shots/${GITHUB_REF_NAME//\//-}" \
+            "Update screen pictures of ${GITHUB_SHA::7} on ${GITHUB_REF_NAME}: before (master) and after, glass and sand, Arabic and English"
