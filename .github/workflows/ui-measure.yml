@@ -10,7 +10,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write   # the pictures go to the data-ui-measure branch (never master or next)
 
 concurrency:
   group: ui-measure-${{ github.ref }}
@@ -75,3 +75,21 @@ jobs:
         with:
           name: ui-measure
           path: ui-out
+      # the sheets, the last frames and the report on a data branch, so they can be read without the artifact store
+      - name: Publish to data-ui-measure
+        if: always()
+        run: |
+          set -e
+          work=$(mktemp -d); run="run-${GITHUB_RUN_NUMBER}"
+          git clone --quiet --depth 5 --branch data-ui-measure "https://x-access-token:${{ github.token }}@github.com/${GITHUB_REPOSITORY}.git" "$work" || {
+            git init --quiet "$work"; git -C "$work" checkout --quiet -b data-ui-measure
+            git -C "$work" remote add origin "https://x-access-token:${{ github.token }}@github.com/${GITHUB_REPOSITORY}.git"; }
+          mkdir -p "$work/$run"
+          cp ui-out/*-sheet.jpg ui-out/*.txt ui-out/report.* "$work/$run"/ 2>/dev/null || true
+          for f in ui-out/*-end.png ui-out/start.png; do [ -f "$f" ] && ffmpeg -v error -y -i "$f" -vf scale=960:540 "$work/$run/$(basename "${f%.png}").jpg"; done
+          cd "$work"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit --quiet -m "UI measure run ${GITHUB_RUN_NUMBER} (${GITHUB_SHA::7})" || true
+          git push origin data-ui-measure

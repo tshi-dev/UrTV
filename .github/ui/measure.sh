@@ -53,8 +53,11 @@ case_back() {
   adb shell "date +%s.%N > /sdcard/t_rec; screenrecord --bit-rate 6000000 --time-limit $secs /sdcard/$name.mp4" &
   rec=$!
   sleep 2
+  adb shell dumpsys gfxinfo sa.urtv.home reset > /dev/null
   echo "t_change: $(adb shell 'date +%s.%N; input keyevent BACK' | head -1)" > "$OUT/$name.txt"
+  for n in 1 2 3; do sleep 1.2; adb shell dumpsys activity activities | grep -q "mResumedActivity.*sa.urtv.home/" && break; echo "back: still in $(adb shell dumpsys activity activities | grep -m1 mResumedActivity | sed 's/.* //')" >> "$OUT/$name.txt"; adb shell input keyevent BACK; done
   wait $rec
+  adb shell dumpsys gfxinfo sa.urtv.home | grep -E "Total frames|Janky frames|percentile|Number (Missed|Slow|Frozen)" >> "$OUT/$name.txt"
   echo "t_rec: $(adb shell cat /sdcard/t_rec)" >> "$OUT/$name.txt"
   echo "focus-after: $(focus)" >> "$OUT/$name.txt"
   adb pull "/sdcard/$name.mp4" "$OUT/$name.mp4" > /dev/null
@@ -98,7 +101,7 @@ sleep 3
 key DPAD_DOWN   # the focus on the apps row, so a lost focus shows
 
 # the home in front, the change from outside (70 s: the home may only read it at its next minute)
-case_front 01-preset-tv-to-couch 70 --es preset couch
+case_front 01-preset-tv-to-couch 100 --es preset couch
 case_front 02-preset-couch-to-tv 70 --es preset tv
 case_front 03-bg-photos-to-scenes 70 --es background scenes
 case_front 04-bg-scenes-to-photos 70 --es background photos
@@ -114,6 +117,28 @@ case_back 20-back-after-couch 12 --es preset couch
 case_back 21-back-after-tv 12 --es preset tv
 case_back 22-back-after-apps-banners 12 --es appsstyle banners
 case_back 23-back-after-apps-tiles 12 --es appsstyle tiles
+# cold start after a look change: is the first frame (HomeSnapshot's stand-in) the old look?
+case_cold() {
+  name=$1; secs=$2; shift 2
+  echo "== $name"
+  saver "$@" > /dev/null
+  sleep 4
+  adb shell am force-stop sa.urtv.home
+  adb shell input keyevent HOME > /dev/null; sleep 2; adb shell am force-stop sa.urtv.home
+  adb logcat -c
+  adb shell "date +%s.%N > /sdcard/t_rec; screenrecord --bit-rate 6000000 --time-limit $secs /sdcard/$name.mp4" &
+  rec=$!
+  sleep 2
+  echo "t_change: $(adb shell 'date +%s.%N; am start -n sa.urtv.home/.MainActivity > /dev/null' | head -1)" > "$OUT/$name.txt"
+  wait $rec
+  adb pull "/sdcard/$name.mp4" "$OUT/$name.mp4" > /dev/null
+  adb shell rm "/sdcard/$name.mp4"
+  adb logcat -d -v epoch | grep -iE "snapshot|first photo|sa\.urtv" | head -200 > "$OUT/$name.logcat.txt"
+  adb exec-out screencap -p > "$OUT/$name-end.png"
+}
+case_cold 40-cold-after-couch 14 --es preset couch
+case_cold 41-cold-after-tv 14 --es preset tv
+
 # inside the settings: does the screen itself change at once (its rows, its look, its preview)
 case_settings 30-settings-preset-couch 12 --es preset couch
 case_settings 31-settings-preset-tv 12 --es preset tv
