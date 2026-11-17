@@ -864,6 +864,7 @@ public class MainActivity extends Activity {
 
         final PillBar right = new PillBar(this);   // the top row: one bar behind its buttons (design/43)
         pillBar = right;
+        right.addOnLayoutChangeListener((nv, n1, n2, n3, n4, n5, n6, n7, n8) -> keepNudgeClear());   // 4.4: the nudge strip keeps NUDGE_CLEAR_PX from the opening row
         right.setGravity(Gravity.CENTER_VERTICAL);
         right.setClipChildren(false);
         Pill inputs = pill(S.t("المصادر"), R.drawable.ic_input);
@@ -2115,28 +2116,36 @@ public class MainActivity extends Activity {
         nudge.addOnLayoutChangeListener((nv, n1, n2, n3, n4, n5, n6, n7, n8) -> keepNudgeClear());   // and the weather line's own (where it is made)
     }
 
-    /** 4.4 the sweep: px at 1080p between the nudge strip and the weather line under «صباح الخير» (they nearly touched) */
+    /** 4.4 the sweep: px at 1080p between the nudge strip and what stands beside it (the weather line under «صباح الخير», the top row of buttons as it opens) */
     static final int NUDGE_CLEAR_PX = 16;
 
-    /** The strip moves sideways, away from the weather line, when the two share a band of the screen and stand closer than NUDGE_CLEAR_PX. */
+    /** The strip moves sideways, away from the weather line and the top row, when it shares a band of the screen with them and stands closer than NUDGE_CLEAR_PX. */
     private void keepNudgeClear() {
-        if (nudge == null || weatherLine == null) return;
+        if (nudge == null) return;
         if (nudge.getTranslationX() != 0f) nudge.setTranslationX(0f);
-        if (nudge.getVisibility() != View.VISIBLE || weatherLine.getVisibility() != View.VISIBLE || weatherLine.getWidth() == 0 || nudge.getWidth() == 0) return;
-        int[] n = new int[2], w = new int[2];
+        if (nudge.getVisibility() != View.VISIBLE || nudge.getWidth() == 0) return;
+        int[] n = new int[2];
         nudge.getLocationInWindow(n);
-        weatherLine.getLocationInWindow(w);
-        if (n[1] >= w[1] + weatherLine.getHeight() || w[1] >= n[1] + nudge.getHeight()) return;   // not side by side
         int gap = Math.round(NUDGE_CLEAR_PX * getResources().getDisplayMetrics().widthPixels / 1920f);
-        float shift = nudgeShift(n[0], nudge.getWidth(), w[0], weatherLine.getWidth(), gap);
+        int lo = Integer.MIN_VALUE, hi = Integer.MAX_VALUE;
+        for (View o : new View[] {weatherLine, pillBar}) {
+            if (o == null || o.getVisibility() != View.VISIBLE || o.getWidth() == 0) continue;
+            int[] w = new int[2];
+            o.getLocationInWindow(w);
+            if (n[1] >= w[1] + o.getHeight() || w[1] >= n[1] + nudge.getHeight()) continue;   // not side by side
+            if (w[0] + o.getWidth() / 2 >= n[0] + nudge.getWidth() / 2) hi = Math.min(hi, w[0] - gap);   // on its right: the strip ends before it
+            else lo = Math.max(lo, w[0] + o.getWidth() + gap);                                         // on its left: the strip starts after it
+        }
+        float shift = nudgeShift(n[0], nudge.getWidth(), lo, hi);
         if (shift != 0f) nudge.setTranslationX(shift);
     }
 
-    /** how far the strip [n, n+nw) moves so that gap px stand between it and the line [w, w+ww): to the left of a line on its right, else to the right */
-    static float nudgeShift(int n, int nw, int w, int ww, int gap) {
-        if (w + ww / 2 >= n + nw / 2) { int over = n + nw + gap - w; return over > 0 ? -over : 0; }
-        int over = w + ww + gap - n;
-        return over > 0 ? over : 0;
+    /** how far the strip [n, n+nw) moves to stand inside [lo, hi): not at all when it does; centred between the two when it is wider than the room */
+    static float nudgeShift(int n, int nw, int lo, int hi) {
+        if (lo != Integer.MIN_VALUE && hi != Integer.MAX_VALUE && nw > hi - lo) return lo + (hi - lo - nw) / 2f - n;
+        if (hi != Integer.MAX_VALUE && n + nw > hi) return hi - (n + nw);
+        if (lo != Integer.MIN_VALUE && n < lo) return lo - n;
+        return 0f;
     }
 
     /** «لاحقاً» (or Back on the bar): hidden for 7 days, then 30 after a second press, then never; the number of presses is kept */

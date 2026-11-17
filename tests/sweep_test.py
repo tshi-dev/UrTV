@@ -26,22 +26,28 @@ check("sweep2, the city prompt: ONE glass strip (12 dp corners) with plain words
       "nudge.setBackground(GlassPaint.fill(this, opaque(l.dialog), NUDGE_RADIUS, l.line));" in main and "nudgeAsk.setBackground(null);" in main
       and "nudgeCard.setBackground(focusOnly(NUDGE_FOCUS_RADIUS));" in main and "nudgeLater.setBackground(focusOnly(NUDGE_FOCUS_RADIUS));" in main
       and "static final float NUDGE_RADIUS = 12, NUDGE_FOCUS_RADIUS = 8;" in main and "nudgeAsk.setBackground(opaqueTile(" not in main and "nudgeCard.setBackground(opaqueTile(" not in main)
-check("sweep2, the weather line: the strip keeps 16 px (at 1080p) from it, moved sideways after each layout of either",
-      "static final int NUDGE_CLEAR_PX = 16;" in main and main.count("keepNudgeClear())") == 2
+check("sweep2, the weather line and the top row: the strip keeps 16 px (at 1080p) from both, moved sideways after each layout of any of the three",
+      "static final int NUDGE_CLEAR_PX = 16;" in main and main.count("keepNudgeClear())") == 3 and "for (View o : new View[] {weatherLine, pillBar})" in main
       and "Math.round(NUDGE_CLEAR_PX * getResources().getDisplayMetrics().widthPixels / 1920f)" in main)
 
-
-def shift(n, nw, w, ww, gap):   # MainActivity.nudgeShift, the same arithmetic
-    if w + ww // 2 >= n + nw // 2:
-        over = n + nw + gap - w
-        return -over if over > 0 else 0
-    over = w + ww + gap - n
-    return over if over > 0 else 0
+MIN, MAX = -2**31, 2**31 - 1
 
 
-check("sweep2, nudgeShift: the case of the screens (the strip 830..1496, the line from 1500): 12 px to the left; far apart: no move; a line on the left: to the right",
-      shift(830, 666, 1500, 270, 16) == -12 and shift(400, 300, 1500, 270, 16) == 0 and shift(300, 400, 100, 210, 16) == 26
-      and "int over = n + nw + gap - w; return over > 0 ? -over : 0;" in main and "int over = w + ww + gap - n;" in main)
+def shift(n, nw, lo, hi):   # MainActivity.nudgeShift, the same arithmetic
+    if lo != MIN and hi != MAX and nw > hi - lo:
+        return lo + (hi - lo - nw) / 2 - n
+    if hi != MAX and n + nw > hi:
+        return hi - (n + nw)
+    if lo != MIN and n < lo:
+        return lo - n
+    return 0
+
+
+check("sweep2, nudgeShift: the screens' cases: the weather line from 1504 moves the strip 464..1456 not at all; the open row to 474 moves it 26 px right; "
+      "both, too close: centred between them; neither: no move",
+      shift(464, 992, MIN, 1504 - 16) == 0 and shift(464, 992, 474 + 16, MAX) == 26 and shift(464, 992, 600, 1500) == 600 + (900 - 992) / 2 - 464
+      and shift(464, 992, MIN, MAX) == 0 and "static float nudgeShift(int n, int nw, int lo, int hi)" in main
+      and "if (hi != Integer.MAX_VALUE && n + nw > hi) return hi - (n + nw);" in main)
 cc = (HOME / "ControlCenter.java").read_text(encoding="utf-8")
 check("sweep2, the control centre: «تخصيص», «شكل اللوحة», «إعادة الترتيب», «تم» are words (no outline at rest), an 8 dp focus fill, never a capsule",
       "static final int WORD_RADIUS = 8;" in cc and "kind == PILL || kind == PRIMARY ? WORD_RADIUS : 12" in cc and "kind == PILL && !f" not in cc
