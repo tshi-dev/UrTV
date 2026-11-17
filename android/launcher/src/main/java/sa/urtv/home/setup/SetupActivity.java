@@ -148,10 +148,27 @@ public class SetupActivity extends Activity {
         return false;
     }
 
+    /** 4.4 (user report «ماهو راضي يفعل تصحيح USB»): Developer options open from the build number, whose place differs per brand; one line each */
+    static final String[] DEV_HELP = {
+        S.n("خيارات المطوّر ما تفتح؟ اضغط سبع مرات على رقم الإصدار، ومكانه حسب التلفزيون:"),
+        S.n("TCL: الإعدادات ← النظام ← حول ← «إصدار نظام Android TV» (الأقدم: تفضيلات الجهاز ← حول ← Build)"),
+        S.n("شاومي: الإعدادات ← تفضيلات الجهاز ← حول ← Build (بنظام Google TV: النظام ← حول ← «إصدار نظام Android TV»)"),
+        S.n("سوني: الإعدادات ← النظام ← حول ← «إصدار نظام Android TV» (الأقدم: تفضيلات الجهاز ← حول ← Build)"),
+        S.n("سكاي ورث: الإعدادات ← تفضيلات الجهاز ← حول ← Build (بنظام Google TV: النظام ← حول ← «إصدار نظام Android TV»)"),
+        S.n("بعدها تلقى «خيارات المطوّر» تحت النظام أو تفضيلات الجهاز، وفيها «تصحيح USB»."),
+    };
+
+    static String devHelp() {
+        StringBuilder b = new StringBuilder();
+        for (String line : DEV_HELP) b.append(b.length() == 0 ? "" : "\n").append(S.tv(line));
+        return b.toString();
+    }
+
     private void buildStart(SetupRunner r) {
         add(langToggle(), dp(12));
         add(text(S.t("يجهّز التلفزيون نفسه، بدون كمبيوتر ولا جوال. اضغط «جهّز كل شي»: يسألك التلفزيون مرة واحدة «السماح بتصحيح USB؟»، ثم نعرض عليك ما سنفعله بالضبط قبل أي تغيير."), 17, "Regular", TEXT), dp(12));
         add(text(S.t("قبل البدء: فعّل «تصحيح USB» (الإعدادات ← تفضيلات الجهاز ← حول ← اضغط «Build» سبع مرات ← خيارات المطوّر ← تصحيح USB). وخلك عند التلفزيون: لما تطلع الرسالة اختر «السماح دائماً»."), 14, "Regular", GOLD), dp(16));
+        add(text(devHelp(), 14, "Regular", TEXT), dp(16));   // 4.4: where the build number is, per brand (DEV_HELP)
         if (SetupRunner.resumable(new FileStore(this))) add(text(S.t("إعداد سابق ما اكتمل: «جهّز كل شي» يكمله من حيث توقف."), 14, "Regular", TEXT), dp(12));
         rescueFirst();   // 4.4: the way back with no computer, before anything is started
         computerHelp();   // 4.4: the switch failed twice here: the computer's way (the rest of «جهّز كل شي» still runs, without the home step)
