@@ -52,8 +52,8 @@ check("D-pad: ▲ ▼ walk the rows to the icon row, ◀ ▶ only between ★ an
       "star.setNextFocusLeftId(Dir.rtl() ? info.getId() : star.getId());" in opts and "info.setNextFocusRightId(Dir.rtl() ? star.getId() : info.getId());" in opts
       and "v.setNextFocusLeftId(v.getId()); v.setNextFocusRightId(v.getId());" in opts)
 check("OK on a row or an icon closes the box, then acts", "v.setOnClickListener(x -> { if (pw[0] != null) pw[0].dismiss(); if (action != null) action.run(); });" in opts)
-check("the box is the app's width as it shows focused, above it (under it when there is no room), the look's colours and focus",
-      "int w = Math.round(card.getWidth() * scale)" in opts and "GlassPaint.focused(a, l, GlassStyle.over(l.focus, dialog), RADIUS)" in opts
+check("the box is at least the app's width as it shows focused (wider when its words need it, 4.3.4: OptionsFit), above it (under it when there is no room), the look's colours and focus",
+      "OptionsFit.width(Math.round(card.getWidth() * scale)," in opts and "GlassPaint.focused(a, l, GlassStyle.over(l.focus, dialog), RADIUS)" in opts
       and "GlassStyle.over(l.dialog, l.base)" in opts)
 import re as _re
 g = {k: int(v) for k, v in _re.findall(r"(PAD|GAP|BUTTON_H|RADIUS|BOX_RADIUS|ICON|ABOVE) = (\d+)", opts.split("static final int", 1)[1].split(";", 1)[0].replace("static final int", ""))}

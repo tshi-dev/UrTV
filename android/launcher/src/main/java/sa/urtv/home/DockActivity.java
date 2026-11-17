@@ -258,7 +258,8 @@ public class DockActivity extends Activity {
         int k = e.getKeyCode();
         if (swallowUp == k && e.getAction() == KeyEvent.ACTION_UP) { swallowUp = -1; return true; }
         if (moving < 0) return super.dispatchKeyEvent(e);
-        if (e.getAction() != KeyEvent.ACTION_DOWN) return true;   // while moving, every key is ours
+        if (!FavEdit.owns(k)) return super.dispatchKeyEvent(e);   // 4.3.4 QA-5: while moving, only the keys the move uses are ours; a remote's app, colour and media keys go on
+        if (e.getAction() != KeyEvent.ACTION_DOWN) return true;
         if (k == KeyEvent.KEYCODE_DPAD_UP && moving > 0) {
             Collections.swap(row, moving, moving - 1);
             moving--;

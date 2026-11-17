@@ -182,6 +182,12 @@ public class SettingsActivity extends Activity {
     /** Back on a category's rows (or on «البطاقات», «المزيد») goes back to the screen its button is on, the focus on that button; on the first screen it leaves. */
     @Override public boolean dispatchKeyEvent(android.view.KeyEvent e) {
         if (e.getAction() == android.view.KeyEvent.ACTION_DOWN) returnWant = null;   // the person moves: the focus is theirs again
+        if (okHold.key(e.getKeyCode(), e.getAction(), android.os.SystemClock.uptimeMillis())) {
+            // a build waited for this release: the row that saw the press takes its click first, then the list is built
+            boolean done = super.dispatchKeyEvent(e);
+            if (!isFinishing() && !isDestroyed()) render();
+            return done;
+        }
         return super.dispatchKeyEvent(e);
     }
 
@@ -225,7 +231,10 @@ public class SettingsActivity extends Activity {
      * list stays where it was scrolled to. A screen just opened starts at its top: the first row, or on the categories the tile last
      * opened (the first one the first time).
      */
+    private final OkHold okHold = new OkHold();   // 4.3.4: a build while OK is held waits for its release (the first press was lost)
+
     private void render() {
+        if (okHold.defer(android.os.SystemClock.uptimeMillis())) return;   // done at OK's release, after its click (dispatchKeyEvent)
         latinDigits = DigitsText.isLatin(prefs.digits());
         List<View> before = rows();
         View had = entering ? null : focusedRow();
@@ -468,7 +477,7 @@ public class SettingsActivity extends Activity {
         row("تحكم من الجوال", "تشغيله وإيقافه وربط جوال، وفي الشاشة حالته الآن", R.drawable.ic_settings,
             new Runnable() { public void run() { openPhoneControl(); } });
         // «كل التطبيقات»: the home screen's «تعديل التطبيقات», or the order by name again (what is hidden stays hidden)
-        row("ترتيب كل التطبيقات", "تحريكها وإخفاؤها على الشاشة الرئيسية، أو الرجوع للترتيب الأصلي", R.drawable.ic_star,
+        row("ترتيب كل التطبيقات", "تحريكها وإخفاؤها وإرجاع المخفية، أو الرجوع للترتيب الأصلي", R.drawable.ic_star,
             new Runnable() { public void run() { pickAppsOrder(); } });
         // what an app's options box does (a long OK or Menu on the app, docs/UX-REVIEW.md) is here too: move, hide and the favourites
         // above, the locks and the app's details here
@@ -1443,14 +1452,15 @@ public class SettingsActivity extends Activity {
     /** «ترتيب كل التطبيقات»: the mode on the home screen, or «رجوع للترتيب الأصلي»; both are the launcher's (it owns the grid). */
     private void pickAppsOrder() {
         new Dlg(this).setTitle("ترتيب كل التطبيقات")
-            .setItems(new String[] {"تعديل التطبيقات", "رجوع للترتيب الأصلي"}, (d, i) -> openAppsOrder(i == 1))
+            .setItems(new String[] {"تعديل التطبيقات", "التطبيقات المخفية", "رجوع للترتيب الأصلي"}, (d, i) -> openAppsOrder(i == 2, i == 1))
             .show();
     }
 
-    private void openAppsOrder(boolean reset) {
+    /** hidden (4.3.4): the mode on «المخفية» with its list; a home older than 4.3.4 opens the mode, where «المخفية» is the last place */
+    private void openAppsOrder(boolean reset, boolean hidden) {
         try {
             startActivity(new Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_HOME).setClassName("sa.urtv.home", "sa.urtv.home.MainActivity")
-                .putExtra(reset ? "reset_apps_order" : "edit_apps", true).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+                .putExtra(reset ? "reset_apps_order" : "edit_apps", true).putExtra("apps_hidden", hidden).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
         } catch (RuntimeException e) {
             toast("ثبّت الواجهة الرئيسية «تلفزيونك» أولاً");
         }
@@ -2502,8 +2512,9 @@ public class SettingsActivity extends Activity {
         last.setOnFocusChangeListener((v, has) -> {
             if (was != null) was.onFocusChange(v, has);
             if (!has) return;
-            for (android.view.ViewParent p = list.getParent(); p != null; p = p.getParent())   // list sits in a frame in the scroll view
-                if (p instanceof ScrollView) { final ScrollView sv = (ScrollView) p; v.post(() -> sv.fullScroll(View.FOCUS_DOWN)); break; }
+            // 4.3.4: the note in view, the focus left where it is. fullScroll(FOCUS_DOWN) also moves the focus to the lowest row: since 4.3.3 put
+            // «النسخ التجريبية» under this row, a step down onto it jumped straight past it
+            v.post(() -> t.requestRectangleOnScreen(new android.graphics.Rect(0, 0, t.getWidth(), t.getHeight())));
         });
     }
 

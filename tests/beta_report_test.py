@@ -27,7 +27,7 @@ for c in ("beta", "latest", "next"):
 for bad in ("channel: beta; rm", "channel: stable", "channel: beta extra", "channel:beta", "channel: "):
     check(f"share.py drops «{bad}»", share.restrict(bad + "\n").strip() == "", share.restrict(bad + "\n"))
 act = (HOME / "ReportActivity.java").read_text(encoding="utf-8")
-check("the report screen adds the line from the update channel", "Report.withChannel(lines, sa.urtv.home.phone.UpdateChannel.read(this))" in act)
+check("the report screen adds the line from the update channel", "Report.withChannel(lines, sa.urtv.home.phone.UpdateChannel.cached())" in act)
 sa = (ROOT / "android/app/src/main/java/sa/urtv/screensaver")
 st, hub, words, en = (sa / "SettingsActivity.java").read_text(encoding="utf-8"), (sa / "SettingsHub.java").read_text(encoding="utf-8"), (sa / "Words.java").read_text(encoding="utf-8"), (ROOT / "i18n/en/saver.tsv").read_text(encoding="utf-8")
 BTN = "أرسل ملاحظة عن النسخة التجريبية"
