@@ -149,6 +149,16 @@ if shutil.which("javac"):
     fd = [r for r in rows if r[0] == "framed"][0][1:]
     check("the cut-out's skyline is read through the crop (a tower at 960-1000 of the photo, its top at 500, stands in "
           "the screen's column at 1000-1040, its top at 528); no crop: the skyline itself", fd == ["25:528", "true"], fd)
+    sclock, mainsrc = read(HOME / "SceneClock.java"), read(HOME / "MainActivity.java")
+    check("4.4 the owner (stair-stepped digits on the TV): the big clock's every layer (glass fill, rim, sheen, shadow) is drawn smooth at the digits' "
+          "real size: anti-aliased, the glass copy sampled with filtering, the text at its true size (LINEAR, SUBPIXEL); no bitmap of it is scaled",
+          "Paint.ANTI_ALIAS_FLAG | Paint.FILTER_BITMAP_FLAG | Paint.DITHER_FLAG | Paint.LINEAR_TEXT_FLAG | Paint.SUBPIXEL_TEXT_FLAG" in sclock
+          and "fill = new Paint(SMOOTH), edge = new Paint(SMOOTH), sheen = new Paint(SMOOTH), shadow = new Paint(SMOOTH)" in sclock
+          and "createScaledBitmap" not in sclock and "setLayerType" not in sclock and "c.drawText(text, x, y, shadow);" in sclock)
+    check("4.4 the owner (the date ran into the big clock's «2»): with the big glass clock the date, zone and prayer lines move up into the header "
+          "clock's empty row (the header keeps its size); back where they were without it",
+          "private void liftDate(boolean up)" in mainsrc and "liftDate(bigClock);" in mainsrc and "liftDate(true);" in mainsrc and "liftDate(false);" in mainsrc
+          and "-(date.getTop() - clock.getTop())" in mainsrc)
     check("ScenePlan's tiers are Ram's numbers", [r for r in rows if r[0] == "tiers"][0][1] == "0,1,2"
           and "public static final int LOW = 0, MID = 1, NORMAL = 2;" in ram)
 else:
@@ -251,7 +261,9 @@ check("4.4 three choices: «التخطيط» (تلفزيونك, the default, ك�
       'HOME_LAYOUTS = {"classic", "couch", "football"};' in prefs and '{"تلفزيونك", "كنبة", "كرة القدم"}' in prefs and 'HOME_BGS = {"photos", "scenes"};' in prefs
       and 'HOME_CLOCKS = {"plain", "glass"};' in prefs and 'sp.getString("homeBg", oldScenes() ? "scenes" : "photos")' in prefs and 'sp.getString("homeClock", oldScenes() ? "glass" : "plain")' in prefs)
 check("the presets set the three at once: «شكل تلفزيونك» (our layout, photos, plain clock; the default) and «شكل كنبة» (the couch layout, scenes, glass clock); any other mix reads «مخصّص»",
-      '{{"urtv", "شكل تلفزيونك", "classic", "photos", "plain", "frame"}, {"couch", "شكل كنبة", "couch", "scenes", "glass", "zoom"}}' in prefs and 'return "مخصّص";' in prefs
+      # 4.4: Couch's apps are «أيقونات» (the owner); a TV set to Couch before («تكبير وظل», "zoom") still reads Couch (presetApps)
+      '{{"urtv", "شكل تلفزيونك", "classic", "photos", "plain", "frame"}, {"couch", "شكل كنبة", "couch", "scenes", "glass", "icons"}}' in prefs and 'return "مخصّص";' in prefs
+      and '("icons".equals(want) && "zoom".equals(have))' in prefs
       and 'row("شكل كنبة", prefs.couchLabel()' in st and 'prefs.setCouch(!prefs.couchOn())' in st and 'row("التخطيط"' in st and 'row("الخلفية"' in st and 'row("الساعة"' in st)
 check("the home: «الخلفية ← الآفاق» shows the scenes on any layout; the glass clock and the cut-out only with «الساعة ← زجاجية», else the header's clock stays",
       'boolean on = "scenes".equals(cfg.homeBg);' in tick and 'boolean glass = "glass".equals(cfg.homeClock);' in tick and "boolean bigClock = glass;" in tick
@@ -282,9 +294,13 @@ check("4.4 the owner: «شكل كنبة» is one switch, off by default; on keep
       'sp.contains("couchOn") ? sp.getBoolean("couchOn", false)' in prefs and 'putString("couchBefore", homeLayout() + "," + homeBg() + "," + homeClock() + "," + appsStyle())' in cset
       and 'setLook3("couch");' in cset and "setHomeLayout(b[0]); setHomeBg(b[1]); setHomeClock(b[2]); setAppsStyle(b[3]);" in cset and '"مفعّل (مخصّص' in prefs)
 main_tile = main[main.index("card.setOnFocusChangeListener((v, has) -> {"):main.index("card.setOnLongClickListener(")]
-check("4.4 «شكل التطبيقات»: إطار (the default: the ring, the name above the tray) or تكبير وظل (larger with a soft shadow, no ring, the name under the tile); «شكل كنبة» turns it on",
-      'HOME_APPS = {"frame", "zoom"};' in prefs and '{"إطار", "تكبير وظل"}' in prefs and 'sp.getString("appsStyle", "frame")' in prefs and 'row("شكل التطبيقات"' in st
+# 4.4 «شكل التطبيقات» became the row's three ways (the owner approved them; tests/apps_look_test.py has the rest): the stored values of the first
+# version (frame, the default ring; zoom, «تكبير وظل») are today's tiles with that focus, and «تكبير وظل» is how the focused app shows in A and B
+check("4.4 «شكل التطبيقات»: بنرات, أيقونات or مربعات ملونة (today's, the default with its ring); تكبير وظل (larger with a soft shadow, no ring, the name under the row) for A and B, and for the tiles where it was chosen",
+      'HOME_APPS = {"banners", "icons", "tiles"};' in prefs and '{"بنرات", "أيقونات", "مربعات ملونة"}' in prefs and 'APPS_STORED = {"banners", "icons", "frame", "zoom"};' in prefs
+      and 'sp.getString("appsStyle", "frame")' in prefs and 'row("شكل التطبيقات"' in st
       and '"apps_style"' in prov and 'getStringExtra("appsstyle")' in recv and "appsstyle) " in read(ROOT / "optimize/saver.sh")
       and "final boolean zoom = inDock && appsZoom;" in main_tile and "FavBar.ZOOM_SCALE" in main_tile and "alpha(has && !zoom ? 1f : 0f)" in main_tile
-      and "placeZoomName(appsZoom && inBar ? f : null);" in main and 'if (as >= 0 && "zoom".equals(cur.getString(as))) appsStyle = "zoom";' in snap)
+      and "placeZoomName(appsZoom && inBar ? f : null);" in main and 'java.util.Arrays.asList("zoom", "banners", "icons", "tiles").contains(v)' in snap
+      and "appsZoom = FavBar.zoom(cfg.appsStyle);" in main)
 sys.exit(1 if failed else 0)

@@ -64,7 +64,7 @@ the phone page's key, «مركز التحكم» the control centre's row that op
 ——— شكل كنبة [الرئيسية]
     الخيارات: مفعّل / متوقف
     الأصل: متوقف
-    تشغيله يضبط مرة وحدة: التخطيط كنبة، الخلفية الآفاق، الساعة زجاجية، شكل التطبيقات تكبير وظل، ويحفظ اختياراتك؛ وإيقافه يرجّعها كما كانت. وتغيير أي واحد منها وهو مفعّل يبقيه مفعّلًا ويقول «مخصّص»
+    تشغيله يضبط مرة وحدة: التخطيط كنبة، الخلفية الآفاق، الساعة زجاجية، شكل التطبيقات أيقونات، ويحفظ اختياراتك؛ وإيقافه يرجّعها كما كانت. وتغيير أي واحد منها وهو مفعّل يبقيه مفعّلًا ويقول «مخصّص»
     مثال للوكيل: optimize/saver.sh couch on
       القيم المقبولة: on|off
 ——— التخطيط [الرئيسية]
@@ -116,6 +116,22 @@ the phone page's key, «مركز التحكم» the control centre's row that op
     الخيارات: كبيرة / متوسطة / صغيرة
     الأصل: كبيرة
     مثال للوكيل: optimize/saver.sh clocksize <large, medium, small>  (`large` is the default and today's look, unchanged)
+——— تصميم شاشة التوقف [شاشة التوقف]
+    الخيارات: معلومات / نظيفة / ساعة كبيرة / لوحة / خط اليوم
+    الأصل: معلومات
+    مثال للوكيل: optimize/saver.sh design <info, clean, big, frame, dayline>  (`info` = «معلومات», the screensaver as it always was, the default)
+——— الشريط في الوسط [شاشة التوقف]
+    الخيارات: بدون / الصلوات / الخانة اليسرى / الطقس
+    الأصل: بدون
+    مثال للوكيل: optimize/saver.sh bar <none, prayers, slot, weather>  (`none` is the default)
+——— مكان الشريط [شاشة التوقف]
+    الخيارات: أسفل الشاشة / تحت الساعة
+    الأصل: أسفل الشاشة
+    مثال للوكيل: optimize/saver.sh barat <bottom, clock>  (`bottom` of the screen is the default; `clock` = under the clock)
+——— مكان الطقس [شاشة التوقف]
+    الخيارات: كما في التصميم / مكانه المعتاد / تحت الساعة / في الزاوية / مخفي
+    الأصل: كما في التصميم
+    مثال للوكيل: optimize/saver.sh wx <auto, usual, clock, corner, off>  (`auto` = as the design has it, the default: its place at the top in `info` and `dayline`, hidden in the others)
 ——— إظهار الثواني [الرئيسية وشاشة التوقف]
     مثال للوكيل: optimize/saver.sh seconds on  (`off` = the default, the clock as always)
       القيم المقبولة: on|off
@@ -129,10 +145,10 @@ the phone page's key, «مركز التحكم» the control centre's row that op
       القيم المقبولة: on|off
 —— التطبيقات
 ——— شكل التطبيقات [الرئيسية]
-    الخيارات: إطار / تكبير وظل
-    الأصل: إطار
-    مثال للوكيل: optimize/saver.sh appsstyle frame  (the default: a ring in the look's colour, the name above the tray)
-      القيم المقبولة: frame|zoom
+    الخيارات: بنرات / أيقونات / مربعات ملونة
+    الأصل: مربعات ملونة
+    مثال للوكيل: optimize/saver.sh appsstyle tiles  («مربعات ملونة», the default: today's tray of tiles, its focus as it was: the ring, or `zoom` where that was chosen)
+      القيم المقبولة: tiles|banners|icons
 ——— توهّج لون التطبيق [الرئيسية]
     مثال للوكيل: optimize/saver.sh glow light  (`off` = the default, `light` = a third of the strength, `on` = full)
       القيم المقبولة: off|light|on
@@ -390,7 +406,7 @@ the phone page's key, «مركز التحكم» the control centre's row that op
     مثال للوكيل: optimize/saver.sh markets off
       القيم المقبولة: tasi,gold,btc | off | on
 ——— الأسواق [شاشة التوقف]
-    مثال للوكيل: optimize/saver.sh markets <up to 4 of tasi, aramco, spx, btc, gold, silver, oil, xrp>  (`oil` = Brent, in dollars per barrel)
+    مثال للوكيل: optimize/saver.sh markets <up to 4 of tasi, aramco, spx, btc, gold, gold21, silver, oil, xrp>  (`oil` = Brent, in dollars per barrel; `gold` = the 24-carat gram in riyals, `gold21` = the 21-carat gram, both can be shown)
     مثال للوكيل: optimize/saver.sh home-card … stocks
     مثال للوكيل: optimize/saver.sh stocks
     مثال للوكيل: optimize/saver.sh markets
@@ -429,7 +445,7 @@ the phone page's key, «مركز التحكم» the control centre's row that op
      القيم المقبولة: auto|on|off
 —— بجانب الساعة
 ——— المحتوى [شاشة التوقف]
-    مثال للوكيل: optimize/saver.sh card <shows, prayers, forecast, hourly, prayerrow, matches, nextmatch, matchday, livenow, minitable, nextmatches, yesterday, weekend, cuppath, formula, national, verse, wisdom, adhkar, stocks, tasks, year, smart, today, album, none>  (the app's own list, Prefs.SAVER_PANELS; `nextprayer` is a home-screen card only: `home-card`)
+    مثال للوكيل: optimize/saver.sh card <shows, prayers, forecast, hourly, prayerrow, matches, nextmatch, matchday, livenow, minitable, nextmatches, yesterday, weekend, cuppath, formula, national, verse, hadith, wisdom, adhkar, stocks, tasks, year, smart, today, album, none>  (the app's own list, Prefs.SAVER_PANELS; `nextprayer` is a home-screen card only: `home-card`)
 ——— بطاقة ثانية [شاشة التوقف]
     مثال للوكيل: optimize/saver.sh card2 <the same list as card, but never the card that is already first>  (`card2 none` = one card, the default; the second card can't repeat the first, and needs a first card: `card verse` first)
 ——— تبديل الآية والحديث [الرئيسية وشاشة التوقف]
@@ -478,6 +494,8 @@ the phone page's key, «مركز التحكم» the control centre's row that op
    إجراء أو شاشة من التلفزيون (ما فيه قيمة يضبطها أمر)
 —— أرسل تقرير [كل التلفزيون]
    إجراء أو شاشة من التلفزيون (ما فيه قيمة يضبطها أمر)
+—— مصادر البيانات [الرئيسية وشاشة التوقف]
+   من التلفزيون فقط (بلا أمر، عن قصد)
 ```
 
 ## «شكل كنبة» متوقف (الأصل): شاشة ٤.٣.٢ (أزرار كبيرة، و«البطاقات» و«المزيد» شاشتا أزرار)
@@ -593,6 +611,22 @@ the phone page's key, «مركز التحكم» the control centre's row that op
      الأصل: تلقائي
      مثال للوكيل: optimize/saver.sh national off  (`auto` is the default)
        القيم المقبولة: auto|off
+———— تصميم شاشة التوقف [شاشة التوقف]
+     الخيارات: معلومات / نظيفة / ساعة كبيرة / لوحة / خط اليوم
+     الأصل: معلومات
+     مثال للوكيل: optimize/saver.sh design <info, clean, big, frame, dayline>  (`info` = «معلومات», the screensaver as it always was, the default)
+———— الشريط في الوسط [شاشة التوقف]
+     الخيارات: بدون / الصلوات / الخانة اليسرى / الطقس
+     الأصل: بدون
+     مثال للوكيل: optimize/saver.sh bar <none, prayers, slot, weather>  (`none` is the default)
+———— مكان الشريط [شاشة التوقف]
+     الخيارات: أسفل الشاشة / تحت الساعة
+     الأصل: أسفل الشاشة
+     مثال للوكيل: optimize/saver.sh barat <bottom, clock>  (`bottom` of the screen is the default; `clock` = under the clock)
+———— مكان الطقس [شاشة التوقف]
+     الخيارات: كما في التصميم / مكانه المعتاد / تحت الساعة / في الزاوية / مخفي
+     الأصل: كما في التصميم
+     مثال للوكيل: optimize/saver.sh wx <auto, usual, clock, corner, off>  (`auto` = as the design has it, the default: its place at the top in `info` and `dayline`, hidden in the others)
 ———— حجم الساعة [شاشة التوقف]
      الخيارات: كبيرة / متوسطة / صغيرة
      الأصل: كبيرة
@@ -607,7 +641,7 @@ the phone page's key, «مركز التحكم» the control centre's row that op
        القيم المقبولة: fasting
 ——— بجانب الساعة
 ———— المحتوى [شاشة التوقف]
-     مثال للوكيل: optimize/saver.sh card <shows, prayers, forecast, hourly, prayerrow, matches, nextmatch, matchday, livenow, minitable, nextmatches, yesterday, weekend, cuppath, formula, national, verse, wisdom, adhkar, stocks, tasks, year, smart, today, album, none>  (the app's own list, Prefs.SAVER_PANELS; `nextprayer` is a home-screen card only: `home-card`)
+     مثال للوكيل: optimize/saver.sh card <shows, prayers, forecast, hourly, prayerrow, matches, nextmatch, matchday, livenow, minitable, nextmatches, yesterday, weekend, cuppath, formula, national, verse, hadith, wisdom, adhkar, stocks, tasks, year, smart, today, album, none>  (the app's own list, Prefs.SAVER_PANELS; `nextprayer` is a home-screen card only: `home-card`)
 ———— بطاقة ثانية [شاشة التوقف]
      مثال للوكيل: optimize/saver.sh card2 <the same list as card, but never the card that is already first>  (`card2 none` = one card, the default; the second card can't repeat the first, and needs a first card: `card verse` first)
 ———— شكل البطاقة [الرئيسية وشاشة التوقف]
@@ -775,7 +809,7 @@ the phone page's key, «مركز التحكم» the control centre's row that op
 —— شكل كنبة [الرئيسية]
    الخيارات: مفعّل / متوقف
    الأصل: متوقف
-   تشغيله يضبط مرة وحدة: التخطيط كنبة، الخلفية الآفاق، الساعة زجاجية، شكل التطبيقات تكبير وظل، ويحفظ اختياراتك؛ وإيقافه يرجّعها كما كانت. وتغيير أي واحد منها وهو مفعّل يبقيه مفعّلًا ويقول «مخصّص»
+   تشغيله يضبط مرة وحدة: التخطيط كنبة، الخلفية الآفاق، الساعة زجاجية، شكل التطبيقات أيقونات، ويحفظ اختياراتك؛ وإيقافه يرجّعها كما كانت. وتغيير أي واحد منها وهو مفعّل يبقيه مفعّلًا ويقول «مخصّص»
    مثال للوكيل: optimize/saver.sh couch on
      القيم المقبولة: on|off
 —— التخطيط [الرئيسية]
@@ -794,10 +828,10 @@ the phone page's key, «مركز التحكم» the control centre's row that op
    مثال للوكيل: optimize/saver.sh clock plain
      القيم المقبولة: plain|glass
 —— شكل التطبيقات [الرئيسية]
-   الخيارات: إطار / تكبير وظل
-   الأصل: إطار
-   مثال للوكيل: optimize/saver.sh appsstyle frame  (the default: a ring in the look's colour, the name above the tray)
-     القيم المقبولة: frame|zoom
+   الخيارات: بنرات / أيقونات / مربعات ملونة
+   الأصل: مربعات ملونة
+   مثال للوكيل: optimize/saver.sh appsstyle tiles  («مربعات ملونة», the default: today's tray of tiles, its focus as it was: the ring, or `zoom` where that was chosen)
+     القيم المقبولة: tiles|banners|icons
 —— حزم الآفاق [الرئيسية]
    الخيارات: آفاق السعودية / آفاق عالمية
    الأصل: آفاق السعودية
@@ -841,6 +875,8 @@ the phone page's key, «مركز التحكم» the control centre's row that op
     مثال للوكيل: optimize/saver.sh update
 ——— مسح الملفات المؤقتة [كل التلفزيون]
     إجراء أو شاشة من التلفزيون (ما فيه قيمة يضبطها أمر)
+——— مصادر البيانات [الرئيسية وشاشة التوقف]
+    من التلفزيون فقط (بلا أمر، عن قصد)
 — أرسل تقرير
 —— أرسل تقرير [كل التلفزيون]
    إجراء أو شاشة من التلفزيون (ما فيه قيمة يضبطها أمر)
@@ -898,7 +934,7 @@ the phone page's key, «مركز التحكم» the control centre's row that op
      مثال للوكيل: optimize/saver.sh markets off
        القيم المقبولة: tasi,gold,btc | off | on
 ———— الأسواق [شاشة التوقف]
-     مثال للوكيل: optimize/saver.sh markets <up to 4 of tasi, aramco, spx, btc, gold, silver, oil, xrp>  (`oil` = Brent, in dollars per barrel)
+     مثال للوكيل: optimize/saver.sh markets <up to 4 of tasi, aramco, spx, btc, gold, gold21, silver, oil, xrp>  (`oil` = Brent, in dollars per barrel; `gold` = the 24-carat gram in riyals, `gold21` = the 21-carat gram, both can be shown)
      مثال للوكيل: optimize/saver.sh home-card … stocks
      مثال للوكيل: optimize/saver.sh stocks
      مثال للوكيل: optimize/saver.sh markets

@@ -39,7 +39,7 @@ check("its picker: the two choices, the one set checked, saved like `saver.sh ve
       and "prefs.setQuoteEvery(QuoteEvery.fromChoice(i)); d.dismiss(); render();" in pick)
 check("the row belongs to «شاشة التوقف» in the settings' categories", '{"تبديل الآية والحديث", SAVER}' in hub)
 check("the page reads #versemin=3 or 10 only, and turns the verse cards alone when the 3 minutes are up",
-      "verseMin: ({3:3, 10:10})[_Q.get('versemin')] || 0," in tpl and "CARDS.forEach(c => { if(c.kind === 'verse') renderCard(c, true); });" in tpl)
+      "verseMin: ({3:3, 10:10})[_Q.get('versemin')] || 0," in tpl and "CARDS.forEach(c => { if(c.kind === 'verse' || c.kind === 'hadith') renderCard(c, true); });" in tpl)
 check("the page's titles: «آية اليوم» / «حديث اليوم» as always, «آية كريمة» / «حديث شريف» every 3 minutes",
       "CONFIG.verseMin ? 'آية كريمة' : 'آية اليوم'" in tpl and "CONFIG.verseMin ? 'حديث شريف' : 'حديث اليوم'" in tpl)
 check("docs: SETTINGS.md and FEATURES.md say it", "saver.sh verse 3" in (ROOT / "docs/SETTINGS.md").read_text(encoding="utf-8")

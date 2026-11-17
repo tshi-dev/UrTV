@@ -403,6 +403,7 @@
 بيتكوين	Bitcoin
 الذهب (الجرام بالريال)	Gold (SAR per gram)
 الفضة (الجرام بالريال)	Silver (SAR per gram)
+ذهب عيار ٢١ (الجرام بالريال)	Gold 21k (SAR per gram)
 نفط برنت (للبرميل)	Brent oil (per barrel)
 ريبل	XRP
 الاتجاه فقط ▲▼	Direction only ▲▼
@@ -1068,7 +1069,7 @@
 شكل كنبة والتخطيط، والخلفية والآفاق، والساعة والنص، والتطبيقات، والبطاقات، والصور.	Couch look and layout, background and horizons, clock and text, apps, cards, and photos.
 التحكم من الجوال: تشغيله وإيقافه وربط جوال، وفي الشاشة حالته الآن	Control from the phone: turn it on or off and pair a phone; the screen shows its state now
 الشكل: %s، والإضاءة: %s	Look: %s, lighting: %s
-مفعّل (التخطيط كنبة، الخلفية الآفاق، الساعة زجاجية، التطبيقات تكبير وظل؛ إيقافه يرجّع اختياراتك)	On (layout Couch, background horizons, glass clock, apps larger with a shadow; turning it off brings your own choices back)
+مفعّل (التخطيط كنبة، الخلفية الآفاق، الساعة زجاجية، التطبيقات أيقونات؛ إيقافه يرجّع اختياراتك)	On (layout Couch, background horizons, glass clock, apps as icons; turning it off brings your own choices back)
 مفعّل (مخصّص: غيّرت صفًا من الأربعة؛ إيقافه يرجّع اختياراتك قبل التشغيل)	On (custom: you changed one of the four rows; turning it off brings back your choices from before)
 زر يوتيوب في الريموت	Remote's YouTube button
 زر نتفليكس في الريموت	Remote's Netflix button
@@ -1318,4 +1319,51 @@
 اختر الجواب	Pick the answer
 فكّروا قبل أن يسبقكم غيركم	Think before the others beat you to it
 اللغز %s من %s	Puzzle %s of %s
+
+# ---- 4.4 the screensaver designs
+تصميم شاشة التوقف	Screensaver design
+الشريط في الوسط	Centre bar
+مكان الشريط	Bar position
+مكان الطقس	Weather position
+معلومات	Info
+نظيفة	Clean
+ساعة كبيرة	Big clock
+لوحة	Frame
+خط اليوم	Day line
+الصلوات	Prayers
+أسفل الشاشة	Bottom of the screen
+تحت الساعة	Under the clock
+كما في التصميم	As the design has it
+مكانه المعتاد	Its usual place
+في الزاوية	In the corner
+ما يناسب هذا الشكل	Doesn't suit this look
+حديث اليوم	Hadith of the day
+حديث اليوم وحده؛ مع بطاقة «آية أو حديث اليوم» تبقى تلك للآية	The hadith of the day alone; beside «Verse or hadith of the day» that one keeps to the verse
+إجازات المدارس	School breaks
+لم يُحدَّد تاريخ. اختر «إجازات المدارس» لأقرب إجازة، أو يحدد المساعد تاريخًا آخر على الكمبيوتر.	No date set. Choose “School breaks” for the next break, or the helper sets another date on the computer.
+مصادر البيانات	Data sources
+من أين تأتي البيانات، وترخيص كل مصدر	Where the data comes from, and each source's licence
+الإعداد	Setting
+كتب السنة	The books of Sunnah
+المصورون	The photographers
+الطقس والغبار، والساعات والأيام القادمة، وبحث المدن	The weather and dust, the coming hours and days, and the city search
+ترخيص CC BY 4.0: اسمه يبقى صغيرًا تحت الطقس	CC BY 4.0 licence: its name stays, small, under the weather
+مواقيت الصلاة بطريقة الحساب المختارة، وبلا إنترنت تُحسب على التلفزيون	Prayer times by the chosen method; without internet they are calculated on the TV
+المباريات ونتائجها وشعارات الأندية	Matches, their results and the clubs' crests
+الأسواق والأسهم والعملات، بأسعار متأخرة	Markets, stocks and currencies, at delayed prices
+نص الآيات و«التفسير الميسر» من مجمع الملك فهد لطباعة المصحف الشريف	The verses' text and the Muyassar tafsir from the King Fahd Glorious Quran Printing Complex
+يُنشر كما هو بلا تعديل، مع ذكر الناشر والمصدر	Published as it is, unchanged, naming the publisher and the source
+الأسماء العربية للفرق	The teams' Arabic names
+ترخيص CC0	CC0 licence
+الحديث والأذكار والحكمة، وتحت كل نص مصدره	The hadith, the adhkar and the wisdom, each text with its source under it
+نصوص مأثورة، لكل نص مصدره	Transmitted texts, each with its source
+صور شاشة التوقف والآفاق، ولكل صورة مصوّرها وترخيصها في «حقوق الصور»	The screensaver's photos and horizons; each photo's photographer and licence are in «Photo credits»
+حسب ترخيص كل صورة	Under each photo's licence
+حسب شروط الموقع: aladhan.com	Under the site's terms: aladhan.com
+حسب شروط الموقع: thesportsdb.com/documentation	Under the site's terms: thesportsdb.com/documentation
+بيانات للعرض فقط، حسب شروط الموقعين: coingecko.com/en/api_terms	For display only, under the two sites' terms: coingecko.com/en/api_terms
+ترخيص CC BY-SA 4.0، واسمه صغيرًا على بطاقة المسلسلات: tvmaze.com	CC BY-SA 4.0 licence, its name small on the series card: tvmaze.com
+بنرات	Banners
+أيقونات	Icons
+مربعات ملونة	Coloured tiles
 

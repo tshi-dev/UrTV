@@ -281,6 +281,7 @@
 أرامكو	Aramco
 ر.س	SAR
 الذهب	Gold
+ذهب ٢١	Gold 21k
 الفضة	Silver
 نفط برنت	Brent
 دولار/برميل	$/bbl
@@ -594,3 +595,6 @@
 المركز %s، %s نقطة	Place %s, %s points
 %s الأول بـ%s نقطة	%s top with %s points
 بدأت المباراة	Kick-off
+مهمتان	2 tasks
+مهام	tasks
+

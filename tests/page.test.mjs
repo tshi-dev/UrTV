@@ -102,7 +102,8 @@ for (const [panel, [rows, title]] of Object.entries(EXPECT)) {
   const { p, ctx, errors } = await open('tv.html', 'teams=136013&panel=' + panel);
   if (SAMPLE[panel]) await p.evaluate(`(${SAMPLE[panel]})(); renderPanel(false);`);
   const r = await p.evaluate(() => ({ n: document.querySelectorAll('#week-list li').length,
-    hd: document.getElementById('week-hd').textContent, shown: getComputedStyle(document.querySelector('.week')).display !== 'none' }));
+    // the title without a source's tiny credit beside it (TVmaze on the series card: the rule of «مصادر البيانات», tests/sources_rule.test.mjs)
+    hd: (h => { const c = h.cloneNode(true); c.querySelectorAll('.srcl').forEach(e => e.remove()); return c.textContent; })(document.getElementById('week-hd')), shown: getComputedStyle(document.querySelector('.week')).display !== 'none' }));
   check(`card ${panel}: no errors`, !errors.length, errors.join('; '));
   check(`card ${panel}: ${rows} rows, title right`, r.shown && r.n === rows && (!title || r.hd === title)
     && (title || ['آية اليوم', 'حديث اليوم'].includes(r.hd)), JSON.stringify(r));
@@ -568,13 +569,14 @@ for (const [width, height] of [[1920, 1080], [1280, 720], [960, 540]]) {
     const ul = document.getElementById('week-list'), card = document.querySelector('.week');
     const bar = document.querySelector('.bottom').getBoundingClientRect(), clock = document.querySelector('.clockwrap').getBoundingClientRect();
     const top = document.querySelector('.top').getBoundingClientRect();
-    const dot = (cs => ({ backgroundColor: cs.backgroundColor, borderRadius: cs.borderRadius }))(getComputedStyle(ul.querySelector('li'), '::before'));
+    const dot = (cs => ({ backgroundColor: cs.backgroundColor, borderRadius: cs.borderRadius, border: cs.borderTopWidth + ' ' + cs.borderTopColor }))(getComputedStyle(ul.querySelector('li'), '::before'));
     const rows = () => [...ul.querySelectorAll('li')].map(li => li.textContent);
     const page1 = rows();
     CARDS[0].page++; renderPanel(false);
     const c = card.getBoundingClientRect();
-    return { hd: document.getElementById('week-hd').textContent, page1, page2: rows(), html: ul.innerHTML,
-             injected: !!ul.querySelector('b, [onclick]'), dotBg: dot.backgroundColor, dotRadius: dot.borderRadius,
+    // the title (4.4 batch 3: the count «٥ مهام» beside it, tests/cards_batch3.test.mjs)
+    return { hd: (h => h.firstElementChild ? h.firstElementChild.textContent : h.textContent)(document.getElementById('week-hd')), page1, page2: rows(), html: ul.innerHTML,
+             injected: !!ul.querySelector('b, [onclick]'), dotBg: dot.backgroundColor, dotRadius: dot.borderRadius, dotBorder: dot.border,
              tooWide: [...ul.querySelectorAll('li')].filter(li => li.scrollWidth > li.clientWidth + 1).length,
              fits: c.top >= top.bottom && c.bottom <= bar.top - 4 && c.right <= clock.left - 4 && c.height <= 0.42 * innerHeight };
   });
@@ -582,7 +584,8 @@ for (const [width, height] of [[1920, 1080], [1280, 720], [960, 540]]) {
   check(`card tasks ${tag}: title, five rows a page, text kept`, !errors.length && r.hd === 'المهام' && r.page1.length === 5
     && r.page1[0] === TASKS[0] && r.page1[1] === TASKS[1] && r.page1[2] === TASKS[2].slice(0, 60), JSON.stringify(r.page1) + errors.join('; '));
   check(`card tasks ${tag}: special characters escaped, none run as HTML`, !r.injected && r.html.includes('&lt;b onclick'), r.html.slice(0, 200));
-  check(`card tasks ${tag}: gold dot on every row`, r.dotBg === 'rgb(220, 184, 111)' && r.dotRadius !== '0px', r.dotBg + ' ' + r.dotRadius);
+  // 4.4 batch 3, 13 (the owner approved it): an open gold ring before each row (a thing to do), not the filled dot of «الشكل السابق»
+  check(`card tasks ${tag}: an open gold ring on every row`, r.dotBg === 'rgba(0, 0, 0, 0)' && r.dotRadius !== '0px' && /^2px rgb\(/.test(r.dotBorder), r.dotBg + ' ' + r.dotRadius + ' ' + r.dotBorder);
   check(`card tasks ${tag}: next page shows the rest`, r.page2.length === 5 && r.page2[2] === TASKS[7] && r.page2[3] === TASKS[0], JSON.stringify(r.page2));
   check(`card tasks ${tag}: clear of the clock and the bottom bar`, r.fits);
   await ctx.close();
@@ -769,6 +772,15 @@ const marketNet = state => r => {
 const mk = p => p.evaluate(() => [...document.querySelectorAll('.mk .m')].map(m => ({ n: m.children[0].textContent,
   px: (m.querySelector('.px') || {}).hidden === false ? m.querySelector('.px').textContent + '|' + (m.querySelector('.px').dataset.u || '') : null,
   ch: m.querySelector('.delta').hidden ? null : m.querySelector('.delta').textContent, up: m.querySelector('.delta').classList.contains('up') })));
+{   // 4.4 (a user report): the 21-carat gram alone or beside the 24-carat one, 21/24 of it, from the same gold price (one request)
+  const asked = [];
+  const { p, ctx, errors } = await open('tv.html', 'markets=gold,gold21&mkstyle=prices', { net: r => { if (/chart\//.test(r.request().url())) asked.push(r.request().url()); return marketNet({})(r); } });
+  await p.waitForTimeout(800);
+  const r = await mk(p);
+  check('markets prices: «ذهب ٢١» is the 21-carat gram (0.875 of the 24-carat), in riyals, beside «الذهب»; gold asked for once; no errors',
+    r.map(x => x.n).join() === 'الذهب,ذهب ٢١' && r[0].px === '٤٨٢٫٢٦|ر.س' && r[1].px === '٤٢١٫٩٨|ر.س' && asked.filter(u => /GC%3DF|GC=F/.test(u)).length === 1 && !errors.length, JSON.stringify(r) + asked.join(',') + errors.join('; '));
+  await ctx.close();
+}
 {
   const state = {};
   const { p, ctx, errors } = await open('tv.html', 'markets=tasi,aramco,gold,btc&mkstyle=prices', { net: marketNet(state) });
@@ -1036,6 +1048,26 @@ for (const [hash, want] of [['', 'matches'], ['slot=matches', 'matches'], ['slot
     check(`countdown with ${why}: the weather`, got[0] === '' && got[1] === 'weather', got.join());
     await r.ctx.close();
   }
+}
+{   // 4.4 «إجازات المدارس» (#cd=school): the next break of the official calendar, by its name; the next one follows by itself
+  const SCHOOL = JSON.stringify({ source: 'test', breaks: [
+    { name: 'إجازة الخريف', from: '2026-11-19', to: '2026-11-22' }, { name: 'إجازة منتصف العام', from: '2027-01-08', to: '2027-01-16' },
+    { name: 'bad', from: 'soon' }] });
+  let asked = 0;
+  const net = r => /calendar\/sa-school\.json$/.test(r.request().url())
+    && (asked++, r.fulfill({ body: SCHOOL, contentType: 'application/json', headers: { 'Access-Control-Allow-Origin': '*' } }), true);
+  const { p, ctx, errors } = await open('tv.html', 'slot=countdown&cd=school', { net, now: new Date('2026-11-17T09:00:00Z') });
+  await p.waitForFunction(() => CONFIG.cd !== '', null, { timeout: 4000 }).catch(() => {});
+  let t = await slotText(p);
+  check('school: the calendar asked once', asked === 1, String(asked));
+  check('school: the next break by its name, days to its first day', t.label === 'إجازة الخريف' && t.row.startsWith('٢ ') && t.row.includes('١٩ نوفمبر'), JSON.stringify(t));
+  t = await p.evaluate(FAKE_NOW('2026-11-20T09:00:00Z') + '; schoolNext(); [CONFIG.cd, CONFIG.cdName]');
+  check('school: once a break began, the next one', t[0] === '2027-01-08' && t[1] === 'إجازة منتصف العام', t.join());
+  check('school: no script errors', !errors.length, errors.join('; '));
+  await ctx.close();
+  const r = await open('tv.html', 'slot=countdown&cd=school');   // no calendar (offline): the weather, as with no date
+  check('school offline: the weather', await r.p.evaluate(() => slotNow()) === 'weather');
+  await r.ctx.close();
 }
 // none: the left panel is gone and the other two share the row, at three sizes
 for (const [width, height] of [[1920, 1080], [1280, 720], [960, 540]]) {

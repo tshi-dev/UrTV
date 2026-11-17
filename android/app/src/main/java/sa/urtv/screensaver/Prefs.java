@@ -88,10 +88,18 @@ final class Prefs {
     // markets at the top left (sent to the page as #markets=, up to MAX_MARKETS, in this order of choice; tasi,spx,btc is what it always showed)
     static final String[][] MARKETS = {
         {"tasi", "تاسي"}, {"aramco", "أرامكو"}, {"spx", "S&P 500"}, {"btc", "بيتكوين"},
-        {"gold", "الذهب (الجرام بالريال)"}, {"silver", "الفضة (الجرام بالريال)"}, {"oil", "نفط برنت (للبرميل)"}, {"xrp", "ريبل"},
+        {"gold", "الذهب (الجرام بالريال)"}, {"gold21", "ذهب عيار ٢١ (الجرام بالريال)"}, {"silver", "الفضة (الجرام بالريال)"}, {"oil", "نفط برنت (للبرميل)"}, {"xrp", "ريبل"},
     };
     static final int MAX_MARKETS = 4;
     static final String DEFAULT_MARKETS = "tasi,spx,btc";
+
+    // 4.4 the screensaver's design (#design=; the owner approved them, docs/mockups/saver-designs): «معلومات» is the page as it always was
+    static final String[][] SAVER_DESIGNS = {{"info", "معلومات"}, {"clean", "نظيفة"}, {"big", "ساعة كبيرة"}, {"frame", "لوحة"}, {"dayline", "خط اليوم"}};
+    // a centred bar with any design (#bar=): the day's prayers, the left slot's item (a match, the countdown or the markets), or the weather
+    static final String[][] SAVER_BARS = {{"none", "بدون"}, {"prayers", "الصلوات"}, {"slot", "الخانة اليسرى"}, {"weather", "الطقس"}};
+    static final String[][] BAR_PLACES = {{"bottom", "أسفل الشاشة"}, {"clock", "تحت الساعة"}};
+    // where the weather goes (#wx=): auto is as the design has it (its place at the top in «معلومات» and «خط اليوم», hidden in the others)
+    static final String[][] WX_PLACES = {{"auto", "كما في التصميم"}, {"usual", "مكانه المعتاد"}, {"clock", "تحت الساعة"}, {"corner", "في الزاوية"}, {"off", "مخفي"}};
 
     // how the markets are shown (#mkstyle=; arrows is what it always showed)
     static final String[][] MK_STYLES = {{"arrows", "الاتجاه فقط ▲▼"}, {"prices", "السعر والنسبة"}};
@@ -292,7 +300,7 @@ final class Prefs {
     // The card beside the clock: value sent to the page (#panel=), Arabic label
     static final String[][] PANELS = {
         {"shows", "جديد المسلسلات"}, {"prayers", "مواقيت الصلاة اليوم"}, {"forecast", "طقس الأيام القادمة"}, {"hourly", "طقس الساعات القادمة"}, {"prayerrow", "الصلوات في صف"}, {"nextprayer", "الصلاة القادمة"},
-        {"matches", "مباريات فرقك القادمة"}, {"nextmatch", "مباراة فريقك القادمة"}, {"matchday", "مباراة اليوم"}, {"livenow", "مباشر الآن"}, {"minitable", "جدول الترتيب"}, {"nextmatches", "مباراة كل فريق القادمة"}, {"yesterday", "نتائج أمس"}, {"weekend", "نهاية الأسبوع"}, {"cuppath", "طريق الكأس"}, {"formula", "فورمولا ١"}, {"national", "المنتخب السعودي"}, {"verse", "آية أو حديث اليوم"}, {"wisdom", "حكمة اليوم"},
+        {"matches", "مباريات فرقك القادمة"}, {"nextmatch", "مباراة فريقك القادمة"}, {"matchday", "مباراة اليوم"}, {"livenow", "مباشر الآن"}, {"minitable", "جدول الترتيب"}, {"nextmatches", "مباراة كل فريق القادمة"}, {"yesterday", "نتائج أمس"}, {"weekend", "نهاية الأسبوع"}, {"cuppath", "طريق الكأس"}, {"formula", "فورمولا ١"}, {"national", "المنتخب السعودي"}, {"verse", "آية أو حديث اليوم"}, {"hadith", "حديث اليوم"}, {"wisdom", "حكمة اليوم"},
         {"adhkar", "أذكار الصباح والمساء"}, {"stocks", "الأسهم"}, {"tasks", "المهام"}, {"year", "السنة"},
         {"smart", "البطاقة الذكية"}, {"today", "يومك"}, {"album", "ألبوم صوري"},
         {"none", "لا شيء"},
@@ -340,6 +348,7 @@ final class Prefs {
         {"formula", "السباق القادم وجلساته بتوقيت مدينتك"},
         {"national", "مباراة المنتخب السعودي القادمة: الخصم واليوم والوقت وآخر مواجهة"},
         {"verse", "آية يوم، وحديث صحيح من الكتب الستة اليوم اللي بعده، ومعه مصدره"},
+        {"hadith", "حديث اليوم وحده؛ مع بطاقة «آية أو حديث اليوم» تبقى تلك للآية"},
         {"wisdom", "مثل أو قول عربي معروف مع مصدره"},
         {"adhkar", "من الفجر للظهر أذكار الصباح، ومن العصر للمغرب أذكار المساء"},
         {"stocks", "أسهمك بالسعر والتغيّر"},
@@ -456,6 +465,22 @@ final class Prefs {
         return MK_STYLES[0][1];
     }
 
+    /** the label of a choice of one of the tables above; the first one when the value is not in it */
+    static String labelOf(String[][] table, String v) {
+        for (String[] c : table) if (c[0].equals(v)) return c[1];
+        return table[0][1];
+    }
+
+    // the values are checked where they are set (the settings' lists, SaverReceiver); the page takes anything else as the default
+    String design() { return sp.getString("design", "info"); }
+    void setDesign(String v) { sp.edit().putString("design", v).apply(); }
+    String bar() { return sp.getString("bar", "none"); }
+    void setBar(String v) { sp.edit().putString("bar", v).apply(); }
+    String barAt() { return sp.getString("barAt", "bottom"); }
+    void setBarAt(String v) { sp.edit().putString("barAt", v).apply(); }
+    String wxAt() { return sp.getString("wxAt", "auto"); }
+    void setWxAt(String v) { sp.edit().putString("wxAt", v).apply(); }
+
     String national() { return "off".equals(sp.getString("national", "auto")) ? "off" : "auto"; }
     void setNational(String v) { sp.edit().putString("national", v).apply(); }
 
@@ -482,6 +507,9 @@ final class Prefs {
 
     /** the countdown's date (YYYY-MM-DD, "" = none) and its name; sent to the page as #cd= and #cdname= */
     String countdownDate() { return sp.getString("cd", ""); }
+    /** 4.4 «إجازات المدارس»: cd=school, the page counts to the next school break of the official calendar (urtv-data), with its name */
+    static final String SCHOOL = "school";
+    static final String SCHOOL_LABEL = "إجازات المدارس";
     String countdownName() { return sp.getString("cdName", ""); }
     void setCountdown(String date, String name) { sp.edit().putString("cd", date).putString("cdName", name).apply(); }
 
@@ -796,6 +824,7 @@ final class Prefs {
             + (backSaver() ? "&backsaver=1" : "")
             + (fbHideDone() ? "&fbhide=1" : "") + (kickoff() ? "" : "&ko=0") + (kickoffGoal() ? "&kogoal=1" : "") + (kickoffEnd() ? "&koend=1" : "") + (dateNum() ? "&datenum=1" : "") + (searchPill() ? "&searchpill=1" : "")   // the football home without the games that ended
             + "&cardstyle=" + cardStyle()
+            + "&design=" + design() + "&bar=" + bar() + "&barat=" + barAt() + "&wx=" + wxAt()
             + "&adhanbar=" + (adhanBar() ? "1" : "0")
             + "&yearstrip=" + (yearStrip() ? "1" : "0")
             + (sunrise() ? "&sunrise=1" : "") + (prayerBar() ? "&prayerbar=1" : "") + (wxMore() ? "&wxmore=1" : "")
@@ -1107,7 +1136,26 @@ final class Prefs {
     /** The card in place i (0 to 2) of the home screen, or "none". */
     String homePanelAt(int i) { List<String> v = homePanels(); return i < v.size() ? v.get(i) : "none"; }
     /** Place i gets that card ("none" empties it and the ones after it move up); a card already in another place moves here. */
+    /**
+     * 4.4 the owner: the look changed (layout, preset): each home card that does not suit it is swapped for the nearest of its kind (CardFit), the
+     * person's own cards kept to come back when the look suits them again; the note for the toast is kept until the settings take it (takeFitNote)
+     */
+    void fitHomeCards() {
+        List<String> mine = sp.contains("homePanelMine") ? parseHomePanels(sp.getString("homePanelMine", "none")) : homePanels();
+        List<String[]> swaps = new ArrayList<>();
+        List<String> fit = CardFit.fitted(mine, homeLayout(), swaps);
+        if (swaps.isEmpty()) {   // nothing to swap: the person's own cards, as they picked them
+            if (sp.contains("homePanelMine")) { setHomePanels(mine); sp.edit().remove("homePanelMine").apply(); }
+            return;
+        }
+        sp.edit().putString("homePanelMine", mine.isEmpty() ? "none" : join(mine, ",")).putString("fitNote", CardFit.swapNote(swaps, PANELS)).apply();
+        setHomePanels(fit);
+    }
+    /** the swap's note, once (the settings show it as a toast) */
+    String takeFitNote() { String n = sp.getString("fitNote", null); if (n != null) sp.edit().remove("fitNote").apply(); return n; }
+
     void setHomePanelAt(int i, String card) {
+        sp.edit().remove("homePanelMine").apply();   // the person's own pick: theirs now, never swapped (an unsuited one only gets its note)
         List<String> now = homePanels();
         String[] slot = new String[HOME_CARDS];
         for (int k = 0; k < slot.length && k < now.size(); k++) slot[k] = now.get(k);
@@ -1226,11 +1274,19 @@ final class Prefs {
     static final String[] HOME_BG_NAMES = {"صوري وحزم الصور", "الآفاق"};
     static final String[] HOME_CLOCKS = {"plain", "glass"};
     static final String[] HOME_CLOCK_NAMES = {"عادية", "زجاجية خلف الصورة"};
-    /** 4.4 «شكل التطبيقات»: how the focused app of the tray shows: a ring in the look's colour and its name above the tray (as always), or larger with a soft shadow, its name under it */
-    static final String[] HOME_APPS = {"frame", "zoom"};
-    static final String[] HOME_APPS_NAMES = {"إطار", "تكبير وظل"};
+    /**
+     * 4.4 «شكل التطبيقات», the row's three ways (the owner approved them): «بنرات» each app's TV banner, «أيقونات» each app's icon in a
+     * rounded square (the two with «تكبير وظل» and the name under the focused one, no tray), «مربعات ملونة» today's tray. Stored as
+     * "banners", "icons", or, for the tray, 4.4's first values: "frame" (the ring, the default) or "zoom" (bigger with a shadow), which
+     * the person keeps (a TV that had «تكبير وظل» keeps it on its tiles). The launcher reads the stored value (FavBar.look, FavBar.zoom).
+     */
+    static final String[] HOME_APPS = {"banners", "icons", "tiles"};
+    static final String[] HOME_APPS_NAMES = {"بنرات", "أيقونات", "مربعات ملونة"};
+    static final String[] APPS_STORED = {"banners", "icons", "frame", "zoom"};
     /** the presets: name, layout, background, clock, the apps' focus */
-    static final String[][] LOOKS = {{"urtv", "شكل تلفزيونك", "classic", "photos", "plain", "frame"}, {"couch", "شكل كنبة", "couch", "scenes", "glass", "zoom"}};
+    static final String[][] LOOKS = {{"urtv", "شكل تلفزيونك", "classic", "photos", "plain", "frame"}, {"couch", "شكل كنبة", "couch", "scenes", "glass", "icons"}};
+    /** the apps' value of a preset as stored: the same, or Couch's before «أيقونات» ("zoom": a TV set to Couch then is still on Couch) */
+    private static boolean presetApps(String want, String have) { return want.equals(have) || ("icons".equals(want) && "zoom".equals(have)); }
     private boolean oldScenes() { return "scenes".equals(sp.getString("homeLayout", "")); }
     String homeLayout() { String v = sp.getString("homeLayout", HOME_LAYOUTS[0]); return java.util.Arrays.asList(HOME_LAYOUTS).contains(v) ? v : HOME_LAYOUTS[0]; }
     void setHomeLayout(String v) {
@@ -1238,6 +1294,7 @@ final class Prefs {
         boolean was = oldScenes();
         if (was) sp.edit().putString("homeBg", homeBg()).putString("homeClock", homeClock()).apply();   // the old value's scenes and clock kept as their own choices
         sp.edit().putString("homeLayout", v).apply();
+        fitHomeCards();
     }
     static String homeLayoutLabel(String v) { int i = java.util.Arrays.asList(HOME_LAYOUTS).indexOf(v); return HOME_LAYOUT_NAMES[Math.max(0, i)]; }
     String homeBg() { String v = sp.getString("homeBg", oldScenes() ? "scenes" : "photos"); return java.util.Arrays.asList(HOME_BGS).contains(v) ? v : "photos"; }
@@ -1246,16 +1303,23 @@ final class Prefs {
     String homeClock() { String v = sp.getString("homeClock", oldScenes() ? "glass" : "plain"); return java.util.Arrays.asList(HOME_CLOCKS).contains(v) ? v : "plain"; }
     void setHomeClock(String v) { if (java.util.Arrays.asList(HOME_CLOCKS).contains(v)) sp.edit().putString("homeClock", v).apply(); }
     static String homeClockLabel(String v) { int i = java.util.Arrays.asList(HOME_CLOCKS).indexOf(v); return HOME_CLOCK_NAMES[Math.max(0, i)]; }
-    String appsStyle() { String v = sp.getString("appsStyle", "frame"); return java.util.Arrays.asList(HOME_APPS).contains(v) ? v : "frame"; }
-    void setAppsStyle(String v) { if (java.util.Arrays.asList(HOME_APPS).contains(v)) sp.edit().putString("appsStyle", v).apply(); }
-    static String appsStyleLabel(String v) { int i = java.util.Arrays.asList(HOME_APPS).indexOf(v); return HOME_APPS_NAMES[Math.max(0, i)]; }
+    /** the stored value (APPS_STORED), sent to the launcher as it is */
+    String appsStyle() { String v = sp.getString("appsStyle", "frame"); return java.util.Arrays.asList(APPS_STORED).contains(v) ? v : "frame"; }
+    /** the way it is (HOME_APPS): "banners", "icons" or "tiles" */
+    static String appsWay(String stored) { return "banners".equals(stored) || "icons".equals(stored) ? stored : "tiles"; }
+    /** a way (HOME_APPS) or a stored value (APPS_STORED); «مربعات ملونة» keeps the tiles' own focus when it is already the way */
+    void setAppsStyle(String v) {
+        if ("tiles".equals(v)) { if (!"tiles".equals(appsWay(appsStyle()))) sp.edit().putString("appsStyle", "frame").apply(); return; }
+        if (java.util.Arrays.asList(APPS_STORED).contains(v)) sp.edit().putString("appsStyle", v).apply();
+    }
+    static String appsStyleLabel(String v) { int i = java.util.Arrays.asList(HOME_APPS).indexOf(appsWay(v)); return HOME_APPS_NAMES[Math.max(0, i)]; }
     /** the preset the three choices match ("urtv", "couch"), or "" (custom) */
     String look3() {
-        for (String[] l : LOOKS) if (l[2].equals(homeLayout()) && l[3].equals(homeBg()) && l[4].equals(homeClock()) && l[5].equals(appsStyle())) return l[0];
+        for (String[] l : LOOKS) if (l[2].equals(homeLayout()) && l[3].equals(homeBg()) && l[4].equals(homeClock()) && presetApps(l[5], appsStyle())) return l[0];
         return "";
     }
     void setLook3(String key) {
-        for (String[] l : LOOKS) if (l[0].equals(key)) { sp.edit().putString("homeLayout", l[2]).putString("homeBg", l[3]).putString("homeClock", l[4]).putString("appsStyle", l[5]).apply(); return; }
+        for (String[] l : LOOKS) if (l[0].equals(key)) { sp.edit().putString("homeLayout", l[2]).putString("homeBg", l[3]).putString("homeClock", l[4]).putString("appsStyle", l[5]).apply(); fitHomeCards(); return; }
     }
     /**
      * 4.4 the owner: «أشكال جاهزة» (docs/mockups/presets): six looks, each a set of values for rows that already exist (no cost when the TV runs).
@@ -1434,7 +1498,7 @@ final class Prefs {
     /** the switch's line: off, on as the preset, or on with a row changed since («مخصّص») */
     String couchLabel() {
         if (!couchOn()) return "متوقف";
-        return "couch".equals(look3()) ? "مفعّل (التخطيط كنبة، الخلفية الآفاق، الساعة زجاجية، التطبيقات تكبير وظل؛ إيقافه يرجّع اختياراتك)"
+        return "couch".equals(look3()) ? "مفعّل (التخطيط كنبة، الخلفية الآفاق، الساعة زجاجية، التطبيقات أيقونات؛ إيقافه يرجّع اختياراتك)"
             : "مفعّل (مخصّص: غيّرت صفًا من الأربعة؛ إيقافه يرجّع اختياراتك قبل التشغيل)";
     }
     static String look3Label(String key) {

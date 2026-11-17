@@ -49,6 +49,7 @@ python3 tests/scene_zoom_test.py   # 4.4 the owner: the clock where it is, the p
 python3 tests/photo_masks_gate_test.py   # 4.4 the gate every cut-out passes before it is published: fringe, stairs, floating pieces, the digits' fit (FIT / FRONT-ONLY / REJECT)
 python3 tests/photo_glass_test.py   # 4.4 «الساعة: زجاجية» over our photos: which cut-out, where the digits go (on a JVM), made only while chosen, never «الحرمين»
 python3 tests/cache_sweep_test.py   # 4.3.3 «مسح الملفات المؤقتة»: the caches only, on a JVM over made-up folders
+python3 tests/sources_rule_test.py   # 4.4 «مصادر البيانات» under «حول»: each source, its terms, its row; the page's 60%-and-half-the-light rule
 python3 tests/lowram_test.py   # a weak TV (Ram.low): no key filter, the clock off the UI thread, pictures let go behind apps, markets «عادي» and 60 s, #lowram=1
 python3 tests/netlog_test.py   # G3: the request log (NetLog: requests by host, one UrTVNet line per 10 minutes with the bytes)
 python3 tests/page_cache_test.py   # G3: the page revalidates its data (ETag, 304) through the WebView cache, and skips periodic loads while offline
@@ -234,6 +235,7 @@ python3 tests/clock_text_test.py
 python3 tests/clock_setting_test.py
 python3 tests/saver_clock24_test.py
 python3 tests/card_box_test.py
+python3 tests/card_fit_test.py   # 4.4 the owner: a home card that does not suit the look says so, and is swapped within its kind when the look changes
 python3 tests/glow_look_test.py
 python3 tests/unsplash_header_test.py
 python3 tests/bounded_test.py
@@ -282,6 +284,7 @@ python3 tests/settings_hub_test.py
 python3 tests/on_off_test.py   # on/off rows: the owner's choice I (green triangles and word), both apps
 python3 tests/parental_text_test.py   # «الرقابة الأبوية»: the card and its two buttons, the count of locked apps (docs/UX-REVIEW.md)
 python3 tests/fav_bar_test.py   # the favourites bar: the tray, five tiles, the focus inside it, the one 40 px move (docs/PROPOSALS-NOV2.md §1)
+python3 tests/apps_look_test.py   # 4.4 «شكل التطبيقات»: بنرات / أيقونات / مربعات ملونة, centred, A and B with no tray and «تكبير وظل», nothing bundled
 python3 tests/called_off_test.py   # 4.3 A1-A3: a called-off game is never live or upcoming; a team's game read from the copy further on
 python3 tests/usb_test.py   # 4.3 B8: the USB viewers are never off and always in the apps row (issue #50)
 python3 tests/sideload_apps_test.py   # #57: a sideloaded app shows on the home next to a Google home (only the TV's own phone-only helpers stay out)
@@ -348,6 +351,13 @@ node tests/prayer_crosscheck_world_page.mjs
 node tests/hijri_crosscheck_page.mjs
 node tests/page.test.mjs
 node tests/tafsir.test.mjs   # «التفسير الميسر» (#tafsir=1): every verse of the deck has its tafsir, whole, in pages of three lines at most, never «…»
+node tests/saver_designs.test.mjs   # 4.4 the screensaver's designs (the owner approved them): each shows what it should; a prayer's name and time never touch
+node tests/lone_card_fit.test.mjs   # 4.4 the owner: a lone card on the launcher is fitted to its box, never a row cut at the bottom
+node tests/saver_depth.test.mjs   # 4.4 «نظيفة» with depth on the screensaver: the photo's own cut-out, never off its pixels, never over unreadable digits
+node tests/verse_hadith.test.mjs   # 4.4 «آية» and «حديث» at once: the hadith card beside the verse card, each its own
+node tests/strip_steady.test.mjs   # 4.4 the screensaver's bottom strip stays put as the slot turns (games, scores, weather, markets)
+node tests/sources_rule.test.mjs   # 4.4 the owner's rule: a source on a card is a tiny dim line at most (60%, half the light), never a provider named elsewhere
+node tests/cards_batch3.test.mjs   # 4.4 card review batch 3 (12 adhkar, 13 tasks, 14 now playing, 16 year, 17 today, 18 shows): new look by default, the old one with «الشكل السابق»
 node tests/football_page.test.mjs   # the football home's widgets and «المباريات» in a browser, on fixed games
 node tests/sports_cards.test.mjs   # 4.4 «الرياضة»: the sports cards (dist/sports.js) on the home, the couch row and the screensaver, the takeover, only the page's own build
 node tests/matches_archive.test.mjs   # «المباريات» with the match archive (data-archive): every followed team, yesterday's results, a club, a league, the chooser

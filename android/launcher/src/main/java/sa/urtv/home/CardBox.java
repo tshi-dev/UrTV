@@ -45,10 +45,23 @@ final class CardBox {
      * 4.4 «التخطيط: كنبة»: the cards in one strip above the apps tray, the screen's width less 48 dp each side, ending 8 dp above the block
      * of the app's name and the tray (before the screen is laid out: 74 % of the height). {width, height, distance from the screen's bottom}.
      */
-    static int[] row(int screenW, int screenH, float density, int titleTop) {
+    static int[] row(int screenW, int screenH, float density, int titleTop) { return row(screenW, screenH, density, titleTop, -1); }
+
+    /**
+     * the same, with the big glass clock on the screen: its digits end at clockBottom (px; ScenePlan.fixedBox), and the strip never covers them
+     * (the owner: the stocks card over the big «2:08»): it starts 12 dp under them and is that much shorter (a card in it then shows fewer rows);
+     * clockBottom -1: no big clock
+     */
+    static int[] row(int screenW, int screenH, float density, int titleTop, int clockBottom) {
         int h = Math.round(screenH * ROW_HEIGHT);
         int end = titleTop > 0 ? titleTop - dp(8, density) : Math.round(screenH * 0.74f);
+        if (clockBottom >= 0) h = Math.max(0, Math.min(h, end - clockBottom - dp(12, density)));
         return new int[]{screenW - 2 * dp(LEFT, density), h, Math.max(0, screenH - end)};
+    }
+
+    /** whether a card's box (left, top, right, bottom, px) covers any of the big clock's digits' box */
+    static boolean overClock(int[] card, int[] clock) {
+        return clock != null && card != null && card[0] < clock[2] && clock[0] < card[2] && card[1] < clock[3] && clock[1] < card[3];
     }
 
     private static int dp(int v, float density) { return Math.round(v * density); }

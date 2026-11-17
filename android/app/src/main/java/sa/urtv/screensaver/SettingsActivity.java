@@ -293,6 +293,8 @@ public class SettingsActivity extends Activity {
      */
     private void render() {
         latinDigits = DigitsText.isLatin(prefs.digits());
+        String fitNote = prefs.takeFitNote();   // 4.4 a home card swapped for one that suits the new look: say so once
+        if (fitNote != null) notice(fitNote);
         List<View> before = rows();
         View had = entering ? null : focusedRow();
         if (screen == null && !classic) screen = SettingsHub.LANG;
@@ -424,6 +426,16 @@ public class SettingsActivity extends Activity {
             new Runnable() { public void run() { prefs.setNightDim(!prefs.nightDim()); render(); } });
         row("المناسبات الوطنية", Prefs.nationalLabel(prefs.national()), R.drawable.ic_eye,
             new Runnable() { public void run() { pickNational(); } });
+        // 4.4 the screensaver's design, its centred bar and the weather's place (the owner approved them)
+        row("تصميم شاشة التوقف", Prefs.labelOf(Prefs.SAVER_DESIGNS, prefs.design()), R.drawable.ic_eye,
+            new Runnable() { public void run() { pickChoice("تصميم شاشة التوقف", Prefs.SAVER_DESIGNS, prefs.design(), v -> prefs.setDesign(v)); } });
+        row("الشريط في الوسط", Prefs.labelOf(Prefs.SAVER_BARS, prefs.bar()), R.drawable.ic_eye,
+            new Runnable() { public void run() { pickChoice("الشريط في الوسط", Prefs.SAVER_BARS, prefs.bar(), v -> prefs.setBar(v)); } });
+        if (!"none".equals(prefs.bar()))   // where the bar goes: only with a bar
+            row("مكان الشريط", Prefs.labelOf(Prefs.BAR_PLACES, prefs.barAt()), R.drawable.ic_eye,
+                new Runnable() { public void run() { pickChoice("مكان الشريط", Prefs.BAR_PLACES, prefs.barAt(), v -> prefs.setBarAt(v)); } });
+        row("مكان الطقس", Prefs.labelOf(Prefs.WX_PLACES, prefs.wxAt()), R.drawable.ic_eye,
+            new Runnable() { public void run() { pickChoice("مكان الطقس", Prefs.WX_PLACES, prefs.wxAt(), v -> prefs.setWxAt(v)); } });
         row("حجم الساعة", Prefs.clockSizeLabel(prefs.clockSize()), R.drawable.ic_eye,
             new Runnable() { public void run() { pickClockSize(); } });
         // «نظام الساعة»: 12 or 24 hours, the same setting as `saver.sh clock24`; the page (screensaver and the home's cards) and the home's clock follow it
@@ -502,7 +514,7 @@ public class SettingsActivity extends Activity {
         row("الساعة", Prefs.homeClockLabel(prefs.homeClock()), R.drawable.ic_eye, new Runnable() { public void run() {
             pickOne("الساعة", Prefs.HOME_CLOCK_NAMES, java.util.Arrays.asList(Prefs.HOME_CLOCKS).indexOf(prefs.homeClock()), i -> prefs.setHomeClock(Prefs.HOME_CLOCKS[i])); } });
         row("شكل التطبيقات", Prefs.appsStyleLabel(prefs.appsStyle()), R.drawable.ic_eye, new Runnable() { public void run() {
-            pickOne("شكل التطبيقات", Prefs.HOME_APPS_NAMES, java.util.Arrays.asList(Prefs.HOME_APPS).indexOf(prefs.appsStyle()), i -> prefs.setAppsStyle(Prefs.HOME_APPS[i])); } });
+            pickOne("شكل التطبيقات", Prefs.HOME_APPS_NAMES, java.util.Arrays.asList(Prefs.HOME_APPS).indexOf(Prefs.appsWay(prefs.appsStyle())), i -> prefs.setAppsStyle(Prefs.HOME_APPS[i])); } });
         row("حزم الآفاق", labels(Prefs.SCENE_PACKS, prefs.scenePacks(), "آفاق السعودية"), R.drawable.ic_eye,
             new Runnable() { public void run() { pickMany("scenePacks", "حزم الآفاق", Prefs.SCENE_PACKS, "بدون اختيار = آفاق السعودية"); } });
         row("بقاء كل أفق", Prefs.sceneStayLabel(prefs.sceneStay()), R.drawable.ic_eye, new Runnable() { public void run() { pickSceneStay(); } });
@@ -619,6 +631,8 @@ public class SettingsActivity extends Activity {
             new Runnable() { public void run() { clearCaches(); } });
         row("أرسل تقرير", "رمز QR يفتح صفحة الإرسال في جوالك", R.drawable.ic_settings,
             new Runnable() { public void run() { openReport(); } });
+        // 4.4 «مصادر البيانات»: where the data comes from, once, here (Sources); on the cards a source is a tiny dim line at most
+        row("مصادر البيانات", "من أين تأتي البيانات، وترخيص كل مصدر", R.drawable.ic_report, new Runnable() { public void run() { showSources(); } });
 
         // «الرقابة الأبوية» (docs/UX-REVIEW.md): the home's own page (the PIN, the locked apps, kids mode); it asks for the PIN itself
         row("الرقابة الأبوية", "رمز يقفل التطبيقات والإعدادات، ووضع الأطفال", R.drawable.ic_lock,
@@ -731,6 +745,20 @@ public class SettingsActivity extends Activity {
         in.requestFocus();
     }
     static final long SEARCH_MS = 120;
+
+    /** 4.4 «مصادر البيانات»: each source and what it gives; OK on one says its terms, and «الإعداد» lands on the row of what it gives */
+    private void showSources() {
+        String[] labels = new String[Sources.LIST.length];
+        for (int i = 0; i < labels.length; i++) labels[i] = conv(Sources.LIST[i][0]) + "\n" + conv(Sources.LIST[i][1]);
+        new Dlg(this).setTitle("مصادر البيانات").setItems(labels, (d, i) -> { d.dismiss(); showSource(Sources.LIST[i]); })
+            .setNegativeButton("رجوع", null).show();
+    }
+
+    private void showSource(final String[] src) {
+        new Dlg(this).setTitle(conv(src[0])).setMessage(conv(src[1]) + "\n\n" + conv(src[2]))
+            .setPositiveButton("الإعداد", (d, w) -> { hubAt = SettingsHub.of(src[3], null); forceWant = src[3]; open(hubAt); })
+            .setNegativeButton("رجوع", (d, w) -> showSources()).show();
+    }
 
     private void showFound(String query) {
         final List<String[]> found = SettingsHub.search(query);
@@ -2620,7 +2648,12 @@ public class SettingsActivity extends Activity {
             if (rows.get(i)[0].equals(current)) sel = i;
         }
         String[] values = new String[labels.length], about = new String[labels.length];
-        for (int i = 0; i < labels.length; i++) { values[i] = rows.get(i)[0]; about[i] = Prefs.about(Prefs.PANEL_ABOUT, values[i]); }
+        for (int i = 0; i < labels.length; i++) {
+            values[i] = rows.get(i)[0];
+            about[i] = Prefs.about(Prefs.PANEL_ABOUT, values[i]);
+            // 4.4 the owner: a card that does not suit the home's look says so, as the plain line under its name (it can still be picked)
+            if (home && !CardFit.suits(values[i], prefs.homeLayout())) about[i] = CardFit.NOTE + "، " + about[i];
+        }
         pickWithPreview(home ? HOME_CARD_NAMES[place] : "بجانب الساعة", values, labels, about, sel,
             v -> prefs.previewUrl(this, v, prefs.cardStyle()),
             v -> { if (home) prefs.setHomePanelAt(place, v); else prefs.setPanel(v); });
@@ -2868,6 +2901,19 @@ public class SettingsActivity extends Activity {
         in.requestFocus();
     }
 
+    /** one choice of a table (Prefs' {value, label} lists): the current one marked; picking saves it and draws the list again */
+    private void pickChoice(String title, final String[][] table, String current, final Pick onPick) {
+        String[] labels = new String[table.length];
+        int sel = 0;
+        for (int i = 0; i < labels.length; i++) {
+            labels[i] = table[i][1];
+            if (table[i][0].equals(current)) sel = i;
+        }
+        new Dlg(this).setTitle(title)
+            .setSingleChoiceItems(labels, sel, (d, i) -> { onPick.on(table[i][0]); d.dismiss(); render(); })
+            .show();
+    }
+
     private void pickMkStyle() {
         String[] labels = new String[Prefs.MK_STYLES.length];
         int sel = 0;
@@ -2958,6 +3004,7 @@ public class SettingsActivity extends Activity {
 
     private String countdownLabel() {
         if (prefs.countdownDate().isEmpty()) return "لم يُحدَّد";
+        if (Prefs.SCHOOL.equals(prefs.countdownDate())) return Prefs.SCHOOL_LABEL;
         String name = prefs.countdownName();
         return CountdownText.label(prefs.countdownDate(), name);
     }
@@ -2965,9 +3012,11 @@ public class SettingsActivity extends Activity {
     /** The date is set from the computer (optimize/saver.sh countdown); here it can be cleared. */
     private void manageCountdown() {
         if (prefs.countdownDate().isEmpty()) {
+            // 4.4: the next school break needs no date from anyone (the official calendar comes with the data); another date, from the computer
             new Dlg(this).setTitle("العدّ التنازلي")
-                .setMessage("لم يُحدَّد تاريخ. يحدده المساعد على الكمبيوتر.")
-                .setPositiveButton("حسنًا", null).show();
+                .setMessage("لم يُحدَّد تاريخ. اختر «إجازات المدارس» لأقرب إجازة، أو يحدد المساعد تاريخًا آخر على الكمبيوتر.")
+                .setPositiveButton(Prefs.SCHOOL_LABEL, (d, w) -> { prefs.setCountdown(Prefs.SCHOOL, ""); render(); })
+                .setNegativeButton("إلغاء", null).show();
             return;
         }
         new Dlg(this).setTitle("العدّ التنازلي")
@@ -4046,6 +4095,41 @@ public class SettingsActivity extends Activity {
     }
 
     private void toast(String s) { Toast.makeText(this, conv(s), Toast.LENGTH_SHORT).show(); }
+
+    /**
+     * 4.4 the app's own one-line notice, for a note that needs no answer (the home card swapped for one that suits the look): bottom-centre,
+     * a small-radius rectangle (never a capsule: the owner's rule; the system Toast is one on some TVs), it fades out after 4 s and takes no key.
+     */
+    private TextView noticeView;
+    private final Runnable hideNotice = () -> { if (noticeView != null) noticeView.animate().alpha(0f).setDuration(300).start(); };
+    private void notice(String s) {
+        if (root == null) return;
+        if (noticeView == null) {
+            noticeView = new TextView(this);
+            noticeView.setSingleLine(true);
+            noticeView.setEllipsize(android.text.TextUtils.TruncateAt.END);
+            noticeView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16);
+            noticeView.setTypeface(font("Thmanyah-Regular"));
+            noticeView.setTextColor(0xFFF1EBDD);
+            noticeView.setPadding(dp(22), dp(12), dp(22), dp(12));
+            android.graphics.drawable.GradientDrawable bg = new android.graphics.drawable.GradientDrawable();
+            bg.setCornerRadius(dp(8));
+            bg.setColor(0xF02B2E36);
+            noticeView.setBackground(bg);
+            noticeView.setFocusable(false);
+            noticeView.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_YES);
+            noticeView.setAlpha(0f);
+            FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(-2, -2, Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL);
+            lp.bottomMargin = dp(36);
+            root.addView(noticeView, lp);
+        }
+        noticeView.setText(conv(s));
+        noticeView.bringToFront();
+        noticeView.removeCallbacks(hideNotice);
+        noticeView.animate().cancel();
+        noticeView.animate().alpha(1f).setDuration(200).start();
+        noticeView.postDelayed(hideNotice, 4000);
+    }
 
     private int dp(int v) { return Math.round(v * getResources().getDisplayMetrics().density); }
 }

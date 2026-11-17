@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <!-- the build: UTC time (YYYYMMDDHHMMSS) of the newest commit of the page's sources, put in by src/build.py. The app loads the page with the newer stamp (its own
      copy or a downloaded one), never by file time, and does not keep a download whose stamp is older than its own (Updater, PageStamp). -->
-<meta name="urtv-build" content="20261117065914">
+<meta name="urtv-build" content="20261117125410">
 <title>Your TV Screen</title>
 <style>
   @font-face{font-family:'Thmanyah';font-weight:300;font-style:normal;font-display:block;src:url("https://raw.githubusercontent.com/tshi-dev/UrTV/master/assets/fonts/Thmanyah-Light.woff2") format("woff2")}
@@ -141,6 +141,7 @@
     font-size:calc(1vw*var(--z,1));font-size:calc(clamp(12px,1vw,18px)*var(--z,1));font-weight:500;letter-spacing:0;color:var(--gold-3);
   }
   .week .hd::after{content:'';flex:1;height:1px;background:linear-gradient(270deg,rgba(var(--gold-rgb),.5),transparent)}
+  .week .hd .srcl{order:2;font-weight:400;white-space:nowrap}   
   .week ul{list-style:none;display:flex;flex-direction:column;gap:0}
   .week li{
     display:flex;align-items:baseline;gap:1.05em;
@@ -230,6 +231,28 @@
   .week li.prow .pc.next i{color:var(--gold-3)}
   html:not(.cso) .week li.prow .pc{gap:.15em}
   html:not(.cso) .week li.prow .pc b{font-weight:400;font-size:.88em;color:#E9E1CE}
+  
+  
+  html:not(.cso) .week li.quote.q2,html:not(.cso) .week li.quote.q3,html:not(.cso) .week li.quote.q4{text-align:start}
+  html:not(.cso) .week li.adf .c{color:#E2DACA}
+  
+  html:not(.cso) .week li.task::before{width:.62em;height:.62em;background:none;border:2px solid var(--gold-3);box-sizing:border-box}
+  html:not(.cso) .week li.task{font-size:calc(1.25vw*var(--z,1));font-size:calc(clamp(15px,1.25vw,24px)*var(--z,1))}
+  
+  html:not(.cso) .stage > .week.np{padding:1.2vh 1.6vw}
+  html:not(.cso) .np .npl{gap:.45em}
+  html:not(.cso) .np .nps{margin-inline-start:-.45em;color:var(--gold-3)}
+  html:not(.cso) .np .npw{color:#E2DACA;font-weight:400}
+  
+  html:not(.cso) .week li.yr .yn{font-size:1.5em}
+  html:not(.cso) .week li.yr .yt{font-size:.92em;color:#E2DACA}
+  
+  html:not(.cso) .week li.td .k{font-size:.8em;color:#CFC6B2}
+  html:not(.cso) .week li.td .r{font-size:.86em;color:var(--gold-3)}
+  
+  html:not(.cso) .week li .rt::before{content:'★ ';font-size:.9em}
+  html:not(.cso) .week li .rt{color:var(--gold-3)}
+  html:not(.cso) .week li .ep{font-size:.8em}
   html:not(.cso) .week li.prow .pc i{font-size:.9em;color:#FFF;font-weight:500}
   html:not(.cso) .week li.prow .pc.past b,html:not(.cso) .week li.prow .pc.past i{color:#B9B09C;font-weight:400}
   html:not(.cso) .week li.prow .pc.next{background:#EBC67D;box-shadow:none}
@@ -559,6 +582,11 @@
   .mblock .big > span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%;
     padding-bottom:.3em;margin-bottom:-.3em;    
     padding-inline:.15em;margin-inline:-.15em;max-width:calc(100% + .3em)}  
+  
+  #match-row{height:calc(2vw*1.1 + .85vh + .88vw*1.4);height:calc(clamp(22px,2vw,42px)*1.1 + .85vh + clamp(11px,.88vw,17px)*1.4);align-items:flex-start}
+  .p-match .sub{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .mblock.lvb .big{font-size:2.6vw;font-size:clamp(26px,2.6vw,54px)}
+  .mblock.lvb .sub{font-size:1.2vw;font-size:clamp(14px,1.2vw,25px)}
   .none-week{font-size:2.5vw;font-size:clamp(26px,2.5vw,54px);font-weight:700;font-family:'ThmanyahDisplay','Thmanyah',serif;color:#A79C85}
 
   
@@ -578,7 +606,9 @@
   .wxdust:not(:empty)::before{content:',';margin-inline-end:.5em;color:rgba(214,175,107,.7)}
   .wxmore{margin-top:.3vh;font-size:.92vw;font-size:clamp(11px,.92vw,18px);font-weight:300;color:var(--dim);white-space:nowrap}
   .wxmore[hidden]{display:none}
-  .wxsrc{margin-top:.3vh;font-size:.86vw;font-size:clamp(10px,.86vw,17px);font-weight:300;color:var(--dim);opacity:.8;white-space:nowrap}
+  
+  .srcl{font-size:.6em;opacity:.5;font-weight:300}
+  .wxsrc{margin-top:.3vh;font-size:calc(1.06vw*.6);font-size:calc(clamp(12px,1.06vw,21px)*.6);font-weight:300;color:var(--dim);opacity:.5;white-space:nowrap}
   .wxsrc:empty{display:none}
   .wxsub{margin-top:.55vh;font-size:1.06vw;font-size:clamp(12px,1.06vw,21px);font-weight:300;color:var(--dim);white-space:nowrap}
   .wxr:not(:empty)::before{content:', ';white-space:pre;color:rgba(214,175,107,.7)}
@@ -589,14 +619,15 @@
   .mk[hidden],.mkup[hidden]{display:none}
   .mk .m{display:inline-flex;align-items:baseline;gap:.45em}
   .mk .delta{font-size:.72em}
-  .mk .m.old,.mkup.old{opacity:.55}   
+  .mk .m.old{opacity:.55}
+  .mkup.old{opacity:.4}   
   .mblock .sub .old{opacity:.6}
   .mk .delta.up{color:#79D6A0}
   .mk .delta.down{color:#EE8B70}
   .mk.px .px{font-variant-numeric:tabular-nums;color:#F6EEDC}
   .mk.px .px[data-u]::after{content:' ' attr(data-u);font-size:.7em;color:#A79C85}
   .mk.px.g{display:grid;grid-template-columns:repeat(2,max-content);width:max-content;gap:.5vh 1.6em}
-  .mkup{margin-top:.6vh;text-align:right;font-size:.82vw;font-size:clamp(10px,.82vw,16px);font-weight:300;color:var(--dim);white-space:nowrap}
+  .mkup{margin-top:.6vh;text-align:right;font-size:calc(1.06vw*.6);font-size:calc(clamp(12px,1.06vw,21px)*.6);font-weight:300;color:var(--dim);opacity:.5;white-space:nowrap}   
   .p-prayer.now .big{color:var(--gold-hi);text-shadow:0 0 40px rgba(var(--gold-rgb),.45)}
   .p-prayer.now .label{color:#F1CF8A}
   .live{color:#EE8B70;font-weight:500}
@@ -830,6 +861,77 @@ html.lowram .photo.settle, html.lowram .week ul.flip li, html.lowram .mrow.flip 
   
   html.clean .top,html.clean .week,html.clean .p-mid,html.clean .p-match,html.clean .ystrip,html.clean .grain,html.clean .adbar,html.clean #fb,html.clean #mp,html.clean .mkup,html.clean #np{display:none!important}
   html.clean:not(.cl2) .p-prayer{display:none!important}
+  
+  html.sd-clean .top,html.sd-clean .week,html.sd-clean .bottom,html.sd-clean .bottom-veil,html.sd-clean .top-veil,html.sd-clean .veil,html.sd-clean .grain,html.sd-clean .subline,html.sd-clean .ystrip,html.sd-clean #credit{display:none!important}
+  html.sd-clean .clockwrap{position:fixed;right:0;left:0;top:20.4vh;display:flex;justify-content:center;z-index:6;margin:0;padding:0}
+  html.sd-clean .clock{font-family:'ThmanyahDisplay','Thmanyah',sans-serif;font-weight:700;font-size:35.6vh;line-height:.9;direction:ltr;color:#fff;text-shadow:0 2px 18px rgba(0,0,0,.28)}
+  html.sd-clean .clock .ampm{display:none}
+  html.sd-glass .clock{background:var(--sd-glass) 0 0/100vw 100vh fixed;-webkit-background-clip:text;background-clip:text;text-shadow:none;-webkit-text-stroke:.15vh rgba(255,255,255,.9);filter:drop-shadow(0 .55vh 2.2vh rgba(0,0,0,.35))}
+  html.sd-glass .clock *{color:transparent!important;text-shadow:none!important}
+  .sd-line{position:fixed;right:0;left:0;top:55.3vh;z-index:7;text-align:center;color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.55),0 0 18px rgba(0,0,0,.35)}
+  .sd-line .d{font-size:3.35vh;font-weight:500}
+  .sd-line .n{margin-top:1.1vh;font-size:2.8vh;color:#F1E7D0}
+  .sd-line .n b{font-weight:500;color:#FFE9B8}
+  
+  .pt{unicode-bidi:isolate;direction:ltr;margin-inline-start:.3em}
+  
+  .sd-fg{position:fixed;z-index:6;background:0 0/100% 100% no-repeat;pointer-events:none}
+  html.sd-still .photo{transform:none!important;animation:none!important}
+
+  html.sd-big .top,html.sd-big .week,html.sd-big .bottom,html.sd-big .subline,html.sd-big .ystrip,html.sd-big #credit{display:none!important}
+  html.sd-big .clockwrap{position:fixed;top:0;left:0;bottom:0;right:0;display:flex;align-items:center;justify-content:center;z-index:6;margin:0}
+  html.sd-big .clock{font-family:'Thmanyah',sans-serif;font-weight:300;font-size:55.5vh;line-height:1;direction:ltr;color:#fff;text-shadow:0 2px 30px rgba(0,0,0,.3)}
+  html.sd-big .clock .ampm{display:none}
+  html.sd-big .bottom-veil{display:block;height:100vh;background:radial-gradient(ellipse at 50% 50%,rgba(0,0,0,.30),rgba(0,0,0,.12) 70%)}
+  .sd-big-d{position:fixed;right:0;left:0;bottom:11.9vh;z-index:7;text-align:center;font-size:3.15vh;color:rgba(255,255,255,.85);text-shadow:0 1px 3px rgba(0,0,0,.5)}
+  html.sd-frame .top,html.sd-frame .week,html.sd-frame .bottom,html.sd-frame .bottom-veil,html.sd-frame .subline,html.sd-frame .ystrip,html.sd-frame #credit{display:none!important}
+  .sd-vig{position:fixed;top:0;left:0;bottom:0;right:0;z-index:6;pointer-events:none;background:radial-gradient(ellipse 75% 70% at 50% 45%,rgba(0,0,0,0) 55%,rgba(0,0,0,.55) 100%)}
+  .sd-vig::after{content:'';position:absolute;top:3.7vh;left:3.7vh;bottom:3.7vh;right:3.7vh;border:1px solid rgba(255,240,210,.35);border-radius:2px}
+  html.sd-frame .clockwrap{position:fixed;left:8.1vh;bottom:6.7vh;z-index:7;margin:0}
+  html.sd-frame .clock{font-size:8.1vh;font-weight:500;line-height:1;color:#fff;text-shadow:0 1px 6px rgba(0,0,0,.5)}
+  html.sd-frame .clock .ampm{font-size:.42em}
+  .sd-fdate{position:fixed;left:8.1vh;bottom:16.3vh;z-index:7;font-size:2.6vh;color:rgba(255,255,255,.85);text-shadow:0 1px 3px rgba(0,0,0,.6)}
+  .sd-verse{position:fixed;right:0;left:0;top:8.1vh;z-index:7;text-align:center;color:#FFF7E6;text-shadow:0 1px 4px rgba(0,0,0,.6)}
+  .sd-verse .q{font-family:'UthmanicHafs','Thmanyah',serif;font-size:4.8vh;line-height:1.6}
+  .sd-verse .o{font-family:'NotoMarks',serif;color:#E0BA74;font-size:1.3em;vertical-align:-.1em;padding:0 .15em}
+  .sd-verse .s{margin-top:.4vh;font-size:2.4vh;color:rgba(255,240,210,.8)}
+  html.sd-day .week,html.sd-day .bottom,html.sd-day .subline{display:none!important}
+  html.sd-day .mid{grid-template-columns:1fr}
+  html.sd-day .clockwrap{justify-self:center;align-self:center;text-align:center}
+  html.sd-day .bottom-veil{display:block!important;height:38vh}
+  .sd-dl{position:fixed;right:11.9vh;left:11.9vh;bottom:6.7vh;height:21vh;z-index:6;direction:ltr}
+  .sd-dl::before{content:'';position:absolute;right:0;left:0;top:8.1vh;height:.75vh;border-radius:.4vh;background:rgba(255,255,255,.22)}
+  .sd-dl .done{position:absolute;left:0;top:8.1vh;height:.75vh;border-radius:.4vh;background:linear-gradient(to right,rgba(224,186,116,.45),#E0BA74)}
+  .sd-dl .now{position:absolute;top:7.05vh;width:3vh;height:3vh;margin-left:-1.5vh;border-radius:50%;background:#FFE9B8;box-shadow:0 0 0 .75vh rgba(255,233,184,.25),0 0 3vh rgba(255,233,184,.6)}
+  
+  .sd-dl .p{position:absolute;top:0;transform:translateX(50%);text-align:center;white-space:nowrap;color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.6)}
+  .sd-dl .p b{display:block;font-size:3vh;font-weight:500;line-height:4.4vh}
+  .sd-dl .p i{display:block;margin-top:7.4vh;font-style:normal;font-size:2.6vh;color:#E2DACA;unicode-bidi:isolate}
+  .sd-dl .p::after{content:'';position:absolute;left:50%;top:7.4vh;width:2px;height:2.2vh;margin-right:-1px;background:rgba(255,255,255,.55)}
+  .sd-dl .p.past{opacity:.6}
+  .sd-dl .p.next b,.sd-dl .p.next i{color:#FFE9B8}
+  .sd-dl .p.next::after{background:#FFE9B8;width:3px}
+  .sd-dl .right{position:absolute;top:17.2vh;transform:translateX(50%);font-size:2.4vh;color:#FFE9B8;white-space:nowrap;text-shadow:0 1px 3px rgba(0,0,0,.6)}
+  
+  .sd-bar{position:fixed;left:50%;transform:translateX(-50%);z-index:7;display:flex;align-items:stretch;gap:1.1vh;padding:1.5vh;border-radius:3vh;
+    background:rgba(12,14,18,.6);border:1px solid rgba(255,255,255,.16);color:#fff;white-space:nowrap}
+  .sd-bar.at-bottom{bottom:6.7vh}
+  .sd-bar .c{display:flex;flex-direction:column;align-items:center;justify-content:center;min-width:16vh;padding:1.5vh 1.9vh;border-radius:1.9vh}
+  .sd-bar .c b{font-size:2.6vh;font-weight:400;color:#E9E1CE}
+  .sd-bar .c i{font-style:normal;font-size:3.5vh;font-weight:500;margin-top:.4vh;unicode-bidi:isolate}
+  .sd-bar .c.past b,.sd-bar .c.past i{color:#B9B09C;font-weight:400}
+  .sd-bar .c.next{background:#EBC67D}.sd-bar .c.next b,.sd-bar .c.next i{color:#1A1409}
+  .sd-bar .c.next em{font-style:normal;font-size:2.2vh;color:#3A2C10;margin-top:.2vh}
+  .sd-bar .one{display:flex;align-items:center;gap:3vh;padding:1.1vh 3vh}
+  .sd-bar .one .k{font-size:2.6vh;color:#E0BA74}
+  .sd-bar .one .v{font-size:3.9vh;font-weight:500}
+  .sd-bar .one .r{font-size:2.8vh;color:#E2DACA}
+  .sd-wx{position:fixed;z-index:7;color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.55),0 0 14px rgba(0,0,0,.3);white-space:nowrap}
+  .sd-wx b{font-weight:500}.sd-wx span{color:#E2DACA;margin-inline-start:.3em}
+  .sd-wx.at-clock{right:0;left:0;text-align:center;font-size:3vh}
+  .sd-wx.at-corner{top:4.1vh;right:5.2vh;font-size:2.8vh}
+  html.sd-wx-usual .top{display:flex!important}html.sd-wx-usual .top .dates,html.sd-wx-usual .top .mk,html.sd-wx-usual .top .rule{visibility:hidden}
+  html.sd-wx-off .top .wx,html.sd-wx-off .top .wxline,html.sd-wx-off .top .wxsub{visibility:hidden}
 @supports not (width:clamp(1px,1px,1px)){html.ck-small{--ckf:9.35vw}#fb{--k:1}}  .clock .ampm{order:1;margin-inline-end:0;margin-inline-start:.25em}
   .week li.quote,.week li.src,.week li.tafsir,.week li.adf .s{direction:rtl}
 </style>
@@ -931,7 +1033,7 @@ const _list = k => (_Q.get(k) || '').split(',').map(x=>x.trim()).filter(Boolean)
 const SEP = ' · ';
 const _num = (k, d) => { const v = parseFloat(_Q.get(k)); return isNaN(v) ? d : v; };
 const _tzOk = z => { try{ new Intl.DateTimeFormat('en',{timeZone:z}); return true; }catch(e){ return false; } };
-const CARD_KINDS = ['shows','prayers','forecast','hourly','prayerrow','nextprayer','matches','nextmatch','matchday','livenow','minitable','nextmatches','yesterday','weekend','cuppath','formula','national','verse','wisdom','adhkar','stocks','tasks','year','smart','today','album'];
+const CARD_KINDS = ['shows','prayers','forecast','hourly','prayerrow','nextprayer','matches','nextmatch','matchday','livenow','minitable','nextmatches','yesterday','weekend','cuppath','formula','national','verse','hadith','wisdom','adhkar','stocks','tasks','year','smart','today','album'];
 const CONFIG = {
   city: _Q.get('city') || 'Riyadh',
   latitude: _num('lat', 24.7136),
@@ -982,7 +1084,7 @@ const CONFIG = {
   clockSize: (v => ['medium','small'].includes(v) ? v : 'large')(_Q.get('clocksize')),
   cardStyle: (v => ['dark1','glass1','dark3','glass3','boxes','classic'].includes(v) ? v : 'current')(_Q.get('cardstyle')),
   markets: (l => l.length ? l : ['tasi','spx','btc'])(
-    _list('markets').filter((k, i, a) => ['tasi','aramco','spx','btc','gold','silver','oil','xrp'].includes(k) && a.indexOf(k) === i).slice(0, 4)),
+    _list('markets').filter((k, i, a) => ['tasi','aramco','spx','btc','gold','gold21','silver','oil','xrp'].includes(k) && a.indexOf(k) === i).slice(0, 4)),
   mkStyle: _Q.get('mkstyle') === 'prices' ? 'prices' : 'arrows',
   stkChg: _Q.get('stkchg') === 'amount' ? 'amount' : 'pct',
   mkBar: _Q.get('mkbar') !== 'off',
@@ -991,11 +1093,16 @@ const CONFIG = {
   slot: (v => ['weather','fasting','countdown','markets','none'].includes(v) ? v : 'matches')(_Q.get('slot')),
   cd: (v => /^\d{4}-\d{2}-\d{2}$/.test(v) && !isNaN(Date.parse(v + 'T00:00:00Z')) && new Date(v + 'T00:00:00Z').toISOString().slice(0, 10) === v ? v : '')(_Q.get('cd') || ''),
   cdName: (_Q.get('cdname') || '').trim().slice(0, 40),
+  cdSchool: _Q.get('cd') === 'school',
   occasion: _Q.get('occasion') !== '0',
   nightDim: _Q.get('nightdim') !== '0',
   verseMin: ({3:3, 10:10})[_Q.get('versemin')] || 0,
   verseKind: (v => v === 'verse' || v === 'hadith' ? v : 'both')(_Q.get('versekind')),
   lowram: _Q.get('lowram') === '1',
+  design: (v => ['clean', 'big', 'frame', 'dayline'].includes(v) ? v : 'info')(_Q.get('design')),
+  bar: (v => ['prayers', 'slot', 'weather'].includes(v) ? v : 'none')(_Q.get('bar')),
+  barAt: _Q.get('barat') === 'clock' ? 'clock' : 'bottom',
+  wxAt: (v => ['usual', 'clock', 'corner', 'off'].includes(v) ? v : 'auto')(_Q.get('wx')),
   midram: _Q.get('midram') === '1',
   seconds: _Q.get('seconds') === '1' && _Q.get('lowram') !== '1',
   tafsir: _Q.get('tafsir') === '1',
@@ -1441,7 +1548,7 @@ async function loadPrayers(){
   renderPanel(false, 'prayers', 'adhkar', 'prayerrow', 'nextprayer');
 }
 
-const UNIT = {day: {one:'day', many:'days'}, hour: {one:'hour', many:'hours'}, min: {one:'min', many:'min'}};
+const UNIT = {day: {one:'day', many:'days'}, hour: {one:'hour', many:'hours'}, min: {one:'min', many:'min'}, task: {one:'task', many:'tasks'}};
 const unitOf = (n, u) => n === 1 ? u.one : u.many;
 const qty = (n, u) => `${ar(n)} ${unitOf(n, u)}`;
 function humanRemaining(sec){
@@ -2435,6 +2542,7 @@ const MARKETS = {
   spx:    {name:'S&P 500',  sym:'^GSPC',    dec:0},
   btc:    {name:'Bitcoin',  cg:'bitcoin',   dec:0, unit:'$'},
   gold:   {name:'Gold',    sym:'GC=F',     dec:2, unit:'SAR', mul:GRAM},
+  gold21: {name:'Gold 21k',   sym:'GC=F',     dec:2, unit:'SAR', mul:GRAM * 0.875},
   silver: {name:'Silver',    sym:'SI=F',     dec:2, unit:'SAR', mul:GRAM},
   oil:    {name:'Brent', sym:'BZ=F',     dec:2, unit:'$/bbl'},
   xrp:    {name:'XRP',     cg:'ripple',    dec:2, unit:'$'},
@@ -2500,6 +2608,28 @@ function fastingNext(now){
     return {key:why[0], days:i, day:h.day, wd:date.getUTCDay(), date};
   }
   return null;
+}
+
+const SCHOOL_URL = 'https://raw.githubusercontent.com/tshi-dev/urtv-data/data/calendar/sa-school.json';
+let SCHOOL = null;
+function schoolNext(){
+  if(!SCHOOL || !Array.isArray(SCHOOL.breaks)) return;
+  const p = riyadhParts(), today = `${p.y}-${String(p.mo).padStart(2, '0')}-${String(p.d).padStart(2, '0')}`;
+  const b = SCHOOL.breaks.filter(x => x && /^\d{4}-\d{2}-\d{2}$/.test(x.from) && x.from >= today).sort((x, y) => x.from < y.from ? -1 : 1)[0];
+  CONFIG.cd = b ? b.from : '';
+  CONFIG.cdName = b ? String(b.name || '').trim().slice(0, 40) : '';
+}
+async function loadSchool(){
+  if(!CONFIG.cdSchool) return;
+  try{ const c = JSON.parse(localStorage.getItem('school') || 'null'); if(c && c.at > Date.now() - DAY_MS && c.j){ SCHOOL = c.j; schoolNext(); renderSlot(); return; } }catch(e){}
+  try{
+    const r = await fetchT(SCHOOL_URL, 15000);
+    if(!r.ok) return;
+    SCHOOL = await r.json();
+    try{ localStorage.setItem('school', JSON.stringify({at: Date.now(), j: SCHOOL})); }catch(e){}
+    schoolNext();
+    renderSlot();
+  }catch(e){}
 }
 
 function countdownDays(){
@@ -2968,8 +3098,9 @@ function renderCard(card, animate, keepSize){
   }
   if(!keepSize){ card.z = 1; card.cap = 0; card.maxLen = 0; card.zi = 0; card.ri = 0; card.el.style.removeProperty('--z'); }
   if(P === 'shows'){
-    if(WEEK_OK_AT && WEEK_FAIL_AT > WEEK_OK_AT) paintHd(hd, '', `<span>${PANEL_TITLE.shows}</span><span class="until">${fmtAgo(WEEK_OK_AT)}</span>`);
-    else paintHd(hd, PANEL_TITLE.shows);
+    const by = '<span class="srcl">TVmaze</span>';
+    if(WEEK_OK_AT && WEEK_FAIL_AT > WEEK_OK_AT) paintHd(hd, '', `<span>${PANEL_TITLE.shows}</span><span class="until">${fmtAgo(WEEK_OK_AT)}</span>${by}`);
+    else paintHd(hd, '', `<span>${PANEL_TITLE.shows}</span>${by}`);
     renderWeekPage(card, animate); return;
   }
   card.el.classList.toggle('stocks', P === 'stocks');
@@ -2990,12 +3121,13 @@ function renderCard(card, animate, keepSize){
   else if(P === 'album') rows = [albumCard(card)];
   else if(P === 'today'){ const q = todayCard(); paintHd(hd, q.title); rows = q.rows; }
   else if(P === 'tasks') rows = CONFIG.tasks.map(t => `<li class="task"><span>${esc(t)}</span></li>`);
-  else if(P === 'verse'){ const q = quoteOfDay(card); paintHd(hd, q.title); rows = q.rows; }
+  else if(P === 'verse' || P === 'hadith'){ const q = quoteOfDay(card, P === 'hadith' ? 'hadith' : CONFIG.cards.includes('hadith') ? 'verse' : CONFIG.verseKind); paintHd(hd, q.title); rows = q.rows; }
   else if(P === 'wisdom'){ const q = wisdomOfDay(); paintHd(hd, q.title); rows = q.rows; }
   else if(P === 'adhkar'){ const q = adhkarCard(card); paintHd(hd, q.title, q.hd); rows = q.rows; }
   else if(P === 'stocks'){ const q = stocksCard(); paintHd(hd, '', q.hd); rows = q.rows; }
   const title = PANEL_TITLE[card.kind === 'nextmatch' ? 'nextmatch' : P];
   if(P === 'matches' && matchesStaleNote()) paintHd(hd, '', `<span>${title}</span><span class="until">${matchesStaleNote()}</span>`);
+  else if(P === 'tasks' && !OLD_LOOK && CONFIG.tasks.length) paintHd(hd, '', `<span>${PANEL_TITLE.tasks}</span><span class="until near">${qty(CONFIG.tasks.length, UNIT.task)}</span>`);
   else if(title) paintHd(hd, title);
   if(!rows.length){
     if(P === 'matches' && !MATCHES_LOADED && ul.firstElementChild && !ul.firstElementChild.classList.contains('empty')) return;
@@ -3049,7 +3181,7 @@ function shrinkCard(c, tooWide){
       if(!ok) return shrinkByContent(c);
     }else return shrinkByContent(c);
   }
-  const list = LISTS.includes(c.eff), quote = c.eff === 'verse' || c.eff === 'adhkar', zLeft = c.zi < Z_STEPS.length - 1;
+  const list = LISTS.includes(c.eff), quote = c.eff === 'verse' || c.eff === 'hadith' || c.eff === 'adhkar', zLeft = c.zi < Z_STEPS.length - 1;
   if(tooWide){ if(!zLeft) return false; c.zi++; }
   else if(list && c.ri < c.base - 1) c.ri++;
   else if(quote && c.zi < 3) c.zi++;
@@ -3064,7 +3196,7 @@ function shrinkCard(c, tooWide){
   return true;
 }
 function shrinkByContent(c){
-  const list = LISTS.includes(c.eff), quote = c.eff === 'verse' || c.eff === 'adhkar';
+  const list = LISTS.includes(c.eff), quote = c.eff === 'verse' || c.eff === 'hadith' || c.eff === 'adhkar';
   if(list && c.ri < c.base - 1) c.ri++;
   else if(quote && c.ri < 6) c.ri++;
   else return false;
@@ -3073,7 +3205,7 @@ function shrinkByContent(c){
   return true;
 }
 function fitCards(){
-  if(CARDS.length < 2) return;
+  if(CARDS.length < 2 && !CONFIG.widget) return;
   const mid = document.querySelector('.mid');
   const tooTall = CONFIG.widget ? () => mid.getBoundingClientRect().height > innerHeight + .5 : pairTooTall;
   mid.classList.add('fit');
@@ -3526,8 +3658,8 @@ function pickShort(list, at, len, card){
   return best;
 }
 const quoteTurn = () => CONFIG.verseMin ? Math.floor(Date.now() / (CONFIG.verseMin * 60000)) : riyadhDayNumber();
-function quoteOfDay(card){
-  const n = quoteTurn(), kind = CONFIG.verseKind, half = kind === 'both' ? Math.floor(n / 2) : n;
+function quoteOfDay(card, kind = CONFIG.verseKind){
+  const n = quoteTurn(), half = kind === 'both' ? Math.floor(n / 2) : n;
   if(VERSES.length && (kind === 'verse' || (kind === 'both' && n % 2 === 0))){
     const v = pickShort(VERSES, half, x => x.text.length, card);
     return {title:CONFIG.verseMin ? 'A verse' : 'Verse of the day', rows:[`<li class="quote quran${v.text.length > 330 ? ' q4' : quoteSize(v.text.length)}"><span class="orn">﴿</span><span class="qt">${esc(v.text)}</span><span class="orn">﴾</span></li>`, '<li class="src">' + esc(v.surah) + SEP + 'verse' + ' ' + ar(v.ayah) + '</li>']
@@ -3921,6 +4053,195 @@ function restoreSnap(){
   }catch(e){}
 }
 
+
+const SD_NAMES = {Fajr: 'Fajr', Sunrise: 'Sunrise', Dhuhr: 'Dhuhr', Asr: 'Asr', Maghrib: 'Maghrib', Isha: 'Isha'};
+const sdText = id => ((document.getElementById(id) || {}).textContent || '').trim();
+const sdNode = (cls) => { let e = document.querySelector('body > .' + cls.split(' ')[0]); if(!e){ e = document.createElement('div'); document.body.appendChild(e); } e.className = cls; return e; };
+const sdDay = () => [sdText('hijri'), sdText('greg').replace(/^[^،]+،\s*/, '')].filter(Boolean).join(SEP);
+const sdMins = k => { const v = DAY_TIMES && DAY_TIMES[k]; if(!v) return null; const [h, m] = String(v).split(':').map(Number); return h * 60 + m; };
+function sdNext(){
+  const name = sdText('prayer-name'), time = sdText('prayer-time'), left = sdText('prayer-count');
+  if(!name || name === '—') return '';
+  return '<b>' + esc(name) + '</b>' + (time ? '<span class="pt">' + esc(time) + '</span>' : '') + (left ? SEP + esc(left) : '');
+}
+function sdWeather(){ return sdText('wx-temp') ? '<b>' + esc(sdText('wx-temp')) + '</b> ' + esc(sdText('wx-desc')) + '<span>' + esc(sdText('wx-range').replace(/^[،\s]+/, '')) + '</span>' : ''; }
+let SD_GLASS_OF = '';
+function sdGlass(){
+  const H = document.documentElement, ph = document.querySelector('.photo'), bg = ph && ph.style.backgroundImage, m = bg && /url\(["']?(.*?)["']?\)$/.exec(bg);
+  if(CONFIG.lowram || !m || m[1] === SD_GLASS_OF) return;
+  SD_GLASS_OF = m[1];
+  sdDepth(m[1]);
+  const img = new Image();
+  img.crossOrigin = 'anonymous';
+  img.onload = () => {
+    try{
+      if(SD_GLASS_OF !== m[1]) return;
+      const c = document.createElement('canvas');
+      c.width = 96; c.height = 54;
+      const g = c.getContext('2d');
+      g.filter = 'saturate(60%)';
+      g.drawImage(img, 0, 0, 96, 54);
+      g.filter = 'none';
+      g.fillStyle = 'rgba(255,255,255,.28)';
+      g.fillRect(0, 0, 96, 54);
+      H.style.setProperty('--sd-glass', "url('" + c.toDataURL('image/jpeg', .8) + "')");
+      H.classList.add('sd-glass');
+    }catch(e){ H.classList.remove('sd-glass'); }
+  };
+  img.onerror = () => H.classList.remove('sd-glass');
+  img.src = m[1];
+}
+
+const MASK_BASE = 'https://raw.githubusercontent.com/tshi-dev/urtv-data/data/masks/';
+const MASK_IDX = {};
+const SD_BOX = [601, 266, 1319, 542];
+const SD_GLYPHS = [[.56, .56, -.24, .56, .56], [.56, -.24, .56, .56]];
+function maskKey(url){
+  if(url.startsWith(PHOTO_BASE)){ const m = /^([A-Za-z0-9_-]{4,40})\.jpg/.exec(url.slice(PHOTO_BASE.length)); return m ? ['photos', m[1]] : null; }
+  if(url.startsWith(PACK_BASE)){ const m = /^([a-z][a-z0-9-]{1,30})\/([0-9]{1,3})\.jpg/.exec(url.slice(PACK_BASE.length)); return m && m[1] !== 'haramain' ? [m[1], m[2]] : null; }
+  const b = /wallpapers\/([A-Za-z0-9_-]{4,40})\.jpg$/.exec(url);
+  return b ? ['photos', b[1]] : null;
+}
+function sdCover(sky, colon){
+  const [l, t, r, b] = SD_BOX, dh = b - t, cx = (l + r) / 2;
+  let most = 0;
+  for(const lay of SD_GLYPHS){
+    let x0 = cx - lay.reduce((a, g) => a + Math.abs(g), 0) * dh / 2;
+    for(const g of lay){
+      const gw = Math.abs(g) * dh;
+      if((g < 0) === colon) for(let x = x0; x <= x0 + gw; x += 2){ const c = Math.floor(x * sky.length / 1920); if(c >= 0 && c < sky.length) most = Math.max(most, Math.min(1, (b - sky[c]) / dh)); }
+      x0 += gw;
+    }
+  }
+  return most;
+}
+const sdLegible = sky => sdCover(sky, false) <= .25 + 1e-4 && sdCover(sky, true) <= .25 + 1e-4;
+function sdImage(url){ return new Promise((ok, no) => { const i = new Image(); i.crossOrigin = 'anonymous'; i.onload = () => ok(i); i.onerror = no; i.src = url; }); }
+function sdRead(photo, fg, box){
+  try{
+    const cw = 960, ch = Math.max(1, Math.round(box[3] / 2)), c = document.createElement('canvas'), d = document.createElement('canvas');
+    c.width = cw; c.height = ch; d.width = 960; d.height = 540;
+    const g = c.getContext('2d'), h = d.getContext('2d');
+    g.drawImage(fg, 0, 0, cw, ch); h.drawImage(photo, 0, 0, 960, 540);
+    const a = g.getImageData(0, 0, cw, ch).data, p = h.getImageData(0, 0, 960, 540).data;
+    const sky = new Array(192).fill(1080);
+    for(let k = 0; k < 192; k++){
+      const x = Math.min(cw - 1, Math.floor(((k + .5) * 10 - box[0]) * cw / box[2]));
+      if(x < 0) continue;
+      for(let y = 0; y < ch; y++) if(a[(y * cw + x) * 4 + 3] > 127){ sky[k] = Math.round(box[1] + y * box[3] / ch); break; }
+    }
+    let best = 1e9, here = 1e9;
+    for(let dy = -3; dy <= 3; dy++) for(let dx = -3; dx <= 3; dx++){
+      let sum = 0, n = 0;
+      for(let y = 0; y < ch; y++) for(let x = 0; x < cw; x++){
+        const i = (y * cw + x) * 4;
+        if(a[i + 3] < 250) continue;
+        const px = Math.round((box[0] + (x + .5) * box[2] / cw) / 2 - .5) + dx, py = Math.round((box[1] + (y + .5) * box[3] / ch) / 2 - .5) + dy;
+        if(px < 0 || py < 0 || px >= 960 || py >= 540) continue;
+        const j = (py * 960 + px) * 4;
+        sum += Math.abs(a[i] - p[j]) + Math.abs(a[i + 1] - p[j + 1]) + Math.abs(a[i + 2] - p[j + 2]); n++;
+      }
+      if(!n) continue;
+      const m = sum / (3 * n);
+      best = Math.min(best, m);
+      if(!dx && !dy) here = m;
+    }
+    return {sky, aligned: here <= 16 && here <= best + .05};
+  }catch(e){ return null; }
+}
+let SD_DEPTH_OF = '';
+async function sdDepth(url){
+  const H = document.documentElement, old = document.querySelector('body > .sd-fg');
+  if(old) old.remove();
+  H.classList.remove('sd-still');
+  SD_DEPTH_OF = url;
+  const key = CONFIG.design === 'clean' && !CONFIG.lowram && !CONFIG.widget && url ? maskKey(url) : null;
+  if(!key) return;
+  try{
+    const idx = MASK_IDX[key[0]] || (MASK_IDX[key[0]] = fetchT(MASK_BASE + key[0] + '/index.json', 15000).then(r => r.ok ? r.json() : {}).catch(() => ({})));
+    const rec = ((await idx).files || {})[key[1]];
+    if(!rec || !Array.isArray(rec.box) || rec.box.length !== 4) return;
+    if(Array.isArray(rec.depth) && !rec.depth.includes('clean')) return;
+    const [photo, fg] = await Promise.all([sdImage(url), sdImage(MASK_BASE + key[0] + '/' + key[1] + '-fg.webp')]);
+    if(SD_DEPTH_OF !== url) return;
+    const got = sdRead(photo, fg, rec.box);
+    if(!got || !got.aligned) return;
+    if(!rec.owner_ok && !sdLegible(got.sky)) return;
+    const [x, y, w, h] = rec.box, e = document.createElement('div');
+    e.className = 'sd-fg';
+    e.style.cssText = `left:${x / 19.2}vw;top:${y / 10.8}vh;width:${w / 19.2}vw;height:${h / 10.8}vh;background-image:url('${fg.src}')`;
+    document.body.appendChild(e);
+    H.classList.add('sd-still');
+  }catch(e){}
+}
+function designInit(){
+  if(CONFIG.widget) return;
+  const H = document.documentElement, d = CONFIG.design;
+  if(d !== 'info') H.classList.add('sd-' + (d === 'dayline' ? 'day' : d));
+  const wx = CONFIG.wxAt === 'auto' ? (d === 'info' || d === 'dayline' ? 'usual-page' : 'off') : CONFIG.wxAt;
+  if(wx === 'usual' && d !== 'info' && d !== 'dayline') H.classList.add('sd-wx-usual');
+  if(wx === 'off' && (d === 'info' || d === 'dayline')) H.classList.add('sd-wx-off');
+  H.dataset.sdwx = wx;
+  if((d === 'clean' || d === 'big' || d === 'frame') && document.querySelector('.clockwrap')) document.body.appendChild(document.querySelector('.clockwrap'));
+  designTick();
+}
+function designTick(){
+  if(CONFIG.widget) return;
+  const d = CONFIG.design, H = document.documentElement;
+  if(d === 'clean'){
+    sdGlass();
+    const nx = CONFIG.bar === 'prayers' ? '' : sdNext();
+    setHTML(sdNode('sd-line'), '<div class="d">' + esc(sdDay()) + '</div>' + (nx ? '<div class="n">' + nx + '</div>' : ''));
+  } else if(d === 'big') setHTML(sdNode('sd-big-d'), esc(sdDay()));
+  else if(d === 'frame'){
+    sdNode('sd-vig');
+    setHTML(sdNode('sd-fdate'), esc(sdDay()));
+    const v = VERSES.length ? VERSES[riyadhDayNumber() % VERSES.length] : null;
+    if(v && v.text.length < 90) setHTML(sdNode('sd-verse'), '<div class="q"><span class="o">﴿</span>' + esc(v.text) + '<span class="o">﴾</span></div><div class="s">' + esc(v.surah) + SEP + 'verse' + ' ' + ar(v.ayah) + '</div>');
+  } else if(d === 'dayline' && DAY_TIMES){
+    const p = riyadhParts(), now = p.h * 60 + p.mi, a = sdMins('Fajr') - 30, b = sdMins('Isha') + 30, x = t => Math.max(0, Math.min(100, (t - a) / (b - a) * 100));
+    const nk = Object.keys(SD_NAMES).find(k => k !== 'Sunrise' && sdMins(k) > now);
+    let h = '<div class="done" style="width:' + x(now).toFixed(1) + '%"></div>';
+    for(const k of Object.keys(SD_NAMES)){
+      const t = sdMins(k);
+      if(t == null) continue;
+      h += '<div class="p' + (t <= now ? ' past' : k === nk ? ' next' : '') + '" style="right:' + x(t).toFixed(1) + '%"><b>' + (k === 'Dhuhr' && isFriday() ? 'Jumuah' : SD_NAMES[k]) + '</b><i>' + fmtTime(Math.floor(t / 60), t % 60) + '</i></div>';
+    }
+    h += '<div class="now" style="right:' + x(now).toFixed(1) + '%"></div>';
+    if(nk) h += '<div class="left" style="right:' + x(sdMins(nk)).toFixed(1) + '%">' + esc(sdText('prayer-count')) + '</div>';
+    setHTML(sdNode('sd-dl'), h);
+  }
+  const under = () => { const c = document.querySelector('.sd-line'); return c ? c.getBoundingClientRect().bottom + innerHeight * .02 : innerHeight * .62; };
+  if(CONFIG.bar !== 'none'){
+    let h = '';
+    if(CONFIG.bar === 'prayers' && DAY_TIMES){
+      const p = riyadhParts(), now = p.h * 60 + p.mi, nk = Object.keys(SD_NAMES).find(k => k !== 'Sunrise' && sdMins(k) > now);
+      for(const k of Object.keys(SD_NAMES)){
+        const t = sdMins(k);
+        if(t == null) continue;
+        h += '<div class="c' + (k === nk ? ' next' : t <= now ? ' past' : '') + '"><b>' + (k === 'Dhuhr' && isFriday() ? 'Jumuah' : SD_NAMES[k]) + '</b><i>' + fmtTime(Math.floor(t / 60), t % 60) + '</i>' + (k === nk ? '<em>' + esc(sdText('prayer-count')) + '</em>' : '') + '</div>';
+      }
+    } else if(CONFIG.bar === 'weather'){
+      if(sdText('wx-temp')) h = '<div class="one"><span class="k">Weather</span><span class="v">' + esc(sdText('wx-temp') + ' ' + sdText('wx-desc')) + '</span><span class="r">' + esc(sdText('wx-range').replace(/^[،\s]+/, '')) + '</span></div>';
+    } else {
+      const blk = document.querySelector('#match-row .mblock') || document.querySelector('#match-row');
+      const big = blk && blk.querySelector('.big'), sub = blk && blk.querySelector('.sub');
+      if(big) h = '<div class="one"><span class="k">' + esc(sdText('slot-label')) + '</span><span class="v">' + big.innerHTML + '</span><span class="r">' + (sub ? sub.innerHTML : '') + '</span></div>';
+    }
+    const e = sdNode('sd-bar ' + (CONFIG.barAt === 'clock' ? 'at-clock' : 'at-bottom'));
+    setHTML(e, h);
+    e.hidden = !h;
+    if(CONFIG.barAt === 'clock') e.style.top = Math.round(under()) + 'px';
+  }
+  const wx = H.dataset.sdwx;
+  if(wx === 'clock' || wx === 'corner'){
+    const e = sdNode('sd-wx at-' + wx), w = sdWeather();
+    setHTML(e, w);
+    e.hidden = !w;
+    if(wx === 'clock') e.style.top = Math.round(under()) + 'px';
+  }
+}
+
 function cardTimers(){
   const clocked = ['prayers', 'hourly', 'prayerrow', 'nextprayer', 'smart', 'today'];
   setInterval(() => renderPanel(false, ...clocked), 15000);
@@ -3939,7 +4260,7 @@ function cardTimers(){
     setInterval(() => {
       if(quoteTurn() === turn) return;
       turn = quoteTurn();
-      CARDS.forEach(c => { if(c.kind === 'verse') renderCard(c, true); });
+      CARDS.forEach(c => { if(c.kind === 'verse' || c.kind === 'hadith') renderCard(c, true); });
       fitCards();
     }, 10*1000);
   }
@@ -4184,13 +4505,13 @@ function fbRender(){
   FB.at = Math.max(0, Math.min(FB.at, list.length - 1));
   setHTML(document.getElementById('fb-wx-c'), fbWeatherHtml());
   setHTML(document.getElementById('fb-pr-c'), fbPrayersHtml());
-  const count = list.length ? 'TheSportsDB' + SEP + fbCount(list.length) : '';
+  const count = list.length ? esc(fbCount(list.length)) + ' <span class="srcl">TheSportsDB</span>' : '';
   const upcoming = list.length && !list.some(ev => fbDayOf(fbKick(ev)) === cityToday(now));
   for(const id of ['fb-mt', 'fb-row']){
     const h = document.querySelector('#' + id + ' h3'), t = h && h.firstChild;
     if(t && t.nodeType === 3) t.nodeValue = upcoming ? FB_W.upcoming : FB_W.today;
   }
-  setText(document.getElementById('fb-mt-n'), count);
+  setHTML(document.getElementById('fb-mt-n'), count);
   setText(document.getElementById('fb-row-n'), list.length ? fbCount(list.length) + fbAllOn(list) : '');
   setHTML(document.getElementById('fb-mt-c'), list.length ? '<ul>' + list.slice(0, 3).map(ev => fbLine(ev, now)).join('') + '</ul>'
     : `<div class="fnone">${MATCHES_LOADED ? FB_W.none : matchesEmptyText()}</div>`);
@@ -4393,9 +4714,10 @@ const mpItem = (t, sub, act) => ({it: 1, idEvent: '', t, sub: sub || '', act});
 const mpItemRow = (x, i) => `<li class="mpg mpi${i === MP.r && MP.zone === 'rows' && !MP.detail ? ' f' : ''}" data-r="${i}"><span>${esc(x.t)}</span><i>${esc(x.sub)}</i></li>`;
 function mpAge(){
   const at = Math.max(MATCH_OK_AT || 0, ...Object.values(LEAGUE_DATA).map(d => Date.parse(d && d.updated) || 0));
-  if(!at) return 'TheSportsDB';
+  const src = '<span class="srcl">TheSportsDB</span>';
+  if(!at) return src;
   const m = Math.round((Date.now() - at) / 60000);
-  return 'TheSportsDB' + SEP + (m < 60 ? fw(FB_W.ago, qty(Math.max(1, m), UNIT.min)) : fmtAgo(at));
+  return esc(m < 60 ? fw(FB_W.ago, qty(Math.max(1, m), UNIT.min)) : fmtAgo(at)) + ' ' + src;
 }
 function mpRender(){
   if(!document.getElementById('mp')) return;
@@ -4804,7 +5126,7 @@ function boot(){
     const onSecond = () => { tickClock(); setTimeout(onSecond, 1000 - Date.now() % 1000 + 15); };
     setTimeout(onSecond, 1000 - Date.now() % 1000 + 15);
   } else setInterval(tickClock, 1000);
-  setInterval(()=>{ tickDates(); tickPrayer(); tickOccasion(); wxExpire(); wxSource(); if(!SLOT_MATCHES) renderSlot(); }, 15000);
+  setInterval(()=>{ tickDates(); tickPrayer(); tickOccasion(); wxExpire(); wxSource(); if(!SLOT_MATCHES) renderSlot(); designTick(); }, 15000);
   if(SLOT_MATCHES){
     setInterval(() => renderMatches(false), 60000);
     const turn = () => { renderMatches(true); setTimeout(turn, CONFIG.leagues.length && MATCH_PAGES > 3 ? CONFIG.matchPageFastMs : CONFIG.matchPageMs); };
@@ -4816,13 +5138,16 @@ function boot(){
   if(USES('shows')) periodic(loadWeek, 6*3600*1000);
   periodic(loadWeather, 30*60*1000);
   cardTimers();
+  designInit();
+  loadSchool();
+  setTimeout(designTick, 2500);
   setInterval(applyNight, 60*1000);
   setInterval(pixelShift, 4*60*1000);
   let lastDay = FMT_DATE.format(new Date());
   setInterval(()=>{
     const d = FMT_DATE.format(new Date());
     if(d !== lastDay){
-      lastDay = d; tickDates(); tickOccasion(); renderPanel(false);
+      lastDay = d; tickDates(); tickOccasion(); renderPanel(false); schoolNext();
       later(() => { loadPhotoIndex().then(() => applyBackground(true)); loadPrayers(); if(NEEDS_MATCHES) loadMatches(); if(USES('shows')) loadWeek(); loadWeather(); });
     }
   }, 60*1000);

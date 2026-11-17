@@ -179,7 +179,7 @@ final class ConfigSnapshot {
                 int hc = cur.getColumnIndex("home_clock");
                 if (hc >= 0 && "glass".equals(cur.getString(hc))) homeClock = "glass";
                 int as = cur.getColumnIndex("apps_style");   // 4.4 «شكل التطبيقات»; an older screensaver says nothing: the ring
-                if (as >= 0 && "zoom".equals(cur.getString(as))) appsStyle = "zoom";
+                if (as >= 0) { String v = cur.getString(as); if (java.util.Arrays.asList("zoom", "banners", "icons", "tiles").contains(v)) appsStyle = v; }   // 4.4: the three ways too (FavBar.look)
                 if ("scenes".equals(homeLayout)) { homeLayout = "classic"; homeBg = "scenes"; homeClock = "glass"; }   // a 4.3.3 test build's screensaver
                 int fb = cur.getColumnIndex("fav_bar");   // an older screensaver does not say: 5
                 if (fb >= 0 && cur.getString(fb) != null) favBar = cur.getString(fb);

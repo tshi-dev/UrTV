@@ -42,8 +42,9 @@ check("favourites tray: tiles 24 px apart (FavBar.GAP)", re.search(r"GAP = 24,",
 main = text(HOME / "MainActivity.java")
 cell = main[main.index("private LinearLayout.LayoutParams rowCell("):main.index("After «إضافة إلى المفضلة»")]
 check("home rows of cards: 6 + 6 dp = 24 px apart, like the tray", "dp(6)" in cell and "dp(10)" not in cell)
-check("dockCell keeps FavBar.GAP in two halves (24 px)", "p.setMarginStart(i == 0 ? 0 : bar(FavBar.GAP) / 2);" in main
-      and "p.setMarginEnd(i == n - 1 ? 0 : bar(FavBar.GAP) - bar(FavBar.GAP) / 2);" in main)
+# 4.4 «شكل التطبيقات»: the gap is the way's (FavBar.gap: GAP, 24, for the tray's tiles and the banners; 40 for the icons)
+check("dockCell keeps the way's gap in two halves (24 px for the tray)", "gap = FavBar.gap(way, h);" in main and "p.setMarginStart(i == 0 ? 0 : gap / 2);" in main
+      and "p.setMarginEnd(i == n - 1 ? 0 : gap - gap / 2);" in main and "return px(ICONS.equals(look) ? ICON_GAP : GAP, screenH);" in text(HOME / "FavBar.java"))
 cc = text(HOME / "ControlCenter.java")
 check("Control Center: the side panel inside the 5 % safe area (x from 96, y 54 to 1026 at 1080p), 560 px wide; every margin and size a multiple of 4 dp",
       "SAFE = 0.05f" in cc and "PANEL_W = 560f / 1920f" in cc and "TALL_W = 560f / 1920f" in text(HOME / "ControlShape.java") and "screenH - 2 * Math.round(screenH * SAFE)" in text(HOME / "ControlShape.java") and "Math.round(H * SAFE)" in cc

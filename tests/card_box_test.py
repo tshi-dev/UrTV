@@ -16,7 +16,8 @@ with tempfile.TemporaryDirectory() as tmp:
     subprocess.run(["javac", "-encoding", "UTF-8", "-d", tmp, str(ROOT / "android/launcher/src/main/java/sa/urtv/home/CardBox.java"),
                     str(ROOT / "tests/CardBoxRun.java")], check=True)
     out = subprocess.run(["java", "-cp", tmp, "sa.urtv.home.CardBoxRun"], check=True, capture_output=True, text=True).stdout
-rows = [l.split() for l in out.splitlines()]
+rows = [l.split() for l in out.splitlines() if not l.startswith('strip ')]
+strips = [l.split() for l in out.splitlines() if l.startswith('strip ')]
 failed = 0
 
 
@@ -46,4 +47,11 @@ for kind, d, n, w, h, *rest in rows:
     check(f"{tag}: ends {'above the app title' if reaches else 'above the dock'}", dp(84) + h <= limit + 1 or h == dp(150),
           (dp(84) + h, limit))
     check(f"{tag}: room for a third card (150 dp at least)", h >= dp(150), hdp)
+for _, title_top, plain_h, clock_h, plain_over, clock_over, top in strips:
+    check(f"4.4 the strip (title at {title_top}): with the big glass clock it never covers its digits (the owner: the stocks card over «2:08»), "
+          f"it starts under them ({top} >= 542 + 12 dp) and is shorter ({clock_h} of {plain_h} px); without it, as it was",
+          clock_over == "false" and int(top) >= 542 + 18 and int(clock_h) <= int(plain_h), (title_top, plain_h, clock_h, plain_over, clock_over, top))
+src = (ROOT / "android/launcher/src/main/java/sa/urtv/home/MainActivity.java").read_text(encoding="utf-8")
+check("the home passes the big clock's bottom to the strip, and fits the cards again when the big clock comes or goes",
+      "bigClockOn ? ScenePlan.fixedBox(dm.widthPixels, dm.heightPixels, false, Dir.rtl())[3] : -1" in src and "handler.post(homeCard::fit)" in src)
 sys.exit(1 if failed else 0)

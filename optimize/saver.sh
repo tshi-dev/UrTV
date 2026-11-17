@@ -54,7 +54,7 @@
 #   optimize/saver.sh homelayout football         the home's layout («التخطيط»): classic (our layout, the default), couch (the cards in a row above the apps, the big clock centred) or football (weather, prayers, today's games)
 #   optimize/saver.sh background scenes           the home's background («الخلفية»): photos (the photos and photo packs, the default) or scenes
 #   optimize/saver.sh clock glass                 the home's clock («الساعة»): plain (the default) or glass (behind the photo's scenery where the photo has a cut-out)
-#   optimize/saver.sh appsstyle zoom              «شكل التطبيقات»: frame (the default: a ring, the name above the tray) or zoom (the focused app larger with a soft shadow, its name under it)
+#   optimize/saver.sh appsstyle icons             «شكل التطبيقات»: tiles (the default: today's tray), banners (each app's TV banner) or icons (each app's icon); A and B no tray, centred
 #   optimize/saver.sh scenepacks saudi,couch      the scene home's packs («المظهر ← حزم الآفاق»): saudi (default, in the app), couch (downloaded once), or both
 #   optimize/saver.sh scenestay 60                how long each scene stays («بقاء كل أفق»): 10, 20 (default), 60 or 300 seconds
 #   optimize/saver.sh scenetime on                «الأفق يتبع الوقت»: the night scenes from Maghrib to Fajr, the others by day (off by default)
@@ -93,6 +93,10 @@
 #   optimize/saver.sh idle 10                      the TV starts the screensaver after N idle minutes: 1 2 5 10 15 30
 #                                                  (the TV's own timer; left alone unless you run this)
 #   optimize/saver.sh cardstyle glass1             look of the card beside the clock: current dark1 glass1 dark3 glass3 boxes classic
+#   optimize/saver.sh design clean                 the screensaver's design: info (default, as it always was) clean big frame dayline
+#   optimize/saver.sh bar prayers                  a centred bar: none (default) prayers slot (the left slot's item) weather
+#   optimize/saver.sh barat clock                  where the bar goes: bottom (default) clock (under the clock)
+#   optimize/saver.sh wx corner                    the weather's place: auto (default, as the design has it) usual clock corner off
 #   optimize/saver.sh national off                 the quiet green look on National Day (21-25 Sep) and Founding Day (20-24 Feb): auto (default) or off
 #   optimize/saver.sh digits latin                 numbers: hindi = ١٢٣ (default), latin = 123
 #   optimize/saver.sh hijrioffset -1               the Hijri date moved by whole days, -2..2 (default 0 = Umm al-Qura as it is): where the month
@@ -104,7 +108,7 @@
 #   optimize/saver.sh backexit hold                «الخروج من تلفزيونك», where the TV keeps its own home: press (default: one Back leaves ours), hold (a long Back) or three (three Backs)
 #   optimize/saver.sh lang en                      «اللغة»: ar (default) | en: the screensaver page and its settings in English, left to right
 #                                                  (the home screen and the phone page are still Arabic: docs/SETTINGS.md says when to offer it)
-#   optimize/saver.sh markets tasi,gold,btc        top left, up to 4 in order: tasi aramco spx btc gold silver oil xrp (default tasi,spx,btc)
+#   optimize/saver.sh markets tasi,gold,btc        top left, up to 4 in order: tasi aramco spx btc gold gold21 silver oil xrp (default tasi,spx,btc; gold21 = the 21-carat gram)
 #   optimize/saver.sh markets off                  hide the markets line at the top (only the weather stays; the list is kept and nothing is fetched for it); `markets on` brings it back
 #   optimize/saver.sh clocksize medium             the screensaver's clock: large (default) medium small
 #   optimize/saver.sh mkstyle prices               markets: arrows (▲▼ only, default) or prices (price and day's change)
@@ -278,7 +282,7 @@ case "${1:-}" in
   couch)      set1 couch "${2:?usage: optimize/saver.sh couch on|off}" ;;
   background) set1 background "${2:?usage: optimize/saver.sh background photos|scenes}" ;;
   clock)      set1 clock "${2:?usage: optimize/saver.sh clock plain|glass}" ;;
-  appsstyle)  set1 appsstyle "${2:?usage: optimize/saver.sh appsstyle frame|zoom}" ;;
+  appsstyle)  set1 appsstyle "${2:?usage: optimize/saver.sh appsstyle tiles|banners|icons}" ;;
   scenepacks) set1 scenepacks "${2:?usage: optimize/saver.sh scenepacks saudi|couch|saudi,couch}" ;;
   scenestay)  set1 scenestay "${2:?usage: optimize/saver.sh scenestay 10|20|60|300}" ;;
   scenetime)  set1 scenetime "${2:?usage: optimize/saver.sh scenetime on|off}" ;;
@@ -323,6 +327,10 @@ case "${1:-}" in
   minrating)set1 minrating "${2:?usage: optimize/saver.sh minrating 7}" ;;
   photos)   set1 photos "${2:?usage: optimize/saver.sh photos 30s|1|5|10|15|30|60 (minutes; 30s = every 30 seconds)}" ;;
   cardstyle)set1 cardstyle "${2:?usage: optimize/saver.sh cardstyle current|dark1|glass1|dark3|glass3|boxes}" ;;
+  design)   set1 design "${2:?usage: optimize/saver.sh design info|clean|big|frame|dayline}" ;;
+  bar)      set1 bar "${2:?usage: optimize/saver.sh bar none|prayers|slot|weather}" ;;
+  barat)    set1 barat "${2:?usage: optimize/saver.sh barat bottom|clock}" ;;
+  wx)       set1 wx "${2:?usage: optimize/saver.sh wx auto|usual|clock|corner|off}" ;;
   markets)  case "${2:?usage: optimize/saver.sh markets tasi,gold,btc | off | on}" in
               off|on) set1 mkbar "$2" ;;
               *) set1 markets "$2" && set1 mkbar on > /dev/null ;;   # choosing markets shows the line
@@ -336,7 +344,7 @@ case "${1:-}" in
     set1 stocks "$(IFS=,; echo "$*")" ;;
   slot)     set1 slot "${2:?usage: optimize/saver.sh slot fasting}" ;;
   countdown)
-    [ $# -ge 2 ] && [ $# -le 3 ] || { echo "usage: optimize/saver.sh countdown 2026-12-01 'name' | clear"; exit 1; }
+    [ $# -ge 2 ] && [ $# -le 3 ] || { echo "usage: optimize/saver.sh countdown 2026-12-01 'name' | school | clear"; exit 1; }
     v=$(quote "$2") || exit 1
     extra="--es countdown $v"
     if [ $# -eq 3 ]; then v=$(quote "$3") || exit 1; extra="$extra --es cdname $v"; fi
