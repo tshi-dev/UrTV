@@ -520,6 +520,14 @@
   .mblock .big > span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%;
     padding-bottom:.3em;margin-bottom:-.3em;    /* room for the dots under ي, ج… */
     padding-inline:.15em;margin-inline:-.15em;max-width:calc(100% + .3em)}  /* and for a final ر or ن past the ends */
+  /* 4.3.3 (the owner, a user report): the strip never moved for the prayer or the occasion, only as the slot turned (a game in a week with its date under
+     it, one under way, two, none, the weather). The slot's row is one box now, as tall as the clubs' line and one line under it (no taller
+     than the strip already is, so the screen with nothing in it stays as it was); each item hangs from its top, a second small line
+     below it in the room under the strip, its lines one each (cut with «…», as the clubs already are), a score under way a size smaller. */
+  #match-row{height:calc(clamp(22px,2vw,42px)*1.1 + .85vh + clamp(11px,.88vw,17px)*1.4);align-items:flex-start}
+  .p-match .sub{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .mblock.lvb .big{font-size:clamp(26px,2.6vw,54px)}
+  .mblock.lvb .sub{font-size:clamp(14px,1.2vw,25px)}
   .none-week{font-size:clamp(26px,2.5vw,54px);font-weight:700;font-family:'ThmanyahDisplay','Thmanyah',serif;color:#A79C85}
 
   /* A new photo settles in over a minute, then holds still: an endless drift kept the TV redrawing

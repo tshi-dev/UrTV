@@ -274,3 +274,4 @@ node tests/phone_page.test.mjs
 node tests/sync_cards.test.mjs   # «توحيد المظهر» on the page: the cards in the material's fill, line and ink, readable on a light look
 node tests/reminder_page.test.mjs   # the screensaver's reminder card: its time, «الآن», «تم», the snooze, the keys, the adhan, English
 node tests/tvports_page.test.mjs   # the packaged page with simulated webOS and Tizen keys
+node tests/strip_steady.test.mjs   # 4.3.3 the screensaver's bottom strip stays put as the slot turns (games, scores, weather, markets)
