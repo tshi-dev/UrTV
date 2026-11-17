@@ -3019,3 +3019,17 @@ Backup first (saver.sh show, dock, disabled list, role, accessibility, screen_of
 | 8c market names 4164/4002/4349 | **PASS** | home card: «النهدي», «المواساة», «إنماء ريت الفندقي» |
 | other | note | the 4.3.3 home shows the pill «خلّ تلفزيونك يفتح على UrTV / لاحقاً» on a TV where 4.4 had already made UrTV the home |
 Then back to 4.4/413: **uninstall** home + screensaver (413 < 426), install 413, owner's settings put back (`show` identical to the backup), «جهّز كل شي» again. **New finding (again): right after a fresh install the setup's key is refused by adbd (`E adbd: Invalid base64 key` right after «key offered»), no «Allow USB debugging?» ever shows, the page waits 3 min. A reboot fixed it** (then the dialog came, Down = Cancel, Left = Allow, the 4-key hint «اختيار ← تحت ← يسار ← اختيار» is on the page ✓). After the setup: role sa.urtv.home, wanted yes, add-on bound, appops allow; HOME_KEY on; Home from YouTube → UrTV. TV asleep, muted.
+
+## step 92 — 4.4 build 427 (next 40db2770 = compact2 3b271bd6)
+| T | result | detail |
+|---|---|---|
+| T5 intro first focus | **PASS** | the first focus is the reading area (not «English»); 3× DOWN scrolls the text, then «جهّز كل شي» |
+| T1 result page | **half** | 15/15 in 01:50; «مراقبة زر الرئيسية («إضافات تلفزيونك»): شغّالة، وهي اللي ترجّعك لتلفزيونك» ✓, HOME_KEY on by default (`home-key: on`) ✓, wanted yes, add-on bound, role sa.urtv.home ✓. **But the headline still says «انتهى الإعداد مع 1 خطوة لم تتم و0 تُركت: الشاشة الرئيسية (ما قدرنا نخلي زر الرئيسية يفتح تلفزيونك…)» and «دور الشاشة الرئيسية: الشاشة الأصلية للتلفزيون»** — with the watch/catch working the Home step should count as done |
+| T2 Home ×20 | **PASS 20/20** | YouTube/Netflix/Settings/HDMI |
+| T2 stress every 6 s ×10 | **PASS 10/10** | |
+| T2 mash on our home 1/s ×10 and 0.5 s ×10 | **PASS** | UrTV in front, **0 «decision paused»** (guard 6-in-4 s ✓) |
+| real remote ×5 | not yet | owner not at the TV; HOME_KEY is on |
+Also found while cleaning for T1:
+- **«إنقاذ تلفزيونك» 427**: the page now scrolls with the reading area first ✓; «رجّع التلفزيون كما كان» gave Home back to Google TV and removed the add-on ✓, **but left the 18 packages off**.
+- **«تراجع» left them off too.** Cause: when I uninstalled the home for step 91 (413 < 426), the record of what the setup had turned off went with it; the setup that ran after the reinstall found the 18 already off and recorded them as «the TV's own», so neither «تراجع» nor the rescue app will ever turn them on. Suggest: keep that record outside the app's data (or in the add-on / a file on /sdcard) so a reinstall does not lose it. I turned the 18 on by hand (`pm enable`) before T1; the T1 setup turned them off again and now owns them.
+TV: UrTV is the home, HOME_KEY on, wanted yes, 18 off (recorded by this setup).
