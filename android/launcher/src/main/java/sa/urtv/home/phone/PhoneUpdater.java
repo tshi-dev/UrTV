@@ -152,12 +152,16 @@ public final class PhoneUpdater {
     private static void prepare(Context c, boolean download) throws Exception {
         clearReady();
         final String channel = UpdateChannel.read(c);
-        final String base = UpdateRules.baseFor(channel);
-        releaseBase = base;
+        String base = UpdateRules.baseFor(channel);
         Version ver = readVersion(base + "version.txt");
+        if ("beta".equals(channel)) {   // 4.3.4: the newer of apk-beta and apk-latest (a 404 on beta, or an older beta: the latest release)
+            Version latest = readVersion(UpdateRules.BASE + "version.txt");
+            if (!UpdateRules.betaWins(builtOf(ver), builtOf(latest))) { ver = latest; base = UpdateRules.BASE; }
+        }
+        releaseBase = base;
         int newest = UpdateRules.buildOf(ver.text);
         synchronized (PhoneUpdater.class) { if (newest > 0) build = newest; }
-        UpdateFlow.Verdict v = UpdateFlow.versionRead(ver.reached, ver.code, newest, "beta".equals(channel));   // no apk-beta release yet: nothing newer, not «cannot»
+        UpdateFlow.Verdict v = UpdateFlow.versionRead(ver.reached, ver.code, newest, UpdateRules.BETA_BASE.equals(base));   // no apk-beta release yet: nothing newer, not «cannot»
         if (v.result == UpdateFlow.Result.UP_TO_DATE) { set("uptodate", "", ""); return; }
         if (v.result == UpdateFlow.Result.OFFLINE) { set("error", "offline", ""); return; }
         if (v.result == UpdateFlow.Result.CANNOT) { cannot(v.reason); return; }
@@ -294,6 +298,12 @@ public final class PhoneUpdater {
         int code;
         String text = "";
     }
+
+    /** a version.txt that answered 200: its build, else -1 */
+    private static int builtOf(Version v) { return v.reached && v.code == 200 ? UpdateRules.buildOf(v.text) : -1; }
+
+    /** 4.3.4: the update found comes from apk-beta (newer than the latest release): the TV asks before it downloads (BetaConfirm) */
+    public static boolean fromBeta() { return UpdateRules.BETA_BASE.equals(releaseBase); }
 
     private static Version readVersion(String url) {
         Version v = new Version();

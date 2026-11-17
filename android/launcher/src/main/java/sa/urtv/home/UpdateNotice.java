@@ -34,6 +34,16 @@ final class UpdateNotice {
         return channel.equals(sp.getString("channel", "latest")) ? sp.getInt("newest", 0) : 0;
     }
 
+    /** one release's version.txt: its build, or -1 (no answer, not 200) */
+    private static int newestAt(String base) {
+        try {
+            Net.Reply r = Net.get(base + "version.txt", null, 10000, 12000, 64);   // IPv4 first, 4 s per address, 12 s in all (Net)
+            return r.status == 200 ? UpdateRules.buildOf(r.text()) : -1;
+        } catch (java.io.IOException | RuntimeException e) {
+            return -1;
+        }
+    }
+
     /** reads version.txt when one is due (off the main thread; {@code done} runs on that thread after a good read) */
     static void checkIfDue(final Context app, final Runnable done) {
         final SharedPreferences sp = app.getSharedPreferences(PREFS, Context.MODE_PRIVATE);
@@ -44,9 +54,9 @@ final class UpdateNotice {
         new Thread(new Runnable() {
             @Override public void run() {
                 try {
-                    Net.Reply r = Net.get(UpdateRules.baseFor(channel) + "version.txt", null, 10000, 12000, 64);   // IPv4 first, 4 s per address, 12 s in all (Net)
-                    if (r.status != 200) return;
-                    int build = UpdateRules.buildOf(r.text());
+                    int build = newestAt(UpdateRules.baseFor(channel));
+                    // 4.3.4: on «النسخ التجريبية» the newer of apk-beta and apk-latest (a beta user is never left behind an official release)
+                    if ("beta".equals(channel)) { int latest = newestAt(UpdateRules.BASE); if (!UpdateRules.betaWins(build, latest)) build = latest; }
                     if (build > 0) {
                         sp.edit().putInt("newest", build).putString("channel", channel).apply();
                         if (done != null) done.run();

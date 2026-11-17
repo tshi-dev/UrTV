@@ -55,7 +55,7 @@ check("baseFor: beta is apk-beta, next is apk-next, anything else apk-latest", '
 check("the home asks the provider for beta too, an unknown word is the latest", '"next".equals(v) || "beta".equals(v)' in chan and 'return "latest"' in chan)
 check("the checks are untouched: no downgrade, same signature", "isNewer(newest, installed)" in text(HOME + "UpdateFlow.java") and "verify(c, pkg, f)" in pu)
 
-check("the engine passes the beta flag, so no apk-beta release says «uptodate» (not «cannot update»)", 'versionRead(ver.reached, ver.code, newest, "beta".equals(channel))' in pu and 'if (v.result == UpdateFlow.Result.UP_TO_DATE) { set("uptodate", "", ""); return; }' in pu)
+check("the engine passes the beta flag, so no apk-beta release says «uptodate» (not «cannot update»)", 'versionRead(ver.reached, ver.code, newest, UpdateRules.BETA_BASE.equals(base))' in pu and 'if (v.result == UpdateFlow.Result.UP_TO_DATE) { set("uptodate", "", ""); return; }' in pu)
 
 # the workflow
 wf = text(".github/workflows/promote-beta.yml")
