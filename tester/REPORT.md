@@ -2999,3 +2999,4 @@ I turned the switch on (`am broadcast -n sa.urtv.home/.DockReceiver -a sa.urtv.h
 5. **The «بالجوالات» tag on a game card should be only a phone icon** (no word), on every game that can be played with phones.
 6. **Night mode: no «auto»** (owner) — only dark or light (drop «تلقائي بعد المغرب»).
 7. **Game setup page («خمس خانات → جهّز اللعبة», picture game-setup-khanat.png): a row is hidden behind «ابدأ»** — the 8th row **«الصوت: يعمل / صامت»** is under the «ابدأ / الأسماء» buttons (only its top edges show above «ابدأ», `game-setup-hidden-row.png`). 8 rows (الجولات، الوقت، نوع اللعب، العدد، الخانات، حروف صعبة، اللعب بالجوالات، الصوت) don't fit above the buttons at 1080p: the list must scroll, or the rows be shorter, or the buttons move.
+8. **«الأسماء» (owner): it should be the TEAM names, with nothing automatic.** The first time, ask for them; after that reuse the same names on this TV (kept per device), and let them be changed any time (the «الأسماء» button).
