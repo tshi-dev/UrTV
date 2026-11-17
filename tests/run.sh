@@ -61,6 +61,7 @@ python3 tests/album_card_test.py   # «ألبوم صوري»: the card of the ow
 python3 tests/home_nudge_test.py   # «خلّ تلفزيونك يفتح على UrTV»: the card while we are not the Home
 python3 tests/look_tweaks_test.py   # «اللون والتحكم»: accents, tray strength, wallpaper dimming, focus style
 python3 tests/idle_rule_test.py   # 4.3.3: 2147483647 is «أبداً», the row never opens the maker's settings
+python3 tests/rescue_test.py   # 4.3.3: «إنقاذ تلفزيونك», the rescue app
 python3 tests/photo_dim_test.py   # 4.4: the photo's darkness is --pdim, never the colour --dim (an opacity read from a colour is 1: a solid black photo)
 python3 tests/security_43_test.py   # 4.3 security and speed round
 python3 tests/appearance_test.py   # the look and backgrounds page
