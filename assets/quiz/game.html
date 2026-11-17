@@ -40,7 +40,7 @@ button{cursor:pointer;border:0;background:none;text-align:inherit}
 .chip{display:flex;align-items:center;gap:12px;border:4px solid var(--bd);background:var(--tile);padding:12px 14px;min-height:64px}
 .chip i{width:28px;height:28px;border:3px solid var(--bd);flex:none}
 .chip b{font-size:26px;font-weight:700;overflow-wrap:anywhere}
-.big{font-size:32px;font-weight:700;line-height:1.25}
+.big{font-size:32px;font-weight:700;line-height:1.25;white-space:pre-line}
 .dim{color:var(--dim);font-size:20px}
 .qrow{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
 .qn{color:var(--saff);font-weight:700;font-size:18px;padding-top:2px}
@@ -88,6 +88,9 @@ button.stamp:active{transform:scale(.97)}
 .vb i{width:26px;height:26px;border:3px solid var(--bd);flex:none}
 .secret{font-size:56px;font-weight:700;line-height:1.15;text-align:center;overflow-wrap:anywhere;padding:28px 12px;background:var(--saff);color:#16140F;border:4px solid var(--bd)}
 .actw{font-size:64px;font-weight:700;line-height:1.1;text-align:center;overflow-wrap:anywhere;padding:28px 12px;border:4px solid var(--bd);background:var(--tile)}
+.keyg{display:grid;grid-template-columns:repeat(5,1fr);gap:4px;direction:rtl}.kc{border:3px solid var(--bd);padding:8px 2px;min-height:58px;font-size:15px;font-weight:700;text-align:center;overflow-wrap:anywhere;display:flex;align-items:center;justify-content:center}.k1{background:#5AA9F0;color:#16140F}.k2{background:#F2705A;color:#16140F}.kn{background:var(--tile)}.kx{background:#16140F;color:#EFE8DA;outline:3px solid var(--saff)}
+.nrow{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}.nb{justify-content:center;min-height:56px;font-size:26px}
+.cv{display:block;width:100%;max-width:420px;aspect-ratio:1/1;margin:8px auto;border:4px solid var(--bd);background:#fff;touch-action:none}
 .row3{display:grid;grid-template-columns:1fr;gap:12px}
 .btn.alt{background:var(--tile)}
 </style>
@@ -102,13 +105,13 @@ var NAME = { ar: 'اللعب بالجوالات', en: 'Phone play' };
 var T = {
   ar: { room: 'الغرفة {0}', yourName: 'اسمك', yourColour: 'لونك', join: 'ادخل', joining: 'لحظة', loading: 'لحظة',
     inn: 'أنت داخل', ready: 'جاهزين؟', waitStart: 'ننتظر أن تبدأ اللعبة', inRoom: 'في الغرفة: {0}', leave: 'خروج', leaveSure: 'اضغط مرة ثانية للخروج',
-    seen: 'شفتها', seenSub: 'اضغط بعد ما تحفظها', hidden: 'تمام، ننتظر الباقين', ok: 'صح', skip: 'تخطّي', foul: 'مخالفة', buzz: 'أنا!', dunno: 'ما أدري',
+    seen: 'شفتها', seenSub: 'اضغط بعد ما تحفظها', hidden: 'تمام، ننتظر الباقين', ok: 'صح', skip: 'تخطّي', foul: 'مخالفة', buzz: 'أنا!', ready: 'جاهز', tiltOn: 'فعّل الإمالة', tiltHint: 'نزّل الجوال = صح، ارفعه = تخطّي', got: 'صح {0}', skipped: 'تخطّي {0}', dunno: 'ما أدري', clear: 'امسح',
     voted: 'سجّلنا اختيارك', send: 'أرسل', sent: 'وصلت إجابتك', typeHere: 'اكتب هنا', pick: 'اختر واحدًا', closed: 'أُغلقت الغرفة', closedSub: 'شكرًا للعب', bad: 'الرمز غير صحيح', lost: 'انقطع', back: 'رجعنا',
     e_name0: 'اكتب اسمك أولًا', e_full: 'الغرفة ممتلئة', e_locked: 'محاولات كثيرة، انتظر دقيقة', e_gone: 'خرجت من الغرفة، ادخل من جديد', e_name: 'اختر اسمًا ثانيًا',
     e_closed: 'اللعبة بدأت أو أُغلقت الغرفة', e_code: 'الرمز غير صحيح', e_rate: 'بسرعة شوي، حاول مرة ثانية', e_net: 'تعذّر الاتصال، حاول مرة ثانية' },
   en: { room: 'Room {0}', yourName: 'Your name', yourColour: 'Your colour', join: 'Join', joining: 'One moment', loading: 'One moment',
     inn: "You're in", ready: 'Ready?', waitStart: 'Waiting for the game to start', inRoom: 'In the room: {0}', leave: 'Leave', leaveSure: 'Tap again to leave',
-    seen: 'Got it', seenSub: 'Tap once you have it', hidden: 'Good, waiting for the others', ok: 'Right', skip: 'Skip', foul: 'Foul', buzz: 'Me!', dunno: "Don't know",
+    seen: 'Got it', seenSub: 'Tap once you have it', hidden: 'Good, waiting for the others', ok: 'Right', skip: 'Skip', foul: 'Foul', buzz: 'Me!', ready: 'Ready', tiltOn: 'Turn on tilting', tiltHint: 'Tilt down = right, tilt up = skip', got: 'Right {0}', skipped: 'Skipped {0}', dunno: "Don't know", clear: 'Clear',
     voted: 'Your choice is in', send: 'Send', sent: 'Your answer is in', typeHere: 'Type here', pick: 'Pick one', closed: 'The room is closed', closedSub: 'Thanks for playing', bad: 'The code is not right', lost: 'Connection lost', back: 'Back',
     e_name0: 'Type your name first', e_full: 'The room is full', e_locked: 'Too many tries, wait a minute', e_gone: 'You left the room, join again', e_name: 'Pick another name',
     e_closed: 'The game has started or the room is closed', e_code: 'The code is not right', e_rate: 'Too fast, try again', e_net: 'Could not connect, try again' }
@@ -197,12 +200,59 @@ function send(a) {
   api('/api/answer', { c: code, t: token, q: c.id, a: a }).then(function (r) { if (!r.ok && r.e !== 'card') delete sent[c.id]; render(true); }, function () { delete sent[c.id]; render(true); });
   render(true);
 }
+/* «على جبيني»: tilting the phone is the same as the two buttons. Down (the screen faces the floor) is «صح», up (the screen faces the ceiling) is «تخطّي»; a swing has to come back to the middle before it counts again. */
+var tiltOn = false, tiltArmed = true, lastFire = 0;
+function fire(a) {
+  if (!st || !st.card || st.card.kind !== 'tilt') return;
+  var t = Date.now(); if (t - lastFire < 600) return; lastFire = t;
+  api('/api/answer', { c: code, t: token, q: st.card.id, a: a }).then(function () {}, function () {});
+}
+function onMotion(ev) {
+  var g = ev.accelerationIncludingGravity; if (!g || g.z == null) return;
+  var z = g.z;
+  if (Math.abs(z) < 3) { tiltArmed = true; return; }
+  if (!tiltArmed) return;
+  if (z <= -7) { tiltArmed = false; fire(0); } else if (z >= 7) { tiltArmed = false; fire(1); }
+}
+function enableTilt() {
+  function on() { if (!tiltOn) { tiltOn = true; window.addEventListener('devicemotion', onMotion); } }
+  try {
+    if (typeof DeviceMotionEvent !== 'undefined' && typeof DeviceMotionEvent.requestPermission === 'function') DeviceMotionEvent.requestPermission().then(function (r) { if (r === 'granted') on(); }, function () {});
+    else on();
+  } catch (e) {}
+}
 function sendText(vals) {
   var c = st.card, x = vals.join('\n');
   if (!x.replace(/\s/g, '')) return;
   sent[c.id] = 0;
   api('/api/answer', { c: code, t: token, q: c.id, a: 0, x: x }).then(function (r) { if (!r.ok && r.e !== 'card') delete sent[c.id]; render(true); }, function () { delete sent[c.id]; render(true); });
   render(true);
+}
+/* «ارسم وخمّن»: the strokes go to the TV in small posts (/api/draw), never more than the card allows; the page keeps nothing of them after the card goes */
+var dp = { items: [], cur: null, cont: false, last: 0, timer: 0, cid: 0 };
+function dpts(a) { return a.map(function (p) { return p[0] + ',' + p[1]; }).join(' '); }
+function dpFlush() {
+  if (!st || !st.card || st.card.id !== dp.cid) { clearInterval(dp.timer); dp.cur = null; dp.items = []; return; }
+  if (dp.cur && dp.cur.length > 1) { dp.items.push((dp.cont ? '+' : '') + dpts(dp.cur)); dp.cont = true; dp.cur = [dp.cur[dp.cur.length - 1]]; }
+  if (!dp.items.length) return;
+  var x = dp.items.join(';'); dp.items = [];
+  api('/api/draw', { c: code, t: token, q: dp.cid, x: x }).then(function () {}, function () {});
+}
+function drawCard(c, cv) {
+  var g = cv.getContext('2d'); g.lineWidth = 6; g.lineCap = 'round'; g.lineJoin = 'round'; g.strokeStyle = '#16140F';
+  dp.cid = c.id; dp.items = []; dp.cur = null; clearInterval(dp.timer); dp.timer = setInterval(dpFlush, 450);
+  function pt(ev) { var r = cv.getBoundingClientRect(); return [Math.max(0, Math.min(1000, Math.round((ev.clientX - r.left) / r.width * 1000))), Math.max(0, Math.min(1000, Math.round((ev.clientY - r.top) / r.height * 1000)))]; }
+  function at(p) { return [p[0] * cv.width / 1000, p[1] * cv.height / 1000]; }
+  cv.addEventListener('pointerdown', function (ev) { ev.preventDefault(); try { cv.setPointerCapture(ev.pointerId); } catch (e) {} var p = pt(ev); dp.cur = [p]; dp.cont = false; var a = at(p); g.beginPath(); g.moveTo(a[0], a[1]); g.lineTo(a[0] + 0.1, a[1]); g.stroke(); });
+  cv.addEventListener('pointermove', function (ev) {
+    if (!dp.cur) return; ev.preventDefault(); var p = pt(ev), l = dp.cur[dp.cur.length - 1];
+    if (Math.abs(p[0] - l[0]) + Math.abs(p[1] - l[1]) < 5) return;
+    var a = at(l), b = at(p); g.beginPath(); g.moveTo(a[0], a[1]); g.lineTo(b[0], b[1]); g.stroke(); dp.cur.push(p);
+    if (dp.cur.length > 400) dpFlush();
+  });
+  function up() { if (!dp.cur) return; if (dp.cur.length === 1) dp.cur.push(dp.cur[0]); dpFlush(); dp.cur = null; dp.cont = false; }
+  cv.addEventListener('pointerup', up); cv.addEventListener('pointercancel', up);
+  return function () { dp.cur = null; dp.items = ['C']; g.clearRect(0, 0, cv.width, cv.height); dpFlush(); };
 }
 function tap(fn) { return function () { fn(); }; }
 function cardScreen() {
@@ -225,9 +275,29 @@ function cardScreen() {
     kids.push(d);
   } else if (c.kind === 'act') {
     kids = [h('div', 'dim', c.title), h('div', 'actw', c.text), c.note ? h('div', 'dim', c.note) : null];
-    var names = [S.ok, S.skip, S.foul, S.buzz], row = h('div', 'row3');
+    var names = [S.ok, S.skip, S.foul, S.buzz, S.ready], row = h('div', 'row3');
     c.acts.forEach(function (a) { var b = h('button', 'btn' + (a === 0 ? '' : ' alt'), names[a], { type: 'button', 'data-a': a }); b.addEventListener('click', function () { api('/api/answer', { c: code, t: token, q: c.id, a: a }).then(function () {}, function () {}); }); row.appendChild(b); });
     kids.push(row);
+  } else if (c.kind === 'key') {
+    kids = [h('div', 'dim', c.title), c.note ? h('div', 'big', c.note) : null];
+    var kg = h('div', 'keyg');
+    for (var ki = 0; ki < c.opts.length; ki++) { var kc = (c.text || '').charAt(ki); kg.appendChild(h('div', 'kc k' + kc, c.opts[ki])); }
+    kids.push(kg);
+    if (c.acts.length && got == null) {
+      var nr = h('div', 'nrow');
+      c.acts.forEach(function (n) { var nb = h('button', 'vb nb', String(n), { type: 'button', 'data-n': n }); nb.addEventListener('click', tap(function () { send(n); })); nr.appendChild(nb); });
+      kids.push(nr);
+    } else if (got != null) kids.push(h('div', 'dim', S.sent));
+  } else if (c.kind === 'tilt') {
+    kids = [h('div', 'dim', c.title), h('div', 'secret', c.text), h('div', 'dim', S.tiltHint)];
+    var row2 = h('div', 'row3');
+    [0, 1].forEach(function (a) { var b = h('button', 'btn' + (a === 0 ? '' : ' alt'), a === 0 ? S.ok : S.skip, { type: 'button', 'data-a': a }); b.addEventListener('click', function () { fire(a); }); row2.appendChild(b); });
+    kids.push(row2);
+    var tl = h('button', 'lnk', S.tiltOn, { type: 'button', id: 'tilton' }); tl.addEventListener('click', enableTilt); kids.push(tl);
+  } else if (c.kind === 'draw') {
+    kids = [h('div', 'dim', c.title), h('div', 'actw', c.text), c.note ? h('div', 'dim', c.note) : null];
+    var cv = h('canvas', 'cv', null, { width: '420', height: '420', id: 'cv' }), clr = h('button', 'btn alt', S.clear, { type: 'button', id: 'clr' });
+    var wipe = drawCard(c, cv); clr.addEventListener('click', wipe); kids.push(cv); kids.push(h('div', 'foot', [clr]));
   } else if (c.kind === 'pick') {
     kids = [h('div', 'big', c.text), c.note ? h('div', 'dim', c.note) : null];
     c.opts.forEach(function (o, i) {
@@ -241,6 +311,7 @@ function cardScreen() {
     kids = [h('div', 'big', c.text), c.note ? h('div', 'dim', c.note) : null];
     var inputs = (c.opts.length ? c.opts : ['']).map(function (lab, i) {
       var inp = h('input', 'inp', null, { type: 'text', maxlength: '30', autocomplete: 'off', autocapitalize: 'off', spellcheck: 'false', 'aria-label': lab || S.typeHere, placeholder: lab || S.typeHere, 'data-f': i, enterkeyhint: 'send' });
+      if (c.self === 1) { inp.setAttribute('inputmode', 'numeric'); inp.setAttribute('maxlength', '13'); inp.style.direction = 'ltr'; }   // a number card: the number pad
       if (got != null) inp.disabled = true;
       kids.push(inp); return inp;
     });

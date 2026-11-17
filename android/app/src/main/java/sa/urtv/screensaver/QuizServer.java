@@ -28,7 +28,7 @@ final class QuizServer {
 
     private final PhoneRoom room; private final Assets assets; private final boolean lanOnly;
     private ServerSocket socket; private ThreadPoolExecutor pool; private volatile boolean running;
-    static final int BODY_MAX = 1024, HEAD_MAX = 8192, POOL = 8;
+    static final int BODY_MAX = 1024, DRAW_MAX = 8192, HEAD_MAX = 8192, POOL = 8;
     /** a whole request must arrive within 3 s (slow-loris); one device holds at most 4 connections; 5 wrong room codes from one address lock that address for 60 s */
     static final long DEADLINE_MS = 3000, IP_LOCK_MS = 60000; static final int PER_IP = 4, IP_WRONG = 5;
     private final Map<String, Integer> open = new HashMap<>(), wrong = new HashMap<>(); private final Map<String, Long> lockedUntil = new HashMap<>();
@@ -133,7 +133,8 @@ final class QuizServer {
             if (host == null || !HOST.matcher(host).matches()) { reply(c, 403, "text/plain", "x".getBytes()); return; }
             if (origin != null && !origin.equalsIgnoreCase("http://" + host)) { reply(c, 403, "text/plain", "x".getBytes()); return; }
             if (site != null && (site.equals("cross-site") || site.equals("same-site"))) { reply(c, 403, "text/plain", "x".getBytes()); return; }
-            if (len < 0 || len > BODY_MAX) { reply(c, 413, "text/plain", "x".getBytes()); return; }
+            if (len < 0 || len > (rl[0].equals("POST") && rl[1].equals("/api/draw") ? DRAW_MAX : BODY_MAX)) {   // only the drawing route may carry more than a kilobyte
+                 reply(c, 413, "text/plain", "x".getBytes()); return; }
             byte[] body = new byte[len];
             for (int off = 0; off < len; ) {   // the body is read first even for a locked address: answering with a body unread makes the close a connection reset
                 int n = in.read(body, off, len - off);
@@ -185,6 +186,13 @@ final class QuizServer {
             Map<String, String> p = form(body);
             if (!room.code().equals(p.get("c"))) { wrongCode(ip); json(c, "{\"ok\":false,\"e\":\"code\"}"); return; }
             String e = room.answer(p.get("t"), num(p.get("q"), -1), num(p.get("a"), -1), p.get("x"));
+            json(c, e == null ? "{\"ok\":true}" : "{\"ok\":false,\"e\":\"" + e + "\"}");
+            return;
+        }
+        if (post && path.equals("/api/draw")) {
+            Map<String, String> p = form(body);
+            if (!room.code().equals(p.get("c"))) { wrongCode(ip); json(c, "{\"ok\":false,\"e\":\"code\"}"); return; }
+            String e = room.draw(p.get("t"), num(p.get("q"), -1), p.get("x"));
             json(c, e == null ? "{\"ok\":true}" : "{\"ok\":false,\"e\":\"" + e + "\"}");
             return;
         }

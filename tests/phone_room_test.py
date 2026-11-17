@@ -42,11 +42,11 @@ check("charades: the word is on the actor's phone alone (the TV never draws it, 
       "game.wordVisible() && !onPhones()" in cha and "if (onPhones()) return; game.peek();" in cha and "game.ready(); game.hide();" in cha and "phones.room.replied(actor)" in cha and "if (game.phase == CharadesGame.Phase.PLAY) game.hide();" in cha)
 check("the base opens a room only on the person's switch, closes it with the screen, and says so when there is no local network",
       "protected final boolean openPhones()" in ga and "protected void onDestroy() { closePhones(); super.onDestroy(); }" in ga and 'S.t("لا توجد شبكة محلية. وصّل التلفزيون بالواي فاي")' in ga)
-check("the games list: a filter beside the night switch («عرض»: الكل or بالجوالات), kept; «بالجوالات» shows only PHONE_GAMES and opens the party games with the phones switch on",
-      'PHONE_GAMES = {"quiz", "khanat", "missing-word", "letter-hive", "word5", "odd-one", "charades", "domino"}' in reg and "filter == 0 || GameRegistry.inPhones(g.id)" in gl and "GamePrefs.setFilter(this, filter)" in gl and 'go.putExtra("phones", true)' in gl
+check("the games list: a filter beside the night switch («عرض»: الكل or بالجوالات), kept; «بالجوالات» shows every game that has a phone mode and opens them with the phones switch on",
+      'PHONE_GAMES = {"quiz", "khanat", "missing-word", "letter-hive", "word5", "odd-one", "charades", "domino"' in reg and "(GameRegistry.inPhones(g.id) && g.ready)" in gl and "GamePrefs.setFilter(this, filter)" in gl and 'go.putExtra("phones", true)' in gl
       and "static void setFilter" in src("GamePrefs.java"))
 check("the phone page: no outside address, no innerHTML or eval, text built with text nodes; it talks only to /api/",
-      not __import__("re").search(r"https?://(?!www\.w3\.org)", page) and "innerHTML" not in page and "eval(" not in page and page.count("/api/") == 6 and "createTextNode" in page)
+      not __import__("re").search(r"https?://(?!www\.w3\.org)", page) and "innerHTML" not in page and "eval(" not in page and page.count("/api/") == 9 and "createTextNode" in page)
 check("the game-only server holds no game rules: it routes a PhoneRoom (the quiz's room and this one) and nothing else", "private final PhoneRoom room;" in src("QuizServer.java") and "implements PhoneRoom" in src("QuizRoom.java") and "implements PhoneRoom" in src("GamePhoneRoom.java"))
 check("docs/GAMES-PHONES.md says the switch is off by default and what is not in phase 1", "Off by default, every time" in (ROOT / "docs/GAMES-PHONES.md").read_text(encoding="utf-8") and "Not in phase 1" in (ROOT / "docs/GAMES-PHONES.md").read_text(encoding="utf-8"))
 mw = src("MissingWordActivity.java")

@@ -17,6 +17,8 @@ final class GameChips {
     final List<Row> rows = new ArrayList<>();
     /** the focus: row == rows.size() is the start button */
     int row, col;
+    /** the first row shown when there are more rows than fit above the start button */
+    int scroll;
     /** the buttons of the last line: 0 the start button, 1 the names button (only when the game has names to write: `names`) */
     int btn; boolean names;
 

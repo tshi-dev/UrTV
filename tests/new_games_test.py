@@ -1,0 +1,90 @@
+#!/usr/bin/env python3
+"""The new party games (4.4, docs/GAMES-NEW.md): the rules run on a plain JVM (tests/NewGamesTest.java, fake clocks), and the pins that keep the TV side to what the docs say.
+A game's session adds its engine to ENGINES, its checks to NewGamesTest and its pins at the end."""
+import re, shutil, subprocess, sys, tempfile
+from pathlib import Path
+ROOT = Path(__file__).resolve().parent.parent
+APP = ROOT / "android/app/src/main/java/sa/urtv/screensaver"
+G = APP / "games"
+failed = 0
+def check(what, ok, extra=""):
+    global failed
+    print(("PASS " if ok else "FAIL ") + what + ("" if ok else "  -> " + str(extra)))
+    if not ok: failed += 1
+if not shutil.which("javac"): print("SKIP: no javac"); sys.exit(1)
+ENGINES = [G / "forehead/ForeheadGame.java", G / "author/AuthorGame.java", G / "closest/ClosestGame.java", G / "liar/LiarGame.java", G / "emoji/EmojiGame.java", G / "link/LinkGame.java", G / "night/NightGame.java", G / "guess/GuessGame.java", G / "draw/DrawGame.java", G / "quran/QuranItems.java", G / "maths/MathGame.java", G / "logic/LogicItems.java", APP / "GameBundle.java", APP / "MiniJson.java"]
+with tempfile.TemporaryDirectory() as t:
+    c = subprocess.run(["javac", "-nowarn", "-encoding", "UTF-8", "-d", t, *map(str, ENGINES), str(ROOT / "tests/NewGamesTest.java")], capture_output=True, text=True)
+    check("the new games' rules compile on a plain JVM (no Android)", c.returncode == 0, c.stderr[-500:])
+    if c.returncode == 0:
+        r = subprocess.run(["java", "-cp", t, "sa.urtv.screensaver.NewGamesTest", str(ROOT / "assets/games/author.gb"), str(ROOT / "assets/games/closest.gb"), str(ROOT / "assets/games/liar.gb"), str(ROOT / "assets/games/emoji.gb"), str(ROOT / "assets/games/link.gb"), str(ROOT / "assets/games/guess.gb"), str(ROOT / "assets/shared/verses.json"), str(ROOT / "android/launcher/src/main/assets/quran/reciters.json"), str(ROOT / "assets/games/logic.gb")], capture_output=True, text=True, timeout=120)
+        for l in r.stdout.splitlines():
+            if l.startswith(("PASS", "FAIL")): print(l); failed += l.startswith("FAIL")
+        check("the JVM test ran to the end", r.returncode == 0 or "FAIL" in r.stdout, r.stderr[-400:])
+def src(n): return (APP / n).read_text(encoding="utf-8")
+reg, gl, room, page = src("GameRegistry.java"), src("QuizGamesActivity.java"), src("GamePhoneRoom.java"), (ROOT / "assets/quiz/game.html").read_text(encoding="utf-8")
+manifest = (ROOT / "android/app/src/main/AndroidManifest.xml").read_text(encoding="utf-8")
+GAMES = {"forehead": "ForeheadActivity", "author": "AuthorActivity", "closest": "ClosestActivity", "liar": "LiarActivity", "emoji": "EmojiActivity", "link": "LinkActivity", "night": "NightActivity", "draw": "DrawActivity", "quran-verse": "QuranVerseActivity", "maths": "MathActivity", "logic": "LogicActivity"}
+for gid, act in GAMES.items():
+    a = src(act + ".java")
+    check(f"{gid}: in the registry (needs phones), in the filter's list, in the manifest (not exported, landscape), and a GameActivity",
+          re.search(r'new Game\("%s", "[^"]+", "[^"]+", "%s", true, true\)' % (gid, act), reg) is not None and f'"{gid}"' in reg.split("PHONE_GAMES = {")[1].split("}")[0]
+          and re.search(r'android:name="\.%s"\s+android:exported="false"\s+android:screenOrientation="landscape"' % act, manifest) is not None and f"class {act} extends GameActivity" in a)
+    check(f"{gid}: opens the phone room itself (the phones are the game), takes no socket of its own, writes no colour of its own",
+          "openPhones()" in a and not re.search(r"ServerSocket|QuizServer|QuizRoom|java\.net\.", a) and not re.search(r"0x[0-9A-Fa-f]{8}|Color\.parseColor", a))
+fh = src("ForeheadActivity.java")
+check("forehead: the word is only ever on the phone (a tilt card), never drawn on the TV; the turns go round the phones of a team; the words are the charades bank and nothing repeats on this TV",
+      "GamePhoneRoom.TILT" in fh and "game.word" in fh and fh.count("game.word") == 2 and "CharadesActivity.PUBLISHED" in fh and "GamePrefs.remember(this, id(), r)" in fh and "private int playerSeat()" in fh)
+check("the phone page: a tilt card with tilt down = right, up = skip, the two buttons too, permission asked on a tap (iOS); the room answers a tilt card as an action card",
+      "c.kind === 'tilt'" in page and "z <= -7" in page and "z >= 7" in page and "requestPermission" in page and "case ACT: case TILT:" in room)
+au = src("AuthorActivity.java")
+check("author: the prompts come from the bundled bank (GameBundles), nothing repeats on this TV; the answers are typed on the phones (a text card), the votes are a pick card that never offers your own name, and the writer's phone is told not to vote",
+      'GameBundles.load(this, "author")' in au and "GamePrefs.remember(this, id(), r)" in au and "GamePhoneRoom.TEXT" in au and "GamePhoneRoom.PICK" in au and "if (j != i) acts[k++] = j;" in au and 'S.t("هذي إجابتك، لا تصوّت")' in au)
+check("the bundled banks are bundles, not plain text: assets/games/author.gb has no readable Arabic and no JSON",
+      all(("سمك".encode() not in (ROOT / "assets/games" / f).read_bytes()) and (ROOT / "assets/games" / f).read_bytes()[:3] == b"GB1" for f in ("author.gb",)))
+cl = src("ClosestActivity.java")
+check("closest: the items come from the bundled bank, nothing repeats on this TV; the guesses are typed on the phones in a number card (a number pad) and read by the rules' own number parser",
+      'GameBundles.load(this, "closest")' in cl and "GamePrefs.remember(this, id(), r)" in cl and "GamePhoneRoom.TEXT" in cl and "unit.isEmpty() ? S.t(\"رقم\") : unit}, null, 1)" in cl and "game.submit(p, t[0])" in cl and "inputmode', 'numeric'" in page)
+check("the bundled closest bank is a bundle (no readable Arabic, no JSON)", (ROOT / "assets/games/closest.gb").read_bytes()[:3] == b"GB1" and "مساحة".encode() not in (ROOT / "assets/games/closest.gb").read_bytes())
+li = src("LiarActivity.java")
+check("liar: the roles go only to the tellers' own phones (a secret card), the others hear the three names; the vote is a pick card; nothing on the TV names the liar before the reveal; nothing repeats on this TV",
+      "GamePhoneRoom.SECRET, names[i]" in li and "game.liarIs(i)" in li and li.count("liarIs(") == 1 and "game.liar()" in li and li.index("case REVEAL: {") < li.index("game.liar()") and "GamePhoneRoom.PICK" in li and "GamePrefs.remember(this, id(), r)" in li and 'GameBundles.load(this, "liar")' in li)
+check("the bundled liar topics are a bundle", (ROOT / "assets/games/liar.gb").read_bytes()[:3] == b"GB1" and "موقف".encode() not in (ROOT / "assets/games/liar.gb").read_bytes())
+em = src("EmojiActivity.java")
+check("emoji: the puzzles come from the bundled bank, nothing repeats on this TV; the options are a pick card of four, the time of each answer is the room's own clock (repliedAt)",
+      'GameBundles.load(this, "emoji")' in em and "GamePrefs.remember(this, id(), r)" in em and "GamePhoneRoom.PICK" in em and "phones.room.repliedAt(p)" in em and "synchronized long repliedAt(int seat)" in room)
+check("the bundled emoji bank is a bundle", (ROOT / "assets/games/emoji.gb").read_bytes()[:3] == b"GB1" and "كبسة".encode() not in (ROOT / "assets/games/emoji.gb").read_bytes())
+lk = src("LinkActivity.java")
+check("link: the key goes only to the two captains' phones (a key card), the rest get the words to touch or a wait line; the TV shows the key only on the end screen; nothing repeats on this TV",
+      "GamePhoneRoom.KEY" in lk and "if (captain(s))" in lk and "boolean shown = game.shown[i] || end;" in lk and "keep(); screen = Screen.PLAY" in lk and 'GameBundles.load(this, "link")' in lk)
+check("the phone page and room: a key card is a grid of the words coloured by the key, with number buttons only when the card offers them; it takes answers only for those numbers",
+      "c.kind === 'key'" in page and ".kc{" in page and "case KEY:" in room)
+check("the bundled link words are a bundle", (ROOT / "assets/games/link.gb").read_bytes()[:3] == b"GB1" and "بحر".encode() not in (ROOT / "assets/games/link.gb").read_bytes())
+ni = src("NightActivity.java")
+check("night: roles go only to each phone as a secret card, the TV names a role only when its player leaves or at the end; the night, the vote and the seer's answer are cards; nothing is killed in the wording",
+      "GamePhoneRoom.SECRET, names[i]" in ni and "GamePhoneRoom.PICK" in ni and ni.count("roleName(game.role[") == 3 and "game.endNight()" in ni and "game.vote(p, a)" in ni and "game.seer(p, a)" in ni)
+gu = src("GuessActivity.java")
+check("guess: every phone bids on a number pad (a text card, self = 1), only the top bid gets the typing fields, the others wait; the topics come from the bundled bank and nothing repeats on this TV; points only",
+      "GamePhoneRoom.TEXT" in gu and ", null, 1)" in gu and "phones.room.hold(i," in gu and 'GameBundles.load(this, "guess")' in gu and "GamePrefs.remember(this, id(), r)" in gu and "money" not in gu.lower())
+check("guess: built but HIDDEN (no registry entry, no filter entry) until its topic lists are checked against sources; the activity stays in the manifest", "GuessActivity" in manifest and "GuessActivity" not in reg and '"guess"' not in reg)
+check("the bundled guess topics are a bundle", (ROOT / "assets/games/guess.gb").read_bytes()[:3] == b"GB1" and "فواكه".encode() not in (ROOT / "assets/games/guess.gb").read_bytes())
+dr = src("DrawActivity.java"); srv = src("QuizServer.java")
+check("draw: the strokes of the drawer's card (a draw card) are shown on the TV, the others type guesses; the words are the charades bank and nothing repeats on this TV",
+      "GamePhoneRoom.DRAW" in dr and "phones.room.strokes(d)" in dr and "game.guess(p, t[0])" in dr and "GamePrefs.remember(this, id(), r)" in dr and "CharadesActivity.PUBLISHED" in dr)
+check("draw: only /api/draw may carry more than a kilobyte (8 KB), the room takes it only for a draw card of that phone, at most 8 posts a second, 300 strokes, 6000 points, every coordinate 0 to 1000; the other routes keep 1 KB",
+      'static final int BODY_MAX = 1024, DRAW_MAX = 8192' in srv and 'rl[1].equals("/api/draw") ? DRAW_MAX : BODY_MAX' in srv and "DRAW_PER_SEC = 8" in room and "DRAW_STROKES = 300" in room and "DRAW_POINTS = 6000" in room and "!DRAW.equals(s.kind)" in room
+      and "default String draw(" in src("PhoneRoom.java") and srv.count("DRAW_MAX") == 2)
+check("draw: the phone page sends strokes in small posts to /api/draw and builds nothing from them", "'/api/draw'" in page and "c.kind === 'draw'" in page and "setPointerCapture" in page)
+qv = src("QuranVerseActivity.java"); qr = src("QuranReciterActivity.java")
+check("quran-verse: the text comes only from the verified mushaf file (shared/verses.json), shown as stored; nothing repeats on this TV; no sound for a wrong pick",
+      'getAssets().open("shared/verses.json")' in qv and "QuranItems.verses(" in qv and "GamePrefs.remember(this, id(), r)" in qv and "QuizSound.LOW" not in qv and ".replace(" not in qv.split("QuranItems.verses(")[1])
+check("reciter: built but HIDDEN: an activity in the manifest, no registry entry and no filter entry until the terms of mp3quran are read (docs/GAMES-QURAN.md); it streams a short clip at play time and stores nothing",
+      "QuranReciterActivity" in manifest and "QuranReciterActivity" not in reg and '"reciter"' not in reg and "setDataSource(url)" in qr and "CLIP_SECONDS * 1000L" in qr and "FileOutputStream" not in qr and "DownloadManager" not in qr)
+ma = src("MathActivity.java")
+check("maths: made by code, no bank; the numbers are typed on a number pad (a text card, self = 1); the TV shows both languages together; the phones show the same question",
+      "MathGame.generate(" in ma and ", null, 1)" in ma and "q.ar + " in ma and "q.en" in ma and "GameBundles" not in ma)
+lo = src("LogicActivity.java")
+check("logic: made by code plus a bundled hand-written bank, nothing from the bank repeats on this TV; both languages are on the TV at once (two lines) and on the phones (two paragraphs); the options are a pick card",
+      "LogicItems.generate(" in lo and 'GameBundles.load(this, "logic")' in lo and "GamePrefs.remember(this, id(), r)" in lo and "LogicItems.SEP" in lo and "GamePhoneRoom.PICK" in lo)
+check("the bundled logic puzzles are a bundle", (ROOT / "assets/games/logic.gb").read_bytes()[:3] == b"GB1" and "حفرة".encode() not in (ROOT / "assets/games/logic.gb").read_bytes())
+sys.exit(1 if failed else 0)

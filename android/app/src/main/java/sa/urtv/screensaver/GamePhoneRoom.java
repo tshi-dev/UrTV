@@ -15,17 +15,17 @@ import java.util.function.LongSupplier;
 final class GamePhoneRoom implements PhoneRoom {
     static final int MAX_PLAYERS = 12, ANSWER_PER_SEC = 5, INBOX_MAX = 32, JOIN_PER_MIN = 20, WRONG_CODE_LOCK = 5;
     static final long CONNECTED_MS = 6000, LOCK_MS = 60000, LOBBY_LIFE_MS = 10 * 60 * 1000;
-    /** what a card is: a secret to read, a vote for one name, a few action buttons, a plain line to wait on, or a list to pick one from («pick»: `opts` are the choices, `acts` the numbers that can be chosen now), or a form of one or more short answers to type («text»: `opts` are the field labels) */
-    static final String SECRET = "secret", VOTE = "vote", ACT = "act", WAIT = "wait", TEXT = "text", PICK = "pick";
+    /** what a card is: a secret to read, a vote for one name, a few action buttons, a plain line to wait on, or a list to pick one from («pick»: `opts` are the choices, `acts` the numbers that can be chosen now), or a key to look at («key»: `text` is one character a cell, `opts` the cell words; it takes no answer), or a form of one or more short answers to type («text»: `opts` are the field labels) */
+    static final String SECRET = "secret", VOTE = "vote", ACT = "act", WAIT = "wait", TEXT = "text", PICK = "pick", TILT = "tilt", KEY = "key", DRAW = "draw";
     /** the action buttons of an «act» card */
-    static final int ACT_OK = 0, ACT_SKIP = 1, ACT_FOUL = 2, ACT_BUZZ = 3;
+    static final int ACT_OK = 0, ACT_SKIP = 1, ACT_FOUL = 2, ACT_BUZZ = 3, ACT_READY = 4;
 
     enum Phase { LOBBY, PLAY, CLOSED }
 
     private static final class Seat {
         final QuizRoom.Player who; long lastSeen; boolean left;
         int cardId; String kind = WAIT, title = "", text = "", note = ""; String[] opts = new String[0]; int[] acts = new int[0]; int self = -1;
-        long firstAt; final ArrayDeque<Integer> inbox = new ArrayDeque<>(); final ArrayDeque<String> posted = new ArrayDeque<>(); final ArrayDeque<Long> sent = new ArrayDeque<>();
+        long firstAt; final ArrayDeque<Integer> inbox = new ArrayDeque<>(); final ArrayDeque<String> posted = new ArrayDeque<>(); final ArrayDeque<Long> sent = new ArrayDeque<>(); final ArrayDeque<Long> drawSent = new ArrayDeque<>(); final java.util.List<int[]> strokes = new java.util.ArrayList<>(); int drawPoints, drawRev;
         Seat(QuizRoom.Player who) { this.who = who; }
     }
 
@@ -91,8 +91,9 @@ final class GamePhoneRoom implements PhoneRoom {
         boolean ok;
         switch (s.kind) {
             case VOTE: ok = a >= 0 && a <= s.opts.length && a != s.self && s.inbox.isEmpty(); break;   // one vote per card; a == opts.length is «ما أدري / ما اتفقنا»
-            case ACT: ok = false; for (int t : s.acts) if (t == a) ok = true; break;
+            case ACT: case TILT: ok = false; for (int t : s.acts) if (t == a) ok = true; break;   // a tilt card is an action card the phone also answers by tilting
             case SECRET: ok = a == 0 && s.inbox.isEmpty(); break;
+            case KEY: { boolean on = false; for (int t : s.acts) if (t == a) on = true; ok = on && s.inbox.isEmpty(); break; }   // a key may carry numbers to choose (the captain's clue number)
             case PICK: { boolean on = false; for (int t : s.acts) if (t == a) on = true; ok = on && a >= 0 && a < s.opts.length && s.inbox.isEmpty(); break; }
             case TEXT: {   // the answers, one line per field, each cleaned; one post per card
                 String f = form(x, s.opts.length);
@@ -108,6 +109,51 @@ final class GamePhoneRoom implements PhoneRoom {
         s.inbox.addLast(a); version++;
         return null;
     }
+
+    /** limits of a drawing card: a post of at most 500 points, 8 posts a second, 300 strokes and 6000 points in all; every coordinate a whole number from 0 to 1000 */
+    static final int DRAW_POST_MAX = 7000, DRAW_POST_POINTS = 500, DRAW_PER_SEC = 8, DRAW_STROKES = 300, DRAW_POINTS = 6000, DRAW_COORD = 1000;
+
+    /** the phone of a drawing card posts its new strokes: «x,y x,y» is a stroke, «+x,y» continues the last one, «C» clears; a post with anything else in it is refused whole */
+    @Override public synchronized String draw(String token, int q, String x) {
+        Seat s = byToken(token);
+        if (s == null) return "token";
+        if (phase != Phase.PLAY) return "phase";
+        long now = clock.getAsLong();
+        while (!s.drawSent.isEmpty() && now - s.drawSent.peekFirst() > 1000) s.drawSent.pollFirst();
+        if (s.drawSent.size() >= DRAW_PER_SEC) return "rate";
+        s.drawSent.addLast(now);
+        if (q != s.cardId || !DRAW.equals(s.kind)) return "stale";
+        if (x == null || x.length() > DRAW_POST_MAX) return "card";
+        java.util.List<int[]> parsed = new java.util.ArrayList<>(); java.util.List<Boolean> cont = new java.util.ArrayList<>(); boolean clear = false; int points = 0;
+        for (String item : x.split(";", -1)) {
+            if (item.isEmpty()) continue;
+            if (item.equals("C")) { clear = true; parsed.clear(); cont.clear(); continue; }
+            boolean c = item.startsWith("+"); String body = c ? item.substring(1) : item;
+            String[] pts = body.split(" ");
+            if (pts.length == 0 || pts.length > DRAW_POST_POINTS) return "card";
+            int[] st = new int[pts.length * 2];
+            for (int i = 0; i < pts.length; i++) {
+                int k = pts[i].indexOf(',');
+                if (k <= 0 || k > 4 || pts[i].length() - k - 1 > 4 || pts[i].length() - k - 1 < 1) return "card";
+                try { int px = Integer.parseInt(pts[i].substring(0, k)), py = Integer.parseInt(pts[i].substring(k + 1)); if (px < 0 || py < 0 || px > DRAW_COORD || py > DRAW_COORD) return "card"; st[i * 2] = px; st[i * 2 + 1] = py; }
+                catch (NumberFormatException e) { return "card"; }
+            }
+            points += pts.length; if (points > DRAW_POST_POINTS) return "card";
+            parsed.add(st); cont.add(c);
+        }
+        if (clear) { s.strokes.clear(); s.drawPoints = 0; }
+        for (int i = 0; i < parsed.size(); i++) {
+            int[] st = parsed.get(i);
+            if (s.drawPoints + st.length / 2 > DRAW_POINTS) return "card";
+            if (cont.get(i) && !s.strokes.isEmpty()) { int[] last = s.strokes.get(s.strokes.size() - 1), m = java.util.Arrays.copyOf(last, last.length + st.length); System.arraycopy(st, 0, m, last.length, st.length); s.strokes.set(s.strokes.size() - 1, m); }
+            else { if (s.strokes.size() >= DRAW_STROKES) return "card"; s.strokes.add(st); }
+            s.drawPoints += st.length / 2;
+        }
+        s.drawRev++; return null;
+    }
+    /** the drawing so far, a copy: one flat array «x0,y0,x1,y1…» per stroke */
+    synchronized java.util.List<int[]> strokes(int seat) { return new java.util.ArrayList<>(seats.get(seat).strokes); }
+    synchronized int drawRev(int seat) { return seats.get(seat).drawRev; }
 
     @Override public synchronized void leave(String token) { Seat s = byToken(token); if (s != null) { s.left = true; version++; } }
 
@@ -134,7 +180,7 @@ final class GamePhoneRoom implements PhoneRoom {
         Seat s = seats.get(seat);
         s.cardId = ++serial; s.kind = kind; s.title = clip(title); s.text = clip(text); s.note = clip(note);
         s.opts = opts == null ? new String[0] : opts.clone(); s.acts = acts == null ? new int[0] : acts.clone(); s.self = self;
-        s.inbox.clear(); s.posted.clear(); version++;
+        s.inbox.clear(); s.posted.clear(); s.strokes.clear(); s.drawPoints = 0; s.drawRev++; version++;
         return s.cardId;
     }
     synchronized void hold(int seat, String text) { card(seat, WAIT, "", text, "", null, null, -1); }
@@ -150,7 +196,10 @@ final class GamePhoneRoom implements PhoneRoom {
         return best;
     }
     /** the id of the card `seat` shows now (a test and the TV's own bookkeeping) */
+    synchronized int stateIdOf(int seat) { return seats.get(seat).cardId; }
     synchronized int stateId(int seat) { return seats.get(seat).cardId; }
+    /** when the phone of `seat` first answered its current card (the clock's ms), 0 when it has not */
+    synchronized long repliedAt(int seat) { Seat s = seats.get(seat); return s.inbox.isEmpty() ? 0 : s.firstAt; }
     synchronized boolean replied(int seat) { return !seats.get(seat).inbox.isEmpty(); }
     synchronized int repliedCount() { int n = 0; for (Seat s : seats) if (!s.left && !s.inbox.isEmpty()) n++; return n; }
     /** every answer sent for the current card since the last call, oldest first (an actor's buttons) */
