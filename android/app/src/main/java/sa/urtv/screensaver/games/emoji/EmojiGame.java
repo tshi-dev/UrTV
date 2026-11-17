@@ -18,13 +18,15 @@ public final class EmojiGame {
     public static final int[] QUESTIONS = {10, 15, 20}, SECONDS = {10, 15, 20};
 
     public static final class Puzzle {
-        public final String id, emoji, cat; public final String[] a; public final int diff; public final boolean kids;
+        public final String id, emoji, cat; public final String[] a; public final int diff; public final boolean kids; public List<String> fixed;   // fixed: the options in order, the right one among them (a puzzle made in code names its own wrong options)
         Puzzle(String id, String emoji, String ar, String en, String cat, int diff, boolean kids) { this.id = id; this.emoji = emoji; a = new String[] {ar, en}; this.cat = cat; this.diff = diff; this.kids = kids; }
         public String answer(boolean en) { return en && !a[1].isEmpty() ? a[1] : a[0]; }
     }
 
     /** a puzzle built in code (the Quran games reuse this engine: a prompt, the right answer, a category that picks look-alike wrong options) */
     public static Puzzle make(String id, String prompt, String answerAr, String cat) { return new Puzzle(id, prompt, answerAr, "", cat, 1, true); }
+    /** a puzzle that names its own options (the logic games): the answer must be one of them */
+    public static Puzzle make(String id, String prompt, String answer, String cat, List<String> options) { Puzzle p = new Puzzle(id, prompt, answer, "", cat, 1, true); p.fixed = new ArrayList<>(options); return p; }
 
     public static List<Puzzle> parse(Object tree) {
         if (!(tree instanceof Map)) return null;
@@ -72,6 +74,7 @@ public final class EmojiGame {
 
     private void deal() {
         Puzzle p = puzzles.get(index);
+        if (p.fixed != null && p.fixed.contains(p.answer(en))) { options = new ArrayList<>(p.fixed); Collections.shuffle(options, rnd); right = options.indexOf(p.answer(en)); java.util.Arrays.fill(choice, -1); java.util.Arrays.fill(gained, 0); return; }
         List<String> wrong = new ArrayList<>(); List<Puzzle> same = new ArrayList<>(), other = new ArrayList<>();
         for (Puzzle q : pool) if (!q.id.equals(p.id) && !q.answer(en).equals(p.answer(en))) (q.cat.equals(p.cat) ? same : other).add(q);
         Collections.shuffle(same, rnd); Collections.shuffle(other, rnd); same.addAll(other);

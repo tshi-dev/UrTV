@@ -10,6 +10,7 @@ import sa.urtv.screensaver.games.guess.GuessGame;
 import sa.urtv.screensaver.games.draw.DrawGame;
 import sa.urtv.screensaver.games.quran.QuranItems;
 import sa.urtv.screensaver.games.maths.MathGame;
+import sa.urtv.screensaver.games.logic.LogicItems;
 import sa.urtv.screensaver.games.emoji.EmojiGame;
 import sa.urtv.screensaver.games.link.LinkGame;
 
@@ -337,6 +338,43 @@ public final class NewGamesTest {
         check("maths: nine players are refused (two to eight)", threw);
     }
 
+    static void logic(String bundleFile) throws Exception {
+        byte[] json = GameBundle.open("logic", java.nio.file.Files.readAllBytes(java.nio.file.Paths.get(bundleFile)));
+        List<EmojiGame.Puzzle> bank = json == null ? null : LogicItems.bank(MiniJson.parse(new String(json, java.nio.charset.StandardCharsets.UTF_8)));
+        check("logic: the hand-written puzzles open and parse (" + (bank == null ? 0 : bank.size()) + ", at least 12), each with both languages and four different options, the answer among them",
+            bank != null && bank.size() >= 12 && bank.stream().allMatch(p -> p.emoji.indexOf(LogicItems.SEP) > 0 && p.fixed.size() == 4 && new java.util.HashSet<>(p.fixed).size() == 4 && p.fixed.contains(p.a[0])));
+        java.util.Random r = new java.util.Random(5); List<EmojiGame.Puzzle> gen = LogicItems.generate(300, r);
+        boolean shape = true, orderOk = true, seqOk = true, oddOk = true, ageOk = true; int orders = 0, seqs = 0, odds = 0, ages = 0;
+        for (EmojiGame.Puzzle p : gen) {
+            shape &= p.fixed.size() == 4 && new java.util.HashSet<>(p.fixed).size() == 4 && p.fixed.contains(p.a[0]) && p.emoji.indexOf(LogicItems.SEP) > 0;
+            String ar = p.emoji.substring(0, p.emoji.indexOf(LogicItems.SEP));
+            if (p.id.startsWith("lg-order-")) {   // rebuild the order from the facts and find the tallest or the shortest on our own
+                orders++; boolean tallest = ar.contains("من الأطول؟"); java.util.Map<String, java.util.Set<String>> over = new java.util.HashMap<>(); java.util.Set<String> all = new java.util.HashSet<>();
+                for (String f : ar.replace("من الأطول؟", "").replace("من الأقصر؟", "").split("، ")) { String[] x = f.trim().split(" أطول من "); if (x.length != 2) continue; over.computeIfAbsent(x[0], k -> new java.util.HashSet<>()).add(x[1]); all.add(x[0]); all.add(x[1]); }
+                String want = null; for (String n : all) { boolean noOneAbove = true, noOneBelow = !over.containsKey(n); for (java.util.Set<String> b : over.values()) if (b.contains(n)) noOneAbove = false; if (tallest ? noOneAbove : noOneBelow) want = n; }
+                orderOk &= want != null && p.a[0].startsWith(want + " /");
+            } else if (p.id.startsWith("lg-seq-")) {
+                seqs++; String[] t = ar.substring(0, ar.indexOf("ما العدد")).replace("?", "").trim().split(",\\s*"); long[] v = new long[t.length]; for (int i = 0; i < t.length; i++) v[i] = Long.parseLong(t[i].trim());
+                long d1 = v[1] - v[0], d2 = v[2] - v[1]; long want;
+                boolean arith = true, geo = v[0] != 0, sq = true, alt = true; for (int i = 1; i < v.length; i++) { arith &= v[i] - v[i - 1] == d1; geo &= v[i] * v[0] == v[i - 1] * v[1]; }
+                for (int i = 0; i < v.length; i++) { double q = Math.sqrt(v[i]); sq &= q == Math.rint(q) && (i == 0 || Math.rint(Math.sqrt(v[i])) - Math.rint(Math.sqrt(v[i - 1])) == 1); }
+                for (int i = 2; i < v.length; i++) alt &= v[i] - v[i - 2] == d1 + d2;
+                long next = arith ? v[v.length - 1] + d1 : geo ? v[v.length - 1] * (v[1] / v[0]) : sq ? (long) Math.pow(Math.sqrt(v[v.length - 1]) + 1, 2) : alt ? v[v.length - 2] + d1 + d2 : -1;
+                seqOk &= next == Long.parseLong(p.a[0]);
+            } else if (p.id.startsWith("lg-odd-")) {
+                odds++; int k = Integer.parseInt(ar.replaceAll("[^0-9]+", " ").trim().split(" ")[0]); String[] nums = ar.substring(ar.indexOf('\n') + 1).trim().split("\\s+"); int notMultiple = 0; for (String x : nums) if (Integer.parseInt(x) % k != 0) notMultiple++;
+                oddOk &= nums.length == 4 && notMultiple == 1 && Integer.parseInt(p.a[0]) % k != 0;
+            } else if (p.id.startsWith("lg-age-")) {
+                ages++; java.util.regex.Matcher m = java.util.regex.Pattern.compile("بـ (\\d+) سنوات، وعمر \\S+ (\\d+) سنة").matcher(ar); boolean f = m.find(); int diff = f ? Integer.parseInt(m.group(1)) : 0, young = f ? Integer.parseInt(m.group(2)) : 0;
+                ageOk &= f && Integer.parseInt(p.a[0]) == (ar.contains("مجموع") ? diff + 2 * young : young + diff);
+            }
+        }
+        check("logic: 300 generated puzzles each have four different options with the answer among them and both languages", shape && gen.size() == 300);
+        check("logic: all four kinds appear (" + orders + " order, " + seqs + " sequence, " + odds + " odd one, " + ages + " ages) and each answer is confirmed by an independent re-solve of the prompt", orders > 30 && seqs > 30 && odds > 30 && ages > 30 && orderOk && seqOk && oddOk && ageOk);
+        EmojiGame g = new EmojiGame(2, gen.subList(0, 3), gen.subList(0, 3), false, new java.util.Random(2));
+        check("logic: the engine shows a made puzzle's own four options and knows the right one", g.options().size() == 4 && g.options().get(g.rightIndex()).equals(gen.get(0).a[0]));
+    }
+
     public static void main(String[] a) throws Exception {
         forehead();
         author(a[0]);
@@ -349,6 +387,7 @@ public final class NewGamesTest {
         draw();
         quran(a[6], a[7]);
         maths();
+        logic(a[8]);
         System.exit(failed == 0 ? 0 : 1);
     }
 }
