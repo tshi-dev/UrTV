@@ -74,6 +74,7 @@ public class ReportActivity extends Activity {
             for (int i = 0; i < rowsOf.length; i++) rowsOf[i].setText((Report.TOPICS[i][0].equals(topic) ? "✓ " : "") + S.tv(Report.TOPICS[i][1]));
             List<String> lines = Report.lines(homeV, saverV, Build.VERSION.RELEASE, Build.VERSION.SDK_INT, webView(), topic,
                     GlassSource.lookName(this), GlassSource.light(this) ? "light" : "dark", HomeCard.footballShown ? "football" : "standard", errors);
+            lines = Report.withChannel(lines, sa.urtv.home.phone.UpdateChannel.read(this));   // «channel: beta|latest»: the nightly analysis splits the two
             shown.setText(String.join("\n", lines));
             qrBox.removeAllViews();
             String url = Report.url(lines);

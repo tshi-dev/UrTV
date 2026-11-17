@@ -59,6 +59,19 @@ public final class Report {
         return l;
     }
 
+    /**
+     * 4.3.3: the line that tells the nightly analysis which channel the TV was on: «channel: beta», «channel: latest» (or next, the tester's), right after
+     * «Versions:». Any other word is the latest. share.py's ALLOWED_LINE has the same three words.
+     */
+    public static List<String> withChannel(List<String> lines, String channel) {
+        List<String> l = new ArrayList<>(lines);
+        String c = "beta".equals(channel) || "next".equals(channel) ? channel : "latest";
+        int at = 0;
+        for (int i = 0; i < l.size(); i++) if (l.get(i).startsWith("Versions:")) at = i + 1;
+        l.add(at, "channel: " + c);
+        return l;
+    }
+
     /** The link for the QR code, or null when not even the first two lines fit. */
     public static String url(List<String> lines) {
         List<String> l = new ArrayList<>(lines);
