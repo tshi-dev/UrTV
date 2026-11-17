@@ -106,3 +106,8 @@ This work adds `FavBar.restyle(cells, way)` on top of it, plus `HomeLook.apply`.
 4. **Keep the rest as it is:**
    - «أكمل المشاهدة» stays on `dockCell(i, n, favs)`, the tiles' geometry, whatever the way;
    - focus is kept by package (`cardByPkg`).
+
+## Agreed with the sweep session (for phase 3)
+
+1. **Glass clock rule.** Since sweep 3 (6df8ffc2) the rule is `glassClock(cfg.homeClock, homeCard != null && homeCard.shownCards() > 0)`: the regular clock shows while any card shows (the owner's choice). `tests/sweep_test.py` and `tests/scene_home_test.py` pin it. The rule moves behind the cover unchanged.
+2. **The hint.** CouchStyle's `HINT` (1.4375 rem) and the hint on `CouchStyle.SUB` stay as they are. If CouchStyle becomes the only form, the classic `HINT_SP` 14 goes, and the hint is never smaller than that.
