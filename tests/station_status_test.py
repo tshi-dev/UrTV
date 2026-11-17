@@ -44,10 +44,23 @@ wf = read(ROOT / ".github/workflows/stations-check.yml")
 check("the check runs once a day and reads the last run's status", "schedule:" in wf and "cron:" in wf and "git show FETCH_HEAD:stations/status.json" in wf and "STATIONS_PREV:" in wf)
 check("status.json goes out with the reports (data-stations, copied to urtv-data stations/)", "git add -f stations" in wf and '(OUT / "status.json")' in read(ROOT / ".github/tools/check_stations.py"))
 
+patch = read(ROOT / "docs/patches/urtv-data-stations-status.patch")
+check("the patch for urtv-data's Stations: daily, the last status read from its data branch, the mirrors from UrTV, status.json published with the rest",
+      "+    - cron: '17 5 * * *'" in patch and "git show FETCH_HEAD:stations/status.json" in patch and "STATIONS_PREV:" in patch
+      and "tools/inputs.sh .github/tools/station_mirrors.json || true" in patch)
+added = "\n".join(l[1:] for l in patch.split("+++ b/.github/tools/check_stations.py", 1)[1].split("\ndiff --git", 1)[0].splitlines() if l.startswith("+") and not l.startswith("+++"))
+mine = read(ROOT / ".github/tools/check_stations.py")
+check("the patch's check_stations.py lines are this one's (urtv-data copies the tool unchanged)", added and all(l in mine for l in added.splitlines()))
+
 # --- the app side ---
 feed, svc, act = read(H / "StationFeed.java"), read(T / "MusicService.java"), read(T / "MainActivity.java")
 check("StationStatus is plain Java", "import android" not in read(T / "StationStatus.java"))
-check("the status is urtv-data's stations/status.json, kept and fetched in the background (ContentFile)", 'PATH = "stations/status.json"' in feed and "ContentFile.refresh(" in feed and "ContentFile.read(" in feed)
+cf, dh = read(H / "ContentFile.java"), read(H / "DataHost.java")
+check("the status: urtv-data's stations/status.json first, UrTV's data-stations branch after a 404 or no answer (DataHost.get), kept and fetched in the background",
+      'URL = DataHost.OLD + "data-stations/stations/status.json"' in feed and "ContentFile.refreshFrom(app, URL, NAME," in feed and "ContentFile.read(" in feed
+      and "fetch(c, name, maxAgeMs, () -> DataHost.get(oldUrl, 15000, 20000, MAX_BYTES));" in cf and '{"data-stations/stations/", "stations/"},' in dh
+      and "if (r.status == 200) return r;" in dh)
+check("refresh() for the other content files is as before (urtv-data only)", "fetch(c, name, maxAgeMs, () -> Net.get(DataHost.NEW + path, null, 15000, 20000, MAX_BYTES));" in cf)
 check("the list leaves a dead station out, never the one in use", "StationStatus.hidden(sa.urtv.home.StationFeed.status(MainActivity.this), keys," in act
       and "prefs.source() == Prefs.SOURCE_RADIO ? prefs.station() : -1" in act and "if (gone[i]) continue;" in act)
 check("next and previous step over a dead station", "playRadio(StationStatus.step(station, 1, hiddenStations()));" in svc and "playRadio(StationStatus.step(station, -1, hiddenStations()));" in svc)
@@ -90,4 +103,30 @@ public static void main(String[] a) {
                 name, res = line.rsplit("\t", 1)
                 check(name, res == "ok")
             check("every case ran", len(out.splitlines()) == 11, len(out.splitlines()))
+
+    # the launcher's DataHost, run for real against a local server: urtv-data has no stations/status.json yet (404), UrTV's data-stations has it
+    run2 = r"""package sa.urtv.home;
+import com.sun.net.httpserver.HttpServer;
+import java.net.InetSocketAddress;
+import java.nio.charset.StandardCharsets;
+public class FeedRun { public static void main(String[] a) throws Exception {
+  HttpServer s = HttpServer.create(new InetSocketAddress("127.0.0.1", 0), 0);
+  StringBuilder asked = new StringBuilder();
+  s.createContext("/", x -> { String p = x.getRequestURI().getPath(); synchronized (asked) { asked.append(p).append(' '); }
+    byte[] b = ("got " + p).getBytes(StandardCharsets.UTF_8); int code = p.startsWith("/old/data-stations/") || p.equals("/new/stations/report.json") ? 200 : 404;
+    x.sendResponseHeaders(code, b.length); x.getResponseBody().write(b); x.close(); });
+  s.start();
+  String base = "http://127.0.0.1:" + s.getAddress().getPort();
+  System.out.println("FALLBACK " + DataHost.getWith(base + "/old/", base + "/new/", base + "/old/data-stations/stations/status.json", 3000, 5000, 1 << 16).text());
+  System.out.println("ASKED " + asked);
+  s.stop(0);
+} }"""
+    with tempfile.TemporaryDirectory() as tmp:
+        Path(tmp, "FeedRun.java").write_text(run2)
+        r = subprocess.run(["javac", "-encoding", "UTF-8", "-d", tmp, str(H / "DataHost.java"), str(H / "Net.java"), str(H / "NetLog.java"), str(Path(tmp, "FeedRun.java"))], capture_output=True, text=True)
+        check("the launcher's DataHost compiles on a plain JVM", r.returncode == 0, r.stderr[-600:])
+        if r.returncode == 0:
+            out = subprocess.run(["java", "-cp", tmp, "sa.urtv.home.FeedRun"], capture_output=True, text=True, timeout=60).stdout
+            check("status.json: a 404 at urtv-data, then UrTV's data-stations answers", "FALLBACK got /old/data-stations/stations/status.json" in out, out)
+            check("asked in that order: urtv-data's stations/ first", "ASKED /new/stations/status.json /old/data-stations/stations/status.json" in out, out)
 sys.exit(1 if failed else 0)

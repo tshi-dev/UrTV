@@ -43,11 +43,25 @@ final class ContentFile {
 
     /** a background fetch of urtv-data's {@code path} into the kept {@code name} when the copy is older than {@code maxAgeMs} (or missing) */
     static void refresh(final Context c, final String path, final String name, long maxAgeMs) {
+        fetch(c, name, maxAgeMs, () -> Net.get(DataHost.NEW + path, null, 15000, 20000, MAX_BYTES));
+    }
+
+    /**
+     * 4.4: refresh() for a file CI still writes to an old branch of UrTV too: {@code oldUrl} is its DataHost.OLD address, and DataHost.get
+     * asks urtv-data first and the old branch when urtv-data answers anything but 200 (a 404 too) or cannot be reached.
+     */
+    static void refreshFrom(final Context c, final String oldUrl, final String name, long maxAgeMs) {
+        fetch(c, name, maxAgeMs, () -> DataHost.get(oldUrl, 15000, 20000, MAX_BYTES));
+    }
+
+    private interface Fetch { Net.Reply get() throws Exception; }
+
+    private static void fetch(final Context c, final String name, long maxAgeMs, final Fetch how) {
         final File f = kept(c, name);
         if ((f.isFile() && System.currentTimeMillis() - f.lastModified() < maxAgeMs) || !fetching.add(name)) return;
         new Thread(() -> {
             try {
-                Net.Reply r = Net.get(DataHost.NEW + path, null, 15000, 20000, MAX_BYTES);
+                Net.Reply r = how.get();
                 if (r.status != 200 || valid(MiniJson.parse(r.text())) == null) return;
                 File dir = f.getParentFile();
                 if (!dir.isDirectory() && !dir.mkdirs()) return;
