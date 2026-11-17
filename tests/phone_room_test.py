@@ -42,8 +42,8 @@ check("charades: the word is on the actor's phone alone (the TV never draws it, 
       "game.wordVisible() && !onPhones()" in cha and "if (onPhones()) return; game.peek();" in cha and "game.ready(); game.hide();" in cha and "phones.room.replied(actor)" in cha and "if (game.phase == CharadesGame.Phase.PLAY) game.hide();" in cha)
 check("the base opens a room only on the person's switch, closes it with the screen, and says so when there is no local network",
       "protected final boolean openPhones()" in ga and "protected void onDestroy() { closePhones(); super.onDestroy(); }" in ga and 'S.t("لا توجد شبكة محلية. وصّل التلفزيون بالواي فاي")' in ga)
-check("the games list: a filter beside the night switch («عرض»: الكل or بالجوالات), kept; «بالجوالات» shows only the games played with phones (their registry flag)",
-      'PHONE_GAMES = {"quiz", "forehead"' in reg and "filter == 0 || (g.phones && g.ready)" in gl and "GamePrefs.setFilter(this, filter)" in gl
+check("the games list: a filter beside the night switch («عرض»: الكل or بالجوالات), kept; «بالجوالات» shows every game that has a phone mode and opens them with the phones switch on",
+      'PHONE_GAMES = {"quiz", "khanat", "missing-word", "letter-hive", "word5", "odd-one", "charades", "domino"' in reg and "(GameRegistry.inPhones(g.id) && g.ready)" in gl and "GamePrefs.setFilter(this, filter)" in gl and 'go.putExtra("phones", true)' in gl
       and "static void setFilter" in src("GamePrefs.java"))
 check("the phone page: no outside address, no innerHTML or eval, text built with text nodes; it talks only to /api/",
       not __import__("re").search(r"https?://(?!www\.w3\.org)", page) and "innerHTML" not in page and "eval(" not in page and page.count("/api/") == 9 and "createTextNode" in page)

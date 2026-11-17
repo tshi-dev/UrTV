@@ -48,7 +48,7 @@ for gid, name, line, act, phones, ready in games:
         if phones == "false":
             check(f"{gid}: played with one remote: it extends GameActivity and opens no server and no socket", f"class {act} extends GameActivity" in src(f"{act}.java") and not re.search(r"ServerSocket|QuizServer|QuizRoom|java\.net\.", src(f"{act}.java")))
 check("the list reads the registry: tiles four to a line, «قريبًا» for a game that is not ready, a phone picture (no word) only for a game played with phones, the default way said in the header",
-      "GameRegistry.ALL" in hub and "COLS = 4" in hub and 'if (!live) {' in hub and "else if (g.phones) {" in hub and "new GameIcons(this, GameIcons.PHONE)" in hub and 'S.t("بالجوالات"))' in hub and 'text(S.t("بالجوالات")' not in hub and 'S.t("بدون جوالات: ريموت واحد يدور بينكم")' in hub and "GameRegistry.firstFocus(GamePrefs.last(this))" in hub)
+      "GameRegistry.ALL" in hub and "COLS = 4" in hub and 'if (!live) {' in hub and "else if (GameRegistry.inPhones(g.id)) {" in hub and "new GameIcons(this, GameIcons.PHONE)" in hub and 'S.t("بالجوالات"))' in hub and 'text(S.t("بالجوالات")' not in hub and 'S.t("بدون جوالات: ريموت واحد يدور بينكم")' in hub and "GameRegistry.firstFocus(GamePrefs.last(this))" in hub)
 check("the list opens a ready game by its registry line, and a game whose screen is missing says «قريبًا» instead of stopping the app", 'setClassName(this, getClass().getPackage().getName() + "." + g.activity)' in hub and "catch (RuntimeException notThere)" in hub)
 shown = code(hub + base + "".join(src(f"{g[3]}.java") for g in games if g[5] == "true" and g[4] == "false"))
 check("no «·» or «•» separator in what the games show, no rounded (pill) shape", not re.search("[·•]", shown) and "setCornerRadius" not in shown and "setCornerRadii" not in shown)
@@ -145,8 +145,10 @@ check("the three header buttons are pictures only (a moon, a palette, a phone), 
       and not re.search(r"0x[0-9A-Fa-f]{8}|Color\.parseColor", gi))
 check("the line under the title sits beside the three buttons, never over them (they are 72 px at y 64, the line is 72 px at y 64 and starts after them), and the page title and the tile titles keep a taller line and a bottom padding so the tail of «ع» is not cut",
       "mp.setMarginEnd(px(96 + 3 * 72 + 2 * 16 + 40)); mp.topMargin = px(64)" in qg and "float size = 72" in qg and "p.topMargin = px(64)" in qg and "page.setLineSpacing(0, 1.15f); page.setPadding(0, 0, 0, px(14))" in qg)
-check("the «بالجوالات» filter keeps only the games played with phones (the registry's phones flag), and PHONE_GAMES is exactly those games, so the tag and the filter agree",
-      "(g.phones && g.ready)" in qg and set(re.findall(r'"([a-z0-9-]+)"', re.search(r"PHONE_GAMES = \{([^}]*)\}", src("GameRegistry.java")).group(1))) == {g[0] for g in re.findall(r'new Game\("([a-z0-9-]+)", "[^"]+", "[^"]+", "[A-Za-z0-9]+", true, true\)', src("GameRegistry.java"))})
+check("the «بالجوالات» filter keeps every game that can be played with phones (PHONE_GAMES: «الأسرع», the older games' phone mode and the party games), each with the phone picture, and opens them with the phones switch on; only games without a phone mode (the packs page) are left out",
+      "(GameRegistry.inPhones(g.id) && g.ready)" in qg and 'go.putExtra("phones", true)' in qg and "else if (GameRegistry.inPhones(g.id)) {" in qg
+      and {"quiz", "khanat", "missing-word", "letter-hive", "word5", "odd-one", "charades", "domino"} <= set(re.findall(r'"([a-z0-9-]+)"', re.search(r"PHONE_GAMES = \{([^}]*)\}", src("GameRegistry.java")).group(1)))
+      and "packs" not in re.search(r"PHONE_GAMES = \{([^}]*)\}", src("GameRegistry.java")).group(1))
 check("a game's setup page never hides a row behind the start button: the rows that fit are shown (the list scrolls with the focus, with arrows when more are above or below)",
       "int fit = Math.max(1, (int) ((840 - y) / step))" in base and "c.scroll = ws" in base and 'centered("▲"' in base and 'centered("▼"' in base and "int scroll;" in src("GameChips.java"))
 check("the team names are asked for the first time a game with names starts on this TV (then kept per TV and changed with «الأسماء»)",

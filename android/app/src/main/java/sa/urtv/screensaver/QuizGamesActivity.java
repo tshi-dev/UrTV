@@ -105,7 +105,7 @@ public class QuizGamesActivity extends Activity {
     /** the games on the page: all of them, or only the ones that can be played with phones */
     private java.util.List<GameRegistry.Game> shown() {
         java.util.List<GameRegistry.Game> v = new java.util.ArrayList<>();
-        for (GameRegistry.Game g : GameRegistry.ALL) if (filter == 0 || (g.phones && g.ready)) v.add(g);
+        for (GameRegistry.Game g : GameRegistry.ALL) if (filter == 0 || (GameRegistry.inPhones(g.id) && g.ready)) v.add(g);
         return v;
     }
     private void draw() {
@@ -137,7 +137,7 @@ public class QuizGamesActivity extends Activity {
                 TextView mark = text(S.t("قريبًا"), 30, words, true); mark.setSingleLine(true); mark.setPadding(0, px(4), 0, px(4));
                 LinearLayout.LayoutParams kp = new LinearLayout.LayoutParams(-2, -2); kp.gravity = Gravity.START;
                 tile.addView(mark, kp);
-            } else if (g.phones) {   // plays with phones: a phone picture on a saffron square, no word (TalkBack says «بالجوالات»)
+            } else if (GameRegistry.inPhones(g.id)) {   // plays with phones: a phone picture on a saffron square, no word (TalkBack says «بالجوالات»)
                 GameIcons mark = new GameIcons(this, GameIcons.PHONE).set(true, 0, L.onSaff, L.saff); mark.setBackgroundColor(L.saff); mark.setPadding(px(8), px(6), px(8), px(6));
                 mark.setContentDescription(S.t("بالجوالات"));
                 LinearLayout.LayoutParams kp = new LinearLayout.LayoutParams(px(52), px(52)); kp.gravity = Gravity.START;
@@ -219,7 +219,7 @@ public class QuizGamesActivity extends Activity {
             GameRegistry.Game g = shown().get(sel);
             boolean opened = false;
             if (g.ready) {
-                try { Intent go = new Intent().setClassName(this, getClass().getPackage().getName() + "." + g.activity); startActivity(go);   // from the «بالجوالات» view the phones switch starts on
+                try { Intent go = new Intent().setClassName(this, getClass().getPackage().getName() + "." + g.activity); if (filter == 1 && !g.id.equals("quiz")) go.putExtra("phones", true); startActivity(go);   // from the «بالجوالات» view the phones switch starts on
                      GamePrefs.setLast(this, g.id); opened = true; }
                 catch (RuntimeException notThere) { /* a game marked ready whose screen is not in this build: «قريبًا» */ }
             }
