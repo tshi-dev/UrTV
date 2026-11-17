@@ -383,15 +383,15 @@ Also tell me, in Arabic, before the first restart: «التلفزيون بيعي
 أول إعادة تشغيل، فجهّز كلمة سر الواي فاي. لو رجع التلفزيون بدون إنترنت: الإعدادات ← الشبكة والإنترنت، اختر شبكتك
 واكتب كلمة السر، وقلّي «تم».» (Table: «the TV forgot its Wi-Fi».)
 
-## 3. Run it (20–30 minutes, the TV restarts twice)
+## 3. Run it (about 10–20 minutes; with `--measure`, 20–30 and the TV restarts twice)
 
 ```
 optimize/run.sh
 ```
-It saves the TV's state, measures memory and the TV's own screensaver, disables telemetry/ads/demos and my picks,
+It saves the TV's state, measures memory (a quick reading, no restart; the TV's own screensaver too on a weak TV under 2.5 GB), disables telemetry/ads/demos and my picks,
 applies the speed and memory tweaks, installs the screensaver and the home screen (behind the safety switch) and
 TV Bro and SmartTube (from their own GitHub releases, the build for this TV's processor),
-measures again and writes `optimize/run/report.md`. Before the optional picks, on a TV whose model our own lists do not
+measures again and writes `optimize/run/report.md`. `optimize/run.sh --measure` is the full measure (a restart and 3 minutes before and after, and both screensavers): only when I ask for exact numbers. Before the optional picks, on a TV whose model our own lists do not
 know (a Sony, Hisense, Haier, Xiaomi…), `optimize/community.sh` applies the tested list for exactly that model from
 CleanYourTV (MIT, `optimize/lists/community/`) if there is one: never a list for another model, never anything in
 `keep.txt`, a launcher or a setup wizard; `report.md` shows them («Community list: …») and `optimize/keep.sh off` names them. If it stops for any reason: `optimize/run.sh` again (it

@@ -2,6 +2,7 @@
 # Measure the TV's memory and load, fairly.
 #   optimize/measure.sh before                 restart, 3 minutes on the home screen, then read (about 5 minutes)
 #   optimize/measure.sh after --now            read right away, no restart
+#   optimize/measure.sh before --quick         4.4, run.sh's default: no restart, 45 s on the home screen (kept awake), then read (about 1 minute)
 #   optimize/measure.sh power                  what UrTV holds right now: Doze, wake locks, alarms, jobs (read-only, see optimize/power.sh)
 #   optimize/measure.sh saver --screensaver    start the screensaver, read after 60 s while it runs, then leave it
 # The TV is kept awake while it settles (its screensaver timeout is stretched, then put back), so a screensaver
@@ -10,7 +11,7 @@ set -euo pipefail
 cd "$(dirname "$0")/.."
 PY="${PY:-optimize/venv/bin/python}"
 [ "${1:-}" != power ] || exec optimize/power.sh   # what UrTV holds right now (Doze, wake locks, alarms, jobs); read-only
-label="${1:?usage: optimize/measure.sh LABEL [--now|--screensaver]}"
+label="${1:?usage: optimize/measure.sh LABEL [--now|--quick|--screensaver]}"
 mode="${2:-}"
 RUN="${URTV_RUN_DIR:-optimize/run}"
 mkdir -p "$RUN"
@@ -39,14 +40,14 @@ if [ "$mode" = --screensaver ]; then
 else
   # Wireless debugging (TLS, pairing) gets a NEW port when the TV restarts, so the connection is lost and the tools cannot find the TV again (37 reports ended with
   # «TV did not come back within 5 min», mostly Android 14): there, measure without the restart and say so. Anything but a plain «adb» answer counts as wireless.
-  if [ "$mode" != --now ]; then
+  if [ "$mode" != --now ] && [ "$mode" != --quick ]; then
     transport=$(tv --transport 2> /dev/null | tail -n 1) || transport=wireless
     if [ "$transport" != adb ]; then
       echo "This TV is connected by Wireless debugging (its port changes when it restarts), so it is not restarted: $label is measured now, without the restart and the 3-minute wait. The reading can be a little higher than after a restart."
       mode=--now
     fi
   fi
-  if [ "$mode" != --now ]; then
+  if [ "$mode" != --now ] && [ "$mode" != --quick ]; then
     optimize/settle.sh wait 2> /dev/null || true   # a restart before Android has written the package state can lose what was disabled
     tv --reboot
   fi
@@ -70,7 +71,10 @@ else
     *) echo "!! screen_off_timeout: the TV did not say its value, so it was not stretched and a screensaver may spoil this reading" ;;
   esac
   tv "input keyevent KEYCODE_HOME" > /dev/null
-  if [ "$mode" != --now ]; then
+  if [ "$mode" = --quick ]; then   # 4.4 (reports: «before» and «after» took 4-5 min each, every run): no restart, a short settle on the home screen
+    echo "quick reading: no restart, ${QUICK_S:-45} s on the home screen (kept awake)… (the full one, with a restart: optimize/run.sh --measure)"
+    sleep "${QUICK_S:-45}"
+  elif [ "$mode" != --now ]; then
     echo "letting the TV settle for 3 minutes (kept awake)…"
     sleep "${SETTLE_S:-180}"
   fi

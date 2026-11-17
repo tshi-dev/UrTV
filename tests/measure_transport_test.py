@@ -64,5 +64,5 @@ check("plain network adb: restarted as before", r.returncode == 0 and "--reboot"
 r, calls = run("")
 check("--transport that says nothing counts as wireless (never a restart on a guess)", "--reboot" not in calls, calls)
 src = (ROOT / "optimize/measure.sh").read_text(encoding="utf-8")
-check("--now never asks (a read with no restart)", src.index("tv --transport") < src.index("tv --reboot") and 'if [ "$mode" != --now ]; then\n    transport=' in src)
+check("--now and --quick never ask (a read with no restart)", src.index("tv --transport") < src.index("tv --reboot") and 'if [ "$mode" != --now ] && [ "$mode" != --quick ]; then\n    transport=' in src)
 sys.exit(1 if failed else 0)
