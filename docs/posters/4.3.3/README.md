@@ -1,4 +1,6 @@
-# UrTV 4.3.3 poster for X (for the owner's approval)
+# UrTV 4.3.3 poster for X
+
+**Final: option 3, layered depth** (the owner's choice). `urtv-4.3.3.png` is a copy of `urtv-4.3.3-3.png`; the other files are the options that were not chosen.
 
 `urtv-4.3.3.png` is 2160×2700 (4:5). It is in the 4.3.1 family: dark green with a gold glow, the UrTV icon at the top right, and the Downloader code at the bottom. The hero is one big gold «4.3.3» with a light sweep across it.
 
