@@ -502,11 +502,13 @@ final class Prefs {
     void setPhotoMinutes(String v) { sp.edit().putString("photoMinutes", v).apply(); }
 
     /**
-     * The release «تحديث تلفزيوني» (the home screen's screen and the phone page) and the newest-version line read: "latest" (default), or "next",
-     * the test build. For agents only (`saver.sh updatechannel`); no screen shows it and the settings export leaves it out.
+     * The release «تحديث تلفزيوني» (the home screen's screen and the phone page) and the newest-version line read: "latest" (default), "beta"
+     * (the row «النسخ التجريبية») or "next", the test build (agents only, `saver.sh updatechannel`). The settings export leaves it out.
      */
-    String updateChannel() { return "next".equals(sp.getString("updateChannel", "latest")) ? "next" : "latest"; }
-    void setUpdateChannel(String v) { sp.edit().putString("updateChannel", "next".equals(v) ? "next" : "latest").apply(); }
+    String updateChannel() { String v = sp.getString("updateChannel", "latest"); return "next".equals(v) || "beta".equals(v) ? v : "latest"; }
+    void setUpdateChannel(String v) { sp.edit().putString("updateChannel", "next".equals(v) || "beta".equals(v) ? v : "latest").apply(); }
+    /** «النسخ التجريبية» (4.3.3, off by default): «تحديث تلفزيوني» reads the apk-beta release; off is the latest. The agents' "next" is its own word. */
+    boolean betaOn() { return "beta".equals(updateChannel()); }
 
     /**
      * The newest version Updater last read, but only one that came from the release of the CURRENT channel (an older app stored none: that was the

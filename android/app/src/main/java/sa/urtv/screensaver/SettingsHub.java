@@ -67,7 +67,7 @@ final class SettingsHub {
         {"الرقابة الأبوية", PARENTAL}, {"تصفية المواقع", FAMILY}, {"اللغة", LANG}, {"مباريات اليوم", CONTENT},
         {"التصنيفات", SHOWS}, {"اللغات", SHOWS}, {"مسلسلات مختارة", SHOWS}, {"أقل تقييم", SHOWS}, {"قائمة الأسهم", CONTENT}, {"تغيّر الأسهم", CONTENT},
         {"تبديل الصورة كل", SAVER}, {"صور شاشة التوقف", SAVER}, {"صوري", SAVER}, {"بدء شاشة التوقف بعد", SAVER},
-        {"التحديث التلقائي للصفحة", UPDATE}, {"تحديث صفحة شاشة التوقف", UPDATE},
+        {"التحديث التلقائي للصفحة", UPDATE}, {"تحديث صفحة شاشة التوقف", UPDATE}, {"النسخ التجريبية", UPDATE},
     };
 
     /** each group header and the category it belongs to: shown only there, above that category's rows of the group */

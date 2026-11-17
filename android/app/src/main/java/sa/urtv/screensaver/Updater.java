@@ -17,10 +17,13 @@ final class Updater {
         PhotoCache.REPO + "dist/tv.html";
     static final long INTERVAL_MS = 6L * 3600 * 1000;
 
+    /** «النسخ التجريبية» turned off while the TV runs a beta newer than the normal build: it stays, and goes back by itself later */
+    static final String BACK_LINE = "بترجع للنسخة العادية لما توصل لنفس الرقم أو أعلى";
     private static final String OFF = "التحديث التلقائي متوقف";
     private static final String RECENT = "تم الفحص مؤخراً";
     private static final String LATEST_URL = "https://github.com/tshi-dev/UrTV/releases/latest";
     private static final String VERSION_URL = "https://github.com/tshi-dev/UrTV/releases/download/apk-latest/version.txt";
+    private static final String BETA_VERSION_URL = "https://github.com/tshi-dev/UrTV/releases/download/apk-beta/version.txt";
     private static final String NEXT_VERSION_URL = "https://github.com/tshi-dev/UrTV/releases/download/apk-next/version.txt";
 
     private Updater() {}
@@ -172,12 +175,14 @@ final class Updater {
      * The newest version: the version.txt the master build attaches to apk-latest (the release /releases/latest points to,
      * so its tag is not a version), else the numbered tag /releases/latest points to. Keeps the old value on any failure.
      */
-    private static void checkLatest(Context c) {
-        boolean next = "next".equals(new Prefs(c).updateChannel());   // the test channel (agents only): apk-next's version.txt, never the latest's redirect
-        String v = latestFromAsset(next ? NEXT_VERSION_URL : VERSION_URL);
-        if (v == null && !next) v = latestFromRedirect();
-        if (v == null) return;
-        new Prefs(c).raw().edit().putString("latestVersion", v).putString("latestChannel", next ? "next" : "latest").putLong("latestCheck", System.currentTimeMillis()).apply();
+    static String checkLatest(Context c) {
+        String ch = new Prefs(c).updateChannel();
+        boolean next = "next".equals(ch), beta = "beta".equals(ch);   // beta and next: their own release's version.txt, never the latest's redirect
+        String v = latestFromAsset(next ? NEXT_VERSION_URL : beta ? BETA_VERSION_URL : VERSION_URL);
+        if (v == null && !next && !beta) v = latestFromRedirect();
+        if (v == null) return null;
+        new Prefs(c).raw().edit().putString("latestVersion", v).putString("latestChannel", ch).putLong("latestCheck", System.currentTimeMillis()).apply();
+        return v;
     }
 
     /** After the update channel was changed (agents only): read the newest version of the new channel's release in the background. */
@@ -241,11 +246,13 @@ final class Updater {
         int newest = Versions.buildOf(new Prefs(c).latestVersion());   // version.txt is "3.<build>": the build is what grows
         String available = newest < 0 ? "لم يُفحص بعد"
             : newest <= mine ? "لا يوجد أحدث" : arabic(Versions.display(BuildConfig.MARKETING, newest));
-        return new String[] {
-            "الإصدار الحالي: " + arabic(Versions.withBuild(BuildConfig.MARKETING, mine)),   // «٤٫٢ (١٧٤)»: the name, then the build
-            "الإصدار المتاح: " + available,
-            "طريقة التحديث: اطلب من مساعد الذكاء الاصطناعي «حدّث تلفزيوني»، وإعداداتك كلها تبقى.",
-        };
+        boolean back = newest >= 0 && newest < mine && !"next".equals(new Prefs(c).updateChannel());   // a beta newer than the normal build: never downgraded
+        java.util.ArrayList<String> out = new java.util.ArrayList<>();
+        out.add("الإصدار الحالي: " + arabic(Versions.withBuild(BuildConfig.MARKETING, mine)));   // «٤٫٢ (١٧٤)»: the name, then the build
+        out.add("الإصدار المتاح: " + available);
+        if (back) out.add(BACK_LINE);
+        out.add("طريقة التحديث: اطلب من مساعد الذكاء الاصطناعي «حدّث تلفزيوني»، وإعداداتك كلها تبقى.");
+        return out.toArray(new String[0]);
     }
 
     private static byte[] readAll(InputStream in) throws java.io.IOException {

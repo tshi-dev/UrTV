@@ -529,6 +529,8 @@ public class SettingsActivity extends Activity {
         // the page only, never the apps: people took it for the app update (rows 421, 441), so its line points to «تحديث تلفزيوني»
         View last = row("تحديث صفحة شاشة التوقف", "ينزّل أحدث صفحة للشاشة فقط · لتحديث التطبيقين: «تحديث تلفزيوني» في نفس القسم", R.drawable.ic_sync, new Runnable() { public void run() { updateNow(); } });
         if (last.getParent() == list) note(last, Updater.versionLines(this));
+        // «النسخ التجريبية» (4.3.3): the beta release first, off by default. Off again never downgrades: the newer build stays until the normal one reaches its number
+        row("النسخ التجريبية", prefs.betaOn() ? "تعمل · تجيك التحديثات قبل الكل بعد ما نجربها. ممكن يكون فيها أخطاء بسيطة" : "متوقفة · تجيك التحديثات قبل الكل بعد ما نجربها. ممكن يكون فيها أخطاء بسيطة", R.drawable.ic_sync, new Runnable() { public void run() { toggleBeta(); } });
         if (tiles) { hub(want, wasIndex); return; }   // a screen of buttons: after the rows were made (none of them is shown on it)
         restoreFocus(want, wasIndex, scrollY);   // a screen just opened: its first row
     }
@@ -2640,6 +2642,20 @@ public class SettingsActivity extends Activity {
                 try { then.got(result); } catch (Exception e) { toast("تعذرت قراءة النتائج"); }
             });
         }).start();
+    }
+
+    /** «النسخ التجريبية»: flips the channel; turning it off reads the normal release and, when the TV is ahead of it, says it will wait (never a downgrade) */
+    private void toggleBeta() {
+        final boolean wasOn = prefs.betaOn();
+        prefs.setUpdateChannel(wasOn ? "latest" : "beta");
+        render();
+        final android.content.Context app = getApplicationContext();
+        new Thread(new Runnable() { @Override public void run() {
+            String v = Updater.checkLatest(app);   // the newest version of the release the TV reads now
+            final int newest = Versions.buildOf(v);
+            if (wasOn && newest >= 0 && newest < BuildConfig.VERSION_CODE) runOnUiThread(new Runnable() { public void run() { toast(Updater.BACK_LINE); render(); } });
+            else if (wasOn) runOnUiThread(new Runnable() { public void run() { render(); } });
+        } }).start();
     }
 
     private void toast(String s) { Toast.makeText(this, conv(s), Toast.LENGTH_SHORT).show(); }
