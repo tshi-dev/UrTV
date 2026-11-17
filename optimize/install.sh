@@ -103,6 +103,35 @@ stream_install() {   # $1 file name in optimize/, $2 package: pm's answer, or no
   return 0
 }
 
+# 4.4 (reports, cause 3): after the file way failed twice with «Unable to open file» (Nokia Streaming Box 8000, TCL BeyondTV4), the APK is streamed
+# once more whatever URTV_STREAM says (no file on the TV to open), and any answer of pm is taken
+stream_again() {   # $1 file name in optimize/: pm's answer, or nothing when it could not be streamed
+  "$PY" -I optimize/tv.py --install-stream "optimize/$1" -r 2> /dev/null || true
+}
+
+# 4.4 (reports, cause 4): Play Protect refused an ADB install (INSTALL_FAILED_VERIFICATION_FAILURE: the launcher, TV Bro). Its ADB check is off for this
+# install only (put back by restore_verifier); still refused: Play Protect may be asking on the TV, so the person is told in Arabic, the run waits
+# VERIFY_WAIT_S (60) for their «تثبيت على أي حال», and tries once more. Sets out. Returns 2 when the TV did
+# not say what its ADB check is (nothing changed), else 0.
+verify_retry() {   # $1 file name in /data/local/tmp, $2 package
+  verifier_old=$("$PY" -I optimize/tv.py "settings get global $VERIFIER" | tr -d '\r\n' || true)
+  if [ -z "$verifier_old" ]; then   # only the word «null» means «not set»; an empty answer is «the TV did not say»
+    echo "!! Play Protect refused the install over ADB, but the TV did not say what its ADB check is set to, so it was not changed. Run the same command again."
+    return 2
+  fi
+  echo "Play Protect refused the install over ADB: its ADB check is off for this install only, and put back right after (was: ${verifier_old:-not set})."
+  echo "للشخص: لو طلعت على التلفزيون رسالة من Play Protect (التطبيق «غير آمن» أو «مبني لإصدار قديم»)، اضغط «تثبيت على أي حال» (Install anyway) بالريموت. هذا تطبيق تلفزيونك، والرسالة تطلع لأن الشاشة الرئيسية مبنية لإصدار أندرويد أقدم."
+  verifier_set=1
+  "$PY" -I optimize/tv.py "settings put global $VERIFIER 0" > /dev/null || true
+  out=$(pm_install "$1" "$2")
+  grep -q INSTALL_FAILED_VERIFICATION_FAILURE <<< "$out" || return 0
+  echo "Play Protect still refused it: waiting ${VERIFY_WAIT_S:-60} s for the person to press «تثبيت على أي حال» on the TV, then one more try."
+  echo "للشخص: على التلفزيون الحين رسالة من Play Protect؟ اضغط «تثبيت على أي حال» (Install anyway). ما طلعت؟ افتح متجر Play ← صورتك ← Play Protect ← الإعدادات، وأوقف «فحص التطبيقات» مؤقتاً، وبعدها قل لي «كمّل»."
+  sleep "${VERIFY_WAIT_S:-60}"
+  out=$(pm_install "$1" "$2")   # installed meanwhile through the person's answer: the same file again is a plain Success
+  return 0
+}
+
 pushed_whole() {   # $1 file name: is the file on the TV (in /data/local/tmp) as big as ours? A TV that does not answer the size counts as «yes»: the install says if it is not
   local want got
   want=$(wc -c < "optimize/$1" | tr -d ' ')
@@ -138,18 +167,15 @@ push_install() {   # $1 apk name, $2 package
     "$PY" -I optimize/tv.py --push-b64 "optimize/$1" "/data/local/tmp/$1"
     out=$(pm_install "$1" "$2")
   fi
+  if grep -q "Unable to open file" <<< "$out"; then   # 4.4 (cause 3): twice: no file to open at all, the APK streamed to pm
+    echo "$1: the TV still could not open the file: installing it by streaming instead (no file on the TV)."
+    local streamed; streamed=$(stream_again "$1")
+    [ -z "$streamed" ] || out=$streamed
+  fi
   fi   # (the streamed install answered: no file was uploaded)
   if grep -q INSTALL_FAILED_VERIFICATION_FAILURE <<< "$out"; then
-    verifier_old=$("$PY" -I optimize/tv.py "settings get global $VERIFIER" | tr -d '\r\n' || true)
-    if [ -z "$verifier_old" ]; then   # only the word «null» means «not set»; an empty answer is «the TV did not say»
-      echo "!! Play Protect refused the install over ADB, but the TV did not say what its ADB check is set to, so it was not changed. Run the same command again."
-      exit 1
-    fi
-    echo "Play Protect refused the install over ADB: its ADB check is off for this install only, and put back right after (was: ${verifier_old:-not set})."
-    echo "للشخص: لو طلعت على التلفزيون رسالة من Play Protect (التطبيق «غير آمن» أو «مبني لإصدار قديم»)، اضغط «تثبيت على أي حال» (Install anyway) بالريموت. هذا تطبيق تلفزيونك، والرسالة تطلع لأن الشاشة الرئيسية مبنية لإصدار أندرويد أقدم."
-    verifier_set=1
-    "$PY" -I optimize/tv.py "settings put global $VERIFIER 0" > /dev/null || true
-    out=$(pm_install "$1" "$2")
+    [ -n "$("$PY" -I optimize/tv.py "ls /data/local/tmp/$1 2> /dev/null" 2> /dev/null | tr -d '\r')" ] || "$PY" -I optimize/tv.py --push-b64 "optimize/$1" "/data/local/tmp/$1"   # a streamed refusal: the file for the retries
+    verify_retry "$1" "$2" || exit 1
   fi
   if grep -q INSTALL_FAILED_VERSION_DOWNGRADE <<< "$out"; then
     # the TV already runs a newer build than this tag's (it updated itself, or apk-next was installed): never a downgrade, never a !!
@@ -261,6 +287,10 @@ from_github() {   # $1 owner/repo, $2 package, $3 asset pattern ({abi} = the TV'
     ! "$PY" -I optimize/tv.py "pm list packages $2" 2> /dev/null | tr -d '\r' | grep -qx "package:$2" || break
     [ "$try" = 2 ] || sleep 5
   done
+  if grep -q INSTALL_FAILED_VERIFICATION_FAILURE <<< "$out"; then   # 4.4 (cause 4): TV Bro refused by Play Protect: the same retry and hint as our apps
+    verify_retry "$name" "$2" || { failed=1; return 0; }
+    restore_verifier
+  fi
   if [ "$out" = NO_ANSWER ] && ! "$PY" -I optimize/tv.py "pm list packages $2" 2> /dev/null | tr -d '\r' | grep -qx "package:$2"; then
     echo "!! skipped after 2 timeouts: ${1##*/}; to add it later: optimize/install.sh extras"
     return 0   # the downloaded file stays, so the next try does not fetch it again
