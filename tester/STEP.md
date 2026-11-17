@@ -1,4 +1,4 @@
-«🔴 URGENT FIRST (owner, 17 Nov evening): a user says since 4.3.3 «the remote freezes/lags on TCL». Do step 98 BEFORE anything else.»
+«🔴 FINAL 4.3.4 BUILD: GitHub Actions run 44156039842 (build 471, work/rel-434 807df4f0), with all fixes (freeze, the update focus skip, two presses, games→settings, the cut-off long-press box, hidden apps). Test the freeze and items (a)–(e) on THIS build (not 469), quickly; release is ~20:15 UTC. Report even partial results at once.» «🔴 URGENT FIRST (owner, 17 Nov evening): a user says since 4.3.3 «the remote freezes/lags on TCL». Do step 98 BEFORE anything else.»
 
 ## step 98 — reproduce «remote freezes on TCL» with 4.3.3 (build 460, apk-latest)
 1. Back up as always. Install 4.3.3 home and screensaver from apk-latest (uninstall first if 4.4 is higher), run «جهّز كل شي», and leave the add-on off (4.3.3 has none).
