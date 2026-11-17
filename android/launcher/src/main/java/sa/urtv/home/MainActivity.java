@@ -3922,7 +3922,10 @@ public class MainActivity extends Activity {
      */
     private void openOurSettings(boolean orTvSettings, String window) {
         Intent hub = new Intent(Intent.ACTION_MAIN).setComponent(new ComponentName(SAVER_PKG, SAVER_PKG + ".YourTvHubActivity"));
-        if (window != null) hub.putExtra("open", window);
+        if (window != null) {   // 4.3.4: a fresh «تلفزيونك»: a screensaver task left open (its settings, its preview) came back as it was, and the games never opened
+            hub.putExtra("open", window);
+            hub.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        }
         Intent i = getPackageManager().resolveActivity(hub, 0) != null ? hub
                 : new Intent(Intent.ACTION_MAIN).setComponent(new ComponentName(SAVER_PKG, SAVER_PKG + ".SettingsActivity"));
         if (getPackageManager().resolveActivity(i, 0) != null) {

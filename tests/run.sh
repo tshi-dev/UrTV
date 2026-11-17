@@ -248,6 +248,7 @@ python3 tests/i18n_saver_test.py   # the settings in English (Words, WordMatch, 
 # English phase 2 (the page): its new tests go right under this line
 python3 tests/i18n_page_test.py   # dist/tv-en.html: built beside tv.html (byte for byte), current, under budget; the app and the home card pick it
 python3 tests/ui_thread_channel_test.py   # 4.3.3 hotfix: no query to the screensaver on the home's UI thread (the TCL remote froze)
+python3 tests/games_open_test.py   # 4.3.4: «الألعاب» opens a fresh «تلفزيونك» on its games (an open settings task came back instead)
 node tests/i18n_page_test.mjs   # dist/tv-en.html in a browser: left to right, no Arabic in its own words on any card
 #
 # English phase 3 (the home app): its new tests go right under this line
