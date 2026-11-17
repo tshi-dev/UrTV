@@ -2048,8 +2048,6 @@ public class SettingsActivity extends Activity {
         }).start();
     }
 
-    }
-
     // ---------- labels ----------
 
     /** Wikidata's Arabic name (or a transliteration) fetched off the UI thread. */
