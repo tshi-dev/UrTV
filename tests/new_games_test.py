@@ -24,7 +24,7 @@ with tempfile.TemporaryDirectory() as t:
 def src(n): return (APP / n).read_text(encoding="utf-8")
 reg, gl, room, page = src("GameRegistry.java"), src("QuizGamesActivity.java"), src("GamePhoneRoom.java"), (ROOT / "assets/quiz/game.html").read_text(encoding="utf-8")
 manifest = (ROOT / "android/app/src/main/AndroidManifest.xml").read_text(encoding="utf-8")
-GAMES = {"forehead": "ForeheadActivity", "author": "AuthorActivity", "closest": "ClosestActivity", "liar": "LiarActivity", "emoji": "EmojiActivity", "link": "LinkActivity", "night": "NightActivity", "guess": "GuessActivity", "draw": "DrawActivity", "quran-verse": "QuranVerseActivity"}
+GAMES = {"forehead": "ForeheadActivity", "author": "AuthorActivity", "closest": "ClosestActivity", "liar": "LiarActivity", "emoji": "EmojiActivity", "link": "LinkActivity", "night": "NightActivity", "draw": "DrawActivity", "quran-verse": "QuranVerseActivity"}
 for gid, act in GAMES.items():
     a = src(act + ".java")
     check(f"{gid}: in the registry (needs phones), in the filter's list, in the manifest (not exported, landscape), and a GameActivity",
@@ -66,6 +66,7 @@ check("night: roles go only to each phone as a secret card, the TV names a role 
 gu = src("GuessActivity.java")
 check("guess: every phone bids on a number pad (a text card, self = 1), only the top bid gets the typing fields, the others wait; the topics come from the bundled bank and nothing repeats on this TV; points only",
       "GamePhoneRoom.TEXT" in gu and ", null, 1)" in gu and "phones.room.hold(i," in gu and 'GameBundles.load(this, "guess")' in gu and "GamePrefs.remember(this, id(), r)" in gu and "money" not in gu.lower())
+check("guess: built but HIDDEN (no registry entry, no filter entry) until its topic lists are checked against sources; the activity stays in the manifest", "GuessActivity" in manifest and "GuessActivity" not in reg and '"guess"' not in reg)
 check("the bundled guess topics are a bundle", (ROOT / "assets/games/guess.gb").read_bytes()[:3] == b"GB1" and "فواكه".encode() not in (ROOT / "assets/games/guess.gb").read_bytes())
 dr = src("DrawActivity.java"); srv = src("QuizServer.java")
 check("draw: the strokes of the drawer's card (a draw card) are shown on the TV, the others type guesses; the words are the charades bank and nothing repeats on this TV",

@@ -40,3 +40,5 @@ The phone server grows its body limit for this one route only:
 - `POST /api/draw` takes up to 8 KB (every other route still 1 KB, anything bigger is refused with 413 before it is read).
 - The room takes it only from the phone whose current card is a draw card, with the card's id (a stale card is refused), at most 8 posts a second, 500 points in a post, 300 strokes and 6000 points a card, every coordinate a whole number from 0 to 1000; a post with anything else in it is refused whole. The server stays on the local network only, with its code and rate limits as before.
 - Strokes are shown by the TV as lines on a canvas; nothing the phone sends is ever read as text, a link or a picture. The page builds no HTML from them.
+
+**«كم تقدر؟» is hidden for now:** its topic lists were written from common knowledge and are not yet checked against sources. `GuessActivity` stays in the manifest; to show it, add `new Game("guess", "كم تقدر؟", "من يسمّي أكثر في الموضوع؟", "GuessActivity", true, true)` to `GameRegistry` before the «packs» entry, `"guess"` to `PHONE_GAMES`, and the name and line to `QuizGamesActivity.WORDS`.
