@@ -86,8 +86,8 @@ check("type-setup: the TV did not say what is bound: the list is left as it is (
 
 # 4.4 (the tester's TCL: TclAppBoot refused the first bind; a force-stopped add-on stays unbound): the bind is checked after the list is written
 rc, out, sent = run("extras-setup", gets=LIST, dump="  Bound services:{}", dump_after=BOUND)
-check("extras-setup: listed but not bound and bound after the list went off and on: Android's answer is read again, it says it runs, rc 0, TCL's AUTO_START allowed",
-      rc == 0 and "Android runs it (Bound services)." in out and "appops set sa.urtv.extras AUTO_START allow" in sent and sent.count("dumpsys accessibility") >= 2, (out, sent))
+check("extras-setup: listed but not bound and bound after the list went off and on: Android's answer is read again, it says it runs, rc 0, TCL's AUTO_START and ASSOC_START allowed and written (4.4 T3)",
+      rc == 0 and "Android runs it (Bound services)." in out and any("appops set sa.urtv.extras AUTO_START allow" in c and "ASSOC_START allow" in c and "appops write-settings" in c for c in sent) and sent.count("dumpsys accessibility") >= 2, (out, sent))
 rc, out, sent = run("extras-setup", gets=LIST, dump="  Bound services:{}")
 puts = [x for x in sent if x.startswith("settings put secure enabled_accessibility_services '" + KM + "'")]
 check("extras-setup: Android keeps refusing: the list off and on twice more, then a !! line with the person's one fix (off and on in the TV's accessibility settings), rc 1",

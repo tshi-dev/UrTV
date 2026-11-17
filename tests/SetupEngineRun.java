@@ -454,7 +454,7 @@ public class SetupEngineRun {
         // the pure rules
         line("S6 " + StockMigration.due("done", "enabled", "enabled", null, null) + " " + StockMigration.due("done", "enabled", "enabled", "on x", null) + " " + StockMigration.due("done", "enabled", "enabled", null, "done x")
             + " " + StockMigration.due("switching", "enabled", "enabled", null, null) + " " + StockMigration.due("done", "disabled", "absent", null, null) + " " + StockMigration.due("done", "absent", "enabled", "off x", null));
-        // 4.4 (HomeFails): the switch fails twice on this TV: the third try is not made (SKIPPED with the computer's line, not one command), a success starts the count again
+        // 4.4 (HomeFails; step 88 T1: never skipped any more): the switch fails twice on this TV, the third try is still made (the add-on path), a success starts the count again
         FakeTv thf = tv(); thf.refuseSwitch = true; Mem mhf = new Mem();
         SetupEngine ehf1 = engine(thf, mhf, new Dead(), new ArrayList<>());
         SetupEngine.Result f0 = ehf1.home();

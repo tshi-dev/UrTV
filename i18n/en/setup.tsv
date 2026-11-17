@@ -125,3 +125,8 @@ TV Bro و SmartTube مثبّتان من قبل: نتركهما.	TV Bro and Smart
 على الريموت: اختيار (يعلّم «السماح دائماً») ← تحت ← يسار ← اختيار (على «السماح»)	On the remote: Select (ticks «Always allow») → Down → Left → Select (on «Allow»)
 السماح دائماً من هذا الكمبيوتر	Always allow from this computer
 السماح	Allow
+دور الشاشة الرئيسية: تلفزيونك	Home role: UrTV
+دور الشاشة الرئيسية: الشاشة الأصلية للتلفزيون	Home role: the TV's own home
+مراقبة زر الرئيسية («إضافات تلفزيونك»): شغّالة، وهي اللي ترجّعك لتلفزيونك	Home watch («UrTV Extras»): running, it brings you back to UrTV
+مراقبة زر الرئيسية («إضافات تلفزيونك»): مثبّتة لكنها ما هي شغّالة	Home watch («UrTV Extras»): installed but not running
+مراقبة زر الرئيسية («إضافات تلفزيونك»): غير مثبّتة	Home watch («UrTV Extras»): not installed

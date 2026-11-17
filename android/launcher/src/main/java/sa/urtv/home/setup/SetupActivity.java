@@ -295,6 +295,17 @@ public class SetupActivity extends Activity {
         say("", GOLD);
     }
 
+    /** «إضافات تلفزيونك» is running now: Android's list of running accessibility services has it (read only) */
+    private boolean extrasBound() {
+        try {
+            android.view.accessibility.AccessibilityManager am = (android.view.accessibility.AccessibilityManager) getSystemService(ACCESSIBILITY_SERVICE);
+            if (am == null) return false;
+            for (android.accessibilityservice.AccessibilityServiceInfo i : am.getEnabledAccessibilityServiceList(android.accessibilityservice.AccessibilityServiceInfo.FEEDBACK_ALL_MASK))
+                if (i.getId() != null && i.getId().startsWith(sa.urtv.home.ExtrasWords.PACKAGE + "/")) return true;
+        } catch (RuntimeException ignored) { }
+        return false;
+    }
+
     /** the boxes that are ticked: picked AND not already on the TV (those show an empty box and are left) */
     static int chosenCount(java.util.Collection<String> picks, java.util.Set<String> have) {
         int n = 0;
@@ -568,6 +579,11 @@ public class SetupActivity extends Activity {
             body.addView(progress, right(dp(24)));
             progress.show(modelOf(r, true));
             say("", GOLD);
+            // 4.4 (step 88 T4): how Home works on this TV, said on the page itself, in the person's language
+            add(text(SetupHook.oursIsDefault(this) ? S.t("دور الشاشة الرئيسية: تلفزيونك") : S.t("دور الشاشة الرئيسية: الشاشة الأصلية للتلفزيون"), 16, "Medium", TEXT), dp(4));
+            add(text(extrasBound() ? S.t("مراقبة زر الرئيسية («إضافات تلفزيونك»): شغّالة، وهي اللي ترجّعك لتلفزيونك")
+                : sa.urtv.home.Extras.installed(this) ? S.t("مراقبة زر الرئيسية («إضافات تلفزيونك»): مثبّتة لكنها ما هي شغّالة")
+                : S.t("مراقبة زر الرئيسية («إضافات تلفزيونك»): غير مثبّتة"), 16, "Medium", extrasBound() ? GOLD : TEXT), dp(16));
             String report = new FileStore(this).get(SetupReport.FILE);
             String url = report == null || report.isEmpty() ? null : SetupRunner.shareUrl(report);
             if (url != null) {

@@ -690,6 +690,14 @@ public class SetupRunnerRun {
         SetupRunner r35d = new SetupRunner();
         go(r35d, h35, SetupRunner.Kind.UNDO, new SetupRunner.Options());
         line("R35d " + states(r35d) + " listed=" + t35.settings.getOrDefault("secure/enabled_accessibility_services", "none") + " switch=" + t35.settings.getOrDefault("secure/accessibility_enabled", "none"));
+        // 35e. 4.4 (step 88 T8): «تراجع» on a TV whose add-on was turned on elsewhere (dock.sh, an older build: nothing recorded): ours leaves the list, the TV's other service stays; the add-on hears «wanted no»
+        SetupEngineRun.FakeTv t35e = SetupEngineRun.tv(); SetupEngineRun.Mem m35e = new SetupEngineRun.Mem(); Host h35e = new Host(t35e, m35e);
+        t35e.settings.put("secure/enabled_accessibility_services", "com.example.keys/.Svc:" + sa.urtv.home.ExtrasWords.SERVICE);
+        t35e.settings.put("secure/accessibility_enabled", "1");
+        m35e.put(SetupEngine.HOME_WANTED, "1");
+        SetupRunner r35e = new SetupRunner();
+        go(r35e, h35e, SetupRunner.Kind.UNDO, new SetupRunner.Options());
+        line("R35e listed=" + t35e.settings.get("secure/enabled_accessibility_services") + " switch=" + t35e.settings.get("secure/accessibility_enabled") + " wanted=" + m35e.get(SetupEngine.HOME_WANTED));
         SetupEngine.KEEP_STOCK_ON = false;
         line("R12 " + states(r12) + " backup=" + m12.get("backup.txt") + " changes=" + (t12.count("pm disable-user") + t12.count("settings put") + t12.count("cmd role add") + t12.count("appops set") + t12.count("pm grant") + t12.count("pm enable"))
             + " " + r12.end().bad + " " + r12.end().text);

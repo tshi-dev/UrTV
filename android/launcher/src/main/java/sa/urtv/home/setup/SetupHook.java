@@ -15,6 +15,7 @@ public final class SetupHook {
     public static void atHomeStart(final Context c) {
         try {
             final Context app = c.getApplicationContext();
+            clearOldFails(app);
             if (!SetupRecovery.pending(app)) { migrate(app); return; }
             SetupRecovery.rearmFromDisk(app);
             if (SetupRecovery.gaveUp(app)) {
@@ -173,6 +174,25 @@ public final class SetupHook {
     }
 
     private static String trim(String s) { return s == null ? "" : s.trim(); }
+
+    static final String FAILS_BUILD = "home-fails-build.txt";
+
+    /**
+     * 4.4 (step 88): the count of failed home switches belongs to the build that failed. After an update (another versionCode) it is cleared once, so the
+     * new build's way (on Google TV the add-on and «wanted») is tried. Quiet and cheap: two small files.
+     */
+    static void clearOldFails(Context app) {
+        try {
+            FileStore store = new FileStore(app);
+            String now = String.valueOf(sa.urtv.home.BuildConfig.VERSION_CODE);
+            if (now.equals(trim(store.get(FAILS_BUILD)))) return;
+            String had = store.get(HomeFails.FILE);
+            if (had != null && !had.trim().isEmpty()) store.put(HomeFails.FILE, "");
+            store.put(FAILS_BUILD, now);
+        } catch (Exception ignored) {
+            // the home screen comes first
+        }
+    }
 
     public static boolean factoryOff(Context c) {
         try { String f = new FileStore(c).get(SetupEngine.FACTORY); return f != null && f.startsWith("on"); }

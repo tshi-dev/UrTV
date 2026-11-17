@@ -471,7 +471,9 @@ final class SetupEngine {
      * the one line and the setup screen shows the computer's way. A try that worked starts the count again.
      */
     Result home() throws IOException {
-        if (HomeFails.givenUp(store.get(HomeFails.FILE))) return skipped(HomeFails.LINE + ": " + HomeFails.GUIDE);
+        // 4.4 (step 88, T1): never skipped because of earlier failures any more. On a Google TV the home step is the add-on and «wanted», which an earlier
+        // build never tried: a fresh run skipped it («1 تُركت: الشاشة الرئيسية…») and the add-on was never turned on. The count still shows the
+        // computer's way on the start screen; an update and «تراجع» clear it (SetupHook.clearOldFails, undo)
         homeAttempted = false;
         watchFor = null;
         Result r = homeSwitch();
@@ -651,6 +653,9 @@ final class SetupEngine {
     // ---- 4.4: the Home key, checked the person's way; the add-on's Home watch where the stock home keeps the key ------------------
 
     static final String EXTRAS_A11Y = "extras-a11y.txt";
+    /** 4.4 (step 88 T3): the add-on may start and be bound at boot on TCL (AUTO_START, ASSOC_START), written to disk now (write-settings); quiet elsewhere */
+    static final String EXTRAS_APPOPS = "appops set " + sa.urtv.home.ExtrasWords.PACKAGE + " AUTO_START allow 2> /dev/null; appops set " + sa.urtv.home.ExtrasWords.PACKAGE
+        + " ASSOC_START allow 2> /dev/null; appops write-settings 2> /dev/null";
     /** stock, stockPkg, holder while the Home watch is being set up (the switch is armed, the role is ours, the stock home still wins the key) */
     private String[] watchFor;
 
@@ -774,7 +779,9 @@ final class SetupEngine {
         if (now == null) return failed("قائمة «تسهيل الاستخدام» في هذا التلفزيون فيها ما لا نرسله، فما غيّرناها.");
         sh.run("settings put secure enabled_accessibility_services '" + now + "'");
         sh.run("settings put secure accessibility_enabled 1");
-        sh.run("appops set " + sa.urtv.home.ExtrasWords.PACKAGE + " AUTO_START allow");   // TCL's boot manager
+        // TCL's boot manager (TclAppBoot): after a restart it refused to bind the add-on («callee doesn't have OP_AUTO_START», step 88 T3). Both ops allowed,
+        // then written to disk at once: AppOps flushes only about 30 minutes later, so a restart before that lost them (3 of 3 boots with this)
+        sh.run(EXTRAS_APPOPS);
         for (int i = 0; i < 3; i++) {
             sleeper.sleep(2500);
             String bound = text("dumpsys accessibility | grep -m1 'Bound services:'");
@@ -789,10 +796,13 @@ final class SetupEngine {
         return failed("التلفزيون ما شغّل «إضافات تلفزيونك». افتح إعدادات التلفزيون ← تسهيل الاستخدام ← إضافات تلفزيونك، وأطفئها وشغّلها من جديد.");
     }
 
-    /** «تراجع»: our entry leaves the list, and the switch goes back to what the TV had when nothing else is on (EXTRAS_A11Y) */
+    /**
+     * «تراجع»: our entry leaves the list (4.4, step 88 T8: ALWAYS, also when this app did not record turning it on: it stayed after an undo), the TV's
+     * other services kept; the switch goes back to what the TV had only when it was recorded (EXTRAS_A11Y) and nothing else is on.
+     */
     private void undoWatch() throws IOException {
         String had = store.get(EXTRAS_A11Y);
-        if (had == null || had.trim().isEmpty()) return;
+        if (had == null) had = "";
         String list = lastLine(text("settings get secure enabled_accessibility_services")).trim();
         if (list.isEmpty()) return;   // the TV did not say: left for the next «تراجع»
         String rest = WatchList.without(list, sa.urtv.home.ExtrasWords.SERVICE);
@@ -933,6 +943,7 @@ final class SetupEngine {
         List<String> problems = new ArrayList<>();
         clearFile(HOME_WANTED);   // 4.4: the person wants the TV as it was: nothing brings our home back or re-applies its role
         clearFile(HOME_REAPPLIED);
+        clearFile(HomeFails.FILE);   // 4.4 (step 88): a new start after «تراجع» begins with no memory of failed home switches
         String stock = journal("stock");
         if (stock.isEmpty() || !COMPONENT.matcher(stock).matches()) {
             Set<String> pk = packages("pm list packages");

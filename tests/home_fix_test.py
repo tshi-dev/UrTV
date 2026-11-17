@@ -51,7 +51,7 @@ check("1. «تراجع» and a stock home put back clear HOME_WANTED (nothing br
 # 2. the watch
 ev = svc[svc.index("public void onAccessibilityEvent(AccessibilityEvent e)"):svc.index("private static void watchLog(int what)")]
 check("2. the watch acts on the stock home's home screen also when the role went back (the setup's WANTED word), and logs each decision on a stock home's window",
-      "watch.decide(on, pkg, cls, stockHomes, chosen || wantedNow, now)" in ev and ev.count("watchLog(") == 3
+      "watch.decide(on, pkg, cls, stockHomes, chosen || wantedNow, now, fight)" in ev and ev.count("watchLog(") == 5
       and all(w in svc for w in ('"stock window its home activity"', '"decision bring ours"', '"decision not its home screen"', '"decision watch off"', '"decision ours not chosen"', '"decision paused"', '"role stock wanted yes"'))
       and "if (!stockPackages.contains(pkg)) return;" in ev)
 check("2. the alias's real activity and launcherx's …HomeActivity count as its home screen; the service logs what it knows when it starts",

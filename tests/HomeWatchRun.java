@@ -18,14 +18,21 @@ public final class HomeWatchRun {
         check("another screen of the stock home (not its HOME activity): nothing", !new HomeWatch().decide(true, lx, lx + ".settings.SettingsActivity", stock, true, 1_000));
         check("another app: nothing", !new HomeWatch().decide(true, "com.netflix.ninja", "com.netflix.ninja.MainActivity", stock, true, 1_000));
         check("the window names no package or class: nothing", !new HomeWatch().decide(true, null, home, stock, true, 1_000) && !new HomeWatch().decide(true, lx, null, stock, true, 1_000));
+        // 4.4 R2g (step 88): a fight over OUR home: one burst (0.7 s) counts once; 6 bursts within 4 s pause the watch for 30 s
         HomeWatch k = new HomeWatch();
-        boolean b1 = k.decide(true, lx, home, stock, true, 10_000), b2 = k.decide(true, lx, home, stock, true, 14_000), b3 = k.decide(true, lx, home, stock, true, 18_000);
-        boolean b4 = k.decide(true, lx, home, stock, true, 22_000);
-        check("three brings within 20 s, the stock home back a fourth time: it steps aside (the TV's home stays)", b1 && b2 && b3 && !b4 && k.paused(22_000));
-        check("while it steps aside (five minutes): nothing", !k.decide(true, lx, home, stock, true, 22_000 + 4 * 60_000));
-        check("after the five minutes: it brings ours again", k.decide(true, lx, home, stock, true, 22_000 + HomeWatch.PAUSE_MS + 1));
-        HomeWatch s = new HomeWatch();
-        boolean spaced = s.decide(true, lx, home, stock, true, 0 + 1) && s.decide(true, lx, home, stock, true, 30_000) && s.decide(true, lx, home, stock, true, 60_000) && s.decide(true, lx, home, stock, true, 90_000);
+        boolean five = true;
+        for (int i = 0; i < 5; i++) five &= k.decide(true, lx, home, stock, true, 10_000 + i * 800L);
+        boolean sixth = k.decide(true, lx, home, stock, true, 14_000);
+        check("a firmware fighting over ours: five bursts brought, the sixth within 6 s pauses the watch (the TV's home stays)", five && !sixth && k.paused(14_000));
+        check("while paused (30 s) a fight over ours is left", !k.decide(true, lx, home, stock, true, 14_000 + 20_000));
+        check("while paused, the person's press over ANOTHER app is still brought (never counted)", k.decide(true, lx, home, stock, true, 14_000 + 20_000, false));
+        check("after the 30 s: ours again", k.decide(true, lx, home, stock, true, 14_000 + HomeWatch.PAUSE_MS + 1));
+        HomeWatch m = new HomeWatch();
+        boolean mash = true;
+        for (int i = 0; i < 4; i++) mash &= m.decide(true, lx, home, stock, true, 50_000 + i * 1_000L);
+        check("a person pressing Home over ours once a second, four times: all brought, no pause", mash && !m.paused(54_000));
+        HomeWatch s1 = new HomeWatch();
+        boolean spaced = s1.decide(true, lx, home, stock, true, 1) && s1.decide(true, lx, home, stock, true, 30_000) && s1.decide(true, lx, home, stock, true, 60_000) && s1.decide(true, lx, home, stock, true, 90_000);
         check("brings spaced over minutes (the person pressing Home now and then): every one goes", spaced);
         // 4.4 (step 86 B): Google TV's Home through another activity, or an alias; the stock home's other screens are left alone
         Set<String> alias = new java.util.HashSet<>(java.util.Arrays.asList(lx + "/" + lx + ".StartupAlias"));
@@ -35,18 +42,24 @@ public final class HomeWatchRun {
         check("a …HomeActivity of ANOTHER app is never a stock home screen", !HomeWatch.homeScreen("com.example.tv", "com.example.tv.HomeActivity", stock));
         check("a view's class (not an activity of the stock home) is not its home screen", !HomeWatch.homeScreen(lx, "android.widget.FrameLayout", stock));
         check("the stock homes' packages", HomeWatch.packages(alias).equals(Collections.singleton(lx)));
-        // 4.4 (step 88): two stock-home windows per Home press: the second within 1.5 s is brought, not counted; 20 presses 10 s apart all bring ours
+        // 4.4 R2g (step 88): one Home press = 2-3 stock windows within 0.5 s; presses over apps never counted (64 of 64 on the owner's Google TV)
         HomeWatch p = new HomeWatch();
         boolean all = true;
-        for (int i = 0; i < 20; i++) { long t = 100_000 + i * 10_000L; all &= p.decide(true, lx, home, stock, true, t) && p.decide(true, lx, home, stock, true, t + 400); }
-        check("one Home press = two stock windows (the second 0.4 s later): 20 presses 10 s apart all bring ours, never paused", all && !p.paused(400_000));
+        for (int i = 0; i < 64; i++) { long t = 100_000 + i * 900L; all &= p.decide(true, lx, home, stock, true, t, false) && p.decide(true, lx, home, stock, true, t + 300, false) && p.decide(true, lx, home, stock, true, t + 500, false); }
+        check("64 Home presses over apps, three stock windows each, 0.9 s apart: all brought, never paused", all && !p.paused(200_000));
         HomeWatch q = new HomeWatch();
-        boolean first = q.decide(true, lx, home, stock, true, 1_000), second = q.decide(true, lx, home, stock, true, 1_900), third = q.decide(true, lx, home, stock, true, 2_600);
-        check("the second window is brought (0.9 s after), a later one counts again (1.6 s after the counted bring)", first && second && third);
+        boolean b1 = q.decide(true, lx, home, stock, true, 1_000), b2 = q.decide(true, lx, home, stock, true, 1_300), b3 = q.decide(true, lx, home, stock, true, 1_600);
+        check("a burst over ours (three windows within 0.7 s) is brought each time and counts once", b1 && b2 && b3);
         HomeWatch loop = new HomeWatch();
         boolean tripped = false;
         for (int i = 0; i < 40 && !tripped; i++) { loop.decide(true, lx, home, stock, true, 1_000 + i * 500L); tripped = loop.paused(1_000 + i * 500L); }
-        check("a true loop (the stock home back every 0.5 s) still trips the guard within seconds: the same-press window never extends itself", tripped);
+        check("a true loop over ours (back every 0.5 s) still trips the guard within seconds: the burst window never extends itself", tripped);
+        check("R2g: the app Home was pressed over comes back within 1.5 s of our bring: ours once more, only once, only that app",
+              HomeWatch.bringAgain("com.google.android.youtube.tv", "com.google.android.youtube.tv", 10_000, false, 10_700)
+              && !HomeWatch.bringAgain("com.google.android.youtube.tv", "com.google.android.youtube.tv", 10_000, true, 10_700)
+              && !HomeWatch.bringAgain("com.google.android.youtube.tv", "com.google.android.youtube.tv", 10_000, false, 11_600)
+              && !HomeWatch.bringAgain("com.netflix.ninja", "com.google.android.youtube.tv", 10_000, false, 10_700)
+              && !HomeWatch.bringAgain("com.google.android.youtube.tv", null, 10_000, false, 10_700));
         System.out.println(bad == 0 ? "ALL PASS" : bad + " FAILED");
         System.exit(bad == 0 ? 0 : 1);
     }
