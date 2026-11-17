@@ -36,5 +36,5 @@ jobs:
         with:
           python-version: '3.12'
       - run: pip install fonttools brotli pillow numpy scipy "opencv-python-headless<5" -r .github/tools/cities-world/requirements.txt
-      - run: npm install --no-save playwright@1.56.1 && npx playwright install --with-deps chromium
+      - run: npm install --no-save playwright@1.56.1 acorn@8.14.0 && npx playwright install --with-deps chromium   # acorn: tests/js_strip_test.mjs (as on next)
       - run: tests/run.sh
