@@ -52,6 +52,7 @@ final class SetupCommunity {
     static List<String> lines(String text) { return SetupEngine.ledgerNames(text); }
 
     private void union(String file, List<String> add) throws IOException {
+        if (LEDGER.equals(file)) { store.put(file, SetupEngine.ledgerText(lines(store.get(file)), add, store.get(SetupPrep.BACKUP))); return; }   // 4.4: never what was off before UrTV
         List<String> all = lines(store.get(file));
         for (String p : add) if (!all.contains(p)) all.add(p);
         StringBuilder b = new StringBuilder();

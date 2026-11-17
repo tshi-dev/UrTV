@@ -261,20 +261,8 @@ final class SetupReport {
             lists.put("tcl-safe", java.util.Arrays.asList(SetupLists.SAFE));
             lists.put("community", SetupCommunity.lines(store.get(SetupCommunity.APPLIED)));
             lists.put("home-replaced", java.util.Arrays.asList(SetupLists.HOME_HELPERS));
-            for (Map.Entry<String, List<String>> e : lists.entrySet()) {
-                List<String> off = new ArrayList<>(), on = new ArrayList<>();
-                int absent = 0;
-                for (String pk : e.getValue()) {
-                    if (disabled.contains(pk)) { if (!off.contains(pk)) off.add(pk); }
-                    else if (installed.contains(pk)) { if (!on.contains(pk)) on.add(pk); }
-                    else absent++;
-                }
-                if (off.isEmpty() && on.isEmpty() && absent == 0) continue;
-                out.add(e.getKey() + ": " + off.size() + " off, " + on.size() + " still on, " + absent + " not on this TV");
-                if (!off.isEmpty()) out.add("  off: " + String.join(", ", off));
-                if (!on.isEmpty()) out.add("  on: " + String.join(", ", on));
-            }
-            Set<String> before = SetupPrep.section(store.get(SetupPrep.BACKUP), "disabled packages");
+            Set<String> before = SetupPrep.section(store.get(SetupPrep.BACKUP), "disabled packages");   // off before UrTV: never «ours» (ReportLists)
+            for (Map.Entry<String, List<String>> e : lists.entrySet()) out.addAll(ReportLists.lines(e.getKey(), e.getValue(), installed, disabled, before));
             List<String> prot = new ArrayList<>();
             for (String pk : SetupLists.KEEP) if (disabled.contains(pk) && !java.util.Arrays.asList(OFF_BY_DESIGN).contains(pk) && !before.contains(pk)) prot.add(pk);
             if (!prot.isEmpty()) out.add("!! protected but off: " + String.join(", ", prot));

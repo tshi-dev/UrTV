@@ -105,7 +105,9 @@ if [ -n "$intended" ]; then
   fi
 fi
 prev=""; [ ! -f "$LEDGER" ] || prev=$(cat "$LEDGER")
-remember() { { printf '%s\n' "$prev"; printf '%s\n' "$1"; } | { grep -E '^[A-Za-z0-9_.]+$' || true; } | sort -u > "$LEDGER.tmp" && mv "$LEDGER.tmp" "$LEDGER"; }
+# 4.4 (reports, cause 10): never a package that was already off when the TV came to us (backup.txt's «disabled packages», taken once before any change)
+before_off=""; [ ! -f "$RUN/backup.txt" ] || before_off=$(sed -n '/^== disabled packages/,/^== /s/^package://p' "$RUN/backup.txt" | tr -d '\r')
+remember() { { printf '%s\n' "$prev"; printf '%s\n' "$1"; } | { grep -E '^[A-Za-z0-9_.]+$' || true; } | awk 'NR==FNR { if ($0 != "") s[$0] = 1; next } !($0 in s)' <(printf '%s\n' "$before_off") - | sort -u > "$LEDGER.tmp" && mv "$LEDGER.tmp" "$LEDGER"; }
 remember "$intended"   # written BEFORE the batch: a batch that dies half way is still undone by the restore
 printf '%s\n' "$pkgs" | awk '{print "pm disable-user --user 0 " $1}' | "$PY" -I optimize/tv.py --batch
 # confirmed by what the TV says is off now (read from the package manager, which is up to date at once)

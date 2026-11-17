@@ -250,11 +250,21 @@ final class SetupEngine {
     }
 
     private void remember(List<String> prev, List<String> add) throws IOException {
-        List<String> all = new ArrayList<>(prev);
-        for (String p : add) if (!all.contains(p)) all.add(p);
+        store.put("disabled-by-us.txt", ledgerText(prev, add, store.get(SetupPrep.BACKUP)));
+    }
+
+    /**
+     * 4.4 (reports, cause 10): the ledger never names a package that was already off when the TV came to us (the backup's «disabled packages», taken
+     * once, before anything was changed): the undo must not turn on what the maker had off, and the report must not call it ours. The earlier
+     * ledger's names and the new ones, in order, once each, without those.
+     */
+    static String ledgerText(List<String> prev, List<String> add, String backup) {
+        Set<String> before = SetupPrep.section(backup, "disabled packages");
+        List<String> all = new ArrayList<>();
+        for (List<String> l : java.util.Arrays.asList(prev, add)) for (String p : l) if (!all.contains(p) && !before.contains(p)) all.add(p);
         StringBuilder b = new StringBuilder();
         for (String p : all) b.append(p).append('\n');
-        store.put("disabled-by-us.txt", b.toString());
+        return b.toString();
     }
 
     // ---- 4. the screensaver (optimize/install.sh saver) -----------------------------------------------------------------------------
