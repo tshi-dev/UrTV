@@ -107,6 +107,8 @@ public class MusicService extends Service implements AudioManager.OnAudioFocusCh
     private static volatile int reconnects;
     /** 4.3 A2: a station that stalls is restarted quietly (StallWatch), at most three times in two minutes */
     private final StallWatch stall = new StallWatch();
+    /** 4.4: a surah that failed goes on from its place after a growing wait, and is said only after SurahRecover.MAX_FAILS in ten minutes */
+    private final SurahRecover surahRecover = new SurahRecover();
 
     private Catalog cat;
     private Prefs prefs;
@@ -448,6 +450,7 @@ public class MusicService extends Service implements AudioManager.OnAudioFocusCh
         station = -1;
         retries = 0;
         pendingSeek = Math.max(0, startAt);
+        surahRecover.reset();   // a pick (or the network back): nothing held against it
         wish.ask();
         prefs.save(source, r.id, surah, station, pendingSeek);
         startUrl(r.server + String.format(Locale.US, "%03d", n) + ".mp3");
@@ -729,7 +732,7 @@ public class MusicService extends Service implements AudioManager.OnAudioFocusCh
         duration = 0;
         foreground();
 
-        player = Playback.create(this, url, source == Prefs.SOURCE_RADIO);
+        player = Playback.create(this, url, source == Prefs.SOURCE_RADIO, source == Prefs.SOURCE_SURAH);   // 4.4: a surah through ExoPlayer too (its file buffer)
         playerKind = player.kind();
         stall.newPlayer();
         player.setAudioAttributes(MEDIA_ATTRS);   // minSdk 26; USAGE_MEDIA is STREAM_MUSIC, the stream the adhan's own volume (adhanVolumeUp) sets
@@ -1010,6 +1013,31 @@ public class MusicService extends Service implements AudioManager.OnAudioFocusCh
                 return;
             }
             finishAdhan();
+            return;
+        }
+        if (source == Prefs.SOURCE_SURAH && failed != null) {   // 4.4: from its place after a growing wait, never a loop of prepares
+            long wait = surahRecover.after(SystemClock.elapsedRealtime());
+            if (wait >= 0) {
+                Log.i(TAG, "surah failed (" + PlayerFault.code(what, extra) + ", " + playerKind + ", host " + hostOf(failed) + "): on from " + pendingSeek / 1000 + " s in " + wait / 1000 + " s");
+                error = RECONNECTING;
+                updateSession();
+                updateNotification();
+                save();
+                final int gen = wish.currentGeneration();
+                handler.postDelayed(() -> {
+                    if (!wish.retry(gen, playing) || source != Prefs.SOURCE_SURAH || !failed.equals(currentUrl)) return;   // not after a stop, a pause or another pick
+                    startUrl(failed);   // pendingSeek: the place it stopped at
+                    error = RECONNECTING;   // until it plays again (onPrepared clears it)
+                    updateSession();
+                    updateNotification();
+                }, wait);
+                return;
+            }
+            Log.w(TAG, "surah failed " + SurahRecover.MAX_FAILS + " times in " + SurahRecover.WINDOW_MS / 60_000 + " min: said");
+            error = PlayerFault.message(false, what, extra);
+            updateSession();
+            updateNotification();
+            save();
             return;
         }
         if (failed != null && retries < 2) {

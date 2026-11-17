@@ -45,7 +45,7 @@ else:
     print("SKIP the Java cases: no javac")
 
 pb, exo, ms, cat = read(T / "Playback.java"), read(ROOT / "android/launcher/src/exo/java/sa/urtv/home/tilawah/ExoPlayback.java"), read(T / "MusicService.java"), read(T / "Catalog.java")
-check("every live station through ExoPlayer (a surah and the adhan stay on MediaPlayer)", "if (radio) {" in pb and "Playback.create(this, url, source == Prefs.SOURCE_RADIO)" in ms)
+check("every live station through ExoPlayer (4.4: a surah too; the adhan stays on MediaPlayer)", "if (radio || surah) {" in pb and "Playback.create(this, url, source == Prefs.SOURCE_RADIO, source == Prefs.SOURCE_SURAH)" in ms)
 check("ExoPlayer plays HLS and progressive streams (ICY read by ExoPlayer), an .m3u8 behind a query string too", "new DefaultMediaSourceFactory(c).setDataSourceFactory(http)" in exo
       and "MimeTypes.APPLICATION_M3U8" in exo and "HlsMediaSource" not in exo)
 check("the end of a live stream is a failure to join again, not an end", "state == Player.STATE_ENDED" in exo and "onError.onError(ExoPlayback.this, MediaPlayer.MEDIA_ERROR_UNKNOWN, PlayerFault.IO)" in exo

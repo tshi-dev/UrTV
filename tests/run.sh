@@ -189,6 +189,7 @@ python3 tests/net_reconnect_test.py   # 4.4 radio: bigger buffer, pre-buffer, jo
 python3 tests/station_sources_test.py   # 4.4 radio: every source of a station in turn (alt, mirrors)
 python3 tests/station_status_test.py    # 4.4 radio: a station dead three checks in a row is hidden (stations/status.json)
 python3 tests/radio_week_test.py        # 4.4 radio: the stations' troubles of the last 7 days, kept and reported
+python3 tests/surah_recover_test.py      # 4.4: a surah through ExoPlayer (file buffer, Range resume), on from its place, no loop of prepares
 python3 tests/focus_rule_test.py   # 4.3.3 G1: the player keeps on behind the screensaver and the TV's settings; another sound pauses it and it comes back
 python3 tests/surah_set_test.py   # 4.3.3: a reciter with «missing» surahs; the player steps over them
 python3 tests/audio_library_test.py   # 4.4 «صوتياتي»: sound files from a USB stick or the phone, kept in the app; the caps; the own adhan from them
