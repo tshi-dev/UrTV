@@ -10,11 +10,11 @@ import curated
 # category id -> (Arabic, English). A category in the data without a name here stops the build: a chip must have a name in both languages.
 CATS = {"geography": ("جغرافيا", "Geography"), "science": ("علوم", "Science"), "islamic": ("دين", "Religion"), "maths-logic": ("رياضيات ومنطق", "Maths and logic"),
         "animals": ("حيوانات", "Animals"), "saudi-gulf": ("السعودية والخليج", "Saudi Arabia and the Gulf"), "history": ("تاريخ", "History"), "food": ("طعام", "Food"),
-        "sports": ("رياضة", "Sports"), "general": ("عام", "General"), "language": ("اللغة", "Language"),
+        "sports": ("رياضة", "Sports"), "general": ("عام", "General"), "language": ("اللغة", "Language"), "technology": ("تقنية", "Technology"),
         # charades categories
         "farm": ("حيوانات المزرعة", "Farm animals"), "kids": ("أطفال", "Kids")}
 # the chips the setup screens show (the owner's 8-chip model); a group lists the category ids it covers; «مزيج» is every category and is added by the reader
-GROUPS = [("islamic", "دين", "Religion", ["islamic"]), ("geography", "جغرافيا", "Geography", ["geography"]), ("science", "علوم", "Science", ["science", "animals", "maths-logic"]),
+GROUPS = [("islamic", "دين", "Religion", ["islamic"]), ("geography", "جغرافيا", "Geography", ["geography"]), ("science", "علوم", "Science", ["science", "animals", "maths-logic", "technology"]),
           ("history", "تاريخ", "History", ["history"]), ("sports", "رياضة", "Sports", ["sports"]), ("saudi", "ثقافة سعودية", "Saudi culture", ["saudi-gulf"]),
           ("general", "عام", "General", ["general", "food", "language"])]
 LEVELS = [(1, "سهل", "Easy"), (2, "متوسط", "Medium"), (3, "صعب", "Hard")]
