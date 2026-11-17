@@ -28,3 +28,7 @@ It needs: the add-on installed + its accessibility service on + «wanted» = yes
 3. `ExtrasA11yService`: remembers the app Home was pressed over; if that app comes back within 1.5 s of our bring (YouTube does this sometimes), ours is brought once more.
 4. (The tester-exp build also forces the key filter on and catches KEYCODE_HOME — for R3 only; do NOT ship that part until the real-remote check.)
 And the setup must leave «wanted» = yes and the add-on on (in 86 B the setup finished with `wanted no → ours not chosen`, so nothing was brought).
+
+## 30-minute idle (R2g, 03:53 → 04:24)
+After 30 min untouched: our screensaver in front, add-on still bound, role = launcherx. First Home → UrTV; then Home from YouTube ×3 → UrTV, UrTV, UrTV. **4/4.**
+**Final verdict: R2g = 100 % Home (64/64 presses), 3/3 boots, 30-min idle OK, no side effects; only the ~0.8 s Google TV flash remains.**
