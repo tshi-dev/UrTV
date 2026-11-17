@@ -182,6 +182,12 @@ public class SettingsActivity extends Activity {
     /** Back on a category's rows (or on «البطاقات», «المزيد») goes back to the screen its button is on, the focus on that button; on the first screen it leaves. */
     @Override public boolean dispatchKeyEvent(android.view.KeyEvent e) {
         if (e.getAction() == android.view.KeyEvent.ACTION_DOWN) returnWant = null;   // the person moves: the focus is theirs again
+        if (okHold.key(e.getKeyCode(), e.getAction(), android.os.SystemClock.uptimeMillis())) {
+            // a build waited for this release: the row that saw the press takes its click first, then the list is built
+            boolean done = super.dispatchKeyEvent(e);
+            if (!isFinishing() && !isDestroyed()) render();
+            return done;
+        }
         return super.dispatchKeyEvent(e);
     }
 
@@ -225,7 +231,10 @@ public class SettingsActivity extends Activity {
      * list stays where it was scrolled to. A screen just opened starts at its top: the first row, or on the categories the tile last
      * opened (the first one the first time).
      */
+    private final OkHold okHold = new OkHold();   // 4.3.4: a build while OK is held waits for its release (the first press was lost)
+
     private void render() {
+        if (okHold.defer(android.os.SystemClock.uptimeMillis())) return;   // done at OK's release, after its click (dispatchKeyEvent)
         latinDigits = DigitsText.isLatin(prefs.digits());
         List<View> before = rows();
         View had = entering ? null : focusedRow();
