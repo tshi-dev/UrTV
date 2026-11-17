@@ -24,8 +24,9 @@ def text(p):
 
 settings = text(APP / "SettingsActivity.java")
 # footer hints: inside y <= 1026 (5 % of the screen's height left under the box; the text is never lower than its box)
-check("settings pages: the footer hint box ends 5 % above the screen's bottom (glyphs were at y 1037)",
-      "hintLp.bottomMargin = Math.round(getResources().getDisplayMetrics().heightPixels * 0.05f);" in settings and "column.addView(hint, hintLp);" in settings)
+check("settings pages: the hint is small on the title's line at the top (the owner, build 413: it took the band under the list), and the list ends in the 3 % safe area",
+      "FrameLayout.LayoutParams hintAt = new FrameLayout.LayoutParams(-2, -2, Gravity.TOP | Gravity.END);" in settings and "root.addView(hint, hintAt);" in settings
+      and "column.addView(hint" not in settings and "panesLp.bottomMargin = Math.round(getResources().getDisplayMetrics().heightPixels * 0.03f);" in settings)
 for f in ("activity_main", "activity_adhan", "activity_player", "activity_surah"):
     x = text(RES / "layout" / (f + ".xml"))
     m = re.search(r'android:paddingBottom="(\d+)dp">', x)

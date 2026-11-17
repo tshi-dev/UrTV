@@ -155,25 +155,25 @@ public class SettingsActivity extends Activity {
         LinearLayout.LayoutParams panesLp = new LinearLayout.LayoutParams(width, 0, 1f);
         panesLp.gravity = Gravity.CENTER_HORIZONTAL;
         if (cs != null) panesLp.topMargin = cs.px(CouchStyle.SAFE_Y);
+        panesLp.bottomMargin = Math.round(getResources().getDisplayMetrics().heightPixels * 0.03f);   // the list down to the 3 % safe area (the hint is on top now)
         column.addView(panes, panesLp);
         hint = new TextView(this);
         hint.setTextColor(look.sub);
         hint.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
         hint.setTypeface(font("Thmanyah-Regular"));
-        hint.setGravity(Gravity.CENTER);
-        hint.setPadding(dp(72), dp(10), dp(72), dp(8));
-        LinearLayout.LayoutParams hintLp = new LinearLayout.LayoutParams(-1, -2);
-        hintLp.bottomMargin = Math.round(getResources().getDisplayMetrics().heightPixels * 0.05f);   // the 5 % safe area: the hint ends at y 1026 of 1080
-        if (cs != null) {   // couch-tv: under the rows, at their start, small and dim
-            hint.setTextColor(CouchStyle.DIM);
-            hint.setTextSize(TypedValue.COMPLEX_UNIT_PX, cs.px(CouchStyle.HINT));
-            hint.setGravity(Gravity.START);
-            hint.setTextDirection(Dir.text());
-            hint.setPaddingRelative(cs.px(CouchStyle.SAFE_X) + sideWidth + gapPx + cs.px(CouchStyle.PAD), cs.px(0.25f), cs.px(CouchStyle.SAFE_X), 0);
-            hintLp.bottomMargin = cs.px(CouchStyle.SAFE_Y);
-        }
-        column.addView(hint, hintLp);
+        if (cs != null) hint.setTextColor(CouchStyle.DIM);
+        hint.setTextDirection(Dir.text());
+        // 4.4 the owner (build 413): the hint took the whole band under the list; it is small, on the title's line at the far end, and the list
+        // has the band
+        hint.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12);
+        if (cs != null) hint.setTextSize(TypedValue.COMPLEX_UNIT_PX, cs.px(CouchStyle.HINT));
+        hint.setGravity(Gravity.END);
+        hint.setPadding(0, 0, 0, 0);
         root.addView(column, new FrameLayout.LayoutParams(-1, -1));
+        FrameLayout.LayoutParams hintAt = new FrameLayout.LayoutParams(-2, -2, Gravity.TOP | Gravity.END);
+        hintAt.topMargin = cs != null ? cs.px(CouchStyle.SAFE_Y) + cs.px(0.75f) : dp(16);
+        hintAt.setMarginEnd(cs != null ? cs.px(CouchStyle.SAFE_X) : dp(36));
+        root.addView(hint, hintAt);
         setContentView(root);
         render();
         if (askCity) root.post(new Runnable() { public void run() { pickCity(); } });
@@ -1229,6 +1229,8 @@ public class SettingsActivity extends Activity {
             v.setTextSize(TypedValue.COMPLEX_UNIT_PX, cs.px(CouchStyle.ROW_TEXT));
             v.setTypeface(font("Thmanyah-Regular"));
             v.setMaxWidth(Math.round((pageWidth - sideWidth) * 0.48f));
+            v.setMaxLines(2);   // a long value wraps at the far end (tester S7), the row stays one size
+            v.setEllipsize(android.text.TextUtils.TruncateAt.END);
             v.setTextDirection(Dir.text());
             LinearLayout.LayoutParams vl = new LinearLayout.LayoutParams(-2, -2);
             vl.setMarginStart(gap);
@@ -1252,12 +1254,13 @@ public class SettingsActivity extends Activity {
     private LinearLayout couchRow(String label, String value, Runnable onClick, String key) {
         int state = OnOff.state(value), mark = 0;
         String sub = null, val = null;
-        if (value != null && state >= 0) { mark = state > 0 ? CouchStyle.Mark.RING_ON : CouchStyle.Mark.RING_OFF; sub = CouchText.after(value, OnOff.wordEnd(value)); }
-        else if (CouchText.short_(value)) val = value;
-        else if (value != null && !value.isEmpty()) sub = value;
-        if (mark == 0 && val == null && onClick != null) mark = CouchStyle.Mark.CHEVRON;
-        String where = SettingsHub.scopeWords(key);   // 4.4 the owner: where the row shows, kept on its line
-        if (!where.isEmpty()) sub = sub == null || sub.isEmpty() ? where : sub + "، " + where;
+        // one line, one size (the owner, build 413): the value at the far end (a long one wraps there), a toggle's words before its ring
+        if (value != null && state >= 0) { mark = state > 0 ? CouchStyle.Mark.RING_ON : CouchStyle.Mark.RING_OFF; val = CouchText.after(value, OnOff.wordEnd(value)); }
+        else if (value != null && !value.isEmpty()) val = value;
+        if (mark == 0 && !CouchText.short_(val) && onClick != null) mark = CouchStyle.Mark.CHEVRON;
+        String where = SettingsHub.scopeWords(key);   // 4.4 the owner: where the row shows, after its value
+        if (!where.isEmpty()) val = val == null || val.isEmpty() ? where : val + "، " + where;
+        if (val != null && val.isEmpty()) val = null;
         final LinearLayout card = couchCard(tx(label), sub == null ? null : tx(sub), val == null ? null : tx(val), mark, null, key);
         if (onClick != null) card.setOnClickListener(v -> { launchedRow = key; onClick.run(); });
         return card;
@@ -1550,6 +1553,8 @@ public class SettingsActivity extends Activity {
     }
 
     static final float FOCUS_SCALE = 1.02f;
+    /** a row's one text size and its padding (the owner, build 413: one line, at most about 80 px at 1080p, so 5 or 6 rows show) */
+    static final int ROW_SP = 18, ROW_PAD = 8;
     static final long FOCUS_MS = 120;
 
     /** The rows of the list now (the views row() made: their tag is their FocusKey; the categories' tiles, two to a line), in order. */
@@ -3496,7 +3501,7 @@ public class SettingsActivity extends Activity {
         card.setOrientation(LinearLayout.HORIZONTAL);
         card.setGravity(Gravity.CENTER_VERTICAL);
         card.setLayoutDirection(Dir.layout());
-        card.setPadding(dp(24), dp(14), dp(20), dp(14));
+        card.setPadding(dp(20), dp(ROW_PAD), dp(16), dp(ROW_PAD));   // 4.4 the owner (build 413): rows of one line, 5 or 6 on the screen (they were 180 px)
         card.setFocusable(true);
         card.setClickable(true);
         card.setTag(FocusKey.key(label));   // which row it is when the list is built again (render keeps the focus on it)
@@ -3521,53 +3526,51 @@ public class SettingsActivity extends Activity {
         d.setTint(look.accent);
         ic.setImageDrawable(d);
         ic.setTag(GlassPaint.ICON);
-        LinearLayout.LayoutParams ip = new LinearLayout.LayoutParams(dp(28), dp(28));
+        LinearLayout.LayoutParams ip = new LinearLayout.LayoutParams(dp(24), dp(24));
         ip.setMarginStart(dp(6));
         card.addView(ic, ip);
 
+        // one line, one size (the owner, build 413): the name at the start, the value at the far end (a long one wraps there, tester S7), then
+        // where the row shows (4.4 the owner) after it in the same line
         LinearLayout texts = new LinearLayout(this);
-        texts.setOrientation(LinearLayout.VERTICAL);
+        texts.setOrientation(LinearLayout.HORIZONTAL);
+        texts.setGravity(Gravity.CENTER_VERTICAL);
         final TextView name = new TextView(this);
         name.setTag("name");   // adjRow changes it in place
         name.setText(noConv ? Words.of(label) : conv(label));
         name.setTextColor(look.text);
-        name.setTextSize(TypedValue.COMPLEX_UNIT_SP, 21);
+        name.setTextSize(TypedValue.COMPLEX_UNIT_SP, ROW_SP);
         name.setTypeface(font("Thmanyah-Medium"));
         name.setSingleLine(true);
-        texts.addView(name);
+        name.setEllipsize(android.text.TextUtils.TruncateAt.END);
+        texts.addView(name, new LinearLayout.LayoutParams(0, -2, 1f));
+        String where = SettingsHub.scopeWords(FocusKey.key(label));   // 4.4 the owner: where the row shows (the home, the screensaver, both, the whole TV)
+        String full = value == null ? (where.isEmpty() ? null : where) : where.isEmpty() ? value : value + "، " + where;
         final TextView val = new TextView(this);
-        final String shown = value == null ? "" : noConv ? Words.of(value) : conv(value);
-        if (value != null) {
+        final String shown = full == null ? "" : noConv ? Words.of(full) : conv(full);
+        if (full != null) {
             val.setText(shown);
             val.setTextColor(look.sub);
-            val.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
+            val.setTextSize(TypedValue.COMPLEX_UNIT_SP, ROW_SP);
             val.setTypeface(font("Thmanyah-Regular"));
             val.setMaxLines(2);   // a long line wraps to a second one instead of being cut with «..» (tester S7); only a third is cut
             val.setEllipsize(android.text.TextUtils.TruncateAt.END);
-            texts.addView(val);
+            val.setMaxWidth(Math.round((pageWidth - sideWidth) * 0.5f));
+            val.setGravity(Gravity.END | Gravity.CENTER_VERTICAL);
+            LinearLayout.LayoutParams vp = new LinearLayout.LayoutParams(-2, -2);
+            vp.setMarginStart(dp(16));
+            texts.addView(val, vp);
         }
         LinearLayout.LayoutParams tp = new LinearLayout.LayoutParams(0, -2, 1f);
-        tp.setMarginStart(dp(18));
+        tp.setMarginStart(dp(14));
         card.addView(texts, tp);
-
-        String where = SettingsHub.scopeWords(FocusKey.key(label));   // 4.4 the owner: where the row shows (the home, the screensaver, both, the whole TV)
-        if (!where.isEmpty()) {
-            TextView scope = new TextView(this);
-            scope.setText(noConv ? Words.of(where) : conv(where));
-            scope.setTextColor(look.sub);
-            scope.setAlpha(0.8f);
-            scope.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12);
-            scope.setTypeface(font("Thmanyah-Regular"));
-            scope.setSingleLine(true);
-            LinearLayout.LayoutParams sp = new LinearLayout.LayoutParams(-2, -2);
-            sp.setMarginEnd(dp(12));
-            card.addView(scope, sp);
-        }
         final TextView chevron = new TextView(this);
         chevron.setText("›");   // shown mirrored (‹) in the RTL row
         chevron.setTextColor(look.sub);
-        chevron.setTextSize(TypedValue.COMPLEX_UNIT_SP, 22);
-        card.addView(chevron);
+        chevron.setTextSize(TypedValue.COMPLEX_UNIT_SP, ROW_SP);
+        LinearLayout.LayoutParams chp = new LinearLayout.LayoutParams(-2, -2);
+        chp.setMarginStart(dp(10));
+        card.addView(chevron, chp);
 
         if (onClick != null) card.setOnClickListener(v -> { launchedRow = (String) card.getTag(); onClick.run(); });   // the row that was pressed: the focus comes back to it after another screen
         paintState(val, mark, shown, state, false);

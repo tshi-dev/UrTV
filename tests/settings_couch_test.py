@@ -42,9 +42,14 @@ plain_tree = tree.replace("\u2066", "").replace("\u2069", "")
 missing = [r for r in side_rows if unesc(r) not in plain_tree]
 check(f"…and every row of the side list's registry ({len(side_rows)}) is in docs/SETTINGS-TREE.md, so nothing is missing in the couch-tv settings", not missing, missing)
 couchrow = st[st.index("    private LinearLayout couchRow("):].split("\n    }\n")[0]
-check("couch-tv's kinds of row: on/off a ring (green with a tick when on), a short value at the far end, a long one under the name, a link a chevron",
-      "state > 0 ? CouchStyle.Mark.RING_ON : CouchStyle.Mark.RING_OFF" in couchrow and "else if (CouchText.short_(value)) val = value;" in couchrow
-      and "if (mark == 0 && val == null && onClick != null) mark = CouchStyle.Mark.CHEVRON;" in couchrow and "SettingsHub.scopeWords(key)" in couchrow)
+check("couch-tv's kinds of row, in one line (the owner, build 413): on/off a ring (green with a tick when on) with its words before it, the value at the far end (a long one wraps there), a link a chevron",
+      "state > 0 ? CouchStyle.Mark.RING_ON : CouchStyle.Mark.RING_OFF; val = CouchText.after(value, OnOff.wordEnd(value));" in couchrow
+      and "else if (value != null && !value.isEmpty()) val = value;" in couchrow and "if (mark == 0 && !CouchText.short_(val) && onClick != null) mark = CouchStyle.Mark.CHEVRON;" in couchrow
+      and "SettingsHub.scopeWords(key)" in couchrow and "v.setMaxLines(2);" in st)
+check("both styles' rows: one line in one text size, at most about 80-90 px at 1080p, so 5 or 6 show (they were 180 px and only 3 fit)",
+      "static final int ROW_SP = 18, ROW_PAD = 8;" in st and "name.setTextSize(TypedValue.COMPLEX_UNIT_SP, ROW_SP);" in rowfn and "val.setTextSize(TypedValue.COMPLEX_UNIT_SP, ROW_SP);" in rowfn
+      and "texts.setOrientation(LinearLayout.HORIZONTAL);" in rowfn and "card.setPadding(dp(20), dp(ROW_PAD), dp(16), dp(ROW_PAD));" in rowfn
+      and num("ROW_H") == 4.75 and num("ROW_TEXT") * 16 * 1.3 + 2 * num("ROW_PAD_Y") * 16 <= 96)
 dlg = st[st.index("    private static final class Dlg extends WordsBuilder {"):st.index("    void dress(AlertDialog d) {")]
 check("a plain picker (one choice, ticks with «حفظ», or a list) is a page in place with the section's breadcrumb; any with a view, a message or buttons of its own stays a dialog",
       "if (owner.cs != null && plain && !raw && items != null && (checks == null || save != null)) {" in dlg and "owner.showPage(p);" in dlg
