@@ -1,0 +1,44 @@
+name: Branch cleanup
+
+# Run by hand (Actions > Branch cleanup > Run workflow). Deletes the branches listed in .github/branch-cleanup.txt,
+# but only a branch whose every commit is already in master or next, and never a protected one.
+# With dry_run on (the default) it only prints what it would delete.
+on:
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'Only list what would be deleted'
+        type: boolean
+        default: true
+
+permissions:
+  contents: write
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Delete merged branches from the list
+        env:
+          DRY: ${{ inputs.dry_run }}
+        run: |
+          git fetch -q origin '+refs/heads/*:refs/remotes/origin/*'
+          keep='^(master|next|data|data-.*|work/tester.*|work/rel-.*|photos-raw|bg-unsplash|content|mockups)$'
+          n=0; kept=0
+          while read -r b; do
+            [ -z "$b" ] && continue
+            if [[ "$b" =~ $keep ]]; then echo "KEEP (protected) $b"; kept=$((kept+1)); continue; fi
+            if ! git rev-parse -q --verify "refs/remotes/origin/$b" >/dev/null; then echo "GONE $b"; continue; fi
+            if git merge-base --is-ancestor "origin/$b" origin/master || git merge-base --is-ancestor "origin/$b" origin/next \
+               || [ -z "$(git cherry origin/next "origin/$b" | grep '^+')" ]; then
+              if [ "$DRY" = "true" ]; then echo "WOULD DELETE $b"; else git push -q origin --delete "$b" && echo "DELETED $b"; fi
+              n=$((n+1))
+            else
+              echo "KEEP (has work not in master or next) $b"; kept=$((kept+1))
+            fi
+          done < .github/branch-cleanup.txt
+          echo "done: $n deleted or to delete, $kept kept (dry_run=$DRY)"
