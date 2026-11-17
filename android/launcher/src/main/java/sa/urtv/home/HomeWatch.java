@@ -11,8 +11,8 @@ import java.util.Set;
  * keeps coming back (three times within 20 s: five minutes off, the stock home stays). No Android in here (tests/HomeWatchRun.java runs it).
  */
 final class HomeWatch {
-    static final long WINDOW_MS = 20_000, PAUSE_MS = 5 * 60_000;
-    static final int MAX_BRINGS = 3;
+    static final long WINDOW_MS = 15_000, PAUSE_MS = 5 * 60_000, FIGHT_MS = 2_000;   // tester-exp (step 88 R2d)
+    static final int MAX_BRINGS = 6;
 
     private final long[] brings = new long[MAX_BRINGS];
     private long pausedUntil, lastBring;
@@ -36,6 +36,9 @@ final class HomeWatch {
         // tester-exp (step 88): one Home press gives two stock-home windows; the second one within 1.5 s is brought again but not counted
         if (lastBring > 0 && now - lastBring < SAME_PRESS_MS) { lastBring = now; return true; }
         if (!fight) { lastBring = now; return true; }
+        // tester-exp (step 88 R2d): over ours, only a FAST return (within FIGHT_MS of our last bring) is the firmware fighting back; later it is
+        // the person pressing Home on our home: brought, not counted
+        if (lastBring == 0 || now - lastBring > FIGHT_MS) { lastBring = now; return true; }
         int recent = 0, oldest = 0;
         for (int i = 0; i < brings.length; i++) {
             if (brings[i] > 0 && now - brings[i] < WINDOW_MS) recent++;
