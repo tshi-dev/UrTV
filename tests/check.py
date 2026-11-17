@@ -393,7 +393,8 @@ with tempfile.TemporaryDirectory() as out:
     r = subprocess.run(["javac", "-proc:none", "-Xmaxerrs", "10000", "-encoding", "UTF-8", "-d", out] + [str(f) for f in java_src],
                        capture_output=True, text=True)
 real = [f"{loc}: {m}" for loc, m in re.findall(r"^(\S+\.java:\d+): error: (.*)$", r.stderr, re.M)
-        if not re.search(r"cannot find symbol|does not override or implement|package .* does not exist|static import only from classes", m)]
+        # «non-static variable super …»: some javac versions (CI's) say this for super.x() in a class whose superclass is a missing Android one (Box.ReadScroll extends ScrollView)
+        if not re.search(r"cannot find symbol|does not override or implement|package .* does not exist|static import only from classes|non-static variable super cannot be referenced from a static context", m)]
 check("launcher Java: no type errors beyond the missing Android classes", not real, real[:8])
 
 # ---- optimize: never disable a kept package

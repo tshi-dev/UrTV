@@ -323,6 +323,38 @@ python3 tests/dock_exact_test.py
 python3 tests/install_fallback_test.py
 python3 tests/run_resume_test.py
 python3 tests/prefetch_test.py
+# 4.4: tests that existed but CI never ran (all pass on next; about 50 s together)
+python3 tests/adhan_late_test.py   # Hotfix 4.3 «الأذان الساعة 12 الليل»: an adhan alarm that arrives late, early, with no prayer time or not near
+python3 tests/build413_test.py   # 4.4, the tester's build 413 (Home 100 % in normal use; T9 with the owner's real remote: the add-on's Home key
+python3 tests/clean_mode_test.py   # «UrTV النظيف» part A (the clean home): it is a MASK over the home (nothing deleted, none of the person's choic
+python3 tests/clean_prayer_card_test.py   # «UrTV النظيف»'s prayer card («بطاقة الصلاة»: بدون / سطر تحت التاريخ / بطاقة; «مكان البطاقة»: وسط / تحت الساعة
+python3 tests/clear_text_test.py   # «نص أوضح» (4.3.1): one setting that makes the grey words and numbers of the home and the screensaver as clear
+python3 tests/control_shape_test.py   # 4.3.1 «شكل لوحة التحكم»: the control center is the tall panel (default, as 4.3) or a wide page; both fit 1080p
+python3 tests/dev_help_test.py   # User report «ماهو راضي يفعل تصحيح USB»: Developer options open from the build number, whose place differs per
+python3 tests/dock_retry_test.py   # Hotfix 4.3: after a cold start the favourites row showed only five apps (two users, 4.2 and 4.3). showApps() f
+python3 tests/factory_test.py   # «تخلّص من واجهة المصنع» (its own row in the settings): the engine on SetupEngineRun's fake TV (the offer and i
+python3 tests/fragment_keep_test.py   # 4.3.2 (a user's adhan times and prayer card disappeared after 4.3.1): the home keeps the screensaver's last RE
+python3 tests/glow_mode_test.py   # «توهّج لون التطبيق» (4.3.1): the glow behind the focused app is OFF by default (new installs and old ones), ha
+python3 tests/google_tv_home_test.py   # Google TV (user reports: TCL G10/G08, Changhong Android 14, Sony BRAVIA VH21, Xiaomi MiTV-AFMU0/1): since 4.3
+python3 tests/home_snapshot_test.py   # The home's stand-in picture (HomeSnapshot): the rules pinned from the source: what the key is made of, the age
+python3 tests/idle_rule_test.py   # «تبدأ شاشة التوقف بعد 2147483 ثانية» (user report): the TV's idle delay was 2147483647 (Integer.MAX: the TV tu
+python3 tests/install_saver_test.py   # 4.3.2 «ثبّت الجزء الثاني»: a TV with only the home (a Fire TV, or installed with Downloader) must never meet a
+python3 tests/league_groups_test.py   # 4.3.1 «البطولات الكبرى» and «اختر دورياتك»: the big tournaments' list is one data file that resolves against t
+python3 tests/match_teams_button_test.py   # 4.3.1: «فرقي» in the matches page's header opens the settings' teams chooser (the page is made again on return
+python3 tests/net_test.py   # Net: the small GET the apps use for their own data files (IPv4 first, 4 s per address, a deadline, a size cap,
+python3 tests/phone_room_test.py   # «اللعب بالجوالات»: the generic phone room of the party games and the game-only server on a plain JVM (tests/Ph
+python3 tests/radio_fault_test.py   # 4.3.1 «الإذاعة»: why a station stopped, in one plain line (no internet / the station did not answer / format n
+python3 tests/settings_sections_test.py   # 4.3.2 «الإعدادات تكون مضبوطة»: every option lives in the one section it belongs to, in a set order, found by a
+python3 tests/setup_row_test.py   # 4.3.1 «إعداد تلفزيوني» is a row of the settings (Home screen) that always opens the setup, even when UrTV is a
+python3 tests/step46_test.py   # The tester's step 46 findings (build 214, a real TCL), the ones that are pinned in the source: «تطبيقات مقترحة
+python3 tests/step47_test.py   # The tester's step 47 findings (build 222, a real TCL) that are pinned in the source: the update screen opened
+python3 tests/tournaments_fixtures_test.py   # 4.3.1 the CI tool of «البطولات الكبرى» (.github/tools/tournaments_fixtures.py) with TheSportsDB mocked: three
+python3 tests/vector_drawables_test.py   # Every vector drawable's pathData must be one the Android Gradle plugin's own vector parser reads (the release
+python3 tests/wall_first_frame_test.py   # Hotfix 4.3: the home never shows black on the way back (a user's Mi Box on 4.3: the cards on black for a few s
+python3 tests/wifi_hotspot_test.py   # A user's tested route (Xiaomi): when the setup wizard owns the saved Wi-Fi and the TV shows no «انسَ الشبكة» o
+python3 tests/your_tv_hub_test.py   # «تلفزيونك» (YourTvHubActivity): what opening the app shows: four windows (the markets, the matches, the games,
+python3 tests/run_list_test.py   # every test file is run by this script (CI runs nothing else)
+
 node tests/es2017_parse.test.mjs   # #19: the built pages parse as ES2017 (Android 9 TVs stuck on WebView 66)
 node tests/date_num.test.mjs   # «التاريخ بالأرقام» on the screensaver page: day/month/year in the digits chosen
 node tests/wx_icon.test.mjs   # the screensaver's weather line: the condition's icon beside the temperature
@@ -367,3 +399,7 @@ node tests/couch_row.test.mjs   # 4.4 the page: «كنبة» (#row=1, the cards 
 node tests/photo_mask_page.test.mjs   # 4.4 the phone page «صوري»: a photo with its mask, checked on the phone, previewed, sent after the photo; the page's own CSP
 node tests/reminder_page.test.mjs   # the screensaver's reminder card: its time, «الآن», «تم», the snooze, the keys, the adhan, English
 node tests/tvports_page.test.mjs   # the packaged page with simulated webOS and Tizen keys
+node tests/game_phone_page.test.mjs   # The party games' phone page (assets/quiz/game.html) in a real browser against the REAL room and server (tests/
+python3 tests/game_bundle_test.py   # the games' bundled data and its checks
+python3 tests/game_packs_test.py   # the games' packs
+python3 tests/new_games_test.py   # the new games' rules and screens
