@@ -41,7 +41,7 @@ for kind in ("KIND_ADHAN_TOGGLE", "KIND_SHORT", "KIND_STOPKEY"):
     seg = seg[:seg.index("} else")]
     check(f"«تلاوة وأذان»: {kind} rebuilds and stays on its row", "adapter.rebuild();" in seg and "focusList(list.getSelectedItemPosition());" in seg, seg)
 check("«تلاوة وأذان»: the volume and back from the muezzin screens keep the row",
-      "prefs.setAdhanVolume(now);\n        adapter.rebuild();\n        focusList(list.getSelectedItemPosition());" in tl and "target = list.getSelectedItemPosition();" in tl)
+      "prefs.setAdhanVolumeLevel(now);\n        adapter.rebuild();\n        focusList(list.getSelectedItemPosition());" in tl and "target = list.getSelectedItemPosition();" in tl)
 for name in ("DockActivity", "TasksActivity", "ParentalActivity"):
     src = (HOME / f"{name}.java").read_text(encoding="utf-8")
     check(f"{name}: its list is rebuilt with the row to focus, and focused after the layout", re.search(r"private void render\(int focus", src) is not None

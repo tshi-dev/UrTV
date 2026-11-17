@@ -21,6 +21,16 @@ public class PrayerSoundActivity extends RowScreen {
             @Override public String title() { return S.t("أذان كل صلاة"); }
             @Override public String tagline() { return S.t("الصلاة الصامتة يبقى وقتها وبطاقتها وتنبيهها، بلا صوت"); }
             @Override public void rows(List<Row> out) {
+                // 4.4: the common wish in one OK: every prayer heard, Fajr silent (its time, card and notice stay); OK again: all five heard
+                out.add(Row.of(S.t("كل الصلوات بصوت عدا الفجر"), allButFajr(prefs) ? S.t("مفعّل") : S.t("متوقف"), () -> {
+                    boolean on = !allButFajr(prefs);
+                    for (int p : PrayerTimes.PRAYERS) {
+                        if (p == PrayerTimes.FAJR) prefs.setPrayerSound(p, on ? "silent" : "");
+                        else if ("silent".equals(prefs.prayerSound(p))) prefs.setPrayerSound(p, "");   // the others heard; their own muezzin kept
+                    }
+                    refresh();
+                }));
+                out.add(Row.head(S.t("كل صلاة")));
                 for (int p : PrayerTimes.PRAYERS) out.add(Row.of(S.tv(PrayerTimes.NAMES[p]), word(p), () -> choose(p)));
                 // touch «أذان الجمعة»: a silent Dhuhr is heard on Fridays
                 out.add(Row.of(S.t("أذان الجمعة"), prefs.fridayDhuhr() ? S.t("مفعّل: الظهر يُسمع يوم الجمعة ولو كان صامتًا") : S.t("متوقف"),
@@ -64,6 +74,12 @@ public class PrayerSoundActivity extends RowScreen {
     private void set(int prayer, String choice) {
         prefs.setPrayerSound(prayer, choice);
         back();
+    }
+
+    /** 4.4: Fajr silent and the four others heard */
+    static boolean allButFajr(Prefs prefs) {
+        for (int p : PrayerTimes.PRAYERS) if ("silent".equals(prefs.prayerSound(p)) != (p == PrayerTimes.FAJR)) return false;
+        return true;
     }
 
     /** the adhan tab's line: «الخمس بصوت», or which ones are silent */

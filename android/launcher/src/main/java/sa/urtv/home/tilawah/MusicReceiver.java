@@ -64,9 +64,21 @@ public class MusicReceiver extends BroadcastReceiver {
             case "sa.urtv.home.ADHAN_OFF":
                 AdhanSettings.on(context, prefs, "sa.urtv.home.ADHAN_ON".equals(action));
                 return;
-            case "sa.urtv.home.ADHAN_VOLUME":   // optimize/music.sh adhan volume 60
-                AdhanSettings.volume(prefs, intent.getIntExtra("percent", -1));
+            case "sa.urtv.home.ADHAN_VOLUME":   // optimize/music.sh adhan volume 60 | tv
+                if (intent.getBooleanExtra("tv", false)) AdhanSettings.volumeTv(prefs);
+                else if (!AdhanSettings.volume(prefs, intent.getIntExtra("percent", -1))) { setResultData("error: the adhan volume is 0-100 or tv"); return; }
+                setResultData("saved\nadhan_volume=" + volumeText(prefs));
                 return;
+            case "sa.urtv.home.PRAYER_VOLUME": {   // 4.4 optimize/music.sh adhan prayer-volume <name> <general|tv|0-100>
+                int p = intent.getIntExtra("prayer", -1);
+                String choice = intent.getStringExtra("choice");
+                if (choice == null) choice = "";
+                boolean known = p == 0 || p == 2 || p == 3 || p == 4 || p == 5;
+                if (!known || !AdhanLevel.valid(choice)) { setResultData("error: prayer is 0,2,3,4,5 and choice is \"\", tv or 0-100"); return; }
+                prefs.setPrayerVolume(p, choice);
+                setResultData("saved\nprayer_volume=" + prayerVolumes(prefs));
+                return;
+            }
             case "sa.urtv.home.VOICE": {
                 String error = AdhanSettings.voice(context, prefs, intent.getIntExtra(MusicService.EXTRA_VOICE, prefs.voice()));
                 setResultData(error != null ? error : "saved\n" + ownListing(context, prefs));
@@ -225,6 +237,17 @@ public class MusicReceiver extends BroadcastReceiver {
         return prefs.quietFrom() + "-" + prefs.quietTo() + " adhan=" + new String[]{"heard", "fajr", "silent"}[prefs.quietAdhan()];
     }
 
+    /** 4.4: «tv» or the percent */
+    static String volumeText(Prefs prefs) { return AdhanLevel.choice(prefs.adhanVolumeLevel()); }
+
+    /** 4.4: each prayer's own level ("" the general one) */
+    private static String prayerVolumes(Prefs prefs) {
+        String[] names = {"fajr", "", "dhuhr", "asr", "maghrib", "isha"};
+        StringBuilder b = new StringBuilder();
+        for (int p : PrayerTimes.PRAYERS) b.append(b.length() > 0 ? "," : "").append(names[p]).append(':').append(prefs.prayerVolume(p));
+        return b.toString();
+    }
+
     private static String prayerSounds(Prefs prefs) {
         String[] names = {"fajr", "", "dhuhr", "asr", "maghrib", "isha"};
         StringBuilder b = new StringBuilder();
@@ -290,6 +313,8 @@ public class MusicReceiver extends BroadcastReceiver {
                 + "|adhan_alarm_last=" + prefs.lastAlarmNoteAt() + (prefs.lastAlarmNote().isEmpty() ? "" : " " + prefs.lastAlarmNote().replace('|', '/'))
                 + "|adhan_live=" + (MusicService.adhanLive() ? 1 : 0)
                 + "|adhan_volume=" + prefs.adhanVolume()
+                + "|adhan_volume_tv=" + (prefs.adhanVolumeTv() ? 1 : 0)   // 4.4 «مثل صوت التلفزيون»
+                + "|prayer_volume=" + prayerVolumes(prefs)
                 + "|adhan_exact=" + (AdhanScheduler.exactAllowed(context) ? 1 : 0)
                 + "|own_bytes=" + (OwnAdhan.exists(context) ? OwnAdhan.bytes(context) : 0)
                 + "|reciter_favs=" + prefs.reciterFavs()

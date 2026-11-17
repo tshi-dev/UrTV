@@ -157,7 +157,9 @@ public class MainActivity extends Activity {
                 startActivity(new Intent(this, AudioActivity.class));
             } else if (row.kind == KIND_EXACT) {
                 openExactAlarmSettings();
-            }   // «صوت الأذان» is set with left/right (changeVolume); OK on it does nothing
+            } else if (row.kind == KIND_VOLUME) {   // 4.4 «مستوى صوت الأذان»: every level, «مثل صوت التلفزيون», and each prayer's own
+                startActivity(new Intent(this, AdhanVolumeActivity.class));
+            }   // left/right on «صوت الأذان» still step it (changeVolume)
         });
 
         tabs = findViewById(R.id.tabs);
@@ -296,7 +298,7 @@ public class MainActivity extends Activity {
         // on «صوت الأذان» left/right are the volume: left louder, right quieter (the bar fills from the right, like the page); English mirrored
         if ((keyCode == KeyEvent.KEYCODE_DPAD_LEFT || keyCode == KeyEvent.KEYCODE_DPAD_RIGHT) && list.hasFocus()
                 && tab == TAB_ADHAN && selectedKind() == KIND_VOLUME) {
-            changeVolume(keyCode == sa.urtv.home.Dir.forwardKey() ? 10 : -10);
+            changeVolume(keyCode == sa.urtv.home.Dir.forwardKey() ? 1 : -1);
             return true;
         }
         // the letter index: the key toward the column (the start edge: right in Arabic, left in English) enters it from the list, the other key leaves it
@@ -372,18 +374,19 @@ public class MainActivity extends Activity {
         return at >= 0 && at < adapter.rows.size() ? adapter.rows.get(at).kind : -1;
     }
 
-    /** The adhan's volume in steps of 10 (10 to 100, no wrapping), heard for two seconds at the new level. */
-    private void changeVolume(int step) {
-        int was = prefs.adhanVolume(), now = Math.max(10, Math.min(100, was + step));
+    /** 4.4: the adhan's volume in steps of 5 (AdhanLevel: «مثل صوت التلفزيون», 0 to 100, no wrapping), heard for two seconds at the new level. */
+    private void changeVolume(int dir) {
+        int was = prefs.adhanVolumeLevel(), now = AdhanLevel.step(was, dir);
         if (now == was) return;
-        prefs.setAdhanVolume(now);
+        prefs.setAdhanVolumeLevel(now);
         adapter.rebuild();
         focusList(list.getSelectedItemPosition());
         MusicService.adhan(this, prefs.voice(), Adhan.name(prefs.voice()), 2);
     }
 
-    /** ٣٠٪ and a bar of ten: the filled part starts at the right, as the page does */
-    private static String volumeText(int value) {
+    /** ٣٠٪ and a bar of ten: the filled part starts at the right, as the page does; 4.4: «مثل صوت التلفزيون» for AdhanLevel.TV */
+    static String volumeText(int value) {
+        if (value == AdhanLevel.TV) return sa.urtv.home.S.t("مثل صوت التلفزيون");
         int filled = Math.max(0, Math.min(10, value / 10));
         StringBuilder bar = new StringBuilder();
         for (int i = 0; i < 10; i++) bar.append(i < filled ? '█' : '░');
@@ -613,7 +616,7 @@ public class MainActivity extends Activity {
                 rows.add(new Row(false, KIND_SAVER_AT, getString(R.string.adhan_saver_at),
                         getString(prefs.adhanSaverAt() ? R.string.adhan_on : R.string.adhan_off), -1));
                 rows.add(new Row(false, KIND_VOLUME, getString(R.string.adhan_volume),
-                        volumeText(prefs.adhanVolume()), -1));
+                        volumeText(prefs.adhanVolumeLevel()), -1));
             }
             notifyDataSetChanged();
         }

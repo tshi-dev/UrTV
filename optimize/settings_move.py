@@ -84,7 +84,7 @@ PRAYER_ADJ_MAX = 20
 HIJRI_MAX = 2
 ADHAN_VOICES = 21                      # tilawah/AdhanVoices.COUNT
 ADHAN_FAJR_VOICES = (10, 13, 17, 20)   # for Fajr only
-ADHAN_VOLUME = (10, 100)
+ADHAN_VOLUME = (0, 100)   # 4.4: 0-100 (was 10-100)
 MAX_TEXT = 60                          # a city or team name
 OWN = "own"                            # the person's own recording: only in the file saved before an import (it stays on that TV)
 

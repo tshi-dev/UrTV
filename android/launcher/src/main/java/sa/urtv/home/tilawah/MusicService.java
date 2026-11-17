@@ -557,7 +557,7 @@ public class MusicService extends Service implements AudioManager.OnAudioFocusCh
         boolean wasAdhan = source == Prefs.SOURCE_ADHAN;
         if (wasAdhan && playing) {
             if (adhanPreview && previewSeconds > 0) {   // the volume row again: the new level, and the same few seconds again
-                volumePercent = prefs.adhanVolume();
+                volumePercent = prefs.volumeFor(prayer);   // 4.4: the prayer's own level, or the general one
                 adhanVolumeUp();
                 handler.postDelayed(previewStop, previewSeconds * 1000L);
                 return;
@@ -572,7 +572,7 @@ public class MusicService extends Service implements AudioManager.OnAudioFocusCh
         adhanCutMs = duaUrl != null ? 0 : AdhanVoices.cutMs(length, voice);   // a dua plays whole
         adhanFadeMs = duaUrl != null ? 0 : AdhanVoices.fadeMs(length);
         if (gone && duaUrl == null) name = null;
-        volumePercent = duaUrl != null ? duaVolume : prefs.adhanVolume();
+        volumePercent = duaUrl != null ? duaVolume : prefs.volumeFor(prayer);   // 4.4 «مستوى صوت الأذان»: the prayer's own, or the general (TV: left as it is)
         Log.i("UrTVAdhan", "adhan start: prayer=" + prayer + (previewSeconds > 0 ? " preview=" + previewSeconds + "s" : " live") + " tv_muted_before=" + mutedBefore);   // before the unmute: the first read
         adhanVolumeUp();
         boolean comeBack = prepareAdhanPause();   // false when an adhan was already on
@@ -690,9 +690,11 @@ public class MusicService extends Service implements AudioManager.OnAudioFocusCh
             prefs.setSavedTvMuted(muted);
             prefs.setSavedTvVolume(savedVolume);
         }
-        int want = Math.round(max * volumePercent / 100f);   // the adhan's own level, or a dua's (4.4)
-        audio.setStreamVolume(AudioManager.STREAM_MUSIC, Math.max(1, Math.min(max, want)), 0);
-        sa.urtv.home.MuteKeep.ours(this, "adhan_volume_set");   // a volume set can end a mute by itself on some TVs: the state after it is in the log
+        int want = AdhanLevel.index(volumePercent, max);   // the adhan's own level, or a dua's (4.4); -1 «مثل صوت التلفزيون»: left as it is
+        if (want >= 0) {
+            audio.setStreamVolume(AudioManager.STREAM_MUSIC, want, 0);
+            sa.urtv.home.MuteKeep.ours(this, "adhan_volume_set");   // a volume set can end a mute by itself on some TVs: the state after it is in the log
+        }
         adhanLevel = audio.getStreamVolume(AudioManager.STREAM_MUSIC);   // what it took, which can differ from what was asked
         prefs.setAdhanLevel(adhanLevel);
     }

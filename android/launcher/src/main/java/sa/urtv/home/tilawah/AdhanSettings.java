@@ -43,12 +43,15 @@ final class AdhanSettings {
         return null;
     }
 
-    /** The adhan's own volume, 10 to 100 percent. */
+    /** The adhan's own volume, 0 to 100 percent (4.4; was 10 to 100). */
     static boolean volume(Prefs prefs, int percent) {
-        if (percent < 10 || percent > 100) return false;
+        if (percent < AdhanLevel.MIN || percent > AdhanLevel.MAX) return false;
         prefs.setAdhanVolume(percent);
         return true;
     }
+
+    /** 4.4 «مثل صوت التلفزيون»: the adhan leaves the TV's volume as it is */
+    static void volumeTv(Prefs prefs) { prefs.setAdhanVolumeTv(); }
 
     static void on(Context c, Prefs prefs, boolean on) {
         prefs.setAdhanOn(on);

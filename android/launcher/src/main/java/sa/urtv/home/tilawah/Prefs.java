@@ -42,8 +42,19 @@ final class Prefs {
     void setAdhanOn(boolean on) { sp.edit().putBoolean("adhan_on", on).apply(); }
 
     /** The adhan's own volume, in percent; the TV's volume comes back after it. */
-    int adhanVolume() { int v = sp.getInt("adhan_volume", 30); return v < 10 || v > 100 ? 30 : v; }
-    void setAdhanVolume(int percent) { sp.edit().putInt("adhan_volume", percent).apply(); }
+    int adhanVolume() { int v = sp.getInt("adhan_volume", 30); return v < 0 || v > 100 ? 30 : v; }   // 4.4: 0..100 (an older app reads under 10 as its 30)
+    void setAdhanVolume(int percent) { sp.edit().putInt("adhan_volume", percent).putBoolean("adhan_volume_tv", false).apply(); }
+    /** 4.4 «مثل صوت التلفزيون»: the adhan leaves the TV's volume as it is */
+    boolean adhanVolumeTv() { return sp.getBoolean("adhan_volume_tv", false); }
+    void setAdhanVolumeTv() { sp.edit().putBoolean("adhan_volume_tv", true).apply(); }
+    /** the general level (AdhanLevel: TV or a percent) */
+    int adhanVolumeLevel() { return AdhanLevel.general(adhanVolume(), adhanVolumeTv()); }
+    void setAdhanVolumeLevel(int level) { if (level == AdhanLevel.TV) setAdhanVolumeTv(); else setAdhanVolume(AdhanLevel.clamp(level)); }
+    /** 4.4: a prayer's own level ("" the general one, "tv", "0".."100") */
+    String prayerVolume(int prayer) { String c = sp.getString("pv_" + prayer, ""); return AdhanLevel.valid(c) ? c : ""; }
+    void setPrayerVolume(int prayer, String choice) { sp.edit().putString("pv_" + prayer, AdhanLevel.valid(choice) ? choice : "").apply(); }
+    /** the level of the adhan for `prayer` (-1: no prayer, the general one) */
+    int volumeFor(int prayer) { return prayer < 0 ? adhanVolumeLevel() : AdhanLevel.forPrayer(prayerVolume(prayer), adhanVolumeLevel()); }
     /** The TV's own volume while an adhan plays, kept on disk so it comes back even if the player was stopped mid-adhan (-1: none). */
     int savedTvVolume() { return sp.getInt("tv_volume_saved", -1); }
     void setSavedTvVolume(int v) { sp.edit().putInt("tv_volume_saved", v).commit(); }
