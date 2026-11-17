@@ -531,6 +531,9 @@ public class SettingsActivity extends Activity {
         if (last.getParent() == list) note(last, Updater.versionLines(this));
         // «النسخ التجريبية» (4.3.3): the beta release first, off by default. Off again never downgrades: the newer build stays until the normal one reaches its number
         row("النسخ التجريبية", prefs.betaOn() ? "تعمل · تجيك التحديثات قبل الكل بعد ما نجربها. ممكن يكون فيها أخطاء بسيطة" : "متوقفة · تجيك التحديثات قبل الكل بعد ما نجربها. ممكن يكون فيها أخطاء بسيطة", R.drawable.ic_sync, new Runnable() { public void run() { toggleBeta(); } });
+        // only while it is on: the report screen (its QR code carries «channel: beta» and the versions), the person types their words on the phone page
+        if (prefs.betaOn()) row("أرسل ملاحظة عن النسخة التجريبية", "رمز QR يفتح صفحة الإرسال في جوالك، وتكتب ملاحظتك هناك", R.drawable.ic_settings,
+            new Runnable() { public void run() { openReport(); } });
         if (tiles) { hub(want, wasIndex); return; }   // a screen of buttons: after the rows were made (none of them is shown on it)
         restoreFocus(want, wasIndex, scrollY);   // a screen just opened: its first row
     }

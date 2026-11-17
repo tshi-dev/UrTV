@@ -28,6 +28,11 @@ for bad in ("channel: beta; rm", "channel: stable", "channel: beta extra", "chan
     check(f"share.py drops «{bad}»", share.restrict(bad + "\n").strip() == "", share.restrict(bad + "\n"))
 act = (HOME / "ReportActivity.java").read_text(encoding="utf-8")
 check("the report screen adds the line from the update channel", "Report.withChannel(lines, sa.urtv.home.phone.UpdateChannel.read(this))" in act)
+sa = (ROOT / "android/app/src/main/java/sa/urtv/screensaver")
+st, hub, words, en = (sa / "SettingsActivity.java").read_text(encoding="utf-8"), (sa / "SettingsHub.java").read_text(encoding="utf-8"), (sa / "Words.java").read_text(encoding="utf-8"), (ROOT / "i18n/en/saver.tsv").read_text(encoding="utf-8")
+BTN = "أرسل ملاحظة عن النسخة التجريبية"
+check("«" + BTN + "» is on the update page and opens the existing report screen, only while beta is on", "if (prefs.betaOn()) row(\"" + BTN + "\"" in st and "openReport(); } });" in st.split(BTN)[1][:400])
+check("it is searchable, marked for the table and in English", '{"' + BTN + '", UPDATE}' in hub and 'S.n("' + BTN + '")' in words and ("\n" + BTN + "\t") in en)
 if not shutil.which("javac"):
     print("SKIP rules: no javac here")
     sys.exit(1 if failed else 0)
