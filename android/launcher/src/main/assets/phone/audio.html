@@ -56,12 +56,12 @@ a{color:var(--acc)}
     caps: 'mp3, m4a, ogg or wav, up to {f} each; {u} of {t} used', sending: 'Sending… {p}%', done: 'It is on the TV ✓',
     too_big: 'The file is bigger than {f}.', full: 'No room left: all sounds together are up to {t}.', too_many: 'The TV holds as many sounds as it can.',
     format: 'This is not a sound the TV can play.', too_long: 'An adhan is at most 5 minutes.', failed: 'Not sent: check the Wi-Fi and try again.',
-    no_session: 'The session ended.', own: 'My adhan', own_fajr: 'Fajr adhan', dua: 'Dua or reminder', none: 'Not used', dua_set: 'Set its time on the TV: Adhan, Duas and reminders.', del: 'Delete', ask: 'Delete «{n}» from the TV?'
+    no_session: 'The session ended.', copy: 'Not saved: the TV has no room left, or could not write it.', empty: 'The file is empty.', busy: 'Another file is being sent: wait until it is on the TV.', order: 'The sending was cut: pick the file again.', slow_down: 'Too fast: wait a moment and try again.', duas_full: 'The duas and reminders list is full.', on_tv: 'A dua or the iqama plays it: change it on the TV.', iqama: 'Iqama sound', own: 'My adhan', own_fajr: 'Fajr adhan', dua: 'Dua or reminder', none: 'Not used', dua_set: 'Set its time on the TV: Adhan, Duas and reminders.', del: 'Delete', ask: 'Delete «{n}» from the TV?'
   } : {
     caps: 'mp3 أو m4a أو ogg أو wav، حتى {f} للملف، والمستخدم {u} من {t}', sending: 'يرسل… {p}٪', done: 'وصل للتلفزيون ✓',
     too_big: 'الملف أكبر من {f}.', full: 'ما بقي مكان: الحد لكل الصوتيات {t}.', too_many: 'التلفزيون فيه أكثر عدد يقدر عليه من الصوتيات.',
     format: 'هذا ليس ملفًا صوتيًا يشتغل على التلفزيون.', too_long: 'الأذان خمس دقائق على الأكثر.', failed: 'ما انرسل: تأكد من الواي فاي وجرّب مرة ثانية.',
-    no_session: 'انتهت الجلسة.', own: 'أذاني الخاص', own_fajr: 'أذان الفجر', dua: 'دعاء أو تذكير', none: 'بلا استخدام', dua_set: 'اضبط وقته من التلفزيون: الأذان، ثم الأدعية والتذكيرات.', del: 'حذف', ask: 'تحذف «{n}» من التلفزيون؟'
+    no_session: 'انتهت الجلسة.', copy: 'ما انحفظ: ما بقي مكان في التلفزيون أو تعذّر الحفظ.', empty: 'الملف فارغ.', busy: 'فيه ملف ثاني يرسل الآن: انتظر حتى يصل.', order: 'انقطع الإرسال: اختر الملف مرة ثانية.', slow_down: 'بسرعة كبيرة: انتظر لحظة وجرّب مرة ثانية.', duas_full: 'قائمة الأدعية والتذكيرات ممتلئة.', on_tv: 'يستخدمه دعاء أو صوت الإقامة: غيّره من التلفزيون.', iqama: 'صوت الإقامة', own: 'أذاني الخاص', own_fajr: 'أذان الفجر', dua: 'دعاء أو تذكير', none: 'بلا استخدام', dua_set: 'اضبط وقته من التلفزيون: الأذان، ثم الأدعية والتذكيرات.', del: 'حذف', ask: 'تحذف «{n}» من التلفزيون؟'
   };
   var $ = function (id) { return document.getElementById(id); };
   if (EN) ['t1', 't2', 't3', 't4', 't5'].forEach(function (k) { $(k).textContent = W[k]; });
@@ -72,7 +72,7 @@ a{color:var(--acc)}
   function say(t) { $('state').textContent = t; }
   function hdr(extra) { var h = extra || {}; if (sess) h['X-UrTV-Session'] = sess; return h; }
   function call(url, opt) {
-    return fetch(url, opt).then(function (r) { return r.json(); }, function () { return { ok: false, error: 'failed' }; }).catch(function () { return { ok: false, error: 'failed' }; });
+    return fetch(url, opt).then(function (r) { return r.status === 429 ? { ok: false, error: 'slow_down' } : r.json(); }, function () { return { ok: false, error: 'failed' }; }).catch(function () { return { ok: false, error: 'failed' }; });
   }
   function word(e) { e = String(e || '').replace(/^audio_/, ''); return W[e] ? fill(W[e]) : e === 'no_session' ? W.no_session : W.failed; }
   function load() {
@@ -91,7 +91,7 @@ a{color:var(--acc)}
     (S.items || []).forEach(function (it) {
       var d = document.createElement('div'); d.className = 'f';
       var b = document.createElement('b'); b.textContent = it.name; d.appendChild(b);
-      var s = document.createElement('small'); s.textContent = it.size; d.appendChild(s);
+      var s = document.createElement('small'); s.textContent = it.use === 'iqama' ? it.size + ' — ' + W.iqama : it.size; d.appendChild(s);
       var u = document.createElement('div'); u.className = 'use';
       ['dua', 'own', 'own_fajr', 'none'].forEach(function (k) {
         var x = document.createElement('button'); x.type = 'button'; x.textContent = W[k];
@@ -109,6 +109,10 @@ a{color:var(--acc)}
     var file = this.files && this.files[0], size = file ? file.size : 0, at = 0, step = S.chunk || 524288;
     this.value = '';
     if (!file) return;
+    if (!size) { say(W.empty); return; }   // 4.4: an empty file is said here, never sent
+    var pick = this;
+    pick.disabled = true;   // 4.4: one file at a time (a second pick used to start over the first and break both)
+    function end() { pick.disabled = false; $('prog').classList.add('hidden'); }
     $('prog').classList.remove('hidden');
     function bar() { $('prog').firstChild.style.width = Math.round(at * 100 / size) + '%'; say(W.sending.replace('{p}', Math.round(at * 100 / size))); }
     function next() {
@@ -116,9 +120,9 @@ a{color:var(--acc)}
       call('/api/audio_piece', { method: 'POST', credentials: 'same-origin', cache: 'no-store', body: file.slice(at, Math.min(size, at + step)),
         headers: hdr({ 'Content-Type': 'application/octet-stream', 'X-UrTV-Offset': String(at), 'X-UrTV-Total': String(size), 'X-UrTV-Name': encodeURIComponent(file.name) }) })
         .then(function (j) {
-          if (!j || !j.ok) { $('prog').classList.add('hidden'); say(word(j && j.error)); return; }
+          if (!j || !j.ok) { end(); say(word(j && j.error)); return; }
           at = Math.min(size, at + step);
-          if (j.result === 'done') { $('prog').classList.add('hidden'); say(W.done); load(); return; }
+          if (j.result === 'done') { end(); say(W.done); load(); return; }
           next();
         });
     }

@@ -84,4 +84,14 @@ final class AudioRules {
         if (bytes >= MB) return (Math.round(bytes * 10.0 / MB) / 10.0) + " MB";
         return Math.max(1, (bytes + 1023) / 1024) + " KB";
     }
+
+    /** 4.4: another upload is still coming: it sent a piece in the last BUSY_MS */
+    static final long BUSY_MS = 30_000L;
+
+    static boolean busy(long total, long lastPieceAt, long now) { return total > 0 && now - lastPieceAt < BUSY_MS; }
+
+    /** 4.4: a file of the library's folder that is a leftover (an unfinished phone upload, a copy that was not kept), never a kept sound */
+    static boolean leftover(String name) {
+        return name != null && (name.equals("phone.part") || name.matches("phone-[0-9]+\\.done") || name.matches("in-[0-9]+\\.tmp"));
+    }
 }

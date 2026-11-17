@@ -69,7 +69,7 @@ public class AudioActivity extends RowScreen {
 
     private String line(AudioStore.Item it) {
         String use = AudioUse.of(this, it.id);
-        String what = "own".equals(use) ? S.t("أذاني الخاص") : "own_fajr".equals(use) ? S.t("أذان الفجر الخاص") : "";
+        String what = "own".equals(use) ? S.t("أذاني الخاص") : "own_fajr".equals(use) ? S.t("أذان الفجر الخاص") : "iqama".equals(use) ? S.t("صوت الإقامة") : "";
         String len = AudioText.length(it.ms);
         return what.isEmpty() ? S.t("%1$s، %2$s", AudioRules.size(it.bytes), len) : S.t("%1$s، %2$s، %3$s", AudioRules.size(it.bytes), len, what);
     }
@@ -84,7 +84,8 @@ public class AudioActivity extends RowScreen {
                 out.add(Row.of(S.t("استمع"), S.t("أول ١٥ ثانية"), () -> listen(it)));
                 out.add(Row.of(S.t("استخدمه لأذاني الخاص"), S.t("لكل الصلوات، والفجر إن لم يكن له تسجيل"), () -> use(it, "own")));
                 out.add(Row.of(S.t("استخدمه لأذان الفجر الخاص"), S.t("للفجر فقط"), () -> use(it, "own_fajr")));
-                if (!AudioUse.of(AudioActivity.this, it.id).isEmpty()) out.add(Row.of(S.t("أوقف استخدامه للأذان"), S.t("يرجع الأذان لمؤذنه"), () -> use(it, "none")));
+                String use = AudioUse.of(AudioActivity.this, it.id);
+                if ("own".equals(use) || "own_fajr".equals(use)) out.add(Row.of(S.t("أوقف استخدامه للأذان"), S.t("يرجع الأذان لمؤذنه"), () -> use(it, "none")));
                 out.add(Row.red(S.t("حذف"), S.t("من التلفزيون"), () -> ask(S.t("تحذف «%s»؟", it.name), S.t("ما يُحذف من الفلاشة ولا من الجوال"), false,
                         new String[]{S.t("حذف"), S.t("إلغاء")},
                         new Runnable[]{() -> { stopPreview(); AudioUse.forget(AudioActivity.this, it.id); AudioStore.remove(AudioActivity.this, it.id); back(); }, null})));

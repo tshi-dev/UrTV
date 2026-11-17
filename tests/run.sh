@@ -192,6 +192,7 @@ python3 tests/radio_week_test.py        # 4.4 radio: the stations' troubles of t
 python3 tests/surah_recover_test.py      # 4.4: a surah through ExoPlayer (file buffer, Range resume), on from its place, no loop of prepares
 python3 tests/adhan_level_test.py        # 4.4 «مستوى صوت الأذان»: 0-100 or like the TV, per prayer; «كل الصلوات بصوت عدا الفجر»
 python3 tests/iqama_test.py             # 4.4 «الإقامة»: a sound and a notice at the iqama (off by default; never in kids mode over other apps)
+python3 tests/audio_upload_test.py      # 4.4 «صوتياتي»: one upload at a time, no lock held over a copy, the iqama on delete, the page's words
 python3 tests/focus_rule_test.py   # 4.3.3 G1: the player keeps on behind the screensaver and the TV's settings; another sound pauses it and it comes back
 python3 tests/surah_set_test.py   # 4.3.3: a reciter with «missing» surahs; the player steps over them
 python3 tests/audio_library_test.py   # 4.4 «صوتياتي»: sound files from a USB stick or the phone, kept in the app; the caps; the own adhan from them
