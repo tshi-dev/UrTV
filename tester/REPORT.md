@@ -2973,3 +2973,11 @@ T8 «تراجع» and the 30-min idle: running now.
 - **30-min idle (07:01 → 07:32): PASS 4/4** — add-on bound, role sa.urtv.home; first Home and 3× Home from YouTube → UrTV.
 - Afterwards I ran «جهّز كل شي» again so the owner keeps UrTV as the main screen: role sa.urtv.home, wanted yes, add-on bound, 18 packages off, Home from YouTube → UrTV. Owner's city/teams/stocks/lang (ar) unchanged. TV asleep, muted.
 **Summary for 4.4 (413): Home works 100 % in normal use (20/20, stress 10/10, on-our-home 8/8, 3/3 reboots, 30-min idle 4/4). To fix: (1) the result page says the Home step failed while it worked (judge after the add-on is bound); (2) mash guard 6-in-6 s → 6-in-4 s; (3) first focus on the intro is «English».**
+
+## T9 / R3 with the owner's REAL remote (4.4 build 413, `HOME_KEY` switch on) — **PASS, and no Google TV flash**
+I turned the switch on (`am broadcast -n sa.urtv.home/.DockReceiver -a sa.urtv.home.HOME_KEY --es mode on` → «home-key: on»); the owner opened YouTube and pressed Home on the remote 3 times (08:02).
+- All 3 presses reached the add-on: `UrTVWatch: home key caught ours opened` ×3 (08:02:12.8, 14.8, 16.8).
+- The key is the remote's own: `KEYCODE_HOME, scanCode=172, flags=0x8` (injected adb keys never reach the filter — that is why R3 could not be tested before).
+- **Google TV was never started**: the only HOME start after each press is `cmp=sa.urtv.home/.MainActivity`, ~150–210 ms after the key (no launcherx START, no window watch needed) → **no Google TV flash at all**.
+- UrTV in front afterwards.
+**Recommendation: turn the HOME_KEY catch ON by default for Google TV** (with the window watch kept as the fallback for TVs/remotes whose Home does not reach the filter). Still to check with the owner later: long-press Home, Home while a video plays in full screen, and that Assistant/Settings keys are untouched with the catch on. I left the switch ON on the owner's TV.
