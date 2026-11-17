@@ -29,7 +29,7 @@ sa.urtv.screensaver/.ScreenDream
 45000
 1
 ---WIFI
-mWifiInfo SSID: "ATS5G", BSSID: 9c:73:70:19:7d:b4, MAC: d0:76:02:ee:90:db, IP: /
+mWifiInfo [Wi-Fi details removed]
 ---LAUNCHERX
 package:com.google.android.apps.tv.launcherx
 package:com.google.android.tungsten.setupwraith

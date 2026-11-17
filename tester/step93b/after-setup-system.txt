@@ -28,5 +28,5 @@ sa.urtv.screensaver/.ScreenDream
 1800000
 ---
 2
-mWifiInfo SSID: "ATS5G", BSSID: 9c:73:70:19:7d:b4, MAC: d0:7
+mWifiInfo [Wi-Fi details removed]
 tv.home/sa.urtv.home.MainActivity}
