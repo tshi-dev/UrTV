@@ -149,6 +149,181 @@ final class SaverFile {
         return s;
     }
 
+    /**
+     * The SET extras (name → value) that put a file's "saver" part on this TV: settings_move.ops(flat(file)) without the home's adhan and reciters
+     * (adhan.bar is the screensaver's and is in). SaverReceiver.set checks every one of them again before anything is saved. The file must have been
+     * checked first (settings_move.validate's rules; the TV's check is SaverReceiver.set's own).
+     */
+    @SuppressWarnings("unchecked")
+    static Map<String, String> extras(Map<String, Object> f) {
+        Map<String, String> ex = new LinkedHashMap<>();
+        if (f.get("city") instanceof Map) {
+            Map<String, Object> c = (Map<String, Object>) f.get("city");
+            ex.put("city", String.valueOf(c.get("name")));
+            ex.put("lat", coord(((Number) c.get("lat")).doubleValue()));
+            ex.put("lon", coord(((Number) c.get("lon")).doubleValue()));
+            ex.put("tz", String.valueOf(c.get("tz")));
+            if (c.containsKey("country")) ex.put("country", String.valueOf(c.get("country")));
+        }
+        String[][] order = {{"digits", "digits"}, {"clock24", "clock24"}, {"clock_size", "clocksize"}, {"card_style", "cardstyle"}, {"greeting", "greeting"},
+            {"listen_pill", "listenpill"}, {"update_bell", "updatebell"}, {"hijri_offset", "hijrioffset"}, {"sunrise", "sunrise"}, {"prayerbar", "prayerbar"},
+            {"wxmore", "wxmore"}, {"months", "months"}, {"lang", "lang"}, {"fav_bar", "favbar"}, {"pagesdark", "pagesdark"}, {"home_photos", "homephotos"},
+            {"home_ours", "homeours"}, {"album_mode", "albummode"}, {"album_date", "albumdate"}, {"album_title", "albumtitle"}, {"album_fit", "albumfit"},
+            {"album_size", "albumsize"}, {"clear_text", "cleartext"}, {"glow", "glow"}, {"accent", "accent"}, {"bar_opacity", "baropacity"},
+            {"wall_dim", "walldim"}, {"focus_style", "focusstyle"}, {"look_sync", "looksync"}};
+        for (String[] o : order) {
+            if (!f.containsKey(o[0])) continue;
+            Object v = f.get(o[0]);
+            ex.put(o[1], v instanceof Boolean ? ((Boolean) v ? "on" : "off") : o[0].equals("hijri_offset") ? signed(((Number) v).intValue()) : String.valueOf(v));
+        }
+        if (f.get("pills_hidden") instanceof List) ex.put("pillshidden", joinOr((List<Object>) f.get("pills_hidden"), "none"));
+        if (f.get("home_packs") instanceof List) ex.put("homepacks", joinOr((List<Object>) f.get("home_packs"), "none"));
+        if (f.get("prayer") instanceof Map) {
+            for (Map.Entry<String, Object> e : ((Map<String, Object>) f.get("prayer")).entrySet()) {
+                if (e.getKey().equals("adjust") && e.getValue() instanceof Map) {
+                    for (Map.Entry<String, Object> a : ((Map<String, Object>) e.getValue()).entrySet()) ex.put("adj_" + a.getKey(), signed(((Number) a.getValue()).intValue()));
+                } else if (e.getKey().equals("method")) ex.put("prayermethod", String.valueOf(e.getValue()));
+                else if (e.getKey().equals("adjust_on")) ex.put("prayeradj", Boolean.TRUE.equals(e.getValue()) ? "on" : "off");
+            }
+        }
+        if (f.get("cards") instanceof Map) {
+            Map<String, Object> c = (Map<String, Object>) f.get("cards");
+            if (c.containsKey("panel")) ex.put("panel", String.valueOf(c.get("panel")));
+            if (c.containsKey("panel2")) ex.put("panel2", String.valueOf(c.get("panel2")));
+            if (c.get("home") instanceof List) ex.put("home_panel", joinOr((List<Object>) c.get("home"), "none"));
+        }
+        if (f.get("markets") instanceof Map) {
+            for (Map.Entry<String, Object> e : ((Map<String, Object>) f.get("markets")).entrySet()) {
+                if (e.getKey().equals("list") && e.getValue() instanceof List) ex.put("markets", joinOr((List<Object>) e.getValue(), ""));
+                else if (e.getKey().equals("on")) ex.put("mkbar", Boolean.TRUE.equals(e.getValue()) ? "on" : "off");
+                else if (e.getKey().equals("style")) ex.put("mkstyle", String.valueOf(e.getValue()));
+            }
+        }
+        if (f.get("teams") instanceof List) {
+            StringBuilder b = new StringBuilder();
+            for (Object t : (List<Object>) f.get("teams")) {
+                Map<String, Object> m = (Map<String, Object>) t;
+                b.append(b.length() > 0 ? "," : "").append(m.get("id")).append(':').append(m.get("name") == null ? "" : m.get("name"));
+            }
+            ex.put("teams", b.toString());
+        }
+        if (f.get("adhan") instanceof Map && ((Map<String, Object>) f.get("adhan")).containsKey("bar"))
+            ex.put("adhanbar", Boolean.TRUE.equals(((Map<String, Object>) f.get("adhan")).get("bar")) ? "on" : "off");
+        return ex;
+    }
+
+    static String coord(double x) {
+        String s = String.format(Locale.ROOT, "%.6f", x).replaceAll("0+$", "").replaceAll("\\.$", "");
+        return s.isEmpty() || s.equals("-0") ? "0" : s;
+    }
+
+    static String signed(int n) { return n > 0 ? "+" + n : String.valueOf(n); }
+
+    private static String joinOr(List<Object> l, String empty) {
+        StringBuilder b = new StringBuilder();
+        for (Object o : l) b.append(b.length() > 0 ? "," : "").append(o);
+        return b.length() == 0 ? empty : b.toString();
+    }
+
+    /**
+     * A strict JSON reader for a settings file: objects (LinkedHashMap, a key given twice is refused), arrays, strings, true/false/null, integers
+     * (Integer, Long if larger) and decimals (Double); no NaN or Infinity; at most 40 levels. IllegalArgumentException with the reason otherwise.
+     */
+    static Object parseJson(String text) {
+        int[] at = {0};
+        Object v = value(text, at, 0);
+        skip(text, at);
+        if (at[0] != text.length()) throw new IllegalArgumentException("text after the end at " + at[0]);
+        return v;
+    }
+
+    private static void skip(String t, int[] at) { while (at[0] < t.length() && " \t\r\n\uFEFF".indexOf(t.charAt(at[0])) >= 0) at[0]++; }
+
+    private static Object value(String t, int[] at, int depth) {
+        if (depth > 40) throw new IllegalArgumentException("nested too deeply");
+        skip(t, at);
+        if (at[0] >= t.length()) throw new IllegalArgumentException("cut short");
+        char c = t.charAt(at[0]);
+        if (c == '{') {
+            at[0]++;
+            Map<String, Object> m = new LinkedHashMap<>();
+            skip(t, at);
+            if (at[0] < t.length() && t.charAt(at[0]) == '}') { at[0]++; return m; }
+            while (true) {
+                skip(t, at);
+                if (at[0] >= t.length() || t.charAt(at[0]) != '"') throw new IllegalArgumentException("a key expected at " + at[0]);
+                String k = string(t, at);
+                if (m.containsKey(k)) throw new IllegalArgumentException(k + " is given twice");
+                skip(t, at);
+                if (at[0] >= t.length() || t.charAt(at[0]) != ':') throw new IllegalArgumentException(": expected at " + at[0]);
+                at[0]++;
+                m.put(k, value(t, at, depth + 1));
+                skip(t, at);
+                if (at[0] < t.length() && t.charAt(at[0]) == ',') { at[0]++; continue; }
+                if (at[0] < t.length() && t.charAt(at[0]) == '}') { at[0]++; return m; }
+                throw new IllegalArgumentException(", or } expected at " + at[0]);
+            }
+        }
+        if (c == '[') {
+            at[0]++;
+            List<Object> l = new ArrayList<>();
+            skip(t, at);
+            if (at[0] < t.length() && t.charAt(at[0]) == ']') { at[0]++; return l; }
+            while (true) {
+                l.add(value(t, at, depth + 1));
+                skip(t, at);
+                if (at[0] < t.length() && t.charAt(at[0]) == ',') { at[0]++; continue; }
+                if (at[0] < t.length() && t.charAt(at[0]) == ']') { at[0]++; return l; }
+                throw new IllegalArgumentException(", or ] expected at " + at[0]);
+            }
+        }
+        if (c == '"') return string(t, at);
+        if (t.startsWith("true", at[0])) { at[0] += 4; return Boolean.TRUE; }
+        if (t.startsWith("false", at[0])) { at[0] += 5; return Boolean.FALSE; }
+        if (t.startsWith("null", at[0])) { at[0] += 4; return null; }
+        Matcher m = Pattern.compile("-?(0|[1-9]\\d*)(\\.\\d+)?([eE][+-]?\\d+)?").matcher(t);
+        if (m.find(at[0]) && m.start() == at[0] && m.end() > at[0]) {
+            String n = m.group();
+            at[0] = m.end();
+            if (m.group(2) == null && m.group(3) == null) {
+                long x = Long.parseLong(n);
+                return x >= Integer.MIN_VALUE && x <= Integer.MAX_VALUE ? (Object) (int) x : (Object) x;
+            }
+            return Double.parseDouble(n);
+        }
+        throw new IllegalArgumentException("a value expected at " + at[0]);
+    }
+
+    private static String string(String t, int[] at) {
+        StringBuilder b = new StringBuilder();
+        at[0]++;
+        while (at[0] < t.length()) {
+            char c = t.charAt(at[0]++);
+            if (c == '"') return b.toString();
+            if (c < 0x20) throw new IllegalArgumentException("a control character in a string");
+            if (c != '\\') { b.append(c); continue; }
+            if (at[0] >= t.length()) break;
+            char e = t.charAt(at[0]++);
+            switch (e) {
+                case '"': b.append('"'); break;
+                case '\\': b.append('\\'); break;
+                case '/': b.append('/'); break;
+                case 'b': b.append('\b'); break;
+                case 'f': b.append('\f'); break;
+                case 'n': b.append('\n'); break;
+                case 'r': b.append('\r'); break;
+                case 't': b.append('\t'); break;
+                case 'u':
+                    if (at[0] + 4 > t.length()) throw new IllegalArgumentException("a cut \\u escape");
+                    b.append((char) Integer.parseInt(t.substring(at[0], at[0] + 4), 16));
+                    at[0] += 4;
+                    break;
+                default: throw new IllegalArgumentException("an unknown escape");
+            }
+        }
+        throw new IllegalArgumentException("a string is not closed");
+    }
+
     /** JSON text of plain values (Map, List, String, Boolean, Integer, Double), Python's json.dumps(ensure_ascii=False, separators=(",", ": ")) style */
     static String json(Object v) {
         StringBuilder b = new StringBuilder();
