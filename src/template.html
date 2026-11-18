@@ -868,6 +868,25 @@ html.lowram .photo.settle, html.lowram .week ul.flip li, html.lowram .mrow.flip 
 </main>
 
 <script>
+// 4.4 (a black-video report): a page left behind another app (a WebView we did not free, or a TV that keeps it) must not keep working for
+// hours: while the page is hidden every interval's work is skipped (the clock, the album, the panels, the photos, saveSnap, the fetches);
+// back in view, the clock and the panels catch up at once. The timers stay, so nothing has to be started again.
+let PAGE_SKIPPED = false;
+(function(){
+  const real = window.setInterval.bind(window);
+  window.setInterval = function(fn, ms, ...args){
+    return real(function(){
+      if(document.hidden){ PAGE_SKIPPED = true; return; }
+      return typeof fn === 'function' ? fn.apply(this, args) : undefined;
+    }, ms);
+  };
+  document.addEventListener('visibilitychange', () => {
+    if(document.hidden || !PAGE_SKIPPED) return;
+    PAGE_SKIPPED = false;
+    try { if(typeof tickClock === 'function') tickClock(); } catch(e){}
+    try { if(typeof renderPanel === 'function') renderPanel(false); } catch(e){}
+  });
+})();
 // daily background: one photo per Riyadh day, deterministic
 const BGS = [
 __BG_SET__
