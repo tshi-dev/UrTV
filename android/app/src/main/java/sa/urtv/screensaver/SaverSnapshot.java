@@ -10,7 +10,7 @@ import java.io.FileOutputStream;
 
 /**
  * The screensaver page never starts blank: the last picture of it (half size, WebP, at most 300 KB, in this app's private cache) is drawn when the dream
- * starts, until the live page has painted, then it fades out over 220 ms. A picture older than 24 h, or made for another page address (the address holds the look, the
+ * starts, until the live page has painted, then it fades out over 220 ms. A picture made in an earlier minute (it shows the clock), older than 24 h, or made for another page address (the address holds the look, the
  * language and the settings) or screen size, is not used: the page's own ground colour stands in. Same rules as the launcher's HomeSnapshot.
  */
 final class SaverSnapshot {
@@ -20,13 +20,16 @@ final class SaverSnapshot {
     static final int MAX_BYTES = 300 * 1024, FADE_MS = 220, LIVE_WAIT_MS = 3000;
     /** the first picture 10 s after the page is live, then one every 3 minutes while it shows */
     static final long FIRST_MS = 10_000, EVERY_MS = 3 * 60 * 1000;
+    static final long SAME_MINUTE_MS = 60_000;
     static final float SCALE = 0.5f;
     private static final String DIR = "saver_snapshot", FILE = "saver.webp", META = "saver.key";
 
     static String key(String url, int w, int h) { return Integer.toHexString(url.hashCode()) + "|" + w + "x" + h; }
 
     static boolean usable(String madeKey, long madeAt, String nowKey, long now) {
-        return madeKey != null && madeKey.equals(nowKey) && madeAt > 0 && now - madeAt >= 0 && now - madeAt <= MAX_AGE_MS;
+        // 4.4 beta 1: the picture carries the clock, so an older one shows an OLD time for the 0.8 s before the live page paints; it is drawn only when it was made in
+        // the very minute that is now (the picture is taken every 3 minutes, so after any idle wait the ground colour stands in instead)
+        return madeKey != null && madeKey.equals(nowKey) && madeAt > 0 && now - madeAt >= 0 && now - madeAt <= MAX_AGE_MS && madeAt / SAME_MINUTE_MS == now / SAME_MINUTE_MS;
     }
 
     private static File dir(Context c) { File d = new File(c.getCacheDir(), DIR); d.mkdirs(); return d; }

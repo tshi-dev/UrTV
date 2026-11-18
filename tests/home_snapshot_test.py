@@ -38,6 +38,8 @@ dream = (ROOT / "android/app/src/main/java/sa/urtv/screensaver/ScreenDream.java"
 ss = (ROOT / "android/app/src/main/java/sa/urtv/screensaver/SaverStart.java").read_text(encoding="utf-8")
 check("the screensaver page has the same rules: 24 h, 300 KB, half size WebP, private cache, keyed by the page address and the screen size",
       "MAX_AGE_MS = 24L * 60 * 60 * 1000" in sv and "MAX_BYTES = 300 * 1024" in sv and "SCALE = 0.5f" in sv and "getCacheDir()" in sv and "url.hashCode()" in sv and "now - madeAt <= MAX_AGE_MS" in sv)
+check("…the picture shows the clock, so it is drawn only when made in the minute that is now (beta 1: an old time for 0.8 s at the start); otherwise the ground colour",
+      "madeAt / SAME_MINUTE_MS == now / SAME_MINUTE_MS" in sv and "SAME_MINUTE_MS = 60_000" in sv and "!usable(madeKey, img.lastModified()" in sv)
 check("…drawn when the dream starts, held until the live page has painted (alpha 1, at most 3 s), then a 220 ms fade; captured only once painted, when the dream ends",
       "SaverSnapshot.load(c, url" in ss and "SaverStart.begin(" in dream and "page.getAlpha() >= 1f" in ss and "LIVE_WAIT_MS = 3000" in sv and "FADE_MS = 220" in sv and "page.getAlpha() < 1f" in sv and "SaverSnapshot.capture(ScreenDream.this, getWindow(), shownUrl, web)" in dream)
 check("…the picture is taken from the dream's window while the page shows (PixelCopy: 10 s after it is live, then every 3 minutes, a flat or failed copy kept out), never from the detached view at the end (a blank)",
