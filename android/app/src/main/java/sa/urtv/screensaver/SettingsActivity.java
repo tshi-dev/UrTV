@@ -96,7 +96,7 @@ public class SettingsActivity extends Activity {
         getWindow().setWindowAnimations(0);
         overridePendingTransition(0, 0);
         prefs = new Prefs(this);
-        classic = !Prefs.ONE_FORM && !prefs.couchOn();   // 4.5 (the owner): one form, couch-tv's compact rows, whatever the look; the 4.3.2 hub only with the flag off
+        classic = !prefs.uiOneForm() && !prefs.couchOn();   // 4.4 beta 2 «إعدادات بشكل واحد» (off by default): one form, couch-tv's compact rows, whatever the look; the 4.3.2 hub only with the flag off
         SettingsHub.classic(classic);
         if (!classic) cs = new CouchStyle(this);
         if (getIntent().hasExtra("hubAt")) { screen = SettingsHub.canon(getIntent().getStringExtra("screen")); hubAt = SettingsHub.canon(getIntent().getStringExtra("hubAt")); }   // pickLang: back on its button
@@ -524,10 +524,10 @@ public class SettingsActivity extends Activity {
         // 4.4 the owner: one switch; on applies the Couch preset and keeps the person's own values, off puts them back (Prefs.setCouch)
         // 4.4 the owner: «أشكال جاهزة», six looks at once (Prefs.setPreset); with PRESETS_REPLACE_COUCH it takes the place of «شكل كنبة»
         // 4.5 «المظهر» over the live home (LookPanelActivity): the looks and the parts, each shown on the home under the focus, kept with OK
-        row("المظهر على الرئيسية", "الأشكال الجاهزة والتخطيط والخلفية والساعة وشكل التطبيقات، تراها على الرئيسية قبل ما تختار", R.drawable.ic_eye,
+        if (prefs.uiPanel()) row("المظهر على الرئيسية", "الأشكال الجاهزة والتخطيط والخلفية والساعة وشكل التطبيقات، تراها على الرئيسية قبل ما تختار", R.drawable.ic_eye,
             new Runnable() { public void run() { LookPanelActivity.open(SettingsActivity.this); } });
         // 4.5 «رجّع الشكل السابق» (the owner approved it): the first row after a change of the look, the look before by name (its time is in the panel's row); pressed again, it comes back
-        if (prefs.hasPreviousLook()) row("رجّع الشكل السابق", prefs.previousLookName(), R.drawable.ic_eye,
+        if (prefs.uiUndo() && prefs.hasPreviousLook()) row("رجّع الشكل السابق", prefs.previousLookName(), R.drawable.ic_eye,
             new Runnable() { public void run() { prefs.restorePreviousLook(); render(); } });
         row("أشكال جاهزة", prefs.presetLabel(), R.drawable.ic_eye, new Runnable() { public void run() { pickPreset(); } });
         if (!Prefs.PRESETS_REPLACE_COUCH) row("شكل كنبة", prefs.couchLabel(), R.drawable.ic_eye, new Runnable() { public void run() { flipCouch(); } });
@@ -549,6 +549,20 @@ public class SettingsActivity extends Activity {
             new Runnable() { public void run() { startActivity(new Intent(SettingsActivity.this, AppearanceActivity.class)); } });
         row("صفحات الأسهم والمباريات داكنة", prefs.pagesDark() ? "مفعّل، بالمظهر الداكن دائمًا" : "متوقف، تتبع مظهر الرئيسية", R.drawable.ic_eye,
             new Runnable() { public void run() { prefs.setPagesDark(!prefs.pagesDark()); render(); } });
+        // 4.4 beta 2 (the owner, «with a protective way»): the new look items, each its own switch, off by default and after an update
+        row("إعدادات بشكل واحد", prefs.uiOneForm() ? "مفعّل، صفوف مضغوطة لكل الأشكال" : "متوقف، كما كانت الإعدادات", R.drawable.ic_eye,
+            new Runnable() { public void run() {
+                prefs.setUiOneForm(!prefs.uiOneForm());
+                startActivity(new Intent(SettingsActivity.this, SettingsActivity.class).putExtra("screen", "look").putExtra("hubAt", "look").putExtra("want", "إعدادات بشكل واحد")
+                    .addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION));   // the other form now, the focus on this row
+                finish();
+            } });
+        row("لوحة المظهر على الرئيسية", prefs.uiPanel() ? "مفعّلة، تعاين الشكل على الرئيسية قبل ما تختار" : "متوقفة", R.drawable.ic_eye,
+            new Runnable() { public void run() { prefs.setUiPanel(!prefs.uiPanel()); render(); } });
+        row("زر رجّع الشكل السابق", prefs.uiUndo() ? "مفعّل، أول صف بعد تغيير الشكل" : "متوقف", R.drawable.ic_eye,
+            new Runnable() { public void run() { prefs.setUiUndo(!prefs.uiUndo()); render(); } });
+        row("تبديل الشكل بلا وميض", prefs.uiSmooth() ? "مفعّل، الرئيسية تتغير مرة وحدة بتلاشٍ قصير" : "متوقف، كما كان", R.drawable.ic_eye,
+            new Runnable() { public void run() { prefs.setUiSmooth(!prefs.uiSmooth()); render(); } });
         // up to three cards left of the clock; each place takes any card, or «بدون» (the ones after it move up)
         for (int k = 0; k < Prefs.HOME_CARDS; k++) {
             final int place = k;
@@ -1101,7 +1115,7 @@ public class SettingsActivity extends Activity {
     private void applyCombo(String key) {
         boolean wasClassic = !prefs.couchOn();
         prefs.setCombo(key);
-        if (Prefs.ONE_FORM || wasClassic == !prefs.couchOn()) { render(); return; }   // 4.5: one form, never opened again for a look
+        if (prefs.uiOneForm() || wasClassic == !prefs.couchOn()) { render(); return; }   // 4.5: one form, never opened again for a look
         startActivity(new Intent(this, SettingsActivity.class).putExtra("screen", "look").putExtra("hubAt", "look").putExtra("want", "أشكال جاهزة")
             .addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION));
         finish();
@@ -1111,7 +1125,7 @@ public class SettingsActivity extends Activity {
     private void applyPreset(String key) {
         boolean wasClassic = !prefs.couchOn();
         prefs.setPreset(key);
-        if (Prefs.ONE_FORM || wasClassic == !prefs.couchOn()) { render(); return; }   // 4.5: one form, never opened again for a look
+        if (prefs.uiOneForm() || wasClassic == !prefs.couchOn()) { render(); return; }   // 4.5: one form, never opened again for a look
         startActivity(new Intent(this, SettingsActivity.class).putExtra("screen", "look").putExtra("hubAt", "look").putExtra("want", "أشكال جاهزة")
             .addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION));
         finish();
@@ -1119,7 +1133,7 @@ public class SettingsActivity extends Activity {
 
     private void flipCouch() {
         prefs.setCouch(!prefs.couchOn());
-        if (Prefs.ONE_FORM) { render(); return; }
+        if (prefs.uiOneForm()) { render(); return; }
         startActivity(new Intent(this, SettingsActivity.class).putExtra("screen", "look").putExtra("hubAt", "look").putExtra("want", "شكل كنبة")
             .addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION));
         finish();

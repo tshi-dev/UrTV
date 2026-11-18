@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """4.5 (the owner approved docs/ui/PROPOSAL.md, «with a protective way»): the settings have one form, couch-tv's compact rows, for every look, and
 the 4.3.2 hub's tiles go. Nothing the person had set may be lost: every row and every tile of the hub is listed here with its place in the one form
-(SettingsHub run on a JVM by tests/OneFormRun.java), and the activity never builds the hub while Prefs.ONE_FORM is on, nor opens again for a look.
+(SettingsHub run on a JVM by tests/OneFormRun.java), and the activity never builds the hub while «إعدادات بشكل واحد» (prefs.uiOneForm) is on, nor opens again for a look.
 Run: python3 tests/settings_one_form_test.py"""
 import re
 import shutil
@@ -23,11 +23,12 @@ def check(name, ok, detail=""):
 
 st = (APP / "SettingsActivity.java").read_text(encoding="utf-8")
 prefs = (APP / "Prefs.java").read_text(encoding="utf-8")
-check("Prefs.ONE_FORM is on (the owner's choice), and the hub is built only with it off",
-      "static final boolean ONE_FORM = true;" in prefs and "classic = !Prefs.ONE_FORM && !prefs.couchOn();" in st)
+check("4.4 beta 2: «إعدادات بشكل واحد» is a switch, off by default (and after an update: a key never stored before), and the hub is built only with it off",
+      'boolean uiOneForm() { return sp.getBoolean("uiOneForm", false); }' in prefs and "classic = !prefs.uiOneForm() && !prefs.couchOn();" in st
+      and 'row("إعدادات بشكل واحد", prefs.uiOneForm() ?' in st)
 check("a look, a mix or «شكل كنبة» never opens the settings again (no restart, no flash): drawn again in place",
-      st.count("if (Prefs.ONE_FORM || wasClassic == !prefs.couchOn()) { render(); return; }") == 2
-      and re.search(r"private void flipCouch\(\) \{\s*prefs\.setCouch\(!prefs\.couchOn\(\)\);\s*if \(Prefs\.ONE_FORM\) \{ render\(\); return; \}", st) is not None)
+      st.count("if (prefs.uiOneForm() || wasClassic == !prefs.couchOn()) { render(); return; }") == 2
+      and re.search(r"private void flipCouch\(\) \{\s*prefs\.setCouch\(!prefs\.couchOn\(\)\);\s*if \(prefs\.uiOneForm\(\)\) \{ render\(\); return; \}", st) is not None)
 if not shutil.which("javac"):
     print("SKIP the places: no javac here")
     sys.exit(1 if failed else 0)

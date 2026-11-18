@@ -218,7 +218,8 @@ final class HomeCard {
         if (!create(want)) return;   // 4.3.5: no WebView on this TV: the home without its card, never a crash (WebViews)
         web.onResume();
         web.resumeTimers();
-        if (android.os.Build.VERSION.SDK_INT >= 23) {   // 4.5: a new page is shown from its first drawn frame (onPageCommitVisible), never as an empty (black) box while it loads
+        ConfigSnapshot k = ConfigSnapshot.known();
+        if (android.os.Build.VERSION.SDK_INT >= 23 && k != null && k.uiSmooth) {   // 4.4 beta 2 «تبديل الشكل بلا وميض»: a new page is shown from its first drawn frame (onPageCommitVisible), never as an empty (black) box while it loads
             final WebView w = web;
             w.setAlpha(0f);
             w.postDelayed(new Runnable() { @Override public void run() { w.setAlpha(1f); } }, HomeLook.WAIT_MS);   // at the latest

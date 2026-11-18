@@ -1382,9 +1382,20 @@ final class Prefs {
      * the look's own; «شكلك المعتاد» puts them back exactly. A row changed after reads «مخصّص». The city, the adhan, the teams and the locks are never
      * touched: a look is the look only. Two of the owner's open questions are flags here, both on until he says otherwise.
      */
-    /** 4.5 (the owner): the settings have one form, couch-tv's compact rows, for every look; the 4.3.2 hub (its tiles) is not shown. Every place of it
-     *  is in the one form (tests/settings_one_form_test.py lists each with its new place). false: as in 4.4 (the hub unless «منظر وساعة»). */
-    static final boolean ONE_FORM = true;
+    // ---- 4.4 beta 2 (the owner: «with a protective way»): each new look item behind its own switch, off by default and after an update
+    /** «إعدادات بشكل واحد»: the settings in one form, couch-tv's compact rows, for every look (off: the 4.3.2 hub unless «منظر وساعة», as in 4.4).
+     *  Every place of the hub is in the one form (tests/settings_one_form_test.py lists each with its new place). */
+    boolean uiOneForm() { return sp.getBoolean("uiOneForm", false); }
+    void setUiOneForm(boolean on) { sp.edit().putBoolean("uiOneForm", on).apply(); }
+    /** «لوحة المظهر على الرئيسية»: the row that opens LookPanelActivity, and the panel itself (saver.sh lookpanel) */
+    boolean uiPanel() { return sp.getBoolean("uiPanel", false); }
+    void setUiPanel(boolean on) { sp.edit().putBoolean("uiPanel", on).apply(); }
+    /** «زر رجّع الشكل السابق»: the first row of «المظهر» after a change of the look */
+    boolean uiUndo() { return sp.getBoolean("uiUndo", false); }
+    void setUiUndo(boolean on) { sp.edit().putBoolean("uiUndo", on).apply(); }
+    /** «تبديل الشكل بلا وميض»: the home told at once (LOOK_CHANGED) and applying a look whole behind its still picture; off: as in 4.4 (the next return or minute) */
+    boolean uiSmooth() { return sp.getBoolean("uiSmooth", false); }
+    void setUiSmooth(boolean on) { sp.edit().putBoolean("uiSmooth", on).apply(); }
     static final boolean PRESETS_REPLACE_COUCH = true;    // «أشكال جاهزة» replaces the «شكل كنبة» switch («منظر وساعة» is the Couch look)
     static final boolean CLEAN_HIDES_BUTTONS = true;      // «صورة فقط» hides the home's round buttons (they stay in the control centre and the menu key)
     static final String[] PRESETS = {"tv", "couch", "clean", "family", "sport", "calm"};
@@ -1624,7 +1635,7 @@ final class Prefs {
 
     /** the home reads the look now (its LOOK_CHANGED receiver); an older home, or none, simply reads it at its next minute as before */
     void lookChanged() {
-        if (ctx == null) return;
+        if (ctx == null || !uiSmooth()) return;   // 4.4 beta 2: only with «تبديل الشكل بلا وميض» on; off, the home reads at its next return or minute, as in 4.4
         try { ctx.sendBroadcast(new android.content.Intent(LOOK_CHANGED).setPackage("sa.urtv.home"), LOOK_PERMISSION); } catch (RuntimeException e) { }
     }
 

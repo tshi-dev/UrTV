@@ -281,7 +281,11 @@ case "${1:-}" in
   preset)     set1 preset "${2:?usage: optimize/saver.sh preset tv|couch|clean|family|sport|calm|couch-prayers|clean-icons|sport-night|tv-glass}" ;;
   couch)      set1 couch "${2:?usage: optimize/saver.sh couch on|off}" ;;
   lookback)   set1 lookback restore ;;
-  lookpanel)  set1 lookpanel open ;;   # 4.5 «المظهر على الرئيسية»: the panel over the home (the looks and parts shown before they are kept)   # 4.5 «رجّع الشكل السابق»: the look before the last change, put back whole (again: the other way)
+  lookpanel)  set1 lookpanel open ;;
+  oneform)    set1 oneform "${2:?usage: optimize/saver.sh oneform on|off}" ;;   # 4.4 beta 2 «إعدادات بشكل واحد» (off by default)
+  lookpanelrow) set1 lookpanelrow "${2:?usage: optimize/saver.sh lookpanelrow on|off}" ;;   # «لوحة المظهر على الرئيسية» (off by default)
+  lookundo)   set1 lookundo "${2:?usage: optimize/saver.sh lookundo on|off}" ;;   # «زر رجّع الشكل السابق» (off by default)
+  smoothlook) set1 smoothlook "${2:?usage: optimize/saver.sh smoothlook on|off}" ;;   # «تبديل الشكل بلا وميض» (off by default)   # 4.5 «المظهر على الرئيسية»: the panel over the home (the looks and parts shown before they are kept)   # 4.5 «رجّع الشكل السابق»: the look before the last change, put back whole (again: the other way)
   background) set1 background "${2:?usage: optimize/saver.sh background photos|scenes}" ;;
   clock)      set1 clock "${2:?usage: optimize/saver.sh clock plain|glass}" ;;
   appsstyle)  set1 appsstyle "${2:?usage: optimize/saver.sh appsstyle tiles|banners|icons}" ;;

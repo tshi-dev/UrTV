@@ -86,7 +86,7 @@ check("a new cards' page is hidden until its first frame is on the screen (onPag
 
 # ---- «رجّع الشكل السابق»
 check("«رجّع الشكل السابق»: the first row of «المظهر», only when there is a look before that is not this one; it puts that look back",
-      re.search(r'if \(prefs\.hasPreviousLook\(\)\) row\("رجّع الشكل السابق", prefs\.previousLookName\(\)', st)
+      re.search(r'if \(prefs\.uiUndo\(\) && prefs\.hasPreviousLook\(\)\) row\("رجّع الشكل السابق", prefs\.previousLookName\(\)', st)
       and st.index('row("رجّع الشكل السابق"') < st.index('row("أشكال جاهزة"') and "prefs.restorePreviousLook(); render();" in st)
 rp = body(prefs, "    void restorePreviousLook() {")
 check("…whole (its fields and which look, mix and own values it was), and the look it replaced becomes the look before (pressed again, it comes back)",
@@ -119,6 +119,19 @@ check("the home moves aside while the panel is open (one transform of its root, 
       and 'aside(i.getBooleanExtra("open", false)); if (!i.getBooleanExtra("open", false)) previewEnd();' in main)
 check("its receiver asks for the same permission", "registerReceiver(lookPanel, pf2, LOOK_PERMISSION, null, Context.RECEIVER_EXPORTED)" in main and "unregisterReceiver(lookPanel)" in main)
 check("the settings open it from the first row of «المظهر» («المظهر على الرئيسية»)", 'row("المظهر على الرئيسية"' in st and "LookPanelActivity.open(SettingsActivity.this)" in st)
+
+# ---- 4.4 beta 2 (the owner, «with a protective way»): each item its own switch, off by default and after an update (a key never stored before)
+for key, getter in (("uiOneForm", "uiOneForm"), ("uiPanel", "uiPanel"), ("uiUndo", "uiUndo"), ("uiSmooth", "uiSmooth")):
+    check(f"«{getter}»: a switch, off unless turned on (sp.getBoolean(\"{key}\", false))", f'boolean {getter}() {{ return sp.getBoolean("{key}", false); }}' in prefs)
+check("each switch gates its item: the one form, the panel's row and the panel itself, the undo row (in the settings and the panel), the home's signal",
+      "classic = !prefs.uiOneForm() && !prefs.couchOn();" in st and 'if (prefs.uiPanel()) row("المظهر على الرئيسية"' in st
+      and "if (!new Prefs(from).uiPanel()) return;" in panel and "if (prefs.uiUndo() && prefs.hasPreviousLook()) first = row(" in panel
+      and "if (ctx == null || !uiSmooth()) return;" in lc)
+check("…and on the home, the new cards' page waits for its first frame only with «تبديل الشكل بلا وميض» on (the provider's ui_smooth; an older screensaver: off)",
+      '"ui_smooth"' in provider and 'p.uiSmooth() ? "1" : "0"' in provider and "k != null && k.uiSmooth" in au and 'cur.getColumnIndex("ui_smooth")' in snap)
+check("the four switches are rows of «المظهر» with a command each (saver.sh oneform, lookpanelrow, lookundo, smoothlook on|off)",
+      all(f'row("{n}"' in st for n in ("إعدادات بشكل واحد", "لوحة المظهر على الرئيسية", "زر رجّع الشكل السابق", "تبديل الشكل بلا وميض"))
+      and all(f"  {c})" in (ROOT / "optimize/saver.sh").read_text(encoding="utf-8") for c in ("oneform", "lookpanelrow", "lookundo", "smoothlook")))
 
 # ---- LastGood.expire on a JVM: the next read asks again; the answer is kept for peek
 if shutil.which("javac"):

@@ -50,6 +50,7 @@ public final class LookPanelActivity extends Activity {
 
     /** opens «المظهر» over the home: the home first (its own task in front), then this see-through screen over it */
     static void open(android.content.Context from) {
+        if (!new Prefs(from).uiPanel()) return;   // 4.4 beta 2: only with «لوحة المظهر على الرئيسية» on
         try {
             from.startActivity(new Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_HOME).setPackage("sa.urtv.home").addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
         } catch (RuntimeException e) { /* our home is not here: the panel over whatever is in front, still a choice with its OK and Back */ }
@@ -92,7 +93,7 @@ public final class LookPanelActivity extends Activity {
         list.addView(text("المظهر", CouchStyle.TITLE, CouchStyle.WHITE, true));
         list.addView(text("التركيز يعرض الشكل على الرئيسية، وموافق يثبّته، ورجوع يرجّع شكلك", CouchStyle.HINT, CouchStyle.SUB, false));
         View first = null;
-        if (prefs.hasPreviousLook()) first = row("رجّع الشكل السابق", prefs.previousLookName(), () -> { prefs.restorePreviousLook(); build(); });
+        if (prefs.uiUndo() && prefs.hasPreviousLook()) first = row("رجّع الشكل السابق", prefs.previousLookName(), () -> { prefs.restorePreviousLook(); build(); });
         list.addView(head("أشكال جاهزة"));
         List<View> cards = new ArrayList<>();
         LinearLayout line = null;

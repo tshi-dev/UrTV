@@ -26,6 +26,8 @@ final class ConfigSnapshot {
     String homeLayout = "classic", scenePacks = "saudi", sceneStay = "20";
     /** 4.4 «الخلفية» (photos, scenes) and «الساعة» (plain, glass): an older screensaver says nothing: photos and plain, the home as it was */
     String homeBg = "photos", homeClock = "plain", appsStyle = "frame";
+    /** 4.4 beta 2 «تبديل الشكل بلا وميض» (the screensaver's switch, off by default; an older screensaver says nothing: off) */
+    boolean uiSmooth;
     boolean sceneByTime, sceneByWeather;   // «الأفق يتبع الوقت», «الأفق يتبع الطقس»: off unless the screensaver says on
     /** «أزرار الريموت»: "youtube=PKG,netflix=,prime=" from the screensaver's settings; null = an older screensaver said nothing */
     String keyApps;
@@ -59,7 +61,7 @@ final class ConfigSnapshot {
     }
 
     /** The same values with another fragment (the one kept on disk). */
-    private ConfigSnapshot withFragment(String f) { ConfigSnapshot c = new ConfigSnapshot(f, greetingOn, adhanBarOn, listenPillOn, updateBellOn, appearance, watchNextOn, look, stale, placeTicket); c.favBar = favBar; c.tweaks = tweaks; c.pagesDark = pagesDark; c.pillsHidden = pillsHidden; c.matchApp = matchApp; c.cityChosen = cityChosen; c.homeLayout = homeLayout; c.scenePacks = scenePacks; c.sceneStay = sceneStay; c.sceneByTime = sceneByTime; c.sceneByWeather = sceneByWeather; c.homeBg = homeBg; c.homeClock = homeClock; c.appsStyle = appsStyle; c.greetingName = greetingName; return c; }
+    private ConfigSnapshot withFragment(String f) { ConfigSnapshot c = new ConfigSnapshot(f, greetingOn, adhanBarOn, listenPillOn, updateBellOn, appearance, watchNextOn, look, stale, placeTicket); c.favBar = favBar; c.tweaks = tweaks; c.pagesDark = pagesDark; c.pillsHidden = pillsHidden; c.matchApp = matchApp; c.cityChosen = cityChosen; c.homeLayout = homeLayout; c.scenePacks = scenePacks; c.sceneStay = sceneStay; c.sceneByTime = sceneByTime; c.sceneByWeather = sceneByWeather; c.homeBg = homeBg; c.homeClock = homeClock; c.appsStyle = appsStyle; c.uiSmooth = uiSmooth; c.greetingName = greetingName; return c; }
 
     private static volatile String savedFragment;   // what this process last wrote (or read) of the kept fragment
 
@@ -77,14 +79,14 @@ final class ConfigSnapshot {
     }
 
     /** The same values, marked as an old copy. */
-    ConfigSnapshot asStale() { ConfigSnapshot c = new ConfigSnapshot(fragment, greetingOn, adhanBarOn, listenPillOn, updateBellOn, appearance, watchNextOn, look, true, placeTicket); c.favBar = favBar; c.tweaks = tweaks; c.pagesDark = pagesDark; c.pillsHidden = pillsHidden; c.matchApp = matchApp; c.cityChosen = cityChosen; c.homeLayout = homeLayout; c.scenePacks = scenePacks; c.sceneStay = sceneStay; c.sceneByTime = sceneByTime; c.sceneByWeather = sceneByWeather; c.homeBg = homeBg; c.homeClock = homeClock; c.appsStyle = appsStyle; c.keyApps = keyApps; c.greetingName = greetingName; return c; }
+    ConfigSnapshot asStale() { ConfigSnapshot c = new ConfigSnapshot(fragment, greetingOn, adhanBarOn, listenPillOn, updateBellOn, appearance, watchNextOn, look, true, placeTicket); c.favBar = favBar; c.tweaks = tweaks; c.pagesDark = pagesDark; c.pillsHidden = pillsHidden; c.matchApp = matchApp; c.cityChosen = cityChosen; c.homeLayout = homeLayout; c.scenePacks = scenePacks; c.sceneStay = sceneStay; c.sceneByTime = sceneByTime; c.sceneByWeather = sceneByWeather; c.homeBg = homeBg; c.homeClock = homeClock; c.appsStyle = appsStyle; c.uiSmooth = uiSmooth; c.keyApps = keyApps; c.greetingName = greetingName; return c; }
 
     /**
      * 4.5 «المظهر»'s preview (LookPreview): the same values with the look's parts a choice under the focus would give, never saved: the layout,
      * the background, the clock, the apps' way and the light (null: the saved one). A copy marked as the answer it was made from (not stale).
      */
     ConfigSnapshot withLook(String layout, String bg, String clock, String apps, String light) {
-        ConfigSnapshot c = new ConfigSnapshot(fragment, greetingOn, adhanBarOn, listenPillOn, updateBellOn, light != null ? light : appearance, watchNextOn, look, stale, placeTicket); c.favBar = favBar; c.tweaks = tweaks; c.pagesDark = pagesDark; c.pillsHidden = pillsHidden; c.matchApp = matchApp; c.cityChosen = cityChosen; c.homeLayout = homeLayout; c.scenePacks = scenePacks; c.sceneStay = sceneStay; c.sceneByTime = sceneByTime; c.sceneByWeather = sceneByWeather; c.homeBg = homeBg; c.homeClock = homeClock; c.appsStyle = appsStyle; c.keyApps = keyApps; c.greetingName = greetingName;
+        ConfigSnapshot c = new ConfigSnapshot(fragment, greetingOn, adhanBarOn, listenPillOn, updateBellOn, light != null ? light : appearance, watchNextOn, look, stale, placeTicket); c.favBar = favBar; c.tweaks = tweaks; c.pagesDark = pagesDark; c.pillsHidden = pillsHidden; c.matchApp = matchApp; c.cityChosen = cityChosen; c.homeLayout = homeLayout; c.scenePacks = scenePacks; c.sceneStay = sceneStay; c.sceneByTime = sceneByTime; c.sceneByWeather = sceneByWeather; c.homeBg = homeBg; c.homeClock = homeClock; c.appsStyle = appsStyle; c.uiSmooth = uiSmooth; c.keyApps = keyApps; c.greetingName = greetingName;
         if (layout != null) c.homeLayout = layout;
         if (bg != null) c.homeBg = bg;
         if (clock != null) c.homeClock = clock;
@@ -232,6 +234,7 @@ final class ConfigSnapshot {
         String homeLayout = "classic", scenePacks = "saudi", sceneStay = "20";
         boolean sceneByTime = false, sceneByWeather = false;
         String homeBg = "photos", homeClock = "plain", appsStyle = "frame";
+        boolean uiSmooth = false;
         try (Cursor cur = c.getContentResolver().query(URI, null, null, null, null)) {
             if (cur != null && cur.moveToFirst()) {
                 fragment = cur.getString(0);
@@ -281,6 +284,8 @@ final class ConfigSnapshot {
                 if (hb >= 0 && "scenes".equals(cur.getString(hb))) homeBg = "scenes";
                 int hc = cur.getColumnIndex("home_clock");
                 if (hc >= 0 && "glass".equals(cur.getString(hc))) homeClock = "glass";
+                int us = cur.getColumnIndex("ui_smooth");
+                if (us >= 0 && "1".equals(cur.getString(us))) uiSmooth = true;
                 int as = cur.getColumnIndex("apps_style");   // 4.4 «شكل التطبيقات»; an older screensaver says nothing: the ring
                 if (as >= 0) { String v = cur.getString(as); if (java.util.Arrays.asList("zoom", "banners", "icons", "tiles").contains(v)) appsStyle = v; }   // 4.4: the three ways too (FavBar.look)
                 if ("scenes".equals(homeLayout)) { homeLayout = "classic"; homeBg = "scenes"; homeClock = "glass"; }   // a 4.3.3 test build's screensaver
@@ -309,6 +314,7 @@ final class ConfigSnapshot {
         made.homeBg = homeBg;
         made.homeClock = homeClock;
         made.appsStyle = appsStyle;
+        made.uiSmooth = uiSmooth;
         made.keyApps = keyApps;
         made.greetingName = greetingName;
         if (fragment != null) keepValues(c, made);   // a real answer: its look and buttons are what a cold first draw shows

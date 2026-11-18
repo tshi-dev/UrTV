@@ -55,8 +55,8 @@ if shutil.which("javac"):
 else:
     print("SKIP the layouts on a JVM: no javac here")
 
-check("the screen follows the switch: off = 4.3.2 (SettingsHub.classic), set before anything is built; 4.5: only with Prefs.ONE_FORM off (tests/settings_one_form_test.py)",
-      "classic = !Prefs.ONE_FORM && !prefs.couchOn();   // 4.5" in st and "SettingsHub.classic(classic);" in st
+check("the screen follows the switch: off = 4.3.2 (SettingsHub.classic), set before anything is built; 4.4 beta 2: only with «إعدادات بشكل واحد» off (tests/settings_one_form_test.py)",
+      "classic = !prefs.uiOneForm() && !prefs.couchOn();   // 4.4 beta 2" in st and "SettingsHub.classic(classic);" in st
       and st.index("SettingsHub.classic(classic);") < st.index("UpdateJob.schedule(this);"))
 check("4.3.2's own ways: its screens of buttons (hub, tile), Back up a screen, its section title on the side; the side list's only when on",
       "if (tiles) { hub(want, wasIndex); return; }" in st and "private View tile(final String cat, String name, int icon, String summary)" in st
