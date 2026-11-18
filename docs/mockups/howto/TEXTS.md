@@ -137,7 +137,8 @@ Every text is written from the game's real rules: its SPEC (`games/<id>/SPEC.md`
 **الهدف** اعرف الكلمة التي يدل عليها سطر الإيموجي قبل الباقين. / Work out the word a line of emoji stands for, before the others.
 **كيف تلعب**
 1. من 2 إلى 10 جوالات. يظهر سطر إيموجي (🍚🍗 = كبسة). / 2 to 10 phones; a line of emoji shows.
-2. اختر الجواب الصحيح من أربعة في جوالك (10 أو 15 أو 20 ثانية). / Pick the right one of four on your phone.
+2. اختر الجواب الصحيح من أربعة في جوالك. / Pick the right one of four on your phone.
+3. لكل لغز 10 أو 15 أو 20 ثانية. / Each puzzle has 10, 15 or 20 seconds.
 **النقاط** أول جواب صحيح 3 نقاط، الثاني 2، وكل صحيح بعدهما 1. / First right answer 3, second 2, every other right one 1.
 **النهاية** بعد 10 أو 15 أو 20 لغزًا يفوز الأعلى. / After 10, 15 or 20 puzzles the highest wins.
 
