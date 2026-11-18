@@ -110,6 +110,22 @@ final class SetupLists {
         "com.xgimi.filemanager",
         "com.tcl.hearaid",
         "com.google.android.marvin.talkback",
+        "com.zeasn.whaleos.settings",
+        "com.apps.channels",
+        "com.beko.tv.channel",
+        "com.grundig.tv.channel",
+        "com.zhixin.atvchannel",
+        "com.cvte.tv.player",
+        "com.mediatek.tv.oneworld.tvcenter",
+        "com.sony.dtv.broadcastsettings",
+        "com.sony.dtv.tuningconfirmation_dvbt",
+        "com.sony.dtv.serviceinformation",
+        "com.sony.dtv.b2b.prosettings",
+        "com.sony.dtv.deviceadminsettings",
+        "com.sony.dtv.b2b.deviceadminsettings",
+        "com.softwinner.settingssetup",
+        "com.softwinner.settingsassist",
+        "com.amazon.whasettings",
     };
 
     /** never turned off: Android's own core, regular expressions matched against the whole name (optimize/lists/core.txt) */
