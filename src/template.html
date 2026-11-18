@@ -3999,10 +3999,32 @@ function stocksCard(){
 }
 
 // verse one day, hadith the next. Verse texts come from the Quran API via CI
-const VERSES = __VERSES__;   // assets/shared/verses.json
 // hadith: only those .github/tools/verify_hadith.py found in the six books, each shown in full as the book has it,
 // isnad and all: parts are ["n", narration] and ["q", the Prophet's words]
-const HADITH = __HADITH__;   // assets/shared/hadith.json, through src/build.py
+// 4.5 (the owner: the page under 500 KB): the two lists (about 400 KB) are dist/quotes.json beside the page, in both apps' assets as tafsir.json is.
+// The page keeps a short starter of each (the shortest, so any card can take one); quotes() puts the whole lists in their place the first time a
+// verse or hadith is drawn, read at once (not later: the day's verse is picked from the whole list, so it must never change under the eyes),
+// from beside the page or the app's assets. Only when none of those answers (a page opened elsewhere): the starter, and the repository's in the background.
+// dist/urtv.html (stand-alone) has the whole lists inline (QUOTES_FULL).
+let VERSES = __VERSES__;   // assets/shared/verses.json
+let HADITH = __HADITH__;   // assets/shared/hadith.json, through src/build.py
+let QUOTES_FULL = __QUOTES_FULL__;
+const quotesOk = j => j && Array.isArray(j.verses) && j.verses.length && Array.isArray(j.hadith) && j.hadith.length;
+function quotes(){
+  if(QUOTES_FULL) return;
+  QUOTES_FULL = true;   // once, whatever happens
+  for(const u of ['quotes.json', 'file:///android_asset/quotes.json', 'file:///android_asset/web/quotes.json']){
+    try{
+      const x = new XMLHttpRequest();   // XHR, not fetch: a file:// page reads file:// only this way; at once, a local file of the app
+      x.open('GET', u, false); x.send();
+      const j = JSON.parse(x.responseText);
+      if(quotesOk(j)){ VERSES = j.verses; HADITH = j.hadith; return; }
+    }catch(e){}
+  }
+  const x = new XMLHttpRequest();
+  x.onload = () => { try{ const j = JSON.parse(x.responseText); if(quotesOk(j)){ VERSES = j.verses; HADITH = j.hadith; renderPanel(false, 'verse'); } }catch(e){} };
+  try{ x.open('GET', 'https://raw.githubusercontent.com/tshi-dev/UrTV/master/dist/quotes.json'); x.timeout = 8000; x.send(); }catch(e){}
+}
 // the text's size steps down with its length
 const quoteSize = n => n > 420 ? ' q3' : n > 300 ? ' q2' : n > 180 ? ' q1' : '';
 // a long text steps down one size more (q1..q4) until the card has 4 px to spare under its 42% and above the bottom bar
@@ -4098,6 +4120,7 @@ function pickShort(list, at, len, card){
 // The verse card's turn: the day as always, or with #versemin=3 the 3-minute slot of the clock
 const quoteTurn = () => CONFIG.verseMin ? Math.floor(Date.now() / (CONFIG.verseMin * 60000)) : riyadhDayNumber();
 function quoteOfDay(card, kind = CONFIG.verseKind){
+  quotes();
   // both (the default): even turns a verse, odd a hadith, each list a step every two turns
   const n = quoteTurn(), half = kind === 'both' ? Math.floor(n / 2) : n;
   if(VERSES.length && (kind === 'verse' || (kind === 'both' && n % 2 === 0))){
@@ -4690,6 +4713,7 @@ function designTick(){
   else if(d === 'frame'){
     sdNode('sd-vig');
     setHTML(sdNode('sd-fdate'), esc(sdDay()));
+    quotes();
     const v = VERSES.length ? VERSES[riyadhDayNumber() % VERSES.length] : null;
     if(v && v.text.length < 90) setHTML(sdNode('sd-verse'), '<div class="q"><span class="o">﴿</span>' + esc(v.text) + '<span class="o">﴾</span></div><div class="s">' + esc(v.surah) + SEP + 'الآية' + ' ' + ar(v.ayah) + '</div>');
   } else if(d === 'dayline' && DAY_TIMES){

@@ -10,10 +10,14 @@ let failed = 0;
 const check = (name, ok, detail = '') => { console.log((ok ? 'PASS ' : 'FAIL ') + name + (ok ? '' : '  -> ' + detail)); if (!ok) failed++; };
 const browser = await chromium.launch(process.env.CHROMIUM ? { executablePath: process.env.CHROMIUM } : {});
 
-async function page(file, w, h, q) {
+// 4.5: the page's clock is pinned (the countdown is not drawn while a prayer is between its adhan and its iqama, so a run at that minute
+// of the real day failed): Wednesday 18 November 2026, 10:30 in Riyadh, after sunrise and over an hour before the Dhuhr adhan (no window)
+const AT = Date.parse('2026-11-18T07:30:00Z');
+async function page(file, w, h, q, at = AT) {
   const ctx = await browser.newContext({ viewport: { width: w, height: h } });
   await ctx.route(/^https?:/, r => r.abort());
   const p = await ctx.newPage();
+  await p.clock.setFixedTime(at);
   const errors = [];
   p.on('pageerror', e => errors.push(e.message));
   await p.goto('file://' + path.join(ROOT, 'dist', file) + '#lat=24.7&lon=46.7&city=x&widget=1&' + q);
@@ -27,7 +31,7 @@ async function page(file, w, h, q) {
     const centred = cards.every(c => getComputedStyle(c.querySelector('.hd')).justifyContent === 'flex-start' && [...c.querySelectorAll('ul:not(.pgrid) > li')].every(l => getComputedStyle(l).justifyContent === 'center'));   // 4.4 the owner: the titles at the start (right) like everywhere, the lines centred
     return { centred, cls: document.documentElement.className, cards: cards.map(box), bgs: cards.map(c => getComputedStyle(c).backgroundColor + '|' + getComputedStyle(c).backgroundImage + '|' + getComputedStyle(c, '::before').backgroundColor),
       lis: lis.map(box), next: lis.filter(l => l.classList.contains('next')).map(l => ({ cd: (l.querySelector('.cd') || {}).textContent || '', bg: getComputedStyle(l).backgroundColor })),
-      cds: document.querySelectorAll('.cd').length, prBg: pr ? getComputedStyle(pr).backgroundColor : '' };
+      cds: document.querySelectorAll('.cd').length, prBg: pr ? getComputedStyle(pr).backgroundColor : '', asr: typeof DAY_TIMES !== 'undefined' && DAY_TIMES ? String(DAY_TIMES.Asr) : '' };
   });
   await ctx.close();
   return { ...r, errors };
@@ -52,6 +56,11 @@ for (const file of ['tv.html', 'tv-en.html']) {
   const cur = await page(file, 461, 250, 'panel=prayers&home_panel=prayers');
   // 4.4 card review: every style has the countdown in the next box (solid gold); only «مربعات» is pbx
   check(`${file} any other style: the countdown in the next box only, it solid gold, no pbx`, cur.cds === 1 && cur.next.length === 1 && cur.next[0].cd.trim() && cur.next[0].bg === 'rgb(235, 198, 125)' && !cur.cls.includes('pbx'), JSON.stringify([cur.cds, cur.next, cur.cls]));
+  // inside an iqama window (5 minutes after the Asr adhan, its iqama 20 minutes after it): Asr is the lit box and no box has a countdown
+  const [ah, am] = cur.asr.split(':').map(Number);
+  const inWin = await page(file, 461, 250, 'panel=prayers&home_panel=prayers', Date.parse('2026-11-18T00:00:00+03:00') + ((ah * 60 + am + 5) * 60000));
+  check(`${file} between the Asr adhan and its iqama: Asr is lit and no box has a countdown`, /^\d{1,2}:\d{2}/.test(cur.asr) && inWin.next.length === 1 && inWin.cds === 0 && !inWin.next[0].cd,
+    JSON.stringify([cur.asr, inWin.cds, inWin.next]));
 }
 await browser.close();
 if (failed) { console.log(`\n${failed} failed`); process.exit(1); }

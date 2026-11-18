@@ -475,11 +475,33 @@ def fill(html, clubs, english_page):
     html = html.replace("__EVENTS__", js_json(json.loads((ROOT / "assets/shared/events.json").read_text(encoding="utf-8"))))
     # «مباريات اليوم»'s marks: the rows only (the page shows a row while it is high, whole, verified and in season; broadcast_check.py)
     html = html.replace("__BROADCAST__", js_json(json.loads((ROOT / "assets/shared/broadcast.json").read_text(encoding="utf-8"))["rows"]))
-    html = html.replace("__VERSES__", js_json(verses_for_screen()))
-    html = html.replace("__HADITH__", js_json(hadith_for_screen()))   # checked by CI
+    # __VERSES__, __HADITH__ and __QUOTES_FULL__: per page in main() (quotes_inline), the whole lists only in urtv.html
     html = html.replace("__ADHKAR__", js_json(adhkar_for_screen()))   # checked by CI
     html = html.replace("__WISDOM__", js_json(json.loads((ROOT / "assets/shared/wisdom.json").read_text(encoding="utf-8"))))
     return html
+
+
+QUOTES_STARTER = 20   # verses and hadith each kept in tv.html for when dist/quotes.json cannot be read (template.html quotes())
+
+
+def quotes_file():
+    """dist/quotes.json: the verse and hadith lists the pages read beside them (4.5: 397 KB out of tv.html), the same for both languages"""
+    return {"verses": verses_for_screen(), "hadith": hadith_for_screen()}
+
+
+def starter(items, size):
+    """the shortest few, in the list's own order (any card can take one): the page's lists until quotes.json is read"""
+    keep = set(sorted(range(len(items)), key=lambda i: (size(items[i]), i))[:QUOTES_STARTER])
+    return [x for i, x in enumerate(items) if i in keep]
+
+
+def quotes_inline(html, whole):
+    """the page's own lists: whole (urtv.html, stand-alone) or the starter, with dist/quotes.json read when a verse or hadith is drawn"""
+    q = quotes_file()
+    if not whole:
+        q = {"verses": starter(q["verses"], lambda v: len(v["text"])), "hadith": starter(q["hadith"], lambda h: sum(len(t) for _, t in h["parts"]))}
+    return (html.replace("__VERSES__", js_json(q["verses"])).replace("__HADITH__", js_json(q["hadith"]))
+            .replace("__QUOTES_FULL__", "true" if whole else "false"))
 
 
 def strip_css_comments(html):
@@ -604,7 +626,7 @@ def main():
     bg_dir = ROOT / "assets/backgrounds"
     bgs = json.loads((bg_dir / "backgrounds.json").read_text(encoding="utf-8"))
     for name, inline, src in (("urtv.html", True, html), ("tv.html", False, html), ("tv-en.html", False, html_en)):
-        page = src
+        page = quotes_inline(src, inline)
         for token, font in FONTS.items():
             path = ROOT / "assets/fonts" / font
             if inline and not path.is_file():   # Thmanyah comes from the private urtv-fonts repo (CI, or a copy you have):
@@ -624,6 +646,9 @@ def main():
         out = Path(os.environ.get("URTV_DIST") or ROOT / "dist") / name
         out.write_text(js, encoding="utf-8")
         print(f"wrote {out.relative_to(ROOT) if out.is_relative_to(ROOT) else out} ({out.stat().st_size / 1e3:.1f} KB)")
+    quotes = Path(os.environ.get("URTV_DIST") or ROOT / "dist") / "quotes.json"
+    quotes.write_text(json.dumps(quotes_file(), ensure_ascii=False, separators=(",", ":")) + "\n", encoding="utf-8")
+    print(f"wrote {quotes.relative_to(ROOT) if quotes.is_relative_to(ROOT) else quotes} ({quotes.stat().st_size / 1e3:.1f} KB)")
     tafsir = Path(os.environ.get("URTV_DIST") or ROOT / "dist") / "tafsir.json"
     tafsir.write_text(json.dumps(tafsir_file(), ensure_ascii=False, separators=(",", ":"), sort_keys=True) + "\n", encoding="utf-8")
     print(f"wrote {tafsir.relative_to(ROOT) if tafsir.is_relative_to(ROOT) else tafsir} ({tafsir.stat().st_size / 1e6:.2f} MB)")
