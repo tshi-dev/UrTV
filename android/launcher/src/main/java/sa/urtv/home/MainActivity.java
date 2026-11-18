@@ -3244,6 +3244,12 @@ public class MainActivity extends Activity {
     private static final int APP_BUTTON_H = 56;
 
 
+    /** where the Sources dropdown hangs: the first pill, or the first dock card when every quick button is hidden (review F21); null: nothing to hang it on */
+    private View inputsAnchor() {
+        if (!pills.isEmpty()) return pills.get(0);
+        return dockCards.isEmpty() ? null : dockCards.get(0);
+    }
+
     private void showInputs(View anchor, int path) {
         guarded(path, null, "المصادر", () -> showInputsNow(anchor));
     }
@@ -4614,8 +4620,13 @@ public class MainActivity extends Activity {
             showAppMenu(f, ((App) f.getTag()).pkg, dockCards.contains(f));
             return true;
         }
-        if (e.getKeyCode() == KeyEvent.KEYCODE_MENU && e.getAction() == KeyEvent.ACTION_UP && edit == null && appsEdit == null && !pills.isEmpty()) {   // 4.3.4 review F2: not over an edit mode
-            showInputs(pills.get(0), ParentalPolicy.MENU_KEY);
+        if (e.getKeyCode() == KeyEvent.KEYCODE_MENU && edit == null && appsEdit == null && nowCard != null && getCurrentFocus() == nowCard && !Parental.state(this).kids) {
+            // 4.4 review F5 (R3): the card's own listener never saw the key (this method takes it first): Menu on «يُتلى الآن» is «شاشة سوداء», behind the same lock
+            if (e.getAction() == KeyEvent.ACTION_UP) launchGuarded(ParentalPolicy.PILL_LISTEN, sa.urtv.home.tilawah.BlackScreenActivity.open(this), "تلاوة وأذان");
+            return true;
+        }
+        if (e.getKeyCode() == KeyEvent.KEYCODE_MENU && e.getAction() == KeyEvent.ACTION_UP && edit == null && appsEdit == null && inputsAnchor() != null && !Parental.state(this).kids) {   // 4.3.4 review F2: not over an edit mode; 4.4 review F21: no pills, the first dock card holds the place
+            showInputs(inputsAnchor(), ParentalPolicy.MENU_KEY);
             return true;
         }
         if (e.getKeyCode() == KeyEvent.KEYCODE_MENU && e.getAction() == KeyEvent.ACTION_UP && Parental.state(this).kids) {
@@ -4721,7 +4732,7 @@ public class MainActivity extends Activity {
                 break;
             }
             case RemoteKeys.OPEN_INPUTS:
-                if (!pills.isEmpty()) showInputs(pills.get(0), ParentalPolicy.MENU_KEY);
+                if (inputsAnchor() != null && !Parental.state(this).kids) showInputs(inputsAnchor(), ParentalPolicy.MENU_KEY);
                 else if (Parental.state(this).kids) openParental();   // 4.3.3: the star key in kids mode: the way out, as the Menu key
                 break;
             case RemoteKeys.OPEN_LIVE_TV:   // the TV button (TCL's 4001): the tuner, as «البث التلفزيوني» opens it

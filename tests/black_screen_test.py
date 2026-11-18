@@ -36,6 +36,9 @@ check("the player's options: «شاشة سوداء» before the red stop (the pl
       and "case 4:   // 4.4 #62" in player and "case 5:\n                MusicService.stopAction(this);" in player)
 check("the home's card: the menu key, behind the «تلاوة وأذان» lock", "KeyEvent.KEYCODE_MENU" in home
       and 'launchGuarded(ParentalPolicy.PILL_LISTEN, sa.urtv.home.tilawah.BlackScreenActivity.open(this), "تلاوة وأذان")' in home)
+check("4.4 review F5: dispatchKey takes the Menu key on the card itself (its own listener never saw it), before the Sources branch; kids mode keeps its way",
+      home.index("getCurrentFocus() == nowCard && !Parental.state(this).kids") < home.index("showInputs(inputsAnchor(), ParentalPolicy.MENU_KEY)")
+      and "private View inputsAnchor()" in home and "dockCards.get(0) : null" not in home and "return dockCards.isEmpty() ? null : dockCards.get(0);" in home)
 check("the control center: a tile only while something plays, behind the same lock", "if (sa.urtv.home.tilawah.NowPlaying.read(act).show)" in center
       and 'tile("black", S.t("شاشة سوداء")' in center and 'host.launchGuarded(ParentalPolicy.PILL_LISTEN, sa.urtv.home.tilawah.BlackScreenActivity.open(act)' in center
       and '"saver", "black"};' in center)
