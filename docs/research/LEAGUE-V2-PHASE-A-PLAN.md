@@ -115,6 +115,35 @@ Not in phase (a): the league home, the live strip, the season strip, the club sh
   - No decorative arrows.
 - **Focused mode:** the title stays in place, and the header goes as a cut. No slide anywhere; on `lowram` nothing animates.
 
+## 3c. Agreed with the honours worker and the UI session (18 Nov)
+
+**The split is agreed.** The honours worker answered the four questions:
+- **Tabs by key, never by place.** The keys are fixed: 0 table, 1 results, 2 fixtures, 3 «الأبطال», 4 «الهدّافون». Since the beta 2 review, 3 and 4 are
+  in the strip only when `honHas` finds their data, so the strip holds 3, 4 or 5 tabs. `v.tab` is the key: phase (a) builds on
+  `keys` / `tabs[].k` in `mpLeagueView`, never on an index.
+- **The side column** (`V.pins`, the seasons, with pick/sel on tabs 0, 1 and 4) stays in focused mode. Hiding the header does not hide
+  the pins.
+- **Past seasons move onto the new rows.** `honTable(v, id)` draws a past season from `sports/<id>/<season>.json`, which has the same row
+  shape plus `champ`.
+  - Once phase (a) lands, it uses the new table rows.
+  - The champion mark «البطل، » at the start of the champion's end text is kept (the UI session approved it).
+  - A past season has no movement arrows and no live toggle.
+- **The later cards call the honours code** through named exports, which the honours worker adds to `SPORTS.hon` (a one-line change on
+  their side):
+  - `champList` / `champRow` for «الأبطال» on the league home;
+  - `top` / `scorers` and `honScorerSeasons(sc, sp)[0]` for «هدّاف الموسم الماضي»;
+  - `club` for the club page's «البطولات»;
+  - every card gated on `has`, so no card is ever empty.
+- **Tests:**
+  - the source-line size is in `tests/honours.test.mjs`;
+  - the page-wide size checks are in `tests/page.test.mjs`, and phase (a) extends those to the table, the legend and the hints.
+- The honours work is on `work/45-honours` (`ffed75d6`, with its merges with 44-beta2 and qa-gate still to be pushed). Phase (a) branches
+  from it once it is pushed, so it builds on the code as it ships.
+
+**From the UI session (OK on b51b8b88):**
+- At 720p with a TV's large font, the full table first drops «له / عليه», since the difference column says it, before any text gets smaller.
+- The real screens from the build go to the UI session before the push for the release.
+
 ## 4. Tests (written first, kept in `tests/run.sh`)
 
 | Test | What it proves |
@@ -124,7 +153,8 @@ Not in phase (a): the league home, the live strip, the season strip, the club sh
 | `tests/matches_archive.test.mjs` (+) | The fallback (no archive table) still draws today's lines. |
 | `tests/sports_hist.test.mjs` | A past season keeps its table and shows no movement or zones from the current season. |
 | 720p screenshot (Playwright) | The 18 rows fit at 1280×720, and no row, cell or legend leaves the 5 % safe area. |
-| size floor (the honours worker's test, extended) | Every text in the table, the legend and the hints is ≥ `.mpi i` at 1280×720 and 960×540; the form shows 3 when 5 do not fit at 36. |
+| size floor (`tests/page.test.mjs`, extended) | Every text in the table, the legend and the hints is ≥ `.mpi i` at 1280×720 and 960×540. With the large font, «له / عليه» go first, then the form shows 3; no text shrinks. |
+| past season (`tests/honours.test.mjs` +) | `honTable` on the new rows keeps «البطل، », has no `.mv` and no toggle; the strip with 3, 4 and 5 tabs keeps the table on key 0. |
 | `tests/webview66_test.py`, `tests/arabic_spacing_test.py`, `tests/check.py` | Unchanged; they must pass on the new CSS and on the size. |
 
 Then `bash tests/run.sh` in full before the push (about 15 minutes, in CI where the fonts are).
