@@ -61,6 +61,8 @@ public abstract class GameActivity extends Activity {
 
     /** the game's id in GameRegistry */
     protected abstract String id();
+    /** the id the hub focuses next time (the hub's own id for the game; null: none is kept). The registry's games: id() */
+    protected String lastId() { return id(); }
     /** draw the game's current screen (the root is empty) */
     protected abstract void draw();
     /** a key of the remote: `dx` is toward the end of the line (already turned for Arabic), `dy` down. Back during a round: call openPause(). */
@@ -103,7 +105,8 @@ public abstract class GameActivity extends Activity {
         root.setLayoutDirection(Dir.layout());
         root.setBackgroundColor(L.paper);
         setContentView(root);
-        GamePrefs.setLast(this, id());
+        String last = lastId();
+        if (last != null) GamePrefs.setLast(this, last);
     }
 
     @Override protected void onResume() {

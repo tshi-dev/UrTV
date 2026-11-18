@@ -29,6 +29,7 @@ public class EngineGameActivity extends GameActivity {
     private GameDef.Def def; private GameChips chips; private GameEngine eng; private GameScore score; private String[] names = new String[0], sideNames = new String[0];
     private long phaseAt, pausedAt; private TickTimer timer; private int sel, teams; private final Random rnd = new Random(); private List<int[]> strokes = new ArrayList<>(); private int strokeRev = -1; private Board board;
 
+    @Override protected String lastId() { String g = getIntent() == null ? null : getIntent().getStringExtra("game"); return g == null ? null : "e:" + g; }   // the hub lists it as «e:game» (QuizGamesActivity): the focus finds it again
     @Override protected String id() { String g = getIntent() == null ? null : getIntent().getStringExtra("game"); return "e-" + (g == null ? "none" : g); }
     @Override protected String gameName() { return def == null ? "" : def.name.get(en); }
     @Override protected boolean inPlay() { return screen == Screen.ASK || screen == Screen.REVEAL; }

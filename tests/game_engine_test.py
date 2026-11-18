@@ -64,4 +64,7 @@ check("the engine screen draws only with the kit: no colour of its own, no socke
       not re.search(r"0x[0-9A-Fa-f]{8}|Color\.parseColor|ServerSocket|QuizServer|java\.net\.|setCornerRadius|setCornerRadii", act + ic) and "·" not in act and "•" not in act and "GamePrefs.remember(this, id(), r)" in act)
 check("the TV waits for the host on a buzz: OK is right, DOWN is wrong, and the phones are told who answers; a wrong call locks that phone and opens the buzzers again", "judge(true)" in act and "judge(false)" in act and "eng.lockedOut(i)" in act and "GameEngine" in act)
 check("the engine's own rules know nothing of Android or of any game: no import of android, no id, no name of a game", "import android" not in ge + gd + gr + gc and not re.search(r"android\.|Context", ge + gd + gr + gc))
+ga = (ROOT / "android/app/src/main/java/sa/urtv/screensaver/GameActivity.java").read_text(encoding="utf-8")
+check("the game played last takes the hub's focus: the hub stores «e:game», so the engine's last id is «e:game» (not id()'s «e-game») and none is kept without a game",
+      'return g == null ? null : "e:" + g;' in act and "protected String lastId() { return id(); }" in ga and "if (last != null) GamePrefs.setLast(this, last);" in ga and "GamePrefs.setLast(this, id())" not in ga)
 sys.exit(1 if failed else 0)
