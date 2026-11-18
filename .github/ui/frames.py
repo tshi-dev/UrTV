@@ -2,19 +2,31 @@
 """Reads measure.sh's videos (screenrecord, variable frame rate) and says, per case, what the person saw after the change:
 when the screen first moved, when it settled, the frames in between, blank or flash frames, and a contact sheet of them.
    python3 frames.py OUT_DIR      -> OUT_DIR/report.md, OUT_DIR/report.json, OUT_DIR/<case>-sheet.jpg"""
-import json, os, subprocess, sys
+import json, os, re, subprocess, sys
 import numpy as np
 from PIL import Image, ImageDraw
 
+def _ffmpeg():
+    """FFMPEG=... , else the one pip's imageio-ffmpeg brings (CI: no apt, a stuck mirror once held the run 10 minutes), else the system's"""
+    if os.environ.get("FFMPEG"):
+        return os.environ["FFMPEG"]
+    try:
+        import imageio_ffmpeg
+        return imageio_ffmpeg.get_ffmpeg_exe()
+    except ImportError:
+        return "ffmpeg"
+
+
+FFMPEG = _ffmpeg()
 W, H = 192, 108          # the frames are compared small: a moved tile shows, the encoder's noise does not
 MOVE = 1.2               # mean |difference| (0..255) that counts as the picture changing
 GAP = 1.5                # changes closer than this (s) are one transition
 
 
 def frames(path):
-    pts = subprocess.run(["ffprobe", "-v", "error", "-select_streams", "v", "-show_entries", "frame=pts_time", "-of", "csv=p=0", path],
-                         capture_output=True, text=True).stdout.split()
-    raw = subprocess.run(["ffmpeg", "-v", "error", "-i", path, "-vf", f"scale={W}:{H},format=gray", "-fps_mode", "passthrough", "-f", "rawvideo", "-"],
+    info = subprocess.run([FFMPEG, "-hide_banner", "-i", path, "-vf", "showinfo", "-fps_mode", "passthrough", "-f", "null", "-"], capture_output=True, text=True).stderr
+    pts = re.findall(r"pts_time:\s*([0-9.]+)", info)   # each frame's time (ffmpeg's own showinfo: no ffprobe needed)
+    raw = subprocess.run([FFMPEG, "-v", "error", "-i", path, "-vf", f"scale={W}:{H},format=gray", "-fps_mode", "passthrough", "-f", "rawvideo", "-"],
                          capture_output=True).stdout
     n = len(raw) // (W * H)
     a = np.frombuffer(raw[: n * W * H], np.uint8).reshape(n, H, W).astype(np.float32)
@@ -23,7 +35,7 @@ def frames(path):
 
 
 def full_frame(path, ts):
-    out = subprocess.run(["ffmpeg", "-v", "error", "-ss", f"{ts:.3f}", "-i", path, "-frames:v", "1", "-vf", "scale=384:216", "-f", "image2pipe", "-vcodec", "png", "-"],
+    out = subprocess.run([FFMPEG, "-v", "error", "-ss", f"{ts:.3f}", "-i", path, "-frames:v", "1", "-vf", "scale=384:216", "-f", "image2pipe", "-vcodec", "png", "-"],
                          capture_output=True).stdout
     import io
     try:

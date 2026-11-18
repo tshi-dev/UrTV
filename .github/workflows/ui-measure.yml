@@ -47,7 +47,7 @@ jobs:
         run: gradle -p android assembleDebug --no-daemon
       - name: Stub apps for the favourites
         run: |
-          pip install pillow==13.0.0 numpy==2.3.4
+          pip install pillow==13.0.0 numpy==2.3.4 imageio-ffmpeg==0.6.0
           bash .github/screens/make_stubs.sh stubs 8
       - name: Enable KVM
         run: |
@@ -69,7 +69,6 @@ jobs:
       - name: Read the frames
         if: always()
         run: |
-          sudo timeout 600 apt-get update -qq && sudo timeout 600 apt-get install -y -qq ffmpeg
           python3 .github/ui/frames.py ui-out --budget | tee -a "$GITHUB_STEP_SUMMARY"; exit ${PIPESTATUS[0]}
       - uses: actions/upload-artifact@v4
         if: always()
@@ -87,7 +86,7 @@ jobs:
             git -C "$work" remote add origin "https://x-access-token:${{ github.token }}@github.com/${GITHUB_REPOSITORY}.git"; }
           mkdir -p "$work/$run"
           cp ui-out/*-sheet.jpg ui-out/*.txt ui-out/report.* "$work/$run"/ 2>/dev/null || true
-          for f in ui-out/*-end.png ui-out/start.png ui-out/panel-*.png ui-out/settings-*.png; do [ -f "$f" ] && ffmpeg -v error -y -i "$f" -vf scale=960:540 "$work/$run/$(basename "${f%.png}").jpg"; done
+          python3 -c "import sys; from PIL import Image; [Image.open(f).convert('RGB').resize((960, 540)).save(sys.argv[1] + '/' + f.split('/')[-1][:-4] + '.jpg', quality=85) for f in sys.argv[2:]]" "$work/$run" $(ls ui-out/*-end.png ui-out/start.png ui-out/panel-*.png ui-out/settings-*.png 2>/dev/null)
           cd "$work"
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
