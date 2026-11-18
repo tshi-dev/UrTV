@@ -1383,7 +1383,7 @@ final class Prefs {
      * touched: a look is the look only. Two of the owner's open questions are flags here, both on until he says otherwise.
      */
     // ---- 4.4 beta 2 (the owner: «with a protective way»): each new look item behind its own switch, off by default and after an update
-    /** «إعدادات بشكل واحد»: the settings in one form, couch-tv's compact rows, for every look (off: the 4.3.2 hub unless «منظر وساعة», as in 4.4).
+    /** «إعدادات بشكل واحد»: the settings in one form, couch-tv's compact rows, for every look (off: the 4.3.2 hub unless «كنبة», as in 4.4).
      *  Every place of the hub is in the one form (tests/settings_one_form_test.py lists each with its new place). */
     boolean uiOneForm() { return sp.getBoolean("uiOneForm", false); }
     void setUiOneForm(boolean on) { sp.edit().putBoolean("uiOneForm", on).apply(); }
@@ -1396,10 +1396,10 @@ final class Prefs {
     /** «تبديل الشكل بلا وميض»: the home told at once (LOOK_CHANGED) and applying a look whole behind its still picture; off: as in 4.4 (the next return or minute) */
     boolean uiSmooth() { return sp.getBoolean("uiSmooth", false); }
     void setUiSmooth(boolean on) { sp.edit().putBoolean("uiSmooth", on).apply(); }
-    static final boolean PRESETS_REPLACE_COUCH = true;    // «أشكال جاهزة» replaces the «شكل كنبة» switch («منظر وساعة» is the Couch look)
+    static final boolean PRESETS_REPLACE_COUCH = true;    // «أشكال جاهزة» replaces the «شكل كنبة» switch («كنبة» is the Couch look)
     static final boolean CLEAN_HIDES_BUTTONS = true;      // «صورة فقط» hides the home's round buttons (they stay in the control centre and the menu key)
     static final String[] PRESETS = {"tv", "couch", "clean", "family", "sport", "calm"};
-    static final String[] PRESET_NAMES = {"شكلك المعتاد", "منظر وساعة", "صورة فقط", "مواقيت يومي", "مباريات اليوم", "ليل هادئ"};
+    static final String[] PRESET_NAMES = {"شكلك المعتاد", "كنبة", "صورة فقط", "مواقيت يومي", "مباريات اليوم", "ليل هادئ"};
     static final String[] PRESET_ABOUT = {
         "اختياراتك كما كانت قبل أي شكل، والتطبيقات مربعات ملونة",
         "تخطيط كنبة، الآفاق، ساعة زجاجية خلف الصورة، التطبيقات أيقونات، داكن",
@@ -1477,7 +1477,7 @@ final class Prefs {
      * it reads as itself (its name) until a row is changed after (then «مخصّص»). key, name, its line, the look, then field=value pairs.
      */
     static final String[][] COMBOS = {
-        {"couch-prayers", "منظر وساعة + مواقيت اليوم", "الآفاق، ومربعات المواقيت في الصف", "couch", "cards=prayerrow"},
+        {"couch-prayers", "كنبة + مواقيت اليوم", "الآفاق، ومربعات المواقيت في الصف", "couch", "cards=prayerrow"},
         {"clean-icons", "صورة فقط + أيقونات التطبيقات", "الصورة والساعة، والتطبيقات أيقونات", "clean", "apps=icons"},
         {"sport-night", "مباريات اليوم + ليل هادئ", "المباريات في الليل، خافتة", "sport", "nightDim=true", "wallDim=40"},
         {"tv-glass", "شكلك المعتاد + الساعة الزجاجية", "اختياراتك، والساعة خلف الصورة", "tv", "clock=glass"}};
@@ -1497,7 +1497,7 @@ final class Prefs {
         sp.edit().putString("preset", c[3]).putString("presetCombo", key).putString("presetApplied", presetNow()).apply();
     }
 
-    /** the look chosen ("tv" when none); a TV that had «شكل كنبة» on reads «منظر وساعة», its four values kept as the person's own */
+    /** the look chosen ("tv" when none); a TV that had «شكل كنبة» on reads «كنبة», its four values kept as the person's own */
     String preset() {
         if (!sp.contains("preset") && sp.getBoolean("couchOn", false)) {
             String[] b = sp.getString("couchBefore", "").split(",");
@@ -1543,7 +1543,7 @@ final class Prefs {
         return out;
     }
     static String presetName(String key) { int i = java.util.Arrays.asList(PRESETS).indexOf(key); return PRESET_NAMES[Math.max(0, i)]; }
-    /** the row's line: the look, or «مخصّص (منظر وساعة، وتغيّر: الساعة)», or «…، وتغيّر أكثر من صف» */
+    /** the row's line: the look, or «مخصّص (كنبة، وتغيّر: الساعة)», or «…، وتغيّر أكثر من صف» */
     String presetLabel() {
         String key = preset(), mix = presetCombo();
         String name = mix.isEmpty() ? presetName(key) : combo(mix)[1];
@@ -1643,7 +1643,7 @@ final class Prefs {
     String presetShow() { return (presetCombo().isEmpty() ? preset() : presetCombo()) + (presetChanged().isEmpty() ? "" : " (custom)"); }
 
     /**
-     * 4.4 the owner: «شكل كنبة» was one switch. With PRESETS_REPLACE_COUCH it is the look «منظر وساعة»: on chooses it, off chooses «شكلك المعتاد».
+     * 4.4 the owner: «شكل كنبة» was one switch. With PRESETS_REPLACE_COUCH it is the look «كنبة»: on chooses it, off chooses «شكلك المعتاد».
      * Without it, the switch as before: on, the Couch preset at once and the person's own four values kept; off, those put back exactly.
      */
     boolean couchOn() {

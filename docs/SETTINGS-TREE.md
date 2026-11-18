@@ -62,7 +62,7 @@ the phone page's key, «مركز التحكم» the control centre's row that op
 ——— رجّع الشكل السابق [الرئيسية وشاشة التوقف]
     مثال للوكيل: optimize/saver.sh lookback
 ——— أشكال جاهزة [الرئيسية وشاشة التوقف]
-    الخيارات: شكلك المعتاد / منظر وساعة / صورة فقط / مواقيت يومي / مباريات اليوم / ليل هادئ
+    الخيارات: شكلك المعتاد / كنبة / صورة فقط / مواقيت يومي / مباريات اليوم / ليل هادئ
     مثال للوكيل: optimize/saver.sh preset family  (tv, couch, clean, family, sport, calm, or a mix: couch-prayers, clean-icons, sport-night, tv-glass)
       القيم المقبولة: tv|couch|clean|family|sport|calm|couch-prayers|clean-icons|sport-night|tv-glass
 ——— شكل كنبة [الرئيسية]
@@ -829,7 +829,7 @@ the phone page's key, «مركز التحكم» the control centre's row that op
 —— رجّع الشكل السابق [الرئيسية وشاشة التوقف]
    مثال للوكيل: optimize/saver.sh lookback
 —— أشكال جاهزة [الرئيسية وشاشة التوقف]
-   الخيارات: شكلك المعتاد / منظر وساعة / صورة فقط / مواقيت يومي / مباريات اليوم / ليل هادئ
+   الخيارات: شكلك المعتاد / كنبة / صورة فقط / مواقيت يومي / مباريات اليوم / ليل هادئ
    مثال للوكيل: optimize/saver.sh preset family  (tv, couch, clean, family, sport, calm, or a mix: couch-prayers, clean-icons, sport-night, tv-glass)
      القيم المقبولة: tv|couch|clean|family|sport|calm|couch-prayers|clean-icons|sport-night|tv-glass
 —— شكل كنبة [الرئيسية]

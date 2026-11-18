@@ -44,7 +44,7 @@ public class SettingsActivity extends Activity {
     private ScrollView scroll;
     private int sideWidth, pageWidth;   // px, fixed in onCreate: the side pane and the whole page
     private int gapPx;                  // px between the side and the rows
-    private CouchStyle cs;              // 4.4 with «منظر وساعة» (the side list): couch-tv's settings, exactly (CouchStyle); null on the 4.3.2 screen
+    private CouchStyle cs;              // 4.4 with «كنبة» (the side list): couch-tv's settings, exactly (CouchStyle); null on the 4.3.2 screen
     private Page page;                  // a picker shown in place of the rows (couch-tv's choice pages), or null
     private EditText searchIn;          // the search's typing box (couch-tv's), kept while the search is shown
 
@@ -1436,7 +1436,7 @@ public class SettingsActivity extends Activity {
         return card;
     }
 
-    // ---- 4.4 «منظر وساعة»: the settings in couch-tv's style (CouchStyle; docs/mockups/settings-couchtv/, approved by the owner) ----
+    // ---- 4.4 «كنبة»: the settings in couch-tv's style (CouchStyle; docs/mockups/settings-couchtv/, approved by the owner) ----
 
     /** the veil over the home under the settings: couch-tv's rgba(10,8,12,.8) over the blurred home; nearly solid on a weak TV («الوضع الخفيف») */
     private void couchVeil() {
@@ -3811,7 +3811,7 @@ public class SettingsActivity extends Activity {
 
         @Override Dlg own() { super.own(); return this; }
 
-        // 4.4 «منظر وساعة»: a plain list (one choice, ticks, or a list) opens as couch-tv's page in place of the rows, not as a dialog
+        // 4.4 «كنبة»: a plain list (one choice, ticks, or a list) opens as couch-tv's page in place of the rows, not as a dialog
         private CharSequence title;
         private CharSequence[] items;
         private int checked = -1;
@@ -4164,7 +4164,7 @@ public class SettingsActivity extends Activity {
         final String cat = SettingsHub.of(FocusKey.key(label), groupCat);   // its action on every screen (the search runs it), its views only on its own
         if (onClick != null) actions.put(FocusKey.key(label), onClick);
         if (!on(cat)) return offscreen();   // 4.4 smoother: a row of another section is not built (a section shows about 12 of the 135)
-        if (cs != null) {   // «منظر وساعة»: couch-tv's row, the same registry row (its key, its action, its section)
+        if (cs != null) {   // «كنبة»: couch-tv's row, the same registry row (its key, its action, its section)
             final LinearLayout couch = couchRow(label, value, onClick, FocusKey.key(label));
             View toSide = sideItems.get(screen);
             if (toSide != null) { if (Dir.rtl()) couch.setNextFocusRightId(toSide.getId()); else couch.setNextFocusLeftId(toSide.getId()); }

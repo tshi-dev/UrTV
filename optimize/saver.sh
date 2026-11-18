@@ -46,7 +46,7 @@
 #   optimize/saver.sh homemine only                home screen: «صوري» with ours (mix), only them (only), none (off), or as the screensaver's (same, the default)
 #   optimize/saver.sh appearance auto              home screen: «المظهر ← الإضاءة», dark (default), light, or auto (light from sunrise until Maghrib in the city)
 #   optimize/saver.sh look navy                    all our screens: «المظهر ← الشكل», glass (default), graphite, navy, clean, or sand
-#   optimize/saver.sh preset family               4.4 «المظهر ← أشكال جاهزة»: tv (شكلك المعتاد: the person's own values back, the default), couch (منظر وساعة),
+#   optimize/saver.sh preset family               4.4 «المظهر ← أشكال جاهزة»: tv (شكلك المعتاد: the person's own values back, the default), couch (كنبة),
 #                                                 clean (صورة فقط), family (مواقيت يومي), sport (مباريات اليوم) or calm (ليل هادئ); show says "preset: family" or
 #                                                 "family (custom)" once a row was changed after. The city, the adhan, the teams and the locks are never touched.
 #                                                 The four «تركيبات مقترحة» too: couch-prayers, clean-icons, sport-night, tv-glass (a look and a row or two)

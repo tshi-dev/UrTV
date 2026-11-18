@@ -23,7 +23,7 @@ CC BY-SA 4.0 (https://www.tvmaze.com/api). The card credits it with a tiny «TVm
 The 4.3.3 scene home proposal (`docs/mockups/`) follows couch-tv's design (https://github.com/Seagey/couch-tv: scenes with a glass
 clock behind the scenery, settings with side sections), and its mockups use couch-tv's five scene photos, their cut-outs and glass
 copies (`tv-home/web/backgrounds/scene-*`, made for couch-tv with an AI image model, "use them however you like"), under the MIT
-License, Copyright (c) 2026 Seagey, the same text as below. With the look «منظر وساعة» the settings follow couch-tv's settings screen
+License, Copyright (c) 2026 Seagey, the same text as below. With the look «كنبة» the settings follow couch-tv's settings screen
 (`tv-home/web/app.css`, «Home settings»: its sizes, colours, kinds of row and motion; `android/app/src/main/java/sa/urtv/screensaver/CouchStyle.java`;
 no code of it is used), and the scene packs' rows show a thumbnail of one of couch-tv's scene photos (`assets/scene-thumbs/couch.jpg`), under the
 same license.

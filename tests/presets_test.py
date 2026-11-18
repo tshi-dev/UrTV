@@ -20,12 +20,12 @@ saver = (ROOT / "optimize/saver.sh").read_text(encoding="utf-8")
 arr = lambda name: re.findall(r'"([^"]*)"', prefs[prefs.index(f"static final String[] {name} = {{"):].split("};")[0].split("{", 1)[1])
 keys, names, fields = arr("PRESETS"), arr("PRESET_NAMES"), arr("PRESET_FIELDS")
 check("the six looks with the owner's names, in his order", keys == ["tv", "couch", "clean", "family", "sport", "calm"]
-      and names == ["شكلك المعتاد", "منظر وساعة", "صورة فقط", "مواقيت يومي", "مباريات اليوم", "ليل هادئ"], (keys, names))
+      and names == ["شكلك المعتاد", "كنبة", "صورة فقط", "مواقيت يومي", "مباريات اليوم", "ليل هادئ"], (keys, names))
 vals = prefs[prefs.index("static final String[][] PRESET_VALUES = {"):].split("};")[0]
 rows = re.findall(r"\n        \{(.*?)\}", vals)
 check("each look gives every field a value or null (the person's own)", len(rows) == 6 and all(len(re.split(r",\s(?![^()]*\))", r)) == len(fields) for r in rows),
       [len(re.split(r",\s(?![^()]*\))", r)) for r in rows])
-check("«منظر وساعة» is the Couch look with the apps as icons, «شكلك المعتاد» the coloured tiles (when nothing of the person's was kept)",
+check("«كنبة» is the Couch look with the apps as icons, «شكلك المعتاد» the coloured tiles (when nothing of the person's was kept)",
       rows[1].startswith('"couch", "scenes", "glass", "icons"') and rows[0].startswith('"classic", "photos", "plain", "tiles"'), rows[:2])
 check("«مباريات اليوم» is the football layout with the new sports cards", '"football", null, "plain", null, "livenow,nextmatches,minitable"' in rows[4]
       and all(f'{{"{c}", ' in prefs for c in ("livenow", "nextmatches", "minitable")), rows[4])
@@ -43,7 +43,7 @@ check("the person's own values kept once (the first look chosen), put back befor
 check("a row changed after reads «مخصّص» (what the look set is kept, compared row by row); the city, the adhan, the teams and the locks are not fields",
       '.putString("presetApplied", presetNow())' in sp and "String.format(java.util.Locale.ROOT, \"مخصّص (%s، وتغيّر: %s)\"" in prefs
       and not any(f in fields for f in ("city", "adhan", "teams", "pin", "lock")))
-check("a TV that had «شكل كنبة» on reads «منظر وساعة», its four values kept as the person's own", 'if (!sp.contains("preset") && sp.getBoolean("couchOn", false))' in prefs
+check("a TV that had «شكل كنبة» on reads «كنبة», its four values kept as the person's own", 'if (!sp.contains("preset") && sp.getBoolean("couchOn", false))' in prefs
       and 'putString("preset", "couch").putString("presetBefore", before)' in prefs and 'if (PRESETS_REPLACE_COUCH) return "couch".equals(preset());' in prefs)
 check("the row is first in «المظهر» in both layouts, the picture picker opens from it, the settings open again in the other layout when it changes",
       'row("أشكال جاهزة", prefs.presetLabel()' in st and "private void pickPreset()" in st and '.putExtra("want", "أشكال جاهزة")' in st
@@ -58,7 +58,7 @@ check("docs/SETTINGS.md has the row and its command", "`optimize/saver.sh preset
 # ---- «تركيبات مقترحة» (the owner approved docs/mockups/presets/combos-*.jpg): one tile, four mixes, the circle from the tile, a fade on a weak TV
 combos = re.findall(r'\{"([a-z-]+)", "([^"]+)", "([^"]+)", "([a-z]+)"((?:, "[a-zA-Z]+=[^"]+")+)\}', prefs[prefs.index("static final String[][] COMBOS = {"):].split("};")[0])
 check("four mixes, each one of the six and a row or two, with the owner's names", [c[0] for c in combos] == ["couch-prayers", "clean-icons", "sport-night", "tv-glass"]
-      and [c[1] for c in combos] == ["منظر وساعة + مواقيت اليوم", "صورة فقط + أيقونات التطبيقات", "مباريات اليوم + ليل هادئ", "شكلك المعتاد + الساعة الزجاجية"]
+      and [c[1] for c in combos] == ["كنبة + مواقيت اليوم", "صورة فقط + أيقونات التطبيقات", "مباريات اليوم + ليل هادئ", "شكلك المعتاد + الساعة الزجاجية"]
       and all(c[3] in keys for c in combos) and all(re.findall(r'"([a-zA-Z]+)=', c[4]) and set(re.findall(r'"([a-zA-Z]+)=', c[4])) <= set(fields) for c in combos), combos)
 sc = prefs[prefs.index("    void setCombo(String key) {"):prefs.index("    /** the look chosen (\"tv\" when none)")]   # 4.5: setCombo and the comboNow it holds the lock for
 check("a mix: its look first (the person's own kept the same way), then its rows, and it reads as itself until a row is changed after",

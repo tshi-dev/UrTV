@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""4.4 the owner: with «منظر وساعة» the settings are couch-tv's, exactly (Seagey/couch-tv, MIT; docs/mockups/settings-couchtv/, approved).
+"""4.4 the owner: with «كنبة» the settings are couch-tv's, exactly (Seagey/couch-tv, MIT; docs/mockups/settings-couchtv/, approved).
 The other looks keep the settings as they are. couch-tv's numbers (its rem: a 120th of the screen), its row kinds, its pages; our rows all there,
 the same registry; Arabic mirrored.   python3 tests/settings_couch_test.py"""
 import re, shutil, subprocess, sys, tempfile
