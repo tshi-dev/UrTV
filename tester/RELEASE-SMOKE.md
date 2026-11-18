@@ -37,8 +37,9 @@ the same network. Note the build in the report's first line.
 ## Settings and update (4 min)
 
 - **S-05 «مركز التحكم».** Open it; all tiles fit (also at 720p when a TV has it); the sound tile names the real output; «الألعاب»
-  opens the games (not settings, not an old preview) and Back returns to the home; «أطفئ الآن» says what it needs.
-  Rows: R-007, R-095, R-096, R-093, R-246.
+  opens the games (not settings, not an old preview) and Back returns to the home; «أطفئ الآن» says what it needs. After playing a
+  game, Home, then «تلفزيونك» in it: the hub, not the game left on top.
+  Rows: R-007, R-095, R-096, R-093, R-246, R-286.
 - **S-06 Settings, single press.** Open the screensaver settings and press OK on 5 rows in a row, fast: each opens on the first press.
   The focused row is readable, the list does not slide sideways, dialogs are not see-through, no second line ends with «..», hints and
   footers inside the screen, the month names whole, the version with its build, focus stays on «UrTV النظيف» after it, «صوري» once,

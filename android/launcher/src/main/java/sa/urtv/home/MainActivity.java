@@ -4563,10 +4563,10 @@ public class MainActivity extends Activity {
      */
     private void openOurSettings(boolean orTvSettings, String window) {
         Intent hub = new Intent(Intent.ACTION_MAIN).setComponent(new ComponentName(SAVER_PKG, SAVER_PKG + ".YourTvHubActivity"));
-        if (window != null) {   // 4.3.4: a fresh «تلفزيونك»: a screensaver task left open (its settings, its preview) came back as it was, and the games never opened
-            hub.putExtra("open", window);
-            hub.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        }
+        // 4.4: «تلفزيونك» always starts at its own root (a fresh task): the screensaver app keeps ONE task, so a hub resumed after Home came back with the
+        // games still on top of it (4.3.4: the same for a screensaver task left open with its settings or preview)
+        hub.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        if (window != null) hub.putExtra("open", window);
         Intent i = getPackageManager().resolveActivity(hub, 0) != null ? hub
                 : new Intent(Intent.ACTION_MAIN).setComponent(new ComponentName(SAVER_PKG, SAVER_PKG + ".SettingsActivity"));
         if (getPackageManager().resolveActivity(i, 0) != null) {
