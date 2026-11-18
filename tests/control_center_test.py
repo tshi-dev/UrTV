@@ -162,7 +162,7 @@ check("the phone remote and the accessibility service are untouched by it (the s
 prev = (ROOT / "android/launcher/src/main/java/sa/urtv/home/tilawah/AdhanPreview.java").read_text(encoding="utf-8")
 check("4.3.3 «الأذان والإقامة»: the next prayer and its iqama from the home's own times (the adhan bar's DayParts, no thread at the panel's opening); OK plays SECONDS of that prayer's muezzin (Fajr's own for Fajr; 4.4: its own choice and level) the voice picker's way",
       "final long[] times = host.adhanTimes();" in center and "ControlText.nextPrayer(times, System.currentTimeMillis())" in center and "AdhanPreview.play(act, sa.urtv.home.tilawah.AdhanPreview.prayerOf(next))" in center
-      and "public static final int SECONDS = 15;" in prev and "MusicService.adhan(c, voice, Adhan.name(voice), SECONDS, prayer);" in prev and "p.playFor(c, prayer)" in prev
+      and "public static final int SECONDS = 15;" in prev and "MusicService.adhan(app, v, Adhan.name(v), SECONDS, prayer)" in prev and "p.playFor(app, prayer)" in prev and "\"adhan-preview\").start();" in prev   # 4.4 (QA-8): picked on a thread
       and "DayParts.now(MainActivity.this, lastCfg.placeFragment(), lastCfg.placeTicket())" in main)
 no_javac = not shutil.which("javac")
 if no_javac:
