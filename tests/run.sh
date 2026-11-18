@@ -296,6 +296,8 @@ python3 tests/on_off_test.py   # on/off rows: the owner's choice I (green triang
 python3 tests/parental_text_test.py   # «الرقابة الأبوية»: the card and its two buttons, the count of locked apps (docs/UX-REVIEW.md)
 python3 tests/fav_bar_test.py   # the favourites bar: the tray, five tiles, the focus inside it, the one 40 px move (docs/PROPOSALS-NOV2.md §1)
 python3 tests/apps_look_test.py   # 4.4 «شكل التطبيقات»: بنرات / أيقونات / مربعات ملونة, centred, A and B with no tray and «تكبير وظل», nothing bundled
+python3 tests/settings_tvos_test.py   # 4.4 beta 2 «شكل شاشة الإعدادات: tvOS»: the 4.3.2 logic in the tvOS manner, light on a weak TV
+python3 tests/glass_dock_test.py   # 4.5 «زجاجي»: the glass bar's size and rows, «كل التطبيقات» as glass, «تغيير الأيقونة»; R1, R3, the tvOS Launcher credit
 python3 tests/called_off_test.py   # 4.3 A1-A3: a called-off game is never live or upcoming; a team's game read from the copy further on
 python3 tests/usb_test.py   # 4.3 B8: the USB viewers are never off and always in the apps row (issue #50)
 python3 tests/sideload_apps_test.py   # #57: a sideloaded app shows on the home next to a Google home (only the TV's own phone-only helpers stay out)

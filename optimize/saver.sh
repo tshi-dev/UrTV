@@ -282,13 +282,15 @@ case "${1:-}" in
   couch)      set1 couch "${2:?usage: optimize/saver.sh couch on|off}" ;;
   lookback)   set1 lookback restore ;;
   lookpanel)  set1 lookpanel open ;;
-  settingsstyle) set1 settingsstyle "${2:?usage: optimize/saver.sh settingsstyle buttons|couch}" ;;   # 4.4 beta 2 «شكل شاشة الإعدادات» (buttons by default)
+  settingsstyle) set1 settingsstyle "${2:?usage: optimize/saver.sh settingsstyle buttons|couch|tvos}" ;;   # 4.4 beta 2 «شكل شاشة الإعدادات» (buttons by default)
   lookpanelrow) set1 lookpanelrow "${2:?usage: optimize/saver.sh lookpanelrow on|off}" ;;   # «لوحة المظهر على الرئيسية» (off by default)
   lookundo)   set1 lookundo "${2:?usage: optimize/saver.sh lookundo on|off}" ;;   # «زر رجّع الشكل السابق» (off by default)
   smoothlook) set1 smoothlook "${2:?usage: optimize/saver.sh smoothlook on|off}" ;;   # «تبديل الشكل بلا وميض» (off by default)   # 4.5 «المظهر على الرئيسية»: the panel over the home (the looks and parts shown before they are kept)   # 4.5 «رجّع الشكل السابق»: the look before the last change, put back whole (again: the other way)
   background) set1 background "${2:?usage: optimize/saver.sh background photos|scenes}" ;;
   clock)      set1 clock "${2:?usage: optimize/saver.sh clock plain|glass}" ;;
-  appsstyle)  set1 appsstyle "${2:?usage: optimize/saver.sh appsstyle tiles|banners|icons}" ;;
+  appsstyle)  set1 appsstyle "${2:?usage: optimize/saver.sh appsstyle tiles|banners|icons|glass}" ;;
+  glasssize)  case "${2:-}" in 50|60|70|80|90|100|110|120|130|140|150) set1 glasssize "$2" ;; *) echo "usage: optimize/saver.sh glasssize 50..150 (steps of 10; 100 the default)"; exit 1 ;; esac ;;
+  glassrows)  case "${2:-}" in 1|2|3) set1 glassrows "$2" ;; *) echo "usage: optimize/saver.sh glassrows 1|2|3"; exit 1 ;; esac ;;
   scenepacks) set1 scenepacks "${2:?usage: optimize/saver.sh scenepacks saudi|couch|saudi,couch}" ;;
   scenestay)  set1 scenestay "${2:?usage: optimize/saver.sh scenestay 10|20|60|300}" ;;
   scenetime)  set1 scenetime "${2:?usage: optimize/saver.sh scenetime on|off}" ;;

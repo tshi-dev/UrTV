@@ -44,6 +44,7 @@ public class SettingsActivity extends Activity {
     private ScrollView scroll;
     private int sideWidth, pageWidth;   // px, fixed in onCreate: the side pane and the whole page
     private int gapPx;                  // px between the side and the rows
+    private TvosStyle ts;               // 4.4 beta 2 «tvOS»: the 4.3.2 screen's logic drawn in the tvOS manner (TvosStyle); null otherwise
     private CouchStyle cs;              // 4.4 with «كنبة» (the side list): couch-tv's settings, exactly (CouchStyle); null on the 4.3.2 screen
     private Page page;                  // a picker shown in place of the rows (couch-tv's choice pages), or null
     private EditText searchIn;          // the search's typing box (couch-tv's), kept while the search is shown
@@ -99,6 +100,7 @@ public class SettingsActivity extends Activity {
         classic = !"couch".equals(prefs.settingsStyle());   // 4.4 beta 2 «شكل شاشة الإعدادات»: the settings' own style, whatever the look («أزرار» by default); the 4.3.2 hub only with the flag off
         SettingsHub.classic(classic);
         if (!classic) cs = new CouchStyle(this);
+        if ("tvos".equals(prefs.settingsStyle())) ts = new TvosStyle(this);   // classic stays true: the same screens, Back and search
         if (getIntent().hasExtra("hubAt")) { screen = SettingsHub.canon(getIntent().getStringExtra("screen")); hubAt = SettingsHub.canon(getIntent().getStringExtra("hubAt")); }   // pickLang: back on its button
         if (getIntent().hasExtra("want")) { forceWant = getIntent().getStringExtra("want"); getIntent().removeExtra("want"); }   // 4.4: back on «شكل كنبة» after it flipped the layout
         UpdateJob.schedule(this);
@@ -111,7 +113,7 @@ public class SettingsActivity extends Activity {
         // the glass look of all our screens: the home's photo, small and blurred once (GlassSource), under its veil; glass tiles and rows
         root = new FrameLayout(this);
         root.setLayoutDirection(Dir.layout());
-        look = GlassSource.page(this, root); couchVeil();
+        look = GlassSource.page(this, root); couchVeil(); tvosVeil();
         scroll = new UpDownScroll(this);
         scroll.setVerticalScrollBarEnabled(false);
         scroll.setHorizontalScrollBarEnabled(false);
@@ -148,8 +150,15 @@ public class SettingsActivity extends Activity {
         pageWidth = width;
         LinearLayout.LayoutParams sideLp = new LinearLayout.LayoutParams(sideWidth, -1);
         sideLp.setMarginEnd(gapPx);
+        if (ts == null) {
         panes.addView(sideScroll, sideLp);
         panes.addView(scroll, new LinearLayout.LayoutParams(width - sideWidth - gapPx + (cs != null ? cs.px(CouchStyle.PAD) : 0), -1));
+        } else {   // «tvOS»: the rows at the start side, the section's icon at the other
+            sideLp.setMarginEnd(0);
+            sideLp.setMarginStart(gapPx);
+            panes.addView(scroll, new LinearLayout.LayoutParams(width - sideWidth - gapPx, -1));
+            panes.addView(sideScroll, sideLp);
+        }
         LinearLayout column = new LinearLayout(this);
         column.setOrientation(LinearLayout.VERTICAL);
         LinearLayout.LayoutParams panesLp = new LinearLayout.LayoutParams(width, 0, 1f);
@@ -228,7 +237,7 @@ public class SettingsActivity extends Activity {
         cleanAsked = false;   // asked again each time the settings come to the front (it was asked once per visit: the row said «مفعّل» only after reopening)
         homeKeyAsked = false;   // 4.4 (QA-7): the same for «زر الرئيسية يفتح تلفزيونك مباشرة»
         extrasLook();   // 4.4 review: «فوق تطبيق آخر» says whether the add-on is here; asked on a thread, once per return
-        look =GlassSource.page(this, root); couchVeil();   // the home's photo or «المظهر» may have changed meanwhile
+        look =GlassSource.page(this, root); couchVeil(); tvosVeil();   // the home's photo or «المظهر» may have changed meanwhile
         hint.setTextColor(look.sub);
         if (back != null) { returnWant = back; returnUntil = System.currentTimeMillis() + 4000; }   // the home answers a moment later and the list is built again: that build keeps the focus on this row too, until a key is pressed (it landed on the row above)
         forceWant = back;   // back from another screen: the focus goes to the row or button that opened it, in the SAME render that builds the list again (it landed on the one above)
@@ -547,6 +556,13 @@ public class SettingsActivity extends Activity {
             pickOne("الساعة", Prefs.HOME_CLOCK_NAMES, java.util.Arrays.asList(Prefs.HOME_CLOCKS).indexOf(prefs.homeClock()), i -> prefs.setLookPart("clock", Prefs.HOME_CLOCKS[i])); } });
         row("شكل التطبيقات", Prefs.appsStyleLabel(prefs.appsStyle()), R.drawable.ic_eye, new Runnable() { public void run() {
             pickOne("شكل التطبيقات", Prefs.HOME_APPS_NAMES, java.util.Arrays.asList(Prefs.HOME_APPS).indexOf(Prefs.appsWay(prefs.appsStyle())), i -> prefs.setLookPart("apps", Prefs.HOME_APPS[i])); } });
+        // 4.5 «زجاجي»: its size and rows (the two rows always here, so the way can be set up before it is chosen)
+        row("حجم شريط tvOS", Prefs.glassSizeLabel(prefs.glassSize()), R.drawable.ic_eye, new Runnable() { public void run() {
+            String[] names = new String[Prefs.GLASS_SIZES.length];
+            for (int k = 0; k < names.length; k++) names[k] = Prefs.glassSizeLabel(Prefs.GLASS_SIZES[k]);
+            pickOne("حجم شريط tvOS", names, java.util.Arrays.asList(Prefs.GLASS_SIZES).indexOf(prefs.glassSize()), i -> prefs.setGlassSize(Prefs.GLASS_SIZES[i])); } });
+        row("صفوف شريط tvOS", Prefs.glassRowsLabel(prefs.glassRows()), R.drawable.ic_eye, new Runnable() { public void run() {
+            pickOne("صفوف شريط tvOS", Prefs.GLASS_ROWS_NAMES, java.util.Arrays.asList(Prefs.GLASS_ROWS).indexOf(prefs.glassRows()), i -> prefs.setGlassRows(Prefs.GLASS_ROWS[i])); } });
         row("حزم الآفاق", labels(Prefs.SCENE_PACKS, prefs.scenePacks(), "آفاق السعودية"), R.drawable.ic_eye,
             new Runnable() { public void run() { pickMany("scenePacks", "حزم الآفاق", Prefs.SCENE_PACKS, "بدون اختيار = آفاق السعودية"); } });
         row("بقاء كل أفق", Prefs.sceneStayLabel(prefs.sceneStay()), R.drawable.ic_eye, new Runnable() { public void run() { pickSceneStay(); } });
@@ -823,6 +839,7 @@ public class SettingsActivity extends Activity {
 
     /** 4.3.2's head: «تلفزيونك» and the screen's name over a screen of buttons; a section's title and line are on the side */
     private void classicHead(boolean tiles) {
+        if (ts != null) { tvosHead(); return; }   // «tvOS»: the screen's name over the rows, the icon on the side, on every screen
         classicSide();
         if (!tiles) return;
         LinearLayout head = new LinearLayout(this);
@@ -1186,7 +1203,7 @@ public class SettingsActivity extends Activity {
         LinearLayout line = null;
         int inLine = 0;
         for (int i = 0; i < cats.length; i++) {
-            boolean alone = wide && i == 0;
+            boolean alone = (wide && i == 0) || ts != null;   // «tvOS»: one section a line
             if (alone || inLine == 0) {
                 line = new LinearLayout(this);
                 line.setOrientation(LinearLayout.HORIZONTAL);
@@ -1211,6 +1228,13 @@ public class SettingsActivity extends Activity {
             t.setNextFocusDownId(tiles.get(SettingsHub.next(i, tiles.size(), 1, wide)).getId());
             t.setNextFocusLeftId(tiles.get(SettingsHub.next(i, tiles.size(), left, wide)).getId());
             t.setNextFocusRightId(tiles.get(SettingsHub.next(i, tiles.size(), right, wide)).getId());
+        }
+        if (ts != null) for (int i = 0; i < tiles.size(); i++) {   // «tvOS»: one column, up and down; the sides stay
+            View t = tiles.get(i);
+            t.setNextFocusUpId(tiles.get(Math.max(0, i - 1)).getId());
+            t.setNextFocusDownId(tiles.get(Math.min(tiles.size() - 1, i + 1)).getId());
+            t.setNextFocusLeftId(t.getId());
+            t.setNextFocusRightId(t.getId());
         }
         restoreFocus(want, wasIndex, 0);
     }
@@ -1267,7 +1291,7 @@ public class SettingsActivity extends Activity {
             hubAt = cat;
             open(cat);
         });
-        card.setOnFocusChangeListener((x, has) -> { paintState(v, mark, shown, state, has); if (has) topWhenFirst(x); });
+        card.setOnFocusChangeListener((x, has) -> { paintState(v, mark, shown, state, has); if (has) topWhenFirst(x); if (ts != null) tvosFocus(x, has, cat); });
         glassCard(card);
         return card;
     }
@@ -1445,6 +1469,79 @@ public class SettingsActivity extends Activity {
         android.graphics.drawable.Drawable bg = root.getBackground();
         android.graphics.drawable.Drawable veil = new android.graphics.drawable.ColorDrawable(lite ? CouchStyle.VEIL_LITE : CouchStyle.VEIL);
         root.setBackground(bg == null ? veil : new android.graphics.drawable.LayerDrawable(new android.graphics.drawable.Drawable[] {bg, veil}));
+    }
+
+    // ---- 4.4 beta 2 «tvOS»: the 4.3.2 screen drawn in the tvOS manner (TvosStyle; docs/mockups/settings-style/, approved by the owner) ----
+
+    /** the tvOS colours over the person's look, and its veil over the blurred home (stronger on a weak TV) */
+    private void tvosVeil() {
+        if (ts == null || root == null) return;
+        look = ts.look(look);
+        android.graphics.drawable.Drawable bg = root.getBackground();
+        android.graphics.drawable.Drawable veil = new android.graphics.drawable.ColorDrawable(ts.veil());
+        root.setBackground(bg == null ? veil : new android.graphics.drawable.LayerDrawable(new android.graphics.drawable.Drawable[] {bg, veil}));
+    }
+
+    private ImageView tvosGlyph;
+    private TextView tvosAbout;
+
+    /** the screen's name over its rows («الإعدادات» on the first), and the side: the shown section's icon large in its glass square, its line under it */
+    private void tvosHead() {
+        TextView title = new TextView(this);
+        title.setText(Words.of(screen == null ? "الإعدادات" : SettingsHub.name(screen)));
+        title.setTextColor(look.text);
+        title.setTextSize(TypedValue.COMPLEX_UNIT_SP, 30);
+        title.setTypeface(font("ThmanyahDisplay-Bold"));
+        title.setGravity(Gravity.CENTER_HORIZONTAL);
+        title.setPadding(0, 0, 0, dp(14));
+        list.addView(title, new LinearLayout.LayoutParams(-1, -2));
+        side.removeAllViews();
+        sideItems.clear();
+        sideBox.setVisibility(View.VISIBLE);
+        int rowsWidth = pageWidth - sideWidth - gapPx;
+        if (scroll.getLayoutParams() != null && scroll.getLayoutParams().width != rowsWidth) {
+            scroll.getLayoutParams().width = rowsWidth;
+            scroll.requestLayout();
+        }
+        side.setGravity(Gravity.CENTER_HORIZONTAL);
+        int box = Math.min(Math.round(sideWidth * TvosStyle.GLYPH_SIDE), dp(TvosStyle.GLYPH_MAX_DP));
+        FrameLayout square = new FrameLayout(this);
+        square.setBackground(ts.glyphBox(box * TvosStyle.GLYPH_CORNER, dp(1)));
+        tvosGlyph = new ImageView(this);
+        tvosGlyph.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO);
+        int icon = Math.round(box * TvosStyle.GLYPH_ICON);
+        square.addView(tvosGlyph, new FrameLayout.LayoutParams(icon, icon, Gravity.CENTER));
+        LinearLayout.LayoutParams sq = new LinearLayout.LayoutParams(box, box);
+        sq.topMargin = dp(56);
+        side.addView(square, sq);
+        tvosAbout = new TextView(this);
+        tvosAbout.setTextColor(look.sub);
+        tvosAbout.setTextSize(TypedValue.COMPLEX_UNIT_SP, HINT_SP);
+        tvosAbout.setTypeface(font("Thmanyah-Regular"));
+        tvosAbout.setGravity(Gravity.CENTER_HORIZONTAL);
+        tvosAbout.setLineSpacing(dp(4), 1f);
+        tvosAbout.setTextDirection(Dir.text());
+        LinearLayout.LayoutParams ap = new LinearLayout.LayoutParams(box + dp(40), -2);
+        ap.topMargin = dp(18);
+        side.addView(tvosAbout, ap);
+        tvosShow(screen == null ? (hubAt != null ? hubAt : SettingsHub.LOOK) : screen);
+    }
+
+    /** the side shows this section: its icon and its line */
+    private void tvosShow(String cat) {
+        if (tvosGlyph == null || cat == null) return;
+        android.graphics.drawable.Drawable d = getDrawable(classicIcon(cat)).mutate();
+        d.setTint(look.text);
+        tvosGlyph.setImageDrawable(d);
+        tvosAbout.setText(conv(SettingsHub.about(cat)));
+    }
+
+    /** a section's button with the focus: the side shows it, and it grows a little (not on a weak TV) */
+    private void tvosFocus(View x, boolean has, String cat) {
+        if (has) tvosShow(cat);
+        float s = has ? ts.grow() : 1f;
+        x.animate().scaleX(s).scaleY(s).setDuration(ts.light ? 0 : FOCUS_MS).setInterpolator(Motion.ease()).start();
+        x.setTranslationZ(has && !ts.light ? dp(4) : 0);
     }
 
     /** couch-tv's side: «الإعدادات», the round search button beside it (couch-tv has no search), then the sections */
@@ -3730,7 +3827,7 @@ public class SettingsActivity extends Activity {
         lv.setOnItemClickListener((p, v, pos, id) -> {
             if (shape) prefs.setLook(values[pos]); else prefs.setAppearance(values[pos]);
             dialog.dismiss();
-            look = GlassSource.page(this, root); couchVeil();   // this screen at once; the home and the others as they come up
+            look = GlassSource.page(this, root); couchVeil(); tvosVeil();   // this screen at once; the home and the others as they come up
             hint.setTextColor(look.sub);
             render();
         });
@@ -4237,6 +4334,7 @@ public class SettingsActivity extends Activity {
             v.setTranslationZ(has ? dp(4) : 0);
             v.animate().scaleX(has ? FOCUS_SCALE : 1f).scaleY(has ? FOCUS_SCALE : 1f).setDuration(Motion.lite(SettingsActivity.this) ? 0 : FOCUS_MS).setInterpolator(Motion.ease()).start();
             if (has) topWhenFirst(v);
+            if (ts != null && ts.light) { v.animate().cancel(); v.setScaleX(1f); v.setScaleY(1f); v.setTranslationZ(0); }   // «tvOS» on a weak TV: nothing grows
         });
         glassCard(card);
         LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(-1, -2);

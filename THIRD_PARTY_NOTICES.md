@@ -187,6 +187,21 @@ per-model lists, packages only, re-taken at commit 3cd274f8 (2 Nov 2026). Clean 
 (`OpenShelf-<version>.apk` from that repository's releases), check that it is that package, and hand it to Android's installer, which asks the person first. Nothing of Open Shelf is bundled in our apps, and we
 have not vetted the apps it installs (the line on its tile says so).
 
+## tvOS Launcher («زجاجي», 4.5)
+
+The glass apps bar, «كل التطبيقات» as glass and «تغيير الأيقونة» adapt parts of tvOS Launcher (https://github.com/techgenius1/tvOS-Launcher),
+Copyright 2026 techgenius, under the Apache License, Version 2.0 (https://www.apache.org/licenses/LICENSE-2.0); tvOS Launcher itself credits
+Hume Launcher and Couch TV. What was adapted, in `android/launcher/src/main/java/sa/urtv/home/`:
+
+- `GlassArt.java`: the smooth squircle icon (createSmoothSquircleDrawable of its home scene), the edge colour of an icon
+  (CustomMedia.sampleDominantEdgeColor), the edited icon's render with zoom and move (renderEditedAppIcon) and trimTransparentPadding.
+- `GlassBar.java`: glass made from the picture behind it, shrunk and blurred once rather than blurred live.
+- `IconEditorActivity.java`: the custom icon's choices (an image, an «auto» edge colour among a set of colours, zoom and move).
+
+Changes: rewritten in Java for the UrTV home; UrTV's own backdrop (GlassSource), shapes, colours, words and layout, Arabic first and right
+to left; every render and file read off the main thread. Each adapted file keeps the copyright lines and the license notice at its top and
+says what was changed. No image, logo or photo of tvOS Launcher is used or bundled.
+
 ## GeoNames and Wikidata (the offline city search)
 
 `android/app/src/main/assets/cities-more.txt` (the places the settings' city search and `saver.sh city` find without the internet, built by

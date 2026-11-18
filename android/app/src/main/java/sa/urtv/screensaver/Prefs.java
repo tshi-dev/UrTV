@@ -1335,9 +1335,22 @@ final class Prefs {
      * "banners", "icons", or, for the tray, 4.4's first values: "frame" (the ring, the default) or "zoom" (bigger with a shadow), which
      * the person keeps (a TV that had «تكبير وظل» keeps it on its tiles). The launcher reads the stored value (FavBar.look, FavBar.zoom).
      */
-    static final String[] HOME_APPS = {"banners", "icons", "tiles"};
-    static final String[] HOME_APPS_NAMES = {"بنرات", "أيقونات", "مربعات ملونة"};
-    static final String[] APPS_STORED = {"banners", "icons", "frame", "zoom"};
+    static final String[] HOME_APPS = {"banners", "icons", "tiles", "glass"};
+    static final String[] HOME_APPS_NAMES = {"بنرات", "أيقونات", "مربعات ملونة", "tvOS"};   // 4.4 beta 2 (the owner): what comes from tvOS Launcher is named «tvOS»
+    static final String[] APPS_STORED = {"banners", "icons", "frame", "zoom", "glass"};
+    /**
+     * 4.5 «زجاجي» (the owner approved docs/mockups/glass/): a liquid-glass bar at the bottom, each app's icon as a rounded square, the name above
+     * the focused one only. Its size, 50 to 150 % in steps of 10 (100 the default), and its rows, 1 to 3 (1): «حجم شريط tvOS», «صفوف شريط tvOS».
+     */
+    static final String[] GLASS_SIZES = {"50", "60", "70", "80", "90", "100", "110", "120", "130", "140", "150"};
+    static final String[] GLASS_ROWS = {"1", "2", "3"};
+    static final String[] GLASS_ROWS_NAMES = {"صف واحد", "صفّان", "ثلاثة صفوف"};
+    String glassSize() { String v = sp.getString("glassSize", "100"); return java.util.Arrays.asList(GLASS_SIZES).contains(v) ? v : "100"; }
+    void setGlassSize(String v) { if (java.util.Arrays.asList(GLASS_SIZES).contains(v)) sp.edit().putString("glassSize", v).apply(); }
+    String glassRows() { String v = sp.getString("glassRows", "1"); return java.util.Arrays.asList(GLASS_ROWS).contains(v) ? v : "1"; }
+    void setGlassRows(String v) { if (java.util.Arrays.asList(GLASS_ROWS).contains(v)) sp.edit().putString("glassRows", v).apply(); }
+    static String glassSizeLabel(String v) { return DigitsText.convert(v, false) + "٪"; }
+    static String glassRowsLabel(String v) { int i = java.util.Arrays.asList(GLASS_ROWS).indexOf(v); return GLASS_ROWS_NAMES[Math.max(0, i)]; }
     /** the presets: name, layout, background, clock, the apps' focus */
     static final String[][] LOOKS = {{"urtv", "شكل تلفزيونك", "classic", "photos", "plain", "frame"}, {"couch", "شكل كنبة", "couch", "scenes", "glass", "icons"}};
     /** the apps' value of a preset as stored: the same, or Couch's before «أيقونات» ("zoom": a TV set to Couch then is still on Couch) */
@@ -1361,7 +1374,7 @@ final class Prefs {
     /** the stored value (APPS_STORED), sent to the launcher as it is */
     String appsStyle() { String v = sp.getString("appsStyle", "frame"); return java.util.Arrays.asList(APPS_STORED).contains(v) ? v : "frame"; }
     /** the way it is (HOME_APPS): "banners", "icons" or "tiles" */
-    static String appsWay(String stored) { return "banners".equals(stored) || "icons".equals(stored) ? stored : "tiles"; }
+    static String appsWay(String stored) { return "banners".equals(stored) || "icons".equals(stored) || "glass".equals(stored) ? stored : "tiles"; }
     /** a way (HOME_APPS) or a stored value (APPS_STORED); «مربعات ملونة» keeps the tiles' own focus when it is already the way */
     void setAppsStyle(String v) {
         if ("tiles".equals(v)) { if (!"tiles".equals(appsWay(appsStyle()))) sp.edit().putString("appsStyle", "frame").apply(); return; }
@@ -1384,10 +1397,10 @@ final class Prefs {
      */
     // ---- 4.4 beta 2 (the owner: «with a protective way»): each new look item behind its own switch, off by default and after an update
     /** 4.4 beta 2 «شكل شاشة الإعدادات» (the owner): the settings screen's own style, apart from the looks: «أزرار» (the 4.3.2 hub, the default) or
-     *  «كنبة» (couch-tv's side list and compact rows). «tvOS» joins SETTINGS_STYLES only once its screen is approved and built (never a dead choice).
+     *  «كنبة» (couch-tv's side list and compact rows), or «tvOS» (the 4.3.2 screen's logic in the tvOS manner, TvosStyle; approved and built for beta 2).
      *  Every place of the hub is in the side list (tests/settings_one_form_test.py lists each with its new place). */
-    static final String[] SETTINGS_STYLES = {"buttons", "couch"};
-    static final String[] SETTINGS_STYLE_NAMES = {"أزرار", "كنبة"};
+    static final String[] SETTINGS_STYLES = {"buttons", "couch", "tvos"};
+    static final String[] SETTINGS_STYLE_NAMES = {"أزرار", "كنبة", "tvOS"};
     /** the style; read the first time after the update as the screen the TV shows now («كنبة» with the look «كنبة», else «أزرار»): no surprise switch */
     String settingsStyle() {
         String v = sp.getString("settingsStyle", null);
