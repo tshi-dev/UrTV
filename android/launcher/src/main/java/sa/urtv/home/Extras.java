@@ -161,6 +161,21 @@ public final class Extras {
         }
     }
 
+    /** 4.4 beta 2: whether this app holds the HOME role (Android 10+; RoleManager answers it for the app itself): ExtrasWords.ROLE_OURS, ROLE_NOT or ROLE_UNKNOWN */
+    private static final String ROLE_HOME = "android.app.role.HOME";
+
+    static String homeRole(Context c) {
+        if (android.os.Build.VERSION.SDK_INT < 29) return ExtrasWords.ROLE_UNKNOWN;
+        try {   // RoleManager by name (public API of Android 10; the class is not in the older SDKs the compile guards build against)
+            Object rm = c.getSystemService("role");
+            if (rm == null) return ExtrasWords.ROLE_UNKNOWN;
+            if (!Boolean.TRUE.equals(rm.getClass().getMethod("isRoleAvailable", String.class).invoke(rm, ROLE_HOME))) return ExtrasWords.ROLE_UNKNOWN;
+            return Boolean.TRUE.equals(rm.getClass().getMethod("isRoleHeld", String.class).invoke(rm, ROLE_HOME)) ? ExtrasWords.ROLE_OURS : ExtrasWords.ROLE_NOT;
+        } catch (ReflectiveOperationException | RuntimeException e) {
+            return ExtrasWords.ROLE_UNKNOWN;
+        }
+    }
+
     /** 4.4 R3 (on by default on a Google TV): the add-on catches the Home key itself; "on", "off" or null to read; null when the add-on did not answer */
     public static Boolean homeKey(Context c, String set) {
         try {

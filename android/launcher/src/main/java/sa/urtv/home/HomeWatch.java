@@ -66,6 +66,15 @@ final class HomeWatch {
     boolean paused(long now) { return now < pausedUntil; }
 
     /**
+     * 4.4 beta 2: the person's home is ours: Android's HOME resolver names ours, OR our home says it holds the HOME role. On a Google TV whose own home
+     * stays on, the resolver names Google TV's home the default even while the role is ours (the owner's TV: launcherx isDefault, priority 2), so the
+     * resolver alone said «not ours» there. An unknown or missing answer from our home is not «ours».
+     */
+    static boolean oursChosen(String resolvedPkg, String roleAnswer, String ours) {
+        return (ours != null && ours.equals(resolvedPkg)) || ExtrasWords.ROLE_OURS.equals(roleAnswer);
+    }
+
+    /**
      * 4.4 beta 2 (the tester's first Home after an update): our home was replaced (installed again). The windows of the install (ours gone a moment, the
      * stock home shown by Android meanwhile) are no fight of a firmware: the pause and the counted bursts they left are let go.
      */

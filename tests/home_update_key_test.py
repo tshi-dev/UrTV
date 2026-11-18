@@ -6,7 +6,9 @@ judged its catch with our home not installed for a moment, turned it off, and ju
   again as it is (WANTED or UNWANTED, never changed), on its own thread: the add-on judges the catch again with our home installed;
 - the add-on (when it is updated too): our home's ADDED or REPLACED lets the watch's pause go and judges the catch again 1.5 s later; and a stock home's
   window while the catch should be on but is off turns it on for the next press.
-Read from the sources; the watch's reset runs in tests/HomeWatchRun.java (tests/extras_test.py).
+- the tester's answer: on the owner's TV Google TV's home stays on and Android's HOME resolver names it the default while our home holds the role, so the
+  add-on's «ours is chosen» (the resolver) was false there; the add-on now also asks our home whether it holds the HOME role.
+Read from the sources; the watch's reset and the fake-resolver cases run in tests/HomeWatchRun.java (tests/extras_test.py).
     python3 tests/home_update_key_test.py"""
 import sys
 from pathlib import Path
@@ -47,12 +49,25 @@ wr = svc.split("private void watchReplaced() {")[1].split("\n    }\n")[0]
 check("the add-on: our home's ADDED or REPLACED (our package only) lets the watch's pause go and judges the catch 1.5 s later",
       "Intent.ACTION_PACKAGE_ADDED" in wr and "Intent.ACTION_PACKAGE_REPLACED" in wr and "addDataSchemeSpecificPart(HOME_PKG, android.os.PatternMatcher.PATTERN_LITERAL)" in wr
       and "HOME_PKG.equals(d.getSchemeSpecificPart())" in wr and "watch.reset();" in wr and "main.postDelayed(rearm, REARM_MS);" in wr and "REARM_MS = 1_500" in svc
-      and "private final Runnable rearm = this::filterKeys;" in svc)
+      and "private final Runnable rearm = () -> { filterKeys(); refreshRole(); };" in svc)
 check("registered when the service connects, let go when it unbinds", "watchReplaced();" in svc.split("protected void onServiceConnected() {")[1].split("\n    }\n")[0]
       and "unregisterReceiver(replaced)" in svc.split("public boolean onUnbind(Intent i) {")[1].split("\n    }\n")[0])
 ev = svc.split("public void onAccessibilityEvent(AccessibilityEvent e) {")[1].split("\n    }\n")[0]
 check("a stock home's window while the catch should be on but is off: on again for the next press (other apps' windows untouched)",
       "if (!homeKeyFiltering() && homeKeyActive()) filterKeys();" in ev and ev.index("if (!stockPackages.contains(pkg)) return;") < ev.index("homeKeyFiltering()"))
 check("the watch's reset lets the pause and the counted bursts go", "void reset() {" in hw and "pausedUntil = 0;" in hw.split("void reset() {")[1] and "java.util.Arrays.fill(brings, 0);" in hw.split("void reset() {")[1])
+br = (H / "ExtrasBridge.java").read_text(encoding="utf-8")
+hr = ext.split("static String homeRole(Context c) {")[1].split("\n    }\n")[0]
+check("the home answers the add-on whether it holds the HOME role (RoleManager.isRoleHeld, Android 10+; unknown below or on an error)",
+      "case ExtrasWords.HOME_ROLE:" in br and "Extras.homeRole(c)" in br and "Build.VERSION.SDK_INT < 29) return ExtrasWords.ROLE_UNKNOWN" in hr and "getMethod(\"isRoleHeld\", String.class).invoke(rm, ROLE_HOME)" in hr and 'ROLE_HOME = "android.app.role.HOME"' in ext)
+oc = svc.split("private boolean oursChosen() {")[1].split("\n    }\n")[0]
+check("the add-on's «ours is chosen» is the resolver OR the role our home holds (HomeWatch.oursChosen, the fake-resolver cases in HomeWatchRun)",
+      "HomeWatch.oursChosen(" in oc and "roleAnswer" in oc)
+rr = svc.split("private void refreshRole() {")[1].split("\n    }\n")[0]
+check("the role is asked on a thread of its own (one at a time), at connect, after our home's install and again at a stock home's window; a change judges the catch on the main thread",
+      '"extras-role").start();' in rr and "roleAsking.compareAndSet(false, true)" in rr and "main.post(this::filterKeys);" in rr
+      and "refreshRole();" in svc.split("protected void onServiceConnected() {")[1].split("\n    }\n")[0]
+      and "private final Runnable rearm = () -> { filterKeys(); refreshRole(); };" in svc and "if (android.os.SystemClock.uptimeMillis() - roleAskedAt > ROLE_REASK_MS) refreshRole();" in ev)
+check("no answer (an older home) keeps the last answer: never a guess", "if (r == null) return;" in rr)
 print("FAILED" if failed else "all passed")
 sys.exit(1 if failed else 0)

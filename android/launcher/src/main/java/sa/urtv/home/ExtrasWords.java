@@ -21,6 +21,11 @@ public final class ExtrasWords {
     public static final String STATUS = "status", TYPE = "type", PRESS = "press", SLEEP = "sleep", GO_HOME = "go_home", WATCH = "watch";
     /** «أزرار الريموت»: both ways. The home tells the add-on the owner's choices when they change ("youtube=PKG,netflix=,…", KeyApps.line); the add-on asks the home for them when it starts */
     public static final String KEY_APPS = "key_apps";
+    /**
+     * 4.4 beta 2 (the owner's Google TV: Google TV's home stays on, and Android's HOME resolver names it the default even while our home holds the HOME
+     * role): the add-on asks the home whether it holds the role; RESULT is ROLE_OURS, ROLE_NOT or ROLE_UNKNOWN (no role before Android 10, or no answer)
+     */
+    public static final String HOME_ROLE = "home_role", ROLE_OURS = "ours", ROLE_NOT = "not", ROLE_UNKNOWN = "unknown";
     /** 4.4: WATCH's other two arguments: the person's chosen home is ours (the setup confirmed it) or not any more («تراجع»); WANTED is also the bundle's key */
     public static final String WANTED = "wanted", UNWANTED = "unwanted";
     /** 4.4 (step 88, R3; on by default on a Google TV from build 413): the add-on catches the remote's Home key itself and opens our home; WATCH's arguments, HOME_KEY the bundle's key */

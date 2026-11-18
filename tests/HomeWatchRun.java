@@ -32,6 +32,12 @@ public final class HomeWatchRun {
         for (int i = 0; i < 6; i++) r.decide(true, lx, home, stock, true, 200_000 + i * 750L);
         boolean wasPaused = r.paused(204_000);
         r.reset();
+        String LX = "com.google.android.apps.tv.launcherx", OURS = "sa.urtv.home";
+        check("4.4 beta 2, a fake resolver: Google TV's home named the default while our home holds the role (the owner's TV): ours", HomeWatch.oursChosen(LX, ExtrasWords.ROLE_OURS, OURS));
+        check("4.4 beta 2, a fake resolver: Google TV's home named and the role not ours: not ours (the person's choice is left)", !HomeWatch.oursChosen(LX, ExtrasWords.ROLE_NOT, OURS));
+        check("4.4 beta 2, a fake resolver: no answer from our home or Android 9: the resolver decides", !HomeWatch.oursChosen(LX, null, OURS) && !HomeWatch.oursChosen(LX, ExtrasWords.ROLE_UNKNOWN, OURS)
+            && HomeWatch.oursChosen(OURS, null, OURS) && HomeWatch.oursChosen(OURS, ExtrasWords.ROLE_NOT, OURS));
+        check("4.4 beta 2, a fake resolver: nothing resolved (the install's moment) but the role ours: ours", HomeWatch.oursChosen(null, ExtrasWords.ROLE_OURS, OURS) && !HomeWatch.oursChosen(null, null, OURS));
         check("4.4 beta 2: our home installed again: the pause the install's windows left is let go, the next fight brings ours", wasPaused && !r.paused(204_000) && r.decide(true, lx, home, stock, true, 204_100));
         HomeWatch m = new HomeWatch();
         boolean mash = true;

@@ -70,6 +70,7 @@ public class ExtrasA11yService extends AccessibilityService {
     @Override protected void onServiceConnected() {
         running = this;
         watchReplaced();   // beta 2: our home installed again (an update) re-arms the Home key catch and the watch
+        refreshRole();   // beta 2: whether our home holds the HOME role (the resolver may name Google TV's home while it does)
         stockHomes = stockHomeActivities(this);
         keyChoices = KeyApps.parse(getSharedPreferences("extras", MODE_PRIVATE).getString(ExtrasWords.KEY_APPS, ""));
         stockPackages = HomeWatch.packages(stockHomes);
@@ -128,7 +129,38 @@ public class ExtrasA11yService extends AccessibilityService {
 
     /** after our home's install: the windows of the install have come and gone */
     static final long REARM_MS = 1_500;
-    private final Runnable rearm = this::filterKeys;
+    private final Runnable rearm = () -> { filterKeys(); refreshRole(); };
+
+    /** beta 2: our home's answer to «do you hold the HOME role» (ExtrasWords.ROLE_*), asked off the main thread; null until it answered */
+    private volatile String roleAnswer;
+    private volatile long roleAskedAt;
+    private final java.util.concurrent.atomic.AtomicBoolean roleAsking = new java.util.concurrent.atomic.AtomicBoolean();
+    static final long ROLE_REASK_MS = 2_000;
+
+    /** asks our home on a thread of its own; a changed answer judges the catch again on the main thread */
+    private void refreshRole() {
+        if (!roleAsking.compareAndSet(false, true)) return;
+        roleAskedAt = android.os.SystemClock.uptimeMillis();
+        try {
+            new Thread(() -> {
+                try {
+                    Bundle b = askHome(this, ExtrasWords.HOME_ROLE, null, null);
+                    String r = b == null ? null : b.getString(ExtrasWords.RESULT);
+                    if (r == null) return;   // an older home, or no answer: the last answer stays
+                    boolean changed = !r.equals(roleAnswer);
+                    roleAnswer = r;
+                    if (!changed) return;
+                    if (ExtrasWords.ROLE_OURS.equals(r)) Log.i("UrTVWatch", "role ours");
+                    else Log.i("UrTVWatch", "role not ours");
+                    main.post(this::filterKeys);
+                } finally {
+                    roleAsking.set(false);
+                }
+            }, "extras-role").start();
+        } catch (RuntimeException e) {
+            roleAsking.set(false);
+        }
+    }
     @Override public void onInterrupt() { }
 
     static boolean enabled() { return running != null; }
@@ -155,6 +187,7 @@ public class ExtrasA11yService extends AccessibilityService {
         }
         if (!stockPackages.contains(pkg)) return;   // any other app's window: nothing read further, nothing logged
         if (!homeKeyFiltering() && homeKeyActive()) filterKeys();   // beta 2: the catch went off while ours was being installed; on again for the next press
+        if (android.os.SystemClock.uptimeMillis() - roleAskedAt > ROLE_REASK_MS) refreshRole();   // beta 2: the role asked again (a thread), for the next press
         // 4.4 (step 86 B): every decision on a stock home's window is logged (the stock home's own class only), so a tester sees why. The watch
         // brings ours while the person's home is ours: Android's default (the role), or the setup's word (WANTED) when the TV took the role back
         boolean on = watchOn(this), chosen = oursChosen(), wantedNow = wanted(this), homeScreen = HomeWatch.homeScreen(pkg, cls, stockHomes);
@@ -284,9 +317,9 @@ public class ExtrasA11yService extends AccessibilityService {
     private boolean oursChosen() {
         try {
             ResolveInfo ri = getPackageManager().resolveActivity(new Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_HOME), PackageManager.MATCH_DEFAULT_ONLY);
-            return ri != null && ri.activityInfo != null && HOME_PKG.equals(ri.activityInfo.packageName);
+            return HomeWatch.oursChosen(ri == null || ri.activityInfo == null ? null : ri.activityInfo.packageName, roleAnswer, HOME_PKG);
         } catch (RuntimeException e) {
-            return false;
+            return ExtrasWords.ROLE_OURS.equals(roleAnswer);
         }
     }
 
