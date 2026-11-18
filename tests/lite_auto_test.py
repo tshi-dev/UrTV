@@ -47,5 +47,6 @@ check("why: a low-memory kill comes first", got.get("KIND") == "KIND oom", got.g
 check("a signal from the future (the clock went back) counts nothing", got.get("FUTURE") == "FUTURE false", got.get("FUTURE"))
 check("a damaged text: only well-formed signals count", got.get("JUNK") == "JUNK 2 true", got.get("JUNK"))
 check("at most 20 kept, signals older than 14 days let go", got.get("KEEP") == "KEEP 20" and got.get("OLD") == "OLD 1", (got.get("KEEP"), got.get("OLD")))
+check("a kill added later at its own time keeps the newer signals (the window is reckoned from now)", got.get("AT") == "AT 2 true", got.get("AT"))
 print("FAILED" if failed else "all passed")
 sys.exit(1 if failed else 0)

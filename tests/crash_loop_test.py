@@ -63,8 +63,8 @@ runs = [
     ([f"V {S} 470", f"o {S+500}", f"c {S+5000}", f"V {S+8000} 470", f"o {S+8500}", f"c {S+12000}", f"V {S+15000} 470", f"q {S+15001}"], ["safe"], "…the same version keeps its count"),
     ([f"c {S}", f"q {S+1}"], ["home"], "a crash with no start known is not counted"),
     (["p garbage|1,x,", f"q {S}"], ["home"], "a damaged file is a clean state"),
-    ([f"V {S} 470", f"o {S+500}", f"c {S+1000}", f"V {S+2000} 470", f"o {S+2500}", f"c {S+3000}", f"V {S+4000} 470", f"o {S+4500}", f"c {S+5000}", "w"], [f"{S+4000}|{S+3000},{S+5000}|{S+4500}", "0", "1|470|"], "the file keeps the start, the last two quick crashes, this start's screen and the version"),
-    (["p 5|6,7|0 0 0|470", "w"], ["5|6,7|0", "0", "0|470|"], "the version line is read back"),
+    ([f"V {S} 470", f"o {S+500}", f"c {S+1000}", f"V {S+2000} 470", f"o {S+2500}", f"c {S+3000}", f"V {S+4000} 470", f"o {S+4500}", f"c {S+5000}", "w"], [f"{S+4000}|{S+3000},{S+5000}|{S+4500}", "0", f"1|470|{S+2000}", "1|"], "the file keeps the start, the last two quick crashes, this start's screen and the version"),
+    (["p 5|6,7|0 0 0|470", "w"], ["5|6,7|0", "0", "0|470|0", "0|"], "the version line is read back"),
     # the hang watchdog: a home screen that opened and never drew its first frame within 20 s counts at the next start
     ([f"s {S}", f"o {S+1000}", f"d {S+2000}", f"s {S+100000}", f"o {S+101000}", f"d {S+102000}", f"s {S+200000}", f"q {S+200001}"], ["home"], "screens that drew in time: the home"),
     ([f"s {S}", f"o {S+1000}", f"s {S+40000}", f"o {S+41000}", f"s {S+80000}", f"q {S+80001}"], ["safe"], "two screens that never drew (hangs): the safe page"),
@@ -73,6 +73,15 @@ runs = [
     ([f"s {S}", f"o {S+1000}", f"c {S+2000}", f"s {S+5000}", f"q {S+5001}"], ["home"], "a crash before the first frame is counted once, not again as a hang"),
     ([f"s {S}", f"s {S+40000}", f"s {S+80000}", f"q {S+80001}"], ["home"], "starts with no home screen (a receiver, a service) are never hangs"),
     ([f"s {S}", f"o {S+1000}", f"s {S+40000}", f"o {S+41000}", "x", f"s {S+80000}", f"q {S+80001}"], ["home"], "«حاول مرة ثانية» also forgives the screen that was open"),
+    # 4.4 beta 3: low-memory kills (Android 11+ says how the last process ended; judged at the next start)
+    ([f"s {S}", f"o {S+500}", f"d {S+1000}", f"s {S+30000}", f"k {S+20000} 1 {S+30000}", f"o {S+30500}", f"d {S+31000}", f"s {S+60000}", f"k {S+50000} 1 {S+60000}", f"q {S+60001}"], ["safe"],
+     "two low-memory kills of the home in front, each within a minute of its start: the safe page (as two crashes)"),
+    ([f"s {S}", f"o {S+500}", f"d {S+1000}", f"s {S+30000}", f"k {S+20000} 0 {S+30000}", f"o {S+30500}", f"d {S+31000}", f"s {S+60000}", f"k {S+50000} 0 {S+60000}", f"q {S+60001}"], ["home"],
+     "kills in the background (normal on any TV): never counted"),
+    ([f"s {S}", f"s {S+30000}", f"k {S+20000} 1 {S+30000}", f"s {S+60000}", f"k {S+50000} 1 {S+60000}", f"q {S+60001}"], ["home"],
+     "a process that never opened the home screen (a receiver, a service): its kills are not counted"),
+    ([f"s {S}", f"o {S+500}", f"d {S+1000}", f"s {S+300000}", f"k {S+200000} 1 {S+300000}", f"o {S+300500}", f"d {S+301000}", f"s {S+600000}", f"k {S+500000} 1 {S+600000}", f"q {S+600001}"], ["home"],
+     "a kill long after the start (the home ran for minutes): not a start that fails"),
     # StockHome (review F2)
     (["h com.tcl.home com.tcl.home.Launcher", "h sa.urtv.home sa.urtv.home.MainActivity", "h com.google.android.tungsten.setupwraith x.Main", "h com.android.tv.settings com.android.tv.settings.FallbackHome", "h com.mediatek.home com.mediatek.home.FallbackHome", "h com.android.settings com.android.settings.FallbackHome"],
      ["real", "not", "not", "not", "not", "not"], "StockHome: a maker's home yes; ours, the setup wizard and the Settings stand-ins no"),
@@ -95,5 +104,12 @@ check("4.3.5 review F4: MainActivity's safe() reads the state in memory, never t
       "static boolean safe(Context c) { CrashLoop s = state; return (s != null ? s : read(c)).safe(System.currentTimeMillis()); }" in store)
 check("F8: a second home screen in the same process is judged on its own first frame (opened() lets drew() mark again)",
       store.split("static void opened(Context c) {")[1].split("}")[0].lstrip().startswith("drewMarked = false;"))
+ex = store[store.index("private static void exits(Context app) {"):store.index("/** MainActivity.onCreate")]
+hk = store.split("static void hook(final Context app) {")[1].split("Thread.setDefaultUncaughtExceptionHandler")[0]
+check("4.4 beta 3: how the last process ended is asked of Android (ApplicationExitInfo, Android 11+) on its own thread at the start, never the UI thread",
+      "if (android.os.Build.VERSION.SDK_INT >= 30) {" in hk and "EXITS.execute(() -> exits(app));" in hk and '"crash-exits"' in store)
+check("4.4 beta 3: only a low-memory kill of the home's own process; each once (the last judged is kept); in front it counts toward safe mode, in front or perceptible it feeds «الوضع الخفيف»",
+      "REASON_LOW_MEMORY" in ex and '"sa.urtv.home".equals(e.getProcessName())' in ex and 'sp.getLong("oom_seen", 0)' in ex and 'sp.edit().putLong("oom_seen", latest).commit();' in ex
+      and "step(app, s -> s.lowMemoryKill(at, front, now));" in ex and "LiteAutoStore.noteAt(app, LiteAuto.OOM, at);" in ex and "final boolean front = k[1] <= FOREGROUND;" in ex)
 print("FAILED" if failed else "all passed")
 sys.exit(1 if failed else 0)

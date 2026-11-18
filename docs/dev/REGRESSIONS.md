@@ -301,6 +301,7 @@ often describe the same bug in two ways, and both rows are kept when their guard
 | R-283 | «إعداد تلفزيوني» stopped at 26 % every time on a Skyworth IRIS (Android 14) and the app closed with no word | the «before» reading restarted the TV and the run waited for a boot resume that did not come back; its end was kept only in memory and the setup screen could not come forward at a boot | 4.4 | `tests/setup_runner_test.py` | launcher setup | Y |
 | R-285 | The safe page's «افتح الشاشة الأصلية» did nothing on a TV whose earlier setup had turned Google TV's home off (the owner's TCL G08, Android 14) | the button opened whatever else answered Home, and the stock home itself was off | 4.4 | `tests/safe_stock_test.py` | launcher | Y |
 | R-286 | A TV with 2.4–3 GB that struggles in practice (memory running full, slow starts, the home killed for memory) never got «الوضع الخفيف» on «تلقائي» | «تلقائي» looked only at the specs (the low-RAM flag, under 2000 MB, two cores) | 4.4 | `tests/lite_auto_test.py` | launcher | N |
+| R-287 | A home killed by Android for memory right after it opened, again and again, never reached the safe page (the TV just kept reopening it) | the crash counter saw only Java crashes and hangs; a low-memory kill leaves no trace in the process | 4.4 | `tests/crash_loop_test.py` | launcher | N |
 
 ## Open findings of the gate (QA-n)
 

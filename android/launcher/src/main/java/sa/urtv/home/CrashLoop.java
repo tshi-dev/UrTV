@@ -23,6 +23,10 @@ final class CrashLoop {
     /** 4.3.5 review F5: the app's versionCode at the last start; a new version starts with nothing counted (an update that fixes the crash) */
     long code;
 
+    /** 4.4 beta 3: the start before this one and whether it opened the home screen: a low-memory kill of that process is judged against them (lowMemoryKill) */
+    long prevStart;
+    boolean prevOpened;
+
     CrashLoop(long startedAt, long[] quick, long openedAt, boolean drew, boolean crashCounted) {
         this.startedAt = startedAt; this.quick = quick; this.openedAt = openedAt; this.drew = drew; this.crashCounted = crashCounted;
     }
@@ -50,6 +54,10 @@ final class CrashLoop {
         }
         CrashLoop out = new CrashLoop(start, q, opened, drew, counted);
         if (t != null) { String[] l = t.split("\n"); if (l.length > 3) { try { out.code = Long.parseLong(l[3].trim()); } catch (NumberFormatException e) { out.code = 0; } } }
+        if (t != null) {   // 4.4 beta 3: the fifth line, «prevStart prevOpened» (an older file has none: nothing to judge)
+            String[] l = t.split("\n");
+            if (l.length > 4) { String[] f = l[4].trim().split(" "); try { out.prevStart = Long.parseLong(f[0]); } catch (NumberFormatException e) { out.prevStart = 0; } out.prevOpened = f.length > 1 && "1".equals(f[1]); }
+        }
         return out;
     }
 
@@ -60,7 +68,8 @@ final class CrashLoop {
     String text() {
         StringBuilder b = new StringBuilder().append(startedAt).append('\n');
         for (int i = 0; i < quick.length; i++) b.append(i == 0 ? "" : ",").append(quick[i]);
-        return b.append('\n').append(openedAt).append(drew ? " 1" : " 0").append(crashCounted ? " 1" : " 0").append('\n').append(code).append('\n').toString();
+        return b.append('\n').append(openedAt).append(drew ? " 1" : " 0").append(crashCounted ? " 1" : " 0").append('\n').append(code).append('\n')
+            .append(prevStart).append(prevOpened ? " 1" : " 0").append('\n').toString();
     }
 
     /** the process started now: a home screen of the last start that never drew in time (and was not counted as a crash) is a quick one */
@@ -73,6 +82,8 @@ final class CrashLoop {
         if (code != 0 && ver != code) r = new long[0];
         CrashLoop out = new CrashLoop(now, r, 0, false, false);
         out.code = ver;
+        out.prevStart = startedAt;   // 4.4 beta 3: the start that just ended, for a low-memory kill of it (lowMemoryKill)
+        out.prevOpened = openedAt > 0;
         return out;
     }
 
@@ -80,7 +91,19 @@ final class CrashLoop {
     CrashLoop opened(long now) { return keep(new CrashLoop(startedAt, quick, now, false, crashCounted)); }
 
     /** the same version as this one (every step but started keeps it) */
-    private CrashLoop keep(CrashLoop n) { n.code = code; return n; }
+    private CrashLoop keep(CrashLoop n) { n.code = code; n.prevStart = prevStart; n.prevOpened = prevOpened; return n; }
+
+    /**
+     * 4.4 beta 3: Android said (ApplicationExitInfo, Android 11+, read at this start) that the last process was killed for memory at {@code killedAt}, in front
+     * ({@code foreground}) or not. A kill of the home screen in front within QUICK_MS of that process's start counts as a quick crash (two put the home in safe mode,
+     * as crashes do); a kill in the background (normal on any TV) or of a process that never opened the home screen does not. Once per kill (the caller keeps the
+     * last one it judged).
+     */
+    CrashLoop lowMemoryKill(long killedAt, boolean foreground, long now) {
+        long[] r = recent(now);
+        boolean quickOne = foreground && prevOpened && prevStart > 0 && killedAt - prevStart >= 0 && killedAt - prevStart <= QUICK_MS && now - killedAt >= 0 && now - killedAt < WINDOW_MS;
+        return keep(new CrashLoop(startedAt, quickOne ? add(r, killedAt, now) : r, openedAt, drew, crashCounted));
+    }
 
     /** the home screen drew its first frame now: in time when within FRAME_MS of its opening */
     CrashLoop drewFrame(long now) {

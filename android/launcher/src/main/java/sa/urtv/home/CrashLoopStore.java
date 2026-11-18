@@ -68,6 +68,9 @@ final class CrashLoopStore {
     static void hook(final Context app) {
         final long now = System.currentTimeMillis();
         step(app, s -> s.started(now, BuildConfig.VERSION_CODE));   // a new version starts with nothing counted (review F5)
+        if (android.os.Build.VERSION.SDK_INT >= 30) {   // 4.4 beta 3: how the last process ended, asked of Android off the UI thread (an older TV cannot say: nothing counted)
+            try { EXITS.execute(() -> exits(app)); } catch (RuntimeException ignored) { }
+        }
         final Thread.UncaughtExceptionHandler prev = Thread.getDefaultUncaughtExceptionHandler();
         Thread.setDefaultUncaughtExceptionHandler((t, e) -> {
             try {
@@ -77,6 +80,50 @@ final class CrashLoopStore {
             } catch (Throwable ignored) { }
             if (prev != null) prev.uncaughtException(t, e);
         });
+    }
+
+    private static final java.util.concurrent.ExecutorService EXITS = java.util.concurrent.Executors.newSingleThreadExecutor(r -> {
+        Thread t = new Thread(r, "crash-exits");
+        t.setDaemon(true);
+        return t;
+    });
+
+    /** the importance of a home screen in front (ActivityManager.RunningAppProcessInfo.IMPORTANCE_FOREGROUND), and of what the person still sees (PERCEPTIBLE) */
+    static final int FOREGROUND = 100, PERCEPTIBLE = 230;
+
+    /**
+     * 4.4 beta 3: the home's own process ended by a low-memory kill (ApplicationExitInfo.REASON_LOW_MEMORY) since the last one judged: in front, judged by
+     * CrashLoop.lowMemoryKill (it counts toward safe mode like a quick crash); in front or perceptible, a sign of a weak TV for «الوضع الخفيف» (LiteAuto.OOM).
+     * The last kill judged is kept, so each counts once. Android 11+ only.
+     */
+    @android.annotation.TargetApi(30)
+    private static void exits(Context app) {
+        try {
+            android.app.ActivityManager am = (android.app.ActivityManager) app.getSystemService(Context.ACTIVITY_SERVICE);
+            android.content.SharedPreferences sp = app.getSharedPreferences("crashloop", Context.MODE_PRIVATE);
+            long seen = sp.getLong("oom_seen", 0), latest = seen;
+            if (android.os.Build.VERSION.SDK_INT < 30) return;   // (the hook checks it too; ApplicationExitInfo is Android 11's)
+            for (android.app.ApplicationExitInfo e : am.getHistoricalProcessExitReasons(app.getPackageName(), 0, 8)) {
+                long[] k = kill(e);   // {at, importance} of a low-memory kill of the home's process; null for any other end
+                if (e.getTimestamp() > latest) latest = e.getTimestamp();
+                if (k == null || k[0] <= seen) continue;
+                final long at = k[0], now = System.currentTimeMillis();
+                final boolean front = k[1] <= FOREGROUND;
+                android.util.Log.i("UrTVCrash", "low-memory kill, importance " + k[1]);
+                step(app, s -> s.lowMemoryKill(at, front, now));
+                if (k[1] <= PERCEPTIBLE) LiteAutoStore.noteAt(app, LiteAuto.OOM, at);   // at the kill's own time (old ones fall out of LiteAuto's 14 days)
+            }
+            if (latest != seen) sp.edit().putLong("oom_seen", latest).commit();
+        } catch (RuntimeException ignored) { }
+    }
+
+    /** {at, importance} when Android says this ended the home's own process for memory, else null */
+    @android.annotation.TargetApi(30)
+    private static long[] kill(Object o) {   // (an Object: the class is named only after the version check, for an Android 8 TV)
+        if (android.os.Build.VERSION.SDK_INT < 30 || !(o instanceof android.app.ApplicationExitInfo)) return null;
+        android.app.ApplicationExitInfo e = (android.app.ApplicationExitInfo) o;
+        if (e.getReason() != android.app.ApplicationExitInfo.REASON_LOW_MEMORY || !"sa.urtv.home".equals(e.getProcessName())) return null;
+        return new long[] {e.getTimestamp(), e.getImportance()};
     }
 
     /** MainActivity.onCreate: the state in memory (the hook's), never the disk */

@@ -23,14 +23,17 @@ public final class LiteAutoStore {
     private static SharedPreferences sp(Context c) { return c.getApplicationContext().getSharedPreferences("ram", Context.MODE_PRIVATE); }
 
     /** one signal (LiteAuto.TRIM, SLOW or OOM), now; off the caller's thread */
-    static void note(Context c, final String kind) {
+    static void note(Context c, final String kind) { noteAt(c, kind, System.currentTimeMillis()); }
+
+    /** the same at the time it happened (a low-memory kill read at the next start); one older than LiteAuto.HOLD is let go by LiteAuto.add */
+    static void noteAt(Context c, final String kind, final long at) {
         final Context app = c.getApplicationContext();
         final long now = System.currentTimeMillis();
         try {
             BG.execute(() -> {
                 try {
                     SharedPreferences p = sp(app);
-                    p.edit().putString(KEY, LiteAuto.add(p.getString(KEY, ""), kind, now)).commit();
+                    p.edit().putString(KEY, LiteAuto.add(p.getString(KEY, ""), kind, at, now)).commit();
                     android.util.Log.i("UrTVRam", "lite signal " + kind);
                 } catch (RuntimeException ignored) { }
             });

@@ -23,6 +23,8 @@ public final class LiteAutoRun {
         String many = "";
         for (int i = 0; i < 40; i++) many = LiteAuto.add(many, LiteAuto.TRIM, t0 + i * 1000);
         System.out.println("KEEP " + LiteAuto.parse(many).size());
+        String late = LiteAuto.add(LiteAuto.add("", LiteAuto.TRIM, t0 + 2 * D), LiteAuto.OOM, t0, t0 + 2 * D);   // an older kill read at the next start
+        System.out.println("AT " + LiteAuto.parse(late).size() + " " + LiteAuto.on(late, t0 + 2 * D));
         String old = LiteAuto.add("trim " + (t0 - 30 * D) + "\n", LiteAuto.SLOW, t0);
         System.out.println("OLD " + LiteAuto.parse(old).size());
     }

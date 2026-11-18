@@ -34,9 +34,12 @@ final class LiteAuto {
     }
 
     /** the text with this signal added; signals older than HOLD, from the future, and all but the last KEEP are let go */
-    static String add(String text, String kind, long now) {
+    static String add(String text, String kind, long now) { return add(text, kind, now, now); }
+
+    /** a signal that happened at {@code at} (a low-memory kill read at the next start), added {@code now}: the window is reckoned from now, never from at */
+    static String add(String text, String kind, long at, long now) {
         List<Event> all = parse(text);
-        all.add(new Event(kind, now));
+        all.add(new Event(kind, at));
         List<Event> kept = new ArrayList<>();
         for (Event e : all) if (e.at <= now && now - e.at <= HOLD) kept.add(e);
         kept.sort((a, b) -> Long.compare(a.at, b.at));
