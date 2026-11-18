@@ -138,16 +138,25 @@ check("the buttons ask for the family PIN when one is set, and ignore touches th
       "SetupGate.guard" in act_src and "setFilterTouchesWhenObscured(true)" in btn and act_src.count("setFocusable(true)") == 1 and "setFocusable(true)" in btn, "")
 runner_src = (SETUP / "SetupRunner.java").read_text(encoding="utf-8")
 host_src = (SETUP / "SetupHost.java").read_text(encoding="utf-8")
-check("4.4 (step 86 B): ONE ADB key for good: nothing deletes it (every run made a new key and the TV's list filled with urtv-home@tv); the host only says it is kept",
-      "SetupSession.keepKey(app)" in host_src and "AdbKeys.delete" not in "".join(p.read_text(encoding="utf-8") for p in SETUP.glob("*.java"))
-      and "static void delete(" not in (SETUP / "AdbKeys.java").read_text(encoding="utf-8") and "deleteKeyIfFinished" not in "".join(p.read_text(encoding="utf-8") for p in SETUP.glob("*.java")), "")
+all_setup = {p.name: p.read_text(encoding="utf-8") for p in SETUP.glob("*.java")}
+sess_src = all_setup["SetupSession.java"]
+keep_body = sess_src[sess_src.index("static void keepKey("):sess_src.index("static void dropKey(")]
+check("4.4 (step 86 B, F20): the ADB key is kept between the steps of a run and after a normal done (every run made a new key and the TV's list filled): the host's finished() only says so, nothing in keepKey or finished() deletes",
+      "SetupSession.keepKey(app)" in host_src and "AdbKeys.delete" not in keep_body and "dropKey" not in host_src[host_src.index("void finished()"):host_src.index("void undone()")]
+      and "deleteKeyIfFinished" not in "".join(all_setup.values()), "")
+check("4.4 (F20, the owner's decision): the key is DELETED at «تراجع» (the runner tells the host once the undo step is done) and when the factory interface is given back, only through SetupSession.dropKey, which keeps it while a home switch or a run still waits for it",
+      "static synchronized void delete(Context c)" in all_setup["AdbKeys.java"]
+      and [n for n, t in all_setup.items() if "AdbKeys.delete(" in t] == ["SetupSession.java"]
+      and sorted(n for n, t in all_setup.items() if "SetupSession.dropKey(" in t and n != "SetupSession.java") == ["FactoryActivity.java", "SetupBootReceiver.java", "SetupHost.java"]
+      and "SetupRecovery.pending(c) || SetupRunner.awaiting(new FileStore(c))" in sess_src
+      and "undone = k == Kind.UNDO && complete" in runner_src and "host.undone()" in runner_src and "default void undone()" in runner_src, "")
 main_src = (ROOT / "android/launcher/src/main/java/sa/urtv/home/MainActivity.java").read_text(encoding="utf-8")
 hook_src = (SETUP / "SetupHook.java").read_text(encoding="utf-8")
 check("the home screen re-arms a cut-off switch at its start with ONE call that never throws (a Force-stop, then Home)", main_src.count("SetupHook.atHomeStart(this)") == 1 and "catch (RuntimeException ignored)" in hook_src and "rearmFromDisk" in hook_src and "SetupRecovery.attempt" in hook_src, "")
 fin = runner_src[runner_src.index("private void run(Kind k"):runner_src.index("private End runSteps")]
 check("after EVERY end of a run the host is told (4.4: it keeps the one key and says so): host.finished() after the try, outside every catch",
       "host.finished()" in fin and fin.index("host.finished()") > fin.rindex("catch (RuntimeException ex)") and "if (finished)" not in fin
-      and "adb key: kept (one key for good)" in (SETUP / "SetupSession.java").read_text(encoding="utf-8"), "")
+      and "adb key: kept between the steps" in (SETUP / "SetupSession.java").read_text(encoding="utf-8"), "")
 check("after the automatic attempts run out the person is told at every start (the home and the setup screen)", "GAVE_UP_NOTICE" in hook_src and "GAVE_UP_NOTICE" in act_src, "")
 check("the setup screen is not in the home screen's own app grid (Dock.catalogue skips this package)", "p.equals(c.getPackageName())" in (ROOT / "android/launcher/src/main/java/sa/urtv/home/Dock.java").read_text(encoding="utf-8"), "")
 check("the engine runs only fixed commands: none is built from text the TV sent, except package names that matched [A-Za-z0-9_.]+",

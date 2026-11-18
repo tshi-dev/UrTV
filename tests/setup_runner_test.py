@@ -45,7 +45,7 @@ check("the counts follow the person's digits setting (the screens' DigitsText)",
 check("the 20 s notice is the owner's wording", 'PROMPT_LATE = "ما ظهرت الرسالة؟ أعد تشغيل التلفزيون وافتح «إعداد تلفزيوني» واضغط «جهّز كل شي» وخلك عند التلفزيون"' in runner)
 check("a run lives in a foreground service (it outlives the screen), not exported", 'android:name=".setup.SetupService" android:exported="false"' in manifest
       and "startForeground(" in service and "startForegroundService" in service)
-check("the TV's start resumes a full run when it restarted the TV on purpose, or (4.3.3) when a restart nobody asked for cut it (twice at most); 4.4: the ADB key is kept for good",
+check("the TV's start resumes a full run when it restarted the TV on purpose, or (4.3.3) when a restart nobody asked for cut it (twice at most); 4.4: the ADB key is kept between the steps",
       "SetupRunner.resumeAtBoot(new FileStore(app))" in boot and "awaitingRestart(store)" in runner[runner.index("static boolean resumeAtBoot"):] and "SetupRunner.get().resume(" in boot and "static void keepKey(" in session
       and "awaitingWifi" not in boot)
 hold = (SETUP / "SetupHold.java").read_text(encoding="utf-8")
@@ -84,6 +84,8 @@ check("R1: «جهّز كل شي» on a healthy TV: every step in order, all done
       got.get("R1") == f"R1 STARTED {FULL_DONE} running=false finished=1 bad=false listened=true", got.get("R1"))
 check("a fresh full run and an undo first let go of a key a run before kept (when nothing is pending); the community answers do not (tester step 18)",
       got.get("RK") == "RK 1 2 2", got.get("RK"))
+check("4.4 F20: the runner tells the host to delete the ADB key once the undo is done, and not after a normal done full run or the answers",
+      got.get("RKD") == "RKD 0 1 1", got.get("RKD"))
 check("step 27: a full run asks the home to open the setup screen again (once), and the screen being shown takes the ask back", got.get("R1reopen") == "R1reopen true false false", got.get("R1reopen"))
 hm = (ROOT / "android/launcher/src/main/java/sa/urtv/home/MainActivity.java").read_text(encoding="utf-8")
 check("step 27: our home, when it comes in front, opens the setup screen once if it was left behind (a window in front may start an activity)", "SetupReopen.take()" in hm.split("protected void onResume()")[1][:600] and "FLAG_ACTIVITY_REORDER_TO_FRONT" in hm.split("SetupReopen.take()")[1][:400])
