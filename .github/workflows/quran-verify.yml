@@ -16,7 +16,7 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
-      - run: pip install fonttools brotli
+      - run: pip install fonttools==4.68.0 brotli==1.2.1
       - run: python3 .github/tools/verify_uthmani.py
       - name: Push to data-quran-verify
         if: always()

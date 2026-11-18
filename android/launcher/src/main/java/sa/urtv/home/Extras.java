@@ -31,17 +31,44 @@ public final class Extras {
         catch (RuntimeException e) { return null; }   // not installed (unknown authority), or another key: «off»
     }
 
+    /** 4.4 (QA-6, R1): the last REAL answer (null: none yet; a failed call keeps the one before), and when it was asked */
+    private static volatile Boolean known;
     private static volatile long askedAt;
-    private static volatile boolean lastOn;
+    private static final java.util.concurrent.atomic.AtomicBoolean asking = new java.util.concurrent.atomic.AtomicBoolean();
+    static final long FRESH_MS = 2000;
 
-    /** the add-on is installed AND its service is on (Android runs it); asked again at most every 2 s (the screens ask it while they draw) */
-    public static boolean enabled() {
-        long now = android.os.SystemClock.elapsedRealtime();
-        if (askedAt != 0 && now - askedAt < 2000) return lastOn;
+    /**
+     * The add-on is installed AND its service is on (Android runs it), as last asked: this NEVER calls into the add-on's process (a TCL that killed
+     * it would start it here, on the UI thread: the 4.3.3 freeze's shape); it asks again on a thread when the answer is older than FRESH_MS.
+     * Null: not known yet. A thread that may wait (the phone page) asks with enabledNow.
+     */
+    public static Boolean enabledKnown() {
+        refresh();
+        return known;
+    }
+
+    /** off the UI thread only (the phone page's server threads): asks the add-on now */
+    public static boolean enabledNow() { return Boolean.TRUE.equals(askNow()); }
+
+    /** enabledKnown, «not known yet» read as off (a screen's line); A11yHeal never reads it so (stuck and listedAndBound want a real answer) */
+    public static boolean enabled() { return Boolean.TRUE.equals(enabledKnown()); }
+
+    /** asks again on a thread when the answer is older than FRESH_MS (the home's return and its minute tick call it) */
+    static void refresh() {
+        if (askedAt != 0 && android.os.SystemClock.elapsedRealtime() - askedAt < FRESH_MS) return;
+        if (!asking.compareAndSet(false, true)) return;
+        new Thread(() -> { try { askNow(); } finally { asking.set(false); } }, "extras-status").start();
+    }
+
+    /** off the UI thread: one call; not installed is a real «off», a failed call keeps the last real answer */
+    static Boolean askNow() {
+        Context c = app;
+        if (c == null) return known;
         Bundle b = call(ExtrasWords.STATUS, null, null);
-        lastOn = b != null && b.getBoolean(ExtrasWords.ON, false);
-        askedAt = now;
-        return lastOn;
+        if (b != null) known = b.getBoolean(ExtrasWords.ON, false);
+        else if (!installed(c)) known = false;
+        askedAt = android.os.SystemClock.elapsedRealtime();
+        return known;
     }
 
     /** the sleep timer's end: the screen off; false when the add-on cannot (not installed, its service off, Android older than 9) */

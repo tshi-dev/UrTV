@@ -31,7 +31,7 @@ public final class Report {
         l.add("UrTV problem report, settings");
         l.add("Versions: home " + safe(home) + ", screensaver " + safe(saver));
         l.add("Device: Android " + safe(release) + ", API " + sdk);
-        l.add("WebView: " + safe(webView));
+        l.add("WebView: " + safe(webView, 64));   // 4.3.5: «package-build», longer than the other values
         return l;
     }
 
@@ -59,6 +59,19 @@ public final class Report {
         return l;
     }
 
+    /**
+     * 4.3.3: the line that tells the nightly analysis which channel the TV was on: «channel: beta», «channel: latest» (or next, the tester's), right after
+     * «Versions:». Any other word is the latest. share.py's ALLOWED_LINE has the same three words.
+     */
+    public static List<String> withChannel(List<String> lines, String channel) {
+        List<String> l = new ArrayList<>(lines);
+        String c = "beta".equals(channel) || "next".equals(channel) ? channel : "latest";
+        int at = 0;
+        for (int i = 0; i < l.size(); i++) if (l.get(i).startsWith("Versions:")) at = i + 1;
+        l.add(at, "channel: " + c);
+        return l;
+    }
+
     /** The link for the QR code, or null when not even the first two lines fit. */
     public static String url(List<String> lines) {
         List<String> l = new ArrayList<>(lines);
@@ -82,16 +95,18 @@ public final class Report {
     }
 
     /** a class name: letters, digits, dots and underscores, at most 64 */
-    static String name(String s) {
+    public static String name(String s) {
         if (s == null) return "?";
         String t = s.replaceAll("[^A-Za-z0-9._]", "");
         return t.isEmpty() ? "?" : t.length() > 64 ? t.substring(t.length() - 64) : t;
     }
 
     /** a version or release word: letters, digits, dots and dashes only, at most 24 ("?" for none) */
-    static String safe(String s) {
+    static String safe(String s) { return safe(s, 24); }
+
+    static String safe(String s, int max) {
         if (s == null) return "?";
         String t = s.replaceAll("[^A-Za-z0-9.-]", "");
-        return t.isEmpty() ? "?" : t.length() > 24 ? t.substring(0, 24) : t;
+        return t.isEmpty() ? "?" : t.length() > max ? t.substring(0, max) : t;
     }
 }

@@ -83,6 +83,11 @@ final class HomeCardChoice {
         return base(choice[0]) + frag + "&widget=1&football=1";
     }
 
+    /** 4.3.4: the football home's three widgets are the home's cards on that layout; «بدون» ("none") turns them off as on the other layouts. Nothing known (null) is not the football home, as before. */
+    static boolean football(String layout, String[] choice) {
+        return "football".equals(layout) && choice != null && choice[1] != null && !choice[1].isEmpty() && !"none".equals(choice[1]);
+    }
+
     /** «المباريات», the page of the games, on that fragment; event opens one game's card at once (null or "" for none). */
     static String matchesUrl(String frag, String event) {
         String f = frag == null ? "" : frag.replaceAll("(^|&)(panel|week|widget|home_panel)=[^&]*", "");

@@ -19,6 +19,10 @@ public final class QuizTest {
 
     static boolean tickReveal(QuizRoom r) { r.tick(); return r.phase == QuizRoom.Phase.REVEAL; }
 
+    static List<QuizPick.Item> merged(List<QuizPick.Item> base, List<QuizPick.Item> extra) {   // the same rule as QuizBank.merge: an id the base has is kept as it is
+        Set<String> ids = new HashSet<>(); for (QuizPick.Item it : base) ids.add(it.id);
+        List<QuizPick.Item> out = new java.util.ArrayList<>(base); for (QuizPick.Item it : extra) if (ids.add(it.id)) out.add(it); return out;
+    }
     public static void main(String[] a) throws Exception {
         // scoring
         check("scoring: an instant right answer is 1000, one at the last second about 500, a late one never below 500",

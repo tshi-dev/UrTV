@@ -10,6 +10,10 @@ name: League fixtures
 # call, seconds); every 15 minutes the live window (only the games in play or ended in the last 30 minutes are asked again, one request each,
 # at most 40; nothing live = done in seconds, no request); Mondays the clean-up (seasons past 8 dropped, every derived file made again).
 # By hand: mode «archive», «live» or «backfill» (openfootball's past seasons, public domain; seasons like 2021-22,2022-23).
+# 4.3.2 one archive for every app: tshi-dev/urtv-data (football/archive on its data branch, read by 4.4) is where the archive is made (its
+# workflows Football and Football history: the live window, the seasons' history with the paid or the free key); the job «archive» here copies
+# it to data-archive unchanged (apps up to 4.3.2 read that), checks that both hold the same games, and keeps ONE issue labelled data-health
+# open while the archive has a problem (closed when it is healthy again). Only while urtv-data cannot be read does it build data-archive itself.
 on:
   workflow_dispatch:
     inputs:
@@ -19,7 +23,7 @@ on:
         type: choice
         options: [fixtures, archive, live, backfill]
       seasons:
-        description: 'backfill only: openfootball seasons, comma-separated (empty: 2021-22 to 2025-26)'
+        description: 'backfill only (when urtv-data cannot be read): openfootball seasons, comma-separated (empty: 2021-22 to 2026-27)'
         default: ''
   schedule:
     - cron: '23 */6 * * *'
@@ -36,6 +40,7 @@ on:
 
 permissions:
   contents: write
+  issues: write   # the one data-health issue
 
 concurrency:   # the fixtures runs one at a time; the archive's own runs (live, clean-up, by hand) in a group of their own
   group: ${{ (github.event.schedule == '*/15 * * * *' || github.event.schedule == '41 3 * * 1' || (inputs.mode != '' && inputs.mode != 'fixtures')) && 'match-archive' || 'league-fixtures' }}
@@ -47,7 +52,7 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 90   # the free API answers about one request in 15 s: 16 leagues took 48 minutes
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683   # v4.2.2
       - name: The files of the last run, kept if a league answers nothing this time
         run: |
           mkdir -p prev
@@ -77,7 +82,7 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 60
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683   # v4.2.2
       - name: The files of the branch, kept
         run: |
           mkdir -p prev leagues
@@ -110,45 +115,55 @@ jobs:
       LIVE: ${{ github.event.schedule == '*/15 * * * *' || inputs.mode == 'live' }}
       BACKFILL: ${{ inputs.mode == 'backfill' }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683   # v4.2.2
         with:
           sparse-checkout: |
             .github/tools
             assets/shared/teams.json
           sparse-checkout-cone-mode: false
-      - name: The archive so far
+      - name: The archive so far, and urtv-data's
+        id: src
         run: |
           mkdir -p prev dl out
           git fetch --depth=1 origin data-archive 2>/dev/null && git archive FETCH_HEAD | tar -x -C prev || echo "no data-archive yet: a new one"
+          t=$(mktemp -d)
+          if git fetch -q --depth=1 https://github.com/tshi-dev/urtv-data data 2>/dev/null && git archive FETCH_HEAD football/archive | tar -x -C "$t" \
+             && python3 -c "import json,sys; sys.exit(0 if json.load(open('$t/football/archive/health.json')).get('events', 0) > 0 else 1)"; then
+            cp -r "$t/football/archive/." out/ && echo "mirror=true" >> "$GITHUB_OUTPUT" && echo "urtv-data's archive: copied unchanged"
+          else
+            echo "urtv-data's archive cannot be read: data-archive is built here this time"
+          fi
       - name: The live window (exits at once when nothing is live)
         id: live
-        if: env.LIVE == 'true'
+        if: steps.src.outputs.mirror != 'true' && env.LIVE == 'true'
         run: |
           python3 -u .github/tools/match_archive.py live --prev prev --out live.json --note live-note.json | tee live.txt
           if grep -q '^nothing live' live.txt; then echo "skip=true" >> "$GITHUB_OUTPUT"; fi
       - name: The leagues' files
-        if: steps.live.outputs.skip != 'true'
+        if: steps.src.outputs.mirror != 'true' && steps.live.outputs.skip != 'true'
         run: git fetch --depth=1 origin data-leagues 2>/dev/null && git archive FETCH_HEAD | tar -x -C dl || echo "no data-leagues"
       - name: The past seasons (openfootball)
-        if: env.BACKFILL == 'true'
+        if: steps.src.outputs.mirror != 'true' && env.BACKFILL == 'true'
         run: |
           cp prev/names.json names.json 2>/dev/null || echo '{}' > names.json
           python3 -u .github/tools/match_archive.py backfill --out backfill.json --report backfill-report.json --names names.json ${SEASONS:+--seasons "$SEASONS"}
         env:
           SEASONS: ${{ inputs.seasons }}
-      - name: Build
-        if: steps.live.outputs.skip != 'true'
+      - name: Build (only while urtv-data cannot be read)
+        if: steps.src.outputs.mirror != 'true' && steps.live.outputs.skip != 'true'
         run: |
           python3 -u .github/tools/match_archive.py build --leagues dl/leagues --prev prev --out out \
             ${{ env.LIVE == 'true' && '--live live.json --live-note live-note.json' || '' }} \
             ${{ env.BACKFILL == 'true' && '--backfill backfill.json --names names.json --backfill-report backfill-report.json' || '' }}
       - name: The next Formula 1 race (Jolpica-F1, at most once a day; a failure keeps the last file)
         if: steps.live.outputs.skip != 'true'
-        run: python3 -u .github/tools/sports_files.py f1 --prev prev --out out || echo "f1: skipped"
-      - name: Push to data-archive
+        run: 'python3 -u .github/tools/sports_files.py f1 --prev prev --out out || echo "f1 skipped"'
+      - name: Push to data-archive (when it changed)
+        id: push
         if: steps.live.outputs.skip != 'true'
         run: |
           test -f out/health.json
+          if [ -f prev/health.json ] && diff -rq -x .git prev out >/dev/null; then echo "data-archive is already the same"; exit 0; fi
           cd out
           git init -q -b data-archive
           git config user.name "github-actions[bot]"
@@ -156,3 +171,12 @@ jobs:
           git add -A
           git commit -qm "Match archive"
           git push -qf "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git" data-archive
+      - name: The data-health issue (one, opened or updated while there is a problem, closed when healthy)
+        if: always() && steps.live.outputs.skip != 'true' && (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch')
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          problems=$(python3 .github/tools/archive_health.py --published https://github.com/tshi-dev/urtv-data data football/archive \
+                     --published "https://github.com/${{ github.repository }}" data-archive "" --health out/health.json) || true
+          python3 .github/tools/archive_health.py --issue "$problems" || echo "the issue could not be updated this time"

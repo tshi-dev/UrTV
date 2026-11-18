@@ -87,23 +87,59 @@ final class ReminderCard {
     boolean showing() { return card.getVisibility() == View.VISIBLE; }
 
     /** the card for what is due now, if there is one (called when the alarm says so and when the home comes back to the front) */
-    void refresh() {
+    private boolean reading, readAgain;   // one background read at a time; a refresh asked meanwhile reads once more after it
+
+    /**
+     * 4.3.4 QA-3: the tasks and the city's zone come from the screensaver's provider, a cross-process query: read on a thread of its own,
+     * then shown on the UI thread (the return to the home and a key on the card never wait on the screensaver's process).
+     */
+    void refresh() { refresh(false); }
+
+    /** reschedule: the reminders' alarm is set again from the same read's thread (the return to the home: the alarm follows the tasks) */
+    void refresh(boolean reschedule) {
+        if (reschedule) ReminderScheduler.scheduleSoon();
+        if (reading) { readAgain = true; return; }
+        reading = true;
+        final Context app = c.getApplicationContext();
+        new Thread(() -> {
+            List<ReminderPlan.Row> rows;
+            TimeZone z;
+            try {
+                rows = ReminderStore.read(app);
+                Digits.init(app);   // «0-9» and «ساعة ٢٤» for the card's lines
+                z = zone(app);
+            } catch (RuntimeException e) {
+                rows = new java.util.ArrayList<>();
+                z = ZoneFix.tvZone();
+            }
+            if (ReminderScheduler.takeSoon()) ReminderScheduler.schedule(app);   // asked by the return to the home (refresh(true))
+            final List<ReminderPlan.Row> got = rows;
+            final TimeZone zone = z;
+            card.post(() -> {
+                reading = false;
+                if (c instanceof android.app.Activity && ((android.app.Activity) c).isDestroyed()) return;
+                show(got, zone);
+                if (readAgain) { readAgain = false; refresh(); }
+            });
+        }, "home-reminders").start();
+    }
+
+    private void show(List<ReminderPlan.Row> rows, TimeZone zone) {
         long now = System.currentTimeMillis();
-        List<ReminderPlan.Row> due = ReminderPlan.showing(ReminderStore.read(c), now);
+        List<ReminderPlan.Row> due = ReminderPlan.showing(rows, now);
         ReminderPlan.Row next = null;
         for (ReminderPlan.Row r : due) if (!shut.contains(ReminderPlan.key(r))) { next = r; break; }
         if (next == null) { hide(); return; }
         if (row == null || row.id != next.id || row.fireAt() != next.fireAt()) {
             row = next;
             focus = 0;
-            Digits.init(c);
             title.setText(row.text);
             later.setText(ReminderText.snooze(Digits.latin()));
             paint();
             card.setVisibility(View.VISIBLE);
             if (row.sound && chimed.add(ReminderPlan.key(row))) chime();   // once for a card, not again when the home comes back
         }
-        sub.setText(ReminderText.when(row, now, zone(), Digits.clock24(), Digits.latin()));
+        sub.setText(ReminderText.when(row, now, zone, Digits.clock24(), Digits.latin()));
     }
 
     void hide() {
@@ -121,14 +157,20 @@ final class ReminderCard {
         return true;
     }
 
-    private void press(int which) {
+    private void press(final int which) {
         if (row == null) return;
         ReminderPlan.Row r = row;
         shut.add(ReminderPlan.key(r));
-        if (which == 0) ReminderStore.done(c, r.id); else ReminderStore.snooze(c, r.id, SNOOZE_MIN);
         hide();
-        ReminderScheduler.schedule(c);
-        refresh();   // the next one, if two are due
+        // 4.3.4 QA-3: the task is written to the screensaver's provider and the alarm set again off the UI thread (a key never waits on it);
+        // the next card, if two are due, is read after the write
+        final Context app = c.getApplicationContext();
+        final long id = r.id;
+        new Thread(() -> {
+            if (which == 0) ReminderStore.done(app, id); else ReminderStore.snooze(app, id, SNOOZE_MIN);
+            ReminderScheduler.schedule(app);
+            card.post(this::refresh);
+        }, "home-reminder-press").start();
     }
 
     private void away() {
@@ -137,9 +179,9 @@ final class ReminderCard {
         refresh();
     }
 
-    private TimeZone zone() {
+    private static TimeZone zone(Context app) {   // off the UI thread (refresh)
         try {
-            String[] z = ConfigSnapshot.read(c).cityZone();
+            String[] z = ConfigSnapshot.read(app).cityZone();
             return z == null ? ZoneFix.tvZone() : ZoneFix.zone(ClockZone.valid(z[1]));
         } catch (RuntimeException e) {
             return ZoneFix.tvZone();

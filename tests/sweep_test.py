@@ -22,35 +22,21 @@ check("no other count in brackets bypasses the digits setting in the settings", 
 
 HOME = ROOT / "android/launcher/src/main/java/sa/urtv/home"
 main = (HOME / "MainActivity.java").read_text(encoding="utf-8")
-check("sweep2, the city prompt: ONE glass strip (12 dp corners) with plain words in it, only the focused choice filled; no capsule of its own",
+check("sweep2, the city prompt: ONE glass strip (8 dp corners on a ~24 dp strip, never a capsule) with plain words in it, only the focused choice filled",
       "nudge.setBackground(GlassPaint.fill(this, opaque(l.dialog), NUDGE_RADIUS, l.line));" in main and "nudgeAsk.setBackground(null);" in main
       and "nudgeCard.setBackground(focusOnly(NUDGE_FOCUS_RADIUS));" in main and "nudgeLater.setBackground(focusOnly(NUDGE_FOCUS_RADIUS));" in main
-      and "static final float NUDGE_RADIUS = 12, NUDGE_FOCUS_RADIUS = 8;" in main and "nudgeAsk.setBackground(opaqueTile(" not in main and "nudgeCard.setBackground(opaqueTile(" not in main)
-check("sweep2, the weather line and the top row: the strip keeps 16 px (at 1080p) from both, moved sideways after each layout of any of the three",
-      "static final int NUDGE_CLEAR_PX = 16;" in main and main.count("keepNudgeClear())") == 3 and "for (View o : new View[] {weatherLine, pillBar})" in main
-      and "Math.round(NUDGE_CLEAR_PX * getResources().getDisplayMetrics().widthPixels / 1920f)" in main)
-check("sweep2, too little room for both gaps (Screens run 10: the open row and the weather line): the question ends in «…», never an overlap; the whole of it again when there is room",
-      "nudgeAsk.setEllipsize(android.text.TextUtils.TruncateAt.END);" in main and "nudgeAsk.setMaxWidth(fit); nudge.requestLayout(); return;" in main
-      and "nudgeAsk.setMaxWidth(NUDGE_ASK_MAX);" in main and "room >= nudge.getWidth() + dp(40)" in main)
-
-MIN, MAX = -2**31, 2**31 - 1
-
-
-def shift(n, nw, lo, hi):   # MainActivity.nudgeShift, the same arithmetic
-    if lo != MIN and hi != MAX and nw > hi - lo:
-        return lo + (hi - lo - nw) / 2 - n
-    if hi != MAX and n + nw > hi:
-        return hi - (n + nw)
-    if lo != MIN and n < lo:
-        return lo - n
-    return 0
-
-
-check("sweep2, nudgeShift: the screens' cases: the weather line from 1504 moves the strip 464..1456 not at all; the open row to 474 moves it 26 px right; "
-      "both, too close: centred between them; neither: no move",
-      shift(464, 992, MIN, 1504 - 16) == 0 and shift(464, 992, 474 + 16, MAX) == 26 and shift(464, 992, 600, 1500) == 600 + (900 - 992) / 2 - 464
-      and shift(464, 992, MIN, MAX) == 0 and "static float nudgeShift(int n, int nw, int lo, int hi)" in main
-      and "if (hi != Integer.MAX_VALUE && n + nw > hi) return hi - (n + nw);" in main)
+      and "static final float NUDGE_RADIUS = 8, NUDGE_FOCUS_RADIUS = 6;" in main and "nudgeAsk.setBackground(opaqueTile(" not in main)
+nudge = main[main.index("private void buildHomeNudge("):main.index("private void snoozeNudge()")]
+check("sweep3 (the owner: «the notification, make it small»): one short line at the home's secondary size (12 sp), small plain buttons, at most 40 % of the screen",
+      "static final int NUDGE_SP = 12;" in main and "static final float NUDGE_MAX = 0.40f;" in main and nudge.count("text(NUDGE_SP,") == 3
+      and 'static final String CITY_ASK = S.n("اختر مدينتك للطقس والصلاة");' in main and "Math.round(screenW * NUDGE_MAX)" in main
+      and "nudgeCard.setPadding(dp(10), dp(4), dp(10), dp(4));" in main and "nudgeLater.setPadding(dp(10), dp(4), dp(10), dp(4));" in main)
+check("sweep3: never cut with «…» (the question is short; a longer notice wraps to two lines)",
+      "nudgeAsk.setMaxLines(2);" in nudge and "TruncateAt" not in nudge and "nudgeAsk.setEllipsize" not in main and "وين أنت؟ اختر مدينتك عشان الطقس والصلاة" not in main)
+check("sweep3: on the top row, right after the round buttons (16 px at 1080p), its middle on the row's middle, never over the weather line or the clock",
+      "static final int NUDGE_CLEAR_PX = 16;" in main and main.count("keepNudgeClear())") == 3
+      and "dx = barLeft ? b[0] + pillBar.getWidth() + gap - n[0] : b[0] - gap - (n[0] + nudge.getWidth());" in main
+      and "dy = b[1] + pillBar.getHeight() / 2f - (n[1] + nudge.getHeight() / 2f);" in main and "dx += Math.min(0f, w[0] - gap - right);" in main)
 cc = (HOME / "ControlCenter.java").read_text(encoding="utf-8")
 check("sweep2, the control centre: «تخصيص», «شكل اللوحة», «إعادة الترتيب», «تم» are words (no outline at rest), an 8 dp focus fill, never a capsule",
       "static final int WORD_RADIUS = 8;" in cc and "kind == PILL || kind == PRIMARY ? WORD_RADIUS : 12" in cc and "kind == PILL && !f" not in cc
@@ -61,4 +47,7 @@ check("sweep2, the top row: its bar never rounder than 8 dp, a labelled button 6
 check("sweep2, the settings hint: the rows' secondary size (14 sp; couch-tv its info line, 1.4375 rem) in the secondary colour, no longer 12 sp",
       "static final int HINT_SP = 14;" in s and "hint.setTextSize(TypedValue.COMPLEX_UNIT_SP, HINT_SP);" in s and "hint.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12);" not in s
       and "hint.setTextColor(CouchStyle.SUB);" in s and "HINT = 1.4375f," in (APP / "CouchStyle.java").read_text(encoding="utf-8"))
+check("sweep2 option 2 (the owner): «الساعة: زجاجية» with any card showing (the couch strip, or the box beside it: sweep 3, the owner circled it) shows the regular clock; the glass clock again without cards",
+      'static boolean glassClock(String homeClock, boolean cardsShown) { return "glass".equals(homeClock) && !cardsShown; }' in main
+      and "boolean glass = glassClock(cfg.homeClock, homeCard != null && homeCard.shownCards() > 0);" in main and "boolean bigClock = glass;" in main)
 sys.exit(1 if failed else 0)

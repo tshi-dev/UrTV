@@ -18,7 +18,7 @@ def check(name, ok, detail=""):
     failed += not ok
 
 check("HomeCard: still one WebView, never focusable itself, nothing inside it takes the focus",
-      card.count("new WebView(") == 1 and "web.setFocusable(false)" in card and "FOCUS_BLOCK_DESCENDANTS" in card)
+      card.count("WebViews.make(") == 1 and "web.setFocusable(false)" in card and "FOCUS_BLOCK_DESCENDANTS" in card)
 check("HomeCard: the WebView keeps setTextZoom(100)", "setTextZoom(100)" in card)
 check("HomeCard: the focus target exists only when «المهام» is among the cards, and goes with the page",
       "if (tasks) addTarget();" in card and "parent.removeView(target)" in card and "tasks = HomeCardChoice.hasTasks(choice)" in card)

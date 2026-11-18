@@ -239,7 +239,7 @@ import glob
 body = tick.split("\n", 1)[1]
 first = [l.strip() for l in body.splitlines() if l.strip() and not l.strip().startswith("//")]
 check("off (the default): sceneTick's first step after reading the layout returns when the scenes are off and nothing of them exists",
-      first[0].startswith('boolean on = "scenes".equals(cfg.homeBg);') and first[1] == 'boolean glass = "glass".equals(cfg.homeClock);'
+      first[0].startswith('boolean on = "scenes".equals(cfg.homeBg);') and first[1] == 'boolean glass = glassClock(cfg.homeClock, homeCard != null && homeCard.shownCards() > 0);'
       and first[2] == "photoGlassTick(cfg, !on && glass);" and first[3].startswith("if (!on && sceneHome == null && !scenesOn) return;"), first[:4])
 check("off: the scene layer is not made at the home's start, only in sceneTick when chosen; turned off, it is shut down and removed whole",
       main.count("new SceneHome(") == 1 and "if (on && sceneHome == null) {" in tick and tick.index("if (on && sceneHome == null) {") < tick.index("new SceneHome(")
@@ -266,7 +266,7 @@ check("the presets set the three at once: «شكل تلفزيونك» (our layou
       and '("icons".equals(want) && "zoom".equals(have))' in prefs
       and 'row("شكل كنبة", prefs.couchLabel()' in st and 'prefs.setCouch(!prefs.couchOn())' in st and 'row("التخطيط"' in st and 'row("الخلفية"' in st and 'row("الساعة"' in st)
 check("the home: «الخلفية ← الآفاق» shows the scenes on any layout; the glass clock and the cut-out only with «الساعة ← زجاجية», else the header's clock stays",
-      'boolean on = "scenes".equals(cfg.homeBg);' in tick and 'boolean glass = "glass".equals(cfg.homeClock);' in tick and "boolean bigClock = glass;" in tick
+      'boolean on = "scenes".equals(cfg.homeBg);' in tick and 'boolean glass = glassClock(cfg.homeClock, homeCard != null && homeCard.shownCards() > 0);' in tick and "boolean bigClock = glass;" in tick
       and "final Bitmap glass = withClock ? decode(" in scene and "final Bitmap cut = withClock && sc.mask != null" in scene
       and 'if ("scenes".equals(homeLayout)) { homeLayout = "classic"; homeBg = "scenes"; homeClock = "glass"; }' in snap)
 check("«حزم الآفاق» (the owner's «الآفاق», was «المشاهد»): «آفاق السعودية» and «آفاق عالمية» (the Couch TV pack), none chosen is the Saudi one; in «المظهر» ← «الخلفية والآفاق»",

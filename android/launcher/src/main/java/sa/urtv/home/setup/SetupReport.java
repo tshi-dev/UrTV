@@ -28,7 +28,7 @@ final class SetupReport {
     /** share.py's ALLOWED_LINE, to the letter: a line that does not look like one of its fields is dropped. */
     static final Pattern ALLOWED_LINE = Pattern.compile(
         "UrTV (problem|setup) report, |UrTV Player (problem report|feature request), |TV: |Computer: |Steps, minutes:seconds:$|Memory:$|Checks:$|Setup results: |ADB: "
-        + "|Protected features on: |(Device|WebView|Home|Home switch|Screensaver|Versions|Extras|Screen|Screen picture):|Auto-start|Optional picks|!! |- |  (off|on): "
+        + "|channel: (beta|latest|next)$|Protected features on: |(Device|WebView|Home|Home switch|Screensaver|Versions|Extras|Screen|Screen picture):|Auto-start|Optional picks|!! |- |  (off|on): "
         + "|home hides|[\\w-]+: \\d+ off, |\\(no steps\\.log: an older run\\.sh\\)$|\\(not measured\\)$|\\(no report\\.md yet: the setup didn't finish\\)$|\\d+ min in all$|\\[\\d+:\\d\\d until it was run again\\]$"
         + "|[A-Za-z0-9_.-]+ \\d+:\\d\\d( STOPPED.*)?(, [A-Za-z0-9_.-]+ \\d+:\\d\\d( STOPPED.*)?)*(, \\[.*\\])?$");
     static final String[] PROTECTED = {"com.tcl.airplay2", "com.google.android.apps.mediashell", "com.tcl.miracast", "com.google.android.katniss", "com.tcl.tvinput", "com.android.vending", "com.google.android.gms"};
@@ -246,6 +246,7 @@ final class SetupReport {
         if (installed != null && installed.contains(RescuePlan.LAUNCHERX)) out.add(googleTvLine(watchBound));
         String saver = tv.tail1("settings get secure screensaver_components").trim();
         out.add("Screensaver: " + (saver.matches("[A-Za-z0-9_.$/,]+") ? saver : "?"));
+        out.add("WebView: " + SetupEngine.webviewLine(tv.text("dumpsys webviewupdate")));   // 4.3.5: package and version (a TV without one: none)
         String vs = appver(SetupEngine.SAVER), vh = appver(SetupEngine.SELF);
         out.add("Versions: screensaver " + vs + ", home " + vh);
         if (installed != null) out.add("Extras: TV Bro " + (installed.contains(SetupInstall.TVBRO) ? "yes" : "no") + ", SmartTube " + (installed.contains(SetupInstall.SMARTTUBE) ? "yes" : "no"));

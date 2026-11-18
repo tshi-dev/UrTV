@@ -52,7 +52,7 @@
   html.row .week ul.pgrid{grid-template-columns:repeat(6,minmax(0,1fr));gap:.5em}
   html.row .week ul.pgrid li{padding:.6em .2em;font-size:calc(1.2vw*var(--z,1));font-size:calc(clamp(16px,1.2vw,26px)*var(--z,1))}
   /* the owner: in the strip the cards' words are centred, the heading, the main line and the line under it */
-  html.row .week .hd{justify-content:center}html.row .week .hd::after{display:none}
+  html.row .week .hd{justify-content:flex-start;padding-top:calc(12px*.4);padding-top:max(6px,calc(var(--cr,12px)*.4))}html.row .week .hd::after{display:none}   /* 4.4 the owner: a card's title at the start (right) in every layout, clear of the rounded corner */
   html.row .week li{justify-content:center;text-align:center}
   html.widget .week{width:100%}
   /* the home's cards take the apps tray's glass (#hpanel= and #hline= from the launcher: FavBar's fill and line, as thin as «شفافية الشريط» says): one family in every look, no per-card tint */
@@ -146,6 +146,8 @@
   }
   .week .hd::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,rgba(var(--gold-rgb),.5),transparent)}
   .week .hd .srcl{order:2;font-weight:400;white-space:nowrap}   /* a source's credit after the line, at its end */
+  /* 4.4 the owner: on the home a card's title kept clear of its rounded corner (--cr, each style's radius): its start inset by .6 of the radius */
+  html.widget .week .hd{padding-inline-start:calc(var(--cr,12px)*.6)}
   .week ul{list-style:none;display:flex;flex-direction:column;gap:0}
   .week li{
     display:flex;align-items:baseline;gap:1.05em;
@@ -325,6 +327,8 @@
   .week li.tafsir .tk{display:block;font-size:.86em;color:var(--gold-3);line-height:1.4}
   .week li.tafsir .tt{display:block}
   .week li.tafsir .tp{display:block;font-size:.8em;color:#B9B09C;text-align:end;line-height:1.3}
+  /* 4.4 the book and the mushaf page under the text, small (the owner approved it: docs/mockups/tafsir-short/ on work/44-cards) */
+  .week li.tafsir .tk.under{font-size:.72em;color:#B9B09C;text-align:end;margin-top:.5vh;line-height:1.3}
   /* a full hadith: the isnad and the narration small and muted, the Prophet's words ﷺ at full size */
   .week li.quote.hadith{font-size:calc(1.3vw*var(--z,1));font-size:calc(clamp(15px,1.3vw,25px)*var(--z,1));line-height:1.7}
   /* long texts a step smaller (by length, see quoteSize()), so the card never grows past the clock row */
@@ -401,11 +405,11 @@
   .week canvas.bl.on{opacity:1}
   .week .frm,.week .dia{display:none}
 
-  html.cs-dark1 .week{border-radius:26px;border-color:rgba(246,239,224,.10)}
+  html.cs-dark1 .week{--cr:26px;border-radius:26px;border-color:rgba(246,239,224,.10)}
   html.cs-dark1 .week::before{background:rgba(8,14,10,.52)}
   html.cs-dark1 .week::after{box-shadow:inset -3px 0 0 var(--gold)}   /* a thin gold line on the edge facing the clock */
 
-  html.cs-glass1 .week{border-radius:34px;border-color:rgba(255,255,255,.22);box-shadow:0 24px 60px rgba(0,0,0,.35)}
+  html.cs-glass1 .week{--cr:34px;border-radius:34px;border-color:rgba(255,255,255,.22);box-shadow:0 24px 60px rgba(0,0,0,.35)}
   html.cs-glass1 .week::before{background:linear-gradient(135deg,rgba(255,255,255,.16),rgba(255,255,255,.04) 45%,rgba(255,255,255,.02) 60%,rgba(255,255,255,.10))}
   html.cs-glass1 .week::after{background:radial-gradient(60% 40% at 85% 0%,rgba(255,255,255,.22),transparent 70%);
     box-shadow:inset 0 1px 0 rgba(255,255,255,.45),inset 0 -1px 0 rgba(255,255,255,.08),inset 1px 0 0 rgba(255,255,255,.12)}
@@ -428,14 +432,14 @@
     pointer-events:none;border:1px solid rgba(var(--gold-rgb),.75)}
   html.cs-dark3 .week .dia.t,html.cs-glass3 .week .dia.t{top:calc(5px + .4vh);transform:translate(-50%,-50%) rotate(45deg)}
   html.cs-dark3 .week .dia.b,html.cs-glass3 .week .dia.b{bottom:calc(5px + .4vh);transform:translate(-50%,50%) rotate(45deg)}
-  html.cs-dark3 .week .hd,html.cs-glass3 .week .hd{justify-content:center}
+  html.cs-dark3 .week .hd,html.cs-glass3 .week .hd{justify-content:flex-start}
   html.cs-dark3 .week .hd::after,html.cs-glass3 .week .hd::after{display:none}
 
-  html.cs-dark3 .week{border-radius:22px;border-color:transparent}
+  html.cs-dark3 .week{--cr:22px;border-radius:22px;border-color:transparent}
   html.cs-dark3 .week::before{background:rgba(7,22,15,.62)}
   html.cs-dark3 .week .dia{background:#07160F}
 
-  html.cs-glass3 .week{border-radius:30px;border-color:rgba(255,255,255,.20);box-shadow:0 24px 60px rgba(0,0,0,.35)}
+  html.cs-glass3 .week{--cr:30px;border-radius:30px;border-color:rgba(255,255,255,.20);box-shadow:0 24px 60px rgba(0,0,0,.35)}
   html.cs-glass3 .week::before{background:linear-gradient(135deg,rgba(120,200,150,.20),rgba(20,60,40,.10) 50%,rgba(var(--gold-rgb),.12))}
   html.cs-glass3 .week::after{box-shadow:inset 0 1px 0 rgba(255,255,255,.40),inset 0 -1px 0 rgba(255,255,255,.06)}
   html.cs-glass3 .week .dia{background:rgb(30,60,44)}
@@ -3972,6 +3976,9 @@ function fitQuote(ul){
 // page), read once and only when it is on: beside the page, the app's own assets (the screensaver's, the launcher's web/), or the repository
 let TAFSIR = null;
 const TAFSIR_NAME = 'التفسير الميسر';
+// 4.4 (the owner: «make it short; the book name and pages is okay»): the book and the verse's mushaf page, small, under the text
+const TAFSIR_PAGE = 'صفحة';
+const tafsirSource = v => TAFSIR_NAME + (v.page ? SEP + TAFSIR_PAGE + ' ' + ar(v.page) : '');
 const tafsirOf = v => TAFSIR && TAFSIR[v.surah + ':' + v.ayah] || '';
 function loadTafsir(){
   if(!CONFIG.tafsir || TAFSIR) return;
@@ -4047,7 +4054,8 @@ function quoteOfDay(card, kind = CONFIG.verseKind){
   if(VERSES.length && (kind === 'verse' || (kind === 'both' && n % 2 === 0))){
     const v = pickShort(VERSES, half, x => x.text.length, card);
     return {title:CONFIG.verseMin ? 'آية كريمة' : 'آية اليوم', rows:[`<li class="quote quran${v.text.length > 330 ? ' q4' : quoteSize(v.text.length)}"><span class="orn">﴿</span><span class="qt">${esc(v.text)}</span><span class="orn">﴾</span></li>`, '<li class="src">' + esc(v.surah) + SEP + 'الآية' + ' ' + ar(v.ayah) + '</li>']
-      .concat(CONFIG.tafsir && tafsirOf(v) ? [`<li class="tafsir"><span class="tk">${TAFSIR_NAME}</span><span class="tt">${esc(tafsirOf(v))}</span><span class="tp"></span></li>`] : [])};
+      .concat(CONFIG.tafsir && tafsirOf(v) ? [OLD_LOOK ? `<li class="tafsir"><span class="tk">${TAFSIR_NAME}</span><span class="tt">${esc(tafsirOf(v))}</span><span class="tp"></span></li>`
+        : `<li class="tafsir"><span class="tt">${esc(tafsirOf(v))}</span><span class="tp"></span><span class="tk under">${tafsirSource(v)}</span></li>`] : [])};
   }
   const h = pickShort(HADITH, half, x => x.parts.reduce((m, [, t]) => m + t.length, 0), card);
   const saw = s => s.replace(/ﷺ/g, '<span class="saw">ﷺ</span>').replace(/[﴿﴾]/g, m => `<span class="orn">${m}</span>`);

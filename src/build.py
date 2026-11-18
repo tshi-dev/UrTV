@@ -60,6 +60,8 @@ def verses_for_screen(with_tafsir=False):
         name = re.sub("[\u064B-\u065F\u0670\u06D6-\u06ED]", "", unicodedata.normalize("NFC", v["surah"]))
         name = name.replace("\u0671", "ا")   # ٱ: no glyph in Thmanyah
         e = {"text": " ".join(v["uthmani"].replace("\u06DE", "").split()), "surah": name, "ayah": v["ayah"]}
+        if v.get("page"):   # 4.4 the tafsir card: «التفسير الميسر، صفحة N» (the Madinah mushaf page, fetch_verses.py --pages)
+            e["page"] = v["page"]
         if with_tafsir and v.get("tafsir"):   # not in the page itself: dist/tafsir.json (tafsir_file)
             e["tafsir"] = tafsir_for_screen(v["tafsir"])
         out.append(e)

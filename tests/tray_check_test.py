@@ -100,12 +100,21 @@ check("the CI job: builds the debug apps, builds stub apps, starts an API 34 TV 
       and "actions/upload-artifact@v4" in wf and "if: always()" in wf)
 check("the CI job runs on every push to next and work branches and on pull requests into next, and a failing check fails the run (no continue-on-error)",
       "pull_request" in wf and "branches: [next]" in wf and "continue-on-error" not in wf and "work/**" in wf)
+check("on «[shots]» the 8 pictures go to the data-screens branch (tray/<branch>/), never committed to the pushed branch",
+      "publish_shots.sh tray-out/shots" in wf and "git add docs/shots" not in wf and 'HEAD:${GITHUB_REF_NAME}' not in wf)
 src = (ROOT / ".github/screens/tray_check.py").read_text(encoding="utf-8")
 check("the rendered check also takes the 8 pictures of the owner's question: sand and dark glass, bar size 5, 7, 10 and all on 12 apps, each judged by analyse() and for a name cut with «…»",
-      "def shots(out, report, failures):" in src and 'for look in ("sand", "glass"):' in src and '(("5", 5), ("7", 7), ("10", 8), ("all", 8))' in src and "seed_dock(12)" in src and "tray-{look}-{setting}.png" in src and "«…»" in src)
+      "def shots(out, report, failures):" in src and 'for look in ("sand", "glass"):' in src and 'for setting in ("5", "7", "10", "all"):' in src and "n = shown(setting, 12)" in src and "seed_dock(12)" in src and "tray-{look}-{setting}.png" in src and "«…»" in src)
 f, _ = tc.analyse(dump(en_n_tiles(7), (152, 704, 256, 752), tray=(128, 768, 1792, 986)), "en", "first", n=7, favs=7)
 check("step 28: 7 tiles in a tray that kept its 218 height (an empty band under them): found", any("high" in x for x in f) and any("not 24 and 24" in x for x in f), f)
 ns_h = [{"cls": "android.widget.TextView", "text": "Stub 1", "desc": "", "focusable": False, "focused": False, "rect": (152, 764, 236, 819)},
         {"cls": "android.widget.TextView", "text": "Hold OK for options", "desc": "", "focusable": False, "focused": False, "rect": (268, 760, 520, 819)}]
 check("step 28: the hint beside the name (16 sp, as big as the name) is not taken for the name", tc.name_label(ns_h, (128, 837, 1792, 986))["text"] == "Stub 1")
+fav = (ROOT / "android/launcher/src/main/java/sa/urtv/home/FavBar.java").read_text(encoding="utf-8")
+m_max = re.search(r"static final int MAX_SHOWN = (\d+);", fav)
+m_def = re.search(r"\bSHOWN = (\d+)", fav)
+check("the check's MAX_SHOWN and SHOWN are FavBar's (4.3.1 raised the cap to ten; the pictures' table kept eight and failed every run)",
+      m_max and m_def and tc.MAX_SHOWN == int(m_max.group(1)) and tc.SHOWN == int(m_def.group(1)), (m_max and m_max.group(1), m_def and m_def.group(1)))
+check("shown() is FavBar.shown: 12 favourites give 5, 7, 10 and 10 for the bar sizes 5, 7, 10 and all; 3 favourites with all give five; 12 never more than ten",
+      [tc.shown(s, 12) for s in ("5", "7", "10", "all")] == [5, 7, 10, 10] and tc.shown("all", 3) == 5 and tc.shown("12", 12) == 10)
 sys.exit(1 if failed else 0)

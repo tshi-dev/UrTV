@@ -33,7 +33,7 @@ final class UpdateNotice {
     private static long code(Context c, String pkg) { long k = PhoneUpdater.installedCode(c, pkg); return k < 0 ? 0 : k; }
 
     private static String channel(Context c) {
-        try { return UpdateChannel.read(c); } catch (RuntimeException e) { return "latest"; }
+        return UpdateChannel.cached();   // 4.3.3 hotfix: this runs on the UI thread (the pill, the card, the minute tick): the kept word, never a query to the screensaver
     }
 
     private static int newest(Context c) { return c.getSharedPreferences(PREFS, Context.MODE_PRIVATE).getInt("newest_" + channel(c), 0); }
@@ -69,24 +69,34 @@ final class UpdateNotice {
         c.getSharedPreferences(PREFS, Context.MODE_PRIVATE).edit().putLong("card_target", target).putLong("card_at", now).apply();
     }
 
+    /** one release's version.txt: its build, or -1 (no answer, not 200) */
+    private static int newestAt(String base) {
+        try {
+            Net.Reply r = Net.get(base + "version.txt", null, 10000, 12000, 64);   // IPv4 first, 4 s per address, 12 s in all (Net)
+            return r.status == 200 ? UpdateRules.buildOf(r.text()) : -1;
+        } catch (java.io.IOException | RuntimeException e) {
+            return -1;
+        }
+    }
+
     /** reads version.txt of the person's channel when one is due (off the main thread; {@code done} runs on that thread after a good read). Offline: nothing said. */
     static void checkIfDue(final Context app, final Runnable done) {
         final SharedPreferences sp = app.getSharedPreferences(PREFS, Context.MODE_PRIVATE);
-        if (!UpdateNoticeRule.due(sp.getLong("at", 0), System.currentTimeMillis())) return;
+        final String ch = channel(app);
+        if (!UpdateNoticeRule.due(sp.getLong("at_" + ch, 0), System.currentTimeMillis())) return;   // per channel: switching to the beta asks at once, not in 6 hours
         if (sa.urtv.home.tilawah.MusicService.carryOurPlaying() || sa.urtv.home.tilawah.NowPlaying.adhanLive()) return;   // never during playback or the adhan: the next start asks
-        sp.edit().putLong("at", System.currentTimeMillis()).apply();   // asked: the next try is in 6 hours, a failure included
+        sp.edit().putLong("at_" + ch, System.currentTimeMillis()).apply();   // asked: the next try is in 6 hours, a failure included
         new Thread(new Runnable() {
             @Override public void run() {
                 try {
-                    String ch = channel(app);
-                    Net.Reply r = Net.get(UpdateRules.baseFor(ch) + "version.txt", null, 10000, 12000, 64);   // IPv4 first, 4 s per address, 12 s in all (Net)
-                    if (r.status != 200) return;
-                    int build = UpdateRules.buildOf(r.text());
+                    int build = newestAt(UpdateRules.baseFor(ch));
+                    // 4.3.4: on «النسخ التجريبية» the newer of apk-beta and apk-latest (a beta user is never left behind an official release)
+                    if ("beta".equals(ch)) { int latest = newestAt(UpdateRules.BASE); if (!UpdateRules.betaWins(build, latest)) build = latest; }
                     if (build > 0) {
                         sp.edit().putInt("newest_" + ch, build).apply();
                         if (done != null) done.run();
                     }
-                } catch (java.io.IOException | RuntimeException ignored) {
+                } catch (RuntimeException ignored) {   // newestAt answers its own IOException (-1)
                     // offline or the release did not answer: quietly, the next try in 6 hours
                 }
             }

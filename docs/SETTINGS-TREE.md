@@ -488,6 +488,11 @@ the phone page's key, «مركز التحكم» the control centre's row that op
 —— تحديث صفحة شاشة التوقف [الرئيسية وشاشة التوقف]
    مثال للوكيل: optimize/saver.sh update  (it also updates by itself; keep «التحديث التلقائي للصفحة» on)
    مثال للوكيل: optimize/saver.sh update
+—— النسخ التجريبية [كل التلفزيون]
+   مثال للوكيل: optimize/saver.sh updatechannel beta
+     القيم المقبولة: beta|latest|next   (next is testing only)
+—— أرسل ملاحظة عن النسخة التجريبية [كل التلفزيون]
+   إجراء أو شاشة من التلفزيون (ما فيه قيمة يضبطها أمر)
 —— إعداد تلفزيوني [كل التلفزيون]
    إجراء أو شاشة من التلفزيون (ما فيه قيمة يضبطها أمر)
 —— مسح الملفات المؤقتة [كل التلفزيون]
@@ -873,6 +878,11 @@ the phone page's key, «مركز التحكم» the control centre's row that op
 ——— تحديث صفحة شاشة التوقف [الرئيسية وشاشة التوقف]
     مثال للوكيل: optimize/saver.sh update  (it also updates by itself; keep «التحديث التلقائي للصفحة» on)
     مثال للوكيل: optimize/saver.sh update
+——— النسخ التجريبية [كل التلفزيون]
+    مثال للوكيل: optimize/saver.sh updatechannel beta
+      القيم المقبولة: beta|latest|next   (next is testing only)
+——— أرسل ملاحظة عن النسخة التجريبية [كل التلفزيون]
+    إجراء أو شاشة من التلفزيون (ما فيه قيمة يضبطها أمر)
 ——— مسح الملفات المؤقتة [كل التلفزيون]
     إجراء أو شاشة من التلفزيون (ما فيه قيمة يضبطها أمر)
 ——— مصادر البيانات [الرئيسية وشاشة التوقف]

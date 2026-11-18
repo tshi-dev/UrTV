@@ -8,6 +8,7 @@ import json
 import re
 import sys
 import tempfile
+import urllib.error
 from pathlib import Path
 from types import SimpleNamespace
 
@@ -167,6 +168,16 @@ check("a backfill name maps through teams.json", nm.id("FC Bayern München", "43
 check("a shared common word is not a match (Luton Town is not Ipswich Town)", nm.id("Luton Town FC", "4328") is None)
 check("a European cup's names are matched exactly only", nm.id("FC Red Bull Salzburg (AUT)", "4480") is None and nm.id("AC Sparta Praha (CZE)", "4480") is None)
 check("the hand file comes first", nm.id("FC Internazionale Milano (ITA)", "4480") == "133681")
+calls_ = []
+nm2 = ma.Names(None, online=True)
+nm2.search = lambda name, lg: calls_.append(name)
+for _ in range(5):
+    nm2.id("Nowhere United FC", "4328")
+check("a name not found is searched once a run, not once a game", len(calls_) == 1, calls_)
+nm2.cache = {"Nowhere United": ""}
+nm2.asked = set()
+nm2.id("Nowhere United FC", "4328")
+check("a miss of an earlier run is searched again (once)", len(calls_) == 2, calls_)
 names = json.loads((ROOT / ".github/tools/archive_names.json").read_text())
 check("archive_names.json maps names to TheSportsDB ids", isinstance(names, dict) and all(re.fullmatch(r"\d{1,7}|", str(v)) for v in names.values()))
 
@@ -181,6 +192,175 @@ check("build asks no network", "urlopen" not in src.split("def build(")[1].split
 check(f"the live run asks at most {ma.LIVE_MAX}, {ma.LIVE_GAP} s apart (the free key's 30 a minute)", ma.LIVE_MAX <= 40 and 60 / ma.LIVE_GAP <= 30)
 check("no Israel, no Western Sahara in the archive's names", not re.search(r"israel|western sahara|إسرائيل|الصحراء الغربية", src + wf, re.I))
 
+
+# 11. history: TheSportsDB mocked (a season of 4 clubs = 12 games, 2 a round); the season list capped, the rounds fill it; a complete past
+# season is not asked again; the Wikipedia check compares the scores
+def fake_tsdb(capped=2):
+    games = {}
+    clubs = ["1", "2", "3", "4"]
+    n = 0
+    for season in ("2024-2025", "2025-2026", "2026-2027"):
+        for i, h in enumerate(clubs):
+            for j, a in enumerate(clubs):
+                if h != a:
+                    n += 1
+                    rnd = (n - 1) % 6 + 1
+                    games.setdefault(season, []).append({"idEvent": f"{season[:4]}{n}", "idLeague": "4668", "strSeason": season,
+                        "idHomeTeam": h, "idAwayTeam": a, "strHomeTeam": "Al-" + h, "strAwayTeam": "Al-" + a, "intHomeScore": "1",
+                        "intAwayScore": "0", "strStatus": "FT", "dateEvent": f"{season[:4]}-09-{rnd:02d}", "strTimestamp": f"{season[:4]}-09-{rnd:02d}T18:00:00",
+                        "intRound": str(rnd), "strSport": "Soccer"})
+    asked = []
+
+    def fetch(url, pause=0):
+        asked.append(url)
+        q = dict(x.split("=", 1) for x in url.split("?", 1)[1].split("&"))
+        if "search_all_seasons" in url:
+            return {"seasons": [{"strSeason": s} for s in games]}
+        evs = games.get(q.get("s"), [])
+        if "eventsseason" in url:
+            return {"events": evs[:capped]}
+        if "eventsround" in url:
+            return {"events": [e for e in evs if e["intRound"] == q["r"]] or None}
+        return {}
+    return fetch, asked
+
+
+fetch, asked = fake_tsdb()
+sys.modules["team_ids"] = SimpleNamespace(API="x/", STATS={"thesportsdb": 0}, PAID=False, redact=str, fetch=fetch, team_key=lambda n: n.lower(),
+                                         same_team=lambda a, b: a.lower() == b.lower())
+saved = ma.HISTORY
+ma.HISTORY = [("4668", "Saudi Pro League", 4)]
+tmp = Path(tempfile.mkdtemp())
+hargs = lambda: SimpleNamespace(out=str(tmp / "h.json"), report=str(tmp / "r.json"), state=str(tmp / "state.json"), leagues="", seasons=3,
+                                budget=1000, pace=0, days=False, check=False)
+ma.history(hargs())
+rep_ = json.loads((tmp / "r.json").read_text())
+check("history: every season read in full through the rounds (12 of 12)", all(v["games"] == 12 and v["finished"] == 12 and v["expected"] == 12
+      for v in rep_["4668"]["seasons"].values()), rep_)
+check("history: the rounds stop once the season is full", max(int(u.split("r=")[1].split("&")[0]) for u in asked if "eventsround" in u) <= 6, asked)
+first = tmp / "first.json"
+first.write_text((tmp / "h.json").read_text())
+n1 = len(asked)
+ma.history(hargs())
+again = [u for u in asked[n1:] if "s=2024-2025" in u]
+check("history: a complete past season is not asked again; the current one is", again == [] and any("s=2026-2027" in u for u in asked[n1:]))
+def fetch404(url, pause=0):
+    if "eventsround" in url:
+        raise urllib.error.HTTPError(url, 404, "Not Found", {}, None)
+    return fetch(url, pause)
+sys.modules["team_ids"].fetch = fetch404
+ma.history(SimpleNamespace(out=str(tmp / "h404.json"), report=str(tmp / "r404.json"), state=None, leagues="", seasons=3, budget=1000, pace=0,
+                           days=False, check=False))
+r404 = json.loads((tmp / "r404.json").read_text())
+check("history: a 404 from a round is an empty answer, counted, not a failed league", r404["requests"]["errors"].get("eventsround.php", 0) > 0
+      and "4668" in r404, r404.get("requests"))
+sys.modules["team_ids"].fetch = fetch
+check("history: the second run gives the current season only", {e["strSeason"] for e in json.loads((tmp / "h.json").read_text())["events"]} == {"2026-2027"})
+oH = build(leagues_dir([]), o9, history=str(first), history_state=str(tmp / "state.json"), history_report=str(tmp / "r.json"))
+check("history's games land in the store and its files are kept", len([e for e in store_events(oH).values() if e["lg"] == "4668"]) == 36
+      and (oH / "history.json").is_file() and (oH / "history-report.json").is_file())
+check("history: results/4668.json, the Saudi league's last results", len(json.loads((oH / "results" / "4668.json").read_text())["results"]) == 30)
+table = {("Al-1", "Al-2"): ("1", "0"), ("Al-2", "Al-1"): ("2", "2")}
+ma.teams_table = lambda: {}
+ma.wiki_results = lambda title: (table, None)
+games = json.loads(first.read_text())["events"]
+chk = ma.wiki_check([e for e in games if e["strSeason"] == "2024-2025"])
+c = chk["4668 2024-2025"]
+check("the Wikipedia check: same, different and missing scores counted", c["same"] == 1 and c["differ"] == 1 and c["not_in_wiki"] == 10, c)
+check("the Wikipedia check names the page", c["page"] == "2024–25 Saudi Pro League")
+ma.HISTORY = saved
+check("HISTORY puts Saudi first and expects 306 games a season since 2023-24",
+      ma.HISTORY[0][0] == "4668" and ma.expected(ma.HISTORY[0][2], "2024-2025") == (306, True) and ma.expected(ma.HISTORY[0][2], "2022-2023") == (240, True))
+check("«auto» leagues: expected from the clubs seen, never a sure count", ma.expected("auto", "2024-2025", 12) == (132, False))
+check("openfootball's rounds: a number from «Matchday 7», a knockout's words kept", ma.round_of("League, Matchday 7") == "7"
+      and ma.round_of("Quarter-finals") == "Quarter-finals")
+check("calendar-year leagues (MLS) read by year", ma.calendar_years(["2024-25", "2025-26"]) == ["2024", "2025", "2026"])
+del sys.modules["team_ids"]
+
+
+# 12. the followed leagues' health; the matrix's plan and merge
+stH = ma.Store()
+nowH = ma.now_utc()
+def put_(i, days, scored_):
+    t = ma.iso(nowH + dt.timedelta(days=days))
+    stH.put({"id": i, "lg": "4668", "s": "2026-2027", "t": t, "h": "1", "a": "2", "hn": "", "an": "", "hs": "1" if scored_ else None,
+             "as": "0" if scored_ else None, "st": "FT" if scored_ else "NS", "r": "", "sp": "Soccer", "pp": False, "src": "tsdb"})
+put_("a", -20, True); put_("b", -5, False); put_("c", 5, False)
+summ, probs = ma.league_health(stH, nowH, {})
+check("a followed league's games played 2-10 days ago without a result are a problem", any("Saudi Pro League (4668)" in p and "have no result" in p for p in probs), probs)
+put_("b", -5, True)
+summ, probs = ma.league_health(stH, nowH, {"4668": {"2024-2025": {"expected": 306, "expected_sure": True, "finished": 300, "current": False}}})
+check("results in the last 10 days: no freshness problem", not any("have no result" in p for p in probs if "4668" in p), probs)
+stB = ma.Store()
+stB.put({"id": "z", "lg": "4668", "s": "2026-2027", "t": ma.iso(nowH - dt.timedelta(days=16)), "h": "1", "a": "2", "hn": "", "an": "", "hs": "1",
+         "as": "0", "st": "FT", "r": "", "sp": "Soccer", "pp": False, "src": "tsdb"})
+check("an international break (no game for 16 days) is no problem", not any("4668" in p for p in ma.league_health(stB, nowH, {})[1]))
+check("a past season short of its sure count is a problem", any("2024-2025: 300 results of 306" in p for p in probs), probs)
+check("health lists every followed league with its newest result", summ["4668"]["results_10d"] == 1 and summ["4668"]["last_result"] and len(summ) == len(ma.HISTORY))
+import io, contextlib
+buf = io.StringIO()
+with contextlib.redirect_stdout(buf):
+    ma.plan(SimpleNamespace(leagues=""))
+plan_ = json.loads(buf.getvalue())
+check("the matrix: every followed league, Saudi first", plan_["league"][0] == "4668" and len(plan_["league"]) == len(ma.HISTORY))
+buf = io.StringIO()
+with contextlib.redirect_stdout(buf):
+    ma.plan(SimpleNamespace(leagues="4339, 4668"))
+check("the matrix of a rerun: only the leagues asked for, in HISTORY's order", json.loads(buf.getvalue())["league"] == ["4668", "4339"])
+md = Path(tempfile.mkdtemp())
+(md / "history-4668").mkdir()
+(md / "history-4668" / "games.json").write_text(json.dumps({"events": [{"idEvent": "1"}]}))
+(md / "history-4668" / "state.json").write_text(json.dumps({"4668": {"2025-2026": {"complete": True}}, "4339": {"x": {}}}))
+(md / "history-4668" / "report.json").write_text(json.dumps({"4668": {"name": "Saudi"}, "requests": {"thesportsdb": 3}}))
+prevst = md / "prev.json"
+prevst.write_text(json.dumps({"4339": {"2024-2025": {"complete": True}}}))
+ma.merge_history(SimpleNamespace(dir=str(md), state=str(prevst), expect="4668,4339", out=str(md / "g.json"), state_out=str(md / "s.json"),
+                                 report=str(md / "r.json")))
+mst, mrp = json.loads((md / "s.json").read_text()), json.loads((md / "r.json").read_text())
+check("merge: a league's job replaces only its own seasons; the others' stay", mst["4668"]["2025-2026"]["complete"] and mst["4339"] == {"2024-2025": {"complete": True}}, mst)
+check("merge: a league whose job failed is listed (and rerun by itself)", mrp["failed"] == ["history-4339"], mrp)
+src_ti = (ROOT / ".github/tools/team_ids.py").read_text()
+check("the key comes only from THESPORTSDB_KEY, the free 123 without it, and is taken out of every error",
+      'os.environ.get("THESPORTSDB_KEY")' in src_ti and 'redact(url)' in src_ti and '"123"' in src_ti)
+
+
+# 13. the owner's issue (archive_health.py): the problems, the two copies compared, one issue opened, updated, closed
+spec2 = importlib.util.spec_from_file_location("archive_health", ROOT / ".github/tools/archive_health.py")
+ah = importlib.util.module_from_spec(spec2)
+spec2.loader.exec_module(ah)
+hf = Path(tempfile.mkdtemp()) / "health.json"
+hf.write_text(json.dumps({"problems": ["Saudi Pro League (4668): 9 games in the last 10 days, none with a result"]}))
+ah.count_events = lambda u, b, f: {"a": 100, "b": 98}[b]
+pr = ah.problems([("x/urtv-data", "a", "football/archive"), ("x/UrTV", "b", "")], str(hf))
+check("health: the archive's own problems and the two copies differing", len(pr) == 2 and "differ" in pr[1] and "100" in pr[1], pr)
+ah.count_events = lambda u, b, f: 100
+check("health: the same games in both copies is no problem", ah.problems([("x/a", "a", ""), ("x/b", "b", "")], None) == [])
+calls, state_ = [], {"open": []}
+def fake_gh(*a):
+    calls.append(a)
+    if a[:2] == ("issue", "list"):
+        return SimpleNamespace(returncode=0, stdout=json.dumps(state_["open"]), stderr="")
+    if a[:2] == ("issue", "create"):
+        state_["open"] = [{"number": 7, "body": a[a.index("--body") + 1]}]
+    return SimpleNamespace(returncode=0, stdout="", stderr="")
+ah.gh = fake_gh
+ah.issue("problem one")
+check("issue: opened once with the label", sum(1 for c in calls if c[:2] == ("issue", "create")) == 1 and any("data-health" in c for c in calls if c[:2] == ("issue", "create")))
+calls.clear(); ah.issue("problem one")
+check("issue: the same problems again change nothing (no mail)", not any(c[:2] in (("issue", "create"), ("issue", "edit")) for c in calls), calls)
+calls.clear(); ah.issue("problem two")
+check("issue: other problems update the one issue", any(c[:2] == ("issue", "edit") for c in calls) and not any(c[:2] == ("issue", "create") for c in calls))
+calls.clear(); ah.issue("")
+check("issue: healthy again closes it", any(c[:2] == ("issue", "close") for c in calls))
+wf2 = (ROOT / ".github/workflows/league-fixtures.yml").read_text()
+check("data-archive copies urtv-data's archive unchanged (builds only when it cannot be read)", "mirror=true" in wf2 and "steps.src.outputs.mirror != 'true'" in wf2)
+check("the workflow's actions are pinned to a commit and run on ubuntu-24.04", not re.search(r"uses: actions/\w+@v\d", wf2) and "ubuntu-latest" not in wf2)
+
+wf3 = (ROOT / ".github/workflows/archive-mirror.yml").read_text()
+check("Archive mirror: its own timer, off the quarter hours, not behind the fixtures job", "'7,22,37,52 * * * *'" in wf3 and "needs:" not in wf3)
+check("Archive mirror: one writer of data-archive with League fixtures' archive job", "group: data-archive" in wf3 and "group: data-archive" in wf2)
+check("Archive mirror: copies urtv-data unchanged, then the count check and the one issue", "tshi-dev/urtv-data data" in wf3
+      and "archive_health.py --issue" in wf3 and not re.search(r"uses: actions/\w+@v\d", wf3) and "ubuntu-24.04" in wf3)
 doc = (ROOT / "docs/MATCH-ARCHIVE.md").read_text()
 check("docs/MATCH-ARCHIVE.md describes every file a client reads", all(x in doc for x in ("index.json", "teams/&lt;teamId&gt;.json",
       "h2h/&lt;lowId&gt;-&lt;highId&gt;.json", "results/&lt;leagueId&gt;.json", "store/&lt;leagueId&gt;/&lt;season&gt;.json")))

@@ -1,0 +1,59 @@
+name: Archive mirror
+
+# 4.3.2 the match archive is made in tshi-dev/urtv-data (football/archive on its data branch: the workflows Football and Football history);
+# this copies it, unchanged, to the data-archive branch the apps up to 4.3.2 read, checks both hold the same games, and keeps ONE issue
+# labelled data-health open while the archive has a problem (closed by itself when it is healthy again; GitHub mails the owner).
+# On its own timer, apart from League fixtures (whose archive job waits for a 45-minute fixtures run and shares its queue), so the copy
+# never waits behind it. A minute off the quarter hours: GitHub drops many runs timed on them. Seconds a run; no API key, no request to
+# TheSportsDB. One writer of data-archive at a time with League fixtures' archive job (the group data-archive).
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '7,22,37,52 * * * *'
+
+permissions:
+  contents: write
+  issues: write
+
+concurrency:
+  group: data-archive
+  cancel-in-progress: false
+
+jobs:
+  mirror:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683   # v4.2.2
+        with:
+          sparse-checkout: .github/tools
+      - name: Copy urtv-data's archive to data-archive (when it changed)
+        id: copy
+        run: |
+          mkdir -p prev out
+          git fetch -q --depth=1 origin data-archive 2>/dev/null && git archive FETCH_HEAD | tar -x -C prev || echo "no data-archive yet"
+          t=$(mktemp -d)
+          git fetch -q --depth=1 https://github.com/tshi-dev/urtv-data data
+          git archive FETCH_HEAD football/archive | tar -x -C "$t"
+          python3 -c "import json,sys; n=json.load(open(sys.argv[1])).get('events', 0); print('urtv-data:', n, 'games'); sys.exit(0 if n > 0 else 1)" "$t/football/archive/health.json"
+          cp -r "$t/football/archive/." out/
+          if [ -f prev/health.json ] && diff -rq prev out >/dev/null; then echo "data-archive is already the same"; exit 0; fi
+          cd out
+          git init -q -b data-archive
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -qm "Match archive (copied from tshi-dev/urtv-data)"
+          git push -qf "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git" data-archive
+          echo "data-archive: copied"
+      - name: The data-health issue (one, opened or updated while there is a problem, closed when healthy)
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          problems=$(python3 .github/tools/archive_health.py --published https://github.com/tshi-dev/urtv-data data football/archive \
+                     --published "https://github.com/${{ github.repository }}" data-archive "" --health out/health.json) || true
+          if [ "${{ steps.copy.outcome }}" != "success" ]; then problems="$(printf '%s\n%s' "$problems" "the copy to data-archive failed (run ${{ github.run_id }})")"; fi
+          echo "${problems:-healthy}"
+          python3 .github/tools/archive_health.py --issue "$problems"

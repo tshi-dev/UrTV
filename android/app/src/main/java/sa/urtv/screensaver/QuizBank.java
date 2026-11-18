@@ -41,7 +41,26 @@ final class QuizBank {
         if (f.isFile() && sp(c).getLong("rev", 0) >= BUNDLED_REV) v = QuizBankCheck.parse(read(f));
         if (v == null || v.size() < QuizPick.MIN_ITEMS) v = asset(c, "quiz/bank.json");
         if (v == null || v.size() < QuizPick.MIN_ITEMS) v = asset(c, "quiz/starter.json");
-        return v == null ? new ArrayList<>() : v;
+        return v == null ? new ArrayList<>() : addExtra(c, v);
+    }
+
+    /** the questions that are not in the public bank come as downloaded packs (kind «quiz», one every two weeks: GamePackStore.ensureQuiz) and are added to whatever bank was chosen: an id the bank already has is kept as it is, and a missing or bad pack adds nothing. No question is bundled in the app. */
+    static List<QuizPick.Item> addExtra(Context c, List<QuizPick.Item> base) {
+        List<QuizPick.Item> out = base;
+        for (GamePacks.Pack p : GamePackStore.quizPacks(c)) {
+            try {
+                byte[] raw = GameBundles.bytes(c, p.id);
+                List<QuizPick.Item> extra = raw == null ? null : QuizBankCheck.parse(raw);
+                if (extra != null) out = merge(out, extra);
+            } catch (RuntimeException e) { /* a bad pack adds nothing */ }
+        }
+        return out;
+    }
+    static List<QuizPick.Item> merge(List<QuizPick.Item> base, List<QuizPick.Item> extra) {
+        java.util.Set<String> ids = new java.util.HashSet<>(); for (QuizPick.Item it : base) ids.add(it.id);
+        List<QuizPick.Item> out = new ArrayList<>(base);
+        for (QuizPick.Item it : extra) if (ids.add(it.id)) out.add(it);
+        return out;
     }
 
     private static List<QuizPick.Item> asset(Context c, String name) {
@@ -59,6 +78,7 @@ final class QuizBank {
      *  newer than what this TV holds. The download is read with a size cap and checked whole (QuizBankCheck) before it replaces the kept file; anything wrong, no network
      *  or a round in play, and the kept copy (or the bundled one) stays. It is used from the next time a quiz screen opens. */
     static void refresh(final Context c) {
+        GamePackStore.ensureQuiz(c, null);   // the new packs of questions, when the person opens a quiz screen (a small file first, a pack only when there is room)
         final Context app = c.getApplicationContext();
         final File f = new File(app.getFilesDir(), FILE);
         final SharedPreferences p = sp(app);

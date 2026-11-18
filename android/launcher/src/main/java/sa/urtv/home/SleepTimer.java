@@ -78,31 +78,40 @@ final class SleepTimer {
     /** The alarm: the time is up. Returns what was done, for the log and for dock.sh. */
     static String fire(Context c) {
         prefs(c).edit().remove("end").remove("since").apply();
-        String done = turnOff(c);
-        prefs(c).edit().putString("last", done).apply();
+        String done = turnOff(c);   // what it did is written to «last» when it is known (off the UI thread)
         c.sendBroadcast(new Intent(CHANGED).setPackage(c.getPackageName()));
         return done;
     }
 
     /**
      * The TV goes to sleep now, the way the timer's end does it (and «أطفئ الآن» in «مركز التحكم»): the sound stops, then the screen is
-     * turned off by the sleep service, or the screensaver comes up without the service. Returns «screen off», «screensaver» or «sound stopped only».
+     * turned off by the sleep service, or the screensaver comes up without the service. Returns «asked»; «screen off», «screensaver» or «sound stopped only» is written to «last» (dock.sh sleep).
      */
     static String turnOff(Context c) {
-        String done;
         try { MusicService.stopIfPlaying(c); } catch (RuntimeException ignored) { }
-        if (Extras.sleepNow()) {
-            done = "screen off";
-        } else {
-            try {
-                c.startActivity(new Intent(Intent.ACTION_MAIN).setClassName("sa.urtv.screensaver", "sa.urtv.screensaver.MainActivity")
-                    .putExtra("sleeping", true).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
-                done = "screensaver";
-            } catch (RuntimeException e) {
-                done = "sound stopped only";
+        final Context app = c.getApplicationContext();
+        // 4.4 (QA-6, R1): the add-on is asked on a thread (a TCL that killed it starts it here: never on a key or the alarm's UI thread);
+        // without it, the screensaver comes up from the main thread, as before
+        new Thread(() -> {
+            String done;
+            if (Extras.sleepNow()) {
+                done = "screen off";
+            } else {
+                new android.os.Handler(android.os.Looper.getMainLooper()).post(() -> {
+                    String d = "screensaver";
+                    try {
+                        app.startActivity(new Intent(Intent.ACTION_MAIN).setClassName("sa.urtv.screensaver", "sa.urtv.screensaver.MainActivity")
+                            .putExtra("sleeping", true).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+                    } catch (RuntimeException e) {
+                        d = "sound stopped only";
+                    }
+                    prefs(app).edit().putString("last", d).apply();
+                });
+                return;
             }
-        }
-        return done;
+            prefs(app).edit().putString("last", done).apply();
+        }, "sleep-off").start();
+        return "asked";   // «screen off», «screensaver» or «sound stopped only» lands in «last» a moment later
     }
 
     /** One line for `optimize/dock.sh sleep`: the time left, and what the end will do. */

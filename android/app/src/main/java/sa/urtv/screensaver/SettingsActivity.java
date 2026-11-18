@@ -220,6 +220,7 @@ public class SettingsActivity extends Activity {
         launchedRow = null;
         adhanAsked = false;
         cleanAsked = false;   // asked again each time the settings come to the front (it was asked once per visit: the row said «مفعّل» only after reopening)
+        homeKeyAsked = false;   // 4.4 (QA-7): the same for «زر الرئيسية يفتح تلفزيونك مباشرة»
         look = GlassSource.page(this, root); couchVeil();   // the home's photo or «المظهر» may have changed meanwhile
         hint.setTextColor(look.sub);
         if (back != null) { returnWant = back; returnUntil = System.currentTimeMillis() + 4000; }   // the home answers a moment later and the list is built again: that build keeps the focus on this row too, until a key is pressed (it landed on the row above)
@@ -232,6 +233,12 @@ public class SettingsActivity extends Activity {
     /** Back on a category's rows (or on «البطاقات», «المزيد») goes back to the screen its button is on, the focus on that button; on the first screen it leaves. */
     @Override public boolean dispatchKeyEvent(android.view.KeyEvent e) {
         if (e.getAction() == android.view.KeyEvent.ACTION_DOWN) returnWant = null;   // the person moves: the focus is theirs again
+        if (okHold.key(e.getKeyCode(), e.getAction(), android.os.SystemClock.uptimeMillis())) {
+            // a build waited for this release: the row that saw the press takes its click first, then the list is built
+            boolean done = super.dispatchKeyEvent(e);
+            if (!isFinishing() && !isDestroyed()) render();
+            return done;
+        }
         return super.dispatchKeyEvent(e);
     }
 
@@ -291,7 +298,10 @@ public class SettingsActivity extends Activity {
      * list stays where it was scrolled to. A screen just opened starts at its top: the first row, or on the categories the tile last
      * opened (the first one the first time).
      */
+    private final OkHold okHold = new OkHold();   // 4.3.4: a build while OK is held waits for its release (the first press was lost)
+
     private void render() {
+        if (okHold.defer(android.os.SystemClock.uptimeMillis())) return;   // done at OK's release, after its click (dispatchKeyEvent)
         latinDigits = DigitsText.isLatin(prefs.digits());
         String fitNote = prefs.takeFitNote();   // 4.4 a home card swapped for one that suits the new look: say so once
         if (fitNote != null) notice(fitNote);
@@ -569,10 +579,10 @@ public class SettingsActivity extends Activity {
             new Runnable() { public void run() { prefs.setBackSaver(!prefs.backSaver()); render(); } });
         // 4.4 (build 413, T9): «إضافات تلفزيونك» catches the remote's Home key and opens this home directly (Google TV's home never starts); on by
         // default on a Google TV. Shown only when the add-on answers (installed and on)
-        final Boolean homeKey = NowPlayingBridge.homeKey(this, null);
+        final Boolean homeKey = homeKeySeen();   // 4.4 (QA-7, R1): the home's last answer; asked on a thread, never at a render
         if (homeKey != null)
             row("زر الرئيسية يفتح تلفزيونك مباشرة", homeKey ? "مفعّل" : "متوقف", R.drawable.ic_eye,
-                new Runnable() { public void run() { NowPlayingBridge.homeKey(SettingsActivity.this, homeKey ? "off" : "on"); render(); } });
+                new Runnable() { public void run() { setHomeKey(!homeKey); } });
         // 4.3.3 «المباريات المنتهية»: on the football home only; hidden, today's list keeps the games still to come (or the next day's)
         if ("football".equals(prefs.homeLayout()))
             row("إخفاء المباريات المنتهية", prefs.fbHideDone() ? "مفعّل" : "متوقف", R.drawable.ic_eye,
@@ -611,7 +621,7 @@ public class SettingsActivity extends Activity {
         row("الجوالات المسموح لها", "التحكم من الجوال: تشغيله وإيقافه وربط جوال، وفي الشاشة حالته الآن", R.drawable.ic_settings,
             new Runnable() { public void run() { openPhoneControl(); } });
         // «كل التطبيقات»: the home screen's «تعديل التطبيقات», or the order by name again (what is hidden stays hidden)
-        row("ترتيب كل التطبيقات", "تحريكها وإخفاؤها على الشاشة الرئيسية، أو الرجوع للترتيب الأصلي", R.drawable.ic_star,
+        row("ترتيب كل التطبيقات", "تحريكها وإخفاؤها وإرجاع المخفية، أو الرجوع للترتيب الأصلي", R.drawable.ic_star,
             new Runnable() { public void run() { pickAppsOrder(); } });
         // what an app's options box does (a long OK or Menu on the app, docs/UX-REVIEW.md) is here too: move, hide and the favourites
         // above, the locks and the app's details here
@@ -679,6 +689,11 @@ public class SettingsActivity extends Activity {
         // the page only, never the apps: people took it for the app update (rows 421, 441), so its line points to «تحديث تلفزيوني»
         View last = row("تحديث صفحة شاشة التوقف", "ينزّل أحدث صفحة للشاشة فقط، لتحديث التطبيقين: «تحديث تلفزيوني» في نفس القسم", R.drawable.ic_sync, new Runnable() { public void run() { updateNow(); } });
         if (last.getParent() == list) note(last, Updater.versionLines(this));
+        // «النسخ التجريبية» (4.3.3): the beta release first, off by default. Off again never downgrades: the newer build stays until the normal one reaches its number
+        row("النسخ التجريبية", prefs.betaOn() ? "تعمل، تجيك التحديثات قبل الكل بعد ما نجربها. ممكن يكون فيها أخطاء بسيطة" : "متوقفة، تجيك التحديثات قبل الكل بعد ما نجربها. ممكن يكون فيها أخطاء بسيطة", R.drawable.ic_sync, new Runnable() { public void run() { toggleBeta(); } });
+        // only while it is on: the report screen (its QR code carries «channel: beta» and the versions), the person types their words on the phone page
+        if (prefs.betaOn()) row("أرسل ملاحظة عن النسخة التجريبية", "رمز QR يفتح صفحة الإرسال في جوالك، وتكتب ملاحظتك هناك", R.drawable.ic_settings,
+            new Runnable() { public void run() { openReport(); } });
         arrange();   // the rows in their section's order, with its headers
         if (tiles) { hub(want, wasIndex); return; }   // 4.3.2: a screen of buttons, after the rows were made (none of them is shown on it)
         if (sideFocus) {   // the focus stays on (or goes to) the section's item in the side list: the rows are only shown
@@ -1810,6 +1825,40 @@ public class SettingsActivity extends Activity {
         return cleanSeen;
     }
 
+    // 4.4 (QA-7, R1): «زر الرئيسية يفتح تلفزيونك مباشرة» is the home's (and its add-on's) answer: asked once per return on a thread, kept, and the
+    // list is built again only when it changed (render asked the home on the UI thread at every open, return and toggle)
+    private Boolean homeKeyKnown;
+    private boolean homeKeyAsked;
+
+    private Boolean homeKeySeen() {
+        if (!homeKeyAsked) {
+            homeKeyAsked = true;
+            final android.content.Context app = getApplicationContext();
+            new Thread(() -> {
+                final Boolean now = NowPlayingBridge.homeKey(app, null);
+                runOnUiThread(() -> {
+                    if (isFinishing() || isDestroyed() || java.util.Objects.equals(now, homeKeyKnown)) return;
+                    homeKeyKnown = now;
+                    render();
+                });
+            }, "home-key").start();
+        }
+        return homeKeyKnown;
+    }
+
+    /** the row pressed: the home is told on a thread, and its answer drawn */
+    private void setHomeKey(final boolean on) {
+        final android.content.Context app = getApplicationContext();
+        new Thread(() -> {
+            final Boolean now = NowPlayingBridge.homeKey(app, on ? "on" : "off");
+            runOnUiThread(() -> {
+                if (isFinishing() || isDestroyed()) return;
+                if (now != null) homeKeyKnown = now;
+                render();
+            });
+        }, "home-key-set").start();
+    }
+
     private Boolean homeAdhanOn() {
         android.database.Cursor c = null;
         try {
@@ -2505,14 +2554,15 @@ public class SettingsActivity extends Activity {
     /** «ترتيب كل التطبيقات»: the mode on the home screen, or «رجوع للترتيب الأصلي»; both are the launcher's (it owns the grid). */
     private void pickAppsOrder() {
         new Dlg(this).setTitle("ترتيب كل التطبيقات")
-            .setItems(new String[] {"تعديل التطبيقات", "رجوع للترتيب الأصلي"}, (d, i) -> openAppsOrder(i == 1))
+            .setItems(new String[] {"تعديل التطبيقات", "التطبيقات المخفية", "رجوع للترتيب الأصلي"}, (d, i) -> openAppsOrder(i == 2, i == 1))
             .show();
     }
 
-    private void openAppsOrder(boolean reset) {
+    /** hidden (4.3.4): the mode on «المخفية» with its list; a home older than 4.3.4 opens the mode, where «المخفية» is the last place */
+    private void openAppsOrder(boolean reset, boolean hidden) {
         try {
             startActivity(new Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_HOME).setClassName("sa.urtv.home", "sa.urtv.home.MainActivity")
-                .putExtra(reset ? "reset_apps_order" : "edit_apps", true).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+                .putExtra(reset ? "reset_apps_order" : "edit_apps", true).putExtra("apps_hidden", hidden).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
         } catch (RuntimeException e) {
             toast("ثبّت الواجهة الرئيسية «تلفزيونك» أولاً");
         }
@@ -3907,8 +3957,9 @@ public class SettingsActivity extends Activity {
         last.setOnFocusChangeListener((v, has) -> {
             if (was != null) was.onFocusChange(v, has);
             if (!has) return;
-            for (android.view.ViewParent p = list.getParent(); p != null; p = p.getParent())   // list sits in a frame in the scroll view
-                if (p instanceof ScrollView) { final ScrollView sv = (ScrollView) p; v.post(() -> sv.fullScroll(View.FOCUS_DOWN)); break; }
+            // 4.3.4: the note in view, the focus left where it is. fullScroll(FOCUS_DOWN) also moves the focus to the lowest row: since 4.3.3 put
+            // «النسخ التجريبية» under this row, a step down onto it jumped straight past it
+            v.post(() -> t.requestRectangleOnScreen(new android.graphics.Rect(0, 0, t.getWidth(), t.getHeight())));
         });
     }
 
@@ -4092,6 +4143,20 @@ public class SettingsActivity extends Activity {
                 try { then.got(result); } catch (Exception e) { toast("تعذرت قراءة النتائج"); }
             });
         }).start();
+    }
+
+    /** «النسخ التجريبية»: flips the channel; turning it off reads the normal release and, when the TV is ahead of it, says it will wait (never a downgrade) */
+    private void toggleBeta() {
+        final boolean wasOn = prefs.betaOn();
+        prefs.setUpdateChannel(wasOn ? "latest" : "beta");
+        render();
+        final android.content.Context app = getApplicationContext();
+        new Thread(new Runnable() { @Override public void run() {
+            String v = Updater.checkLatest(app);   // the newest version of the release the TV reads now
+            final int newest = Versions.buildOf(v);
+            if (wasOn && newest >= 0 && newest < BuildConfig.VERSION_CODE) runOnUiThread(new Runnable() { public void run() { toast(Updater.BACK_LINE); render(); } });
+            else if (wasOn) runOnUiThread(new Runnable() { public void run() { render(); } });
+        } }).start();
     }
 
     private void toast(String s) { Toast.makeText(this, conv(s), Toast.LENGTH_SHORT).show(); }

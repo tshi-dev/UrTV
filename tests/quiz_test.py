@@ -15,7 +15,7 @@ def check(what, ok, extra=""):
 if not shutil.which("javac"):
     print("SKIP quiz: no javac"); sys.exit(1)
 with tempfile.TemporaryDirectory() as tmp:
-    c = subprocess.run(["javac", "-nowarn", "-d", tmp, *(str(APP / f"Quiz{n}.java") for n in ("Room", "Pick", "Server", "BankCheck")), str(APP / "MiniJson.java"), str(APP / "PhoneRoom.java"), str(APP / "DigitsText.java"), str(APP / "GamesMeta.java"), str(APP / "GameDataCheck.java"), str(ROOT / "tests/QuizTest.java")], capture_output=True, text=True)
+    c = subprocess.run(["javac", "-nowarn", "-d", tmp, *(str(APP / f"Quiz{n}.java") for n in ("Room", "Pick", "Server", "BankCheck")), str(APP / "MiniJson.java"), str(APP / "PhoneRoom.java"), str(APP / "DigitsText.java"), str(APP / "GamesMeta.java"), str(APP / "GameDataCheck.java"), str(APP / "GameBundle.java"), str(ROOT / "tests/QuizTest.java")], capture_output=True, text=True)
     check("the quiz compiles on a plain JVM (no Android in the rules, the picking or the server)", c.returncode == 0, c.stderr[-600:])
     if c.returncode == 0:
         r = subprocess.run(["java", "-cp", tmp, "sa.urtv.screensaver.QuizTest", str(ROOT / "assets/quiz/starter.json"), str(ROOT / "assets/quiz/bank.json")], capture_output=True, text=True, timeout=240)
@@ -123,3 +123,8 @@ import json as _j2
 _b = _j2.load(open(ROOT / "assets/quiz/bank.json", encoding="utf-8"))
 check("the bundled bank is the v2 file with the whole verified bank (at least 1000 items) and stays small (under 500 KB, it is compressed in the APK)",
       _b["v"] == 2 and len(_b["items"]) >= 1000 and (ROOT / "assets/quiz/bank.json").stat().st_size < 500_000)
+_qb = (APP / "QuizBank.java").read_text(encoding="utf-8"); _ps = (APP / "GamePackStore.java").read_text(encoding="utf-8")
+check("the quiz bank adds the questions of every installed pack of kind «quiz» to whatever bank was chosen (the downloaded copy, the bundled one or the starter) with one rule: an id the bank has is kept, a missing or bad pack adds nothing, nothing throws",
+      "return v == null ? new ArrayList<>() : addExtra(c, v);" in _qb and "for (GamePacks.Pack p : GamePackStore.quizPacks(c))" in _qb and "GameBundles.bytes(c, p.id)" in _qb and "if (ids.add(it.id)) out.add(it)" in _qb and "catch (RuntimeException e)" in _qb)
+check("a quiz screen fetches the new packs (a small index first, a pack only when the TV has room and the sha256 matches); the downloaded questions are in no public file and no question is bundled in the app",
+      "GamePackStore.ensureQuiz(c, null)" in _qb and "static void ensureQuiz" in _ps and "GamePacks.canDownload(app.getFilesDir().getUsableSpace(), p.bytes)" in _ps and not (ROOT / "assets/games/bank-extra.gb").exists() and "bank-extra" not in "".join(f.read_text(encoding="utf-8") for f in APP.glob("*.java")))

@@ -1,8 +1,10 @@
 #!/usr/bin/env bash
 # Every check in one go: static checks, then the screen in a real browser. See tests/check.py and page.test.mjs.
-#   pip install fonttools brotli pillow -r .github/tools/cities-world/requirements.txt && npm install --no-save playwright@1.56.1 acorn@8.14.0 && npx playwright install chromium
+#   pip install fonttools==4.68.0 brotli==1.2.1 pillow==13.0.0 cryptography==50.0.2 numpy==2.5.5 scipy==1.18.1 opencv-python-headless==4.14.0.94 -r .github/tools/cities-world/requirements.txt && npm install --no-save playwright@1.56.1 acorn@8.14.0 && npx playwright install chromium
 set -euo pipefail
 cd "$(dirname "$0")/.."
+# «regressions»: the release gate's group alone (docs/dev/REGRESSIONS.md, docs/dev/RELEASE.md): bash tests/run.sh regressions
+if [ "${1:-}" = "regressions" ]; then shift; exec python3 tests/regressions/run.py "$@"; fi
 python3 tests/check.py
 python3 tests/arabic_spacing_test.py   # Arabic letters stay joined: no letter-spacing on anything that can hold Arabic
 python3 tests/tilawah_test.py
@@ -139,6 +141,7 @@ python3 tests/cities_world_test.py
 python3 tests/cities_more_test.py   # 4.3.3 the offline city search: the list (GeoNames + Wikidata), its generator, the ranking
 python3 tests/cities_md_test.py
 python3 tests/home_card_test.py
+python3 tests/football_off_test.py   # 4.3.4: «بدون» turns the football home's widgets off
 python3 tests/home_page_test.py   # the home's cards on the screensaver's newer page (its stocks stayed stale on the APK's own)
 python3 tests/perf_idle_test.py
 python3 tests/league_fixtures_test.py
@@ -275,6 +278,10 @@ python3 tests/phone_draw_test.py   # 4.3 #53 «ارسم»: live strokes from the
 python3 tests/lang_provider_test.py   # 4.3: «اللغة» read only for UrTV Player (content://sa.urtv.home.lang/lang)
 python3 tests/match_app_test.py   # 4.3 «شاهد المباراة»: the match app and the FIND_MATCH contract
 python3 tests/update_channel_test.py
+python3 tests/beta_channel_test.py   # 4.3.3: «النسخ التجريبية», apk-beta, promote-beta.yml
+python3 tests/beta_report_test.py   # 4.3.3: «channel: beta|latest» in the report
+python3 tests/beta_notes_test.py   # 4.3.3: the one-time beta line and the crash question
+python3 tests/beta_pill_test.py   # 4.3.3: the home update pill follows the channel
 python3 tests/android_compile_test.py
 bash tests/android_compile.sh   # both apps against android-all API 34; SKIP (not a failure) when offline or the jar is not cached
 python3 tests/countdown_text_test.py
@@ -353,12 +360,27 @@ python3 tests/vector_drawables_test.py   # Every vector drawable's pathData must
 python3 tests/wall_first_frame_test.py   # Hotfix 4.3: the home never shows black on the way back (a user's Mi Box on 4.3: the cards on black for a few s
 python3 tests/wifi_hotspot_test.py   # A user's tested route (Xiaomi): when the setup wizard owns the saved Wi-Fi and the TV shows no «انسَ الشبكة» o
 python3 tests/your_tv_hub_test.py   # «تلفزيونك» (YourTvHubActivity): what opening the app shows: four windows (the markets, the matches, the games,
+python3 tests/rescue_code_test.py   # the rescue app's Downloader code: the same on the setup page and in docs/RESCUE.md
 python3 tests/run_list_test.py   # every test file is run by this script (CI runs nothing else)
 
 node tests/es2017_parse.test.mjs   # #19: the built pages parse as ES2017 (Android 9 TVs stuck on WebView 66)
 node tests/date_num.test.mjs   # «التاريخ بالأرقام» on the screensaver page: day/month/year in the digits chosen
 node tests/wx_icon.test.mjs   # the screensaver's weather line: the condition's icon beside the temperature
 node tests/js_strip_test.mjs   # the pages ship without the script's comments: the same program (acorn trees), 50 KB smaller
+python3 tests/ui_thread_channel_test.py   # 4.3.3 hotfix: no query to the screensaver on the home's UI thread (the TCL remote froze)
+python3 tests/ui_thread_44_test.py   # 4.4 (QA-6..QA-10, R1): the add-on, the home key, the adhan preview, the follows and the notices file off the UI thread
+python3 tests/games_open_test.py   # 4.3.4: «الألعاب» opens a fresh «تلفزيونك» on its games (an open settings task came back instead)
+python3 tests/hidden_apps_way_test.py   # 4.3.4: a way back to hidden apps (settings «التطبيقات المخفية»), the toast names it, the mode survives onResume
+python3 tests/options_fit_test.py   # 4.3.4: the app options box is as wide as its words (they were cut off on a small tile)
+python3 tests/update_rows_focus_test.py   # 4.3.4: a step down in «تحديث تلفزيوني» no longer skips «تحديث صفحة شاشة التوقف» (fullScroll moved the focus)
+python3 tests/ok_hold_test.py   # 4.3.4: a settings rebuild while OK is held waits for the release (the first press was lost)
+python3 tests/edit_keys_test.py   # the edit modes keep only the keys they use: a remote's app, colour, channel and maker keys go on
+python3 tests/qa_434_test.py   # 4.3.4: the release gate's findings: the first clock draw from memory (QA-1), the reminder card read off the UI thread (QA-3), the favourites move keeps only its keys (QA-5), the review's F1/F2
+python3 tests/beta_newest_test.py   # 4.3.4: «النسخ التجريبية» takes the newer of apk-beta and apk-latest (a beta user got no update again)
+python3 tests/beta_confirm_test.py   # 4.3.4: a beta build asks «نسخة تجريبية» on the TV before anything is downloaded
+python3 tests/webview_guard_test.py   # 4.3.5: no WebView on the TV: the home draws without its card, never a crash at start (a CVTE Android 9 black screen)
+python3 tests/crash_loop_test.py   # 4.3.5 (R7): two crashes right after start open SafeActivity (the TV's own home one press away), never a black screen
+python3 tests/api28_compile_test.py   # 4.3.5: the home compiles against Android 9 with every newer API behind a Build.VERSION check; the reports name the WebView
 node tests/i18n_page_test.mjs   # dist/tv-en.html in a browser: left to right, no Arabic in its own words on any card
 #
 # English phase 3 (the home app): its new tests go right under this line
@@ -390,12 +412,14 @@ node tests/verse_hadith.test.mjs   # 4.4 «آية» and «حديث» at once: th
 node tests/strip_steady.test.mjs   # 4.4 the screensaver's bottom strip stays put as the slot turns (games, scores, weather, markets)
 node tests/sources_rule.test.mjs   # 4.4 the owner's rule: a source on a card is a tiny dim line at most (60%, half the light), never a provider named elsewhere
 node tests/cards_batch3.test.mjs   # 4.4 card review batch 3 (12 adhkar, 13 tasks, 14 now playing, 16 year, 17 today, 18 shows): new look by default, the old one with «الشكل السابق»
+node tests/tafsir_short.test.mjs   # 4.4 the tafsir card short: the Muyassar whole, «التفسير الميسر، صفحة N» under it, the pages stored per verse
 node tests/football_page.test.mjs   # the football home's widgets and «المباريات» in a browser, on fixed games
 node tests/sports_cards.test.mjs   # 4.4 «الرياضة»: the sports cards (dist/sports.js) on the home, the couch row and the screensaver, the takeover, only the page's own build
 node tests/matches_archive.test.mjs   # «المباريات» with the match archive (data-archive): every followed team, yesterday's results, a club, a league, the chooser
 node tests/phone_page.test.mjs
 node tests/sync_cards.test.mjs   # «توحيد المظهر» on the page: the cards in the material's fill, line and ink, readable on a light look
 node tests/couch_row.test.mjs   # 4.4 the page: «كنبة» (#row=1, the cards in one strip above the tray) and «مربعات» (today's prayers as boxes in a row, the next one lit with its countdown)
+node tests/card_title.test.mjs   # 4.4 the owner: a home card's title clear of its rounded corner and the rule, at the start, in every style and layout
 node tests/photo_mask_page.test.mjs   # 4.4 the phone page «صوري»: a photo with its mask, checked on the phone, previewed, sent after the photo; the page's own CSP
 node tests/reminder_page.test.mjs   # the screensaver's reminder card: its time, «الآن», «تم», the snooze, the keys, the adhan, English
 node tests/tvports_page.test.mjs   # the packaged page with simulated webOS and Tizen keys
@@ -403,3 +427,6 @@ node tests/game_phone_page.test.mjs   # The party games' phone page (assets/quiz
 python3 tests/game_bundle_test.py   # the games' bundled data and its checks
 python3 tests/game_packs_test.py   # the games' packs
 python3 tests/new_games_test.py   # the new games' rules and screens
+#
+# «regressions» (docs/dev/REGRESSIONS.md): the gate's own tests, and any guard of the register this file does not run by name above
+python3 tests/regressions/run.py --rest

@@ -136,7 +136,7 @@
 تحكم من الجوال	Phone control
 تشغيله وإيقافه وربط جوال، وفي الشاشة حالته الآن	Turn on/off and pair a phone; the screen shows its state
 ترتيب كل التطبيقات	Arrange all apps
-تحريكها وإخفاؤها على الشاشة الرئيسية، أو الرجوع للترتيب الأصلي	Move or hide them on the home screen, or restore the original order
+تحريكها وإخفاؤها وإرجاع المخفية، أو الرجوع للترتيب الأصلي	Move, hide or bring back hidden apps, or restore the original order
 تحديث التطبيقين: يعرض الإصدار ويتحقق من التحديث	Update both apps: shows the version and checks for updates
 مؤقت النوم والشبكة والصوت وإعدادات التلفزيون	Sleep timer, network, sound, and TV settings
 رمز QR يفتح صفحة الإرسال في جوالك	A QR code opens the report page on your phone
@@ -157,6 +157,12 @@
 يعمل، عند بدء الشاشة، كل ٦ ساعات	On, When the screensaver starts, every 6 hours
 تحديث صفحة شاشة التوقف	Update screensaver page
 ينزّل أحدث صفحة للشاشة فقط، لتحديث التطبيقين: «تحديث تلفزيوني» في نفس القسم	Gets the latest page only, To update the apps: “Update Your TV” in this section
+النسخ التجريبية	Beta versions
+أرسل ملاحظة عن النسخة التجريبية	Send a note about the beta
+رمز QR يفتح صفحة الإرسال في جوالك، وتكتب ملاحظتك هناك	A QR code opens the send page on your phone, and you type your note there
+تعمل، تجيك التحديثات قبل الكل بعد ما نجربها. ممكن يكون فيها أخطاء بسيطة	On, you get updates before everyone, after we have tried them. They may have small bugs
+متوقفة، تجيك التحديثات قبل الكل بعد ما نجربها. ممكن يكون فيها أخطاء بسيطة	Off, you get updates before everyone, after we have tried them. They may have small bugs
+بترجع للنسخة العادية لما توصل لنفس الرقم أو أعلى	It goes back to the normal version once that reaches the same number or higher
 البطاقة الأولى	First card
 البطاقة الثانية	Second card
 البطاقة الثالثة	Third card
@@ -223,6 +229,7 @@
 ثبّت الواجهة الرئيسية «تلفزيونك» أولاً	Install the “Your TV” home app first
 حدّث الواجهة الرئيسية «تلفزيونك» أو ثبّتها أولاً	Update or install the “Your TV” home app first
 تعديل التطبيقات	Edit apps
+التطبيقات المخفية	Hidden apps
 رجوع للترتيب الأصلي	Restore the original order
 حدّث التطبيقين «شاشة تلفزيونك» و«تلفزيونك»: واحد منهم أقدم من الثاني	Update both apps, “Your TV Screen” and “Your TV”: one is older than the other
 # ---- cards
@@ -1367,3 +1374,5 @@
 أيقونات	Icons
 مربعات ملونة	Coloured tiles
 
+جديد	New
+%s سؤال	%s questions

@@ -25,6 +25,27 @@ final class ContentFile {
     static File kept(Context c, String name) { return new File(new File(c.getFilesDir(), "content"), name); }
 
     /** the kept copy, parsed (MiniJson), when it is an object with "v": 1; else null */
+    /** 4.4 (QA-10, R1): a kept copy per file, parsed again only when the file's time or size changed; read off the UI thread (Kept.load) */
+    static final class Kept {
+        private final String name;
+        private volatile Object value;
+        private long at = -1, size = -1;
+        Kept(String name) { this.name = name; }
+
+        /** what the last load found (null: nothing yet, or no valid file); never touches the disk */
+        Object value() { return value; }
+
+        /** off the UI thread: the file again when its time or size moved */
+        synchronized void load(Context c) {
+            File f = kept(c, name);
+            long t = f.isFile() ? f.lastModified() : 0, n = f.isFile() ? f.length() : 0;
+            if (t == at && n == size) return;
+            value = t == 0 ? null : read(c, name);
+            at = t;
+            size = n;
+        }
+    }
+
     static Object read(Context c, String name) {
         File f = kept(c, name);
         if (!f.isFile()) return null;

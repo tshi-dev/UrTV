@@ -133,7 +133,7 @@ The home screen's setup («إعداد تلفزيوني», `android/launcher/src/
 Android 8 to 10 handling of the answer). Both files keep their credit header. The idea of running the setup from the TV itself follows Free My TV's
 `HomeMode.java`; the commands and lists are UrTV's own (the ones `optimize/` runs from a computer).
 
-The LG webOS and Samsung Tizen packaging in `webos/` and `tizen/` (`build.py`, `install.py`, `appinfo.json` and `config.xml` as a
+The LG webOS and Samsung Tizen packaging in `ports/webos/` and `ports/tizen/` (`build.py`, `install.py`, `appinfo.json` and `config.xml` as a
 starting point) is also adapted from Free My TV: how to pack an `.ipk` and a `.wgt` with Python only, how to install over Developer
 Mode (LG's Key Server and SSH, Samsung's SDB), and which key codes and manifest entries a TV app needs. Each adapted file says so in
 its header.
