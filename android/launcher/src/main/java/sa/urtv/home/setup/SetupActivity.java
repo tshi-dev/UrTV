@@ -680,6 +680,7 @@ public class SetupActivity extends Activity {
         SetupRunner.Options o = new SetupRunner.Options();
         o.extras = extras;
         o.picks = new java.util.ArrayList<>(picks);
+        o.fullMeasure = sa.urtv.home.DebugFlags.on(this, "fullmeasure");   // 4.4: a tester's switch (dock.sh debug fullmeasure on): the full measure with its restarts
         SetupRunner.Start s = SetupRunner.get().start(undoIt ? SetupRunner.Kind.UNDO : SetupRunner.Kind.FULL, o, new SetupHost(this));
         if (s != SetupRunner.Start.STARTED) {
             say("يعمل إعداد آخر الآن؛ انتظر حتى ينتهي.", GOLD);
