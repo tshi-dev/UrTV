@@ -20,7 +20,40 @@ public final class UpdateRules {
     public static final String[][] APKS = {{"sa.urtv.screensaver", "urtv-screensaver.apk"}, {"sa.urtv.extras", "urtv-extras.apk"}, {"sa.urtv.home", "urtv-home.apk"}};
     public static final long MAX_APK_BYTES = 80_000_000L;
 
+    /** PhoneUpdater.sizeOf's answer for a file the release does not hold (HTTP 404); -1 stays «not known» (a network error, no size given). */
+    public static final long MISSING = -2;
+
     private UpdateRules() { }
+
+    /**
+     * R-288: the home and the screensaver are required (the update fails without their files); every other package (the add-on, «إضافات تلفزيونك») is optional:
+     * a release may not hold its file (apk-beta did not), and then it is skipped, never a failure.
+     */
+    public static boolean isRequired(String pkg) { return "sa.urtv.home".equals(pkg) || "sa.urtv.screensaver".equals(pkg); }
+
+    /** a 404 from a server that answered: the file is not in the release. Any other answer (a 500, a block, no answer at all) is not «missing». */
+    public static boolean assetMissing(int httpCode) { return httpCode == 404; }
+
+    /** the packages to update: those installed, except an optional one whose file is missing at the release */
+    public static java.util.List<String> wanted(java.util.Collection<String> installed, Set<String> missing) {
+        java.util.List<String> out = new java.util.ArrayList<>();
+        for (String p : installed) if (isRequired(p) || missing == null || !missing.contains(p)) out.add(p);
+        return out;
+    }
+
+    /**
+     * The lowest build among the installed packages that count: a package whose file is missing at the release and that is optional is left out (it can never
+     * be updated from there, so it must not keep «a newer build» on for ever). 0 when none is installed. Builds below 0 are «not installed».
+     */
+    public static long lowestInstalled(java.util.Map<String, Long> installedByPackage, Set<String> missing) {
+        long low = Long.MAX_VALUE;
+        for (java.util.Map.Entry<String, Long> e : installedByPackage.entrySet()) {
+            long k = e.getValue() == null ? -1 : e.getValue();
+            if (k < 0 || !wanted(java.util.Collections.singleton(e.getKey()), missing).contains(e.getKey())) continue;
+            if (k < low) low = k;
+        }
+        return low == Long.MAX_VALUE ? 0 : low;
+    }
 
     /** Where the files are for a channel: "next" is the test release, "beta" the beta one, anything else (nothing, an unknown word) the latest. */
     public static String baseFor(String channel) { return "next".equals(channel) ? NEXT_BASE : "beta".equals(channel) ? BETA_BASE : BASE; }
