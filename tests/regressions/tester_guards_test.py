@@ -96,7 +96,7 @@ check("step 38: «حقوق الصور» puts each file name in a left-to-right i
       'append(PhotoPacks.isolate(r[0]))' in cr and not re.search(r'append\(r\[0\]\)', cr), cr[:300])
 check("step 38: …and «إغلاق» is drawn in the page's text colour once the dialog is shown",
       re.search(r"d\.show\(\);\s*android\.widget\.Button close = d\.getButton\(android\.content\.DialogInterface\.BUTTON_POSITIVE\);\s*"
-                r"if \(close != null\) close\.setTextColor\(look\.text\);", cr), cr[-400:])
+                r"if \(close != null\) close\.setTextColor\(look\.text\);", body(ppa, "private void creditsDialog(String text) {")), cr[-400:])   # 4.4 QA-13: the dialog is built after the thread that reads the files
 if shutil.which("javac") and shutil.which("java"):
     with tempfile.TemporaryDirectory() as t:
         run = Path(t) / "src/sa/urtv/screensaver/TesterIsolateRun.java"
