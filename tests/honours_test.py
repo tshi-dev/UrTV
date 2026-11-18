@@ -15,6 +15,7 @@ from types import SimpleNamespace
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / ".github/tools"))
 import honours as h  # noqa: E402
+h.PACE = 0   # offline: no pause between the fake answers
 
 failed = 0
 

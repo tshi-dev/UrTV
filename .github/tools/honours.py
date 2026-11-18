@@ -35,6 +35,7 @@ from honours_study import same_club, season_keys   # noqa: E402
 V = 1
 UA = "UrTV-honours/1.0 (https://github.com/tshi-dev/UrTV; weekly, a few hundred requests)"
 SCORER_SEASONS = 8
+PACE = 1.5   # seconds between two requests to Wikimedia (it answers a fast client 429)
 # TheSportsDB's league id -> its Wikidata item (the item every season item names with P3450)
 LEAGUES = {"4328": "Q9448", "4331": "Q82595", "4332": "Q15804", "4334": "Q13394", "4335": "Q324867", "4337": "Q167541", "4339": "Q485568",
            "4344": "Q182994", "4346": "Q18543", "4480": "Q18756", "4483": "Q483794", "4484": "Q212412", "4490": "Q15980635", "4520": "Q570246",
@@ -55,7 +56,9 @@ def http(url, tries=6):
             return urllib.request.urlopen(urllib.request.Request(url, headers={"User-Agent": UA, "Accept": "application/json"}), timeout=90).read()
         except urllib.error.HTTPError as e:
             if e.code in (429, 503) and i < tries - 1:
-                time.sleep(int(e.headers.get("retry-after") or 0) + 5 * (i + 1))
+                wait = min(int(e.headers.get("retry-after") or 0), 120) + 5 * (i + 1)   # a «come back in 1000 s» is not waited for: the run fails, the files stay
+                print(f"  {e.code}, again in {wait} s: {url[:80]}", flush=True)
+                time.sleep(wait)
                 continue
             raise
         except OSError:
@@ -75,12 +78,14 @@ def query_seasons(fetch):
         for r in (j.get("query") or {}).get("search", []):
             if re.fullmatch(r"Q\d+", r.get("title", "")):
                 by_q[r["title"]] = lg
+        time.sleep(PACE)
     ents = {}
     qs = sorted(by_q)
     for i in range(0, len(qs), 50):
         j = json.loads(fetch(WDAPI + "?" + urllib.parse.urlencode({"action": "wbgetentities", "ids": "|".join(qs[i:i + 50]), "props": "claims|sitelinks",
                                                                    "sitefilter": "arwiki|enwiki", "format": "json"})))
         ents.update(j.get("entities") or {})
+        time.sleep(PACE)
     return seasons_from_entities(ents, by_q)
 
 
@@ -130,6 +135,7 @@ def labels(fetch, qids):
         for q, e in (j.get("entities") or {}).items():
             lab = e.get("labels") or {}
             out[q] = {"en": (lab.get("en") or {}).get("value", ""), "ar": ar_club((lab.get("ar") or {}).get("value", ""))}
+        time.sleep(PACE)
     return out
 
 
@@ -167,7 +173,7 @@ def wikitexts(fetch, wiki, titles):
             except (KeyError, IndexError):
                 pass
         if i + 10 < len(titles):
-            time.sleep(3)
+            time.sleep(2 * PACE)
     return out
 
 
