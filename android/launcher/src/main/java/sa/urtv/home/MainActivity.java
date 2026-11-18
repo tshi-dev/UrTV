@@ -187,6 +187,7 @@ public class MainActivity extends Activity {
             clockReads.execute(() -> {
                 ConfigSnapshot.read(app);
                 Extras.askNow();   // 4.4 (QA-6): the add-on's state for the tick's screens, read here, off the UI thread
+                notices.load(app);   // 4.4 (QA-10): the notices file, again only when it changed
                 runOnUiThread(() -> {
                     if (isDestroyed() || !resumed) return;
                     updateClock();
@@ -324,6 +325,7 @@ public class MainActivity extends Activity {
             try { guarded(ParentalPolicy.WIDGET_MATCHES, null, S.t("إعداد تلفزيوني"), () -> launch(new Intent(this, sa.urtv.home.setup.SetupActivity.class).addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT))); } catch (RuntimeException ignored) { }   // the person opened this screen already (its own lock was passed then)
         }
         Extras.refresh();   // 4.4 (QA-6): the add-on's state, asked on a thread (the screens read the kept answer)
+        { final Context app = getApplicationContext(); clockReads.execute(() -> notices.load(app)); }   // 4.4 (QA-10): the notices file, off the UI thread
         sa.urtv.home.phone.PhoneUpdater.homeIsUp(getApplicationContext());   // an update cover waiting in front for this home closes now
         sa.urtv.home.setup.SetupHook.homeUp(this);   // «تخلّص من واجهة المصنع»: this boot's home came up (BootGuard)
         UpdateCarry.homeShown = true;   // the carry-over after our update asks whether our home is in front
@@ -2230,13 +2232,16 @@ public class MainActivity extends Activity {
     private String noticeOnScreen;   // the notice's id while this visit shows it; null once the home goes behind (it was seen) or «تم»
 
     /** 4.3.3 the notice due now (NoticeRule), never while our tilawah or adhan plays; its id is marked seen as it first appears */
+    /** 4.4 (QA-10, R1): the notices file, loaded off the UI thread (the minute tick's reads, and each return) */
+    private final ContentFile.Kept notices = new ContentFile.Kept(NoticeRule.NAME);
+
     private NoticeRule.Notice dueNotice() {
         if (sa.urtv.home.tilawah.MusicService.carryOurPlaying()) return null;   // never over playback
         ContentFile.refresh(getApplicationContext(), NoticeRule.PATH, NoticeRule.NAME, 3 * 3600_000L);
         android.content.SharedPreferences np = getSharedPreferences(NUDGE_PREFS, MODE_PRIVATE);
         java.util.Set<String> seen = np.getStringSet("notice_seen", java.util.Collections.<String>emptySet());
         String day = new java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.ROOT).format(new java.util.Date());
-        NoticeRule.Notice n = NoticeRule.pick(ContentFile.read(this, NoticeRule.NAME), day, BuildConfig.MARKETING, seen, noticeOnScreen);
+        NoticeRule.Notice n = NoticeRule.pick(notices.value(), day, BuildConfig.MARKETING, seen, noticeOnScreen);   // 4.4 (QA-10): the kept copy (loaded on the tick's thread)
         if (n != null && !n.id.equals(noticeOnScreen)) {
             noticeOnScreen = n.id;
             java.util.Set<String> s = new java.util.HashSet<>(seen);
