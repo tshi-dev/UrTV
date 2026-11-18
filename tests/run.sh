@@ -427,6 +427,7 @@ node tests/game_phone_page.test.mjs   # The party games' phone page (assets/quiz
 python3 tests/game_bundle_test.py   # the games' bundled data and its checks
 python3 tests/game_packs_test.py   # the games' packs
 python3 tests/new_games_test.py   # the new games' rules and screens
+python3 tests/saver_review44_test.py   # 4.4 review fixes in the screensaver app (F12-F15)
 #
 # «regressions» (docs/dev/REGRESSIONS.md): the gate's own tests, and any guard of the register this file does not run by name above
 python3 tests/regressions/run.py --rest
