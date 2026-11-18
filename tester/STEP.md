@@ -47,7 +47,8 @@ The owner made code 8042301 for https://github.com/tshi-dev/UrTV/releases/downlo
 3. Report «step 97: code 8042301 OK/FAIL».
 If it opens a page or an error instead, report exactly what Downloader shows.
 
-## step 96 — 4.4 on apk-next (UPDATED AGAIN: use the LATEST apk-next, now next = b8d74d35, build 467, run 44149385021, which adds the owner's sweep 3: card titles not cut, the small city notice, the regular clock whenever cards show; earlier: da81cbcf build 465; it now also has 4.3.3, the beta switch, the tafsir card, Riyadh option 2 and the rescue code 8042301), AFTER step 97
+## step 96 — 4.4 on apk-next (UPDATED 18 Nov 04:40 Riyadh: use apk-next build 484 = next 5892d8de, Build APKs run 44217039958. It now also has 4.3.4 + 4.3.5 (safe home) and the QA-6..10 fixes: the add-on check and four other reads moved off the remote's thread, so the 4.3.3-style TCL freeze must not come back in 4.4), AFTER the 4.3.4 NOW line and steps 99–100
+Extra for build 484 (report each PASS/FAIL): (a) with the add-on installed, press the remote steadily across a minute change and right after Home: no lag or freeze; (b) open «مركز التحكم» and «الإضافات» 5 times quickly: instant; (c) adhan preview in the control centre plays; (d) open «المباريات» with follows kept: opens at once; (e) the screensaver's settings: toggle a few switches, no lag; (f) the notice bar still shows a due notice. Then the original step 96 list below.
 This is the first full 4.4 build with everything merged:
 - presets, «منظر وساعة» settings, the compact setup + setup speed;
 - the HOME_KEY catch;
