@@ -38,6 +38,9 @@ pj = p["jobs"]
 check("promote-beta: gate from regressions.yml on the source build's commit, promote needs it",
       pj.get("gate", {}).get("uses") == "./.github/workflows/regressions.yml" and "needs.source.outputs.sha" in str(pj["gate"].get("with", {}))
       and pj.get("promote", {}).get("needs") == "gate")
+pr = " ".join(str(s.get("run", "")) for s in pj["promote"]["steps"])
+check("promote-beta (R-288): copies every .apk of the source, needs home+screensaver+extras there, and fails when apk-beta lacks an asset name of the source afterwards",
+      "--pattern '*.apk'" in pr and "urtv-extras.apk" in pr and "apks=(next/*.apk)" in pr and "comm -23 source-assets.txt beta-assets.txt" in pr and "apk-beta lacks" in pr and "--prerelease --latest=false" in pr)
 steps = " ".join(str(s.get("run", "")) for s in g["jobs"]["regressions"]["steps"])
 check("the gate runs the regressions group and the API surface diff", "tests/run.sh regressions" in steps and ".github/tools/api_surface_diff.py" in steps)
 on = g.get("on") or g.get(True)
