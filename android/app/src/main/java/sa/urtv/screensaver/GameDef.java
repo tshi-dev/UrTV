@@ -88,7 +88,7 @@ final class GameDef {
             if (e != null && !(e instanceof String)) throw fail(where + ".en", "a text");
             if (e != null) en = (String) e;
         } else throw fail(where, "a text: a string or {ar, en}");
-        if (!clean(ar, max)) throw fail(where + ".ar", "empty, over " + max + " characters, with a direction mark, a control character, a link, «·» or «•»");
+        if (!clean(ar, max)) throw fail(where + ".ar", "empty, over " + max + " characters, with a direction mark, a control character, a link or a dot sign");
         if (!(hasArabic(ar) || (digitsOk && hasDigit(ar)))) throw fail(where + ".ar", "no Arabic letters");
         if (!en.isEmpty() && (!clean(en, max) || hasArabic(en))) throw fail(where + ".en", "English only, within " + max + " characters, no direction marks or links");
         return new Text(ar, en);
