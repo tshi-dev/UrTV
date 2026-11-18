@@ -186,7 +186,7 @@ public class TasksActivity extends Activity implements sa.urtv.home.phone.TextTa
     private String reminderWhen(long due) {
         java.util.TimeZone tz = ZoneFix.tvZone();
         try {
-            String[] z = ConfigSnapshot.read(this).cityZone();
+            String[] z = ConfigSnapshot.ui(this).cityZone();
             if (z != null) tz = ZoneFix.zone(ClockZone.valid(z[1]));
         } catch (RuntimeException ignored) { }
         java.util.Calendar c = java.util.Calendar.getInstance(tz), n = java.util.Calendar.getInstance(tz);

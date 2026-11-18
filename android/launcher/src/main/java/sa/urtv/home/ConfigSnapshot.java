@@ -1,6 +1,7 @@
 package sa.urtv.home;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
 
@@ -101,6 +102,65 @@ final class ConfigSnapshot {
 
     /** 4.3.4 QA-1: the last answer this process had, never a query (the UI thread's first draw); null when it has none yet */
     static ConfigSnapshot known() { return LAST.peek(); }
+
+    /**
+     * 4.4 QA-11 (the TCL freeze's shape): what a screen's onCreate, a return or a key on the UI thread asks for its look, digits and buttons. Never a
+     * query: the answer this process already has (known), else the last real answer kept on disk (marked old); a read on a thread of its own then
+     * brings the fresh one (and the digits and language), which the next draw, return or tick shows, as a setting saved a moment ago always did.
+     */
+    static ConfigSnapshot ui(Context c) {
+        ConfigSnapshot k = LAST.peek();
+        if (k == null) k = kept(c);
+        refreshSoon(c);
+        return k;
+    }
+
+    private static final java.util.concurrent.atomic.AtomicBoolean asking = new java.util.concurrent.atomic.AtomicBoolean();
+    private static volatile long askedAt = -SHARE_MS;
+
+    /** one read at a time, off the UI thread, not more than once in SHARE_MS */
+    private static void refreshSoon(Context c) {
+        long now = android.os.SystemClock.elapsedRealtime();
+        if (now - askedAt < SHARE_MS || !asking.compareAndSet(false, true)) return;
+        askedAt = now;
+        final Context app = c.getApplicationContext();
+        new Thread(new Runnable() {
+            @Override public void run() {
+                try { Digits.remember(app, read(app)); } catch (RuntimeException ignored) { } finally { asking.set(false); }
+            }
+        }, "config-ui").start();
+    }
+
+    /** the last real answer kept on disk (its fragment and the look, appearance and buttons), marked old; the defaults when there is none */
+    private static ConfigSnapshot kept(Context c) {
+        SharedPreferences p = c.getApplicationContext().getSharedPreferences("config_last", Context.MODE_PRIVATE);
+        String f = lastFragment(c);
+        ConfigSnapshot s = new ConfigSnapshot(f, !"0".equals(p.getString("greeting", "1")), !"0".equals(p.getString("adhan_bar", "1")),
+                !"0".equals(p.getString("listen_pill", "1")), !"0".equals(p.getString("update_bell", "1")), p.getString("appearance", null),
+                !"0".equals(p.getString("watch_next", "1")), p.getString("look", null), true, 0);
+        s.tweaks = p.getString("tweaks", "");
+        s.pagesDark = !"0".equals(p.getString("pages_dark", "1"));
+        s.matchApp = p.getString("match_app", "auto");
+        GlassStyle.setTweaks(s.tweaks);
+        return s;
+    }
+
+    /** the values a screen's first draw needs, kept beside the fragment when they change (a real answer only) */
+    private static void keepValues(Context c, ConfigSnapshot s) {
+        String sig = s.appearance + "|" + s.look + "|" + s.tweaks + "|" + s.pagesDark + "|" + s.matchApp + "|" + s.greetingOn + s.adhanBarOn + s.listenPillOn + s.updateBellOn + s.watchNextOn;
+        if (sig.equals(keptSig)) return;
+        keptSig = sig;
+        try {
+            c.getApplicationContext().getSharedPreferences("config_last", Context.MODE_PRIVATE).edit()
+                    .putString("appearance", s.appearance).putString("look", s.look).putString("tweaks", s.tweaks)
+                    .putString("pages_dark", s.pagesDark ? "1" : "0").putString("match_app", s.matchApp)
+                    .putString("greeting", s.greetingOn ? "1" : "0").putString("adhan_bar", s.adhanBarOn ? "1" : "0")
+                    .putString("listen_pill", s.listenPillOn ? "1" : "0").putString("update_bell", s.updateBellOn ? "1" : "0")
+                    .putString("watch_next", s.watchNextOn ? "1" : "0").apply();
+        } catch (RuntimeException ignored) { }
+    }
+
+    private static volatile String keptSig;
 
     static ConfigSnapshot read(final Context c) {
         final ConfigSnapshot[] none = {null};
@@ -214,6 +274,7 @@ final class ConfigSnapshot {
         made.appsStyle = appsStyle;
         made.keyApps = keyApps;
         made.greetingName = greetingName;
+        if (fragment != null) keepValues(c, made);   // a real answer: its look and buttons are what a cold first draw shows
         return made;
     }
 

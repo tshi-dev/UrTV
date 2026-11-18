@@ -33,9 +33,9 @@ main, card, dock, cs, lg = text("MainActivity.java"), text("ReminderCard.java"),
 uc = body(main, "private void updateClock() {")
 first = body(uc, "if (!clockFirstDone) {")
 check("QA-1: the first draw takes ConfigSnapshot.known() and reads only when the process has no answer yet",
-      "ConfigSnapshot known = ConfigSnapshot.known();" in first and "if (known == null) { updateClock(ConfigSnapshot.read(this)); return; }" in first
-      and first.index("ConfigSnapshot.known()") < first.index("ConfigSnapshot.read(this)"), first)
-check("QA-1: …then goes on to the background read (no return after drawing the known answer)", "updateClock(known);" in first and "return; }\n            updateClock(known);\n        }" in first
+      "ConfigSnapshot known = ConfigSnapshot.known();" in first and "updateClock(known != null ? known : ConfigSnapshot.ui(this));" in first
+      and "ConfigSnapshot.read(this)" not in first, first)
+check("QA-1: …then goes on to the background read (no return after drawing the known answer)", "updateClock(known != null ? known : ConfigSnapshot.ui(this));\n        }" in first and "return;" not in first
       and 'new Thread(' in uc and '"home-config").start();' in uc)
 kn = body(cs, "static ConfigSnapshot known() {")
 check("QA-1: ConfigSnapshot.known() is memory only (LastGood.peek), no content resolver", "LAST.peek()" in kn and "query" not in kn and "getContentResolver" not in kn, kn)

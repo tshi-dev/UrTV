@@ -947,7 +947,7 @@ public class MainActivity extends Activity {
         updatePill.setOnClickListener(v -> launchGuarded(ParentalPolicy.PILL_UPDATES, new Intent(this, UpdateActivity.class), "تحديث تلفزيوني"));
         List<Pill> row = new ArrayList<>(Arrays.asList(inputs));
         tasksPill = tasks;
-        if (isInstalled(SAVER_PKG) && ConfigSnapshot.read(this).tasksPillOn()) row.add(tasks);   // «زر المهام»: hidden in the screensaver's settings, it is not in the row
+        if (isInstalled(SAVER_PKG) && ConfigSnapshot.ui(this).tasksPillOn()) row.add(tasks);   // «زر المهام»: hidden in the screensaver's settings, it is not in the row
         if (centerWanted()) row.add(centerPill);
         row.add(marketsBtn);
         row.add(matchesBtn);
@@ -958,7 +958,7 @@ public class MainActivity extends Activity {
         bellPill = pill(S.t("تحديثات التطبيقات"), R.drawable.ic_bell);
         bellPill.setOnClickListener(v -> guarded(ParentalPolicy.PILL_UPDATES, UpdatesBell.PLAY_STORE, S.t("متجر Play"), this::openUpdates));
         // [/updates bell]
-        if (listenPillWanted(ConfigSnapshot.read(this).listenPillOn)) row.add(tilawah);   // «زر تلاوة وأذان»: hidden in the screensaver's settings, it is simply not in the row
+        if (listenPillWanted(ConfigSnapshot.ui(this).listenPillOn)) row.add(tilawah);   // «زر تلاوة وأذان»: hidden in the screensaver's settings, it is simply not in the row
         for (Pill p : row) {
             right.addView(p, sideLlp(-2, dp(Pill.HEIGHT), 0, 0, dp(Pill.GAP), 0));
             pills.add(p);
@@ -3497,8 +3497,8 @@ public class MainActivity extends Activity {
             // 4.3.4 QA-1: a home made again (a language change, recreate) draws at once from the answer this process already has, and the
             // fresh read below goes off the UI thread; only the process's very first draw asks the screensaver here (nothing is on screen yet)
             ConfigSnapshot known = ConfigSnapshot.known();
-            if (known == null) { updateClock(ConfigSnapshot.read(this)); return; }
-            updateClock(known);
+            // 4.4 QA-11: a cold process draws this once from the last real answer kept on disk (marked old, never a query); the read below follows at once
+            updateClock(known != null ? known : ConfigSnapshot.ui(this));
         }
         if (clockReading) return;
         clockReading = true;

@@ -44,7 +44,7 @@ check("hiding takes the button out of the row and out of the focus list (a hidde
       "pillRow.removeView(tilawahPill)" in apply and "pills.remove(tilawahPill)" in apply and "setVisibility" not in apply, apply)
 check("the focus goes to the pill before it when the hidden button had it", "hadFocus" in apply and "pills.get(pills.size() - 1).requestFocus()" in apply, apply)
 check("it comes back at the end of the row, where it always was", "pillRow.addView(tilawahPill" in apply and "pills.add(tilawahPill)" in apply, apply)
-check("the row is built from the setting too (no flash of the button on a TV that hid it)", "listenPillWanted(ConfigSnapshot.read(this).listenPillOn)) row.add(tilawah)" in main)
+check("the row is built from the setting too (no flash of the button on a TV that hid it)", "listenPillWanted(ConfigSnapshot.ui(this).listenPillOn)) row.add(tilawah)" in main)
 check("a build without the listening part (R.bool.show_listening false) never shows it, whatever the setting says",
       "return setting && getResources().getBoolean(R.bool.show_listening);" in main)
 tick = main.split("applyListenPill(cfg.listenPillOn);")

@@ -44,7 +44,7 @@ public class MatchesActivity extends Activity {
     @Override
     protected void onCreate(Bundle b) {
         super.onCreate(b);
-        ConfigSnapshot cfg = ConfigSnapshot.read(this);
+        ConfigSnapshot cfg = ConfigSnapshot.ui(this);
         final int ground = cfg.pagesDark ? Color.rgb(0x17, 0x18, 0x1B) : Color.rgb(0xF4, 0xF2, 0xEC);   // the page's own ground (dark, or sand), before its first frame
         getWindow().setBackgroundDrawable(new android.graphics.drawable.ColorDrawable(ground));   // and the window's, so no other colour shows while the view is not yet drawn
         web = WebViews.make(this);

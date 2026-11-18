@@ -48,7 +48,7 @@ public class TaskReminderActivity extends Activity {
         load();
         if (edit == null) { finish(); return; }
         try {
-            String[] z = ConfigSnapshot.read(this).cityZone();
+            String[] z = ConfigSnapshot.ui(this).cityZone();
             zone = z == null ? ZoneFix.tvZone() : ZoneFix.zone(ClockZone.valid(z[1]));
         } catch (RuntimeException e) {
             zone = ZoneFix.tvZone();

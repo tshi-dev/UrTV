@@ -81,5 +81,28 @@ rcv = main.split("private final BroadcastReceiver nowPlayingChanged = new Broadc
 check("review: the adhan receiver takes the known answer, and reads only off the UI thread when there is none",
       "ConfigSnapshot.known()" in rcv and "clockReads.execute(" in rcv and "updateAdhanBar(ConfigSnapshot.read(" not in rcv)
 
+# QA-11: the home's and the screens' reads of the screensaver's settings
+cs = src(HOME / "ConfigSnapshot.java")
+uib = body(cs, "static ConfigSnapshot ui(Context c) {")
+check("QA-11: ConfigSnapshot.ui is the known answer, else the kept one, and asks on a thread (never read/query)",
+      "LAST.peek()" in uib and "kept(c)" in uib and "refreshSoon(c)" in uib and "read(" not in uib and "query(" not in uib)
+rs = body(cs, "private static void refreshSoon(Context c) {")
+check("QA-11: the refresh is one thread at a time, not more than once in SHARE_MS, and hands the digits and language the answer",
+      'new Thread(' in rs and '"config-ui").start();' in rs and "asking.compareAndSet(false, true)" in rs and "Digits.remember(app, read(app))" in rs)
+check("QA-11: a real answer keeps its look, appearance and buttons on disk, so a cold first draw shows the last real ones",
+      "keepValues(c, made)" in cs and '.putString("look", s.look)' in cs and 'p.getString("look", null)' in body(cs, "private static ConfigSnapshot kept(Context c) {"))
+gs = src(HOME / "GlassSource.java")
+check("QA-11: the glass look, light and page ground read the kept answer on the UI thread",
+      "ConfigSnapshot.ui(c).appearance()" in gs and "ConfigSnapshot.ui(c).look()" in gs and "ConfigSnapshot.ui(a).pagesDark" in gs and "ConfigSnapshot.read(a)" not in gs)
+check("QA-11: only the phone page's server threads ask the screensaver now (lookNameNow)", "lookNameNow(c)" in body(gs, "public static java.util.Map<String, Object> phoneState(Context c) {"))
+check("QA-11: Digits.init takes the kept answer", "ConfigSnapshot.ui(c)" in body(src(HOME / "Digits.java"), "public static void init(Context c) {"))
+check("QA-11: the markets, matches, tasks and reminder screens, and the pill row, take the kept answer",
+      "ConfigSnapshot.ui(this)" in body(src(HOME / "MarketsActivity.java"), "String param(") if "String param(" in src(HOME / "MarketsActivity.java") else "ConfigSnapshot.ui(this).fragment" in src(HOME / "MarketsActivity.java"))
+for f in ("MatchesActivity", "TaskReminderActivity", "TasksActivity"):
+    check("QA-11: " + f + " takes the kept answer on the UI thread", "ConfigSnapshot.ui(this)" in src(HOME / (f + ".java")))
+check("QA-11: the pill row takes the kept answer", main.count("ConfigSnapshot.ui(this)") >= 3)
+uc = body(main, "private void updateClock() {")
+check("QA-11: the first clock draw of a cold process uses the kept answer, then reads on its thread", "ConfigSnapshot.ui(this)" in uc and "ConfigSnapshot.read(this)" not in uc)
+
 print("FAILED" if failed else "all passed")
 sys.exit(1 if failed else 0)

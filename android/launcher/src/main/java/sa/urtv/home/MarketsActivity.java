@@ -1396,7 +1396,7 @@ public class MarketsActivity extends Activity {
     /** one value of the screensaver's settings fragment ("a=b&c=d"), decoded; null when it is not there */
     private String param(String name) {
         if (saved.containsKey(name)) return saved.get(name);
-        String f = ConfigSnapshot.read(this).fragment;
+        String f = ConfigSnapshot.ui(this).fragment;
         if (f == null) return null;
         for (String kv : f.split("&")) {
             int eq = kv.indexOf('=');
