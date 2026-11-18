@@ -3175,3 +3175,9 @@ What the owner got: the screen (UpdateActivity) shows «التحديث من ال
 Log (logcat, tag UrTVUpdate): `00:03:14 PackageParser … /data/user/0/sa.urtv.home/files/phone-update/urtv-screensaver.apk` (so the home app did download at least the screensaver apk) then `W UrTVUpdate: cannot update: download` at 00:03:15 and again at 00:03:25 on the second press; `UrTVSetup: update install questions answered or given up: screensaver free`. REQUEST_INSTALL_PACKAGES for sa.urtv.home is allow. Installed 525 stays 525, nothing was installed.
 Likely cause (not proven): apk-beta (Beta 3.525) contains only urtv-home.apk, urtv-screensaver.apk and version.txt, no urtv-extras.apk, while the TV has the add-on installed (516), so the downloader treats a missing file as «download» failure. Or the screen offered an update to a build equal to the installed one (see the earlier finding: «تحديث جديد 4.4» although installed = newest = 525). Either way: an in-TV update to the beta fails on this TV, and the message sent the owner to «ask the AI assistant» instead of saying what failed.
 Pictures (PC only): optimize/run/step96/pics/upd-1.png … upd-6.png.
+
+## Step 101 on 4.4 beta 525 — owner's results at the TV (19 Nov, hand-tested by the owner, recorded by the tester)
+- (a) black video: PASS. YouTube played normally both times after the screensaver, no black picture.
+- (b) screensaver after 2 min in another app: PASS. Clock correct at once, everything fast.
+- Finding (polish/annoying): when the screensaver starts it first shows an OLD frame with the OLD time for about 0.8 s, then it loads the real screen. Likely the last drawn frame/cache being shown before the first fresh draw; should show the current time or a blank until the first draw.
+- (d) page size/clock: not answered yet.
