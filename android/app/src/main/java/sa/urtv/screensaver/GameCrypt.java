@@ -44,7 +44,7 @@ final class GameCrypt {
     }
 
     static byte[] unhex(String s) { byte[] b = new byte[s.length() / 2]; for (int i = 0; i < b.length; i++) b[i] = (byte) Integer.parseInt(s.substring(i * 2, i * 2 + 2), 16); return b; }
-    static String hex(byte[] b) { StringBuilder s = new StringBuilder(); for (byte x : b) s.append(String.format("%02x", x & 0xff)); return s.toString(); }
+    static String hex(byte[] b) { StringBuilder s = new StringBuilder(); for (byte x : b) s.append(Character.forDigit((x >> 4) & 15, 16)).append(Character.forDigit(x & 15, 16)); return s.toString(); }
 
     /**
      * The slow part, once: PBKDF2-HMAC-SHA256 of the normalised code with the record's own random salt (`rounds` 100000 to 1000000; the file's records say how many). Two things are then made from
