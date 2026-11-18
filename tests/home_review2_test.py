@@ -24,5 +24,11 @@ for field, key in [("favBar", "fav_bar"), ("pillsHidden", "pills_hidden"), ("hom
     check(f"F1: {field} is read back in kept(), written in keepValues and part of its signature",
           f's.{field} =' in kept and f'"{key}"' in kept and f'"{key}"' in kv and f"s.{field}" in kv.split(".edit()")[0], field)
 
+# F2: the tasks list's late render keeps the focus in the text field while the person types
+ta = src(HOME / "TasksActivity.java")
+rd = body(ta, "private void render(int focus) {")
+check("F2: render skips its focus request while the text field has the focus (not on the first render)",
+      "field.hasFocus() && !fieldFirst" in rd and "!typing &&" in rd and rd.index("boolean typing") < rd.index("fieldFirst = false;") < rd.index("f.post(f::requestFocus)"))
+
 print("FAILED" if failed else "all passed")
 sys.exit(1 if failed else 0)

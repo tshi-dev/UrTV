@@ -285,8 +285,9 @@ public class TasksActivity extends Activity implements sa.urtv.home.phone.TextTa
         }
         View f = wanted != null ? wanted : first != null ? first : mic.getVisibility() == View.VISIBLE ? mic : field;
         if (fieldFirst) f = field;   // the first render: the text field, ready to type (OK opens the keyboard); «تكلّم» is one ▼ ◀ away
+        boolean typing = field != null && field.hasFocus() && !fieldFirst;   // 4.4 review: a late render (an add's answer) must not take the focus from the person typing the next task
         fieldFirst = false;
-        if (f != null && confirm.getVisibility() != View.VISIBLE) f.post(f::requestFocus);
+        if (f != null && !typing && confirm.getVisibility() != View.VISIBLE) f.post(f::requestFocus);
     }
 
     // ---------------------------------------------------------------- changes (the list itself lives in the screensaver app)
