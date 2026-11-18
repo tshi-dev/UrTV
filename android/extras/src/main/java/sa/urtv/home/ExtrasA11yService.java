@@ -276,9 +276,10 @@ public class ExtrasA11yService extends AccessibilityService {
             boolean front = homeFront, lowRam = Ram.low(this);
             if (!front && !lowRam) stockHome = stockHomeOn(this);   // one package query, only when the home leaves (none on a weak TV: no filter there)
             if (homeKeyLost == null) homeKeyLost = homeKeyLost(this);
-            boolean want = SettingsKey.filterWanted(front, stockHome, lowRam, homeKeyLost)
+            boolean want = Build.VERSION.SDK_INT >= SettingsKey.MIN_FILTER_SDK && (   // 4.3.6: no key filter at all below Android 9 (a Percee OTT box on 8.0 froze)
+                SettingsKey.filterWanted(front, stockHome, lowRam, homeKeyLost, Build.VERSION.SDK_INT)
                 || KeyApps.filterWanted(front, KeyApps.anyChosen(keyChoices), KeyButton.filterSafe())   // «أزرار الريموت»: only for a button given an app
-                || homeKeyActive();   // 4.4 R3: the Home key caught here (on by default on a Google TV, only while the person's home is ours)
+                || homeKeyActive());   // 4.4 R3: the Home key caught here (on by default on a Google TV, only while the person's home is ours)
             AccessibilityServiceInfo info = getServiceInfo();
             if (info == null) return;
             boolean has = (info.flags & AccessibilityServiceInfo.FLAG_REQUEST_FILTER_KEY_EVENTS) != 0;
@@ -292,11 +293,22 @@ public class ExtrasA11yService extends AccessibilityService {
     }
 
     static boolean homeKeyLost(Context c) {
-        try { return c.getPackageManager().queryIntentActivities(new Intent(SettingsKey.NOTIFICATION_PANEL_ACTION), 0).isEmpty(); }
+        try {
+            if (!SettingsKey.homeKeyLostApplies(Build.VERSION.SDK_INT, c.getPackageManager().hasSystemFeature(PackageManager.FEATURE_LEANBACK))) return false;   // 4.3.6: only an Android TV of 9 or newer
+            return c.getPackageManager().queryIntentActivities(new Intent(SettingsKey.NOTIFICATION_PANEL_ACTION), 0).isEmpty();
+        }
         catch (RuntimeException e) { return false; }
     }
 
     @Override protected boolean onKeyEvent(KeyEvent e) {
+        try {   // 4.3.6: never throws into Android's key dispatch; anything unexpected gives the key back untouched
+            return keyEvent(e);
+        } catch (Throwable t) {
+            return false;
+        }
+    }
+
+    private boolean keyEvent(KeyEvent e) {
         if (e.getKeyCode() == KeyEvent.KEYCODE_HOME && homeKeyActive()) return homeKeyCaught(e);   // 4.4 R3: on by default on a Google TV, the person's home ours
         if (appKey(e)) return true;   // «أزرار الريموت»: a button the owner gave an app; every other key goes on below, untouched
         Boolean lost = homeKeyLost;

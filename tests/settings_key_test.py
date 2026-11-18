@@ -50,9 +50,9 @@ check("the TV's accessibility settings tell the person about the Settings key", 
 # the service
 fk = ts.split("private void filterKeys() {")[1].split("\n    }\n")[0]
 check("the flag follows SettingsKey.filterWanted, set and cleared with setServiceInfo",
-      "SettingsKey.filterWanted(front, stockHome, lowRam, homeKeyLost)" in fk and "FLAG_REQUEST_FILTER_KEY_EVENTS" in fk and "setServiceInfo(info)" in fk and "~AccessibilityServiceInfo.FLAG_REQUEST_FILTER_KEY_EVENTS" in fk)
+      "Build.VERSION.SDK_INT >= SettingsKey.MIN_FILTER_SDK && (" in fk and "SettingsKey.filterWanted(front, stockHome, lowRam, homeKeyLost, Build.VERSION.SDK_INT)" in fk and "FLAG_REQUEST_FILTER_KEY_EVENTS" in fk and "setServiceInfo(info)" in fk and "~AccessibilityServiceInfo.FLAG_REQUEST_FILTER_KEY_EVENTS" in fk)
 check("the filter is set when the service connects", "filterKeys();" in ts.split("protected void onServiceConnected() {")[1].split("\n    }\n")[0])
-ok = ts.split("protected boolean onKeyEvent(KeyEvent e) {")[1].split("\n    }\n")[0]
+ok = ts.split("private boolean keyEvent(KeyEvent e) {")[1].split("\n    }\n")[0]   # (4.3.6: onKeyEvent wraps it in a catch-all)
 check("onKeyEvent: SettingsKey decides; PASS returns false at once; nothing is logged or kept there",
       "settingsKey.decide(e.getKeyCode(), e.getAction(), e.getRepeatCount(), homeFront, stockHome, lost != null && lost)" in ok and "if (d == SettingsKey.PASS) return false;" in ok
       and "log(" not in ok and "Log." not in ok and "getScanCode" not in ok and "getMetaState" not in ok and ok.index("return false") < ok.index("new Thread"), ok)
@@ -87,6 +87,9 @@ check("FEATURES.md, SETTINGS.md and TVS.md say what the Settings key does outsid
       "SettingsKey" in tvs and "زر الإعدادات" in feat and "outside our home" in sett, "")
 check("the receiver-mode design is written down (docs/TVS.md)", "«وضع الرسيفر»" in tvs and "Shell cannot change component state" in tvs)
 
+check("4.3.6: homeKeyLost is asked only on an Android TV (FEATURE_LEANBACK) of 9 or newer", "SettingsKey.homeKeyLostApplies(Build.VERSION.SDK_INT, c.getPackageManager().hasSystemFeature(PackageManager.FEATURE_LEANBACK))" in ts)
+okc = re.search(r"protected boolean onKeyEvent\(KeyEvent e\) \{\s*try \{[^}]*return keyEvent\(e\);\s*\} catch \(Throwable t\) \{\s*return false;", ts)
+check("4.3.6: onKeyEvent never throws into Android's key dispatch (catches everything and gives the key back)", bool(okc))
 if not shutil.which("javac"):
     print("SKIP settings key cases: no javac here")
     sys.exit(1 if failed else 0)
