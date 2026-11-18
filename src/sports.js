@@ -372,7 +372,7 @@ const HW = {nowS:'الحالي', tableOf:'جدول الترتيب النهائي
   srcChampsWp:'المصدر: نتائج المباريات وويكي بيانات وويكيبيديا (CC BY-SA 4.0)', srcScorers:'المصدر: ويكيبيديا وويكي بيانات (CC BY-SA 4.0)',
   noScorers:'لا نعرف هدّاف هذا الموسم بعد', noChamps:'لا نعرف أبطال هذا الدوري بعد', honours:'البطولات', lastTitle:'آخرها %s',
   title1:'لقب واحد', title2:'لقبان', titleFew:'%s ألقاب', titleMany:'%s لقبًا', titlesLast:'%s، آخرها %s',};
-const HON_BASE = DATA_OLD + 'data-honours/';
+const HON_BASE = DATA_OLD + 'data-honours/';   // the weekly job's branch (.github/workflows/honours.yml); a move to urtv-data adds it to DATA_MAP and the apps' DataHost together
 const honWant = (kind, id) => archWant(HON_BASE + kind + '/' + id + '.json');
 const honSeasonName = x => ar(String(x));
 const honOk = x => /^\d{4}(-\d{4})?$/.test(String(x || ''));

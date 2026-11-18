@@ -289,11 +289,12 @@ What was built:
 The scorer files are one file per league, with the seasons inside it, rather than the proposed `scorers/<lg>/<season>.json`. The page shows 8
 seasons, and one download is better than eight on a TV.
 
-**urtv-data.** This session could not be given urtv-data, so the job runs here and publishes the branch `data-honours`. The page reads
-`football/honours/` on urtv-data first (`DATA_MAP`) and falls back to `data-honours`. Moving the job there means:
+**urtv-data.** This session could not be given urtv-data, so the job runs here and publishes the branch `data-honours`, which the page
+reads. Moving the job there means:
 
 1. copy `honours.py`, `honours_study.py` and the workflow, and publish to `football/honours/`;
-2. add this row to its `DATA-LICENSE.md`:
+2. add `['data-honours/', 'football/honours/']` to the page's `DATA_MAP` and the apps' DataHost map together (tests/data_host_test.py keeps them the same);
+3. add this row to its `DATA-LICENSE.md`:
    `| Wikipedia (ar, en) / Wikidata | football/honours/scorers/, a champion whose "src" says wikipedia | CC BY-SA 4.0 (share-alike); each season names its articles |`
 
 Tests:

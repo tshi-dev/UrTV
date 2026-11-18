@@ -3074,7 +3074,7 @@ async function fetchT(url, ms){
 
 // 4.3.3 data: urtv-data first, the old branch second (docs/DATA-HOST.md, the apps' DataHost)
 const DATA_OLD = 'https://raw.githubusercontent.com/tshi-dev/UrTV/', DATA_NEW = 'https://raw.githubusercontent.com/tshi-dev/urtv-data/data/';
-const DATA_MAP = [['data-leagues/leagues/', 'football/leagues/'], ['data-catalogue/catalogue/', 'football/catalogue/'], ['data-archive/', 'football/archive/'], ['data-honours/', 'football/honours/'],
+const DATA_MAP = [['data-leagues/leagues/', 'football/leagues/'], ['data-catalogue/catalogue/', 'football/catalogue/'], ['data-archive/', 'football/archive/'],
   ['data-games/quiz/', 'games/quiz/'], ['data-games/games/', 'games/'], ['data-markets/markets/', 'markets/'], ['data-stations/stations/', 'stations/']];
 function dataUrls(u){
   const r = u.slice(DATA_OLD.length), m = u.startsWith(DATA_OLD) && DATA_MAP.find(m => r.startsWith(m[0]));
