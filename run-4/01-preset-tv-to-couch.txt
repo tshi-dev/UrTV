@@ -1,0 +1,2 @@
+focus-before:  android.widget.FrameLayout [1136,792][1440,962]
+t_change: 1795029872.330067621
