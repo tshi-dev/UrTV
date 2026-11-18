@@ -412,6 +412,24 @@ def glass_shots(out):
     (d / "glass-icon-editor.png").write_bytes(adb("exec-out", "screencap", "-p", text=False).stdout)
     key("BACK")
     saver("--es appsstyle tiles")
+    # «شكل شاشة الإعدادات: tvOS»: the first screen, a section («المظهر», four down), and the light version («الوضع الخفيف» on), at 1080 and 720
+    saver("--es settingsstyle tvos")
+    for size, tag in (("1920x1080", "1080"), ("1280x720", "720")):
+        shell(f"wm size {size}")
+        for lite in ("off", "on"):
+            saver(f"--es lite {lite}")
+            shell("am force-stop sa.urtv.screensaver")
+            shell("am start -W -n sa.urtv.screensaver/.SettingsActivity")
+            time.sleep(5)
+            name = f"tvos-settings-{tag}" + ("-light" if lite == "on" else "")
+            (d / f"{name}.png").write_bytes(adb("exec-out", "screencap", "-p", text=False).stdout)
+            if lite == "off" and tag == "1080":
+                key("DPAD_DOWN", "DPAD_DOWN", "DPAD_DOWN", "DPAD_DOWN", "DPAD_CENTER")
+                time.sleep(3)
+                (d / "tvos-settings-1080-section.png").write_bytes(adb("exec-out", "screencap", "-p", text=False).stdout)
+            key("HOME")
+    shell("wm size 1920x1080")
+    saver("--es lite auto", "--es settingsstyle buttons")
     print("glass pictures captured")
 
 

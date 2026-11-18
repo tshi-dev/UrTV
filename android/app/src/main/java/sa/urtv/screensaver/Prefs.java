@@ -1397,10 +1397,10 @@ final class Prefs {
      */
     // ---- 4.4 beta 2 (the owner: «with a protective way»): each new look item behind its own switch, off by default and after an update
     /** 4.4 beta 2 «شكل شاشة الإعدادات» (the owner): the settings screen's own style, apart from the looks: «أزرار» (the 4.3.2 hub, the default) or
-     *  «كنبة» (couch-tv's side list and compact rows). «tvOS» joins SETTINGS_STYLES only once its screen is approved and built (never a dead choice).
+     *  «كنبة» (couch-tv's side list and compact rows), or «tvOS» (the 4.3.2 screen's logic in the tvOS manner, TvosStyle; approved and built for beta 2).
      *  Every place of the hub is in the side list (tests/settings_one_form_test.py lists each with its new place). */
-    static final String[] SETTINGS_STYLES = {"buttons", "couch"};
-    static final String[] SETTINGS_STYLE_NAMES = {"أزرار", "كنبة"};
+    static final String[] SETTINGS_STYLES = {"buttons", "couch", "tvos"};
+    static final String[] SETTINGS_STYLE_NAMES = {"أزرار", "كنبة", "tvOS"};
     /** the style; read the first time after the update as the screen the TV shows now («كنبة» with the look «كنبة», else «أزرار»): no surprise switch */
     String settingsStyle() {
         String v = sp.getString("settingsStyle", null);

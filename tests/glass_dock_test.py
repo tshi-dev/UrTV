@@ -113,7 +113,8 @@ check("tvOS Launcher credited: its copyright and the Apache-2.0 notice in each a
       and "## tvOS Launcher" in notices and "Copyright 2026 techgenius" in notices)
 # our own mockups of the «tvOS» manner (docs/mockups/settings-style, tvos-preset: rendered from our own pages, their READMEs say so) are named after it
 check("nothing of tvOS Launcher's images in the apps or the pages (no file named after it outside our own mockups)",
-      not any("tvos" in p.name.lower() for p in ROOT.rglob("*") if ".git" not in p.parts and "node_modules" not in p.parts and "mockups" not in p.parts))
+      not any("tvos" in p.name.lower() and p.suffix.lower() in (".png", ".jpg", ".jpeg", ".webp", ".svg", ".gif") for p in ROOT.rglob("*")
+              if ".git" not in p.parts and "node_modules" not in p.parts and "mockups" not in p.parts))
 
 # ---- the words
 new = allapps + editor + art + bar + grid + store
