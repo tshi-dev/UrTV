@@ -61,6 +61,8 @@ final class SetupEngine {
     private final Sleeper sleeper;
     private final String stamp;
     private int sdk = 0;
+    /** 4.5: the protected HOME role path (HomeRole) is opt-in: off unless the tester's switch is on (dock.sh debug homerole on); off = the switch as before */
+    boolean protectedRoleOn;
 
     SetupEngine(Shell sh, Store store, Out out, Deadman deadman, Sleeper sleeper, String stamp) {
         this.sh = sh; this.store = store; this.out = out; this.deadman = deadman; this.sleeper = sleeper; this.stamp = stamp;
@@ -595,7 +597,7 @@ final class SetupEngine {
         AdbClient.Result setHome = sh.run("cmd package set-home-activity --user 0 " + q(HOME_ACTIVITY));
         boolean roleOk = role.code == 0 || (sdk > 0 && sdk < 29);    // Android 9 and older have no `cmd role`
         // 4.5 (the owner's «with a protective way»): add alone did not give ours the role (Android 10+): the stock holder is taken off it, guarded (HomeRole)
-        if (KEEP_STOCK_ON && HomeRole.addAloneFailed(sdkNow(), role.code, roleHolder(), SELF)) return protectedRole(stock, stockPkg, holder, pk);
+        if (KEEP_STOCK_ON && protectedRoleOn && HomeRole.addAloneFailed(sdkNow(), role.code, roleHolder(), SELF)) return protectedRole(stock, stockPkg, holder, pk);
         if (!roleOk || setHome.code != 0) return abort(stock, stockPkg, holder, "ما قبل التلفزيون تعيين شاشتنا شاشةً رئيسية، فما عطّلنا الأصلية.", false);
         if (KEEP_STOCK_ON) {   // ours holds Home; the stock home and the wizard are left as they are
             sh.run("cmd package set-home-activity --user 0 " + q(HOME_ACTIVITY));

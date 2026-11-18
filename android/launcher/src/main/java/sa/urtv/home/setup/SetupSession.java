@@ -41,6 +41,7 @@ final class SetupSession implements Closeable {
         SetupEngine engine = new SetupEngine(adb::run, new FileStore(c), out, new SetupDeadman(c), ms -> {
             try { Thread.sleep(ms); } catch (InterruptedException e) { Thread.currentThread().interrupt(); throw new IOException("interrupted"); }
         }, new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss", java.util.Locale.US).format(new java.util.Date()));
+        engine.protectedRoleOn = sa.urtv.home.DebugFlags.on(c, "homerole");   // 4.5: the protected HOME role path, opt-in (dock.sh debug homerole on)
         return new SetupSession(adb, engine);
     }
 

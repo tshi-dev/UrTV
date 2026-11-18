@@ -18,6 +18,8 @@ public final class HomeRoleRun {
 
     static int idx(SetupEngineRun.FakeTv t, String prefix) { for (int i = 0; i < t.log.size(); i++) if (t.log.get(i).startsWith(prefix)) return i; return -1; }
 
+    static SetupEngine on(SetupEngine e) { e.protectedRoleOn = true; return e; }
+
     static SetupEngineRun.FakeTv sticky() { SetupEngineRun.FakeTv t = SetupEngineRun.tv(); t.stickyRole = true; t.roleHolder = STOCK; t.sdk = "30"; return t; }
 
     public static void main(String[] a) throws Exception {
@@ -35,7 +37,7 @@ public final class HomeRoleRun {
 
         // H1: add alone does not take (Android 11): recorded outside the app's data, then taken off, ours added, a real Home press opens ours; nothing disabled
         SetupEngineRun.FakeTv t1 = sticky(); SetupEngineRun.Mem m1 = new SetupEngineRun.Mem(); SetupEngineRun.Dead d1 = new SetupEngineRun.Dead(); List<String> s1 = new ArrayList<>();
-        SetupEngine e1 = SetupEngineRun.engine(t1, m1, d1, s1);
+        SetupEngine e1 = SetupEngineRun.engine(t1, m1, d1, s1); e1.protectedRoleOn = true;
         SetupEngine.Result r1 = e1.home();
         int rec = idx(t1, "printf '%s\\n' " + STOCK), rem = idx(t1, "cmd role remove-role-holder"), addOurs = -1;
         for (int i = rem + 1; i < t1.log.size() && rem >= 0; i++) if (t1.log.get(i).equals(HomeRole.add("sa.urtv.home"))) { addOurs = i; break; }
@@ -46,34 +48,38 @@ public final class HomeRoleRun {
         System.out.println("H1u " + u1.status + " role=" + t1.roleHolder + " file=" + t1.roleFile);
         // H2: the record cannot be written: nothing is taken off the role
         SetupEngineRun.FakeTv t2 = sticky(); t2.recordFails = true;
-        SetupEngine.Result r2 = SetupEngineRun.engine(t2, new SetupEngineRun.Mem(), new SetupEngineRun.Dead(), new ArrayList<>()).home();
+        SetupEngine.Result r2 = on(SetupEngineRun.engine(t2, new SetupEngineRun.Mem(), new SetupEngineRun.Dead(), new ArrayList<>())).home();
         System.out.println("H2 " + r2.status + " removes=" + t2.count("cmd role remove-role-holder") + " role=" + t2.roleHolder + " " + changes(t2));
         // H3: after the holder is taken off, ours is refused: the recorded holder gets the role back at once, said; the record let go; the safety switch let go
         SetupEngineRun.FakeTv t3 = sticky(); t3.addFailsAfterRemove = true; SetupEngineRun.Dead d3 = new SetupEngineRun.Dead(); List<String> s3 = new ArrayList<>();
-        SetupEngine.Result r3 = SetupEngineRun.engine(t3, new SetupEngineRun.Mem(), d3, s3).home();
+        SetupEngine.Result r3 = on(SetupEngineRun.engine(t3, new SetupEngineRun.Mem(), d3, s3)).home();
         System.out.println("H3 " + r3.status + " role=" + t3.roleHolder + " file=" + t3.roleFile + " said=" + String.join("|", s3).contains(HomeRole.ADD_FAILED + HomeRole.PUT_BACK_OK)
             + " disarmed=" + (d3.disarmed > 0) + " " + changes(t3));
         // H4: ours has the role but the Home key still opens the stock home: put back at once, said
         SetupEngineRun.FakeTv t4 = sticky(); t4.refuseSwitch = true; List<String> s4 = new ArrayList<>();
-        SetupEngine.Result r4 = SetupEngineRun.engine(t4, new SetupEngineRun.Mem(), new SetupEngineRun.Dead(), s4).home();
+        SetupEngine.Result r4 = on(SetupEngineRun.engine(t4, new SetupEngineRun.Mem(), new SetupEngineRun.Dead(), s4)).home();
         System.out.println("H4 " + r4.status + " role=" + t4.roleHolder + " file=" + t4.roleFile + " said=" + String.join("|", s4).contains(HomeRole.VERIFY_FAILED) + " " + changes(t4));
         // H5: the TV ignores the take-off: ours never gets the role: put back (the stock holder never lost it), said
         SetupEngineRun.FakeTv t5 = sticky(); t5.removeIgnored = true; List<String> s5 = new ArrayList<>();
-        SetupEngine.Result r5 = SetupEngineRun.engine(t5, new SetupEngineRun.Mem(), new SetupEngineRun.Dead(), s5).home();
+        SetupEngine.Result r5 = on(SetupEngineRun.engine(t5, new SetupEngineRun.Mem(), new SetupEngineRun.Dead(), s5)).home();
         System.out.println("H5 " + r5.status + " role=" + t5.roleHolder + " said=" + String.join("|", s5).contains(HomeRole.ADD_FAILED));
         // H6: the role's holder is the setup wizard: never taken off
         SetupEngineRun.FakeTv t6 = sticky(); t6.roleHolder = "com.google.android.tungsten.setupwraith";
-        SetupEngine.Result r6 = SetupEngineRun.engine(t6, new SetupEngineRun.Mem(), new SetupEngineRun.Dead(), new ArrayList<>()).home();
+        SetupEngine.Result r6 = on(SetupEngineRun.engine(t6, new SetupEngineRun.Mem(), new SetupEngineRun.Dead(), new ArrayList<>())).home();
         System.out.println("H6 " + r6.status + " removes=" + t6.count("cmd role remove-role-holder") + " records=" + t6.count("printf"));
         // H7: Android 9 (no role): the protected way is never taken
         SetupEngineRun.FakeTv t7 = sticky(); t7.sdk = "28";
-        SetupEngineRun.engine(t7, new SetupEngineRun.Mem(), new SetupEngineRun.Dead(), new ArrayList<>()).home();
+        on(SetupEngineRun.engine(t7, new SetupEngineRun.Mem(), new SetupEngineRun.Dead(), new ArrayList<>())).home();
         System.out.println("H7 removes=" + t7.count("cmd role remove-role-holder") + " records=" + t7.count("printf"));
         // H8: add alone works (the usual TV): nothing is recorded or taken off
         SetupEngineRun.FakeTv t8 = SetupEngineRun.tv(); t8.sdk = "30";
-        SetupEngineRun.engine(t8, new SetupEngineRun.Mem(), new SetupEngineRun.Dead(), new ArrayList<>()).home();
+        on(SetupEngineRun.engine(t8, new SetupEngineRun.Mem(), new SetupEngineRun.Dead(), new ArrayList<>())).home();
         System.out.println("H8 removes=" + t8.count("cmd role remove-role-holder") + " records=" + t8.count("printf"));
 
+        // H9: the switch off (the default): a TV where add alone does not take is never touched by the protected way; the switch goes on as before
+        SetupEngineRun.FakeTv t9 = sticky();
+        SetupEngineRun.engine(t9, new SetupEngineRun.Mem(), new SetupEngineRun.Dead(), new ArrayList<>()).home();
+        System.out.println("H9 removes=" + t9.count("cmd role remove-role-holder") + " records=" + t9.count("printf") + " role=" + t9.roleHolder);
         // the rescue app: the recorded holder gets the role back, then the record is let go
         Set<String> inst = new LinkedHashSet<>(Arrays.asList("com.tcl.cyberui", "sa.urtv.home"));
         RescuePlan.Plan p = RescuePlan.plan(inst, new LinkedHashSet<String>(), null, "", "com.tcl.cyberui\n");

@@ -24,7 +24,7 @@ pr = eng[eng.index("private Result protectedRole("):eng.index("private Result pu
 pb = eng[eng.index("private Result putRoleBack("):]
 pb = pb[:pb.index("\n    }\n")]
 check("the protected way is taken only after add alone failed (Android 10+), on the keep-the-stock-home switch",
-      "if (KEEP_STOCK_ON && HomeRole.addAloneFailed(sdkNow(), role.code, roleHolder(), SELF)) return protectedRole(" in sw
+      "if (KEEP_STOCK_ON && protectedRoleOn && HomeRole.addAloneFailed(sdkNow(), role.code, roleHolder(), SELF)) return protectedRole(" in sw
       and sw.index('sh.run("cmd role add-role-holder --user 0 android.app.role.HOME " + SELF);') < sw.index("HomeRole.addAloneFailed(")
       and "static final int MIN_SDK = 29;" in hr and "return sdk >= MIN_SDK && (addCode != 0 || !self.equals(holderAfter));" in hr)
 check("rule 2: the safety switch is armed (and its deadline on disk) before the switch reaches the protected way", sw.index("deadman.arm(SAFETY_SECONDS)") < sw.index("protectedRole(stock"))
@@ -79,5 +79,9 @@ check("H7 Android 9 (no role): the protected way never runs", got.get("H7") == "
 check("H8 add alone works (most TVs): nothing recorded or taken off", got.get("H8") == "H8 removes=0 records=0", got.get("H8"))
 check("the rescue: the recorded holder gets the role (another maker's home, or Google's), then the record is let go; none recorded: untouched",
       got.get("RESCUE") == f"RESCUE com.tcl.cyberui true clear=true google={L} clear=true none=true", got.get("RESCUE"))
+check("opt-in: off by default (a field, false), on only with the tester's switch (dock.sh debug homerole on → DebugFlags), documented in SETTINGS.md",
+      "    boolean protectedRoleOn;" in eng and 'engine.protectedRoleOn = sa.urtv.home.DebugFlags.on(c, "homerole");' in text(SETUP / "SetupSession.java")
+      and '"homerole"' in text(HOME / "DebugFlags.java") and "|homerole)" in text(ROOT / "optimize/dock.sh") and "dock.sh debug homerole on" in text(ROOT / "docs/SETTINGS.md"))
+check("H9 the switch off (the default): the protected way never runs, the stock holder keeps the role", got.get("H9") == f"H9 removes=0 records=0 role={L}", got.get("H9"))
 print("FAILED" if failed else "all passed")
 sys.exit(1 if failed else 0)

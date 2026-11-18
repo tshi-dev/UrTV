@@ -158,7 +158,7 @@ check("4.4 (R2): the end is written for every full run that ends, let go when a 
       and "endNotSeen(app);" in SH and 'store.put(SetupRunner.END_FILE, "bad told\\n"' in SH)
 check("4.4: the full measure is a tester's switch only (dock.sh debug fullmeasure, DebugFlags), no button; the PC's is run.sh --measure",
       'o.fullMeasure = sa.urtv.home.DebugFlags.on(this, "fullmeasure");' in SA and '"fullmeasure"' in (ROOT / "android/launcher/src/main/java/sa/urtv/home/DebugFlags.java").read_text(encoding="utf-8")
-      and "|fullmeasure)" in (ROOT / "optimize/dock.sh").read_text(encoding="utf-8") and "dock.sh debug fullmeasure on" in (ROOT / "docs/SETTINGS.md").read_text(encoding="utf-8"))
+      and "|fullmeasure|" in (ROOT / "optimize/dock.sh").read_text(encoding="utf-8") and "dock.sh debug fullmeasure on" in (ROOT / "docs/SETTINGS.md").read_text(encoding="utf-8"))
 check("R17: the TV ignored the restart (the same boot after the resume): it is NOT asked again; the reading is taken without one",
       got.get("R17") == "R17 reboots=1 kinds=[before now] beforeDone=true", got.get("R17"))
 check("R18: a fresh install is refused unless the APK is signed with this app's own key; nothing is installed or recorded then",

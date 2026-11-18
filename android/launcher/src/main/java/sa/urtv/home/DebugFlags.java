@@ -27,7 +27,7 @@ public final class DebugFlags {
     private DebugFlags() { }
 
     static final String CHANGED = "sa.urtv.home.DEBUG_CHANGED";
-    static final String[] NAMES = {"traynoglass", "nopillpanel", "nowifimark", "nosnapshot", "nocardglass", "nokeyfilter", "keytrace", "nolift", "noglow", "noshine", "noscale", "notitle", "plainfocus", "nobackdrop", "radioslow", "fullmeasure"};
+    static final String[] NAMES = {"traynoglass", "nopillpanel", "nowifimark", "nosnapshot", "nocardglass", "nokeyfilter", "keytrace", "nolift", "noglow", "noshine", "noscale", "notitle", "plainfocus", "nobackdrop", "radioslow", "fullmeasure", "homerole"};
 
     private static SharedPreferences sp(Context c) { return c.getApplicationContext().getSharedPreferences("debug_flags", Context.MODE_PRIVATE); }
 
