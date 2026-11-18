@@ -97,10 +97,24 @@ p, rc, out, led = run({"TV_ACTS": "com.tcl.bi/.LiveTv", "INPUT_PKGS": "com.tcl.l
 check("disable.sh: what the handler guard and the input guard leave on are both in inputs-left.txt (community.sh does not count them as applied)",
       rc == 0 and sorted((p.tree / "optimize/run/inputs-left.txt").read_text().split()) == ["com.tcl.bi", "com.tcl.logkit"]
       and not any("disable-user" in c and c.endswith((" com.tcl.bi", " com.tcl.logkit")) for c in p.changes("sh")), (out, p.changes("sh")))
-for knob in ("NO_SETTINGS", "SILENT_HANDLERS"):
-    p, rc, out, led = run({knob: "yes"})
-    check(f"disable.sh ({knob}): the TV names no Settings app or drops the answer: a !! line, a non-zero exit and NOT ONE disable command (fail closed)",
+for name, env in (("SILENT_HANDLERS", {"SILENT_HANDLERS": "yes"}), ("NO_SETTINGS and NO_HOMES", {"NO_SETTINGS": "yes", "NO_HOMES": "yes"})):
+    p, rc, out, led = run(env)
+    check(f"disable.sh ({name}): the TV drops the answer or names neither a Settings app nor a Home app: a !! line, a non-zero exit and NOT ONE disable command (fail closed)",
           rc == 1 and "!! disable.sh: the TV did not say which apps open its Settings and its channels" in out and p.changes("sh") == [] and not led, (rc, out, p.changes("sh"), led))
+p, rc, out, led = run({"NO_SETTINGS": "yes"})
+check("disable.sh (review F4): a TV whose own Settings app does not declare android.settings.SETTINGS but names its Home apps: the list goes on (not a stop for good)",
+      rc == 0 and led == ["com.tcl.bi", "com.tcl.logkit"] and "!! disable.sh" not in out, (rc, out, led))
+p, rc, out, led = run({"SDK": "23"})
+check("disable.sh (review F1): Android 6 (no `cmd package`): nothing from the list is turned off, with an Arabic note, exit 0 (the setup goes on), none counted as applied",
+      rc == 0 and "!! disable.sh" not in out and "على أندرويد 6 وأقدم" in out and not led
+      and not any("disable-user" in c and c.endswith((" com.tcl.bi", " com.tcl.logkit")) for c in p.changes("sh"))
+      and {"com.tcl.bi", "com.tcl.logkit"} <= set((p.tree / "optimize/run/inputs-left.txt").read_text().split()), (rc, out, led, p.changes("sh")))
+eng = (ROOT / "android/launcher/src/main/java/sa/urtv/home/setup/SetupEngine.java").read_text(encoding="utf-8")
+fo = eng[eng.index("Result factoryOff()"):eng.index("Result restoreFactory()")]
+check("review F2: «عطّل واجهة المصنع» asks the TV first (nothing changed when it does not say), never turns off a stock home that opens Settings or channels, "
+      "and offers «رجّع واجهة المصنع» once the stock home is off even if the list step failed",
+      fo.index("InputGuard.handlers(text(InputGuard.HANDLERS))") < fo.index("remember(") < fo.index("Result h = home();")
+      and "if (handlers.contains(stockPkg)) return failed(" in fo and fo.index("store.put(FACTORY") < fo.index("if (d.status == Status.FAILED) return d;"), "")
 check("the handler guard's !! line is in SETUP-PROMPT's table «When something goes wrong»",
       "`!! disable.sh: the TV did not say which apps open its Settings and its channels" in (ROOT / "docs/SETUP-PROMPT.md").read_text(encoding="utf-8"))
 check("the hung case says how to restart the TV (tv.py --reboot, never a plain reboot)", "optimize/venv/bin/python -I optimize/tv.py --reboot" in sh)

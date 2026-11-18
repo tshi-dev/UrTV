@@ -1117,6 +1117,10 @@ final class SetupEngine {
         FactoryOffer o = factoryOffer();
         if (o.refusal != null) return failed(o.refusal);
         String stockPkg = o.stock.substring(0, o.stock.indexOf('/'));
+        // 4.3.6 (review F2): the TV is asked before anything changes; a stock home that opens the TV's Settings or channels is never turned off
+        Set<String> handlers = InputGuard.handlers(text(InputGuard.HANDLERS));
+        if (handlers == null) return failed(InputGuard.HANDLERS_SAID);
+        if (handlers.contains(stockPkg)) return failed("واجهة المصنع في هذا التلفزيون هي اللي تفتح إعداداته أو قنواته، فما عطّلناها. ما تغيّر شيء.");
         boolean stockWasOn = o.packages.contains(stockPkg);   // the offer lists it only when it was on: what this step turns off is in the ledger, whoever runs the command
         if (stockWasOn) remember(ledgerNames(store.get("disabled-by-us.txt")), java.util.Collections.singletonList(stockPkg));   // written BEFORE any command
         Result h = home();
@@ -1128,8 +1132,8 @@ final class SetupEngine {
             if (off == null || !off.contains(stockPkg)) return failed("ما قبل التلفزيون إيقاف الشاشة الأصلية. ما تغيّر شيء مهم؛ «رجّع واجهة المصنع» يرجّع كل ما أوقفناه.");
         }
         Result d = debloat();
+        store.put(FACTORY, "on " + stamp + "\n");   // the stock home is off now: «رجّع واجهة المصنع» is offered even when the list step failed (review F2)
         if (d.status == Status.FAILED) return d;
-        store.put(FACTORY, "on " + stamp + "\n");
         return done("عطّلنا واجهة المصنع (تعطيل لا حذف). «رجّع واجهة المصنع» يرجّعها بضغطة وحدة.");
     }
 

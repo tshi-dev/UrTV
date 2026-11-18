@@ -23,28 +23,31 @@ final class InputGuard {
      * They stay on whatever a list says: a vendor's Settings or Live TV app taken off leaves no way back to the inputs or the network (Clean Your
      * TV's handler guard, github.com/Gathin23/cleanyourtv, MIT). The command is the script's, to the letter (tests/input_guard_test.py).
      */
-    static final String HANDLERS = "echo \"== settings\"; cmd package query-activities --brief -a android.settings.SETTINGS 2>/dev/null; echo \"== tv\"; for d in content://android.media.tv/channel/1 content://android.media.tv/passthrough/1; do cmd package query-activities --brief -a android.intent.action.VIEW -d $d 2>/dev/null; done; cmd package query-activities --brief -a android.intent.action.VIEW -d content://android.media.tv/channel/1 -t vnd.android.cursor.item/channel 2>/dev/null; cmd package query-activities --brief -a android.media.tv.action.SETUP_INPUTS 2>/dev/null; echo END_OF_LIST";
+    static final String HANDLERS = "echo \"== sdk $(getprop ro.build.version.sdk)\"; echo \"== settings\"; cmd package query-activities --brief -a android.settings.SETTINGS 2>/dev/null; echo \"== tv\"; for d in content://android.media.tv/channel/1 content://android.media.tv/passthrough/1; do cmd package query-activities --brief -a android.intent.action.VIEW -d $d 2>/dev/null; done; cmd package query-activities --brief -a android.intent.action.VIEW -d content://android.media.tv/channel/1 -t vnd.android.cursor.item/channel 2>/dev/null; cmd package query-activities --brief -a android.media.tv.action.SETUP_INPUTS 2>/dev/null; echo \"== home\"; cmd package query-activities --brief -a android.intent.action.MAIN -c android.intent.category.HOME 2>/dev/null; echo END_OF_LIST";
 
     static final String HANDLERS_LEFT = "تركنا شغّالاً ما يفتح إعدادات التلفزيون أو قنواته أو مداخله: ";
     static final String HANDLERS_SAID = "لم يقل التلفزيون أي التطبيقات تفتح إعداداته وقنواته، فما أوقفنا شيئاً. جرّب مرة ثانية.";
 
-    /** The packages that answer those intents; null when the end marker is missing or no app answers Settings (the TV did not say: nothing is turned off). */
+    /**
+     * The packages that answer those intents (the «== settings» and «== tv» parts; «== home» only proves the TV answered); null when the end
+     * marker is missing or the TV named neither a Settings app nor a Home app (it did not say: nothing is turned off).
+     */
     static Set<String> handlers(String text) {
         if (text == null) return null;
-        boolean end = false, settings = false, inSettings = false;
+        boolean end = false, any = false;
+        String section = "";
         Set<String> out = new LinkedHashSet<>();
         for (String raw : text.replace("\r", "").split("\n")) {
             String l = raw.trim();
-            if (l.equals("END_OF_LIST")) { end = true; inSettings = false; }
-            else if (l.equals("== settings")) inSettings = true;
-            else if (l.equals("== tv")) inSettings = false;
+            if (l.equals("END_OF_LIST")) { end = true; section = ""; }
+            else if (l.startsWith("== ")) section = l.substring(3);
             else if (l.matches("[A-Za-z0-9_.]+/[A-Za-z0-9_.$]+")) {
                 String pkg = l.substring(0, l.indexOf('/'));
-                if (inSettings) settings = true;
-                if (!pkg.startsWith("sa.urtv.")) out.add(pkg);
+                if (section.equals("settings") || section.equals("home")) any = true;
+                if ((section.equals("settings") || section.equals("tv")) && !pkg.startsWith("sa.urtv.")) out.add(pkg);
             }
         }
-        return end && settings ? out : null;
+        return end && any ? out : null;
     }
 
     /** The command for these packages (bare package names: the callers check them). */
