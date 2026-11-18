@@ -1,0 +1,4 @@
+         1795038453.153  3291  3291 I wm_on_paused_called: [239571037,sa.urtv.screensaver.SettingsActivity,performPause]
+         1795038453.165  3334  3334 I wm_on_restart_called: [216335404,sa.urtv.home.MainActivity,performRestartActivity]
+         1795038453.211  3334  3334 I wm_on_resume_called: [216335404,sa.urtv.home.MainActivity,RESUME_ACTIVITY]
+         1795038453.468  3291  3291 I wm_on_destroy_called: [239571037,sa.urtv.screensaver.SettingsActivity,performDestroy]
