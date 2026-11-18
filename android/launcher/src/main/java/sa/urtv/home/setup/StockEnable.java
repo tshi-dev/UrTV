@@ -12,8 +12,9 @@ final class StockEnable {
 
     static final String WRAITH = "com.google.android.tungsten.setupwraith";
 
-    static boolean run(SetupEngine.Shell sh, String pkg) throws IOException {
-        if (pkg == null || pkg.equals(WRAITH) || !Arrays.asList(sa.urtv.home.StockHome.known()).contains(pkg)) return false;
+    /** {@code known}: the known stock homes (StockHome.known(), passed in: this file stays free of the home package for the pure tests) */
+    static boolean run(SetupEngine.Shell sh, String pkg, String[] known) throws IOException {
+        if (pkg == null || pkg.equals(WRAITH) || known == null || !Arrays.asList(known).contains(pkg)) return false;
         sh.run("pm enable " + pkg);
         String off = sh.run("pm list packages -d; echo END_OF_LIST").output;
         return off != null && off.contains("END_OF_LIST") && !Arrays.asList(off.replace("\r", "").split("\n")).contains("package:" + pkg);
