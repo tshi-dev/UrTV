@@ -194,4 +194,16 @@ adb exec-out screencap -p > "$OUT/settings-one-form-look.png"
 # inside the settings: does the screen itself change at once (its rows, its look, its preview)
 case_settings 30-settings-preset-couch 12 --es preset couch
 case_settings 31-settings-preset-tv 12 --es preset tv
+
+# 4.4 beta 2 (the owner's test of build 525: a look's picture was cropped, its inset over it): each look and mix on the real home, whole, no inset,
+# for the pictures of «أشكال جاهزة» (android/app/src/main/assets/presets/*.jpg are made from these, 480x270)
+adb shell input keyevent HOME; sleep 2
+start sa.urtv.home/.MainActivity; sleep 4
+for look in tv couch clean family sport calm couch-prayers clean-icons sport-night tv-glass; do
+  adb shell "am broadcast -n sa.urtv.screensaver/.SaverReceiver -a sa.urtv.screensaver.SET --es preset tv --es home_panel prayerrow,hourly" > /dev/null
+  [ "$look" = tv ] || adb shell "am broadcast -n sa.urtv.screensaver/.SaverReceiver -a sa.urtv.screensaver.SET --es preset $look" > /dev/null
+  sleep 12
+  adb exec-out screencap -p > "$OUT/look-$look.png"
+done
+adb shell "am broadcast -n sa.urtv.screensaver/.SaverReceiver -a sa.urtv.screensaver.SET --es preset tv" > /dev/null
 echo done

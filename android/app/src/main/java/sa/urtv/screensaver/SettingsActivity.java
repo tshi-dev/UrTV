@@ -897,6 +897,7 @@ public class SettingsActivity extends Activity {
             if (i == HEAD_SIMPLE) { names[k] = "أشكال بسيطة"; about[k] = "الرئيسية فقط، والإعدادات كما هي"; continue; }
             if (i == MIX) { names[k] = "تركيبات مقترحة"; about[k] = "شكل من الستة مع تغيير أو اثنين"; pics[k] = "combos"; continue; }
             names[k] = Prefs.PRESET_NAMES[i]; about[k] = Prefs.PRESET_ABOUT[i]; pics[k] = keys[k] = Prefs.PRESETS[i];
+            if (Prefs.PRESETS[i].equals(prefs.preset()) && prefs.presetCombo().isEmpty()) about[k] = String.format(java.util.Locale.ROOT, "الحالي، %s", about[k]);   // the owner: the one on now says so
         }
         final FrameLayout frame = new FrameLayout(this);
         final LinearLayout box = new LinearLayout(this);
@@ -944,7 +945,7 @@ public class SettingsActivity extends Activity {
         });
         box.addView(lv, new LinearLayout.LayoutParams(0, dp(420), 1f));
         final ImageView pic = new ImageView(this);
-        pic.setScaleType(ImageView.ScaleType.CENTER_CROP);
+        pic.setScaleType(ImageView.ScaleType.FIT_CENTER);   // the owner: a look's picture whole, never cropped
         pic.setOutlineProvider(new ViewOutlineProvider() {
             @Override public void getOutline(View v, Outline o) { o.setRoundRect(0, 0, v.getWidth(), v.getHeight(), dp(18)); }
         });
@@ -982,6 +983,7 @@ public class SettingsActivity extends Activity {
         dialog.setOnShowListener(d -> {
             dress(dialog);
             dialog.getWindow().setLayout(Math.min(getResources().getDisplayMetrics().widthPixels - dp(48), dp(940)), android.view.ViewGroup.LayoutParams.WRAP_CONTENT);
+            MixFocus.calm(dialog.getWindow());   // the owner: a quiet backdrop, the settings page behind does not show through
             lv.requestFocus();
             lv.setSelection(prefs.presetCombo().isEmpty() ? nowAt : mixAt);
             update.run();
@@ -1156,7 +1158,7 @@ public class SettingsActivity extends Activity {
             h.setTypeface(font("Thmanyah-Medium"));
             panel.addView(h);
             TextView sub = new TextView(SettingsActivity.this);
-            sub.setText(conv("كل واحدة شكل من الستة مع تغيير أو اثنين؛ اختيارها يضبطها كلها"));
+            sub.setText(conv("أربع تركيبات، كل وحدة شكل جاهز مع تغيير أو اثنين؛ اختيارها يضبطها كلها"));
             sub.setTextColor(look.sub);
             sub.setTextSize(TypedValue.COMPLEX_UNIT_SP, 13);
             sub.setTypeface(font("Thmanyah-Regular"));
@@ -1164,14 +1166,31 @@ public class SettingsActivity extends Activity {
             LinearLayout row = new LinearLayout(SettingsActivity.this);
             row.setOrientation(LinearLayout.HORIZONTAL);
             row.setLayoutDirection(Dir.layout());
+            // 4.4 beta 2 (the owner's test of build 525): every mix reachable, the list scrolls with the focus and says where it is («٢ من ٤»)
+            android.widget.HorizontalScrollView strip = new android.widget.HorizontalScrollView(SettingsActivity.this);
+            strip.setHorizontalScrollBarEnabled(false);
+            strip.setHorizontalFadingEdgeEnabled(true);
+            strip.setFadingEdgeLength(dp(40));
+            strip.addView(row);
+            final TextView where = new TextView(SettingsActivity.this);
+            where.setTextColor(look.sub);
+            where.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
+            where.setTypeface(font("Thmanyah-Regular"));
+            where.setPadding(0, dp(8), 0, 0);
+            final String now = prefs.presetCombo();
             for (final String[] c : Prefs.COMBOS) {
+                final int at = cards.size();
                 LinearLayout card = new LinearLayout(SettingsActivity.this);
                 card.setOrientation(LinearLayout.VERTICAL);
                 card.setPadding(dp(7), dp(7), dp(7), dp(9));
                 card.setFocusable(true);
-                card.setBackground(GlassPaint.focused(SettingsActivity.this, look, 14));
+                card.setBackground(MixFocus.card(SettingsActivity.this, look, 14));   // the owner: at rest a quiet panel, focused the fill with a white ring
+                card.setOnFocusChangeListener((v, has) -> {
+                    if (!has) return;
+                    where.setText(conv(String.format(java.util.Locale.ROOT, "التركيبة %s من %s", at + 1, Prefs.COMBOS.length)));
+                });
                 ImageView im = new ImageView(SettingsActivity.this);
-                im.setScaleType(ImageView.ScaleType.CENTER_CROP);
+                im.setScaleType(ImageView.ScaleType.FIT_CENTER);   // the whole picture, never cropped
                 im.setClipToOutline(true);
                 im.setOutlineProvider(new ViewOutlineProvider() {
                     @Override public void getOutline(View v, Outline o) { o.setRoundRect(0, 0, v.getWidth(), v.getHeight(), dp(10)); }
@@ -1190,6 +1209,14 @@ public class SettingsActivity extends Activity {
                 a.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12);
                 a.setTypeface(font("Thmanyah-Regular"));
                 card.addView(a, new LinearLayout.LayoutParams(dp(192), -2));
+                if (c[0].equals(now)) {   // the owner: the one on now says so
+                    TextView cur = new TextView(SettingsActivity.this);
+                    cur.setText(conv("الحالي"));
+                    cur.setTextColor(focusColors(MixFocus.NOW, MixFocus.NOW_ON_FOCUS));
+                    cur.setTextSize(TypedValue.COMPLEX_UNIT_SP, 13);
+                    cur.setTypeface(font("Thmanyah-Medium"));
+                    card.addView(cur, new LinearLayout.LayoutParams(dp(192), -2));
+                }
                 card.setOnClickListener(v -> { dialog.dismiss(); applyCombo(c[0]); });
                 card.setOnKeyListener((v, code, e) -> {   // up from a mix: moving away closes it, the focus back on the tile
                     if (code == android.view.KeyEvent.KEYCODE_DPAD_UP && e.getAction() == android.view.KeyEvent.ACTION_DOWN) { close(); return true; }
@@ -1201,7 +1228,8 @@ public class SettingsActivity extends Activity {
                 row.addView(card, cp);
                 cards.add(card);
             }
-            panel.addView(row);
+            panel.addView(strip, new LinearLayout.LayoutParams(-1, -2));
+            panel.addView(where);
             FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(-1, -1);
             frame.addView(panel, lp);
             panel.setVisibility(View.INVISIBLE);
@@ -1216,7 +1244,9 @@ public class SettingsActivity extends Activity {
             shown = true;
             panel.setVisibility(View.VISIBLE);
             panel.post(() -> {
-                cards.get(0).requestFocus();
+                int at = 0;   // the focus on the mix on now, else the first
+                for (int i = 0; i < Prefs.COMBOS.length; i++) if (Prefs.COMBOS[i][0].equals(prefs.presetCombo())) at = i;
+                cards.get(at).requestFocus();
                 animate(true, null);
             });
         }
@@ -1229,7 +1259,7 @@ public class SettingsActivity extends Activity {
             animate(false, () -> {
                 panel.setVisibility(View.INVISIBLE);
                 list.requestFocus();
-                list.setSelection(Prefs.PRESETS.length - 1);   // the focus to the look above the tile: it does not open again at once
+                list.setSelection(list.getCount() - 2);   // the focus to the look above the tile (the tile is last): it does not open again at once
             });
             return true;
         }
@@ -3246,6 +3276,7 @@ public class SettingsActivity extends Activity {
         dialog.setOnShowListener(d -> {
             dress(dialog);
             dialog.getWindow().setLayout(Math.min(getResources().getDisplayMetrics().widthPixels - dp(48), dp(940)), android.view.ViewGroup.LayoutParams.WRAP_CONTENT);
+            MixFocus.calm(dialog.getWindow());   // the owner: a quiet backdrop, the settings page behind does not show through
             lv.requestFocus();
             lv.setSelection(Math.max(0, selected));
             handler.postDelayed(update, 50);

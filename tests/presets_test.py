@@ -104,4 +104,21 @@ check("a full-design look with cards on the home asks once: keep them inside the
 check("without cards hides them, never loses them: kept in homePanelHidden, the look as chosen (not «مخصّص»), «رجّع بطاقاتك» and «شكلك المعتاد» bring them back",
       'sp.edit().putString("homePanelHidden", join(mine, ","))' in prefs and 'sp.edit().putString("presetApplied", presetNow()).apply();' in prefs
       and "void restoreHiddenCards()" in prefs and '.remove("homePanelHidden").apply();' in prefs and "static boolean fullDesign(String key) { return FULL_DESIGN_STYLE.containsKey(key); }" in prefs)
+# ---- 4.4 beta 2, the owner's test of build 525 («تركيبات مقترحة», FAIL on usability): focus, the one on now, a quiet backdrop, all reachable, never cropped
+mix = st[st.index("    private final class MixPanel {"):st.index("        /** the tile's centre in the panel's coordinates */")]
+mf = (APP / "MixFocus.java").read_text(encoding="utf-8")
+check("a) a mix card is a quiet panel at rest and the focus fill with a white 3 dp ring when focused (not the same fill on all four)",
+      "card.setBackground(MixFocus.card(SettingsActivity.this, look, 14));" in mix and "GlassPaint.focused(SettingsActivity.this, look, 14)" not in mix
+      and "s.addState(new int[] {android.R.attr.state_focused}, on);" in mf and "s.addState(new int[] {}, GlassPaint.panel(c, l, radiusDp));" in mf
+      and "on.setStroke(" in mf and "RING = 0xFFFFFFFF" in mf)
+check("a) the one on now says «الحالي» (the mix's card, and the look's line in the list), and the focus starts on it",
+      'cur.setText(conv("الحالي"));' in mix and "if (c[0].equals(now)) {" in mix and "Prefs.COMBOS[i][0].equals(prefs.presetCombo())) at = i;" in mix
+      and '"الحالي، %s"' in pick)
+check("b) the line counts what is there (four mixes), every mix is reachable in a strip that scrolls with the focus, and the place is said («التركيبة ٢ من ٤»)",
+      "أربع تركيبات" in mix and "من الستة" not in mix and "new android.widget.HorizontalScrollView" in mix and "setHorizontalFadingEdgeEnabled(true)" in mix
+      and '"التركيبة %s من %s", at + 1, Prefs.COMBOS.length' in mix and len(re.findall(r'^\s*\{"[a-z-]+", "', prefs.split("static final String[][] COMBOS = {")[1].split("};")[0], re.M)) == 4)
+check("c) the pickers sit over a deep dim: the busy page behind does not show through (the looks' picker and the cards' picker)",
+      st.count("MixFocus.calm(dialog.getWindow());") == 2 and "FLAG_DIM_BEHIND" in mf and "DIM = 0.85f" in mf)
+check("d) a look's or a mix's picture is shown whole, never cropped by the view (FIT_CENTER)",
+      "im.setScaleType(ImageView.ScaleType.FIT_CENTER);" in mix and "pic.setScaleType(ImageView.ScaleType.FIT_CENTER);" in pick and "CENTER_CROP" not in mix)
 sys.exit(1 if failed else 0)
