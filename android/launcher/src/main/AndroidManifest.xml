@@ -159,6 +159,13 @@
         android:supportsRtl="true"
         android:theme="@style/Home">
 
+        <!-- 4.3.5 (R7): what the home opens instead of its screen after it died twice right after starting (CrashLoop): plain views, the TV's own home one press away -->
+        <activity
+            android:name=".SafeActivity"
+            android:exported="false"
+            android:excludeFromRecents="true"
+            android:screenOrientation="landscape" />
+
         <activity
             android:name=".MainActivity"
             android:exported="true"

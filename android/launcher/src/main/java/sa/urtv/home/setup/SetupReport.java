@@ -211,6 +211,7 @@ final class SetupReport {
         out.add("Home: " + (home.matches("[A-Za-z0-9_.]+/[A-Za-z0-9_.$]+") ? home : "?"));
         String saver = tv.tail1("settings get secure screensaver_components").trim();
         out.add("Screensaver: " + (saver.matches("[A-Za-z0-9_.$/,]+") ? saver : "?"));
+        out.add("WebView: " + SetupEngine.webviewLine(tv.text("dumpsys webviewupdate")));   // 4.3.5: package and version (a TV without one: none)
         String vs = appver(SetupEngine.SAVER), vh = appver(SetupEngine.SELF);
         out.add("Versions: screensaver " + vs + ", home " + vh);
         if (installed != null) out.add("Extras: TV Bro " + (installed.contains(SetupInstall.TVBRO) ? "yes" : "no") + ", SmartTube " + (installed.contains(SetupInstall.SMARTTUBE) ? "yes" : "no"));

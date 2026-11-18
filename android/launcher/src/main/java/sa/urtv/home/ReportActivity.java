@@ -125,8 +125,9 @@ public class ReportActivity extends Activity {
     private static String webView() {
         try {
             PackageInfo p = android.webkit.WebView.getCurrentWebViewPackage();
-            if (p == null) return null;   // its build number (no versionName is read anywhere: tests/version_name_test.py)
-            return String.valueOf(Build.VERSION.SDK_INT >= 28 ? p.getLongVersionCode() : (long) p.versionCode);
+            if (p == null) return "none";   // 4.3.5: a TV without a WebView says so (the home runs without its card: WebViews)
+            // the package (4.3.5: a CVTE set's own WebView tells more than its number) and its build number (no versionName is read anywhere: tests/version_name_test.py)
+            return p.packageName + "-" + (Build.VERSION.SDK_INT >= 28 ? p.getLongVersionCode() : (long) p.versionCode);
         } catch (RuntimeException e) {
             return null;
         }
