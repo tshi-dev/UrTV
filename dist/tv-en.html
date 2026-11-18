@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <!-- the build: UTC time (YYYYMMDDHHMMSS) of the newest commit of the page's sources, put in by src/build.py. The app loads the page with the newer stamp (its own
      copy or a downloaded one), never by file time, and does not keep a download whose stamp is older than its own (Updater, PageStamp). -->
-<meta name="urtv-build" content="20261118055225">
+<meta name="urtv-build" content="20261118060730">
 <title>Your TV Screen</title>
 <style>
   @font-face{font-family:'Thmanyah';font-weight:300;font-style:normal;font-display:block;src:url("https://raw.githubusercontent.com/tshi-dev/UrTV/master/assets/fonts/Thmanyah-Light.woff2") format("woff2")}
@@ -838,7 +838,7 @@ html.lowram .photo.settle, html.lowram .week ul.flip li, html.lowram .mrow.flip 
 // 4.4 (a black-video report): a page left behind another app (a WebView we did not free, or a TV that keeps it) must not keep working for
 // hours: while the page is hidden every interval's work is skipped (the clock, the album, the panels, the photos, saveSnap, the fetches);
 // back in view, the clock and the panels catch up at once. The timers stay, so nothing has to be started again.
-let PAGE_SKIPPED = false;
+let PAGE_SKIPPED = false, PAGE_FULL = false;   // PAGE_FULL: the full screensaver (boot) runs, not the home's cards or a page of its own
 (function(){
   const real = window.setInterval.bind(window);
   window.setInterval = function(fn, ms, ...args){
@@ -851,9 +851,9 @@ let PAGE_SKIPPED = false;
     if(document.hidden || !PAGE_SKIPPED) return;
     PAGE_SKIPPED = false;
     try { if(typeof tickClock === 'function') tickClock(); } catch(e){}
-    try { if(typeof tickDates === 'function') tickDates(); } catch(e){}
+    try { if(PAGE_FULL && typeof tickDates === 'function') tickDates(); } catch(e){}   // the dates and the night only where boot() runs them (review F5: the national day's colours)
     try { if(typeof tickPrayer === 'function') tickPrayer(); } catch(e){}
-    try { if(typeof applyNight === 'function') applyNight(); } catch(e){}
+    try { if(PAGE_FULL && typeof applyNight === 'function') applyNight(); } catch(e){}
     try { if(typeof renderPanel === 'function') renderPanel(false); } catch(e){}
   });
 })();
@@ -4632,6 +4632,7 @@ function bootMatchPage(){
 }
 
 function boot(){
+  PAGE_FULL = true;
   if(CONFIG.lowram) document.documentElement.classList.add('lowram');
   pruneStorage();
   if(CONFIG.matchPage){ bootMatchPage(); return; }

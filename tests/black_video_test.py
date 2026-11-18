@@ -48,7 +48,7 @@ check("2. each frees or pauses its WebView when it leaves the screen", all(owner
 
 # 3. the page
 tpl = (ROOT / "src/template.html").read_text(encoding="utf-8")
-m = re.search(r"let PAGE_SKIPPED = false;\n\(function\(\)\{.*?\n\}\)\(\);", tpl, re.S)
+m = re.search(r"let PAGE_SKIPPED = false[^;]*;[^\n]*\n\(function\(\)\{.*?\n\}\)\(\);", tpl, re.S)
 check("3. the page has its hidden gate, before any interval is made", m is not None and tpl.index("let PAGE_SKIPPED") < tpl.index("setInterval(") if m else False)
 if not shutil.which("node") or m is None:
     print("SKIP the page on node")
