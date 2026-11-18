@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""4.4 beta 3 «الأذان محفوظ مسبقاً» (R-288): the usual and the Fajr adhan recordings are kept in the app's own files (not the cache Android may empty), checked for
+"""4.4 beta 3 «الأذان محفوظ مسبقاً» (R-302): the usual and the Fajr adhan recordings are kept in the app's own files (not the cache Android may empty), checked for
 from the home's minute tick on their own thread (an hour after a failed try, ten minutes in the last 45 before a prayer); at the prayer a voice that is not on
 the TV while offline, or whose stream fails, gives way to another saved voice; an adhan that could not play at all is said in «الأذان» for a day.
 AdhanKeep runs on a plain JVM; the wiring is read from the sources.
