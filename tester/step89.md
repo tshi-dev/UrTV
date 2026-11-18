@@ -11,3 +11,11 @@ TV: TCL G08, Android 14, 4.4 build 484, muted. Wi-Fi: connected.
 
 Findings so far: none blocking. Observation (not ours): com.tcl.ttvs is busy at idle.
 Still to do (need long runs or the remote): meminfo after 30 min, offline test, UX walk, settings tree.
+
+## part 2: memory after ~38 min idle (4.4 build 516, owner's look)
+| | t0 (22:23) | +38 min (23:01) |
+|---|---|---|
+| home PSS | 77 MB | 74 MB |
+| screensaver PSS | 63 MB | 61 MB |
+No growth, no leak, no new crash in the crash buffer, our apps not in the top CPU list (idle). Wi-Fi: connected.
+Offline test (Wi-Fi off 5 min) not run: adb goes over the network, switching Wi-Fi off cuts the tester's connection.
