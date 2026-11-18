@@ -81,4 +81,6 @@ filter5	other	off	ok	ok	28	on	Android 9: as before (another app, no stock home)
 filter5	home	off	low	lost	34	on	Android 14 (the Haier MatrixTV it was made for): as before
 lostask	26	tv				no	4.3.6: homeKeyLost is not asked on Android 8 (it was always «lost» there)
 lostask	28	box				no	4.3.6: nor on a box without Android TV's SystemUI (its panel action never resolves)
-lostask	28	tv				yes	an Android TV of 9 or newer: asked, as before
+lostask	28	tv				no	4.3.6 review F7: Android 9: not asked (the panel action is Android 11's; before it the answer was always «lost»)
+lostask	29	tv				no	4.3.6 review F7: Android 10: not asked either
+lostask	30	tv				yes	an Android TV of 11 or newer: asked, as before (the Haier MatrixTV is 14)

@@ -85,6 +85,7 @@ public class TypeService extends AccessibilityService {
         try {   // 4.3.6: never throws into Android's key dispatch; anything unexpected gives the key back untouched
             return keyEvent(e);
         } catch (Throwable t) {
+            log("settings key=error");   // one fixed word: never the key or the exception's text
             return false;
         }
     }
@@ -132,7 +133,7 @@ public class TypeService extends AccessibilityService {
 
     static boolean homeKeyLost(Context c) {
         try {
-            if (!SettingsKey.homeKeyLostApplies(Build.VERSION.SDK_INT, c.getPackageManager().hasSystemFeature(PackageManager.FEATURE_LEANBACK))) return false;   // 4.3.6: only an Android TV of 9 or newer
+            if (!SettingsKey.homeKeyLostApplies(Build.VERSION.SDK_INT, c.getPackageManager().hasSystemFeature(PackageManager.FEATURE_LEANBACK))) return false;   // 4.3.6: only an Android TV of 11 or newer (the panel action is Android 11's)
             boolean lost = c.getPackageManager().queryIntentActivities(new Intent(SettingsKey.NOTIFICATION_PANEL_ACTION), 0).isEmpty();
             if (lost) log("settings key=homelost"); else log("settings key=homeok");
             return lost;

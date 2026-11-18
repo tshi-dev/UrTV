@@ -87,9 +87,10 @@ check("the receiver-mode design is written down (docs/TVS.md)", "«وضع الر
 
 ts = (HOME / "TypeService.java").read_text(encoding="utf-8")
 check("4.3.6: TypeService asks for keys only through filterWanted(..., SDK_INT) (never below Android 9)", "SettingsKey.filterWanted(front, stockHome, lowRam, homeKeyLost, Build.VERSION.SDK_INT)" in ts)
-check("4.3.6: homeKeyLost is asked only on an Android TV (FEATURE_LEANBACK) of 9 or newer", "SettingsKey.homeKeyLostApplies(Build.VERSION.SDK_INT, c.getPackageManager().hasSystemFeature(PackageManager.FEATURE_LEANBACK))" in ts)
-ok = re.search(r"protected boolean onKeyEvent\(KeyEvent e\) \{\s*try \{[^}]*return keyEvent\(e\);\s*\} catch \(Throwable t\) \{\s*return false;", ts)
+check("4.3.6: homeKeyLost is asked only on an Android TV (FEATURE_LEANBACK) of 11 or newer", "SettingsKey.homeKeyLostApplies(Build.VERSION.SDK_INT, c.getPackageManager().hasSystemFeature(PackageManager.FEATURE_LEANBACK))" in ts)
+ok = re.search(r"protected boolean onKeyEvent\(KeyEvent e\) \{\s*try \{[^}]*return keyEvent\(e\);\s*\} catch \(Throwable t\) \{\s*(?:log\("settings key=error"\);[^\n]*\s*)?return false;", ts)
 check("4.3.6: onKeyEvent never throws into Android's key dispatch (catches everything and gives the key back)", bool(ok))
+check("4.3.6 review F8: the catch-all logs one fixed word, never the key or the exception", 'log("settings key=error");' in ts and "t.getMessage" not in ts)
 if not shutil.which("javac"):
     print("SKIP settings key cases: no javac here")
     sys.exit(1 if failed else 0)
