@@ -8,7 +8,7 @@ const fs = require('fs'), path = require('path');
     const p = await b.newPage({ viewport: small ? { width: 1280, height: 720 } : { width: 1920, height: 1080 }, deviceScaleFactor: 1 });
     await p.goto('file://' + path.join(__dirname, f), { waitUntil: 'networkidle' });
     await p.evaluate(() => document.fonts.ready);
-    await p.screenshot({ path: path.join(__dirname, '..', f.replace('.html', '.png')) });
+    await p.screenshot({ path: path.join(__dirname, '..', f.replace('.html', '.png')), fullPage: f.includes('matrix') });
     await p.close();
     console.log('rendered', f);
   }
