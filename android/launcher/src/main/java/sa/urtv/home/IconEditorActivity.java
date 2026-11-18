@@ -195,7 +195,7 @@ public final class IconEditorActivity extends Activity {
                 Bitmap ic = GlassArt.trim(GlassArt.bitmapOf(getPackageManager().getApplicationIcon(pkg), 256));
                 runOnUiThread(() -> { if (!alive) return; appIcon = ic; render(); });
             } catch (PackageManager.NameNotFoundException | RuntimeException e) {
-                runOnUiThread(this::finish);
+                runOnUiThread(() -> finish());   // the app is gone: nothing to change
             }
         });
         save.post(() -> ((View) src.getChildAt(0)).requestFocus());
