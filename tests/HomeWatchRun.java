@@ -28,6 +28,11 @@ public final class HomeWatchRun {
         check("while paused (30 s) a fight over ours is left", !k.decide(true, lx, home, stock, true, 13_750 + 20_000));
         check("while paused, the person's press over ANOTHER app is still brought (never counted)", k.decide(true, lx, home, stock, true, 13_750 + 20_000, false));
         check("after the 30 s: ours again", k.decide(true, lx, home, stock, true, 13_750 + HomeWatch.PAUSE_MS + 1));
+        HomeWatch r = new HomeWatch();
+        for (int i = 0; i < 6; i++) r.decide(true, lx, home, stock, true, 200_000 + i * 750L);
+        boolean wasPaused = r.paused(204_000);
+        r.reset();
+        check("4.4 beta 2: our home installed again: the pause the install's windows left is let go, the next fight brings ours", wasPaused && !r.paused(204_000) && r.decide(true, lx, home, stock, true, 204_100));
         HomeWatch m = new HomeWatch();
         boolean mash = true;
         for (int i = 0; i < 10; i++) { long t0 = 50_000 + i * 1_000L; mash &= m.decide(true, lx, home, stock, true, t0) && m.decide(true, lx, home, stock, true, t0 + 300); }

@@ -29,6 +29,7 @@ python3 tests/home_fix2_test.py   # 4.4 steps 87-88: the watch counts one bring 
 python3 tests/home_fix3_test.py   # 4.4 step 88 (build 386): R2g, never skip the home step, TCL appops, the result page, «تراجع»
 python3 tests/compact_test.py   # 4.4 compact: every size of the setup, update, install, rescue and add-on screens
 python3 tests/home_fix_test.py   # 4.4 step 86 B: the switch survives, the Home watch, one ADB key, «إلغاء» on the prompt, the small setup window
+python3 tests/home_update_key_test.py   # 4.4 beta 2: the first Home after an update of the home opens ours (the add-on's catch judged again)
 python3 tests/extras_test.py   # 4.3.3 «إضافات تلفزيونك»: the add-on with the accessibility service, the home without one
 python3 tests/stock_kept_test.py   # 4.3.3: the computer's home switch keeps the stock home and the wizard on; the factory provider
 python3 tests/cast_test.py   # «البث من الجوال»: a Chromecast keeps its setup wizard (the cast credentials); dock.sh cast on|off|status

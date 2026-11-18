@@ -65,6 +65,16 @@ final class HomeWatch {
 
     boolean paused(long now) { return now < pausedUntil; }
 
+    /**
+     * 4.4 beta 2 (the tester's first Home after an update): our home was replaced (installed again). The windows of the install (ours gone a moment, the
+     * stock home shown by Android meanwhile) are no fight of a firmware: the pause and the counted bursts they left are let go.
+     */
+    void reset() {
+        pausedUntil = 0;
+        lastBurst = 0;
+        java.util.Arrays.fill(brings, 0);
+    }
+
     /** the packages of the stock homes' HOME activities ("package/class") */
     static Set<String> packages(Set<String> stockHomes) {
         Set<String> out = new java.util.HashSet<>();

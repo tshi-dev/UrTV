@@ -41,12 +41,23 @@ public final class A11yHeal extends BroadcastReceiver {
         }
         final String why = intent != null && Intent.ACTION_MY_PACKAGE_REPLACED.equals(intent.getAction()) ? "replaced" : "boot";
         if ("replaced".equals(why)) UpdateCarry.after(app, "replaced");   // at once, before the wait (arms the alarms)
+        if ("replaced".equals(why)) rearm(app, "replaced");   // beta 2: the add-on's Home key catch judged again, now that we are installed
         final PendingResult pending = goAsync();
         new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
             @Override public void run() {
+                if ("replaced".equals(why)) rearm(app, "settled");   // and once more after the install's windows (the role back on ours)
                 try { check(app, why); } finally { pending.finish(); }
             }
         }, SETTLE_MS);
+    }
+
+    /** beta 2: Extras.rearmHomeKey on its own thread (a call into the add-on); a fixed word in the log */
+    static void rearm(final Context app, final String when) {
+        try {
+            new Thread(() -> Log.i(TAG, "add-on home key " + when + ": " + Extras.rearmHomeKey(app)), "addon-rearm").start();
+        } catch (RuntimeException e) {
+            Log.w(TAG, "add-on home key " + when + ": not started");
+        }
     }
 
     /** The home's first show in this process: the same check, a moment later. */

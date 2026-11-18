@@ -6,6 +6,7 @@ import android.app.SearchManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
@@ -68,6 +69,7 @@ public class ExtrasA11yService extends AccessibilityService {
 
     @Override protected void onServiceConnected() {
         running = this;
+        watchReplaced();   // beta 2: our home installed again (an update) re-arms the Home key catch and the watch
         stockHomes = stockHomeActivities(this);
         keyChoices = KeyApps.parse(getSharedPreferences("extras", MODE_PRIVATE).getString(ExtrasWords.KEY_APPS, ""));
         stockPackages = HomeWatch.packages(stockHomes);
@@ -90,7 +92,43 @@ public class ExtrasA11yService extends AccessibilityService {
         s.keyChoices = m;
         s.main.post(s::filterKeys);
     }
-    @Override public boolean onUnbind(Intent i) { running = null; return super.onUnbind(i); }
+    @Override public boolean onUnbind(Intent i) {
+        running = null;
+        if (replaced != null) { try { unregisterReceiver(replaced); } catch (RuntimeException ignored) { } replaced = null; }
+        return super.onUnbind(i);
+    }
+
+    /**
+     * 4.4 beta 2 (the tester, build 525: after an update of our home the FIRST Home press opened the stock home; after UrTV ran once, 3 of 3 ours): the
+     * key catch is judged when our home's window comes and goes, and while our package was being replaced Android's HOME was not ours for a moment, so
+     * the catch went off and nothing judged it again until our home came to the front. Now our home's install (ADDED or REPLACED of sa.urtv.home)
+     * lets the watch's pause go and judges the catch again, a moment later (the install's own windows first). Fixed words in the log only.
+     */
+    private android.content.BroadcastReceiver replaced;
+
+    private void watchReplaced() {
+        if (replaced != null) return;
+        replaced = new android.content.BroadcastReceiver() {
+            @Override public void onReceive(Context c, Intent i) {
+                android.net.Uri d = i == null ? null : i.getData();
+                if (d == null || !HOME_PKG.equals(d.getSchemeSpecificPart())) return;
+                Log.i("UrTVWatch", "home installed again catch judged again");
+                watch.reset();
+                main.removeCallbacks(rearm);
+                main.postDelayed(rearm, REARM_MS);
+            }
+        };
+        IntentFilter f = new IntentFilter();
+        f.addAction(Intent.ACTION_PACKAGE_ADDED);
+        f.addAction(Intent.ACTION_PACKAGE_REPLACED);
+        f.addDataScheme("package");
+        f.addDataSchemeSpecificPart(HOME_PKG, android.os.PatternMatcher.PATTERN_LITERAL);
+        try { registerReceiver(replaced, f); } catch (RuntimeException e) { replaced = null; Log.i("UrTVWatch", "home install watch failed"); }
+    }
+
+    /** after our home's install: the windows of the install have come and gone */
+    static final long REARM_MS = 1_500;
+    private final Runnable rearm = this::filterKeys;
     @Override public void onInterrupt() { }
 
     static boolean enabled() { return running != null; }
@@ -116,6 +154,7 @@ public class ExtrasA11yService extends AccessibilityService {
             filterKeys();
         }
         if (!stockPackages.contains(pkg)) return;   // any other app's window: nothing read further, nothing logged
+        if (!homeKeyFiltering() && homeKeyActive()) filterKeys();   // beta 2: the catch went off while ours was being installed; on again for the next press
         // 4.4 (step 86 B): every decision on a stock home's window is logged (the stock home's own class only), so a tester sees why. The watch
         // brings ours while the person's home is ours: Android's default (the role), or the setup's word (WANTED) when the TV took the role back
         boolean on = watchOn(this), chosen = oursChosen(), wantedNow = wanted(this), homeScreen = HomeWatch.homeScreen(pkg, cls, stockHomes);
@@ -196,6 +235,12 @@ public class ExtrasA11yService extends AccessibilityService {
 
     /** the catch acts: on, and the person's home is ours (the setup's word, or Android's default home); never over a home the person kept */
     private boolean homeKeyActive() { return homeKey(this) && (wanted(this) || oursChosen()); }
+
+    /** whether Android sends us the keys now (the catch can act) */
+    private boolean homeKeyFiltering() {
+        AccessibilityServiceInfo info = getServiceInfo();
+        return info != null && (info.flags & AccessibilityServiceInfo.FLAG_REQUEST_FILTER_KEY_EVENTS) != 0;
+    }
 
     static void setHomeKey(Context c, boolean on) {
         c.getSharedPreferences("extras", MODE_PRIVATE).edit().putBoolean(ExtrasWords.HOME_KEY, on).apply();
