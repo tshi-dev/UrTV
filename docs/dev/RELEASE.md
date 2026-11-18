@@ -11,7 +11,7 @@ only for the changed files, see «A fix after the review»).
 | 2 | **Regressions group green** | CI, or `bash tests/run.sh regressions` | `regressions.yml` run by hand on the branch (Actions → «Regressions gate» → ref = the sha): every guard of `docs/dev/REGRESSIONS.md`, the gate's rules, the API surface diff in the run's summary | a failed guard; a new UI-thread path to a cross-process call |
 | 3 | **Independent review, no blocker/high open** | a fresh reviewer (below) | `docs/dev/reviews/<version>.md`, `python3 .github/tools/review_gate.py` PASS | a blocker or high finding open, or accepted without the owner |
 | 4 | **Tester: RELEASE-SMOKE PASS** | the supervisor, through the tester | `tester/RELEASE-SMOKE.md` on the `apk-next` build of the sha, the report's S-01…S-19 lines | any FAIL |
-| 5 | **Owner OK** | the owner | their «OK» on the summary (steps 1–4, the API diff's new lines, the review's counts) | no OK |
+| 5 | **Owner OK** | the owner | their «OK» on the summary (steps 1–4, the API diff's new lines, the review's counts), and per new game: its line in `tests/regressions/games_released.txt` moves from «pending» to the version | no OK; a ready game «pending» and not held back (GameRegistry.HELD, the release switch) stops the publish (`games_release_test.py`) |
 | 6 | **master** | the supervisor | merge the sha, nothing else; android.yml runs checks and the gate (with step 3's check) again before it publishes | the publish stops by itself if 1–3 fail on master |
 
 CI enforces 1–3 on master by itself: `android.yml`'s `apk` job needs `checks` and `regressions` (with `release: true`, which runs
@@ -97,7 +97,11 @@ The rest are this checklist; the reviewer (step 3) and the supervisor confirm ea
 - [ ] **R8** the setup never turns off the stock home or the wizard that holds the Wi-Fi or cast credentials; protected packages stay on; a skip with a note, not `!!`.
 - [ ] **R13** Checks ran on every head that reaches next or master (a green «Build APKs» only means it compiled).
 - [ ] **R19** parallel branches merged in one integration worktree, both sides kept in shared registries (run.sh, the register, keep.txt); check.py with the real fonts and every test before a push to next.
-- [ ] **R20** no push to master, branch delete or GitHub reply without the owner (signed «— فريق UrTV»); commits as tshi-dev, no AI lines.
+- [ ] **R20** no push to master, branch delete or GitHub reply without the owner (signed «— فريق UrTV»). Who a commit is by is checked by
+  `tests/regressions/attribution_test.py` for every commit since the last release tag: no AI identity (Claude, Anthropic, a bot other than
+  github-actions) as author or committer and no «Co-Authored-By: Claude», «Claude-Session:» or «Generated with» line; our own commits by
+  tshi-dev, author and committer; a contributor keeps their own name, through a «Merge PR #N» commit by tshi-dev (honest credit). What
+  came before the rules is in its ALLOW with a reason; history is never rewritten.
 - [ ] **R22** no tester or person names in branch names; merged branches deleted.
 - [ ] **R23** a session stopped by its usage limit left one line of state in STEP.md.
 - [ ] **R24** spend: Sonnet workers, one fix round per batch, no polling.
