@@ -230,6 +230,17 @@ final class SetupEngine {
         }
         List<String> intended = new ArrayList<>();
         for (String p : pkgs) if (installed.contains(p) && !wasOff.contains(p)) intended.add(p);
+        if (!intended.isEmpty()) {   // disable.sh's handler guard (4.4): what opens the TV's Settings, channels or inputs stays on
+            Set<String> h = InputGuard.handlers(text(InputGuard.HANDLERS));
+            if (h == null) return failed(InputGuard.HANDLERS_SAID);
+            List<String> held = new ArrayList<>();
+            for (String p : intended) if (h.contains(p)) held.add(p);
+            if (!held.isEmpty()) {
+                out.line(InputGuard.HANDLERS_LEFT + String.join(" ", held));
+                pkgs = InputGuard.without(pkgs, new LinkedHashSet<>(held));
+                intended = InputGuard.without(intended, new LinkedHashSet<>(held));
+            }
+        }
         if (!intended.isEmpty()) {   // disable.sh's input guard: what the TV says drives an HDMI input or is a keyboard stays on
             InputGuard.Answer a = InputGuard.parse(text(InputGuard.command(intended)));
             if (a == null) return failed("لم يقل التلفزيون أي التطبيقات تشغّل مداخل HDMI أو لوحة المفاتيح، فما أوقفنا شيئاً. جرّب مرة ثانية.");
