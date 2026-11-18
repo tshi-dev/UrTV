@@ -2618,10 +2618,21 @@ async function loadEvents(){
 
 // Every followed team with something to show, two at a time; the page turns every 15 s.
 let MATCH_PAGE = 0, MATCH_PAGES = 1;
-// 4.4 the bar's games are built once a minute or when the data changes, not at every page turn (many leagues: hundreds of games, and a weak
-// TV's clock must not stutter every 10 s); the followed leagues' own games at most 48 (24 on a weak TV), the nearest first; a followed club's never cut
-let MATCH_REV = 0, MATCH_MEMO = {key: '', games: null};
+// 4.4 the followed leagues' games (hundreds with many leagues) are built once a minute, or when their data changes, not at every page turn
+// (a weak TV's clock must not stutter every 10 s): the memo holds while the minute, MATCH_REV (a live refresh), the live patches and the
+// very league objects are the same. At most 48 of them (24 on a weak TV), the nearest first. A followed club's own games are never memoized
+// (few, and their data changes in place: a result kept, a fixture moved on) and never cut
+let MATCH_REV = 0, LEAGUE_MEMO = {key: '', refs: [], evs: [], list: null};
 const MATCH_LEAGUE_MAX = () => CONFIG.lowram ? 24 : 48;
+function leagueShowMemo(now, shown){
+  const names = CONFIG.leagues.concat(CONFIG.tour ? ['tournaments'] : []), refs = names.map(n => LEAGUE_DATA[n]);
+  let lp = 0;
+  for(const k in LIVE_PATCH) lp += (LIVE_PATCH[k] && LIVE_PATCH[k].at) || 0;
+  const key = [Math.floor(now / 60000), MATCH_REV, lp, names.join(), (CONFIG.tourOff || []).join()].join('|'), m = LEAGUE_MEMO;
+  if(m.key !== key || m.refs.length !== refs.length || refs.some((r, i) => r !== m.refs[i] || (r && r.events) !== m.evs[i]))
+    LEAGUE_MEMO = {key, refs, evs: refs.map(r => r && r.events), list: leagueShow(now, new Set())};
+  return LEAGUE_MEMO.list.filter(g => !shown.has(g.ev.idEvent) && !shown.has(evKey(g.ev)));   // what a followed club already shows, as leagueShow itself leaves out
+}
 // Two games a page. Two games whose names do not fit side by side even at the smallest size and the short names
 // (a league has such pairs: «كهرباء الإسماعيلية × الاتحاد السكندري») are learnt here and shown one to a page from then on.
 const NARROW = new Set();
@@ -2643,13 +2654,9 @@ function matchesEmptyText(){
 const matchesStaleNote = () => MATCH_OK_AT && MATCH_FAIL_AT > MATCH_OK_AT ? fmtAgo(MATCH_OK_AT) : '';
 function renderMatches(turn){
   if(!SLOT_MATCHES) return;
-  const now = Date.now(), shown = new Set(), key = [Math.floor(now / 60000), MATCH_OK_AT, MATCH_REV, CONFIG.teamIds.join(), CONFIG.leagues.join()].join('|');
-  let games = MATCH_MEMO.key === key && MATCH_MEMO.games;
-  if(!games){
-    games = CONFIG.teamIds.map(id => matchSlot(id, now, shown)).filter(Boolean);
-    if(CONFIG.leagues.length) games = [...games, ...leagueShow(now, shown).slice(0, MATCH_LEAGUE_MAX())].sort(byRank);   // one order
-    MATCH_MEMO = {key, games};
-  }
+  const now = Date.now(), shown = new Set();
+  let games = CONFIG.teamIds.map(id => matchSlot(id, now, shown)).filter(Boolean);
+  if(CONFIG.leagues.length) games = [...games, ...leagueShowMemo(now, shown).slice(0, MATCH_LEAGUE_MAX())].sort(byRank);   // one order
   const live = focusGames(now, true);   // a followed team is playing: that game alone, big, until it ends
   const slots = live.length ? live.map(ev => gameBlock(ev, now, true))
     : [...games.map(g => g.html), ...CONFIG.events.map(k => eventSlot(k, now))].filter(Boolean);
