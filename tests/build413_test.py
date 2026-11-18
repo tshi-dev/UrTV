@@ -22,7 +22,7 @@ hk = svc.split("static boolean homeKey(Context c) {")[1].split("\n    }\n")[0]
 check("1. the catch: the person's switch wins once set, else on where Google TV's home is installed",
       "if (sp.contains(ExtrasWords.HOME_KEY)) return sp.getBoolean(ExtrasWords.HOME_KEY, false);" in hk and 'return installed(c, "com.google.android.apps.tv.launcherx");' in hk)
 check("1. it acts only while the person's home is ours", "private boolean homeKeyActive() { return homeKey(this) && (wanted(this) || oursChosen()); }" in svc
-      and "if (e.getKeyCode() == KeyEvent.KEYCODE_HOME && homeKeyActive()) return homeKeyCaught(e);" in svc and "|| homeKeyActive();" in svc)
+      and "if (e.getKeyCode() == KeyEvent.KEYCODE_HOME && homeKeyActive()) return homeKeyCaught(e);" in svc and "|| homeKeyActive());" in svc)
 check("1. the key filter follows when the person's home changes", "if (s != null) s.main.post(s::filterKeys);   // the Home key catch follows the person's home" in svc)
 check("1. the window watch is still there as the fallback", "watch.decide(on, pkg, cls, stockHomes, chosen || wantedNow, now, fight)" in svc)
 dock = read("optimize/dock.sh")

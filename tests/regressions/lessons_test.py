@@ -86,6 +86,7 @@ setup_core = [x.encode().decode("unicode_escape") for x in re.findall(r'"((?:[^"
 check("R12 the TV setup's core rules are core.txt's (optimize/gen_setup_lists.py)", setup_core == [c.pattern for c in core], (len(setup_core), len(core)))
 for p in ("com.android.sdksandbox", "com.android.location.fused"):
     check(f"R12 {p} is core (never turned off)", any(c.fullmatch(p) for c in core))
+check("R279 com.google.android.sdksandbox (the Google spelling) is core too", any(c.fullmatch("com.google.android.sdksandbox") for c in core))
 
 # R15
 aw = text(".github/workflows/android.yml")

@@ -388,6 +388,7 @@ python3 tests/crash_loop_test.py   # 4.3.5 (R7): two crashes right after start o
 python3 tests/api28_compile_test.py   # 4.3.5: the home compiles against Android 9 with every newer API behind a Build.VERSION check; the reports name the WebView
 python3 tests/black_video_test.py   # 4.3.5: no page of ours keeps working behind another app (the screensaver activity, every WebView owner, the page's hidden gate)
 node tests/es2017_parse.test.mjs   # #19: the built pages parse as ES2017 (Android 9 TVs stuck on WebView 66)
+python3 tests/api26_compile_test.py   # 4.3.6: the home against Android 8.0 (its minSdk): every newer API behind a version check for 27 or newer (a Percee OTT box)
 node tests/i18n_page_test.mjs   # dist/tv-en.html in a browser: left to right, no Arabic in its own words on any card
 #
 # English phase 3 (the home app): its new tests go right under this line
