@@ -101,7 +101,8 @@ public class MatchesActivity extends Activity {
         setContentView(web);
         web.postDelayed(reveal, 1500);   // a page that never finishes still shows what it has
         String event = getIntent().getStringExtra(EXTRA_EVENT);
-        HomeFollows.sync(this);   // 4.3.3 what the home kept while the screensaver could not take it goes to it now
+        final android.content.Context syncApp = getApplicationContext();   // 4.4 (QA-9, R1): handed over on a thread (a query and calls to the screensaver)
+        new Thread(() -> HomeFollows.sync(syncApp), "follows-sync").start();   // 4.3.3 what the home kept while the screensaver could not take it goes to it now
         String frag = HomeFollows.fragment(this, cfg.fragment);   // …and what it still keeps joins the page's lists
         web.loadUrl(HomePage.fresh(this, HomeCardChoice.matchesUrl(frag, event) + (cfg.pagesDark ? "&pagedark=1" : "")));   // «صفحات الأسهم والمباريات داكنة»: the page in its dark theme
         web.requestFocus();
