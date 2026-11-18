@@ -836,6 +836,7 @@
   #mp-side::-webkit-scrollbar{display:none}
   #mp-side .fg svg{width:1em;height:1em;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linejoin:round}
   #mp-side li.pin i{color:var(--fgr)}
+  #mp .mpsrc{margin:calc(var(--u)*12) calc(var(--u)*8) 0;font-size:calc(var(--u)*20);color:var(--fs)}   /* 4.5 the source under a list (CC BY-SA asks for it) */
   #mp-days{overflow:hidden}
   /* 4.3.3 a club's form: ف ت خ in their colours */
   .fm{display:inline-flex;gap:calc(var(--u)*10);font-size:calc(var(--u)*26);font-weight:700}
@@ -3073,7 +3074,7 @@ async function fetchT(url, ms){
 
 // 4.3.3 data: urtv-data first, the old branch second (docs/DATA-HOST.md, the apps' DataHost)
 const DATA_OLD = 'https://raw.githubusercontent.com/tshi-dev/UrTV/', DATA_NEW = 'https://raw.githubusercontent.com/tshi-dev/urtv-data/data/';
-const DATA_MAP = [['data-leagues/leagues/', 'football/leagues/'], ['data-catalogue/catalogue/', 'football/catalogue/'], ['data-archive/', 'football/archive/'],
+const DATA_MAP = [['data-leagues/leagues/', 'football/leagues/'], ['data-catalogue/catalogue/', 'football/catalogue/'], ['data-archive/', 'football/archive/'], ['data-honours/', 'football/honours/'],
   ['data-games/quiz/', 'games/quiz/'], ['data-games/games/', 'games/'], ['data-markets/markets/', 'markets/'], ['data-stations/stations/', 'stations/']];
 function dataUrls(u){
   const r = u.slice(DATA_OLD.length), m = u.startsWith(DATA_OLD) && DATA_MAP.find(m => r.startsWith(m[0]));
@@ -4837,6 +4838,7 @@ const FB_W = {
   am1:'ودقيقة', am2:'ودقيقتين', amFew:'و%s دقائق', amMany:'و%s دقيقة', taskText:'مباراة %s، تبدأ %s',
   table:'جدول الترتيب', results:'النتائج', noTable:'الترتيب غير متاح الآن', noTableL:'الترتيب غير متاح لهذا الدوري', pts:'%s نقطة', played:'لعب %s',
   h2hAll:'%s %s فوز، %s تعادل، %s %s', h2hIn:'في %s مواجهة', h2hMore:'كل المواجهات (%s)',
+  champs:'الأبطال', scorers:'الهدّافون',
   myLeagues:'دورياتي', add:'أضف دوريًا أو فريقًا', manage:'إعدادات فرقي', noTeams:'ما تتابع فريقًا بعد', noLeagues:'ما تتابع دوريًا بعد', allLands:'كل الدول',
   lgTeams:'فرق هذا الدوري', lgOpen:'الترتيب والنتائج', followedL:'أُضيف %s إلى دورياتك', unfollowedL:'أُزيل %s من دورياتك', on:'متابَع', find:'ابحث عن فريق', found:'نتائج البحث', typeName:'اكتب اسم الفريق', full:'وصلت للحد: ٨ دوريات', fullL:'هذا الحد الأعلى: ٢٤ دوريًا حتى يبقى التلفزيون سريعًا. أزل دوريًا لتضيف غيره', fullT:'هذا الحد الأعلى: ٤٠ فريقًا حتى يبقى التلفزيون سريعًا. أزل فريقًا لتضيف غيره', fullT20:'وصلت للحد: ٢٠ فريقًا',
   warnL:'إضافة أكثر من ٨ قد تبطّئ التلفزيون إذا كان ضعيف. موافق مرة ثانية: أضف، أو رجوع', warnT:'إضافة أكثر من ٢٠ قد تبطّئ التلفزيون إذا كان ضعيف. موافق مرة ثانية: أضف، أو رجوع', choose:'اختر دوريًا',
@@ -5127,7 +5129,11 @@ function lgName(id){
 }
 function mpLeagueView(v){
   const id = String(v.id), tab = v.tab || 0, now = Date.now(), groups = [];
-  const tabs = [FB_W.table, FB_W.results, FB_W.title].map((t, i) => ({t, on: i === tab, act: () => { v.tab = i; MP.l = MP.r = 0; mpRender(); }}));
+  const tabs = [FB_W.table, FB_W.results, FB_W.title, FB_W.champs, FB_W.scorers].map((t, i) => ({t, on: i === tab, act: () => { v.tab = i; MP.l = MP.r = 0; mpRender(); }}));
+  // 4.5 the side's seasons, a past season, «الأبطال» and «الهدّافون»: the honours part of dist/sports.js (SPORTS.hon), loaded beside the page
+  const H = SPORTS && SPORTS.hon, hv = H ? H.league(v, id, tab) : tab > 2 ? {pins: [], groups: [{key: 'h', name: tabs[tab].t, games: [], none: FB_W.loading}]} : {pins: []};
+  const pins = hv.pins || [];
+  if(hv.groups) return {title: lgName(id), tabs, pins, groups: hv.groups};
   const res = tab < 2 ? archWant('results/' + id + '.json') : null;
   if(tab === 1){
     const by = new Map();
@@ -5145,7 +5151,7 @@ function mpLeagueView(v){
     const sp = archWant('sports/' + id + '.json');
     const own = sp && !sp.cup && Array.isArray(sp.table) && sp.table.filter(x => x && /^\d+$/.test(String(x.id)) && x.p > 0);
     let rows = [], t = null;
-    if(own && own.length) rows = own.map((x, i) => mpItem(ar(i + 1) + '. ' + (x.ar || teamAr(x.n, String(x.id))), fw(FB_W.pts, ar(+x.pts || 0)) + '، ' + fw(FB_W.played, ar(+x.p || 0)),
+    if(own && own.length) rows = own.map((x, i) => mpItem(ar(i + 1) + '. ' + clubNm(x.ar, x.n, String(x.id)), fw(FB_W.pts, ar(+x.pts || 0)) + '، ' + fw(FB_W.played, ar(+x.p || 0)),
       () => mpGo({k: 'club', id: String(x.id)})));
     else if(sp !== undefined){   // the archive has no table of it (not there yet, a cup, a season not started): TheSportsDB's
       const g = fbGames().find(ev => String(ev.idLeague) === id && ev.strSeason), r0 = res && res.results && res.results[0];
@@ -5157,8 +5163,11 @@ function mpLeagueView(v){
     const waiting = sp === undefined || (!rows.length && t === undefined);
     groups.push({key: 't', name: FB_W.table, games: rows, none: waiting ? FB_W.loading : navigator.onLine === false ? FB_W.noTable : FB_W.noTableL});   // 4.4 (c): this league has none, said so
   }
-  return {title: lgName(id), tabs, groups};
+  return {title: lgName(id), tabs, groups, pins};
 }
+// 4.5 the names a file has in both languages: the page's own first (English: the English one; build.py EN_CODE)
+const clubNm = (a, en, id) => a || teamAr(en, id);
+const plNm = x => x.ar || x.en || '';
 // 4.3.3 the followed leagues' ids (a built-in one by its file's games, else by the archive's index)
 const mpLeagueIds = () => [...new Set(CONFIG.ownLeagues.map(n => catId(n) || lgIdOf(n)).filter(Boolean))];
 const LG_IDS = {};   // a league followed from the page: its token -> its id (before its file or the index say)
@@ -5294,8 +5303,8 @@ function mpRender(){
     }
     if(day !== MP.day){ MP.day = day; MP.d = MP.days.indexOf(day); MP.r = 0; MP.l = 0; }
   }
-  const groups = V ? V.groups : mpGroups(), pins = V ? [] : mpPins();
-  MP.leagues = pins.concat(groups);
+  const groups = V ? V.groups : mpGroups(), pins = V ? V.pins || [] : mpPins();   // 4.5 a view's own pins: a league's seasons
+  MP.leagues = pins.concat(V && pins.length ? [] : groups);   // 4.5 a view with seasons: the side is its seasons (the list's headings stay in the list)
   if(!V && MP.zone !== 'leagues' && groups.length){ let n = 0; MP.leagues.forEach((g, i) => { if(!g.pin && MP.r >= n) MP.l = i; n += g.games.length; }); }   // the side's lit row: the focused game's league, not a pin
   MP.l = Math.max(0, Math.min(MP.l, MP.leagues.length - 1));
   const shown = MP.only ? groups.slice(MP.l, MP.l + 1) : groups;   // a view of lists (the chooser): the side's chosen one alone
@@ -5311,11 +5320,12 @@ function mpRender(){
     return `<li class="${d === MP.day ? 'on' : ''}${ring(i)}">${word}</li>`;
   }).join(''));
   setHTML(document.getElementById('mp-side'), MP.leagues.map((g, i) =>
-    `<li class="${i === MP.l ? 'on' : ''}${g.pin ? ' pin' : ''}${MP.zone === 'leagues' && i === MP.l ? ' f' : ''}"><span>${esc(g.side || g.name)}</span><i>${g.pin ? fbGlyph('star') : ar(g.count != null ? g.count : g.games.length)}</i></li>`).join(''));
+    `<li class="${(g.pick ? g.sel : i === MP.l) ? 'on' : ''}${g.pin ? ' pin' : ''}${MP.zone === 'leagues' && i === MP.l ? ' f' : ''}"><span>${esc(g.side || g.name)}</span><i>${g.pin ? fbGlyph('star') : g.pick ? esc(g.mark || '') : ar(g.count != null ? g.count : g.games.length)}</i></li>`).join(''));
   let n = 0;
   setHTML(document.getElementById('mp-list'), shown.length ? shown.map(g => `<section data-g="${esc(g.key)}"><h2>${g.nameHtml || esc(g.name)}</h2>`
     + (g.games.length ? '<ul>' + g.games.map(ev => ev.it ? mpItemRow(ev, n++) : mpRow(ev, now, n++, g.dated ? 2 : g.more)).join('') + '</ul>' : '')
-    + (g.loading ? `<div class="fnone">${esc(matchesEmptyText())}</div>` : '') + (g.none && !g.games.length ? `<div class="fnone">${esc(g.none)}</div>` : '') + '</section>').join('')
+    + (g.loading ? `<div class="fnone">${esc(matchesEmptyText())}</div>` : '') + (g.none && !g.games.length ? `<div class="fnone">${esc(g.none)}</div>` : '')
+    + (g.foot ? `<div class="mpsrc">${esc(g.foot)}</div>` : '') + '</section>').join('')   // 4.5 a list's source (the honours)
     : `<div class="fnone">${V ? esc(V.empty || FB_W.noData) : MATCHES_LOADED && !(MP.wait && MP.day < t) ? fbNone(MP.day) : matchesEmptyText()}</div>`);
   fillCrests(document.getElementById('mp'));
   const f = MP.zone === 'leagues' ? !MP.only && document.querySelectorAll('#mp-list section')[MP.l - pins.length] : document.querySelector('#mp-list li.f');
@@ -5527,6 +5537,7 @@ function mpClubView(v){
     if(!v.allH2h && ms.length > 10) rows.push(mpItem(fw(FB_W.h2hMore, ar(ms.length)), '', () => { v.allH2h = 1; mpRender(); }));
     groups.push({key: 'h2h', name: fw(FB_W.h2h, teamNameOf(vs)), games: rows, dated: 1, none: wait(h)});
   }
+  if(SPORTS && SPORTS.hon) groups.push(...SPORTS.hon.club(id, j));   // 4.5 its titles (dist/sports.js)
   const tabs = [{t: fw(fbFollowed(id) ? FB_W.unfollowT : FB_W.followT, name), act: () => mpFollowTeam(id)}];
   if(v.vs) tabs.push({t: fw(FB_W.see, teamNameOf(vs)), act: () => { MP.view = {k: 'club', id: vs, vs: id}; MP.zone = 'rows'; MP.d = MP.l = MP.r = 0; MP.note = MP.ask = ''; mpRender(); }});
   const f = formOf(id);
@@ -5608,6 +5619,7 @@ function mpKey(e){
     if(k === 'ArrowDown') MP.l = Math.min(MP.leagues.length - 1, MP.l + 1);
     else if(k === 'ArrowUp'){ if(MP.l) MP.l--; else MP.zone = 'days'; }
     else if(pin && (k === fwd || ok)){ e.preventDefault(); return mpGo({k: 'league', id: pin}); }   // a pinned league: its table, results and games
+    else if(MP.leagues[MP.l] && MP.leagues[MP.l].pick && (k === fwd || ok)){ e.preventDefault(); return MP.leagues[MP.l].pick(); }   // 4.5 a season: its table, results or scorers
     else if(k === fwd || ok){ if(MP.rows.length) MP.zone = 'rows'; }
     else return;
     if(MP.only) MP.r = 0;
@@ -5618,7 +5630,7 @@ function mpKey(e){
     else if(k === back){ if(MP.leagues.length) MP.zone = 'leagues'; }
     else if(ok){ const x = MP.rows[MP.r]; e.preventDefault(); if(x && x.it){ if(x.act) x.act(); } else if(x) mpOpen(x); return; }
     else return;
-    if(!MP.only){ let n = 0; MP.leagues.forEach((g, i) => { if(MP.r >= n) MP.l = i; n += g.games.length; }); }
+    if(!MP.only){ let n = 0; MP.leagues.forEach((g, i) => { if(!g.pick && MP.r >= n) MP.l = i; n += g.games.length; }); }   // a season stays the side's place
   }
   e.preventDefault();
   mpRender();
@@ -5648,7 +5660,7 @@ function bootMatchPage(){
 // alert (on unless #ko=0, for followed teams) needs it
 let SPORTS = null;
 function loadSportsJs(){
-  if(SPORTS || !(CONFIG.cards.some(k => SPORT_KINDS.includes(k)) || (CONFIG.teamIds.length && _Q.get('ko') !== '0'))) return;
+  if(SPORTS || !(CONFIG.matchPage || CONFIG.cards.some(k => SPORT_KINDS.includes(k)) || (CONFIG.teamIds.length && _Q.get('ko') !== '0'))) return;   // 4.5 «المباريات»: the honours
   const stamp = document.querySelector('meta[name="urtv-build"]').content, f = document.documentElement.lang === 'en' ? 'sports-en.js' : 'sports.js';
   const urls = [f, 'file:///android_asset/' + f, 'file:///android_asset/web/' + f, 'https://raw.githubusercontent.com/tshi-dev/UrTV/master/dist/' + f];
   const next = i => {
@@ -5657,6 +5669,7 @@ function loadSportsJs(){
     x.onload = () => {
       if(!x.responseText.includes('SPORTS_BUILD:' + stamp + ':')) return fail();   // another build's code: never run against this page
       const sc = document.createElement('script'); sc.textContent = x.responseText; document.head.appendChild(sc);
+      if(SPORTS && CONFIG.matchPage){ mpRender(); return; }   // 4.5 the page of «المباريات» uses only its honours part (no card, no alert)
       if(SPORTS){ renderPanel(false, ...SPORT_KINDS); if(MATCHES_LOADED) SPORTS.load(); }
     };
     x.onerror = x.ontimeout = fail;
@@ -5667,7 +5680,7 @@ function loadSportsJs(){
 function boot(){
   if(CONFIG.lowram) document.documentElement.classList.add('lowram');
   pruneStorage();
-  if(CONFIG.matchPage){ bootMatchPage(); return; }
+  if(CONFIG.matchPage){ bootMatchPage(); loadSportsJs(); return; }
   if(CONFIG.football){ bootFootball(); loadSportsJs(); return; }
   if(CONFIG.widget){ bootWidget(); loadSportsJs(); return; }
   PAGE_FULL = true;   // the full screensaver only: the other layouts left above (review F5)

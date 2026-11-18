@@ -56,8 +56,8 @@ def champion(league, events, now):
         how = f"final ({len(fin)} leg{'s' if len(fin) > 1 else ''}) {name[a]} {ga}-{gb} {name[b]}"
         if ga == gb:
             return {"state": "final level (penalties or away goals are not in the archive)", "how": how}
-        w = a if ga > gb else b
-        return {"state": "champion", "id": w, "name": name[w], "how": how}
+        w, l = (a, b) if ga > gb else (b, a)
+        return {"state": "champion", "id": w, "name": name[w], "how": how, "score": [max(ga, gb), min(ga, gb)], "vs": l, "vn": name[l], "legs": len(fin)}
     games = [e for e in ev if str(e.get("r") or "").isdigit() and int(e["r"]) < 100]
     left = [e for e in games if not done(e)]
     if left:
@@ -75,7 +75,7 @@ def champion(league, events, now):
         return {"state": "table leader only (not the champion)", "name": t[0][1]}
     gap = t[0][2] - t[1][2]
     how = f"{t[0][2]} pts, {gap} ahead of {t[1][1]}" + (" (level on points: goal difference here, the league's own tie-break may differ)" if gap == 0 else "")
-    return {"state": "champion", "id": t[0][0], "name": t[0][1], "how": how}
+    return {"state": "champion", "id": t[0][0], "name": t[0][1], "how": how, "pts": t[0][2], "gap": gap, "vs": t[1][0], "vn": t[1][1]}
 
 
 def season_keys(start):

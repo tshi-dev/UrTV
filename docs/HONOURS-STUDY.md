@@ -268,3 +268,35 @@ Four choices for the owner:
 - The TheSportsDB terms were not read (the site is unreachable from here).
 - The CC BY-SA 4.0 licence text itself could not be fetched (creativecommons.org is unreachable). The four points in 2.3 are Wikipedia's own reuse page.
 - Seasons that miss games in the archive (Ligue 1 2024-25, Eredivisie 2022-24, Morocco, Egypt, Qatar 2025-26) have no champion from the archive. Wikidata fills some of them.
+
+## 5. Built (4.5), after the owner's answers
+
+The owner's answers to the four choices:
+
+- (a) «لم يُحسم بعد» for the season under way, and OK on it opens its table.
+- (b) No title count until a league's list is complete. Until then the club page shows the latest title only.
+- (c) Older champions by name only.
+- (d) The source line under the list, and the scorers rule above.
+
+What was built:
+
+| part | where | what |
+|---|---|---|
+| a league's seasons and champions | `.github/tools/sports_files.py` (every archive build) | `sports/<id>.json` gets `seasons` (newest first) and `champs` (each season the archive is sure of: `honours_study.champion`, with points, the margin and the runner-up, or a cup final's score). `sports/<id>/<season>.json` is each past season: its final table, every result, its champion. |
+| the weekly honours | `.github/tools/honours.py`, `.github/workflows/honours.yml` (Tuesdays, pinned, branch `data-honours`) | `champions/<id>.json`: the archive's, Wikidata's and (for a season Wikidata has no winner of) the season article's champion. Two sources must agree, or the season is left out (`held`) and goes to `report.json`. `complete` and `titles` are there only when the list has no gap from Wikidata's first season. `scorers/<id>.json`: the finished seasons' top scorers (the last 8), published only when the sources agree. `LICENSE.md` says the terms. |
+| the page | `src/template.html` (`hon*`, one block; the league and club pages call it) | The side's seasons; a past season's table and results; «الأبطال»; «الهدّافون» with «المصدر: ويكيبيديا وويكي بيانات (CC BY-SA 4.0)»; the club page's «البطولات». Self-contained, for the league page's redesign. |
+
+The scorer files are one file per league, with the seasons inside it, rather than the proposed `scorers/<lg>/<season>.json`. The page shows 8
+seasons, and one download is better than eight on a TV.
+
+**urtv-data.** This session could not be given urtv-data, so the job runs here and publishes the branch `data-honours`. The page reads
+`football/honours/` on urtv-data first (`DATA_MAP`) and falls back to `data-honours`. Moving the job there means:
+
+1. copy `honours.py`, `honours_study.py` and the workflow, and publish to `football/honours/`;
+2. add this row to its `DATA-LICENSE.md`:
+   `| Wikipedia (ar, en) / Wikidata | football/honours/scorers/, a champion whose "src" says wikipedia | CC BY-SA 4.0 (share-alike); each season names its articles |`
+
+Tests:
+- `tests/sports_files_test.py`: the season files and the champions;
+- `tests/honours_test.py`: the infobox reading, the cross-check, `complete`, the agreement rule, a failed source, the workflow;
+- `tests/honours.test.mjs`: the page in a browser, Arabic and English, 720p.

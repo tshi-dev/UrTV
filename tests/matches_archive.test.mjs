@@ -165,8 +165,8 @@ const ids = (p, key) => p.evaluate(k => ((MP.leagues.find(x => x.key === k) || {
   await p.keyboard.press('Enter');
   await p.waitForTimeout(400);
   check('pins: no script error', !errors.length, errors.join(' | '));
-  check('pins: OK on the pin opens the league, its name on top, three tabs (table, results, games)', await p.evaluate(() => MP.view && MP.view.k === 'league' && MP.view.id === '4328')
-    && await p.textContent('#mp-h') === 'الدوري الإنجليزي' && (await p.$$eval('#mp-days li', ls => ls.map(l => l.textContent).join())) === 'جدول الترتيب,النتائج,المباريات');
+  check('pins: OK on the pin opens the league, its name on top, its tabs (table, results, games; 4.5 champions, top scorers)', await p.evaluate(() => MP.view && MP.view.k === 'league' && MP.view.id === '4328')
+    && await p.textContent('#mp-h') === 'الدوري الإنجليزي' && (await p.$$eval('#mp-days li', ls => ls.map(l => l.textContent).join())) === 'جدول الترتيب,النتائج,المباريات,الأبطال,الهدّافون');
   check('pins: the table asks TheSportsDB once for the season the league\'s games say', asked.filter(a => a === 'table').length === 1, asked.join());
   const table = await p.$$eval('#mp-list li', ls => ls.map(l => l.textContent));
   check('pins: the table\'s rows: place, club, points', table.length === 2 && /^١\. .+٢٥ نقطة$/.test(table[0]), table.join(' / '));

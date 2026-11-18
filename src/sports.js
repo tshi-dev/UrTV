@@ -363,8 +363,108 @@ function spScoreWatch(now){
   });
 }
 
+// ---- 4.5 the honours (docs/HONOURS-STUDY.md), the part of «المباريات» the league and club pages call (SPORTS.hon.league, SPORTS.hon.club): a league's past seasons from the archive (sports/<id>/<season>.json: the final table, every result, the champion it is sure of),
+// its champions season by season and its top scorers from the weekly files (data-honours, urtv-data first: champions/ cross-checked, scorers/
+// CC BY-SA 4.0, their source said under them). A club's count of titles only when its league's list is complete; else its latest title only.
+const HW = {nowS:'الحالي', tableOf:'جدول الترتيب النهائي %s', resultsOf:'نتائج %s', scorersOf:'الهدّافون %s', champMark:'البطل',
+  undecided:'لم يُحسم بعد', ptsGap:'%s نقطة، بفارق %s عن %s', ptsLevel:'%s نقطة، بالتساوي مع %s', finalWon:'النهائي %s على %s',
+  goalsFew:'%s أهداف', goalsMany:'%s هدفًا', fromArchive:'من أرشيفنا', older:'قبل ذلك', srcChamps:'المصدر: نتائج المباريات وويكي بيانات',
+  srcChampsWp:'المصدر: نتائج المباريات وويكي بيانات وويكيبيديا (CC BY-SA 4.0)', srcScorers:'المصدر: ويكيبيديا وويكي بيانات (CC BY-SA 4.0)',
+  noScorers:'لا نعرف هدّاف هذا الموسم بعد', noChamps:'لا نعرف أبطال هذا الدوري بعد', honours:'البطولات', lastTitle:'آخرها %s',
+  title1:'لقب واحد', title2:'لقبان', titleFew:'%s ألقاب', titleMany:'%s لقبًا', titlesLast:'%s، آخرها %s',};
+const HON_BASE = DATA_OLD + 'data-honours/';
+const honWant = (kind, id) => archWant(HON_BASE + kind + '/' + id + '.json');
+const honSeasonName = x => ar(String(x));
+const honOk = x => /^\d{4}(-\d{4})?$/.test(String(x || ''));
+const honGoals = n => fw(n <= 10 ? HW.goalsFew : HW.goalsMany, ar(n));
+const honTitles = n => fw(n === 1 ? HW.title1 : n === 2 ? HW.title2 : n <= 10 ? HW.titleFew : HW.titleMany, ar(n));
+const honSeasons = sp => ((sp && Array.isArray(sp.seasons) && sp.seasons) || []).filter(honOk).map(String).slice(0, 8);
+// the side's seasons: ▲ ▼ walk them, OK (or ◀) chooses one, the current one is marked
+function honPins(v, list, chosen){
+  if(list.length < 2) return [];
+  return list.map((x, i) => ({key: 'season' + x, side: honSeasonName(x), mark: i ? '' : HW.nowS, sel: x === chosen, games: [],
+    pick: () => { v.season = x; MP.zone = 'rows'; MP.r = 0; mpRender(); }}));
+}
+function honTable(v, id){
+  const f = archWant('sports/' + id + '/' + v.season + '.json'), ch = f && f.champ, rows = [];
+  ((f && !f.cup && Array.isArray(f.table) && f.table) || []).filter(x => x && /^\d+$/.test(String(x.id)) && x.p > 0).forEach((x, i) =>
+    rows.push(mpItem(ar(i + 1) + '. ' + clubNm(x.ar, x.n, String(x.id)), (ch && String(ch.id) === String(x.id) ? HW.champMark + '، ' : '')
+      + fw(FB_W.pts, ar(+x.pts || 0)) + '، ' + fw(FB_W.played, ar(+x.p || 0)), () => mpGo({k: 'club', id: String(x.id)}))));
+  if(!rows.length && ch) rows.push(honChampRow(v, ch));   // a cup's season: its champion
+  return [{key: 't', name: fw(HW.tableOf, honSeasonName(v.season)), games: rows, none: f === undefined ? FB_W.loading : FB_W.noData}];
+}
+function honResults(v, id){
+  const f = archWant('sports/' + id + '/' + v.season + '.json'), by = new Map(), groups = [];
+  ((f && f.results) || []).map(g => archEv(g)).filter(Boolean).forEach(ev => { const k = fbRound(ev) || FB_W.results; if(!by.has(k)) by.set(k, []); by.get(k).push(ev); });
+  by.forEach((games, k) => groups.push({key: 'r' + groups.length, name: k, games, dated: 1}));
+  return groups.length ? groups : [{key: 'r', name: fw(HW.resultsOf, honSeasonName(v.season)), games: [], none: f === undefined ? FB_W.loading : FB_W.noData}];
+}
+// a league's champions, newest first: the weekly file's (cross-checked), and the archive's own for a season it does not have yet (one it
+// left out for a disagreement stays out)
+function honChampList(id, sp){
+  const h = honWant('champions', id), list = ((h && Array.isArray(h.seasons) && h.seasons) || []).filter(c => c && honOk(c.s));
+  const have = new Set(list.map(c => String(c.s)).concat((h && h.held) || []));
+  const own = ((sp && sp.champs) || []).filter(c => c && honOk(c.s) && !have.has(String(c.s))).map(c => Object.assign({src: 'archive'}, c, {en: c.n}));
+  return {list: own.concat(list).sort((a, b) => String(b.s).localeCompare(String(a.s))), file: h};
+}
+function honChampRow(v, c){
+  const name = clubNm(c.ar, c.en || c.n, c.id ? String(c.id) : ''), them = c.vs || c.vn ? clubNm(c.var, c.vn, String(c.vs || '')) : '';
+  const sub = c.pts != null && them ? fw(c.gap ? HW.ptsGap : HW.ptsLevel, ar(c.pts), ...(c.gap ? [ar(c.gap), them] : [them]))
+    : Array.isArray(c.score) && them ? fw(HW.finalWon, ar(c.score[0]) + '-' + ar(c.score[1]), them) : '';
+  return mpItem(honSeasonName(c.s) + ' ' + name, sub, c.id ? () => mpGo({k: 'club', id: String(c.id)}) : () => {});
+}
+function honChamps(v, id, sp){
+  const {list, file} = honChampList(id, sp), cur = sp && honOk(sp.season) ? String(sp.season) : '';
+  const recent = [], older = [];
+  if(cur && !list.some(c => String(c.s) === cur))   // the season under way: OK opens its table as it stands
+    recent.push(mpItem(honSeasonName(cur), HW.undecided, () => { v.tab = 0; v.season = undefined; MP.l = MP.r = 0; mpRender(); }));
+  list.forEach(c => (/archive/.test(String(c.src || '')) ? recent : older).push(honChampRow(v, c)));
+  const foot = list.some(c => /wikipedia/.test(String(c.src || ''))) ? HW.srcChampsWp : HW.srcChamps;
+  if(!list.length) return [{key: 'c', name: FB_W.champs, games: recent, none: file === undefined || sp === undefined ? FB_W.loading : HW.noChamps}];
+  return [{key: 'c', name: HW.fromArchive, games: recent, foot: older.length ? '' : foot}].filter(g => g.games.length)
+    .concat(older.length ? [{key: 'o', name: HW.older, games: older, foot}] : []);
+}
+// the seasons «الهدّافون» can show: the scorers file's and the archive's, newest first, 8
+function honScorerSeasons(sc, sp){
+  const all = new Set(honSeasons(sp).concat(Object.keys((sc && sc.seasons) || {}).filter(honOk)));
+  return [...all].sort((a, b) => b.localeCompare(a)).slice(0, 8);
+}
+const honTop = (sc, x) => ((sc && sc.seasons && sc.seasons[x] && sc.seasons[x].top) || []).filter(t => t && (t.ar || t.en) && +t.goals > 0);
+function honScorers(sc, x){
+  const top = honTop(sc, x);
+  return [{key: 's', name: x ? fw(HW.scorersOf, honSeasonName(x)) : FB_W.scorers, games: top.map(t => mpItem(plNm(t), honGoals(+t.goals), () => {})),
+    none: sc === undefined ? FB_W.loading : HW.noScorers, foot: top.length ? HW.srcScorers : ''}];
+}
+// the club page's «البطولات»: each competition it has won, its latest title, and the count only when that league's list is complete
+function honClub(id, j){
+  const lgs = new Set();
+  ((j && j.last) || []).concat((j && j.next) || []).forEach(g => g && g.lg && lgs.add(String(g.lg)));
+  fbGames().forEach(ev => { if(String(ev.idHomeTeam) === id || String(ev.idAwayTeam) === id) lgs.add(String(ev.idLeague || '')); });
+  const rows = [];
+  [...lgs].filter(x => /^\d+$/.test(x)).forEach(lg => {
+    const {list, file} = honChampList(lg, archWant('sports/' + lg + '.json')), won = list.filter(c => String(c.id || '') === id);
+    if(!won.length) return;
+    const n = file && file.complete && file.titles && +file.titles[id];
+    rows.push(mpItem(lgName(lg), n > 0 ? fw(HW.titlesLast, honTitles(n), honSeasonName(won[0].s)) : fw(HW.lastTitle, honSeasonName(won[0].s)),
+      () => { mpGo({k: 'league', id: lg, tab: 3}); MP.d = 3; }));
+  });
+  return rows.length ? [{key: 'hon', name: HW.honours, games: rows}] : [];
+}
+
+// the league page: {pins} (the side's seasons) and, when this part draws the tab, {groups}: a past season's table or results, «الأبطال», «الهدّافون»
+function honLeague(v, id, tab){
+  const sp0 = archWant('sports/' + id + '.json'), cur = sp0 && sp0.season ? String(sp0.season) : '';
+  if(tab === 3) return {pins: [], groups: honChamps(v, id, sp0)};
+  if(tab === 4){ const sc = honWant('scorers', id), list = honScorerSeasons(sc, sp0), pick = v.season || list.find(x => honTop(sc, x).length) || list[0];
+    return {pins: honPins(v, list, pick), groups: honScorers(sc, pick)}; }
+  if(tab > 1) return {pins: []};
+  const pins = honPins(v, honSeasons(sp0), v.season || cur);
+  return v.season && v.season !== cur ? {pins, groups: tab ? honResults(v, id) : honTable(v, id)} : {pins};
+}
+
 SPORTS = {
   stamp: SP_STAMP,
+  hon: {league: honLeague, club: honClub},
   load: spLoad,
   card(card, P){
     const now = Date.now();

@@ -1,0 +1,55 @@
+name: Honours
+
+# 4.5 «الأبطال» and «الهدّافون» (docs/HONOURS-STUDY.md, .github/tools/honours.py): each league's champions season by season and its top
+# scorers, from our match archive (its sports/ files), Wikidata (CC0) and Wikipedia's season articles (CC BY-SA 4.0). Pushed to the branch
+# data-honours (champions/, scorers/, report.json, LICENSE.md); the page reads urtv-data's football/honours/ first when it is there.
+# Weekly (Tuesdays), by hand, or when its own files change on master or next. One Wikidata query and a few hundred Wikipedia and Wikidata
+# requests, spaced; a source that does not answer keeps the published files (nothing is pushed).
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '17 3 * * 2'
+  push:
+    branches: [master, next]
+    paths:
+      - '.github/tools/honours.py'
+      - '.github/tools/honours_study.py'
+      - '.github/workflows/honours.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: data-honours
+  cancel-in-progress: false
+
+jobs:
+  honours:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683   # v4.2.2
+        with:
+          sparse-checkout: .github/tools
+      - name: The archive's files (urtv-data's, else data-archive) and the last published honours
+        run: |
+          mkdir -p archive prev out
+          t=$(mktemp -d)
+          if git fetch -q --depth=1 https://github.com/tshi-dev/urtv-data data 2>/dev/null && git archive FETCH_HEAD football/archive/sports | tar -x -C "$t"; then
+            cp -r "$t/football/archive/." archive/ && echo "urtv-data's archive"
+          else
+            git fetch -q --depth=1 origin data-archive && git archive FETCH_HEAD sports | tar -x -C archive && echo "data-archive"
+          fi
+          git fetch -q --depth=1 origin data-honours 2>/dev/null && git archive FETCH_HEAD | tar -x -C prev || echo "no data-honours yet"
+      - run: python3 -u .github/tools/honours.py --archive archive --prev prev --out out
+      - name: Push to data-honours (when it changed)
+        run: |
+          test -f out/LICENSE.md
+          if diff -rq -x .git -x report.json prev out >/dev/null 2>&1; then echo "data-honours is already the same"; exit 0; fi
+          cd out
+          git init -q -b data-honours
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -qm "Honours"
+          git push -qf "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git" data-honours
