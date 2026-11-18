@@ -689,7 +689,7 @@ public class SettingsActivity extends Activity {
         if (autoRow != null && autoRow.getLayoutParams() instanceof android.view.ViewGroup.MarginLayoutParams) ((android.view.ViewGroup.MarginLayoutParams) autoRow.getLayoutParams()).topMargin += dp(32);
         // the page only, never the apps: people took it for the app update (rows 421, 441), so its line points to «تحديث تلفزيوني»
         View last = row("تحديث صفحة شاشة التوقف", "ينزّل أحدث صفحة للشاشة فقط، لتحديث التطبيقين: «تحديث تلفزيوني» في نفس القسم", R.drawable.ic_sync, new Runnable() { public void run() { updateNow(); } });
-        if (last.getParent() == list) note(last, Updater.versionLines(this));
+        if (last.getParent() == list) { TextView ver = note(last, Updater.versionLines(this)); ver.setFocusable(true); ver.setClickable(true); ver.setOnClickListener(v -> versionTap()); }
         // «النسخ التجريبية» (4.3.3): the beta release first, off by default. Off again never downgrades: the newer build stays until the normal one reaches its number
         row("النسخ التجريبية", prefs.betaOn() ? "تعمل، تجيك التحديثات قبل الكل بعد ما نجربها. ممكن يكون فيها أخطاء بسيطة" : "متوقفة، تجيك التحديثات قبل الكل بعد ما نجربها. ممكن يكون فيها أخطاء بسيطة", R.drawable.ic_sync, new Runnable() { public void run() { toggleBeta(); } });
         // only while it is on: the report screen (its QR code carries «channel: beta» and the versions), the person types their words on the phone page
@@ -4029,7 +4029,7 @@ public class SettingsActivity extends Activity {
     }
 
     /** Plain lines at the end, in no button: nothing to focus, so the last row scrolls them into view. */
-    private void note(View last, String... lines) {
+    private TextView note(View last, String... lines) {
         TextView t = new TextView(this);
         t.setText(conv(android.text.TextUtils.join("\n", lines)));
         t.setTextColor(look.sub);
@@ -4048,6 +4048,25 @@ public class SettingsActivity extends Activity {
             // «النسخ التجريبية» under this row, a step down onto it jumped straight past it
             v.post(() -> t.requestRectangleOnScreen(new android.graphics.Rect(0, 0, t.getWidth(), t.getHeight())));
         });
+        return t;
+    }
+
+    /**
+     * The owner's pass (GameRelease, docs/GAMES-RELEASE.md): OK seven times in a row on the version lines, each within four seconds of the last, opens a box for a code. Nothing on any screen
+     * says there is a pass or a group; a code that does not open it leaves nothing behind and says nothing; one that does shows «تم». The check runs off the UI thread.
+     */
+    private int verTaps; private long verAt;
+    private void versionTap() {
+        long now = System.currentTimeMillis();
+        verTaps = now - verAt > 4000 ? 1 : verTaps + 1; verAt = now;
+        if (verTaps < 7) return;
+        verTaps = 0;
+        final EditText in = new EditText(this);
+        in.setSingleLine(true);
+        in.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS | InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
+        new Dlg(this).setTitle("الرمز").setView(in)
+            .setPositiveButton("حفظ", (d, w) -> GameReleaseStore.tryCode(this, in.getText().toString(), () -> runOnUiThread(() -> toast("تم"))))
+            .setNegativeButton("إلغاء", null).show();
     }
 
     /**

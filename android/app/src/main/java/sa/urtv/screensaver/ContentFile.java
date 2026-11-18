@@ -74,11 +74,18 @@ final class ContentFile {
         fetch(c, name, maxAgeMs, () -> DataHost.get(oldUrl, 15000, 20000, MAX_BYTES));
     }
 
+    /** refresh() that tells when the attempt is over (done, failed or not needed, on a thread of its own or the caller's): the caller reads the kept copy again then; the games' release file uses it */
+    static void refresh(final Context c, final String path, final String name, long maxAgeMs, final Runnable after) {
+        fetch(c, name, maxAgeMs, () -> Net.get(DataHost.NEW + path, null, 15000, 20000, MAX_BYTES), after);
+    }
+
     private interface Fetch { Net.Reply get() throws Exception; }
 
-    private static void fetch(final Context c, final String name, long maxAgeMs, final Fetch how) {
+    private static void fetch(final Context c, final String name, long maxAgeMs, final Fetch how) { fetch(c, name, maxAgeMs, how, null); }
+
+    private static void fetch(final Context c, final String name, long maxAgeMs, final Fetch how, final Runnable after) {
         final File f = kept(c, name);
-        if ((f.isFile() && System.currentTimeMillis() - f.lastModified() < maxAgeMs) || !fetching.add(name)) return;
+        if ((f.isFile() && System.currentTimeMillis() - f.lastModified() < maxAgeMs) || !fetching.add(name)) { if (after != null) { try { after.run(); } catch (RuntimeException ignored) { } } return; }
         final Context app = c.getApplicationContext();
         new Thread(() -> {
             try {
@@ -93,6 +100,7 @@ final class ContentFile {
                 // offline: the kept copy stays; tried again after maxAgeMs
             } finally {
                 fetching.remove(name);
+                if (after != null) { try { after.run(); } catch (RuntimeException ignored) { } }
             }
         }, "content-" + name).start();
     }

@@ -1387,3 +1387,24 @@
 أضف	Add
 لا	No
 الدوريات كاملة (بدون اختيار = بدون)	Whole leagues (none ticked = none)
+# ---- the games engine (docs/GAME-ENGINE.md)
+اللعبة تتسع لعدد أقل من اللاعبين	The game takes fewer players
+الفريق كله	The whole team
+من الأول إلى الأخير	From first to last
+اضغط ما يناسب كل واحد بالترتيب: %s	Tap the match for each one in turn: %s
+اختر اللاعب الأنسب	Pick the player who fits best
+جاوب بصوت عالٍ	Answer out loud
+%s يجاوب	%s is answering
+جاوبت غلط، انتظر الباقين	Wrong, wait for the others
+تلميح: %s	Hint: %s
+كفاية، نشوف النتيجة	Enough, show the result
+اكتبوا الرقم من جوالاتكم	Type the number on your phones
+اكتبوا الإجابة من جوالاتكم	Type the answer on your phones
+خمّن %s من %s	%s of %s guessed
+هل جاوب صح؟	Was it right?
+اضغطوا «أنا!» في جوالاتكم، وأسرعكم يجاوب	Press «Me!» on your phones: the fastest answers
+ما أحد صوّت	Nobody voted
+الأكثر: %s	Most: %s
+ما أحد جاوب صح	Nobody got it right
+جاوب صح: %s	Got it right: %s
+الرمز	Code

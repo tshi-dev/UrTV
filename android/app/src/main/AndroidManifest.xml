@@ -109,6 +109,11 @@
             android:screenOrientation="landscape"
             android:configChanges="keyboard|keyboardHidden|navigation|orientation|screenSize|uiMode" />
         <activity
+            android:name=".EngineGameActivity"
+            android:exported="false"
+            android:screenOrientation="landscape"
+            android:configChanges="keyboard|keyboardHidden|navigation|orientation|screenSize|uiMode" />
+        <activity
             android:name=".ForeheadActivity"
             android:exported="false"
             android:screenOrientation="landscape"

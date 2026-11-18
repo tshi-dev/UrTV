@@ -238,7 +238,7 @@ public abstract class GameActivity extends Activity {
     protected final String num(int v) { return DigitsText.convert(String.valueOf(v), latin); }
     /** an Arabic text of the data in the person's digits (the English text is left as it is) */
     protected final String digits(String s) { return en ? s : DigitsText.convert(s, latin); }
-    protected final String gameName() { GameRegistry.Game g = GameRegistry.byId(id()); return g == null ? "" : S.tv(g.name); }
+    protected String gameName() { GameRegistry.Game g = GameRegistry.byId(id()); return g == null ? "" : S.tv(g.name); }
     protected final void toast(String s) { Toast.makeText(this, s, Toast.LENGTH_SHORT).show(); }
     /** one of the existing tones (QuizSound.TICK, CHIME, LOW, FANFARE), when the sound chip is on */
     protected final void play(int which) { QuizSound.play(sound, which); }
