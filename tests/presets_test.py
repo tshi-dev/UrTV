@@ -51,7 +51,7 @@ check("the row is first in «المظهر» in both layouts, the picture picker 
       and 'FULL_DESIGN_STYLE = java.util.Collections.singletonMap("couch", "couch");' in prefs
       and 'if (!sp.contains("settingsStyleBefore")) sp.edit().putString("settingsStyleBefore", settingsStyle()).apply();' in prefs
       and 'if (sb != null) sp.edit().putString("settingsStyle", sb).remove("settingsStyleBefore").apply();' in prefs
-      and '"رجّع الشكل السابق", "أشكال جاهزة", "شكل شاشة الإعدادات", "رجّع بطاقاتك", "شكل كنبة",' in hub and '{"أشكال جاهزة", LOOK}, {"شكل شاشة الإعدادات", LOOK}, {"رجّع بطاقاتك", LOOK}, {"شكل كنبة", LOOK}' in hub and '{"أشكال جاهزة", "look"}' in hub)
+      and '"رجّع الشكل السابق", "أشكال جاهزة", "شكل شاشة الإعدادات", "تخصيص", "رجّع بطاقاتك", "شكل كنبة",' in hub and '{"أشكال جاهزة", LOOK}, {"شكل شاشة الإعدادات", LOOK}, {"تخصيص", LOOK}, {"رجّع بطاقاتك", LOOK}, {"شكل كنبة", LOOK}' in hub and '{"أشكال جاهزة", "look"}' in hub)
 pics = [ROOT / f"android/app/src/main/assets/presets/{k}.jpg" for k in keys]
 check("each look's picture is in the app, small (under 40 KB)", all(p.is_file() and p.stat().st_size < 40 * 1024 for p in pics), [p.name for p in pics if not p.is_file()])
 check("saver.sh preset tv|couch|clean|family|sport|calm; show says «preset: family» or «family (custom)»; given before any one row",

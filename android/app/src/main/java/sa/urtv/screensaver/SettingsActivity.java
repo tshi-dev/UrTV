@@ -548,6 +548,9 @@ public class SettingsActivity extends Activity {
                     .addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION));   // the other style now, the focus on this row
                 finish();
             }); } });
+        // 4.4 beta 2 (the owner approved docs/mockups/full-look 05): «تخصيص», the look's parts gathered under one row (each still its own row
+        // below, so the search and a link reach it as before); a part changed since the look was chosen says «غيّرتها»
+        row("تخصيص", customLine(), R.drawable.ic_eye, new Runnable() { public void run() { pickCustom(); } });
         // 4.4 beta 2 (the owner, docs/mockups/full-look 06): after «… بدون بطاقات», the hidden cards come back from here, fitted to the look
         if (!prefs.hiddenCards().isEmpty()) row("رجّع بطاقاتك", "بطاقاتك قبل التصميم، بنفس ترتيبها", R.drawable.ic_eye,
             new Runnable() { public void run() { prefs.restoreHiddenCards(); String n = prefs.takeFitNote(); render(); if (n != null) notice(n); } });
@@ -988,6 +991,43 @@ public class SettingsActivity extends Activity {
     }
 
     private static final int HEAD_FULL = -1, HEAD_SIMPLE = -2, MIX = -3;
+
+    /** the parts «تخصيص» gathers, each the label of its own row (its action is that row's), and the look's field it is (null: none) */
+    private static final String[][] CUSTOM_PARTS = {
+        {"التخطيط", "layout"}, {"الخلفية", "bg"}, {"الساعة", "clock"}, {"شكل التطبيقات", "apps"}, {"شكل شاشة الإعدادات", null},
+        {"البطاقة الأولى", "cards"}, {"البطاقة الثانية", "cards"}, {"البطاقة الثالثة", "cards"}, {"وضع الألوان", "appearance"}};
+
+    /** «تخصيص»'s line: what changed since the look was chosen, or what it holds */
+    private String customLine() {
+        List<String> ch = prefs.presetChanged();
+        if (ch.isEmpty()) return "التخطيط والخلفية والساعة والتطبيقات والبطاقات";
+        StringBuilder b = new StringBuilder();
+        for (String c : ch) { if (b.length() > 0) b.append("، "); b.append(c); }
+        return String.format(java.util.Locale.ROOT, "غيّرت: %s", b);
+    }
+
+    /**
+     * «تخصيص»: the look's parts in one list, each with its value, «غيّرتها» on a part changed since the look was chosen; OK on one opens that part's
+     * own choice (its row's action, so there is one way to change it); then «رجّع بطاقاتك» while cards are hidden, and «رجّع شكلك المعتاد» while a look is on.
+     */
+    private void pickCustom() {
+        final List<String> labels = new ArrayList<>();
+        final List<Runnable> acts = new ArrayList<>();
+        List<String> changed = prefs.presetChanged();
+        for (String[] part : CUSTOM_PARTS) {
+            final Runnable act = actions.get(FocusKey.key(part[0]));
+            if (act == null) continue;   // a row not on this TV (a switch off): not offered
+            int k = part[1] == null ? -1 : java.util.Arrays.asList(Prefs.PRESET_FIELDS).indexOf(part[1]);
+            boolean mine = k >= 0 && changed.contains(Prefs.PRESET_FIELD_NAMES[k]);
+            labels.add(mine ? String.format(java.util.Locale.ROOT, "%s، غيّرتها", part[0]) : part[0]);
+            acts.add(act);
+        }
+        if (!prefs.hiddenCards().isEmpty()) { labels.add("رجّع بطاقاتك"); acts.add(() -> { prefs.restoreHiddenCards(); String n = prefs.takeFitNote(); render(); if (n != null) notice(n); }); }
+        if (!"tv".equals(prefs.preset()) || !prefs.presetCombo().isEmpty()) { labels.add("رجّع شكلك المعتاد"); acts.add(() -> applyPreset("tv")); }
+        final CharSequence[] shown = new CharSequence[labels.size()];
+        for (int i = 0; i < shown.length; i++) shown[i] = conv(labels.get(i));
+        new Dlg(this).setTitle("تخصيص").setItems(shown, (d, i) -> acts.get(i).run()).show();
+    }
 
     /**
      * 4.4 beta 2 (the owner approved docs/mockups/full-look 06): a full-design look and the home's cards. One question, two plain choices: the cards
