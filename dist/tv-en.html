@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <!-- the build: UTC time (YYYYMMDDHHMMSS) of the newest commit of the page's sources, put in by src/build.py. The app loads the page with the newer stamp (its own
      copy or a downloaded one), never by file time, and does not keep a download whose stamp is older than its own (Updater, PageStamp). -->
-<meta name="urtv-build" content="20261118061724">
+<meta name="urtv-build" content="20261118064019">
 <title>Your TV Screen</title>
 <style>
   @font-face{font-family:'Thmanyah';font-weight:300;font-style:normal;font-display:block;src:url("https://raw.githubusercontent.com/tshi-dev/UrTV/master/assets/fonts/Thmanyah-Light.woff2") format("woff2")}
@@ -1024,7 +1024,7 @@ html.lowram .photo.settle, html.lowram .week ul.flip li, html.lowram .mrow.flip 
 </main>
 
 <script>
-let PAGE_SKIPPED = false;
+let PAGE_SKIPPED = false, PAGE_FULL = false;
 (function(){
   const real = window.setInterval.bind(window);
   window.setInterval = function(fn, ms, ...args){
@@ -1037,9 +1037,9 @@ let PAGE_SKIPPED = false;
     if(document.hidden || !PAGE_SKIPPED) return;
     PAGE_SKIPPED = false;
     try { if(typeof tickClock === 'function') tickClock(); } catch(e){}
-    try { if(typeof tickDates === 'function') tickDates(); } catch(e){}
+    try { if(PAGE_FULL && typeof tickDates === 'function') tickDates(); } catch(e){}
     try { if(typeof tickPrayer === 'function') tickPrayer(); } catch(e){}
-    try { if(typeof applyNight === 'function') applyNight(); } catch(e){}
+    try { if(PAGE_FULL && typeof applyNight === 'function') applyNight(); } catch(e){}
     try { if(typeof renderPanel === 'function') renderPanel(false); } catch(e){}
   });
 })();
@@ -5124,6 +5124,7 @@ function boot(){
   if(CONFIG.matchPage){ bootMatchPage(); return; }
   if(CONFIG.football){ bootFootball(); loadSportsJs(); return; }
   if(CONFIG.widget){ bootWidget(); loadSportsJs(); return; }
+  PAGE_FULL = true;
   buildCards();
   loadSportsJs();
   if(document.fonts) document.fonts.ready.then(() => {

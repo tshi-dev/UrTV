@@ -1067,7 +1067,7 @@ html.lowram .photo.settle, html.lowram .week ul.flip li, html.lowram .mrow.flip 
 // 4.4 (a black-video report): a page left behind another app (a WebView we did not free, or a TV that keeps it) must not keep working for
 // hours: while the page is hidden every interval's work is skipped (the clock, the album, the panels, the photos, saveSnap, the fetches);
 // back in view, the clock and the panels catch up at once. The timers stay, so nothing has to be started again.
-let PAGE_SKIPPED = false;
+let PAGE_SKIPPED = false, PAGE_FULL = false;   // PAGE_FULL: the full screensaver (boot) runs, not the home's cards or a page of its own
 (function(){
   const real = window.setInterval.bind(window);
   window.setInterval = function(fn, ms, ...args){
@@ -1080,9 +1080,9 @@ let PAGE_SKIPPED = false;
     if(document.hidden || !PAGE_SKIPPED) return;
     PAGE_SKIPPED = false;
     try { if(typeof tickClock === 'function') tickClock(); } catch(e){}
-    try { if(typeof tickDates === 'function') tickDates(); } catch(e){}
+    try { if(PAGE_FULL && typeof tickDates === 'function') tickDates(); } catch(e){}   // the dates and the night only where boot() runs them (review F5: the national day's colours)
     try { if(typeof tickPrayer === 'function') tickPrayer(); } catch(e){}
-    try { if(typeof applyNight === 'function') applyNight(); } catch(e){}
+    try { if(PAGE_FULL && typeof applyNight === 'function') applyNight(); } catch(e){}
     try { if(typeof renderPanel === 'function') renderPanel(false); } catch(e){}
   });
 })();
@@ -5635,6 +5635,7 @@ function boot(){
   if(CONFIG.matchPage){ bootMatchPage(); return; }
   if(CONFIG.football){ bootFootball(); loadSportsJs(); return; }
   if(CONFIG.widget){ bootWidget(); loadSportsJs(); return; }
+  PAGE_FULL = true;   // the full screensaver only: the other layouts left above (review F5)
   buildCards();
   loadSportsJs();
   if(document.fonts) document.fonts.ready.then(() => {   // widths change once the fonts are in
