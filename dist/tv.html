@@ -849,6 +849,9 @@ let PAGE_SKIPPED = false;
     if(document.hidden || !PAGE_SKIPPED) return;
     PAGE_SKIPPED = false;
     try { if(typeof tickClock === 'function') tickClock(); } catch(e){}
+    try { if(typeof tickDates === 'function') tickDates(); } catch(e){}
+    try { if(typeof tickPrayer === 'function') tickPrayer(); } catch(e){}
+    try { if(typeof applyNight === 'function') applyNight(); } catch(e){}
     try { if(typeof renderPanel === 'function') renderPanel(false); } catch(e){}
   });
 })();
@@ -4684,14 +4687,14 @@ function boot(){
   setInterval(adhanLiveTick, CONFIG.lowram ? 15000 : 3000);
   if(REMS.length){ remDraw(); setInterval(remDraw, CONFIG.lowram ? 5000 : 1000); }
   if(CONFIG.seconds){   // the seconds turn on the second, not a drifting interval's moment
-    const onSecond = () => { tickClock(); setTimeout(onSecond, 1000 - Date.now() % 1000 + 15); };
+    const onSecond = () => { if(document.hidden) PAGE_SKIPPED = true; else tickClock(); setTimeout(onSecond, 1000 - Date.now() % 1000 + 15); };   // hidden: no work (the gate)
     setTimeout(onSecond, 1000 - Date.now() % 1000 + 15);
   } else setInterval(tickClock, 1000);
   setInterval(()=>{ tickDates(); tickPrayer(); tickOccasion(); wxExpire(); wxSource(); if(!SLOT_MATCHES) renderSlot(); }, 15000);
   if(SLOT_MATCHES){   // the matches timers run only while the slot shows matches
     setInterval(() => renderMatches(false), 60000);
     // 15 s a page (two games), 10 s once a league makes more than 3 pages
-    const turn = () => { renderMatches(true); setTimeout(turn, CONFIG.leagues.length && MATCH_PAGES > 3 ? CONFIG.matchPageFastMs : CONFIG.matchPageMs); };
+    const turn = () => { if(document.hidden) PAGE_SKIPPED = true; else renderMatches(true); setTimeout(turn, CONFIG.leagues.length && MATCH_PAGES > 3 ? CONFIG.matchPageFastMs : CONFIG.matchPageMs); };
     setTimeout(turn, CONFIG.matchPageMs);
   }
   if(NEEDS_MATCHES){ periodic(loadLive, 2*60000); periodic(loadMatches, 30*60*1000); }
