@@ -31,12 +31,18 @@ final class UpdateNoticeRule {
      * Which of our apps are behind the target, as bits (HOME, SAVER, EXTRAS). A build of 0 or less is «not installed» or «not known»: never behind (a missing screensaver
      * app has its own way, «ثبّت الجزء الثاني»; a missing add-on is optional).
      */
-    static int behind(long home, long saver, long extras, int newest) {
+    static int behind(long home, long saver, long extras, int newest) { return behind(home, saver, extras, newest, false); }
+
+    /**
+     * R-288: {@code extrasAbsent}: the release holds no file for the add-on (apk-beta did not), so it can never be brought up from there and is never «behind»
+     * (the home and the screensaver at the newest build are then up to date, however old the add-on is).
+     */
+    static int behind(long home, long saver, long extras, int newest, boolean extrasAbsent) {
         long t = target(home, saver, extras, newest);
         int b = 0;
         if (home > 0 && home < t) b |= HOME;
         if (saver > 0 && saver < t) b |= SAVER;
-        if (extras > 0 && extras < t) b |= EXTRAS;
+        if (extras > 0 && !extrasAbsent && extras < t) b |= EXTRAS;
         return b;
     }
 

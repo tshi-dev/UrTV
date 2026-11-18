@@ -42,4 +42,18 @@ if shutil.which("javac") and shutil.which("java"):
 else:
     print("SKIP rules: no javac here")
 
+upd = text(PHONE / "PhoneUpdater.java")
+prepare = upd.split("private static void prepare")[1].split("private static boolean downloadAndVerify")[0]
+download = upd.split("private static boolean downloadAndVerify")[1].split("interface Job")[0]
+check("the check compares the lowest build of the packages that count (not the add-on whose file is absent)",
+      "UpdateRules.lowestInstalled(" in upd and "lowestInstalled(c, missingOptional(c, base))" in prepare and prepare.index("UpdateFlow.versionRead(") < prepare.index("missingOptional("))
+check("the download list drops an optional package whose file is missing, with a log note", "UpdateRules.wanted(" in download and 'Log.i(TAG, "skipped' in upd)
+check("missing is decided by a 404 of the probe (sizeOf), a network error stays a failure", "UpdateRules.MISSING" in upd and "UpdateRules.assetMissing(" in upd)
+check("the probe runs on the update thread (never the UI thread)", 'guarded("tv-update-check"' in upd)
+
+nrule = text(HOME / "UpdateNoticeRule.java")
+notice = text(HOME / "UpdateNotice.java")
+check("the home's offer: an add-on whose file is absent at the release is never behind", "boolean extrasAbsent" in nrule and "extras > 0 && !extrasAbsent && extras < t" in nrule)
+check("the home's offer asks the release for the add-on's file off the main thread and keeps the answer per channel",
+      "extras_absent_" in notice and "new Thread(" in notice and "UpdateRules.assetMissing(" in notice)
 sys.exit(1 if failed else 0)

@@ -17,6 +17,8 @@ public final class UpdateNoticeRun {
         check("4.4 behind: the home older than the screensaver", UpdateNoticeRule.behind(300, 305, 0, 0) == H);
         check("4.4 behind: the add-on older than the others", UpdateNoticeRule.behind(305, 305, 300, 305) == E);
         check("4.4 behind: a missing screensaver (0) or add-on is never behind (the screensaver has «ثبّت الجزء الثاني»)", UpdateNoticeRule.behind(305, 0, 0, 305) == 0);
+        check("R-288 behind: the add-on (516) older than the home and screensaver (525) but its file is absent at the release: nothing (the beta bug: the offer stayed on for ever)", UpdateNoticeRule.behind(525, 525, 516, 525, true) == 0 && UpdateNoticeRule.behind(525, 525, 516, 525, false) == E);
+        check("R-288 behind: the add-on's file absent does not hide a real update: the home and screensaver behind a newer release still are", UpdateNoticeRule.behind(525, 525, 516, 530, true) == (H | S));
         long d = 24 * h;
         check("4.4 card: something behind and never shown: shown", UpdateNoticeRule.cardDue(S, 305, 0, 0, -1, 10 * d));
         check("4.4 card: shown for this build: not again for 3 days", !UpdateNoticeRule.cardDue(S, 305, 305, 10 * d, -1, 12 * d) && UpdateNoticeRule.cardDue(S, 305, 305, 10 * d, -1, 13 * d));
