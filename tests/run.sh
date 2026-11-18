@@ -417,6 +417,7 @@ node tests/cards_batch3.test.mjs   # 4.4 card review batch 3 (12 adhkar, 13 task
 node tests/tafsir_short.test.mjs   # 4.4 the tafsir card short: the Muyassar whole, «التفسير الميسر، صفحة N» under it, the pages stored per verse
 node tests/football_page.test.mjs   # the football home's widgets and «المباريات» in a browser, on fixed games
 node tests/sports_cards.test.mjs   # 4.4 «الرياضة»: the sports cards (dist/sports.js) on the home, the couch row and the screensaver, the takeover, only the page's own build
+node tests/many_follows.test.mjs   # 4.4 40 clubs and 24 leagues in the page: the extra ones asked every 2nd load, files 4 at a time, the bar built once a minute, the warning's two OKs, «فرقي» at 720p
 node tests/matches_archive.test.mjs   # «المباريات» with the match archive (data-archive): every followed team, yesterday's results, a club, a league, the chooser
 node tests/phone_page.test.mjs
 node tests/sync_cards.test.mjs   # «توحيد المظهر» on the page: the cards in the material's fill, line and ink, readable on a light look
