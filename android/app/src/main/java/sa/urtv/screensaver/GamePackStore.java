@@ -88,14 +88,11 @@ final class GamePackStore {
                     if (!(allQuiz ? p.quiz() : p.id.equals(id))) continue;
                     if (installed(app, p.id) && sp(app).getInt(p.id + ".ver", 0) >= p.ver) continue;
                     if (!GamePacks.canDownload(app.getFilesDir().getUsableSpace(), p.bytes)) return;   // a TV low on space is left alone
-                    Net.Reply d = Net.get(BASE + p.id + "/pack.gb", null, 20000, 120000, (int) GamePacks.PACK_MAX);
-                    if (d.status != 200 || d.body.length != p.bytes || !GamePacks.shaOk(d.body, p.sha)) return;
-                    File tmp = new File(dir(app), p.id + ".gb.tmp");
-                    try (FileOutputStream o = new FileOutputStream(tmp)) { o.write(d.body); }
-                    if (!tmp.renameTo(file(app, p.id))) { tmp.delete(); return; }
+                    if (QuizBank.playing) return;   // a round started while the index came: not a big download now
+                    if (!download(app, p)) return;
                     sp(app).edit().putInt(p.id + ".ver", p.ver).putLong(p.id + ".used", System.currentTimeMillis()).apply();
                 }
-            } catch (Exception ignored) {
+            } catch (Throwable ignored) {   // also OutOfMemoryError: a TV with little memory must not crash a round for a download
                 // no network, a bad answer: the games use what they have
             } finally {
                 busy = false;
@@ -103,5 +100,27 @@ final class GamePackStore {
             }
         }, "game-packs");
         t.setPriority(Thread.MIN_PRIORITY); t.setDaemon(true); t.start();
+    }
+    /** one pack to a temporary file as it arrives (never held whole in memory), hashed on the way, then renamed over the pack: true when it is in place. A round that starts
+     *  while it downloads stops it (the sink throws), and the temporary file never stays. */
+    private static boolean download(Context app, GamePacks.Pack p) throws Exception {
+        File tmp = new File(dir(app), p.id + ".gb.tmp");
+        java.security.MessageDigest md = java.security.MessageDigest.getInstance("SHA-256");
+        boolean ok = false;
+        try {
+            try (java.io.OutputStream o = new java.io.BufferedOutputStream(new FileOutputStream(tmp), 32768)) {
+                java.io.OutputStream sink = new java.io.OutputStream() {
+                    @Override public void write(int b) throws java.io.IOException { write(new byte[] {(byte) b}, 0, 1); }
+                    @Override public void write(byte[] b, int off, int len) throws java.io.IOException {
+                        if (QuizBank.playing) throw new IllegalStateException("a round started")   /* not an IOException: Net would try the next address */;
+                        md.update(b, off, len); o.write(b, off, len);
+                    }
+                };
+                Net.Reply d = Net.get(BASE + p.id + "/pack.gb", null, 20000, 120000, (int) GamePacks.PACK_MAX, sink);
+                if (d.status != 200) return false;
+            }
+            ok = tmp.length() == p.bytes && GamePacks.hex(md.digest()).equals(p.sha) && tmp.renameTo(file(app, p.id));
+            return ok;
+        } finally { if (!ok) tmp.delete(); }
     }
 }
