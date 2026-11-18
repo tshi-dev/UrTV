@@ -95,11 +95,12 @@ const key = async (p, k, n = 1) => { for (let i = 0; i < n; i++) { await p.keybo
   await p.evaluate(() => mpGo({ k: 'league', id: '4668', tab: 3 }));
   await p.waitForTimeout(800);
   const r = await rows(p), t = await text(p);
-  check('«الأبطال»: the season under way first «لم يُحسم بعد», then the archive\'s champions with points and the margin',
-    !errors.length && r[0] === '٢٠٢٦-٢٠٢٧ لم يُحسم بعد' && r[1] === '٢٠٢٥-٢٠٢٦ النصر ٨٦ نقطة، بفارق ٢ عن الهلال', JSON.stringify(r) + errors.join('|'));
+  check('«الأبطال»: the season under way first «لم يُحسم بعد، افتح الجدول» (the focus on it), then the archive\'s champions with points and the margin',
+    !errors.length && r[0] === '٢٠٢٦-٢٠٢٧ لم يُحسم بعد، افتح الجدول' && r[1] === '٢٠٢٥-٢٠٢٦: النصر ٨٦ نقطة، بفارق ٢ عن الهلال', JSON.stringify(r) + errors.join('|'));
   check('…a season the weekly check held (its sources disagreed) is not shown, even though the archive names it', !t.includes('٢٠٢٤-٢٠٢٥'), t.slice(0, 400));
-  check('…older seasons under «قبل ذلك», by name only', t.includes('قبل ذلك') && r.includes('٢٠١٧-٢٠١٨ الهلال') && r.includes('١٩٧٧-١٩٧٨ الأهلي'), JSON.stringify(r));
+  check('…older seasons under «قبل ذلك», by name only', t.includes('قبل ذلك') && r.includes('٢٠١٧-٢٠١٨: الهلال') && r.includes('١٩٧٧-١٩٧٨: الأهلي'), JSON.stringify(r));
   check('…the source under the list, Wikipedia\'s licence named because a season came from it', t.includes('المصدر: نتائج المباريات وويكي بيانات وويكيبيديا (CC BY-SA 4.0)'), t.slice(-200));
+  check('the focus starts on «لم يُحسم بعد»', await p.evaluate(() => /لم يُحسم بعد/.test((document.querySelector('#mp li.mpg.f') || {}).innerText || '')));
   const v = await p.evaluate(() => { MP.zone = 'rows'; MP.r = 0; MP.rows[0].act(); return [MP.view.tab || 0, MP.view.season || '']; });
   await p.waitForTimeout(300);
   check('OK on «لم يُحسم بعد»: the season under way\'s table', JSON.stringify(v) === '[0,""]' && /^١\. الهلال/.test((await rows(p))[0] || ''), JSON.stringify(v));
@@ -136,7 +137,7 @@ const key = async (p, k, n = 1) => { for (let i = 0; i < n; i++) { await p.keybo
   await p.evaluate(() => mpGo({ k: 'league', id: '4668', tab: 3 }));
   await p.waitForTimeout(800);
   const r = await rows(p), t = await text(p);
-  check('no weekly file: the archive\'s three champions, and the plain source line', r.length === 4 && r[2] === '٢٠٢٤-٢٠٢٥ الاتحاد ٨٣ نقطة، بفارق ٨ عن الهلال'
+  check('no weekly file: the archive\'s three champions, and the plain source line', r.length === 4 && r[2] === '٢٠٢٤-٢٠٢٥: الاتحاد ٨٣ نقطة، بفارق ٨ عن الهلال'
     && t.includes('المصدر: نتائج المباريات وويكي بيانات') && !t.includes('ويكيبيديا'), JSON.stringify(r));
   await ctx.close();
 }
@@ -181,7 +182,7 @@ const key = async (p, k, n = 1) => { for (let i = 0; i < n; i++) { await p.keybo
   await p.evaluate(() => mpGo({ k: 'league', id: '4668', tab: 3 }));
   await p.waitForTimeout(800);
   const r = await rows(p), t = await text(p);
-  check('English «Champions»: English club names and words, Latin digits', !errors.length && r[1] === '2025-2026 Al-Nassr 86 pts, 2 ahead of Al-Hilal' && t.includes('Earlier')
+  check('English «Champions»: English club names and words, Latin digits', !errors.length && r[1] === '2025-2026: Al-Nassr 86 pts, 2 ahead of Al-Hilal' && t.includes('Earlier')
     && !/[؀-ۿ]/.test(t), JSON.stringify(r) + errors.join('|'));
   await p.evaluate(() => { MP.view.tab = 4; mpRender(); });
   await p.waitForTimeout(300);
@@ -199,6 +200,8 @@ for (const [w, h] of [[1280, 720], [960, 540]]) {   // 720p: the five tabs and t
   const m = await p.evaluate(() => { const d = document.getElementById('mp-days'), last = d.lastElementChild.getBoundingClientRect();
     return { wide: document.documentElement.scrollWidth <= innerWidth + 1, tabs: last.left >= -1 && last.right <= innerWidth + 1 }; });
   check(`${w}x${h}: the five tabs on screen, nothing wider than the screen`, m.wide && m.tabs && !errors.length, JSON.stringify(m) + errors.join('|'));
+  const sz = await p.evaluate(() => [parseFloat(getComputedStyle(document.querySelector('#mp .mpsrc')).fontSize), parseFloat(getComputedStyle(document.querySelector('#mp li.mpi i')).fontSize)]);
+  check(`${w}x${h}: the source line as big as the rows' muted text (never smaller: read from the couch)`, sz[0] >= sz[1] && sz[1] > 0, JSON.stringify(sz));
   await ctx.close();
 }
 await browser.close();

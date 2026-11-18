@@ -367,7 +367,7 @@ function spScoreWatch(now){
 // its champions season by season and its top scorers from the weekly files (data-honours, urtv-data first: champions/ cross-checked, scorers/
 // CC BY-SA 4.0, their source said under them). A club's count of titles only when its league's list is complete; else its latest title only.
 const HW = {nowS:'الحالي', tableOf:'جدول الترتيب النهائي %s', resultsOf:'نتائج %s', scorersOf:'الهدّافون %s', champMark:'البطل',
-  undecided:'لم يُحسم بعد', ptsGap:'%s نقطة، بفارق %s عن %s', ptsLevel:'%s نقطة، بالتساوي مع %s', finalWon:'النهائي %s على %s',
+  undecided:'لم يُحسم بعد، افتح الجدول', ptsGap:'%s نقطة، بفارق %s عن %s', ptsLevel:'%s نقطة، بالتساوي مع %s', finalWon:'النهائي %s على %s',
   goalsFew:'%s أهداف', goalsMany:'%s هدفًا', fromArchive:'من أرشيفنا', older:'قبل ذلك', srcChamps:'المصدر: نتائج المباريات وويكي بيانات',
   srcChampsWp:'المصدر: نتائج المباريات وويكي بيانات وويكيبيديا (CC BY-SA 4.0)', srcScorers:'المصدر: ويكيبيديا وويكي بيانات (CC BY-SA 4.0)',
   noScorers:'لا نعرف هدّاف هذا الموسم بعد', noChamps:'لا نعرف أبطال هذا الدوري بعد', honours:'البطولات', lastTitle:'آخرها %s',
@@ -411,7 +411,7 @@ function honChampRow(v, c){
   const name = clubNm(c.ar, c.en || c.n, c.id ? String(c.id) : ''), them = c.vs || c.vn ? clubNm(c.var, c.vn, String(c.vs || '')) : '';
   const sub = c.pts != null && them ? fw(c.gap ? HW.ptsGap : HW.ptsLevel, ar(c.pts), ...(c.gap ? [ar(c.gap), them] : [them]))
     : Array.isArray(c.score) && them ? fw(HW.finalWon, ar(c.score[0]) + '-' + ar(c.score[1]), them) : '';
-  return mpItem(honSeasonName(c.s) + ' ' + name, sub, c.id ? () => mpGo({k: 'club', id: String(c.id)}) : () => {});
+  return mpItem(honSeasonName(c.s) + ': ' + name, sub, c.id ? () => mpGo({k: 'club', id: String(c.id)}) : () => {});
 }
 function honChamps(v, id, sp){
   const {list, file} = honChampList(id, sp), cur = sp && honOk(sp.season) ? String(sp.season) : '';
