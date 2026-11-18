@@ -99,6 +99,16 @@ public class MainActivity extends Activity {
     @Override
     protected void onStop() {
         Showing.leave();
+        // 4.4 (a black-video report): another app came in front (Home, then YouTube; the TV's own screensaver; the screen off after the sleep
+        // timer): the page is freed and the preview closes, so no live renderer sits under a video app for hours on a weak TV. The next
+        // «شاشة التوقف» builds it fresh (startSaver already clears the task). A rotation or a resize keeps it.
+        if (!isChangingConfigurations()) {
+            alive = false;
+            snapHandler.removeCallbacksAndMessages(null);
+            ScreenView.release(web);
+            web = null;
+            finish();
+        }
         super.onStop();
     }
 
