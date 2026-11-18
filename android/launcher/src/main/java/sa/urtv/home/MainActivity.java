@@ -2130,7 +2130,7 @@ public class MainActivity extends Activity {
             if (nudgeIsUpdate) { launchGuarded(ParentalPolicy.PILL_UPDATES, new Intent(this, UpdateActivity.class), "تحديث تلفزيوني"); return; }   // 4.3.1: the builds differ
             if (nudgeIsCity) { openCity(); return; }   // 4.3.1: the same bar asks for the city while it is due
             if (nudgeIsStock) {   // 4.4: the TV's own «Home app» choice (no adb needed); where the TV has none, «إعداد تلفزيوني» and its «تراجع»
-                sa.urtv.home.setup.SetupHook.clearStockBackOffer(this);
+                sa.urtv.home.setup.SetupHook.stockTaken(this);   // review A2-F1: HOME_WANTED goes too
                 Intent hs = new Intent(android.provider.Settings.ACTION_HOME_SETTINGS);
                 if (getPackageManager().resolveActivity(hs, 0) != null) launchGuarded(ParentalPolicy.PILL_TV_SETTINGS, hs, "إعدادات التلفزيون");
                 else guarded(ParentalPolicy.WIDGET_MATCHES, null, S.t("إعداد تلفزيوني"), () -> launch(new Intent(this, sa.urtv.home.setup.SetupActivity.class)));

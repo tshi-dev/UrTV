@@ -115,7 +115,7 @@ public final class SetupHook {
         try {
             final Context app = c.getApplicationContext();
             final FileStore store = new FileStore(app);
-            if (!"1".equals(trim(store.get(SetupEngine.HOME_WANTED))) || SetupRecovery.pending(app) || SetupRunner.get().running() || oursIsDefault(app)) return;
+            if (!"1".equals(trim(store.get(SetupEngine.HOME_WANTED))) || stockBackOffered(app) || SetupRecovery.pending(app) || SetupRunner.get().running() || oursIsDefault(app)) return;
             if (!trim(store.get(SetupEngine.HOME_REAPPLIED)).isEmpty()) {
                 if (reapplyTried == 0) { reapplyTried = 1; android.util.Log.i(TAG, "home role: lost again after one re-apply; left as it is"); }
                 return;
@@ -236,6 +236,13 @@ public final class SetupHook {
     /** the person answered the offer (or «لاحقاً»): it goes, and the count starts again */
     public static void clearStockBackOffer(Context c) {
         try { FileStore f = new FileStore(c); f.put(STOCK_OFFER, ""); f.put(HOME_GUARD, BootGuard.fresh(System.currentTimeMillis()).text()); } catch (Exception ignored) { }
+    }
+
+    /** 4.4 review A2-F1: the person pressed the bar to take the TV's own home: our wish for the home goes too (reapplyIfLost and the add-on's watch would undo the rescue), and the add-on is told at once */
+    public static void stockTaken(Context c) {
+        clearStockBackOffer(c);
+        try { new FileStore(c).put(SetupEngine.HOME_WANTED, ""); } catch (Exception ignored) { }
+        tellWatchNow(c);
     }
 
     /** Our home reached the screen (MainActivity.onResume): this boot is fine and BootGuard's count starts again (the factory step's, and 4.4 the home's own). One small read; a write only when it changes. */

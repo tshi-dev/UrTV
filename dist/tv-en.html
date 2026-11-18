@@ -279,8 +279,8 @@
   .week li.fc .lo,.week li.fc .hi{text-align:center;font-variant-numeric:tabular-nums}
   .week li.fc .lo{color:#CFC6B2}.week li.fc .hi{color:#FFF;font-weight:500}
   .week li.fc .rg{position:relative;height:5px;border-radius:3px;background:rgba(255,255,255,.14)}
-  .week li.fc .rg i{position:absolute;top:0;bottom:0;border-radius:3px;background:linear-gradient(to right,#8FC3C9,var(--gold-3) 60%,#F0975F)}
-  html[dir=ltr] .week li.fc .rg i{background:linear-gradient(to left,#8FC3C9,var(--gold-3) 60%,#F0975F)}
+  .week li.fc .rg i{position:absolute;top:0;bottom:0;left:var(--s,0);border-radius:3px;background:linear-gradient(to right,#8FC3C9,var(--gold-3) 60%,#F0975F)}
+  html[dir=ltr] .week li.fc .rg i{left:auto;right:var(--s,0);background:linear-gradient(to left,#8FC3C9,var(--gold-3) 60%,#F0975F)}
   .week li.np{display:grid;grid-template-columns:auto 1fr auto;align-items:baseline;gap:.35em .6em;white-space:normal;border-bottom:none;padding:.4em 0 .2em}
   .week li.np > *{max-width:none;overflow:visible;text-overflow:clip;padding:0;margin:0;white-space:nowrap}
   .week li.np b{grid-column:1;font-size:2em;line-height:1.1;font-weight:500;color:var(--gold-hi)}
@@ -3349,7 +3349,7 @@ function forecastRows(){
       : enDate(new Date(d.date + 'T12:00:00Z'), {timeZone:'UTC', weekday:'long'});
     const a = (d.lo - lo) / span * 100, b = (d.hi - d.lo) / span * 100;
     return `<li class="fc"><span>${day}</span><span class="wxi">${wxIcon(d.code, false)}</span><span class="ep">${WX_CODES[d.code] || ''}</span>`
-         + `<span class="lo">${ar(Math.round(d.lo))}°</span><span class="rg"><i style="inset-inline-start:${a.toFixed(0)}%;width:${b.toFixed(0)}%"></i></span><span class="hi">${ar(Math.round(d.hi))}°</span></li>`;
+         + `<span class="lo">${ar(Math.round(d.lo))}°</span><span class="rg"><i style="--s:${a.toFixed(0)}%;width:${b.toFixed(0)}%"></i></span><span class="hi">${ar(Math.round(d.hi))}°</span></li>`;
   });
 }
 

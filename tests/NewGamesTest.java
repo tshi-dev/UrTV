@@ -170,7 +170,7 @@ public final class NewGamesTest {
         check("emoji: nothing repeats while there are enough fresh puzzles", EmojiGame.pick(all, 8, false, recent, new Random(3)).stream().noneMatch(p -> recent.contains(p.id)));
         byte[] json = GameBundle.open("emoji", java.nio.file.Files.readAllBytes(java.nio.file.Paths.get(bundleFile)));
         List<EmojiGame.Puzzle> real = json == null ? null : EmojiGame.parse(MiniJson.parse(new String(json, java.nio.charset.StandardCharsets.UTF_8)));
-        boolean cats = real != null; if (cats) { Map<String, Integer> c = new HashMap<>(); for (EmojiGame.Puzzle p : real) c.merge(p.cat, 1, Integer::sum); for (int v : c.values()) cats &= v >= 4 || true; }
+        boolean cats = real != null; if (cats) { Map<String, Integer> c = new HashMap<>(); for (EmojiGame.Puzzle p : real) c.merge(p.cat, 1, Integer::sum); for (int v : c.values()) cats &= v >= 4; }
         check("emoji: the bundled bank opens and parses (" + (real == null ? 0 : real.size()) + " puzzles, at least 140), every answer has an English text, no two puzzles have the same emoji or the same answer",
             real != null && real.size() >= 140 && real.stream().allMatch(p -> !p.a[1].isEmpty()) && real.stream().map(p -> p.emoji).distinct().count() == real.size() && real.stream().map(p -> p.a[0]).distinct().count() == real.size());
     }
