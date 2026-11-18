@@ -172,6 +172,15 @@ final class SetupEngine {
 
     // ---- 1. the checks --------------------------------------------------------------------------------------------------------------
 
+    /** the TV's SDK, asked now when no precheck ran in this session (the home switch on its own, from the settings' row) */
+    private int sdkNow() throws IOException {
+        if (sdk == 0) {
+            String t = lastLine(text("getprop ro.build.version.sdk")).replaceAll("[^0-9]", "");
+            sdk = t.isEmpty() ? 0 : Integer.parseInt(t);
+        }
+        return sdk;
+    }
+
     Result precheck() throws IOException {
         String sdkText = lastLine(text("getprop ro.build.version.sdk")).replaceAll("[^0-9]", "");
         sdk = sdkText.isEmpty() ? 0 : Integer.parseInt(sdkText);
@@ -585,6 +594,8 @@ final class SetupEngine {
         AdbClient.Result role = sh.run("cmd role add-role-holder --user 0 android.app.role.HOME " + SELF);
         AdbClient.Result setHome = sh.run("cmd package set-home-activity --user 0 " + q(HOME_ACTIVITY));
         boolean roleOk = role.code == 0 || (sdk > 0 && sdk < 29);    // Android 9 and older have no `cmd role`
+        // 4.5 (the owner's «with a protective way»): add alone did not give ours the role (Android 10+): the stock holder is taken off it, guarded (HomeRole)
+        if (KEEP_STOCK_ON && HomeRole.addAloneFailed(sdkNow(), role.code, roleHolder(), SELF)) return protectedRole(stock, stockPkg, holder, pk);
         if (!roleOk || setHome.code != 0) return abort(stock, stockPkg, holder, "ما قبل التلفزيون تعيين شاشتنا شاشةً رئيسية، فما عطّلنا الأصلية.", false);
         if (KEEP_STOCK_ON) {   // ours holds Home; the stock home and the wizard are left as they are
             sh.run("cmd package set-home-activity --user 0 " + q(HOME_ACTIVITY));
@@ -609,6 +620,46 @@ final class SetupEngine {
         sh.run("am force-stop com.android.tv.settings");
         sh.run("input keyevent KEYCODE_HOME");
         return verifyAndFinish(stock, stockPkg, holder, pk, false);
+    }
+
+    /**
+     * 4.5 (HomeRole): add-role-holder alone did not make ours the HOME role holder. The safety switch is armed already (homeSwitch arms it before any change: rule 2).
+     * The holder is written outside the app's data and read back (rule 1), only a holder that may be taken off is (rule 6), the role is taken from it and given
+     * to ours, and a real Home press must open ours. Nothing is disabled or uninstalled here (rule 3); any failure gives the role back at once (rule 4).
+     */
+    private Result protectedRole(String stock, String stockPkg, String holder, Set<String> pk) throws IOException {
+        String prev = roleHolder();
+        if (prev.isEmpty() || prev.equals(SELF)) prev = holder;
+        if (!HomeRole.removable(prev)) return abort(stock, stockPkg, holder, HomeRole.NOT_REMOVABLE, false);
+        sh.run(HomeRole.record(prev));
+        if (!prev.equals(HomeRole.parse(text(HomeRole.READ)))) { sh.run(HomeRole.CLEAR); return abort(stock, stockPkg, holder, HomeRole.NOT_RECORDED, false); }
+        journalStep("role-remove");
+        sh.run(HomeRole.remove(prev));
+        AdbClient.Result add = sh.run(HomeRole.add(SELF));
+        if (add.code != 0 || !SELF.equals(roleHolder())) return putRoleBack(prev, stock, stockPkg, HomeRole.ADD_FAILED);
+        sh.run("cmd package set-home-activity --user 0 " + q(HOME_ACTIVITY));
+        sh.run("am force-stop com.android.tv.settings");
+        sh.run("input keyevent KEYCODE_HOME");
+        journalStep("verify");
+        if (!homeKeyOpensOurs()) return putRoleBack(prev, stock, stockPkg, HomeRole.VERIFY_FAILED);
+        return finishHome(pk, HomeRole.DONE);   // the recorded holder stays on file: «تراجع» and the rescue give the role back to it
+    }
+
+    /** rule 4: the recorded holder gets the role back at once, its home activity too (only role commands: nothing is enabled, disabled or removed), and the screen says so */
+    private Result putRoleBack(String prev, String stock, String stockPkg, String why) throws IOException {
+        sh.run(HomeRole.add(prev));
+        if (prev.equals(stockPkg)) sh.run("cmd package set-home-activity --user 0 " + q(stock));
+        sh.run("input keyevent KEYCODE_HOME");
+        boolean back = prev.equals(roleHolder());
+        if (back) {
+            sh.run(HomeRole.CLEAR);
+            deadman.disarm();
+            clearDeadline();
+            journalState("restored");
+        }
+        String said = why + (back ? HomeRole.PUT_BACK_OK : HomeRole.PUT_BACK_PENDING);
+        out.line(said);
+        return failed(said);
     }
 
     /**
@@ -966,7 +1017,8 @@ final class SetupEngine {
      * home's helpers come back too (the undo). Returns whether Home is confirmed; nothing says «restored» before this is true.
      */
     private boolean putStockBack(String stock, String stockPkg, String holder, boolean withHelpers) throws IOException {
-        String back = holder.isEmpty() || holder.equals(SELF) || !PKG.matcher(holder).matches() ? stockPkg : holder;
+        String recorded = HomeRole.parse(text(HomeRole.READ));   // 4.5 (HomeRole rule 5): the holder the protected path took off the role, kept outside the app's data
+        String back = !recorded.isEmpty() ? recorded : holder.isEmpty() || holder.equals(SELF) || !PKG.matcher(holder).matches() ? stockPkg : holder;
         if (withHelpers) for (String h : SetupLists.HOME_HELPERS) sh.run("pm enable " + h);
         sh.run("pm enable " + WRAITH);
         sh.run("pm enable " + stockPkg);
@@ -976,13 +1028,13 @@ final class SetupEngine {
         if (back.equals(stockPkg)) sh.run("cmd package set-home-activity --user 0 " + q(stock));
         if (stockPkg.equals(LAUNCHERX)) sh.run("cmd notification allow_listener " + NOTIFICATION_LISTENER);
         sh.run("input keyevent KEYCODE_HOME");
-        if (resolveHome().startsWith(back + "/")) return true;   // a quick TV is checked at once, before any wait
+        if (resolveHome().startsWith(back + "/")) { if (!recorded.isEmpty()) sh.run(HomeRole.CLEAR); return true; }   // a quick TV is checked at once, before any wait
         for (int i = 0; i < 3; i++) {
             sleeper.sleep(3000);
-            if (resolveHome().startsWith(back + "/")) return true;
+            if (resolveHome().startsWith(back + "/")) { if (!recorded.isEmpty()) sh.run(HomeRole.CLEAR); return true; }
             sh.run("input keyevent KEYCODE_HOME");
         }
-        return false;
+        return false;   // the record stays: the next restore gives the role back to it
     }
 
     /**

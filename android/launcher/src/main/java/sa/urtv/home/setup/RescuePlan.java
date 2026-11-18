@@ -36,7 +36,10 @@ final class RescuePlan {
      * {@code installed}, {@code off}: the TV's package lists (null: the TV did not say: nothing is planned); {@code ledger}: what our setup turned off (null when the home
      * did not answer); {@code a11y}: enabled_accessibility_services as the TV says it ("" or "null": none).
      */
-    static Plan plan(Set<String> installed, Set<String> off, List<String> ledger, String a11y) {
+    static Plan plan(Set<String> installed, Set<String> off, List<String> ledger, String a11y) { return plan(installed, off, ledger, a11y, ""); }
+
+    /** 4.5 (HomeRole rule 5): {@code recorded}: the holder our setup took off the HOME role (HomeRole.JOURNAL, read over adb); it gets the role back first */
+    static Plan plan(Set<String> installed, Set<String> off, List<String> ledger, String a11y, String recorded) {
         Plan p = new Plan();
         if (installed == null || off == null) return p;
         Set<String> want = new LinkedHashSet<>();
@@ -49,6 +52,13 @@ final class RescuePlan {
             p.enabled.add(pkg);
         }
         String stock = installed.contains(LAUNCHERX) ? LAUNCHERX_HOME : installed.contains(TVLAUNCHER) ? TVLAUNCHER_HOME : "";
+        String rec = HomeRole.parse(recorded);
+        if (!rec.isEmpty() && installed.contains(rec) && (stock.isEmpty() || !stock.startsWith(rec + "/"))) {   // a recorded holder that is not Google's home: the role to it
+            if (off.contains(rec) && !p.enabled.contains(rec)) { p.commands.add("pm enable " + rec); p.enabled.add(rec); }
+            p.commands.add(HomeRole.add(rec));
+            p.home = rec;
+            stock = "";
+        }
         if (!stock.isEmpty()) {
             String pkg = stock.substring(0, stock.indexOf('/'));
             p.commands.add("cmd role add-role-holder --user 0 android.app.role.HOME " + pkg);
@@ -61,6 +71,7 @@ final class RescuePlan {
             p.commands.add(rest.isEmpty() ? "settings delete secure enabled_accessibility_services" : "settings put secure enabled_accessibility_services '" + rest + "'");
             p.a11yChanged = true;
         }
+        if (!rec.isEmpty() && !p.home.isEmpty()) p.commands.add(HomeRole.CLEAR);   // given back: the record is let go
         p.commands.add("input keyevent KEYCODE_HOME");
         return p;
     }

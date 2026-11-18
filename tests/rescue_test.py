@@ -17,7 +17,7 @@ def text(p): return Path(p).read_text(encoding="utf-8")
 
 if shutil.which("javac") and shutil.which("java"):
     with tempfile.TemporaryDirectory() as tmp:
-        src = [SETUP / "RescuePlan.java", SETUP / "WatchList.java", SETUP / "SetupLists.java", SETUP.parent / "ExtrasWords.java", ROOT / "tests/RescuePlanRun.java"]
+        src = [SETUP / "RescuePlan.java", SETUP / "HomeRole.java", SETUP / "WatchList.java", SETUP / "SetupLists.java", SETUP.parent / "ExtrasWords.java", ROOT / "tests/RescuePlanRun.java"]
         r = subprocess.run(["javac", "-encoding", "UTF-8", "-d", tmp, *map(str, src)], capture_output=True, text=True)
         check("RescuePlan compiles on a plain JVM", r.returncode == 0, r.stderr)
         if r.returncode == 0:

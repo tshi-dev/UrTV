@@ -103,7 +103,8 @@ public class RescueActivity extends Activity {
             if (installed == null || off == null) { say("التلفزيون ما قال قائمة تطبيقاته، فما غيّرنا شيئاً. اضغط الزر مرة ثانية."); return; }
             List<String> ledger = RescuePlan.ledger(homeLedger());
             String a11y = lastLine(adb.run("settings get secure enabled_accessibility_services").output);
-            RescuePlan.Plan p = RescuePlan.plan(installed, off, ledger, a11y);
+            String recorded = adb.run(HomeRole.READ).output;   // 4.5: the holder our setup took off the HOME role (kept outside UrTV's data)
+            RescuePlan.Plan p = RescuePlan.plan(installed, off, ledger, a11y, recorded);
             for (String c : p.commands) adb.run(c);
             Set<String> after = RescuePlan.packages(adb.run("pm list packages -d; echo END_OF_LIST").output);
             StringBuilder said = new StringBuilder("تم.\n");

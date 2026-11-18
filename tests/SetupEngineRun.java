@@ -23,6 +23,9 @@ public class SetupEngineRun {
         String sdk = "34";
         boolean silent, dashFailsMarker, wizardAnswersHome, wizardOwnsWifi, castInWizard, nokia, refuseSwitch, noRoleManager, emptyResolve;
         boolean roleRejected, homeRejected, ignoreRoleBack, appopRefused;
+        // 4.5 (HomeRole): stickyRole: add-role-holder for ours says OK but the stock holder keeps the role until it is taken off; the record outside the app's data
+        boolean stickyRole, recordFails, removeIgnored, addFailsAfterRemove;
+        String roleFile;
         String exactAlarm = "default";
         String maker = "Google", adbPort = "", bucket = "10", bootId = "boot-1";
         int reboots;
@@ -48,7 +51,7 @@ public class SetupEngineRun {
 
         String home() {
             if (emptyResolve) return "";
-            String h = roleHolder;
+            String h = roleHolder.isEmpty() ? stockPkg : roleHolder;   // 4.5: no holder: Home goes to the stock home
             if (ignoreRoleBack && h.equals("sa.urtv.home") && refuseSwitch) return "com.google.android.tungsten.setupwraith/.RecoveryActivity";   // stuck on the setup wizard's recovery screen
             if (h.equals("sa.urtv.home") && !off.contains("sa.urtv.home")) return refuseSwitch && !extrasBound() ? stockPkg + "/.home.HomeActivity" : "sa.urtv.home/.MainActivity";   // 4.4: the add-on's watch brings ours back
             if (off.contains(h)) return "com.google.android.tungsten.setupwraith/.RecoveryActivity";
@@ -160,9 +163,19 @@ public class SetupEngineRun {
             if (c.startsWith("am start -a android.settings.SETTINGS")) { top = "com.android.tv.settings/.MainSettings"; return ""; }
             if (c.startsWith("settings delete ")) { String[] w = c.split(" "); settings.remove(w[2] + "/" + w[3]); return ""; }
             if (c.startsWith("cmd role get-role-holders")) return noRoleManager ? "" : roleHolder + "\n";
+            if (c.startsWith("cmd role remove-role-holder")) {
+                String who = c.substring(c.lastIndexOf(' ') + 1);
+                if (!removeIgnored && who.equals(roleHolder)) roleHolder = "";
+                return "";
+            }
+            if (c.startsWith("printf '%s\\n' ") && c.endsWith(" > " + HomeRole.JOURNAL)) { if (!recordFails) roleFile = c.split(" ")[2]; return ""; }
+            if (c.equals(HomeRole.READ.replace(" 2> /dev/null", ""))) return roleFile == null ? "" : roleFile + "\n";   // (answer() strips the redirect)
+            if (c.equals(HomeRole.CLEAR)) { roleFile = null; return ""; }
             if (c.startsWith("cmd role add-role-holder")) {
                 String who = c.substring(c.lastIndexOf(' ') + 1);
                 if (roleRejected && who.equals("sa.urtv.home")) return "Error\n";
+                if (stickyRole && who.equals("sa.urtv.home") && !roleHolder.isEmpty() && !roleHolder.equals(who)) return "";   // «OK», nothing changed
+                if (addFailsAfterRemove && who.equals("sa.urtv.home") && roleHolder.isEmpty()) return "Error\n";
                 if (ignoreRoleBack && !who.equals("sa.urtv.home")) return "";
                 roleHolder = who;
                 return "";
