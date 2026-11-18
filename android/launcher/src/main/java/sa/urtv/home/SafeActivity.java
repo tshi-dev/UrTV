@@ -17,7 +17,8 @@ import java.util.List;
 /**
  * 4.3.5 (R7): what the home opens instead of its screen after it died twice right after starting (CrashLoop). Nothing here can fail the way the
  * home did: plain views, no WebView, no other app's data, no photo. «افتح الشاشة الأصلية» opens the TV's own home; «حاول مرة ثانية» clears the
- * count and starts the home screen again. Our claim as the default home is dropped, so the next Home press offers the TV's own home too.
+ * count and starts the home screen again. Our place as the default home is never touched (4.3.5 review F1: on Android 9 nothing could put it back,
+ * and the setup wizard would take the Home key).
  */
 public class SafeActivity extends Activity {
     static final String TITLE = S.n("تلفزيونك توقف أكثر من مرة عند التشغيل"),
@@ -30,7 +31,6 @@ public class SafeActivity extends Activity {
     @Override
     protected void onCreate(Bundle b) {
         super.onCreate(b);
-        try { getPackageManager().clearPackagePreferredActivities(getPackageName()); } catch (RuntimeException ignored) { }   // our own claim only
         LinearLayout col = new LinearLayout(this);
         col.setOrientation(LinearLayout.VERTICAL);
         col.setGravity(Gravity.CENTER);
@@ -47,10 +47,12 @@ public class SafeActivity extends Activity {
             startActivity(new Intent(this, MainActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
             finish();
         });
-        col.addView(stock);
+        boolean hasStock = stockHome() != null;   // 4.3.5 review F2: a TV whose own home our setup turned off: no dead button, the retry is the way
+        if (hasStock) col.addView(stock);
+        else col.addView(text(S.tv(NO_STOCK), 16));
         col.addView(retry);
         setContentView(col);
-        stock.requestFocus();
+        (hasStock ? stock : retry).requestFocus();
     }
 
     /** the TV's own home: the first other app that answers HOME */
@@ -67,8 +69,8 @@ public class SafeActivity extends Activity {
     private ComponentName stockHome() {
         List<ResolveInfo> homes = getPackageManager().queryIntentActivities(new Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_HOME), 0);
         for (ResolveInfo r : homes) {
-            if (r.activityInfo == null || getPackageName().equals(r.activityInfo.packageName)) continue;
-            if ("com.android.settings".equals(r.activityInfo.packageName)) continue;   // Settings' FallbackHome: only a stand-in
+            if (r.activityInfo == null) continue;
+            if (!StockHome.real(r.activityInfo.packageName, r.activityInfo.name)) continue;   // never ours, the setup wizard or a Settings stand-in (as the setup's otherHome)
             return new ComponentName(r.activityInfo.packageName, r.activityInfo.name);
         }
         return null;
