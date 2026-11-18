@@ -104,5 +104,27 @@ check("QA-11: the pill row takes the kept answer", main.count("ConfigSnapshot.ui
 uc = body(main, "private void updateClock() {")
 check("QA-11: the first clock draw of a cold process uses the kept answer, then reads on its thread", "ConfigSnapshot.ui(this)" in uc and "ConfigSnapshot.read(this)" not in uc)
 
+# QA-12: the tasks screens and the reminders' alarm
+ta = src(HOME / "TasksActivity.java")
+check("QA-12: «المهام» asks the provider only on its io thread (fetch is called from io.execute lambdas and from fetch's own helpers only)",
+      "private static Tasks fetch(" in ta and "getContentResolver().query(TASKS" in body(ta, "private static Tasks fetch(")
+      and "getContentResolver().query(" not in ta.replace(body(ta, "private static Tasks fetch("), ""))
+check("QA-12: «المهام» draws the list as last answered (render has no query) and refreshes on its thread at each return",
+      "fetch(" not in body(ta, "private void render(int focus) {") and "refresh(0);" in body(ta, "protected void onResume() {")
+      and "io.execute(() -> {" in body(ta, "private void refresh(final int focus) {") and "post(() -> { apply(t); render(focus); });" in body(ta, "private void refresh(final int focus) {"))
+ch = body(ta, "private void change(final int kind")
+check("QA-12: add, finish and delete write, find the task's id, re-plan the reminders and re-read the list inside one io job; the UI thread only says and draws",
+      "io.execute(() -> {" in ch and "ReminderScheduler.schedule(app);" in ch and "fetch(app)" in ch and "post(() -> {" in ch
+      and "ReminderScheduler.schedule" not in ta.replace(ch, "") and "getContentResolver()" not in ta.replace(ch, "").replace(body(ta, "private static Tasks fetch("), ""))
+check("QA-12: a refused add puts its words back in the field; a full list is still said at once", "field.setText(t)" in ta and "MAX_TASKS) { toast(" in ta)
+check("QA-12: the voice answer is read against the list on screen (no query in onActivityResult)", "getContentResolver" not in body(ta, "protected void onActivityResult(") and "load()" not in ta)
+trs = src(HOME / "TaskReminderActivity.java")
+onc = body(trs, "protected void onCreate(Bundle b) {")
+check("QA-12: the reminder page reads its task on a thread and shows when it is here (it still leaves when the task is gone)",
+      "io.execute(() -> {" in onc and "fetch(app, id)" in onc and "finish();" in onc and "View.INVISIBLE" in onc and "getContentResolver" not in onc)
+check("QA-12: a change on the reminder page is saved, and the alarm re-planned, on the io thread, in order",
+      "io.execute(() -> {" in body(trs, "private void save() {") and "ReminderScheduler.schedule(app);" in body(trs, "private void save() {") and "ReminderScheduler.schedule(this)" not in trs
+      and "if (edit == null) return;" in body(trs, "private void step(int row, int dir) {"))
+
 print("FAILED" if failed else "all passed")
 sys.exit(1 if failed else 0)

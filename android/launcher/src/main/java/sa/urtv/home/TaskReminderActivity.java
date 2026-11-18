@@ -40,13 +40,12 @@ public class TaskReminderActivity extends Activity {
     private TextView[] labels;
     private LinearLayout[] rows;
     private String taskText = "";
+    private TextView name;
 
     @Override protected void onCreate(Bundle b) {
         super.onCreate(b);
         Digits.init(this);
         id = getIntent().getLongExtra(EXTRA_ID, 0);
-        load();
-        if (edit == null) { finish(); return; }
         try {
             String[] z = ConfigSnapshot.ui(this).cityZone();
             zone = z == null ? ZoneFix.tvZone() : ZoneFix.zone(ClockZone.valid(z[1]));
@@ -64,7 +63,7 @@ public class TaskReminderActivity extends Activity {
         col.setPadding(0, dp(40), 0, dp(48));
         frame.addView(col, new FrameLayout.LayoutParams(dp(600), -2, Gravity.CENTER_HORIZONTAL));
         col.addView(text(S.t("مهمة"), 26, "Medium", TEXT), gap(dp(16)));
-        TextView name = text(taskText, 20, "Medium", TEXT);
+        name = text(taskText, 20, "Medium", TEXT);
         name.setPadding(dp(16), dp(16), dp(16), dp(16));
         GlassPaint.card(name, look, 14);
         col.addView(name, gap(dp(8)));
@@ -103,25 +102,55 @@ public class TaskReminderActivity extends Activity {
         col.addView(hint, gap(0));
         scroll.setLayoutDirection(Dir.layout(Dir.rtl()));
         setContentView(scroll);
-        draw();
-        rows[0].post(rows[0]::requestFocus);
+        // 4.4 QA-12: the task is read from the screensaver's provider on a thread (never on the UI thread); the page shows when it is here, and
+        // leaves when the task is gone or the app is too old for reminders, as it did when it waited
+        shown = frame;
+        shown.setVisibility(View.INVISIBLE);
+        final android.content.Context app = getApplicationContext();
+        io.execute(() -> {
+            final Loaded got = fetch(app, id);
+            runOnUiThread(() -> {
+                if (isDestroyed() || isFinishing()) return;
+                if (got == null) { finish(); return; }
+                taskText = got.text;
+                edit = got.edit;
+                name.setText(S.tv(taskText));
+                shown.setVisibility(View.VISIBLE);
+                draw();
+                rows[0].requestFocus();
+            });
+        });
     }
 
-    /** the task's text and reminder from the screensaver app's list; edit stays null when it is gone or the app is too old for reminders */
-    private void load() {
-        try (android.database.Cursor c = getContentResolver().query(TASKS, null, null, null, null)) {
-            if (c == null || c.getColumnIndex("due") < 0) return;
+    private final java.util.concurrent.ExecutorService io = java.util.concurrent.Executors.newSingleThreadExecutor();
+    private View shown;
+
+    @Override protected void onDestroy() {
+        super.onDestroy();
+        io.shutdown();   // a save still queued runs
+    }
+
+    private static final class Loaded {
+        final String text;
+        final ReminderEdit edit;
+        Loaded(String text, ReminderEdit edit) { this.text = text; this.edit = edit; }
+    }
+
+    /** the task's text and reminder from the screensaver app's list (io thread); null when it is gone or the app is too old for reminders */
+    private static Loaded fetch(android.content.Context app, long id) {
+        try (android.database.Cursor c = app.getContentResolver().query(TASKS, null, null, null, null)) {
+            if (c == null || c.getColumnIndex("due") < 0) return null;
             while (c.moveToNext()) {
                 if (c.getLong(c.getColumnIndexOrThrow("id")) != id) continue;
-                taskText = c.getString(c.getColumnIndexOrThrow("t"));
-                edit = new ReminderEdit(c.getLong(c.getColumnIndexOrThrow("due")), c.getInt(c.getColumnIndexOrThrow("bf")), c.getInt(c.getColumnIndexOrThrow("rp")),
-                        c.getInt(c.getColumnIndexOrThrow("snd")) == 1, c.getInt(c.getColumnIndexOrThrow("wh")));
-                return;
+                return new Loaded(c.getString(c.getColumnIndexOrThrow("t")), new ReminderEdit(c.getLong(c.getColumnIndexOrThrow("due")), c.getInt(c.getColumnIndexOrThrow("bf")), c.getInt(c.getColumnIndexOrThrow("rp")),
+                        c.getInt(c.getColumnIndexOrThrow("snd")) == 1, c.getInt(c.getColumnIndexOrThrow("wh"))));
             }
         } catch (RuntimeException ignored) { }
+        return null;
     }
 
     private void step(int row, int dir) {
+        if (edit == null) return;   // the task has not come yet
         long now = System.currentTimeMillis();
         switch (row) {
             case 0: edit.toggle(now); break;
@@ -144,8 +173,13 @@ public class TaskReminderActivity extends Activity {
         v.put("rp", edit.repeat);
         v.put("snd", edit.sound ? 1 : 0);
         v.put("wh", edit.where);
-        try { getContentResolver().update(TASKS, v, null, null); } catch (RuntimeException ignored) { }
-        ReminderScheduler.schedule(this);   // the alarm follows
+        final android.content.Context app = getApplicationContext();
+        try {   // on the io thread, in order: the write, then the alarm that follows it
+            io.execute(() -> {
+                try { app.getContentResolver().update(TASKS, v, null, null); } catch (RuntimeException ignored) { }
+                ReminderScheduler.schedule(app);
+            });
+        } catch (java.util.concurrent.RejectedExecutionException ignored) { }
     }
 
     private void draw() {
