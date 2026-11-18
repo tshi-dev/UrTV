@@ -3181,3 +3181,5 @@ Pictures (PC only): optimize/run/step96/pics/upd-1.png … upd-6.png.
 - (b) screensaver after 2 min in another app: PASS. Clock correct at once, everything fast.
 - Finding (polish/annoying): when the screensaver starts it first shows an OLD frame with the OLD time for about 0.8 s, then it loads the real screen. Likely the last drawn frame/cache being shown before the first fresh draw; should show the current time or a blank until the first draw.
 - (d) screensaver page load: PARTIAL. The page loads, but not at once: the owner's 0.8 s old-frame finding above IS the answer for (d). Clock size not reported yet.
+- Step 96 (g) the «!» in the games: PASS (owner: good).
+- Finding (annoying, same family as the settings-focus finding): in the games SETTINGS, when the screen first opens the focus should start on the first (top) part; it does not.
