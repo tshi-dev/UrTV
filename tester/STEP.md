@@ -1,3 +1,11 @@
+«▶▶ NOW (owner, 18 Nov 23:35 Riyadh, REPLACES the NOW below): 4.4 BETA 1 is live: apk-beta = 3.525 (next 1d192000; apk-latest stays 3.517 = 4.3.6). Status check from the supervisor: done so far = 101 (partial), 96 (a) + jank + clock, 89 parts 1–2. NOT done: 103, 96 extras (g)–(m), the rest of 89, 102, 95. Do, in this order, and push a report after EACH item:
+ 1) Put the owner's TV on 4.4 beta 525 through «تحديث تلفزيوني» with «النسخ التجريبية» on (this also tests the beta switch, item 5b). Check settings kept, HOME role, add-on bound, home key, TV muted.
+ 2) Step 96 extras (g)–(m) on 525, plus the «أشكال جاهزة» presets and «شكل التطبيقات» A/B/C. Where adb can't reach a screen, say exactly which ones (so the owner knows what to do by hand).
+ 3) Step 89: the remaining audit items on 525.
+ 4) Step 103 (PC + Chrome only) at any pause.
+ 5) Step 102 only if a spare TV exists; else write «step 102 skipped: no test TV».
+ Finish with ONE summary table in REPORT.md: every step/item → PASS / FAIL / NOT DONE (why) / NEEDS OWNER.»
+
 «🔇 KEEP THE TV MUTED THE WHOLE TIME (the owner is asleep): mute before you start, re-mute after every reboot, install or wake (the TV unmutes itself after sleep), no adhan, recitation or sound tests tonight.»
 «‼ COMMIT RULE (owner, 18 Nov): every commit you push must have author AND committer `tshi-dev <272740088+tshi-dev@users.noreply.github.com>` (run `git config user.name tshi-dev && git config user.email 272740088+tshi-dev@users.noreply.github.com` in your clone) and NO «Co-Authored-By», «Claude-Session» or «Generated with» lines. Your pushes so far on work/tester-report used «UrTV tester <tester@urtv.invalid>» + a Co-Authored-By line: stop that from now on; don't rewrite pushed history.»
 «EXTRA for step 96 (owner's TV, 4.4): measure the home jank (gfxinfo, same 3-min script) twice more: once with the owner's look as is, once after switching to the plain look («شكلك المعتاد» without scenes/glass), then put the owner's look back. Report janky % and p50/p99 for both, so we know if the scenes/glass look causes the 20 % jank.»
