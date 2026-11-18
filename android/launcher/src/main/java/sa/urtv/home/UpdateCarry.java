@@ -155,7 +155,10 @@ public final class UpdateCarry {
                 c.startActivity(new Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_HOME).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
                 return "home_intent_sent";
             }
-            if (attempt == 1) return Extras.goHome() ? "a11y_home_pressed" : "a11y_not_bound";
+            if (attempt == 1) {   // 4.4 (QA-6, R1): the add-on's Home is asked on a thread (this runs at the home's return); its answer is only logged
+                new Thread(() -> android.util.Log.i("UrTVCarry", "front a11y: " + (Extras.goHome() ? "pressed" : "not bound")), "carry-front").start();
+                return "a11y_home_asked";
+            }
             android.app.NotificationManager nm = (android.app.NotificationManager) c.getSystemService(Context.NOTIFICATION_SERVICE);
             if (nm == null) return "no_notification_service";
             nm.createNotificationChannel(new android.app.NotificationChannel("carry_front", S.t("تحديث تلفزيونك"), android.app.NotificationManager.IMPORTANCE_HIGH));

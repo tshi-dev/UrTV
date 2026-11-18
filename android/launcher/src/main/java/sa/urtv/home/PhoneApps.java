@@ -191,7 +191,7 @@ public final class PhoneApps {
     }
 
     /** Is «إضافات تلفزيونك» on (4.3.3: the add-on holds the accessibility service the home had)? Then Back and Home work in every app. */
-    public static boolean keysEverywhere() { return Extras.enabled(); }
+    public static boolean keysEverywhere() { return Extras.enabledNow(); }   // the phone page's server thread: asked now (4.4, QA-6)
 
     /** Do the arrows and OK reach another app too? From Android 13 any of the services does it; before that only the typing/remote one. */
     public static boolean dpadEverywhere() { boolean on = keysEverywhere(); return RemoteNav.dpadEverywhere(android.os.Build.VERSION.SDK_INT, on, on); }
@@ -211,6 +211,6 @@ public final class PhoneApps {
     }
 
     /** Is the typing service on? Without it a phone cannot type into other apps (the page says how to turn it on). */
-    public static boolean typingEnabled() { return Extras.enabled(); }
+    public static boolean typingEnabled() { return Extras.enabledNow(); }
 
 }

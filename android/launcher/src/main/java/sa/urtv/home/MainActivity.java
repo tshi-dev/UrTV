@@ -186,6 +186,7 @@ public class MainActivity extends Activity {
             final Context app = getApplicationContext();
             clockReads.execute(() -> {
                 ConfigSnapshot.read(app);
+                Extras.askNow();   // 4.4 (QA-6): the add-on's state for the tick's screens, read here, off the UI thread
                 runOnUiThread(() -> {
                     if (isDestroyed() || !resumed) return;
                     updateClock();
@@ -322,6 +323,7 @@ public class MainActivity extends Activity {
         if (sa.urtv.home.setup.SetupReopen.take()) {   // «إعداد تلفزيوني» was left behind by the home switch: its progress and its done screen come back (once)
             try { guarded(ParentalPolicy.WIDGET_MATCHES, null, S.t("إعداد تلفزيوني"), () -> launch(new Intent(this, sa.urtv.home.setup.SetupActivity.class).addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT))); } catch (RuntimeException ignored) { }   // the person opened this screen already (its own lock was passed then)
         }
+        Extras.refresh();   // 4.4 (QA-6): the add-on's state, asked on a thread (the screens read the kept answer)
         sa.urtv.home.phone.PhoneUpdater.homeIsUp(getApplicationContext());   // an update cover waiting in front for this home closes now
         sa.urtv.home.setup.SetupHook.homeUp(this);   // «تخلّص من واجهة المصنع»: this boot's home came up (BootGuard)
         UpdateCarry.homeShown = true;   // the carry-over after our update asks whether our home is in front

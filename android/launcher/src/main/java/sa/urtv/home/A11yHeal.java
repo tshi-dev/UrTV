@@ -61,7 +61,7 @@ public final class A11yHeal extends BroadcastReceiver {
     /** One of our services is in the TV's list but Android does not run it (the phone page says so instead of doing nothing). */
     public static boolean stuck(Context c) {
         String list = read(c, LIST);
-        return A11yList.has(list, TYPE) && !Extras.enabled();
+        return A11yList.has(list, TYPE) && Boolean.FALSE.equals(Extras.enabledKnown());   // 4.4 (QA-6): only a real «off» (on the UI thread the kept answer, never a call)
     }
 
     /** 4.4: «إضافات تلفزيونك» is in the TV's list (turned on), bound or not */
@@ -73,7 +73,7 @@ public final class A11yHeal extends BroadcastReceiver {
     /** Our service is in the list AND Android runs it (bound): the carry's accessibility stage is done only then. */
     static boolean listedAndBound(Context c) {
         String list = read(c, LIST);
-        return A11yList.has(list, TYPE) && Extras.enabled();
+        return A11yList.has(list, TYPE) && Boolean.TRUE.equals(Extras.enabledKnown());
     }
 
     static void check(Context c, String why) {

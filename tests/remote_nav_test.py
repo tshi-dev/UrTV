@@ -77,7 +77,7 @@ check("the typing/remote service presses a key: a global action, else a focus mo
       "static String press(String key)" in ts and "s.performGlobalAction(st.code)" in ts and "cur.focusSearch(direction)" in ts and "AccessibilityNodeInfo.ACTION_FOCUS" in ts and "AccessibilityNodeInfo.ACTION_CLICK" in ts
       and "RemoteNav.plan(key, Build.VERSION.SDK_INT, true)" in ts)
 check("the home asks the add-on (Extras.press); without it the key is «service_off» and the TV offers the add-on, not at every key",
-      "String r = Extras.press(key);" in pa and 'Extras.offerOnce("keys")' in pa and "return Extras.enabled();" in pa and "now - lastOffer < 120_000" in text(HOME + "Extras.java"))
+      "String r = Extras.press(key);" in pa and 'Extras.offerOnce("keys")' in pa and "return Extras.enabledNow();" in pa and "now - lastOffer < 120_000" in text(HOME + "Extras.java"))
 check("the node walks are bounded (a count and a depth)", "new int[] {500}" in ts and "depth >= 40" in ts and "up < 6" in ts)
 # privacy: the log
 trace = text(HOME + "RemoteTrace.java")
