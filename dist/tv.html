@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <!-- the build: UTC time (YYYYMMDDHHMMSS) of the newest commit of the page's sources, put in by src/build.py. The app loads the page with the newer stamp (its own
      copy or a downloaded one), never by file time, and does not keep a download whose stamp is older than its own (Updater, PageStamp). -->
-<meta name="urtv-build" content="20261117173649">
+<meta name="urtv-build" content="20261118050227">
 <title>شاشة تلفزيونك</title>
 <style>
   @font-face{font-family:'Thmanyah';font-weight:300;font-style:normal;font-display:block;src:url("https://raw.githubusercontent.com/tshi-dev/UrTV/master/assets/fonts/Thmanyah-Light.woff2") format("woff2")}
@@ -1022,6 +1022,22 @@ html.lowram .photo.settle, html.lowram .week ul.flip li, html.lowram .mrow.flip 
 </main>
 
 <script>
+let PAGE_SKIPPED = false;
+(function(){
+  const real = window.setInterval.bind(window);
+  window.setInterval = function(fn, ms, ...args){
+    return real(function(){
+      if(document.hidden){ PAGE_SKIPPED = true; return; }
+      return typeof fn === 'function' ? fn.apply(this, args) : undefined;
+    }, ms);
+  };
+  document.addEventListener('visibilitychange', () => {
+    if(document.hidden || !PAGE_SKIPPED) return;
+    PAGE_SKIPPED = false;
+    try { if(typeof tickClock === 'function') tickClock(); } catch(e){}
+    try { if(typeof renderPanel === 'function') renderPanel(false); } catch(e){}
+  });
+})();
 const BGS = [
   {u:"https://raw.githubusercontent.com/tshi-dev/UrTV/master/assets/backgrounds/9hWJs7iblh8.jpg", c:"NEOM · Unsplash", d:0.9},
   {u:"https://raw.githubusercontent.com/tshi-dev/UrTV/master/assets/backgrounds/XDtzu1D2P8c.jpg", c:"NEOM · Unsplash", d:0.84},
