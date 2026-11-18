@@ -78,7 +78,7 @@ PANELS = ("shows", "prayers", "forecast", "hourly", "prayerrow", "nextprayer", "
           "stocks", "tasks", "year", "smart", "today", "album", "none")
 HOME_ONLY = ("nextprayer",)   # Prefs.homeOnly: offered on the home cards, never as the screensaver's panel
 HOME_CARDS = 3
-MAX_TEAMS = 20
+MAX_TEAMS = 40   # 4.4 the ceiling (FollowLimit.MAX_TEAMS; past 20 the TV warns once when the person adds one)
 PRAYERS = ("fajr", "dhuhr", "asr", "maghrib", "isha")
 PRAYER_ADJ_MAX = 20
 HIJRI_MAX = 2

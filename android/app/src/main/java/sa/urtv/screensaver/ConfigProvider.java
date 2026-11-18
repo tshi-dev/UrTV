@@ -188,6 +188,18 @@ public class ConfigProvider extends ContentProvider {
                 out.putBoolean("ok", ok);
                 return out;
             }
+            case "phone_follow_check": {   // 4.4 the launcher's page asks before a «تابع»: "add", "warn" (past the soft limit, the warning not yet answered) or "full"; arg "leagues" or "teams"
+                String kind = FollowLimit.LEAGUES.equals(arg) ? FollowLimit.LEAGUES : FollowLimit.TEAMS;
+                out.putString("state", FollowLimit.word(p.followState(kind)));
+                out.putBoolean("ok", true);
+                return out;
+            }
+            case "phone_follow_warned": {   // 4.4 …and the warning was answered «أضف» on the launcher's page: never asked again, here or there
+                String kind = FollowLimit.LEAGUES.equals(arg) ? FollowLimit.LEAGUES : FollowLimit.TEAMS;
+                p.setFollowWarned(kind);
+                out.putBoolean("ok", true);
+                return out;
+            }
             case "phone_unfollow": {   // «أزل … من فرقي» on a game's card: arg is the team's id
                 out.putBoolean("ok", arg != null && arg.matches("\\d{1,9}") && p.removeTeam(arg));
                 return out;

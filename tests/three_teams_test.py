@@ -16,8 +16,8 @@ def check(name, ok, detail=""):
 read = lambda p: p.read_text(encoding="utf-8")
 prefs, prov, settings, snap, page = read(APP / "Prefs.java"), read(APP / "ConfigProvider.java"), read(APP / "SettingsActivity.java"), read(HOME / "ConfigSnapshot.java"), read(ROOT / "src/template.html")
 
-check("saver: a team is added at the end of the list (up to 20), never in place of another",
-      "static final int MAX_TEAMS = 20;" in prefs and "if (v.size() >= MAX_TEAMS) return false;" in prefs and 'v.add(id + "|" + name.replace("|", " ").replace(";", " "));' in prefs)
+check("saver: a team is added at the end of the list (past 20 only after the warning, up to 40: 4.4 FollowLimit), never in place of another",
+      "MAX_TEAMS = FollowLimit.MAX_TEAMS;" in prefs and "if (FollowLimit.check(FollowLimit.TEAMS, v.size(), followWarned(FollowLimit.TEAMS)) != FollowLimit.ADD) return false;" in prefs and 'v.add(id + "|" + name.replace("|", " ").replace(";", " "));' in prefs)
 check("saver: the fragment carries every followed team's id", '+ "&teams=" + join(teamIds(), ",")' in prefs and "for (String t : teams()) ids.add(t.split(\"\\\\|\", 2)[0]);" in prefs)
 check("saver: «الفرق المتابعة» keeps the ticked ones, all of them", "for (int i = 0; i < cur.size(); i++) if (keep[i]) v.add(cur.get(i));" in settings)
 check("launcher: the provider's first column is the fragment, read whole", "fragment = cur.getString(0);" in snap)

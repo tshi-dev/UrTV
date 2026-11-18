@@ -305,6 +305,7 @@ python3 tests/photos_phone_test.py   # 4.3 «صوري»: 50, and from a paired p
 python3 tests/own_adhan_fajr_test.py   # 4.3 C16: a second own adhan, for Fajr
 python3 tests/football_test.py   # the football home and «المباريات»: the setting, the pages, the widgets' focus, the tray's move, the broadcast table (docs/PROPOSALS-NOV2.md §1)
 python3 tests/three_teams_test.py   # 4.3.3 A3: three followed teams through every step (saver Prefs, the provider, the launcher's link, the page)
+python3 tests/follow_limit_test.py   # 4.4 more than 8 leagues and 20 clubs: one warning once, at most 24 and 40, every place a person adds one
 python3 tests/follow_store_test.py   # 4.3.3 following from «المباريات» with the screensaver app missing or older: the home keeps it, joins it, hands it over
 python3 tests/settings_report_test.py   # «أرسل تقرير»: share.py's allowlist, nothing personal
 python3 tests/dialog_fit_test.py

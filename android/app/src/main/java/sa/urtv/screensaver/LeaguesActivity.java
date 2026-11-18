@@ -29,7 +29,7 @@ import java.util.Map;
 /**
  * 4.3.1 «اختر دورياتك»: the leagues of the matches and the cards on one screen, no nested pages. The search field on top, then the sections «البطولات الكبرى» (the switch, and its
  * tournaments as ticks the person can untick one by one), «السعودية», «أوروبا», «آسيا وأفريقيا», «العالم»; each row is a tick and the Arabic name; the count of the chosen leagues
- * (up to Prefs.MAX_LEAGUES) is in the header. Without a search a section shows the built-in leagues and the catalogue's best-known ones (top), with a search all of the catalogue.
+ * (up to Prefs.MAX_LEAGUES, past Prefs.SOFT_LEAGUES after one warning) is in the header. Without a search a section shows the built-in leagues and the catalogue's best-known ones (top), with a search all of the catalogue.
  * The same settings as before (Prefs.leagues, Prefs.tournaments, Prefs.tournamentsOff); the big tournaments' list is assets/shared/tournaments.json.
  */
 public class LeaguesActivity extends Activity {
@@ -148,13 +148,23 @@ public class LeaguesActivity extends Activity {
         List<String> v = new ArrayList<>(prefs.leagues());
         boolean had = false;
         for (int i = v.size() - 1; i >= 0; i--) if (CatalogueLeagues.same(v.get(i), stored)) { v.remove(i); had = true; }
-        if (!had) {
-            if (v.size() >= Prefs.MAX_LEAGUES) { toast(S.t("حتى %s دوريات", String.valueOf(Prefs.MAX_LEAGUES))); return; }
+        if (!had) {   // 4.4 past 8 the one warning (once), at 24 the words that say so (FollowLimit)
+            int st = FollowLimit.check(FollowLimit.LEAGUES, v.size(), prefs.followWarned(FollowLimit.LEAGUES));
+            if (st == FollowLimit.FULL) { dialog().setTitle(FollowLimit.full(FollowLimit.LEAGUES)).setPositiveButton("حسنًا", null).show(); return; }
+            if (st == FollowLimit.WARN) {
+                dialog().setTitle(FollowLimit.warning(FollowLimit.LEAGUES))
+                    .setPositiveButton("أضف", (d, w) -> { prefs.setFollowWarned(FollowLimit.LEAGUES); toggleLeague(stored); })
+                    .setNegativeButton("لا", null)
+                    .show();
+                return;
+            }
             v.add(stored);
         }
         prefs.setList("leagues", v);
         fill();
     }
+
+    private WordsBuilder dialog() { return new WordsBuilder(this, look.light ? R.style.UrDialogLight : R.style.UrDialog); }
 
     private void fill() {
         View focused = getCurrentFocus();
@@ -200,7 +210,7 @@ public class LeaguesActivity extends Activity {
             for (View v : sections.get(i)) list.addView(v, line(dp(8)));
         }
         if (searching && list.getChildCount() == 0) list.addView(text(S.t("لا توجد نتائج"), 18, "Regular", look.sub), line(dp(8)));
-        countView.setText(S.t("اخترت %s من %s", String.valueOf(prefs.leagues().size()), String.valueOf(Prefs.MAX_LEAGUES)));
+        countView.setText(S.t("اخترت %s من %s", String.valueOf(prefs.leagues().size()), String.valueOf(Prefs.MAX_LEAGUES)));   // 4.4 of the ceiling (24); past 8 the warning says the rest
         if (want != null && !(want instanceof String && ((String) want).isEmpty())) { View again = list.findViewWithTag(want); if (again != null) again.requestFocus(); }
     }
 
