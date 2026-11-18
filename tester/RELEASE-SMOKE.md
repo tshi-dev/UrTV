@@ -91,7 +91,7 @@ the same network. Note the build in the report's first line.
 - **S-16 «إعداد تلفزيوني».** Open it (do not run «جهّز كل شي» on the owner's TV): the language follows the home, «ابدأ» takes the first
   OK, the language switch labels whole, the screen stays for the run, the factory page keeps the screen on; on a test TV a full run
   passes the USB question and ends with UrTV as the home, casting, the remote keys, USB viewer and inputs still working.
-  Rows: R-259, R-260, R-262, R-265, R-267, R-017, R-040, R-052, R-061, R-073, R-133, R-134, R-145, R-162, R-173, R-244, R-169, R-043, R-172, R-041, R-038, R-283.
+  Rows: R-259, R-260, R-262, R-265, R-267, R-017, R-040, R-052, R-061, R-073, R-133, R-134, R-145, R-162, R-173, R-244, R-169, R-043, R-172, R-041, R-038, R-283, R-285.
 - **S-17 English.** «اللغة» English for a minute: app captions, the grid heading, Tilawah footers, the favourites left to right, the
   long-press hint. Back to Arabic. Rows: R-142, R-143, R-144, R-185.
 - **S-18 Games.** «الأسرع» with one phone: room code shown, digits as set, the podium right; «خمّن الكلمة» takes a common word and has

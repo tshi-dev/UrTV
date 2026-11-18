@@ -25,7 +25,10 @@ public class SafeActivity extends Activity {
             BODY = S.n("افتح الشاشة الأصلية للتلفزيون، أو جرّب مرة ثانية. إذا تكرر، أرسل تقرير من مساعدك"),
             BODY_RETRY = S.n("جرّب مرة ثانية. إذا تكرر، أرسل تقرير من مساعدك"),
             STOCK = S.n("افتح الشاشة الأصلية"), RETRY = S.n("حاول مرة ثانية"),
-            NO_STOCK = S.n("ما لقينا شاشة أصلية مفعّلة، افتح الإعدادات من زر الإعدادات في الريموت");
+            NO_STOCK = S.n("ما لقينا شاشة أصلية مفعّلة، افتح الإعدادات من زر الإعدادات في الريموت"),
+            ENABLING = S.n("نشغّل الشاشة الأصلية…"),
+            MANUAL = S.n("الشاشة الأصلية موقوفة. شغّلها: الإعدادات ← التطبيقات ← تطبيقات النظام ← %s ← تفعيل، ثم اضغط زر الرئيسية.");
+    private TextView state;
 
     @Override protected void attachBaseContext(android.content.Context b) { super.attachBaseContext(S.wrap(b)); }
 
@@ -39,7 +42,8 @@ public class SafeActivity extends Activity {
         int pad = Math.round(48 * getResources().getDisplayMetrics().density);
         col.setPadding(pad, pad, pad, pad);
         col.addView(text(S.tv(TITLE), 26));
-        boolean hasStock = stockHome() != null;   // 4.3.5 review F2: a TV whose own home our setup turned off: no dead button, the retry is the way
+        // 4.3.5 review F2: no dead button. 4.4 (step 100): a known stock home that an earlier setup turned off counts too: the button turns it back on first
+        boolean hasStock = stockHome() != null || disabledStock() != null;
         col.addView(text(S.tv(hasStock ? BODY : BODY_RETRY), 18));   // review F8: no line about a home that is not there
         Button stock = button(S.tv(STOCK));
         stock.setOnClickListener(v -> openStock());
@@ -51,19 +55,61 @@ public class SafeActivity extends Activity {
         });
         if (hasStock) col.addView(stock);
         col.addView(retry);
+        state = text("", 16);   // what the button did, said here (never a silent press)
+        col.addView(state);
         setContentView(col);
         (hasStock ? stock : retry).requestFocus();
     }
 
-    /** the TV's own home: the first other app that answers HOME */
+    /** the TV's own home (StockHome.decide): a known stock home that is off is turned back on first over our adb key, else the way by hand is said; never a silent press */
     private void openStock() {
+        final String off = disabledStock();
+        switch (StockHome.decide(off, stockHome() != null, sa.urtv.home.setup.SetupHook.hasKey(this))) {
+            case StockHome.ENABLE:
+                say(S.tv(ENABLING));
+                final android.content.Context app = getApplicationContext();
+                new Thread(() -> {
+                    boolean on = sa.urtv.home.setup.SetupHook.enableStock(app, off);
+                    runOnUiThread(() -> { if (isFinishing() || isDestroyed()) return; if (on && stockHome() != null) launch(); else say(manual(off)); });
+                }, "safe-stock").start();
+                return;
+            case StockHome.MANUAL: say(manual(off)); return;
+            case StockHome.OPEN: launch(); return;
+            default: say(S.tv(NO_STOCK));
+        }
+    }
+
+    private void launch() {
         ComponentName c = stockHome();
-        if (c == null) { android.widget.Toast.makeText(this, S.tv(NO_STOCK), android.widget.Toast.LENGTH_LONG).show(); return; }
         try {
+            if (c == null) throw new IllegalStateException();
             startActivity(new Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_HOME).setComponent(c).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
         } catch (RuntimeException e) {
-            android.widget.Toast.makeText(this, S.tv(NO_STOCK), android.widget.Toast.LENGTH_LONG).show();
+            say(S.tv(NO_STOCK));
         }
+    }
+
+    private void say(String s) {
+        if (state != null) state.setText(s);
+        android.widget.Toast.makeText(this, s, android.widget.Toast.LENGTH_LONG).show();
+    }
+
+    private String manual(String pkg) {
+        String label = null;
+        try { label = String.valueOf(getPackageManager().getApplicationLabel(getPackageManager().getApplicationInfo(pkg, android.content.pm.PackageManager.MATCH_DISABLED_COMPONENTS))); } catch (Exception ignored) { }
+        return String.format(S.tv(MANUAL), label == null || label.trim().isEmpty() ? "Google TV Home" : label.trim());
+    }
+
+    /** a known stock home (StockHome.KNOWN) that is installed but turned off; null when none */
+    private String disabledStock() {
+        java.util.Set<String> off = new java.util.HashSet<>();
+        for (String k : StockHome.KNOWN) {
+            try {
+                android.content.pm.ApplicationInfo ai = getPackageManager().getApplicationInfo(k, android.content.pm.PackageManager.MATCH_DISABLED_COMPONENTS);
+                if (!ai.enabled) off.add(k);
+            } catch (Exception notInstalled) { }
+        }
+        return StockHome.disabledKnown(off);
     }
 
     private ComponentName stockHome() {

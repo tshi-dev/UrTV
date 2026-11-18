@@ -124,6 +124,23 @@ public final class SetupHook {
         } catch (java.io.IOException | RuntimeException ignored) { }
     }
 
+    /** 4.4 (step 100): this app holds an adb key the TV has let in before (no question pops up) */
+    public static boolean hasKey(Context c) { return AdbKeys.exists(c); }
+
+    /**
+     * 4.4 (step 100): the safe page's «افتح الشاشة الأصلية» on a TV whose stock home an earlier setup turned off: that one package is turned back on over this
+     * app's adb key (no question pops up: only where the key exists), then read back. Only a known stock home (StockHome.KNOWN), never the setup wizard.
+     * Blocks: call it off the UI thread. True when the TV says it is on now.
+     */
+    public static boolean enableStock(Context c, String pkg) {
+        if (!AdbKeys.exists(c)) return false;
+        try (SetupSession s = SetupSession.open(c, 5000, null, new SetupEngine.Out() { @Override public void line(String text) { } })) {
+            return StockEnable.run(s::run, pkg);
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
     private static String field(String json, String key) {
         java.util.regex.Matcher m = java.util.regex.Pattern.compile("^  \"" + java.util.regex.Pattern.quote(key) + "\": \"(.*)\",?$", java.util.regex.Pattern.MULTILINE).matcher(json);
         return m.find() ? m.group(1) : "";
