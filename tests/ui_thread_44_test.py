@@ -136,7 +136,7 @@ check("QA-12: the screen's alarm (the place is a question to the screensaver) is
       "static void scheduleSoon(Context c) {" in sch and '"adhan-schedule").start();' in sch and "AdhanScheduler.schedule(this)" not in tmain.replace("AdhanScheduler.schedule(this, ", ""))
 mk = src(HOME / "MarketsActivity.java")
 check("QA-12: a market or stock toggle calls the screensaver on a thread; the value is kept at once and taken back when it refuses",
-      'new Thread(() -> {' in body(mk, "private void saverSet(") and '"saver-set").start();' in body(mk, "private void saverSet(") and "getContentResolver().call(SAVER" in body(mk, "private void saverSet(")
+      'saverQueue.execute(() -> {' in body(mk, "private void saverSet(") and 'new Thread(r, "saver-set")' in mk and "new Thread(" not in body(mk, "private void saverSet(") and "getContentResolver().call(SAVER" in body(mk, "private void saverSet(")
       and "this.saved.remove(key)" in mk and "if (saverSet(" not in mk)
 sl = src(HOME / "setup/SetupLang.java")
 check("QA-12: the first-run language choice tells the screensaver on a thread (the screen is built again in it at once)",

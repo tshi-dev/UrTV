@@ -138,5 +138,5 @@ disk:prefs.commit | launcher:MainActivity.onCreate | Dock.followKeyApps | writes
 disk:prefs.commit | launcher:MainActivity.onCreate | UpdateCarry.step | the update's carry steps, once after an update (as MainActivity's at 4.3.4)
 disk:prefs.commit | launcher:MainActivity.onReceive | Dock.followKeyApps | writes only when the remote's key apps changed (compared with the kept value first)
 disk:prefs.commit | launcher:MainActivity.onResume | Dock.followKeyApps | writes only when the remote's key apps changed (compared with the kept value first)
-disk:stream | launcher:MainActivity.onCreate | CrashLoopStore.write | 4.4 safe mode by design: the crash-loop count must be on disk before the screen builds (a few bytes, the app's own file)
-disk:stream | launcher:SafeActivity.onCreate | CrashLoopStore.write | 4.4 safe mode by design: the crash-loop count must be on disk before the screen builds (a few bytes, the app's own file)
+disk:stream | launcher:MainActivity.onCreate | CrashLoopStore.write | over-reach: reached only through the background writer (CrashLoopStore.later, thread "crashloop-store"); the one synchronous write is hook() in HomeApp.onCreate (the start is counted first, before anything else can fail)
+disk:stream | launcher:SafeActivity.onCreate | CrashLoopStore.write | over-reach: reached only through the background writer (CrashLoopStore.later, thread "crashloop-store"); the one synchronous write is hook() in HomeApp.onCreate (the start is counted first, before anything else can fail)

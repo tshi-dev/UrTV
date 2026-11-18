@@ -42,10 +42,18 @@ final class ExtrasNotice {
         if (in == null || !canDraw(c)) return false;
         final boolean[] ok = {false};
         final CountDownLatch done = new CountDownLatch(1);
+        // 4.4 review: 0 = posted, 1 = the main thread has taken it, 2 = given up (the home then shows its toast): a late runnable must not draw too
+        final java.util.concurrent.atomic.AtomicInteger state = new java.util.concurrent.atomic.AtomicInteger();
         new Handler(Looper.getMainLooper()).post(() -> {
+            if (!state.compareAndSet(0, 1)) return;
             try { ok[0] = add(c.getApplicationContext(), in); } catch (RuntimeException ignored) { } finally { done.countDown(); }
         });
-        try { done.await(2, TimeUnit.SECONDS); } catch (InterruptedException e) { Thread.currentThread().interrupt(); }
+        try {
+            if (!done.await(2, TimeUnit.SECONDS)) {
+                if (state.compareAndSet(0, 2)) return false;   // never started: it will not draw, the caller says it another way
+                done.await(1, TimeUnit.SECONDS);   // already drawing: its answer is a moment away
+            }
+        } catch (InterruptedException e) { Thread.currentThread().interrupt(); }
         return ok[0];
     }
 
