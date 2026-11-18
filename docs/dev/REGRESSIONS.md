@@ -306,15 +306,15 @@ and adds a row above.
 
 - **QA-6** (4.4, R1, the TCL freeze's shape) `Extras.enabled` is a provider call into the add-on's process on the UI thread (cached 2 s):
   at the home's onResume and every minute tick (`updateHomeNudge -> A11yHeal.stuck`), and when «مركز التحكم» or «الإضافات» opens. A TCL
-  that killed the add-on starts its process there. **Open.** Fix: keep the add-on's answer from a background read, as ConfigSnapshot does.
+  that killed the add-on starts its process there. **Fixed in 4.4** (0f81bf1b, `tests/ui_thread_44_test.py`).
 - **QA-7** (4.4, R1) the screensaver settings' render asks the home (`NowPlayingBridge.homeKey`) on the UI thread at every render
-  (open, return, each toggle). **Open.** Fix: ask once off the UI thread, keep the answer.
+  (open, return, each toggle). **Fixed in 4.4** (ca54c843, `tests/ui_thread_44_test.py`).
 - **QA-8** (4.4, R1, low) the control centre's adhan preview tile asks the screensaver for the place on the UI thread when pressed
-  (`Prefs.playFor -> Place.get`). **Open.**
+  (`Prefs.playFor -> Place.get`). **Fixed in 4.4** (b8e3a8aa, `tests/ui_thread_44_test.py`).
 - **QA-9** (4.4, R1, low) «المباريات»'s onCreate queries and calls the screensaver to hand over kept follows (`HomeFollows.sync`), only
-  when the home kept some. **Open.**
+  when the home kept some. **Fixed in 4.4** (15c4a306, `tests/ui_thread_44_test.py`).
 - **QA-10** (4.4, R1, low) the home's notice bar reads and parses the notices file (`ContentFile.read`, own disk, bounded) at every
-  minute tick and return (`updateHomeNudge -> dueNotice`). **Open.**
+  minute tick and return (`updateHomeNudge -> dueNotice`). **Fixed in 4.4** (d0c0b9c0, `tests/ui_thread_44_test.py`).
 
 The 4.3.4 review's F1 and F2: R-257, R-258.
 

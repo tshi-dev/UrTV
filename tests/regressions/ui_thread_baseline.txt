@@ -346,7 +346,7 @@ ipc:ContentResolver.write | saver:SettingsActivity.onCreate | GlassSource.refres
 ipc:ContentResolver.write | saver:YourTvHubActivity.onCreate | GlassSource.refresh | baseline 4.3.4 (onCreate, R1)
 proc:exec | launcher:ReportActivity.onCreate | ReportActivity.recentErrors | baseline 4.3.4 (onCreate, R1)
 
-# 4.4 (next 68735302 merged into the gate, 18 Nov): its new paths, each with its reason; QA-6..QA-10 are real R1 findings, OPEN
+# 4.4 (next 68735302 merged into the gate, 18 Nov): its new paths, each with its reason; QA-6..QA-10 (real R1 findings) were fixed on work/44-uithread and their lines removed
 disk:Files | launcher:MainActivity.onCreate | CrashLoopStore.read | 4.4 safe mode by design: the crash-loop count must be on disk before the screen builds (a few bytes, the app's own file)
 disk:Files | launcher:SafeActivity.onCreate | CrashLoopStore.read | 4.4 safe mode by design: the crash-loop count must be on disk before the screen builds (a few bytes, the app's own file)
 disk:decodeFile | launcher:RowScreen.onCreate | GlassSource.backdrop | a 4.4 settings screen's onCreate reads the shared 3 s snapshot and its glass backdrop, as the 4.3.4 screens do (the onCreate R1 debt of the baseline)
@@ -365,13 +365,9 @@ disk:prefs.commit | launcher:MainActivity.onCreate | Dock.followKeyApps | writes
 disk:prefs.commit | launcher:MainActivity.onCreate | UpdateCarry.step | the update's carry steps, once after an update (as MainActivity's at 4.3.4)
 disk:prefs.commit | launcher:MainActivity.onReceive | Dock.followKeyApps | writes only when the remote's key apps changed (compared with the kept value first)
 disk:prefs.commit | launcher:MainActivity.onResume | Dock.followKeyApps | writes only when the remote's key apps changed (compared with the kept value first)
-disk:prefs.commit | launcher:MatchesActivity.onCreate | HomeFollows.put | QA-9 OPEN (R1, low, 4.4): «المباريات»'s onCreate queries and calls the screensaver to hand over kept follows (only when the home kept some)
-disk:stream | launcher:MainActivity.dispatchKeyEvent | ContentFile.read | QA-10 OPEN (R1, low, 4.4): the home's notice bar reads and parses the notices file (ContentFile, own disk, bounded) on every minute tick and return
 disk:stream | launcher:MainActivity.onCreate | ContentFile.read | once at the home's start: a small file of the app's own (as SetupHook.homeUp at 4.3.4)
 disk:stream | launcher:MainActivity.onCreate | CrashLoopStore.write | 4.4 safe mode by design: the crash-loop count must be on disk before the screen builds (a few bytes, the app's own file)
 disk:stream | launcher:MainActivity.onCreate | FileStore.put | once at the home's start: a small file of the app's own (as SetupHook.homeUp at 4.3.4)
-disk:stream | launcher:MainActivity.onReceive | ContentFile.read | QA-10 OPEN (R1, low, 4.4): the home's notice bar reads and parses the notices file (ContentFile, own disk, bounded) on every minute tick and return
-disk:stream | launcher:MainActivity.onResume | ContentFile.read | QA-10 OPEN (R1, low, 4.4): the home's notice bar reads and parses the notices file (ContentFile, own disk, bounded) on every minute tick and return
 disk:stream | launcher:SafeActivity.onCreate | CrashLoopStore.write | 4.4 safe mode by design: the crash-loop count must be on disk before the screen builds (a few bytes, the app's own file)
 disk:stream | saver:AppearanceActivity.onCreate | ContentFile.read | R1 debt (4.4): a small JSON of the app's own read at the settings' render (bounded)
 disk:stream | saver:AppearanceActivity.onResume | ContentFile.read | R1 debt (4.4): a small JSON of the app's own read at the settings' render (bounded)
@@ -381,18 +377,7 @@ disk:stream | saver:SettingsActivity.onResume | ContentFile.read | R1 debt (4.4)
 ipc:ConfigSnapshot.read | launcher:RowScreen.onCreate | Digits.init | a 4.4 settings screen's onCreate reads the shared 3 s snapshot and its glass backdrop, as the 4.3.4 screens do (the onCreate R1 debt of the baseline)
 ipc:ConfigSnapshot.read | launcher:RowScreen.onCreate | GlassSource.light | a 4.4 settings screen's onCreate reads the shared 3 s snapshot and its glass backdrop, as the 4.3.4 screens do (the onCreate R1 debt of the baseline)
 ipc:ConfigSnapshot.read | launcher:RowScreen.onCreate | GlassSource.lookName | a 4.4 settings screen's onCreate reads the shared 3 s snapshot and its glass backdrop, as the 4.3.4 screens do (the onCreate R1 debt of the baseline)
-ipc:ContentResolver.call | launcher:ExtrasActivity.onResume | Extras.call | QA-6 OPEN (R1, 4.4): Extras.enabled is a provider call into the add-on's process on the UI thread (cached 2 s) at onResume, every minute tick (A11yHeal.stuck), opening «مركز التحكم» and «الإضافات»; a TCL that killed the add-on starts it here: the 4.3.3 freeze's shape
-ipc:ContentResolver.call | launcher:MainActivity.dispatchKeyEvent | Extras.call | QA-6 OPEN (R1, 4.4): Extras.enabled is a provider call into the add-on's process on the UI thread (cached 2 s) at onResume, every minute tick (A11yHeal.stuck), opening «مركز التحكم» and «الإضافات»; a TCL that killed the add-on starts it here: the 4.3.3 freeze's shape
-ipc:ContentResolver.call | launcher:MainActivity.onCreate | Extras.call | QA-6 OPEN (R1, 4.4): Extras.enabled is a provider call into the add-on's process on the UI thread (cached 2 s) at onResume, every minute tick (A11yHeal.stuck), opening «مركز التحكم» and «الإضافات»; a TCL that killed the add-on starts it here: the 4.3.3 freeze's shape
-ipc:ContentResolver.call | launcher:MainActivity.onReceive | Extras.call | QA-6 OPEN (R1, 4.4): Extras.enabled is a provider call into the add-on's process on the UI thread (cached 2 s) at onResume, every minute tick (A11yHeal.stuck), opening «مركز التحكم» and «الإضافات»; a TCL that killed the add-on starts it here: the 4.3.3 freeze's shape
-ipc:ContentResolver.call | launcher:MainActivity.onResume | Extras.call | QA-6 OPEN (R1, 4.4): Extras.enabled is a provider call into the add-on's process on the UI thread (cached 2 s) at onResume, every minute tick (A11yHeal.stuck), opening «مركز التحكم» and «الإضافات»; a TCL that killed the add-on starts it here: the 4.3.3 freeze's shape
-ipc:ContentResolver.call | launcher:MatchesActivity.onCreate | HomeFollows.call | QA-9 OPEN (R1, low, 4.4): «المباريات»'s onCreate queries and calls the screensaver to hand over kept follows (only when the home kept some)
-ipc:ContentResolver.call | saver:SettingsActivity.dispatchKeyEvent | NowPlayingBridge.homeKey | QA-7 OPEN (R1, 4.4): the screensaver settings' render asks the home (home_key) on the UI thread at every render (open, return, each toggle)
 ipc:ContentResolver.call | saver:SettingsActivity.dispatchKeyEvent | NowPlayingBridge.kickoffWhistle | over-reach: inside the «جرّب» row's click Runnable; one call when the person presses it
-ipc:ContentResolver.call | saver:SettingsActivity.onCreate | NowPlayingBridge.homeKey | QA-7 OPEN (R1, 4.4): the screensaver settings' render asks the home (home_key) on the UI thread at every render (open, return, each toggle)
 ipc:ContentResolver.call | saver:SettingsActivity.onCreate | NowPlayingBridge.kickoffWhistle | over-reach: inside the «جرّب» row's click Runnable; one call when the person presses it
-ipc:ContentResolver.call | saver:SettingsActivity.onResume | NowPlayingBridge.homeKey | QA-7 OPEN (R1, 4.4): the screensaver settings' render asks the home (home_key) on the UI thread at every render (open, return, each toggle)
 ipc:ContentResolver.call | saver:SettingsActivity.onResume | NowPlayingBridge.kickoffWhistle | over-reach: inside the «جرّب» row's click Runnable; one call when the person presses it
-ipc:ContentResolver.query | launcher:MainActivity.dispatchKeyEvent | Place.get | QA-8 OPEN (R1, low, 4.4): the control centre's adhan preview tile asks the screensaver for the place on the UI thread when pressed (Prefs.playFor)
-ipc:ContentResolver.query | launcher:MatchesActivity.onCreate | HomeFollows.sync | QA-9 OPEN (R1, low, 4.4): «المباريات»'s onCreate queries and calls the screensaver to hand over kept follows (only when the home kept some)
 ipc:ContentResolver.query | launcher:RowScreen.onCreate | ConfigSnapshot.query | a 4.4 settings screen's onCreate reads the shared 3 s snapshot and its glass backdrop, as the 4.3.4 screens do (the onCreate R1 debt of the baseline)
