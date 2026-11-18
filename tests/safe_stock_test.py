@@ -26,7 +26,7 @@ check("what it did is written on the page itself (and a toast), not only a toast
 check("the way by hand names the app as the TV shows it (a turned-off app's label), and is in the English table",
       "MATCH_DISABLED_COMPONENTS" in safe and "%s ← تفعيل" in safe and "%s ← تفعيل" in text(ROOT / "i18n/en/home.tsv"))
 check("the turn-on: only where this app's key exists (no question pops up on the safe page), through StockEnable",
-      "if (!AdbKeys.exists(c)) return false;" in hook and "return StockEnable.run(s::run, pkg);" in hook)
+      "if (!AdbKeys.exists(c)) return false;" in hook and "return StockEnable.run(s::run, pkg, sa.urtv.home.StockHome.known());" in hook)
 check("the known stock homes are tvOS Launcher's list (Apache-2.0), Google's first, and the setup wizard is never one",
       "tvOS Launcher" in stock and "Apache-2.0" in stock and stock.index('"com.google.android.apps.tv.launcherx"') < stock.index('"com.tcl.cyberui"') and "setupwraith" not in stock.split("KNOWN = {")[1].split("};")[0])
 

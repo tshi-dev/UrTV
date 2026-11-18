@@ -135,7 +135,7 @@ public final class SetupHook {
     public static boolean enableStock(Context c, String pkg) {
         if (!AdbKeys.exists(c)) return false;
         try (SetupSession s = SetupSession.open(c, 5000, null, new SetupEngine.Out() { @Override public void line(String text) { } })) {
-            return StockEnable.run(s::run, pkg);
+            return StockEnable.run(s::run, pkg, sa.urtv.home.StockHome.known());
         } catch (Exception e) {
             return false;
         }
