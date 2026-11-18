@@ -332,6 +332,7 @@ public class MainActivity extends Activity {
             try { guarded(ParentalPolicy.WIDGET_MATCHES, null, S.t("إعداد تلفزيوني"), () -> launch(new Intent(this, sa.urtv.home.setup.SetupActivity.class).addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT))); } catch (RuntimeException ignored) { }   // the person opened this screen already (its own lock was passed then)
         }
         Extras.refresh();   // 4.4 (QA-6): the add-on's state, asked on a thread (the screens read the kept answer)
+        checkOverlayOffer();   // 4.4: once, for whoever used «فوق تطبيق آخر» on 4.3.x (the settings and the add-on are asked on a thread)
         { final Context app = getApplicationContext(); clockReads.execute(() -> notices.load(app)); }   // 4.4 (QA-10): the notices file, off the UI thread
         sa.urtv.home.phone.PhoneUpdater.homeIsUp(getApplicationContext());   // an update cover waiting in front for this home closes now
         sa.urtv.home.setup.SetupHook.homeUp(this);   // «تخلّص من واجهة المصنع»: this boot's home came up (BootGuard)
@@ -2170,6 +2171,7 @@ public class MainActivity extends Activity {
                 else guarded(ParentalPolicy.WIDGET_MATCHES, null, S.t("إعداد تلفزيوني"), () -> launch(new Intent(this, sa.urtv.home.setup.SetupActivity.class)));
                 return;
             }
+            if (nudgeIsOverlay) { launchGuarded(ParentalPolicy.PILL_TV_SETTINGS, Extras.intent(this, "overlay"), "إضافات تلفزيونك"); overlayAfterOffer(); return; }   // 4.4: the add-on's own offer for «فوق تطبيق آخر»; the bar is done either way
             if (nudgeIsExtras) {   // 4.4: we heal it where we may write the list; else the TV's accessibility settings, behind the sleep lock
                 if (A11yHeal.canHeal(this)) { A11yHeal.check(getApplicationContext(), "fix-nudge"); android.widget.Toast.makeText(this, S.t("شغّلنا «إضافات تلفزيونك» من جديد"), android.widget.Toast.LENGTH_LONG).show(); handler.postDelayed(() -> updateHomeNudge(false), 4000); return; }
                 android.widget.Toast.makeText(this, S.tv(ExtrasActivity.STUCK_FIX), android.widget.Toast.LENGTH_LONG).show();
@@ -2249,6 +2251,7 @@ public class MainActivity extends Activity {
     private void snoozeNudge() {
         if (nudgeIsNotice) { if (!noticeFixed) dismissNotice(); return; }   // 4.3.3: Back on a notice is «تم»
         android.content.SharedPreferences sp = getSharedPreferences(NUDGE_PREFS, MODE_PRIVATE);
+        if (nudgeIsOverlay) { overlayAfterOffer(); return; }   // 4.4: «لاحقاً» counts as shown: the offer is made once
         if (nudgeIsStock) { sa.urtv.home.setup.SetupHook.clearStockBackOffer(this); updateHomeNudge(false); return; }   // 4.4: «لاحقاً»: not asked again until two more bad boots
         if (nudgeIsUpdate) { updateCardOnScreen = -1; updateHomeNudge(false); return; }   // 4.4: the card was shown once; «لاحقاً» hides it (it comes back for a newer build or after 3 days)
         String k = nudgeIsCity ? "city_" : nudgeIsExtras ? "extras_" : "";   // the city question and the add-on's fix wait on their own counts
@@ -2260,6 +2263,9 @@ public class MainActivity extends Activity {
     private boolean nudgeIsCity;      // the bar is asking for the city (CityAskRule), not for «إعداد تلفزيوني»
     private boolean nudgeIsUpdate;    // 4.4: the bar is the card «في تحديث لـ …» (UpdateNotice.card); OK opens «تحديث تلفزيوني»
     private boolean nudgeIsStock;     // 4.4: the bar offers «رجّع الواجهة الأصلية» after two bad boots of ours (SetupHook.stockBackOffered)
+    private boolean nudgeIsOverlay;   // 4.4: the bar offers the add-on for «فوق تطبيق آخر» once (OverlayOfferRule)
+    private volatile boolean overlayDue;   // set on a thread (checkOverlayOffer); read on the UI thread by the bar
+    private boolean overlayOnScreen;   // this visit shows the offer (it was marked seen as it first appeared)
     private boolean nudgeIsExtras;    // 4.4: the bar says «إضافات تلفزيونك» is on but not running (A11yHeal.stuck), OK fixes it
     private long updateCardOnScreen = -1;   // 4.4: the build the card asks for while this visit shows it (-1: none); it stays up for the visit, then it was seen
     private boolean nudgeIsNotice, noticeFixed;   // 4.3.3: the bar shows a published notice (NoticeRule); fixed: one that is not dismissible (no button)
@@ -2327,6 +2333,40 @@ public class MainActivity extends Activity {
         nudgeLater.setNextFocusLeftId(rtl ? nudgeLater.getId() : nudgeCard.getId());
     }
 
+    /**
+     * 4.4: the overlay offer, decided OFF the UI thread (the screensaver's settings and the add-on are IPC, the prefs are disk): the kick-off alert is on and set to
+     * «فوق تطبيق آخر», and the add-on cannot draw. The result is applied on the UI thread; the bar then shows it (once, not in kids mode, not during a setup).
+     */
+    private void checkOverlayOffer() {
+        final Context app = getApplicationContext();
+        if (overlayDue || overlayOnScreen) return;
+        clockReads.execute(() -> {
+            try {
+                int shown = app.getSharedPreferences(NUDGE_PREFS, MODE_PRIVATE).getInt(OverlayOfferRule.KEY, 0);
+                if (shown >= OverlayOfferRule.VERSION) return;   // the cheap check first: no IPC for a TV that was offered
+                boolean[] set = KickoffReceiver.settings(app);
+                boolean kids = Parental.state(app).kids, setup = sa.urtv.home.setup.SetupHold.on();
+                boolean draws = set[0] && set[2] && !kids && !setup && Extras.canDraw();
+                if (!OverlayOfferRule.due(set[0], set[2], draws, kids, setup, shown)) return;
+                overlayDue = true;
+                runOnUiThread(() -> { if (!isDestroyed() && !isFinishing() && resumed) updateHomeNudge(false); });
+            } catch (RuntimeException ignored) { }
+        });
+    }
+
+    /** the offer was answered («شغّلها» or «لاحقاً»): never again for this version */
+    private void overlayAfterOffer() {
+        overlayDue = false;
+        overlayOnScreen = false;
+        markOverlayOffered();
+        updateHomeNudge(false);
+    }
+
+    private void markOverlayOffered() {
+        final Context app = getApplicationContext();
+        clockReads.execute(() -> app.getSharedPreferences(NUDGE_PREFS, MODE_PRIVATE).edit().putInt(OverlayOfferRule.KEY, OverlayOfferRule.VERSION).apply());
+    }
+
     /** as the home comes to the front: show or hide the bar; {@code takeFocus} puts the focus on it the first time it appears (after the home has laid out and put its own focus), so OK is all it takes */
     private void updateHomeNudge(boolean takeFocus) {
         if (nudge == null) return;
@@ -2346,23 +2386,27 @@ public class MainActivity extends Activity {
         // 4.4: «إضافات تلفزيونك» turned on but Android does not run it (a TCL refused the bind; a force-stop): the one-line fix, once the TV has been up a while
         boolean askExtras = !askStock && !askUpdate && !kids && android.os.SystemClock.elapsedRealtime() > 90_000 && A11yHeal.stuck(this)
             && HomeNudgeRule.show(false, false, np.getLong("extras_later_until", 0), nowMs);
-        boolean askCity = !askStock && !askUpdate && !askExtras && mismatch == null && CityAskRule.show(isInstalled(SAVER_PKG), cityChosenNow, java.util.TimeZone.getDefault().getID(), kids, np.getLong("city_later_until", 0), nowMs);
+        // 4.4: «فوق تطبيق آخر» moved to the add-on: offered once to whoever used it (checkOverlayOffer), after the problems above, before the city
+        boolean askOverlay = (overlayDue || overlayOnScreen) && !askStock && !askUpdate && !askExtras && !kids && !quiet && !sa.urtv.home.setup.SetupHold.on();
+        if (askOverlay && !overlayOnScreen) { overlayOnScreen = true; markOverlayOffered(); }   // marked seen as it first appears: the bar never comes back for this version
+        boolean askCity = !askStock && !askUpdate && !askExtras && !askOverlay && mismatch == null && CityAskRule.show(isInstalled(SAVER_PKG), cityChosenNow, java.util.TimeZone.getDefault().getID(), kids, np.getLong("city_later_until", 0), nowMs);
         // 4.4: no bar asks to make UrTV the home any more (it is not pushed: the settings' row «اجعل UrTV الشاشة الرئيسية» is the way in for whoever wants it)
-        boolean show = askStock || askUpdate || askExtras || askCity;   // never two at once: the stock home back, the update, the add-on, then the city
+        boolean show = askStock || askUpdate || askExtras || askOverlay || askCity;   // never two at once: the stock home back, the update, the add-on, then the city
         NoticeRule.Notice notice = show || kids ? null : dueNotice();   // 4.3.3: a notice only when the bar has nothing else to say
         show |= notice != null;
         boolean was = nudge.getVisibility() == View.VISIBLE;
         nudgeIsCity = askCity;
         nudgeIsUpdate = askUpdate;
         nudgeIsExtras = askExtras;
+        nudgeIsOverlay = askOverlay;
         nudgeIsStock = askStock;
         nudgeIsNotice = notice != null;
         noticeFixed = notice != null && !notice.dismissible;
-        nudgeCard.setText(notice != null ? S.t("تم") : askStock ? S.t("رجّع الواجهة الأصلية") : askUpdate ? S.t("حدّث الآن") : askExtras ? S.t("أصلحها") : askCity ? S.t("اختر المدينة") : S.t("خلّ تلفزيونك يفتح على UrTV"));
+        nudgeCard.setText(notice != null ? S.t("تم") : askStock ? S.t("رجّع الواجهة الأصلية") : askUpdate ? S.t("حدّث الآن") : askExtras ? S.t("أصلحها") : askOverlay ? S.t("شغّلها") : askCity ? S.t("اختر المدينة") : S.t("خلّ تلفزيونك يفتح على UrTV"));
         if (notice != null) nudgeAsk.setText(notice.text(S.en()));
         else if (askStock) nudgeAsk.setText(S.t("تلفزيونك ما فتح بعد آخر تشغيلين للتلفزيون"));
-        else if (askUpdate) nudgeAsk.setText(card.line); else if (askExtras) nudgeAsk.setText(S.tv(ExtrasActivity.STUCK_FIX)); else if (askCity) nudgeAsk.setText(S.tv(CITY_ASK));
-        nudgeAsk.setVisibility(askStock || askUpdate || askExtras || askCity || notice != null ? View.VISIBLE : View.GONE);
+        else if (askUpdate) nudgeAsk.setText(card.line); else if (askExtras) nudgeAsk.setText(S.tv(ExtrasActivity.STUCK_FIX)); else if (askOverlay) nudgeAsk.setText(S.t("«فوق تطبيق آخر» صار في «إضافات تلفزيونك»: شغّلها ليبقى التنبيه فوق التطبيق")); else if (askCity) nudgeAsk.setText(S.tv(CITY_ASK));
+        nudgeAsk.setVisibility(askStock || askUpdate || askExtras || askOverlay || askCity || notice != null ? View.VISIBLE : View.GONE);
         nudgeCard.setVisibility(noticeFixed ? View.GONE : View.VISIBLE);
         nudgeLater.setVisibility(notice != null ? View.GONE : View.VISIBLE);
         if (show && !was) {

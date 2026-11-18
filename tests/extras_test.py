@@ -64,7 +64,8 @@ center, main, phone = text(HOME / "ControlCenter.java"), text(HOME / "MainActivi
 check("the offer opens from the four places that need the add-on: «أطفئ الآن» (OK and a long OK), the sleep timer's line, the phone's keys and the phone's typing",
       center.count('Extras.intent(act, "sleep")') == 2 and 'Extras.intent(this, "sleep")' in main and 'Extras.offerOnce("keys")' in phone and 'Extras.offerOnce("type")' in phone)
 check("the phone's keys and typing offer it at most once in two minutes", "now - lastOffer < 120_000" in ext)
-check("nothing else opens the offer (no start-up nag)", len(re.findall(r"Extras\.(?:offer\w*|intent)\(", "".join(text(p) for p in HOME.rglob("*.java") if p.name not in ("Extras.java",)))) == 5)
+# the sixth is the once-only bar for whoever used «فوق تطبيق آخر» on 4.3.x (OverlayOfferRule; tests/overlay_offer_test.py pins its once-flag)
+check("nothing else opens the offer (no start-up nag)", len(re.findall(r"Extras\.(?:offer\w*|intent)\(", "".join(text(p) for p in HOME.rglob("*.java") if p.name not in ("Extras.java",)))) == 6)
 check("the offer screen: the approved name and words, the Play Protect line, «ثبّت الإضافة» and «ليس الآن»",
       all(w in act for w in ('S.t("إضافات تلفزيونك")', "يطلب بيانات حساسة", "تثبيت على أي حال", 'S.t("ثبّت الإضافة")', 'S.t("ليس الآن")', "تسهيل الاستخدام")) and "تلفزيونك بلس" not in act)
 check("the install is our release file only: our package and our key are checked before Android's installer",
