@@ -132,6 +132,17 @@ const key = async (p, k, n = 1) => { for (let i = 0; i < n; i++) { await p.keybo
     && await p.evaluate(() => { MP.tabs[3].act(); return MP.view.tab === 4; }), await p.$$eval('#mp-days li', ls => ls.map(l => l.textContent).join()));
   await ctx.close();
 }
+{   // the named parts the league page v2's cards call (SPORTS.hon), and what they give
+  const { p, ctx, errors } = await open(ALL);
+  await p.evaluate(() => mpGo({ k: 'league', id: '4668', tab: 3 }));
+  await p.waitForTimeout(800);
+  const r = await p.evaluate(() => { const H = SPORTS.hon, sp = archWant('sports/4668.json'), sc = H.want('scorers', '4668'), last = H.scorerSeasons(sc, sp).find(x => H.top(sc, x).length);
+    return { names: ['league', 'club', 'has', 'champList', 'champRow', 'top', 'scorers', 'scorerSeasons', 'want'].filter(k => typeof H[k] === 'function').length,
+      champs: H.champList('4668', sp).list.slice(0, 3).map(c => H.champRow({}, c).t), last, top: H.top(sc, last).map(t => t.goals), has: H.has('4668') }; });
+  check('SPORTS.hon names its parts for the v2 cards: the last 3 champions\' rows, last season\'s top scorer, has()',
+    !errors.length && r.names === 9 && r.champs[0] === '٢٠٢٥-٢٠٢٦: النصر' && r.champs.length === 3 && r.last === '2024-2025' && r.top[0] === 25 && r.has.champs && r.has.scorers, JSON.stringify(r) + errors.join('|'));
+  await ctx.close();
+}
 {   // «الأبطال» with no weekly file yet: the archive's own champions
   const { p, ctx } = await open(Object.assign({}, ALL, { 'h:champions/4668.json': null }));
   await p.evaluate(() => mpGo({ k: 'league', id: '4668', tab: 3 }));

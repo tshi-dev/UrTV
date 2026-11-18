@@ -470,7 +470,10 @@ function honLeague(v, id, tab){
 
 SPORTS = {
   stamp: SP_STAMP,
-  hon: {league: honLeague, club: honClub, has: honHas},
+  // 4.5 the honours: the league and club pages', and named parts for the league page v2's cards (docs/research/LEAGUE-V2-PHASE-A-PLAN.md §3c),
+  // each card gated on has(id) so none is ever empty
+  hon: {league: honLeague, club: honClub, has: honHas, champList: honChampList, champRow: honChampRow, top: honTop, scorers: honScorers,
+    scorerSeasons: honScorerSeasons, want: honWant},
   load: spLoad,
   card(card, P){
     const now = Date.now();
