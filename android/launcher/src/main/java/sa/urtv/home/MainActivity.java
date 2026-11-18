@@ -384,6 +384,10 @@ public class MainActivity extends Activity {
     protected void onPause() {
         super.onPause();
         resumed = false;
+        if (overlayOnScreen) {   // it was on the screen: after a few seconds it counts as seen (once); sooner, it comes again at the next visit
+            if (android.os.SystemClock.elapsedRealtime() - overlayShownAt >= 4000) { overlayDue = false; markOverlayOffered(); }
+            overlayOnScreen = false;
+        }
         noticeOnScreen = null;   // 4.3.3: a notice was seen on this visit; it does not come back
         if (sceneHome != null) sceneHome.stop();   // no timer and no fade while another screen is in front
         updateCardOnScreen = -1;   // 4.4: the same for the card «في تحديث لـ …»
@@ -2264,7 +2268,10 @@ public class MainActivity extends Activity {
     private boolean nudgeIsUpdate;    // 4.4: the bar is the card «في تحديث لـ …» (UpdateNotice.card); OK opens «تحديث تلفزيوني»
     private boolean nudgeIsStock;     // 4.4: the bar offers «رجّع الواجهة الأصلية» after two bad boots of ours (SetupHook.stockBackOffered)
     private boolean nudgeIsOverlay;   // 4.4: the bar offers the add-on for «فوق تطبيق آخر» once (OverlayOfferRule)
-    private volatile boolean overlayDue;   // set on a thread (checkOverlayOffer); read on the UI thread by the bar
+    private static volatile boolean overlayDue;   // set on a thread (checkOverlayOffer); read on the UI thread by the bar; per process, so a recreated home still shows it
+    private static volatile boolean overlayChecked;   // a real answer was got in this process: not asked again
+    private static final java.util.concurrent.atomic.AtomicBoolean overlayChecking = new java.util.concurrent.atomic.AtomicBoolean();
+    private long overlayShownAt;   // when this visit first showed the bar (elapsedRealtime)
     private boolean overlayOnScreen;   // this visit shows the offer (it was marked seen as it first appeared)
     private boolean nudgeIsExtras;    // 4.4: the bar says «إضافات تلفزيونك» is on but not running (A11yHeal.stuck), OK fixes it
     private long updateCardOnScreen = -1;   // 4.4: the build the card asks for while this visit shows it (-1: none); it stays up for the visit, then it was seen
@@ -2339,19 +2346,23 @@ public class MainActivity extends Activity {
      */
     private void checkOverlayOffer() {
         final Context app = getApplicationContext();
-        if (overlayDue || overlayOnScreen) return;
-        clockReads.execute(() -> {
+        if (overlayDue || overlayOnScreen || overlayChecked) return;   // once per process: a real answer is kept, so a TV that never gets the offer does not wake the saver and the add-on at every return
+        if (!overlayChecking.compareAndSet(false, true)) return;
+        new Thread(() -> {   // its own thread: a cold start of the saver's or the add-on's process must not hold up the clock and the photo queued on the home's reads thread
             try {
                 int shown = app.getSharedPreferences(NUDGE_PREFS, MODE_PRIVATE).getInt(OverlayOfferRule.KEY, 0);
-                if (shown >= OverlayOfferRule.VERSION) return;   // the cheap check first: no IPC for a TV that was offered
+                if (shown >= OverlayOfferRule.VERSION) { overlayChecked = true; return; }   // the cheap check first: no IPC for a TV that was offered
                 boolean[] set = KickoffReceiver.settings(app);
                 boolean kids = Parental.state(app).kids, setup = sa.urtv.home.setup.SetupHold.on();
-                boolean draws = set[0] && set[2] && !kids && !setup && Extras.canDraw();
-                if (!OverlayOfferRule.due(set[0], set[2], draws, kids, setup, shown)) return;
+                Boolean known = set[0] && set[2] && !kids && !setup ? Extras.canDrawKnown() : Boolean.FALSE;
+                if (known == null) return;   // the add-on gave no answer: not «cannot draw»; asked again at the next return
+                overlayChecked = true;
+                if (!OverlayOfferRule.due(set[0], set[2], known, kids, setup, shown)) return;
                 overlayDue = true;
                 runOnUiThread(() -> { if (!isDestroyed() && !isFinishing() && resumed) updateHomeNudge(false); });
-            } catch (RuntimeException ignored) { }
-        });
+            } catch (RuntimeException ignored) {
+            } finally { overlayChecking.set(false); }
+        }, "overlay-offer").start();
     }
 
     /** the offer was answered («شغّلها» or «لاحقاً»): never again for this version */
@@ -2388,7 +2399,7 @@ public class MainActivity extends Activity {
             && HomeNudgeRule.show(false, false, np.getLong("extras_later_until", 0), nowMs);
         // 4.4: «فوق تطبيق آخر» moved to the add-on: offered once to whoever used it (checkOverlayOffer), after the problems above, before the city
         boolean askOverlay = (overlayDue || overlayOnScreen) && !askStock && !askUpdate && !askExtras && !kids && !quiet && !sa.urtv.home.setup.SetupHold.on();
-        if (askOverlay && !overlayOnScreen) { overlayOnScreen = true; markOverlayOffered(); }   // marked seen as it first appears: the bar never comes back for this version
+        if (askOverlay && !overlayOnScreen) { overlayOnScreen = true; overlayShownAt = android.os.SystemClock.elapsedRealtime(); }   // marked seen when the person answers it or leaves after a few seconds of seeing it (onPause), not on first appearance
         boolean askCity = !askStock && !askUpdate && !askExtras && !askOverlay && mismatch == null && CityAskRule.show(isInstalled(SAVER_PKG), cityChosenNow, java.util.TimeZone.getDefault().getID(), kids, np.getLong("city_later_until", 0), nowMs);
         // 4.4: no bar asks to make UrTV the home any more (it is not pushed: the settings' row «اجعل UrTV الشاشة الرئيسية» is the way in for whoever wants it)
         boolean show = askStock || askUpdate || askExtras || askOverlay || askCity;   // never two at once: the stock home back, the update, the add-on, then the city

@@ -76,8 +76,15 @@ public final class Extras {
      * kick-off and iqama receivers' threads), never from a screen's thread.
      */
     static boolean canDraw() {
+        return Boolean.TRUE.equals(canDrawKnown());
+    }
+
+    /** as canDraw, but null when the call failed (the add-on is installed and gave no answer): a failed call is not «cannot draw». Not installed is a real false. */
+    static Boolean canDrawKnown() {
         Bundle b = call(ExtrasWords.STATUS, null, null);
-        return b != null && b.getBoolean(ExtrasWords.CAN_DRAW, false);
+        if (b != null) return b.getBoolean(ExtrasWords.CAN_DRAW, false);
+        Context c = app;
+        return c != null && !installed(c) ? Boolean.FALSE : null;
     }
 
     /** 4.4: the add-on draws the corner notice over the app in front; false when it cannot (not installed, no permission, the TV refused). Off the UI thread only. */

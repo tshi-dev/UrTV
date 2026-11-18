@@ -36,14 +36,19 @@ else:
 main = read(HOME / "MainActivity.java")
 m = main.find("private void checkOverlayOffer()")
 body = main[m:main.find("private void overlayAfterOffer()")]
-check("the check runs on the home's reads thread, never on the UI thread (settings, add-on and prefs are IPC and disk)",
-      "clockReads.execute" in body and "KickoffReceiver.settings(app)" in body and "Extras.canDraw()" in body and "getSharedPreferences" in body.split("clockReads.execute")[1])
-check("the condition is the rule's: the kick-off setting on AND the add-on cannot draw", "OverlayOfferRule.due(set[0], set[2], draws, kids, setup, shown)" in body and "Extras.canDraw()" in body)
+check("the check runs on its own thread (not the clock's clockReads queue), never on the UI thread (settings, add-on and prefs are IPC and disk)",
+      "new Thread(" in body and '"overlay-offer"' in body and "clockReads" not in body and "KickoffReceiver.settings(app)" in body and "Extras.canDrawKnown()" in body and "getSharedPreferences" in body.split("new Thread(")[1])
+check("once per process: a real answer sets a static flag, so a TV that never gets the offer does not wake the saver and the add-on at every return",
+      "private static volatile boolean overlayChecked" in main and "overlayChecked) return;" in body and body.count("overlayChecked = true") == 2 and "overlayChecking.compareAndSet(false, true)" in body)
+check("a failed add-on call is not «cannot draw»: canDrawKnown gives null for it, and a null answer neither spends nor shows the offer",
+      "static Boolean canDrawKnown()" in read(HOME / "Extras.java") and "if (known == null) return;" in body and "Boolean.TRUE.equals(canDrawKnown())" in read(HOME / "Extras.java"))
+check("the condition is the rule's: the kick-off setting on AND the add-on cannot draw", "OverlayOfferRule.due(set[0], set[2], known, kids, setup, shown)" in body)
 check("kids mode and a running setup keep it away, in the check and again in the bar",
       "Parental.state(app).kids" in body and "SetupHold.on()" in body
       and "askOverlay = (overlayDue || overlayOnScreen) && !askStock && !askUpdate && !askExtras && !kids && !quiet && !sa.urtv.home.setup.SetupHold.on()" in main)
-check("once: marked seen as it first appears, and «لاحقاً» or «شغّلها» mark it too (a versioned flag in the home's prefs)",
-      "if (askOverlay && !overlayOnScreen) { overlayOnScreen = true; markOverlayOffered(); }" in main
+check("once: marked seen when the bar was on screen 4 s or more and the person leaves, and «لاحقاً» or «شغّلها» mark it too (a versioned flag in the home's prefs); not on first appearance",
+      "if (askOverlay && !overlayOnScreen) { overlayOnScreen = true; overlayShownAt = android.os.SystemClock.elapsedRealtime(); }" in main
+      and "elapsedRealtime() - overlayShownAt >= 4000) { overlayDue = false; markOverlayOffered(); }" in main
       and "if (nudgeIsOverlay) { overlayAfterOffer(); return; }" in main
       and "putInt(OverlayOfferRule.KEY, OverlayOfferRule.VERSION)" in main
       and "static final int VERSION = 1" in read(HOME / "OverlayOfferRule.java"))

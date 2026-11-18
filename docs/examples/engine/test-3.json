@@ -1,0 +1,9 @@
+{"v": 1, "id": "test-3", "name": {"ar": "اختبار ٣", "en": "Test 3"}, "line": {"ar": "ارسم وخمّن واضغط الجرس", "en": "Draw, guess and buzz"},
+ "icon": "bulb", "look": {"accent": "pink"}, "kids": true, "players": {"min": 3, "max": 8}, "rounds": 4, "seconds": 45, "score": "speed", "points": 5,
+ "source": {"ar": "من تأليف فريق UrTV لأغراض الاختبار", "en": "Written by the UrTV team for testing"},
+ "items": [
+  {"t": "draw", "w": {"ar": "شجرة", "en": "tree"}},
+  {"t": "buzz", "q": "من يسمّي لونا من ألوان العلم الأخضر؟", "a": ["أخضر", "أبيض"]},
+  {"t": "draw", "w": {"ar": "بيت", "en": "house"}},
+  {"t": "buzz", "q": "اذكر اسم حيوان يعيش في البحر"}
+ ]}

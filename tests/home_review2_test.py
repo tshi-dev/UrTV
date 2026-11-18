@@ -51,10 +51,10 @@ check("F5: saverSet runs on a single-thread executor and a refusal does not roll
 cl = src(HOME / "CrashLoopStore.java")
 bl = (ROOT / "tests/regressions/ui_thread_baseline.txt").read_text(encoding="utf-8").splitlines()
 wl = [l for l in bl if "| CrashLoopStore.write |" in l]
-check("F6: opened/drew/clear write only through the background writer; the baseline lines say so and name hook() in HomeApp.onCreate",
-      "BG.execute(" in body(cl, "private static void later(") and "write(" not in body(cl, "static void opened(Context c) {") and "write(" not in body(cl, "static void drew(Context c) {")
+check("F6: opened/drew/clear change the state in memory and write only through the background writer (4.3.5 step()); the baseline lines say so",
+      "BG.execute(" in cl and "write(" not in body(cl, "static void opened(Context c) {") and "write(" not in body(cl, "static void drew(Context c) {")
       and "CrashLoopStore.hook(this)" in src(HOME / "HomeApp.java") and len(wl) == 2
-      and all("crashloop-store" in l and "hook() in HomeApp.onCreate" in l and "must be on disk before the screen builds" not in l for l in wl))
+      and all("crashloop-store" in l and "must be on disk before the screen builds" not in l for l in wl))
 
 # overlay F2: a notice the add-on gave up on (2 s) is not drawn later
 xn = src(ROOT / "android/extras/src/main/java/sa/urtv/home/ExtrasNotice.java")

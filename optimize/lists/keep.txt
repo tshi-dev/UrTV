@@ -95,3 +95,23 @@ com.xgimi.filemanager                  # XGIMI file manager
 # Accessibility and sound
 com.tcl.hearaid
 com.google.android.marvin.talkback
+
+# The TV's own Settings, Live TV / channels and tuning (4.3.6, R-280): a community list named these, and with one off a TV can lose its way
+# back to Settings, its channels or its inputs (Clean Your TV's handler guard cites a Sony that lost its inputs and one that lost Settings).
+# Kept by name when unsure: a bloat app left on is harmless, a lost Settings or Live TV is not. The TV is also asked at run time (disable.sh HANDLERS).
+com.zeasn.whaleos.settings             # Whale OS's Settings app (Sankey and other Whale OS sets)
+com.apps.channels                      # the channel list / Live TV of Vestel-made sets (Acer, Compac, Master-G, Sanyo, Thomson)
+com.beko.tv.channel                    # Beko's TV channels
+com.grundig.tv.channel                 # Grundig's TV channels
+com.zhixin.atvchannel                  # the TV channel app of Anker Nebula projectors
+com.cvte.tv.player                     # CVTE boards' TV player (the tuner and inputs picture)
+com.mediatek.tv.oneworld.tvcenter      # MediaTek's TV center (inputs and channels, XGIMI)
+com.sony.dtv.broadcastsettings         # Sony's broadcast (channel) settings
+com.sony.dtv.tuningconfirmation_dvbt   # Sony's DVB-T tuning
+com.sony.dtv.serviceinformation        # Sony's channel service information
+com.sony.dtv.b2b.prosettings           # Sony's Pro settings (hotel and business mode)
+com.sony.dtv.deviceadminsettings       # Sony's device admin settings
+com.sony.dtv.b2b.deviceadminsettings   # the same, Sony's business build
+com.softwinner.settingssetup           # Allwinner projectors' settings setup
+com.softwinner.settingsassist          # Allwinner projectors' settings helper
+com.amazon.whasettings                 # Fire TV's settings for connected speakers

@@ -22,7 +22,8 @@ const ref = r => DATA.find(v => v.ref === r);
 check('known pages: الإخلاص ٣ on 604, التكاثر ٨ on 600, الحج ٧٧ on 341, الفاتحة on 1 (where in the deck)',
   ref('112:3').page === 604 && ref('102:8').page === 600 && ref('22:77').page === 341 && (!ref('1:1') || ref('1:1').page === 1));
 
-const browser = await chromium.launch(process.env.CHROMIUM ? { executablePath: process.env.CHROMIUM } : {});
+// 4.5: the page's own file:// reads (dist/quotes.json, tafsir.json beside it) as the TV's WebViews allow them (setAllowFileAccessFromFileURLs)
+const browser = await chromium.launch({ args: ['--allow-file-access-from-files'], ...(process.env.CHROMIUM ? { executablePath: process.env.CHROMIUM } : {}) });
 const AR = n => String(n).replace(/\d/g, d => '٠١٢٣٤٥٦٧٨٩'[d]);
 for (const [file, pick, page, style] of [['tv.html', 'الإخلاص:3', 604, ''], ['tv.html', 'التكاثر:8', 600, ''], ['tv.html', 'الحج:77', 341, ''],
     ['tv.html', 'الحج:77', 341, 'classic'], ['tv-en.html', 'الإخلاص:3', 604, '']]) {

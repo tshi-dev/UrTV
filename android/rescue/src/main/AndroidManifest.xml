@@ -30,5 +30,26 @@
                 <category android:name="android.intent.category.LEANBACK_LAUNCHER" />
             </intent-filter>
         </activity>
+        <!-- 4.4 (R7): the fallback home, the screen a TV opens when UrTV is gone and the stock home is off. The alias is OFF here, so it never competes with any
+             home; the setup turns it on (sa.urtv.home.setup.RescueHome: «pm enable», read back) in the same adb batch that turns the stock home off, and off when the
+             stock home is back. FallbackHomeActivity also turns it off by itself when it sees a stock home again. -->
+        <activity
+            android:name="sa.urtv.home.setup.FallbackHomeActivity"
+            android:exported="false"
+            android:excludeFromRecents="true"
+            android:launchMode="singleTask"
+            android:screenOrientation="landscape"
+            android:theme="@android:style/Theme.Material.NoActionBar" />
+        <activity-alias
+            android:name="sa.urtv.home.setup.RescueHome"
+            android:targetActivity="sa.urtv.home.setup.FallbackHomeActivity"
+            android:enabled="false"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.HOME" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity-alias>
     </application>
 </manifest>

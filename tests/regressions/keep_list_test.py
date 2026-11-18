@@ -52,4 +52,12 @@ sc = (ROOT / "android/launcher/src/main/java/sa/urtv/home/setup/SetupCommunity.j
 check("the TV setup drops SetupLists.KEEP from a community list (both places)", sc.count("SetupLists.KEEP") >= 2, sc.count("SetupLists.KEEP"))
 for p in ("com.sony.dtv.netflixmanager", "com.netflix.ninja"):
     check(f"4.3.4: {p} (a remote button) is kept", p in keep)
+# R-280 (4.3.6): a TV's own Settings, Live TV / channels and tuning apps that community lists named are kept, each with its reason
+SETTINGS_TV = ("com.zeasn.whaleos.settings", "com.apps.channels", "com.beko.tv.channel", "com.grundig.tv.channel", "com.zhixin.atvchannel", "com.cvte.tv.player",
+               "com.mediatek.tv.oneworld.tvcenter", "com.sony.dtv.broadcastsettings", "com.sony.dtv.tuningconfirmation_dvbt", "com.sony.dtv.serviceinformation",
+               "com.sony.dtv.b2b.prosettings", "com.sony.dtv.deviceadminsettings", "com.sony.dtv.b2b.deviceadminsettings", "com.softwinner.settingssetup",
+               "com.softwinner.settingsassist", "com.amazon.whasettings")
+kt = (L / "keep.txt").read_text(encoding="utf-8")
+for p in SETTINGS_TV:
+    check(f"R-280 {p} (Settings / Live TV / tuning) is kept, with its reason", p in keep and re.search(r"^" + re.escape(p) + r"\s+#\s*\S", kt, re.M))
 sys.exit(1 if failed else 0)

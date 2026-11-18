@@ -106,13 +106,13 @@ var T = {
   ar: { room: 'الغرفة {0}', yourName: 'اسمك', yourColour: 'لونك', join: 'ادخل', joining: 'لحظة', loading: 'لحظة',
     inn: 'أنت داخل', ready: 'جاهزين؟', waitStart: 'ننتظر أن تبدأ اللعبة', inRoom: 'في الغرفة: {0}', leave: 'خروج', leaveSure: 'اضغط مرة ثانية للخروج',
     seen: 'شفتها', seenSub: 'اضغط بعد ما تحفظها', hidden: 'تمام، ننتظر الباقين', ok: 'صح', skip: 'تخطّي', foul: 'مخالفة', buzz: 'أنا!', ready: 'جاهز', tiltOn: 'فعّل الإمالة', tiltHint: 'نزّل الجوال = صح، ارفعه = تخطّي', got: 'صح {0}', skipped: 'تخطّي {0}', dunno: 'ما أدري', clear: 'امسح',
-    voted: 'سجّلنا اختيارك', send: 'أرسل', sent: 'وصلت إجابتك', typeHere: 'اكتب هنا', pick: 'اختر واحدًا', closed: 'أُغلقت الغرفة', closedSub: 'شكرًا للعب', bad: 'الرمز غير صحيح', lost: 'انقطع', back: 'رجعنا',
+    voted: 'سجّلنا اختيارك', send: 'أرسل', sent: 'وصلت إجابتك', orderHint: 'اضغط بالترتيب الصحيح', undo: 'تراجع', typeHere: 'اكتب هنا', pick: 'اختر واحدًا', closed: 'أُغلقت الغرفة', closedSub: 'شكرًا للعب', bad: 'الرمز غير صحيح', lost: 'انقطع', back: 'رجعنا',
     e_name0: 'اكتب اسمك أولًا', e_full: 'الغرفة ممتلئة', e_locked: 'محاولات كثيرة، انتظر دقيقة', e_gone: 'خرجت من الغرفة، ادخل من جديد', e_name: 'اختر اسمًا ثانيًا',
     e_closed: 'اللعبة بدأت أو أُغلقت الغرفة', e_code: 'الرمز غير صحيح', e_rate: 'بسرعة شوي، حاول مرة ثانية', e_net: 'تعذّر الاتصال، حاول مرة ثانية' },
   en: { room: 'Room {0}', yourName: 'Your name', yourColour: 'Your colour', join: 'Join', joining: 'One moment', loading: 'One moment',
     inn: "You're in", ready: 'Ready?', waitStart: 'Waiting for the game to start', inRoom: 'In the room: {0}', leave: 'Leave', leaveSure: 'Tap again to leave',
     seen: 'Got it', seenSub: 'Tap once you have it', hidden: 'Good, waiting for the others', ok: 'Right', skip: 'Skip', foul: 'Foul', buzz: 'Me!', ready: 'Ready', tiltOn: 'Turn on tilting', tiltHint: 'Tilt down = right, tilt up = skip', got: 'Right {0}', skipped: 'Skipped {0}', dunno: "Don't know", clear: 'Clear',
-    voted: 'Your choice is in', send: 'Send', sent: 'Your answer is in', typeHere: 'Type here', pick: 'Pick one', closed: 'The room is closed', closedSub: 'Thanks for playing', bad: 'The code is not right', lost: 'Connection lost', back: 'Back',
+    voted: 'Your choice is in', send: 'Send', sent: 'Your answer is in', orderHint: 'Tap them in the right order', undo: 'Undo', typeHere: 'Type here', pick: 'Pick one', closed: 'The room is closed', closedSub: 'Thanks for playing', bad: 'The code is not right', lost: 'Connection lost', back: 'Back',
     e_name0: 'Type your name first', e_full: 'The room is full', e_locked: 'Too many tries, wait a minute', e_gone: 'You left the room, join again', e_name: 'Pick another name',
     e_closed: 'The game has started or the room is closed', e_code: 'The code is not right', e_rate: 'Too fast, try again', e_net: 'Could not connect, try again' }
 };
@@ -221,6 +221,13 @@ function enableTilt() {
     else on();
   } catch (e) {}
 }
+var ordSeq = {};
+function sendOrder(seq) {
+  var c = st.card;
+  sent[c.id] = 0;
+  api('/api/answer', { c: code, t: token, q: c.id, a: 0, x: seq.join(',') }).then(function (r) { if (!r.ok && r.e !== 'card') delete sent[c.id]; render(true); }, function () { delete sent[c.id]; render(true); });
+  render(true);
+}
 function sendText(vals) {
   var c = st.card, x = vals.join('\n');
   if (!x.replace(/\s/g, '')) return;
@@ -298,6 +305,25 @@ function cardScreen() {
     kids = [h('div', 'dim', c.title), h('div', 'actw', c.text), c.note ? h('div', 'dim', c.note) : null];
     var cv = h('canvas', 'cv', null, { width: '420', height: '420', id: 'cv' }), clr = h('button', 'btn alt', S.clear, { type: 'button', id: 'clr' });
     var wipe = drawCard(c, cv); clr.addEventListener('click', wipe); kids.push(cv); kids.push(h('div', 'foot', [clr]));
+  } else if (c.kind === 'order') {
+    /* the engine's «order» and «pairs» blocks: tap the things in the order you think is right; the answer is their numbers, once */
+    kids = [h('div', 'big', c.text), c.note ? h('div', 'dim', c.note) : null, h('div', 'dim', got == null ? S.orderHint : S.sent)];
+    var chosen = (ordSeq[c.id] || []).slice(), list = h('div', null), go = h('button', 'btn', S.send, { type: 'button', id: 'ordsend' }), undo = h('button', 'btn alt', S.undo, { type: 'button', id: 'ordundo' });
+    function paintOrder() {
+      list.textContent = '';
+      c.opts.forEach(function (o, i) {
+        var at = chosen.indexOf(i);
+        var b = h('button', 'vb' + (at >= 0 ? ' pick' : ''), [at >= 0 ? h('b', null, D(at + 1) + ' ') : null, h('span', null, o)], { type: 'button', 'data-i': i });
+        if (got != null || at >= 0) b.disabled = true;
+        b.addEventListener('click', function () { chosen.push(i); ordSeq[c.id] = chosen.slice(); paintOrder(); });
+        list.appendChild(b);
+      });
+      go.disabled = chosen.length !== c.opts.length || got != null; undo.disabled = !chosen.length || got != null;
+    }
+    go.addEventListener('click', function () { if (chosen.length === c.opts.length) sendOrder(chosen); });
+    undo.addEventListener('click', function () { chosen.pop(); ordSeq[c.id] = chosen.slice(); paintOrder(); });
+    paintOrder(); kids.push(list);
+    if (got == null) kids.push(h('div', 'row3', [go, undo])); else kids.push(h('div', 'msg', h('div', 'big', S.sent)));
   } else if (c.kind === 'pick') {
     kids = [h('div', 'big', c.text), c.note ? h('div', 'dim', c.note) : null];
     c.opts.forEach(function (o, i) {

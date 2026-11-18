@@ -23,6 +23,7 @@ public final class SetupHook {
     private static void atHomeStartNow(final Context app) {
         try {
             clearOldFails(app);
+            endNotSeen(app);   // 4.4 (R2)
             if (!SetupRecovery.pending(app)) { migrate(app); return; }
             SetupRecovery.rearmFromDisk(app);
             if (SetupRecovery.gaveUp(app)) {
@@ -51,7 +52,10 @@ public final class SetupHook {
         try {
             FileStore store = new FileStore(app);
             String j = store.get("home-switch.json");
-            if (j == null || !StockMigration.due(field(j, "state"), field(j, "stock_before"), field(j, "wizard_before"), store.get(SetupEngine.FACTORY), store.get(StockMigration.MARK))) return;
+            if (j == null || !StockMigration.due(field(j, "state"), field(j, "stock_before"), field(j, "wizard_before"), store.get(SetupEngine.FACTORY), store.get(StockMigration.MARK))) {
+                noJournal(app, store);   // 4.4 (R7): a TV switched the old way from the PC
+                return;
+            }
             new Thread(new Runnable() {
                 @Override public void run() {
                     try (SetupSession s = SetupSession.open(app, 5000, null, new SetupEngine.Out() { @Override public void line(String text) { } })) {
@@ -66,6 +70,74 @@ public final class SetupHook {
             }, "stock-migration").start();
         } catch (RuntimeException ignored) {
             // the home screen comes first
+        }
+    }
+
+    /**
+     * 4.4 (R7): no stock home answers Home (asked of this app's own package manager, no adb), the person did not choose «عطّل واجهة المصنع», and nothing was done yet:
+     * where this app's adb key exists (it was let in before) the stock home is turned back on (SetupEngine.migrateStockNoJournal); else the person is told the way
+     * by hand, once (no «السماح بتصحيح USB؟» popping up at a home start).
+     */
+    private static void noJournal(final Context app, FileStore store) {
+        String f = store.get(SetupEngine.FACTORY), m = store.get(StockMigration.MARK);
+        if ((f != null && f.startsWith("on")) || (m != null && !m.trim().isEmpty())) return;
+        java.util.List<String> homes = new java.util.ArrayList<>();
+        for (android.content.pm.ResolveInfo r : app.getPackageManager().queryIntentActivities(new android.content.Intent(android.content.Intent.ACTION_MAIN).addCategory(android.content.Intent.CATEGORY_HOME), 0))
+            if (r.activityInfo != null) homes.add(r.activityInfo.packageName);
+        if (RescueHome.stockHomeOn(homes)) return;
+        if (!AdbKeys.exists(app)) {
+            String told = store.get(StockMigration.TOLD_MARK);
+            if (told != null && !told.trim().isEmpty()) return;
+            try { store.put(StockMigration.TOLD_MARK, "told\n"); } catch (java.io.IOException e) { return; }
+            new android.os.Handler(android.os.Looper.getMainLooper()).post(new Runnable() { @Override public void run() { Toast.makeText(app, StockMigration.TOLD, Toast.LENGTH_LONG).show(); } });
+            return;
+        }
+        new Thread(new Runnable() {
+            @Override public void run() {
+                try (SetupSession s = SetupSession.open(app, 5000, null, new SetupEngine.Out() { @Override public void line(String text) { } })) {
+                    final SetupEngine.Result r = s.engine.migrateStockNoJournal();
+                    if (r != null && r.status == SetupEngine.Status.DONE) {
+                        new android.os.Handler(android.os.Looper.getMainLooper()).post(new Runnable() { @Override public void run() { Toast.makeText(app, StockMigration.NOTICE, Toast.LENGTH_LONG).show(); } });
+                    }
+                } catch (Exception ignored) {
+                    // the TV did not answer: the next start tries again
+                }
+            }
+        }, "stock-migration-pc").start();
+    }
+
+    /**
+     * 4.4 (R2: a Skyworth IRIS «stopped at 26 %, then the app closed by itself»): a full run that ended badly while its screen was not in front (it ended at a
+     * boot, or the app was closed) is said once at the next start of UrTV, in one line, with the way on. The setup screen shows the whole end (restoreEnd).
+     */
+    private static void endNotSeen(final Context app) {
+        try {
+            FileStore store = new FileStore(app);
+            String t = store.get(SetupRunner.END_FILE);
+            if (t == null || !t.startsWith("bad\n")) return;   // ok, told already, or none
+            final String text = t.substring(4).trim();
+            store.put(SetupRunner.END_FILE, "bad told\n" + text + "\n");
+            if (text.isEmpty()) return;
+            new android.os.Handler(android.os.Looper.getMainLooper()).post(new Runnable() { @Override public void run() {
+                Toast.makeText(app, "«إعداد تلفزيوني» ما كمل: " + text + " افتح «إعداد تلفزيوني» لتكمل.", Toast.LENGTH_LONG).show();
+            } });
+        } catch (java.io.IOException | RuntimeException ignored) { }
+    }
+
+    /** 4.4 (step 100): this app holds an adb key the TV has let in before (no question pops up) */
+    public static boolean hasKey(Context c) { return AdbKeys.exists(c); }
+
+    /**
+     * 4.4 (step 100): the safe page's «افتح الشاشة الأصلية» on a TV whose stock home an earlier setup turned off: that one package is turned back on over this
+     * app's adb key (no question pops up: only where the key exists), then read back. Only a known stock home (StockHome.KNOWN), never the setup wizard.
+     * Blocks: call it off the UI thread. True when the TV says it is on now.
+     */
+    public static boolean enableStock(Context c, String pkg) {
+        if (!AdbKeys.exists(c)) return false;
+        try (SetupSession s = SetupSession.open(c, 5000, null, new SetupEngine.Out() { @Override public void line(String text) { } })) {
+            return StockEnable.run(s::run, pkg, sa.urtv.home.StockHome.known());
+        } catch (Exception e) {
+            return false;
         }
     }
 

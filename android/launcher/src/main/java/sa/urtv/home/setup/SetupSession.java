@@ -14,6 +14,9 @@ final class SetupSession implements Closeable {
 
     private SetupSession(AdbClient adb, SetupEngine engine) { this.adb = adb; this.engine = engine; }
 
+    /** one command over this session (SetupHook.enableStock) */
+    AdbClient.Result run(String command) throws IOException { return adb.run(command); }
+
     /** approvalMs: how long to wait for the person to accept the TV's prompt (0 for the receiver: the key is known by then). */
     static SetupSession open(Context c, int approvalMs, AdbClient.Approval approval, SetupEngine.Out out) throws IOException { return open(c, "127.0.0.1", approvalMs, approval, out); }
 

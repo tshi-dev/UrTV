@@ -23,7 +23,7 @@ check("its line says the page only and points to «تحديث تلفزيوني»
 check("«تحديث تلفزيوني» says it updates the two apps", 'row("تحديث تلفزيوني", "تحديث التطبيقين: ' in render)
 check("both rows sit in the same category («تحديث تلفزيوني»), so «في نفس القسم» is true",
       '{"تحديث تلفزيوني", UPDATE}' in hub and '{"تحديث صفحة شاشة التوقف", UPDATE}' in hub)
-check("the version lines still show under it", "if (last.getParent() == list) note(last, Updater.versionLines(this));" in render)
+check("the version lines still show under it", "if (last.getParent() == list) { TextView ver = note(last, Updater.versionLines(this));" in render)
 old = [str(p.relative_to(ROOT)) for p in list((ROOT / "android").rglob("*.java")) + [ROOT / "README.md", ROOT / "docs/TEST-PLAN.md"]
        if "تحديث الشاشة الآن" in text(p)]
 check("the old name is gone from the apps, the README and the test plan", not old, old)

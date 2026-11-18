@@ -345,6 +345,7 @@ python3 tests/control_shape_test.py   # 4.3.1 «شكل لوحة التحكم»: 
 python3 tests/dev_help_test.py   # User report «ماهو راضي يفعل تصحيح USB»: Developer options open from the build number, whose place differs per
 python3 tests/dock_retry_test.py   # Hotfix 4.3: after a cold start the favourites row showed only five apps (two users, 4.2 and 4.3). showApps() f
 python3 tests/factory_test.py   # «تخلّص من واجهة المصنع» (its own row in the settings): the engine on SetupEngineRun's fake TV (the offer and i
+python3 tests/rescue_home_test.py   # 4.4 (R7): the rescue's fallback home: armed before the stock home goes, off when it is back; the factory step only where needed; a PC-switched TV gets its stock home back
 python3 tests/fragment_keep_test.py   # 4.3.2 (a user's adhan times and prayer card disappeared after 4.3.1): the home keeps the screensaver's last RE
 python3 tests/glow_mode_test.py   # «توهّج لون التطبيق» (4.3.1): the glow behind the focused app is OFF by default (new installs and old ones), ha
 python3 tests/google_tv_home_test.py   # Google TV (user reports: TCL G10/G08, Changhong Android 14, Sony BRAVIA VH21, Xiaomi MiTV-AFMU0/1): since 4.3
@@ -387,7 +388,12 @@ python3 tests/beta_newest_test.py   # 4.3.4: «النسخ التجريبية» t
 python3 tests/beta_confirm_test.py   # 4.3.4: a beta build asks «نسخة تجريبية» on the TV before anything is downloaded
 python3 tests/webview_guard_test.py   # 4.3.5: no WebView on the TV: the home draws without its card, never a crash at start (a CVTE Android 9 black screen)
 python3 tests/crash_loop_test.py   # 4.3.5 (R7): two crashes right after start open SafeActivity (the TV's own home one press away), never a black screen
+python3 tests/safe_stock_test.py   # 4.4 (step 100): «افتح الشاشة الأصلية» turns a stock home an earlier setup turned off back on (our key), else says the way by hand; never silent
 python3 tests/api28_compile_test.py   # 4.3.5: the home compiles against Android 9 with every newer API behind a Build.VERSION check; the reports name the WebView
+python3 tests/api26_compile_test.py   # 4.3.6: the home against Android 8.0 (its minSdk): every newer API behind a version check for 27 or newer (a Percee OTT box)
+python3 tests/black_video_test.py   # 4.3.5: no page of ours keeps working behind another app (the screensaver activity, every WebView owner, the page's hidden gate)
+node tests/es2017_parse.test.mjs   # #19: the built pages parse as ES2017 (Android 9 TVs stuck on WebView 66)
+python3 tests/api26_compile_test.py   # 4.3.6: the home against Android 8.0 (its minSdk): every newer API behind a version check for 27 or newer (a Percee OTT box)
 node tests/i18n_page_test.mjs   # dist/tv-en.html in a browser: left to right, no Arabic in its own words on any card
 #
 # English phase 3 (the home app): its new tests go right under this line
@@ -402,6 +408,7 @@ python3 tests/quiz_test.py   # «الأسرع»: the room, the picking, the serv
 node tests/quiz_phone.test.mjs   # «الأسرع»: the phone page at 360 px in a browser
 node tests/quiz_e2e.test.mjs   # «الأسرع»: two phones against the real room and server on the loopback
 python3 tests/games_data_test.py   # the games' data: the forms, the limits, the bundled starters
+python3 tests/howto_test.py   # «طريقة اللعب»: the small «!» on a start screen and the panel behind it, the texts of the 19 games (rules on a plain JVM, the three places a text lives, the Android side by its source)
 python3 tests/games_kit_test.py   # the games' kit, the registry and the list, «خمس خانات» and «الكلمة المفقودة» (their rules on a plain JVM)
 python3 tests/domino_test.py   # «دومينو»: the rules and the computer players on a plain JVM, whole games from seeds (docs/DOMINO.md)
 #
@@ -437,6 +444,7 @@ node tests/game_phone_page.test.mjs   # The party games' phone page (assets/quiz
 python3 tests/game_bundle_test.py   # the games' bundled data and its checks
 python3 tests/game_packs_test.py   # the games' packs
 python3 tests/new_games_test.py   # the new games' rules and screens
+python3 tests/game_engine_test.py   # the games engine and its remote release switch (docs/GAME-ENGINE.md, docs/GAMES-RELEASE.md)
 python3 tests/saver_review44_test.py   # 4.4 review fixes in the screensaver app (F12-F15)
 python3 tests/saver_gate_test.py   # 4.4 review: a settings change during the page start is kept and looked at again (F1)
 python3 tests/saver_prayerfix_test.py   # 4.4 review: the late prayer correction reaches a running dream (F2)

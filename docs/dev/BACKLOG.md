@@ -23,3 +23,9 @@ and a setting beside «المظهر». No live blur, as now.
 ## Split tv.html
 
 Move the largest rarely-shown part (measure first: games / sports takeover / settings panels) into a lazy file; target back under 746 KB. 4.4 raised the tv.html budget in tests/check.py from 746 KB to 775 KB (tv.html was 760,217 bytes with every 4.4 branch in).
+
+4.5 (work/45-pagesize, the owner: under 500 KB): the verse and hadith lists (397 KB, the largest part by far) are `dist/quotes.json` beside the page,
+in both apps' assets (the screensaver's, the launcher's `web/`) and the TV ports, read once and at once (synchronous XHR of a local file) the first time
+a verse or hadith is drawn; the page keeps the 20 shortest of each for a page that cannot read it (then the repository's, in the background).
+`dist/urtv.html` keeps them inline. tv.html 770,352 → 381,560 bytes, tv-en.html 734,197 → 345,405; the budget in tests/check.py is 500 KB.
+Left for later if needed: the team tables (TEAM_AR 18 KB, TEAM_BY_ID 12 KB) and a whitespace pass (about 13 KB).
