@@ -1,0 +1,18 @@
+t_change: 1795031088.147652560
+back: still in t9}
+Total frames rendered: 39
+Janky frames: 39 (100.00%)
+50th percentile: 150ms
+90th percentile: 200ms
+95th percentile: 200ms
+99th percentile: 250ms
+Number Missed Vsync: 30
+Number Slow UI thread: 21
+Number Slow bitmap uploads: 2
+Number Slow issue draw commands: 39
+50th gpu percentile: 14ms
+90th gpu percentile: 22ms
+95th gpu percentile: 4950ms
+99th gpu percentile: 4950ms
+t_rec: 1795031086.131827382
+focus-after:  android.widget.LinearLayout [172,72][362,132]

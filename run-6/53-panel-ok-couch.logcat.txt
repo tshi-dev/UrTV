@@ -1,0 +1,1 @@
+         1795031184.904   470  1218 I ActivityTaskManager: START u0 {flg=0x10000000 cmp=sa.urtv.screensaver/.SettingsActivity (has extras)} from uid 2000
