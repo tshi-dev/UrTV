@@ -54,6 +54,7 @@ SNAPSHOT = [
     ("disabled", "pm list packages -d"),
     ("a11y-list", "settings get secure enabled_accessibility_services"),
     ("a11y-switch", "settings get secure accessibility_enabled"),
+    ("wanted", f"am broadcast -n {SELF}/.DockReceiver -a {SELF}.HOME_WANTED --es mode status"),
 ]
 LOG_KEEP = re.compile(r"RoleService|RoleController|RoleManager|ActivityTaskManager.*(HOME|android\.intent\.category\.HOME)|UrTVSetup|UrTVWatch|launcherx", re.I)
 FORBIDDEN = re.compile(r"\bpm (disable|disable-user|uninstall|clear)\b|factory|master_clear|wipe|recovery|\bPIN_|\bpin (set|reset|off)\b", re.I)
@@ -261,7 +262,7 @@ class Doctor:
         raise ValueError(a)
 
     def restore(self):
-        """the TV as before the run: the role holder, the home activity, the accessibility list and switch, «wanted» off. Nothing is turned off."""
+        """the TV as before the run: the role holder, the home activity, the accessibility list and switch, «wanted» as it was (read before the run). Nothing is turned off."""
         holders = role_holders(self.before.get("role", ""))
         now = role_holders(self.tv.sh(f"cmd role get-role-holders --user 0 {ROLE}"))
         if SELF in now and SELF not in holders:
@@ -279,44 +280,47 @@ class Doctor:
                 self.tv.sh(f"settings put secure {setting} '{v}'")
             elif v == "null":
                 self.tv.sh(f"settings delete secure {setting}")
-        self.wanted(False)
+        self.wanted("home-wanted: yes" in self.before.get("wanted", ""))
         self.tv.sh("input keyevent KEYCODE_HOME")
 
     def run(self, angles, reboot=False, keep=False):
         self.before = self.snapshot("before")
-        results, winner = [], None
-        for a in angles:
-            self.log(f"angle {a}: {ABOUT[a]}")
-            self.mark()
-            try:
-                applied, note = self.apply(a)
-            except SystemExit:
-                raise
-            except Exception as e:   # the TV dropped: said, put back, the next angle
-                applied, note = False, f"failed: {e}"
-            r = {"angle": a, "about": ABOUT[a], "applied": applied, "note": note.strip()[-800:]}
-            if applied:
-                self.tv.wait(3)
-                r.update(self.test(a))
-            else:
-                r.update({"passed": False, "why": "not applied: " + note.strip().splitlines()[-1] if note.strip() else "not applied"})
-            after = self.snapshot(f"after-{a}")
-            r["log"] = explain(after["log"])
-            r["revert_alarm"] = revert_armed(after["alarm"])
-            r["watch_bound"] = bound(after["accessibility"])
-            self.log(f"   {'PASSED' if r['passed'] else 'failed'}: {r['why']}")
-            if r["passed"] and reboot and a != "F":
-                self.tv.reboot()
-                r["after_reboot"] = self.test(a)
-                self.log(f"   after a restart: {'passed' if r['after_reboot']['passed'] else 'failed'}: {r['after_reboot']['why']}")
-            results.append(r)
-            if r["passed"]:
-                winner = a
-                break
-            self.restore()
-        if winner is None or not keep:
-            self.restore()
-        return results, winner
+        results, winner, done = [], None, False
+        try:
+            for a in angles:
+                self.log(f"angle {a}: {ABOUT[a]}")
+                self.mark()
+                try:
+                    applied, note = self.apply(a)
+                except SystemExit:
+                    raise
+                except Exception as e:   # the TV dropped: said, put back, the next angle
+                    applied, note = False, f"failed: {e}"
+                r = {"angle": a, "about": ABOUT[a], "applied": applied, "note": note.strip()[-800:]}
+                if applied:
+                    self.tv.wait(3)
+                    r.update(self.test(a))
+                else:
+                    r.update({"passed": False, "why": "not applied: " + note.strip().splitlines()[-1] if note.strip() else "not applied"})
+                after = self.snapshot(f"after-{a}")
+                r["log"] = explain(after["log"])
+                r["revert_alarm"] = revert_armed(after["alarm"])
+                r["watch_bound"] = bound(after["accessibility"])
+                self.log(f"   {'PASSED' if r['passed'] else 'failed'}: {r['why']}")
+                if r["passed"] and reboot and a != "F":
+                    self.tv.reboot()
+                    r["after_reboot"] = self.test(a)
+                    self.log(f"   after a restart: {'passed' if r['after_reboot']['passed'] else 'failed'}: {r['after_reboot']['why']}")
+                results.append(r)
+                if r["passed"]:
+                    winner = a
+                    break
+                self.restore()
+            done = True
+            return results, winner
+        finally:   # an error or Ctrl-C mid-run puts the TV back too; --keep keeps only a finished, passed run
+            if not (done and winner is not None and keep):
+                self.restore()
 
 
 def report(results, winner, props, out_dir):

@@ -7,6 +7,21 @@ final class DuaPlan {
 
     static boolean same(long t, long due) { return t > 0 && due > 0 && Math.abs(t - due) <= SAME_MS; }
 
+    /**
+     * 4.4 review F11: which dua does this alarm belong to? moments[i] is dua i's own next moment found from SAME_MS before the alarm (0: none or off),
+     * lastDue[i] the moment it last played. The window only finds the moment; the dua that plays is the one whose moment is nearest the alarm
+     * (the first in the list on a tie), and only that one: two duas 2 minutes apart each play once. -1: none.
+     */
+    static int pick(long[] moments, long[] lastDue, long due) {
+        int best = -1;
+        for (int i = 0; i < moments.length; i++) {
+            long t = moments[i];
+            if (lastDue[i] >= t || !same(t, due)) continue;
+            if (best < 0 || Math.abs(t - due) < Math.abs(moments[best] - due)) best = i;
+        }
+        return best;
+    }
+
     private DuaPlan() { }
 
     /** an alarm later than this is a missed one: never made up */

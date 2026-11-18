@@ -60,8 +60,8 @@ check("2. the home tells the add-on WANTED / UNWANTED (on its start and at boot,
       "sa.urtv.home.Extras.homeWanted(app, wanted)" in hook and "SetupHook.tellWatch(app);" in boot and "tellWatch(c);" in hook
       and "ExtrasA11yService.setWanted(getContext(), ExtrasWords.WANTED.equals(arg))" in prov)
 # 3. the key
-check("3. one ADB key for good: no delete anywhere in the setup, the log says it is kept",
-      "AdbKeys.delete" not in "".join(text(p) for p in SETUP.glob("*.java")) and "adb key: kept (one key for good)" in text(SETUP / "SetupSession.java"))
+check("3. one ADB key between the steps: the only delete is SetupSession.dropKey (at «تراجع» and the factory restore, F20), the log says it is kept otherwise",
+      "".join(text(p) for p in SETUP.glob("*.java")).count("AdbKeys.delete(") == 1 and "AdbKeys.delete(c);" in text(SETUP / "SetupSession.java") and "adb key: kept between the steps" in text(SETUP / "SetupSession.java"))
 # 4. Cancel
 check("4. AdbClient waits for the answer half a second at a time (Android 11+ too), ends at once on «إلغاء» or at the time limit",
       adb.count("if (approval != null && approval.cancelled())") == 2 and "throw new IOException(CANCELLED);" in adb and "Thread.sleep(500);" in adb
