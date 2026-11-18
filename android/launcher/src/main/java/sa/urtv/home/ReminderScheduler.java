@@ -35,6 +35,11 @@ public final class ReminderScheduler {
 
     public static void schedule(Context c) { schedule(c, 0); }
 
+    // 4.3.4 QA-3: the home's return asks for a reschedule that the reminder card's background read then does (never on the UI thread)
+    private static final java.util.concurrent.atomic.AtomicBoolean SOON = new java.util.concurrent.atomic.AtomicBoolean();
+    static void scheduleSoon() { SOON.compareAndSet(false, true); }
+    static boolean takeSoon() { return SOON.getAndSet(false); }
+
     static boolean exactAllowed(Context c) {
         if (Build.VERSION.SDK_INT < 31) return true;
         AlarmManager am = (AlarmManager) c.getSystemService(Context.ALARM_SERVICE);
