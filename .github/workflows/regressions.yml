@@ -58,7 +58,8 @@ jobs:
       - run: npm install --no-save playwright@1.56.1 acorn@8.14.0 && npx playwright install --with-deps chromium   # acorn: tests/js_strip_test.mjs
       - name: The regressions group
         env:
-          ATTRIBUTION_STRICT: '1'   # the released commits' authors and messages need the history back to the last tag (fetch-depth: 0 above)
+          ATTRIBUTION_STRICT: '1'
+          GAMES_RELEASE_STRICT: ${{ inputs.release && '1' || '' }}   # a publish to apk-latest: no ready game still «pending» (games_released.txt)   # the released commits' authors and messages need the history back to the last tag (fetch-depth: 0 above)
         run: bash tests/run.sh regressions
       - name: API surface against the previous release
         if: ${{ !cancelled() }}

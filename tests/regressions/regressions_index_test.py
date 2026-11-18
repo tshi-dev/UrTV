@@ -35,6 +35,7 @@ named = {g for _, c in rows for g in reg.guards(c)}
 PREVENTIVE = {"tests/regressions/no_bundled_packs_test.py": "the photo packs are downloaded, never shipped in an APK (supervisor's rule, 4.3.4)",
               "tests/regressions/regressions_index_test.py": "this file",
               "tests/regressions/attribution_test.py": "the owner's rule (18 Nov): tshi-dev authors and commits every released commit, no AI lines",
+              "tests/regressions/games_release_test.py": "the owner's rule: no game reaches a release without its release line (games_released.txt)",
               "tests/regressions/lessons_test.py": "the LESSONS rules (R4, R9, R10, R12, R15, R16, R17): rules, not one bug each", "tests/regressions/release_gate_ci_test.py": "the gate's own wiring"}
 orphan = [str(p.relative_to(ROOT)) for p in sorted((ROOT / "tests/regressions").glob("*_test.py"))
           if str(p.relative_to(ROOT)) not in named and str(p.relative_to(ROOT)) not in PREVENTIVE]
