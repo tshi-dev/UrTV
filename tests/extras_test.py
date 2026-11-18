@@ -99,4 +99,6 @@ check("4.4: the home's bar says it too (after the TV has been up 90 s, never in 
 check("4.4: a heal from the offer or the bar is not taken for our own update (UpdateCarry is not run for «fix-…»)", '!"boot".equals(why) && !why.startsWith("fix")' in heal)
 check("4.4: dock.sh extras-setup reads Android's Bound services after writing the list, turns the list off and on while ours is not bound (twice), says the person's fix if it still is not, and allows TCL's AUTO_START",
       "Bound services:" in dock and "the list was turned off and on again" in dock and "أطفئها وشغّلها من جديد" in dock and "appops set sa.urtv.extras AUTO_START allow" in dock)
+check("4.4 review F9: the offer asks the add-on on a thread when it resumes and looks again on the UI thread when it answers (not only the kept answer)",
+      "protected void onResume() {" in act and 'new Thread(() -> { Extras.askNow(); runOnUiThread(() -> { if (!isFinishing() && !isDestroyed()) refresh(); }); }, "extras-offer").start();' in act.split("protected void onResume() {")[1].split("}\n\n")[0] + "}")
 sys.exit(1 if failed else 0)

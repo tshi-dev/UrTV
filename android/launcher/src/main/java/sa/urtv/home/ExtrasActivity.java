@@ -149,6 +149,8 @@ public class ExtrasActivity extends Activity {
     @Override protected void onResume() {
         super.onResume();
         refresh();
+        // 4.4 review F9: the kept answer can be old (the person just turned it on in Android's settings): ask on a thread, and look again on the UI thread when it answers
+        new Thread(() -> { Extras.askNow(); runOnUiThread(() -> { if (!isFinishing() && !isDestroyed()) refresh(); }); }, "extras-offer").start();
         if (askedSource && !working && canInstall()) { askedSource = false; install(); }   // back from Android's «allow this source» screen
     }
 
