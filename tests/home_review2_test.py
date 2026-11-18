@@ -47,5 +47,14 @@ sv = body(mk, "private void saverSet(")
 check("F5: saverSet runs on a single-thread executor and a refusal does not roll back over a later press",
       "Executors.newSingleThreadExecutor(" in mk and "saverQueue.execute(" in sv and "new Thread(" not in sv and "!value.equals(this.saved.get(key))" in sv)
 
+# F6: the baseline's reason for CrashLoopStore.write says what the code does
+cl = src(HOME / "CrashLoopStore.java")
+bl = (ROOT / "tests/regressions/ui_thread_baseline.txt").read_text(encoding="utf-8").splitlines()
+wl = [l for l in bl if "| CrashLoopStore.write |" in l]
+check("F6: opened/drew/clear write only through the background writer; the baseline lines say so and name hook() in HomeApp.onCreate",
+      "BG.execute(" in body(cl, "private static void later(") and "write(" not in body(cl, "static void opened(Context c) {") and "write(" not in body(cl, "static void drew(Context c) {")
+      and "CrashLoopStore.hook(this)" in src(HOME / "HomeApp.java") and len(wl) == 2
+      and all("crashloop-store" in l and "hook() in HomeApp.onCreate" in l and "must be on disk before the screen builds" not in l for l in wl))
+
 print("FAILED" if failed else "all passed")
 sys.exit(1 if failed else 0)
