@@ -3,6 +3,16 @@
 
 «🔴 FINAL 4.3.4 BUILD (NEWEST): GitHub Actions run 44165441466 (build 476, work/rel-434 6eaf77ed), with ALL fixes incl. the Sony keys, the beta newer-of-both + download confirm, the cards-off fix and the QA UI-thread fixes. Older: run 44156039842 (build 471) (freeze, the update focus skip, two presses, games→settings, the cut-off long-press box, hidden apps). Test the freeze and items (a)–(e) on THIS build (not 469), quickly; release is ~20:15 UTC. Report even partial results at once.» «🔴 URGENT FIRST (owner, 17 Nov evening): a user says since 4.3.3 «the remote freezes/lags on TCL». Do step 98 BEFORE anything else.»
 
+## step 102 — S-21 «حذف UrTV بعد عطّل واجهة المصنع» (4.4 apk-next after work/44-rescuehome is merged). ONLY on a spare test TV, NEVER the owner's TV; if there is no spare TV, write «step 102 skipped: no test TV» and go on. One Android 9 TV and one Android 11+ TV if available.
+1. «جهّز كل شي». If Home already opens UrTV, open «تخلّص من واجهة المصنع»: it must say it isn't needed. PASS if nothing changed.
+2. On a TV where the Home switch failed: uninstall «إنقاذ تلفزيونك» first, open «تخلّص من واجهة المصنع»: it must ask for the rescue app and change nothing.
+3. Install «إنقاذ تلفزيونك» again, run «تخلّص من واجهة المصنع». Home still opens UrTV. adb: `cmd package query-activities --brief -a android.intent.action.MAIN -c android.intent.category.HOME` lists sa.urtv.rescue/sa.urtv.home.setup.RescueHome.
+4. Uninstall UrTV from Settings → Apps. Within seconds or after Home, the TV shows «تلفزيونك بدون شاشة رئيسية». FAIL: black screen or a «choose a home» chooser.
+5. «افتح الإعدادات» opens Settings; one app from the list opens; Back does nothing.
+6. Turn the original home on by hand, press Home: the original opens; Home again: the rescue screen never comes back; the HOME query no longer lists sa.urtv.rescue.
+7. Reinstall UrTV: just an app until switched again.
+Report: build, TV model, Android version, PASS/FAIL per step.
+
 ## step 101 — 4.3.5 release check (stable candidate; GitHub Actions run 44251449461, work/rel-435 8c2e06ea, artifact «apks»), AFTER the 4.3.4 NOW line, BEFORE step 96
 Install over 4.3.4 (update, keep data). TV muted. RELEASE-SMOKE (docs/dev/RELEASE-SMOKE.md on next) plus, each PASS/FAIL:
 (a) black video: open «شاشة التوقف» from the home, then Home → YouTube, play any video for 5 min, back to the home, YouTube again: picture shows every time (no black video); the screensaver returns normally after.
