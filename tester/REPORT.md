@@ -3134,3 +3134,18 @@ Installed over the owner's 4.4 (484) as an update (versionCode 491 > 484), TV mu
 - (d) old-TV page fix #19 / clock size: NOT done (needs the screensaver on screen; the TV's own screensaver ran by itself right after the reboot but I did not catch a picture). NEEDS the owner.
 - (e) remote speed, 3 min across minute changes and after Home: no ANR, no crash, no skipped-frame lines, no screensaver process start, 0 real stalls (two huge «>300 ms» values in my parser are not real: they are rows without a finish time). BUT smoothness is the same as 4.4/484: janky 21.7 %, p50 32 ms, p99 150 ms (4.3.3: 7.7 %, 21 ms, 69 ms). So the 4.4 look on the owner's settings costs frames; it is not a freeze.
 Note: my 484→491 update kept the owner's settings (the 4.4-only keys are hidden by the 4.3.5 UI).
+
+## step 101 redo on 4.3.5 final (build 504) + step 96 on 4.4 build 516 (18 Nov night, TV muted)
+Method: backup of the owner's settings/dock first (identical to the earlier one), update over the installed 4.4 (versionCode 504 > 484 and 516 > 504, so no uninstall, data kept), 3-minute family key session (optimize/run/step98/run.sh), owner's setup checked after each install.
+
+| build | janky % | frame p50 / p90 / p99 (gfxinfo) | stalls >300 ms | ANR | screensaver cold start |
+|---|---|---|---|---|---|
+| 4.3.5 / 504, owner's settings | 21.8 | 34 / 69 / 150 ms | 0 | 0 | 0 |
+| 4.4 / 516, owner's look (couch, scenes, glass clock) | 10.0 | 21 / 46 / 109 ms | 0 | 0 | 0 |
+| 4.4 / 516, plain look (classic layout, photo background, plain clock) | 14.2 | 22 / 61 / 109 ms | 0 | 0 | 0 |
+(4.4 / 484 earlier, owner's look: 20-22 % janky.)
+Answer to «does the scenes/glass look cause the ~20 % jank?»: NO. On 516 the owner's look is not worse than the plain look (10.0 % vs 14.2 %, same p99). 516 is about half as janky as 484 / 504 on the owner's settings.
+Step 101 on 504: (c) home starts normally after the update, HOME role = UrTV: PASS. (e) steady presses incl. minute changes and Home: no stall, no ANR: PASS. (a), (b), (d) need the screensaver / the owner at the TV: NOT DONE (adb cannot start the dream).
+Step 96 on 516: install over 504 OK; settings identical to the backup (only the version line differs); add-on bound, HOME role = UrTV, home-key on. Extras (a) steady presses / Home: no lag, 0 stalls: PASS.
+Clock sharpness (step 96 item 4, partial): 1:1 screencap at 1920x1080 (the TV's output size), crop zoomed 400 % nearest-neighbour: tester/clock/clock-home-x4.png (home clock, 10:21) and clock-screensaver-x4.png (screensaver clock, 10:32). Both: smooth anti-aliased edges, no stair-steps, no blur. NOT done: «منظر وساعة» glass clock and Riyadh glass clock (cannot switch screens by remote), second time of day per clock.
+Not done on 516 (need the remote or the owner): items (g)-(k), (m), the presets, «شكل التطبيقات» A/B/C, 5b beta switch, (l) skipped (not allowed).
