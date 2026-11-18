@@ -25,7 +25,8 @@ const check = (name, ok, detail = '') => {
   if (!ok) failed++;
 };
 
-const browser = await chromium.launch(process.env.CHROMIUM ? { executablePath: process.env.CHROMIUM } : {});
+// 4.5: the page's own file:// reads (dist/quotes.json, tafsir.json beside it) as the TV's WebViews allow them (setAllowFileAccessFromFileURLs)
+const browser = await chromium.launch({ args: ['--allow-file-access-from-files'], ...(process.env.CHROMIUM ? { executablePath: process.env.CHROMIUM } : {}) });
 
 async function open(file, hash, { width = 1920, height = 1080, seed = true, net = null, now = null, tzId = null } = {}) {
   const ctx = await browser.newContext({ viewport: { width, height }, ...(tzId ? { timezoneId: tzId } : {}) });

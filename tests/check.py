@@ -38,10 +38,10 @@ leaked = [str(f.relative_to(ROOT)) for f in tracked("*Thmanyah*") + tracked("dis
 check("Thmanyah's files and the page that inlines them are not committed", not leaked, leaked)
 missing_fonts = [f for f in ("Thmanyah-Regular.woff2", "ThmanyahDisplay-Bold.woff2") if not (ROOT / "assets/fonts" / f).is_file()]
 check("Thmanyah is in place for the build (CI: the private urtv-fonts checkout; locally: your own copy)", not missing_fonts, missing_fonts)
-before = {n: (ROOT / "dist" / n).read_bytes() for n in ("tv.html", "tv-en.html") if (ROOT / "dist" / n).is_file()}
+before = {n: (ROOT / "dist" / n).read_bytes() for n in ("tv.html", "tv-en.html", "quotes.json") if (ROOT / "dist" / n).is_file()}
 r = subprocess.run([sys.executable, "src/build.py"], cwd=ROOT, capture_output=True, text=True)
 check("src/build.py runs", r.returncode == 0, r.stderr[-400:])
-for page, limit in (("urtv.html", 4_000_000), ("tv.html", 775_000), ("tv-en.html", 746_000)):   # 4.4 tv.html raised from 746 KB; the follow-up moves a lazy part out of tv.html (see docs/dev/BACKLOG.md). Before:   # 4.3.1: 746 KB (tournaments + the album card options, own-photos album mode and clearer text landed together). Was: 742 KB (+2 KB for the big tournaments: the 36 h file, their rows after the leagues' on the cards, at most 3). Before: 740 KB with the football home and «المباريات» (docs/PROPOSALS-NOV2.md §1, about 42 KB), the reminder card and photo packs (about 7 KB) and the markets link; about 10 KB left. tv.html: about 1000 verses and hadith (650 KB until the Gulf prayer methods and the checked Aladhan answer added 4 KB; 680 KB from the one release of 26 Oct: next-prayer card, crests, city line, adhan bar, then Wave 2 countries, Hijri offset and the 24-hour clock add about 11 KB)
+for page, limit in (("urtv.html", 4_000_000), ("tv.html", 500_000), ("tv-en.html", 500_000)):   # 4.5 (the owner): under 500 KB, the verse and hadith lists in dist/quotes.json. Before: 775 KB (4.4), 746 KB (4.3.1)
     html = (ROOT / "dist" / page).read_text(encoding="utf-8")
     left = sorted(set(re.findall(r"__[A-Z][A-Z_]+__", html)))
     check(f"{page}: every build token replaced", not left, left)
@@ -58,7 +58,7 @@ unstamp = lambda b: re.sub(rb'(<meta name="urtv-build" content=")\d{14}', rb"\1"
 stale = [n for n, b in before.items() if unstamp((ROOT / "dist" / n).read_bytes()) != unstamp(b)]
 check("dist/tv.html carries the build stamp the app compares pages by (<meta name=\"urtv-build\">, 14 digits)",
       re.search(rb'<meta name="urtv-build" content="\d{14}">', (ROOT / "dist/tv.html").read_bytes()[:4096]) is not None)
-check("dist/ matched a fresh build (run src/build.py after editing src/)", len(before) == 2 and not stale, stale)   # tv.html and tv-en.html («اللغة» English, its own 740 KB)
+check("dist/ matched a fresh build (run src/build.py after editing src/)", len(before) == 3 and not stale, stale)   # tv.html and tv-en.html («اللغة» English, its own 740 KB)
 
 
 # ---- the page must run on an old WebView (Chrome 66): no `?.` and no `??` (Chrome 80), no .flat() / .flatMap() (Chrome 69).
@@ -166,8 +166,22 @@ check("bundled backgrounds exist", all((ROOT / "assets/backgrounds" / b["file"])
 
 # ---- verse and hadith: only checked text, and every character has a glyph
 page = (ROOT / "dist/tv.html").read_text(encoding="utf-8")
-verses = json.loads(re.search(r"const VERSES = (\[.*?\]);", page, re.S).group(1))
-hadith = json.loads(re.search(r"const HADITH = (\[.*?\]);", page, re.S).group(1))
+# 4.5: the whole lists are dist/quotes.json (read beside the page); the page keeps the shortest few of each until it reads them
+quotes_file = json.loads((ROOT / "dist/quotes.json").read_text(encoding="utf-8"))
+verses, hadith = quotes_file["verses"], quotes_file["hadith"]
+for name in ("tv.html", "tv-en.html"):
+    pg = (ROOT / "dist" / name).read_text(encoding="utf-8")
+    sv = json.loads(re.search(r"let VERSES = (\[.*?\]);", pg, re.S).group(1))
+    sh = json.loads(re.search(r"let HADITH = (\[.*?\]);", pg, re.S).group(1))
+    check(f"{name}: a starter of 20 verses and 20 hadith, each one of quotes.json's, in its order, and quotes.json read when one is drawn",
+          len(sv) == 20 and len(sh) == 20 and all(x in verses for x in sv) and all(x in hadith for x in sh)
+          and [verses.index(x) for x in sv] == sorted(verses.index(x) for x in sv) and "let QUOTES_FULL = false;" in pg and "'quotes.json'" in pg, (len(sv), len(sh)))
+urtv = (ROOT / "dist/urtv.html").read_text(encoding="utf-8")
+check("urtv.html (stand-alone) keeps the whole lists inline", "let QUOTES_FULL = true;" in urtv
+      and json.loads(re.search(r"let VERSES = (\[.*?\]);", urtv, re.S).group(1)) == verses)
+gradle = (ROOT / "android/app/build.gradle").read_text(encoding="utf-8") + (ROOT / "android/launcher/build.gradle").read_text(encoding="utf-8")
+check("quotes.json goes into both apps beside the page (the screensaver's assets, the launcher's web/) and into the TV ports",
+      gradle.count("'quotes.json'") == 2 and 'out["quotes.json"]' in (ROOT / "ports/tvports/common.py").read_text(encoding="utf-8"))
 check("verses present", len(verses) >= 200, len(verses))
 check("hadith present", len(hadith) >= 200, len(hadith))
 wisdom = json.loads(re.search(r"const WISDOM = (\[.*?\]);", page, re.S).group(1))
