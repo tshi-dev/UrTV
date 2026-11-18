@@ -771,7 +771,11 @@ final class Prefs {
                 ContentFile.refresh(app, PrayerFix.PATH, PrayerFix.NAME, 12 * 3600_000L);
                 PRAYER_FIX.load(app);
                 prayerFixLoaded = true;
-                if (PRAYER_FIX.value() != before && changed != null) new android.os.Handler(android.os.Looper.getMainLooper()).post(changed);
+                if (PRAYER_FIX.value() != before) {
+                    if (changed != null) new android.os.Handler(android.os.Looper.getMainLooper()).post(changed);
+                    // 4.4 review F2: no screen of ours to draw again (the dream's start): tell the ones that are up, which rebuild only when their address differs; a repeat read is the same copy, so no second broadcast
+                    else app.sendBroadcast(new android.content.Intent(CHANGED).setPackage(app.getPackageName()));
+                }
             }, "prayer-fix");
             t.setPriority(Thread.MIN_PRIORITY); t.setDaemon(true); t.start();
         }
