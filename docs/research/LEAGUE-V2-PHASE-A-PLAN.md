@@ -26,8 +26,8 @@ switch or one line, never the structure.
    - rank, movement, badge, club, P, W, D, L, GF, GA, GD, Pts, last 5;
    - a zone bar on each zoned row, with a legend in words underneath.
 
-   OK on a row opens the club (`mpClubView`, as today). The quick-view sheet comes in phase (d).
-3. **Focused mode:** OK on the tab, or Down into the table, hides the page header so 18 rows fit without a scroll. Back shows the
+   «موافق» on a row opens the club (`mpClubView`, as today). The quick-view sheet comes in phase (d).
+3. **Focused mode:** «موافق» on the tab, or Down into the table, hides the page header so 18 rows fit without a scroll. Back shows the
    header again. A league with more than 20 clubs scrolls with the focus, as the list does today.
 4. **The live toggle:** as in §0.
 
@@ -98,6 +98,23 @@ Not in phase (a): the league home, the live strip, the season strip, the club sh
   - New strings go in `i18n/en/page.tsv`: column heads, the legend words, the kinds, the toggle.
   - The layout mirrors through the existing LTR rules (`en_css`).
 
+## 3b. After the UI session's review (18 Nov)
+
+- **Built on the honours code.** work/45-honours, going into 4.4 beta 2, owns «الأبطال», «الهدّافون», the past seasons in the side column and
+  the club's «البطولات», in its own `hon*` block and with its own wording. Phase (a) touches only the current season's «جدول الترتيب».
+  - The past-season table the honours side column opens keeps its own drawing, unless the honours worker agrees to share the new row
+    markup.
+  - The split is written down with the honours worker before the first commit.
+- **The size floor:**
+  - No text is under the rows' muted size (`.mpi i`: 24 at 1080p lengths, 16 px at 720p).
+  - Form squares are 36 with 24 letters. If five do not fit at that size (a long club name at 960×540), the table shows the last 3.
+  - Arrows are at the row's number size.
+  - The test is the honours worker's (every text ≥ `.mpi i` at 1280×720 and 960×540), extended to the table.
+- **Hints:**
+  - «موافق»: «موافق على نادٍ: نظرة سريعة، رجوع: صفحة الدوري».
+  - No decorative arrows.
+- **Focused mode:** the title stays in place, and the header goes as a cut. No slide anywhere; on `lowram` nothing animates.
+
 ## 4. Tests (written first, kept in `tests/run.sh`)
 
 | Test | What it proves |
@@ -107,6 +124,7 @@ Not in phase (a): the league home, the live strip, the season strip, the club sh
 | `tests/matches_archive.test.mjs` (+) | The fallback (no archive table) still draws today's lines. |
 | `tests/sports_hist.test.mjs` | A past season keeps its table and shows no movement or zones from the current season. |
 | 720p screenshot (Playwright) | The 18 rows fit at 1280×720, and no row, cell or legend leaves the 5 % safe area. |
+| size floor (the honours worker's test, extended) | Every text in the table, the legend and the hints is ≥ `.mpi i` at 1280×720 and 960×540; the form shows 3 when 5 do not fit at 36. |
 | `tests/webview66_test.py`, `tests/arabic_spacing_test.py`, `tests/check.py` | Unchanged; they must pass on the new CSS and on the size. |
 
 Then `bash tests/run.sh` in full before the push (about 15 minutes, in CI where the fonts are).

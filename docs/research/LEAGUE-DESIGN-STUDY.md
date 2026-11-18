@@ -17,9 +17,9 @@
 **المبادئ الخمسة:**
 
 1. **الصفحة تجيب عن «ماذا يحدث الآن وماذا بعده؟».** أعلاها: الجولة الحالية والعدّ للمباراة القادمة. تحته شريط المباشر.
-   ثم ثلاثة أعمدة: الترتيب، والجولة الحالية، والأبطال. كل شيء آخر يبعد ضغطة OK واحدة.
+   ثم ثلاثة أعمدة: الترتيب، والجولة الحالية، والأبطال. كل شيء آخر يبعد ضغطة «موافق» واحدة.
 2. **الترتيب في الرئيسية نافذة على الجدول، لا الجدول كله.** تُظهر الأوائل الأربعة، وفريقك والفريقين حوله، وفرق الهبوط.
-   وضغطة OK تفتح الجدول كاملًا على شاشة واحدة: ١٨ صفًّا بلا تمرير، وكل الأعمدة.
+   وضغطة «موافق» تفتح الجدول كاملًا على شاشة واحدة: ١٨ صفًّا بلا تمرير، وكل الأعمدة.
 3. **لون وكلمة معًا، لا لون وحده.**
    - شريط المنطقة على الحافة اليمنى للصف، ومفتاح بالكلمات تحت الجدول.
    - الشكل حروف «ف ت خ» في مربعات ملونة، والأحدث يمينًا.
@@ -239,7 +239,7 @@ are in `tester/league-shots.md` on `work/tester-report`. Where a note here diffe
 - **Below, «في الترتيب»:** the table window around the club, its row ringed, and OK opens the full table.
 - **Below, «المباريات القادمة»:** by round, including other competitions (the AFC game in the mockup).
 - **Below, «البطولات»:**
-  - each competition, with the latest title and «و٩ قبله نعرفها» (the honours study's honest count);
+  - each competition with its latest title, «آخرها ٢٠٢٥-٢٠٢٦», and no count until the list is complete (the honours worker's rule; with a complete list: «و٩ قبلها في أرشيفنا»);
   - «هدّاف الدوري» when one of the club's players was a season's top scorer (`scorers/<lg>/<season>.json`, `team` = the club's id).
   - The source line is the honours one.
 - **Data:** all of it is there or coming in 4.5:
@@ -276,7 +276,7 @@ are in `tester/league-shots.md` on `work/tester-report`. Where a note here diffe
    - Under it: the live strip, then the table window, the current round, and the scorers.
    - Everything else is one OK away. Every card opens something (the Apple TV lesson).
 2. **A window, then the whole.**
-   - The home shows the table's top four, the followed club with one club either side, and the relegation places, with a line «٧ أندية أخرى، OK: الجدول كاملًا».
+   - The home shows the table's top four, the followed club with one club either side, and the relegation places, with a line «٧ أندية أخرى، موافق: الجدول كاملًا» (hints say «موافق», never «OK», as in the rest of the app).
    - The full table is its own focused screen: the page header steps aside and all 18 rows show without scrolling, with every column. This follows Bundesliga's compact and detailed tables.
 3. **Colour plus a word.**
    - Zones are a 6 px bar on the row's start edge (the right in RTL) with a legend in words under the table, like GOAL Arabic.
@@ -343,6 +343,25 @@ are in `tester/league-shots.md` on `work/tester-report`. Where a note here diffe
 | Zones per league | **new**: a small table per league (places → zone), kept in the archive index | to write; the owner checks it |
 
 Weight: about 6–8 KB of CSS and 6–10 KB of JS in the template, no assets. `tv.html` stays well under 500 KB.
+
+### 7b. The UI session's review (18 Nov) and what changed
+
+The UI session approved the direction and all ten decisions, with these changes, which the mockups now carry:
+- **Size floor:** at 720p, no text is smaller than the rows' muted secondary text (`.mpi i`, 24 at 1080p lengths, 16 px at 720p).
+  This covers hints, the legend and sub-lines.
+  - `render.mjs` checks every text at 1920×1080, 1280×720 and 960×540, and fails under the floor. The real page gets the same test the
+    honours worker added.
+  - The form squares are 36 (24 px at 720p) with 24 letters (16 px). If a table cannot fit five at that size, it shows the last 3.
+  - The movement arrows are the size of the row's numbers.
+- **Wording:**
+  - «موافق», not «OK», in every hint.
+  - «يمين ويسار: الجولات», not arrows used as decoration.
+  - The honours wording as built: «٢٠٢٥-٢٠٢٦: النصر», «آخرها …», and no count until a list is complete.
+- **Club page:** the follow item is a plain tab like the others; the ring shows only when it has the focus.
+- **Full-table mode:** the title stays where the page header was. The change is a cut on weak TVs (`lowram`), never a slide.
+- **Scope:** the honours work (work/45-honours, 4.4 beta 2) already builds «الأبطال», «الهدّافون», the past seasons in the side column, and
+  the club's «البطولات». v2 builds on that code and wording, and makes no second version. The split is agreed with the honours worker
+  before phase (a).
 
 ### 8. Questions for the owner
 

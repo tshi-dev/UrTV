@@ -29,7 +29,7 @@
   .hd .sub{color:var(--fs);font-size:calc(var(--u)*26);margin-top:calc(var(--u)*6)}
   .hd .sub b{color:var(--fi);font-weight:500}
   .nx{width:calc(var(--u)*520);text-align:left;direction:rtl}
-  .nx .k{color:var(--fs);font-size:calc(var(--u)*22);text-align:left}
+  .nx .k{color:var(--fs);font-size:calc(var(--u)*24);text-align:left}
   .nx .v{font-size:calc(var(--u)*30);font-weight:500;text-align:left;margin-top:calc(var(--u)*4)}
   .nx .t{color:var(--fgr);font-size:calc(var(--u)*26);font-weight:500;text-align:left;margin-top:calc(var(--u)*2)}
 
@@ -38,18 +38,18 @@
   .tabs li{padding:calc(var(--u)*10) calc(var(--u)*24);color:var(--fs);border-bottom:calc(var(--u)*4) solid transparent;border-radius:calc(var(--u)*12) calc(var(--u)*12) 0 0;white-space:nowrap;margin-left:calc(var(--u)*8)}
   .tabs li.on{color:var(--fgr);font-weight:700;border-bottom-color:var(--fgr)}
   .tabs li.f{box-shadow:inset 0 0 0 calc(var(--u)*3) var(--fring)}
-  .tabs .hint{margin-right:auto;margin-left:0;border:0;color:var(--fs);font-size:calc(var(--u)*22);align-self:center}
+  .tabs .hint{margin-right:auto;margin-left:0;border:0;color:var(--fs);font-size:calc(var(--u)*24);align-self:center}
 
   .f{box-shadow:inset 0 0 0 calc(var(--u)*3) var(--fring)!important;background:var(--rowf)!important}
   .card{background:var(--fbg);border:1px solid var(--fln);border-radius:calc(var(--u)*24)}
   h2{font-size:calc(var(--u)*30);font-weight:700;margin-bottom:calc(var(--u)*12);display:flex;justify-content:space-between;align-items:baseline}
-  h2 i{font-style:normal;font-weight:400;color:var(--fs);font-size:calc(var(--u)*22)}
+  h2 i{font-style:normal;font-weight:400;color:var(--fs);font-size:calc(var(--u)*24)}
 
   /* ---- the live strip: one card per game on now, the minute in the live colour, the score in the middle */
   .live{display:flex;margin-top:calc(var(--u)*16)}
   .lv{flex:1;padding:calc(var(--u)*10) calc(var(--u)*24);margin-left:calc(var(--u)*20);border-radius:calc(var(--u)*20)}
   .lv:last-child{margin-left:0}
-  .lv .m{color:var(--flo);font-size:calc(var(--u)*22);font-weight:500;display:flex;justify-content:space-between}
+  .lv .m{color:var(--flo);font-size:calc(var(--u)*24);font-weight:500;display:flex;justify-content:space-between}
   .lv .m i{font-style:normal;color:var(--fs);font-weight:400}
   .lv .s{display:flex;align-items:center;justify-content:space-between;margin-top:calc(var(--u)*6)}
   .lv .s span{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:calc(var(--u)*28)}
@@ -61,34 +61,34 @@
 
   /* ---- the table */
   .tb{list-style:none;padding:calc(var(--u)*6) calc(var(--u)*10)}
-  .tr{display:flex;align-items:center;height:calc(var(--u)*44);padding:0 calc(var(--u)*8);border-radius:calc(var(--u)*12);border-right:calc(var(--u)*6) solid transparent;position:relative}
+  .tr{display:flex;align-items:center;height:calc(var(--u)*46);padding:0 calc(var(--u)*8);border-radius:calc(var(--u)*12);border-right:calc(var(--u)*6) solid transparent;position:relative}
   .tr + .tr{border-top:1px solid var(--fln)}
   .tr.z1{border-right-color:var(--z1)}.tr.z2{border-right-color:var(--z2)}.tr.z3{border-right-color:var(--z3)}
-  .tr.th{height:calc(var(--u)*38);color:var(--fs);font-size:calc(var(--u)*20);border-top:0}
+  .tr.th{height:calc(var(--u)*38);color:var(--fs);font-size:calc(var(--u)*24);border-top:0}
   .tr.mine{background:var(--rowf)}
   .tr.mine .nm{font-weight:700}
   .tr .rk{width:calc(var(--u)*44);text-align:center;font-weight:500}
-  .tr .mv{width:calc(var(--u)*26);text-align:center;font-size:calc(var(--u)*16)}
+  .tr .mv{width:calc(var(--u)*52);text-align:center;font-size:inherit;white-space:nowrap}
   .mv.up{color:var(--z1)}.mv.dn{color:var(--z3)}.mv.eq{color:var(--fs);opacity:.6}
-  .bd{width:calc(var(--u)*34);height:calc(var(--u)*34);border-radius:50%;background:var(--sq);color:var(--fs);font-size:calc(var(--u)*17);font-weight:700;display:flex;align-items:center;justify-content:center;margin:0 calc(var(--u)*10) 0 calc(var(--u)*12);flex:none}
+  .bd{width:calc(var(--u)*34);height:calc(var(--u)*34);border-radius:50%;background:var(--sq);color:var(--fs);font-size:calc(var(--u)*24);font-weight:700;display:flex;align-items:center;justify-content:center;margin:0 calc(var(--u)*10) 0 calc(var(--u)*12);flex:none}
   .tr .nm{flex:1;min-width:0;display:flex;align-items:baseline;white-space:nowrap}
   .tr .nm span{overflow:hidden;text-overflow:ellipsis}
-  .tr .nm em{flex:none;font-style:normal;color:var(--flo);font-size:calc(var(--u)*20);font-weight:500;margin-right:calc(var(--u)*10)}
+  .tr .nm em{flex:none;font-style:normal;color:var(--flo);font-size:calc(var(--u)*24);font-weight:500;margin-right:calc(var(--u)*10)}
   .tr .c{width:calc(var(--u)*56);text-align:center;color:var(--fs)}
   .tr .c.w{width:calc(var(--u)*70)}
   .tr .pt{width:calc(var(--u)*64);text-align:center;font-weight:700}
   .tr .pt.ptl{color:var(--flo)}
   .tr.th .pt{font-weight:400}
-  .tr .fo{width:calc(var(--u)*170);display:flex;justify-content:flex-end;direction:ltr}
-  .sqf{width:calc(var(--u)*28);height:calc(var(--u)*28);border-radius:calc(var(--u)*6);color:#fff;font-size:calc(var(--u)*17);font-weight:700;display:flex;align-items:center;justify-content:center;margin-left:calc(var(--u)*4)}
+  .tr .fo{width:calc(var(--u)*200);display:flex;justify-content:flex-end;direction:ltr}
+  .sqf{width:calc(var(--u)*36);height:calc(var(--u)*36);border-radius:calc(var(--u)*6);color:#fff;font-size:calc(var(--u)*24);font-weight:700;display:flex;align-items:center;justify-content:center;margin-left:calc(var(--u)*4)}
   .sqf.w{background:var(--z1)}.sqf.d{background:#8D918C}.sqf.l{background:var(--z3)}
   .sqf.n{background:transparent;border:calc(var(--u)*2) dashed var(--fln);color:var(--fs)}
-  .tr.gapr{height:calc(var(--u)*30);color:var(--fs);font-size:calc(var(--u)*20);justify-content:center;border-top:1px dashed var(--fln)}
+  .tr.gapr{height:calc(var(--u)*30);color:var(--fs);font-size:calc(var(--u)*24);justify-content:center;border-top:1px dashed var(--fln)}
   .tr.gapr + .tr{border-top:1px dashed var(--fln)}
 
   /* ---- a game row (the round, the results): the day, the clubs, the time or the score */
   .gl{list-style:none;padding:calc(var(--u)*6) calc(var(--u)*10)}
-  .gd{color:var(--fs);font-size:calc(var(--u)*21);padding:calc(var(--u)*8) calc(var(--u)*12) calc(var(--u)*2)}
+  .gd{color:var(--fs);font-size:calc(var(--u)*24);padding:calc(var(--u)*8) calc(var(--u)*12) calc(var(--u)*2)}
   .gr{display:flex;align-items:center;min-height:calc(var(--u)*54);padding:0 calc(var(--u)*12);border-radius:calc(var(--u)*12)}
   .gr + .gr{border-top:1px solid var(--fln)}
   .gr .a,.gr .b{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:calc(var(--u)*26)}
@@ -96,7 +96,7 @@
   .gr .x{width:calc(var(--u)*104);text-align:center;font-size:calc(var(--u)*24);color:var(--fs);direction:ltr;unicode-bidi:isolate;white-space:nowrap}
   .gr .x.sc{color:var(--fi);font-weight:700;font-size:calc(var(--u)*28)}
   .gr .x.on{color:var(--flo);font-weight:700;font-size:calc(var(--u)*28)}
-  .gr .x small{display:block;font-size:calc(var(--u)*17);font-weight:500;line-height:1}
+  .gr .x small{display:block;font-size:calc(var(--u)*24);font-weight:500;line-height:1}
   .gr .w{font-weight:700}
 
   /* scorers */
@@ -104,11 +104,11 @@
   .sc-r{display:flex;align-items:center;min-height:calc(var(--u)*58);padding:0 calc(var(--u)*12)}
   .sc-r + .sc-r{border-top:1px solid var(--fln)}
   .sc-r .n{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:calc(var(--u)*26)}
-  .sc-r .n i{display:block;font-style:normal;color:var(--fs);font-size:calc(var(--u)*20)}
+  .sc-r .n i{display:block;font-style:normal;color:var(--fs);font-size:calc(var(--u)*24)}
   .sc-r b{font-size:calc(var(--u)*30);width:calc(var(--u)*48);text-align:center}
-  .more{color:var(--fgr);font-size:calc(var(--u)*22);padding:calc(var(--u)*10) calc(var(--u)*12);text-align:center}
+  .more{color:var(--fgr);font-size:calc(var(--u)*24);padding:calc(var(--u)*10) calc(var(--u)*12);text-align:center}
 
-  .legend{display:flex;align-items:center;color:var(--fs);font-size:calc(var(--u)*21);margin-top:calc(var(--u)*14)}
+  .legend{display:flex;align-items:center;color:var(--fs);font-size:calc(var(--u)*24);margin-top:calc(var(--u)*14)}
   .legend span{display:flex;align-items:center;margin-left:calc(var(--u)*32)}
   .legend i{width:calc(var(--u)*18);height:calc(var(--u)*18);border-radius:calc(var(--u)*4);margin-left:calc(var(--u)*10);display:inline-block}
   .keys{margin-right:auto!important;margin-left:0!important}
@@ -119,14 +119,14 @@
   .rn .cap b{font-size:calc(var(--u)*40);font-weight:700}
   .rn .cap span{color:var(--fs);font-size:calc(var(--u)*24)}
   .rs{list-style:none;display:flex;margin-top:calc(var(--u)*14)}
-  .rs li{width:calc(var(--u)*44);height:calc(var(--u)*44);margin-left:calc(var(--u)*4.4);border-radius:calc(var(--u)*8);display:flex;align-items:center;justify-content:center;font-size:calc(var(--u)*19);color:var(--fs);background:var(--fbg);border:1px solid var(--fln);flex:none}
+  .rs li{width:calc(var(--u)*44);height:calc(var(--u)*48);margin-left:calc(var(--u)*4.4);border-radius:calc(var(--u)*8);display:flex;align-items:center;justify-content:center;font-size:calc(var(--u)*24);color:var(--fs);background:var(--fbg);border:1px solid var(--fln);flex:none}
   .rs li.pl{background:var(--sq);border-color:transparent}
   .rs li.now{border:calc(var(--u)*2) solid var(--fgr);color:var(--fgr);font-weight:700}
   .rs li.sel{background:var(--fgr);color:#fff;font-weight:700;border-color:var(--fgr);box-shadow:0 0 0 calc(var(--u)*3) var(--dlg),0 0 0 calc(var(--u)*6) var(--fring)}
   .gg{display:flex;flex-wrap:wrap;margin-top:calc(var(--u)*20);align-content:flex-start}
   .gc{width:calc(50% - var(--u)*10);margin-bottom:calc(var(--u)*14);padding:calc(var(--u)*12) calc(var(--u)*24);border-radius:calc(var(--u)*20)}
   .gc:nth-child(odd){margin-left:calc(var(--u)*20)}
-  .gc .d{color:var(--fs);font-size:calc(var(--u)*21);display:flex;justify-content:space-between}
+  .gc .d{color:var(--fs);font-size:calc(var(--u)*24);display:flex;justify-content:space-between}
   .gc .d i{font-style:normal}
   .gc .s{display:flex;align-items:center;margin-top:calc(var(--u)*6)}
   .gc .s > span{flex:1;display:flex;align-items:center;white-space:nowrap;font-size:calc(var(--u)*28)}
@@ -147,18 +147,18 @@
   .stats div{flex:1;text-align:center;background:var(--fbg);border:1px solid var(--fln);border-radius:calc(var(--u)*18);padding:calc(var(--u)*12) 0;margin-left:calc(var(--u)*14)}
   .stats div:last-child{margin-left:0}
   .stats b{display:block;font-size:calc(var(--u)*38);font-weight:700}
-  .stats i{font-style:normal;color:var(--fs);font-size:calc(var(--u)*21)}
+  .stats i{font-style:normal;color:var(--fs);font-size:calc(var(--u)*24)}
   .sh-t{font-size:calc(var(--u)*24);color:var(--fs);margin:calc(var(--u)*22) 0 calc(var(--u)*10)}
   .nxg{padding:calc(var(--u)*14) calc(var(--u)*24);display:flex;align-items:center;justify-content:space-between}
   .nxg b{font-size:calc(var(--u)*30);font-weight:500}
   .nxg span{color:var(--fgr);font-weight:500;font-size:calc(var(--u)*24);text-align:left}
-  .nxg span i{display:block;font-style:normal;color:var(--fs);font-weight:400;font-size:calc(var(--u)*21)}
+  .nxg span i{display:block;font-style:normal;color:var(--fs);font-weight:400;font-size:calc(var(--u)*24)}
   .btns{display:flex;margin-top:auto}
   .btns button{flex:1;font:inherit;font-size:calc(var(--u)*26);color:var(--fi);background:var(--btn);border:1px solid var(--fln);border-radius:calc(var(--u)*16);padding:calc(var(--u)*20) calc(var(--u)*12);margin-left:calc(var(--u)*16);outline:none}
   .btns button:last-child{margin-left:0}
   .btns button.pri{background:var(--pri);color:#fff;border-color:var(--pri)}
   .btns button.fr{box-shadow:0 0 0 calc(var(--u)*3) var(--dlg),0 0 0 calc(var(--u)*6) var(--fring)}
-  .peek{color:var(--fs);font-size:calc(var(--u)*21);text-align:center;margin-top:calc(var(--u)*14)}
+  .peek{color:var(--fs);font-size:calc(var(--u)*24);text-align:center;margin-top:calc(var(--u)*14)}
   /* ---- the club page (v2): a header with the badge and the place, the form tiles and the next game, then the table around it, the coming games, the titles */
   .ch{display:flex;align-items:center}
   .ch .bd{width:calc(var(--u)*104);height:calc(var(--u)*104);font-size:calc(var(--u)*44);margin:0 0 0 calc(var(--u)*28)}
@@ -170,19 +170,24 @@
   .ft{width:calc(var(--u)*128);margin-left:calc(var(--u)*14);text-align:center}
   .ft b{display:block;border-radius:calc(var(--u)*12);color:#fff;font-size:calc(var(--u)*30);font-weight:700;padding:calc(var(--u)*10) 0;unicode-bidi:isolate}   /* RTL: the club's own goals first, on the right */
   .ft b.w{background:var(--z1)}.ft b.d{background:#8D918C}.ft b.l{background:var(--z3)}
-  .ft span{display:block;color:var(--fs);font-size:calc(var(--u)*21);margin-top:calc(var(--u)*6);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .ft span{display:block;color:var(--fs);font-size:calc(var(--u)*24);margin-top:calc(var(--u)*6);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .ncard{flex:1;margin-right:calc(var(--u)*28);padding:calc(var(--u)*16) calc(var(--u)*28);display:flex;align-items:center;justify-content:space-between}
-  .ncard .k{color:var(--fs);font-size:calc(var(--u)*22)}
+  .ncard .k{color:var(--fs);font-size:calc(var(--u)*24)}
   .ncard .v{font-size:calc(var(--u)*34);font-weight:700;margin-top:calc(var(--u)*4)}
   .ncard .t{text-align:left;color:var(--fgr);font-weight:500;font-size:calc(var(--u)*28)}
-  .ncard .t i{display:block;font-style:normal;color:var(--fs);font-weight:400;font-size:calc(var(--u)*22)}
+  .ncard .t i{display:block;font-style:normal;color:var(--fs);font-weight:400;font-size:calc(var(--u)*24)}
   .hon{list-style:none;padding:calc(var(--u)*6) calc(var(--u)*10)}
   .hon li{display:flex;align-items:center;justify-content:space-between;min-height:calc(var(--u)*64);padding:0 calc(var(--u)*12)}
   .hon li + li{border-top:1px solid var(--fln)}
   .hon li span{font-size:calc(var(--u)*26)}
-  .hon li i{font-style:normal;color:var(--fs);font-size:calc(var(--u)*21);text-align:left}
+  .hon li i{font-style:normal;color:var(--fs);font-size:calc(var(--u)*24);text-align:left}
   .hon li i b{display:block;color:var(--fi);font-weight:500;font-size:calc(var(--u)*24)}
-  .src{color:var(--fs);font-size:calc(var(--u)*19);margin-top:calc(var(--u)*8)}
+  .src{color:var(--fs);font-size:calc(var(--u)*24);margin-top:calc(var(--u)*8)}
+  .no-f{box-shadow:none!important}
+  .pg.full{padding-top:calc(var(--u)*32);padding-bottom:calc(var(--u)*24)}
+  .pg.full .tr{height:calc(var(--u)*44)}
+  .pg.full .tr.th{height:calc(var(--u)*36)}
+  .pg.full .legend{margin-top:calc(var(--u)*8)}
 </style>
 </head>
 <body>
@@ -215,7 +220,7 @@ function row(c, i, full, ring){
 const head = full => `<li class="tr th"><span class="rk">#</span><span class="mv"></span><span class="bd" style="visibility:hidden"></span><span class="nm">النادي</span>`
   + (full ? '<span class="c">لعب</span><span class="c">فاز</span><span class="c">تعادل</span><span class="c">خسر</span><span class="c">له</span><span class="c">عليه</span><span class="c w">الفارق</span>' : '<span class="c">لعب</span><span class="c w">الفارق</span>')
   + '<span class="pt">نقاط</span><span class="fo">آخر ٥، الأحدث يمينًا</span></li>';
-const gapRow = n => `<li class="tr gapr">${n === 1 ? 'نادٍ آخر' : D(n) + ' أندية أخرى'}، OK: الجدول كاملًا</li>`;
+const gapRow = n => `<li class="tr gapr">${n === 1 ? 'نادٍ آخر' : D(n) + ' أندية أخرى'}، موافق: الجدول كاملًا</li>`;
 const legend = extra => '<div class="legend">' + ZONES.map(([z, t]) => `<span><i style="background:var(--${z})"></i>${t}</span>`).join('')
   + '<span><span class="mv up" style="margin-left:6px">▲</span>عن الجولة الماضية</span>' + (extra || '') + '</div>';
 
@@ -237,41 +242,41 @@ const SCREENS = {
     return `<div class="pg">
       <div class="hd"><div class="ch">${badge('النصر').replace('class="bd"', 'class="bd"')}<div><h1>النصر</h1><div class="sub"><b>الثاني في دوري روشن السعودي</b>  ٢٦ نقطة من ١١ مباراة</div></div></div>
         <div class="nx"><div class="k">آخر بطولة</div><div class="v">دوري روشن ٢٠٢٥-٢٠٢٦</div></div></div>
-      <ul class="tabs"><li class="on">النادي</li><li>المباريات</li><li>النتائج</li><li>البطولات</li><li>المواجهات</li><li class="f">أزل النصر من فرقي</li><li class="hint">OK يفتح، يمين ويسار بين الأقسام</li></ul>
+      <ul class="tabs"><li class="on">النادي</li><li>المباريات</li><li>النتائج</li><li>البطولات</li><li>المواجهات</li><li>أزل النصر من فرقي</li><li class="hint">موافق يفتح، يمين ويسار بين الأقسام</li></ul>
       <div class="row2">
         <div><h2>آخر ٥ <i>الأحدث يمينًا</i></h2><div class="fts">${tiles.reverse().map(x => `<div class="ft"><b class="${x[1]}">${x[0]}</b><span>${x[2]}</span></div>`).join('')}</div></div>
         <div class="ncard card"><div><div class="k">المباراة القادمة، الجولة ١١</div><div class="v">النصر – الأهلي</div></div><div class="t">الليلة ٩:٠٠ م<i>بعد ساعة و٤٢ دقيقة</i></div></div>
       </div>
       <div class="cols">
-        <div style="width:calc(var(--u)*760)"><h2>في الترتيب <i>OK: الجدول كاملًا</i></h2>
+        <div style="width:calc(var(--u)*760)"><h2>في الترتيب <i>موافق: الجدول كاملًا</i></h2>
           <ul class="tb card">${head(false)}${t.slice(0, 6).map(x => row(x[0], x[1], false, x[1] === me)).join('')}</ul></div>
         <div style="width:calc(var(--u)*470)"><h2>المباريات القادمة</h2>
           <ul class="gl card"><li class="gd">الجولة ١١، السبت ٢١ نوفمبر</li>${gr('النصر','٩:٠٠ م','الأهلي')}<li class="gd">الجولة ١٢، الجمعة ٢٨ نوفمبر</li>${gr('القادسية','٨:٠٠ م','النصر')}
             <li class="gd">الجولة ١٣، الخميس ٤ ديسمبر</li>${gr('النصر','٨:٣٠ م','الخلود')}<li class="gd">دوري أبطال آسيا للنخبة، الثلاثاء ٩ ديسمبر</li>${gr('الغرافة','٧:٠٠ م','النصر')}</ul></div>
         <div style="flex:1;min-width:0"><h2>البطولات</h2>
-          <ul class="hon card"><li><span>دوري روشن</span><i><b>٢٠٢٥-٢٠٢٦</b>و٩ قبله نعرفها</i></li><li><span>كأس الملك</span><i><b>٢٠٢٢-٢٠٢٣</b>و٦ قبله نعرفها</i></li>
-            <li><span>هدّاف الدوري</span><i><b>رونالدو، ٣٥ هدفًا</b>٢٠٢٣-٢٠٢٤</i></li></ul>
+          <ul class="hon card"><li><span>دوري روشن</span><i>آخرها <b style="display:inline">٢٠٢٥-٢٠٢٦</b></i></li><li><span>كأس الملك</span><i>آخرها <b style="display:inline">٢٠٢٢-٢٠٢٣</b></i></li>
+            <li><span>هدّاف الدوري</span><i>٢٠٢٥-٢٠٢٦: <b style="display:inline">رونالدو</b></i></li></ul>
           <div class="src">ما نعرف موسمه فقط، من ويكي بيانات ونتائج المباريات</div></div>
       </div></div>`;
   },
   home(){
     const t = CLUBS.map((c, i) => [c, i]);
     const pick = [...t.slice(0, 4), 'gap1', t[5], t[6], t[7], 'gap7', ...t.slice(15)];
-    return `<div class="pg">${HEAD(0, 'OK يفتح، يمين ويسار بين الأقسام')}
+    return `<div class="pg">${HEAD(0, 'موافق يفتح، يمين ويسار بين الأقسام')}
       <div class="live">${LIVE.map((g, i) => `<div class="lv card${i === 0 ? ' f' : ''}"><div class="m"><span>مباشر ${g[3]}</span><i>${g[4]}</i></div><div class="s"><span>${g[0]}</span><b>${g[1]}</b><span>${g[2]}</span></div></div>`).join('')}
         <div class="lv card"><div class="m" style="color:var(--fs)"><span>انتهت</span><i>اليوم ٤:٣٥ م</i></div><div class="s"><span>الخليج</span><b style="color:var(--fi)">٢ : ٢</b><span>الفيحاء</span></div></div></div>
       <div class="cols">
         <div style="width:calc(var(--u)*800)"><h2>الترتيب <i>مباشر: يتغير مع النتائج</i></h2>
           <ul class="tb card">${head(false)}${pick.map(x => typeof x === 'string' ? gapRow(+x.slice(3)) : row(x[0], x[1], false)).join('')}</ul></div>
-        <div style="width:calc(var(--u)*470)"><h2>الجولة ١١ <i>◀ ▶ الجولات</i></h2>
+        <div style="width:calc(var(--u)*470)"><h2>الجولة ١١ <i>يمين ويسار: الجولات</i></h2>
           <ul class="gl card"><li class="gd">اليوم، السبت ٢١ نوفمبر</li>
             ${gr('الشباب','١ : ١','التعاون','on',"٦٧'")}${gr('الفتح','٠ : ٢','نيوم','on',"٣٤'")}${gr('النصر','٩:٠٠ م','الأهلي')}
             <li class="gd">غدًا، الأحد ٢٢ نوفمبر</li>${gr('الاتفاق','٦:٠٠ م','الرياض')}${gr('الأخدود','٨:٣٠ م','الخلود')}
             <li class="gd">أمس، الجمعة ٢٠ نوفمبر</li>${gr('الهلال','٣ : ١','الحزم','sc')}${gr('ضمك','٠ : ١','القادسية','sc')}</ul></div>
         <div style="flex:1;min-width:0"><h2>الأبطال</h2>
-          <ul class="hon card"><li><span>٢٠٢٥-٢٠٢٦</span><i><b>النصر</b>٨٦ نقطة</i></li><li><span>٢٠٢٤-٢٠٢٥</span><i><b>الاتحاد</b></i></li><li><span>٢٠٢٣-٢٠٢٤</span><i><b>الهلال</b></i></li><li class="more" style="justify-content:center">كل الأبطال</li></ul>
+          <ul class="hon card"><li><span>٢٠٢٥-٢٠٢٦: النصر</span></li><li><span>٢٠٢٤-٢٠٢٥: الاتحاد</span></li><li><span>٢٠٢٣-٢٠٢٤: الهلال</span></li><li class="more" style="justify-content:center">كل الأبطال</li></ul>
           <h2 style="margin-top:calc(var(--u)*22)">هدّاف الموسم الماضي</h2>
-          <ul class="hon card"><li><span>رونالدو</span><i><b>٣٥ هدفًا</b>النصر</i></li></ul></div>
+          <ul class="hon card"><li style="flex-direction:column;align-items:flex-start;justify-content:center;padding:calc(var(--u)*8) calc(var(--u)*12)"><span>٢٠٢٥-٢٠٢٦: رونالدو</span><i>النصر، ٢٥ هدفًا</i></li></ul></div>
       </div></div>`;
   },
   rounds(){
@@ -282,15 +287,15 @@ const SCREENS = {
     return `<div class="pg">${HEAD(2, 'يمين ويسار: جولة قبل وبعد')}
       <div class="rn"><div class="cap"><b>الجولة ${D(R)}</b><span>من الخميس ٢٧ إلى السبت ٢٩ نوفمبر، ٩ مباريات، بعد ٦ أيام</span></div>
         <ul class="rs">${Array.from({length: 34}, (_, i) => i + 1).map(n => `<li class="${n < now ? 'pl' : ''}${n === now ? ' now' : ''}${n === R ? ' sel' : ''}">${D(n)}</li>`).join('')}</ul>
-        <div class="legend" style="margin-top:calc(var(--u)*10)"><span><i style="background:var(--sq)"></i>لُعبت</span><span><i style="border:2px solid var(--fgr)"></i>الجاري الآن</span><span><i style="background:var(--fgr)"></i>المختارة</span><span class="keys">أسفل: المباريات، OK على مباراة: بطاقتها</span></div></div>
+        <div class="legend" style="margin-top:calc(var(--u)*10)"><span><i style="background:var(--sq)"></i>لُعبت</span><span><i style="border:2px solid var(--fgr)"></i>الجاري الآن</span><span><i style="background:var(--fgr)"></i>المختارة</span><span class="keys">أسفل: المباريات، موافق على مباراة: بطاقتها</span></div></div>
       <div class="gg">${games.map((g, i) => `<div class="gc card"><div class="d"><span>${g[0]}</span><i>${i === 7 ? 'قمة الجولة' : ''}</i></div>
         <div class="s"><span>${badge(g[2])}${g[2]}</span><b>${g[1]}</b><span>${badge(g[3])}${g[3]}</span></div></div>`).join('')}</div></div>`;
   },
   table(ring){
     // focused: the page's header and tabs step aside (Back brings them back), the 18 rows fit on one screen without a scroll
-    return `<div class="pg"><div class="hd" style="align-items:baseline"><h1 style="font-size:calc(var(--u)*40)">الترتيب <span style="font-weight:400;color:var(--fs);font-size:calc(var(--u)*28)">دوري روشن السعودي، بعد الجولة ١٠ ومع مباريات الجولة ١١</span></h1></div>
-      <ul class="tabs" style="margin-top:calc(var(--u)*8)">${['الكل','على أرضه','خارج أرضه','قبل المباريات الجارية'].map((t, i) => `<li class="${i === 0 ? 'on' : ''}" style="font-size:calc(var(--u)*24)">${t}</li>`).join('')}<li class="hint">OK على نادٍ: نظرة سريعة، رجوع: صفحة الدوري</li></ul>
-      <ul class="tb card" style="margin-top:calc(var(--u)*14)">${head(true)}${CLUBS.map((c, i) => row(c, i, true, i === (ring || 6))).join('')}</ul>
+    return `<div class="pg full"><div class="hd" style="align-items:baseline"><h1 style="font-size:calc(var(--u)*40)">الترتيب <span style="font-weight:400;color:var(--fs);font-size:calc(var(--u)*28)">دوري روشن السعودي، بعد الجولة ١٠ ومع مباريات الجولة ١١</span></h1></div>
+      <ul class="tabs" style="margin-top:calc(var(--u)*8)">${['الكل','على أرضه','خارج أرضه','قبل المباريات الجارية'].map((t, i) => `<li class="${i === 0 ? 'on' : ''}" style="font-size:calc(var(--u)*24)">${t}</li>`).join('')}<li class="hint">موافق على نادٍ: نظرة سريعة، رجوع: صفحة الدوري</li></ul>
+      <ul class="tb card" style="margin-top:calc(var(--u)*8)">${head(true)}${CLUBS.map((c, i) => row(c, i, true, i === (ring || 6))).join('')}</ul>
       ${legend('<span><em style="font-style:normal;color:var(--flo);margin-left:8px">مباشر</em>نقاط مؤقتة</span>')}</div>`;
   },
   club(){
