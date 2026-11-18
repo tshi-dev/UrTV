@@ -79,7 +79,12 @@ final class SetupMeasure {
      * One reading. restartAllowed false: never a restart (a home switch is still waiting for its safety switch). Throws SetupRunner.Restarting after
      * it sent `reboot`: the run ends there and resumes after the boot.
      */
-    SetupEngine.Result measure(String label, boolean restartAllowed) throws IOException {
+    SetupEngine.Result measure(String label, boolean restartAllowed) throws IOException { return measure(label, restartAllowed, false); }
+
+    /** 4.4: quick: the run's default reading (no restart asked for), said as such; restartAllowed false then */
+    static final String QUICK = "نقيس الذاكرة الآن قراءةً سريعة، " + NO_RESTART + " (القياس الكامل يعيد تشغيل التلفزيون، وما نحتاجه هنا).";
+
+    SetupEngine.Result measure(String label, boolean restartAllowed, boolean quick) throws IOException {
         if (label.startsWith("before") && hasRow(store.get(SUMMARY), "before")) return done("القياس قبل الإعداد موجود من قبل: أبقيناه.");
         String phase = store.get(PHASE);
         boolean restarted = false;
@@ -89,7 +94,7 @@ final class SetupMeasure {
             if (!now.isEmpty() && !now.equals(was)) restarted = true;
             else out.line("التلفزيون لم يُعِد التشغيل كما طلبنا، فلن نطلبه مرة ثانية: نقيس الآن " + NO_RESTART + ".");
         } else if (!restartAllowed) {
-            out.line("نقيس الآن " + NO_RESTART + " (تبديل الشاشة الرئيسية ما زال ينتظر تأكيده).");
+            out.line(quick ? QUICK : "نقيس الآن " + NO_RESTART + " (تبديل الشاشة الرئيسية ما زال ينتظر تأكيده).");
         } else if (!adbSurvivesRestart()) {
             out.line("اتصال التصحيح في هذا التلفزيون لا يبقى بعد إعادة التشغيل، فلن نعيد تشغيله: نقيس الآن " + NO_RESTART + "، والقراءة قد تكون أعلى قليلاً.");
         } else {

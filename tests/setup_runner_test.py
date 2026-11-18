@@ -142,6 +142,20 @@ check("R31: a low-memory TV (under about 1 GB) is never asked for the whole syst
       got.get("R31lowram") == f"R31lowram {FULL_DONE} bad=false said=0 bounded=true unbounded=0 sysMeminfo=0 skipped=true timeout=null row=true", got.get("R31lowram"))
 check("R16: a TV whose adb would not come back on 5555 after a restart: no restart at all, both readings «بدون إعادة تشغيل», the run in one go",
       got.get("R16") == f"R16 {FULL_DONE} reboots=0 kinds=[before now|after now]", got.get("R16"))
+check("R17q (4.4, a Skyworth IRIS on Android 14 stopped at 26 %): by default the run never restarts the TV (quick readings before and after), even where adb survives a restart; its end is kept",
+      got.get("R17q") == "R17q reboots=0 kinds=[before now,after now] await=false ended=true kept=ok", got.get("R17q"))
+check("R17e (4.4, R2): the kept end comes back in a new process (the setup screen shows it), bad or not",
+      got.get("R17e") == "R17e same=true bad=true", got.get("R17e"))
+SR = (ROOT / "android/launcher/src/main/java/sa/urtv/home/setup/SetupRunner.java").read_text(encoding="utf-8")
+SH = (ROOT / "android/launcher/src/main/java/sa/urtv/home/setup/SetupHook.java").read_text(encoding="utf-8")
+SA = (ROOT / "android/launcher/src/main/java/sa/urtv/home/setup/SetupActivity.java").read_text(encoding="utf-8")
+check("4.4: the full measure only when asked (Options.fullMeasure, kept across the restart in runner.txt and in the confirmed options); the preview says no restart then",
+      "boolean fullMeasure;" in SR and "measure(label, c.options.fullMeasure && !switching(c.store), !c.options.fullMeasure)" in SR
+      and 'o.fullMeasure = "1".equals(saved.get("measure"));' in SR and '(o.fullMeasure ? "\\nmeasure=1" : "")' in SR and "o.fullMeasure = options.fullMeasure;" in SR
+      and "p.restarts = c.options != null && c.options.fullMeasure" in SR)
+check("4.4 (R2): the end is written for every full run that ends, let go when a new run starts, shown by the setup screen of a new process, and said once at UrTV's next start when it was bad",
+      'host.store().put(END_FILE, (e.bad ? "bad" : "ok")' in SR and 'try { host.store().put(END_FILE, ""); }' in SR and "SetupRunner.get().restoreEnd(new FileStore(this));" in SA
+      and "endNotSeen(app);" in SH and 'store.put(SetupRunner.END_FILE, "bad told\\n"' in SH)
 check("R17: the TV ignored the restart (the same boot after the resume): it is NOT asked again; the reading is taken without one",
       got.get("R17") == "R17 reboots=1 kinds=[before now] beforeDone=true", got.get("R17"))
 check("R18: a fresh install is refused unless the APK is signed with this app's own key; nothing is installed or recorded then",

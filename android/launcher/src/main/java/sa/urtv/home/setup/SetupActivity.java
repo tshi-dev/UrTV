@@ -65,6 +65,7 @@ public class SetupActivity extends Activity {
     @Override
     protected void onCreate(Bundle b) {
         super.onCreate(b);
+        SetupRunner.get().restoreEnd(new FileStore(this));   // 4.4 (R2): a run that ended while this screen was gone (a boot, the app closed) is said here
         Digits.init(this);
         // 4.4 (the owner, step 86 B: «The window is tooooo big… scrollable in a small fit in center window. And the QR to the left.»): a SMALL window
         // in the middle of the screen, inside the 5 % safe area, never taller than it; its title stays, and what is under it scrolls INSIDE the
@@ -554,7 +555,7 @@ public class SetupActivity extends Activity {
         S.n("أجوبة قائمة المجتمع"),
         S.n("نحفظ حالة التلفزيون الآن (نسخة احتياطية) قبل أي تغيير، ونرجّع أي ميزة محمية موقوفة (البث، الصوت، الريموت، المتجر)."),
         S.n("نقيس الذاكرة قبل الإعداد وبعده: يُعاد تشغيل التلفزيون مرتين، ويكمل الإعداد وحده بعد كل مرة."),
-        S.n("نقيس الذاكرة قبل الإعداد وبعده (بدون إعادة تشغيل في هذا التلفزيون)."),
+        S.n("نقيس الذاكرة قبل الإعداد وبعده قراءةً سريعة، بدون إعادة تشغيل التلفزيون."),
         S.n("نعطي تلفزيونك أذوناته (الموقع، منبّهات الأذان، التحديثات)."),
         S.n("نوقف تطبيقات القائمة الآمنة (إعلانات وتتبّع وعروض)، ونسجّلها لنرجعها بزر واحد."),
         S.n("القائمة الآمنة: لا شيء منها شغّال في هذا التلفزيون."),
