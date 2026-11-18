@@ -41,5 +41,11 @@ hp = src(HOME / "HomePage.java")
 check("F4: HomePage.copy is synchronized (the card's thread and the matches page's thread share the temp file)",
       "private static synchronized File copy(Context c, String name) {" in hp and hp.count('prefix + "tmp"') == 1)
 
+# F5: the markets' toggles reach the screensaver in the order pressed (one thread), a refusal only undoes the latest value
+mk = src(HOME / "MarketsActivity.java")
+sv = body(mk, "private void saverSet(")
+check("F5: saverSet runs on a single-thread executor and a refusal does not roll back over a later press",
+      "Executors.newSingleThreadExecutor(" in mk and "saverQueue.execute(" in sv and "new Thread(" not in sv and "!value.equals(this.saved.get(key))" in sv)
+
 print("FAILED" if failed else "all passed")
 sys.exit(1 if failed else 0)

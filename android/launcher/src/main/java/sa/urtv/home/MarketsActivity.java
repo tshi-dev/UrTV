@@ -1388,7 +1388,7 @@ public class MarketsActivity extends Activity {
     private void saverSet(final String key, final String value, final String was, final Runnable done, final Runnable undone) {
         saved.put(key, value);
         final android.content.Context app = getApplicationContext();
-        new Thread(() -> {
+        saverQueue.execute(() -> {   // 4.4 review: one thread, in the order of the presses (a thread per press could reach the screensaver reordered)
             boolean ok = false;
             try {
                 Bundle e = new Bundle();
@@ -1400,12 +1400,15 @@ public class MarketsActivity extends Activity {
             runOnUiThread(() -> {
                 if (isDestroyed() || isFinishing()) return;
                 if (saved) { done.run(); return; }
+                if (!value.equals(this.saved.get(key))) return;   // a later press already replaced it: that one decides, not this refusal
                 if (was == null) this.saved.remove(key); else this.saved.put(key, was);
                 toast(S.t("ما حُفظ: حدّث تطبيق «شاشة تلفزيونك»"));
                 undone.run();
             });
-        }, "saver-set").start();
+        });
     }
+
+    private final java.util.concurrent.ExecutorService saverQueue = java.util.concurrent.Executors.newSingleThreadExecutor(r -> new Thread(r, "saver-set"));
 
     /** what this screen saved a moment ago: the settings are read through a short shared cache (ConfigSnapshot.SHARE_MS) */
     private final java.util.Map<String, String> saved = new java.util.HashMap<>();
