@@ -300,7 +300,7 @@ often describe the same bug in two ways, and both rows are kept when their guard
 | R-282 | «I deleted the app and the screen became black»: UrTV removed from the TV's Settings on a TV whose stock home our setup had turned off left no home at all | the stock home off («عطّل واجهة المصنع», or a PC switch of before 4.3.3 never undone on the TV) with nothing to take Home after us | 4.4 | `tests/rescue_home_test.py`, `tests/factory_test.py`, `tests/rescue_test.py` | launcher + rescue + optimize | Y |
 | R-283 | «إعداد تلفزيوني» stopped at 26 % every time on a Skyworth IRIS (Android 14) and the app closed with no word | the «before» reading restarted the TV and the run waited for a boot resume that did not come back; its end was kept only in memory and the setup screen could not come forward at a boot | 4.4 | `tests/setup_runner_test.py` | launcher setup | Y |
 | R-285 | The safe page's «افتح الشاشة الأصلية» did nothing on a TV whose earlier setup had turned Google TV's home off (the owner's TCL G08, Android 14) | the button opened whatever else answered Home, and the stock home itself was off | 4.4 | `tests/safe_stock_test.py` | launcher | Y |
-| R-286 | A TV with 2.4–3 GB that struggles in practice (memory running full, slow starts, the home killed for memory) never got «الوضع الخفيف» on «تلقائي» | «تلقائي» looked only at the specs (the low-RAM flag, under 2000 MB, two cores) | 4.4 | `tests/lite_auto_test.py` | launcher | N |
+| R-300 | A TV with 2.4–3 GB that struggles in practice (memory running full, slow starts, the home killed for memory) never got «الوضع الخفيف» on «تلقائي» | «تلقائي» looked only at the specs (the low-RAM flag, under 2000 MB, two cores) | 4.4 | `tests/lite_auto_test.py` | launcher | N |
 
 ## Open findings of the gate (QA-n)
 
