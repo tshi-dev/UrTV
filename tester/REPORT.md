@@ -3125,3 +3125,12 @@ Owner request for 4.4 (chat, 18 Nov): allow more than 8 clubs/leagues, with one 
 - But the home is heavier than 4.3.x: janky frames **20.5 %** (356) vs 7.7 % on 4.3.3/4.3.2; p50 32 ms (21 ms), p99 109 ms (65 ms), Missed Vsync 50. Suspect: the couch/scenes/glass look on this TV's GPU; not tried with the plain look to confirm.
 - NOT done: (b) control centre/add-ons ×5, (c) adhan preview (TV muted, no sound tests), (d) matches page, (e) screensaver switches, (f) notice bar; my adb navigation can't read focus on these screens.
 Raw: tester/step96/.
+
+## step 101 — 4.3.5 release check (run 44251449461, build 491)  [tester, 18 Nov]
+Installed over the owner's 4.4 (484) as an update (versionCode 491 > 484), TV muted. Items needing the owner or a real screensaver start are marked.
+- (a) black video: **PARTIAL PASS**. Home → YouTube (guest profile, a short video) ×4 on 4.3.5: the picture showed every time (brightness 92–95, never black). The «open the screensaver first» step could not be done by adb on this TV (`cmd dreams` needs root, Somnambulator does nothing), and the 5-minute play was not done (the video was 19 s). NEEDS the owner for the full screensaver → YouTube loop.
+- (b) screensaver hidden gate (2 min in another app): NOT done, same reason (cannot start the screensaver from adb). NEEDS the owner.
+- (c) safe home: no forced crash. After a reboot the home started normally (role = UrTV, first Home → UrTV) and «إعداد تلفزيوني» opens. **PASS**.
+- (d) old-TV page fix #19 / clock size: NOT done (needs the screensaver on screen; the TV's own screensaver ran by itself right after the reboot but I did not catch a picture). NEEDS the owner.
+- (e) remote speed, 3 min across minute changes and after Home: no ANR, no crash, no skipped-frame lines, no screensaver process start, 0 real stalls (two huge «>300 ms» values in my parser are not real: they are rows without a finish time). BUT smoothness is the same as 4.4/484: janky 21.7 %, p50 32 ms, p99 150 ms (4.3.3: 7.7 %, 21 ms, 69 ms). So the 4.4 look on the owner's settings costs frames; it is not a freeze.
+Note: my 484→491 update kept the owner's settings (the 4.4-only keys are hidden by the 4.3.5 UI).
