@@ -105,7 +105,7 @@ final class FavBar {
     /**
      * 4.5 «زجاجي» (the owner approved docs/mockups/glass/): a liquid-glass bar at the bottom, as wide as its icons, each app's icon a smooth
      * squircle 96 at 100 %, 28 apart, 22 from the bar's edge, the corner about a quarter of the icon; the size 50 to 150 % and 1 to 3 rows are
-     * the person's («حجم الشريط الزجاجي», «صفوف الشريط الزجاجي»). The bar stays centred and the clock where it is.
+     * the person's («حجم شريط tvOS», «صفوف شريط tvOS»). The bar stays centred and the clock where it is.
      */
     static final String GLASS = "glass";
     static final int GLASS_ICON = 96, GLASS_GAP = 28, GLASS_PAD = 22;

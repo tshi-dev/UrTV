@@ -273,7 +273,7 @@ check("«حزم الآفاق» (the owner's «الآفاق», was «المشاه
       '{"saudi", "آفاق السعودية"}, {"couch", "آفاق عالمية"}' in prefs and 'if (out.isEmpty()) out.add("saudi");' in prefs
       and 'row("حزم الآفاق"' in st
       and '{LOOK, H + "أشكال جاهزة والتخطيط", "أشكال جاهزة", "شكل كنبة", "التخطيط", "وضع الألوان", "صفحات الأسهم والمباريات داكنة",' in hub
-      and 'H + "الخلفية والآفاق", "الخلفية", "حزم الآفاق", "بقاء كل أفق", "الأفق يتبع الوقت", "الأفق يتبع الطقس",' in hub and '{"الساعة", LOOK}, {"شكل التطبيقات", LOOK}, {"حجم الشريط الزجاجي", LOOK}, {"صفوف الشريط الزجاجي", LOOK}, {"حزم الآفاق", LOOK}' in hub)
+      and 'H + "الخلفية والآفاق", "الخلفية", "حزم الآفاق", "بقاء كل أفق", "الأفق يتبع الوقت", "الأفق يتبع الطقس",' in hub and '{"الساعة", LOOK}, {"شكل التطبيقات", LOOK}, {"حجم شريط tvOS", LOOK}, {"صفوف شريط tvOS", LOOK}, {"حزم الآفاق", LOOK}' in hub)
 check("«بقاء كل أفق», «الأفق يتبع الوقت», «الأفق يتبع الطقس»: rows in «المظهر», off by default (20 s), given to the home, which picks night by the prayer times and fog by the greeting's weather",
       'row("بقاء كل أفق"' in st and 'row("الأفق يتبع الوقت"' in st and 'row("الأفق يتبع الطقس"' in st and 'sp.getBoolean("sceneByTime", false)' in prefs
       and 'sp.getBoolean("sceneByWeather", false)' in prefs and 'sp.getString("sceneStay", "20")' in prefs and '"scene_stay", "scene_time", "scene_weather"' in prov
@@ -297,7 +297,7 @@ main_tile = main[main.index("card.setOnFocusChangeListener((v, has) -> {"):main.
 # 4.4 «شكل التطبيقات» became the row's three ways (the owner approved them; tests/apps_look_test.py has the rest): the stored values of the first
 # version (frame, the default ring; zoom, «تكبير وظل») are today's tiles with that focus, and «تكبير وظل» is how the focused app shows in A and B
 check("4.4 «شكل التطبيقات»: بنرات, أيقونات or مربعات ملونة (today's, the default with its ring); تكبير وظل (larger with a soft shadow, no ring, the name under the row) for A and B, and for the tiles where it was chosen",
-      'HOME_APPS = {"banners", "icons", "tiles", "glass"};' in prefs and '{"بنرات", "أيقونات", "مربعات ملونة", "زجاجي"}' in prefs and 'APPS_STORED = {"banners", "icons", "frame", "zoom", "glass"};' in prefs
+      'HOME_APPS = {"banners", "icons", "tiles", "glass"};' in prefs and '{"بنرات", "أيقونات", "مربعات ملونة", "tvOS"}' in prefs and 'APPS_STORED = {"banners", "icons", "frame", "zoom", "glass"};' in prefs
       and 'sp.getString("appsStyle", "frame")' in prefs and 'row("شكل التطبيقات"' in st
       and '"apps_style"' in prov and 'getStringExtra("appsstyle")' in recv and "appsstyle) " in read(ROOT / "optimize/saver.sh")
       and "final boolean zoom = inDock && appsZoom;" in main_tile and "FavBar.ZOOM_SCALE" in main_tile and "alpha(has && !zoom ? 1f : 0f)" in main_tile

@@ -3293,7 +3293,7 @@ public class MainActivity extends Activity {
 
     // ---- 4.5 «زجاجي»: the bar's size and rows, its glass, and its last tile «كل التطبيقات»
 
-    /** the bar's size factor and rows (FavBar.glassK, glassRows, from «حجم الشريط الزجاجي» and «صفوف الشريط الزجاجي») */
+    /** the bar's size factor and rows (FavBar.glassK, glassRows, from «حجم شريط tvOS» and «صفوف شريط tvOS») */
     private volatile float glassK = 1f;
     private int glassRowsN = 1;
     private final GlassBar glassBar = new GlassBar();

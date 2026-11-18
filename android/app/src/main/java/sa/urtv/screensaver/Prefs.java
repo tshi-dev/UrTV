@@ -1336,11 +1336,11 @@ final class Prefs {
      * the person keeps (a TV that had «تكبير وظل» keeps it on its tiles). The launcher reads the stored value (FavBar.look, FavBar.zoom).
      */
     static final String[] HOME_APPS = {"banners", "icons", "tiles", "glass"};
-    static final String[] HOME_APPS_NAMES = {"بنرات", "أيقونات", "مربعات ملونة", "زجاجي"};
+    static final String[] HOME_APPS_NAMES = {"بنرات", "أيقونات", "مربعات ملونة", "tvOS"};   // 4.4 beta 2 (the owner): what comes from tvOS Launcher is named «tvOS»
     static final String[] APPS_STORED = {"banners", "icons", "frame", "zoom", "glass"};
     /**
      * 4.5 «زجاجي» (the owner approved docs/mockups/glass/): a liquid-glass bar at the bottom, each app's icon as a rounded square, the name above
-     * the focused one only. Its size, 50 to 150 % in steps of 10 (100 the default), and its rows, 1 to 3 (1): «حجم الشريط الزجاجي», «صفوف الشريط الزجاجي».
+     * the focused one only. Its size, 50 to 150 % in steps of 10 (100 the default), and its rows, 1 to 3 (1): «حجم شريط tvOS», «صفوف شريط tvOS».
      */
     static final String[] GLASS_SIZES = {"50", "60", "70", "80", "90", "100", "110", "120", "130", "140", "150"};
     static final String[] GLASS_ROWS = {"1", "2", "3"};
