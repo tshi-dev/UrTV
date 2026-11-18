@@ -108,6 +108,29 @@ const key = async (p, k, n = 1) => { for (let i = 0; i < n; i++) { await p.keybo
   check('no «·» or «•»', !/[·•]/.test(t), '');
   await ctx.close();
 }
+{   // 4.4 beta 2: before the data exists (no seasons in the archive's file, no weekly files): no new tab, no seasons, no «البطولات»
+  const OLD = { 'sports/4668.json': Object.assign({}, SPORTS, { seasons: undefined, champs: undefined }), 'results/4668.json': { v: 1, id: '4668', results: [] }, 'teams/136013.json': TEAM };
+  const { p, ctx, errors } = await open(OLD);
+  await p.evaluate(() => mpGo({ k: 'league', id: '4668', tab: 3 }));
+  await p.waitForTimeout(900);
+  const tabs = await p.$$eval('#mp-days li', ls => ls.map(l => l.textContent).join());
+  check('no data yet: the three tabs as before (no empty «الأبطال» or «الهدّافون»), a tab asked for that is not there opens the table',
+    !errors.length && tabs === 'جدول الترتيب,النتائج,المباريات' && await p.evaluate(() => /الهلال/.test(document.getElementById('mp-list').innerText)), tabs + errors.join('|'));
+  check('…and no seasons in the side', (await side(p)).length <= 1 && !(await side(p)).some(x => /^٢٠٢٥/.test(x)), JSON.stringify(await side(p)));
+  await p.evaluate(() => mpGo({ k: 'club', id: '136013' }));
+  await p.waitForTimeout(700);
+  check('…and the club page has no «البطولات»', !(await text(p)).includes('البطولات'), (await text(p)).slice(0, 300));
+  await ctx.close();
+}
+{   // only scorers known: «الهدّافون» alone, at its place after «المباريات»
+  const ONE = { 'sports/4668.json': Object.assign({}, SPORTS, { champs: [] }), 'h:scorers/4668.json': SCORERS, 'results/4668.json': { v: 1, id: '4668', results: [] } };
+  const { p, ctx } = await open(ONE);
+  await p.evaluate(() => mpGo({ k: 'league', id: '4668' }));
+  await p.waitForTimeout(900);
+  check('only scorers known: four tabs, «الهدّافون» the fourth, and it opens', await p.$$eval('#mp-days li', ls => ls.map(l => l.textContent).join()) === 'جدول الترتيب,النتائج,المباريات,الهدّافون'
+    && await p.evaluate(() => { MP.tabs[3].act(); return MP.view.tab === 4; }), await p.$$eval('#mp-days li', ls => ls.map(l => l.textContent).join()));
+  await ctx.close();
+}
 {   // «الأبطال» with no weekly file yet: the archive's own champions
   const { p, ctx } = await open(Object.assign({}, ALL, { 'h:champions/4668.json': null }));
   await p.evaluate(() => mpGo({ k: 'league', id: '4668', tab: 3 }));

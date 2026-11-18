@@ -446,11 +446,17 @@ function honClub(id, j){
     if(!won.length) return;
     const n = file && file.complete && file.titles && +file.titles[id];
     rows.push(mpItem(lgName(lg), n > 0 ? fw(HW.titlesLast, honTitles(n), honSeasonName(won[0].s)) : fw(HW.lastTitle, honSeasonName(won[0].s)),
-      () => { mpGo({k: 'league', id: lg, tab: 3}); MP.d = 3; }));
+      () => { mpGo({k: 'league', id: lg, tab: 3}); MP.d = Math.max(0, (MP.tabs || []).findIndex(x => x.on)); }));
   });
   return rows.length ? [{key: 'hon', name: HW.honours, games: rows}] : [];
 }
 
+// which of the league's honours have data (a tab without it is not shown): «الأبطال» when the weekly file or the archive names a champion,
+// «الهدّافون» when the scorers file has a season
+function honHas(id){
+  const sp = archWant('sports/' + id + '.json'), {list} = honChampList(id, sp), sc = honWant('scorers', id);
+  return {champs: list.length > 0, scorers: Object.keys((sc && sc.seasons) || {}).some(x => honTop(sc, x).length)};
+}
 // the league page: {pins} (the side's seasons) and, when this part draws the tab, {groups}: a past season's table or results, «الأبطال», «الهدّافون»
 function honLeague(v, id, tab){
   const sp0 = archWant('sports/' + id + '.json'), cur = sp0 && sp0.season ? String(sp0.season) : '';
@@ -464,7 +470,7 @@ function honLeague(v, id, tab){
 
 SPORTS = {
   stamp: SP_STAMP,
-  hon: {league: honLeague, club: honClub},
+  hon: {league: honLeague, club: honClub, has: honHas},
   load: spLoad,
   card(card, P){
     const now = Date.now();

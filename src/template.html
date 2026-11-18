@@ -5152,10 +5152,13 @@ function lgName(id){
   return FB_LEAGUES[id] || CONFIG.leagueNames[id] || (l && (l.ar || l.en)) || '#' + id;
 }
 function mpLeagueView(v){
-  const id = String(v.id), tab = v.tab || 0, now = Date.now(), groups = [];
-  const tabs = [FB_W.table, FB_W.results, FB_W.title, FB_W.champs, FB_W.scorers].map((t, i) => ({t, on: i === tab, act: () => { v.tab = i; MP.l = MP.r = 0; mpRender(); }}));
-  // 4.5 the side's seasons, a past season, «الأبطال» and «الهدّافون»: the honours part of dist/sports.js (SPORTS.hon), loaded beside the page
-  const H = SPORTS && SPORTS.hon, hv = H ? H.league(v, id, tab) : tab > 2 ? {pins: [], groups: [{key: 'h', name: tabs[tab].t, games: [], none: FB_W.loading}]} : {pins: []};
+  const id = String(v.id), now = Date.now(), groups = [];
+  // 4.5 the side's seasons, a past season, «الأبطال» and «الهدّافون»: the honours part of dist/sports.js (SPORTS.hon), loaded beside the page.
+  // A tab is there only when its data is (never an empty tab): «الأبطال» 3 and «الهدّافون» 4 keep their numbers when shown
+  const H = SPORTS && SPORTS.hon, has = H ? H.has(id) : {};
+  const keys = [0, 1, 2].concat(has.champs ? [3] : [], has.scorers ? [4] : []), tab = keys.includes(v.tab || 0) ? v.tab || 0 : 0;
+  const tabs = keys.map(k => ({t: [FB_W.table, FB_W.results, FB_W.title, FB_W.champs, FB_W.scorers][k], k, on: k === tab, act: () => { v.tab = k; MP.l = MP.r = 0; mpRender(); }}));
+  const hv = H ? H.league(v, id, tab) : {pins: []};
   const pins = hv.pins || [];
   if(hv.groups) return {title: lgName(id), tabs, pins, groups: hv.groups};
   const res = tab < 2 ? archWant('results/' + id + '.json') : null;
