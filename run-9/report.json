@@ -1,0 +1,58 @@
+[
+ {
+  "case": "01-preset-tv-to-couch",
+  "frames": 33,
+  "change_at": 2.0,
+  "focus_before": "android.widget.FrameLayout [1136,792][1440,962]",
+  "focus_after": "android.widget.LinearLayout [172,72][362,132]",
+  "first": 2.164,
+  "settled": 2.525,
+  "span": 0.361,
+  "changed_frames": 2,
+  "blank": [],
+  "flash": [],
+  "total_change": 32.46
+ },
+ {
+  "case": "02-preset-couch-to-tv",
+  "frames": 26,
+  "change_at": 2.0,
+  "focus_before": "android.widget.LinearLayout [172,72][362,132]",
+  "focus_after": "android.widget.LinearLayout [172,72][362,132]",
+  "first": 1.888,
+  "settled": 2.743,
+  "span": 0.855,
+  "changed_frames": 3,
+  "blank": [],
+  "flash": [],
+  "total_change": 24.89
+ },
+ {
+  "case": "03-bg-photos-to-scenes",
+  "frames": 8,
+  "change_at": 2.0,
+  "focus_before": "android.widget.LinearLayout [172,72][362,132]",
+  "focus_after": "android.widget.LinearLayout [172,72][362,132]",
+  "first": 1.224,
+  "settled": 1.224,
+  "span": 0.0,
+  "changed_frames": 1,
+  "blank": [],
+  "flash": [],
+  "total_change": 17.61
+ },
+ {
+  "case": "04-bg-scenes-to-photos",
+  "frames": 28,
+  "change_at": 2.0,
+  "focus_before": "android.widget.LinearLayout [172,72][362,132]",
+  "focus_after": "android.widget.LinearLayout [172,72][362,132]",
+  "first": 0.368,
+  "settled": 2.401,
+  "span": 2.033,
+  "changed_frames": 14,
+  "blank": [],
+  "flash": [],
+  "total_change": 21.17
+ }
+]
