@@ -47,9 +47,14 @@ public final class Report {
      * and dashes goes in (no address, network name or text of a log line).
      */
     public static List<String> lines(String home, String saver, String release, int sdk, String webView, String topic, String look, String appearance, String layout, List<String> errors) {
+        return lines(home, saver, release, sdk, webView, topic, look, appearance, layout, null, errors);
+    }
+
+    /** 4.4 beta 3: with «الوضع الخفيف»'s automatic state on the Home line («lite=auto-on-t2-s0-o1», LiteAuto.report); null leaves it out */
+    public static List<String> lines(String home, String saver, String release, int sdk, String webView, String topic, String look, String appearance, String layout, String lite, List<String> errors) {
         List<String> l = lines(home, saver, release, sdk, webView);
         l.add("Extras: about=" + safe(topic));
-        l.add("Home: look=" + safe(look) + ", appearance=" + safe(appearance) + ", layout=" + safe(layout));
+        l.add("Home: look=" + safe(look) + ", appearance=" + safe(appearance) + ", layout=" + safe(layout) + (lite == null ? "" : ", lite=" + safe(lite)));
         if (errors != null && !errors.isEmpty()) {
             StringBuilder e = new StringBuilder("Extras: errors=");
             int n = 0;

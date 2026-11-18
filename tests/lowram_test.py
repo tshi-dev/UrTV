@@ -41,7 +41,7 @@ if shutil.which("javac") and shutil.which("java"):
     for rel, body in STUBS.items():
         (tmp / "src" / rel).parent.mkdir(parents=True, exist_ok=True)
         (tmp / "src" / rel).write_text(body)
-    srcs = [str(tmp / "src" / r) for r in STUBS] + [str(HOME / f) for f in ("Ram.java", "ClockTick.java", "SettingsKey.java", "MarketData.java", "MarketNames.java", "DigitsText.java")] + [str(ROOT / "tests/LowRamRun.java")]
+    srcs = [str(tmp / "src" / r) for r in STUBS] + [str(HOME / f) for f in ("Ram.java", "LiteAuto.java", "ClockTick.java", "SettingsKey.java", "MarketData.java", "MarketNames.java", "DigitsText.java")] + [str(ROOT / "tests/LowRamRun.java")]
     r = subprocess.run(["javac", "-encoding", "UTF-8", "-d", str(tmp / "out"), *srcs], capture_output=True, text=True)
     check("the rules compile", r.returncode == 0, r.stderr[-800:])
     if r.returncode == 0:

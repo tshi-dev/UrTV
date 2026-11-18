@@ -23,6 +23,7 @@ public final class SetupHook {
     private static void atHomeStartNow(final Context app) {
         try {
             clearOldFails(app);
+            sa.urtv.home.LiteAutoStore.tellOnce(app);   // 4.4 beta 3: «الوضع الخفيف» came on by itself: said once
             endNotSeen(app);   // 4.4 (R2)
             if (!SetupRecovery.pending(app)) { migrate(app); return; }
             SetupRecovery.rearmFromDisk(app);

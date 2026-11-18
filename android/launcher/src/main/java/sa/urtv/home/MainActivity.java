@@ -416,6 +416,7 @@ public class MainActivity extends Activity {
     public void onTrimMemory(int level) {
         super.onTrimMemory(level);
         android.util.Log.i("UrTVHome", "trim level " + level + " (resumed=" + resumed + ", ram tier " + Ram.tier(this) + ")");
+        if (resumed && level >= TRIM_MEMORY_RUNNING_LOW && level < TRIM_MEMORY_UI_HIDDEN) LiteAutoStore.note(this, LiteAuto.TRIM);   // 4.4 beta 3: memory ran low with the home in front
         if (resumed || !Ram.trimNow(Ram.tier(this), level)) return;   // only when the system really asks (LOW: behind another app; MID: MODERATE and worse; NORMAL: never)
         homeCard.destroy();
         if (sceneHome != null) sceneHome.trim();   // the scene not showing lets its pictures go
