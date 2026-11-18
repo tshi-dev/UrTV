@@ -49,6 +49,9 @@ check("2. each frees or pauses its WebView when it leaves the screen", all(owner
 # 3. the page
 tpl = (ROOT / "src/template.html").read_text(encoding="utf-8")
 m = re.search(r"let PAGE_SKIPPED = false[^;]*;[^\n]*\n\(function\(\)\{.*?\n\}\)\(\);", tpl, re.S)
+check("3. PAGE_FULL is set only after the other layouts have left boot() (the home's cards, «المباريات», football)",
+      "PAGE_FULL = true;" in tpl and tpl.index("PAGE_FULL = true;") > tpl.index("if(CONFIG.widget){ bootWidget(); return; }")
+      > tpl.index("if(CONFIG.football){ bootFootball(); return; }") > tpl.index("if(CONFIG.matchPage){ bootMatchPage(); return; }") > tpl.index("function boot(){"))
 check("3. the page has its hidden gate, before any interval is made", m is not None and tpl.index("let PAGE_SKIPPED") < tpl.index("setInterval(") if m else False)
 if not shutil.which("node") or m is None:
     print("SKIP the page on node")

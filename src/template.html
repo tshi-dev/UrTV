@@ -4656,12 +4656,12 @@ function bootMatchPage(){
 }
 
 function boot(){
-  PAGE_FULL = true;
   if(CONFIG.lowram) document.documentElement.classList.add('lowram');
   pruneStorage();
   if(CONFIG.matchPage){ bootMatchPage(); return; }
   if(CONFIG.football){ bootFootball(); return; }
   if(CONFIG.widget){ bootWidget(); return; }
+  PAGE_FULL = true;   // the full screensaver only: the other layouts left above (review F5)
   buildCards();
   if(document.fonts) document.fonts.ready.then(() => {   // widths change once the fonts are in
     fitYearStrip();
