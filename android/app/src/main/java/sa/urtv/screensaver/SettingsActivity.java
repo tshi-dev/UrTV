@@ -96,7 +96,7 @@ public class SettingsActivity extends Activity {
         getWindow().setWindowAnimations(0);
         overridePendingTransition(0, 0);
         prefs = new Prefs(this);
-        classic = !prefs.couchOn();
+        classic = !Prefs.ONE_FORM && !prefs.couchOn();   // 4.5 (the owner): one form, couch-tv's compact rows, whatever the look; the 4.3.2 hub only with the flag off
         SettingsHub.classic(classic);
         if (!classic) cs = new CouchStyle(this);
         if (getIntent().hasExtra("hubAt")) { screen = SettingsHub.canon(getIntent().getStringExtra("screen")); hubAt = SettingsHub.canon(getIntent().getStringExtra("hubAt")); }   // pickLang: back on its button
@@ -1089,7 +1089,7 @@ public class SettingsActivity extends Activity {
     private void applyCombo(String key) {
         boolean wasClassic = !prefs.couchOn();
         prefs.setCombo(key);
-        if (wasClassic == !prefs.couchOn()) { render(); return; }
+        if (Prefs.ONE_FORM || wasClassic == !prefs.couchOn()) { render(); return; }   // 4.5: one form, never opened again for a look
         startActivity(new Intent(this, SettingsActivity.class).putExtra("screen", "look").putExtra("hubAt", "look").putExtra("want", "أشكال جاهزة")
             .addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION));
         finish();
@@ -1099,7 +1099,7 @@ public class SettingsActivity extends Activity {
     private void applyPreset(String key) {
         boolean wasClassic = !prefs.couchOn();
         prefs.setPreset(key);
-        if (wasClassic == !prefs.couchOn()) { render(); return; }
+        if (Prefs.ONE_FORM || wasClassic == !prefs.couchOn()) { render(); return; }   // 4.5: one form, never opened again for a look
         startActivity(new Intent(this, SettingsActivity.class).putExtra("screen", "look").putExtra("hubAt", "look").putExtra("want", "أشكال جاهزة")
             .addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION));
         finish();
@@ -1107,6 +1107,7 @@ public class SettingsActivity extends Activity {
 
     private void flipCouch() {
         prefs.setCouch(!prefs.couchOn());
+        if (Prefs.ONE_FORM) { render(); return; }
         startActivity(new Intent(this, SettingsActivity.class).putExtra("screen", "look").putExtra("hubAt", "look").putExtra("want", "شكل كنبة")
             .addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION));
         finish();

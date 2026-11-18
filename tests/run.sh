@@ -45,6 +45,7 @@ python3 tests/motion_test.py   # 4.4 the same easing everywhere (Motion: 200 ms,
 python3 tests/sweep_test.py   # 4.4 the consistency sweep: what it fixed stays fixed
 python3 tests/separators_test.py   # 4.4 no «·» or «•» on a screen, in either language (S.sep)
 python3 tests/settings_couch_test.py   # 4.4 «منظر وساعة»: the settings in couch-tv's style (its numbers, row kinds, pages, search, thumbnails), every registry row, Arabic mirrored
+python3 tests/settings_one_form_test.py   # 4.5 one settings form for every look (Prefs.ONE_FORM): every row and tile of the 4.3.2 hub listed with its new place
 
 python3 tests/settings_classic_test.py   # 4.4 «شكل كنبة» switches the settings screen too: every row in both layouts (4.3.2 and the side list), search in both, the switch in both
 python3 tests/settings_tree_test.py   # docs/SETTINGS-TREE.md is what the code says now (.github/tools/settings_tree.py)

@@ -27,8 +27,8 @@ check("…its colours: the veil rgba(10,8,12,.8), the rows 8 % white, the value 
 check("…its focus: a section x1.04, a row x1.02, in 200 ms on cubic-bezier(.2,.8,.2,1)",
       "SEC_SCALE = 1.04f, ROW_SCALE = 1.02f;" in cs and "static final long MS = Motion.MS;" in cs and "return Motion.ease();" in cs
       and "static final long MS = 200;" in (APP / "Motion.java").read_text(encoding="utf-8") and "new PathInterpolator(0.2f, 0.8f, 0.2f, 1f)" in (APP / "Motion.java").read_text(encoding="utf-8"))
-check("only with «منظر وساعة» (the side list): the 4.3.2 screen of every other look keeps its own (CouchStyle made only when not classic)",
-      "if (!classic) cs = new CouchStyle(this);" in st and "classic = !prefs.couchOn();" in st)
+check("CouchStyle is made whenever the 4.3.2 hub is not (4.5: one form, Prefs.ONE_FORM; tests/settings_one_form_test.py)",
+      "if (!classic) cs = new CouchStyle(this);" in st and "classic = !Prefs.ONE_FORM && !prefs.couchOn();" in st)
 check("switching the look switches the settings at once: they open again in the other style", "private void flipCouch()" in st and "finish();" in st[st.index("private void flipCouch()"):][:700])
 check("a weak TV («الوضع الخفيف») gets a nearly solid veil instead of the see-through one",
       'boolean lite = "on".equals(prefs.lite()) || ("auto".equals(prefs.lite()) && Prefs.lowRam(this));' in st and "lite ? CouchStyle.VEIL_LITE : CouchStyle.VEIL" in st)

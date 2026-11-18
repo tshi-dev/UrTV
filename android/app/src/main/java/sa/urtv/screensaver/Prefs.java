@@ -1382,6 +1382,9 @@ final class Prefs {
      * the look's own; «شكلك المعتاد» puts them back exactly. A row changed after reads «مخصّص». The city, the adhan, the teams and the locks are never
      * touched: a look is the look only. Two of the owner's open questions are flags here, both on until he says otherwise.
      */
+    /** 4.5 (the owner): the settings have one form, couch-tv's compact rows, for every look; the 4.3.2 hub (its tiles) is not shown. Every place of it
+     *  is in the one form (tests/settings_one_form_test.py lists each with its new place). false: as in 4.4 (the hub unless «منظر وساعة»). */
+    static final boolean ONE_FORM = true;
     static final boolean PRESETS_REPLACE_COUCH = true;    // «أشكال جاهزة» replaces the «شكل كنبة» switch («منظر وساعة» is the Couch look)
     static final boolean CLEAN_HIDES_BUTTONS = true;      // «صورة فقط» hides the home's round buttons (they stay in the control centre and the menu key)
     static final String[] PRESETS = {"tv", "couch", "clean", "family", "sport", "calm"};
