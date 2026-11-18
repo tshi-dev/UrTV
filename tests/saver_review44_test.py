@@ -22,4 +22,18 @@ check("F15: the blocking query is kidsAsk, used only by that thread", "static bo
       and len(re.findall(r"kidsAsk\(", npb)) == 2)
 check("F15: screenUrl still adds &kids=1 only with the kick-off on and kids on", 'kickoff() && NowPlayingBridge.kidsOn(c) ? "&kids=1" : ""' in prefs)
 
+# F13: the packs list scrolls: every pack can be reached and deleted
+gp = src("GamePacksActivity.java")
+sc = body(gp, "static int scrollTo(")
+def scroll(n, sel, first, fit):   # the same rule as the Java, run here
+    if sel < first: first = sel
+    if sel >= first + fit: first = sel - fit + 1
+    return max(0, min(first, max(0, n - fit)))
+check("F13: the rows are drawn from a first-row offset (not the first six), the focus can go to the last pack, and there are more-rows marks",
+      "for (int i = first; i < rows.size() && i < first + FIT; i++)" in gp and "i < 6" not in gp and "Math.min(rows.size(), 6)" not in gp and "sel + dy)" in gp and "Math.min(rows.size() - 1, sel + dy)" in gp
+      and gp.count("\u25b2") >= 2 and gp.count("\u25bc") >= 2 and "if (first > 0)" in gp and "if (first + FIT < rows.size())" in gp)
+check("F13: the offset rule keeps the focused row on the screen for 20 packs, first to last and back",
+      "if (sel < first) first = sel;" in sc and "if (sel >= first + fit) first = sel - fit + 1;" in sc and "Math.min(first, Math.max(0, n - fit))" in sc
+      and all((lambda f: f <= s < f + 6)(scroll(20, s, 0, 6)) for s in range(20)) and scroll(20, 19, 0, 6) == 14 and scroll(20, 0, 14, 6) == 0)
+
 sys.exit(1 if failed else 0)
