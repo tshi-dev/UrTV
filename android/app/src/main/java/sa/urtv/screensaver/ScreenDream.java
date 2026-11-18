@@ -21,15 +21,22 @@ public class ScreenDream extends DreamService {
     /** settings were saved while this dream is on (an agent's `saver.sh city`): start the page over with them, not at the next dream */
     private final BroadcastReceiver changed = new BroadcastReceiver() {
         @Override public void onReceive(Context c, Intent i) {
-            if (!attached || web == null) return;
-            // S6 (P4): the page is built again only when what it is opened with changed; a setting that does not reach it (the phone's, the home's) left the dream as it was
-            if (new Prefs(c).screenUrl(c, false).equals(shownUrl)) return;
-            WebView old = web;
-            web = null;
-            ScreenView.release(old);
-            show(false);
+            if (!attached) return;
+            if (gate.changedWhileStarting()) return;   // 4.4 review F1: the page is not created yet; it is looked at again when it is (createPage)
+            rebuildIfChanged(c);
         }
     };
+    private final StartGate gate = new StartGate();
+
+    /** S6 (P4): the page is built again only when what it is opened with changed; a setting that does not reach it (the phone's, the home's) left the dream as it was */
+    private void rebuildIfChanged(Context c) {
+        if (!attached || web == null) return;
+        if (new Prefs(c).screenUrl(c, false).equals(shownUrl)) return;
+        WebView old = web;
+        web = null;
+        ScreenView.release(old);
+        show(false);
+    }
 
     @Override
     public void onAttachedToWindow() {
@@ -103,12 +110,18 @@ public class ScreenDream extends DreamService {
     /** start: the dream starting (counted for the first-run note), not a renderer's re-creation: the picture first, the page after the first frame (SaverStart) */
     private void show(final boolean start) {
         shownUrl = new Prefs(this).screenUrl(this, false);
+        final int token = gate.begin();   // a start that a newer one has replaced creates nothing
         if (getWindow() != null) getWindow().setBackgroundDrawable(new android.graphics.drawable.ColorDrawable(0xFF040E09));   // the page's ground, under the view until it has painted
         SaverStart.begin(new SaverStart.Host() {
             @Override public Context context() { return ScreenDream.this; }
             @Override public void setContent(android.view.View v) { setContentView(v); }
-            @Override public WebView createPage() { web = ScreenView.create(ScreenDream.this, ScreenDream.this::gone, start); return web; }
-            @Override public boolean alive() { return attached; }
+            @Override public WebView createPage() {
+                web = ScreenView.create(ScreenDream.this, ScreenDream.this::gone, start);
+                gate.created(token);
+                if (gate.takeDirty()) snapHandler.post(() -> rebuildIfChanged(ScreenDream.this));   // a change came in during the start
+                return web;
+            }
+            @Override public boolean alive() { return attached && gate.current(token); }
         }, shownUrl, () -> {
             snapHandler.removeCallbacks(snapTick);
             snapHandler.postDelayed(snapTick, SaverSnapshot.FIRST_MS);   // the picture for the next start, taken from the window while the page shows
@@ -130,6 +143,7 @@ public class ScreenDream extends DreamService {
         NowPlayingBridge.clearCard();
         if (attached) Showing.leave();
         attached = false;
+        gate.cancel();
         try { unregisterReceiver(changed); } catch (IllegalArgumentException ignored) { }
         snapHandler.removeCallbacks(adhanWatch);
         snapHandler.removeCallbacks(snapTick);   // (the picture the next start draws first was taken while the page showed: SaverSnapshot.capture)
