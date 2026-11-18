@@ -1,0 +1,3 @@
+t_change: 1795036973.406598250
+t_rec: 1795036971.403570823
+focus-after:  android.widget.LinearLayout [80,219][1211,297]

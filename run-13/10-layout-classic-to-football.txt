@@ -1,0 +1,4 @@
+focus-before:  android.widget.LinearLayout [172,72][362,132]
+t_change: 1795036663.714551826
+t_rec: 1795036661.710811026
+focus-after:  android.webkit.WebView [0,0][1920,832]
