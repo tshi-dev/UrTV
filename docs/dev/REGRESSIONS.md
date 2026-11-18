@@ -293,7 +293,7 @@ often describe the same bug in two ways, and both rows are kept when their guard
 ## Open findings of the gate (QA-n)
 
 Paths the UI-thread rule (`tests/regressions/ui_thread_ipc_test.py`) found already there at 4.3.4. They are in its baseline so the gate
-passes today, each with its QA number; none is fixed by the gate. A fix removes the line from `tests/regressions/ui_thread_baseline.txt`
+passes today, each with a written reason (the test refuses the bare «baseline 4.3.4»); the open ones carry their QA number; none is fixed by the gate. A fix removes the line from `tests/regressions/ui_thread_baseline.txt`
 and adds a row above.
 
 - **QA-1** `MainActivity.onResume -> updateClock`: the first draw read `ConfigSnapshot.read` on the UI thread. **Fixed in 4.3.4**
@@ -320,6 +320,19 @@ and adds a row above.
   when the home kept some. **Fixed in 4.4** (15c4a306, `tests/ui_thread_44_test.py`).
 - **QA-10** (4.4, R1, low) the home's notice bar reads and parses the notices file (`ContentFile.read`, own disk, bounded) at every
   minute tick and return (`updateHomeNudge -> dueNotice`). **Fixed in 4.4** (d0c0b9c0, `tests/ui_thread_44_test.py`).
+- **QA-11** (R1, the TCL freeze's shape; open) the home's and its screens' reads of the screensaver's settings on the UI thread:
+  `ConfigSnapshot.read` through `GlassSource.light` / `lookName` / `pageFor` (a screen's look, at onCreate, return or press, and the key that
+  opens the control centre), `Digits.init`, the pill row in `MainActivity.buildHeader`, and the markets, matches and tasks screens' own
+  settings. One answer is shared for 3 s, so only the first read in 3 s asks; on a TCL that killed the screensaver that read starts its
+  process (the 4.3.3 freeze). The home's clock draw (QA-1) and the greeting and adhan-bar receivers are fixed; these are not.
+  Fix: `ConfigSnapshot.known()` or a read on a thread, as QA-1 did.
+- **QA-12** (R1; open, low) one-off calls into the screensaver's or the home's provider from a screen's open or a press, on the UI thread:
+  the tasks and reminder screens (`TasksActivity.load` and the writes, `ReminderScheduler.schedule`), the matches screen's page copy
+  (`HomePage.fresh`), the settings screens' backdrop (`GlassSource.refresh`), the hub's `CleanMask.state`, the language save in the
+  first-run setup, the market toggles, and the «تلاوة وأذان» preview's `Place.get`. The reminder card's own paths are R-255 (QA-3), fixed.
+- **QA-13** (R1; open, low) the app's own disk work at a start or a render: the last-picture overlays (`HomeSnapshot`, `SaverSnapshot`), the
+  glass backdrop and the first-frame wallpaper, bundled asset pictures and credits files in the settings, the setup ledger, and the report
+  screen's `logcat` read. All small and bounded; none crosses a process.
 
 The 4.3.4 review's F1 and F2: R-257, R-258.
 
