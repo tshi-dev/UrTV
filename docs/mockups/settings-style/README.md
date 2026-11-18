@@ -6,5 +6,5 @@
 | [02-couch-look-section.png](02-couch-look-section.png) | The «كنبة» side list: «المظهر», the same row in the same place, value «كنبة»; so the person can always go back to the buttons |
 | [03-couch-choice-page.png](03-couch-choice-page.png) | Its choices: «أزرار» (4.3's big sections) and «كنبة» (side list, compact rows); choosing opens the settings again in the other style with the focus on this row. «tvOS» is added here only once its screen is approved and built |
 
-Rules: the looks (أشكال جاهزة) no longer change the settings screen; after the update each TV keeps the screen it shows now
+Rules: only a full-design look («كنبة»; «tvOS» once built) changes the settings screen too, and «شكلك المعتاد» puts the person's own back; the other looks never do; after the update each TV keeps the screen it shows now
 («كنبة» if the look «كنبة» was chosen, else «أزرار»); `optimize/saver.sh settingsstyle buttons|couch`; search finds it by «شكل الإعدادات», «القائمة», «الأزرار».
