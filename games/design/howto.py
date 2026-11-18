@@ -15,9 +15,9 @@ def btn(label, x, y, w, h, focus, size=44, side="right"):
     bg, fg = (P["ink"], P["paper"]) if focus else (P["tile"], P["ink"])
     return f'<div class="btn" style="{side}:{x}px;top:{y}px;width:{w}px;height:{h}px;background:{bg};color:{fg};font-size:{size}px">{label}</div>'
 def bang(focus):
-    """the «!» button: a square at the top, at the END edge (the left in Arabic): the title keeps the start edge, the small line moves inward"""
-    ring = f'<div class="a" style="left:84px;top:40px;width:120px;height:120px;border:6px solid {P["saff"]}"></div>' if focus else ""
-    return ring + btn("!", 96, 52, 96, 96, focus, 64, "left")
+    """the «!» button: a small mark (48 x 48) at the top END corner (the left in Arabic), as quiet as a hint key; focused = the same size with a saffron ring"""
+    ring = f'<div class="a" style="left:88px;top:62px;width:64px;height:64px;border:6px solid {P["saff"]}"></div>' if focus else ""
+    return ring + btn("!", 96, 70, 48, 48, False, 34, "left").replace("border:6px solid", "border:4px solid")
 def chips(rows, y0, rowh=76, gap=14):
     out = ""; y = y0
     for label, opts, picked, focus in rows:
@@ -35,7 +35,7 @@ def start_screen(bang_focus):
             ("زر الخيارات", ["نعم", "لا"], 0, -1), ("فرصة للفريق الآخر", ["لا", "نعم"], 0, -1), ("من يختار الحرف", ["من يجاوب صح يختار الحرف", "بالتناوب"], 0, -1)]
     h = hint("اختيار", "طريقة اللعب", "▼", "رجوع للإعدادات", "رجوع", "الألعاب") if bang_focus else hint("▲ ▼", "السطر", "◀ ▶", "الاختيار", "اختيار", "ابدأ", "رجوع", "الألعاب")
     return (f'<div class="band"><div class="a" style="right:96px;top:54px;font-size:96px;font-weight:700">خلية الحروف</div>'
-            f'<div class="a" style="left:216px;top:84px;width:700px;text-align:left;font-size:40px;font-weight:700;color:{P["saff"]}">جهّز اللعبة</div></div>' + bang(bang_focus) + chips(rows, 224) +
+            f'<div class="a" style="left:176px;top:84px;width:700px;text-align:left;font-size:40px;font-weight:700;color:{P["saff"]}">جهّز اللعبة</div></div>' + bang(bang_focus) + chips(rows, 224) +
             f'<div class="a" style="left:96px;top:806px;width:64px;text-align:center;font-size:36px;opacity:.8">▼</div>' + btn("ابدأ", 96, 856, 640, 104, not bang_focus, 44) + h)
 def parse(game_no):
     t = (ROOT / "docs/mockups/howto/TEXTS.md").read_text(encoding="utf-8")
@@ -50,24 +50,26 @@ def parse(game_no):
         elif cur and line.strip(): blocks[cur].append(re.sub(r"^\d+\.\s*", "", ar(line)))
     name = re.sub(r"^\d+\.\s*", "", name); name = name.split(" (")[0]
     return name, blocks
-def panel_page(game_no):
+def panel_page(game_no, k=1.0):
     name, b = parse(game_no); steps = b["كيف تلعب"]
-    goal = f'<div class="a" style="right:96px;top:224px;width:1040px"><div style="background:{P["ink"]};color:{P["paper"]};font-size:36px;font-weight:700;padding:6px 20px;display:inline-block">الهدف</div><div style="font-size:38px;font-weight:700;margin-top:8px;line-height:1.3">{b["الهدف"][0]}</div></div>'
-    nums = "".join(f'<div style="display:flex;gap:18px;margin-top:12px"><div style="min-width:60px;height:60px;background:{P["ink"]};color:{P["paper"]};font-size:38px;font-weight:700;display:flex;align-items:center;justify-content:center">{["١","٢","٣","٤","٥"][i]}</div><div style="font-size:36px;line-height:1.3">{s}</div></div>' for i, s in enumerate(steps))
+    goal = f'<div class="a" style="right:96px;top:224px;width:1040px"><div style="background:{P["ink"]};color:{P["paper"]};font-size:36px;font-weight:700;padding:6px 20px;display:inline-block">الهدف</div><div style="font-size:{38*k:.0f}px;font-weight:700;margin-top:8px;line-height:1.3">{b["الهدف"][0]}</div></div>'
+    nums = "".join(f'<div style="display:flex;gap:18px;margin-top:12px"><div style="min-width:60px;height:60px;background:{P["ink"]};color:{P["paper"]};font-size:38px;font-weight:700;display:flex;align-items:center;justify-content:center">{["١","٢","٣","٤","٥"][i]}</div><div style="font-size:{36*k:.0f}px;line-height:1.3">{s}</div></div>' for i, s in enumerate(steps))
     how = f'<div class="a" style="right:96px;top:396px;width:1040px"><div style="background:{P["deep"]};color:#fff;font-size:36px;font-weight:700;padding:6px 20px;display:inline-block">كيف تلعب</div>{nums}</div>'
     col = ""
     for key in ("بالجوالات", "النقاط", "النهاية"):
         if key in b:
             body = "".join(f'<div>{l}</div>' for l in b[key])
-            col += f'<div style="background:{P["tile"]};border:6px solid {P["ink"]};margin-bottom:16px"><div style="background:{P["ink"]};color:{P["paper"]};font-size:36px;font-weight:700;padding:6px 20px">{key}</div><div style="padding:6px 20px 12px;font-size:34px;line-height:1.3">{body}</div></div>'
+            col += f'<div style="background:{P["tile"]};border:6px solid {P["ink"]};margin-bottom:16px"><div style="background:{P["ink"]};color:{P["paper"]};font-size:36px;font-weight:700;padding:6px 20px">{key}</div><div style="padding:6px 20px 12px;font-size:{34*k:.0f}px;line-height:1.3">{body}</div></div>'
     col = f'<div class="a" style="left:96px;top:224px;width:640px">{col}</div>'
     return (f'<div class="band"><div class="a" style="right:96px;top:54px;font-size:96px;font-weight:700">طريقة اللعب</div><div class="a" style="left:96px;top:84px;width:700px;text-align:left;font-size:40px;font-weight:700;color:{P["saff"]}">{name}</div></div>'
-            + goal + how + col + hint("▲ ▼", "تمرير", "رجوع", "إغلاق"))
+            + (f'<div class="a" style="left:0;right:0;top:200px;height:760px;overflow:hidden">{goal.replace("top:224px","top:24px")}{how.replace("top:396px","top:196px")}{col.replace("top:224px","top:24px")}</div>'
+               f'<div class="a" style="left:0;right:0;top:880px;height:80px;background:linear-gradient(rgba(239,232,218,0),{P["paper"]} 70%)"></div><div class="a" style="right:96px;top:906px;font-size:40px;font-weight:700;width:1040px;text-align:center">▼</div>' if k > 1 else goal + how + col)
+            + hint("▲ ▼", "تمرير", "رجوع", "إغلاق"))
 def page(body, scale=1.0): return f'<!doctype html><meta charset="utf-8"><style>{CSS}</style>{body}'
 SHOTS = {"howto-start-unfocused": (start_screen(False), 1920, 1080, 1.0), "howto-start-focused": (start_screen(True), 1920, 1080, 1.0)}
 for no, tag in ((6, "letter-hive"), (1, "quiz")):
     SHOTS[f"howto-panel-{tag}"] = (panel_page(no), 1920, 1080, 1.0)
-    SHOTS[f"howto-panel-{tag}-720"] = (panel_page(no), 1920, 1080, 1280 / 1920)   # the same layout drawn at 1280 x 720 (a device scale of 2/3)
+    SHOTS[f"howto-panel-{tag}-720"] = (panel_page(no, 42 / 36), 1920, 1080, 1280 / 1920)   # 1280 x 720 (a device scale of 2/3), the body text raised from 36 to 42 design px: 28 px real
 if __name__ == "__main__":
     out = os.path.abspath(sys.argv[1]); os.makedirs(out, exist_ok=True)
     for n, (h, w, hh, sc) in SHOTS.items(): open(f"{out}/{n}.html", "w", encoding="utf-8").write(page(h, sc))
