@@ -71,17 +71,25 @@ rm -f "$RUN/inputs-left.txt"   # what the guard left on in this run (community.s
 # 4.4: what opens the TV's Settings, its channels (Live TV) or the setup of its inputs stays on, whatever a list says: the TV is asked which apps
 # answer android.settings.SETTINGS, the VIEW intent of a TV channel or input (content://android.media.tv/...) and android.media.tv.action.SETUP_INPUTS.
 # A vendor's Settings or Live TV app taken off leaves no way back to the inputs or the network (the handler guard of Clean Your TV, tools/disable.sh,
-# github.com/Gathin23/cleanyourtv, MIT; it names a Sony that lost its inputs and one that lost its Settings). Fail closed: a TV that does not answer,
-# or names no Settings app at all, gets NOTHING turned off. The same command is sent by the setup on the TV (InputGuard.HANDLERS; tests/input_guard_test.py).
-HANDLERS='echo "== settings"; cmd package query-activities --brief -a android.settings.SETTINGS 2>/dev/null; echo "== tv"; for d in content://android.media.tv/channel/1 content://android.media.tv/passthrough/1; do cmd package query-activities --brief -a android.intent.action.VIEW -d $d 2>/dev/null; done; cmd package query-activities --brief -a android.intent.action.VIEW -d content://android.media.tv/channel/1 -t vnd.android.cursor.item/channel 2>/dev/null; cmd package query-activities --brief -a android.media.tv.action.SETUP_INPUTS 2>/dev/null; echo END_OF_LIST'
+# github.com/Gathin23/cleanyourtv, MIT; it names a Sony that lost its inputs and one that lost its Settings). Fail closed: a TV that does not answer
+# (no end marker, or not even its Home apps: the «== home» part only proves the question was answered) gets NOTHING turned off. Android 6 and older
+# have no `cmd package`, so there nothing from a list is turned off, with a note, not a stop (the rest of the setup goes on). The same command is sent by the setup on the TV (InputGuard.HANDLERS; tests/input_guard_test.py).
+HANDLERS='echo "== sdk $(getprop ro.build.version.sdk)"; echo "== settings"; cmd package query-activities --brief -a android.settings.SETTINGS 2>/dev/null; echo "== tv"; for d in content://android.media.tv/channel/1 content://android.media.tv/passthrough/1; do cmd package query-activities --brief -a android.intent.action.VIEW -d $d 2>/dev/null; done; cmd package query-activities --brief -a android.intent.action.VIEW -d content://android.media.tv/channel/1 -t vnd.android.cursor.item/channel 2>/dev/null; cmd package query-activities --brief -a android.media.tv.action.SETUP_INPUTS 2>/dev/null; echo "== home"; cmd package query-activities --brief -a android.intent.action.MAIN -c android.intent.category.HOME 2>/dev/null; echo END_OF_LIST'
 if [ -n "$intended" ]; then
   raw=$("$PY" -I optimize/tv.py "$HANDLERS" 2> /dev/null | tr -d '\r') || raw=""
-  settings=$(sed -n '/^== settings$/,/^== tv$/p' <<< "$raw" | sed 's/^[[:space:]]*//' | sed -n -E 's#^([A-Za-z0-9_.]+)/[A-Za-z0-9_.$]+$#\1#p')
-  if ! grep -qx END_OF_LIST <<< "$raw" || [ -z "$settings" ]; then
-    echo "!! disable.sh: the TV did not say which apps open its Settings and its channels, so NOTHING was turned off. Run the same command again. (على أندرويد 6 وأقدم ما يقدر التلفزيون يجاوب هذا السؤال، فما نوقف فيه أي تطبيق من القوائم.)" >&2
+  sdk=$(sed -n -E 's/^== sdk ([0-9]+)$/\1/p' <<< "$raw" | head -n 1)
+  if [ -n "$sdk" ] && [ "$sdk" -lt 24 ]; then
+    echo "Nothing turned off from this list: Android 6 and older cannot say which apps open the TV's Settings and channels (على أندرويد 6 وأقدم ما يقدر التلفزيون يقول أي التطبيقات تفتح إعداداته وقنواته، فما أوقفنا شيئاً من هذه القائمة)." >&2
+    printf '%s\n' "$intended" > "$RUN/inputs-left.txt"   # community.sh: none of them was applied
+    exit 0
+  fi
+  pick() { sed -n "/^== $1\$/,/^== /p" <<< "$raw" | sed 's/^[[:space:]]*//' | sed -n -E 's#^([A-Za-z0-9_.]+)/[A-Za-z0-9_.$]+$#\1#p'; }
+  settings=$(pick settings); tvapps=$(pick tv); homeapps=$(pick home)
+  if ! grep -qx END_OF_LIST <<< "$raw" || [ -z "$settings$homeapps" ]; then
+    echo "!! disable.sh: the TV did not say which apps open its Settings and its channels, so NOTHING was turned off. Run the same command again." >&2
     exit 1
   fi
-  handlers=$(sed 's/^[[:space:]]*//' <<< "$raw" | sed -n -E 's#^([A-Za-z0-9_.]+)/[A-Za-z0-9_.$]+$#\1#p' | grep -v '^sa\.urtv\.' | sort -u)
+  handlers=$(printf '%s\n%s\n' "$settings" "$tvapps" | grep -v '^sa\.urtv\.' | grep . | sort -u || true)
   hheld=$(printf '%s\n' "$intended" | grep -Fx -f <(printf '%s\n' "$handlers" | grep . || echo '#none#') || true)
   if [ -n "$hheld" ]; then
     echo "Left on, the TV opens its Settings, channels or inputs with them: $(paste -sd' ' - <<< "$hheld")" >&2

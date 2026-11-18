@@ -166,10 +166,12 @@ check("step: an app that answers the channel VIEW intent or android.settings.SET
       and "تركنا شغّالاً ما يفتح إعدادات التلفزيون أو قنواته أو مداخله" in jout
       and plain[2] not in (p.file("sh", "community-applied.txt") or "").split() and plain[3] not in (p.file("java", "community-applied.txt") or "").split()
       and set((p.file("sh", "community-applied.txt") or "").split()) == set((p.file("java", "community-applied.txt") or "").split()), (p.diff(), out, jout))
-for knob in ("NO_SETTINGS", "SILENT_HANDLERS"):
-    p, rc, out, res, jout = case(inst, **{knob: "yes"})
-    check(f"step ({knob}): the TV does not say which apps open its Settings and channels: NOTHING turned off on either side (fail closed)",
-          rc != 0 and "!! disable.sh: the TV did not say which apps open its Settings" in out and res == "FAILED" and p.changes("sh") == [] == p.changes("java"), (rc, res, out, p.diff()))
+p, rc, out, res, jout = case(inst, SILENT_HANDLERS="yes")
+check("step (SILENT_HANDLERS): the TV does not say which apps open its Settings and channels: NOTHING turned off on either side (fail closed)",
+      rc != 0 and "!! disable.sh: the TV did not say which apps open its Settings" in out and res == "FAILED" and p.changes("sh") == [] == p.changes("java"), (rc, res, out, p.diff()))
+p, rc, out, res, jout = case(inst, NO_SETTINGS="yes")
+check("step (review F4, NO_SETTINGS): no app declares android.settings.SETTINGS but the Home apps answer: both sides go on, the same TV afterwards",
+      rc == 0 and res == "DONE" and p.same() and p.changes("java") != [], (rc, res, out, p.diff()))
 # offline: neither applies anything (the third-party list is not applied without its one safety rating); the app says so, and the run goes on
 p, rc, out, res, jout = case(inst, offline=True)
 check("step offline: community.sh and the app both apply NOTHING; the app's step is «تُرك» with «ما قدرنا نتأكد من القائمة بدون إنترنت», and records it for the report",
