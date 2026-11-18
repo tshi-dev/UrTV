@@ -3,6 +3,15 @@
 
 «🔴 FINAL 4.3.4 BUILD (NEWEST): GitHub Actions run 44165441466 (build 476, work/rel-434 6eaf77ed), with ALL fixes incl. the Sony keys, the beta newer-of-both + download confirm, the cards-off fix and the QA UI-thread fixes. Older: run 44156039842 (build 471) (freeze, the update focus skip, two presses, games→settings, the cut-off long-press box, hidden apps). Test the freeze and items (a)–(e) on THIS build (not 469), quickly; release is ~20:15 UTC. Report even partial results at once.» «🔴 URGENT FIRST (owner, 17 Nov evening): a user says since 4.3.3 «the remote freezes/lags on TCL». Do step 98 BEFORE anything else.»
 
+## step 101 — 4.3.5 release check (stable candidate; GitHub Actions run 44251449461, work/rel-435 8c2e06ea, artifact «apks»), AFTER the 4.3.4 NOW line, BEFORE step 96
+Install over 4.3.4 (update, keep data). TV muted. RELEASE-SMOKE (docs/dev/RELEASE-SMOKE.md on next) plus, each PASS/FAIL:
+(a) black video: open «شاشة التوقف» from the home, then Home → YouTube, play any video for 5 min, back to the home, YouTube again: picture shows every time (no black video); the screensaver returns normally after.
+(b) the screensaver hidden gate: open the screensaver, switch to another app for 2 min, come back: clock, date, prayer line and night dim are right at once; on a national day the cards are not green.
+(c) safe home: do NOT force a crash on the owner's TV; only check «إعداد تلفزيوني» opens and the home starts normally after a restart.
+(d) old-TV page fix (#19): the screensaver page loads and the clock is normal size.
+(e) remote speed: steady presses across a minute change and after Home: no lag (4.3.4's fix kept).
+Report «4.3.5 PASS/FAIL» per item; then put the owner's setup back.
+
 ## step 100 — 4.3.5 safe-home (GitHub Actions run 44175740734, work/435-safehome 94ffb8d4), after step 99 items 1–2
 1. Install the 4.3.5 home from the artifact (over 4.3.4/4.4, uninstalling first if lower). Normal use: home OK, no regressions in the step-98 list.
 2. Simulate a broken WebView: `adb shell cmd webviewupdate disable-redundant-packages` is not enough; instead use `pm disable-user` on the TV's WebView provider ONLY if the TV has a fallback, otherwise SKIP and say so. Never leave the WebView disabled; put it back right away. Expected: the home starts without the cards and doesn't crash.
