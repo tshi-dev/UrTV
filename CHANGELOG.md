@@ -35,6 +35,14 @@ Newest first. `next` is where changes land first; a release is what was tested t
 - The Benghazi 2026 prayer table that Libya's own prayer method is fitted to: ALMAJBRY (#23).
 - The CVTE source screen (`alliance://start_signal`) as the «المصادر» fallback: alihaydaralmossa22-png (#17).
 
+## 4.3.6
+
+A safety hotfix of 4.3.5: the setup never turns off the apps that open a TV's own Settings, its channels (Live TV) or the setup of its inputs.
+
+- **إعدادات التلفزيون وقنواته ما تنطفي أبداً:** قبل ما نوقف أي تطبيق من القائمة نسأل التلفزيون نفسه أي التطبيقات تفتح «الإعدادات» والقنوات (التلفزيون المباشر) وإعداد المداخل، ونتركها شغّالة مهما قالت القائمة. وإذا ما جاوب التلفزيون، أو ما ذكر أي تطبيق للإعدادات، ما نوقف شيئاً من القائمة ونقول ليش. بعض قوائم المجتمع كانت تذكر تطبيق الإعدادات أو القنوات لبعض الطرازات (Whale OS وبعض أجهزة Vestel وBeko وGrundig وSony وغيرها)، وصارت محفوظة بالاسم أيضاً.
+- **الريموت ما يعلّق على أجهزة أندرويد 8:** على جهاز OTT بأندرويد 8.0 كان الريموت يتوقف عن الاستجابة في الواجهة بعد التحديث. خدمة الكتابة من الجوال كانت تطلب كل ضغطات الريموت على هذه الأجهزة. صارت ما تطلبها أبداً تحت أندرويد 9 ولا على جهاز ما هو Android TV، وأي خطأ فيها يرجّع الزر كما هو.
+- **حماية إضافية لنظام أندرويد:** `com.google.android.sdksandbox` (اسم جوجل لصندوق حماية الإعلانات في أندرويد) صار ضمن أجزاء النظام اللي ما تنطفي، مثل `com.android.sdksandbox`.
+
 ## 4.3.5
 
 A hotfix of 4.3.4: a TV whose home kept failing at start (an LG-branded CVTE Android 9 set) was left on a black screen, and video in other apps went black after the TV had been on a while.

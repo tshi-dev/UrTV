@@ -147,4 +147,13 @@ check("com.tcl.partnercustomizer stays on the safe list, with why (our home answ
       and "our home answers the remote's app keys itself" in (ROOT / "optimize/lists/tcl-safe.txt").read_text(encoding="utf-8"))
 for p in ("com.amazon.tv.ooberesource", "com.oneplus.oobe.tv", "org.droidtv.hidwizard"):
     check(f"a first-run or pairing wizard ({p}) is never taken from a community list", bool(com.NOT_FOR_US.search(p)))
+# 4.3.6: a TV's own Settings, Live TV / channel and tuning apps that community lists named are kept by name too, each with its reason
+SETTINGS_TV = ("com.zeasn.whaleos.settings", "com.apps.channels", "com.beko.tv.channel", "com.grundig.tv.channel", "com.zhixin.atvchannel", "com.cvte.tv.player",
+               "com.mediatek.tv.oneworld.tvcenter", "com.sony.dtv.broadcastsettings", "com.sony.dtv.tuningconfirmation_dvbt", "com.sony.dtv.serviceinformation",
+               "com.sony.dtv.b2b.prosettings", "com.sony.dtv.deviceadminsettings", "com.sony.dtv.b2b.deviceadminsettings", "com.softwinner.settingssetup",
+               "com.softwinner.settingsassist", "com.amazon.whasettings")
+kt = (ROOT / "optimize/lists/keep.txt").read_text(encoding="utf-8")
+for p in SETTINGS_TV:
+    check(f"keep.txt keeps {p} (Settings / Live TV / tuning), with its reason, and no community list turns it off",
+          p in KEEP and re.search(r"^" + re.escape(p) + r"\s+#\s*\S", kt, re.M) and all(p not in com.packages(str(f), KEEP) for f in lists))
 sys.exit(1 if failed else 0)
