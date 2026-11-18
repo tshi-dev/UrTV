@@ -13,7 +13,7 @@ public final class GameEngineTest {
     static List<String> why(String json) { List<String> w = new ArrayList<>(); GameDef.parse(tree(json), w); return w; }
     static final byte[] SALT1 = "saltsalt-one-001".getBytes(), SALT2 = "saltsalt-two-002".getBytes(), GK = new byte[32], IV = new byte[12];
     static { for (int i = 0; i < 32; i++) GK[i] = (byte) (i * 7 + 3); for (int i = 0; i < 12; i++) IV[i] = (byte) (i + 1); }
-    static final String C1 = "K7QF-2M9X-A3BD-84TZ", C2 = "owner two code 99211x";
+    static final String C1 = "K7QF2M", C2 = "9XA3BD";
 
     /** a made-up game with one item of the block `t` */
     static String game(String extra, String items) {
@@ -50,16 +50,16 @@ public final class GameEngineTest {
             && !GameRelease.on(r, "four", false, Long.MAX_VALUE / 2) && !GameRelease.on(r, "five", true, Long.MAX_VALUE / 2) && !r.games.containsKey("Bad Id"));
         GameRelease.Release off = rel("{\"v\":1,\"games\":{\"one\":{\"a\":false,\"b\":false},\"two\":{\"a\":\"off\",\"b\":null}}}");
         check("turning a game off again: false, null or any other word is off for both groups (the same game was on in the file above)", !GameRelease.on(off, "one", true, d1) && !GameRelease.on(off, "one", false, d1) && !GameRelease.on(off, "two", true, d1) && GameRelease.on(r, "one", false, d1));
-        String rec1 = GameCrypt.record(C1, SALT1, 2000, GK, IV), rec2 = GameCrypt.record(C2, SALT2, 2000, GK, IV);
-        String json = "{\"v\":1,\"games\":{\"one\":{\"a\":\"now\"}},\"codes\":[\"" + rec1 + "\",\"" + rec2 + "\",\"1:2000:zz:bad\",42,\"1:10:" + "ab".repeat(8) + ":" + "0".repeat(64) + ":" + "0".repeat(120) + "\"]}";
+        String rec1 = GameCrypt.record(C1, SALT1, 100000, GK, IV), rec2 = GameCrypt.record(C2, SALT2, 100000, GK, IV);
+        String json = "{\"v\":1,\"games\":{\"one\":{\"a\":\"now\"}},\"codes\":[\"" + rec1 + "\",\"" + rec2 + "\",\"2:100000:zz:bad\",42,\"2:99999:" + "ab".repeat(8) + ":" + "0".repeat(64) + ":" + "0".repeat(120) + "\"]}";
         GameRelease.Release pr = rel(json);
         check("parse: only well-formed records are kept (a bad one, a number, rounds under 1000 are dropped)", pr.codes.size() == 2 && pr.codes.contains(rec1) && pr.codes.contains(rec2));
         String[] m1 = GameRelease.match(pr, C1);
-        check("match: the right code gives its record and the group key; spaces, dashes, lower case and Arabic-Indic digits do not matter", m1 != null && m1[0].equals(rec1) && m1[1].equals(GameCrypt.hex(GK)) && GameRelease.match(pr, "k7qf 2m9x a3bd 84tz")[0].equals(rec1)
-            && GameRelease.match(pr, "OWNERTWOCODE٩٩٢١١X")[0].equals(rec2));
-        check("match: a wrong code, a near one, an empty one, null, a code of 11 characters, or no file: nothing, and no special answer", GameRelease.match(pr, "K7QF-2M9X-A3BD-84TY") == null && GameRelease.match(pr, "") == null && GameRelease.match(pr, null) == null && GameRelease.match(null, C1) == null
-            && GameRelease.match(pr, "K7QF2M9XA3B") == null && GameRelease.match(rel("{\"v\":1,\"games\":{}}"), C1) == null);
-        check("a code under 12 characters is never opened (a record made from a short one does not match)", GameRelease.match(rel("{\"v\":1,\"games\":{},\"codes\":[\"" + GameCrypt.record("ABC123XYZ99", SALT1, 2000, GK, IV) + "\"]}"), "ABC123XYZ99") == null);
+        check("match: the right code gives its record and the group key; spaces, dashes, lower case and Arabic-Indic digits do not matter", m1 != null && m1[0].equals(rec1) && m1[1].equals(GameCrypt.hex(GK)) && GameRelease.match(pr, "k7qf 2m")[0].equals(rec1)
+            && GameRelease.match(pr, "٩XA٣BD")[0].equals(rec2));
+        check("match: a wrong code, a near one, an empty one, null, a code of 5, 7 or a wrong sign (O, 1), or no file: nothing, and no special answer", GameRelease.match(pr, "K7QF2N") == null && GameRelease.match(pr, "") == null && GameRelease.match(pr, null) == null && GameRelease.match(null, C1) == null
+            && GameRelease.match(pr, "K7QF2") == null && GameRelease.match(pr, "K7QF2MA") == null && GameRelease.match(pr, "K7QF2O") == null && GameRelease.match(pr, "K7QF21") == null && GameRelease.match(rel("{\"v\":1,\"games\":{}}"), C1) == null);
+        check("a code is exactly 6 signs of the alphabet: a record made for a code with an O (not in the alphabet) never opens", GameRelease.match(rel("{\"v\":1,\"games\":{},\"codes\":[\"" + GameCrypt.record("ABC2O3", SALT1, 100000, GK, IV) + "\"]}"), "ABC2O3") == null);
         String withLine = "{\"v\":1,\"games\":{\"one\":{\"b\":\"now\"}},\"codes\":[\"" + rec1 + "\"]}", without = "{\"v\":1,\"games\":{\"one\":{\"b\":\"now\"}},\"codes\":[]}";
         GameRelease.Release w1 = rel(withLine), w0 = rel(without);
         check("revoke: a kept record is good while the file lists it; take the line out and the TV is group A and the game is off; no file or no record kept is not good",
@@ -70,13 +70,13 @@ public final class GameEngineTest {
 
     // ------------------------------------------------------------------ group B: the cryptography
     static void crypto() throws Exception {
-        String rec1 = GameCrypt.record(C1, SALT1, 2000, GK, IV);
-        check("record: 1:rounds:salt:check:wrapped, hex, 64 characters of check, the wrapped key is 60 bytes; the code is in none of it; another salt gives another check", GameCrypt.wellFormed(rec1) && rec1.split(":").length == 5 && rec1.split(":")[3].length() == 64 && rec1.split(":")[4].length() == 120
-            && !rec1.toLowerCase().contains("k7qf") && !rec1.equals(GameCrypt.record(C1, SALT2, 2000, GK, IV)));
-        check("the check hash is not the key: the wrap key and the check come from the same code and salt with different purposes, so the public hash opens nothing", !Arrays.equals(GameCrypt.derive(C1, SALT1, 2000, "check"), GameCrypt.derive(C1, SALT1, 2000, "wrap")) && Arrays.equals(GameCrypt.derive(C1, SALT1, 2000, "wrap"), GameCrypt.derive("k7qf2m9xa3bd84tz", SALT1, 2000, "wrap")));
-        check("groupKey: the right code opens the record's group key; any spelling of it", Arrays.equals(GameCrypt.groupKey(C1, rec1), GK) && Arrays.equals(GameCrypt.groupKey("k7qf 2m9x a3bd 84tz", rec1), GK));
-        check("groupKey: a wrong code, a short one, null, a record of another code, a changed record: null and no exception", GameCrypt.groupKey("K7QF-2M9X-A3BD-84TY", rec1) == null && GameCrypt.groupKey("K7QF", rec1) == null && GameCrypt.groupKey(null, rec1) == null
-            && GameCrypt.groupKey(C1, GameCrypt.record(C2, SALT2, 2000, GK, IV)) == null && GameCrypt.groupKey(C1, rec1.substring(0, rec1.length() - 2) + "00") == null && GameCrypt.groupKey(C1, "nonsense") == null && GameCrypt.groupKey(C1, "1:2000:zz:bad:x") == null);
+        String rec1 = GameCrypt.record(C1, SALT1, 100000, GK, IV);
+        check("record: 2:rounds:salt:check:wrapped, hex, 64 characters of check, the wrapped key is 60 bytes; the code is in none of it; another salt gives another check", GameCrypt.wellFormed(rec1) && rec1.split(":").length == 5 && rec1.split(":")[3].length() == 64 && rec1.split(":")[4].length() == 120
+            && !rec1.toLowerCase().contains("k7qf2m") && !rec1.equals(GameCrypt.record(C1, SALT2, 100000, GK, IV)));
+        check("the check hash is not the key: the wrap key and the check come from the same code and salt with different purposes, so the public hash opens nothing", !Arrays.equals(GameCrypt.derive(C1, SALT1, 2000, "check"), GameCrypt.derive(C1, SALT1, 2000, "wrap")) && Arrays.equals(GameCrypt.derive(C1, SALT1, 2000, "wrap"), GameCrypt.derive("k7qf2m", SALT1, 2000, "wrap")));
+        check("groupKey: the right code opens the record's group key; any spelling of it", Arrays.equals(GameCrypt.groupKey(C1, rec1), GK) && Arrays.equals(GameCrypt.groupKey("k7qf 2m", rec1), GK));
+        check("groupKey: a wrong code, a short one, null, a record of another code, a changed record: null and no exception", GameCrypt.groupKey("K7QF2N", rec1) == null && GameCrypt.groupKey("K7QF", rec1) == null && GameCrypt.groupKey(null, rec1) == null
+            && GameCrypt.groupKey(C1, GameCrypt.record(C2, SALT2, 100000, GK, IV)) == null && GameCrypt.groupKey(C1, rec1.substring(0, rec1.length() - 2) + "00") == null && GameCrypt.groupKey(C1, "nonsense") == null && GameCrypt.groupKey(C1, "1:2000:zz:bad:x") == null);
         byte[] plain = "{\"v\":1,\"x\":\"اختبار ١\"}".getBytes("UTF-8");
         String sealed = GameCrypt.seal(GK, plain, IV);
         check("seal/open: AES-256-GCM: iv + ciphertext + tag; the right key opens it; the text is not in it", Arrays.equals(GameCrypt.open(GK, sealed), plain) && sealed.length() == (12 + plain.length + 16) * 2 && !sealed.contains(GameCrypt.hex("اختبار".getBytes("UTF-8"))));
@@ -102,13 +102,13 @@ public final class GameEngineTest {
 
     // ------------------------------------------------------------------ the tool of urtv-data (Python) and the app (Java) agree
     static void crossLanguage() throws Exception {
-        String rec = "1:2000:0102030405060708090a0b0c0d0e0f10:97543ae48293b3d64865faf6cbce160aa3a3109ef98d58450c252366189b541e:0102030405060708090a0b0c5fd2f068b636a47723ba769bbeee580d5e28f8cfa921b05a509f8181b3a572424277d0206928c207231c73a99283a25f";
+        String rec = "2:100000:0102030405060708090a0b0c0d0e0f10:6d8332a362c55f2ad7da9b942e65a8f9843548fc31cccec823a0f1a3202d3aba:0102030405060708090a0b0cc82675a5e853e06ae0c33c903eba5327089aac9d195d6c4cdf290dcaec3b754663e6cb1b84b8dc69a6ca29f80cf43b3b";
         String sealed = "0102030405060708090a0b0c7ec82cf7d6a5dca434805965c8b432869ae939564fca887481865806e35b3a6bff7256fc2011cac7d6473e84bf";
         byte[] key = new byte[32]; for (int i = 0; i < 32; i++) key[i] = (byte) i;
-        check("the record urtv-data's tool (Python) made opens in the app (Java): the right code gives the group key, in any spelling; a wrong code gives nothing", GameCrypt.wellFormed(rec) && Arrays.equals(GameCrypt.groupKey("ABCD-2345-WXYZ-6789-QR", rec), key)
-            && Arrays.equals(GameCrypt.groupKey("abcd 2345 wxyz 6789 qr", rec), key) && GameCrypt.groupKey("ABCD-2345-WXYZ-6789-QS", rec) == null);
+        check("the record urtv-data's tool (Python) made opens in the app (Java): the right code gives the group key, in any spelling; a wrong code gives nothing", GameCrypt.wellFormed(rec) && Arrays.equals(GameCrypt.groupKey("ABCD23", rec), key)
+            && Arrays.equals(GameCrypt.groupKey("abcd 23", rec), key) && GameCrypt.groupKey("ABCD24", rec) == null);
         check("a game sealed by the tool (Python, AES-256-GCM) is read by the app (Java) with the group key; with another key it is nothing", Arrays.equals(GameCrypt.open(key, sealed), "{\"v\":1,\"x\":\"اختبار ١\"}".getBytes("UTF-8")) && GameCrypt.open(new byte[32], sealed) == null);
-        check("and the other way: the app's record and seal with the same inputs are byte for byte the tool's", rec.equals(GameCrypt.record("ABCD-2345-WXYZ-6789-QR", GameCrypt.unhex("0102030405060708090a0b0c0d0e0f10"), 2000, key, GameCrypt.unhex("0102030405060708090a0b0c"))) && sealed.equals(GameCrypt.seal(key, "{\"v\":1,\"x\":\"اختبار ١\"}".getBytes("UTF-8"), GameCrypt.unhex("0102030405060708090a0b0c"))));
+        check("and the other way: the app's record and seal with the same inputs are byte for byte the tool's", rec.equals(GameCrypt.record("ABCD23", GameCrypt.unhex("0102030405060708090a0b0c0d0e0f10"), 100000, key, GameCrypt.unhex("0102030405060708090a0b0c"))) && sealed.equals(GameCrypt.seal(key, "{\"v\":1,\"x\":\"اختبار ١\"}".getBytes("UTF-8"), GameCrypt.unhex("0102030405060708090a0b0c"))));
     }
 
     // ------------------------------------------------------------------ the definitions

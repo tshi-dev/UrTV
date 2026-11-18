@@ -12,7 +12,7 @@ import java.util.regex.Pattern;
  * (release/games.json) names it and its time has come for the TV's group; a file that is missing, broken or old enough to say nothing means nothing is on, never the other way (R11's
  * spirit). Two groups and nothing else: «a» is everyone, «b» holds the owner's pass. No account, no id, nothing is sent: the TV only downloads the file.
  *
- *   {"v":1, "games":{"<id>":{"a":"2026-12-01T00:00:00Z","b":"now"}}, "defs":{"<id>":{game}}, "bdefs":{"<id>":"<sealed hex>"}, "codes":["1:rounds:salt:check:wrapped"]}
+ *   {"v":1, "games":{"<id>":{"a":"2026-12-01T00:00:00Z","b":"now"}}, "defs":{"<id>":{game}}, "bdefs":{"<id>":"<sealed hex>"}, "codes":["2:rounds:salt:check:wrapped"]}
  *
  * A time is «now» (on at once), a UTC time «yyyy-MM-ddTHH:mm:ssZ» (on from then), or anything else, including false, a missing key or a missing game: off. Group B has a game from its «b» time
  * or its «a» time. `defs` are the games' definitions for everyone, `bdefs` the ones sealed with the group key (GameCrypt) that only a TV with a pass in `codes` can read.
@@ -20,7 +20,7 @@ import java.util.regex.Pattern;
 final class GameRelease {
     private GameRelease() {}
 
-    static final int CODES_MAX = 200, GAMES_MAX = 60;
+    static final int CODES_MAX = 30, GAMES_MAX = 60;
     static final long OFF = -1;
     static final Pattern ID = Pattern.compile("[a-z0-9][a-z0-9-]{1,39}");
 
@@ -79,7 +79,7 @@ final class GameRelease {
 
     /** the record of the file that this typed code opens, with the group key it holds: {record, key hex}, or null (too short, none matches); the typed text is never kept */
     static String[] match(Release r, String typed) {
-        if (r == null || GameCrypt.normalize(typed).length() < GameCrypt.CODE_MIN) return null;
+        if (r == null || !GameCrypt.validCode(GameCrypt.normalize(typed))) return null;
         String[] found = null;
         for (String rec : r.codes) {
             byte[] k = GameCrypt.groupKey(typed, rec);   // no early exit: the time does not tell which one

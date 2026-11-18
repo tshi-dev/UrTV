@@ -4061,12 +4061,42 @@ public class SettingsActivity extends Activity {
         verTaps = now - verAt > 4000 ? 1 : verTaps + 1; verAt = now;
         if (verTaps < 7) return;
         verTaps = 0;
+        // six square boxes, one sign each; the field that takes the typing lies over them, clear, so the remote and the keyboard work as on any field. Six signs of the code's alphabet
+        // (GameCrypt.ALPHABET), capitals, and the check starts by itself at the sixth: nothing more to press, and nothing said when it is wrong.
+        final int boxW = dp(52), boxH = dp(64), gap = dp(8), n = GameCrypt.CODE_LEN;
+        final FrameLayout box = new FrameLayout(this);
+        final LinearLayout row = new LinearLayout(this); row.setOrientation(LinearLayout.HORIZONTAL); row.setLayoutDirection(View.LAYOUT_DIRECTION_LTR);
+        final TextView[] cells = new TextView[n];
+        for (int k = 0; k < n; k++) {
+            TextView c = new TextView(this); c.setGravity(Gravity.CENTER); c.setTextColor(look.text); c.setTextSize(TypedValue.COMPLEX_UNIT_SP, 26); c.setTypeface(font("Thmanyah-Regular"));
+            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(boxW, boxH); lp.setMarginEnd(k < n - 1 ? gap : 0); row.addView(c, lp); cells[k] = c;
+        }
         final EditText in = new EditText(this);
-        in.setSingleLine(true);
-        in.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS | InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
-        new Dlg(this).setTitle("الرمز").setView(in)
-            .setPositiveButton("حفظ", (d, w) -> GameReleaseStore.tryCode(this, in.getText().toString(), () -> runOnUiThread(() -> toast("تم"))))
-            .setNegativeButton("إلغاء", null).show();
+        in.setSingleLine(true); in.setAlpha(0f); in.setCursorVisible(false); in.setLayoutDirection(View.LAYOUT_DIRECTION_LTR);
+        in.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS | InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS | InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
+        in.setFilters(new android.text.InputFilter[] {new android.text.InputFilter.AllCaps(), (src, st, en, d, ds, de) -> { StringBuilder b = new StringBuilder(); for (int q = st; q < en; q++) if (Character.isLetterOrDigit(src.charAt(q))) b.append(src.charAt(q)); return b.length() == en - st ? null : b.toString(); }, new android.text.InputFilter.LengthFilter(n)});
+        final Runnable paint = () -> {
+            String t = in.getText().toString();
+            for (int k = 0; k < n; k++) {
+                cells[k].setText(k < t.length() ? String.valueOf(t.charAt(k)) : "");
+                android.graphics.drawable.GradientDrawable g = new android.graphics.drawable.GradientDrawable(); g.setColor(0); g.setStroke(dp(k == t.length() ? 3 : 2), k == t.length() ? look.text : look.sub);
+                cells[k].setBackground(g);
+            }
+        };
+        paint.run();
+        box.addView(row, new FrameLayout.LayoutParams(-2, -2, Gravity.CENTER_HORIZONTAL));
+        box.addView(in, new FrameLayout.LayoutParams(-1, boxH));
+        box.setPadding(dp(16), dp(12), dp(16), dp(4));
+        final AlertDialog dialog = new Dlg(this).setTitle("اكتب الرمز").setView(box).setNegativeButton("إلغاء", null).create();
+        in.addTextChangedListener(new android.text.TextWatcher() {
+            @Override public void beforeTextChanged(CharSequence c, int a, int b, int d) { }
+            @Override public void onTextChanged(CharSequence c, int a, int b, int d) { }
+            @Override public void afterTextChanged(android.text.Editable e) {
+                paint.run();
+                if (e.length() == n) { String typed = e.toString(); dialog.dismiss(); GameReleaseStore.tryCode(SettingsActivity.this, typed, () -> runOnUiThread(() -> toast("تم"))); }
+            }
+        });
+        dialog.show();
     }
 
     /**

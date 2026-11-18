@@ -5,6 +5,7 @@ import java.security.GeneralSecurityException;
 import java.security.SecureRandom;
 import java.util.Arrays;
 import javax.crypto.Cipher;
+import javax.crypto.Mac;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.GCMParameterSpec;
 import javax.crypto.spec.PBEKeySpec;
@@ -19,7 +20,9 @@ import javax.crypto.spec.SecretKeySpec;
 final class GameCrypt {
     private GameCrypt() {}
 
-    static final int KEY_BYTES = 32, IV_BYTES = 12, TAG_BITS = 128, ROUNDS_MIN = 1000, ROUNDS_MAX = 100_000, SALT_MIN = 8, CODE_MIN = 12;
+    static final int KEY_BYTES = 32, IV_BYTES = 12, TAG_BITS = 128, ROUNDS_MIN = 100_000, ROUNDS_MAX = 1_000_000, ROUNDS_DEFAULT = 300_000, SALT_MIN = 8, CODE_LEN = 6;
+    /** the letters and digits a pass code is made of: A to Z without I, L and O, and the digits 2 to 9 (31 signs; nothing that can be read as another) */
+    static final String ALPHABET = "ABCDEFGHJKMNPQRSTUVWXYZ23456789";
 
     /** what is typed, as the hashes see it: upper case, Arabic-Indic and Persian digits as Latin, only letters and digits (a dash or a space does not matter) */
     static String normalize(String typed) {
@@ -34,14 +37,28 @@ final class GameCrypt {
         return b.toString();
     }
 
+    /** is this (already normalised) text a code: exactly CODE_LEN signs of the alphabet */
+    static boolean validCode(String n) {
+        if (n == null || n.length() != CODE_LEN) return false;
+        for (int i = 0; i < n.length(); i++) if (ALPHABET.indexOf(n.charAt(i)) < 0) return false;
+        return true;
+    }
+
     static byte[] unhex(String s) { byte[] b = new byte[s.length() / 2]; for (int i = 0; i < b.length; i++) b[i] = (byte) Integer.parseInt(s.substring(i * 2, i * 2 + 2), 16); return b; }
     static String hex(byte[] b) { StringBuilder s = new StringBuilder(); for (byte x : b) s.append(String.format("%02x", x & 0xff)); return s.toString(); }
 
-    /** PBKDF2-HMAC-SHA256 of the normalised code; `purpose` ("check" or "wrap") is added to the salt so the hash that is public can never be the key */
+    /**
+     * The slow part, once: PBKDF2-HMAC-SHA256 of the normalised code with the record's own random salt (`rounds` 100000 to 1000000; the file's records say how many). Two things are then made from
+     * that one result by HMAC with a name each, so what is public (the check) can never be the key and a TV pays for the slow part once: «check» (does this code belong to the record) and «wrap» (the key
+     * that opens the group key).
+     */
     static byte[] derive(String code, byte[] salt, int rounds, String purpose) throws GeneralSecurityException {
-        byte[] p = purpose.getBytes(StandardCharsets.UTF_8), s = Arrays.copyOf(salt, salt.length + p.length);
-        System.arraycopy(p, 0, s, salt.length, p.length);
-        return SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256").generateSecret(new PBEKeySpec(normalize(code).toCharArray(), s, rounds, KEY_BYTES * 8)).getEncoded();
+        byte[] master = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256").generateSecret(new PBEKeySpec(normalize(code).toCharArray(), salt, rounds, KEY_BYTES * 8)).getEncoded();
+        return named(master, purpose);
+    }
+    private static byte[] named(byte[] master, String purpose) throws GeneralSecurityException {
+        Mac m = Mac.getInstance("HmacSHA256"); m.init(new SecretKeySpec(master, "HmacSHA256"));
+        return m.doFinal(purpose.getBytes(StandardCharsets.UTF_8));
     }
 
     /** AES-256-GCM: «iv + ciphertext + tag» as hex, a fresh random iv unless one is given (a test) */
@@ -65,10 +82,11 @@ final class GameCrypt {
         } catch (GeneralSecurityException | RuntimeException e) { return null; }
     }
 
-    /** the record of a pass code for the file: «1:rounds:salt:check:wrapped» (the group key sealed under the code's wrap key) */
+    /** the record of a pass code for the file: «2:rounds:salt:check:wrapped» (the group key sealed under the code's wrap key) */
     static String record(String code, byte[] salt, int rounds, byte[] groupKey, byte[] iv) {
         try {
-            return "1:" + rounds + ":" + hex(salt) + ":" + hex(derive(code, salt, rounds, "check")) + ":" + seal(derive(code, salt, rounds, "wrap"), groupKey, iv);
+            byte[] master = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256").generateSecret(new PBEKeySpec(normalize(code).toCharArray(), salt, rounds, KEY_BYTES * 8)).getEncoded();
+            return "2:" + rounds + ":" + hex(salt) + ":" + hex(named(master, "check")) + ":" + seal(named(master, "wrap"), groupKey, iv);
         } catch (GeneralSecurityException e) { return null; }
     }
 
@@ -77,21 +95,21 @@ final class GameCrypt {
         try {
             String n = normalize(typed);
             String[] p = record.split(":");
-            if (n.length() < CODE_MIN || p.length != 5 || !p[0].equals("1")) return null;
+            if (!validCode(n) || p.length != 5 || !p[0].equals("2")) return null;
             int rounds = Integer.parseInt(p[1]);
             if (rounds < ROUNDS_MIN || rounds > ROUNDS_MAX || p[2].length() < SALT_MIN * 2) return null;
             byte[] salt = unhex(p[2]);
-            byte[] check = derive(n, salt, rounds, "check");
-            if (!java.security.MessageDigest.isEqual(hex(check).getBytes(StandardCharsets.UTF_8), p[3].getBytes(StandardCharsets.UTF_8))) return null;
-            return open(derive(n, salt, rounds, "wrap"), p[4]);
+            byte[] master = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256").generateSecret(new PBEKeySpec(n.toCharArray(), salt, rounds, KEY_BYTES * 8)).getEncoded();
+            if (!java.security.MessageDigest.isEqual(hex(named(master, "check")).getBytes(StandardCharsets.UTF_8), p[3].getBytes(StandardCharsets.UTF_8))) return null;
+            return open(named(master, "wrap"), p[4]);
         } catch (GeneralSecurityException | RuntimeException e) { return null; }
     }
 
-    /** the shape of a record, without opening it: 1:rounds:salt hex:check hex (64):wrapped hex (the group key sealed: 60 bytes) */
+    /** the shape of a record, without opening it: 2:rounds:salt hex:check hex (64):wrapped hex (the group key sealed: 60 bytes) */
     static boolean wellFormed(String r) {
         if (r == null) return false;
         String[] p = r.split(":");
-        if (p.length != 5 || !p[0].equals("1") || !p[1].matches("\\d{4,6}") || !p[2].matches("[0-9a-f]{16,64}") || !p[3].matches("[0-9a-f]{64}") || !p[4].matches("[0-9a-f]{" + (IV_BYTES + KEY_BYTES + 16) * 2 + "}")) return false;
+        if (p.length != 5 || !p[0].equals("2") || !p[1].matches("\\d{6,7}") || !p[2].matches("[0-9a-f]{16,64}") || !p[3].matches("[0-9a-f]{64}") || !p[4].matches("[0-9a-f]{" + (IV_BYTES + KEY_BYTES + 16) * 2 + "}")) return false;
         int rounds = Integer.parseInt(p[1]);
         return rounds >= ROUNDS_MIN && rounds <= ROUNDS_MAX;
     }
