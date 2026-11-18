@@ -71,6 +71,9 @@ final class GameRegistry {
     };
     /** the how-to row of a game (see HOWTO), or null when it has none */
     static String[] howto(String id) { for (String[] r : HOWTO) if (r[0].equals(id)) return r; return null; }
+    /** the games of this list that are held back: the hub shows one only when the release file (GameReleaseStore.nativeOn) has turned it on for this TV's group; the eight others and «packs» are always shown */
+    static final String[] HELD = {"forehead", "author", "closest", "liar", "emoji", "link", "night", "draw", "quran-verse", "maths", "logic"};
+    static boolean held(String id) { for (String g : HELD) if (g.equals(id)) return true; return false; }
 
     static Game byId(String id) { for (Game g : ALL) if (g.id.equals(id)) return g; return null; }
 
