@@ -4835,7 +4835,8 @@ const FB_W = {
   startsAfter:'تبدأ بعد %s %s', startsBefore:'تبدأ قبل %s %s', adhanAt:'أذان %s في الدقيقة %s منها', ago:'قبل %s', nextIn:'%s بعد %s',
   h1:'بساعة', h2:'بساعتين', hFew:'ب%s ساعات', hMany:'ب%s ساعة', m1:'بدقيقة', m2:'بدقيقتين', mFew:'ب%s دقائق', mMany:'ب%s دقيقة',
   am1:'ودقيقة', am2:'ودقيقتين', amFew:'و%s دقائق', amMany:'و%s دقيقة', taskText:'مباراة %s، تبدأ %s',
-  table:'جدول الترتيب', results:'النتائج', noTable:'الترتيب غير متاح الآن', pts:'%s نقطة',
+  table:'جدول الترتيب', results:'النتائج', noTable:'الترتيب غير متاح الآن', noTableL:'الترتيب غير متاح لهذا الدوري', pts:'%s نقطة', played:'لعب %s',
+  h2hAll:'%s %s فوز، %s تعادل، %s %s', h2hIn:'في %s مواجهة', h2hMore:'كل المواجهات (%s)',
   myLeagues:'دورياتي', add:'أضف دوريًا أو فريقًا', manage:'إعدادات فرقي', noTeams:'ما تتابع فريقًا بعد', noLeagues:'ما تتابع دوريًا بعد', allLands:'كل الدول',
   lgTeams:'فرق هذا الدوري', lgOpen:'الترتيب والنتائج', followedL:'أُضيف %s إلى دورياتك', unfollowedL:'أُزيل %s من دورياتك', on:'متابَع', find:'ابحث عن فريق', found:'نتائج البحث', typeName:'اكتب اسم الفريق', full:'وصلت للحد: ٨ دوريات', fullL:'هذا الحد الأعلى: ٢٤ دوريًا حتى يبقى التلفزيون سريعًا. أزل دوريًا لتضيف غيره', fullT:'هذا الحد الأعلى: ٤٠ فريقًا حتى يبقى التلفزيون سريعًا. أزل فريقًا لتضيف غيره', fullT20:'وصلت للحد: ٢٠ فريقًا',
   warnL:'إضافة أكثر من ٨ قد تبطّئ التلفزيون إذا كان ضعيف. موافق مرة ثانية: أضف، أو رجوع', warnT:'إضافة أكثر من ٢٠ قد تبطّئ التلفزيون إذا كان ضعيف. موافق مرة ثانية: أضف، أو رجوع', choose:'اختر دوريًا',
@@ -5138,13 +5139,23 @@ function mpLeagueView(v){
     fbGames().filter(ev => String(ev.idLeague) === id && !fbDone(ev, now)).forEach(ev => { const k = fbRound(ev); if(!by.has(k)) by.set(k, []); by.get(k).push(ev); });
     by.forEach((games, k) => groups.push({key: 'n' + groups.length, name: k, games, dated: 1}));
     if(!by.size) groups.push({key: 'n', name: FB_W.title, games: [], none: MATCHES_LOADED ? FB_W.noData : FB_W.loading});
-  } else {   // TheSportsDB's table of the season the league's games say (one request, when this tab is open)
-    const g = fbGames().find(ev => String(ev.idLeague) === id && ev.strSeason), r0 = res && res.results && res.results[0];
-    const season = String((g && g.strSeason) || (r0 && r0.s) || '');
-    const t = tableUrl(id, season) ? archWant(tableUrl(id, season)) : res === undefined ? undefined : null;
-    const rows = ((t && Array.isArray(t.table) && t.table) || []).filter(x => x && /^\d+$/.test(String(x.idTeam)))
-      .map(x => mpItem(ar(+x.intRank || 0) + '. ' + teamAr(x.strTeam, String(x.idTeam)), fw(FB_W.pts, ar(+x.intPoints || 0)), () => mpGo({k: 'club', id: String(x.idTeam)})));
-    groups.push({key: 't', name: FB_W.table, games: rows, none: t === undefined ? FB_W.loading : FB_W.noTable});
+  } else {
+    // 4.4 the table CI computes from the archive (sports/<id>.json: every league of the archive, every club's games of the season) first;
+    // TheSportsDB's of the season (one request, the free key has it for some leagues only) when that file is not there; neither: says so
+    const sp = archWant('sports/' + id + '.json');
+    const own = sp && !sp.cup && Array.isArray(sp.table) && sp.table.filter(x => x && /^\d+$/.test(String(x.id)) && x.p > 0);
+    let rows = [], t = null;
+    if(own && own.length) rows = own.map((x, i) => mpItem(ar(i + 1) + '. ' + (x.ar || teamAr(x.n, String(x.id))), fw(FB_W.pts, ar(+x.pts || 0)) + '، ' + fw(FB_W.played, ar(+x.p || 0)),
+      () => mpGo({k: 'club', id: String(x.id)})));
+    else if(sp !== undefined){   // the archive has no table of it (not there yet, a cup, a season not started): TheSportsDB's
+      const g = fbGames().find(ev => String(ev.idLeague) === id && ev.strSeason), r0 = res && res.results && res.results[0];
+      const season = String((g && g.strSeason) || (r0 && r0.s) || '');
+      t = tableUrl(id, season) ? archWant(tableUrl(id, season)) : res === undefined ? undefined : null;
+      rows = ((t && Array.isArray(t.table) && t.table) || []).filter(x => x && /^\d+$/.test(String(x.idTeam)))
+        .map(x => mpItem(ar(+x.intRank || 0) + '. ' + teamAr(x.strTeam, String(x.idTeam)), fw(FB_W.pts, ar(+x.intPoints || 0)), () => mpGo({k: 'club', id: String(x.idTeam)})));
+    }
+    const waiting = sp === undefined || (!rows.length && t === undefined);
+    groups.push({key: 't', name: FB_W.table, games: rows, none: waiting ? FB_W.loading : navigator.onLine === false ? FB_W.noTable : FB_W.noTableL});   // 4.4 (c): this league has none, said so
   }
   return {title: lgName(id), tabs, groups};
 }
@@ -5166,6 +5177,17 @@ function h2hOf(a, b){
   if(!/^\d+$/.test(a) || !/^\d+$/.test(b) || a === b) return null;
   const j = archWant('h2h/' + [a, b].sort((x, y) => x - y).join('-') + '.json');
   const ms = ((j && j.meetings) || []).filter(m => m && m.hs != null && m.as != null && m.hs !== '' && m.as !== '').slice(0, 5);
+  if(!ms.length) return null;
+  const r = {n: ms.length, a: 0, d: 0, b: 0};
+  ms.forEach(m => { const hs = +m.hs, as = +m.as; if(hs === as) r.d++; else if((hs > as) === (String(m.h) === a)) r.a++; else r.b++; });
+  return r;
+}
+// 4.4 every meeting the archive keeps (up to 100, both orders of home and away): {n, a, d, b} from a's side, null when none has a score
+function h2hAll(a, b){
+  a = String(a); b = String(b);
+  if(!/^\d+$/.test(a) || !/^\d+$/.test(b) || a === b) return null;
+  const j = archWant('h2h/' + [a, b].sort((x, y) => x - y).join('-') + '.json');
+  const ms = ((j && j.meetings) || []).filter(m => m && m.hs != null && m.as != null && m.hs !== '' && m.as !== '');
   if(!ms.length) return null;
   const r = {n: ms.length, a: 0, d: 0, b: 0};
   ms.forEach(m => { const hs = +m.hs, as = +m.as; if(hs === as) r.d++; else if((hs > as) === (String(m.h) === a)) r.a++; else r.b++; });
@@ -5498,7 +5520,13 @@ function mpClubView(v){
   by.forEach((games, k) => groups.push({key: 'n' + groups.length, name: k, games, dated: 1}));
   if(!coming.length) groups.push({key: 'n', name: FB_W.upcoming, games: [], none: wait(j)});
   groups.push({key: 'last', name: FB_W.last, games: last, dated: 1, none: wait(j)});
-  if(/^\d+$/.test(vs)) groups.push({key: 'h2h', name: fw(FB_W.h2h, teamNameOf(vs)), games: ((h && h.meetings) || []).slice(0, 10).map(g => archEv(g)).filter(Boolean), dated: 1, none: wait(h)});
+  if(/^\d+$/.test(vs)){   // 4.4 the all-time count first (every stored meeting), then the meetings: 10, and all of them after «كل المواجهات»
+    const ms = ((h && h.meetings) || []).map(g => archEv(g)).filter(Boolean), all = h2hAll(id, vs), rows = [];
+    if(all) rows.push(mpItem(fw(FB_W.h2hAll, name, ar(all.a), ar(all.d), teamNameOf(vs), ar(all.b)), fw(FB_W.h2hIn, ar(all.n)), () => {}));
+    rows.push(...(v.allH2h ? ms : ms.slice(0, 10)));
+    if(!v.allH2h && ms.length > 10) rows.push(mpItem(fw(FB_W.h2hMore, ar(ms.length)), '', () => { v.allH2h = 1; mpRender(); }));
+    groups.push({key: 'h2h', name: fw(FB_W.h2h, teamNameOf(vs)), games: rows, dated: 1, none: wait(h)});
+  }
   const tabs = [{t: fw(fbFollowed(id) ? FB_W.unfollowT : FB_W.followT, name), act: () => mpFollowTeam(id)}];
   if(v.vs) tabs.push({t: fw(FB_W.see, teamNameOf(vs)), act: () => { MP.view = {k: 'club', id: vs, vs: id}; MP.zone = 'rows'; MP.d = MP.l = MP.r = 0; MP.note = MP.ask = ''; mpRender(); }});
   const f = formOf(id);

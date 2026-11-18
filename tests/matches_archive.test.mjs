@@ -132,8 +132,8 @@ const ids = (p, key) => p.evaluate(k => ((MP.leagues.find(x => x.key === k) || {
   check('A2: no script error', !errors.length, errors.join(' | '));
   check('A2: the card closed, the club\'s page is open with its name', await p.evaluate(() => !MP.detail && MP.view && MP.view.k === 'club') && /الهلال/.test(await p.textContent('#mp-h')), await p.textContent('#mp-h'));
   const secs = await p.evaluate(() => MP.leagues.map(g => g.name + ':' + g.games.map(e => e.idEvent).join('+')));
-  check('A2: the coming games one section per round (the competition and its round), then the last results, then the meetings', secs.length === 5 && /الجولة ١٣:11$/.test(secs[0]) && /الجولة ١٤:14$/.test(secs[1]) && /:15$/.test(secs[2])
-    && secs[3] === 'آخر النتائج:23+d:2026-10-20:136013:136016' && /^المواجهات مع .+:23\+d:2025-03-01:136011:136013$/.test(secs[4]), secs.join(' | '));
+  check('A2: the coming games one section per round (the competition and its round), then the last results, then the meetings (4.4: the all-time count first, an item with no game)', secs.length === 5 && /الجولة ١٣:11$/.test(secs[0]) && /الجولة ١٤:14$/.test(secs[1]) && /:15$/.test(secs[2])
+    && secs[3] === 'آخر النتائج:23+d:2026-10-20:136013:136016' && /^المواجهات مع .+:\+23\+d:2025-03-01:136011:136013$/.test(secs[4]), secs.join(' | '));
   check('A2: a result in the club\'s page says its day, not «انتهت»', /أمس|الإثنين|٢ نوفمبر/.test(await p.textContent('#mp-list section[data-g="last"] li')), await p.textContent('#mp-list section[data-g="last"] li'));
   const tabs = await p.$$eval('#mp-days li', ls => ls.map(l => l.textContent));
   check('A2: the strip: follow or unfollow the club, and the other club\'s page', tabs.length === 2 && /^ألغِ متابعة الهلال$/.test(tabs[0]) && /^صفحة /.test(tabs[1]), tabs.join(' / '));
@@ -185,11 +185,11 @@ const ids = (p, key) => p.evaluate(k => ((MP.leagues.find(x => x.key === k) || {
   check('pins: Back to the day', await p.evaluate(() => [mpBack(), MP.view].join()) === 'closed,');
   await ctx.close();
 }
-{   // the table not answered (no season known, nothing asked): «الترتيب غير متاح الآن», no error
+{   // the table not answered (no archive table, no season known, nothing asked): 4.4 «الترتيب غير متاح لهذا الدوري» («…الآن» only offline), no error
   const { p, ctx, errors } = await open('matchpage=1', { archive: {} });
   await p.evaluate(() => mpGo({k: 'league', id: '4339'}));
   await p.waitForTimeout(300);
-  check('pins: a league with no table says so', !errors.length && await p.textContent('#mp-list .fnone') === 'الترتيب غير متاح الآن', errors.join(' | ') + await p.textContent('#mp-list'));
+  check('pins: a league with no table says so', !errors.length && await p.textContent('#mp-list .fnone') === 'الترتيب غير متاح لهذا الدوري', errors.join(' | ') + await p.textContent('#mp-list'));
   await ctx.close();
 }
 
