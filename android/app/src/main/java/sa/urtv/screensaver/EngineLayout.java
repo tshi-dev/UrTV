@@ -17,7 +17,4 @@ final class EngineLayout {
         int col = cols == 1 ? 0 : i / rows, row = cols == 1 ? i : i % rows;   // a column is filled before the next one: the reading order in a right-to-left screen
         return new float[] {LEFT + col * (w + GAP), TOP + row * (h + GAP), w, h};
     }
-
-    /** the font size (design px) of the words in a stamp of `n` things: bigger when there are few */
-    static float words(int n, int length) { float base = n <= 3 ? 68 : 56; return length > 30 ? base - 16 : length > 18 ? base - 8 : base; }
 }

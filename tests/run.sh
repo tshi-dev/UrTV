@@ -433,6 +433,7 @@ node tests/game_phone_page.test.mjs   # The party games' phone page (assets/quiz
 python3 tests/game_bundle_test.py   # the games' bundled data and its checks
 python3 tests/game_packs_test.py   # the games' packs
 python3 tests/new_games_test.py   # the new games' rules and screens
+python3 tests/game_engine_test.py   # the games engine and its remote release switch (docs/GAME-ENGINE.md, docs/GAMES-RELEASE.md)
 python3 tests/saver_review44_test.py   # 4.4 review fixes in the screensaver app (F12-F15)
 python3 tests/saver_gate_test.py   # 4.4 review: a settings change during the page start is kept and looked at again (F1)
 python3 tests/saver_prayerfix_test.py   # 4.4 review: the late prayer correction reaches a running dream (F2)

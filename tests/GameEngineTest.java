@@ -29,7 +29,7 @@ public final class GameEngineTest {
         return b.toString();
     }
     public static void main(String[] a) throws Exception {
-        release(); crypto(); defs(); engine(); System.exit(failed == 0 ? 0 : 1);
+        release(); crypto(); defs(); engine(); layout(); examples(a); System.exit(failed == 0 ? 0 : 1);
     }
 
     // ------------------------------------------------------------------ the release switch
@@ -136,6 +136,55 @@ public final class GameEngineTest {
         check("a text may be {ar, en} or a plain string; an {en} without ar is refused; hints are texts", def(game("", CHOOSE.replace("\"ما أكبر كوكب؟\"", "{\"ar\":\"ما أكبر كوكب؟\",\"en\":\"Which planet is biggest?\"}"))).items.get(0).q.get(true).startsWith("Which") && def(game("", CHOOSE.replace("\"ما أكبر كوكب؟\"", "{\"en\":\"x\"}"))) == null
             && def(game("", CHOOSE.replace("\"a\":1", "\"a\":1,\"h\":\"تلميح صغير\""))).items.get(0).hint.ar.equals("تلميح صغير"));
         check("the engine's vocabulary is exactly what the docs say: 11 blocks, 5 scores, 12 icons, 15 accents", GameDef.BLOCKS.length == 11 && GameDef.SCORES.length == 5 && GameDef.ICONS.length == 12 && GameDef.ACCENTS.length == 15);
+    }
+
+    // ------------------------------------------------------------------ the example games of docs/examples/engine
+    static void examples(String[] files) throws Exception {
+        int played = 0; boolean all = files.length > 0;
+        for (String f : files) {
+            String json = new String(java.nio.file.Files.readAllBytes(java.nio.file.Paths.get(f)), "UTF-8");
+            List<String> w = new ArrayList<>(); GameDef.Def d = GameDef.parse(tree(json), w);
+            if (d == null) { check("example " + f + " is a game the engine can run", false); System.out.println(w); all = false; continue; }
+            int n = Math.max(d.minPlayers, 3); if (n > d.maxPlayers) n = d.maxPlayers;
+            GameEngine g = new GameEngine(d, d.items, n, 0, new Random(4), null); int rounds = 0;
+            while (g.phase == GameEngine.Phase.ASK && rounds < 40) {
+                GameDef.Item it = g.item();
+                if (it.t.equals("buzz")) { g.buzz(0, 5); g.judgeBuzz(true); }
+                else {
+                    for (int p = 0; p < n; p++) {
+                        Object a;
+                        switch (it.t) { case "choose": case "odd": a = it.a; break; case "tf": a = it.tf; break; case "order": case "pairs": { int[] sh = g.shown(), s = new int[sh.length]; for (int k = 0; k < sh.length; k++) for (int j = 0; j < sh.length; j++) if (sh[j] == k) s[k] = j; a = s; break; }
+                            case "word": case "blank": a = it.answers.get(0).replace("___", ""); break; case "draw": a = it.word.ar; break; case "closest": a = it.num; break; default: a = (p + 1) % n; }
+                        g.answer(p, a, 100 + p * 50);
+                    }
+                    g.reveal();
+                }
+                g.next(); rounds++;
+            }
+            all &= g.phase == GameEngine.Phase.END && rounds == g.total() && Arrays.stream(g.score).sum() > 0;
+            played++;
+        }
+        check("the example games (" + played + ") parse, and a full game of each plays through every round with right answers and scores", files.length == 0 || (all && played == files.length));
+    }
+
+    // ------------------------------------------------------------------ where things stand on the screen
+    static void layout() {
+        boolean inside = true, apart = true, big720 = true;
+        for (int n = 2; n <= 6; n++) {
+            float[][] r = new float[n][];
+            for (int i = 0; i < n; i++) {
+                r[i] = EngineLayout.rect(i, n);
+                inside &= r[i][0] >= 96 && r[i][1] >= 440 && r[i][0] + r[i][2] <= 1824 && r[i][1] + r[i][3] <= 960;
+                big720 &= r[i][3] * 2f / 3f >= 56 && r[i][2] * 2f / 3f >= 300;
+            }
+            for (int i = 0; i < n; i++) for (int j = i + 1; j < n; j++) apart &= r[i][0] + r[i][2] <= r[j][0] || r[j][0] + r[j][2] <= r[i][0] || r[i][1] + r[i][3] <= r[j][1] || r[j][1] + r[j][3] <= r[i][1];
+        }
+        check("layout: 2 to 6 stamps all stand inside the 96 px safe area below the question block (y 440 to 960)", inside);
+        check("layout: no two stamps touch or overlap, for every count", apart);
+        check("layout at 1280 x 720 (R5): a stamp is 56 px high and 300 px wide at the least, for every count", big720);
+        float[] one = EngineLayout.rect(0, 3), two = EngineLayout.rect(0, 4);
+        check("layout: up to three stand in one full-width column, four to six in two columns; a column is filled before the next (so the first is at the start edge)", one[2] > 1700 && two[2] < 900 && EngineLayout.rect(0, 6)[0] == EngineLayout.rect(1, 6)[0] && EngineLayout.rect(3, 6)[0] > EngineLayout.rect(0, 6)[0]);
+        check("layout: six stamps in two columns of three keep their height at 132 or the room allows; two stamps are not taller than 132", EngineLayout.rect(0, 2)[3] <= 132 && EngineLayout.rect(0, 6)[3] >= 120);
     }
 
     // ------------------------------------------------------------------ the engine
