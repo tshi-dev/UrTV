@@ -25,6 +25,8 @@
     <!-- 4.4 «صوتياتي»: a sound file on a USB stick is read (and copied into the app) only when the person opens the stick in «صوتياتي» and allows it -->
     <uses-permission android:name="android.permission.READ_MEDIA_AUDIO" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" android:maxSdkVersion="32" />
+    <!-- 4.5 «تغيير الأيقونة»: an image from the TV's storage or a USB drive for an app's icon (asked only when the person chooses one) -->
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
     <!-- the adhan alarm, put back after a reboot or a clock change -->
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
@@ -276,6 +278,20 @@
         </receiver>
 
         <!-- «ترتيب المفضلة»: the favourites as a list; also opened from the screensaver's settings -->
+        <!-- 4.5 «زجاجي»: «كل التطبيقات» as a glass window, and «تغيير الأيقونة»; only the home opens them (not exported) -->
+        <activity
+            android:name=".AllAppsActivity"
+            android:exported="false"
+            android:label="كل التطبيقات"
+            android:screenOrientation="landscape"
+            android:theme="@android:style/Theme.Material.NoActionBar" />
+        <activity
+            android:name=".IconEditorActivity"
+            android:exported="false"
+            android:label="تغيير الأيقونة"
+            android:screenOrientation="landscape"
+            android:theme="@android:style/Theme.Material.NoActionBar" />
+
         <activity
             android:name=".DockActivity"
             android:exported="true"

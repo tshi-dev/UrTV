@@ -379,6 +379,42 @@ def shots(out, report, failures):
     seed_dock(7)
 
 
+def glass_shots(out):
+    """4.5 «زجاجي», for a person to look at (no assertions: tests/glass_dock_test.py has the rules): the owner's three bars (100 % one row, 70 % two rows,
+    150 % one row) with the focus on the first favourite, «كل التطبيقات» as glass (OK on the bar's last tile) and «تغيير الأيقونة» (a long OK on the
+    first favourite, then the row). Arabic, the dark glass look, 12 stub apps; the pictures go to OUT_DIR/shots/glass-*.png with the others."""
+    d = out / "shots"
+    d.mkdir(parents=True, exist_ok=True)
+    shell("wm density 320")
+    seed_dock(12)
+    saver("--es lang ar", "--es homelayout classic", "--es look glass", "--es appearance dark", "--es appsstyle glass")
+    for size, rows in (("100", "1"), ("70", "2"), ("150", "1")):
+        saver(f"--es glasssize {size}", f"--es glassrows {rows}")
+        shell("am force-stop sa.urtv.home")
+        go_home()
+        key(*["DPAD_RIGHT"] * 12)
+        time.sleep(2)
+        (d / f"glass-{size}-{rows}.png").write_bytes(adb("exec-out", "screencap", "-p", text=False).stdout)
+        print(f"glass {size} % {rows} rows captured")
+    saver("--es glasssize 100", "--es glassrows 1")
+    shell("am force-stop sa.urtv.home")
+    go_home()
+    key(*["DPAD_LEFT"] * 14, "DPAD_CENTER")   # the last tile of the bar: «كل التطبيقات»
+    time.sleep(6)
+    (d / "glass-all-apps.png").write_bytes(adb("exec-out", "screencap", "-p", text=False).stdout)
+    key("BACK")
+    time.sleep(3)
+    key(*["DPAD_RIGHT"] * 14)
+    shell("input keyevent --longpress DPAD_CENTER")
+    time.sleep(3)
+    key("DPAD_DOWN", "DPAD_DOWN", "DPAD_DOWN", "DPAD_CENTER")   # «انقل», «أخفِ», «اقفل», then «تغيير الأيقونة»
+    time.sleep(5)
+    (d / "glass-icon-editor.png").write_bytes(adb("exec-out", "screencap", "-p", text=False).stdout)
+    key("BACK")
+    saver("--es appsstyle tiles")
+    print("glass pictures captured")
+
+
 def run(out):
     from PIL import Image
     import faulthandler
@@ -465,6 +501,10 @@ def run(out):
         shots(out, report, failures)
     except Exception as e:   # the pictures are for the eyes; a crash here must not hide the rules above
         print("shots not completed:", type(e).__name__, str(e)[:200])
+    try:
+        glass_shots(out)
+    except Exception as e:   # pictures for the eyes, never a reason to fail
+        print("glass pictures not completed:", type(e).__name__, str(e)[:200])
     (out / "tray-report.json").write_text(json.dumps(report, indent=1), encoding="utf-8")
     for f in failures:
         print("FAIL " + f)

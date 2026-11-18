@@ -99,8 +99,107 @@ final class FavBar {
     static final String BANNERS = "banners", ICONS = "icons", TILES = "tiles";
     static final int BANNER_W = 256, BANNER_H = 144, ICON = 112, ICON_GAP = 40, ICON_RADIUS = 24;
 
-    /** the way a stored value means: the three, and 4.4's first two («إطار», «تكبير وظل»: the focus on today's tiles) are C */
-    static String look(String stored) { return BANNERS.equals(stored) || ICONS.equals(stored) ? stored : TILES; }
+    /** the way a stored value means: the three (4.5: and «زجاجي»), and 4.4's first two («إطار», «تكبير وظل»: the focus on today's tiles) are C */
+    static String look(String stored) { return BANNERS.equals(stored) || ICONS.equals(stored) || GLASS.equals(stored) ? stored : TILES; }
+
+    /**
+     * 4.5 «زجاجي» (the owner approved docs/mockups/glass/): a liquid-glass bar at the bottom, as wide as its icons, each app's icon a smooth
+     * squircle 96 at 100 %, 28 apart, 22 from the bar's edge, the corner about a quarter of the icon; the size 50 to 150 % and 1 to 3 rows are
+     * the person's («حجم الشريط الزجاجي», «صفوف الشريط الزجاجي»). The bar stays centred and the clock where it is.
+     */
+    static final String GLASS = "glass";
+    static final int GLASS_ICON = 96, GLASS_GAP = 28, GLASS_PAD = 22;
+    /** the squircle's corner over its side (tvOS Launcher's smooth squircle is about the same) */
+    static final float GLASS_CORNER = 0.24f;
+
+    /** the stored size ("50".."150", steps of 10) as a factor; anything else 1 */
+    static float glassK(String pct) {
+        try {
+            int v = Integer.parseInt(pct.trim());
+            return v < 50 || v > 150 ? 1f : v / 100f;
+        } catch (RuntimeException e) {
+            return 1f;
+        }
+    }
+
+    /** the stored rows ("1".."3"); anything else one */
+    static int glassRows(String rows) {
+        try {
+            int v = Integer.parseInt(rows.trim());
+            return v < 1 || v > 3 ? 1 : v;
+        } catch (RuntimeException e) {
+            return 1;
+        }
+    }
+
+    /** an icon's side at this size */
+    static int glassCell(int screenH, float k) { return px(GLASS_ICON * k, screenH); }
+
+    /** the space between two icons (across and down) */
+    static int glassGap(int screenH, float k) { return px(GLASS_GAP * k, screenH); }
+
+    /** the glass between the icons and the bar's edge */
+    static int glassPad(int screenH, float k) { return px(GLASS_PAD * k, screenH); }
+
+    /** the squircle's corner */
+    static int glassRadius(int screenH, float k) { return Math.round(glassCell(screenH, k) * GLASS_CORNER); }
+
+    /** the bar's corner: the icon's plus the glass around it, so the two curves run side by side */
+    static int glassBarRadius(int screenH, float k) { return glassRadius(screenH, k) + glassPad(screenH, k); }
+
+    /** the columns of {@code n} icons in {@code rows} rows (the last row may be shorter); never more rows than icons */
+    static int glassCols(int n, int rows) { return Math.max(1, (n + Math.max(1, rows) - 1) / Math.max(1, rows)); }
+
+    /** the rows actually used by {@code n} icons */
+    static int glassRowsUsed(int n, int rows) { return n <= 0 ? 1 : (n + glassCols(n, rows) - 1) / glassCols(n, rows); }
+
+    /** the most of the screen's height the bar and the space under it may take: the clock, the greeting and the cards keep their place above it */
+    static final float GLASS_MAX_H = 0.62f;
+
+    /**
+     * The rows asked for, fewer when they would not fit under {@link #GLASS_MAX_H} at this size (150 % in three rows is two), at least one.
+     */
+    static int glassRowsFit(int screenH, float k, int rows) {
+        int r = Math.max(1, Math.min(3, rows));
+        while (r > 1 && r * glassCell(screenH, k) + (r - 1) * glassGap(screenH, k) + 2 * glassPad(screenH, k) + 2 * glassGrow(screenH, k) + px(REST_BOTTOM, screenH) > screenH * GLASS_MAX_H) r--;
+        return r;
+    }
+
+    /** the row's height (the tray's): its rows of icons (as many as fit, glassRowsFit), the gaps between them, the glass above and below, and room for the focused one to grow */
+    static int glassRowH(int screenH, float k, int rows, int n) {
+        int r = glassRowsUsed(n, glassRowsFit(screenH, k, rows));
+        return r * glassCell(screenH, k) + (r - 1) * glassGap(screenH, k) + 2 * glassPad(screenH, k) + 2 * glassGrow(screenH, k);
+    }
+
+    /** what the focused icon grows on each side (ZOOM_SCALE about its centre), kept free above and below the bar */
+    static int glassGrow(int screenH, float k) { return (int) Math.ceil(glassCell(screenH, k) * (ZOOM_SCALE - 1f) / 2f); }
+
+    /** the bar's width for {@code n} icons in {@code rows} rows */
+    static int glassBarW(int screenH, float k, int rows, int n) {
+        int c = glassCols(n, rows);
+        return c * glassCell(screenH, k) + (c - 1) * glassGap(screenH, k) + 2 * glassPad(screenH, k);
+    }
+
+    /** where icon {@code i} sits in the grid: {row, column}, row by row, the first at the start side (the right in Arabic) */
+    static int[] glassCellAt(int i, int n, int rows) {
+        int c = glassCols(n, rows);
+        return new int[] {i / c, i % c};
+    }
+
+    /**
+     * ◀ ▶ in the glass grid: the index the focus goes to, or -1 at a row's end (it stays: it never wraps to the next row). rtl as sideStep.
+     */
+    static int glassSideStep(int index, int n, int rows, boolean right, boolean rtl) {
+        int c = glassCols(n, rows), next = sideStep(index, n, right, rtl);
+        return next < 0 || next / c != index / c ? -1 : next;
+    }
+
+    /** ▲ ▼ in the glass grid: the one above or under (the nearest in a shorter last row), or -1 out of the grid (the home's own up and down) */
+    static int glassUpDown(int index, int n, int rows, boolean down) {
+        int c = glassCols(n, rows), r = index / c + (down ? 1 : -1);
+        if (r < 0 || r * c >= n) return -1;
+        return Math.min(n - 1, r * c + index % c);
+    }
 
     /** «تكبير وظل» (bigger with a shadow, the name under it): always for A and B; for C as it was chosen ("zoom") */
     static boolean zoom(String stored) { return !TILES.equals(look(stored)) || "zoom".equals(stored); }

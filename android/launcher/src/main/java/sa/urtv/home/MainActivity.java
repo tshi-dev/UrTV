@@ -98,7 +98,8 @@ public class MainActivity extends Activity {
     private final List<View> pills = new ArrayList<>();
 
     private HomeScrollView scroll;
-    private LinearLayout content, dockRow;
+    private LinearLayout content;
+    private DockGrid dockRow;   // 4.5: a LinearLayout that also draws «زجاجي»'s glass and grid
     private FrameLayout hero;
     private LinearLayout grid;
     private View glow;   // null while «توهّج لون التطبيق» is off (nothing allocated, nothing animated)
@@ -767,7 +768,7 @@ public class MainActivity extends Activity {
 
         // the favourites bar (docs/PROPOSALS-NOV2.md §1, FavBar): a tray 218 high, the same on every look and layout; five 304×170 tiles
         // show, the first on the right, and more scroll inside it; the row never leaves it
-        dockRow = new LinearLayout(this);
+        dockRow = new DockGrid(this);
         dockRow.setOrientation(LinearLayout.HORIZONTAL);
         dockRow.setGravity(Gravity.CENTER);   // 4.4 (the owner): the row centred in every way; a long one fills the tray and scrolls with the focus
         dockRow.setLayoutDirection(Dir.layout());   // the first favourite on the right in Arabic, on the left in English (tester step 20)
@@ -1359,6 +1360,15 @@ public class MainActivity extends Activity {
                 if (a.icon == null) artCache.put("i:" + a.pkg, a.icon = fitted(ri.loadIcon(pm), false));
             }
         }
+        if (FavBar.GLASS.equals(appsLook)) {   // 4.5 «زجاجي»: the person's own icon (IconStore), else the app's icon as a smooth squircle (GlassArt), made here off the main thread and cached
+            String key = "g:" + a.pkg + ":" + IconStore.stamp(this, a.pkg);
+            a.icon = artCache.get(key);
+            if (a.icon == null) {
+                Bitmap own = IconStore.read(this, a.pkg);
+                int size = FavBar.glassCell(getResources().getDisplayMetrics().heightPixels, 1.5f);   // made once at the biggest size, drawn smaller
+                artCache.put(key, a.icon = new BitmapDrawable(getResources(), own != null ? own : GlassArt.appIcon(ri.loadIcon(pm), size)));
+            }
+        }
         a.color = sampleColor(a.pkg, a.art);
         return a;
     }
@@ -1394,6 +1404,7 @@ public class MainActivity extends Activity {
             View tile = tile(dock.get(i), true);
             dockRow.addView(tile, dockCell(i, dock.size()));
         }
+        addAllAppsTile();
         applyTrayHeight();
         appsLabel.setVisibility(rest.isEmpty() ? View.GONE : View.VISIBLE);
         wireFocus();
@@ -1462,6 +1473,13 @@ public class MainActivity extends Activity {
 
     private LinearLayout.LayoutParams dockCell(int i, int n, int favs, String way) {
         int h = getResources().getDisplayMetrics().heightPixels, gap = FavBar.gap(way, h);   // 4.4 «شكل التطبيقات»: each way its own cell
+        if (FavBar.GLASS.equals(way)) {   // 4.5 «زجاجي»: the squircle at the person's size (the grid of DockGrid places it when there are rows)
+            int c = FavBar.glassCell(h, glassK), g = FavBar.glassGap(h, glassK);
+            LinearLayout.LayoutParams p = new LinearLayout.LayoutParams(c, -2);
+            p.setMarginStart(i == 0 ? 0 : g / 2);
+            p.setMarginEnd(i == n - 1 ? 0 : g - g / 2);
+            return p;
+        }
         LinearLayout.LayoutParams p = new LinearLayout.LayoutParams(FavBar.cellW(way, h, FavBar.shown(barSetting, favs), i), -2);
         p.setMarginStart(i == 0 ? 0 : gap / 2);
         p.setMarginEnd(i == n - 1 ? 0 : gap - gap / 2);
@@ -1478,7 +1496,8 @@ public class MainActivity extends Activity {
     /** the tray is as high as its tiles with the same 24 above and below them (FavBar.trayH): its bottom stays where it was, its top follows */
     private void applyTrayHeight() {
         if (tray == null) return;
-        int h = FavBar.rowH(appsLook, getResources().getDisplayMetrics().heightPixels, barShown());
+        int h = glassWay() ? FavBar.glassRowH(getResources().getDisplayMetrics().heightPixels, glassK, glassRowsN, dockRow == null ? 1 : dockRow.getChildCount())
+                : FavBar.rowH(appsLook, getResources().getDisplayMetrics().heightPixels, barShown());
         android.view.ViewGroup.LayoutParams lp = tray.getLayoutParams();
         if (lp != null && lp.height != h) { lp.height = h; tray.setLayoutParams(lp); }
     }
@@ -1522,7 +1541,9 @@ public class MainActivity extends Activity {
         AspectFrame card = new AspectFrame(this);
         final boolean icons = inDock && FavBar.ICONS.equals(appsLook) && app.icon != null;   // B: the icon's rounded square
         if (icons) card.ratio = FavBar.aspect(FavBar.ICONS);
-        final int corner = inDock ? FavBar.radius(icons ? FavBar.ICONS : FavBar.TILES, getResources().getDisplayMetrics().heightPixels) : dp(10);
+        final boolean glassy = inDock && glassWay() && app.icon != null;   // 4.5 «زجاجي»: the squircle made off the main thread (appOf), drawn whole
+        if (glassy) card.ratio = 1f;
+        final int corner = glassy ? FavBar.glassRadius(getResources().getDisplayMetrics().heightPixels, glassK) : inDock ? FavBar.radius(icons ? FavBar.ICONS : FavBar.TILES, getResources().getDisplayMetrics().heightPixels) : dp(10);
         card.setId(View.generateViewId());
         card.setFocusable(true);
         card.setClickable(true);
@@ -1535,11 +1556,16 @@ public class MainActivity extends Activity {
         });
         GradientDrawable bg = new GradientDrawable();
         bg.setColor(app.isBanner && !icons ? 0xFF1C1C1E : darken(app.color, 0.45f));
+        if (glassy) bg.setColor(0);   // the squircle has its own colour
         card.setBackground(bg);
 
         ImageView img = new ImageView(this);
         img.setImageDrawable(icons ? app.icon : app.art);
-        if (icons) {   // B: the icon filling its square, a little inside
+        if (glassy) {
+            img.setImageDrawable(app.icon);
+            img.setScaleType(ImageView.ScaleType.FIT_XY);
+            card.addView(img, new FrameLayout.LayoutParams(-1, -1));
+        } else if (icons) {   // B: the icon filling its square, a little inside
             img.setScaleType(ImageView.ScaleType.FIT_CENTER);
             card.addView(img, new FrameLayout.LayoutParams(-1, -1));
             img.setPadding(dp(10), dp(10), dp(10), dp(10));
@@ -1691,6 +1717,19 @@ public class MainActivity extends Activity {
             c.setNextFocusRightId(i == d - 1 ? c.getId() : dockCards.get(i + 1).getId());
             c.setNextFocusDownId(!tvCards.isEmpty() ? tvCards.get(0).get(Math.min(i, tvCards.get(0).size() - 1)).getId()
                     : g > 0 ? gridCards.get(Math.min(i, g - 1)).getId() : c.getId());
+        }
+        if (allAppsCard != null && d > 0) {   // «زجاجي»: «كل التطبيقات» goes up and down as the last favourite
+            allAppsCard.setNextFocusUpId(topId);
+            allAppsCard.setNextFocusDownId(dockCards.get(d - 1).getNextFocusDownId());
+        }
+        if (glassWay() && dockRow != null && dockRow.rows() > 1) {   // «زجاجي» in rows: ▲ ▼ inside the grid first (FavBar.glassUpDown), then the home's own
+            int n = dockRow.getChildCount();
+            for (int i = 0; i < n; i++) {
+                View c = ((ViewGroup) dockRow.getChildAt(i)).getChildAt(0);
+                int up = FavBar.glassUpDown(i, n, dockRow.rows(), false), dn = FavBar.glassUpDown(i, n, dockRow.rows(), true);
+                if (up >= 0) c.setNextFocusUpId(((ViewGroup) dockRow.getChildAt(up)).getChildAt(0).getId());
+                if (dn >= 0) c.setNextFocusDownId(((ViewGroup) dockRow.getChildAt(dn)).getChildAt(0).getId());
+            }
         }
         for (int r = 0; r < tvCards.size(); r++) {   // «أكمل المشاهدة»: a row up to the one above (the favourites), down to the next (the apps)
             List<View> row = tvCards.get(r);
@@ -2599,6 +2638,7 @@ public class MainActivity extends Activity {
             dockRow.addView(box, dockCell(i, order.size()));
             dockCards.add(card);
         }
+        if (allAppsBox != null) { dockRow.addView(allAppsBox); relayDock(); }   // «زجاجي»: «كل التطبيقات» stays the last
         wireFocus();
     }
 
@@ -2812,7 +2852,8 @@ public class MainActivity extends Activity {
         View oldBox = card == null ? null : (View) card.getParent();
         if (oldBox != null && oldBox.getParent() instanceof ViewGroup) ((ViewGroup) oldBox.getParent()).removeView(oldBox);
         gridCards.remove(card);
-        dockRow.addView(tile(app, true));   // tile() puts it in dockCards and cardByPkg
+        View added = tile(app, true);   // tile() puts it in dockCards and cardByPkg
+        dockRow.addView(added, allAppsBox != null && allAppsBox.getParent() == dockRow ? dockRow.indexOfChild(allAppsBox) : dockRow.getChildCount());   // before «كل التطبيقات» of «زجاجي»
         for (int i = 0; i < dockRow.getChildCount(); i++) dockRow.getChildAt(i).setLayoutParams(dockCell(i, dockRow.getChildCount()));
         Toast.makeText(this, S.t("أُضيف إلى المفضلة: %s", app.label), Toast.LENGTH_SHORT).show();
     }
@@ -3064,6 +3105,10 @@ public class MainActivity extends Activity {
         }
         Intent shop = AppStore.storeIntent(this, pkg);
         if (!kids && shop != null) o.store = () -> guarded(ParentalPolicy.MENU_APP, pkg, S.t("صفحته في المتجر"), () -> launch(shop));
+        if (!kids && glassWay()) o.icon = () -> {   // 4.5 «تغيير الأيقونة»: the glass bar's icons only
+            try { startActivityForResult(new Intent(this, IconEditorActivity.class).putExtra(IconEditorActivity.PKG, pkg), REQ_ICON); }
+            catch (RuntimeException e) { android.util.Log.w("UrTVHome", "icon editor", e); }
+        };
         if (appOptions != null) appOptions.dismiss();
         appOptions = AppOptions.show(this, anchor, inDock ? 1.12f : 1.1f, homeGlass(), font("sans-serif-medium"), o);
     }
@@ -3118,7 +3163,7 @@ public class MainActivity extends Activity {
     private void placeName() {
         if (nameRow == null || nameRow.getWidth() == 0) return;
         View f = getCurrentFocus();
-        boolean inBar = f != null && dockCards.contains(f) && edit == null;
+        boolean inBar = f != null && (dockCards.contains(f) || f == allAppsCard) && edit == null;
         placeZoomName(appsZoom && inBar ? f : null);
         if (appsZoom) inBar = false;   // «تكبير وظل»: the name is under the tile, not above the tray
         // this runs on every step of the tray's scroll: a new animator each step (cancel and restart, an invalidation each) is exactly what makes a scroll janky;
@@ -3139,8 +3184,117 @@ public class MainActivity extends Activity {
         if (tray == null) return;
         tray.setBackground(FavBar.TILES.equals(appsLook) ? dockBand : null);
         int side = FavBar.padSide(appsLook, getResources().getDisplayMetrics().heightPixels);
-        if (dockRow != null) dockRow.setPadding(side, dockRow.getPaddingTop(), side, dockRow.getPaddingBottom());
+        int sh = getResources().getDisplayMetrics().heightPixels;
+        if (dockRow != null && glassWay()) {   // 4.5 «زجاجي»: the glass round the icons, room for the focused one to grow, the grid's rows
+            int edge = FavBar.glassPad(sh, glassK) + FavBar.glassGrow(sh, glassK);
+            dockRow.setPadding(edge, edge, edge, edge);
+            glassBar.radius(FavBar.glassBarRadius(sh, glassK));
+            glassBar.light(lightNow);
+            dockRow.glass(glassBar, glassRowsN, FavBar.glassCell(sh, glassK), FavBar.glassGap(sh, glassK), FavBar.glassPad(sh, glassK));
+            readGlassBackdrop();
+        } else if (dockRow != null) {
+            dockRow.glass(null, 1, 0, 0, 0);
+            dockRow.setPadding(side, bar(FavBar.PAD_TOP), side, bar(FavBar.PAD_TOP));
+        }
         applyTrayHeight();
+    }
+
+    // ---- 4.5 «زجاجي»: the bar's size and rows, its glass, and its last tile «كل التطبيقات»
+
+    /** the bar's size factor and rows (FavBar.glassK, glassRows, from «حجم الشريط الزجاجي» and «صفوف الشريط الزجاجي») */
+    private volatile float glassK = 1f;
+    private int glassRowsN = 1;
+    private final GlassBar glassBar = new GlassBar();
+    /** «كل التطبيقات», the bar's last tile in «زجاجي» (not a favourite: never in dockCards); null in the other ways */
+    private View allAppsBox, allAppsCard;
+    static final int REQ_ALL_APPS = 451, REQ_ICON = 452;
+
+    private boolean glassWay() { return FavBar.GLASS.equals(appsLook); }
+
+    /** the bar's picture: the home's backdrop (GlassSource), read off the main thread, given to the bar on it */
+    private void readGlassBackdrop() {
+        if (!glassWay() || loader.isShutdown()) return;
+        loader.execute(() -> {
+            Bitmap b = GlassSource.backdrop(this);
+            runOnUiThread(() -> { glassBar.backdrop(b); if (dockRow != null) dockRow.invalidate(); });
+        });
+    }
+
+    /** every cell of the row its place again (the last has no end margin) */
+    private void relayDock() {
+        int n = dockRow.getChildCount();
+        for (int i = 0; i < n; i++) dockRow.getChildAt(i).setLayoutParams(dockCell(i, n));
+    }
+
+    /** «زجاجي»: «كل التطبيقات» at the bar's end, a frosted squircle with a grid of four, its name over it while focused; OK opens the glass window */
+    private void addAllAppsTile() {
+        allAppsBox = null;
+        allAppsCard = null;
+        if (!glassWay()) return;
+        int sh = getResources().getDisplayMetrics().heightPixels, corner = FavBar.glassRadius(sh, glassK);
+        AspectFrame card = new AspectFrame(this);
+        card.ratio = 1f;
+        card.setId(View.generateViewId());
+        card.setFocusable(true);
+        card.setClickable(true);
+        card.setContentDescription(S.t("كل التطبيقات"));
+        card.setClipToOutline(true);
+        card.setOutlineProvider(new ViewOutlineProvider() {
+            @Override public void getOutline(View v, Outline o) { o.setRoundRect(0, 0, v.getWidth(), v.getHeight(), corner); }
+        });
+        GradientDrawable bg = new GradientDrawable();
+        bg.setCornerRadius(corner);
+        bg.setColor(0x38FFFFFF);
+        bg.setStroke(Math.max(1, bar(1.5f)), 0x59FFFFFF);
+        card.setBackground(bg);
+        card.addView(new AllAppsMark(this), new FrameLayout.LayoutParams(-1, -1));
+        card.setOnClickListener(v -> openAllApps());
+        card.setOnFocusChangeListener((v, has) -> {
+            scaleTo(v, has ? FavBar.ZOOM_SCALE : 1f);
+            v.animate().translationZ(has ? dp(2 * GlowLook.LIFT_DP) : 0).setInterpolator(Motion.ease()).setDuration(Motion.move(MainActivity.this)).start();
+            if (!has) return;
+            lastFocusedId = v.getId();
+            nameCard = v;
+            fadeGlow(0.35f);
+            placeName();
+        });
+        LinearLayout box = new LinearLayout(this);
+        box.setOrientation(LinearLayout.VERTICAL);
+        box.setClipChildren(false);
+        box.setClipToPadding(false);
+        box.addView(card, new LinearLayout.LayoutParams(-1, -2));
+        allAppsBox = box;
+        allAppsCard = card;
+        dockRow.addView(box);
+        relayDock();
+    }
+
+    /** the glass window of every app (AllAppsActivity); the app chosen there opens here, through its own tile (the family lock, kids mode, the same launch) */
+    private void openAllApps() {
+        try { startActivityForResult(new Intent(this, AllAppsActivity.class), REQ_ALL_APPS); }
+        catch (RuntimeException e) { android.util.Log.w("UrTVHome", "all apps", e); }
+    }
+
+    @Override protected void onActivityResult(int req, int result, Intent data) {
+        super.onActivityResult(req, result, data);
+        if (req == REQ_ICON && result == RESULT_OK) { buildApps(); return; }   // «تغيير الأيقونة»: the bar again with the new icon
+        if (req != REQ_ALL_APPS || result != RESULT_OK || data == null) return;
+        String pkg = data.getStringExtra(AllAppsActivity.PKG);
+        View c = pkg == null ? null : cardByPkg.get(pkg);
+        if (c != null) c.performClick();
+    }
+
+    /** the four small squares of «كل التطبيقات» (drawn: no image) */
+    static final class AllAppsMark extends View {
+        private final android.graphics.Paint p = new android.graphics.Paint(android.graphics.Paint.ANTI_ALIAS_FLAG);
+        AllAppsMark(Context c) { super(c); p.setColor(0xF2FFFFFF); setImportantForAccessibility(IMPORTANT_FOR_ACCESSIBILITY_NO); }
+        @Override protected void onDraw(Canvas c) {
+            float w = getWidth(), s = w * 0.17f, g = w * 0.08f, x0 = (w - 2 * s - g) / 2f, y0 = (getHeight() - 2 * s - g) / 2f, r = s * 0.3f;
+            for (int i = 0; i < 4; i++) {
+                float x = x0 + (i % 2) * (s + g), y = y0 + (i / 2) * (s + g);
+                c.drawRoundRect(x, y, x + s, y + s, r, r, p);
+            }
+        }
     }
 
     private void placeZoomName(View f) {
@@ -3156,6 +3310,7 @@ public class MainActivity extends Activity {
         }
         Object tag = f.getTag();
         if (tag instanceof App) zoomName.setText(((App) tag).label);
+        else if (f == allAppsCard) zoomName.setText(S.t("كل التطبيقات"));
         zoomName.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
         int[] a = new int[2], h = new int[2], t = new int[2];
         f.getLocationInWindow(a);
@@ -3163,7 +3318,8 @@ public class MainActivity extends Activity {
         tray.getLocationInWindow(t);
         float centre = a[0] + f.getWidth() * f.getScaleX() / 2f;   // the tile grows about its centre
         zoomName.setX(centre - h[0] - zoomName.getMeasuredWidth() / 2f);   // its place on the screen, whichever side it starts from
-        zoomName.setTranslationY(t[1] - h[1] + tray.getHeight() + bar(8));
+        if (glassWay()) zoomName.setTranslationY(t[1] - h[1] + FavBar.glassGrow(getResources().getDisplayMetrics().heightPixels, glassK) - zoomName.getMeasuredHeight() - bar(10));   // «زجاجي»: over the bar, alone
+        else zoomName.setTranslationY(t[1] - h[1] + tray.getHeight() + bar(8));
         if (zoomName.getAlpha() < 1f) zoomName.animate().alpha(1f).setDuration(Motion.MS).setInterpolator(Motion.ease()).start();
     }
 
@@ -3392,6 +3548,7 @@ public class MainActivity extends Activity {
         GlassStyle.Material m = GlassStyle.material(lookNow, light, GlassStyle.BAR);   // «توحيد المظهر»: the apps bar wears the home's one material, as the upper buttons and the cards do
         dockBand.setColor(noGlass ? 0 : m.fill);
         dockBand.setStroke(Math.max(1, bar(1)), noGlass ? 0 : m.line);
+        glassBar.light(light);   // 4.5 «زجاجي»: the bar's tint follows the home's light
         trayRingColor = m.ring; trayRingPx = m.ringWidth;
         if (wallDimView != null) wallDimView.setAlpha(GlassStyle.dimPercent() / 100f);
         for (View c : dockCards) { GradientDrawable r = ringByCard.get(c); if (r != null) r.setStroke(trayRingW(), trayRing()); }
@@ -3647,7 +3804,15 @@ public class MainActivity extends Activity {
         ampm.setVisibility(h24 ? View.GONE : View.VISIBLE);
         sceneTick(cfg);
         String wayNow = FavBar.look(cfg.appsStyle);
-        if (!wayNow.equals(appsLook)) {   // 4.4 «شكل التطبيقات»: another way of the row: its tray, its cells and their art made again
+        float kNow = FavBar.glassK(cfg.glassSize);
+        int rowsNow = FavBar.glassRowsFit(getResources().getDisplayMetrics().heightPixels, kNow, FavBar.glassRows(cfg.glassRows));   // as many as fit at this size
+        boolean glassNew = FavBar.GLASS.equals(wayNow) && wayNow.equals(appsLook) && (kNow != glassK || rowsNow != glassRowsN);   // 4.5 «زجاجي»: another size or rows
+        glassK = kNow;
+        glassRowsN = rowsNow;
+        if (glassNew) {
+            applyAppsLook();
+            buildApps();
+        } else if (!wayNow.equals(appsLook)) {   // 4.4 «شكل التطبيقات»: another way of the row: its tray, its cells and their art made again
             appsLook = wayNow;
             appsZoom = FavBar.zoom(cfg.appsStyle);
             applyAppsLook();
@@ -4156,6 +4321,7 @@ public class MainActivity extends Activity {
             }
             showWallpaperIfCurrent(bm, gen, key);
             if (gen == wallGen) GlassSource.update(this, bm, key);   // the glass look's backdrop: made again only for another photo
+            if (gen == wallGen) readGlassBackdrop();   // 4.5 «زجاجي»: the bar's glass follows it
             if (only) return;   // no network while only the owner's photos show
             if (!NetGate.allowed(resumed, NetGateAndroid.displayOn(this))) return;   // another app came up, or standby: no network; the next rotation on return asks
             // 2. then the network: the photo list (once a day), the cache pruned, and the hosted photo if it was missing
@@ -4178,6 +4344,7 @@ public class MainActivity extends Activity {
                 Bitmap fresh = got.isFile() ? decode(() -> new java.io.FileInputStream(got)) : null;
                 showWallpaperIfCurrent(fresh, gen, "photo:" + got.getName());
                 if (gen == wallGen) GlassSource.update(this, fresh, "photo:" + got.getName());
+                if (gen == wallGen) readGlassBackdrop();
             } catch (java.io.IOException | RuntimeException ignored) { }
         }).start();
         scheduleWallpaper(WALLPAPER_INTERVAL_MS);
@@ -4775,6 +4942,7 @@ public class MainActivity extends Activity {
         // the row reads from the right in Arabic, so the item before the focused one is the one on the right; in English the left
         boolean rtl = row.getLayoutDirection() == View.LAYOUT_DIRECTION_RTL;   // the row as it is drawn (Dir.layout() when it was built)
         int next = FavBar.sideStep(index, row.getChildCount(), right, rtl);
+        if (row instanceof DockGrid && ((DockGrid) row).rows() > 1) next = FavBar.glassSideStep(index, row.getChildCount(), ((DockGrid) row).rows(), right, rtl);   // «زجاجي» in rows: never round to the next row
         if (next < 0) return true;   // the edge of the row: stay put
         View target = row.getChildAt(next);
         if (target == null || target.getVisibility() != View.VISIBLE) return true;
