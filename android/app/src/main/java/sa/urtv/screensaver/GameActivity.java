@@ -49,6 +49,8 @@ public abstract class GameActivity extends Activity {
     protected boolean en, rtl, latin, animate, confetti, sound; protected int tier;
     // the pause card and the hand-over, drawn over whatever the game shows
     private boolean pauseCard; private int pauseSel;
+    // the how-to panel («!» on the start screen, the Menu key): drawn over the game, the clocks stopped
+    private GameHowToView howtoView; private boolean howtoOpen; private int titleInset;
     private int hand; private String handName = "", handSecret = "", handNote = ""; private Runnable handDone; private long handAt; private TextView handCount;
 
     private final Runnable loop = new Runnable() {
@@ -120,7 +122,7 @@ public abstract class GameActivity extends Activity {
 
     private void step() {
         long now = System.currentTimeMillis();
-        if (pauseCard) return;
+        if (pauseCard || howtoOpen) return;
         if (hand == 2) {
             long left = HAND_COUNT_MS - (now - handAt);
             if (left <= 0) { hand = 3; handAt = now; redraw(); }
@@ -137,6 +139,7 @@ public abstract class GameActivity extends Activity {
     /** draw again: the pause card, the hand-over, or the game's own screen */
     protected final void redraw() {
         if (root == null) return;
+        if (howtoOpen) { showHowTo(); return; }
         root.removeAllViews(); handCount = null;
         root.setBackgroundColor(L.paper);
         if (namesMode > 0) drawNames(); else if (pauseCard) drawPause(); else if (hand > 0) drawHand(); else draw();
@@ -144,6 +147,13 @@ public abstract class GameActivity extends Activity {
 
     @Override public boolean dispatchKeyEvent(KeyEvent e) {
         int k = e.getKeyCode();
+        if (k == KeyEvent.KEYCODE_MENU) {   // Menu opens «طريقة اللعب» (and closes it); in a round the game is paused first, a secret on the screen keeps it closed
+            if (e.getAction() == KeyEvent.ACTION_DOWN) {
+                if (howtoOpen) closeHowTo();
+                else if (howtoContent() != null && namesMode == 0 && hand == 0) { if (inPlay() && !pauseCard) openPause(); openHowTo(); }
+            }
+            return true;
+        }
         boolean back = k == KeyEvent.KEYCODE_BACK || k == KeyEvent.KEYCODE_ESCAPE;
         boolean ok = k == KeyEvent.KEYCODE_DPAD_CENTER || k == KeyEvent.KEYCODE_ENTER || k == KeyEvent.KEYCODE_NUMPAD_ENTER || k == KeyEvent.KEYCODE_BUTTON_A;
         int dx = k == KeyEvent.KEYCODE_DPAD_LEFT ? -1 : k == KeyEvent.KEYCODE_DPAD_RIGHT ? 1 : 0;
@@ -151,11 +161,27 @@ public abstract class GameActivity extends Activity {
         int dy = k == KeyEvent.KEYCODE_DPAD_UP ? -1 : k == KeyEvent.KEYCODE_DPAD_DOWN ? 1 : 0;
         if (!(back || ok || dx != 0 || dy != 0)) return super.dispatchKeyEvent(e);
         if (e.getAction() != KeyEvent.ACTION_DOWN) return true;   // the key is ours whole: its release never reaches another screen
+        if (howtoOpen) { if (back) closeHowTo(); else if (dy != 0 && howtoView != null) howtoView.scroll(dy); return true; }   // the panel: Back closes, ▲ ▼ scroll
         if (namesMode > 0) keyNames(back, ok, dx, dy);
         else if (pauseCard) keyPause(back, ok, dy);
         else if (hand > 0) keyHand(back, ok);
         else onKey(back, ok, dx, dy);
         return true;
+    }
+
+    // ---------------------------------------------------------------- «طريقة اللعب» (docs/GAMES-KIT.md)
+
+    /** what the panel says about this game: the registry's row by default; a game whose rules are in its data file may return the file's `howto` block (GameHowTo.fromJson). null = no «!» */
+    protected GameHowTo.Content howtoContent() { return GameHowTo.of(GameRegistry.howto(id())); }
+    protected final boolean howtoShown() { return howtoOpen; }
+    protected final void openHowTo() { if (howtoOpen || howtoContent() == null) return; howtoOpen = true; redraw(); }
+    private void closeHowTo() { howtoOpen = false; howtoView = null; redraw(); }
+    private void showHowTo() {
+        GameHowTo.Content c = howtoContent();
+        if (c == null) { howtoOpen = false; redraw(); return; }
+        root.removeAllViews(); handCount = null; root.setBackgroundColor(L.paper);
+        howtoView = new GameHowToView(this, c, gameName(), L, scale, rtl, en, latin, display(), font("Thmanyah-Medium"));
+        root.addView(howtoView, new FrameLayout.LayoutParams(-1, -1));
     }
 
     // ---------------------------------------------------------------- the pause card
@@ -304,7 +330,7 @@ public abstract class GameActivity extends Activity {
     protected final void title(String big, String small) {
         band(200);
         root.addView(text(big, 96, L.onDeep, true), at(1100, 120, 96, 54));
-        if (small != null) { TextView s = text(small, 40, L.saff, false); s.setGravity(Gravity.END); s.setTextAlignment(View.TEXT_ALIGNMENT_VIEW_END); root.addView(s, atEnd(700, 56, 96, 84)); }
+        if (small != null) { TextView s = text(small, 40, L.saff, false); s.setGravity(Gravity.END); s.setTextAlignment(View.TEXT_ALIGNMENT_VIEW_END); root.addView(s, atEnd(700, 56, 96 + titleInset, 84)); }
     }
     /** the bottom line: pairs of (key, what it does), so every screen says its next key in words */
     protected final void hints(String... kv) {
@@ -515,7 +541,15 @@ public abstract class GameActivity extends Activity {
 
     /** the ready screen: up to seven rows of chips (tighter from the seventh) and the big start button, which has the focus when the screen opens (OK starts with last time's choices) */
     protected final void setup(GameChips c, String startLabel) {
+        c.hasHelp = howtoContent() != null;
+        titleInset = c.hasHelp ? 80 : 0;   // the small line makes room for the «!» at the end corner
         title(gameName(), S.t("جهّز اللعبة"));
+        titleInset = 0;
+        if (c.hasHelp) {   // the «!»: a small mark at the top end corner, quiet like a hint key; with the focus the same size in a saffron ring
+            if (c.help) root.addView(box(0, L.saff, 6, false), atEnd(64, 64, 88, 62));
+            TextView mark = centered("!", 34, L.ink, true); mark.setBackground(shape(L.tile, L.ink, 4, false));
+            root.addView(mark, atEnd(48, 48, 96, 70));
+        }
         int n = c.rows.size(); boolean tight = n > 6;
         float y = tight ? 224 : 232, rowH = tight ? 76 : 88, gap = 14, step = rowH + gap;
         int fit = Math.max(1, (int) ((840 - y) / step));   // the rows that stand above the start button (it begins at 856): nothing hides behind it
@@ -526,9 +560,10 @@ public abstract class GameActivity extends Activity {
         if (ws > 0) root.addView(centered("▲", 36, L.ink(0xCC), true), at(64, 48, 1760, 188));            // more rows above
         if (ws + fit < n) root.addView(centered("▼", 36, L.ink(0xCC), true), at(64, 48, 1760, 806));       // more rows below
         c.names = namesKind() != null;
-        root.addView(button(startLabel, c.onButton() && c.btn == 0), at(640, 104, 96, 856));
-        if (c.names) root.addView(button(S.t("الأسماء"), c.onButton() && c.btn == 1), at(480, 104, 96 + 640 + 24, 856));
-        hints("▲ ▼", S.t("السطر"), "◀ ▶", S.t("الاختيار"), S.t("اختيار"), c.onButton() ? (c.btn == 1 ? S.t("الأسماء") : startLabel) : S.t("تأكيد"), S.t("رجوع"), S.t("الألعاب"));
+        root.addView(button(startLabel, c.onButton() && c.btn == 0 && !c.help), at(640, 104, 96, 856));
+        if (c.names) root.addView(button(S.t("الأسماء"), c.onButton() && c.btn == 1 && !c.help), at(480, 104, 96 + 640 + 24, 856));
+        if (c.help) hints(S.t("اختيار"), S.t("طريقة اللعب"), "▼", S.t("الإعدادات"), S.t("رجوع"), S.t("الألعاب"));
+        else hints("▲ ▼", S.t("السطر"), "◀ ▶", S.t("الاختيار"), S.t("اختيار"), c.onButton() ? (c.btn == 1 ? S.t("الأسماء") : startLabel) : S.t("تأكيد"), S.t("رجوع"), S.t("الألعاب"));
     }
     /** one row: the label at the start, then the chips, as wide as their words; picked = saffron, the focus = ink, not offered = dashed */
     private float chipRow(GameChips c, int r, float y, float hgt, float gap) {
@@ -544,7 +579,7 @@ public abstract class GameActivity extends Activity {
         } while (total > avail && f > 26);
         float x = cx;
         for (int i = 0; i < row.opts.length; i++) {
-            boolean off = row.off[i], focus = c.row == r && c.col == i, isSel = i == row.picked;
+            boolean off = row.off[i], focus = !c.help && c.row == r && c.col == i, isSel = i == row.picked;
             int fill = focus ? L.ink : isSel ? L.saff : off ? L.paper : L.tile;
             int words = focus ? (isSel ? L.saff : L.onInk) : off ? L.ink(0x88) : isSel ? L.onSaff : L.ink;   // standing on the picked one: saffron words and a saffron frame
             FrameLayout chip = stamp(fill, focus && isSel ? L.saff : off ? L.ink(0x88) : L.ink, focus && isSel ? 12 : 6, off);
@@ -560,6 +595,7 @@ public abstract class GameActivity extends Activity {
         if (back) { finish(); return false; }
         if (dx != 0 || dy != 0) { if (c.move(dx, dy)) redraw(); return false; }
         if (!ok) return false;
+        if (c.help) { openHowTo(); return false; }   // OK on the «!»
         if (c.onButton()) {
             if (c.btn == 1) { openNames(); return false; }
             if (namesKind() != null && !GamePrefs.namesAsked(this, namesKind())) { openNames(); return false; }   // the first time on this TV the names are asked for before the game starts; after that they are kept

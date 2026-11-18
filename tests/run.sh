@@ -400,6 +400,7 @@ python3 tests/quiz_test.py   # «الأسرع»: the room, the picking, the serv
 node tests/quiz_phone.test.mjs   # «الأسرع»: the phone page at 360 px in a browser
 node tests/quiz_e2e.test.mjs   # «الأسرع»: two phones against the real room and server on the loopback
 python3 tests/games_data_test.py   # the games' data: the forms, the limits, the bundled starters
+python3 tests/howto_test.py   # «طريقة اللعب»: the small «!» on a start screen and the panel behind it, the texts of the 19 games (rules on a plain JVM, the three places a text lives, the Android side by its source)
 python3 tests/games_kit_test.py   # the games' kit, the registry and the list, «خمس خانات» and «الكلمة المفقودة» (their rules on a plain JVM)
 python3 tests/domino_test.py   # «دومينو»: the rules and the computer players on a plain JVM, whole games from seeds (docs/DOMINO.md)
 #
