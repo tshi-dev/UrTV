@@ -1328,9 +1328,24 @@ public class MainActivity extends Activity {
         for (ResolveInfo ri : Dock.catalogue(this)) {
             ActivityInfo ai = ri.activityInfo;
             if (!ParentalPolicy.visible(family, ai.packageName)) continue;
-            out.add(appOf(ri, pm, given));   // its art only for an app that shows
+            App app = appOf(ri, pm, given);   // its art only for an app that shows
+            if (FavBar.GLASS.equals(appsLook)) glassIcon(app, ri, pm);
+            out.add(app);
         }
         return out;
+    }
+
+    /**
+     * 4.5 «زجاجي»: the person's own icon (IconStore), else the app's icon as a smooth squircle (GlassArt), cached by package and the kept icon. Only
+     * from loadApps, the loader's thread (a file and a render: never on the main thread; one app brought back on it shows in the grid, which has no glass).
+     */
+    private void glassIcon(App a, ResolveInfo ri, PackageManager pm) {
+        String key = "g:" + a.pkg + ":" + IconStore.stamp(this, a.pkg);
+        a.icon = artCache.get(key);
+        if (a.icon != null) return;
+        Bitmap own = IconStore.read(this, a.pkg);
+        int size = FavBar.glassCell(getResources().getDisplayMetrics().heightPixels, 1.5f);   // made once at the biggest size, drawn smaller
+        artCache.put(key, a.icon = new BitmapDrawable(getResources(), own != null ? own : GlassArt.appIcon(ri.loadIcon(pm), size)));
     }
 
     /** One app's name, art and colour (off the main thread for the whole list; on it for the one app «المخفية» brings back). */
@@ -1358,15 +1373,6 @@ public class MainActivity extends Activity {
             else {
                 a.icon = artCache.get("i:" + a.pkg);
                 if (a.icon == null) artCache.put("i:" + a.pkg, a.icon = fitted(ri.loadIcon(pm), false));
-            }
-        }
-        if (FavBar.GLASS.equals(appsLook)) {   // 4.5 «زجاجي»: the person's own icon (IconStore), else the app's icon as a smooth squircle (GlassArt), made here off the main thread and cached
-            String key = "g:" + a.pkg + ":" + IconStore.stamp(this, a.pkg);
-            a.icon = artCache.get(key);
-            if (a.icon == null) {
-                Bitmap own = IconStore.read(this, a.pkg);
-                int size = FavBar.glassCell(getResources().getDisplayMetrics().heightPixels, 1.5f);   // made once at the biggest size, drawn smaller
-                artCache.put(key, a.icon = new BitmapDrawable(getResources(), own != null ? own : GlassArt.appIcon(ri.loadIcon(pm), size)));
             }
         }
         a.color = sampleColor(a.pkg, a.art);
@@ -3268,13 +3274,13 @@ public class MainActivity extends Activity {
 
     /** «تغيير الأيقونة» (IconEditorActivity); the bar is made again when it saved */
     private void editIcon(String pkg) {
-        try { startActivityForResult(new Intent(this, IconEditorActivity.class).putExtra(IconEditorActivity.PKG, pkg), REQ_ICON); }
+        try { startActivityForResult(new Intent(this, IconEditorActivity.class).putExtra(IconEditorActivity.PKG, pkg).putExtra(IconEditorActivity.LOOK, lookNow).putExtra(IconEditorActivity.LIGHT, lightNow), REQ_ICON); }
         catch (RuntimeException e) { android.util.Log.w("UrTVHome", "icon editor", e); }
     }
 
     /** the glass window of every app (AllAppsActivity); the app chosen there opens here, through its own tile (the family lock, kids mode, the same launch) */
     private void openAllApps() {
-        try { startActivityForResult(new Intent(this, AllAppsActivity.class), REQ_ALL_APPS); }
+        try { startActivityForResult(new Intent(this, AllAppsActivity.class).putExtra(AllAppsActivity.LOOK, lookNow).putExtra(AllAppsActivity.LIGHT, lightNow), REQ_ALL_APPS); }
         catch (RuntimeException e) { android.util.Log.w("UrTVHome", "all apps", e); }
     }
 

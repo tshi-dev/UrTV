@@ -73,9 +73,12 @@ check("the bar: DockGrid draws GlassBar round the icons only and lays them out i
       "dockRow = new DockGrid(this);" in main and "dockRow.glass(glassBar, glassRowsN" in main and "glass.draw(c);" in grid and "FavBar.glassCellAt(i, n, rows)" in grid)
 
 # ---- R1: off the main thread
-loadapps = main[main.index("private App appOf("):main.index("/** On the main thread: the dock first")]
-check("R1: each icon's squircle is made in appOf (the loader's thread) and cached by package and the person's icon",
-      "GlassArt.appIcon(ri.loadIcon(pm), size)" in loadapps and '"g:" + a.pkg + ":" + IconStore.stamp(this, a.pkg)' in loadapps and "artCache.put(key" in loadapps)
+loadapps = main[main.index("private List<App> loadApps("):main.index("/** One app's name, art and colour")]
+check("R1: each icon's squircle is made only from loadApps (the loader's thread; appOf also runs on the main thread for one app), cached by package and the person's icon",
+      "if (FavBar.GLASS.equals(appsLook)) glassIcon(app, ri, pm);" in loadapps and "GlassArt.appIcon(ri.loadIcon(pm), size)" in loadapps
+      and '"g:" + a.pkg + ":" + IconStore.stamp(this, a.pkg)' in loadapps and main.count("glassIcon(") == 2)
+check("R1: the two glass screens take the look from the home (no read of the screensaver's settings) and read the backdrop on their worker",
+      all("getIntent().getStringExtra(LOOK)" in f and "Bitmap photo = GlassSource.backdrop(this);" in f and "GlassSource.light(" not in f for f in (allapps, editor)))
 check("R1: the bar's picture is read on the loader (GlassSource's backdrop, blurred once when the photo changed), and again with a new photo",
       "loader.execute(() -> {\n            Bitmap b = GlassSource.backdrop(this);" in main and main.count("readGlassBackdrop();") >= 3)
 check("no live blur anywhere in the glass (no RenderEffect, no blur filter): the backdrop is drawn", not re.search(r"RenderEffect|BlurMaskFilter|setRenderEffect", bar + art + grid + allapps + editor) and "drawBitmap(backdrop" in bar)

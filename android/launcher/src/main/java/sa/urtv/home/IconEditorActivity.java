@@ -52,7 +52,8 @@ import java.util.concurrent.Executors;
  * and «إلغاء», rectangles. The icon is kept in this app's files (IconStore), never the app's own.
  */
 public final class IconEditorActivity extends Activity {
-    static final String PKG = "pkg";
+    static final String PKG = "pkg", LOOK = "look", LIGHT = "light";
+    private boolean light;
     static final int ASK_READ = 41, MAX_IMAGES = 80, DEPTH = 4;
 
     /** the colours: «تلقائي» (0, the edge colour), then 13 */
@@ -90,7 +91,17 @@ public final class IconEditorActivity extends Activity {
         root.setOrientation(LinearLayout.HORIZONTAL);
         root.setLayoutDirection(Dir.layout());
         root.setPadding(dp(48), dp(32), dp(48), dp(24));
-        look = GlassSource.page(this, root);
+        // the look and the light come from the home that opened this (no read of the screensaver's settings on the main thread); the page is the
+        // home's photo, already blurred once (GlassSource), under its veil: the frost
+        light = getIntent().getBooleanExtra(LIGHT, false);
+        look = GlassStyle.of(GlassStyle.look(getIntent().getStringExtra(LOOK)), light);
+        root.setBackgroundColor(look.base);   // the look's own colour at once; the photo when it was read on the worker
+        final GlassStyle.Look pageLook = look;
+        worker.execute(() -> {
+            Bitmap photo = GlassSource.backdrop(this);
+            float veil = GlassSource.scrim(this, pageLook);
+            runOnUiThread(() -> { if (alive && photo != null) root.setBackground(GlassPaint.page(this, photo, pageLook, veil)); });
+        });
 
         // the preview at the start side, the controls beside it
         LinearLayout left = new LinearLayout(this);

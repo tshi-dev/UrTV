@@ -38,7 +38,8 @@ import java.util.concurrent.Executors;
  * the home, which opens it through its own tile (the family lock asks there, as for any app). Back closes the window.
  */
 public final class AllAppsActivity extends Activity {
-    static final String PKG = "pkg";
+    static final String PKG = "pkg", LOOK = "look", LIGHT = "light";
+    private boolean light;
     static final int COLS = 5;
 
     private final ExecutorService worker = Executors.newSingleThreadExecutor();
@@ -64,7 +65,17 @@ public final class AllAppsActivity extends Activity {
         android.util.DisplayMetrics dm = getResources().getDisplayMetrics();
         FrameLayout root = new FrameLayout(this);
         root.setLayoutDirection(Dir.layout());
-        look = GlassSource.page(this, root);   // the home's photo, already blurred once (GlassSource), under its veil: the frost
+        // the look and the light come from the home that opened this (no read of the screensaver's settings on the main thread); the page is the
+        // home's photo, already blurred once (GlassSource), under its veil: the frost
+        light = getIntent().getBooleanExtra(LIGHT, false);
+        look = GlassStyle.of(GlassStyle.look(getIntent().getStringExtra(LOOK)), light);
+        root.setBackgroundColor(look.base);   // the look's own colour at once; the photo when it was read on the worker
+        final GlassStyle.Look pageLook = look;
+        worker.execute(() -> {
+            Bitmap photo = GlassSource.backdrop(this);
+            float veil = GlassSource.scrim(this, pageLook);
+            runOnUiThread(() -> { if (alive && photo != null) root.setBackground(GlassPaint.page(this, photo, pageLook, veil)); });
+        });
 
         LinearLayout panel = new LinearLayout(this);
         panel.setOrientation(LinearLayout.VERTICAL);
@@ -73,7 +84,7 @@ public final class AllAppsActivity extends Activity {
         panel.setPadding(pad, dp(24), pad, dp(12));
         GradientDrawable glass = new GradientDrawable();
         glass.setCornerRadius(dp(28));
-        glass.setColor(GlassSource.light(this) ? 0x8CFFFFFF : 0x2EFFFFFF);
+        glass.setColor(light ? 0x8CFFFFFF : 0x2EFFFFFF);
         glass.setStroke(Math.max(1, dp(1)), 0x4DFFFFFF);
         panel.setBackground(glass);
         root.addView(panel, new FrameLayout.LayoutParams(Math.round(dm.widthPixels * 0.78f), Math.round(dm.heightPixels * 0.86f), Gravity.CENTER));
