@@ -159,6 +159,30 @@
   .btns button.pri{background:var(--pri);color:#fff;border-color:var(--pri)}
   .btns button.fr{box-shadow:0 0 0 calc(var(--u)*3) var(--dlg),0 0 0 calc(var(--u)*6) var(--fring)}
   .peek{color:var(--fs);font-size:calc(var(--u)*21);text-align:center;margin-top:calc(var(--u)*14)}
+  /* ---- the club page (v2): a header with the badge and the place, the form tiles and the next game, then the table around it, the coming games, the titles */
+  .ch{display:flex;align-items:center}
+  .ch .bd{width:calc(var(--u)*104);height:calc(var(--u)*104);font-size:calc(var(--u)*44);margin:0 0 0 calc(var(--u)*28)}
+  .ch h1{font-size:calc(var(--u)*56);font-weight:700;line-height:1.1}
+  .ch .sub{color:var(--fs);font-size:calc(var(--u)*26);margin-top:calc(var(--u)*4)}
+  .ch .sub b{color:var(--fi);font-weight:500}
+  .row2{display:flex;margin-top:calc(var(--u)*22)}
+  .fts{display:flex}
+  .ft{width:calc(var(--u)*128);margin-left:calc(var(--u)*14);text-align:center}
+  .ft b{display:block;border-radius:calc(var(--u)*12);color:#fff;font-size:calc(var(--u)*30);font-weight:700;padding:calc(var(--u)*10) 0;unicode-bidi:isolate}   /* RTL: the club's own goals first, on the right */
+  .ft b.w{background:var(--z1)}.ft b.d{background:#8D918C}.ft b.l{background:var(--z3)}
+  .ft span{display:block;color:var(--fs);font-size:calc(var(--u)*21);margin-top:calc(var(--u)*6);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .ncard{flex:1;margin-right:calc(var(--u)*28);padding:calc(var(--u)*16) calc(var(--u)*28);display:flex;align-items:center;justify-content:space-between}
+  .ncard .k{color:var(--fs);font-size:calc(var(--u)*22)}
+  .ncard .v{font-size:calc(var(--u)*34);font-weight:700;margin-top:calc(var(--u)*4)}
+  .ncard .t{text-align:left;color:var(--fgr);font-weight:500;font-size:calc(var(--u)*28)}
+  .ncard .t i{display:block;font-style:normal;color:var(--fs);font-weight:400;font-size:calc(var(--u)*22)}
+  .hon{list-style:none;padding:calc(var(--u)*6) calc(var(--u)*10)}
+  .hon li{display:flex;align-items:center;justify-content:space-between;min-height:calc(var(--u)*64);padding:0 calc(var(--u)*12)}
+  .hon li + li{border-top:1px solid var(--fln)}
+  .hon li span{font-size:calc(var(--u)*26)}
+  .hon li i{font-style:normal;color:var(--fs);font-size:calc(var(--u)*21);text-align:left}
+  .hon li i b{display:block;color:var(--fi);font-weight:500;font-size:calc(var(--u)*24)}
+  .src{color:var(--fs);font-size:calc(var(--u)*19);margin-top:calc(var(--u)*8)}
 </style>
 </head>
 <body>
@@ -207,6 +231,29 @@ function gr(a, x, b, kind, small){
 const SCORERS = [['كريستيانو رونالدو','النصر',11],['ماركوس ليوناردو','الهلال',9],['كريم بنزيما','الاتحاد',8],['إيفان توني','الأهلي',8]];
 
 const SCREENS = {
+  clubpage(){
+    const t = CLUBS.map((c, i) => [c, i]), me = 1;   // النصر, 2nd
+    const tiles = [['٢ : ٠','w','الخليج'],['١ : ١','d','الأهلي'],['٣ : ١','w','الفتح'],['٢ : ٠','w','ضمك'],['٤ : ٠','w','الرياض']];   // oldest first; newest on the right, next to the next game
+    return `<div class="pg">
+      <div class="hd"><div class="ch">${badge('النصر').replace('class="bd"', 'class="bd"')}<div><h1>النصر</h1><div class="sub"><b>الثاني في دوري روشن السعودي</b>  ٢٦ نقطة من ١١ مباراة</div></div></div>
+        <div class="nx"><div class="k">آخر بطولة</div><div class="v">دوري روشن ٢٠٢٥-٢٠٢٦</div></div></div>
+      <ul class="tabs"><li class="on">النادي</li><li>المباريات</li><li>النتائج</li><li>البطولات</li><li>المواجهات</li><li class="f">أزل النصر من فرقي</li><li class="hint">OK يفتح، يمين ويسار بين الأقسام</li></ul>
+      <div class="row2">
+        <div><h2>آخر ٥ <i>الأحدث يمينًا</i></h2><div class="fts">${tiles.reverse().map(x => `<div class="ft"><b class="${x[1]}">${x[0]}</b><span>${x[2]}</span></div>`).join('')}</div></div>
+        <div class="ncard card"><div><div class="k">المباراة القادمة، الجولة ١١</div><div class="v">النصر – الأهلي</div></div><div class="t">الليلة ٩:٠٠ م<i>بعد ساعة و٤٢ دقيقة</i></div></div>
+      </div>
+      <div class="cols">
+        <div style="width:calc(var(--u)*760)"><h2>في الترتيب <i>OK: الجدول كاملًا</i></h2>
+          <ul class="tb card">${head(false)}${t.slice(0, 6).map(x => row(x[0], x[1], false, x[1] === me)).join('')}</ul></div>
+        <div style="width:calc(var(--u)*470)"><h2>المباريات القادمة</h2>
+          <ul class="gl card"><li class="gd">الجولة ١١، السبت ٢١ نوفمبر</li>${gr('النصر','٩:٠٠ م','الأهلي')}<li class="gd">الجولة ١٢، الجمعة ٢٨ نوفمبر</li>${gr('القادسية','٨:٠٠ م','النصر')}
+            <li class="gd">الجولة ١٣، الخميس ٤ ديسمبر</li>${gr('النصر','٨:٣٠ م','الخلود')}<li class="gd">دوري أبطال آسيا للنخبة، الثلاثاء ٩ ديسمبر</li>${gr('الغرافة','٧:٠٠ م','النصر')}</ul></div>
+        <div style="flex:1;min-width:0"><h2>البطولات</h2>
+          <ul class="hon card"><li><span>دوري روشن</span><i><b>٢٠٢٥-٢٠٢٦</b>و٩ قبله نعرفها</i></li><li><span>كأس الملك</span><i><b>٢٠٢٢-٢٠٢٣</b>و٦ قبله نعرفها</i></li>
+            <li><span>هدّاف الدوري</span><i><b>رونالدو، ٣٥ هدفًا</b>٢٠٢٣-٢٠٢٤</i></li></ul>
+          <div class="src">ما نعرف موسمه فقط، من ويكي بيانات ونتائج المباريات</div></div>
+      </div></div>`;
+  },
   home(){
     const t = CLUBS.map((c, i) => [c, i]);
     const pick = [...t.slice(0, 4), 'gap1', t[5], t[6], t[7], 'gap7', ...t.slice(15)];
@@ -221,10 +268,10 @@ const SCREENS = {
             ${gr('الشباب','١ : ١','التعاون','on',"٦٧'")}${gr('الفتح','٠ : ٢','نيوم','on',"٣٤'")}${gr('النصر','٩:٠٠ م','الأهلي')}
             <li class="gd">غدًا، الأحد ٢٢ نوفمبر</li>${gr('الاتفاق','٦:٠٠ م','الرياض')}${gr('الأخدود','٨:٣٠ م','الخلود')}
             <li class="gd">أمس، الجمعة ٢٠ نوفمبر</li>${gr('الهلال','٣ : ١','الحزم','sc')}${gr('ضمك','٠ : ١','القادسية','sc')}</ul></div>
-        <div style="flex:1;min-width:0"><h2>الهدّافون</h2>
-          <ul class="sc-l card">${SCORERS.map(s => `<li class="sc-r"><span class="n">${s[0]}<i>${s[1]}</i></span><b>${D(s[2])}</b></li>`).join('')}<li class="more">كل الهدّافين</li></ul>
-          <h2 style="margin-top:calc(var(--u)*22)">آخر بطل</h2>
-          <ul class="sc-l card"><li class="sc-r"><span class="n">النصر<i>٢٠٢٥-٢٠٢٦، ٨٦ نقطة</i></span></li></ul></div>
+        <div style="flex:1;min-width:0"><h2>الأبطال</h2>
+          <ul class="hon card"><li><span>٢٠٢٥-٢٠٢٦</span><i><b>النصر</b>٨٦ نقطة</i></li><li><span>٢٠٢٤-٢٠٢٥</span><i><b>الاتحاد</b></i></li><li><span>٢٠٢٣-٢٠٢٤</span><i><b>الهلال</b></i></li><li class="more" style="justify-content:center">كل الأبطال</li></ul>
+          <h2 style="margin-top:calc(var(--u)*22)">هدّاف الموسم الماضي</h2>
+          <ul class="hon card"><li><span>رونالدو</span><i><b>٣٥ هدفًا</b>النصر</i></li></ul></div>
       </div></div>`;
   },
   rounds(){

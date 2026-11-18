@@ -5,7 +5,7 @@ import path from 'path';
 const require = createRequire(import.meta.url);
 const { chromium } = require('playwright');
 const dir = path.dirname(fileURLToPath(import.meta.url));
-const shots = [['1-league-home', 'home'], ['2-matchweeks', 'rounds'], ['3-table-full', 'table'], ['4-club-quick-view', 'club'], ['5-league-home-dark', 'home,dark']];
+const shots = [['1-league-home', 'home'], ['2-matchweeks', 'rounds'], ['3-table-full', 'table'], ['4-club-quick-view', 'club'], ['6-club-page', 'clubpage'], ['5-league-home-dark', 'home,dark']];
 const sizes = [[1920, 1080, '1080p'], [1280, 720, '720p']];
 const browser = await chromium.launch();
 for (const [w, h, tag] of sizes) {

@@ -17,7 +17,7 @@
 **المبادئ الخمسة:**
 
 1. **الصفحة تجيب عن «ماذا يحدث الآن وماذا بعده؟».** أعلاها: الجولة الحالية والعدّ للمباراة القادمة. تحته شريط المباشر.
-   ثم ثلاثة أعمدة: الترتيب، والجولة الحالية، والهدّافون. كل شيء آخر يبعد ضغطة OK واحدة.
+   ثم ثلاثة أعمدة: الترتيب، والجولة الحالية، والأبطال. كل شيء آخر يبعد ضغطة OK واحدة.
 2. **الترتيب في الرئيسية نافذة على الجدول، لا الجدول كله.** تُظهر الأوائل الأربعة، وفريقك والفريقين حوله، وفرق الهبوط.
    وضغطة OK تفتح الجدول كاملًا على شاشة واحدة: ١٨ صفًّا بلا تمرير، وكل الأعمدة.
 3. **لون وكلمة معًا، لا لون وحده.**
@@ -44,7 +44,22 @@
 4. نظرة سريعة على نادٍ من الجدول
 5. الرئيسية بالمظهر الداكن
 
+6. صفحة النادي
+
 كلها بحجم ١٩٢٠×١٠٨٠ و١٢٨٠×٧٢٠، وكلها بألوان صفحة «المباريات» نفسها.
+
+**ما رآه المختبِر بعينه (الخطوة ١٠٣، ١٨ نوفمبر):** فتح المختبِر FotMob وSofaScore وESPN وBBC وموقع الدوري الإنجليزي وموقع دوري روشن
+بدقة ١٢٨٠×٧٢٠، وصوّر الصفحات. هذا أكّد ما كان «لم يُتحقق». التفاصيل في القسم 2b. أهم ما وجده:
+- **المناطق:** شريط ملون على حافة الصف، في FotMob وSofaScore والدوري الإنجليزي وموقع دوري روشن.
+- **الشكل:** مربعات «ف ت خ»، في FotMob وSofaScore وBBC والدوري الإنجليزي.
+- **أسهم الصعود والنزول:** في موقع دوري روشن الرسمي وحده، وهي حركة منذ الجولة الماضية. وهو ما اقترحناه بالضبط.
+- **عمود «الخصم القادم»:** في FotMob وBBC والدوري الإنجليزي.
+- **صفحة النادي في FotMob:** صف «آخر ٥» نتائج ملونة، وبطاقة المباراة القادمة، والجدول وصف النادي مُبرز. ولا توجد فيها صفحة بطولات.
+
+**تصحيح:** بيانات الهدّافين من عمل 4.5 فيها **هدّاف كل موسم منتهٍ فقط**، لا قائمة هدّافي الموسم الجاري. لا يوجد مصدر مجاني مرخّص لأهداف كل
+مباراة. لذلك استبدلنا عمود الهدّافين في الرئيسية بـ«الأبطال» و«هدّاف الموسم الماضي».
+
+**صفحة النادي الجديدة:** النموذج ٦ في المجلد نفسه، وتفاصيلها في القسم 2c.
 
 **ما يحتاج قرار المالك:** في آخر الملف (قسم 8).
 
@@ -168,6 +183,71 @@ All of it must work with a D-pad at 3 m, at 720p, Arabic first, RTL.
 - **Scorebug trend for 2025-26: restraint.** The work is "not in adding more information, but in smarter ways to reveal it" ([SVG](https://www.sportsvideo.org/2026/06/09/designing-the-modern-scorebug-how-broadcast-graphics-teams-are-rethinking-the-most-important-element-on-screen/)). Logos have beaten letter codes ([Newscast Studio](https://www.newscaststudio.com/2025/09/25/fox-sports-nfl-score-bug-2025-season/)). Tight, square type loses its inner shapes at a distance ([critique](https://pimpmytype.com/fifa-2026-font/)).
 - **RTL charts.** Arabic outlets that mirror their UI mirror their charts too ([paper](https://rakotondravony.com/assets/pdf/alebri2024design.pdf)).
 
+### 2b. What the big sites do: the tester's own visit (step 103, 18 Nov)
+
+**Method.** The tester opened these sites at 1280×720, with no login and no cookies accepted. The images stay on the owner's PC. The notes
+are in `tester/league-shots.md` on `work/tester-report`. Where a note here differs from §2, this one is first-hand and wins.
+
+**Leagues.**
+
+| Site | Table columns | Zones | Form | Movement | Next / rounds |
+|---|---|---|---|---|---|
+| FotMob ([table](https://www.fotmob.com/leagues/536/table/saudi-pro-league)) | # team PL +- GD PTS Form Next | thin bar at the row start + legend (Champions League Elite, Qualification, League Two, Relegation) | last 5 squares, W green / D grey / L red | **none** | Next = the opponent's crest. Fixtures by date / round / team; Overview has «Round N» with arrows or a dropdown ([fixtures](https://www.fotmob.com/leagues/536/fixtures/saudi-pro-league)) |
+| SofaScore ([league](https://www.sofascore.com/football/tournament/saudi-arabia/saudi-pro-league/955)) | with All / Home / Away tabs | a small coloured chip with the zone code on the badge + «Rules and legend» below | last 5 squares | none | «By date / By round» with a «Round N» dropdown and arrows; a featured next-match card; heavy (popups, ads) |
+| ESPN ([table](https://www.espn.com/soccer/standings/_/league/KSA.1)) | club GP W D L F A GD P | none | none | none | a day strip with arrows and a calendar ([schedule](https://www.espn.com/soccer/schedule/_/league/KSA.1)) |
+| BBC Sport ([PL](https://www.bbc.com/sport/football/premier-league/table)) | P W D L F A GD Pts Form | thin separator lines between rows (after 4th, 5th), no legend in view | last 5 squares + a trailing «next» square | none | n/a |
+| premierleague.com ([tables](https://www.premierleague.com/en/tables)) | pos crest P W D L GF GA GD Pts Form Next | coloured bar at the row start | last 5 | none | Next = crest |
+| **spl.com.sa** ([standings](https://www.spl.com.sa/en/standings)) | **arrow** club P W D L GF GA GD PTS TREND | coloured bar at the row start | a TREND column that expands per club | **up green / down red / dash, since the last round** | «Overall» and season dropdowns |
+| Kooora / Yallakora | home pages only (ad and consent gates) | — | — | — | a yesterday / today / tomorrow strip with a match carousel |
+
+**Clubs (FotMob: Al-Hilal, Al-Nassr, Al-Ittihad, Liverpool; [Al-Hilal](https://www.fotmob.com/teams/2529/overview/al-hilal)).**
+- **Header:** the crest and country. Tabs: Overview, Table, Fixtures, Squad, Player stats, Team stats, Transfers, History, News.
+- **Overview, top row:** «Team form», the last 5 as coloured score chips with the opponent's crest under each; and «Next match», with the competition, time, both crests and date.
+- **Overview, below:**
+  - the league table with the club's row highlighted;
+  - a season-stats pitch with the best XI;
+  - «Fixture difficulty» for the next three;
+  - a fixtures carousel with arrows;
+  - Liverpool also has an AI-written daily news summary.
+- **Honours:** no honours page. History shows coach win % per season, past table positions, and a table per season ([history](https://www.fotmob.com/teams/2529/history/al-hilal)).
+- **Squad:** photo, name, position, flag, number, age, height and value.
+
+**What this changes in our proposal.**
+- **Confirmed:**
+  - the zone bar at the row's start, with a legend (FotMob, SofaScore, Premier League, spl.com.sa);
+  - form as W/D/L squares (four sites);
+  - movement arrows "since the last round". These are exactly the **official Roshn site's**, and that site is our users' reference, so we keep them.
+- **New idea, not taken for now:**
+  - a «next opponent» column (FotMob, BBC, Premier League). At 720p the full table has no room for it.
+  - Instead, the club sheet and the club page show the next game in full.
+- **Club page:** the FotMob overview's top row (form + next match) and its highlighted table are the backbone of our club page (§2c). Squad, player ratings and fixture difficulty are not taken: we have no data for them.
+- **Honours:** no big site gives honours a place on the club page. This is where our 4.5 honours data stands out: «البطولات» with the latest title per competition.
+
+### 2c. The club page proposal (mockup 6)
+
+[6-club-page-1080p.png](../mockups/league-v2/6-club-page-1080p.png) / [720p](../mockups/league-v2/6-club-page-720p.png)
+
+- **Header:**
+  - the badge (runtime, a letter circle until it loads), the name, and «الثاني في دوري روشن السعودي، ٢٦ نقطة من ١١ مباراة»;
+  - on the left, «آخر بطولة» from the honours champions files.
+- **Tabs:**
+  - «النادي» (this overview), then «المباريات», «النتائج», «البطولات» and «المواجهات»: today's club view's groups;
+  - follow / unfollow stays the last tab, as now.
+- **Top row:**
+  - «آخر ٥» as five score tiles, each the club's goals first, its colour, and the opponent under it, newest on the right;
+  - beside it, the next game card with the round and a fixed-box countdown.
+- **Below, «في الترتيب»:** the table window around the club, its row ringed, and OK opens the full table.
+- **Below, «المباريات القادمة»:** by round, including other competitions (the AFC game in the mockup).
+- **Below, «البطولات»:**
+  - each competition, with the latest title and «و٩ قبله نعرفها» (the honours study's honest count);
+  - «هدّاف الدوري» when one of the club's players was a season's top scorer (`scorers/<lg>/<season>.json`, `team` = the club's id).
+  - The source line is the honours one.
+- **Data:** all of it is there or coming in 4.5:
+  - `teams/<id>.json` for the next and last games;
+  - `sports/<lg>.json` for the table, form and `mv`;
+  - the honours `champions/` and `scorers/` files.
+  - No squad, no player stats.
+
 ### 3. Comparison table
 
 | Product | League home | Table: zones / form / movement / live | Next and live | Round navigation | TV (10-foot) |
@@ -234,7 +314,9 @@ All of it must work with a D-pad at 3 m, at 720p, Arabic first, RTL.
 |---|---|
 | xG / "justice table", fixture difficulty, player ratings | We have no such data (TheSportsDB free + our archive), and they are noise at 3 m. |
 | News, transfers, video highlights tabs | No data or rights; the page is for games. |
-| A tab per stat (team stats, player stats) | Too many tabs for a D-pad. Scorers only, from 4.5's honours work. |
+| A tab per stat (team stats, player stats), a current scorers list | Too many tabs for a D-pad, and no data: 4.5's honours work has each past season's top scorer only. |
+| A «next opponent» column in the table (FotMob, BBC, PL) | No room at 720p; the club sheet and the club page show the next game in full. |
+| Squad, ratings, fixture difficulty on the club page (FotMob) | No data. |
 | Kit-colour backgrounds (PL broadcast), club-coloured cards | No bundled club data or logos; colours would fight the zones. |
 | Date strip navigation (ESPN) as the main navigator | A league in progress is talked about in rounds; days remain inside a round. |
 | Swipe gestures, hover, horizontal carousels that hide items | D-pad only; the season strip shows all 34 rounds at once. |
@@ -255,7 +337,8 @@ All of it must work with a D-pad at 3 m, at 720p, Arabic first, RTL.
 | Live points | the live API (TheSportsDB free) + the table | **new**, client side, provisional |
 | Current round, countdown | `fbGames()` / `fbRound()` | there |
 | Rounds 1–34 and their games | `results/<id>.json` + coming games | there (round number per game: check coverage) |
-| Scorers, champions | 4.5 `work/45-honours` | coming |
+| Champions, a past season's top scorer | 4.5 `work/45-honours` (`champions/`, `scorers/<lg>/<season>.json`: the season's top scorer only) | coming |
+| **This season's scorers list** | none: no free licensed per-match scorers (honours study 2.1) | **not available**; the home shows «الأبطال» and «هدّاف الموسم الماضي» instead |
 | Badges | runtime (TheSportsDB) | there |
 | Zones per league | **new**: a small table per league (places → zone), kept in the archive index | to write; the owner checks it |
 
