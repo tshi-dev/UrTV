@@ -9,7 +9,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
  * and limitations under the License.
  *
- * Adapted from tvOS Launcher (SceneHome.createSmoothSquircleDrawable, CustomMedia.sampleDominantEdgeColor, renderEditedAppIcon and
+ * Adapted from tvOS Launcher (its home scene's createSmoothSquircleDrawable, CustomMedia.sampleDominantEdgeColor, renderEditedAppIcon and
  * trimTransparentPadding). Changed by UrTV: rewritten in Java for the UrTV home; one render for the glass bar and the icon editor
  * (shape, background, zoom and move in one place); the shapes are UrTV's three (square, rounded, circle); every call made off the main
  * thread (a weak TV); no image of tvOS Launcher is used. THIRD_PARTY_NOTICES.md has the notice.

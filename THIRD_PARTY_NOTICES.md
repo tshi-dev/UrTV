@@ -193,7 +193,7 @@ The glass apps bar, «كل التطبيقات» as glass and «تغيير الأ
 Copyright 2026 techgenius, under the Apache License, Version 2.0 (https://www.apache.org/licenses/LICENSE-2.0); tvOS Launcher itself credits
 Hume Launcher and Couch TV. What was adapted, in `android/launcher/src/main/java/sa/urtv/home/`:
 
-- `GlassArt.java`: the smooth squircle icon (SceneHome.createSmoothSquircleDrawable), the edge colour of an icon
+- `GlassArt.java`: the smooth squircle icon (createSmoothSquircleDrawable of its home scene), the edge colour of an icon
   (CustomMedia.sampleDominantEdgeColor), the edited icon's render with zoom and move (renderEditedAppIcon) and trimTransparentPadding.
 - `GlassBar.java`: glass made from the picture behind it, shrunk and blurred once rather than blurred live.
 - `IconEditorActivity.java`: the custom icon's choices (an image, an «auto» edge colour among a set of colours, zoom and move).

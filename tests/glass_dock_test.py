@@ -98,7 +98,7 @@ check("the editor: storage, USB or the app's own icon; «تلقائي» and 13 c
       all(w in editor for w in ('"من التخزين"', '"من USB"', '"الأيقونة الأصلية"', '"تلقائي"', '"مربع"', '"مربع بحواف دائرية"', '"دائرة"', '"تكبير"', '"تصغير"', '"حفظ"', '"إلغاء"'))
       and editor.count("0xFF") - editor.count("0xFF2C2C2E") >= 13 and len(re.search(r"COLOURS = \{(.*?)\};", editor, re.S).group(1).split(",")) == 14)
 check("«تغيير الأيقونة» in the app's options: «زجاجي» only, never in kids mode; the icon is kept in the home's own files (IconStore), the app's own untouched",
-      "if (!kids && glassWay()) o.icon = " in main and 'ICON_ROW = S.n("تغيير الأيقونة")' in opts and "getFilesDir(), \"icons\"" in store)
+      "if (!kids && glassWay()) o.icon = () -> editIcon(pkg);" in main and 'ICON_ROW = S.n("تغيير الأيقونة")' in opts and "getFilesDir(), \"icons\"" in store)
 check("the images are asked for only when the person chooses them (READ_MEDIA_IMAGES on 13+, else the old read permission)",
       'android.permission.READ_MEDIA_IMAGES' in manifest and "requestPermissions(new String[] {readPermission()}" in editor)
 check("the two screens are the home's only (not exported)", re.search(r'android:name="\.AllAppsActivity"\s+android:exported="false"', manifest) and re.search(r'android:name="\.IconEditorActivity"\s+android:exported="false"', manifest))

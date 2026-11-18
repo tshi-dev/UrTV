@@ -3105,10 +3105,7 @@ public class MainActivity extends Activity {
         }
         Intent shop = AppStore.storeIntent(this, pkg);
         if (!kids && shop != null) o.store = () -> guarded(ParentalPolicy.MENU_APP, pkg, S.t("صفحته في المتجر"), () -> launch(shop));
-        if (!kids && glassWay()) o.icon = () -> {   // 4.5 «تغيير الأيقونة»: the glass bar's icons only
-            try { startActivityForResult(new Intent(this, IconEditorActivity.class).putExtra(IconEditorActivity.PKG, pkg), REQ_ICON); }
-            catch (RuntimeException e) { android.util.Log.w("UrTVHome", "icon editor", e); }
-        };
+        if (!kids && glassWay()) o.icon = () -> editIcon(pkg);   // 4.5 «تغيير الأيقونة»: the glass bar's icons only
         if (appOptions != null) appOptions.dismiss();
         appOptions = AppOptions.show(this, anchor, inDock ? 1.12f : 1.1f, homeGlass(), font("sans-serif-medium"), o);
     }
@@ -3267,6 +3264,12 @@ public class MainActivity extends Activity {
         allAppsCard = card;
         dockRow.addView(box);
         relayDock();
+    }
+
+    /** «تغيير الأيقونة» (IconEditorActivity); the bar is made again when it saved */
+    private void editIcon(String pkg) {
+        try { startActivityForResult(new Intent(this, IconEditorActivity.class).putExtra(IconEditorActivity.PKG, pkg), REQ_ICON); }
+        catch (RuntimeException e) { android.util.Log.w("UrTVHome", "icon editor", e); }
     }
 
     /** the glass window of every app (AllAppsActivity); the app chosen there opens here, through its own tile (the family lock, kids mode, the same launch) */
