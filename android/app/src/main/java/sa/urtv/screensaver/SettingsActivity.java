@@ -221,7 +221,8 @@ public class SettingsActivity extends Activity {
         adhanAsked = false;
         cleanAsked = false;   // asked again each time the settings come to the front (it was asked once per visit: the row said «مفعّل» only after reopening)
         homeKeyAsked = false;   // 4.4 (QA-7): the same for «زر الرئيسية يفتح تلفزيونك مباشرة»
-        look = GlassSource.page(this, root); couchVeil();   // the home's photo or «المظهر» may have changed meanwhile
+        extrasLook();   // 4.4 review: «فوق تطبيق آخر» says whether the add-on is here; asked on a thread, once per return
+        look =GlassSource.page(this, root); couchVeil();   // the home's photo or «المظهر» may have changed meanwhile
         hint.setTextColor(look.sub);
         if (back != null) { returnWant = back; returnUntil = System.currentTimeMillis() + 4000; }   // the home answers a moment later and the list is built again: that build keeps the focus on this row too, until a key is pressed (it landed on the row above)
         forceWant = back;   // back from another screen: the focus goes to the row or button that opened it, in the SAME render that builds the list again (it landed on the one above)
@@ -383,7 +384,7 @@ public class SettingsActivity extends Activity {
             new Runnable() { public void run() { prefs.setKickoffGoal(!prefs.kickoffGoal()); render(); } });
         row("صافرة النهاية", prefs.kickoffEnd() ? "يعمل" : "متوقف", R.drawable.ic_trophy,
             new Runnable() { public void run() { prefs.setKickoffEnd(!prefs.kickoffEnd()); render(); } });
-        row("فوق تطبيق آخر", prefs.kickoffOver() ? (extrasInstalled() ? "يعمل" : "يعمل، لكنه يحتاج «إضافات تلفزيونك»") : "متوقف", R.drawable.ic_trophy,
+        row("فوق تطبيق آخر", prefs.kickoffOver() ? (Boolean.FALSE.equals(extrasHere) ? "يعمل، لكنه يحتاج «إضافات تلفزيونك»" : extrasHere == null ? "يعمل" : "يعمل لو سمحت للإضافة بالظهور فوق التطبيقات") : "متوقف", R.drawable.ic_trophy,
             new Runnable() { public void run() { prefs.setKickoffOver(!prefs.kickoffOver()); render(); if (prefs.kickoffOver()) askOverlay(); } });
         row("جرّب التنبيه", "يظهر الآن بفريقين للتجربة", R.drawable.ic_trophy,
             new Runnable() { public void run() { KickoffTry.show(SettingsActivity.this, prefs.kickoffWhistle()); } });
@@ -2098,7 +2099,7 @@ public class SettingsActivity extends Activity {
      *  add-on the person is told so on screen and its offer opens (the home's own screen); with it, the TV's «الظهور فوق التطبيقات» screen for the add-on;
      *  a TV that hides it: the computer's command, said once */
     private void askOverlay() {
-        if (!extrasInstalled()) { offerExtras(); return; }
+        if (Boolean.FALSE.equals(extrasHere)) { offerExtras(); return; }
         Intent i = new Intent("android.settings.action.MANAGE_OVERLAY_PERMISSION", Uri.parse("package:sa.urtv.extras"));
         try {
             if (getPackageManager().resolveActivity(i, 0) != null) { startActivity(i); return; }
@@ -2106,9 +2107,25 @@ public class SettingsActivity extends Activity {
         toast("هذا التلفزيون يخفي هذا الإذن، فيُعطى من الكمبيوتر");
     }
 
-    /** «إضافات تلفزيونك» is installed (only read) */
-    private boolean extrasInstalled() {
-        try { getPackageManager().getPackageInfo("sa.urtv.extras", 0); return true; } catch (Exception e) { return false; }
+    /** «إضافات تلفزيونك» is installed (only read); never in a render: extrasLook asks on a thread */
+    private static boolean extrasInstalled(android.content.pm.PackageManager pm) {
+        try { pm.getPackageInfo("sa.urtv.extras", 0); return true; } catch (Exception e) { return false; }
+    }
+
+    /** the last answer of extrasLook: null = not asked yet (the row then says only «يعمل»; the add-on's own permission is not known here) */
+    private volatile Boolean extrasHere;
+
+    private void extrasLook() {
+        final android.content.pm.PackageManager pm = getPackageManager();
+        new Thread(() -> {
+            final boolean here = extrasInstalled(pm);
+            runOnUiThread(() -> {
+                if (isFinishing() || isDestroyed()) return;
+                Boolean was = extrasHere;
+                extrasHere = here;
+                if (was == null || was != here) render();
+            });
+        }, "extras-look").start();
     }
 
     /** the home's offer of the add-on (install it), told what it is for; the home opens it only for this app (signature permission, same key) */

@@ -56,5 +56,20 @@ check("F6: opened/drew/clear write only through the background writer; the basel
       and "CrashLoopStore.hook(this)" in src(HOME / "HomeApp.java") and len(wl) == 2
       and all("crashloop-store" in l and "hook() in HomeApp.onCreate" in l and "must be on disk before the screen builds" not in l for l in wl))
 
+# overlay F2: a notice the add-on gave up on (2 s) is not drawn later
+xn = src(ROOT / "android/extras/src/main/java/sa/urtv/home/ExtrasNotice.java")
+sh = body(xn, "static boolean show(final Context c, final Bundle in) {")
+check("overlay F2: the posted runnable takes a token (compareAndSet 0 to 1) and the timeout gives up with 0 to 2, so the home's toast and the overlay are never both shown",
+      "state.compareAndSet(0, 1)" in sh and "state.compareAndSet(0, 2)" in sh and sh.index("compareAndSet(0, 1)") < sh.index("add(c.getApplicationContext()") and sh.index("compareAndSet(0, 2)") > sh.index("done.await("))
+
+# overlay F4: the saver's «فوق تطبيق آخر» row is honest about the add-on's permission and never asks the package manager in a render
+sa = src(ROOT / "android/app/src/main/java/sa/urtv/screensaver/SettingsActivity.java")
+NEWLINE = "يعمل لو سمحت للإضافة بالظهور فوق التطبيقات"
+tsv = (ROOT / "i18n/en/saver.tsv").read_text(encoding="utf-8")
+check("overlay F4: the row says «يعمل لو سمحت…» when the add-on is installed, with an English entry",
+      NEWLINE in sa and any(l.startswith(NEWLINE + "\t") and l.split("\t")[1].strip() for l in tsv.splitlines()))
+check("overlay F4: the install check is asked on a thread (extras-look), cached in extrasHere, and never called from a render or a press",
+      '"extras-look").start();' in sa and "extrasInstalled()" not in sa and sa.count("extrasInstalled(pm)") == 1 and "extrasLook();" in body(sa, "protected void onResume() {"))
+
 print("FAILED" if failed else "all passed")
 sys.exit(1 if failed else 0)
