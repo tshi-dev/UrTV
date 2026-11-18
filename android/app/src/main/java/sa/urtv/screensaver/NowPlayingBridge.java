@@ -89,7 +89,7 @@ final class NowPlayingBridge {
 
     private static volatile boolean kidsBusy;
     /** kids mode as the launcher last said it (a copy kept in hub_seen, like the clean mask): no query, so it is safe on the UI thread (kidsAsk blocks). The first start after the
-     *  install may use the older answer; a thread asks the launcher again for the next one. */
+     *  install, before any answer, takes the safe side (kids); a thread asks the launcher again for the next one. */
     static boolean kidsOn(final Context c) {
         final Context app = c.getApplicationContext();
         if (!kidsBusy) {
@@ -97,7 +97,10 @@ final class NowPlayingBridge {
             Thread t = new Thread(() -> {
                 try {
                     android.content.SharedPreferences sp = app.getSharedPreferences("hub_seen", Context.MODE_PRIVATE);
-                    Boolean now = KeptAnswer.toStore(kidsAsk(app), sp.getBoolean("kids_on", false));   // only a real answer that differs
+                    Boolean ans = kidsAsk(app);
+                    boolean ever = sp.contains("kids_on");
+                    if (ans == null && !ever && !launcherHere(app)) ans = Boolean.FALSE;   // no launcher on this TV: there are no kids mode and no answer to wait for
+                    Boolean now = ever ? KeptAnswer.toStore(ans, sp.getBoolean("kids_on", false)) : ans;   // only a real answer that differs; the very first answer is always kept
                     if (now != null) {
                         sp.edit().putBoolean("kids_on", now).apply();   // before the broadcast: the next kidsOn() is this one
                         app.sendBroadcast(new android.content.Intent(Prefs.CHANGED).setPackage(app.getPackageName()));   // the dream is built again with it (as CleanMask), only when its address differs
@@ -108,7 +111,13 @@ final class NowPlayingBridge {
             }, "kids-flag");
             t.setPriority(Thread.MIN_PRIORITY); t.setDaemon(true); t.start();
         }
-        return app.getSharedPreferences("hub_seen", Context.MODE_PRIVATE).getBoolean("kids_on", false);
+        return app.getSharedPreferences("hub_seen", Context.MODE_PRIVATE).getBoolean("kids_on", true);   // never answered yet: kids, the safe side (no kick-off notice before the launcher has said)
+    }
+
+    /** on a thread: the launcher is installed, so an answer is to come */
+    private static boolean launcherHere(Context c) {
+        try { c.getPackageManager().getPackageInfo(CoverRule.HOME_PKG, 0); return true; }
+        catch (Exception e) { return false; }
     }
 
     /** 4.4 «جرّب التنبيه»: the launcher plays its kick-off whistle once (it checks our signature; never over the adhan); false when it could not be asked */
