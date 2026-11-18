@@ -16,7 +16,8 @@ the same network. Note the build in the report's first line.
   over about half a second. Open an app, press Home, press ▶ at once and keep moving: the focus follows every press. Press Back on the
   home 5 times quickly: each answers at once. Repeat once after `optimize/tv.py` force-stops the screensaver app (the TCL case).
   Also: switch «اللغة» and back, then move at once (the home made again answers at once); open a reminder card and press OK.
-  Rows: R-001, R-002, R-042, R-254, R-255.
+  On a TV with the add-on: the same at the minute tick; open «مركز التحكم», press the adhan preview; open «المباريات».
+  Rows: R-269, R-270, R-271, R-272, R-001, R-002, R-042, R-254, R-255.
 - **S-02 Return to the home.** From YouTube, Home: the photo is there at once (no black, no blur), all favourites (not five), the tray's
   tiles inside it, the name under the focused tile, no other app comes to the front afterwards; «كل التطبيقات» lists the store and the
   maker's apps, no «تلفزيونك UrTV» tile, app names in one language.

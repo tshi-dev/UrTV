@@ -284,6 +284,11 @@ often describe the same bug in two ways, and both rows are kept when their guard
 | R-266 | Pressing Home quickly on our home paused the watch, and Google TV's home stayed (tester step 88) | a bring counted more than once per press | 4.4 (build 427) | `tests/home_fix3_test.py` | launcher (Google TV) | Y |
 | R-267 | The setup intro's first focus was on «English»: one OK switched the language (tester step 88) | the first focus went to the language switch | 4.4 (build 427) | `tests/fix159_test.py` | launcher (setup) | Y |
 | R-268 | Sideloaded apps missing from the home next to a Google home (GitHub #57) | apps without a TV activity were hidden | 4.4 | `tests/sideload_apps_test.py` | launcher (Google TV) | Y |
+| R-269 | The home could stall at its return and every minute while it asked the add-on whether it runs (QA-6) | Extras.enabled: a provider call into the add-on's process on the UI thread | 4.4 | `tests/ui_thread_44_test.py`, `tests/regressions/ui_thread_ipc_test.py` | launcher + extras (TCL) | Y |
+| R-270 | The screensaver settings asked the home at every redraw (QA-7) | NowPlayingBridge.homeKey on the UI thread in render | 4.4 | `tests/ui_thread_44_test.py`, `tests/regressions/ui_thread_ipc_test.py` | saver-app | Y |
+| R-271 | Pressing the adhan preview in «مركز التحكم» asked the screensaver on the UI thread (QA-8) | Prefs.playFor -> Place.get on the press | 4.4 | `tests/ui_thread_44_test.py`, `tests/regressions/ui_thread_ipc_test.py` | launcher | Y |
+| R-272 | «المباريات» asked the screensaver as it opened, to hand over kept follows (QA-9) | HomeFollows.sync in onCreate | 4.4 | `tests/ui_thread_44_test.py`, `tests/regressions/ui_thread_ipc_test.py` | launcher | Y |
+| R-273 | The notice bar read and parsed its file every minute on the UI thread (QA-10) | dueNotice -> ContentFile.read on the tick | 4.4 | `tests/ui_thread_44_test.py`, `tests/regressions/ui_thread_ipc_test.py` | launcher | N |
 
 ## Open findings of the gate (QA-n)
 
