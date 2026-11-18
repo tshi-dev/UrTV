@@ -3161,3 +3161,11 @@ Item 2 (extras g-m, presets, apps style A/B/C): NOT DONE by adb: they need the r
 - `pm list packages -d | grep -E 'launcherx|setupwraith'` → empty: launcherx and setupwraith are both ENABLED (both listed by `pm list packages -e`). The owner's disabled-packages backup from before the tests had neither of them either.
 - `cmd package resolve-activity -a android.intent.action.MAIN -c android.intent.category.HOME` → priority=2 isDefault=true `com.google.android.apps.tv.launcherx.home.HomeActivity` (enabled=true, exported=true), while the role holder is sa.urtv.home. `query-activities` lists setupwraith RecoveryActivity, sa.urtv.home.MainActivity (priority 0) and settings FallbackHome (-1000), plus launcherx at priority 2.
 - I changed nothing: no enable/disable of launcherx or setupwraith in this session after step 100.
+
+## Owner at the TV, first feedback (19 Nov, build 525 beta) — NEEDS-OWNER item 1/3 started
+Owner's words, all on the settings and update screens:
+1. SETTINGS focus (annoying): going from a main settings row into its sub-screen, focus does NOT start on the top (first) row of the sub-screen.
+2. SETTINGS lag (annoying): there is drag (lag) in the movement between settings rows.
+3. UPDATE SCREEN (annoying): it said there IS an update. Checked from the PC at the same moment: `saver.sh show` says installed 4.4 (build 525), newest 4.4 (build 525) on the beta channel, apk-beta is Beta 3.525. The screen (sa.urtv.home.UpdateActivity) shows «الإصدار المثبّت 4.4» with the orange button «تحديث جديد 4.4، اضغط للتحديث», no build numbers and no «محدّث» state. So the screen offers an update to the same 4.4 that is installed; it needs to show build numbers and say up to date when the builds are equal. (Possible cause to check: it compares something else than the home build, e.g. the add-on, which is 516 here because apk-beta has no extras apk.)
+4. DESIGN (annoying/polish): the update page looks different from the settings page (different style/card/background), the owner finds the change between them jarring.
+Picture (PC only, not pushed): update screen as above.
