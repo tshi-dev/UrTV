@@ -1,0 +1,95 @@
+{
+ "field": "text_qpc_hafs",
+ "probes": [
+  {
+   "name": "quran/verses/qpc_hafs",
+   "url": "https://api.quran.com/api/v4/quran/verses/qpc_hafs?chapter_number=1",
+   "rows": 7,
+   "fields": [
+    "text_qpc_hafs"
+   ],
+   "sample": {
+    "id": 1,
+    "verse_key": "1:1",
+    "text_qpc_hafs": "بِسۡمِ ٱللَّهِ ٱلرَّحۡمَٰنِ ٱلرَّحِيمِ ١"
+   }
+  },
+  {
+   "name": "verses/by_chapter",
+   "url": "https://api.quran.com/api/v4/verses/by_chapter/1?fields=text_qpc_hafs&per_page=300&words=false",
+   "rows": 7,
+   "fields": [
+    "text_qpc_hafs"
+   ],
+   "sample": {
+    "id": 1,
+    "verse_number": 1,
+    "verse_key": "1:1",
+    "hizb_number": 1,
+    "rub_el_hizb_number": 1,
+    "ruku_number": 1,
+    "manzil_number": 1,
+    "sajdah_number": null,
+    "text_qpc_hafs": "بِسۡمِ ٱللَّهِ ٱلرَّحۡمَٰنِ ٱلرَّحِيمِ ١",
+    "page_number": 1,
+    "juz_number": 1
+   }
+  },
+  {
+   "name": "quran/verses/uthmani",
+   "url": "https://api.quran.com/api/v4/quran/verses/uthmani?chapter_number=1",
+   "rows": 7,
+   "fields": [
+    "text_uthmani"
+   ],
+   "sample": {
+    "id": 1,
+    "verse_key": "1:1",
+    "text_uthmani": "بِسْمِ ٱللَّهِ ٱلرَّحْمَـٰنِ ٱلرَّحِيمِ"
+   }
+  }
+ ],
+ "font": {
+  "shipped_woff2_sha256": "a387ca8babbfcdf329ee3bc7e04687acdaec6453a6dd9112a03a6af9eb249d52",
+  "pinned_ttf_sha256": "5c47602425fb4190327ab9e1a2e8ed2f53dceaf595d8ccc29ac32b8b209ad398",
+  "tried": [],
+  "shipped_signature": "cda92e15030901b852cba26020fa5f04d89b972e6fbb2794aec461a6f9646cf9",
+  "shipped_codepoints": 611,
+  "pages": [
+   {
+    "url": "https://fonts.qurancomplex.gov.sa/",
+    "links": [
+     "https://fonts.qurancomplex.gov.sa/_next/static/chunks/3ufc8hxg2s8lq.css",
+     "https://fonts.qurancomplex.gov.sa/_next/static/chunks/2_xf99yxhp4od.js",
+     "https://qurancomplex.gov.sa",
+     "https://fonts.qurancomplex.gov.sa/favicon.ico?favicon.204wq2f86hham.ico",
+     "https://fonts.qurancomplex.gov.sa/apple-icon.png?apple-icon.01oc11a44kyaq.png",
+     "https://fonts.qurancomplex.gov.sa/",
+     "https://www.youtube.com/user/qurancomplex/playlists",
+     "https://fonts.qurancomplex.gov.sa/files/Praying_Calender_1448_MAKKAH.pdf",
+     "https://fonts.qurancomplex.gov.sa/files/Praying_Calender_1448_MADINAH.pdf",
+     "https://fonts.qurancomplex.gov.sa/files/Praying_Calender_1448_RIYADH.pdf",
+     "https://fonts.qurancomplex.gov.sa/files/Praying_Calender_1448_DAMMAM.pdf",
+     "mailto:info@qurancomplex.gov.sa",
+     "https://x.com/qurancomplex",
+     "https://www.youtube.com/user/qurancomplex",
+     "https://www.instagram.com/qurancomplex",
+     "https://www.snapchat.com/add/qurancomplex",
+     "https://www.facebook.com/qurancomplex.gov.sa/"
+    ]
+   },
+   {
+    "url": "https://fonts.qurancomplex.gov.sa/favicon.ico?favicon.204wq2f86hham.ico",
+    "links": []
+   }
+  ]
+ },
+ "source": "quran/verses/qpc_hafs",
+ "source_verses": 6236,
+ "verses_checked": 500,
+ "verses_exact": 500,
+ "adhkar_checked": 5,
+ "adhkar_exact": 5,
+ "mismatches": [],
+ "result": "all exact"
+}
