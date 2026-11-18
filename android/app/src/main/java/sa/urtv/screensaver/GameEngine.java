@@ -73,7 +73,7 @@ final class GameEngine {
         if (s == null) return Double.NaN;
         StringBuilder b = new StringBuilder();
         for (char c : s.trim().toCharArray()) {
-            if (c >= '٠' && c <= '٩') c = (char) ('0' + c - '٠'); else if (c >= '۰' && c <= '۹') c = (char) ('0' + c - '۰');
+            if (c > 127 && Character.digit(c, 10) >= 0) c = Character.forDigit(Character.digit(c, 10), 10);
             else if (c == '٫' || c == ',') c = '.'; else if (c == '٬' || c == ' ' || c == '‏') continue; else if (c == '−') c = '-';
             if (!((c >= '0' && c <= '9') || c == '.' || c == '-')) return Double.NaN;
             b.append(c);
@@ -90,7 +90,7 @@ final class GameEngine {
         for (char c : s.toCharArray()) {
             if ((c >= 'ً' && c <= 'ْ') || c == 'ٰ' || c == 'ـ') continue;
             switch (c) { case 'أ': case 'إ': case 'آ': case 'ٱ': c = 'ا'; break; case 'ى': case 'ئ': c = 'ي'; break; case 'ؤ': c = 'و'; break; case 'ة': c = 'ه'; break; default: }
-            if (c >= '٠' && c <= '٩') c = (char) ('0' + c - '٠'); else if (c >= '۰' && c <= '۹') c = (char) ('0' + c - '۰');
+            if (c > 127 && Character.digit(c, 10) >= 0) c = Character.forDigit(Character.digit(c, 10), 10);
             if (Character.isLetterOrDigit(c)) b.append(Character.toLowerCase(c)); else if (c == ' ' && b.length() > 0 && b.charAt(b.length() - 1) != ' ') b.append(' ');
         }
         String r = b.toString().trim();

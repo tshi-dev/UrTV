@@ -29,8 +29,7 @@ final class GameCrypt {
         if (typed == null) return "";
         StringBuilder b = new StringBuilder();
         for (char c : typed.toCharArray()) {
-            if (c >= '٠' && c <= '٩') c = (char) ('0' + (c - '٠'));
-            else if (c >= '۰' && c <= '۹') c = (char) ('0' + (c - '۰'));
+            if (c > 127 && Character.digit(c, 10) >= 0) c = Character.forDigit(Character.digit(c, 10), 10);
             c = Character.toUpperCase(c);
             if ((c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9')) b.append(c);
         }
