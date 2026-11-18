@@ -30,7 +30,8 @@ check("v2: the focused bar shows its name large (2.75 rem) and one plain line of
 check("v2: the line is never smaller than the couch hint (1.4375 rem)", num("SEC2_LINE") >= num("HINT"))
 check("v2: it grows by its words, never by a scale or an animation, so a weak TV has no motion (the owner's light version)",
       "animate()" not in secf and "setScale" not in secf and "if (cs != null) couchSectionFocus(x, has); else" in st)
-short = dict(re.findall(r'\{(\w+), "([^"]+)"\}', hub.split("static final String[][] SHORT = {")[1].split("};")[0]))
+short = dict(zip(re.findall(r"\w+", hub.split("static final String[] SHORT_KEYS = {")[1].split("};")[0]),
+                 re.findall(r'"([^"]+)"', hub.split("static final String[] SHORT_LINES = {")[1].split("};")[0])))
 check("v2: every section has its line (search aside), plain words: no «*», no «·», no marks",
       set(short) == {"LANG", "PLACE", "LOOK", "APPS", "BUTTONS", "PRAY", "CONTENT", "SAVER", "FAMILY", "UPDATE"}
       and not any(ch in v for v in short.values() for ch in "*·✦•★") and short["LOOK"] == "الأشكال الجاهزة، والتخطيط، والخلفية، والساعة، والتطبيقات", short)
