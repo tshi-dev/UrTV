@@ -3995,9 +3995,10 @@ function loadTafsir(){
 }
 // The whole tafsir, as large as the card allows (three steps), else in pages of three lines (two in a crowded card) at the smallest,
 // each in turn every 12 s (20 s on a weak TV); the tallest page holds the line's height, so the card never moves
+// The turning timer belongs to its own list (ul.__tafsirT): a redraw of another card (every 15 s) must not stop it. TAFSIR_PG.t is the last one started (the tests stop it).
 const TAFSIR_PG = {t: 0};
 function fitTafsir(ul){
-  clearInterval(TAFSIR_PG.t); TAFSIR_PG.t = 0;
+  clearInterval(ul.__tafsirT); ul.__tafsirT = 0;
   const el = ul.querySelector('li.tafsir');
   if(!el) return;
   const tt = el.querySelector('.tt'), tp = el.querySelector('.tp'), full = el.dataset.full || (el.dataset.full = tt.textContent), words = full.split(' ');
@@ -4027,7 +4028,7 @@ function fitTafsir(ul){
     show();
     if(crowded() && max === 3) continue;
     if(crowded()){ el.remove(); return; }   // even two lines a page do not fit beside this card: no tafsir here, never a cut one
-    if(pages.length > 1) TAFSIR_PG.t = setInterval(() => { k = (k + 1) % pages.length; show(); }, CONFIG.lowram ? 20000 : 12000);
+    if(pages.length > 1) TAFSIR_PG.t = ul.__tafsirT = setInterval(() => { k = (k + 1) % pages.length; show(); }, CONFIG.lowram ? 20000 : 12000);
     return;
   }
 }
