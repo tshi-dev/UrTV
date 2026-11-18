@@ -18,6 +18,14 @@ public final class CardFitRun {
             out.append("fit\t").append(k[0]).append('\t').append(String.join(",", f)).append('\t').append(swaps.size()).append('\t').append(String.join(",", back))
                .append('\t').append(CardFit.swapNote(swaps, new String[][] {{"prayers", "مواقيت الصلاة اليوم"}, {"prayerrow", "الصلوات في صف"}, {"forecast", "طقس الأيام القادمة"}, {"hourly", "طقس الساعات القادمة"}})).append('\n');
         }
+        for (String[] row : CardFit.TABLE) {
+            out.append("row\t").append(row[0]).append('\t').append(row.length - 1);
+            for (String l : CardFit.LOOKS) for (String bg : CardFit.BGS)
+                out.append('\t').append(l).append('/').append(bg).append('=').append(CardFit.decide(row[0], l, bg)).append('~').append(CardFit.why(row[0], l, bg));
+            out.append('\n');
+        }
+        out.append("compact\t").append(String.join(",", CardFit.COMPACT)).append('\n');
+        out.append("unknown\t").append(CardFit.decide("stocks", "nowhere", "photos")).append('\t').append(CardFit.decide("nothing", "couch", "photos")).append('\t').append(CardFit.decide("none", "tvos", "scenes")).append('\n');
         System.out.print(out);
     }
 }
