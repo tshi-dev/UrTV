@@ -73,5 +73,13 @@ check("QA-10: the copy is loaded on the tick's thread and at each return (off th
 cf = src(HOME / "ContentFile.java")
 load = body(cf, "synchronized void load(Context c) {").split("\n        }")[0] if "synchronized void load(Context c) {" in cf else ""
 check("QA-10: the file is parsed again only when its time or size changed", "if (t == at && n == size) return;" in cf and "read(c, name)" in cf.split("synchronized void load(Context c) {")[1])
+# 4.4 review: two reads of the screensaver's settings left on the UI thread by their own code
+gr = src(HOME / "Greeting.java")
+check("review: the greeting's weather answer reads the settings on its worker thread; the posted code only draws",
+      "final ConfigSnapshot again = ConfigSnapshot.read(context);" in gr and "main.post(() -> { fetching = false; update(" in gr and "ConfigSnapshot.read(context)); });" not in gr)
+rcv = main.split("private final BroadcastReceiver nowPlayingChanged = new BroadcastReceiver() {")[1].split("private final BroadcastReceiver sleepChanged")[0]
+check("review: the adhan receiver takes the known answer, and reads only off the UI thread when there is none",
+      "ConfigSnapshot.known()" in rcv and "clockReads.execute(" in rcv and "updateAdhanBar(ConfigSnapshot.read(" not in rcv)
+
 print("FAILED" if failed else "all passed")
 sys.exit(1 if failed else 0)

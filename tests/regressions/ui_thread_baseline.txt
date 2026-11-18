@@ -97,16 +97,12 @@ ipc:ConfigSnapshot.read | launcher:InputNamesActivity.onResume | GlassSource.lig
 ipc:ConfigSnapshot.read | launcher:InputNamesActivity.onResume | GlassSource.lookName | baseline 4.3.4
 ipc:ConfigSnapshot.read | launcher:MainActivity.dispatchKeyEvent | GlassSource.light | baseline 4.3.4
 ipc:ConfigSnapshot.read | launcher:MainActivity.dispatchKeyEvent | GlassSource.lookName | baseline 4.3.4
-ipc:ConfigSnapshot.read | launcher:MainActivity.dispatchKeyEvent | Greeting.fetch | baseline 4.3.4
 ipc:ConfigSnapshot.read | launcher:MainActivity.dispatchKeyEvent | MainActivity.updateClock | the first draw only (clockFirstDone); every later read is on clockReads; ConfigSnapshot shares one answer for 3 s
 ipc:ConfigSnapshot.read | launcher:MainActivity.onReceive | GlassSource.light | baseline 4.3.4
 ipc:ConfigSnapshot.read | launcher:MainActivity.onReceive | GlassSource.lookName | baseline 4.3.4
-ipc:ConfigSnapshot.read | launcher:MainActivity.onReceive | Greeting.fetch | baseline 4.3.4
-ipc:ConfigSnapshot.read | launcher:MainActivity.onReceive | MainActivity.onReceive | baseline 4.3.4
 ipc:ConfigSnapshot.read | launcher:MainActivity.onReceive | MainActivity.updateClock | the first draw only (clockFirstDone); every later read is on clockReads; ConfigSnapshot shares one answer for 3 s
 ipc:ConfigSnapshot.read | launcher:MainActivity.onResume | GlassSource.light | baseline 4.3.4
 ipc:ConfigSnapshot.read | launcher:MainActivity.onResume | GlassSource.lookName | baseline 4.3.4
-ipc:ConfigSnapshot.read | launcher:MainActivity.onResume | Greeting.fetch | baseline 4.3.4
 ipc:ConfigSnapshot.read | launcher:MainActivity.onResume | MainActivity.updateClock | QA-1 fixed in 4.3.4: only a cold process's very first draw reads here (nothing on screen yet); a recreated home uses ConfigSnapshot.known()
 ipc:ConfigSnapshot.read | launcher:ParentalActivity.onResume | GlassSource.light | baseline 4.3.4
 ipc:ConfigSnapshot.read | launcher:ParentalActivity.onResume | GlassSource.lookName | baseline 4.3.4
@@ -254,7 +250,6 @@ ipc:ConfigSnapshot.read | launcher:InputNamesActivity.onCreate | GlassSource.loo
 ipc:ConfigSnapshot.read | launcher:MainActivity.onCreate | Digits.init | baseline 4.3.4 (onCreate, R1)
 ipc:ConfigSnapshot.read | launcher:MainActivity.onCreate | GlassSource.light | baseline 4.3.4 (onCreate, R1)
 ipc:ConfigSnapshot.read | launcher:MainActivity.onCreate | GlassSource.lookName | baseline 4.3.4 (onCreate, R1)
-ipc:ConfigSnapshot.read | launcher:MainActivity.onCreate | Greeting.fetch | baseline 4.3.4 (onCreate, R1)
 ipc:ConfigSnapshot.read | launcher:MainActivity.onCreate | MainActivity.buildHeader | baseline 4.3.4 (onCreate, R1)
 ipc:ConfigSnapshot.read | launcher:MainActivity.onCreate | MainActivity.updateClock | baseline 4.3.4 (onCreate, R1)
 ipc:ConfigSnapshot.read | launcher:MarketsActivity.onCreate | Digits.init | baseline 4.3.4 (onCreate, R1)
