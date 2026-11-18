@@ -141,13 +141,28 @@ final class ConfigSnapshot {
         s.tweaks = p.getString("tweaks", "");
         s.pagesDark = !"0".equals(p.getString("pages_dark", "1"));
         s.matchApp = p.getString("match_app", "auto");
+        // 4.4 review: the rest of what the first draw reads (a cold start must not flash the defaults and then rebuild)
+        s.favBar = p.getString("fav_bar", "5");
+        s.pillsHidden = p.getString("pills_hidden", "");
+        s.homeLayout = p.getString("home_layout", "classic");
+        s.scenePacks = p.getString("scene_packs", "saudi");
+        s.sceneStay = p.getString("scene_stay", "20");
+        s.sceneByTime = "1".equals(p.getString("scene_time", "0"));
+        s.sceneByWeather = "1".equals(p.getString("scene_weather", "0"));
+        s.homeBg = p.getString("home_bg", "photos");
+        s.homeClock = p.getString("home_clock", "plain");
+        s.appsStyle = p.getString("apps_style", "frame");
+        s.greetingName = p.getString("greeting_name", "");
+        s.cityChosen = !"0".equals(p.getString("city_chosen", "1"));
         GlassStyle.setTweaks(s.tweaks);
         return s;
     }
 
     /** the values a screen's first draw needs, kept beside the fragment when they change (a real answer only) */
     private static void keepValues(Context c, ConfigSnapshot s) {
-        String sig = s.appearance + "|" + s.look + "|" + s.tweaks + "|" + s.pagesDark + "|" + s.matchApp + "|" + s.greetingOn + s.adhanBarOn + s.listenPillOn + s.updateBellOn + s.watchNextOn;
+        String sig = s.appearance + "|" + s.look + "|" + s.tweaks + "|" + s.pagesDark + "|" + s.matchApp + "|" + s.greetingOn + s.adhanBarOn + s.listenPillOn + s.updateBellOn + s.watchNextOn
+                + "|" + s.favBar + "|" + s.pillsHidden + "|" + s.homeLayout + "|" + s.scenePacks + "|" + s.sceneStay + "|" + s.sceneByTime + s.sceneByWeather
+                + "|" + s.homeBg + "|" + s.homeClock + "|" + s.appsStyle + "|" + s.greetingName + "|" + s.cityChosen;
         if (sig.equals(keptSig)) return;
         keptSig = sig;
         try {
@@ -156,7 +171,12 @@ final class ConfigSnapshot {
                     .putString("pages_dark", s.pagesDark ? "1" : "0").putString("match_app", s.matchApp)
                     .putString("greeting", s.greetingOn ? "1" : "0").putString("adhan_bar", s.adhanBarOn ? "1" : "0")
                     .putString("listen_pill", s.listenPillOn ? "1" : "0").putString("update_bell", s.updateBellOn ? "1" : "0")
-                    .putString("watch_next", s.watchNextOn ? "1" : "0").apply();
+                    .putString("watch_next", s.watchNextOn ? "1" : "0")
+                    .putString("fav_bar", s.favBar).putString("pills_hidden", s.pillsHidden).putString("home_layout", s.homeLayout)
+                    .putString("scene_packs", s.scenePacks).putString("scene_stay", s.sceneStay)
+                    .putString("scene_time", s.sceneByTime ? "1" : "0").putString("scene_weather", s.sceneByWeather ? "1" : "0")
+                    .putString("home_bg", s.homeBg).putString("home_clock", s.homeClock).putString("apps_style", s.appsStyle)
+                    .putString("greeting_name", s.greetingName).putString("city_chosen", s.cityChosen ? "1" : "0").apply();
         } catch (RuntimeException ignored) { }
     }
 
