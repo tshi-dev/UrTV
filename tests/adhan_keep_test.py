@@ -52,7 +52,7 @@ check("the stream failed and no copy came: a saved voice, else the miss is kept 
 check("the stand-in is read from the saved list the check wrote, its one file looked at again", "AdhanKeep.parseSaved(prefs.adhanSaved(), Adhan.VOICES)" in ms and "return v > 0 && Adhan.isCached(this, v) ? v : -1;" in ms)
 check("«الأذان» says under the muezzin: saved, not yet, or the last adhan missed (prefs only)", "Adhan.label(playVoice) + Adhan.keepNote(prefs, OwnAdhan.isOwn(playVoice))" in main
       and "File" not in ad.split("static String keepNote(Prefs prefs, boolean own) {")[1].split("\n    }\n")[0])
-for ar in ["محفوظ على التلفزيون", "غير محفوظ على التلفزيون بعد، نحمّله أول ما يتوفر الإنترنت", "آخر أذان ما اشتغل: ما كان محفوظاً على التلفزيون ولا فيه إنترنت"]:
+for ar in ["محفوظ على التلفزيون", "غير محفوظ على التلفزيون بعد، نحمّله أول ما يتوفر الإنترنت", "آخر أذان ما اشتغل لأنه ما كان محفوظًا على التلفزيون وما كان فيه إنترنت"]:
     check("English entry: " + ar, ("\n" + ar + "\t") in en and "·" not in ar)
 
 if shutil.which("javac") and shutil.which("java"):
@@ -73,5 +73,6 @@ if shutil.which("javac") and shutil.which("java"):
                 check("AdhanKeep " + k, got.get(k) == v, got.get(k))
 else:
     print("SKIP no javac")
+check("the UI session: the muezzin and the place are joined with «، » («, » in English), never «—»", "static String label(int voice) { return name(voice) + sa.urtv.home.S.sep() + place(voice); }" in ad and " — " not in ad.split("static String label(int voice)")[1].split("\n")[0])
 print("FAILED" if failed else "all passed")
 sys.exit(1 if failed else 0)

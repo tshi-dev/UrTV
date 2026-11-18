@@ -141,8 +141,8 @@ final class Adhan {
     /** Where it was recorded, e.g. «الحرم المكي». */
     static String place(int voice) { return OwnAdhan.isOwn(voice) ? sa.urtv.home.S.tv(OwnAdhanText.PLACE) : (sa.urtv.home.S.en() ? PLACES_EN : PLACES)[clamp(voice) - 1]; }
 
-    /** Both, for the row that opens this list: «فاروق حضراوي — الحرم المكي». */
-    static String label(int voice) { return name(voice) + " — " + place(voice); }
+    /** Both, for the row that opens this list: «فاروق حضراوي، الحرم المكي» (4.4 beta 3, the UI session: no «—»; ", " in English). */
+    static String label(int voice) { return name(voice) + sa.urtv.home.S.sep() + place(voice); }
 
     /**
      * The copy the adhan plays from: the kept one (the app's files, beta 3) when it is there, else the cache's (the other voices, «تلاوة»'s daily round).
@@ -167,7 +167,7 @@ final class Adhan {
     /** 4.4 beta 3: what «الأذان» says under the muezzin about the copy on the TV (prefs only: nothing is looked at on disk for it) */
     static final String KEPT = sa.urtv.home.S.n("محفوظ على التلفزيون"),
             NOT_KEPT = sa.urtv.home.S.n("غير محفوظ على التلفزيون بعد، نحمّله أول ما يتوفر الإنترنت"),
-            MISSED = sa.urtv.home.S.n("آخر أذان ما اشتغل: ما كان محفوظاً على التلفزيون ولا فيه إنترنت");
+            MISSED = sa.urtv.home.S.n("آخر أذان ما اشتغل لأنه ما كان محفوظًا على التلفزيون وما كان فيه إنترنت");
 
     /** the row's words after the muezzin: a missed adhan (a day), else whether the chosen voices are on the TV; "" for the person's own recording */
     static String keepNote(Prefs prefs, boolean own) {

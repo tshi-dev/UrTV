@@ -913,4 +913,4 @@ mp3 أو m4a أو ogg أو wav	mp3, m4a, ogg or wav
 الشاشة الأصلية موقوفة. شغّلها: الإعدادات ← التطبيقات ← تطبيقات النظام ← %s ← تفعيل، ثم اضغط زر الرئيسية.	The TV's own home is turned off. Turn it on: Settings → Apps → System apps → %s → Enable, then press Home.
 محفوظ على التلفزيون	Saved on the TV
 غير محفوظ على التلفزيون بعد، نحمّله أول ما يتوفر الإنترنت	Not saved on the TV yet, downloaded as soon as there is internet
-آخر أذان ما اشتغل: ما كان محفوظاً على التلفزيون ولا فيه إنترنت	The last adhan did not play: it was not saved on the TV and there was no internet
+آخر أذان ما اشتغل لأنه ما كان محفوظًا على التلفزيون وما كان فيه إنترنت	The last adhan did not play because it was not saved on the TV and there was no internet
