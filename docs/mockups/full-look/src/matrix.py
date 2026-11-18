@@ -10,13 +10,15 @@ CARDS = [('nextprayer', 'الصلاة القادمة'), ('prayerrow', 'الصل�
 LOOKS = [('classic', 'تلفزيونك'), ('football', 'كرة القدم'), ('couch', 'كنبة'), ('tvos', 'tvOS')]
 BGS = [('photos', 'صوري'), ('scenes', 'الآفاق')]
 COMPACT = {"nextprayer", "prayerrow", "hourly", "verse", "hadith", "wisdom", "year", "smart"}   # CardFit.COMPACT today
-TVOS = COMPACT | {"nextmatch", "matchday", "livenow", "formula", "national", "today", "album"}   # three lines on a glass card
+TVOS = COMPACT | {"nextmatch", "matchday", "livenow", "formula", "national", "today", "album", "forecast"}   # a title and three lines on a glass card
+NOTE = {("tvos", "verse"): "بعرض بطاقتين", ("tvos", "hadith"): "بعرض بطاقتين", ("tvos", "forecast"): "صف من ٤ أيام",
+        ("couch", "smart"): "من البطاقات المناسبة", ("tvos", "smart"): "من البطاقات المناسبة"}
 
 def fit(card, look, bg):
     """(yes, reason): the background never decides alone, since every card sits on its own glass (a flat fill on a weak TV), but it is a column of its own"""
     if look == "couch" and card not in COMPACT: return False, "قائمة طويلة: ما تنعرض كاملة في شريط كنبة"
     if look == "tvos" and card not in TVOS: return False, "قائمة طويلة: أطول من بطاقة tvOS"
-    return True, ""
+    return True, NOTE.get((look, card), "")
 
 if __name__ == "__main__":
     head = "".join(f"<th>{l}<small>{' و'.join(b for _, b in BGS)}</small></th>" for _, l in LOOKS)
@@ -26,7 +28,8 @@ if __name__ == "__main__":
         for lk, _ in LOOKS:
             r = [fit(k, lk, b) for b, _ in BGS]
             ok = all(x[0] for x in r)
-            cells += f'<td class="{"y" if ok else "n"}">{"يناسب" if ok else "ما يناسب"}</td>'
+            note = r[0][1] if ok else ""
+            cells += f'<td class="{"y" if ok else "n"}">{"يناسب" if ok else "ما يناسب"}{"، " + note if note else ""}</td>'
         rows += f"<tr><td class=c>{n}</td>{cells}</tr>"
     html = f'''<!doctype html><html lang="ar"><head><meta charset="utf-8"><link rel="stylesheet" href="base.css"><style>
 html,body{{height:auto;overflow:visible}}body{{background:#121014;padding:40px 60px}}h1{{font-size:36px;margin-bottom:4px}}p{{font-size:20px;color:var(--dim);margin-bottom:14px}}
@@ -39,5 +42,5 @@ td{{padding:3px 12px;text-align:center;background:rgba(255,255,255,.05)}}td.c{{t
     open("08-matrix.html", "w", encoding="utf-8").write(html)
     md = "| البطاقة | " + " | ".join(l for _, l in LOOKS) + " |\n|---|" + "---|" * len(LOOKS) + "\n"
     for k, n in CARDS:
-        md += f"| {n} | " + " | ".join("يناسب" if all(fit(k, lk, b)[0] for b, _ in BGS) else "ما يناسب" for lk, _ in LOOKS) + " |\n"
+        md += f"| {n} | " + " | ".join(("يناسب" + ("، " + fit(k, lk, "photos")[1] if fit(k, lk, "photos")[1] else "")) if all(fit(k, lk, b)[0] for b, _ in BGS) else "ما يناسب" for lk, _ in LOOKS) + " |\n"
     open("matrix.md", "w", encoding="utf-8").write(md)
