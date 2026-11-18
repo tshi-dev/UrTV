@@ -78,7 +78,7 @@ if [ -n "$intended" ]; then
   raw=$("$PY" -I optimize/tv.py "$HANDLERS" 2> /dev/null | tr -d '\r') || raw=""
   settings=$(sed -n '/^== settings$/,/^== tv$/p' <<< "$raw" | sed 's/^[[:space:]]*//' | sed -n -E 's#^([A-Za-z0-9_.]+)/[A-Za-z0-9_.$]+$#\1#p')
   if ! grep -qx END_OF_LIST <<< "$raw" || [ -z "$settings" ]; then
-    echo "!! disable.sh: the TV did not say which apps open its Settings and its channels, so NOTHING was turned off. Run the same command again." >&2
+    echo "!! disable.sh: the TV did not say which apps open its Settings and its channels, so NOTHING was turned off. Run the same command again. (على أندرويد 6 وأقدم ما يقدر التلفزيون يجاوب هذا السؤال، فما نوقف فيه أي تطبيق من القوائم.)" >&2
     exit 1
   fi
   handlers=$(sed 's/^[[:space:]]*//' <<< "$raw" | sed -n -E 's#^([A-Za-z0-9_.]+)/[A-Za-z0-9_.$]+$#\1#p' | grep -v '^sa\.urtv\.' | sort -u)
