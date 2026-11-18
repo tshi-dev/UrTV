@@ -18,7 +18,7 @@ often describe the same bug in two ways, and both rows are kept when their guard
 **Numbering (the gate assigns blocks; a branch takes the next free id of its block, and renumbers before merge on a clash):**
 R-284 work/45-homerole · R-285 work/44-safefix · R-286 the 500 KB page gate · **R-287–R-299 4.4 beta 2** (work/45-ui, work/45-glass, the
 settings-style row, the «كنبة» rename, the glass dock) · **R-300 on: 4.4 beta 3** (R-300 work/44b3-lite, R-301 work/44b3-oom, R-302 the adhan row, then in merge
-order; work/44b3-adhan). Taken in beta 2: R-287 work/44b2-homeupdate.
+order). Taken in beta 2: R-287 work/44b2-homeupdate.
 
 | ID | Symptom | Cause | Fixed | Guard | Area | On TV |
 |---|---|---|---|---|---|---|
