@@ -56,7 +56,9 @@ check("the home's bridge answers only the family lock's questions and the Settin
       all(f"case ExtrasWords.{m}" in bridge for m in ("TYPE_CHECK", "SETTINGS_PIN", "KEY")) and "if (SettingsKey.isSettingsKey(e.getKeyCode()))" in bridge)
 check("the home's calls fail soft: an add-on that is missing or does not answer is «off», never an error", "catch (RuntimeException e) { return null; }" in ext
       and "return r == null ? RemoteNav.OFF : r;" in ext and "return r == null ? ExtrasWords.OFF : r;" in ext)
-check("the screens ask the add-on at most every 2 s (they ask while they draw)", "now - askedAt < 2000" in ext)
+check("the screens never ask the add-on themselves: the kept answer, asked again on a thread when older than 2 s (4.4, QA-6, R1)",
+      "static final long FRESH_MS = 2000;" in ext and "android.os.SystemClock.elapsedRealtime() - askedAt < FRESH_MS" in ext
+      and '"extras-status").start();' in ext and "refresh();\n        return known;" in ext)
 # the offer: only when a feature that needs it was asked for
 center, main, phone = text(HOME / "ControlCenter.java"), text(HOME / "MainActivity.java"), text(HOME / "PhoneApps.java")
 check("the offer opens from the four places that need the add-on: «أطفئ الآن» (OK and a long OK), the sleep timer's line, the phone's keys and the phone's typing",
@@ -88,7 +90,7 @@ check("tests/android_compile.sh compiles the add-on too", "the extras module com
 # 4.4 (the tester's TCL): turned on in the TV's list but not run by Android (TclAppBoot refused the bind; a force-stop): detected and said, never assumed to work
 heal = text(HOME / "A11yHeal.java")
 check("4.4: «turned on but not running» = listed and not bound (Extras.enabled is the service's own answer)", "static boolean listed(Context c) { return A11yList.has(read(c, LIST), TYPE); }" in heal
-      and "return A11yList.has(list, TYPE) && !Extras.enabled();" in heal)
+      and "return A11yList.has(list, TYPE) && Boolean.FALSE.equals(Extras.enabledKnown());" in heal)   # 4.4 (QA-6): only a real «off»
 check("4.4: the offer screen says the one fix (off and on again in «تسهيل الاستخدام»), after our own heal where we may write the list",
       "if (A11yHeal.listed(this))" in act and 'A11yHeal.check(getApplicationContext(), "fix-offer")' in act and "state.setText(S.tv(STUCK_FIX));" in act and "أطفئها وشغّلها من جديد" in act)
 check("4.4: the home's bar says it too (after the TV has been up 90 s, never in kids mode, its own «لاحقاً»), OK heals it or opens the accessibility settings behind the sleep lock",

@@ -34,7 +34,7 @@ check("«تم» and Back hide a dismissible one; one that is not has no button a
 check("a notice never takes the focus by itself, and has no «لاحقاً»", "&& notice == null) nudge.post(" in upd and "nudgeLater.setVisibility(notice != null ? View.GONE : View.VISIBLE);" in upd)
 check("its text in the app's language, the kept copy only (fetched in the background every 3 hours)",
       "nudgeAsk.setText(notice.text(S.en()));" in upd and "ContentFile.refresh(getApplicationContext(), NoticeRule.PATH, NoticeRule.NAME, 3 * 3600_000L);" in m
-      and "NoticeRule.pick(ContentFile.read(this, NoticeRule.NAME), day, BuildConfig.MARKETING, seen, noticeOnScreen)" in m)
+      and "NoticeRule.pick(notices.value(), day, BuildConfig.MARKETING, seen, noticeOnScreen)" in m and "notices.load(app);" in m)   # 4.4 (QA-10): the kept copy, loaded off the UI thread
 
 if not shutil.which("javac"):
     print("SKIP the run: no javac")

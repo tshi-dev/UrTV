@@ -30,7 +30,7 @@ check("the receiver: the same within three minutes", "d.rule.next(due - DuaPlan.
 check("the duas are set again when the times change (Aladhan's, a new place)", "DuaScheduler.schedule(c);   // 4.4: the duas' too" in read(T / "PrayerTimes.java") and read(T / "AdhanSync.java").count("DuaScheduler.schedule(c);") == 2)
 check("a preview of another muezzin replaces the first; the same one only gets its time again", "if (adhanPreview && previewSeconds > 0 && wanted == adhanVoice) {" in svc and "if (duaNow == null && !adhanPreview) return;" in svc)
 check("a prayer's row: the adhan whole, as a preview, at that prayer's level", "MusicService.adhan(this, voice, Adhan.name(voice), WHOLE_PREVIEW_S, row.index);" in tab and "WHOLE_PREVIEW_S = 600" in tab)
-check("the control centre: that prayer's own muezzin and level", "public static void play(Context c, int prayer)" in prev and "p.playFor(c, prayer)" in prev and "AdhanPreview.prayerOf(next)" in read(H / "ControlCenter.java"))
+check("the control centre: that prayer's own muezzin and level", "public static void play(Context c, int prayer)" in prev and "p.playFor(app, prayer)" in prev and "AdhanPreview.prayerOf(next)" in read(H / "ControlCenter.java"))
 
 if shutil.which("javac"):
     run = r"""package sa.urtv.home.tilawah;

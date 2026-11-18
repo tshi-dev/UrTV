@@ -368,6 +368,7 @@ node tests/date_num.test.mjs   # «التاريخ بالأرقام» on the scre
 node tests/wx_icon.test.mjs   # the screensaver's weather line: the condition's icon beside the temperature
 node tests/js_strip_test.mjs   # the pages ship without the script's comments: the same program (acorn trees), 50 KB smaller
 python3 tests/ui_thread_channel_test.py   # 4.3.3 hotfix: no query to the screensaver on the home's UI thread (the TCL remote froze)
+python3 tests/ui_thread_44_test.py   # 4.4 (QA-6..QA-10, R1): the add-on, the home key, the adhan preview, the follows and the notices file off the UI thread
 python3 tests/games_open_test.py   # 4.3.4: «الألعاب» opens a fresh «تلفزيونك» on its games (an open settings task came back instead)
 python3 tests/hidden_apps_way_test.py   # 4.3.4: a way back to hidden apps (settings «التطبيقات المخفية»), the toast names it, the mode survives onResume
 python3 tests/options_fit_test.py   # 4.3.4: the app options box is as wide as its words (they were cut off on a small tile)
