@@ -82,7 +82,8 @@ the phone page's key, «مركز التحكم» the control centre's row that op
    مثال للوكيل: optimize/saver.sh settingsstyle couch  (or `buttons`, `tvos`)
      القيم المقبولة: buttons|couch|tvos
 —— رجّع بطاقاتك [الرئيسية]
-   لا أمر موثّق بعد
+   مثال للوكيل: optimize/saver.sh preset tv  (the person's own look and cards back)
+     القيم المقبولة: tv|couch|clean|family|sport|calm|couch-prayers|clean-icons|sport-night|tv-glass
 —— شكل كنبة [الرئيسية]
    الخيارات: مفعّل / متوقف
    الأصل: متوقف
@@ -853,7 +854,8 @@ the phone page's key, «مركز التحكم» the control centre's row that op
    مثال للوكيل: optimize/saver.sh settingsstyle couch  (or `buttons`, `tvos`)
      القيم المقبولة: buttons|couch|tvos
 —— رجّع بطاقاتك [الرئيسية]
-   لا أمر موثّق بعد
+   مثال للوكيل: optimize/saver.sh preset tv  (the person's own look and cards back)
+     القيم المقبولة: tv|couch|clean|family|sport|calm|couch-prayers|clean-icons|sport-night|tv-glass
 —— شكل كنبة [الرئيسية]
    الخيارات: مفعّل / متوقف
    الأصل: متوقف
