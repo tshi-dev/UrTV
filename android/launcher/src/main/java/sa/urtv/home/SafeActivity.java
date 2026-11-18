@@ -23,6 +23,7 @@ import java.util.List;
 public class SafeActivity extends Activity {
     static final String TITLE = S.n("تلفزيونك توقف أكثر من مرة عند التشغيل"),
             BODY = S.n("افتح الشاشة الأصلية للتلفزيون، أو جرّب مرة ثانية. إذا تكرر، أرسل تقرير من مساعدك"),
+            BODY_RETRY = S.n("جرّب مرة ثانية. إذا تكرر، أرسل تقرير من مساعدك"),
             STOCK = S.n("افتح الشاشة الأصلية"), RETRY = S.n("حاول مرة ثانية"),
             NO_STOCK = S.n("ما لقينا شاشة أصلية مفعّلة، افتح الإعدادات من زر الإعدادات في الريموت");
 
@@ -38,7 +39,8 @@ public class SafeActivity extends Activity {
         int pad = Math.round(48 * getResources().getDisplayMetrics().density);
         col.setPadding(pad, pad, pad, pad);
         col.addView(text(S.tv(TITLE), 26));
-        col.addView(text(S.tv(BODY), 18));
+        boolean hasStock = stockHome() != null;   // 4.3.5 review F2: a TV whose own home our setup turned off: no dead button, the retry is the way
+        col.addView(text(S.tv(hasStock ? BODY : BODY_RETRY), 18));   // review F8: no line about a home that is not there
         Button stock = button(S.tv(STOCK));
         stock.setOnClickListener(v -> openStock());
         Button retry = button(S.tv(RETRY));
@@ -47,9 +49,7 @@ public class SafeActivity extends Activity {
             startActivity(new Intent(this, MainActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
             finish();
         });
-        boolean hasStock = stockHome() != null;   // 4.3.5 review F2: a TV whose own home our setup turned off: no dead button, the retry is the way
         if (hasStock) col.addView(stock);
-        else col.addView(text(S.tv(NO_STOCK), 16));
         col.addView(retry);
         setContentView(col);
         (hasStock ? stock : retry).requestFocus();

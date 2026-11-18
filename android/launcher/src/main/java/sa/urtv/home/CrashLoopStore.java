@@ -20,8 +20,10 @@ final class CrashLoopStore {
         }
     }
 
-    /** read-modify-write is one step: the crash handler, the hook and the background writer never interleave */
+    /** the in-memory state: held for the few microseconds a step takes, never across the disk (4.3.5 review F7) */
     private static final Object LOCK = new Object();
+    /** the file: held by the background writer and the dying process's handler while they write and fsync */
+    private static final Object FILE_LOCK = new Object();
     /** 4.4 review F7 (R1): opened() and drew() are written here, never with an fsync on the UI thread; the crash handler and the hook still write at once */
     private static final java.util.concurrent.ExecutorService BG = java.util.concurrent.Executors.newSingleThreadExecutor(r -> {
         Thread t = new Thread(r, "crashloop-store");
@@ -38,7 +40,12 @@ final class CrashLoopStore {
     private static void save(final Context c, final CrashLoop s) {
         final Context app = c.getApplicationContext() != null ? c.getApplicationContext() : c;
         try {
-            BG.execute(() -> { synchronized (LOCK) { if (state == s) write(app, s); } });   // a newer state has its own write queued
+            BG.execute(() -> {
+                synchronized (FILE_LOCK) {   // the disk under its own lock: a UI step (LOCK only) never waits on this fsync
+                    synchronized (LOCK) { if (state != s) return; }   // checked with the file held: a newer state (a crash) is never overwritten by this one
+                    write(app, s);
+                }
+            });
         } catch (RuntimeException ignored) {
         }
     }
@@ -63,7 +70,11 @@ final class CrashLoopStore {
         step(app, s -> s.started(now, BuildConfig.VERSION_CODE));   // a new version starts with nothing counted (review F5)
         final Thread.UncaughtExceptionHandler prev = Thread.getDefaultUncaughtExceptionHandler();
         Thread.setDefaultUncaughtExceptionHandler((t, e) -> {
-            try { synchronized (LOCK) { CrashLoop s = (state != null ? state : read(app)).crashed(System.currentTimeMillis()); state = s; write(app, s); } } catch (Throwable ignored) { }
+            try {
+                CrashLoop s;
+                synchronized (LOCK) { s = (state != null ? state : read(app)).crashed(System.currentTimeMillis()); state = s; }
+                synchronized (FILE_LOCK) { write(app, s); }   // the process is dying: written now
+            } catch (Throwable ignored) { }
             if (prev != null) prev.uncaughtException(t, e);
         });
     }

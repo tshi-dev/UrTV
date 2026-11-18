@@ -26,7 +26,7 @@ oncreate = app.split("public void onCreate() {")[1]
 check("the process's start is counted first in HomeApp (before anything that could crash)",
       oncreate.split("\n")[2].strip().startswith("CrashLoopStore.hook(this);"))
 check("a crash is written at once (synced) before the old handler takes the process down",
-      ".crashed(System.currentTimeMillis()); state = s; write(app, s);" in store and "o.getFD().sync();" in store
+      ".crashed(System.currentTimeMillis()); state = s; }" in store and "synchronized (FILE_LOCK) { write(app, s); }   // the process is dying" in store and "o.getFD().sync();" in store
       and store.index("crashed(") < store.index("prev.uncaughtException(t, e)"))
 mc = main.split("protected void onCreate(Bundle b) {\n        super.onCreate(b);")[1]
 check("MainActivity asks first: in safe mode it opens SafeActivity and finishes, building nothing",
@@ -40,7 +40,7 @@ check("SafeActivity: plain views only (no WebView, no provider, no photo)",
 check("4.3.5 review F1: SafeActivity never touches our place as the default home (on Android 9 nothing could put it back)", "clearPackagePreferredActivities" not in safe)
 check("4.3.5 review F2: «افتح الشاشة الأصلية» opens a real stock home (StockHome.real); none left: no button, the retry has the focus",
       "if (!StockHome.real(r.activityInfo.packageName, r.activityInfo.name)) continue;" in safe and "if (hasStock) col.addView(stock);" in safe
-      and "(hasStock ? stock : retry).requestFocus();" in safe)
+      and "(hasStock ? stock : retry).requestFocus();" in safe and "S.tv(hasStock ? BODY : BODY_RETRY)" in safe)   # F8: no line about a missing home
 check("«حاول مرة ثانية» clears the count and starts the home again", "CrashLoopStore.clear(this);" in safe and "MainActivity.class" in safe)
 check("SafeActivity is in the manifest, not exported", 'android:name=".SafeActivity"\n            android:exported="false"' in man)
 words = ["تلفزيونك توقف أكثر من مرة عند التشغيل", "افتح الشاشة الأصلية للتلفزيون، أو جرّب مرة ثانية. إذا تكرر، أرسل تقرير من مساعدك",
@@ -87,6 +87,10 @@ hook = store.split("static void hook(final Context app) {")[1].split("Thread.set
 check("F7 and 4.3.5 review F4: no file is written on the caller's thread (the hook, opened, drew, clear): the state changes in memory, BG writes it; only the dying process's handler writes at once",
       "BG.execute(" in store and "write(" not in hook and "step(app, s -> s.started(now, BuildConfig.VERSION_CODE));" in hook
       and "step(c, s -> s.opened(now));" in store and "step(c, s -> s.drewFrame(now));" in store and "step(c, CrashLoop::cleared);" in store and "setDaemon(true)" in store)
+bg = store.split("BG.execute(() -> {")[1].split("});")[0] if "BG.execute(() -> {" in store else ""
+check("4.3.5 review F7: the state lock is never held across the disk; the writer re-checks the state with the file held (a crash is never overwritten)",
+      "synchronized (FILE_LOCK) {" in bg and bg.index("synchronized (FILE_LOCK)") < bg.index("synchronized (LOCK) { if (state != s) return; }") < bg.index("write(app, s);")
+      and "synchronized (LOCK) { s = f.apply(" in store and "write(" not in store.split("private static void step(")[1].split("\n    }\n")[0])
 check("4.3.5 review F4: MainActivity's safe() reads the state in memory, never the disk once the hook ran",
       "static boolean safe(Context c) { CrashLoop s = state; return (s != null ? s : read(c)).safe(System.currentTimeMillis()); }" in store)
 check("F8: a second home screen in the same process is judged on its own first frame (opened() lets drew() mark again)",
