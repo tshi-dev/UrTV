@@ -353,7 +353,10 @@ public class SaverReceiver extends BroadcastReceiver {
         if (homeBg != null && !Arrays.asList(Prefs.HOME_BGS).contains(homeBg)) return "error: background is photos or scenes";
         if (homeClock != null && !Arrays.asList(Prefs.HOME_CLOCKS).contains(homeClock)) return "error: clock is plain or glass";
         if (appsStyle != null && !Arrays.asList(Prefs.HOME_APPS).contains(appsStyle) && !Arrays.asList(Prefs.APPS_STORED).contains(appsStyle))
-            return "error: appsstyle is banners, icons or tiles (frame or zoom: tiles with that focus)";
+            return "error: appsstyle is banners, icons, tiles or glass (frame or zoom: tiles with that focus)";
+        String glassSize = i.getStringExtra("glasssize"), glassRows = i.getStringExtra("glassrows");
+        if (glassSize != null && !Arrays.asList(Prefs.GLASS_SIZES).contains(glassSize)) return "error: glasssize is 50 to 150 in steps of 10";
+        if (glassRows != null && !Arrays.asList(Prefs.GLASS_ROWS).contains(glassRows)) return "error: glassrows is 1, 2 or 3";
         if (homeLayout != null && !Arrays.asList(Prefs.HOME_LAYOUTS).contains(homeLayout))
             return "error: homelayout is one of " + Prefs.join(Arrays.asList(Prefs.HOME_LAYOUTS), " ");
         String scenePacks = i.getStringExtra("scenepacks");   // 4.3.3 «حزم الآفاق»: saudi, couch, or both (comma between)
@@ -513,6 +516,8 @@ public class SaverReceiver extends BroadcastReceiver {
         if (homeBg != null) p.setHomeBg(homeBg);
         if (homeClock != null) p.setHomeClock(homeClock);
         if (appsStyle != null) p.setAppsStyle(appsStyle);
+        if (glassSize != null) p.setGlassSize(glassSize);   // 4.5 «زجاجي»
+        if (glassRows != null) p.setGlassRows(glassRows);
         if (scenePacks != null) p.setScenePacks(Arrays.asList(scenePacks.split(",")));
         if (sceneStay != null) p.setSceneStay(sceneStay);
         if (sceneTime != null) p.setSceneByTime("on".equals(sceneTime));

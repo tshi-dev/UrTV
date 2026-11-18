@@ -525,6 +525,13 @@ public class SettingsActivity extends Activity {
             pickOne("الساعة", Prefs.HOME_CLOCK_NAMES, java.util.Arrays.asList(Prefs.HOME_CLOCKS).indexOf(prefs.homeClock()), i -> prefs.setHomeClock(Prefs.HOME_CLOCKS[i])); } });
         row("شكل التطبيقات", Prefs.appsStyleLabel(prefs.appsStyle()), R.drawable.ic_eye, new Runnable() { public void run() {
             pickOne("شكل التطبيقات", Prefs.HOME_APPS_NAMES, java.util.Arrays.asList(Prefs.HOME_APPS).indexOf(Prefs.appsWay(prefs.appsStyle())), i -> prefs.setAppsStyle(Prefs.HOME_APPS[i])); } });
+        // 4.5 «زجاجي»: its size and rows (the two rows always here, so the way can be set up before it is chosen)
+        row("حجم الشريط الزجاجي", Prefs.glassSizeLabel(prefs.glassSize()), R.drawable.ic_eye, new Runnable() { public void run() {
+            String[] names = new String[Prefs.GLASS_SIZES.length];
+            for (int k = 0; k < names.length; k++) names[k] = Prefs.glassSizeLabel(Prefs.GLASS_SIZES[k]);
+            pickOne("حجم الشريط الزجاجي", names, java.util.Arrays.asList(Prefs.GLASS_SIZES).indexOf(prefs.glassSize()), i -> prefs.setGlassSize(Prefs.GLASS_SIZES[i])); } });
+        row("صفوف الشريط الزجاجي", Prefs.glassRowsLabel(prefs.glassRows()), R.drawable.ic_eye, new Runnable() { public void run() {
+            pickOne("صفوف الشريط الزجاجي", Prefs.GLASS_ROWS_NAMES, java.util.Arrays.asList(Prefs.GLASS_ROWS).indexOf(prefs.glassRows()), i -> prefs.setGlassRows(Prefs.GLASS_ROWS[i])); } });
         row("حزم الآفاق", labels(Prefs.SCENE_PACKS, prefs.scenePacks(), "آفاق السعودية"), R.drawable.ic_eye,
             new Runnable() { public void run() { pickMany("scenePacks", "حزم الآفاق", Prefs.SCENE_PACKS, "بدون اختيار = آفاق السعودية"); } });
         row("بقاء كل أفق", Prefs.sceneStayLabel(prefs.sceneStay()), R.drawable.ic_eye, new Runnable() { public void run() { pickSceneStay(); } });
