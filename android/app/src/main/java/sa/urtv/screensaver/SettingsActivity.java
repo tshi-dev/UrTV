@@ -1439,9 +1439,9 @@ public class SettingsActivity extends Activity {
             if (!cat.equals(screen)) open(cat);
             else restoreFocus(lastRow.get(screen), 0, scroll.getScrollY());   // into the rows: the one last focused there, else the first
         });
-        if (cs != null) couchSection(card, bar, ic, n);
+        if (cs != null) couchSection(card, bar, ic, n, cat);
         card.setOnFocusChangeListener((x, has) -> {
-            if (cs != null) CouchStyle.focus(x, has, CouchStyle.SEC_SCALE); else
+            if (cs != null) couchSectionFocus(x, has); else
             x.setAlpha(has || cat.equals(screen) ? 1f : 0.82f);
             side.removeCallbacks(sideOpen);
             if (has && !SettingsHub.SEARCH.equals(cat) && !cat.equals(screen)) {   // the section's rows, the focus kept on the list
@@ -1585,28 +1585,51 @@ public class SettingsActivity extends Activity {
         }
     }
 
-    /** one section of the side in couch-tv's look: its icon in a rounded box, its name; white when focused, lit while it is the one shown */
-    private void couchSection(LinearLayout card, View bar, ImageView ic, TextView n) {
+    /**
+     * one section of the side in couch-tv's look, 4.4 beta 2 v2 (the owner approved docs/mockups/settings-style/couch-v2-*): a taller bar, the
+     * name only (no icon, no mark); white when focused, lit while it is the one shown. The focused bar shows its name large and, under it, one plain
+     * line of what is inside (SettingsHub.SHORT): it grows by its words, never by a scale, so a weak TV has no motion at all.
+     */
+    private void couchSection(LinearLayout card, View bar, ImageView ic, TextView n, String cat) {
         bar.setVisibility(View.GONE);
-        card.setMinimumHeight(cs.px(CouchStyle.SEC_H));
-        card.setPaddingRelative(cs.px(0.875f), cs.px(0.5f), cs.px(1.5f), cs.px(0.5f));
+        ic.setVisibility(View.GONE);
+        card.setOrientation(LinearLayout.VERTICAL);
+        card.setGravity(Gravity.CENTER_VERTICAL | Gravity.START);
+        card.setMinimumHeight(cs.px(CouchStyle.SEC2_H));
+        card.setPaddingRelative(cs.px(CouchStyle.SEC2_PAD_X), cs.px(CouchStyle.SEC2_PAD_Y), cs.px(CouchStyle.SEC2_PAD_X), cs.px(CouchStyle.SEC2_PAD_Y));
         card.setBackground(cs.card(0, CouchStyle.SEC_ON, CouchStyle.SEC_RADIUS));
-        ic.setDuplicateParentStateEnabled(true);
-        ic.setImageTintList(CouchStyle.ink(CouchStyle.SEC, CouchStyle.WHITE, CouchStyle.INK));
-        android.graphics.drawable.StateListDrawable box = new android.graphics.drawable.StateListDrawable();
-        box.addState(new int[] {android.R.attr.state_focused}, cs.round(CouchStyle.ICON_BOX_FOCUS, CouchStyle.SEC_ICON_RADIUS));
-        box.addState(new int[] {}, cs.round(CouchStyle.ICON_BOX, CouchStyle.SEC_ICON_RADIUS));
-        ic.setBackground(box);
-        int pad = (cs.px(CouchStyle.SEC_ICON_BOX) - cs.px(CouchStyle.SEC_ICON)) / 2;
-        ic.setPadding(pad, pad, pad, pad);
-        LinearLayout.LayoutParams ip = new LinearLayout.LayoutParams(cs.px(CouchStyle.SEC_ICON_BOX), cs.px(CouchStyle.SEC_ICON_BOX));
-        ic.setLayoutParams(ip);
         n.setDuplicateParentStateEnabled(true);
         n.setTextColor(CouchStyle.ink(CouchStyle.SEC, CouchStyle.WHITE, CouchStyle.INK));
-        n.setTextSize(TypedValue.COMPLEX_UNIT_PX, cs.px(CouchStyle.SEC_TEXT));
-        LinearLayout.LayoutParams tp = (LinearLayout.LayoutParams) n.getLayoutParams();
-        tp.setMarginStart(cs.px(1.25f));
+        n.setTextSize(TypedValue.COMPLEX_UNIT_PX, cs.px(CouchStyle.SEC2_TEXT));
+        n.setLayoutParams(new LinearLayout.LayoutParams(-1, -2));
+        TextView line = new TextView(this);
+        line.setTag(SEC_LINE);
+        line.setText(conv(SettingsHub.shortLine(cat)));
+        line.setTextColor(CouchStyle.INK_SUB);
+        line.setTextSize(TypedValue.COMPLEX_UNIT_PX, cs.px(CouchStyle.SEC2_LINE));
+        line.setTypeface(font("Thmanyah-Regular"));
+        line.setTextDirection(Dir.text());
+        line.setMaxLines(3);   // wraps (a large font at 720p), never cut with «…»
+        line.setVisibility(View.GONE);
+        card.addView(line, new LinearLayout.LayoutParams(-1, -2));
     }
+
+    /** a section's focus in «كنبة» v2: its name large and its line shown; back to the name alone when the focus leaves (a size change, no animation) */
+    private void couchSectionFocus(View card, boolean has) {
+        TextView n = null;
+        View line = card.findViewWithTag(SEC_LINE);
+        for (int k = 0; k < ((ViewGroup) card).getChildCount(); k++) {
+            View c = ((ViewGroup) card).getChildAt(k);
+            if (c instanceof TextView && c != line && c.getVisibility() == View.VISIBLE) { n = (TextView) c; break; }
+        }
+        if (n != null) {
+            n.setTextSize(TypedValue.COMPLEX_UNIT_PX, cs.px(has ? CouchStyle.SEC2_BIG : CouchStyle.SEC2_TEXT));
+            n.setTypeface(font(has ? "ThmanyahDisplay-Bold" : "Thmanyah-Medium"));
+        }
+        if (line != null && ((TextView) line).length() > 0) line.setVisibility(has ? View.VISIBLE : View.GONE);
+        card.setTranslationZ(has ? 8f : 0f);
+    }
+    private static final String SEC_LINE = "secLine";
 
     /** couch-tv's head of the rows: a breadcrumb (a picker's section) over the title */
     private void couchHead() {

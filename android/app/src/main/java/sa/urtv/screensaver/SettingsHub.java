@@ -370,6 +370,22 @@ final class SettingsHub {
     }
 
     /** A category's name, null for none. */
+    /** 4.4 beta 2 «كنبة» v2 (the owner approved docs/mockups/settings-style/couch-v2-*): the one plain line under a focused section's big name,
+     *  what is inside, shorter than CATEGORIES' own line; none for the search */
+    static final String[][] SHORT = {
+        {LANG, "لغة التلفزيون، والأرقام، والتقويم، ونظام الساعة"},
+        {PLACE, "المدينة، ومنها الطقس ومواقيت الصلاة"},
+        {LOOK, "الأشكال الجاهزة، والتخطيط، والخلفية، والساعة، والتطبيقات"},
+        {APPS, "شريط التطبيقات وترتيبه وأقفاله"},
+        {BUTTONS, "أزرار الشاشة الرئيسية ومركز التحكم"},
+        {PRAY, "الأذان وتنبيهاته، وطريقة حساب المواقيت"},
+        {CONTENT, "فرقك ودورياتك، والأسواق، وجديد المسلسلات"},
+        {SAVER, "ما يظهر عليها، ومتى تبدأ"},
+        {FAMILY, "الرقابة الأبوية، وتصفية المواقع، والجوالات"},
+        {UPDATE, "الإصدار والتحديث، وإرسال تقرير"},
+    };
+    static String shortLine(String category) { for (String[] r : SHORT) if (r[0].equals(category)) return r[1]; return ""; }
+
     static String name(String category) {
         String[] c = find(category);
         return c == null ? null : c[1];
