@@ -280,6 +280,7 @@ case "${1:-}" in
   homelayout) set1 homelayout "${2:?usage: optimize/saver.sh homelayout classic|couch|football}" ;;
   preset)     set1 preset "${2:?usage: optimize/saver.sh preset tv|couch|clean|family|sport|calm|couch-prayers|clean-icons|sport-night|tv-glass}" ;;
   couch)      set1 couch "${2:?usage: optimize/saver.sh couch on|off}" ;;
+  lookback)   set1 lookback restore ;;   # 4.5 «رجّع الشكل السابق»: the look before the last change, put back whole (again: the other way)
   background) set1 background "${2:?usage: optimize/saver.sh background photos|scenes}" ;;
   clock)      set1 clock "${2:?usage: optimize/saver.sh clock plain|glass}" ;;
   appsstyle)  set1 appsstyle "${2:?usage: optimize/saver.sh appsstyle tiles|banners|icons}" ;;

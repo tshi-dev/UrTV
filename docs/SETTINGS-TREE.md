@@ -57,6 +57,10 @@ the phone page's key, «مركز التحكم» the control centre's row that op
       القيم المقبولة: on|off
 — المظهر
 —— أشكال جاهزة والتخطيط
+——— المظهر على الرئيسية [الرئيسية]
+    إجراء أو شاشة من التلفزيون (ما فيه قيمة يضبطها أمر)
+——— رجّع الشكل السابق [الرئيسية وشاشة التوقف]
+    مثال للوكيل: optimize/saver.sh lookback
 ——— أشكال جاهزة [الرئيسية وشاشة التوقف]
     الخيارات: شكلك المعتاد / منظر وساعة / صورة فقط / مواقيت يومي / مباريات اليوم / ليل هادئ
     مثال للوكيل: optimize/saver.sh preset family  (tv, couch, clean, family, sport, calm, or a mix: couch-prayers, clean-icons, sport-night, tv-glass)

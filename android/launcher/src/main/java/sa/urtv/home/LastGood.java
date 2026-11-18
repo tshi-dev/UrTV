@@ -20,8 +20,13 @@ public final class LastGood<T> {
     /** the last good value, never a query (null when there was none) */
     public synchronized T peek() { return last; }
 
+    /** 4.5: the next read asks again whatever the time (a setting just changed: Prefs.LOOK_CHANGED); the last answer stays for peek */
+    public synchronized void expire() { expired = true; }
+    private boolean expired;
+
     public synchronized Read<T> read(long now, long shareMs, Query<T> query) {
-        if (last != null && now - lastAt >= 0 && now - lastAt < shareMs) return new Read<>(last, false);
+        if (!expired && last != null && now - lastAt >= 0 && now - lastAt < shareMs) return new Read<>(last, false);
+        expired = false;
         T v = query.ask();
         if (v != null) { last = v; lastAt = now; return new Read<>(v, false); }
         return new Read<>(last, true);   // the last good one (null when there never was one)

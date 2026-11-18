@@ -187,13 +187,19 @@ final class HomeCard {
             @Override public void run() {
                 final String want = readUrl();
                 activity.runOnUiThread(new Runnable() {
-                    @Override public void run() { if (gen == refreshGen && resumed) applyUrl(want); }
+                    @Override public void run() { if (gen == refreshGen && resumed) applyUrl(want); appliedGen = gen; }
                 });
             }
         }, "homecard-url").start();
     }
 
-    private int refreshGen;
+    private int refreshGen, appliedGen;
+    private volatile String previewLayout, previewCards;
+    /** 4.5 «المظهر»: the layout and the cards a look under the focus would give (null: the saved ones); the next refresh shows them */
+    void preview(String layout, String cards) { previewLayout = layout; previewCards = cards; }
+
+    /** 4.5 HomeLook: the last refresh's url is in place and its page has drawn (or there is no page): the cover over a change of look may go */
+    boolean settled() { return appliedGen == refreshGen && !loading && (web == null || web.getAlpha() >= 1f); }
 
     /** P9 (weak TVs only): the card's page is let go after this long behind another app; the return builds it again (a page is some tens of MB of the renderer's memory) */
     static final long IDLE_DROP_MS = 10 * 60 * 1000;
@@ -212,6 +218,11 @@ final class HomeCard {
         if (!create(want)) return;   // 4.3.5: no WebView on this TV: the home without its card, never a crash (WebViews)
         web.onResume();
         web.resumeTimers();
+        if (android.os.Build.VERSION.SDK_INT >= 23) {   // 4.5: a new page is shown from its first drawn frame (onPageCommitVisible), never as an empty (black) box while it loads
+            final WebView w = web;
+            w.setAlpha(0f);
+            w.postDelayed(new Runnable() { @Override public void run() { w.setAlpha(1f); } }, HomeLook.WAIT_MS);   // at the latest
+        }
     }
 
     /** the page runs again; B7 (first-frame guard): after another app the card flickered (a blank or half-drawn frame before the page painted again): it is shown once the page has drawn its first frame after the return (visual state), at the latest after 700 ms */
@@ -277,6 +288,8 @@ final class HomeCard {
         if (layout == null) layout = sp.getString("layout", "classic");
         // Unreadable settings (the screensaver is missing, too old, or signed with another key, e.g. reinstalled
         // before this app): keep the last cards chosen, «بدون» included. Only with nothing remembered, the prayers.
+        if (previewLayout != null) layout = previewLayout;   // 4.5 «المظهر»'s preview: what is under the focus, never saved
+        if (previewCards != null) panel = previewCards;
         String[] choice = HomeCardChoice.pick(frag, panel, sp.getString("frag", null), sp.getString("panel", null));
         football = HomeCardChoice.football(layout, choice) && footballHost != null;   // 4.3.4: «بدون» turns the football home's widgets off too
         footballShown = football;   // «أرسل تقرير» says which layout the home had
@@ -349,6 +362,10 @@ final class HomeCard {
                 if (resumed) refresh();
                 return true;
             }
+
+            /** 4.5: the new page's first frame is on the screen: the card shows from it (applyUrl hid it while it loaded) */
+            @Override
+            public void onPageCommitVisible(WebView v, String u) { if (v.getAlpha() < 1f) v.setAlpha(1f); }
 
             // the page asks GitHub for its fonts; answer from the APK
             @Override

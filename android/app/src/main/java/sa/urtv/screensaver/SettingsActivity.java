@@ -202,6 +202,12 @@ public class SettingsActivity extends Activity {
     private Runnable previewOff, previewOn;
 
     @Override
+    protected void onPause() {
+        super.onPause();
+        prefs.lookChanged();   // 4.5: whatever was changed here (the colours, the cards…), the home reads it now, while it is still behind this screen
+    }
+
+    @Override
     protected void onStop() {
         if (previewOff != null) previewOff.run();
         super.onStop();
@@ -517,15 +523,21 @@ public class SettingsActivity extends Activity {
         // 4.3.3 «الواجهة»: the home as it was (the default), the football home, or «الآفاق» (a scene with the glass clock behind its scenery); and the scene packs
         // 4.4 the owner: one switch; on applies the Couch preset and keeps the person's own values, off puts them back (Prefs.setCouch)
         // 4.4 the owner: «أشكال جاهزة», six looks at once (Prefs.setPreset); with PRESETS_REPLACE_COUCH it takes the place of «شكل كنبة»
+        // 4.5 «المظهر» over the live home (LookPanelActivity): the looks and the parts, each shown on the home under the focus, kept with OK
+        row("المظهر على الرئيسية", "الأشكال الجاهزة والتخطيط والخلفية والساعة وشكل التطبيقات، تراها على الرئيسية قبل ما تختار", R.drawable.ic_eye,
+            new Runnable() { public void run() { LookPanelActivity.open(SettingsActivity.this); } });
+        // 4.5 «رجّع الشكل السابق» (the owner approved it): the first row after a change of the look, the look before by name (its time is in the panel's row); pressed again, it comes back
+        if (prefs.hasPreviousLook()) row("رجّع الشكل السابق", prefs.previousLookName(), R.drawable.ic_eye,
+            new Runnable() { public void run() { prefs.restorePreviousLook(); render(); } });
         row("أشكال جاهزة", prefs.presetLabel(), R.drawable.ic_eye, new Runnable() { public void run() { pickPreset(); } });
         if (!Prefs.PRESETS_REPLACE_COUCH) row("شكل كنبة", prefs.couchLabel(), R.drawable.ic_eye, new Runnable() { public void run() { flipCouch(); } });
         row("التخطيط", Prefs.homeLayoutLabel(prefs.homeLayout()), R.drawable.ic_eye, new Runnable() { public void run() { pickHomeLayout(); } });
         row("الخلفية", Prefs.homeBgLabel(prefs.homeBg()), R.drawable.ic_eye, new Runnable() { public void run() {
-            pickOne("الخلفية", Prefs.HOME_BG_NAMES, java.util.Arrays.asList(Prefs.HOME_BGS).indexOf(prefs.homeBg()), i -> prefs.setHomeBg(Prefs.HOME_BGS[i])); } });
+            pickOne("الخلفية", Prefs.HOME_BG_NAMES, java.util.Arrays.asList(Prefs.HOME_BGS).indexOf(prefs.homeBg()), i -> prefs.setLookPart("bg", Prefs.HOME_BGS[i])); } });
         row("الساعة", Prefs.homeClockLabel(prefs.homeClock()), R.drawable.ic_eye, new Runnable() { public void run() {
-            pickOne("الساعة", Prefs.HOME_CLOCK_NAMES, java.util.Arrays.asList(Prefs.HOME_CLOCKS).indexOf(prefs.homeClock()), i -> prefs.setHomeClock(Prefs.HOME_CLOCKS[i])); } });
+            pickOne("الساعة", Prefs.HOME_CLOCK_NAMES, java.util.Arrays.asList(Prefs.HOME_CLOCKS).indexOf(prefs.homeClock()), i -> prefs.setLookPart("clock", Prefs.HOME_CLOCKS[i])); } });
         row("شكل التطبيقات", Prefs.appsStyleLabel(prefs.appsStyle()), R.drawable.ic_eye, new Runnable() { public void run() {
-            pickOne("شكل التطبيقات", Prefs.HOME_APPS_NAMES, java.util.Arrays.asList(Prefs.HOME_APPS).indexOf(Prefs.appsWay(prefs.appsStyle())), i -> prefs.setAppsStyle(Prefs.HOME_APPS[i])); } });
+            pickOne("شكل التطبيقات", Prefs.HOME_APPS_NAMES, java.util.Arrays.asList(Prefs.HOME_APPS).indexOf(Prefs.appsWay(prefs.appsStyle())), i -> prefs.setLookPart("apps", Prefs.HOME_APPS[i])); } });
         row("حزم الآفاق", labels(Prefs.SCENE_PACKS, prefs.scenePacks(), "آفاق السعودية"), R.drawable.ic_eye,
             new Runnable() { public void run() { pickMany("scenePacks", "حزم الآفاق", Prefs.SCENE_PACKS, "بدون اختيار = آفاق السعودية"); } });
         row("بقاء كل أفق", Prefs.sceneStayLabel(prefs.sceneStay()), R.drawable.ic_eye, new Runnable() { public void run() { pickSceneStay(); } });
@@ -3632,7 +3644,7 @@ public class SettingsActivity extends Activity {
         for (int i = 0; i < labels.length; i++) labels[i] = Prefs.HOME_LAYOUT_NAMES[i];
         new Dlg(this).setTitle("التخطيط")
             .setSingleChoiceItems(labels, java.util.Arrays.asList(Prefs.HOME_LAYOUTS).indexOf(prefs.homeLayout()), (d, i) -> {
-                prefs.setHomeLayout(Prefs.HOME_LAYOUTS[i]);
+                prefs.setLookPart("layout", Prefs.HOME_LAYOUTS[i]);   // 4.5: the look before kept, the home told at once
                 d.dismiss();
                 render();
             })

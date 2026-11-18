@@ -347,6 +347,8 @@ public class SaverReceiver extends BroadcastReceiver {
             return "error: surface is quick|cards|tray, a number from 30 to 100, and one of look glass graphite";
         String homeLayout = i.getStringExtra("homelayout");
         String preset = i.getStringExtra("preset");
+        String lookback = i.getStringExtra("lookback");
+        if (lookback != null && !"restore".equals(lookback)) return "error: lookback is restore";
         String couch = i.getStringExtra("couch"), homeBg = i.getStringExtra("background"), homeClock = i.getStringExtra("clock"), appsStyle = i.getStringExtra("appsstyle");
         if ("scenes".equals(homeLayout)) { homeLayout = null; couch = "on"; }   // 4.3.3's word: the scenes with the glass clock
         if (couch != null && !"on".equals(couch) && !"off".equals(couch)) return "error: couch is on or off";
@@ -507,6 +509,7 @@ public class SaverReceiver extends BroadcastReceiver {
         if (focusX != null) p.setFocusStyle(focusX);
         if (syncX != null) p.setLookSync("on".equals(syncX));
         if (surfaceP != null) { int s = Arrays.asList(GlassStyle.SURFACES).indexOf(surfaceP[0]); p.setSurfacePercent(s, Integer.parseInt(surfaceP[1])); p.setSurfaceFill(s, surfaceP[2]); }
+        if ("restore".equals(i.getStringExtra("lookback"))) p.restorePreviousLook();   // 4.5 «رجّع الشكل السابق» (optimize/saver.sh lookback)
         if (preset != null) p.setPreset(preset);   // «أشكال جاهزة» before any one row given beside it (that row then makes it «مخصّص»)
         if (couch != null) p.setCouch("on".equals(couch));   // «شكل كنبة» first (it keeps or puts back the four), then any one choice given beside it
         if (homeLayout != null) p.setHomeLayout(homeLayout);

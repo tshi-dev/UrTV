@@ -80,6 +80,20 @@ final class ConfigSnapshot {
     ConfigSnapshot asStale() { ConfigSnapshot c = new ConfigSnapshot(fragment, greetingOn, adhanBarOn, listenPillOn, updateBellOn, appearance, watchNextOn, look, true, placeTicket); c.favBar = favBar; c.tweaks = tweaks; c.pagesDark = pagesDark; c.pillsHidden = pillsHidden; c.matchApp = matchApp; c.cityChosen = cityChosen; c.homeLayout = homeLayout; c.scenePacks = scenePacks; c.sceneStay = sceneStay; c.sceneByTime = sceneByTime; c.sceneByWeather = sceneByWeather; c.homeBg = homeBg; c.homeClock = homeClock; c.appsStyle = appsStyle; c.keyApps = keyApps; c.greetingName = greetingName; return c; }
 
     /**
+     * 4.5 «المظهر»'s preview (LookPreview): the same values with the look's parts a choice under the focus would give, never saved: the layout,
+     * the background, the clock, the apps' way and the light (null: the saved one). A copy marked as the answer it was made from (not stale).
+     */
+    ConfigSnapshot withLook(String layout, String bg, String clock, String apps, String light) {
+        ConfigSnapshot c = new ConfigSnapshot(fragment, greetingOn, adhanBarOn, listenPillOn, updateBellOn, light != null ? light : appearance, watchNextOn, look, stale, placeTicket); c.favBar = favBar; c.tweaks = tweaks; c.pagesDark = pagesDark; c.pillsHidden = pillsHidden; c.matchApp = matchApp; c.cityChosen = cityChosen; c.homeLayout = homeLayout; c.scenePacks = scenePacks; c.sceneStay = sceneStay; c.sceneByTime = sceneByTime; c.sceneByWeather = sceneByWeather; c.homeBg = homeBg; c.homeClock = homeClock; c.appsStyle = appsStyle; c.keyApps = keyApps; c.greetingName = greetingName;
+        if (layout != null) c.homeLayout = layout;
+        if (bg != null) c.homeBg = bg;
+        if (clock != null) c.homeClock = clock;
+        if (apps != null) c.appsStyle = apps;
+        return c;
+    }
+
+
+    /**
      * The settings fragment for the PRAYER PLACE (Place, the adhan alarm, the day parts): null when this is an old copy, so that only a real
      * answer of the screensaver can become the remembered place or move the alarm. Display values (zone, digits, clock) may use the old copy.
      */
@@ -99,6 +113,9 @@ final class ConfigSnapshot {
     static final long SHARE_MS = 3000;
 
     private static final LastGood<ConfigSnapshot> LAST = new LastGood<>();
+
+    /** 4.5: a look was just changed (Prefs.LOOK_CHANGED): the next read asks the screensaver again, not the 3-second copy */
+    static void expire() { LAST.expire(); }
 
     /** 4.3.4 QA-1: the last answer this process had, never a query (the UI thread's first draw); null when it has none yet */
     static ConfigSnapshot known() { return LAST.peek(); }

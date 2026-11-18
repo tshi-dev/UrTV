@@ -63,6 +63,13 @@
         android:name="sa.urtv.home.READ_GLASS"
         android:protectionLevel="signature" />
 
+    <!-- 4.5 the look: the screensaver's settings and «المظهر» tell the home a look changed, or show one before it is kept (Prefs.LOOK_CHANGED,
+         LookPanel's previews); only our two apps (same signing key) may send it, and the home's receiver asks for it -->
+    <permission
+        android:name="sa.urtv.home.LOOK"
+        android:protectionLevel="signature" />
+    <uses-permission android:name="sa.urtv.home.LOOK" />
+
     <!-- «تحديث تلفزيوني»: only our two apps (same signing key) may open the update screen -->
     <permission
         android:name="sa.urtv.home.OPEN_UPDATE"

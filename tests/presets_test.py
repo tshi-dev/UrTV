@@ -36,7 +36,7 @@ hid = re.search(r'BUTTONS_HIDDEN = "([^"]*)";', prefs).group(1)
 check("«صورة فقط» (the owner): the sources, the tasks, the recitation, the markets, the games, the phone and the search hidden; «مركز التحكم» and «تحديث جديد» stay",
       sorted(hid.split("|")[0].split(",")) == ["inputs", "markets", "matches", "phone"] and hid.split("|")[1:] == ["false", "false", "false"]
       and '"inputs"' in prefs[prefs.index("QUICK_BUTTONS = {"):].split("}")[0], hid)
-sp = prefs[prefs.index("    void setPreset(String key) {"):].split("\n    }\n")[0]
+sp = prefs[prefs.index("    void setPreset(String key) {"):prefs.index("    /** the rows changed since the look was chosen")]   # 4.5: setPreset and the writePreset it holds the lock for
 check("the person's own values kept once (the first look chosen), put back before each look, and exactly by «شكلك المعتاد»",
       'if (before == null) { before = presetNow(); sp.edit().putString("presetBefore", before).apply(); }' in sp and "else presetPut(before);" in sp
       and 'if (before != null) presetPut(before);' in sp and '.remove("preset").remove("presetBefore").remove("presetApplied")' in sp)
@@ -60,9 +60,9 @@ combos = re.findall(r'\{"([a-z-]+)", "([^"]+)", "([^"]+)", "([a-z]+)"((?:, "[a-z
 check("four mixes, each one of the six and a row or two, with the owner's names", [c[0] for c in combos] == ["couch-prayers", "clean-icons", "sport-night", "tv-glass"]
       and [c[1] for c in combos] == ["منظر وساعة + مواقيت اليوم", "صورة فقط + أيقونات التطبيقات", "مباريات اليوم + ليل هادئ", "شكلك المعتاد + الساعة الزجاجية"]
       and all(c[3] in keys for c in combos) and all(re.findall(r'"([a-zA-Z]+)=', c[4]) and set(re.findall(r'"([a-zA-Z]+)=', c[4])) <= set(fields) for c in combos), combos)
-sc = prefs[prefs.index("    void setCombo(String key) {"):].split("\n    }\n")[0]
+sc = prefs[prefs.index("    void setCombo(String key) {"):prefs.index("    /** the look chosen (\"tv\" when none)")]   # 4.5: setCombo and the comboNow it holds the lock for
 check("a mix: its look first (the person's own kept the same way), then its rows, and it reads as itself until a row is changed after",
-      "setPreset(c[3]);" in sc and '.putString("presetCombo", key).putString("presetApplied", presetNow())' in sc
+      "writePreset(c[3]);" in sc and '.putString("presetCombo", key).putString("presetApplied", presetNow())' in sc
       and 'String name = mix.isEmpty() ? presetName(key) : combo(mix)[1];' in prefs and 'sp.edit().remove("presetCombo").apply();' in prefs
       and 'if (combo(key) != null) { setCombo(key); return; }' in prefs)
 pick = st[st.index("    private void pickPreset() {"):st.index("    /** a mix chosen: applied as a look is")]

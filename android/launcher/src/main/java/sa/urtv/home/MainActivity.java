@@ -301,13 +301,130 @@ public class MainActivity extends Activity {
         InternalReceivers.register(this, nowPlayingChanged, new IntentFilter(NowPlaying.CHANGED));
         InternalReceivers.register(this, reminderDue, new IntentFilter(ReminderReceiver.SHOW));
         InternalReceivers.register(this, kickoffDue, new IntentFilter(KickoffReceiver.SHOW));
+        homeLook = new HomeLook(this);
+        // 4.5 the screensaver's settings tell the home a look changed (Prefs.LOOK_CHANGED), only under our signature permission
+        IntentFilter lf = new IntentFilter(LOOK_CHANGED);
+        if (android.os.Build.VERSION.SDK_INT >= 33) registerReceiver(lookChanged, lf, LOOK_PERMISSION, null, Context.RECEIVER_EXPORTED);
+        else registerReceiver(lookChanged, lf, LOOK_PERMISSION, null);
+        IntentFilter pf2 = new IntentFilter(LOOK_PREVIEW);
+        pf2.addAction(LOOK_PANEL);
+        if (android.os.Build.VERSION.SDK_INT >= 33) registerReceiver(lookPanel, pf2, LOOK_PERMISSION, null, Context.RECEIVER_EXPORTED);
+        else registerReceiver(lookPanel, pf2, LOOK_PERMISSION, null);
+    }
+
+    // ---- 4.5 (docs/ui/PROPOSAL.md, approved): a look changed shows at once and whole, behind HomeLook's cover when the home is on the screen
+    static final String LOOK_CHANGED = "sa.urtv.home.LOOK_CHANGED", LOOK_PERMISSION = "sa.urtv.home.LOOK";
+    private HomeLook homeLook;
+    /** the home is on the screen (onStart to onStop), even under a see-through screen such as «المظهر» */
+    private boolean shown;
+    private final BroadcastReceiver lookChanged = new BroadcastReceiver() {
+        @Override public void onReceive(Context c, Intent i) { lookChangedNow(); }
+    };
+
+    /** the saved look, read now (not the 3-second copy, not at the next minute), off the UI thread, then shown */
+    private void lookChangedNow() {
+        lookPreview = null;   // a look was kept (OK) or the saved one is wanted: no preview over it any more
+        homeCard.preview(null, null);
+        ConfigSnapshot.expire();
+        final Context app = getApplicationContext();
+        clockReads.execute(() -> {
+            final ConfigSnapshot got = ConfigSnapshot.read(app);
+            runOnUiThread(() -> { if (got != null && !isDestroyed() && !isFinishing()) showLook(got); });
+        });
+    }
+
+    /**
+     * The home in the look {@code cfg} says, every part of it in one go: on the screen, behind HomeLook's still picture and one fade (a change that
+     * throws puts the look shown before back, still behind it); not on the screen (the settings in front), at once, so the first frame of the
+     * return is already the new look (it was the old one, then the parts one by one: docs/ui/STUDY.md). The focus stays on the same app.
+     */
+    private void showLook(final ConfigSnapshot cfg) {
+        final String pkg = focusedPkg();
+        final ConfigSnapshot before = lastCfg;
+        final Runnable apply = () -> {
+            updateClock(cfg);
+            if (resumed) homeCard.refresh();   // not in front: onResume refreshes it, and the new page shows from its first frame (HomeCard)
+            applyClean();
+            wireFocus();
+            if (pkg != null) { focusPkgAfter = pkg; applyPendingFocus(); }
+        };
+        if (!shown || homeLook == null) { apply.run(); return; }
+        homeLook.change(apply, () -> { if (before != null) updateClock(before); }, () -> homeCard == null || homeCard.settled());
+    }
+
+    // «المظهر» (LookPanelActivity, in the screensaver app, see-through over this screen): the home moves aside while it is open, and shows the
+    // look under its focus before it is kept. The preview is never saved: it lays its parts over every read of the saved look (updateClock) and
+    // over the cards' choice (HomeCard.preview); its end, or Back, shows the saved look again; OK saves (Prefs) and LOOK_CHANGED follows.
+    static final String LOOK_PREVIEW = "sa.urtv.home.LOOK_PREVIEW", LOOK_PANEL = "sa.urtv.home.LOOK_PANEL";
+    /** layout, bg, clock, apps, light, cards (null each: the saved one); null: no preview */
+    private String[] lookPreview;
+    private final BroadcastReceiver lookPanel = new BroadcastReceiver() {
+        @Override public void onReceive(Context c, Intent i) {
+            if (LOOK_PANEL.equals(i.getAction())) { aside(i.getBooleanExtra("open", false)); if (!i.getBooleanExtra("open", false)) previewEnd(); return; }
+            if (!i.getBooleanExtra("on", false)) { previewEnd(); return; }
+            String[] p = {i.getStringExtra("layout"), i.getStringExtra("bg"), i.getStringExtra("clock"), i.getStringExtra("apps"), i.getStringExtra("light"), i.getStringExtra("cards")};
+            if (java.util.Arrays.equals(p, lookPreview)) return;
+            lookPreview = p;
+            homeCard.preview(p[0], p[5]);
+            ConfigSnapshot saved = ConfigSnapshot.known();
+            if (saved != null) showPreview(saved);
+        }
+    };
+
+    /** the preview shown, behind HomeLook's cover; the cards' page follows it even though this screen is paused under the panel */
+    private void showPreview(final ConfigSnapshot saved) {
+        final String pkg = focusedPkg();
+        final ConfigSnapshot before = lastCfg;
+        Runnable apply = () -> { updateClock(saved); homeCard.refresh(); applyClean(); if (pkg != null) { focusPkgAfter = pkg; applyPendingFocus(); } };
+        if (!shown || homeLook == null) { apply.run(); return; }
+        homeLook.change(apply, () -> { lookPreview = null; homeCard.preview(null, null); if (before != null) updateClock(before); }, () -> homeCard == null || homeCard.settled());
+    }
+
+    /** no preview any more (Back, the panel closed, or OK and its LOOK_CHANGED): the saved look, read fresh */
+    private void previewEnd() {
+        if (lookPreview == null) return;
+        lookPreview = null;
+        homeCard.preview(null, null);
+        lookChangedNow();
+    }
+
+    /** the whole home a little smaller beside the panel (one transform of its root, no layout), or back; a cut in «الوضع الخفيف» */
+    private void aside(boolean open) {
+        View root = findViewById(android.R.id.content);
+        if (root == null) return;
+        float s = open ? ASIDE_SCALE : 1f;
+        float edge = root.getWidth() * ASIDE_MARGIN / (1f - ASIDE_SCALE);   // the pivot that leaves that margin once scaled: p + (W - p) s = W - m
+        root.setPivotX(Dir.rtl() ? root.getWidth() - edge : edge);
+        root.setPivotY(root.getHeight() / 2f);
+        root.animate().cancel();
+        if (Ram.low(this)) { root.setScaleX(s); root.setScaleY(s); return; }
+        root.animate().scaleX(s).scaleY(s).setDuration(Motion.MS).setInterpolator(Motion.ease()).start();
+    }
+    /** the panel is 700 of 1920 at the start side's other end; the home, scaled, keeps 40 px (of 1920) from its own edge */
+    static final float ASIDE_SCALE = 0.6146f, ASIDE_MARGIN = 40f / 1920f;
+
+    /** the app whose tile has the focus, null when the focus is elsewhere */
+    private String focusedPkg() {
+        View f = getCurrentFocus();
+        for (Map.Entry<String, View> e : cardByPkg.entrySet()) {
+            for (View v = f; v != null; v = v.getParent() instanceof View ? (View) v.getParent() : null) if (v == e.getValue()) return e.getKey();
+        }
+        return null;
     }
 
     /** the photos were let go: decoding the next one starts HERE, at the start of the return (off the main thread, at screen size), not after the first frame's provider queries */
     @Override
     protected void onStart() {
         super.onStart();
+        shown = true;
         if (wallTrimmed) { wallTrimmed = false; nextWallpaper(); }
+    }
+
+    @Override
+    protected void onStop() {
+        shown = false;
+        if (homeLook != null) homeLook.finishNow();   // a cover still up when the screen was left: the change is complete, nothing to fade
+        super.onStop();
     }
 
     @Override
@@ -587,6 +704,8 @@ public class MainActivity extends Activity {
         unregisterReceiver(nowPlayingChanged);
         unregisterReceiver(reminderDue);
         unregisterReceiver(kickoffDue);
+        try { unregisterReceiver(lookChanged); } catch (IllegalArgumentException ignored) { }
+        try { unregisterReceiver(lookPanel); } catch (IllegalArgumentException ignored) { }
         loader.shutdownNow();
         tvLoader.shutdownNow();
         clockReads.shutdownNow();
@@ -3712,6 +3831,7 @@ public class MainActivity extends Activity {
     }
 
     private void updateClock(ConfigSnapshot cfg) {
+        if (lookPreview != null && cfg != null) cfg = cfg.withLook(lookPreview[0], lookPreview[1], lookPreview[2], lookPreview[3], lookPreview[4]);   // 4.5 «المظهر»: what is under the focus, never saved
         lastCfg = cfg;   // «مركز التحكم»'s «الأذان والإقامة» reads the times from it
         long ms = System.currentTimeMillis();
         clockDrawnAt = ms;

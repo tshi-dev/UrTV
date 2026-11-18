@@ -75,9 +75,9 @@ check("search: never answers with the search's own row, and «مدينة» finds
 occ = ["المناسبة القادمة", "saver"]
 check("4.5 (a user: «can I remove the Ramadan countdown?»): «المناسبة القادمة» is found by رمضان, a whole question, العيد or عيد, العد التنازلي and الإفطار with or without its hamza",
       all(occ in search[q] for q in ("رمضان", "كم باقي على رمضان", "العيد", "عيد", "العد التنازلي", "الإفطار", "الافطار")), {q: search[q][:3] for q in ("رمضان", "عيد", "الإفطار")})
-check("4.5 the other names people use: الأسهم and تاسي find «الأسواق», سكرين سيفر and screensaver find the screensaver's rows (تاسي not «يوم التأسيس»), ثيم finds «أشكال جاهزة»; a short word (على) finds no alias",
+check("4.5 the other names people use: الأسهم and تاسي find «الأسواق», سكرين سيفر and screensaver find the screensaver's rows (تاسي not «يوم التأسيس»), ثيم finds «أشكال جاهزة»; a short word (على) finds no alias, only rows whose name holds it",
       ["الأسواق", "content"] in search["الأسهم"] and ["الأسواق", "content"] in search["تاسي"] and ["بدء شاشة التوقف بعد", "saver"] in search["سكرين سيفر"]
-      and ["تصميم شاشة التوقف", "look"] in search["screensaver"] and all(r[0] != "المناسبات الوطنية" for r in search["تاسي"]) and any(r[0] == "أشكال جاهزة" for r in search["ثيم"]) and search["على"] == [],
+      and ["تصميم شاشة التوقف", "look"] in search["screensaver"] and all(r[0] != "المناسبات الوطنية" for r in search["تاسي"]) and any(r[0] == "أشكال جاهزة" for r in search["ثيم"]) and all("على" in r[0] for r in search["على"]),
       {q: search[q][:3] for q in ("الأسهم", "سكرين سيفر", "ثيم", "على")})
 names = {n for n, _, _ in rows}
 targets = re.findall(r'\{"[^"]+", "([^"]+)"\}', hub[hub.index("ALIASES = {"):hub.index("};", hub.index("ALIASES = {"))])
