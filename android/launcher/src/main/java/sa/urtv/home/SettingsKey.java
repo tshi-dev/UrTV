@@ -109,6 +109,24 @@ final class SettingsKey {
         return homeFront ? homeKeyLost : filterWanted(false, stockHome);
     }
 
+    /**
+     * 4.3.6: never below Android 9 (SDK 28). A Percee OTT box on Android 8.0: with the filter on, the remote froze on our home (every key goes
+     * through our main thread and Android 8.0 holds the input queue for the answer); without the app it worked. Below 9 the Settings key outside
+     * our home is the TV's own again, as on a weak TV.
+     */
+    static final int MIN_FILTER_SDK = 28;
+    static boolean filterWanted(boolean homeFront, boolean stockHome, boolean lowRam, boolean homeKeyLost, int sdk) {
+        if (sdk < MIN_FILTER_SDK) return false;
+        return filterWanted(homeFront, stockHome, lowRam, homeKeyLost);
+    }
+    /**
+     * Whether «the system takes the key before our home» (homeKeyLost) can be asked at all: only on an Android TV (leanback) of Android 9 or newer.
+     * NOTIFICATION_PANEL_ACTION is Android TV's SystemUI; on a box without it the action never resolves, and the answer «lost» turned the filter on
+     * while our home was in front, on every key (the Percee box above).
+     */
+    static boolean homeKeyLostApplies(int sdk, boolean leanback) {
+        return leanback && sdk >= MIN_FILTER_SDK;
+    }
     /** The enabled HOME answerers (packages) include a stock home: one that is not ours, not the setup wizard, not a settings app's fallback. */
     static boolean stockHomeOn(Iterable<String> homePackages, String ours) {
         if (homePackages == null) return false;

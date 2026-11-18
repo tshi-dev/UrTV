@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ResolveInfo;
 import android.net.Uri;
+import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -65,7 +66,7 @@ public class TypeService extends AccessibilityService {
             boolean front = homeFront, lowRam = Ram.low(this);
             if (!front && !lowRam) stockHome = stockHomeOn(this);   // one package query, only when the home leaves (none on a weak TV: no filter there)
             if (homeKeyLost == null) homeKeyLost = homeKeyLost(this);   // once per service: it does not change while the TV runs
-            boolean want = SettingsKey.filterWanted(front, stockHome, lowRam, homeKeyLost) && !DebugFlags.on(this, "nokeyfilter");   // (a tester's switch: no key filter at all)
+            boolean want = SettingsKey.filterWanted(front, stockHome, lowRam, homeKeyLost, Build.VERSION.SDK_INT) && !DebugFlags.on(this, "nokeyfilter");   // (a tester's switch: no key filter at all)
             AccessibilityServiceInfo info = getServiceInfo();
             if (info == null) return;
             boolean has = (info.flags & AccessibilityServiceInfo.FLAG_REQUEST_FILTER_KEY_EVENTS) != 0;
@@ -81,6 +82,14 @@ public class TypeService extends AccessibilityService {
 
     /** Every key, while the filter is on. Anything but the Settings key goes back to Android untouched: nothing is read, kept or logged. */
     @Override protected boolean onKeyEvent(KeyEvent e) {
+        try {   // 4.3.6: never throws into Android's key dispatch; anything unexpected gives the key back untouched
+            return keyEvent(e);
+        } catch (Throwable t) {
+            return false;
+        }
+    }
+
+    private boolean keyEvent(KeyEvent e) {
         Boolean lost = homeKeyLost;
         int d = settingsKey.decide(e.getKeyCode(), e.getAction(), e.getRepeatCount(), homeFront, stockHome, lost != null && lost);
         if (d == SettingsKey.PASS) return false;
@@ -123,6 +132,7 @@ public class TypeService extends AccessibilityService {
 
     static boolean homeKeyLost(Context c) {
         try {
+            if (!SettingsKey.homeKeyLostApplies(Build.VERSION.SDK_INT, c.getPackageManager().hasSystemFeature(PackageManager.FEATURE_LEANBACK))) return false;   // 4.3.6: only an Android TV of 9 or newer
             boolean lost = c.getPackageManager().queryIntentActivities(new Intent(SettingsKey.NOTIFICATION_PANEL_ACTION), 0).isEmpty();
             if (lost) log("settings key=homelost"); else log("settings key=homeok");
             return lost;
