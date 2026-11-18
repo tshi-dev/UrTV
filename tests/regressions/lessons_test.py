@@ -5,7 +5,8 @@ tests/edit_keys_test.py, R11 tests/beta_channel_test.py and tests/beta_newest_te
 (the byte budget) and tests/market_names_test.py, R21 privacy_test.py. Here:
 
 - R4  no focus listener scrolls (fullScroll, pageScroll, arrowScroll) or moves the focus (requestFocus) of another view by itself;
-- R9  every app targets API 34; the home declares no accessibility service (4.4 moved them to the add-on);
+- R9  every app targets API 34; the home declares no accessibility service and no overlay permission, notification listener, device admin, READ_LOGS or
+      QUERY_ALL_PACKAGES (4.4 moved the services and SYSTEM_ALERT_WINDOW to the add-on; Play Protect «sensitive data»), and the add-on holds them;
 - R10 tests/webview66_test.py (every inset, clamp()/min()/max() and flex gap with its fallback) is there and run;
 - R12 no fixed clean-up list names Android's core (core.txt), and the setup's own copy of the core rules is core.txt;
 - R15 apk-latest keeps the Latest flag and its stable names, rescue included; no other release takes Latest;
@@ -53,6 +54,19 @@ KNOWN_A11Y = set()   # 4.4 moved SleepService and TypeService to the add-on (Pla
 check("R9 the home declares no accessibility service (Play Protect; they live in the add-on)", set(a11y) <= KNOWN_A11Y, sorted(set(a11y) - KNOWN_A11Y))
 if set(a11y) < KNOWN_A11Y:
     print("NOTE an accessibility service left the home: remove it from KNOWN_A11Y")
+import re as _re
+live = _re.sub(r"<!--.*?-->", "", man, flags=_re.S)   # only what the manifest really declares, not its comments
+for perm in ("SYSTEM_ALERT_WINDOW", "BIND_ACCESSIBILITY_SERVICE", "BIND_NOTIFICATION_LISTENER_SERVICE", "BIND_DEVICE_ADMIN", "READ_LOGS", "QUERY_ALL_PACKAGES"):
+    check(f"R9 the home's manifest has no {perm} (Play Protect «can request access to sensitive data»)", perm not in live)
+check("R9 the home's manifest has no device-admin receiver, notification listener or accessibility service",
+      "android.app.action.DEVICE_ADMIN_ENABLED" not in live and "android.service.notification.NotificationListenerService" not in live
+      and "android.accessibilityservice.AccessibilityService" not in live)
+home_java = [p for p in (ROOT / "android/launcher/src/main/java").rglob("*.java") if "TYPE_APPLICATION_OVERLAY" in p.read_text(encoding="utf-8") or "canDrawOverlays" in p.read_text(encoding="utf-8")]
+check("R9 no code of the home draws an overlay window or asks canDrawOverlays (the add-on does: ExtrasNotice)", not home_java, [p.name for p in home_java])
+xm = text("android/extras/src/main/AndroidManifest.xml")
+check("R9 the add-on holds SYSTEM_ALERT_WINDOW and the accessibility service, and its provider is signature-guarded (EXTRAS)",
+      '<uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />' in xm and "BIND_ACCESSIBILITY_SERVICE" in xm
+      and 'android:authorities="sa.urtv.extras.bridge"' in xm and 'android:permission="sa.urtv.permission.EXTRAS"' in xm.split('sa.urtv.extras.bridge')[1][:200])
 
 # R10: WebView 66 (Chrome 66) has no inset, clamp()/min()/max() or flex gap: tests/webview66_test.py (4.4, GitHub #19) checks that every
 # use has its fallback before it and that the flex-gap stand-in is there; it must stay and stay in run.sh (it replaced 4.3.4's count ceilings)

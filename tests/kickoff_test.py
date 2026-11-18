@@ -5,7 +5,7 @@ screensaver's settings, the provider, saver.sh, dock.sh overlay) are pinned.
 
     python3 tests/kickoff_test.py
 """
-import shutil, subprocess, sys, tempfile, wave
+import re, shutil, subprocess, sys, tempfile, wave
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -46,14 +46,24 @@ plan, rcv, sched, over, man, main, card, whistle = (read(HOME / "sports/KickoffP
     read(HOME / "KickoffOverlay.java"), read(ROOT / "android/launcher/src/main/AndroidManifest.xml"), read(HOME / "MainActivity.java"), read(HOME / "HomeCard.java"), read(HOME / "tilawah/Whistle.java"))
 check("the launcher: the receiver, put back after a reboot and an update, only the system can send it (DUMP)",
       'android:name=".KickoffReceiver"' in man and "sa.urtv.home.KICKOFF_RESCHEDULE" in man and man.split('android:name=".KickoffReceiver"', 1)[1].split("</receiver>", 1)[0].count("android.permission.DUMP") == 1)
-check("the launcher asks for «الظهور فوق التطبيقات» in its manifest (granted only by the person or dock.sh overlay on)", "android.permission.SYSTEM_ALERT_WINDOW" in man)
+xman, xnote, xprov, xwords, xact, ovn = (read(ROOT / "android/extras/src/main/AndroidManifest.xml"), read(ROOT / "android/extras/src/main/java/sa/urtv/home/ExtrasNotice.java"),
+    read(ROOT / "android/extras/src/main/java/sa/urtv/home/ExtrasCallProvider.java"), read(HOME / "ExtrasWords.java"), read(HOME / "ExtrasActivity.java"), read(HOME / "OverlayNotice.java"))
+check("«الظهور فوق التطبيقات» is the ADD-ON's (granted only by the person or dock.sh overlay on): the home has no SYSTEM_ALERT_WINDOW (Play Protect), the add-on has",
+      "SYSTEM_ALERT_WINDOW" not in re.sub(r"<!--.*?-->", "", man, flags=re.S) and '<uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />' in xman)
 check("defaults when the screensaver app says nothing: on, the whistle, not over another app", "boolean[] s = {true, true, false};" in rcv)
 check("before showing: the game is looked up once; no answer (no network) = nothing", "lookupevent.php?id=" in rcv and "KickoffPlan.confirmed(check != null" in rcv)
 check("never with the adhan, never with the screen off, each game once", "NowPlaying.adhanLive()" in rcv and "screenOn" in rcv and "KickoffStore.markDone(app, g.id)" in rcv)
 check("kids mode and quiet hours reach the rules", "Parental.state(app).kids" in rcv and "Whistle.quietNow(app)" in rcv)
 check("over another app: only with «فوق تطبيق آخر» and the permission; the overlay is never focused or touched",
-      "Settings.canDrawOverlays(app)" in rcv and "TYPE_APPLICATION_OVERLAY" in over and "FLAG_NOT_FOCUSABLE" in over and "FLAG_NOT_TOUCHABLE" in over)
-check("the notice over another app: cream text on dark glass, top right", "CREAM = 0xFFFFF8EC" in over and "0xE60C0E12" in over and "Gravity.TOP | Dir.start(true)" in over, "colour")
+      "canDrawOverlays" not in rcv and "set[2] && !kids && OverlayNotice.ready()" in rcv and "OverlayNotice.kick(g)" in rcv and "TYPE_APPLICATION_OVERLAY" not in over
+      and "TYPE_APPLICATION_OVERLAY" in xnote and "FLAG_NOT_FOCUSABLE" in xnote and "FLAG_NOT_TOUCHABLE" in xnote and "Settings.canDrawOverlays(c)" in xnote)
+check("the add-on side: the provider answers «notice» (draws it) and says CAN_DRAW in its status; both ends are signature-guarded (EXTRAS); the words are shared",
+      "case ExtrasWords.NOTICE:" in xprov and "ExtrasNotice.show(getContext(), extras)" in xprov and "ExtrasWords.CAN_DRAW" in xprov
+      and 'android:permission="sa.urtv.permission.EXTRAS"' in xman and '"notice"' in xwords and '"can_draw"' in xwords
+      and "Extras.notice(b)" in ovn and "Extras.canDraw()" in ovn)
+check("the home's notice in its own window stays (no permission needed), and no TYPE_APPLICATION_OVERLAY is left anywhere in the home",
+      "static boolean showIn(" in over and not [p.name for p in HOME.rglob("*.java") if "TYPE_APPLICATION_OVERLAY" in read(p)])
+check("the notice over another app: cream text on dark glass, top right (the add-on's window), 8 s", "CREAM = 0xFFFFF8EC" in xnote and "0xE60C0E12" in xnote and "Gravity.TOP | Gravity.RIGHT" in xnote and "SHOW_MS = 8_000L" in xnote, "colour")
 check("the whistle is a notification sound that ducks the TV (never a music stream)", "USAGE_NOTIFICATION_EVENT" in whistle and "AUDIOFOCUS_GAIN_TRANSIENT_MAY_DUCK" in whistle)
 check("the home's card asks the page for its list (no JavaScript interface, only while in front)",
       "addJavascriptInterface" not in card and "spKickList()" in card and "idle.removeCallbacks(kickPull);   // 4.4" in card)
@@ -71,10 +81,18 @@ check("the provider gives the column «kickoff»", '"kickoff", "greeting_name"})
 rows = ["تنبيه بداية المباراة", "صوت التنبيه", "عند الهدف", "صافرة النهاية", "فوق تطبيق آخر"]
 check("the five rows in the settings, in both layouts (the hub's tables)", all(f'row("{r}"' in act for r in rows) and all(hub.count(f'"{r}"') >= 4 for r in rows),
       [r for r in rows if hub.count(f'"{r}"') < 4])
-check("«فوق تطبيق آخر» opens the TV's own permission screen for the home app", "MANAGE_OVERLAY_PERMISSION" in act and '"package:sa.urtv.home"' in act)
+check("«فوق تطبيق آخر» opens the TV's own permission screen for the ADD-ON (the home has none)", "MANAGE_OVERLAY_PERMISSION" in act and '"package:sa.urtv.extras"' in act and '"package:sa.urtv.home"' not in act)
+check("without the add-on the person is told on screen (Arabic, with its English entry) and the add-on's offer opens; the row says it needs the add-on",
+      "if (!extrasInstalled()) { offerExtras(); return; }" in act and '"sa.urtv.home.ExtrasActivity"' in act and '"sa.urtv.home.EXTRAS_FOR", "overlay"' in act
+      and "«فوق تطبيق آخر» يحتاج «إضافات تلفزيونك»: نفتح لك تثبيتها" in act and "يعمل، لكنه يحتاج «إضافات تلفزيونك»" in act
+      and all("\t" in l for l in read(ROOT / "i18n/en/saver.tsv").splitlines() if "فوق تطبيق آخر» يحتاج" in l)
+      and "«فوق تطبيق آخر» يحتاج «إضافات تلفزيونك» وهي غير مثبّتة" in xact and '"overlay".equals(' in xact and "allowOverlay()" in xact
+      and '"package:" + ExtrasWords.PACKAGE' in xact and 'android:name="sa.urtv.home.OPEN_EXTRAS"' in man)
 check("agents: saver.sh kickoff/kickoffgoal/kickoffend/kickoffover, and show says them", all(f"set1 {k} " in sh for k in ("kickoff", "kickoffgoal", "kickoffend", "kickoffover"))
       and all(f'"\\n{k}: "' in srcv for k in ("kickoff", "kickoffgoal", "kickoffend", "kickoffover")))
-check("dock.sh overlay on|off|status sets the appop; reset.sh puts it back", "appops set sa.urtv.home SYSTEM_ALERT_WINDOW allow" in dock and "appops set sa.urtv.home SYSTEM_ALERT_WINDOW default" in rst)
+check("dock.sh overlay on|off|status sets the ADD-ON's appop (nothing changed when it is not installed); reset.sh puts it back",
+      "appops set sa.urtv.extras SYSTEM_ALERT_WINDOW allow" in dock and "appops set sa.urtv.home SYSTEM_ALERT_WINDOW allow" not in dock
+      and "pm list packages sa.urtv.extras" in dock.split("overlay:2)")[1].split("overlay:*)")[0] and "appops set sa.urtv.extras SYSTEM_ALERT_WINDOW default" in rst)
 npp, bridge, tryj = read(HOME / "tilawah/NowPlayingProvider.java"), read(APP / "NowPlayingBridge.java"), read(APP / "KickoffTry.java")
 check("kids mode reaches the screensaver's page: the launcher's read-only .../kids row, &kids=1 on the screensaver's address (only that, not the home's cards)",
       '"kids".equals(uri.getLastPathSegment())' in npp and "KidsNow.on(getContext())" in npp and 'content://sa.urtv.home.nowplaying/kids' in bridge

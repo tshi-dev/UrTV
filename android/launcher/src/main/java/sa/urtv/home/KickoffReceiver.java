@@ -8,7 +8,6 @@ import android.net.Uri;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.PowerManager;
-import android.provider.Settings;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -29,7 +28,7 @@ import sa.urtv.home.tilawah.Whistle;
  * of the game (lookupevent: no answer, postponed or cancelled: nothing), then the short whistle (KickoffPlan.sound: chosen, never in kids
  * mode, the quiet hours or with the adhan) and the notice where the person is: the home's page draws it (spKick, told by a broadcast of our
  * own), the screensaver's page draws its own from its clock, over another app a small overlay with «فوق تطبيق آخر» and the permission
- * (KickoffOverlay), else a text notice (a toast, like the reminders'). Each game once; the alarm is put back after a reboot, a clock change
+ * (OverlayNotice: the add-on «إضافات تلفزيونك» draws it), else a text notice (a toast, like the reminders'). Each game once; the alarm is put back after a reboot, a clock change
  * or an update.
  */
 public class KickoffReceiver extends BroadcastReceiver {
@@ -76,17 +75,19 @@ public class KickoffReceiver extends BroadcastReceiver {
             if (!KickoffPlan.confirmed(check != null, check == null ? "" : check[0], check != null && "yes".equalsIgnoreCase(check[1]))) continue;
             int front = AdhanFront.whereNow(app);
             boolean kids = Parental.state(app).kids;
-            final int where = KickoffPlan.where(front == AdhanFront.AT_HOME ? 0 : front == AdhanFront.AT_SAVER ? 1 : 2, kids, set[2], Settings.canDrawOverlays(app));
+            // the overlay permission is the add-on's (the home holds none): asked here, on this thread, and only when the notice could go over another app
+            final int where = KickoffPlan.where(front == AdhanFront.AT_HOME ? 0 : front == AdhanFront.AT_SAVER ? 1 : 2, kids, set[2], front == AdhanFront.AT_OTHER && set[2] && !kids && OverlayNotice.ready());
             if (KickoffPlan.sound(set[1], kids, Whistle.quietNow(app), NowPlaying.adhanLive(), where)) Whistle.play(app);
-            new Handler(Looper.getMainLooper()).post(() -> show(app, g, where));
+            final boolean drawn = where == KickoffPlan.OVERLAY && OverlayNotice.kick(g);   // the add-on's window (IPC: this thread, never the UI thread)
+            new Handler(Looper.getMainLooper()).post(() -> show(app, g, where, drawn));
             Log.i("UrTVKickoff", "kick-off shown: " + where);
         }
     }
 
-    private static void show(Context app, KickoffPlan.Game g, int where) {
+    private static void show(Context app, KickoffPlan.Game g, int where, boolean drawn) {
         S.init(app);
         if (where == KickoffPlan.HOME) app.sendBroadcast(new Intent(SHOW).setPackage(app.getPackageName()).putExtra("game", g.json()).putExtra("json", g.noticeJson()).putExtra("line", g.line(S.t("بدأت المباراة"))));
-        else if (where == KickoffPlan.OVERLAY && KickoffOverlay.show(app, g)) return;
+        else if (where == KickoffPlan.OVERLAY && drawn) return;
         else if (where == KickoffPlan.OVERLAY || where == KickoffPlan.TOAST) {
             try { Toast.makeText(app, g.line(S.t("بدأت المباراة")), Toast.LENGTH_LONG).show(); } catch (RuntimeException ignored) { }
         }

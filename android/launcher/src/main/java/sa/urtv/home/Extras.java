@@ -71,6 +71,21 @@ public final class Extras {
         return known;
     }
 
+    /**
+     * 4.4: the add-on is installed and the TV lets it draw over other apps (its SYSTEM_ALERT_WINDOW). Asks the add-on: OFF the UI thread only (the
+     * kick-off and iqama receivers' threads), never from a screen's thread.
+     */
+    static boolean canDraw() {
+        Bundle b = call(ExtrasWords.STATUS, null, null);
+        return b != null && b.getBoolean(ExtrasWords.CAN_DRAW, false);
+    }
+
+    /** 4.4: the add-on draws the corner notice over the app in front; false when it cannot (not installed, no permission, the TV refused). Off the UI thread only. */
+    static boolean notice(Bundle what) {
+        Bundle b = call(ExtrasWords.NOTICE, null, what);
+        return b != null && b.getBoolean(ExtrasWords.RESULT, false);
+    }
+
     /** the sleep timer's end: the screen off; false when the add-on cannot (not installed, its service off, Android older than 9) */
     static boolean sleepNow() {
         Bundle b = call(ExtrasWords.SLEEP, null, null);

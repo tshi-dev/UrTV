@@ -34,7 +34,7 @@ import java.util.Set;
  */
 public class ExtrasActivity extends Activity {
     private static final String TAG = "UrTVExtras", RESULT = "sa.urtv.home.EXTRAS_INSTALL_RESULT";
-    /** what asked: "sleep", "type", "keys" (else the plain line) */
+    /** what asked: "sleep", "type", "keys", "overlay" («فوق تطبيق آخر»: the notice over another app) (else the plain line) */
     static final String EXTRA_FOR = "sa.urtv.home.EXTRAS_FOR";
 
     @Override protected void attachBaseContext(android.content.Context b) { super.attachBaseContext(S.wrap(b)); }
@@ -44,6 +44,9 @@ public class ExtrasActivity extends Activity {
     /** 4.4: the one fix when the add-on is turned on in the TV's list but Android does not run it */
     static final String STUCK_FIX = S.n("«إضافات تلفزيونك» مفعّلة لكن التلفزيون ما شغّلها: أطفئها وشغّلها من جديد في «تسهيل الاستخدام»");
     private boolean registered, working, askedSource, sentToSettings;
+    /** «فوق تطبيق آخر» asked for the add-on: what matters is its «الظهور فوق التطبيقات» permission, not its accessibility service; the answer of the last ask (a thread) */
+    private boolean forOverlay;
+    private volatile boolean canDraw;
 
     private final BroadcastReceiver result = new BroadcastReceiver() {
         @Override public void onReceive(Context c, Intent i) {
@@ -82,8 +85,8 @@ public class ExtrasActivity extends Activity {
 
     /** the line that names what asked for the add-on */
     static String lead(String what) {
-        String f = "sleep".equals(what) ? S.t("«إطفاء الشاشة»") : "type".equals(what) ? S.t("«الكتابة من الجوال»") : "keys".equals(what) ? S.t("«أزرار الجوال داخل التطبيقات»") : S.t("هذه الميزة");
-        return S.t("%s تحتاج إضافة صغيرة منّا اسمها «إضافات تلفزيونك». فيها ثلاث ميزات:", f);
+        String f = "sleep".equals(what) ? S.t("«إطفاء الشاشة»") : "type".equals(what) ? S.t("«الكتابة من الجوال»") : "keys".equals(what) ? S.t("«أزرار الجوال داخل التطبيقات»") : "overlay".equals(what) ? S.t("«فوق تطبيق آخر»") : S.t("هذه الميزة");
+        return S.t("%s تحتاج إضافة صغيرة منّا اسمها «إضافات تلفزيونك». فيها أربع ميزات:", f);
     }
 
     private Typeface font(String f) { try { return Typeface.createFromAsset(getAssets(), "fonts/" + f + ".otf"); } catch (RuntimeException e) { return null; } }
@@ -96,10 +99,12 @@ public class ExtrasActivity extends Activity {
         page.page.setBackgroundColor(0xF0151619);
         page.title.setText(S.t("إضافات تلفزيونك"));
         LinearLayout col = page.content;
+        forOverlay = getIntent() != null && "overlay".equals(getIntent().getStringExtra(EXTRA_FOR));
         col.addView(text(lead(getIntent() == null ? null : getIntent().getStringExtra(EXTRA_FOR)), 17, 0xFFECEFF3, "Thmanyah-Medium", start), lp(10));
         col.addView(text(S.t("١. زر الرئيسية يرجّعك لتلفزيونك لو فتح التلفزيون شاشته الأصلية (أجهزة Google TV).") + "\n"
             + S.t("٢. الكتابة من الجوال داخل التطبيقات الثانية، ومؤقت النوم يطفي الشاشة.") + "\n"
-            + S.t("٣. زر الإعدادات في الريموت يشتغل وأنت تشاهد فيديو HDR."), 17, 0xFFD6DAE0, "Thmanyah-Regular", start), lp(10));
+            + S.t("٣. زر الإعدادات في الريموت يشتغل وأنت تشاهد فيديو HDR.") + "\n"
+            + S.t("٤. تنبيه المباراة والإقامة يظهر فوق التطبيق الذي تشاهده."), 17, 0xFFD6DAE0, "Thmanyah-Regular", start), lp(10));
         TextView warn = text(S.t("عند التثبيت ممكن يقول Play Protect إن التطبيق «يطلب بيانات حساسة». هذا لأن الإضافة تستخدم «تسهيل الاستخدام» لتعرف أي تطبيق قدامك فقط: ما تقرأ اللي تكتبه ولا ترسل شيئاً. اضغط «تثبيت على أي حال»."),
             17, 0xFFD6DAE0, "Thmanyah-Regular", start);
         warn.setBackground(box(0xFF1C1E22, 0xFF3A3D44, dp(16)));
@@ -151,13 +156,24 @@ public class ExtrasActivity extends Activity {
         refresh();
         // 4.4 review F9: the kept answer can be old (the person just turned it on in Android's settings): ask on a thread, and look again on the UI thread when it answers
         new Thread(() -> { Extras.askNow(); runOnUiThread(() -> { if (!isFinishing() && !isDestroyed()) refresh(); }); }, "extras-offer").start();
+        if (forOverlay) new Thread(() -> { canDraw = Extras.canDraw(); runOnUiThread(() -> { if (!isFinishing() && !isDestroyed()) refresh(); }); }, "extras-overlay").start();   // the add-on's «الظهور فوق التطبيقات», on a thread
         if (askedSource && !working && canInstall()) { askedSource = false; install(); }   // back from Android's «allow this source» screen
     }
 
     /** the button says what is next: install, or turn the service on; once it runs, the screen closes */
     private void refresh() {
         if (working) return;
-        if (!Extras.installed(this)) { button.setText(S.t("ثبّت الإضافة")); return; }
+        if (!Extras.installed(this)) { button.setText(S.t("ثبّت الإضافة")); if (forOverlay) state.setText(S.t("«فوق تطبيق آخر» يحتاج «إضافات تلفزيونك» وهي غير مثبّتة")); return; }
+        if (forOverlay) {   // the notice needs the add-on's «الظهور فوق التطبيقات», not its accessibility service
+            if (canDraw) {
+                android.widget.Toast.makeText(this, S.t("«فوق تطبيق آخر» جاهز"), android.widget.Toast.LENGTH_LONG).show();
+                finish();
+                return;
+            }
+            button.setText(S.t("اسمح بالظهور فوق التطبيقات"));
+            state.setText(S.t("الإضافة مثبّتة: بقي السماح لها بالظهور فوق التطبيقات"));
+            return;
+        }
         if (Extras.enabled()) {
             android.widget.Toast.makeText(this, S.t("«إضافات تلفزيونك» شغّالة"), android.widget.Toast.LENGTH_LONG).show();
             finish();
@@ -175,6 +191,7 @@ public class ExtrasActivity extends Activity {
     private void act() {
         if (working) return;
         if (!Extras.installed(this)) { install(); return; }
+        if (forOverlay) { allowOverlay(); return; }
         if (Parental.needsPin(this, ParentalPolicy.targets(ParentalPolicy.SLEEP_ACCESSIBILITY, null))) { say(S.t("إعدادات التلفزيون مقفولة بالرقم السري: افتحها من «مركز التحكم» واختر «إضافات تلفزيونك»")); return; }
         try {
             sentToSettings = true;
@@ -183,6 +200,15 @@ public class ExtrasActivity extends Activity {
         } catch (RuntimeException e) {
             say(S.t("افتح إعدادات التلفزيون ← تسهيل الاستخدام، وشغّل «إضافات تلفزيونك»"));
         }
+    }
+
+    /** the TV's own «الظهور فوق التطبيقات» screen for the add-on; a TV that hides it: the computer's command, said once */
+    private void allowOverlay() {
+        Intent i = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:" + ExtrasWords.PACKAGE));
+        try {
+            if (getPackageManager().resolveActivity(i, 0) != null) { startActivity(i); return; }
+        } catch (RuntimeException ignored) { }
+        say(S.t("هذا التلفزيون يخفي هذا الإذن، فيُعطى من الكمبيوتر"));
     }
 
     private boolean canInstall() { return Build.VERSION.SDK_INT < 26 || getPackageManager().canRequestPackageInstalls(); }

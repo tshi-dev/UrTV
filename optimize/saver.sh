@@ -78,7 +78,7 @@
 #   optimize/saver.sh fbhide on                   the football home: hide the games that ended (off = the default: they show with their score)
 #   optimize/saver.sh kickoff off                 4.4 the kick-off alert of the followed clubs (on = the default; silent = no whistle, whistle = with it)
 #   optimize/saver.sh kickoffgoal on              …a goal's score in the corner too (off = the default); kickoffend on: the final score
-#   optimize/saver.sh kickoffover on              …over another app too (off = the default; needs «الظهور فوق التطبيقات»: optimize/dock.sh overlay on)
+#   optimize/saver.sh kickoffover on              …over another app too (off = the default; needs the add-on «إضافات تلفزيونك» (optimize/install.sh addon) with its «الظهور فوق التطبيقات»: optimize/dock.sh overlay on)
 #   optimize/saver.sh taskspill off                home screen: the «المهام» button: on (default) or off. Off removes only the button: the tasks stay, in the «المهام» card and on the phone
 #   optimize/saver.sh verse 3                      the verse-or-hadith card (card verse): day (default: a verse one day, a hadith the next), 3 or 10 (a new one every 3 or 10 minutes)
 #   optimize/saver.sh versekind verse              what that card shows: both (default: a verse, then a hadith), verse (verses only) or hadith (hadith only)

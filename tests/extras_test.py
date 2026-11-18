@@ -72,7 +72,9 @@ check("the install is our release file only: our package and our key are checked
       and 'URL = "https://github.com/tshi-dev/UrTV/releases/download/apk-latest/urtv-extras.apk"' in words)
 check("installed but off: the button opens the TV's accessibility settings (not when they are behind the PIN)",
       "Settings.ACTION_ACCESSIBILITY_SETTINGS" in act and "ParentalPolicy.SLEEP_ACCESSIBILITY" in act)
-check("the activity is not exported", re.search(r'android:name="\.ExtrasActivity" android:exported="false"', man))
+check("the activity is exported only behind the signature permission OPEN_EXTRAS (the screensaver's «فوق تطبيق آخر» opens the offer)",
+      re.search(r'android:name="\.ExtrasActivity" android:exported="true" android:permission="sa\.urtv\.home\.OPEN_EXTRAS"', man)
+      and re.search(r'<permission\s+android:name="sa\.urtv\.home\.OPEN_EXTRAS"\s+android:protectionLevel="signature"', man))
 # the watch
 ev = svc.split("public void onAccessibilityEvent(AccessibilityEvent e) {")[1].split("\n    }\n")[0]
 check("the Home watch reads of a window only its package and class, and asks HomeWatch",

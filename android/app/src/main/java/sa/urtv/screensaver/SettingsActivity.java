@@ -383,7 +383,7 @@ public class SettingsActivity extends Activity {
             new Runnable() { public void run() { prefs.setKickoffGoal(!prefs.kickoffGoal()); render(); } });
         row("صافرة النهاية", prefs.kickoffEnd() ? "يعمل" : "متوقف", R.drawable.ic_trophy,
             new Runnable() { public void run() { prefs.setKickoffEnd(!prefs.kickoffEnd()); render(); } });
-        row("فوق تطبيق آخر", prefs.kickoffOver() ? "يعمل" : "متوقف", R.drawable.ic_trophy,
+        row("فوق تطبيق آخر", prefs.kickoffOver() ? (extrasInstalled() ? "يعمل" : "يعمل، لكنه يحتاج «إضافات تلفزيونك»") : "متوقف", R.drawable.ic_trophy,
             new Runnable() { public void run() { prefs.setKickoffOver(!prefs.kickoffOver()); render(); if (prefs.kickoffOver()) askOverlay(); } });
         row("جرّب التنبيه", "يظهر الآن بفريقين للتجربة", R.drawable.ic_trophy,
             new Runnable() { public void run() { KickoffTry.show(SettingsActivity.this, prefs.kickoffWhistle()); } });
@@ -2061,16 +2061,34 @@ public class SettingsActivity extends Activity {
         });
     }
 
-    /** Followed teams: untick to remove, or add one (presets, league browsing, search). Up to 20. */
-    /** 4.4 «فوق تطبيق آخر»: the TV's own «الظهور فوق التطبيقات» screen for the home app; a TV that hides it: the computer's command, said once */
+    /** 4.4 «فوق تطبيق آخر»: the notice over another app is drawn by the add-on «إضافات تلفزيونك» (the home holds no overlay permission: Play Protect). Without the
+     *  add-on the person is told so on screen and its offer opens (the home's own screen); with it, the TV's «الظهور فوق التطبيقات» screen for the add-on;
+     *  a TV that hides it: the computer's command, said once */
     private void askOverlay() {
-        Intent i = new Intent("android.settings.action.MANAGE_OVERLAY_PERMISSION", Uri.parse("package:sa.urtv.home"));
+        if (!extrasInstalled()) { offerExtras(); return; }
+        Intent i = new Intent("android.settings.action.MANAGE_OVERLAY_PERMISSION", Uri.parse("package:sa.urtv.extras"));
         try {
             if (getPackageManager().resolveActivity(i, 0) != null) { startActivity(i); return; }
         } catch (RuntimeException ignored) { }
         toast("هذا التلفزيون يخفي هذا الإذن، فيُعطى من الكمبيوتر");
     }
 
+    /** «إضافات تلفزيونك» is installed (only read) */
+    private boolean extrasInstalled() {
+        try { getPackageManager().getPackageInfo("sa.urtv.extras", 0); return true; } catch (Exception e) { return false; }
+    }
+
+    /** the home's offer of the add-on (install it), told what it is for; the home opens it only for this app (signature permission, same key) */
+    private void offerExtras() {
+        try {
+            startActivity(new Intent().setClassName("sa.urtv.home", "sa.urtv.home.ExtrasActivity").putExtra("sa.urtv.home.EXTRAS_FOR", "overlay"));
+            toast("«فوق تطبيق آخر» يحتاج «إضافات تلفزيونك»: نفتح لك تثبيتها");
+        } catch (RuntimeException e) {
+            toast("«فوق تطبيق آخر» يحتاج «إضافات تلفزيونك»، ولم نقدر نفتح تثبيتها");
+        }
+    }
+
+    /** Followed teams: untick to remove, or add one (presets, league browsing, search). Up to 20. */
     private void manageTeams() {
         final List<String> cur = prefs.teams();
         String[] labels = new String[cur.size()];
