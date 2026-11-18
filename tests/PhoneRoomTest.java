@@ -12,6 +12,7 @@ public final class PhoneRoomTest {
     static void check(String what, boolean ok) { System.out.println((ok ? "PASS " : "FAIL ") + what); if (!ok) failed++; }
     static long[] now = {1_000_000L};
     static GamePhoneRoom room() { now[0] = 1_000_000L; return new GamePhoneRoom("4321", () -> now[0], new Random(7)); }
+    static boolean advance() { now[0] += 1500; return true; }   // the room allows 5 answers a second per phone
     static QuizRoom.Player join(GamePhoneRoom r, String n) { return r.join("4321", n, -1, null).player; }
 
     /** `serve <page.html>`: the real phone page behind the real server on the loopback, driven by lines on stdin (tests/phone_page.test.mjs):
@@ -31,6 +32,7 @@ public final class PhoneRoomTest {
                 case "secret": r.card(seat, GamePhoneRoom.SECRET, r.name(seat), txt, "note", null, null, -1); break;
                 case "vote": r.card(seat, GamePhoneRoom.VOTE, "", "who?", "", r.names().toArray(new String[0]), null, seat); break;
                 case "act": r.card(seat, GamePhoneRoom.ACT, "act", txt, "", null, new int[]{0, 1, 2}, -1); break;
+                case "order": r.card(seat, GamePhoneRoom.ORDER, "", "order these", "note", new String[]{"first", "second", "third"}, null, -1); break;
                 case "wait": r.hold(seat, txt); break;
                 case "pick": r.card(seat, GamePhoneRoom.PICK, "", "tiles", "note", new String[]{"3|5", "1|1", "6|2"}, new int[]{0, 2}, -1); break;
                 case "text": r.card(seat, GamePhoneRoom.TEXT, "", "who?", "", txt.isEmpty() ? new String[]{"one"} : txt.split(","), null, -1); break;
@@ -100,6 +102,11 @@ public final class PhoneRoomTest {
         int tid = r.card(1, GamePhoneRoom.TEXT, "", "word?", "", new String[]{"a", "b"}, null, -1);
         check("text: nothing typed is none; a post is cleaned (symbols out, spaces single), kept per field, taken once",
             r.typed(1) == null && r.answer(p1.token, tid, 0, "كلمة!!  طويلة\n") == null && Arrays.equals(r.typed(1), new String[]{"كلمة طويلة", ""}) && "card".equals(r.answer(p1.token, tid, 0, "x")));
+        now[0] += 1500;
+        int od = r.card(1, GamePhoneRoom.ORDER, "", "order", "", new String[]{"a", "b", "c"}, null, -1);
+        check("order: the phone answers once with the numbers of the options in its order (a permutation); a repeat, a missing number, a number out of range, text and an empty post are refused; the TV reads it as one string",
+            "card".equals(r.answer(p1.token, od, 0, "0,0,1")) && "card".equals(r.answer(p1.token, od, 0, "0,1")) && "card".equals(r.answer(p1.token, od, 0, "0,1,3")) && "card".equals(r.answer(p1.token, od, 0, "a,b,c")) && "card".equals(r.answer(p1.token, od, 0, null))
+            && advance() && "card".equals(r.answer(p1.token, od, 1, "0,1,2")) && r.answer(p1.token, od, 0, "2,0,1") == null && "2,0,1".equals(r.typed(1)[0]) && "card".equals(r.answer(p1.token, od, 0, "0,1,2")));
         now[0] += 1500;
         int tid2 = r.card(1, GamePhoneRoom.TEXT, "", "word?", "", new String[]{"a"}, null, -1);
         check("text: an empty post, a link-long post and the wrong card are refused; a new card forgets the old post", "card".equals(r.answer(p1.token, tid2, 0, "  \n ")) && "card".equals(r.answer(p1.token, tid2, 0, "y".repeat(700))) && "stale".equals(r.answer(p1.token, tid, 0, "x")) && r.typed(1) == null);

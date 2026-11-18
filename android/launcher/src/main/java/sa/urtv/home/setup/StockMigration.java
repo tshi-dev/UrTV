@@ -23,6 +23,17 @@ final class StockMigration {
         return "enabled".equals(stockBefore) || "enabled".equals(wizardBefore);
     }
 
+    /** 4.4 (R7): Google's stock home that is off (launcherx first, else tvlauncher), installed; null when neither (another maker's home is never guessed) */
+    static String googleStockOff(java.util.Set<String> installed, java.util.Set<String> off, String launcherx, String tvlauncher) {
+        if (installed.contains(launcherx) && off.contains(launcherx)) return launcherx;
+        if (installed.contains(tvlauncher) && off.contains(tvlauncher)) return tvlauncher;
+        return null;
+    }
+
+    /** 4.4 (R7): said once where no stock home answers Home and this app cannot fix it over adb (no key of ours on this TV): the way by hand */
+    static final String TOLD_MARK = "stock-off-told.txt";
+    static final String TOLD = "الشاشة الأصلية لتلفزيونك موقوفة من إعداد قديم. لو حذفت UrTV تصير الشاشة سوداء. شغّلها: الإعدادات ← التطبيقات ← كل التطبيقات ← الشاشة الأصلية ← تفعيل (UrTV تبقى الشاشة الرئيسية).";
+
     /** The packages to turn on: each one the journal says was on before and the TV says is off now (a package the TV had off itself is never touched). */
     static java.util.List<String> toEnable(String stockBefore, String stockPkg, String wizardBefore, String wizardPkg, java.util.Set<String> off, java.util.List<String> helpers, java.util.Set<String> installed) {
         java.util.List<String> out = new java.util.ArrayList<>();

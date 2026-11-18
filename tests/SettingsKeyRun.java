@@ -27,6 +27,10 @@ public final class SettingsKeyRun {
                 case "filter": r = SettingsKey.filterWanted(f[1].equals("home"), f[2].equals("on")) ? "on" : "off"; break;
                 // "filter4": front stockHome lowRam(low|ok) homeKeyLost(lost|ok)
                 case "filter4": r = SettingsKey.filterWanted(f[1].equals("home"), f[2].equals("on"), f[3].equals("low"), f[4].equals("lost")) ? "on" : "off"; break;
+                // "filter5": front stockHome lowRam homeKeyLost sdk (4.3.6: never below Android 9)
+                case "filter5": r = SettingsKey.filterWanted(f[1].equals("home"), f[2].equals("on"), f[3].equals("low"), f[4].equals("lost"), Integer.parseInt(f[5])) ? "on" : "off"; break;
+                // "lostask": sdk leanback(tv|box): may homeKeyLost be asked at all
+                case "lostask": r = SettingsKey.homeKeyLostApplies(Integer.parseInt(f[1]), f[2].equals("tv")) ? "yes" : "no"; break;
                 case "stock": r = SettingsKey.stockHomeOn(f[1].isEmpty() ? Collections.<String>emptyList() : Arrays.asList(f[1].split(",")), "sa.urtv.home") ? "yes" : "no"; break;
                 default: {
                     int code = Integer.parseInt(f[1]), action = Integer.parseInt(f[2]), repeat = Integer.parseInt(f[3]);

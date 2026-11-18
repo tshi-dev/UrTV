@@ -12,14 +12,24 @@ import android.widget.Toast;
 public final class SetupHook {
     private SetupHook() { }
 
+    /** 4.4 QA-13: the setup ledger's small files are read on a thread of their own, never in the home's onCreate; what they decide (the safety switch, the notice) comes a moment later */
     public static void atHomeStart(final Context c) {
+        final Context app = c.getApplicationContext();
+        new Thread(new Runnable() {
+            @Override public void run() { try { atHomeStartNow(app); } catch (RuntimeException ignored) { } }
+        }, "setup-home-check").start();
+    }
+
+    private static void atHomeStartNow(final Context app) {
         try {
-            final Context app = c.getApplicationContext();
             clearOldFails(app);
+            endNotSeen(app);   // 4.4 (R2)
             if (!SetupRecovery.pending(app)) { migrate(app); return; }
             SetupRecovery.rearmFromDisk(app);
             if (SetupRecovery.gaveUp(app)) {
-                Toast.makeText(app, SetupRecovery.GAVE_UP_NOTICE, Toast.LENGTH_LONG).show();
+                new android.os.Handler(android.os.Looper.getMainLooper()).post(new Runnable() {
+                    @Override public void run() { Toast.makeText(app, SetupRecovery.GAVE_UP_NOTICE, Toast.LENGTH_LONG).show(); }
+                });
                 return;
             }
             new Thread(new Runnable() {
@@ -42,7 +52,10 @@ public final class SetupHook {
         try {
             FileStore store = new FileStore(app);
             String j = store.get("home-switch.json");
-            if (j == null || !StockMigration.due(field(j, "state"), field(j, "stock_before"), field(j, "wizard_before"), store.get(SetupEngine.FACTORY), store.get(StockMigration.MARK))) return;
+            if (j == null || !StockMigration.due(field(j, "state"), field(j, "stock_before"), field(j, "wizard_before"), store.get(SetupEngine.FACTORY), store.get(StockMigration.MARK))) {
+                noJournal(app, store);   // 4.4 (R7): a TV switched the old way from the PC
+                return;
+            }
             new Thread(new Runnable() {
                 @Override public void run() {
                     try (SetupSession s = SetupSession.open(app, 5000, null, new SetupEngine.Out() { @Override public void line(String text) { } })) {
@@ -58,6 +71,57 @@ public final class SetupHook {
         } catch (RuntimeException ignored) {
             // the home screen comes first
         }
+    }
+
+    /**
+     * 4.4 (R7): no stock home answers Home (asked of this app's own package manager, no adb), the person did not choose «عطّل واجهة المصنع», and nothing was done yet:
+     * where this app's adb key exists (it was let in before) the stock home is turned back on (SetupEngine.migrateStockNoJournal); else the person is told the way
+     * by hand, once (no «السماح بتصحيح USB؟» popping up at a home start).
+     */
+    private static void noJournal(final Context app, FileStore store) {
+        String f = store.get(SetupEngine.FACTORY), m = store.get(StockMigration.MARK);
+        if ((f != null && f.startsWith("on")) || (m != null && !m.trim().isEmpty())) return;
+        java.util.List<String> homes = new java.util.ArrayList<>();
+        for (android.content.pm.ResolveInfo r : app.getPackageManager().queryIntentActivities(new android.content.Intent(android.content.Intent.ACTION_MAIN).addCategory(android.content.Intent.CATEGORY_HOME), 0))
+            if (r.activityInfo != null) homes.add(r.activityInfo.packageName);
+        if (RescueHome.stockHomeOn(homes)) return;
+        if (!AdbKeys.exists(app)) {
+            String told = store.get(StockMigration.TOLD_MARK);
+            if (told != null && !told.trim().isEmpty()) return;
+            try { store.put(StockMigration.TOLD_MARK, "told\n"); } catch (java.io.IOException e) { return; }
+            new android.os.Handler(android.os.Looper.getMainLooper()).post(new Runnable() { @Override public void run() { Toast.makeText(app, StockMigration.TOLD, Toast.LENGTH_LONG).show(); } });
+            return;
+        }
+        new Thread(new Runnable() {
+            @Override public void run() {
+                try (SetupSession s = SetupSession.open(app, 5000, null, new SetupEngine.Out() { @Override public void line(String text) { } })) {
+                    final SetupEngine.Result r = s.engine.migrateStockNoJournal();
+                    if (r != null && r.status == SetupEngine.Status.DONE) {
+                        new android.os.Handler(android.os.Looper.getMainLooper()).post(new Runnable() { @Override public void run() { Toast.makeText(app, StockMigration.NOTICE, Toast.LENGTH_LONG).show(); } });
+                    }
+                } catch (Exception ignored) {
+                    // the TV did not answer: the next start tries again
+                }
+            }
+        }, "stock-migration-pc").start();
+    }
+
+    /**
+     * 4.4 (R2: a Skyworth IRIS «stopped at 26 %, then the app closed by itself»): a full run that ended badly while its screen was not in front (it ended at a
+     * boot, or the app was closed) is said once at the next start of UrTV, in one line, with the way on. The setup screen shows the whole end (restoreEnd).
+     */
+    private static void endNotSeen(final Context app) {
+        try {
+            FileStore store = new FileStore(app);
+            String t = store.get(SetupRunner.END_FILE);
+            if (t == null || !t.startsWith("bad\n")) return;   // ok, told already, or none
+            final String text = t.substring(4).trim();
+            store.put(SetupRunner.END_FILE, "bad told\n" + text + "\n");
+            if (text.isEmpty()) return;
+            new android.os.Handler(android.os.Looper.getMainLooper()).post(new Runnable() { @Override public void run() {
+                Toast.makeText(app, "«إعداد تلفزيوني» ما كمل: " + text + " افتح «إعداد تلفزيوني» لتكمل.", Toast.LENGTH_LONG).show();
+            } });
+        } catch (java.io.IOException | RuntimeException ignored) { }
     }
 
     private static String field(String json, String key) {
@@ -115,7 +179,7 @@ public final class SetupHook {
         try {
             final Context app = c.getApplicationContext();
             final FileStore store = new FileStore(app);
-            if (!"1".equals(trim(store.get(SetupEngine.HOME_WANTED))) || SetupRecovery.pending(app) || SetupRunner.get().running() || oursIsDefault(app)) return;
+            if (!"1".equals(trim(store.get(SetupEngine.HOME_WANTED))) || stockBackOffered(app) || SetupRecovery.pending(app) || SetupRunner.get().running() || oursIsDefault(app)) return;
             if (!trim(store.get(SetupEngine.HOME_REAPPLIED)).isEmpty()) {
                 if (reapplyTried == 0) { reapplyTried = 1; android.util.Log.i(TAG, "home role: lost again after one re-apply; left as it is"); }
                 return;
@@ -238,8 +302,28 @@ public final class SetupHook {
         try { FileStore f = new FileStore(c); f.put(STOCK_OFFER, ""); f.put(HOME_GUARD, BootGuard.fresh(System.currentTimeMillis()).text()); } catch (Exception ignored) { }
     }
 
+    /** 4.4 review A2-F1: the person pressed the bar to take the TV's own home: our wish for the home goes too (reapplyIfLost and the add-on's watch would undo the rescue), and the add-on is told at once */
+    public static void stockTaken(Context c) {
+        clearStockBackOffer(c);
+        try { new FileStore(c).put(SetupEngine.HOME_WANTED, ""); } catch (Exception ignored) { }
+        tellWatchNow(c);
+    }
+
     /** Our home reached the screen (MainActivity.onResume): this boot is fine and BootGuard's count starts again (the factory step's, and 4.4 the home's own). One small read; a write only when it changes. */
-    public static void homeUp(Context c) {
+    public static void homeUp(final Context c) {
+        // 4.4 QA-13: on a thread of its own (the ledger's files, the journal, the guard), one at a time; the home's return never reads them
+        if (!homeUpRunning.compareAndSet(false, true)) return;
+        final Context app = c.getApplicationContext();
+        new Thread(new Runnable() {
+            @Override public void run() {
+                try { homeUpNow(app); } catch (RuntimeException ignored) { } finally { homeUpRunning.set(false); }
+            }
+        }, "setup-home-up").start();
+    }
+
+    private static final java.util.concurrent.atomic.AtomicBoolean homeUpRunning = new java.util.concurrent.atomic.AtomicBoolean();
+
+    private static void homeUpNow(Context c) {
         confirmIfDrawn(c);
         reapplyIfLost(c);
         tellWatch(c);

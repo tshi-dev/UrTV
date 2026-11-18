@@ -38,7 +38,7 @@ check("the whole box opens behind the family lock's MENU, from a long OK on the 
       "guarded(ParentalPolicy.MENU, null, S.t(\"قائمة التطبيق\"), () -> showAppMenuNow(anchor, pkg, inDock));" in main
       and "card.setOnLongClickListener(v -> { optionsHintUsed(); showAppMenu(v, app.pkg, inDock); return true; });" in main
       and "getCurrentFocus().getTag() instanceof App" in main and "showAppMenu(f, ((App) f.getTag()).pkg, dockCards.contains(f));" in main
-      and "showInputs(pills.get(0), ParentalPolicy.MENU_KEY);" in main)
+      and "showInputs(inputsAnchor(), ParentalPolicy.MENU_KEY);" in main)
 check("no tile beside the favourites: the bar is the apps only", "optionsTile" not in main and "pickingOptions" not in main)
 check("the hint «اضغط مطوّلاً للخيارات» beside a favourite's name, the first few times only, never once the box was opened",
       'OPTIONS_HINT = S.n("اضغط مطوّلاً للخيارات")' in main and "seen < OPTIONS_HINT_TIMES" in main and "optionsHint(inDock);" in main

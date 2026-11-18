@@ -21,6 +21,8 @@ final class GameChips {
     int scroll;
     /** the buttons of the last line: 0 the start button, 1 the names button (only when the game has names to write: `names`) */
     int btn; boolean names;
+    /** the small «!» above the first row (the how-to panel): `hasHelp` when the game has one, `help` when it has the focus (up from the first row reaches it, down leaves it) */
+    boolean hasHelp, help;
 
     GameChips add(String key, String label, String[] opts, int def) { rows.add(new Row(key, label, opts, Math.max(0, Math.min(opts.length - 1, def)))); row = rows.size(); return this; }
 
@@ -31,11 +33,14 @@ final class GameChips {
     /** an arrow: true when the focus moved. `dx` is toward the end of the line (the caller has turned it for Arabic). */
     boolean move(int dx, int dy) {
         if (dy != 0) {
+            if (help) { if (dy < 0) return false; help = false; return true; }
+            if (dy < 0 && row == 0 && hasHelp) { help = true; return true; }
             int to = Math.max(0, Math.min(rows.size(), row + dy));
             if (to == row) return false;
             row = to; col = onButton() ? 0 : rows.get(row).picked; btn = 0;
             return true;
         }
+        if (help) return false;
         if (onButton()) { int b = names ? Math.max(0, Math.min(1, btn + dx)) : 0; if (b == btn) return false; btn = b; return true; }
         if (dx == 0) return false;
         int to = Math.max(0, Math.min(rows.get(row).opts.length - 1, col + dx));

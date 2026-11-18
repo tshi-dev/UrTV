@@ -116,7 +116,8 @@ final class Greeting {
                         .putFloat("dust", dust)
                         .putFloat("vis", (float) cur.optDouble("visibility", -1))
                         .putInt("code", cur.getInt("weather_code")).apply();
-                main.post(() -> { fetching = false; update(java.util.Calendar.getInstance().get(java.util.Calendar.HOUR_OF_DAY), ConfigSnapshot.read(context)); });
+                final ConfigSnapshot again = ConfigSnapshot.read(context);   // on this thread: the posted code never asks the screensaver's provider on the UI thread
+                main.post(() -> { fetching = false; update(java.util.Calendar.getInstance().get(java.util.Calendar.HOUR_OF_DAY), again); });
             } catch (Exception e) {
                 main.post(() -> fetching = false);   // offline or Open-Meteo is down: the last answer, if fresh, stays
             }

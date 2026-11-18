@@ -74,3 +74,13 @@ filter4	other	on	ok	ok		off	a stock home on: as before
 filter4	home	off	low	lost		on	a weak TV whose system takes the key before our home (Haier MatrixTV BE): the service listens while our home is in front
 filter4	other	off	low	ok		off	a weak TV, another app: never
 filter4	other	off	low	lost		off	a weak TV, another app: never (only our own home is filtered there)
+filter5	home	off	ok	lost	26	off	4.3.6 (a Percee OTT box, Android 8.0, the remote froze on our home): no key filter below Android 9, even where the key looked lost
+filter5	other	off	ok	ok	26	off	4.3.6: another app on Android 8.0: no key filter either
+filter5	other	off	ok	ok	27	off	4.3.6: Android 8.1: no key filter
+filter5	other	off	ok	ok	28	on	Android 9: as before (another app, no stock home)
+filter5	home	off	low	lost	34	on	Android 14 (the Haier MatrixTV it was made for): as before
+lostask	26	tv				no	4.3.6: homeKeyLost is not asked on Android 8 (it was always «lost» there)
+lostask	28	box				no	4.3.6: nor on a box without Android TV's SystemUI (its panel action never resolves)
+lostask	28	tv				no	4.3.6 review F7: Android 9: not asked (the panel action is Android 11's; before it the answer was always «lost»)
+lostask	29	tv				no	4.3.6 review F7: Android 10: not asked either
+lostask	30	tv				yes	an Android TV of 11 or newer: asked, as before (the Haier MatrixTV is 14)

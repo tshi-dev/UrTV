@@ -37,6 +37,13 @@ final class GameLook {
         new GameLook(true, 0xFF12161C, 0xFFE6E9EE, 0xFF1E242C, 0xFF0F4D4A, 0xFF0B3A38, 0xFFE0A83E, 0xFF14120E, 0xFFF1F4F7, 0xFF217257, 0xFFD9694C, SIDES_NIGHT),
         new GameLook(true, 0xFF24201A, 0xFFE8DCC4, 0xFF332D25, 0xFF1F5A43, 0xFF174632, 0xFFD99A3A, 0xFF1A1409, 0xFFF3EBDA, 0xFF23785C, 0xFFD2694A, SIDES_NIGHT)};
 
+    /** the colour an engine game names for its accent («saff», «ok», «pink», «deep», «ink», «side0» to «side9») in this look */
+    static int accent(GameLook l, String name) {
+        switch (name) { case "ok": return l.ok; case "pink": return l.pink; case "deep": return l.deep; case "ink": return l.ink; case "saff": return l.saff; default: }
+        if (name.startsWith("side")) { try { return l.sides[Integer.parseInt(name.substring(4)) % l.sides.length]; } catch (RuntimeException e) { return l.saff; } }
+        return l.saff;
+    }
+
     /** the ink at an alpha 0..255 (quiet words, dashed lines) */
     int ink(int alpha) { return (ink & 0x00FFFFFF) | (alpha << 24); }
 

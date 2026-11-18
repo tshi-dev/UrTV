@@ -10,6 +10,7 @@ the UI thread instead whenever a key or the minute tick waits on it.
 
 Run: python3 tests/regressions/ui_thread_ipc_test.py            (the check)
      python3 tests/regressions/ui_thread_ipc_test.py --list     (every path found, one line each, with its route)"""
+import re
 import sys
 from pathlib import Path
 
@@ -50,7 +51,9 @@ def main():
     base = baseline()
     failed = 0
     new = sorted(k for k in now if k not in base)
-    no_reason = sorted(k for k, r in base.items() if not r)
+    # a reason is written by the reviewer: empty, or the bare copy of the label «baseline 4.3.4» (with or without its parenthetical), is none
+    bare = re.compile(r"^baseline 4\.3\.4(\s*\([^)]*\))?\.?$", re.I)
+    no_reason = sorted(k for k, r in base.items() if not r or bare.match(r.strip()))
     gone = sorted(k for k in base if k not in now)
     ipc = [k for k in new if k[0].startswith("ipc:")]
     disk = [k for k in new if k[0].startswith("disk:")]
@@ -59,7 +62,7 @@ def main():
     for k in disk:
         print("FAIL new disk work on the UI thread: " + " | ".join(k) + "\n     route: " + now[k])
     for k in no_reason:
-        print("FAIL a baseline line with no reason: " + " | ".join(k))
+        print("FAIL a baseline line with no written reason (empty, or only «baseline 4.3.4»): " + " | ".join(k))
     failed = len(new) + len(no_reason)
     for k in gone:
         print("NOTE no longer on the UI thread (remove its baseline line): " + " | ".join(k))

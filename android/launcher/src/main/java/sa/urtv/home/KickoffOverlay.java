@@ -2,7 +2,6 @@ package sa.urtv.home;
 
 import android.content.Context;
 import android.graphics.Color;
-import android.graphics.PixelFormat;
 import android.graphics.Typeface;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Handler;
@@ -11,45 +10,21 @@ import android.util.DisplayMetrics;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.View;
-import android.view.WindowManager;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import sa.urtv.home.sports.KickoffPlan;
 
 /**
- * 4.4 the kick-off notice over another app (YouTube, Shahid…), with «فوق تطبيق آخر» and the TV's «الظهور فوق التطبيقات» permission: the
- * page's own notice drawn natively, the top right, 8 seconds, then it slides away. It takes no focus and no key (NOT_FOCUSABLE, NOT_TOUCHABLE):
- * what plays under it goes on. Cream text on dark glass, the two clubs' colours, no crest.
+ * 4.4 the kick-off notice in our own home's window (showIn: no permission, never focused), the top right, 8 seconds, then it slides away. Cream
+ * text on dark glass, the two clubs' colours, no crest. Over another app the add-on draws the same notice (OverlayNotice, ExtrasNotice): the home
+ * holds no overlay permission (Play Protect).
  */
 final class KickoffOverlay {
     private KickoffOverlay() { }
 
     static final long SHOW_MS = 8_000L;
     private static final int CREAM = 0xFFFFF8EC, GOLD = 0xFFF0D48E, SUB = 0xFFE5DCC8;
-
-    /** false when it could not be shown (no permission, the TV refused): the caller says it another way */
-    static boolean show(Context c, KickoffPlan.Game g) {
-        final WindowManager wm = (WindowManager) c.getSystemService(Context.WINDOW_SERVICE);
-        if (wm == null) return false;
-        DisplayMetrics dm = c.getResources().getDisplayMetrics();
-        final View box = view(c, g, dm);
-        WindowManager.LayoutParams p = new WindowManager.LayoutParams((int) (dm.widthPixels * 0.36f), WindowManager.LayoutParams.WRAP_CONTENT,
-            WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
-            WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE | WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE | WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN,
-            PixelFormat.TRANSLUCENT);
-        p.gravity = Gravity.TOP | Dir.start(true);   // the top right in both languages (the owner's corner, as the mockup)
-        p.x = (int) (dm.widthPixels * 0.025f);
-        p.y = (int) (dm.heightPixels * 0.045f);
-        try { wm.addView(box, p); } catch (RuntimeException e) { return false; }
-        final float away = dm.widthPixels * 0.4f;
-        box.setTranslationX(away);
-        box.animate().translationX(0).setDuration(450).start();
-        new Handler(Looper.getMainLooper()).postDelayed(() -> box.animate().translationX(away).setDuration(450).withEndAction(() -> {
-            try { wm.removeView(box); } catch (RuntimeException ignored) { }
-        }).start(), SHOW_MS);
-        return true;
-    }
 
     /** on our own home: the same notice in the home's window (no permission), the top right, never focused; false when it could not be added */
     static boolean showIn(android.app.Activity a, KickoffPlan.Game g) {

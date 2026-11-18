@@ -13,7 +13,7 @@ public class SetupRunnerRun {
         final SetupEngineRun.Dead dead = new SetupEngineRun.Dead();
         boolean inline = true;
         String refuse;              // open() throws this message
-        int opens, finished, sleeps, fresh, freshAtOpen = -1;
+        int opens, finished, sleeps, fresh, undone, freshAtOpen = -1;
         final List<Runnable> held = new ArrayList<>();
         SetupRunner r;              // the runner this host serves: the person's answer at the start screen is given from sleep()
         Boolean answer = true;      // «ابدأ» (true), «إلغاء» (false), nothing (null: the ten minutes run out)
@@ -69,6 +69,7 @@ public class SetupRunnerRun {
         public void spawn(Runnable job) { if (inline) job.run(); else held.add(job); }
         public void finished() { finished++; }
         public void freshKey() { fresh++; }
+        public void undone() { undone++; }
         boolean late;
         String lateLines = "";
         public void sleep(int ms) {
@@ -200,11 +201,12 @@ public class SetupRunnerRun {
         // tester step 18: the second run did not ask: a key a run kept is let go again BEFORE a fresh run and an undo (when nothing is pending)
         SetupRunner rk = new SetupRunner(); Host hk = new Host(SetupEngineRun.tv(), new SetupEngineRun.Mem());
         go(rk, hk, SetupRunner.Kind.FULL, new SetupRunner.Options());
-        int afterFull = hk.fresh;
+        int afterFull = hk.fresh, keyFull = hk.undone;
         go(rk, hk, SetupRunner.Kind.UNDO, new SetupRunner.Options());
-        int afterUndo = hk.fresh;
+        int afterUndo = hk.fresh, keyUndo = hk.undone;
         go(rk, hk, SetupRunner.Kind.ANSWERS, new SetupRunner.Options());
         line("RK " + afterFull + " " + afterUndo + " " + hk.fresh);
+        line("RKD " + keyFull + " " + keyUndo + " " + hk.undone);   // 4.4 F20: the key goes at the undo, not after a done full run or the answers
         List<SetupRunner.Line> all = r.linesSince(0);
         boolean ordered = true;
         for (int i = 1; i < all.size(); i++) if (all.get(i).seq != all.get(i - 1).seq + 1) ordered = false;
@@ -345,7 +347,8 @@ public class SetupRunnerRun {
         SetupEngineRun.FakeTv t15 = SetupEngineRun.tv(); t15.installed.remove("sa.urtv.screensaver"); t15.adbPort = "5555";
         SetupEngineRun.Mem m15 = new SetupEngineRun.Mem(); Host h15 = new Host(t15, m15);
         SetupRunner r15 = new SetupRunner();
-        go(r15, h15, SetupRunner.Kind.FULL, new SetupRunner.Options());
+        SetupRunner.Options o15 = new SetupRunner.Options(); o15.fullMeasure = true;   // 4.4: the full measure is asked for (the default is the quick reading)
+        go(r15, h15, SetupRunner.Kind.FULL, o15);
         String first15 = r15.end() == null ? "null" : r15.end().text;
         boolean await = SetupRunner.awaitingRestart(m15);
         int rb1 = t15.reboots;
@@ -377,11 +380,26 @@ public class SetupRunnerRun {
         java.nio.file.Files.write(java.nio.file.Paths.get(System.getProperty("out"), "report-now.md"), m16.get("report.md").getBytes(java.nio.charset.StandardCharsets.UTF_8));
         // 17. the TV ignored the restart: resumed on the same boot, it is not asked again
         SetupEngineRun.FakeTv t17 = SetupEngineRun.tv(); t17.adbPort = "5555"; SetupEngineRun.Mem m17 = new SetupEngineRun.Mem(); Host h17 = new Host(t17, m17);
-        go(new SetupRunner(), h17, SetupRunner.Kind.FULL, new SetupRunner.Options());
+        SetupRunner.Options o17 = new SetupRunner.Options(); o17.fullMeasure = true;   // 4.4: the full measure asked for
+        go(new SetupRunner(), h17, SetupRunner.Kind.FULL, o17);
         t17.adbPort = "";   // (so the reading after the setup does not restart either)
         SetupRunner r17 = new SetupRunner();
         resume(r17, h17);
         line("R17 reboots=" + t17.reboots + " kinds=[" + m17.get("measure-kinds.txt").trim().split("\n")[0] + "] beforeDone=" + states(r17).contains("before:DONE"));
+        // 17q. 4.4 (a Skyworth IRIS, Android 14, stopped at 26 %): by default the run takes quick readings and never restarts the TV, even where adb survives a restart
+        SetupEngineRun.FakeTv t17q = SetupEngineRun.tv(); t17q.adbPort = "5555"; SetupEngineRun.Mem m17q = new SetupEngineRun.Mem(); Host h17q = new Host(t17q, m17q);
+        SetupRunner r17q = new SetupRunner();
+        go(r17q, h17q, SetupRunner.Kind.FULL, new SetupRunner.Options());
+        String kinds17q = m17q.get("measure-kinds.txt") == null ? "" : m17q.get("measure-kinds.txt").trim().replace("\n", ",");
+        line("R17q reboots=" + t17q.reboots + " kinds=[" + kinds17q + "] await=" + SetupRunner.awaitingRestart(m17q) + " ended=" + (r17q.end() != null)
+            + " kept=" + String.valueOf(m17q.get(SetupRunner.END_FILE)).split("\n")[0]);
+        // 17e. 4.4 (R2): the end is kept on disk; a new process's setup screen shows it; a new run lets it go
+        SetupRunner r17e = new SetupRunner();
+        r17e.restoreEnd(m17q);
+        String e17 = r17e.end() == null ? "null" : r17e.end().text;
+        SetupEngineRun.Mem m17b = new SetupEngineRun.Mem(); m17b.put(SetupRunner.END_FILE, "bad\nانقطع الاتصال.\n");
+        SetupRunner r17b = new SetupRunner(); r17b.restoreEnd(m17b);
+        line("R17e same=" + e17.equals(r17q.end().text) + " bad=" + (r17b.end() != null && r17b.end().bad && r17b.end().text.equals("انقطع الاتصال.")));
         // 18. a fresh install signed with another key is refused
         SetupEngineRun.FakeTv t18 = SetupEngineRun.tv(); t18.installed.remove("sa.urtv.screensaver"); SetupEngineRun.Mem m18 = new SetupEngineRun.Mem(); Host h18 = new Host(t18, m18);
         h18.apkSig = "ef".repeat(32);
@@ -614,7 +632,8 @@ public class SetupRunnerRun {
             }
         };
         SetupRunner r32 = new SetupRunner(); cur32[0] = r32;
-        go(r32, h32, SetupRunner.Kind.FULL, new SetupRunner.Options());
+        SetupRunner.Options o32 = new SetupRunner.Options(); o32.fullMeasure = true;   // 4.4: the full measure asked for
+        go(r32, h32, SetupRunner.Kind.FULL, o32);
         boolean resumes = SetupRunner.awaitingRestart(disk32);
         t32.bootId = "boot-2";
         SetupEngineRun.Mem after32 = new SetupEngineRun.Mem(); after32.files.putAll(disk32.files);

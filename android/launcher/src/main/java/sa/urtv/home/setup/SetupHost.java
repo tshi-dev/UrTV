@@ -50,6 +50,8 @@ final class SetupHost implements SetupRunner.Host {
         SetupHook.tellWatchNow(app);   // 4.4 (step 88): after every end the add-on hears HOME_WANTED as it is now (set by a confirmed switch, cleared by «تراجع»)
     }
 
+    @Override public void undone() { SetupSession.dropKey(app); }
+
     @Override public void homeWanted(boolean wanted) { sa.urtv.home.Extras.homeWanted(app, wanted); }
 
     @Override public void freshKey() { SetupSession.keepKey(app); }

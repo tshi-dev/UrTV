@@ -26,10 +26,10 @@ days, rec, svc, prev, tab = read(T / "DuaDays.java"), read(T / "DuaReceiver.java
 check("the days start at yesterday", "if (k < -1 || k > DuaRule.HORIZON) return null;" in days and "for (int k = -1; k <= HORIZON; k++)" in read(T / "DuaRule.java"))
 check("a clock time is the city's clock that day", "w.set(Calendar.HOUR_OF_DAY, minutes / 60);" in days and "d.wall != null ? d.wall.applyAsLong(clock)" in read(T / "DuaRule.java"))
 check("the Hijri date moves with «فرق التاريخ الهجري»", "HijriShift.fromFragment(" in days and "HijriShift.date(noonShifted, hijriShift)" in days)
-check("the receiver: the same within three minutes", "d.rule.next(due - DuaPlan.SAME_MS - 1, days)" in rec and "if (!DuaPlan.same(t, due)) continue;" in rec)
+check("the receiver: its moment found within three minutes, only the nearest dua taken, lastDue = its moment", "d.rule.next(due - DuaPlan.SAME_MS - 1, days)" in rec and "DuaPlan.pick(moments, last, due)" in rec and "chosen.lastDue = moments[k];" in rec)
 check("the duas are set again when the times change (Aladhan's, a new place)", "DuaScheduler.schedule(c);   // 4.4: the duas' too" in read(T / "PrayerTimes.java") and read(T / "AdhanSync.java").count("DuaScheduler.schedule(c);") == 2)
 check("a preview of another muezzin replaces the first; the same one only gets its time again", "if (adhanPreview && previewSeconds > 0 && wanted == adhanVoice) {" in svc and "if (duaNow == null && !adhanPreview) return;" in svc)
-check("a prayer's row: the adhan whole, as a preview, at that prayer's level", "MusicService.adhan(this, voice, Adhan.name(voice), WHOLE_PREVIEW_S, row.index);" in tab and "WHOLE_PREVIEW_S = 600" in tab)
+check("a prayer's row: the adhan whole, as a preview, at that prayer's level", "MusicService.adhan(app, v, Adhan.name(v), WHOLE_PREVIEW_S, prayer);" in tab and "WHOLE_PREVIEW_S = 600" in tab)
 check("the control centre: that prayer's own muezzin and level", "public static void play(Context c, int prayer)" in prev and "p.playFor(app, prayer)" in prev and "AdhanPreview.prayerOf(next)" in read(H / "ControlCenter.java"))
 
 if shutil.which("javac"):
@@ -60,6 +60,21 @@ public static void main(String[] a) {
   DuaRule.Days plain = k -> k != 0 ? null : new DuaRule.Day(5, 2026, 4, 24, 1447, 11, 7, m0, new long[6]);
   out("a day with no wall clock (the tests' days): midnight + minutes, as before", c.next(m0 - 1, plain) == m0 + 10 * 3600_000L);
   out("an alarm and a moment within three minutes are the same", DuaPlan.same(due, due + 2 * 60_000L) && DuaPlan.same(due, due - 3 * 60_000L) && !DuaPlan.same(due, due + 4 * 60_000L) && !DuaPlan.same(0, due));
+  // 4.4 review F11: A at 10:00 and B at 10:02, each its own alarm; each plays exactly once
+  long A = day0 + 10 * 3600_000L, B = A + 2 * 60_000L;
+  long[] last = {0, 0}; int plays0 = 0, plays1 = 0;
+  long alarm = A;   // the first alarm is the earliest moment
+  for (int step = 0; step < 4 && alarm > 0; step++) {
+    long[] mom = {A > last[0] ? A : (A + 86_400_000L), B > last[1] ? B : (B + 86_400_000L)};   // each dua's next moment from the window before the alarm
+    int k = DuaPlan.pick(mom, last, alarm);
+    if (k >= 0) { last[k] = mom[k]; if (k == 0) plays0++; else plays1++; }
+    long n0 = last[0] >= A ? A + 86_400_000L : A, n1 = last[1] >= B ? B + 86_400_000L : B;   // the scheduler: the next after each one's lastDue
+    long next = Math.min(n0, n1);
+    alarm = next > B ? 0 : next;
+  }
+  out("two duas 2 minutes apart (10:00 and 10:02): each plays exactly once", plays0 == 1 && plays1 == 1);
+  out("the alarm takes the dua whose moment is nearest, not the first in the list", DuaPlan.pick(new long[]{B, A}, new long[]{0, 0}, A) == 1 && DuaPlan.pick(new long[]{B, A}, new long[]{B, 0}, A) == 1);
+  out("a dua already played at its moment is not taken again by a later alarm", DuaPlan.pick(new long[]{A, B}, new long[]{A, 0}, B) == 1 && DuaPlan.pick(new long[]{A}, new long[]{A}, B) == -1);
 } }"""
     with tempfile.TemporaryDirectory() as tmp:
         Path(tmp, "DtRun.java").write_text(run)
@@ -70,5 +85,5 @@ public static void main(String[] a) {
             for line in out.splitlines():
                 name, res = line.rsplit("\t", 1)
                 check(name, res == "ok")
-            check("every case ran", len(out.splitlines()) == 6, out)
+            check("every case ran", len(out.splitlines()) == 9, out)
 sys.exit(1 if failed else 0)

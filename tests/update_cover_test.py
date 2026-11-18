@@ -56,5 +56,5 @@ check("the cover STAYS after Home is pressed for the new home (it closed at once
       "if (what == CoverRule.HOME_WAIT)" in cover and "handler.postDelayed(homeLate, CoverRule.HOME_WAIT_MS)" in cover and "if (homePressed) return;" in cover
       and cover.split("if (what == CoverRule.HOME_WAIT)")[1].split("return;\n        }")[0].count("finish()") == 0)
 check("the NEW home process sends «I am up» once, when it is on the screen (the old process that replaced itself is gone), to the screensaver app only",
-      "public static void homeIsUp(Context c)" in upd and "new Intent(COVER_CLOSE).setPackage(COVER_PKG)" in upd.split("public static void homeIsUp")[1][:500] and "PhoneUpdater.homeIsUp(getApplicationContext())" in mainsrc.split("protected void onResume()")[1][:1200])
+      "public static void homeIsUp(Context c)" in upd and "new Intent(COVER_CLOSE).setPackage(COVER_PKG)" in upd.split("public static void homeIsUp")[1][:500] and "PhoneUpdater.homeIsUp(getApplicationContext())" in mainsrc.split("protected void onResume()")[1][:2000])
 sys.exit(1 if failed else 0)

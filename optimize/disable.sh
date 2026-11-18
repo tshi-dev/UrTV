@@ -82,6 +82,37 @@ fi
 # (InputGuard.java; tests/input_guard_test.py keeps them equal).
 GUARD='s=$(getprop ro.build.version.sdk); for p in @PKGS@; do d=$(dumpsys package $p 2>/dev/null); case "$d" in *"hung system process"*) echo "HUNG $p";; *"requested permissions:"*) printf "%s\n" "$d" | sed -n -E "/requested permissions:/,/(install|runtime) permissions:|User [0-9]+:/p" | grep -q TV_INPUT_HARDWARE && echo "INPUT $p";; *"grantedPermissions:"*) printf "%s\n" "$d" | sed -n -E "/grantedPermissions:/,/(install|runtime) permissions:|User [0-9]+:/p" | grep -q TV_INPUT_HARDWARE && echo "INPUT $p";; *"Package [$p]"*) [ "${s:-0}" -ge 23 ] 2>/dev/null || echo "NOCHK $p";; *"Unable to find"*) ;; *) echo "NOCHK $p";; esac; printf "%s\n" "$d" | grep -qE "android\.media\.tv\.TvInputService|android\.view\.InputMethod" && echo "INPUT $p"; done; echo END_OF_LIST'
 rm -f "$RUN/inputs-left.txt"   # what the guard left on in this run (community.sh does not count them as applied)
+# 4.4: what opens the TV's Settings, its channels (Live TV) or the setup of its inputs stays on, whatever a list says: the TV is asked which apps
+# answer android.settings.SETTINGS, the VIEW intent of a TV channel or input (content://android.media.tv/...) and android.media.tv.action.SETUP_INPUTS.
+# A vendor's Settings or Live TV app taken off leaves no way back to the inputs or the network (the handler guard of Clean Your TV, tools/disable.sh,
+# github.com/Gathin23/cleanyourtv, MIT; it names a Sony that lost its inputs and one that lost its Settings). Fail closed: a TV that does not answer
+# (no end marker, or not even its Home apps: the «== home» part only proves the question was answered) gets NOTHING turned off. Android 6 and older
+# have no `cmd package`, so there nothing from a list is turned off, with a note, not a stop (the rest of the setup goes on). The same command is sent by the setup on the TV (InputGuard.HANDLERS; tests/input_guard_test.py).
+HANDLERS='echo "== sdk $(getprop ro.build.version.sdk)"; echo "== settings"; cmd package query-activities --brief -a android.settings.SETTINGS 2>/dev/null; echo "== tv"; for d in content://android.media.tv/channel/1 content://android.media.tv/passthrough/1; do cmd package query-activities --brief -a android.intent.action.VIEW -d $d 2>/dev/null; done; cmd package query-activities --brief -a android.intent.action.VIEW -d content://android.media.tv/channel/1 -t vnd.android.cursor.item/channel 2>/dev/null; cmd package query-activities --brief -a android.media.tv.action.SETUP_INPUTS 2>/dev/null; echo "== home"; cmd package query-activities --brief -a android.intent.action.MAIN -c android.intent.category.HOME 2>/dev/null; echo END_OF_LIST'
+if [ -n "$intended" ]; then
+  raw=$("$PY" -I optimize/tv.py "$HANDLERS" 2> /dev/null | tr -d '\r') || raw=""
+  sdk=$(sed -n -E 's/^== sdk ([0-9]+)$/\1/p' <<< "$raw" | head -n 1)
+  if [ -n "$sdk" ] && [ "$sdk" -lt 24 ]; then
+    echo "Nothing turned off from this list: Android 6 and older cannot say which apps open the TV's Settings and channels (على أندرويد 6 وأقدم ما يقدر التلفزيون يقول أي التطبيقات تفتح إعداداته وقنواته، فما أوقفنا شيئاً من هذه القائمة)." >&2
+    printf '%s\n' "$intended" > "$RUN/inputs-left.txt"   # community.sh: none of them was applied
+    exit 0
+  fi
+  pick() { sed -n "/^== $1\$/,/^== /p" <<< "$raw" | sed 's/^[[:space:]]*//' | sed -n -E 's#^([A-Za-z0-9_.]+)/[A-Za-z0-9_.$]+$#\1#p'; }
+  settings=$(pick settings); tvapps=$(pick tv); homeapps=$(pick home)
+  if ! grep -qx END_OF_LIST <<< "$raw" || [ -z "$settings$homeapps" ]; then
+    echo "!! disable.sh: the TV did not say which apps open its Settings and its channels, so NOTHING was turned off. Run the same command again." >&2
+    exit 1
+  fi
+  handlers=$(printf '%s\n%s\n' "$settings" "$tvapps" | grep -v '^sa\.urtv\.' | grep . | sort -u || true)
+  hheld=$(printf '%s\n' "$intended" | grep -Fx -f <(printf '%s\n' "$handlers" | grep . || echo '#none#') || true)
+  if [ -n "$hheld" ]; then
+    echo "Left on, the TV opens its Settings, channels or inputs with them: $(paste -sd' ' - <<< "$hheld")" >&2
+    printf '%s\n' "$hheld" > "$RUN/inputs-left.txt"
+    pkgs=$(printf '%s\n' "$pkgs" | awk 'NR==FNR { if ($0 != "") s[$0] = 1; next } !($0 in s)' <(printf '%s\n' "$hheld") -)
+    intended=$(printf '%s\n' "$intended" | awk 'NR==FNR { if ($0 != "") s[$0] = 1; next } !($0 in s)' <(printf '%s\n' "$hheld") -)
+    [ -n "$pkgs" ] || exit 0
+  fi
+fi
 if [ -n "$intended" ]; then
   raw=$("$PY" -I optimize/tv.py "${GUARD/@PKGS@/$(paste -sd' ' - <<< "$intended")}" 2> /dev/null | tr -d '\r') || raw=""
   if ! grep -qx END_OF_LIST <<< "$raw"; then
@@ -98,7 +129,7 @@ if [ -n "$intended" ]; then
   [ -z "$unread" ] || echo "Left on, the TV's answer about them cannot be read (an input driver must not be guessed): $(paste -sd' ' - <<< "$unread")" >&2
   if [ -n "$held$unread" ]; then
     out=$(printf '%s\n%s\n' "$held" "$unread")
-    grep -E '^[A-Za-z0-9_.]+$' <<< "$out" | sort -u > "$RUN/inputs-left.txt" || true
+    { cat "$RUN/inputs-left.txt" 2> /dev/null; printf '%s\n' "$out"; } | grep -E '^[A-Za-z0-9_.]+$' | sort -u > "$RUN/inputs-left.tmp" && mv "$RUN/inputs-left.tmp" "$RUN/inputs-left.txt" || true
     pkgs=$(printf '%s\n' "$pkgs" | awk 'NR==FNR { if ($0 != "") s[$0] = 1; next } !($0 in s)' <(printf '%s\n' "$out") -)
     intended=$(printf '%s\n' "$intended" | awk 'NR==FNR { if ($0 != "") s[$0] = 1; next } !($0 in s)' <(printf '%s\n' "$out") -)
     [ -n "$pkgs" ] || exit 0

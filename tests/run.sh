@@ -40,6 +40,7 @@ python3 tests/presets_test.py   # 4.4 «أشكال جاهزة»: six looks, the 
 python3 tests/settings_smooth_test.py   # 4.4 «smoother» settings: one section built per render, the side list opens on a rest, focus recolours only, 120 ms scale, live search
 
 python3 tests/webview66_test.py   # #19 WebView 66: a fallback before each inset/clamp/min/max, flex gap as margins, the Hijri date without Umm al-Qura
+python3 tests/tafsir_timer_test.py   # 4.4 review: a redraw of another card does not stop the paged tafsir (the timer is per list)
 python3 tests/motion_test.py   # 4.4 the same easing everywhere (Motion: 200 ms, couch-tv's curve; a fade with «الوضع الخفيف»)
 python3 tests/sweep_test.py   # 4.4 the consistency sweep: what it fixed stays fixed
 python3 tests/separators_test.py   # 4.4 no «·» or «•» on a screen, in either language (S.sep)
@@ -148,6 +149,7 @@ python3 tests/league_fixtures_test.py
 python3 tests/match_archive_test.py   # 4.3.1 the match archive: append-only, a corrected score, the live window, the backfill names
 python3 tests/sports_files_test.py   # 4.4 the sports cards' files: sports/<league>.json from the store, f1/next.json once a day
 python3 tests/kickoff_test.py   # 4.4 «تنبيه بداية المباراة»: the rules on a JVM (KickoffRun.java), the whistle, the defaults, the settings, saver.sh and dock.sh overlay
+python3 tests/overlay_offer_test.py   # 4.4 the add-on's «فوق تطبيق آخر» offered once on the first run (rule on a JVM, the bar, the once-flag, the changelog line)
 python3 tests/league_catalogue_test.py   # 4.3 «كل الدوريات»: the CI catalogue (the walk, the content rules, the Arabic names)
 python3 tests/catalogue_leagues_test.py   # 4.3 «كل الدوريات» on the TV: read only when the picker opens, picked ones only, 8 at most
 python3 tests/data_host_test.py   # 4.3.3 the data files: tshi-dev/urtv-data first, the old data branch second, one map in both apps and the page
@@ -305,6 +307,7 @@ python3 tests/photos_phone_test.py   # 4.3 «صوري»: 50, and from a paired p
 python3 tests/own_adhan_fajr_test.py   # 4.3 C16: a second own adhan, for Fajr
 python3 tests/football_test.py   # the football home and «المباريات»: the setting, the pages, the widgets' focus, the tray's move, the broadcast table (docs/PROPOSALS-NOV2.md §1)
 python3 tests/three_teams_test.py   # 4.3.3 A3: three followed teams through every step (saver Prefs, the provider, the launcher's link, the page)
+python3 tests/follow_limit_test.py   # 4.4 more than 8 leagues and 20 clubs: one warning once, at most 24 and 40, every place a person adds one
 python3 tests/follow_store_test.py   # 4.3.3 following from «المباريات» with the screensaver app missing or older: the home keeps it, joins it, hands it over
 python3 tests/settings_report_test.py   # «أرسل تقرير»: share.py's allowlist, nothing personal
 python3 tests/dialog_fit_test.py
@@ -341,6 +344,7 @@ python3 tests/control_shape_test.py   # 4.3.1 «شكل لوحة التحكم»: 
 python3 tests/dev_help_test.py   # User report «ماهو راضي يفعل تصحيح USB»: Developer options open from the build number, whose place differs per
 python3 tests/dock_retry_test.py   # Hotfix 4.3: after a cold start the favourites row showed only five apps (two users, 4.2 and 4.3). showApps() f
 python3 tests/factory_test.py   # «تخلّص من واجهة المصنع» (its own row in the settings): the engine on SetupEngineRun's fake TV (the offer and i
+python3 tests/rescue_home_test.py   # 4.4 (R7): the rescue's fallback home: armed before the stock home goes, off when it is back; the factory step only where needed; a PC-switched TV gets its stock home back
 python3 tests/fragment_keep_test.py   # 4.3.2 (a user's adhan times and prayer card disappeared after 4.3.1): the home keeps the screensaver's last RE
 python3 tests/glow_mode_test.py   # «توهّج لون التطبيق» (4.3.1): the glow behind the focused app is OFF by default (new installs and old ones), ha
 python3 tests/google_tv_home_test.py   # Google TV (user reports: TCL G10/G08, Changhong Android 14, Sony BRAVIA VH21, Xiaomi MiTV-AFMU0/1): since 4.3
@@ -370,6 +374,8 @@ node tests/wx_icon.test.mjs   # the screensaver's weather line: the condition's 
 node tests/js_strip_test.mjs   # the pages ship without the script's comments: the same program (acorn trees), 50 KB smaller
 python3 tests/ui_thread_channel_test.py   # 4.3.3 hotfix: no query to the screensaver on the home's UI thread (the TCL remote froze)
 python3 tests/ui_thread_44_test.py   # 4.4 (QA-6..QA-10, R1): the add-on, the home key, the adhan preview, the follows and the notices file off the UI thread
+python3 tests/home_review2_test.py   # 4.4 review round 2: the kept settings copy, the tasks focus, the language guard, the page copy lock, the markets queue, the overlay notice token
+python3 tests/black_video_test.py   # 4.4: no page of ours keeps working behind another app (the screensaver activity, every WebView owner, the page's hidden gate)
 python3 tests/games_open_test.py   # 4.3.4: «الألعاب» opens a fresh «تلفزيونك» on its games (an open settings task came back instead)
 python3 tests/hidden_apps_way_test.py   # 4.3.4: a way back to hidden apps (settings «التطبيقات المخفية»), the toast names it, the mode survives onResume
 python3 tests/options_fit_test.py   # 4.3.4: the app options box is as wide as its words (they were cut off on a small tile)
@@ -382,6 +388,10 @@ python3 tests/beta_confirm_test.py   # 4.3.4: a beta build asks «نسخة تج�
 python3 tests/webview_guard_test.py   # 4.3.5: no WebView on the TV: the home draws without its card, never a crash at start (a CVTE Android 9 black screen)
 python3 tests/crash_loop_test.py   # 4.3.5 (R7): two crashes right after start open SafeActivity (the TV's own home one press away), never a black screen
 python3 tests/api28_compile_test.py   # 4.3.5: the home compiles against Android 9 with every newer API behind a Build.VERSION check; the reports name the WebView
+python3 tests/api26_compile_test.py   # 4.3.6: the home against Android 8.0 (its minSdk): every newer API behind a version check for 27 or newer (a Percee OTT box)
+python3 tests/black_video_test.py   # 4.3.5: no page of ours keeps working behind another app (the screensaver activity, every WebView owner, the page's hidden gate)
+node tests/es2017_parse.test.mjs   # #19: the built pages parse as ES2017 (Android 9 TVs stuck on WebView 66)
+python3 tests/api26_compile_test.py   # 4.3.6: the home against Android 8.0 (its minSdk): every newer API behind a version check for 27 or newer (a Percee OTT box)
 node tests/i18n_page_test.mjs   # dist/tv-en.html in a browser: left to right, no Arabic in its own words on any card
 #
 # English phase 3 (the home app): its new tests go right under this line
@@ -396,6 +406,7 @@ python3 tests/quiz_test.py   # «الأسرع»: the room, the picking, the serv
 node tests/quiz_phone.test.mjs   # «الأسرع»: the phone page at 360 px in a browser
 node tests/quiz_e2e.test.mjs   # «الأسرع»: two phones against the real room and server on the loopback
 python3 tests/games_data_test.py   # the games' data: the forms, the limits, the bundled starters
+python3 tests/howto_test.py   # «طريقة اللعب»: the small «!» on a start screen and the panel behind it, the texts of the 19 games (rules on a plain JVM, the three places a text lives, the Android side by its source)
 python3 tests/games_kit_test.py   # the games' kit, the registry and the list, «خمس خانات» and «الكلمة المفقودة» (their rules on a plain JVM)
 python3 tests/domino_test.py   # «دومينو»: the rules and the computer players on a plain JVM, whole games from seeds (docs/DOMINO.md)
 #
@@ -416,6 +427,8 @@ node tests/cards_batch3.test.mjs   # 4.4 card review batch 3 (12 adhkar, 13 task
 node tests/tafsir_short.test.mjs   # 4.4 the tafsir card short: the Muyassar whole, «التفسير الميسر، صفحة N» under it, the pages stored per verse
 node tests/football_page.test.mjs   # the football home's widgets and «المباريات» in a browser, on fixed games
 node tests/sports_cards.test.mjs   # 4.4 «الرياضة»: the sports cards (dist/sports.js) on the home, the couch row and the screensaver, the takeover, only the page's own build
+node tests/many_follows.test.mjs   # 4.4 40 clubs and 24 leagues in the page: the extra ones asked every 2nd load, files 4 at a time, the bar built once a minute, the warning's two OKs, «فرقي» at 720p
+node tests/sports_hist.test.mjs   # 4.4 the league page's table from the archive first (TheSportsDB's after it, a plain line when neither), the club page's all-time meetings
 node tests/matches_archive.test.mjs   # «المباريات» with the match archive (data-archive): every followed team, yesterday's results, a club, a league, the chooser
 node tests/phone_page.test.mjs
 node tests/sync_cards.test.mjs   # «توحيد المظهر» on the page: the cards in the material's fill, line and ink, readable on a light look
@@ -428,6 +441,11 @@ node tests/game_phone_page.test.mjs   # The party games' phone page (assets/quiz
 python3 tests/game_bundle_test.py   # the games' bundled data and its checks
 python3 tests/game_packs_test.py   # the games' packs
 python3 tests/new_games_test.py   # the new games' rules and screens
+python3 tests/game_engine_test.py   # the games engine and its remote release switch (docs/GAME-ENGINE.md, docs/GAMES-RELEASE.md)
+python3 tests/saver_review44_test.py   # 4.4 review fixes in the screensaver app (F12-F15)
+python3 tests/saver_gate_test.py   # 4.4 review: a settings change during the page start is kept and looked at again (F1)
+python3 tests/saver_prayerfix_test.py   # 4.4 review: the late prayer correction reaches a running dream (F2)
+python3 tests/saver_kids_keep_test.py   # 4.4 review: the kids copy keeps its last real answer (F3)
 #
 # «regressions» (docs/dev/REGRESSIONS.md): the gate's own tests, and any guard of the register this file does not run by name above
 python3 tests/regressions/run.py --rest

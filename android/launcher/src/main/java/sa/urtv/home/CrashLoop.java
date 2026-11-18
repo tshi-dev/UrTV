@@ -20,6 +20,9 @@ final class CrashLoop {
 
     CrashLoop(long startedAt, long[] quick) { this(startedAt, quick, 0, false, false); }
 
+    /** 4.3.5 review F5: the app's versionCode at the last start; a new version starts with nothing counted (an update that fixes the crash) */
+    long code;
+
     CrashLoop(long startedAt, long[] quick, long openedAt, boolean drew, boolean crashCounted) {
         this.startedAt = startedAt; this.quick = quick; this.openedAt = openedAt; this.drew = drew; this.crashCounted = crashCounted;
     }
@@ -45,7 +48,9 @@ final class CrashLoop {
                 counted = f.length > 2 && "1".equals(f[2]);
             }
         }
-        return new CrashLoop(start, q, opened, drew, counted);
+        CrashLoop out = new CrashLoop(start, q, opened, drew, counted);
+        if (t != null) { String[] l = t.split("\n"); if (l.length > 3) { try { out.code = Long.parseLong(l[3].trim()); } catch (NumberFormatException e) { out.code = 0; } } }
+        return out;
     }
 
     private static long num(String[] lines, int i) {
@@ -55,37 +60,49 @@ final class CrashLoop {
     String text() {
         StringBuilder b = new StringBuilder().append(startedAt).append('\n');
         for (int i = 0; i < quick.length; i++) b.append(i == 0 ? "" : ",").append(quick[i]);
-        return b.append('\n').append(openedAt).append(drew ? " 1" : " 0").append(crashCounted ? " 1" : " 0").append('\n').toString();
+        return b.append('\n').append(openedAt).append(drew ? " 1" : " 0").append(crashCounted ? " 1" : " 0").append('\n').append(code).append('\n').toString();
     }
 
     /** the process started now: a home screen of the last start that never drew in time (and was not counted as a crash) is a quick one */
-    CrashLoop started(long now) {
+    CrashLoop started(long now) { return started(now, code); }
+
+    /** the process started now, as versionCode {@code ver}: another version than the last start's begins with nothing counted (review F5) */
+    CrashLoop started(long now, long ver) {
         long[] r = recent(now);
         if (openedAt > 0 && !drew && !crashCounted) r = add(r, openedAt, now);
-        return new CrashLoop(now, r, 0, false, false);
+        if (code != 0 && ver != code) r = new long[0];
+        CrashLoop out = new CrashLoop(now, r, 0, false, false);
+        out.code = ver;
+        return out;
     }
 
     /** the home screen opened now (not the safe page) */
-    CrashLoop opened(long now) { return new CrashLoop(startedAt, quick, now, false, crashCounted); }
+    CrashLoop opened(long now) { return keep(new CrashLoop(startedAt, quick, now, false, crashCounted)); }
+
+    /** the same version as this one (every step but started keeps it) */
+    private CrashLoop keep(CrashLoop n) { n.code = code; return n; }
 
     /** the home screen drew its first frame now: in time when within FRAME_MS of its opening */
     CrashLoop drewFrame(long now) {
         boolean inTime = openedAt > 0 && now - openedAt >= 0 && now - openedAt <= FRAME_MS;
-        return new CrashLoop(startedAt, quick, openedAt, drew || inTime, crashCounted);
+        return keep(new CrashLoop(startedAt, quick, openedAt, drew || inTime, crashCounted));
     }
 
-    /** the process is dying now: a quick crash when it is within QUICK_MS of the start */
+    /**
+     * the process is dying now: a quick crash when it is within QUICK_MS of the start AND the home screen was opened in this process
+     * (4.3.5 review F3: a background service or receiver that crash-loops never takes the working home screen away)
+     */
     CrashLoop crashed(long now) {
         long[] r = recent(now);
-        if (startedAt <= 0 || now - startedAt < 0 || now - startedAt > QUICK_MS) return new CrashLoop(startedAt, r, openedAt, drew, crashCounted);
-        return new CrashLoop(startedAt, add(r, now, now), openedAt, drew, true);
+        if (openedAt <= 0 || startedAt <= 0 || now - startedAt < 0 || now - startedAt > QUICK_MS) return keep(new CrashLoop(startedAt, r, openedAt, drew, crashCounted));
+        return keep(new CrashLoop(startedAt, add(r, now, now), openedAt, drew, true));
     }
 
     /** the home should not start its screen now: QUICK_LIMIT quick crashes or hangs within WINDOW_MS */
     boolean safe(long now) { return recent(now).length >= QUICK_LIMIT; }
 
     /** «حاول مرة ثانية»: nothing counted (this start's screen is not held against it either) */
-    CrashLoop cleared() { return new CrashLoop(startedAt, new long[0], 0, false, false); }
+    CrashLoop cleared() { return keep(new CrashLoop(startedAt, new long[0], 0, false, false)); }
 
     private long[] add(long[] r, long at, long now) {
         if (now - at < 0 || now - at >= WINDOW_MS) return r;

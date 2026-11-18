@@ -52,7 +52,7 @@ check("no overlay was added for it (the manifest's overlay permission is the kic
       and manifest.count("SYSTEM_ALERT_WINDOW") <= 1)
 check("the last alarm is written down for the status", "setLastAlarmNote(AdhanPlan.note(" in receiver and "adhan_alarm_last=" in music)
 check("the tab has the row with one plain label", "KIND_NOTICE" in tmain and '<string name="adhan_notice">تنبيه عند الأذان</string>' in strings)
-check("the switch re-sets the alarm (screen and agent)", tmain.split("row.kind == KIND_NOTICE")[1].split("KIND_SAVER_AT")[0].count("AdhanScheduler.schedule(this)") == 1
+check("the switch re-sets the alarm (screen and agent)", tmain.split("row.kind == KIND_NOTICE")[1].split("KIND_SAVER_AT")[0].count("AdhanScheduler.scheduleSoon(this)") == 1
       and music.split('"sa.urtv.home.ADHAN_NOTICE"')[1].split("return;")[0].count("AdhanScheduler.schedule(context)") == 1)
 check("the agent command is declared and in music.sh", '"sa.urtv.home.ADHAN_NOTICE"' in manifest and "notice)" in music_sh and "adhan_notice=" in music)
 
@@ -78,7 +78,7 @@ check("the front is read once, before anything starts (the saver itself would ch
 check("it starts the screensaver app's preview the way the home's button does, with no new permission and never throws",
       'PKG + ".MainActivity"' in saver and "FLAG_ACTIVITY_CLEAR_TASK" in saver and "catch (RuntimeException" in saver and "resolveActivity" in saver and manifest.count("SYSTEM_ALERT_WINDOW") <= 1)
 check("the tab has the row with one plain label", "KIND_SAVER_AT" in tmain and '<string name="adhan_saver_at">شاشة التوقف وقت الأذان</string>' in strings)
-check("the switch re-sets the alarm (screen and agent)", tmain.split("row.kind == KIND_SAVER_AT")[1].split("KIND_EXACT")[0].count("AdhanScheduler.schedule(this)") == 1
+check("the switch re-sets the alarm (screen and agent)", tmain.split("row.kind == KIND_SAVER_AT")[1].split("KIND_EXACT")[0].count("AdhanScheduler.scheduleSoon(this)") == 1
       and music.split('"sa.urtv.home.ADHAN_SAVERAT"')[1].split("return;")[0].count("AdhanScheduler.schedule(context)") == 1)
 check("the agent command is declared and in music.sh", '"sa.urtv.home.ADHAN_SAVERAT"' in manifest and "saver-at)" in music_sh and "adhan_saver_at=" in music)
 for key in ("adhan_saver_only", "adhan_notice", "adhan_takbir", "adhan_saver_at"):

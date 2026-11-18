@@ -174,7 +174,7 @@ check("a row is added only on its own category's screen (made on every screen, s
 check("a header is drawn by arrange, from SettingsHub.ORDER, and only above a row; a row made in the code is added at once and put in its place after the build",
       "if (!row) continue;" in st and "headerView(h)" in st and "SettingsHub.headers(screen)" in st and "pendingHeader" not in st and "arrange();" in render
       and render.index('row("معاينة الشاشة"') < render.index("arrange();") < render.index("restoreFocus(want, wasIndex, scrollY);"))
-check("the version lines show under «تحديث صفحة شاشة التوقف» only where that row is", "if (last.getParent() == list) note(last, Updater.versionLines(this));" in render)
+check("the version lines show under «تحديث صفحة شاشة التوقف» only where that row is", "if (last.getParent() == list) { TextView ver = note(last, Updater.versionLines(this));" in render)
 check("the rows are found again by their tag after a rebuild (the focus stays on the row)", "if (all.contains(v)) return v;" in st)
 for fn_ in ("openAdhanSettings()", "openDockSettings()", "openInputNames()", "openDockEdit()", "openUpdate()", "openPhoneControl()", "openFamilyDns()",
             "pickCity()", "updateNow()", 'openHome("center")', 'openHome("listen")', "openReport()", "AppearanceActivity.class"):

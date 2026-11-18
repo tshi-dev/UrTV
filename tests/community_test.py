@@ -129,6 +129,7 @@ def run(cmd):
     if cmd.endswith("; echo END_OF_LIST"):   # the end-marked questions of disable.sh
         base = cmd[: -len("; echo END_OF_LIST")]
         return ("package:android\n" if base == "pm list packages" else "") + run(base) + "END_OF_LIST\n"
+    if "android.settings.SETTINGS" in cmd: return "== settings\n    com.android.tv.settings/.MainSettings\n== tv\n"   # disable.sh's handler guard (4.4)
     if cmd == "pm list packages": return "".join("package:%s\n" % p.lstrip("-") for p in S)
     if cmd == "pm list packages -d": return "".join("package:%s\n" % p[1:] for p in S if p.startswith("-"))
     if cmd.startswith("cmd package query-activities"): return "" if os.environ.get("NOHOMES") else "2 activities found:\n  Activity #0:\n    priority=0 preferredOrder=0 match=0x108000 specificIndex=-1 isDefault=true\n    com.acme.launcher/.Main\n  Activity #1:\n    priority=0 preferredOrder=0 match=0x108000 specificIndex=-1 isDefault=true\n    com.google.android.apps.tv.launcherx/.Home\n"
@@ -210,6 +211,8 @@ check("... and the comment credits Clean Your TV", "Clean Your TV" in (ROOT / "o
 # the Privacy Sandbox runtime and the fused location provider (Clean Your TV bf505124, f5c37c36: the latter boot-looped a TCL S5400A)
 check("core.txt protects com.android.sdksandbox and com.android.location.fused (whole names only)",
       is_core("com.android.sdksandbox") and is_core("com.android.location.fused") and not is_core("com.android.sdksandboxx") and not is_core("com.vendor.sdksandbox"), "")
+check("core.txt protects both spellings of the SDK sandbox (com.android. and com.google.android., as Clean Your TV does)",
+      is_core("com.android.sdksandbox") and is_core("com.google.android.sdksandbox") and not is_core("com.google.android.sdksandboxx"), "")
 
 print("\nall community checks passed" if not failed else f"\n{failed} failed")
 sys.exit(1 if failed else 0)

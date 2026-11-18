@@ -7,6 +7,10 @@
     <permission android:name="sa.urtv.permission.EXTRAS" android:protectionLevel="signature" />
     <uses-permission android:name="sa.urtv.permission.EXTRAS" />
 
+    <!-- 4.4 «فوق تطبيق آخر»: the corner notice over another app (the kick-off alert, «تنبيه الإقامة») is drawn here, not by the home (Play Protect). Off until the person
+         allows «الظهور فوق التطبيقات» for this app (the TV's screen, or `optimize/dock.sh overlay on`); the window takes no focus and no touch -->
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+
     <!-- Android 11+: what it may see. The home (to call it and to bring it back), the HOME answerers (the watch, the Settings key), the settings it opens -->
     <queries>
         <package android:name="sa.urtv.home" />

@@ -44,12 +44,12 @@ check("hiding takes the button out of the row and out of the focus list (a hidde
       "pillRow.removeView(tilawahPill)" in apply and "pills.remove(tilawahPill)" in apply and "setVisibility" not in apply, apply)
 check("the focus goes to the pill before it when the hidden button had it", "hadFocus" in apply and "pills.get(pills.size() - 1).requestFocus()" in apply, apply)
 check("it comes back at the end of the row, where it always was", "pillRow.addView(tilawahPill" in apply and "pills.add(tilawahPill)" in apply, apply)
-check("the row is built from the setting too (no flash of the button on a TV that hid it)", "listenPillWanted(ConfigSnapshot.read(this).listenPillOn)) row.add(tilawah)" in main)
+check("the row is built from the setting too (no flash of the button on a TV that hid it)", "listenPillWanted(ConfigSnapshot.ui(this).listenPillOn)) row.add(tilawah)" in main)
 check("a build without the listening part (R.bool.show_listening false) never shows it, whatever the setting says",
       "return setting && getResources().getBoolean(R.bool.show_listening);" in main)
 tick = main.split("applyListenPill(cfg.listenPillOn);")
 check("the minute tick applies the setting", len(tick) == 2 and "updateAdhanBar(cfg);" in tick[0][-80:], "")
-menu = main.split("private void showAppMenuNow(")[1].split("showMenu(anchor, labels, actions);")[0]
+menu = main.split("private void showAppMenuNow(")[1].split("showMenu(anchor, labels, actions);")[0].split("\n    public boolean dispatchKeyEvent")[0].split("\n    private boolean dispatchKey")[0]   # 4.4: the slice ran on into the key handling
 check("hidden: the settings' «افتح تلاوة وأذان» opens the screen through the home, behind the same family lock as the button (the app's options are about the app only)",
       'row("افتح تلاوة وأذان"' in settings and 'openHome("listen")' in settings and "تلاوة وأذان" not in menu)
 check("shown: the button itself is still behind that lock",

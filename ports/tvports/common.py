@@ -101,6 +101,7 @@ def files(extra=None):
     out["index.html"] = html.encode("utf-8")
     out["data.js"] = data_js().encode("utf-8")
     out["shell.js"] = (ROOT / "ports" / "tvports" / "shell.js").read_bytes()
+    out["quotes.json"] = (ROOT / "dist" / "quotes.json").read_bytes()   # 4.5: the verse and hadith lists, read beside the page (template.html quotes())
     out.update(extra or {})
     return out
 

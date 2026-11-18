@@ -30,8 +30,7 @@
     <!-- the adhan alarm, put back after a reboot or a clock change -->
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
-    <!-- 4.4 «فوق تطبيق آخر» of the kick-off alert: a small notice over another app (TYPE_APPLICATION_OVERLAY, not focusable, not touchable); asked for only when chosen, granted on the TV or with appops (docs/SETTINGS.md); without it a text notice -->
-    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+    <!-- 4.4: no SYSTEM_ALERT_WINDOW here (Play Protect «sensitive data»): the notice «فوق تطبيق آخر» is drawn by the add-on «إضافات تلفزيونك» (OverlayNotice) -->
     <!-- the adhan at its minute (an alarm clock for the prayer times): from targetSdk 33, Android 14 no longer gives SCHEDULE_EXACT_ALARM to a new
          install, so a TV set up from Downloader would hear the adhan minutes late until the setup's appops ran. USE_EXACT_ALARM (Android 13+, a
          normal permission) keeps it exact as it was on 30; Android 12 still reads SCHEDULE_EXACT_ALARM above. -->
@@ -77,6 +76,10 @@
         android:protectionLevel="signature" />
     <permission
         android:name="sa.urtv.home.OPEN_CLEAN"
+        android:protectionLevel="signature" />
+    <!-- «إضافات تلفزيونك»'s offer, opened from the screensaver's settings when «فوق تطبيق آخر» is turned on without the add-on (signature, same key) -->
+    <permission
+        android:name="sa.urtv.home.OPEN_EXTRAS"
         android:protectionLevel="signature" />
 
     <uses-feature android:name="android.software.leanback" android:required="false" />
@@ -495,7 +498,7 @@
             android:exported="true"
             android:permission="sa.urtv.permission.EXTRAS" />
         <!-- the offer: install «إضافات تلفزيونك» or turn its service on (opened only when a feature that needs it was asked for) -->
-        <activity android:name=".ExtrasActivity" android:exported="false" android:screenOrientation="landscape" android:theme="@android:style/Theme.Material.NoActionBar" />
+        <activity android:name=".ExtrasActivity" android:exported="true" android:permission="sa.urtv.home.OPEN_EXTRAS" android:screenOrientation="landscape" android:theme="@android:style/Theme.Material.NoActionBar" />
 
         <!-- the «تلاوة» screens: the Quran recitations and the radio, inside the home screen (the «تلاوة» pill).
              Not exported and with no launcher category on purpose: it must not show up among the apps. -->

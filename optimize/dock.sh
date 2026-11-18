@@ -18,7 +18,7 @@
 #   optimize/dock.sh backsaver on|off        «الرجوع يفتح شاشة التوقف»: Back on our home starts the screensaver (off by default; the TV row in «الشاشة الرئيسية» is set too); no argument says how it stands
 #   optimize/dock.sh message on|off          «رسائل الجوال» (4.3 #53): a paired phone's short message shown on the screen for 20 s (on by default); no argument says how it stands
 #   optimize/dock.sh message overapps on|off «فوق التطبيقات»: also over a film or a match (on by default); off = only on our home and the screensaver
-#   optimize/dock.sh overlay on|off|status   4.4 «فوق تطبيق آخر» of the kick-off alert: lets the home draw its corner notice over another app (SYSTEM_ALERT_WINDOW; off by default)
+#   optimize/dock.sh overlay on|off|status   4.4 «فوق تطبيق آخر» of the kick-off alert: lets the add-on «إضافات تلفزيونك» draw the corner notice over another app (SYSTEM_ALERT_WINDOW of sa.urtv.extras, the home holds none; off by default)
 #   optimize/dock.sh familydns on|off|status|grant   «حماية العائلة (DNS)»: Private DNS to AdGuard Family, checked and undone by optimize/familydns.sh
 #   optimize/dock.sh cast on|off|status    «البث من الجوال» on a Chromecast with Google TV: casting and the Google Home remote kept (on, the default) or our home first (off); optimize/cast.sh
 #   optimize/dock.sh extras-setup          turn on «إضافات تلفزيونك» (UrTV Extras, optimize/install.sh addon first; once): the sleep timer's screen-off, the phone remote's
@@ -36,7 +36,7 @@
 #   optimize/dock.sh pin off               no PIN: nothing asks, kids mode ends; the apps chosen stay for the next PIN
 #   optimize/dock.sh pin reset             the PIN was forgotten: everything parental back to nothing (the PIN, the locks, kids mode, the wrong tries), and «محفظتي» is wiped
 #   optimize/dock.sh ramtier low|mid|normal|auto   a test switch: the memory tier the home uses (auto = the TV's real one); counts from the next start of the home
-#   optimize/dock.sh debug traynoglass|nopillpanel|nowifimark|nosnapshot|nocardglass|nokeyfilter|keytrace|nolift|noglow|noshine|noscale|notitle|plainfocus|nobackdrop|radioslow [on|off]   a tester's switch: one piece of the home's drawing off (on is the default word); `debug all off` puts every one back, `debug show` lists them; the home starts over at each change
+#   optimize/dock.sh debug traynoglass|nopillpanel|nowifimark|nosnapshot|nocardglass|nokeyfilter|keytrace|nolift|noglow|noshine|noscale|notitle|plainfocus|nobackdrop|radioslow|fullmeasure [on|off]   a tester's switch: one piece of the home's drawing off (on is the default word); `debug all off` puts every one back, `debug show` lists them; the home starts over at each change
 # The home screen redraws at once; the sleep timer's pill too. Only ADB can do this (sa.urtv.home/.DockReceiver needs the shell's DUMP).
 set -euo pipefail
 cd "$(dirname "$0")/.."
@@ -61,12 +61,12 @@ case "${1:-}:$#" in
   reset:*) send RESET_DOCK ;;
   ramtier:2) case "$2" in low|mid|normal|auto) send RAM_TIER "--es tier $2" ;; *) echo "usage: optimize/dock.sh ramtier low|mid|normal|auto"; exit 1 ;; esac ;;
   ramtier:*) echo "usage: optimize/dock.sh ramtier low|mid|normal|auto"; exit 1 ;;
-  debug:1) echo "usage: optimize/dock.sh debug traynoglass|nopillpanel|nowifimark|nosnapshot|nocardglass|nokeyfilter|keytrace|nolift|noglow|noshine|noscale|notitle|plainfocus|nobackdrop|radioslow [on|off] | all off | show"; exit 1 ;;
+  debug:1) echo "usage: optimize/dock.sh debug traynoglass|nopillpanel|nowifimark|nosnapshot|nocardglass|nokeyfilter|keytrace|nolift|noglow|noshine|noscale|notitle|plainfocus|nobackdrop|radioslow|fullmeasure [on|off] | all off | show"; exit 1 ;;
   debug:*) case "$2" in
       show) send DEBUG "--es flag show" ;;
       all) [ "${3:-}" = off ] || { echo "usage: optimize/dock.sh debug all off"; exit 1; }; send DEBUG "--es flag all --es value off" ;;
-      traynoglass|nopillpanel|nowifimark|nosnapshot|nocardglass|nokeyfilter|keytrace|nolift|noglow|noshine|noscale|notitle|plainfocus|nobackdrop|radioslow) case "${3:-on}" in on|off) send DEBUG "--es flag $2 --es value ${3:-on}" ;; *) echo "usage: optimize/dock.sh debug $2 on|off"; exit 1 ;; esac ;;
-      *) echo "usage: optimize/dock.sh debug traynoglass|nopillpanel|nowifimark|nosnapshot|nocardglass|nokeyfilter|keytrace|nolift|noglow|noshine|noscale|notitle|plainfocus|nobackdrop|radioslow [on|off] | all off | show"; exit 1 ;;
+      traynoglass|nopillpanel|nowifimark|nosnapshot|nocardglass|nokeyfilter|keytrace|nolift|noglow|noshine|noscale|notitle|plainfocus|nobackdrop|radioslow|fullmeasure) case "${3:-on}" in on|off) send DEBUG "--es flag $2 --es value ${3:-on}" ;; *) echo "usage: optimize/dock.sh debug $2 on|off"; exit 1 ;; esac ;;
+      *) echo "usage: optimize/dock.sh debug traynoglass|nopillpanel|nowifimark|nosnapshot|nocardglass|nokeyfilter|keytrace|nolift|noglow|noshine|noscale|notitle|plainfocus|nobackdrop|radioslow|fullmeasure [on|off] | all off | show"; exit 1 ;;
     esac ;;
   hidden:*) send HIDDEN ;;
   hide:*|show:*)
@@ -97,11 +97,18 @@ case "${1:-}:$#" in
     [ "$2" = overapps ] || { echo "usage: optimize/dock.sh message overapps on|off"; exit 1; }
     case "$3" in on|off) send PHONE_MESSAGE "--es mode status --es overapps $3" ;; *) echo "usage: optimize/dock.sh message overapps on|off"; exit 1 ;; esac ;;
   overlay:2)
-    # 4.4: the appop behind «الظهور فوق التطبيقات» for the home app; on some TVs the Settings screen for it is hidden, so the person's choice is set from here
+    # 4.4: the appop behind «الظهور فوق التطبيقات», for the ADD-ON «إضافات تلفزيونك» (sa.urtv.extras draws the notice; the home holds no overlay permission: Play Protect).
+    # On some TVs the Settings screen for it is hidden, so the person's choice is set from here. Without the add-on there is nothing to allow: say so, change nothing.
     case "$2" in
-      on) "$PY" -I optimize/tv.py "appops set sa.urtv.home SYSTEM_ALERT_WINDOW allow" > /dev/null; echo "overlay: on (the kick-off notice may show over another app when «فوق تطبيق آخر» is نعم)" ;;
-      off) "$PY" -I optimize/tv.py "appops set sa.urtv.home SYSTEM_ALERT_WINDOW default" > /dev/null; echo "overlay: off" ;;
-      status) "$PY" -I optimize/tv.py "appops get sa.urtv.home SYSTEM_ALERT_WINDOW" | tr -d '\r' ;;
+      on|status)
+        if ! "$PY" -I optimize/tv.py "pm list packages sa.urtv.extras" | tr -d '\r' | grep -qx "package:sa.urtv.extras"; then
+          echo "overlay: «إضافات تلفزيونك» is not installed on this TV: it draws the notice over another app. Offer it to the person: optimize/install.sh addon (or the add-on's install screen on the TV), then run this again"; exit 1
+        fi ;;
+    esac
+    case "$2" in
+      on) "$PY" -I optimize/tv.py "appops set sa.urtv.extras SYSTEM_ALERT_WINDOW allow" > /dev/null; echo "overlay: on (the kick-off notice may show over another app when «فوق تطبيق آخر» is نعم)" ;;
+      off) "$PY" -I optimize/tv.py "appops set sa.urtv.extras SYSTEM_ALERT_WINDOW default" > /dev/null 2>&1 || true; "$PY" -I optimize/tv.py "appops set sa.urtv.home SYSTEM_ALERT_WINDOW default" > /dev/null 2>&1 || true; echo "overlay: off" ;;
+      status) "$PY" -I optimize/tv.py "appops get sa.urtv.extras SYSTEM_ALERT_WINDOW" | tr -d '\r' ;;
       *) echo "usage: optimize/dock.sh overlay on|off|status"; exit 1 ;;
     esac ;;
   overlay:*) echo "usage: optimize/dock.sh overlay on|off|status"; exit 1 ;;

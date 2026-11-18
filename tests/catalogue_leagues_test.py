@@ -26,7 +26,8 @@ def read(p):
 
 
 prefs, st, rc = read(APP / "Prefs.java"), read(APP / "SettingsActivity.java"), read(APP / "SaverReceiver.java")
-check("at most 8 leagues in all", "static final int MAX_LEAGUES = 8;" in prefs)
+check("4.4 the leagues: 8 without a word, then one warning, at most 24 (FollowLimit)", "SOFT_LEAGUES = FollowLimit.SOFT_LEAGUES, MAX_LEAGUES = FollowLimit.MAX_LEAGUES;" in prefs
+      and "SOFT_LEAGUES = 8, MAX_LEAGUES = 24" in read(APP / "FollowLimit.java"))
 check("the page gets the tokens and the names (leaguesFragment)", '+ leaguesFragment()' in prefs and '"&lgn=" + Uri.encode(names)' in prefs)
 uses = [m.start() for m in re.finditer(r"CatalogueLeagues\.URL", st)]
 check("the catalogue is read in one place only: openCatalogue, from the picker's «كل الدوريات…»", len(uses) == 1
@@ -44,7 +45,7 @@ check("a kept copy is shown at once only when CatalogueLeagues.useKept says so (
 check("saver.sh can follow one by id (id4719)", 'matches("id\\\\d{1,6}")' in rc)
 
 t = read(ROOT / "src/template.html")
-check("the page: #leagues= takes id4719, 8 at most; #lgn= names them", "/^id\\d{1,6}$/.test(x)).slice(0, 8)" in t and "_Q.get('lgn')" in t)
+check("the page: #leagues= takes id4719, 24 at most (4.4: FollowLimit's ceiling); #lgn= names them", "/^id\\d{1,6}$/.test(x)).slice(0, 24)" in t and "_Q.get('lgn')" in t)
 check("the page: a catalogue league is asked of TheSportsDB (next and past), after the teams, in their queue", "eventsnextleague', 'eventspastleague'" in t
       and "leagues = loadLeagues(step, teamsAsked)" in t and "teamsDone();" in t and "await ready;" in t)
 check("the page: the copy of a league no longer picked goes", "if(!CONFIG.leagues.includes(k) && !(CONFIG.tour && k === 'tournaments')) delete LEAGUE_DATA[k];" in t)

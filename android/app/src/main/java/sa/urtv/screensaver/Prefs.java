@@ -187,12 +187,22 @@ final class Prefs {
     String prayerMethod() { String v = sp.getString("prayerMethod", "auto"); return PrayerMethod.GULF.equals(v) ? PrayerMethod.GULF : PrayerMethod.AUTO; }   // 4.3 A4: a saved «jafari» is «تلقائي»
     void setPrayerMethod(String v) { sp.edit().putString("prayerMethod", v).apply(); }
 
-    static final int MAX_TEAMS = 20;
+    /** 4.4 the clubs: 20 as before without a word, then one warning once (FollowLimit), at most 40 */
+    static final int SOFT_TEAMS = FollowLimit.SOFT_TEAMS, MAX_TEAMS = FollowLimit.MAX_TEAMS;
     /**
      * Whole leagues followed (#leagues=): the page downloads one small file for each built-in one, every 30 minutes; a league of the
-     * catalogue (CatalogueLeagues) is asked of TheSportsDB itself, 2 requests every 30 minutes: 8 in all keeps the free key's rate.
+     * catalogue (CatalogueLeagues) is asked of TheSportsDB itself, 2 requests every 30 minutes. 4.4: 8 as before without a word, then
+     * one warning once (FollowLimit), at most 24; past 8 the page asks for the extra ones every second load (every third on a weak TV), the free key's rate.
      */
-    static final int MAX_LEAGUES = 8;
+    static final int SOFT_LEAGUES = FollowLimit.SOFT_LEAGUES, MAX_LEAGUES = FollowLimit.MAX_LEAGUES;
+
+    /** 4.4 the warning past the soft limit was shown and answered «أضف» (FollowLimit.LEAGUES or TEAMS): it is never shown again */
+    boolean followWarned(String kind) { return sp.getBoolean("followWarned_" + kind, false); }
+    void setFollowWarned(String kind) { sp.edit().putBoolean("followWarned_" + kind, true).apply(); }
+    /** what one more league or club means now: FollowLimit.ADD, WARN or FULL */
+    int followState(String kind) {
+        return FollowLimit.check(kind, FollowLimit.LEAGUES.equals(kind) ? leagues().size() : teams().size(), followWarned(kind));
+    }
 
     /** The league of LEAGUES that name (English as TheSportsDB spells it, the Arabic label, or its slug) means, else null. */
     static String[] leagueByName(String name) {
@@ -227,7 +237,7 @@ final class Prefs {
         if (e == null) return false;
         List<String> v = leagues();
         for (String s : v) if (sameLeague(s, id, en)) return false;
-        if (v.size() >= MAX_LEAGUES) return false;
+        if (FollowLimit.check(FollowLimit.LEAGUES, v.size(), followWarned(FollowLimit.LEAGUES)) != FollowLimit.ADD) return false;   // the ceiling, or the warning not yet answered
         v.add(e);
         setList("leagues", v);
         return true;
@@ -279,11 +289,11 @@ final class Prefs {
         return list("teams");
     }
 
-    /** false when already followed or the list is full */
+    /** false when already followed, at the ceiling, or past the soft limit before its warning was answered «أضف» */
     boolean addTeam(String id, String name) {
         List<String> v = teams();
         for (String t : v) if (t.startsWith(id + "|")) return false;
-        if (v.size() >= MAX_TEAMS) return false;
+        if (FollowLimit.check(FollowLimit.TEAMS, v.size(), followWarned(FollowLimit.TEAMS)) != FollowLimit.ADD) return false;   // the ceiling, or the warning not yet answered
         v.add(id + "|" + name.replace("|", " ").replace(";", " "));
         setList("teams", v);
         return true;
@@ -723,13 +733,56 @@ final class Prefs {
     /** «تعديل وقت الصلاة» (default off): the five prayers moved by their own minutes, −20..20 (PrayerAdj); sent to the page and the home screen as #adj=. */
     boolean prayerAdjOn() { return sp.getBoolean("prayerAdjOn", false); }
 
-    /** 4.3.3 today's published prayer corrections for the city (PrayerFix), from the kept copy; fetched again in the background twice a day */
+    /**
+     * 4.3.3 today's published prayer corrections for the city (PrayerFix), from the kept copy; fetched again in the background twice a day.
+     * 4.4 QA-13: the copy is held in memory (prayerFixKnown); a provider or worker thread that finds none yet waits for the first read (a helper
+     * thread, as it always waited), and the UI thread never does: it takes what is known and the screen draws again when the read is done.
+     */
     int[] prayerFix() {
-        ContentFile.refresh(ctx, PrayerFix.PATH, PrayerFix.NAME, 12 * 3600_000L);
+        if (!prayerFixLoaded && android.os.Looper.myLooper() != android.os.Looper.getMainLooper()) {
+            final Context app = ctx.getApplicationContext();
+            Thread first = new Thread(() -> {
+                ContentFile.refresh(app, PrayerFix.PATH, PrayerFix.NAME, 12 * 3600_000L);
+                PRAYER_FIX.load(app);
+                prayerFixLoaded = true;
+            }, "prayer-fix-first");
+            first.start();
+            try { first.join(); } catch (InterruptedException e) { Thread.currentThread().interrupt(); }
+        }
+        return prayerFixKnown(null);
+    }
+
+    private static final ContentFile.Kept PRAYER_FIX = new ContentFile.Kept(PrayerFix.NAME);
+    private static volatile long prayerFixAskedAt = -60_000L;
+    private static volatile boolean prayerFixLoaded;
+
+    /**
+     * 4.4 QA-13: prayerFix() for a screen's draw on the UI thread: the kept copy as this process last read it (never the file), and a thread that
+     * fetches and reads it again at most once a minute; {@code changed} runs on the main thread when what it read is another copy than the one
+     * drawn from (the first read of a process, or a new file), so the screen draws again with it.
+     */
+    int[] prayerFixKnown(final Runnable changed) {
+        final Context app = ctx.getApplicationContext();
+        long now = android.os.SystemClock.elapsedRealtime();
+        if (now - prayerFixAskedAt >= 60_000L) {
+            prayerFixAskedAt = now;
+            Thread t = new Thread(() -> {
+                Object before = PRAYER_FIX.value();
+                ContentFile.refresh(app, PrayerFix.PATH, PrayerFix.NAME, 12 * 3600_000L);
+                PRAYER_FIX.load(app);
+                prayerFixLoaded = true;
+                if (PRAYER_FIX.value() != before) {
+                    if (changed != null) new android.os.Handler(android.os.Looper.getMainLooper()).post(changed);
+                    // 4.4 review F2: no screen of ours to draw again (the dream's start): tell the ones that are up, which rebuild only when their address differs; a repeat read is the same copy, so no second broadcast
+                    else app.sendBroadcast(new android.content.Intent(CHANGED).setPackage(app.getPackageName()));
+                }
+            }, "prayer-fix");
+            t.setPriority(Thread.MIN_PRIORITY); t.setDaemon(true); t.start();
+        }
         java.text.SimpleDateFormat f = new java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.ROOT);
-        f.setTimeZone(java.util.TimeZone.getTimeZone("UTC"));   // the city's day, by ZoneFix's offset for its zone
-        long now = System.currentTimeMillis();
-        return PrayerFix.forDay(ContentFile.read(ctx, PrayerFix.NAME), cityCountry(), city()[0], f.format(new java.util.Date(now + ZoneFix.offset(cityTz(), now))));
+        f.setTimeZone(java.util.TimeZone.getTimeZone("UTC"));
+        long t0 = System.currentTimeMillis();
+        return PrayerFix.forDay(PRAYER_FIX.value(), cityCountry(), city()[0], f.format(new java.util.Date(t0 + ZoneFix.offset(cityTz(), t0))));
     }
 
     /** the adj= of the fragment: the person's own minutes where set, the published correction elsewhere; nothing when both are none */

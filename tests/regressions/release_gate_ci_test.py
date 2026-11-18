@@ -3,6 +3,7 @@
 promote-beta.yml copies to apk-beta only after the gate passed on the commit the source build was made from; the gate runs the
 «regressions» group and the API surface diff, which fails on a new UI-thread path to a cross-process call.
 Run: python3 tests/regressions/release_gate_ci_test.py"""
+import os
 import sys
 from pathlib import Path
 
@@ -17,6 +18,9 @@ def check(name, ok, detail=""):
 try:
     import yaml
 except ImportError:
+    if os.environ.get("CI"):   # 4.4 review E-F1: in CI a missing module is a failure, never a pass
+        print("FAIL no yaml module in CI (pip install pyyaml in checks.yml / regressions.yml)")
+        sys.exit(1)
     print("SKIP no yaml module")
     sys.exit(0)
 def load(n): return yaml.safe_load((W / n).read_text(encoding="utf-8"))
@@ -38,5 +42,9 @@ steps = " ".join(str(s.get("run", "")) for s in g["jobs"]["regressions"]["steps"
 check("the gate runs the regressions group and the API surface diff", "tests/run.sh regressions" in steps and ".github/tools/api_surface_diff.py" in steps)
 on = g.get("on") or g.get(True)
 check("the gate can be called (workflow_call) and run by hand", "workflow_call" in on and "workflow_dispatch" in on)
+check("the gate checks the released commits' attribution with the full history (ATTRIBUTION_STRICT=1)",
+      any(str(st.get("env", {}).get("ATTRIBUTION_STRICT")) == "1" and "tests/run.sh regressions" in str(st.get("run", "")) for st in g["jobs"]["regressions"]["steps"]))
+check("a release (release: true) also refuses a ready game still «pending» (GAMES_RELEASE_STRICT)",
+      any("inputs.release" in str(st.get("env", {}).get("GAMES_RELEASE_STRICT", "")) for st in g["jobs"]["regressions"]["steps"]))
 check("it fetches the tags (the diff needs the previous release)", any(s.get("with", {}).get("fetch-depth") == 0 for s in g["jobs"]["regressions"]["steps"]))
 sys.exit(1 if failed else 0)

@@ -4,6 +4,7 @@ newer than the TV out of the code. This compiles the home against Android 9's ow
 pinned, kept in the same cache as tests/android_compile.sh): every symbol Android 9 lacks must sit behind a Build.VERSION check in the 10 lines
 above it (SDK_INT), so a TV on 8 or 9 never reaches it. Also: the setup report's «WebView:» line (package and version) on a JVM.
 SKIP (exit 0) when javac is missing or the jar can't be fetched (offline). Run: python3 tests/api28_compile_test.py"""
+import os
 import hashlib, os, re, shutil, subprocess, sys, tempfile, urllib.request
 from pathlib import Path
 
@@ -26,7 +27,7 @@ def sha1(p):
     return h.hexdigest()
 
 if not shutil.which("javac"):
-    print("SKIP api 28: no javac"); sys.exit(0)
+    print("SKIP api 28: no javac"); sys.exit(1 if os.environ.get("CI") else 0)
 jar = CACHE / f"android-all-{VER}.jar"
 if not jar.is_file() or sha1(jar) != SHA1:
     try:
@@ -37,7 +38,7 @@ if not jar.is_file() or sha1(jar) != SHA1:
             tmp.unlink(); print("FAIL api 28: the downloaded jar does not match the pinned sha1 (not used)"); sys.exit(1)
         tmp.replace(jar)
     except Exception as e:
-        print(f"SKIP api 28: android-all {VER} is not cached and could not be fetched ({type(e).__name__})"); sys.exit(0)
+        print(f"SKIP api 28: android-all {VER} is not cached and could not be fetched ({type(e).__name__})"); sys.exit(1 if os.environ.get("CI") else 0)   # 4.4 review E-F6: in CI a skip is a failure
 
 with tempfile.TemporaryDirectory() as w:
     w = Path(w)

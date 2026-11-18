@@ -47,12 +47,24 @@ final class SetupSession implements Closeable {
     @Override public void close() { adb.close(); }
 
     /**
-     * 4.4 (the owner's TV, step 86 B): the ADB key is kept for good, ONE key. Until 4.4 it was deleted after every finished run, so every run made a new
-     * key, the TV asked «السماح بتصحيح USB؟» again, and its saved list filled with urtv-home@tv keys; the safety switch, the home's own re-apply of the
-     * HOME role and «تراجع» all need it later. It goes only when the person revokes it on the TV («إلغاء تراخيص تصحيح USB»: the TV then asks again for
-     * the same key). Called after every end; it never deletes, it only says the key is there.
+     * 4.4 (the owner's TV, step 86 B): ONE ADB key between the steps of a run. Until 4.4 it was deleted after every finished run, so every run made a new
+     * key, the TV asked «السماح بتصحيح USB؟» again, and its saved list filled with urtv-home@tv keys. So after a normal end it is kept (this only says so);
+     * it goes at «تراجع» and when the factory interface is given back ({@link #dropKey}), nowhere else.
      */
     static void keepKey(Context c) {
-        android.util.Log.i("UrTVSetup", "adb key: kept (one key for good) exists=" + AdbKeys.exists(c));
+        android.util.Log.i("UrTVSetup", "adb key: kept between the steps exists=" + AdbKeys.exists(c));
+    }
+
+    /**
+     * 4.4 review F20 (the owner's decision): «تراجع» finished, or the factory interface given back: the key goes (the TV trusts nothing of ours any more).
+     * Not while something still needs it: a home switch waiting for its safety switch, or a full run waiting for the TV's restart or the person's «كمّل».
+     */
+    static void dropKey(Context c) {
+        if (SetupRecovery.pending(c) || SetupRunner.awaiting(new FileStore(c))) {
+            android.util.Log.i("UrTVSetup", "adb key: kept (a switch or a run still waits for it)");
+            return;
+        }
+        AdbKeys.delete(c);
+        android.util.Log.i("UrTVSetup", "adb key: deleted exists=" + AdbKeys.exists(c));
     }
 }

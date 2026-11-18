@@ -25,6 +25,17 @@ final class AdhanScheduler {
 
     static void schedule(Context c) { schedule(c, Place.get(c)); }
 
+    /**
+     * 4.4 QA-12: the same on a thread of its own, for a screen's onCreate or a press (the place is a question to the screensaver, which may have
+     * to be started): the screen never waits for it, and the alarm is set a moment later, the same one.
+     */
+    static void scheduleSoon(Context c) {
+        final Context app = c.getApplicationContext();
+        new Thread(new Runnable() {
+            @Override public void run() { try { schedule(app); } catch (RuntimeException ignored) { } }
+        }, "adhan-schedule").start();
+    }
+
     /** The alarm for the next adhan of this place (the caller read it once, so what it was judged by is what the alarm is set for). */
     static synchronized void schedule(Context c, Place place) {   // one at a time: two threads cannot interleave the identity and the alarm
         AlarmManager am = (AlarmManager) c.getSystemService(Context.ALARM_SERVICE);

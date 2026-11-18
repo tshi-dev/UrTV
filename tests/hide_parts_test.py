@@ -51,7 +51,7 @@ check("page: with night dimming off the dimmer stays clear, before any time is r
 check("home: an older screensaver (or none) says nothing: the button is shown",
       'boolean tasksPillOn() { return fragment == null || !(fragment.contains("&taskspill=0") || fragment.startsWith("taskspill=0")); }' in snap)
 check("home: the row is built from the setting too (no flash of the button on a TV that hid it)",
-      "if (isInstalled(SAVER_PKG) && ConfigSnapshot.read(this).tasksPillOn()) row.add(tasks);" in main)
+      "if (isInstalled(SAVER_PKG) && ConfigSnapshot.ui(this).tasksPillOn()) row.add(tasks);" in main)
 apply = main[main.index("private void applyTasksPill(boolean setting) {"):].split("\n    }\n")[0]
 check("home: hiding takes it out of the row and out of the pills, the focus to «المصادر»; showing puts it back right after «المصادر» (first, after «يُتلى الآن», while «زر المصادر» is hidden)",
       "pills.remove(tasksPill);" in apply and "pillRow.removeView(tasksPill);" in apply and "inputsPill.requestFocus();" in apply

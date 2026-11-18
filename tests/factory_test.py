@@ -45,9 +45,11 @@ check("every step of the connection is logged under UrTVFactory (the key, the pa
 check("step 62: the page keeps the screen on while it waits (a sleeping screen shows no question), the log says what adbd replied after CNXN (AUTH type, a second TOKEN after our key), and the final text only says nothing changed and UrTV works fine without the step",
       "FLAG_KEEP_SCREEN_ON" in act and 'note("adbd said "' in adb and "a second one after our key" in adb and "UrTV يشتغل ممتاز بدونها" in act and "optimize/install.sh" not in act)
 check("it refuses with the reason where debugging is off (the connect says so), and the engine refuses where the wizard owns the Wi-Fi or the safety switch cannot be set",
-      "debugging is off" in act and "تصحيح USB مطفأ" in act and "wizardOwnsWifi()" in eng.split("FactoryOffer factoryOffer()")[1][:900] and "deadman.arm(30)" in eng.split("FactoryOffer factoryOffer()")[1][:1600])
-check("the ADB key is kept (4.4: always, one key for good; the step's automatic restore needs it), the restore at boot is tried again at the next boot when it did not finish",
-      "static void keepKey(" in sess and "AdbKeys.delete" not in sess and "SetupBootReceiver" in recv and "restoreFactory()" in recv and "the next boot tries again" in recv)
+      "debugging is off" in act and "تصحيح USB مطفأ" in act and "wizardOwnsWifi()" in eng.split("FactoryOffer factoryOffer()")[1][:1800] and "deadman.arm(30)" in eng.split("FactoryOffer factoryOffer()")[1][:2400])   # (4.4 R7: two refusals first)
+check("the ADB key is kept while the step is on (the automatic restore needs it) and deleted once the interface is given back (4.4 F20: the screen's restore and the boot restore, only when DONE); the restore at boot is tried again at the next boot when it did not finish",
+      "static void keepKey(" in sess and "AdbKeys.delete(c);" in sess and "SetupBootReceiver" in recv and "restoreFactory()" in recv and "the next boot tries again" in recv
+      and "SetupSession.dropKey(app)" in recv and "Status.DONE) { store.put(BootGuard.FILE" in recv
+      and "if (r.status == SetupEngine.Status.DONE) SetupSession.dropKey(this);" in (SETUP / "FactoryActivity.java").read_text(encoding="utf-8"))
 check("the boot counter: a boot counts only when our home did not come up in it (MainActivity.onResume says so) and our process crashed in it (ApplicationExitInfo; older Android: no home is enough); two in a row restore",
       "SetupHook.homeUp(this)" in mainsrc and "getHistoricalProcessExitReasons" in recv and "REASON_CRASH" in recv and "BootGuard.onBoot(prev, crashesSince(app, prev.bootAt), now)" in recv)
 if not shutil.which("javac"):

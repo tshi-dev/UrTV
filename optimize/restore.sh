@@ -69,6 +69,7 @@ fi
     echo "touch /data/local/tmp/home_ok"
     [ -z "$nonce" ] || echo "touch /data/local/tmp/home_ok.$nonce"   # (the one of the last home switch)
     echo "pm enable ${STOCK_LAUNCHER%%/*}"
+    echo "pm disable sa.urtv.rescue/sa.urtv.home.setup.RescueHome 2> /dev/null"   # 4.4 (R7): the stock home is back, the rescue's fallback home steps aside (RescueHome.DISARM)
     # Google TV's home can come back without its notification access (seen on other TVs); give it back
     [ "${STOCK_LAUNCHER%%/*}" != com.google.android.apps.tv.launcherx ] || echo "cmd notification allow_listener com.google.android.apps.tv.launcherx/.coreservices.notificationlistener.TvNotificationListenerService"
     echo "cmd role add-role-holder --user 0 android.app.role.HOME ${STOCK_LAUNCHER%%/*}"

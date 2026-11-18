@@ -35,8 +35,8 @@ for name, body in dialogs.items():
 dlg_cls = st[st.index("    private static final class Dlg extends WordsBuilder {"):st.index("    void dress(AlertDialog d) {")]   # Dlg's own override (a page in place with the Couch look) is not a dialog
 check("every setMultiChoiceItems of the settings is in one of those", st.count("setMultiChoiceItems(") - dlg_cls.count("setMultiChoiceItems(") == sum(b.count("setMultiChoiceItems(") for b in dialogs.values()))
 leagues = dialogs.get("pickLeagues", "")
-check("«الدوريات كاملة» saves the leagues ticked (and keeps its limit of Prefs.MAX_LEAGUES while ticking)",
-      'prefs.setList("leagues", v);' in leagues and "checked && n > Prefs.MAX_LEAGUES" in leagues
+check("«الدوريات كاملة» saves the leagues ticked (and its limits while ticking: 4.4 tickLeague, the one warning past 8, the ceiling)",
+      'prefs.setList("leagues", v);' in leagues and "if (checked) tickLeague((AlertDialog) d, on, i, 0);" in leagues
       and leagues.index(".multi(") < leagues.index('prefs.setList("leagues"') < leagues.index(".setTitle("))
 
 dlg = st[st.index("private static final class Dlg"):].split("\n    }\n")[0]
