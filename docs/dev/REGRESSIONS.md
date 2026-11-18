@@ -294,15 +294,16 @@ often describe the same bug in two ways, and both rows are kept when their guard
 ## Open findings of the gate (QA-n)
 
 Paths the UI-thread rule (`tests/regressions/ui_thread_ipc_test.py`) found already there at 4.3.4. They are in its baseline so the gate
-passes today, each with a written reason (the test refuses the bare «baseline 4.3.4»); the open ones carry their QA number; none is fixed by the gate. A fix removes the line from `tests/regressions/ui_thread_baseline.txt`
+passes today, each with a written reason (the test refuses the bare «baseline 4.3.4»); the findings carry their QA number (all fixed in 4.4); none was fixed by the gate itself. A fix removes the line from `tests/regressions/ui_thread_baseline.txt`
 and adds a row above.
 
 - **QA-1** `MainActivity.onResume -> updateClock`: the first draw read `ConfigSnapshot.read` on the UI thread. **Fixed in 4.3.4**
   (R-254, `tests/qa_434_test.py`): a home made again draws from the process's last answer; only a cold process's very first draw
   still reads (nothing on screen yet), and that one line stays in the baseline.
 - **QA-2** the screensaver (`ScreenDream` / its `MainActivity`) `dispatchKeyEvent -> NowPlayingBridge.adhanState`: a cross-process query
-  to the home on a key. **Open, for 4.4:** a cached state could make OK miss an adhan that just started; it needs the home's adhan
-  broadcast feeding the cache. The query goes to the home's own process (rarely killed).
+  to the home on a key. **Fixed in 4.4** (2981706d, `tests/ui_thread_44_test.py`): the key decides from the adhan state the page's own ask
+  (every 3 s, `adhan()`) or a thread last kept (`adhanKnown`, fresh for 8 s), never a query; the stop call goes on a thread. The first key of an
+  adhan that began a second earlier may not know it yet, as the bar did not.
 - **QA-3** the reminder card's refresh, the return's reschedule and OK on the card read and wrote the screensaver's tasks provider on the
   UI thread. **Fixed in 4.3.4** (R-255, `tests/qa_434_test.py`).
 - **QA-4** `updateClock -> AdhanSync.onConfig -> Place.get`: **not a bug.** onConfig calls the 3-argument `Place.get`, which never
@@ -321,19 +322,22 @@ and adds a row above.
   when the home kept some. **Fixed in 4.4** (15c4a306, `tests/ui_thread_44_test.py`).
 - **QA-10** (4.4, R1, low) the home's notice bar reads and parses the notices file (`ContentFile.read`, own disk, bounded) at every
   minute tick and return (`updateHomeNudge -> dueNotice`). **Fixed in 4.4** (d0c0b9c0, `tests/ui_thread_44_test.py`).
-- **QA-11** (R1, the TCL freeze's shape; open) the home's and its screens' reads of the screensaver's settings on the UI thread:
-  `ConfigSnapshot.read` through `GlassSource.light` / `lookName` / `pageFor` (a screen's look, at onCreate, return or press, and the key that
-  opens the control centre), `Digits.init`, the pill row in `MainActivity.buildHeader`, and the markets, matches and tasks screens' own
-  settings. One answer is shared for 3 s, so only the first read in 3 s asks; on a TCL that killed the screensaver that read starts its
-  process (the 4.3.3 freeze). The home's clock draw (QA-1) and the greeting and adhan-bar receivers are fixed; these are not.
-  Fix: `ConfigSnapshot.known()` or a read on a thread, as QA-1 did.
-- **QA-12** (R1; open, low) one-off calls into the screensaver's or the home's provider from a screen's open or a press, on the UI thread:
-  the tasks and reminder screens (`TasksActivity.load` and the writes, `ReminderScheduler.schedule`), the matches screen's page copy
-  (`HomePage.fresh`), the settings screens' backdrop (`GlassSource.refresh`), the hub's `CleanMask.state`, the language save in the
-  first-run setup, the market toggles, and the «تلاوة وأذان» preview's `Place.get`. The reminder card's own paths are R-255 (QA-3), fixed.
-- **QA-13** (R1; open, low) the app's own disk work at a start or a render: the last-picture overlays (`HomeSnapshot`, `SaverSnapshot`), the
-  glass backdrop and the first-frame wallpaper, bundled asset pictures and credits files in the settings, the setup ledger, and the report
-  screen's `logcat` read. All small and bounded; none crosses a process.
+- **QA-11** (R1, the TCL freeze's shape) the home's and its screens' reads of the screensaver's settings on the UI thread (`GlassSource.light` /
+  `lookName` / `pageFor`, `Digits.init`, the pill row, the markets, matches, tasks and reminder screens). **Fixed in 4.4** (3f3fde22,
+  `tests/ui_thread_44_test.py`): `ConfigSnapshot.ui` serves the known answer, else the last real one kept on disk (with its look, appearance and
+  buttons), and a thread reads the fresh one; a change shows at the next draw, return or tick.
+- **QA-12** (R1, low) one-off calls into the screensaver's or the home's provider from a screen's open or a press, on the UI thread.
+  **Fixed in 4.4**: the tasks and reminder screens and their alarm (e26f9f9c); the matches page copy, the language choice in the first-run setup,
+  the market toggles, the «تلاوة وأذان» prayer row and its alarm (e8e26069); the settings screens' backdrop, the hub's `CleanMask.state`, the
+  «جرّب» whistle (2981706d). All on threads of their own, the result drawn when it comes (`tests/ui_thread_44_test.py`).
+- **QA-13** (R1, low) the app's own disk work at a start or a render. **Fixed in 4.4**: the last-picture overlays, the glass backdrop, the
+  first-frame wallpaper, the setup ledger, the model defaults and the report's `logcat` read (e8e26069); the screensaver's start picture, the
+  settings' bundled pictures, the packs' names and credits, the published corrections (2981706d). Decoded or read on a thread; a picture that
+  comes after its frame is not drawn (the home's overlay after 400 ms) or is drawn when it is here.
+
+At 4.4 the baseline has no «open» line. What stays in it has a reason that says why: the WebView's own IO thread (`PhotoCache.serve`, the
+card's `shouldInterceptRequest`), the update's and the phone page's own threads, and small `commit()` writes of the app's own prefs and the
+safe-mode counter (own disk, no other process).
 
 The 4.3.4 review's F1 and F2: R-257, R-258.
 
