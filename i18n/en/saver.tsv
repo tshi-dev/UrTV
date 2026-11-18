@@ -89,6 +89,22 @@
 يعمل، نقاط السنة تحت الساعة، واليوم يلمع	On, A dot for each day under the clock, today glowing
 المناسبة القادمة	Next occasion
 ظاهرة، أسفل الشاشة في الوسط: كم باقي على رمضان والأعياد، والإفطار والإمساك في رمضان	Shown, Bottom center: days to Ramadan and Eid, and iftar and suhoor in Ramadan
+مخفية، كم باقي على رمضان والأعياد	Hidden, days to Ramadan and Eid
+رجّع الشكل السابق	Previous look
+المظهر على الرئيسية	Looks on the home screen
+الأشكال الجاهزة والتخطيط والخلفية والساعة وشكل التطبيقات، تراها على الرئيسية قبل ما تختار	Looks, layout, background, clock and app style, seen on the home screen before you choose
+التركيز يعرض الشكل على الرئيسية، وموافق يثبّته، ورجوع يرجّع شكلك	The focus shows the look on the home screen; OK keeps it, Back puts yours back
+كل جزء وحده	Each part on its own
+موافق يثبّت، ورجوع يرجّع الشكل المحفوظ	OK keeps it, Back puts the saved look back
+لوحة المظهر على الرئيسية	Looks panel on home
+مفعّلة، تعاين الشكل على الرئيسية قبل ما تختار	On, see a look on the home screen before you choose
+زر رجّع الشكل السابق	Previous look button
+مفعّل، أول صف بعد تغيير الشكل	On, the first row after the look changes
+تبديل الشكل بلا وميض	Switch looks without flicker
+شكل شاشة الإعدادات	Settings screen style
+أزرار	Buttons
+متوقف، كما كان	Off, as it was
+مفعّل، الرئيسية تتغير مرة وحدة بتلاشٍ قصير	On, the home screen changes once with a short fade
 تعتيم الليل	Night dimming
 يعمل، تغمق الشاشة من ٩ مساءً، وأغمق من ١١ إلى ٥ الفجر، وترجع ٧ الصباح	On, Dims from 9 pm, darkest 11 pm to 5 am, back at 7 am
 متوقف، نفس الإضاءة طول الليل	Off, Same brightness all night
@@ -1113,7 +1129,6 @@
 أشكال جاهزة والتخطيط	Ready looks and layout
 أشكال جاهزة والتخطيط، والخلفية والآفاق، والساعة والنص، والتطبيقات، والبطاقات، والصور.	Ready looks and layout, background and horizons, clock and text, apps, cards and photos.
 شكلك المعتاد	Your usual look
-منظر وساعة	View and clock
 صورة فقط	Photo only
 مواقيت يومي	My prayer day
 ليل هادئ	Quiet night
@@ -1133,7 +1148,7 @@
 تركيبات مقترحة	Suggested mixes
 شكل من الستة مع تغيير أو اثنين	One of the six looks with a change or two
 كل واحدة شكل من الستة مع تغيير أو اثنين؛ اختيارها يضبطها كلها	Each is one of the six looks with a change or two; choosing it sets it all
-منظر وساعة + مواقيت اليوم	View and clock + today's prayers
+كنبة + مواقيت اليوم	Couch + today's prayers
 الآفاق، ومربعات المواقيت في الصف	Horizons, and the prayer boxes in the row
 صورة فقط + أيقونات التطبيقات	Photo only + app icons
 الصورة والساعة، والتطبيقات أيقونات	The photo and the clock, the apps as icons

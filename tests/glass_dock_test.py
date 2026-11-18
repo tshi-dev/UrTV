@@ -111,7 +111,9 @@ notices = read(ROOT / "THIRD_PARTY_NOTICES.md")
 check("tvOS Launcher credited: its copyright and the Apache-2.0 notice in each adapted file, what was changed, and a section in THIRD_PARTY_NOTICES.md",
       all("Copyright 2026 techgenius" in f and "Apache License, Version 2.0" in f and "Changed by UrTV" in f for f in (art, bar, editor))
       and "## tvOS Launcher" in notices and "Copyright 2026 techgenius" in notices)
-check("nothing of tvOS Launcher's images in the repository (no file named after it)", not any("tvos" in p.name.lower() for p in ROOT.rglob("*") if ".git" not in p.parts))
+# our own mockups of the «tvOS» manner (docs/mockups/settings-style, tvos-preset: rendered from our own pages, their READMEs say so) are named after it
+check("nothing of tvOS Launcher's images in the apps or the pages (no file named after it outside our own mockups)",
+      not any("tvos" in p.name.lower() for p in ROOT.rglob("*") if ".git" not in p.parts and "node_modules" not in p.parts and "mockups" not in p.parts))
 
 # ---- the words
 new = allapps + editor + art + bar + grid + store

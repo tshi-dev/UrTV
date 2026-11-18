@@ -57,10 +57,17 @@ the phone page's key, «مركز التحكم» the control centre's row that op
       القيم المقبولة: on|off
 — المظهر
 —— أشكال جاهزة والتخطيط
+——— المظهر على الرئيسية [الرئيسية]
+    مثال للوكيل: optimize/saver.sh lookpanel
+——— رجّع الشكل السابق [الرئيسية وشاشة التوقف]
+    مثال للوكيل: optimize/saver.sh lookback
 ——— أشكال جاهزة [الرئيسية وشاشة التوقف]
-    الخيارات: شكلك المعتاد / منظر وساعة / صورة فقط / مواقيت يومي / مباريات اليوم / ليل هادئ
+    الخيارات: شكلك المعتاد / كنبة / صورة فقط / مواقيت يومي / مباريات اليوم / ليل هادئ
     مثال للوكيل: optimize/saver.sh preset family  (tv, couch, clean, family, sport, calm, or a mix: couch-prayers, clean-icons, sport-night, tv-glass)
       القيم المقبولة: tv|couch|clean|family|sport|calm|couch-prayers|clean-icons|sport-night|tv-glass
+——— شكل شاشة الإعدادات [كل التلفزيون]
+    مثال للوكيل: optimize/saver.sh settingsstyle couch  (or `buttons`)
+      القيم المقبولة: buttons|couch
 ——— شكل كنبة [الرئيسية]
     الخيارات: مفعّل / متوقف
     الأصل: متوقف
@@ -79,6 +86,15 @@ the phone page's key, «مركز التحكم» the control centre's row that op
       القيم المقبولة: dark|light|auto
 ——— صفحات الأسهم والمباريات داكنة [الرئيسية]
     مثال للوكيل: optimize/saver.sh pagesdark off
+      القيم المقبولة: on|off
+——— لوحة المظهر على الرئيسية [الرئيسية]
+    مثال للوكيل: optimize/saver.sh lookpanelrow on  (or `off`)
+      القيم المقبولة: on|off
+——— زر رجّع الشكل السابق [الرئيسية وشاشة التوقف]
+    مثال للوكيل: optimize/saver.sh lookundo on  (or `off`)
+      القيم المقبولة: on|off
+——— تبديل الشكل بلا وميض [الرئيسية]
+    مثال للوكيل: optimize/saver.sh smoothlook on  (or `off`)
       القيم المقبولة: on|off
 —— الخلفية والآفاق
 ——— الخلفية [الرئيسية]
@@ -818,10 +834,17 @@ the phone page's key, «مركز التحكم» the control centre's row that op
      مثال للوكيل: optimize/saver.sh watchnext off  (`on`, the default)
        القيم المقبولة: on|off
 — المظهر والخلفيات
+—— المظهر على الرئيسية [الرئيسية]
+   مثال للوكيل: optimize/saver.sh lookpanel
+—— رجّع الشكل السابق [الرئيسية وشاشة التوقف]
+   مثال للوكيل: optimize/saver.sh lookback
 —— أشكال جاهزة [الرئيسية وشاشة التوقف]
-   الخيارات: شكلك المعتاد / منظر وساعة / صورة فقط / مواقيت يومي / مباريات اليوم / ليل هادئ
+   الخيارات: شكلك المعتاد / كنبة / صورة فقط / مواقيت يومي / مباريات اليوم / ليل هادئ
    مثال للوكيل: optimize/saver.sh preset family  (tv, couch, clean, family, sport, calm, or a mix: couch-prayers, clean-icons, sport-night, tv-glass)
      القيم المقبولة: tv|couch|clean|family|sport|calm|couch-prayers|clean-icons|sport-night|tv-glass
+—— شكل شاشة الإعدادات [كل التلفزيون]
+   مثال للوكيل: optimize/saver.sh settingsstyle couch  (or `buttons`)
+     القيم المقبولة: buttons|couch
 —— شكل كنبة [الرئيسية]
    الخيارات: مفعّل / متوقف
    الأصل: متوقف
@@ -883,6 +906,15 @@ the phone page's key, «مركز التحكم» the control centre's row that op
      القيم المقبولة: glass|graphite|navy|clean|sand
    مثال للوكيل: optimize/saver.sh appearance auto
      القيم المقبولة: dark|light|auto
+—— لوحة المظهر على الرئيسية [الرئيسية]
+   مثال للوكيل: optimize/saver.sh lookpanelrow on  (or `off`)
+     القيم المقبولة: on|off
+—— زر رجّع الشكل السابق [الرئيسية وشاشة التوقف]
+   مثال للوكيل: optimize/saver.sh lookundo on  (or `off`)
+     القيم المقبولة: on|off
+—— تبديل الشكل بلا وميض [الرئيسية]
+   مثال للوكيل: optimize/saver.sh smoothlook on  (or `off`)
+     القيم المقبولة: on|off
 — مركز التحكم
 —— مركز التحكم [الرئيسية]
    إجراء أو شاشة من التلفزيون (ما فيه قيمة يضبطها أمر)

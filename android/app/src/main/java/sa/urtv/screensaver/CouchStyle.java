@@ -12,7 +12,7 @@ import android.graphics.drawable.StateListDrawable;
 import android.view.View;
 
 /**
- * 4.4 the owner: with the look «منظر وساعة» the settings are couch-tv's, exactly (Seagey/couch-tv, MIT: tv-home/web/app.css «Home settings»;
+ * 4.4 the owner: with the look «كنبة» the settings are couch-tv's, exactly (Seagey/couch-tv, MIT: tv-home/web/app.css «Home settings»;
  * docs/mockups/settings-couchtv/, approved). Its sizes are in its rem, a 120th of the screen's width (16 px on 1920), so they are the same share
  * of any screen; its colours and its 200 ms cubic-bezier(.2,.8,.2,1). Plain numbers and three small drawings (the toggle's ring, the choice's
  * tick, the chevron); SettingsActivity builds the views with them. The other looks keep the settings as they are.

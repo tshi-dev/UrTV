@@ -33,7 +33,7 @@ block = mf[mf.index('android:name=".PlayerUpdateProvider"') - 30:]
 block = block[:block.index("/>") + 2]
 check("the provider: sa.urtv.home.player, exported behind READ_LANG (the normal permission the Player already holds), no new permission",
       'android:authorities="sa.urtv.home.player"' in block and 'android:permission="sa.urtv.permission.READ_LANG"' in block
-      and not re.search(r'android:name="[^"]*PLAYER[^"]*"\s*android:protectionLevel', mf, re.I) and mf.count("<permission") == 10)   # no permission of its own: READ_LANG (10: sa.urtv.home.OPEN_EXTRAS, the add-on offer from the screensaver; then sa.urtv.permission.EXTRAS, «إضافات تلفزيونك», and sa.urtv.permission.RESCUE, the ledger the 4.3.3 rescue app in apk-latest still asks)
+      and not re.search(r'android:name="[^"]*PLAYER[^"]*"\s*android:protectionLevel', mf, re.I) and mf.count("<permission") == 11)   # 11 since 4.5: sa.urtv.home.LOOK (the screensaver's look signals to the home, signature);   # no permission of its own: READ_LANG (10: sa.urtv.home.OPEN_EXTRAS, the add-on offer from the screensaver; then sa.urtv.permission.EXTRAS, «إضافات تلفزيونك», and sa.urtv.permission.RESCUE, the ledger the 4.3.3 rescue app in apk-latest still asks)
 check("the provider answers only /update, only to the Player with its key (null to anyone else), from the cache, the refresh in the background",
       '!("/" + PATH).equals(uri.getPath())) return null;' in prov and "String caller = getCallingPackage();" in prov
       and "if (!PlayerUpdate.callerOk(caller, MirrorInstall.signers(getContext().getPackageManager(), caller))) return null;" in prov

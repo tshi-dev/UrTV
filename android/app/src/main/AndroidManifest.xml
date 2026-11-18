@@ -29,6 +29,11 @@
         android:name="sa.urtv.home.READ_GLASS"
         android:protectionLevel="signature" />
     <uses-permission android:name="sa.urtv.home.READ_GLASS" />
+    <!-- 4.5 the look: Prefs.LOOK_CHANGED and «المظهر»'s previews to the home (signature, same key); declared here too, as READ_GLASS is -->
+    <permission
+        android:name="sa.urtv.home.LOOK"
+        android:protectionLevel="signature" />
+    <uses-permission android:name="sa.urtv.home.LOOK" />
     <uses-permission android:name="sa.urtv.home.READ_NOW_PLAYING" />
     <!-- opens the launcher's «حماية العائلة» screen (signature permission, same key) -->
     <uses-permission android:name="sa.urtv.home.FAMILY_DNS" />
@@ -86,6 +91,14 @@
         <activity
             android:name=".SettingsActivity"
             android:exported="true" />
+
+        <!-- 4.5 «المظهر» over the live home: see-through, at the end side; opened from the settings, or by our home (same key: sa.urtv.home.LOOK) -->
+        <activity
+            android:name=".LookPanelActivity"
+            android:exported="true"
+            android:permission="sa.urtv.home.LOOK"
+            android:excludeFromRecents="true"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
 
         <!-- «الألعاب»: the hub's third window, the games list, and «الأسرع» (the live quiz: the TV side; its game-only server is not the remote's pairing) -->
         <activity

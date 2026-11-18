@@ -46,7 +46,7 @@
 #   optimize/saver.sh homemine only                home screen: «صوري» with ours (mix), only them (only), none (off), or as the screensaver's (same, the default)
 #   optimize/saver.sh appearance auto              home screen: «المظهر ← الإضاءة», dark (default), light, or auto (light from sunrise until Maghrib in the city)
 #   optimize/saver.sh look navy                    all our screens: «المظهر ← الشكل», glass (default), graphite, navy, clean, or sand
-#   optimize/saver.sh preset family               4.4 «المظهر ← أشكال جاهزة»: tv (شكلك المعتاد: the person's own values back, the default), couch (منظر وساعة),
+#   optimize/saver.sh preset family               4.4 «المظهر ← أشكال جاهزة»: tv (شكلك المعتاد: the person's own values back, the default), couch (كنبة),
 #                                                 clean (صورة فقط), family (مواقيت يومي), sport (مباريات اليوم) or calm (ليل هادئ); show says "preset: family" or
 #                                                 "family (custom)" once a row was changed after. The city, the adhan, the teams and the locks are never touched.
 #                                                 The four «تركيبات مقترحة» too: couch-prayers, clean-icons, sport-night, tv-glass (a look and a row or two)
@@ -280,6 +280,12 @@ case "${1:-}" in
   homelayout) set1 homelayout "${2:?usage: optimize/saver.sh homelayout classic|couch|football}" ;;
   preset)     set1 preset "${2:?usage: optimize/saver.sh preset tv|couch|clean|family|sport|calm|couch-prayers|clean-icons|sport-night|tv-glass}" ;;
   couch)      set1 couch "${2:?usage: optimize/saver.sh couch on|off}" ;;
+  lookback)   set1 lookback restore ;;
+  lookpanel)  set1 lookpanel open ;;
+  settingsstyle) set1 settingsstyle "${2:?usage: optimize/saver.sh settingsstyle buttons|couch}" ;;   # 4.4 beta 2 «شكل شاشة الإعدادات» (buttons by default)
+  lookpanelrow) set1 lookpanelrow "${2:?usage: optimize/saver.sh lookpanelrow on|off}" ;;   # «لوحة المظهر على الرئيسية» (off by default)
+  lookundo)   set1 lookundo "${2:?usage: optimize/saver.sh lookundo on|off}" ;;   # «زر رجّع الشكل السابق» (off by default)
+  smoothlook) set1 smoothlook "${2:?usage: optimize/saver.sh smoothlook on|off}" ;;   # «تبديل الشكل بلا وميض» (off by default)   # 4.5 «المظهر على الرئيسية»: the panel over the home (the looks and parts shown before they are kept)   # 4.5 «رجّع الشكل السابق»: the look before the last change, put back whole (again: the other way)
   background) set1 background "${2:?usage: optimize/saver.sh background photos|scenes}" ;;
   clock)      set1 clock "${2:?usage: optimize/saver.sh clock plain|glass}" ;;
   appsstyle)  set1 appsstyle "${2:?usage: optimize/saver.sh appsstyle tiles|banners|icons|glass}" ;;

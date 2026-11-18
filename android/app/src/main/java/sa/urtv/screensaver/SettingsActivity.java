@@ -44,7 +44,7 @@ public class SettingsActivity extends Activity {
     private ScrollView scroll;
     private int sideWidth, pageWidth;   // px, fixed in onCreate: the side pane and the whole page
     private int gapPx;                  // px between the side and the rows
-    private CouchStyle cs;              // 4.4 with «منظر وساعة» (the side list): couch-tv's settings, exactly (CouchStyle); null on the 4.3.2 screen
+    private CouchStyle cs;              // 4.4 with «كنبة» (the side list): couch-tv's settings, exactly (CouchStyle); null on the 4.3.2 screen
     private Page page;                  // a picker shown in place of the rows (couch-tv's choice pages), or null
     private EditText searchIn;          // the search's typing box (couch-tv's), kept while the search is shown
 
@@ -96,7 +96,7 @@ public class SettingsActivity extends Activity {
         getWindow().setWindowAnimations(0);
         overridePendingTransition(0, 0);
         prefs = new Prefs(this);
-        classic = !prefs.couchOn();
+        classic = !"couch".equals(prefs.settingsStyle());   // 4.4 beta 2 «شكل شاشة الإعدادات»: the settings' own style, whatever the look («أزرار» by default); the 4.3.2 hub only with the flag off
         SettingsHub.classic(classic);
         if (!classic) cs = new CouchStyle(this);
         if (getIntent().hasExtra("hubAt")) { screen = SettingsHub.canon(getIntent().getStringExtra("screen")); hubAt = SettingsHub.canon(getIntent().getStringExtra("hubAt")); }   // pickLang: back on its button
@@ -200,6 +200,12 @@ public class SettingsActivity extends Activity {
 
     /** A picker's live preview (a WebView running the page) is let go while another app is in front, and drawn again on return; null when no picker is open. */
     private Runnable previewOff, previewOn;
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        prefs.lookChanged();   // 4.5: whatever was changed here (the colours, the cards…), the home reads it now, while it is still behind this screen
+    }
 
     @Override
     protected void onStop() {
@@ -431,7 +437,7 @@ public class SettingsActivity extends Activity {
         row("نص أوضح", prefs.clearText() ? "مفعّل الكلام الرمادي بلون النص الكامل" : "متوقف", R.drawable.ic_eye,
             new Runnable() { public void run() { prefs.setClearText(!prefs.clearText()); render(); } });
         // shown by default as always; OK hides it (and shows it again)
-        row("المناسبة القادمة", prefs.occasion() ? "ظاهرة، أسفل الشاشة في الوسط: كم باقي على رمضان والأعياد، والإفطار والإمساك في رمضان" : "مخفية", R.drawable.ic_eye,
+        row("المناسبة القادمة", prefs.occasion() ? "ظاهرة، أسفل الشاشة في الوسط: كم باقي على رمضان والأعياد، والإفطار والإمساك في رمضان" : "مخفية، كم باقي على رمضان والأعياد", R.drawable.ic_eye,
             new Runnable() { public void run() { prefs.setOccasion(!prefs.occasion()); render(); } });
         row("تعتيم الليل", prefs.nightDim() ? "يعمل، تغمق الشاشة من ٩ مساءً، وأغمق من ١١ إلى ٥ الفجر، وترجع ٧ الصباح" : "متوقف، نفس الإضاءة طول الليل", R.drawable.ic_eye,
             new Runnable() { public void run() { prefs.setNightDim(!prefs.nightDim()); render(); } });
@@ -517,15 +523,30 @@ public class SettingsActivity extends Activity {
         // 4.3.3 «الواجهة»: the home as it was (the default), the football home, or «الآفاق» (a scene with the glass clock behind its scenery); and the scene packs
         // 4.4 the owner: one switch; on applies the Couch preset and keeps the person's own values, off puts them back (Prefs.setCouch)
         // 4.4 the owner: «أشكال جاهزة», six looks at once (Prefs.setPreset); with PRESETS_REPLACE_COUCH it takes the place of «شكل كنبة»
+        // 4.5 «المظهر» over the live home (LookPanelActivity): the looks and the parts, each shown on the home under the focus, kept with OK
+        if (prefs.uiPanel()) row("المظهر على الرئيسية", "الأشكال الجاهزة والتخطيط والخلفية والساعة وشكل التطبيقات، تراها على الرئيسية قبل ما تختار", R.drawable.ic_eye,
+            new Runnable() { public void run() { LookPanelActivity.open(SettingsActivity.this); } });
+        // 4.5 «رجّع الشكل السابق» (the owner approved it): the first row after a change of the look, the look before by name (its time is in the panel's row); pressed again, it comes back
+        if (prefs.uiUndo() && prefs.hasPreviousLook()) row("رجّع الشكل السابق", prefs.previousLookName(), R.drawable.ic_eye,
+            new Runnable() { public void run() { prefs.restorePreviousLook(); render(); } });
         row("أشكال جاهزة", prefs.presetLabel(), R.drawable.ic_eye, new Runnable() { public void run() { pickPreset(); } });
+        // 4.4 beta 2 «شكل شاشة الإعدادات» (the owner): the settings' own style, in both screens at the same place, so one can always go back
+        row("شكل شاشة الإعدادات", Prefs.settingsStyleLabel(prefs.settingsStyle()), R.drawable.ic_eye, new Runnable() { public void run() {
+            pickOne("شكل شاشة الإعدادات", Prefs.SETTINGS_STYLE_NAMES, java.util.Arrays.asList(Prefs.SETTINGS_STYLES).indexOf(prefs.settingsStyle()), i -> {
+                if (Prefs.SETTINGS_STYLES[i].equals(prefs.settingsStyle())) return;
+                prefs.setSettingsStyle(Prefs.SETTINGS_STYLES[i]);
+                startActivity(new Intent(SettingsActivity.this, SettingsActivity.class).putExtra("screen", "look").putExtra("hubAt", "look").putExtra("want", "شكل شاشة الإعدادات")
+                    .addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION));   // the other style now, the focus on this row
+                finish();
+            }); } });
         if (!Prefs.PRESETS_REPLACE_COUCH) row("شكل كنبة", prefs.couchLabel(), R.drawable.ic_eye, new Runnable() { public void run() { flipCouch(); } });
         row("التخطيط", Prefs.homeLayoutLabel(prefs.homeLayout()), R.drawable.ic_eye, new Runnable() { public void run() { pickHomeLayout(); } });
         row("الخلفية", Prefs.homeBgLabel(prefs.homeBg()), R.drawable.ic_eye, new Runnable() { public void run() {
-            pickOne("الخلفية", Prefs.HOME_BG_NAMES, java.util.Arrays.asList(Prefs.HOME_BGS).indexOf(prefs.homeBg()), i -> prefs.setHomeBg(Prefs.HOME_BGS[i])); } });
+            pickOne("الخلفية", Prefs.HOME_BG_NAMES, java.util.Arrays.asList(Prefs.HOME_BGS).indexOf(prefs.homeBg()), i -> prefs.setLookPart("bg", Prefs.HOME_BGS[i])); } });
         row("الساعة", Prefs.homeClockLabel(prefs.homeClock()), R.drawable.ic_eye, new Runnable() { public void run() {
-            pickOne("الساعة", Prefs.HOME_CLOCK_NAMES, java.util.Arrays.asList(Prefs.HOME_CLOCKS).indexOf(prefs.homeClock()), i -> prefs.setHomeClock(Prefs.HOME_CLOCKS[i])); } });
+            pickOne("الساعة", Prefs.HOME_CLOCK_NAMES, java.util.Arrays.asList(Prefs.HOME_CLOCKS).indexOf(prefs.homeClock()), i -> prefs.setLookPart("clock", Prefs.HOME_CLOCKS[i])); } });
         row("شكل التطبيقات", Prefs.appsStyleLabel(prefs.appsStyle()), R.drawable.ic_eye, new Runnable() { public void run() {
-            pickOne("شكل التطبيقات", Prefs.HOME_APPS_NAMES, java.util.Arrays.asList(Prefs.HOME_APPS).indexOf(Prefs.appsWay(prefs.appsStyle())), i -> prefs.setAppsStyle(Prefs.HOME_APPS[i])); } });
+            pickOne("شكل التطبيقات", Prefs.HOME_APPS_NAMES, java.util.Arrays.asList(Prefs.HOME_APPS).indexOf(Prefs.appsWay(prefs.appsStyle())), i -> prefs.setLookPart("apps", Prefs.HOME_APPS[i])); } });
         // 4.5 «زجاجي»: its size and rows (the two rows always here, so the way can be set up before it is chosen)
         row("حجم شريط tvOS", Prefs.glassSizeLabel(prefs.glassSize()), R.drawable.ic_eye, new Runnable() { public void run() {
             String[] names = new String[Prefs.GLASS_SIZES.length];
@@ -544,6 +565,13 @@ public class SettingsActivity extends Activity {
             new Runnable() { public void run() { startActivity(new Intent(SettingsActivity.this, AppearanceActivity.class)); } });
         row("صفحات الأسهم والمباريات داكنة", prefs.pagesDark() ? "مفعّل، بالمظهر الداكن دائمًا" : "متوقف، تتبع مظهر الرئيسية", R.drawable.ic_eye,
             new Runnable() { public void run() { prefs.setPagesDark(!prefs.pagesDark()); render(); } });
+        // 4.4 beta 2 (the owner, «with a protective way»): the new look items, each its own switch, off by default and after an update
+        row("لوحة المظهر على الرئيسية", prefs.uiPanel() ? "مفعّلة، تعاين الشكل على الرئيسية قبل ما تختار" : "متوقفة", R.drawable.ic_eye,
+            new Runnable() { public void run() { prefs.setUiPanel(!prefs.uiPanel()); render(); } });
+        row("زر رجّع الشكل السابق", prefs.uiUndo() ? "مفعّل، أول صف بعد تغيير الشكل" : "متوقف", R.drawable.ic_eye,
+            new Runnable() { public void run() { prefs.setUiUndo(!prefs.uiUndo()); render(); } });
+        row("تبديل الشكل بلا وميض", prefs.uiSmooth() ? "مفعّل، الرئيسية تتغير مرة وحدة بتلاشٍ قصير" : "متوقف، كما كان", R.drawable.ic_eye,
+            new Runnable() { public void run() { prefs.setUiSmooth(!prefs.uiSmooth()); render(); } });
         // up to three cards left of the clock; each place takes any card, or «بدون» (the ones after it move up)
         for (int k = 0; k < Prefs.HOME_CARDS; k++) {
             final int place = k;
@@ -1092,31 +1120,30 @@ public class SettingsActivity extends Activity {
         }
     }
 
-    /** a mix chosen: applied as a look is (the settings open again in the other layout when it changes) */
+    /** a mix chosen: applied as a look is, and drawn again here (4.4 beta 2: a look never changes the settings screen; «شكل شاشة الإعدادات» does) */
     private void applyCombo(String key) {
-        boolean wasClassic = !prefs.couchOn();
+        String style = prefs.settingsStyle();
         prefs.setCombo(key);
-        if (wasClassic == !prefs.couchOn()) { render(); return; }
-        startActivity(new Intent(this, SettingsActivity.class).putExtra("screen", "look").putExtra("hubAt", "look").putExtra("want", "أشكال جاهزة")
-            .addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION));
-        finish();
+        afterLook(style);
     }
 
-    /** a look chosen: applied; the settings open again in the other layout when it changed (the Couch look's side list), else drawn again */
+    /** a look chosen: applied, and drawn again here; 4.4 beta 2 (the owner): only a full-design look («كنبة») changes the settings screen too */
     private void applyPreset(String key) {
-        boolean wasClassic = !prefs.couchOn();
+        String style = prefs.settingsStyle();
         prefs.setPreset(key);
-        if (wasClassic == !prefs.couchOn()) { render(); return; }
-        startActivity(new Intent(this, SettingsActivity.class).putExtra("screen", "look").putExtra("hubAt", "look").putExtra("want", "أشكال جاهزة")
-            .addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION));
+        afterLook(style);
+    }
+
+    /** the same screen drawn again, or, when the look changed the settings screen's style, the settings opened again in it, on «أشكال جاهزة» */
+    private void afterLook(String styleBefore) {
+        if (styleBefore.equals(prefs.settingsStyle())) { render(); return; }
+        startActivity(new Intent(this, SettingsActivity.class).putExtra("screen", "look").putExtra("hubAt", "look").putExtra("want", "أشكال جاهزة").addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION));
         finish();
     }
 
     private void flipCouch() {
         prefs.setCouch(!prefs.couchOn());
-        startActivity(new Intent(this, SettingsActivity.class).putExtra("screen", "look").putExtra("hubAt", "look").putExtra("want", "شكل كنبة")
-            .addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION));
-        finish();
+        render();   // 4.4 beta 2: the settings screen stays as it is
     }
 
     private void classicSide() {
@@ -1416,7 +1443,7 @@ public class SettingsActivity extends Activity {
         return card;
     }
 
-    // ---- 4.4 «منظر وساعة»: the settings in couch-tv's style (CouchStyle; docs/mockups/settings-couchtv/, approved by the owner) ----
+    // ---- 4.4 «كنبة»: the settings in couch-tv's style (CouchStyle; docs/mockups/settings-couchtv/, approved by the owner) ----
 
     /** the veil over the home under the settings: couch-tv's rgba(10,8,12,.8) over the blurred home; nearly solid on a weak TV («الوضع الخفيف») */
     private void couchVeil() {
@@ -3638,7 +3665,7 @@ public class SettingsActivity extends Activity {
         for (int i = 0; i < labels.length; i++) labels[i] = Prefs.HOME_LAYOUT_NAMES[i];
         new Dlg(this).setTitle("التخطيط")
             .setSingleChoiceItems(labels, java.util.Arrays.asList(Prefs.HOME_LAYOUTS).indexOf(prefs.homeLayout()), (d, i) -> {
-                prefs.setHomeLayout(Prefs.HOME_LAYOUTS[i]);
+                prefs.setLookPart("layout", Prefs.HOME_LAYOUTS[i]);   // 4.5: the look before kept, the home told at once
                 d.dismiss();
                 render();
             })
@@ -3791,7 +3818,7 @@ public class SettingsActivity extends Activity {
 
         @Override Dlg own() { super.own(); return this; }
 
-        // 4.4 «منظر وساعة»: a plain list (one choice, ticks, or a list) opens as couch-tv's page in place of the rows, not as a dialog
+        // 4.4 «كنبة»: a plain list (one choice, ticks, or a list) opens as couch-tv's page in place of the rows, not as a dialog
         private CharSequence title;
         private CharSequence[] items;
         private int checked = -1;
@@ -4144,7 +4171,7 @@ public class SettingsActivity extends Activity {
         final String cat = SettingsHub.of(FocusKey.key(label), groupCat);   // its action on every screen (the search runs it), its views only on its own
         if (onClick != null) actions.put(FocusKey.key(label), onClick);
         if (!on(cat)) return offscreen();   // 4.4 smoother: a row of another section is not built (a section shows about 12 of the 135)
-        if (cs != null) {   // «منظر وساعة»: couch-tv's row, the same registry row (its key, its action, its section)
+        if (cs != null) {   // «كنبة»: couch-tv's row, the same registry row (its key, its action, its section)
             final LinearLayout couch = couchRow(label, value, onClick, FocusKey.key(label));
             View toSide = sideItems.get(screen);
             if (toSide != null) { if (Dir.rtl()) couch.setNextFocusRightId(toSide.getId()); else couch.setNextFocusLeftId(toSide.getId()); }

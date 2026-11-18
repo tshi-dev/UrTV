@@ -77,7 +77,7 @@ check("the screensaver's defaults: on, the whistle, goal off, the final whistle 
       'getBoolean("kickoff", true)' in prefs and 'getBoolean("kickoffWhistle", true)' in prefs and 'getBoolean("kickoffGoal", false)' in prefs
       and 'getBoolean("kickoffEnd", false)' in prefs and 'getBoolean("kickoffOver", false)' in prefs)
 check("the page is told only what is not the default (&ko=0, &kogoal=1, &koend=1)", '(kickoff() ? "" : "&ko=0")' in prefs and '"&kogoal=1"' in prefs and '"&koend=1"' in prefs)
-check("the provider gives the column «kickoff»", '"kickoff", "greeting_name", "glass_size", "glass_rows"});' in prov and "p.kickoffColumn(), p.greetingName(), p.glassSize(), p.glassRows()});" in prov)
+check("the provider gives the column «kickoff»", '"kickoff", "greeting_name", "ui_smooth", "glass_size", "glass_rows"});' in prov and 'p.kickoffColumn(), p.greetingName(), p.uiSmooth() ? "1" : "0", p.glassSize(), p.glassRows()});' in prov)
 rows = ["تنبيه بداية المباراة", "صوت التنبيه", "عند الهدف", "صافرة النهاية", "فوق تطبيق آخر"]
 check("the five rows in the settings, in both layouts (the hub's tables)", all(f'row("{r}"' in act for r in rows) and all(hub.count(f'"{r}"') >= 4 for r in rows),
       [r for r in rows if hub.count(f'"{r}"') < 4])

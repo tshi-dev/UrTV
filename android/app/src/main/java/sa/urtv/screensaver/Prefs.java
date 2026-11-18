@@ -1395,10 +1395,39 @@ final class Prefs {
      * the look's own; «شكلك المعتاد» puts them back exactly. A row changed after reads «مخصّص». The city, the adhan, the teams and the locks are never
      * touched: a look is the look only. Two of the owner's open questions are flags here, both on until he says otherwise.
      */
-    static final boolean PRESETS_REPLACE_COUCH = true;    // «أشكال جاهزة» replaces the «شكل كنبة» switch («منظر وساعة» is the Couch look)
+    // ---- 4.4 beta 2 (the owner: «with a protective way»): each new look item behind its own switch, off by default and after an update
+    /** 4.4 beta 2 «شكل شاشة الإعدادات» (the owner): the settings screen's own style, apart from the looks: «أزرار» (the 4.3.2 hub, the default) or
+     *  «كنبة» (couch-tv's side list and compact rows). «tvOS» joins SETTINGS_STYLES only once its screen is approved and built (never a dead choice).
+     *  Every place of the hub is in the side list (tests/settings_one_form_test.py lists each with its new place). */
+    static final String[] SETTINGS_STYLES = {"buttons", "couch"};
+    static final String[] SETTINGS_STYLE_NAMES = {"أزرار", "كنبة"};
+    /** the style; read the first time after the update as the screen the TV shows now («كنبة» with the look «كنبة», else «أزرار»): no surprise switch */
+    String settingsStyle() {
+        String v = sp.getString("settingsStyle", null);
+        if (v == null) {
+            v = couchOn() || sp.getBoolean("uiOneForm", false) ? "couch" : "buttons";
+            SharedPreferences.Editor e = sp.edit().putString("settingsStyle", v);
+            if (couchOn() && !sp.getBoolean("uiOneForm", false)) e.putString("settingsStyleBefore", "buttons");   // the look «كنبة» gave it: «شكلك المعتاد» gives the buttons back, as before
+            e.apply();
+        }
+        return java.util.Arrays.asList(SETTINGS_STYLES).contains(v) ? v : "buttons";
+    }
+    /** the person's own choice: kept as theirs («شكلك المعتاد» no longer puts an older one back) */
+    void setSettingsStyle(String v) { if (java.util.Arrays.asList(SETTINGS_STYLES).contains(v)) sp.edit().putString("settingsStyle", v).remove("settingsStyleBefore").apply(); }
+    static String settingsStyleLabel(String v) { int i = java.util.Arrays.asList(SETTINGS_STYLES).indexOf(v); return SETTINGS_STYLE_NAMES[Math.max(0, i)]; }
+    /** «لوحة المظهر على الرئيسية»: the row that opens LookPanelActivity, and the panel itself (saver.sh lookpanel) */
+    boolean uiPanel() { return sp.getBoolean("uiPanel", false); }
+    void setUiPanel(boolean on) { sp.edit().putBoolean("uiPanel", on).apply(); }
+    /** «زر رجّع الشكل السابق»: the first row of «المظهر» after a change of the look */
+    boolean uiUndo() { return sp.getBoolean("uiUndo", false); }
+    void setUiUndo(boolean on) { sp.edit().putBoolean("uiUndo", on).apply(); }
+    /** «تبديل الشكل بلا وميض»: the home told at once (LOOK_CHANGED) and applying a look whole behind its still picture; off: as in 4.4 (the next return or minute) */
+    boolean uiSmooth() { return sp.getBoolean("uiSmooth", false); }
+    void setUiSmooth(boolean on) { sp.edit().putBoolean("uiSmooth", on).apply(); }
+    static final boolean PRESETS_REPLACE_COUCH = true;    // «أشكال جاهزة» replaces the «شكل كنبة» switch («كنبة» is the Couch look)
     static final boolean CLEAN_HIDES_BUTTONS = true;      // «صورة فقط» hides the home's round buttons (they stay in the control centre and the menu key)
     static final String[] PRESETS = {"tv", "couch", "clean", "family", "sport", "calm"};
-    static final String[] PRESET_NAMES = {"شكلك المعتاد", "منظر وساعة", "صورة فقط", "مواقيت يومي", "مباريات اليوم", "ليل هادئ"};
+    static final String[] PRESET_NAMES = {"شكلك المعتاد", "كنبة", "صورة فقط", "مواقيت يومي", "مباريات اليوم", "ليل هادئ"};
     static final String[] PRESET_ABOUT = {
         "اختياراتك كما كانت قبل أي شكل، والتطبيقات مربعات ملونة",
         "تخطيط كنبة، الآفاق، ساعة زجاجية خلف الصورة، التطبيقات أيقونات، داكن",
@@ -1476,7 +1505,7 @@ final class Prefs {
      * it reads as itself (its name) until a row is changed after (then «مخصّص»). key, name, its line, the look, then field=value pairs.
      */
     static final String[][] COMBOS = {
-        {"couch-prayers", "منظر وساعة + مواقيت اليوم", "الآفاق، ومربعات المواقيت في الصف", "couch", "cards=prayerrow"},
+        {"couch-prayers", "كنبة + مواقيت اليوم", "الآفاق، ومربعات المواقيت في الصف", "couch", "cards=prayerrow"},
         {"clean-icons", "صورة فقط + أيقونات التطبيقات", "الصورة والساعة، والتطبيقات أيقونات", "clean", "apps=icons"},
         {"sport-night", "مباريات اليوم + ليل هادئ", "المباريات في الليل، خافتة", "sport", "nightDim=true", "wallDim=40"},
         {"tv-glass", "شكلك المعتاد + الساعة الزجاجية", "اختياراتك، والساعة خلف الصورة", "tv", "clock=glass"}};
@@ -1486,13 +1515,17 @@ final class Prefs {
     void setCombo(String key) {
         String[] c = combo(key);
         if (c == null) return;
-        setPreset(c[3]);
+        synchronized (LOOK_LOCK) { rememberLook(); comboNow(c, key); }
+        lookChanged();
+    }
+    private void comboNow(String[] c, String key) {
+        writePreset(c[3]);
         if ("tv".equals(c[3])) sp.edit().putString("presetBefore", presetNow()).apply();   // the person's own, kept: «شكلك المعتاد» alone puts them back
         for (int k = 4; k < c.length; k++) { int eq = c[k].indexOf('='); setPresetField(c[k].substring(0, eq), c[k].substring(eq + 1)); }
         sp.edit().putString("preset", c[3]).putString("presetCombo", key).putString("presetApplied", presetNow()).apply();
     }
 
-    /** the look chosen ("tv" when none); a TV that had «شكل كنبة» on reads «منظر وساعة», its four values kept as the person's own */
+    /** the look chosen ("tv" when none); a TV that had «شكل كنبة» on reads «كنبة», its four values kept as the person's own */
     String preset() {
         if (!sp.contains("preset") && sp.getBoolean("couchOn", false)) {
             String[] b = sp.getString("couchBefore", "").split(",");
@@ -1504,6 +1537,12 @@ final class Prefs {
     }
     void setPreset(String key) {
         if (combo(key) != null) { setCombo(key); return; }   // saver.sh preset takes a mix's key too
+        if (!java.util.Arrays.asList(PRESETS).contains(key)) return;
+        synchronized (LOOK_LOCK) { rememberLook(); writePreset(key); }
+        lookChanged();
+    }
+    /** the look written, every field of it, under LOOK_LOCK (the caller's): the home never reads it half done */
+    private void writePreset(String key) {
         int i = java.util.Arrays.asList(PRESETS).indexOf(key);
         if (i < 0) return;
         sp.edit().remove("presetCombo").apply();
@@ -1512,13 +1551,22 @@ final class Prefs {
             if (before != null) presetPut(before);
             else for (int k = 0; k < PRESET_FIELDS.length; k++) setPresetField(PRESET_FIELDS[k], PRESET_VALUES[0][k]);
             sp.edit().remove("preset").remove("presetBefore").remove("presetApplied").remove("presetCombo").putBoolean("couchOn", false).remove("couchBefore").apply();
+            String sb = sp.getString("settingsStyleBefore", null);   // the settings screen the person had before a full-design look
+            if (sb != null) sp.edit().putString("settingsStyle", sb).remove("settingsStyleBefore").apply();
             return;
         }
         if (before == null) { before = presetNow(); sp.edit().putString("presetBefore", before).apply(); }   // the person's own, kept once
         else presetPut(before);                                                                                // back to them, then the look
         for (int k = 0; k < PRESET_FIELDS.length; k++) setPresetField(PRESET_FIELDS[k], PRESET_VALUES[i][k]);
         sp.edit().putString("preset", key).putString("presetApplied", presetNow()).putBoolean("couchOn", "couch".equals(key)).remove("couchBefore").apply();
+        String full = FULL_DESIGN_STYLE.get(key);   // the owner (4.4 beta 2): a full-design look changes the settings screen too; the other looks never do
+        if (full != null && !full.equals(settingsStyle())) {
+            if (!sp.contains("settingsStyleBefore")) sp.edit().putString("settingsStyleBefore", settingsStyle()).apply();   // kept once, for «شكلك المعتاد»
+            sp.edit().putString("settingsStyle", full).apply();
+        }
     }
+    /** the looks that are a whole design, with the settings screen of that design («tvOS» joins once its look and screen are approved and built) */
+    static final java.util.Map<String, String> FULL_DESIGN_STYLE = java.util.Collections.singletonMap("couch", "couch");
     /** the rows changed since the look was chosen (their Arabic names), none while it is as chosen */
     List<String> presetChanged() {
         List<String> out = new ArrayList<>();
@@ -1532,7 +1580,7 @@ final class Prefs {
         return out;
     }
     static String presetName(String key) { int i = java.util.Arrays.asList(PRESETS).indexOf(key); return PRESET_NAMES[Math.max(0, i)]; }
-    /** the row's line: the look, or «مخصّص (منظر وساعة، وتغيّر: الساعة)», or «…، وتغيّر أكثر من صف» */
+    /** the row's line: the look, or «مخصّص (كنبة، وتغيّر: الساعة)», or «…، وتغيّر أكثر من صف» */
     String presetLabel() {
         String key = preset(), mix = presetCombo();
         String name = mix.isEmpty() ? presetName(key) : combo(mix)[1];
@@ -1540,11 +1588,99 @@ final class Prefs {
         if (ch.isEmpty()) return name;
         return ch.size() == 1 ? String.format(java.util.Locale.ROOT, "مخصّص (%s، وتغيّر: %s)", name, ch.get(0)) : String.format(java.util.Locale.ROOT, "مخصّص (%s، وتغيّر أكثر من صف)", name);
     }
+    // ---- 4.5 (docs/ui/PROPOSAL.md, approved): one way a look is written, the look before it kept, the home told at once
+
+    /** held while a look is written (setPreset, setCombo, setLookPart, restorePreviousLook) and while ConfigProvider reads it: never half a look */
+    static final Object LOOK_LOCK = new Object();
+    /** the home's own action: the saved look changed, read it now (not at the next minute); sent only to sa.urtv.home, under LOOK_PERMISSION */
+    static final String LOOK_CHANGED = "sa.urtv.home.LOOK_CHANGED";
+    static final String LOOK_PERMISSION = "sa.urtv.home.LOOK";
+    private static final String[] PREV_KEYS = {"preset", "presetCombo", "presetBefore", "presetApplied"};
+
+    /** the look as it is now, whole: its fields and which look and mix it was (a line each; the stored strings with their new lines escaped) */
+    private String lookWhole() {
+        StringBuilder b = new StringBuilder(presetNow());
+        for (String k : PREV_KEYS) b.append("\n#").append(k).append('=').append(sp.contains(k) ? sp.getString(k, "").replace("\\", "\\\\").replace("\n", "\\n") : "\u0000");
+        return b.toString();
+    }
+    private void lookPut(String whole) {
+        SharedPreferences.Editor e = sp.edit();
+        StringBuilder fields = new StringBuilder();
+        for (String line : whole.split("\n")) {
+            int eq = line.indexOf('=');
+            if (eq <= 0) continue;
+            if (line.startsWith("#")) {
+                String k = line.substring(1, eq), v = line.substring(eq + 1);
+                if ("\u0000".equals(v)) e.remove(k); else e.putString(k, unesc(v));
+            } else fields.append(line).append('\n');
+        }
+        presetPut(fields.toString());
+        e.putBoolean("couchOn", whole.contains("\n#preset=couch\n")).remove("couchBefore").apply();
+    }
+    private static String unesc(String v) {
+        StringBuilder b = new StringBuilder();
+        for (int i = 0; i < v.length(); i++) {
+            char c = v.charAt(i);
+            if (c == '\\' && i + 1 < v.length()) { char d = v.charAt(++i); b.append(d == 'n' ? '\n' : d); } else b.append(c);
+        }
+        return b.toString();
+    }
+    /** keeps the look as it is as «the look before» (with the time), once per change; «رجّع الشكل السابق» puts it back */
+    void rememberLook() {
+        sp.edit().putString("lookPrev", lookWhole()).putLong("lookPrevAt", System.currentTimeMillis()).apply();
+    }
+    /** there is a look before this one, and it is not this one */
+    boolean hasPreviousLook() { String v = sp.getString("lookPrev", null); return v != null && !v.equals(lookWhole()); }
+    /** its name for the row: the look's or the mix's, «مخصّص» when it was changed after */
+    String previousLookName() {
+        String v = sp.getString("lookPrev", "");
+        String key = "tv", mix = "";
+        for (String line : v.split("\n")) {
+            if (line.startsWith("#preset=") && !line.endsWith("\u0000")) key = line.substring(8);
+            if (line.startsWith("#presetCombo=") && !line.endsWith("\u0000")) mix = line.substring(13);
+        }
+        return combo(mix) != null ? combo(mix)[1] : presetName(java.util.Arrays.asList(PRESETS).contains(key) ? key : "tv");
+    }
+    long previousLookAt() { return sp.getLong("lookPrevAt", 0); }
+    /** «رجّع الشكل السابق»: the look before put back whole, and this one kept as the look before (pressed again, it comes back) */
+    void restorePreviousLook() {
+        synchronized (LOOK_LOCK) {
+            String prev = sp.getString("lookPrev", null);
+            if (prev == null) return;
+            String now = lookWhole();
+            lookPut(prev);
+            sp.edit().putString("lookPrev", now).putLong("lookPrevAt", System.currentTimeMillis()).apply();
+        }
+        lookChanged();
+    }
+    /** one part of the look (layout, bg, clock, apps: PRESET_FIELDS) changed by a row or the panel: the look before kept, the home told */
+    void setLookPart(String field, String value) {
+        synchronized (LOOK_LOCK) { rememberLook(); setPresetField(field, value); }
+        lookChanged();
+    }
+    /** the home's part of a look, as choosing it would make it, without saving anything (LookPanelActivity's preview): layout, bg, clock, apps,
+     *  appearance, cards («شكلك المعتاد» is the person's own values, kept or as they are) */
+    String[] lookOf(String key) {
+        java.util.Map<String, String> v = new java.util.HashMap<>();
+        for (String f : PRESET_FIELDS) v.put(f, presetField(f));
+        String before = sp.getString("presetBefore", null);
+        if (before != null) for (String line : before.split("\n")) { int eq = line.indexOf('='); if (eq > 0) v.put(line.substring(0, eq), line.substring(eq + 1)); }
+        int i = java.util.Arrays.asList(PRESETS).indexOf(key);
+        if (i > 0 || (i == 0 && before == null)) for (int k = 0; k < PRESET_FIELDS.length; k++) if (PRESET_VALUES[Math.max(0, i)][k] != null) v.put(PRESET_FIELDS[k], PRESET_VALUES[Math.max(0, i)][k]);
+        return new String[] {v.get("layout"), v.get("bg"), v.get("clock"), v.get("apps"), v.get("appearance"), v.get("cards")};
+    }
+
+    /** the home reads the look now (its LOOK_CHANGED receiver); an older home, or none, simply reads it at its next minute as before */
+    void lookChanged() {
+        if (ctx == null || !uiSmooth()) return;   // 4.4 beta 2: only with «تبديل الشكل بلا وميض» on; off, the home reads at its next return or minute, as in 4.4
+        try { ctx.sendBroadcast(new android.content.Intent(LOOK_CHANGED).setPackage("sa.urtv.home"), LOOK_PERMISSION); } catch (RuntimeException e) { }
+    }
+
     /** saver.sh show: "family" or "family (custom)" */
     String presetShow() { return (presetCombo().isEmpty() ? preset() : presetCombo()) + (presetChanged().isEmpty() ? "" : " (custom)"); }
 
     /**
-     * 4.4 the owner: «شكل كنبة» was one switch. With PRESETS_REPLACE_COUCH it is the look «منظر وساعة»: on chooses it, off chooses «شكلك المعتاد».
+     * 4.4 the owner: «شكل كنبة» was one switch. With PRESETS_REPLACE_COUCH it is the look «كنبة»: on chooses it, off chooses «شكلك المعتاد».
      * Without it, the switch as before: on, the Couch preset at once and the person's own four values kept; off, those put back exactly.
      */
     boolean couchOn() {
