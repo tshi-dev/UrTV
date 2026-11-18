@@ -112,6 +112,12 @@ public class RescueActivity extends Activity {
             said.append(p.enabled.isEmpty() ? "ما كان شيء من تطبيقات التلفزيون موقوفاً.\n" : "شغّلنا " + back + " من " + p.enabled.size() + " تطبيقاً كان موقوفاً.\n");
             said.append(p.home.isEmpty() ? "ما عرفنا الشاشة الأصلية: اختر الشاشة الرئيسية من إعدادات التلفزيون ← التطبيقات.\n" : "زر الرئيسية يفتح الشاشة الأصلية الآن.\n");
             if (p.a11yChanged) said.append("أطفأنا «إضافات تلفزيونك».\n");
+            if (!p.home.isEmpty()) {   // 4.4 (R7): the stock home has Home again: the fallback home steps aside (two homes would ask the person which one)
+                try {
+                    getPackageManager().setComponentEnabledSetting(new android.content.ComponentName(this, RescueHome.ALIAS_CLASS),
+                        android.content.pm.PackageManager.COMPONENT_ENABLED_STATE_DISABLED, android.content.pm.PackageManager.DONT_KILL_APP);
+                } catch (RuntimeException ignored) { }
+            }
             if (ledger == null) said.append("(ما ردّت الشاشة الرئيسية «تلفزيونك»، فشغّلنا ما نعرفه من تطبيقات التلفزيون الأساسية. لو بقي تطبيق موقوفاً شغّله من إعدادات التلفزيون ← التطبيقات.)\n");
             said.append("اضغط زر الرئيسية في الريموت.");
             say(said.toString());

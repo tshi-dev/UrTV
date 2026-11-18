@@ -105,6 +105,13 @@ the same network. Note the build in the report's first line.
   keys each do what they did before the setup. A dead one is a FAIL naming the button (docs/dev/REGRESSIONS.md «Watch»: the candidates).
   Rows: R-009.
 
+## When a test TV is at hand (never the owner's TV)
+
+- **S-21 Removing UrTV after «عطّل واجهة المصنع».** One Android 9 TV and one Android 11 or newer: without «إنقاذ تلفزيونك» the step refuses and
+  changes nothing; with it, after the step Home still opens UrTV; uninstall UrTV from the TV's Settings: the TV opens «تلفزيونك بدون شاشة
+  رئيسية» by itself (never a black screen, never a chooser); «افتح الإعدادات» and an app of the list open; turn the stock home on by hand:
+  the next Home opens it, and the rescue screen does not come back. The full steps are in tester/STEP.md. Rows: R-282.
+
 ## The report
 
 ```

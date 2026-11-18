@@ -343,6 +343,7 @@ python3 tests/control_shape_test.py   # 4.3.1 «شكل لوحة التحكم»: 
 python3 tests/dev_help_test.py   # User report «ماهو راضي يفعل تصحيح USB»: Developer options open from the build number, whose place differs per
 python3 tests/dock_retry_test.py   # Hotfix 4.3: after a cold start the favourites row showed only five apps (two users, 4.2 and 4.3). showApps() f
 python3 tests/factory_test.py   # «تخلّص من واجهة المصنع» (its own row in the settings): the engine on SetupEngineRun's fake TV (the offer and i
+python3 tests/rescue_home_test.py   # 4.4 (R7): the rescue's fallback home: armed before the stock home goes, off when it is back; the factory step only where needed; a PC-switched TV gets its stock home back
 python3 tests/fragment_keep_test.py   # 4.3.2 (a user's adhan times and prayer card disappeared after 4.3.1): the home keeps the screensaver's last RE
 python3 tests/glow_mode_test.py   # «توهّج لون التطبيق» (4.3.1): the glow behind the focused app is OFF by default (new installs and old ones), ha
 python3 tests/google_tv_home_test.py   # Google TV (user reports: TCL G10/G08, Changhong Android 14, Sony BRAVIA VH21, Xiaomi MiTV-AFMU0/1): since 4.3

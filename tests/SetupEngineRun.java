@@ -34,6 +34,7 @@ public class SetupEngineRun {
         boolean wifiConnected = true, wifiGoesWithWizard, homeNotInFront, wifiSilent;
         int savedNetworks = 1;
         int wizardNets = 1, otherNets = 0;   // 4.3 A3: how many saved networks the wizard owns (when wizardOwnsWifi), and others'
+        boolean rescueArmed, rescueRefuses;  // 4.4 (R7): the rescue app's fallback home (RescueHome), turned on by `pm enable <alias>`; a TV may refuse it
         String otherHomes = "";              // 4.3 A3: more lines of query-activities (another maker's home, a FallbackHome)
         String top;                 // what `am start` put in front (null: what Home shows)
         long dfTotal = 16777216, dfAvail = 12582912;
@@ -144,6 +145,8 @@ public class SetupEngineRun {
                 if (p.equals("com.google.android.tungsten.setupwraith") && wifiGoesWithWizard) { savedNetworks = 0; wifiConnected = false; }   // Android removes the wizard's networks
                 return "Package " + p + " new state: disabled-user\n";
             }
+            if (c.equals(RescueHome.ARM)) { if (installed.contains(RescueHome.PKG) && !rescueRefuses) rescueArmed = true; return ""; }
+            if (c.startsWith("pm disable " + RescueHome.ALIAS)) { rescueArmed = false; return ""; }
             if (c.startsWith("pm enable ")) { String p = c.substring(c.lastIndexOf(' ') + 1); if (!stuck.contains(p)) off.remove(p); return "Package " + p + " new state: enabled\n"; }
             if (c.startsWith("pm grant ")) return "";
             if (c.startsWith("appops get sa.urtv.home SCHEDULE_EXACT_ALARM")) return "SCHEDULE_EXACT_ALARM: " + exactAlarm + "; time=+1d\n";
@@ -167,7 +170,8 @@ public class SetupEngineRun {
             if (c.startsWith("cmd package set-home-activity")) return "";
             if (c.startsWith("cmd package resolve-activity")) return home() + "\n";
             if (c.startsWith("cmd package query-activities")) return "2 activities found:\n  Activity #0:\n    priority=0\n    " + stockPkg + "/.home.HomeActivity\n"
-                + (wizardAnswersHome ? "  Activity #1:\n    com.google.android.tungsten.setupwraith/.RecoveryActivity\n" : "") + otherHomes;
+                + (wizardAnswersHome ? "  Activity #1:\n    com.google.android.tungsten.setupwraith/.RecoveryActivity\n" : "") + otherHomes
+                + (rescueArmed ? "    " + RescueHome.ALIAS + "\n" : "");
             if (c.equals("cmd wifi status")) return wifiSilent ? "" : wifiConnected ? "Wifi is enabled\nWifi is connected to \"net\"\n" : "Wifi is enabled\nWifi is not connected\n";
             if (c.equals("cmd wifi list-networks")) {
                 if (wifiSilent) return "";
@@ -210,6 +214,10 @@ public class SetupEngineRun {
         public void disarm() { disarmed++; }
         public boolean exact() { return exact; }
     }
+
+    /** 4.4 (R7): a TV where «عطّل واجهة المصنع» is offered: the rescue app installed, and the home switch failed once (HomeFails) */
+    static FakeTv factoryTv() { FakeTv t = tv(); t.installed.add(RescueHome.PKG); return t; }
+    static Mem factoryMem() { Mem m = new Mem(); m.put(HomeFails.FILE, "1\n"); return m; }
 
     static FakeTv tv() {
         FakeTv t = new FakeTv();
@@ -473,7 +481,7 @@ public class SetupEngineRun {
         SetupEngine.Result g1 = engine(thg, mhg, new Dead(), new ArrayList<>()).home();
         line("HF2 " + g1.status + " count=" + mhg.get(HomeFails.FILE).trim() + " " + HomeFails.givenUp("2") + " " + HomeFails.givenUp("1") + " " + HomeFails.givenUp(null) + " " + HomeFails.after(null, false, false).isEmpty());
         // 4.3.3 (A17): the wizard owns the saved Wi-Fi: nothing says so on the start screen, and «تخلّص من واجهة المصنع» is offered (the wizard is never turned off)
-        FakeTv s7 = tv(); s7.wizardAnswersHome = true; s7.wizardOwnsWifi = true; SetupEngine se7 = engine(s7, new Mem(), new Dead(), new ArrayList<>());
+        FakeTv s7 = factoryTv(); s7.wizardAnswersHome = true; s7.wizardOwnsWifi = true; SetupEngine se7 = engine(s7, factoryMem(), new Dead(), new ArrayList<>());
         SetupEngine.FactoryOffer fo7 = se7.factoryOffer();
         line("S7 owns=" + se7.wizardOwnsWifi() + " refusal=" + (fo7.refusal == null ? "none" : "yes") + " wizardInPlan=" + fo7.packages.contains(WR) + " wizardOff=" + s7.off.contains(WR));
     }

@@ -51,7 +51,10 @@ public final class SetupHook {
         try {
             FileStore store = new FileStore(app);
             String j = store.get("home-switch.json");
-            if (j == null || !StockMigration.due(field(j, "state"), field(j, "stock_before"), field(j, "wizard_before"), store.get(SetupEngine.FACTORY), store.get(StockMigration.MARK))) return;
+            if (j == null || !StockMigration.due(field(j, "state"), field(j, "stock_before"), field(j, "wizard_before"), store.get(SetupEngine.FACTORY), store.get(StockMigration.MARK))) {
+                noJournal(app, store);   // 4.4 (R7): a TV switched the old way from the PC
+                return;
+            }
             new Thread(new Runnable() {
                 @Override public void run() {
                     try (SetupSession s = SetupSession.open(app, 5000, null, new SetupEngine.Out() { @Override public void line(String text) { } })) {
@@ -67,6 +70,39 @@ public final class SetupHook {
         } catch (RuntimeException ignored) {
             // the home screen comes first
         }
+    }
+
+    /**
+     * 4.4 (R7): no stock home answers Home (asked of this app's own package manager, no adb), the person did not choose «عطّل واجهة المصنع», and nothing was done yet:
+     * where this app's adb key exists (it was let in before) the stock home is turned back on (SetupEngine.migrateStockNoJournal); else the person is told the way
+     * by hand, once (no «السماح بتصحيح USB؟» popping up at a home start).
+     */
+    private static void noJournal(final Context app, FileStore store) {
+        String f = store.get(SetupEngine.FACTORY), m = store.get(StockMigration.MARK);
+        if ((f != null && f.startsWith("on")) || (m != null && !m.trim().isEmpty())) return;
+        java.util.List<String> homes = new java.util.ArrayList<>();
+        for (android.content.pm.ResolveInfo r : app.getPackageManager().queryIntentActivities(new android.content.Intent(android.content.Intent.ACTION_MAIN).addCategory(android.content.Intent.CATEGORY_HOME), 0))
+            if (r.activityInfo != null) homes.add(r.activityInfo.packageName);
+        if (RescueHome.stockHomeOn(homes)) return;
+        if (!AdbKeys.exists(app)) {
+            String told = store.get(StockMigration.TOLD_MARK);
+            if (told != null && !told.trim().isEmpty()) return;
+            try { store.put(StockMigration.TOLD_MARK, "told\n"); } catch (java.io.IOException e) { return; }
+            new android.os.Handler(android.os.Looper.getMainLooper()).post(new Runnable() { @Override public void run() { Toast.makeText(app, StockMigration.TOLD, Toast.LENGTH_LONG).show(); } });
+            return;
+        }
+        new Thread(new Runnable() {
+            @Override public void run() {
+                try (SetupSession s = SetupSession.open(app, 5000, null, new SetupEngine.Out() { @Override public void line(String text) { } })) {
+                    final SetupEngine.Result r = s.engine.migrateStockNoJournal();
+                    if (r != null && r.status == SetupEngine.Status.DONE) {
+                        new android.os.Handler(android.os.Looper.getMainLooper()).post(new Runnable() { @Override public void run() { Toast.makeText(app, StockMigration.NOTICE, Toast.LENGTH_LONG).show(); } });
+                    }
+                } catch (Exception ignored) {
+                    // the TV did not answer: the next start tries again
+                }
+            }
+        }, "stock-migration-pc").start();
     }
 
     private static String field(String json, String key) {
