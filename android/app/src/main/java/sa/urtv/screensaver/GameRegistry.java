@@ -44,6 +44,10 @@ final class GameRegistry {
     static boolean inPhones(String id) { if (id.startsWith("e:")) return true; return inPhonesList(id); }
     private static boolean inPhonesList(String id) { for (String g : PHONE_GAMES) if (g.equals(id)) return true; return false; }
 
+    /** the games of this list that are held back: the hub shows one only when the release file (GameReleaseStore.nativeOn) has turned it on for this TV's group; the eight others and «packs» are always shown */
+    static final String[] HELD = {"forehead", "author", "closest", "liar", "emoji", "link", "night", "draw", "quran-verse", "maths", "logic"};
+    static boolean held(String id) { for (String g : HELD) if (g.equals(id)) return true; return false; }
+
     static Game byId(String id) { for (Game g : ALL) if (g.id.equals(id)) return g; return null; }
 
     /** where the list's focus starts, among `list` (what the hub shows now: the engine games are in it when they are on) */

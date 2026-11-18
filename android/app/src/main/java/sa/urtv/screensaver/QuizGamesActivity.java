@@ -119,7 +119,7 @@ public class QuizGamesActivity extends Activity {
     /** the games on the page: all of them, or only the ones that can be played with phones */
     private java.util.List<GameRegistry.Game> shown() {
         java.util.List<GameRegistry.Game> v = new java.util.ArrayList<>();
-        for (GameRegistry.Game g : GameRegistry.ALL) if (filter == 0 || (GameRegistry.inPhones(g.id) && g.ready)) v.add(g);
+        for (GameRegistry.Game g : GameRegistry.ALL) if ((filter == 0 || (GameRegistry.inPhones(g.id) && g.ready)) && (!GameRegistry.held(g.id) || GameReleaseStore.nativeOn(g.id))) v.add(g);
         int at = v.size() - 1;   // the games of the engine (GameReleaseStore: only the ones that are on) stand before the last tile, «حزم المحتوى»
         for (GameRegistry.Game g : v) if (g.id.equals("packs")) at = v.indexOf(g);
         for (GameDef.Def d : GameReleaseStore.games()) v.add(Math.max(0, at++), new GameRegistry.Game("e:" + d.id, d.name.get(S.en()), d.line.get(S.en()), "EngineGameActivity", true, true));

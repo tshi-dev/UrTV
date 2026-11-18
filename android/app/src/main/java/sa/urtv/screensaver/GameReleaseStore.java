@@ -31,6 +31,9 @@ final class GameReleaseStore {
     /** is this game on for this TV now and a game the engine can run: memory only, safe on the UI thread */
     static boolean visible(String id) { return defs.containsKey(id) && GameRelease.on(current, id, groupB, System.currentTimeMillis()); }
 
+    /** is this game of the app's own list (GameRegistry.HELD) on for this TV now: the file says so for the TV's group; no file, a broken file, no answer yet: no. Memory only */
+    static boolean nativeOn(String id) { return GameRelease.heldOn(current, id, groupB, System.currentTimeMillis()); }
+
     /** the engine games that are on now, in the file's order (memory only) */
     static List<GameDef.Def> games() {
         List<GameDef.Def> out = new ArrayList<>();
@@ -40,7 +43,7 @@ final class GameReleaseStore {
     static GameDef.Def def(String id) { return visible(id) ? defs.get(id) : null; }
 
     /** the games that are on now, as one string: the hub draws again when it changes */
-    static String signature() { StringBuilder b = new StringBuilder(); for (GameDef.Def d : games()) b.append(d.id).append(','); return b.toString(); }
+    static String signature() { StringBuilder b = new StringBuilder(); for (GameDef.Def d : games()) b.append(d.id).append(','); for (String id : GameRegistry.HELD) if (nativeOn(id)) b.append(id).append(','); return b.toString(); }
 
     /** off the UI thread: the kept copy and the group, then (if the copy is old) a fetch and the same again; `changed` runs after each answer on that thread */
     static void warm(final Context c, final Runnable changed) {

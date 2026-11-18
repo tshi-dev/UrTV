@@ -77,6 +77,9 @@ final class GameRelease {
         return a || b;
     }
 
+    /** a game of the app's own list that is held back (GameRegistry.HELD): on only when the file turns it on for this group; every other id of the list is never held, so the file cannot hide it */
+    static boolean heldOn(Release r, String id, boolean groupB, long now) { return GameRegistry.held(id) && on(r, id, groupB, now); }
+
     /** the record of the file that this typed code opens, with the group key it holds: {record, key hex}, or null (too short, none matches); the typed text is never kept */
     static String[] match(Release r, String typed) {
         if (r == null || !GameCrypt.validCode(GameCrypt.normalize(typed))) return null;

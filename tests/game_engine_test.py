@@ -13,7 +13,7 @@ def check(what, ok, extra=""):
     print(("PASS " if ok else "FAIL ") + what + ("" if ok else "  -> " + str(extra)))
     if not ok: failed += 1
 if not shutil.which("javac"): print("SKIP: no javac"); sys.exit(1)
-PURE = ["GameEngine", "GameDef", "GameCrypt", "GameRelease", "EngineLayout", "MiniJson"]
+PURE = ["GameEngine", "GameDef", "GameCrypt", "GameRelease", "GameRegistry", "EngineLayout", "MiniJson"]
 with tempfile.TemporaryDirectory() as t:
     c = subprocess.run(["javac", "-nowarn", "-encoding", "UTF-8", "-d", t, *[str(APP / (n + ".java")) for n in PURE], str(ROOT / "tests/GameEngineTest.java")], capture_output=True, text=True)
     check("the engine, the definitions, the release switch and the cryptography compile on a plain JVM (no Android)", c.returncode == 0, c.stderr[-600:])
@@ -39,6 +39,9 @@ check("a game of the file is read for everyone from `defs`, and for a TV with a 
 check("R1: the UI thread asks only memory: visible(), games(), def() and signature() read volatile fields; the reading, the fetch, the packs and the code check are on their own threads", not re.search(r"File\b|Net\.|ContentFile|getSharedPreferences|MiniJson|GameBundles|Thread", st.split("static boolean visible(String id)")[1].split("static void warm")[0])
       and st.count("new Thread(") == 2 and "private static volatile GameRelease.Release current; private static volatile boolean groupB; private static volatile Map<String, GameDef.Def> defs" in st)
 check("R1: the hub, the settings and the engine screen never read the file or the preferences themselves", not re.search(r"ContentFile|Net\.get|getSharedPreferences\(\"games_release|GameBundles", hub + act) and "getSharedPreferences" not in sett.split("private void versionTap()")[1].split("private void ")[0])
+check("held games: the hub shows a game of GameRegistry.HELD only when GameReleaseStore.nativeOn says so (memory only, on the UI thread); the signature includes them so the hub draws again when one is turned on or off; nothing else is hidden",
+      "(!GameRegistry.held(g.id) || GameReleaseStore.nativeOn(g.id))" in hub and "for (String id : GameRegistry.HELD) if (nativeOn(id))" in st
+      and "static boolean nativeOn(String id) { return GameRelease.heldOn(current, id, groupB, System.currentTimeMillis()); }" in st and "static boolean heldOn(Release r, String id, boolean groupB, long now) { return GameRegistry.held(id) && on(r, id, groupB, now); }" in gr)
 check("offline: the copy is the kept file (ContentFile.Kept: only an object with v = 1 is ever written, a bad answer never replaces a good one), read again after every fetch; the fetch tells when it is over",
       "KEPT.load(app)" in st and "ContentFile.refresh(app, PATH, NAME, MAX_AGE_MS," in st and "static Object valid(Object o)" in cf and "valid(MiniJson.parse(r.text())) == null) return;" in cf and "after.run()" in cf)
 check("a missing, unreadable or wrong file means nothing is on: parse gives null, on() answers false without a release, no definition is read, and until the first answer the store is empty", "if (r == null) return false;" in gr and "private static volatile Map<String, GameDef.Def> defs = Collections.emptyMap();" in st and "current = r; groupB = b; defs = m;" in st)

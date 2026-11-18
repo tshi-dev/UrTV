@@ -66,6 +66,21 @@ public final class GameEngineTest {
             GameRelease.passValid(w1, rec1) && GameRelease.on(w1, "one", GameRelease.passValid(w1, rec1), 5) && !GameRelease.passValid(w0, rec1) && !GameRelease.on(w0, "one", GameRelease.passValid(w0, rec1), 5)
             && !GameRelease.passValid(null, rec1) && !GameRelease.passValid(pr, null) && !GameRelease.passValid(pr, ""));
         check("offline: the kept copy is read the same way as a fresh one: the same text gives the same answers, any number of times", GameRelease.on(rel(json), "one", false, 1) && GameRelease.on(rel(json), "one", false, 2) && GameRelease.on(rel(json), "one", false, 3));
+        // the app's own games that are held back (GameRegistry.HELD): the same file turns them on, per group
+        String held0 = GameRegistry.HELD[0], held1 = GameRegistry.HELD[1], open0 = "quiz";
+        String hj = "{\"v\":1,\"games\":{\"" + held0 + "\":{\"b\":\"now\"},\"" + held1 + "\":{\"a\":\"now\"},\"" + open0 + "\":{\"a\":false}}}";
+        GameRelease.Release hr = rel(hj);
+        check("held games: hidden by default (no file, an empty file, a broken one) for both groups, even far in the future", !GameRelease.heldOn(null, held0, true, 4102444800000L) && !GameRelease.heldOn(none, held0, true, 4102444800000L)
+            && !GameRelease.heldOn(rel("{broken"), held0, true, 5) && !GameRelease.heldOn(rel("{\"v\":2,\"games\":{}}"), held0, true, 5));
+        check("held games: a game with a B time only is on for group B after the release and never for A; one with an A time is on for both", GameRelease.heldOn(hr, held0, true, 5) && !GameRelease.heldOn(hr, held0, false, Long.MAX_VALUE / 2)
+            && GameRelease.heldOn(hr, held1, false, 5) && GameRelease.heldOn(hr, held1, true, 5));
+        check("held games: off again (false, a missing key) and a revoked pass hide them again; a game the file does not list stays hidden", !GameRelease.heldOn(hr, GameRegistry.HELD[2], true, 5)
+            && !GameRelease.heldOn(rel("{\"v\":1,\"games\":{\"" + held0 + "\":{\"a\":false,\"b\":false}}}"), held0, true, 5) && !GameRelease.heldOn(rel("{\"v\":1,\"games\":{\"" + held0 + "\":{\"b\":\"now\"}},\"codes\":[]}"), held0, GameRelease.passValid(rel("{\"v\":1,\"games\":{},\"codes\":[]}"), "2:100000:00:00:00"), 5));
+        boolean allHeld = GameRegistry.HELD.length == 11;
+        for (String h : GameRegistry.HELD) allHeld &= GameRegistry.byId(h) != null;
+        check("held games: the eleven are all games of the list, and none of the games shown from the start (or «packs») is held, whatever the file says",
+            allHeld && !GameRegistry.held("quiz") && !GameRegistry.held("khanat") && !GameRegistry.held("missing-word") && !GameRegistry.held("odd-one") && !GameRegistry.held("charades") && !GameRegistry.held("letter-hive") && !GameRegistry.held("word5") && !GameRegistry.held("domino") && !GameRegistry.held("packs")
+            && !GameRelease.heldOn(hr, "quiz", true, 5) && !GameRelease.heldOn(hr, "packs", true, 5));
     }
 
     // ------------------------------------------------------------------ group B: the cryptography
