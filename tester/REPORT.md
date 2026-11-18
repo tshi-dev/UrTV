@@ -3156,3 +3156,8 @@ FINDING (annoying): right after the adb update the first Home press opened the s
 Checks on 525: role = sa.urtv.home, add-on bound, home-key on, TV muted.
 3-min key session on 525 (owner's look): janky 20.6 %, frame p50/p90/p99 34 / 69 / 109 ms, 0 stalls >300 ms, 0 ANR, 0 screensaver cold starts. Note: 516 measured 10.0 % on the same look, 484/504 20-22 %, so the janky % moves between 10 and 22 between runs/builds; the p99 stays 109-150 ms and nothing exceeds 100 ms.
 Item 2 (extras g-m, presets, apps style A/B/C): NOT DONE by adb: they need the remote on the home screens (uiautomator shows no focus there). NEEDS OWNER.
+
+## Answer to the supervisor's launcherx question (19 Nov, TV on 4.4 beta 525)
+- `pm list packages -d | grep -E 'launcherx|setupwraith'` → empty: launcherx and setupwraith are both ENABLED (both listed by `pm list packages -e`). The owner's disabled-packages backup from before the tests had neither of them either.
+- `cmd package resolve-activity -a android.intent.action.MAIN -c android.intent.category.HOME` → priority=2 isDefault=true `com.google.android.apps.tv.launcherx.home.HomeActivity` (enabled=true, exported=true), while the role holder is sa.urtv.home. `query-activities` lists setupwraith RecoveryActivity, sa.urtv.home.MainActivity (priority 0) and settings FallbackHome (-1000), plus launcherx at priority 2.
+- I changed nothing: no enable/disable of launcherx or setupwraith in this session after step 100.
