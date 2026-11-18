@@ -27,6 +27,11 @@ final class KickoffOverlay {
     private static final int CREAM = 0xFFFFF8EC, GOLD = 0xFFF0D48E, SUB = 0xFFE5DCC8;
 
     /** on our own home: the same notice in the home's window (no permission), the top right, never focused; false when it could not be added */
+    private static volatile long shownUntil;
+
+    /** 4.4 beta 3: a kick-off notice is on our home now */
+    static boolean showing() { return android.os.SystemClock.uptimeMillis() < shownUntil; }
+
     static boolean showIn(android.app.Activity a, KickoffPlan.Game g) {
         final android.view.ViewGroup root;
         try { root = (android.view.ViewGroup) a.getWindow().getDecorView(); } catch (RuntimeException e) { return false; }
@@ -38,6 +43,7 @@ final class KickoffOverlay {
         p.rightMargin = (int) (dm.widthPixels * 0.025f);
         p.topMargin = (int) (dm.heightPixels * 0.045f);
         try { root.addView(box, p); } catch (RuntimeException e) { return false; }
+        shownUntil = android.os.SystemClock.uptimeMillis() + SHOW_MS + 450;   // 4.4 beta 3: HomeNotice waits while this is up
         final float away = dm.widthPixels * 0.4f;
         box.setTranslationX(away);
         box.animate().translationX(0).setDuration(450).start();

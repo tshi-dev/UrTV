@@ -2,7 +2,6 @@ package sa.urtv.home;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.widget.Toast;
 
 /**
  * 4.4 beta 3 (LiteAuto): the signals of a weak TV, kept in the «ram» preferences next to «الوضع الخفيف». Written on a thread of its own (never the UI thread);
@@ -78,10 +77,22 @@ public final class LiteAutoStore {
             String s = p.getString(KEY, "");
             long since = LiteAuto.since(s, now);
             if (since == 0 || p.getLong(TOLD, 0) == since) return;
-            p.edit().putLong(TOLD, since).commit();
-            final String why = why(LiteAuto.reasonKind(s, now));
-            new android.os.Handler(android.os.Looper.getMainLooper()).post(() -> Toast.makeText(c.getApplicationContext(),
-                String.format(S.tv(SAID), S.tv(why)), Toast.LENGTH_LONG).show());
+            pendingText = String.format(S.tv(SAID), S.tv(why(LiteAuto.reasonKind(s, now))));
+            pendingSince = since;   // said by the home at its next resume (HomeNotice), marked told only then
         } catch (RuntimeException ignored) { }
+    }
+
+    /** the notice waiting for the home's next resume (UI thread reads it: memory only), or null */
+    private static volatile String pendingText;
+    private static volatile long pendingSince;
+
+    static String pending() { return pendingText; }
+
+    /** the home showed it: marked told (off the UI thread), so it is said once per time it comes on */
+    static void shown(Context c) {
+        final long since = pendingSince;
+        pendingText = null;
+        final Context app = c.getApplicationContext();
+        try { BG.execute(() -> { try { sp(app).edit().putLong(TOLD, since).commit(); } catch (RuntimeException ignored) { } }); } catch (RuntimeException ignored) { }
     }
 }

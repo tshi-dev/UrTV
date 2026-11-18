@@ -327,6 +327,7 @@ public class MainActivity extends Activity {
         if (sceneHome != null) sceneHome.start();
         if (resumeAt == 0) resumeAt = SystemClock.elapsedRealtime();
         firstFrameWallpaper();   // (a return that did not restart: the photo may have been let go by onTrimMemory)
+        if (LiteAutoStore.pending() != null) AfterFrame.run(getWindow().getDecorView(), this::liteNotice);   // 4.4 beta 3: «الوضع الخفيف» came on by itself
         handler.postDelayed(snapTick, HomeSnapshot.IDLE_MS);
         if (sa.urtv.home.setup.SetupReopen.take()) {   // «إعداد تلفزيوني» was left behind by the home switch: its progress and its done screen come back (once)
             try { guarded(ParentalPolicy.WIDGET_MATCHES, null, S.t("إعداد تلفزيوني"), () -> launch(new Intent(this, sa.urtv.home.setup.SetupActivity.class).addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT))); } catch (RuntimeException ignored) { }   // the person opened this screen already (its own lock was passed then)
@@ -4591,6 +4592,14 @@ public class MainActivity extends Activity {
     private final Map<String, Typeface> fonts = new HashMap<>();
 
     /** Thmanyah from assets/fonts; any old family name maps to the nearest weight. */
+    /** 4.4 beta 3: «الوضع الخفيف» came on by itself: said once, after the first frame, never over the adhan or a kick-off notice (then at the next resume) */
+    private void liteNotice() {
+        String text = LiteAutoStore.pending();
+        if (text == null || !resumed || isDestroyed() || isFinishing()) return;
+        if (NowPlaying.adhanLive() || KickoffOverlay.showing()) return;
+        if (HomeNotice.show(homeRoot, text, font("regular"), Ram.low(this))) LiteAutoStore.shown(this);
+    }
+
     private Typeface font(String family) {
         String file = family.contains("display") ? "ThmanyahDisplay-Bold"
                 : family.contains("thin") || family.contains("light") ? "Thmanyah-Light"

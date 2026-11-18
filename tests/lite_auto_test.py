@@ -28,7 +28,7 @@ note = store[store.index("static void note("):store.index("static boolean on(")]
 check("nothing on the UI thread: a signal is written on lite-auto's own thread; the «said once» runs on the home's start thread",
       "BG.execute(" in note and ".commit();" in note and "LiteAutoStore.tellOnce(app);" in hook and hook.index("LiteAutoStore.tellOnce(app);") > hook.index("private static void atHomeStartNow("))
 check("never silent: said once when it comes on (with why), and the report's Home line carries «lite=auto-on-t…»",
-      "p.getLong(TOLD, 0) == since" in store and "String.format(S.tv(SAID), S.tv(why))" in store and '", lite=" + safe(lite)' in rep and "LiteAutoStore.report(this)" in ra)
+      "p.getLong(TOLD, 0) == since" in store and "pendingText = String.format(S.tv(SAID), S.tv(why(LiteAuto.reasonKind(s, now))));" in store and '", lite=" + safe(lite)' in rep and "LiteAutoStore.report(this)" in ra)
 check("Ram.java is shared with the add-on: LiteAuto goes with it (the add-on keeps no signals: no change there)", "'Ram.java', 'LiteAuto.java'" in text(ROOT / "android/extras/build.gradle"))
 
 if not shutil.which("javac"):
@@ -60,5 +60,20 @@ check("the screensaver asks the home (lite_line, same key only) on a thread, onc
       '"lite_line".equals(method)' in npp and "LiteAutoStore.rowLine(getContext())" in npp and 'checkCallingPermission("sa.urtv.home.READ_NOW_PLAYING")' in npp.split('"lite_line".equals(method)')[1][:200]
       and '"lite_line", null, null)' in nb and '}, "lite-line").start();' in sa and "liteLineAsked = false;" in sa
       and 'liteLine != null && !liteLine.isEmpty() ? liteLine : Prefs.liteLabel(prefs.lite(), Prefs.lowRam(this))' in sa)
+hn = (ROOT / "android/launcher/src/main/java/sa/urtv/home/HomeNotice.java").read_text(encoding="utf-8")
+ma = (ROOT / "android/launcher/src/main/java/sa/urtv/home/MainActivity.java").read_text(encoding="utf-8")
+ko = (ROOT / "android/launcher/src/main/java/sa/urtv/home/KickoffOverlay.java").read_text(encoding="utf-8")
+check("the notice is the home's own (HomeNotice), never a Toast: a rectangle (8 dp corner) at the bottom centre 36 dp up, the settings' colours, 16 sp, 22/12 dp, two lines at most 60% wide",
+      "Toast" not in store and "import android.widget.Toast" not in hn and "Toast.makeText" not in hn and "bg.setCornerRadius(8 * d);" in hn and "Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL" in hn and "lp.bottomMargin = Math.round(36 * d);" in hn
+      and "bg.setColor(0xF02B2E36);" in hn and "v.setTextColor(0xFFF1EBDD);" in hn and "TypedValue.COMPLEX_UNIT_SP, 16" in hn and "v.setMaxLines(2);" in hn
+      and "widthPixels * 0.6f" in hn and "Math.round(22 * d), Math.round(12 * d)" in hn and "setEllipsize" not in hn)
+check("timed and quiet: not focusable, read once, a 200 ms fade (none on a weak TV), gone after 6 s and taken off the root",
+      "v.setFocusable(false);" in hn and "IMPORTANT_FOR_ACCESSIBILITY_YES" in hn and "announceForAccessibility(text)" in hn and "SHOW_MS = 6_000, FADE_MS = 200" in hn
+      and "if (low) v.setAlpha(1f);" in hn and "root.removeView(v)" in hn)
+ln = ma.split("private void liteNotice() {")[1].split("\n    }\n")[0]
+check("shown at the home's resume after the first frame (AfterFrame), never over the adhan or a kick-off notice, marked told only once shown (off the UI thread)",
+      "AfterFrame.run(getWindow().getDecorView(), this::liteNotice);" in ma and "NowPlaying.adhanLive() || KickoffOverlay.showing()" in ln
+      and "HomeNotice.show(homeRoot, text, font(\"regular\"), Ram.low(this))" in ln and "LiteAutoStore.shown(this);" in ln
+      and "static boolean showing()" in ko and "BG.execute(" in store.split("static void shown(Context c) {")[1].split("\n    }\n")[0])
 print("FAILED" if failed else "all passed")
 sys.exit(1 if failed else 0)
