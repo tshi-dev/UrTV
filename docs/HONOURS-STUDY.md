@@ -191,20 +191,29 @@ and the owner's rule is "everything sourced". So we treat it as CC BY-SA and cre
 
 A club's titles for its page come from the champions files. No extra file is needed: the page gathers the club's id across the leagues it follows.
 
-### 3.4 The UI, as mockups for the owner first (no code until he says yes)
+### 3.4 The UI: mockups for the owner (no code until the owner says yes)
 
-1. **The league page:** a season picker at the top (← 2025-26 →, the remote's left and right). Under it there are two new tabs next to «الترتيب»:
-   - «الأبطال»: the list of seasons and champions, newest first, the club's Arabic name, OK opens the club;
-   - «الهدّافون»: the season's top scorer(s) with goals and club, and the small source line.
+The mockups are drawn on the real page (`dist/tv.html`, its own styles), with sample data taken from the research. They are in
+`docs/shots/honours-mock/`. The fonts are stand-ins, because the real font files are not in this checkout.
 
-   For a past season, «الترتيب» shows the final table from the archive where it has one.
-2. **The club page:** one line «البطولات: الدوري ×N (آخرها 2025-26)، كأس الملك ×N …», then OK for the list of seasons.
-3. The views to show the owner:
-   - 1080p and 720p, Arabic and English;
-   - a league with a long history (La Liga);
-   - one with a thin one (UAE);
-   - a season with no champion said («لم يُحسم بعد» or nothing at all: his choice);
-   - a shared top scorer.
+The season picker is the page's own side column, not a new control. The remote already goes right into it and up and down in it,
+so it needs no new key. There are 8 seasons: the current one first, marked «الحالي».
+
+| # | view | file |
+|---|---|---|
+| 1 | League page, «جدول الترتيب» of a past season: the final table, the champion said on its row | `1-league-past-table-1080p.png`, `-720p.png` |
+| 2 | League page, «الأبطال»: newest first; the archive's seasons with points and margin; older seasons from Wikidata with the name only; the current season «لم يُحسم بعد» | `2-league-champions-1080p.png`, `-720p.png` |
+| 3 | League page, «الهدّافون» of a season, with the source line | `3-league-scorers-1080p.png` |
+| 4 | A shared top scorer (EPL 2021-22: Salah and Son, 23 each) | `4-epl-scorers-shared-1080p.png` |
+| 5 | Club page, a third group «البطولات»: each competition, its latest title, and how many before it **that we know** | `5-club-titles-1080p.png`, `-720p.png` |
+| 6 | English | `6-league-scorers-en-1080p.png` |
+
+Four choices for the owner:
+
+1. **A season with no champion yet:** show «لم يُحسم بعد», or leave the row out?
+2. **Title counts on the club page:** Wikidata has gaps. Al-Hilal has 16 Saudi league titles in it, but its real total is higher, because 2019-20 to 2021-22 have no item or no winner. The mockup says «و١٥ موسمًا قبله نعرفها» rather than a total that would be wrong. Is that acceptable, or should the club page show only the latest title until the gaps are filled? (Filling them from Wikipedia's lists of champions is possible, under CC BY-SA.)
+3. **Older seasons in «الأبطال»:** name only. Wikidata has no points.
+4. **The source line:** small, under the list, only on «الهدّافون» and «الأبطال». Is that its place?
 
 ## 4. Not done in this phase
 
