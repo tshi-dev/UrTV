@@ -11,15 +11,15 @@ charades | 4.3 | «بدون كلام»
 letter-hive | 4.3 | «خلية الحروف»
 word5 | 4.3 | «خمّن الكلمة»
 domino | 4.3 | «دومينو»
-forehead | pending | 4.4 on next, the owner's OK not yet given
-author | pending | 4.4 on next, the owner's OK not yet given
-closest | pending | 4.4 on next, the owner's OK not yet given
-liar | pending | 4.4 on next, the owner's OK not yet given
-emoji | pending | 4.4 on next, the owner's OK not yet given
-link | pending | 4.4 on next, the owner's OK not yet given
-night | pending | 4.4 on next, the owner's OK not yet given
-draw | pending | 4.4 on next, the owner's OK not yet given
-quran-verse | pending | 4.4 on next, the owner's OK not yet given
-maths | pending | 4.4 on next, the owner's OK not yet given
-logic | pending | 4.4 on next, the owner's OK not yet given
-packs | pending | 4.4 on next (the packs screen), the owner's OK not yet given
+forehead | pending | 4.4 ships it held (the owner, 18 Nov: open only through the release switch, group B first)
+author | pending | 4.4 ships it held (the owner, 18 Nov: open only through the release switch, group B first)
+closest | pending | 4.4 ships it held (the owner, 18 Nov: open only through the release switch, group B first)
+liar | pending | 4.4 ships it held (the owner, 18 Nov: open only through the release switch, group B first)
+emoji | pending | 4.4 ships it held (the owner, 18 Nov: open only through the release switch, group B first)
+link | pending | 4.4 ships it held (the owner, 18 Nov: open only through the release switch, group B first)
+night | pending | 4.4 ships it held (the owner, 18 Nov: open only through the release switch, group B first)
+draw | pending | 4.4 ships it held (the owner, 18 Nov: open only through the release switch, group B first)
+quran-verse | pending | 4.4 ships it held (the owner, 18 Nov: open only through the release switch, group B first)
+maths | pending | 4.4 ships it held (the owner, 18 Nov: open only through the release switch, group B first)
+logic | pending | 4.4 ships it held (the owner, 18 Nov: open only through the release switch, group B first)
+packs | always | «حزم المحتوى»: not a game, the packs screen (the owner, 18 Nov)
