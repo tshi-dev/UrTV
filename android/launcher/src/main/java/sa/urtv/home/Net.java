@@ -44,7 +44,10 @@ final class Net {
     }
 
     /** GET `url` (http or https), `headers` extra request headers, at most `maxBytes` of body, the whole call within `deadlineMs`; an IOException when it cannot */
-    static Reply get(String url, Map<String, String> headers, int readMs, int deadlineMs, int maxBytes) throws IOException {
+    static Reply get(String url, Map<String, String> headers, int readMs, int deadlineMs, int maxBytes) throws IOException { return get(url, headers, readMs, deadlineMs, maxBytes, null); }
+
+    /** the same, but with a `sink` the body is written to as it arrives (a big file: never held whole in memory); the reply then has an empty body. On a failure the sink may hold a part. */
+    static Reply get(String url, Map<String, String> headers, int readMs, int deadlineMs, int maxBytes, OutputStream sink) throws IOException {
         long end = System.nanoTime() + deadlineMs * 1_000_000L;
         NetLog.count(url);   // G3: the request log
         URL u = new URL(url);
@@ -63,7 +66,7 @@ final class Net {
                 s.connect(new InetSocketAddress(a, port), (int) Math.min(CONNECT_MS, left));
                 Socket io = tls ? tls(s, host, port, (int) Math.min(readMs, Math.max(1, (end - System.nanoTime()) / 1_000_000L))) : s;
                 io.setSoTimeout((int) Math.min(readMs, Math.max(1, (end - System.nanoTime()) / 1_000_000L)));
-                return exchange(io, host, port, tls, path, headers, end, maxBytes);
+                return exchange(io, host, port, tls, path, headers, end, maxBytes, sink);
             } catch (IOException e) {
                 last = e;
                 try { s.close(); } catch (IOException ignored) { }
@@ -228,7 +231,7 @@ final class Net {
 
     private static boolean android() { return String.valueOf(System.getProperty("java.vendor")).contains("Android") || String.valueOf(System.getProperty("java.vm.vendor")).contains("Android"); }
 
-    private static Reply exchange(Socket io, String host, int port, boolean tls, String path, Map<String, String> headers, long end, int maxBytes) throws IOException {
+    private static Reply exchange(Socket io, String host, int port, boolean tls, String path, Map<String, String> headers, long end, int maxBytes, OutputStream sink) throws IOException {
         try (Socket c = io) {
             StringBuilder rq = new StringBuilder("GET ").append(path).append(" HTTP/1.1\r\nHost: ").append(host);
             if (port != (tls ? 443 : 80)) rq.append(':').append(port);
@@ -249,7 +252,9 @@ final class Net {
                 int i = l.indexOf(':');
                 if (i > 0) h.put(l.substring(0, i).trim().toLowerCase(Locale.ROOT), l.substring(i + 1).trim());
             }
-            ByteArrayOutputStream body = new ByteArrayOutputStream();
+            ByteArrayOutputStream mem = sink == null ? new ByteArrayOutputStream() : null;
+            OutputStream body = sink == null ? mem : sink;
+            long[] total = new long[1];
             if ("chunked".equalsIgnoreCase(h.get("transfer-encoding"))) {
                 while (true) {
                     String sz = line(in, end);
@@ -259,7 +264,7 @@ final class Net {
                     try { n = Integer.parseInt((semi >= 0 ? sz.substring(0, semi) : sz).trim(), 16); } catch (NumberFormatException e) { throw new IOException("chunk"); }
                     if (n < 0) throw new IOException("chunk");
                     if (n == 0) break;
-                    copy(in, body, n, end, maxBytes);
+                    copy(in, body, n, end, maxBytes, total);
                     line(in, end);   // the line end after the chunk
                 }
             } else {
@@ -267,10 +272,10 @@ final class Net {
                 long want = -1;
                 if (len != null) { try { want = Long.parseLong(len.trim()); } catch (NumberFormatException e) { throw new IOException("length"); } }
                 if (want > maxBytes) throw new IOException("too big");
-                if (want >= 0) copy(in, body, want, end, maxBytes);
-                else copy(in, body, Long.MAX_VALUE, end, maxBytes);   // to the end of the connection
+                if (want >= 0) copy(in, body, want, end, maxBytes, total);
+                else copy(in, body, Long.MAX_VALUE, end, maxBytes, total);   // to the end of the connection
             }
-            return new Reply(code, body.toByteArray(), h);
+            return new Reply(code, mem == null ? new byte[0] : mem.toByteArray(), h);
         }
     }
 
@@ -287,14 +292,15 @@ final class Net {
         return b.length() == 0 ? null : b.toString();
     }
 
-    private static void copy(InputStream in, ByteArrayOutputStream to, long n, long end, int cap) throws IOException {
+    private static void copy(InputStream in, OutputStream to, long n, long end, int cap, long[] total) throws IOException {
         byte[] buf = new byte[8192];
         long left = n;
         while (left > 0) {
             int r = in.read(buf, 0, (int) Math.min(buf.length, left));
             if (r < 0) { if (n == Long.MAX_VALUE) return; throw new IOException("short"); }
             to.write(buf, 0, r);
-            if (to.size() > cap) throw new IOException("too big");
+            total[0] += r;
+            if (total[0] > cap) throw new IOException("too big");
             if (System.nanoTime() > end) throw new IOException("deadline");
             left -= r;
         }

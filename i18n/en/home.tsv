@@ -349,7 +349,8 @@ HDMI ARC (مضخم أو ساوند بار)	HDMI ARC (amplifier or soundbar)
 افتح القفل	Unlock
 أضف للمفضلة	Add to favorites
 أزل من المفضلة	Remove from favorites
-أُخفي، ويرجع من «تعديل التطبيقات»	Hidden. Bring it back from “Edit apps”
+أُخفي، ويرجع من الإعدادات: «التطبيقات المخفية»	Hidden. Bring it back from Settings: “Hidden apps”
+ما فيه تطبيقات مخفية	No hidden apps
 فُتح القفل	Unlocked
 قُفل، ويطلب الرمز	Locked: it asks for the PIN
 الرقابة الأبوية متوقفة	Parental controls are off
@@ -679,7 +680,7 @@ HDMI ARC (مضخم أو ساوند بار)	HDMI ARC (amplifier or soundbar)
 بحث	Search
 غير متوفرة	Not available
 هذه السورة غير متوفرة بصوت هذا القارئ	This reciter has no recording of this surah
-%s تحتاج إضافة صغيرة منّا اسمها «إضافات تلفزيونك». فيها ثلاث ميزات:	%s needs a small add-on of ours called “UrTV Extras”. It has three features:
+%s تحتاج إضافة صغيرة منّا اسمها «إضافات تلفزيونك». فيها أربع ميزات:	%s needs a small add-on of ours called “UrTV Extras”. It has four features:
 «أزرار الجوال داخل التطبيقات»	“Phone buttons inside apps”
 «إضافات تلفزيونك» شغّالة	“UrTV Extras” is on
 «إطفاء الشاشة»	“Screen off”
@@ -889,3 +890,22 @@ mp3 أو m4a أو ogg أو wav	mp3, m4a, ogg or wav
 انت على النسخة التجريبية، إذا شفت شي غريب أرسل ملاحظة	You are on the beta. If you see anything odd, send a note
 أرسل ملاحظة	Send a note
 تمام	OK
+نسخة تجريبية	Beta version
+هذا التحديث نسخة تجريبية: فيها مزايا جديدة وقد تكون فيها أخطاء. تبي تحمّلها؟	This update is a beta: it has new features and may have bugs. Download it?
+حمّل	Download
+هذا التلفزيون ما فيه متصفح النظام، فالصفحة ما تفتح	This TV has no system browser (WebView), so the page cannot open
+تلفزيونك توقف أكثر من مرة عند التشغيل	UrTV stopped more than once while starting
+افتح الشاشة الأصلية للتلفزيون، أو جرّب مرة ثانية. إذا تكرر، أرسل تقرير من مساعدك	Open the TV's own home screen, or try again. If it keeps happening, send a report through your assistant
+افتح الشاشة الأصلية	Open the TV's home screen
+حاول مرة ثانية	Try again
+ما لقينا شاشة أصلية مفعّلة، افتح الإعدادات من زر الإعدادات في الريموت	No TV home screen is turned on; open Settings with the remote's Settings button
+٤. تنبيه المباراة والإقامة يظهر فوق التطبيق الذي تشاهده.	4. The kick-off and iqama alerts show over the app you are watching.
+«فوق تطبيق آخر»	“Over another app”
+«فوق تطبيق آخر» يحتاج «إضافات تلفزيونك» وهي غير مثبّتة	“Over another app” needs “UrTV Extras”, which is not installed
+«فوق تطبيق آخر» جاهز	“Over another app” is ready
+اسمح بالظهور فوق التطبيقات	Allow showing over apps
+الإضافة مثبّتة: بقي السماح لها بالظهور فوق التطبيقات	The add-on is installed: it still needs to be allowed to show over apps
+هذا التلفزيون يخفي هذا الإذن، فيُعطى من الكمبيوتر	This TV hides this permission: it is given from the computer
+شغّلها	Turn it on
+«فوق تطبيق آخر» صار في «إضافات تلفزيونك»: شغّلها ليبقى التنبيه فوق التطبيق	“Over another app” now lives in “UrTV Extras”: turn it on to keep the alert over the app
+جرّب مرة ثانية. إذا تكرر، أرسل تقرير من مساعدك	Try again. If it keeps happening, send a report through your assistant

@@ -30,14 +30,24 @@ final class SaverStart {
     static void begin(final Host host, final String url, final Runnable afterContent) {
         final long t0 = android.os.SystemClock.elapsedRealtime();
         final Context c = host.context();
+        final android.util.DisplayMetrics dm = c.getResources().getDisplayMetrics();
+        // 4.4 QA-13: the last picture (a WebP in this app's cache) is decoded on a thread, and the window's own ground colour stands in for the few
+        // milliseconds it takes (the dream and the page's window already paint it); the content, with the picture in its first frame, is set when it is here
+        new Thread(() -> {
+            final Bitmap last = SaverSnapshot.load(c, url, dm.widthPixels, dm.heightPixels);
+            final String why = SaverSnapshot.why(c, url, dm.widthPixels, dm.heightPixels);
+            new android.os.Handler(android.os.Looper.getMainLooper()).post(() -> { if (host.alive()) show(host, url, afterContent, t0, dm, last, why); });
+        }, "saver-picture").start();
+    }
+
+    private static void show(final Host host, final String url, final Runnable afterContent, final long t0, android.util.DisplayMetrics dm, final Bitmap last, final String why) {
+        final Context c = host.context();
         final FrameLayout box = new FrameLayout(c);
         box.setBackgroundColor(0xFF040E09);
-        android.util.DisplayMetrics dm = c.getResources().getDisplayMetrics();
-        Bitmap last = SaverSnapshot.load(c, url, dm.widthPixels, dm.heightPixels);
         final ImageView cover = new ImageView(c);
         cover.setScaleType(ImageView.ScaleType.FIT_XY);
         if (last != null) { cover.setImageBitmap(last); box.addView(cover, new FrameLayout.LayoutParams(-1, -1)); }
-        android.util.Log.i("UrTVSaver", "snapshot: " + SaverSnapshot.why(c, url, dm.widthPixels, dm.heightPixels) + (last != null ? ", decoded " + last.getWidth() + "x" + last.getHeight() : "") + ", ready at " + (android.os.SystemClock.elapsedRealtime() - t0) + " ms");
+        android.util.Log.i("UrTVSaver", "snapshot: " + why + (last != null ? ", decoded " + last.getWidth() + "x" + last.getHeight() : "") + ", ready at " + (android.os.SystemClock.elapsedRealtime() - t0) + " ms");
         host.setContent(box);
         if (afterContent != null) afterContent.run();
         final boolean coverOn = last != null;

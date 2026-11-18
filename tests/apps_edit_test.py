@@ -57,7 +57,7 @@ check("full favourites say so", 'case AppsEdit.FAVOURITES_FULL:' in main and 'S.
 check("«انقل» in the options of an app of «كل التطبيقات» starts «تعديل التطبيقات» on it (a favourite: «تعديل المفضلة»); not in kids mode",
       "if (!kids) {\n            o.move = () -> { if (inDock) beginEdit(pkg); else beginAppsEdit(pkg); };" in main)
 check("the mode asks the settings' lock first, as «تعديل المفضلة» (ParentalPolicy.MENU_ARRANGE, «قفل الإعدادات»); kids mode never starts it",
-      re.search(r'private void beginAppsEdit\(String pkg\) \{\s*if \(kidsNoEdit\(\)\) return;\s*guarded\(ParentalPolicy\.MENU_ARRANGE, null, S\.t\("تعديل التطبيقات"\), \(\) -> startAppsEdit\(pkg\)\);', main) is not None)
+      re.search(r'private void beginAppsEdit\(String pkg\) \{\s*(?:if \(pkg != null\) wantHiddenList = false;[^\n]*\s*)?if \(kidsNoEdit\(\)\) return;\s*guarded\(ParentalPolicy\.MENU_ARRANGE, null, S\.t\("تعديل التطبيقات"\), \(\) -> startAppsEdit\(pkg\)\);', main) is not None)
 check("startAppsEdit is reached only through beginAppsEdit", len(re.findall(r"startAppsEdit\(", main)) == 2)
 check("kids mode: no «تعديل المفضلة» either (it saved a row of the allowed apps only), the same rule (AppsEdit.allowed)",
       "if (!kids) {\n            o.move = " in main and "if (AppsEdit.allowed(Parental.state(this).kids)) return false;" in main)
@@ -70,7 +70,7 @@ check("keys: the adhan rule first, then the remote's shortcut keys (one that act
       and "if (appsEdit != null) leaveAppsEdit();   // and in «تعديل التطبيقات»" in d)
 keyfn = fn(main, "private boolean appsEditKey(KeyEvent e)")
 check("the mode leaves the volume and power keys to Android, eats a release, and steps a held key at the home's pace",
-      "AdhanKeys.reserved(k)) return false" in keyfn and "ACTION_DOWN) return true" in keyfn and "SIDE_REPEAT_MS" in keyfn and keyfn.count("oncePerPress") == 2)
+      "AdhanKeys.reserved(k) || !FavEdit.owns(k)) return false" in keyfn and "ACTION_DOWN) return true" in keyfn and "SIDE_REPEAT_MS" in keyfn and keyfn.count("oncePerPress") == 2)
 check("the arrows' direction comes from the grid's layout direction (FavEdit.step, Arabic)", "FavEdit.step(k, grid.getLayoutDirection() == View.LAYOUT_DIRECTION_RTL)" in keyfn)
 check("another screen (onPause) or Home leaves the mode, saving; a change of the apps under it (buildApps) ends it without saving",
       "if (appsEdit != null) leaveAppsEdit();" in fn(main, "protected void onPause()") and "if (appsEdit != null) leaveAppsEdit();" in fn(main, "protected void onNewIntent(Intent intent)")
@@ -79,9 +79,9 @@ check("a rewiring while the mode is on ends with the mode's own wiring", fn(main
 check("a step of the carried app builds again only the rows that differ", "if (same) continue;" in fn(main, "private void syncGrid(List<String> order, boolean withHidden)"))
 
 # ---- the settings
-check("Settings → «التطبيقات والمفضلة» has «ترتيب كل التطبيقات», with «تعديل التطبيقات» and «رجوع للترتيب الأصلي»",
-      'row("ترتيب كل التطبيقات"' in settings and '{"تعديل التطبيقات", "رجوع للترتيب الأصلي"}' in settings and '{"ترتيب كل التطبيقات", APPS}' in hub)
-check("…which ask the home screen with the extras it reads", '.putExtra(reset ? "reset_apps_order" : "edit_apps", true)' in settings
+check("Settings → «التطبيقات والمفضلة» has «ترتيب كل التطبيقات», with «تعديل التطبيقات», «التطبيقات المخفية» (4.3.4) and «رجوع للترتيب الأصلي»",
+      'row("ترتيب كل التطبيقات"' in settings and '{"تعديل التطبيقات", "التطبيقات المخفية", "رجوع للترتيب الأصلي"}' in settings and '{"ترتيب كل التطبيقات", APPS}' in hub)
+check("…which ask the home screen with the extras it reads", '.putExtra(reset ? "reset_apps_order" : "edit_apps", true).putExtra("apps_hidden", hidden)' in settings
       and 'EXTRA_EDIT_APPS = "edit_apps", EXTRA_RESET_APPS = "reset_apps_order"' in main)
 check("…and «رجوع للترتيب الأصلي» asks the settings' lock too, and nothing in kids mode",
       'if (kidsNoEdit()) return true;\n            guarded(ParentalPolicy.MENU_ARRANGE, null, S.t("ترتيب كل التطبيقات")' in main)

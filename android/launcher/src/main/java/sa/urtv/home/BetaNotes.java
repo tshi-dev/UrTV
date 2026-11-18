@@ -36,7 +36,7 @@ final class BetaNotes {
         try {
             SharedPreferences sp = a.getSharedPreferences(PREFS, Context.MODE_PRIVATE);
             String crash = sp.getString("crash", null);
-            boolean beta = UpdateChannel.beta(a);
+            boolean beta = "beta".equals(UpdateChannel.cached());   // 4.3.3 hotfix: onResume is the UI thread: the kept word, never a query
             long code = PhoneUpdater.installedCode(a, a.getPackageName());
             String what = BetaNotesRule.what(beta, crash, sp.getLong("seen", 0), code);
             SharedPreferences.Editor e = sp.edit().remove("crash");   // asked, or dropped (off): never twice

@@ -45,7 +45,7 @@ check("the counts follow the person's digits setting (the screens' DigitsText)",
 check("the 20 s notice is the owner's wording", 'PROMPT_LATE = "ما ظهرت الرسالة؟ أعد تشغيل التلفزيون وافتح «إعداد تلفزيوني» واضغط «جهّز كل شي» وخلك عند التلفزيون"' in runner)
 check("a run lives in a foreground service (it outlives the screen), not exported", 'android:name=".setup.SetupService" android:exported="false"' in manifest
       and "startForeground(" in service and "startForegroundService" in service)
-check("the TV's start resumes a full run when it restarted the TV on purpose, or (4.3.3) when a restart nobody asked for cut it (twice at most); 4.4: the ADB key is kept for good",
+check("the TV's start resumes a full run when it restarted the TV on purpose, or (4.3.3) when a restart nobody asked for cut it (twice at most); 4.4: the ADB key is kept between the steps",
       "SetupRunner.resumeAtBoot(new FileStore(app))" in boot and "awaitingRestart(store)" in runner[runner.index("static boolean resumeAtBoot"):] and "SetupRunner.get().resume(" in boot and "static void keepKey(" in session
       and "awaitingWifi" not in boot)
 hold = (SETUP / "SetupHold.java").read_text(encoding="utf-8")
@@ -84,6 +84,8 @@ check("R1: «جهّز كل شي» on a healthy TV: every step in order, all done
       got.get("R1") == f"R1 STARTED {FULL_DONE} running=false finished=1 bad=false listened=true", got.get("R1"))
 check("a fresh full run and an undo first let go of a key a run before kept (when nothing is pending); the community answers do not (tester step 18)",
       got.get("RK") == "RK 1 2 2", got.get("RK"))
+check("4.4 F20: the runner tells the host to delete the ADB key once the undo is done, and not after a normal done full run or the answers",
+      got.get("RKD") == "RKD 0 1 1", got.get("RKD"))
 check("step 27: a full run asks the home to open the setup screen again (once), and the screen being shown takes the ask back", got.get("R1reopen") == "R1reopen true false false", got.get("R1reopen"))
 hm = (ROOT / "android/launcher/src/main/java/sa/urtv/home/MainActivity.java").read_text(encoding="utf-8")
 check("step 27: our home, when it comes in front, opens the setup screen once if it was left behind (a window in front may start an activity)", "SetupReopen.take()" in hm.split("protected void onResume()")[1][:600] and "FLAG_ACTIVITY_REORDER_TO_FRONT" in hm.split("SetupReopen.take()")[1][:400])
@@ -140,6 +142,23 @@ check("R31: a low-memory TV (under about 1 GB) is never asked for the whole syst
       got.get("R31lowram") == f"R31lowram {FULL_DONE} bad=false said=0 bounded=true unbounded=0 sysMeminfo=0 skipped=true timeout=null row=true", got.get("R31lowram"))
 check("R16: a TV whose adb would not come back on 5555 after a restart: no restart at all, both readings «بدون إعادة تشغيل», the run in one go",
       got.get("R16") == f"R16 {FULL_DONE} reboots=0 kinds=[before now|after now]", got.get("R16"))
+check("R17q (4.4, a Skyworth IRIS on Android 14 stopped at 26 %): by default the run never restarts the TV (quick readings before and after), even where adb survives a restart; its end is kept",
+      got.get("R17q") == "R17q reboots=0 kinds=[before now,after now] await=false ended=true kept=ok", got.get("R17q"))
+check("R17e (4.4, R2): the kept end comes back in a new process (the setup screen shows it), bad or not",
+      got.get("R17e") == "R17e same=true bad=true", got.get("R17e"))
+SR = (ROOT / "android/launcher/src/main/java/sa/urtv/home/setup/SetupRunner.java").read_text(encoding="utf-8")
+SH = (ROOT / "android/launcher/src/main/java/sa/urtv/home/setup/SetupHook.java").read_text(encoding="utf-8")
+SA = (ROOT / "android/launcher/src/main/java/sa/urtv/home/setup/SetupActivity.java").read_text(encoding="utf-8")
+check("4.4: the full measure only when asked (Options.fullMeasure, kept across the restart in runner.txt and in the confirmed options); the preview says no restart then",
+      "boolean fullMeasure;" in SR and "measure(label, c.options.fullMeasure && !switching(c.store), !c.options.fullMeasure)" in SR
+      and 'o.fullMeasure = "1".equals(saved.get("measure"));' in SR and '(o.fullMeasure ? "\\nmeasure=1" : "")' in SR and "o.fullMeasure = options.fullMeasure;" in SR
+      and "p.restarts = c.options != null && c.options.fullMeasure" in SR)
+check("4.4 (R2): the end is written for every full run that ends, let go when a new run starts, shown by the setup screen of a new process, and said once at UrTV's next start when it was bad",
+      'host.store().put(END_FILE, (e.bad ? "bad" : "ok")' in SR and 'try { host.store().put(END_FILE, ""); }' in SR and "SetupRunner.get().restoreEnd(new FileStore(this));" in SA
+      and "endNotSeen(app);" in SH and 'store.put(SetupRunner.END_FILE, "bad told\\n"' in SH)
+check("4.4: the full measure is a tester's switch only (dock.sh debug fullmeasure, DebugFlags), no button; the PC's is run.sh --measure",
+      'o.fullMeasure = sa.urtv.home.DebugFlags.on(this, "fullmeasure");' in SA and '"fullmeasure"' in (ROOT / "android/launcher/src/main/java/sa/urtv/home/DebugFlags.java").read_text(encoding="utf-8")
+      and "|fullmeasure)" in (ROOT / "optimize/dock.sh").read_text(encoding="utf-8") and "dock.sh debug fullmeasure on" in (ROOT / "docs/SETTINGS.md").read_text(encoding="utf-8"))
 check("R17: the TV ignored the restart (the same boot after the resume): it is NOT asked again; the reading is taken without one",
       got.get("R17") == "R17 reboots=1 kinds=[before now] beforeDone=true", got.get("R17"))
 check("R18: a fresh install is refused unless the APK is signed with this app's own key; nothing is installed or recorded then",

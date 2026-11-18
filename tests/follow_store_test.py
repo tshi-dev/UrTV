@@ -21,12 +21,12 @@ check("the bridge: the screensaver's answer when it answers (its no is final: th
       and 'return out == null || !out.containsKey("ok") ? null : out.getBoolean("ok");' in hf)
 check("unfollow takes it from both lists", "boolean home = HomeFollows.removeTeam(c, id);" in ma and "boolean home = HomeFollows.removeLeague(c, id);" in ma)
 check("the page opens: the kept follows go to the screensaver first, then what is still kept joins the page's lists",
-      ma.index("HomeFollows.sync(this);") < ma.index("String frag = HomeFollows.fragment(this, cfg.fragment);") < ma.index("HomeCardChoice.matchesUrl(frag, event)"))
+      ma.index("new Thread(() -> HomeFollows.sync(syncApp), \"follows-sync\").start();") < ma.index("String frag = HomeFollows.fragment(this, cfg.fragment);") < ma.index("HomeCardChoice.matchesUrl(frag, event)"))
 check("sync: one the screensaver has already, or takes now, leaves the home's list; one it cannot take stays; nothing when it does not answer",
       "if (frag == null) return;" in hf and "if (!ids.contains(FollowMerge.key(t)) && !ok(c, \"phone_follow\"" in hf and "if (!FollowMerge.hasLeague(toks, l) && !ok(c, \"phone_follow_league\"" in hf)
-check("the screensaver takes a league: a built-in one by its English name, else the catalogue's entry; never twice; up to 8",
+check("the screensaver takes a league: a built-in one by its English name, else the catalogue's entry; never twice; past 8 only after the warning, up to 24 (4.4)",
       'case "phone_follow_league": {' in prov and 'case "phone_unfollow_league": {' in prov and "String e = b != null ? b[0] : CatalogueLeagues.entry(id, ar, en);" in prefs
-      and "for (String s : v) if (sameLeague(s, id, en)) return false;" in prefs and "if (v.size() >= MAX_LEAGUES) return false;" in prefs)
+      and "for (String s : v) if (sameLeague(s, id, en)) return false;" in prefs and "if (FollowLimit.check(FollowLimit.LEAGUES, v.size(), followWarned(FollowLimit.LEAGUES)) != FollowLimit.ADD) return false;" in prefs)
 check("…behind the launcher's own permission, as the other phone_ calls", prov.index("c.checkCallingPermission(PHONE_PERMISSION)") < prov.index('case "phone_follow_league"'))
 
 if not shutil.which("javac"):
@@ -45,7 +45,7 @@ else:
     check("joined: the screensaver's first, none twice (a team, a built-in league by its id, a catalogue league), the new one's name added",
           j["teams"] == "136013,9,136015" and unquote(j["leagues"]) == "English Premier League,id4719,id5000" and unquote(j["lgn"]) == "4719~آسيا|5000~كأس" and j["city"] == "X" and j["panel"] == "verse", out["joined"])
     check("a space is %20, never + (the page reads + as a space)", "+" not in out["joined"] and "%20" in out["joined"])
-    check("20 teams: no 21st", q(out["fullTeams"])["teams"].count(",") == 19 and "999" not in out["fullTeams"], out["fullTeams"])
+    check("40 teams (4.4: the ceiling): no 41st", q(out["fullTeams"])["teams"].count(",") == 39 and "999" not in out["fullTeams"], out["fullTeams"])
     check("add: the same id never twice, a name loses the list's separators, a bad id or a full list changes nothing", out["add"] == "[1|a] [1|a, 2|b c d] null null", out["add"])
     check("a league entry: its token checked (a built-in name, else id + its id), a bad id refused", out["league"] == "4337|هولندا|Dutch Eredivisie|Dutch Eredivisie 4337|a|b|id4337 null", out["league"])
     check("remove by id", out["remove"] == "[2|b]", out["remove"])

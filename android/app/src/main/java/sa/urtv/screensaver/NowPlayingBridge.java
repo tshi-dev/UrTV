@@ -73,17 +73,51 @@ final class NowPlayingBridge {
         }
     }
 
-    /** 4.4 kids mode is on in the launcher: the page draws no kick-off notice on the screensaver then. False when the launcher does not say (an older one). */
-    static boolean kidsOn(Context c) {
+    /** 4.4 kids mode is on in the launcher: the page draws no kick-off notice on the screensaver then. null when the launcher did not answer (an error, no row): the last answer stays (KeptAnswer). */
+    static Boolean kidsAsk(Context c) {
         Cursor cur = null;
         try {
             cur = c.getApplicationContext().getContentResolver().query(Uri.parse("content://sa.urtv.home.nowplaying/kids"), null, null, null, null);
-            return cur != null && cur.getColumnIndex("on") >= 0 && cur.moveToFirst() && cur.getInt(cur.getColumnIndex("on")) == 1;
+            if (cur == null || cur.getColumnIndex("on") < 0 || !cur.moveToFirst()) return null;
+            return cur.getInt(cur.getColumnIndex("on")) == 1;
         } catch (Exception ignored) {
-            return false;
+            return null;
         } finally {
             if (cur != null) try { cur.close(); } catch (Exception ignored) { }
         }
+    }
+
+    private static volatile boolean kidsBusy;
+    /** kids mode as the launcher last said it (a copy kept in hub_seen, like the clean mask): no query, so it is safe on the UI thread (kidsAsk blocks). The first start after the
+     *  install, before any answer, takes the safe side (kids); a thread asks the launcher again for the next one. */
+    static boolean kidsOn(final Context c) {
+        final Context app = c.getApplicationContext();
+        if (!kidsBusy) {
+            kidsBusy = true;
+            Thread t = new Thread(() -> {
+                try {
+                    android.content.SharedPreferences sp = app.getSharedPreferences("hub_seen", Context.MODE_PRIVATE);
+                    Boolean ans = kidsAsk(app);
+                    boolean ever = sp.contains("kids_on");
+                    if (ans == null && !ever && !launcherHere(app)) ans = Boolean.FALSE;   // no launcher on this TV: there are no kids mode and no answer to wait for
+                    Boolean now = ever ? KeptAnswer.toStore(ans, sp.getBoolean("kids_on", false)) : ans;   // only a real answer that differs; the very first answer is always kept
+                    if (now != null) {
+                        sp.edit().putBoolean("kids_on", now).apply();   // before the broadcast: the next kidsOn() is this one
+                        app.sendBroadcast(new android.content.Intent(Prefs.CHANGED).setPackage(app.getPackageName()));   // the dream is built again with it (as CleanMask), only when its address differs
+                    }
+                }
+                catch (RuntimeException ignored) { /* the last answer stays */ }
+                finally { kidsBusy = false; }
+            }, "kids-flag");
+            t.setPriority(Thread.MIN_PRIORITY); t.setDaemon(true); t.start();
+        }
+        return app.getSharedPreferences("hub_seen", Context.MODE_PRIVATE).getBoolean("kids_on", true);   // never answered yet: kids, the safe side (no kick-off notice before the launcher has said)
+    }
+
+    /** on a thread: the launcher is installed, so an answer is to come */
+    private static boolean launcherHere(Context c) {
+        try { c.getPackageManager().getPackageInfo(CoverRule.HOME_PKG, 0); return true; }
+        catch (Exception e) { return false; }
     }
 
     /** 4.4 «جرّب التنبيه»: the launcher plays its kick-off whistle once (it checks our signature; never over the adhan); false when it could not be asked */
@@ -113,17 +147,63 @@ final class NowPlayingBridge {
         } catch (Exception ignored) { return null; }
     }
 
-    /** Ends the adhan that is playing in the launcher (it checks our signature, and stops only an adhan). */
+    /** Ends the adhan that is playing in the launcher (it checks our signature, and stops only an adhan). A call into its process: not on the UI thread (stopAdhanSoon). */
     static void stopAdhan(Context c) {
         try {
             c.getApplicationContext().getContentResolver().call(Uri.parse("content://sa.urtv.home.nowplaying"), "stop_adhan", null, null);
         } catch (Exception ignored) { }
     }
 
-    /** The page asks once in a while, and every few seconds around a prayer time: the adhan's words go on the bar. */
+    /**
+     * 4.4 QA-2: the key that stops the adhan: the call goes on a thread, and what was known is forgotten at once (the next key is an ordinary
+     * one; the adhan's bar goes with the page's next ask).
+     */
+    static void stopAdhanSoon(Context c) {
+        final Context app = c.getApplicationContext();
+        adhanSeen = null;
+        new Thread(() -> stopAdhan(app), "adhan-stop").start();
+    }
+
+    // 4.4 QA-2: a key on the screensaver decides from the adhan state the page's own ask (every 3 s, adhan()) or a thread last learned, never from a query on the UI thread
+    private static volatile JSONObject adhanSeen;
+    private static volatile long adhanSeenAt;
+    private static volatile boolean adhanBusy;
+    private static final long ADHAN_FRESH_MS = 8000;   // the page asks every 3 s: a copy older than this is no longer what the bar says
+
+    /**
+     * What the screensaver knows of the adhan now: {"live":true,...} when the last answer (not older than ADHAN_FRESH_MS) said it plays, else
+     * {"live":false}. Never a query: it is read for a key on the UI thread. It also starts a thread that asks the launcher again, so the next
+     * key (and the bar) see the change; the first key of an adhan that started a second ago may not know it yet, as the bar did not.
+     */
+    static JSONObject adhanKnown(Context c) {
+        refreshAdhan(c);
+        JSONObject o = adhanSeen;
+        if (o != null && android.os.SystemClock.elapsedRealtime() - adhanSeenAt <= ADHAN_FRESH_MS) return o;
+        JSONObject none = new JSONObject();
+        try { none.put("live", false); } catch (org.json.JSONException ignored) { }
+        return none;
+    }
+
+    /** asks the launcher about the adhan on a thread of its own (one at a time) and keeps the answer */
+    static void refreshAdhan(Context c) {
+        if (adhanBusy) return;
+        adhanBusy = true;
+        final Context app = c.getApplicationContext();
+        Thread t = new Thread(() -> {
+            try { rememberAdhan(adhanState(app)); }
+            catch (RuntimeException ignored) { /* the last answer stays until it is too old */ }
+            finally { adhanBusy = false; }
+        }, "adhan-state");
+        t.setPriority(Thread.MIN_PRIORITY); t.setDaemon(true); t.start();
+    }
+
+    private static void rememberAdhan(JSONObject o) { adhanSeen = o; adhanSeenAt = android.os.SystemClock.elapsedRealtime(); }
+
+    /** The page asks once in a while, and every few seconds around a prayer time: the adhan's words go on the bar (on the bridge's thread); the key handlers use the same answer. */
     @JavascriptInterface
     public String adhan() {
         JSONObject o = adhanState(app);
+        rememberAdhan(o);
         return o.optBoolean("live") ? o.toString() : "";
     }
 

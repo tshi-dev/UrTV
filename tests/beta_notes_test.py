@@ -28,7 +28,7 @@ check("no Android in the rule", "import android" not in rule)
 check("the crash hook is installed with the process and keeps the old handler", "BetaNotes.hookCrashes(this)" in app and "prev.uncaughtException(t, e)" in bn and "Thread.getDefaultUncaughtExceptionHandler()" in bn)
 check("a crash keeps one thing: the class name, cleaned by Report.name (committed: the process is dying)", 'putString("crash", Report.name(e.getClass().getName())).commit()' in bn and "getMessage" not in bn and "getStackTrace" not in bn)
 check("the question is asked from the home's onResume, not in kids mode, once (the note is removed as it is read)", "if (!Parental.state(this).kids) BetaNotes.maybeAsk(this);" in main and 'remove("crash")' in bn)
-check("only on the beta channel: the rule is given the channel, and the build seen is kept only there", "UpdateChannel.beta(a)" in bn and "if (beta) e.putLong(\"seen\", code)" in bn)
+check("only on the beta channel: the rule is given the channel, and the build seen is kept only there", '"beta".equals(UpdateChannel.cached())' in bn and "if (beta) e.putLong(\"seen\", code)" in bn)
 check("both buttons open the existing report screen; a crash hands over its class name", "new Intent(a, ReportActivity.class)" in bn and 'i.putExtra("error", error)' in bn and 'getStringExtra("error")' in ra)
 for w in ("صار خطأ، تبي ترسل تقرير؟", "انت على النسخة التجريبية، إذا شفت شي غريب أرسل ملاحظة"):
     check("«" + w + "» is said through S.t and has its English", ('"' + w + '"') in bn and ("\n" + w + "\t") in en)

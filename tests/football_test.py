@@ -36,7 +36,7 @@ check("«تابع» goes through the screensaver's provider, the launcher's own 
 
 card, main, ff, ma = read(HOME / "HomeCard.java"), read(HOME / "MainActivity.java"), read(HOME / "FootballFocus.java"), read(HOME / "MatchesActivity.java")
 check("HomeCard: football only when the setting says so (and something is known), its page instead of the cards",
-      'football = "football".equals(layout) && footballHost != null && choice != null;' in card
+      'football = HomeCardChoice.football(layout, choice) && footballHost != null;' in card
       and "return withGlass(HomePage.fresh(activity, HomeCardChoice.footballUrl(choice)));" in card)
 check("HomeCard: the widgets' box is the screen's width from its top, 832 high at 1080p, and the cards' own place comes back without them",
       "params.width = dm.widthPixels;" in card and "FootballFocus.HEIGHT_1080 * dm.heightPixels / 1080f" in card and "static final int HEIGHT_1080 = 832;" in ff
@@ -57,8 +57,8 @@ check("OK on the games opens «المباريات» on the chosen game", "guarde
 check("«المباريات»: the page's own mode, Back closes a game's card first, its WebView pauses and resumes like HomeCard's",
       "HomeCardChoice.matchesUrl(frag, event)" in ma and "String frag = HomeFollows.fragment(this, cfg.fragment);" in ma and "mpBack()" in ma and 'if (!"closed".equals(FootballFocus.unquote(v))) finish();' in ma
       and 'android:name=".MatchesActivity"' in read(ROOT / "android/launcher/src/main/AndroidManifest.xml"))
-check("what the page may ask: a task (the reminder's hook, MatchReminder), a followed club added or removed, the broadcaster's app (installed? open), and 4.3 «شاهد المباراة» (is a match app there? the game's checked facts to it), nothing else",
-      ma.count("@JavascriptInterface") == 12 and "public boolean followLeague(String id, String ar, String en, String token)" in ma and "public boolean unfollowLeague(String id, String en)" in ma and "public boolean openTeams()" in ma and "public boolean matchApp()" in ma and "public boolean findMatch(String json)" in ma and "public boolean remind(String text, double at)" in ma and "public boolean follow(String id, String name)" in ma and "public boolean unfollow(String id)" in ma
+check("what the page may ask: a task (the reminder's hook, MatchReminder), a followed club added or removed, the broadcaster's app (installed? open), and 4.3 «شاهد المباراة» (is a match app there? the game's checked facts to it), 4.4 the follow limits (followCheck, followWarned), nothing else",
+      ma.count("@JavascriptInterface") == 14 and "public String followCheck(String kind)" in ma and "public boolean followWarned(String kind)" in ma and "public boolean followLeague(String id, String ar, String en, String token)" in ma and "public boolean unfollowLeague(String id, String en)" in ma and "public boolean openTeams()" in ma and "public boolean matchApp()" in ma and "public boolean findMatch(String json)" in ma and "public boolean remind(String text, double at)" in ma and "public boolean follow(String id, String name)" in ma and "public boolean unfollow(String id)" in ma
       and "public String appOf(String csv)" in ma and "public boolean open(String csv)" in ma
       and 'if (id == null || !id.matches("\\\\d{1,9}")) return false;' in ma and "static boolean add(Context c, String text, long at)" in ma
       and 'pkg.matches("[A-Za-z0-9_.]{3,120}")' in ma and "getLeanbackLaunchIntentForPackage" in ma)   # a package name only, never a link or an intent from the page

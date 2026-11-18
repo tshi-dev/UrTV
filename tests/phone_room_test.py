@@ -46,7 +46,7 @@ check("the games list: a filter beside the night switch («عرض»: الكل or
       'PHONE_GAMES = {"quiz", "khanat", "missing-word", "letter-hive", "word5", "odd-one", "charades", "domino"' in reg and "(GameRegistry.inPhones(g.id) && g.ready)" in gl and "GamePrefs.setFilter(this, filter)" in gl and 'go.putExtra("phones", true)' in gl
       and "static void setFilter" in src("GamePrefs.java"))
 check("the phone page: no outside address, no innerHTML or eval, text built with text nodes; it talks only to /api/",
-      not __import__("re").search(r"https?://(?!www\.w3\.org)", page) and "innerHTML" not in page and "eval(" not in page and page.count("/api/") == 9 and "createTextNode" in page)
+      not __import__("re").search(r"https?://(?!www\.w3\.org)", page) and "innerHTML" not in page and "eval(" not in page and page.count("/api/") == 10 and "createTextNode" in page)
 check("the game-only server holds no game rules: it routes a PhoneRoom (the quiz's room and this one) and nothing else", "private final PhoneRoom room;" in src("QuizServer.java") and "implements PhoneRoom" in src("QuizRoom.java") and "implements PhoneRoom" in src("GamePhoneRoom.java"))
 check("docs/GAMES-PHONES.md says the switch is off by default and what is not in phase 1", "Off by default, every time" in (ROOT / "docs/GAMES-PHONES.md").read_text(encoding="utf-8") and "Not in phase 1" in (ROOT / "docs/GAMES-PHONES.md").read_text(encoding="utf-8"))
 mw = src("MissingWordActivity.java")

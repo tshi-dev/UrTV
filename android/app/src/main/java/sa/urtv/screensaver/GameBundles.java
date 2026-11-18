@@ -24,6 +24,11 @@ final class GameBundles {
         byte[] pack = GamePackStore.open(c, name);
         return pack == null ? null : GameBundle.open(name, pack);
     }
+    /** the same as bytes, without counting as a use of the pack (GamePackStore.peek) */
+    static byte[] peekBytes(Context c, String name) {
+        byte[] pack = GamePackStore.peek(c, name);
+        return pack == null ? null : GameBundle.open(name, pack);
+    }
     private static Object parse(byte[] json) {
         if (json == null) return null;
         try { return MiniJson.parse(new String(json, java.nio.charset.StandardCharsets.UTF_8)); } catch (RuntimeException e) { return null; }

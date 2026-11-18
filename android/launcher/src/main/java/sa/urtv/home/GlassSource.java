@@ -21,14 +21,14 @@ public final class GlassSource {
 
     static final String FILE = "glass/backdrop.png";
 
-    private static Bitmap cached;            // the one bitmap of this process
+    private static volatile Bitmap cached;   // the one bitmap of this process
     private static long cachedStamp = -1;
 
     static File file(Context c) { return new File(c.getFilesDir(), FILE); }
 
     private static SharedPreferences prefs(Context c) { return Dock.prefs(c); }
 
-    /** The backdrop (one bitmap for every screen of this process), read again only when the file changed; null while there is none. */
+    /** The backdrop (one bitmap for every screen of this process), read again only when the file changed; null while there is none. Reads the file: never on the UI thread. */
     static synchronized Bitmap backdrop(Context c) {
         File f = file(c);
         long stamp = f.isFile() ? f.lastModified() : 0;
@@ -38,6 +38,9 @@ public final class GlassSource {
         }
         return cached;
     }
+
+    /** 4.4 QA-13: the backdrop this process already has (memory only, never the file); null before the first read, or while there is none */
+    static Bitmap backdropKnown() { return cached; }
 
     /**
      * The two colours that bound every pixel of the backdrop (GlassStyle.bounds), kept when it was made. Not known (a backdrop from
@@ -55,14 +58,17 @@ public final class GlassSource {
 
     /** Light now? «المظهر» as the screensaver keeps it; automatic follows what the home shows (it writes it), else the clock. */
     public static boolean light(Context c) {
-        String mode = ConfigSnapshot.read(c).appearance();
+        String mode = ConfigSnapshot.ui(c).appearance();   // 4.4 QA-11: the kept answer on the UI thread, never a query
         if (Look.AUTO.equals(mode) && prefs(c).contains("glass_home_light")) return prefs(c).getBoolean("glass_home_light", false);
         Calendar now = Calendar.getInstance();
         return Look.light(mode, null, now.get(Calendar.HOUR_OF_DAY) * 60 + now.get(Calendar.MINUTE));
     }
 
     /** «المظهر ← الشكل» as the screensaver keeps it (glass, graphite, navy, clean); unknown or missing: glass. */
-    public static String lookName(Context c) { return GlassStyle.look(ConfigSnapshot.read(c).look()); }
+    public static String lookName(Context c) { return GlassStyle.look(ConfigSnapshot.ui(c).look()); }
+
+    /** the same, asked of the screensaver now: for the phone page's server threads, never the UI thread */
+    static String lookNameNow(Context c) { return GlassStyle.look(ConfigSnapshot.read(c).look()); }
 
     /** The look of now: «الشكل» in the light or the dark of now. */
     public static GlassStyle.Look look(Context c) { return GlassStyle.of(lookName(c), light(c)); }
@@ -70,8 +76,32 @@ public final class GlassSource {
     /** A screen's page: the backdrop under its veil, in the look of now. Returns that look, for the screen's own colours. */
     public static GlassStyle.Look page(Activity a, View root) {
         GlassStyle.Look l = look(a);
-        root.setBackground(GlassPaint.page(a, backdrop(a), l, scrim(a, l)));
+        paint(a, root, l);
         return l;
+    }
+
+    /**
+     * 4.4 QA-13: a screen's onCreate paints the backdrop this process already has (or the look's solid colour when it has none yet) and never
+     * decodes the file: the file is read on a thread, and when it brings another picture (the first screen of a process, or the home changed
+     * its photo) the background is painted again under the same look.
+     */
+    private static void paint(final Activity a, final View root, final GlassStyle.Look l) {
+        final Bitmap known = backdropKnown();
+        root.setBackground(GlassPaint.page(a, known, l, scrim(a, l)));
+        final Context app = a.getApplicationContext();
+        new Thread(new Runnable() {
+            @Override public void run() {
+                final Bitmap now;
+                try { now = backdrop(app); } catch (RuntimeException | OutOfMemoryError e) { return; }
+                if (now == known) return;
+                a.runOnUiThread(new Runnable() {
+                    @Override public void run() {
+                        if (a.isDestroyed() || a.isFinishing()) return;
+                        root.setBackground(GlassPaint.page(a, now, l, scrim(a, l)));
+                    }
+                });
+            }
+        }, "glass-backdrop").start();
     }
 
     /**
@@ -79,9 +109,9 @@ public final class GlassSource {
      * (the default), else in the look of the home as every page is. The look is returned for the screen's own colours.
      */
     public static GlassStyle.Look pageFor(Activity a, View root) {
-        if (!ConfigSnapshot.read(a).pagesDark) return page(a, root);
+        if (!ConfigSnapshot.ui(a).pagesDark) return page(a, root);
         GlassStyle.Look l = GlassStyle.DARK;
-        root.setBackground(GlassPaint.page(a, backdrop(a), l, scrim(a, l)));
+        paint(a, root, l);
         return l;
     }
 
@@ -103,7 +133,7 @@ public final class GlassSource {
     public static java.util.Map<String, Object> phoneState(Context c) {
         java.util.Map<String, Object> m = new java.util.LinkedHashMap<>();
         File f = file(c);
-        String look = lookName(c);
+        String look = lookNameNow(c);
         m.put("glass_stamp", f.isFile() ? f.lastModified() : 0L);
         m.put("glass_look", look);
         m.put("glass_dark", (long) Math.round(scrim(c, GlassStyle.of(look, false)) * 1000));

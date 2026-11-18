@@ -186,6 +186,8 @@ public class MainActivity extends Activity {
             final Context app = getApplicationContext();
             clockReads.execute(() -> {
                 ConfigSnapshot.read(app);
+                Extras.askNow();   // 4.4 (QA-6): the add-on's state for the tick's screens, read here, off the UI thread
+                notices.load(app);   // 4.4 (QA-10): the notices file, again only when it changed
                 runOnUiThread(() -> {
                     if (isDestroyed() || !resumed) return;
                     updateClock();
@@ -202,7 +204,14 @@ public class MainActivity extends Activity {
     private final BroadcastReceiver nowPlayingChanged = new BroadcastReceiver() {
         @Override public void onReceive(Context c, Intent i) {
             updateNowPlaying();
-            updateAdhanBar(ConfigSnapshot.read(MainActivity.this));   // the adhan began or ended: the bar names it, or goes
+            // the adhan began or ended: the bar names it, or goes. From the answer this process already has; only with none yet is it read, off the UI thread
+            ConfigSnapshot known = ConfigSnapshot.known();
+            if (known != null) { updateAdhanBar(known); return; }
+            final Context app = getApplicationContext();
+            clockReads.execute(() -> {
+                final ConfigSnapshot got = ConfigSnapshot.read(app);
+                runOnUiThread(() -> { if (!isDestroyed() && !isFinishing()) updateAdhanBar(got); });
+            });
         }
     };
     // the sleep timer started, ended or was cancelled (here, or from the computer): the pill follows at once
@@ -235,13 +244,21 @@ public class MainActivity extends Activity {
     @Override
     protected void onCreate(Bundle b) {
         super.onCreate(b);
+        if (CrashLoopStore.safe(this)) {   // 4.3.5 (R7): the home died twice right after starting: the safe page, never a black screen
+            safeRedirect = true;
+            openSafePage();
+            finish();
+            return;
+        }
+        CrashLoopStore.opened(this);   // 4.3.5: the screen must draw its first frame within 20 s, or the next start counts a hang (CrashLoop)
+        getWindow().getDecorView().getViewTreeObserver().addOnDrawListener(firstDraw);
         if (DebugFlags.on(this, "keytrace")) KeyTrace.install();
         dbgFocus = DebugFlags.focusMask(this);   // a tester's switches for the tile's focus animation (dock.sh debug plainfocus ...)
         if (Ram.low(this)) dbgFocus |= DebugFlags.LIFT | DebugFlags.SHINE;   // A14 «الوضع الخفيف»: the focused tile without its elevation shadow and its shine (the scale and the highlight stay)
         FamilyDnsAndroid.status(this);   // first use in this process: undoes a Family DNS check that a crash cut short
         sa.urtv.home.setup.SetupHook.atHomeStart(this);   // a home switch that was cut off is put back (it never throws)
         Digits.init(this);   // the screensaver's «الأرقام» setting, for every number this screen writes
-        DeviceDefaults.apply(getApplicationContext());   // 4.3.3: this model's published defaults, only where nothing is set (devices.json)
+        { final Context app = getApplicationContext(); clockReads.execute(() -> DeviceDefaults.apply(app)); }   // 4.3.3: this model's published defaults, only where nothing is set (devices.json); 4.4 QA-13: its file is read on a thread
         langBuilt = S.lang();   // the language this screen is built in (updateClock rebuilds it when «اللغة» changes)
         dockApps = loadDock();
         // G4: the TV's live TV app and source picker are not looked for here (a dozen package manager calls on the main thread before the first frame): the inputs list and «التلفزيون» ask each time they open
@@ -314,6 +331,9 @@ public class MainActivity extends Activity {
         if (sa.urtv.home.setup.SetupReopen.take()) {   // «إعداد تلفزيوني» was left behind by the home switch: its progress and its done screen come back (once)
             try { guarded(ParentalPolicy.WIDGET_MATCHES, null, S.t("إعداد تلفزيوني"), () -> launch(new Intent(this, sa.urtv.home.setup.SetupActivity.class).addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT))); } catch (RuntimeException ignored) { }   // the person opened this screen already (its own lock was passed then)
         }
+        Extras.refresh();   // 4.4 (QA-6): the add-on's state, asked on a thread (the screens read the kept answer)
+        checkOverlayOffer();   // 4.4: once, for whoever used «فوق تطبيق آخر» on 4.3.x (the settings and the add-on are asked on a thread)
+        { final Context app = getApplicationContext(); clockReads.execute(() -> notices.load(app)); }   // 4.4 (QA-10): the notices file, off the UI thread
         sa.urtv.home.phone.PhoneUpdater.homeIsUp(getApplicationContext());   // an update cover waiting in front for this home closes now
         sa.urtv.home.setup.SetupHook.homeUp(this);   // «تخلّص من واجهة المصنع»: this boot's home came up (BootGuard)
         UpdateCarry.homeShown = true;   // the carry-over after our update asks whether our home is in front
@@ -336,7 +356,7 @@ public class MainActivity extends Activity {
         updateNowPlaying();
         homeCard.refresh();
         applyClean();   // «UrTV النظيف» changed while another screen was in front (after the card refresh: applyClean may hide the card)
-        if (reminder != null) { reminder.refresh(); ReminderScheduler.schedule(this); }   // a card that came due while another app was in front; the alarm follows the tasks
+        if (reminder != null) reminder.refresh(true);   // a card that came due while another app was in front; the alarm follows the tasks (both off the UI thread: QA-3)
         readAnimationScale();
         loadTvRows();   // what one watched since: «أكمل المشاهدة» moves on
         showUpdateResult();
@@ -364,6 +384,10 @@ public class MainActivity extends Activity {
     protected void onPause() {
         super.onPause();
         resumed = false;
+        if (overlayOnScreen) {   // it was on the screen: after a few seconds it counts as seen (once); sooner, it comes again at the next visit
+            if (android.os.SystemClock.elapsedRealtime() - overlayShownAt >= 4000) { overlayDue = false; markOverlayOffered(); }
+            overlayOnScreen = false;
+        }
         noticeOnScreen = null;   // 4.3.3: a notice was seen on this visit; it does not come back
         if (sceneHome != null) sceneHome.stop();   // no timer and no fade while another screen is in front
         updateCardOnScreen = -1;   // 4.4: the same for the card «في تحديث لـ …»
@@ -424,23 +448,33 @@ public class MainActivity extends Activity {
     /** the last picture of the home (half size, from the cache), else the skeleton in the look's colours, over everything until the live frame is there */
     private void showSnapshot() {
         if (snapOverlay != null || homeRoot == null) return;
-        android.util.DisplayMetrics dm = getResources().getDisplayMetrics();
-        Bitmap b = HomeSnapshot.load(this, dm.widthPixels, dm.heightPixels);
-        if (b == null) {   // no good picture (none, stale, another look, `debug nosnapshot`): no overlay at all, the live views and the look's own colour show, never black blocks
-            android.util.Log.i("UrTVHome", "snapshot overlay: none (no usable picture)");
-            return;
-        }
-        ImageView v = new ImageView(this);
-        v.setScaleType(ImageView.ScaleType.FIT_XY);
-        v.setImageBitmap(b);
-        v.setFocusable(false);
-        homeRoot.addView(v, new FrameLayout.LayoutParams(-1, -1));
-        snapOverlay = v;
-        snapShownAt = android.os.SystemClock.elapsedRealtime();
-        android.util.Log.i("UrTVHome", "snapshot overlay: picture shown");
-        handler.removeCallbacks(snapCheck);
-        handler.postDelayed(snapCheck, 120);
+        final android.util.DisplayMetrics dm = getResources().getDisplayMetrics();
+        final long asked = SystemClock.elapsedRealtime();
+        // 4.4 QA-13: the picture (a 300 KB WebP in this app's cache) is decoded on a thread and put over the home when it is here; one that comes
+        // after the live frame (SNAP_LATE_MS) is not shown, as when there is none (the live views and the look's own colour, never black blocks)
+        clockReads.execute(() -> {
+            final Bitmap b = HomeSnapshot.load(this, dm.widthPixels, dm.heightPixels);
+            runOnUiThread(() -> {
+                if (isDestroyed() || isFinishing() || snapOverlay != null || homeRoot == null) return;
+                if (b == null || SystemClock.elapsedRealtime() - asked > SNAP_LATE_MS) {
+                    android.util.Log.i("UrTVHome", "snapshot overlay: none (no usable picture)");
+                    return;
+                }
+                ImageView v = new ImageView(this);
+                v.setScaleType(ImageView.ScaleType.FIT_XY);
+                v.setImageBitmap(b);
+                v.setFocusable(false);
+                homeRoot.addView(v, new FrameLayout.LayoutParams(-1, -1));
+                snapOverlay = v;
+                snapShownAt = android.os.SystemClock.elapsedRealtime();
+                android.util.Log.i("UrTVHome", "snapshot overlay: picture shown");
+                handler.removeCallbacks(snapCheck);
+                handler.postDelayed(snapCheck, 120);
+            });
+        });
     }
+
+    private static final long SNAP_LATE_MS = 400;
 
     private void hideSnapshot() {
         final View v = snapOverlay;
@@ -459,20 +493,37 @@ public class MainActivity extends Activity {
     private void firstFrameWallpaper() {
         if (wallFront == null) return;
         boolean has = wallFront.getDrawable() != null;
-        java.io.File f = new java.io.File(getFilesDir(), WALL_SMALL);
-        int how = WallFirstFrame.source(has, smallPhoto != null, f.isFile());
-        if (how == WallFirstFrame.MEMORY || how == WallFirstFrame.DISK) {
-            Bitmap b = how == WallFirstFrame.MEMORY ? smallPhoto : android.graphics.BitmapFactory.decodeFile(f.getPath());
-            if (b != null) {
-                smallPhoto = b;
-                wallFront.setImageBitmap(b);
-                wallFront.setAlpha(1f);
-                logFirstPhoto(how == WallFirstFrame.MEMORY ? "small copy, memory" : "small copy, disk");
-                return;
-            }
+        // 4.4 QA-13: only the copy in memory is drawn in the first frame; the copy on disk is decoded on a thread and drawn when it is here (the
+        // look's colour stays behind it meanwhile, never black), and only when no photo has come in the view by then
+        int how = WallFirstFrame.source(has, smallPhoto != null, true);
+        if (how == WallFirstFrame.MEMORY) {
+            Bitmap b = smallPhoto;
+            wallFront.setImageBitmap(b);
+            wallFront.setAlpha(1f);
+            logFirstPhoto("small copy, memory");
+            return;
+        }
+        if (how == WallFirstFrame.DISK) {
+            if (wallDiskLoading) return;
+            wallDiskLoading = true;
+            final java.io.File f = new java.io.File(getFilesDir(), WALL_SMALL);
+            clockReads.execute(() -> {
+                final Bitmap b = f.isFile() ? android.graphics.BitmapFactory.decodeFile(f.getPath()) : null;
+                runOnUiThread(() -> {
+                    wallDiskLoading = false;
+                    if (b == null || isDestroyed() || wallFront == null || wallFront.getDrawable() != null) { logFirstPhoto("none, the look's colour"); return; }
+                    if (smallPhoto == null) smallPhoto = b;
+                    wallFront.setImageBitmap(b);
+                    wallFront.setAlpha(1f);
+                    logFirstPhoto("small copy, disk");
+                });
+            });
+            return;
         }
         logFirstPhoto(has ? "photo kept" : "none, the look's colour");
     }
+
+    private boolean wallDiskLoading;
 
     /** one line per return for the tester: the time from the home coming back to the first photo frame (tag UrTVHome) */
     private void logFirstPhoto(String how) {
@@ -526,6 +577,7 @@ public class MainActivity extends Activity {
 
     @Override
     protected void onDestroy() {
+        if (safeRedirect) { super.onDestroy(); return; }   // nothing of the screen was made (CrashLoop)
         unregisterReceiver(packages);
         KeyTrace.release();
         unregisterReceiver(dockChanged);
@@ -541,6 +593,25 @@ public class MainActivity extends Activity {
         homeCard.destroy();
         if (photoGlass != null) photoGlass.shutdown();
         super.onDestroy();
+    }
+
+    private boolean safeRedirect;   // 4.3.5: this instance only opened SafeActivity and finished
+
+    /** 4.3.5: the first frame of the home screen was drawn: marked once (off the draw itself), then the listener goes */
+    private final android.view.ViewTreeObserver.OnDrawListener firstDraw = new android.view.ViewTreeObserver.OnDrawListener() {
+        @Override public void onDraw() {
+            final android.view.ViewTreeObserver.OnDrawListener self = this;
+            handler.post(() -> {
+                CrashLoopStore.drew(MainActivity.this);
+                android.view.ViewTreeObserver o = getWindow().getDecorView().getViewTreeObserver();
+                if (o.isAlive()) o.removeOnDrawListener(self);
+            });
+        }
+    };
+
+    /** 4.3.5 (R7): never behind the family lock: a home that keeps dying cannot ask for the PIN, and the page only offers the TV's own home */
+    private void openSafePage() {
+        launch(new Intent(this, SafeActivity.class));
     }
 
     @Override
@@ -908,7 +979,7 @@ public class MainActivity extends Activity {
         updatePill.setOnClickListener(v -> launchGuarded(ParentalPolicy.PILL_UPDATES, new Intent(this, UpdateActivity.class), "تحديث تلفزيوني"));
         List<Pill> row = new ArrayList<>(Arrays.asList(inputs));
         tasksPill = tasks;
-        if (isInstalled(SAVER_PKG) && ConfigSnapshot.read(this).tasksPillOn()) row.add(tasks);   // «زر المهام»: hidden in the screensaver's settings, it is not in the row
+        if (isInstalled(SAVER_PKG) && ConfigSnapshot.ui(this).tasksPillOn()) row.add(tasks);   // «زر المهام»: hidden in the screensaver's settings, it is not in the row
         if (centerWanted()) row.add(centerPill);
         row.add(marketsBtn);
         row.add(matchesBtn);
@@ -919,7 +990,7 @@ public class MainActivity extends Activity {
         bellPill = pill(S.t("تحديثات التطبيقات"), R.drawable.ic_bell);
         bellPill.setOnClickListener(v -> guarded(ParentalPolicy.PILL_UPDATES, UpdatesBell.PLAY_STORE, S.t("متجر Play"), this::openUpdates));
         // [/updates bell]
-        if (listenPillWanted(ConfigSnapshot.read(this).listenPillOn)) row.add(tilawah);   // «زر تلاوة وأذان»: hidden in the screensaver's settings, it is simply not in the row
+        if (listenPillWanted(ConfigSnapshot.ui(this).listenPillOn)) row.add(tilawah);   // «زر تلاوة وأذان»: hidden in the screensaver's settings, it is simply not in the row
         for (Pill p : row) {
             right.addView(p, sideLlp(-2, dp(Pill.HEIGHT), 0, 0, dp(Pill.GAP), 0));
             pills.add(p);
@@ -2098,12 +2169,13 @@ public class MainActivity extends Activity {
             if (nudgeIsUpdate) { launchGuarded(ParentalPolicy.PILL_UPDATES, new Intent(this, UpdateActivity.class), "تحديث تلفزيوني"); return; }   // 4.3.1: the builds differ
             if (nudgeIsCity) { openCity(); return; }   // 4.3.1: the same bar asks for the city while it is due
             if (nudgeIsStock) {   // 4.4: the TV's own «Home app» choice (no adb needed); where the TV has none, «إعداد تلفزيوني» and its «تراجع»
-                sa.urtv.home.setup.SetupHook.clearStockBackOffer(this);
+                sa.urtv.home.setup.SetupHook.stockTaken(this);   // review A2-F1: HOME_WANTED goes too
                 Intent hs = new Intent(android.provider.Settings.ACTION_HOME_SETTINGS);
                 if (getPackageManager().resolveActivity(hs, 0) != null) launchGuarded(ParentalPolicy.PILL_TV_SETTINGS, hs, "إعدادات التلفزيون");
                 else guarded(ParentalPolicy.WIDGET_MATCHES, null, S.t("إعداد تلفزيوني"), () -> launch(new Intent(this, sa.urtv.home.setup.SetupActivity.class)));
                 return;
             }
+            if (nudgeIsOverlay) { launchGuarded(ParentalPolicy.PILL_TV_SETTINGS, Extras.intent(this, "overlay"), "إضافات تلفزيونك"); overlayAfterOffer(); return; }   // 4.4: the add-on's own offer for «فوق تطبيق آخر»; the bar is done either way
             if (nudgeIsExtras) {   // 4.4: we heal it where we may write the list; else the TV's accessibility settings, behind the sleep lock
                 if (A11yHeal.canHeal(this)) { A11yHeal.check(getApplicationContext(), "fix-nudge"); android.widget.Toast.makeText(this, S.t("شغّلنا «إضافات تلفزيونك» من جديد"), android.widget.Toast.LENGTH_LONG).show(); handler.postDelayed(() -> updateHomeNudge(false), 4000); return; }
                 android.widget.Toast.makeText(this, S.tv(ExtrasActivity.STUCK_FIX), android.widget.Toast.LENGTH_LONG).show();
@@ -2183,6 +2255,7 @@ public class MainActivity extends Activity {
     private void snoozeNudge() {
         if (nudgeIsNotice) { if (!noticeFixed) dismissNotice(); return; }   // 4.3.3: Back on a notice is «تم»
         android.content.SharedPreferences sp = getSharedPreferences(NUDGE_PREFS, MODE_PRIVATE);
+        if (nudgeIsOverlay) { overlayAfterOffer(); return; }   // 4.4: «لاحقاً» counts as shown: the offer is made once
         if (nudgeIsStock) { sa.urtv.home.setup.SetupHook.clearStockBackOffer(this); updateHomeNudge(false); return; }   // 4.4: «لاحقاً»: not asked again until two more bad boots
         if (nudgeIsUpdate) { updateCardOnScreen = -1; updateHomeNudge(false); return; }   // 4.4: the card was shown once; «لاحقاً» hides it (it comes back for a newer build or after 3 days)
         String k = nudgeIsCity ? "city_" : nudgeIsExtras ? "extras_" : "";   // the city question and the add-on's fix wait on their own counts
@@ -2194,19 +2267,28 @@ public class MainActivity extends Activity {
     private boolean nudgeIsCity;      // the bar is asking for the city (CityAskRule), not for «إعداد تلفزيوني»
     private boolean nudgeIsUpdate;    // 4.4: the bar is the card «في تحديث لـ …» (UpdateNotice.card); OK opens «تحديث تلفزيوني»
     private boolean nudgeIsStock;     // 4.4: the bar offers «رجّع الواجهة الأصلية» after two bad boots of ours (SetupHook.stockBackOffered)
+    private boolean nudgeIsOverlay;   // 4.4: the bar offers the add-on for «فوق تطبيق آخر» once (OverlayOfferRule)
+    private static volatile boolean overlayDue;   // set on a thread (checkOverlayOffer); read on the UI thread by the bar; per process, so a recreated home still shows it
+    private static volatile boolean overlayChecked;   // a real answer was got in this process: not asked again
+    private static final java.util.concurrent.atomic.AtomicBoolean overlayChecking = new java.util.concurrent.atomic.AtomicBoolean();
+    private long overlayShownAt;   // when this visit first showed the bar (elapsedRealtime)
+    private boolean overlayOnScreen;   // this visit shows the offer (it was marked seen as it first appeared)
     private boolean nudgeIsExtras;    // 4.4: the bar says «إضافات تلفزيونك» is on but not running (A11yHeal.stuck), OK fixes it
     private long updateCardOnScreen = -1;   // 4.4: the build the card asks for while this visit shows it (-1: none); it stays up for the visit, then it was seen
     private boolean nudgeIsNotice, noticeFixed;   // 4.3.3: the bar shows a published notice (NoticeRule); fixed: one that is not dismissible (no button)
     private String noticeOnScreen;   // the notice's id while this visit shows it; null once the home goes behind (it was seen) or «تم»
 
     /** 4.3.3 the notice due now (NoticeRule), never while our tilawah or adhan plays; its id is marked seen as it first appears */
+    /** 4.4 (QA-10, R1): the notices file, loaded off the UI thread (the minute tick's reads, and each return) */
+    private final ContentFile.Kept notices = new ContentFile.Kept(NoticeRule.NAME);
+
     private NoticeRule.Notice dueNotice() {
         if (sa.urtv.home.tilawah.MusicService.carryOurPlaying()) return null;   // never over playback
         ContentFile.refresh(getApplicationContext(), NoticeRule.PATH, NoticeRule.NAME, 3 * 3600_000L);
         android.content.SharedPreferences np = getSharedPreferences(NUDGE_PREFS, MODE_PRIVATE);
         java.util.Set<String> seen = np.getStringSet("notice_seen", java.util.Collections.<String>emptySet());
         String day = new java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.ROOT).format(new java.util.Date());
-        NoticeRule.Notice n = NoticeRule.pick(ContentFile.read(this, NoticeRule.NAME), day, BuildConfig.MARKETING, seen, noticeOnScreen);
+        NoticeRule.Notice n = NoticeRule.pick(notices.value(), day, BuildConfig.MARKETING, seen, noticeOnScreen);   // 4.4 (QA-10): the kept copy (loaded on the tick's thread)
         if (n != null && !n.id.equals(noticeOnScreen)) {
             noticeOnScreen = n.id;
             java.util.Set<String> s = new java.util.HashSet<>(seen);
@@ -2258,6 +2340,44 @@ public class MainActivity extends Activity {
         nudgeLater.setNextFocusLeftId(rtl ? nudgeLater.getId() : nudgeCard.getId());
     }
 
+    /**
+     * 4.4: the overlay offer, decided OFF the UI thread (the screensaver's settings and the add-on are IPC, the prefs are disk): the kick-off alert is on and set to
+     * «فوق تطبيق آخر», and the add-on cannot draw. The result is applied on the UI thread; the bar then shows it (once, not in kids mode, not during a setup).
+     */
+    private void checkOverlayOffer() {
+        final Context app = getApplicationContext();
+        if (overlayDue || overlayOnScreen || overlayChecked) return;   // once per process: a real answer is kept, so a TV that never gets the offer does not wake the saver and the add-on at every return
+        if (!overlayChecking.compareAndSet(false, true)) return;
+        new Thread(() -> {   // its own thread: a cold start of the saver's or the add-on's process must not hold up the clock and the photo queued on the home's reads thread
+            try {
+                int shown = app.getSharedPreferences(NUDGE_PREFS, MODE_PRIVATE).getInt(OverlayOfferRule.KEY, 0);
+                if (shown >= OverlayOfferRule.VERSION) { overlayChecked = true; return; }   // the cheap check first: no IPC for a TV that was offered
+                boolean[] set = KickoffReceiver.settings(app);
+                boolean kids = Parental.state(app).kids, setup = sa.urtv.home.setup.SetupHold.on();
+                Boolean known = set[0] && set[2] && !kids && !setup ? Extras.canDrawKnown() : Boolean.FALSE;
+                if (known == null) return;   // the add-on gave no answer: not «cannot draw»; asked again at the next return
+                overlayChecked = true;
+                if (!OverlayOfferRule.due(set[0], set[2], known, kids, setup, shown)) return;
+                overlayDue = true;
+                runOnUiThread(() -> { if (!isDestroyed() && !isFinishing() && resumed) updateHomeNudge(false); });
+            } catch (RuntimeException ignored) {
+            } finally { overlayChecking.set(false); }
+        }, "overlay-offer").start();
+    }
+
+    /** the offer was answered («شغّلها» or «لاحقاً»): never again for this version */
+    private void overlayAfterOffer() {
+        overlayDue = false;
+        overlayOnScreen = false;
+        markOverlayOffered();
+        updateHomeNudge(false);
+    }
+
+    private void markOverlayOffered() {
+        final Context app = getApplicationContext();
+        clockReads.execute(() -> app.getSharedPreferences(NUDGE_PREFS, MODE_PRIVATE).edit().putInt(OverlayOfferRule.KEY, OverlayOfferRule.VERSION).apply());
+    }
+
     /** as the home comes to the front: show or hide the bar; {@code takeFocus} puts the focus on it the first time it appears (after the home has laid out and put its own focus), so OK is all it takes */
     private void updateHomeNudge(boolean takeFocus) {
         if (nudge == null) return;
@@ -2277,23 +2397,27 @@ public class MainActivity extends Activity {
         // 4.4: «إضافات تلفزيونك» turned on but Android does not run it (a TCL refused the bind; a force-stop): the one-line fix, once the TV has been up a while
         boolean askExtras = !askStock && !askUpdate && !kids && android.os.SystemClock.elapsedRealtime() > 90_000 && A11yHeal.stuck(this)
             && HomeNudgeRule.show(false, false, np.getLong("extras_later_until", 0), nowMs);
-        boolean askCity = !askStock && !askUpdate && !askExtras && mismatch == null && CityAskRule.show(isInstalled(SAVER_PKG), cityChosenNow, java.util.TimeZone.getDefault().getID(), kids, np.getLong("city_later_until", 0), nowMs);
+        // 4.4: «فوق تطبيق آخر» moved to the add-on: offered once to whoever used it (checkOverlayOffer), after the problems above, before the city
+        boolean askOverlay = (overlayDue || overlayOnScreen) && !askStock && !askUpdate && !askExtras && !kids && !quiet && !sa.urtv.home.setup.SetupHold.on();
+        if (askOverlay && !overlayOnScreen) { overlayOnScreen = true; overlayShownAt = android.os.SystemClock.elapsedRealtime(); }   // marked seen when the person answers it or leaves after a few seconds of seeing it (onPause), not on first appearance
+        boolean askCity = !askStock && !askUpdate && !askExtras && !askOverlay && mismatch == null && CityAskRule.show(isInstalled(SAVER_PKG), cityChosenNow, java.util.TimeZone.getDefault().getID(), kids, np.getLong("city_later_until", 0), nowMs);
         // 4.4: no bar asks to make UrTV the home any more (it is not pushed: the settings' row «اجعل UrTV الشاشة الرئيسية» is the way in for whoever wants it)
-        boolean show = askStock || askUpdate || askExtras || askCity;   // never two at once: the stock home back, the update, the add-on, then the city
+        boolean show = askStock || askUpdate || askExtras || askOverlay || askCity;   // never two at once: the stock home back, the update, the add-on, then the city
         NoticeRule.Notice notice = show || kids ? null : dueNotice();   // 4.3.3: a notice only when the bar has nothing else to say
         show |= notice != null;
         boolean was = nudge.getVisibility() == View.VISIBLE;
         nudgeIsCity = askCity;
         nudgeIsUpdate = askUpdate;
         nudgeIsExtras = askExtras;
+        nudgeIsOverlay = askOverlay;
         nudgeIsStock = askStock;
         nudgeIsNotice = notice != null;
         noticeFixed = notice != null && !notice.dismissible;
-        nudgeCard.setText(notice != null ? S.t("تم") : askStock ? S.t("رجّع الواجهة الأصلية") : askUpdate ? S.t("حدّث الآن") : askExtras ? S.t("أصلحها") : askCity ? S.t("اختر المدينة") : S.t("خلّ تلفزيونك يفتح على UrTV"));
+        nudgeCard.setText(notice != null ? S.t("تم") : askStock ? S.t("رجّع الواجهة الأصلية") : askUpdate ? S.t("حدّث الآن") : askExtras ? S.t("أصلحها") : askOverlay ? S.t("شغّلها") : askCity ? S.t("اختر المدينة") : S.t("خلّ تلفزيونك يفتح على UrTV"));
         if (notice != null) nudgeAsk.setText(notice.text(S.en()));
         else if (askStock) nudgeAsk.setText(S.t("تلفزيونك ما فتح بعد آخر تشغيلين للتلفزيون"));
-        else if (askUpdate) nudgeAsk.setText(card.line); else if (askExtras) nudgeAsk.setText(S.tv(ExtrasActivity.STUCK_FIX)); else if (askCity) nudgeAsk.setText(S.tv(CITY_ASK));
-        nudgeAsk.setVisibility(askStock || askUpdate || askExtras || askCity || notice != null ? View.VISIBLE : View.GONE);
+        else if (askUpdate) nudgeAsk.setText(card.line); else if (askExtras) nudgeAsk.setText(S.tv(ExtrasActivity.STUCK_FIX)); else if (askOverlay) nudgeAsk.setText(S.t("«فوق تطبيق آخر» صار في «إضافات تلفزيونك»: شغّلها ليبقى التنبيه فوق التطبيق")); else if (askCity) nudgeAsk.setText(S.tv(CITY_ASK));
+        nudgeAsk.setVisibility(askStock || askUpdate || askExtras || askOverlay || askCity || notice != null ? View.VISIBLE : View.GONE);
         nudgeCard.setVisibility(noticeFixed ? View.GONE : View.VISIBLE);
         nudgeLater.setVisibility(notice != null ? View.GONE : View.VISIBLE);
         if (show && !was) {
@@ -2473,10 +2597,10 @@ public class MainActivity extends Activity {
         for (View c : dockCards) liftCard(c, false);
     }
 
-    /** One key while the mode is on. True: it is ours (every key but the volume and power ones). */
+    /** One key while the mode is on. True: it is ours (FavEdit.owns: the arrows, OK, Back and what would move the focus; every other key goes on). */
     private boolean editKey(KeyEvent e) {
         int k = e.getKeyCode();
-        if (AdhanKeys.reserved(k)) return false;
+        if (AdhanKeys.reserved(k) || !FavEdit.owns(k)) return false;
         if (e.getAction() != KeyEvent.ACTION_DOWN) return true;   // a release does nothing; it must not click the tile under the focus
         long now = SystemClock.uptimeMillis();
         int rep = e.getRepeatCount();
@@ -2592,6 +2716,9 @@ public class MainActivity extends Activity {
 
     /** The settings' «ترتيب كل التطبيقات» asks the home screen for the mode, or for the order by name again, with these extras. */
     static final String EXTRA_EDIT_APPS = "edit_apps", EXTRA_RESET_APPS = "reset_apps_order";
+    /** 4.3.4, with edit_apps: the settings' «التطبيقات المخفية»: the mode opens on «المخفية» with its list (people found no way back to a hidden app) */
+    static final String EXTRA_APPS_HIDDEN = "apps_hidden";
+    private boolean wantHiddenList;       // asked for with EXTRA_APPS_HIDDEN, waiting for the mode
 
     private AppsEdit appsEdit;            // null: the mode is off
     private boolean wantAppsEdit;         // asked for from the settings, waiting for the whole grid to be on screen
@@ -2618,12 +2745,17 @@ public class MainActivity extends Activity {
         }
         if (!i.getBooleanExtra(EXTRA_EDIT_APPS, false)) return false;
         wantAppsEdit = true;
+        wantHiddenList = i.getBooleanExtra(EXTRA_APPS_HIDDEN, false);
+        // 4.3.4: an app changed while the settings were in front: onResume (after this) would build the grid again and end the mode at once,
+        // so the grid is built now and the mode starts when it is done
+        if (appsStale) { appsStale = false; buildApps(); }
         beginPendingAppsEdit();
         return true;
     }
 
     /** «تعديل التطبيقات» from the long-press menu (on the app that was pressed) or from the settings (pkg null). The family lock asks first. */
     private void beginAppsEdit(String pkg) {
+        if (pkg != null) wantHiddenList = false;   // 4.3.4 review F1: a settings ask for the hidden list that a PIN or kids mode stopped is not the long press's
         if (kidsNoEdit()) return;
         guarded(ParentalPolicy.MENU_ARRANGE, null, S.t("تعديل التطبيقات"), () -> startAppsEdit(pkg));
     }
@@ -2648,11 +2780,17 @@ public class MainActivity extends Activity {
         List<String> order = gridPackages();
         hiddenFound.clear();
         for (ResolveInfo ri : Dock.hiddenApps(this)) hiddenFound.put(ri.activityInfo.packageName, ri);
+        boolean toHidden = wantHiddenList;
+        wantHiddenList = false;
+        if (toHidden && hiddenFound.isEmpty()) {
+            Toast.makeText(this, S.t("ما فيه تطبيقات مخفية"), Toast.LENGTH_SHORT).show();
+            return;
+        }
         if (order.isEmpty() && hiddenFound.isEmpty()) {
             Toast.makeText(this, S.t("كل تطبيقاتك في المفضلة"), Toast.LENGTH_SHORT).show();
             return;
         }
-        int focus = pkg != null ? order.indexOf(pkg) : -1;
+        int focus = toHidden ? order.size() : pkg != null ? order.indexOf(pkg) : -1;   // order.size(): «المخفية» (AppsEdit)
         if (focus < 0) {
             View f = getCurrentFocus();
             for (int i = 0; i < gridCards.size(); i++) if (gridCards.get(i) == f) focus = i;
@@ -2662,6 +2800,7 @@ public class MainActivity extends Activity {
         paintEditChrome();
         editHint.setVisibility(View.VISIBLE);
         paintAppsEdit();
+        if (toHidden) grid.post(() -> { if (appsEdit != null && appsEdit.onHiddenList() && hiddenCard != null) showHiddenList(); });   // its list at once, once laid out
     }
 
     /** Back: the order, what was hidden or shown and the favourites are kept (Dock.saveApps, one broadcast that builds the screen again). */
@@ -2706,10 +2845,10 @@ public class MainActivity extends Activity {
         else if (!dockCards.isEmpty()) dockCards.get(0).requestFocus();
     }
 
-    /** One key while the mode is on. True: it is ours (every key but the volume and power ones), as in «تعديل المفضلة». */
+    /** One key while the mode is on. True: it is ours (FavEdit.owns), as in «تعديل المفضلة». */
     private boolean appsEditKey(KeyEvent e) {
         int k = e.getKeyCode();
-        if (AdhanKeys.reserved(k)) return false;
+        if (AdhanKeys.reserved(k) || !FavEdit.owns(k)) return false;
         if (e.getAction() != KeyEvent.ACTION_DOWN) return true;   // a release does nothing; it must not click the tile under the focus
         long now = SystemClock.uptimeMillis();
         int rep = e.getRepeatCount();
@@ -2973,7 +3112,7 @@ public class MainActivity extends Activity {
                 if (inDock && dock.size() <= MIN_DOCK) { toast(S.t("المفضلة لا تقل عن %s", arabicDigits(String.valueOf(MIN_DOCK)))); return; }
                 if (inDock) { dock.remove(pkg); saveDock(dock, dock.isEmpty() ? null : dock.get(Math.max(0, i - 1))); }
                 Dock.hideOrShow(this, Collections.singletonList(pkg), true);   // back from «تعديل التطبيقات» ← «المخفية»
-                toast(S.t("أُخفي، ويرجع من «تعديل التطبيقات»"));
+                toast(S.t("أُخفي، ويرجع من الإعدادات: «التطبيقات المخفية»"));   // 4.3.4: the old line named a button the menu does not have
             };
         }
         ParentalPolicy.State family = Parental.state(this);
@@ -3193,6 +3332,12 @@ public class MainActivity extends Activity {
     /** dp: the height of a button in the app menu's bottom row (an icon over a short name) */
     private static final int APP_BUTTON_H = 56;
 
+
+    /** where the Sources dropdown hangs: the first pill, or the first dock card when every quick button is hidden (review F21); null: nothing to hang it on */
+    private View inputsAnchor() {
+        if (!pills.isEmpty()) return pills.get(0);
+        return dockCards.isEmpty() ? null : dockCards.get(0);
+    }
 
     private void showInputs(View anchor, int path) {
         guarded(path, null, "المصادر", () -> showInputsNow(anchor));
@@ -3429,7 +3574,14 @@ public class MainActivity extends Activity {
     private boolean clockReading, clockFirstDone;
 
     private void updateClock() {
-        if (!clockFirstDone) { clockFirstDone = true; updateClock(ConfigSnapshot.read(this)); return; }
+        if (!clockFirstDone) {
+            clockFirstDone = true;
+            // 4.3.4 QA-1: a home made again (a language change, recreate) draws at once from the answer this process already has, and the
+            // fresh read below goes off the UI thread; only the process's very first draw asks the screensaver here (nothing is on screen yet)
+            ConfigSnapshot known = ConfigSnapshot.known();
+            // 4.4 QA-11: a cold process draws this once from the last real answer kept on disk (marked old, never a query); the read below follows at once
+            updateClock(known != null ? known : ConfigSnapshot.ui(this));
+        }
         if (clockReading) return;
         clockReading = true;
         final android.content.Context app = getApplicationContext();
@@ -4411,7 +4563,10 @@ public class MainActivity extends Activity {
      */
     private void openOurSettings(boolean orTvSettings, String window) {
         Intent hub = new Intent(Intent.ACTION_MAIN).setComponent(new ComponentName(SAVER_PKG, SAVER_PKG + ".YourTvHubActivity"));
-        if (window != null) hub.putExtra("open", window);
+        if (window != null) {   // 4.3.4: a fresh «تلفزيونك»: a screensaver task left open (its settings, its preview) came back as it was, and the games never opened
+            hub.putExtra("open", window);
+            hub.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        }
         Intent i = getPackageManager().resolveActivity(hub, 0) != null ? hub
                 : new Intent(Intent.ACTION_MAIN).setComponent(new ComponentName(SAVER_PKG, SAVER_PKG + ".SettingsActivity"));
         if (getPackageManager().resolveActivity(i, 0) != null) {
@@ -4544,7 +4699,7 @@ public class MainActivity extends Activity {
             }
             return true;
         }
-        if (edit != null && editKey(e)) return true;   // «تعديل المفضلة»: every key but the volume and power ones is ours
+        if (edit != null && editKey(e)) return true;   // «تعديل المفضلة»: the keys it uses (FavEdit.owns); the rest go on
         if (appsEdit != null && appsEditKey(e)) return true;   // «تعديل التطبيقات»: the same
         // the Menu key on an app: its options (the long OK's box); anywhere else the Inputs dropdown, as before
         if (e.getKeyCode() == KeyEvent.KEYCODE_MENU && e.getAction() == KeyEvent.ACTION_UP && edit == null && appsEdit == null
@@ -4554,8 +4709,13 @@ public class MainActivity extends Activity {
             showAppMenu(f, ((App) f.getTag()).pkg, dockCards.contains(f));
             return true;
         }
-        if (e.getKeyCode() == KeyEvent.KEYCODE_MENU && e.getAction() == KeyEvent.ACTION_UP && !pills.isEmpty()) {
-            showInputs(pills.get(0), ParentalPolicy.MENU_KEY);
+        if (e.getKeyCode() == KeyEvent.KEYCODE_MENU && edit == null && appsEdit == null && nowCard != null && getCurrentFocus() == nowCard && !Parental.state(this).kids) {
+            // 4.4 review F5 (R3): the card's own listener never saw the key (this method takes it first): Menu on «يُتلى الآن» is «شاشة سوداء», behind the same lock
+            if (e.getAction() == KeyEvent.ACTION_UP) launchGuarded(ParentalPolicy.PILL_LISTEN, sa.urtv.home.tilawah.BlackScreenActivity.open(this), "تلاوة وأذان");
+            return true;
+        }
+        if (e.getKeyCode() == KeyEvent.KEYCODE_MENU && e.getAction() == KeyEvent.ACTION_UP && edit == null && appsEdit == null && inputsAnchor() != null && !Parental.state(this).kids) {   // 4.3.4 review F2: not over an edit mode; 4.4 review F21: no pills, the first dock card holds the place
+            showInputs(inputsAnchor(), ParentalPolicy.MENU_KEY);
             return true;
         }
         if (e.getKeyCode() == KeyEvent.KEYCODE_MENU && e.getAction() == KeyEvent.ACTION_UP && Parental.state(this).kids) {
@@ -4600,7 +4760,7 @@ public class MainActivity extends Activity {
     private boolean backExitTakes(KeyEvent e) {
         int r;
         if (e.getAction() == KeyEvent.ACTION_DOWN && e.getRepeatCount() == 0) {
-            String mode = BackExit.fromFragment(ConfigSnapshot.read(this).fragment);
+            String mode = BackExit.fromFragment(ConfigSnapshot.lastFragment(this));   // 4.3.4 follow-up: never a query to the screensaver on a key (the UI thread)
             boolean scrolled = scroll.getScrollY() > 0 && !dockCards.isEmpty();
             backGuarded = BackExit.guards(mode, isDefaultHome(), scrolled);
             if (!backGuarded) return false;
@@ -4661,7 +4821,7 @@ public class MainActivity extends Activity {
                 break;
             }
             case RemoteKeys.OPEN_INPUTS:
-                if (!pills.isEmpty()) showInputs(pills.get(0), ParentalPolicy.MENU_KEY);
+                if (inputsAnchor() != null && !Parental.state(this).kids) showInputs(inputsAnchor(), ParentalPolicy.MENU_KEY);
                 else if (Parental.state(this).kids) openParental();   // 4.3.3: the star key in kids mode: the way out, as the Menu key
                 break;
             case RemoteKeys.OPEN_LIVE_TV:   // the TV button (TCL's 4001): the tuner, as «البث التلفزيوني» opens it

@@ -82,6 +82,14 @@ try {
   await a.pg.click('#sendtext');
   await a.pg.waitForSelector('.msg', { timeout: 5000 });
   const got = await ask('typed 0'); check('text: two fields typed on the phone arrive as one post, cleaned', ins.length === 2 && got === 'TYPED وردة|نخلة', ins.length + ' ' + got);
+  send('order 0');
+  await a.pg.waitForSelector('[data-s="card-order"]', { timeout: 5000 });
+  check('order: the things are buttons, send is off until all are chosen', (await a.pg.$$('.vb')).length === 3 && await a.pg.$eval('#ordsend', x => x.disabled));
+  await a.pg.click('.vb[data-i="2"]'); await a.pg.click('.vb[data-i="0"]'); await a.pg.click('#ordundo'); await a.pg.click('.vb[data-i="1"]'); await a.pg.click('.vb[data-i="0"]');
+  check('order: tapped things are numbered, undo takes the last one back, send is on when all three are chosen', !(await a.pg.$eval('#ordsend', x => x.disabled)));
+  await a.pg.click('#ordsend');
+  await a.pg.waitForSelector('.msg', { timeout: 5000 });
+  check('order: the order arrives as one post 2,1,0', (await ask('typed 0')).startsWith('TYPED 2,1,0'));
   check('no script error on either phone', a.errs.length === 0 && b.errs.length === 0, a.errs.concat(b.errs).join('|'));
   const html = await a.pg.content();
   check('the page loads nothing from outside and builds text with text nodes only', !/https?:\/\/(?!127)/.test(html.replace(/http:\/\/www\.w3\.org\/2000\/svg/g, '')) && !/innerHTML|eval\(/.test(html));

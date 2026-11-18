@@ -8,8 +8,8 @@ import android.widget.Toast;
 
 /**
  * «تنبيه عند الأذان»: a small text toast for 5 seconds, over whatever is in front. The system draws it, so it needs no permission and does not
- * take the focus or a key (nothing to dismiss, nothing blocked). This app holds no SYSTEM_ALERT_WINDOW and the setup grants none, so an overlay
- * window of ours would show nowhere; a text toast is the one thing Android lets an app show from the background without it (a custom
+ * take the focus or a key (nothing to dismiss, nothing blocked). This app holds no SYSTEM_ALERT_WINDOW (the add-on does, for the kick-off and iqama notices),
+ * so an overlay window of ours would show nowhere; a text toast is the one thing Android lets an app show from the background without it (a custom
  * toast view is not). A long toast lasts 3.5 s, so a short one follows and the whole is cut at 5 s.
  */
 final class AdhanNotice {

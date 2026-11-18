@@ -19,9 +19,18 @@ jobs:
     uses: ./.github/workflows/checks.yml
     secrets: inherit
 
+  # the release gate (docs/dev/RELEASE.md): every guard of docs/dev/REGRESSIONS.md and the API surface diff against the last release;
+  # a new UI-thread path to a cross-process call stops the publish. Master only, as checks.
+  regressions:
+    if: github.ref_name == 'master'
+    uses: ./.github/workflows/regressions.yml
+    with:
+      release: true   # and docs/dev/reviews/<VERSION>.md has no blocker or high open
+    secrets: inherit
+
   apk:
-    needs: checks
-    if: ${{ !cancelled() && (needs.checks.result == 'success' || needs.checks.result == 'skipped') }}
+    needs: [checks, regressions]
+    if: ${{ !cancelled() && (needs.checks.result == 'success' || needs.checks.result == 'skipped') && (needs.regressions.result == 'success' || needs.regressions.result == 'skipped') }}
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4

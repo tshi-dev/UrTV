@@ -58,6 +58,7 @@ public class QuizActivity extends Activity {
     private final Handler h = new Handler(Looper.getMainLooper());
     private final Map<String, Typeface> fonts = new HashMap<>();
     private Prefs prefs; private boolean latin, en, rtl, lowRam, animate; private float scale;
+    private GameHowToView howtoView; private int titleInset;   // «طريقة اللعب» (docs/GAMES-KIT.md): the panel over the setup screen, and the room the small line makes for the «!»
     private FrameLayout root; private List<QuizPick.Item> bank = new ArrayList<>();
     private Screen screen = Screen.SETUP; private int sel, selRow;
     // the chips
@@ -94,7 +95,13 @@ public class QuizActivity extends Activity {
         try { anim = Settings.Global.getFloat(getContentResolver(), Settings.Global.ANIMATOR_DURATION_SCALE, 1f); } catch (RuntimeException ignored) { /* default */ }
         animate = !lowRam && anim > 0f;   // reduced motion (animations off in the TV's developer settings) and low-RAM TVs: none
         scale = getResources().getDisplayMetrics().widthPixels / 1920f;
-        bank = QuizPick.forLang(QuizBank.load(this), S.en());   // an English room plays only the items whose English text is really English
+        final List<QuizPick.Item> base = QuizBank.load(this);
+        bank = QuizPick.forLang(base, S.en());   // an English room plays only the items whose English text is really English
+        QuizBank.withExtras(this, base, merged -> {   // the packs of questions come from a thread (they are parsed slowly), then the screen has them
+            if (isFinishing() || isDestroyed() || root == null) return;
+            bank = QuizPick.forLang(merged, S.en());
+            if (screen == Screen.SETUP) { fixCat(); show(Screen.SETUP); }
+        });
         QuizBank.refresh(this);
         useMeta();   // games/meta.json: the chips' names and groups from the data (the built-in lists are the offline default)
         cat = QuizBank.category(this); level = QuizBank.level(this); countIdx = QuizBank.count(this); kids = QuizBank.kids(this); sound = QuizBank.sound(this);
@@ -153,6 +160,13 @@ public class QuizActivity extends Activity {
     @Override public boolean dispatchKeyEvent(KeyEvent e) {
         if (e.getAction() != KeyEvent.ACTION_DOWN) return super.dispatchKeyEvent(e);
         int k = e.getKeyCode();
+        if (howtoView != null) {   // the panel is open: Back and Menu close it, ▲ ▼ scroll, nothing else reaches the game
+            if (k == KeyEvent.KEYCODE_BACK || k == KeyEvent.KEYCODE_ESCAPE || k == KeyEvent.KEYCODE_MENU) closeHowTo();
+            else if (k == KeyEvent.KEYCODE_DPAD_UP) howtoView.scroll(-1);
+            else if (k == KeyEvent.KEYCODE_DPAD_DOWN) howtoView.scroll(1);
+            return true;
+        }
+        if (k == KeyEvent.KEYCODE_MENU) { if (screen == Screen.SETUP) openHowTo(); return true; }   // the room's screens refresh by themselves, so the panel is for the setup only
         boolean back = k == KeyEvent.KEYCODE_BACK || k == KeyEvent.KEYCODE_ESCAPE;
         boolean ok = k == KeyEvent.KEYCODE_DPAD_CENTER || k == KeyEvent.KEYCODE_ENTER || k == KeyEvent.KEYCODE_NUMPAD_ENTER || k == KeyEvent.KEYCODE_BUTTON_A;
         int dx = k == KeyEvent.KEYCODE_DPAD_LEFT ? -1 : k == KeyEvent.KEYCODE_DPAD_RIGHT ? 1 : 0;
@@ -218,7 +232,7 @@ public class QuizActivity extends Activity {
     private void title(String big, String small) {
         band(200);
         root.addView(text(big, 96, ONDEEP, true), at(1100, 120, 96, 54));
-        if (small != null) { TextView s = text(small, 40, SAFF, false); s.setGravity(Gravity.END); s.setTextAlignment(View.TEXT_ALIGNMENT_VIEW_END); root.addView(s, atEnd(700, 56, 96, 84)); }
+        if (small != null) { TextView s = text(small, 40, SAFF, false); s.setGravity(Gravity.END); s.setTextAlignment(View.TEXT_ALIGNMENT_VIEW_END); root.addView(s, atEnd(700, 56, 96 + titleInset, 84)); }
     }
     private void hints(String... kv) {
         LinearLayout row = new LinearLayout(this); row.setOrientation(LinearLayout.HORIZONTAL); row.setLayoutDirection(Dir.layout());
@@ -270,6 +284,15 @@ public class QuizActivity extends Activity {
         }
     }
 
+    // ---- «طريقة اللعب»
+    private void openHowTo() {
+        GameHowTo.Content c = GameHowTo.of(GameRegistry.howto("quiz"));
+        if (c == null) return;
+        howtoView = new GameHowToView(this, c, S.tv(NAME), GameLook.of(this), scale, rtl, en, latin, font("ThmanyahDisplay-Bold"), font("Thmanyah-Medium"));
+        root.removeAllViews(); root.addView(howtoView, new FrameLayout.LayoutParams(-1, -1));
+    }
+    private void closeHowTo() { howtoView = null; show(Screen.SETUP); }
+
     // ---- the chips (B8)
     private static final String[] KIDS_OPTS = {S.n("لا"), S.n("نعم")}, SOUND_OPTS = {S.n("يعمل"), S.n("صامت")};
     /** the chips' words (QuizPick has no Android in it, so they are marked here for the English table) */
@@ -280,7 +303,9 @@ public class QuizActivity extends Activity {
     private void fixCat() { if (!catOffered(cat)) cat = QuizPick.MIX; }
 
     private void drawSetup() {
-        title(S.t("جهّز اللعبة"), S.tv(NAME));
+        titleInset = 80; title(S.t("جهّز اللعبة"), S.tv(NAME)); titleInset = 0;
+        if (selRow < 0) root.addView(box(0, SAFF, 6, false), atEnd(64, 64, 88, 62));   // the «!» (docs/GAMES-KIT.md): small, at the end corner; with the focus the same size in a saffron ring
+        TextView mark = centered("!", 34, INK, true); mark.setBackground(((View) box(TILE, INK, 4, false)).getBackground()); root.addView(mark, atEnd(48, 48, 96, 70));
         // rows: 0 category, 1 level, 2 questions, 3 kids, 4 sound, 5 the button
         float y = 232;
         y = chipRow(0, S.t("الفئة"), catLabels(), catIndex(), y, true);
@@ -290,7 +315,8 @@ public class QuizActivity extends Activity {
         y = chipRow(4, S.t("الصوت"), new String[]{S.tv(SOUND_OPTS[0]), S.tv(SOUND_OPTS[1])}, sound ? 0 : 1, y, false);
         TextView go = button(S.t("افتح الغرفة"), selRow == 5, 640);
         root.addView(go, at(640, 104, 96, 856));
-        hints("▲ ▼", S.t("السطر"), "◀ ▶", S.t("الاختيار"), S.t("اختيار"), S.t("ابدأ"));
+        if (selRow < 0) hints(S.t("اختيار"), S.t("طريقة اللعب"), "▼", S.t("الإعدادات"));
+        else hints("▲ ▼", S.t("السطر"), "◀ ▶", S.t("الاختيار"), S.t("اختيار"), S.t("ابدأ"));
     }
     /** the category chips: «مزيج» and the built-in ones, or, when games/meta.json is on the TV, the groups and categories it names (the data's names in UrTV's language) */
     private String[][] cats = QuizPick.CATEGORIES;
@@ -340,6 +366,8 @@ public class QuizActivity extends Activity {
     private void keySetup(boolean back, boolean ok, int dx, int dy) {
         int rows = 6;
         if (back) { finish(); return; }
+        if (selRow < 0) { if (ok) openHowTo(); else if (dy > 0) { selRow = 0; show(Screen.SETUP); } return; }   // on the «!»: OK opens the panel, down goes back to the first row
+        if (dy < 0 && selRow == 0) { selRow = -1; show(Screen.SETUP); return; }                              // up from the first row reaches the «!»
         if (dy != 0) { selRow = Math.max(0, Math.min(rows - 1, selRow + dy)); sel = clampSel(selRow, selRowPick(selRow)); show(Screen.SETUP); return; }
         if (selRow == 5) { if (ok) openRoom(); return; }
         int n = rowSize(selRow);

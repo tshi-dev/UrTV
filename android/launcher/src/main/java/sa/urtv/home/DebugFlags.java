@@ -23,15 +23,15 @@ import android.content.SharedPreferences;
  *   radioslow    a live radio station stalls and fails its first four tries after each pick, so the retry and the second source can be watched (MusicService)
  *   keytrace     one log line per key on the home (tag UrTVKeyTrace): queue, dispatch, focus, layout, draw and the next six frames' intervals (KeyTrace)
  */
-final class DebugFlags {
+public final class DebugFlags {
     private DebugFlags() { }
 
     static final String CHANGED = "sa.urtv.home.DEBUG_CHANGED";
-    static final String[] NAMES = {"traynoglass", "nopillpanel", "nowifimark", "nosnapshot", "nocardglass", "nokeyfilter", "keytrace", "nolift", "noglow", "noshine", "noscale", "notitle", "plainfocus", "nobackdrop", "radioslow"};
+    static final String[] NAMES = {"traynoglass", "nopillpanel", "nowifimark", "nosnapshot", "nocardglass", "nokeyfilter", "keytrace", "nolift", "noglow", "noshine", "noscale", "notitle", "plainfocus", "nobackdrop", "radioslow", "fullmeasure"};
 
     private static SharedPreferences sp(Context c) { return c.getApplicationContext().getSharedPreferences("debug_flags", Context.MODE_PRIVATE); }
 
-    static boolean on(Context c, String name) {
+    public static boolean on(Context c, String name) {
         try { return sp(c).getBoolean(name, false); } catch (RuntimeException e) { return false; }
     }
 

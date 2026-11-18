@@ -55,7 +55,7 @@ public class SetupBootReceiver extends BroadcastReceiver {
                 @Override public void run() {
                     try (SetupSession s = SetupSession.open(app, 0, null, new SetupEngine.Out() { @Override public void line(String text) { } })) {
                         SetupEngine.Result r = s.engine.restoreFactory();
-                        if (r.status == SetupEngine.Status.DONE) store.put(BootGuard.FILE, BootGuard.fresh(System.currentTimeMillis()).text());
+                        if (r.status == SetupEngine.Status.DONE) { store.put(BootGuard.FILE, BootGuard.fresh(System.currentTimeMillis()).text()); SetupSession.dropKey(app); }
                     } catch (Exception e) {
                         // the TV did not answer (ADB off): the count stays at the limit and the next boot tries again
                     } finally {

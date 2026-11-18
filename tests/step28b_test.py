@@ -50,7 +50,7 @@ check("8: the setting: Prefs (on by default), the command's word checked before 
       and st.index('row("وضع الألوان"') < st.index('row("صفحات الأسهم والمباريات داكنة"') < st.index('row("الخروج من تلفزيونك"'))
 cfg, gs = text(HOME / "ConfigSnapshot.java"), text(HOME / "GlassSource.java")
 check("8: the home reads it (on for an older screensaver); Markets uses the dark look (GlassStyle.DARK over the same backdrop) while on, else the home's look; the matches page gets #pagedark=1",
-      "boolean pagesDark = true;" in cfg and 'cur.getColumnIndex("pages_dark")' in cfg and "GlassStyle.Look l = GlassStyle.DARK;" in gs and "if (!ConfigSnapshot.read(a).pagesDark) return page(a, root);" in gs
+      "boolean pagesDark = true;" in cfg and 'cur.getColumnIndex("pages_dark")' in cfg and "GlassStyle.Look l = GlassStyle.DARK;" in gs and "if (!ConfigSnapshot.ui(a).pagesDark) return page(a, root);" in gs
       and "GlassSource.pageFor(this, root)" in text(HOME / "MarketsActivity.java") and '(cfg.pagesDark ? "&pagedark=1" : "")' in text(HOME / "MatchesActivity.java"))
 check("8: the page has its dark theme (#pagedark=1 → html.mpdark), the sand look is the default of the page without it", "pageDark: _Q.get('pagedark') === '1'," in tpl and "html.mpage.mpdark,html.mpage.mpdark body{background:#17181B}" in tpl
       and "classList.toggle('mpdark', !!CONFIG.pageDark)" in tpl)

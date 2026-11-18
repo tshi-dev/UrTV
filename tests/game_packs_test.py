@@ -18,8 +18,8 @@ with tempfile.TemporaryDirectory() as t:
         for l in r.stdout.splitlines():
             if l.startswith(("PASS", "FAIL")): print(l); failed += l.startswith("FAIL")
 ps = (APP / "GamePackStore.java").read_text(encoding="utf-8"); act = (APP / "GamePacksActivity.java").read_text(encoding="utf-8"); gl = (APP / "QuizGamesActivity.java").read_text(encoding="utf-8")
-check("a pack is downloaded only when its game opens: not during a round, not when the TV is low on space, only after the sha256 matches, written whole then renamed",
-      "QuizBank.playing" in ps and "GamePacks.canDownload(" in ps and "GamePacks.shaOk(d.body, p.sha)" in ps and "tmp.renameTo(file(app, p.id))" in ps and "d.body.length != p.bytes" in ps)
+check("a pack is downloaded only when its game opens: not during a round, not when the TV is low on space, only after the sha256 matches (hashed as it is streamed to a temporary file), then renamed",
+      "QuizBank.playing" in ps and "GamePacks.canDownload(" in ps and "GamePacks.hex(md.digest()).equals(p.sha)" in ps and "tmp.renameTo(file(app, p.id))" in ps and "tmp.length() == p.bytes" in ps)
 check("the packs come from urtv-data over Net (a size cap, no redirect) and nothing about the TV is sent", "tshi-dev/urtv-data/main/games/packs/" in ps and "Net.get(" in ps and "PACK_MAX" in ps and "getAndroidId" not in ps and "Build.SERIAL" not in ps)
 check("the packs screen lists size, «احتفظ دائمًا» / «تلقائي» and «حذف الآن»; the games list sweeps expired packs when it opens",
       'S.t("حذف الآن")' in act and 'S.t("احتفظ دائمًا")' in act and 'S.t("تلقائي")' in act and "GamePackStore.sweep(this)" in gl)

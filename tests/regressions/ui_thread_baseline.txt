@@ -1,0 +1,142 @@
+# tests/regressions/ui_thread_ipc_test.py: the UI-thread paths that were there at 4.3.4, each with a reason.
+# kind | app:Entry.method | the method that does the work | reason
+# A new line needs a reviewer's reason (docs/dev/RELEASE.md); the bare «baseline 4.3.4» is refused by the test.
+# QA-n = a finding in docs/dev/REGRESSIONS.md («Open findings of the gate»); «open QA-n» = still open there; «over-reach» = the graph's
+# route runs on another thread (a click listener, a WebView's IO thread, a guarded worker), not on the UI thread.
+
+disk:prefs.commit | launcher:DockActivity.onResume | Parental.pin | baseline 4.3.4: prefs written with commit() on a click or a return (small file, the app's own)
+disk:prefs.commit | launcher:DockActivity.onResume | Parental.put | baseline 4.3.4: prefs written with commit() on a click or a return (small file, the app's own)
+disk:prefs.commit | launcher:DockActivity.onResume | Parental.remove | baseline 4.3.4: prefs written with commit() on a click or a return (small file, the app's own)
+disk:prefs.commit | launcher:FamilyDnsActivity.onClick | FamilyDnsAndroid.run | baseline 4.3.4: prefs written with commit() on a click or a return (small file, the app's own)
+disk:prefs.commit | launcher:InputNamesActivity.onResume | Parental.pin | baseline 4.3.4: prefs written with commit() on a click or a return (small file, the app's own)
+disk:prefs.commit | launcher:InputNamesActivity.onResume | Parental.put | baseline 4.3.4: prefs written with commit() on a click or a return (small file, the app's own)
+disk:prefs.commit | launcher:InputNamesActivity.onResume | Parental.remove | baseline 4.3.4: prefs written with commit() on a click or a return (small file, the app's own)
+disk:prefs.commit | launcher:MainActivity.dispatchKeyEvent | Parental.pin | baseline 4.3.4: prefs written with commit() on a click or a return (small file, the app's own)
+disk:prefs.commit | launcher:MainActivity.dispatchKeyEvent | Parental.put | baseline 4.3.4: prefs written with commit() on a click or a return (small file, the app's own)
+disk:prefs.commit | launcher:MainActivity.dispatchKeyEvent | Parental.remove | baseline 4.3.4: prefs written with commit() on a click or a return (small file, the app's own)
+disk:prefs.commit | launcher:MainActivity.dispatchKeyEvent | Parental.toggle | baseline 4.3.4: prefs written with commit() on a click or a return (small file, the app's own)
+disk:prefs.commit | launcher:MainActivity.onReceive | Parental.pin | baseline 4.3.4: prefs written with commit() on a click or a return (small file, the app's own)
+disk:prefs.commit | launcher:MainActivity.onReceive | Parental.put | baseline 4.3.4: prefs written with commit() on a click or a return (small file, the app's own)
+disk:prefs.commit | launcher:MainActivity.onReceive | Parental.remove | baseline 4.3.4: prefs written with commit() on a click or a return (small file, the app's own)
+disk:prefs.commit | launcher:MainActivity.onReceive | Parental.toggle | baseline 4.3.4: prefs written with commit() on a click or a return (small file, the app's own)
+disk:prefs.commit | launcher:MainActivity.onResume | Parental.pin | baseline 4.3.4: prefs written with commit() on a click or a return (small file, the app's own)
+disk:prefs.commit | launcher:MainActivity.onResume | Parental.put | baseline 4.3.4: prefs written with commit() on a click or a return (small file, the app's own)
+disk:prefs.commit | launcher:MainActivity.onResume | Parental.remove | baseline 4.3.4: prefs written with commit() on a click or a return (small file, the app's own)
+disk:prefs.commit | launcher:MainActivity.onResume | Parental.toggle | baseline 4.3.4: prefs written with commit() on a click or a return (small file, the app's own)
+disk:prefs.commit | launcher:MainActivity.onResume | UpdateCarry.step | baseline 4.3.4: prefs written with commit() on a click or a return (small file, the app's own)
+disk:prefs.commit | launcher:ParentalActivity.onResume | Parental.pin | baseline 4.3.4: prefs written with commit() on a click or a return (small file, the app's own)
+disk:prefs.commit | launcher:ParentalActivity.onResume | Parental.put | baseline 4.3.4: prefs written with commit() on a click or a return (small file, the app's own)
+disk:prefs.commit | launcher:ParentalActivity.onResume | Parental.remove | baseline 4.3.4: prefs written with commit() on a click or a return (small file, the app's own)
+disk:prefs.commit | launcher:ParentalActivity.onResume | Parental.setKids | baseline 4.3.4: prefs written with commit() on a click or a return (small file, the app's own)
+disk:prefs.commit | launcher:ParentalActivity.onResume | Parental.toggle | baseline 4.3.4: prefs written with commit() on a click or a return (small file, the app's own)
+disk:prefs.commit | launcher:ParentalActivity.onResume | Parental.turnOff | baseline 4.3.4: prefs written with commit() on a click or a return (small file, the app's own)
+disk:prefs.commit | launcher:PhoneActivity.onResume | Parental.pin | baseline 4.3.4: prefs written with commit() on a click or a return (small file, the app's own)
+disk:prefs.commit | launcher:PhoneActivity.onResume | Parental.put | baseline 4.3.4: prefs written with commit() on a click or a return (small file, the app's own)
+disk:prefs.commit | launcher:PhoneActivity.onResume | Parental.remove | baseline 4.3.4: prefs written with commit() on a click or a return (small file, the app's own)
+disk:prefs.commit | launcher:SetupActivity.onClick | Parental.pin | baseline 4.3.4: prefs written with commit() on a click or a return (small file, the app's own)
+disk:prefs.commit | launcher:SetupActivity.onClick | Parental.put | baseline 4.3.4: prefs written with commit() on a click or a return (small file, the app's own)
+disk:prefs.commit | launcher:SetupActivity.onClick | Parental.remove | baseline 4.3.4: prefs written with commit() on a click or a return (small file, the app's own)
+disk:prefs.commit | launcher:SetupActivity.onResume | Parental.pin | baseline 4.3.4: prefs written with commit() on a click or a return (small file, the app's own)
+disk:prefs.commit | launcher:SetupActivity.onResume | Parental.put | baseline 4.3.4: prefs written with commit() on a click or a return (small file, the app's own)
+disk:prefs.commit | launcher:SetupActivity.onResume | Parental.remove | baseline 4.3.4: prefs written with commit() on a click or a return (small file, the app's own)
+disk:prefs.commit | launcher:UpdateActivity.onClick | Parental.pin | baseline 4.3.4: prefs written with commit() on a click or a return (small file, the app's own)
+disk:prefs.commit | launcher:UpdateActivity.onClick | Parental.put | baseline 4.3.4: prefs written with commit() on a click or a return (small file, the app's own)
+disk:prefs.commit | launcher:UpdateActivity.onClick | Parental.remove | baseline 4.3.4: prefs written with commit() on a click or a return (small file, the app's own)
+disk:prefs.commit | launcher:UpdateActivity.onClick | SaverHold.remember | baseline 4.3.4: prefs written with commit() on a click or a return (small file, the app's own)
+disk:prefs.commit | launcher:UpdateActivity.onClick | UpdateCarry.before | baseline 4.3.4: prefs written with commit() on a click or a return (small file, the app's own)
+disk:prefs.commit | launcher:UpdateActivity.onResume | Parental.pin | baseline 4.3.4: prefs written with commit() on a click or a return (small file, the app's own)
+disk:prefs.commit | launcher:UpdateActivity.onResume | Parental.put | baseline 4.3.4: prefs written with commit() on a click or a return (small file, the app's own)
+disk:prefs.commit | launcher:UpdateActivity.onResume | Parental.remove | baseline 4.3.4: prefs written with commit() on a click or a return (small file, the app's own)
+disk:prefs.commit | launcher:UpdateActivity.onResume | SaverHold.remember | baseline 4.3.4: prefs written with commit() on a click or a return (small file, the app's own)
+disk:prefs.commit | launcher:UpdateActivity.onResume | UpdateCarry.before | baseline 4.3.4: prefs written with commit() on a click or a return (small file, the app's own)
+disk:prefs.commit | launcher:WatchNextActivity.onResume | Parental.pin | baseline 4.3.4: prefs written with commit() on a click or a return (small file, the app's own)
+disk:prefs.commit | launcher:WatchNextActivity.onResume | Parental.put | baseline 4.3.4: prefs written with commit() on a click or a return (small file, the app's own)
+disk:prefs.commit | launcher:WatchNextActivity.onResume | Parental.remove | baseline 4.3.4: prefs written with commit() on a click or a return (small file, the app's own)
+disk:stream | launcher:UpdateActivity.onClick | PhoneUpdater.fetch | over-reach: the check, download and install run inside PhoneUpdater.guarded(...), a thread of their own (tv-update, tv-update-check); the screen only starts it
+disk:stream | launcher:UpdateActivity.onClick | PhoneUpdater.installNext | over-reach: the check, download and install run inside PhoneUpdater.guarded(...), a thread of their own (tv-update, tv-update-check); the screen only starts it
+disk:stream | launcher:UpdateActivity.onResume | PhoneUpdater.fetch | over-reach: the check, download and install run inside PhoneUpdater.guarded(...), a thread of their own (tv-update, tv-update-check); the screen only starts it
+disk:stream | launcher:UpdateActivity.onResume | PhoneUpdater.installNext | over-reach: the check, download and install run inside PhoneUpdater.guarded(...), a thread of their own (tv-update, tv-update-check); the screen only starts it
+disk:stream | saver:MainActivity.onReceive | PackStore.creditsJson | over-reach: PhotoCache.serve is the WebView's shouldInterceptRequest, which runs on the WebView's own IO thread, not the UI thread
+disk:stream | saver:MainActivity.onReceive | PhotoCache.download | over-reach: PhotoCache.serve is the WebView's shouldInterceptRequest, which runs on the WebView's own IO thread, not the UI thread
+disk:stream | saver:MainActivity.onReceive | PhotoCache.pack | over-reach: PhotoCache.serve is the WebView's shouldInterceptRequest, which runs on the WebView's own IO thread, not the UI thread
+disk:stream | saver:MainActivity.onReceive | PhotoCache.readAll | over-reach: PhotoCache.serve is the WebView's shouldInterceptRequest, which runs on the WebView's own IO thread, not the UI thread
+disk:stream | saver:MainActivity.onReceive | PhotoCache.serve | over-reach: PhotoCache.serve is the WebView's shouldInterceptRequest, which runs on the WebView's own IO thread, not the UI thread
+disk:stream | saver:ScreenDream.onReceive | PackStore.creditsJson | over-reach: PhotoCache.serve is the WebView's shouldInterceptRequest, which runs on the WebView's own IO thread, not the UI thread
+disk:stream | saver:ScreenDream.onReceive | PhotoCache.download | over-reach: PhotoCache.serve is the WebView's shouldInterceptRequest, which runs on the WebView's own IO thread, not the UI thread
+disk:stream | saver:ScreenDream.onReceive | PhotoCache.pack | over-reach: PhotoCache.serve is the WebView's shouldInterceptRequest, which runs on the WebView's own IO thread, not the UI thread
+disk:stream | saver:ScreenDream.onReceive | PhotoCache.readAll | over-reach: PhotoCache.serve is the WebView's shouldInterceptRequest, which runs on the WebView's own IO thread, not the UI thread
+disk:stream | saver:ScreenDream.onReceive | PhotoCache.serve | over-reach: PhotoCache.serve is the WebView's shouldInterceptRequest, which runs on the WebView's own IO thread, not the UI thread
+disk:stream | saver:SettingsActivity.dispatchKeyEvent | PackStore.creditsJson | over-reach: PhotoCache.serve is the WebView's shouldInterceptRequest, which runs on the WebView's own IO thread, not the UI thread
+disk:stream | saver:SettingsActivity.dispatchKeyEvent | PhotoCache.download | over-reach: PhotoCache.serve is the WebView's shouldInterceptRequest, which runs on the WebView's own IO thread, not the UI thread
+disk:stream | saver:SettingsActivity.dispatchKeyEvent | PhotoCache.pack | over-reach: PhotoCache.serve is the WebView's shouldInterceptRequest, which runs on the WebView's own IO thread, not the UI thread
+disk:stream | saver:SettingsActivity.dispatchKeyEvent | PhotoCache.readAll | over-reach: PhotoCache.serve is the WebView's shouldInterceptRequest, which runs on the WebView's own IO thread, not the UI thread
+disk:stream | saver:SettingsActivity.dispatchKeyEvent | PhotoCache.serve | over-reach: PhotoCache.serve is the WebView's shouldInterceptRequest, which runs on the WebView's own IO thread, not the UI thread
+disk:stream | saver:SettingsActivity.onResume | PackStore.creditsJson | over-reach: PhotoCache.serve is the WebView's shouldInterceptRequest, which runs on the WebView's own IO thread, not the UI thread
+disk:stream | saver:SettingsActivity.onResume | PhotoCache.download | over-reach: PhotoCache.serve is the WebView's shouldInterceptRequest, which runs on the WebView's own IO thread, not the UI thread
+disk:stream | saver:SettingsActivity.onResume | PhotoCache.pack | over-reach: PhotoCache.serve is the WebView's shouldInterceptRequest, which runs on the WebView's own IO thread, not the UI thread
+disk:stream | saver:SettingsActivity.onResume | PhotoCache.readAll | over-reach: PhotoCache.serve is the WebView's shouldInterceptRequest, which runs on the WebView's own IO thread, not the UI thread
+disk:stream | saver:SettingsActivity.onResume | PhotoCache.serve | over-reach: PhotoCache.serve is the WebView's shouldInterceptRequest, which runs on the WebView's own IO thread, not the UI thread
+ipc:ContentResolver.call | launcher:PhoneActivity.onClick | PhoneActions.saver | over-reach: PhoneActions.lang runs in the phone page server's own request thread (PhoneHost's Page.html), never in onCreate, onResume or a click
+ipc:ContentResolver.call | launcher:PhoneActivity.onResume | PhoneActions.saver | over-reach: PhoneActions.lang runs in the phone page server's own request thread (PhoneHost's Page.html), never in onCreate, onResume or a click
+ipc:ContentResolver.query | launcher:MainActivity.dispatchKeyEvent | HomeCard.ownPhoto | over-reach: inside the card WebView's shouldInterceptRequest (WebView's own IO thread), not the UI thread
+ipc:ContentResolver.query | launcher:MainActivity.onReceive | HomeCard.ownPhoto | over-reach: inside the card WebView's shouldInterceptRequest (WebView's own IO thread), not the UI thread
+ipc:ContentResolver.query | launcher:MainActivity.onResume | HomeCard.ownPhoto | over-reach: inside the card WebView's shouldInterceptRequest (WebView's own IO thread), not the UI thread
+ipc:ContentResolver.query | launcher:UpdateActivity.onClick | UpdateChannel.ask | over-reach: UpdateChannel.read here is inside PhoneUpdater.prepare, which runs in PhoneUpdater.guarded(...), a thread of its own
+ipc:ContentResolver.query | launcher:UpdateActivity.onResume | UpdateChannel.ask | over-reach: UpdateChannel.read here is inside PhoneUpdater.prepare, which runs in PhoneUpdater.guarded(...), a thread of its own
+ipc:ContentResolver.write | launcher:MainActivity.dispatchKeyEvent | HomeCard.ownPhoto | over-reach: inside the card WebView's shouldInterceptRequest (WebView's own IO thread), not the UI thread
+ipc:ContentResolver.write | launcher:MainActivity.onReceive | HomeCard.ownPhoto | over-reach: inside the card WebView's shouldInterceptRequest (WebView's own IO thread), not the UI thread
+ipc:ContentResolver.write | launcher:MainActivity.onResume | HomeCard.ownPhoto | over-reach: inside the card WebView's shouldInterceptRequest (WebView's own IO thread), not the UI thread
+ipc:UpdateChannel.read | launcher:UpdateActivity.onClick | PhoneUpdater.prepare | over-reach: the check, download and install run inside PhoneUpdater.guarded(...), a thread of their own (tv-update, tv-update-check); the screen only starts it
+ipc:UpdateChannel.read | launcher:UpdateActivity.onResume | PhoneUpdater.prepare | over-reach: the check, download and install run inside PhoneUpdater.guarded(...), a thread of their own (tv-update, tv-update-check); the screen only starts it
+
+# R1 (LESSONS): onCreate and subprocesses joined the rule after 4.3.4; what they reach today, not yet reviewed one by one
+disk:prefs.commit | launcher:CleanActivity.onCreate | Parental.pin | over-reach: onCreate only reads PinStore.isSet(); the commit() is in the store's put/remove, which run when a PIN is set or cleared (a press in the PIN dialog, a few bytes in the app's own prefs)
+disk:prefs.commit | launcher:CleanActivity.onCreate | Parental.put | over-reach: onCreate only reads PinStore.isSet(); the commit() is in the store's put/remove, which run when a PIN is set or cleared (a press in the PIN dialog, a few bytes in the app's own prefs)
+disk:prefs.commit | launcher:CleanActivity.onCreate | Parental.remove | over-reach: onCreate only reads PinStore.isSet(); the commit() is in the store's put/remove, which run when a PIN is set or cleared (a press in the PIN dialog, a few bytes in the app's own prefs)
+disk:prefs.commit | launcher:FactoryActivity.onCreate | Parental.pin | over-reach: onCreate only reads PinStore.isSet(); the commit() is in the store's put/remove, which run when a PIN is set or cleared (a press in the PIN dialog, a few bytes in the app's own prefs)
+disk:prefs.commit | launcher:FactoryActivity.onCreate | Parental.put | over-reach: onCreate only reads PinStore.isSet(); the commit() is in the store's put/remove, which run when a PIN is set or cleared (a press in the PIN dialog, a few bytes in the app's own prefs)
+disk:prefs.commit | launcher:FactoryActivity.onCreate | Parental.remove | over-reach: onCreate only reads PinStore.isSet(); the commit() is in the store's put/remove, which run when a PIN is set or cleared (a press in the PIN dialog, a few bytes in the app's own prefs)
+disk:prefs.commit | launcher:FamilyDnsActivity.onCreate | FamilyDnsAndroid.run | a press on the family-DNS toggle: the commit() of the running mark is a few bytes in the app's own prefs on the UI thread, before its worker thread starts; no other process
+disk:prefs.commit | launcher:MainActivity.onCreate | Parental.pin | over-reach: onCreate only reads PinStore.isSet(); the commit() is in the store's put/remove, which run when a PIN is set or cleared (a press in the PIN dialog, a few bytes in the app's own prefs)
+disk:prefs.commit | launcher:MainActivity.onCreate | Parental.put | over-reach: onCreate only reads PinStore.isSet(); the commit() is in the store's put/remove, which run when a PIN is set or cleared (a press in the PIN dialog, a few bytes in the app's own prefs)
+disk:prefs.commit | launcher:MainActivity.onCreate | Parental.remove | over-reach: onCreate only reads PinStore.isSet(); the commit() is in the store's put/remove, which run when a PIN is set or cleared (a press in the PIN dialog, a few bytes in the app's own prefs)
+disk:prefs.commit | launcher:MainActivity.onCreate | Parental.toggle | a press in an app's menu (lock or unlock an app) writes a few bytes with commit() in the app's own prefs: on the UI thread, no other process, no wait on one
+disk:prefs.commit | launcher:MarketsActivity.onCreate | Parental.pin | over-reach: onCreate only reads PinStore.isSet(); the commit() is in the store's put/remove, which run when a PIN is set or cleared (a press in the PIN dialog, a few bytes in the app's own prefs)
+disk:prefs.commit | launcher:MarketsActivity.onCreate | Parental.put | over-reach: onCreate only reads PinStore.isSet(); the commit() is in the store's put/remove, which run when a PIN is set or cleared (a press in the PIN dialog, a few bytes in the app's own prefs)
+disk:prefs.commit | launcher:MarketsActivity.onCreate | Parental.remove | over-reach: onCreate only reads PinStore.isSet(); the commit() is in the store's put/remove, which run when a PIN is set or cleared (a press in the PIN dialog, a few bytes in the app's own prefs)
+disk:prefs.commit | launcher:MarketsActivity.onCreate | Portfolio.save | a press on a stock card or in the portfolio options (the click listeners built in show) writes a few bytes with commit() in the app's own prefs: on the UI thread, no other process, no wait on one
+disk:prefs.commit | launcher:MarketsActivity.onCreate | Portfolio.wipe | a press on a stock card or in the portfolio options (the click listeners built in show) writes a few bytes with commit() in the app's own prefs: on the UI thread, no other process, no wait on one
+disk:prefs.commit | launcher:PhoneActivity.onCreate | Parental.pin | over-reach: onCreate only reads PinStore.isSet(); the commit() is in the store's put/remove, which run when a PIN is set or cleared (a press in the PIN dialog, a few bytes in the app's own prefs)
+disk:prefs.commit | launcher:PhoneActivity.onCreate | Parental.put | over-reach: onCreate only reads PinStore.isSet(); the commit() is in the store's put/remove, which run when a PIN is set or cleared (a press in the PIN dialog, a few bytes in the app's own prefs)
+disk:prefs.commit | launcher:PhoneActivity.onCreate | Parental.remove | over-reach: onCreate only reads PinStore.isSet(); the commit() is in the store's put/remove, which run when a PIN is set or cleared (a press in the PIN dialog, a few bytes in the app's own prefs)
+disk:prefs.commit | launcher:SetupActivity.onCreate | Parental.pin | over-reach: onCreate only reads PinStore.isSet(); the commit() is in the store's put/remove, which run when a PIN is set or cleared (a press in the PIN dialog, a few bytes in the app's own prefs)
+disk:prefs.commit | launcher:SetupActivity.onCreate | Parental.put | over-reach: onCreate only reads PinStore.isSet(); the commit() is in the store's put/remove, which run when a PIN is set or cleared (a press in the PIN dialog, a few bytes in the app's own prefs)
+disk:prefs.commit | launcher:SetupActivity.onCreate | Parental.remove | over-reach: onCreate only reads PinStore.isSet(); the commit() is in the store's put/remove, which run when a PIN is set or cleared (a press in the PIN dialog, a few bytes in the app's own prefs)
+disk:stream | saver:MainActivity.onCreate | PackStore.creditsJson | over-reach: PhotoCache.serve is the WebView's shouldInterceptRequest, which runs on the WebView's own IO thread, not the UI thread
+disk:stream | saver:MainActivity.onCreate | PhotoCache.download | over-reach: PhotoCache.serve is the WebView's shouldInterceptRequest, which runs on the WebView's own IO thread, not the UI thread
+disk:stream | saver:MainActivity.onCreate | PhotoCache.pack | over-reach: PhotoCache.serve is the WebView's shouldInterceptRequest, which runs on the WebView's own IO thread, not the UI thread
+disk:stream | saver:MainActivity.onCreate | PhotoCache.readAll | over-reach: PhotoCache.serve is the WebView's shouldInterceptRequest, which runs on the WebView's own IO thread, not the UI thread
+disk:stream | saver:MainActivity.onCreate | PhotoCache.serve | over-reach: PhotoCache.serve is the WebView's shouldInterceptRequest, which runs on the WebView's own IO thread, not the UI thread
+disk:stream | saver:SettingsActivity.onCreate | PackStore.creditsJson | over-reach: PhotoCache.serve is the WebView's shouldInterceptRequest, which runs on the WebView's own IO thread, not the UI thread
+disk:stream | saver:SettingsActivity.onCreate | PhotoCache.download | over-reach: PhotoCache.serve is the WebView's shouldInterceptRequest, which runs on the WebView's own IO thread, not the UI thread
+disk:stream | saver:SettingsActivity.onCreate | PhotoCache.pack | over-reach: PhotoCache.serve is the WebView's shouldInterceptRequest, which runs on the WebView's own IO thread, not the UI thread
+disk:stream | saver:SettingsActivity.onCreate | PhotoCache.readAll | over-reach: PhotoCache.serve is the WebView's shouldInterceptRequest, which runs on the WebView's own IO thread, not the UI thread
+disk:stream | saver:SettingsActivity.onCreate | PhotoCache.serve | over-reach: PhotoCache.serve is the WebView's shouldInterceptRequest, which runs on the WebView's own IO thread, not the UI thread
+ipc:ContentResolver.call | launcher:PhoneActivity.onCreate | PhoneActions.saver | over-reach: PhoneActions.lang runs in the phone page server's own request thread (PhoneHost's Page.html), never in onCreate, onResume or a click
+ipc:ContentResolver.query | launcher:MainActivity.onCreate | HomeCard.ownPhoto | over-reach: inside the card WebView's shouldInterceptRequest (WebView's own IO thread), not the UI thread
+ipc:ContentResolver.write | launcher:MainActivity.onCreate | HomeCard.ownPhoto | over-reach: inside the card WebView's shouldInterceptRequest (WebView's own IO thread), not the UI thread
+
+# 4.4 (next 68735302 merged into the gate, 18 Nov): its new paths, each with its reason; QA-6..QA-10 (real R1 findings) were fixed on work/44-uithread and their lines removed
+disk:Files | launcher:MainActivity.onCreate | CrashLoopStore.read | 4.4 safe mode by design: the crash-loop count must be on disk before the screen builds (a few bytes, the app's own file)
+disk:Files | launcher:SafeActivity.onCreate | CrashLoopStore.read | 4.4 safe mode by design: the crash-loop count must be on disk before the screen builds (a few bytes, the app's own file)
+disk:prefs.commit | launcher:ExtrasActivity.onCreate | Parental.pin | the PIN state in the app's own prefs, as MainActivity's at 4.3.4
+disk:prefs.commit | launcher:ExtrasActivity.onCreate | Parental.put | the PIN state in the app's own prefs, as MainActivity's at 4.3.4
+disk:prefs.commit | launcher:ExtrasActivity.onCreate | Parental.remove | the PIN state in the app's own prefs, as MainActivity's at 4.3.4
+disk:prefs.commit | launcher:ExtrasActivity.onResume | UpdateCarry.step | the update's carry steps, once after an update (as MainActivity's at 4.3.4)
+disk:prefs.commit | launcher:MainActivity.dispatchKeyEvent | Dock.followKeyApps | writes only when the remote's key apps changed (compared with the kept value first)
+disk:prefs.commit | launcher:MainActivity.onCreate | Dock.followKeyApps | writes only when the remote's key apps changed (compared with the kept value first)
+disk:prefs.commit | launcher:MainActivity.onCreate | UpdateCarry.step | the update's carry steps, once after an update (as MainActivity's at 4.3.4)
+disk:prefs.commit | launcher:MainActivity.onReceive | Dock.followKeyApps | writes only when the remote's key apps changed (compared with the kept value first)
+disk:prefs.commit | launcher:MainActivity.onResume | Dock.followKeyApps | writes only when the remote's key apps changed (compared with the kept value first)
+disk:stream | launcher:MainActivity.onCreate | CrashLoopStore.write | over-reach: reached only through the background writer (CrashLoopStore.later, thread "crashloop-store"); since 4.3.5 even hook() in HomeApp.onCreate changes the state in memory and writes it on that thread; only the dying process's crash handler writes at once
+disk:stream | launcher:SafeActivity.onCreate | CrashLoopStore.write | over-reach: reached only through the background writer (CrashLoopStore.later, thread "crashloop-store"); since 4.3.5 even hook() in HomeApp.onCreate changes the state in memory and writes it on that thread; only the dying process's crash handler writes at once

@@ -59,7 +59,7 @@ jobs:
 
       - name: Stub apps for the favourites
         run: |
-          pip install pillow
+          pip install pillow==13.0.0
           bash .github/screens/make_stubs.sh stubs 12
 
       - name: Rules of the check, on made-up dumps

@@ -31,6 +31,13 @@ final class Versions {
     private static final java.util.regex.Pattern TAG = java.util.regex.Pattern.compile("(?:^|/)v(\\d+\\.\\d+)$");
     private static final java.util.regex.Pattern TAG_NAMED = java.util.regex.Pattern.compile("(?:^|/)v\\d+\\.\\d+\\.(\\d+)$");
 
+    /** 4.3.4: of two version texts (either may be null), the one with the higher build; equal: the first. Null when neither has a build. */
+    static String newerOf(String a, String b) {
+        int x = buildOf(a), y = buildOf(b);
+        if (x < 0 && y < 0) return null;
+        return x >= y ? a : b;
+    }
+
     /** The build in a version.txt text or its stored form ("3.51" gives 51); -1 for anything else. */
     static int buildOf(String versionText) {
         String t = fromText(versionText);

@@ -22,7 +22,7 @@ check("screensaver start (SaverStart, the dream's and the app's own page): the w
       and "SaverStart.begin(" in dream and "SaverStart.begin(" in mact and "web = ScreenView.create(" in dream.split("createPage()")[1][:200] and "web = ScreenView.create(" in mact.split("createPage()")[1][:200]
       and "SaverSnapshot.capture(MainActivity.this, getWindow(), shownUrl, web)" in mact)
 check("screensaver start: one log line each (tag UrTVSaver) for what is on disk and why it is or is not used, the first frame, the page view's creation time, the page live, and the copy's result",
-      all(k in ss for k in ('"snapshot: " + SaverSnapshot.why(', '"snapshot: first frame (', '"snapshot: the page\'s view created in ', '"snapshot: the page is live at ')) and "static String why(" in snap
+      all(k in ss for k in ('"snapshot: " + why', '"snapshot: first frame (', '"snapshot: the page\'s view created in ', '"snapshot: the page is live at ')) and "static String why(" in snap
       and all(k in snap for k in ('"snapshot: copy of the window ', '"snapshot: saved ', '"snapshot: not taken (')))
 
 dbg = src(HOME / "DebugFlags.java")

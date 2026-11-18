@@ -220,7 +220,9 @@ public class SettingsActivity extends Activity {
         launchedRow = null;
         adhanAsked = false;
         cleanAsked = false;   // asked again each time the settings come to the front (it was asked once per visit: the row said «مفعّل» only after reopening)
-        look = GlassSource.page(this, root); couchVeil();   // the home's photo or «المظهر» may have changed meanwhile
+        homeKeyAsked = false;   // 4.4 (QA-7): the same for «زر الرئيسية يفتح تلفزيونك مباشرة»
+        extrasLook();   // 4.4 review: «فوق تطبيق آخر» says whether the add-on is here; asked on a thread, once per return
+        look =GlassSource.page(this, root); couchVeil();   // the home's photo or «المظهر» may have changed meanwhile
         hint.setTextColor(look.sub);
         if (back != null) { returnWant = back; returnUntil = System.currentTimeMillis() + 4000; }   // the home answers a moment later and the list is built again: that build keeps the focus on this row too, until a key is pressed (it landed on the row above)
         forceWant = back;   // back from another screen: the focus goes to the row or button that opened it, in the SAME render that builds the list again (it landed on the one above)
@@ -232,6 +234,12 @@ public class SettingsActivity extends Activity {
     /** Back on a category's rows (or on «البطاقات», «المزيد») goes back to the screen its button is on, the focus on that button; on the first screen it leaves. */
     @Override public boolean dispatchKeyEvent(android.view.KeyEvent e) {
         if (e.getAction() == android.view.KeyEvent.ACTION_DOWN) returnWant = null;   // the person moves: the focus is theirs again
+        if (okHold.key(e.getKeyCode(), e.getAction(), android.os.SystemClock.uptimeMillis())) {
+            // a build waited for this release: the row that saw the press takes its click first, then the list is built
+            boolean done = super.dispatchKeyEvent(e);
+            if (!isFinishing() && !isDestroyed()) render();
+            return done;
+        }
         return super.dispatchKeyEvent(e);
     }
 
@@ -291,7 +299,10 @@ public class SettingsActivity extends Activity {
      * list stays where it was scrolled to. A screen just opened starts at its top: the first row, or on the categories the tile last
      * opened (the first one the first time).
      */
+    private final OkHold okHold = new OkHold();   // 4.3.4: a build while OK is held waits for its release (the first press was lost)
+
     private void render() {
+        if (okHold.defer(android.os.SystemClock.uptimeMillis())) return;   // done at OK's release, after its click (dispatchKeyEvent)
         latinDigits = DigitsText.isLatin(prefs.digits());
         String fitNote = prefs.takeFitNote();   // 4.4 a home card swapped for one that suits the new look: say so once
         if (fitNote != null) notice(fitNote);
@@ -345,7 +356,7 @@ public class SettingsActivity extends Activity {
         row("تعديل وقت الصلاة", prefs.prayerAdjOn() ? "يعمل، لكل صلاة دقائقها، من −٢٠ إلى +٢٠ (الشروق لا يتغيّر)" : "متوقف، الأوقات كما تُحسب", R.drawable.ic_eye,
             new Runnable() { public void run() { prefs.setPrayerAdjOn(!prefs.prayerAdjOn()); render(); } });
         if (prefs.prayerAdjOn()) for (int k = 0; k < PrayerAdj.COUNT; k++) adjRow(k);
-        String fixed = PrayerFix.applied(prefs.prayerAdjOn(), prefs.prayerAdj(), prefs.prayerFix());   // 4.3.3: never silent
+        String fixed = PrayerFix.applied(prefs.prayerAdjOn(), prefs.prayerAdj(), prefs.prayerFixKnown(() -> { if (!isFinishing() && !isDestroyed()) render(); }));   // 4.3.3: never silent
         if (!fixed.isEmpty()) { line("تصحيح منشور لأوقات اليوم، وتعديلك لأي صلاة يبقى هو المعتمد", look.sub, 0); line(fixed, look.sub, 0); }
         if (on(SettingsHub.PLACE) || on(SettingsHub.PRAY)) line(Location.HELP, look.sub, 0);
 
@@ -373,7 +384,7 @@ public class SettingsActivity extends Activity {
             new Runnable() { public void run() { prefs.setKickoffGoal(!prefs.kickoffGoal()); render(); } });
         row("صافرة النهاية", prefs.kickoffEnd() ? "يعمل" : "متوقف", R.drawable.ic_trophy,
             new Runnable() { public void run() { prefs.setKickoffEnd(!prefs.kickoffEnd()); render(); } });
-        row("فوق تطبيق آخر", prefs.kickoffOver() ? "يعمل" : "متوقف", R.drawable.ic_trophy,
+        row("فوق تطبيق آخر", prefs.kickoffOver() ? (Boolean.FALSE.equals(extrasHere) ? "يعمل، لكنه يحتاج «إضافات تلفزيونك»" : extrasHere == null ? "يعمل" : "يعمل لو سمحت للإضافة بالظهور فوق التطبيقات") : "متوقف", R.drawable.ic_trophy,
             new Runnable() { public void run() { prefs.setKickoffOver(!prefs.kickoffOver()); render(); if (prefs.kickoffOver()) askOverlay(); } });
         row("جرّب التنبيه", "يظهر الآن بفريقين للتجربة", R.drawable.ic_trophy,
             new Runnable() { public void run() { KickoffTry.show(SettingsActivity.this, prefs.kickoffWhistle()); } });
@@ -569,10 +580,10 @@ public class SettingsActivity extends Activity {
             new Runnable() { public void run() { prefs.setBackSaver(!prefs.backSaver()); render(); } });
         // 4.4 (build 413, T9): «إضافات تلفزيونك» catches the remote's Home key and opens this home directly (Google TV's home never starts); on by
         // default on a Google TV. Shown only when the add-on answers (installed and on)
-        final Boolean homeKey = NowPlayingBridge.homeKey(this, null);
+        final Boolean homeKey = homeKeySeen();   // 4.4 (QA-7, R1): the home's last answer; asked on a thread, never at a render
         if (homeKey != null)
             row("زر الرئيسية يفتح تلفزيونك مباشرة", homeKey ? "مفعّل" : "متوقف", R.drawable.ic_eye,
-                new Runnable() { public void run() { NowPlayingBridge.homeKey(SettingsActivity.this, homeKey ? "off" : "on"); render(); } });
+                new Runnable() { public void run() { setHomeKey(!homeKey); } });
         // 4.3.3 «المباريات المنتهية»: on the football home only; hidden, today's list keeps the games still to come (or the next day's)
         if ("football".equals(prefs.homeLayout()))
             row("إخفاء المباريات المنتهية", prefs.fbHideDone() ? "مفعّل" : "متوقف", R.drawable.ic_eye,
@@ -611,7 +622,7 @@ public class SettingsActivity extends Activity {
         row("الجوالات المسموح لها", "التحكم من الجوال: تشغيله وإيقافه وربط جوال، وفي الشاشة حالته الآن", R.drawable.ic_settings,
             new Runnable() { public void run() { openPhoneControl(); } });
         // «كل التطبيقات»: the home screen's «تعديل التطبيقات», or the order by name again (what is hidden stays hidden)
-        row("ترتيب كل التطبيقات", "تحريكها وإخفاؤها على الشاشة الرئيسية، أو الرجوع للترتيب الأصلي", R.drawable.ic_star,
+        row("ترتيب كل التطبيقات", "تحريكها وإخفاؤها وإرجاع المخفية، أو الرجوع للترتيب الأصلي", R.drawable.ic_star,
             new Runnable() { public void run() { pickAppsOrder(); } });
         // what an app's options box does (a long OK or Menu on the app, docs/UX-REVIEW.md) is here too: move, hide and the favourites
         // above, the locks and the app's details here
@@ -678,7 +689,7 @@ public class SettingsActivity extends Activity {
         if (autoRow != null && autoRow.getLayoutParams() instanceof android.view.ViewGroup.MarginLayoutParams) ((android.view.ViewGroup.MarginLayoutParams) autoRow.getLayoutParams()).topMargin += dp(32);
         // the page only, never the apps: people took it for the app update (rows 421, 441), so its line points to «تحديث تلفزيوني»
         View last = row("تحديث صفحة شاشة التوقف", "ينزّل أحدث صفحة للشاشة فقط، لتحديث التطبيقين: «تحديث تلفزيوني» في نفس القسم", R.drawable.ic_sync, new Runnable() { public void run() { updateNow(); } });
-        if (last.getParent() == list) note(last, Updater.versionLines(this));
+        if (last.getParent() == list) { TextView ver = note(last, Updater.versionLines(this)); ver.setFocusable(true); ver.setClickable(true); ver.setOnClickListener(v -> versionTap()); }
         // «النسخ التجريبية» (4.3.3): the beta release first, off by default. Off again never downgrades: the newer build stays until the normal one reaches its number
         row("النسخ التجريبية", prefs.betaOn() ? "تعمل، تجيك التحديثات قبل الكل بعد ما نجربها. ممكن يكون فيها أخطاء بسيطة" : "متوقفة، تجيك التحديثات قبل الكل بعد ما نجربها. ممكن يكون فيها أخطاء بسيطة", R.drawable.ic_sync, new Runnable() { public void run() { toggleBeta(); } });
         // only while it is on: the report screen (its QR code carries «channel: beta» and the versions), the person types their words on the phone page
@@ -899,13 +910,35 @@ public class SettingsActivity extends Activity {
         dialog.show();
     }
 
-    /** a picture of the app (assets) into the view, the one before it let go */
-    private void setAssetPicture(ImageView v, String path) {
-        try (InputStream in = getAssets().open(path)) {
-            android.graphics.drawable.Drawable old = v.getDrawable();
-            v.setImageBitmap(android.graphics.BitmapFactory.decodeStream(in));
-            if (old instanceof android.graphics.drawable.BitmapDrawable) ((android.graphics.drawable.BitmapDrawable) old).getBitmap().recycle();
-        } catch (java.io.IOException | RuntimeException e) { v.setImageDrawable(null); }
+    /**
+     * 4.4 QA-13: the pictures of the app's own assets (a row's thumbnail, a mix's picture, the stage's photo) are decoded on this one thread and
+     * put in their view when they are here; the row is drawn at once without it. It ends by itself when idle.
+     */
+    private final java.util.concurrent.ThreadPoolExecutor pics = newPics();
+
+    private static java.util.concurrent.ThreadPoolExecutor newPics() {
+        java.util.concurrent.ThreadPoolExecutor e = new java.util.concurrent.ThreadPoolExecutor(1, 1, 5, java.util.concurrent.TimeUnit.SECONDS, new java.util.concurrent.LinkedBlockingQueue<Runnable>());
+        e.allowCoreThreadTimeOut(true);
+        return e;
+    }
+
+    /** the small thumbnails already decoded in this process (a row is drawn again at every render): a few hundred KB, never recycled */
+    private static final android.util.LruCache<String, Bitmap> THUMBS = new android.util.LruCache<String, Bitmap>(6 * 1024 * 1024) {
+        @Override protected int sizeOf(String k, Bitmap b) { return b.getByteCount(); }
+    };
+
+    /** a picture of the app (assets) into the view, the one before it let go (on the pictures' thread; the view keeps its old one until the new one is here) */
+    private void setAssetPicture(final ImageView v, final String path) {
+        pics.execute(() -> {
+            Bitmap b = null;
+            try (InputStream in = getAssets().open(path)) { b = android.graphics.BitmapFactory.decodeStream(in); } catch (java.io.IOException | RuntimeException | OutOfMemoryError e) { }
+            final Bitmap got = b;
+            runOnUiThread(() -> {
+                android.graphics.drawable.Drawable old = v.getDrawable();
+                v.setImageBitmap(got);
+                if (old instanceof android.graphics.drawable.BitmapDrawable && ((android.graphics.drawable.BitmapDrawable) old).getBitmap() != got) ((android.graphics.drawable.BitmapDrawable) old).getBitmap().recycle();
+            });
+        });
     }
 
     /**
@@ -1495,7 +1528,18 @@ public class SettingsActivity extends Activity {
         if (thumb != null) {
             ImageView th = new ImageView(this);
             th.setScaleType(ImageView.ScaleType.CENTER_CROP);
-            try (InputStream in = getAssets().open(thumb)) { th.setImageBitmap(BitmapFactory.decodeStream(in)); } catch (java.io.IOException | RuntimeException e) { }
+            final Bitmap hit = THUMBS.get(thumb);
+            if (hit != null) th.setImageBitmap(hit);
+            else {
+                final String name = thumb;
+                final ImageView target = th;
+                pics.execute(() -> {
+                    Bitmap b = null;
+                    try (InputStream in = getAssets().open(name)) { b = BitmapFactory.decodeStream(in); } catch (java.io.IOException | RuntimeException | OutOfMemoryError e) { }
+                    final Bitmap got = b;
+                    if (got != null) { THUMBS.put(name, got); runOnUiThread(() -> target.setImageBitmap(got)); }
+                });
+            }
             th.setClipToOutline(true);
             th.setOutlineProvider(new ViewOutlineProvider() {
                 @Override public void getOutline(View v, Outline o) { o.setRoundRect(0, 0, v.getWidth(), v.getHeight(), cs.px(CouchStyle.THUMB_RADIUS)); }
@@ -1815,6 +1859,40 @@ public class SettingsActivity extends Activity {
         return cleanSeen;
     }
 
+    // 4.4 (QA-7, R1): «زر الرئيسية يفتح تلفزيونك مباشرة» is the home's (and its add-on's) answer: asked once per return on a thread, kept, and the
+    // list is built again only when it changed (render asked the home on the UI thread at every open, return and toggle)
+    private Boolean homeKeyKnown;
+    private boolean homeKeyAsked;
+
+    private Boolean homeKeySeen() {
+        if (!homeKeyAsked) {
+            homeKeyAsked = true;
+            final android.content.Context app = getApplicationContext();
+            new Thread(() -> {
+                final Boolean now = NowPlayingBridge.homeKey(app, null);
+                runOnUiThread(() -> {
+                    if (isFinishing() || isDestroyed() || java.util.Objects.equals(now, homeKeyKnown)) return;
+                    homeKeyKnown = now;
+                    render();
+                });
+            }, "home-key").start();
+        }
+        return homeKeyKnown;
+    }
+
+    /** the row pressed: the home is told on a thread, and its answer drawn */
+    private void setHomeKey(final boolean on) {
+        final android.content.Context app = getApplicationContext();
+        new Thread(() -> {
+            final Boolean now = NowPlayingBridge.homeKey(app, on ? "on" : "off");
+            runOnUiThread(() -> {
+                if (isFinishing() || isDestroyed()) return;
+                if (now != null) homeKeyKnown = now;
+                render();
+            });
+        }, "home-key-set").start();
+    }
+
     private Boolean homeAdhanOn() {
         android.database.Cursor c = null;
         try {
@@ -2017,16 +2095,50 @@ public class SettingsActivity extends Activity {
         });
     }
 
-    /** Followed teams: untick to remove, or add one (presets, league browsing, search). Up to 20. */
-    /** 4.4 «فوق تطبيق آخر»: the TV's own «الظهور فوق التطبيقات» screen for the home app; a TV that hides it: the computer's command, said once */
+    /** 4.4 «فوق تطبيق آخر»: the notice over another app is drawn by the add-on «إضافات تلفزيونك» (the home holds no overlay permission: Play Protect). Without the
+     *  add-on the person is told so on screen and its offer opens (the home's own screen); with it, the TV's «الظهور فوق التطبيقات» screen for the add-on;
+     *  a TV that hides it: the computer's command, said once */
     private void askOverlay() {
-        Intent i = new Intent("android.settings.action.MANAGE_OVERLAY_PERMISSION", Uri.parse("package:sa.urtv.home"));
+        if (Boolean.FALSE.equals(extrasHere)) { offerExtras(); return; }
+        Intent i = new Intent("android.settings.action.MANAGE_OVERLAY_PERMISSION", Uri.parse("package:sa.urtv.extras"));
         try {
             if (getPackageManager().resolveActivity(i, 0) != null) { startActivity(i); return; }
         } catch (RuntimeException ignored) { }
         toast("هذا التلفزيون يخفي هذا الإذن، فيُعطى من الكمبيوتر");
     }
 
+    /** «إضافات تلفزيونك» is installed (only read); never in a render: extrasLook asks on a thread */
+    private static boolean extrasInstalled(android.content.pm.PackageManager pm) {
+        try { pm.getPackageInfo("sa.urtv.extras", 0); return true; } catch (Exception e) { return false; }
+    }
+
+    /** the last answer of extrasLook: null = not asked yet (the row then says only «يعمل»; the add-on's own permission is not known here) */
+    private volatile Boolean extrasHere;
+
+    private void extrasLook() {
+        final android.content.pm.PackageManager pm = getPackageManager();
+        new Thread(() -> {
+            final boolean here = extrasInstalled(pm);
+            runOnUiThread(() -> {
+                if (isFinishing() || isDestroyed()) return;
+                Boolean was = extrasHere;
+                extrasHere = here;
+                if (was == null || was != here) render();
+            });
+        }, "extras-look").start();
+    }
+
+    /** the home's offer of the add-on (install it), told what it is for; the home opens it only for this app (signature permission, same key) */
+    private void offerExtras() {
+        try {
+            startActivity(new Intent().setClassName("sa.urtv.home", "sa.urtv.home.ExtrasActivity").putExtra("sa.urtv.home.EXTRAS_FOR", "overlay"));
+            toast("«فوق تطبيق آخر» يحتاج «إضافات تلفزيونك»: نفتح لك تثبيتها");
+        } catch (RuntimeException e) {
+            toast("«فوق تطبيق آخر» يحتاج «إضافات تلفزيونك»، ولم نقدر نفتح تثبيتها");
+        }
+    }
+
+    /** Followed teams: untick to remove, or add one (presets, league browsing, search). Up to 20. */
     private void manageTeams() {
         final List<String> cur = prefs.teams();
         String[] labels = new String[cur.size()];
@@ -2039,15 +2151,46 @@ public class SettingsActivity extends Activity {
                 render();
             })
             .setTitle(cur.isEmpty() ? "لا توجد فرق متابعة" : "الفرق المتابعة (ألغِ التحديد للحذف)");
-        if (cur.size() < Prefs.MAX_TEAMS) b.setNeutralButton("إضافة فريق", (d, w) -> pickTeam(0));
+        b.setNeutralButton("إضافة فريق", (d, w) -> askFollow(FollowLimit.TEAMS, () -> pickTeam(0)));   // 4.4 at the ceiling it says so, never a missing button
         if (!cur.isEmpty()) b.setMultiChoiceItems(labels, keep, (d, i, checked) -> keep[i] = checked);
         b.show();
     }
 
     private void addTeam(String id, String name) {
-        if (prefs.addTeam(id, name)) toast("تمت متابعة " + name);
-        else toast(prefs.teams().size() >= Prefs.MAX_TEAMS ? "الحد الأعلى ٢٠ فريقاً" : "متابَع مسبقاً");
-        render();
+        for (String t : prefs.teams()) if (t.startsWith(id + "|")) { toast("متابَع مسبقاً"); return; }
+        askFollow(FollowLimit.TEAMS, () -> {
+            if (prefs.addTeam(id, name)) toast("تمت متابعة " + name);
+            render();
+        });
+    }
+
+    /**
+     * 4.4 one more league or club (FollowLimit): at once up to the soft limit; past it, the first time only, the warning that a weak TV may
+     * slow down with «أضف» / «لا» («أضف» is remembered, never asked again); at the ceiling the words that say so (never a silent no).
+     */
+    private void askFollow(final String kind, final Runnable go) {
+        int st = prefs.followState(kind);
+        if (st == FollowLimit.ADD) { go.run(); return; }
+        if (st == FollowLimit.FULL) { new Dlg(this).setTitle(FollowLimit.full(kind)).setPositiveButton("حسنًا", null).show(); return; }
+        new Dlg(this).setTitle(FollowLimit.warning(kind))
+            .setPositiveButton("أضف", (d, w) -> { prefs.setFollowWarned(kind); go.run(); })
+            .setNegativeButton("لا", null)
+            .show();
+    }
+
+    /** 4.4 the same in a list of ticks (the count is the dialog's own): past the soft limit the tick waits for the warning's «أضف», at the ceiling it stays off */
+    private void tickLeague(final AlertDialog d, final boolean[] on, final int i, int elsewhere) {
+        int before = elsewhere - 1;   // the ones ticked before this one (and those followed outside this list)
+        for (boolean b : on) if (b) before++;
+        int st = FollowLimit.check(FollowLimit.LEAGUES, before, prefs.followWarned(FollowLimit.LEAGUES));
+        if (st == FollowLimit.ADD) return;
+        on[i] = false;
+        d.getListView().setItemChecked(i, false);
+        if (st == FollowLimit.FULL) { new Dlg(this).setTitle(FollowLimit.full(FollowLimit.LEAGUES)).setPositiveButton("حسنًا", null).show(); return; }
+        new Dlg(this).setTitle(FollowLimit.warning(FollowLimit.LEAGUES))
+            .setPositiveButton("أضف", (x, w) -> { prefs.setFollowWarned(FollowLimit.LEAGUES); on[i] = true; d.getListView().setItemChecked(i, true); })
+            .setNegativeButton("لا", null)
+            .show();
     }
 
     private void pickTeam(final int slot) {
@@ -2164,7 +2307,7 @@ public class SettingsActivity extends Activity {
             .show();
     }
 
-    /** Whole leagues: every game of every club in them is shown, up to Prefs.MAX_LEAGUES leagues. */
+    /** Whole leagues: every game of every club in them is shown, up to Prefs.MAX_LEAGUES leagues (past Prefs.SOFT_LEAGUES after one warning). */
     private String leaguesLabel() {
         List<String> out = new ArrayList<>();
         for (String s : prefs.leagues()) out.add(leagueLabel(s));
@@ -2179,7 +2322,7 @@ public class SettingsActivity extends Activity {
 
     /**
      * The built-in leagues, then the catalogue ones already picked (to unpick them here too); «كل الدوريات…» opens the catalogue
-     * (CatalogueLeagues: read from the internet only now). Up to Prefs.MAX_LEAGUES in all.
+     * (CatalogueLeagues: read from the internet only now). Up to Prefs.MAX_LEAGUES in all (tickLeague).
      */
     private void pickLeagues() {
         final List<String> cur = prefs.leagues();
@@ -2195,16 +2338,8 @@ public class SettingsActivity extends Activity {
                 render();
             })
             .setNeutralButton("كل الدوريات…", (d, w) -> { prefs.setList("leagues", ticked(keys, on)); render(); openCatalogue(); })   // what is ticked is kept
-            .setTitle("الدوريات كاملة (حتى " + arabicNum(Prefs.MAX_LEAGUES) + "، بدون اختيار = بدون)")
-            .setMultiChoiceItems(labels.toArray(new String[0]), on, (d, i, checked) -> {
-                int n = 0;
-                for (boolean b : on) if (b) n++;
-                if (checked && n > Prefs.MAX_LEAGUES) {
-                    on[i] = false;
-                    ((AlertDialog) d).getListView().setItemChecked(i, false);
-                    toast("حتى " + arabicNum(Prefs.MAX_LEAGUES) + " دوريات");
-                }
-            })
+            .setTitle("الدوريات كاملة (بدون اختيار = بدون)")
+            .setMultiChoiceItems(labels.toArray(new String[0]), on, (d, i, checked) -> { if (checked) tickLeague((AlertDialog) d, on, i, 0); })
             .show();
     }
 
@@ -2332,18 +2467,14 @@ public class SettingsActivity extends Activity {
             })
             .setTitle(title)
             .setMultiChoiceItems(labels, on, (d, i, checked) -> {
-                int n = 0;
+                if (!checked) return;
+                int n = 0;   // the leagues followed outside this group
                 for (String s : cur) {
                     boolean here = false;
                     for (String[] r : rows) here |= CatalogueLeagues.same(s, "id" + r[0]);
                     if (!here) n++;
                 }
-                for (boolean b : on) if (b) n++;
-                if (checked && n > Prefs.MAX_LEAGUES) {
-                    on[i] = false;
-                    ((AlertDialog) d).getListView().setItemChecked(i, false);
-                    toast("حتى " + arabicNum(Prefs.MAX_LEAGUES) + " دوريات");
-                }
+                tickLeague((AlertDialog) d, on, i, n);
             })
             .setOnDismissListener(d -> catalogueBusy = false)
             .show();
@@ -2510,14 +2641,15 @@ public class SettingsActivity extends Activity {
     /** «ترتيب كل التطبيقات»: the mode on the home screen, or «رجوع للترتيب الأصلي»; both are the launcher's (it owns the grid). */
     private void pickAppsOrder() {
         new Dlg(this).setTitle("ترتيب كل التطبيقات")
-            .setItems(new String[] {"تعديل التطبيقات", "رجوع للترتيب الأصلي"}, (d, i) -> openAppsOrder(i == 1))
+            .setItems(new String[] {"تعديل التطبيقات", "التطبيقات المخفية", "رجوع للترتيب الأصلي"}, (d, i) -> openAppsOrder(i == 2, i == 1))
             .show();
     }
 
-    private void openAppsOrder(boolean reset) {
+    /** hidden (4.3.4): the mode on «المخفية» with its list; a home older than 4.3.4 opens the mode, where «المخفية» is the last place */
+    private void openAppsOrder(boolean reset, boolean hidden) {
         try {
             startActivity(new Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_HOME).setClassName("sa.urtv.home", "sa.urtv.home.MainActivity")
-                .putExtra(reset ? "reset_apps_order" : "edit_apps", true).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+                .putExtra(reset ? "reset_apps_order" : "edit_apps", true).putExtra("apps_hidden", hidden).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
         } catch (RuntimeException e) {
             toast("ثبّت الواجهة الرئيسية «تلفزيونك» أولاً");
         }
@@ -2729,14 +2861,14 @@ public class SettingsActivity extends Activity {
         // the stage: our photo, dimmed, with the card on it; as tall as the card needs (setStageHeight), round-cornered, no empty space
         final FrameLayout stage = new FrameLayout(this);
         stage.setBackgroundColor(0xFF07150E);
-        Bitmap photo = photo(3);
-        if (photo != null) {
-            ImageView bgPhoto = new ImageView(this);
-            bgPhoto.setScaleType(ImageView.ScaleType.CENTER_CROP);
-            bgPhoto.setImageBitmap(photo);
-            bgPhoto.setColorFilter(new PorterDuffColorFilter(0x8C000000, PorterDuff.Mode.SRC_OVER));   // dim, as the screen's own veil does
-            stage.addView(bgPhoto, new FrameLayout.LayoutParams(-1, -1));
-        }
+        final ImageView bgPhoto = new ImageView(this);   // the photo comes from the pictures' thread (the stage shows its ground colour until then)
+        bgPhoto.setScaleType(ImageView.ScaleType.CENTER_CROP);
+        bgPhoto.setColorFilter(new PorterDuffColorFilter(0x8C000000, PorterDuff.Mode.SRC_OVER));   // dim, as the screen's own veil does
+        stage.addView(bgPhoto, new FrameLayout.LayoutParams(-1, -1));
+        pics.execute(() -> {
+            final Bitmap photo = photo(3);
+            if (photo != null) runOnUiThread(() -> bgPhoto.setImageBitmap(photo));
+        });
         stage.setOutlineProvider(new ViewOutlineProvider() {
             @Override public void getOutline(View v, Outline o) { o.setRoundRect(0, 0, v.getWidth(), v.getHeight(), dp(18)); }
         });
@@ -3897,7 +4029,7 @@ public class SettingsActivity extends Activity {
     }
 
     /** Plain lines at the end, in no button: nothing to focus, so the last row scrolls them into view. */
-    private void note(View last, String... lines) {
+    private TextView note(View last, String... lines) {
         TextView t = new TextView(this);
         t.setText(conv(android.text.TextUtils.join("\n", lines)));
         t.setTextColor(look.sub);
@@ -3912,9 +4044,59 @@ public class SettingsActivity extends Activity {
         last.setOnFocusChangeListener((v, has) -> {
             if (was != null) was.onFocusChange(v, has);
             if (!has) return;
-            for (android.view.ViewParent p = list.getParent(); p != null; p = p.getParent())   // list sits in a frame in the scroll view
-                if (p instanceof ScrollView) { final ScrollView sv = (ScrollView) p; v.post(() -> sv.fullScroll(View.FOCUS_DOWN)); break; }
+            // 4.3.4: the note in view, the focus left where it is. fullScroll(FOCUS_DOWN) also moves the focus to the lowest row: since 4.3.3 put
+            // «النسخ التجريبية» under this row, a step down onto it jumped straight past it
+            v.post(() -> t.requestRectangleOnScreen(new android.graphics.Rect(0, 0, t.getWidth(), t.getHeight())));
         });
+        return t;
+    }
+
+    /**
+     * The owner's pass (GameRelease, docs/GAMES-RELEASE.md): OK seven times in a row on the version lines, each within four seconds of the last, opens a box for a code. Nothing on any screen
+     * says there is a pass or a group; a code that does not open it leaves nothing behind and says nothing; one that does shows «تم». The check runs off the UI thread.
+     */
+    private int verTaps; private long verAt;
+    private void versionTap() {
+        long now = System.currentTimeMillis();
+        verTaps = now - verAt > 4000 ? 1 : verTaps + 1; verAt = now;
+        if (verTaps < 7) return;
+        verTaps = 0;
+        // six square boxes, one sign each; the field that takes the typing lies over them, clear, so the remote and the keyboard work as on any field. Six signs of the code's alphabet
+        // (GameCrypt.ALPHABET), capitals, and the check starts by itself at the sixth: nothing more to press, and nothing said when it is wrong.
+        final int boxW = dp(52), boxH = dp(64), gap = dp(8), n = GameCrypt.CODE_LEN;
+        final FrameLayout box = new FrameLayout(this);
+        final LinearLayout row = new LinearLayout(this); row.setOrientation(LinearLayout.HORIZONTAL); row.setLayoutDirection(View.LAYOUT_DIRECTION_LTR);
+        final TextView[] cells = new TextView[n];
+        for (int k = 0; k < n; k++) {
+            TextView c = new TextView(this); c.setGravity(Gravity.CENTER); c.setTextColor(look.text); c.setTextSize(TypedValue.COMPLEX_UNIT_SP, 26); c.setTypeface(font("Thmanyah-Regular"));
+            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(boxW, boxH); lp.setMarginEnd(k < n - 1 ? gap : 0); row.addView(c, lp); cells[k] = c;
+        }
+        final EditText in = new EditText(this);
+        in.setSingleLine(true); in.setAlpha(0f); in.setCursorVisible(false); in.setLayoutDirection(View.LAYOUT_DIRECTION_LTR);
+        in.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS | InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS | InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
+        in.setFilters(new android.text.InputFilter[] {new android.text.InputFilter.AllCaps(), (src, st, en, d, ds, de) -> { StringBuilder b = new StringBuilder(); for (int q = st; q < en; q++) if (Character.isLetterOrDigit(src.charAt(q))) b.append(src.charAt(q)); return b.length() == en - st ? null : b.toString(); }, new android.text.InputFilter.LengthFilter(n)});
+        final Runnable paint = () -> {
+            String t = in.getText().toString();
+            for (int k = 0; k < n; k++) {
+                cells[k].setText(k < t.length() ? String.valueOf(t.charAt(k)) : "");
+                android.graphics.drawable.GradientDrawable g = new android.graphics.drawable.GradientDrawable(); g.setColor(0); g.setStroke(dp(k == t.length() ? 3 : 2), k == t.length() ? look.text : look.sub);
+                cells[k].setBackground(g);
+            }
+        };
+        paint.run();
+        box.addView(row, new FrameLayout.LayoutParams(-2, -2, Gravity.CENTER_HORIZONTAL));
+        box.addView(in, new FrameLayout.LayoutParams(-1, boxH));
+        box.setPadding(dp(16), dp(12), dp(16), dp(4));
+        final AlertDialog dialog = new Dlg(this).setTitle("اكتب الرمز").setView(box).setNegativeButton("إلغاء", null).create();
+        in.addTextChangedListener(new android.text.TextWatcher() {
+            @Override public void beforeTextChanged(CharSequence c, int a, int b, int d) { }
+            @Override public void onTextChanged(CharSequence c, int a, int b, int d) { }
+            @Override public void afterTextChanged(android.text.Editable e) {
+                paint.run();
+                if (e.length() == n) { String typed = e.toString(); dialog.dismiss(); GameReleaseStore.tryCode(SettingsActivity.this, typed, () -> runOnUiThread(() -> toast("تم"))); }
+            }
+        });
+        dialog.show();
     }
 
     /**

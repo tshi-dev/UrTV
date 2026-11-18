@@ -7,7 +7,7 @@ import android.net.Uri;
 import android.os.Bundle;
 
 /**
- * «إضافات تلفزيونك»: what the home asks of the add-on's service (ExtrasWords): status, type, press, sleep, go_home, watch. Calls only (no rows); the manifest
+ * «إضافات تلفزيونك»: what the home asks of the add-on (ExtrasWords): status, type, press, sleep, go_home, watch, notice (the corner notice over another app). Calls only (no rows); the manifest
  * guards it with ExtrasWords.PERMISSION, a signature permission: only our home (our key) gets in. Each answer is one fixed word or flag.
  */
 public class ExtrasCallProvider extends ContentProvider {
@@ -20,6 +20,10 @@ public class ExtrasCallProvider extends ContentProvider {
             case ExtrasWords.STATUS:
                 out.putBoolean(ExtrasWords.ON, ExtrasA11yService.enabled());
                 out.putBoolean(ExtrasWords.WATCH, ExtrasA11yService.watchOn(getContext()));
+                out.putBoolean(ExtrasWords.CAN_DRAW, ExtrasNotice.canDraw(getContext()));   // 4.4: the TV lets this app draw over apps (no service needed for that)
+                break;
+            case ExtrasWords.NOTICE:   // 4.4 «فوق تطبيق آخر»: the corner notice over the app in front
+                out.putBoolean(ExtrasWords.RESULT, ExtrasNotice.show(getContext(), extras));
                 break;
             case ExtrasWords.TYPE:
                 out.putString(ExtrasWords.RESULT, ExtrasA11yService.typeText(getContext(), arg == null ? "" : arg,

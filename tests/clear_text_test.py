@@ -37,7 +37,7 @@ check("GlassStyle (both copies, identical but the package): «text=clear» is re
       and gs_a.replace("sa.urtv.screensaver", "P").replace("sa.urtv.home", "P") == gs_h.replace("sa.urtv.screensaver", "P").replace("sa.urtv.home", "P"))
 check("the home's own palette (the date, the weather, the lines under the clock) follows: its soft colour is its ink when on", "GlassStyle.clearText() ? new Palette(p.text, p.ink, p.ink," in look)
 check("the page: #clear=1 rewrites the sheet's grey text colours (not a border or a fill), --dim and the football and markets tokens to the full ink, once, before anything shows; the gold, green and red stay",
-      "clear: _Q.get('clear') === '1'" in page and "if(CONFIG.clear){" in page and "(^|[^-\\w])(color:)#(?:B9AE96|A79C85|9C9279|8F8670|CFC5AD|D8CDB6|E6DCC4|9FB8A8)\\b/gi, '$1$2' + dark" in page and "(--dim:)#C3B8A2" in page)
+      "clear: _Q.get('clear') === '1'" in page and "if(CONFIG.clear){" in page and "(^|[^-\\w])(color:)#(?:B9AE96|A79C85|9C9279|8F8670|CFC5AD|D8CDB6|E6DCC4|9FB8A8)" in page and "(--dim:)#C3B8A2" in page)   # #19: no lookbehind (WebView 66)
 check("saver.sh cleartext on|off, validated by the receiver, shown by `show`, moved by settings_move (clear_text)",
       "  cleartext) " in sh and "optimize/saver.sh cleartext on" in sh.split("set -euo")[0] and 'getStringExtra("cleartext")' in rcv and "setClearText" in rcv and '"\\ncleartext: "' in rcv
       and '"clear_text"' in text(ROOT / "optimize/settings_move.py") and 'es("cleartext", flag(v))' in text(ROOT / "optimize/settings_move.py"))

@@ -22,7 +22,7 @@ def check(name, ok, detail=""):
 
 main = (H / "MainActivity.java").read_text(encoding="utf-8")
 check("the first frame: the small copy is put in the photo view at the start, on onRestart and on onResume (memory, else the file), before the live photo", main.count("firstFrameWallpaper();") >= 3
-      and "WallFirstFrame.source(has, smallPhoto != null, f.isFile())" in main)
+      and "WallFirstFrame.source(has, smallPhoto != null, true)" in main)
 check("a trim keeps the small copy as the stand-in (480 px) when there is one, and the full photo is marked gone", "Bitmap thumb = smallPhoto;" in main and "fullPhotoShown = false;" in main)
 check("every photo shown makes the small copy off the main thread (480 px wide, WebP, in files/ beside the other photos)", 'new Thread(() -> saveSmallPhoto(forSmall), "wall-small")' in main and "WALL_SMALL = \"wall-small.webp\"" in main
       and "WallFirstFrame.SMALL_W" in main)
@@ -33,7 +33,7 @@ main_src = main
 check("the Activity only stopped (onRestart): NO overlay, its live views are still there; the picture is for a cold start only", "protected void onRestart()" in main and "showSnapshot();" in main
       and main.count("showSnapshot();") == 1 and main.split("protected void onRestart()")[1].split("}")[0].count("showSnapshot") == 0 or "NO overlay" in main)
 check("no skeleton, ever: with no good picture (none, stale, another look, `debug nosnapshot`) there is no overlay at all; the live views and the look's own colour show", "HomeSnapshot.skeleton(" not in main
-      and 'snapshot overlay: none (no usable picture)' in main and "if (b == null) {" in main)
+      and 'snapshot overlay: none (no usable picture)' in main and "if (b == null || SystemClock.elapsedRealtime() - asked > SNAP_LATE_MS) {" in main)
 check("a trim always leaves a stand-in: the small copy, else a 160 px copy of whatever drawable is there (rendered small), and on out of memory the photos stay (never nulled for nothing)",
       "Bitmap thumb = smallPhoto;" in main and "d.draw(cv);" in main and "the photos stay" in main and main.index("if (thumb == null) {") < main.index("v.setImageDrawable(null)"))
 check("the home's own provider and disk reads (ownInfo, homePackInfo, remotePhotos) run in the photo thread, not on the main thread", main.split("final int gen = ++wallGen;")[1].split("new Thread(() -> {")[1][:900].count("ownInfo()") == 1

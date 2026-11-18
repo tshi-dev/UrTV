@@ -36,8 +36,8 @@ check("the panel starts nothing by itself: every launch goes through the host's 
 check("the sound output opens an intent that resolves, falling back to the TV's settings",
       "resolveActivity(sound, 0) != null ? sound : new Intent(Settings.ACTION_SETTINGS)" in center)
 check("the sleep timer's tile and «أطفئ الآن» end the same way (SleepTimer.turnOff: the service, else sound off and the screensaver)",
-      "SleepTimer.turnOff(act)" in center and "static String turnOff(Context c)" in src("SleepTimer.java") and "String done = turnOff(c);" in src("SleepTimer.java")
-      and "Extras.sleepNow()" in src("SleepTimer.java").split("static String turnOff")[1])
+      "SleepTimer.turnOff(act)" in center and "static String turnOff(Context c)" in src("SleepTimer.java") and "String done = turnOff(c, end);" in src("SleepTimer.java")
+      and "Extras.sleepNow()" in src("SleepTimer.java").split("static String turnOff")[-1])
 check("«أطفئ الآن» without «إضافات تلفزيونك» (4.3.3): the tile says «يحتاج تفعيل، اضغط للتفعيل», OK opens its offer (install it, or turn it on) behind the sleep lock (ParentalPolicy.SLEEP_ACCESSIBILITY); no silent fallback to sound off and the screensaver, no notice and no delay; a long OK does the same",
       "Extras.enabled()" in center and "ParentalPolicy.SLEEP_ACCESSIBILITY" in center and 'S.t("يحتاج تفعيل، اضغط للتفعيل")' in center and center.count('Extras.intent(act, "sleep")') == 2
       and "SLEEP_OFF_NOTICE" not in center and "SLEEP_OFF_NOTICE" not in text and "offPending" not in center and "ui.postDelayed(" not in center.split("private void turnOffNow()")[1].split("// ------")[0] and "مو شغّالة" not in text)
@@ -55,7 +55,7 @@ check("four round toggles on top (Bluetooth, mirroring, the sleep timer, «أط�
 check("the focus: a solid fill in the look's colours with its ink, coming in over the one motion (Motion: 200 ms, couch-tv's curve)",
       "FOCUS_MS = (int) Motion.MS" in center and "anim.setInterpolator(Motion.ease());" in center and "ValueAnimator.ofArgb(shown, target)" in center and "anim.setDuration(FOCUS_MS)" in center and "int target = f ? FOCUSED : " in center and "ON_SUB" in center)
 check("«تخصيص»: a tick per item, the arrows move a row (Left/Right by the reading direction), at most eight rows, «إعادة الضبط» (the defaults), «تم»; Back goes back to the panel's main view; kept on this TV",
-      "MAX_ROWS = 8" in center and "tickedRows(now) >= MAX_ROWS" in center and "KeyEvent.KEYCODE_DPAD_RIGHT : KeyEvent.KEYCODE_DPAD_LEFT" in center and "private void reset()" in center
+      "MAX_ROWS = 10" in center and "tickedRows(now) >= MAX_ROWS" in center and "KeyEvent.KEYCODE_DPAD_RIGHT : KeyEvent.KEYCODE_DPAD_LEFT" in center and "private void reset()" in center
       and 'getSharedPreferences("control"' in center and "if (code == KeyEvent.KEYCODE_BACK) { if (e.getAction() == KeyEvent.ACTION_UP) showMain(); return true; }" in center
       and all(f'"{w}"' in center for w in ("تخصيص", "تم", "إعادة الضبط", "اختر ما يظهر ورتّبه بالأسهم")))
 check("«شاشة التوقف» is unticked until asked for (its pill is on the home); a toggle or a row that does not exist on this TV is not in the list",
@@ -162,11 +162,16 @@ check("the phone remote and the accessibility service are untouched by it (the s
 prev = (ROOT / "android/launcher/src/main/java/sa/urtv/home/tilawah/AdhanPreview.java").read_text(encoding="utf-8")
 check("4.3.3 «الأذان والإقامة»: the next prayer and its iqama from the home's own times (the adhan bar's DayParts, no thread at the panel's opening); OK plays SECONDS of that prayer's muezzin (Fajr's own for Fajr; 4.4: its own choice and level) the voice picker's way",
       "final long[] times = host.adhanTimes();" in center and "ControlText.nextPrayer(times, System.currentTimeMillis())" in center and "AdhanPreview.play(act, sa.urtv.home.tilawah.AdhanPreview.prayerOf(next))" in center
-      and "public static final int SECONDS = 15;" in prev and "MusicService.adhan(c, voice, Adhan.name(voice), SECONDS, prayer);" in prev and "p.playFor(c, prayer)" in prev
+      and "public static final int SECONDS = 15;" in prev and "MusicService.adhan(app, v, Adhan.name(v), SECONDS, prayer)" in prev and "p.playFor(app, prayer)" in prev and "\"adhan-preview\").start();" in prev   # 4.4 (QA-8): picked on a thread
       and "DayParts.now(MainActivity.this, lastCfg.placeFragment(), lastCfg.placeTicket())" in main)
 no_javac = not shutil.which("javac")
 if no_javac:
     print("SKIP control center logic: no javac here")
+# ---- 4.4 review F4: the black screen and the adhan row are not cut by the cap
+check("the default rows (8 + adhan is among them, saver and apps off) and the black screen all fit: the cap is ten and «شاشة سوداء» is never counted or cut by it",
+      "MAX_ROWS = 10" in center and 'shown >= MAX_ROWS && !it.key.equals("black")' in center and 'if (!it.key.equals("update") && !it.key.equals("black")) shown++;' in center
+      and len([k for k in re.search(r'ROWS = \{([^}]*)\}', center).group(1).replace('"','').split(",") if k.strip() not in ("saver", "apps")]) <= 10)
+
 # ---- 4.3.1: ours before the TV's, the city beside it; a saved old default order follows the new one
 check("«إعدادات تلفزيونك» comes before the TV's «الإعدادات» by default, «المدينة» right after it; the old default order saved by the editor counts as never reordered",
       center.index('"ours", "games", "city", "adhan", "tv"') > 0 and 'OLD_DEFAULT = "net,sound,speed,tv,ours,saver"' in center and 'if (v.equals(OLD_DEFAULT)) v = "";' in center

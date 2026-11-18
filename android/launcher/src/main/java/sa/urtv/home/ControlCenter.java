@@ -71,7 +71,7 @@ final class ControlCenter {
     /** the slide-in, and the focus fill coming in (ms) */
     static final int SLIDE_MS = (int) Motion.MS, FOCUS_MS = (int) Motion.MS;   // 4.4 the same easing everywhere (Motion)
     /** the most rows the panel shows; the four round toggles are not counted */
-    static final int MAX_ROWS = 8;   // 4.3.1: ours, the games and the city joined the six
+    static final int MAX_ROWS = 10;   // 4.3.1: ours, the games and the city joined the six; 4.4 review F4: ten, the default eight plus «الأذان والإقامة» and «شاشة سوداء» (the panel scrolls)
     /** the round toggles, in this order; every other item is a row */
     static final String[] TOGGLES = {"bluetooth", "mirror", "sleep", "off"};
     /** the rows' order before the person moves any; «شاشة التوقف» is unticked until they ask for it (its own pill is on the home) */
@@ -417,8 +417,8 @@ final class ControlCenter {
         Item updRow = find("update");
         if (updRow != null) shownRows.add(0, updRow);   // the build mismatch comes first and is not one of the person's rows
         for (Item it : shownRows) {
-            if (!it.key.equals("update") && (off.contains(it.key) || shown >= MAX_ROWS)) continue;
-            if (!it.key.equals("update")) shown++;
+            if (!it.key.equals("update") && (off.contains(it.key) || (shown >= MAX_ROWS && !it.key.equals("black")))) continue;   // «شاشة سوداء» is only here while something plays: never behind the cap
+            if (!it.key.equals("update") && !it.key.equals("black")) shown++;
             Cell c = new Cell(Cell.ROW, it);
             if (wideNow) {   // two to a line, the first at the start side
                 if (rowCells.size() % 2 == 0) {

@@ -21,10 +21,16 @@ public final class AdhanPreview {
      * so the preview says something. `prayer`: PrayerTimes' number, -1 the general one.
      */
     public static void play(Context c, int prayer) {
-        Prefs p = new Prefs(c);
-        int voice = prayer < 0 ? p.playVoiceFor(c, false) : p.playFor(c, prayer);
-        if (voice == PrayerSound.SILENT) voice = p.playVoiceFor(c, prayer == PrayerTimes.FAJR);
-        MusicService.adhan(c, voice, Adhan.name(voice), SECONDS, prayer);
+        final Context app = c.getApplicationContext();
+        // 4.4 (QA-8, R1): which voice plays reads the place (Friday's Dhuhr: a question to the screensaver), so it is picked on a thread; the
+        // control centre's press never waits on the screensaver's process
+        new Thread(() -> {
+            Prefs p = new Prefs(app);
+            int voice = prayer < 0 ? p.playVoiceFor(app, false) : p.playFor(app, prayer);
+            if (voice == PrayerSound.SILENT) voice = p.playVoiceFor(app, prayer == PrayerTimes.FAJR);
+            final int v = voice;
+            new android.os.Handler(android.os.Looper.getMainLooper()).post(() -> MusicService.adhan(app, v, Adhan.name(v), SECONDS, prayer));
+        }, "adhan-preview").start();
     }
 
     /** the control centre's prayer (0 Fajr … 4 Isha, its own order; -1 after Isha: tomorrow's Fajr) as PrayerTimes' number */

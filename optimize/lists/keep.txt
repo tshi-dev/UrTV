@@ -39,6 +39,32 @@ com.google.android.gsf
 com.android.vending                    # Play Store: restrict it (optimize/tweaks.sh), never disable
 com.android.location.fused
 
+# The remote's own buttons (a Sony RMF-TX520P report: only the numbers, Home, volume and Settings worked). A dedicated button
+# (Netflix, YouTube, Prime Video, the mic, the colour keys, Input/TV for a set-top box) is answered by the maker's package or opens
+# the app itself: off, the button does nothing. Community lists turned some of these off; keep.sh turns them back on.
+com.sony.dtv.netflixmanager            # Sony: the remote's Netflix button
+com.netflix.partner.ncm                # Netflix's partner service behind the Netflix button
+com.netflix.tokenmanager               # the same, on other sets
+com.mstar.netflixobserver              # MStar sets: the Netflix button
+com.netflix.ninja                      # Netflix: the remote has a button for it
+com.google.android.youtube.tv          # YouTube: the remote has a button for it
+com.amazon.amazonvideo.livingroom      # Prime Video: the remote has a button for it
+com.amazon.aiv.us                      # Prime Video (US build)
+com.sony.dtv.voicesearch               # Sony: the remote's mic
+com.sony.dtv.assistantadapter          # Sony: the mic to Google Assistant
+com.google.android.speech.pumpkin      # voice commands from the remote's mic
+com.xiaomi.voicecontrol                # Xiaomi: the remote's mic
+com.xiaomi.mitv.remotecontroller.service   # Xiaomi: the remote's buttons
+com.uei.quicksetsdk.sony               # Sony: the remote's Input/TV/CH keys for a set-top box (QuickSet)
+com.sony.dtv.irblaster                 # Sony: the IR blaster those keys use
+com.sony.dtv.hbbtvlauncher             # Sony: the colour keys on a broadcast (HbbTV)
+com.sony.dtv.hbbtvplayer               # the same
+com.sony.dtv.discovery                 # Sony: the remote's DISCOVER button (older remotes)
+com.sony.dtv.recapp                    # Sony: the remote's REC key
+com.sony.dtv.tvxlauncher.titlelist     # Sony: the remote's TITLE LIST key
+com.sony.dtv.youview                   # Sony (UK): the remote's YouView button
+com.amazon.device_remote_config_sync_service   # Fire TV: the remote's button settings
+
 # Home screens: only optimize/install.sh launcher may disable these, behind the safety switch
 com.google.android.apps.tv.launcherx   # Google TV home
 com.google.android.tvlauncher          # Android TV home (older sets)
@@ -69,3 +95,23 @@ com.xgimi.filemanager                  # XGIMI file manager
 # Accessibility and sound
 com.tcl.hearaid
 com.google.android.marvin.talkback
+
+# The TV's own Settings, Live TV / channels and tuning (4.3.6, R-280): a community list named these, and with one off a TV can lose its way
+# back to Settings, its channels or its inputs (Clean Your TV's handler guard cites a Sony that lost its inputs and one that lost Settings).
+# Kept by name when unsure: a bloat app left on is harmless, a lost Settings or Live TV is not. The TV is also asked at run time (disable.sh HANDLERS).
+com.zeasn.whaleos.settings             # Whale OS's Settings app (Sankey and other Whale OS sets)
+com.apps.channels                      # the channel list / Live TV of Vestel-made sets (Acer, Compac, Master-G, Sanyo, Thomson)
+com.beko.tv.channel                    # Beko's TV channels
+com.grundig.tv.channel                 # Grundig's TV channels
+com.zhixin.atvchannel                  # the TV channel app of Anker Nebula projectors
+com.cvte.tv.player                     # CVTE boards' TV player (the tuner and inputs picture)
+com.mediatek.tv.oneworld.tvcenter      # MediaTek's TV center (inputs and channels, XGIMI)
+com.sony.dtv.broadcastsettings         # Sony's broadcast (channel) settings
+com.sony.dtv.tuningconfirmation_dvbt   # Sony's DVB-T tuning
+com.sony.dtv.serviceinformation        # Sony's channel service information
+com.sony.dtv.b2b.prosettings           # Sony's Pro settings (hotel and business mode)
+com.sony.dtv.deviceadminsettings       # Sony's device admin settings
+com.sony.dtv.b2b.deviceadminsettings   # the same, Sony's business build
+com.softwinner.settingssetup           # Allwinner projectors' settings setup
+com.softwinner.settingsassist          # Allwinner projectors' settings helper
+com.amazon.whasettings                 # Fire TV's settings for connected speakers

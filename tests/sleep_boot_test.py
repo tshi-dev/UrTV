@@ -26,6 +26,10 @@ check("manifest: the boot receiver exists, is for the system/shell only and hear
       and rec.get(A + "permission") == "android.permission.DUMP" and "android.intent.action.BOOT_COMPLETED" in actions, actions)
 check("the boot receiver calls forgetAfterBoot", "SleepTimer.forgetAfterBoot(c)" in (HOME / "SleepBootReceiver.java").read_text(encoding="utf-8"))
 
+recv = (HOME / "SleepReceiver.java").read_text(encoding="utf-8")
+check("4.4 review F6: the alarm's receiver holds goAsync() and finishes it when the thread that asks the add-on ends (on every path)",
+      "goAsync()" in recv and "SleepTimer.fire(c, " in recv and "pr.finish()" in recv and "finally {" in timer
+      and "if (!later && end != null) end.run();" in timer and timer.count("end.run()") == 2)
 if not shutil.which("javac"):
     print("SKIP sleep window: no javac here")
     sys.exit(1 if failed else 0)

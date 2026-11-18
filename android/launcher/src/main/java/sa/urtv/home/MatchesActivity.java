@@ -44,10 +44,15 @@ public class MatchesActivity extends Activity {
     @Override
     protected void onCreate(Bundle b) {
         super.onCreate(b);
-        ConfigSnapshot cfg = ConfigSnapshot.read(this);
+        ConfigSnapshot cfg = ConfigSnapshot.ui(this);
         final int ground = cfg.pagesDark ? Color.rgb(0x17, 0x18, 0x1B) : Color.rgb(0xF4, 0xF2, 0xEC);   // the page's own ground (dark, or sand), before its first frame
         getWindow().setBackgroundDrawable(new android.graphics.drawable.ColorDrawable(ground));   // and the window's, so no other colour shows while the view is not yet drawn
-        web = new WebView(this);
+        web = WebViews.make(this);
+        if (web == null) {   // 4.3.5: no WebView on this TV: say so and go back, never a crash
+            android.widget.Toast.makeText(this, S.t("هذا التلفزيون ما فيه متصفح النظام، فالصفحة ما تفتح"), android.widget.Toast.LENGTH_LONG).show();
+            finish();
+            return;
+        }
         web.setBackgroundColor(ground);
         web.setAlpha(0f);   // not shown (alpha, not INVISIBLE: a view that is not drawn gets no visual-state callback) until the page has painted its first frame
         final Runnable reveal = () -> { if (web != null) web.setAlpha(1f); };
@@ -96,9 +101,16 @@ public class MatchesActivity extends Activity {
         setContentView(web);
         web.postDelayed(reveal, 1500);   // a page that never finishes still shows what it has
         String event = getIntent().getStringExtra(EXTRA_EVENT);
-        HomeFollows.sync(this);   // 4.3.3 what the home kept while the screensaver could not take it goes to it now
+        final android.content.Context syncApp = getApplicationContext();   // 4.4 (QA-9, R1): handed over on a thread (a query and calls to the screensaver)
+        new Thread(() -> HomeFollows.sync(syncApp), "follows-sync").start();   // 4.3.3 what the home kept while the screensaver could not take it goes to it now
         String frag = HomeFollows.fragment(this, cfg.fragment);   // …and what it still keeps joins the page's lists
-        web.loadUrl(HomePage.fresh(this, HomeCardChoice.matchesUrl(frag, event) + (cfg.pagesDark ? "&pagedark=1" : "")));   // «صفحات الأسهم والمباريات داكنة»: the page in its dark theme
+        // 4.4 QA-12: the freshest copy of the page (a question to the screensaver and, when it carries a newer one, a file copy) is found on a thread;
+        // the page loads when it is here, over the ground the screen already shows (the window and the web view are in the page's own ground colour)
+        final String wanted = HomeCardChoice.matchesUrl(frag, event) + (cfg.pagesDark ? "&pagedark=1" : "");   // «صفحات الأسهم والمباريات داكنة»: the page in its dark theme
+        new Thread(() -> {
+            final String url = HomePage.fresh(syncApp, wanted);
+            runOnUiThread(() -> { if (web != null && !isDestroyed()) web.loadUrl(url); });
+        }, "matches-page").start();
         web.requestFocus();
     }
 
@@ -205,6 +217,14 @@ public class MatchesActivity extends Activity {
             if (id == null || !id.matches("\\d{1,9}")) return false;
             boolean home = HomeFollows.removeTeam(c, id);
             return Boolean.TRUE.equals(HomeFollows.call(c, "phone_unfollow", id)) || home;
+        }
+
+        /** 4.4 before a «تابع»: "add", "warn" (the one warning past 8 leagues or 20 clubs, not yet answered) or "full" (24 or 40); "" an older screensaver */
+        @JavascriptInterface public String followCheck(String kind) { return HomeFollows.state(c, kind); }
+
+        /** 4.4 the warning was answered «أضف»: the screensaver remembers it (never asked again, here or in its settings) */
+        @JavascriptInterface public boolean followWarned(String kind) {
+            return Boolean.TRUE.equals(HomeFollows.call(c, "phone_follow_warned", "leagues".equals(kind) ? "leagues" : "teams"));
         }
 
         /** «تابع»: the screensaver's list when it answers (its no is final: there already, or full); 4.3.3 missing or older: the home keeps it */

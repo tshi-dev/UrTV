@@ -40,7 +40,7 @@ check("…on the photo's own thread, only for the photo still shown", "if (gen =
 decodes = [str(p.relative_to(ROOT)) for p, s in java.items() if re.search(r"GlassSource\.file\(|backdrop\.png|GlassSource\.BACKDROP|\bBACKDROP\b", s)
            and p.name not in ("GlassSource.java", "GlassProvider.java")]
 check("one bitmap per process: only GlassSource decodes the backdrop, and keeps it (one static field, read again when the file changes)",
-      not decodes and "private static Bitmap cached;" in source and "private static Bitmap cached;" in sourceApp and "if (stamp != cachedStamp)" in source, decodes)
+      not decodes and "private static volatile Bitmap cached;" in source and "private static Bitmap cached;" in sourceApp and "if (stamp != cachedStamp)" in source, decodes)
 check("a focused card's words and icons take the focus ink from its focus listener (not duplicateParentState: the TV test of 3.147)",
       "setDuplicateParentStateEnabled" not in paint and "card.setOnFocusChangeListener(new Follow(was) {" in paint
       and "words.get(i).setTextColor(colours.get(i)[has ? 1 : 0]);" in paint and "if (was != null) was.onFocusChange(v, has);" in paint)

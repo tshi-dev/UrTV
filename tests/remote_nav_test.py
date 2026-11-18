@@ -77,7 +77,7 @@ check("the typing/remote service presses a key: a global action, else a focus mo
       "static String press(String key)" in ts and "s.performGlobalAction(st.code)" in ts and "cur.focusSearch(direction)" in ts and "AccessibilityNodeInfo.ACTION_FOCUS" in ts and "AccessibilityNodeInfo.ACTION_CLICK" in ts
       and "RemoteNav.plan(key, Build.VERSION.SDK_INT, true)" in ts)
 check("the home asks the add-on (Extras.press); without it the key is «service_off» and the TV offers the add-on, not at every key",
-      "String r = Extras.press(key);" in pa and 'Extras.offerOnce("keys")' in pa and "return Extras.enabled();" in pa and "now - lastOffer < 120_000" in text(HOME + "Extras.java"))
+      "String r = Extras.press(key);" in pa and 'Extras.offerOnce("keys")' in pa and "return Extras.enabledNow();" in pa and "now - lastOffer < 120_000" in text(HOME + "Extras.java"))
 check("the node walks are bounded (a count and a depth)", "new int[] {500}" in ts and "depth >= 40" in ts and "up < 6" in ts)
 # privacy: the log
 trace = text(HOME + "RemoteTrace.java")
@@ -88,7 +88,7 @@ code = ts[ts.index("static String press(String key)"):ts.index("    private stat
 check("no window content is read into a string, logged or returned by a key press", not re.search(r"getText\(|getContentDescription\(|getPackageName\(|getClassName\(|toString\(\)", code))
 # no new capability
 man = text("android/launcher/src/main/AndroidManifest.xml")
-check("no permission was added (the launcher declares the same ones)", man.count("<uses-permission") == 25)   # 25 since 4.4 the kick-off alert (SYSTEM_ALERT_WINDOW, «فوق تطبيق آخر», off by default); 24 since 4.4 audio (READ_MEDIA_AUDIO, READ_EXTERNAL_STORAGE up to 32); 22 since 4.3.3: sa.urtv.permission.EXTRAS, our own signature permission to call «إضافات تلفزيونك»; 19 since REQUEST_DELETE_PACKAGES («حذف التطبيق» in the app menu); 21 since targetSdk 34: FOREGROUND_SERVICE_SPECIAL_USE (SetupService must name its type) and USE_EXACT_ALARM (the adhan stays exact on a new install)
+check("no permission was added (the launcher declares the same ones)", man.count("<uses-permission") == 24)   # 24 since 4.4 the overlay permission moved to the add-on (Play Protect); was 25 with SYSTEM_ALERT_WINDOW;   # 25 since 4.4 the kick-off alert (SYSTEM_ALERT_WINDOW, «فوق تطبيق آخر», off by default); 24 since 4.4 audio (READ_MEDIA_AUDIO, READ_EXTERNAL_STORAGE up to 32); 22 since 4.3.3: sa.urtv.permission.EXTRAS, our own signature permission to call «إضافات تلفزيونك»; 19 since REQUEST_DELETE_PACKAGES («حذف التطبيق» in the app menu); 21 since targetSdk 34: FOREGROUND_SERVICE_SPECIAL_USE (SetupService must name its type) and USE_EXACT_ALARM (the adhan stays exact on a new install)
 for xml in ("android/extras/src/main/res/xml/extras_service.xml",):
     x = re.sub(r"<!--.*?-->", "", text(xml), flags=re.S)
     # the service may ASK for key events (the Settings key outside our home, SettingsKey: tests/settings_key_test.py); the flag is set at run time only, never in the xml

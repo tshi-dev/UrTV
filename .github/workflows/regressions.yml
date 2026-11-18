@@ -1,0 +1,66 @@
+name: Regressions gate
+
+# The release gate (docs/dev/RELEASE.md): the «regressions» group (every guard in docs/dev/REGRESSIONS.md and the gate's own rules) and the
+# API surface diff against the previous release tag, printed in the run's summary for review. It fails on a failed guard or on a new
+# UI-thread path to a cross-process call (the 4.3.3 TCL freeze). android.yml runs it before publishing to apk-latest; promote-beta.yml runs it
+# on the commit of the build it promotes. It can also be run by hand on any branch or sha.
+on:
+  workflow_call:
+    inputs:
+      ref:
+        description: 'The commit to check (default: the one that called)'
+        required: false
+        type: string
+        default: ''
+      release:
+        description: 'A publish to apk-latest: the independent review of this version must have no blocker or high open (docs/dev/RELEASE.md)'
+        required: false
+        type: boolean
+        default: false
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: 'A branch, tag or sha (default: the branch it is run on)'
+        required: false
+        type: string
+        default: ''
+
+permissions:
+  contents: read
+
+jobs:
+  regressions:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.ref || github.sha }}
+          fetch-depth: 0   # the tags: the API surface diff compares with the previous release
+      # the page tests draw text: the private fonts, as checks.yml (never committed)
+      - uses: actions/checkout@v4
+        with:
+          repository: tshi-dev/urtv-fonts
+          token: ${{ secrets.FONTS_TOKEN }}
+          path: .fonts-private
+      - name: Private fonts
+        run: |
+          cp .fonts-private/web/*.woff2 assets/fonts/
+          mkdir -p android/launcher/src/main/assets/fonts
+          cp .fonts-private/android/*.otf android/launcher/src/main/assets/fonts/
+          rm -rf .fonts-private
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install pyyaml==6.0.3 fonttools==4.68.0 brotli==1.2.1 pillow==13.0.0 cryptography==50.0.2 numpy==2.5.5 scipy==1.18.1 opencv-python-headless==4.14.0.94 -r .github/tools/cities-world/requirements.txt
+      - run: npm install --no-save playwright@1.56.1 acorn@8.14.0 && npx playwright install --with-deps chromium   # acorn: tests/js_strip_test.mjs
+      - name: The regressions group
+        run: bash tests/run.sh regressions
+      - name: API surface against the previous release
+        if: ${{ !cancelled() }}
+        run: python3 .github/tools/api_surface_diff.py
+      - name: The independent review of this version (a release only)
+        if: ${{ !cancelled() && inputs.release }}
+        run: python3 .github/tools/review_gate.py

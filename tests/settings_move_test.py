@@ -321,7 +321,7 @@ refused("team name with an apostrophe", lambda d: d.update(teams=[{"id": "1", "n
 refused("team name with a comma", lambda d: d.update(teams=[{"id": "1", "name": "a,b"}]), "must not have any of")
 refused("team name too long", lambda d: d.update(teams=[{"id": "1", "name": "x" * 61}]), "1 to 60 characters")
 refused("team twice", lambda d: d.update(teams=[{"id": "1", "name": "a"}, {"id": "1", "name": "b"}]), "teams has a club twice")
-refused("21 teams", lambda d: d.update(teams=[{"id": str(i), "name": "t"} for i in range(21)]), "up to 20 teams")
+refused("41 teams (4.4: the ceiling, FollowLimit.MAX_TEAMS)", lambda d: d.update(teams=[{"id": str(i), "name": "t"} for i in range(41)]), "up to 40 teams")
 refused("teams not a list", lambda d: d.update(teams="136013"), "teams must be a list")
 refused("adhan volume -1 (4.4: 0-100)", lambda d: d["adhan"].update(volume=-1), "adhan.volume must be a whole number from 0 to 100")
 refused("adhan volume 101", lambda d: d["adhan"].update(volume=101), "adhan.volume")
@@ -577,7 +577,8 @@ for name, mine in (("DIGITS", sm.DIGITS), ("CARD_STYLES", sm.CARD_STYLES), ("CLO
                    ("MARKETS", sm.MARKETS), ("PANELS", sm.PANELS)):
     check(f"{name} is the app's own list", table(name) == mine, (table(name), mine))
 check("MAX_MARKETS, HOME_CARDS, MAX_TEAMS are the app's", f"MAX_MARKETS = {sm.MAX_MARKETS};" in prefs and f"HOME_CARDS = {sm.HOME_CARDS};" in prefs
-      and f"MAX_TEAMS = {sm.MAX_TEAMS};" in prefs, "")
+      and f"MAX_TEAMS = {sm.MAX_TEAMS}" in (ROOT / "android/app/src/main/java/sa/urtv/screensaver/FollowLimit.java").read_text(encoding="utf-8")
+      and "MAX_TEAMS = FollowLimit.MAX_TEAMS;" in prefs, "")   # 4.4 the ceiling lives in FollowLimit
 adj = (ROOT / "android/app/src/main/java/sa/urtv/screensaver/PrayerAdj.java").read_text(encoding="utf-8")
 check("prayer names and range are the app's", f"MAX = {sm.PRAYER_ADJ_MAX};" in adj and ", ".join(f'"{p}"' for p in sm.PRAYERS) in adj, "")
 hij = (ROOT / "android/app/src/main/java/sa/urtv/screensaver/HijriOffset.java").read_text(encoding="utf-8")

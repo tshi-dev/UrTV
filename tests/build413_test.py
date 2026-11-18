@@ -22,7 +22,7 @@ hk = svc.split("static boolean homeKey(Context c) {")[1].split("\n    }\n")[0]
 check("1. the catch: the person's switch wins once set, else on where Google TV's home is installed",
       "if (sp.contains(ExtrasWords.HOME_KEY)) return sp.getBoolean(ExtrasWords.HOME_KEY, false);" in hk and 'return installed(c, "com.google.android.apps.tv.launcherx");' in hk)
 check("1. it acts only while the person's home is ours", "private boolean homeKeyActive() { return homeKey(this) && (wanted(this) || oursChosen()); }" in svc
-      and "if (e.getKeyCode() == KeyEvent.KEYCODE_HOME && homeKeyActive()) return homeKeyCaught(e);" in svc and "|| homeKeyActive();" in svc)
+      and "if (e.getKeyCode() == KeyEvent.KEYCODE_HOME && homeKeyActive()) return homeKeyCaught(e);" in svc and "|| homeKeyActive());" in svc)
 check("1. the key filter follows when the person's home changes", "if (s != null) s.main.post(s::filterKeys);   // the Home key catch follows the person's home" in svc)
 check("1. the window watch is still there as the fallback", "watch.decide(on, pkg, cls, stockHomes, chosen || wantedNow, now, fight)" in svc)
 dock = read("optimize/dock.sh")
@@ -31,8 +31,10 @@ out = subprocess.run(["bash", str(ROOT / "optimize/dock.sh"), "home-key", "maybe
 check("1. a wrong word is refused before the TV is asked", out.returncode == 1 and "usage: optimize/dock.sh home-key" in out.stdout, out.stdout + out.stderr)
 act, bridge = read("android/app/src/main/java/sa/urtv/screensaver/SettingsActivity.java"), read("android/app/src/main/java/sa/urtv/screensaver/NowPlayingBridge.java")
 prov = read("android/launcher/src/main/java/sa/urtv/home/tilawah/NowPlayingProvider.java")
-check("1. the settings switch: shown when the add-on answers, flips through the home", 'final Boolean homeKey = NowPlayingBridge.homeKey(this, null);\n        if (homeKey != null)' in act
-      and 'row("زر الرئيسية يفتح تلفزيونك مباشرة", homeKey ? "مفعّل" : "متوقف"' in act and 'NowPlayingBridge.homeKey(SettingsActivity.this, homeKey ? "off" : "on")' in act)
+check("1. the settings switch: shown when the add-on answers, flips through the home (4.4, QA-7: both asked on a thread, the answer kept)",
+      'final Boolean homeKey = homeKeySeen();' in act and 'if (homeKey != null)' in act
+      and 'row("زر الرئيسية يفتح تلفزيونك مباشرة", homeKey ? "مفعّل" : "متوقف"' in act and "setHomeKey(!homeKey);" in act
+      and 'NowPlayingBridge.homeKey(app, null)' in act and 'NowPlayingBridge.homeKey(app, on ? "on" : "off")' in act)
 check("1. the bridge and the provider (same key only)", '"home_key", set, null' in bridge and 'if ("home_key".equals(method)' in prov
       and "sa.urtv.home.Extras.homeKey(getContext()" in prov.split('if ("home_key".equals(method)')[1].split("return b;")[0]
       and 'checkCallingPermission("sa.urtv.home.READ_NOW_PLAYING")' in prov.split('if ("home_key".equals(method)')[1].split("return b;")[0])

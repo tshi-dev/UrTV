@@ -37,6 +37,16 @@ def tile_size(n=5):
 def tray_height(n=5):
     """the tray's height when n show: the tile's height with 24 above and below it (FavBar.trayH: 218 for five)"""
     return round(tile_size(n)[0] * 170 / 304) + 48
+MAX_SHOWN, SHOWN = 10, 5      # FavBar.MAX_SHOWN and FavBar.SHOWN (tests/tray_check_test.py keeps them equal): up to ten whole tiles since 4.3.1, five by default
+
+
+def shown(setting, favs):
+    """how many tiles the tray shows whole: FavBar.shown, the same rule ("5" to "10", or "all": every favourite up to MAX_SHOWN, never under five)"""
+    if setting == "all":
+        return max(SHOWN, min(MAX_SHOWN, favs))
+    return max(SHOWN, min(MAX_SHOWN, int(setting)))
+
+
 LIFT_ROOM = 8                 # the focused tile (lifted 6, grown 1.08, ringed) keeps at least this much between it and the tray's edge
 
 
@@ -347,7 +357,8 @@ def shots(out, report, failures):
     seed_dock(12)
     saver("--es lang ar", "--es homelayout classic")
     for look in ("sand", "glass"):
-        for setting, n in (("5", 5), ("7", 7), ("10", 8), ("all", 8)):
+        for setting in ("5", "7", "10", "all"):
+            n = shown(setting, 12)   # what the home shows with 12 favourites: 5, 7, 10, 10 (it was 8 for "10" and "all" while FavBar.MAX_SHOWN was 8)
             tag = f"shot-{look}-{setting}"
             saver(f"--es look {look}", f"--es favbar {setting}", "--es appearance dark" if look == "glass" else "--es appearance auto")
             for attempt in range(3):   # a shot taken while the home had scrolled up (the tray at the top edge: a slow emulator, a key that went on to the rows below) is taken again from a fresh start
@@ -398,7 +409,7 @@ def run(out):
     # «تطبيقات في الشريط»: 7 whole tiles (Arabic) and 10 (English), the tray's box and the name's place unchanged
     shell("wm density 320")
     for n, lang, favs in ((7, "ar", 7), (10, "en", 10)):
-        shown_n = min(n, 10)   # 4.3.1: up to ten show whole, no scrolling (FavBar.MAX_SHOWN)
+        shown_n = shown(str(n), favs)   # 4.3.1: up to ten show whole, no scrolling (FavBar.MAX_SHOWN)
         seed_dock(favs)
         saver(f"--es favbar {n}")
         tag = f"bar{n}-{lang}"

@@ -65,6 +65,7 @@ public class SetupActivity extends Activity {
     @Override
     protected void onCreate(Bundle b) {
         super.onCreate(b);
+        SetupRunner.get().restoreEnd(new FileStore(this));   // 4.4 (R2): a run that ended while this screen was gone (a boot, the app closed) is said here
         Digits.init(this);
         // 4.4 (the owner, step 86 B: «The window is tooooo big… scrollable in a small fit in center window. And the QR to the left.»): a SMALL window
         // in the middle of the screen, inside the 5 % safe area, never taller than it; its title stays, and what is under it scrolls INSIDE the
@@ -95,9 +96,9 @@ public class SetupActivity extends Activity {
         } else if (SetupRecovery.pending(this) && !SetupRunner.get().running()) {
             // a home switch was cut off (the app was closed, the TV restarted): the safety switch is set again from its saved deadline, and one attempt is made now
             say("بدأ تبديل سابق للشاشة الرئيسية ولم يكتمل. نحاول إرجاع الشاشة الأصلية الآن؛ إن لم تظهر وحدها فاضغط «تراجع».", GOLD);
-            SetupRecovery.rearmFromDisk(this);
             new Thread(new Runnable() {
                 @Override public void run() {
+                    SetupRecovery.rearmFromDisk(SetupActivity.this);   // 4.4 QA-13: the saved deadline is read on this thread (the safety switch is set again first)
                     SetupEngine.Result r = SetupRecovery.attempt(SetupActivity.this, new SetupEngine.Out() { @Override public void line(String t) { SetupActivity.this.line(t); } });
                     if (r != null) {
                         final String m = r.message;
@@ -554,7 +555,7 @@ public class SetupActivity extends Activity {
         S.n("أجوبة قائمة المجتمع"),
         S.n("نحفظ حالة التلفزيون الآن (نسخة احتياطية) قبل أي تغيير، ونرجّع أي ميزة محمية موقوفة (البث، الصوت، الريموت، المتجر)."),
         S.n("نقيس الذاكرة قبل الإعداد وبعده: يُعاد تشغيل التلفزيون مرتين، ويكمل الإعداد وحده بعد كل مرة."),
-        S.n("نقيس الذاكرة قبل الإعداد وبعده (بدون إعادة تشغيل في هذا التلفزيون)."),
+        S.n("نقيس الذاكرة قبل الإعداد وبعده قراءةً سريعة، بدون إعادة تشغيل التلفزيون."),
         S.n("نعطي تلفزيونك أذوناته (الموقع، منبّهات الأذان، التحديثات)."),
         S.n("نوقف تطبيقات القائمة الآمنة (إعلانات وتتبّع وعروض)، ونسجّلها لنرجعها بزر واحد."),
         S.n("القائمة الآمنة: لا شيء منها شغّال في هذا التلفزيون."),
@@ -679,6 +680,7 @@ public class SetupActivity extends Activity {
         SetupRunner.Options o = new SetupRunner.Options();
         o.extras = extras;
         o.picks = new java.util.ArrayList<>(picks);
+        o.fullMeasure = sa.urtv.home.DebugFlags.on(this, "fullmeasure");   // 4.4: a tester's switch (dock.sh debug fullmeasure on): the full measure with its restarts
         SetupRunner.Start s = SetupRunner.get().start(undoIt ? SetupRunner.Kind.UNDO : SetupRunner.Kind.FULL, o, new SetupHost(this));
         if (s != SetupRunner.Start.STARTED) {
             say("يعمل إعداد آخر الآن؛ انتظر حتى ينتهي.", GOLD);

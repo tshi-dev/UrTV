@@ -68,6 +68,11 @@ final class SetupRunner {
         boolean extras = true;    // TV Bro and SmartTube (the owner's choice: on unless the person unticks them)
         java.util.List<String> picks;   // 4.3: the ticked apps of «تطبيقات مقترحة» (SuggestedApps ids); null = the ones ticked at first
         Map<String, Boolean> answers = new LinkedHashMap<>();   // ANSWERS: the person's yes/no to the community list's questions
+        /**
+         * 4.4 (a Skyworth IRIS on Android 14 stopped at 26 % every time: the «before» reading restarted the TV and the run did not come back): the full
+         * measure (a restart and 3 minutes each) only when asked for; by default one quick reading before and one after, no restart, as optimize/run.sh
+         */
+        boolean fullMeasure;
     }
 
     /** One connection to the TV with an engine on it (SetupSession on the TV, a fake in the tests). */
@@ -85,8 +90,10 @@ final class SetupRunner {
         SetupEngine.Store store();
         /** Runs the job on a thread that survives the screen (a foreground service holds the process on the TV). */
         void spawn(Runnable job);
-        /** After EVERY end of a run, when its connection is closed (4.4: the ADB key is kept for good, SetupSession.keepKey). */
+        /** After EVERY end of a run, when its connection is closed (4.4: the ADB key is kept between the steps, SetupSession.keepKey; undone() deletes it). */
         void finished();
+        /** 4.4 review F20: «تراجع» ended and its step is done: the ADB key goes now (SetupSession.dropKey), unless something still waits for it. */
+        default void undone() { }
         /**
          * Before a fresh run (a full one that does not resume, or the undo): an ADB key a run before kept (a switch was pending then) goes now when
          * nothing is pending any more, so a new run never gets in on an old «السماح دائماً» (tester step 18: the second run did not ask).
@@ -279,7 +286,7 @@ final class SetupRunner {
         List<String> l = new ArrayList<>();
         l.add(tr.apply("نحفظ حالة التلفزيون الآن (نسخة احتياطية) قبل أي تغيير، ونرجّع أي ميزة محمية موقوفة (البث، الصوت، الريموت، المتجر)."));
         l.add(tr.apply(p.restarts ? "نقيس الذاكرة قبل الإعداد وبعده: يُعاد تشغيل التلفزيون مرتين، ويكمل الإعداد وحده بعد كل مرة."
-            : "نقيس الذاكرة قبل الإعداد وبعده (بدون إعادة تشغيل في هذا التلفزيون)."));
+            : "نقيس الذاكرة قبل الإعداد وبعده قراءةً سريعة، بدون إعادة تشغيل التلفزيون."));
         l.add(tr.apply("نعطي تلفزيونك أذوناته (الموقع، منبّهات الأذان، التحديثات)."));
         if (p.safe < 0) l.add(tr.apply("نوقف تطبيقات القائمة الآمنة (إعلانات وتتبّع وعروض)، ونسجّلها لنرجعها بزر واحد."));
         else if (p.safe == 0) l.add(tr.apply("القائمة الآمنة: لا شيء منها شغّال في هذا التلفزيون."));
@@ -337,7 +344,7 @@ final class SetupRunner {
         p.smarttube = tv.installed(SetupInstall.SMARTTUBE);
         for (sa.urtv.home.SuggestedApps.App a : sa.urtv.home.SuggestedApps.all()) if (a.inSetup() && tv.installed(a.pkg)) p.have.add(a.id);
         p.tcl = new SetupPrep(c.shell, c.store, s -> { }).isTcl();
-        p.restarts = !switching(c.store) && new SetupMeasure(c.shell, c.store, s -> { }, c.host::sleep).adbSurvivesRestart();
+        p.restarts = c.options != null && c.options.fullMeasure && !switching(c.store) && new SetupMeasure(c.shell, c.store, s -> { }, c.host::sleep).adbSurvivesRestart();
         p.homeOurs = c.engine.resolveHome().startsWith(SetupEngine.SELF + "/");
         p.wifiAsk = !p.homeOurs && c.engine.wizardOwnsWifi();
         return p;
@@ -428,7 +435,7 @@ final class SetupRunner {
      */
     static SetupEngine.Result measureOrGoOn(Context c, String label) throws IOException {
         try {
-            return measure(c).measure(label, !switching(c.store));
+            return measure(c).measure(label, c.options.fullMeasure && !switching(c.store), !c.options.fullMeasure);
         } catch (Restarting r) {
             throw r;
         } catch (IOException e) {
@@ -483,6 +490,18 @@ final class SetupRunner {
     synchronized Kind kind() { return kind; }
     synchronized End end() { return end; }
 
+    /** 4.4 (R2): the last full run's end, kept on disk: «bad|ok|bad told» on the first line, then the sentence. Cleared when a new run starts. */
+    static final String END_FILE = "setup-end.txt";
+
+    /** The setup screen opened in a new process (the run ended at a boot, or the app was closed): the kept end is shown, not an empty screen. */
+    synchronized void restoreEnd(SetupEngine.Store store) {
+        if (running || end != null || store == null) return;
+        String t = store.get(END_FILE);
+        if (t == null || t.trim().isEmpty() || !t.contains("\n")) return;
+        String first = t.substring(0, t.indexOf('\n')), text = t.substring(t.indexOf('\n') + 1).trim();
+        if (!text.isEmpty()) end = new End(text, first.startsWith("bad"));
+    }
+
     /**
      * The setup screen was left behind: the home switch puts the stock home in front and then ours, and a family that pressed «ابدأ» never saw the run
      * or the done screen (step 27). The runner raises this when the switch is done and when a full run ends; our home, when it comes in front (a visible
@@ -494,7 +513,7 @@ final class SetupRunner {
     /** true once: and the flag is down (the home opens the screen now) */
     synchronized boolean takeReopen() { boolean r = reopen; reopen = false; return r; }
     synchronized Options options() {
-        Options o = new Options(); o.extras = options.extras; o.answers.putAll(options.answers);
+        Options o = new Options(); o.extras = options.extras; o.answers.putAll(options.answers); o.fullMeasure = options.fullMeasure;
         o.picks = options.picks == null ? null : new java.util.ArrayList<>(options.picks);
         return o;
     }
@@ -572,6 +591,7 @@ final class SetupRunner {
             steps = new ArrayList<>();
             for (Def d : plan(k)) steps.add(new Step(d.id));
         }
+        try { host.store().put(END_FILE, ""); } catch (IOException ignored) { }   // a new run: the last one's kept end is let go
         changed();
         final Options opts = options();
         synchronized (this) { live = opts; }
@@ -594,6 +614,7 @@ final class SetupRunner {
         if (!"FULL".equals(saved.get("kind"))) return false;
         Options o = new Options();
         o.extras = !"0".equals(saved.get("extras"));
+        o.fullMeasure = "1".equals(saved.get("measure"));   // 4.4: the full measure only when the run was started with it
         if (saved.containsKey("picks")) o.picks = sa.urtv.home.SuggestedApps.parse(saved.get("picks"));   // a run saved before 4.3 has none: the first ticks
         synchronized (this) {
             if (running) return false;
@@ -684,7 +705,7 @@ final class SetupRunner {
     /** The pointer and every finished step, written before a step starts and after it ends (all or nothing: FileStore). */
     private void writeState(SetupEngine.Store store, Options o, String at, String phase) throws IOException {
         String auto = readState(store).get("auto");   // how many times a boot resumed this run by itself (kept across the run's writes)
-        StringBuilder b = new StringBuilder("kind=FULL\nextras=" + (o.extras ? "1" : "0") + (o.picks == null ? "" : "\npicks=" + sa.urtv.home.SuggestedApps.join(o.picks)) + "\nat=" + at + "\nphase=" + phase + "\ntime=" + System.currentTimeMillis() + "\nlive=1\n"
+        StringBuilder b = new StringBuilder("kind=FULL\nextras=" + (o.extras ? "1" : "0") + (o.fullMeasure ? "\nmeasure=1" : "") + (o.picks == null ? "" : "\npicks=" + sa.urtv.home.SuggestedApps.join(o.picks)) + "\nat=" + at + "\nphase=" + phase + "\ntime=" + System.currentTimeMillis() + "\nlive=1\n"
             + (auto == null || auto.isEmpty() ? "" : "auto=" + auto + "\n"));
         for (Step s : steps()) {
             if (s.state == State.DONE || s.state == State.SKIPPED || s.state == State.FAILED) b.append("s.").append(s.id).append('=').append(s.state).append('\t').append(oneLine(s.reason)).append('\n');
@@ -721,6 +742,9 @@ final class SetupRunner {
         } catch (RuntimeException ex) {
             e = new End("حدث خطأ غير متوقع، ما غيّرنا شيئاً بعده. جرّب «تراجع» ثم أعد.", true);
         }
+        if (k == Kind.FULL && e != null && !e.wifi) {   // 4.4 (R2): the end is kept, so a run that ended while nobody looked (a boot, the app closed) is still said
+            try { host.store().put(END_FILE, (e.bad ? "bad" : "ok") + "\n" + e.text + "\n"); } catch (IOException ignored) { }
+        }
         if (k == Kind.FULL && e != null && !e.wifi) {
             try {
                 // the run is over: nothing to resume. Cut off (the connection dropped): the pointer stays for «جهّز كل شي», but nothing resumes by itself at a boot
@@ -732,6 +756,9 @@ final class SetupRunner {
             } catch (IOException ignored) { }
         }
         try { host.finished(); } catch (RuntimeException ignored) { }
+        boolean undone;
+        synchronized (this) { undone = k == Kind.UNDO && complete && !steps.isEmpty() && steps.get(0).state == State.DONE; }
+        if (undone) { try { host.undone(); } catch (RuntimeException ignored) { } }
         synchronized (this) {
             running = false;
             end = e;

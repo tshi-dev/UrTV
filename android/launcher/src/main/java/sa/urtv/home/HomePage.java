@@ -37,7 +37,7 @@ final class HomePage {
     }
 
     /** Our copy of the screensaver's page when it is newer than ours, made or brought up to date now; null for none. */
-    private static File copy(Context c, String name) {
+    private static synchronized File copy(Context c, String name) {   // 4.4 review: one thread at a time (the card's and the matches page's both write the same tmp file)
         String own;
         try { own = PageStamp.read(c.getAssets().open("web/" + name)); } catch (Exception e) { own = ""; }
         if (!providerIsOurs(c)) return null;   // S1: a page is taken only from the screensaver app that carries our signature, never from another app that claimed the authority

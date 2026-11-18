@@ -6,6 +6,7 @@ import android.app.Application;
 public final class HomeApp extends Application {
     @Override public void onCreate() {
         super.onCreate();
+        CrashLoopStore.hook(this);   // 4.3.5 (R7): first, so a crash anywhere after it is counted (CrashLoop, SafeActivity)
         Extras.init(this);   // 4.3.3 «إضافات تلفزيونك»: the add-on is asked with this process's context
         MuteKeep.start(this);
         BetaNotes.hookCrashes(this);   // 4.3.3: the class name of a crash, for the beta note (BetaNotes)

@@ -66,6 +66,14 @@ public final class NetTest {
         check("a redirect is not followed: its status and Location come back", rd.status == 302 && rd.headers.get("location") != null);
         s.close();
 
+        s = serve("sink", (out, rq) -> write(out, "HTTP/1.1 200 OK\r\nTransfer-Encoding: chunked\r\n\r\n5\r\nhello\r\n6\r\n world\r\n0\r\n\r\n"));
+        ByteArrayOutputStream sunk = new ByteArrayOutputStream();
+        Net.Reply sr = Net.get(url(s), null, 3000, 5000, 1000, sunk);
+        check("a sink gets the body as it arrives (a chunked one too) and the reply holds none of it", sr.status == 200 && sr.body.length == 0 && sunk.toString("UTF-8").equals("hello world"));
+        boolean sinkBig = false; try { Net.get(url(s), null, 3000, 5000, 8, new ByteArrayOutputStream()); } catch (IOException e) { sinkBig = true; }
+        check("the size cap counts what went to the sink (a chunked body over it is an error)", sinkBig);
+        s.close();
+
         s = serve("big", (out, rq) -> write(out, "HTTP/1.1 200 OK\r\nContent-Length: 5000\r\n\r\n" + "x".repeat(5000)));
         boolean big = false; try { Net.get(url(s), null, 3000, 5000, 1000); } catch (IOException e) { big = true; }
         check("a body over the cap (by its Content-Length) is an error, before it is read", big);
