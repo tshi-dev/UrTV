@@ -74,5 +74,11 @@ with tempfile.TemporaryDirectory() as tmp:
     for steps, want, name in runs:
         got = subprocess.run(["java", "-cp", tmp, "sa.urtv.home.CrashLoopRun"] + steps, check=True, capture_output=True, text=True).stdout.split()
         check(name, got == want, f"{got}, want {want}")
+# ---- 4.4 review F7, F8: no fsync on the UI thread; each home screen of a process is judged on its own first frame
+check("F7: opened() and drew() write on the store's background thread (never the caller's), the crash handler and the hook still write at once under one lock",
+      "BG.execute(" in store and "static void opened(Context c) {" in store and "write(c, read(c).opened" not in store and "write(c, read(c).drewFrame" not in store
+      and "synchronized (LOCK) { write(app, read(app).crashed(" in store and "synchronized (LOCK) { write(app, read(app).started(" in store and "setDaemon(true)" in store)
+check("F8: a second home screen in the same process is judged on its own first frame (opened() lets drew() mark again)",
+      store.split("static void opened(Context c) {")[1].split("}")[0].lstrip().startswith("drewMarked = false;"))
 print("FAILED" if failed else "all passed")
 sys.exit(1 if failed else 0)
