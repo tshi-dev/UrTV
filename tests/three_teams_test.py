@@ -1,4 +1,4 @@
-"""4.3.3 A3: a person followed 3 teams and saw 1. Every step from the screensaver's list to the page carries all three: Prefs keeps up to 20
+"""4.3.3 A3: a person followed 3 teams and saw 1. Every step from the screensaver's list to the page carries all three: Prefs keeps up to 40 (20 is only where the TV warns)
 and writes every id into the fragment, the provider hands the fragment over whole, the launcher's link keeps #teams=, and the page reads
 them all and asks each team's games (the server's free answer and the archive's team file; tests/matches_archive.test.mjs draws them).
 Run: python3 tests/three_teams_test.py"""
