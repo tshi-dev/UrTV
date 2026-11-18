@@ -355,7 +355,7 @@ public class SettingsActivity extends Activity {
         row("تعديل وقت الصلاة", prefs.prayerAdjOn() ? "يعمل، لكل صلاة دقائقها، من −٢٠ إلى +٢٠ (الشروق لا يتغيّر)" : "متوقف، الأوقات كما تُحسب", R.drawable.ic_eye,
             new Runnable() { public void run() { prefs.setPrayerAdjOn(!prefs.prayerAdjOn()); render(); } });
         if (prefs.prayerAdjOn()) for (int k = 0; k < PrayerAdj.COUNT; k++) adjRow(k);
-        String fixed = PrayerFix.applied(prefs.prayerAdjOn(), prefs.prayerAdj(), prefs.prayerFix());   // 4.3.3: never silent
+        String fixed = PrayerFix.applied(prefs.prayerAdjOn(), prefs.prayerAdj(), prefs.prayerFixKnown(() -> { if (!isFinishing() && !isDestroyed()) render(); }));   // 4.3.3: never silent
         if (!fixed.isEmpty()) { line("تصحيح منشور لأوقات اليوم، وتعديلك لأي صلاة يبقى هو المعتمد", look.sub, 0); line(fixed, look.sub, 0); }
         if (on(SettingsHub.PLACE) || on(SettingsHub.PRAY)) line(Location.HELP, look.sub, 0);
 
@@ -909,13 +909,35 @@ public class SettingsActivity extends Activity {
         dialog.show();
     }
 
-    /** a picture of the app (assets) into the view, the one before it let go */
-    private void setAssetPicture(ImageView v, String path) {
-        try (InputStream in = getAssets().open(path)) {
-            android.graphics.drawable.Drawable old = v.getDrawable();
-            v.setImageBitmap(android.graphics.BitmapFactory.decodeStream(in));
-            if (old instanceof android.graphics.drawable.BitmapDrawable) ((android.graphics.drawable.BitmapDrawable) old).getBitmap().recycle();
-        } catch (java.io.IOException | RuntimeException e) { v.setImageDrawable(null); }
+    /**
+     * 4.4 QA-13: the pictures of the app's own assets (a row's thumbnail, a mix's picture, the stage's photo) are decoded on this one thread and
+     * put in their view when they are here; the row is drawn at once without it. It ends by itself when idle.
+     */
+    private final java.util.concurrent.ThreadPoolExecutor pics = newPics();
+
+    private static java.util.concurrent.ThreadPoolExecutor newPics() {
+        java.util.concurrent.ThreadPoolExecutor e = new java.util.concurrent.ThreadPoolExecutor(1, 1, 5, java.util.concurrent.TimeUnit.SECONDS, new java.util.concurrent.LinkedBlockingQueue<Runnable>());
+        e.allowCoreThreadTimeOut(true);
+        return e;
+    }
+
+    /** the small thumbnails already decoded in this process (a row is drawn again at every render): a few hundred KB, never recycled */
+    private static final android.util.LruCache<String, Bitmap> THUMBS = new android.util.LruCache<String, Bitmap>(6 * 1024 * 1024) {
+        @Override protected int sizeOf(String k, Bitmap b) { return b.getByteCount(); }
+    };
+
+    /** a picture of the app (assets) into the view, the one before it let go (on the pictures' thread; the view keeps its old one until the new one is here) */
+    private void setAssetPicture(final ImageView v, final String path) {
+        pics.execute(() -> {
+            Bitmap b = null;
+            try (InputStream in = getAssets().open(path)) { b = android.graphics.BitmapFactory.decodeStream(in); } catch (java.io.IOException | RuntimeException | OutOfMemoryError e) { }
+            final Bitmap got = b;
+            runOnUiThread(() -> {
+                android.graphics.drawable.Drawable old = v.getDrawable();
+                v.setImageBitmap(got);
+                if (old instanceof android.graphics.drawable.BitmapDrawable && ((android.graphics.drawable.BitmapDrawable) old).getBitmap() != got) ((android.graphics.drawable.BitmapDrawable) old).getBitmap().recycle();
+            });
+        });
     }
 
     /**
@@ -1505,7 +1527,18 @@ public class SettingsActivity extends Activity {
         if (thumb != null) {
             ImageView th = new ImageView(this);
             th.setScaleType(ImageView.ScaleType.CENTER_CROP);
-            try (InputStream in = getAssets().open(thumb)) { th.setImageBitmap(BitmapFactory.decodeStream(in)); } catch (java.io.IOException | RuntimeException e) { }
+            final Bitmap hit = THUMBS.get(thumb);
+            if (hit != null) th.setImageBitmap(hit);
+            else {
+                final String name = thumb;
+                final ImageView target = th;
+                pics.execute(() -> {
+                    Bitmap b = null;
+                    try (InputStream in = getAssets().open(name)) { b = BitmapFactory.decodeStream(in); } catch (java.io.IOException | RuntimeException | OutOfMemoryError e) { }
+                    final Bitmap got = b;
+                    if (got != null) { THUMBS.put(name, got); runOnUiThread(() -> target.setImageBitmap(got)); }
+                });
+            }
             th.setClipToOutline(true);
             th.setOutlineProvider(new ViewOutlineProvider() {
                 @Override public void getOutline(View v, Outline o) { o.setRoundRect(0, 0, v.getWidth(), v.getHeight(), cs.px(CouchStyle.THUMB_RADIUS)); }
@@ -2792,14 +2825,14 @@ public class SettingsActivity extends Activity {
         // the stage: our photo, dimmed, with the card on it; as tall as the card needs (setStageHeight), round-cornered, no empty space
         final FrameLayout stage = new FrameLayout(this);
         stage.setBackgroundColor(0xFF07150E);
-        Bitmap photo = photo(3);
-        if (photo != null) {
-            ImageView bgPhoto = new ImageView(this);
-            bgPhoto.setScaleType(ImageView.ScaleType.CENTER_CROP);
-            bgPhoto.setImageBitmap(photo);
-            bgPhoto.setColorFilter(new PorterDuffColorFilter(0x8C000000, PorterDuff.Mode.SRC_OVER));   // dim, as the screen's own veil does
-            stage.addView(bgPhoto, new FrameLayout.LayoutParams(-1, -1));
-        }
+        final ImageView bgPhoto = new ImageView(this);   // the photo comes from the pictures' thread (the stage shows its ground colour until then)
+        bgPhoto.setScaleType(ImageView.ScaleType.CENTER_CROP);
+        bgPhoto.setColorFilter(new PorterDuffColorFilter(0x8C000000, PorterDuff.Mode.SRC_OVER));   // dim, as the screen's own veil does
+        stage.addView(bgPhoto, new FrameLayout.LayoutParams(-1, -1));
+        pics.execute(() -> {
+            final Bitmap photo = photo(3);
+            if (photo != null) runOnUiThread(() -> bgPhoto.setImageBitmap(photo));
+        });
         stage.setOutlineProvider(new ViewOutlineProvider() {
             @Override public void getOutline(View v, Outline o) { o.setRoundRect(0, 0, v.getWidth(), v.getHeight(), dp(18)); }
         });

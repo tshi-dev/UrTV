@@ -47,6 +47,11 @@ public class YourTvHubActivity extends Activity {
     /** «اللغة» or the look changed while the hub was open or behind another screen: it is built again in the new one (step 47: it kept its old language) */
     private void staleCheck() {
         if (prefs == null || isFinishing()) return;
+        if (CleanMask.state(this) != CleanMask.OFF) {   // «UrTV النظيف» came on while the hub was open (the home's answer reached us after the open): straight on our settings
+            startActivity(new Intent(this, SettingsActivity.class));
+            finish();
+            return;
+        }
         if (!madeLang.equals(prefs.lang()) || !madeLook.equals(prefs.look() + "|" + prefs.appearance())) recreate();
     }
 

@@ -130,17 +130,63 @@ final class NowPlayingBridge {
         } catch (Exception ignored) { return null; }
     }
 
-    /** Ends the adhan that is playing in the launcher (it checks our signature, and stops only an adhan). */
+    /** Ends the adhan that is playing in the launcher (it checks our signature, and stops only an adhan). A call into its process: not on the UI thread (stopAdhanSoon). */
     static void stopAdhan(Context c) {
         try {
             c.getApplicationContext().getContentResolver().call(Uri.parse("content://sa.urtv.home.nowplaying"), "stop_adhan", null, null);
         } catch (Exception ignored) { }
     }
 
-    /** The page asks once in a while, and every few seconds around a prayer time: the adhan's words go on the bar. */
+    /**
+     * 4.4 QA-2: the key that stops the adhan: the call goes on a thread, and what was known is forgotten at once (the next key is an ordinary
+     * one; the adhan's bar goes with the page's next ask).
+     */
+    static void stopAdhanSoon(Context c) {
+        final Context app = c.getApplicationContext();
+        adhanSeen = null;
+        new Thread(() -> stopAdhan(app), "adhan-stop").start();
+    }
+
+    // 4.4 QA-2: a key on the screensaver decides from the adhan state the page's own ask (every 3 s, adhan()) or a thread last learned, never from a query on the UI thread
+    private static volatile JSONObject adhanSeen;
+    private static volatile long adhanSeenAt;
+    private static volatile boolean adhanBusy;
+    private static final long ADHAN_FRESH_MS = 8000;   // the page asks every 3 s: a copy older than this is no longer what the bar says
+
+    /**
+     * What the screensaver knows of the adhan now: {"live":true,...} when the last answer (not older than ADHAN_FRESH_MS) said it plays, else
+     * {"live":false}. Never a query: it is read for a key on the UI thread. It also starts a thread that asks the launcher again, so the next
+     * key (and the bar) see the change; the first key of an adhan that started a second ago may not know it yet, as the bar did not.
+     */
+    static JSONObject adhanKnown(Context c) {
+        refreshAdhan(c);
+        JSONObject o = adhanSeen;
+        if (o != null && android.os.SystemClock.elapsedRealtime() - adhanSeenAt <= ADHAN_FRESH_MS) return o;
+        JSONObject none = new JSONObject();
+        try { none.put("live", false); } catch (org.json.JSONException ignored) { }
+        return none;
+    }
+
+    /** asks the launcher about the adhan on a thread of its own (one at a time) and keeps the answer */
+    static void refreshAdhan(Context c) {
+        if (adhanBusy) return;
+        adhanBusy = true;
+        final Context app = c.getApplicationContext();
+        Thread t = new Thread(() -> {
+            try { rememberAdhan(adhanState(app)); }
+            catch (RuntimeException ignored) { /* the last answer stays until it is too old */ }
+            finally { adhanBusy = false; }
+        }, "adhan-state");
+        t.setPriority(Thread.MIN_PRIORITY); t.setDaemon(true); t.start();
+    }
+
+    private static void rememberAdhan(JSONObject o) { adhanSeen = o; adhanSeenAt = android.os.SystemClock.elapsedRealtime(); }
+
+    /** The page asks once in a while, and every few seconds around a prayer time: the adhan's words go on the bar (on the bridge's thread); the key handlers use the same answer. */
     @JavascriptInterface
     public String adhan() {
         JSONObject o = adhanState(app);
+        rememberAdhan(o);
         return o.optBoolean("live") ? o.toString() : "";
     }
 

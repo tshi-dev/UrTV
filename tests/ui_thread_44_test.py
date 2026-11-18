@@ -165,5 +165,51 @@ rp = src(HOME / "ReportActivity.java")
 check("QA-13: the report's logcat classes are read on a thread and the lines drawn again with them",
       '"report-errors").start();' in rp and "recentErrors()" in rp.split('"report-errors"')[0].split("new Thread(")[-1] and "= recentErrors();" not in rp)
 
+# QA-2 and the screensaver's QA-12 / QA-13
+cm = src(APP / "CleanMask.java")
+check("QA-12: CleanMask.state is the kept copy (no query); a thread asks the home, keeps a changed answer and tells the screens that are up",
+      "getContentResolver" not in body(cm, "static int state(Context c) {") and 'new Thread(' in body(cm, "static int state(Context c) {") and "Prefs.CHANGED" in cm and "private static int ask(Context c) {" in cm
+      and body(cm, "static int state(Context c) {").index("putInt(\"clean_mask\"") < body(cm, "static int state(Context c) {").index("sendBroadcast("))
+hub = src(APP / "YourTvHubActivity.java")
+check("QA-12: the hub goes straight on to the settings when the mask turns out to be on after it opened", "CleanMask.state(this) != CleanMask.OFF" in body(hub, "private void staleCheck() {"))
+npb = src(APP / "NowPlayingBridge.java")
+check("QA-2: a key reads the adhan state kept (the page's ask every 3 s, or a thread's), never a query: adhanKnown",
+      "getContentResolver" not in body(npb, "static JSONObject adhanKnown(Context c) {") and "refreshAdhan(c);" in body(npb, "static JSONObject adhanKnown(Context c) {")
+      and "ADHAN_FRESH_MS" in body(npb, "static JSONObject adhanKnown(Context c) {") and "adhanState(app)" in body(npb, "static void refreshAdhan(Context c) {") and "new Thread(" in body(npb, "static void refreshAdhan(Context c) {"))
+check("QA-2: the page's own ask feeds the same copy, and the stop call is made on a thread with the copy forgotten at once",
+      "rememberAdhan(o);" in body(npb, "public String adhan() {") and "adhanSeen = null;" in body(npb, "static void stopAdhanSoon(Context c) {") and '"adhan-stop"' in body(npb, "static void stopAdhanSoon(Context c) {"))
+for f in ("ScreenDream", "MainActivity"):
+    t = src(APP / (f + ".java"))
+    kd = body(t, "public boolean dispatchKeyEvent(KeyEvent e) {")
+    check("QA-2: " + f + "'s key uses adhanKnown and stopAdhanSoon (no adhanState, no stopAdhan on the key)",
+          "NowPlayingBridge.adhanKnown(this)" in kd and "NowPlayingBridge.stopAdhanSoon(this)" in kd and "adhanState(" not in kd and "NowPlayingBridge.stopAdhan(this)" not in kd)
+    check("QA-2: " + f + " asks the adhan on a thread every 3 s while it shows, when the page does not (the adhan bar is off)",
+          "adhanWatch" in t and "refreshAdhan(" in t and "adhanBar()" in body(t, "private final Runnable adhanWatch = new Runnable() {"))
+ks = src(APP / "KickoffTry.java")
+check("QA-12: the «جرّب» whistle is called on a thread", '"kickoff-whistle").start();' in ks and "if (sound) NowPlayingBridge.kickoffWhistle(a);" not in ks)
+gsa = src(APP / "GlassSource.java")
+pgs = body(gsa, "static GlassStyle.Look page(final Activity a, final View root) {")
+check("QA-12: the settings screens paint what is known of the home's backdrop and ask the home on a thread, painting again when it brings another",
+      "refresh(a)" not in pgs and "refresh(app);" in pgs and '"glass-refresh").start();' in pgs and "a.runOnUiThread(" in pgs and "refresh(c);" not in body(gsa, "static android.graphics.drawable.Drawable pageIn(Context c, GlassStyle.Look l) {"))
+rf = body(gsa, "private static void refresh(Context c) {")
+check("QA-12: refresh holds the class lock for its assignments only (the UI thread's draw never waits on the home)", "synchronized (GlassSource.class)" in rf and "private static synchronized void refresh" not in gsa)
+ss = src(APP / "SaverStart.java")
+check("QA-13: the dream's last picture is decoded on a thread; its content is set (with the picture in the first frame) when it is here",
+      '"saver-picture").start();' in body(ss, "static void begin(final Host host, final String url, final Runnable afterContent) {") and "SaverSnapshot.load(" not in body(ss, "private static void show(")
+      and "host.alive()" in body(ss, "static void begin(final Host host, final String url, final Runnable afterContent) {"))
+st = src(APP / "SettingsActivity.java")
+check("QA-13: a settings row's thumbnail, a mix's picture and the stage's photo are decoded on the pictures' thread",
+      st.count("pics.execute(() -> {") >= 3 and "THUMBS" in st and "th.setImageBitmap(BitmapFactory.decodeStream(in))" not in st and "\n        Bitmap photo = photo(3);" not in st
+      and "v.setImageBitmap(android.graphics.BitmapFactory.decodeStream(in));" not in st)
+pk = src(APP / "PhotoPacksActivity.java")
+check("QA-13: the pack cover of «صورنا» and the credits' files are read on a thread",
+      '"pack-cover").start();' in pk and '"pack-credits").start();' in pk and "PackStore.creditRows(this" not in pk)
+ap = src(APP / "AppearanceActivity.java")
+check("QA-13: the packs' names are read on a thread and the page drawn again when they differ", "PackStore.names(this)" not in ap and '"pack-names").start();' in ap and "namesAsked = false;" in body(ap, "protected void onResume() {"))
+pf = src(APP / "Prefs.java")
+check("QA-13: the settings' correction note takes the kept published-corrections copy; a worker or provider thread waits for the first read as before, the UI thread never does",
+      "prayerFixKnown(" in st and "Looper.myLooper() != android.os.Looper.getMainLooper()" in body(pf, "int[] prayerFix() {") and '"prayer-fix-first"' in body(pf, "int[] prayerFix() {")
+      and "ContentFile.read(" not in body(pf, "int[] prayerFix() {") and "ContentFile.read(" not in body(pf, "int[] prayerFixKnown(final Runnable changed) {"))
+
 print("FAILED" if failed else "all passed")
 sys.exit(1 if failed else 0)

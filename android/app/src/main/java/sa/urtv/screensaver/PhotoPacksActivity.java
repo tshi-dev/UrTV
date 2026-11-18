@@ -203,12 +203,17 @@ public class PhotoPacksActivity extends Activity {
 
     private void loadCover(ImageView cover, PhotoPacks.Pack p) {
         final java.io.File own = p == null ? null : PackStore.photo(this, p.id, 1);
-        if (p == null) {   // «صورنا»: one of the app's own photos
-            try (java.io.InputStream in = getAssets().open("backgrounds/" + firstBackground())) {
-                BitmapFactory.Options o = new BitmapFactory.Options();
-                o.inSampleSize = 4;
-                cover.setImageBitmap(BitmapFactory.decodeStream(in, null, o));
-            } catch (java.io.IOException | RuntimeException ignored) { }
+        if (p == null) {   // «صورنا»: one of the app's own photos (a bundled picture, decoded on a thread)
+            new Thread(() -> {
+                Bitmap bm = null;
+                try (java.io.InputStream in = getAssets().open("backgrounds/" + firstBackground())) {
+                    BitmapFactory.Options o = new BitmapFactory.Options();
+                    o.inSampleSize = 4;
+                    bm = BitmapFactory.decodeStream(in, null, o);
+                } catch (java.io.IOException | RuntimeException ignored) { }
+                final Bitmap shown = bm;
+                if (shown != null) runOnUiThread(() -> { if (!isFinishing()) cover.setImageBitmap(shown); });
+            }, "pack-cover").start();
             return;
         }
         final android.content.Context app = getApplicationContext();
@@ -289,15 +294,26 @@ public class PhotoPacksActivity extends Activity {
 
     /** «حقوق الصور»: every photo of the packs on the TV with its author, licence and link; and the app's own set */
     private void showCredits() {
-        StringBuilder sb = new StringBuilder();
-        for (PhotoPacks.Pack p : packs) {
-            List<String[]> rows = PackStore.creditRows(this, p.id);
-            if (rows.isEmpty()) continue;
-            sb.append(S.en() ? p.nameEn : p.name).append('\n');
-            for (String[] r : rows) sb.append("  ").append(PhotoPacks.isolate(r[0])).append(S.sep()).append(PhotoPacks.creditLine(r[1], r[2])).append(S.sep()).append(r[3]).append('\n');
-            sb.append('\n');
-        }
-        sb.append(w("صورنا: Unsplash، وكل صورة في docs/PHOTO-CREDITS.md"));
+        // 4.4 QA-13: the packs' credit files are read on a thread; the dialog opens when the text is made
+        final android.content.Context app = getApplicationContext();
+        final List<PhotoPacks.Pack> shown = new ArrayList<>(packs);
+        new Thread(() -> {
+            StringBuilder sb = new StringBuilder();
+            for (PhotoPacks.Pack p : shown) {
+                List<String[]> rows = PackStore.creditRows(app, p.id);
+                if (rows.isEmpty()) continue;
+                sb.append(S.en() ? p.nameEn : p.name).append('\n');
+                for (String[] r : rows) sb.append("  ").append(PhotoPacks.isolate(r[0])).append(S.sep()).append(PhotoPacks.creditLine(r[1], r[2])).append(S.sep()).append(r[3]).append('\n');
+                sb.append('\n');
+            }
+            sb.append(w("صورنا: Unsplash، وكل صورة في docs/PHOTO-CREDITS.md"));
+            final String text = sb.toString();
+            runOnUiThread(() -> { if (!isFinishing() && !isDestroyed()) creditsDialog(text); });
+        }, "pack-credits").start();
+    }
+
+    private void creditsDialog(String text) {
+        StringBuilder sb = new StringBuilder(text);
         TextView body = text(sb.toString(), 14, "Regular", look.text);
         body.setPadding(dp(24), dp(16), dp(24), dp(8));
         ScrollView sv = new ScrollView(this);

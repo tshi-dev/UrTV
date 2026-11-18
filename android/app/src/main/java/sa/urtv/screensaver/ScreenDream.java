@@ -44,6 +44,7 @@ public class ScreenDream extends DreamService {
         setScreenBright(true);
         attached = true;
         Showing.enter();
+        snapHandler.post(adhanWatch);
         show(true);
         InternalReceivers.register(this, changed, new IntentFilter(Prefs.CHANGED));
     }
@@ -55,10 +56,10 @@ public class ScreenDream extends DreamService {
     @Override
     public boolean dispatchKeyEvent(KeyEvent e) {
         boolean down = e.getAction() == KeyEvent.ACTION_DOWN;
-        org.json.JSONObject adhan = down ? NowPlayingBridge.adhanState(this) : null;   // asked on a press only; a release belongs to the one before
+        org.json.JSONObject adhan = down ? NowPlayingBridge.adhanKnown(this) : null;   // asked on a press only; a release belongs to the one before
         boolean live = adhan != null && adhan.optBoolean("live");
         int d = adhanKeys.decide(e.getKeyCode(), e.getAction(), e.getRepeatCount(), live, new Prefs(this).adhanBar(), true, live && adhan.optBoolean("any"));
-        if (d == AdhanKeys.STOP) NowPlayingBridge.stopAdhan(this);
+        if (d == AdhanKeys.STOP) NowPlayingBridge.stopAdhanSoon(this);
         if (d != AdhanKeys.PASS) return true;
         int r = reminderKeys.decide(e.getKeyCode(), e.getAction(), e.getRepeatCount(), NowPlayingBridge.reminderCard());
         if (r != ReminderKeys.PASS) {   // a reminder's card is up: the first press is the card's, the screensaver stays
@@ -80,6 +81,15 @@ public class ScreenDream extends DreamService {
         if (!NowPlayingBridge.setupRunning(this)) return;
         if (android.os.Build.VERSION.SDK_INT >= 29) wakeUp(); else finish();
     }
+
+    /** with the adhan bar off the page does not ask the launcher about the adhan: the dream does, every 3 s, so «إيقاف الأذان بأي زر» still finds it playing (on a thread, never on the UI thread) */
+    private final Runnable adhanWatch = new Runnable() {
+        @Override public void run() {
+            if (!attached) return;
+            if (!new Prefs(ScreenDream.this).adhanBar()) NowPlayingBridge.refreshAdhan(ScreenDream.this);
+            snapHandler.postDelayed(this, 3000);
+        }
+    };
 
     private final android.os.Handler snapHandler = new android.os.Handler(android.os.Looper.getMainLooper());
     private final Runnable snapTick = new Runnable() {
@@ -121,6 +131,7 @@ public class ScreenDream extends DreamService {
         if (attached) Showing.leave();
         attached = false;
         try { unregisterReceiver(changed); } catch (IllegalArgumentException ignored) { }
+        snapHandler.removeCallbacks(adhanWatch);
         snapHandler.removeCallbacks(snapTick);   // (the picture the next start draws first was taken while the page showed: SaverSnapshot.capture)
         ScreenView.release(web);
         web = null;

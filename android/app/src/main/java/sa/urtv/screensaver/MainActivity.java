@@ -39,6 +39,14 @@ public class MainActivity extends Activity {
     }
 
     private String shownUrl;
+    /** with the adhan bar off the page does not ask the launcher about the adhan: the preview does, every 3 s, on a thread (see ScreenDream) */
+    private final Runnable adhanWatch = new Runnable() {
+        @Override public void run() {
+            if (!new Prefs(MainActivity.this).adhanBar()) NowPlayingBridge.refreshAdhan(MainActivity.this);
+            snapHandler.postDelayed(this, 3000);
+        }
+    };
+
     private final android.os.Handler snapHandler = new android.os.Handler(android.os.Looper.getMainLooper());
     private final Runnable snapTick = new Runnable() {
         @Override public void run() {
@@ -81,10 +89,10 @@ public class MainActivity extends Activity {
     public boolean dispatchKeyEvent(KeyEvent e) {
         // as in the dream: while the adhan plays, OK (or any key, with «إيقاف الأذان بأي زر») stops it and the preview stays
         boolean down = e.getAction() == KeyEvent.ACTION_DOWN;
-        org.json.JSONObject adhan = down ? NowPlayingBridge.adhanState(this) : null;
+        org.json.JSONObject adhan = down ? NowPlayingBridge.adhanKnown(this) : null;
         boolean live = adhan != null && adhan.optBoolean("live");
         int d = adhanKeys.decide(e.getKeyCode(), e.getAction(), e.getRepeatCount(), live, new Prefs(this).adhanBar(), true, live && adhan.optBoolean("any"));
-        if (d == AdhanKeys.STOP) NowPlayingBridge.stopAdhan(this);
+        if (d == AdhanKeys.STOP) NowPlayingBridge.stopAdhanSoon(this);
         if (d != AdhanKeys.PASS) return true;
         if (e.getAction() == KeyEvent.ACTION_UP) finish();
         return true;
@@ -94,11 +102,13 @@ public class MainActivity extends Activity {
     protected void onStart() {
         super.onStart();
         Showing.enter();   // the home's «الأذان على شاشة التوقف فقط»: the preview counts as the screensaver
+        snapHandler.post(adhanWatch);
     }
 
     @Override
     protected void onStop() {
         Showing.leave();
+        snapHandler.removeCallbacks(adhanWatch);
         super.onStop();
     }
 

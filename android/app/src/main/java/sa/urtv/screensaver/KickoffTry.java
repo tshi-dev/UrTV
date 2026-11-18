@@ -39,7 +39,7 @@ final class KickoffTry {
         final float away = dm.widthPixels * 0.4f;
         box.setTranslationX(away);
         box.animate().translationX(0).setDuration(450).start();
-        if (sound) NowPlayingBridge.kickoffWhistle(a);
+        if (sound) { final android.content.Context app = a.getApplicationContext(); new Thread(() -> NowPlayingBridge.kickoffWhistle(app), "kickoff-whistle").start(); }   // 4.4 QA-12: the call into the launcher is not made on the press
         new Handler(Looper.getMainLooper()).postDelayed(() -> box.animate().translationX(away).setDuration(450).withEndAction(() -> {
             if (box.getParent() == root) root.removeView(box);
             if (shown == box) shown = null;
