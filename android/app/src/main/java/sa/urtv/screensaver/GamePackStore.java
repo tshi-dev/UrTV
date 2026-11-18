@@ -30,14 +30,21 @@ final class GamePackStore {
 
     /** the pack's bytes (a game opens it), or null when it is not here; opening it counts as using it */
     static byte[] open(Context c, String id) {
+        byte[] b = peek(c, id);
+        if (b != null) touch(c, id);
+        return b;
+    }
+    /** the pack's bytes without counting as a use (the quiz bank reads every pack it holds; only the packs a round asked from are used: touch) */
+    static byte[] peek(Context c, String id) {
         File f = file(c, id);
         if (!f.isFile() || f.length() > GamePacks.PACK_MAX) return null;
-        try (java.io.FileInputStream in = new java.io.FileInputStream(f)) {
-            byte[] b = Bounded.readAll(in, (int) GamePacks.PACK_MAX);
-            sp(c).edit().putLong(id + ".used", System.currentTimeMillis()).apply();
-            return b;
-        } catch (Exception e) { return null; }
+        try (java.io.FileInputStream in = new java.io.FileInputStream(f)) { return Bounded.readAll(in, (int) GamePacks.PACK_MAX); }
+        catch (Exception | OutOfMemoryError e) { return null; }
     }
+    /** the pack was used now: its 14 days start again */
+    static void touch(Context c, String id) { sp(c).edit().putLong(id + ".used", System.currentTimeMillis()).apply(); }
+    /** the version downloaded (0 = not known) */
+    static int version(Context c, String id) { return sp(c).getInt(id + ".ver", 0); }
 
     static void delete(Context c, String id) {
         file(c, id).delete();

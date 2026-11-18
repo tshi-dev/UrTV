@@ -47,4 +47,18 @@ check("F14: a round re-checked before the big download and on every write while 
 check("F14: Net has a sink call (in both apps, the same file) and counts the cap over what it wrote",
       "static Reply get(String url, Map<String, String> headers, int readMs, int deadlineMs, int maxBytes, OutputStream sink)" in net and "total[0] > cap" in net and net.split("\n", 1)[1] == launcher_net.split("\n", 1)[1])
 
+# F12: the packs of questions are parsed on a thread, and .used is stamped only for a pack a round used
+qb, store2, qa, hv = src("QuizBank.java"), src("GamePackStore.java"), src("QuizActivity.java"), src("LetterHiveActivity.java")
+ld = body(qb, "static List<QuizPick.Item> load(")
+op = body(store2, "static byte[] open(")
+check("F12: QuizBank.load (the UI thread's call in onCreate) parses no pack: no addExtra/extras/GameBundles in it; the packs come through withExtras on a thread and a main-thread callback",
+      "extras(" not in ld and "addExtra" not in ld and "GameBundles" not in ld and "static void withExtras(" in qb and "new Thread(" in body(qb, "static void withExtras(") and "Looper.getMainLooper()" in qb)
+check("F12: both screens open with the bundled bank and merge the packs when ready (a hive game in play keeps its bank)",
+      "QuizBank.withExtras(this, base, merged ->" in qa and "QuizBank.withExtras(this, base, merged ->" in hv and "screen != Screen.BOARD && screen != Screen.ASK" in hv and "extras(" not in qa.split("QuizBank.withExtras")[0] and "isDestroyed()" in qa)
+check("F12: the merged list is kept until a pack comes, goes or changes (one parse per change, not one per open)",
+      "key.toString().equals(extrasKey) && extrasList != null" in qb and "GamePackStore.version(c, p.id)" in qb)
+check("F12: reading a pack for the bank does not stamp .used (peek); opening it for a game does (open = peek + touch); a round stamps only the packs its questions came from",
+      "peek(c, id)" in op and "touch(c, id)" in op and ".used" not in body(store2, "static byte[] peek(") and "GameBundles.peekBytes(c, p.id)" in qb and "GameBundles.bytes(" not in qb
+      and "owners.get(it.id)" in body(qb, "static void remember(") and "GamePackStore.touch(c, pid)" in body(qb, "static void remember("))
+
 sys.exit(1 if failed else 0)

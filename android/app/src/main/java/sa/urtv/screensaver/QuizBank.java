@@ -34,28 +34,57 @@ final class QuizBank {
     static volatile boolean playing;
 
     /** the bank of a game, always from this TV's own storage, whole and in memory before the first question: the downloaded copy when it is at least as new as the
-     *  bundled one and passes the check, else the bundled bank (assets/quiz/bank.json), else the small starter set. No network, no error screen; never throws. */
+     *  bundled one and passes the check, else the bundled bank (assets/quiz/bank.json), else the small starter set. No network, no error screen; never throws.
+     *  The downloaded packs of questions are NOT in it (each is parsed with a key derivation, a decryption and an inflate: seconds on a small TV): a screen opens with this
+     *  bank and calls {@link #withExtras} to have them added from a thread. */
     static List<QuizPick.Item> load(Context c) {
         List<QuizPick.Item> v = null;
         File f = new File(c.getFilesDir(), FILE);
         if (f.isFile() && sp(c).getLong("rev", 0) >= BUNDLED_REV) v = QuizBankCheck.parse(read(f));
         if (v == null || v.size() < QuizPick.MIN_ITEMS) v = asset(c, "quiz/bank.json");
         if (v == null || v.size() < QuizPick.MIN_ITEMS) v = asset(c, "quiz/starter.json");
-        return v == null ? new ArrayList<>() : addExtra(c, v);
+        return v == null ? new ArrayList<>() : v;
     }
 
-    /** the questions that are not in the public bank come as downloaded packs (kind «quiz», one every two weeks: GamePackStore.ensureQuiz) and are added to whatever bank was chosen: an id the bank already has is kept as it is, and a missing or bad pack adds nothing. No question is bundled in the app. */
-    static List<QuizPick.Item> addExtra(Context c, List<QuizPick.Item> base) {
-        List<QuizPick.Item> out = base;
-        for (GamePacks.Pack p : GamePackStore.quizPacks(c)) {
+    /** a thread adds the installed packs of questions to `base` and `ready` runs on the main thread with the whole bank (not at all when there is no pack: the screen has what it needs). */
+    static void withExtras(Context c, final List<QuizPick.Item> base, final java.util.function.Consumer<List<QuizPick.Item>> ready) {
+        final Context app = c.getApplicationContext();
+        Thread t = new Thread(() -> {
             try {
-                byte[] raw = GameBundles.bytes(c, p.id);
+                final List<QuizPick.Item> extra = extras(app);
+                if (extra.isEmpty()) return;
+                new android.os.Handler(android.os.Looper.getMainLooper()).post(() -> ready.accept(merge(base, extra)));
+            } catch (Throwable ignored) { /* the screen keeps the bank it has */ }
+        }, "quiz-packs");
+        t.setPriority(Thread.MIN_PRIORITY); t.setDaemon(true); t.start();
+    }
+
+    /** the merged questions of the installed packs of questions (kind «quiz»), in the index's order: an id seen first is kept; a missing or bad pack adds nothing. No question is bundled in the app.
+     *  Blocking (call it from a thread). Reading a pack here is not using it (.used is not stamped: see {@link #remember}); the answer is kept until a pack comes, goes or changes. */
+    static synchronized List<QuizPick.Item> extras(Context c) {
+        List<GamePacks.Pack> packs = GamePackStore.quizPacks(c);
+        StringBuilder key = new StringBuilder();
+        for (GamePacks.Pack p : packs) key.append(p.id).append(':').append(GamePackStore.size(c, p.id)).append(':').append(GamePackStore.version(c, p.id)).append(';');
+        if (key.toString().equals(extrasKey) && extrasList != null) return extrasList;
+        List<QuizPick.Item> out = new ArrayList<>();
+        java.util.Map<String, String> owner = new java.util.HashMap<>();
+        for (GamePacks.Pack p : packs) {
+            try {
+                byte[] raw = GameBundles.peekBytes(c, p.id);
                 List<QuizPick.Item> extra = raw == null ? null : QuizBankCheck.parse(raw);
-                if (extra != null) out = merge(out, extra);
+                if (extra == null) continue;
+                int before = out.size();
+                out = merge(out, extra);
+                for (QuizPick.Item it : out.subList(before, out.size())) owner.put(it.id, p.id);
             } catch (RuntimeException e) { /* a bad pack adds nothing */ }
         }
+        extrasKey = key.toString(); extrasList = out; owners = owner;
         return out;
     }
+    private static String extrasKey;
+    private static List<QuizPick.Item> extrasList;
+    /** the id of a question that came from a pack -> the pack */
+    private static volatile java.util.Map<String, String> owners = new java.util.HashMap<>();
     static List<QuizPick.Item> merge(List<QuizPick.Item> base, List<QuizPick.Item> extra) {
         java.util.Set<String> ids = new java.util.HashSet<>(); for (QuizPick.Item it : base) ids.add(it.id);
         List<QuizPick.Item> out = new ArrayList<>(base);
@@ -146,8 +175,11 @@ final class QuizBank {
         return v;
     }
 
-    /** the ids of this game's questions go to the front of the last 100 */
+    /** the ids of this game's questions go to the front of the last 100; a pack that gave one of them is used now (its 14 days start again: only a pack a round really used) */
     static void remember(Context c, List<QuizPick.Item> asked) {
+        java.util.Set<String> used = new java.util.HashSet<>();
+        for (QuizPick.Item it : asked) { String pid = owners.get(it.id); if (pid != null) used.add(pid); }
+        for (String pid : used) GamePackStore.touch(c, pid);
         List<String> all = new ArrayList<>();
         for (QuizPick.Item it : asked) all.add(it.id);
         for (String id : recent(c)) if (!all.contains(id)) all.add(id);
