@@ -40,9 +40,18 @@ final class GameRegistry {
 
     /** the games that can be played with the phones (every game that has a phone mode: «الأسرع», the party games and the older games' phase 1): the list's tag and the «بالجوالات» filter use this list, so every game with the phone picture stays when the list is filtered; a game whose phone mode is added later goes here */
     static final String[] PHONE_GAMES = {"quiz", "khanat", "missing-word", "letter-hive", "word5", "odd-one", "charades", "domino", "forehead", "author", "closest", "liar", "emoji", "link", "night", "draw", "quran-verse", "maths", "logic"};
-    static boolean inPhones(String id) { for (String g : PHONE_GAMES) if (g.equals(id)) return true; return false; }
+    /** the engine games (GameReleaseStore) are played with phones, and their ids in the hub start with «e:» */
+    static boolean inPhones(String id) { if (id.startsWith("e:")) return true; return inPhonesList(id); }
+    private static boolean inPhonesList(String id) { for (String g : PHONE_GAMES) if (g.equals(id)) return true; return false; }
 
     static Game byId(String id) { for (Game g : ALL) if (g.id.equals(id)) return g; return null; }
+
+    /** where the list's focus starts, among `list` (what the hub shows now: the engine games are in it when they are on) */
+    static int firstFocus(java.util.List<Game> list, String lastId) {
+        for (int i = 0; i < list.size(); i++) if (list.get(i).ready && list.get(i).id.equals(lastId)) return i;
+        for (int i = 0; i < list.size(); i++) if (list.get(i).ready && !list.get(i).phones) return i;
+        return 0;
+    }
 
     /** where the list's focus starts: the game played last when it is still ready, else the first ready game played with no phones (the default way), else the first */
     static int firstFocus(String lastId) {

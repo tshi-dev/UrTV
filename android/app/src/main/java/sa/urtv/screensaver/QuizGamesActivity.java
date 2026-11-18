@@ -74,7 +74,21 @@ public class QuizGamesActivity extends Activity {
         setContentView(root);
         filter = GamePrefs.filter(this);
         GamePackStore.sweep(this);   // a «تلقائي» pack nobody opened for 14 days goes
-        sel = filter == 0 ? GameRegistry.firstFocus(GamePrefs.last(this)) : 0;
+        sel = filter == 0 ? GameRegistry.firstFocus(shown(), GamePrefs.last(this)) : 0;
+        draw();
+        // the engine's games (GameReleaseStore): a background answer may add tiles; until then (and with no file) the page is as it always was
+        shownSig = GameReleaseStore.signature();
+        GameReleaseStore.warm(this, () -> runOnUiThread(this::releaseChanged));
+    }
+    private String shownSig = "";
+    private void releaseChanged() {
+        if (isFinishing() || root == null || GameReleaseStore.signature().equals(shownSig)) return;
+        String keep = null; java.util.List<GameRegistry.Game> was = shown();
+        if (head == 0 && sel >= 0 && sel < was.size()) keep = was.get(sel).id;
+        shownSig = GameReleaseStore.signature();
+        java.util.List<GameRegistry.Game> now = shown();
+        if (keep != null) for (int i = 0; i < now.size(); i++) if (now.get(i).id.equals(keep)) { sel = i; break; }
+        if (sel >= now.size()) sel = Math.max(0, now.size() - 1);
         draw();
     }
 
@@ -106,6 +120,9 @@ public class QuizGamesActivity extends Activity {
     private java.util.List<GameRegistry.Game> shown() {
         java.util.List<GameRegistry.Game> v = new java.util.ArrayList<>();
         for (GameRegistry.Game g : GameRegistry.ALL) if (filter == 0 || (GameRegistry.inPhones(g.id) && g.ready)) v.add(g);
+        int at = v.size() - 1;   // the games of the engine (GameReleaseStore: only the ones that are on) stand before the last tile, «حزم المحتوى»
+        for (GameRegistry.Game g : v) if (g.id.equals("packs")) at = v.indexOf(g);
+        for (GameDef.Def d : GameReleaseStore.games()) v.add(Math.max(0, at++), new GameRegistry.Game("e:" + d.id, d.name.get(S.en()), d.line.get(S.en()), "EngineGameActivity", true, true));
         return v;
     }
     private void draw() {
@@ -136,6 +153,12 @@ public class QuizGamesActivity extends Activity {
             if (!live) {   // «قريبًا»: a small word at the top of the tile
                 TextView mark = text(S.t("قريبًا"), 30, words, true); mark.setSingleLine(true); mark.setPadding(0, px(4), 0, px(4));
                 LinearLayout.LayoutParams kp = new LinearLayout.LayoutParams(-2, -2); kp.gravity = Gravity.START;
+                tile.addView(mark, kp);
+            } else if (g.id.startsWith("e:")) {   // a game of the engine: its picture from the built-in set, on its accent
+                GameDef.Def d = GameReleaseStore.def(g.id.substring(2));
+                int accent = d == null ? L.saff : GameLook.accent(L, d.accent);
+                EngineIcons mark = new EngineIcons(this, d == null ? "star" : d.icon, L.ink); mark.setBackgroundColor(accent); mark.setPadding(px(8), px(6), px(8), px(6));
+                LinearLayout.LayoutParams kp = new LinearLayout.LayoutParams(px(52), px(52)); kp.gravity = Gravity.START;
                 tile.addView(mark, kp);
             } else if (GameRegistry.inPhones(g.id)) {   // plays with phones: a phone picture on a saffron square, no word (TalkBack says «بالجوالات»)
                 GameIcons mark = new GameIcons(this, GameIcons.PHONE).set(true, 0, L.onSaff, L.saff); mark.setBackgroundColor(L.saff); mark.setPadding(px(8), px(6), px(8), px(6));
@@ -219,7 +242,7 @@ public class QuizGamesActivity extends Activity {
             GameRegistry.Game g = shown().get(sel);
             boolean opened = false;
             if (g.ready) {
-                try { Intent go = new Intent().setClassName(this, getClass().getPackage().getName() + "." + g.activity); if (filter == 1 && !g.id.equals("quiz")) go.putExtra("phones", true); startActivity(go);   // from the «بالجوالات» view the phones switch starts on
+                try { Intent go = new Intent().setClassName(this, getClass().getPackage().getName() + "." + g.activity); if (g.id.startsWith("e:")) go.putExtra("game", g.id.substring(2)); if (filter == 1 && !g.id.equals("quiz")) go.putExtra("phones", true); startActivity(go);   // from the «بالجوالات» view the phones switch starts on
                      GamePrefs.setLast(this, g.id); opened = true; }
                 catch (RuntimeException notThere) { /* a game marked ready whose screen is not in this build: «قريبًا» */ }
             }
