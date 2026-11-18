@@ -30,5 +30,11 @@ rd = body(ta, "private void render(int focus) {")
 check("F2: render skips its focus request while the text field has the focus (not on the first render)",
       "field.hasFocus() && !fieldFirst" in rd and "!typing &&" in rd and rd.index("boolean typing") < rd.index("fieldFirst = false;") < rd.index("f.post(f::requestFocus)"))
 
+# F3: S.remember has the same 10 s guard as S.refresh and ignores an old copy
+ss = src(HOME / "S.java")
+rm = body(ss, "static void remember(Context c, ConfigSnapshot snap) {")
+check("F3: remember ignores a stale snapshot and anything within 10 s of the person's own S.set",
+      "snap.stale" in rm and "setAt != 0 && android.os.SystemClock.elapsedRealtime() - setAt < 10_000" in rm and rm.index("snap.stale") < rm.index("snap.lang()"))
+
 print("FAILED" if failed else "all passed")
 sys.exit(1 if failed else 0)
