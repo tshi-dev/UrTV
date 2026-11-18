@@ -139,6 +139,54 @@ case_cold() {
 case_cold 40-cold-after-couch 14 --es preset couch
 case_cold 41-cold-after-tv 14 --es preset tv
 
+# 4.5 «المظهر على الرئيسية»: the panel over the live home (opened from its row in the settings), a preview under the focus, OK, Back, the undo row
+case_keys() {   # NAME SECONDS KEY... : the keys pressed while the screen is recorded; a picture at the end
+  name=$1; secs=$2; shift 2
+  echo "== $name"
+  adb logcat -c; adb logcat -b events -c
+  adb shell "date +%s.%N > /sdcard/t_rec; screenrecord --bit-rate 6000000 --time-limit $secs /sdcard/$name.mp4" &
+  rec=$!
+  sleep 2
+  echo "t_change: $(adb shell "date +%s.%N; input keyevent $1" | head -1)" > "$OUT/$name.txt"
+  shift
+  for k in "$@"; do sleep 0.8; adb shell input keyevent "$k"; done
+  wait $rec
+  echo "t_rec: $(adb shell cat /sdcard/t_rec)" >> "$OUT/$name.txt"
+  echo "focus-after: $(focus)" >> "$OUT/$name.txt"
+  adb pull "/sdcard/$name.mp4" "$OUT/$name.mp4" > /dev/null
+  adb shell rm "/sdcard/$name.mp4"
+  adb logcat -d -v epoch | grep -iE "UrTVHome|look change|sa\.urtv" | head -200 > "$OUT/$name.logcat.txt"
+  adb exec-out screencap -p > "$OUT/$name-end.png"
+}
+saver --es preset tv > /dev/null
+start sa.urtv.home/.MainActivity
+sleep 6
+adb shell "am start -n sa.urtv.screensaver/.SettingsActivity --es screen look --es want 'المظهر على الرئيسية'" > /dev/null
+sleep 5
+adb exec-out screencap -p > "$OUT/panel-00-settings-row.png"
+case_keys 50-panel-open 6 DPAD_CENTER
+adb exec-out screencap -p > "$OUT/panel-01-open.png"
+case_keys 51-panel-preview-couch 6 DPAD_LEFT
+adb exec-out screencap -p > "$OUT/panel-02-preview-couch.png"
+case_keys 52-panel-back-saved 6 BACK
+sleep 2
+adb shell "am start -n sa.urtv.screensaver/.SettingsActivity --es screen look --es want 'المظهر على الرئيسية'" > /dev/null
+sleep 5
+case_keys 53-panel-ok-couch 8 DPAD_CENTER DPAD_LEFT DPAD_CENTER
+adb exec-out screencap -p > "$OUT/panel-03-kept-couch.png"
+case_keys 54-panel-close 5 BACK
+sleep 2
+adb shell "am start -n sa.urtv.screensaver/.SettingsActivity --es screen look --es want 'المظهر على الرئيسية'" > /dev/null
+sleep 5
+adb shell input keyevent DPAD_CENTER; sleep 3
+adb exec-out screencap -p > "$OUT/panel-04-undo-row.png"
+case_keys 55-panel-undo 8 DPAD_CENTER
+adb exec-out screencap -p > "$OUT/panel-05-undone.png"
+adb shell input keyevent BACK; sleep 2
+adb shell "am start -n sa.urtv.screensaver/.SettingsActivity --es screen look" > /dev/null
+sleep 5
+adb exec-out screencap -p > "$OUT/settings-one-form-look.png"
+
 # inside the settings: does the screen itself change at once (its rows, its look, its preview)
 case_settings 30-settings-preset-couch 12 --es preset couch
 case_settings 31-settings-preset-tv 12 --es preset tv

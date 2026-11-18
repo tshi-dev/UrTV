@@ -87,6 +87,19 @@ def case(out, name):
     return r
 
 
+# 4.5 the owner's budgets (docs/ui/PROPOSAL.md, approved: CI checks), at the emulator's scale (software drawing: about twice a 2 GB TV's time)
+BUDGETS = [
+    ("no blank or dark frame in any switch of look (the cold start, 4x, is reported, not yet budgeted)", lambda r: r["case"].startswith("4") or not r.get("blank")),
+    ("a change from outside shows within 3 s (it waited for the minute: 4 to 52 s)", lambda r: not r["case"][:2] in ("01", "02", "03", "04", "05", "06", "07", "08", "09") or (r.get("first") is not None and r["first"] <= 3.0)),
+    ("after Back the new look is settled within 1.2 s (2 x the 600 ms of a TV)", lambda r: not r["case"].startswith("2") or (r.get("settled") is not None and r["settled"] <= 1.2)),
+]
+
+
+def budgets(res):
+    """the owner's budgets over every case: [(rule, [failing cases])]"""
+    return [(name, [r["case"] for r in res if not ok(r)]) for name, ok in BUDGETS]
+
+
 def main(out):
     names = sorted(f[:-4] for f in os.listdir(out) if f.endswith(".mp4"))
     res = [case(out, n) for n in names]
@@ -94,9 +107,13 @@ def main(out):
     lines = ["| case | first change (s) | settled (s) | changed frames | blank | flash | focus before → after |", "|---|---|---|---|---|---|---|"]
     for r in res:
         lines.append(f"| {r['case']} | {r.get('first')} | {r.get('settled')} | {r.get('changed_frames')} | {len(r.get('blank') or [])} | {len(r.get('flash') or [])} | {r.get('focus_before','')} → {r.get('focus_after','')} |")
+    bad = budgets(res)
+    lines += ["", "| budget | cases over it |", "|---|---|"] + [f"| {n} | {', '.join(c) if c else 'none'} |" for n, c in bad]
     open(os.path.join(out, "report.md"), "w").write("\n".join(lines) + "\n")
     print("\n".join(lines))
+    if "--budget" in sys.argv and any(c for _, c in bad):
+        sys.exit("over the budget: " + "; ".join(f"{n}: {', '.join(c)}" for n, c in bad if c))
 
 
 if __name__ == "__main__":
-    main(sys.argv[1])
+    main(sys.argv[1])  # --budget: exit 1 when a case is over the owner's budgets

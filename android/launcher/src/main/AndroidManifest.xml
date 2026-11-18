@@ -68,7 +68,6 @@
     <permission
         android:name="sa.urtv.home.LOOK"
         android:protectionLevel="signature" />
-    <uses-permission android:name="sa.urtv.home.LOOK" />
 
     <!-- «تحديث تلفزيوني»: only our two apps (same signing key) may open the update screen -->
     <permission

@@ -349,7 +349,7 @@ public class MainActivity extends Activity {
             if (pkg != null) { focusPkgAfter = pkg; applyPendingFocus(); }
         };
         if (!shown || homeLook == null) { apply.run(); return; }
-        homeLook.change(apply, () -> { if (before != null) updateClock(before); }, () -> homeCard == null || homeCard.settled());
+        homeLook.change(apply, () -> { if (before != null) updateClock(before); }, () -> appsSettled() && (homeCard == null || homeCard.settled()));
     }
 
     // «المظهر» (LookPanelActivity, in the screensaver app, see-through over this screen): the home moves aside while it is open, and shows the
@@ -377,7 +377,7 @@ public class MainActivity extends Activity {
         final ConfigSnapshot before = lastCfg;
         Runnable apply = () -> { updateClock(saved); homeCard.refresh(); applyClean(); if (pkg != null) { focusPkgAfter = pkg; applyPendingFocus(); } };
         if (!shown || homeLook == null) { apply.run(); return; }
-        homeLook.change(apply, () -> { lookPreview = null; homeCard.preview(null, null); if (before != null) updateClock(before); }, () -> homeCard == null || homeCard.settled());
+        homeLook.change(apply, () -> { lookPreview = null; homeCard.preview(null, null); if (before != null) updateClock(before); }, () -> appsSettled() && (homeCard == null || homeCard.settled()));
     }
 
     /** no preview any more (Back, the panel closed, or OK and its LOOK_CHANGED): the saved look, read fresh */
@@ -1460,6 +1460,10 @@ public class MainActivity extends Activity {
     private int dockRetries;
     private final Runnable dockRetry = () -> { if (!isDestroyed() && !isFinishing()) buildApps(); };
 
+    /** 4.5 the last buildApps' row is shown (HomeLook waits for it: a new way of the apps is never seen half built) */
+    private int appsShownGen;
+    private boolean appsSettled() { return appsShownGen == appsGen; }
+
     private void buildApps() {
         if (edit != null) abandonEdit();
         if (appsEdit != null) abandonAppsEdit();   // the grid it edits is stale: nothing saved, as «تعديل المفضلة»
@@ -1560,6 +1564,7 @@ public class MainActivity extends Activity {
         if (last != null) last.requestFocus();
         else if (!dockCards.isEmpty()) dockCards.get(0).requestFocus();
         appsShown = true;
+        appsShownGen = gen;   // 4.5 HomeLook: the row asked last is on the screen
         if (entranceDue) { entranceDue = false; playEntrance(); }
         applyPendingFocus();
         beginPendingEdit();

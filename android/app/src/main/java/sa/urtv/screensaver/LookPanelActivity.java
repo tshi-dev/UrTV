@@ -49,11 +49,13 @@ public final class LookPanelActivity extends Activity {
     private boolean previewing;
 
     /** opens «المظهر» over the home: the home first (its own task in front), then this see-through screen over it */
-    static void open(Activity from) {
+    static void open(android.content.Context from) {
         try {
             from.startActivity(new Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_HOME).setPackage("sa.urtv.home").addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
         } catch (RuntimeException e) { /* our home is not here: the panel over whatever is in front, still a choice with its OK and Back */ }
-        from.startActivity(new Intent(from, LookPanelActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_NO_ANIMATION));
+        try {
+            from.startActivity(new Intent(from, LookPanelActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_NO_ANIMATION));
+        } catch (RuntimeException e) { /* a background start the system refused (a receiver on Android 10+): nothing opens, nothing changes */ }
     }
 
     @Override

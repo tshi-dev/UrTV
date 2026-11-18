@@ -348,6 +348,8 @@ public class SaverReceiver extends BroadcastReceiver {
         String homeLayout = i.getStringExtra("homelayout");
         String preset = i.getStringExtra("preset");
         String lookback = i.getStringExtra("lookback");
+        String lookpanel = i.getStringExtra("lookpanel");
+        if (lookpanel != null && !"open".equals(lookpanel)) return "error: lookpanel is open";
         if (lookback != null && !"restore".equals(lookback)) return "error: lookback is restore";
         String couch = i.getStringExtra("couch"), homeBg = i.getStringExtra("background"), homeClock = i.getStringExtra("clock"), appsStyle = i.getStringExtra("appsstyle");
         if ("scenes".equals(homeLayout)) { homeLayout = null; couch = "on"; }   // 4.3.3's word: the scenes with the glass clock
@@ -581,6 +583,8 @@ public class SaverReceiver extends BroadcastReceiver {
         if (leagues != null) p.setList("leagues", leagues);
         // the page reads its settings once, when it starts: a screensaver (or preview) already on the screen would go on showing the old ones
         c.sendBroadcast(new Intent(Prefs.CHANGED).setPackage(c.getPackageName()));
+        p.lookChanged();   // 4.5: the home reads them now too (a look, a part, the cards…), not at its next minute
+        if ("open".equals(i.getStringExtra("lookpanel"))) LookPanelActivity.open(c);   // optimize/saver.sh lookpanel: «المظهر» over the home
         return "saved\n" + describe(c, p);
     }
 

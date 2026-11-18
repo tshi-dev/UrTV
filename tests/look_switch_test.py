@@ -77,7 +77,8 @@ check("one fade of 250 ms on Motion's curve; «الوضع الخفيف» (Ram.lo
       and "getWidth() / 2" in look and "shot.recycle()" in look)
 check("a change while one is under way waits for it (the last one wins), and a screen left with a cover up ends it at once",
       "if (busy()) { queued = () -> change(apply, undo, ready); return; }" in look and "void finishNow()" in look)
-check("the cover waits for the cards: their url read and in place, the page drawn (HomeCard.settled)", "homeCard == null || homeCard.settled()" in sl
+check("the cover waits for the apps' row (the one asked last is shown) and the cards: their url read and in place, the page drawn (HomeCard.settled)",
+      "() -> appsSettled() && (homeCard == null || homeCard.settled())" in sl and "appsShownGen = gen;" in main and "private boolean appsSettled() { return appsShownGen == appsGen; }" in main
       and "boolean settled() { return appliedGen == refreshGen && !loading && (web == null || web.getAlpha() >= 1f); }" in card)
 au = body(card, "    private void applyUrl(String want) {")
 check("a new cards' page is hidden until its first frame is on the screen (onPageCommitVisible), at most WAIT_MS: never a black box",

@@ -27,7 +27,7 @@ check("every row of the registry has its place in both layouts (the side list an
 check("…and every row is in its 4.3.2 section's order (none left at the end by accident)", all(r in old_order for r in old_rows), [r for r in old_rows if r not in old_order])
 check("the 4.4 rows sit in their natural 4.3.2 section: the switch and the look's rows in «المظهر والخلفيات», the Hijri shift with the clock, the caches with the update",
       all(f'{{"{r}", "{c}"}}' in hub for r, c in (("أشكال جاهزة", "look"), ("شكل كنبة", "look"), ("التخطيط", "look"), ("حزم الآفاق", "look"), ("وضع الألوان", "look"), ("فرق التاريخ الهجري", "clock"),
-                                                 ("مسح الملفات المؤقتة", "update"))) and '{"look", "أشكال جاهزة", "شكل كنبة",' in hub)
+                                                 ("مسح الملفات المؤقتة", "update"))) and '{"look", "المظهر على الرئيسية", "رجّع الشكل السابق", "أشكال جاهزة", "شكل كنبة",' in hub)   # 4.5: the panel's row and the undo first
 
 if shutil.which("javac"):
     with tempfile.TemporaryDirectory() as tmp:
