@@ -25,7 +25,7 @@ check("the update screen on beta reads apk-latest too and keeps the newer (the r
       and "if (!UpdateRules.betaOffered(builtOf(ver), builtOf(latest), betaDeclined(c))) { ver = latest; base = UpdateRules.BASE; }" in prep
       and prep.index("betaOffered") < prep.index("releaseBase = base;"))
 check("…a 404 is «nothing newer» only when the chosen release is the beta one", "UpdateRules.BETA_BASE.equals(base))" in prep)
-check("the home's pill on beta: the newer of both", 'if ("beta".equals(ch)) { int latest = newestAt(UpdateRules.BASE); if (!UpdateRules.betaWins(build, latest)) build = latest; }' in un)
+check("the home's pill on beta: the newer of both", 'if ("beta".equals(ch)) { int latest = newestAt(UpdateRules.BASE); if (!UpdateRules.betaWins(build, latest)) { build = latest; base = UpdateRules.BASE; } }' in un)
 check("the screensaver's version line on beta: the newer of both", "v = Versions.newerOf(v, l);" in up and "String l = latestFromAsset(VERSION_URL);" in up)
 check("fromBeta() says the found update is the beta release (for the TV's question before it downloads)",
       "public static boolean fromBeta() { return UpdateRules.BETA_BASE.equals(releaseBase); }" in pu)

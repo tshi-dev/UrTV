@@ -37,7 +37,7 @@ check("the release of the person's channel (apk-latest, or apk-next for a tester
       "new Thread(" in un and "Net.get(base + \"version.txt\", null, 10000, 12000, 64)" in un and "UpdateChannel.cached()" in un
       and "MusicService.carryOurPlaying() || sa.urtv.home.tilawah.NowPlaying.adhanLive()" in un and "UpdateNoticeRule.due(" in un and "PackageInstaller" not in un and "ACTION_VIEW" not in un)
 check("4.4: all three apps are compared (the home, the screensaver app, «إضافات تلفزيونك» where it is installed); a missing screensaver keeps «ثبّت الجزء الثاني»",
-      "UpdateNoticeRule.behind(code(c, c.getPackageName()), code(c, SAVER), code(c, ExtrasWords.PACKAGE), newest(c))" in un and "k < 0 ? 0 : k" in un)
+      "UpdateNoticeRule.behind(code(c, c.getPackageName()), code(c, SAVER), code(c, ExtrasWords.PACKAGE), newest(c), extrasAbsent(c))" in un and "k < 0 ? 0 : k" in un)
 check("4.4: the one-time card «في تحديث لـ …» on the home's bar: OK opens «تحديث تلفزيوني» behind its lock, never in kids mode or over playback or the adhan, marked shown as it appears, «لاحقاً» hides it",
       'S.t("في تحديث لـ %s", names(b))' in un and "UpdateNotice.card(this, updateCardOnScreen, nowMs)" in main and "kids || quiet || askStock ? null :" in main
       and "UpdateNotice.shown(this, card.target, nowMs)" in main and "if (nudgeIsUpdate) { launchGuarded(ParentalPolicy.PILL_UPDATES, new Intent(this, UpdateActivity.class)" in main

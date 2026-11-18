@@ -54,6 +54,22 @@ public class UpdateActivity extends Activity {
         S.n("تحديث جديد %s، اضغط للتحديث"),
         S.n("تم التحديث ✓ %s"),
         S.n("الخطوة: %s"),
+        S.n("تعذّر تنزيل ملف %s"),
+        S.n("تعذّر تنزيل ملف التحديث"),
+        S.n("التلفزيون غير متصل بالواي فاي أو الإيثرنت"),
+        S.n("ما يكفي المساحة الفارغة على التلفزيون"),
+        S.n("الملف لا يطابق توقيع التطبيق"),
+        S.n("الملف ليس للتطبيق المطلوب"),
+        S.n("تعذّرت قراءة الملف"),
+        S.n("الملف ليس أحدث من المثبّت"),
+        S.n("تعذّر فتح شاشة السماح بالتثبيت"),
+        S.n("حدث خطأ غير متوقع أثناء التحديث"),
+        S.n("ما وصلت ملفات للتحديث"),
+        S.n("تعذّر حفظ سجل التحديث"),
+        S.n("نظام التلفزيون يمنع التثبيت"),
+        S.n("رفض مثبّت أندرويد الملف"),
+        S.n("الملف يتعارض مع نسخة مثبّتة"),
+        S.n("الملف لا يناسب هذا الجهاز"),
         S.n("تحديث تطبيق الحافظة"),
         S.n("تحديث الواجهة الرئيسية"),
         S.n("تحديث إضافات تلفزيونك"),
@@ -231,13 +247,13 @@ public class UpdateActivity extends Activity {
                 col.addView(text(UpdateText.done(newest, S::tv), 17, "Medium", GOLD, Dir.start()), right(dp(8)));
                 return doneButton();
             case "error":
-                return renderError(why, detail);
+                return renderError(why, detail, st.containsKey("why") ? (String) st.get("why") : "");   // «why»: the installer's word for «failed», the file for «cannot»
             default:
                 return checkButton();
         }
     }
 
-    private View renderError(String why, String detail) {
+    private View renderError(String why, String detail, String extra) {
         switch (why) {
             case "offline":
                 col.addView(text(S.tv(UpdateText.OFFLINE), 17, "Medium", RED, Dir.start()), right(dp(16)));
@@ -257,12 +273,20 @@ public class UpdateActivity extends Activity {
             case "failed":
                 col.addView(text(S.tv(UpdateText.NOT_DONE), 17, "Medium", RED, Dir.start()), right(dp(6)));
                 col.addView(text(UpdateText.failedStep(S.tv(UpdateOrder.label(detail)), S::tv), 14, "Regular", DIM, Dir.start()), right(dp(14)));
+                reasonLine(extra, "");
                 aiMessage();
                 return checkButton();
-            default:   // "cannot", and anything this screen doesn't know: the same message
+            default:   // "cannot", and anything this screen doesn't know: what failed when known (R-288), then the AI assistant line
+                reasonLine(detail, extra);
                 aiMessage();
                 return checkButton();
         }
+    }
+
+    /** R-288: what failed, in a sentence of its own above the AI assistant line (nothing when the word is not known) */
+    private void reasonLine(String word, String file) {
+        String line = UpdateText.reason(word, file, S::tv);
+        if (line != null) col.addView(text(line, 17, "Medium", RED, Dir.start()), right(dp(8)));
     }
 
     /** The message that sends the owner to their AI assistant, with the repository address small under it. */

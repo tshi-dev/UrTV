@@ -70,8 +70,11 @@ jobs:
           case "$want" in
             *[!0-9a-fA-F]*|'') echo "::error::the build is a number or a commit sha (hex), nothing else"; exit 1;; esac
           mkdir -p next
-          gh release download "$SRC" --repo "$GITHUB_REPOSITORY" --dir next --pattern 'urtv-screensaver.apk' --pattern 'urtv-home.apk' --pattern 'urtv-extras.apk' --pattern 'version.txt'
+          # EVERY .apk the source holds (a file the TVs update from must exist at apk-beta too: R-288, the add-on's file was missing there) and version.txt
+          gh release download "$SRC" --repo "$GITHUB_REPOSITORY" --dir next --pattern '*.apk' --pattern 'version.txt'
           for f in urtv-screensaver.apk urtv-home.apk urtv-extras.apk version.txt; do [ -s "next/$f" ] || { echo "::error::$SRC has no $f"; exit 1; }; done
+          ls next | sort > source-assets.txt
+          echo "$SRC holds: $(tr '\n' ' ' < source-assets.txt)"
           ver="$(tr -d '[:space:]' < next/version.txt)"
           body="$(gh release view "$SRC" --repo "$GITHUB_REPOSITORY" --json body --jq .body)"
           echo "$SRC holds $ver"
@@ -91,7 +94,12 @@ jobs:
           else
             gh release create apk-beta --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" --prerelease --latest=false --title "Beta ${VER}" --notes "Beta build ${VER}, promoted from ${SRC} by the owner after approving it. The same signed files, not rebuilt. ${NOTE}"
           fi
-          # version.txt last: a TV that reads it finds the APKs already there
-          gh release upload apk-beta --repo "$GITHUB_REPOSITORY" --clobber next/urtv-screensaver.apk next/urtv-home.apk next/urtv-extras.apk
+          # version.txt last: a TV that reads it finds the APKs already there (every .apk the source holds, nothing deleted)
+          apks=(next/*.apk)
+          gh release upload apk-beta --repo "$GITHUB_REPOSITORY" --clobber "${apks[@]}"
           gh release upload apk-beta --repo "$GITHUB_REPOSITORY" --clobber next/version.txt
-          echo "apk-beta now holds $VER"
+          # apk-beta must now hold every asset name the source holds, or the job fails (R-288)
+          gh release view apk-beta --repo "$GITHUB_REPOSITORY" --json assets --jq '.assets[].name' | sort > beta-assets.txt
+          missing="$(comm -23 source-assets.txt beta-assets.txt | tr '\n' ' ')"
+          [ -z "$missing" ] || { echo "::error::apk-beta lacks: $missing"; exit 1; }
+          echo "apk-beta now holds $VER with all of: $(tr '\n' ' ' < source-assets.txt)"

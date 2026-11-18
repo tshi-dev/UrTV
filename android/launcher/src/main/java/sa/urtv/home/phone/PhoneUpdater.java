@@ -165,7 +165,7 @@ public final class PhoneUpdater {
         if (v.result == UpdateFlow.Result.UP_TO_DATE) { set("uptodate", "", ""); return; }
         if (v.result == UpdateFlow.Result.OFFLINE) { set("error", "offline", ""); return; }
         if (v.result == UpdateFlow.Result.CANNOT) { cannot(v.reason); return; }
-        v = UpdateFlow.first(newest, lowestInstalled(c), canInstall(c));
+        v = UpdateFlow.first(newest, lowestInstalled(c, missingOptional(c, base)), canInstall(c));   // R-288: an add-on whose file this release lacks cannot keep «a newer build» on
         switch (v.result) {
             case OFFLINE: set("error", "offline", ""); return;
             case UP_TO_DATE: set("uptodate", "", ""); return;
@@ -186,14 +186,16 @@ public final class PhoneUpdater {
         final String base = releaseBase;
         List<String> have = new ArrayList<>();
         for (String[] apk : UpdateRules.APKS) if (installedCode(c, apk[0]) >= 0) have.add(apk[0]);
-        List<String> order = UpdateOrder.order(have);
+        Set<String> missing = missingOptional(c, base);   // R-288: an optional file the release does not hold is skipped, not a failure
+        for (String pkg : have) if (missing.contains(pkg)) Log.i(TAG, "skipped " + fileOf(pkg) + ": not in this release");
+        List<String> order = UpdateOrder.order(UpdateRules.wanted(have, missing));
         long[] sizes = new long[order.size()];
         long sum = 0;
         boolean known = true;
         for (int i = 0; i < sizes.length; i++) {
             long n = sizeOf(base + fileOf(order.get(i)));
             sizes[i] = n > 0 ? n : UpdateRules.MAX_APK_BYTES;   // unknown: the most a file may be
-            sum += n;
+            sum += Math.max(n, 0);
             known &= n > 0;
         }
         dlDone = 0;
@@ -219,7 +221,7 @@ public final class PhoneUpdater {
                 Log.w(TAG, "download failed: " + e);
                 got = false;
             }
-            if (!got) { clean(dir); cannot(UpdateFlow.fetchFailed().reason); return false; }   // version.txt was read: this is not «no connection»
+            if (!got) { clean(dir); cannot(UpdateFlow.fetchFailed().reason, fileOf(pkg)); return false; }   // version.txt was read: this is not «no connection»
             verifying = true;
             String why = verify(c, pkg, f);
             verifying = false;
@@ -278,9 +280,12 @@ public final class PhoneUpdater {
     }
 
     /** The TV can't update itself: the screen shows the message about the AI assistant. The reason goes to the log. */
-    private static void cannot(String why) {
-        Log.w(TAG, "cannot update: " + why);
-        set("error", "cannot", why);
+    private static void cannot(String why) { cannot(why, ""); }
+
+    /** file: the file that failed, when one did (the screen says «تعذّر تنزيل ملف …»); it goes to the log and the status' «why» */
+    private static void cannot(String why, String file) {
+        Log.w(TAG, "cannot update: " + why + (file.isEmpty() ? "" : " (" + file + ")"));
+        set("error", "cannot", why, file);
     }
 
     private static String fileOf(String pkg) {
@@ -350,7 +355,20 @@ public final class PhoneUpdater {
         return v;
     }
 
-    /** The size of a file without downloading it: the first byte only, and the total from Content-Range. -1 when the server doesn't say. */
+    /**
+     * The optional packages that are installed here and whose file the release does not hold (a 404 of the probe; a network error is not «missing»: the
+     * download then fails as before). Network: call off the main thread only.
+     */
+    private static Set<String> missingOptional(Context c, String base) {
+        Set<String> out = new HashSet<>();
+        for (String[] apk : UpdateRules.APKS) {
+            if (UpdateRules.isRequired(apk[0]) || installedCode(c, apk[0]) < 0) continue;
+            if (sizeOf(base + apk[1]) == UpdateRules.MISSING) out.add(apk[0]);
+        }
+        return out;
+    }
+
+    /** The size of a file without downloading it: the first byte only, and the total from Content-Range. -1 when the server doesn't say, MISSING (-2) on a 404. */
     private static long sizeOf(String url) {
         if (!UpdateRules.isReleaseUrl(url)) return -1;
         try {
@@ -365,6 +383,7 @@ public final class PhoneUpdater {
                     if (range != null && range.matches("bytes 0-0/[0-9]{1,12}")) return Long.parseLong(range.substring(range.indexOf('/') + 1));
                     return -1;
                 }
+                if (UpdateRules.assetMissing(code)) return UpdateRules.MISSING;   // a 404: the release does not hold this file
                 return code == HttpURLConnection.HTTP_OK ? con.getContentLengthLong() : -1;
             } finally {
                 con.disconnect();
@@ -517,14 +536,11 @@ public final class PhoneUpdater {
     /** The version of this app as the screen and the phone page name it: «4.0» (the VERSION file's name; the build, the versionCode, is in the status). */
     public static String installedName(Context c) { return UpdateText.versionOf(BuildConfig.MARKETING, BuildConfig.VERSION_CODE); }
 
-    /** The lowest build among our apps that are installed: the TV is up to date only when all of them are. */
-    private static long lowestInstalled(Context c) {
-        long low = Long.MAX_VALUE;
-        for (String[] apk : UpdateRules.APKS) {
-            long k = installedCode(c, apk[0]);
-            if (k >= 0 && k < low) low = k;
-        }
-        return low == Long.MAX_VALUE ? 0 : low;
+    /** The lowest build among our apps that are installed and count: the TV is up to date only when all of them are (an optional one whose file the release lacks does not count, R-288). */
+    private static long lowestInstalled(Context c, Set<String> missing) {
+        Map<String, Long> have = new LinkedHashMap<>();
+        for (String[] apk : UpdateRules.APKS) have.put(apk[0], installedCode(c, apk[0]));
+        return UpdateRules.lowestInstalled(have, missing);
     }
 
     private static Set<String> signers(PackageInfo i) throws Exception {

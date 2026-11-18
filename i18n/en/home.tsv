@@ -340,6 +340,22 @@ HDMI ARC (مضخم أو ساوند بار)	HDMI ARC (amplifier or soundbar)
 تحديث جديد %s، اضغط للتحديث	New update %s, press to update
 تم التحديث ✓ %s	Updated ✓ %s
 الخطوة: %s	Step: %s
+تعذّر تنزيل ملف %s	Couldn’t download the file %s
+تعذّر تنزيل ملف التحديث	Couldn’t download the update file
+التلفزيون غير متصل بالواي فاي أو الإيثرنت	The TV isn’t connected to Wi-Fi or Ethernet
+ما يكفي المساحة الفارغة على التلفزيون	There isn’t enough free space on the TV
+الملف لا يطابق توقيع التطبيق	The file doesn’t match the app’s signature
+الملف ليس للتطبيق المطلوب	The file isn’t for the expected app
+تعذّرت قراءة الملف	The file couldn’t be read
+الملف ليس أحدث من المثبّت	The file isn’t newer than the installed app
+تعذّر فتح شاشة السماح بالتثبيت	Couldn’t open the install permission screen
+حدث خطأ غير متوقع أثناء التحديث	An unexpected error happened during the update
+ما وصلت ملفات للتحديث	No update files arrived
+تعذّر حفظ سجل التحديث	Couldn’t save the update record
+نظام التلفزيون يمنع التثبيت	The TV’s system blocks the install
+رفض مثبّت أندرويد الملف	Android’s installer refused the file
+الملف يتعارض مع نسخة مثبّتة	The file conflicts with an installed version
+الملف لا يناسب هذا الجهاز	The file doesn’t suit this device
 تحديث تطبيق الحافظة	Updating the screensaver app
 تحديث الواجهة الرئيسية	Updating the home screen
 التحقق من الملفات	Checking the files

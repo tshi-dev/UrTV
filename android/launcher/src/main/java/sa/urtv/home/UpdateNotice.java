@@ -38,8 +38,11 @@ final class UpdateNotice {
 
     private static int newest(Context c) { return c.getSharedPreferences(PREFS, Context.MODE_PRIVATE).getInt("newest_" + channel(c), 0); }
 
+    /** R-288: the last read found no add-on file in this channel's release (a 404): the add-on is then never «behind» */
+    private static boolean extrasAbsent(Context c) { return c.getSharedPreferences(PREFS, Context.MODE_PRIVATE).getBoolean("extras_absent_" + channel(c), false); }
+
     private static int behindNow(Context c) {
-        return UpdateNoticeRule.behind(code(c, c.getPackageName()), code(c, SAVER), code(c, ExtrasWords.PACKAGE), newest(c));
+        return UpdateNoticeRule.behind(code(c, c.getPackageName()), code(c, SAVER), code(c, ExtrasWords.PACKAGE), newest(c), extrasAbsent(c));
     }
 
     static boolean wanted(Context c) { return behindNow(c) != 0; }
@@ -79,6 +82,17 @@ final class UpdateNotice {
         }
     }
 
+    /** 404 on the add-on's file at a release: true (absent), false (there: 200 or 206), null (no answer or anything else: what was known stays) */
+    private static Boolean extrasAbsentAt(String base) {
+        try {
+            Net.Reply r = Net.get(base + "urtv-extras.apk", java.util.Collections.singletonMap("Range", "bytes=0-0"), 10000, 12000, 1);   // the first byte only
+            if (UpdateRules.assetMissing(r.status)) return Boolean.TRUE;
+            return r.status == 200 || r.status == 206 || (r.status >= 300 && r.status < 400) ? Boolean.FALSE : null;   // Net follows no redirect: a 302 to the file's host means the file is there
+        } catch (java.io.IOException | RuntimeException e) {
+            return null;
+        }
+    }
+
     /** reads version.txt of the person's channel when one is due (off the main thread; {@code done} runs on that thread after a good read). Offline: nothing said. */
     static void checkIfDue(final Context app, final Runnable done) {
         final SharedPreferences sp = app.getSharedPreferences(PREFS, Context.MODE_PRIVATE);
@@ -90,10 +104,14 @@ final class UpdateNotice {
             @Override public void run() {
                 try {
                     int build = newestAt(UpdateRules.baseFor(ch));
+                    String base = UpdateRules.baseFor(ch);
                     // 4.3.4: on «النسخ التجريبية» the newer of apk-beta and apk-latest (a beta user is never left behind an official release)
-                    if ("beta".equals(ch)) { int latest = newestAt(UpdateRules.BASE); if (!UpdateRules.betaWins(build, latest)) build = latest; }
+                    if ("beta".equals(ch)) { int latest = newestAt(UpdateRules.BASE); if (!UpdateRules.betaWins(build, latest)) { build = latest; base = UpdateRules.BASE; } }
                     if (build > 0) {
-                        sp.edit().putInt("newest_" + ch, build).apply();
+                        Boolean absent = PhoneUpdater.installedCode(app, ExtrasWords.PACKAGE) >= 0 ? extrasAbsentAt(base) : Boolean.FALSE;   // R-288: only where the add-on is installed
+                        SharedPreferences.Editor e = sp.edit().putInt("newest_" + ch, build);
+                        if (absent != null) e.putBoolean("extras_absent_" + ch, absent);
+                        e.apply();
                         if (done != null) done.run();
                     }
                 } catch (RuntimeException ignored) {   // newestAt answers its own IOException (-1)

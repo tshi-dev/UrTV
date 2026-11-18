@@ -830,8 +830,7 @@ header.top .sub{display:block;font-weight:400;font-size:14px;color:var(--dim)}
 	function upText(u) {
 		if (!u) return;
 		var t = UP[u.status] || '';
-		if (u.status === 'error' && u.reason) t += ' ' + (UPWHY[u.reason] || '');
-		if (u.status === 'error') { var w = UPWHY[u.why] || UPWHY[u.detail]; if (w && w !== UPWHY[u.reason]) t += ' ' + w; }
+		if (u.status === 'error') { var g = u.reason === 'cannot' || u.reason === 'failed', w = UPWHY[u.why] || UPWHY[u.detail]; if (!g) t += ' ' + (UPWHY[u.reason] || ''); if (w && w !== UPWHY[u.reason]) t += ' ' + w + (u.detail === 'download' && u.why ? ' (' + u.why + ')' : ''); if (g) t += ' ' + UPWHY[u.reason]; }   // what failed (the file named) first, the AI assistant line last
 		if ((u.status === 'available' || u.status === 'found') && u.build) t += ' (' + (u.version || 'الإصدار ' + u.build) + ')';
 		$('upState').textContent = t;
 		$('upGo').classList.toggle('hidden', u.status !== 'available' && u.status !== 'found');

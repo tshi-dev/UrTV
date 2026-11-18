@@ -17,6 +17,14 @@ public final class UpdateText {
     public static final String NOT_DONE = "ما اكتمل التحديث";
     public static final String DECLINED = "ألغيت التثبيت.";
 
+    /** R-288: what failed, in a plain sentence (the failure screen says it first, the AI assistant line last). One %s: the file's name. */
+    public static final String DOWNLOAD_FILE = "تعذّر تنزيل ملف %s", DOWNLOAD = "تعذّر تنزيل ملف التحديث", NETWORK = "التلفزيون غير متصل بالواي فاي أو الإيثرنت",
+            STORAGE = "ما يكفي المساحة الفارغة على التلفزيون", SIGNATURE = "الملف لا يطابق توقيع التطبيق", OTHER_APP = "الملف ليس للتطبيق المطلوب",
+            UNREADABLE = "تعذّرت قراءة الملف", NOT_NEWER = "الملف ليس أحدث من المثبّت", PERMISSION = "تعذّر فتح شاشة السماح بالتثبيت",
+            UNEXPECTED = "حدث خطأ غير متوقع أثناء التحديث", NOTHING = "ما وصلت ملفات للتحديث", RECORD = "تعذّر حفظ سجل التحديث",
+            BLOCKED = "نظام التلفزيون يمنع التثبيت", INSTALLER_REFUSED = "رفض مثبّت أندرويد الملف", CONFLICT = "الملف يتعارض مع نسخة مثبّتة",
+            INCOMPATIBLE = "الملف لا يناسب هذا الجهاز";
+
     private UpdateText() { }
 
     /** The version inside an Arabic line, isolated so its digits and dot keep together. */
@@ -44,6 +52,32 @@ public final class UpdateText {
 
     public static String done(String version) { return done(version, ARABIC); }
     public static String done(String version, Say say) { return say.t(DONE, isolate(version)); }
+
+    /**
+     * The sentence for the word an update stopped with (UpdateFlow's, UpdateRules.verify's, the installer's), or null for a word it does not know (the screen then has
+     * only the AI assistant line). file: the file that failed to download, when it is known.
+     */
+    public static String reason(String why, String file, Say say) {
+        if (why == null) return null;
+        switch (why) {
+            case "download": return file == null || file.isEmpty() ? say.t(DOWNLOAD) : say.t(DOWNLOAD_FILE, file);
+            case "network": return say.t(NETWORK);
+            case "space": case "storage": return say.t(STORAGE);
+            case "other_key": case "unsigned": return say.t(SIGNATURE);
+            case "other_app": return say.t(OTHER_APP);
+            case "unreadable": return say.t(UNREADABLE);
+            case "not_newer": return say.t(NOT_NEWER);
+            case "permission_screen": return say.t(PERMISSION);
+            case "exception": return say.t(UNEXPECTED);
+            case "nothing": return say.t(NOTHING);
+            case "record": return say.t(RECORD);
+            case "blocked": return say.t(BLOCKED);
+            case "invalid": case "installer": return say.t(INSTALLER_REFUSED);
+            case "conflict": return say.t(CONFLICT);
+            case "incompatible": return say.t(INCOMPATIBLE);
+            default: return null;
+        }
+    }
 
     public static String failedStep(String stepLabel) { return failedStep(stepLabel, ARABIC); }
     public static String failedStep(String stepLabel, Say say) { return say.t(FAILED_STEP, stepLabel); }

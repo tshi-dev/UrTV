@@ -64,9 +64,13 @@ check("promote-beta is by hand only, with the build as input", re.search(r"^on:\
 check("it copies the source release's files as they are (no build, no signing step)", 'gh release download "$SRC"' in wf and "gradle" not in wf.lower() and "apksigner" not in wf and "keystore" not in wf.lower())
 check("it refuses when the source holds another build than the one asked for", "$SRC holds build" in wf and "exit 1" in wf)
 check("the source is apk-next (default) or apk-latest, nothing else (4.3.4: so beta TVs also get what everyone gets)", "default: apk-next" in wf and "- apk-latest" in wf and 'case "$SRC" in apk-next|apk-latest)' in wf)
-check("it publishes the two APKs and version.txt to apk-beta, version.txt last", "urtv-screensaver.apk" in wf and "urtv-home.apk" in wf and wf.rindex("next/version.txt") > wf.rindex("next/urtv-home.apk") and "apk-beta" in wf)
-check("4.4 review D-F1: promote-beta also copies urtv-extras.apk (UpdateRules.APKS has it: a TV with the add-on fails the whole update without it), before version.txt",
-      "--pattern 'urtv-extras.apk'" in wf and "next/urtv-extras.apk" in wf and wf.rindex("next/version.txt") > wf.rindex("next/urtv-extras.apk"))
+check("it publishes the APKs and version.txt to apk-beta, version.txt last", "urtv-screensaver.apk" in wf and "urtv-home.apk" in wf and wf.rindex("next/version.txt") > wf.rindex('"${apks[@]}"') and "apk-beta" in wf)
+check("R-288 (4.4 review D-F1): promote-beta copies EVERY .apk the source holds (not a fixed list), requires home, screensaver and extras there, and uploads version.txt last",
+      "--pattern '*.apk'" in wf and "--pattern 'version.txt'" in wf and "for f in urtv-screensaver.apk urtv-home.apk urtv-extras.apk version.txt" in wf
+      and 'apks=(next/*.apk)' in wf and wf.rindex("next/version.txt") > wf.rindex('"${apks[@]}"'))
+check("R-288: after uploading it checks apk-beta holds every asset name of the source and fails the job otherwise; it deletes nothing",
+      "comm -23 source-assets.txt beta-assets.txt" in wf and "apk-beta lacks" in wf and wf.index("apk-beta lacks") > wf.rindex("next/version.txt") and "exit 1" in wf.split("apk-beta lacks")[1][:40]
+      and not re.search(r"release\s+delete|delete-asset|gh api[^\n]*DELETE", wf))
 check("the apk-beta release is a pre-release and never the repository's latest", "--prerelease" in wf and "--latest=false" in wf)
 check("nothing else promotes: no other workflow writes apk-beta", not any(re.search(r"tag_name:\s*apk-beta|release\s+(edit|create|upload|delete)\s+apk-beta|--tag\s+apk-beta", p.read_text(encoding="utf-8")) for p in (ROOT / ".github/workflows").glob("*.yml") if p.name != "promote-beta.yml"))
 if shutil.which("python3"):
