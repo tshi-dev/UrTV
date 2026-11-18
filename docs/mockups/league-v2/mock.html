@@ -1,0 +1,267 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>League v2 mockups</title>
+<!-- Mockup only (4.5 league design study). Not shipped. The real page uses Thmanyah; this file falls back to a stand-in Arabic font for the
+     screenshots. Colours, sizes (1080p lengths × --u), the focus ring and the cards are #mp's own (src/template.html, «المباريات»).
+     No flex gap, inset, clamp or min() in the new parts (R10, WebView 66): spacing is margins. Sample data, not real results. -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;700&display=block">
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{--u:1px}
+  html,body{background:#F4F2EC;font-family:'Thmanyah','IBM Plex Sans Arabic',sans-serif;overflow:hidden}
+  /* #mp's light tokens, as they are */
+  #root{--fi:#1B1F1D;--fs:#5E635F;--fgr:#1B8354;--fam:#8A5600;--fring:#1B8354;--fln:#E4E1D8;--fbg:#fff;--rowf:#EEF6F1;--dlg:#F7F6F1;--btn:#fff;--pri:#21915F;
+    --veil:rgba(244,242,236,.72);--shd:rgba(40,36,24,.18);--flo:#B3261E;
+    /* new: three zone colours, chosen to stay apart for the common colour-blindness types and on a washed-out TV panel */
+    --z1:#1B8354;--z2:#2F6FB3;--z3:#B3261E;--sq:#E9E6DD}
+  html.dark,html.dark body{background:#17181B}
+  html.dark #root{--fi:#FFFFFF;--fs:#DADCE0;--fgr:#8FE0B4;--fam:#F0B35A;--fring:#8FE0B4;--fln:rgba(255,255,255,.16);--fbg:#202227;--rowf:rgba(143,224,180,.14);--dlg:#1D1F24;--btn:#2A2D33;--pri:#1B8354;
+    --veil:rgba(0,0,0,.66);--shd:rgba(0,0,0,.5);--flo:#FF9A8F;--z1:#5CC48E;--z2:#7FB0E8;--z3:#FF8A7E;--sq:rgba(255,255,255,.1)}
+  .pg{position:fixed;top:0;right:0;bottom:0;left:0;padding:calc(var(--u)*44) calc(var(--u)*120) calc(var(--u)*36);color:var(--fi);display:flex;flex-direction:column;font-size:calc(var(--u)*28)}
+  .num{unicode-bidi:isolate}
+
+  /* ---- header: the league, the round, the next game's countdown (a fixed box: the numbers change, nothing around them moves) */
+  .hd{display:flex;justify-content:space-between;align-items:flex-end}
+  .hd h1{font-size:calc(var(--u)*50);font-weight:700;line-height:1.1}
+  .hd .sub{color:var(--fs);font-size:calc(var(--u)*26);margin-top:calc(var(--u)*6)}
+  .hd .sub b{color:var(--fi);font-weight:500}
+  .nx{width:calc(var(--u)*520);text-align:left;direction:rtl}
+  .nx .k{color:var(--fs);font-size:calc(var(--u)*22);text-align:left}
+  .nx .v{font-size:calc(var(--u)*30);font-weight:500;text-align:left;margin-top:calc(var(--u)*4)}
+  .nx .t{color:var(--fgr);font-size:calc(var(--u)*26);font-weight:500;text-align:left;margin-top:calc(var(--u)*2)}
+
+  /* ---- the tabs: #mp-days as it is */
+  .tabs{list-style:none;display:flex;border-bottom:1px solid var(--fln);margin-top:calc(var(--u)*12)}
+  .tabs li{padding:calc(var(--u)*10) calc(var(--u)*24);color:var(--fs);border-bottom:calc(var(--u)*4) solid transparent;border-radius:calc(var(--u)*12) calc(var(--u)*12) 0 0;white-space:nowrap;margin-left:calc(var(--u)*8)}
+  .tabs li.on{color:var(--fgr);font-weight:700;border-bottom-color:var(--fgr)}
+  .tabs li.f{box-shadow:inset 0 0 0 calc(var(--u)*3) var(--fring)}
+  .tabs .hint{margin-right:auto;margin-left:0;border:0;color:var(--fs);font-size:calc(var(--u)*22);align-self:center}
+
+  .f{box-shadow:inset 0 0 0 calc(var(--u)*3) var(--fring)!important;background:var(--rowf)!important}
+  .card{background:var(--fbg);border:1px solid var(--fln);border-radius:calc(var(--u)*24)}
+  h2{font-size:calc(var(--u)*30);font-weight:700;margin-bottom:calc(var(--u)*12);display:flex;justify-content:space-between;align-items:baseline}
+  h2 i{font-style:normal;font-weight:400;color:var(--fs);font-size:calc(var(--u)*22)}
+
+  /* ---- the live strip: one card per game on now, the minute in the live colour, the score in the middle */
+  .live{display:flex;margin-top:calc(var(--u)*16)}
+  .lv{flex:1;padding:calc(var(--u)*10) calc(var(--u)*24);margin-left:calc(var(--u)*20);border-radius:calc(var(--u)*20)}
+  .lv:last-child{margin-left:0}
+  .lv .m{color:var(--flo);font-size:calc(var(--u)*22);font-weight:500;display:flex;justify-content:space-between}
+  .lv .m i{font-style:normal;color:var(--fs);font-weight:400}
+  .lv .s{display:flex;align-items:center;justify-content:space-between;margin-top:calc(var(--u)*6)}
+  .lv .s span{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:calc(var(--u)*28)}
+  .lv .s span:last-child{text-align:left}
+  .lv .s b{font-size:calc(var(--u)*40);font-weight:700;padding:0 calc(var(--u)*20);direction:ltr;unicode-bidi:isolate}
+
+  .cols{flex:1;min-height:0;display:flex;margin-top:calc(var(--u)*18)}
+  .cols > div + div{margin-right:calc(var(--u)*28)}
+
+  /* ---- the table */
+  .tb{list-style:none;padding:calc(var(--u)*6) calc(var(--u)*10)}
+  .tr{display:flex;align-items:center;height:calc(var(--u)*44);padding:0 calc(var(--u)*8);border-radius:calc(var(--u)*12);border-right:calc(var(--u)*6) solid transparent;position:relative}
+  .tr + .tr{border-top:1px solid var(--fln)}
+  .tr.z1{border-right-color:var(--z1)}.tr.z2{border-right-color:var(--z2)}.tr.z3{border-right-color:var(--z3)}
+  .tr.th{height:calc(var(--u)*38);color:var(--fs);font-size:calc(var(--u)*20);border-top:0}
+  .tr.mine{background:var(--rowf)}
+  .tr.mine .nm{font-weight:700}
+  .tr .rk{width:calc(var(--u)*44);text-align:center;font-weight:500}
+  .tr .mv{width:calc(var(--u)*26);text-align:center;font-size:calc(var(--u)*16)}
+  .mv.up{color:var(--z1)}.mv.dn{color:var(--z3)}.mv.eq{color:var(--fs);opacity:.6}
+  .bd{width:calc(var(--u)*34);height:calc(var(--u)*34);border-radius:50%;background:var(--sq);color:var(--fs);font-size:calc(var(--u)*17);font-weight:700;display:flex;align-items:center;justify-content:center;margin:0 calc(var(--u)*10) 0 calc(var(--u)*12);flex:none}
+  .tr .nm{flex:1;min-width:0;display:flex;align-items:baseline;white-space:nowrap}
+  .tr .nm span{overflow:hidden;text-overflow:ellipsis}
+  .tr .nm em{flex:none;font-style:normal;color:var(--flo);font-size:calc(var(--u)*20);font-weight:500;margin-right:calc(var(--u)*10)}
+  .tr .c{width:calc(var(--u)*56);text-align:center;color:var(--fs)}
+  .tr .c.w{width:calc(var(--u)*70)}
+  .tr .pt{width:calc(var(--u)*64);text-align:center;font-weight:700}
+  .tr .pt.ptl{color:var(--flo)}
+  .tr.th .pt{font-weight:400}
+  .tr .fo{width:calc(var(--u)*170);display:flex;justify-content:flex-end;direction:ltr}
+  .sqf{width:calc(var(--u)*28);height:calc(var(--u)*28);border-radius:calc(var(--u)*6);color:#fff;font-size:calc(var(--u)*17);font-weight:700;display:flex;align-items:center;justify-content:center;margin-left:calc(var(--u)*4)}
+  .sqf.w{background:var(--z1)}.sqf.d{background:#8D918C}.sqf.l{background:var(--z3)}
+  .sqf.n{background:transparent;border:calc(var(--u)*2) dashed var(--fln);color:var(--fs)}
+  .tr.gapr{height:calc(var(--u)*30);color:var(--fs);font-size:calc(var(--u)*20);justify-content:center;border-top:1px dashed var(--fln)}
+  .tr.gapr + .tr{border-top:1px dashed var(--fln)}
+
+  /* ---- a game row (the round, the results): the day, the clubs, the time or the score */
+  .gl{list-style:none;padding:calc(var(--u)*6) calc(var(--u)*10)}
+  .gd{color:var(--fs);font-size:calc(var(--u)*21);padding:calc(var(--u)*8) calc(var(--u)*12) calc(var(--u)*2)}
+  .gr{display:flex;align-items:center;min-height:calc(var(--u)*54);padding:0 calc(var(--u)*12);border-radius:calc(var(--u)*12)}
+  .gr + .gr{border-top:1px solid var(--fln)}
+  .gr .a,.gr .b{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:calc(var(--u)*26)}
+  .gr .b{text-align:left}
+  .gr .x{width:calc(var(--u)*104);text-align:center;font-size:calc(var(--u)*24);color:var(--fs);direction:ltr;unicode-bidi:isolate;white-space:nowrap}
+  .gr .x.sc{color:var(--fi);font-weight:700;font-size:calc(var(--u)*28)}
+  .gr .x.on{color:var(--flo);font-weight:700;font-size:calc(var(--u)*28)}
+  .gr .x small{display:block;font-size:calc(var(--u)*17);font-weight:500;line-height:1}
+  .gr .w{font-weight:700}
+
+  /* scorers */
+  .sc-l{list-style:none;padding:calc(var(--u)*6) calc(var(--u)*10)}
+  .sc-r{display:flex;align-items:center;min-height:calc(var(--u)*58);padding:0 calc(var(--u)*12)}
+  .sc-r + .sc-r{border-top:1px solid var(--fln)}
+  .sc-r .n{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:calc(var(--u)*26)}
+  .sc-r .n i{display:block;font-style:normal;color:var(--fs);font-size:calc(var(--u)*20)}
+  .sc-r b{font-size:calc(var(--u)*30);width:calc(var(--u)*48);text-align:center}
+  .more{color:var(--fgr);font-size:calc(var(--u)*22);padding:calc(var(--u)*10) calc(var(--u)*12);text-align:center}
+
+  .legend{display:flex;align-items:center;color:var(--fs);font-size:calc(var(--u)*21);margin-top:calc(var(--u)*14)}
+  .legend span{display:flex;align-items:center;margin-left:calc(var(--u)*32)}
+  .legend i{width:calc(var(--u)*18);height:calc(var(--u)*18);border-radius:calc(var(--u)*4);margin-left:calc(var(--u)*10);display:inline-block}
+  .keys{margin-right:auto!important;margin-left:0!important}
+
+  /* ---- the round navigator: the whole season in one row of squares */
+  .rn{margin-top:calc(var(--u)*24)}
+  .rn .cap{display:flex;justify-content:space-between;align-items:baseline}
+  .rn .cap b{font-size:calc(var(--u)*40);font-weight:700}
+  .rn .cap span{color:var(--fs);font-size:calc(var(--u)*24)}
+  .rs{list-style:none;display:flex;margin-top:calc(var(--u)*14)}
+  .rs li{width:calc(var(--u)*44);height:calc(var(--u)*44);margin-left:calc(var(--u)*4.4);border-radius:calc(var(--u)*8);display:flex;align-items:center;justify-content:center;font-size:calc(var(--u)*19);color:var(--fs);background:var(--fbg);border:1px solid var(--fln);flex:none}
+  .rs li.pl{background:var(--sq);border-color:transparent}
+  .rs li.now{border:calc(var(--u)*2) solid var(--fgr);color:var(--fgr);font-weight:700}
+  .rs li.sel{background:var(--fgr);color:#fff;font-weight:700;border-color:var(--fgr);box-shadow:0 0 0 calc(var(--u)*3) var(--dlg),0 0 0 calc(var(--u)*6) var(--fring)}
+  .gg{display:flex;flex-wrap:wrap;margin-top:calc(var(--u)*20);align-content:flex-start}
+  .gc{width:calc(50% - var(--u)*10);margin-bottom:calc(var(--u)*14);padding:calc(var(--u)*12) calc(var(--u)*24);border-radius:calc(var(--u)*20)}
+  .gc:nth-child(odd){margin-left:calc(var(--u)*20)}
+  .gc .d{color:var(--fs);font-size:calc(var(--u)*21);display:flex;justify-content:space-between}
+  .gc .d i{font-style:normal}
+  .gc .s{display:flex;align-items:center;margin-top:calc(var(--u)*6)}
+  .gc .s > span{flex:1;display:flex;align-items:center;white-space:nowrap;font-size:calc(var(--u)*28)}
+  .gc .s > span:last-child{flex-direction:row-reverse}
+  .gc .s > span .bd{margin:0 0 0 calc(var(--u)*14)}
+  .gc .s > span:last-child .bd{margin:0 calc(var(--u)*14) 0 0}
+  .gc .s b{width:calc(var(--u)*130);text-align:center;font-size:calc(var(--u)*30);color:var(--fs);font-weight:500;direction:ltr;unicode-bidi:isolate}
+
+  /* ---- the club's quick view: a sheet on the left, the table's ranks and names stay in sight */
+  .veil{position:fixed;top:0;right:0;bottom:0;left:0;background:var(--veil)}
+  .sheet{position:fixed;top:calc(var(--u)*36);bottom:calc(var(--u)*36);left:calc(var(--u)*72);width:calc(var(--u)*820);background:var(--dlg);border:1px solid var(--fln);border-radius:calc(var(--u)*32);
+    box-shadow:0 30px 80px var(--shd);padding:calc(var(--u)*36) calc(var(--u)*44);display:flex;flex-direction:column;color:var(--fi);font-size:calc(var(--u)*28)}
+  .sh-h{display:flex;align-items:center}
+  .sh-h .bd{width:calc(var(--u)*96);height:calc(var(--u)*96);font-size:calc(var(--u)*40);margin:0 0 0 calc(var(--u)*28)}
+  .sh-h b{display:block;font-size:calc(var(--u)*46);font-weight:700;line-height:1.15}
+  .sh-h span{display:block;color:var(--fs);font-size:calc(var(--u)*26);margin-top:calc(var(--u)*4)}
+  .stats{display:flex;margin-top:calc(var(--u)*24)}
+  .stats div{flex:1;text-align:center;background:var(--fbg);border:1px solid var(--fln);border-radius:calc(var(--u)*18);padding:calc(var(--u)*12) 0;margin-left:calc(var(--u)*14)}
+  .stats div:last-child{margin-left:0}
+  .stats b{display:block;font-size:calc(var(--u)*38);font-weight:700}
+  .stats i{font-style:normal;color:var(--fs);font-size:calc(var(--u)*21)}
+  .sh-t{font-size:calc(var(--u)*24);color:var(--fs);margin:calc(var(--u)*22) 0 calc(var(--u)*10)}
+  .nxg{padding:calc(var(--u)*14) calc(var(--u)*24);display:flex;align-items:center;justify-content:space-between}
+  .nxg b{font-size:calc(var(--u)*30);font-weight:500}
+  .nxg span{color:var(--fgr);font-weight:500;font-size:calc(var(--u)*24);text-align:left}
+  .nxg span i{display:block;font-style:normal;color:var(--fs);font-weight:400;font-size:calc(var(--u)*21)}
+  .btns{display:flex;margin-top:auto}
+  .btns button{flex:1;font:inherit;font-size:calc(var(--u)*26);color:var(--fi);background:var(--btn);border:1px solid var(--fln);border-radius:calc(var(--u)*16);padding:calc(var(--u)*20) calc(var(--u)*12);margin-left:calc(var(--u)*16);outline:none}
+  .btns button:last-child{margin-left:0}
+  .btns button.pri{background:var(--pri);color:#fff;border-color:var(--pri)}
+  .btns button.fr{box-shadow:0 0 0 calc(var(--u)*3) var(--dlg),0 0 0 calc(var(--u)*6) var(--fring)}
+  .peek{color:var(--fs);font-size:calc(var(--u)*21);text-align:center;margin-top:calc(var(--u)*14)}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script>
+// Sample data (Roshn Saudi League 2026-27 shape: 18 clubs, 34 rounds). Not real results.
+const D = s => String(s).replace(/\d/g, d => '٠١٢٣٤٥٦٧٨٩'[d]);
+const CLUBS = [
+  // name, w, d, l, gf, ga, last 5 (oldest first), move since last round, zone, live minute (playing now)
+  ['الهلال',9,1,1,27,9,'wwdww',0,1],['النصر',8,2,1,29,12,'wwwdw',0,1],['الاتحاد',7,2,2,22,13,'lwwdw',1,1],['القادسية',7,1,3,21,12,'wwlww',-1,2],
+  ['الأهلي',6,3,2,19,11,'dwdwl',0,0],['التعاون',6,2,3,17,13,'wlwwd',2,0,"٦٧'"],['الاتفاق',5,3,3,16,14,'dlwwd',0,0],['الشباب',5,2,4,15,14,'lwdlw',-2,0,"٦٧'"],
+  ['نيوم',4,4,3,14,14,'ddwlw',3,0,"٣٤'"],['الفتح',4,3,4,13,15,'wldlw',-1,0,"٣٤'"],['الخليج',4,2,5,15,18,'lwlwd',0,0],['الفيحاء',2,4,5,11,13,'ddlld',-1,0],
+  ['الحزم',2,3,6,12,17,'lldwl',1,0],['الرياض',2,2,7,10,18,'llwll',-1,0],['ضمك',2,2,7,9,18,'wlldl',0,0],['الخلود',1,4,6,10,17,'dlldl',0,3],
+  ['الأخدود',1,4,6,8,19,'ldlll',1,3],['النجمة',1,2,8,7,24,'llwll',-1,3]];
+const MINE = 'الاتفاق';
+const ZONES = [['z1','دوري أبطال آسيا للنخبة'],['z2','دوري أبطال آسيا ٢'],['z3','الهبوط']];
+const FL = {w:'ف', d:'ت', l:'خ'};
+const form = (s, next) => '<span class="fo">' + s.split('').map(c => `<span class="sqf ${c}">${FL[c]}</span>`).join('') + '</span>';
+const mv = m => m > 0 ? `<span class="mv up">▲${D(m)}</span>` : m < 0 ? `<span class="mv dn">▼${D(-m)}</span>` : '<span class="mv eq">–</span>';
+const badge = n => `<span class="bd">${n.replace(/^ال/, '').charAt(0)}</span>`;   // the real badge loads at runtime; this circle is its place-holder
+function row(c, i, full, ring){
+  const [n, w, d, l, gf, ga, fo, m, z, live] = c, p = w + d + l, pts = w * 3 + d, gd = gf - ga;
+  const cls = ['tr', z ? 'z' + z : '', n === MINE ? 'mine' : '', ring ? 'f' : ''].join(' ');
+  const nm = `<span class="nm"><span>${n}</span>${live ? `<em>${full ? 'مباشر ' : ''}${live}</em>` : ''}</span>`;
+  const mid = full
+    ? `<span class="c">${D(p)}</span><span class="c">${D(w)}</span><span class="c">${D(d)}</span><span class="c">${D(l)}</span><span class="c">${D(gf)}</span><span class="c">${D(ga)}</span><span class="c w num">${gd > 0 ? '+' : ''}${D(gd)}</span>`
+    : `<span class="c">${D(p)}</span><span class="c w num">${gd > 0 ? '+' : ''}${D(gd)}</span>`;
+  return `<li class="${cls}"><span class="rk">${D(i + 1)}</span>${mv(m)}${badge(n)}${nm}${mid}<span class="pt${live ? ' ptl' : ''}">${D(pts)}</span>${form(fo)}</li>`;
+}
+const head = full => `<li class="tr th"><span class="rk">#</span><span class="mv"></span><span class="bd" style="visibility:hidden"></span><span class="nm">النادي</span>`
+  + (full ? '<span class="c">لعب</span><span class="c">فاز</span><span class="c">تعادل</span><span class="c">خسر</span><span class="c">له</span><span class="c">عليه</span><span class="c w">الفارق</span>' : '<span class="c">لعب</span><span class="c w">الفارق</span>')
+  + '<span class="pt">نقاط</span><span class="fo">آخر ٥، الأحدث يمينًا</span></li>';
+const gapRow = n => `<li class="tr gapr">${n === 1 ? 'نادٍ آخر' : D(n) + ' أندية أخرى'}، OK: الجدول كاملًا</li>`;
+const legend = extra => '<div class="legend">' + ZONES.map(([z, t]) => `<span><i style="background:var(--${z})"></i>${t}</span>`).join('')
+  + '<span><span class="mv up" style="margin-left:6px">▲</span>عن الجولة الماضية</span>' + (extra || '') + '</div>';
+
+const HEAD = (tab, hint) => `<div class="hd"><div><h1>دوري روشن السعودي</h1><div class="sub"><b>الجولة ١١ من ٣٤</b>  موسم ٢٠٢٦-٢٠٢٧</div></div>
+  <div class="nx"><div class="k">المباراة القادمة الليلة</div><div class="v">النصر – الأهلي، ٩:٠٠ م</div><div class="t">بعد ساعة و٤٢ دقيقة</div></div></div>
+  <ul class="tabs">${['الرئيسية','الترتيب','المباريات','الهدّافون','الأبطال','الأندية'].map((t, i) => `<li class="${i === tab ? 'on' : ''}">${t}</li>`).join('')}${hint ? `<li class="hint">${hint}</li>` : ''}</ul>`;
+
+const LIVE = [['الشباب','١ : ١','التعاون',"٦٧'",'الشوط الثاني'],['الفتح','٠ : ٢','نيوم',"٣٤'",'الشوط الأول']];
+function gr(a, x, b, kind, small){
+  const win = kind === 'sc' && x.split(':').map(s => s.trim());
+  return `<li class="gr"><span class="a">${a}</span><span class="x ${kind || ''}">${x}${small ? `<small>${small}</small>` : ''}</span><span class="b">${b}</span></li>`;
+}
+const SCORERS = [['كريستيانو رونالدو','النصر',11],['ماركوس ليوناردو','الهلال',9],['كريم بنزيما','الاتحاد',8],['إيفان توني','الأهلي',8]];
+
+const SCREENS = {
+  home(){
+    const t = CLUBS.map((c, i) => [c, i]);
+    const pick = [...t.slice(0, 4), 'gap1', t[5], t[6], t[7], 'gap7', ...t.slice(15)];
+    return `<div class="pg">${HEAD(0, 'OK يفتح، يمين ويسار بين الأقسام')}
+      <div class="live">${LIVE.map((g, i) => `<div class="lv card${i === 0 ? ' f' : ''}"><div class="m"><span>مباشر ${g[3]}</span><i>${g[4]}</i></div><div class="s"><span>${g[0]}</span><b>${g[1]}</b><span>${g[2]}</span></div></div>`).join('')}
+        <div class="lv card"><div class="m" style="color:var(--fs)"><span>انتهت</span><i>اليوم ٤:٣٥ م</i></div><div class="s"><span>الخليج</span><b style="color:var(--fi)">٢ : ٢</b><span>الفيحاء</span></div></div></div>
+      <div class="cols">
+        <div style="width:calc(var(--u)*800)"><h2>الترتيب <i>مباشر: يتغير مع النتائج</i></h2>
+          <ul class="tb card">${head(false)}${pick.map(x => typeof x === 'string' ? gapRow(+x.slice(3)) : row(x[0], x[1], false)).join('')}</ul></div>
+        <div style="width:calc(var(--u)*470)"><h2>الجولة ١١ <i>◀ ▶ الجولات</i></h2>
+          <ul class="gl card"><li class="gd">اليوم، السبت ٢١ نوفمبر</li>
+            ${gr('الشباب','١ : ١','التعاون','on',"٦٧'")}${gr('الفتح','٠ : ٢','نيوم','on',"٣٤'")}${gr('النصر','٩:٠٠ م','الأهلي')}
+            <li class="gd">غدًا، الأحد ٢٢ نوفمبر</li>${gr('الاتفاق','٦:٠٠ م','الرياض')}${gr('الأخدود','٨:٣٠ م','الخلود')}
+            <li class="gd">أمس، الجمعة ٢٠ نوفمبر</li>${gr('الهلال','٣ : ١','الحزم','sc')}${gr('ضمك','٠ : ١','القادسية','sc')}</ul></div>
+        <div style="flex:1;min-width:0"><h2>الهدّافون</h2>
+          <ul class="sc-l card">${SCORERS.map(s => `<li class="sc-r"><span class="n">${s[0]}<i>${s[1]}</i></span><b>${D(s[2])}</b></li>`).join('')}<li class="more">كل الهدّافين</li></ul>
+          <h2 style="margin-top:calc(var(--u)*22)">آخر بطل</h2>
+          <ul class="sc-l card"><li class="sc-r"><span class="n">النصر<i>٢٠٢٥-٢٠٢٦، ٨٦ نقطة</i></span></li></ul></div>
+      </div></div>`;
+  },
+  rounds(){
+    const R = 12, now = 11;
+    const games = [['الخميس ٢٧ نوفمبر','٦:٠٠ م','الخلود','الفتح'],['الخميس ٢٧ نوفمبر','٨:٣٠ م','الاتحاد','الشباب'],['الجمعة ٢٨ نوفمبر','٥:٤٠ م','الفيحاء','ضمك'],
+      ['الجمعة ٢٨ نوفمبر','٨:٠٠ م','القادسية','النصر'],['الجمعة ٢٨ نوفمبر','٨:٠٠ م','نيوم','الخليج'],['السبت ٢٩ نوفمبر','٥:٤٠ م','الرياض','الأخدود'],
+      ['السبت ٢٩ نوفمبر','٦:٠٠ م','الحزم','الاتفاق'],['السبت ٢٩ نوفمبر','٨:٣٠ م','الأهلي','الهلال'],['السبت ٢٩ نوفمبر','٩:٠٠ م','النجمة','التعاون']];
+    return `<div class="pg">${HEAD(2, 'يمين ويسار: جولة قبل وبعد')}
+      <div class="rn"><div class="cap"><b>الجولة ${D(R)}</b><span>من الخميس ٢٧ إلى السبت ٢٩ نوفمبر، ٩ مباريات، بعد ٦ أيام</span></div>
+        <ul class="rs">${Array.from({length: 34}, (_, i) => i + 1).map(n => `<li class="${n < now ? 'pl' : ''}${n === now ? ' now' : ''}${n === R ? ' sel' : ''}">${D(n)}</li>`).join('')}</ul>
+        <div class="legend" style="margin-top:calc(var(--u)*10)"><span><i style="background:var(--sq)"></i>لُعبت</span><span><i style="border:2px solid var(--fgr)"></i>الجاري الآن</span><span><i style="background:var(--fgr)"></i>المختارة</span><span class="keys">أسفل: المباريات، OK على مباراة: بطاقتها</span></div></div>
+      <div class="gg">${games.map((g, i) => `<div class="gc card"><div class="d"><span>${g[0]}</span><i>${i === 7 ? 'قمة الجولة' : ''}</i></div>
+        <div class="s"><span>${badge(g[2])}${g[2]}</span><b>${g[1]}</b><span>${badge(g[3])}${g[3]}</span></div></div>`).join('')}</div></div>`;
+  },
+  table(ring){
+    // focused: the page's header and tabs step aside (Back brings them back), the 18 rows fit on one screen without a scroll
+    return `<div class="pg"><div class="hd" style="align-items:baseline"><h1 style="font-size:calc(var(--u)*40)">الترتيب <span style="font-weight:400;color:var(--fs);font-size:calc(var(--u)*28)">دوري روشن السعودي، بعد الجولة ١٠ ومع مباريات الجولة ١١</span></h1></div>
+      <ul class="tabs" style="margin-top:calc(var(--u)*8)">${['الكل','على أرضه','خارج أرضه','قبل المباريات الجارية'].map((t, i) => `<li class="${i === 0 ? 'on' : ''}" style="font-size:calc(var(--u)*24)">${t}</li>`).join('')}<li class="hint">OK على نادٍ: نظرة سريعة، رجوع: صفحة الدوري</li></ul>
+      <ul class="tb card" style="margin-top:calc(var(--u)*14)">${head(true)}${CLUBS.map((c, i) => row(c, i, true, i === (ring || 6))).join('')}</ul>
+      ${legend('<span><em style="font-style:normal;color:var(--flo);margin-left:8px">مباشر</em>نقاط مؤقتة</span>')}</div>`;
+  },
+  club(){
+    return SCREENS.table(6) + `<div class="veil"></div><div class="sheet">
+      <div class="sh-h">${badge('الاتفاق')}<div><b>الاتفاق</b><span>المركز ٧، ١٨ نقطة، لعب ١١</span></div></div>
+      <div class="stats"><div><b>٥</b><i>فاز</i></div><div><b>٣</b><i>تعادل</i></div><div><b>٣</b><i>خسر</i></div><div><b>١٦</b><i>له</i></div><div><b>١٤</b><i>عليه</i></div></div>
+      <div class="sh-t">المباراة القادمة</div>
+      <div class="nxg card"><b>الاتفاق – الرياض</b><span>غدًا ٦:٠٠ م<i>الجولة ١١، بعد يوم و٣ ساعات</i></span></div>
+      <div class="sh-t">آخر النتائج</div>
+      <ul class="gl card">${gr('الاتفاق','٢ : ٠','الحزم','sc','ف')}${gr('الشباب','١ : ١','الاتفاق','sc','ت')}${gr('الاتفاق','٣ : ١','الفيحاء','sc','ف')}</ul>
+      <div class="btns" style="margin-top:calc(var(--u)*22)"><button class="pri fr">صفحة النادي</button><button>المواجهات</button><button>أزل من فرقي</button></div>
+      <div class="peek">أعلى وأسفل: النادي الذي فوقه وتحته، رجوع: الجدول</div></div>`;
+  }
+};
+const scr = (location.hash.slice(1) || 'home').split(',');
+if(scr.includes('dark')) document.documentElement.classList.add('dark');
+document.documentElement.style.setProperty('--u', (innerWidth / 1920) + 'px');
+document.getElementById('root').innerHTML = SCREENS[scr[0]]();
+</script>
+</body>
+</html>
