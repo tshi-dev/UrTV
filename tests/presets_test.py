@@ -51,7 +51,7 @@ check("the row is first in «المظهر» in both layouts, the picture picker 
       and 'FULL_DESIGN_STYLE = java.util.Collections.singletonMap("couch", "couch");' in prefs
       and 'if (!sp.contains("settingsStyleBefore")) sp.edit().putString("settingsStyleBefore", settingsStyle()).apply();' in prefs
       and 'if (sb != null) sp.edit().putString("settingsStyle", sb).remove("settingsStyleBefore").apply();' in prefs
-      and '"رجّع الشكل السابق", "أشكال جاهزة", "شكل شاشة الإعدادات", "شكل كنبة",' in hub and '{"أشكال جاهزة", LOOK}, {"شكل شاشة الإعدادات", LOOK}, {"شكل كنبة", LOOK}' in hub and '{"أشكال جاهزة", "look"}' in hub)
+      and '"رجّع الشكل السابق", "أشكال جاهزة", "شكل شاشة الإعدادات", "رجّع بطاقاتك", "شكل كنبة",' in hub and '{"أشكال جاهزة", LOOK}, {"شكل شاشة الإعدادات", LOOK}, {"رجّع بطاقاتك", LOOK}, {"شكل كنبة", LOOK}' in hub and '{"أشكال جاهزة", "look"}' in hub)
 pics = [ROOT / f"android/app/src/main/assets/presets/{k}.jpg" for k in keys]
 check("each look's picture is in the app, small (under 40 KB)", all(p.is_file() and p.stat().st_size < 40 * 1024 for p in pics), [p.name for p in pics if not p.is_file()])
 check("saver.sh preset tv|couch|clean|family|sport|calm; show says «preset: family» or «family (custom)»; given before any one row",
@@ -70,8 +70,10 @@ check("a mix: its look first (the person's own kept the same way), then its rows
       and 'String name = mix.isEmpty() ? presetName(key) : combo(mix)[1];' in prefs and 'sp.edit().remove("presetCombo").apply();' in prefs
       and 'if (combo(key) != null) { setCombo(key); return; }' in prefs)
 pick = st[st.index("    private void pickPreset() {"):st.index("    /** a mix chosen: applied as a look is")]
-check("the picker: the six, then the one tile «تركيبات مقترحة»; the focus on it opens the mixes, Back or up closes them into it",
-      'names[mixAt] = "تركيبات مقترحة";' in pick and "if (pos == mixAt) mixes.open(v);" in pick and "mixes.close()" in pick
+check("the picker (4.4 beta 2, the owner approved docs/mockups/full-look 01): «تصميم كامل» (Prefs.fullDesign) then «أشكال بسيطة», each a heading the focus passes over, then the one tile «تركيبات مقترحة»; the focus on it opens the mixes, Back or up closes them into it",
+      'if (i == MIX) { names[k] = "تركيبات مقترحة";' in pick and "if (pos == mixAt) mixes.open(v);" in pick and "mixes.close()" in pick
+      and "order.add(HEAD_FULL);" in pick and "order.add(HEAD_SIMPLE);" in pick and pick.index("order.add(HEAD_FULL);") < pick.index("order.add(HEAD_SIMPLE);")
+      and "@Override public boolean isEnabled(int i) { return pics[i] != null; }" in pick
       and "KEYCODE_DPAD_UP" in pick and "close(); return true;" in pick)
 check("the motion: a circular reveal from the tile's centre, the mixes fanning out of it, 250 ms slowing at the end; closing the same way back",
       "ViewAnimationUtils.createCircularReveal(panel, (int) c[0], (int) c[1], in ? 0f : r, in ? r : 0f)" in pick and "setDuration(PresetMotion.MS)" in pick
@@ -93,4 +95,13 @@ if shutil.which("javac"):
               and abs(float(got["r"]) - 1000.0) < 0.01 and got.get("e0") == "0.0" and got.get("e1") == "1.0", got)
 else:
     print("NOTE javac not found: PresetMotion not run here (CI runs it)")
+
+# ---- 4.4 beta 2 (the owner approved docs/mockups/full-look 06): the cards question of a full-design look
+ask = st[st.index("    private void askCards(final String key) {"):].split("\n    }\n")[0]
+check("a full-design look with cards on the home asks once: keep them inside the design (each unfit one named with its replacement, CardFit) or the design without cards; Back cancels",
+      "if (Prefs.fullDesign(keys[pos]) && !prefs.homePanels().isEmpty()) askCards(keys[pos]);" in pick and '"خلّ بطاقاتي داخل التصميم"' in ask
+      and '"%s بدون بطاقات"' in ask and "CardFit.fitted(mine," in ask and "applyPreset(key, i == 1)" in ask)
+check("without cards hides them, never loses them: kept in homePanelHidden, the look as chosen (not «مخصّص»), «رجّع بطاقاتك» and «شكلك المعتاد» bring them back",
+      'sp.edit().putString("homePanelHidden", join(mine, ","))' in prefs and 'sp.edit().putString("presetApplied", presetNow()).apply();' in prefs
+      and "void restoreHiddenCards()" in prefs and '.remove("homePanelHidden").apply();' in prefs and "static boolean fullDesign(String key) { return FULL_DESIGN_STYLE.containsKey(key); }" in prefs)
 sys.exit(1 if failed else 0)

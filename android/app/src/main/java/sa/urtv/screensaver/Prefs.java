@@ -316,6 +316,9 @@ final class Prefs {
         {"none", "لا شيء"},
     };
 
+    /** a card's name (PANELS), or its key */
+    static String panelName(String key) { for (String[] p : PANELS) if (p[0].equals(key)) return p[1]; return key; }
+
     /** Cards for the home screen only: on the screensaver the always-on panel at the bottom right already says the same. */
     static boolean homeOnly(String v) { return "nextprayer".equals(v); }
 
@@ -1537,12 +1540,39 @@ final class Prefs {
         String v = sp.getString("preset", "tv");
         return java.util.Arrays.asList(PRESETS).contains(v) ? v : "tv";
     }
-    void setPreset(String key) {
+    void setPreset(String key) { setPreset(key, false); }
+    /**
+     * 4.4 beta 2 (the owner, docs/mockups/full-look 06): a full-design look with the cards fitted into it (noCards false: each card that does not
+     * fit swapped for its nearest by CardFit, as always), or the pure design without cards (noCards true): the cards hidden, not lost, their list kept
+     * in «homePanelHidden» for «رجّع بطاقاتك»; the look is then as chosen (not «مخصّص»), and «شكلك المعتاد» puts the person's own cards back.
+     */
+    void setPreset(String key, boolean noCards) {
         if (combo(key) != null) { setCombo(key); return; }   // saver.sh preset takes a mix's key too
         if (!java.util.Arrays.asList(PRESETS).contains(key)) return;
-        synchronized (LOOK_LOCK) { rememberLook(); writePreset(key); }
+        synchronized (LOOK_LOCK) {
+            rememberLook();
+            List<String> mine = homePanels();
+            writePreset(key);
+            if (noCards && !mine.isEmpty()) {
+                sp.edit().putString("homePanelHidden", join(mine, ",")).remove("homePanelMine").apply();
+                setHomePanels(new ArrayList<String>());
+                sp.edit().putString("presetApplied", presetNow()).apply();
+            } else if (!noCards) sp.edit().remove("homePanelHidden").apply();
+        }
         lookChanged();
     }
+    /** the cards hidden by a design «بدون بطاقات», or none */
+    List<String> hiddenCards() { return sp.contains("homePanelHidden") ? parseHomePanels(sp.getString("homePanelHidden", "none")) : new ArrayList<String>(); }
+    /** «رجّع بطاقاتك»: the hidden cards back, fitted to the look as any card is */
+    void restoreHiddenCards() {
+        List<String> h = hiddenCards();
+        sp.edit().remove("homePanelHidden").apply();
+        if (h.isEmpty()) return;
+        synchronized (LOOK_LOCK) { setHomePanels(h); fitHomeCards(); }
+        lookChanged();
+    }
+    /** a full-design look («كنبة», «tvOS»): it asks about the cards and changes the settings screen too */
+    static boolean fullDesign(String key) { return FULL_DESIGN_STYLE.containsKey(key); }
     /** the look written, every field of it, under LOOK_LOCK (the caller's): the home never reads it half done */
     private void writePreset(String key) {
         int i = java.util.Arrays.asList(PRESETS).indexOf(key);
@@ -1552,7 +1582,7 @@ final class Prefs {
         if ("tv".equals(key)) {
             if (before != null) presetPut(before);
             else for (int k = 0; k < PRESET_FIELDS.length; k++) setPresetField(PRESET_FIELDS[k], PRESET_VALUES[0][k]);
-            sp.edit().remove("preset").remove("presetBefore").remove("presetApplied").remove("presetCombo").putBoolean("couchOn", false).remove("couchBefore").apply();
+            sp.edit().remove("preset").remove("presetBefore").remove("presetApplied").remove("presetCombo").putBoolean("couchOn", false).remove("couchBefore").remove("homePanelHidden").apply();
             String sb = sp.getString("settingsStyleBefore", null);   // the settings screen the person had before a full-design look
             if (sb != null) sp.edit().putString("settingsStyle", sb).remove("settingsStyleBefore").apply();
             return;
