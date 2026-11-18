@@ -2909,13 +2909,19 @@ public class SettingsActivity extends Activity {
             if (rows.get(i)[0].equals(current)) sel = i;
         }
         String[] values = new String[labels.length], about = new String[labels.length];
+        final boolean[] off = new boolean[labels.length];
+        String cardLook = prefs.cardLook(), bg = prefs.homeBg();
         for (int i = 0; i < labels.length; i++) {
             values[i] = rows.get(i)[0];
             about[i] = Prefs.about(Prefs.PANEL_ABOUT, values[i]);
-            // 4.4 the owner: a card that does not suit the home's look says so, as the plain line under its name (it can still be picked)
-            if (home && !CardFit.suits(values[i], prefs.homeLayout())) about[i] = CardFit.NOTE + "، " + about[i];
+            if (!home) continue;
+            // 4.4 beta 2 (the owner, docs/mockups/full-look 07): a card that does not fit the look and the background (CardFit.TABLE) is shown off,
+            // its reason the one line under its name, and is never applied; one that fits in its own way says how («بعرض بطاقتين»)
+            String why = CardFit.why(values[i], cardLook, bg);
+            off[i] = !CardFit.fits(values[i], cardLook, bg) && !values[i].equals(current);   // the card shown now stays choosable (it is there already)
+            if (!why.isEmpty()) about[i] = off[i] ? why : why + "، " + about[i];
         }
-        pickWithPreview(home ? HOME_CARD_NAMES[place] : "بجانب الساعة", values, labels, about, sel,
+        pickWithPreview(home ? HOME_CARD_NAMES[place] : "بجانب الساعة", values, labels, about, off, sel,
             v -> prefs.previewUrl(this, v, prefs.cardStyle()),
             v -> { if (home) prefs.setHomePanelAt(place, v); else prefs.setPanel(v); });
     }
@@ -2935,7 +2941,7 @@ public class SettingsActivity extends Activity {
             about[i] = "none".equals(values[i]) ? "بطاقة واحدة بجانب الساعة" : Prefs.about(Prefs.PANEL_ABOUT, values[i]);
             if (values[i].equals(prefs.panel2())) sel = i;
         }
-        pickWithPreview("بطاقة ثانية", values, labels, about, sel,
+        pickWithPreview("بطاقة ثانية", values, labels, about, null, sel,
             v -> prefs.previewUrl(this, v, prefs.cardStyle()), v -> prefs.setPanel2(v));
     }
 
@@ -2948,7 +2954,7 @@ public class SettingsActivity extends Activity {
      * from the page once it has drawn). The dialog is in the screen's glass design (Dlg). The WebView is made when the picker opens and
      * destroyed when it closes; it keeps the TV's text size out of it (setTextZoom(100) in ScreenView) like every other one of ours.
      */
-    private void pickWithPreview(String title, final String[] values, final String[] labels, final String[] about, int selected,
+    private void pickWithPreview(String title, final String[] values, final String[] labels, final String[] about, final boolean[] off, int selected,
                                  final Url urlFor, final Pick onPick) {
         final int previewW = 480, viewH = 300, pad = 22;   // dp: the page is laid out in a box like the home screen's, 480 wide
         final LinearLayout box = new LinearLayout(this);
@@ -2978,6 +2984,7 @@ public class SettingsActivity extends Activity {
                 a.setTextSize(TypedValue.COMPLEX_UNIT_SP, 13);
                 a.setTypeface(font("Thmanyah-Regular"));
                 r.addView(a);
+                if (off != null && off[i]) { n.setAlpha(0.5f); a.setTextColor(OFF_REASON); }   // shown off: dimmed, its reason in a warm tone, still focusable to read
                 return r;
             }
         });
@@ -3051,7 +3058,14 @@ public class SettingsActivity extends Activity {
         });
         final AlertDialog dialog = new Dlg(this).setTitle(title).setView(box)
             .setNegativeButton("إلغاء", null).create();
-        lv.setOnItemClickListener((p, v, pos, id) -> { onPick.on(values[pos]); dialog.dismiss(); render(); });
+        lv.setOnItemClickListener((p, v, pos, id) -> {
+            if (off != null && off[pos]) {   // the owner: never applied, never silent: the row says no (a short nudge, none on a weak TV) and its reason is read again
+                if (!Motion.lite(this) && v != null) v.animate().translationX(dp(8)).setDuration(90).withEndAction(() -> v.animate().translationX(0).setDuration(90).start()).start();
+                if (v != null) v.announceForAccessibility(about[pos]);
+                return;
+            }
+            onPick.on(values[pos]); dialog.dismiss(); render();
+        });
         previewOff = () -> {
             handler.removeCallbacks(update);
             handler.removeCallbacks(measure);
@@ -3248,7 +3262,7 @@ public class SettingsActivity extends Activity {
         for (int i = 0; i < labels.length; i++) { values[i] = Prefs.CARD_STYLES[i][0]; about[i] = Prefs.about(Prefs.CARD_STYLE_ABOUT, values[i]); }
         // the preview is the card you have now, in the style under the cursor (the prayer times when there is no card)
         final String card = "none".equals(prefs.panel()) ? "prayers" : prefs.panel();
-        pickWithPreview("شكل البطاقة", values, labels, about, sel, v -> prefs.previewUrl(this, card, v), v -> prefs.setCardStyle(v));
+        pickWithPreview("شكل البطاقة", values, labels, about, null, sel, v -> prefs.previewUrl(this, card, v), v -> prefs.setCardStyle(v));
     }
 
     private void pickSlot() {
@@ -4428,6 +4442,9 @@ public class SettingsActivity extends Activity {
      */
     private TextView noticeView;
     private final Runnable hideNotice = () -> { if (noticeView != null) noticeView.animate().alpha(0f).setDuration(300).start(); };
+    /** the reason under a choice shown off (CardFit), a warm tone readable on the glass and on the focus fill */
+    static final int OFF_REASON = 0xFFE0A07F;
+
     private void notice(String s) {
         if (root == null) return;
         if (noticeView == null) {

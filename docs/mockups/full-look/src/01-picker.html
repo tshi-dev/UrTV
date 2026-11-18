@@ -1,0 +1,38 @@
+<!doctype html><html lang="ar"><head><meta charset="utf-8"><link rel="stylesheet" href="base.css">
+<style>
+.blur{position:absolute;inset:0;background:url(../../../../android/launcher/src/main/assets/scenes/saudi/riyadh.jpg) center/cover;filter:blur(40px) brightness(.4);transform:scale(1.08)}
+.live{position:absolute;top:150px;right:40px;width:1920px;height:1080px;transform-origin:top right;transform:scale(.6146);border-radius:22px;overflow:hidden;box-shadow:0 30px 80px rgba(0,0,0,.55);outline:2px solid rgba(255,255,255,.18);background:url(../02-couch-cards-1080.png) center/cover}
+.under{position:absolute;right:40px;width:1180px;top:840px;font-size:24px;color:var(--dim)}
+.under b{color:var(--fg)}
+.panel{position:absolute;top:0;bottom:0;left:0;width:700px;background:rgba(14,14,16,.88);padding:50px 48px 36px;display:flex;flex-direction:column;gap:12px}
+.panel h1{font-size:44px}.panel .sub{font-size:21px;color:var(--dim)}
+.sec{font-size:20px;color:var(--faint);margin:12px 4px 0}
+.full{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.fc{border-radius:16px;overflow:hidden;background:rgba(255,255,255,.07);outline:3px solid transparent}
+.fc img{display:block;width:100%;aspect-ratio:16/9;object-fit:cover}
+.fc .n{padding:10px 14px 12px;font-size:25px;font-weight:600}.fc .n small{display:block;font-size:18px;color:var(--dim);font-weight:400;line-height:1.35}
+.fc.f{outline:4px solid #fff;transform:scale(1.03);background:#fff;color:#111}.fc.f .n small{color:#444}
+.simple{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.sc{border-radius:12px;overflow:hidden;background:rgba(255,255,255,.07)}.sc img{display:block;width:100%;aspect-ratio:16/9;object-fit:cover}.sc .n{font-size:18px;padding:5px 10px 7px}
+.sc .now{color:var(--green);font-size:15px;margin-inline-start:6px}
+.hint{margin-top:auto;font-size:21px;color:var(--dim);line-height:1.5}.hint b{color:var(--fg)}
+</style></head><body>
+<div class="blur"></div><div class="live"></div>
+<div class="under"><b>معاينة حيّة:</b> الرئيسية نفسها بشكل «كنبة» مع بطاقاتك، بدون حفظ. <b>موافق</b> يثبّته كله مرة وحدة، و<b>رجوع</b> يرجّع شكلك كما كان.</div>
+<div class="panel"><h1>أشكال جاهزة</h1><div class="sub">اختر شكل، وشوفه على الرئيسية قبل ما تثبّته</div>
+ <div class="sec">تصميم كامل: الرئيسية والتطبيقات والساعة والخلفية وشاشة الإعدادات</div>
+ <div class="full">
+  <div class="fc f"><img src="../02-couch-cards-1080.png"><div class="n">كنبة<small>ساعة كبيرة في الوسط، وبطاقاتك على زجاج، والتطبيقات أيقونات</small></div></div>
+  <div class="fc"><img src="tvos-home.png"><div class="n">tvOS<small>شريط زجاجي، وبطاقاتك فوقه، وإعدادات بصفوف كبيرة</small></div></div>
+ </div>
+ <div class="sec">أشكال بسيطة: الرئيسية فقط، والإعدادات كما هي</div>
+ <div class="simple">
+  <div class="sc"><img src="../../presets/preset-tv.jpg"><div class="n">شكلك المعتاد<span class="now">الحالي</span></div></div>
+  <div class="sc"><img src="../../presets/preset-family.jpg"><div class="n">مواقيت يومي</div></div>
+  <div class="sc"><img src="../../presets/preset-sport.jpg"><div class="n">مباريات اليوم</div></div>
+  <div class="sc"><img src="../../presets/preset-clean.jpg"><div class="n">صورة فقط</div></div>
+  <div class="sc"><img src="../../presets/preset-calm.jpg"><div class="n">ليل هادئ</div></div>
+ </div>
+ <div class="hint"><b>موافق</b> ثبّت، <b>رجوع</b> ألغِ. وبعدها تقدر تغيّر أي شي من «تخصيص».</div>
+</div>
+</body></html>

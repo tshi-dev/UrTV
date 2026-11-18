@@ -1365,6 +1365,8 @@ final class Prefs {
         fitHomeCards();
     }
     static String homeLayoutLabel(String v) { int i = java.util.Arrays.asList(HOME_LAYOUTS).indexOf(v); return HOME_LAYOUT_NAMES[Math.max(0, i)]; }
+    /** the look the home's cards are decided for (CardFit.LOOKS): «tvOS» with the full tvOS look, else the home's layout */
+    String cardLook() { return "tvos".equals(sp.getString("preset", "")) ? "tvos" : homeLayout(); }
     String homeBg() { String v = sp.getString("homeBg", oldScenes() ? "scenes" : "photos"); return java.util.Arrays.asList(HOME_BGS).contains(v) ? v : "photos"; }
     void setHomeBg(String v) { if (java.util.Arrays.asList(HOME_BGS).contains(v)) sp.edit().putString("homeBg", v).apply(); }
     static String homeBgLabel(String v) { int i = java.util.Arrays.asList(HOME_BGS).indexOf(v); return HOME_BG_NAMES[Math.max(0, i)]; }
