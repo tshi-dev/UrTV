@@ -22,7 +22,7 @@ KEEPS_ALL = {
     "saver:GameActivity.dispatchKeyEvent": "a full-screen game: Back and Home are handled before the end; the game owns the rest",
     "saver:QuizActivity.dispatchKeyEvent": "a full-screen game (the quiz room): Back is handled before the end",
     "saver:MainActivity.dispatchKeyEvent": "the screensaver's preview: any key ends the preview (as the dream does), Back included",
-    "launcher:DockActivity.dispatchKeyEvent": "QA-5 open: while an app is being moved in «ترتيب المفضلة» every key is taken (the edit-mode bug of 4.3.4, in its own screen); outside the move every key goes on",
+    "launcher:DockActivity.dispatchKeyEvent": "«ترتيب المفضلة» while an app is moved: its own keys end in return true, any other key went on before (FavEdit.owns, QA-5 fixed in 4.3.4)",
 }
 failed = 0
 def check(name, ok, detail=""):
@@ -51,6 +51,9 @@ check(f"the key handlers were found ({seen})", seen >= 20, seen)
 check("every key method can answer «not mine» (false, super, or a condition)", not no_pass, no_pass)
 new = sorted(set(takes_all) - set(KEEPS_ALL))
 check("a handler that takes every key reaching its end is named in KEEPS_ALL with a reason", not new, new)
+dock = g.blank((ROOT / "android/launcher/src/main/java/sa/urtv/home/DockActivity.java").read_text(encoding="utf-8"))
+check("QA-5: DockActivity's move hands on what FavEdit.owns does not claim, before it takes the rest",
+      "if (!FavEdit.owns(k)) return super.dispatchKeyEvent(e);" in dock)
 gone = sorted(set(KEEPS_ALL) - set(takes_all))
 if gone:
     print("NOTE no longer takes every key (remove from KEEPS_ALL): " + ", ".join(gone))

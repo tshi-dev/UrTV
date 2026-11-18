@@ -15,7 +15,8 @@ the same network. Note the build in the report's first line.
 - **S-01 Remote latency, minute tick and after Home.** Wait for the clock's minute to turn while pressing ◀▶ on the favourites: no stall
   over about half a second. Open an app, press Home, press ▶ at once and keep moving: the focus follows every press. Press Back on the
   home 5 times quickly: each answers at once. Repeat once after `optimize/tv.py` force-stops the screensaver app (the TCL case).
-  Rows: R-001, R-002, R-042.
+  Also: switch «اللغة» and back, then move at once (the home made again answers at once); open a reminder card and press OK.
+  Rows: R-001, R-002, R-042, R-254, R-255.
 - **S-02 Return to the home.** From YouTube, Home: the photo is there at once (no black, no blur), all favourites (not five), the tray's
   tiles inside it, the name under the focused tile, no other app comes to the front afterwards; «كل التطبيقات» lists the store and the
   maker's apps, no «تلفزيونك UrTV» tile, app names in one language.
@@ -23,7 +24,9 @@ the same network. Note the build in the report's first line.
 - **S-03 Long-press menu, hidden apps, edit modes.** Long-press an app with a short name: every option's words whole. Hide an app,
   then settings ← «ترتيب كل التطبيقات» ← «التطبيقات المخفية» brings it back. In «تعديل المفضلة» press a colour key and a channel key:
   they act (the mode does not swallow them); Back ends the mode.
-  Rows: R-005, R-008, R-010.
+  In «ترتيب المفضلة» move an app and press a colour key (it acts); Menu inside an edit mode opens nothing over it; cancel the PIN on
+  «التطبيقات المخفية», then long-press «انقل» on an app: it moves that app.
+  Rows: R-005, R-008, R-010, R-256, R-257, R-258.
 - **S-04 The remote's own buttons.** On the home and in an app: Netflix, YouTube, Prime (when the remote has them), the mic, a colour
   key, Settings (the TV's settings or ours, as the row says), the TV/Live key (the tuner, not the last HDMI), the input key.
   Rows: R-009, R-054, R-058, R-069, R-121, R-122, R-139, R-046, R-055.

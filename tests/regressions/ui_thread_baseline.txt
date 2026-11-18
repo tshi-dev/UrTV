@@ -95,28 +95,22 @@ ipc:ConfigSnapshot.read | launcher:DockActivity.onResume | GlassSource.light | b
 ipc:ConfigSnapshot.read | launcher:DockActivity.onResume | GlassSource.lookName | baseline 4.3.4
 ipc:ConfigSnapshot.read | launcher:InputNamesActivity.onResume | GlassSource.light | baseline 4.3.4
 ipc:ConfigSnapshot.read | launcher:InputNamesActivity.onResume | GlassSource.lookName | baseline 4.3.4
-ipc:ConfigSnapshot.read | launcher:MainActivity.dispatchKeyEvent | Digits.init | baseline 4.3.4
 ipc:ConfigSnapshot.read | launcher:MainActivity.dispatchKeyEvent | GlassSource.light | baseline 4.3.4
 ipc:ConfigSnapshot.read | launcher:MainActivity.dispatchKeyEvent | GlassSource.lookName | baseline 4.3.4
 ipc:ConfigSnapshot.read | launcher:MainActivity.dispatchKeyEvent | Greeting.fetch | baseline 4.3.4
 ipc:ConfigSnapshot.read | launcher:MainActivity.dispatchKeyEvent | MainActivity.loadTvRows | baseline 4.3.4
 ipc:ConfigSnapshot.read | launcher:MainActivity.dispatchKeyEvent | MainActivity.updateClock | the first draw only (clockFirstDone); every later read is on clockReads; ConfigSnapshot shares one answer for 3 s
-ipc:ConfigSnapshot.read | launcher:MainActivity.dispatchKeyEvent | ReminderCard.zone | baseline 4.3.4
-ipc:ConfigSnapshot.read | launcher:MainActivity.onReceive | Digits.init | baseline 4.3.4
 ipc:ConfigSnapshot.read | launcher:MainActivity.onReceive | GlassSource.light | baseline 4.3.4
 ipc:ConfigSnapshot.read | launcher:MainActivity.onReceive | GlassSource.lookName | baseline 4.3.4
 ipc:ConfigSnapshot.read | launcher:MainActivity.onReceive | Greeting.fetch | baseline 4.3.4
 ipc:ConfigSnapshot.read | launcher:MainActivity.onReceive | MainActivity.loadTvRows | baseline 4.3.4
 ipc:ConfigSnapshot.read | launcher:MainActivity.onReceive | MainActivity.onReceive | baseline 4.3.4
 ipc:ConfigSnapshot.read | launcher:MainActivity.onReceive | MainActivity.updateClock | the first draw only (clockFirstDone); every later read is on clockReads; ConfigSnapshot shares one answer for 3 s
-ipc:ConfigSnapshot.read | launcher:MainActivity.onReceive | ReminderCard.zone | baseline 4.3.4
-ipc:ConfigSnapshot.read | launcher:MainActivity.onResume | Digits.init | baseline 4.3.4
 ipc:ConfigSnapshot.read | launcher:MainActivity.onResume | GlassSource.light | baseline 4.3.4
 ipc:ConfigSnapshot.read | launcher:MainActivity.onResume | GlassSource.lookName | baseline 4.3.4
 ipc:ConfigSnapshot.read | launcher:MainActivity.onResume | Greeting.fetch | baseline 4.3.4
 ipc:ConfigSnapshot.read | launcher:MainActivity.onResume | MainActivity.loadTvRows | baseline 4.3.4
-ipc:ConfigSnapshot.read | launcher:MainActivity.onResume | MainActivity.updateClock | the first draw only (clockFirstDone); every later read is on clockReads; ConfigSnapshot shares one answer for 3 s
-ipc:ConfigSnapshot.read | launcher:MainActivity.onResume | ReminderCard.zone | baseline 4.3.4
+ipc:ConfigSnapshot.read | launcher:MainActivity.onResume | MainActivity.updateClock | QA-1 fixed in 4.3.4: only a cold process's very first draw reads here (nothing on screen yet); a recreated home uses ConfigSnapshot.known()
 ipc:ConfigSnapshot.read | launcher:ParentalActivity.onResume | GlassSource.light | baseline 4.3.4
 ipc:ConfigSnapshot.read | launcher:ParentalActivity.onResume | GlassSource.lookName | baseline 4.3.4
 ipc:ConfigSnapshot.read | launcher:PhoneActivity.onResume | GlassSource.light | baseline 4.3.4
@@ -142,13 +136,10 @@ ipc:ContentResolver.query | launcher:DockActivity.onResume | ConfigSnapshot.quer
 ipc:ContentResolver.query | launcher:InputNamesActivity.onResume | ConfigSnapshot.query | ConfigSnapshot.read: one cross-process answer shared for 3 s (SHARE_MS); QA-1 open: the first read after Home can still start the screensaver's process on a TCL
 ipc:ContentResolver.query | launcher:MainActivity.dispatchKeyEvent | ConfigSnapshot.query | ConfigSnapshot.read: one cross-process answer shared for 3 s (SHARE_MS); QA-1 open: the first read after Home can still start the screensaver's process on a TCL
 ipc:ContentResolver.query | launcher:MainActivity.dispatchKeyEvent | HomeCard.ownPhoto | over-reach: inside the card WebView's shouldInterceptRequest (WebView's own IO thread), not the UI thread
-ipc:ContentResolver.query | launcher:MainActivity.dispatchKeyEvent | ReminderStore.read | QA-3 open: the reminder card's refresh reads the screensaver's tasks provider on the UI thread (a return to the home, a key on the card)
 ipc:ContentResolver.query | launcher:MainActivity.onReceive | ConfigSnapshot.query | ConfigSnapshot.read: one cross-process answer shared for 3 s (SHARE_MS); QA-1 open: the first read after Home can still start the screensaver's process on a TCL
 ipc:ContentResolver.query | launcher:MainActivity.onReceive | HomeCard.ownPhoto | over-reach: inside the card WebView's shouldInterceptRequest (WebView's own IO thread), not the UI thread
-ipc:ContentResolver.query | launcher:MainActivity.onReceive | ReminderStore.read | QA-3 open: the reminder card's refresh reads the screensaver's tasks provider on the UI thread (a return to the home, a key on the card)
 ipc:ContentResolver.query | launcher:MainActivity.onResume | ConfigSnapshot.query | ConfigSnapshot.read: one cross-process answer shared for 3 s (SHARE_MS); QA-1 open: the first read after Home can still start the screensaver's process on a TCL
 ipc:ContentResolver.query | launcher:MainActivity.onResume | HomeCard.ownPhoto | over-reach: inside the card WebView's shouldInterceptRequest (WebView's own IO thread), not the UI thread
-ipc:ContentResolver.query | launcher:MainActivity.onResume | ReminderStore.read | QA-3 open: the reminder card's refresh reads the screensaver's tasks provider on the UI thread (a return to the home, a key on the card)
 ipc:ContentResolver.query | launcher:ParentalActivity.onResume | ConfigSnapshot.query | ConfigSnapshot.read: one cross-process answer shared for 3 s (SHARE_MS); QA-1 open: the first read after Home can still start the screensaver's process on a TCL
 ipc:ContentResolver.query | launcher:PhoneActivity.onResume | ConfigSnapshot.query | ConfigSnapshot.read: one cross-process answer shared for 3 s (SHARE_MS); QA-1 open: the first read after Home can still start the screensaver's process on a TCL
 ipc:ContentResolver.query | launcher:SetupActivity.onClick | ConfigSnapshot.query | ConfigSnapshot.read: one cross-process answer shared for 3 s (SHARE_MS); QA-1 open: the first read after Home can still start the screensaver's process on a TCL
@@ -167,8 +158,6 @@ ipc:ContentResolver.query | saver:PhotoPacksActivity.onResume | GlassSource.refr
 ipc:ContentResolver.query | saver:ScreenDream.dispatchKeyEvent | NowPlayingBridge.adhanState | QA-2 open: a key on the screensaver asks the home whether the adhan plays (cross-process) before it acts
 ipc:ContentResolver.query | saver:SettingsActivity.onResume | GlassSource.refresh | baseline 4.3.4
 ipc:ContentResolver.write | launcher:MainActivity.dispatchKeyEvent | HomeCard.ownPhoto | over-reach: inside the card WebView's shouldInterceptRequest (WebView's own IO thread), not the UI thread
-ipc:ContentResolver.write | launcher:MainActivity.dispatchKeyEvent | ReminderStore.done | baseline 4.3.4
-ipc:ContentResolver.write | launcher:MainActivity.dispatchKeyEvent | ReminderStore.snooze | baseline 4.3.4
 ipc:ContentResolver.write | launcher:MainActivity.onReceive | HomeCard.ownPhoto | over-reach: inside the card WebView's shouldInterceptRequest (WebView's own IO thread), not the UI thread
 ipc:ContentResolver.write | launcher:MainActivity.onResume | HomeCard.ownPhoto | over-reach: inside the card WebView's shouldInterceptRequest (WebView's own IO thread), not the UI thread
 ipc:ContentResolver.write | launcher:TasksActivity.onResume | TasksActivity.delete | baseline 4.3.4

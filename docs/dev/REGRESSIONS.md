@@ -269,6 +269,11 @@ often describe the same bug in two ways, and both rows are kept when their guard
 | R-251 | Beta on with no beta build: update said it cannot update from the TV | a 404 on apk-beta read as CANNOT | 4.3.3 (build 458) | `tests/update_test.py` | launcher | Y |
 | R-252 | «بدون» left the football home's weather, prayers and games widgets on | HomeCardChoice.football did not ask whether the cards were on | 4.3.4 | `tests/football_off_test.py` | launcher | Y |
 | R-253 | The tester's report carried a Wi-Fi name, its BSSID and MAC addresses | device details pasted from a diagnosis into a tracked report | 4.3.3 (report fixed in f49cf8eb) | `tests/regressions/privacy_test.py` | docs / tester | N |
+| R-254 | The home answered the remote late right after it was made again (a language change, recreate) | the first clock draw read the screensaver's settings on the UI thread (QA-1) | 4.3.4 | `tests/qa_434_test.py`, `tests/regressions/ui_thread_ipc_test.py` | launcher (TCL) | Y |
+| R-255 | The remote lagged at the return to the home and on a reminder card's OK | the reminder card read and wrote the screensaver's tasks provider on the UI thread (QA-3) | 4.3.4 | `tests/qa_434_test.py`, `tests/regressions/ui_thread_ipc_test.py` | launcher (TCL) | Y |
+| R-256 | While moving an app in «ترتيب المفضلة» the remote's app, colour and media keys did nothing | the move mode took every key (QA-5) | 4.3.4 | `tests/qa_434_test.py`, `tests/regressions/key_handlers_test.py` | launcher | Y |
+| R-257 | After a cancelled PIN on «التطبيقات المخفية», the next «انقل» opened the hidden list or said there are none | the settings' hidden-list ask stayed set (review F1) | 4.3.4 | `tests/qa_434_test.py`, `tests/apps_edit_test.py` | launcher | Y |
+| R-258 | Menu inside an edit mode opened «المصادر» over it | the Inputs branch did not check for an edit mode (review F2) | 4.3.4 | `tests/qa_434_test.py` | launcher | Y |
 
 ## Open findings of the gate (QA-n)
 
@@ -277,19 +282,19 @@ passes today, each with its QA number; none is fixed by the gate. A fix removes 
 and adds a row above.
 
 - **QA-1** `MainActivity.onResume -> updateClock`: the first draw read `ConfigSnapshot.read` on the UI thread. **Fixed in 4.3.4**
-  (`work/434-qa`, `tests/qa_434_test.py`): a home made again draws from the process's last answer; only a cold process's very first draw
+  (R-254, `tests/qa_434_test.py`): a home made again draws from the process's last answer; only a cold process's very first draw
   still reads (nothing on screen yet), and that one line stays in the baseline.
 - **QA-2** the screensaver (`ScreenDream` / its `MainActivity`) `dispatchKeyEvent -> NowPlayingBridge.adhanState`: a cross-process query
   to the home on a key. **Open, for 4.4:** a cached state could make OK miss an adhan that just started; it needs the home's adhan
   broadcast feeding the cache. The query goes to the home's own process (rarely killed).
 - **QA-3** the reminder card's refresh, the return's reschedule and OK on the card read and wrote the screensaver's tasks provider on the
-  UI thread. **Fixed in 4.3.4** (`work/434-qa`, `tests/qa_434_test.py`).
+  UI thread. **Fixed in 4.3.4** (R-255, `tests/qa_434_test.py`).
 - **QA-4** `updateClock -> AdhanSync.onConfig -> Place.get`: **not a bug.** onConfig calls the 3-argument `Place.get`, which never
   queries; the graph mixed up the overloads and took `AdhanScheduler.schedule(c, p)` for an executor. Both fixed in `javagraph.py`.
 - **QA-5** `DockActivity.dispatchKeyEvent` («ترتيب المفضلة»): while an app was moved every key was taken. **Fixed in 4.3.4**
-  (`work/434-qa`: FavEdit.owns, `tests/qa_434_test.py`); `key_handlers_test.py`'s KEEPS_ALL entry goes when it lands.
+  (R-256: FavEdit.owns, `tests/qa_434_test.py`).
 
-The rows for QA-1, QA-3, QA-5 and the 4.3.4 review's F1/F2 are added when `work/434-qa` is on the release line.
+The 4.3.4 review's F1 and F2: R-257, R-258.
 
 ## Watch
 
