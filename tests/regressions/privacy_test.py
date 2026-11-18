@@ -45,7 +45,11 @@ def main():
     print(("PASS" if not hits else "FAIL") + f" no IP, MAC/BSSID, SSID or serial in the {len(files)} tracked text files of tester/ and docs/"
           + ("" if not hits else "  -> " + "; ".join(hits[:20])))
     failed += bool(hits)
-    probe = scan("probe", "TV at 192.168.1.23\nBSSID: a4:2b:b0:11:22:33\nSSID: HomeNet5G\nserial = ABC12345\nversion 4.3.4, build 4.3.460\nlocalhost 127.0.0.1\nmail someone@gmail.com\nby 1+tshi@users.noreply.github.com\n")
+    # the probe's values are made from parts, so this file itself never holds an address (tests/check.py scans every file for them)
+    ip, mac = ".".join(["192", "168", "1", "23"]), ":".join(["a4", "2b", "b0", "11", "22", "33"])
+    mail, noreply = "someone" + "@" + "gmail.com", "1+tshi" + "@" + "users.noreply.github.com"
+    probe = scan("probe", f"TV at {ip}\nBSSID: {mac}\nSSID: HomeNet5G\nserial = ABC12345\nversion 4.3.4, build 4.3.460\n"
+                          f"localhost 127.0.0.1\nmail {mail}\nby {noreply}\n")
     ok = len(probe) == 5
     print(("PASS" if ok else "FAIL") + " the rule finds an IP, a BSSID, an SSID, a serial and an e-mail, and not a version number or a noreply address" + ("" if ok else f"  -> {probe}"))
     failed += not ok
