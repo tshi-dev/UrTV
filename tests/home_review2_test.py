@@ -36,5 +36,10 @@ rm = body(ss, "static void remember(Context c, ConfigSnapshot snap) {")
 check("F3: remember ignores a stale snapshot and anything within 10 s of the person's own S.set",
       "snap.stale" in rm and "setAt != 0 && android.os.SystemClock.elapsedRealtime() - setAt < 10_000" in rm and rm.index("snap.stale") < rm.index("snap.lang()"))
 
+# F4: the page copy is made by one thread at a time (one shared temp file)
+hp = src(HOME / "HomePage.java")
+check("F4: HomePage.copy is synchronized (the card's thread and the matches page's thread share the temp file)",
+      "private static synchronized File copy(Context c, String name) {" in hp and hp.count('prefix + "tmp"') == 1)
+
 print("FAILED" if failed else "all passed")
 sys.exit(1 if failed else 0)
