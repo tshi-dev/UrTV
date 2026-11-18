@@ -37,8 +37,9 @@ the same network. Note the build in the report's first line.
 ## Settings and update (4 min)
 
 - **S-05 «مركز التحكم».** Open it; all tiles fit (also at 720p when a TV has it); the sound tile names the real output; «الألعاب»
-  opens the games (not settings, not an old preview) and Back returns to the home; «أطفئ الآن» says what it needs.
-  Rows: R-007, R-095, R-096, R-093, R-246.
+  opens the games (not settings, not an old preview) and Back returns to the home; «أطفئ الآن» says what it needs. After playing a
+  game, Home, then «تلفزيونك» in it: the hub, not the game left on top.
+  Rows: R-007, R-095, R-096, R-093, R-246, R-290.
 - **S-06 Settings, single press.** Open the screensaver settings and press OK on 5 rows in a row, fast: each opens on the first press.
   The focused row is readable, the list does not slide sideways, dialogs are not see-through, no second line ends with «..», hints and
   footers inside the screen, the month names whole, the version with its build, focus stays on «UrTV النظيف» after it, «صوري» once,
@@ -56,8 +57,9 @@ the same network. Note the build in the report's first line.
   an off card is not drawn; the prayer card and adhan times there; the greeting fits the hour; the city's clock right; the stocks card
   without a dark box or bright rim; clean mode on then off: the quick-buttons box as wide as before, the prayer card centred; the
   «خلّ تلفزيونك يفتح على UrTV» line never over a card; the quick buttons all in the look's fill; adhkar digits as set.
-  On the football home, «بدون» turns its weather, prayers and games widgets off too.
-  Rows: R-252, R-022, R-029, R-050, R-085, R-123, R-199, R-233, R-242, R-243, R-225, R-188, R-196, R-035, R-082, R-087, R-205.
+  On the football home, «بدون» turns its weather, prayers and games widgets off too. Start the screensaver after a few minutes idle: no
+  old picture with an old time first (the dark ground until the page is up, then the real time).
+  Rows: R-289, R-252, R-022, R-029, R-050, R-085, R-123, R-199, R-233, R-242, R-243, R-225, R-188, R-196, R-035, R-082, R-087, R-205.
 - **S-09 Screensaver.** Start it (`optimize/saver.sh` preview or wait): no black/blank second, the photo visible (never solid black),
   photos of several packs mixed, the bottom strip steady across two slot turns, weather and prices current, Arabic joined, «حقوق الصور»
   names readable and «إغلاق» visible; the English page with no dark patch.
