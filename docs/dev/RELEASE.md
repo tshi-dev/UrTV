@@ -97,7 +97,10 @@ The rest are this checklist; the reviewer (step 3) and the supervisor confirm ea
 - [ ] **R8** the setup never turns off the stock home or the wizard that holds the Wi-Fi or cast credentials; protected packages stay on; a skip with a note, not `!!`.
 - [ ] **R13** Checks ran on every head that reaches next or master (a green «Build APKs» only means it compiled).
 - [ ] **R19** parallel branches merged in one integration worktree, both sides kept in shared registries (run.sh, the register, keep.txt); check.py with the real fonts and every test before a push to next.
-- [ ] **R20** no push to master, branch delete or GitHub reply without the owner (signed «— فريق UrTV»); commits as tshi-dev, no AI lines.
+- [ ] **R20** no push to master, branch delete or GitHub reply without the owner (signed «— فريق UrTV»). Commits as tshi-dev with no AI
+  lines is checked by `tests/regressions/attribution_test.py` (the owner's rule of 18 Nov: author AND committer tshi-dev, no
+  «Co-Authored-By: Claude», «Claude-Session:» or «Generated with» line, for every commit since the last release tag; what came before the
+  rule is listed in its ALLOW with a reason, and a contributor's PR commits are added there by the owner's merge, never rewritten).
 - [ ] **R22** no tester or person names in branch names; merged branches deleted.
 - [ ] **R23** a session stopped by its usage limit left one line of state in STEP.md.
 - [ ] **R24** spend: Sonnet workers, one fix round per batch, no polling.

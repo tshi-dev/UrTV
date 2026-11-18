@@ -38,5 +38,7 @@ steps = " ".join(str(s.get("run", "")) for s in g["jobs"]["regressions"]["steps"
 check("the gate runs the regressions group and the API surface diff", "tests/run.sh regressions" in steps and ".github/tools/api_surface_diff.py" in steps)
 on = g.get("on") or g.get(True)
 check("the gate can be called (workflow_call) and run by hand", "workflow_call" in on and "workflow_dispatch" in on)
+check("the gate checks the released commits' attribution with the full history (ATTRIBUTION_STRICT=1)",
+      any(str(st.get("env", {}).get("ATTRIBUTION_STRICT")) == "1" and "tests/run.sh regressions" in str(st.get("run", "")) for st in g["jobs"]["regressions"]["steps"]))
 check("it fetches the tags (the diff needs the previous release)", any(s.get("with", {}).get("fetch-depth") == 0 for s in g["jobs"]["regressions"]["steps"]))
 sys.exit(1 if failed else 0)
