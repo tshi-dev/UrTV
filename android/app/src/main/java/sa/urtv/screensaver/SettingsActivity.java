@@ -220,6 +220,7 @@ public class SettingsActivity extends Activity {
         launchedRow = null;
         adhanAsked = false;
         cleanAsked = false;   // asked again each time the settings come to the front (it was asked once per visit: the row said «مفعّل» only after reopening)
+        homeKeyAsked = false;   // 4.4 (QA-7): the same for «زر الرئيسية يفتح تلفزيونك مباشرة»
         look = GlassSource.page(this, root); couchVeil();   // the home's photo or «المظهر» may have changed meanwhile
         hint.setTextColor(look.sub);
         if (back != null) { returnWant = back; returnUntil = System.currentTimeMillis() + 4000; }   // the home answers a moment later and the list is built again: that build keeps the focus on this row too, until a key is pressed (it landed on the row above)
@@ -578,10 +579,10 @@ public class SettingsActivity extends Activity {
             new Runnable() { public void run() { prefs.setBackSaver(!prefs.backSaver()); render(); } });
         // 4.4 (build 413, T9): «إضافات تلفزيونك» catches the remote's Home key and opens this home directly (Google TV's home never starts); on by
         // default on a Google TV. Shown only when the add-on answers (installed and on)
-        final Boolean homeKey = NowPlayingBridge.homeKey(this, null);
+        final Boolean homeKey = homeKeySeen();   // 4.4 (QA-7, R1): the home's last answer; asked on a thread, never at a render
         if (homeKey != null)
             row("زر الرئيسية يفتح تلفزيونك مباشرة", homeKey ? "مفعّل" : "متوقف", R.drawable.ic_eye,
-                new Runnable() { public void run() { NowPlayingBridge.homeKey(SettingsActivity.this, homeKey ? "off" : "on"); render(); } });
+                new Runnable() { public void run() { setHomeKey(!homeKey); } });
         // 4.3.3 «المباريات المنتهية»: on the football home only; hidden, today's list keeps the games still to come (or the next day's)
         if ("football".equals(prefs.homeLayout()))
             row("إخفاء المباريات المنتهية", prefs.fbHideDone() ? "مفعّل" : "متوقف", R.drawable.ic_eye,
@@ -1822,6 +1823,40 @@ public class SettingsActivity extends Activity {
             }, "hub-clean").start();
         }
         return cleanSeen;
+    }
+
+    // 4.4 (QA-7, R1): «زر الرئيسية يفتح تلفزيونك مباشرة» is the home's (and its add-on's) answer: asked once per return on a thread, kept, and the
+    // list is built again only when it changed (render asked the home on the UI thread at every open, return and toggle)
+    private Boolean homeKeyKnown;
+    private boolean homeKeyAsked;
+
+    private Boolean homeKeySeen() {
+        if (!homeKeyAsked) {
+            homeKeyAsked = true;
+            final android.content.Context app = getApplicationContext();
+            new Thread(() -> {
+                final Boolean now = NowPlayingBridge.homeKey(app, null);
+                runOnUiThread(() -> {
+                    if (isFinishing() || isDestroyed() || java.util.Objects.equals(now, homeKeyKnown)) return;
+                    homeKeyKnown = now;
+                    render();
+                });
+            }, "home-key").start();
+        }
+        return homeKeyKnown;
+    }
+
+    /** the row pressed: the home is told on a thread, and its answer drawn */
+    private void setHomeKey(final boolean on) {
+        final android.content.Context app = getApplicationContext();
+        new Thread(() -> {
+            final Boolean now = NowPlayingBridge.homeKey(app, on ? "on" : "off");
+            runOnUiThread(() -> {
+                if (isFinishing() || isDestroyed()) return;
+                if (now != null) homeKeyKnown = now;
+                render();
+            });
+        }, "home-key-set").start();
     }
 
     private Boolean homeAdhanOn() {
