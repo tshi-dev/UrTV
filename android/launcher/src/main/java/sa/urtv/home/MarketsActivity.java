@@ -1363,7 +1363,8 @@ public class MarketsActivity extends Activity {
             if (w.size() >= 8) { toast(S.t("قائمتك ممتلئة: %s أسهم", digits(8))); return; }
             w.add(code);
         }
-        if (saverSet("stocks", String.join(",", w))) { toast(S.t("تم الحفظ")); show(tab, false); }
+        final String was = param("stocks");
+        saverSet("stocks", String.join(",", w), was, () -> { toast(S.t("تم الحفظ")); show(tab, false); }, () -> show(tab, false));
     }
 
     private void toggleBar(String key) {
@@ -1375,19 +1376,35 @@ public class MarketsActivity extends Activity {
             if (b.size() >= 4) { toast(S.t("الشريط ممتلئ: %s أسواق. أخفِ واحدًا أولًا", digits(4))); return; }
             b.add(key);
         }
-        if (saverSet("markets", String.join(",", b))) toast(S.t("تم الحفظ"));
+        final String was = param("markets");
+        saverSet("markets", String.join(",", b), was, () -> toast(S.t("تم الحفظ")), () -> { });
     }
 
-    /** one setting of the screensaver's, through the same checks as its own settings (ConfigProvider phone_set, SaverReceiver.set) */
-    private boolean saverSet(String key, String value) {
-        Bundle e = new Bundle();
-        e.putString(key, value);
-        try {
-            Bundle r = getContentResolver().call(SAVER, "phone_set", null, e);
-            if (r != null && r.getBoolean("ok")) { saved.put(key, value); return true; }
-        } catch (RuntimeException ignored) { }
-        toast(S.t("ما حُفظ: حدّث تطبيق «شاشة تلفزيونك»"));
-        return false;
+    /**
+     * one setting of the screensaver's, through the same checks as its own settings (ConfigProvider phone_set, SaverReceiver.set). 4.4 QA-12: the
+     * call is made on a thread, not on the press: the screen takes the new value as saved at once (it is what the screen draws), and when the
+     * screensaver refuses it says so, takes the value back, and draws again.
+     */
+    private void saverSet(final String key, final String value, final String was, final Runnable done, final Runnable undone) {
+        saved.put(key, value);
+        final android.content.Context app = getApplicationContext();
+        new Thread(() -> {
+            boolean ok = false;
+            try {
+                Bundle e = new Bundle();
+                e.putString(key, value);
+                Bundle r = app.getContentResolver().call(SAVER, "phone_set", null, e);
+                ok = r != null && r.getBoolean("ok");
+            } catch (RuntimeException ignored) { }
+            final boolean saved = ok;
+            runOnUiThread(() -> {
+                if (isDestroyed() || isFinishing()) return;
+                if (saved) { done.run(); return; }
+                if (was == null) this.saved.remove(key); else this.saved.put(key, was);
+                toast(S.t("ما حُفظ: حدّث تطبيق «شاشة تلفزيونك»"));
+                undone.run();
+            });
+        }, "saver-set").start();
     }
 
     /** what this screen saved a moment ago: the settings are read through a short shared cache (ConfigSnapshot.SHARE_MS) */

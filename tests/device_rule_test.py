@@ -22,7 +22,7 @@ def check(name, ok, detail=""):
 dd = (HOME / "DeviceDefaults.java").read_text(encoding="utf-8")
 main = (HOME / "MainActivity.java").read_text(encoding="utf-8")
 cc = (HOME / "ControlCenter.java").read_text(encoding="utf-8")
-check("applied once at the home's start, before the screen is built", "DeviceDefaults.apply(getApplicationContext());" in main
+check("applied once at the home's start, before the screen is built", "DeviceDefaults.apply(app)" in main
       and main.index("DeviceDefaults.apply(") < main.index("setContentView(buildUi());"))
 check("only where nothing is set: the sound row's mark is written only when absent, in ControlCenter's own file, and ControlCenter reads it",
       'if (!sp.contains("sound_bad")) sp.edit().putBoolean("sound_bad", true).apply();' in dd and 'getSharedPreferences("control", Context.MODE_PRIVATE)' in dd

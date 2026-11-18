@@ -50,9 +50,9 @@ public class ReportActivity extends Activity {
         col.addView(text(S.tv(Report.HOW), 17, "Regular", look.sub), lp(dp(22)));
         long saver = PhoneUpdater.installedCode(this, "sa.urtv.screensaver");   // the build of each app, written as everywhere (UpdateText.versionOf)
         final String homeV = PhoneUpdater.installedName(this), saverV = saver < 0 ? null : UpdateText.versionOf(BuildConfig.MARKETING, (int) saver);
-        final List<String> errors = recentErrors();
-        String crashed = getIntent().getStringExtra("error");   // BetaNotes: the class name of the crash that restarted the home (Report.name cleans it again)
-        if (crashed != null && !crashed.isEmpty() && !errors.contains(crashed)) errors.add(crashed);
+        final List<String> errors = new java.util.ArrayList<>();
+        final String crashed = getIntent().getStringExtra("error");   // BetaNotes: the class name of the crash that restarted the home (Report.name cleans it again)
+        if (crashed != null && !crashed.isEmpty()) errors.add(crashed);   // the log's own classes come after (recentErrors, on a thread below)
         // what it is about: one pick from a short list, so a report is never empty (a short row each; OK picks)
         col.addView(text(S.tv(Report.ABOUT), 16, "Medium", look.accent), lp(dp(6)));
         final TextView[] rowsOf = new TextView[Report.TOPICS.length];
@@ -87,6 +87,17 @@ public class ReportActivity extends Activity {
             }
         };
         refresh[0].run();
+        // 4.4 QA-13: logcat of this process is read on a thread (a child process: never on the UI thread); the report's lines are drawn again with the classes it names
+        new Thread(() -> {
+            final List<String> found = new ArrayList<>(recentErrors());
+            runOnUiThread(() -> {
+                if (isDestroyed() || isFinishing()) return;
+                if (crashed != null && !crashed.isEmpty() && !found.contains(crashed)) found.add(crashed);
+                errors.clear();
+                errors.addAll(found);
+                refresh[0].run();
+            });
+        }, "report-errors").start();
         col.addView(text(S.tv(Report.WHAT), 16, "Medium", look.accent), lp(dp(6)));
         col.addView(shown, lp(dp(24)));
         TextView back = text(S.tv(Report.BACK), 18, "Medium", look.text);

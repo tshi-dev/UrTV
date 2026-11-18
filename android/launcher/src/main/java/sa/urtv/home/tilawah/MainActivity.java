@@ -106,13 +106,23 @@ public class MainActivity extends Activity {
                 MusicService.playRadio(this, row.index);
                 openPlayer();
             } else if (row.kind == KIND_PRAYER) {
-                int voice = prefs.playFor(this, row.index);   // Fajr has its own muezzin; 4.4: the prayer's own choice (a silent one: its general voice, to hear it)
-                if (voice == PrayerSound.SILENT) voice = prefs.playVoiceFor(this, row.index == PrayerTimes.FAJR);
-                MusicService.adhan(this, voice, Adhan.name(voice), WHOLE_PREVIEW_S, row.index);   // 4.4: heard whole, at that prayer's level, as a preview: a real
-                openPlayer();                                                                    // adhan that comes meanwhile takes its place (it used to be swallowed)
+                // 4.4 QA-12: which voice plays reads the place (Friday's Dhuhr: a question to the screensaver), so it is picked on a thread, as the
+                // control centre's preview does (AdhanPreview); the press never waits on the other process
+                final android.content.Context app = getApplicationContext();
+                final int prayer = row.index;
+                new Thread(() -> {
+                    int voice = prefs.playFor(app, prayer);   // Fajr has its own muezzin; 4.4: the prayer's own choice (a silent one: its general voice, to hear it)
+                    if (voice == PrayerSound.SILENT) voice = prefs.playVoiceFor(app, prayer == PrayerTimes.FAJR);
+                    final int v = voice;
+                    runOnUiThread(() -> {
+                        if (isDestroyed() || isFinishing()) return;
+                        MusicService.adhan(app, v, Adhan.name(v), WHOLE_PREVIEW_S, prayer);   // 4.4: heard whole, at that prayer's level, as a preview: a real
+                        openPlayer();                                                        // adhan that comes meanwhile takes its place (it used to be swallowed)
+                    });
+                }, "adhan-row").start();
             } else if (row.kind == KIND_ADHAN_TOGGLE) {
                 prefs.setAdhanOn(!prefs.adhanOn());
-                AdhanScheduler.schedule(this);
+                AdhanScheduler.scheduleSoon(this);
                 adapter.rebuild();
                 focusList(list.getSelectedItemPosition());
             } else if (row.kind == KIND_VOICE) {
@@ -137,12 +147,12 @@ public class MainActivity extends Activity {
                 focusList(list.getSelectedItemPosition());
             } else if (row.kind == KIND_NOTICE) {
                 prefs.setAdhanNotice(!prefs.adhanNotice());
-                AdhanScheduler.schedule(this);   // the alarm is wanted for the notice alone, too
+                AdhanScheduler.scheduleSoon(this);   // the alarm is wanted for the notice alone, too
                 adapter.rebuild();
                 focusList(list.getSelectedItemPosition());
             } else if (row.kind == KIND_SAVER_AT) {
                 prefs.setAdhanSaverAt(!prefs.adhanSaverAt());
-                AdhanScheduler.schedule(this);   // the alarm is wanted for the screensaver alone, too
+                AdhanScheduler.scheduleSoon(this);   // the alarm is wanted for the screensaver alone, too
                 adapter.rebuild();
                 focusList(list.getSelectedItemPosition());
             } else if (row.kind == KIND_LINK) {
@@ -188,7 +198,7 @@ public class MainActivity extends Activity {
         // (refresh also puts the alarm back for the new times)
         PrayerTimes.refresh(this, () -> { adapter.rebuild(); focusList(list.getSelectedItemPosition()); });
         Adhan.prefetchAll(this);
-        AdhanScheduler.schedule(this);
+        AdhanScheduler.scheduleSoon(this);
     }
 
     @Override protected void onResume() {

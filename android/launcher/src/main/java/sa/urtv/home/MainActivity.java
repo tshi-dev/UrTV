@@ -258,7 +258,7 @@ public class MainActivity extends Activity {
         FamilyDnsAndroid.status(this);   // first use in this process: undoes a Family DNS check that a crash cut short
         sa.urtv.home.setup.SetupHook.atHomeStart(this);   // a home switch that was cut off is put back (it never throws)
         Digits.init(this);   // the screensaver's «الأرقام» setting, for every number this screen writes
-        DeviceDefaults.apply(getApplicationContext());   // 4.3.3: this model's published defaults, only where nothing is set (devices.json)
+        { final Context app = getApplicationContext(); clockReads.execute(() -> DeviceDefaults.apply(app)); }   // 4.3.3: this model's published defaults, only where nothing is set (devices.json); 4.4 QA-13: its file is read on a thread
         langBuilt = S.lang();   // the language this screen is built in (updateClock rebuilds it when «اللغة» changes)
         dockApps = loadDock();
         // G4: the TV's live TV app and source picker are not looked for here (a dozen package manager calls on the main thread before the first frame): the inputs list and «التلفزيون» ask each time they open
@@ -443,23 +443,33 @@ public class MainActivity extends Activity {
     /** the last picture of the home (half size, from the cache), else the skeleton in the look's colours, over everything until the live frame is there */
     private void showSnapshot() {
         if (snapOverlay != null || homeRoot == null) return;
-        android.util.DisplayMetrics dm = getResources().getDisplayMetrics();
-        Bitmap b = HomeSnapshot.load(this, dm.widthPixels, dm.heightPixels);
-        if (b == null) {   // no good picture (none, stale, another look, `debug nosnapshot`): no overlay at all, the live views and the look's own colour show, never black blocks
-            android.util.Log.i("UrTVHome", "snapshot overlay: none (no usable picture)");
-            return;
-        }
-        ImageView v = new ImageView(this);
-        v.setScaleType(ImageView.ScaleType.FIT_XY);
-        v.setImageBitmap(b);
-        v.setFocusable(false);
-        homeRoot.addView(v, new FrameLayout.LayoutParams(-1, -1));
-        snapOverlay = v;
-        snapShownAt = android.os.SystemClock.elapsedRealtime();
-        android.util.Log.i("UrTVHome", "snapshot overlay: picture shown");
-        handler.removeCallbacks(snapCheck);
-        handler.postDelayed(snapCheck, 120);
+        final android.util.DisplayMetrics dm = getResources().getDisplayMetrics();
+        final long asked = SystemClock.elapsedRealtime();
+        // 4.4 QA-13: the picture (a 300 KB WebP in this app's cache) is decoded on a thread and put over the home when it is here; one that comes
+        // after the live frame (SNAP_LATE_MS) is not shown, as when there is none (the live views and the look's own colour, never black blocks)
+        clockReads.execute(() -> {
+            final Bitmap b = HomeSnapshot.load(this, dm.widthPixels, dm.heightPixels);
+            runOnUiThread(() -> {
+                if (isDestroyed() || isFinishing() || snapOverlay != null || homeRoot == null) return;
+                if (b == null || SystemClock.elapsedRealtime() - asked > SNAP_LATE_MS) {
+                    android.util.Log.i("UrTVHome", "snapshot overlay: none (no usable picture)");
+                    return;
+                }
+                ImageView v = new ImageView(this);
+                v.setScaleType(ImageView.ScaleType.FIT_XY);
+                v.setImageBitmap(b);
+                v.setFocusable(false);
+                homeRoot.addView(v, new FrameLayout.LayoutParams(-1, -1));
+                snapOverlay = v;
+                snapShownAt = android.os.SystemClock.elapsedRealtime();
+                android.util.Log.i("UrTVHome", "snapshot overlay: picture shown");
+                handler.removeCallbacks(snapCheck);
+                handler.postDelayed(snapCheck, 120);
+            });
+        });
     }
+
+    private static final long SNAP_LATE_MS = 400;
 
     private void hideSnapshot() {
         final View v = snapOverlay;
@@ -478,20 +488,37 @@ public class MainActivity extends Activity {
     private void firstFrameWallpaper() {
         if (wallFront == null) return;
         boolean has = wallFront.getDrawable() != null;
-        java.io.File f = new java.io.File(getFilesDir(), WALL_SMALL);
-        int how = WallFirstFrame.source(has, smallPhoto != null, f.isFile());
-        if (how == WallFirstFrame.MEMORY || how == WallFirstFrame.DISK) {
-            Bitmap b = how == WallFirstFrame.MEMORY ? smallPhoto : android.graphics.BitmapFactory.decodeFile(f.getPath());
-            if (b != null) {
-                smallPhoto = b;
-                wallFront.setImageBitmap(b);
-                wallFront.setAlpha(1f);
-                logFirstPhoto(how == WallFirstFrame.MEMORY ? "small copy, memory" : "small copy, disk");
-                return;
-            }
+        // 4.4 QA-13: only the copy in memory is drawn in the first frame; the copy on disk is decoded on a thread and drawn when it is here (the
+        // look's colour stays behind it meanwhile, never black), and only when no photo has come in the view by then
+        int how = WallFirstFrame.source(has, smallPhoto != null, true);
+        if (how == WallFirstFrame.MEMORY) {
+            Bitmap b = smallPhoto;
+            wallFront.setImageBitmap(b);
+            wallFront.setAlpha(1f);
+            logFirstPhoto("small copy, memory");
+            return;
+        }
+        if (how == WallFirstFrame.DISK) {
+            if (wallDiskLoading) return;
+            wallDiskLoading = true;
+            final java.io.File f = new java.io.File(getFilesDir(), WALL_SMALL);
+            clockReads.execute(() -> {
+                final Bitmap b = f.isFile() ? android.graphics.BitmapFactory.decodeFile(f.getPath()) : null;
+                runOnUiThread(() -> {
+                    wallDiskLoading = false;
+                    if (b == null || isDestroyed() || wallFront == null || wallFront.getDrawable() != null) { logFirstPhoto("none, the look's colour"); return; }
+                    if (smallPhoto == null) smallPhoto = b;
+                    wallFront.setImageBitmap(b);
+                    wallFront.setAlpha(1f);
+                    logFirstPhoto("small copy, disk");
+                });
+            });
+            return;
         }
         logFirstPhoto(has ? "photo kept" : "none, the look's colour");
     }
+
+    private boolean wallDiskLoading;
 
     /** one line per return for the tester: the time from the home coming back to the first photo frame (tag UrTVHome) */
     private void logFirstPhoto(String how) {

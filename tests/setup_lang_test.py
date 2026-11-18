@@ -55,8 +55,8 @@ check("laid out by Dir, 24 px apart, buttons 160 dp wide, as tall as their text 
 check("both are focusable by the D-pad (the button style) and a press chooses", "SetupLang.choose(SetupActivity.this, code)" in tog and "button(opts[i][1])" in tog)
 sl = text(HOME / "setup/SetupLang.java")
 check("choosing keeps the language here, tells the screensaver (phone_set lang, as saver.sh lang does) and builds the screen again",
-      "S.set(a, v);" in sl and "save(a, v);" in sl and "a.recreate();" in sl and '"phone_set"' in sl and 'extras.putString("lang", Tr.norm(lang))' in sl
-      and sl.index("S.set(a, v);") < sl.index("save(a, v);") < sl.index("a.recreate();"))
+      "S.set(a, v);" in sl and "save(app, v)" in sl and "a.recreate();" in sl and '"phone_set"' in sl and 'extras.putString("lang", Tr.norm(lang))' in sl
+      and sl.index("S.set(a, v);") < sl.index("save(app, v)") < sl.index("a.recreate();"))
 check("choosing the language already in use does nothing", "if (v.equals(S.lang())) return;" in sl)
 prov = text(ROOT / "android/app/src/main/java/sa/urtv/screensaver/ConfigProvider.java")
 rec = text(ROOT / "android/app/src/main/java/sa/urtv/screensaver/SaverReceiver.java")

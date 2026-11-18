@@ -126,5 +126,44 @@ check("QA-12: a change on the reminder page is saved, and the alarm re-planned, 
       "io.execute(() -> {" in body(trs, "private void save() {") and "ReminderScheduler.schedule(app);" in body(trs, "private void save() {") and "ReminderScheduler.schedule(this)" not in trs
       and "if (edit == null) return;" in body(trs, "private void step(int row, int dir) {"))
 
+# QA-12 / QA-13 (the launcher's other one-off calls and small disk reads)
+tmain = src(HOME / "tilawah/MainActivity.java")
+prow = tmain.split("row.kind == KIND_PRAYER")[1].split("row.kind == KIND_ADHAN_TOGGLE")[0]
+check("QA-12: a prayer row's press picks the voice (it reads the place) on a thread and starts it from the main thread",
+      'new Thread(() -> {' in prow and prow.index("new Thread(") < prow.index("prefs.playFor(app, prayer)") and "runOnUiThread(() -> {" in prow and '"adhan-row").start();' in prow)
+sch = src(HOME / "tilawah/AdhanScheduler.java")
+check("QA-12: the screen's alarm (the place is a question to the screensaver) is set on a thread: scheduleSoon; the screen and its switches call that",
+      "static void scheduleSoon(Context c) {" in sch and '"adhan-schedule").start();' in sch and "AdhanScheduler.schedule(this)" not in tmain.replace("AdhanScheduler.schedule(this, ", ""))
+mk = src(HOME / "MarketsActivity.java")
+check("QA-12: a market or stock toggle calls the screensaver on a thread; the value is kept at once and taken back when it refuses",
+      'new Thread(() -> {' in body(mk, "private void saverSet(") and '"saver-set").start();' in body(mk, "private void saverSet(") and "getContentResolver().call(SAVER" in body(mk, "private void saverSet(")
+      and "this.saved.remove(key)" in mk and "if (saverSet(" not in mk)
+sl = src(HOME / "setup/SetupLang.java")
+check("QA-12: the first-run language choice tells the screensaver on a thread (the screen is built again in it at once)",
+      'new Thread(() -> save(app, v), "setup-lang").start();' in sl and "save(a, v);" not in sl)
+mt = src(HOME / "MatchesActivity.java")
+check("QA-12: «المباريات» finds the freshest page on a thread and loads it when it is here",
+      '"matches-page").start();' in mt and "HomePage.fresh(syncApp, wanted)" in mt and "web.loadUrl(HomePage.fresh(" not in mt)
+sh = src(HOME / "setup/SetupHook.java")
+check("QA-13: the setup ledger's files are read on a thread at the home's start and at its return (never in onCreate / onResume)",
+      '"setup-home-check").start();' in sh and '"setup-home-up").start();' in sh and "homeUpRunning.compareAndSet(false, true)" in sh
+      and "new FileStore(" not in body(sh, "public static void atHomeStart(final Context c) {") and "new FileStore(" not in body(sh, "public static void homeUp(final Context c) {"))
+sa = src(HOME / "setup/SetupActivity.java")
+check("QA-13: the setup page reads the saved deadline inside its recovery thread", "SetupRecovery.rearmFromDisk(SetupActivity.this);" in sa and "SetupRecovery.rearmFromDisk(this);" not in sa)
+gs = src(HOME / "GlassSource.java")
+pg = body(gs, "private static void paint(")
+check("QA-13: a screen's page paints the backdrop the process has (or the look's colour) and decodes the file on a thread, painting again when it brings another picture",
+      "backdropKnown()" in pg and "backdrop(app)" in pg and '"glass-backdrop").start();' in pg and "a.runOnUiThread(" in pg and "backdrop(a)" not in gs.replace("backdropKnown()", ""))
+check("QA-13: the home's first frame takes the small photo copy from memory only; the file is decoded on clockReads",
+      "int how = WallFirstFrame.source(has, smallPhoto != null, true);" in main and "BitmapFactory.decodeFile" in body(main, "private void firstFrameWallpaper() {")
+      and "clockReads.execute(() -> {" in body(main, "private void firstFrameWallpaper() {") and "wallDiskLoading" in main)
+snp = body(main, "private void showSnapshot() {")
+check("QA-13: the last-picture overlay is decoded on clockReads and put over the home only when it comes within SNAP_LATE_MS (else as with no picture)",
+      "clockReads.execute(() -> {" in snp and "HomeSnapshot.load(" in snp and "SNAP_LATE_MS" in snp and snp.index("clockReads.execute") < snp.index("HomeSnapshot.load("))
+check("QA-13: the model's defaults file is read on clockReads", "clockReads.execute(() -> DeviceDefaults.apply(app))" in main)
+rp = src(HOME / "ReportActivity.java")
+check("QA-13: the report's logcat classes are read on a thread and the lines drawn again with them",
+      '"report-errors").start();' in rp and "recentErrors()" in rp.split('"report-errors"')[0].split("new Thread(")[-1] and "= recentErrors();" not in rp)
+
 print("FAILED" if failed else "all passed")
 sys.exit(1 if failed else 0)

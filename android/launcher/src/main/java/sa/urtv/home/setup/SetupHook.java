@@ -12,14 +12,23 @@ import android.widget.Toast;
 public final class SetupHook {
     private SetupHook() { }
 
+    /** 4.4 QA-13: the setup ledger's small files are read on a thread of their own, never in the home's onCreate; what they decide (the safety switch, the notice) comes a moment later */
     public static void atHomeStart(final Context c) {
+        final Context app = c.getApplicationContext();
+        new Thread(new Runnable() {
+            @Override public void run() { try { atHomeStartNow(app); } catch (RuntimeException ignored) { } }
+        }, "setup-home-check").start();
+    }
+
+    private static void atHomeStartNow(final Context app) {
         try {
-            final Context app = c.getApplicationContext();
             clearOldFails(app);
             if (!SetupRecovery.pending(app)) { migrate(app); return; }
             SetupRecovery.rearmFromDisk(app);
             if (SetupRecovery.gaveUp(app)) {
-                Toast.makeText(app, SetupRecovery.GAVE_UP_NOTICE, Toast.LENGTH_LONG).show();
+                new android.os.Handler(android.os.Looper.getMainLooper()).post(new Runnable() {
+                    @Override public void run() { Toast.makeText(app, SetupRecovery.GAVE_UP_NOTICE, Toast.LENGTH_LONG).show(); }
+                });
                 return;
             }
             new Thread(new Runnable() {
@@ -246,7 +255,20 @@ public final class SetupHook {
     }
 
     /** Our home reached the screen (MainActivity.onResume): this boot is fine and BootGuard's count starts again (the factory step's, and 4.4 the home's own). One small read; a write only when it changes. */
-    public static void homeUp(Context c) {
+    public static void homeUp(final Context c) {
+        // 4.4 QA-13: on a thread of its own (the ledger's files, the journal, the guard), one at a time; the home's return never reads them
+        if (!homeUpRunning.compareAndSet(false, true)) return;
+        final Context app = c.getApplicationContext();
+        new Thread(new Runnable() {
+            @Override public void run() {
+                try { homeUpNow(app); } catch (RuntimeException ignored) { } finally { homeUpRunning.set(false); }
+            }
+        }, "setup-home-up").start();
+    }
+
+    private static final java.util.concurrent.atomic.AtomicBoolean homeUpRunning = new java.util.concurrent.atomic.AtomicBoolean();
+
+    private static void homeUpNow(Context c) {
         confirmIfDrawn(c);
         reapplyIfLost(c);
         tellWatch(c);

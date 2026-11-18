@@ -104,7 +104,13 @@ public class MatchesActivity extends Activity {
         final android.content.Context syncApp = getApplicationContext();   // 4.4 (QA-9, R1): handed over on a thread (a query and calls to the screensaver)
         new Thread(() -> HomeFollows.sync(syncApp), "follows-sync").start();   // 4.3.3 what the home kept while the screensaver could not take it goes to it now
         String frag = HomeFollows.fragment(this, cfg.fragment);   // …and what it still keeps joins the page's lists
-        web.loadUrl(HomePage.fresh(this, HomeCardChoice.matchesUrl(frag, event) + (cfg.pagesDark ? "&pagedark=1" : "")));   // «صفحات الأسهم والمباريات داكنة»: the page in its dark theme
+        // 4.4 QA-12: the freshest copy of the page (a question to the screensaver and, when it carries a newer one, a file copy) is found on a thread;
+        // the page loads when it is here, over the ground the screen already shows (the window and the web view are in the page's own ground colour)
+        final String wanted = HomeCardChoice.matchesUrl(frag, event) + (cfg.pagesDark ? "&pagedark=1" : "");   // «صفحات الأسهم والمباريات داكنة»: the page in its dark theme
+        new Thread(() -> {
+            final String url = HomePage.fresh(syncApp, wanted);
+            runOnUiThread(() -> { if (web != null && !isDestroyed()) web.loadUrl(url); });
+        }, "matches-page").start();
         web.requestFocus();
     }
 
