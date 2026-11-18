@@ -608,7 +608,8 @@ public class MainActivity extends Activity {
                     if ("silent".equals(prefs.prayerSound(prayer))) detail = sa.urtv.home.S.t("%s، صامت", detail);   // 4.4 «أذان كل صلاة»
                     rows.add(new Row(false, KIND_PRAYER, PrayerTimes.NAMES[prayer], detail, prayer, isNext));
                 }
-                rows.add(new Row(false, KIND_VOICE, getString(R.string.adhan_voice), Adhan.label(prefs.playVoice(MainActivity.this)), -1));
+                int playVoice = prefs.playVoice(MainActivity.this);
+                rows.add(new Row(false, KIND_VOICE, getString(R.string.adhan_voice), Adhan.label(playVoice) + Adhan.keepNote(prefs, OwnAdhan.isOwn(playVoice)), -1));   // beta 3: saved on the TV, or the last adhan missed
                 // 4.4 «أذان كل صلاة»: which prayers are heard, and with what
                 rows.add(new Row(false, KIND_PRAYER_SOUND, sa.urtv.home.S.t("أذان كل صلاة"), PrayerSoundActivity.summary(prefs), -1));
                 // 4.4 «الأدعية والتذكيرات»: sounds the person picks, played at their times like the adhan

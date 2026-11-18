@@ -217,4 +217,12 @@ final class Prefs {
     void setPrefetchTried(long at) { sp.edit().putLong("adhan_prefetch_try", at).apply(); }
     String prefetchDay() { return sp.getString("adhan_prefetch_day", ""); }
     void setPrefetchDay(String day) { sp.edit().putString("adhan_prefetch_day", day).apply(); }
+
+    /** 4.4 beta 3: the voices on the TV («3,10», written by Adhan.keepNow off the UI thread), the next adhan's time (the alarm's), and when an adhan could not play */
+    String adhanSaved() { return sp.getString("adhan_saved", ""); }
+    void setAdhanSaved(String text) { sp.edit().putString("adhan_saved", text).apply(); }
+    long nextAdhanAt() { return sp.getLong("adhan_next_at", 0); }
+    void setNextAdhanAt(long at) { sp.edit().putLong("adhan_next_at", at).apply(); }
+    long adhanMissed() { return sp.getLong("adhan_missed", 0); }
+    void setAdhanMissed(long at) { sp.edit().putLong("adhan_missed", at).apply(); }
 }
