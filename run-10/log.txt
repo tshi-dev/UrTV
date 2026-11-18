@@ -1,0 +1,17 @@
+Performing Streamed Install
+Success
+Performing Streamed Install
+Success
+== 01-preset-tv-to-couch
+/sdcard/01-preset-tv-to-couch.mp4: 1 file pulled, 0 skipped. 426.8 MB/s (1806185 bytes in 0.004s)
+== 02-preset-couch-to-tv
+/sdcard/02-preset-couch-to-tv.mp4: 1 file pulled, 0 skipped. 294.8 MB/s (671234 bytes in 0.002s)
+== 03-bg-photos-to-scenes
+/sdcard/03-bg-photos-to-scenes.mp4: 1 file pulled, 0 skipped. 218.5 MB/s (291738 bytes in 0.001s)
+== 04-bg-scenes-to-photos
+/sdcard/04-bg-scenes-to-photos.mp4: 1 file pulled, 0 skipped. 314.6 MB/s (558710 bytes in 0.002s)
+== 05-apps-tiles-to-banners
+/sdcard/05-apps-tiles-to-banners.mp4: 1 file pulled, 0 skipped. 187.3 MB/s (191556 bytes in 0.001s)
+== 06-apps-banners-to-icons
+/sdcard/06-apps-banners-to-icons.mp4: 1 file pulled, 0 skipped. 184.3 MB/s (191371 bytes in 0.001s)
+== 07-apps-icons-to-tiles
