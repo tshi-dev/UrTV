@@ -74,7 +74,7 @@ final class NowPlayingBridge {
     }
 
     /** 4.4 kids mode is on in the launcher: the page draws no kick-off notice on the screensaver then. False when the launcher does not say (an older one). */
-    static boolean kidsOn(Context c) {
+    static boolean kidsAsk(Context c) {
         Cursor cur = null;
         try {
             cur = c.getApplicationContext().getContentResolver().query(Uri.parse("content://sa.urtv.home.nowplaying/kids"), null, null, null, null);
@@ -84,6 +84,23 @@ final class NowPlayingBridge {
         } finally {
             if (cur != null) try { cur.close(); } catch (Exception ignored) { }
         }
+    }
+
+    private static volatile boolean kidsBusy;
+    /** kids mode as the launcher last said it (a copy kept in hub_seen, like the clean mask): no query, so it is safe on the UI thread (kidsAsk blocks). The first start after the
+     *  install may use the older answer; a thread asks the launcher again for the next one. */
+    static boolean kidsOn(final Context c) {
+        final Context app = c.getApplicationContext();
+        if (!kidsBusy) {
+            kidsBusy = true;
+            Thread t = new Thread(() -> {
+                try { app.getSharedPreferences("hub_seen", Context.MODE_PRIVATE).edit().putBoolean("kids_on", kidsAsk(app)).apply(); }
+                catch (RuntimeException ignored) { /* the last answer stays */ }
+                finally { kidsBusy = false; }
+            }, "kids-flag");
+            t.setPriority(Thread.MIN_PRIORITY); t.setDaemon(true); t.start();
+        }
+        return app.getSharedPreferences("hub_seen", Context.MODE_PRIVATE).getBoolean("kids_on", false);
     }
 
     /** 4.4 «جرّب التنبيه»: the launcher plays its kick-off whistle once (it checks our signature; never over the adhan); false when it could not be asked */

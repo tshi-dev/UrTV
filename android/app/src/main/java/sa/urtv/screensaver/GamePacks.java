@@ -69,12 +69,14 @@ final class GamePacks {
 
     /** the file is the one the index describes */
     static boolean shaOk(byte[] data, String hex) {
-        try {
-            byte[] d = MessageDigest.getInstance("SHA-256").digest(data);
-            StringBuilder b = new StringBuilder();
-            for (byte x : d) b.append(String.format(java.util.Locale.ROOT, "%02x", x));
-            return b.toString().equals(hex);
-        } catch (java.security.NoSuchAlgorithmException e) { return false; }
+        try { return hex(MessageDigest.getInstance("SHA-256").digest(data)).equals(hex); }
+        catch (java.security.NoSuchAlgorithmException e) { return false; }
+    }
+    /** lower-case hex of a digest */
+    static String hex(byte[] d) {
+        StringBuilder b = new StringBuilder();
+        for (byte x : d) b.append(String.format(java.util.Locale.ROOT, "%02x", x));
+        return b.toString();
     }
 
     /** «12.4 MB» / «830 KB» for the packs list (digits are written by the caller's digits setting) */

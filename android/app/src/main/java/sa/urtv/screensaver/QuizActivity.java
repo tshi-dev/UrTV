@@ -94,7 +94,13 @@ public class QuizActivity extends Activity {
         try { anim = Settings.Global.getFloat(getContentResolver(), Settings.Global.ANIMATOR_DURATION_SCALE, 1f); } catch (RuntimeException ignored) { /* default */ }
         animate = !lowRam && anim > 0f;   // reduced motion (animations off in the TV's developer settings) and low-RAM TVs: none
         scale = getResources().getDisplayMetrics().widthPixels / 1920f;
-        bank = QuizPick.forLang(QuizBank.load(this), S.en());   // an English room plays only the items whose English text is really English
+        final List<QuizPick.Item> base = QuizBank.load(this);
+        bank = QuizPick.forLang(base, S.en());   // an English room plays only the items whose English text is really English
+        QuizBank.withExtras(this, base, merged -> {   // the packs of questions come from a thread (they are parsed slowly), then the screen has them
+            if (isFinishing() || isDestroyed() || root == null) return;
+            bank = QuizPick.forLang(merged, S.en());
+            if (screen == Screen.SETUP) { fixCat(); show(Screen.SETUP); }
+        });
         QuizBank.refresh(this);
         useMeta();   // games/meta.json: the chips' names and groups from the data (the built-in lists are the offline default)
         cat = QuizBank.category(this); level = QuizBank.level(this); countIdx = QuizBank.count(this); kids = QuizBank.kids(this); sound = QuizBank.sound(this);

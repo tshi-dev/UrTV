@@ -104,7 +104,7 @@ check("phone: «gone» keeps the token and says «خرجت من الغرفة، �
       "e === 'gone'" in page and "e_gone: 'خرجت من الغرفة، ادخل من جديد'" in page and "function roomLabel()" in page and "QuizRoom.isolateMath(" in act)
 check("language: the TV shows the question and the four answers in UrTV's language (q.text(en), q.opt(i, en)); the letters are A B C D in English and أ ب ج د in Arabic on the TV; the setup page's chips follow it (S.tv)",
       "String qText = q.text(en);" in act and "String a = q.opt(i, en);" in act and 'LETTERS_AR = {"أ", "ب", "ج", "د"}, LETTERS_EN = {"A", "B", "C", "D"}' in act and "private String letter(int i) { return en ? LETTERS_EN[i] : LETTERS_AR[i]; }" in act
-      and "S.tv(cats[i][1])" in act and "S.tv(QuizPick.LEVELS[i])" in act and "QuizPick.forLang(QuizBank.load(this), S.en())" in act)
+      and "S.tv(cats[i][1])" in act and "S.tv(QuizPick.LEVELS[i])" in act and "QuizPick.forLang(base, S.en())" in act and "QuizBank.load(this)" in act)
 check("language: each phone gets its own page's language (the state poll sends &l=, the room answers in it), the letters on the phone are أ ب ج د in Arabic and A B C D in English, the digits fixing touches the Arabic text only",
       "'&l=' + L, null, 4000)" in page and 'room.stateFor(p.get("t"), "en".equals(p.get("l")))' in srv and "letters: ['أ', 'ب', 'ج', 'د']" in page and "letters: ['A', 'B', 'C', 'D']" in page
       and "q.texts[1]};   // the English text is left as it is" in act)
@@ -125,6 +125,6 @@ check("the bundled bank is the v2 file with the whole verified bank (at least 10
       _b["v"] == 2 and len(_b["items"]) >= 1000 and (ROOT / "assets/quiz/bank.json").stat().st_size < 500_000)
 _qb = (APP / "QuizBank.java").read_text(encoding="utf-8"); _ps = (APP / "GamePackStore.java").read_text(encoding="utf-8")
 check("the quiz bank adds the questions of every installed pack of kind «quiz» to whatever bank was chosen (the downloaded copy, the bundled one or the starter) with one rule: an id the bank has is kept, a missing or bad pack adds nothing, nothing throws",
-      "return v == null ? new ArrayList<>() : addExtra(c, v);" in _qb and "for (GamePacks.Pack p : GamePackStore.quizPacks(c))" in _qb and "GameBundles.bytes(c, p.id)" in _qb and "if (ids.add(it.id)) out.add(it)" in _qb and "catch (RuntimeException e)" in _qb)
+      "static void withExtras(" in _qb and "merge(base, extra)" in _qb and "for (GamePacks.Pack p : packs)" in _qb and "GamePackStore.quizPacks(c)" in _qb and "GameBundles.peekBytes(c, p.id)" in _qb and "if (ids.add(it.id)) out.add(it)" in _qb and "catch (RuntimeException e)" in _qb)
 check("a quiz screen fetches the new packs (a small index first, a pack only when the TV has room and the sha256 matches); the downloaded questions are in no public file and no question is bundled in the app",
       "GamePackStore.ensureQuiz(c, null)" in _qb and "static void ensureQuiz" in _ps and "GamePacks.canDownload(app.getFilesDir().getUsableSpace(), p.bytes)" in _ps and not (ROOT / "assets/games/bank-extra.gb").exists() and "bank-extra" not in "".join(f.read_text(encoding="utf-8") for f in APP.glob("*.java")))
