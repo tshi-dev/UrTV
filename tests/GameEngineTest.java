@@ -29,7 +29,7 @@ public final class GameEngineTest {
         return b.toString();
     }
     public static void main(String[] a) throws Exception {
-        release(); crypto(); defs(); engine(); layout(); examples(a); System.exit(failed == 0 ? 0 : 1);
+        release(); crypto(); crossLanguage(); defs(); engine(); layout(); examples(a); System.exit(failed == 0 ? 0 : 1);
     }
 
     // ------------------------------------------------------------------ the release switch
@@ -98,6 +98,17 @@ public final class GameEngineTest {
         byte[] gk2 = GK.clone(); gk2[5] ^= 0x55;
         GameRelease.Release r2 = rel("{\"v\":1,\"games\":{\"test-1\":{\"b\":\"now\"}},\"bdefs\":{\"test-1\":\"" + GameCrypt.seal(gk2, game("", CHOOSE).getBytes("UTF-8"), IV) + "\"},\"codes\":[]}");
         check("revoke for good: a file sealed again with a new group key cannot be read with the key a revoked TV kept", GameRelease.def(r2, "test-1", GK) == null && GameRelease.def(r2, "test-1", gk2) != null);
+    }
+
+    // ------------------------------------------------------------------ the tool of urtv-data (Python) and the app (Java) agree
+    static void crossLanguage() throws Exception {
+        String rec = "1:2000:0102030405060708090a0b0c0d0e0f10:97543ae48293b3d64865faf6cbce160aa3a3109ef98d58450c252366189b541e:0102030405060708090a0b0c5fd2f068b636a47723ba769bbeee580d5e28f8cfa921b05a509f8181b3a572424277d0206928c207231c73a99283a25f";
+        String sealed = "0102030405060708090a0b0c7ec82cf7d6a5dca434805965c8b432869ae939564fca887481865806e35b3a6bff7256fc2011cac7d6473e84bf";
+        byte[] key = new byte[32]; for (int i = 0; i < 32; i++) key[i] = (byte) i;
+        check("the record urtv-data's tool (Python) made opens in the app (Java): the right code gives the group key, in any spelling; a wrong code gives nothing", GameCrypt.wellFormed(rec) && Arrays.equals(GameCrypt.groupKey("ABCD-2345-WXYZ-6789-QR", rec), key)
+            && Arrays.equals(GameCrypt.groupKey("abcd 2345 wxyz 6789 qr", rec), key) && GameCrypt.groupKey("ABCD-2345-WXYZ-6789-QS", rec) == null);
+        check("a game sealed by the tool (Python, AES-256-GCM) is read by the app (Java) with the group key; with another key it is nothing", Arrays.equals(GameCrypt.open(key, sealed), "{\"v\":1,\"x\":\"اختبار ١\"}".getBytes("UTF-8")) && GameCrypt.open(new byte[32], sealed) == null);
+        check("and the other way: the app's record and seal with the same inputs are byte for byte the tool's", rec.equals(GameCrypt.record("ABCD-2345-WXYZ-6789-QR", GameCrypt.unhex("0102030405060708090a0b0c0d0e0f10"), 2000, key, GameCrypt.unhex("0102030405060708090a0b0c"))) && sealed.equals(GameCrypt.seal(key, "{\"v\":1,\"x\":\"اختبار ١\"}".getBytes("UTF-8"), GameCrypt.unhex("0102030405060708090a0b0c"))));
     }
 
     // ------------------------------------------------------------------ the definitions
