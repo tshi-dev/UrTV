@@ -1,5 +1,5 @@
 «🔇 KEEP THE TV MUTED THE WHOLE TIME (the owner is asleep): mute before you start, re-mute after every reboot, install or wake (the TV unmutes itself after sleep), no adhan, recitation or sound tests tonight.»
-«▶ NOW (owner, 17 Nov 23:25): TEST 4.3.4 ON THE OWNER'S TV NOW. Use apk-latest once it shows build 477 (around 00:00 Riyadh), or before that the identical build 476 (run 44165441466). Run step 98 (the freeze, items (a)–(e)) plus: the Sony/remote keys (edit mode passes other keys), the cards turned off really hide, beta ON → «تحقق من التحديث» offers the newest of both, and a beta build asks «نسخة تجريبية… تبي تحمّلها؟». Report «4.3.4 PASS/FAIL» per item at once. Then put the owner's setup back.»
+«▶ NOW (owner, 18 Nov midday): 4.3.5 is going to apk-latest now (stable). 1) Update the owner's TV from «تحديث تلفزيوني» to 4.3.5 (or install run 44251449461's apks if apk-latest still shows 3.477) and run step 101. 2) Then step 96 on the newest apk-next (4.4), including the 4.4 extras below it. Report PASS/FAIL per item at once, push the report, TV muted, never the family PIN, put the owner's setup back. (The old 4.3.4 check is superseded by 4.3.5.)»
 
 «🔴 FINAL 4.3.4 BUILD (NEWEST): GitHub Actions run 44165441466 (build 476, work/rel-434 6eaf77ed), with ALL fixes incl. the Sony keys, the beta newer-of-both + download confirm, the cards-off fix and the QA UI-thread fixes. Older: run 44156039842 (build 471) (freeze, the update focus skip, two presses, games→settings, the cut-off long-press box, hidden apps). Test the freeze and items (a)–(e) on THIS build (not 469), quickly; release is ~20:15 UTC. Report even partial results at once.» «🔴 URGENT FIRST (owner, 17 Nov evening): a user says since 4.3.3 «the remote freezes/lags on TCL». Do step 98 BEFORE anything else.»
 
@@ -57,6 +57,14 @@ The owner made code 8042301 for https://github.com/tshi-dev/UrTV/releases/downlo
 If it opens a page or an error instead, report exactly what Downloader shows.
 
 ## step 96 — 4.4 on apk-next (UPDATED 18 Nov 04:40 Riyadh: use apk-next build 484 = next 5892d8de, Build APKs run 44217039958. It now also has 4.3.4 + 4.3.5 (safe home) and the QA-6..10 fixes: the add-on check and four other reads moved off the remote's thread, so the 4.3.3-style TCL freeze must not come back in 4.4), AFTER the 4.3.4 NOW line and steps 99–100
+4.4 extras (each PASS/FAIL), on the newest apk-next:
+(g) every game's start screen has a small «!» at the top end corner; Up reaches it, OK opens «طريقة اللعب», Back closes, ▲▼ scroll; Menu opens it on the start screen; at 720p the text is readable.
+(h) «فوق تطبيق آخر» kick-off/notice alert: without «إضافات تلفزيونك» the screen says it needs the add-on and offers it; after installing the add-on and allowing «الظهور فوق التطبيقات», the alert draws over YouTube.
+(i) Menu on the «يُتلى الآن» card opens the black screen; any key but volume/mute brings the picture back.
+(j) Follow a 9th league: one warning «إضافة أكثر من ٨…» with «أضف»/«لا»; the 10th has no warning.
+(k) A club page: the all-time head-to-head line and «كل المواجهات»; a league page: the table tab shows a table or «الترتيب غير متاح لهذا الدوري».
+(l) «إعداد تلفزيوني» → «تراجع» only if the owner allows it: afterwards the app's ADB key is gone. Skip if not allowed.
+(m) Cold start: note if the plain look colour shows for more than a moment before the backdrop photo.
 Extra for build 484 (report each PASS/FAIL): (a) with the add-on installed, press the remote steadily across a minute change and right after Home: no lag or freeze; (b) open «مركز التحكم» and «الإضافات» 5 times quickly: instant; (c) adhan preview in the control centre plays; (d) open «المباريات» with follows kept: opens at once; (e) the screensaver's settings: toggle a few switches, no lag; (f) the notice bar still shows a due notice. Then the original step 96 list below.
 This is the first full 4.4 build with everything merged:
 - presets, «منظر وساعة» settings, the compact setup + setup speed;
