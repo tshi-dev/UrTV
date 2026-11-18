@@ -18,7 +18,7 @@ npb, prefs = src("NowPlayingBridge.java"), src("Prefs.java")
 ko = body(npb, "static boolean kidsOn(")
 check("F15: kidsOn (called by screenUrl on the UI thread) makes no provider query: it reads a kept copy and a thread refreshes it",
       "getContentResolver" not in ko and 'getBoolean("kids_on"' in ko and "new Thread(" in ko and "kidsAsk(" in ko)
-check("F15: the blocking query is kidsAsk, used only by that thread", "static boolean kidsAsk(" in npb and "getContentResolver().query(Uri.parse(\"content://sa.urtv.home.nowplaying/kids\")" in body(npb, "static boolean kidsAsk(")
+check("F15: the blocking query is kidsAsk, used only by that thread", "static Boolean kidsAsk(" in npb and "getContentResolver().query(Uri.parse(\"content://sa.urtv.home.nowplaying/kids\")" in body(npb, "static Boolean kidsAsk(")
       and len(re.findall(r"kidsAsk\(", npb)) == 2)
 check("F15: screenUrl still adds &kids=1 only with the kick-off on and kids on", 'kickoff() && NowPlayingBridge.kidsOn(c) ? "&kids=1" : ""' in prefs)
 

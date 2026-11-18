@@ -73,14 +73,15 @@ final class NowPlayingBridge {
         }
     }
 
-    /** 4.4 kids mode is on in the launcher: the page draws no kick-off notice on the screensaver then. False when the launcher does not say (an older one). */
-    static boolean kidsAsk(Context c) {
+    /** 4.4 kids mode is on in the launcher: the page draws no kick-off notice on the screensaver then. null when the launcher did not answer (an error, no row): the last answer stays (KeptAnswer). */
+    static Boolean kidsAsk(Context c) {
         Cursor cur = null;
         try {
             cur = c.getApplicationContext().getContentResolver().query(Uri.parse("content://sa.urtv.home.nowplaying/kids"), null, null, null, null);
-            return cur != null && cur.getColumnIndex("on") >= 0 && cur.moveToFirst() && cur.getInt(cur.getColumnIndex("on")) == 1;
+            if (cur == null || cur.getColumnIndex("on") < 0 || !cur.moveToFirst()) return null;
+            return cur.getInt(cur.getColumnIndex("on")) == 1;
         } catch (Exception ignored) {
-            return false;
+            return null;
         } finally {
             if (cur != null) try { cur.close(); } catch (Exception ignored) { }
         }
@@ -94,7 +95,14 @@ final class NowPlayingBridge {
         if (!kidsBusy) {
             kidsBusy = true;
             Thread t = new Thread(() -> {
-                try { app.getSharedPreferences("hub_seen", Context.MODE_PRIVATE).edit().putBoolean("kids_on", kidsAsk(app)).apply(); }
+                try {
+                    android.content.SharedPreferences sp = app.getSharedPreferences("hub_seen", Context.MODE_PRIVATE);
+                    Boolean now = KeptAnswer.toStore(kidsAsk(app), sp.getBoolean("kids_on", false));   // only a real answer that differs
+                    if (now != null) {
+                        sp.edit().putBoolean("kids_on", now).apply();   // before the broadcast: the next kidsOn() is this one
+                        app.sendBroadcast(new android.content.Intent(Prefs.CHANGED).setPackage(app.getPackageName()));   // the dream is built again with it (as CleanMask), only when its address differs
+                    }
+                }
                 catch (RuntimeException ignored) { /* the last answer stays */ }
                 finally { kidsBusy = false; }
             }, "kids-flag");

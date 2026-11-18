@@ -433,6 +433,9 @@ python3 tests/game_bundle_test.py   # the games' bundled data and its checks
 python3 tests/game_packs_test.py   # the games' packs
 python3 tests/new_games_test.py   # the new games' rules and screens
 python3 tests/saver_review44_test.py   # 4.4 review fixes in the screensaver app (F12-F15)
+python3 tests/saver_gate_test.py   # 4.4 review: a settings change during the page start is kept and looked at again (F1)
+python3 tests/saver_prayerfix_test.py   # 4.4 review: the late prayer correction reaches a running dream (F2)
+python3 tests/saver_kids_keep_test.py   # 4.4 review: the kids copy keeps its last real answer (F3)
 #
 # «regressions» (docs/dev/REGRESSIONS.md): the gate's own tests, and any guard of the register this file does not run by name above
 python3 tests/regressions/run.py --rest
