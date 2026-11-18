@@ -3,6 +3,19 @@
 
 «🔴 FINAL 4.3.4 BUILD (NEWEST): GitHub Actions run 44165441466 (build 476, work/rel-434 6eaf77ed), with ALL fixes incl. the Sony keys, the beta newer-of-both + download confirm, the cards-off fix and the QA UI-thread fixes. Older: run 44156039842 (build 471) (freeze, the update focus skip, two presses, games→settings, the cut-off long-press box, hidden apps). Test the freeze and items (a)–(e) on THIS build (not 469), quickly; release is ~20:15 UTC. Report even partial results at once.» «🔴 URGENT FIRST (owner, 17 Nov evening): a user says since 4.3.3 «the remote freezes/lags on TCL». Do step 98 BEFORE anything else.»
 
+## step 103 — league-page research screenshots in Chrome (owner, 18 Nov). PC only, TV untouched. Do it at any pause, even before the TV steps.
+Use the owner's Chrome (Claude in Chrome). NEVER log in to anything, never accept cookies/terms beyond what's needed to see the page, no purchases, no personal data. Window 1280×720 (also one phone-width shot per site with DevTools device mode, 412×915).
+Shots (one PNG each, named NNN-site-what.png, e.g. 001-fotmob-roshn-overview.png), for the Saudi Pro League (Roshn) and the Premier League:
+- fotmob.com: league overview, full table (with form if shown), fixtures by round, a live or finished match page.
+- sofascore.com: the same four.
+- onefootball.com, espn.com/soccer, bbc.com/sport/football: league table and fixtures pages.
+- premierleague.com: table, fixtures, a club page.
+- spl.com.sa (Roshn): standings, fixtures, a club page.
+- kooora.com and yallakora.com: Roshn table, fixtures, a match page.
+- thmanyah.com and shahid.mbc.net and the SSC/beIN sites: any public league/schedule page without login.
+- youtube.com: the official Roshn/Thmanyah/SSC channels and the Premier League channel: open a matchday/round-up video, pause where a full-screen TABLE or FIXTURES graphic is on screen, screenshot that frame; write the video URL with the timestamp.
+Save ALL images on the PC only, in a folder like C:\UrTV-research\league-shots\ with index.txt (one line each: file, URL, date-time, what it shows). Do NOT push any image to GitHub (others' copyright). Push ONLY a text summary to work/tester-report as tester/league-shots.md: the index lines plus, per site, 3 lines: how the table shows zones/form/movement, how next/live games show, how round navigation works. Then tell the owner the folder path so he can send the pictures to the supervisor.
+
 ## step 102 — S-21 «حذف UrTV بعد عطّل واجهة المصنع» (4.4 apk-next after work/44-rescuehome is merged). ONLY on a spare test TV, NEVER the owner's TV; if there is no spare TV, write «step 102 skipped: no test TV» and go on. One Android 9 TV and one Android 11+ TV if available.
 1. «جهّز كل شي». If Home already opens UrTV, open «تخلّص من واجهة المصنع»: it must say it isn't needed. PASS if nothing changed.
 2. On a TV where the Home switch failed: uninstall «إنقاذ تلفزيونك» first, open «تخلّص من واجهة المصنع»: it must ask for the rescue app and change nothing.
