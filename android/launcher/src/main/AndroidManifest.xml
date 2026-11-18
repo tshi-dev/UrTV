@@ -68,6 +68,8 @@
     <permission
         android:name="sa.urtv.home.LOOK"
         android:protectionLevel="signature" />
+    <!-- held too: the screensaver sends LOOK_CHANGED to the home only if the home holds it (without it Android drops it: the home waited for the minute) -->
+    <uses-permission android:name="sa.urtv.home.LOOK" />
 
     <!-- «تحديث تلفزيوني»: only our two apps (same signing key) may open the update screen -->
     <permission

@@ -220,9 +220,8 @@ check("«اللغة»: العربية and English in their own words (no transla
       and "finish();" in pick)
 check("…and only that start comes back on its section (an old key is mapped by SettingsHub.canon); any other start is on the first screen, as it always was",
       'if (getIntent().hasExtra("hubAt")) { screen = SettingsHub.canon(getIntent().getStringExtra("screen")); hubAt = SettingsHub.canon(getIntent().getStringExtra("hubAt")); }' in st
-      and st.count('putExtra("hubAt"') == 5 and '.putExtra("hubAt", "look").putExtra("want", "شكل كنبة")' in st
-      and '.putExtra("hubAt", "look").putExtra("want", "إعدادات بشكل واحد")' in st   # 4.4 beta 2: the one-form switch opens the settings in the other form
-      and '.putExtra("hubAt", "look").putExtra("want", "أشكال جاهزة")' in st)   # 4.4: pickLang, and «شكل كنبة» or «أشكال جاهزة» reopening the settings
+      and st.count('putExtra("hubAt"') == 3
+      and '.putExtra("hubAt", "look").putExtra("want", "شكل شاشة الإعدادات")' in st and '.putExtra("hubAt", "look").putExtra("want", "أشكال جاهزة")' in st)   # 4.4 beta 2: pickLang, «شكل شاشة الإعدادات», and a full-design look («كنبة») opening the settings in the other style
 # ---- «اللغة» moves with the other settings (optimize/settings_move.py), checked like them
 import importlib.util  # noqa: E402
 spec = importlib.util.spec_from_file_location("settings_move", ROOT / "optimize/settings_move.py")

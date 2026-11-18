@@ -1383,10 +1383,25 @@ final class Prefs {
      * touched: a look is the look only. Two of the owner's open questions are flags here, both on until he says otherwise.
      */
     // ---- 4.4 beta 2 (the owner: «with a protective way»): each new look item behind its own switch, off by default and after an update
-    /** «إعدادات بشكل واحد»: the settings in one form, couch-tv's compact rows, for every look (off: the 4.3.2 hub unless «كنبة», as in 4.4).
-     *  Every place of the hub is in the one form (tests/settings_one_form_test.py lists each with its new place). */
-    boolean uiOneForm() { return sp.getBoolean("uiOneForm", false); }
-    void setUiOneForm(boolean on) { sp.edit().putBoolean("uiOneForm", on).apply(); }
+    /** 4.4 beta 2 «شكل شاشة الإعدادات» (the owner): the settings screen's own style, apart from the looks: «أزرار» (the 4.3.2 hub, the default) or
+     *  «كنبة» (couch-tv's side list and compact rows). «tvOS» joins SETTINGS_STYLES only once its screen is approved and built (never a dead choice).
+     *  Every place of the hub is in the side list (tests/settings_one_form_test.py lists each with its new place). */
+    static final String[] SETTINGS_STYLES = {"buttons", "couch"};
+    static final String[] SETTINGS_STYLE_NAMES = {"أزرار", "كنبة"};
+    /** the style; read the first time after the update as the screen the TV shows now («كنبة» with the look «كنبة», else «أزرار»): no surprise switch */
+    String settingsStyle() {
+        String v = sp.getString("settingsStyle", null);
+        if (v == null) {
+            v = couchOn() || sp.getBoolean("uiOneForm", false) ? "couch" : "buttons";
+            SharedPreferences.Editor e = sp.edit().putString("settingsStyle", v);
+            if (couchOn() && !sp.getBoolean("uiOneForm", false)) e.putString("settingsStyleBefore", "buttons");   // the look «كنبة» gave it: «شكلك المعتاد» gives the buttons back, as before
+            e.apply();
+        }
+        return java.util.Arrays.asList(SETTINGS_STYLES).contains(v) ? v : "buttons";
+    }
+    /** the person's own choice: kept as theirs («شكلك المعتاد» no longer puts an older one back) */
+    void setSettingsStyle(String v) { if (java.util.Arrays.asList(SETTINGS_STYLES).contains(v)) sp.edit().putString("settingsStyle", v).remove("settingsStyleBefore").apply(); }
+    static String settingsStyleLabel(String v) { int i = java.util.Arrays.asList(SETTINGS_STYLES).indexOf(v); return SETTINGS_STYLE_NAMES[Math.max(0, i)]; }
     /** «لوحة المظهر على الرئيسية»: the row that opens LookPanelActivity, and the panel itself (saver.sh lookpanel) */
     boolean uiPanel() { return sp.getBoolean("uiPanel", false); }
     void setUiPanel(boolean on) { sp.edit().putBoolean("uiPanel", on).apply(); }
@@ -1523,13 +1538,22 @@ final class Prefs {
             if (before != null) presetPut(before);
             else for (int k = 0; k < PRESET_FIELDS.length; k++) setPresetField(PRESET_FIELDS[k], PRESET_VALUES[0][k]);
             sp.edit().remove("preset").remove("presetBefore").remove("presetApplied").remove("presetCombo").putBoolean("couchOn", false).remove("couchBefore").apply();
+            String sb = sp.getString("settingsStyleBefore", null);   // the settings screen the person had before a full-design look
+            if (sb != null) sp.edit().putString("settingsStyle", sb).remove("settingsStyleBefore").apply();
             return;
         }
         if (before == null) { before = presetNow(); sp.edit().putString("presetBefore", before).apply(); }   // the person's own, kept once
         else presetPut(before);                                                                                // back to them, then the look
         for (int k = 0; k < PRESET_FIELDS.length; k++) setPresetField(PRESET_FIELDS[k], PRESET_VALUES[i][k]);
         sp.edit().putString("preset", key).putString("presetApplied", presetNow()).putBoolean("couchOn", "couch".equals(key)).remove("couchBefore").apply();
+        String full = FULL_DESIGN_STYLE.get(key);   // the owner (4.4 beta 2): a full-design look changes the settings screen too; the other looks never do
+        if (full != null && !full.equals(settingsStyle())) {
+            if (!sp.contains("settingsStyleBefore")) sp.edit().putString("settingsStyleBefore", settingsStyle()).apply();   // kept once, for «شكلك المعتاد»
+            sp.edit().putString("settingsStyle", full).apply();
+        }
     }
+    /** the looks that are a whole design, with the settings screen of that design («tvOS» joins once its look and screen are approved and built) */
+    static final java.util.Map<String, String> FULL_DESIGN_STYLE = java.util.Collections.singletonMap("couch", "couch");
     /** the rows changed since the look was chosen (their Arabic names), none while it is as chosen */
     List<String> presetChanged() {
         List<String> out = new ArrayList<>();

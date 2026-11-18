@@ -49,9 +49,9 @@ check("ConfigProvider reads the look under the same lock: never half a look", "s
 lc = body(prefs, "    void lookChanged() {")
 check("the signal goes to the home app only, under the signature permission sa.urtv.home.LOOK; an older home simply reads at its next minute",
       'setPackage("sa.urtv.home")' in lc and "LOOK_PERMISSION" in lc and 'LOOK_PERMISSION = "sa.urtv.home.LOOK"' in prefs)
-check("sa.urtv.home.LOOK is a signature permission declared by both apps (as READ_GLASS), and the screensaver holds it",
+check("sa.urtv.home.LOOK is a signature permission declared by both apps (as READ_GLASS), and both hold it (the home too: the signal is sent to it under that permission, ui-measure run 6 saw «Permission Denial» without it)",
       all(re.search(r'<permission\s+android:name="sa\.urtv\.home\.LOOK"\s+android:protectionLevel="signature"', m) for m in (app_man, home_man))
-      and '<uses-permission android:name="sa.urtv.home.LOOK" />' in app_man)
+      and all('<uses-permission android:name="sa.urtv.home.LOOK" />' in m for m in (app_man, home_man)))
 check("the home's receiver asks for that permission (exported on 13+ only that way) and is let go in onDestroy",
       "registerReceiver(lookChanged, lf, LOOK_PERMISSION, null, Context.RECEIVER_EXPORTED)" in main and "registerReceiver(lookChanged, lf, LOOK_PERMISSION, null);" in main
       and "unregisterReceiver(lookChanged)" in main)
@@ -121,17 +121,17 @@ check("its receiver asks for the same permission", "registerReceiver(lookPanel, 
 check("the settings open it from the first row of «المظهر» («المظهر على الرئيسية»)", 'row("المظهر على الرئيسية"' in st and "LookPanelActivity.open(SettingsActivity.this)" in st)
 
 # ---- 4.4 beta 2 (the owner, «with a protective way»): each item its own switch, off by default and after an update (a key never stored before)
-for key, getter in (("uiOneForm", "uiOneForm"), ("uiPanel", "uiPanel"), ("uiUndo", "uiUndo"), ("uiSmooth", "uiSmooth")):
+for key, getter in (("uiPanel", "uiPanel"), ("uiUndo", "uiUndo"), ("uiSmooth", "uiSmooth")):
     check(f"«{getter}»: a switch, off unless turned on (sp.getBoolean(\"{key}\", false))", f'boolean {getter}() {{ return sp.getBoolean("{key}", false); }}' in prefs)
-check("each switch gates its item: the one form, the panel's row and the panel itself, the undo row (in the settings and the panel), the home's signal",
-      "classic = !prefs.uiOneForm() && !prefs.couchOn();" in st and 'if (prefs.uiPanel()) row("المظهر على الرئيسية"' in st
+check("each switch gates its item: the settings screen's style, the panel's row and the panel itself, the undo row (in the settings and the panel), the home's signal",
+      'classic = !"couch".equals(prefs.settingsStyle());' in st and 'if (prefs.uiPanel()) row("المظهر على الرئيسية"' in st
       and "if (!new Prefs(from).uiPanel()) return;" in panel and "if (prefs.uiUndo() && prefs.hasPreviousLook()) first = row(" in panel
       and "if (ctx == null || !uiSmooth()) return;" in lc)
 check("…and on the home, the new cards' page waits for its first frame only with «تبديل الشكل بلا وميض» on (the provider's ui_smooth; an older screensaver: off)",
       '"ui_smooth"' in provider and 'p.uiSmooth() ? "1" : "0"' in provider and "k != null && k.uiSmooth" in au and 'cur.getColumnIndex("ui_smooth")' in snap)
-check("the four switches are rows of «المظهر» with a command each (saver.sh oneform, lookpanelrow, lookundo, smoothlook on|off)",
-      all(f'row("{n}"' in st for n in ("إعدادات بشكل واحد", "لوحة المظهر على الرئيسية", "زر رجّع الشكل السابق", "تبديل الشكل بلا وميض"))
-      and all(f"  {c})" in (ROOT / "optimize/saver.sh").read_text(encoding="utf-8") for c in ("oneform", "lookpanelrow", "lookundo", "smoothlook")))
+check("the four switches are rows of «المظهر» with a command each (saver.sh settingsstyle buttons|couch; lookpanelrow, lookundo, smoothlook on|off)",
+      all(f'row("{n}"' in st for n in ("شكل شاشة الإعدادات", "لوحة المظهر على الرئيسية", "زر رجّع الشكل السابق", "تبديل الشكل بلا وميض"))
+      and all(f"  {c})" in (ROOT / "optimize/saver.sh").read_text(encoding="utf-8") for c in ("settingsstyle", "lookpanelrow", "lookundo", "smoothlook")))
 
 # ---- LastGood.expire on a JVM: the next read asks again; the answer is kept for peek
 if shutil.which("javac"):

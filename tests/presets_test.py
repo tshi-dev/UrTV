@@ -45,9 +45,13 @@ check("a row changed after reads «مخصّص» (what the look set is kept, comp
       and not any(f in fields for f in ("city", "adhan", "teams", "pin", "lock")))
 check("a TV that had «شكل كنبة» on reads «كنبة», its four values kept as the person's own", 'if (!sp.contains("preset") && sp.getBoolean("couchOn", false))' in prefs
       and 'putString("preset", "couch").putString("presetBefore", before)' in prefs and 'if (PRESETS_REPLACE_COUCH) return "couch".equals(preset());' in prefs)
-check("the row is first in «المظهر» in both layouts, the picture picker opens from it, the settings open again in the other layout when it changes",
+check("the row is first in «المظهر» in both layouts, the picture picker opens from it; 4.4 beta 2 (the owner): only a full-design look («كنبة») changes the settings screen too, then they open again in it on this row; any other look is drawn again in place",
       'row("أشكال جاهزة", prefs.presetLabel()' in st and "private void pickPreset()" in st and '.putExtra("want", "أشكال جاهزة")' in st
-      and '"رجّع الشكل السابق", "أشكال جاهزة", "شكل كنبة",' in hub and '{"أشكال جاهزة", LOOK}, {"شكل كنبة", LOOK}' in hub and '{"أشكال جاهزة", "look"}' in hub)
+      and "if (styleBefore.equals(prefs.settingsStyle())) { render(); return; }" in st
+      and 'FULL_DESIGN_STYLE = java.util.Collections.singletonMap("couch", "couch");' in prefs
+      and 'if (!sp.contains("settingsStyleBefore")) sp.edit().putString("settingsStyleBefore", settingsStyle()).apply();' in prefs
+      and 'if (sb != null) sp.edit().putString("settingsStyle", sb).remove("settingsStyleBefore").apply();' in prefs
+      and '"رجّع الشكل السابق", "أشكال جاهزة", "شكل شاشة الإعدادات", "شكل كنبة",' in hub and '{"أشكال جاهزة", LOOK}, {"شكل شاشة الإعدادات", LOOK}, {"شكل كنبة", LOOK}' in hub and '{"أشكال جاهزة", "look"}' in hub)
 pics = [ROOT / f"android/app/src/main/assets/presets/{k}.jpg" for k in keys]
 check("each look's picture is in the app, small (under 40 KB)", all(p.is_file() and p.stat().st_size < 40 * 1024 for p in pics), [p.name for p in pics if not p.is_file()])
 check("saver.sh preset tv|couch|clean|family|sport|calm; show says «preset: family» or «family (custom)»; given before any one row",

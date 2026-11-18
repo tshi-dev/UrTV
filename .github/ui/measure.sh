@@ -92,7 +92,7 @@ case_settings() {
 # a known start: «شكلك المعتاد», photos, the plain clock, the coloured tiles; a card so the home is not empty
 # 4.4 beta 2: the new look items are switches, off by default; this run measures them on (MEASURE_OFF=1: as a TV that only updated)
 if [ -z "${MEASURE_OFF:-}" ]; then
-  adb shell "am broadcast -n sa.urtv.screensaver/.SaverReceiver -a sa.urtv.screensaver.SET --es oneform on --es lookpanelrow on --es lookundo on --es smoothlook on" > /dev/null
+  adb shell "am broadcast -n sa.urtv.screensaver/.SaverReceiver -a sa.urtv.screensaver.SET --es settingsstyle couch --es lookpanelrow on --es lookundo on --es smoothlook on" > /dev/null
 fi
 adb shell "am broadcast -n sa.urtv.screensaver/.SaverReceiver -a sa.urtv.screensaver.SET --es preset tv --es home_panel prayerrow,hourly" > /dev/null
 start sa.urtv.home/.MainActivity

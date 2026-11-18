@@ -65,6 +65,9 @@ the phone page's key, «مركز التحكم» the control centre's row that op
     الخيارات: شكلك المعتاد / كنبة / صورة فقط / مواقيت يومي / مباريات اليوم / ليل هادئ
     مثال للوكيل: optimize/saver.sh preset family  (tv, couch, clean, family, sport, calm, or a mix: couch-prayers, clean-icons, sport-night, tv-glass)
       القيم المقبولة: tv|couch|clean|family|sport|calm|couch-prayers|clean-icons|sport-night|tv-glass
+——— شكل شاشة الإعدادات [كل التلفزيون]
+    مثال للوكيل: optimize/saver.sh settingsstyle couch  (or `buttons`)
+      القيم المقبولة: buttons|couch
 ——— شكل كنبة [الرئيسية]
     الخيارات: مفعّل / متوقف
     الأصل: متوقف
@@ -83,9 +86,6 @@ the phone page's key, «مركز التحكم» the control centre's row that op
       القيم المقبولة: dark|light|auto
 ——— صفحات الأسهم والمباريات داكنة [الرئيسية]
     مثال للوكيل: optimize/saver.sh pagesdark off
-      القيم المقبولة: on|off
-——— إعدادات بشكل واحد [كل التلفزيون]
-    مثال للوكيل: optimize/saver.sh oneform on  (or `off`)
       القيم المقبولة: on|off
 ——— لوحة المظهر على الرئيسية [الرئيسية]
     مثال للوكيل: optimize/saver.sh lookpanelrow on  (or `off`)
@@ -832,6 +832,9 @@ the phone page's key, «مركز التحكم» the control centre's row that op
    الخيارات: شكلك المعتاد / كنبة / صورة فقط / مواقيت يومي / مباريات اليوم / ليل هادئ
    مثال للوكيل: optimize/saver.sh preset family  (tv, couch, clean, family, sport, calm, or a mix: couch-prayers, clean-icons, sport-night, tv-glass)
      القيم المقبولة: tv|couch|clean|family|sport|calm|couch-prayers|clean-icons|sport-night|tv-glass
+—— شكل شاشة الإعدادات [كل التلفزيون]
+   مثال للوكيل: optimize/saver.sh settingsstyle couch  (or `buttons`)
+     القيم المقبولة: buttons|couch
 —— شكل كنبة [الرئيسية]
    الخيارات: مفعّل / متوقف
    الأصل: متوقف
@@ -883,9 +886,6 @@ the phone page's key, «مركز التحكم» the control centre's row that op
      القيم المقبولة: glass|graphite|navy|clean|sand
    مثال للوكيل: optimize/saver.sh appearance auto
      القيم المقبولة: dark|light|auto
-—— إعدادات بشكل واحد [كل التلفزيون]
-   مثال للوكيل: optimize/saver.sh oneform on  (or `off`)
-     القيم المقبولة: on|off
 —— لوحة المظهر على الرئيسية [الرئيسية]
    مثال للوكيل: optimize/saver.sh lookpanelrow on  (or `off`)
      القيم المقبولة: on|off
