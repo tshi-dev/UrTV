@@ -1,0 +1,17 @@
+[s[999C[999B[6n[u[H[J[?25l[H[J[s[999C[999B[6n[uTasks: 405 total,   1 running, 404 sleeping,   0 stopped,   0 zombie
+  Mem:  2451284K total,  2271120K used,   180164K free,     5300K buffers
+ Swap:   917500K total,   681844K used,   235656K free,   793552K cached
+400%cpu  28%user   0%nice  38%sys 334%idle   0%iow   0%irq   0%sirq   0%host
+[7m  PID USER         PR  NI VIRT  RES  SHR S[%CPU] %MEM     TIME+ ARGS            [0m
+[1m15631 shell        20   0  17M 4.1M 3.4M R 18.7   0.1   0:00.10 top -n 1 -m 12[m
+ 1938 u0_a35       20   0 2.0G 109M  79M S 18.7   4.5  11:53.03 com.google.andr+
+  545 audioserver  20   0  36M 3.4M 2.6M S  6.2   0.1   2:01.31 voicesdk_server
+ 5573 u0_a106      20   0 1.2G 135M 118M S  3.1   5.6   0:06.67 com.hkinnovate.+
+ 1148 wifi         20   0  31M 4.1M 3.8M S  3.1   0.1   0:06.91 wpa_supplicant +
+  667 root         20   0 111M  15M  15M S  3.1   0.6   0:46.56 tcl_tv_display_+
+  535 audioserver  20   0  93M  19M  16M S  3.1   0.8   0:49.86 audioserver
+  484 audioserver  RT   0 102M  12M  10M S  3.1   0.4   1:22.64 vendor.mediatek+
+15558 root          0 -20    0    0    0 I  0.0   0.0   0:00.00 [kworker/3:2H]
+15479 u0_a45       20   0 1.2G 136M 100M S  0.0   5.6   0:01.33 com.android.ven+
+15289 root          0 -20    0    0    0 I  0.0   0.0   0:00.00 [kworker/0:0H]
+15140 root          0 -20    0    0    0 I  0.0   0.0   0:00.00 [kworker/2:1H-k+[?25h[0m[999H[K[?25h[?25h[0m[999H[K

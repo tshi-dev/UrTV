@@ -3118,3 +3118,10 @@ Owner request for 4.4 (chat, 18 Nov): allow more than 8 clubs/leagues, with one 
 - The TV had only «Downloader for TV» (hkinnovate, no codes). Owner OK'd it: I installed the real «Downloader by AFTVnews» (com.esaba.downloader) from Play.
 - Typed code 8042301 in its box and pressed Load: it downloaded `urtv-rescue.apk` = **60437 bytes**, the same as the release asset (`curl -sI` Content-Length 60437, HTTP 200). Then it asked to install; the TV said unknown apps are not allowed from this source (tester/step98b/step97-install-prompt.png). I pressed **Cancel** and did not grant the permission, so nothing was installed over anything. I deleted the downloaded file.
 - Notes for the guide: with adb-driven keys the Downloader's page cursor ate the D-pad; taps worked. A real remote should open the box with the top bar.
+
+## step 96 (build 484) item (a) only  [tester, 18 Nov]  **(a) PASS for freezes, with a smoothness note**
+4.4 build 484 on the TCL with the owner's setup (add-on bound, couch layout, scenes background, glass clock), 3 min of family-style keys with Home pressed at the minute change (same script as step 98):
+- No stall over 300 ms (longest frame in the last 120: 64 ms), no ANR, `logcat -b crash` empty, no `Start proc sa.urtv.screensaver`, no skipped-frame lines. So no 4.3.3-style freeze.
+- But the home is heavier than 4.3.x: janky frames **20.5 %** (356) vs 7.7 % on 4.3.3/4.3.2; p50 32 ms (21 ms), p99 109 ms (65 ms), Missed Vsync 50. Suspect: the couch/scenes/glass look on this TV's GPU; not tried with the plain look to confirm.
+- NOT done: (b) control centre/add-ons ×5, (c) adhan preview (TV muted, no sound tests), (d) matches page, (e) screensaver switches, (f) notice bar; my adb navigation can't read focus on these screens.
+Raw: tester/step96/.
