@@ -69,7 +69,7 @@ be = body(main, "private void beginAppsEdit(String pkg) {")
 check("F1: a long-press «انقل» (pkg) forgets a hidden-list ask that a PIN or kids mode stopped, before anything can return",
       be.strip("{} \n").startswith("if (pkg != null) wantHiddenList = false;"), be[:200])
 menu = [ln for ln in main.splitlines() if "KEYCODE_MENU" in ln and "ACTION_UP" in ln and "showInputs" not in ln]
-inputs = next((ln for ln in main.splitlines() if "e.getKeyCode() == KeyEvent.KEYCODE_MENU" in ln and "!pills.isEmpty()" in ln), "")
+inputs = next((ln for ln in main.splitlines() if "e.getKeyCode() == KeyEvent.KEYCODE_MENU" in ln and "inputsAnchor() != null" in ln), "")
 check("F2: the Menu key opens «المصادر» only with no edit mode on", "edit == null && appsEdit == null" in inputs, inputs)
 
 if shutil.which("javac"):

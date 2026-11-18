@@ -49,7 +49,7 @@ check("a build without the listening part (R.bool.show_listening false) never sh
       "return setting && getResources().getBoolean(R.bool.show_listening);" in main)
 tick = main.split("applyListenPill(cfg.listenPillOn);")
 check("the minute tick applies the setting", len(tick) == 2 and "updateAdhanBar(cfg);" in tick[0][-80:], "")
-menu = main.split("private void showAppMenuNow(")[1].split("showMenu(anchor, labels, actions);")[0]
+menu = main.split("private void showAppMenuNow(")[1].split("showMenu(anchor, labels, actions);")[0].split("\n    public boolean dispatchKeyEvent")[0].split("\n    private boolean dispatchKey")[0]   # 4.4: the slice ran on into the key handling
 check("hidden: the settings' «افتح تلاوة وأذان» opens the screen through the home, behind the same family lock as the button (the app's options are about the app only)",
       'row("افتح تلاوة وأذان"' in settings and 'openHome("listen")' in settings and "تلاوة وأذان" not in menu)
 check("shown: the button itself is still behind that lock",
