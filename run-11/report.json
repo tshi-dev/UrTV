@@ -1,0 +1,16 @@
+[
+ {
+  "case": "01-preset-tv-to-couch",
+  "frames": 37,
+  "change_at": 2.0,
+  "focus_before": "android.widget.FrameLayout [1136,792][1440,962]",
+  "focus_after": "android.widget.LinearLayout [172,72][362,132]",
+  "first": 1.241,
+  "settled": 1.57,
+  "span": 0.329,
+  "changed_frames": 2,
+  "blank": [],
+  "flash": [],
+  "total_change": 32.75
+ }
+]
