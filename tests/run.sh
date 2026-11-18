@@ -148,6 +148,7 @@ python3 tests/perf_idle_test.py
 python3 tests/league_fixtures_test.py
 python3 tests/match_archive_test.py   # 4.3.1 the match archive: append-only, a corrected score, the live window, the backfill names
 python3 tests/sports_files_test.py   # 4.4 the sports cards' files: sports/<league>.json from the store, f1/next.json once a day
+python3 tests/honours_study_test.py   # 4.5 honours study: a season's champion from our archive only when sure (both legs of a final, never MLS's table leader)
 python3 tests/kickoff_test.py   # 4.4 «تنبيه بداية المباراة»: the rules on a JVM (KickoffRun.java), the whistle, the defaults, the settings, saver.sh and dock.sh overlay
 python3 tests/overlay_offer_test.py   # 4.4 the add-on's «فوق تطبيق آخر» offered once on the first run (rule on a JVM, the bar, the once-flag, the changelog line)
 python3 tests/league_catalogue_test.py   # 4.3 «كل الدوريات»: the CI catalogue (the walk, the content rules, the Arabic names)
