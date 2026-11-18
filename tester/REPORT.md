@@ -3102,3 +3102,14 @@ Installed 4.3.4 (477) fresh and ran «جهّز كل شي» (USB dialog: Allow, b
 - (d) the top-bar control center opens (picture not kept: it showed the network name); its «تلفزيونك» row opened the city/region picker (tester/step98b/d-games.png), and the «الألعاب» row was not reached. No game was pressed.
 - Freeze: not seen on 4.3.4 either (earlier numbers: 469 candidate, 4.3.3, 4.3.2 all clean).
 The owner's 4.4 setup is backed up in optimize/run/step98/before2 (kept local) and will be put back after step 100.
+
+## step 100 — 4.3.5 safe-home (run 44175740734, build 480)  [tester, 18 Nov]
+**PASS on items 1 and 3, with one FAIL-ish finding; item 2 SKIPPED.** (Wi-Fi: connected)
+1. 4.3.5 (versionCode 480) installed over 4.3.4: home opens, Home key goes to UrTV, no regression seen.
+2. Broken WebView: SKIPPED (I did not disable the TV's WebView provider; no fallback was checked, and the rule says never leave it off).
+3. Crash loop (`am crash sa.urtv.home`, twice within ~10 s after starting the home):
+   - after the 1st crash: home restarts normally; after the 2nd: `SafeActivity` shows «تلفزيونك توقف أكثر من مرة عند التشغيل» with «افتح الشاشة الأصلية» (focused first) and «حاول مرة ثانية» — tester/step100/s100-safe.png. The Home key keeps showing it.
+   - «حاول مرة ثانية» → UrTV home back (MainActivity). PASS.
+   - «افتح الشاشة الأصلية» on a TV set up by 4.3.x: **nothing happens** (page stays) because setup turned launcherx (com.google.android.apps.tv.launcherx) off. After `pm enable` of launcherx the same button opens Google TV at once (s100-orig2.png). So on a set-up TV the button is dead. Suggest: the button enables launcherx (and the setup's other home package) first, or the page says what to do.
+4. Owner's 4.4 (build 484) put back: all settings from the backup restored (saver.sh show identical, dock identical), HOME role sa.urtv.home, add-on bound, home-key on, first Home after a reboot goes to UrTV, TV muted.
+Owner request for 4.4 (chat, 18 Nov): allow more than 8 clubs/leagues, with one warning that a weak TV may slow down (sent to the supervisor).
