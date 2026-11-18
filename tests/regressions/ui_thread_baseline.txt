@@ -1,21 +1,22 @@
 # tests/regressions/ui_thread_ipc_test.py: the UI-thread paths that were there at 4.3.4, each with a reason.
 # kind | app:Entry.method | the method that does the work | reason
-# A new line needs a reviewer's reason (docs/dev/RELEASE.md). «baseline 4.3.4» = there before the gate, not yet reviewed one by one;
-# QA-n = an open finding in docs/dev/REGRESSIONS.md («Open findings of the gate»).
+# A new line needs a reviewer's reason (docs/dev/RELEASE.md); the bare «baseline 4.3.4» is refused by the test.
+# QA-n = a finding in docs/dev/REGRESSIONS.md («Open findings of the gate»); «open QA-n» = still open there; «over-reach» = the graph's
+# route runs on another thread (a click listener, a WebView's IO thread, a guarded worker), not on the UI thread.
 
-disk:Files | saver:MainActivity.onReceive | SaverSnapshot.load | baseline 4.3.4
-disk:Files | saver:MainActivity.onReceive | SaverSnapshot.why | baseline 4.3.4
-disk:Files | saver:ScreenDream.onReceive | SaverSnapshot.load | baseline 4.3.4
-disk:Files | saver:ScreenDream.onReceive | SaverSnapshot.why | baseline 4.3.4
-disk:decodeFile | launcher:MainActivity.onRestart | MainActivity.firstFrameWallpaper | baseline 4.3.4
-disk:decodeFile | launcher:MainActivity.onResume | MainActivity.firstFrameWallpaper | baseline 4.3.4
-disk:decodeFile | saver:AppearanceActivity.onResume | GlassSource.refresh | baseline 4.3.4
-disk:decodeFile | saver:MainActivity.onReceive | SaverSnapshot.load | baseline 4.3.4
-disk:decodeFile | saver:PhotoPacksActivity.onResume | GlassSource.refresh | baseline 4.3.4
-disk:decodeFile | saver:ScreenDream.onReceive | SaverSnapshot.load | baseline 4.3.4
-disk:decodeFile | saver:SettingsActivity.dispatchKeyEvent | SettingsActivity.photo | baseline 4.3.4
-disk:decodeFile | saver:SettingsActivity.onResume | GlassSource.refresh | baseline 4.3.4
-disk:decodeFile | saver:SettingsActivity.onResume | SettingsActivity.photo | baseline 4.3.4
+disk:Files | saver:MainActivity.onReceive | SaverSnapshot.load | by design at the dream's start: the same last-picture overlay (a small WebP in the app's own cache, 24 h old at most) is drawn before the page paints; open QA-13
+disk:Files | saver:MainActivity.onReceive | SaverSnapshot.why | by design at the dream's start: the same last-picture overlay (a small WebP in the app's own cache, 24 h old at most) is drawn before the page paints; open QA-13
+disk:Files | saver:ScreenDream.onReceive | SaverSnapshot.load | by design at the dream's start: the same last-picture overlay (a small WebP in the app's own cache, 24 h old at most) is drawn before the page paints; open QA-13
+disk:Files | saver:ScreenDream.onReceive | SaverSnapshot.why | by design at the dream's start: the same last-picture overlay (a small WebP in the app's own cache, 24 h old at most) is drawn before the page paints; open QA-13
+disk:decodeFile | launcher:MainActivity.onRestart | MainActivity.firstFrameWallpaper | by design: the small copy of the last wallpaper (the app's own file) is drawn in the first frame, only when there is no picture in memory; open QA-13
+disk:decodeFile | launcher:MainActivity.onResume | MainActivity.firstFrameWallpaper | by design: the small copy of the last wallpaper (the app's own file) is drawn in the first frame, only when there is no picture in memory; open QA-13
+disk:decodeFile | saver:AppearanceActivity.onResume | GlassSource.refresh | the settings screen's open or return asks the home for its backdrop and decodes the bitmap only when the stamp changed (the home's own small PNG); open QA-12 (the query) and QA-13 (the decode)
+disk:decodeFile | saver:MainActivity.onReceive | SaverSnapshot.load | by design at the dream's start: the same last-picture overlay (a small WebP in the app's own cache, 24 h old at most) is drawn before the page paints; open QA-13
+disk:decodeFile | saver:PhotoPacksActivity.onResume | GlassSource.refresh | the settings screen's open or return asks the home for its backdrop and decodes the bitmap only when the stamp changed (the home's own small PNG); open QA-12 (the query) and QA-13 (the decode)
+disk:decodeFile | saver:ScreenDream.onReceive | SaverSnapshot.load | by design at the dream's start: the same last-picture overlay (a small WebP in the app's own cache, 24 h old at most) is drawn before the page paints; open QA-13
+disk:decodeFile | saver:SettingsActivity.dispatchKeyEvent | SettingsActivity.photo | R1 debt: one bundled asset picture decoded at a sample size for a settings card at render; small, the app's own assets; open QA-13
+disk:decodeFile | saver:SettingsActivity.onResume | GlassSource.refresh | the settings screen's open or return asks the home for its backdrop and decodes the bitmap only when the stamp changed (the home's own small PNG); open QA-12 (the query) and QA-13 (the decode)
+disk:decodeFile | saver:SettingsActivity.onResume | SettingsActivity.photo | R1 debt: one bundled asset picture decoded at a sample size for a settings card at render; small, the app's own assets; open QA-13
 disk:prefs.commit | launcher:DockActivity.onResume | Parental.pin | baseline 4.3.4: prefs written with commit() on a click or a return (small file, the app's own)
 disk:prefs.commit | launcher:DockActivity.onResume | Parental.put | baseline 4.3.4: prefs written with commit() on a click or a return (small file, the app's own)
 disk:prefs.commit | launcher:DockActivity.onResume | Parental.remove | baseline 4.3.4: prefs written with commit() on a click or a return (small file, the app's own)
@@ -64,287 +65,282 @@ disk:prefs.commit | launcher:UpdateActivity.onResume | UpdateCarry.before | base
 disk:prefs.commit | launcher:WatchNextActivity.onResume | Parental.pin | baseline 4.3.4: prefs written with commit() on a click or a return (small file, the app's own)
 disk:prefs.commit | launcher:WatchNextActivity.onResume | Parental.put | baseline 4.3.4: prefs written with commit() on a click or a return (small file, the app's own)
 disk:prefs.commit | launcher:WatchNextActivity.onResume | Parental.remove | baseline 4.3.4: prefs written with commit() on a click or a return (small file, the app's own)
-disk:stream | launcher:MainActivity.onResume | FileStore.get | baseline 4.3.4
-disk:stream | launcher:MainActivity.onResume | FileStore.put | baseline 4.3.4
-disk:stream | launcher:UpdateActivity.onClick | PhoneUpdater.fetch | baseline 4.3.4
-disk:stream | launcher:UpdateActivity.onClick | PhoneUpdater.installNext | baseline 4.3.4
-disk:stream | launcher:UpdateActivity.onResume | PhoneUpdater.fetch | baseline 4.3.4
-disk:stream | launcher:UpdateActivity.onResume | PhoneUpdater.installNext | baseline 4.3.4
-disk:stream | saver:AppearanceActivity.onResume | PackStore.names | baseline 4.3.4
-disk:stream | saver:MainActivity.onReceive | PackStore.creditsJson | baseline 4.3.4
-disk:stream | saver:MainActivity.onReceive | PhotoCache.download | baseline 4.3.4
-disk:stream | saver:MainActivity.onReceive | PhotoCache.pack | baseline 4.3.4
-disk:stream | saver:MainActivity.onReceive | PhotoCache.readAll | baseline 4.3.4
-disk:stream | saver:MainActivity.onReceive | PhotoCache.serve | baseline 4.3.4
-disk:stream | saver:ScreenDream.onReceive | PackStore.creditsJson | baseline 4.3.4
-disk:stream | saver:ScreenDream.onReceive | PhotoCache.download | baseline 4.3.4
-disk:stream | saver:ScreenDream.onReceive | PhotoCache.pack | baseline 4.3.4
-disk:stream | saver:ScreenDream.onReceive | PhotoCache.readAll | baseline 4.3.4
-disk:stream | saver:ScreenDream.onReceive | PhotoCache.serve | baseline 4.3.4
-disk:stream | saver:SettingsActivity.dispatchKeyEvent | PackStore.creditsJson | baseline 4.3.4
-disk:stream | saver:SettingsActivity.dispatchKeyEvent | PhotoCache.download | baseline 4.3.4
-disk:stream | saver:SettingsActivity.dispatchKeyEvent | PhotoCache.pack | baseline 4.3.4
-disk:stream | saver:SettingsActivity.dispatchKeyEvent | PhotoCache.readAll | baseline 4.3.4
-disk:stream | saver:SettingsActivity.dispatchKeyEvent | PhotoCache.serve | baseline 4.3.4
-disk:stream | saver:SettingsActivity.onResume | PackStore.creditsJson | baseline 4.3.4
-disk:stream | saver:SettingsActivity.onResume | PhotoCache.download | baseline 4.3.4
-disk:stream | saver:SettingsActivity.onResume | PhotoCache.pack | baseline 4.3.4
-disk:stream | saver:SettingsActivity.onResume | PhotoCache.readAll | baseline 4.3.4
-disk:stream | saver:SettingsActivity.onResume | PhotoCache.serve | baseline 4.3.4
-ipc:ConfigSnapshot.read | launcher:DockActivity.onResume | GlassSource.light | baseline 4.3.4
-ipc:ConfigSnapshot.read | launcher:DockActivity.onResume | GlassSource.lookName | baseline 4.3.4
-ipc:ConfigSnapshot.read | launcher:InputNamesActivity.onResume | GlassSource.light | baseline 4.3.4
-ipc:ConfigSnapshot.read | launcher:InputNamesActivity.onResume | GlassSource.lookName | baseline 4.3.4
-ipc:ConfigSnapshot.read | launcher:MainActivity.dispatchKeyEvent | GlassSource.light | baseline 4.3.4
-ipc:ConfigSnapshot.read | launcher:MainActivity.dispatchKeyEvent | GlassSource.lookName | baseline 4.3.4
-ipc:ConfigSnapshot.read | launcher:MainActivity.dispatchKeyEvent | Greeting.fetch | baseline 4.3.4
+disk:stream | launcher:MainActivity.onResume | FileStore.get | the setup ledger: a small file in the app's own files/setup, read at the home's start and written once when the home is up (SetupHook); open QA-13
+disk:stream | launcher:MainActivity.onResume | FileStore.put | the setup ledger: a small file in the app's own files/setup, read at the home's start and written once when the home is up (SetupHook); open QA-13
+disk:stream | launcher:UpdateActivity.onClick | PhoneUpdater.fetch | over-reach: the check, download and install run inside PhoneUpdater.guarded(...), a thread of their own (tv-update, tv-update-check); the screen only starts it
+disk:stream | launcher:UpdateActivity.onClick | PhoneUpdater.installNext | over-reach: the check, download and install run inside PhoneUpdater.guarded(...), a thread of their own (tv-update, tv-update-check); the screen only starts it
+disk:stream | launcher:UpdateActivity.onResume | PhoneUpdater.fetch | over-reach: the check, download and install run inside PhoneUpdater.guarded(...), a thread of their own (tv-update, tv-update-check); the screen only starts it
+disk:stream | launcher:UpdateActivity.onResume | PhoneUpdater.installNext | over-reach: the check, download and install run inside PhoneUpdater.guarded(...), a thread of their own (tv-update, tv-update-check); the screen only starts it
+disk:stream | saver:AppearanceActivity.onResume | PackStore.names | R1 debt: a small credits or names file of the app's own read at the settings screen's render (bounded); open QA-13
+disk:stream | saver:MainActivity.onReceive | PackStore.creditsJson | over-reach: PhotoCache.serve is the WebView's shouldInterceptRequest, which runs on the WebView's own IO thread, not the UI thread
+disk:stream | saver:MainActivity.onReceive | PhotoCache.download | over-reach: PhotoCache.serve is the WebView's shouldInterceptRequest, which runs on the WebView's own IO thread, not the UI thread
+disk:stream | saver:MainActivity.onReceive | PhotoCache.pack | over-reach: PhotoCache.serve is the WebView's shouldInterceptRequest, which runs on the WebView's own IO thread, not the UI thread
+disk:stream | saver:MainActivity.onReceive | PhotoCache.readAll | over-reach: PhotoCache.serve is the WebView's shouldInterceptRequest, which runs on the WebView's own IO thread, not the UI thread
+disk:stream | saver:MainActivity.onReceive | PhotoCache.serve | over-reach: PhotoCache.serve is the WebView's shouldInterceptRequest, which runs on the WebView's own IO thread, not the UI thread
+disk:stream | saver:ScreenDream.onReceive | PackStore.creditsJson | over-reach: PhotoCache.serve is the WebView's shouldInterceptRequest, which runs on the WebView's own IO thread, not the UI thread
+disk:stream | saver:ScreenDream.onReceive | PhotoCache.download | over-reach: PhotoCache.serve is the WebView's shouldInterceptRequest, which runs on the WebView's own IO thread, not the UI thread
+disk:stream | saver:ScreenDream.onReceive | PhotoCache.pack | over-reach: PhotoCache.serve is the WebView's shouldInterceptRequest, which runs on the WebView's own IO thread, not the UI thread
+disk:stream | saver:ScreenDream.onReceive | PhotoCache.readAll | over-reach: PhotoCache.serve is the WebView's shouldInterceptRequest, which runs on the WebView's own IO thread, not the UI thread
+disk:stream | saver:ScreenDream.onReceive | PhotoCache.serve | over-reach: PhotoCache.serve is the WebView's shouldInterceptRequest, which runs on the WebView's own IO thread, not the UI thread
+disk:stream | saver:SettingsActivity.dispatchKeyEvent | PackStore.creditsJson | over-reach: PhotoCache.serve is the WebView's shouldInterceptRequest, which runs on the WebView's own IO thread, not the UI thread
+disk:stream | saver:SettingsActivity.dispatchKeyEvent | PhotoCache.download | over-reach: PhotoCache.serve is the WebView's shouldInterceptRequest, which runs on the WebView's own IO thread, not the UI thread
+disk:stream | saver:SettingsActivity.dispatchKeyEvent | PhotoCache.pack | over-reach: PhotoCache.serve is the WebView's shouldInterceptRequest, which runs on the WebView's own IO thread, not the UI thread
+disk:stream | saver:SettingsActivity.dispatchKeyEvent | PhotoCache.readAll | over-reach: PhotoCache.serve is the WebView's shouldInterceptRequest, which runs on the WebView's own IO thread, not the UI thread
+disk:stream | saver:SettingsActivity.dispatchKeyEvent | PhotoCache.serve | over-reach: PhotoCache.serve is the WebView's shouldInterceptRequest, which runs on the WebView's own IO thread, not the UI thread
+disk:stream | saver:SettingsActivity.onResume | PackStore.creditsJson | over-reach: PhotoCache.serve is the WebView's shouldInterceptRequest, which runs on the WebView's own IO thread, not the UI thread
+disk:stream | saver:SettingsActivity.onResume | PhotoCache.download | over-reach: PhotoCache.serve is the WebView's shouldInterceptRequest, which runs on the WebView's own IO thread, not the UI thread
+disk:stream | saver:SettingsActivity.onResume | PhotoCache.pack | over-reach: PhotoCache.serve is the WebView's shouldInterceptRequest, which runs on the WebView's own IO thread, not the UI thread
+disk:stream | saver:SettingsActivity.onResume | PhotoCache.readAll | over-reach: PhotoCache.serve is the WebView's shouldInterceptRequest, which runs on the WebView's own IO thread, not the UI thread
+disk:stream | saver:SettingsActivity.onResume | PhotoCache.serve | over-reach: PhotoCache.serve is the WebView's shouldInterceptRequest, which runs on the WebView's own IO thread, not the UI thread
+ipc:ConfigSnapshot.read | launcher:DockActivity.onResume | GlassSource.light | open QA-11: a return to (or a press in) this screen redraws its glass look through ConfigSnapshot.read (shared 3 s); the first read in 3 s can start the screensaver's process
+ipc:ConfigSnapshot.read | launcher:DockActivity.onResume | GlassSource.lookName | open QA-11: a return to (or a press in) this screen redraws its glass look through ConfigSnapshot.read (shared 3 s); the first read in 3 s can start the screensaver's process
+ipc:ConfigSnapshot.read | launcher:InputNamesActivity.onResume | GlassSource.light | open QA-11: a return to (or a press in) this screen redraws its glass look through ConfigSnapshot.read (shared 3 s); the first read in 3 s can start the screensaver's process
+ipc:ConfigSnapshot.read | launcher:InputNamesActivity.onResume | GlassSource.lookName | open QA-11: a return to (or a press in) this screen redraws its glass look through ConfigSnapshot.read (shared 3 s); the first read in 3 s can start the screensaver's process
+ipc:ConfigSnapshot.read | launcher:MainActivity.dispatchKeyEvent | GlassSource.light | open QA-11: the key that opens the control centre draws its glass look (GlassSource.look -> ConfigSnapshot.read, shared 3 s); the first read in 3 s can start the screensaver's process
+ipc:ConfigSnapshot.read | launcher:MainActivity.dispatchKeyEvent | GlassSource.lookName | open QA-11: the key that opens the control centre draws its glass look (GlassSource.look -> ConfigSnapshot.read, shared 3 s); the first read in 3 s can start the screensaver's process
 ipc:ConfigSnapshot.read | launcher:MainActivity.dispatchKeyEvent | MainActivity.updateClock | the first draw only (clockFirstDone); every later read is on clockReads; ConfigSnapshot shares one answer for 3 s
-ipc:ConfigSnapshot.read | launcher:MainActivity.onReceive | GlassSource.light | baseline 4.3.4
-ipc:ConfigSnapshot.read | launcher:MainActivity.onReceive | GlassSource.lookName | baseline 4.3.4
-ipc:ConfigSnapshot.read | launcher:MainActivity.onReceive | Greeting.fetch | baseline 4.3.4
-ipc:ConfigSnapshot.read | launcher:MainActivity.onReceive | MainActivity.onReceive | baseline 4.3.4
+ipc:ConfigSnapshot.read | launcher:MainActivity.onReceive | GlassSource.light | the minute tick: the tick's clockReads thread has just read the settings, so this finds ConfigSnapshot's 3 s copy; open QA-11 only if that copy has gone
+ipc:ConfigSnapshot.read | launcher:MainActivity.onReceive | GlassSource.lookName | the minute tick: the tick's clockReads thread has just read the settings, so this finds ConfigSnapshot's 3 s copy; open QA-11 only if that copy has gone
 ipc:ConfigSnapshot.read | launcher:MainActivity.onReceive | MainActivity.updateClock | the first draw only (clockFirstDone); every later read is on clockReads; ConfigSnapshot shares one answer for 3 s
-ipc:ConfigSnapshot.read | launcher:MainActivity.onResume | GlassSource.light | baseline 4.3.4
-ipc:ConfigSnapshot.read | launcher:MainActivity.onResume | GlassSource.lookName | baseline 4.3.4
-ipc:ConfigSnapshot.read | launcher:MainActivity.onResume | Greeting.fetch | baseline 4.3.4
+ipc:ConfigSnapshot.read | launcher:MainActivity.onResume | GlassSource.light | open QA-11: a return to (or a press in) this screen redraws its glass look through ConfigSnapshot.read (shared 3 s); the first read in 3 s can start the screensaver's process
+ipc:ConfigSnapshot.read | launcher:MainActivity.onResume | GlassSource.lookName | open QA-11: a return to (or a press in) this screen redraws its glass look through ConfigSnapshot.read (shared 3 s); the first read in 3 s can start the screensaver's process
 ipc:ConfigSnapshot.read | launcher:MainActivity.onResume | MainActivity.updateClock | QA-1 fixed in 4.3.4: only a cold process's very first draw reads here (nothing on screen yet); a recreated home uses ConfigSnapshot.known()
-ipc:ConfigSnapshot.read | launcher:ParentalActivity.onResume | GlassSource.light | baseline 4.3.4
-ipc:ConfigSnapshot.read | launcher:ParentalActivity.onResume | GlassSource.lookName | baseline 4.3.4
-ipc:ConfigSnapshot.read | launcher:PhoneActivity.onResume | GlassSource.light | baseline 4.3.4
-ipc:ConfigSnapshot.read | launcher:PhoneActivity.onResume | GlassSource.lookName | baseline 4.3.4
-ipc:ConfigSnapshot.read | launcher:SetupActivity.onClick | GlassSource.light | baseline 4.3.4
-ipc:ConfigSnapshot.read | launcher:SetupActivity.onClick | GlassSource.lookName | baseline 4.3.4
-ipc:ConfigSnapshot.read | launcher:SetupActivity.onResume | GlassSource.light | baseline 4.3.4
-ipc:ConfigSnapshot.read | launcher:SetupActivity.onResume | GlassSource.lookName | baseline 4.3.4
-ipc:ConfigSnapshot.read | launcher:TasksActivity.onResume | TasksActivity.reminderWhen | baseline 4.3.4
-ipc:ConfigSnapshot.read | launcher:UpdateActivity.onClick | GlassSource.light | baseline 4.3.4
-ipc:ConfigSnapshot.read | launcher:UpdateActivity.onClick | GlassSource.lookName | baseline 4.3.4
-ipc:ConfigSnapshot.read | launcher:UpdateActivity.onResume | GlassSource.light | baseline 4.3.4
-ipc:ConfigSnapshot.read | launcher:UpdateActivity.onResume | GlassSource.lookName | baseline 4.3.4
-ipc:ConfigSnapshot.read | launcher:WatchNextActivity.onResume | GlassSource.light | baseline 4.3.4
-ipc:ConfigSnapshot.read | launcher:WatchNextActivity.onResume | GlassSource.lookName | baseline 4.3.4
-ipc:ContentResolver.call | launcher:PhoneActivity.onClick | PhoneActions.saver | baseline 4.3.4
-ipc:ContentResolver.call | launcher:PhoneActivity.onResume | PhoneActions.saver | baseline 4.3.4
-ipc:ContentResolver.call | launcher:SetupActivity.onClick | SetupLang.save | baseline 4.3.4
-ipc:ContentResolver.call | launcher:SetupActivity.onResume | SetupLang.save | baseline 4.3.4
+ipc:ConfigSnapshot.read | launcher:ParentalActivity.onResume | GlassSource.light | open QA-11: a return to (or a press in) this screen redraws its glass look through ConfigSnapshot.read (shared 3 s); the first read in 3 s can start the screensaver's process
+ipc:ConfigSnapshot.read | launcher:ParentalActivity.onResume | GlassSource.lookName | open QA-11: a return to (or a press in) this screen redraws its glass look through ConfigSnapshot.read (shared 3 s); the first read in 3 s can start the screensaver's process
+ipc:ConfigSnapshot.read | launcher:PhoneActivity.onResume | GlassSource.light | open QA-11: a return to (or a press in) this screen redraws its glass look through ConfigSnapshot.read (shared 3 s); the first read in 3 s can start the screensaver's process
+ipc:ConfigSnapshot.read | launcher:PhoneActivity.onResume | GlassSource.lookName | open QA-11: a return to (or a press in) this screen redraws its glass look through ConfigSnapshot.read (shared 3 s); the first read in 3 s can start the screensaver's process
+ipc:ConfigSnapshot.read | launcher:SetupActivity.onClick | GlassSource.light | open QA-11: a return to (or a press in) this screen redraws its glass look through ConfigSnapshot.read (shared 3 s); the first read in 3 s can start the screensaver's process
+ipc:ConfigSnapshot.read | launcher:SetupActivity.onClick | GlassSource.lookName | open QA-11: a return to (or a press in) this screen redraws its glass look through ConfigSnapshot.read (shared 3 s); the first read in 3 s can start the screensaver's process
+ipc:ConfigSnapshot.read | launcher:SetupActivity.onResume | GlassSource.light | open QA-11: a return to (or a press in) this screen redraws its glass look through ConfigSnapshot.read (shared 3 s); the first read in 3 s can start the screensaver's process
+ipc:ConfigSnapshot.read | launcher:SetupActivity.onResume | GlassSource.lookName | open QA-11: a return to (or a press in) this screen redraws its glass look through ConfigSnapshot.read (shared 3 s); the first read in 3 s can start the screensaver's process
+ipc:ConfigSnapshot.read | launcher:TasksActivity.onResume | TasksActivity.reminderWhen | open QA-11: the screen reads one of the screensaver's settings (ground colour, markets bar or the city's zone for times) through ConfigSnapshot.read (shared 3 s) on the UI thread
+ipc:ConfigSnapshot.read | launcher:UpdateActivity.onClick | GlassSource.light | open QA-11: a return to (or a press in) this screen redraws its glass look through ConfigSnapshot.read (shared 3 s); the first read in 3 s can start the screensaver's process
+ipc:ConfigSnapshot.read | launcher:UpdateActivity.onClick | GlassSource.lookName | open QA-11: a return to (or a press in) this screen redraws its glass look through ConfigSnapshot.read (shared 3 s); the first read in 3 s can start the screensaver's process
+ipc:ConfigSnapshot.read | launcher:UpdateActivity.onResume | GlassSource.light | open QA-11: a return to (or a press in) this screen redraws its glass look through ConfigSnapshot.read (shared 3 s); the first read in 3 s can start the screensaver's process
+ipc:ConfigSnapshot.read | launcher:UpdateActivity.onResume | GlassSource.lookName | open QA-11: a return to (or a press in) this screen redraws its glass look through ConfigSnapshot.read (shared 3 s); the first read in 3 s can start the screensaver's process
+ipc:ConfigSnapshot.read | launcher:WatchNextActivity.onResume | GlassSource.light | open QA-11: a return to (or a press in) this screen redraws its glass look through ConfigSnapshot.read (shared 3 s); the first read in 3 s can start the screensaver's process
+ipc:ConfigSnapshot.read | launcher:WatchNextActivity.onResume | GlassSource.lookName | open QA-11: a return to (or a press in) this screen redraws its glass look through ConfigSnapshot.read (shared 3 s); the first read in 3 s can start the screensaver's process
+ipc:ContentResolver.call | launcher:PhoneActivity.onClick | PhoneActions.saver | over-reach: PhoneActions.lang runs in the phone page server's own request thread (PhoneHost's Page.html), never in onCreate, onResume or a click
+ipc:ContentResolver.call | launcher:PhoneActivity.onResume | PhoneActions.saver | over-reach: PhoneActions.lang runs in the phone page server's own request thread (PhoneHost's Page.html), never in onCreate, onResume or a click
+ipc:ContentResolver.call | launcher:SetupActivity.onClick | SetupLang.save | a press on the language choice in the first-run setup: one phone_set call to the screensaver per press (reached through the plan's click listener); open QA-12 (low)
+ipc:ContentResolver.call | launcher:SetupActivity.onResume | SetupLang.save | a press on the language choice in the first-run setup: one phone_set call to the screensaver per press (reached through the plan's click listener); open QA-12 (low)
 ipc:ContentResolver.call | saver:MainActivity.dispatchKeyEvent | NowPlayingBridge.stopAdhan | a key that stops the adhan: one call, only while the adhan plays
 ipc:ContentResolver.call | saver:ScreenDream.dispatchKeyEvent | NowPlayingBridge.stopAdhan | a key that stops the adhan: one call, only while the adhan plays
-ipc:ContentResolver.query | launcher:DockActivity.onResume | ConfigSnapshot.query | ConfigSnapshot.read: one cross-process answer shared for 3 s (SHARE_MS); QA-1 open: the first read after Home can still start the screensaver's process on a TCL
-ipc:ContentResolver.query | launcher:InputNamesActivity.onResume | ConfigSnapshot.query | ConfigSnapshot.read: one cross-process answer shared for 3 s (SHARE_MS); QA-1 open: the first read after Home can still start the screensaver's process on a TCL
-ipc:ContentResolver.query | launcher:MainActivity.dispatchKeyEvent | ConfigSnapshot.query | ConfigSnapshot.read: one cross-process answer shared for 3 s (SHARE_MS); QA-1 open: the first read after Home can still start the screensaver's process on a TCL
+ipc:ContentResolver.query | launcher:DockActivity.onResume | ConfigSnapshot.query | ConfigSnapshot.read: one cross-process answer shared for 3 s (SHARE_MS); open QA-11: the first read in 3 s can still start the screensaver's process on a TCL (QA-1's home clock draw itself is fixed, R-254)
+ipc:ContentResolver.query | launcher:InputNamesActivity.onResume | ConfigSnapshot.query | ConfigSnapshot.read: one cross-process answer shared for 3 s (SHARE_MS); open QA-11: the first read in 3 s can still start the screensaver's process on a TCL (QA-1's home clock draw itself is fixed, R-254)
+ipc:ContentResolver.query | launcher:MainActivity.dispatchKeyEvent | ConfigSnapshot.query | ConfigSnapshot.read: one cross-process answer shared for 3 s (SHARE_MS); open QA-11: the first read in 3 s can still start the screensaver's process on a TCL (QA-1's home clock draw itself is fixed, R-254)
 ipc:ContentResolver.query | launcher:MainActivity.dispatchKeyEvent | HomeCard.ownPhoto | over-reach: inside the card WebView's shouldInterceptRequest (WebView's own IO thread), not the UI thread
-ipc:ContentResolver.query | launcher:MainActivity.onReceive | ConfigSnapshot.query | ConfigSnapshot.read: one cross-process answer shared for 3 s (SHARE_MS); QA-1 open: the first read after Home can still start the screensaver's process on a TCL
+ipc:ContentResolver.query | launcher:MainActivity.onReceive | ConfigSnapshot.query | ConfigSnapshot.read: one cross-process answer shared for 3 s (SHARE_MS); open QA-11: the first read in 3 s can still start the screensaver's process on a TCL (QA-1's home clock draw itself is fixed, R-254)
 ipc:ContentResolver.query | launcher:MainActivity.onReceive | HomeCard.ownPhoto | over-reach: inside the card WebView's shouldInterceptRequest (WebView's own IO thread), not the UI thread
-ipc:ContentResolver.query | launcher:MainActivity.onResume | ConfigSnapshot.query | ConfigSnapshot.read: one cross-process answer shared for 3 s (SHARE_MS); QA-1 open: the first read after Home can still start the screensaver's process on a TCL
+ipc:ContentResolver.query | launcher:MainActivity.onResume | ConfigSnapshot.query | ConfigSnapshot.read: one cross-process answer shared for 3 s (SHARE_MS); open QA-11: the first read in 3 s can still start the screensaver's process on a TCL (QA-1's home clock draw itself is fixed, R-254)
 ipc:ContentResolver.query | launcher:MainActivity.onResume | HomeCard.ownPhoto | over-reach: inside the card WebView's shouldInterceptRequest (WebView's own IO thread), not the UI thread
-ipc:ContentResolver.query | launcher:ParentalActivity.onResume | ConfigSnapshot.query | ConfigSnapshot.read: one cross-process answer shared for 3 s (SHARE_MS); QA-1 open: the first read after Home can still start the screensaver's process on a TCL
-ipc:ContentResolver.query | launcher:PhoneActivity.onResume | ConfigSnapshot.query | ConfigSnapshot.read: one cross-process answer shared for 3 s (SHARE_MS); QA-1 open: the first read after Home can still start the screensaver's process on a TCL
-ipc:ContentResolver.query | launcher:SetupActivity.onClick | ConfigSnapshot.query | ConfigSnapshot.read: one cross-process answer shared for 3 s (SHARE_MS); QA-1 open: the first read after Home can still start the screensaver's process on a TCL
-ipc:ContentResolver.query | launcher:SetupActivity.onResume | ConfigSnapshot.query | ConfigSnapshot.read: one cross-process answer shared for 3 s (SHARE_MS); QA-1 open: the first read after Home can still start the screensaver's process on a TCL
-ipc:ContentResolver.query | launcher:TasksActivity.onResume | ConfigSnapshot.query | ConfigSnapshot.read: one cross-process answer shared for 3 s (SHARE_MS); QA-1 open: the first read after Home can still start the screensaver's process on a TCL
-ipc:ContentResolver.query | launcher:TasksActivity.onResume | ReminderStore.read | QA-3 open: the reminder card's refresh reads the screensaver's tasks provider on the UI thread (a return to the home, a key on the card)
-ipc:ContentResolver.query | launcher:TasksActivity.onResume | TasksActivity.load | baseline 4.3.4
-ipc:ContentResolver.query | launcher:UpdateActivity.onClick | ConfigSnapshot.query | ConfigSnapshot.read: one cross-process answer shared for 3 s (SHARE_MS); QA-1 open: the first read after Home can still start the screensaver's process on a TCL
-ipc:ContentResolver.query | launcher:UpdateActivity.onClick | UpdateChannel.ask | baseline 4.3.4
-ipc:ContentResolver.query | launcher:UpdateActivity.onResume | ConfigSnapshot.query | ConfigSnapshot.read: one cross-process answer shared for 3 s (SHARE_MS); QA-1 open: the first read after Home can still start the screensaver's process on a TCL
-ipc:ContentResolver.query | launcher:UpdateActivity.onResume | UpdateChannel.ask | baseline 4.3.4
-ipc:ContentResolver.query | launcher:WatchNextActivity.onResume | ConfigSnapshot.query | ConfigSnapshot.read: one cross-process answer shared for 3 s (SHARE_MS); QA-1 open: the first read after Home can still start the screensaver's process on a TCL
-ipc:ContentResolver.query | saver:AppearanceActivity.onResume | GlassSource.refresh | baseline 4.3.4
+ipc:ContentResolver.query | launcher:ParentalActivity.onResume | ConfigSnapshot.query | ConfigSnapshot.read: one cross-process answer shared for 3 s (SHARE_MS); open QA-11: the first read in 3 s can still start the screensaver's process on a TCL (QA-1's home clock draw itself is fixed, R-254)
+ipc:ContentResolver.query | launcher:PhoneActivity.onResume | ConfigSnapshot.query | ConfigSnapshot.read: one cross-process answer shared for 3 s (SHARE_MS); open QA-11: the first read in 3 s can still start the screensaver's process on a TCL (QA-1's home clock draw itself is fixed, R-254)
+ipc:ContentResolver.query | launcher:SetupActivity.onClick | ConfigSnapshot.query | ConfigSnapshot.read: one cross-process answer shared for 3 s (SHARE_MS); open QA-11: the first read in 3 s can still start the screensaver's process on a TCL (QA-1's home clock draw itself is fixed, R-254)
+ipc:ContentResolver.query | launcher:SetupActivity.onResume | ConfigSnapshot.query | ConfigSnapshot.read: one cross-process answer shared for 3 s (SHARE_MS); open QA-11: the first read in 3 s can still start the screensaver's process on a TCL (QA-1's home clock draw itself is fixed, R-254)
+ipc:ContentResolver.query | launcher:TasksActivity.onResume | ConfigSnapshot.query | ConfigSnapshot.read: one cross-process answer shared for 3 s (SHARE_MS); open QA-11: the first read in 3 s can still start the screensaver's process on a TCL (QA-1's home clock draw itself is fixed, R-254)
+ipc:ContentResolver.query | launcher:TasksActivity.onResume | ReminderStore.read | open QA-12: the tasks screen re-plans the reminders after a delete (ReminderScheduler.schedule reads the tasks provider) on the UI thread; the reminder card's own paths were fixed in 4.3.4 (QA-3, R-255)
+ipc:ContentResolver.query | launcher:TasksActivity.onResume | TasksActivity.load | open QA-12: the screen reads the screensaver's tasks provider when it opens and again after each change, on the UI thread (the reminder card was fixed in R-255, these screens were not)
+ipc:ContentResolver.query | launcher:UpdateActivity.onClick | ConfigSnapshot.query | ConfigSnapshot.read: one cross-process answer shared for 3 s (SHARE_MS); open QA-11: the first read in 3 s can still start the screensaver's process on a TCL (QA-1's home clock draw itself is fixed, R-254)
+ipc:ContentResolver.query | launcher:UpdateActivity.onClick | UpdateChannel.ask | over-reach: UpdateChannel.read here is inside PhoneUpdater.prepare, which runs in PhoneUpdater.guarded(...), a thread of its own
+ipc:ContentResolver.query | launcher:UpdateActivity.onResume | ConfigSnapshot.query | ConfigSnapshot.read: one cross-process answer shared for 3 s (SHARE_MS); open QA-11: the first read in 3 s can still start the screensaver's process on a TCL (QA-1's home clock draw itself is fixed, R-254)
+ipc:ContentResolver.query | launcher:UpdateActivity.onResume | UpdateChannel.ask | over-reach: UpdateChannel.read here is inside PhoneUpdater.prepare, which runs in PhoneUpdater.guarded(...), a thread of its own
+ipc:ContentResolver.query | launcher:WatchNextActivity.onResume | ConfigSnapshot.query | ConfigSnapshot.read: one cross-process answer shared for 3 s (SHARE_MS); open QA-11: the first read in 3 s can still start the screensaver's process on a TCL (QA-1's home clock draw itself is fixed, R-254)
+ipc:ContentResolver.query | saver:AppearanceActivity.onResume | GlassSource.refresh | the settings screen's open or return asks the home for its backdrop (one small query, the home's own process) and reads the picture only when the stamp changed; open QA-12
 ipc:ContentResolver.query | saver:MainActivity.dispatchKeyEvent | NowPlayingBridge.adhanState | QA-2 open: a key on the screensaver asks the home whether the adhan plays (cross-process) before it acts
-ipc:ContentResolver.query | saver:PhotoPacksActivity.onResume | GlassSource.refresh | baseline 4.3.4
+ipc:ContentResolver.query | saver:PhotoPacksActivity.onResume | GlassSource.refresh | the settings screen's open or return asks the home for its backdrop (one small query, the home's own process) and reads the picture only when the stamp changed; open QA-12
 ipc:ContentResolver.query | saver:ScreenDream.dispatchKeyEvent | NowPlayingBridge.adhanState | QA-2 open: a key on the screensaver asks the home whether the adhan plays (cross-process) before it acts
-ipc:ContentResolver.query | saver:SettingsActivity.onResume | GlassSource.refresh | baseline 4.3.4
+ipc:ContentResolver.query | saver:SettingsActivity.onResume | GlassSource.refresh | the settings screen's open or return asks the home for its backdrop (one small query, the home's own process) and reads the picture only when the stamp changed; open QA-12
 ipc:ContentResolver.write | launcher:MainActivity.dispatchKeyEvent | HomeCard.ownPhoto | over-reach: inside the card WebView's shouldInterceptRequest (WebView's own IO thread), not the UI thread
 ipc:ContentResolver.write | launcher:MainActivity.onReceive | HomeCard.ownPhoto | over-reach: inside the card WebView's shouldInterceptRequest (WebView's own IO thread), not the UI thread
 ipc:ContentResolver.write | launcher:MainActivity.onResume | HomeCard.ownPhoto | over-reach: inside the card WebView's shouldInterceptRequest (WebView's own IO thread), not the UI thread
-ipc:ContentResolver.write | launcher:TasksActivity.onResume | TasksActivity.delete | baseline 4.3.4
-ipc:ContentResolver.write | launcher:TasksActivity.onResume | TasksActivity.markDone | baseline 4.3.4
-ipc:ContentResolver.write | saver:AppearanceActivity.onResume | GlassSource.refresh | baseline 4.3.4
-ipc:ContentResolver.write | saver:PhotoPacksActivity.onResume | GlassSource.refresh | baseline 4.3.4
-ipc:ContentResolver.write | saver:SettingsActivity.onResume | GlassSource.refresh | baseline 4.3.4
-ipc:UpdateChannel.read | launcher:UpdateActivity.onClick | PhoneUpdater.prepare | baseline 4.3.4
-ipc:UpdateChannel.read | launcher:UpdateActivity.onResume | PhoneUpdater.prepare | baseline 4.3.4
+ipc:ContentResolver.write | launcher:TasksActivity.onResume | TasksActivity.delete | a press (add, finish, delete, or save a reminder) writes the screensaver's tasks provider on the UI thread, one call per press; reached from onCreate or onResume through the row's click listener; open QA-12 (low)
+ipc:ContentResolver.write | launcher:TasksActivity.onResume | TasksActivity.markDone | a press (add, finish, delete, or save a reminder) writes the screensaver's tasks provider on the UI thread, one call per press; reached from onCreate or onResume through the row's click listener; open QA-12 (low)
+ipc:ContentResolver.write | saver:AppearanceActivity.onResume | GlassSource.refresh | the settings screen's open or return asks the home for its backdrop (one small query, the home's own process) and reads the picture only when the stamp changed; open QA-12
+ipc:ContentResolver.write | saver:PhotoPacksActivity.onResume | GlassSource.refresh | the settings screen's open or return asks the home for its backdrop (one small query, the home's own process) and reads the picture only when the stamp changed; open QA-12
+ipc:ContentResolver.write | saver:SettingsActivity.onResume | GlassSource.refresh | the settings screen's open or return asks the home for its backdrop (one small query, the home's own process) and reads the picture only when the stamp changed; open QA-12
+ipc:UpdateChannel.read | launcher:UpdateActivity.onClick | PhoneUpdater.prepare | over-reach: the check, download and install run inside PhoneUpdater.guarded(...), a thread of their own (tv-update, tv-update-check); the screen only starts it
+ipc:UpdateChannel.read | launcher:UpdateActivity.onResume | PhoneUpdater.prepare | over-reach: the check, download and install run inside PhoneUpdater.guarded(...), a thread of their own (tv-update, tv-update-check); the screen only starts it
 
 # R1 (LESSONS): onCreate and subprocesses joined the rule after 4.3.4; what they reach today, not yet reviewed one by one
-disk:Files | launcher:MainActivity.onCreate | HomeSnapshot.load | baseline 4.3.4 (onCreate, R1)
-disk:Files | saver:MainActivity.onCreate | SaverSnapshot.load | baseline 4.3.4 (onCreate, R1)
-disk:Files | saver:MainActivity.onCreate | SaverSnapshot.why | baseline 4.3.4 (onCreate, R1)
-disk:decodeFile | launcher:AdhanActivity.onCreate | GlassSource.backdrop | baseline 4.3.4 (onCreate, R1)
-disk:decodeFile | launcher:CleanActivity.onCreate | GlassSource.backdrop | baseline 4.3.4 (onCreate, R1)
-disk:decodeFile | launcher:DockActivity.onCreate | GlassSource.backdrop | baseline 4.3.4 (onCreate, R1)
-disk:decodeFile | launcher:FactoryActivity.onCreate | GlassSource.backdrop | baseline 4.3.4 (onCreate, R1)
-disk:decodeFile | launcher:FamilyDnsActivity.onCreate | GlassSource.backdrop | baseline 4.3.4 (onCreate, R1)
-disk:decodeFile | launcher:InputNamesActivity.onCreate | GlassSource.backdrop | baseline 4.3.4 (onCreate, R1)
-disk:decodeFile | launcher:MainActivity.onCreate | GlassSource.backdrop | baseline 4.3.4 (onCreate, R1)
-disk:decodeFile | launcher:MainActivity.onCreate | HomeSnapshot.load | baseline 4.3.4 (onCreate, R1)
-disk:decodeFile | launcher:MainActivity.onCreate | MainActivity.firstFrameWallpaper | baseline 4.3.4 (onCreate, R1)
-disk:decodeFile | launcher:MarketsActivity.onCreate | GlassSource.backdrop | baseline 4.3.4 (onCreate, R1)
-disk:decodeFile | launcher:ParentalActivity.onCreate | GlassSource.backdrop | baseline 4.3.4 (onCreate, R1)
-disk:decodeFile | launcher:PhoneActivity.onCreate | GlassSource.backdrop | baseline 4.3.4 (onCreate, R1)
-disk:decodeFile | launcher:PlayerActivity.onCreate | GlassSource.backdrop | baseline 4.3.4 (onCreate, R1)
-disk:decodeFile | launcher:ReportActivity.onCreate | GlassSource.backdrop | baseline 4.3.4 (onCreate, R1)
-disk:decodeFile | launcher:SetupActivity.onCreate | GlassSource.backdrop | baseline 4.3.4 (onCreate, R1)
-disk:decodeFile | launcher:SuggestedAppsActivity.onCreate | GlassSource.backdrop | baseline 4.3.4 (onCreate, R1)
-disk:decodeFile | launcher:SurahActivity.onCreate | GlassSource.backdrop | baseline 4.3.4 (onCreate, R1)
-disk:decodeFile | launcher:TaskReminderActivity.onCreate | GlassSource.backdrop | baseline 4.3.4 (onCreate, R1)
-disk:decodeFile | launcher:TasksActivity.onCreate | GlassSource.backdrop | baseline 4.3.4 (onCreate, R1)
-disk:decodeFile | launcher:UpdateActivity.onCreate | GlassSource.backdrop | baseline 4.3.4 (onCreate, R1)
-disk:decodeFile | launcher:WatchNextActivity.onCreate | GlassSource.backdrop | baseline 4.3.4 (onCreate, R1)
-disk:decodeFile | saver:AppearanceActivity.onCreate | GlassSource.refresh | baseline 4.3.4 (onCreate, R1)
-disk:decodeFile | saver:LeaguesActivity.onCreate | GlassSource.refresh | baseline 4.3.4 (onCreate, R1)
-disk:decodeFile | saver:MainActivity.onCreate | SaverSnapshot.load | baseline 4.3.4 (onCreate, R1)
-disk:decodeFile | saver:PhotoPacksActivity.onCreate | GlassSource.refresh | baseline 4.3.4 (onCreate, R1)
-disk:decodeFile | saver:PhotoPacksActivity.onCreate | PhotoPacksActivity.loadCover | baseline 4.3.4 (onCreate, R1)
-disk:decodeFile | saver:SettingsActivity.onCreate | GlassSource.refresh | baseline 4.3.4 (onCreate, R1)
-disk:decodeFile | saver:SettingsActivity.onCreate | SettingsActivity.photo | baseline 4.3.4 (onCreate, R1)
-disk:decodeFile | saver:YourTvHubActivity.onCreate | GlassSource.refresh | baseline 4.3.4 (onCreate, R1)
-disk:prefs.commit | launcher:CleanActivity.onCreate | Parental.pin | baseline 4.3.4 (onCreate, R1)
-disk:prefs.commit | launcher:CleanActivity.onCreate | Parental.put | baseline 4.3.4 (onCreate, R1)
-disk:prefs.commit | launcher:CleanActivity.onCreate | Parental.remove | baseline 4.3.4 (onCreate, R1)
-disk:prefs.commit | launcher:FactoryActivity.onCreate | Parental.pin | baseline 4.3.4 (onCreate, R1)
-disk:prefs.commit | launcher:FactoryActivity.onCreate | Parental.put | baseline 4.3.4 (onCreate, R1)
-disk:prefs.commit | launcher:FactoryActivity.onCreate | Parental.remove | baseline 4.3.4 (onCreate, R1)
-disk:prefs.commit | launcher:FamilyDnsActivity.onCreate | FamilyDnsAndroid.run | baseline 4.3.4 (onCreate, R1)
-disk:prefs.commit | launcher:MainActivity.onCreate | Parental.pin | baseline 4.3.4 (onCreate, R1)
-disk:prefs.commit | launcher:MainActivity.onCreate | Parental.put | baseline 4.3.4 (onCreate, R1)
-disk:prefs.commit | launcher:MainActivity.onCreate | Parental.remove | baseline 4.3.4 (onCreate, R1)
-disk:prefs.commit | launcher:MainActivity.onCreate | Parental.toggle | baseline 4.3.4 (onCreate, R1)
-disk:prefs.commit | launcher:MarketsActivity.onCreate | Parental.pin | baseline 4.3.4 (onCreate, R1)
-disk:prefs.commit | launcher:MarketsActivity.onCreate | Parental.put | baseline 4.3.4 (onCreate, R1)
-disk:prefs.commit | launcher:MarketsActivity.onCreate | Parental.remove | baseline 4.3.4 (onCreate, R1)
-disk:prefs.commit | launcher:MarketsActivity.onCreate | Portfolio.save | baseline 4.3.4 (onCreate, R1)
-disk:prefs.commit | launcher:MarketsActivity.onCreate | Portfolio.wipe | baseline 4.3.4 (onCreate, R1)
-disk:prefs.commit | launcher:PhoneActivity.onCreate | Parental.pin | baseline 4.3.4 (onCreate, R1)
-disk:prefs.commit | launcher:PhoneActivity.onCreate | Parental.put | baseline 4.3.4 (onCreate, R1)
-disk:prefs.commit | launcher:PhoneActivity.onCreate | Parental.remove | baseline 4.3.4 (onCreate, R1)
-disk:prefs.commit | launcher:SetupActivity.onCreate | Parental.pin | baseline 4.3.4 (onCreate, R1)
-disk:prefs.commit | launcher:SetupActivity.onCreate | Parental.put | baseline 4.3.4 (onCreate, R1)
-disk:prefs.commit | launcher:SetupActivity.onCreate | Parental.remove | baseline 4.3.4 (onCreate, R1)
-disk:stream | launcher:MainActivity.onCreate | FileStore.get | baseline 4.3.4 (onCreate, R1)
-disk:stream | launcher:MatchesActivity.onCreate | HomePage.copy | baseline 4.3.4 (onCreate, R1)
-disk:stream | launcher:SetupActivity.onCreate | FileStore.get | baseline 4.3.4 (onCreate, R1)
-disk:stream | saver:AppearanceActivity.onCreate | PackStore.names | baseline 4.3.4 (onCreate, R1)
-disk:stream | saver:MainActivity.onCreate | PackStore.creditsJson | baseline 4.3.4 (onCreate, R1)
-disk:stream | saver:MainActivity.onCreate | PhotoCache.download | baseline 4.3.4 (onCreate, R1)
-disk:stream | saver:MainActivity.onCreate | PhotoCache.pack | baseline 4.3.4 (onCreate, R1)
-disk:stream | saver:MainActivity.onCreate | PhotoCache.readAll | baseline 4.3.4 (onCreate, R1)
-disk:stream | saver:MainActivity.onCreate | PhotoCache.serve | baseline 4.3.4 (onCreate, R1)
-disk:stream | saver:PhotoPacksActivity.onCreate | PackStore.creditRows | baseline 4.3.4 (onCreate, R1)
-disk:stream | saver:SettingsActivity.onCreate | PackStore.creditsJson | baseline 4.3.4 (onCreate, R1)
-disk:stream | saver:SettingsActivity.onCreate | PhotoCache.download | baseline 4.3.4 (onCreate, R1)
-disk:stream | saver:SettingsActivity.onCreate | PhotoCache.pack | baseline 4.3.4 (onCreate, R1)
-disk:stream | saver:SettingsActivity.onCreate | PhotoCache.readAll | baseline 4.3.4 (onCreate, R1)
-disk:stream | saver:SettingsActivity.onCreate | PhotoCache.serve | baseline 4.3.4 (onCreate, R1)
-ipc:ConfigSnapshot.read | launcher:AdhanActivity.onCreate | Digits.init | baseline 4.3.4 (onCreate, R1)
-ipc:ConfigSnapshot.read | launcher:AdhanActivity.onCreate | GlassSource.light | baseline 4.3.4 (onCreate, R1)
-ipc:ConfigSnapshot.read | launcher:AdhanActivity.onCreate | GlassSource.lookName | baseline 4.3.4 (onCreate, R1)
-ipc:ConfigSnapshot.read | launcher:CleanActivity.onCreate | Digits.init | baseline 4.3.4 (onCreate, R1)
-ipc:ConfigSnapshot.read | launcher:CleanActivity.onCreate | GlassSource.light | baseline 4.3.4 (onCreate, R1)
-ipc:ConfigSnapshot.read | launcher:CleanActivity.onCreate | GlassSource.lookName | baseline 4.3.4 (onCreate, R1)
-ipc:ConfigSnapshot.read | launcher:DockActivity.onCreate | Digits.init | baseline 4.3.4 (onCreate, R1)
-ipc:ConfigSnapshot.read | launcher:DockActivity.onCreate | GlassSource.light | baseline 4.3.4 (onCreate, R1)
-ipc:ConfigSnapshot.read | launcher:DockActivity.onCreate | GlassSource.lookName | baseline 4.3.4 (onCreate, R1)
-ipc:ConfigSnapshot.read | launcher:FactoryActivity.onCreate | GlassSource.light | baseline 4.3.4 (onCreate, R1)
-ipc:ConfigSnapshot.read | launcher:FactoryActivity.onCreate | GlassSource.lookName | baseline 4.3.4 (onCreate, R1)
-ipc:ConfigSnapshot.read | launcher:FamilyDnsActivity.onCreate | GlassSource.light | baseline 4.3.4 (onCreate, R1)
-ipc:ConfigSnapshot.read | launcher:FamilyDnsActivity.onCreate | GlassSource.lookName | baseline 4.3.4 (onCreate, R1)
-ipc:ConfigSnapshot.read | launcher:InputNamesActivity.onCreate | Digits.init | baseline 4.3.4 (onCreate, R1)
-ipc:ConfigSnapshot.read | launcher:InputNamesActivity.onCreate | GlassSource.light | baseline 4.3.4 (onCreate, R1)
-ipc:ConfigSnapshot.read | launcher:InputNamesActivity.onCreate | GlassSource.lookName | baseline 4.3.4 (onCreate, R1)
-ipc:ConfigSnapshot.read | launcher:MainActivity.onCreate | Digits.init | baseline 4.3.4 (onCreate, R1)
-ipc:ConfigSnapshot.read | launcher:MainActivity.onCreate | GlassSource.light | baseline 4.3.4 (onCreate, R1)
-ipc:ConfigSnapshot.read | launcher:MainActivity.onCreate | GlassSource.lookName | baseline 4.3.4 (onCreate, R1)
-ipc:ConfigSnapshot.read | launcher:MainActivity.onCreate | Greeting.fetch | baseline 4.3.4 (onCreate, R1)
-ipc:ConfigSnapshot.read | launcher:MainActivity.onCreate | MainActivity.buildHeader | baseline 4.3.4 (onCreate, R1)
-ipc:ConfigSnapshot.read | launcher:MainActivity.onCreate | MainActivity.updateClock | baseline 4.3.4 (onCreate, R1)
-ipc:ConfigSnapshot.read | launcher:MarketsActivity.onCreate | Digits.init | baseline 4.3.4 (onCreate, R1)
-ipc:ConfigSnapshot.read | launcher:MarketsActivity.onCreate | GlassSource.light | baseline 4.3.4 (onCreate, R1)
-ipc:ConfigSnapshot.read | launcher:MarketsActivity.onCreate | GlassSource.lookName | baseline 4.3.4 (onCreate, R1)
-ipc:ConfigSnapshot.read | launcher:MarketsActivity.onCreate | GlassSource.pageFor | baseline 4.3.4 (onCreate, R1)
-ipc:ConfigSnapshot.read | launcher:MarketsActivity.onCreate | MarketsActivity.param | baseline 4.3.4 (onCreate, R1)
-ipc:ConfigSnapshot.read | launcher:MatchesActivity.onCreate | MatchesActivity.onCreate | baseline 4.3.4 (onCreate, R1)
-ipc:ConfigSnapshot.read | launcher:ParentalActivity.onCreate | Digits.init | baseline 4.3.4 (onCreate, R1)
-ipc:ConfigSnapshot.read | launcher:ParentalActivity.onCreate | GlassSource.light | baseline 4.3.4 (onCreate, R1)
-ipc:ConfigSnapshot.read | launcher:ParentalActivity.onCreate | GlassSource.lookName | baseline 4.3.4 (onCreate, R1)
-ipc:ConfigSnapshot.read | launcher:PhoneActivity.onCreate | Digits.init | baseline 4.3.4 (onCreate, R1)
-ipc:ConfigSnapshot.read | launcher:PhoneActivity.onCreate | GlassSource.light | baseline 4.3.4 (onCreate, R1)
-ipc:ConfigSnapshot.read | launcher:PhoneActivity.onCreate | GlassSource.lookName | baseline 4.3.4 (onCreate, R1)
-ipc:ConfigSnapshot.read | launcher:PlayerActivity.onCreate | Digits.init | baseline 4.3.4 (onCreate, R1)
-ipc:ConfigSnapshot.read | launcher:PlayerActivity.onCreate | GlassSource.light | baseline 4.3.4 (onCreate, R1)
-ipc:ConfigSnapshot.read | launcher:PlayerActivity.onCreate | GlassSource.lookName | baseline 4.3.4 (onCreate, R1)
-ipc:ConfigSnapshot.read | launcher:ReportActivity.onCreate | Digits.init | baseline 4.3.4 (onCreate, R1)
-ipc:ConfigSnapshot.read | launcher:ReportActivity.onCreate | GlassSource.light | baseline 4.3.4 (onCreate, R1)
-ipc:ConfigSnapshot.read | launcher:ReportActivity.onCreate | GlassSource.lookName | baseline 4.3.4 (onCreate, R1)
-ipc:ConfigSnapshot.read | launcher:SetupActivity.onCreate | Digits.init | baseline 4.3.4 (onCreate, R1)
-ipc:ConfigSnapshot.read | launcher:SetupActivity.onCreate | GlassSource.light | baseline 4.3.4 (onCreate, R1)
-ipc:ConfigSnapshot.read | launcher:SetupActivity.onCreate | GlassSource.lookName | baseline 4.3.4 (onCreate, R1)
-ipc:ConfigSnapshot.read | launcher:SuggestedAppsActivity.onCreate | Digits.init | baseline 4.3.4 (onCreate, R1)
-ipc:ConfigSnapshot.read | launcher:SuggestedAppsActivity.onCreate | GlassSource.light | baseline 4.3.4 (onCreate, R1)
-ipc:ConfigSnapshot.read | launcher:SuggestedAppsActivity.onCreate | GlassSource.lookName | baseline 4.3.4 (onCreate, R1)
-ipc:ConfigSnapshot.read | launcher:SurahActivity.onCreate | Digits.init | baseline 4.3.4 (onCreate, R1)
-ipc:ConfigSnapshot.read | launcher:SurahActivity.onCreate | GlassSource.light | baseline 4.3.4 (onCreate, R1)
-ipc:ConfigSnapshot.read | launcher:SurahActivity.onCreate | GlassSource.lookName | baseline 4.3.4 (onCreate, R1)
-ipc:ConfigSnapshot.read | launcher:TaskReminderActivity.onCreate | Digits.init | baseline 4.3.4 (onCreate, R1)
-ipc:ConfigSnapshot.read | launcher:TaskReminderActivity.onCreate | GlassSource.light | baseline 4.3.4 (onCreate, R1)
-ipc:ConfigSnapshot.read | launcher:TaskReminderActivity.onCreate | GlassSource.lookName | baseline 4.3.4 (onCreate, R1)
-ipc:ConfigSnapshot.read | launcher:TaskReminderActivity.onCreate | TaskReminderActivity.onCreate | baseline 4.3.4 (onCreate, R1)
-ipc:ConfigSnapshot.read | launcher:TasksActivity.onCreate | Digits.init | baseline 4.3.4 (onCreate, R1)
-ipc:ConfigSnapshot.read | launcher:TasksActivity.onCreate | GlassSource.light | baseline 4.3.4 (onCreate, R1)
-ipc:ConfigSnapshot.read | launcher:TasksActivity.onCreate | GlassSource.lookName | baseline 4.3.4 (onCreate, R1)
-ipc:ConfigSnapshot.read | launcher:TasksActivity.onCreate | TasksActivity.reminderWhen | baseline 4.3.4 (onCreate, R1)
-ipc:ConfigSnapshot.read | launcher:UpdateActivity.onCreate | Digits.init | baseline 4.3.4 (onCreate, R1)
-ipc:ConfigSnapshot.read | launcher:UpdateActivity.onCreate | GlassSource.light | baseline 4.3.4 (onCreate, R1)
-ipc:ConfigSnapshot.read | launcher:UpdateActivity.onCreate | GlassSource.lookName | baseline 4.3.4 (onCreate, R1)
-ipc:ConfigSnapshot.read | launcher:WatchNextActivity.onCreate | Digits.init | baseline 4.3.4 (onCreate, R1)
-ipc:ConfigSnapshot.read | launcher:WatchNextActivity.onCreate | GlassSource.light | baseline 4.3.4 (onCreate, R1)
-ipc:ConfigSnapshot.read | launcher:WatchNextActivity.onCreate | GlassSource.lookName | baseline 4.3.4 (onCreate, R1)
-ipc:ContentResolver.call | launcher:MarketsActivity.onCreate | MarketsActivity.saverSet | baseline 4.3.4 (onCreate, R1)
-ipc:ContentResolver.call | launcher:PhoneActivity.onCreate | PhoneActions.saver | baseline 4.3.4 (onCreate, R1)
-ipc:ContentResolver.call | launcher:SetupActivity.onCreate | SetupLang.save | baseline 4.3.4 (onCreate, R1)
-ipc:ContentResolver.query | launcher:AdhanActivity.onCreate | ConfigSnapshot.query | baseline 4.3.4 (onCreate, R1)
-ipc:ContentResolver.query | launcher:CleanActivity.onCreate | ConfigSnapshot.query | baseline 4.3.4 (onCreate, R1)
-ipc:ContentResolver.query | launcher:DockActivity.onCreate | ConfigSnapshot.query | baseline 4.3.4 (onCreate, R1)
-ipc:ContentResolver.query | launcher:FactoryActivity.onCreate | ConfigSnapshot.query | baseline 4.3.4 (onCreate, R1)
-ipc:ContentResolver.query | launcher:FamilyDnsActivity.onCreate | ConfigSnapshot.query | baseline 4.3.4 (onCreate, R1)
-ipc:ContentResolver.query | launcher:InputNamesActivity.onCreate | ConfigSnapshot.query | baseline 4.3.4 (onCreate, R1)
-ipc:ContentResolver.query | launcher:MainActivity.onCreate | ConfigSnapshot.query | baseline 4.3.4 (onCreate, R1)
-ipc:ContentResolver.query | launcher:MainActivity.onCreate | HomeCard.ownPhoto | baseline 4.3.4 (onCreate, R1)
-ipc:ContentResolver.query | launcher:MainActivity.onCreate | Place.get | baseline 4.3.4 (onCreate, R1)
-ipc:ContentResolver.query | launcher:MarketsActivity.onCreate | ConfigSnapshot.query | baseline 4.3.4 (onCreate, R1)
-ipc:ContentResolver.query | launcher:MatchesActivity.onCreate | ConfigSnapshot.query | baseline 4.3.4 (onCreate, R1)
-ipc:ContentResolver.query | launcher:ParentalActivity.onCreate | ConfigSnapshot.query | baseline 4.3.4 (onCreate, R1)
-ipc:ContentResolver.query | launcher:PhoneActivity.onCreate | ConfigSnapshot.query | baseline 4.3.4 (onCreate, R1)
-ipc:ContentResolver.query | launcher:PlayerActivity.onCreate | ConfigSnapshot.query | baseline 4.3.4 (onCreate, R1)
-ipc:ContentResolver.query | launcher:ReportActivity.onCreate | ConfigSnapshot.query | baseline 4.3.4 (onCreate, R1)
-ipc:ContentResolver.query | launcher:SetupActivity.onCreate | ConfigSnapshot.query | baseline 4.3.4 (onCreate, R1)
-ipc:ContentResolver.query | launcher:SuggestedAppsActivity.onCreate | ConfigSnapshot.query | baseline 4.3.4 (onCreate, R1)
-ipc:ContentResolver.query | launcher:SurahActivity.onCreate | ConfigSnapshot.query | baseline 4.3.4 (onCreate, R1)
-ipc:ContentResolver.query | launcher:TaskReminderActivity.onCreate | ConfigSnapshot.query | baseline 4.3.4 (onCreate, R1)
-ipc:ContentResolver.query | launcher:TaskReminderActivity.onCreate | ReminderStore.read | baseline 4.3.4 (onCreate, R1)
-ipc:ContentResolver.query | launcher:TaskReminderActivity.onCreate | TaskReminderActivity.load | baseline 4.3.4 (onCreate, R1)
-ipc:ContentResolver.query | launcher:TasksActivity.onCreate | ConfigSnapshot.query | baseline 4.3.4 (onCreate, R1)
-ipc:ContentResolver.query | launcher:TasksActivity.onCreate | ReminderStore.read | baseline 4.3.4 (onCreate, R1)
-ipc:ContentResolver.query | launcher:TasksActivity.onCreate | TasksActivity.load | baseline 4.3.4 (onCreate, R1)
-ipc:ContentResolver.query | launcher:UpdateActivity.onCreate | ConfigSnapshot.query | baseline 4.3.4 (onCreate, R1)
-ipc:ContentResolver.query | launcher:WatchNextActivity.onCreate | ConfigSnapshot.query | baseline 4.3.4 (onCreate, R1)
-ipc:ContentResolver.query | saver:AppearanceActivity.onCreate | GlassSource.refresh | baseline 4.3.4 (onCreate, R1)
-ipc:ContentResolver.query | saver:LeaguesActivity.onCreate | GlassSource.refresh | baseline 4.3.4 (onCreate, R1)
-ipc:ContentResolver.query | saver:PhotoPacksActivity.onCreate | GlassSource.refresh | baseline 4.3.4 (onCreate, R1)
-ipc:ContentResolver.query | saver:SettingsActivity.onCreate | GlassSource.refresh | baseline 4.3.4 (onCreate, R1)
-ipc:ContentResolver.query | saver:YourTvHubActivity.onCreate | CleanMask.state | baseline 4.3.4 (onCreate, R1)
-ipc:ContentResolver.query | saver:YourTvHubActivity.onCreate | GlassSource.refresh | baseline 4.3.4 (onCreate, R1)
-ipc:ContentResolver.write | launcher:MainActivity.onCreate | HomeCard.ownPhoto | baseline 4.3.4 (onCreate, R1)
-ipc:ContentResolver.write | launcher:MatchesActivity.onCreate | HomePage.copy | baseline 4.3.4 (onCreate, R1)
-ipc:ContentResolver.write | launcher:TaskReminderActivity.onCreate | TaskReminderActivity.save | baseline 4.3.4 (onCreate, R1)
-ipc:ContentResolver.write | launcher:TasksActivity.onCreate | TasksActivity.add | baseline 4.3.4 (onCreate, R1)
-ipc:ContentResolver.write | launcher:TasksActivity.onCreate | TasksActivity.delete | baseline 4.3.4 (onCreate, R1)
-ipc:ContentResolver.write | launcher:TasksActivity.onCreate | TasksActivity.markDone | baseline 4.3.4 (onCreate, R1)
-ipc:ContentResolver.write | saver:AppearanceActivity.onCreate | GlassSource.refresh | baseline 4.3.4 (onCreate, R1)
-ipc:ContentResolver.write | saver:LeaguesActivity.onCreate | GlassSource.refresh | baseline 4.3.4 (onCreate, R1)
-ipc:ContentResolver.write | saver:PhotoPacksActivity.onCreate | GlassSource.refresh | baseline 4.3.4 (onCreate, R1)
-ipc:ContentResolver.write | saver:SettingsActivity.onCreate | GlassSource.refresh | baseline 4.3.4 (onCreate, R1)
-ipc:ContentResolver.write | saver:YourTvHubActivity.onCreate | GlassSource.refresh | baseline 4.3.4 (onCreate, R1)
-proc:exec | launcher:ReportActivity.onCreate | ReportActivity.recentErrors | baseline 4.3.4 (onCreate, R1)
+disk:Files | launcher:MainActivity.onCreate | HomeSnapshot.load | by design at a cold start: the last-picture overlay (half-size WebP, 300 KB at most, 24 h old at most, the app's own cache) must be drawn before the first frame; open QA-13: could be decoded on a thread
+disk:Files | saver:MainActivity.onCreate | SaverSnapshot.load | by design at the dream's start: the same last-picture overlay (a small WebP in the app's own cache, 24 h old at most) is drawn before the page paints; open QA-13
+disk:Files | saver:MainActivity.onCreate | SaverSnapshot.why | by design at the dream's start: the same last-picture overlay (a small WebP in the app's own cache, 24 h old at most) is drawn before the page paints; open QA-13
+disk:decodeFile | launcher:AdhanActivity.onCreate | GlassSource.backdrop | a screen's onCreate decodes the glass backdrop PNG for its background (small, 512 KB at most, the app's own file); open QA-13: the screen could draw plain first and the picture after
+disk:decodeFile | launcher:CleanActivity.onCreate | GlassSource.backdrop | a screen's onCreate decodes the glass backdrop PNG for its background (small, 512 KB at most, the app's own file); open QA-13: the screen could draw plain first and the picture after
+disk:decodeFile | launcher:DockActivity.onCreate | GlassSource.backdrop | a screen's onCreate decodes the glass backdrop PNG for its background (small, 512 KB at most, the app's own file); open QA-13: the screen could draw plain first and the picture after
+disk:decodeFile | launcher:FactoryActivity.onCreate | GlassSource.backdrop | a screen's onCreate decodes the glass backdrop PNG for its background (small, 512 KB at most, the app's own file); open QA-13: the screen could draw plain first and the picture after
+disk:decodeFile | launcher:FamilyDnsActivity.onCreate | GlassSource.backdrop | a screen's onCreate decodes the glass backdrop PNG for its background (small, 512 KB at most, the app's own file); open QA-13: the screen could draw plain first and the picture after
+disk:decodeFile | launcher:InputNamesActivity.onCreate | GlassSource.backdrop | a screen's onCreate decodes the glass backdrop PNG for its background (small, 512 KB at most, the app's own file); open QA-13: the screen could draw plain first and the picture after
+disk:decodeFile | launcher:MainActivity.onCreate | GlassSource.backdrop | a screen's onCreate decodes the glass backdrop PNG for its background (small, 512 KB at most, the app's own file); open QA-13: the screen could draw plain first and the picture after
+disk:decodeFile | launcher:MainActivity.onCreate | HomeSnapshot.load | by design at a cold start: the last-picture overlay (half-size WebP, 300 KB at most, 24 h old at most, the app's own cache) must be drawn before the first frame; open QA-13: could be decoded on a thread
+disk:decodeFile | launcher:MainActivity.onCreate | MainActivity.firstFrameWallpaper | by design: the small copy of the last wallpaper (the app's own file) is drawn in the first frame, only when there is no picture in memory; open QA-13
+disk:decodeFile | launcher:MarketsActivity.onCreate | GlassSource.backdrop | a screen's onCreate decodes the glass backdrop PNG for its background (small, 512 KB at most, the app's own file); open QA-13: the screen could draw plain first and the picture after
+disk:decodeFile | launcher:ParentalActivity.onCreate | GlassSource.backdrop | a screen's onCreate decodes the glass backdrop PNG for its background (small, 512 KB at most, the app's own file); open QA-13: the screen could draw plain first and the picture after
+disk:decodeFile | launcher:PhoneActivity.onCreate | GlassSource.backdrop | a screen's onCreate decodes the glass backdrop PNG for its background (small, 512 KB at most, the app's own file); open QA-13: the screen could draw plain first and the picture after
+disk:decodeFile | launcher:PlayerActivity.onCreate | GlassSource.backdrop | a screen's onCreate decodes the glass backdrop PNG for its background (small, 512 KB at most, the app's own file); open QA-13: the screen could draw plain first and the picture after
+disk:decodeFile | launcher:ReportActivity.onCreate | GlassSource.backdrop | a screen's onCreate decodes the glass backdrop PNG for its background (small, 512 KB at most, the app's own file); open QA-13: the screen could draw plain first and the picture after
+disk:decodeFile | launcher:SetupActivity.onCreate | GlassSource.backdrop | a screen's onCreate decodes the glass backdrop PNG for its background (small, 512 KB at most, the app's own file); open QA-13: the screen could draw plain first and the picture after
+disk:decodeFile | launcher:SuggestedAppsActivity.onCreate | GlassSource.backdrop | a screen's onCreate decodes the glass backdrop PNG for its background (small, 512 KB at most, the app's own file); open QA-13: the screen could draw plain first and the picture after
+disk:decodeFile | launcher:SurahActivity.onCreate | GlassSource.backdrop | a screen's onCreate decodes the glass backdrop PNG for its background (small, 512 KB at most, the app's own file); open QA-13: the screen could draw plain first and the picture after
+disk:decodeFile | launcher:TaskReminderActivity.onCreate | GlassSource.backdrop | a screen's onCreate decodes the glass backdrop PNG for its background (small, 512 KB at most, the app's own file); open QA-13: the screen could draw plain first and the picture after
+disk:decodeFile | launcher:TasksActivity.onCreate | GlassSource.backdrop | a screen's onCreate decodes the glass backdrop PNG for its background (small, 512 KB at most, the app's own file); open QA-13: the screen could draw plain first and the picture after
+disk:decodeFile | launcher:UpdateActivity.onCreate | GlassSource.backdrop | a screen's onCreate decodes the glass backdrop PNG for its background (small, 512 KB at most, the app's own file); open QA-13: the screen could draw plain first and the picture after
+disk:decodeFile | launcher:WatchNextActivity.onCreate | GlassSource.backdrop | a screen's onCreate decodes the glass backdrop PNG for its background (small, 512 KB at most, the app's own file); open QA-13: the screen could draw plain first and the picture after
+disk:decodeFile | saver:AppearanceActivity.onCreate | GlassSource.refresh | the settings screen's open or return asks the home for its backdrop and decodes the bitmap only when the stamp changed (the home's own small PNG); open QA-12 (the query) and QA-13 (the decode)
+disk:decodeFile | saver:LeaguesActivity.onCreate | GlassSource.refresh | the settings screen's open or return asks the home for its backdrop and decodes the bitmap only when the stamp changed (the home's own small PNG); open QA-12 (the query) and QA-13 (the decode)
+disk:decodeFile | saver:MainActivity.onCreate | SaverSnapshot.load | by design at the dream's start: the same last-picture overlay (a small WebP in the app's own cache, 24 h old at most) is drawn before the page paints; open QA-13
+disk:decodeFile | saver:PhotoPacksActivity.onCreate | GlassSource.refresh | the settings screen's open or return asks the home for its backdrop and decodes the bitmap only when the stamp changed (the home's own small PNG); open QA-12 (the query) and QA-13 (the decode)
+disk:decodeFile | saver:PhotoPacksActivity.onCreate | PhotoPacksActivity.loadCover | R1 debt: one bundled asset picture decoded at a sample size for a settings card at render; small, the app's own assets; open QA-13
+disk:decodeFile | saver:SettingsActivity.onCreate | GlassSource.refresh | the settings screen's open or return asks the home for its backdrop and decodes the bitmap only when the stamp changed (the home's own small PNG); open QA-12 (the query) and QA-13 (the decode)
+disk:decodeFile | saver:SettingsActivity.onCreate | SettingsActivity.photo | R1 debt: one bundled asset picture decoded at a sample size for a settings card at render; small, the app's own assets; open QA-13
+disk:decodeFile | saver:YourTvHubActivity.onCreate | GlassSource.refresh | the settings screen's open or return asks the home for its backdrop and decodes the bitmap only when the stamp changed (the home's own small PNG); open QA-12 (the query) and QA-13 (the decode)
+disk:prefs.commit | launcher:CleanActivity.onCreate | Parental.pin | over-reach: onCreate only reads PinStore.isSet(); the commit() is in the store's put/remove, which run when a PIN is set or cleared (a press in the PIN dialog, a few bytes in the app's own prefs)
+disk:prefs.commit | launcher:CleanActivity.onCreate | Parental.put | over-reach: onCreate only reads PinStore.isSet(); the commit() is in the store's put/remove, which run when a PIN is set or cleared (a press in the PIN dialog, a few bytes in the app's own prefs)
+disk:prefs.commit | launcher:CleanActivity.onCreate | Parental.remove | over-reach: onCreate only reads PinStore.isSet(); the commit() is in the store's put/remove, which run when a PIN is set or cleared (a press in the PIN dialog, a few bytes in the app's own prefs)
+disk:prefs.commit | launcher:FactoryActivity.onCreate | Parental.pin | over-reach: onCreate only reads PinStore.isSet(); the commit() is in the store's put/remove, which run when a PIN is set or cleared (a press in the PIN dialog, a few bytes in the app's own prefs)
+disk:prefs.commit | launcher:FactoryActivity.onCreate | Parental.put | over-reach: onCreate only reads PinStore.isSet(); the commit() is in the store's put/remove, which run when a PIN is set or cleared (a press in the PIN dialog, a few bytes in the app's own prefs)
+disk:prefs.commit | launcher:FactoryActivity.onCreate | Parental.remove | over-reach: onCreate only reads PinStore.isSet(); the commit() is in the store's put/remove, which run when a PIN is set or cleared (a press in the PIN dialog, a few bytes in the app's own prefs)
+disk:prefs.commit | launcher:FamilyDnsActivity.onCreate | FamilyDnsAndroid.run | over-reach: a press on the family-DNS toggle; the commit() of the running mark is a few bytes in the app's own prefs before its worker thread starts
+disk:prefs.commit | launcher:MainActivity.onCreate | Parental.pin | over-reach: onCreate only reads PinStore.isSet(); the commit() is in the store's put/remove, which run when a PIN is set or cleared (a press in the PIN dialog, a few bytes in the app's own prefs)
+disk:prefs.commit | launcher:MainActivity.onCreate | Parental.put | over-reach: onCreate only reads PinStore.isSet(); the commit() is in the store's put/remove, which run when a PIN is set or cleared (a press in the PIN dialog, a few bytes in the app's own prefs)
+disk:prefs.commit | launcher:MainActivity.onCreate | Parental.remove | over-reach: onCreate only reads PinStore.isSet(); the commit() is in the store's put/remove, which run when a PIN is set or cleared (a press in the PIN dialog, a few bytes in the app's own prefs)
+disk:prefs.commit | launcher:MainActivity.onCreate | Parental.toggle | over-reach: a press in an app's menu (lock or unlock an app), reached through the tile's click listener, not onCreate; a few bytes in the app's own prefs
+disk:prefs.commit | launcher:MarketsActivity.onCreate | Parental.pin | over-reach: onCreate only reads PinStore.isSet(); the commit() is in the store's put/remove, which run when a PIN is set or cleared (a press in the PIN dialog, a few bytes in the app's own prefs)
+disk:prefs.commit | launcher:MarketsActivity.onCreate | Parental.put | over-reach: onCreate only reads PinStore.isSet(); the commit() is in the store's put/remove, which run when a PIN is set or cleared (a press in the PIN dialog, a few bytes in the app's own prefs)
+disk:prefs.commit | launcher:MarketsActivity.onCreate | Parental.remove | over-reach: onCreate only reads PinStore.isSet(); the commit() is in the store's put/remove, which run when a PIN is set or cleared (a press in the PIN dialog, a few bytes in the app's own prefs)
+disk:prefs.commit | launcher:MarketsActivity.onCreate | Portfolio.save | over-reach: a press on a stock card or in the portfolio options (the click listeners built in show), not onCreate; a few bytes in the app's own prefs
+disk:prefs.commit | launcher:MarketsActivity.onCreate | Portfolio.wipe | over-reach: a press on a stock card or in the portfolio options (the click listeners built in show), not onCreate; a few bytes in the app's own prefs
+disk:prefs.commit | launcher:PhoneActivity.onCreate | Parental.pin | over-reach: onCreate only reads PinStore.isSet(); the commit() is in the store's put/remove, which run when a PIN is set or cleared (a press in the PIN dialog, a few bytes in the app's own prefs)
+disk:prefs.commit | launcher:PhoneActivity.onCreate | Parental.put | over-reach: onCreate only reads PinStore.isSet(); the commit() is in the store's put/remove, which run when a PIN is set or cleared (a press in the PIN dialog, a few bytes in the app's own prefs)
+disk:prefs.commit | launcher:PhoneActivity.onCreate | Parental.remove | over-reach: onCreate only reads PinStore.isSet(); the commit() is in the store's put/remove, which run when a PIN is set or cleared (a press in the PIN dialog, a few bytes in the app's own prefs)
+disk:prefs.commit | launcher:SetupActivity.onCreate | Parental.pin | over-reach: onCreate only reads PinStore.isSet(); the commit() is in the store's put/remove, which run when a PIN is set or cleared (a press in the PIN dialog, a few bytes in the app's own prefs)
+disk:prefs.commit | launcher:SetupActivity.onCreate | Parental.put | over-reach: onCreate only reads PinStore.isSet(); the commit() is in the store's put/remove, which run when a PIN is set or cleared (a press in the PIN dialog, a few bytes in the app's own prefs)
+disk:prefs.commit | launcher:SetupActivity.onCreate | Parental.remove | over-reach: onCreate only reads PinStore.isSet(); the commit() is in the store's put/remove, which run when a PIN is set or cleared (a press in the PIN dialog, a few bytes in the app's own prefs)
+disk:stream | launcher:MainActivity.onCreate | FileStore.get | the setup ledger: a small file in the app's own files/setup, read at the home's start and written once when the home is up (SetupHook); open QA-13
+disk:stream | launcher:MatchesActivity.onCreate | HomePage.copy | the matches screen's onCreate brings our copy of the page up to date when the screensaver carries a newer one (HomePage.fresh: a file copy, only when newer); open QA-12
+disk:stream | launcher:SetupActivity.onCreate | FileStore.get | the setup ledger: a small file in the app's own files/setup, read at the home's start and written once when the home is up (SetupHook); open QA-13
+disk:stream | saver:AppearanceActivity.onCreate | PackStore.names | R1 debt: a small credits or names file of the app's own read at the settings screen's render (bounded); open QA-13
+disk:stream | saver:MainActivity.onCreate | PackStore.creditsJson | over-reach: PhotoCache.serve is the WebView's shouldInterceptRequest, which runs on the WebView's own IO thread, not the UI thread
+disk:stream | saver:MainActivity.onCreate | PhotoCache.download | over-reach: PhotoCache.serve is the WebView's shouldInterceptRequest, which runs on the WebView's own IO thread, not the UI thread
+disk:stream | saver:MainActivity.onCreate | PhotoCache.pack | over-reach: PhotoCache.serve is the WebView's shouldInterceptRequest, which runs on the WebView's own IO thread, not the UI thread
+disk:stream | saver:MainActivity.onCreate | PhotoCache.readAll | over-reach: PhotoCache.serve is the WebView's shouldInterceptRequest, which runs on the WebView's own IO thread, not the UI thread
+disk:stream | saver:MainActivity.onCreate | PhotoCache.serve | over-reach: PhotoCache.serve is the WebView's shouldInterceptRequest, which runs on the WebView's own IO thread, not the UI thread
+disk:stream | saver:PhotoPacksActivity.onCreate | PackStore.creditRows | R1 debt: a small credits or names file of the app's own read at the settings screen's render (bounded); open QA-13
+disk:stream | saver:SettingsActivity.onCreate | PackStore.creditsJson | over-reach: PhotoCache.serve is the WebView's shouldInterceptRequest, which runs on the WebView's own IO thread, not the UI thread
+disk:stream | saver:SettingsActivity.onCreate | PhotoCache.download | over-reach: PhotoCache.serve is the WebView's shouldInterceptRequest, which runs on the WebView's own IO thread, not the UI thread
+disk:stream | saver:SettingsActivity.onCreate | PhotoCache.pack | over-reach: PhotoCache.serve is the WebView's shouldInterceptRequest, which runs on the WebView's own IO thread, not the UI thread
+disk:stream | saver:SettingsActivity.onCreate | PhotoCache.readAll | over-reach: PhotoCache.serve is the WebView's shouldInterceptRequest, which runs on the WebView's own IO thread, not the UI thread
+disk:stream | saver:SettingsActivity.onCreate | PhotoCache.serve | over-reach: PhotoCache.serve is the WebView's shouldInterceptRequest, which runs on the WebView's own IO thread, not the UI thread
+ipc:ConfigSnapshot.read | launcher:AdhanActivity.onCreate | Digits.init | open QA-11: a screen's onCreate reads the digits style through ConfigSnapshot.read (shared 3 s); the first read can start the screensaver's process
+ipc:ConfigSnapshot.read | launcher:AdhanActivity.onCreate | GlassSource.light | open QA-11: the screen's onCreate asks its glass look and light through ConfigSnapshot.read (shared 3 s); the first read can start the screensaver's process
+ipc:ConfigSnapshot.read | launcher:AdhanActivity.onCreate | GlassSource.lookName | open QA-11: the screen's onCreate asks its glass look and light through ConfigSnapshot.read (shared 3 s); the first read can start the screensaver's process
+ipc:ConfigSnapshot.read | launcher:CleanActivity.onCreate | Digits.init | open QA-11: a screen's onCreate reads the digits style through ConfigSnapshot.read (shared 3 s); the first read can start the screensaver's process
+ipc:ConfigSnapshot.read | launcher:CleanActivity.onCreate | GlassSource.light | open QA-11: the screen's onCreate asks its glass look and light through ConfigSnapshot.read (shared 3 s); the first read can start the screensaver's process
+ipc:ConfigSnapshot.read | launcher:CleanActivity.onCreate | GlassSource.lookName | open QA-11: the screen's onCreate asks its glass look and light through ConfigSnapshot.read (shared 3 s); the first read can start the screensaver's process
+ipc:ConfigSnapshot.read | launcher:DockActivity.onCreate | Digits.init | open QA-11: a screen's onCreate reads the digits style through ConfigSnapshot.read (shared 3 s); the first read can start the screensaver's process
+ipc:ConfigSnapshot.read | launcher:DockActivity.onCreate | GlassSource.light | open QA-11: the screen's onCreate asks its glass look and light through ConfigSnapshot.read (shared 3 s); the first read can start the screensaver's process
+ipc:ConfigSnapshot.read | launcher:DockActivity.onCreate | GlassSource.lookName | open QA-11: the screen's onCreate asks its glass look and light through ConfigSnapshot.read (shared 3 s); the first read can start the screensaver's process
+ipc:ConfigSnapshot.read | launcher:FactoryActivity.onCreate | GlassSource.light | open QA-11: the screen's onCreate asks its glass look and light through ConfigSnapshot.read (shared 3 s); the first read can start the screensaver's process
+ipc:ConfigSnapshot.read | launcher:FactoryActivity.onCreate | GlassSource.lookName | open QA-11: the screen's onCreate asks its glass look and light through ConfigSnapshot.read (shared 3 s); the first read can start the screensaver's process
+ipc:ConfigSnapshot.read | launcher:FamilyDnsActivity.onCreate | GlassSource.light | open QA-11: the screen's onCreate asks its glass look and light through ConfigSnapshot.read (shared 3 s); the first read can start the screensaver's process
+ipc:ConfigSnapshot.read | launcher:FamilyDnsActivity.onCreate | GlassSource.lookName | open QA-11: the screen's onCreate asks its glass look and light through ConfigSnapshot.read (shared 3 s); the first read can start the screensaver's process
+ipc:ConfigSnapshot.read | launcher:InputNamesActivity.onCreate | Digits.init | open QA-11: a screen's onCreate reads the digits style through ConfigSnapshot.read (shared 3 s); the first read can start the screensaver's process
+ipc:ConfigSnapshot.read | launcher:InputNamesActivity.onCreate | GlassSource.light | open QA-11: the screen's onCreate asks its glass look and light through ConfigSnapshot.read (shared 3 s); the first read can start the screensaver's process
+ipc:ConfigSnapshot.read | launcher:InputNamesActivity.onCreate | GlassSource.lookName | open QA-11: the screen's onCreate asks its glass look and light through ConfigSnapshot.read (shared 3 s); the first read can start the screensaver's process
+ipc:ConfigSnapshot.read | launcher:MainActivity.onCreate | Digits.init | open QA-11: a screen's onCreate reads the digits style through ConfigSnapshot.read (shared 3 s); the first read can start the screensaver's process
+ipc:ConfigSnapshot.read | launcher:MainActivity.onCreate | GlassSource.light | open QA-11: the screen's onCreate asks its glass look and light through ConfigSnapshot.read (shared 3 s); the first read can start the screensaver's process
+ipc:ConfigSnapshot.read | launcher:MainActivity.onCreate | GlassSource.lookName | open QA-11: the screen's onCreate asks its glass look and light through ConfigSnapshot.read (shared 3 s); the first read can start the screensaver's process
+ipc:ConfigSnapshot.read | launcher:MainActivity.onCreate | MainActivity.buildHeader | open QA-11: onCreate builds the pill row and asks the screensaver's settings (tasks and listen buttons hidden or not) through ConfigSnapshot.read; the first read in 3 s can start its process
+ipc:ConfigSnapshot.read | launcher:MainActivity.onCreate | MainActivity.updateClock | QA-1 fixed in 4.3.4 (R-254): only a cold process's very first draw reads here (nothing on screen yet); a recreated home uses ConfigSnapshot.known()
+ipc:ConfigSnapshot.read | launcher:MarketsActivity.onCreate | Digits.init | open QA-11: a screen's onCreate reads the digits style through ConfigSnapshot.read (shared 3 s); the first read can start the screensaver's process
+ipc:ConfigSnapshot.read | launcher:MarketsActivity.onCreate | GlassSource.light | open QA-11: the screen's onCreate asks its glass look and light through ConfigSnapshot.read (shared 3 s); the first read can start the screensaver's process
+ipc:ConfigSnapshot.read | launcher:MarketsActivity.onCreate | GlassSource.lookName | open QA-11: the screen's onCreate asks its glass look and light through ConfigSnapshot.read (shared 3 s); the first read can start the screensaver's process
+ipc:ConfigSnapshot.read | launcher:MarketsActivity.onCreate | GlassSource.pageFor | open QA-11: the screen's onCreate asks its glass look and light through ConfigSnapshot.read (shared 3 s); the first read can start the screensaver's process
+ipc:ConfigSnapshot.read | launcher:MarketsActivity.onCreate | MarketsActivity.param | open QA-11: the screen reads one of the screensaver's settings (ground colour, markets bar or the city's zone for times) through ConfigSnapshot.read (shared 3 s) on the UI thread
+ipc:ConfigSnapshot.read | launcher:MatchesActivity.onCreate | MatchesActivity.onCreate | open QA-11: the screen reads one of the screensaver's settings (ground colour, markets bar or the city's zone for times) through ConfigSnapshot.read (shared 3 s) on the UI thread
+ipc:ConfigSnapshot.read | launcher:ParentalActivity.onCreate | Digits.init | open QA-11: a screen's onCreate reads the digits style through ConfigSnapshot.read (shared 3 s); the first read can start the screensaver's process
+ipc:ConfigSnapshot.read | launcher:ParentalActivity.onCreate | GlassSource.light | open QA-11: the screen's onCreate asks its glass look and light through ConfigSnapshot.read (shared 3 s); the first read can start the screensaver's process
+ipc:ConfigSnapshot.read | launcher:ParentalActivity.onCreate | GlassSource.lookName | open QA-11: the screen's onCreate asks its glass look and light through ConfigSnapshot.read (shared 3 s); the first read can start the screensaver's process
+ipc:ConfigSnapshot.read | launcher:PhoneActivity.onCreate | Digits.init | open QA-11: a screen's onCreate reads the digits style through ConfigSnapshot.read (shared 3 s); the first read can start the screensaver's process
+ipc:ConfigSnapshot.read | launcher:PhoneActivity.onCreate | GlassSource.light | open QA-11: the screen's onCreate asks its glass look and light through ConfigSnapshot.read (shared 3 s); the first read can start the screensaver's process
+ipc:ConfigSnapshot.read | launcher:PhoneActivity.onCreate | GlassSource.lookName | open QA-11: the screen's onCreate asks its glass look and light through ConfigSnapshot.read (shared 3 s); the first read can start the screensaver's process
+ipc:ConfigSnapshot.read | launcher:PlayerActivity.onCreate | Digits.init | open QA-11: a screen's onCreate reads the digits style through ConfigSnapshot.read (shared 3 s); the first read can start the screensaver's process
+ipc:ConfigSnapshot.read | launcher:PlayerActivity.onCreate | GlassSource.light | open QA-11: the screen's onCreate asks its glass look and light through ConfigSnapshot.read (shared 3 s); the first read can start the screensaver's process
+ipc:ConfigSnapshot.read | launcher:PlayerActivity.onCreate | GlassSource.lookName | open QA-11: the screen's onCreate asks its glass look and light through ConfigSnapshot.read (shared 3 s); the first read can start the screensaver's process
+ipc:ConfigSnapshot.read | launcher:ReportActivity.onCreate | Digits.init | open QA-11: a screen's onCreate reads the digits style through ConfigSnapshot.read (shared 3 s); the first read can start the screensaver's process
+ipc:ConfigSnapshot.read | launcher:ReportActivity.onCreate | GlassSource.light | open QA-11: the screen's onCreate asks its glass look and light through ConfigSnapshot.read (shared 3 s); the first read can start the screensaver's process
+ipc:ConfigSnapshot.read | launcher:ReportActivity.onCreate | GlassSource.lookName | open QA-11: the screen's onCreate asks its glass look and light through ConfigSnapshot.read (shared 3 s); the first read can start the screensaver's process
+ipc:ConfigSnapshot.read | launcher:SetupActivity.onCreate | Digits.init | open QA-11: a screen's onCreate reads the digits style through ConfigSnapshot.read (shared 3 s); the first read can start the screensaver's process
+ipc:ConfigSnapshot.read | launcher:SetupActivity.onCreate | GlassSource.light | open QA-11: the screen's onCreate asks its glass look and light through ConfigSnapshot.read (shared 3 s); the first read can start the screensaver's process
+ipc:ConfigSnapshot.read | launcher:SetupActivity.onCreate | GlassSource.lookName | open QA-11: the screen's onCreate asks its glass look and light through ConfigSnapshot.read (shared 3 s); the first read can start the screensaver's process
+ipc:ConfigSnapshot.read | launcher:SuggestedAppsActivity.onCreate | Digits.init | open QA-11: a screen's onCreate reads the digits style through ConfigSnapshot.read (shared 3 s); the first read can start the screensaver's process
+ipc:ConfigSnapshot.read | launcher:SuggestedAppsActivity.onCreate | GlassSource.light | open QA-11: the screen's onCreate asks its glass look and light through ConfigSnapshot.read (shared 3 s); the first read can start the screensaver's process
+ipc:ConfigSnapshot.read | launcher:SuggestedAppsActivity.onCreate | GlassSource.lookName | open QA-11: the screen's onCreate asks its glass look and light through ConfigSnapshot.read (shared 3 s); the first read can start the screensaver's process
+ipc:ConfigSnapshot.read | launcher:SurahActivity.onCreate | Digits.init | open QA-11: a screen's onCreate reads the digits style through ConfigSnapshot.read (shared 3 s); the first read can start the screensaver's process
+ipc:ConfigSnapshot.read | launcher:SurahActivity.onCreate | GlassSource.light | open QA-11: the screen's onCreate asks its glass look and light through ConfigSnapshot.read (shared 3 s); the first read can start the screensaver's process
+ipc:ConfigSnapshot.read | launcher:SurahActivity.onCreate | GlassSource.lookName | open QA-11: the screen's onCreate asks its glass look and light through ConfigSnapshot.read (shared 3 s); the first read can start the screensaver's process
+ipc:ConfigSnapshot.read | launcher:TaskReminderActivity.onCreate | Digits.init | open QA-11: a screen's onCreate reads the digits style through ConfigSnapshot.read (shared 3 s); the first read can start the screensaver's process
+ipc:ConfigSnapshot.read | launcher:TaskReminderActivity.onCreate | GlassSource.light | open QA-11: the screen's onCreate asks its glass look and light through ConfigSnapshot.read (shared 3 s); the first read can start the screensaver's process
+ipc:ConfigSnapshot.read | launcher:TaskReminderActivity.onCreate | GlassSource.lookName | open QA-11: the screen's onCreate asks its glass look and light through ConfigSnapshot.read (shared 3 s); the first read can start the screensaver's process
+ipc:ConfigSnapshot.read | launcher:TaskReminderActivity.onCreate | TaskReminderActivity.onCreate | open QA-11: the screen reads one of the screensaver's settings (ground colour, markets bar or the city's zone for times) through ConfigSnapshot.read (shared 3 s) on the UI thread
+ipc:ConfigSnapshot.read | launcher:TasksActivity.onCreate | Digits.init | open QA-11: a screen's onCreate reads the digits style through ConfigSnapshot.read (shared 3 s); the first read can start the screensaver's process
+ipc:ConfigSnapshot.read | launcher:TasksActivity.onCreate | GlassSource.light | open QA-11: the screen's onCreate asks its glass look and light through ConfigSnapshot.read (shared 3 s); the first read can start the screensaver's process
+ipc:ConfigSnapshot.read | launcher:TasksActivity.onCreate | GlassSource.lookName | open QA-11: the screen's onCreate asks its glass look and light through ConfigSnapshot.read (shared 3 s); the first read can start the screensaver's process
+ipc:ConfigSnapshot.read | launcher:TasksActivity.onCreate | TasksActivity.reminderWhen | open QA-11: the screen reads one of the screensaver's settings (ground colour, markets bar or the city's zone for times) through ConfigSnapshot.read (shared 3 s) on the UI thread
+ipc:ConfigSnapshot.read | launcher:UpdateActivity.onCreate | Digits.init | open QA-11: a screen's onCreate reads the digits style through ConfigSnapshot.read (shared 3 s); the first read can start the screensaver's process
+ipc:ConfigSnapshot.read | launcher:UpdateActivity.onCreate | GlassSource.light | open QA-11: the screen's onCreate asks its glass look and light through ConfigSnapshot.read (shared 3 s); the first read can start the screensaver's process
+ipc:ConfigSnapshot.read | launcher:UpdateActivity.onCreate | GlassSource.lookName | open QA-11: the screen's onCreate asks its glass look and light through ConfigSnapshot.read (shared 3 s); the first read can start the screensaver's process
+ipc:ConfigSnapshot.read | launcher:WatchNextActivity.onCreate | Digits.init | open QA-11: a screen's onCreate reads the digits style through ConfigSnapshot.read (shared 3 s); the first read can start the screensaver's process
+ipc:ConfigSnapshot.read | launcher:WatchNextActivity.onCreate | GlassSource.light | open QA-11: the screen's onCreate asks its glass look and light through ConfigSnapshot.read (shared 3 s); the first read can start the screensaver's process
+ipc:ConfigSnapshot.read | launcher:WatchNextActivity.onCreate | GlassSource.lookName | open QA-11: the screen's onCreate asks its glass look and light through ConfigSnapshot.read (shared 3 s); the first read can start the screensaver's process
+ipc:ContentResolver.call | launcher:MarketsActivity.onCreate | MarketsActivity.saverSet | over-reach: a press on a market or stock toggle (one phone_set call per press), reached through the card's click listener, not onCreate; open QA-12 (low)
+ipc:ContentResolver.call | launcher:PhoneActivity.onCreate | PhoneActions.saver | over-reach: PhoneActions.lang runs in the phone page server's own request thread (PhoneHost's Page.html), never in onCreate, onResume or a click
+ipc:ContentResolver.call | launcher:SetupActivity.onCreate | SetupLang.save | a press on the language choice in the first-run setup: one phone_set call to the screensaver per press (reached through the plan's click listener); open QA-12 (low)
+ipc:ContentResolver.query | launcher:AdhanActivity.onCreate | ConfigSnapshot.query | the query under ConfigSnapshot.read (one answer shared for 3 s): the same open item as this entry's ConfigSnapshot.read lines, QA-11; the first read in 3 s can start the screensaver's process on a TCL
+ipc:ContentResolver.query | launcher:CleanActivity.onCreate | ConfigSnapshot.query | the query under ConfigSnapshot.read (one answer shared for 3 s): the same open item as this entry's ConfigSnapshot.read lines, QA-11; the first read in 3 s can start the screensaver's process on a TCL
+ipc:ContentResolver.query | launcher:DockActivity.onCreate | ConfigSnapshot.query | the query under ConfigSnapshot.read (one answer shared for 3 s): the same open item as this entry's ConfigSnapshot.read lines, QA-11; the first read in 3 s can start the screensaver's process on a TCL
+ipc:ContentResolver.query | launcher:FactoryActivity.onCreate | ConfigSnapshot.query | the query under ConfigSnapshot.read (one answer shared for 3 s): the same open item as this entry's ConfigSnapshot.read lines, QA-11; the first read in 3 s can start the screensaver's process on a TCL
+ipc:ContentResolver.query | launcher:FamilyDnsActivity.onCreate | ConfigSnapshot.query | the query under ConfigSnapshot.read (one answer shared for 3 s): the same open item as this entry's ConfigSnapshot.read lines, QA-11; the first read in 3 s can start the screensaver's process on a TCL
+ipc:ContentResolver.query | launcher:InputNamesActivity.onCreate | ConfigSnapshot.query | the query under ConfigSnapshot.read (one answer shared for 3 s): the same open item as this entry's ConfigSnapshot.read lines, QA-11; the first read in 3 s can start the screensaver's process on a TCL
+ipc:ContentResolver.query | launcher:MainActivity.onCreate | ConfigSnapshot.query | the query under ConfigSnapshot.read (one answer shared for 3 s): the same open item as this entry's ConfigSnapshot.read lines, QA-11; the first read in 3 s can start the screensaver's process on a TCL
+ipc:ContentResolver.query | launcher:MainActivity.onCreate | HomeCard.ownPhoto | over-reach: inside the card WebView's shouldInterceptRequest (WebView's own IO thread), not the UI thread
+ipc:ContentResolver.query | launcher:MainActivity.onCreate | Place.get | over-reach for onCreate: this is the prayer-and-recitation screen's press on a prayer row (Prefs.playFor -> Place.get): one query per press; open QA-12 (low; QA-8 fixed the control centre's tile only)
+ipc:ContentResolver.query | launcher:MarketsActivity.onCreate | ConfigSnapshot.query | the query under ConfigSnapshot.read (one answer shared for 3 s): the same open item as this entry's ConfigSnapshot.read lines, QA-11; the first read in 3 s can start the screensaver's process on a TCL
+ipc:ContentResolver.query | launcher:MatchesActivity.onCreate | ConfigSnapshot.query | the query under ConfigSnapshot.read (one answer shared for 3 s): the same open item as this entry's ConfigSnapshot.read lines, QA-11; the first read in 3 s can start the screensaver's process on a TCL
+ipc:ContentResolver.query | launcher:ParentalActivity.onCreate | ConfigSnapshot.query | the query under ConfigSnapshot.read (one answer shared for 3 s): the same open item as this entry's ConfigSnapshot.read lines, QA-11; the first read in 3 s can start the screensaver's process on a TCL
+ipc:ContentResolver.query | launcher:PhoneActivity.onCreate | ConfigSnapshot.query | the query under ConfigSnapshot.read (one answer shared for 3 s): the same open item as this entry's ConfigSnapshot.read lines, QA-11; the first read in 3 s can start the screensaver's process on a TCL
+ipc:ContentResolver.query | launcher:PlayerActivity.onCreate | ConfigSnapshot.query | the query under ConfigSnapshot.read (one answer shared for 3 s): the same open item as this entry's ConfigSnapshot.read lines, QA-11; the first read in 3 s can start the screensaver's process on a TCL
+ipc:ContentResolver.query | launcher:ReportActivity.onCreate | ConfigSnapshot.query | the query under ConfigSnapshot.read (one answer shared for 3 s): the same open item as this entry's ConfigSnapshot.read lines, QA-11; the first read in 3 s can start the screensaver's process on a TCL
+ipc:ContentResolver.query | launcher:SetupActivity.onCreate | ConfigSnapshot.query | the query under ConfigSnapshot.read (one answer shared for 3 s): the same open item as this entry's ConfigSnapshot.read lines, QA-11; the first read in 3 s can start the screensaver's process on a TCL
+ipc:ContentResolver.query | launcher:SuggestedAppsActivity.onCreate | ConfigSnapshot.query | the query under ConfigSnapshot.read (one answer shared for 3 s): the same open item as this entry's ConfigSnapshot.read lines, QA-11; the first read in 3 s can start the screensaver's process on a TCL
+ipc:ContentResolver.query | launcher:SurahActivity.onCreate | ConfigSnapshot.query | the query under ConfigSnapshot.read (one answer shared for 3 s): the same open item as this entry's ConfigSnapshot.read lines, QA-11; the first read in 3 s can start the screensaver's process on a TCL
+ipc:ContentResolver.query | launcher:TaskReminderActivity.onCreate | ConfigSnapshot.query | the query under ConfigSnapshot.read (one answer shared for 3 s): the same open item as this entry's ConfigSnapshot.read lines, QA-11; the first read in 3 s can start the screensaver's process on a TCL
+ipc:ContentResolver.query | launcher:TaskReminderActivity.onCreate | ReminderStore.read | a press in the reminder's steps saves it and re-plans the alarms (ReminderScheduler.schedule reads the tasks provider) on the UI thread; open QA-12 (the reminder card's own paths were fixed in R-255)
+ipc:ContentResolver.query | launcher:TaskReminderActivity.onCreate | TaskReminderActivity.load | open QA-12: the screen reads the screensaver's tasks provider when it opens and again after each change, on the UI thread (the reminder card was fixed in R-255, these screens were not)
+ipc:ContentResolver.query | launcher:TasksActivity.onCreate | ConfigSnapshot.query | the query under ConfigSnapshot.read (one answer shared for 3 s): the same open item as this entry's ConfigSnapshot.read lines, QA-11; the first read in 3 s can start the screensaver's process on a TCL
+ipc:ContentResolver.query | launcher:TasksActivity.onCreate | ReminderStore.read | a press in the reminder's steps saves it and re-plans the alarms (ReminderScheduler.schedule reads the tasks provider) on the UI thread; open QA-12 (the reminder card's own paths were fixed in R-255)
+ipc:ContentResolver.query | launcher:TasksActivity.onCreate | TasksActivity.load | open QA-12: the screen reads the screensaver's tasks provider when it opens and again after each change, on the UI thread (the reminder card was fixed in R-255, these screens were not)
+ipc:ContentResolver.query | launcher:UpdateActivity.onCreate | ConfigSnapshot.query | the query under ConfigSnapshot.read (one answer shared for 3 s): the same open item as this entry's ConfigSnapshot.read lines, QA-11; the first read in 3 s can start the screensaver's process on a TCL
+ipc:ContentResolver.query | launcher:WatchNextActivity.onCreate | ConfigSnapshot.query | the query under ConfigSnapshot.read (one answer shared for 3 s): the same open item as this entry's ConfigSnapshot.read lines, QA-11; the first read in 3 s can start the screensaver's process on a TCL
+ipc:ContentResolver.query | saver:AppearanceActivity.onCreate | GlassSource.refresh | the settings screen's open or return asks the home for its backdrop (one small query, the home's own process) and reads the picture only when the stamp changed; open QA-12
+ipc:ContentResolver.query | saver:LeaguesActivity.onCreate | GlassSource.refresh | the settings screen's open or return asks the home for its backdrop (one small query, the home's own process) and reads the picture only when the stamp changed; open QA-12
+ipc:ContentResolver.query | saver:PhotoPacksActivity.onCreate | GlassSource.refresh | the settings screen's open or return asks the home for its backdrop (one small query, the home's own process) and reads the picture only when the stamp changed; open QA-12
+ipc:ContentResolver.query | saver:SettingsActivity.onCreate | GlassSource.refresh | the settings screen's open or return asks the home for its backdrop (one small query, the home's own process) and reads the picture only when the stamp changed; open QA-12
+ipc:ContentResolver.query | saver:YourTvHubActivity.onCreate | CleanMask.state | the hub's open asks the home whether the clean mode is on (one query to the home's own process, and the answer is kept); open QA-12
+ipc:ContentResolver.query | saver:YourTvHubActivity.onCreate | GlassSource.refresh | the settings screen's open or return asks the home for its backdrop (one small query, the home's own process) and reads the picture only when the stamp changed; open QA-12
+ipc:ContentResolver.write | launcher:MainActivity.onCreate | HomeCard.ownPhoto | over-reach: inside the card WebView's shouldInterceptRequest (WebView's own IO thread), not the UI thread
+ipc:ContentResolver.write | launcher:MatchesActivity.onCreate | HomePage.copy | the matches screen's onCreate reads the screensaver's newer page when there is one (HomePage.fresh: one openInputStream, then a copy); open QA-12
+ipc:ContentResolver.write | launcher:TaskReminderActivity.onCreate | TaskReminderActivity.save | a press (add, finish, delete, or save a reminder) writes the screensaver's tasks provider on the UI thread, one call per press; reached from onCreate or onResume through the row's click listener; open QA-12 (low)
+ipc:ContentResolver.write | launcher:TasksActivity.onCreate | TasksActivity.add | a press (add, finish, delete, or save a reminder) writes the screensaver's tasks provider on the UI thread, one call per press; reached from onCreate or onResume through the row's click listener; open QA-12 (low)
+ipc:ContentResolver.write | launcher:TasksActivity.onCreate | TasksActivity.delete | a press (add, finish, delete, or save a reminder) writes the screensaver's tasks provider on the UI thread, one call per press; reached from onCreate or onResume through the row's click listener; open QA-12 (low)
+ipc:ContentResolver.write | launcher:TasksActivity.onCreate | TasksActivity.markDone | a press (add, finish, delete, or save a reminder) writes the screensaver's tasks provider on the UI thread, one call per press; reached from onCreate or onResume through the row's click listener; open QA-12 (low)
+ipc:ContentResolver.write | saver:AppearanceActivity.onCreate | GlassSource.refresh | the settings screen's open or return asks the home for its backdrop (one small query, the home's own process) and reads the picture only when the stamp changed; open QA-12
+ipc:ContentResolver.write | saver:LeaguesActivity.onCreate | GlassSource.refresh | the settings screen's open or return asks the home for its backdrop (one small query, the home's own process) and reads the picture only when the stamp changed; open QA-12
+ipc:ContentResolver.write | saver:PhotoPacksActivity.onCreate | GlassSource.refresh | the settings screen's open or return asks the home for its backdrop (one small query, the home's own process) and reads the picture only when the stamp changed; open QA-12
+ipc:ContentResolver.write | saver:SettingsActivity.onCreate | GlassSource.refresh | the settings screen's open or return asks the home for its backdrop (one small query, the home's own process) and reads the picture only when the stamp changed; open QA-12
+ipc:ContentResolver.write | saver:YourTvHubActivity.onCreate | GlassSource.refresh | the settings screen's open or return asks the home for its backdrop (one small query, the home's own process) and reads the picture only when the stamp changed; open QA-12
+proc:exec | launcher:ReportActivity.onCreate | ReportActivity.recentErrors | onCreate runs logcat (-d, 400 lines) for this process on the UI thread to name the last errors in a report; open QA-13
 
 # 4.4 (next 68735302 merged into the gate, 18 Nov): its new paths, each with its reason; QA-6..QA-10 (real R1 findings) were fixed on work/44-uithread and their lines removed
 disk:Files | launcher:MainActivity.onCreate | CrashLoopStore.read | 4.4 safe mode by design: the crash-loop count must be on disk before the screen builds (a few bytes, the app's own file)

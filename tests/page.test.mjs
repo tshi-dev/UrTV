@@ -359,6 +359,24 @@ for (const [hash, on] of [['panel=verse', false], ['panel=verse&tafsir=1', true]
   }
 }
 
+// ---- a redraw of ANOTHER card (every 15 s: prayers, today, smart) must not stop the paged tafsir: each list keeps its own turning timer
+// (4.4 review; written without a browser at hand, not run when added)
+{
+  const { p, ctx, errors } = await open('tv.html', 'panel=verse&tafsir=1', { width: 960, height: 540 });
+  const r = await p.evaluate(long => {
+    const key = v => v.surah + ':' + v.ayah, per = 2 * VERSES.length, day = per * Math.ceil(riyadhDayNumber() / per);
+    TAFSIR = { [key(VERSES[0])]: long };
+    window.riyadhDayNumber = () => day; renderPanel(false);
+    const ul = document.getElementById('week-list'), t = ul.querySelector('li.tafsir');
+    if (!t || !(t.__pages || []).length || t.__pages.length < 2) return { skipped: true };
+    const timer = ul.__tafsirT, other = document.createElement('ul');
+    fitTafsir(other);   // another card's list, without a tafsir: its redraw
+    return { timer: !!timer, same: ul.__tafsirT === timer };
+  }, TAFSIR_3X);
+  check('tafsir paging: redrawing another card\'s list leaves the turning timer running', !errors.length && !r.skipped && r.timer && r.same, JSON.stringify(r) + errors.join('; '));
+  await ctx.close();
+}
+
 // ---- «تبديل الآية والحديث»: #versemin=3 a new verse or hadith every 3 minutes (verse, hadith, verse…) titled «آية كريمة» / «حديث شريف»;
 // anything else is one a day as always («آية اليوم» / «حديث اليوم», the same text all day)
 for (const [hash, every] of [['panel=verse', 0], ['panel=verse&versemin=3', 3], ['panel=verse&versemin=5', 0], ['panel=verse&versemin=x', 0]]) {

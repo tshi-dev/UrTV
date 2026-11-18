@@ -40,6 +40,7 @@ python3 tests/presets_test.py   # 4.4 «أشكال جاهزة»: six looks, the 
 python3 tests/settings_smooth_test.py   # 4.4 «smoother» settings: one section built per render, the side list opens on a rest, focus recolours only, 120 ms scale, live search
 
 python3 tests/webview66_test.py   # #19 WebView 66: a fallback before each inset/clamp/min/max, flex gap as margins, the Hijri date without Umm al-Qura
+python3 tests/tafsir_timer_test.py   # 4.4 review: a redraw of another card does not stop the paged tafsir (the timer is per list)
 python3 tests/motion_test.py   # 4.4 the same easing everywhere (Motion: 200 ms, couch-tv's curve; a fade with «الوضع الخفيف»)
 python3 tests/sweep_test.py   # 4.4 the consistency sweep: what it fixed stays fixed
 python3 tests/separators_test.py   # 4.4 no «·» or «•» on a screen, in either language (S.sep)

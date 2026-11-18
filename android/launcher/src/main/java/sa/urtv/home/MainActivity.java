@@ -204,7 +204,14 @@ public class MainActivity extends Activity {
     private final BroadcastReceiver nowPlayingChanged = new BroadcastReceiver() {
         @Override public void onReceive(Context c, Intent i) {
             updateNowPlaying();
-            updateAdhanBar(ConfigSnapshot.read(MainActivity.this));   // the adhan began or ended: the bar names it, or goes
+            // the adhan began or ended: the bar names it, or goes. From the answer this process already has; only with none yet is it read, off the UI thread
+            ConfigSnapshot known = ConfigSnapshot.known();
+            if (known != null) { updateAdhanBar(known); return; }
+            final Context app = getApplicationContext();
+            clockReads.execute(() -> {
+                final ConfigSnapshot got = ConfigSnapshot.read(app);
+                runOnUiThread(() -> { if (!isDestroyed() && !isFinishing()) updateAdhanBar(got); });
+            });
         }
     };
     // the sleep timer started, ended or was cancelled (here, or from the computer): the pill follows at once
