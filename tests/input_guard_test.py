@@ -78,6 +78,31 @@ for knob, said in (("DUMP_HUNG", "hung system process"), ("SILENT_DUMP", "did no
     p, rc, out, led = run({knob: "yes"})
     check(f"disable.sh ({knob}): a !! line, a non-zero exit and NOT ONE disable command, nothing remembered",
           rc == 1 and "!! disable.sh" in out and said in out and p.changes("sh") == [] and not led, (rc, out, p.changes("sh"), led))
+# ---- 4.4: the handler guard (Settings, channels, inputs' setup), the same command from the script and the app
+h_sh = re.search(r"^HANDLERS='(.*)'$", sh, re.M)
+h_java = re.search(r'static final String HANDLERS = "((?:[^"\\]|\\.)*)";', java)
+h_unesc = re.sub(r'\\(.)', r'\1', h_java.group(1)) if h_java else None
+check("the app's InputGuard.HANDLERS is disable.sh's HANDLERS, to the letter", h_sh and h_unesc == h_sh.group(1), (h_sh and h_sh.group(1), h_unesc))
+check("HANDLERS asks for android.settings.SETTINGS, the VIEW of a channel and of an input (by URI and by type) and SETUP_INPUTS, and ends with the marker",
+      h_sh and all(x in h_sh.group(1) for x in ("-a android.settings.SETTINGS", "content://android.media.tv/channel/1", "content://android.media.tv/passthrough/1",
+                                                  "-t vnd.android.cursor.item/channel", "android.media.tv.action.SETUP_INPUTS", "echo END_OF_LIST")))
+for f, needle in (("SetupEngine.java", "InputGuard.handlers(text(InputGuard.HANDLERS))"), ("SetupCommunity.java", "InputGuard.handlers(tv.text(InputGuard.HANDLERS))")):
+    check(f"{f} asks the TV which apps open its Settings and channels before it turns anything off", needle in (ROOT / "android/launcher/src/main/java/sa/urtv/home/setup" / f).read_text(encoding="utf-8"))
+p, rc, out, led = run({"TV_ACTS": "com.tcl.bi/.LiveTv"})
+check("disable.sh: an app that answers a channel's VIEW intent stays on, is said, and is not in the ledger",
+      rc == 0 and "com.tcl.bi" not in p.tv("sh")["off"].split() and led == ["com.tcl.logkit"] and "opens its Settings, channels or inputs with them: com.tcl.bi" in out, (out, led))
+p, rc, out, led = run({"SETTINGS_ACTS": "com.android.tv.settings/.MainSettings com.tcl.logkit/.Settings"})
+check("disable.sh: a vendor app that answers android.settings.SETTINGS stays on", rc == 0 and "com.tcl.logkit" not in p.tv("sh")["off"].split() and led == ["com.tcl.bi"], (out, led))
+p, rc, out, led = run({"TV_ACTS": "com.tcl.bi/.LiveTv", "INPUT_PKGS": "com.tcl.logkit"})
+check("disable.sh: what the handler guard and the input guard leave on are both in inputs-left.txt (community.sh does not count them as applied)",
+      rc == 0 and sorted((p.tree / "optimize/run/inputs-left.txt").read_text().split()) == ["com.tcl.bi", "com.tcl.logkit"]
+      and not any("disable-user" in c and c.endswith((" com.tcl.bi", " com.tcl.logkit")) for c in p.changes("sh")), (out, p.changes("sh")))
+for knob in ("NO_SETTINGS", "SILENT_HANDLERS"):
+    p, rc, out, led = run({knob: "yes"})
+    check(f"disable.sh ({knob}): the TV names no Settings app or drops the answer: a !! line, a non-zero exit and NOT ONE disable command (fail closed)",
+          rc == 1 and "!! disable.sh: the TV did not say which apps open its Settings and its channels" in out and p.changes("sh") == [] and not led, (rc, out, p.changes("sh"), led))
+check("the handler guard's !! line is in SETUP-PROMPT's table «When something goes wrong»",
+      "`!! disable.sh: the TV did not say which apps open its Settings and its channels" in (ROOT / "docs/SETUP-PROMPT.md").read_text(encoding="utf-8"))
 check("the hung case says how to restart the TV (tv.py --reboot, never a plain reboot)", "optimize/venv/bin/python -I optimize/tv.py --reboot" in sh)
 p, rc, out, led = run({}, listed=("com.tcl.bi", "com.amazon.franktvinput"))
 check("disable.sh: a list that names an input (inputs.txt) is refused whole, nothing changed", rc == 1 and "com.amazon.franktvinput" in out and p.changes("sh") == [], (rc, out))

@@ -129,6 +129,7 @@ def run(cmd):
     if cmd.endswith("; echo END_OF_LIST"):   # the end-marked questions of disable.sh
         base = cmd[: -len("; echo END_OF_LIST")]
         return ("package:android\n" if base == "pm list packages" else "") + run(base) + "END_OF_LIST\n"
+    if "android.settings.SETTINGS" in cmd: return "== settings\n    com.android.tv.settings/.MainSettings\n== tv\n"   # disable.sh's handler guard (4.4)
     if cmd == "pm list packages": return "".join("package:%s\n" % p.lstrip("-") for p in S)
     if cmd == "pm list packages -d": return "".join("package:%s\n" % p[1:] for p in S if p.startswith("-"))
     if cmd.startswith("cmd package query-activities"): return "" if os.environ.get("NOHOMES") else "2 activities found:\n  Activity #0:\n    priority=0 preferredOrder=0 match=0x108000 specificIndex=-1 isDefault=true\n    com.acme.launcher/.Main\n  Activity #1:\n    priority=0 preferredOrder=0 match=0x108000 specificIndex=-1 isDefault=true\n    com.google.android.apps.tv.launcherx/.Home\n"

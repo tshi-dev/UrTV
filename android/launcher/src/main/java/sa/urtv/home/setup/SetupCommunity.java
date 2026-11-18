@@ -119,10 +119,19 @@ final class SetupCommunity {
         return done("أوقفنا " + off + " تطبيقاً من قائمة المجتمع لطراز تلفزيونك (CleanYourTV)" + (off < todo.size() ? "؛ " + (todo.size() - off) + " رفض التلفزيون إيقافها." : "."));
     }
 
-    static final String GUARD_SAID = "لم يقل التلفزيون أي التطبيقات تشغّل مداخل HDMI أو لوحة المفاتيح، فما أوقفنا شيئاً من قائمة المجتمع. أعد تشغيل التلفزيون ثم اضغط «جهّز كل شي» مرة ثانية.";
+    static final String GUARD_SAID = "لم يقل التلفزيون أي التطبيقات تشغّل مداخل HDMI أو لوحة المفاتيح أو تفتح إعداداته وقنواته، فما أوقفنا شيئاً من قائمة المجتمع. أعد تشغيل التلفزيون ثم اضغط «جهّز كل شي» مرة ثانية.";
 
     /** disable.sh's input guard (InputGuard): the packages without those the TV says drive an input or are a keyboard; null when it did not say. */
     private List<String> guarded(List<String> pkgs) throws IOException {
+        Set<String> h = InputGuard.handlers(tv.text(InputGuard.HANDLERS));   // 4.4: what opens the TV's Settings, channels or inputs stays on
+        if (h == null) return null;
+        List<String> held = new ArrayList<>();
+        for (String p : pkgs) if (h.contains(p)) held.add(p);
+        if (!held.isEmpty()) {
+            out.line(InputGuard.HANDLERS_LEFT + String.join(" ", held));
+            pkgs = InputGuard.without(pkgs, new LinkedHashSet<>(held));
+            if (pkgs.isEmpty()) return pkgs;
+        }
         InputGuard.Answer a = InputGuard.parse(tv.text(InputGuard.command(pkgs)));
         if (a == null || a.hung) return null;
         if (!a.left().isEmpty()) out.line("تركنا شغّالاً ما يشغّل مداخل التلفزيون (HDMI، الموالف) أو لوحة المفاتيح: " + String.join(" ", a.left()));
