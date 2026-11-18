@@ -120,13 +120,15 @@ final class SettingsKey {
         return filterWanted(homeFront, stockHome, lowRam, homeKeyLost);
     }
     /**
-     * Whether «the system takes the key before our home» (homeKeyLost) can be asked at all: only on an Android TV (leanback) of Android 9 or newer.
+     * Whether «the system takes the key before our home» (homeKeyLost) can be asked at all: only on an Android TV (leanback) of Android 11 or newer.
      * NOTIFICATION_PANEL_ACTION is Android TV's SystemUI; on a box without it the action never resolves, and the answer «lost» turned the filter on
      * while our home was in front, on every key (the Percee box above).
      */
     static boolean homeKeyLostApplies(int sdk, boolean leanback) {
-        return leanback && sdk >= MIN_FILTER_SDK;
+        return leanback && sdk >= PANEL_ACTION_SDK;
     }
+    /** NOTIFICATION_PANEL_ACTION is Android 11's (NotificationManager.ACTION_TOGGLE_NOTIFICATION_HANDLER_PANEL): before it the answer is always «lost» (review F7) */
+    static final int PANEL_ACTION_SDK = 30;
     /** The enabled HOME answerers (packages) include a stock home: one that is not ours, not the setup wizard, not a settings app's fallback. */
     static boolean stockHomeOn(Iterable<String> homePackages, String ours) {
         if (homePackages == null) return false;

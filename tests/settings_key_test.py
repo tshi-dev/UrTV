@@ -87,9 +87,10 @@ check("FEATURES.md, SETTINGS.md and TVS.md say what the Settings key does outsid
       "SettingsKey" in tvs and "زر الإعدادات" in feat and "outside our home" in sett, "")
 check("the receiver-mode design is written down (docs/TVS.md)", "«وضع الرسيفر»" in tvs and "Shell cannot change component state" in tvs)
 
-check("4.3.6: homeKeyLost is asked only on an Android TV (FEATURE_LEANBACK) of 9 or newer", "SettingsKey.homeKeyLostApplies(Build.VERSION.SDK_INT, c.getPackageManager().hasSystemFeature(PackageManager.FEATURE_LEANBACK))" in ts)
-okc = re.search(r"protected boolean onKeyEvent\(KeyEvent e\) \{\s*try \{[^}]*return keyEvent\(e\);\s*\} catch \(Throwable t\) \{\s*return false;", ts)
+check("4.3.6: homeKeyLost is asked only on an Android TV (FEATURE_LEANBACK) of 11 or newer", "SettingsKey.homeKeyLostApplies(Build.VERSION.SDK_INT, c.getPackageManager().hasSystemFeature(PackageManager.FEATURE_LEANBACK))" in ts)
+okc = re.search(r"protected boolean onKeyEvent\(KeyEvent e\) \{\s*try \{[^}]*return keyEvent\(e\);\s*\} catch \(Throwable t\) \{\s*(?:log\(.settings key=error.\);[^\n]*\s*)?return false;", ts)
 check("4.3.6: onKeyEvent never throws into Android's key dispatch (catches everything and gives the key back)", bool(okc))
+check("4.3.6 review F8: the catch-all logs one fixed word, never the key or the exception", 'log("settings key=error");' in ts and "t.getMessage" not in ts)
 if not shutil.which("javac"):
     print("SKIP settings key cases: no javac here")
     sys.exit(1 if failed else 0)
