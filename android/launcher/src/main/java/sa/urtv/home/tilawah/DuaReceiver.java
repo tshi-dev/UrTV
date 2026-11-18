@@ -18,14 +18,20 @@ public class DuaReceiver extends BroadcastReceiver {
         long due = intent.getLongExtra(DuaScheduler.EXTRA_DUE, 0), now = System.currentTimeMillis();
         DuaStore.Dua chosen = null;
         DuaDays days = new DuaDays(c);
-        for (DuaStore.Dua d : DuaStore.list(c)) {
-            if (!d.on || d.lastDue >= due) continue;
-            long t = d.rule.next(due - DuaPlan.SAME_MS - 1, days);   // its own moment is this alarm's: 4.4 within SAME_MS (the prayer times may have been
-            if (!DuaPlan.same(t, due)) continue;                         // corrected since the alarm was set: Aladhan's, a new city, «تعديل وقت الصلاة»)
-            d.lastDue = due;
-            if (!d.rule.repeat) d.on = false;
-            DuaStore.put(c, d);
-            if (chosen == null) chosen = d;   // two at the same minute: the first in the list plays
+        java.util.List<DuaStore.Dua> all = DuaStore.list(c);
+        long[] moments = new long[all.size()], last = new long[all.size()];
+        for (int i = 0; i < moments.length; i++) {
+            DuaStore.Dua d = all.get(i);
+            last[i] = d.lastDue;
+            // its own moment from SAME_MS before the alarm: the prayer times may have been corrected since the alarm was set (Aladhan's, a new city, «تعديل وقت الصلاة»)
+            moments[i] = d.on ? d.rule.next(due - DuaPlan.SAME_MS - 1, days) : 0;
+        }
+        int k = DuaPlan.pick(moments, last, due);   // only the nearest one is taken; another a minute or two later keeps its own alarm
+        if (k >= 0) {
+            chosen = all.get(k);
+            chosen.lastDue = moments[k];
+            if (!chosen.rule.repeat) chosen.on = false;
+            DuaStore.put(c, chosen);
         }
         if (chosen != null) {
             AudioManager am = (AudioManager) c.getSystemService(Context.AUDIO_SERVICE);
