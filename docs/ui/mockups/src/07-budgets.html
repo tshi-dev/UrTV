@@ -1,0 +1,19 @@
+<!doctype html><html lang="ar"><head><meta charset="utf-8"><link rel="stylesheet" href="base.css">
+<style>body{background:#0d0d0f;padding:56px 64px}h1{font-size:44px}.s{font-size:21px;color:var(--dim);margin:8px 0 28px}
+table{width:100%;border-collapse:separate;border-spacing:0 8px;font-size:23px}th{font-weight:500;color:var(--faint);text-align:right;padding:0 20px 4px;font-size:19px}
+td{background:rgba(255,255,255,.06);padding:15px 20px}td:first-child{border-radius:0 12px 12px 0}td:last-child{border-radius:12px 0 0 12px}
+.bad{color:#ff8f7a}.good{color:var(--green)}.n{font-size:19px;color:var(--dim);margin-top:18px;line-height:1.6}</style></head><body>
+<h1>حدود الأداء</h1><div class="s">تُقاس في CI على محاكي Android TV بنفس سكربت اليوم (ui-measure)، ويفشل الفحص إذا تجاوزها. الأرقام لتلفزيون ٢ ج.ب، والمحاكي يُعطى ضعفها</div>
+<table><tr><th>المقياس</th><th>اليوم (المحاكي)</th><th>الحد</th><th>كيف</th></tr>
+<tr><td>من موافق أو رجوع إلى الشكل المستقر</td><td class="bad">١٫٣ إلى ٣٫٧ ث</td><td class="good">أقل من ٣٠٠ م.ث</td><td>تطبيق خلف صورة ثابتة، ثم تلاشٍ واحد</td></tr>
+<tr><td>الصور المختلفة أثناء الانتقال</td><td class="bad">٤ إلى ١٧</td><td class="good">تلاشٍ واحد فقط</td><td>لا شيء يُرسم نصف جاهز</td></tr>
+<tr><td>الإطارات الفارغة أو المعتمة</td><td class="bad">١ إلى ٤</td><td class="good">صفر</td><td>WebView القديمة تبقى حتى ترسم الجديدة</td></tr>
+<tr><td>مساحة البطاقات السوداء</td><td class="bad">قرابة ١٫٨ ث</td><td class="good">صفر</td><td>تغيير الألوان والضوء بلا تحميل صفحة</td></tr>
+<tr><td>تغيير من الجوال حتى يظهر</td><td class="bad">٤ إلى ٥٢ ث</td><td class="good">أقل من ١ ث</td><td>إشعار محمي للرئيسية بدل انتظار الدقيقة</td></tr>
+<tr><td>المعاينة عند وقوف التركيز</td><td class="bad">لا توجد</td><td class="good">٣٣٠ م.ث، تلاشٍ ٢٠٠ م.ث</td><td>صور مصغّرة مفكوكة مسبقًا، خارج خيط الواجهة</td></tr>
+<tr><td>إطارات بطيئة في خيط الواجهة عند تغيير شكل التطبيقات</td><td class="bad">٢٩ من ٤٤</td><td class="good">٢ على الأكثر</td><td>تغيير أسلوب الخلايا في مكانها بلا إعادة بناء الصف</td></tr>
+<tr><td>التركيز بعد التغيير</td><td class="bad">يضيع إلى الزر العلوي</td><td class="good">نفس العنصر</td><td>حفظه بالمفتاح (التطبيق أو الصف)</td></tr>
+<tr><td>أول إطار بعد تشغيل بارد</td><td class="bad">إطار أسود وصورة معتمة ٢٫٦ ث</td><td class="good">صورة الشكل الصحيح فورًا</td><td>صورة البدء مفتاحها الشكل كله</td></tr>
+</table>
+<div class="n">في «الوضع الخفيف» يصير التلاشي قطعًا مباشرًا من الصورة الثابتة إلى الشكل الجديد، فلا إطار فارغ ولا حركة. الذاكرة: صورة ثابتة واحدة بنصف الدقة (حوالي ٢ م.ب) تُحرَّر بعد التلاشي</div>
+</body></html>
