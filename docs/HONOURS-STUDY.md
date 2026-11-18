@@ -1,0 +1,214 @@
+# 4.5 honours: champions per season and top scorers (phase 1: research)
+
+Phase 1 is research and data only. There is no UI and no app change in this phase. The owner sees the mockups before any code is written.
+
+The logic that names a champion from our archive is in `.github/tools/honours_study.py`, tested by `tests/honours_study_test.py`.
+The research was run on 2026-11-18. The numbers below are a snapshot from that day.
+
+## 1. Champions
+
+### 1.1 From our archive (2021-22 on)
+
+Rules (in `honours_study.py`):
+
+- **A league:** the top of the final table, said only when the season is surely over. That means:
+  - every game is played;
+  - the last game is at least 21 days old;
+  - the archive holds at least 90% of a full double round-robin.
+
+  A league with a split or play-offs, or one whose games the archive lacks, says nothing. That is safer than a wrong champion.
+- **A cup:** the final's winner, with both legs of a two-legged final added up. A level final says nothing, because the archive has no penalties or away goals.
+- **MLS:** the table leader is the Supporters' Shield, not the champion (the champion is the MLS Cup, a play-off). It is never called champion.
+
+Result: 52 seasons named, every finished season the archive can prove.
+
+| league | 2022-23 | 2023-24 | 2024-25 | 2025-26 |
+|---|---|---|---|---|
+| Premier League | Man City | Man City | Liverpool | Arsenal |
+| Bundesliga | Bayern (level on points with Dortmund, goal difference) | Leverkusen | Bayern | Bayern |
+| Serie A | Napoli | Inter | Napoli | Inter |
+| Ligue 1 | PSG | PSG | — games missing (307/342) | — 1 game left in the archive |
+| La Liga | Barcelona | Real Madrid | Barcelona | Barcelona |
+| Eredivisie | — games missing | — games missing | PSV | PSV |
+| Süper Lig | Galatasaray | Galatasaray | Galatasaray | Galatasaray |
+| Primeira Liga | Benfica | Sporting | Sporting | Porto |
+| Botola (Morocco) | FAR Rabat | Raja | — games missing | — games missing |
+| Qatar Stars League | Al-Duhail | Al-Sadd | Al-Sadd | — games missing |
+| Saudi Pro League | Al-Ittihad | Al-Hilal | Al-Ittihad | Al-Nassr |
+| UAE Pro League | Shabab Al-Ahli | Al-Wasl | Shabab Al-Ahli | Al-Ain |
+| Egypt | Al-Ahly | — 1 game left | — games missing | — games missing |
+| Iraq | Al-Shorta | — 1 game left | — 1 game left | — 7 games left |
+| Saudi First Division (Yelo) | — | — | Neom | — 1 game left |
+| Champions League | Man City | Real Madrid | PSG | — final level 1-1 (penalties) |
+| AFC Champions League (Elite) | Urawa (2022, 2 legs) | Al-Ain (2023, 2 legs) | Al-Ahli | Al-Ahli |
+| King Cup | — | — | Al-Ittihad | — no final in the archive |
+| Copa del Rey, Coupe de France, Nations League | the archive holds only 2026-27 (no final yet) | | | |
+| MLS | never (table leader only) | | | |
+
+"1 game left" is nearly always one game the source never closed (postponed and never updated). The proposed job lists these
+seasons in its report so that a person can see them. It never fills them in by guessing.
+
+### 1.2 Cross-check: Wikidata (CC0) and ar.wikipedia
+
+**Against Wikidata** (`P1346` winner on the season item, `P3450` season of league):
+
+- 28 agree;
+- **0 disagree**;
+- 13 have a season item with no winner (Süper Lig 2022-23, 2024-25, 2025-26; Portugal 2023-24, 2024-25; Saudi 2024-25; UAE ×3; AFC 2022 and 2025-26; Yelo 2024-25; King Cup 2024-25);
+- 11 have no season item at all (Morocco, Qatar, Egypt, Iraq, Süper Lig 2023-24, UAE 2023-24, AFC 2023 and 2024-25).
+
+**Against ar.wikipedia** (the «البطل» field of the season infobox):
+
+- every value read agrees with the archive: EPL, Bundesliga, Serie A, Ligue 1, La Liga, Eredivisie, Süper Lig 2025-26, Saudi ×4, UAE 2024-25, Yelo, King Cup;
+- no field: UCL, AFC, Portugal, Bundesliga 2025-26, Serie A 2023-24;
+- no Arabic article: Süper Lig 2022-23 and 2024-25, Portugal 2025-26.
+
+**Disagreements recorded: none.** The 4 found on the first run were missing Wikidata labels in a batch fetch, not real disagreements.
+
+### 1.3 The longer honours list (Wikidata)
+
+Season items per league, with a winner, from Wikidata on 2026-11-18. QIDs are in `docs/research/honours/map.json`.
+
+| league | season items | with a winner | note |
+|---|---|---|---|
+| Premier League | 36 | 34 | from 1992-93 (the First Division is a different item) |
+| Bundesliga | 64 | 63 | |
+| Serie A | 125 | 124 | |
+| Ligue 1 | 95 | 87 | |
+| La Liga | 98 | 96 | |
+| Eredivisie | 138 | 135 | |
+| Süper Lig | 69 | 61 | recent seasons have no winner |
+| Primeira Liga | 103 | 93 | |
+| MLS | 36 | 26 | the MLS Cup winner |
+| Champions League (incl. European Cup) | 96 | 71 | |
+| Copa del Rey | 125 | 124 | |
+| Coupe de France | 110 | 108 | |
+| Nations League | 15 | 7 | |
+| Botola | 72 | 63 | |
+| Qatar Stars League | 63 | 26 | thin |
+| Saudi Pro League | 53 | 47 | from 1976-77; recent seasons partly blank |
+| UAE Pro League | 52 | 10 | thin |
+| AFC Champions League | 43 | 39 | |
+| Egyptian Premier League | 73 | 22 | thin |
+| Iraqi Premier League | 52 | 42 | |
+| Saudi First Division | 33 | 5 | thin |
+| King Cup | 13 | 8 | thin; the cup is older than its items |
+
+Some winners in Wikidata are "unknown value" (a blank node). Those are left out, not guessed.
+
+**What this means:**
+
+- The European leagues, the cups, Morocco, Iraq and Saudi have a usable list of past champions in Wikidata, which is CC0: no credit is required, though we give it.
+- Qatar, UAE, Egypt, Yelo and the King Cup are thin. For them the list would be our archive only (2021-22 on), until Wikidata fills in.
+- Wikidata alone lags the latest seasons by months (Süper Lig, Portugal and Saudi 2024-25 have no winner yet). The archive is fresher. The two together cover the recent seasons that each one alone misses.
+
+## 2. Top scorers: sources and coverage
+
+### 2.1 Sources
+
+| source | scorers? | licence | usable |
+|---|---|---|---|
+| **openfootball** football.json (and its .txt repos) | **no**: 0 matches with a scorer in every league and season 2019-20 to 2025-26; the .txt files have no goal minutes either | CC0 | no (nothing to use) |
+| **Wikidata** season item `P3279` top scorer (qualifiers `P54` team, `P1351` goals), or `P12475` | yes, but only for a few leagues (see 2.2) | CC0 | **yes** |
+| **en.wikipedia** season infobox «league topscorer» | yes, nearly every season of every league | CC BY-SA 4.0 | yes, with credit and share-alike (2.3) |
+| **ar.wikipedia** season infobox «هداف الدوري» | yes, where the Arabic article exists | CC BY-SA 4.0 | yes, with credit and share-alike (2.3) |
+| **TheSportsDB** free key | not on the free tier as far as we know: lookuptable covers only some leagues, and the player and timeline calls are premium | its own terms | **unverified**: thesportsdb.com is unreachable from this environment, so its terms page could not be read. Do not rely on it until a person reads the terms |
+
+### 2.2 Coverage: league × season × source (2021-22 to 2025-26)
+
+(The extraction from Wikipedia is running: the table is filled in by the next commit on this branch.)
+
+### 2.3 Licence: what Wikipedia needs from us
+
+Wikipedia text is CC BY-SA 4.0. Its reuse page asks for four things:
+
+1. credit by a link to the article(s);
+2. a notice of the licence with its link;
+3. the same licence on what we change or build from it (share-alike);
+4. a note that it was changed.
+
+A top scorer's name and goal count is a bare fact, and facts are not copyrightable in most places. But the infobox is a selection,
+and the owner's rule is "everything sourced". So we treat it as CC BY-SA and credit it. That costs little:
+
+- **urtv-data `DATA-LICENSE.md`** gets one row:
+  `| Wikipedia (ar, en) | football/scorers/ | CC BY-SA 4.0; each season file names its article(s) |`.
+  The `scorers/` folder is then CC BY-SA 4.0 as a whole, which is the share-alike. Our CC BY 4.0 elsewhere is unchanged.
+- **Every season file** carries `src` (the article URLs, ar and en) and `lic: "CC BY-SA 4.0"`. The job records a change ("name from en, put into Arabic") in `note`.
+- **On screen**, under the «الهدّافون» list, there is one small line: «المصدر: ويكيبيديا (CC BY-SA 4.0)». English: "Source: Wikipedia (CC BY-SA 4.0)".
+  A TV cannot follow a link, so the URL lives in the file and on the phone page's «المصادر» list, which is linkable.
+- Wikidata values (CC0) need no line, but the same line covers them when both are used.
+- Champions from our archive are our own data (CC BY 4.0, from TheSportsDB's results). The Wikidata history is CC0. The champions list needs no new line.
+
+## 3. Proposal
+
+### 3.1 Which sources, honestly
+
+- **Champions:**
+  - the archive for 2021-22 on (our rules, sure seasons only);
+  - Wikidata `P1346` for older seasons and to fill gaps;
+  - where both have a season, they must agree. A disagreement is never published: it goes into the job's report for a person to check.
+- **Top scorers:**
+  - Wikidata `P3279`/`P12475` first (CC0);
+  - otherwise the season's Wikipedia infobox: the Arabic article first for the Arabic name, and the English article for the goal count when the Arabic has none;
+  - TheSportsDB not until its terms are read;
+  - openfootball has nothing.
+- **Names in Arabic:** the club's Arabic name from the archive's existing names (`ar` in `teams/`); a player's name from the ar.wikipedia link text or the Wikidata Arabic label. With neither, the Latin name is shown, never a machine transliteration.
+
+### 3.2 The CI job (in urtv-data)
+
+- `.github/workflows/honours.yml`: weekly (Tuesday 03:17 UTC) and on demand. Actions are pinned to a sha, like the repo's other jobs.
+- `tools/honours.py`: the logic in `honours_study.py` (moved there and tested there), plus:
+  - the Wikidata API (`wbgetentities`), not WDQS SPARQL, because the query service limits a client to about one query a minute;
+  - the Wikipedia API (`action=parse`, section 0), spaced 3 s apart and honouring `retry-after`;
+  - a user agent that names the project and its repository URL, as Wikimedia asks.
+- Each season is written only when it is sure. A file is never emptied because a source failed: the last good file stays.
+- The weekly report lists the seasons with no champion, the disagreements, and the "1 game left" seasons.
+- Size: about 22 leagues × about 100 seasons of champions in 22 small files, plus about 110 scorer files a year.
+
+### 3.3 Data files (`football/` on the data branch)
+
+`champions/<lg>.json`:
+
+```json
+{ "v": 1, "id": "4668", "updated": "…",
+  "seasons": [ { "s": "2025-2026", "id": "136014", "en": "Al-Nassr", "ar": "النصر", "src": "archive", "wd": "Q…" },
+               { "s": "1977-1978", "en": "Al-Ahli", "ar": "الأهلي", "src": "wikidata", "wd": "Q…" } ] }
+```
+
+- `id` is TheSportsDB's club id when the club is in our archive. It is what opens the club page.
+- `src` is `archive`, `wikidata` or `both`. Newest season first.
+
+`scorers/<lg>/<season>.json`:
+
+```json
+{ "v": 1, "id": "4668", "s": "2023-2024", "updated": "…",
+  "top": [ { "en": "Cristiano Ronaldo", "ar": "كريستيانو رونالدو", "team": "136014", "goals": 35 } ],
+  "src": ["https://ar.wikipedia.org/wiki/…", "https://en.wikipedia.org/wiki/…"], "lic": "CC BY-SA 4.0" }
+```
+
+- `top` is a list: a shared top scorer has two or more entries. The infobox gives only the top scorer, not a top 10.
+- A top-10 list would need per-match scorers. No free licensed source has them (2.1).
+
+A club's titles for its page come from the champions files. No extra file is needed: the page gathers the club's id across the leagues it follows.
+
+### 3.4 The UI, as mockups for the owner first (no code until he says yes)
+
+1. **The league page:** a season picker at the top (← 2025-26 →, the remote's left and right). Under it there are two new tabs next to «الترتيب»:
+   - «الأبطال»: the list of seasons and champions, newest first, the club's Arabic name, OK opens the club;
+   - «الهدّافون»: the season's top scorer(s) with goals and club, and the small source line.
+
+   For a past season, «الترتيب» shows the final table from the archive where it has one.
+2. **The club page:** one line «البطولات: الدوري ×N (آخرها 2025-26)، كأس الملك ×N …», then OK for the list of seasons.
+3. The views to show the owner:
+   - 1080p and 720p, Arabic and English;
+   - a league with a long history (La Liga);
+   - one with a thin one (UAE);
+   - a season with no champion said («لم يُحسم بعد» or nothing at all: his choice);
+   - a shared top scorer.
+
+## 4. Not done in this phase
+
+- No UI, no app change, no urtv-data job yet: proposal only.
+- The TheSportsDB terms were not read (the site is unreachable from here).
+- The CC BY-SA 4.0 licence text itself could not be fetched (creativecommons.org is unreachable). The four points in 2.3 are Wikipedia's own reuse page.
+- Seasons that miss games in the archive (Ligue 1 2024-25, Eredivisie 2022-24, Morocco, Egypt, Qatar 2025-26) have no champion from the archive. Wikidata fills some of them.
