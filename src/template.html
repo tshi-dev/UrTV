@@ -1107,11 +1107,11 @@ const CONFIG = {
   // followed teams in priority order: #teams=id,id,... (up to 20); older builds send team1/team2
   teamIds: (_Q.has('teams') ? _Q.get('teams').split(',')
             : [_Q.has('team1') ? _Q.get('team1') : '136013', _Q.has('team2') ? _Q.get('team2') : '136137'])
-    .map(x=>(x||'').trim()).filter(x=>/^\d+$/.test(x)).slice(0, 20),
+    .map(x=>(x||'').trim()).filter(x=>/^\d+$/.test(x)).slice(0, 40),   // 4.4 the ceiling (FollowLimit.MAX_TEAMS)
   sportsKey: '123',
   // whole leagues: #leagues=Saudi-Arabian Pro League,NBA; 4.3 a league of the settings' catalogue by its id: id4719, its name in
   // #lgn=4719~name|… (the settings' language). At most 8: a catalogue league is asked of TheSportsDB itself (2 requests every 30 minutes)
-  leagues: _list('leagues').filter(x => /^[A-Za-z0-9 \-]{2,40}$/.test(x) || /^id\d{1,6}$/.test(x)).slice(0, 8),
+  leagues: _list('leagues').filter(x => /^[A-Za-z0-9 \-]{2,40}$/.test(x) || /^id\d{1,6}$/.test(x)).slice(0, 24),   // 4.4 the ceiling (FollowLimit.MAX_LEAGUES)
   tourOff: _list('tourx').filter(x => /^\d{1,6}$/.test(x)),
   tour: _Q.get('tour') === '1',   // «البطولات الكبرى»: leagues/tournaments.json
   leagueNames: Object.fromEntries((_Q.get('lgn') || '').split('|').map(x => x.split('~')).filter(x => x.length === 2 && /^\d{1,6}$/.test(x[0]) && x[1].trim())
@@ -2410,8 +2410,8 @@ async function loadCatalogueLeague(name, step){
 async function loadLeagues(step, ready){
   let got = 0;
   Object.keys(LEAGUE_DATA).forEach(k => { if(!CONFIG.leagues.includes(k) && !(CONFIG.tour && k === 'tournaments')) delete LEAGUE_DATA[k]; });   // a league no longer picked: its copy goes
-  const cat = (async () => { await ready; for(const name of CONFIG.leagues.filter(catId)) got += await loadCatalogueLeague(name, step); })();
-  await Promise.all([cat, ...CONFIG.leagues.filter(n => !catId(n)).map(async name => {
+  const cat = (async () => { await ready; for(const [i, name] of CONFIG.leagues.entries()) if(catId(name) && followDue(i, SOFT_LEAGUES, !LEAGUE_DATA[name])) got += await loadCatalogueLeague(name, step); })();   // 4.4 past 8: every 2nd load
+  await Promise.all([cat, inBatches(CONFIG.leagues.filter(n => !catId(n)), 4, async name => {   // 4.4 four files at a time
     try{
       const r = await fetchData(LEAGUE_BASE + leagueSlug(name) + '.json', 12000);
       if(!r.ok) return;
@@ -2506,7 +2506,7 @@ const loadLive = guarded('live', async function(){
     await job();
     if(asked !== before && job !== jobs[jobs.length - 1]) await sleep(CONFIG.queueGapMs);
   }
-  if(asked) renderMatches();   // outside a match window nothing was asked, nothing changed
+  if(asked){ MATCH_REV++; renderMatches(); }   // outside a match window nothing was asked, nothing changed
 });
 
 // ---------- other sports: Formula 1, UFC, boxing (events, not teams) ----------
@@ -2637,6 +2637,10 @@ async function loadEvents(){
 
 // Every followed team with something to show, two at a time; the page turns every 15 s.
 let MATCH_PAGE = 0, MATCH_PAGES = 1;
+// 4.4 the bar's games are built once a minute or when the data changes, not at every page turn (many leagues: hundreds of games, and a weak
+// TV's clock must not stutter every 10 s); the followed leagues' own games at most 48 (24 on a weak TV), the nearest first; a followed club's never cut
+let MATCH_REV = 0, MATCH_MEMO = {key: '', games: null};
+const MATCH_LEAGUE_MAX = () => CONFIG.lowram ? 24 : 48;
 // Two games a page. Two games whose names do not fit side by side even at the smallest size and the short names
 // (a league has such pairs: «كهرباء الإسماعيلية × الاتحاد السكندري») are learnt here and shown one to a page from then on.
 const NARROW = new Set();
@@ -2658,9 +2662,13 @@ function matchesEmptyText(){
 const matchesStaleNote = () => MATCH_OK_AT && MATCH_FAIL_AT > MATCH_OK_AT ? fmtAgo(MATCH_OK_AT) : '';
 function renderMatches(turn){
   if(!SLOT_MATCHES) return;
-  const now = Date.now(), shown = new Set();
-  let games = CONFIG.teamIds.map(id => matchSlot(id, now, shown)).filter(Boolean);
-  if(CONFIG.leagues.length) games = [...games, ...leagueShow(now, shown)].sort(byRank);   // one order
+  const now = Date.now(), shown = new Set(), key = [Math.floor(now / 60000), MATCH_OK_AT, MATCH_REV, CONFIG.teamIds.join(), CONFIG.leagues.join()].join('|');
+  let games = MATCH_MEMO.key === key && MATCH_MEMO.games;
+  if(!games){
+    games = CONFIG.teamIds.map(id => matchSlot(id, now, shown)).filter(Boolean);
+    if(CONFIG.leagues.length) games = [...games, ...leagueShow(now, shown).slice(0, MATCH_LEAGUE_MAX())].sort(byRank);   // one order
+    MATCH_MEMO = {key, games};
+  }
   const live = focusGames(now, true);   // a followed team is playing: that game alone, big, until it ends
   const slots = live.length ? live.map(ev => gameBlock(ev, now, true))
     : [...games.map(g => g.html), ...CONFIG.events.map(k => eventSlot(k, now))].filter(Boolean);
@@ -2777,17 +2785,28 @@ async function fetchLast(id){
   return j.results || [];
 }
 // One request at a time, CONFIG.queueGapMs apart, and never two runs at once
+// 4.4 more than 20 clubs or 8 leagues (FollowLimit's soft limits): the ones past them are asked of the sports server every 2nd load
+// (every 3rd on a weak TV, #lowram=1), so 40 clubs never double the queue; their games come from the archive (GitHub) meanwhile; one
+// never asked yet is asked at once. The league files (GitHub) four at a time, not all together
+const SOFT_TEAMS = 20, SOFT_LEAGUES = 8;
+let MATCH_CYCLE = 0, LOAD_CYCLE = 0;   // LOAD_CYCLE: the load under way (0 the first: everyone is asked)
+const ASKED_TEAMS = new Set();   // the clubs asked at least once in this page's life (a club with no coming game has nothing kept)
+const followDue = (i, soft, never) => i < soft || never || LOAD_CYCLE % (CONFIG.lowram ? 3 : 2) === 0;
+async function inBatches(list, n, fn){ for(let i = 0; i < list.length; i += n) await Promise.all(list.slice(i, i + n).map(fn)); }
 const loadMatches = guarded('matches', async function(){
   // never throw away a good fixture or result on a failed refresh
   let answered = 0, asked = 0;
+  LOAD_CYCLE = MATCH_CYCLE++;
   const step = async () => { if(asked++) await sleep(CONFIG.queueGapMs); };
   // a file on GitHub, not the sports server; a catalogue league is the sports server's, after the teams' (the same queue)
   let teamsDone, leagues = 0;
   const teamsAsked = new Promise(r => { teamsDone = r; });
   if(CONFIG.leagues.length) leagues = loadLeagues(step, teamsAsked);
-  const arch = Promise.all(CONFIG.teamIds.map(id => archTeam(id).catch(() => 0)));   // GitHub, not the sports server: beside its queue
+  const archN = [], arch = inBatches(CONFIG.teamIds, 4, async id => { archN.push(await archTeam(id).catch(() => 0)); }).then(() => archN);   // GitHub, not the sports server: beside its queue, 4 at a time (4.4)
   const failed = [];
-  for(const id of CONFIG.teamIds){
+  for(const [i, id] of CONFIG.teamIds.entries()){
+    if(!followDue(i, SOFT_TEAMS, !ASKED_TEAMS.has(id))) continue;   // 4.4 past 20: every 2nd load (the archive meanwhile)
+    ASKED_TEAMS.add(id);
     let got = 0;
     await step();
     try{
@@ -4808,7 +4827,8 @@ const FB_W = {
   am1:'ودقيقة', am2:'ودقيقتين', amFew:'و%s دقائق', amMany:'و%s دقيقة', taskText:'مباراة %s، تبدأ %s',
   table:'جدول الترتيب', results:'النتائج', noTable:'الترتيب غير متاح الآن', pts:'%s نقطة',
   myLeagues:'دورياتي', add:'أضف دوريًا أو فريقًا', manage:'إعدادات فرقي', noTeams:'ما تتابع فريقًا بعد', noLeagues:'ما تتابع دوريًا بعد', allLands:'كل الدول',
-  lgTeams:'فرق هذا الدوري', lgOpen:'الترتيب والنتائج', followedL:'أُضيف %s إلى دورياتك', unfollowedL:'أُزيل %s من دورياتك', on:'متابَع', find:'ابحث عن فريق', found:'نتائج البحث', typeName:'اكتب اسم الفريق', full:'وصلت للحد: ٨ دوريات', choose:'اختر دوريًا',
+  lgTeams:'فرق هذا الدوري', lgOpen:'الترتيب والنتائج', followedL:'أُضيف %s إلى دورياتك', unfollowedL:'أُزيل %s من دورياتك', on:'متابَع', find:'ابحث عن فريق', found:'نتائج البحث', typeName:'اكتب اسم الفريق', full:'وصلت للحد: ٨ دوريات', fullL:'هذا الحد الأعلى: ٢٤ دوريًا حتى يبقى التلفزيون سريعًا. أزل دوريًا لتضيف غيره', fullT:'هذا الحد الأعلى: ٤٠ فريقًا حتى يبقى التلفزيون سريعًا. أزل فريقًا لتضيف غيره', fullT20:'وصلت للحد: ٢٠ فريقًا',
+  warnL:'إضافة أكثر من ٨ قد تبطّئ التلفزيون إذا كان ضعيف. موافق مرة ثانية: أضف، أو رجوع', warnT:'إضافة أكثر من ٢٠ قد تبطّئ التلفزيون إذا كان ضعيف. موافق مرة ثانية: أضف، أو رجوع', choose:'اختر دوريًا',
   h2hSum:'%s: %s %s فوز، %s تعادل، %s %s', h2h1:'آخر مواجهة', h2h2:'آخر مواجهتين', h2hN:'آخر %s مواجهات',
   marks:'فتخ', form:'آخر ٥', rank:'المركز %s',
   club:'صفحة الفريقين', last:'آخر النتائج', h2h:'المواجهات مع %s', see:'صفحة %s', loading:'جارٍ التحميل…', noData:'لا شيء هنا بعد', followT:'تابع %s', unfollowT:'ألغِ متابعة %s',
@@ -5399,11 +5419,25 @@ MP_VIEWS.find = () => {
   return {title: FB_W.find, tabs: [{input: 1, t: ''}], groups: [{key: 'found', name: FB_W.found, games: hits.map(([id, t]) => mpItem(t.ar || teamAr(t.en, id), fbFollowed(id) ? FB_W.on : '', () => mpGo({k: 'club', id}))),
     none: !q ? FB_W.typeName : ix === undefined ? FB_W.loading : FB_W.noData}]};
 };
+// 4.4 one more league or club (the screensaver's FollowLimit, through the app): 'go'; 'stop' (the ceiling, or the one warning shown now:
+// its second OK is «أضف», anything else «لا»); 'warned' (that second OK: the app remembers it, never asked again, and it is the confirmation)
+// An older screensaver says nothing: the old limits, 8 leagues and 20 clubs, as before
+function mpGate(kind, key){
+  const host = window.UrtvMatches;
+  let st = '';
+  try{ st = host && host.followCheck ? String(host.followCheck(kind) || '') : ''; }catch(e){}
+  if(!st) st = (kind === 'leagues' ? mpLeagueIds().length >= 8 : CONFIG.teamIds.length >= 20) ? 'old' : 'add';
+  if(st === 'full' || st === 'old'){ MP.ask = ''; MP.note = st === 'old' ? (kind === 'leagues' ? FB_W.full : FB_W.fullT20) : kind === 'leagues' ? FB_W.fullL : FB_W.fullT; return 'stop'; }
+  if(st !== 'warn') return 'go';
+  if(MP.ask !== 'w' + key){ MP.ask = 'w' + key; MP.note = kind === 'leagues' ? FB_W.warnL : FB_W.warnT; return 'stop'; }
+  try{ host.followWarned(kind); }catch(e){}
+  return 'warned';
+}
 // a league followed or unfollowed from the page: a second OK confirms; the screensaver's list, or the home's while it cannot take it
 function mpFollowLeague(v){
   const host = window.UrtvMatches, id = String(v.id), on = lgFollowed(id), name = v.ar || v.en || lgName(id);
   const token = FB_LEAGUES[id] && /^[A-Za-z0-9 \-]{2,40}$/.test(v.en || '') ? v.en : 'id' + id;   // a built-in league: its own file
-  if(!on && mpLeagueIds().length >= 8){ MP.note = FB_W.full; return mpRender(); }
+  if(!on){ const g = mpGate('leagues', 'l' + id); if(g === 'stop') return mpRender(); if(g === 'warned') MP.ask = 'l' + id; }   // 4.4 the warning's second OK confirms too
   if(MP.ask !== 'l' + id){ MP.ask = 'l' + id; MP.note = FB_W.sure; return mpRender(); }
   MP.ask = '';
   let ok = false;
@@ -5429,6 +5463,7 @@ const teamEnOf = id => { const ix = archWant('index.json'), t = ix && ix.teams &
 // «تابع» / «ألغِ متابعة» from a view: a second OK confirms, as on a game's card; the page is filled again with the new list
 function mpFollowTeam(id){
   const name = teamNameOf(id), on = fbFollowed(id), host = window.UrtvMatches;
+  if(!on){ const g = mpGate('teams', 'f' + id); if(g === 'stop') return mpRender(); if(g === 'warned') MP.ask = 'f' + id; }
   if(MP.ask !== 'f' + id){ MP.ask = 'f' + id; MP.note = FB_W.sure; return mpRender(); }
   MP.ask = '';
   let ok = false;
@@ -5466,6 +5501,7 @@ function mpAct(){
   if(ringed && ringed.dataset.k === 'club'){ mpBack(); mpGo({k: 'club', id: String(ev.idHomeTeam), vs: String(ev.idAwayTeam)}); return; }
   const b = ringed && mpButtons(ev, Date.now()).find(x => x.k === ringed.dataset.k);
   if(!b) return;
+  if(b.k === 'follow'){ const g = mpGate('teams', b.k); if(g === 'stop') return mpDetailRender(); if(g === 'warned') MP.ask = b.k; }   // 4.4 past 20 clubs the one warning, at 40 the ceiling
   if((b.k === 'follow' || b.k === 'unfollow') && MP.ask !== b.k){ MP.ask = b.k; MP.note = FB_W.sure; return mpDetailRender(); }   // one OK never follows or unfollows: the second confirms
   MP.ask = '';
   const host = window.UrtvMatches;

@@ -2134,15 +2134,46 @@ public class SettingsActivity extends Activity {
                 render();
             })
             .setTitle(cur.isEmpty() ? "لا توجد فرق متابعة" : "الفرق المتابعة (ألغِ التحديد للحذف)");
-        if (cur.size() < Prefs.MAX_TEAMS) b.setNeutralButton("إضافة فريق", (d, w) -> pickTeam(0));
+        b.setNeutralButton("إضافة فريق", (d, w) -> askFollow(FollowLimit.TEAMS, () -> pickTeam(0)));   // 4.4 at the ceiling it says so, never a missing button
         if (!cur.isEmpty()) b.setMultiChoiceItems(labels, keep, (d, i, checked) -> keep[i] = checked);
         b.show();
     }
 
     private void addTeam(String id, String name) {
-        if (prefs.addTeam(id, name)) toast("تمت متابعة " + name);
-        else toast(prefs.teams().size() >= Prefs.MAX_TEAMS ? "الحد الأعلى ٢٠ فريقاً" : "متابَع مسبقاً");
-        render();
+        for (String t : prefs.teams()) if (t.startsWith(id + "|")) { toast("متابَع مسبقاً"); return; }
+        askFollow(FollowLimit.TEAMS, () -> {
+            if (prefs.addTeam(id, name)) toast("تمت متابعة " + name);
+            render();
+        });
+    }
+
+    /**
+     * 4.4 one more league or club (FollowLimit): at once up to the soft limit; past it, the first time only, the warning that a weak TV may
+     * slow down with «أضف» / «لا» («أضف» is remembered, never asked again); at the ceiling the words that say so (never a silent no).
+     */
+    private void askFollow(final String kind, final Runnable go) {
+        int st = prefs.followState(kind);
+        if (st == FollowLimit.ADD) { go.run(); return; }
+        if (st == FollowLimit.FULL) { new Dlg(this).setTitle(FollowLimit.full(kind)).setPositiveButton("حسنًا", null).show(); return; }
+        new Dlg(this).setTitle(FollowLimit.warning(kind))
+            .setPositiveButton("أضف", (d, w) -> { prefs.setFollowWarned(kind); go.run(); })
+            .setNegativeButton("لا", null)
+            .show();
+    }
+
+    /** 4.4 the same in a list of ticks (the count is the dialog's own): past the soft limit the tick waits for the warning's «أضف», at the ceiling it stays off */
+    private void tickLeague(final AlertDialog d, final boolean[] on, final int i, int elsewhere) {
+        int before = elsewhere - 1;   // the ones ticked before this one (and those followed outside this list)
+        for (boolean b : on) if (b) before++;
+        int st = FollowLimit.check(FollowLimit.LEAGUES, before, prefs.followWarned(FollowLimit.LEAGUES));
+        if (st == FollowLimit.ADD) return;
+        on[i] = false;
+        d.getListView().setItemChecked(i, false);
+        if (st == FollowLimit.FULL) { new Dlg(this).setTitle(FollowLimit.full(FollowLimit.LEAGUES)).setPositiveButton("حسنًا", null).show(); return; }
+        new Dlg(this).setTitle(FollowLimit.warning(FollowLimit.LEAGUES))
+            .setPositiveButton("أضف", (x, w) -> { prefs.setFollowWarned(FollowLimit.LEAGUES); on[i] = true; d.getListView().setItemChecked(i, true); })
+            .setNegativeButton("لا", null)
+            .show();
     }
 
     private void pickTeam(final int slot) {
@@ -2259,7 +2290,7 @@ public class SettingsActivity extends Activity {
             .show();
     }
 
-    /** Whole leagues: every game of every club in them is shown, up to Prefs.MAX_LEAGUES leagues. */
+    /** Whole leagues: every game of every club in them is shown, up to Prefs.MAX_LEAGUES leagues (past Prefs.SOFT_LEAGUES after one warning). */
     private String leaguesLabel() {
         List<String> out = new ArrayList<>();
         for (String s : prefs.leagues()) out.add(leagueLabel(s));
@@ -2274,7 +2305,7 @@ public class SettingsActivity extends Activity {
 
     /**
      * The built-in leagues, then the catalogue ones already picked (to unpick them here too); «كل الدوريات…» opens the catalogue
-     * (CatalogueLeagues: read from the internet only now). Up to Prefs.MAX_LEAGUES in all.
+     * (CatalogueLeagues: read from the internet only now). Up to Prefs.MAX_LEAGUES in all (tickLeague).
      */
     private void pickLeagues() {
         final List<String> cur = prefs.leagues();
@@ -2290,16 +2321,8 @@ public class SettingsActivity extends Activity {
                 render();
             })
             .setNeutralButton("كل الدوريات…", (d, w) -> { prefs.setList("leagues", ticked(keys, on)); render(); openCatalogue(); })   // what is ticked is kept
-            .setTitle("الدوريات كاملة (حتى " + arabicNum(Prefs.MAX_LEAGUES) + "، بدون اختيار = بدون)")
-            .setMultiChoiceItems(labels.toArray(new String[0]), on, (d, i, checked) -> {
-                int n = 0;
-                for (boolean b : on) if (b) n++;
-                if (checked && n > Prefs.MAX_LEAGUES) {
-                    on[i] = false;
-                    ((AlertDialog) d).getListView().setItemChecked(i, false);
-                    toast("حتى " + arabicNum(Prefs.MAX_LEAGUES) + " دوريات");
-                }
-            })
+            .setTitle("الدوريات كاملة (بدون اختيار = بدون)")
+            .setMultiChoiceItems(labels.toArray(new String[0]), on, (d, i, checked) -> { if (checked) tickLeague((AlertDialog) d, on, i, 0); })
             .show();
     }
 
@@ -2427,18 +2450,14 @@ public class SettingsActivity extends Activity {
             })
             .setTitle(title)
             .setMultiChoiceItems(labels, on, (d, i, checked) -> {
-                int n = 0;
+                if (!checked) return;
+                int n = 0;   // the leagues followed outside this group
                 for (String s : cur) {
                     boolean here = false;
                     for (String[] r : rows) here |= CatalogueLeagues.same(s, "id" + r[0]);
                     if (!here) n++;
                 }
-                for (boolean b : on) if (b) n++;
-                if (checked && n > Prefs.MAX_LEAGUES) {
-                    on[i] = false;
-                    ((AlertDialog) d).getListView().setItemChecked(i, false);
-                    toast("حتى " + arabicNum(Prefs.MAX_LEAGUES) + " دوريات");
-                }
+                tickLeague((AlertDialog) d, on, i, n);
             })
             .setOnDismissListener(d -> catalogueBusy = false)
             .show();

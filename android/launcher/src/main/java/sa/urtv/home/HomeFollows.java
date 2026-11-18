@@ -76,5 +76,19 @@ final class HomeFollows {
         }
     }
 
+    /**
+     * 4.4 what one more league or club means, as the screensaver (it keeps the lists) says: "add", "warn" (past the soft limit, its one
+     * warning not yet answered) or "full"; "" when it is missing or older (the page keeps its old rule then)
+     */
+    static String state(Context c, String kind) {
+        try {
+            Bundle out = c.getContentResolver().call(CONFIG, "phone_follow_check", "leagues".equals(kind) ? "leagues" : "teams", null);
+            String s = out == null ? null : out.getString("state");
+            return s != null && s.matches("add|warn|full") ? s : "";
+        } catch (RuntimeException e) {
+            return "";
+        }
+    }
+
     private static boolean ok(Context c, String method, String arg) { return Boolean.TRUE.equals(call(c, method, arg)); }
 }

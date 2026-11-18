@@ -305,6 +305,7 @@ python3 tests/photos_phone_test.py   # 4.3 «صوري»: 50, and from a paired p
 python3 tests/own_adhan_fajr_test.py   # 4.3 C16: a second own adhan, for Fajr
 python3 tests/football_test.py   # the football home and «المباريات»: the setting, the pages, the widgets' focus, the tray's move, the broadcast table (docs/PROPOSALS-NOV2.md §1)
 python3 tests/three_teams_test.py   # 4.3.3 A3: three followed teams through every step (saver Prefs, the provider, the launcher's link, the page)
+python3 tests/follow_limit_test.py   # 4.4 more than 8 leagues and 20 clubs: one warning once, at most 24 and 40, every place a person adds one
 python3 tests/follow_store_test.py   # 4.3.3 following from «المباريات» with the screensaver app missing or older: the home keeps it, joins it, hands it over
 python3 tests/settings_report_test.py   # «أرسل تقرير»: share.py's allowlist, nothing personal
 python3 tests/dialog_fit_test.py
@@ -417,6 +418,7 @@ node tests/cards_batch3.test.mjs   # 4.4 card review batch 3 (12 adhkar, 13 task
 node tests/tafsir_short.test.mjs   # 4.4 the tafsir card short: the Muyassar whole, «التفسير الميسر، صفحة N» under it, the pages stored per verse
 node tests/football_page.test.mjs   # the football home's widgets and «المباريات» in a browser, on fixed games
 node tests/sports_cards.test.mjs   # 4.4 «الرياضة»: the sports cards (dist/sports.js) on the home, the couch row and the screensaver, the takeover, only the page's own build
+node tests/many_follows.test.mjs   # 4.4 40 clubs and 24 leagues in the page: the extra ones asked every 2nd load, files 4 at a time, the bar built once a minute, the warning's two OKs, «فرقي» at 720p
 node tests/matches_archive.test.mjs   # «المباريات» with the match archive (data-archive): every followed team, yesterday's results, a club, a league, the chooser
 node tests/phone_page.test.mjs
 node tests/sync_cards.test.mjs   # «توحيد المظهر» on the page: the cards in the material's fill, line and ink, readable on a light look

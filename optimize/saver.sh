@@ -10,7 +10,7 @@
 #                                                      unless the name is a built-in city; a built-in city is always Asia/Riyadh)
 #   optimize/saver.sh city 'الكويت' 29.37 47.98 Asia/Kuwait
 #   optimize/saver.sh find-team الهلال             a club's id (Arabic or English name): id:Name | league
-#   optimize/saver.sh teams 136013:Al-Hilal 150643:Al-Zulfi    followed teams in order (up to 20; more are left out and listed);
+#   optimize/saver.sh teams 136013:Al-Hilal 150643:Al-Zulfi    followed teams in order (up to 40; more are left out and listed; past 20 the TV warns once when the person adds one, an agent's list is taken as it is);
 #                                                  `teams none` (or `teams ""`) follows no team: the defaults (الهلال، المنتخب السعودي) go
 #   optimize/saver.sh card prayers                 beside the clock: shows prayers forecast hourly prayerrow matches nextmatch matchday livenow minitable nextmatches yesterday weekend cuppath formula national verse wisdom adhkar stocks tasks year smart today album none
 #   optimize/saver.sh card2 hourly                 a second card beside the clock, shown only while the clock is small (clocksize small):
@@ -121,7 +121,7 @@
 #   optimize/saver.sh slot fasting                 the bottom-left slot: matches (default; the weather when no team is followed)
 #                                                  weather fasting countdown markets none
 #   optimize/saver.sh countdown 2026-12-01 'رحلة الصيف'    the date and name slot=countdown counts down to ("clear" removes it)
-#   optimize/saver.sh leagues 'Saudi-Arabian Pro League'   whole leagues, up to 8, by English or Arabic name (دوري روشن السعودي) or a catalogue id (id4719);
+#   optimize/saver.sh leagues 'Saudi-Arabian Pro League'   whole leagues, up to 24 (the TV warns once past 8 when the person adds one), by English or Arabic name (دوري روشن السعودي) or a catalogue id (id4719);
 #                                                  every game of every club in them joins the teams' games ("" = none)
 #   optimize/saver.sh events f1,ufc               other sports beside the teams' games: f1 ufc boxing  ("" = none)
 #   optimize/saver.sh prayermethod gulf|auto       «طريقة الحساب»: auto (the default) = the city's country's own, gulf = the Gulf method (Fajr 19.5°, Isha 90 min) for any place
@@ -240,10 +240,10 @@ case "${1:-}" in
       set1 teams ""; exit $?
     fi
     [ "$1" != none ] || { echo "usage: optimize/saver.sh teams none   (alone: it clears the followed teams)"; exit 1; }
-    if [ $# -gt 20 ]; then   # the app keeps the first 20 and drops the rest without a word: say so here
-      echo "Only 20 teams can be followed. Kept: ${*:1:20}"
-      echo "Left out (${#} given): ${*:11}"
-      set -- "${@:1:20}"
+    if [ $# -gt 40 ]; then   # 4.4 the ceiling (FollowLimit.MAX_TEAMS): the app takes 40 at most, so say here which are left out
+      echo "At most 40 teams can be followed. Kept: ${*:1:40}"
+      echo "Left out (${#} given): ${*:41}"
+      set -- "${@:1:40}"
     fi
     set1 teams "$(IFS=,; echo "$*")" ;;
   card)     [ "${2:-}" = nextprayer ] && { echo "!! nextprayer is a home-screen card only (the screensaver's bottom-right panel already shows the next prayer): optimize/saver.sh home-card nextprayer"; exit 1; }

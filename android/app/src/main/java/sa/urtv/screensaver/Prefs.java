@@ -187,12 +187,22 @@ final class Prefs {
     String prayerMethod() { String v = sp.getString("prayerMethod", "auto"); return PrayerMethod.GULF.equals(v) ? PrayerMethod.GULF : PrayerMethod.AUTO; }   // 4.3 A4: a saved «jafari» is «تلقائي»
     void setPrayerMethod(String v) { sp.edit().putString("prayerMethod", v).apply(); }
 
-    static final int MAX_TEAMS = 20;
+    /** 4.4 the clubs: 20 as before without a word, then one warning once (FollowLimit), at most 40 */
+    static final int SOFT_TEAMS = FollowLimit.SOFT_TEAMS, MAX_TEAMS = FollowLimit.MAX_TEAMS;
     /**
      * Whole leagues followed (#leagues=): the page downloads one small file for each built-in one, every 30 minutes; a league of the
-     * catalogue (CatalogueLeagues) is asked of TheSportsDB itself, 2 requests every 30 minutes: 8 in all keeps the free key's rate.
+     * catalogue (CatalogueLeagues) is asked of TheSportsDB itself, 2 requests every 30 minutes. 4.4: 8 as before without a word, then
+     * one warning once (FollowLimit), at most 24; past 8 the page asks for the extra ones every second load (every third on a weak TV), the free key's rate.
      */
-    static final int MAX_LEAGUES = 8;
+    static final int SOFT_LEAGUES = FollowLimit.SOFT_LEAGUES, MAX_LEAGUES = FollowLimit.MAX_LEAGUES;
+
+    /** 4.4 the warning past the soft limit was shown and answered «أضف» (FollowLimit.LEAGUES or TEAMS): it is never shown again */
+    boolean followWarned(String kind) { return sp.getBoolean("followWarned_" + kind, false); }
+    void setFollowWarned(String kind) { sp.edit().putBoolean("followWarned_" + kind, true).apply(); }
+    /** what one more league or club means now: FollowLimit.ADD, WARN or FULL */
+    int followState(String kind) {
+        return FollowLimit.check(kind, FollowLimit.LEAGUES.equals(kind) ? leagues().size() : teams().size(), followWarned(kind));
+    }
 
     /** The league of LEAGUES that name (English as TheSportsDB spells it, the Arabic label, or its slug) means, else null. */
     static String[] leagueByName(String name) {
@@ -227,7 +237,7 @@ final class Prefs {
         if (e == null) return false;
         List<String> v = leagues();
         for (String s : v) if (sameLeague(s, id, en)) return false;
-        if (v.size() >= MAX_LEAGUES) return false;
+        if (FollowLimit.check(FollowLimit.LEAGUES, v.size(), followWarned(FollowLimit.LEAGUES)) != FollowLimit.ADD) return false;   // the ceiling, or the warning not yet answered
         v.add(e);
         setList("leagues", v);
         return true;
@@ -279,11 +289,11 @@ final class Prefs {
         return list("teams");
     }
 
-    /** false when already followed or the list is full */
+    /** false when already followed, at the ceiling, or past the soft limit before its warning was answered «أضف» */
     boolean addTeam(String id, String name) {
         List<String> v = teams();
         for (String t : v) if (t.startsWith(id + "|")) return false;
-        if (v.size() >= MAX_TEAMS) return false;
+        if (FollowLimit.check(FollowLimit.TEAMS, v.size(), followWarned(FollowLimit.TEAMS)) != FollowLimit.ADD) return false;   // the ceiling, or the warning not yet answered
         v.add(id + "|" + name.replace("|", " ").replace(";", " "));
         setList("teams", v);
         return true;

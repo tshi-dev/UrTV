@@ -219,6 +219,14 @@ public class MatchesActivity extends Activity {
             return Boolean.TRUE.equals(HomeFollows.call(c, "phone_unfollow", id)) || home;
         }
 
+        /** 4.4 before a «تابع»: "add", "warn" (the one warning past 8 leagues or 20 clubs, not yet answered) or "full" (24 or 40); "" an older screensaver */
+        @JavascriptInterface public String followCheck(String kind) { return HomeFollows.state(c, kind); }
+
+        /** 4.4 the warning was answered «أضف»: the screensaver remembers it (never asked again, here or in its settings) */
+        @JavascriptInterface public boolean followWarned(String kind) {
+            return Boolean.TRUE.equals(HomeFollows.call(c, "phone_follow_warned", "leagues".equals(kind) ? "leagues" : "teams"));
+        }
+
         /** «تابع»: the screensaver's list when it answers (its no is final: there already, or full); 4.3.3 missing or older: the home keeps it */
         @JavascriptInterface public boolean follow(String id, String name) {
             if (id == null || !id.matches("\\d{1,9}")) return false;
