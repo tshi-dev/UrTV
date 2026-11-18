@@ -112,7 +112,8 @@ class FakeTv:
             self.switch = "null"
             return ""
         if "HOME_WANTED" in cmd:
-            self.wanted = cmd.endswith("on")
+            if not cmd.endswith("status"):
+                self.wanted = cmd.endswith("on")
             return "home-wanted: " + ("yes" if self.wanted else "no")
         if cmd.startswith("pm path sa.urtv.extras"):
             return "package:/data/app/x/base.apk" if self.extras else ""
@@ -177,4 +178,17 @@ with tempfile.TemporaryDirectory() as tmp:
     tv4 = FakeTv(extras=False)
     hd.Doctor(tv4, tmp, log=lambda s: None).run(["E", "F"])
     check("E asks the tester once (Enter); F restarts the TV once", tv4.asked == 1 and tv4.reboots == 1)
+    # F10: «wanted» is put back as it was (on stays on), also when the run dies halfway
+    tv5 = FakeTv()
+    tv5.wanted = True
+    hd.Doctor(tv5, tmp, log=lambda s: None).run(["A"])
+    check("«wanted» that was ON before the run is ON after it (not forced off)", tv5.wanted)
+    tv6 = FakeTv()
+    tv6.wanted = True
+    tv6.test = lambda angle: (_ for _ in ()).throw(KeyboardInterrupt())
+    try:
+        hd.Doctor(tv6, tmp, log=lambda s: None).run(["D"])
+    except KeyboardInterrupt:
+        pass
+    check("a run that dies halfway (Ctrl-C) still puts the TV back: the role launcherx's, «wanted» as it was", tv6.role == LX and tv6.wanted)
 sys.exit(1 if failed else 0)
