@@ -16,7 +16,7 @@
     python3 .github/tools/honours.py --archive DIR --prev DIR --out DIR
 
 The archive DIR holds sports/<id>.json and sports/<id>/<season>.json (the match archive's own files). A source that does not answer keeps
-the previous file: a league's file is never emptied by a failed run. Wikidata's query service allows few queries a minute: one query.
+the previous file: a league's file is never emptied by a failed run. Wikidata through its API (the query service refuses a busy client).
 """
 import argparse
 import datetime as dt
@@ -40,7 +40,6 @@ LEAGUES = {"4328": "Q9448", "4331": "Q82595", "4332": "Q15804", "4334": "Q13394"
            "4344": "Q182994", "4346": "Q18543", "4480": "Q18756", "4483": "Q483794", "4484": "Q212412", "4490": "Q15980635", "4520": "Q570246",
            "4663": "Q60681", "4668": "Q255633", "4678": "Q5334350", "4719": "Q193041", "4829": "Q680619", "5056": "Q248512", "5627": "Q2656109",
            "5649": "Q1187210"}
-WDQS = "https://query.wikidata.org/sparql"
 WDAPI = "https://www.wikidata.org/w/api.php"
 CHAMP_FIELD = {"ar": r"البطل|الفائز|حامل اللقب", "en": r"champions?|winners?"}
 SCORER_FIELD = {"ar": r"هداف الدوري|هداف البطولة|هداف المسابقة|أفضل هداف|الهداف|الهدافون",
@@ -67,44 +66,58 @@ def http(url, tries=6):
 
 
 def query_seasons(fetch):
-    """every season item of our leagues: [{q, lg, start, end, win:[Q], ts:[(Q, goals)], ar, en}]"""
-    values = " ".join("wd:" + q for q in LEAGUES.values())
-    sparql = f"""SELECT ?season ?league ?start ?end ?winner ?ts ?goals ?arT ?enT WHERE {{
-  VALUES ?league {{ {values} }} ?season wdt:P3450 ?league .
-  OPTIONAL {{ ?season wdt:P580 ?start }} OPTIONAL {{ ?season wdt:P582 ?end }} OPTIONAL {{ ?season wdt:P1346 ?winner }}
-  OPTIONAL {{ ?season p:P3279 ?st . ?st ps:P3279 ?ts . OPTIONAL {{ ?st pq:P1351 ?goals }} }}
-  OPTIONAL {{ ?arl schema:about ?season ; schema:isPartOf <https://ar.wikipedia.org/> ; schema:name ?arT }}
-  OPTIONAL {{ ?enl schema:about ?season ; schema:isPartOf <https://en.wikipedia.org/> ; schema:name ?enT }} }}"""
-    rows = json.loads(fetch(WDQS + "?" + urllib.parse.urlencode({"query": sparql, "format": "json"})))["results"]["bindings"]
-    return seasons_from_rows(rows)
+    """every season item of our leagues: [{q, lg, start, end, win:[Q], ts:[(Q, goals)], ar, en}], from the Wikidata API (its search by statement,
+    then the items): the query service limits a client to about one query a minute and refuses more for many minutes"""
+    by_q = {}
+    for lg, league in LEAGUES.items():
+        j = json.loads(fetch(WDAPI + "?" + urllib.parse.urlencode({"action": "query", "list": "search", "srsearch": f"haswbstatement:P3450={league}",
+                                                                   "srnamespace": 0, "srlimit": 500, "format": "json"})))
+        for r in (j.get("query") or {}).get("search", []):
+            if re.fullmatch(r"Q\d+", r.get("title", "")):
+                by_q[r["title"]] = lg
+    ents = {}
+    qs = sorted(by_q)
+    for i in range(0, len(qs), 50):
+        j = json.loads(fetch(WDAPI + "?" + urllib.parse.urlencode({"action": "wbgetentities", "ids": "|".join(qs[i:i + 50]), "props": "claims|sitelinks",
+                                                                   "sitefilter": "arwiki|enwiki", "format": "json"})))
+        ents.update(j.get("entities") or {})
+    return seasons_from_entities(ents, by_q)
 
 
-def _q(v):
-    m = re.search(r"/entity/(Q\d+)$", v or "")
-    return m.group(1) if m else None   # a blank node («unknown value») is no one
+def _value(snak):
+    return ((snak or {}).get("datavalue") or {}).get("value") if (snak or {}).get("snaktype") == "value" else None
 
 
-def seasons_from_rows(rows):
-    by_lg = {q: lg for lg, q in LEAGUES.items()}
-    out = {}
-    for r in rows:
-        g = lambda k: (r.get(k) or {}).get("value")
-        q, lg = _q(g("season")), by_lg.get(_q(g("league")))
-        if not q or not lg:
+def seasons_from_entities(ents, by_q):
+    out = []
+    for q, e in ents.items():
+        cl = e.get("claims") or {}
+        lg = by_q.get(q)
+        if not lg or LEAGUES[lg] not in {(_value(c.get("mainsnak")) or {}).get("id") for c in cl.get("P3450", [])}:
             continue
-        s = out.setdefault(q, {"q": q, "lg": lg, "start": "", "end": "", "win": [], "ts": [], "ar": "", "en": ""})
-        s["start"] = s["start"] or (g("start") or "")[:10]
-        s["end"] = s["end"] or (g("end") or "")[:10]
-        s["ar"] = s["ar"] or g("arT") or ""
-        s["en"] = s["en"] or g("enT") or ""
-        w = _q(g("winner"))
-        if w and w not in s["win"]:
-            s["win"].append(w)
-        t = _q(g("ts"))
-        if t and t not in [x[0] for x in s["ts"]]:
-            goals = g("goals")
-            s["ts"].append((t, int(float(goals)) if goals and re.fullmatch(r"\d+(\.0+)?", goals) else None))
-    return sorted(out.values(), key=lambda s: (s["lg"], s["start"]))
+
+        def first_time(p):
+            for c in cl.get(p, []):
+                v = _value(c.get("mainsnak"))
+                if v and v.get("time"):
+                    return v["time"].lstrip("+")[:10]
+            return ""
+        win = []
+        for c in cl.get("P1346", []):
+            v = _value(c.get("mainsnak"))   # «unknown value» is no one
+            if v and v.get("id") and v["id"] not in win and c.get("rank") != "deprecated":
+                win.append(v["id"])
+        ts = []
+        for c in cl.get("P3279", []):
+            v = _value(c.get("mainsnak"))
+            if not v or not v.get("id") or c.get("rank") == "deprecated":
+                continue
+            amount = next((x.get("amount") for x in (_value(g) for g in (c.get("qualifiers") or {}).get("P1351", [])) if x and x.get("amount")), None)
+            ts.append((v["id"], int(float(amount)) if amount and re.fullmatch(r"[+-]?\d+(\.0+)?", amount) else None))
+        sl = e.get("sitelinks") or {}
+        out.append({"q": q, "lg": lg, "start": first_time("P580"), "end": first_time("P582"), "win": win, "ts": ts,
+                    "ar": (sl.get("arwiki") or {}).get("title", ""), "en": (sl.get("enwiki") or {}).get("title", "")})
+    return sorted(out, key=lambda s: (s["lg"], s["start"]))
 
 
 def labels(fetch, qids):

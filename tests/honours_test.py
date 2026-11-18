@@ -104,16 +104,20 @@ args = SimpleNamespace(archive=str(tmp / "archive"), prev=str(tmp / "prev"), out
 def down(url):
     raise OSError("no network")
 check("Wikidata does not answer: the run stops, nothing written (the published files stay)", h.run(args, down) == 1 and not (tmp / "out").exists())
-ROWS = {"results": {"bindings": [
-    {"season": {"value": "http://www.wikidata.org/entity/Q25"}, "league": {"value": "http://www.wikidata.org/entity/Q255633"},
-     "start": {"value": "2025-08-01T00:00:00Z"}, "end": {"value": "2026-05-30T00:00:00Z"}, "winner": {"value": "http://www.wikidata.org/entity/Q1001"}},
-    {"season": {"value": "http://www.wikidata.org/entity/Q20"}, "league": {"value": "http://www.wikidata.org/entity/Q255633"},
-     "start": {"value": "2024-08-01T00:00:00Z"}, "winner": {"value": "http://www.wikidata.org/.well-known/genid/abc"}}]}}
+def snak(v):
+    return {"mainsnak": {"snaktype": "value", "datavalue": {"value": v}}, "rank": "normal"}
+ENTS = {"Q25": {"claims": {"P3450": [snak({"id": "Q255633"})], "P580": [snak({"time": "+2025-08-01T00:00:00Z"})], "P582": [snak({"time": "+2026-05-30T00:00:00Z"})],
+                           "P1346": [snak({"id": "Q1001"})]}, "sitelinks": {}},
+        "Q20": {"claims": {"P3450": [snak({"id": "Q255633"})], "P580": [snak({"time": "+2024-08-01T00:00:00Z"})],
+                           "P1346": [{"mainsnak": {"snaktype": "somevalue"}, "rank": "normal"}]}, "sitelinks": {}},
+        "Q99": {"claims": {"P3450": [snak({"id": "Q9448"})]}, "sitelinks": {}}}   # found by the search, but of another league: not this one
 asked = []
 def net(url):
     asked.append(url)
-    if url.startswith(h.WDQS):
-        return json.dumps(ROWS).encode()
+    if "list=search" in url:
+        return json.dumps({"query": {"search": [{"title": "Q25"}, {"title": "Q20"}, {"title": "Q99"}] if "Q255633" in url else []}}).encode()
+    if "wbgetentities" in url and "claims" in url:
+        return json.dumps({"entities": {q: e for q, e in ENTS.items() if q in url}}).encode()
     if "wbgetentities" in url:
         return json.dumps({"entities": {"Q1001": {"labels": {"en": {"value": "Al-Nassr"}, "ar": {"value": "نادي النصر"}}}}}).encode()
     return b'{"query":{"pages":[]}}'
@@ -126,7 +130,7 @@ check("…a league with nothing new keeps its last file", json.loads((tmp / "out
 lic = (tmp / "out/LICENSE.md").read_text()
 check("…LICENSE.md: scorers CC BY-SA 4.0, champions CC BY 4.0 with Wikidata CC0", "CC BY-SA 4.0" in lic and "CC BY 4.0" in lic and "CC0" in lic)
 check("…report.json written", "left_out" in json.loads((tmp / "out/report.json").read_text()))
-check("…one Wikidata query only (the query service allows few)", sum(u.startswith(h.WDQS) for u in asked) == 1, sum(u.startswith(h.WDQS) for u in asked))
+check("…Wikidata through its API, never the query service (it refuses a busy client for many minutes)", not any("query.wikidata.org" in u for u in asked) and any("haswbstatement" in u for u in asked))
 check("…a user agent that names the project, as Wikimedia asks", "github.com/tshi-dev/UrTV" in h.UA)
 
 # ---- the workflow
