@@ -23,6 +23,7 @@ public final class SetupHook {
     private static void atHomeStartNow(final Context app) {
         try {
             clearOldFails(app);
+            endNotSeen(app);   // 4.4 (R2)
             if (!SetupRecovery.pending(app)) { migrate(app); return; }
             SetupRecovery.rearmFromDisk(app);
             if (SetupRecovery.gaveUp(app)) {
@@ -103,6 +104,24 @@ public final class SetupHook {
                 }
             }
         }, "stock-migration-pc").start();
+    }
+
+    /**
+     * 4.4 (R2: a Skyworth IRIS «stopped at 26 %, then the app closed by itself»): a full run that ended badly while its screen was not in front (it ended at a
+     * boot, or the app was closed) is said once at the next start of UrTV, in one line, with the way on. The setup screen shows the whole end (restoreEnd).
+     */
+    private static void endNotSeen(final Context app) {
+        try {
+            FileStore store = new FileStore(app);
+            String t = store.get(SetupRunner.END_FILE);
+            if (t == null || !t.startsWith("bad\n")) return;   // ok, told already, or none
+            final String text = t.substring(4).trim();
+            store.put(SetupRunner.END_FILE, "bad told\n" + text + "\n");
+            if (text.isEmpty()) return;
+            new android.os.Handler(android.os.Looper.getMainLooper()).post(new Runnable() { @Override public void run() {
+                Toast.makeText(app, "«إعداد تلفزيوني» ما كمل: " + text + " افتح «إعداد تلفزيوني» لتكمل.", Toast.LENGTH_LONG).show();
+            } });
+        } catch (java.io.IOException | RuntimeException ignored) { }
     }
 
     private static String field(String json, String key) {
