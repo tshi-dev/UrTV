@@ -24,4 +24,14 @@ check("docs/RESCUE.md in English: the same code", f"in Downloader enter **{code}
 check("no «once it exists» left in the guide", "لما يتوفر" not in doc and "once it exists" not in doc)
 others = set(re.findall(r"\b\d{7}\b", ar + en)) - {code}
 check("the guide names no other 7-digit code", not others, others)
+# 4.4 review F27: what the repo CAN pin about the code. Downloader's own service (the code -> URL map) cannot be reached from here, so the owner confirms once
+# that the code resolves to the link below; what is pinned is that the link is real and stable: the docs name it, and CI uploads exactly that asset name to apk-latest.
+link = "https://github.com/tshi-dev/UrTV/releases/download/apk-latest/urtv-rescue.apk"
+check("docs/RESCUE.md names the fixed link the code stands for (apk-latest / urtv-rescue.apk), Arabic and English", link in ar and link in en)
+yml = (ROOT / ".github/workflows/android.yml").read_text(encoding="utf-8")
+latest = yml[yml.index("name: Publish to the apk-latest release"):yml.index("name: Publish to the numbered release")]
+check("android.yml builds the rescue app under the stable name urtv-rescue.apk", re.search(r"cp android/rescue/build/outputs/apk/release/rescue-release\.apk urtv-rescue\.apk\b", yml) is not None)
+check("android.yml uploads urtv-rescue.apk to the apk-latest release, and a missing file stops the publish (fail_on_unmatched_files)",
+      "tag_name: apk-latest" in latest and re.search(r"^\s+urtv-rescue\.apk\s*$", latest, re.M) is not None and "fail_on_unmatched_files: true" in latest)
+check("the code in RescueInfo is the one in the docs and the one the setup page shows (the docs table row too)", f"(الكود {code})" in ar and f"enter **{code}**" in en and f'DOWNLOADER_CODE = "{code}"' in info)
 sys.exit(1 if failed else 0)
