@@ -13,22 +13,22 @@ public final class FactoryRun {
         SetupEngine.KEEP_STOCK_ON = false;   // these scenarios are the OLD switch's rules (the safe order, the wizard asked about the Wi-Fi); 4.3.2's keep-the-stock-home switch has its own scenarios (stockhome_test.py)
         String stock = "com.google.android.apps.tv.launcherx";
         // F1: a healthy TV: it may go on; the plan is the stock home first, then the safe list installed and not off already; nothing changed; the safety switch tested and let go
-        SetupEngineRun.FakeTv t1 = SetupEngineRun.tv(); SetupEngineRun.Mem m1 = new SetupEngineRun.Mem(); SetupEngineRun.Dead d1 = new SetupEngineRun.Dead();
+        SetupEngineRun.FakeTv t1 = SetupEngineRun.factoryTv(); SetupEngineRun.Mem m1 = SetupEngineRun.factoryMem(); SetupEngineRun.Dead d1 = new SetupEngineRun.Dead();
         SetupEngine.FactoryOffer o1 = SetupEngineRun.engine(t1, m1, d1, new ArrayList<>()).factoryOffer();
         List<String> safeInstalled = new ArrayList<>();
         for (String p : SetupEngine.filterSafe(SetupLists.SAFE)) if (t1.installed.contains(p) && !t1.off.contains(p)) safeInstalled.add(p);
         System.out.println("F1 " + (o1.refusal == null) + " first=" + o1.packages.get(0) + " plan=" + joined(o1.packages).equals(joined(add(stock, safeInstalled))) + " changed=" + (t1.count("pm disable-user") + t1.count("pm enable"))
                 + " armed=" + d1.armed + " disarmed=" + d1.disarmed);
         // F2: the setup wizard owns the saved Wi-Fi: refused with the reason, nothing changed
-        SetupEngineRun.FakeTv t2 = SetupEngineRun.tv(); t2.wizardAnswersHome = true; t2.wizardOwnsWifi = true; t2.roleHolder = stock;
-        SetupEngine.FactoryOffer o2 = SetupEngineRun.engine(t2, new SetupEngineRun.Mem(), new SetupEngineRun.Dead(), new ArrayList<>()).factoryOffer();
+        SetupEngineRun.FakeTv t2 = SetupEngineRun.factoryTv(); t2.wizardAnswersHome = true; t2.wizardOwnsWifi = true; t2.roleHolder = stock;
+        SetupEngine.FactoryOffer o2 = SetupEngineRun.engine(t2, SetupEngineRun.factoryMem(), new SetupEngineRun.Dead(), new ArrayList<>()).factoryOffer();
         System.out.println("F2 " + (o2.refusal != null && o2.refusal.contains("الواي فاي")) + " changed=" + (t2.count("pm disable-user") + t2.count("cmd role")));
         // F3: the safety switch cannot be set: refused with the reason
-        SetupEngineRun.FakeTv t3 = SetupEngineRun.tv(); SetupEngineRun.Dead d3 = new SetupEngineRun.Dead(); d3.works = false;
-        SetupEngine.FactoryOffer o3 = SetupEngineRun.engine(t3, new SetupEngineRun.Mem(), d3, new ArrayList<>()).factoryOffer();
+        SetupEngineRun.FakeTv t3 = SetupEngineRun.factoryTv(); SetupEngineRun.Dead d3 = new SetupEngineRun.Dead(); d3.works = false;
+        SetupEngine.FactoryOffer o3 = SetupEngineRun.engine(t3, SetupEngineRun.factoryMem(), d3, new ArrayList<>()).factoryOffer();
         System.out.println("F3 " + (o3.refusal != null && o3.refusal.contains("مفتاح الأمان")) + " changed=" + t3.count("pm disable-user"));
         // F4: it turns the stock interface off: the stock home and the safe list, written in the ledger first; the protected features are never in it; nothing uninstalled
-        SetupEngineRun.FakeTv t4 = SetupEngineRun.tv(); SetupEngineRun.Mem m4 = new SetupEngineRun.Mem(); SetupEngineRun.Dead d4 = new SetupEngineRun.Dead();
+        SetupEngineRun.FakeTv t4 = SetupEngineRun.factoryTv(); SetupEngineRun.Mem m4 = SetupEngineRun.factoryMem(); SetupEngineRun.Dead d4 = new SetupEngineRun.Dead();
         String before = SetupEngineRun.snapshot(t4);
         SetupEngine e4 = SetupEngineRun.engine(t4, m4, d4, new ArrayList<>());
         SetupEngine.Result r4 = e4.factoryOff();
@@ -42,14 +42,15 @@ public final class FactoryRun {
         List<String> enabled = new ArrayList<>();
         for (String l : t4.log) if (l.startsWith("pm enable ")) enabled.add(l.substring("pm enable ".length()).replace("--user 0 ", "").trim());
         TreeSet<String> allowed = new TreeSet<>(ledger4);
-        allowed.add(stock); allowed.add(SetupEngine.WRAITH); allowed.addAll(Arrays.asList(SetupLists.HOME_HELPERS));
+        allowed.add(stock); allowed.add(SetupEngine.WRAITH); allowed.addAll(Arrays.asList(SetupLists.HOME_HELPERS));   // (and the rescue's fallback home, armed by the step itself: 4.4 R7)
+        allowed.add(RescueHome.ALIAS);
         TreeSet<String> extra = new TreeSet<>(enabled); extra.removeAll(allowed);
         System.out.println("F5 " + u5.status + " same=" + SetupEngineRun.snapshot(t4).equals(before) + " home=" + t4.home().startsWith(stock) + " ledgerEmpty=" + m4.get("disabled-by-us.txt").trim().isEmpty()
                 + " enabledAllLedger=" + enabled.containsAll(ledger4) + " extraEnabled=[" + String.join(",", extra) + "] mark=" + m4.get(SetupEngine.FACTORY).startsWith("off") + " isOff=" + e4.factoryIsOff());
         // F6: the restore does not run the full undo: nothing of ours is uninstalled, the screensaver and the tweaks are left, the apps the setup installed stay
         System.out.println("F6 uninstall=" + (t4.count("pm uninstall")) + " settingsPut=" + (t4.count("settings put") + t4.count("settings delete")) + " appops=" + t4.count("appops set"));
         // F7: a package that does not come back stays in the ledger for the next try
-        SetupEngineRun.FakeTv t7 = SetupEngineRun.tv(); SetupEngineRun.Mem m7 = new SetupEngineRun.Mem();
+        SetupEngineRun.FakeTv t7 = SetupEngineRun.factoryTv(); SetupEngineRun.Mem m7 = SetupEngineRun.factoryMem();
         SetupEngine e7 = SetupEngineRun.engine(t7, m7, new SetupEngineRun.Dead(), new ArrayList<>());
         e7.factoryOff();
         String stuck = SetupEngine.ledgerNames(m7.get("disabled-by-us.txt")).get(1);

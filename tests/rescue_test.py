@@ -35,8 +35,9 @@ act = text(ROOT / "android/rescue/src/main/java/sa/urtv/home/setup/RescueActivit
 check("its own app (sa.urtv.rescue), our key, in the Gradle build, the setup's adb client and plan copied in (one copy of each)",
       "applicationId 'sa.urtv.rescue'" in gradle and "keyAlias 'urtv'" in gradle and "':rescue'" in text(ROOT / "android/settings.gradle")
       and all(f"'{f}'" in gradle for f in ("AdbClient.java", "AdbKeys.java", "RescuePlan.java")))
-check("in the TV's apps list (LAUNCHER and LEANBACK_LAUNCHER), no other screen, asks the home only through our signature permission",
-      "android.intent.category.LEANBACK_LAUNCHER" in man and man.count("<activity") == 1 and 'android:protectionLevel="signature"' in man and '<package android:name="sa.urtv.home" />' in man)
+check("in the TV's apps list (LAUNCHER and LEANBACK_LAUNCHER), no other screen there (4.4 R7: the fallback home is not exported, reached only by its alias, tests/rescue_home_test.py), asks the home only through our signature permission",
+      "android.intent.category.LEANBACK_LAUNCHER" in man and man.count("android.intent.category.LAUNCHER") == 1 and man.count("android.intent.category.LEANBACK_LAUNCHER") == 1
+      and man.count("<activity\n") == 2 and man.count("<activity-alias") == 1 and 'android:name="sa.urtv.home.setup.FallbackHomeActivity"\n            android:exported="false"' in man and 'android:protectionLevel="signature"' in man and '<package android:name="sa.urtv.home" />' in man)
 check("one big button «رجّع التلفزيون كما كان», over the TV's own adb (127.0.0.1:5555), the plan's commands only, and it says what it did",
       'text("رجّع التلفزيون كما كان"' in act and 'AdbClient.connect("127.0.0.1", 5555' in act and "for (String c : p.commands) adb.run(c);" in act
       and "شغّلنا " in act and "زر الرئيسية يفتح الشاشة الأصلية الآن" in act and "أطفأنا «إضافات تلفزيونك»" in act)

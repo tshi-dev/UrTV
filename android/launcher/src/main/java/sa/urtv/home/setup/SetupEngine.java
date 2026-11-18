@@ -678,6 +678,33 @@ final class SetupEngine {
         if (after == null) return null;
         for (String p : turn) if (after.contains(p)) return failed("ما قبل التلفزيون تشغيل بعض ما أوقفه الإعداد القديم؛ نجرّب مرة ثانية عند التشغيل القادم.");
         sh.run("cmd role add-role-holder --user 0 android.app.role.HOME " + SELF);   // ours stays Home
+        sh.run(RescueHome.DISARM);   // 4.4 (R7): the stock home is back
+        store.put(StockMigration.MARK, "done " + stamp + "\n");
+        return done(StockMigration.NOTICE);
+    }
+
+    /**
+     * 4.4 (R7): a TV switched the old way from the PC (its journal is on the computer, not here): no stock home answers Home and the person did not choose «عطّل واجهة
+     * المصنع». Uninstalling UrTV there leaves a black screen, so Google's stock home (launcherx, else tvlauncher) is turned back on, once; ours stays Home. Another
+     * maker's home is not guessed (StockMigration.TOLD tells the person the way by hand instead). null: nothing done (or the TV did not say: tried at the next start).
+     */
+    Result migrateStockNoJournal() throws IOException {
+        if (factoryIsOff()) return null;
+        String mark = store.get(StockMigration.MARK);
+        if (mark != null && !mark.trim().isEmpty()) return null;
+        String homes = text(RescueHome.HOMES);
+        if (homes == null || RescueHome.packages(homes).isEmpty()) return null;   // the TV did not say
+        if (RescueHome.stockHomeOn(RescueHome.packages(homes))) { store.put(StockMigration.MARK, "none " + stamp + "\n"); return null; }
+        Set<String> off = packages("pm list packages -d"), pk = packages("pm list packages");
+        if (off == null || pk == null) return null;
+        String stockPkg = StockMigration.googleStockOff(pk, off, LAUNCHERX, TVLAUNCHER);
+        if (stockPkg == null) return null;
+        sh.run("pm enable " + stockPkg);
+        Set<String> after = packages("pm list packages -d");
+        if (after == null || after.contains(stockPkg)) return null;   // tried again at the next start
+        sh.run("cmd role add-role-holder --user 0 android.app.role.HOME " + SELF);   // ours stays Home
+        sh.run("cmd package set-home-activity --user 0 " + q(HOME_ACTIVITY));
+        sh.run(RescueHome.DISARM);
         store.put(StockMigration.MARK, "done " + stamp + "\n");
         return done(StockMigration.NOTICE);
     }
@@ -943,6 +970,7 @@ final class SetupEngine {
         if (withHelpers) for (String h : SetupLists.HOME_HELPERS) sh.run("pm enable " + h);
         sh.run("pm enable " + WRAITH);
         sh.run("pm enable " + stockPkg);
+        sh.run(RescueHome.DISARM);   // 4.4 (R7): the stock home is back, the fallback home is not needed
         if (!back.equals(stockPkg)) sh.run("pm enable " + back);
         sh.run("cmd role add-role-holder --user 0 android.app.role.HOME " + back);
         if (back.equals(stockPkg)) sh.run("cmd package set-home-activity --user 0 " + q(stock));
@@ -1092,6 +1120,9 @@ final class SetupEngine {
     FactoryOffer factoryOffer() throws IOException {
         Set<String> pk = packages("pm list packages"), off = packages("pm list packages -d");
         if (pk == null || off == null) return new FactoryOffer("التلفزيون لم يقل أي تطبيقاته مثبّتة وأيها موقوف، فما نقدر نقول وش بنوقف. جرّب مرة ثانية.", "", new ArrayList<String>());
+        // 4.4 (R7): only where Home does not open ours without it (the switch, the add-on's watch included, failed: HomeFails), and only with the rescue's fallback home
+        if (HomeFails.count(store.get(HomeFails.FILE)) < 1) return new FactoryOffer(RescueHome.NOT_NEEDED, "", new ArrayList<String>());
+        if (!pk.contains(RescueHome.PKG)) return new FactoryOffer(RescueHome.NEED, "", new ArrayList<String>());
         String stock = pk.contains(LAUNCHERX) ? LAUNCHERX_HOME : pk.contains(TVLAUNCHER) ? TVLAUNCHER_HOME : otherHome(pk);
         if (stock == null || stock.isEmpty()) return new FactoryOffer("ما عرفنا ما الشاشة الرئيسية الأصلية لهذا التلفزيون، فما نعطّل شيئاً.", "", new ArrayList<String>());
         if (wizardOwnsWifi())
@@ -1121,6 +1152,9 @@ final class SetupEngine {
         Set<String> handlers = InputGuard.handlers(text(InputGuard.HANDLERS));
         if (handlers == null) return failed(InputGuard.HANDLERS_SAID);
         if (handlers.contains(stockPkg)) return failed("واجهة المصنع في هذا التلفزيون هي اللي تفتح إعداداته أو قنواته، فما عطّلناها. ما تغيّر شيء.");
+        // 4.4 (R7): the rescue's fallback home is armed and read back BEFORE the stock home goes; not armed: put back, nothing else changed
+        sh.run(RescueHome.ARM);
+        if (!RescueHome.armed(text(RescueHome.HOMES))) { sh.run(RescueHome.DISARM); return failed(RescueHome.NOT_ARMED); }
         boolean stockWasOn = o.packages.contains(stockPkg);   // the offer lists it only when it was on: what this step turns off is in the ledger, whoever runs the command
         if (stockWasOn) remember(ledgerNames(store.get("disabled-by-us.txt")), java.util.Collections.singletonList(stockPkg));   // written BEFORE any command
         Result h = home();
@@ -1168,7 +1202,7 @@ final class SetupEngine {
         for (String p : keep) b.append(p).append('\n');
         store.put("disabled-by-us.txt", b.toString());
         if (!keep.isEmpty() && off != null) problems.add(keep.size() + " تطبيقاً لم يقبل التلفزيون تشغيله؛ جرّب مرة ثانية.");
-        if (problems.isEmpty()) store.put(FACTORY, "off " + stamp + "\n");
+        if (problems.isEmpty()) { store.put(FACTORY, "off " + stamp + "\n"); sh.run(RescueHome.DISARM); }   // 4.4 (R7): the stock home is back
         if (!problems.isEmpty()) return failed(String.join(" ", problems));
         return done("رجّعنا واجهة المصنع وكل ما أوقفناه.");
     }
