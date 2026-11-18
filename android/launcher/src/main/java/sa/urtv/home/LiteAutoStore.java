@@ -12,8 +12,10 @@ public final class LiteAutoStore {
     private LiteAutoStore() { }
 
     static final String KEY = LiteAuto.KEY, TOLD = "auto_told";
-    static final String SAID = S.n("شغّلنا «الوضع الخفيف» تلقائياً: %s. تقدر تطفيه من الإعدادات ← الوضع الخفيف."),
-            WHY_OOM = S.n("النظام أغلق UrTV لنقص الذاكرة"), WHY_TRIM = S.n("ذاكرة التلفزيون امتلأت"), WHY_SLOW = S.n("التشغيل كان بطيئاً");
+    /** the UI session's wording (4.4 beta 3): the notice once, and the «الوضع الخفيف» row's line; one set of reasons for both */
+    static final String SAID = S.n("شغّلنا «الوضع الخفيف» تلقائيًا لأن %s مرتين هذا الأسبوع. تقدر تطفيه من الإعدادات في «الوضع الخفيف»."),
+            ROW = S.n("تلقائي: شغّال الآن لأن %s مرتين هذا الأسبوع"),
+            WHY_OOM = S.n("النظام أغلق UrTV لنقص الذاكرة"), WHY_TRIM = S.n("ذاكرة التلفزيون امتلأت"), WHY_SLOW = S.n("التشغيل كان بطيئًا");
     private static final java.util.concurrent.ExecutorService BG = java.util.concurrent.Executors.newSingleThreadExecutor(r -> {
         Thread t = new Thread(r, "lite-auto");
         t.setDaemon(true);
@@ -48,6 +50,25 @@ public final class LiteAutoStore {
         try { return LiteAuto.report(sp(c).getString(KEY, ""), System.currentTimeMillis()); } catch (RuntimeException e) { return "?"; }
     }
 
+    private static String why(String kind) { return LiteAuto.OOM.equals(kind) ? WHY_OOM : LiteAuto.TRIM.equals(kind) ? WHY_TRIM : WHY_SLOW; }
+
+    /**
+     * the «الوضع الخفيف» row's line in the screensaver's settings (asked through NowPlayingProvider «lite_line»): «تلقائي: شغّال الآن لأن …» while this TV's
+     * signs keep it on, "" otherwise (the row then says «تلقائي» as before). Prefs only; the screensaver asks off its UI thread.
+     */
+    public static String rowLine(Context c) {
+        try {
+            SharedPreferences p = sp(c);
+            if (!"auto".equals(p.getString("lite", "auto"))) return "";
+            long now = System.currentTimeMillis();
+            String s = p.getString(KEY, "");
+            if (!LiteAuto.on(s, now)) return "";
+            return String.format(S.tv(ROW), S.tv(why(LiteAuto.reasonKind(s, now))));
+        } catch (RuntimeException e) {
+            return "";
+        }
+    }
+
     /** called on the home's start thread (SetupHook.atHomeStart): the first time it is on, one line says so and why */
     public static void tellOnce(final Context c) {
         try {
@@ -58,8 +79,7 @@ public final class LiteAutoStore {
             long since = LiteAuto.since(s, now);
             if (since == 0 || p.getLong(TOLD, 0) == since) return;
             p.edit().putLong(TOLD, since).commit();
-            String k = LiteAuto.reasonKind(s, now);
-            final String why = LiteAuto.OOM.equals(k) ? WHY_OOM : LiteAuto.TRIM.equals(k) ? WHY_TRIM : WHY_SLOW;
+            final String why = why(LiteAuto.reasonKind(s, now));
             new android.os.Handler(android.os.Looper.getMainLooper()).post(() -> Toast.makeText(c.getApplicationContext(),
                 String.format(S.tv(SAID), S.tv(why)), Toast.LENGTH_LONG).show());
         } catch (RuntimeException ignored) { }

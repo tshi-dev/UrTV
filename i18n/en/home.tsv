@@ -911,7 +911,8 @@ mp3 أو m4a أو ogg أو wav	mp3, m4a, ogg or wav
 جرّب مرة ثانية. إذا تكرر، أرسل تقرير من مساعدك	Try again. If it keeps happening, send a report through your assistant
 نشغّل الشاشة الأصلية…	Turning the TV's own home back on…
 الشاشة الأصلية موقوفة. شغّلها: الإعدادات ← التطبيقات ← تطبيقات النظام ← %s ← تفعيل، ثم اضغط زر الرئيسية.	The TV's own home is turned off. Turn it on: Settings → Apps → System apps → %s → Enable, then press Home.
-شغّلنا «الوضع الخفيف» تلقائياً: %s. تقدر تطفيه من الإعدادات ← الوضع الخفيف.	We turned on «Light mode» by itself: %s. You can turn it off in Settings → Light mode.
+شغّلنا «الوضع الخفيف» تلقائيًا لأن %s مرتين هذا الأسبوع. تقدر تطفيه من الإعدادات في «الوضع الخفيف».	Light mode is on by itself because %s twice this week. You can turn it off in Settings, «Light mode».
 النظام أغلق UrTV لنقص الذاكرة	the system closed UrTV for lack of memory
-ذاكرة التلفزيون امتلأت	the TV's memory ran full
-التشغيل كان بطيئاً	starting was slow
+ذاكرة التلفزيون امتلأت	the TV's memory filled up
+التشغيل كان بطيئًا	starting was slow
+تلقائي: شغّال الآن لأن %s مرتين هذا الأسبوع	Automatic: on now because %s twice this week

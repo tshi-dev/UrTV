@@ -47,5 +47,18 @@ check("why: a low-memory kill comes first", got.get("KIND") == "KIND oom", got.g
 check("a signal from the future (the clock went back) counts nothing", got.get("FUTURE") == "FUTURE false", got.get("FUTURE"))
 check("a damaged text: only well-formed signals count", got.get("JUNK") == "JUNK 2 true", got.get("JUNK"))
 check("at most 20 kept, signals older than 14 days let go", got.get("KEEP") == "KEEP 20" and got.get("OLD") == "OLD 1", (got.get("KEEP"), got.get("OLD")))
+rl = store.split("public static String rowLine(Context c) {")[1].split("\n    }\n")[0]
+npp = (ROOT / "android/launcher/src/main/java/sa/urtv/home/tilawah/NowPlayingProvider.java").read_text(encoding="utf-8")
+sa = (ROOT / "android/app/src/main/java/sa/urtv/screensaver/SettingsActivity.java").read_text(encoding="utf-8")
+nb = (ROOT / "android/app/src/main/java/sa/urtv/screensaver/NowPlayingBridge.java").read_text(encoding="utf-8")
+check("the UI session's wording: the notice and the row's line, one set of reasons, no arrow or dash, tanween on the alif",
+      'S.n("شغّلنا «الوضع الخفيف» تلقائيًا لأن %s مرتين هذا الأسبوع. تقدر تطفيه من الإعدادات في «الوضع الخفيف».")' in store
+      and 'S.n("تلقائي: شغّال الآن لأن %s مرتين هذا الأسبوع")' in store and 'S.n("التشغيل كان بطيئًا")' in store and "←" not in store and "—" not in store)
+check("the row's line: only on «تلقائي» while this TV's signs keep it on, from prefs, the same reasons as the notice",
+      '"auto".equals(p.getString("lite", "auto"))' in rl and "LiteAuto.on(s, now)" in rl and "String.format(S.tv(ROW), S.tv(why(LiteAuto.reasonKind(s, now))))" in rl)
+check("the screensaver asks the home (lite_line, same key only) on a thread, once per return, and keeps «تلقائي، …» when there is no line",
+      '"lite_line".equals(method)' in npp and "LiteAutoStore.rowLine(getContext())" in npp and 'checkCallingPermission("sa.urtv.home.READ_NOW_PLAYING")' in npp.split('"lite_line".equals(method)')[1][:200]
+      and '"lite_line", null, null)' in nb and '}, "lite-line").start();' in sa and "liteLineAsked = false;" in sa
+      and 'liteLine != null && !liteLine.isEmpty() ? liteLine : Prefs.liteLabel(prefs.lite(), Prefs.lowRam(this))' in sa)
 print("FAILED" if failed else "all passed")
 sys.exit(1 if failed else 0)

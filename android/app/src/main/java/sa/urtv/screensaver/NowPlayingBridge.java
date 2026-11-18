@@ -139,6 +139,17 @@ final class NowPlayingBridge {
         } catch (Exception ignored) { return "no_link"; }
     }
 
+    /**
+     * 4.4 beta 3 «الوضع الخفيف» on «تلقائي»: the home's line when this TV's own signs turned it on («تلقائي: شغّال الآن لأن …», in the home's language),
+     * "" when they did not, null when the home did not answer. A call into its process: never on the UI thread.
+     */
+    static String liteLine(Context c) {
+        try {
+            android.os.Bundle b = c.getApplicationContext().getContentResolver().call(Uri.parse("content://sa.urtv.home.nowplaying"), "lite_line", null, null);
+            return b == null ? null : b.getString("result");
+        } catch (Exception ignored) { return null; }
+    }
+
     /** 4.4 «زر الرئيسية يفتح تلفزيونك مباشرة»: the add-on's Home key catch through the launcher ("on", "off" or null to read); null when either did not answer */
     static Boolean homeKey(Context c, String set) {
         try {

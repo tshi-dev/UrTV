@@ -221,6 +221,7 @@ public class SettingsActivity extends Activity {
         adhanAsked = false;
         cleanAsked = false;   // asked again each time the settings come to the front (it was asked once per visit: the row said «مفعّل» only after reopening)
         homeKeyAsked = false;   // 4.4 (QA-7): the same for «زر الرئيسية يفتح تلفزيونك مباشرة»
+        liteLineAsked = false;   // 4.4 beta 3: the same for «الوضع الخفيف»'s line from the home
         extrasLook();   // 4.4 review: «فوق تطبيق آخر» says whether the add-on is here; asked on a thread, once per return
         look =GlassSource.page(this, root); couchVeil();   // the home's photo or «المظهر» may have changed meanwhile
         hint.setTextColor(look.sub);
@@ -425,7 +426,8 @@ public class SettingsActivity extends Activity {
         row("توهّج لون التطبيق", "on".equals(prefs.glowMode()) ? "مفعّل" : "light".equals(prefs.glowMode()) ? "خفيف" : "مطفأ", R.drawable.ic_eye,
             new Runnable() { public void run() { prefs.setGlowMode("off".equals(prefs.glowMode()) ? "light" : "light".equals(prefs.glowMode()) ? "on" : "off"); render(); } });
         // A14 «الوضع الخفيف»: auto (a weak TV: little memory or few cores) by default; on and off are the person's. Less motion, slower refresh, smaller photos, no blur
-        row("الوضع الخفيف", Prefs.liteLabel(prefs.lite(), Prefs.lowRam(this)), R.drawable.ic_eye,
+        final String liteLine = "auto".equals(prefs.lite()) ? liteLineSeen() : null;   // 4.4 beta 3: the home's own line when this TV's signs turned it on
+        row("الوضع الخفيف", liteLine != null && !liteLine.isEmpty() ? liteLine : Prefs.liteLabel(prefs.lite(), Prefs.lowRam(this)), R.drawable.ic_eye,
             new Runnable() { public void run() { String v = prefs.lite(); prefs.setLite("auto".equals(v) ? "on" : "on".equals(v) ? "off" : "auto"); render(); } });
         // «نص أوضح»: the grey words and numbers of the home and the screensaver in the look's full text colour (white; the dark ink in a light look)
         row("نص أوضح", prefs.clearText() ? "مفعّل الكلام الرمادي بلون النص الكامل" : "متوقف", R.drawable.ic_eye,
@@ -1863,6 +1865,26 @@ public class SettingsActivity extends Activity {
     // list is built again only when it changed (render asked the home on the UI thread at every open, return and toggle)
     private Boolean homeKeyKnown;
     private boolean homeKeyAsked;
+
+    // 4.4 beta 3: «الوضع الخفيف»'s line from the home (LiteAutoStore.rowLine): asked once per return on a thread, kept, the list built again when it changed
+    private String liteLineKnown;
+    private boolean liteLineAsked;
+
+    private String liteLineSeen() {
+        if (!liteLineAsked) {
+            liteLineAsked = true;
+            final android.content.Context app = getApplicationContext();
+            new Thread(() -> {
+                final String now = NowPlayingBridge.liteLine(app);
+                runOnUiThread(() -> {
+                    if (isFinishing() || isDestroyed() || java.util.Objects.equals(now, liteLineKnown)) return;
+                    liteLineKnown = now;
+                    render();
+                });
+            }, "lite-line").start();
+        }
+        return liteLineKnown;
+    }
 
     private Boolean homeKeySeen() {
         if (!homeKeyAsked) {
