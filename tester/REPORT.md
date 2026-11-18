@@ -3094,3 +3094,11 @@ Run = family-style keys (favourites walk, YouTube out and Home pressed at second
 - Suspect check 4b: in 4.3.3 there was **no** screensaver cold start at any minute change or return Home (the screensaver process was already alive). So the ConfigProvider-on-UI-thread theory is **not shown on this TV**; it may need a TV with low RAM or the screensaver killed (not tried: I did not force-kill it). 4.3.3 jank = 4.3.2 jank (same 7.7 %), so 4.3.3 is not worse here.
 - Not measured: `getevent -lt` raw latency (adb-injected keys only; a real remote needs the owner). Steps 4c (a–e user reports) NOT done yet.
 - TV left on 4.3.4 candidate (469) for now; restoring the owner's 4.4 setup next.
+
+## step 98 follow-up — 4.3.4 (build 477, apk-latest) on the TCL, partial  [tester, 18 Nov]
+Installed 4.3.4 (477) fresh and ran «جهّز كل شي» (USB dialog: Allow, button1 verified). Home opens, Home key goes to UrTV.
+- (a) long press on an app: the menu (انقل / أخفِ / اقفل / صفحته في المتجر + two small buttons) is complete, nothing cut off — tester/step98b/a-longpress.png. (The «تعديل التطبيقات» box itself was not reached.)
+- (b)(c)(e) NOT checked: my uiautomator focus reader returns empty text on the home screens, so I could not navigate reliably by adb; these need a person with the remote (or a better navigation helper).
+- (d) the top-bar control center opens (picture not kept: it showed the network name); its «تلفزيونك» row opened the city/region picker (tester/step98b/d-games.png), and the «الألعاب» row was not reached. No game was pressed.
+- Freeze: not seen on 4.3.4 either (earlier numbers: 469 candidate, 4.3.3, 4.3.2 all clean).
+The owner's 4.4 setup is backed up in optimize/run/step98/before2 (kept local) and will be put back after step 100.
