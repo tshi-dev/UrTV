@@ -290,6 +290,7 @@ often describe the same bug in two ways, and both rows are kept when their guard
 | R-272 | «المباريات» asked the screensaver as it opened, to hand over kept follows (QA-9) | HomeFollows.sync in onCreate | 4.4 | `tests/ui_thread_44_test.py`, `tests/regressions/ui_thread_ipc_test.py` | launcher | Y |
 | R-273 | The notice bar read and parsed its file every minute on the UI thread (QA-10) | dueNotice -> ContentFile.read on the tick | 4.4 | `tests/ui_thread_44_test.py`, `tests/regressions/ui_thread_ipc_test.py` | launcher | N |
 | R-274 | Play Protect blocked 4.3.4 («can request access to sensitive data») | the home still held the overlay permission (SYSTEM_ALERT_WINDOW, «فوق تطبيق آخر») after its accessibility services moved to the add-on | 4.4 | `tests/regressions/lessons_test.py`, `tests/kickoff_test.py`, `tests/iqama_test.py` | launcher + extras | N |
+| R-279 | `com.google.android.sdksandbox` (the Google spelling of Android's SDK sandbox) was not core, so a list could name it | core.txt had only the `com.android.` spelling | 4.3.6 | `tests/regressions/lessons_test.py`, `tests/community_test.py` | optimize + launcher setup | N |
 
 ## Open findings of the gate (QA-n)
 

@@ -210,6 +210,8 @@ check("... and the comment credits Clean Your TV", "Clean Your TV" in (ROOT / "o
 # the Privacy Sandbox runtime and the fused location provider (Clean Your TV bf505124, f5c37c36: the latter boot-looped a TCL S5400A)
 check("core.txt protects com.android.sdksandbox and com.android.location.fused (whole names only)",
       is_core("com.android.sdksandbox") and is_core("com.android.location.fused") and not is_core("com.android.sdksandboxx") and not is_core("com.vendor.sdksandbox"), "")
+check("core.txt protects both spellings of the SDK sandbox (com.android. and com.google.android., as Clean Your TV does)",
+      is_core("com.android.sdksandbox") and is_core("com.google.android.sdksandbox") and not is_core("com.google.android.sdksandboxx"), "")
 
 print("\nall community checks passed" if not failed else f"\n{failed} failed")
 sys.exit(1 if failed else 0)
