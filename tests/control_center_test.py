@@ -36,8 +36,8 @@ check("the panel starts nothing by itself: every launch goes through the host's 
 check("the sound output opens an intent that resolves, falling back to the TV's settings",
       "resolveActivity(sound, 0) != null ? sound : new Intent(Settings.ACTION_SETTINGS)" in center)
 check("the sleep timer's tile and «أطفئ الآن» end the same way (SleepTimer.turnOff: the service, else sound off and the screensaver)",
-      "SleepTimer.turnOff(act)" in center and "static String turnOff(Context c)" in src("SleepTimer.java") and "String done = turnOff(c);" in src("SleepTimer.java")
-      and "Extras.sleepNow()" in src("SleepTimer.java").split("static String turnOff")[1])
+      "SleepTimer.turnOff(act)" in center and "static String turnOff(Context c)" in src("SleepTimer.java") and "String done = turnOff(c, end);" in src("SleepTimer.java")
+      and "Extras.sleepNow()" in src("SleepTimer.java").split("static String turnOff")[-1])
 check("«أطفئ الآن» without «إضافات تلفزيونك» (4.3.3): the tile says «يحتاج تفعيل، اضغط للتفعيل», OK opens its offer (install it, or turn it on) behind the sleep lock (ParentalPolicy.SLEEP_ACCESSIBILITY); no silent fallback to sound off and the screensaver, no notice and no delay; a long OK does the same",
       "Extras.enabled()" in center and "ParentalPolicy.SLEEP_ACCESSIBILITY" in center and 'S.t("يحتاج تفعيل، اضغط للتفعيل")' in center and center.count('Extras.intent(act, "sleep")') == 2
       and "SLEEP_OFF_NOTICE" not in center and "SLEEP_OFF_NOTICE" not in text and "offPending" not in center and "ui.postDelayed(" not in center.split("private void turnOffNow()")[1].split("// ------")[0] and "مو شغّالة" not in text)

@@ -38,7 +38,7 @@ phone = src(HOME / "PhoneApps.java")
 check("QA-6: the phone page's server threads ask now (enabledNow), the only callers that may wait",
       "return Extras.enabledNow();" in phone and [f.name for f in HOME.rglob("*.java") if "Extras.enabledNow()" in src(f)] == ["PhoneApps.java"])
 sleep = src(HOME / "SleepTimer.java")
-off = body(sleep, "static String turnOff(Context c) {")
+off = body(sleep, "static String turnOff(Context c, final Runnable end) {")
 check("QA-6: «أطفئ الآن» and the timer's end ask the add-on on a thread; the screensaver comes up from the main thread without it",
       '"sleep-off").start();' in off and off.index("new Thread(") < off.index("Extras.sleepNow()") and "Looper.getMainLooper()).post(" in off)
 carry = src(HOME / "UpdateCarry.java")
