@@ -105,7 +105,8 @@ def main():
     tag = released()
     cut = False
     if tag and git("rev-parse", "--is-shallow-repository").stdout.strip() == "true":   # a shallow clone: whole only if no cut lies in the range
-        shallow = set((ROOT / git("rev-parse", "--git-dir").stdout.strip() / "shallow").read_text().split())
+        sf = ROOT / git("rev-parse", "--git-path", "shallow").stdout.strip()   # a worktree's is the main repository's
+        shallow = set(sf.read_text().split()) if sf.is_file() else set()
         cut = bool(shallow & set(git("rev-list", f"{tag}..HEAD").stdout.split()))
     if not tag or cut:
         msg = "no release tag in this (shallow?) history: the commits since the last release cannot be listed"
