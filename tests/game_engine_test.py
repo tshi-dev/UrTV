@@ -41,7 +41,14 @@ check("R1: the UI thread asks only memory: visible(), games(), def() and signatu
 check("R1: the hub, the settings and the engine screen never read the file or the preferences themselves", not re.search(r"ContentFile|Net\.get|getSharedPreferences\(\"games_release|GameBundles", hub + act) and "getSharedPreferences" not in sett.split("private void versionTap()")[1].split("private void ")[0])
 check("held games: the hub shows a game of GameRegistry.HELD only when GameReleaseStore.nativeOn says so (memory only, on the UI thread); the signature includes them so the hub draws again when one is turned on or off; nothing else is hidden",
       "(!GameRegistry.held(g.id) || GameReleaseStore.nativeOn(g.id))" in hub and "for (String id : GameRegistry.HELD) if (nativeOn(id))" in st
-      and "static boolean nativeOn(String id) { return GameRelease.heldOn(current, id, groupB, System.currentTimeMillis()); }" in st and "static boolean heldOn(Release r, String id, boolean groupB, long now) { return GameRegistry.held(id) && on(r, id, groupB, now); }" in gr)
+      and "static boolean nativeOn(String id) { return GameRelease.heldOn(current, id, groupB, System.currentTimeMillis()); }" in st and "static boolean heldOn(Release r, String id, boolean groupB, long now) { return GameRegistry.held(id) && r != null && r.natives.contains(id) && on(r, id, groupB, now); }" in gr)
+_man = (ROOT / "android/app/src/main/AndroidManifest.xml").read_text(encoding="utf-8")
+_held = re.search(r'HELD = \{([^}]*)\}', (APP / "GameRegistry.java").read_text(encoding="utf-8")).group(1)
+_ids = re.findall(r'"([a-z-]+)"', _held)
+_acts = [g[3] for g in re.findall(r'new Game\("([a-z-]+)", "([^"]*)", "([^"]*)", "(\w+)"', (APP / "GameRegistry.java").read_text(encoding="utf-8")) if g[0] in _ids]
+check("held games: all eleven activities are not exported (an intent from outside cannot open one that is not released), and the phones have no list of games of their own: the hub's list (shown()) is the only one",
+      len(_ids) == 11 and len(_acts) == 11 and all(re.search(r'android:name="\.' + a + r'"\s+android:exported="false"', _man) for a in _acts)
+      and not any('"' + i + '"' in (ROOT / "assets/quiz/game.html").read_text(encoding="utf-8") for i in _ids))
 check("offline: the copy is the kept file (ContentFile.Kept: only an object with v = 1 is ever written, a bad answer never replaces a good one), read again after every fetch; the fetch tells when it is over",
       "KEPT.load(app)" in st and "ContentFile.refresh(app, PATH, NAME, MAX_AGE_MS," in st and "static Object valid(Object o)" in cf and "valid(MiniJson.parse(r.text())) == null) return;" in cf and "after.run()" in cf)
 check("a missing, unreadable or wrong file means nothing is on: parse gives null, on() answers false without a release, no definition is read, and until the first answer the store is empty", "if (r == null) return false;" in gr and "private static volatile Map<String, GameDef.Def> defs = Collections.emptyMap();" in st and "current = r; groupB = b; defs = m;" in st)

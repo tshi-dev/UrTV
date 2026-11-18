@@ -27,7 +27,7 @@ final class GameRelease {
     /** what a good file says: per game the two times (epoch ms, OFF when off), the open definitions, the sealed ones, and the pass records */
     static final class Release {
         final Map<String, long[]> games = new LinkedHashMap<>(); final Map<String, Object> defs = new LinkedHashMap<>(); final Map<String, String> bdefs = new LinkedHashMap<>();
-        final List<String> codes = new ArrayList<>();
+        final List<String> codes = new ArrayList<>(); final java.util.Set<String> natives = new java.util.HashSet<>();   // ids marked "native": true (a game of the app's own list, GameRegistry.HELD)
     }
 
     private static final Pattern WHEN = Pattern.compile("^(\\d{4})-(\\d{2})-(\\d{2})T(\\d{2}):(\\d{2}):(\\d{2})Z$");
@@ -57,10 +57,11 @@ final class GameRelease {
             if (!(e.getKey() instanceof String) || !ID.matcher((String) e.getKey()).matches() || !(e.getValue() instanceof Map)) continue;
             Map<?, ?> g = (Map<?, ?>) e.getValue();
             r.games.put((String) e.getKey(), new long[] {when(g.get("a")), when(g.get("b"))});
+            if (Boolean.TRUE.equals(g.get("native"))) r.natives.add((String) e.getKey());
         }
-        if (m.get("defs") instanceof Map) for (Map.Entry<?, ?> e : ((Map<?, ?>) m.get("defs")).entrySet()) if (e.getKey() instanceof String && r.games.containsKey(e.getKey())) r.defs.put((String) e.getKey(), e.getValue());
+        if (m.get("defs") instanceof Map) for (Map.Entry<?, ?> e : ((Map<?, ?>) m.get("defs")).entrySet()) if (e.getKey() instanceof String && r.games.containsKey(e.getKey()) && !r.natives.contains(e.getKey())) r.defs.put((String) e.getKey(), e.getValue());
         if (m.get("bdefs") instanceof Map) for (Map.Entry<?, ?> e : ((Map<?, ?>) m.get("bdefs")).entrySet())
-            if (e.getKey() instanceof String && r.games.containsKey(e.getKey()) && e.getValue() instanceof String && ((String) e.getValue()).length() <= 200_000) r.bdefs.put((String) e.getKey(), (String) e.getValue());
+            if (e.getKey() instanceof String && r.games.containsKey(e.getKey()) && !r.natives.contains(e.getKey()) && e.getValue() instanceof String && ((String) e.getValue()).length() <= 200_000) r.bdefs.put((String) e.getKey(), (String) e.getValue());
         if (m.get("codes") instanceof List) for (Object c : (List<?>) m.get("codes")) {
             if (r.codes.size() >= CODES_MAX) break;
             if (c instanceof String && GameCrypt.wellFormed((String) c)) r.codes.add((String) c);
@@ -77,8 +78,8 @@ final class GameRelease {
         return a || b;
     }
 
-    /** a game of the app's own list that is held back (GameRegistry.HELD): on only when the file turns it on for this group; every other id of the list is never held, so the file cannot hide it */
-    static boolean heldOn(Release r, String id, boolean groupB, long now) { return GameRegistry.held(id) && on(r, id, groupB, now); }
+    /** a game of the app's own list that is held back (GameRegistry.HELD): on only when the file has it as {"native": true, ...} and turns it on for this group; every other id of the list is never held, so the file cannot hide it */
+    static boolean heldOn(Release r, String id, boolean groupB, long now) { return GameRegistry.held(id) && r != null && r.natives.contains(id) && on(r, id, groupB, now); }
 
     /** the record of the file that this typed code opens, with the group key it holds: {record, key hex}, or null (too short, none matches); the typed text is never kept */
     static String[] match(Release r, String typed) {
