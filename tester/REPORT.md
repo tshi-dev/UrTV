@@ -3113,3 +3113,8 @@ The owner's 4.4 setup is backed up in optimize/run/step98/before2 (kept local) a
    - «افتح الشاشة الأصلية» on a TV set up by 4.3.x: **nothing happens** (page stays) because setup turned launcherx (com.google.android.apps.tv.launcherx) off. After `pm enable` of launcherx the same button opens Google TV at once (s100-orig2.png). So on a set-up TV the button is dead. Suggest: the button enables launcherx (and the setup's other home package) first, or the page says what to do.
 4. Owner's 4.4 (build 484) put back: all settings from the backup restored (saver.sh show identical, dock identical), HOME role sa.urtv.home, add-on bound, home-key on, first Home after a reboot goes to UrTV, TV muted.
 Owner request for 4.4 (chat, 18 Nov): allow more than 8 clubs/leagues, with one warning that a weak TV may slow down (sent to the supervisor).
+
+## step 97 — Downloader code 8042301  [tester, 18 Nov]  **PASS**
+- The TV had only «Downloader for TV» (hkinnovate, no codes). Owner OK'd it: I installed the real «Downloader by AFTVnews» (com.esaba.downloader) from Play.
+- Typed code 8042301 in its box and pressed Load: it downloaded `urtv-rescue.apk` = **60437 bytes**, the same as the release asset (`curl -sI` Content-Length 60437, HTTP 200). Then it asked to install; the TV said unknown apps are not allowed from this source (tester/step98b/step97-install-prompt.png). I pressed **Cancel** and did not grant the permission, so nothing was installed over anything. I deleted the downloaded file.
+- Notes for the guide: with adb-driven keys the Downloader's page cursor ate the D-pad; taps worked. A real remote should open the box with the top bar.
