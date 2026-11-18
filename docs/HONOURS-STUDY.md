@@ -116,7 +116,54 @@ Some winners in Wikidata are "unknown value" (a blank node). Those are left out,
 
 ### 2.2 Coverage: league × season × source (2021-22 to 2025-26)
 
-(The extraction from Wikipedia is running: the table is filled in by the next commit on this branch.)
+Read on 2026-11-18 from each season's Wikidata item and its ar and en Wikipedia articles, through the item's sitelinks.
+
+Key:
+- **WD**: Wikidata `P3279` (CC0);
+- **ar** / **en**: the article's infobox field «هداف الدوري» / "league topscorer" (CC BY-SA 4.0);
+- **item, none**: the season item and article exist, but neither field;
+- **·**: no Wikidata season item. The article may exist, but it was not found this way. The job would look it up by title.
+
+MLS is a calendar year: its "2021-22" column is 2022, and so on.
+
+| league | 2021-22 | 2022-23 | 2023-24 | 2024-25 | 2025-26 |
+|---|---|---|---|---|---|
+| Premier League | WD ar en | WD ar en | WD ar en | WD en | en |
+| Bundesliga | ar en | en | ar en | ar en | en |
+| Serie A | ar en | ar en | item, none | ar en | en |
+| Ligue 1 | ar en | en | ar en | ar en | en |
+| La Liga | ar en | WD ar en | ar en | ar en | ar en |
+| Eredivisie | en | en | en | ar en | ar en |
+| Süper Lig | en | en | · | en | ar en |
+| Primeira Liga | · | item, none | en | en | en |
+| MLS (calendar year) | en | en | · | en | ar |
+| Champions League | en | WD en | WD en | WD en | WD en |
+| Copa del Rey | en | en | · | · | · |
+| Coupe de France | ar en | · | · | · | · |
+| Nations League | en | WD en | · | WD en | · |
+| Botola | · | · | · | · | · |
+| Qatar Stars League | ar en | · | · | · | · |
+| Saudi Pro League | ar en | ar en | ar en | ar en | ar en |
+| UAE Pro League | ar | en | · | ar en | ar en |
+| AFC Champions League | en | · | · | · | en |
+| Egypt | ar en | · | · | · | · |
+| Iraq | ar en | · | · | · | item, none |
+| Saudi First Division | · | ar en | ar en | ar en | ar en |
+| King Cup | · | · | ar | ar | ar |
+
+What the table shows:
+
+- **Wikipedia covers nearly everything that has an article.** en has the scorer in nearly every season of the European leagues, the Saudi leagues, UAE and the UCL. ar has the field in most Saudi, Spanish, German, Italian and French seasons.
+- **Wikidata is thin.** Its top scorer is only there for the EPL to 2024-25, La Liga 2022-23, the UCL and the Nations League. On its own it is not enough.
+- **The gaps** are Morocco, Qatar, Egypt and Iraq after 2021-22, and the cups. There is no season item, so the articles were not reached this way. A lookup by title can fill some of them (ar articles are named «الدوري المصري الممتاز 2023–24» and so on).
+- **ar and en disagree** in 2 seasons:
+  - UAE 2024-25: ar 20 goals, en 16;
+  - Iraq 2021-22: ar 15, en 22.
+
+  In Ligue 1 2024-25, ar names Dembélé alone (with a note) and en names Dembélé and Greenwood level. The job must **publish a season only when the sources agree** (both articles, or an article and Wikidata), on both the name and the goals. A season with one source only is published when the field is plain (a name and a number). Every disagreement goes to the report, never to the screen.
+- **Arabic names:** where the ar article has the field, its link text is the Arabic name (حمد الله، إيغالو، كينيونيس…). Otherwise it is the player's Wikidata Arabic label. With neither, the Latin name.
+
+The raw rows are in `docs/research/honours/wp_scorers.json`.
 
 ### 2.3 Licence: what Wikipedia needs from us
 
