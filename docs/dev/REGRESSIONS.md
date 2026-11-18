@@ -15,6 +15,11 @@ Sources of the first rows: the 4.3.3/4.3.4 hotfix list, CHANGELOG.md (4.0 to 4.3
 (`tester/REPORT.md` on `work/tester-report`, steps 1 to 93). A row seeded from the tester names the step; the CHANGELOG and the report
 often describe the same bug in two ways, and both rows are kept when their guards differ.
 
+**Numbering (the gate assigns blocks; a branch takes the next free id of its block, and renumbers before merge on a clash):**
+R-284 work/45-homerole · R-285 work/44-safefix · R-286 the 500 KB page gate · **R-287–R-299 4.4 beta 2** (work/45-ui, work/45-glass, the
+settings-style row, the «كنبة» rename, the glass dock) · **R-300 on: 4.4 beta 3** (R-300 work/44b3-lite, R-301 work/44b3-oom, then in merge
+order).
+
 | ID | Symptom | Cause | Fixed | Guard | Area | On TV |
 |---|---|---|---|---|---|---|
 | R-001 | TCL: the remote froze for seconds every minute and at each return to the home | UpdateChannel.read: a provider query on the home's UI thread (tick, onResume) restarted the killed screensaver process | 4.3.4 | `tests/ui_thread_channel_test.py`, `tests/regressions/ui_thread_ipc_test.py` | launcher (TCL) | Y |
