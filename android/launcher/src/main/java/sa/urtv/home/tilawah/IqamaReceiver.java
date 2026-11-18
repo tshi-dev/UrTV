@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.media.AudioManager;
 import android.os.PowerManager;
-import android.provider.Settings;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -13,14 +12,14 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 
-import sa.urtv.home.NoticeOverlay;
+import sa.urtv.home.OverlayNotice;
 import sa.urtv.home.S;
 import sa.urtv.home.sports.KickoffPlan;
 
 /**
  * 4.4 «الإقامة»: at the iqama (IqamaScheduler), the person's iqama sound through the dua's way (its own volume, the recitation paused and brought
  * back, never over the adhan: MusicService.dua) and «تنبيه الإقامة» where the person is: a text notice over our home and the screensaver, over
- * another app the kick-off's overlay rule (KickoffPlan.where: an overlay with the TV's permission, else a text notice, nothing in kids mode).
+ * another app the kick-off's overlay rule (KickoffPlan.where: the add-on's overlay with the TV's permission for it, else a text notice, nothing in kids mode).
  */
 public class IqamaReceiver extends BroadcastReceiver {
     @Override public void onReceive(Context c, Intent intent) {
@@ -40,7 +39,10 @@ public class IqamaReceiver extends BroadcastReceiver {
             String path = source(app, sound);
             if (path != null) MusicService.dua(app, path, S.n("الإقامة"), prefs.iqamaVolume());
         }
-        if (prefs.iqamaNotice()) notice(app, prayer);
+        if (prefs.iqamaNotice()) {
+            final PendingResult done = goAsync();   // the add-on is asked on a thread (IPC, never the UI thread)
+            new Thread(() -> { try { notice(app, prayer); } catch (RuntimeException e) { Log.i("UrTVAdhan", "iqama notice: " + e.getClass().getSimpleName()); } finally { done.finish(); } }, "iqama-notice").start();
+        }
         Log.i("UrTVAdhan", "iqama: prayer=" + prayer + " sound=" + (sound.isEmpty() ? "none" : sound) + " notice=" + (prefs.iqamaNotice() ? 1 : 0));
     }
 
@@ -71,10 +73,12 @@ public class IqamaReceiver extends BroadcastReceiver {
         S.init(app);
         String line = IqamaText.line(prayer);
         int front = AdhanFront.whereNow(app);
-        int where = KickoffPlan.where(front == AdhanFront.AT_HOME ? 0 : front == AdhanFront.AT_SAVER ? 1 : 2, NoticeOverlay.kids(app), true, Settings.canDrawOverlays(app));
+        boolean kids = OverlayNotice.kids(app);
+        int where = KickoffPlan.where(front == AdhanFront.AT_HOME ? 0 : front == AdhanFront.AT_SAVER ? 1 : 2, kids, true, front == AdhanFront.AT_OTHER && !kids && OverlayNotice.ready());
         if (where == KickoffPlan.NONE) return;
+        final boolean drawn = where == KickoffPlan.OVERLAY && OverlayNotice.show(S.t("الإقامة"), line);
+        if (drawn) return;
         new android.os.Handler(android.os.Looper.getMainLooper()).post(() -> {
-            if (where == KickoffPlan.OVERLAY && NoticeOverlay.show(app, S.t("الإقامة"), line)) return;
             try { Toast.makeText(app, line, Toast.LENGTH_LONG).show(); } catch (RuntimeException ignored) { }
         });
     }

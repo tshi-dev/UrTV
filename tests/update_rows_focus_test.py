@@ -16,7 +16,7 @@ def check(name, ok, detail=""):
 
 s = (ROOT / "android/app/src/main/java/sa/urtv/screensaver/SettingsActivity.java").read_text(encoding="utf-8")
 code = re.sub(r"//[^\n]*", "", s)   # what runs, not what the comments say
-note = code.split("private void note(View last, String... lines) {")[1].split("\n    }\n")[0]
+note = code.split("private TextView note(View last, String... lines) {")[1].split("\n    }\n")[0]
 rows = s.split('View last = row("تحديث صفحة شاشة التوقف"')[1].split("restoreFocus(want, wasIndex, scrollY);")[0]
 
 check("rows follow «تحديث صفحة شاشة التوقف» (why fullScroll skipped it)", 'row("النسخ التجريبية"' in rows)

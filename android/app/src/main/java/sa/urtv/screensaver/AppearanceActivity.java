@@ -75,7 +75,27 @@ public class AppearanceActivity extends Activity {
     @Override protected void onResume() {
         super.onResume();
         look = GlassSource.page(this, root);
+        namesAsked = false;   // the names may have changed while we were away: read again (once)
         render();   // back from the packs: their counts moved
+    }
+
+    /** 4.4 QA-13: the packs' names come from the index kept on the TV: read on a thread, the page drawn again when they differ from the last ones */
+    private Map<String, String> namesSeen;
+    private boolean namesAsked;
+
+    private void askNames() {
+        if (namesAsked) return;
+        namesAsked = true;
+        final android.content.Context app = getApplicationContext();
+        new Thread(() -> {
+            final Map<String, String> m = PackStore.names(app);
+            runOnUiThread(() -> {
+                if (isFinishing() || isDestroyed()) return;
+                boolean changed = !m.equals(namesSeen);
+                namesSeen = m;
+                if (changed) render();
+            });
+        }, "pack-names").start();
     }
 
     // ---- drawing ----
@@ -354,7 +374,8 @@ public class AppearanceActivity extends Activity {
             LinearLayout set = tiles();
             Map<String, Integer> have = PackStore.installed(this);
             final Set<String> mine = prefs.homePacksOn();
-            final Map<String, String> names = PackStore.names(this);   // the pack's name, not its id («space»)
+            final Map<String, String> names = namesSeen != null ? namesSeen : new java.util.HashMap<String, String>();   // the pack's name, not its id («space»); the id until the file has been read
+            askNames();
             for (final String id : have.keySet()) {
                 final boolean on = mine.contains(id);
                 set.addView(tile("home:pack:" + id, new Mock(Mock.PHOTOS, id, look), names.containsKey(id) ? names.get(id) : id, on, v -> { prefs.setHomePacksOn(PhotoPacks.toggled(prefs.homePacksOn(), id, !on)); render(); }), tileParams());

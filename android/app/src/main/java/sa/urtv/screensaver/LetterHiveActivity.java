@@ -11,6 +11,7 @@ import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
@@ -47,7 +48,9 @@ public class LetterHiveActivity extends GameActivity {
         super.onCreate(b);
         Map<?, ?> index = GameData.load(this, "letter-hive", GamesBoardData::hiveIndex, GamesBoardData::hiveIndex);
         Map<?, ?> samples = GameData.load(this, "khanat", GamesBoardData::samples, GamesBoardData::samples);
-        bank = GamesBoardData.hive(QuizBank.load(this), index, samples);
+        final List<QuizPick.Item> base = QuizBank.load(this);
+        bank = GamesBoardData.hive(base, index, samples);
+        QuizBank.withExtras(this, base, merged -> { if (!isFinishing() && !isDestroyed() && screen != Screen.BOARD && screen != Screen.ASK) bank = GamesBoardData.hive(merged, index, samples); });   // the packs of questions come from a thread; a game in play keeps its bank
         GameData.refresh(this, "letter-hive", GamesBoardData::hiveIndex, GamesBoardData.HIVE_BYTES);
         QuizBank.refresh(this);
         names = teamNames(2);

@@ -32,12 +32,15 @@ others = [m for f in H.rglob("*.java") if f.name != "IqamaScheduler.java" for m 
 check("request 53 is the iqama's alone", not others, others)
 check("the receiver: on time only, the screen on, the sound the dua's way, the notice", "IqamaPlan.onTime(due, now)" in rec and "if (!screenOn) return;" in rec
       and 'MusicService.dua(app, path, S.n("الإقامة"), prefs.iqamaVolume());' in rec and "IqamaPlan.sound(sound, true, MusicService.carryAdhanActive(), prefs.quietNow(app), others)" in rec)
-check("the notice: the kick-off's rule (kids mode: the home only), an overlay with the permission, else a text notice",
-      "KickoffPlan.where(front == AdhanFront.AT_HOME ? 0 : front == AdhanFront.AT_SAVER ? 1 : 2, NoticeOverlay.kids(app), true, Settings.canDrawOverlays(app))" in rec
-      and "if (where == KickoffPlan.NONE) return;" in rec and "NoticeOverlay.show(app," in rec and "Toast.makeText(app, line, Toast.LENGTH_LONG)" in rec)
-ov = read(H / "NoticeOverlay.java")
-check("the overlay takes no focus and no key, 8 s, the kick-off's look; kids mode not known = as kids mode",
-      "FLAG_NOT_FOCUSABLE | WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE" in ov and "KickoffOverlay.SHOW_MS" in ov and "0xE60C0E12" in ov and "catch (RuntimeException e) { return true; }" in ov)
+check("the notice: the kick-off's rule (kids mode: the home only), the add-on's overlay with its permission, else a text notice; asked on a thread (IPC)",
+      "KickoffPlan.where(front == AdhanFront.AT_HOME ? 0 : front == AdhanFront.AT_SAVER ? 1 : 2, kids, true, front == AdhanFront.AT_OTHER && !kids && OverlayNotice.ready())" in rec
+      and "if (where == KickoffPlan.NONE) return;" in rec and "OverlayNotice.show(S.t(" in rec and "Toast.makeText(app, line, Toast.LENGTH_LONG)" in rec
+      and "goAsync()" in rec and "canDrawOverlays" not in rec)
+ov = read(H / "OverlayNotice.java")
+xn = read(ROOT / "android/extras/src/main/java/sa/urtv/home/ExtrasNotice.java")
+check("the home asks the add-on to draw it; the add-on's window takes no focus and no key, 8 s, the kick-off's look; kids mode not known = as kids mode",
+      "Extras.notice(b)" in ov and "TYPE_APPLICATION_OVERLAY" not in ov and "catch (RuntimeException e) { return true; }" in ov
+      and "FLAG_NOT_FOCUSABLE | WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE" in xn and "SHOW_MS = 8_000L" in xn and "0xE60C0E12" in xn)
 check("receiver and page in the manifest (not exported)", '<receiver android:name=".tilawah.IqamaReceiver" android:exported="false" />' in man and ".tilawah.IqamaActivity" in man)
 check("the adhan tab: a row «الإقامة» opens its page", "KIND_IQAMA = 20" in main and "startActivity(new Intent(this, IqamaActivity.class));" in main and 'S.t("الإقامة"), IqamaActivity.summary(' in main)
 check("the page: the sound (none, our bell, «صوتياتي»), its volume (left/right, heard), the notice", 'S.t("صوت الإقامة")' in act and 'S.t("نغمة قصيرة")' in act

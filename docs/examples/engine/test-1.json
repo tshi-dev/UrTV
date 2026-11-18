@@ -1,0 +1,11 @@
+{"v": 1, "id": "test-1", "name": {"ar": "اختبار ١", "en": "Test 1"}, "line": {"ar": "أسئلة عامة بسيطة لتجربة المحرك", "en": "Simple general questions to try the engine"},
+ "icon": "star", "look": {"accent": "saff"}, "kids": true, "players": {"min": 1, "max": 8, "teams": true}, "rounds": 6, "seconds": 20, "score": "first", "points": 3, "hints": true,
+ "source": {"ar": "من تأليف فريق UrTV لأغراض الاختبار", "en": "Written by the UrTV team for testing"},
+ "items": [
+  {"t": "choose", "q": {"ar": "كم عدد أيام الأسبوع؟", "en": "How many days are in a week?"}, "o": ["٥", "٦", "٧", "٨"], "a": 2, "h": "فكّر في الجمعة والسبت"},
+  {"t": "tf", "q": {"ar": "الشمس نجم", "en": "The Sun is a star"}, "a": true},
+  {"t": "odd", "q": "أي واحد من هؤلاء ليس فاكهة؟", "o": ["تفاح", "موز", "جزر", "برتقال"], "a": 2},
+  {"t": "word", "q": "ما عاصمة المملكة العربية السعودية؟", "a": ["الرياض", "Riyadh"]},
+  {"t": "blank", "q": "الماء يتجمد عند ___ درجة مئوية", "a": ["صفر", "٠", "0"]},
+  {"t": "closest", "q": "كم يوما في السنة العادية؟", "a": 365, "u": "يوم"}
+ ]}

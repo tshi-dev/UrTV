@@ -84,7 +84,12 @@ cmd() {
     package) case "$2" in
                resolve-activity) echo "priority=0 preferredOrder=0 match=0x108000 specificIndex=-1 isDefault=false"; echo "${HOME_NOW:-com.google.android.apps.tv.launcherx/.home.HomeActivity}" ;;
                compile) change "cmd package ${*:2}"; if [ "${COMPILE_FAIL:-}" = yes ]; then echo "Failure: dex2oat failed"; else echo Success; fi ;;
-               query-activities) [ "${NO_HOMES:-}" = yes ] && return 0; printf '%s\n' ${HOMES:-com.google.android.apps.tv.launcherx/.home.HomeActivity} | sed 's/^/    /' ;;
+               query-activities)   # SETTINGS_ACTS answer android.settings.SETTINGS, TV_ACTS a channel/input VIEW or SETUP_INPUTS (NO_SETTINGS=yes: none)
+                 case "$*" in
+                   *android.settings.SETTINGS*) [ "${NO_SETTINGS:-}" = yes ] && return 0; printf '%s\n' ${SETTINGS_ACTS:-com.android.tv.settings/.MainSettings} | sed 's/^/    /' ;;
+                   *android.media.tv*) [ -n "${TV_ACTS:-}" ] && printf '%s\n' $TV_ACTS | sed 's/^/    /' ;;
+                   *) [ "${NO_HOMES:-}" = yes ] && return 0; printf '%s\n' ${HOMES:-com.google.android.apps.tv.launcherx/.home.HomeActivity} | sed 's/^/    /' ;;
+                 esac ;;
              esac ;;
   esac
 }
@@ -136,6 +141,8 @@ if [ "${1:-}" = --batch ]; then
 fi
 # a TV that drops the answer about its disabled apps (nothing at all comes back, not even the end marker)
 if [ "${SILENT_OFF:-}" = yes ] && [[ "$1" == *"pm list packages -d"* ]]; then echo; exit 0; fi
+# a TV that drops the answer of the handler guard (no end marker)
+if [ "${SILENT_HANDLERS:-}" = yes ] && [[ "$1" == *"android.settings.SETTINGS"* ]]; then echo; exit 0; fi
 # a TV that drops the answer of the input guard (no end marker)
 if [ "${SILENT_DUMP:-}" = yes ] && [[ "$1" == *"dumpsys package"* ]]; then echo; exit 0; fi
 out=$(eval "$1" 2>&1); rc=$?

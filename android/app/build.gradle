@@ -58,7 +58,7 @@ android {
 }
 
 def copyPage = tasks.register('copyPage', Copy) {
-    from('../../dist') { include 'tv.html', 'tv-en.html', 'tafsir.json', 'sports.js', 'sports-en.js' }   // tv-en.html: «اللغة» English (docs/ENGLISH.md); tafsir.json: «التفسير الميسر», read by the page only with #tafsir=1
+    from('../../dist') { include 'tv.html', 'tv-en.html', 'tafsir.json', 'quotes.json', 'sports.js', 'sports-en.js' }   // tv-en.html: «اللغة» English (docs/ENGLISH.md); tafsir.json: «التفسير الميسر», read by the page only with #tafsir=1
     into "$buildDir/generated/page"
 }
 preBuild.dependsOn copyPage

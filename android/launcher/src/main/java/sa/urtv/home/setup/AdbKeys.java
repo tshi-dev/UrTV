@@ -46,7 +46,18 @@ final class AdbKeys {
         }
     }
 
-    // 4.4: no delete. The key is made once and kept for good (SetupSession.keepKey); the person revokes it on the TV («إلغاء تراخيص تصحيح USB»).
+    /**
+     * 4.4 review F20 (the owner's decision): the key is kept between the steps of one run (one key, so the TV's list does not fill: R-261) and goes
+     * when the setup is undone («تراجع») or the factory interface is given back (SetupSession.dropKey, only then, and only when nothing is waiting for it).
+     * Never after a normal done. The TV's own entry stays until the person revokes it («إلغاء تراخيص تصحيح USB»).
+     */
+    static synchronized void delete(Context c) {
+        File dir = c.getFilesDir();
+        for (String n : new String[] {"adbkey", "adbkey.pub", "adbkey.tmp", "adbkey.pub.tmp"}) {
+            File f = new File(dir, n);
+            if (f.exists() && !f.delete()) f.deleteOnExit();
+        }
+    }
 
     /** For the log only: is a key on disk now. */
     static synchronized boolean exists(Context c) { return new File(c.getFilesDir(), "adbkey").exists() || new File(c.getFilesDir(), "adbkey.pub").exists(); }

@@ -18,7 +18,7 @@
 #   optimize/dock.sh backsaver on|off        «الرجوع يفتح شاشة التوقف»: Back on our home starts the screensaver (off by default; the TV row in «الشاشة الرئيسية» is set too); no argument says how it stands
 #   optimize/dock.sh message on|off          «رسائل الجوال» (4.3 #53): a paired phone's short message shown on the screen for 20 s (on by default); no argument says how it stands
 #   optimize/dock.sh message overapps on|off «فوق التطبيقات»: also over a film or a match (on by default); off = only on our home and the screensaver
-#   optimize/dock.sh overlay on|off|status   4.4 «فوق تطبيق آخر» of the kick-off alert: lets the home draw its corner notice over another app (SYSTEM_ALERT_WINDOW; off by default)
+#   optimize/dock.sh overlay on|off|status   4.4 «فوق تطبيق آخر» of the kick-off alert: lets the add-on «إضافات تلفزيونك» draw the corner notice over another app (SYSTEM_ALERT_WINDOW of sa.urtv.extras, the home holds none; off by default)
 #   optimize/dock.sh familydns on|off|status|grant   «حماية العائلة (DNS)»: Private DNS to AdGuard Family, checked and undone by optimize/familydns.sh
 #   optimize/dock.sh cast on|off|status    «البث من الجوال» on a Chromecast with Google TV: casting and the Google Home remote kept (on, the default) or our home first (off); optimize/cast.sh
 #   optimize/dock.sh extras-setup          turn on «إضافات تلفزيونك» (UrTV Extras, optimize/install.sh addon first; once): the sleep timer's screen-off, the phone remote's
@@ -97,11 +97,18 @@ case "${1:-}:$#" in
     [ "$2" = overapps ] || { echo "usage: optimize/dock.sh message overapps on|off"; exit 1; }
     case "$3" in on|off) send PHONE_MESSAGE "--es mode status --es overapps $3" ;; *) echo "usage: optimize/dock.sh message overapps on|off"; exit 1 ;; esac ;;
   overlay:2)
-    # 4.4: the appop behind «الظهور فوق التطبيقات» for the home app; on some TVs the Settings screen for it is hidden, so the person's choice is set from here
+    # 4.4: the appop behind «الظهور فوق التطبيقات», for the ADD-ON «إضافات تلفزيونك» (sa.urtv.extras draws the notice; the home holds no overlay permission: Play Protect).
+    # On some TVs the Settings screen for it is hidden, so the person's choice is set from here. Without the add-on there is nothing to allow: say so, change nothing.
     case "$2" in
-      on) "$PY" -I optimize/tv.py "appops set sa.urtv.home SYSTEM_ALERT_WINDOW allow" > /dev/null; echo "overlay: on (the kick-off notice may show over another app when «فوق تطبيق آخر» is نعم)" ;;
-      off) "$PY" -I optimize/tv.py "appops set sa.urtv.home SYSTEM_ALERT_WINDOW default" > /dev/null; echo "overlay: off" ;;
-      status) "$PY" -I optimize/tv.py "appops get sa.urtv.home SYSTEM_ALERT_WINDOW" | tr -d '\r' ;;
+      on|status)
+        if ! "$PY" -I optimize/tv.py "pm list packages sa.urtv.extras" | tr -d '\r' | grep -qx "package:sa.urtv.extras"; then
+          echo "overlay: «إضافات تلفزيونك» is not installed on this TV: it draws the notice over another app. Offer it to the person: optimize/install.sh addon (or the add-on's install screen on the TV), then run this again"; exit 1
+        fi ;;
+    esac
+    case "$2" in
+      on) "$PY" -I optimize/tv.py "appops set sa.urtv.extras SYSTEM_ALERT_WINDOW allow" > /dev/null; echo "overlay: on (the kick-off notice may show over another app when «فوق تطبيق آخر» is نعم)" ;;
+      off) "$PY" -I optimize/tv.py "appops set sa.urtv.extras SYSTEM_ALERT_WINDOW default" > /dev/null 2>&1 || true; "$PY" -I optimize/tv.py "appops set sa.urtv.home SYSTEM_ALERT_WINDOW default" > /dev/null 2>&1 || true; echo "overlay: off" ;;
+      status) "$PY" -I optimize/tv.py "appops get sa.urtv.extras SYSTEM_ALERT_WINDOW" | tr -d '\r' ;;
       *) echo "usage: optimize/dock.sh overlay on|off|status"; exit 1 ;;
     esac ;;
   overlay:*) echo "usage: optimize/dock.sh overlay on|off|status"; exit 1 ;;

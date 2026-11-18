@@ -95,9 +95,9 @@ public class SetupActivity extends Activity {
         } else if (SetupRecovery.pending(this) && !SetupRunner.get().running()) {
             // a home switch was cut off (the app was closed, the TV restarted): the safety switch is set again from its saved deadline, and one attempt is made now
             say("بدأ تبديل سابق للشاشة الرئيسية ولم يكتمل. نحاول إرجاع الشاشة الأصلية الآن؛ إن لم تظهر وحدها فاضغط «تراجع».", GOLD);
-            SetupRecovery.rearmFromDisk(this);
             new Thread(new Runnable() {
                 @Override public void run() {
+                    SetupRecovery.rearmFromDisk(SetupActivity.this);   // 4.4 QA-13: the saved deadline is read on this thread (the safety switch is set again first)
                     SetupEngine.Result r = SetupRecovery.attempt(SetupActivity.this, new SetupEngine.Out() { @Override public void line(String t) { SetupActivity.this.line(t); } });
                     if (r != null) {
                         final String m = r.message;

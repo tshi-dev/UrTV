@@ -157,36 +157,80 @@ public class TasksActivity extends Activity implements sa.urtv.home.phone.TextTa
     @Override
     protected void onResume() {
         super.onResume();
-        render(0);
+        if (fieldFirst && field != null) field.post(field::requestFocus);   // ready to type while the list is still on its way
+        refresh(0);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        io.shutdown();   // what is queued (a change, the reminders' alarm) still runs; nothing new
     }
 
     // ---------------------------------------------------------------- list
 
-    /** false when the screensaver app is missing, too old or refuses us */
-    private boolean load() {
-        texts.clear();
-        dones.clear();
-        ids.clear();
-        dues.clear();
-        try (Cursor c = getContentResolver().query(TASKS, null, null, null, null)) {
-            if (c == null) return false;
+    /**
+     * 4.4 QA-12: the screensaver's tasks provider is asked on this screen's own thread (io), one job at a time and in order, and the answer
+     * is drawn on the UI thread when it comes; a key, onCreate and onResume never wait on the other process. The list on screen is the last
+     * answer (empty, and not yet drawn, until the first one).
+     */
+    private final java.util.concurrent.ExecutorService io = java.util.concurrent.Executors.newSingleThreadExecutor();
+    private boolean loadOk = true;   // false: the screensaver app is missing, too old or refuses us (the last answer)
+
+    /** the tasks as one answer of the provider; ok is false when the screensaver app is missing, too old or refuses us */
+    private static final class Tasks {
+        final List<String> texts = new ArrayList<>();
+        final List<Boolean> dones = new ArrayList<>();
+        final List<Long> ids = new ArrayList<>();
+        final List<Long> dues = new ArrayList<>();
+        boolean ok;
+    }
+
+    /** the provider's list: a cross-process query, only ever on the io thread */
+    private static Tasks fetch(android.content.Context app) {
+        Tasks r = new Tasks();
+        try (Cursor c = app.getContentResolver().query(TASKS, null, null, null, null)) {
+            if (c == null) return r;
             while (c.moveToNext()) {
-                texts.add(c.getString(1));
-                dones.add(c.getInt(2) != 0);
-                ids.add(c.getColumnCount() > 4 ? c.getLong(4) : 0L);
-                dues.add(c.getColumnCount() > 5 ? c.getLong(5) : 0L);
+                r.texts.add(c.getString(1));
+                r.dones.add(c.getInt(2) != 0);
+                r.ids.add(c.getColumnCount() > 4 ? c.getLong(4) : 0L);
+                r.dues.add(c.getColumnCount() > 5 ? c.getLong(5) : 0L);
             }
-            return true;
+            r.ok = true;
         } catch (RuntimeException e) {
-            return false;
+            r = new Tasks();
         }
+        return r;
+    }
+
+    /** the answer becomes the list on screen (UI thread) */
+    private void apply(Tasks t) {
+        texts.clear(); texts.addAll(t.texts);
+        dones.clear(); dones.addAll(t.dones);
+        ids.clear(); ids.addAll(t.ids);
+        dues.clear(); dues.addAll(t.dues);
+        loadOk = t.ok;
+    }
+
+    private void post(Runnable r) {
+        runOnUiThread(() -> { if (!isDestroyed() && !isFinishing()) r.run(); });
+    }
+
+    /** asks the provider on the io thread, then draws the list (focus: the row to keep) */
+    private void refresh(final int focus) {
+        final android.content.Context app = getApplicationContext();
+        io.execute(() -> {
+            final Tasks t = fetch(app);
+            post(() -> { apply(t); render(focus); });
+        });
     }
 
     /** «٥:٠٠ م» of an appointment, with the day when it is not today (the city's clock) */
     private String reminderWhen(long due) {
         java.util.TimeZone tz = ZoneFix.tvZone();
         try {
-            String[] z = ConfigSnapshot.read(this).cityZone();
+            String[] z = ConfigSnapshot.ui(this).cityZone();
             if (z != null) tz = ZoneFix.zone(ClockZone.valid(z[1]));
         } catch (RuntimeException ignored) { }
         java.util.Calendar c = java.util.Calendar.getInstance(tz), n = java.util.Calendar.getInstance(tz);
@@ -198,8 +242,9 @@ public class TasksActivity extends Activity implements sa.urtv.home.phone.TextTa
         return DigitsText.convert(f.format(new java.util.Date(due)), Digits.latin()) + "  " + time;
     }
 
+    /** draws the list as last answered (UI thread, no query) */
     private void render(int focus) {
-        boolean ok = load();
+        boolean ok = loadOk;
         list.removeAllViews();
         if (!ok) status.setText(S.t("تطبيق شاشة التوقف غير مثبّت أو قديم"));
         else if (texts.isEmpty()) list.addView(text(S.t("لا مهام اليوم"), 17, "Medium", DIM), right(0));
@@ -240,30 +285,17 @@ public class TasksActivity extends Activity implements sa.urtv.home.phone.TextTa
         }
         View f = wanted != null ? wanted : first != null ? first : mic.getVisibility() == View.VISIBLE ? mic : field;
         if (fieldFirst) f = field;   // the first render: the text field, ready to type (OK opens the keyboard); «تكلّم» is one ▼ ◀ away
+        boolean typing = field != null && field.hasFocus() && !fieldFirst;   // 4.4 review: a late render (an add's answer) must not take the focus from the person typing the next task
         fieldFirst = false;
-        if (f != null && confirm.getVisibility() != View.VISIBLE) f.post(f::requestFocus);
+        if (f != null && !typing && confirm.getVisibility() != View.VISIBLE) f.post(f::requestFocus);
     }
 
     // ---------------------------------------------------------------- changes (the list itself lives in the screensaver app)
 
     /** id is the task the person pointed at (0 when it is not known: found again by its text, the first open one) */
-    private void markDone(String t, long id) {
-        ContentValues v = new ContentValues();
-        long which = id > 0 ? id : idOf(t, true);
-        int n = which > 0 ? 0 : numberOf(t, true);
-        if (which > 0) v.put("id", which); else v.put("i", n);
-        if ((which > 0 || n > 0) && write(() -> getContentResolver().update(TASKS, v, null, null) > 0)) toast(S.t("تم: %s", t));
-        else failed();
-    }
+    private void markDone(String t, long id) { change(DONE, t, id, S.t("تم: %s", t), this::failed); }
 
-    private void delete(String t, long id) {
-        long which = id > 0 ? id : idOf(t, false);
-        int n = which > 0 ? 0 : numberOf(t, false);
-        Uri uri = which > 0 ? TASKS.buildUpon().appendPath("id").appendPath(String.valueOf(which)).build()
-                : TASKS.buildUpon().appendPath(String.valueOf(n)).build();
-        if ((which > 0 || n > 0) && write(() -> getContentResolver().delete(uri, null, null) > 0)) toast(S.t("حُذفت: %s", t));
-        else failed();
-    }
+    private void delete(String t, long id) { change(DELETE, t, id, S.t("حُذفت: %s", t), this::failed); }
 
     /** Text typed on the phone («تحكم من الجوال») becomes a task, like a spoken one. */
     @Override public boolean acceptText(String t) {
@@ -288,26 +320,56 @@ public class TasksActivity extends Activity implements sa.urtv.home.phone.TextTa
     }
 
     private boolean add(String t) {
-        ContentValues v = new ContentValues();
-        v.put("t", t);
         if (texts.size() >= MAX_TASKS) { toast(S.t("%s مهمة كحد أقصى", ar(MAX_TASKS))); return false; }   // said on the screen (a toast alone was not seen on the TV, step 27)
-        boolean ok = write(() -> getContentResolver().insert(TASKS, v) != null);
-        if (ok) toast(S.t("أُضيفت: %s", t));
-        else toast(S.t("ما أضفت المهمة: القائمة ممتلئة (%s) أو النص فاضي", ar(MAX_TASKS)));
-        return ok;
+        // the insert is on the io thread; a refused one (full list, empty text) says so when the provider answers and puts the words back in the field
+        change(ADD, t, 0, S.t("أُضيفت: %s", t),
+                () -> { toast(S.t("ما أضفت المهمة: القائمة ممتلئة (%s) أو النص فاضي", ar(MAX_TASKS))); if (field.getText().length() == 0) field.setText(t); });
+        return true;
     }
 
-    private interface Change { boolean run(); }
+    private static final int ADD = 0, DONE = 1, DELETE = 2;
 
-    private boolean write(Change c) {
-        try {
-            boolean ok = c.run();
-            ReminderScheduler.schedule(this);   // a task done or deleted may have been the next reminder
-            render(0);
-            return ok;
-        } catch (RuntimeException e) {   // SecurityException: not the same signing key; or the app is gone
-            return false;
-        }
+    /**
+     * One change of the screensaver's list, off the UI thread: the write, the reminders' alarm (a task done or deleted may have been the next
+     * reminder), then the fresh list; the UI thread then says what happened and draws it.
+     */
+    private void change(final int kind, final String t, final long id, final String okMsg, final Runnable refused) {
+        final android.content.Context app = getApplicationContext();
+        io.execute(() -> {
+            boolean ok;
+            try {
+                if (kind == ADD) {
+                    ContentValues v = new ContentValues();
+                    v.put("t", t);
+                    ok = app.getContentResolver().insert(TASKS, v) != null;
+                } else {
+                    boolean open = kind == DONE;
+                    Tasks cur = id > 0 ? null : fetch(app);
+                    long which = id > 0 ? id : idOf(cur, t, open);
+                    int n = which > 0 ? 0 : numberOf(cur, t, open);
+                    if (which <= 0 && n <= 0) ok = false;
+                    else if (kind == DONE) {
+                        ContentValues v = new ContentValues();
+                        if (which > 0) v.put("id", which); else v.put("i", n);
+                        ok = app.getContentResolver().update(TASKS, v, null, null) > 0;
+                    } else {
+                        Uri uri = which > 0 ? TASKS.buildUpon().appendPath("id").appendPath(String.valueOf(which)).build()
+                                : TASKS.buildUpon().appendPath(String.valueOf(n)).build();
+                        ok = app.getContentResolver().delete(uri, null, null) > 0;
+                    }
+                }
+                ReminderScheduler.schedule(app);
+            } catch (RuntimeException e) {   // SecurityException: not the same signing key; or the app is gone
+                ok = false;
+            }
+            final boolean done = ok;
+            final Tasks fresh = fetch(app);
+            post(() -> {
+                apply(fresh);
+                if (done) { render(0); toast(okMsg); }
+                else refused.run();
+            });
+        });
     }
 
     private void failed() {
@@ -315,19 +377,19 @@ public class TasksActivity extends Activity implements sa.urtv.home.phone.TextTa
         render(0);
     }
 
-    /** the id of the first task with this text (an open one when openOnly); 0 when there is none, or the app gives no ids */
-    private long idOf(String t, boolean openOnly) {
-        if (!load()) return 0;
-        for (int i = 0; i < texts.size(); i++)
-            if (texts.get(i).equals(t) && !(openOnly && dones.get(i))) return ids.get(i);
+    /** the id of the first task with this text (an open one when openOnly) in this answer; 0 when there is none, or the app gives no ids */
+    private static long idOf(Tasks cur, String t, boolean openOnly) {
+        if (cur == null || !cur.ok) return 0;
+        for (int i = 0; i < cur.texts.size(); i++)
+            if (cur.texts.get(i).equals(t) && !(openOnly && cur.dones.get(i))) return cur.ids.get(i);
         return 0;
     }
 
     /** the number the screensaver gives it now (from 1), found again by its text: for an older screensaver app that has no ids */
-    private int numberOf(String t, boolean openOnly) {
-        if (!load()) return 0;
-        for (int i = 0; i < texts.size(); i++)
-            if (texts.get(i).equals(t) && !(openOnly && dones.get(i))) return i + 1;
+    private static int numberOf(Tasks cur, String t, boolean openOnly) {
+        if (cur == null || !cur.ok) return 0;
+        for (int i = 0; i < cur.texts.size(); i++)
+            if (cur.texts.get(i).equals(t) && !(openOnly && cur.dones.get(i))) return i + 1;
         return 0;
     }
 
@@ -406,8 +468,7 @@ public class TasksActivity extends Activity implements sa.urtv.home.phone.TextTa
             heard = new ArrayList<>();
             heard.add(q);
         }
-        load();
-        TaskVoice.Result r = null;
+        TaskVoice.Result r = null;   // against the list on screen (the last answer; the screen's return refreshes it)
         for (String h : heard) {   // the recognizer's best guess first; the first one that is a command
             r = TaskVoice.understand(h, texts, dones);
             if (r.kind != TaskVoice.Kind.NONE) break;

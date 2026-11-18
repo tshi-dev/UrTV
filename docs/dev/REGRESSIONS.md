@@ -276,7 +276,7 @@ often describe the same bug in two ways, and both rows are kept when their guard
 | R-258 | Menu inside an edit mode opened «المصادر» over it | the Inputs branch did not check for an edit mode (review F2) | 4.3.4 | `tests/qa_434_test.py` | launcher | Y |
 | R-259 | Setup page English while the home was Arabic; «2 apps chosen» for none (tester step 86/88) | the page language and the count were not read from the right state | 4.4 (build 386) | `tests/home_fix2_test.py` | launcher (setup) | Y |
 | R-260 | Setup page larger than the screen, cut at the top; QR at the far right (tester step 86) | the setup window was not fitted to the screen | 4.4 (build 376) | `tests/home_fix_test.py` | launcher (setup) | Y |
-| R-261 | Setup made a new ADB key at each start; the TV's key list filled up (tester step 86) | no single kept ADB key | 4.4 (build 376) | `tests/setup_engine_test.py` | launcher (setup) | N |
+| R-261 | Setup made a new ADB key at each start; the TV's key list filled up (tester step 86) | no single kept ADB key between the steps (and, owner's decision 4.4 review F20: deleted at «تراجع» and the factory restore, never after a normal done) | 4.4 (build 376) | `tests/setup_engine_test.py` | launcher (setup) | N |
 | R-262 | «إلغاء» on the USB-debugging question: the setup hung or closed with no message (tester step 86) | the cancel was not handled as an answer | 4.4 (build 386) | `tests/setup_runner_test.py`, `tests/home_fix_test.py` | launcher (setup) | Y |
 | R-263 | Google TV kept its home: UrTV never the home after the setup (tester steps 86-88) | Google TV took the home role back; no Home-key catch or window watch | 4.4 (build 413) | `tests/home_fix_test.py`, `tests/home_fix2_test.py`, `tests/home_fix3_test.py`, `tests/build413_test.py` | launcher + extras (Google TV) | Y |
 | R-264 | The add-on was not bound after a reboot or a force-stop on the TCL (tester steps 85, 88) | nothing healed a listed but unbound accessibility service | 4.4 (build 413) | `tests/dock_sleep_test.py`, `tests/home_fix3_test.py`, `tests/extras_test.py` | extras (TCL) | Y |
@@ -289,22 +289,28 @@ often describe the same bug in two ways, and both rows are kept when their guard
 | R-271 | Pressing the adhan preview in «مركز التحكم» asked the screensaver on the UI thread (QA-8) | Prefs.playFor -> Place.get on the press | 4.4 | `tests/ui_thread_44_test.py`, `tests/regressions/ui_thread_ipc_test.py` | launcher | Y |
 | R-272 | «المباريات» asked the screensaver as it opened, to hand over kept follows (QA-9) | HomeFollows.sync in onCreate | 4.4 | `tests/ui_thread_44_test.py`, `tests/regressions/ui_thread_ipc_test.py` | launcher | Y |
 | R-273 | The notice bar read and parsed its file every minute on the UI thread (QA-10) | dueNotice -> ContentFile.read on the tick | 4.4 | `tests/ui_thread_44_test.py`, `tests/regressions/ui_thread_ipc_test.py` | launcher | N |
+| R-274 | Play Protect blocked 4.3.4 («can request access to sensitive data») | the home still held the overlay permission (SYSTEM_ALERT_WINDOW, «فوق تطبيق آخر») after its accessibility services moved to the add-on | 4.4 | `tests/regressions/lessons_test.py`, `tests/kickoff_test.py`, `tests/iqama_test.py` | launcher + extras | N |
 | R-275 | An LG-branded CVTE Android 9 set: the LG logo, then a black screen; the home died at every start | `new WebView` threw on a TV without a working system WebView, and the home card made one at each start | 4.3.5 | `tests/webview_guard_test.py` | launcher (CVTE, Android 9) | N |
 | R-276 | A home that kept crashing or hanging right after start left the TV on a black screen | no crash-loop guard: two quick crashes or two starts without a first frame now open SafeActivity with the TV's own home | 4.3.5 | `tests/crash_loop_test.py` | launcher | N |
 | R-277 | A call newer than Android 9 could crash the home on Android 8 and 9 TVs | minSdk 26 and lint does not stop the build: nothing compiled the home against API 28 | 4.3.5 | `tests/api28_compile_test.py` | launcher | N |
+| R-278 | A community list could turn off a TV's own Settings app or its Live TV / channel app, leaving no way back to the inputs or the network (the comparison with Clean Your TV, docs/research/COMPARE-2026-11.md) | the guards asked the TV only for Home, inputs and keyboards, not for the apps that open Settings, a channel or the inputs' setup | 4.3.6 | `tests/input_guard_test.py`, `tests/setup_community_test.py` | optimize + launcher setup | N |
+| R-279 | `com.google.android.sdksandbox` (the Google spelling of Android's SDK sandbox) was not core, so a list could name it | core.txt had only the `com.android.` spelling | 4.3.6 | `tests/regressions/lessons_test.py`, `tests/community_test.py` | optimize + launcher setup | N |
+| R-280 | Community lists named a TV's own Settings, Live TV / channel and tuning apps (Whale OS Settings, Vestel's com.apps.channels, Beko/Grundig channels, Sony broadcast and tuning settings…); with one off a TV can lose its way back to Settings, its channels or its inputs | keep.txt did not name them, and the runtime guard (R-278) was not there yet | 4.3.6 | `tests/regressions/keep_list_test.py` | optimize + launcher setup | N |
+| R-281 | The remote froze on our home on an Android 8.0 OTT box (Percee); uninstalling UrTV fixed it | the accessibility key filter asked for every key while our home was in front: «the system takes the Settings key» was always true on a box without Android TV's SystemUI, and Android 8.0 holds the input queue for the answer | 4.3.6 | `tests/settings_key_test.py`, `tests/api26_compile_test.py` | launcher + extras | N |
 
 ## Open findings of the gate (QA-n)
 
 Paths the UI-thread rule (`tests/regressions/ui_thread_ipc_test.py`) found already there at 4.3.4. They are in its baseline so the gate
-passes today, each with its QA number; none is fixed by the gate. A fix removes the line from `tests/regressions/ui_thread_baseline.txt`
+passes today, each with a written reason (the test refuses the bare «baseline 4.3.4»); the findings carry their QA number (all fixed in 4.4); none was fixed by the gate itself. A fix removes the line from `tests/regressions/ui_thread_baseline.txt`
 and adds a row above.
 
 - **QA-1** `MainActivity.onResume -> updateClock`: the first draw read `ConfigSnapshot.read` on the UI thread. **Fixed in 4.3.4**
   (R-254, `tests/qa_434_test.py`): a home made again draws from the process's last answer; only a cold process's very first draw
   still reads (nothing on screen yet), and that one line stays in the baseline.
 - **QA-2** the screensaver (`ScreenDream` / its `MainActivity`) `dispatchKeyEvent -> NowPlayingBridge.adhanState`: a cross-process query
-  to the home on a key. **Open, for 4.4:** a cached state could make OK miss an adhan that just started; it needs the home's adhan
-  broadcast feeding the cache. The query goes to the home's own process (rarely killed).
+  to the home on a key. **Fixed in 4.4** (2981706d, `tests/ui_thread_44_test.py`): the key decides from the adhan state the page's own ask
+  (every 3 s, `adhan()`) or a thread last kept (`adhanKnown`, fresh for 8 s), never a query; the stop call goes on a thread. The first key of an
+  adhan that began a second earlier may not know it yet, as the bar did not.
 - **QA-3** the reminder card's refresh, the return's reschedule and OK on the card read and wrote the screensaver's tasks provider on the
   UI thread. **Fixed in 4.3.4** (R-255, `tests/qa_434_test.py`).
 - **QA-4** `updateClock -> AdhanSync.onConfig -> Place.get`: **not a bug.** onConfig calls the 3-argument `Place.get`, which never
@@ -323,6 +329,22 @@ and adds a row above.
   when the home kept some. **Fixed in 4.4** (15c4a306, `tests/ui_thread_44_test.py`).
 - **QA-10** (4.4, R1, low) the home's notice bar reads and parses the notices file (`ContentFile.read`, own disk, bounded) at every
   minute tick and return (`updateHomeNudge -> dueNotice`). **Fixed in 4.4** (d0c0b9c0, `tests/ui_thread_44_test.py`).
+- **QA-11** (R1, the TCL freeze's shape) the home's and its screens' reads of the screensaver's settings on the UI thread (`GlassSource.light` /
+  `lookName` / `pageFor`, `Digits.init`, the pill row, the markets, matches, tasks and reminder screens). **Fixed in 4.4** (3f3fde22,
+  `tests/ui_thread_44_test.py`): `ConfigSnapshot.ui` serves the known answer, else the last real one kept on disk (with its look, appearance and
+  buttons), and a thread reads the fresh one; a change shows at the next draw, return or tick.
+- **QA-12** (R1, low) one-off calls into the screensaver's or the home's provider from a screen's open or a press, on the UI thread.
+  **Fixed in 4.4**: the tasks and reminder screens and their alarm (e26f9f9c); the matches page copy, the language choice in the first-run setup,
+  the market toggles, the «تلاوة وأذان» prayer row and its alarm (e8e26069); the settings screens' backdrop, the hub's `CleanMask.state`, the
+  «جرّب» whistle (2981706d). All on threads of their own, the result drawn when it comes (`tests/ui_thread_44_test.py`).
+- **QA-13** (R1, low) the app's own disk work at a start or a render. **Fixed in 4.4**: the last-picture overlays, the glass backdrop, the
+  first-frame wallpaper, the setup ledger, the model defaults and the report's `logcat` read (e8e26069); the screensaver's start picture, the
+  settings' bundled pictures, the packs' names and credits, the published corrections (2981706d). Decoded or read on a thread; a picture that
+  comes after its frame is not drawn (the home's overlay after 400 ms) or is drawn when it is here.
+
+At 4.4 the baseline has no «open» line. What stays in it has a reason that says why: the WebView's own IO thread (`PhotoCache.serve`, the
+card's `shouldInterceptRequest`), the update's and the phone page's own threads, and small `commit()` writes of the app's own prefs and the
+safe-mode counter (own disk, no other process).
 
 The 4.3.4 review's F1 and F2: R-257, R-258.
 

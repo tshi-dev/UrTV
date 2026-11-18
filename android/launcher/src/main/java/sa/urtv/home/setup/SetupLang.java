@@ -38,7 +38,10 @@ final class SetupLang {
         String v = Tr.norm(lang);
         if (v.equals(S.lang())) return;
         S.set(a, v);
-        save(a, v);
+        // 4.4 QA-12: the screensaver is told on a thread, not by a call on the press; the choice is already kept here (S.set), and the screen built
+        // again in it does not ask the screensaver for the language for 10 s after the person's own choice (S.refresh)
+        final Context app = a.getApplicationContext();
+        new Thread(() -> save(app, v), "setup-lang").start();
         a.recreate();
     }
 }

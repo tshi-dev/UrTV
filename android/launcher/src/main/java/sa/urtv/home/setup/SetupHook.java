@@ -12,14 +12,23 @@ import android.widget.Toast;
 public final class SetupHook {
     private SetupHook() { }
 
+    /** 4.4 QA-13: the setup ledger's small files are read on a thread of their own, never in the home's onCreate; what they decide (the safety switch, the notice) comes a moment later */
     public static void atHomeStart(final Context c) {
+        final Context app = c.getApplicationContext();
+        new Thread(new Runnable() {
+            @Override public void run() { try { atHomeStartNow(app); } catch (RuntimeException ignored) { } }
+        }, "setup-home-check").start();
+    }
+
+    private static void atHomeStartNow(final Context app) {
         try {
-            final Context app = c.getApplicationContext();
             clearOldFails(app);
             if (!SetupRecovery.pending(app)) { migrate(app); return; }
             SetupRecovery.rearmFromDisk(app);
             if (SetupRecovery.gaveUp(app)) {
-                Toast.makeText(app, SetupRecovery.GAVE_UP_NOTICE, Toast.LENGTH_LONG).show();
+                new android.os.Handler(android.os.Looper.getMainLooper()).post(new Runnable() {
+                    @Override public void run() { Toast.makeText(app, SetupRecovery.GAVE_UP_NOTICE, Toast.LENGTH_LONG).show(); }
+                });
                 return;
             }
             new Thread(new Runnable() {
@@ -115,7 +124,7 @@ public final class SetupHook {
         try {
             final Context app = c.getApplicationContext();
             final FileStore store = new FileStore(app);
-            if (!"1".equals(trim(store.get(SetupEngine.HOME_WANTED))) || SetupRecovery.pending(app) || SetupRunner.get().running() || oursIsDefault(app)) return;
+            if (!"1".equals(trim(store.get(SetupEngine.HOME_WANTED))) || stockBackOffered(app) || SetupRecovery.pending(app) || SetupRunner.get().running() || oursIsDefault(app)) return;
             if (!trim(store.get(SetupEngine.HOME_REAPPLIED)).isEmpty()) {
                 if (reapplyTried == 0) { reapplyTried = 1; android.util.Log.i(TAG, "home role: lost again after one re-apply; left as it is"); }
                 return;
@@ -238,8 +247,28 @@ public final class SetupHook {
         try { FileStore f = new FileStore(c); f.put(STOCK_OFFER, ""); f.put(HOME_GUARD, BootGuard.fresh(System.currentTimeMillis()).text()); } catch (Exception ignored) { }
     }
 
+    /** 4.4 review A2-F1: the person pressed the bar to take the TV's own home: our wish for the home goes too (reapplyIfLost and the add-on's watch would undo the rescue), and the add-on is told at once */
+    public static void stockTaken(Context c) {
+        clearStockBackOffer(c);
+        try { new FileStore(c).put(SetupEngine.HOME_WANTED, ""); } catch (Exception ignored) { }
+        tellWatchNow(c);
+    }
+
     /** Our home reached the screen (MainActivity.onResume): this boot is fine and BootGuard's count starts again (the factory step's, and 4.4 the home's own). One small read; a write only when it changes. */
-    public static void homeUp(Context c) {
+    public static void homeUp(final Context c) {
+        // 4.4 QA-13: on a thread of its own (the ledger's files, the journal, the guard), one at a time; the home's return never reads them
+        if (!homeUpRunning.compareAndSet(false, true)) return;
+        final Context app = c.getApplicationContext();
+        new Thread(new Runnable() {
+            @Override public void run() {
+                try { homeUpNow(app); } catch (RuntimeException ignored) { } finally { homeUpRunning.set(false); }
+            }
+        }, "setup-home-up").start();
+    }
+
+    private static final java.util.concurrent.atomic.AtomicBoolean homeUpRunning = new java.util.concurrent.atomic.AtomicBoolean();
+
+    private static void homeUpNow(Context c) {
         confirmIfDrawn(c);
         reapplyIfLost(c);
         tellWatch(c);

@@ -71,4 +71,8 @@ home = eng[eng.index("    private Result homeSwitch() throws IOException {"):eng
 check("the 5-minute safety switch is armed on every path of the switch before the role is touched, and the switch does not start without it",
       home.index("deadman.arm(SAFETY_SECONDS)") < home.index('sh.run("cmd role add-role-holder --user 0 android.app.role.HOME " + SELF)') and "if (!deadman.arm(SAFETY_SECONDS))" in home
       and "SAFETY_SECONDS = 300" in eng.replace(" ", " "))
+st = hook[hook.index("public static void stockTaken"):][:400]
+check("4.4 review A2-F1: the stock-home bar clears HOME_WANTED and tells the add-on at once; reapplyIfLost waits while the offer is up (else the rescue is undone at the next boot)",
+      'HOME_WANTED, ""' in st and "tellWatchNow(c)" in st and "SetupHook.stockTaken(this)" in main and "stockBackOffered(app) || SetupRecovery.pending(app)" in hook)
 sys.exit(1 if failed else 0)
+

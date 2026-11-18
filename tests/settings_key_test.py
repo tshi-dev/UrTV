@@ -44,15 +44,15 @@ check("the xml comment says why", "canRequestFilterKeyEvents:" in xml and "set a
 check("the service is declared once, in the add-on, with its xml, behind BIND_ACCESSIBILITY_SERVICE; the home has none",
       xman.count('android:name="sa.urtv.home.ExtrasA11yService"') == 1 and "@xml/extras_service" in xman and "BIND_ACCESSIBILITY_SERVICE" not in man
       and 'android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE"' in xman.split('android:name="sa.urtv.home.ExtrasA11yService"')[1][:300])
-check("no new permission for this (the launcher declares the same ones, and our own EXTRAS one)", man.count("<uses-permission") == 25)   # 25 since 4.4 the kick-off alert (SYSTEM_ALERT_WINDOW, «فوق تطبيق آخر», off by default); 19 since REQUEST_DELETE_PACKAGES («حذف التطبيق» in the app menu); 21 since targetSdk 34: FOREGROUND_SERVICE_SPECIAL_USE (SetupService must name its type) and USE_EXACT_ALARM (the adhan stays exact on a new install)
+check("no new permission for this (the launcher declares the same ones, and our own EXTRAS one)", man.count("<uses-permission") == 24)   # 24 since 4.4 the overlay permission moved to the add-on (was 25 with SYSTEM_ALERT_WINDOW);   # 25 since 4.4 the kick-off alert (SYSTEM_ALERT_WINDOW, «فوق تطبيق آخر», off by default); 19 since REQUEST_DELETE_PACKAGES («حذف التطبيق» in the app menu); 21 since targetSdk 34: FOREGROUND_SERVICE_SPECIAL_USE (SetupService must name its type) and USE_EXACT_ALARM (the adhan stays exact on a new install)
 check("the TV's accessibility settings tell the person about the Settings key", "زر الإعدادات في الريموت يفتح إعدادات التلفزيون" in text("android/extras/src/main/res/values/strings.xml"))
 
 # the service
 fk = ts.split("private void filterKeys() {")[1].split("\n    }\n")[0]
 check("the flag follows SettingsKey.filterWanted, set and cleared with setServiceInfo",
-      "SettingsKey.filterWanted(front, stockHome, lowRam, homeKeyLost)" in fk and "FLAG_REQUEST_FILTER_KEY_EVENTS" in fk and "setServiceInfo(info)" in fk and "~AccessibilityServiceInfo.FLAG_REQUEST_FILTER_KEY_EVENTS" in fk)
+      "Build.VERSION.SDK_INT >= SettingsKey.MIN_FILTER_SDK && (" in fk and "SettingsKey.filterWanted(front, stockHome, lowRam, homeKeyLost, Build.VERSION.SDK_INT)" in fk and "FLAG_REQUEST_FILTER_KEY_EVENTS" in fk and "setServiceInfo(info)" in fk and "~AccessibilityServiceInfo.FLAG_REQUEST_FILTER_KEY_EVENTS" in fk)
 check("the filter is set when the service connects", "filterKeys();" in ts.split("protected void onServiceConnected() {")[1].split("\n    }\n")[0])
-ok = ts.split("protected boolean onKeyEvent(KeyEvent e) {")[1].split("\n    }\n")[0]
+ok = ts.split("private boolean keyEvent(KeyEvent e) {")[1].split("\n    }\n")[0]   # (4.3.6: onKeyEvent wraps it in a catch-all)
 check("onKeyEvent: SettingsKey decides; PASS returns false at once; nothing is logged or kept there",
       "settingsKey.decide(e.getKeyCode(), e.getAction(), e.getRepeatCount(), homeFront, stockHome, lost != null && lost)" in ok and "if (d == SettingsKey.PASS) return false;" in ok
       and "log(" not in ok and "Log." not in ok and "getScanCode" not in ok and "getMetaState" not in ok and ok.index("return false") < ok.index("new Thread"), ok)
@@ -87,6 +87,10 @@ check("FEATURES.md, SETTINGS.md and TVS.md say what the Settings key does outsid
       "SettingsKey" in tvs and "زر الإعدادات" in feat and "outside our home" in sett, "")
 check("the receiver-mode design is written down (docs/TVS.md)", "«وضع الرسيفر»" in tvs and "Shell cannot change component state" in tvs)
 
+check("4.3.6: homeKeyLost is asked only on an Android TV (FEATURE_LEANBACK) of 11 or newer", "SettingsKey.homeKeyLostApplies(Build.VERSION.SDK_INT, c.getPackageManager().hasSystemFeature(PackageManager.FEATURE_LEANBACK))" in ts)
+okc = re.search(r"protected boolean onKeyEvent\(KeyEvent e\) \{\s*try \{[^}]*return keyEvent\(e\);\s*\} catch \(Throwable t\) \{\s*(?:log\(.settings key=error.\);[^\n]*\s*)?return false;", ts)
+check("4.3.6: onKeyEvent never throws into Android's key dispatch (catches everything and gives the key back)", bool(okc))
+check("4.3.6 review F8: the catch-all logs one fixed word, never the key or the exception", 'log("settings key=error");' in ts and "t.getMessage" not in ts)
 if not shutil.which("javac"):
     print("SKIP settings key cases: no javac here")
     sys.exit(1 if failed else 0)

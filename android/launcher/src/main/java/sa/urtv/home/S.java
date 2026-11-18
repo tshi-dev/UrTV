@@ -78,7 +78,8 @@ public final class S {
     /** what the screensaver says now (Digits passes every snapshot on); a missing screensaver leaves the kept value */
     static void remember(Context c, ConfigSnapshot snap) {
         init(c);
-        if (snap == null || snap.fragment == null) return;
+        if (snap == null || snap.fragment == null || snap.stale) return;   // an old copy is never an answer
+        if (setAt != 0 && android.os.SystemClock.elapsedRealtime() - setAt < 10_000) return;   // 4.4 review: the person's own choice just now beats an answer the screensaver gave before it heard it
         String now = snap.lang();
         if (now.equals(lang)) return;
         lang = now;

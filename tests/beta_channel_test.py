@@ -2,6 +2,7 @@
 """4.3.3 «النسخ التجريبية»: the beta channel of «تحديث تلفزيوني». Off by default; on, the version and the APKs come from the apk-beta release (the
 screensaver's newest-version line and the home's update screen); off again never downgrades; `saver.sh updatechannel beta|latest|next`; and the owner's
 workflow promote-beta.yml copies an approved apk-next build to apk-beta as it is.   Run: python3 tests/beta_channel_test.py"""
+import os
 import re
 import shutil
 import subprocess
@@ -64,6 +65,8 @@ check("it copies the source release's files as they are (no build, no signing st
 check("it refuses when the source holds another build than the one asked for", "$SRC holds build" in wf and "exit 1" in wf)
 check("the source is apk-next (default) or apk-latest, nothing else (4.3.4: so beta TVs also get what everyone gets)", "default: apk-next" in wf and "- apk-latest" in wf and 'case "$SRC" in apk-next|apk-latest)' in wf)
 check("it publishes the two APKs and version.txt to apk-beta, version.txt last", "urtv-screensaver.apk" in wf and "urtv-home.apk" in wf and wf.rindex("next/version.txt") > wf.rindex("next/urtv-home.apk") and "apk-beta" in wf)
+check("4.4 review D-F1: promote-beta also copies urtv-extras.apk (UpdateRules.APKS has it: a TV with the add-on fails the whole update without it), before version.txt",
+      "--pattern 'urtv-extras.apk'" in wf and "next/urtv-extras.apk" in wf and wf.rindex("next/version.txt") > wf.rindex("next/urtv-extras.apk"))
 check("the apk-beta release is a pre-release and never the repository's latest", "--prerelease" in wf and "--latest=false" in wf)
 check("nothing else promotes: no other workflow writes apk-beta", not any(re.search(r"tag_name:\s*apk-beta|release\s+(edit|create|upload|delete)\s+apk-beta|--tag\s+apk-beta", p.read_text(encoding="utf-8")) for p in (ROOT / ".github/workflows").glob("*.yml") if p.name != "promote-beta.yml"))
 if shutil.which("python3"):
@@ -74,7 +77,8 @@ if shutil.which("python3"):
               set(doc["jobs"]) == {"source", "gate", "promote"} and doc["jobs"]["gate"].get("uses") == "./.github/workflows/regressions.yml"
               and doc["jobs"]["promote"].get("needs") == "gate")
     except ImportError:
-        print("SKIP yaml: not installed")
+        if os.environ.get("CI"): check("PyYAML is installed in CI (the workflow guard needs it)", False, "pip install pyyaml")
+        else: print("SKIP yaml: not installed")
 
 # the rules run
 if not shutil.which("javac"):

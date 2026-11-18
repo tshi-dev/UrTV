@@ -24,7 +24,7 @@ public final class Digits {
         SharedPreferences sp = c.getApplicationContext().getSharedPreferences(PREFS, Context.MODE_PRIVATE);
         latin = sp.getBoolean("latin", false);
         clock24 = sp.getBoolean("clock24", false);
-        remember(c, ConfigSnapshot.read(c));
+        remember(c, ConfigSnapshot.ui(c));   // 4.4 QA-11: the kept answer; the fresh one is read on a thread (ConfigSnapshot.ui) and passed to remember there
     }
 
     /** the home screen's minute tick already reads the snapshot: it passes it on */

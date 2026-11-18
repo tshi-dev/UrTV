@@ -32,7 +32,9 @@ for name, src, flag in (("the dream", dream, "attached"), ("the preview", previe
     check(f"{name} listens for it while it is on the screen (registered when it starts, unregistered when it ends)",
           "InternalReceivers.register(this, changed, new IntentFilter(Prefs.CHANGED))" in src and "unregisterReceiver(changed)" in src, "")
     handler = src.split("onReceive(Context c, Intent i) {")[1].split("\n        }\n")[0]
+    # 4.4 review F1: the receiver hands over to rebuildIfChanged (a change during the async start is kept and looked at once the page exists)
+    rebuild = (src.split("private void rebuildIfChanged(Context c) {")[1] if "private void rebuildIfChanged(Context c) {" in src else src.split("private void rebuild() {")[1]).split("\n    }\n")[0]
     check(f"{name} throws the old page away and builds a new one, only while it is up",
-          f"if (!{flag} || web == null) return;" in handler and "ScreenView.release(old)" in handler and "show(" in handler
-          and handler.index("ScreenView.release(old)") < handler.index("show("), handler)
+          f"if (!{flag}" in (handler + rebuild) and "web == null) return;" in rebuild and "ScreenView.release(old)" in rebuild and "show(" in rebuild
+          and rebuild.index("ScreenView.release(old)") < rebuild.index("show("), rebuild)
 sys.exit(1 if failed else 0)

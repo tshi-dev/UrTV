@@ -20,13 +20,21 @@ public class MainActivity extends Activity {
     /** settings were saved while this preview is open: it starts over with them (the page reads its settings once) */
     private final BroadcastReceiver changed = new BroadcastReceiver() {
         @Override public void onReceive(Context c, Intent i) {
-            if (!alive || web == null) return;
-            WebView old = web;
-            web = null;
-            ScreenView.release(old);
-            show();
+            if (!alive) return;
+            if (gate.changedWhileStarting()) return;   // 4.4 review F1: the page is not created yet; it is looked at again when it is (createPage)
+            rebuild();
         }
     };
+    private final StartGate gate = new StartGate();
+
+    private void rebuild() {
+        if (!alive || web == null) return;
+        if (new Prefs(this).screenUrl(this, false).equals(shownUrl)) return;   // as the dream (S6): a change the page is not opened with leaves it as it is (the late prayer correction, kids mode, are in the address)
+        WebView old = web;
+        web = null;
+        ScreenView.release(old);
+        show();
+    }
 
     @Override
     protected void onCreate(Bundle b) {
@@ -39,6 +47,14 @@ public class MainActivity extends Activity {
     }
 
     private String shownUrl;
+    /** with the adhan bar off the page does not ask the launcher about the adhan: the preview does, every 3 s, on a thread (see ScreenDream) */
+    private final Runnable adhanWatch = new Runnable() {
+        @Override public void run() {
+            if (!new Prefs(MainActivity.this).adhanBar()) NowPlayingBridge.refreshAdhan(MainActivity.this);
+            snapHandler.postDelayed(this, 3000);
+        }
+    };
+
     private final android.os.Handler snapHandler = new android.os.Handler(android.os.Looper.getMainLooper());
     private final Runnable snapTick = new Runnable() {
         @Override public void run() {
@@ -51,6 +67,7 @@ public class MainActivity extends Activity {
     /** the same start as the dream's: the last picture of the page (or the ground colour) at once, the page's view after the first frame (SaverStart) */
     private void show() {
         shownUrl = new Prefs(this).screenUrl(this, false);
+        final int token = gate.begin();   // a start that a newer one has replaced creates nothing
         getWindow().setBackgroundDrawable(new android.graphics.drawable.ColorDrawable(0xFF040E09));   // the page's ground, as the dream's window: not black until the page has painted
         SaverStart.begin(new SaverStart.Host() {
             @Override public Context context() { return MainActivity.this; }
@@ -59,8 +76,13 @@ public class MainActivity extends Activity {
                 v.setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
                     | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY | View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
             }
-            @Override public WebView createPage() { web = ScreenView.create(MainActivity.this, MainActivity.this::gone, false); return web; }
-            @Override public boolean alive() { return alive && !isFinishing(); }
+            @Override public WebView createPage() {
+                web = ScreenView.create(MainActivity.this, MainActivity.this::gone, false);
+                gate.created(token);
+                if (gate.takeDirty()) snapHandler.post(MainActivity.this::rebuild);   // a change came in during the start: the preview starts over with it
+                return web;
+            }
+            @Override public boolean alive() { return alive && !isFinishing() && gate.current(token); }
         }, shownUrl, () -> {
             snapHandler.removeCallbacks(snapTick);
             snapHandler.postDelayed(snapTick, SaverSnapshot.FIRST_MS);
@@ -81,10 +103,10 @@ public class MainActivity extends Activity {
     public boolean dispatchKeyEvent(KeyEvent e) {
         // as in the dream: while the adhan plays, OK (or any key, with «إيقاف الأذان بأي زر») stops it and the preview stays
         boolean down = e.getAction() == KeyEvent.ACTION_DOWN;
-        org.json.JSONObject adhan = down ? NowPlayingBridge.adhanState(this) : null;
+        org.json.JSONObject adhan = down ? NowPlayingBridge.adhanKnown(this) : null;
         boolean live = adhan != null && adhan.optBoolean("live");
         int d = adhanKeys.decide(e.getKeyCode(), e.getAction(), e.getRepeatCount(), live, new Prefs(this).adhanBar(), true, live && adhan.optBoolean("any"));
-        if (d == AdhanKeys.STOP) NowPlayingBridge.stopAdhan(this);
+        if (d == AdhanKeys.STOP) NowPlayingBridge.stopAdhanSoon(this);
         if (d != AdhanKeys.PASS) return true;
         if (e.getAction() == KeyEvent.ACTION_UP) finish();
         return true;
@@ -94,11 +116,24 @@ public class MainActivity extends Activity {
     protected void onStart() {
         super.onStart();
         Showing.enter();   // the home's «الأذان على شاشة التوقف فقط»: the preview counts as the screensaver
+        snapHandler.post(adhanWatch);
     }
 
     @Override
     protected void onStop() {
         Showing.leave();
+        snapHandler.removeCallbacks(adhanWatch);
+        // 4.4 (a black-video report): another app came in front (Home, then YouTube; the TV's own screensaver; the screen off after the sleep
+        // timer): the page is freed and the preview closes, so no live renderer sits under a video app for hours on a weak TV. The next
+        // «شاشة التوقف» builds it fresh (startSaver already clears the task). A rotation or a resize keeps it.
+        if (!isChangingConfigurations()) {
+            alive = false;
+            gate.cancel();
+            snapHandler.removeCallbacksAndMessages(null);
+            ScreenView.release(web);
+            web = null;
+            finish();
+        }
         super.onStop();
     }
 

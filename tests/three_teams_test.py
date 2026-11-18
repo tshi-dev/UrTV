@@ -1,4 +1,4 @@
-"""4.3.3 A3: a person followed 3 teams and saw 1. Every step from the screensaver's list to the page carries all three: Prefs keeps up to 20
+"""4.3.3 A3: a person followed 3 teams and saw 1. Every step from the screensaver's list to the page carries all three: Prefs keeps up to 40 (20 is only where the TV warns)
 and writes every id into the fragment, the provider hands the fragment over whole, the launcher's link keeps #teams=, and the page reads
 them all and asks each team's games (the server's free answer and the archive's team file; tests/matches_archive.test.mjs draws them).
 Run: python3 tests/three_teams_test.py"""
@@ -16,14 +16,15 @@ def check(name, ok, detail=""):
 read = lambda p: p.read_text(encoding="utf-8")
 prefs, prov, settings, snap, page = read(APP / "Prefs.java"), read(APP / "ConfigProvider.java"), read(APP / "SettingsActivity.java"), read(HOME / "ConfigSnapshot.java"), read(ROOT / "src/template.html")
 
-check("saver: a team is added at the end of the list (up to 20), never in place of another",
-      "static final int MAX_TEAMS = 20;" in prefs and "if (v.size() >= MAX_TEAMS) return false;" in prefs and 'v.add(id + "|" + name.replace("|", " ").replace(";", " "));' in prefs)
+check("saver: a team is added at the end of the list (past 20 only after the warning, up to 40: 4.4 FollowLimit), never in place of another",
+      "MAX_TEAMS = FollowLimit.MAX_TEAMS;" in prefs and "if (FollowLimit.check(FollowLimit.TEAMS, v.size(), followWarned(FollowLimit.TEAMS)) != FollowLimit.ADD) return false;" in prefs and 'v.add(id + "|" + name.replace("|", " ").replace(";", " "));' in prefs)
 check("saver: the fragment carries every followed team's id", '+ "&teams=" + join(teamIds(), ",")' in prefs and "for (String t : teams()) ids.add(t.split(\"\\\\|\", 2)[0]);" in prefs)
 check("saver: «الفرق المتابعة» keeps the ticked ones, all of them", "for (int i = 0; i < cur.size(); i++) if (keep[i]) v.add(cur.get(i));" in settings)
 check("launcher: the provider's first column is the fragment, read whole", "fragment = cur.getString(0);" in snap)
-check("page: #teams= read up to 20 ids", ".map(x=>(x||'').trim()).filter(x=>/^\\d+$/.test(x)).slice(0, 20)," in page)
-check("page: every followed team is asked (the server, then its archive file beside the queue)", "for(const id of CONFIG.teamIds){" in page
-      and "const arch = Promise.all(CONFIG.teamIds.map(id => archTeam(id).catch(() => 0)));" in page)
+check("page: #teams= read up to 40 ids (4.4: FollowLimit's ceiling)", ".map(x=>(x||'').trim()).filter(x=>/^\\d+$/.test(x)).slice(0, 40)," in page)
+check("page: every followed team is asked (the server, then its archive file beside the queue; 4.4: past 20 every 2nd load, tests/many_follows.test.mjs)",
+      "for(const [i, id] of CONFIG.teamIds.entries()){" in page and "if(!followDue(i, SOFT_TEAMS, !ASKED_TEAMS.has(id))) continue;" in page
+      and "arch = inBatches(CONFIG.teamIds, 4, async id => { archN.push(await archTeam(id).catch(() => 0)); })" in page)
 check("page: every followed team's games are in the page's list (the server's and the archive's)",
       "CONFIG.teamIds.forEach(id => {\n    const next = (NEXT_LIST[id] || (MATCHES[id] ? [MATCHES[id]] : [])).concat(archOf(id, 'next'));" in page)
 

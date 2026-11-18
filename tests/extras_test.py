@@ -64,7 +64,8 @@ center, main, phone = text(HOME / "ControlCenter.java"), text(HOME / "MainActivi
 check("the offer opens from the four places that need the add-on: «أطفئ الآن» (OK and a long OK), the sleep timer's line, the phone's keys and the phone's typing",
       center.count('Extras.intent(act, "sleep")') == 2 and 'Extras.intent(this, "sleep")' in main and 'Extras.offerOnce("keys")' in phone and 'Extras.offerOnce("type")' in phone)
 check("the phone's keys and typing offer it at most once in two minutes", "now - lastOffer < 120_000" in ext)
-check("nothing else opens the offer (no start-up nag)", len(re.findall(r"Extras\.(?:offer\w*|intent)\(", "".join(text(p) for p in HOME.rglob("*.java") if p.name not in ("Extras.java",)))) == 5)
+# the sixth is the once-only bar for whoever used «فوق تطبيق آخر» on 4.3.x (OverlayOfferRule; tests/overlay_offer_test.py pins its once-flag)
+check("nothing else opens the offer (no start-up nag)", len(re.findall(r"Extras\.(?:offer\w*|intent)\(", "".join(text(p) for p in HOME.rglob("*.java") if p.name not in ("Extras.java",)))) == 6)
 check("the offer screen: the approved name and words, the Play Protect line, «ثبّت الإضافة» and «ليس الآن»",
       all(w in act for w in ('S.t("إضافات تلفزيونك")', "يطلب بيانات حساسة", "تثبيت على أي حال", 'S.t("ثبّت الإضافة")', 'S.t("ليس الآن")', "تسهيل الاستخدام")) and "تلفزيونك بلس" not in act)
 check("the install is our release file only: our package and our key are checked before Android's installer",
@@ -72,7 +73,9 @@ check("the install is our release file only: our package and our key are checked
       and 'URL = "https://github.com/tshi-dev/UrTV/releases/download/apk-latest/urtv-extras.apk"' in words)
 check("installed but off: the button opens the TV's accessibility settings (not when they are behind the PIN)",
       "Settings.ACTION_ACCESSIBILITY_SETTINGS" in act and "ParentalPolicy.SLEEP_ACCESSIBILITY" in act)
-check("the activity is not exported", re.search(r'android:name="\.ExtrasActivity" android:exported="false"', man))
+check("the activity is exported only behind the signature permission OPEN_EXTRAS (the screensaver's «فوق تطبيق آخر» opens the offer)",
+      re.search(r'android:name="\.ExtrasActivity" android:exported="true" android:permission="sa\.urtv\.home\.OPEN_EXTRAS"', man)
+      and re.search(r'<permission\s+android:name="sa\.urtv\.home\.OPEN_EXTRAS"\s+android:protectionLevel="signature"', man))
 # the watch
 ev = svc.split("public void onAccessibilityEvent(AccessibilityEvent e) {")[1].split("\n    }\n")[0]
 check("the Home watch reads of a window only its package and class, and asks HomeWatch",
@@ -99,4 +102,6 @@ check("4.4: the home's bar says it too (after the TV has been up 90 s, never in 
 check("4.4: a heal from the offer or the bar is not taken for our own update (UpdateCarry is not run for «fix-…»)", '!"boot".equals(why) && !why.startsWith("fix")' in heal)
 check("4.4: dock.sh extras-setup reads Android's Bound services after writing the list, turns the list off and on while ours is not bound (twice), says the person's fix if it still is not, and allows TCL's AUTO_START",
       "Bound services:" in dock and "the list was turned off and on again" in dock and "أطفئها وشغّلها من جديد" in dock and "appops set sa.urtv.extras AUTO_START allow" in dock)
+check("4.4 review F9: the offer asks the add-on on a thread when it resumes and looks again on the UI thread when it answers (not only the kept answer)",
+      "protected void onResume() {" in act and 'new Thread(() -> { Extras.askNow(); runOnUiThread(() -> { if (!isFinishing() && !isDestroyed()) refresh(); }); }, "extras-offer").start();' in act.split("protected void onResume() {")[1].split("}\n\n")[0] + "}")
 sys.exit(1 if failed else 0)

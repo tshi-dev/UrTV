@@ -16,7 +16,7 @@ final class GamePhoneRoom implements PhoneRoom {
     static final int MAX_PLAYERS = 12, ANSWER_PER_SEC = 5, INBOX_MAX = 32, JOIN_PER_MIN = 20, WRONG_CODE_LOCK = 5;
     static final long CONNECTED_MS = 6000, LOCK_MS = 60000, LOBBY_LIFE_MS = 10 * 60 * 1000;
     /** what a card is: a secret to read, a vote for one name, a few action buttons, a plain line to wait on, or a list to pick one from («pick»: `opts` are the choices, `acts` the numbers that can be chosen now), or a key to look at («key»: `text` is one character a cell, `opts` the cell words; it takes no answer), or a form of one or more short answers to type («text»: `opts` are the field labels) */
-    static final String SECRET = "secret", VOTE = "vote", ACT = "act", WAIT = "wait", TEXT = "text", PICK = "pick", TILT = "tilt", KEY = "key", DRAW = "draw";
+    static final String SECRET = "secret", VOTE = "vote", ACT = "act", WAIT = "wait", TEXT = "text", PICK = "pick", TILT = "tilt", KEY = "key", DRAW = "draw", ORDER = "order";
     /** the action buttons of an «act» card */
     static final int ACT_OK = 0, ACT_SKIP = 1, ACT_FOUL = 2, ACT_BUZZ = 3, ACT_READY = 4;
 
@@ -95,6 +95,11 @@ final class GamePhoneRoom implements PhoneRoom {
             case SECRET: ok = a == 0 && s.inbox.isEmpty(); break;
             case KEY: { boolean on = false; for (int t : s.acts) if (t == a) on = true; ok = on && s.inbox.isEmpty(); break; }   // a key may carry numbers to choose (the captain's clue number)
             case PICK: { boolean on = false; for (int t : s.acts) if (t == a) on = true; ok = on && a >= 0 && a < s.opts.length && s.inbox.isEmpty(); break; }
+            case ORDER: {   // «x» is the options' numbers in the order the phone chose, «2,0,1»: a permutation of 0..n-1, once
+                ok = a == 0 && permutation(x, s.opts.length) && s.posted.isEmpty();
+                if (ok) { s.posted.addLast(x); s.inbox.addLast(0); version++; return null; }
+                break;
+            }
             case TEXT: {   // the answers, one line per field, each cleaned; one post per card
                 String f = form(x, s.opts.length);
                 ok = a == 0 && f != null && s.posted.isEmpty();
@@ -238,6 +243,21 @@ final class GamePhoneRoom implements PhoneRoom {
             else if (cp == ' ' && b.length() > 0 && b.charAt(b.length() - 1) != ' ') { b.append(' '); n++; }
         }
         return b.toString().trim();
+    }
+
+    /** is `x` the numbers 0 to n-1, each once, comma between, at most 12 */
+    static boolean permutation(String x, int n) {
+        if (x == null || n < 2 || n > 12 || x.length() > 40) return false;
+        String[] p = x.split(",", -1);
+        if (p.length != n) return false;
+        boolean[] seen = new boolean[n];
+        for (String v : p) {
+            if (!v.matches("\\d{1,2}")) return false;
+            int k = Integer.parseInt(v);
+            if (k >= n || seen[k]) return false;
+            seen[k] = true;
+        }
+        return true;
     }
 
     private Seat byToken(String t) { if (t == null || t.isEmpty()) return null; for (Seat s : seats) if (s.who.token.equals(t)) return s; return null; }

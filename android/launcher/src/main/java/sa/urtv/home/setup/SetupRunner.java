@@ -85,8 +85,10 @@ final class SetupRunner {
         SetupEngine.Store store();
         /** Runs the job on a thread that survives the screen (a foreground service holds the process on the TV). */
         void spawn(Runnable job);
-        /** After EVERY end of a run, when its connection is closed (4.4: the ADB key is kept for good, SetupSession.keepKey). */
+        /** After EVERY end of a run, when its connection is closed (4.4: the ADB key is kept between the steps, SetupSession.keepKey; undone() deletes it). */
         void finished();
+        /** 4.4 review F20: «تراجع» ended and its step is done: the ADB key goes now (SetupSession.dropKey), unless something still waits for it. */
+        default void undone() { }
         /**
          * Before a fresh run (a full one that does not resume, or the undo): an ADB key a run before kept (a switch was pending then) goes now when
          * nothing is pending any more, so a new run never gets in on an old «السماح دائماً» (tester step 18: the second run did not ask).
@@ -732,6 +734,9 @@ final class SetupRunner {
             } catch (IOException ignored) { }
         }
         try { host.finished(); } catch (RuntimeException ignored) { }
+        boolean undone;
+        synchronized (this) { undone = k == Kind.UNDO && complete && !steps.isEmpty() && steps.get(0).state == State.DONE; }
+        if (undone) { try { host.undone(); } catch (RuntimeException ignored) { } }
         synchronized (this) {
             running = false;
             end = e;

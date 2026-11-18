@@ -25,6 +25,11 @@ public final class ExtrasWords {
     public static final String WANTED = "wanted", UNWANTED = "unwanted";
     /** 4.4 (step 88, R3; on by default on a Google TV from build 413): the add-on catches the remote's Home key itself and opens our home; WATCH's arguments, HOME_KEY the bundle's key */
     public static final String HOME_KEY_ON = "homekey_on", HOME_KEY_OFF = "homekey_off", HOME_KEY = "home_key";
+    /**
+     * 4.4 the over-other-apps notice lives in the add-on (SYSTEM_ALERT_WINDOW is held by it, not by the home: Play Protect): NOTICE draws it (the bundle's
+     * HEAD, LINE, SUB, C1, C2, RTL; answer RESULT true when it was added to the screen), and STATUS also answers CAN_DRAW (the TV lets the add-on draw over apps).
+     */
+    public static final String NOTICE = "notice", CAN_DRAW = "can_draw", HEAD = "head", LINE = "line", SUB = "sub", C1 = "c1", C2 = "c2", RTL = "rtl";
     // the home's calls (the add-on asks)
     public static final String TYPE_CHECK = "type_check", SETTINGS_PIN = "settings_pin", KEY = "key", LEDGER = "ledger";
     /** «أزرار الريموت» over another app: the family lock's answer for the app a button opens (NEEDS_PIN, HIDDEN) */

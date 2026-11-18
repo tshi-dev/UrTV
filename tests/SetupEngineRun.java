@@ -66,6 +66,7 @@ public class SetupEngineRun {
         }
 
         String answer(String c) {
+            if (c.equals(InputGuard.HANDLERS)) return "== settings\n    com.android.tv.settings/.MainSettings\n== tv\nEND_OF_LIST\n";   // disable.sh's handler guard (4.4): the stock Settings answers, nothing in the safe list does
             if (c.startsWith("s=$(getprop ro.build.version.sdk); for p in ")) return "END_OF_LIST\n";   // disable.sh's input guard (InputGuard): no input driver here
             if (!c.endsWith("; echo END_OF_LIST") && c.contains("; ")) {   // a line of several commands (the backup's, autostart's): each one's answer in turn
                 StringBuilder b = new StringBuilder();

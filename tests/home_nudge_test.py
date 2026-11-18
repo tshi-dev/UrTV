@@ -55,7 +55,7 @@ check("settings: «اجعل UrTV الشاشة الرئيسية» opens the launc
       'row("اجعل UrTV الشاشة الرئيسية", isHome ? "✓ UrTV هو الشاشة الرئيسية"' in saver and '"sa.urtv.home.setup.SetupActivity"' in saver and "if (!isHome) openSetup();" in saver
       and "android.intent.category.HOME" in (ROOT / "android/app/src/main/AndroidManifest.xml").read_text(encoding="utf-8"))
 # ---- 4.3.1 the city question: the same bar, one at a time
-tail = main.split("private void updateHomeNudge", 1)[1][:2600]
+tail = main.split("private void updateHomeNudge", 1)[1][:4200]
 cc = (HOME / "ControlCenter.java").read_text(encoding="utf-8")
 if shutil.which("javac") and shutil.which("java"):
     with tempfile.TemporaryDirectory() as tmp:
@@ -69,7 +69,7 @@ if shutil.which("javac") and shutil.which("java"):
                     failed += line.startswith("FAIL ")
             check("every city rule ran", "ALL PASS" in out, out[-200:])
 check("the question is the nudge's bar: due only while no city was chosen (the screensaver's city_chosen), never together with the nudge (the city first), its own snooze count, OK opens the chooser",
-      "CityAskRule.show(isInstalled(SAVER_PKG), cityChosenNow, java.util.TimeZone.getDefault().getID(), kids" in tail and "boolean show = askStock || askUpdate || askExtras || askCity;" in tail
+      "CityAskRule.show(isInstalled(SAVER_PKG), cityChosenNow, java.util.TimeZone.getDefault().getID(), kids" in tail and "boolean show = askStock || askUpdate || askExtras || askOverlay || askCity;" in tail
       and "nudgeIsCity = askCity;" in tail and 'String k = nudgeIsCity ? "city_" : nudgeIsExtras ? "extras_" : "";' in main and "if (nudgeIsCity) { openCity(); return; }" in main
       and "cfg.cityChosen != cityChosenNow" in main)
 check("the home asks the screensaver (city_chosen column; an older one says nothing = chosen, nobody is asked), and its words are in the English table",

@@ -16,7 +16,8 @@ import java.util.Map;
 final class FollowMerge {
     private FollowMerge() { }
 
-    static final int MAX_TEAMS = 20, MAX_LEAGUES = 8;
+    /** 4.4 the ceilings (the screensaver's FollowLimit: 40 clubs, 24 leagues; its soft limits and their one warning are the screensaver's, which keeps the lists) */
+    static final int MAX_TEAMS = 40, MAX_LEAGUES = 24;
 
     /** the first field: a team's or a league's id */
     static String key(String entry) { return entry == null ? "" : entry.split("\\|", 2)[0]; }
