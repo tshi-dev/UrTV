@@ -107,4 +107,10 @@ js = read(ROOT / "src/sports.js")
 check("the page hands the launcher the time as digits in a string (13 digits are too long for the home's Json)", "t: String(fbKick(ev))" in js)
 check("the home's page keeps the list for the launcher; the screensaver page draws its own notice, never with no network",
       "function spKickList(){ return spHanded; }" in js and "if(CONFIG.widget || _Q.get('ko') === '0'" in js and "navigator.onLine === false" in js)
+_kr = (ROOT / "android/launcher/src/main/java/sa/urtv/home/KickoffReceiver.java").read_text(encoding="utf-8") if "ROOT" in globals() else (Path(__file__).resolve().parent.parent / "android/launcher/src/main/java/sa/urtv/home/KickoffReceiver.java").read_text(encoding="utf-8")
+_ea = (Path(__file__).resolve().parent.parent / "android/launcher/src/main/java/sa/urtv/home/ExtrasActivity.java").read_text(encoding="utf-8")
+_run = _kr.split("private static void run(Context app) {")[1].split("private static void show(")[0]
+check("4.4 review: the kick-off thread knows the TV's language before it builds the notice (S.init in run, not only in show)", "S.init(app);" in _run.split("boolean[] set")[0])
+_act = _ea.split("private void act() {")[1][:1200]
+check("4.4 review: granting the overlay is behind the same PIN lock as the add-on's other settings", _act.index("Parental.needsPin") < _act.index("allowOverlay();"))
 sys.exit(1 if failed else 0)

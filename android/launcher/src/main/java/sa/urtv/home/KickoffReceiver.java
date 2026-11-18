@@ -65,6 +65,7 @@ public class KickoffReceiver extends BroadcastReceiver {
         long now = System.currentTimeMillis();
         List<KickoffPlan.Game> due = KickoffPlan.due(KickoffStore.games(app), now, KickoffStore.done(app));
         if (due.isEmpty()) return;
+        S.init(app);   // 4.4 review: a cold process still says Arabic until the words know the TV's language (the notice over another app is built on this thread)
         boolean[] set = settings(app);
         PowerManager pm = (PowerManager) app.getSystemService(Context.POWER_SERVICE);
         boolean screenOn = pm == null || pm.isInteractive();

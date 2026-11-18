@@ -191,8 +191,8 @@ public class ExtrasActivity extends Activity {
     private void act() {
         if (working) return;
         if (!Extras.installed(this)) { install(); return; }
-        if (forOverlay) { allowOverlay(); return; }
         if (Parental.needsPin(this, ParentalPolicy.targets(ParentalPolicy.SLEEP_ACCESSIBILITY, null))) { say(S.t("إعدادات التلفزيون مقفولة بالرقم السري: افتحها من «مركز التحكم» واختر «إضافات تلفزيونك»")); return; }
+        if (forOverlay) { allowOverlay(); return; }
         try {
             sentToSettings = true;
             startActivity(new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS));
