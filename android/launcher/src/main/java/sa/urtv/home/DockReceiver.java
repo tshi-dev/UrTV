@@ -27,6 +27,7 @@ import java.util.Map;
  *   am broadcast -n sa.urtv.home/.DockReceiver -a sa.urtv.home.SET_INPUT_NAME --es id com.x/.Svc/HDMI1 --es name 'PS5'   (empty: the TV's name)
  *   am broadcast -n sa.urtv.home/.DockReceiver -a sa.urtv.home.DEBUG --es flag traynoglass|nopillpanel|nowifimark|nosnapshot|nocardglass|nokeyfilter|keytrace|nolift|noglow|noshine|noscale|notitle|plainfocus|nobackdrop|all|show --es value on|off   (a tester's switch: one piece of the home's drawing off)
  *   am broadcast -n sa.urtv.home/.DockReceiver -a sa.urtv.home.RAM_TIER --es tier low|mid|normal|auto   (a test switch: the memory tier, from the next start)
+ *   am broadcast -n sa.urtv.home/.DockReceiver -a sa.urtv.home.LITE_SIGNALS --es mode clear|status   4.4 beta 3: the weak-TV signs of «الوضع الخفيف» on «تلقائي»
  *   am broadcast -n sa.urtv.home/.DockReceiver -a sa.urtv.home.PIN_SET --es pin 1234   «الرقابة الأبوية»: the master PIN (never printed back)
  *   am broadcast -n sa.urtv.home/.DockReceiver -a sa.urtv.home.PIN_LOCK --es target com.example.app   (PIN_UNLOCK to open it again; a pill: @wifi...)
  *   am broadcast -n sa.urtv.home/.DockReceiver -a sa.urtv.home.PIN_STATUS            what is set
@@ -237,6 +238,12 @@ public class DockReceiver extends BroadcastReceiver {
                 if (!DebugFlags.set(c, f, !"off".equals(v))) { setResultData("error: all can only be turned off"); return; }
                 c.sendBroadcast(new Intent(DebugFlags.CHANGED).setPackage(c.getPackageName()));
                 setResultData("debug: " + DebugFlags.describe(c) + " (the home starts over)");
+                return;
+            }
+            case "sa.urtv.home.LITE_SIGNALS": {   // 4.4 beta 3: the tester puts the TV back exactly after forcing the notice
+                String m = String.valueOf(i.getStringExtra("mode"));
+                if (!m.equals("clear") && !m.equals("status")) { setResultData("error: add --es mode clear|status"); return; }
+                setResultData("lite-signals: " + (m.equals("clear") ? LiteAutoStore.clear(c) : LiteAutoStore.report(c)));
                 return;
             }
             case "sa.urtv.home.RAM_TIER": {

@@ -75,5 +75,13 @@ check("shown at the home's resume after the first frame (AfterFrame), never over
       "AfterFrame.run(getWindow().getDecorView(), this::liteNotice);" in ma and "NowPlaying.adhanLive() || KickoffOverlay.showing()" in ln
       and "HomeNotice.show(homeRoot, text, font(\"regular\"), Ram.low(this))" in ln and "LiteAutoStore.shown(this);" in ln
       and "static boolean showing()" in ko and "BG.execute(" in store.split("static void shown(Context c) {")[1].split("\n    }\n")[0])
+dock = (ROOT / "optimize/dock.sh").read_text(encoding="utf-8")
+dr = (ROOT / "android/launcher/src/main/java/sa/urtv/home/DockReceiver.java").read_text(encoding="utf-8")
+mf = (ROOT / "android/launcher/src/main/AndroidManifest.xml").read_text(encoding="utf-8")
+cl = store.split("static String clear(Context c) {")[1].split("\n    }\n")[0]
+check("dock.sh lite-signals clear|status (the shell only, DUMP): the signals and the «said» mark forgotten, the person's choice left, a fixed word logged",
+      'lite-signals:2) case "$2" in clear|status) send LITE_SIGNALS "--es mode $2"' in dock and 'case "sa.urtv.home.LITE_SIGNALS":' in dr
+      and "LiteAutoStore.clear(c)" in dr and '<action android:name="sa.urtv.home.LITE_SIGNALS" />' in mf
+      and ".remove(KEY).remove(TOLD).commit()" in cl and '"lite"' not in cl and '"lite signals cleared"' in cl and '"lite signals clear failed"' in cl)
 print("FAILED" if failed else "all passed")
 sys.exit(1 if failed else 0)

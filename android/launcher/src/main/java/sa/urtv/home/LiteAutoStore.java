@@ -44,6 +44,21 @@ public final class LiteAutoStore {
         catch (RuntimeException e) { return false; }
     }
 
+    /**
+     * `dock.sh lite-signals clear` (the shell only: DockReceiver needs DUMP): the signals and the «said» mark are forgotten, as before any test; the
+     * person's own «تشغيل» / «إيقاف» / «تلقائي» is left as it is. Counts from the next start of the home. A fixed word back, and in the log.
+     */
+    static String clear(Context c) {
+        try {
+            boolean ok = sp(c).edit().remove(KEY).remove(TOLD).commit();
+            pendingText = null;
+            android.util.Log.i("UrTVRam", ok ? "lite signals cleared" : "lite signals clear failed");
+            return ok ? "cleared (auto-off-t0-s0-o0 from the next start of the home)" : "error: not written";
+        } catch (RuntimeException e) {
+            return "error: not written";
+        }
+    }
+
     /** the report's line */
     static String report(Context c) {
         try { return LiteAuto.report(sp(c).getString(KEY, ""), System.currentTimeMillis()); } catch (RuntimeException e) { return "?"; }
