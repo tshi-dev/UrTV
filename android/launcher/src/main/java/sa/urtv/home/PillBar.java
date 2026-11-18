@@ -7,7 +7,6 @@ import android.graphics.Paint;
 import android.graphics.RectF;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.DecelerateInterpolator;
 import android.widget.LinearLayout;
 
 import java.util.HashMap;
@@ -32,14 +31,14 @@ final class PillBar extends LinearLayout {
     private float open;   // 0 closed .. 1 open
     private ValueAnimator anim;
     private float applied = -1f;   // the openness the children were last shaped for
-    static final long OPEN_MS = 220, CLOSE_DELAY_MS = 160;
+    static final long OPEN_MS = Motion.MS, CLOSE_DELAY_MS = 160;   // 4.4 the same easing everywhere (Motion)
 
     PillBar(Context c) {
         super(c);
         dp = c.getResources().getDisplayMetrics().density;
         line.setStyle(Paint.Style.STROKE);
         line.setStrokeWidth(Math.max(1f, dp));
-        radius = GlassStyle.RADIUS_OUTER / 2f * dp;
+        radius = Math.min(GlassStyle.RADIUS_OUTER / 2f, MAX_RADIUS) * dp;
         setWillNotDraw(false);
         setClipChildren(false);
     }
@@ -76,7 +75,7 @@ final class PillBar extends LinearLayout {
         if (open == to) { if (applied != to) apply(); return; }   // already there and shaped: no layout, no redraw
         anim = ValueAnimator.ofFloat(open, to);
         anim.setDuration(Math.max(40, Math.round(OPEN_MS * Math.abs(to - open))));
-        anim.setInterpolator(new DecelerateInterpolator(2f));
+        anim.setInterpolator(Motion.ease());
         anim.addUpdateListener(a -> { open = (float) a.getAnimatedValue(); apply(); });
         anim.start();
     }
@@ -114,11 +113,13 @@ final class PillBar extends LinearLayout {
         boolean none = DebugFlags.on(getContext(), "nopillpanel");   // a tester's switch (dock.sh debug nopillpanel): no panel behind the buttons
         fill.setColor(none ? 0 : m.fill);
         line.setColor(none ? 0 : m.line);
-        radius = m.radius / 2f * dp;   // the material's px at 1080p, where 1 dp is 2 px
+        radius = Math.min(m.radius / 2f, MAX_RADIUS) * dp;   // the material's px at 1080p, where 1 dp is 2 px; 4.4 never rounder than a panel (no pills)
         invalidate();
     }
 
     private float radius;
+    /** 4.4 the owner (no pills): the bar is a panel with rounded corners, never a capsule round the row (its height is about 30 dp) */
+    static final float MAX_RADIUS = 8f;
 
     @Override protected void dispatchDraw(Canvas c) {
         float l = Float.MAX_VALUE, t = Float.MAX_VALUE, rt = -Float.MAX_VALUE, b = -Float.MAX_VALUE;

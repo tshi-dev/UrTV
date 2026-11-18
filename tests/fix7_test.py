@@ -46,7 +46,10 @@ check("the update screen keeps it on from onResume and clears it in onPause",
       re.search(r"void onResume\(\).*?addFlags\([^)]*" + KEEP, ua, re.S) and re.search(r"void onPause\(\).*?clearFlags\([^)]*" + KEEP, ua, re.S))
 check("setup keeps it on only while it is running (not from onCreate)", su.count("addFlags(WindowManager.LayoutParams." + KEEP + ")") == 1
       and su.index("running = true;") < su.index(KEEP) and "clearFlags" in su and su.index("running = false;") < su.index("clearFlags"))
-others = [f.name for f in (ROOT / HOME).rglob("*.java") if f.name not in ("PhoneActivity.java", "UpdateActivity.java", "SetupActivity.java", "PlayerActivity.java", "MarketsActivity.java", "FactoryActivity.java", "DisabledAppsActivity.java") and KEEP in f.read_text(encoding="utf-8")]
+others = [f.name for f in (ROOT / HOME).rglob("*.java") if f.name not in ("PhoneActivity.java", "UpdateActivity.java", "SetupActivity.java", "PlayerActivity.java", "MarketsActivity.java", "FactoryActivity.java", "DisabledAppsActivity.java", "BlackScreenActivity.java", "BlackScreen.java") and KEEP in f.read_text(encoding="utf-8")]
+# (4.4 #62 «شاشة سوداء»: on only while the recitation plays, cleared when it stops and when the screen goes: tests/black_screen_test.py)
+_bs = (ROOT / HOME / "tilawah/BlackScreenActivity.java").read_text(encoding="utf-8")
+check("the black screen keeps it on only while sound plays and clears it in onPause", "clearFlags(WindowManager.LayoutParams." + KEEP + ")" in _bs and "keepOn(false);" in _bs)
 # (the factory page keeps it on while it waits for «Allow USB debugging?», tester step 62; the window flag ends with the page)
 # (the Quran player screen kept it on before this change; it is not one of the screens of the owner's report; the markets page keeps it on only in live mode, step 27)
 check("no other screen of the launcher keeps the screen awake", not others, others)
@@ -64,7 +67,7 @@ sr = text("android/app/src/main/java/sa/urtv/screensaver/SaverReceiver.java")
 check("the receiver takes none / an empty list as «no cards»", 'if (h.isEmpty() || "none".equals(h)) continue;' in sr and "if (homeCards != null) p.setHomePanels(homeCards);" in sr)
 
 # 2. typing where the app has no field
-ts = text(HOME + "TypeService.java")
+ts = text("android/extras/src/main/java/sa/urtv/home/ExtrasA11yService.java")   # 4.3.3: the add-on «إضافات تلفزيونك»
 check("YouTube TV in front: its own search first, on any screen and whatever the field, by ACTION_SEARCH then its web link, both bound to the package",
       "if (AppSearch.supports(pkg)) {" in ts and "new Intent(Intent.ACTION_SEARCH).setPackage(pkg).putExtra(SearchManager.QUERY, q)" in ts
       and "new Intent(Intent.ACTION_VIEW, Uri.parse(AppSearch.webUrl(q))).setPackage(pkg)" in ts and ts.index("AppSearch.supports(pkg)") < ts.index("root.findFocus(AccessibilityNodeInfo.FOCUS_INPUT)")

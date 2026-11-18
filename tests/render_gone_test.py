@@ -20,7 +20,7 @@ check("the two apps carry the same RenderGuard", a_guard.split("\n", 1)[1] == h_
 
 # every WebView we create has a client that answers a dead renderer
 sources = list(APP.glob("*.java")) + list(HOME.glob("*.java")) + list((HOME / "tilawah").glob("*.java"))
-makers = [p for p in sources if "new WebView(" in text(p)]
+makers = [p for p in sources if p.name != "WebViews.java" and ("new WebView(" in text(p) or "WebViews.make(" in text(p))]   # 4.3.5: the home makes them through WebViews.make
 check("the files that make a WebView: ScreenView, HomeCard and «المباريات» (MatchesActivity), no others",
       sorted(p.name for p in makers) == ["HomeCard.java", "MatchesActivity.java", "ScreenView.java"], [p.name for p in makers])
 for p in makers:
@@ -40,7 +40,7 @@ check("SettingsActivity: a preview whose renderer died goes blank and is not mad
 card = text(HOME / "HomeCard.java")
 check("HomeCard: the dead view is destroyed, made again only while the home screen is in front and the guard allows",
       "guard.gone(" in card and "if (resumed) refresh();" in card and "guard.mayCreate(" in card and "if (v != web) { v.destroy(); return true; }" in card)
-check("HomeCard: resume does not bring a view back while the guard says no", card.index("guard.mayCreate(") < card.index("create(want);"))
+check("HomeCard: resume does not bring a view back while the guard says no", card.index("guard.mayCreate(") < card.index("create(want))"))   # 4.3.5: if (!create(want)) return;
 matches = text(HOME / "MatchesActivity.java")
 check("«المباريات»: a dead renderer takes the page away (destroyed, the activity finishes), never reloaded",
       "if (v == web) web = null;" in matches and "v.destroy();" in matches and "finish();   // the renderer died" in matches

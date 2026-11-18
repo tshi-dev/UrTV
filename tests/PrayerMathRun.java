@@ -123,6 +123,20 @@ public final class PrayerMathRun {
                 && PrayerMath.methodFor("Asia/Dubai", null) == 16 && PrayerMath.methodFor("Asia/Bahrain", null) == 8 && PrayerMath.methodFor("Asia/Muscat", "auto") == 100
                 && PrayerMath.methodFor("Africa/Cairo", null) == 5 && PrayerMath.methodFor("Asia/Amman", null) == 23 && PrayerMath.methodFor("Africa/Tunis", null) == 18 && PrayerMath.methodFor("Africa/Algiers", null) == 19 && PrayerMath.methodFor("Africa/Casablanca", null) == 21 && PrayerMath.methodFor("Asia/Damascus", null) == 5 && PrayerMath.methodFor("Asia/Beirut", null) == 5
                 && PrayerMath.methodFor("Asia/Gaza", null) == 5 && PrayerMath.methodFor("Asia/Hebron", null) == 5 && PrayerMath.methodFor("Nowhere/Land", null) == 4 && PrayerMath.methodFor(null, null) == 4, "");
+        // Libya (101, ours): fitted to the Benghazi 2026 prayer table of pull request 23 (all 365 days within a minute; here the 15th of each month: Fajr, Dhuhr, Asr, Maghrib, Isha)
+        check("methods: Tripoli's zone gets Libya's own 101 (not Egypt's 5), which Aladhan does not know", PrayerMath.methodFor("Africa/Tripoli", null) == 101 && !PrayerMath.aladhanKnows(101), "");
+        String[] benghazi = {
+                "2026-01-15 06:15 12:50 15:39 17:58 19:19", "2026-02-15 06:00 12:55 16:02 18:26 19:43", "2026-03-15 05:29 12:50 16:14 18:48 20:04",
+                "2026-04-15 04:46 12:41 16:17 19:09 20:29", "2026-05-15 04:09 12:37 16:17 19:30 20:58", "2026-06-15 03:53 12:41 16:21 19:48 21:21",
+                "2026-07-15 04:07 12:47 16:26 19:47 21:18", "2026-08-15 04:35 12:45 16:23 19:24 20:47", "2026-09-15 05:01 12:36 16:05 18:46 20:03",
+                "2026-10-15 05:22 12:27 15:40 18:07 19:24", "2026-11-15 05:44 12:25 15:19 17:40 19:00", "2026-12-15 06:05 12:36 15:18 17:37 18:59"};
+        for (String line : benghazi) {
+            String[] f = line.split(" ");
+            String[] ymd = f[0].split("-");
+            long[] g = PrayerMath.compute(2026, Integer.parseInt(ymd[1]), Integer.parseInt(ymd[2]), 32.11486, 20.06859, "Africa/Tripoli", false, PrayerMath.methodFor("Africa/Tripoli", null));
+            String bt = row(g, "Africa/Tripoli"), p = bt.split(" ")[0] + " " + bt.split(" ")[2] + " " + bt.split(" ")[3] + " " + bt.split(" ")[4] + " " + bt.split(" ")[5];
+            check("Libya: Benghazi on " + f[0] + " is within a minute of the published table", within(p, f[1] + " " + f[2] + " " + f[3] + " " + f[4] + " " + f[5], 1), p);
+        }
         check("methods: pm=gulf is the Gulf method (8) for Oman and anywhere; Aladhan knows 8 but not Oman's own 100",
                 PrayerMath.methodFor("Asia/Muscat", "gulf") == 8 && PrayerMath.methodFor("Asia/Riyadh", "gulf") == 8 && PrayerMath.aladhanKnows(8) && PrayerMath.aladhanKnows(23) && !PrayerMath.aladhanKnows(100), "");
         // Muscat, 23 October 2026, 23.5880 N 58.3829 E: Oman's ministry (Fajr 18, Isha 18, Dhuhr/Asr/Maghrib +5; the parameters egyjs/afnon-android-tv-launcher fitted to the

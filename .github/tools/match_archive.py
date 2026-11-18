@@ -33,6 +33,9 @@ import urllib.parse
 import urllib.request
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import sports_files   # noqa: E402  (4.4: sports/<league>.json, f1/next.json)
+
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parents[1]
 TEAMS = ROOT / "assets/shared/teams.json"
@@ -259,6 +262,7 @@ def derive(store, out, prev, now, stamp):
                        for t, n in sorted(names.items())},
              "leagues": {lg: {"en": store.name(lg), "ar": LEAGUE_AR.get(lg, "")} for lg in sorted(store.meta)}}
     emit(out, prev, "index.json", index)
+    sports_files.derive(store, out, prev, now, stamp, index["teams"], LEAGUE_AR, emit)   # 4.4 the sports cards' one file per league
     return len(per_team), len(pairs)
 
 
@@ -366,6 +370,8 @@ def build(args):
     out.mkdir(parents=True, exist_ok=True)
     store.write(out, prev, stamp)
     teams, pairs = derive(store, out, prev, now, stamp)
+    if (prev / "f1").is_dir() and prev != out:   # the F1 file is asked once a day (sports_files.py f1): every other run carries it over
+        shutil.copytree(prev / "f1", out / "f1", dirs_exist_ok=True)
     size = sum(f.stat().st_size for f in out.rglob("*.json"))
     health = {"updated": stamp, "events": after, "new": counts["new"], "updated_events": counts["updated"], "pruned": dropped,
               "leagues": len({lg for lg, _ in store.leagues}), "seasons": len(store.leagues), "teams": teams, "pairs": pairs,

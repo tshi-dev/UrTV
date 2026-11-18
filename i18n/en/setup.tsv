@@ -6,14 +6,14 @@
 2. اختر «إلغاء تراخيص تصحيح USB».	2. Choose “Revoke USB debugging authorizations”.
 3. أطفئ «تصحيح USB». («تراجع» من هنا يحتاجه مفعّلاً.)	3. Turn “USB debugging” off. (“Undo” here needs it on.)
 لو صار شي:	If something goes wrong:
-• الشاشة الرئيسية ما فتحت تلفزيونك: انتظر 5 دقائق ترجع الأصلية وحدها، أو اضغط «تراجع».	• The Home button did not open Your TV: wait 5 minutes and the original comes back by itself, or press “Undo”.
-• تطبيق تحتاجه صار موقوفاً: «تراجع» يرجّع كل ما أوقفناه.	• An app you need was turned off: “Undo” turns back on everything we turned off.
-• انقطع الواي فاي: اتصل به من إعدادات التلفزيون ← الشبكة.	• The Wi-Fi dropped: connect to it in the TV settings → Network.
-• تبي التلفزيون كما كان: فعّل «تصحيح USB» واضغط «تراجع».	• You want the TV as it was: turn “USB debugging” on and press “Undo”.
+الشاشة الرئيسية ما فتحت تلفزيونك: انتظر 5 دقائق ترجع الأصلية وحدها، أو اضغط «تراجع».	The Home button did not open Your TV: wait 5 minutes and the original comes back by itself, or press “Undo”.
+تطبيق تحتاجه صار موقوفاً: «تراجع» يرجّع كل ما أوقفناه.	An app you need was turned off: “Undo” turns back on everything we turned off.
+انقطع الواي فاي: اتصل به من إعدادات التلفزيون ← الشبكة.	The Wi-Fi dropped: connect to it in the TV settings → Network.
+تبي التلفزيون كما كان: فعّل «تصحيح USB» واضغط «تراجع».	You want the TV as it was: turn “USB debugging” on and press “Undo”.
 تراجع (يرجّع التلفزيون كما كان)	Undo (puts the TV back as it was)
 تم	Done
 تم الرجوع. أطفئ «تصحيح USB» من خيارات المطوّر، واختر «إلغاء تراخيص تصحيح USB» لتنظيف التلفزيون.	Undone. Turn “USB debugging” off in Developer options, and choose “Revoke USB debugging authorizations” to clean the TV up.
-انتهى الرجوع مع ملاحظات (فوق).	The undo finished with notes (above).
+انتهى الرجوع مع ملاحظات	The undo finished with notes
 توقّفنا قبل أي تغيير.	We stopped before changing anything.
 انتهى الإعداد. اضغط زر الرئيسية في الريموت. ثم أطفئ «تصحيح USB» من خيارات المطوّر واختر «إلغاء تراخيص تصحيح USB» إن لم تحتجهما (التراجع من هنا يحتاجهما).	The setup is done. Press the Home button on the remote. Then turn “USB debugging” off in Developer options and choose “Revoke USB debugging authorizations” if you do not need them (Undo here needs them).
 # the start, plan, wait and Wi-Fi screens (build 179): SetupActivity and the fixed sentences of SetupRunner (SetupActivity.WORDS)
@@ -54,9 +54,15 @@ TV Bro و SmartTube مثبّتان من قبل: نتركهما.	TV Bro and Smart
 التلفزيون يسأل «السماح بتصحيح USB؟»: اختر «السماح دائماً» بالريموت.	The TV is asking “Allow USB debugging?”: choose “Always allow” with the remote.
 ما ظهرت الرسالة؟ أعد تشغيل التلفزيون وافتح «إعداد تلفزيوني» واضغط «جهّز كل شي» وخلك عند التلفزيون	No message? Restart the TV, open “Your TV setup”, press “Set everything up” and stay at the TV.
 ما بدأنا الإعداد، وما تغيّر شيء في التلفزيون.	We did not start the setup, and nothing on the TV changed.
-قبل تبديل الشاشة الرئيسية: شبكة الواي فاي محفوظة باسم «وسيط الإعداد» في هذا التلفزيون، وإيقافه يمسحها. افتح إعدادات التلفزيون ← الشبكة، واختر «انسَ الشبكة»، ثم اتصل بها من جديد بنفس كلمة المرور (خلّها قدامك قبل). بعدها ارجع هنا واضغط «كمّل». ما تبي؟ اضغط «كمّل» بدونها، ونكمل والوسيط شغّال.	Before switching the home screen: the Wi-Fi network is saved on this TV under the name “Setup helper”, and turning it off erases it. Open the TV’s Settings → Network, choose “Forget network”, then join it again with the same password (have it ready first). Then come back here and press “Continue”. Rather not? Press “Continue” without it and we carry on with the helper running.
+قبل تبديل الشاشة الرئيسية: شبكة الواي فاي محفوظة باسم «وسيط الإعداد» في هذا التلفزيون، وإيقافه يمسحها. افتح إعدادات التلفزيون ← الشبكة، واختر «انسَ الشبكة»، ثم اتصل بها من جديد بنفس كلمة المرور (خلّها قدامك قبل). ما ظهر «انسَ الشبكة» أو ما رضي (مجرّبة على شاومي)؟ اتصل أول بنقطة اتصال من جوالك، بعدها انسَ شبكة البيت وارجع اتصل بها من الإعدادات. بعدها ارجع هنا واضغط «كمّل». ما تبي؟ اضغط «كمّل» بدونها، ونكمل والوسيط شغّال.	Before switching the home screen: the Wi-Fi network is saved on this TV under the name “Setup helper”, and turning it off erases it. Open the TV’s Settings → Network, choose “Forget network”, then join it again with the same password (have it ready first). No “Forget network”, or it won’t (tested on a Xiaomi)? Join a hotspot from your phone first, then forget the home network and join it again from Settings. Then come back here and press “Continue”. Rather not? Press “Continue” without it and we carry on with the helper running.
 يجهّز التلفزيون نفسه، بدون كمبيوتر ولا جوال. اضغط «جهّز كل شي»: يسألك التلفزيون مرة واحدة «السماح بتصحيح USB؟»، ثم نعرض عليك ما سنفعله بالضبط قبل أي تغيير.	The TV sets itself up, with no computer and no phone. Press “Set everything up”: the TV asks you once “Allow USB debugging?”, then we show you exactly what we will do before any change.
 قبل البدء: فعّل «تصحيح USB» (الإعدادات ← تفضيلات الجهاز ← حول ← اضغط «Build» سبع مرات ← خيارات المطوّر ← تصحيح USB). وخلك عند التلفزيون: لما تطلع الرسالة اختر «السماح دائماً».	Before you start: turn on “USB debugging” (Settings → Device Preferences → About → press “Build” seven times → Developer options → USB debugging). Stay at the TV: when the message appears, choose “Always allow”.
+خيارات المطوّر ما تفتح؟ اضغط سبع مرات على رقم الإصدار، ومكانه حسب التلفزيون:	Developer options won’t open? Press the build number seven times; where it is depends on the TV:
+TCL: الإعدادات ← النظام ← حول ← «إصدار نظام Android TV» (الأقدم: تفضيلات الجهاز ← حول ← Build)	TCL: Settings → System → About → “Android TV OS build” (older ones: Device Preferences → About → Build)
+شاومي: الإعدادات ← تفضيلات الجهاز ← حول ← Build (بنظام Google TV: النظام ← حول ← «إصدار نظام Android TV»)	Xiaomi: Settings → Device Preferences → About → Build (on Google TV: System → About → “Android TV OS build”)
+سوني: الإعدادات ← النظام ← حول ← «إصدار نظام Android TV» (الأقدم: تفضيلات الجهاز ← حول ← Build)	Sony: Settings → System → About → “Android TV OS build” (older ones: Device Preferences → About → Build)
+سكاي ورث: الإعدادات ← تفضيلات الجهاز ← حول ← Build (بنظام Google TV: النظام ← حول ← «إصدار نظام Android TV»)	Skyworth: Settings → Device Preferences → About → Build (on Google TV: System → About → “Android TV OS build”)
+بعدها تلقى «خيارات المطوّر» تحت النظام أو تفضيلات الجهاز، وفيها «تصحيح USB».	Then “Developer options” is under System or Device Preferences, with “USB debugging” in it.
 إعداد سابق ما اكتمل: «جهّز كل شي» يكمله من حيث توقف.	An earlier setup did not finish: “Set everything up” carries on from where it stopped.
 جهّز كل شي	Set everything up
 هذا ما سنفعله في تلفزيونك، بالترتيب. ما تغيّر شيء بعد:	This is what we will do on your TV, in order. Nothing has changed yet:
@@ -79,8 +85,6 @@ TV Bro و SmartTube مثبّتان من قبل: نتركهما.	TV Bro and Smart
 استغرق %s	Took %s
 %s من %s خطوة	%s of %s steps
 السماح بتصحيح USB؟	Allow USB debugging?
-السماح دائماً	Always allow
-اضغط «اختيار» بالريموت على «السماح دائماً»	Press Select on the remote on “Always allow”
 نجهّز تلفزيونك	Setting up your TV
 نرجّع التلفزيون كما كان	Putting your TV back as it was
 اختيار	OK
@@ -116,3 +120,19 @@ TV Bro و SmartTube مثبّتان من قبل: نتركهما.	TV Bro and Smart
 التلفزيون رفض مفتاح التطبيق. من إعدادات المطوّرين اختر «إلغاء تصريحات تصحيح USB» ثم جرّب من جديد.	The TV rejected the app's key. In the developer options choose «Revoke USB debugging authorizations», then try again.
 ما قدرنا نكلّم التلفزيون: تأكد من تفعيل تصحيح USB، وافصل أي كمبيوتر موصول بالتلفزيون عبر adb، ثم جرّب.	We could not talk to the TV: make sure USB debugging is on, disconnect any computer connected to the TV over adb, then try again.
 هذا التلفزيون ما عرض سؤال «السماح بتصحيح USB؟» لتطبيقنا، فما نقدر نسوّي هذه الخطوة منه. ما غيّرنا شيئًا، وUrTV يشتغل ممتاز بدونها. وإن كان جهاز آخر موصول بالتلفزيون عبر adb فافصله وجرّب.	This TV did not show the «Allow USB debugging?» question to our app, so we cannot do this step from here. We changed nothing, and UrTV works fine without it. If another device is connected to the TV over adb, disconnect it and try again.
+جرّب الإعداد بمساعد ذكي من الكمبيوتر	Try the setup with an AI helper on a computer
+على هذا التلفزيون ما نجح تبديل الشاشة الرئيسية من هنا مرتين. افتح على الكمبيوتر مساعداً ذكياً (مثل Claude Code) في مجلد UrTV وقل له: «اقرأ docs/SETUP-PROMPT.md وجهّز تلفزيوني». امسح الرمز لترى الدليل.	On this TV switching the home screen from here failed twice. On a computer, open an AI helper (such as Claude Code) in the UrTV folder and tell it: “read docs/SETUP-PROMPT.md and set up my TV”. Scan the code to see the guide.
+قبل ما نبدأ: لو صار شيء	Before we start: if anything goes wrong
+1. اضغط زر الإعدادات في الريموت ← التطبيقات ← Downloader ← فتح.	1. Press the remote's Settings key → Apps → Downloader → Open.
+2. اكتب الكود %s وثبّت «إنقاذ تلفزيونك».	2. Enter the code %s and install “UrTV Rescue”.
+2. ثبّت «إنقاذ تلفزيونك» برابطه في الدليل (امسح الرمز).	2. Install “UrTV Rescue” with its link in the guide (scan the code).
+3. افتحه واضغط «رجّع التلفزيون كما كان».	3. Open it and press “Put the TV back as it was”.
+صوّر هذه الشاشة بجوالك الحين، عشان تكون عندك لو احتجتها.	Take a photo of this screen with your phone now, so you have it if you need it.
+على الريموت: اختيار (يعلّم «السماح دائماً») ← تحت ← يسار ← اختيار (على «السماح»)	On the remote: Select (ticks «Always allow») → Down → Left → Select (on «Allow»)
+السماح دائماً من هذا الكمبيوتر	Always allow from this computer
+السماح	Allow
+دور الشاشة الرئيسية: تلفزيونك	Home role: UrTV
+دور الشاشة الرئيسية: الشاشة الأصلية للتلفزيون	Home role: the TV's own home
+مراقبة زر الرئيسية («إضافات تلفزيونك»): شغّالة، وهي اللي ترجّعك لتلفزيونك	Home watch («UrTV Extras»): running, it brings you back to UrTV
+مراقبة زر الرئيسية («إضافات تلفزيونك»): مثبّتة لكنها ما هي شغّالة	Home watch («UrTV Extras»): installed but not running
+مراقبة زر الرئيسية («إضافات تلفزيونك»): غير مثبّتة	Home watch («UrTV Extras»): not installed

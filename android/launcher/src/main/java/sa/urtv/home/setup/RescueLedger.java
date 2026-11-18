@@ -11,18 +11,21 @@ import java.util.List;
 /**
  * 4.3.3 «إنقاذ تلفزيونك» (the rescue app, android/rescue): answers what our setup turned off (the ledger disabled-by-us.txt and the community list's
  * community-applied.txt: package names, one per line), so the rescue can turn those back on. Only an app signed with our key can ask
- * (the signature permission {@link RescuePlan#PERMISSION}); nothing else is shared, nothing is written.
+ * (the signature permission sa.urtv.permission.RESCUE); nothing else is shared, nothing is written.
  */
 public final class RescueLedger extends ContentProvider {
+    // the words the 4.3.3 rescue app (the one in apk-latest) asks with; the 4.4 rescue app asks the home's extras bridge instead (ExtrasWords.LEDGER)
+    private static final String CALL = "ledger", RESULT = "result";
+
     @Override public boolean onCreate() { return true; }
 
     @Override public Bundle call(String method, String arg, Bundle extras) {
-        if (!RescuePlan.LEDGER_CALL.equals(method) || getContext() == null) return null;
+        if (!CALL.equals(method) || getContext() == null) return null;
         FileStore store = new FileStore(getContext());
         List<String> names = SetupEngine.ledgerNames(store.get("disabled-by-us.txt"));
         for (String p : SetupEngine.ledgerNames(store.get("community-applied.txt"))) if (!names.contains(p)) names.add(p);
         Bundle b = new Bundle();
-        b.putString(RescuePlan.LEDGER_RESULT, String.join("\n", names));
+        b.putString(RESULT, String.join("\n", names));
         return b;
     }
 

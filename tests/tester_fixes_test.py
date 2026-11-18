@@ -53,7 +53,7 @@ check("B5: another app resumed by the OEM is paused with one media key only insi
       "KEYCODE_MEDIA_PAUSE" in carry and "pauseOthers(true, c.muted, adhan, tv.ourPlaying(), tv.musicActive(), false, since) && since <= OEM_WINDOW_MS" in heal_list
       and "getLaunchIntentForPackage" not in carry and carry.count("startActivity(") == 1 and "CATEGORY_HOME" in carry and "startActivity" not in heal)
 check("A2 (build 180): after an update started from our UpdateActivity the install's removal of our task is answered by bringing our home to the front: the HOME intent, HOME through the accessibility service, a full-screen notification, in turn, only in the first 45 s",
-      "tv.bringFront(c.frontTries)" in heal_list and "FRONT_WINDOW_MS = 45_000" in heal_list and "c.ui && !c.frontDone" in heal_list and "TypeService.goHome()" in carry and "setFullScreenIntent(pi, true)" in carry
+      "tv.bringFront(c.frontTries)" in heal_list and "FRONT_WINDOW_MS = 45_000" in heal_list and "c.ui && !c.frontDone" in heal_list and "Extras.goHome()" in carry and "setFullScreenIntent(pi, true)" in carry
       and "UpdateCarry.homeShown = true;" in text(HOME / "MainActivity.java"))
 check("A3 (build 180): every call logs what it found, a record from the build before included (no generation: its time is the generation), also when it does nothing",
       'log("step", 0, "no_record"' in carry and 'rec.gen = sp.getLong("at", 0)' in carry and '"no_a11y_entry"' in heal_list and 'tv.log("audio", r, "why=" + why)' in heal_list)
@@ -95,7 +95,7 @@ home_tsv = dict(l.split("\t", 1) for l in text(ROOT / "i18n/en/home.tsv").splitl
 fixed = re.findall(r'(?:text|button|quiet)\((?:digits\()?S\.t\("([^"]+)"\)', done)
 check("E17: the done screen's 13 fixed lines go through S.t (none left as a bare Arabic literal)", len(fixed) == 12 and 'add(text("' not in done and 'button("' not in done, (len(fixed), fixed))
 check("E17: every one has its English in i18n/en/setup.tsv (the title in home.tsv)", all(f in setup_tsv for f in fixed) and "إعداد تلفزيوني" in home_tsv
-      and 'text(S.t("إعداد تلفزيوني")' in act, [f for f in fixed if f not in setup_tsv])
+      and 'page.title.setText(S.t("إعداد تلفزيوني"));' in act, [f for f in fixed if f not in setup_tsv])
 runner = text(HOME / "setup/SetupRunner.java")
 endof = runner[runner.index("static End endOf("):runner.index("A cut connection said")]
 ends = re.findall(r'S\.n\("([^"]+)"\)', act[act.index("static final String[] ENDS"):act.index("private void buildDone(")])
@@ -119,20 +119,21 @@ check("E15/E18: the home is built again when «اللغة» changes (the heading
       and main.index("Digits.remember(this, cfg);") < main.index("if (langBuilt != null && !langBuilt.equals(S.lang()))"))
 check("E15: the apps grid heading is said in «اللغة»", 'appsLabel.setText(S.t("كل التطبيقات"));' in main and home_tsv.get("كل التطبيقات") == "All apps")
 check("E18: the favourites row is laid out by Dir (first tile on the left in English), and ◀ ▶ follow the row as drawn",
-      "dockRow.setLayoutDirection(Dir.layout());" in main and "dockRow.setGravity(Gravity.CENTER_VERTICAL | Dir.start());" in main
+      "dockRow.setLayoutDirection(Dir.layout());" in main and "dockRow.setGravity(Gravity.CENTER);" in main   # 4.4 (the owner): centred; a full row starts at its start side as before
       and "boolean rtl = row.getLayoutDirection() == View.LAYOUT_DIRECTION_RTL;" in main and "FavBar.sideStep(index, row.getChildCount(), right, rtl)" in main
       and "else if (!dockCards.isEmpty()) dockCards.get(0).requestFocus();" in main)
 
 # E16: the Tilawah and adhan footers (XML strings whose runs of spaces the build makes one)
 sjava = text(HOME / "S.java")
-check("E16: the table finds an entry by its one-space form too (aapt makes «  •  » into « • » in getString)", "spaced(m);" in sjava
+check("E16: the table finds an entry by its one-space form too (aapt makes «, » into «, » in getString)", "spaced(m);" in sjava
       and 'String one = e.getKey().replaceAll(" {2,}", " ");' in sjava and sjava.index("spaced(m);") < sjava.index("table = m;"))
 xml = text(ROOT / "android/launcher/src/main/res/values/strings.xml")
 spaced = [v for v in re.findall(r"<string name=\"[^\"]+\"[^>]*>(.*?)</string>", xml, re.S) if re.search(r"\S  +\S", v)]
 one_space = {re.sub(" {2,}", " ", k): v for k, v in home_tsv.items()}
-check("E16: every XML string with a run of spaces (the footers, «متوقف  •  الأذان كاملًا»…) is found in its one-space form", spaced
-      and all(re.sub(" {2,}", " ", v) in one_space for v in spaced) and "يمين/يسار بين الأقسام  •  اختيار للفتح  •  رجوع للواجهة" in spaced
-      and "متوقف  •  الأذان كاملًا" in spaced, [v for v in spaced if re.sub(" {2,}", " ", v) not in one_space])
+# 4.4: the footers' «  •  » became «، » (one space, no run left); any run of spaces that comes back is still found in its one-space form
+check("E16: every XML string with a run of spaces is found in its one-space form, and the footers (now «، ») are in the table",
+      all(re.sub(" {2,}", " ", v) in one_space for v in spaced) and "يمين/يسار بين الأقسام، اختيار للفتح، رجوع للواجهة" in one_space
+      and "متوقف، الأذان كاملًا" in one_space, [v for v in spaced if re.sub(" {2,}", " ", v) not in one_space])
 til = text(HOME / "tilawah/MainActivity.java")
 check("E16: the rows keep their Arabic line (OnOff reads it) and say it through Ui.line, which now finds the one-space form whole",
       "Ui.line(" in til and "String whole = sa.urtv.home.S.tv(s);" in text(HOME / "tilawah/Ui.java"))

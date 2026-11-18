@@ -70,7 +70,7 @@ final class Teams {
     static String label(Context c, TeamSearch.Team t) {
         all(c);
         if (t.ar.isEmpty() || (S.en() && !t.en.isEmpty())) return t.en;
-        synchronized (Teams.class) { return TRANSLIT.contains(t.id) ? t.ar + "  ·  " + t.en : t.ar; }
+        synchronized (Teams.class) { return TRANSLIT.contains(t.id) ? t.ar + S.sep() + t.en : t.ar; }
     }
 
     /** The clubs of one league (or NATIONAL), in Arabic alphabetical order. */

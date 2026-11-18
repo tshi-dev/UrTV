@@ -37,7 +37,7 @@ final class Cities {
     }
 
     static String country(String[] city) { return city.length > 5 ? city[5] : legacy(city.length > 3 ? city[3] : "Asia/Riyadh")[0]; }
-    static String display(String[] city) { return city[0] + (city.length > 4 ? " · " + city[4] : ""); }
+    static String display(String[] city) { return city[0] + (city.length > 4 ? "، " + city[4] : ""); }
 
     /**
      * The built-in city with exactly this name and place, or null. A map built once, on the first ask: with 3,679 cities a scan of the whole list on
@@ -284,7 +284,8 @@ final class Cities {
             {"بيش", "17.3833", "42.5167"},
             {"الريث", "17.6333", "43.0833"},
             {"العيدابي", "17.2333", "43.1000"},
-            {"الحرث", "16.8000", "43.1167"}
+            {"الحرث", "16.8000", "43.1167"},
+            {"أحد المسارحة", "16.7079", "42.9552"}
         }),
         new Region("منطقة نجران", new String[][] {
             {"نجران", "17.4933", "44.1277"},
@@ -540,7 +541,7 @@ final class Cities {
         new Region("الصومال", "SO", 3, unpack("SO", new String[] {
             "مقديشو|2.0371|45.3438|Africa/Mogadishu|Mogadishu\nبورمة|9.9361|43.1828|Africa/Mogadishu|Borama\nهرجيسة|9.5600|44.0650|Africa/Mogadishu|Hargeysa\nبربرة|10.4396|45.0143|Africa/Mogadishu|Berbera\nكسمايو|-0.3582|42.5454|Africa/Mogadishu|Kismayo\nمركة|1.7159|44.7717|Africa/Mogadishu|Marka\nالدبير|11.7667|51.2167|Africa/Mogadishu|El Dibir\nروقي|9.9729|43.4276|Africa/Mogadishu|Ruqi\nبيدوا|3.1138|43.6498|Africa/Mogadishu|Baidoa\nعابدواق|6.2458|46.2247|Africa/Addis_Ababa|Cabudwaaq\nبرعو|9.5221|45.5336|Africa/Mogadishu|Burao\nكامبوني|-1.6377|41.5866|Africa/Mogadishu|Kaambooni\nجبيلي|9.7003|43.6244|Africa/Mogadishu|Gebiley\nبوساسو|11.2842|49.1816|Africa/Mogadishu|Bosaso\nبلد حوا|3.9284|41.8800|Africa/Mogadishu|Beled Hawo\nبالانبالي|5.7690|45.7630|Africa/Addis_Ababa|Balanbale\nأفغوي|2.1381|45.1212|Africa/Mogadishu|Afgooye\nجالكعيو|6.7697|47.4308|Africa/Mogadishu|Gaalkacyo\nلاس عانود|8.4774|47.3597|Africa/Mogadishu|Laascaanood\nغروي|8.4021|48.4828|Africa/Mogadishu|Garoowe\nبلدوين|4.7358|45.2036|Africa/Mogadishu|Beledweyne\nقوريولي|1.7878|44.5300|Africa/Mogadishu|Qoryooley"
         })),
-        new Region("ليبيا", "LY", 5, unpack("LY", new String[] {
+        new Region("ليبيا", "LY", 101, unpack("LY", new String[] {
             "طرابلس|32.8874|13.1873|Africa/Tripoli|Tripoli\nبنغازي|32.1149|20.0686|Africa/Tripoli|Benghazi\nمصراتة|32.3753|15.0925|Africa/Tripoli|Misratah\nزليتن|32.4674|14.5687|Africa/Tripoli|Zliten\nالخمس|32.6486|14.2619|Africa/Tripoli|Al Khums\nالزاوية|32.7571|12.7276|Africa/Tripoli|Az Zāwīyah\nجنزور|32.8187|13.0173|Africa/Tripoli|Janzūr\nسبها|27.0377|14.4283|Africa/Tripoli|Sabha\nطبرق|32.0896|23.9538|Africa/Tripoli|Tobruk\nأجدابيا|30.7554|20.2263|Africa/Tripoli|Ajdabiya\nالعجيلات|32.7572|12.3763|Africa/Tripoli|Al Ajaylat\nالبيضاء|32.7627|21.7551|Africa/Tripoli|Al Bayḑā’\nالجديد|27.0500|14.4000|Africa/Tripoli|Al Jadīd\nسرت|31.2089|16.5887|Africa/Tripoli|Sirte\nدرنة|32.7670|22.6367|Africa/Tripoli|Darnah\nالجميل|32.8529|12.0612|Africa/Tripoli|Al Jumayl\nقصر بن غشير|32.6833|13.1833|Africa/Tripoli|Qaşr Bin Ghashīr\nتاجوراء|32.8817|13.3506|Africa/Tripoli|Tājūrā’\nالمرج|32.4926|20.8291|Africa/Tripoli|Al Marj\nصبراتة|32.7933|12.4885|Africa/Tripoli|Şabrātah\nالحرشة|32.7647|12.6739|Africa/Tripoli|Al Ḩurshah\nصرمان|32.7567|12.5716|Africa/Tripoli|Şurmān\nمسلاتة|32.5834|14.0363|Africa/Tripoli|Msalātah\nالسوّاني|32.7167|13.0667|Africa/Tripoli|As Sawānī\nترهونة|32.4350|13.6332|Africa/Tripoli|Tarhuna\nالعزيزية|32.5319|13.0175|Africa/Tripoli|Al ‘Azīzīyah"
         })),
         new Region("موريتانيا", "MR", 3, unpack("MR", new String[] {

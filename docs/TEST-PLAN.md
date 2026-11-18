@@ -29,7 +29,7 @@ Navigate with the remote, or `adb shell input keyevent DPAD_DOWN|DPAD_UP|DPAD_CE
 | A1 | Open the app from the TV launcher | Banner «شاشة تلفزيونك»; the settings open on «الأذان» wide on top (focused, «مفعّل» or «متوقف» under it, three green triangles when on), then the other buttons two to a row, the first of each pair on the right; each shows its current value under its name |
 | A1b | ◀▶▲▼ on the buttons, OK on «تحديث تلفزيوني», Back; OK on «البطاقات», OK on «شاشة التوقف», Back, Back; OK on «الأذان» | ▼ from «الأذان» goes to the right one under it, ▲ from the first pair back to it; ▶ goes to the right one of a pair, ◀ to the left one; nothing wraps. «تحديث تلفزيوني» opens its rows (first focused); Back returns with the focus on it. «البطاقات» opens two buttons; Back from «شاشة التوقف» lands on it, Back again on «البطاقات». «الأذان» opens the home's adhan page on its switch: OK flips it (behind the family lock if set), and back in the settings the button says so |
 | A2 | Open every tile and move through every row with D-pad | Every row focusable and highlighted; nothing unreachable; each row is in exactly one tile (the list in FEATURES.md) |
-| A2b | In «الموقع والصلاة», change «طريقة الحساب» | The focus stays on that row after the change, as before |
+| A2b | In «الصلاة والأذان», change «طريقة الحساب» | The focus stays on that row after the change, as before |
 | A3 | المدينة → open | First item «بحث عن مدينة أو قرية», then 13 regions with counts |
 | A4 | Region «منطقة الرياض» → pick «الخرج» | Dialog closes, row shows «المدينة: الخرج» |
 | A5 | المدينة → search → type `ابها` or `Abha` | Results list from the internet; pick one → row updates |
@@ -151,6 +151,16 @@ Use the TV's clock or wait for the real moment; take a screenshot at each.
 | L8 | Screensaver settings → «ترتيب التطبيقات المفضلة» (the long-press menu no longer has it) | List of favourites, numbered, first one focused |
 | L8b | Long-press OK on a favourite → «تعديل المفضلة» (also: settings → «تعديل المفضلة»); OK picks up, ◀▶ move (in Arabic ▶ goes toward the right end), ▲ to the start, OK drops, Back puts back; ▼ then OK on «×» removes, «تراجع» for 5 s: ▲ from the tile reaches it (▼ back to the tile), and Back within the 5 s undoes too; Back leaves | Hint line on top, × on each tile, lifted tile with a gold outline; the order stays after leaving and in `dock.sh show`; the adhan stops on any key; with a PIN and «قفل الإعدادات» the PIN is asked first |
 | L8c | Settings → الشاشة الرئيسية → «أكمل المشاهدة» (on; the first time «السماح», Android's dialog: allow), then watch half an episode in Netflix and come back to the home | One row «أكمل المشاهدة» right under the favourites, its cards a favourite's width under them, none cut; the clock and the photo stay while ▼ goes onto it, and the episode's name is the line above the favourites; a gold line of how far in. ▼ from it reaches «كل التطبيقات». No other rows. OK opens the episode in its own app; a locked app asks its PIN first. OK on the settings row again turns it off: the row goes |
+| L8d | Settings → المظهر → «الساعة» → زجاجية خلف الصورة (الخلفية: صوري وحزم الصور); wait for a photo of ours from «الطبيعة» or «مدن السعودية», then a «الحرمين» photo and one of your own | The header clock goes; a big glass clock (the photo inside the digits, a light edge) stands on the photo. On a photo of ours with a clean sky (the Riyadh skyline, the blue mountains) the buildings or hills come in front of the lower part of the digits within a few seconds; on others, «الحرمين» and your own photos the clock stays fully in front. Nothing flickers when the photo changes |
+| L8e | Same, then «الساعة» → عادية | The glass clock goes and the header clock is back at once; `optimize/saver.sh show` says `clock: plain` |
+| L8f | Settings → المظهر → «التخطيط» → كنبة, with two or three home cards chosen | The cards leave the clock's side and sit in one low strip the screen's width, just above the focused app's name; all the same height, nothing cut. With «الخلفية: الآفاق» and the glass clock, the big clock is alone in the middle. ▲ from the apps reaches «المهام» on its card as before. Back to «تلفزيونك»: the cards return beside the clock |
+| L8g | Settings → المظهر → «شكل البطاقة» → مربعات, with «مواقيت اليوم» as a home card (try «تلفزيونك» and «كنبة», a photo and a glass-clock scene) | Today's six times as separate boxes in one row, no card round them, each on the bar's glass; the next prayer's box is light, a little larger, with «بعد … » under its time, and it moves on when the time comes. Every box reads over a bright photo. Any other card beside it keeps its usual card. `saver.sh show` says `cardstyle: boxes` |
+| L8h | Phone page → «صوري» → «صورة مع قناعها»: pick a photo with a clear sky, then a mask made as in docs/OWN-PHOTO-MASK.md; then try a mask of another shape. With «الساعة: زجاجية» and «الخلفية: صوري وحزم الصور», wait for that photo on the home | The good mask: three ✓ lines, a preview with the clock behind the scenery, «أرسلها مع القناع», then «وصلت الصورة وقناعها للتلفزيون ✓». On the TV the photo's buildings or hills stand in front of the lower digits. The other shape: a red line that says why, and «أرسل الصورة بدون قناع» sends the photo alone (the clock in front). Deleting the photo on the TV deletes its mask |
+| L8i | Settings → المظهر → «شكل التطبيقات» → تكبير وظل; move along the apps tray; then «شكل كنبة» on, then off | The focused app grows a little with a soft shadow and no coloured ring; its name is under the tray, centred on it, and follows it; the name above the tray is gone. «شكل كنبة» on turns it on, off puts the ring back. `saver.sh show` says `appsstyle:` |
+| L8j | «شكل كنبة» on, with the home cards on; let the scenes turn (night, golden, Riyadh) | The cards' heading, main line and line under it are centred. The big clock is in the same place on every scene; on the night lake the mountain now crosses only the lower part of the digits (most of each digit above it), the picture fills the screen with no empty band at the top, and the cut-out lines up with the photo exactly |
+| L8k | Settings → المظهر: choose your own «التخطيط» (كرة القدم) and «الساعة» (عادية); then «شكل كنبة» on; then change «الساعة» to عادية; then «شكل كنبة» off | On: the couch layout, the horizons, the glass clock and the larger apps at once, the line says what it set. After the clock change it stays on and says «مخصّص». Off: the football layout and your plain clock are back exactly as before. `saver.sh show` says `couch: on`, `on (custom)`, `off` in turn |
+| L8l | Settings with «شكل كنبة» off (a fresh TV): look at the first screen, open «المظهر والخلفيات», search for «كنبة»; turn «شكل كنبة» on; then off again | Off: the 4.3.2 settings screen with its buttons, «شكل كنبة» the first row of «المظهر والخلفيات», the 4.4 rows (شكل التطبيقات، وضع الألوان…) in their sections, the search finds it. On: the screen reopens at once as the side list on the right, the focus on «شكل كنبة» in «المظهر». Off: back to the buttons, focus on the switch. A city chosen in one screen shows in the other |
+| L8m | «الساعة: زجاجية خلف الصورة» on the night lake horizon, on Riyadh, and on a photo of ours that has a cut-out; look closely at the edge where the scenery crosses the digits; then send your own photo with an all-white mask, then with a ragged one, from the phone page | The digits are frosted glass (no pink or washed cast, a thin bright rim, a soft shadow) and read on a bright and a dark sky. The scenery's edge over the digits is clean: no light or dark outline, no stair steps, the peak and the trees in front of the digits' lower part, sky through the tower's opening. The all-white and the ragged masks are refused: the phone says why, the photo shows with the clock in front |
 | L9 | OK on the 3rd app, ▲ twice, OK; then Back | It turns gold, moves to the top, drops; home row shows it first |
 | L10 | «إزالة» beside an app (▶/◀ to reach it); then «+» on an app under «إضافة تطبيق» | Removed / added at the end; never below 5 or above 10 (a message says so) |
 | L12 | `optimize/saver.sh tasks add 'اشتري خبز'`, then press Home and the «المهام» pill | The pill is there; the list shows «اشتري خبز» with a gold dot; OK on it → «تم: اشتري خبز», it turns to ✓ |
@@ -249,6 +259,101 @@ in «كل التطبيقات». Full reference: [TILAWAH.md](TILAWAH.md).
 | Y20 | `optimize/music.sh surah sudais 18`, then start the screensaver (the «شاشة التوقف» pill) | A small card at the top centre: «يُتلى الآن · سورة الكهف · …القارئ», in the card style chosen in «شكل البطاقة»; the screensaver starts as usual; after `optimize/music.sh stop` it is gone within a minute; with a station on: its name and «بث مباشر» |
 | Y21 | `optimize/saver.sh home-card matches`, `teams 136013:Al-Hilal`, look at the card (with and without a score) | One line per game: «الهلال [شعار] ٢ - ١ [شعار] النصر», or «الأهلي [شعار] × [شعار] الاتحاد», the crests close to the names; then the date and «بعد …» (a finished game: «انتهت» and its day); space above and below each row; no «…» |
 | Y22 | The same with three cards on the home screen, and the screensaver's card (`saver.sh panel matches`, which shows the crests too) | Still one line per game; a long line first loses its crests (that row only, the full names stay), then takes the clubs' short names, then the short date («الجمعة ٩:٠٠ م» / «٢٤ أكتوبر»), then a slightly smaller size, never «…»; a live game stays big, with the crests in the same order |
+
+## 13. 4.3.2 «the stock home stays on» (branch work/432-stockhome; the owner's TCL Google TV, launcherx)
+
+The home switch of «إعداد تلفزيوني» now makes UrTV the HOME role and turns NOTHING off: the stock home (launcherx), the setup wizard (setupwraith) and the stock home's
+helpers stay on, because a Google TV with them off can fail to start (a blank screen, a restart loop) and the wizard owning the Wi-Fi stopped the switch. «تخلّص من واجهة المصنع»
+is the one place that still turns the stock home off, only when the person asks. A TV switched the old way gets what that switch turned off back, once, at the first start of the home
+(one toast). The scripts (`optimize/install.sh launcher`) are NOT changed in this build. Check with ADB before and after: `adb shell pm list packages -d` (what is off),
+`adb shell cmd role get-role-holders android.app.role.HOME`, `adb shell cmd package resolve-activity --brief -c android.intent.category.HOME -a android.intent.action.MAIN`.
+
+| ID | Do | Expect |
+|---|---|---|
+| S1 | A TV switched the old way (launcherx and setupwraith in `pm list packages -d`): install this build, open the home | One toast: «رجّعنا تشغيل الشاشة الأصلية ووسيط الإعداد…»; afterwards launcherx, setupwraith and the helpers are NOT in `pm list packages -d` (packages the TV had off by itself, e.g. com.tcl.bi, stay off); the HOME role is still sa.urtv.home. Open the home again: no second toast |
+| S2 | On a TV never switched: «إعداد تلفزيوني» → the home step | No Wi-Fi question (even where the wizard owns the Wi-Fi), the step says UrTV is the home; `pm list packages -d` shows NO launcherx / setupwraith / helpers; role = sa.urtv.home. Write down what the Home key opens now (UrTV or Google's home) and what it opens from an app |
+| S3 | After S2: reboot with `optimize/venv/bin/python -I optimize/tv.py --reboot` | The TV starts normally (no blank screen, no restart loop); write down which home is in front after the start; the TV's own settings and the Wi-Fi are as before |
+| S4 | Start the home step and cut the connection (unplug the network cable / turn the Wi-Fi off) while it runs | After 5 minutes the safety switch puts the stock home back by itself (journal «restored», Home = launcherx); nothing was turned off in between |
+| S5 | «تراجع» (the setup's undo) after S2 | The role goes back to launcherx, Home opens Google's home, the journal says «restored»; nothing is left off except what the TV had off itself |
+| S6 | «تخلّص من واجهة المصنع» (still explicit), then «رجّع واجهة المصنع» | The first turns the stock home off (with its two confirmations) and the second turns it back on and gives it Home; the migration of S1 does NOT turn the stock home on while the factory step is on |
+| S7 | A TV that had launcherx off BEFORE UrTV (a hotel/operator TV): install, open the home | Nothing is turned on, no toast (the journal says it was off before) |
+
+## 14. 4.3.3 «setup and system robustness» (branch work/433-setup)
+
+Before and after each: `adb shell pm list packages -d`, `adb shell cmd role get-role-holders android.app.role.HOME`, `adb shell cmd package resolve-activity --brief -c android.intent.category.HOME -a android.intent.action.MAIN`. The app needs this branch's home build (CI apk of the branch) for T3, T6–T9.
+
+| ID | Do | Expect |
+|---|---|---|
+| T1 | A TV never switched: `optimize/install.sh launcher` | No «Home switch paused», no Wi-Fi or cast question; ends «Launcher is home; the stock home and the setup wizard stay on…»; `pm list packages -d` has NO launcherx / tvlauncher / setupwraith / helpers; role = sa.urtv.home |
+| T2 | A TV switched by an OLD install.sh (launcherx and setupwraith in `pm list packages -d`, `optimize/run/home-switch.json` says state done): `optimize/install.sh launcher` | «Turned back on what an older home switch turned off (…)»; afterwards both are on; Home still UrTV; run it again: the line does not come back (`optimize/run/stock-migrated.txt` exists) |
+| T3 | As T2 but first «تخلّص من واجهة المصنع» in the app; check `adb shell content query --uri content://sa.urtv.home.setupstate/factory` says `off=1`; then `optimize/install.sh launcher` | The wizard comes back on, launcherx stays off, the line names «تخلّص من واجهة المصنع» |
+| T4 | After T1: `optimize/venv/bin/python -I optimize/tv.py --reboot` | The TV starts normally, Wi-Fi as before; write down which home is in front |
+| T5 | `optimize/disable.sh` with a list that names the TV's own home package (copy a community list and add it) | «Left on, the TV starts with them (they answer Home): …»; that package not in `pm list packages -d` |
+| T6 | A TV whose setup wizard owns the saved Wi-Fi (TCL G08/G10/G14): «إعداد تلفزيوني» → «جهّز كل شي» | The start screen does NOT say we will ask to forget the Wi-Fi; no Wi-Fi question at the home step; «تخلّص من واجهة المصنع» is offered (not refused for the Wi-Fi); the Wi-Fi stays connected after a restart |
+| T7 | `optimize/install.sh saver` (and `extras`) on Android 7+ | «Installed urtv-screensaver.apk by streaming it (no copy on the TV)»; `adb shell ls /data/local/tmp` has no urtv apk. Again with `URTV_STREAM=0`: the old upload (percent lines) and install, same result |
+| T8 | «جهّز كل شي» and, while the precheck or the backup runs, cut the TV's own adb once: Settings → Developer options → «تصحيح USB» off and on again within ~10 s (the key stays allowed: no new prompt) | A line «انقطع الاتصال بالتلفزيون؛ نعيد الاتصال ونعيد هذه الخطوة.», the step runs again and the run goes on; steps.log in the report has «reconnect …» |
+| T9 | «جهّز كل شي», and at ~20–30 % pull the TV's power for 10 s, plug in | After the start the setup screen comes back by itself and goes on from the step it was on (a cut home switch is put back first); a second power cut does the same; a third does not resume by itself (press «جهّز كل شي») |
+| T10 | Chromecast/Google TV paired by Wireless debugging (`optimize/find-tv.sh pair`): `optimize/venv/bin/python -I optimize/tv.py --reboot`, then `optimize/run.sh` | It finds the TV's new port by itself («TV is back») and goes on from its step; if Wireless debugging is off after the start, the !! line says to read «IP address & Port» and `optimize/find-tv.sh connect` |
+
+
+### 14b. «إضافات تلفزيونك» (UrTV Extras, the add-on; branch work/433-setup, its CI artifact «apks» has urtv-extras.apk)
+
+Install the branch's home first (`adb install -r urtv-home.apk`). The add-on: `adb install -r urtv-extras.apk` (or `optimize/install.sh addon` once it is in a release; Play Protect may ask: «تثبيت على أي حال»). Turn its service on: `optimize/dock.sh extras-setup`, or by hand: `adb shell settings put secure enabled_accessibility_services sa.urtv.extras/sa.urtv.home.ExtrasA11yService` (keep any entry already there, joined with «:») and `adb shell settings put secure accessibility_enabled 1`. Check it runs: `adb shell dumpsys accessibility | grep -i ExtrasA11yService` (in «Bound services»).
+
+| ID | Do | Expect |
+|---|---|---|
+| X1 | Install the branch's home on a TV where Play Protect blocked 4.3.x («بيانات حساسة») | It installs with no «sensitive data» block; `adb shell dumpsys package sa.urtv.home \| grep -i accessibility` shows no service |
+| X2 | Without the add-on: «مركز التحكم» → «أطفئ الآن» | The tile says «يحتاج تفعيل، اضغط للتفعيل»; OK opens «إضافات تلفزيونك» (the screen of the mockup: title, three numbered lines, the Play Protect box, «ثبّت الإضافة» focused, «ليس الآن»). «ليس الآن» closes it |
+| X3 | On that screen: «ثبّت الإضافة» (the TV online; the release must have urtv-extras.apk, else install it with adb and go to X4) | «ينزّل…», «يثبّت…», Android's install screen (and Play Protect's, press «تثبيت على أي حال»); back on the screen the button says «شغّلها في «تسهيل الاستخدام»» |
+| X4 | Press it, turn «إضافات تلفزيونك» on in the TV's accessibility settings, come back | The screen closes with «إضافات تلفزيونك» شغّالة; «أطفئ الآن» now turns the screen off |
+| X5 | «مؤقت النوم» 15 min (or `optimize/dock.sh sleep 1` if allowed) | At the end the screen turns off (not the screensaver) |
+| X6 | Phone page («تحكم من الجوال») with YouTube or Netflix in front: arrows, OK, Back, Home, then type text in a search field | They act in that app; the text lands in the field. With the add-on off: the phone says to turn on «إضافات تلفزيونك» and the TV shows the offer (at most once in 2 minutes) |
+| X7 | GitHub #37: play a video (HDR if you have one) in an app, press the remote's Settings key | The TV's settings open over the video (picture/brightness can be changed) — on the owner's TCL with the stock home on, the TV's own handler may answer first: write down which |
+| X8 | Google TV (launcherx installed), UrTV the Home app: open an app, press Home | UrTV comes to the front (if Google TV's home flashes first, write down how long). `adb logcat -s UrTVWatch` shows «home=brought» |
+| X9 | X8 but press Home 4 times quickly while Google TV keeps winning | After the third bring within 20 s it stops for 5 minutes (Google TV's home stays) — no loop |
+| X10 | `adb shell am force-stop sa.urtv.extras` then use the phone keys | Android restarts the service by itself (Bound services); if not, a home start or `optimize/dock.sh extras-setup` binds it again |
+| X11 | «تحديث تلفزيونك» on a TV with the add-on installed (a newer build in apk-next with `saver.sh updatechannel next`) | The steps show «تحديث إضافات تلفزيونك» between the screensaver and the home; all three update |
+| X12 | `optimize/reset.sh` | sa.urtv.extras is removed with the others, its entry leaves enabled_accessibility_services |
+
+
+## 15. 4.4 «update notice, the home switch not pushed, the add-on's bind» (branch work/44-update)
+
+Builds: `adb shell dumpsys package sa.urtv.home | grep versionCode` (and sa.urtv.screensaver, sa.urtv.extras). To force a fresh release check: `adb shell pm clear sa.urtv.home` is NOT allowed (it wipes the person's settings); instead wait 6 h, or install a build older than apk-latest.
+
+| ID | Do | Expect |
+|---|---|---|
+| U1 | Install this branch's home and an OLDER screensaver (e.g. apk-latest's, if older), open the home | The top bar: «في تحديث لـ شاشة التوقف» with «حدّث الآن» and «لاحقاً»; the «تحديث» pill in the top row. OK opens «تحديث تلفزيوني» |
+| U2 | Back to the home again (no update done) | The card does not come back (one-time); the pill stays |
+| U3 | All three apps the same build, apk-latest newer (or `optimize/saver.sh updatechannel next` with a newer apk-next) | Within 6 h of the last check (or at the next start of the home after it): «في تحديث لـ الشاشة الرئيسية وشاشة التوقف وإضافات تلفزيونك» (the add-on only if installed) |
+| U4 | Play a surah («تلاوة») and wait for U1/U3's condition, or start the adhan preview | No card while it plays; it appears on the next return to the home after |
+| U5 | Kids mode on | No card, no pill |
+| U6 | Wi-Fi off, open the home | Nothing said, no error |
+| U7 | Uninstall the screensaver app (test TV only) and open «تلفزيونك» | «ثبّت الجزء الثاني» as before; no «في تحديث» card for it |
+| H1 | On a TV where UrTV is NOT the home: open the home | No bar «خلّ تلفزيونك يفتح على UrTV» any more, ever. The settings' row «اجعل UrTV الشاشة الرئيسية» is still there |
+| H2 | A TV where the switch fails (Home keeps opening the stock home): «إعداد تلفزيوني» → «جهّز كل شي» twice | Each home step fails; after the second, the start screen (and the done screen) show «جرّب الإعداد بمساعد ذكي من الكمبيوتر», the guide line and a QR to docs/SETUP-PROMPT.md; a third run skips the home step with that line (the rest still runs) |
+| H3 | After H2 (test TV): `adb shell run-as sa.urtv.home cat files/setup/home-fails.txt` is not possible on a release build; instead make the switch succeed once (e.g. on another TV) | A successful switch starts the count again (no QR) |
+| E1 | TCL (TclAppBoot): install the add-on, `optimize/dock.sh extras-setup` | It says «Android runs it (Bound services).»; if the TV refused the first bind, one or two lines «… the list was turned off and on again (n)» before it. `adb shell dumpsys accessibility \| grep -i ExtrasA11yService` is in Bound services |
+| E2 | Then `adb shell am force-stop sa.urtv.extras`, wait 2 minutes, open the home | The bar says «إضافات تلفزيونك مفعّلة لكن التلفزيون ما شغّلها: أطفئها وشغّلها من جديد…» with «أصلحها». OK: where UrTV holds WRITE_SECURE_SETTINGS (Family DNS set up) it re-binds by itself (toast «شغّلنا…»), else the TV's accessibility settings open; turn it off and on there. Bound again afterwards |
+| E3 | E2's state, then «أطفئ الآن» in «مركز التحكم» | The offer screen says the same one fix (not «ثبّت») |
+| E4 | `optimize/dock.sh extras-setup` on E2's state | It turns the list off and on itself and confirms «Android runs it» |
+
+
+### 15b. 4.4 the home switch on a Google TV, and the ways back (from a FRESH state: UrTV removed, `optimize/reset.sh` or uninstall all sa.urtv.* by hand)
+
+Install only the branch's home (`adb install -r urtv-home.apk`); the setup downloads the screensaver and «إضافات تلفزيونك» itself (from apk-latest; apk-next while apk-latest has no urtv-extras.apk yet: for the test, push the branch build to apk-next or install urtv-extras.apk by adb first).
+
+| ID | Do | Expect |
+|---|---|---|
+| G1 | «إعداد تلفزيوني» → the start screen | «قبل ما نبدأ: لو صار شيء», three steps, a QR (scan it: docs/RESCUE.md opens), «صوّر هذه الشاشة بجوالك…» |
+| G2 | «جهّز كل شي» on a Google TV (launcherx) | The home step: if Home already opens UrTV, done; else the line «زر الرئيسية ما زال يفتح الشاشة الأصلية…: نجرّب «إضافات تلفزيونك»…», the add-on installed (Play Protect: «تثبيت على أي حال»), «إضافات تلفزيونك» شغّالة (or «…أطفأناها وشغّلناها من جديد» on a TCL), then «زر الرئيسية يفتح تلفزيونك الآن…». `adb shell dumpsys accessibility \| grep -i ExtrasA11yService` in Bound services; `pm list packages -d` has NO launcherx / setupwraith |
+| G3 | After G2: open YouTube, press Home on the remote (5 times, a few seconds apart) | UrTV every time (Google TV's home may flash first: write down how long) |
+| G4 | The report (QR on the done screen) | «Home: sa.urtv.home/.MainActivity» only if G3 is true; on a TV where it did not work, the stock home's component (never a false pass) |
+| G5 | A TV where it does not work (or the add-on's service turned off right before the check) | «ما قدرنا نخلي زر الرئيسية يفتح تلفزيونك على هذا التلفزيون…»; Home = the stock home; everything else of the setup done. A second «جهّز كل شي» with the same result: the start screen then shows «جرّب الإعداد بمساعد ذكي من الكمبيوتر» + QR, and a third run skips the home step |
+| G6 | «تراجع» after G2 | The role back to the stock home, «إضافات تلفزيونك» out of enabled_accessibility_services (the list and accessibility_enabled as before the setup) |
+| R1 | Install urtv-rescue.apk (`adb install -r`, or Downloader with its code 8042301) and open «إنقاذ تلفزيونك» from the apps row (with UrTV still the home after G2) | One big button. Press it: the TV asks «السماح بتصحيح USB؟» → «السماح دائماً»; it says what it turned on, «زر الرئيسية يفتح الشاشة الأصلية الآن», «أطفأنا «إضافات تلفزيونك»». Home now opens the stock home; nothing uninstalled |
+| R2 | Turn launcherx off by hand (`adb shell pm disable-user --user 0 com.google.android.apps.tv.launcherx`, test TV only), uninstall sa.urtv.home, reach Downloader with the remote's Settings key → Apps → Downloader → Open, install and run the rescue app | launcherx back on, Home opens it (no ledger: it says it turned on what it knows) |
+| R3 | The phone route of docs/RESCUE.md (Bugjaeger or Remote ADB Shell), the one line pasted | No error that stops it; Home opens the stock home |
+| R4 | The home's own check: hard to force; on a test TV, make our home crash at start twice in a row after a restart (not possible on a release build) — at least check that after two normal restarts no bar «رجّع الواجهة الأصلية» appears | No false offer |
 
 ## Report format
 

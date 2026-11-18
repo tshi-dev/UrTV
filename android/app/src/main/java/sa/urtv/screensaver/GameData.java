@@ -46,7 +46,7 @@ final class GameData {
         if ((f.isFile() && System.currentTimeMillis() - f.lastModified() < REFRESH_MS) || !fetching.add(name)) return;
         new Thread(() -> {
             try {
-                Net.Reply r = Net.get(BASE + name + ".json", null, 15000, 20000, Math.min(maxBytes, GameDataCheck.BYTES_MAX));   // no redirect, a size cap, IPv4 first (Net)
+                Net.Reply r = DataHost.get(BASE + name + ".json", 15000, 20000, Math.min(maxBytes, GameDataCheck.BYTES_MAX));   // urtv-data, then the old branch (DataHost); no redirect, a size cap, IPv4 first (Net)
                 if (r.status != 200) return;
                 byte[] b = r.body;
                 if (published.parse(b) == null) return;   // never replace a good file with a bad one

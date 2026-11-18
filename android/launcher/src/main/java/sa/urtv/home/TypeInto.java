@@ -4,7 +4,7 @@ import java.util.List;
 
 /**
  * Typing from the phone into ANOTHER app, through the accessibility service: which text field, what the field holds afterwards, and when it is
- * refused. No Android in it (tests/TypeIntoRun.java runs it); SleepService wraps the real screen in {@link Node}. The service is off until the
+ * refused. No Android in it (tests/TypeIntoRun.java runs it); the add-on's ExtrasA11yService wraps the real screen in {@link Node}. The service is off until the
  * owner turns it on. It looks at the screen only at the moment a phone sends text, only to find the field, and nothing it sees is kept, logged
  * or sent back: the phone gets one of a few fixed words.
  */

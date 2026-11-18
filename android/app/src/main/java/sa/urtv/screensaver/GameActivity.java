@@ -88,6 +88,7 @@ public abstract class GameActivity extends Activity {
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);   // no screensaver and no sleep while a game is open
         prefs = new Prefs(this);
         L = GameLook.of(this);
+        QuizActivity.applyLook(L);   // the shared views (check mark, confetti, ink letters) read the same colours
         latin = DigitsText.isLatin(prefs.digits()); en = S.en(); rtl = Dir.rtl();
         tier = Prefs.ramTier(this);
         float anim = 1f;
@@ -127,7 +128,10 @@ public abstract class GameActivity extends Activity {
             return;
         }
         if (hand == 3) { if (now - handAt >= HAND_HIDE_MS) { hand = 1; redraw(); } return; }   // a secret left on the screen hides by itself
-        if (hand == 0) onTick(now);
+        if (hand == 0) {
+            if (phoneLobby && phones != null && phones.room.version() != phoneSeen) redraw();   // someone joined or left: the list is drawn again
+            onTick(now);
+        }
     }
 
     /** draw again: the pause card, the hand-over, or the game's own screen */
@@ -135,7 +139,7 @@ public abstract class GameActivity extends Activity {
         if (root == null) return;
         root.removeAllViews(); handCount = null;
         root.setBackgroundColor(L.paper);
-        if (pauseCard) drawPause(); else if (hand > 0) drawHand(); else draw();
+        if (namesMode > 0) drawNames(); else if (pauseCard) drawPause(); else if (hand > 0) drawHand(); else draw();
     }
 
     @Override public boolean dispatchKeyEvent(KeyEvent e) {
@@ -147,7 +151,8 @@ public abstract class GameActivity extends Activity {
         int dy = k == KeyEvent.KEYCODE_DPAD_UP ? -1 : k == KeyEvent.KEYCODE_DPAD_DOWN ? 1 : 0;
         if (!(back || ok || dx != 0 || dy != 0)) return super.dispatchKeyEvent(e);
         if (e.getAction() != KeyEvent.ACTION_DOWN) return true;   // the key is ours whole: its release never reaches another screen
-        if (pauseCard) keyPause(back, ok, dy);
+        if (namesMode > 0) keyNames(back, ok, dx, dy);
+        else if (pauseCard) keyPause(back, ok, dy);
         else if (hand > 0) keyHand(back, ok);
         else onKey(back, ok, dx, dy);
         return true;
@@ -239,7 +244,12 @@ public abstract class GameActivity extends Activity {
     protected final void play(int which) { QuizSound.play(sound, which); }
     protected final String letter(int i) { return en ? LETTERS_EN[i % 4] : LETTERS_AR[i % 4]; }
     /** the default names of `n` sides, in UrTV's language */
-    protected final String[] teamNames(int n) { String[] v = new String[n]; for (int i = 0; i < n; i++) v[i] = S.tv(GameScore.TEAMS[i % GameScore.MAX]); return v; }
+    protected final String[] teamNames(int n) { String[] v = new String[n]; for (int i = 0; i < n; i++) v[i] = S.tv(GameScore.TEAMS[i % GameScore.MAX]); return GameNames.resolve(GamePrefs.names(this, "teams"), v, latin); }
+    /** the players' names: what the people wrote on this TV, else «لاعب 1», «لاعب 2» */
+    protected final String[] playerNames(int n) { String[] v = new String[n]; for (int i = 0; i < n; i++) v[i] = S.t("لاعب %s", num(i + 1)); return GameNames.resolve(GamePrefs.names(this, "players"), v, latin); }
+    /** a game with names to write says which kind ("teams" or "players") and how many now; the ready screen then has a «الأسماء» button beside «ابدأ» */
+    protected String namesKind() { return null; }
+    protected int namesCount() { return 0; }
 
     /** a view placed on the 1920 x 1080 design: x from the start edge (the right in Arabic), y from the top; a negative width or height fills */
     protected final FrameLayout.LayoutParams at(float w, float hgt, float x, float y) {
@@ -429,7 +439,7 @@ public abstract class GameActivity extends Activity {
             LinearLayout t = new LinearLayout(this); t.setOrientation(LinearLayout.HORIZONTAL); t.setGravity(Gravity.CENTER_VERTICAL); t.setLayoutDirection(Dir.layout());
             t.setBackground(shape(on ? L.ink : L.tile, L.ink, 6, false)); t.setPadding(px(small ? 14 : 20), 0, px(small ? 14 : 20), 0);
             LinearLayout.LayoutParams sp = new LinearLayout.LayoutParams(px(small ? 24 : 36), px(small ? 24 : 36)); sp.setMarginEnd(px(small ? 10 : 16));
-            t.addView(box(GameLook.SIDES[i % GameLook.SIDES.length], on ? L.onInk : L.ink, 3, false), sp);
+            t.addView(box(L.sides[i % L.sides.length], on ? L.onInk : L.ink, 3, false), sp);
             float f = small ? 30 : 40;
             TextView nm = text(s.n > 6 ? "" : clip(names[i], f, w - (small ? 130 : 200)), f, on ? L.onInk : L.ink, true); nm.setSingleLine(true);
             t.addView(nm, new LinearLayout.LayoutParams(0, -2, 1f));
@@ -452,7 +462,7 @@ public abstract class GameActivity extends Activity {
             TextView rk = centered(num(rank), big, rank == 1 ? L.onSaff : L.onInk, true); rk.setBackgroundColor(rank == 1 ? L.saff : L.ink);
             row.addView(rk, new LinearLayout.LayoutParams(px(128 - 6), px(hgt - 12)));
             LinearLayout.LayoutParams sp = new LinearLayout.LayoutParams(px(20), px(tiny ? 36 : small ? 44 : 64)); sp.setMarginStart(px(32)); sp.setMarginEnd(px(24));
-            row.addView(box(GameLook.SIDES[side % GameLook.SIDES.length], L.ink, 3, false), sp);
+            row.addView(box(L.sides[side % L.sides.length], L.ink, 3, false), sp);
             TextView nm = text(names[side], nameSize, L.ink, true); nm.setSingleLine(true); nm.setEllipsize(android.text.TextUtils.TruncateAt.END);
             row.addView(nm, new LinearLayout.LayoutParams(0, -2, 1f));
             if (withLast && s.last[side] > 0) {
@@ -506,11 +516,19 @@ public abstract class GameActivity extends Activity {
     /** the ready screen: up to seven rows of chips (tighter from the seventh) and the big start button, which has the focus when the screen opens (OK starts with last time's choices) */
     protected final void setup(GameChips c, String startLabel) {
         title(gameName(), S.t("جهّز اللعبة"));
-        boolean tight = c.rows.size() > 6;
-        float y = tight ? 224 : 232;
-        for (int r = 0; r < c.rows.size(); r++) y = chipRow(c, r, y, tight ? 76 : 88, tight ? 14 : 14);
-        root.addView(button(startLabel, c.onButton()), at(640, 104, 96, 856));
-        hints("▲ ▼", S.t("السطر"), "◀ ▶", S.t("الاختيار"), S.t("اختيار"), c.onButton() ? startLabel : S.t("تأكيد"), S.t("رجوع"), S.t("الألعاب"));
+        int n = c.rows.size(); boolean tight = n > 6;
+        float y = tight ? 224 : 232, rowH = tight ? 76 : 88, gap = 14, step = rowH + gap;
+        int fit = Math.max(1, (int) ((840 - y) / step));   // the rows that stand above the start button (it begins at 856): nothing hides behind it
+        int ws = c.scroll;
+        if (c.row < n) { if (c.row < ws) ws = c.row; if (c.row >= ws + fit) ws = c.row - fit + 1; }
+        ws = Math.max(0, Math.min(ws, Math.max(0, n - fit))); c.scroll = ws;
+        for (int r = ws; r < Math.min(n, ws + fit); r++) y = chipRow(c, r, y, rowH, gap);
+        if (ws > 0) root.addView(centered("▲", 36, L.ink(0xCC), true), at(64, 48, 1760, 188));            // more rows above
+        if (ws + fit < n) root.addView(centered("▼", 36, L.ink(0xCC), true), at(64, 48, 1760, 806));       // more rows below
+        c.names = namesKind() != null;
+        root.addView(button(startLabel, c.onButton() && c.btn == 0), at(640, 104, 96, 856));
+        if (c.names) root.addView(button(S.t("الأسماء"), c.onButton() && c.btn == 1), at(480, 104, 96 + 640 + 24, 856));
+        hints("▲ ▼", S.t("السطر"), "◀ ▶", S.t("الاختيار"), S.t("اختيار"), c.onButton() ? (c.btn == 1 ? S.t("الأسماء") : startLabel) : S.t("تأكيد"), S.t("رجوع"), S.t("الألعاب"));
     }
     /** one row: the label at the start, then the chips, as wide as their words; picked = saffron, the focus = ink, not offered = dashed */
     private float chipRow(GameChips c, int r, float y, float hgt, float gap) {
@@ -542,7 +560,11 @@ public abstract class GameActivity extends Activity {
         if (back) { finish(); return false; }
         if (dx != 0 || dy != 0) { if (c.move(dx, dy)) redraw(); return false; }
         if (!ok) return false;
-        if (c.onButton()) return true;
+        if (c.onButton()) {
+            if (c.btn == 1) { openNames(); return false; }
+            if (namesKind() != null && !GamePrefs.namesAsked(this, namesKind())) { openNames(); return false; }   // the first time on this TV the names are asked for before the game starts; after that they are kept
+            return true;
+        }
         if (!c.pick()) { toast(S.t("قريبًا")); return false; }
         if (c.get("sound") != null) { sound = c.picked("sound") == 0; GamePrefs.setSound(this, sound); }
         onChips(c);
@@ -557,5 +579,125 @@ public abstract class GameActivity extends Activity {
     protected final int keyButtons(int sel, int n, boolean ok, int d) {
         if (ok) return -1 - sel;
         return Math.max(0, Math.min(n - 1, sel + d));
+    }
+
+    // ---------------------------------------------------------------- the names (written by the people playing)
+
+    /** 0 closed, 1 the list of names, 2 the keyboard for one name */
+    private int namesMode, nameSel, padLang; private String nameKind = "teams"; private String[] nameCur = new String[0]; private String nameText = ""; private GameNames.Pad pad;
+    private int nameN;
+
+    private void openNames() {
+        nameKind = namesKind(); GamePrefs.setNamesAsked(this, nameKind); nameN = Math.max(1, Math.min(GameNames.SLOTS, namesCount()));
+        String[] saved = GamePrefs.names(this, nameKind);
+        nameCur = new String[nameN];
+        for (int i = 0; i < nameN; i++) nameCur[i] = saved[i];
+        namesMode = 1; nameSel = 0; redraw();
+    }
+    private void saveNames() {
+        String[] all = GamePrefs.names(this, nameKind);   // the slots beyond this game's count stay as they were
+        for (int i = 0; i < nameN; i++) all[i] = nameCur[i];
+        GamePrefs.setNames(this, nameKind, all);
+    }
+    private String[] suggestions() {
+        String[] v = new String[nameN];
+        for (int i = 0; i < nameN; i++) v[i] = nameKind.equals("players") ? S.t("لاعب %s", num(i + 1)) : S.tv(GameScore.TEAMS[i % GameScore.MAX]);
+        return v;
+    }
+    private void drawNames() {
+        title(nameKind.equals("players") ? S.t("أسماء اللاعبين") : S.t("أسماء الفرق"), S.t("اكتبوها أنتم"));
+        if (namesMode == 2) { drawKeyboard(); return; }
+        String[] sug = suggestions();
+        int cols = nameN > 6 ? 2 : 1, per = (nameN + cols - 1) / cols;
+        float w = cols == 2 ? 840 : 960;
+        for (int i = 0; i < nameN; i++) {
+            boolean empty = nameCur[i].isEmpty();
+            TextView f = button(clip(empty ? sug[i] : nameCur[i], 44, w - 60), nameSel == i);
+            if (empty) f.setAlpha(.6f);   // the suggestion, kept only if nobody writes
+            root.addView(f, at(w, 92, 96 + (i / per) * (w + 24), 232 + (i % per) * 104));
+        }
+        root.addView(button(S.t("أسماء جديدة"), nameSel == nameN), at(640, 104, 96, 856));
+        hints("▲ ▼", S.t("الاختيار"), S.t("اختيار"), nameSel == nameN ? S.t("أسماء جديدة") : S.t("اكتب الاسم"), S.t("رجوع"), S.t("تم"));
+    }
+    private void drawKeyboard() {
+        TextView box = centered(nameText.isEmpty() ? " " : nameText, 96, L.ink, true); box.setSingleLine(true);
+        box.setBackground(shapeFor(L.tile, L.ink, 6));
+        root.addView(box, at(1100, 128, 96, 232));
+        root.addView(text(S.t("%s من %s", num(nameText.length()), num(GameNames.MAX)), 40, L.ink(0xCC), false), at(500, 56, 1220, 268));
+        float kw = 132, kh = 100, gap = 12, y0 = 392;
+        for (int r = 0; r < pad.rowCount(); r++) {
+            if (pad.isAction(r)) {
+                String[] lab = {S.t("مسافة"), S.t("حذف"), S.t("تم"), padLang == 0 ? "EN" : "ع"};
+                for (int c = 0; c < GameNames.ACTIONS; c++) root.addView(button(lab[c], pad.row == r && pad.col == c), at(kw * 2 + gap, kh, 96 + c * (kw * 2 + gap + gap), y0 + r * (kh + gap)));
+            } else for (int c = 0; c < pad.cols(r); c++) {
+                TextView k = button(String.valueOf(pad.ch(r, c)), pad.row == r && pad.col == c);
+                root.addView(k, at(kw, kh, 96 + c * (kw + gap), y0 + r * (kh + gap)));
+            }
+        }
+        hints("◀ ▶ ▲ ▼", S.t("الحروف"), S.t("اختيار"), S.t("اكتب"), S.t("رجوع"), S.t("إلغاء"));
+    }
+    private GradientDrawable shapeFor(int fill, int stroke, float strokePx) { return shape(fill, stroke, strokePx, false); }
+    private void keyNames(boolean back, boolean ok, int dx, int dy) {
+        if (namesMode == 2) {
+            if (back) { namesMode = 1; redraw(); return; }
+            if (!ok) { pad.move(dx, dy); redraw(); return; }
+            int a = pad.action();
+            if (a == GameNames.DONE) { nameCur[nameSel] = GameNames.clean(nameText); saveNames(); namesMode = 1; }
+            else if (a == GameNames.LANG) { padLang = 1 - padLang; pad = new GameNames.Pad(padLang == 0); }
+            else nameText = pad.press(nameText);
+            redraw();
+            return;
+        }
+        if (back) { namesMode = 0; redraw(); return; }
+        if (dy != 0) { nameSel = Math.max(0, Math.min(nameN, nameSel + dy)); redraw(); return; }
+        int per = (nameN + (nameN > 6 ? 2 : 1) - 1) / (nameN > 6 ? 2 : 1);
+        if (dx != 0 && nameN > 6 && nameSel < nameN) { int to = nameSel + (dx > 0 ? per : -per); if (to >= 0 && to < nameN) { nameSel = to; redraw(); } return; }
+        if (!ok) return;
+        if (nameSel == nameN) { for (int i = 0; i < nameN; i++) nameCur[i] = ""; saveNames(); redraw(); return; }
+        padLang = en ? 1 : 0; pad = new GameNames.Pad(padLang == 0); nameText = nameCur[nameSel]; namesMode = 2; redraw();
+    }
+
+    // ---------------------------------------------------------------- «اللعب بالجوالات» (docs/GAMES-PHONES.md)
+
+    /** the phone room, while a game uses one (null = the remote plays alone, the default of every game) */
+    protected PhonePlay phones; protected boolean phoneLobby; private int phoneSeen = -1;
+    /** opens the room and its server; false (with a word on the screen) when the TV has no local network */
+    protected final boolean openPhones() {
+        if (phones != null) return true;
+        if (QuizActivity.lanAddress() == null) { toast(S.t("لا توجد شبكة محلية. وصّل التلفزيون بالواي فاي")); return false; }
+        phones = PhonePlay.open(this);
+        if (phones == null) { toast(S.t("تعذّر فتح الغرفة")); return false; }
+        return true;
+    }
+    protected final void closePhones() { phoneLobby = false; if (phones != null) { phones.close(); phones = null; } }
+    @Override protected void onDestroy() { closePhones(); super.onDestroy(); }
+
+    /** the lobby: the QR and the address at the start side, the phones that came in at the end, the start button (needs `min` phones) */
+    protected final void drawPhoneLobby(int min, int max) {
+        phoneSeen = phones.room.version();
+        title(S.t("اللعب بالجوالات"), S.t("امسح الرمز بكاميرا الجوال، أو افتح العنوان"));
+        FrameLayout qrBox = stamp(0xFFFFFFFF, L.ink, 6, false);
+        FrameLayout.LayoutParams qp = new FrameLayout.LayoutParams(-1, -1); qp.setMargins(px(14), px(14), px(14), px(14));
+        qrBox.addView(new QuizActivity.QrView(this, QrCode.encode(phones.url + (en ? "?l=en" : ""))), qp);
+        root.addView(qrBox, at(360, 360, 96, 250));
+        FrameLayout codeBox = stamp(L.saff, L.ink, 6, false);
+        codeBox.addView(centered(DigitsText.convert(phones.code, latin), 120, L.onSaff, true), new FrameLayout.LayoutParams(-1, -1));
+        root.addView(codeBox, at(360, 150, 96, 630));
+        TextView addr = text("\u2066" + phones.url.replace("http://", "") + "\u2069", 36, L.ink, true); addr.setTextDirection(View.TEXT_DIRECTION_LTR); addr.setSingleLine(true);
+        root.addView(addr, at(560, 56, 96, 800));
+        java.util.List<String> names = phones.room.names();
+        for (int i = 0; i < names.size(); i++) {
+            FrameLayout st = stamp(L.tile, L.ink, 6, false);
+            TextView nm = text(clip(names.get(i), 44, 300), 44, L.ink, true); nm.setSingleLine(true);
+            FrameLayout.LayoutParams np = new FrameLayout.LayoutParams(-1, -2, Gravity.START | Gravity.CENTER_VERTICAL); np.setMarginStart(px(24)); np.setMarginEnd(px(12));
+            st.addView(nm, np);
+            if (!phones.room.connected(i)) st.setAlpha(.45f);
+            root.addView(st, atEnd(360, 84, 96 + (i % 2) * 384, 250 + (i / 2) * 100));
+        }
+        boolean can = names.size() >= min;
+        TextView go = button(can ? S.t("ابدأ") : S.t("لازم %s لاعبين على الأقل", num(min)), can);
+        if (!can) go.setAlpha(.55f);
+        root.addView(go, at(640, 104, 96, 856));
+        hints(S.t("اختيار"), can ? S.t("ابدأ") : S.t("لازم %s لاعبين على الأقل", num(min)), S.t("رجوع"), S.t("أغلق الغرفة"));
     }
 }

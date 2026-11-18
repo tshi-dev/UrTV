@@ -19,9 +19,9 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * «إنقاذ تلفزيونك» (UrTV Rescue, 4.3.3): one screen, one big button «رجّع التلفزيون كما كان». Over the TV's own adb (127.0.0.1:5555, «تصحيح USB» on; the TV asks once
+ * «إنقاذ تلفزيونك» (UrTV Rescue, 4.4): one screen, one big button «رجّع التلفزيون كما كان». Over the TV's own adb (127.0.0.1:5555, «تصحيح USB» on; the TV asks once
  * «السماح بتصحيح USB؟»), it turns back on what our setup turned off (the home's ledger where the home still answers, and in any case the TV's own homes, the setup wizard
- * and the stock home's helpers), gives Home to the stock home, and says what it did (RescuePlan decides).
+ * and the stock home's helpers), gives Home to the stock home, takes «إضافات تلفزيونك» out of the accessibility list, and says what it did (RescuePlan decides).
  * Nothing is removed or turned off. Works with no home at all: it is opened from the TV's apps list or from Downloader.
  */
 public class RescueActivity extends Activity {
@@ -52,17 +52,17 @@ public class RescueActivity extends Activity {
 
     @Override protected void onCreate(Bundle b) {
         super.onCreate(b);
-        ScrollView page = new ScrollView(this);
-        page.setBackgroundColor(0xFF151619);
-        LinearLayout col = new LinearLayout(this);
-        col.setOrientation(LinearLayout.VERTICAL);
-        col.setLayoutDirection(View.LAYOUT_DIRECTION_RTL);
-        col.setPadding(dp(48), dp(36), dp(48), dp(36));
-        page.addView(col, new ScrollView.LayoutParams(-1, -2));
-        col.addView(text("إنقاذ تلفزيونك", 28, 0xFFECEFF3, true));
-        col.addView(text("يرجّع التلفزيون كما كان قبل UrTV: يشغّل الشاشة الأصلية ووسيط الإعداد وكل ما أوقفه إعدادنا، ويرجّع زر الرئيسية للشاشة الأصلية. ما يحذف شيئاً.", 17, 0xFFD6DAE0, false));
+        // 4.4 (the owner: «ONE BOX for everything»): the same box as UrTV's setup (sa.urtv.home.Box, copied in), its words read before the button
+        GradientDrawable face = new GradientDrawable();
+        face.setColor(0xFF1A1C20);
+        face.setCornerRadius(dp(22));
+        sa.urtv.home.Box page = sa.urtv.home.Box.make(this, face, 0xFFECEFF3, 0xFF9AA1AB, Typeface.DEFAULT_BOLD, View.LAYOUT_DIRECTION_RTL);
+        page.page.setBackgroundColor(0xFF151619);
+        page.title.setText("إنقاذ تلفزيونك");
+        LinearLayout col = page.content;
+        col.addView(text("يرجّع التلفزيون كما كان قبل UrTV: يشغّل الشاشة الأصلية ووسيط الإعداد وكل ما أوقفه إعدادنا، ويرجّع زر الرئيسية للشاشة الأصلية، ويطفي «إضافات تلفزيونك». ما يحذف شيئاً.", 17, 0xFFD6DAE0, false));
         col.addView(text("يحتاج «تصحيح USB» مفعّلاً (الإعدادات ← تفضيلات الجهاز ← حول ← اضغط «Build» سبع مرات ← خيارات المطوّر ← تصحيح USB). لما يسألك التلفزيون «السماح بتصحيح USB؟» اختر «السماح دائماً».", 14, 0xFFD6AF6B, false));
-        col.addView(text(String.join("\n", DEV_HELP), 14, 0xFFD6DAE0, false));   // where the build number is, per brand (the setup screen has the same lines)
+        col.addView(text(String.join("\n", DEV_HELP), 14, 0xFFD6DAE0, false));   // 4.4: where the build number is, per brand (the setup screen has the same lines)
         button = text("رجّع التلفزيون كما كان", 17, 0xFF151619, true);
         button.setGravity(Gravity.CENTER);
         button.setFocusable(true);
@@ -73,15 +73,15 @@ public class RescueActivity extends Activity {
         button.setBackground(g);
         button.setOnFocusChangeListener((v, has) -> { g.setStroke(has ? dp(4) : 0, 0xFF7FB2FF); });
         button.setOnClickListener(v -> start());
-        LinearLayout.LayoutParams bp = new LinearLayout.LayoutParams(-1, dp(44));
+        LinearLayout.LayoutParams bp = new LinearLayout.LayoutParams(-1, dp(44));   // 4.4 compact: 44 dp, 18 sp
         bp.topMargin = dp(16);
         col.addView(button, bp);
         state = text("", 17, 0xFFECEFF3, false);
         LinearLayout.LayoutParams sp = new LinearLayout.LayoutParams(-1, -2);
         sp.topMargin = dp(12);
         col.addView(state, sp);
-        setContentView(page);
-        button.post(button::requestFocus);
+        setContentView(page.page);
+        page.focusFirst(button);
     }
 
     private void say(final String s) { runOnUiThread(() -> state.setText(s)); }
@@ -102,7 +102,8 @@ public class RescueActivity extends Activity {
             Set<String> off = RescuePlan.packages(adb.run("pm list packages -d; echo END_OF_LIST").output);
             if (installed == null || off == null) { say("التلفزيون ما قال قائمة تطبيقاته، فما غيّرنا شيئاً. اضغط الزر مرة ثانية."); return; }
             List<String> ledger = RescuePlan.ledger(homeLedger());
-            RescuePlan.Plan p = RescuePlan.plan(installed, off, ledger);
+            String a11y = lastLine(adb.run("settings get secure enabled_accessibility_services").output);
+            RescuePlan.Plan p = RescuePlan.plan(installed, off, ledger, a11y);
             for (String c : p.commands) adb.run(c);
             Set<String> after = RescuePlan.packages(adb.run("pm list packages -d; echo END_OF_LIST").output);
             StringBuilder said = new StringBuilder("تم.\n");
@@ -110,6 +111,7 @@ public class RescueActivity extends Activity {
             for (String e : p.enabled) if (after == null || !after.contains(e)) back++;
             said.append(p.enabled.isEmpty() ? "ما كان شيء من تطبيقات التلفزيون موقوفاً.\n" : "شغّلنا " + back + " من " + p.enabled.size() + " تطبيقاً كان موقوفاً.\n");
             said.append(p.home.isEmpty() ? "ما عرفنا الشاشة الأصلية: اختر الشاشة الرئيسية من إعدادات التلفزيون ← التطبيقات.\n" : "زر الرئيسية يفتح الشاشة الأصلية الآن.\n");
+            if (p.a11yChanged) said.append("أطفأنا «إضافات تلفزيونك».\n");
             if (ledger == null) said.append("(ما ردّت الشاشة الرئيسية «تلفزيونك»، فشغّلنا ما نعرفه من تطبيقات التلفزيون الأساسية. لو بقي تطبيق موقوفاً شغّله من إعدادات التلفزيون ← التطبيقات.)\n");
             said.append("اضغط زر الرئيسية في الريموت.");
             say(said.toString());
@@ -130,10 +132,16 @@ public class RescueActivity extends Activity {
     /** what our setup turned off, asked of the home (our key only); null when the home is gone or did not answer */
     private String homeLedger() {
         try {
-            Bundle b = getContentResolver().call(Uri.parse("content://" + RescuePlan.LEDGER_AUTHORITY), RescuePlan.LEDGER_CALL, null, null);
-            return b == null ? null : b.getString(RescuePlan.LEDGER_RESULT);
+            Bundle b = getContentResolver().call(Uri.parse("content://" + sa.urtv.home.ExtrasWords.HOME_AUTHORITY), sa.urtv.home.ExtrasWords.LEDGER, null, null);
+            return b == null ? null : b.getString(sa.urtv.home.ExtrasWords.RESULT);
         } catch (RuntimeException e) {
             return null;
         }
+    }
+
+    private static String lastLine(String s) {
+        String last = "";
+        for (String l : s.replace("\r", "").split("\n")) if (!l.trim().isEmpty()) last = l.trim();
+        return last;
     }
 }

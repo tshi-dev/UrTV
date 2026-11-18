@@ -53,14 +53,14 @@ ALLOWED_TOP = ("schema", "city", "digits", "prayer", "hijri_offset", "clock24", 
 # reads that file and fails if these drift from it).
 DIGITS = ("hindi", "latin")
 PRAYER_METHODS = ("auto", "gulf")   # 4.3 A4: an older file's «jafari» is imported as «auto» (no longer offered)
-CARD_STYLES = ("current", "dark1", "glass1", "dark3", "glass3")
+CARD_STYLES = ("current", "dark1", "glass1", "dark3", "glass3", "boxes", "classic")
 CLOCK_SIZES = ("large", "medium", "small")
 MK_STYLES = ("arrows", "prices")
 MONTHS = ("default", "levant")
 LANGS = ("ar", "en")   # «اللغة» (Tr.java: ar, the default, or en)
 RECITER_ID = re.compile(r"[A-Za-z0-9_-]{1,60}")   # a reciter's id in quran/reciters.json
 FAV_BARS = ("5", "6", "7", "8", "9", "10", "all")   # «تطبيقات في الشريط»: how many favourites the home tray shows whole (Prefs.FAV_BARS)
-QUICK_BUTTONS = ("markets", "matches", "center", "phone")   # the home's quick buttons that can be hidden (Prefs.QUICK_BUTTONS)
+QUICK_BUTTONS = ("markets", "matches", "center", "phone", "inputs")   # the home's quick buttons that can be hidden (Prefs.QUICK_BUTTONS)
 ACCENTS = ("default", "amber", "gold", "green", "teal", "sky", "violet", "rose", "coral")   # «لون التمييز» (GlassStyle.ACCENTS; default = the look's own)
 FOCUS_STYLES = ("solid", "frame", "glow")   # «شكل التركيز» (GlassStyle.FOCUS_STYLES)
 BAR_OPACITY = (30, 100)   # «شفافية الشريط»: 100 = as it was
@@ -72,9 +72,9 @@ HOME_PHOTOS = ("same", "own")   # the home's wallpaper: the screensaver's packs 
 PACK_ID = re.compile(r"[a-z][a-z0-9-]{1,30}")   # a photo pack's id (PhotoPacks.validId)
 MAX_HOME_PACKS = 12   # docs/PHOTO-PACKS.md: at most 12 packs
 SWITCHES = ("greeting", "sunrise", "prayerbar", "wxmore", "pagesdark")   # on/off switches the TV reports as «on» / «off»
-MARKETS = ("tasi", "aramco", "spx", "btc", "gold", "silver", "oil", "xrp")
+MARKETS = ("tasi", "aramco", "spx", "btc", "gold", "gold21", "silver", "oil", "xrp")
 MAX_MARKETS = 4
-PANELS = ("shows", "prayers", "forecast", "hourly", "prayerrow", "nextprayer", "matches", "verse", "wisdom", "adhkar",
+PANELS = ("shows", "prayers", "forecast", "hourly", "prayerrow", "nextprayer", "matches", "nextmatch", "matchday", "livenow", "minitable", "nextmatches", "yesterday", "weekend", "cuppath", "formula", "national", "verse", "hadith", "wisdom", "adhkar",
           "stocks", "tasks", "year", "smart", "today", "album", "none")
 HOME_ONLY = ("nextprayer",)   # Prefs.homeOnly: offered on the home cards, never as the screensaver's panel
 HOME_CARDS = 3
@@ -84,7 +84,7 @@ PRAYER_ADJ_MAX = 20
 HIJRI_MAX = 2
 ADHAN_VOICES = 21                      # tilawah/AdhanVoices.COUNT
 ADHAN_FAJR_VOICES = (10, 13, 17, 20)   # for Fajr only
-ADHAN_VOLUME = (10, 100)
+ADHAN_VOLUME = (0, 100)   # 4.4: 0-100 (was 10-100)
 MAX_TEXT = 60                          # a city or team name
 OWN = "own"                            # the person's own recording: only in the file saved before an import (it stays on that TV)
 

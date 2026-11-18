@@ -149,7 +149,7 @@ public class PhotoPacksActivity extends Activity {
         boolean there = have.containsKey(p.id), active = there && on.contains(p.id);
         String state = busy.contains(p.id) ? "downloading" : failed.contains(p.id) && !there ? "failed" : there ? (active ? "on" : "off") : "get";
         String name = S.en() ? p.nameEn : p.name, source = S.en() ? p.sourceEn : p.source;
-        String meta = conv(w("%s صورة · %s م.ب", String.valueOf(p.count), String.valueOf(PhotoPacks.megabytes(p.bytes))));
+        String meta = conv(w("%s صورة، %s م.ب", String.valueOf(p.count), String.valueOf(PhotoPacks.megabytes(p.bytes))));
         return card("pack:" + p.id, p, name, active, meta, source, state, v -> {
             if (busy.contains(p.id)) return;
             if (!there) { download(p); return; }
@@ -255,18 +255,37 @@ public class PhotoPacksActivity extends Activity {
 
     /** a pack that is on the TV: turn it on or off, delete it */
     private void choose(PhotoPacks.Pack p, boolean active) {
-        String[] items = {active ? "إيقاف" : "تشغيل", "حذف"};
+        Integer share = prefs.packShares().get(p.id);
+        String[] items = {w(active ? "إيقاف" : "تشغيل"), w("حذف"), conv(w("النسبة: %s", shareLabel(share == null ? 0 : share)))};
         WordsBuilder dlg = new WordsBuilder(this, look.light ? R.style.UrDialogLight : R.style.UrDialog).own();   // the pack's name is data, not a word to translate
         dlg.setTitle(S.en() ? p.nameEn : p.name)
-            .setItems(new String[] {w(items[0]), w(items[1])}, (d, i) -> {
+            .setItems(active ? items : java.util.Arrays.copyOf(items, 2), (d, i) -> {   // «النسبة» only for a pack that is on
                 if (i == 0) prefs.setPacksOn(PhotoPacks.toggled(prefs.packsOn(), p.id, !active));
-                else {
+                else if (i == 1) {
                     PackStore.delete(this, p.id);
                     prefs.setPacksOn(PhotoPacks.toggled(prefs.packsOn(), p.id, false));
-                }
+                    prefs.setPackShare(p.id, 0);
+                } else { pickShare(p); return; }
                 render();
             }).show();
     }
+
+    /**
+     * 4.3.3 «النسبة»: how much of the packs' turns this pack takes, 10 % to 90 %, or «تلقائي» (by its number of photos, as always): 70 % nature
+     * and 30 % cities. Packs left on «تلقائي» share what the others leave, by size (PhotoPacks.reps).
+     */
+    private void pickShare(PhotoPacks.Pack p) {
+        Integer now = prefs.packShares().get(p.id);
+        String[] labels = new String[PhotoPacks.SHARES.length];
+        int at = 0;
+        for (int i = 0; i < labels.length; i++) { labels[i] = conv(shareLabel(PhotoPacks.SHARES[i])); if (now != null && now == PhotoPacks.SHARES[i]) at = i; }
+        WordsBuilder dlg = new WordsBuilder(this, look.light ? R.style.UrDialogLight : R.style.UrDialog).own();
+        dlg.setTitle(conv(w("النسبة: %s", S.en() ? p.nameEn : p.name)))
+            .setSingleChoiceItems(labels, at, (d, i) -> { prefs.setPackShare(p.id, PhotoPacks.SHARES[i]); d.dismiss(); render(); })
+            .show();
+    }
+
+    private String shareLabel(int pct) { return pct <= 0 ? w("تلقائي") : pct + "٪"; }
 
     /** «حقوق الصور»: every photo of the packs on the TV with its author, licence and link; and the app's own set */
     private void showCredits() {
@@ -275,7 +294,7 @@ public class PhotoPacksActivity extends Activity {
             List<String[]> rows = PackStore.creditRows(this, p.id);
             if (rows.isEmpty()) continue;
             sb.append(S.en() ? p.nameEn : p.name).append('\n');
-            for (String[] r : rows) sb.append("  ").append(PhotoPacks.isolate(r[0])).append(" · ").append(PhotoPacks.creditLine(r[1], r[2])).append(" · ").append(r[3]).append('\n');
+            for (String[] r : rows) sb.append("  ").append(PhotoPacks.isolate(r[0])).append(S.sep()).append(PhotoPacks.creditLine(r[1], r[2])).append(S.sep()).append(r[3]).append('\n');
             sb.append('\n');
         }
         sb.append(w("صورنا: Unsplash، وكل صورة في docs/PHOTO-CREDITS.md"));

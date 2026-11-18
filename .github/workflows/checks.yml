@@ -4,7 +4,7 @@ name: Checks
 # in a real browser. The Android apps are compiled by android.yml.
 on:
   push:
-    branches: [master, next, content]
+    branches: [master, next, content, 'work/rel-*']
   pull_request:
   workflow_dispatch:
   workflow_call:   # android.yml runs it before publishing to apk-latest
@@ -35,6 +35,6 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - run: pip install fonttools==4.68.0 brotli==1.2.1 pillow==13.0.0 -r .github/tools/cities-world/requirements.txt
-      - run: npm install --no-save playwright@1.56.1 && npx playwright install --with-deps chromium
+      - run: pip install fonttools==4.68.0 brotli==1.2.1 pillow==13.0.0 cryptography==50.0.2 numpy==2.5.5 scipy==1.18.1 opencv-python-headless==4.14.0.94 -r .github/tools/cities-world/requirements.txt
+      - run: npm install --no-save playwright@1.56.1 acorn@8.14.0 && npx playwright install --with-deps chromium   # acorn: tests/js_strip_test.mjs
       - run: tests/run.sh

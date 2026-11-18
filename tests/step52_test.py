@@ -50,10 +50,10 @@ check("settings: the «UrTV النظيف» row is asked again at each return and
       and "topMargin += dp(32)" in st and 'View autoRow = row("التحديث التلقائي للصفحة"' in st)
 
 # ---- step 54
-kt = src(HOME / "KeyTrace.java"); typ = src(HOME / "TypeService.java")
+kt = src(HOME / "KeyTrace.java"); typ = src(ROOT / "android/extras/src/main/java/sa/urtv/home/ExtrasA11yService.java")
 check("keytrace + nokeyfilter: `dock.sh debug keytrace on` logs per key (tag UrTVKeyTrace) queue, dispatch, focus, layout, draw and six frame intervals; `nokeyfilter` stops the accessibility key filter",
       '"keytrace"' in dbg and '"nokeyfilter"' in dbg and 'android.util.Log.i("UrTVKeyTrace"' in kt and all(k in kt for k in ("queue=", "dispatch=", "focus@=", "layout@=", "draw@=", "frames=[", "janky="))
-      and 'DebugFlags.on(this, "keytrace")' in main and "KeyTrace.focusChanged();" in main and 'DebugFlags.on(this, "nokeyfilter")' in typ and "nokeyfilter|keytrace" in src(ROOT / "optimize/dock.sh"))
+      and 'DebugFlags.on(this, "keytrace")' in main and "KeyTrace.focusChanged();" in main and "nokeyfilter|keytrace" in src(ROOT / "optimize/dock.sh"))   # 4.3.3: the key filter is the add-on's (it cannot read the home's switches): nokeyfilter has no effect any more
 mact = src(SAVER / "MainActivity.java")
 check("the saver app's own page starts like the dream: SaverStart (picture, first frame, then the WebView), the same log lines, and its own snapshot capture",
       "SaverStart.begin(" in mact and "SaverSnapshot.capture(MainActivity.this" in mact)
@@ -63,8 +63,8 @@ check("quiz: «جاوب الجميع» in the header of the reveal when it ended
       and "r.dg === 1" in page_ and "AR && !LATIN" in page_)
 sett = src(SAVER / "SettingsActivity.java")
 resm = sett.split("protected void onResume()")[1].split("\n    }\n")[0]
-check("settings: the row (or the first screen's button) that opened another screen gets the focus back on return: remembered at the press (launchedRow, for a button \"hub:<cat>\"), handed to the SAME render that rebuilds the list (forceWant, read before the focus search), not restored before it",
-      "launchedRow = (String) card.getTag(); onClick.run();" in sett and 'launchedRow = "hub:" + cat; hubAt = cat; act.run(); return;' in sett
+check("settings: the row that opened another screen gets the focus back on return: remembered at the press (launchedRow), handed to the SAME render that rebuilds the list (forceWant, read before the focus search), not restored before it (4.3.3: no screen of buttons any more)",
+      "launchedRow = (String) card.getTag(); onClick.run();" in sett
       and resm.index("forceWant = back;") < resm.index("render();") and "final String want = forceWant != null ? forceWant :" in sett and "forceWant = null;" in sett)
 dbg2 = src(HOME / "DebugFlags.java"); mm = src(HOME / "MainActivity.java")
 check("focus-animation switches (dock.sh debug nolift|noglow|noshine|noscale|notitle|plainfocus): read once at build (focusMask), each turns exactly its part off in the tile's focus listener; plainfocus = all of them and the label, the lift and the glide",

@@ -27,8 +27,13 @@ final class QuizPick {
         Item(String id, String cat, int diff, boolean kids, String[] q, String[] a, String[][] w) { this.id = id; this.cat = cat; this.diff = diff; this.kids = kids; this.q = q; this.a = a; this.w = w; }
     }
 
+    /** chip key -> the bank categories it covers (from games/meta.json: a group such as «علوم» covers science, animals and maths); empty = every key is one category (the built-in chips) */
+    static volatile java.util.Map<String, Set<String>> GROUPS = java.util.Collections.emptyMap();
+
     static boolean matches(Item it, String cat, int level, boolean kids) {
-        return (MIX.equals(cat) || it.cat.equals(cat)) && (level == 0 || it.diff == level) && (!kids || it.kids);
+        Set<String> g = GROUPS.get(cat);
+        boolean inCat = MIX.equals(cat) || (g != null ? g.contains(it.cat) : it.cat.equals(cat));
+        return inCat && (level == 0 || it.diff == level) && (!kids || it.kids);
     }
 
     static int available(List<Item> bank, String cat, int level, boolean kids) {

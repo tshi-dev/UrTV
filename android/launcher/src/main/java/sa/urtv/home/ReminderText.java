@@ -18,7 +18,7 @@ final class ReminderText {
 
     /** one line for the notice over another app: the task, then when */
     static String line(ReminderPlan.Row r, long now, TimeZone tz, boolean clock24, boolean latin) {
-        return r.text + "  ·  " + when(r, now, tz, clock24, latin);
+        return r.text + S.sep() + when(r, now, tz, clock24, latin);
     }
 
     static String snooze(boolean latin) {

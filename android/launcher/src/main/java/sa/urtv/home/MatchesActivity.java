@@ -25,7 +25,8 @@ import java.util.Collections;
  * Back closes a game's card before it leaves. Two things it asks of the app (window.UrtvMatches):
  *  - remind: «ذكّرني قبلها بنصف ساعة» adds a task (the screensaver's «المهام») with the game and its time, and a reminder: due at kick-off,
  *    «قبلها بـ» 30, silent (MatchReminder, as `saver.sh tasks add '<text>' --at '…' --before 30` does).
- *  - follow: «تابع» adds the club to the followed teams (the screensaver's provider, phone_follow: the same list as «الفرق المتابعة»).
+ *  - follow: «تابع» adds the club to the followed teams (the screensaver's provider, phone_follow: the same list as «الفرق المتابعة»);
+ *    4.3.3 a league too (phone_follow_league), and with the screensaver missing or older the home keeps both (HomeFollows) until it can take them.
  *
  * <p>A second WebView of this app beside HomeCard's: pauseTimers()/resumeTimers() are process-wide, so this one resumes them in onResume and
  * pauses them in onPause, as HomeCard does; the home and this page are never both in front (tests/home_card_test.py).
@@ -46,7 +47,12 @@ public class MatchesActivity extends Activity {
         ConfigSnapshot cfg = ConfigSnapshot.read(this);
         final int ground = cfg.pagesDark ? Color.rgb(0x17, 0x18, 0x1B) : Color.rgb(0xF4, 0xF2, 0xEC);   // the page's own ground (dark, or sand), before its first frame
         getWindow().setBackgroundDrawable(new android.graphics.drawable.ColorDrawable(ground));   // and the window's, so no other colour shows while the view is not yet drawn
-        web = new WebView(this);
+        web = WebViews.make(this);
+        if (web == null) {   // 4.3.5: no WebView on this TV: say so and go back, never a crash
+            android.widget.Toast.makeText(this, S.t("هذا التلفزيون ما فيه متصفح النظام، فالصفحة ما تفتح"), android.widget.Toast.LENGTH_LONG).show();
+            finish();
+            return;
+        }
         web.setBackgroundColor(ground);
         web.setAlpha(0f);   // not shown (alpha, not INVISIBLE: a view that is not drawn gets no visual-state callback) until the page has painted its first frame
         final Runnable reveal = () -> { if (web != null) web.setAlpha(1f); };
@@ -59,7 +65,7 @@ public class MatchesActivity extends Activity {
         s.setAllowFileAccess(true);
         s.setAllowFileAccessFromFileURLs(true);
         s.setAllowUniversalAccessFromFileURLs(true);
-        s.setCacheMode(WebSettings.LOAD_NO_CACHE);
+        s.setCacheMode(WebSettings.LOAD_DEFAULT);   // G3: the HTTP cache (the page revalidates its data: fetchT, cache:'no-cache')
         s.setTextZoom(100);   // as HomeCard: the TV's font size must not push the page out of its boxes
         web.addJavascriptInterface(new Bridge(getApplicationContext(), this), "UrtvMatches");
         web.setWebViewClient(new WebViewClient() {
@@ -88,13 +94,16 @@ public class MatchesActivity extends Activity {
                         } catch (java.io.IOException ignored) { }
                     }
                 }
+                NetLog.count(u);   // G3: the request log
                 return super.shouldInterceptRequest(v, r);
             }
         });
         setContentView(web);
         web.postDelayed(reveal, 1500);   // a page that never finishes still shows what it has
         String event = getIntent().getStringExtra(EXTRA_EVENT);
-        web.loadUrl(HomePage.fresh(this, HomeCardChoice.matchesUrl(cfg.fragment, event) + (cfg.pagesDark ? "&pagedark=1" : "")));   // «صفحات الأسهم والمباريات داكنة»: the page in its dark theme
+        HomeFollows.sync(this);   // 4.3.3 what the home kept while the screensaver could not take it goes to it now
+        String frag = HomeFollows.fragment(this, cfg.fragment);   // …and what it still keeps joins the page's lists
+        web.loadUrl(HomePage.fresh(this, HomeCardChoice.matchesUrl(frag, event) + (cfg.pagesDark ? "&pagedark=1" : "")));   // «صفحات الأسهم والمباريات داكنة»: the page in its dark theme
         web.requestFocus();
     }
 
@@ -196,24 +205,31 @@ public class MatchesActivity extends Activity {
             return true;
         }
 
+        /** «أزل … من فرقي»: from the screensaver's list and the home's own (4.3.3), true when it was in either */
         @JavascriptInterface public boolean unfollow(String id) {
             if (id == null || !id.matches("\\d{1,9}")) return false;
-            try {
-                Bundle out = c.getContentResolver().call(CONFIG, "phone_unfollow", id, null);
-                return out != null && out.getBoolean("ok");
-            } catch (RuntimeException e) {
-                return false;
-            }
+            boolean home = HomeFollows.removeTeam(c, id);
+            return Boolean.TRUE.equals(HomeFollows.call(c, "phone_unfollow", id)) || home;
         }
 
+        /** «تابع»: the screensaver's list when it answers (its no is final: there already, or full); 4.3.3 missing or older: the home keeps it */
         @JavascriptInterface public boolean follow(String id, String name) {
             if (id == null || !id.matches("\\d{1,9}")) return false;
-            try {
-                Bundle out = c.getContentResolver().call(CONFIG, "phone_follow", id + ":" + (name == null ? "" : name.replace(":", " ").trim()), null);
-                return out != null && out.getBoolean("ok");
-            } catch (RuntimeException e) {   // the screensaver is missing or older: nothing changed
-                return false;
-            }
+            Boolean saver = HomeFollows.call(c, "phone_follow", id + ":" + (name == null ? "" : name.replace(":", " ").trim()));
+            return saver != null ? saver : HomeFollows.addTeam(c, id, name);
+        }
+
+        /** 4.3.3 a whole league, the same way: token is the page's word for it (a built-in league's English name, else id + its id) */
+        @JavascriptInterface public boolean followLeague(String id, String ar, String en, String token) {
+            if (id == null || !id.matches("\\d{1,6}")) return false;
+            Boolean saver = HomeFollows.call(c, "phone_follow_league", id + "|" + FollowMerge.clean(ar) + "|" + FollowMerge.clean(en));
+            return saver != null ? saver : HomeFollows.addLeague(c, id, ar, en, token);
+        }
+
+        @JavascriptInterface public boolean unfollowLeague(String id, String en) {
+            if (id == null || !id.matches("\\d{1,6}")) return false;
+            boolean home = HomeFollows.removeLeague(c, id);
+            return Boolean.TRUE.equals(HomeFollows.call(c, "phone_unfollow_league", id + "|" + FollowMerge.clean(en))) || home;
         }
     }
 

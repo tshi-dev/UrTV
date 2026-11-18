@@ -38,8 +38,8 @@ if shutil.which("javac"):
           r["url"].startswith("https://github.com/tshi-dev/UrTV/releases/download/apk-latest/urtv-screensaver.apk") and r["url"].endswith("code 2927902"), r["url"])
 else:
     print("SKIP install saver (JVM half): no javac here")
-check("the screen: «ثبّت الجزء الثاني», a button that downloads and installs, Downloader's code in Latin digits (not through S.t), the 5 % safe area",
-      'S.t("ثبّت الجزء الثاني")' in act and 'S.t("نزّل وثبّت")' in act and "SaverInstallRule.DOWNLOADER_CODE" in act and "widthPixels * 0.05f" in act)
+check("the screen: «ثبّت الجزء الثاني», a button that downloads and installs, Downloader's code in Latin digits (not through S.t), in the one box (4.4, Box: the 5 % safe area)",
+      'S.t("ثبّت الجزء الثاني")' in act and 'S.t("نزّل وثبّت")' in act and "SaverInstallRule.DOWNLOADER_CODE" in act and "Box.make(this, face," in act and "setContentView(box.page);" in act)
 check("it downloads, verifies the package and the key BEFORE the installer, and uses the same install path as the other installs",
       "MirrorInstall.download(SaverInstallRule.URL, f)" in act and "SaverInstallRule.verify(" in act and act.index("SaverInstallRule.verify(") < act.index("MirrorInstall.commit(")
       and "MirrorInstall.signers(getPackageManager(), getPackageName())" in act)

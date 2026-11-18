@@ -46,14 +46,14 @@ check("step 62: the page keeps the screen on while it waits (a sleeping screen s
       "FLAG_KEEP_SCREEN_ON" in act and 'note("adbd said "' in adb and "a second one after our key" in adb and "UrTV يشتغل ممتاز بدونها" in act and "optimize/install.sh" not in act)
 check("it refuses with the reason where debugging is off (the connect says so), and the engine refuses where the wizard owns the Wi-Fi or the safety switch cannot be set",
       "debugging is off" in act and "تصحيح USB مطفأ" in act and "wizardOwnsWifi()" in eng.split("FactoryOffer factoryOffer()")[1][:900] and "deadman.arm(30)" in eng.split("FactoryOffer factoryOffer()")[1][:1600])
-check("the ADB key is kept while the step is on (its automatic restore needs it), the restore at boot is tried again at the next boot when it did not finish",
-      'factory.startsWith("on")' in sess and "SetupBootReceiver" in recv and "restoreFactory()" in recv and "the next boot tries again" in recv)
+check("the ADB key is kept (4.4: always, one key for good; the step's automatic restore needs it), the restore at boot is tried again at the next boot when it did not finish",
+      "static void keepKey(" in sess and "AdbKeys.delete" not in sess and "SetupBootReceiver" in recv and "restoreFactory()" in recv and "the next boot tries again" in recv)
 check("the boot counter: a boot counts only when our home did not come up in it (MainActivity.onResume says so) and our process crashed in it (ApplicationExitInfo; older Android: no home is enough); two in a row restore",
       "SetupHook.homeUp(this)" in mainsrc and "getHistoricalProcessExitReasons" in recv and "REASON_CRASH" in recv and "BootGuard.onBoot(prev, crashesSince(app, prev.bootAt), now)" in recv)
 if not shutil.which("javac"):
     print("SKIP factory logic: no javac"); sys.exit(1 if failed else 0)
 with tempfile.TemporaryDirectory() as tmp:
-    pure = [p for p in sorted(SETUP.glob("*.java")) if "import android." not in p.read_text(encoding="utf-8")] + [HOME / "phone/UpdateRules.java", HOME / "SuggestedApps.java"]
+    pure = [p for p in sorted(SETUP.glob("*.java")) if "import android." not in p.read_text(encoding="utf-8")] + [HOME / "phone/UpdateRules.java", HOME / "SuggestedApps.java", HOME / "ExtrasWords.java"]
     r = subprocess.run(["javac", "-encoding", "UTF-8", "-d", tmp, *map(str, pure), str(ROOT / "tests/SetupEngineRun.java"), str(ROOT / "tests/FactoryRun.java"), str(ROOT / "tests/BootGuardRun.java")], capture_output=True, text=True)
     check("the engine, the fake TV and the runners compile", r.returncode == 0, r.stderr[-800:])
     if r.returncode:

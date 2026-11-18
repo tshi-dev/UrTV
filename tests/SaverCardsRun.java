@@ -34,9 +34,11 @@ public final class SaverCardsRun {
       public SharedPreferences getSharedPreferences(String n,int m){return sp;}
       public void sendBroadcast(Intent i){}
       public String getPackageName(){return "sa.urtv.screensaver";}
+      public Context getApplicationContext(){return this;}
     };
     // the owner's sequence: a card, then «بدون» (the phone page sends "none" for an empty list), then three cards, then the empty string
     String[][] steps = {{"nextprayer", "nextprayer"}, {"none", "none"}, {"verse,hourly,prayers", "verse,hourly,prayers"}, {"", "none"}, {"nextprayer", "nextprayer"}, {"none", "none"}};
+    NetLog.logger = (m, r, h) -> { };   // Prefs starts NetLogcat otherwise, which needs the real Process.myUid
     for (String[] st : steps) {
       Intent i = new Intent(); i.putExtra("home_panel", st[0]);
       // describe() (the answer's text) needs the system; the save is made before it, so an exception from there is expected here

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- «إضافات تلفزيونك» (UrTV Extras, 4.3.3): the optional add-on with the one accessibility service the home no longer has (ExtrasA11yService). No internet, no
+     screen of its own: the person installs it from the home's offer («إضافات تلفزيونك») and turns its service on in the TV's accessibility settings. -->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- the home and the add-on call each other's provider only with this; signature: only an app signed with our key holds it (both declare it) -->
+    <permission android:name="sa.urtv.permission.EXTRAS" android:protectionLevel="signature" />
+    <uses-permission android:name="sa.urtv.permission.EXTRAS" />
+
+    <!-- Android 11+: what it may see. The home (to call it and to bring it back), the HOME answerers (the watch, the Settings key), the settings it opens -->
+    <queries>
+        <package android:name="sa.urtv.home" />
+        <intent><action android:name="android.intent.action.MAIN" /><category android:name="android.intent.category.HOME" /></intent>
+        <intent><action android:name="android.settings.SETTINGS" /></intent>
+        <intent><action android:name="android.app.action.TOGGLE_NOTIFICATION_HANDLER_PANEL" /></intent>
+        <intent><action android:name="android.intent.action.SEARCH" /></intent>
+        <!-- «أزرار الريموت»: the app a remote button was given, opened by its launcher entry -->
+        <intent><action android:name="android.intent.action.MAIN" /><category android:name="android.intent.category.LEANBACK_LAUNCHER" /></intent>
+        <intent><action android:name="android.intent.action.MAIN" /><category android:name="android.intent.category.LAUNCHER" /></intent>
+    </queries>
+
+    <application
+        android:allowBackup="false"
+        android:label="@string/app_name"
+        android:icon="@mipmap/ic_extras">
+
+        <service
+            android:name="sa.urtv.home.ExtrasA11yService"
+            android:exported="true"
+            android:label="@string/service_label"
+            android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE">
+            <intent-filter>
+                <action android:name="android.accessibilityservice.AccessibilityService" />
+            </intent-filter>
+            <meta-data android:name="android.accessibilityservice" android:resource="@xml/extras_service" />
+        </service>
+
+        <provider
+            android:name="sa.urtv.home.ExtrasCallProvider"
+            android:authorities="sa.urtv.extras.bridge"
+            android:exported="true"
+            android:permission="sa.urtv.permission.EXTRAS" />
+    </application>
+</manifest>

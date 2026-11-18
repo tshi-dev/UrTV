@@ -11,6 +11,7 @@ tv-en.html          tv.html in English, for «اللغة» English (docs/ENGLISH
 """
 import base64
 import json
+import os
 import re
 import sys
 import unicodedata
@@ -30,18 +31,20 @@ FONTS = {
 REPO = "https://raw.githubusercontent.com/tshi-dev/UrTV/master/"
 
 
-TAFSIR_MAX = 130   # characters kept of «التفسير الميسر»; the card shows at most three lines of it
-
-
 def tafsir_for_screen(text):
-    """The tafsir cut at a word to TAFSIR_MAX characters, «…» after it if cut ('' when there is none)."""
-    t = " ".join((text or "").split())
-    if len(t) <= TAFSIR_MAX:
-        return t
-    return t[:TAFSIR_MAX].rsplit(" ", 1)[0].rstrip(" ،,:؛.") + "…"
+    """«التفسير الميسر» whole, only its spaces made single: its terms of publication allow no cut, no addition (QuranEnc.com's,
+    for this King Fahd Complex text). A long one is shown in pages by the page (fitTafsir), never ended with «…»."""
+    return " ".join((text or "").split())
 
 
-def verses_for_screen():
+def tafsir_file():
+    """{"<surah name as the card shows it>:<ayah>": tafsir} for every verse of the deck: dist/tafsir.json, read by the page only with
+    #tafsir=1 (the whole tafsir is about 200 KB, four times what the page may grow). The key is the card's own words, so a newer page
+    with another deck still finds the right text, or none."""
+    return {f"{v['surah']}:{v['ayah']}": v["tafsir"] for v in verses_for_screen(with_tafsir=True) if v.get("tafsir")}
+
+
+def verses_for_screen(with_tafsir=False):
     """assets/shared/verses.json as fetched by .github/tools/fetch_verses.py. The text shown is the `uthmani` one, the
     KFGQPC text the Uthmanic Hafs font is made for, kept exactly as fetched (waqf signs included, the font draws them;
     its code points are not normalised or re-ordered) except the ۞ hizb sign the data puts in front of a word. A verse without it is left out: this font gets no other text.
@@ -57,7 +60,9 @@ def verses_for_screen():
         name = re.sub("[\u064B-\u065F\u0670\u06D6-\u06ED]", "", unicodedata.normalize("NFC", v["surah"]))
         name = name.replace("\u0671", "ا")   # ٱ: no glyph in Thmanyah
         e = {"text": " ".join(v["uthmani"].replace("\u06DE", "").split()), "surah": name, "ayah": v["ayah"]}
-        if v.get("tafsir"):
+        if v.get("page"):   # 4.4 the tafsir card: «التفسير الميسر، صفحة N» (the Madinah mushaf page, fetch_verses.py --pages)
+            e["page"] = v["page"]
+        if with_tafsir and v.get("tafsir"):   # not in the page itself: dist/tafsir.json (tafsir_file)
             e["tafsir"] = tafsir_for_screen(v["tafsir"])
         out.append(e)
     return out
@@ -213,7 +218,7 @@ def hadith_for_screen():
             continue
         if any(k == "q" for k, _ in parts) and words <= HADITH_MAX_WORDS:
             grade = tirmidhi_grade(full["text"]) or albani_grade(full.get("grades"))
-            source = f"{full['book']} · {str(full['number']).translate(digits)}" + (f" · {grade}" if grade else "")
+            source = f"{full['book']}، {str(full['number']).translate(digits)}" + (f"، {grade}" if grade else "")   # 4.4: «،», never «·»
             out.append({"parts": parts, "source": source})
     return out
 
@@ -285,6 +290,8 @@ HIJRI_EN = ["Muharram", "Safar", "Rabi al-Awwal", "Rabi al-Thani", "Jumada al-Aw
 EN_CODE = [
     # Latin digits unless Arabic-Indic ones are asked for; the dates and numbers in English
     ("digits: _Q.get('digits') === 'latin' ? 'latin' : 'hindi',", "digits: _Q.get('digits') === 'hindi' ? 'hindi' : 'latin',", 1),
+    # 4.4: the Arabic page joins two parts with «، » (never «·»); the English one keeps its « · »
+    ("const SEP = '، ';", "const SEP = ' · ';", 1),
     # the Gregorian words from fixed English names, never from Intl's en-GB (its commas and order differ between ICU versions, so between
     # WebViews): Intl gives only the numbers of the day in the zone. «Monday, 2 November 2026», «Monday 2 November», «2 November», «Mon»
     ("const GREG = 'ar-SA-u-ca-gregory-nu-' + NU;", """const GREG = 'en-u-ca-gregory-nu-latn';
@@ -336,48 +343,51 @@ function enDate(d, o){
     const wd = EN_DAYS[enDay(now, CONFIG.timezone).wd];
     const hm = HIJRI_EN[parseInt(hp.month, 10) - 1];
     if(hm) setText(document.getElementById('hijri'), wd + ', ' + ar(parseInt(hp.day, 10)) + ' ' + hm + ' ' + ar(parseInt(hp.year, 10)) + ' AH');""", 1),
+    # «التاريخ بالأرقام» (#datenum=1): the weekday's comma and the Hijri mark in English
+    ("const wd = new Intl.DateTimeFormat(GREG, {timeZone: CONFIG.timezone, weekday:'long'}).format(now) + '، ';\n    setText(document.getElementById('hijri'), wd + n('islamic-umalqura', hijriAt(now)) + ' هـ');",
+     "const wd = EN_DAYS[enDay(now, CONFIG.timezone).wd] + ', ';\n    setText(document.getElementById('hijri'), wd + n('islamic-umalqura', hijriAt(now)) + ' AH');", 1),
     ("if(nat) setText(nl, nat.name + ' ' + ar(nat.n) + nat.unit);", "if(nat) setText(nl, nat.name + ' · ' + ar(nat.n) + ' years');", 1),
     # one day, 2 days; «2 hours, 15 min» (the parts are joined with ' و ' → ', ', which the code also splits on)
     ("""const UNIT = {
-  day: {one:'يوم', two:'يومين', few:'أيام', many:'يوم'},
+  day: {one:'يوم', two:'يومين', few:'أيام', many:'يوم', mid:'يومًا'},
   hour:{one:'ساعة', two:'ساعتين', few:'ساعات', many:'ساعة'},
-  min: {one:'دقيقة', two:'دقيقتين', few:'دقائق', many:'دقيقة'}
+  min: {one:'دقيقة', two:'دقيقتين', few:'دقائق', many:'دقيقة'},
+  task:{one:'مهمة', two:'مهمتان', few:'مهام', many:'مهمة', mid:'مهمة'}
 };
+// the counted noun as Arabic says it: «يوم», «يومين», «٥ أيام», «١١ يومًا», «١٠٠ يوم», «١٠٥ أيام» (by the last two digits)
+const unitOf = (n, u) => { const r = n % 100; return r >= 3 && r <= 10 ? u.few : r >= 11 && u.mid || u.many; };
 function qty(n,u){
+  if(n === 1) return u.one;
   if(n === 2) return u.two;
-  if(n >= 3 && n <= 10) return `${ar(n)} ${u.few}`;
-  return `${ar(n)} ${u.many}`;
-}""", """const UNIT = {day: {one:'day', many:'days'}, hour: {one:'hour', many:'hours'}, min: {one:'min', many:'min'}};
-const qty = (n, u) => `${ar(n)} ${n === 1 ? u.one : u.many}`;""", 1),
+  return `${ar(n)} ${unitOf(n, u)}`;
+}""", """const UNIT = {day: {one:'day', many:'days'}, hour: {one:'hour', many:'hours'}, min: {one:'min', many:'min'}, task: {one:'task', many:'tasks'}};
+const unitOf = (n, u) => n === 1 ? u.one : u.many;
+const qty = (n, u) => `${ar(n)} ${unitOf(n, u)}`;""", 1),
     # «Maghrib adhan in 8 min», «Maghrib iqama in 12 min», «Maghrib adhan · Any button stops the adhan»
-    ("return (n ? 'أذان ' + n : 'الأذان') + '  ·  '", "return (n ? n + ' adhan' : 'Adhan') + '  ·  '", 1),
+    ("return (n ? 'أذان ' + n : 'الأذان') + SEP", "return (n ? n + ' adhan' : 'Adhan') + SEP", 1),
     ("return 'أذان ' + prayerName(x) + ' بعد ' + untilAdhan(toAdhan);", "return prayerName(x) + ' adhan in ' + untilAdhan(toAdhan);", 1),
     ("return 'إقامة ' + prayerName(x) + ' بعد ' + humanRemaining(", "return prayerName(x) + ' iqama in ' + humanRemaining(", 1),
     ("'الإقامة بعد <b>'", "'Iqama in <b>'", 1),
     ("'بعد <b>'", "'in <b>'", 3),
     ("'قبل <b>' + humanRemaining(Math.max(60, Math.floor(ago) * 60)) + '</b>'", "'<b>' + humanRemaining(Math.max(60, Math.floor(ago) * 60)) + '</b> ago'", 1),
-    ("setHTML(elD, ar(oc.days) + ' <span class=\"unit\">' + OCC_TEXT.unit + '</span>');",
-     "setHTML(elD, ar(oc.days) + ' <span class=\"unit\">' + (oc.days === 1 ? 'day' : OCC_TEXT.unit) + '</span>');", 1),
-    ("""'<span class="num">' + ar(n) + '</span> <span class="unit">يوم</span>', name);""",
-     """'<span class="num">' + ar(n) + '</span> <span class="unit">' + (n === 1 ? 'day' : 'days') + '</span>', name);""", 1),
     ("ramadanDay:n => 'اليوم ' + ar(n) + ' من رمضان',", "ramadanDay:n => 'Ramadan day ' + ar(n),", 1),
     # team and people's names as the data has them, in English (no Arabic table, no transliteration, no Wikidata lookup)
     ("const teamAr = (s, id) => arName(s, 'team', id);", "const teamAr = (s, id) => String(s || '').trim();", 1),
     ("function translit(en){\n", "function translit(en){ return String(en || ''); }\nfunction translitAr(en){\n", 1),
     ("'morocco':'المغرب'}", "'morocco':'Morocco'}", 1),
     # the games
-    ("`<div class=\"sub\">النتيجة النهائية · ${day}</div></div>`", "`<div class=\"sub\">Final · ${day}</div></div>`", 1),
+    ("`<div class=\"sub\">النتيجة النهائية${SEP}${day}</div></div>`", "`<div class=\"sub\">Final${SEP}${day}</div></div>`", 1),
     ("`بعد ${shortRemaining(diff)}</div>", "`In ${shortRemaining(diff)}</div>", 1),
     ("`بدأت ${clk}` : `الدقيقة ${ar(m)}`", "`Since ${clk}` : `${ar(m)}'`", 1),
-    ("· بدأ ${clk}`", "· started ${clk}`", 1),
+    ("${SEP}بدأ ${clk}`", "${SEP}started ${clk}`", 1),
     # «Saudi Arabian Grand Prix», short «Saudi Arabian GP»: the event's own name
     ("const gpName = gp ? 'جائزة ' + (GP_AR[place] || trl(gp[1].trim())) + ' الكبرى' : trl(name);",
      "const gpName = gp ? gp[1].replace(/\\bformula\\s*1\\b/i,'').replace(/\\b20\\d\\d\\b/,'').trim() + ' Grand Prix' : name;", 1),
     ("gpName.replace(/ الكبرى$/, '')", "gpName.replace(/ Grand Prix$/, ' GP')", 1),
     # the cards
-    ("`الموسم ${ar(e.season)}` : `الموسم ${ar(e.season)} · ح ${ar(e.number)}`", "`Season ${ar(e.season)}` : `S${ar(e.season)} E${ar(e.number)}`", 1),
-    ("`اليوم <b>${ar(day)}</b> من ${ar(total)} · ", "`Day <b>${ar(day)}</b> of ${ar(total)} · ", 1),
-    ("${fmtTime(n.h, n.mi)}،</span><span class=\"r\">بعد ${left}</span>", "${fmtTime(n.h, n.mi)},</span><span class=\"r\">in ${left}</span>", 1),
+    ("`الموسم ${ar(e.season)}` : `الموسم ${ar(e.season)}${SEP}ح ${ar(e.number)}`", "`Season ${ar(e.season)}` : `S${ar(e.season)} E${ar(e.number)}`", 1),
+    ("`اليوم <b>${ar(day)}</b> من ${ar(total)}${SEP}", "`Day <b>${ar(day)}</b> of ${ar(total)}${SEP}", 1),
+    ("${fmtTime(n.h, n.mi)}</span><span class=\"r\">بعد ${left}</span>", "${fmtTime(n.h, n.mi)}</span><span class=\"r\">in ${left}</span>", 1),
     ("`${prayerName(n)} بعد ${shortHM(", "`${prayerName(n)} in ${shortHM(", 1),
     ("return m < 1 ? 'الآن' : m < 60 ? 'قبل ' + ar(m) + ' د' : 'قبل ' + ar(Math.floor(m / 60)) + ' س';",
      "return m < 1 ? 'now' : m < 60 ? ar(m) + ' min ago' : ar(Math.floor(m / 60)) + ' h ago';", 1),
@@ -477,8 +487,116 @@ def strip_css_comments(html):
     return re.sub(r"(<style[^>]*>)(.*?)(</style>)", lambda m: m.group(1) + re.sub(r"/\*.*?\*/", "", m.group(2), flags=re.S) + m.group(3), html, flags=re.S)
 
 
+REGEX_AFTER = set("(,=:[!&|?{};+-*%<>~^")
+REGEX_WORDS = ("return", "typeof", "case", "in", "of", "delete", "void", "new", "throw", "else", "do", "yield", "await")
+
+
+def strip_js_comments(js):
+    """A script without its // and /* */ comments (about 50 KB of the page: the template keeps them for the people who read it). Strings,
+    template literals (and the code in their ${...}) and regex literals are read past, never cut. A comment alone on its line goes with its
+    line; one after code goes with the spaces before it, and its line break stays (so no two statements are joined). tests/js_strip_test.mjs
+    parses the script before and after with acorn and checks the two trees are the same, so nothing the page does changes."""
+    out, i, n = [], 0, len(js)
+    stack, depth, last, word = [], 0, "", ""   # stack: the brace depth of each open ${; last: the last code character; word: the last identifier
+    def template(i):   # js[i] is inside a template's text: up to its end (`) or a ${
+        start = i
+        while i < n:
+            if js[i] == "\\":
+                i += 2
+            elif js[i] == "`":
+                out.append(js[start:i + 1]); return i + 1, False
+            elif js.startswith("${", i):
+                out.append(js[start:i + 2]); return i + 2, True
+            else:
+                i += 1
+        out.append(js[start:]); return n, False
+    while i < n:
+        c = js[i]
+        if js.startswith("//", i) or js.startswith("/*", i):
+            end = (js.find("\n", i) if js.startswith("//", i) else js.find("*/", i + 2) + 2)
+            if end < (0 if js.startswith("//", i) else 2): end = n
+            line_start = js.rfind("\n", 0, i) + 1
+            before = js[line_start:i]
+            if not before.strip() and js.startswith("//", i):   # alone on its line: the line goes
+                while out and out[-1] and out[-1][-1] in " \t":
+                    out[-1] = out[-1].rstrip(" \t")
+                    if out[-1]: break
+                    out.pop()
+                i = end + 1 if end < n else n
+                continue
+            while out and out[-1] and out[-1][-1] in " \t":
+                out[-1] = out[-1].rstrip(" \t")
+                if out[-1]: break
+                out.pop()
+            if js.startswith("/*", i) and "\n" not in js[i:end]: out.append(" ")   # a /* */ between tokens keeps them apart
+            elif js.startswith("/*", i): out.append("\n")
+            i = end
+            continue
+        if c in "'\"":
+            j = i + 1
+            while j < n and js[j] != c and js[j] != "\n":
+                j += 2 if js[j] == "\\" else 1
+            out.append(js[i:j + 1]); i = j + 1; last = "a"; word = ""
+            continue
+        if c == "`":
+            out.append("`")
+            i, inside = template(i + 1)
+            if inside: stack.append(depth); depth = 0
+            last = "a"; word = ""
+            continue
+        if c == "/" and (last == "" or last in REGEX_AFTER or word in REGEX_WORDS):
+            j, cls = i + 1, False
+            while j < n and js[j] != "\n" and (cls or js[j] != "/"):
+                if js[j] == "\\": j += 1
+                elif js[j] == "[": cls = True
+                elif js[j] == "]": cls = False
+                j += 1
+            j += 1
+            while j < n and (js[j].isalpha()): j += 1   # the flags
+            out.append(js[i:j]); i = j; last = "a"; word = ""
+            continue
+        if c == "{":
+            depth += 1
+        elif c == "}":
+            if depth == 0 and stack:   # the end of a ${...}: back into the template's text
+                depth = stack.pop()
+                out.append("}")
+                i, inside = template(i + 1)
+                if inside: stack.append(depth); depth = 0
+                last = "a"; word = ""
+                continue
+            depth -= 1
+        if c.isalnum() or c in "_$":
+            j = i
+            while j < n and (js[j].isalnum() or js[j] in "_$"): j += 1
+            word = js[i:j]; out.append(word); i = j; last = "a"
+            continue
+        if not c.isspace():
+            last = c; word = ""
+        out.append(c); i += 1
+    return "".join(out)
+
+
+def sports_js(stamp, english_page):
+    """4.4 dist/sports.js (and sports-en.js through the table): the sports cards' and the kick-off alert's code, read by the page only when
+    it needs them; it carries the page's build stamp, and the page runs only the one of its own build"""
+    import os
+    js = (ROOT / "src/sports.js").read_text(encoding="utf-8").replace("__BUILD__", stamp)
+    if english_page:
+        js, left = tr.translate(js, tr.load())
+        if left:
+            raise SystemExit("i18n/en/page.tsv has no entry for (src/sports.js): " + " | ".join(left[:10]))
+    return js if os.environ.get("URTV_JS_COMMENTS") == "keep" else strip_js_comments(js)
+
+
+def strip_page_js(html):
+    """strip_js_comments on each inline <script> of a page"""
+    return re.sub(r"(<script>)(.*?)(</script>)", lambda m: m.group(1) + strip_js_comments(m.group(2)) + m.group(3), html, flags=re.S)
+
+
 def main():
-    template = (ROOT / "src/template.html").read_text(encoding="utf-8").replace("__BUILD__", build_stamp())
+    stamp = build_stamp()
+    template = (ROOT / "src/template.html").read_text(encoding="utf-8").replace("__BUILD__", stamp)
     clubs = json.loads((ROOT / "assets/shared/teams.json").read_text(encoding="utf-8"))
     html = fill(template, clubs, False)
     html_en = fill(english(template), clubs, True)
@@ -497,10 +615,18 @@ def main():
         for bg in bgs:
             u = data_uri(bg_dir / bg["file"], "image/jpeg") if inline else REPO + "assets/backgrounds/" + bg["file"]
             entries.append(f'  {{u:"{u}", c:{js_json(bg["credit"])}, d:{bg["brightness"]}}}')
-        out = ROOT / "dist" / name
+        out = Path(os.environ.get("URTV_DIST") or ROOT / "dist") / name   # URTV_DIST, URTV_JS_COMMENTS=keep: tests/js_strip_test.mjs's copy with the comments
         out.parent.mkdir(exist_ok=True)
-        out.write_text(strip_css_comments(page.replace("__BG_SET__", ",\n".join(entries))), encoding="utf-8")
-        print(f"wrote {out.relative_to(ROOT)} ({out.stat().st_size / 1e6:.1f} MB)")
+        keep = os.environ.get("URTV_JS_COMMENTS") == "keep"
+        out.write_text((lambda h: h if keep else strip_page_js(h))(strip_css_comments(page.replace("__BG_SET__", ",\n".join(entries)))), encoding="utf-8")
+        print(f"wrote {out.relative_to(ROOT) if out.is_relative_to(ROOT) else out} ({out.stat().st_size / 1e6:.1f} MB)")
+    for name, js in (("sports.js", sports_js(stamp, False)), ("sports-en.js", sports_js(stamp, True))):
+        out = Path(os.environ.get("URTV_DIST") or ROOT / "dist") / name
+        out.write_text(js, encoding="utf-8")
+        print(f"wrote {out.relative_to(ROOT) if out.is_relative_to(ROOT) else out} ({out.stat().st_size / 1e3:.1f} KB)")
+    tafsir = Path(os.environ.get("URTV_DIST") or ROOT / "dist") / "tafsir.json"
+    tafsir.write_text(json.dumps(tafsir_file(), ensure_ascii=False, separators=(",", ":"), sort_keys=True) + "\n", encoding="utf-8")
+    print(f"wrote {tafsir.relative_to(ROOT) if tafsir.is_relative_to(ROOT) else tafsir} ({tafsir.stat().st_size / 1e6:.2f} MB)")
 
 if __name__ == "__main__":
     main()

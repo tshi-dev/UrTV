@@ -20,7 +20,9 @@ final class FavBar {
     static final int SHOWN = 5;
     /** the focused tile: 6 up and 1.08 from its centre, a 3 px ring, in 150 ms; a tile picked up to move: a little more, still inside */
     static final float FOCUS_SCALE = 1.08f, LIFTED_SCALE = 1.12f;
-    static final int LIFT = 6, RING = 3, MS = 150;
+    /** 4.4 «شكل التطبيقات: تكبير وظل»: the focused app's size (the ring's look is FOCUS_SCALE) */
+    static final float ZOOM_SCALE = 1.14f;
+    static final int LIFT = 6, RING = 3, MS = 200;   // 4.4 the same easing everywhere: Motion.MS (plain Java here, tests/fav_bar_test.py runs it)
     /** the app's name: 30 px, its box 56 above the tray's top (about 16 px between its baseline and the tray) */
     static final int NAME_PX = 30, NAME_GAP = 16;
     /** the one move: 40 px down in 250 ms while a scrolling widget has the focus */
@@ -86,6 +88,55 @@ final class FavBar {
         d = rectLeft < left ? rectLeft - left : rectRight - right;
         int to = Math.max(0, Math.min(Math.max(0, contentW - viewW), scrollX + d));
         return to - scrollX;
+    }
+
+    /**
+     * 4.4 «شكل التطبيقات», three ways of the row (the owner approved the three: docs/mockups/couch-apps/ on work/433-design): A «بنرات»,
+     * each app's TV banner as Google TV draws it, 256×144 at 1080, radius 16; B «أيقونات», each app's launcher icon in a rounded square,
+     * 112, further apart (40); C «مربعات ملونة», today's tray of tiles. A and B have no tray, and every way is centred (CENTER_HORIZONTAL
+     * in a row as wide as the screen's tray, so a short row sits in the middle and a long one scrolls with the focus).
+     */
+    static final String BANNERS = "banners", ICONS = "icons", TILES = "tiles";
+    static final int BANNER_W = 256, BANNER_H = 144, ICON = 112, ICON_GAP = 40, ICON_RADIUS = 24;
+
+    /** the way a stored value means: the three, and 4.4's first two («إطار», «تكبير وظل»: the focus on today's tiles) are C */
+    static String look(String stored) { return BANNERS.equals(stored) || ICONS.equals(stored) ? stored : TILES; }
+
+    /** «تكبير وظل» (bigger with a shadow, the name under it): always for A and B; for C as it was chosen ("zoom") */
+    static boolean zoom(String stored) { return !TILES.equals(look(stored)) || "zoom".equals(stored); }
+
+    /** the width of cell {@code i} of {@code n} shown: A and B their own size, C the tray's share (tileW) */
+    static int cellW(String look, int screenH, int n, int i) {
+        if (BANNERS.equals(look)) return px(BANNER_W, screenH);
+        if (ICONS.equals(look)) return px(ICON, screenH);
+        return tileW(screenH, n, i);
+    }
+
+    /** a cell's height over its width: 16:9 for a banner or a tile, 1 for an icon's square */
+    static float aspect(String look) { return ICONS.equals(look) ? 1f : 9f / 16f; }
+
+    /** the space between two cells */
+    static int gap(String look, int screenH) { return px(ICONS.equals(look) ? ICON_GAP : GAP, screenH); }
+
+    /** a cell's corners */
+    static int radius(String look, int screenH) { return px(ICONS.equals(look) ? ICON_RADIUS : TILE_RADIUS, screenH); }
+
+    /** the row's height: its cells with the same 24 above and below (room for the focused one to grow), or the tray's (trayH) */
+    static int rowH(String look, int screenH, int n) {
+        if (BANNERS.equals(look)) return px(BANNER_H, screenH) + 2 * px(PAD_TOP, screenH);
+        if (ICONS.equals(look)) return px(ICON, screenH) + 2 * px(PAD_TOP, screenH);
+        return trayH(screenH, n);
+    }
+
+    /** the row's inset on each side: the tray's 24 (its glass edge); none with no tray (A, B), so six banners fit the tray's width */
+    static int padSide(String look, int screenH) { return TILES.equals(look) ? px(PAD_SIDE, screenH) : 0; }
+
+    /** where a row of {@code n} cells starts (from its start edge) in a width {@code w}: centred, or 0 when it is wider (it scrolls) */
+    static int centredStart(String look, int screenH, int n, int w) {
+        int row = 0;
+        for (int i = 0; i < n; i++) row += cellW(look, screenH, Math.max(n, SHOWN), i);
+        row += Math.max(0, n - 1) * gap(look, screenH) + 2 * padSide(look, screenH);
+        return Math.max(0, (w - row) / 2);
     }
 
     /** a length of the 1080p spec on a screen this many pixels high */

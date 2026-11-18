@@ -48,7 +48,7 @@ android {
     // the page is built by ../../src/build.py into dist/; only tv.html and tv-en.html go in (copyPage below): dist/urtv.html is the
     // stand-alone copy with the fonts and photos inlined, which no screen of the app loads
     sourceSets {
-        main { assets.srcDirs = ['../launcher/src/main/assets', '../../assets', "$buildDir/generated/page", "$buildDir/generated/i18n"] }   // Thmanyah fonts, backgrounds/, shared/ (the club lists), the page
+        main { assets.srcDirs = ['src/main/assets', '../launcher/src/main/assets', '../../assets', "$buildDir/generated/page", "$buildDir/generated/i18n"] }   // Thmanyah fonts, backgrounds/, shared/ (the club lists), the page
     }
 
     compileOptions {
@@ -58,7 +58,7 @@ android {
 }
 
 def copyPage = tasks.register('copyPage', Copy) {
-    from('../../dist') { include 'tv.html', 'tv-en.html' }   // tv-en.html: «اللغة» English (docs/ENGLISH.md)
+    from('../../dist') { include 'tv.html', 'tv-en.html', 'tafsir.json', 'sports.js', 'sports-en.js' }   // tv-en.html: «اللغة» English (docs/ENGLISH.md); tafsir.json: «التفسير الميسر», read by the page only with #tafsir=1
     into "$buildDir/generated/page"
 }
 preBuild.dependsOn copyPage

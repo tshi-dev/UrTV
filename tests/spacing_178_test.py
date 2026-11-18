@@ -24,8 +24,9 @@ def text(p):
 
 settings = text(APP / "SettingsActivity.java")
 # footer hints: inside y <= 1026 (5 % of the screen's height left under the box; the text is never lower than its box)
-check("settings pages: the footer hint box ends 5 % above the screen's bottom (glyphs were at y 1037)",
-      "hintLp.bottomMargin = Math.round(getResources().getDisplayMetrics().heightPixels * 0.05f);" in settings and "column.addView(hint, hintLp);" in settings)
+check("settings pages: the hint is small on the title's line at the top (the owner, build 413: it took the band under the list), and the list ends in the 3 % safe area",
+      "FrameLayout.LayoutParams hintAt = new FrameLayout.LayoutParams(-2, -2, Gravity.TOP | Gravity.END);" in settings and "root.addView(hint, hintAt);" in settings
+      and "column.addView(hint" not in settings and "panesLp.bottomMargin = Math.round(getResources().getDisplayMetrics().heightPixels * 0.03f);" in settings)
 for f in ("activity_main", "activity_adhan", "activity_player", "activity_surah"):
     x = text(RES / "layout" / (f + ".xml"))
     m = re.search(r'android:paddingBottom="(\d+)dp">', x)
@@ -41,8 +42,9 @@ check("favourites tray: tiles 24 px apart (FavBar.GAP)", re.search(r"GAP = 24,",
 main = text(HOME / "MainActivity.java")
 cell = main[main.index("private LinearLayout.LayoutParams rowCell("):main.index("After «إضافة إلى المفضلة»")]
 check("home rows of cards: 6 + 6 dp = 24 px apart, like the tray", "dp(6)" in cell and "dp(10)" not in cell)
-check("dockCell keeps FavBar.GAP in two halves (24 px)", "p.setMarginStart(i == 0 ? 0 : bar(FavBar.GAP) / 2);" in main
-      and "p.setMarginEnd(i == n - 1 ? 0 : bar(FavBar.GAP) - bar(FavBar.GAP) / 2);" in main)
+# 4.4 «شكل التطبيقات»: the gap is the way's (FavBar.gap: GAP, 24, for the tray's tiles and the banners; 40 for the icons)
+check("dockCell keeps the way's gap in two halves (24 px for the tray)", "gap = FavBar.gap(way, h);" in main and "p.setMarginStart(i == 0 ? 0 : gap / 2);" in main
+      and "p.setMarginEnd(i == n - 1 ? 0 : gap - gap / 2);" in main and "return px(ICONS.equals(look) ? ICON_GAP : GAP, screenH);" in text(HOME / "FavBar.java"))
 cc = text(HOME / "ControlCenter.java")
 check("Control Center: the side panel inside the 5 % safe area (x from 96, y 54 to 1026 at 1080p), 560 px wide; every margin and size a multiple of 4 dp",
       "SAFE = 0.05f" in cc and "PANEL_W = 560f / 1920f" in cc and "TALL_W = 560f / 1920f" in text(HOME / "ControlShape.java") and "screenH - 2 * Math.round(screenH * SAFE)" in text(HOME / "ControlShape.java") and "Math.round(H * SAFE)" in cc
@@ -72,17 +74,17 @@ check("…and neither has its English", "Standard (January, February, March)" in
 # the matches and markets pages by keys (docs/SETTINGS.md has the path)
 hub = text(APP / "SettingsHub.java")
 cats = re.findall(r'^\s*\{([A-Z]+), "', hub[hub.index("CATEGORIES = {"):], re.M)
-check("hub order: CITY wide (4.3.1), then two to a row from ADHAN; «المزيد» is the 11th tile after it", cats[:12] == ["CITY", "ADHAN", "PLACE", "CLOCK", "LISTEN", "CARDS", "LOOK", "CONTROL", "PHONE", "UPDATE", "REPORT", "MORE"], cats[:11])
-check("«المباريات والأسواق» is the first button of «المزيد»", [c for c in cats if c in ("CONTENT", "APPS", "SHOWS", "PARENTAL", "FAMILY", "LANG")][0] == "CONTENT")
+check("side list order (4.3.3): the search, then the ten sections", cats[:11] == ["SEARCH", "LANG", "PLACE", "LOOK", "APPS", "BUTTONS", "PRAY", "CONTENT", "SAVER", "FAMILY", "UPDATE"], cats[:11])
+check("«المباريات والأسواق» is the eighth item of the side list, six under «اللغة» where the settings open (▼ ×6)", cats.index("CONTENT") == 7 and cats.index("LANG") == 1)
 rows = re.findall(r'^\s*row\("([^"]+)"', settings[settings.index("private void render()"):], re.M)
-content = ["مباريات اليوم", "الفرق المتابعة (", "الدوريات كاملة", "رياضات أخرى", "صفحة الأسواق"]
+content = ["مباريات اليوم", "الفرق المتابعة (", "الدوريات كاملة", "رياضات أخرى", "افتح صفحة الأسواق"]
 order = [r for r in rows if any(r.startswith(c) for c in content)]
-check("«مباريات اليوم» is the first row of «المباريات والأسواق» and «صفحة الأسواق» the fifth (four ▼ from the first)", [r.split(" (")[0] for r in order][:5] == ["مباريات اليوم", "الفرق المتابعة", "الدوريات كاملة", "رياضات أخرى", "صفحة الأسواق"], order)
+check("«مباريات اليوم» is the first row of «المباريات والأسواق» and «افتح صفحة الأسواق» the fifth (four ▼ from the first)", [r.split(" (")[0] for r in order][:5] == ["مباريات اليوم", "الفرق المتابعة", "الدوريات كاملة", "رياضات أخرى", "افتح صفحة الأسواق"], order)
 check("both rows open the launcher's pages, and those are exported", 'setClassName("sa.urtv.home", "sa.urtv.home.MatchesActivity")' in settings and 'setClassName("sa.urtv.home", "sa.urtv.home.MarketsActivity")' in settings
       and re.search(r'android:name="\.MatchesActivity"\s+android:exported="true"', text(ROOT / "android/launcher/src/main/AndroidManifest.xml")) is not None
       and re.search(r'android:name="\.MarketsActivity"\s+android:exported="true"', text(ROOT / "android/launcher/src/main/AndroidManifest.xml")) is not None)
 check("from the home: OK on the stocks card opens the markets page, OK on the games widget the matches page",
       "launch(new Intent(MainActivity.this, MarketsActivity.class));" in main and "new Intent(MainActivity.this, MatchesActivity.class)" in main)
 doc = text(ROOT / "docs/SETTINGS.md")
-check("docs/SETTINGS.md has the key path", "المباريات والأسواق" in doc and "▼ ×5" in doc and "▼ ×4" in doc)
+check("docs/SETTINGS.md has the key path", "المباريات والأسواق" in doc and "▼ ×6" in doc and "▼ ×5" in doc)
 sys.exit(1 if failed else 0)

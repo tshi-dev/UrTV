@@ -1,4 +1,4 @@
-// 4.3.3 (the owner, a user report): the screensaver's bottom strip jumped as the slot turned (a game in a week, one under way with its score, two games,
+// 4.4 (the owner): the screensaver's bottom strip jumped as the slot turned (a game in a week, one under way with its score, two games,
 // none, the weather, the markets). The slot's row is one fixed box now: whatever it shows, the strip's top stays where it is, every item
 // hangs from the box's top and stays on the screen, and the clubs stay on one line. At three screen sizes, with the shortest and the longest items.
 //   python3 src/build.py && node tests/strip_steady.test.mjs

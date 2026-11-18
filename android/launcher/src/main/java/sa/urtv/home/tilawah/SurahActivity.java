@@ -13,7 +13,7 @@ import android.widget.GridView;
 import android.widget.TextView;
 import sa.urtv.home.R;
 
-/** The 114 surahs of one reciter, six columns, made for the remote's arrows. */
+/** The 114 surahs of one reciter, six columns, made for the remote's arrows. A surah the reciter has no recording of (reciters.json «missing», 4.3.3) keeps its place, dimmed, «غير متوفرة». */
 public class SurahActivity extends Activity {
     /** «اللغة» (docs/ENGLISH.md): with Arabic the context itself, with English an English one */
     @Override protected void attachBaseContext(android.content.Context b) { super.attachBaseContext(sa.urtv.home.S.wrap(b)); }
@@ -48,6 +48,10 @@ public class SurahActivity extends Activity {
         grid = findViewById(R.id.grid);
         grid.setAdapter(new SurahAdapter());
         grid.setOnItemClickListener((parent, view, position, id) -> {
+            if (!reciter.has(position + 1)) {   // 4.3.3: nothing to play; said, and the grid stays
+                android.widget.Toast.makeText(this, sa.urtv.home.S.t("هذه السورة غير متوفرة بصوت هذا القارئ"), android.widget.Toast.LENGTH_SHORT).show();
+                return;
+            }
             MusicService.playSurah(this, reciter.id, position + 1);
             startActivity(new Intent(this, PlayerActivity.class));
         });
@@ -105,7 +109,7 @@ public class SurahActivity extends Activity {
     }
 
     private final class SurahAdapter extends BaseAdapter {
-        @Override public int getCount() { return reciter.surahs; }
+        @Override public int getCount() { return SurahSet.LAST; }   // all 114 in their places; reciter.surahs (the count above) is how many it has
         @Override public Object getItem(int position) { return position + 1; }
         @Override public long getItemId(int position) { return position + 1; }
 
@@ -114,8 +118,10 @@ public class SurahActivity extends Activity {
                     : LayoutInflater.from(parent.getContext()).inflate(R.layout.item_surah, parent, false);
             TextView number = view.findViewById(R.id.number);
             TextView name = view.findViewById(R.id.name);
-            number.setText(Ui.arabic(position + 1));
+            boolean has = reciter.has(position + 1);
+            number.setText(has ? Ui.arabic(position + 1) : sa.urtv.home.S.t("غير متوفرة"));
             name.setText(cat.surahName(position + 1));
+            view.setAlpha(has ? 1f : 0.4f);
             number.setTypeface(Ui.font(SurahActivity.this, "Thmanyah-Regular.otf"));
             name.setTypeface(Ui.font(SurahActivity.this, "Thmanyah-Medium.otf"));
             return view;

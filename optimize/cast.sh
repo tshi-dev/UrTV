@@ -6,8 +6,8 @@
 #   optimize/dock.sh cast on       casting kept (the default): the wizard on, the cast receiver restarted, then the usual home switch, which
 #                                  keeps the wizard on and makes our home the Home if Android lets it (else the TV keeps its own home and
 #                                  UrTV opens from its «تلفزيونك» tile)
-#   optimize/dock.sh cast off      our home first: the choice is recorded, then the usual home switch, which may turn the wizard off with
-#                                  its Wi-Fi guard (never when it owns the saved Wi-Fi). Casting from a phone then says «untrusted device».
+#   optimize/dock.sh cast off      our home first: the choice is recorded, then the usual home switch (from 4.3.3 it never turns the wizard off;
+#                                  older versions could, with their Wi-Fi guard). Casting stays on.
 # Only on a Google cast device whose wizard holds the cast credentials (the provider AND a Google-made device: cast_device); anywhere else,
 # a TCL or Sony Google TV whose wizard has the same provider included, it says so and stops.
 # The wizard is only ever turned ON here; turning it off is install.sh's job, with its checks.

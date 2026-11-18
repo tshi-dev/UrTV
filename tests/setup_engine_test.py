@@ -23,7 +23,7 @@ if not shutil.which("javac"):
     sys.exit(1 if failed else 0)
 with tempfile.TemporaryDirectory() as tmp:
     # (the Android-facing classes of the folder are compiled by tests/android_compile.sh; here only the pure ones)
-    pure = [p for p in sorted(SETUP.glob("*.java")) if "import android." not in p.read_text(encoding="utf-8")] + [SETUP.parent / "phone/UpdateRules.java", SETUP.parent / "SuggestedApps.java"]   # (read only: its rule for updates)
+    pure = [p for p in sorted(SETUP.glob("*.java")) if "import android." not in p.read_text(encoding="utf-8")] + [SETUP.parent / "phone/UpdateRules.java", SETUP.parent / "SuggestedApps.java", SETUP.parent / "ExtrasWords.java"]   # (read only: its rule for updates)
     r = subprocess.run(["javac", "-encoding", "UTF-8", "-d", tmp, *map(str, pure), str(ROOT / "tests/SetupEngineRun.java")], capture_output=True, text=True)
     check("the pure classes compile", r.returncode == 0, r.stderr)
     if r.returncode:
@@ -138,18 +138,54 @@ check("the buttons ask for the family PIN when one is set, and ignore touches th
       "SetupGate.guard" in act_src and "setFilterTouchesWhenObscured(true)" in btn and act_src.count("setFocusable(true)") == 1 and "setFocusable(true)" in btn, "")
 runner_src = (SETUP / "SetupRunner.java").read_text(encoding="utf-8")
 host_src = (SETUP / "SetupHost.java").read_text(encoding="utf-8")
-check("the ADB key is deleted when the job is finished (setup done, or undone) and nothing is pending (the runner's host, after every end)",
-      "SetupSession.deleteKeyIfFinished(app)" in host_src and "AdbKeys.delete" in (SETUP / "SetupSession.java").read_text(encoding="utf-8"), "")
+check("4.4 (step 86 B): ONE ADB key for good: nothing deletes it (every run made a new key and the TV's list filled with urtv-home@tv); the host only says it is kept",
+      "SetupSession.keepKey(app)" in host_src and "AdbKeys.delete" not in "".join(p.read_text(encoding="utf-8") for p in SETUP.glob("*.java"))
+      and "static void delete(" not in (SETUP / "AdbKeys.java").read_text(encoding="utf-8") and "deleteKeyIfFinished" not in "".join(p.read_text(encoding="utf-8") for p in SETUP.glob("*.java")), "")
 main_src = (ROOT / "android/launcher/src/main/java/sa/urtv/home/MainActivity.java").read_text(encoding="utf-8")
 hook_src = (SETUP / "SetupHook.java").read_text(encoding="utf-8")
 check("the home screen re-arms a cut-off switch at its start with ONE call that never throws (a Force-stop, then Home)", main_src.count("SetupHook.atHomeStart(this)") == 1 and "catch (RuntimeException ignored)" in hook_src and "rearmFromDisk" in hook_src and "SetupRecovery.attempt" in hook_src, "")
 fin = runner_src[runner_src.index("private void run(Kind k"):runner_src.index("private End runSteps")]
-check("the key is deleted after EVERY end of a run (it refuses by itself while a switch is pending): host.finished() after the try, outside every catch",
+check("after EVERY end of a run the host is told (4.4: it keeps the one key and says so): host.finished() after the try, outside every catch",
       "host.finished()" in fin and fin.index("host.finished()") > fin.rindex("catch (RuntimeException ex)") and "if (finished)" not in fin
-      and "SetupRunner.awaiting(new FileStore(c))" in (SETUP / "SetupSession.java").read_text(encoding="utf-8"), "")
+      and "adb key: kept (one key for good)" in (SETUP / "SetupSession.java").read_text(encoding="utf-8"), "")
 check("after the automatic attempts run out the person is told at every start (the home and the setup screen)", "GAVE_UP_NOTICE" in hook_src and "GAVE_UP_NOTICE" in act_src, "")
 check("the setup screen is not in the home screen's own app grid (Dock.catalogue skips this package)", "p.equals(c.getPackageName())" in (ROOT / "android/launcher/src/main/java/sa/urtv/home/Dock.java").read_text(encoding="utf-8"), "")
 check("the engine runs only fixed commands: none is built from text the TV sent, except package names that matched [A-Za-z0-9_.]+",
       "PKG.matcher" in engine_src and "COMPONENT.matcher" in engine_src, "")
 check("the engine's lines name no network, serial or address (it never prints what dumpsys wifi or getprop said)", not re.search(r'out\.line\([^;]*(wifi|ssid|serial)', engine_src, re.I), "")
+# ---- 4.3.2: the home switch keeps the stock home, the wizard and the helpers ON (no TV can fail to start because of it), and a TV switched the old way gets them back once
+check("S1: the switch makes ours the HOME role and turns NOTHING off (no stock home, no wizard even where it owns the Wi-Fi, no helpers), no Wi-Fi question, the journal says done, the safety switch armed and disarmed",
+      (got.get("S1") or "").startswith("S1 DONE asked=false role=sa.urtv.home home=sa.urtv.home/.MainActivity stockOff=false wizardOff=false helperOff=false disables=0 journal=done armed=1 disarmed=1"), got.get("S1"))
+check("S1: «تراجع» gives the stock home its role and Home back", got.get("S1_undo") == "S1_undo DONE role=com.google.android.apps.tv.launcherx home=com.google.android.apps.tv.launcherx/.home.HomeActivity", got.get("S1_undo"))
+check("S2: a TV switched the old way: the stock home, the wizard and the helper are turned on again by the journal (what the TV had off itself, com.tcl.bi, stays off), ours stays Home, the notice is the one line, the mark is written",
+      "status=DONE notice=true off=[com.tcl.bi] role=sa.urtv.home home=sa.urtv.home/.MainActivity mark=true" in (got.get("S2") or ""), got.get("S2"))
+check("S2: only once: a second start turns nothing on and says nothing", got.get("S2_twice") == "S2_twice true extra_enables=0", got.get("S2_twice"))
+check("HF0 (4.4): the Home key still opens the stock home after the role is ours (Google TV): the switch waits for the add-on's watch, not counted yet, the stock home NOT given the role back yet",
+      (got.get("HF0") or "").startswith("HF0 FAILED pending=true role=sa.urtv.home fails_after_first=null"), got.get("HF0"))
+check("HF (4.4, step 88 T1): the home switch failed twice on this TV: the third run STILL tries (never skipped for old failures: on Google TV the add-on is the way), the count stays for the start screen's guide",
+      got.get("HF") == "HF FAILED FAILED FAILED count=2 third_line=false third_asked=1", got.get("HF"))
+eng_src = (ROOT / "android/launcher/src/main/java/sa/urtv/home/setup/SetupEngine.java").read_text(encoding="utf-8")
+hook_src2 = (ROOT / "android/launcher/src/main/java/sa/urtv/home/setup/SetupHook.java").read_text(encoding="utf-8")
+check("4.4 (step 88): the home step never skips for HomeFails; the count is cleared by «تراجع» and once after an update (another versionCode)",
+      "HomeFails.givenUp" not in eng_src and "clearFile(HomeFails.FILE);" in eng_src[eng_src.index("Result undo()"):]
+      and "clearOldFails(app);" in hook_src2 and "sa.urtv.home.BuildConfig.VERSION_CODE" in hook_src2)
+check("HF2 (4.4): a switch that worked starts the count again; two is the limit; nothing tried writes nothing", got.get("HF2") == "HF2 DONE count=0 true false false true", got.get("HF2"))
+act = (ROOT / "android/launcher/src/main/java/sa/urtv/home/setup/SetupActivity.java").read_text(encoding="utf-8")
+check("4.4: the setup screen shows the computer's way with a QR to docs/SETUP-PROMPT.md once the switch failed twice (start and done screens)",
+      act.count("computerHelp();") == 2 and "qrBeside(words, HomeFails.GUIDE_URL, sa.urtv.home.Compact.QR_DP);" in act and "if (!HomeFails.givenUp(new FileStore(this).get(HomeFails.FILE))) return;" in act
+      and 'GUIDE_URL = "https://github.com/tshi-dev/UrTV/blob/master/docs/SETUP-PROMPT.md"' in (ROOT / "android/launcher/src/main/java/sa/urtv/home/setup/HomeFails.java").read_text(encoding="utf-8"))
+check("S7 (4.3.3, A17): the wizard owns the saved Wi-Fi: the start screen does not ask about it, «تخلّص من واجهة المصنع» is offered and never names the wizard",
+      got.get("S7") == "S7 owns=false refusal=none wizardInPlan=false wizardOff=false", got.get("S7"))
+check("S3: «تخلّص من واجهة المصنع» is on (the person's choice): the migration turns nothing on", got.get("S3_factory") == "S3_factory true enables=0 stockOff=true", got.get("S3_factory"))
+check("S4: what the TV had off before UrTV (the journal says «disabled») is never turned on", got.get("S4_off_before_us") == "S4_off_before_us true off=[com.google.android.apps.tv.launcherx, com.google.android.tungsten.setupwraith, com.tcl.bi] enables=0", got.get("S4_off_before_us"))
+check("S5: a switch still «switching» is the recovery's, not the migration's", got.get("S5_switching") == "S5_switching true enables=0", got.get("S5_switching"))
+check("S6: the pure rule: due only for a finished switch of ours that is not migrated, with no factory step on, and with something that was on before",
+      got.get("S6") == "S6 true false false false false true", got.get("S6"))
+src = (SETUP / "SetupEngine.java").read_text(encoding="utf-8")
+hook = (SETUP / "SetupHook.java").read_text(encoding="utf-8")
+check("the switch's code: KEEP_STOCK_ON leaves the wizard, the stock home and the helpers alone (no pm disable-user before it returns), and the factory step is the one that still disables the stock home",
+      "if (KEEP_STOCK_ON) {   // ours holds Home" in src and src.index("if (KEEP_STOCK_ON) {   // ours holds Home") < src.index('if (wizardListed) sh.run("pm disable-user --user 0 " + WRAITH);') and "if (!KEEP_STOCK_ON) for (String h : SetupLists.HOME_HELPERS)" in src
+      and "Result factoryOff() throws IOException" in src)
+check("the migration runs at a start of the home when nothing is being recovered, behind the files' own check, on a background thread, and tells the person with a toast",
+      "if (!SetupRecovery.pending(app)) { migrate(app); return; }" in hook and "StockMigration.due(" in hook and 'new Thread(' in hook and "Toast.makeText(app, StockMigration.NOTICE" in hook)
 sys.exit(1 if failed else 0)

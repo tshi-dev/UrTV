@@ -40,7 +40,8 @@ public class SetupActivity extends Activity {
     private sa.urtv.home.GlassStyle.Look look;
 
     private LinearLayout body, col;
-    private FrameLayout.LayoutParams colLp;
+    /** 4.4: the one box (sa.urtv.home.Box) */
+    private sa.urtv.home.Box page;
     private int screenW;
     private TextView status, detail, start, undo;
     private boolean running;     // a run is shown as going (this screen's thread only)
@@ -53,42 +54,41 @@ public class SetupActivity extends Activity {
     private boolean ticking;
     private static SetupRunner.End dismissed;
     /** the done screen's QR code: a multiple of 8 dp (the packed report needs a small code, tester step 18) */
-    static final int QR_DP = 224;   // a done screen the person closed with «تم»: the start screen again
+    static final int QR_DP = 160;   // 4.4 compact: smaller, but the packed report is a dense code: not under 160 dp so a phone still reads it   // a done screen the person closed with «تم»: the start screen again
 
     /** «اللغة» (docs/ENGLISH.md): the done screen's own words in English when it is set (i18n/en/setup.tsv) */
-    @Override protected void attachBaseContext(android.content.Context b) { super.attachBaseContext(S.wrap(b)); }
+    @Override protected void attachBaseContext(android.content.Context b) {
+        S.refresh(b);   // 4.4 (step 88): the screensaver's language now, before the configuration (the page came up in English while the home was Arabic)
+        super.attachBaseContext(S.wrap(b));
+    }
 
     @Override
     protected void onCreate(Bundle b) {
         super.onCreate(b);
         Digits.init(this);
-        ScrollView scroll = new ScrollView(this);
-        glass(scroll);   // the glass look: the home's photo, small and blurred once, under its veil
-        scroll.setVerticalScrollBarEnabled(false);
-        scroll.setFillViewport(true);
-        // one card on a solid surface, in the 5 % safe area and 16 dp more, as the update screen
-        FrameLayout frame = new FrameLayout(this);
-        scroll.addView(frame, new FrameLayout.LayoutParams(-1, -1));
-        int sw = getResources().getDisplayMetrics().widthPixels, sh = getResources().getDisplayMetrics().heightPixels;
-        frame.setPadding(Math.round(sw * 0.05f), Math.round(sh * 0.05f) + dp(16), Math.round(sw * 0.05f), Math.round(sh * 0.05f) + dp(16));
-        LinearLayout col = new LinearLayout(this);
-        col.setOrientation(LinearLayout.VERTICAL);
-        col.setLayoutDirection(Dir.layout());
-        col.setPadding(dp(40), dp(32), dp(40), dp(32));
-        col.setBackground(sa.urtv.home.GlassPaint.fill(this, sa.urtv.home.GlassStyle.over(look.dialog, look.base), 22, look.line));
+        // 4.4 (the owner, step 86 B: «The window is tooooo big… scrollable in a small fit in center window. And the QR to the left.»): a SMALL window
+        // in the middle of the screen, inside the 5 % safe area, never taller than it; its title stays, and what is under it scrolls INSIDE the
+        // window. Before, the whole page scrolled and the card was centred in it: a card taller than the screen began above its top edge (the title
+        // cut off) and «جهّز كل شي» sat at the bottom edge.
+        // 4.4 (the owner: «ONE BOX for everything»): the same box as every setup, update, install and rescue screen (sa.urtv.home.Box): one size always,
+        // the title fixed at its top, the page under it scrolling inside with a scroll bar and «⌄»; long words are read before the focus goes to a button
+        FrameLayout probe = new FrameLayout(this);
+        glass(probe);   // the glass look's colours (the home's photo under its veil)
+        int sw = getResources().getDisplayMetrics().widthPixels;
         screenW = sw;
-        colLp = new FrameLayout.LayoutParams(Math.min(dp(880), sw - 2 * Math.round(sw * 0.05f)), -2, Gravity.CENTER);
-        this.col = col;
-        frame.addView(col, colLp);
-        col.addView(text(S.t("إعداد تلفزيوني"), 28, "Medium", TEXT), right(dp(16)));
+        page = sa.urtv.home.Box.make(this, sa.urtv.home.GlassPaint.fill(this, sa.urtv.home.GlassStyle.over(look.dialog, look.base), 22, look.line), TEXT, DIM, typeface("Medium"), Dir.layout());
+        page.page.setBackground(probe.getBackground());
+        page.title.setText(S.t("إعداد تلفزيوني"));
+        this.col = page.box;
         body = new LinearLayout(this);
         body.setOrientation(LinearLayout.VERTICAL);
-        col.addView(body, right(0));
-        status = text("", 16, "Medium", GOLD);
-        col.addView(status, right(dp(8)));
-        detail = text("", 13, "Regular", DIM);
-        col.addView(detail, right(0));
-        setContentView(scroll);
+        page.content.addView(body, right(0));
+        status = text("", 17, "Medium", GOLD);
+        page.content.addView(status, right(dp(8)));
+        detail = text("", 14, "Regular", DIM);
+        page.content.addView(detail, right(0));
+        FrameLayout frame = page.page;
+        setContentView(frame);
         show();
         if (SetupRecovery.pending(this) && SetupRecovery.gaveUp(this)) {
             say(SetupRecovery.GAVE_UP_NOTICE + ": اضغط «تراجع».", RED);
@@ -121,9 +121,7 @@ public class SetupActivity extends Activity {
             progress = null;
             clock.removeCallbacks(secondTick);
             ticking = false;
-            colLp.width = want.equals("progress") || want.equals("done") ? Math.max(dp(880), screenW - 2 * Math.round(screenW * 0.05f)) : Math.min(dp(880), screenW - 2 * Math.round(screenW * 0.05f));   // the progress and the result use the whole safe width
-            colLp.width = Math.min(colLp.width, screenW - 2 * Math.round(screenW * 0.05f));
-            col.setLayoutParams(colLp);
+            page.scroll.scrollTo(0, 0);   // 4.4: the box never changes its size (Box); a new page starts at its top
             detail.setText("");
             if (want.equals("plan")) buildPlan(r);
             else if (want.equals("progress")) buildProgress(r);
@@ -150,11 +148,30 @@ public class SetupActivity extends Activity {
         return false;
     }
 
+    /** 4.4 (user report «ماهو راضي يفعل تصحيح USB»): Developer options open from the build number, whose place differs per brand; one line each */
+    static final String[] DEV_HELP = {
+        S.n("خيارات المطوّر ما تفتح؟ اضغط سبع مرات على رقم الإصدار، ومكانه حسب التلفزيون:"),
+        S.n("TCL: الإعدادات ← النظام ← حول ← «إصدار نظام Android TV» (الأقدم: تفضيلات الجهاز ← حول ← Build)"),
+        S.n("شاومي: الإعدادات ← تفضيلات الجهاز ← حول ← Build (بنظام Google TV: النظام ← حول ← «إصدار نظام Android TV»)"),
+        S.n("سوني: الإعدادات ← النظام ← حول ← «إصدار نظام Android TV» (الأقدم: تفضيلات الجهاز ← حول ← Build)"),
+        S.n("سكاي ورث: الإعدادات ← تفضيلات الجهاز ← حول ← Build (بنظام Google TV: النظام ← حول ← «إصدار نظام Android TV»)"),
+        S.n("بعدها تلقى «خيارات المطوّر» تحت النظام أو تفضيلات الجهاز، وفيها «تصحيح USB»."),
+    };
+
+    static String devHelp() {
+        StringBuilder b = new StringBuilder();
+        for (String line : DEV_HELP) b.append(b.length() == 0 ? "" : "\n").append(S.tv(line));
+        return b.toString();
+    }
+
     private void buildStart(SetupRunner r) {
         add(langToggle(), dp(12));
-        add(text(S.t("يجهّز التلفزيون نفسه، بدون كمبيوتر ولا جوال. اضغط «جهّز كل شي»: يسألك التلفزيون مرة واحدة «السماح بتصحيح USB؟»، ثم نعرض عليك ما سنفعله بالضبط قبل أي تغيير."), 15, "Regular", TEXT), dp(12));
-        add(text(S.t("قبل البدء: فعّل «تصحيح USB» (الإعدادات ← تفضيلات الجهاز ← حول ← اضغط «Build» سبع مرات ← خيارات المطوّر ← تصحيح USB). وخلك عند التلفزيون: لما تطلع الرسالة اختر «السماح دائماً»."), 13, "Regular", GOLD), dp(16));
+        add(text(S.t("يجهّز التلفزيون نفسه، بدون كمبيوتر ولا جوال. اضغط «جهّز كل شي»: يسألك التلفزيون مرة واحدة «السماح بتصحيح USB؟»، ثم نعرض عليك ما سنفعله بالضبط قبل أي تغيير."), 17, "Regular", TEXT), dp(12));
+        add(text(S.t("قبل البدء: فعّل «تصحيح USB» (الإعدادات ← تفضيلات الجهاز ← حول ← اضغط «Build» سبع مرات ← خيارات المطوّر ← تصحيح USB). وخلك عند التلفزيون: لما تطلع الرسالة اختر «السماح دائماً»."), 14, "Regular", GOLD), dp(16));
+        add(text(devHelp(), 14, "Regular", TEXT), dp(16));   // 4.4: where the build number is, per brand (DEV_HELP)
         if (SetupRunner.resumable(new FileStore(this))) add(text(S.t("إعداد سابق ما اكتمل: «جهّز كل شي» يكمله من حيث توقف."), 14, "Regular", TEXT), dp(12));
+        rescueFirst();   // 4.4: the way back with no computer, before anything is started
+        computerHelp();   // 4.4: the switch failed twice here: the computer's way (the rest of «جهّز كل شي» still runs, without the home step)
         start = button(S.t("جهّز كل شي"));
         start.setOnClickListener(new View.OnClickListener() { public void onClick(View v) { go(false); } });
         add(start, dp(12));
@@ -165,7 +182,7 @@ public class SetupActivity extends Activity {
         final TextView again = refocusLang == null ? null : langButtons.get(refocusLang);
         refocusLang = null;
         final TextView first = again != null ? again : start;
-        first.post(new Runnable() { @Override public void run() { first.requestFocus(); } });
+        page.focusFirst(first);   // 4.4: long words are read first (Box)
         SetupRunner.End e = r.end();
         if (e != null && e != dismissed) say(S.tv(e.text), e.bad ? RED : GOLD);
         else say("", GOLD);
@@ -195,8 +212,8 @@ public class SetupActivity extends Activity {
             paintLang(b, on, false);
             b.setOnFocusChangeListener(new View.OnFocusChangeListener() { public void onFocusChange(View v, boolean has) { paintLang(b, on, has); } });
             b.setOnClickListener(new View.OnClickListener() { public void onClick(View v) { if (!code.equals(S.lang())) refocusLang = code; SetupLang.choose(SetupActivity.this, code); } });
-            b.setPadding(dp(16), dp(12), dp(16), dp(12));   // the whole word inside: 24 px above and below (the 88 px box cut «English» in half, build 180)
-            b.setMinHeight(dp(52));
+            b.setPadding(dp(16), dp(8), dp(16), dp(8));   // the whole word inside: 24 px above and below (the 88 px box cut «English» in half, build 180)
+            b.setMinHeight(dp(sa.urtv.home.Compact.BUTTON_DP));
             langButtons.put(code, b);
             LinearLayout.LayoutParams p = new LinearLayout.LayoutParams(dp(160), -2);
             if (i > 0) p.setMarginStart(dp(12));
@@ -206,6 +223,10 @@ public class SetupActivity extends Activity {
     }
 
     /** the on/off look (OnOff): the focus fill while focused, else the panel; the one in use has the green triangles and its words in green */
+    /**
+     * 4.4 (HomeFails): where the home switch was tried twice and did not make UrTV the home, the in-app path is not offered any more; this says the one way that works
+     * on such a TV, an AI helper on a computer with docs/SETUP-PROMPT.md, and a QR to that guide. Nothing when the switch has not failed twice.
+     */
     private void paintLang(TextView t, boolean on, boolean focused) {
         t.setBackground(focused ? sa.urtv.home.GlassPaint.focused(this, look, 14) : sa.urtv.home.GlassPaint.panel(this, look, 14));
         int green = sa.urtv.home.OnOff.green(focused ? look.focus : look.light ? 0xFFFFFFFF : 0xFF000000);
@@ -223,7 +244,7 @@ public class SetupActivity extends Activity {
     private void buildPlan(SetupRunner r) {
         SetupRunner.Preview p = r.preview();
         if (p == null) p = new SetupRunner.Preview();
-        add(text(S.t("هذا ما سنفعله في تلفزيونك، بالترتيب. ما تغيّر شيء بعد:"), 20, "Medium", TEXT), dp(12));
+        add(text(S.t("هذا ما سنفعله في تلفزيونك، بالترتيب. ما تغيّر شيء بعد:"), 17, "Medium", TEXT), dp(12));
         // design/43: the plan in one glass panel, each line numbered by a quiet accent number, not a wall of plain lines
         List<String> plan = SetupRunner.planLines(p, TR);
         LinearLayout planBox = new LinearLayout(this);
@@ -235,16 +256,17 @@ public class SetupActivity extends Activity {
             LinearLayout line = new LinearLayout(this);
             line.setOrientation(LinearLayout.HORIZONTAL);
             line.setLayoutDirection(Dir.layout());
-            TextView n = text(digits(String.valueOf(i + 1)), 16, "Medium", GOLD);
+            TextView n = text(digits(String.valueOf(i + 1)), 17, "Medium", GOLD);
             n.setMinWidth(dp(32));
             line.addView(n, new LinearLayout.LayoutParams(-2, -2));
-            line.addView(text(digits(plan.get(i)), 15, "Regular", TEXT), new LinearLayout.LayoutParams(0, -2, 1f));
+            line.addView(text(digits(plan.get(i)), 17, "Regular", TEXT), new LinearLayout.LayoutParams(0, -2, 1f));
             planBox.addView(line, right(dp(8)));
         }
         add(planBox, dp(16));
         // 4.3: a box per suggested app the setup can install (OK ticks or unticks it); one already on the TV says so and is left
-        add(text(S.t("تطبيقات مقترحة: علّم ما تبي نثبّته معها"), 15, "Medium", TEXT), dp(8));
+        add(text(S.t("تطبيقات مقترحة: علّم ما تبي نثبّته معها"), 14, "Medium", TEXT), dp(8));
         final TextView summary = text("", 14, "Regular", DIM);
+        final java.util.Set<String> haveIds = new java.util.HashSet<>(p.have);
         for (final sa.urtv.home.SuggestedApps.App a : sa.urtv.home.SuggestedApps.forSetup(android.os.Build.VERSION.SDK_INT)) {
             // design/43: a row per app (a button(): its guard against overlays, the look's focus fill), a tick box at its start in the accent when ticked, its name and its line; OK ticks or unticks
             final boolean have = p.have.contains(a.id);
@@ -256,7 +278,7 @@ public class SetupActivity extends Activity {
             final Runnable paint = new Runnable() { public void run() {
                 boolean on = !have && picks.contains(a.id);
                 row.setCompoundDrawablesRelativeWithIntrinsicBounds(new TickBox(on, look.accent, look.sub, look.light ? 0xFFFFFFFF : 0xFF14161A), null, null, null);
-                summary.setText(digits(S.t("%s تطبيقات مختارة", String.valueOf(picks.size()))));
+                summary.setText(digits(S.t("%s تطبيقات مختارة", String.valueOf(chosenCount(picks, haveIds)))));   // 4.4 (step 88): an app already on the TV is not «chosen» (it said 2 with both boxes empty)
             } };
             paint.run();
             row.setOnClickListener(new View.OnClickListener() {
@@ -275,8 +297,104 @@ public class SetupActivity extends Activity {
         TextView no = quiet(S.t("إلغاء"));
         no.setOnClickListener(new View.OnClickListener() { public void onClick(View v) { SetupRunner.get().cancel(); } });
         add(no, dp(12));
-        begin.post(new Runnable() { @Override public void run() { begin.requestFocus(); } });
+        page.focusFirst(begin);
         say("", GOLD);
+    }
+
+    static final int RESULT_RECHECK = 10;
+
+    /** the result page's two Home lines, as they are now; again in a second while either is not yet fine and {@code left} seconds remain */
+    private void homeLines(final TextView roleLine, final TextView watchLine, final int left) {
+        if (isFinishing() || isDestroyed()) return;
+        boolean ours = SetupHook.oursIsDefault(this), bound = extrasBound();
+        roleLine.setText(ours ? S.t("دور الشاشة الرئيسية: تلفزيونك") : S.t("دور الشاشة الرئيسية: الشاشة الأصلية للتلفزيون"));
+        watchLine.setText(bound ? S.t("مراقبة زر الرئيسية («إضافات تلفزيونك»): شغّالة، وهي اللي ترجّعك لتلفزيونك")
+            : sa.urtv.home.Extras.installed(this) ? S.t("مراقبة زر الرئيسية («إضافات تلفزيونك»): مثبّتة لكنها ما هي شغّالة")
+            : S.t("مراقبة زر الرئيسية («إضافات تلفزيونك»): غير مثبّتة"));
+        watchLine.setTextColor(bound ? GOLD : TEXT);
+        if ((ours && bound) || left <= 0 || !sa.urtv.home.Extras.installed(this)) return;
+        watchLine.postDelayed(new Runnable() { public void run() { homeLines(roleLine, watchLine, left - 1); } }, 1000);
+    }
+
+    /** «إضافات تلفزيونك» is running now: Android's list of running accessibility services has it (read only) */
+    private boolean extrasBound() {
+        try {
+            android.view.accessibility.AccessibilityManager am = (android.view.accessibility.AccessibilityManager) getSystemService(ACCESSIBILITY_SERVICE);
+            if (am == null) return false;
+            for (android.accessibilityservice.AccessibilityServiceInfo i : am.getEnabledAccessibilityServiceList(android.accessibilityservice.AccessibilityServiceInfo.FEEDBACK_ALL_MASK))
+                if (i.getId() != null && i.getId().startsWith(sa.urtv.home.ExtrasWords.PACKAGE + "/")) return true;
+        } catch (RuntimeException ignored) { }
+        return false;
+    }
+
+    /** the boxes that are ticked: picked AND not already on the TV (those show an empty box and are left) */
+    static int chosenCount(java.util.Collection<String> picks, java.util.Set<String> have) {
+        int n = 0;
+        for (String id : picks) if (!have.contains(id)) n++;
+        return n;
+    }
+
+    /** 4.4 «قبل ما نبدأ: لو صار شيء» (RescueInfo): three steps to «إنقاذ تلفزيونك», a QR to docs/RESCUE.md, and a photo of the screen asked for */
+    private void rescueFirst() {
+        LinearLayout words = new LinearLayout(this);
+        words.setOrientation(LinearLayout.VERTICAL);
+        words.setLayoutDirection(Dir.layout());
+        words.addView(text(S.tv(RescueInfo.TITLE), 17, "Medium", GOLD), right(dp(4)));
+        words.addView(text(digits(S.tv(RescueInfo.STEP1)), 14, "Regular", TEXT), right(dp(4)));
+        words.addView(text(RescueInfo.hasCode() ? S.tv(RescueInfo.STEP2_CODE, RescueInfo.DOWNLOADER_CODE) : digits(S.tv(RescueInfo.STEP2_DOC)), 14, "Regular", TEXT), right(dp(4)));   // the code in Latin digits, as Downloader asks it
+        words.addView(text(digits(S.tv(RescueInfo.STEP3)), 14, "Regular", TEXT), right(dp(8)));
+        words.addView(text(S.tv(RescueInfo.PHOTO), 14, "Regular", GOLD), right(0));
+        qrBeside(words, RescueInfo.DOC_URL, sa.urtv.home.Compact.QR_DP);
+    }
+
+    /**
+     * 4.4 (the owner: «And the QR to the left»): the words and their QR side by side, the QR on the LEFT of the screen in both languages (the row is laid
+     * out left to right; the words keep their own direction), so the window stays short.
+     */
+    private void qrBeside(LinearLayout words, String url, int qrDp) {
+        LinearLayout row = new LinearLayout(this);
+        row.setOrientation(LinearLayout.HORIZONTAL);
+        row.setLayoutDirection(View.LAYOUT_DIRECTION_LTR);
+        row.setGravity(Gravity.CENTER_VERTICAL);
+        try {
+            QrView qr = new QrView(this);
+            qr.setCode(QrCode.encodeLarge(url));
+            LinearLayout card = new LinearLayout(this);
+            card.setGravity(Gravity.CENTER);
+            card.setPadding(dp(8), dp(8), dp(8), dp(8));
+            android.graphics.drawable.GradientDrawable white = new android.graphics.drawable.GradientDrawable();
+            white.setColor(0xFFFFFFFF);
+            white.setCornerRadius(dp(12));
+            card.setBackground(white);
+            card.addView(qr, new LinearLayout.LayoutParams(dp(qrDp), dp(qrDp)));
+            LinearLayout.LayoutParams cp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+            cp.rightMargin = dp(24);
+            row.addView(card, cp);
+        } catch (IllegalArgumentException ignored) { }
+        row.addView(words, new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f));
+        add(row, dp(16));
+    }
+
+    /** RescueInfo's words, said in «اللغة» (S.tv above) */
+    @SuppressWarnings("unused") private static final String[] RESCUE_WORDS = {
+        S.n("قبل ما نبدأ: لو صار شيء"), S.n("1. اضغط زر الإعدادات في الريموت ← التطبيقات ← Downloader ← فتح."), S.n("2. اكتب الكود %s وثبّت «إنقاذ تلفزيونك»."),
+        S.n("2. ثبّت «إنقاذ تلفزيونك» برابطه في الدليل (امسح الرمز)."), S.n("3. افتحه واضغط «رجّع التلفزيون كما كان»."), S.n("صوّر هذه الشاشة بجوالك الحين، عشان تكون عندك لو احتجتها."),
+    };
+
+    /** HomeFails' words, said in «اللغة» (S.tv above) */
+    @SuppressWarnings("unused") private static final String[] HOME_FAILS_WORDS = {
+        S.n("جرّب الإعداد بمساعد ذكي من الكمبيوتر"),
+        S.n("على هذا التلفزيون ما نجح تبديل الشاشة الرئيسية من هنا مرتين. افتح على الكمبيوتر مساعداً ذكياً (مثل Claude Code) في مجلد UrTV وقل له: «اقرأ docs/SETUP-PROMPT.md وجهّز تلفزيوني». امسح الرمز لترى الدليل."),
+    };
+
+    private void computerHelp() {
+        if (!HomeFails.givenUp(new FileStore(this).get(HomeFails.FILE))) return;
+        LinearLayout words = new LinearLayout(this);
+        words.setOrientation(LinearLayout.VERTICAL);
+        words.setLayoutDirection(Dir.layout());
+        words.addView(text(S.tv(HomeFails.LINE), 17, "Medium", GOLD), right(dp(4)));
+        words.addView(text(S.tv(HomeFails.GUIDE), 14, "Regular", TEXT), right(0));
+        qrBeside(words, HomeFails.GUIDE_URL, sa.urtv.home.Compact.QR_DP);
     }
 
     private void buildProgress(SetupRunner r) {
@@ -372,12 +490,14 @@ public class SetupActivity extends Activity {
         m.prompt = r.promptWaiting();
         m.promptLate = r.promptLate();
         m.promptTitle = S.tv(SetupRunner.PROMPT_LINE);
-        m.promptHint = S.t("اضغط «اختيار» بالريموت على «السماح دائماً»");
+        // 4.4 (step 88): the TV's focus starts on the box «السماح دائماً», and DOWN lands on «إلغاء»: the four keys in order (the drawing shows them)
+        m.promptHint = S.t("على الريموت: اختيار (يعلّم «السماح دائماً») ← تحت ← يسار ← اختيار (على «السماح»)");
         m.artOk = S.t("اختيار");
+        m.artAlways = S.t("السماح دائماً من هذا الكمبيوتر");
         m.promptLateText = S.tv(SetupRunner.PROMPT_LATE);
         m.artTitle = S.t("السماح بتصحيح USB؟");
         m.artCancel = S.t("إلغاء");
-        m.artAllow = S.t("السماح دائماً");
+        m.artAllow = S.t("السماح");
         m.finished = finished;
         SetupRunner.End e = r.end();
         m.bad = e != null && e.bad;
@@ -400,15 +520,15 @@ public class SetupActivity extends Activity {
     private static String why(String reason) { return reason == null || reason.isEmpty() ? "" : " — " + reason; }
 
     private void buildWifi() {
-        add(text(S.t("خطوة منك قبل الشاشة الرئيسية"), 18, "Medium", TEXT), dp(8));
-        add(text(S.tv(SetupRunner.WIFI_ASK_TEXT), 15, "Regular", TEXT), dp(16));
+        add(text(S.t("خطوة منك قبل الشاشة الرئيسية"), 17, "Medium", TEXT), dp(8));
+        add(text(S.tv(SetupRunner.WIFI_ASK_TEXT), 17, "Regular", TEXT), dp(16));
         final TextView more = button(S.t("كمّل"));
         more.setOnClickListener(new View.OnClickListener() { public void onClick(View v) { go(false); } });
         add(more, dp(12));
         undo = quiet(S.t("تراجع (يرجّع التلفزيون كما كان)"));
         undo.setOnClickListener(new View.OnClickListener() { public void onClick(View v) { go(true); } });
         add(undo, dp(16));
-        more.post(new Runnable() { @Override public void run() { more.requestFocus(); } });
+        page.focusFirst(more);
         say("", GOLD);
     }
 
@@ -453,13 +573,13 @@ public class SetupActivity extends Activity {
         S.n("التلفزيون يسأل «السماح بتصحيح USB؟»: اختر «السماح دائماً» بالريموت."),
         S.n("ما ظهرت الرسالة؟ أعد تشغيل التلفزيون وافتح «إعداد تلفزيوني» واضغط «جهّز كل شي» وخلك عند التلفزيون"),
         S.n("ما بدأنا الإعداد، وما تغيّر شيء في التلفزيون."),
-        S.n("قبل تبديل الشاشة الرئيسية: شبكة الواي فاي محفوظة باسم «وسيط الإعداد» في هذا التلفزيون، وإيقافه يمسحها. افتح إعدادات التلفزيون ← الشبكة، واختر «انسَ الشبكة»، ثم اتصل بها من جديد بنفس كلمة المرور (خلّها قدامك قبل). بعدها ارجع هنا واضغط «كمّل». ما تبي؟ اضغط «كمّل» بدونها، ونكمل والوسيط شغّال."),
+        S.n("قبل تبديل الشاشة الرئيسية: شبكة الواي فاي محفوظة باسم «وسيط الإعداد» في هذا التلفزيون، وإيقافه يمسحها. افتح إعدادات التلفزيون ← الشبكة، واختر «انسَ الشبكة»، ثم اتصل بها من جديد بنفس كلمة المرور (خلّها قدامك قبل). ما ظهر «انسَ الشبكة» أو ما رضي (مجرّبة على شاومي)؟ اتصل أول بنقطة اتصال من جوالك، بعدها انسَ شبكة البيت وارجع اتصل بها من الإعدادات. بعدها ارجع هنا واضغط «كمّل». ما تبي؟ اضغط «كمّل» بدونها، ونكمل والوسيط شغّال."),
     };
 
     /** The ends SetupRunner.endOf says in fixed words, marked for the table (the done screen shows them with S.tv; tests/tester_fixes_test.py). */
     static final String[] ENDS = {
         S.n("تم الرجوع. أطفئ «تصحيح USB» من خيارات المطوّر، واختر «إلغاء تراخيص تصحيح USB» لتنظيف التلفزيون."),
-        S.n("انتهى الرجوع مع ملاحظات (فوق)."),
+        S.n("انتهى الرجوع مع ملاحظات"),
         S.n("توقّفنا قبل أي تغيير."),
         S.n("انتهى الإعداد. اضغط زر الرئيسية في الريموت. ثم أطفئ «تصحيح USB» من خيارات المطوّر واختر «إلغاء تراخيص تصحيح USB» إن لم تحتجهما (التراجع من هنا يحتاجهما)."),
     };
@@ -467,11 +587,26 @@ public class SetupActivity extends Activity {
     private void buildDone(SetupRunner r) {
         final SetupRunner.End e = r.end();
         say(S.tv(e.text), e.bad ? RED : GOLD);
+        if (e.retry) {   // 4.4: «إلغاء» on the prompt, or no answer: nothing changed; the same job again, first and focused (a full run shows this on the start screen)
+            final boolean undoAgain = r.kind() == SetupRunner.Kind.UNDO;
+            final TextView again = button(undoAgain ? S.t("تراجع (يرجّع التلفزيون كما كان)") : S.t("جهّز كل شي"));
+            again.setOnClickListener(new View.OnClickListener() { public void onClick(View v) { dismissed = e; go(undoAgain); } });
+            add(again, dp(12));
+            page.focusFirst(again);
+            return;
+        }
         if (r.kind() == SetupRunner.Kind.FULL) {
             progress = new SetupProgressView(this, look, typeface("Medium"), typeface("Regular"));   // the same phases as the progress, all settled, and the result in the main area
             body.addView(progress, right(dp(24)));
             progress.show(modelOf(r, true));
             say("", GOLD);
+            // 4.4 (step 88 T4): how Home works on this TV, said on the page itself, in the person's language
+            final TextView roleLine = text("", 17, "Medium", TEXT), watchLine = text("", 17, "Medium", TEXT);
+            add(roleLine, dp(4));
+            add(watchLine, dp(16));
+            // 4.4 (build 413, T1): read right after the run they said «الشاشة الأصلية» and «ما هي شغّالة» while both were fine a moment later:
+            // read again once a second for up to RESULT_RECHECK seconds, until the add-on is bound and ours is the default home
+            homeLines(roleLine, watchLine, RESULT_RECHECK);
             String report = new FileStore(this).get(SetupReport.FILE);
             String url = report == null || report.isEmpty() ? null : SetupRunner.shareUrl(report);
             if (url != null) {
@@ -493,7 +628,7 @@ public class SetupActivity extends Activity {
                     cp.gravity = Gravity.CENTER_HORIZONTAL;
                     cp.topMargin = dp(16);
                     body.addView(card, cp);
-                    TextView caption = text(S.t("امسح الرمز بجوالك لترى تقرير الإعداد وترسله للمطوّر إن أردت (بلا أي معلومة شخصية)."), 13, "Regular", DIM);
+                    TextView caption = text(S.t("امسح الرمز بجوالك لترى تقرير الإعداد وترسله للمطوّر إن أردت (بلا أي معلومة شخصية)."), 14, "Regular", DIM);
                     caption.setGravity(Gravity.CENTER_HORIZONTAL);
                     caption.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
                     LinearLayout.LayoutParams tp = new LinearLayout.LayoutParams(dp(QR_DP + 32 + 96), LinearLayout.LayoutParams.WRAP_CONTENT);
@@ -504,15 +639,16 @@ public class SetupActivity extends Activity {
                 } catch (IllegalArgumentException ignored) { }
             }
         }
-        add(text(S.t("بعد الإعداد أطفئ التصحيح:"), 15, "Medium", TEXT), dp(4));
+        computerHelp();
+        add(text(S.t("بعد الإعداد أطفئ التصحيح:"), 17, "Medium", TEXT), dp(4));
         add(text(digits(S.t("1. الإعدادات ← تفضيلات الجهاز ← خيارات المطوّر.")), 14, "Regular", TEXT), dp(4));
         add(text(digits(S.t("2. اختر «إلغاء تراخيص تصحيح USB».")), 14, "Regular", TEXT), dp(4));
         add(text(digits(S.t("3. أطفئ «تصحيح USB». («تراجع» من هنا يحتاجه مفعّلاً.)")), 14, "Regular", TEXT), dp(12));
-        add(text(S.t("لو صار شي:"), 15, "Medium", TEXT), dp(4));
-        add(text(digits(S.t("• الشاشة الرئيسية ما فتحت تلفزيونك: انتظر 5 دقائق ترجع الأصلية وحدها، أو اضغط «تراجع».")), 14, "Regular", TEXT), dp(4));
-        add(text(S.t("• تطبيق تحتاجه صار موقوفاً: «تراجع» يرجّع كل ما أوقفناه."), 14, "Regular", TEXT), dp(4));
-        add(text(S.t("• انقطع الواي فاي: اتصل به من إعدادات التلفزيون ← الشبكة."), 14, "Regular", TEXT), dp(4));
-        add(text(S.t("• تبي التلفزيون كما كان: فعّل «تصحيح USB» واضغط «تراجع»."), 14, "Regular", TEXT), dp(12));
+        add(text(S.t("لو صار شي:"), 17, "Medium", TEXT), dp(4));
+        add(text(digits(S.t("الشاشة الرئيسية ما فتحت تلفزيونك: انتظر 5 دقائق ترجع الأصلية وحدها، أو اضغط «تراجع».")), 14, "Regular", TEXT), dp(4));
+        add(text(S.t("تطبيق تحتاجه صار موقوفاً: «تراجع» يرجّع كل ما أوقفناه."), 14, "Regular", TEXT), dp(4));
+        add(text(S.t("انقطع الواي فاي: اتصل به من إعدادات التلفزيون ← الشبكة."), 14, "Regular", TEXT), dp(4));
+        add(text(S.t("تبي التلفزيون كما كان: فعّل «تصحيح USB» واضغط «تراجع»."), 14, "Regular", TEXT), dp(12));
         final TextView ok = button(S.t("تم"));
         ok.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
@@ -526,7 +662,7 @@ public class SetupActivity extends Activity {
         undo = quiet(S.t("تراجع (يرجّع التلفزيون كما كان)"));
         undo.setOnClickListener(new View.OnClickListener() { public void onClick(View v) { go(true); } });
         add(undo, dp(12));
-        ok.post(new Runnable() { @Override public void run() { ok.requestFocus(); } });
+        page.focusFirst(ok);
     }
 
     // ---- the buttons --------------------------------------------------------------------------------------------------------------
@@ -582,8 +718,26 @@ public class SetupActivity extends Activity {
         show();   // a run started before this screen was opened (or while it was closed) is shown as it is now
     }
 
+    /**
+     * 4.4 (step 86 B): the TV's «السماح بتصحيح USB؟» is a window over this screen. When it closes this screen gets its focus back; if the run was still
+     * waiting for the answer, the runner counts it as «إلغاء» unless the TV answers within a few seconds (SetupRunner.promptClosed). The screen never
+     * closes by itself: it says «ضغطت «إلغاء»…» and offers «جهّز كل شي» again.
+     */
+    @Override public void onWindowFocusChanged(boolean hasFocus) {
+        super.onWindowFocusChanged(hasFocus);
+        SetupRunner r = SetupRunner.get();
+        if (!hasFocus && r.promptWaiting()) { promptCovered = true; r.promptCoveredNow(); }
+        else if (hasFocus && promptCovered) {
+            promptCovered = false;
+            if (r.promptWaiting()) r.promptClosed(System.currentTimeMillis());
+        }
+    }
+
+    private boolean promptCovered;
+
     @Override protected void onPause() {
         resumedNow = false;
+        if (SetupRunner.get().promptWaiting()) SetupRunner.get().promptCoveredNow();   // the dialog over this screen, or the person left it: not «no dialog»
         SetupRunner.get().setListener(null);
         super.onPause();
     }
@@ -604,10 +758,10 @@ public class SetupActivity extends Activity {
 
     /** a button in the glass look: the panel, the solid focus fill and its ink while focused; another window over this screen cannot press it */
     private TextView button(String label) {
-        TextView t = text(label, 18, "Medium", TEXT);
+        TextView t = text(label, 17, "Medium", TEXT);
         t.setGravity(Gravity.CENTER);
-        t.setPadding(dp(16), dp(14), dp(16), dp(14));
-        t.setMinHeight(dp(56));   // 56 dp: the main button of a screen
+        t.setPadding(dp(16), dp(8), dp(16), dp(8));
+        t.setMinHeight(dp(sa.urtv.home.Compact.BUTTON_DP));   // 4.4 compact: 44 dp, the main button of a screen
         t.setFocusable(true);
         t.setClickable(true);
         t.setFilterTouchesWhenObscured(true);

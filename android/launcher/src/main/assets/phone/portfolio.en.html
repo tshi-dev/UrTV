@@ -165,7 +165,7 @@ input{width:100%;min-height:52px;background:var(--tile)}
       h.buys.forEach(function (b) { var p = b.split(':'); q += +p[0]; c += p[0] * p[1]; });
       var row = el('div', 'hold'), d = el('div');
       d.appendChild(el('span', '', h.name));
-      d.appendChild(el('small', '', h.code + ' · ' + shares(q) + ' · ' + nf(c / q, 2) + ' ' + unit(h.code)));
+      d.appendChild(el('small', '', h.code + ', ' + shares(q) + ', ' + nf(c / q, 2) + ' ' + unit(h.code)));
       row.appendChild(d);
       var ed = el('button', 'lnk', 'Edit'); ed.onclick = function () { choose(h.code, h.buys); };
       var rm = el('button', 'lnk', 'Delete');
@@ -191,7 +191,7 @@ input{width:100%;min-height:52px;background:var(--tile)}
       var b = el('button', i === 0 ? 'on' : '');
       b.appendChild(el('span', '', nameOf(code)));
       var px = (data.prices || {})[code];
-      b.appendChild(el('small', 'num', code + (px ? ' · ' + nf(+px, 2) + ' ' + unit(code) : '')));
+      b.appendChild(el('small', 'num', code + (px ? ', ' + nf(+px, 2) + ' ' + unit(code) : '')));
       b.onclick = function () { choose(code, null); };
       box.appendChild(b);
     });

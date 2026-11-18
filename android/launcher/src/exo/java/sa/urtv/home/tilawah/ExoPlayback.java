@@ -26,7 +26,17 @@ import androidx.media3.exoplayer.upstream.DefaultLoadErrorHandlingPolicy;
  * the live window starts again at the live edge quietly; the buffer starts after 2.5 s and keeps as much as the window holds.
  */
 public final class ExoPlayback extends Playback {
-    static final int MIN_BUFFER_MS = 15_000, MAX_BUFFER_MS = 60_000, START_MS = 2_500, RESTART_MS = 5_000, RETRIES = 8;
+    /**
+     * 4.4 (the owner: a bigger buffer for live audio, and a pre-buffer before it plays): it starts once START_MS is in (5 s, was 2.5 s), and after a
+     * rebuffer once RESTART_MS is (10 s); it keeps 30 to 120 s ahead when the stream gives it (an audio stream of 128 kbps: about 2 MB at most).
+     */
+    static final int MIN_BUFFER_MS = 30_000, MAX_BUFFER_MS = 120_000, START_MS = 5_000, RESTART_MS = 10_000, RETRIES = 8;
+    /**
+     * 4.4 (a user report on 4.3: «تقطيع» in a surah within a minute, the stations fine): a surah file (mp3quran) through ExoPlayer too, with a
+     * file's buffer: up to four minutes read ahead, so a slow or dropped connection is heard minutes later or never. A read that drops is
+     * retried (FILE_RETRIES, with Media3's growing wait) from the byte it stopped at (an HTTP Range request), not from the start.
+     */
+    static final int FILE_MIN_BUFFER_MS = 60_000, FILE_MAX_BUFFER_MS = 240_000, FILE_START_MS = 2_500, FILE_RESTART_MS = 5_000, FILE_RETRIES = 12;
     static final String UA = "UrTV (Android TV)";
 
     private final ExoPlayer exo;
@@ -39,7 +49,13 @@ public final class ExoPlayback extends Playback {
     private long quietSince;
     private int quiet;
 
-    public ExoPlayback(Context c) {
+    /** true: a live station (as before); false: a file that ends (a surah) */
+    private final boolean live;
+
+    public ExoPlayback(Context c) { this(c, true); }
+
+    public ExoPlayback(Context c, boolean live) {
+        this.live = live;
         DefaultHttpDataSource.Factory http = new DefaultHttpDataSource.Factory()
                 .setUserAgent(UA)
                 .setConnectTimeoutMs(10_000)
@@ -47,8 +63,14 @@ public final class ExoPlayback extends Playback {
                 .setAllowCrossProtocolRedirects(false);   // https stays https (the app allows cleartext for radiojar.com only)
         exo = new ExoPlayer.Builder(c)
                 .setLooper(Looper.getMainLooper())
-                .setLoadControl(new DefaultLoadControl.Builder().setBufferDurationsMs(MIN_BUFFER_MS, MAX_BUFFER_MS, START_MS, RESTART_MS).build())
-                .setMediaSourceFactory(new DefaultMediaSourceFactory(c).setDataSourceFactory(http).setLoadErrorHandlingPolicy(new DefaultLoadErrorHandlingPolicy(RETRIES)))
+                .setLoadControl(live ? new DefaultLoadControl.Builder().setBufferDurationsMs(MIN_BUFFER_MS, MAX_BUFFER_MS, START_MS, RESTART_MS).build()
+                        : new DefaultLoadControl.Builder().setBufferDurationsMs(FILE_MIN_BUFFER_MS, FILE_MAX_BUFFER_MS, FILE_START_MS, FILE_RESTART_MS)
+                            .setPrioritizeTimeOverSizeThresholds(true).build())   // a surah: the time read ahead counts, not the bytes
+                .setMediaSourceFactory((live ? new DefaultMediaSourceFactory(c).setDataSourceFactory(http)
+                        // a surah: a file path too, and an MP3 without a seek table can still be sought (CBR): «متابعة» and a resume go on from the place
+                        : new DefaultMediaSourceFactory(new androidx.media3.datasource.DefaultDataSource.Factory(c, http),
+                            new androidx.media3.extractor.DefaultExtractorsFactory().setConstantBitrateSeekingEnabled(true).setConstantBitrateSeekingAlwaysEnabled(true)))
+                        .setLoadErrorHandlingPolicy(new DefaultLoadErrorHandlingPolicy(live ? RETRIES : FILE_RETRIES)))
                 .setHandleAudioBecomingNoisy(false)
                 .build();
         exo.setPlayWhenReady(false);
@@ -65,6 +87,8 @@ public final class ExoPlayback extends Playback {
                 } else if (state == Player.STATE_BUFFERING && prepared && !rebuffering) {
                     rebuffering = true;
                     if (onInfo != null) onInfo.onInfo(ExoPlayback.this, MediaPlayer.MEDIA_INFO_BUFFERING_START, 0);
+                } else if (state == Player.STATE_ENDED && !live) {   // a surah's end: the next one (MusicService), as MediaPlayer's completion
+                    if (onCompletion != null) onCompletion.onCompletion(ExoPlayback.this);
                 } else if (state == Player.STATE_ENDED) {   // a live stream has no end: the server closed it, joined again (RadioPolicy)
                     if (onError != null) onError.onError(ExoPlayback.this, MediaPlayer.MEDIA_ERROR_UNKNOWN, PlayerFault.IO);
                     else if (onCompletion != null) onCompletion.onCompletion(ExoPlayback.this);
@@ -82,7 +106,7 @@ public final class ExoPlayback extends Playback {
                 for (Throwable c = e.getCause(); c != null; c = c.getCause()) if (c.getClass().getSimpleName().startsWith("Playlist")) stuck = true;
                 long nowMs = android.os.SystemClock.elapsedRealtime();
                 if (nowMs - quietSince > 60_000) { quietSince = nowMs; quiet = 0; }
-                if ((e.errorCode == PlaybackException.ERROR_CODE_BEHIND_LIVE_WINDOW || stuck) && ++quiet <= 6) {   // fell out of the 12 s window: back to the live edge, quietly
+                if (live && (e.errorCode == PlaybackException.ERROR_CODE_BEHIND_LIVE_WINDOW || stuck) && ++quiet <= 6) {   // fell out of the 12 s window: back to the live edge, quietly
                     exo.seekToDefaultPosition();
                     exo.prepare();
                     return;
@@ -108,8 +132,8 @@ public final class ExoPlayback extends Playback {
     @Override void setOnErrorListener(OnError l) { onError = l; }
     @Override void setDataSource(String u) { url = u; }
     @Override void prepareAsync() {
-        MediaItem.Builder item = new MediaItem.Builder().setUri(url)
-            .setLiveConfiguration(new MediaItem.LiveConfiguration.Builder().setMinPlaybackSpeed(1f).setMaxPlaybackSpeed(1f).build());   // 4.3.1 never speeds up to chase the live edge: a 12 s window leaves no room to starve
+        MediaItem.Builder item = new MediaItem.Builder().setUri(url);
+        if (live) item.setLiveConfiguration(new MediaItem.LiveConfiguration.Builder().setMinPlaybackSpeed(1f).setMaxPlaybackSpeed(1f).build());   // 4.3.1 never speeds up to chase the live edge: a 12 s window leaves no room to starve
         if (StallWatch.isHls(url)) item.setMimeType(androidx.media3.common.MimeTypes.APPLICATION_M3U8);   // an .m3u8 behind a query string too
         exo.setMediaItem(item.build());
         exo.prepare();

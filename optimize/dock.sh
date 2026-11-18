@@ -18,10 +18,18 @@
 #   optimize/dock.sh backsaver on|off        «الرجوع يفتح شاشة التوقف»: Back on our home starts the screensaver (off by default; the TV row in «الشاشة الرئيسية» is set too); no argument says how it stands
 #   optimize/dock.sh message on|off          «رسائل الجوال» (4.3 #53): a paired phone's short message shown on the screen for 20 s (on by default); no argument says how it stands
 #   optimize/dock.sh message overapps on|off «فوق التطبيقات»: also over a film or a match (on by default); off = only on our home and the screensaver
+#   optimize/dock.sh overlay on|off|status   4.4 «فوق تطبيق آخر» of the kick-off alert: lets the home draw its corner notice over another app (SYSTEM_ALERT_WINDOW; off by default)
 #   optimize/dock.sh familydns on|off|status|grant   «حماية العائلة (DNS)»: Private DNS to AdGuard Family, checked and undone by optimize/familydns.sh
 #   optimize/dock.sh cast on|off|status    «البث من الجوال» on a Chromecast with Google TV: casting and the Google Home remote kept (on, the default) or our home first (off); optimize/cast.sh
-#   optimize/dock.sh sleep-setup           turn on the sleep service (an accessibility service, once) so the end turns the screen off
-#   optimize/dock.sh type-setup            turn on the remote-and-typing service (a second accessibility service, once) so the phone remote can press keys and type in other apps
+#   optimize/dock.sh extras-setup          turn on «إضافات تلفزيونك» (UrTV Extras, optimize/install.sh addon first; once): the sleep timer's screen-off, the phone remote's
+#                                          keys and typing in other apps, the Settings key outside the home, the Home button on a Google TV
+#                                          (sleep-setup and type-setup: the old names, the same step)
+#   optimize/dock.sh home-watch on|off|status   4.4 Google TV: «the person's home is ours» for the add-on's Home watch (the role alone never moves
+#                                          the Home key there: TCL G10/G08, Changhong Android 14, Sony BRAVIA VH21, Xiaomi MiTV-AFMU0/1); after extras-setup
+#   optimize/dock.sh home-key on|off|status    4.4 «زر الرئيسية يفتح تلفزيونك مباشرة»: the add-on catches the remote's Home key (on by default on a Google TV,
+#                                          only while the person's home is ours; the window watch stays as the fallback)
+#   optimize/dock.sh key                   «أزرار الريموت»: this remote's app buttons (YouTube, Netflix…: the ones its brand has) and the app each opens
+#   optimize/dock.sh key BUTTON PKG        give one of this remote's buttons (the ids `key` lists: youtube, netflix…) another app; `default` = as before. Over other apps with «إضافات تلفزيونك» (extras-setup)
 #   optimize/dock.sh pin set 1234         «الرقابة الأبوية»: the master PIN (4 digits), set or changed from here without the old one; never printed back
 #   optimize/dock.sh pin lock PKG          lock one app (its package, e.g. com.netflix.ninja), a pill (@inputs @wifi @tvsettings @tasks @saver @listen @sleep @center) or @urtv (our settings); `pin unlock PKG` opens it again
 #   optimize/dock.sh pin status            what is set: PIN or not, what is locked, kids mode, wrong tries (never the PIN)
@@ -72,6 +80,12 @@ case "${1:-}:$#" in
     [ $# -gt 0 ] || { echo "usage: optimize/dock.sh set PKG1 PKG2 ..."; exit 1; }
     for p in "$@"; do [[ "$p" =~ ^[A-Za-z0-9_.]+$ ]] || { echo "not a package name: $p"; exit 1; }; done
     send SET_DOCK "--es apps $(IFS=,; echo "$*")" ;;
+  key:1) send KEY_APP ;;
+  key:3)
+    [[ "$2" =~ ^[a-z]+$ ]] || { echo "usage: optimize/dock.sh key [BUTTON PKG|default] (BUTTON from optimize/dock.sh key)"; exit 1; }
+    [[ "$3" == default || "$3" =~ ^[A-Za-z][A-Za-z0-9_]*(\.[A-Za-z0-9_]+)+$ ]] || { echo "usage: optimize/dock.sh key $2 PKG|default (PKG from optimize/dock.sh apps)"; exit 1; }
+    send KEY_APP "--es key $2 --es app $3" || exit 1
+    "$PY" -I optimize/tv.py "am broadcast -n sa.urtv.screensaver/.SaverReceiver -a sa.urtv.screensaver.SET --es keyapp $2=$3" > /dev/null 2>&1 || true ;;   # the TV's row says the same
   backsaver:1) send BACK_SAVER "--es mode status" ;;
   backsaver:2)
     # the home's switch, then the same on the screensaver's row (its settings show it; the home follows that row only when it changes)
@@ -82,6 +96,15 @@ case "${1:-}:$#" in
   message:3)
     [ "$2" = overapps ] || { echo "usage: optimize/dock.sh message overapps on|off"; exit 1; }
     case "$3" in on|off) send PHONE_MESSAGE "--es mode status --es overapps $3" ;; *) echo "usage: optimize/dock.sh message overapps on|off"; exit 1 ;; esac ;;
+  overlay:2)
+    # 4.4: the appop behind «الظهور فوق التطبيقات» for the home app; on some TVs the Settings screen for it is hidden, so the person's choice is set from here
+    case "$2" in
+      on) "$PY" -I optimize/tv.py "appops set sa.urtv.home SYSTEM_ALERT_WINDOW allow" > /dev/null; echo "overlay: on (the kick-off notice may show over another app when «فوق تطبيق آخر» is نعم)" ;;
+      off) "$PY" -I optimize/tv.py "appops set sa.urtv.home SYSTEM_ALERT_WINDOW default" > /dev/null; echo "overlay: off" ;;
+      status) "$PY" -I optimize/tv.py "appops get sa.urtv.home SYSTEM_ALERT_WINDOW" | tr -d '\r' ;;
+      *) echo "usage: optimize/dock.sh overlay on|off|status"; exit 1 ;;
+    esac ;;
+  overlay:*) echo "usage: optimize/dock.sh overlay on|off|status"; exit 1 ;;
   sleep:1) send SLEEP_TV ;;
   sleep:2)
     case "$2" in
@@ -90,10 +113,16 @@ case "${1:-}:$#" in
       *) minutes=$2; [ "$minutes" -le 600 ] || { echo "minutes: 1 to 600"; exit 1; } ;;
     esac
     send SLEEP_TV "--ei minutes $minutes" ;;
-  sleep-setup:1|type-setup:1)
-    # two accessibility services of ours, each turned on on its own (typing is a separate service: it can read the screen to find a text field, the sleep one cannot)
-    if [ "$1" = type-setup ]; then svc="sa.urtv.home/sa.urtv.home.TypeService"; what="the typing service"; done_msg="the typing service is on (remote and typing): the phone remote can press the arrows, OK, Back and Home in the app in front and type into its text field"
-    else svc="sa.urtv.home/sa.urtv.home.SleepService"; what="the sleep service"; done_msg="the sleep service is on: the end of «مؤقت النوم» turns the screen off"; fi
+  extras-setup:1|sleep-setup:1|type-setup:1)
+    # 4.3.3: the home has no accessibility service any more; the one service is in the optional add-on «إضافات تلفزيونك» (sa.urtv.extras, optimize/install.sh addon):
+    # the sleep timer's screen-off, the phone remote's keys and typing in other apps, the Settings key outside our home, the Home-button watch on a Google TV.
+    # sleep-setup and type-setup are the old names of the same step.
+    svc="sa.urtv.extras/sa.urtv.home.ExtrasA11yService"; what="«إضافات تلفزيونك» (UrTV Extras)"
+    done_msg="«إضافات تلفزيونك» is on: the end of «مؤقت النوم» turns the screen off, the phone remote presses keys and types in the app in front, the Settings key works in other apps, and on a Google TV the Home button comes back to UrTV"
+    if ! "$PY" -I optimize/tv.py "pm list packages sa.urtv.extras" | tr -d '\r' | grep -qx "package:sa.urtv.extras"; then
+      echo "!! «إضافات تلفزيونك» (sa.urtv.extras) is not installed on the TV: optimize/install.sh addon first, then the same command again. (Play Protect may ask: the person presses «تثبيت على أي حال».)"
+      exit 1
+    fi
     cur=$("$PY" -I optimize/tv.py "settings get secure enabled_accessibility_services; settings get secure accessibility_enabled" | tr -d '\r')
     now=$(sed -n 1p <<< "$cur")
     # only the word «null» means no service is on; an empty answer is «the TV did not say», and the person's own list must not be overwritten
@@ -122,13 +151,52 @@ case "${1:-}:$#" in
         else echo "$what was already on"; fi ;;
       null|"") "$PY" -I optimize/tv.py "settings put secure enabled_accessibility_services '$svc'" >/dev/null ;;
       *) if [[ "$now" =~ ^[A-Za-z0-9_.\$/:]+$ ]]; then
-           "$PY" -I optimize/tv.py "settings put secure enabled_accessibility_services '$now:$svc'" >/dev/null
+           now=$(tr ':' '\n' <<< "$now" | grep -v '^sa\.urtv\.home/' | grep . | paste -sd: - || true)   # the home's own services of 4.3.2 and before are gone: their dead entries leave
+           "$PY" -I optimize/tv.py "settings put secure enabled_accessibility_services '${now:+$now:}$svc'" >/dev/null
          else echo "!! enabled_accessibility_services: the list on this TV has a character this script does not send, so $what was not added"; exit 1; fi ;;
     esac
     "$PY" -I optimize/tv.py "settings put secure accessibility_enabled 1" >/dev/null
     after=$("$PY" -I optimize/tv.py "settings get secure enabled_accessibility_services" | tail -n 1 | tr -d '\r')
     case "$after" in *"$svc"*) ;; *) echo "!! enabled_accessibility_services: this TV did not take $what (it says ${after:-nothing})" ;; esac
+    # 4.4: in the list is not running. A TCL's TclAppBoot refused the first bind («forbid bind service sa.urtv.extras/…»), and a force-stopped add-on is not bound
+    # again by itself: Android's own answer (Bound services) is read, and while ours is not in it the list goes off and on again (a change Android listens to),
+    # twice at most. A TV that does not say what is bound is left as it is (nothing guessed). TCL's boot manager is also told the add-on may start and be
+    # bound at boot (AUTO_START, ASSOC_START), written to disk at once (appops write-settings: AppOps flushes 30 min later, a restart before lost it; 4.4 T3).
+    "$PY" -I optimize/tv.py "appops set sa.urtv.extras AUTO_START allow 2> /dev/null; appops set sa.urtv.extras ASSOC_START allow 2> /dev/null; appops write-settings 2> /dev/null" > /dev/null 2>&1 || true
+    bound=unknown
+    for try in 1 2 3; do
+      sleep 2
+      b=$("$PY" -I optimize/tv.py "dumpsys accessibility" | tr -d '\r' | grep -m1 'Bound services:' || true)
+      [ -n "$b" ] || break
+      if [[ "$b" == *"$svc"* ]]; then bound=yes; break; fi
+      bound=no
+      [ "$try" = 3 ] && break
+      now=$("$PY" -I optimize/tv.py "settings get secure enabled_accessibility_services" | tail -n 1 | tr -d '\r')
+      [[ "$now" == *"$svc"* ]] && [[ "$now" =~ ^[A-Za-z0-9_.\$/:]+$ ]] || break
+      rest=$(tr ':' '\n' <<< "$now" | grep -vxF "$svc" | paste -sd: - || true)
+      if [ -n "$rest" ]; then "$PY" -I optimize/tv.py "settings put secure enabled_accessibility_services '$rest'" >/dev/null
+      else "$PY" -I optimize/tv.py "settings delete secure enabled_accessibility_services" >/dev/null; fi
+      "$PY" -I optimize/tv.py "settings put secure enabled_accessibility_services '$now'" >/dev/null
+      echo "$what is in the list but Android did not run it (a TV may refuse the first bind): the list was turned off and on again ($try)"
+    done
+    if [ "$bound" = no ]; then
+      echo "!! $what is in the list but Android does not run it, even after turning it off and on twice. Ask the person, in Arabic: «افتح إعدادات التلفزيون ← تسهيل الاستخدام ← إضافات تلفزيونك، أطفئها وشغّلها من جديد». Then optimize/dock.sh extras-setup again to check."
+      exit 1
+    fi
+    [ "$bound" = yes ] && echo "Android runs it (Bound services)."
     echo "$done_msg" ;;
+  home-key:2)
+    case "$2" in
+      on|off|status) send HOME_KEY "--es mode $2" ;;
+      *) echo "usage: optimize/dock.sh home-key on|off|status"; exit 1 ;;
+    esac ;;
+  home-key:*) echo "usage: optimize/dock.sh home-key on|off|status"; exit 1 ;;
+  home-watch:2)
+    case "$2" in
+      on|off|status) send HOME_WANTED "--es mode $2" ;;
+      *) echo "usage: optimize/dock.sh home-watch on|off|status"; exit 1 ;;
+    esac ;;
+  home-watch:*) echo "usage: optimize/dock.sh home-watch on|off|status"; exit 1 ;;
   pin:*)
     shift
     case "${1:-}:$#" in
@@ -167,5 +235,5 @@ case "${1:-}:$#" in
     esc=$(printf '%s' "$3" | sed "s/'/'\\\\''/g")   # an apostrophe inside the quotes, as optimize/type.sh does; the app decides whether the name is kept
     send SET_INPUT_NAME "--es id '$2' --es name '$esc'" ;;
   input-name:*) echo "usage: optimize/dock.sh input-name ID 'الاسم'   (ID from: optimize/dock.sh input-names; '' = the TV's own name)"; exit 1 ;;
-  *) sed -n '2,29p' "$0"; exit 1 ;;
+  *) sed -n '2,/^# The home screen redraws/p' "$0"; exit 1 ;;
 esac

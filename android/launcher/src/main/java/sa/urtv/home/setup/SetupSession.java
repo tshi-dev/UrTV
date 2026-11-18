@@ -47,15 +47,12 @@ final class SetupSession implements Closeable {
     @Override public void close() { adb.close(); }
 
     /**
-     * The ADB key is a standing credential once «السماح دائماً» was accepted: it is deleted when nothing is pending (no home switch waiting for its
-     * safety switch, no full run waiting for the TV to come back from a restart or for the person's «كمّل» after the Wi-Fi). The next run makes a new
-     * key and the TV asks again.
+     * 4.4 (the owner's TV, step 86 B): the ADB key is kept for good, ONE key. Until 4.4 it was deleted after every finished run, so every run made a new
+     * key, the TV asked «السماح بتصحيح USB؟» again, and its saved list filled with urtv-home@tv keys; the safety switch, the home's own re-apply of the
+     * HOME role and «تراجع» all need it later. It goes only when the person revokes it on the TV («إلغاء تراخيص تصحيح USB»: the TV then asks again for
+     * the same key). Called after every end; it never deletes, it only says the key is there.
      */
-    static void deleteKeyIfFinished(Context c) {
-        String factory = new FileStore(c).get(SetupEngine.FACTORY);
-        boolean pending = SetupRecovery.pending(c) || (factory != null && factory.startsWith("on")), awaiting = SetupRunner.awaiting(new FileStore(c));   // the factory step keeps the key: its restore needs it
-        if (!pending && !awaiting) AdbKeys.delete(c);
-        android.util.Log.i("UrTVSetup", "adb key: " + (!pending && !awaiting ? "deleted" : "kept (" + (pending ? "home switch or factory step pending" : "run waiting") + ")")
-            + " exists=" + AdbKeys.exists(c));
+    static void keepKey(Context c) {
+        android.util.Log.i("UrTVSetup", "adb key: kept (one key for good) exists=" + AdbKeys.exists(c));
     }
 }

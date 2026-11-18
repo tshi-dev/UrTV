@@ -17,6 +17,8 @@ import android.os.Bundle;
  * And ".../setup": one row (running) while «إعداد تلفزيوني» runs a setup (SetupHold): the screensaver steps aside then.
  * And ".../adhan_on": one row (on 1 or 0), the adhan's switch, which the screensaver's settings show on their «الأذان» button. Nothing here
  * changes it: that button opens the adhan's page through the home, behind its family lock.
+ * 4.4: ".../kids", one row (on 1 or 0), kids mode, which the screensaver's page reads (no kick-off notice over it then); and
+ * call("kickoff_whistle"), the whistle once for «جرّب التنبيه» (never over the adhan).
  */
 public class NowPlayingProvider extends ContentProvider {
     @Override public boolean onCreate() { return true; }
@@ -28,6 +30,11 @@ public class NowPlayingProvider extends ContentProvider {
             MatrixCursor h = new MatrixCursor(new String[]{"held"});
             h.addRow(new Object[]{sa.urtv.home.setup.SaverHold.held(getContext()) ? 1 : 0});
             return h;
+        }
+        if (uri != null && "kids".equals(uri.getLastPathSegment())) {   // 4.4 kids mode (read only): the screensaver's page then draws no kick-off notice
+            MatrixCursor k = new MatrixCursor(new String[]{"on"});
+            k.addRow(new Object[]{sa.urtv.home.KidsNow.on(getContext()) ? 1 : 0});
+            return k;
         }
         if (uri != null && "setup".equals(uri.getLastPathSegment())) {
             MatrixCursor h = new MatrixCursor(new String[]{"running"});
@@ -47,8 +54,10 @@ public class NowPlayingProvider extends ContentProvider {
             return a;
         }
         if (uri != null && "adhan".equals(uri.getLastPathSegment())) {
-            MatrixCursor a = new MatrixCursor(new String[]{"prayer", "any_key"});
-            if (MusicService.adhanLive()) a.addRow(new Object[]{MusicService.adhanPrayer(), new Prefs(getContext()).adhanStopKey() ? 1 : 0});
+            // 4.4: a third column, the dua's name while a dua or reminder plays ("" for an adhan): an older screensaver reads the first two only
+            MatrixCursor a = new MatrixCursor(new String[]{"prayer", "any_key", "name"});
+            String dua = MusicService.duaName();
+            if (MusicService.adhanLive()) a.addRow(new Object[]{MusicService.adhanPrayer(), new Prefs(getContext()).adhanStopKey() ? 1 : 0, dua == null ? "" : dua});
             return a;
         }
         MatrixCursor out = new MatrixCursor(new String[]{"playing", "title", "who"});
@@ -62,6 +71,36 @@ public class NowPlayingProvider extends ContentProvider {
         if ("stop_adhan".equals(method) && getContext() != null
                 && getContext().checkCallingPermission("sa.urtv.home.READ_NOW_PLAYING") == PackageManager.PERMISSION_GRANTED) {
             if (MusicService.adhanLive()) MusicService.stopAdhan(getContext());
+        }
+        // 4.4 «جرّب التنبيه» in the screensaver's settings (same key only): the kick-off whistle once, never over the adhan
+        if ("kickoff_whistle".equals(method) && getContext() != null
+                && getContext().checkCallingPermission("sa.urtv.home.READ_NOW_PLAYING") == PackageManager.PERMISSION_GRANTED) {
+            if (!MusicService.adhanLive()) Whistle.play(getContext());
+            return new Bundle();
+        }
+        // 4.3.3 «مسح الملفات المؤقتة» in the screensaver's settings (same key only): this app's cache folder, its size or the sweep (CacheSweep keeps the adhan's sounds and an APK on its way)
+        if (("cache_size".equals(method) || "clear_cache".equals(method)) && getContext() != null
+                && getContext().checkCallingPermission("sa.urtv.home.READ_NOW_PLAYING") == PackageManager.PERMISSION_GRANTED) {
+            java.io.File cache = getContext().getCacheDir();
+            Bundle b = new Bundle();
+            b.putLong("bytes", "clear_cache".equals(method) ? sa.urtv.home.CacheSweep.clear(cache) : sa.urtv.home.CacheSweep.size(cache));
+            return b;
+        }
+        // 4.4 «زر الرئيسية يفتح تلفزيونك مباشرة» in the screensaver's settings (same key only): the add-on's Home key catch, arg "on", "off" or null to read;
+        // no "on" in the answer when the add-on did not answer (the row is then not shown)
+        if ("home_key".equals(method) && getContext() != null
+                && getContext().checkCallingPermission("sa.urtv.home.READ_NOW_PLAYING") == PackageManager.PERMISSION_GRANTED) {
+            Boolean on = sa.urtv.home.Extras.homeKey(getContext(), "on".equals(arg) || "off".equals(arg) ? arg : null);
+            Bundle b = new Bundle();
+            if (on != null) b.putBoolean("on", on);
+            return b;
+        }
+        // 4.4 «بدء شاشة التوقف بعد» in the screensaver's settings (same key only): the TV's idle delay over our adb (SetupHook.setIdle), the answer in "result"
+        if ("set_idle".equals(method) && getContext() != null
+                && getContext().checkCallingPermission("sa.urtv.home.READ_NOW_PLAYING") == PackageManager.PERMISSION_GRANTED) {
+            Bundle b = new Bundle();
+            b.putString("result", sa.urtv.home.setup.SetupHook.setIdle(getContext(), arg));
+            return b;
         }
         return null;
     }

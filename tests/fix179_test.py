@@ -35,7 +35,7 @@ check("PIN pad: no focus scale on a key (it ate 4 px of the gap beside it); the 
       "scaleX" not in pin and text(HOME / "PinPrompt.java").count("dp(a, 12)") >= 5)
 settings = text(APP / "SettingsActivity.java")
 check("settings pages: 64 px above the first line, a group's header 32 above and 16 under it (the first row was 124 px down)",
-      "list.setPadding(dp(8), dp(32), dp(8), dp(16));" in settings and "t.setPadding(dp(10), dp(16), dp(10), dp(8));" in settings and "head.setPadding(0, 0, 0, dp(16));" in settings)
+      "list.setPadding(dp(8), dp(32), dp(8), dp(16));" in settings and "t.setPadding(dp(10), dp(16), dp(10), dp(8));" in settings and "title.setPadding(dp(10), 0, dp(10), dp(4));" in settings)
 mk = text(HOME / "MarketsActivity.java")
 check("markets: the page ends at the safe area (5 % under it), so no list starts under y 1026 and the lists scroll in",
       "page.setPadding(Math.round(dm.widthPixels * 0.05f), Math.round(dm.heightPixels * 0.05f), Math.round(dm.widthPixels * 0.05f), Math.round(dm.heightPixels * 0.05f));" in mk
@@ -59,9 +59,9 @@ check("the setup's ongoing notification is in the person's language (review R12)
 md = text(HOME / "MarketData.java")
 check("market data (owner): the TV asks the file every 5 minutes (the open page too), a late file shows its own time «آخر تحديث», no error",
       "FRESH_MS = 5 * 60_000L" in text(HOME / "MarketFile.java") and "if (++ticks % 5 == 0) refreshPrices();" in mk and "periodic(loadMarkets, (CONFIG.lowram ? 15 : CONFIG.midram ? 10 : 5)*60*1000);" in tpl and "15*60*1000);" not in tpl[tpl.index("const loadStocks = loadMarkets"):][:6000])
-check("market data: «الأسعار متأخرة · المصدر: Yahoo Finance» under every tab of the markets page and on the stock card, small, in the file's own provider name",
-      'S.t("الأسعار متأخرة · المصدر: %s", name)' in mk and "content.addView(sourceNote(), gap(16));" in mk and "cardNote = (TextView) sourceNote();" in mk and 'return "stooq".equals(src)' in md
-      and "الأسعار متأخرة · المصدر: %s\tDelayed prices · Source: %s" in text(ROOT / "i18n/en/home.tsv"))
+check("market data: «الأسعار متأخرة، المصدر: Yahoo Finance» under every tab of the markets page and on the stock card, small, in the file's own provider name",
+      'S.t("الأسعار متأخرة، المصدر: %s", name)' in mk and "content.addView(sourceNote(), gap(16));" in mk and "cardNote = (TextView) sourceNote();" in mk and 'return "stooq".equals(src)' in md
+      and "الأسعار متأخرة، المصدر: %s\tDelayed prices, Source: %s" in text(ROOT / "i18n/en/home.tsv"))
 # ---- build 180's final test (work/fix-180)
 ml = text(RES / "layout/activity_main.xml")
 check("B3: the Tilawah tabs are 24 px apart (12 dp)", ml.count('android:layout_marginStart="12dp"') >= 2 and 'android:layout_marginStart="10dp"' not in ml)
@@ -81,10 +81,10 @@ check("item 10: after a holding is saved, deleted or the portfolio wiped the pag
       mk.count("redraw();") >= 6 and "tab == 2 && actions.getChildCount() > 0 ? actions.getChildAt(0)" in mk and "liveButtons.contains(getCurrentFocus())" in mk
       and "show(2, false);\n        });\n        save.setBackground" not in mk)
 check("item 11: the dock is topped up from the other apps in the order of their package names, never of their labels (labels follow the language: Downloader in Arabic, Apple TV in English)",
-      "AppsEdit.topUp(have, other, MIN_DOCK)" in main and "java.util.Collections.sort(pool);" in text(HOME / "AppsEdit.java"))
+      "AppsEdit.topUp(have, other, AppsEdit.floor(Dock.exact(this), have.size(), MIN_DOCK))" in main and "java.util.Collections.sort(pool);" in text(HOME / "AppsEdit.java"))
 tpl2 = text(ROOT / "src/template.html")
 check("item 9: the matches page opens on the day the widget shows (today's games, else the next day that has games, in the city's zone) until the person picks a day",
-      "if(!MP.picked){" in tpl2 and "const next = fbGames().filter(ev => fbKick(ev) > now).sort((a, b) => fbKick(a) - fbKick(b))[0];" in tpl2 and "MP.picked = true;" in tpl2)
+      "if(!V && !MP.picked){" in tpl2 and "const next = fbGames().filter(ev => fbKick(ev) > now).sort((a, b) => fbKick(a) - fbKick(b))[0];" in tpl2 and "MP.picked = true;" in tpl2)
 check("item 9: a match's card opens with no button focused (OK adds nothing by accident); ◀ ▶ go to the buttons",
-      "MP.btn = Math.max(-1, Math.min(MP.btn, btns.length));" in tpl2 and ": -1;   // «شاهد على …» is ringed when it is there" in tpl2 and "ringed = document.querySelector('#mp-detail .mdb button.f, #mp-detail .mdq button.f')" in tpl2)   # step 28b: btns.length is «رجوع»
+      "MP.btn = Math.max(-1, Math.min(MP.btn, btns.length + club));" in tpl2 and ": -1;   // «شاهد على …» is ringed when it is there" in tpl2 and "ringed = document.querySelector('#mp-detail .mdb button.f, #mp-detail .mdq button.f')" in tpl2)   # step 28b: btns.length is «رجوع»
 sys.exit(1 if failed else 0)

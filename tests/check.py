@@ -41,7 +41,7 @@ check("Thmanyah is in place for the build (CI: the private urtv-fonts checkout; 
 before = {n: (ROOT / "dist" / n).read_bytes() for n in ("tv.html", "tv-en.html") if (ROOT / "dist" / n).is_file()}
 r = subprocess.run([sys.executable, "src/build.py"], cwd=ROOT, capture_output=True, text=True)
 check("src/build.py runs", r.returncode == 0, r.stderr[-400:])
-for page, limit in (("urtv.html", 4_000_000), ("tv.html", 746_000), ("tv-en.html", 746_000)):   # 4.3.1: 746 KB (tournaments + the album card options, own-photos album mode and clearer text landed together). Was: 742 KB (+2 KB for the big tournaments: the 36 h file, their rows after the leagues' on the cards, at most 3). Before: 740 KB with the football home and «المباريات» (docs/PROPOSALS-NOV2.md §1, about 42 KB), the reminder card and photo packs (about 7 KB) and the markets link; about 10 KB left. tv.html: about 1000 verses and hadith (650 KB until the Gulf prayer methods and the checked Aladhan answer added 4 KB; 680 KB from the one release of 26 Oct: next-prayer card, crests, city line, adhan bar, then Wave 2 countries, Hijri offset and the 24-hour clock add about 11 KB)
+for page, limit in (("urtv.html", 4_000_000), ("tv.html", 775_000), ("tv-en.html", 746_000)):   # 4.4 tv.html raised from 746 KB; the follow-up moves a lazy part out of tv.html (see docs/dev/BACKLOG.md). Before:   # 4.3.1: 746 KB (tournaments + the album card options, own-photos album mode and clearer text landed together). Was: 742 KB (+2 KB for the big tournaments: the 36 h file, their rows after the leagues' on the cards, at most 3). Before: 740 KB with the football home and «المباريات» (docs/PROPOSALS-NOV2.md §1, about 42 KB), the reminder card and photo packs (about 7 KB) and the markets link; about 10 KB left. tv.html: about 1000 verses and hadith (650 KB until the Gulf prayer methods and the checked Aladhan answer added 4 KB; 680 KB from the one release of 26 Oct: next-prayer card, crests, city line, adhan bar, then Wave 2 countries, Hijri offset and the 24-hour clock add about 11 KB)
     html = (ROOT / "dist" / page).read_text(encoding="utf-8")
     left = sorted(set(re.findall(r"__[A-Z][A-Z_]+__", html)))
     check(f"{page}: every build token replaced", not left, left)
@@ -393,7 +393,8 @@ with tempfile.TemporaryDirectory() as out:
     r = subprocess.run(["javac", "-proc:none", "-Xmaxerrs", "10000", "-encoding", "UTF-8", "-d", out] + [str(f) for f in java_src],
                        capture_output=True, text=True)
 real = [f"{loc}: {m}" for loc, m in re.findall(r"^(\S+\.java:\d+): error: (.*)$", r.stderr, re.M)
-        if not re.search(r"cannot find symbol|does not override or implement|package .* does not exist|static import only from classes", m)]
+        # «non-static variable super …»: some javac versions (CI's) say this for super.x() in a class whose superclass is a missing Android one (Box.ReadScroll extends ScrollView)
+        if not re.search(r"cannot find symbol|does not override or implement|package .* does not exist|static import only from classes|non-static variable super cannot be referenced from a static context", m)]
 check("launcher Java: no type errors beyond the missing Android classes", not real, real[:8])
 
 # ---- optimize: never disable a kept package

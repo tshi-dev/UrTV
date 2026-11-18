@@ -15,8 +15,8 @@ final class HaramLive {
 
     /** The two live channels, in the rows' order: [the title (Arabic, i18n/en/home.tsv), the official /live page]. */
     static final String[][] LIVE = {
-        {"مكة المكرمة · قناة القرآن الكريم", "https://www.youtube.com/@SaudiQuranTv/live"},
-        {"المدينة المنورة · قناة السنة النبوية", "https://www.youtube.com/@SaudiSunnahTv/live"},
+        {"مكة المكرمة، قناة القرآن الكريم", "https://www.youtube.com/@SaudiQuranTv/live"},
+        {"المدينة المنورة، قناة السنة النبوية", "https://www.youtube.com/@SaudiSunnahTv/live"},
     };
 
     /**

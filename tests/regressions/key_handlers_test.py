@@ -22,6 +22,7 @@ KEEPS_ALL = {
     "saver:GameActivity.dispatchKeyEvent": "a full-screen game: Back and Home are handled before the end; the game owns the rest",
     "saver:QuizActivity.dispatchKeyEvent": "a full-screen game (the quiz room): Back is handled before the end",
     "saver:MainActivity.dispatchKeyEvent": "the screensaver's preview: any key ends the preview (as the dream does), Back included",
+    "launcher:BlackScreenActivity.dispatchKeyEvent": "4.4 «الشاشة السوداء» (the screen off while the Quran plays): any key but volume and mute closes it (BlackScreen.closesOn hands those on first); a key must never reach the player behind",
     "launcher:DockActivity.dispatchKeyEvent": "«ترتيب المفضلة» while an app is moved: its own keys end in return true, any other key went on before (FavEdit.owns, QA-5 fixed in 4.3.4)",
 }
 failed = 0

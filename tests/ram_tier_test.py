@@ -47,7 +47,7 @@ check("one place: no other MemTotal check in either app (only Ram.java and Prefs
       all("totalMem" not in text(f) for f in list(HOME.rglob("*.java")) if f.name != "Ram.java")
       and not re.search(r"< ?2560|2560", " ".join(text(f) for f in list(HOME.rglob("*.java")) + list(SAVER.glob("*.java")))))
 check("what LOW keeps doing only for LOW: the key filter (TypeService), the markets' «عادي» start, the page's #lowram=1 (no seconds, slow timers, no transitions, one photo layer)",
-      "lowRam = Ram.low(this)" in text(HOME / "TypeService.java") and "if (Ram.low(this)) liveOn = false;" in text(HOME / "MarketsActivity.java")
+      "lowRam = Ram.low(this)" in text(ROOT / "android/extras/src/main/java/sa/urtv/home/ExtrasA11yService.java") and "if (Ram.low(this)) liveOn = false;" in text(HOME / "MarketsActivity.java")
       and '(lowRam(ctx) ? "&lowram=1" : midRam(ctx) ? "&midram=1" : "")' in pf)
 check("what MID keeps (the cheap memory cuts): drop-on-trim and the card page's idle drop (Ram.tight), photos at 1280, own photos at most 25, the markets a little slower (45 s live, 10 min page)",
       "!Ram.trimNow(Ram.tier(this), level)) return;" in text(HOME / "MainActivity.java") and "Ram.tight(activity)) idle.postDelayed" in text(HOME / "HomeCard.java")

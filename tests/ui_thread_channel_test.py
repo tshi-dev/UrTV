@@ -20,7 +20,7 @@ uc, cs, un, bn, ra, main = read("phone/UpdateChannel.java"), read("ConfigSnapsho
 check("UpdateChannel.cached never queries (no content resolver in it)", "getContentResolver" not in uc.split("public static String cached() {")[1].split("\n    }\n")[0])
 check("read() keeps what it learned for cached()", "String v = ask(c);\n        remember(v);" in uc)
 check("ConfigSnapshot's background read keeps the channel", 'cur.getColumnIndex("update_channel")' in cs and "UpdateChannel.remember(cur.getString(uc))" in cs)
-check("the tick's update pill: wanted() and checkIfDue() use the kept word", "UpdateChannel.read" not in un and un.count("UpdateChannel.cached()") == 2)
+check("the tick's update pill: wanted() and checkIfDue() use the kept word", "UpdateChannel.read" not in un and un.count("UpdateChannel.cached()") == 1 and "return UpdateChannel.cached();" in un)   # 4.4: every path goes through channel(c)
 check("the return to the home (BetaNotes.maybeAsk, onResume) uses the kept word", "UpdateChannel.read" not in bn and "UpdateChannel.beta(" not in bn and "UpdateChannel.cached()" in bn)
 check("the report screen uses the kept word", "UpdateChannel.read" not in ra and "UpdateChannel.cached()" in ra)
 check("MainActivity itself never asks the channel", not re.search(r"UpdateChannel\.(read|beta)\(", main))

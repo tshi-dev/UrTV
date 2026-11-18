@@ -83,8 +83,28 @@ public final class PhotoPacksRun {
         check("«صورنا» can go off only while a pack that is on is on the TV", PhotoPacks.mayTurnOursOff(on, have) && !PhotoPacks.mayTurnOursOff(on, new HashMap<>())
             && !PhotoPacks.mayTurnOursOff(new LinkedHashSet<>(), have), "");
         check("size in MB rounds up, never 0", PhotoPacks.megabytes(1) == 1 && PhotoPacks.megabytes(1 << 20) == 1 && PhotoPacks.megabytes((1 << 20) + 1) == 2, "");
-        check("credit line", PhotoPacks.creditLine("NASA", "Public domain").equals("NASA · Public domain") && PhotoPacks.creditLine("", "CC0").equals("CC0")
+        check("credit line", PhotoPacks.creditLine("NASA", "Public domain").equals("NASA, Public domain") && PhotoPacks.creditLine("", "CC0").equals("CC0")
             && PhotoPacks.creditLine("X", "").equals("X"), "");
+        // 4.3.3 «النسبة»: a pack named more often takes more of the packs' turns
+        check("reps: no shares, or one pack: once each (the fragment as it was)", java.util.Arrays.equals(PhotoPacks.reps(new int[] {16, 13}, new int[] {0, 0}, 12), new int[] {1, 1})
+            && java.util.Arrays.equals(PhotoPacks.reps(new int[] {16}, new int[] {70}, 12), new int[] {1}), "");
+        int[] r = PhotoPacks.reps(new int[] {16, 13}, new int[] {70, 30}, 12);
+        double nature = 100.0 * 16 * r[0] / (16 * r[0] + 13 * r[1]);
+        check("reps: nature 70 %, cities 30 % (16 and 13 photos): within 3 points, 12 names at most", Math.abs(nature - 70) <= 3 && r[0] + r[1] <= 12, java.util.Arrays.toString(r) + " " + nature);
+        r = PhotoPacks.reps(new int[] {16, 13, 19}, new int[] {50, 0, 0}, 12);
+        double first = 100.0 * 16 * r[0] / (16 * r[0] + 13 * r[1] + 19 * r[2]);
+        check("reps: one at 50 %, the two left on «تلقائي» share the rest", Math.abs(first - 50) <= 4 && r[1] >= 1 && r[2] >= 1, java.util.Arrays.toString(r) + " " + first);
+        r = PhotoPacks.reps(new int[] {12, 16, 19, 13, 17}, new int[] {90, 0, 0, 0, 0}, 12);
+        int sum = 0; for (int x : r) sum += x;
+        check("reps: every pack at least once, never more than 12 names", sum <= 12 && java.util.Arrays.stream(r).allMatch(x -> x >= 1), java.util.Arrays.toString(r));
+        java.util.Map<String, Integer> have2 = new HashMap<>();
+        have2.put("nature", 16); have2.put("ksa-cities", 13);
+        java.util.Set<String> on2 = new LinkedHashSet<>(java.util.Arrays.asList("nature", "ksa-cities"));
+        check("fragment: no shares is exactly as before", PhotoPacks.fragment(on2, have2, new HashMap<>()).equals(PhotoPacks.fragment(on2, have2)) && PhotoPacks.fragment(on2, have2).equals("&packs=nature:16,ksa-cities:13"), PhotoPacks.fragment(on2, have2));
+        String f = PhotoPacks.fragment(on2, have2, PhotoPacks.parseShares("nature:70,ksa-cities:30"));
+        check("fragment: 70/30 names nature twice and the cities once (the page takes each name's photos into the rotation)", f.equals("&packs=nature:16,nature:16,ksa-cities:13"), f);
+        check("shares: parsed and written back, nonsense left out", PhotoPacks.joinShares(PhotoPacks.parseShares("nature:70,ksa-cities:30,Bad:10,x:5,sea:15,space:0")).equals("nature:70,ksa-cities:30"),
+            PhotoPacks.joinShares(PhotoPacks.parseShares("nature:70,ksa-cities:30,Bad:10,x:5,sea:15,space:0")));
         if (failed > 0) { System.out.println(failed + " failed"); System.exit(1); }
     }
 }

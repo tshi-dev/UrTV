@@ -40,9 +40,12 @@ check("4.3.2 the matches page header keeps a gap and wraps (the source line neve
 ms = text(HOME / "tilawah/MusicService.java")
 fc = ms.split("public void onAudioFocusChange(int change) {")[1].split("\n    }\n")[0] if "public void onAudioFocusChange(int change) {" in ms else ""
 check("#35 playback asks for audio focus and gives it back", "requestAudioFocus(" in ms and "abandonAudioFocusRequest(" in ms)
+# 4.3: the cases in onAudioFocusChange itself; 4.4: decided by FocusRule (tests/focus_rule_test.py runs it), the service acting on its answer
+old_form = ("AUDIOFOCUS_LOSS" in fc and "AUDIOFOCUS_GAIN" in fc and "AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK" in fc)
+new_form = ("FocusRule.on(change" in fc and "case PAUSE_UNTIL_GAIN" in fc and "case DUCK" in fc and "case GAIN" in fc
+            and (ROOT / "tests/focus_rule_test.py").is_file())
 check("#35 a loss pauses (and remembers to resume), a gain resumes, a duck lowers the volume",
-      "AUDIOFOCUS_LOSS" in fc and "player.pause()" in fc and "resumeOnFocus = true" in fc and "AUDIOFOCUS_GAIN" in fc
-      and "player.start()" in fc and "AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK" in fc)
+      (old_form or new_form) and "player.pause()" in fc and "resumeOnFocus = true" in fc and "player.start()" in fc and "setVolume(" in fc)
 
 # GitHub #4 (4.0): the setup stopped at a package the TV itself ships off (com.tcl.smartalexa) with «!! still off»
 with tempfile.TemporaryDirectory() as tmp:

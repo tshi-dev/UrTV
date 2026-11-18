@@ -20,8 +20,8 @@ def check(name, ok, detail=""):
     failed += not ok
 
 
-EXPECTED_METHODS = 21   # (4.3 A4: no Ja'fari) Umm al-Qura, the four Gulf ones, Egypt, Jordan, Morocco, Algeria, Tunisia, and Oman's ministry (100, ours: Aladhan has none)
-EXPECTED_ZONES = 16   # the zones that have a method of their own: the Gulf's five, Cairo, Amman, Damascus, Beirut, Gaza, Hebron, Jerusalem (hand-entered), Casablanca, El_Aaiun (hand-entered), Algiers, Tunis
+EXPECTED_METHODS = 22   # (4.3 A4: no Ja'fari) Umm al-Qura, the four Gulf ones, Egypt, Jordan, Morocco, Algeria, Tunisia, and Oman's ministry (100) and Libya (101), both ours: Aladhan has none
+EXPECTED_ZONES = 17   # the zones that have a method of their own: the Gulf's five, Cairo, Amman, Damascus, Beirut, Gaza, Hebron, Jerusalem (hand-entered), Casablanca, El_Aaiun (hand-entered), Algiers, Tunis
 # the page: CONFIG.prayerMethod = pm=gulf ? 8 : the id sent, else ({'Asia/Kuwait':9, ...})[zone] || 4
 tpl = (ROOT / "src/template.html").read_text(encoding="utf-8")
 m = re.search(r"CONFIG\.prayerMethod = _Q\.get\('pm'\) === 'gulf' \? 8\s*:\s*RESOLVED_METHOD !== null \? RESOLVED_METHOD : \(\{([^}]*)\}\)\[CONFIG\.timezone\] \|\| 4;", tpl)
@@ -45,7 +45,7 @@ labels = {}
 for zs, label in re.findall(r"((?:case \"[A-Za-z_/]+\": )+)return \"([^\"]+)\";", app_src):
     for z in re.findall(r'"([A-Za-z_/]+)"', zs):
         labels[z] = label
-by_id = {100: "وزارة الأوقاف والشؤون الدينية العُمانية", 18: "وزارة الشؤون الدينية التونسية", 19: "وزارة الشؤون الدينية الجزائرية", 21: "وزارة الأوقاف المغربية", 9: "الكويت", 10: "قطر", 16: "الإمارات", 8: "الخليج", 5: "الهيئة المصرية للمساحة", 23: "وزارة الأوقاف الأردنية"}
+by_id = {101: "ليبيا", 100: "وزارة الأوقاف والشؤون الدينية العُمانية", 18: "وزارة الشؤون الدينية التونسية", 19: "وزارة الشؤون الدينية الجزائرية", 21: "وزارة الأوقاف المغربية", 9: "الكويت", 10: "قطر", 16: "الإمارات", 8: "الخليج", 5: "الهيئة المصرية للمساحة", 23: "وزارة الأوقاف الأردنية"}
 check("the app names the same zones, one label per method", {z: l for z, l in labels.items()} == {z: by_id[i] for z, i in page.items()}, f"{labels}")
 
 # the city line under the clock names the calculation in the same words on both screens: the page's CAL_LABEL by method id, the launcher's

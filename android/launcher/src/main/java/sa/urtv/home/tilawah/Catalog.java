@@ -20,10 +20,16 @@ final class Catalog {
 
     static final class Reciter {
         final String id, name, server;
+        /** how many surahs it has: 114, or fewer when reciters.json gives «missing» (4.3.3) */
         final int surahs;
-        Reciter(String id, String name, String server, int surahs) {
-            this.id = id; this.name = name; this.server = server; this.surahs = surahs;
+        /** 4.3.3: the surahs it has no recording of (SurahSet.clean: sorted, in range); empty for a reciter with all 114 */
+        final int[] missing;
+        Reciter(String id, String name, String server, int[] missing) {
+            this.id = id; this.name = name; this.server = server;
+            this.missing = SurahSet.clean(missing);
+            this.surahs = SurahSet.count(this.missing);
         }
+        boolean has(int n) { return SurahSet.has(n, missing); }
     }
 
     static final class Station {
@@ -33,6 +39,8 @@ final class Catalog {
         final boolean live;
         /** 4.3: a second address of the same station (stations.json «alt»), tried after the first failed every try; null when there is none */
         String alt;
+        /** 4.4: more addresses of the same station (stations.json «mirrors»), tried after «alt» (StationSources) */
+        final List<String> mirrors = new ArrayList<>();
         Station(String name, String url, boolean live) { this.name = name; this.url = url; this.live = live; }
     }
 
@@ -57,8 +65,11 @@ final class Catalog {
             JSONArray reciters = new JSONObject(read(c, "quran/reciters.json")).getJSONArray("reciters");
             for (int i = 0; i < reciters.length(); i++) {
                 JSONObject r = reciters.getJSONObject(i);
+                JSONArray gone = r.optJSONArray("missing");   // 4.3.3: the surahs this reciter has no recording of (none: all 114)
+                int[] missing = new int[gone == null ? 0 : gone.length()];
+                for (int k = 0; k < missing.length; k++) missing[k] = gone.optInt(k, 0);
                 catalog.reciters.add(new Reciter(r.getString("id"), en ? r.optString("en", r.getString("name")) : r.getString("name"),
-                        r.getString("server"), r.getInt("surahs")));
+                        r.getString("server"), missing));
             }
             JSONArray stations = new JSONObject(read(c, "quran/stations.json")).getJSONArray("stations");
             for (int i = 0; i < stations.length(); i++) {
@@ -67,6 +78,8 @@ final class Catalog {
                 st.key = s.getString("name");
                 String alt = s.optString("alt", "");
                 if (alt.startsWith("https://")) st.alt = alt;   // https only: StreamUrl follows its redirect (radiojar's to its own cleartext host)
+                JSONArray mirrors = s.optJSONArray("mirrors");   // 4.4: an older app ignores the key
+                if (mirrors != null) for (int k = 0; k < mirrors.length(); k++) { String m = mirrors.optString(k, ""); if (m.startsWith("https://")) st.mirrors.add(m); }
                 catalog.stations.add(st);
             }
             JSONArray surahs = new JSONObject(read(c, "quran/surahs.json")).getJSONArray("surahs");

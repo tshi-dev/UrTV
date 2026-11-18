@@ -28,7 +28,7 @@ final class SetupReport {
     /** share.py's ALLOWED_LINE, to the letter: a line that does not look like one of its fields is dropped. */
     static final Pattern ALLOWED_LINE = Pattern.compile(
         "UrTV (problem|setup) report, |UrTV Player (problem report|feature request), |TV: |Computer: |Steps, minutes:seconds:$|Memory:$|Checks:$|Setup results: |ADB: "
-        + "|channel: (beta|latest|next)$|Protected features on: |(Device|WebView|Home|Home switch|Screensaver|Versions|Extras):|Auto-start|Optional picks|!! |- |  (off|on): "
+        + "|channel: (beta|latest|next)$|Protected features on: |(Device|WebView|Home|Home switch|Screensaver|Versions|Extras|Screen|Screen picture):|Auto-start|Optional picks|!! |- |  (off|on): "
         + "|home hides|[\\w-]+: \\d+ off, |\\(no steps\\.log: an older run\\.sh\\)$|\\(not measured\\)$|\\(no report\\.md yet: the setup didn't finish\\)$|\\d+ min in all$|\\[\\d+:\\d\\d until it was run again\\]$"
         + "|[A-Za-z0-9_.-]+ \\d+:\\d\\d( STOPPED.*)?(, [A-Za-z0-9_.-]+ \\d+:\\d\\d( STOPPED.*)?)*(, \\[.*\\])?$");
     static final String[] PROTECTED = {"com.tcl.airplay2", "com.google.android.apps.mediashell", "com.tcl.miracast", "com.google.android.katniss", "com.tcl.tvinput", "com.android.vending", "com.google.android.gms"};
@@ -196,6 +196,38 @@ final class SetupReport {
         return text;
     }
 
+    /** the component in front after the Home key, pressed over another app; "?" when the TV did not say */
+    private String homeKeyOpens() throws IOException {
+        tv.text("am start -a android.settings.SETTINGS");
+        tv.text("sleep 3");
+        tv.text("input keyevent KEYCODE_HOME");
+        tv.text("sleep 4");
+        java.util.regex.Matcher m = java.util.regex.Pattern.compile(" ([A-Za-z0-9_.]+/[A-Za-z0-9_.$]+)").matcher(tv.tail1("dumpsys activity activities | grep -E 'mResumedActivity|topResumedActivity' | head -n 1"));
+        tv.text("am start --activity-reorder-to-front -n " + SetupEngine.SETUP_ACTIVITY);   // 4.4 (step 88): the setup page in front again
+        return m.find() ? m.group(1) : "?";
+    }
+
+    /** 4.4 (step 87): on a Google TV the role does not decide the Home key; the report says both, and whether the add-on's watch is bound (it is what brings ours) */
+    private String homeHow() throws IOException {
+        String role = tv.tail1("cmd role get-role-holders --user 0 android.app.role.HOME").trim();
+        boolean watch = tv.text("dumpsys accessibility | grep -m1 'Bound services:'").contains(sa.urtv.home.ExtrasWords.SERVICE);
+        watchBound = watch;
+        return "Home role: " + (role.isEmpty() ? "?" : role) + "; Home watch («إضافات تلفزيونك»): " + (watch ? "bound" : "not bound");
+    }
+
+    private boolean watchBound;
+
+    /**
+     * 4.4 (user reports, the tester's finding): since 4.3 the role alone never moves the Home key on a Google TV (TCL G10/G08, Changhong Android 14,
+     * Sony BRAVIA VH21, Xiaomi MiTV-AFMU0/1): launcherx gets it by name. The add-on's watch is how Home works there; the report says so in words
+     * an agent reads, so nobody chases the role or turns launcherx off.
+     */
+    static String googleTvLine(boolean watch) {
+        return watch
+            ? "Google TV: Home works through the add-on's watch («إضافات تلفزيونك», bound); here the Home key goes to Google TV's home whatever the role says, and the watch brings ours. This is how it works on Google TV: do not chase the role, never turn launcherx off"
+            : "Google TV: the add-on's watch («إضافات تلفزيونك») is NOT bound, so Home stays with Google TV's home: on Google TV the add-on is the only way Home opens ours (the role alone never moves the key here). Turn the add-on on («جهّز كل شي» again); never turn launcherx off";
+    }
+
     private List<String> checks() throws IOException {
         List<String> out = new ArrayList<>(), bad = new ArrayList<>();
         Set<String> installed = tv.packages("pm list packages"), disabled = tv.packages("pm list packages -d");
@@ -207,10 +239,14 @@ final class SetupReport {
         }
         out.add("Protected features on: " + ok + "/" + (ok + bad.size()));
         out.addAll(bad);
-        String home = tv.tail1(SetupEngine.RESOLVE_HOME).trim();
-        out.add("Home: " + (home.matches("[A-Za-z0-9_.]+/[A-Za-z0-9_.$]+") ? home : "?"));
+        // 4.4: «Home:» is what the Home key really opens (the person's way: another app in front, the key, then who is in front), never what the role resolves to: on a
+        // Google TV launcherx keeps the key whatever the role says, and the old line said «sa.urtv.home» there (16 runs, a false pass on every Google TV)
+        out.add("Home: " + homeKeyOpens());
+        out.add(homeHow());
+        if (installed != null && installed.contains(RescuePlan.LAUNCHERX)) out.add(googleTvLine(watchBound));
         String saver = tv.tail1("settings get secure screensaver_components").trim();
         out.add("Screensaver: " + (saver.matches("[A-Za-z0-9_.$/,]+") ? saver : "?"));
+        out.add("WebView: " + SetupEngine.webviewLine(tv.text("dumpsys webviewupdate")));   // 4.3.5: package and version (a TV without one: none)
         String vs = appver(SetupEngine.SAVER), vh = appver(SetupEngine.SELF);
         out.add("Versions: screensaver " + vs + ", home " + vh);
         if (installed != null) out.add("Extras: TV Bro " + (installed.contains(SetupInstall.TVBRO) ? "yes" : "no") + ", SmartTube " + (installed.contains(SetupInstall.SMARTTUBE) ? "yes" : "no"));
@@ -226,20 +262,8 @@ final class SetupReport {
             lists.put("tcl-safe", java.util.Arrays.asList(SetupLists.SAFE));
             lists.put("community", SetupCommunity.lines(store.get(SetupCommunity.APPLIED)));
             lists.put("home-replaced", java.util.Arrays.asList(SetupLists.HOME_HELPERS));
-            for (Map.Entry<String, List<String>> e : lists.entrySet()) {
-                List<String> off = new ArrayList<>(), on = new ArrayList<>();
-                int absent = 0;
-                for (String pk : e.getValue()) {
-                    if (disabled.contains(pk)) { if (!off.contains(pk)) off.add(pk); }
-                    else if (installed.contains(pk)) { if (!on.contains(pk)) on.add(pk); }
-                    else absent++;
-                }
-                if (off.isEmpty() && on.isEmpty() && absent == 0) continue;
-                out.add(e.getKey() + ": " + off.size() + " off, " + on.size() + " still on, " + absent + " not on this TV");
-                if (!off.isEmpty()) out.add("  off: " + String.join(", ", off));
-                if (!on.isEmpty()) out.add("  on: " + String.join(", ", on));
-            }
-            Set<String> before = SetupPrep.section(store.get(SetupPrep.BACKUP), "disabled packages");
+            Set<String> before = SetupPrep.section(store.get(SetupPrep.BACKUP), "disabled packages");   // off before UrTV: never «ours» (ReportLists)
+            for (Map.Entry<String, List<String>> e : lists.entrySet()) out.addAll(ReportLists.lines(e.getKey(), e.getValue(), installed, disabled, before));
             List<String> prot = new ArrayList<>();
             for (String pk : SetupLists.KEEP) if (disabled.contains(pk) && !java.util.Arrays.asList(OFF_BY_DESIGN).contains(pk) && !before.contains(pk)) prot.add(pk);
             if (!prot.isEmpty()) out.add("!! protected but off: " + String.join(", ", prot));

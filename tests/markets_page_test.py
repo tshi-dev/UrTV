@@ -82,8 +82,8 @@ check("the page: the stocks card gets the ring and no mic mark; with no kind, bo
       "c.kind === 'stocks' ? c.el.classList.add('tap')" in page and "function setLiveFocus(on, kind = 'tasks')" in page
       and "function liveRect(kind = 'tasks')" in page and "html.widget .week.tap.lf{" in page)
 st = text(APP / "SettingsActivity.java")
-check("the settings: «صفحة الأسواق» in «المباريات والأسواق» opens it", 'row("صفحة الأسواق"' in st and '"sa.urtv.home.MarketsActivity"' in st
-      and '{"صفحة الأسواق", CONTENT}' in text(APP / "SettingsHub.java"))
+check("the settings: «افتح صفحة الأسواق» in «المباريات والأسواق» opens it", 'row("افتح صفحة الأسواق"' in st and '"sa.urtv.home.MarketsActivity"' in st
+      and '{"افتح صفحة الأسواق", CONTENT}' in text(APP / "SettingsHub.java"))
 cp = text(APP / "ConfigProvider.java")
 check("the stock card's buttons change the watchlist and the bar through the screensaver's own checks (phone_set -> SaverReceiver.set)",
       'new String[] {"stocks", "markets"}' in cp and 'getContentResolver().call(SAVER, "phone_set", null, e)' in act)
@@ -119,7 +119,7 @@ check("live mode: one batched request for the symbols on screen and the open car
       and "save(" not in text(HOME / "MarketFile.java").split("static java.util.Map<String, MarketData.Live> live")[1].split("static MarketData cached")[0])
 check("live mode: it falls back to the 5-minute file: «عادي» puts the file's prices back (MarketFile.last), a failed ask leaves the data and the footer returns to «الأسعار متأخرة»",
       "MarketData file = MarketFile.last();" in act2 and "shownLive = liveOn && MarketData.liveFresh(liveOkAt, System.currentTimeMillis());" in act2
-      and 'S.t("الأسعار متأخرة · المصدر: %s", name)' in act2 and 'S.t("مباشر · المصدر: %s", name)' in act2)
+      and 'S.t("الأسعار متأخرة، المصدر: %s", name)' in act2 and 'S.t("مباشر، المصدر: %s", name)' in act2)
 check("live mode: labels: Tadawul «متأخرة ~١٥ د», any other the quote's time; the footer says «مباشر» while live", 'S.t("متأخرة ~%s د", digits(15))' in act2 and "MarketData.liveKind(code)" in act2
       and "clock(k.get(Calendar.HOUR_OF_DAY), k.get(Calendar.MINUTE))" in act2)
 check("step 27: live mode keeps the screen awake while the page is in front (FLAG_KEEP_SCREEN_ON set when live and resumed, cleared otherwise)", "FLAG_KEEP_SCREEN_ON" in act2 and "if (liveOn && resumed) getWindow().addFlags" in act2
@@ -154,14 +154,14 @@ check("step 182: the app's own FX_CODES are CI's, in the same order (a TV asks Y
 mf182 = text(HOME / "MarketFile.java")
 lf = mf182[mf182.index("static void loadFx("):mf182.index("private static String fxFromYahoo(")]
 check("step 182: CI's fx.json first; Yahoo asked only when it is missing, empty or older than 48 h, once a day (the copy of today returns first), not again for 30 min after a failure; only today's rates are saved",
-      "DAY_OF_YEAR" in lf and lf.index("download(MarketData.FX_URL)") < lf.index("MarketData.fxNeedsOwn(text, t) && t - fxOwnAskedAt >= FX_OWN_PAUSE_MS") < lf.index("fxFromYahoo()")
+      "DAY_OF_YEAR" in lf and lf.index("download(c, MarketData.FX_URL)") < lf.index("MarketData.fxNeedsOwn(text, t) && t - fxOwnAskedAt >= FX_OWN_PAUSE_MS") < lf.index("fxFromYahoo()")
       and "FX_OWN_PAUSE_MS = 30 * 60_000L" in mf182 and "FX_STALE_MS = 48 * 3600_000L" in text(HOME / "MarketData.java")
       and "if (!MarketData.fxNeedsOwn(text, t)) { save(c, FX, text); fxText = text; }" in lf and "fxText == null ||" not in lf)
 peg_doc = text(HOME / "MarketData.java")
 check("step 182: FX_PEGS keeps its own doc (no two docs stacked over FX_CODES)", "«مربوط بالدولار». */\n    static final String[][] FX_PEGS" in peg_doc and "*/\n    /** the currencies the page" not in peg_doc)
 check("4.1 reports: each currency of «صرف العملات» shows a gram of gold in it (KWD, BHD…) when the gold price and its rate are known",
       "MarketData.goldGram(gq == null ? Double.NaN : gq.p, code, rates)" in act2 and 'S.t("غرام الذهب %s"' in act2 and "if (!Double.isNaN(gram))" in act2)
-check("currencies: a missing rate shows «—» (MarketData.fxNumber of NaN), never 0; the pegs say «مربوط بالدولار»", 'MarketData.pegged(code) ? code + " · " + S.t("مربوط بالدولار")' in act2 and 'return "—"' in text(HOME / "MarketData.java"))
+check("currencies: a missing rate shows «—» (MarketData.fxNumber of NaN), never 0; the pegs say «مربوط بالدولار»", 'MarketData.pegged(code) ? code + S.sep() + S.t("مربوط بالدولار")' in act2 and 'return "—"' in text(HOME / "MarketData.java"))
 check("step 28 (the owner's photo): the pad's zero is a Latin-style 0 in Arabic (the Arabic one is a dot beside the separator), the separator key is large, and ⌫ is mirrored in RTL",
       'if (key.equals("0") && !Digits.latin()) return "0";' in act2 and 'sp + 10' in act2 and 'key.equals("⌫") && Dir.rtl()) b.setScaleX(-1f)' in act2
       and act2.count("padStyle((TextView) b,") == 2 and act2.count("button(padLabel(") == 2)

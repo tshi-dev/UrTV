@@ -30,6 +30,10 @@ final class Prefs {
     static final int STATION_ORDER = 2;
     int position() { return sp.getInt("position", 0); }
 
+    /** 4.4 «متابعة السورة»: each surah's place (SurahPlaces) */
+    String surahPlaces() { return sp.getString("surah_places", ""); }
+    void setSurahPlaces(String r) { sp.edit().putString("surah_places", r).apply(); }
+
     void save(int source, String reciter, int surah, int station, int position) {
         sp.edit().putInt("source", source).putString("reciter", reciter).putInt("surah", surah)
                 .putInt("station", station).putInt("station_order", STATION_ORDER).putInt("position", position).apply();
@@ -42,8 +46,19 @@ final class Prefs {
     void setAdhanOn(boolean on) { sp.edit().putBoolean("adhan_on", on).apply(); }
 
     /** The adhan's own volume, in percent; the TV's volume comes back after it. */
-    int adhanVolume() { int v = sp.getInt("adhan_volume", 30); return v < 10 || v > 100 ? 30 : v; }
-    void setAdhanVolume(int percent) { sp.edit().putInt("adhan_volume", percent).apply(); }
+    int adhanVolume() { int v = sp.getInt("adhan_volume", 30); return v < 0 || v > 100 ? 30 : v; }   // 4.4: 0..100 (an older app reads under 10 as its 30)
+    void setAdhanVolume(int percent) { sp.edit().putInt("adhan_volume", percent).putBoolean("adhan_volume_tv", false).apply(); }
+    /** 4.4 «مثل صوت التلفزيون»: the adhan leaves the TV's volume as it is */
+    boolean adhanVolumeTv() { return sp.getBoolean("adhan_volume_tv", false); }
+    void setAdhanVolumeTv() { sp.edit().putBoolean("adhan_volume_tv", true).apply(); }
+    /** the general level (AdhanLevel: TV or a percent) */
+    int adhanVolumeLevel() { return AdhanLevel.general(adhanVolume(), adhanVolumeTv()); }
+    void setAdhanVolumeLevel(int level) { if (level == AdhanLevel.TV) setAdhanVolumeTv(); else setAdhanVolume(AdhanLevel.clamp(level)); }
+    /** 4.4: a prayer's own level ("" the general one, "tv", "0".."100") */
+    String prayerVolume(int prayer) { String c = sp.getString("pv_" + prayer, ""); return AdhanLevel.valid(c) ? c : ""; }
+    void setPrayerVolume(int prayer, String choice) { sp.edit().putString("pv_" + prayer, AdhanLevel.valid(choice) ? choice : "").apply(); }
+    /** the level of the adhan for `prayer` (-1: no prayer, the general one) */
+    int volumeFor(int prayer) { return prayer < 0 ? adhanVolumeLevel() : AdhanLevel.forPrayer(prayerVolume(prayer), adhanVolumeLevel()); }
     /** The TV's own volume while an adhan plays, kept on disk so it comes back even if the player was stopped mid-adhan (-1: none). */
     int savedTvVolume() { return sp.getInt("tv_volume_saved", -1); }
     void setSavedTvVolume(int v) { sp.edit().putInt("tv_volume_saved", v).commit(); }
@@ -86,6 +101,37 @@ final class Prefs {
     /** What plays at a prayer: Fajr has its own voice. */
     int playVoiceFor(Context c, boolean fajr) { return fajr ? playFajrVoice(c) : playVoice(c); }
 
+    /** 4.4 «أذان كل صلاة»: this prayer's choice (PrayerSound), "" when the general adhan plays as before */
+    String prayerSound(int prayer) { String c = sp.getString("pp_" + prayer, ""); return PrayerSound.valid(c) ? c : ""; }
+    void setPrayerSound(int prayer, String choice) { sp.edit().putString("pp_" + prayer, PrayerSound.valid(choice) ? choice : "").apply(); }
+
+    /** 4.4 «ساعات الهدوء»: off by default; 23:00 to 05:00 when first turned on; the adhan in it heard by default */
+    boolean quietOn() { return sp.getBoolean("quiet_on", false); }
+    int quietFrom() { return Math.floorMod(sp.getInt("quiet_from", 23 * 60), 1440); }
+    int quietTo() { return Math.floorMod(sp.getInt("quiet_to", 5 * 60), 1440); }
+    int quietAdhan() { int v = sp.getInt("quiet_adhan", QuietHours.ADHAN_HEARD); return v < 0 || v > 2 ? QuietHours.ADHAN_HEARD : v; }
+    void setQuiet(boolean on, int from, int to, int adhan) {
+        sp.edit().putBoolean("quiet_on", on).putInt("quiet_from", Math.floorMod(from, 1440)).putInt("quiet_to", Math.floorMod(to, 1440)).putInt("quiet_adhan", adhan).apply();
+    }
+
+    /** the quiet hours hold now, in the city's own time */
+    boolean quietNow(Context c) {
+        if (!quietOn()) return false;
+        java.util.Calendar now = java.util.Calendar.getInstance(sa.urtv.home.ZoneFix.zone(Place.get(c).tz), java.util.Locale.US);
+        return QuietHours.inside(now.get(java.util.Calendar.HOUR_OF_DAY) * 60 + now.get(java.util.Calendar.MINUTE), quietFrom(), quietTo());
+    }
+
+    /** 4.4: what plays at this prayer now: a voice (Prefs.OWN…, 1..COUNT) or PrayerSound.SILENT */
+    int playFor(Context c, int prayer) {
+        boolean friday = fridayDhuhr()
+                && java.util.Calendar.getInstance(sa.urtv.home.ZoneFix.zone(Place.get(c).tz), java.util.Locale.US).get(java.util.Calendar.DAY_OF_WEEK) == java.util.Calendar.FRIDAY;
+        return PrayerSound.voice(prayerSound(prayer), prayer, playVoiceFor(c, prayer == PrayerTimes.FAJR), OwnAdhan.exists(c), OwnAdhan.fajrExists(c), friday);
+    }
+
+    /** 4.4 touch «أذان الجمعة»: on by default: a Dhuhr set silent is still heard on Fridays (it matters only when Dhuhr is silent) */
+    boolean fridayDhuhr() { return sp.getBoolean("friday_dhuhr", true); }
+    void setFridayDhuhr(boolean on) { sp.edit().putBoolean("friday_dhuhr", on).apply(); }
+
     /**
      * Writes down what Fajr is using now before one of the two choices changes, so a change to the other prayers' voice never moves the one
      * for Fajr (nothing is written when the TV starts; the old single voice is read as it is until then).
@@ -99,6 +145,9 @@ final class Prefs {
 
     /** the reciters marked ★ (ids, comma separated, in the order they were marked): shown first on the reciters tab under «المفضلون» */
     String reciterFavs() { return sp.getString("reciter_favs", ""); }
+    /** 4.4: the stations' troubles of the last seven days (RadioWeek) */
+    String radioWeek() { return sp.getString("radio_week", ""); }
+    void radioWeek(String r) { sp.edit().putString("radio_week", r).apply(); }
     void setReciterFavs(String ids) { sp.edit().putString("reciter_favs", ids == null ? "" : ids).apply(); }
 
     /** «أذان مختصر»: the adhan stops after its first minute with a short fade (not the few seconds of a preview). Off until it is turned on. */
@@ -126,7 +175,15 @@ final class Prefs {
     void setAdhanNotice(boolean on) { sp.edit().putBoolean("adhan_notice", on).apply(); }
 
     /** The alarm goes off for the adhan or for any option that acts at the prayer's time (the notice). */
-    boolean alarmWanted() { return adhanOn() || adhanNotice() || adhanSaverAt(); }
+    boolean alarmWanted() { return adhanOn() || adhanNotice() || adhanSaverAt() || IqamaPlan.wanted(iqamaSound(), iqamaNotice()); }   // 4.4: the iqama's alarm is set by the adhan's
+
+    /** 4.4 «الإقامة»: its sound (IqamaPlan: "" none, the default; "chime"; "a<id>" one of «صوتياتي»), its volume (10-100, 30) and «تنبيه الإقامة» (off) */
+    String iqamaSound() { String s = sp.getString("iqama_sound", ""); return IqamaPlan.validSound(s) ? s : ""; }
+    void setIqamaSound(String s) { sp.edit().putString("iqama_sound", IqamaPlan.validSound(s) ? s : "").apply(); }
+    int iqamaVolume() { int v = sp.getInt("iqama_volume", 30); return v < 10 || v > 100 ? 30 : v; }
+    void setIqamaVolume(int v) { sp.edit().putInt("iqama_volume", Math.max(10, Math.min(100, v))).apply(); }
+    boolean iqamaNotice() { return sp.getBoolean("iqama_notice", false); }
+    void setIqamaNotice(boolean on) { sp.edit().putBoolean("iqama_notice", on).apply(); }
 
     /** «شاشة التوقف وقت الأذان»: at the prayer's time the screensaver starts, if our home is in front (never over another app). Off until it is turned on. */
     boolean adhanSaverAt() { return sp.getBoolean("adhan_saver_at", false); }

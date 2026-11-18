@@ -37,29 +37,29 @@ check("the sound output opens an intent that resolves, falling back to the TV's 
       "resolveActivity(sound, 0) != null ? sound : new Intent(Settings.ACTION_SETTINGS)" in center)
 check("the sleep timer's tile and «أطفئ الآن» end the same way (SleepTimer.turnOff: the service, else sound off and the screensaver)",
       "SleepTimer.turnOff(act)" in center and "static String turnOff(Context c)" in src("SleepTimer.java") and "String done = turnOff(c);" in src("SleepTimer.java")
-      and "SleepService.sleepNow()" in src("SleepTimer.java").split("static String turnOff")[1])
-check("«أطفئ الآن» with the service off: the tile says «يحتاج تفعيل، اضغط للتفعيل», OK opens the TV's accessibility settings behind the sleep lock (ParentalPolicy.SLEEP_ACCESSIBILITY) with a line «فعّل «تلفزيونك: إطفاء الشاشة»»; no silent fallback to sound off and the screensaver, no notice and no delay; a long OK does the same",
-      "SleepService.enabled()" in center and "ParentalPolicy.SLEEP_ACCESSIBILITY" in center and 'S.t("يحتاج تفعيل، اضغط للتفعيل")' in center and 'S.t("فعّل «%s»", act.getString(R.string.sleep_service_label))' in center
+      and "Extras.sleepNow()" in src("SleepTimer.java").split("static String turnOff")[1])
+check("«أطفئ الآن» without «إضافات تلفزيونك» (4.3.3): the tile says «يحتاج تفعيل، اضغط للتفعيل», OK opens its offer (install it, or turn it on) behind the sleep lock (ParentalPolicy.SLEEP_ACCESSIBILITY); no silent fallback to sound off and the screensaver, no notice and no delay; a long OK does the same",
+      "Extras.enabled()" in center and "ParentalPolicy.SLEEP_ACCESSIBILITY" in center and 'S.t("يحتاج تفعيل، اضغط للتفعيل")' in center and center.count('Extras.intent(act, "sleep")') == 2
       and "SLEEP_OFF_NOTICE" not in center and "SLEEP_OFF_NOTICE" not in text and "offPending" not in center and "ui.postDelayed(" not in center.split("private void turnOffNow()")[1].split("// ------")[0] and "مو شغّالة" not in text)
 check("«إعدادات تلفزيونك» opens our settings (the screensaver app's SettingsActivity) through «قفل الإعدادات» (@urtv), the tile only when that app is there",
       "host.openOurSettings()" in center and "ParentalPolicy.OUR_SETTINGS, null" in main and 'SAVER_PKG + ".SettingsActivity"' in main
       and "case OUR_SETTINGS:" in policy and "t.add(OWN_SETTINGS)" in policy.split("case OUR_SETTINGS:")[1][:200]
       and center.index("if (host.saverInstalled())") < center.index('"تلفزيونك"') < center.index('"tv", S.t("الإعدادات")'))
-check("the side panel: 560 px of 1920 wide inside the 5 % safe area, a clear full-screen popup it slides across for 220 ms (ease-out), a press outside closes it, what does not fit scrolls",
-      "PANEL_W = 560f / 1920f, SAFE = 0.05f" in center and "SLIDE_MS = 220" in center and "new PopupWindow(root, W, H, true)" in center and "root.setOnClickListener(v -> dismiss());" in center
-      and "panel.animate().translationX(0).setDuration(SLIDE_MS).setInterpolator(new DecelerateInterpolator())" in center and "Dir.start() | Gravity.TOP" in center
+check("the side panel: 560 px of 1920 wide inside the 5 % safe area, a clear full-screen popup it slides across in the one motion (Motion: 200 ms, couch-tv's curve; a fade with «الوضع الخفيف»), a press outside closes it, what does not fit scrolls",
+      "PANEL_W = 560f / 1920f, SAFE = 0.05f" in center and "SLIDE_MS = (int) Motion.MS" in center and "new PopupWindow(root, W, H, true)" in center and "root.setOnClickListener(v -> dismiss());" in center
+      and "panel.animate().translationX(0).setDuration(SLIDE_MS).setInterpolator(Motion.ease())" in center and "final boolean fade = wideNow || Ram.low(anchor.getContext());" in center and "Dir.start() | Gravity.TOP" in center
       and "new ScrollView(act)" in center and "ControlLayout" not in center and not (HOME / "ControlLayout.java").exists())
 check("four round toggles on top (Bluetooth, mirroring, the sleep timer, «أطفئ الآن»), then rows with a short value each (network, sound, speed, the TV's settings, ours); ellipsized one-line values",
-      'TOGGLES = {"bluetooth", "mirror", "sleep", "off"}' in center and 'ROWS = {"net", "sound", "speed", "ours", "games", "city", "tv", "saver"}' in center and "GradientDrawable.OVAL" in center
+      'TOGGLES = {"bluetooth", "mirror", "sleep", "off"}' in center and 'ROWS = {"net", "sound", "speed", "ours", "games", "city", "adhan", "tv", "apps", "saver", "black"}' in center and "GradientDrawable.OVAL" in center
       and "t.setSingleLine(true);" in center and "TruncateAt.END" in center and "ControlText.networkDetail" not in center)
-check("the focus: a solid fill in the look's colours with its ink, coming in over 170 ms (ease-out)",
-      "FOCUS_MS = 170" in center and "ValueAnimator.ofArgb(shown, target)" in center and "anim.setDuration(FOCUS_MS)" in center and "int target = f ? FOCUSED : " in center and "ON_SUB" in center)
+check("the focus: a solid fill in the look's colours with its ink, coming in over the one motion (Motion: 200 ms, couch-tv's curve)",
+      "FOCUS_MS = (int) Motion.MS" in center and "anim.setInterpolator(Motion.ease());" in center and "ValueAnimator.ofArgb(shown, target)" in center and "anim.setDuration(FOCUS_MS)" in center and "int target = f ? FOCUSED : " in center and "ON_SUB" in center)
 check("«تخصيص»: a tick per item, the arrows move a row (Left/Right by the reading direction), at most eight rows, «إعادة الضبط» (the defaults), «تم»; Back goes back to the panel's main view; kept on this TV",
       "MAX_ROWS = 8" in center and "tickedRows(now) >= MAX_ROWS" in center and "KeyEvent.KEYCODE_DPAD_RIGHT : KeyEvent.KEYCODE_DPAD_LEFT" in center and "private void reset()" in center
       and 'getSharedPreferences("control"' in center and "if (code == KeyEvent.KEYCODE_BACK) { if (e.getAction() == KeyEvent.ACTION_UP) showMain(); return true; }" in center
       and all(f'"{w}"' in center for w in ("تخصيص", "تم", "إعادة الضبط", "اختر ما يظهر ورتّبه بالأسهم")))
 check("«شاشة التوقف» is unticked until asked for (its pill is on the home); a toggle or a row that does not exist on this TV is not in the list",
-      'DEFAULT_OFF = {"saver"}' in center and "for (String k : TOGGLES) { Item it = find(k); if (it != null) out.add(it); }" in center)
+      'DEFAULT_OFF = {"saver", "apps"}' in center and "for (String k : TOGGLES) { Item it = find(k); if (it != null) out.add(it); }" in center)
 check("the Wi-Fi status is next to the greeting (a small icon on its line, no focus, no press), not in the quick-button bar",
       "greetRow.addView(netIcon, sideLlp(dp(NET_ICON), dp(NET_ICON), dp(8), 0, 0, 0));" in main and "NET_ICON = 22" in main and "right.member(netIcon)" not in main
       and "right.addView(netIcon" not in main and "int ink = online ? palette().soft : NET_OFFLINE;" in main and "netIcon.setColorFilter(ink);" in main and "setFocusable" not in main.split("netIcon = new ImageView(this);")[1].split("left.addView(greetRow")[0])
@@ -70,6 +70,12 @@ check("the panel opens on the tile used last while the home is in front (the fir
 check("«حرّر الذاكرة» is gone: no tile, no kill call, no permission (Android 14 gives a normal app nothing useful to do there)",
       "killBackgroundProcesses" not in center and "freeMemory" not in center and "ic_memory" not in center and "killable" not in text
       and "KILL_BACKGROUND_PROCESSES" not in manifest and not (ROOT / "android/launcher/src/main/res/drawable/ic_memory.xml").exists())
+sb = center.split("static boolean soundBroken(long away, int quickBefore) {")[1].split("\n    }\n")[0]
+check("4.3.3 TCL G07: a slower crash (its «keeps stopping» window) counts too: a second return within 10 s in a row marks the sound screen bad; a clock that moved back never does",
+      "SOUND_SLOW_FAIL_MS = 10_000" in center and "if (away < 0) return false;" in sb and "away < SOUND_FAIL_MS || (away < SOUND_SLOW_FAIL_MS && quickBefore >= 1)" in sb
+      and 'e.putInt("sound_quick", away >= 0 && away < SOUND_SLOW_FAIL_MS ? quick + 1 : 0);' in center)
+check("the sound tile never fails silently: an error opening it (or an old class) opens the TV's settings instead, itself guarded",
+      "catch (RuntimeException | LinkageError e) {   // A6" in center and "catch (RuntimeException | LinkageError ignored) { }" in center)
 check("the sound tile reads the real devices with their product names", "d[i].getProductName()" in center and "ControlText.outputs(types, products)" in center)
 check("the remote's Settings key opens our settings with a fallback to the TV's own", "OPEN_OUR_SETTINGS" in keys and "case RemoteKeys.OPEN_OUR_SETTINGS:" in main and "openOurSettings(true)" in main
       and "orTvSettings" in main and "ParentalPolicy.REMOTE_SETTINGS" in main.split("private void openOurSettings")[2].split("\n    }\n")[0])
@@ -123,11 +129,17 @@ check("the tile is there only when one resolves, opens it behind the TV's settin
       and "host.launchGuarded(ParentalPolicy.PILL_TV_SETTINGS, bluetooth, ControlText.BLUETOOTH)" in center
       and 'BLUETOOTH = S.n("البلوتوث")' in text and 'BLUETOOTH_HINT = S.n("الريموت والملحقات")' in text
       and (ROOT / "android/launcher/src/main/res/drawable/ic_bluetooth.xml").exists())
+apps_block = text[text.index("static final String[] APPS_ACTIONS = {"):text.index("};", text.index("static final String[] APPS_ACTIONS = {"))]
+check("PR #18 «إدارة التطبيقات»: the apps actions in order, each in the manifest's <queries>, the tile only when one resolves, behind the TV settings' lock, unticked by default and for anyone who saved the editor before it existed",
+      re.findall(r'"([A-Za-z0-9_.]+)"', apps_block) == ["android.settings.MANAGE_ALL_APPLICATIONS_SETTINGS", "android.settings.MANAGE_APPLICATIONS_SETTINGS", "android.settings.APPLICATION_SETTINGS"]
+      and all(f'<action android:name="{a}" />' in manifest.split("<queries>")[1].split("</queries>")[0] for a in re.findall(r'"([A-Za-z0-9_.]+)"', apps_block))
+      and "final Intent apps = appsIntent();" in center and "if (apps != null)" in center and "host.launchGuarded(ParentalPolicy.PILL_TV_SETTINGS, apps, ControlText.APPS)" in center
+      and 'DEFAULT_OFF = {"saver", "apps"}' in center and 'LATE_OFF = {"apps"}' in center and 'putString("known"' in center)
 check("Wi-Fi and Bluetooth side by side, first (docs/UX-REVIEW.md): the network tile, then Bluetooth, then the rest",
       center.index('tile("net"') < center.index('tile("bluetooth"') < center.index('tile("sound"') < center.index('tile("speed"')
       < center.index('tile("sleep"') < center.index('tile("off"') < center.index('tile("mirror"') < center.index('tile("saver"'))
-check("at most thirteen tiles: sleep, off, network, speed, sound, mirroring, Bluetooth, screensaver, the city, the games, ours, the build line, the TV's settings",
-      len(re.findall(r'tile\("[a-z]+"', center)) == 13, re.findall(r'tile\("[a-z]+"', center))
+check("at most sixteen tiles: «إدارة التطبيقات» (PR #18, unticked until asked for), sleep, off, network, speed, sound, «الأذان والإقامة» (4.3.3), mirroring, Bluetooth, screensaver, the city, the games, ours, the build line, the TV's settings, and (4.4 #62, only while something plays) the black screen",
+      len(re.findall(r'tile\("[a-z]+"', center)) == 16, re.findall(r'tile\("[a-z]+"', center))
 # ---- no traffic before OK
 check("the only network code is the speed test's, and it is started by the tile's OK on a worker thread",
       "new SpeedTest()" in center and "HttpURLConnection" not in center and "new Thread(" in center.split("private void speedTest")[1]
@@ -140,28 +152,35 @@ check("the speed test is bounded: a few MB, a measuring time, connect and read t
 check("nothing is uploaded: no output stream, no POST", "getOutputStream" not in speed and "setDoOutput" not in speed and "POST" not in speed)
 check("the talkies credit headers are in the files that adapt it", all("rajupp/talkies" in s.split("*/")[0] for s in (speed, center)))
 check("the manifest asks for no QUERY_ALL_PACKAGES and adds no accessibility capability",
-      "QUERY_ALL_PACKAGES" not in manifest and manifest.count("android.accessibilityservice.AccessibilityService") == 2)   # the sleep service and the phone remote's typing service; the Control Center adds none
+      "QUERY_ALL_PACKAGES" not in manifest and manifest.count("android.accessibilityservice.AccessibilityService") == 0)   # 4.3.3: none in the home (the one service is the add-on «إضافات تلفزيونك»s); the Control Center adds none
 check("every number goes through Digits.of (no String.valueOf of a number into a label), every format has Locale.ROOT",
       "String.valueOf" not in center and all("Locale.ROOT" in l for l in (text + speed).split("\n") if "String.format" in l))
 check("no new receiver, service or alarm for it", not re.search(r"registerReceiver|startService|AlarmManager|JobScheduler", center))
-check("the phone remote and the accessibility service are untouched by it (the service's name is only read for the line that says which one to turn on)", "PhoneApi" not in center and "sleep_service" not in center.replace("R.string.sleep_service_label", ""))
+check("the phone remote and the accessibility service are untouched by it (the service's name is only read for the line that says which one to turn on)", "PhoneApi" not in center and "sleep_service" not in center)
 
 # ---- the logic
-if not shutil.which("javac"):
+prev = (ROOT / "android/launcher/src/main/java/sa/urtv/home/tilawah/AdhanPreview.java").read_text(encoding="utf-8")
+check("4.3.3 «الأذان والإقامة»: the next prayer and its iqama from the home's own times (the adhan bar's DayParts, no thread at the panel's opening); OK plays SECONDS of that prayer's muezzin (Fajr's own for Fajr; 4.4: its own choice and level) the voice picker's way",
+      "final long[] times = host.adhanTimes();" in center and "ControlText.nextPrayer(times, System.currentTimeMillis())" in center and "AdhanPreview.play(act, sa.urtv.home.tilawah.AdhanPreview.prayerOf(next))" in center
+      and "public static final int SECONDS = 15;" in prev and "MusicService.adhan(c, voice, Adhan.name(voice), SECONDS, prayer);" in prev and "p.playFor(c, prayer)" in prev
+      and "DayParts.now(MainActivity.this, lastCfg.placeFragment(), lastCfg.placeTicket())" in main)
+no_javac = not shutil.which("javac")
+if no_javac:
     print("SKIP control center logic: no javac here")
-    # ---- 4.3.1: ours before the TV's, the city beside it; a saved old default order follows the new one
+# ---- 4.3.1: ours before the TV's, the city beside it; a saved old default order follows the new one
 check("«إعدادات تلفزيونك» comes before the TV's «الإعدادات» by default, «المدينة» right after it; the old default order saved by the editor counts as never reordered",
-      center.index('"ours", "games", "city", "tv"') > 0 and 'OLD_DEFAULT = "net,sound,speed,tv,ours,saver"' in center and 'if (v.equals(OLD_DEFAULT)) v = "";' in center
+      center.index('"ours", "games", "city", "adhan", "tv"') > 0 and 'OLD_DEFAULT = "net,sound,speed,tv,ours,saver"' in center and 'if (v.equals(OLD_DEFAULT)) v = "";' in center
       and center.index('tile("city"') < center.index('tile("games"') < center.index('tile("ours"') < center.index('tile("tv"') and "host.openCity()" in center)
 # ---- 4.3.1: «تلفزيونك» (the hub) and the build line
 check("«تلفزيونك» opens the screensaver app's hub (the games one press away), «الألعاب» opens its window, an old screensaver without the hub gets its settings, and the build line comes first",
       'YourTvHubActivity"' in main and 'hub.putExtra("open", window)' in main and 'openOurSettings(false, "games")' in main and "host.openGames()" in center and "host.openUpdate()" in center
       and "shownRows.add(0, updRow)" in center and "VersionMismatchRule.which(BuildConfig.VERSION_CODE, saverBuild())" in main)
 check("the hub opens a window on the extra", 'getStringExtra("open")' in (ROOT / "android/app/src/main/java/sa/urtv/screensaver/YourTvHubActivity.java").read_text(encoding="utf-8"))
-sys.exit(1 if failed else 0)
+if no_javac:
+    sys.exit(1 if failed else 0)   # 4.3.3: the logic below used to be skipped always (this exit stood outside the if)
 cases = [l.split("\t") for l in (ROOT / "tests/control_center_cases.tsv").read_text(encoding="utf-8").split("\n") if l and not l.startswith("#")]
 with tempfile.TemporaryDirectory() as tmp:
-    subprocess.run(["javac", "-encoding", "UTF-8", "-d", tmp, str(ROOT / "tests/i18n_home_stub/S.java"), str(ROOT / "android/launcher/src/main/java/sa/urtv/home/Tr.java"), str(HOME / "ControlText.java"), str(HOME / "PillText.java"), str(HOME / "DigitsText.java"),
+    subprocess.run(["javac", "-encoding", "UTF-8", "-d", tmp, str(ROOT / "tests/i18n_home_stub/S.java"), str(ROOT / "android/launcher/src/main/java/sa/urtv/home/Tr.java"), str(HOME / "ControlText.java"), str(HOME / "AdhanBarText.java"), str(HOME / "GreetingText.java"), str(HOME / "ClockText.java"), str(HOME / "PillText.java"), str(HOME / "DigitsText.java"),
                     str(HOME / "SpeedTest.java"), str(ROOT / "tests/ControlTextRun.java"), str(ROOT / "tests/SpeedTestRun.java")], check=True, capture_output=True)
     out = subprocess.run(["java", "-Dfile.encoding=UTF-8", "-cp", tmp, "sa.urtv.home.ControlTextRun", str(ROOT / "tests/control_center_cases.tsv")],
                          check=True, capture_output=True).stdout
@@ -187,6 +206,6 @@ check("the tray's scroll does no avoidable work per step: the name row's fade st
 
 # ---- 4.3.1: ours before the TV's, the city beside it; a saved old default order follows the new one
 check("«إعدادات تلفزيونك» comes before the TV's «الإعدادات» by default, «المدينة» right after it; the old default order saved by the editor counts as never reordered",
-      center.index('"ours", "games", "city", "tv"') > 0 and 'OLD_DEFAULT = "net,sound,speed,tv,ours,saver"' in center and 'if (v.equals(OLD_DEFAULT)) v = "";' in center
+      center.index('"ours", "games", "city", "adhan", "tv"') > 0 and 'OLD_DEFAULT = "net,sound,speed,tv,ours,saver"' in center and 'if (v.equals(OLD_DEFAULT)) v = "";' in center
       and center.index('tile("city"') < center.index('tile("games"') < center.index('tile("ours"') < center.index('tile("tv"') and "host.openCity()" in center)
 sys.exit(1 if failed else 0)

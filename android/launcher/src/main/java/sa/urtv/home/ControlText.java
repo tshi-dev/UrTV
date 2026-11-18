@@ -42,9 +42,57 @@ final class ControlText {
     /** the one line under the tile's name */
     static final String BLUETOOTH_HINT = S.n("الريموت والملحقات");
 
+    /**
+     * «إدارة التطبيقات» (based on PR #18 by alihaydaralmossa22-png): the TV's own screen for its apps (remove, stop, permissions), the first of these the TV can
+     * open, and no tile when none can. Each one is in the manifest's <queries>.
+     */
+    static final String[] APPS_ACTIONS = {
+        "android.settings.MANAGE_ALL_APPLICATIONS_SETTINGS",
+        "android.settings.MANAGE_APPLICATIONS_SETTINGS",
+        "android.settings.APPLICATION_SETTINGS",
+    };
+    static final String APPS = S.n("إدارة التطبيقات");
+    static final String APPS_HINT = S.n("حذف وإيقاف وصلاحيات");
+
+    /** 4.3.3 «الأذان والإقامة»: the row's name, and its line until the next prayer's times are known */
+    static final String ADHAN = S.n("الأذان والإقامة");
+    static final String ADHAN_HINT = S.n("اضغط اختيار لتسمع المؤذن");
+
+    private static final String[] PRAYERS = {S.n("الفجر"), S.n("الظهر"), S.n("العصر"), S.n("المغرب"), S.n("العشاء")};
+
+    /** the next of today's five (times: Fajr … Isha in ms, then 1 on a Friday) after now, -1 after Isha or with no times */
+    static int nextPrayer(long[] times, long now) {
+        if (times == null || times.length < 5) return -1;
+        for (int i = 0; i < 5; i++) if (times[i] > now) return i;
+        return -1;
+    }
+
+    /** the iqama's time of prayer i (AdhanBarText.IQAMA minutes after its adhan); 0 for a Friday's Dhuhr (the khutba comes first) */
+    static long iqamaAt(long[] times, int i) {
+        boolean friday = times.length > 5 && times[5] == 1;
+        if (i < 0 || i >= 5 || (i == 1 && friday)) return 0;
+        return times[i] + AdhanBarText.IQAMA[i] * 60_000L;
+    }
+
+    /** our Arabic word for prayer i (said with S.tv); a Friday's Dhuhr is «الجمعة» */
+    static String prayerName(int i, long[] times) {
+        return i == 1 && times.length > 5 && times[5] == 1 ? "الجمعة" : PRAYERS[i];
+    }
+
+    /** «العصر ٣:١٥ م، الإقامة ٣:٣٥ م»; with no iqama time (a Friday's Dhuhr) the adhan's alone: «الظهر ١٢:٠٢ م». No «·»: a comma, as the other lines. */
+    static String adhanLine(String prayer, String adhan, String iqama) {
+        return iqama == null || iqama.isEmpty() ? prayer + " " + adhan : S.t("%s %s، الإقامة %s", prayer, adhan, iqama);
+    }
+
     /** The action the tile opens: the first of BLUETOOTH_ACTIONS this TV can open, or null (then there is no tile). */
     static String bluetoothAction(Opens tv) {
         for (String a : BLUETOOTH_ACTIONS) if (tv.opens(a)) return a;
+        return null;
+    }
+
+    /** The action the «إدارة التطبيقات» tile opens: the first of APPS_ACTIONS this TV can open, or null (then there is no tile). */
+    static String appsAction(Opens tv) {
+        for (String a : APPS_ACTIONS) if (tv.opens(a)) return a;
         return null;
     }
 

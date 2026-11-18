@@ -44,6 +44,7 @@ final class MarketFile {
             StringBuilder s = new StringBuilder();
             for (String x : symbols) s.append(s.length() > 0 ? "," : "").append(java.net.URLEncoder.encode(x, "UTF-8"));
             h = (HttpURLConnection) new URL(String.format(LIVE_URL, s.toString().replace("%2C", ","))).openConnection();
+            NetLog.count(String.valueOf(h.getURL()));   // G3: the request log (NetLog)
             h.setConnectTimeout(TIMEOUT_MS);
             h.setReadTimeout(TIMEOUT_MS);
             h.setUseCaches(false);
@@ -111,7 +112,7 @@ final class MarketFile {
         then.setTimeInMillis(have.lastModified());
         if (have.isFile() && now.get(java.util.Calendar.YEAR) == then.get(java.util.Calendar.YEAR)
                 && now.get(java.util.Calendar.DAY_OF_YEAR) == then.get(java.util.Calendar.DAY_OF_YEAR)) return;
-        String text = download(MarketData.DAILY_URL);
+        String text = download(c, MarketData.DAILY_URL);
         if (text != null && text.contains("\"daily\"")) save(c, DAILY, text);
     }
 
@@ -130,7 +131,7 @@ final class MarketFile {
         then.setTimeInMillis(have.lastModified());
         if (have.isFile() && now.get(java.util.Calendar.YEAR) == then.get(java.util.Calendar.YEAR)
                 && now.get(java.util.Calendar.DAY_OF_YEAR) == then.get(java.util.Calendar.DAY_OF_YEAR)) return;
-        String text = download(MarketData.FX_URL);
+        String text = download(c, MarketData.FX_URL);
         long t = System.currentTimeMillis();
         // CI's file is missing, has no rate or is older than MarketData.FX_STALE_MS (the data branch had none for a while: a TV installed then showed
         // «لا أسعار بعد» for hours, steps 27, 28b and 182): the app asks Yahoo itself, the way it asks for the live prices. We get here only when the copy
@@ -172,15 +173,16 @@ final class MarketFile {
             MarketData d = cached(c);
             if (d != null) return d;
         }
-        String text = download(MarketData.URL);
+        String text = download(c, MarketData.URL);
         if (text != null && MarketData.parse(text) != null) save(c, NAME, text);
         return cached(c);
     }
 
-    /** the file's text, or null (offline, a timeout, not 200) */
-    private static String download(String url) {
+    /** the file's text, or null (offline, a timeout, not 200, the back-off after a failure) */
+    private static String download(Context c, String url) {
         try {
-            Net.Reply r = Net.get(url, null, TIMEOUT_MS, 2 * TIMEOUT_MS, 4 << 20);   // IPv4 first, 4 s per address, a deadline (Net)
+            // urtv-data, then the old branch (DataHost); IPv4 first, 4 s per address, a deadline; G3: with the copy's ETag (an unchanged file is a 304), the markets page and the card asking at once make one request
+            Net.Reply r = DataHost.cached(new File(c.getCacheDir(), "net"), url, TIMEOUT_MS, 2 * TIMEOUT_MS, 4 << 20, 0, true);
             return r.status == 200 ? r.text() : null;
         } catch (Exception e) {
             return null;

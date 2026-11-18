@@ -85,8 +85,8 @@ public class ConfigProvider extends ContentProvider {
         }
         // home_panel: the first card alone (what an older launcher reads); home_panels: all of them, "a,b,c" or "none"
         List<String> cards = p.homePanels();
-        MatrixCursor c = new MatrixCursor(new String[] {"fragment", "home_panel", "greeting", "home_panels", "adhan_bar", "listen_pill", "update_channel", "appearance", "update_bell", "watch_next", "look", "home_layout", "fav_bar", "pages_dark", "pills_hidden", "look_tweaks", "match_app", "page_zone", "city_chosen"});
-        c.addRow(new Object[] {p.fragment(), cards.isEmpty() ? "none" : cards.get(0), p.greeting() ? "1" : "0", p.homePanel(), p.adhanBar() ? "1" : "0", p.listenPill() ? "1" : "0", p.updateChannel(), p.appearance(), p.updateBell() ? "1" : "0", p.watchNext() ? "1" : "0", p.look(), p.homeLayout(), p.favBar(), p.pagesDark() ? "1" : "0", p.pillsHidden(), p.tweaks(), p.matchApp(), p.pageZone(), p.cityChosen() ? "1" : "0"});
+        MatrixCursor c = new MatrixCursor(new String[] {"fragment", "home_panel", "greeting", "home_panels", "adhan_bar", "listen_pill", "update_channel", "appearance", "update_bell", "watch_next", "look", "home_layout", "fav_bar", "pages_dark", "pills_hidden", "look_tweaks", "match_app", "page_zone", "city_chosen", "lite", "scene_packs", "scene_stay", "scene_time", "scene_weather", "home_bg", "home_clock", "apps_style", "key_apps", "kickoff", "greeting_name"});
+        c.addRow(new Object[] {p.fragment(), cards.isEmpty() ? "none" : cards.get(0), p.greeting() ? "1" : "0", p.homePanel(), p.adhanBar() ? "1" : "0", p.listenPill() ? "1" : "0", p.updateChannel(), p.appearance(), p.updateBell() ? "1" : "0", p.watchNext() ? "1" : "0", p.look(), p.homeLayout(), p.favBar(), p.pagesDark() ? "1" : "0", p.pillsHidden(), p.tweaks(), p.matchApp(), p.pageZone(), p.cityChosen() ? "1" : "0", p.lite(), Prefs.join(p.scenePacks(), ","), p.sceneStay(), p.sceneByTime() ? "1" : "0", p.sceneByWeather() ? "1" : "0", p.homeBg(), p.homeClock(), p.appsStyle(), p.keyApps(), p.kickoffColumn(), p.greetingName()});
         return c;
     }
 
@@ -122,6 +122,36 @@ public class ConfigProvider extends ContentProvider {
                 out.putString("why", why == null ? "" : why);
                 out.putInt("count", Own.count(c));
                 out.putInt("max", Own.max(c));
+                return out;
+            }
+            case "phone_photo_list": {   // 4.4: the photos on the TV for the phone's «صوري»: each one's pick (OwnPick: its number and file time)
+                int n = Own.count(c);
+                String[] ids = new String[n];
+                for (int i = 1; i <= n; i++) ids[i - 1] = OwnPick.id(i, Own.stamp(c, i));
+                out.putStringArray("ids", ids);
+                out.putInt("count", n);
+                out.putInt("max", Own.max(c));
+                return out;
+            }
+            case "phone_photo_thumb": {   // 4.4: a small JPEG of the picked photo (arg: its pick); nothing when the pick names no photo now
+                OwnPick pick = OwnPick.parse(arg);
+                if (pick != null && pick.same(Own.count(c), Own.stamp(c, pick.n))) {
+                    byte[] jpeg = Own.thumbJpeg(c, pick.n);
+                    if (jpeg != null) out.putByteArray("jpeg", jpeg);
+                }
+                return out;
+            }
+            case "phone_photo_del": {   // 4.4: deletes the picked photo (arg: its pick) and its mask; «photo_moved» when the pick names no photo now
+                boolean done = Own.deletePick(c, OwnPick.parse(arg));
+                out.putString("result", done ? "photo_deleted" : "photo_moved");
+                out.putInt("count", Own.count(c));
+                return out;
+            }
+            case "phone_photo_mask": {   // 4.4: the mask of the photo the same phone just added (the launcher's /api/photo-mask), a PNG
+                byte[] png = extras == null ? null : extras.getByteArray("png");
+                String why = png == null || png.length == 0 || png.length > 1_000_000 ? "bad" : Own.addMask(c, png);
+                out.putString("result", why == null ? "mask_added" : "mask_refused");
+                out.putString("why", why == null ? "" : why);
                 return out;
             }
             case "phone_state": {
@@ -162,6 +192,16 @@ public class ConfigProvider extends ContentProvider {
                 out.putBoolean("ok", arg != null && arg.matches("\\d{1,9}") && p.removeTeam(arg));
                 return out;
             }
+            case "phone_follow_league": {   // 4.3.3 «تابع» a league on «المباريات» (or the home's kept one): arg "id|ar|en"; false when there already or full
+                String[] kv = arg == null ? new String[0] : arg.split("\\|", -1);
+                out.putBoolean("ok", kv.length == 3 && p.addLeague(kv[0], kv[1], kv[2]));
+                return out;
+            }
+            case "phone_unfollow_league": {   // 4.3.3 its «ألغِ متابعة»: arg "id|en"
+                String[] kv = arg == null ? new String[0] : arg.split("\\|", -1);
+                out.putBoolean("ok", kv.length == 2 && p.removeLeague(kv[0], kv[1]));
+                return out;
+            }
             case "phone_cities": {
                 ArrayList<String> names = new ArrayList<>();
                 for (String[] city : CityMatch.find(arg == null ? "" : arg)) if (names.size() < 20) names.add(city[0]);
@@ -186,6 +226,12 @@ public class ConfigProvider extends ContentProvider {
             try { n = Integer.parseInt(seg.get(1)); } catch (NumberFormatException e) { throw new FileNotFoundException(); }
             if (n < 1 || n > Own.count(c)) throw new FileNotFoundException();
             return ParcelFileDescriptor.open(Own.file(c, n), ParcelFileDescriptor.MODE_READ_ONLY);
+        }
+        if (seg.size() == 3 && "own".equals(seg.get(0)) && "mask".equals(seg.get(2)) && "r".equals(mode)) {   // 4.4 .../own/N/mask: photo N's mask, when it has one
+            int n;
+            try { n = Integer.parseInt(seg.get(1)); } catch (NumberFormatException e) { throw new FileNotFoundException(); }
+            if (n < 1 || n > Own.count(c) || !Own.mask(c, n).isFile()) throw new FileNotFoundException();
+            return ParcelFileDescriptor.open(Own.mask(c, n), ParcelFileDescriptor.MODE_READ_ONLY);
         }
         if (seg.size() == 3 && "homepack".equals(seg.get(0)) && "r".equals(mode)) {   // .../homepack/ID/N: photo N of a pack the home rotates, read only
             String id = seg.get(1);

@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- «إنقاذ تلفزيونك» (UrTV Rescue, 4.3.3): one screen, one button that puts the TV back as it was over its own adb. In the TV's apps list (also on Android TV
+<!-- «إنقاذ تلفزيونك» (UrTV Rescue, 4.4): one screen, one button that puts the TV back as it was over its own adb. In the TV's apps list (also on Android TV
      launchers: LEANBACK_LAUNCHER), so it is reached even with no home of ours. INTERNET: the TV's own adb on 127.0.0.1 (no other address is ever opened). -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
     <uses-permission android:name="android.permission.INTERNET" />
     <!-- what our setup turned off is asked of the home through its provider: our key only (both declare it, signature) -->
-    <permission android:name="sa.urtv.permission.RESCUE" android:protectionLevel="signature" />
-    <uses-permission android:name="sa.urtv.permission.RESCUE" />
+    <permission android:name="sa.urtv.permission.EXTRAS" android:protectionLevel="signature" />
+    <uses-permission android:name="sa.urtv.permission.EXTRAS" />
     <uses-feature android:name="android.software.leanback" android:required="false" />
     <uses-feature android:name="android.hardware.touchscreen" android:required="false" />
 

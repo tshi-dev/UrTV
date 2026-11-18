@@ -30,7 +30,7 @@ check("the row is in «الشاشة الرئيسية», right after «زر ال�
 check("one plain label, «مفعّل» or «متوقف», and OK flips it",
       'row("الرجوع يفتح شاشة التوقف", prefs.backSaver() ? "مفعّل" : "متوقف", R.drawable.ic_eye,' in row
       and "prefs.setBackSaver(!prefs.backSaver()); render();" in row)
-check("the settings hub files it under «الشاشة الرئيسية»", '{"الرجوع يفتح شاشة التوقف", HOME}' in hub)
+check("the settings hub files it under «الأزرار السريعة» (4.3.3)", '{"الرجوع يفتح شاشة التوقف", BUTTONS}' in hub)
 check("the receiver takes backsaver on or off and refuses the rest before saving; `saver.sh show` says it",
       '{"backsaver", backSaver}' in receiver and receiver.index('{"backsaver", backSaver}') < receiver.index('p.setBackSaver("on".equals(backSaver));')
       and '"\\nbacksaver: " + (p.backSaver() ? "on" : "off")' in receiver)
@@ -47,6 +47,6 @@ check("home: the minute tick (and every return) takes it, beside the other home 
       "applyTasksPill(cfg.tasksPillOn());\n        Dock.followBackSaver(this, cfg.backSaver());" in main and main.count("Dock.followBackSaver(") == 1)
 
 docs = text(ROOT / "docs/FEATURES.md") + text(ROOT / "docs/SETTINGS.md")
-check("FEATURES.md and SETTINGS.md say where the row is", "الإعدادات ← الشاشة الرئيسية ← **الرجوع يفتح شاشة التوقف**" in docs
-      and "الشاشة الرئيسية; مفعّل/متوقف, off by default" in docs)
+check("FEATURES.md and SETTINGS.md say where the row is", "الإعدادات ← الأزرار السريعة ← **الرجوع يفتح شاشة التوقف**" in docs
+      and "الأزرار السريعة; مفعّل/متوقف, off by default" in docs)
 sys.exit(1 if failed else 0)

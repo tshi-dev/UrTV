@@ -6,7 +6,8 @@
            assets/fonts/UthmanicHafs-v30.woff2 is made for; verify_uthmani.py compares it with the source in CI.
            Never show it in another font.
   tafsir   «التفسير الميسر» (King Fahd Complex), api.alquran.cloud edition ar.muyassar; the screen shows it
-           only with #tafsir=1
+           only with #tafsir=1, whole (its terms of publication allow no cut, no addition): src/build.py writes it to
+           dist/tafsir.json, read by the page only when it is on
 
 Runs in CI (.github/workflows/verses.yml): api.alquran.cloud is unreachable from the dev container. The screen never
 holds Quran text typed by hand; it only shows what this script fetched, copied to assets/shared/verses.json.
@@ -14,6 +15,7 @@ holds Quran text typed by hand; it only shows what this script fetched, copied t
   python3 fetch_verses.py --uthmani   add `uthmani` (QPC Hafs) to assets/shared/verses.json and to the Quranic
                                       entries of assets/shared/adhkar.json, in place
 """
+import bisect
 import json
 import sys
 import time
@@ -120,6 +122,27 @@ def add_uthmani():
         print(path.relative_to(ROOT), sum("uthmani" in v for v in data), "with uthmani")
 
 
+def page_of(starts, ref):
+    """the Madinah mushaf page of an ayah "S:A" (or the first of a range "S:A-B"), from the pages' first ayahs (api.alquran.cloud /v1/meta)"""
+    s, a = ref.split("-")[0].split(":")
+    key = (int(s), int(a))
+    return bisect.bisect_right(starts, key)
+
+
+def add_pages():
+    """4.4 the tafsir card: «التفسير الميسر، صفحة N» under the text. Each verse gets its mushaf page ("page"), the rest unchanged."""
+    meta = get("https://api.alquran.cloud/v1/meta")["data"]["pages"]["references"]
+    starts = [(p["surah"], p["ayah"]) for p in meta]
+    if len(starts) != 604 or starts != sorted(starts):
+        raise SystemExit(f"unexpected page table: {len(starts)} pages")
+    path = ROOT / "assets/shared/verses.json"
+    data = json.loads(path.read_text(encoding="utf-8"))
+    for v in data:
+        v["page"] = page_of(starts, v["ref"])
+    path.write_text(json.dumps(data, ensure_ascii=False, indent=1), encoding="utf-8")
+    print(path.relative_to(ROOT), sum("page" in v for v in data), "with page")
+
+
 def main():
     u = Uthmani()
     out = []
@@ -127,11 +150,11 @@ def main():
         d = get(f"https://api.alquran.cloud/v1/ayah/{ref}/{EDITION}")["data"]
         tafsir = get(f"https://api.alquran.cloud/v1/ayah/{ref}/{TAFSIR_EDITION}")["data"]["text"]
         out.append({"ref": ref, "surah": d["surah"]["name"], "ayah": d["numberInSurah"], "text": d["text"],
-                    "uthmani": u.ref(ref), "tafsir": " ".join(tafsir.split())})
+                    "uthmani": u.ref(ref), "tafsir": " ".join(tafsir.split()), "page": d["page"]})   # 4.4: its Madinah mushaf page
         print(ref, d["surah"]["name"], len(d["text"].split()), "words")
     Path("verses").mkdir(exist_ok=True)
     Path("verses/verses.json").write_text(json.dumps(out, ensure_ascii=False, indent=1), encoding="utf-8")
 
 
 if __name__ == "__main__":
-    add_uthmani() if "--uthmani" in sys.argv else main()
+    add_uthmani() if "--uthmani" in sys.argv else add_pages() if "--pages" in sys.argv else main()

@@ -28,14 +28,17 @@ abstract class Playback {
     /**
      * ExoPlayer for every live station when the build carries it (HLS as before, and since a user report on 4.2 the Icecast ones too: the TV's
      * MediaPlayer stopped for good when such a stream dropped, and said «صيغة البث غير مدعومة» for a passing error), else the TV's MediaPlayer.
-     * A surah and the adhan stay on MediaPlayer.
+     * The adhan stays on MediaPlayer; a surah goes to ExoPlayer too since 4.4 (create with `surah`).
      */
-    static Playback create(Context c, String url, boolean radio) {
-        if (radio) {
+    static Playback create(Context c, String url, boolean radio) { return create(c, url, radio, false); }
+
+    /** 4.4: `surah` true: a surah file through ExoPlayer too (its file buffer, a dropped read resumed where it stopped); the adhan stays on MediaPlayer */
+    static Playback create(Context c, String url, boolean radio, boolean surah) {
+        if (radio || surah) {
             try {
-                return (Playback) Class.forName(EXO).getConstructor(Context.class).newInstance(c);
+                return (Playback) Class.forName(EXO).getConstructor(Context.class, boolean.class).newInstance(c, radio);
             } catch (ReflectiveOperationException | LinkageError | RuntimeException e) {
-                android.util.Log.w("UrTVMusic", "ExoPlayer not available, MediaPlayer plays the station: " + e);
+                android.util.Log.w("UrTVMusic", "ExoPlayer not available, MediaPlayer plays it: " + e);
             }
         }
         return new Platform();

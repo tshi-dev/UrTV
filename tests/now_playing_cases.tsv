@@ -3,16 +3,16 @@ title	0	الفاتحة		سورة الفاتحة	a surah: «سورة» and its na
 title	0	البقرة	x	سورة البقرة	the station is ignored for a surah
 title	1		إذاعة القرآن الكريم - السعودية	إذاعة القرآن الكريم - السعودية	a station: its name
 sub	0	عبدالرحمن السديس	0	عبدالرحمن السديس	a surah: who recites it
-sub	0	عبدالرحمن السديس	23	عبدالرحمن السديس  ·  نوم ٢٣ د	with a sleep timer: the minutes left, Arabic digits
+sub	0	عبدالرحمن السديس	23	عبدالرحمن السديس، نوم ٢٣ د	with a sleep timer: the minutes left, Arabic digits
 sub	1		0	بث مباشر	a station: «بث مباشر»
-sub	1		5	بث مباشر  ·  نوم ٥ د	a station with a sleep timer
+sub	1		5	بث مباشر، نوم ٥ د	a station with a sleep timer
 sub	0	مشاري العفاسي	-1	مشاري العفاسي	a negative number is no timer
-sub	0	مشاري العفاسي	120	مشاري العفاسي  ·  نوم ١٢٠ د	two hours left
-hint	0			اختيار: إيقاف/تشغيل  ·  يمين/يسار: السورة  ·  مطولًا: فتح	a surah: OK, ◀ ▶ the surah, a long OK opens the player
-hint	1			اختيار: إيقاف/تشغيل  ·  مطولًا: فتح	a station: no ◀ ▶ (nothing to skip to)
+sub	0	مشاري العفاسي	120	مشاري العفاسي، نوم ١٢٠ د	two hours left
+hint	0			اختيار: إيقاف/تشغيل، يمين/يسار: السورة، مطولًا: فتح	a surah: OK, ◀ ▶ the surah, a long OK opens the player
+hint	1			اختيار: إيقاف/تشغيل، مطولًا: فتح	a station: no ◀ ▶ (nothing to skip to)
 note	تعذّر تحميل السورة	1		تعذّر تحميل السورة	what failed comes before loading
 note		1		جارٍ التحميل…	loading, nothing failed
 note		0			nothing to say
-subnote	0	عبدالرحمن السديس	0:جارٍ التحميل…	جارٍ التحميل…  ·  عبدالرحمن السديس	loading: the note first, then who recites
-subnote	1		5:تعذّر الاتصال بالبث، تحقق من الإنترنت	تعذّر الاتصال بالبث، تحقق من الإنترنت  ·  بث مباشر  ·  نوم ٥ د	a station that failed, with the sleep timer
+subnote	0	عبدالرحمن السديس	0:جارٍ التحميل…	جارٍ التحميل…، عبدالرحمن السديس	loading: the note first, then who recites
+subnote	1		5:تعذّر الاتصال بالبث، تحقق من الإنترنت	تعذّر الاتصال بالبث، تحقق من الإنترنت، بث مباشر، نوم ٥ د	a station that failed, with the sleep timer
 subnote	0	مشاري العفاسي	0:	مشاري العفاسي	no note: the plain line

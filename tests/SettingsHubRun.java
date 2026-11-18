@@ -27,7 +27,7 @@ public final class SettingsHubRun {
             }
         }
         // each screen of buttons (null: the first): "screen KEY n wide" then its ways "next KEY i n dir = j"
-        for (String sc : new String[] {null, SettingsHub.CARDS, SettingsHub.MORE}) {
+        for (String sc : new String[] {null}) {
             String[] t = SettingsHub.tiles(sc);
             boolean wide = SettingsHub.wide(sc);
             String name = sc == null ? "-" : sc;

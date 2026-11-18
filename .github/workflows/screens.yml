@@ -97,6 +97,8 @@ jobs:
           cp -r "$run" latest
           ls "$run" | sed "s#^#https://raw.githubusercontent.com/${GITHUB_REPOSITORY}/data-screens/$run/#" > "$run/index.txt"
           cp "$run/index.txt" latest/index.txt
+          git config user.name "github-actions[bot]"   # the commit needs a name (the first run's had none: the push found no branch)
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add -A
           git commit --quiet -m "Screens of ${GITHUB_SHA::7} (run ${GITHUB_RUN_NUMBER})" || true
           git push --force origin data-screens

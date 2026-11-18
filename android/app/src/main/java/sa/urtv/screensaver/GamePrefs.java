@@ -26,6 +26,29 @@ final class GamePrefs {
     static boolean sound(Context c) { return sp(c).getBoolean("sound", true); }
     static void setSound(Context c, boolean on) { sp(c).edit().putBoolean("sound", on).apply(); }
 
+    /** the night look: 0 off (the default), 1 on. There is no automatic state: dark or light, the person chooses (an old «automatic» value reads as off). */
+    static final int NIGHT_OFF = 0, NIGHT_ON = 1, PALETTES = 3;
+    static int night(Context c) { return sp(c).getInt("night", NIGHT_OFF) == NIGHT_ON ? NIGHT_ON : NIGHT_OFF; }
+    static void setNight(Context c, int v) { sp(c).edit().putInt("night", v).apply(); }
+    /** the filter of the games list: 0 all the games (the default), 1 only the ones that can be played with phones */
+    static int filter(Context c) { return sp(c).getInt("filter", 0) == 1 ? 1 : 0; }
+    static void setFilter(Context c, int v) { sp(c).edit().putInt("filter", v == 1 ? 1 : 0).apply(); }
+    /** the names the people playing gave (kind "teams" or "players"): kept on this TV for next time, "" in a slot = the game's suggestion; setNames with nothing forgets them */
+    static String[] names(Context c, String kind) { return GameNames.split(sp(c).getString("names." + kind, "")); }
+    static void setNames(Context c, String kind, String[] v) {
+        String j = GameNames.join(v);
+        if (j.replace("\n", "").isEmpty()) sp(c).edit().remove("names." + kind).apply(); else sp(c).edit().putString("names." + kind, j).apply();
+    }
+    /** were the names of this kind ever asked for on this TV (the first start asks; after that they are kept and changed with «الأسماء») */
+    static boolean namesAsked(Context c, String kind) { return sp(c).getBoolean("names.asked." + kind, false); }
+    static void setNamesAsked(Context c, String kind) { sp(c).edit().putBoolean("names.asked." + kind, true).apply(); }
+    /** which night palette: 0 warm charcoal, 1 blue-black, 2 dim sepia (the default: the owner chose it) */
+    static final int PALETTE_DEFAULT = 2;
+    static int palette(Context c) { int v = sp(c).getInt("palette", PALETTE_DEFAULT); return v < 0 || v >= PALETTES ? PALETTE_DEFAULT : v; }
+    static void setPalette(Context c, int v) { sp(c).edit().putInt("palette", v).apply(); }
+    /** is the night look on right now: only when the person switched it on */
+    static boolean nightNow(Context c) { return night(c) == NIGHT_ON; }
+
     static Set<String> recent(Context c, String id) {
         String s = sp(c).getString("recent." + id, "");
         Set<String> v = new LinkedHashSet<>();

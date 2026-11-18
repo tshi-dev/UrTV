@@ -29,4 +29,8 @@ for c, g in zip(cases, got):
 if len(got) < len(cases):
     print("FAIL fewer answers than cases")
     failed += 1
+act = (ROOT / "android/launcher/src/main/java/sa/urtv/home/TasksActivity.java").read_text(encoding="utf-8")
+wired = "TaskVoice.spoken(heard.get(0), texts, dones, MAX_CHARS)" in act and "SearchManager.QUERY" in act and 'ask(S.t("أضيف «%s»؟", t), () -> add(t));' in act
+print(("PASS " if wired else "FAIL ") + "#48: «تكلّم» asks to add plain words, and reads a recognizer's answer given as a search query")
+failed += not wired
 sys.exit(1 if failed else 0)

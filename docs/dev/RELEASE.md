@@ -77,8 +77,8 @@ The supervisor's LESSONS.md: 77 problems, 25 rules. A machine checks these, in t
 | R3 a key handler gives back keys it does not use | `key_handlers_test.py`, `tests/edit_keys_test.py` |
 | R4 no focus listener scrolls by itself | `lessons_test.py` |
 | R5 menus fit (partly: the app options box, dialogs) | `tests/options_fit_test.py`, `tests/dialog_fit_test.py`; the rest is smoke S-03/S-06 at 720p |
-| R9 target API 34; no new accessibility service in the home | `lessons_test.py` |
-| R10 the page's WebView 66 CSS never grows without a fallback; ES2017; no letter-spacing on Arabic | `lessons_test.py`, `tests/check.py`, `tests/arabic_spacing_test.py` |
+| R9 target API 34; no accessibility service in the home | `lessons_test.py` |
+| R10 every WebView 66 risk in the page's CSS has its fallback; ES2017; no letter-spacing on Arabic | `tests/webview66_test.py` (kept by `lessons_test.py`), `tests/check.py`, `tests/arabic_spacing_test.py` |
 | R11 a missing beta falls back; the newer of beta and latest | `tests/beta_channel_test.py`, `tests/beta_newest_test.py` |
 | R12 no clean-up list touches keep.txt or the core | `keep_list_test.py`, `lessons_test.py` |
 | R14 no content pack in an APK | `no_bundled_packs_test.py` |

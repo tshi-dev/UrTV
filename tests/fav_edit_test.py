@@ -25,7 +25,7 @@ leave = main.split("private void leaveEdit()")[1].split("\n    }\n")[0]
 check("BACK saves through Dock.save, the store «ترتيب المفضلة» and dock.sh use", "Dock.save(this, row)" in leave)
 check("…and nowhere else writes the order: no preference of its own in the mode", not re.search(r'putString\("dock"', main.split("«تعديل المفضلة»")[1].split("private void saveDock")[0]))
 check("«ترتيب المفضلة» saves through Dock.save", "Dock.save(this, row)" in arrange)
-check("dock.sh's SET_DOCK saves through Dock.save", re.search(r"Dock\.save\(c, row\)", receiver) is not None)
+check("dock.sh's SET_DOCK saves through Dock.saveExact (4.4, cause 11: exactly the apps chosen; tests/dock_exact_test.py)", re.search(r"Dock\.saveExact\(c, row\)", receiver) is not None)
 check("Dock.save keeps the order in the \"dock\" preference and tells the home screen", 'putString("dock"' in dock.split("static void save")[1] and "CHANGED" in dock.split("static void save")[1])
 check("an unchanged row is not saved (no top-up kept by a visit)", "if (e.changed())" in leave)
 check("the mode asks the settings' lock before it starts (ParentalPolicy.MENU_ARRANGE, «قفل الإعدادات»); in kids mode it does not start",
@@ -38,7 +38,7 @@ check("the mode leaves the volume and power keys to Android (AdhanKeys.reserved)
 check("a key release is consumed, so OK never clicks the app under it", "ACTION_DOWN) return true" in keyfn)
 check("a held key steps at the pace the home screen already uses (SIDE_REPEAT_MS)", keyfn.count("SIDE_REPEAT_MS") >= 3)
 check("the direction comes from the row's layout direction (FavEdit.step)", "FavEdit.step(k, dockRow.getLayoutDirection() == View.LAYOUT_DIRECTION_RTL)" in keyfn)
-check("the hint line is the one asked for", "اختر تطبيقًا لتحريكه · × للحذف · رجوع للإنهاء" in edit)
+check("the hint line is the one asked for", "اختر تطبيقًا لتحريكه، × للحذف، رجوع للإنهاء" in edit)
 check("«تراجع» lasts 5 seconds", "UNDO_MS = 5000" in edit)
 check("the row changing under the mode (an app installed, dock.sh) ends it without saving: buildApps abandons it",
       "if (edit != null) abandonEdit();" in main.split("private void buildApps()")[1][:200])

@@ -4,6 +4,30 @@ Code and ideas taken from other projects, with their licenses. Fonts, photos and
 `assets/fonts/*-NOTICE.txt` and `*-OFL.txt`, `docs/PHOTO-CREDITS.md`, `optimize/lists/community/LICENSE-CleanYourTV.txt`, and the
 launcher's origin in `android/launcher/LICENSE-tv-home`.
 
+## التفسير الميسر
+
+«التفسير الميسر» under the verse of the day (only with «التفسير الميسر» on, `#tafsir=1`): نخبة من العلماء، مجمع الملك فهد لطباعة المصحف الشريف
+(King Fahd Glorious Quran Printing Complex), fetched by `.github/tools/fetch_verses.py` from api.alquran.cloud (edition `ar.muyassar`) into
+`assets/shared/verses.json`, and shipped as `dist/tafsir.json`. The text is shown whole and unchanged (never shortened, nothing added),
+with its name above it; QuranEnc.com publishes the same tafsir on these terms (re-publication allowed with no modification, addition or
+deletion, the publisher and source named).
+
+## TVmaze
+
+«جديد المسلسلات» (the series card, and the settings' series search) reads the TVmaze API (api.tvmaze.com), whose data is licensed under
+CC BY-SA 4.0 (https://www.tvmaze.com/api). The card credits it with a tiny «TVmaze» at the end of its header line, and the settings' «مصادر
+البيانات» (حول) names the licence with its link (tvmaze.com).
+
+## couch-tv
+
+The 4.3.3 scene home proposal (`docs/mockups/`) follows couch-tv's design (https://github.com/Seagey/couch-tv: scenes with a glass
+clock behind the scenery, settings with side sections), and its mockups use couch-tv's five scene photos, their cut-outs and glass
+copies (`tv-home/web/backgrounds/scene-*`, made for couch-tv with an AI image model, "use them however you like"), under the MIT
+License, Copyright (c) 2026 Seagey, the same text as below. With the look «منظر وساعة» the settings follow couch-tv's settings screen
+(`tv-home/web/app.css`, «Home settings»: its sizes, colours, kinds of row and motion; `android/app/src/main/java/sa/urtv/screensaver/CouchStyle.java`;
+no code of it is used), and the scene packs' rows show a thumbnail of one of couch-tv's scene photos (`assets/scene-thumbs/couch.jpg`), under the
+same license.
+
 ## talkies
 
 The home screen's spring motion (`android/launcher/src/main/java/sa/urtv/home/Spring.java`) and the ideas for the channel and
@@ -114,6 +138,11 @@ starting point) is also adapted from Free My TV: how to pack an `.ipk` and a `.w
 Mode (LG's Key Server and SSH, Samsung's SDB), and which key codes and manifest entries a TV app needs. Each adapted file says so in
 its header.
 
+«أزرار الريموت» (`android/launcher/src/main/java/sa/urtv/home/RemoteButtons.java`, and its copy in the screensaver app) takes Free My TV's
+per-brand remote table from `RemoteKeys.java`, `Prefs.java` and `SabrinaRemote.java` (release 1.5.0): which TVs (by maker, brand,
+model and Android version), which key and scan codes each app button sends, the onn and Chromecast remote checks, Xiaomi's burst
+and TCL Android 11's filter rule. Only the app buttons are taken. The file says so in its header; the licence is the one below.
+
 talkies has `Spring.java` from Free My TV (https://github.com/simbasjungles/free-my-tv, `app/src/io/freemytv/Spring.java`), under
 this license:
 
@@ -157,3 +186,26 @@ per-model lists, packages only, re-taken at commit 3cd274f8 (2 Nov 2026). Clean 
 «تطبيقات مقترحة» offers Open Shelf (https://github.com/wingedpanther/openshelf, GPL-3.0; its font under the SIL Open Font License 1.1) as one entry. We only link to it: the settings download its own release file
 (`OpenShelf-<version>.apk` from that repository's releases), check that it is that package, and hand it to Android's installer, which asks the person first. Nothing of Open Shelf is bundled in our apps, and we
 have not vetted the apps it installs (the line on its tile says so).
+
+## GeoNames and Wikidata (the offline city search)
+
+`android/app/src/main/assets/cities-more.txt` (the places the settings' city search and `saver.sh city` find without the internet, built by
+`.github/tools/cities-more/build.py`) and the world part of the built-in list (`Cities.java`) are made from:
+
+- **GeoNames** (https://www.geonames.org/), cities500, through the `geonamescache` package: names, coordinates, populations and time zones,
+  under the Creative Commons Attribution 4.0 License (CC BY 4.0, https://creativecommons.org/licenses/by/4.0/). Changes: places chosen by
+  country and population, places already in the built-in list left out, coordinates rounded to four decimals.
+- **Wikidata** (https://www.wikidata.org/): the Arabic names and other Arabic spellings of those GeoNames places (by their GeoNames id, P1566)
+  and the seats of the Saudi governorates, under CC0 1.0 (public domain dedication). A snapshot is kept in `.github/tools/cities-more/sources/`.
+
+## The kick-off whistle (4.4, not third-party)
+
+`android/launcher/src/main/res/raw/kickoff_whistle.ogg` (1.2 s, about 10 KB) is not taken from anywhere: it is synthesised by
+`.github/tools/make_whistle.py` (a pea-whistle tone with its trill and a short release, numpy and ffmpeg) and dedicated to the
+public domain under CC0 1.0. Run the script again to make the same file.
+
+## The iqama chime (4.4, not third-party)
+
+`android/launcher/src/main/res/raw/iqama_chime.ogg` (2.4 s, about 9 KB) is not taken from anywhere: it is synthesised by
+`.github/tools/make_iqama_chime.py` (a soft two-note bell, G5 then E5, numpy and ffmpeg) and dedicated to the public domain under CC0 1.0.
+Run the script again to make the same file.

@@ -109,7 +109,7 @@ public final class UpdateRun {
             && !UpdateRules.answerIsOurs("", "sa.urtv.home", null) && !UpdateRules.answerIsOurs(null, "sa.urtv.home", null)
             && !UpdateRules.answerIsOurs("sa.urtv.screensaver", "sa.urtv.home", null) && !UpdateRules.answerIsOurs("sa.urtv.home", null, null)
             && !UpdateRules.answerIsOurs("sa.urtv.home", "sa.urtv.home", "com.evil.app"), "");
-        check("the order is the one of UpdateRules.APKS (screensaver, then home)", UpdateRules.APKS[0][0].equals(UpdateOrder.SAVER) && UpdateRules.APKS[1][0].equals(UpdateOrder.LAUNCHER), "");
+        check("the order is the one of UpdateRules.APKS (screensaver, then home)", UpdateRules.APKS[0][0].equals(UpdateOrder.SAVER) && UpdateRules.APKS[UpdateRules.APKS.length - 1][0].equals(UpdateOrder.LAUNCHER) && UpdateRules.APKS[1][0].equals(UpdateOrder.EXTRAS), "");
 
         // ---- the record: written before the launcher is replaced, read after the restart
         Mem disk = new Mem();
@@ -159,7 +159,7 @@ public final class UpdateRun {
         check("up to date: «تلفزيونك محدّث: 4.0»", "تلفزيونك محدّث: 4.0".equals(bare(UpdateText.upToDate(UpdateText.versionOf("4.0", 52)))), bare(UpdateText.upToDate(UpdateText.versionOf("4.0", 52))));
         check("the version is isolated inside the Arabic line", UpdateText.installed("4.0").contains("⁧" + "4.0" + "⁩"), "");
         check("no network: «ما فيه اتصال بالإنترنت»", "ما فيه اتصال بالإنترنت".equals(UpdateText.OFFLINE), "");
-        check("available: «تحديث جديد 4.0 · اضغط للتحديث»", "تحديث جديد 4.0 · اضغط للتحديث".equals(bare(UpdateText.available(UpdateText.versionOf("4.0", 52)))), "");
+        check("available: «تحديث جديد 4.0، اضغط للتحديث»", "تحديث جديد 4.0، اضغط للتحديث".equals(bare(UpdateText.available(UpdateText.versionOf("4.0", 52)))), "");
         check("done: «تم التحديث ✓ 3.N»", "تم التحديث ✓ 3.52".equals(bare(UpdateText.done("3.52"))), "");
         check("not completed: «ما اكتمل التحديث», and the step", "ما اكتمل التحديث".equals(UpdateText.NOT_DONE) && UpdateText.failedStep(UpdateOrder.label(UpdateOrder.LAUNCHER)).contains("الواجهة")
             && !UpdateOrder.label(UpdateOrder.SAVER).equals(UpdateOrder.label(UpdateOrder.LAUNCHER)), "");

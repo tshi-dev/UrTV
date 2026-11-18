@@ -87,7 +87,7 @@ final class Places {
         "منطقة جازان", "Jazan Region", "صبيا", "Sabya", "جازان", "Jazan", "أبو عريش", "Abu Arish", "فيفاء", "Fifa", "صامطة", "Samtah",
         "ضمد", "Damad", "الظبية", "Adh Dhabyah", "فرسان", "Farasan", "ذهبان", "Dhahban", "الجرادية", "Al Jaradiyah", "مسلية", "Muslliyah",
         "الشقيري", "Ash Shuqayri", "مزهرة", "Mizhirah", "الدرب", "Ad Darb", "الشقيق", "Ash Shuqaiq", "العارضة", "Al Aridah", "بيش", "Baish",
-        "الريث", "Ar Rayth", "العيدابي", "Al Idabi", "الحرث", "Al Harth", "منطقة نجران", "Najran Region", "نجران", "Najran",
+        "الريث", "Ar Rayth", "العيدابي", "Al Idabi", "الحرث", "Al Harth", "أحد المسارحة", "Ahad al Masarihah", "منطقة نجران", "Najran Region", "نجران", "Najran",
         "المشعلية", "Al Mashaliyah", "حبونا", "Habuna", "الوديعة", "Al Wadiah", "خباش", "Khubash", "يدمة", "Yadamah", "بدر الجنوب", "Badr Al Janub",
         "شرورة", "Sharurah", "ثار", "Thar", "منطقة الباحة", "Al Bahah Region", "الباحة", "Al Bahah", "بلجرشي", "Baljurashi", "العقيق", "Al Aqiq",
         "المندق", "Al Mandaq", "المخواة", "Al Mikhwah", "قلوة", "Qilwah", "القرى", "Al Qura", "منطقة الجوف", "Al Jawf Region", "سكاكا", "Sakaka",

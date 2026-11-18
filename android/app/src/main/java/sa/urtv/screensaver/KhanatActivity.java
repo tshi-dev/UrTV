@@ -16,7 +16,7 @@ import java.util.Random;
  * each box is judged by the group and marked team by team. In English UrTV the letters are A to Z and the examples the English names.
  */
 public class KhanatActivity extends GameActivity {
-    enum Screen { SETUP, LETTER, WRITING, WHO, REVEAL, SCORE, END }
+    enum Screen { SETUP, LOBBY, LETTER, WRITING, WHO, REVEAL, SCORE, END }
 
     static final int[] ROUNDS = {3, 5, 8}, SECONDS = {60, 90, 0}, COUNTS = {2, 3, 4, 5, 6, 7, 8, 9, 10};
     /** teams: 2 to 4 (the first three counts); individual mode: 2 to 10 players (GameScore.MAX) */
@@ -42,31 +42,87 @@ public class KhanatActivity extends GameActivity {
             .add("mode", S.t("نوع اللعب"), new String[]{S.t("فرق"), S.t("أفراد")}, 0)
             .add("count", S.t("العدد"), new String[]{num(2), num(3), num(4), num(5), num(6), num(7), num(8), num(9), num(10)}, 0)
             .add("boxes", S.t("الخانات"), new String[]{num(5), S.t("%s مع أكلة", num(6)), S.t("%s مع مدينة سعودية", num(6))}, 0)
-            .add("hard", S.t("حروف صعبة"), new String[]{S.tv(ON_OFF[0]), S.tv(ON_OFF[1])}, 0);
+            .add("hard", S.t("حروف صعبة"), new String[]{S.tv(ON_OFF[0]), S.tv(ON_OFF[1])}, 0)
+            .add("phones", S.t("اللعب بالجوالات"), new String[]{S.tv(ON_OFF[0]), S.tv(ON_OFF[1])}, 0);
         remembered(soundChip(chips));
+        chips.get("phones").picked = getIntent().getBooleanExtra("phones", false) ? 1 : 0;   // off unless the «بالجوالات» view opened this game; never kept from last time
         onChips(chips);
     }
 
     /** teams are 2 to 4; with «أفراد» every count to ten is offered */
     @Override protected void onChips(GameChips c) { for (int i = MAX_TEAMS - 1; i < COUNTS.length; i++) c.setOff("count", i, c.picked("mode") == 0); }
     private boolean solo() { return chips.picked("mode") == 1; }
-    private String[] playerNames(int n) { String[] v = new String[n]; for (int i = 0; i < n; i++) v[i] = S.t("لاعب %s", num(i + 1)); return v; }
+    @Override protected String namesKind() { return solo() ? "players" : "teams"; }
+    @Override protected int namesCount() { return COUNTS[chips.picked("count")]; }
 
-    @Override protected boolean inPlay() { return screen != Screen.SETUP && screen != Screen.END; }
+    @Override protected boolean inPlay() { return screen != Screen.SETUP && screen != Screen.LOBBY && screen != Screen.END; }
     @Override protected void onPauseChanged(boolean paused, long now) { if (paused) clock.pause(now); else clock.resume(now); }
     @Override protected void onEndRound() { if (game != null) { game.finish(); clock.stop(); go(Screen.END); play(QuizSound.FANFARE); } }
 
     private String boxName(String key) { for (int i = 0; i < BOX_KEYS.length; i++) if (BOX_KEYS[i].equals(key)) return S.tv(BOX_NAMES[i]); return key; }
-    private void go(Screen s) { screen = s; sel = 0; examples = false; redraw(); }
+    private void go(Screen s) {
+        if (s == Screen.REVEAL && screen != Screen.REVEAL && onPhones()) { collect(); autoMark(); }
+        screen = s; sel = 0; examples = false; redraw();
+    }
+
+    // ---------------------------------------------------------------- with phones: every phone is a player and types its answers
+
+    private String[][] typedAns = new String[0][0];   // [side][box]: what each phone typed
+    private int firstSeat = -1; private long graceAt;
+    private boolean onPhones() { return phones != null && phones.room.phase() == GamePhoneRoom.Phase.PLAY; }
+    /** the boxes' forms go to every phone: the round's letter and one field per box */
+    private void sendForms() {
+        if (!onPhones()) return;
+        String[] labels = new String[game.boxes.length];
+        for (int i = 0; i < labels.length; i++) labels[i] = boxName(game.boxes[i]);
+        for (int i = 0; i < phones.room.count(); i++) phones.room.card(i, GamePhoneRoom.TEXT, "", S.t("كلمة لكل خانة تبدأ بحرف %s", game.letter), "", labels, null, -1);
+        firstSeat = -1; graceAt = 0;
+    }
+    /** what the phones typed, into [side][box] (empty where nothing was typed) */
+    private void collect() {
+        typedAns = new String[game.score.n][game.boxes.length];
+        for (int i = 0; i < typedAns.length; i++) {
+            String[] t = i < phones.room.count() ? phones.room.typed(i) : null;
+            for (int b = 0; b < game.boxes.length; b++) typedAns[i][b] = t == null || b >= t.length ? "" : t[b];
+        }
+        phones.room.waitAll(S.t("شوفوا التلفزيون"));
+    }
+    /** the host's first guess for this box: nothing for an empty answer or one that does not start with the letter, «مكررة» when another player wrote the same word, else «صحيحة»; the host can change any tile */
+    private void autoMark() {
+        if (!onPhones() || game.phase != KhanatEngine.Phase.REVEAL) return;
+        int n = game.score.n, b = game.box; String lead = MissingWord.fold(game.letter);
+        String[] f = new String[n];
+        for (int i = 0; i < n; i++) f[i] = MissingWord.fold(typedAns[i][b]);
+        for (int i = 0; i < n; i++) {
+            boolean ok = !f[i].isEmpty() && !lead.isEmpty() && f[i].charAt(0) == lead.charAt(0), dup = false;
+            for (int j = 0; j < n; j++) if (j != i && f[j].equals(f[i])) dup = true;
+            game.set(i, !ok ? KhanatEngine.NONE : dup ? KhanatEngine.SAME : KhanatEngine.VALID);
+        }
+    }
+    private void startWithPhones() {
+        int n = phones.room.count();
+        if (n < 2) return;
+        if (n > GameScore.MAX) { toast(S.t("اللعبة تتسع لعشرة لاعبين")); return; }
+        phones.room.start(); phoneLobby = false;
+        begin(n, phones.room.names().toArray(new String[0]));
+    }
 
     private void start() {
+        if (chips.picked("phones") == 1) {
+            if (!onPhones()) { if (data == null || data.letters(en, false).size() < 10) { toast(S.t("قريبًا")); return; } if (!openPhones()) return; screen = Screen.LOBBY; phoneLobby = true; redraw(); return; }
+            begin(phones.room.count(), phones.room.names().toArray(new String[0]));
+            return;
+        }
+        closePhones();   // the switch is off: the remote plays alone, as it always did
+        begin(COUNTS[chips.picked("count")], null);
+    }
+    private void begin(int teams, String[] phoneNames) {
         if (data == null || data.letters(en, false).size() < 10) { toast(S.t("قريبًا")); return; }
         int sixth = chips.picked("boxes"), n = sixth == 0 ? 5 : 6;
         String[] boxes = new String[n];
         System.arraycopy(BOX_KEYS, 0, boxes, 0, 5);
         if (n == 6) boxes[5] = BOX_KEYS[4 + sixth];
-        int teams = COUNTS[chips.picked("count")];
-        names = solo() ? playerNames(teams) : teamNames(teams);
+        names = phoneNames != null ? phoneNames : solo() ? playerNames(teams) : teamNames(teams);
         game = new KhanatEngine(teams, ROUNDS[chips.picked("rounds")], boxes, data.letters(en, chips.picked("hard") == 1), rnd);
         beginLetter();
     }
@@ -75,6 +131,7 @@ public class KhanatActivity extends GameActivity {
         game.write();
         clock.start(SECONDS[chips.picked("time")] * 1000L, System.currentTimeMillis());
         go(Screen.WRITING);
+        sendForms();
     }
 
     // ---------------------------------------------------------------- the clock
@@ -87,6 +144,12 @@ public class KhanatActivity extends GameActivity {
             else if (t >= LETTER_MS) beginWriting();
         } else if (screen == Screen.WRITING && clock.running()) {
             if (timer != null) timer.set(clock.leftSeconds(now));
+            if (onPhones()) {   // the first phone to send ends the writing for everyone after a short grace; when every phone has sent, at once
+                if (firstSeat < 0) { int f = phones.room.firstReplied(); if (f >= 0) { firstSeat = f; graceAt = now + 8000; play(QuizSound.CHIME); redraw(); } }
+                if (firstSeat >= 0 && (now >= graceAt || phones.room.repliedCount() >= phones.room.active())) {
+                    clock.stop(); game.stop(true); game.finishedFirst(firstSeat); go(Screen.REVEAL); return;
+                }
+            }
             if (clock.over(now)) { clock.stop(); game.stop(false); play(QuizSound.LOW); go(Screen.REVEAL); }
         }
     }
@@ -96,6 +159,7 @@ public class KhanatActivity extends GameActivity {
     @Override protected void onKey(boolean back, boolean ok, int dx, int dy) {
         switch (screen) {
             case SETUP: if (keySetup(chips, back, ok, dx, dy)) start(); return;
+            case LOBBY: if (back) { closePhones(); go(Screen.SETUP); } else if (ok) startWithPhones(); return;
             case LETTER: if (back) openPause(); else if (ok) { settled = true; beginWriting(); } return;
             case WRITING: if (back) openPause(); else if (ok) { clock.stop(); game.stop(true); go(Screen.WHO); } return;
             case WHO: {
@@ -131,7 +195,7 @@ public class KhanatActivity extends GameActivity {
         else if (sel == n + 1) { examples = !examples; redraw(); }
         else {
             game.nextBox();
-            if (game.phase == KhanatEngine.Phase.SCORE) { go(Screen.SCORE); play(QuizSound.CHIME); } else { sel = 0; examples = false; redraw(); }
+            if (game.phase == KhanatEngine.Phase.SCORE) { go(Screen.SCORE); play(QuizSound.CHIME); } else { autoMark(); sel = 0; examples = false; redraw(); }
         }
     }
 
@@ -143,6 +207,7 @@ public class KhanatActivity extends GameActivity {
         timer = null; spinView = null;
         switch (screen) {
             case SETUP: setup(chips, S.t("ابدأ")); break;
+            case LOBBY: drawPhoneLobby(2, GameScore.MAX); break;
             case LETTER: drawLetter(); break;
             case WRITING: drawWriting(); break;
             case WHO: drawWho(); break;
@@ -181,6 +246,7 @@ public class KhanatActivity extends GameActivity {
         int secs = SECONDS[chips.picked("time")];
         if (secs > 0) { timer = new TickTimer(secs, 452); timer.set(clock.leftSeconds(System.currentTimeMillis())); }
         boxTiles(568, 200, -1);
+        if (onPhones() && firstSeat >= 0) root.addView(centered(S.t("%s خلّص، باقي الباقين ثواني", phones.room.name(firstSeat)), 56, L.ink, true), at(1728, 80, 96, 690));
         sidesBar(game.score, names, -1, 800);
         hints(S.t("اختيار"), S.t("خلّصنا"), S.t("رجوع"), S.t("إيقاف مؤقت"));
     }
@@ -211,7 +277,7 @@ public class KhanatActivity extends GameActivity {
             float[] r = KhanatLayout.tile(n, i), w = r;
             FrameLayout t = stamp(st == KhanatEngine.VALID ? L.ok : st == KhanatEngine.SAME ? L.saff : L.tile, L.ink, focus ? 14 : 6, false);
             int words = st == KhanatEngine.VALID ? L.onDeep : st == KhanatEngine.SAME ? L.onSaff : L.ink;
-            String verdict = st == KhanatEngine.VALID ? S.t("صحيحة") : st == KhanatEngine.SAME ? S.t("مكررة") : S.t("بدون");
+            String verdict = onPhones() && !typedAns[i][game.box].isEmpty() ? typedAns[i][game.box] : st == KhanatEngine.VALID ? S.t("صحيحة") : st == KhanatEngine.SAME ? S.t("مكررة") : S.t("بدون");   // with phones the tile shows what was typed; its colour and points are the verdict
             String plus = "⁦+" + num(KhanatEngine.points(st)) + "⁩";
             if (compact) {   // two rows: the name on top, the verdict and the points below it
                 t.addView(centered(clip(names[i], 44, w[2] - 40), 44, words, true), new FrameLayout.LayoutParams(-1, px(64), Gravity.TOP));

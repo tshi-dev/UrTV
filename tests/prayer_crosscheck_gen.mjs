@@ -41,11 +41,13 @@ const METHOD = {
   // 100 is ours, not Aladhan's: Oman's Ministry of Awqaf and Religious Affairs, Fajr 18, Isha 18, Dhuhr/Asr/Maghrib +5, as fitted by
   // egyjs/afnon-android-tv-launcher (MIT, Method.OMAN_AWQAF) to the ministry's 2026 timetable (adhan's own PrayerAdjustments(0, 0, 5, 5, 5, 0))
   100: { fajr: 18, isha: 18, adj: { dhuhr: 5, asr: 5, maghrib: 5 } },
+  // 101 is ours: Libya, fitted to the Benghazi 2026 table (PR #23)
+  101: { fajr: 18, isha: 17, adj: { dhuhr: 1 } },
 };
 const ZONE_METHOD = {
   'Asia/Riyadh': 4, 'Asia/Kuwait': 9, 'Asia/Qatar': 10, 'Asia/Dubai': 16, 'Asia/Bahrain': 8, 'Asia/Muscat': 100,
   'Africa/Cairo': 5, 'Asia/Damascus': 5, 'Asia/Beirut': 5, 'Asia/Gaza': 5, 'Asia/Hebron': 5,
-  'Asia/Amman': 23, 'Africa/Casablanca': 21, 'Africa/Algiers': 19, 'Africa/Tunis': 18,
+  'Asia/Amman': 23, 'Africa/Casablanca': 21, 'Africa/Algiers': 19, 'Africa/Tunis': 18, 'Africa/Tripoli': 101,
 };
 
 // ---- dates. Ramadan is the official Umm al-Qura month 9 (tests/hijri_crosscheck.tsv): 1447 = 2026-02-18..03-19, 1448 = 2027-02-08..03-08

@@ -74,7 +74,7 @@ EXTRA = [
     ("15", "رفحاء", 29.6264, 43.4931), ("15", "العويقيلة", 30.3333, 42.2500),
     ("17", "العارضة", 17.0333, 43.0667), ("17", "بيش", 17.3833, 42.5167),
     ("17", "الريث", 17.6333, 43.0833), ("17", "العيدابي", 17.2333, 43.1000),
-    ("17", "الحرث", 16.8000, 43.1167),
+    ("17", "الحرث", 16.8000, 43.1167), ("17", "أحد المسارحة", 16.7079, 42.9552),   # 4.4 a user report: the governorate's seat
     ("16", "شرورة", 17.4667, 47.1167), ("16", "حبونا", 17.8475, 44.0211),
     ("16", "ثار", 17.8667, 44.3000),
     ("02", "المخواة", 19.7667, 41.4333), ("02", "قلوة", 19.9333, 41.2667),
@@ -172,7 +172,7 @@ ARAB = [
 
 METHOD_IDS = {"MWL": 3, "ISNA": 2, "KARACHI": 1, "KEMENAG": 20, "JAKIM": 17,
               "SINGAPORE": 11, "DIYANET": 13, "FRANCE_UOIF": 12, "RUSSIA": 14,
-              "MOONSIGHTING": 15, "EGYPT": 5, "MOROCCO": 21}
+              "MOONSIGHTING": 15, "EGYPT": 5, "MOROCCO": 21, "LIBYA": 101}
 
 
 def world_regions(root):
@@ -180,6 +180,8 @@ def world_regions(root):
     out = []
     for cc, iterator in groupby(data, key=lambda c: c['country']):
         cities = list(iterator)
+        if cc == 'LY':   # Libya's own calculation (id 101, fitted to the Benghazi 2026 table of PR #23), not Egypt's
+            for c in cities: c['method'] = 'LIBYA'
         assert len({c['method'] for c in cities}) == 1
         # Packed strings avoid the JVM's 64 KB initializer limit. Each chunk is
         # comfortably below the 65535-byte modified-UTF8 string-constant limit.

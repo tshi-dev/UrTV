@@ -39,7 +39,8 @@ check("the level the adhan set is kept on disk with the saved volume", "setAdhan
 
 # Fajr voice
 check("the alarm carries which prayer it is for, and the receiver plays Fajr's voice at Fajr",
-      "EXTRA_PRAYER" in text("AdhanScheduler.java") and "prefs.playVoiceFor(context, prayer == PrayerTimes.FAJR)" in receiver)
+      "EXTRA_PRAYER" in text("AdhanScheduler.java") and "prefs.playFor(context, prayer)" in receiver
+      and "playVoiceFor(c, prayer == PrayerTimes.FAJR)" in prefs)   # 4.4: playFor is the general voice (Fajr's at Fajr) unless «أذان كل صلاة» chose another
 check("choosing a voice for one never moves the other (the Fajr choice is written down first)", prefs.count("freezeFajr();") >= 3)
 check("the usual voice is never a Fajr recording", "AdhanVoices.normalVoice(" in prefs)
 

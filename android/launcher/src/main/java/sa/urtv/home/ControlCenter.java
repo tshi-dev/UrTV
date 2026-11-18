@@ -21,7 +21,6 @@ import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
-import android.view.animation.DecelerateInterpolator;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -61,21 +60,27 @@ final class ControlCenter {
         void openSleep(View anchor);   // «مؤقت النوم» popup, locked by «@sleep»
         boolean saverInstalled();
         Typeface font(String family);
+        /** 4.3.3: today's Fajr, Dhuhr, Asr, Maghrib and Isha (ms) and 1 on a Friday, as the adhan bar reads them; null when unknown */
+        long[] adhanTimes();
+        /** a time as the home's clock writes it (the city's zone, 12 or 24 hours, the digits chosen) */
+        String clock(long ms);
     }
 
     /** the panel: 560 px of 1920 wide, inside the 5 % safe area (x from 96, y from 54 to 1026 at 1080p) */
     static final float PANEL_W = 560f / 1920f, SAFE = 0.05f;
     /** the slide-in, and the focus fill coming in (ms) */
-    static final int SLIDE_MS = 220, FOCUS_MS = 170;
+    static final int SLIDE_MS = (int) Motion.MS, FOCUS_MS = (int) Motion.MS;   // 4.4 the same easing everywhere (Motion)
     /** the most rows the panel shows; the four round toggles are not counted */
     static final int MAX_ROWS = 8;   // 4.3.1: ours, the games and the city joined the six
     /** the round toggles, in this order; every other item is a row */
     static final String[] TOGGLES = {"bluetooth", "mirror", "sleep", "off"};
     /** the rows' order before the person moves any; «شاشة التوقف» is unticked until they ask for it (its own pill is on the home) */
-    static final String[] ROWS = {"net", "sound", "speed", "ours", "games", "city", "tv", "saver"};   // 4.3.1: ours before the TV's, the city beside it
+    static final String[] ROWS = {"net", "sound", "speed", "ours", "games", "city", "adhan", "tv", "apps", "saver", "black"};   // 4.3.1: ours before the TV's, the city beside it; 4.3.3: «الأذان والإقامة»; 4.4 #62: the black screen
     /** the order before 4.3.1 (ours after the TV's): saved by anyone who opened the editor, never a choice, so it follows the new default */
     static final String OLD_DEFAULT = "net,sound,speed,tv,ours,saver";
-    static final String[] DEFAULT_OFF = {"saver"};
+    static final String[] DEFAULT_OFF = {"saver", "apps"};
+    /** rows added after 4.4 that stay unticked for anyone who saved the editor before they existed (their `known` list lacks them): PR #18's «إدارة التطبيقات» */
+    static final String[] LATE_OFF = {"apps"};
 
     // the glass look the home shows (GlassSource.look, when the panel opens): the panel opaque over the look's solid colour (it sits over the
     // home's photo as it is), the rows a glass panel on it, the focused one the solid focus fill; GlassStyle checks each of them
@@ -122,13 +127,24 @@ final class ControlCenter {
      * settings, which every TV has, and never the sound screen again (no crash loop). The mark is kept on this TV.
      */
     static final long SOUND_FAIL_MS = 3500;
+    /** 4.3.3: where the crash leaves its «keeps stopping» window up for a moment the return is later: two returns in a row within this are the crash too */
+    static final long SOUND_SLOW_FAIL_MS = 10_000;
 
     private void soundReturned() {
         long t = prefs().getLong("sound_t", 0);
         if (t == 0) return;
+        long away = System.currentTimeMillis() - t;
+        int quick = prefs().getInt("sound_quick", 0);
         SharedPreferences.Editor e = prefs().edit().remove("sound_t");
-        if (System.currentTimeMillis() - t < SOUND_FAIL_MS) e.putBoolean("sound_bad", true);
+        if (soundBroken(away, quick)) e.putBoolean("sound_bad", true);
+        e.putInt("sound_quick", away >= 0 && away < SOUND_SLOW_FAIL_MS ? quick + 1 : 0);
         e.apply();
+    }
+
+    /** the sound screen crashed: back within SOUND_FAIL_MS, or within SOUND_SLOW_FAIL_MS for the second time in a row (quickBefore: such returns just before) */
+    static boolean soundBroken(long away, int quickBefore) {
+        if (away < 0) return false;   // the clock moved back
+        return away < SOUND_FAIL_MS || (away < SOUND_SLOW_FAIL_MS && quickBefore >= 1);
     }
 
     /** one thing the panel can show: a round toggle or a row */
@@ -169,20 +185,43 @@ final class ControlCenter {
                 Intent sound = soundIntent();
                 if (Settings.ACTION_SOUND_SETTINGS.equals(sound.getAction())) prefs().edit().putLong("sound_t", System.currentTimeMillis()).apply();   // soundReturned reads it
                 host.launchGuarded(ParentalPolicy.PILL_TV_SETTINGS, sound, S.t("إعدادات الصوت"));
-            } catch (RuntimeException e) {   // A6: the TCL G07 crashed here: the tile must never take the home down; the log says what it was
+            } catch (RuntimeException | LinkageError e) {   // A6: the TCL G07 crashed here: the tile must never take the home down; the log says what it was
                 android.util.Log.w("UrTVControl", "sound tile failed " + e.getClass().getSimpleName());
+                try { host.launchGuarded(ParentalPolicy.PILL_TV_SETTINGS, new Intent(Settings.ACTION_SETTINGS), S.t("إعدادات التلفزيون")); }   // the TV's settings instead of nothing
+                catch (RuntimeException | LinkageError ignored) { }
             }
         });
+        // 4.3.3 «الأذان والإقامة»: the next prayer's adhan and iqama times (the home's own, as its adhan bar), OK plays the muezzin it will have for a few seconds
+        final long[] times = host.adhanTimes();
+        final int next = ControlText.nextPrayer(times, System.currentTimeMillis());   // -1: after Isha (tomorrow's Fajr is next) or no times
+        String adhanValue = ControlText.ADHAN_HINT;
+        if (next >= 0) {
+            long iq = ControlText.iqamaAt(times, next);
+            adhanValue = ControlText.adhanLine(S.tv(ControlText.prayerName(next, times)), host.clock(times[next]), iq > 0 ? host.clock(iq) : "");
+        }
+        final Item adhan = tile("adhan", ControlText.ADHAN, adhanValue, R.drawable.ic_listen, null);
+        adhan.action = () -> {
+            try {
+                sa.urtv.home.tilawah.AdhanPreview.play(act, sa.urtv.home.tilawah.AdhanPreview.prayerOf(next));   // 4.4: that prayer's own muezzin and level (Fajr's for Fajr, today's or tomorrow's)
+                adhan.setValue(S.t("يُسمع الآن"));
+            } catch (RuntimeException e) {
+                android.util.Log.w("UrTVControl", "adhan preview failed " + e.getClass().getSimpleName());
+            }
+        };
         Item test = tile("speed", S.t("اختبار السرعة"), S.t("اضغط اختيار للبدء"), R.drawable.ic_speed, null);
         test.action = () -> speedTest(test);
         tile("sleep", S.t("مؤقت النوم"), sleepLine(), R.drawable.ic_sleep, () -> { dismiss(); host.openSleep(anchor); });
-        Item off = tile("off", S.t("أطفئ الآن"), SleepService.enabled() ? S.t("تُطفأ الشاشة فورًا") : S.t("يحتاج تفعيل، اضغط للتفعيل"),
+        Item off = tile("off", S.t("أطفئ الآن"), Extras.enabled() ? S.t("تُطفأ الشاشة فورًا") : S.t("يحتاج تفعيل، اضغط للتفعيل"),
                 R.drawable.ic_power, null);
         off.action = () -> turnOffNow();
-        off.hold = () -> {   // a long OK: where the sleep service is turned on, behind the same lock as the sleep timer's own line
+        off.hold = () -> {   // a long OK: «إضافات تلفزيونك» (install it, or turn its service on), behind the same lock as the sleep timer's own line
             dismiss();
-            host.launchGuarded(ParentalPolicy.SLEEP_ACCESSIBILITY, new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS), "إعدادات التلفزيون");
+            host.launchGuarded(ParentalPolicy.SLEEP_ACCESSIBILITY, Extras.intent(act, "sleep"), "إعدادات التلفزيون");
         };
+        // 4.4 #62 «شاشة سوداء»: only while a surah or a station is on; behind the «تلاوة وأذان» lock, as the player is
+        if (sa.urtv.home.tilawah.NowPlaying.read(act).show)
+            tile("black", S.t("شاشة سوداء"), S.t("الصوت يستمر والصورة تنطفئ"), R.drawable.ic_power,
+                    () -> { dismiss(); host.launchGuarded(ParentalPolicy.PILL_LISTEN, sa.urtv.home.tilawah.BlackScreenActivity.open(act), "تلاوة وأذان"); });
         // «انعكاس الشاشة»: the TV's own mirroring app (ControlText.MIRROR_APPS), only when one is installed; locked as that app's own tile is
         final Intent mirror = mirrorIntent();
         if (mirror != null)
@@ -199,6 +238,11 @@ final class ControlCenter {
         if (upd != null) tile("update", upd, "", R.drawable.ic_update, () -> { dismiss(); host.openUpdate(); });
         tile("tv", S.t("الإعدادات"), S.t("إعدادات التلفزيون"), R.drawable.ic_settings,
                 () -> { dismiss(); host.launchGuarded(ParentalPolicy.PILL_TV_SETTINGS, new Intent(Settings.ACTION_SETTINGS), "إعدادات التلفزيون"); });
+        // PR #18 «إدارة التطبيقات»: the TV's own apps screen (remove, stop, permissions); unticked until asked for, only when one of the actions resolves
+        final Intent apps = appsIntent();
+        if (apps != null)
+            tile("apps", ControlText.APPS, ControlText.APPS_HINT, R.drawable.ic_store,
+                    () -> { dismiss(); host.launchGuarded(ParentalPolicy.PILL_TV_SETTINGS, apps, ControlText.APPS); });
 
         android.util.DisplayMetrics dm = act.getResources().getDisplayMetrics();
         final int W = dm.widthPixels, H = dm.heightPixels;
@@ -251,11 +295,12 @@ final class ControlCenter {
             if (start != null) lastKey = start;
             showMain();
         }
-        // the slide: from beyond its own edge to its place in 220 ms
-        if (wideNow) panel.setAlpha(0f); else panel.setTranslationX((rtl ? 1 : -1) * (panelW + margin));
+        // the slide: from beyond its own edge to its place in Motion.MS on the one curve; a weak TV («الوضع الخفيف») and the wide page fade in where they stand
+        final boolean fade = wideNow || Ram.low(anchor.getContext());
+        if (fade) panel.setAlpha(0f); else panel.setTranslationX((rtl ? 1 : -1) * (panelW + margin));
         pw.showAtLocation(anchor.getRootView(), Gravity.NO_GRAVITY, 0, 0);   // the whole screen, from its corner
-        panel.post(() -> { if (wideNow) panel.animate().alpha(1f).setDuration(SLIDE_MS).start();   // the wide page comes in where it stands
-            else panel.animate().translationX(0).setDuration(SLIDE_MS).setInterpolator(new DecelerateInterpolator()).start(); });
+        panel.post(() -> { if (fade) panel.animate().alpha(1f).setDuration(SLIDE_MS).setInterpolator(Motion.ease()).start();
+            else panel.animate().translationX(0).setDuration(SLIDE_MS).setInterpolator(Motion.ease()).start(); });
     }
 
     // ---------------------------------------------------------------- what is kept on this TV
@@ -264,7 +309,12 @@ final class ControlCenter {
 
     private Set<String> unticked() {
         String v = prefs().getString("off", null);
-        return new HashSet<>(Arrays.asList(v == null ? DEFAULT_OFF : v.isEmpty() ? new String[0] : v.split(",")));
+        Set<String> off = new HashSet<>(Arrays.asList(v == null ? DEFAULT_OFF : v.isEmpty() ? new String[0] : v.split(",")));
+        if (v != null) {   // saved before a late row existed: it joins unticked, not on top of what they chose
+            String known = prefs().getString("known", "");
+            for (String k : LATE_OFF) if (!Arrays.asList(known.split(",")).contains(k)) off.add(k);
+        }
+        return off;
     }
 
     /** the rows this TV can show, in the person's order (the default order for any they have not placed) */
@@ -297,7 +347,7 @@ final class ControlCenter {
         StringBuilder r = new StringBuilder(), o = new StringBuilder();
         for (Item it : rows) r.append(r.length() > 0 ? "," : "").append(it.key);
         for (String k : off) o.append(o.length() > 0 ? "," : "").append(k);
-        prefs().edit().putString("rows", r.toString()).putString("off", o.toString()).apply();
+        prefs().edit().putString("rows", r.toString()).putString("off", o.toString()).putString("known", android.text.TextUtils.join(",", LATE_OFF)).apply();
     }
 
     private void reset() { prefs().edit().remove("rows").remove("off").apply(); }
@@ -305,7 +355,7 @@ final class ControlCenter {
     // ---------------------------------------------------------------- the main view
 
     /** «أطفئ الآن» while the sleep service is off: its round toggle says so under the name */
-    private static boolean needsOn(Item it) { return it != null && it.key.equals("off") && !SleepService.enabled(); }
+    private static boolean needsOn(Item it) { return it != null && it.key.equals("off") && !Extras.enabled(); }
 
     private Item tile(String key, String title, String value, int icon, Runnable action) {
         Item it = new Item(key, S.tv(title), S.tv(value), icon);   // a name or line given as our Arabic words (ControlText's) is said in «اللغة»; one already said stays
@@ -609,6 +659,8 @@ final class ControlCenter {
     /** One focusable thing in the panel; its fill comes in over FOCUS_MS when it has the focus, solid, with the look's ink over it. */
     private final class Cell extends LinearLayout {
         static final int TOGGLE = 0, ROW = 1, CHECK = 2, PILL = 3, PRIMARY = 4, BACK = 5;
+        /** 4.4: «تخصيص», «شكل لوحة التحكم», «إعادة الترتيب», «تم»: plain words at rest (no outline), an 8 dp rounded fill on focus, never a capsule */
+        static final int WORD_RADIUS = 8;
         final int kind;
         final Item item;
         boolean ticked;
@@ -626,7 +678,7 @@ final class ControlCenter {
             setFocusable(true);
             setClickable(true);
             setId(View.generateViewId());
-            fill.setCornerRadius(dp(kind == PILL || kind == PRIMARY ? 16 : 12));
+            fill.setCornerRadius(dp(kind == PILL || kind == PRIMARY ? WORD_RADIUS : 12));   // 4.4 the owner (no pills): a word, its focus a rounded square
             if (kind == TOGGLE) buildToggle();
             else if (kind == ROW) buildRow();
             else if (kind == CHECK) buildCheck();
@@ -755,14 +807,13 @@ final class ControlCenter {
             if (animate) {
                 anim = ValueAnimator.ofArgb(shown, target);
                 anim.setDuration(FOCUS_MS);
-                anim.setInterpolator(new DecelerateInterpolator());
+                anim.setInterpolator(Motion.ease());
                 anim.addUpdateListener(a -> shape.setColor((Integer) a.getAnimatedValue()));
                 anim.start();
             } else shape.setColor(target);
             shown = target;
-            if (RING != 0) shape.setStroke(f ? dp(3) : kind == TOGGLE || kind == PILL ? Math.max(1, dp(1)) : 0, f ? RING : LINE);   // «رملي»: a calm focus, a green line round a soft fill
+            if (RING != 0) shape.setStroke(f ? dp(3) : kind == TOGGLE ? Math.max(1, dp(1)) : 0, f ? RING : LINE);   // «رملي»: a calm focus, a green line round a soft fill
             else if (kind == TOGGLE && !f) shape.setStroke(Math.max(1, dp(1)), SleepTimer.minutesLeft(act) > 0 && item.key.equals("sleep") ? ACCENT : LINE);
-            else if (kind == PILL && !f) shape.setStroke(Math.max(1, dp(1)), LINE);
             else shape.setStroke(0, 0);
             if (name != null) name.setTextColor(kind == TOGGLE ? TEXT : ink);
             if (value != null) value.setTextColor(f ? ON_SUB : SUB);
@@ -868,6 +919,15 @@ final class ControlCenter {
         return action == null ? null : new Intent(action);
     }
 
+    /** the first apps screen this TV can open (ControlText.appsAction), or null when none resolves */
+    private Intent appsIntent() {
+        android.content.pm.PackageManager pm = act.getPackageManager();
+        String action = ControlText.appsAction(a -> {
+            try { return pm.resolveActivity(new Intent(a), 0) != null; } catch (RuntimeException e) { return false; }
+        });
+        return action == null ? null : new Intent(action);
+    }
+
     /** the sound settings if this TV has them (the public action), else the TV's settings: never an intent that does not resolve */
     private Intent soundIntent() {
         Intent sound = new Intent(Settings.ACTION_SOUND_SETTINGS);
@@ -886,10 +946,9 @@ final class ControlCenter {
      * lock as the sleep timer's own line) with a line saying which service to turn on; there is no silent fallback here any more («شاشة التوقف» next to it starts the screensaver).
      */
     private void turnOffNow() {
-        if (SleepService.enabled()) { dismiss(); SleepTimer.turnOff(act); return; }
+        if (Extras.enabled()) { dismiss(); SleepTimer.turnOff(act); return; }
         dismiss();
-        android.widget.Toast.makeText(act, S.t("فعّل «%s»", act.getString(R.string.sleep_service_label)), android.widget.Toast.LENGTH_LONG).show();
-        host.launchGuarded(ParentalPolicy.SLEEP_ACCESSIBILITY, new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS), "إعدادات التلفزيون");
+        host.launchGuarded(ParentalPolicy.SLEEP_ACCESSIBILITY, Extras.intent(act, "sleep"), "إعدادات التلفزيون");   // 4.3.3: the offer of «إضافات تلفزيونك»
     }
 
     // ---------------------------------------------------------------- «اختبار السرعة»
@@ -899,7 +958,7 @@ final class ControlCenter {
         if (speed != null) {
             speed.cancel();
             speed = null;
-            t.setValue(S.t("أُلغي · اضغط اختيار للبدء"));
+            t.setValue(S.t("أُلغي، اضغط اختيار للبدء"));
             return;
         }
         final SpeedTest test = new SpeedTest();

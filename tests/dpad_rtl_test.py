@@ -57,7 +57,7 @@ for f, want in pairs.items():
     check(f"{f}: its ◀▶ ids are the Arabic ones with Dir.rtl(), swapped in English", all(w in src_f for w in want), [w for w in want if w not in src_f])
 listen = (HOME / "tilawah/MainActivity.java").read_text(encoding="utf-8")
 check("«تلاوة وأذان»: the tabs and the adhan's volume follow Dir (◀ is forward in Arabic, ▶ in English)",
-      "changeVolume(keyCode == sa.urtv.home.Dir.forwardKey() ? 10 : -10);" in listen and "int delta = keyCode == sa.urtv.home.Dir.backKey() ? -1 : 1;" in listen)
+      "changeVolume(keyCode == sa.urtv.home.Dir.forwardKey() ? 1 : -1);" in listen and "int delta = keyCode == sa.urtv.home.Dir.backKey() ? -1 : 1;" in listen)
 if not shutil.which("javac"):
     print("SKIP cell walk: no javac here")
     sys.exit(1 if failed else 0)

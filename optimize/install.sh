@@ -7,6 +7,8 @@
 #                                  github.com/truefedex/tv-bro) and SmartTube (YouTube without ads,
 #                                  github.com/yuliskov/SmartTube), the build that fits the TV's processor
 #   optimize/install.sh all        both (saver, launcher)
+#   optimize/install.sh addon      «إضافات تلفزيونك» (UrTV Extras, 4.3.3): the optional add-on with the accessibility service the home no longer has;
+#                                  then optimize/dock.sh extras-setup turns its service on
 # launcher can stop once with exit 5 and an Arabic line for the person, BEFORE anything is changed: the TV's setup wizard owns
 # the saved Wi-Fi network (it would be deleted with the wizard). The person forgets the network and joins it again in the TV's
 # Settings, says «كمّل», and the same command (or optimize/run.sh) reads the owner again and goes on (see «wifi-ask» below).
@@ -16,8 +18,8 @@ set -euo pipefail
 cd "$(dirname "$0")/.."
 PY="${PY:-optimize/venv/bin/python}"
 REL=https://github.com/tshi-dev/UrTV/releases/download/${APK_TAG:-apk-latest}   # APK_TAG=v4.0.N: that numbered build (v3.N for the old ones)
-what="${1:?usage: optimize/install.sh saver|launcher|extras|all}"
-case "$what" in saver|launcher|extras|all) ;; *) echo "usage: optimize/install.sh saver|launcher|extras|all" >&2; exit 2;; esac
+what="${1:?usage: optimize/install.sh saver|launcher|extras|addon|all|prefetch}"
+case "$what" in saver|launcher|extras|addon|all|prefetch) ;; *) echo "usage: optimize/install.sh saver|launcher|extras|addon|all|prefetch" >&2; exit 2;; esac
 . optimize/home-journal.sh   # the journal of the home switch (what the switch changed, to undo it after a restart)
 failed=0   # an extra that did not install: the rest are still tried, then run.sh must not count the step as done
 
@@ -39,6 +41,31 @@ curl_get() {
   done
   cat "$errf" >&2; rm -f "$errf"
   return "$rc"
+}
+
+# 4.4 setup speed: `install.sh prefetch` (run.sh starts it in the background while the TV is measured) downloads our APKs into optimize/.prefetch
+# ahead of their steps; push_install takes a finished one (same build tag) instead of downloading it again. Nothing on the TV is touched.
+PREFETCH=optimize/.prefetch
+if [ "$what" = prefetch ]; then
+  mkdir -p "$PREFETCH"
+  for f in urtv-screensaver.apk urtv-home.apk; do
+    [ -f "$PREFETCH/$f" ] && [ "$(cat "$PREFETCH/$f.tag" 2> /dev/null)" = "$REL" ] && continue
+    rm -f "$PREFETCH/$f" "$PREFETCH/$f.tag"
+    t0=$(date +%s)
+    if curl_get -fsSL -o "$PREFETCH/$f.part" "$REL/$f"; then
+      mv "$PREFETCH/$f.part" "$PREFETCH/$f" && echo "$REL" > "$PREFETCH/$f.tag"
+      echo "timing: prefetch $f $(( $(date +%s) - t0 )) s"
+    else rm -f "$PREFETCH/$f.part"; fi   # the step downloads it itself, as before
+  done
+  exit 0
+fi
+fetch_apk() {   # $1 apk name: into optimize/, from the prefetch when it has this build, else downloaded
+  if [ -f "$PREFETCH/$1" ] && [ "$(cat "$PREFETCH/$1.tag" 2> /dev/null)" = "$REL" ] && [ -n "$(find "$PREFETCH/$1" -mmin -120 2> /dev/null)" ]; then   # this run's (apk-latest moves)
+    mv "$PREFETCH/$1" "optimize/$1" && rm -f "$PREFETCH/$1.tag" && { echo "timing: download $1 0 s (prefetched)"; return 0; }
+  fi
+  local t0; t0=$(date +%s)
+  curl_get -fsSL -o "optimize/$1" "$REL/$1" || return 1
+  echo "timing: download $1 $(( $(date +%s) - t0 )) s"
 }
 
 # Play Protect can refuse an ADB install (INSTALL_FAILED_VERIFICATION_FAILURE, seen on a TCL Android 14): its ADB
@@ -81,6 +108,55 @@ pm_install() {   # $1 file name in /data/local/tmp, $2 package: pm's answer. A b
   printf '%s\n' "$out"
 }
 
+# 4.3.3: the APK streamed straight to `cmd package install -S` (tv.py --install-stream, as `adb install` does): no copy in /data/local/tmp, so no
+# «Unable to open file», no full TV storage from a second copy, one step instead of three. Only a clear answer is taken: Success (and the app still
+# there 3 s later), a newer build already on the TV, or another signature. Anything else (an Android older than 7, a dropped connection, Play Protect,
+# no answer) prints nothing and the caller goes on the way it always did: upload the file, install it (an install -r of the same file twice is harmless).
+# URTV_STREAM=0 turns it off.
+stream_install() {   # $1 file name in optimize/, $2 package: pm's answer, or nothing (then the file is uploaded as before)
+  local out
+  [ "${URTV_STREAM:-1}" = 1 ] || return 0
+  out=$("$PY" -I optimize/tv.py --install-stream "optimize/$1" -r 2> /dev/null) || true
+  if grep -q Success <<< "$out"; then
+    sleep 3
+    "$PY" -I optimize/tv.py "pm list packages $2" 2> /dev/null | tr -d '\r' | grep -qx "package:$2" || return 0   # removed again: the file way has the Play Store retry
+    echo "Installed $1 by streaming it (no copy on the TV)." >&2
+    printf '%s\n' "$out"
+  elif grep -qE 'INSTALL_FAILED_VERSION_DOWNGRADE|UPDATE_INCOMPATIBLE|signatures do not match' <<< "$out"; then
+    printf '%s\n' "$out"
+  fi
+  return 0
+}
+
+# 4.4 (reports, cause 3): after the file way failed twice with «Unable to open file» (Nokia Streaming Box 8000, TCL BeyondTV4), the APK is streamed
+# once more whatever URTV_STREAM says (no file on the TV to open), and any answer of pm is taken
+stream_again() {   # $1 file name in optimize/: pm's answer, or nothing when it could not be streamed
+  "$PY" -I optimize/tv.py --install-stream "optimize/$1" -r 2> /dev/null || true
+}
+
+# 4.4 (reports, cause 4): Play Protect refused an ADB install (INSTALL_FAILED_VERIFICATION_FAILURE: the launcher, TV Bro). Its ADB check is off for this
+# install only (put back by restore_verifier); still refused: Play Protect may be asking on the TV, so the person is told in Arabic, the run waits
+# VERIFY_WAIT_S (60) for their «تثبيت على أي حال», and tries once more. Sets out. Returns 2 when the TV did
+# not say what its ADB check is (nothing changed), else 0.
+verify_retry() {   # $1 file name in /data/local/tmp, $2 package
+  verifier_old=$("$PY" -I optimize/tv.py "settings get global $VERIFIER" | tr -d '\r\n' || true)
+  if [ -z "$verifier_old" ]; then   # only the word «null» means «not set»; an empty answer is «the TV did not say»
+    echo "!! Play Protect refused the install over ADB, but the TV did not say what its ADB check is set to, so it was not changed. Run the same command again."
+    return 2
+  fi
+  echo "Play Protect refused the install over ADB: its ADB check is off for this install only, and put back right after (was: ${verifier_old:-not set})."
+  echo "للشخص: لو طلعت على التلفزيون رسالة من Play Protect (التطبيق «غير آمن» أو «مبني لإصدار قديم»)، اضغط «تثبيت على أي حال» (Install anyway) بالريموت. هذا تطبيق تلفزيونك، والرسالة تطلع لأن الشاشة الرئيسية مبنية لإصدار أندرويد أقدم."
+  verifier_set=1
+  "$PY" -I optimize/tv.py "settings put global $VERIFIER 0" > /dev/null || true
+  out=$(pm_install "$1" "$2")
+  grep -q INSTALL_FAILED_VERIFICATION_FAILURE <<< "$out" || return 0
+  echo "Play Protect still refused it: waiting ${VERIFY_WAIT_S:-60} s for the person to press «تثبيت على أي حال» on the TV, then one more try."
+  echo "للشخص: على التلفزيون الحين رسالة من Play Protect؟ اضغط «تثبيت على أي حال» (Install anyway). ما طلعت؟ افتح متجر Play ← صورتك ← Play Protect ← الإعدادات، وأوقف «فحص التطبيقات» مؤقتاً، وبعدها قل لي «كمّل»."
+  sleep "${VERIFY_WAIT_S:-60}"
+  out=$(pm_install "$1" "$2")   # installed meanwhile through the person's answer: the same file again is a plain Success
+  return 0
+}
+
 pushed_whole() {   # $1 file name: is the file on the TV (in /data/local/tmp) as big as ours? A TV that does not answer the size counts as «yes»: the install says if it is not
   local want got
   want=$(wc -c < "optimize/$1" | tr -d ' ')
@@ -97,16 +173,19 @@ push_install() {   # $1 apk name, $2 package
   if [ "$2" = sa.urtv.home ] && "$PY" -I optimize/tv.py "pm list packages com.tcl.tv" 2> /dev/null | tr -d '\r' | grep -qx "package:com.tcl.tv"; then
     "$PY" -I optimize/tv.py "am force-stop com.tcl.tv" > /dev/null 2>&1 || true
   fi
-  if ! curl_get -fsSL -o "optimize/$1" "$REL/$1"; then
+  if ! fetch_apk "$1"; then
     echo "!! Could not download $REL/$1 (tag ${APK_TAG:-apk-latest}): no such build, or no internet"; exit 1
   fi
+  local out t0; t0=$(date +%s)
+  out=$(stream_install "$1" "$2")
+  [ -z "$out" ] || echo "timing: install $1 streamed $(( $(date +%s) - t0 )) s"
+  if [ -z "$out" ]; then
   "$PY" -I optimize/tv.py --push-b64 "optimize/$1" "/data/local/tmp/$1"
   if ! pushed_whole "$1"; then   # 4.3.2: a file that arrived short (a dropped upload) is sent again before pm is asked to read it
     echo "$1 reached the TV with another size than ours: sending it again."
     "$PY" -I optimize/tv.py "rm -f /data/local/tmp/$1" > /dev/null 2>&1 || true
     "$PY" -I optimize/tv.py --push-b64 "optimize/$1" "/data/local/tmp/$1"
   fi
-  local out
   out=$(pm_install "$1" "$2")
   if grep -q "Unable to open file" <<< "$out"; then   # 4.3.2 (Nokia Streaming Box 8000, TCL BeyondTV4): the file did not reach /data/local/tmp whole, or the TV could not read it: sent again, installed once more
     echo "$1 did not reach the TV whole (pm said: Unable to open file): sending it again and installing once more."
@@ -114,17 +193,15 @@ push_install() {   # $1 apk name, $2 package
     "$PY" -I optimize/tv.py --push-b64 "optimize/$1" "/data/local/tmp/$1"
     out=$(pm_install "$1" "$2")
   fi
+  if grep -q "Unable to open file" <<< "$out"; then   # 4.4 (cause 3): twice: no file to open at all, the APK streamed to pm
+    echo "$1: the TV still could not open the file: installing it by streaming instead (no file on the TV)."
+    local streamed; streamed=$(stream_again "$1")
+    [ -z "$streamed" ] || out=$streamed
+  fi
+  fi   # (the streamed install answered: no file was uploaded)
   if grep -q INSTALL_FAILED_VERIFICATION_FAILURE <<< "$out"; then
-    verifier_old=$("$PY" -I optimize/tv.py "settings get global $VERIFIER" | tr -d '\r\n' || true)
-    if [ -z "$verifier_old" ]; then   # only the word «null» means «not set»; an empty answer is «the TV did not say»
-      echo "!! Play Protect refused the install over ADB, but the TV did not say what its ADB check is set to, so it was not changed. Run the same command again."
-      exit 1
-    fi
-    echo "Play Protect refused the install over ADB: its ADB check is off for this install only, and put back right after (was: ${verifier_old:-not set})."
-    echo "للشخص: لو طلعت على التلفزيون رسالة من Play Protect (التطبيق «غير آمن» أو «مبني لإصدار قديم»)، اضغط «تثبيت على أي حال» (Install anyway) بالريموت. هذا تطبيق تلفزيونك، والرسالة تطلع لأن الشاشة الرئيسية مبنية لإصدار أندرويد أقدم."
-    verifier_set=1
-    "$PY" -I optimize/tv.py "settings put global $VERIFIER 0" > /dev/null || true
-    out=$(pm_install "$1" "$2")
+    [ -n "$("$PY" -I optimize/tv.py "ls /data/local/tmp/$1 2> /dev/null" 2> /dev/null | tr -d '\r')" ] || "$PY" -I optimize/tv.py --push-b64 "optimize/$1" "/data/local/tmp/$1"   # a streamed refusal: the file for the retries
+    verify_retry "$1" "$2" || exit 1
   fi
   if grep -q INSTALL_FAILED_VERSION_DOWNGRADE <<< "$out"; then
     # the TV already runs a newer build than this tag's (it updated itself, or apk-next was installed): never a downgrade, never a !!
@@ -155,6 +232,7 @@ push_install() {   # $1 apk name, $2 package
       exit 1
     fi
   fi
+  echo "timing: install $1 $(( $(date +%s) - t0 )) s in all"
   restore_verifier
   "$PY" -I optimize/tv.py "rm -f /data/local/tmp/$1"
 }
@@ -223,23 +301,34 @@ from_github() {   # $1 owner/repo, $2 package, $3 asset pattern ({abi} = the TV'
   name=$(basename "$url")
   if [ -f "optimize/$name" ] && [ "$size" != 0 ] && [ "$(wc -c < "optimize/$name" | tr -d ' ')" = "$size" ]; then
     echo "$name is already downloaded: not downloading it again."
-  elif ! curl_get -fsSL -o "optimize/$name" "$url"; then echo "!! Could not download $url"; failed=1; return 0; fi
+  else
+    local d0; d0=$(date +%s)
+    if ! curl_get -fsSL -o "optimize/$name" "$url"; then echo "!! Could not download $url"; failed=1; return 0; fi
+    echo "timing: download $name $(( $(date +%s) - d0 )) s"
+  fi
   # An optional app never holds the setup up: the upload and the install are tried twice (an upload resumes where it stopped),
   # and a TV that did not answer both times means this app is skipped with one line and the setup goes on.
-  local try
-  for try in 1 2; do
+  local try t0; t0=$(date +%s)
+  out=$(stream_install "$name" "$2")
+  [ -z "$out" ] || try=streamed
+  [ "${try:-}" = streamed ] || for try in 1 2; do
     if "$PY" -I optimize/tv.py --push-b64 "optimize/$name" "/data/local/tmp/$name"; then out=$(pm_install "$name" "$2"); else out=NO_ANSWER; fi
     [ "$out" = NO_ANSWER ] || break
     # the install may even have finished while the TV was silent
     ! "$PY" -I optimize/tv.py "pm list packages $2" 2> /dev/null | tr -d '\r' | grep -qx "package:$2" || break
     [ "$try" = 2 ] || sleep 5
   done
+  if grep -q INSTALL_FAILED_VERIFICATION_FAILURE <<< "$out"; then   # 4.4 (cause 4): TV Bro refused by Play Protect: the same retry and hint as our apps
+    verify_retry "$name" "$2" || { failed=1; return 0; }
+    restore_verifier
+  fi
   if [ "$out" = NO_ANSWER ] && ! "$PY" -I optimize/tv.py "pm list packages $2" 2> /dev/null | tr -d '\r' | grep -qx "package:$2"; then
     echo "!! skipped after 2 timeouts: ${1##*/}; to add it later: optimize/install.sh extras"
     return 0   # the downloaded file stays, so the next try does not fetch it again
   fi
   "$PY" -I optimize/tv.py "rm -f /data/local/tmp/$name" > /dev/null 2>&1 || true
   rm -f "optimize/$name"
+  echo "timing: install $name $(( $(date +%s) - t0 )) s ($([ "${try:-}" = streamed ] && echo streamed || echo "file way, try ${try:-?}"))"
   if [ "$out" = NO_ANSWER ]; then echo "Installed $name (the TV was slow to answer)"
   elif grep -q Success <<< "$out"; then echo "Installed $name"
   elif grep -qE 'UPDATE_INCOMPATIBLE|signatures do not match' <<< "$out"; then
@@ -254,6 +343,12 @@ if [ "$what" = extras ]; then
   from_github truefedex/tv-bro com.phlox.tvwebbrowser 'tvbro-[0-9.]+-generic-geckoExcluded\.apk'   # light: the TV's WebView
   from_github yuliskov/SmartTube org.smarttube.stable 'SmartTube_stable_[0-9.]+_{abi}\.apk'
   [ "$failed" = 0 ] || exit 1
+fi
+
+if [ "$what" = addon ]; then
+  echo "للشخص: بعد لحظات ممكن تطلع على التلفزيون رسالة من Play Protect («يطلب بيانات حساسة»)؛ إذا طلعت اضغط «تثبيت على أي حال» (Install anyway). الإضافة تعرف أي تطبيق قدامك فقط ولا ترسل شيئاً."
+  push_install urtv-extras.apk sa.urtv.extras
+  echo "«إضافات تلفزيونك» is installed. Turn its service on: optimize/dock.sh extras-setup"
 fi
 
 if [ "$what" = saver ] || [ "$what" = all ]; then
@@ -311,6 +406,13 @@ if [ "$what" = launcher ] || [ "$what" = all ]; then
   fi
   echo "Stock home: ${STOCK:-not found}"
 
+  # 4.3.3 (the app's switch since 4.3.2, SetupEngine.KEEP_STOCK_ON): the switch makes ours the HOME role and the home activity and turns NOTHING
+  # off: not the stock home, not the setup wizard (setupwraith), not the stock home's helpers. With them off some Google TVs cannot start (a blank
+  # screen and a restart loop: couch-tv's TROUBLESHOOTING.md «If your TV loops after a restart», github.com/Seagey/couch-tv, MIT), and the wizard
+  # owning the saved Wi-Fi made the switch stop for the person. So there is no Wi-Fi question and no cast question any more, and a rerun turns
+  # back on what an older run turned off (stock_back below, by the journal). URTV_KEEP_STOCK=0 is the old switch, kept only for the tests of its rules.
+  KEEP_STOCK=${URTV_KEEP_STOCK:-1}
+
   # The setup wizard (setupwraith) is turned off only when it really answers Home. Disabling it can delete the Wi-Fi network
   # that was saved during the first-run wizard (CleanYourTV's README, github.com/Gathin23/cleanyourtv, MIT: a network saved
   # then belongs to the wizard, and Android removes an app's saved networks when it is disabled; two TCL sets lost their
@@ -352,7 +454,7 @@ if [ "$what" = launcher ] || [ "$what" = all ]; then
     cast_device "$o"
   }
   CAST_KEPT=no      # yes: the wizard stays on for the cast credentials
-  if [ "$(tr -d '\r\n ' 2> /dev/null < "$CASTF")" != off ] && wraith_casts; then   # 2> first: a missing file says nothing
+  if [ "$KEEP_STOCK" != 1 ] && [ "$(tr -d '\r\n ' 2> /dev/null < "$CASTF")" != off ] && wraith_casts; then   # 2> first: a missing file says nothing
     if "$PY" -I optimize/tv.py "pm list packages -d" 2> /dev/null | tr -d '\r' | grep -x "package:$WRAITH" > /dev/null; then   # no grep -q (pipefail)
       echo "This TV's setup wizard holds its cast credentials (a Chromecast), but it is off (an earlier setup turned it off), so casting from a phone says «untrusted device». optimize/dock.sh cast on turns it back on."
     else
@@ -378,7 +480,8 @@ if [ "$what" = launcher ] || [ "$what" = all ]; then
   #    («wifi-ask.txt» says it was asked: never twice) and goes on: in the safe order if the network moved, as before if it did not.
   #    Only the person touches the Wi-Fi, in the TV's own Settings: this script never forgets, deletes or changes a network.
   ASKF="${URTV_RUN_DIR:-optimize/run}/wifi-ask.txt"
-  if [ -n "$STOCK" ] && [ ! -s "$ASKF" ] && [ "$CAST_KEPT" != yes ]; then   # a Chromecast keeps its wizard anyway: nothing to ask
+  if [ "$KEEP_STOCK" = 1 ]; then rm -f "$ASKF"   # nothing is turned off, so the Wi-Fi is never at risk: no question (an old «asked» is let go)
+  elif [ -n "$STOCK" ] && [ ! -s "$ASKF" ] && [ "$CAST_KEPT" != yes ]; then   # a Chromecast keeps its wizard anyway: nothing to ask
     res=$("$PY" -I optimize/tv.py "cmd package resolve-activity --brief -c android.intent.category.HOME -a android.intent.action.MAIN" 2> /dev/null) || res=""
     if [ -n "$res" ] && ! grep -q sa.urtv.home <<< "$res" && wraith_answers_home && [ "$(wifi_owner)" = owned ]; then
       mkdir -p "$(dirname "$ASKF")"
@@ -435,6 +538,46 @@ if [ "$what" = launcher ] || [ "$what" = all ]; then
     "$PY" -I optimize/tv.py "appops set sa.urtv.home REQUEST_INSTALL_PACKAGES allow" || true
   fi   # APPOP-END
 
+  # 1b. (KEEP_STOCK) A TV switched the old way gets back, once, what that switch turned off: the stock home, the setup wizard and the stock home's
+  #     helpers, each one only if the journal says it was on before (never what the TV had off itself) and the TV says it is off now. The stock home
+  #     and its helpers stay off when the person chose «تخلّص من واجهة المصنع» in the app (the app's own provider says so; if it does not answer,
+  #     the stock home is left as it is and only the wizard comes back). Ours stays the HOME role. The mark stock-migrated.txt: never twice.
+  MIGF="${URTV_RUN_DIR:-optimize/run}/stock-migrated.txt"
+  stock_back() {
+    local st sb wb spkg dis fac turn=() p after left=""
+    st=$(jget state); sb=$(jget stock_before); wb=$(jget wizard_before); spkg=$(jget stock); spkg=${spkg%%/*}
+    [ ! -s "$MIGF" ] || return 0
+    case "$st" in done|restored) ;; *) return 0 ;; esac   # «switching» belongs to jrecover; no journal: nothing of ours was turned off
+    { [ "$sb" = enabled ] || [ "$wb" = enabled ]; } || return 0
+    dis=$("$PY" -I optimize/tv.py "pm list packages -d; echo D_END" 2> /dev/null | tr -d '\r') || dis=""
+    grep -qx D_END <<< "$dis" || { echo "(Could not read which apps are off on the TV: what an older home switch turned off is checked on the next run.)"; return 0; }
+    fac=$("$PY" -I optimize/tv.py "content query --uri content://sa.urtv.home.setupstate/factory 2> /dev/null" 2> /dev/null | tr -d '\r') || fac=""
+    if grep -q 'off=1' <<< "$fac"; then fac=on; elif grep -q 'off=0' <<< "$fac"; then fac=off; else fac=unknown; fi
+    if [ "$wb" = enabled ] && grep -qx "package:$WRAITH" <<< "$dis"; then turn+=("$WRAITH"); fi
+    if [ "$sb" = enabled ] && [ "$fac" = off ]; then
+      [ -z "$spkg" ] || ! grep -qx "package:$spkg" <<< "$dis" || turn+=("$spkg")
+      while read -r p; do grep -qx "package:$p" <<< "$dis" && turn+=("$p"); done < <(grep -vE '^[[:space:]]*(#|$)' optimize/lists/home-replaced.txt | awk '{print $1}')
+    elif [ "$sb" = enabled ] && [ -n "$spkg" ] && grep -qx "package:$spkg" <<< "$dis"; then
+      left=" The stock home is still off: $([ "$fac" = on ] && echo "the person chose «تخلّص من واجهة المصنع» in the app (its «رجّع واجهة المصنع» brings it back)" || echo "the app did not say whether the person chose «تخلّص من واجهة المصنع», so it was left as it is (the next run asks again)")."
+    fi
+    if [ "${#turn[@]}" = 0 ]; then
+      [ -n "$left" ] && { echo "${left# }"; [ "$fac" = unknown ] && return 0; }
+      mkdir -p "$(dirname "$MIGF")"; echo "none $(date '+%Y-%m-%d %H:%M:%S')" > "$MIGF"; return 0
+    fi
+    printf '%s\n' "${turn[@]}" | awk '{print "pm enable " $1}' | "$PY" -I optimize/tv.py --batch > /dev/null \
+      || { echo "!! Could not turn back on what an older home switch turned off (the TV did not answer): run the same command again."; return 1; }
+    optimize/settle.sh mark 2> /dev/null || true
+    after=$("$PY" -I optimize/tv.py "pm list packages -d; echo D_END" 2> /dev/null | tr -d '\r') || after=""
+    grep -qx D_END <<< "$after" || { echo "!! Turned back on what an older home switch turned off, but the TV did not confirm it: run the same command again."; return 1; }
+    for p in "${turn[@]}"; do
+      if grep -qx "package:$p" <<< "$after"; then echo "!! The TV did not turn $p back on: run the same command again; if it says this again, report it (optimize/share.sh --preview --problem)."; return 1; fi
+    done
+    echo "Turned back on what an older home switch turned off (${turn[*]}): with them off some TVs cannot start. Nothing else was changed.$left"
+    [ "$fac" = unknown ] && [ -n "$left" ] && return 0   # asked again next run
+    mkdir -p "$(dirname "$MIGF")"; echo "done $(date '+%Y-%m-%d %H:%M:%S')" > "$MIGF"
+  }
+  if [ "$KEEP_STOCK" = 1 ]; then stock_back || exit 1; fi
+
   WIZARD_KEPT=no   # yes: the switch went on with the setup wizard left on (it owns the Wi-Fi, or the TV did not say who does)
   SAFE_ORDER=no     # yes: the network moved off the wizard after the person was asked: the wizard goes first (see switch_home)
   SAFE_STAGE=       # the step of the safe order in progress (an ADB drop before the stock home went off is undone, not retried)
@@ -490,7 +633,9 @@ if [ "$what" = launcher ] || [ "$what" = all ]; then
     if [ "${1:-}" != verify ]; then
       SAFE_ORDER=no; SAFE_STAGE=
       # before anything is changed: does the wizard answer Home, and can it go without taking the Wi-Fi with it?
-      if [ "$CAST_KEPT" = yes ]; then
+      if [ "$KEEP_STOCK" = 1 ]; then
+        WIZARD_KEPT=yes   # KEEP_STOCK: the wizard stays on whoever owns the Wi-Fi; nothing to decide
+      elif [ "$CAST_KEPT" = yes ]; then
         WIZARD_KEPT=yes   # never «listed»: the wizard is not in the batch, and the verify step's wraith_off leaves it on too
       elif wraith_answers_home; then
         # owned: the switch goes on with the wizard left on (the HOME role and set-home-activity choose ours, and the
@@ -609,6 +754,14 @@ if [ "$what" = launcher ] || [ "$what" = all ]; then
               "cmd package set-home-activity --user 0 sa.urtv.home/.MainActivity"
               "am force-stop com.android.tv.settings"
               "input keyevent KEYCODE_HOME")
+      elif [ "$KEEP_STOCK" = 1 ]; then
+        # ours holds Home; the stock home, the wizard and the helpers are left as they are (nothing is turned off)
+        jstep switch
+        cmds=("cmd role add-role-holder --user 0 android.app.role.HOME sa.urtv.home"
+              "cmd package set-home-activity --user 0 sa.urtv.home/.MainActivity"
+              "cmd package set-home-activity --user 0 sa.urtv.home/.MainActivity"
+              "am force-stop com.android.tv.settings"
+              "input keyevent KEYCODE_HOME")
       else
         jstep switch
         cmds=("cmd role add-role-holder --user 0 android.app.role.HOME sa.urtv.home"
@@ -641,7 +794,7 @@ if [ "$what" = launcher ] || [ "$what" = all ]; then
       if grep -q sa.urtv.home <<< "$top"; then ours=yes; break; fi
       "$PY" -I optimize/tv.py "input keyevent KEYCODE_HOME" > /dev/null || return 1
       # it took Home back after the switch: now it has to go (only if that cannot cost the Wi-Fi)
-      if [ "$wraith" = no ] && wraith_answers_home; then wraith=listed; wraith_off || true; fi
+      if [ "$KEEP_STOCK" != 1 ] && [ "$wraith" = no ] && wraith_answers_home; then wraith=listed; wraith_off || true; fi
     done
     if [ "$ours" != yes ]; then
       # An on-TV dialog may be waiting for the person (a Home chooser, a role request): wait for the answer before anything is undone.
@@ -793,6 +946,7 @@ if [ "$what" = launcher ] || [ "$what" = all ]; then
        echo "Home switch: skipped, could not tell which app is this TV's own home screen" > "${URTV_RUN_DIR:-optimize/run}/home-skipped.txt" ;;
     2|6) home_skipped=1   # every way a TV keeps its own home ends here: ONE plain result that is not an error, so nobody runs the launcher again and again
        if [ "$CAST_KEPT" = yes ]; then why="Its setup wizard holds the cast credentials (a Chromecast) and stays on so casting and the Google Home remote work, and with it on Home still goes to the stock home. optimize/dock.sh cast off makes our home the Home and gives casting up; optimize/dock.sh cast on brings casting back"
+       elif [ "$KEEP_STOCK" = 1 ]; then why="The stock home and the setup wizard stay on (with them off some TVs cannot start), and this firmware still sends Home to its own launcher after the role and the home activity were asked twice"
        elif [ "$WIZARD_KEPT" = yes ]; then why="Its setup wizard must stay on to keep the saved Wi-Fi password, and Home still goes to the stock home"
        else why="Home did not open the new launcher after the role and the home activity were asked twice (some firmware pins Home to its own launcher)"; fi
        echo "Home switch skipped: this TV keeps its own home screen. $why ($DIAG). UrTV works as an app and as the screensaver; the stock home is back as it was. This is not an error, and trying again will not change it."
@@ -802,7 +956,10 @@ if [ "$what" = launcher ] || [ "$what" = all ]; then
     *) home_stop_line "$rc"   # 3 (the safety switch fired first) and anything unexpected: said from what the TV shows now
        exit 1 ;;
   esac
-  if [ "$home_skipped" = 0 ]; then
+  if [ "$home_skipped" = 0 ] && [ "$KEEP_STOCK" = 1 ]; then
+    rm -f "${URTV_RUN_DIR:-optimize/run}/home-skipped.txt"
+    echo "Launcher is home; the stock home and the setup wizard stay on (nothing was turned off). Press Home from inside an app to double-check."
+  elif [ "$home_skipped" = 0 ]; then
     # 5. Only now: the stock home's helpers are dead weight (restore.sh brings them back).
     grep -vE '^[[:space:]]*(#|$)' optimize/lists/home-replaced.txt | awk '{print "pm disable-user --user 0 " $1}' \
       | "$PY" -I optimize/tv.py --batch > /dev/null || true

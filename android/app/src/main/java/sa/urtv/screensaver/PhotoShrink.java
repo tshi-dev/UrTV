@@ -13,6 +13,21 @@ final class PhotoShrink {
     private PhotoShrink() { }
 
     static final int MAX = 1920, QUALITY = 88;
+    /** G3 (4.3.3): the smallest long side a kept photo is made (a weak TV's size, and a TV whose screen is drawn at 1280x720) */
+    static final int LOW = 1280;
+
+    /** the long side to keep a photo at on a screen whose long side is screenLong px (as the apps draw it): that, between LOW and MAX; MAX when not known */
+    static int screenMax(int screenLong) { return screenLong <= 0 ? MAX : Math.max(LOW, Math.min(MAX, screenLong)); }
+
+    /** this TV's: a TV that draws its screen at 1280x720 keeps its photos at 1280, not 1920 (half the pixels to decode and to keep) */
+    static int screenMax(android.content.Context c) {
+        try {
+            android.util.DisplayMetrics d = c.getResources().getDisplayMetrics();
+            return screenMax(Math.max(d.widthPixels, d.heightPixels));
+        } catch (RuntimeException e) {
+            return MAX;
+        }
+    }
 
     /** the photo's bytes, or smaller ones (a JPEG at most MAX px on the long side) when it was larger; the bytes as given when it cannot be read or is already small */
     static byte[] toScreen(byte[] data) { return toSize(data, MAX); }

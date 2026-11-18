@@ -41,6 +41,7 @@ final class AppOptions {
         Runnable uninstall;   // null: not offered (a system app, or ours)
         Runnable store;       // null: not offered (no Play Store on this TV)
         boolean locked, favouriteNow;
+        String lockLabel;     // null: «اقفل» / «افتح القفل»; kids mode: «الرقابة الأبوية» (the way out, behind the PIN)
     }
 
     /** the height of the box, dp, for this many rows (the icon row always) */
@@ -74,7 +75,7 @@ final class AppOptions {
         final int rowH = OptionsFit.rowHeight(px(BUTTON_H, d), fm.descent - fm.ascent, px(8, d));
         if (s.move != null) rows.add(row(a, d, l, dialog, medium, R.drawable.ic_move, MOVE, s.move, pw));
         if (s.hide != null) rows.add(row(a, d, l, dialog, medium, R.drawable.ic_hide, HIDE, s.hide, pw));
-        if (s.lock != null) rows.add(row(a, d, l, dialog, medium, R.drawable.ic_lock, s.locked ? UNLOCK : LOCK, s.lock, pw));
+        if (s.lock != null) rows.add(row(a, d, l, dialog, medium, R.drawable.ic_lock, s.lockLabel != null ? s.lockLabel : s.locked ? UNLOCK : LOCK, s.lock, pw));
         if (s.store != null) rows.add(row(a, d, l, dialog, medium, R.drawable.ic_store, STORE, s.store, pw));
         if (s.uninstall != null) rows.add(row(a, d, l, dialog, medium, R.drawable.ic_delete, UNINSTALL, s.uninstall, pw));
         for (int i = 0; i < rows.size(); i++) {

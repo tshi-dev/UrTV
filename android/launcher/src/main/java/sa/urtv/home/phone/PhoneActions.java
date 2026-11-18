@@ -318,6 +318,46 @@ final class PhoneActions implements Actions {
 
     // ---- 4.3 «صوري» from the phone: the screensaver keeps it (its provider checks it: a JPEG, its size, no camera data, room)
 
+    // ---- 4.4 «صوتياتي»: the person's sound files, kept in the app (AudioBridge)
+
+    @Override public Map<String, Object> audio() { return sa.urtv.home.tilawah.AudioBridge.state(app); }
+
+    @Override public Result audioPiece(long offset, long total, String name, byte[] data) {
+        String r = sa.urtv.home.tilawah.AudioBridge.piece(app, offset, total, name, data);
+        return "more".equals(r) || "done".equals(r) ? Result.ok(r) : Result.fail("audio_" + r);
+    }
+
+    @Override public Result audioOp(String op, Long id, String as) {
+        String r = sa.urtv.home.tilawah.AudioBridge.op(app, op, id == null ? -1 : id, as);
+        return r == null ? Result.ok("done") : Result.fail("audio_" + r);
+    }
+
+    // ---- 4.4 «صوري»: the photos on the TV, one deleted from the phone (the screensaver app's provider, PHONE_SETTINGS)
+
+    @Override public Map<String, Object> photos() {
+        Map<String, Object> m = new LinkedHashMap<>();
+        Bundle out = saver("phone_photo_list", null, null);
+        if (out == null) return m;
+        List<Object> ids = new ArrayList<>();
+        String[] got = out.getStringArray("ids");
+        if (got != null) for (String id : got) ids.add(id);
+        m.put("ids", ids);
+        m.put("count", (long) out.getInt("count", 0));
+        m.put("max", (long) out.getInt("max", 0));
+        return m;
+    }
+
+    @Override public byte[] photoThumb(String id) {
+        Bundle out = saver("phone_photo_thumb", id, null);
+        return out == null ? null : out.getByteArray("jpeg");
+    }
+
+    @Override public Result photoDelete(String id) {
+        Bundle out = saver("phone_photo_del", id, null);
+        if (out == null) return Result.fail("failed");
+        return "photo_deleted".equals(out.getString("result")) ? Result.ok("photo_deleted") : Result.fail("photo_moved");
+    }
+
     @Override public Result photoAdd(byte[] jpeg) {
         Bundle in = new Bundle();
         in.putByteArray("jpeg", jpeg);
@@ -326,6 +366,17 @@ final class PhoneActions implements Actions {
         String r = out.getString("result", "photo_refused"), why = out.getString("why", "");
         if (r.equals("photo_added")) return Result.ok("photo_added");
         return Result.fail(why.equals("full") ? "photo_full" : why.equals("camera data") ? "photo_camera" : "photo_refused");
+    }
+
+    @Override public Result photoMask(byte[] png) {
+        Bundle in = new Bundle();
+        in.putByteArray("png", png);
+        Bundle out = saver("phone_photo_mask", null, in);
+        if (out == null) return Result.fail("failed");
+        if ("mask_added".equals(out.getString("result", ""))) return Result.ok("mask_added");
+        String why = out.getString("why", "");
+        return Result.fail(why.equals("shape") ? "mask_shape" : why.equals("tones") ? "mask_tones" : why.equals("cover") ? "mask_cover"
+                : why.equals("edge") ? "mask_edge" : why.equals("late") ? "mask_late" : "mask_refused");
     }
 
     // ---- 4.3 #53 «اكتب وارسم»: a short message on the TV's screen (PhoneMessage decides, MessageActivity shows)

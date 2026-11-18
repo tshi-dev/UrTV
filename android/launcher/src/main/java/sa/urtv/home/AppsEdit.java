@@ -14,7 +14,7 @@ import java.util.List;
  */
 final class AppsEdit {
     /** the line at the top of the screen while the mode is on */
-    static final String HINT = S.n("اختر تطبيقًا لتحريكه · × للإخفاء · ارفعه للمفضلة · رجوع للإنهاء");
+    static final String HINT = S.n("اختر تطبيقًا لتحريكه، × للإخفاء، ارفعه للمفضلة، رجوع للإنهاء");
 
     /** «المخفية»: the last place of the grid while something is hidden */
     static final String HIDDEN_TITLE = S.n("المخفية");
@@ -84,6 +84,12 @@ final class AppsEdit {
         for (int n = chosen.size(); n < min && !pool.isEmpty(); n++) add.add(pool.remove(0));
         return add;
     }
+
+    /**
+     * 4.4 (reports, cause 11): `dock.sh set` with 3 apps showed 5, topped up with games. A row the owner set exactly (Dock.saveExact) is not topped
+     * up, unless none of it is on this TV (never an empty row); every other row keeps the floor of {@code min}.
+     */
+    static int floor(boolean exact, int chosenHere, int min) { return exact && chosenHere > 0 ? 0 : min; }
 
     /** (the favourites' top-up, above) the order the grid shows */
     static List<String> arrange(List<String> byName, String saved) {

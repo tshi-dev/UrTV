@@ -2,8 +2,8 @@ plugins {
     id 'com.android.application'
 }
 
-// «إنقاذ تلفزيونك» (UrTV Rescue, 4.3.3): a tiny app with one button that puts the TV back as it was, over the TV's own adb (the same way as «إعداد تلفزيوني»), for a
-// person with no computer: installed with Downloader even when the home is gone. Signed with the same key as the others (it asks the home, through a signature permission, what the setup turned off).
+// «إنقاذ تلفزيونك» (UrTV Rescue, 4.4): a tiny app with one button that puts the TV back as it was, over the TV's own adb (the same way as «إعداد تلفزيوني»), for a
+// person with no computer: installed with Downloader even when the home is gone. Signed with the same key as the others (it asks the home what the setup turned off).
 android {
     namespace 'sa.urtv.rescue'
     compileSdk 34
@@ -47,9 +47,11 @@ android {
 }
 
 // the setup's own files the rescue uses as they are (its adb client and key, the plan of what to turn back on)
-def sharedSetup = ['AdbClient.java', 'AdbKeys.java', 'SetupLists.java', 'RescuePlan.java']
+def sharedSetup = ['AdbClient.java', 'AdbKeys.java', 'SetupLists.java', 'WatchList.java', 'RescuePlan.java']
+def sharedHome = ['ExtrasWords.java', 'Box.java', 'Compact.java']
 def copyShared = tasks.register('copyShared', Copy) {
     from('../launcher/src/main/java/sa/urtv/home/setup') { include sharedSetup; into 'sa/urtv/home/setup' }
+    from('../launcher/src/main/java/sa/urtv/home') { include sharedHome; into 'sa/urtv/home' }
     into "$buildDir/generated/shared"
 }
 preBuild.dependsOn copyShared

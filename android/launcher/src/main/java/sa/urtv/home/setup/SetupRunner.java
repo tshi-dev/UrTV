@@ -50,8 +50,10 @@ final class SetupRunner {
     static final class End {
         final String text;
         final boolean bad, wifi;
+        /** 4.4: the run never got in (the prompt was cancelled, or got no answer): the screen offers «جهّز كل شي» again, first */
+        final boolean retry;
         End(String text, boolean bad) { this(text, bad, false); }
-        End(String text, boolean bad, boolean wifi) { this.text = text; this.bad = bad; this.wifi = wifi; }
+        End(String text, boolean bad, boolean wifi) { this.text = text; this.bad = bad; this.wifi = wifi; this.retry = CANCELLED_TEXT.equals(text) || NOT_ACCEPTED_TEXT.equals(text) || NO_DIALOG_TEXT.equals(text); }
     }
 
     /** What the full run would do on this TV, read (nothing changed) after the precheck: the start screen's plan and its real counts. */
@@ -83,13 +85,15 @@ final class SetupRunner {
         SetupEngine.Store store();
         /** Runs the job on a thread that survives the screen (a foreground service holds the process on the TV). */
         void spawn(Runnable job);
-        /** After EVERY end of a run, when its connection is closed: the ADB key goes when nothing is pending (SetupSession.deleteKeyIfFinished). */
+        /** After EVERY end of a run, when its connection is closed (4.4: the ADB key is kept for good, SetupSession.keepKey). */
         void finished();
         /**
          * Before a fresh run (a full one that does not resume, or the undo): an ADB key a run before kept (a switch was pending then) goes now when
          * nothing is pending any more, so a new run never gets in on an old «السماح دائماً» (tester step 18: the second run did not ask).
          */
         default void freshKey() { }
+        /** 4.4: «إضافات تلفزيونك» learns whether the person's chosen home is ours (its watch then works without the HOME role); quiet without it */
+        default void homeWanted(boolean wanted) { }
         void sleep(int ms) throws IOException;
         long now();
         /** A file of the app's assets (setup/community.txt), null when it is not there. */
@@ -150,13 +154,20 @@ final class SetupRunner {
     static final String PROMPT_LATE = "ما ظهرت الرسالة؟ أعد تشغيل التلفزيون وافتح «إعداد تلفزيوني» واضغط «جهّز كل شي» وخلك عند التلفزيون";
     /** The Wi-Fi question (install.sh's line for the person), shown with «كمّل». */
     static final String WIFI_ASK_TEXT = "قبل تبديل الشاشة الرئيسية: شبكة الواي فاي محفوظة باسم «وسيط الإعداد» في هذا التلفزيون، وإيقافه يمسحها. "
-        + "افتح إعدادات التلفزيون ← الشبكة، واختر «انسَ الشبكة»، ثم اتصل بها من جديد بنفس كلمة المرور (خلّها قدامك قبل). بعدها ارجع هنا واضغط «كمّل». "
+        + "افتح إعدادات التلفزيون ← الشبكة، واختر «انسَ الشبكة»، ثم اتصل بها من جديد بنفس كلمة المرور (خلّها قدامك قبل). "
+        + "ما ظهر «انسَ الشبكة» أو ما رضي (مجرّبة على شاومي)؟ اتصل أول بنقطة اتصال من جوالك، بعدها انسَ شبكة البيت وارجع اتصل بها من الإعدادات. "
+        + "بعدها ارجع هنا واضغط «كمّل». "
         + "ما تبي؟ اضغط «كمّل» بدونها، ونكمل والوسيط شغّال.";
     static final String NOT_STARTED = "ما بدأنا الإعداد، وما تغيّر شيء في التلفزيون.";
 
     static final String STATE_FILE = "runner.txt";
     static final int RING = 400;
-    static final int RESUME_TRIES = 40, RESUME_WAIT_MS = 15_000;   // ten minutes for the TV's adb to come back after a restart
+    static final int RESUME_TRIES = 40, RESUME_WAIT_MS = 15_000;
+    /** 4.3.3: a step that may run twice is run again this many times on a new connection when the TV's adb drops in it */
+    static final int RECONNECTS = 2;
+    static final String RECONNECT_LINE = "انقطع الاتصال بالتلفزيون؛ نعيد الاتصال ونعيد هذه الخطوة.";
+    /** 4.3.3: a full run cut off by a restart nobody asked for (IRIS TV and others at 20 to 26 %) goes on by itself at the boot, this many times per run at most */
+    static final int AUTO_RESUMES = 2;   // ten minutes for the TV's adb to come back after a restart
 
     private static final SetupRunner INSTANCE = new SetupRunner();
 
@@ -175,6 +186,9 @@ final class SetupRunner {
     private boolean awaitingConfirm;
     private Boolean confirmed;            // null: no answer yet
     private long promptSince;             // when the TV was asked (0: not waiting for the prompt)
+    private long promptClosedAt;          // 4.4: when the screen saw the prompt close (it got its focus back) while no answer had come (0: not seen)
+    private boolean promptCovered;        // 4.4 (step 88): something came over the setup screen while it waited (the TV's dialog, or the person left it)
+    private String promptAbort;           // 4.4: why the wait was ended (CANCELLED_TEXT, NO_DIALOG_TEXT), null while it goes on
     private boolean promptLate;
 
     SetupRunner() { }
@@ -217,6 +231,14 @@ final class SetupRunner {
         p.add(new Def("home", false, c -> {
             if (c.engine.askWifi()) throw new Paused();   // before anything of the switch: the person is asked once, the run resumes here
             SetupEngine.Result r = c.engine.home();
+            if (c.engine.watchPending()) {   // 4.4: the stock home keeps the Home key (Google TV): «إضافات تلفزيونك» installed and turned on over this adb, then the key checked again
+                SetupEngine.Result add = install(c).addon();
+                SetupEngine.Result on = add.status == SetupEngine.Status.DONE ? c.engine.enableWatch() : add;
+                // 4.4 (step 88): the person chose our home by running the setup: the add-on is told «wanted» BEFORE the key is checked, so its watch brings
+                // ours even when the TV gives the HOME role back to Google TV (after a 15/15 setup it said «role stock wanted no → ours not chosen»)
+                if (on.status == SetupEngine.Status.DONE) c.host.homeWanted(true);
+                r = c.engine.finishWatch(on.status == SetupEngine.Status.DONE);
+            }
             c.runner.wantScreen();   // the stock home and then ours come in front: our home opens this screen again
             return r;
         }));
@@ -362,6 +384,32 @@ final class SetupRunner {
     /** The prompt got no answer in 20 s (the screen shows PROMPT_LATE while it still waits). */
     synchronized boolean promptLate() { return promptLate && promptSince > 0; }
     synchronized boolean promptWaiting() { return promptSince > 0; }
+
+    /** 4.4: «إلغاء» counts once the prompt has been closed this long and the TV still gave no answer (an «السماح» answers within a second or two) */
+    static final int CANCEL_GRACE_MS = 6000;
+
+    /** for the tests: the prompt is waiting since then */
+    synchronized void promptStartedForTest(long since) { promptSince = since; promptClosedAt = 0; promptCovered = false; promptAbort = null; }
+
+    /** 4.4 (step 88): the TV's dialog never came (adbd's «Invalid base64 key» on a first start): with nothing over the setup screen this long, the wait ends */
+    static final int NO_DIALOG_MS = 30_000;
+
+    /** The setup screen lost its focus (or was left) while the prompt waited: a dialog came over it, or the person went elsewhere. */
+    synchronized void promptCoveredNow() { if (promptSince > 0) promptCovered = true; }
+
+    /** why the wait ended, null while it goes on */
+    synchronized String promptAbort() { return promptAbort; }
+
+    /** The setup screen got its focus back while the prompt was waiting: the prompt was answered. If no answer comes within CANCEL_GRACE_MS, it was «إلغاء». */
+    synchronized void promptClosed(long now) { if (promptSince > 0 && promptClosedAt == 0) promptClosedAt = now; }
+
+    /** for AdbClient: the prompt closed CANCEL_GRACE_MS ago and still no answer */
+    synchronized boolean promptCancelled(long now) {
+        if (promptSince <= 0) return false;
+        if (promptClosedAt > 0 && now - promptClosedAt >= CANCEL_GRACE_MS) promptAbort = CANCELLED_TEXT;
+        else if (!promptCovered && promptClosedAt == 0 && now - promptSince >= NO_DIALOG_MS) promptAbort = NO_DIALOG_TEXT;   // the screen was never covered: no dialog
+        return promptAbort != null;
+    }
 
     private void promptCheck(Host host) {
         boolean say;
@@ -587,13 +635,40 @@ final class SetupRunner {
         return resumable(store) && "restart".equals(readState(store).get("await"));
     }
 
+    /**
+     * 4.3.3: a full run was still running when the TV went down (no end was written: «live=1» stays, no await), within the last day, and a boot has not
+     * resumed it {@link #AUTO_RESUMES} times already: the TV restarted by itself in the middle (IRIS TV and others stopped at 20 to 26 % and restarted),
+     * so the boot resumes it. A run that ended (done, or stopped by a cut connection the person was told about) has no «live» and waits for «جهّز كل شي».
+     */
+    static boolean cutByRestart(SetupEngine.Store store) {
+        Map<String, String> s = readState(store);
+        if (!resumable(store) || !"1".equals(s.get("live")) || s.get("await") != null) return false;
+        int n;
+        try { n = Integer.parseInt(s.getOrDefault("auto", "0")); } catch (NumberFormatException e) { n = AUTO_RESUMES; }
+        return n < AUTO_RESUMES;
+    }
+
+    /** The boot resumes the run (planned restart, or {@link #cutByRestart}): the count of resumes on their own goes up first, so a run that keeps restarting the TV stops. */
+    static boolean resumeAtBoot(SetupEngine.Store store) throws IOException {
+        if (awaitingRestart(store)) return true;
+        if (!cutByRestart(store)) return false;
+        Map<String, String> s = readState(store);
+        int n;
+        try { n = Integer.parseInt(s.getOrDefault("auto", "0")); } catch (NumberFormatException e) { n = 0; }
+        String t = store.get(STATE_FILE);
+        StringBuilder b = new StringBuilder();
+        for (String l : t.split("\n")) if (!l.startsWith("auto=") && !l.isEmpty()) b.append(l).append('\n');
+        store.put(STATE_FILE, b.append("auto=").append(n + 1).append('\n').toString());
+        return true;
+    }
+
     /** True when the run paused for the Wi-Fi (the person forgets the network and joins it again, then «كمّل»). */
     static boolean awaitingWifi(SetupEngine.Store store) {
         return resumable(store) && "wifi".equals(readState(store).get("await"));
     }
 
     /** The ADB key stays only while a run waits: for the TV's restart, or for the person's «كمّل» (no second prompt then). */
-    static boolean awaiting(SetupEngine.Store store) { return awaitingRestart(store) || awaitingWifi(store); }
+    static boolean awaiting(SetupEngine.Store store) { return awaitingRestart(store) || awaitingWifi(store) || cutByRestart(store); }
 
     static Map<String, String> readState(SetupEngine.Store store) {
         Map<String, String> out = new LinkedHashMap<>();
@@ -608,7 +683,9 @@ final class SetupRunner {
 
     /** The pointer and every finished step, written before a step starts and after it ends (all or nothing: FileStore). */
     private void writeState(SetupEngine.Store store, Options o, String at, String phase) throws IOException {
-        StringBuilder b = new StringBuilder("kind=FULL\nextras=" + (o.extras ? "1" : "0") + (o.picks == null ? "" : "\npicks=" + sa.urtv.home.SuggestedApps.join(o.picks)) + "\nat=" + at + "\nphase=" + phase + "\ntime=" + System.currentTimeMillis() + "\n");
+        String auto = readState(store).get("auto");   // how many times a boot resumed this run by itself (kept across the run's writes)
+        StringBuilder b = new StringBuilder("kind=FULL\nextras=" + (o.extras ? "1" : "0") + (o.picks == null ? "" : "\npicks=" + sa.urtv.home.SuggestedApps.join(o.picks)) + "\nat=" + at + "\nphase=" + phase + "\ntime=" + System.currentTimeMillis() + "\nlive=1\n"
+            + (auto == null || auto.isEmpty() ? "" : "auto=" + auto + "\n"));
         for (Step s : steps()) {
             if (s.state == State.DONE || s.state == State.SKIPPED || s.state == State.FAILED) b.append("s.").append(s.id).append('=').append(s.state).append('\t').append(oneLine(s.reason)).append('\n');
         }
@@ -632,13 +709,15 @@ final class SetupRunner {
             e = new End(WIFI_ASK_TEXT, false, true);   // the person is asked; «كمّل» resumes the run at the home switch
             try {
                 String st = host.store().get(STATE_FILE);
-                host.store().put(STATE_FILE, (st == null ? "" : st) + "await=wifi\n");
+                host.store().put(STATE_FILE, (st == null ? "" : st.replace("live=1\n", "")) + "await=wifi\n");
             } catch (IOException ignored) { }
         } catch (NotStarted n) {
             e = new End(NOT_STARTED, false);
             complete = true;
         } catch (IOException ex) {
-            e = new End(cutText(ex.getMessage(), host.store()), true);
+            String why;
+            synchronized (this) { why = promptAbort; promptAbort = null; }
+            e = new End(why != null && AdbClient.CANCELLED.equals(ex.getMessage()) ? why : cutText(ex.getMessage(), host.store()), true);
         } catch (RuntimeException ex) {
             e = new End("حدث خطأ غير متوقع، ما غيّرنا شيئاً بعده. جرّب «تراجع» ثم أعد.", true);
         }
@@ -648,7 +727,7 @@ final class SetupRunner {
                 if (complete) host.store().put(STATE_FILE, "");
                 else {
                     String st = host.store().get(STATE_FILE);
-                    if (st != null) host.store().put(STATE_FILE, st.replace("await=restart\n", ""));
+                    if (st != null) host.store().put(STATE_FILE, st.replace("await=restart\n", "").replace("live=1\n", ""));   // ended here: no boot resumes it by itself
                 }
             } catch (IOException ignored) { }
         }
@@ -668,14 +747,17 @@ final class SetupRunner {
         Session s;
         if (resumeAt == null) {
             try {
-                s = host.open(180_000, () -> {
-                    line(PROMPT_LINE);
-                    synchronized (this) { promptSince = host.now(); promptLate = false; }
-                    changed();
-                    host.later(PROMPT_LATE_MS, () -> promptCheck(host));
+                s = host.open(180_000, new AdbClient.Approval() {
+                    @Override public void waiting() {
+                        line(PROMPT_LINE);
+                        synchronized (SetupRunner.this) { promptSince = host.now(); promptLate = false; promptClosedAt = 0; promptCovered = false; promptAbort = null; }
+                        changed();
+                        host.later(PROMPT_LATE_MS, () -> promptCheck(host));
+                    }
+                    @Override public boolean cancelled() { return promptCancelled(host.now()); }
                 }, out);
             } finally {
-                synchronized (this) { promptSince = 0; }
+                synchronized (this) { promptSince = 0; promptClosedAt = 0; }
             }
             changed();
         } else {
@@ -703,8 +785,10 @@ final class SetupRunner {
                 if (k == Kind.FULL) { writeState(host.store(), o, d.id, "started"); stamp(host, "start " + d.id); }
                 set(d.id, State.RUNNING, "", host);
                 SetupEngine.Result r;
+                for (int again = 0; ; again++) {
                 try {
                     r = d.body.run(c);
+                    break;
                 } catch (Restarting e) {
                     if (k == Kind.FULL) stamp(host, "stopped " + d.id + " (the TV restarts for the measurement)");
                     throw e;
@@ -719,9 +803,23 @@ final class SetupRunner {
                     for (Step st : steps()) if (st.state == State.PENDING) set(st.id, State.SKIPPED, NOT_STARTED, host);
                     if (k == Kind.FULL) stamp(host, "stopped " + d.id + " (not started: no «ابدأ»)");
                     throw e;
-                } catch (IOException | RuntimeException e) {
-                    if (k == Kind.FULL) stamp(host, "stopped " + d.id + " (" + (e instanceof IOException ? "the connection" : "an error") + ")");
+                } catch (IOException e) {
+                    // 4.3.3: the connection dropped (the TV's adb went quiet: a Skyworth SWTV-22AE on Android 14 stopped the precheck three times so).
+                    // A step that may run twice is run again on a new connection (the key is known: no prompt), twice at most; any other stops as before.
+                    if (!d.repeatable || again >= RECONNECTS) {
+                        if (k == Kind.FULL) stamp(host, "stopped " + d.id + " (the connection)");
+                        throw e;
+                    }
+                    if (k == Kind.FULL) stamp(host, "reconnect " + d.id + " (the connection)");
+                    line(RECONNECT_LINE);
+                    try { s.close(); } catch (RuntimeException ignored) { }
+                    s = openAgain(host, out);
+                    c = new Context(s.engine(), s.shell(), host.store(), o, out, this, host);
+                    c.session = s;
+                } catch (RuntimeException e) {
+                    if (k == Kind.FULL) stamp(host, "stopped " + d.id + " (an error)");
                     throw e;
+                }
                 }
                 set(d.id, r.status == SetupEngine.Status.DONE ? State.DONE : r.status == SetupEngine.Status.SKIPPED ? State.SKIPPED : State.FAILED, r.message, host);
                 if (k == Kind.FULL) { writeState(host.store(), o, d.id, "done"); stamp(host, "done " + d.id); }
@@ -772,11 +870,11 @@ final class SetupRunner {
     static End endOf(Kind k, List<Step> steps) {
         if (k == Kind.ANSWERS) {
             boolean ok = !steps.isEmpty() && steps.get(0).state == State.DONE;
-            return new End(ok ? steps.get(0).reason : "ما تمّت الأجوبة (التفاصيل فوق).", !ok);
+            return new End(ok ? steps.get(0).reason : "ما تمّت الأجوبة" + because(steps), !ok);
         }
         if (k == Kind.UNDO) {
             boolean ok = !steps.isEmpty() && steps.get(0).state == State.DONE;
-            return new End(ok ? "تم الرجوع. أطفئ «تصحيح USB» من خيارات المطوّر، واختر «إلغاء تراخيص تصحيح USB» لتنظيف التلفزيون." : "انتهى الرجوع مع ملاحظات (فوق).", false);
+            return new End(ok ? "تم الرجوع. أطفئ «تصحيح USB» من خيارات المطوّر، واختر «إلغاء تراخيص تصحيح USB» لتنظيف التلفزيون." : "انتهى الرجوع مع ملاحظات" + because(steps), false);
         }
         int failed = 0, skipped = 0;
         for (Step s : steps) {
@@ -790,7 +888,25 @@ final class SetupRunner {
         if (failed == 0 && skipped == 0) {
             return new End("انتهى الإعداد. اضغط زر الرئيسية في الريموت. ثم أطفئ «تصحيح USB» من خيارات المطوّر واختر «إلغاء تراخيص تصحيح USB» إن لم تحتجهما (التراجع من هنا يحتاجهما).", false);
         }
-        return new End("انتهى الإعداد مع " + failed + " خطوة لم تتم و" + skipped + " تُركت (التفاصيل فوق). «تراجع» يرجّع كل شيء.", failed > 0);
+        return new End("انتهى الإعداد مع " + failed + " خطوة لم تتم و" + skipped + " تُركت" + because(steps) + " «تراجع» يرجّع كل شيء.", failed > 0);
+    }
+
+    /**
+     * 4.4 (step 88): the steps that did not finish, named with their reason, in the end sentence itself (the old «details above» pointed to details the page does
+     * not show). Two at most, each reason cut to 160 characters; ends with a full stop.
+     */
+    static String because(List<Step> steps) {
+        StringBuilder b = new StringBuilder();
+        int n = 0;
+        for (Step s : steps) {
+            if (s.state != State.FAILED && s.state != State.SKIPPED) continue;
+            if (n++ == 2) { b.append("، وغيرها"); break; }
+            String why = s.reason == null ? "" : s.reason.trim();
+            if (why.length() > 160) why = why.substring(0, 159) + "…";
+            while (why.endsWith(".")) why = why.substring(0, why.length() - 1);
+            b.append(n == 1 ? ": " : "؛ ").append(label(s.id)).append(why.isEmpty() ? "" : " (" + why + ")");
+        }
+        return b.append('.').toString();
     }
 
     /**
@@ -804,6 +920,13 @@ final class SetupRunner {
         return "انقطع الاتصال بالتلفزيون، والشاشة الرئيسية كما هي (ما كنا في منتصف تبديلها). اضغط «جهّز كل شي» ليكمل من حيث توقف.";
     }
 
+    /** 4.4 (the owner's words): «إلغاء» on the prompt; nothing changed, and the screen offers «جهّز كل شي» again */
+    /** 4.4 (step 88, the owner's words): the TV's dialog never came; after a restart it comes at once */
+    static final String NO_DIALOG_TEXT = "ما ظهرت رسالة السماح؟ أعد تشغيل التلفزيون ثم اضغط «جهّز كل شي» مرة ثانية. ما تغيّر شيء في التلفزيون.";
+    static final String CANCELLED_TEXT = "ضغطت «إلغاء». اضغط «جهّز كل شي» مرة ثانية واختر «السماح دائماً». ما تغيّر شيء في التلفزيون.";
+    /** no answer to the prompt in time (it may never have shown) */
+    static final String NOT_ACCEPTED_TEXT = "ما وصلنا ردّ على «السماح بتصحيح USB؟». اضغط «جهّز كل شي» مرة ثانية واختر «السماح دائماً». إذا ما ظهرت الرسالة أصلاً: أعد تشغيل التلفزيون ثم جرّب. ما تغيّر شيء في التلفزيون.";   // a prompt left unanswered (e.g. under the screensaver) blocks every later one until adbd restarts: TV test, 30 Oct
+
     static final String CUT = "انقطع الاتصال بالتلفزيون. إن كنت في منتصف تبديل الشاشة الرئيسية فسترجع الأصلية وحدها بعد 5 دقائق. جرّب مرة ثانية.";
 
     /** What a connection error means for the person. */
@@ -811,7 +934,8 @@ final class SetupRunner {
         String cut = CUT;
         if (m == null) return cut;
         if (m.startsWith("debugging is off")) return "تصحيح USB مطفأ في التلفزيون. فعّله (خيارات المطوّر ← تصحيح USB) ثم اضغط «جهّز كل شي».";
-        if (m.contains("permission was not accepted")) return "لم تُقبل رسالة «السماح بتصحيح USB؟». إذا ما ظهرت الرسالة أصلاً: أعد تشغيل التلفزيون، ثم افتح «إعداد تلفزيوني» واضغط «جهّز كل شي» وخلك عند التلفزيون، تطلع خلال ثواني. واختر «السماح دائماً».";   // a prompt left unanswered (e.g. under the screensaver) blocks every later one until adbd restarts: TV test, 30 Oct
+        if (m.equals(AdbClient.CANCELLED)) return CANCELLED_TEXT;
+        if (m.contains("permission was not accepted")) return NOT_ACCEPTED_TEXT;   // a prompt left unanswered (e.g. under the screensaver) blocks every later one until adbd restarts: TV test, 30 Oct
         if (m.contains("TLS")) return "هذا التلفزيون يطلب التصحيح اللاسلكي؛ استخدم «تصحيح USB» العادي.";
         if (m.startsWith("the TV did not come back")) return "ما رجع الاتصال بالتلفزيون بعد إعادة تشغيله. تأكد أن «تصحيح USB» ما زال مفعّلاً، ثم اضغط «جهّز كل شي» ليكمل الإعداد من حيث توقف.";
         return cut;
@@ -820,7 +944,7 @@ final class SetupRunner {
     /** For the tests: a fresh runner state (the process-wide one is never reset on the TV). */
     synchronized void resetForTest() {
         ring.clear(); seq = 0; steps = new ArrayList<>(); kind = null; running = false; end = null; listener = null; options = new Options();
-        live = null; preview = null; awaitingConfirm = false; confirmed = null; promptSince = 0; promptLate = false;
+        live = null; preview = null; awaitingConfirm = false; confirmed = null; promptSince = 0; promptLate = false; promptClosedAt = 0; promptCovered = false; promptAbort = null;
     }
 
     static List<String> ids(List<Def> plan) {

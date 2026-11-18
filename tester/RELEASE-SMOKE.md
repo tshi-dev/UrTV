@@ -29,7 +29,9 @@ the same network. Note the build in the report's first line.
   Rows: R-005, R-008, R-010, R-256, R-257, R-258.
 - **S-04 The remote's own buttons.** On the home and in an app: Netflix, YouTube, Prime (when the remote has them), the mic, a colour
   key, Settings (the TV's settings or ours, as the row says), the TV/Live key (the tuner, not the last HDMI), the input key.
-  Rows: R-009, R-054, R-058, R-069, R-121, R-122, R-139, R-046, R-055.
+  On a Google TV: Home from an app, quickly, five times: UrTV each time; after a restart the add-on works (Home, sleep). Apps
+  installed outside the store are on the home.
+  Rows: R-263, R-264, R-266, R-268, R-009, R-054, R-058, R-069, R-121, R-122, R-139, R-046, R-055.
 
 ## Settings and update (4 min)
 
@@ -88,7 +90,7 @@ the same network. Note the build in the report's first line.
 - **S-16 «إعداد تلفزيوني».** Open it (do not run «جهّز كل شي» on the owner's TV): the language follows the home, «ابدأ» takes the first
   OK, the language switch labels whole, the screen stays for the run, the factory page keeps the screen on; on a test TV a full run
   passes the USB question and ends with UrTV as the home, casting, the remote keys, USB viewer and inputs still working.
-  Rows: R-017, R-040, R-052, R-061, R-073, R-133, R-134, R-145, R-162, R-173, R-244, R-169, R-043, R-172, R-041, R-038.
+  Rows: R-259, R-260, R-262, R-265, R-267, R-017, R-040, R-052, R-061, R-073, R-133, R-134, R-145, R-162, R-173, R-244, R-169, R-043, R-172, R-041, R-038.
 - **S-17 English.** «اللغة» English for a minute: app captions, the grid heading, Tilawah footers, the favourites left to right, the
   long-press hint. Back to Arabic. Rows: R-142, R-143, R-144, R-185.
 - **S-18 Games.** «الأسرع» with one phone: room code shown, digits as set, the podium right; «خمّن الكلمة» takes a common word and has

@@ -32,6 +32,62 @@ final class Dock {
     static boolean backSaver(Context c) { return prefs(c).getBoolean("back_saver", false); }
 
     static void setBackSaver(Context c, boolean on) { prefs(c).edit().putBoolean("back_saver", on).apply(); }
+
+    /** This TV's remote, as RemoteButtons knows it (by maker, brand, model and Android version; read once). */
+    static int remoteTv() { return KeyButton.TV; }
+
+    /** «أزرار الريموت»: the app the owner gave one of this remote's buttons (RemoteButtons ids), empty = what it did before (`dock.sh key`). */
+    static String keyApp(Context c, String key) { return prefs(c).getString("key_app_" + key, ""); }
+
+    static void setKeyApp(Context c, String key, String pkg) {
+        prefs(c).edit().putString("key_app_" + key, pkg == null ? "" : pkg).commit();
+        tellExtras(c);
+    }
+
+    /** every button's choice in one line, "youtube=PKG,netflix=,…" (KeyApps.line): what the add-on keeps */
+    static String keyAppsLine(Context c) { return KeyApps.line(keyApps(c)); }
+
+    /** the add-on (over other apps) takes the choices now, off the caller's thread */
+    static void tellExtras(Context c) {
+        final Context app = c.getApplicationContext();
+        final String line = keyAppsLine(app);
+        new Thread(() -> Extras.keyApps(app, line), "key-apps").start();
+    }
+
+    /** the package is on this TV and enabled */
+    static boolean installed(Context c, String pkg) {
+        try {
+            return c.getPackageManager().getApplicationInfo(pkg, 0).enabled;
+        } catch (PackageManager.NameNotFoundException e) {
+            return false;
+        }
+    }
+
+    /**
+     * The rows in the screensaver's settings (ConfigSnapshot.keyApps, "youtube=PKG,netflix=,prime="; null = no answer): when they change, the
+     * home's own choices take them. Only on a change, so `dock.sh key` (which sends both) and an older screensaver leave them as set.
+     */
+    static void followKeyApps(Context c, String tv) {
+        if (tv == null) return;
+        SharedPreferences p = prefs(c);
+        if (tv.equals(p.getString("key_apps_tv", null))) return;
+        SharedPreferences.Editor e = p.edit().putString("key_apps_tv", tv);
+        for (String part : tv.split(",")) {
+            int eq = part.indexOf('=');
+            if (eq < 0) continue;
+            String k = part.substring(0, eq), v = part.substring(eq + 1);
+            if (RemoteButtons.byId(remoteTv(), k) != null && KeyApps.validChoice(v)) e.putString("key_app_" + k, v);
+        }
+        e.commit();
+        tellExtras(c);
+    }
+
+    /** every key's choice, for RemoteKeys */
+    static Map<String, String> keyApps(Context c) {
+        Map<String, String> m = new LinkedHashMap<>();
+        for (RemoteButtons.Button b : RemoteButtons.buttons(remoteTv())) m.put(b.id, keyApp(c, b.id));
+        return m;
+    }
     /**
      * The row in the screensaver's settings (ConfigSnapshot.backSaver; null = no real answer): when it changes, the switch above takes its
      * value. Only on a change, so `dock.sh backsaver` (which sends both) and an older screensaver that says nothing leave it as set.
@@ -80,8 +136,8 @@ final class Dock {
 
     /**
      * Shows what the TV's own home screen would: next to a Google home (which lists only TV apps; counted if it is
-     * installed, even disabled by install.sh), apps with only an ordinary launcher activity stay out, as they are
-     * mostly the maker's helpers; next to a maker's own home (CVTE, MediaTek sets) they come in, as its store and
+     * installed, even disabled by install.sh), apps that came with the TV and have only an ordinary launcher activity stay
+     * out, as they are mostly the maker's helpers (one the person sideloaded comes in: #57, {@link AppRule}); next to a maker's own home (CVTE, MediaTek sets) they come in, as its store and
      * settings are among them. On top of that rule: the hidden apps in config.xml, other home screens, and what was
      * hidden or shown from ADB (optimize/dock.sh hide / show).
      */
@@ -110,13 +166,11 @@ final class Dock {
             for (ResolveInfo ri : pm.queryIntentActivities(q, PackageManager.GET_RESOLVED_FILTER)) {
                 String p = ri.activityInfo.packageName;
                 if (p.equals(c.getPackageName()) || out.containsKey(p) || (why != null && why.containsKey(p)) || seenHidden.contains(p)) continue;
-                String reason = hidden.contains(p) ? "hidden with dock.sh hide or the × of «تعديل التطبيقات»"
-                        : shown.contains(p) ? null
-                        : config.contains(p) ? "hidden in config.xml"
-                        : homes.contains(p) ? "a home screen"
-                        : UsbViewers.is(p) ? null   // 4.3 B8: the TV's viewer of a USB stick is always in the row (issue #50)
-                        : googleHome && category.equals(Intent.CATEGORY_LAUNCHER)
-                                ? "no TV activity, and the TV's own home lists only TV apps" : null;
+                android.content.pm.ApplicationInfo app = ri.activityInfo.applicationInfo;
+                boolean system = app != null && (app.flags & (android.content.pm.ApplicationInfo.FLAG_SYSTEM
+                        | android.content.pm.ApplicationInfo.FLAG_UPDATED_SYSTEM_APP)) != 0;
+                String reason = AppRule.reason(hidden.contains(p), shown.contains(p), config.contains(p), homes.contains(p), UsbViewers.is(p),
+                        googleHome, category.equals(Intent.CATEGORY_LAUNCHER), system);   // #57: a sideloaded app shows even without a TV activity
                 if (reason == null) out.put(p, ri);
                 else if (why != null) why.put(p, reason);
                 if (hidden.contains(p) && seenHidden.add(p) && hiddenOut != null) hiddenOut.add(ri);
@@ -191,17 +245,27 @@ final class Dock {
         List<String> rest = new ArrayList<>(apps.keySet());
         rest.removeAll(row);
         Collections.sort(rest, (x, y) -> apps.get(x).compareToIgnoreCase(apps.get(y)));
-        while (row.size() < MIN && !rest.isEmpty()) row.add(rest.remove(0));
+        int floor = AppsEdit.floor(exact(c), row.size(), MIN);
+        while (row.size() < floor && !rest.isEmpty()) row.add(rest.remove(0));
         return row;
     }
 
+    /** the home's own editors (the row never below MIN): an exact row set from the computer is a normal one again */
     static void save(Context c, List<String> row) {
-        prefs(c).edit().putString("dock", String.join(",", row)).apply();
+        prefs(c).edit().putString("dock", String.join(",", row)).putBoolean("dock_exact", false).apply();
         c.sendBroadcast(new Intent(CHANGED).setPackage(c.getPackageName()));
     }
 
+    /** 4.4 (cause 11): `dock.sh set`: exactly these apps, fewer than MIN too (AppsEdit.floor) */
+    static void saveExact(Context c, List<String> row) {
+        prefs(c).edit().putString("dock", String.join(",", row)).putBoolean("dock_exact", true).apply();
+        c.sendBroadcast(new Intent(CHANGED).setPackage(c.getPackageName()));
+    }
+
+    static boolean exact(Context c) { return prefs(c).getBoolean("dock_exact", false); }
+
     static void reset(Context c) {
-        prefs(c).edit().remove("dock").apply();
+        prefs(c).edit().remove("dock").remove("dock_exact").apply();
         c.sendBroadcast(new Intent(CHANGED).setPackage(c.getPackageName()));
     }
 }

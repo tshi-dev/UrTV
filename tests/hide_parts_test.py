@@ -36,10 +36,10 @@ for key, pref, extra, frag in (("occasion", "occasion", "occasion", "&occasion=0
 check("rows «المناسبة القادمة» and «تعتيم الليل» in «العرض» (شاشة التوقف), before «المناسبات الوطنية»; OK flips each",
       render.index('header("العرض")') < render.index('row("المناسبة القادمة"') < render.index('row("تعتيم الليل"') < render.index('row("المناسبات الوطنية"')
       and "prefs.setOccasion(!prefs.occasion()); render();" in render and "prefs.setNightDim(!prefs.nightDim()); render();" in render
-      and '{"المناسبة القادمة", SAVER}' in hub and '{"تعتيم الليل", SAVER}' in hub)
+      and '{"المناسبة القادمة", SAVER}' in hub and '{"تعتيم الليل", LOOK}' in hub)
 check("row «زر المهام» in «الشاشة الرئيسية», after «زر تلاوة وأذان», saying where the tasks are while it is hidden",
       render.index('row("زر تلاوة وأذان"') < render.index('row("زر المهام"') < render.index('row("جرس التحديثات"')
-      and "prefs.setTasksPill(!prefs.tasksPill()); render();" in render and "بطاقة «المهام» ومن الجوال" in render and '{"زر المهام", HOME}' in hub)
+      and "prefs.setTasksPill(!prefs.tasksPill()); render();" in render and "بطاقة «المهام» ومن الجوال" in render and '{"زر المهام", BUTTONS}' in hub)
 
 check("page: #occasion=0 and #nightdim=0 only; anything else as always",
       "occasion: _Q.get('occasion') !== '0'," in tpl and "nightDim: _Q.get('nightdim') !== '0'," in tpl)
@@ -53,9 +53,9 @@ check("home: an older screensaver (or none) says nothing: the button is shown",
 check("home: the row is built from the setting too (no flash of the button on a TV that hid it)",
       "if (isInstalled(SAVER_PKG) && ConfigSnapshot.read(this).tasksPillOn()) row.add(tasks);" in main)
 apply = main[main.index("private void applyTasksPill(boolean setting) {"):].split("\n    }\n")[0]
-check("home: hiding takes it out of the row and out of the pills, the focus to «المصادر»; showing puts it back right after «المصادر»",
+check("home: hiding takes it out of the row and out of the pills, the focus to «المصادر»; showing puts it back right after «المصادر» (first, after «يُتلى الآن», while «زر المصادر» is hidden)",
       "pills.remove(tasksPill);" in apply and "pillRow.removeView(tasksPill);" in apply and "inputsPill.requestFocus();" in apply
-      and "pillRow.addView(tasksPill, pillRow.indexOfChild(inputsPill) + 1," in apply and "pills.add(pills.indexOf(inputsPill) + 1, tasksPill);" in apply
+      and "pillRow.addView(tasksPill, inputsIn ? pillRow.indexOfChild(inputsPill) + 1 : 1," in apply and "pills.add(inputsIn ? pills.indexOf(inputsPill) + 1 : 0, tasksPill);" in apply
       and "wireFocus();" in apply and "isInstalled(SAVER_PKG)" in apply)
 check("home: the minute tick applies it, beside the «تلاوة وأذان» button", "applyListenPill(cfg.listenPillOn);\n        applyTasksPill(cfg.tasksPillOn());" in main)
 check("home: the phone's and the card's ways into the list do not look at it",

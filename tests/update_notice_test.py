@@ -33,6 +33,14 @@ main = (HOME / "MainActivity.java").read_text(encoding="utf-8")
 un = (HOME / "UpdateNotice.java").read_text(encoding="utf-8")
 check("a pill «تحديث جديد» opens the update screen (behind its lock) and is in the row only while UpdateNotice says so, never in kids mode",
       'new Intent(this, UpdateActivity.class)' in main and "UpdateNotice.wanted(this)" in main and "!Parental.state(this).kids && UpdateNotice.wanted(this)" in main)
-check("the release is read off the main thread, at most every 12 hours, only its first 64 bytes; nothing is installed from the notice",
-      "new Thread(" in un and "Net.get(base + \"version.txt\", null, 10000, 12000, 64)" in un and "UpdateNoticeRule.due(" in un and "PackageInstaller" not in un and "ACTION_VIEW" not in un)
+check("the release of the person's channel (apk-latest, or apk-next for a tester) is read off the main thread, at most every 6 hours, only its first 64 bytes, never during playback or the adhan; nothing is installed from the notice",
+      "new Thread(" in un and "Net.get(base + \"version.txt\", null, 10000, 12000, 64)" in un and "UpdateChannel.cached()" in un
+      and "MusicService.carryOurPlaying() || sa.urtv.home.tilawah.NowPlaying.adhanLive()" in un and "UpdateNoticeRule.due(" in un and "PackageInstaller" not in un and "ACTION_VIEW" not in un)
+check("4.4: all three apps are compared (the home, the screensaver app, «إضافات تلفزيونك» where it is installed); a missing screensaver keeps «ثبّت الجزء الثاني»",
+      "UpdateNoticeRule.behind(code(c, c.getPackageName()), code(c, SAVER), code(c, ExtrasWords.PACKAGE), newest(c))" in un and "k < 0 ? 0 : k" in un)
+check("4.4: the one-time card «في تحديث لـ …» on the home's bar: OK opens «تحديث تلفزيوني» behind its lock, never in kids mode or over playback or the adhan, marked shown as it appears, «لاحقاً» hides it",
+      'S.t("في تحديث لـ %s", names(b))' in un and "UpdateNotice.card(this, updateCardOnScreen, nowMs)" in main and "kids || quiet || askStock ? null :" in main
+      and "UpdateNotice.shown(this, card.target, nowMs)" in main and "if (nudgeIsUpdate) { launchGuarded(ParentalPolicy.PILL_UPDATES, new Intent(this, UpdateActivity.class)" in main
+      and "if (nudgeIsUpdate) { updateCardOnScreen = -1; updateHomeNudge(false); return; }" in main)
+check("4.4: a good read of the release updates the pill and the card at once", "if (resumed) updateHomeNudge(false);" in main)
 sys.exit(1 if failed else 0)

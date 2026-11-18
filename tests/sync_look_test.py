@@ -41,9 +41,9 @@ check("the white glass of before is one set of numbers (FavBar's own, which test
       "GLASS_FILL_DARK = 0x24FFFFFF, GLASS_LINE_DARK = 0x47FFFFFF, GLASS_FILL_LIGHT = 0xB8FFFFFF, GLASS_LINE_LIGHT = 0xD9FFFFFF;" in gs
       and "FILL_DARK = 0x24FFFFFF, LINE_DARK = 0x47FFFFFF, FILL_LIGHT = 0xB8FFFFFF, LINE_LIGHT = 0xD9FFFFFF;" in fav and "RADIUS = 24," in fav and "RING_LIGHT" not in fav)
 # ---- the three surfaces
-check("the upper buttons: PillBar draws the material's fill, line and outer corner; a button in it has the inner corner (8 dp = 16 px) and the look's focus in the focus style",
-      "void look(GlassStyle.Material m) {" in bar and "fill.setColor(none ? 0 : m.fill);" in bar and "line.setColor(none ? 0 : m.line);" in bar and "radius = m.radius / 2f * dp;" in bar
-      and "GlassStyle.barPercent()" not in bar and "pillBar.look(GlassStyle.material(glassNow, lookNow, GlassStyle.QUICK));" in main and "bg.setCornerRadius(dp(8));" in pill and "GlassStyle.focusStyle()" in pill)
+check("the upper buttons: PillBar draws the material's fill, line and outer corner; a button in it has a small corner (6 dp = 12 px; 4.4 no pills, the bar never rounder than 8 dp) and the look's focus in the focus style",
+      "void look(GlassStyle.Material m) {" in bar and "fill.setColor(none ? 0 : m.fill);" in bar and "line.setColor(none ? 0 : m.line);" in bar and "radius = Math.min(m.radius / 2f, MAX_RADIUS) * dp;" in bar and "static final float MAX_RADIUS = 8f;" in bar
+      and "GlassStyle.barPercent()" not in bar and "pillBar.look(GlassStyle.material(glassNow, lookNow, GlassStyle.QUICK));" in main and "bg.setCornerRadius(dp(6));" in pill and "GlassStyle.focusStyle()" in pill)
 apply = main[main.index("private void applyLook(boolean light)"):].split("\n    }\n")[0]
 check("the apps bar: the band is the material's fill and line, its corner FavBar.RADIUS (24), its tiles' the inner 16; the focused tile's ring is the material's colour and width",
       "GlassStyle.Material m = GlassStyle.material(lookNow, light, GlassStyle.BAR);" in apply and "dockBand.setColor(noGlass ? 0 : m.fill);" in apply and "trayRingColor = m.ring; trayRingPx = m.ringWidth;" in apply

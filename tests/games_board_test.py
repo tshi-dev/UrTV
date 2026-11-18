@@ -20,7 +20,7 @@ if not shutil.which("javac"):
     print("SKIP games: no javac"); sys.exit(1)
 for pkg, test, data, parts in RUNS:
     engine = [GAMES / pkg / f"{pkg.capitalize()}{p}.java" for p in parts]
-    loader = [APP / f for f in ("GamesBoardData.java", "MiniJson.java", "QuizBankCheck.java", "QuizPick.java", "QuizRoom.java", "DigitsText.java")] + sorted(p for d in ("hive", "word5") for p in (GAMES / d).glob("*.java") if d != pkg)
+    loader = [APP / f for f in ("GamesBoardData.java", "MiniJson.java", "QuizBankCheck.java", "QuizPick.java", "QuizRoom.java", "PhoneRoom.java", "DigitsText.java")] + sorted(p for d in ("hive", "word5") for p in (GAMES / d).glob("*.java") if d != pkg)
     with tempfile.TemporaryDirectory() as tmp:
         c = subprocess.run(["javac", "-nowarn", "-d", tmp, *map(str, engine), *map(str, loader), str(ROOT / f"tests/{test}.java")], capture_output=True, text=True)
         check(f"{pkg}: the engine compiles on a plain JVM", c.returncode == 0, c.stderr[-800:])

@@ -23,7 +23,7 @@ import sa.urtv.screensaver.games.word5.Word5Words;
  * a tile shows the letter exactly as its key does, and the end shows the word in its own spelling. The rules are Word5Game (tests/Word5Test.java).
  */
 public class Word5Activity extends GameActivity {
-    private enum Screen { SETUP, PLAY, END }
+    private enum Screen { SETUP, LOBBY, PLAY, END }
     private static final int GRID_W = 718, KEY = 124, GAP = 12, KEYS_Y = 292;
 
     private Screen screen = Screen.SETUP;
@@ -49,17 +49,55 @@ public class Word5Activity extends GameActivity {
         chips = new GameChips();
         chips.add("tries", S.t("المحاولات"), new String[] {num(Word5Game.TRIES[0]), num(Word5Game.TRIES[1]), num(Word5Game.TRIES[2])}, 0);
         chips.add("kids", S.t("الفئة"), new String[] {S.t("للجميع"), S.t("أطفال")}, 0);
+        chips.add("phones", S.t("اللعب بالجوالات"), new String[] {S.tv(ON_OFF[0]), S.tv(ON_OFF[1])}, 0);
         remembered(soundChip(chips));
+        chips.get("phones").picked = getIntent().getBooleanExtra("phones", false) ? 1 : 0;   // off unless the «بالجوالات» view opened this game; never kept from last time
     }
 
+    private boolean onPhones() { return phones != null && phones.room.phase() == GamePhoneRoom.Phase.PLAY; }
+    /** with phones: everyone types the guess on their own phone (the first one in is entered), the keyboard on the TV stays for the remote */
+    private void sendCards(String note) {
+        if (!onPhones() || game == null || game.over()) return;
+        for (int i = 0; i < phones.room.count(); i++) phones.room.card(i, GamePhoneRoom.TEXT, "", S.t("خمّن الكلمة: %s من %s", num(game.row() + 1), num(game.tries)), note, new String[] {S.t("خمسة حروف")}, null, -1);
+    }
+    private void phoneGuess(int seat) {
+        String[] t = phones.room.typed(seat);
+        String w = Word5Text.normalize(t == null ? "" : t[0]).replace(" ", "");
+        while (game.delete()) { }   // a clean row
+        for (int i = 0; i < w.length(); i++) { int k = Word5Text.ALPHABET.indexOf(w.charAt(i)); if (k < 0 || !game.type(k)) break; }
+        Word5Game.Entered e = game.enter();
+        String who = phones.room.name(seat);
+        if (e == Word5Game.Entered.SHORT) { message = S.t("%s: الكلمة خمسة حروف", who); play(QuizSound.LOW); }
+        else if (e == Word5Game.Entered.UNKNOWN) { message = S.t("%s: ما نعرف هذي الكلمة", who); shake = true; play(QuizSound.LOW); }
+        else if (e == Word5Game.Entered.NEXT) { message = ""; play(QuizSound.CHIME); }
+        else { screen = Screen.END; sel = 0; play(e == Word5Game.Entered.WON ? QuizSound.FANFARE : QuizSound.LOW); }
+        if (e == Word5Game.Entered.SHORT || e == Word5Game.Entered.UNKNOWN) { while (game.delete()) { } }
+        if (screen == Screen.END) phones.room.waitAll(S.t("شوفوا التلفزيون")); else sendCards(message);
+        redraw();
+    }
+    @Override protected void onTick(long now) {
+        if (screen == Screen.PLAY && onPhones() && game != null && !game.over()) { int b = phones.room.firstReplied(); if (b >= 0) phoneGuess(b); }
+    }
+    private void startWithPhones() {
+        if (phones.room.count() < 1) return;
+        phones.room.start(); phoneLobby = false;
+        begin();
+    }
     private void start() {
         if (words == null) { toast(S.t("قريبًا")); return; }
+        if (chips.picked("phones") == 1) {
+            if (!onPhones()) { if (!openPhones()) return; screen = Screen.LOBBY; phoneLobby = true; redraw(); return; }
+        } else closePhones();   // the switch is off: the remote plays alone, as it always did
+        begin();
+    }
+    private void begin() {
         List<String> recent = new ArrayList<>(GamePrefs.recent(this, id()));
         answer = words.free(chips.picked("kids") == 1, recent, new Random());
         GamePrefs.remember(this, id(), Collections.singletonList(answer.word));
         game = new Word5Game(words, answer.word, Word5Game.TRIES[chips.picked("tries")]);
         keys.set(0); message = ""; shake = false;
         screen = Screen.PLAY;
+        sendCards("");
         redraw();
     }
 
@@ -67,6 +105,7 @@ public class Word5Activity extends GameActivity {
 
     @Override protected void onKey(boolean back, boolean ok, int dx, int dy) {
         if (screen == Screen.SETUP) { if (keySetup(chips, back, ok, dx, dy)) start(); return; }
+        if (screen == Screen.LOBBY) { if (back) { closePhones(); screen = Screen.SETUP; redraw(); } else if (ok) startWithPhones(); return; }
         if (screen == Screen.END) {
             if (back) { finish(); return; }
             int v = dy != 0 ? keyButtons(sel, 3, false, dy) : keyButtons(sel, 3, ok, 0);
@@ -96,8 +135,8 @@ public class Word5Activity extends GameActivity {
             Word5Game.Entered e = game.enter();
             if (e == Word5Game.Entered.SHORT) { message = S.t("الكلمة خمسة حروف"); play(QuizSound.LOW); refreshLine(); return; }
             else if (e == Word5Game.Entered.UNKNOWN) { message = S.t("ما نعرف هذي الكلمة"); shake = true; keys.set(Word5Keys.DELETE); play(QuizSound.LOW); }
-            else if (e == Word5Game.Entered.NEXT) { message = ""; keys.set(0); play(QuizSound.CHIME); }
-            else { screen = Screen.END; sel = 0; play(e == Word5Game.Entered.WON ? QuizSound.FANFARE : QuizSound.LOW); }
+            else if (e == Word5Game.Entered.NEXT) { message = ""; keys.set(0); play(QuizSound.CHIME); sendCards(""); }
+            else { screen = Screen.END; sel = 0; play(e == Word5Game.Entered.WON ? QuizSound.FANFARE : QuizSound.LOW); if (onPhones()) phones.room.waitAll(S.t("شوفوا التلفزيون")); }
             redraw();
         }
     }
@@ -120,6 +159,7 @@ public class Word5Activity extends GameActivity {
 
     @Override protected void draw() {
         if (screen == Screen.SETUP) { setup(chips, S.t("ابدأ")); return; }
+        if (screen == Screen.LOBBY) { drawPhoneLobby(1, 12); return; }
         boolean end = screen == Screen.END;
         // the rows of tiles, at the start side, the whole height
         int rows = game.tries;

@@ -29,6 +29,12 @@ final class GreetingText {
         }
     }
 
+    /** PR #45 (AlaaAlmasri): the greeting with the person's name after it, «صباح الخير، علاء»; no name (the default) is the greeting alone. The name is isolated (it may be Latin letters in an Arabic line). */
+    static String withName(String greeting, String name) {
+        String clean = name == null ? "" : name.trim();
+        return clean.isEmpty() ? greeting : S.t("%s، %s", greeting, "\u2068" + clean + "\u2069");
+    }
+
     /** Open-Meteo's WMO weather code, as a short phrase that goes before «في المدينة». */
     static String sky(int code) {
         switch (code) {
@@ -67,6 +73,21 @@ final class GreetingText {
         String sky = sky(code);
         String d = dust >= HEAVY_DUST ? S.t("غبار كثيف") : dust >= DUST ? S.t("غبار") : "";
         return d.isEmpty() ? sky : sky.isEmpty() ? d : S.t("%s و%s", sky, S.en() ? d.toLowerCase(java.util.Locale.ROOT) : d);   // «Clear sky and dust»
+    }
+
+    /**
+     * 4.3.3: the drawing beside the weather line, as the screensaver page's wxIcon picks it (Open-Meteo's WMO code; night: before sunrise or after sunset):
+     * "sun", "moon", "part", "partnight", "cloud", "fog", "rain", "snow" or "storm" (res/drawable/wx_*.xml); null for a code we do not know.
+     */
+    static String icon(int code, boolean night) {
+        if (code < 0) return null;
+        if (code <= 1) return night ? "moon" : "sun";
+        if (code == 2) return night ? "partnight" : "part";
+        if (code == 3) return "cloud";
+        if (code == 45 || code == 48) return "fog";
+        if (code >= 95) return "storm";
+        if ((code >= 71 && code <= 77) || code == 85 || code == 86) return "snow";
+        return "rain";   // drizzle, rain and showers
     }
 
     /** «سماء صافية في الرياض، ٣١°» (no «·» beside a digit: the TV's font draws it as ٠); a code we have no word for gives just «الرياض، ٣١°»; dust (0 when unknown) is told beside the sky: «سماء صافية وغبار في الرياض، ٣٥°». */

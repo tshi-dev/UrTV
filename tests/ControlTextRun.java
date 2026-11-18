@@ -38,6 +38,13 @@ public final class ControlTextRun {
                     out.append(ControlText.outputs(types, names));
                     break;
                 }
+                case "adhan": {   // 4.3.3 «الأذان والإقامة»: f[1] now (minutes of the day), f[2] friday 0|1; today's five at 05:00 12:00 15:20 17:45 19:15 (minutes, as ms)
+                    long[] t = {300 * 60_000L, 720 * 60_000L, 920 * 60_000L, 1065 * 60_000L, 1155 * 60_000L, Long.parseLong(f[2])};
+                    int i = ControlText.nextPrayer(t, Long.parseLong(f[1]) * 60_000L);
+                    long iq = i < 0 ? 0 : ControlText.iqamaAt(t, i);
+                    out.append(i < 0 ? "none" : ControlText.adhanLine(ControlText.prayerName(i, t), "@" + (t[i] / 60_000L), iq > 0 ? "@" + (iq / 60_000L) : ""));
+                    break;
+                }
                 case "mirror": {
                     final java.util.Set<String> has = new java.util.HashSet<>(java.util.Arrays.asList(f[1].split(",")));
                     String app = ControlText.mirrorApp(has::contains);
@@ -47,6 +54,12 @@ public final class ControlTextRun {
                 case "bluetooth": {
                     final java.util.Set<String> has = new java.util.HashSet<>(java.util.Arrays.asList(f[1].split(",")));
                     String a = ControlText.bluetoothAction(has::contains);
+                    out.append(a == null ? "none" : a);
+                    break;
+                }
+                case "apps": {
+                    final java.util.Set<String> has = new java.util.HashSet<>(java.util.Arrays.asList(f[1].split(",")));
+                    String a = ControlText.appsAction(has::contains);
                     out.append(a == null ? "none" : a);
                     break;
                 }

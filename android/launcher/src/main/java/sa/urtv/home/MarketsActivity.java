@@ -196,7 +196,7 @@ public class MarketsActivity extends Activity {
     private String sourceText() {
         shownLive = liveOn && MarketData.liveFresh(liveOkAt, System.currentTimeMillis());
         String name = data == null ? "Yahoo Finance" : data.sourceName();
-        return shownLive ? S.t("مباشر · المصدر: %s", name) : liveOn ? S.t("الأسعار متأخرة · المصدر: %s", name) : S.t("الأسعار غير مباشرة · المصدر: %s", name);   // «عادي» is a choice, not a delay
+        return shownLive ? S.t("مباشر، المصدر: %s", name) : liveOn ? S.t("الأسعار متأخرة، المصدر: %s", name) : S.t("الأسعار غير مباشرة، المصدر: %s", name);   // «عادي» is a choice, not a delay
     }
 
     /** a row's live label: Tadawul's «متأخرة ~١٥ د» (delayed at the source), any other market its quote's time; nothing when it is not live */
@@ -411,21 +411,21 @@ public class MarketsActivity extends Activity {
             String word = S.t("السوق الأمريكي مفتوح");
             s.append(word);
             s.setSpan(new ForegroundColorSpan(UP), 0, word.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-            s.append(" · ").append(S.t("يغلق بعد %s", duration(MarketData.until(now, MarketData.usCloseAt(now)))));
+            s.append(S.sep()).append(S.t("يغلق بعد %s", duration(MarketData.until(now, MarketData.usCloseAt(now)))));
         } else {
             String word = open ? S.t("تداول مفتوح") : S.t("تداول مغلق");
             s.append(word);
             s.setSpan(new ForegroundColorSpan(open ? UP : TEXT), 0, word.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-            s.append(" · ");
+            s.append(S.sep());
             if (open) {
                 s.append(S.t("يغلق بعد %s", duration(MarketData.until(now, MarketData.closeAt(now)))));
-                if (us) s.append(" · ").append(S.t("السوق الأمريكي مفتوح"));
+                if (us) s.append(S.sep()).append(S.t("السوق الأمريكي مفتوح"));
             } else {
                 long at = MarketData.nextOpen(now);
                 s.append(S.t("يفتح %s %s", S.tv(DAYS[Math.min(DAYS.length - 1, MarketData.weekday(at) - 1)]), clock(10, 0)));   // «يفتح الأربعاء ١٠:٠٠ ص»: short enough for the line
             }
         }
-        s.append(" · ");
+        s.append(S.sep());
         boolean live = liveOn && MarketData.liveFresh(liveOkAt, now);
         if (data == null && loading) s.append(S.t("جارٍ التحميل…"));
         else if (data == null || data.updated == 0) s.append(S.t("لا أسعار بعد: يلزم اتصال بالإنترنت"));
@@ -433,7 +433,7 @@ public class MarketsActivity extends Activity {
             Calendar k = Calendar.getInstance(ZoneFix.zone(zone()));
             k.setTimeInMillis(live ? liveOkAt : data.updated);
             String at = clock(k.get(Calendar.HOUR_OF_DAY), k.get(Calendar.MINUTE));
-            s.append(live ? S.t("آخر تحديث %s", at) + " · " + S.t("مباشر") : liveOn ? S.t("آخر تحديث %s · أسعار متأخرة", at) : S.t("آخر تحديث %s", at) + " · " + S.t("غير مباشرة"));
+            s.append(live ? S.t("آخر تحديث %s", at) + S.sep() + S.t("مباشر") : liveOn ? S.t("آخر تحديث %s، أسعار متأخرة", at) : S.t("آخر تحديث %s", at) + S.sep() + S.t("غير مباشرة"));
         }
         String shown = s.toString();
         if (!shown.equals(lastHeader)) { lastHeader = shown; state.setText(s); }   // a live tick that says the same draws nothing (the minute of «آخر تحديث» is all that changes)
@@ -578,7 +578,7 @@ public class MarketsActivity extends Activity {
         br.addView(new MarketChart(this).bar(new float[] {done, 1 - done}, new int[] {done > 0 && done < 1 ? ACCENT : DIM, 0}, look.line), sized(-1, 8, 12));
         LinearLayout se = new LinearLayout(this);
         se.addView(text(clock(10, 0), 13, "Regular", DIM), new LinearLayout.LayoutParams(0, -2, 1f));
-        se.addView(text(S.t("%s · مزاد الإغلاق إلى %s", clock(15, 0), clock(15, 10)), 13, "Regular", DIM), new LinearLayout.LayoutParams(-2, -2));
+        se.addView(text(S.t("%s، مزاد الإغلاق إلى %s", clock(15, 0), clock(15, 10)), 13, "Regular", DIM), new LinearLayout.LayoutParams(-2, -2));
         br.addView(se, gap(8));
         row1.addView(br, weight(1.15f, 16));
         content.addView(row1, wrap());
@@ -667,7 +667,7 @@ public class MarketsActivity extends Activity {
         LinearLayout a = new LinearLayout(this);
         a.setLayoutDirection(View.LAYOUT_DIRECTION_LTR);
         boolean us = "US".equals(MarketData.exchange(sym));   // the day's hours are the symbol's own exchange's, in its own time (New York: 9:30 to 4:00)
-        String start = which == MarketData.TODAY ? (us ? S.t("%s · نيويورك", clock(9, 30)) : clock(10, 0)) : which == MarketData.WEEK ? S.t("قبل أسبوع") : which == MarketData.MONTH ? S.t("قبل شهر") : date(r.from);
+        String start = which == MarketData.TODAY ? (us ? S.t("%s، نيويورك", clock(9, 30)) : clock(10, 0)) : which == MarketData.WEEK ? S.t("قبل أسبوع") : which == MarketData.MONTH ? S.t("قبل شهر") : date(r.from);
         String end = which == MarketData.TODAY ? (us ? clock(16, 0) : clock(15, 0)) : date(r.to);
         a.addView(text(start, 13, "Regular", DIM), new LinearLayout.LayoutParams(-2, -2));
         TextView mid = text(which == MarketData.TODAY ? S.t("الخط المتقطع: إغلاق أمس") : S.t("الخط المتقطع: أول الفترة"), 13, "Regular", DIM);
@@ -910,7 +910,7 @@ public class MarketsActivity extends Activity {
             LinearLayout nm = new LinearLayout(this);
             nm.setOrientation(LinearLayout.VERTICAL);
             nm.addView(text(ccyName(code), 17, "Medium", TEXT), wrap());
-            nm.addView(ltrStart(text(MarketData.pegged(code) ? code + " · " + S.t("مربوط بالدولار") : code, 13, "Regular", DIM)), wrap());
+            nm.addView(ltrStart(text(MarketData.pegged(code) ? code + S.sep() + S.t("مربوط بالدولار") : code, 13, "Regular", DIM)), wrap());
             MarketData.Quote gq = data == null ? null : data.quotes.get(MarketData.GOLD);
             double gram = MarketData.goldGram(gq == null ? Double.NaN : gq.p, code, rates);   // a gram of gold in this currency (KWD, BHD…: 4.1 reports)
             if (!Double.isNaN(gram)) nm.addView(text(S.t("غرام الذهب %s", MarketData.show(MarketData.fxNumber(gram), Digits.latin())), 13, "Regular", DIM), wrap());
@@ -924,7 +924,7 @@ public class MarketsActivity extends Activity {
             list.addView(r, gap(code.equals("USD") ? 8 : 4));
         }
         content.addView(list, wrap());
-        content.addView(text(S.t("أسعار يومية · المصدر: Yahoo Finance. الريال والدرهم والريال القطري والدينار البحريني والريال العماني والدينار الأردني مربوطة بالدولار."), 12, "Regular", DIM), gap(16));
+        content.addView(text(S.t("أسعار يومية، المصدر: Yahoo Finance. الريال والدرهم والريال القطري والدينار البحريني والريال العماني والدينار الأردني مربوطة بالدولار."), 12, "Regular", DIM), gap(16));
         actions.addView(button(S.t("حوّل"), true, v -> converter(fxPrefs().getString("from", "USD"), fxPrefs().getString("to", "SAR"))), buttonParams(0));
         actions.addView(button(S.t("اختر العملات"), false, v -> chooseCurrencies()), buttonParams(12));
     }
@@ -954,7 +954,7 @@ public class MarketsActivity extends Activity {
             final String code = c[0];
             View[] holder = new View[1];
             // the state word first and green while on, with the three green triangles at the start (toggle style I, as everywhere in the settings)
-            holder[0] = settingRow(ccyName(code), (chosen.contains(code) ? S.t("مفعّلة") : S.t("متوقفة")) + " · " + code, chosen.contains(code), v -> {
+            holder[0] = settingRow(ccyName(code), (chosen.contains(code) ? S.t("مفعّلة") : S.t("متوقفة")) + S.sep() + code, chosen.contains(code), v -> {
                 if (chosen.contains(code)) chosen.remove(code); else chosen.add(code);
                 List<String> ordered = new ArrayList<>();
                 for (String[] k : CCY) if (chosen.contains(k[0])) ordered.add(k[0]);
@@ -1018,8 +1018,8 @@ public class MarketsActivity extends Activity {
         final boolean[] untouched = {true};   // the first key replaces the 1 that shows at first
         final TextView shown = ltrStart(text("", 30, "Medium", TEXT)), result = ltrStart(text("", 22, "Medium", ACCENT)), fromB = (TextView) button("", false, null), toB = (TextView) button("", false, null);
         Runnable paint = () -> {
-            fromB.setText(ccyName(ends[0]) + " · " + ends[0]);
-            toB.setText(ccyName(ends[1]) + " · " + ends[1]);
+            fromB.setText(ccyName(ends[0]) + S.sep() + ends[0]);
+            toB.setText(ccyName(ends[1]) + S.sep() + ends[1]);
             shown.setText(MarketData.show(MarketData.typedAmount(amount.toString()), Digits.latin()) + " " + ends[0]);
             double a = amount.length() == 0 ? 0 : Double.parseDouble(amount.toString().endsWith(".") ? amount + "0" : amount.toString());
             double r = MarketData.convert(a, ends[0], ends[1], rates);
@@ -1154,7 +1154,7 @@ public class MarketsActivity extends Activity {
         LinearLayout nm = new LinearLayout(this);
         nm.setOrientation(LinearLayout.VERTICAL);
         nm.addView(text(S.tv(MarketData.name(code)), 18, "Medium", TEXT), wrap());
-        nm.addView(ltrStart(text(r.h.usd() ? S.t("%s · بالدولار", code) : code, 13, "Regular", DIM)), wrap());
+        nm.addView(ltrStart(text(r.h.usd() ? S.t("%s، بالدولار", code) : code, 13, "Regular", DIM)), wrap());
         row.addView(nm, new LinearLayout.LayoutParams(0, -2, COLS[0]));
         String dots = "••••";
         row.addView(ltrStart(text(hide ? "••" : MarketData.show(trim(r.h.qty()), Digits.latin()), 16, "Regular", TEXT)), new LinearLayout.LayoutParams(0, -2, COLS[1]));
@@ -1248,9 +1248,9 @@ public class MarketsActivity extends Activity {
         head.addView(text(title != null ? title : S.tv(MarketData.name(code)), 26, "Medium", TEXT), new LinearLayout.LayoutParams(0, -2, 1f));
         boolean us = MarketData.isUsIndex(code);
         boolean sa = !us && (code.startsWith("^") || MarketData.isSaudi(code));
-        String sub = us ? S.t("%s · بالدولار", code) : code.startsWith("^") ? S.t("مؤشر السوق الرئيسية · تداول") : sa ? S.t("%s · تداول · ر.س", code) : S.t("%s · بالدولار", code);
+        String sub = us ? S.t("%s، بالدولار", code) : code.startsWith("^") ? S.t("مؤشر السوق الرئيسية، تداول") : sa ? S.t("%s، تداول، ر.س", code) : S.t("%s، بالدولار", code);
         String tag = liveTag(code);
-        head.addView(ltrStart(text(tag.isEmpty() ? sub : sub + " · " + tag, 14, "Regular", DIM)), new LinearLayout.LayoutParams(-2, -2));
+        head.addView(ltrStart(text(tag.isEmpty() ? sub : sub + S.sep() + tag, 14, "Regular", DIM)), new LinearLayout.LayoutParams(-2, -2));
         inner.addView(head, wrap());
         if (q != null) {
             cardBlock = (LinearLayout) chartBlock(null, q, 40, 96, MarketData.symbol(code));
@@ -1449,7 +1449,7 @@ public class MarketsActivity extends Activity {
         LinearLayout head = new LinearLayout(this);
         head.setGravity(Gravity.BOTTOM);
         head.addView(text(S.tv(MarketData.name(code)), 26, "Medium", TEXT), new LinearLayout.LayoutParams(0, -2, 1f));
-        head.addView(ltrStart(text(MarketData.isSaudi(code) ? S.t("%s · ر.س", code) : S.t("%s · بالدولار", code), 14, "Regular", DIM)), new LinearLayout.LayoutParams(-2, -2));
+        head.addView(ltrStart(text(MarketData.isSaudi(code) ? S.t("%s، ر.س", code) : S.t("%s، بالدولار", code), 14, "Regular", DIM)), new LinearLayout.LayoutParams(-2, -2));
         box.addView(head, wrap());
         final StringBuilder[] values = {new StringBuilder(Double.isNaN(qty) ? "" : trim(qty)), new StringBuilder(Double.isNaN(avg) ? "" : trim(avg))};
         final int[] field = {0};
@@ -1590,7 +1590,7 @@ public class MarketsActivity extends Activity {
         box.addView(text(S.t("خيارات محفظتي"), 24, "Medium", TEXT), wrap());
         boolean pinSet = Parental.state(this).pinSet;
         boolean on = Portfolio.locked(this) && pinSet;
-        View lock = settingRow(S.t("اقفل محفظتي"), on ? S.t("مفعّل · تسأل عن الرقم السري قبل فتحها") : pinSet ? S.t("متوقف") : S.t("متوقف · ضع رقمًا سريًا من الرقابة الأبوية أولًا"), on, v -> {
+        View lock = settingRow(S.t("اقفل محفظتي"), on ? S.t("مفعّل، تسأل عن الرقم السري قبل فتحها") : pinSet ? S.t("متوقف") : S.t("متوقف، ضع رقمًا سريًا من الرقابة الأبوية أولًا"), on, v -> {
             if (!Parental.state(this).pinSet) { toast(S.t("ضع رقمًا سريًا من الرقابة الأبوية أولًا")); return; }
             if (Portfolio.locked(this)) {   // turning it off asks for the PIN too
                 Parental.confirm(this, Parental.adhanFirst(this), S.n("محفظتي"), () -> { Portfolio.setLocked(this, false); d.dismiss(); options(); }, () -> { });
@@ -1705,7 +1705,7 @@ public class MarketsActivity extends Activity {
         nm.setOrientation(LinearLayout.VERTICAL);
         nm.addView(text(S.tv(MarketData.name(code)), sp, "Medium", TEXT), wrap());
         String tag = liveTag(code);
-        nm.addView(ltrStart(text(tag.isEmpty() ? code : code + " · " + tag, 12, "Regular", DIM)), wrap());
+        nm.addView(ltrStart(text(tag.isEmpty() ? code : code + S.sep() + tag, 12, "Regular", DIM)), wrap());
         return nm;
     }
 

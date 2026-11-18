@@ -84,7 +84,7 @@
 - **UrTV النظيف:** الأساسيات فقط في الرئيسية وشاشة التوقف، مع سطر الصلاة القادمة أو بطاقة صلاة، وكل شي يرجع بضغطة.
 - **توحيد المظهر:** الأزرار والبطاقات وشريط التطبيقات بمادة وحدة في كل شكل.
 - **تخلّص من واجهة المصنع:** تعطيل (ما يحذف) واجهة المصنع بتأكيدين وبضغطة ترجع؛ بعض التلفزيونات ما تعرض سؤال التصحيح لتطبيقنا، وUrTV يشتغل بدونها.
-- **قبل ما تحذف UrTV:** إذا كنت شغّلت «تخلّص من واجهة المصنع» فلا تحذف التطبيق قبل ما ترجّعها (الإعدادات ← الشاشة الرئيسية ← «رجّع واجهة المصنع»، أو «إعداد تلفزيوني» ثم «تراجع»)، وإلا يبقى التلفزيون بلا شاشة رئيسية وتطلع شاشة سوداء. في الإعدادات صف «قبل ما تحذف التطبيق…» يقول لك هذا، وفيه زر الرجوع.
+- **قبل ما تحذف UrTV:** إذا كنت شغّلت «تخلّص من واجهة المصنع» فلا تحذف التطبيق قبل ما ترجّعها (الإعدادات ← التطبيقات ← «رجّع واجهة المصنع»، أو «إعداد تلفزيوني» ثم «تراجع»)، وإلا يبقى التلفزيون بلا شاشة رئيسية وتطلع شاشة سوداء. في الإعدادات صف «قبل ما تحذف التطبيق…» يقول لك هذا، وفيه زر الرجوع.
 - **التحكم من الجوال:** صفحة جوال جديدة: ريموت، وكتابة عربية، ورسالة ورسم على الشاشة، وصورك.
 - **تسريع آمن:** يوقف الإعلانات والتتبع بشكل يرجع، وما يلمس AirPlay ولا البث ولا الصوت.
 
@@ -155,6 +155,10 @@ Every feature: [docs/FEATURES.md](docs/FEATURES.md) (Arabic). Every setting with
 - What the apps send over the network: [docs/NETWORK.md](docs/NETWORK.md) · TV models: [docs/TVS.md](docs/TVS.md) · what we learned on real TVs: [docs/OPTIMIZE.md](docs/OPTIMIZE.md).
 - Download the apps: [the latest release](https://github.com/tshi-dev/UrTV/releases/latest). Release tags and build numbers: [docs/DEVELOPERS.md](docs/DEVELOPERS.md#releases-and-build-numbers).
 - [CHANGELOG.md](CHANGELOG.md) · [CONTRIBUTING.md](CONTRIBUTING.md)
+
+## License
+
+The code is MIT. The games' content (the banks, prompts, puzzles and packs of the family games) is **all rights reserved**, kept in a private repository and shipped to TVs only as compiled, compressed, encrypted bundles: see [docs/LICENSE-CONTENT.md](docs/LICENSE-CONTENT.md).
 
 ## Credits
 

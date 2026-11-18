@@ -18,11 +18,11 @@ def check(name, ok, detail=""):
 svc, pb, exo = (T / "MusicService.java").read_text(encoding="utf-8"), (T / "Playback.java").read_text(encoding="utf-8"), EXO.read_text(encoding="utf-8")
 gradle, props = (ROOT / "android/launcher/build.gradle").read_text(encoding="utf-8"), (ROOT / "android/gradle.properties").read_text(encoding="utf-8")
 check("the service plays through Playback (MediaPlayer, or ExoPlayer for a live HLS station), never a MediaPlayer of its own",
-      "private Playback player;" in svc and "Playback.create(this, url, source == Prefs.SOURCE_RADIO)" in svc and "new MediaPlayer()" not in svc)
+      "private Playback player;" in svc and "Playback.create(this, url, source == Prefs.SOURCE_RADIO, source == Prefs.SOURCE_SURAH)" in svc and "new MediaPlayer()" not in svc)
 check("Playback.create: ExoPlayer for every station (4.3: the Icecast ones too), loaded by name, MediaPlayer when it cannot be",
-      "if (radio) {" in pb and 'Class.forName(EXO)' in pb and "return new Platform();" in pb and 'EXO = "sa.urtv.home.tilawah.ExoPlayback"' in pb)
-check("ExoPlayback: a 15-60 s buffer starting after 2.5 s, 8 retries of a failed segment, behind-the-window back to the live edge, its own focus off",
-      "MIN_BUFFER_MS = 15_000, MAX_BUFFER_MS = 60_000, START_MS = 2_500" in exo and "new DefaultLoadErrorHandlingPolicy(RETRIES)" in exo and "RETRIES = 8" in exo
+      "if (radio || surah) {" in pb and 'Class.forName(EXO)' in pb and "return new Platform();" in pb and 'EXO = "sa.urtv.home.tilawah.ExoPlayback"' in pb)
+check("ExoPlayback: a 30-120 s buffer (4.4: was 15-60) that starts after a 5 s pre-buffer (was 2.5), 8 retries of a failed segment, behind-the-window back to the live edge, its own focus off",
+      "MIN_BUFFER_MS = 30_000, MAX_BUFFER_MS = 120_000, START_MS = 5_000, RESTART_MS = 10_000" in exo and "new DefaultLoadErrorHandlingPolicy(live ? RETRIES : FILE_RETRIES)" in exo and "RETRIES = 8" in exo
       and "ERROR_CODE_BEHIND_LIVE_WINDOW" in exo and "exo.seekToDefaultPosition();" in exo and ".build(), false);" in exo)
 check("ExoPlayback keeps https on https, keeps the CPU and Wi-Fi up, and gives MediaPlayer's buffering callbacks",
       "setAllowCrossProtocolRedirects(false)" in exo and "C.WAKE_MODE_NETWORK" in exo and "MEDIA_INFO_BUFFERING_START" in exo and "MEDIA_INFO_BUFFERING_END" in exo)

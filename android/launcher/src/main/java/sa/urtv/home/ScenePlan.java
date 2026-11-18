@@ -1,0 +1,358 @@
+package sa.urtv.home;
+
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * 4.3.3 «الآفاق» (the scene home, docs/mockups/PERFORMANCE.md): the rules, with no Android in them (tests/ScenePlanRun.java runs them).
+ * A scene is a photo, a blurred and brightened copy of it (the clock's glass) and, for depth, the scenery cut out of it with the sky
+ * transparent (the mask), drawn over the clock. A pack's scenes are listed in its scenes.tsv, one line each:
+ * id, Arabic name, English name, the digits' top and bottom (px of a 1080 screen; 4.4: read for old data only, the clock stands at fixedBox), the mask's box "x,y,w,h" (px of 1080p) or "-",
+ * dark ("1": a dark clock, for a pale scene), the photo's credit, (4.3.3, may be missing) its tags ("owner_ok", 4.4: the owner's placement is
+ * kept as it is, ScenePlan.OWNER_OK), and (4.4, may be missing or "-") digits_x, the
+ * digits' centre in px of 1920 with no cards beside the clock (480..1440; the middle by default). Tags: "night" (shown from Maghrib to Fajr when
+ * «الأفق يتبع الوقت» is on), "fog" (shown in fog when «الأفق يتبع الطقس» is on), comma between.
+ */
+final class ScenePlan {
+    private ScenePlan() { }
+
+    /** the memory tiers, Ram's numbers (Ram itself needs Android; tests/scene_home_test.py keeps the two the same) */
+    static final int LOW = 0, MID = 1, NORMAL = 2;
+
+    /** the two packs: «آفاق السعودية» is in the app; «آفاق عالمية» is downloaded when chosen (SceneDownload) */
+    static final String SAUDI = "saudi", COUCH = "couch";
+
+    /** how long a scene stays (s), as the settings say; LOW changes at most every 5 minutes, with no fade */
+    static final int STAY_S = 20, MIN_STAY_S = 10, LOW_STAY_S = 300, FADE_MS = 1600;
+
+    static final class Scene {
+        final String pack, id, name, nameEn, credit, tags;
+        final int digitsTop, digitsBottom;   // px of a 1080-line screen
+        int digitsX = 960;                   // 4.4 scenes.tsv's 10th column, read for old data only: the clock no longer moves per scene (fixedBox)
+        int[] frame = WHOLE;                 // 4.4 the part of the photo shown full screen, x, y, w in px of 1920 x 1080 (scenes.tsv's 11th column)
+        String depth;                        // 4.4 the layouts the cut-out is drawn in (12th column: clean, couch); null: old data, the rule decides anywhere
+        final int[] mask;                    // x, y, w, h of the cut-out in px of 1080p; null: no cut-out (the clock is drawn over the photo)
+        final boolean dark;
+
+        Scene(String pack, String id, String name, String nameEn, int top, int bottom, int[] mask, boolean dark, String credit, String tags) {
+            this.pack = pack; this.id = id; this.name = name; this.nameEn = nameEn; this.digitsTop = top; this.digitsBottom = bottom;
+            this.mask = mask; this.dark = dark; this.credit = credit; this.tags = "," + tags.trim() + ",";
+        }
+
+        boolean is(String tag) { return tags.contains("," + tag + ","); }
+    }
+
+    /** A pack's scenes.tsv: the good lines only (a bad line is left out, never half read). */
+    static List<Scene> parse(String pack, String tsv) {
+        List<Scene> out = new ArrayList<>();
+        if (tsv == null) return out;
+        for (String line : tsv.split("\n")) {
+            if (line.trim().isEmpty() || line.startsWith("#")) continue;
+            String[] f = line.split("\t", -1);
+            if (f.length < 8 || !f[0].matches("[a-z][a-z0-9-]{1,23}")) continue;
+            try {
+                int top = Integer.parseInt(f[3].trim()), bottom = Integer.parseInt(f[4].trim());
+                if (top < 0 || bottom > 1080 || bottom - top < 120) continue;   // a clock too small to read is not a scene
+                int[] mask = null;
+                if (!"-".equals(f[5].trim())) {
+                    String[] m = f[5].trim().split(",");
+                    if (m.length != 4) continue;
+                    mask = new int[] {Integer.parseInt(m[0]), Integer.parseInt(m[1]), Integer.parseInt(m[2]), Integer.parseInt(m[3])};
+                    if (mask[0] < 0 || mask[1] < 0 || mask[2] <= 0 || mask[3] <= 0 || mask[0] + mask[2] > 1920 || mask[1] + mask[3] > 1080) continue;
+                }
+                Scene sc = new Scene(pack, f[0], f[1], f[2], top, bottom, mask, "1".equals(f[6].trim()), f[7], f.length > 8 ? f[8] : "");
+                if (f.length > 9 && f[9].trim().matches("[0-9]{3,4}")) sc.digitsX = Math.max(480, Math.min(1440, Integer.parseInt(f[9].trim())));   // "-" or absent: the middle
+                if (f.length > 10) sc.frame = noUpscale(frameOf(f[10]), 1920);   // the pack's photos are 1920 x 1080 (scene_home_test)
+                if (f.length > 11) sc.depth = "," + f[11].trim() + ",";
+                out.add(sc);
+            } catch (NumberFormatException e) {
+                // left out
+            }
+        }
+        return out;
+    }
+
+    /** The packs that are on ("saudi,couch"): the known ones, in that order; none named is the Saudi pack alone. */
+    static List<String> packs(String setting) {
+        List<String> out = new ArrayList<>();
+        String s = "," + (setting == null ? "" : setting) + ",";
+        if (s.contains("," + SAUDI + ",")) out.add(SAUDI);
+        if (s.contains("," + COUCH + ",")) out.add(COUCH);
+        if (out.isEmpty()) out.add(SAUDI);
+        return out;
+    }
+
+    /** LOW: the photo only, decoded at 1280 wide; MID and NORMAL: the screen's width (at most 1920: the files are 1080p). */
+    static int decodeWidth(int tier, int screenW) { return tier == LOW ? Math.min(1280, screenW) : Math.min(1920, screenW); }
+
+    /** the cut-out over the clock: not on LOW (no layer, no memory), the clock is drawn over the photo */
+    static boolean mask(int tier) { return tier != LOW; }
+
+    /** a fade between two scenes: not on LOW (it cuts) */
+    static boolean fade(int tier) { return tier != LOW; }
+
+    /** how long a scene stays, in ms */
+    static long stayMs(int tier, int seconds) {
+        if (tier == LOW) return LOW_STAY_S * 1000L;
+        return Math.max(MIN_STAY_S, seconds <= 0 ? STAY_S : seconds) * 1000L;
+    }
+
+    /**
+     * Where the clock's digits go on a screen of w x h: {left, top, right, bottom} in px. The scene says the height (its digits sit low enough for its
+     * scenery to cross them); with the home's cards on the screen (they are on the left of an Arabic home) the clock takes the other half, at the start
+     * side, else the middle. {@code rtl}: the start side is the right.
+     */
+    /**
+     * 4.4 the owner: the clock stays where it is and the picture (with its cut-out and the glass in the digits) comes down a little, by a zoom from
+     * the screen's top centre (never an empty band), until the share of the digits above the scenery reaches its band's target (target()): under 60 %
+     * to 75 %, 60 to 70 % to 80 %, 70 to 85 % to 85 %; 85 % or more stays as it is (Riyadh, 92 %). MAX_ZOOM at most.
+     */
+    static final float[][] BANDS = {{0.60f, 0.75f}, {0.70f, 0.80f}, {0.85f, 0.85f}};
+    static final float MAX_ZOOM = 1.4f;
+
+    /** the visible share a picture showing v of the digits is brought to (BANDS; v itself from 85 %) */
+    static float target(float v) {
+        for (float[] b : BANDS) if (v < b[0]) return b[1];
+        return v;
+    }
+
+    /** the share of the digits' box (left, top, right, bottom on a w x h screen) above the scenery, the picture zoomed by k about the top centre; sky: 48 columns, px of 1080 */
+    static float visible(int[] sky, int[] box, int w, int h, float k) {
+        if (sky == null || sky.length != 48 || box == null || box[3] <= box[1]) return 1f;
+        float cover = 0;
+        int n = 0;
+        for (int x = box[0]; x < box[2]; x += Math.max(1, w / 192)) {
+            float src = w / 2f + (x - w / 2f) / k;   // the picture's column under this one
+            int c = Math.max(0, Math.min(47, (int) (src * 48 / w)));
+            float top = sky[c] * h / 1080f * k;
+            cover += Math.max(0f, Math.min(1f, (box[3] - top) / (box[3] - box[1])));
+            n++;
+        }
+        return n == 0 ? 1f : 1f - cover / n;
+    }
+
+    /** the zoom (1 or more) that brings the digits' visible share to its band's target (see above) */
+    static float zoom(int[] sky, int[] box, int w, int h) {
+        float v0 = visible(sky, box, w, h, 1f), target = target(v0);
+        float k = 1f;
+        while (visible(sky, box, w, h, k) < target - 1e-4f && k < MAX_ZOOM) k = Math.round((k + 0.01f) * 100) / 100f;
+        return k;
+    }
+
+    /**
+     * 4.4 the owner: depth never makes a digit unreadable (the night lake's trees made its ٤ a ٢, the golden tower made a ٤ an ع) or hides the colon.
+     * Each digit of the clock as the digits' box holds it (digits 0.56 of its height wide, the colon 0.24, centred: «١٢:٣٠» and «٤:٥٨») may be covered by the scenery for at most COVER of its height, from its base, and under the colon as much (its dot never), the picture zoomed by k about the top centre. The same rule
+     * as the masks gate (.github/tools/photo_masks.py), which places a pack's clocks by it; here it holds wherever the clock really is (the cards or
+     * the apps row move it). sky: the scenery's top in columns (any number, px of 1080), as skyline() gives it, read with smoothing so a spike a few
+     * px wide does not count.
+     */
+    static final float COVER = 0.25f;
+    static final float[][] GLYPHS = {{0.56f, 0.56f, -0.24f, 0.56f, 0.56f}, {0.56f, -0.24f, 0.56f, 0.56f}};   // «١٢:٣٠» and «٤:٥٨» (the time runs left to right)
+
+    /** the most of any digit's height the scenery covers (0..1), or of the colon's ({@code colon}) */
+    static float cover(int[] sky, int[] box, int w, int h, float k, boolean colon) {
+        if (sky == null || sky.length == 0 || box == null || box[3] <= box[1] || w <= 0) return 0f;
+        float dh = box[3] - box[1], cx = (box[0] + box[2]) / 2f, most = 0f;
+        for (float[] layout : GLYPHS) {
+            float total = 0;
+            for (float g : layout) total += Math.abs(g);
+            float x0 = cx - total * dh / 2;
+            for (float g : layout) {
+                float gw = Math.abs(g) * dh;
+                if ((g < 0) == colon) for (float x = x0; x <= x0 + gw; x += Math.max(1f, w / 960f)) {
+                    float src = w / 2f + (x - w / 2f) / k;
+                    int c = (int) Math.floor(src * sky.length / w);
+                    if (c < 0 || c >= sky.length) continue;
+                    float top = sky[c] * h / 1080f * k;
+                    most = Math.max(most, Math.min(1f, (box[3] - top) / dh));
+                }
+                x0 += gw;
+            }
+        }
+        return most;
+    }
+
+    static float cover(int[] sky, int[] box, int w, int h, float k) { return cover(sky, box, w, h, k, false); }
+
+    /**
+     * every digit covered at most COVER of its height from its base, and the scenery under the colon too (its lower dot starts about 30 % up: the
+     * colon itself is never covered); the masks gate's numbers
+     */
+    static boolean legible(int[] sky, int[] box, int w, int h, float k) {
+        return cover(sky, box, w, h, k, false) <= COVER + 1e-4f && cover(sky, box, w, h, k, true) <= COVER + 1e-4f;
+    }
+
+    /**
+     * The zoom for a scene's picture with its cut-out: zoom() (the owner's bands), then more (MAX_ZOOM at most) until every glyph is legible; 0 when
+     * no zoom makes it so: then the cut-out is not drawn (the clock in front of the picture, «FRONT-ONLY»). sky48: zoom()'s 48 columns; fine: the
+     * finer skyline legible() reads (null: sky48).
+     */
+    static float depth(int[] sky48, int[] fine, int[] box, int w, int h) {
+        int[] f = fine != null ? fine : sky48;
+        float k = zoom(sky48, box, w, h);
+        while (!legible(f, box, w, h, k) && k < MAX_ZOOM) k = Math.round((k + 0.01f) * 100) / 100f;
+        return legible(f, box, w, h, k) ? k : 0f;
+    }
+
+    /** 4.4 the owner saw this scene's placement and reads it (scenes.tsv tag "owner_ok"): its cut-out stays, with no legibility drop and no zoom */
+    static final String OWNER_OK = "owner_ok";
+
+    /**
+     * 4.4 never a misaligned cut-out (the owner's doubled buildings): the cut-out's solid pixels (alpha 250 or more) against the photo's under
+     * them, both made small (photo pw x ph for the 1920 x 1080 frame; cut cw x ch over place, px of 1080p): the mean RGB difference at its own
+     * place at most ALIGN_DIFF, and no shift of up to ALIGN_SHIFT px matching better. ARGB ints.
+     */
+    static final float ALIGN_DIFF = 16f;
+    static final int ALIGN_SHIFT = 3;
+
+    static boolean aligned(int[] photo, int pw, int ph, int[] cut, int cw, int ch, int[] place) {
+        if (photo == null || cut == null || place == null || pw <= 0 || ph <= 0 || cw <= 0 || ch <= 0) return false;
+        float best = Float.MAX_VALUE, here = Float.MAX_VALUE;
+        for (int dy = -ALIGN_SHIFT; dy <= ALIGN_SHIFT; dy++) for (int dx = -ALIGN_SHIFT; dx <= ALIGN_SHIFT; dx++) {
+            long sum = 0, n = 0;
+            for (int y = 0; y < ch; y += 2) for (int x = 0; x < cw; x += 2) {
+                int c = cut[y * cw + x];
+                if ((c >>> 24) < 250) continue;
+                int px = Math.round((place[0] + (x + 0.5f) * place[2] / cw) * pw / 1920f - 0.5f) + dx;
+                int py = Math.round((place[1] + (y + 0.5f) * place[3] / ch) * ph / 1080f - 0.5f) + dy;
+                if (px < 0 || py < 0 || px >= pw || py >= ph) continue;
+                int p = photo[py * pw + px];
+                sum += Math.abs(((c >> 16) & 255) - ((p >> 16) & 255)) + Math.abs(((c >> 8) & 255) - ((p >> 8) & 255)) + Math.abs((c & 255) - (p & 255));
+                n++;
+            }
+            if (n == 0) continue;
+            float d = sum / (3f * n);
+            best = Math.min(best, d);
+            if (dx == 0 && dy == 0) here = d;
+        }
+        return here <= ALIGN_DIFF && here <= best + 0.05f;   // its own place the best match (a dark, even silhouette differs by little, a shifted one is never the best)
+    }
+
+    /**
+     * the scenery's top in each of 48 columns (px of 1080) of a scene's cut-out: px, its pixels made small (sw x sh), placed at the scene's mask box
+     * (x, y, w, h in px of 1920 x 1080); a column with none of it: 1080
+     */
+    static int[] skyline(int[] px, int sw, int sh, int[] place) { return skyline(px, sw, sh, place, 48); }
+
+    /** the same in n columns (legible() reads 192: a narrow tower is not lost between two of 48) */
+    static int[] skyline(int[] px, int sw, int sh, int[] place, int n) {
+        int[] line = new int[n];
+        java.util.Arrays.fill(line, 1080);
+        if (place == null || sw <= 0 || sh <= 0) return line;
+        for (int c = 0; c < n; c++) {
+            float x = (c + 0.5f) * 1920f / n;
+            if (x < place[0] || x >= place[0] + place[2]) continue;
+            int mx = Math.min(sw - 1, (int) ((x - place[0]) * sw / place[2]));
+            for (int y = 0; y < sh; y++) if (((px[y * sw + mx] >>> 24) & 255) > 127) { line[c] = Math.round(place[1] + y * place[3] / (float) sh); break; }
+        }
+        return line;
+    }
+
+    static int[] clockBox(Scene s, int w, int h, boolean cardsShown, boolean rtl) { return fixedBox(w, h, cardsShown, rtl); }
+
+    /**
+     * 4.4 the owner: «the clock always in the same place across our images». The digits' box on a w x h screen, the same for every scene and photo
+     * and for the clean and couch layouts (where the owner approved Riyadh: DIGITS tall from TOP, 266-542 at 1080, [601,266,1319,542]); with the
+     * cards beside the clock (on the left of an Arabic home) in the start half. Only the picture's framing changes per image (its frame, frame()).
+     */
+    static final float DIGITS = 276 / 1080f, TOP = 266 / 1080f;   // Riyadh's digits as the owner saw them: 266-542 at 1080
+
+    static int[] fixedBox(int w, int h, boolean cardsShown, boolean rtl) {
+        int digitH = Math.round(h * DIGITS);
+        int width = Math.min(Math.round(digitH * 2.6f), cardsShown ? Math.round(w * 0.44f) : Math.round(w * 0.7f));
+        int centre = !cardsShown ? w / 2 : rtl ? Math.round(w * 0.73f) : Math.round(w * 0.27f);
+        int top = Math.round(h * TOP);
+        return new int[] {centre - width / 2, top, centre + width / 2, top + digitH};
+    }
+
+    /** 4.4 the layouts a cut-out can be drawn in (the masks gate's names): the clock with no cards and no apps row, and «كنبة»'s apps row under it */
+    static final String CLEAN = "clean", COUCH_HOME = "couch";
+
+    /** the layout of the home now: clean, couch, or null with the cards beside the clock (never a cut-out there: the clock in front) */
+    static String layout(boolean cardsBeside, boolean appsRow) { return cardsBeside ? null : appsRow ? COUCH_HOME : CLEAN; }
+
+    /** a picture's cut-out in a layout: one its gate lists (depth; none listed: old data, any), and the digits legible there unless the owner approved it */
+    static boolean draws(String depth, String layout, boolean ownerOk, int[] sky48, int[] fine, int[] box, int w, int h) {
+        if (layout == null) return false;
+        if (depth != null && !depth.contains("," + layout + ",")) return false;
+        if (ownerOk) return true;
+        int[] f = fine != null ? fine : sky48;
+        return f == null || legible(f, box, w, h, 1f);
+    }
+
+    /** no framing: the whole photo */
+    static final int[] WHOLE = {0, 0, 1920};
+
+    /** a frame "x,y,w" (px of the 1920 x 1080 photo; its height w x 9/16, inside the photo; w 1372 to 1920, a zoom of 1.4 at most); anything else: the whole photo */
+    static int[] frameOf(String v) {
+        if (v == null || !v.trim().matches("[0-9]{1,4},[0-9]{1,4},[0-9]{3,4}")) return WHOLE;
+        String[] p = v.trim().split(",");
+        int x = Integer.parseInt(p[0]), y = Integer.parseInt(p[1]), cw = Integer.parseInt(p[2]);
+        if (cw < 1372 || cw > 1920 || x + cw > 1920 || y + Math.round(cw * 9 / 16f) > 1080) return WHOLE;
+        return new int[] {x, y, cw};
+    }
+
+    /**
+     * 4.4 the owner: a photo is never upscaled nor stretched. A frame that shows fewer of the photo's own pixels than a 1080p screen has (its w x the
+     * photo's width / 1920 under 1920) is not used: the whole photo. Our photos and horizons are 1920 x 1080, so today only the whole photo passes.
+     */
+    static int[] noUpscale(int[] frame, int sourceWidth) {
+        if (frame == null || sourceWidth <= 0) return WHOLE;
+        return (long) frame[2] * sourceWidth >= 1920L * 1920 ? frame : WHOLE;
+    }
+
+    /**
+     * the picture's framing on a w x h screen: its crop shown full screen, then zoomed by z about the screen's top centre (the legibility zoom);
+     * {scale, translate x, translate y} of a full-screen view with its pivot at 0, 0 (the photo, the glass in the digits); a view placed at L, T
+     * takes translate + L x (scale - 1), translate + T x (scale - 1)
+     */
+    static float[] frame(int[] crop, int w, int h, float z) {
+        int[] c = crop == null ? WHOLE : crop;
+        float k = 1920f / c[2], s1 = h / 1080f;
+        return new float[] {k * z, w / 2f * (1 - z) - c[0] * s1 * k * z, -c[1] * s1 * k * z};
+    }
+
+    /** a skyline (n columns, px of 1080, 1080: none) of the photo as the crop shows it on the screen */
+    static int[] framed(int[] src, int[] crop) {
+        if (src == null) return null;
+        int[] c = crop == null ? WHOLE : crop;
+        if (c[0] == 0 && c[1] == 0 && c[2] == 1920) return src;
+        int n = src.length;
+        int[] out = new int[n];
+        for (int i = 0; i < n; i++) {
+            float x = c[0] + (i + 0.5f) * 1920f / n * c[2] / 1920f;
+            int col = Math.max(0, Math.min(n - 1, (int) Math.floor(x * n / 1920f)));
+            out[i] = src[col] >= 1080 ? 1080 : Math.max(0, Math.round((src[col] - c[1]) * 1920f / c[2]));
+        }
+        return out;
+    }
+
+    /**
+     * The scenes to take turns now: with «الأفق يتبع الطقس» and fog in the city, the fog scenes; with «الأفق يتبع الوقت», the night scenes from Maghrib
+     * to Fajr and the others by day. A rule that would leave none is let go (the packs on may have no night or no fog scene): never an empty home.
+     */
+    static List<Scene> choose(List<Scene> all, boolean byTime, boolean night, boolean byWeather, boolean fog) {
+        if (byWeather && fog) {
+            List<Scene> f = new ArrayList<>();
+            for (Scene s : all) if (s.is("fog")) f.add(s);
+            if (!f.isEmpty()) return f;
+        }
+        if (byTime) {
+            List<Scene> t = new ArrayList<>();
+            for (Scene s : all) if (s.is("night") == night) t.add(s);
+            if (!t.isEmpty()) return t;
+        }
+        return all;
+    }
+
+    /** Open-Meteo's weather codes for fog (45 fog, 48 rime fog) */
+    static boolean fog(int wmo) { return wmo == 45 || wmo == 48; }
+
+    /** «بقاء كل أفق» as the screensaver gives it (10, 20, 60 or 300 s); anything else: 20 */
+    static int stay(String v) {
+        try { int s = Integer.parseInt(v); return s == 10 || s == 20 || s == 60 || s == 300 ? s : STAY_S; } catch (RuntimeException e) { return STAY_S; }
+    }
+
+    /** The next scene to show after {@code i} of {@code n} (they take turns in order); -1 for none. */
+    static int next(int i, int n) { return n <= 0 ? -1 : (i + 1) % n; }
+}

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
-"""The settings start small (the owner's ask, notes/settings-proto v2): a first screen of buttons (SettingsHub), «الأذان» wide on top; a button opens
-its rows, a screen of more buttons («البطاقات», «المزيد»), or does one thing at once (DIRECT). Every row of
+"""The settings (4.3.2, the owner's ask: every option in the one section it belongs to; 4.3.3: ten sections, docs/mockups/SETTINGS-MAP.md): a first
+screen of buttons (SettingsHub), the search wide on top; a button opens its section's rows (nothing deeper), or does one thing at once (DIRECT: the search). Every row of
 SettingsActivity is found in the source and must be named in SettingsHub.ROWS (a new row with no category fails here), every header in
 SettingsHub.HEADERS; the map has no stale names; the categories, the D-pad on the tiles (two to a row, from the right), Back to the
 tile, and the wiring of render are checked from the source and, for SettingsHub and FocusKey, run for real (tests/SettingsHubRun.java).
@@ -24,13 +24,16 @@ render = render[:render.index("\n    }\n")]
 
 # ---- every row and header of the settings, in source order, with the header it sits under
 calls, header = [], ""
-for m in re.finditer(r'\bheader\("([^"]+)"\)|\brow\(("(?:[^"\\]|\\.)*"|HOME_CARD_NAMES\[k\]|PrayerAdj\.label\()', st):
+for m in re.finditer(r'\bheader\("([^"]+)"\)|\brow\(("(?:[^"\\]|\\.)*"|HOME_CARD_NAMES\[k\]|PrayerAdj\.label\(|k\.title)', st):
     if m.group(1):
         header = m.group(1)
         calls.append(("header", header, ""))
     elif m.group(2) == "HOME_CARD_NAMES[k]":
         names = re.search(r'HOME_CARD_NAMES = \{([^}]*)\}', st).group(1)
         for n in re.findall(r'"([^"]+)"', names): calls.append(("row", unesc(n), header))
+    elif m.group(2) == "k.title":   # «أزرار الريموت»: one row for each app button this TV's remote has (RemoteButtons; every brand's, for the map)
+        rb = (APP / "RemoteButtons.java").read_text(encoding="utf-8")
+        for n in re.findall(r'b\("[a-z]+", "([^"]+)"', rb): calls.append(("row", unesc(n), header))
     elif m.group(2) == "PrayerAdj.label(":
         pass   # adjRow: the prayers' own rows, by their names and minutes; checked below with the header they are made under
     else:
@@ -39,11 +42,12 @@ rows = [c for c in calls if c[0] == "row"]
 heads = [c for c in calls if c[0] == "header"]
 check("the source has the settings' rows and headers (the test reads what it should)", len(rows) >= 45 and len(heads) >= 9, (len(rows), len(heads)))
 check("no row is made outside render, adjRow and the home cards' loop (so the scan above sees them all)",
-      len(re.findall(r"(?<!View )\brow\((?!\))", st)) == len(re.findall(r'\brow\(("|HOME_CARD_NAMES\[k\]|PrayerAdj\.label\()', st)), "a row( call with another first argument")
+      len(re.findall(r"(?<!View )\brow\((?!\))", st)) == len(re.findall(r'\brow\(("|HOME_CARD_NAMES\[k\]|PrayerAdj\.label\(|k\.title)', st)), "a row( call with another first argument")
 
-cat_names = dict(re.findall(r'\{(CITY|ADHAN|PLACE|CLOCK|LISTEN|CARDS|LOOK|CONTROL|PHONE|UPDATE|REPORT|MORE|SAVER|HOME|CONTENT|APPS|SHOWS|PARENTAL|FAMILY|LANG), "([^"]+)"', hub))
+catblock = hub[hub.index("static final String[][] CATEGORIES"):hub.index("static final String[][] OLD")]
+cat_names = dict(re.findall(r'\{(SEARCH|LANG|PLACE|LOOK|APPS|BUTTONS|PRAY|CONTENT|SAVER|FAMILY|UPDATE), "([^"]+)"', hub[hub.index("static final String[][] CATEGORIES"):hub.index("static final String[][] OLD")]))
 rows_block = hub[hub.index("static final String[][] ROWS"):hub.index("static final String[][] HEADERS")]
-mapped = [(unesc(a), b) for a, b in re.findall(r'\{"([^"]+)", (ADHAN|PLACE|CLOCK|LISTEN|CARDS|LOOK|CONTROL|PHONE|UPDATE|REPORT|MORE|SAVER|HOME|CONTENT|APPS|SHOWS|FAMILY|LANG)\}', rows_block)]
+mapped = [(unesc(a), b) for a, b in re.findall(r'\{"([^"]+)", (SEARCH|LANG|PLACE|LOOK|APPS|BUTTONS|PRAY|CONTENT|SAVER|FAMILY|UPDATE)\}', rows_block)]
 
 if not shutil.which("javac"):
     print("SKIP settings hub: no javac here")
@@ -73,38 +77,35 @@ for r in row_out[:-1]: by.setdefault(r[1], []).append(r[0])
 cats = [l.split("\t") for l in rest if l.startswith("category ")]
 C = {c[0].split(" ")[1]: {"name": c[1], "index": int(c[2]), "parent": c[3], "direct": c[4], "tiles": c[5] == "true"} for c in cats}
 first = sorted([k for k, v in C.items() if v["parent"] == "-"], key=lambda k: C[k]["index"])
-check("the first screen: «المدينة» first (the wide one, 4.3.1), then «الأذان» and the buttons of the prototype in its order",
-      [C[k]["name"] for k in first] == ["المدينة", "الأذان", "الموقع والصلاة", "الساعة والأرقام", "تلاوة وأذان", "البطاقات", "المظهر والخلفيات", "مركز التحكم",
-                                       "التحكم من الجوال", "تحديث تلفزيوني", "أرسل تقرير", "المزيد"], [C[k]["name"] for k in first])
-check("«البطاقات» holds «شاشة التوقف» and «الشاشة الرئيسية»; «المزيد» the matches and markets, the apps, the shows, «الرقابة الأبوية», «تصفية المواقع» (and «اللغة» once LANG_TILE is on)",
-      sorted((C[k]["index"], C[k]["name"]) for k in C if C[k]["parent"] == "cards") == [(0, "شاشة التوقف"), (1, "الشاشة الرئيسية")]
-      and [C[k]["name"] for k in sorted((k for k in C if C[k]["parent"] == "more" and C[k]["index"] >= 0), key=lambda k: C[k]["index"])]
-      == ["المباريات والأسواق", "التطبيقات والمفضلة", "جديد المسلسلات", "الرقابة الأبوية", "تصفية المواقع"] + (["اللغة"] if "static final boolean LANG_TILE = true;" in hub else []),
-      {k: (v["parent"], v["index"]) for k, v in C.items()})
-check("only the first screen, «البطاقات» and «المزيد» are screens of buttons, and nothing is deeper than that",
-      {k for k, v in C.items() if v["tiles"]} == {"cards", "more"} and all(C[v["parent"]]["parent"] == "-" for v in C.values() if v["parent"] != "-"))
+check("the first screen: the search first (the wide one), then the ten sections in the owner's order (4.3.3)",
+      [C[k]["name"] for k in first] == ["بحث في الإعدادات", "اللغة", "الموقع والطقس", "المظهر", "التطبيقات", "الأزرار السريعة", "الصلاة والأذان",
+                                       "المباريات والأسواق", "شاشة التوقف", "العائلة والأمان", "حول"], [C[k]["name"] for k in first])
+check("nothing is deeper than the first screen: every category is a button of it and none is a screen of buttons",
+      len(first) == len(C) and not any(v["tiles"] for v in C.values()))
 direct = {k: v["direct"] for k, v in C.items() if v["direct"] != "-"}
-check("the buttons that do one thing at once, each by its one row: «الأذان», «مركز التحكم», «التحكم من الجوال», «أرسل تقرير», «الرقابة الأبوية», «تصفية المواقع», «اللغة»",
-      direct == {"city": "تغيير المدينة", "adhan": "الأذان", "control": "مركز التحكم", "phone": "تحكم من الجوال", "report": "أرسل تقرير", "parental": "الرقابة الأبوية", "family": "تصفية المواقع",
-                 "lang": "اللغة"}
-      and all(by.get(k) == [r] for k, r in direct.items()), {k: (r, by.get(k)) for k, r in direct.items()})
+check("the one button that does one thing at once is the search; no city shortcut, no second city row (4.3.3: the city is chosen in one place)",
+      direct == {"search": "بحث في الإعدادات"} and by.get("search") == ["بحث في الإعدادات"] and "city" not in by
+      and by.get("place", []).count("المدينة") == 1 and 'row("تغيير المدينة"' not in st and by.get("pray", []).count("الأذان") == 1, {k: (r, by.get(k)) for k, r in direct.items()})
 check("every other category has rows of its own (no empty screen), a screen of buttons none",
-      all(by.get(k) for k, v in C.items() if not v["tiles"] and k not in direct) and not any(by.get(k) for k, v in C.items() if v["tiles"]),
+      all(by.get(k) for k in C if k not in direct),
       {k: len(by.get(k, [])) for k in C})
-want = {"الأذان": "adhan", "تنبيه قبل الأذان": "saver", "أسماء المصادر": "apps", "ترتيب التطبيقات المفضلة": "apps", "تعديل المفضلة": "apps",
-        "تحديث تلفزيوني": "update", "تحديث صفحة شاشة التوقف": "update", "التحديث التلقائي للصفحة": "update", "تحكم من الجوال": "phone",
-        "تصفية المواقع": "family", "الدولة": "place", "المدينة": "place", "طريقة الحساب": "place", "زر تلاوة وأذان": "listen",
-        "افتح تلاوة وأذان": "listen", "البطاقة الأولى": "home", "معاينة الشاشة": "saver", "بطاقة ثانية": "saver", "نظام الساعة": "clock",
-        "الأرقام": "clock", "أسماء الأشهر الميلادية": "clock", "حجم الساعة": "saver", "المظهر": "look", "التصنيفات": "shows", "قائمة الأسهم": "content"}
+want = {"الأذان": "pray", "تنبيه قبل الأذان": "pray", "أسماء المصادر": "apps", "ترتيب التطبيقات المفضلة": "apps", "تعديل المفضلة": "apps",
+        "تحديث تلفزيوني": "update", "تحديث صفحة شاشة التوقف": "update", "التحديث التلقائي للصفحة": "update", "أرسل تقرير": "update", "الجوالات المسموح لها": "family",
+        "مركز التحكم": "buttons", "الرقابة الأبوية": "family", "تصفية المواقع": "family", "الدولة": "place", "المدينة": "place", "اللغة": "lang", "نظام الساعة": "lang",
+        "التحية والطقس": "place", "الرطوبة والرياح": "place",
+        "طريقة الحساب": "pray", "تعديل وقت الصلاة": "pray", "زر تلاوة وأذان": "buttons", "افتح تلاوة وأذان": "pray", "البطاقة الأولى": "look", "معاينة الشاشة": "saver",
+        "بطاقة ثانية": "saver", "بدء شاشة التوقف بعد": "saver", "الأرقام": "lang", "أسماء الأشهر الميلادية": "lang", "إظهار الثواني": "look", "حجم الساعة": "look",
+        "وضع الألوان": "look", "نص أوضح": "look", "توهّج لون التطبيق": "look", "تعتيم الليل": "look", "صور شاشة التوقف": "look", "صوري": "look", "سرعة ألبوم صوري": "look",
+        "التصنيفات": "content", "قائمة الأسهم": "content", "مباريات اليوم": "content", "زر المباريات": "buttons"}
 got = {r[0]: r[1] for r in row_out[:-1]}
-check("each row in its place: the clock and digits in «الساعة والأرقام», the updates together, the button's switch in «تلاوة وأذان»…",
+check("each row in its one section (4.3.3): the language and the calendar in «اللغة», the city and the weather in «الموقع والطقس», the quick buttons on their own, the parental lock and the phones in «العائلة والأمان»…",
       all(got.get(k) == v for k, v in want.items()), {k: got.get(k) for k, v in want.items() if got.get(k) != v})
 adj = st[st.index("private void adjRow(final int k)"):].split("\n    }\n")[0]
-check("the prayers' own minute rows (adjRow) are made in «الموقع», so they go with its category («الموقع والصلاة»)",
+check("the prayers' own minute rows (adjRow) are made in «الموقع», so they go with its category («الصلاة والأذان والتلاوة»), after «تعديل وقت الصلاة»",
       "row(PrayerAdj.label(" in adj and render.index('header("الموقع")') < render.index("adjRow(k)") < render.index('header("المباريات")')
-      and 'if (on(SettingsHub.PLACE)) line(Location.HELP' in render)
+      and 'if (on(SettingsHub.PLACE) || on(SettingsHub.PRAY)) line(Location.HELP' in render and "SettingsHub.rank(screen, (String) v.getTag())" in st and "double at = r >= 0 ? r : last + 0.5;" in st)
 check("a row not named goes with its header's category at run time (none is ever lost), else «شاشة التوقف»",
-      row_out[-1][2] == "saver" and all(r[2] == r[1] for r in row_out[:-1]), [r for r in row_out[:-1] if r[2] != r[1]])
+      row_out[-1][2] == "look" and all(r[2] == r[1] for r in row_out[:-1]), [r for r in row_out[:-1] if r[2] != r[1]])
 
 # ---- the D-pad on a screen of buttons: two to a row from the right, the first screen's first one wide; nothing wraps
 scr = {l.split(" ")[1]: (int(l.split(" ")[2]), l.split(" ")[3] == "true") for l in rest if l.startswith("screen ")}
@@ -128,43 +129,41 @@ for name, (n, wide) in scr.items():
             j = nxt.get((name, i, n, d), i)
             if j not in seen: seen.add(j); todo.append(j)
     check(f"every button of «{name}» is reachable from the first with the D-pad", seen == set(range(n)), sorted(set(range(n)) - seen))
-n0, w0 = scr["-"]
-check("the wide «الأذان»: DOWN goes to the right one under it, the other keys stay on it", w0 and nxt[("-", 0, n0, 1)] == 1
-      and all(nxt[("-", 0, n0, d)] == 0 for d in (0, 2, 3)))
-check("an odd last button, alone on its row: DOWN and LEFT stay on it", nxt[("-", 6, 7, 1)] == 6 and nxt[("-", 6, 7, 2)] == 6)
-hubfn = st[st.index("    private void hub(String want, int wasIndex) {"):].split("\n    }\n")[0]
-check("the buttons are wired with SettingsHub.next for all four keys (the wide one known), in rows laid out right to left (Dir: left to right in English, the sides swapped)",
-      all(f"t.setNextFocus{d}Id(tiles.get(SettingsHub.next(i, tiles.size(), {k}, wide)).getId());" in hubfn for d, k in (("Up", 0), ("Down", 1), ("Left", "left"), ("Right", "right")))
-      and "final int left = Dir.rtl() ? 2 : 3, right = Dir.rtl() ? 3 : 2;" in hubfn
-      and "line.setLayoutDirection(Dir.layout());" in hubfn and "final boolean wide = SettingsHub.wide(screen);" in hubfn
-      and "boolean alone = wide && i == 0;" in hubfn)
 icons = st[st.index("private static int hubIcon(String cat)"):].split("\n    }\n")[0]
 summ = st[st.index("private String hubSummary(String cat)"):].split("\n    }\n")[0]
 check("every button has its icon and says what is set in it now (a case for every category)",
       all(f"case SettingsHub.{k.upper()}:" in icons and f"case SettingsHub.{k.upper()}:" in summ for k in C), [k for k in C if f"case SettingsHub.{k.upper()}:" not in summ])
 check("«الأذان» shows the home's switch, read from the home (NowPlayingProvider .../adhan_on) off the UI thread (the last answer is kept), and says nothing of it when the home cannot say",
       "Boolean on = homeAdhanSeen();" in summ and "private Boolean homeAdhanSeen()" in st and "new Thread(() -> {" in st.split("private Boolean homeAdhanSeen()")[1].split("private Boolean homeAdhanOn()")[0] and 'content://sa.urtv.home.nowplaying/adhan_on' in st and "OnOff.ON_WORD : OnOff.OFF_WORD" in summ)
-tilefn = st[st.index("private View tile(final String cat, String name, int icon, String summary)"):].split("\n    }\n")[0]
-check("OK on a button: a DIRECT one runs its row's own action, any other opens its screen (and is the one focused on the way back)",
-      "String row = SettingsHub.direct(cat);" in tilefn and "Runnable act = row == null ? null : actions.get(row);" in tilefn
-      and "if (act != null) { launchedRow = \"hub:\" + cat; hubAt = cat; act.run(); return; }" in tilefn and "hubAt = cat;\n            open(cat);" in tilefn)
-check("the screens of buttons are built after the rows (so each row's action is known), and those rows are never added there",
-      render.index("actions.clear();") < render.index('row("معاينة الشاشة"') < render.index("if (tiles) { hub(want, wasIndex); return; }")
-      and "if (onClick != null) actions.put(FocusKey.key(label), onClick);" in st)
+sidefn = st[st.index("    private View sideItem(final String cat) {"):].split("\n    }\n")[0]
+sidepane = st[st.index("    private void sidePane() {"):].split("\n    }\n")[0]
+check("4.3.3 the side list (the mockup): «الإعدادات», then the search and the ten sections in SettingsHub's order, built once, the section shown marked",
+      "for (String cat : SettingsHub.tiles(null)) {" in sidepane and "if (sideItems.isEmpty()) {" in sidepane and 'findViewWithTag("bar")' in sidepane
+      and 't.setText(conv("الإعدادات"));' in sidepane)
+check("moving the focus along the list shows each section's rows once the focus rests on it (SIDE_MS: holding the arrow builds none on the way) and keeps the focus on the list; OK goes into the rows (the one last focused); the search item opens the search",
+      "if (has && !SettingsHub.SEARCH.equals(cat) && !cat.equals(screen)) {" in sidefn and "sideFocus = true;\n                    open(cat);" in sidefn
+      and "side.removeCallbacks(sideOpen);" in sidefn and "side.postDelayed(sideOpen, SIDE_MS);" in sidefn and "if (!x.hasFocus() || cat.equals(screen)) return;" in sidefn
+      and "if (SettingsHub.SEARCH.equals(cat)) { searchSettings(); return; }" in sidefn and "restoreFocus(lastRow.get(screen), 0, scroll.getScrollY());" in sidefn
+      and "if (sideFocus) {" in render and "item.post(item::requestFocus);" in render)
+check("a row's key toward the list goes to its own section's item, never to the one beside it",
+      "View item = sideItems.get(screen);" in st and "if (Dir.rtl()) card.setNextFocusRightId(item.getId()); else card.setNextFocusLeftId(item.getId());" in st)
+check("the settings open on the first section with the focus on its item (a link or the city's way in opens its own section and row)",
+      "if (screen == null && !classic) { screen = SettingsHub.LANG; sideFocus = true; }" in st and st.index("if (askCity) cityRow();") < st.index("if (screen == null && !classic) { screen = SettingsHub.LANG; sideFocus = true; }"))
+check("the pane's head: the section's name, its line, and what is set in it now; no «•» in the hint",
+      "title.setText(conv(SettingsHub.name(screen)));" in render and "line(SettingsHub.about(screen), look.sub, 0);" in render and "String now = hubSummary(screen);" in render
+      and 'hint.setText(Words.of("اختيار يفتح، ورجوع يرجّعك خطوة"));' in render)
 
 # ---- the screens: Back to the tile, the focus kept on a row, nothing drawn outside its category
 back = st[st.index("public void onBackPressed()"):].split("\n    }\n")[0]
-check("Back on a category goes back to the screen its button is on, the focus on that button; on the first screen it leaves the settings",
-      "if (screen == null) { super.onBackPressed(); return; }" in back and "hubAt = screen;" in back and "open(SettingsHub.parent(screen));" in back)
-check("each category's screen comes back on its row last focused (the first row the first time); the hub on the tile last opened",
-      "lastRow.put(screen, (String) f.getTag());" in back and back.index("lastRow.put(") < back.index("open(SettingsHub.parent(screen));")
-      and ": lastRow.get(screen))" in render)
+check("Back in the rows goes to their section's item in the side list (the row kept for the way back in); Back on the list leaves the settings",
+      "if (f == null || screen == null || sideItems.get(screen) == null) { super.onBackPressed(); return; }" in back
+      and "lastRow.put(screen, (String) f.getTag());" in back and back.index("lastRow.put(") < back.index("sideItems.get(screen).requestFocus();")
+      and ": entering ? (tiles ? (hubAt != null ? \"hub:\" + hubAt : null) : lastRow.get(screen)) :" in render)
 side = st[st.index("private void sidePane()"):].split("\n    }\n")[0]
-check("a category's screen: its title and its line on the right (the side pane, first in the RTL panes), the rows on the left; no side on the first screen",
-      "side.setVisibility(tiles ? View.GONE : View.VISIBLE);" in side and "SettingsHub.name(screen)" in side and "SettingsHub.about(screen)" in side
-      and st.index("panes.addView(side, sideLp);") < st.index("panes.addView(scroll,") and "panes.setLayoutDirection(Dir.layout());" in st
-      and "if (tiles) list.addView(head);" in render)
-abouts = dict(re.findall(r'\{(CITY|ADHAN|PLACE|CLOCK|LISTEN|CARDS|LOOK|CONTROL|PHONE|UPDATE|REPORT|MORE|SAVER|HOME|CONTENT|APPS|SHOWS|PARENTAL|FAMILY|LANG), "[^"]+", "([^"]*)"', hub))
+check("the side list on the right (first in the RTL panes, in a scroll view for small screens), the rows on the left",
+      st.index("panes.addView(sideScroll, sideLp);") < st.index("panes.addView(scroll,") and "panes.setLayoutDirection(Dir.layout());" in st
+      and "sideScroll.addView(side, new FrameLayout.LayoutParams(-1, -2));" in st)
+abouts = dict(re.findall(r'\{(SEARCH|LANG|PLACE|LOOK|APPS|BUTTONS|PRAY|CONTENT|SAVER|FAMILY|UPDATE), "[^"]+", "([^"]*)"', hub[hub.index("static final String[][] CATEGORIES"):hub.index("static final String[][] OLD")]))
 check("every category with a screen of its own has its line for it (a DIRECT one has none)",
       all(len(abouts[k.upper()]) > 20 for k in C if k not in direct) and all(abouts[k.upper()] == "" for k in direct), abouts)
 check("a button opens its category from the top", "entering = true;" in st[st.index("private void open(String category)"):].split("\n    }\n")[0])
@@ -172,23 +171,21 @@ rowfn = st[st.index("private View row(String label, String value, int icon, fina
 check("a row is added only on its own category's screen (made on every screen, so its code runs as before)",
       "final String cat = SettingsHub.of(FocusKey.key(label), groupCat);" in rowfn and "if (!on(cat)) return card;" in rowfn
       and rowfn.index("if (!on(cat)) return card;") < rowfn.index("list.addView(card, lp);"))
-check("a header is drawn only on its category's screen, above the first of its rows there",
-      "pendingHeader = on(groupCat) ? text : null;" in st and "if (pendingHeader != null && cat.equals(groupCat)) { drawHeader(pendingHeader); pendingHeader = null; }" in rowfn)
+check("a header is drawn by arrange, from SettingsHub.ORDER, and only above a row; a row made in the code is added at once and put in its place after the build",
+      "if (!row) continue;" in st and "headerView(h)" in st and "SettingsHub.headers(screen)" in st and "pendingHeader" not in st and "arrange();" in render
+      and render.index('row("معاينة الشاشة"') < render.index("arrange();") < render.index("restoreFocus(want, wasIndex, scrollY);"))
 check("the version lines show under «تحديث صفحة شاشة التوقف» only where that row is", "if (last.getParent() == list) note(last, Updater.versionLines(this));" in render)
-check("the tiles and the rows are found again by their tag after a rebuild (the focus stays on the tile, as on a row)",
-      'card.setTag("hub:" + cat);' in st and "if (all.contains(v)) return v;" in st)
+check("the rows are found again by their tag after a rebuild (the focus stays on the row)", "if (all.contains(v)) return v;" in st)
 for fn_ in ("openAdhanSettings()", "openDockSettings()", "openInputNames()", "openDockEdit()", "openUpdate()", "openPhoneControl()", "openFamilyDns()",
             "pickCity()", "updateNow()", 'openHome("center")', 'openHome("listen")', "openReport()", "AppearanceActivity.class"):
     check(f"the row's own action is kept: {fn_}", fn_ in render)
 
-# ---- TV6 row 21: «تحكم من الجوال» must be findable (a tester on 3.145 did not find it and phone control stayed on): now its own button
-cat_keys = set(C)
-check("every row of SettingsActivity is in a category that has a button (nothing hides a row, whatever is installed)",
-      all(c in cat_keys for c in got.values()), {k: c for k, c in got.items() if c not in cat_keys})
-check("«التحكم من الجوال» is a button of the first screen, and OK on it opens the home's screen at once («تحكم من الجوال»)",
-      C["phone"]["parent"] == "-" and direct.get("phone") == "تحكم من الجوال" and got.get("تحكم من الجوال") == "phone")
+# ---- TV6 row 21: «تحكم من الجوال» must be findable (a tester on 3.145 did not find it and phone control stayed on): a row of «التحكم والجوال», and the search finds it by «جوال»
+check("phone control (4.4 «الجوالات المسموح لها», the owner's name) is a row of «العائلة والأمان», and the search finds it by «جوال», «ريموت» and its old name",
+      got.get("الجوالات المسموح لها") == "family" and 'row("الجوالات المسموح لها"' in st and '{"جوال", "الجوالات المسموح لها"}' in hub and '{"ريموت", "الجوالات المسموح لها"}' in hub
+      and '{"تحكم من الجوال", "الجوالات المسموح لها"}' in hub and '{FAMILY, "الرقابة الأبوية", "تصفية المواقع", "الجوالات المسموح لها"}' in hub)
 check("its line does not claim it is off (this app cannot see the home's switch): the screen it opens shows the state",
-      'row("تحكم من الجوال", "متوقف' not in st and 'row("تحكم من الجوال", "تشغيله وإيقافه' in st and 'case SettingsHub.PHONE: return "تشغيله وإيقافه' in summ)
+      'row("الجوالات المسموح لها", "متوقف' not in st and 'row("الجوالات المسموح لها", "التحكم من الجوال: تشغيله وإيقافه' in st)
 check("opening it never fails silently: no home installed says so, and the target is exported in the home's manifest",
       "ثبّت الواجهة الرئيسية" in st[st.index("private void openPhoneControl()"):].split("\n    }\n")[0]
       and re.search(r'<activity\s+android:name="\.PhoneActivity"\s+android:exported="true"', (ROOT / "android/launcher/src/main/AndroidManifest.xml").read_text(encoding="utf-8")) is not None)
@@ -197,9 +194,8 @@ check("«أرسل تقرير» opens the home's ReportActivity (exported), and s
       and 'setClassName("sa.urtv.home", "sa.urtv.home.ReportActivity")' in st and "حدّث الواجهة الرئيسية" in st[st.index("private void openReport()"):].split("\n    }\n")[0])
 # ---- the TV test of 3.145: after going down and up again the header stayed hidden; once, two screens were drawn over each other
 top = st[st.index("private void topWhenFirst(View v)"):].split("\n    }\n")[0]
-check("the first row (on a screen of buttons, its first line) brings the page back to its very top, after the scroll view's own move",
-      "if (at == 0 || (pairs && at == 1)) scroll.post(() -> scroll.smoothScrollTo(0, 0));" in top and "boolean pairs = SettingsHub.hasTiles(screen) && !SettingsHub.wide(screen);" in top
-      and "if (has) topWhenFirst(v);" in rowfn and "card.setOnFocusChangeListener((x, has) -> { paintState(v, mark, shown, state, has); if (has) topWhenFirst(x); });" in st)
+check("the first row brings the page back to its very top (the section's name and line show again), after the scroll view's own move",
+      "if (at == 0 || (pairs && at == 1)) scroll.post(() -> scroll.smoothScrollTo(0, 0));" in top and "boolean pairs = classic && SettingsHub.hasTiles(screen)" in top and "if (has) topWhenFirst(v);" in rowfn)
 check("a screen just opened is at its top at once (never drawn at the old one's place first)",
       "scroll.scrollTo(0, 0);" in st[st.index("private void open(String category)"):].split("\n    }\n")[0])
 check("the settings have no window animation in or out, so no two screens are ever drawn over each other",
@@ -210,8 +206,8 @@ check("«ترتيب المفضلة»: the first app brings the list back to its 
       and "if (was != null) was.onFocusChange(v, has);" in dock)
 # the TV test of 3.147: in «الموقع والصلاة», after 5 down and 5 up, the list moved from the left half to the right half and back
 check("the settings' side pane and rows have fixed widths (no weights), worked out once; the rows' width changes only between the categories and a category",
-      "new LinearLayout.LayoutParams(sideWidth, -1)" in st and "new LinearLayout.LayoutParams(width - sideWidth - dp(36), -1)" in st
-      and "0.36f);" not in st and "0.64f));" not in st and "int rowsWidth = tiles ? pageWidth : pageWidth - sideWidth - dp(36);" in st)
+      "new LinearLayout.LayoutParams(sideWidth, -1)" in st and "new LinearLayout.LayoutParams(width - sideWidth - gapPx + (cs != null ? cs.px(CouchStyle.PAD) : 0), -1)" in st
+      and "0.36f);" not in st and "0.64f));" not in st and "int rowsWidth = pageWidth - sideWidth - gapPx + (cs != null ? cs.px(CouchStyle.PAD) : 0);" in st)
 check("…and the scroll goes up and down only: nothing can move the page sideways", "@Override public void scrollTo(int x, int y) { super.scrollTo(0, y); }" in st
       and "scroll = new UpDownScroll(this);" in st)
 sys.exit(1 if failed else 0)

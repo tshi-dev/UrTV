@@ -93,7 +93,7 @@ check("step 38: this branch's photos/packs.json lists the five packs (an empty i
 ppa = text(SAVER / "PhotoPacksActivity.java")
 cr = body(ppa, "private void showCredits() {")
 check("step 38: «حقوق الصور» puts each file name in a left-to-right isolate (PhotoPacks.isolate(r[0]))",
-      'append(PhotoPacks.isolate(r[0])).append(" · ")' in cr and not re.search(r'append\(r\[0\]\)', cr), cr[:300])
+      'append(PhotoPacks.isolate(r[0]))' in cr and not re.search(r'append\(r\[0\]\)', cr), cr[:300])
 check("step 38: …and «إغلاق» is drawn in the page's text colour once the dialog is shown",
       re.search(r"d\.show\(\);\s*android\.widget\.Button close = d\.getButton\(android\.content\.DialogInterface\.BUTTON_POSITIVE\);\s*"
                 r"if \(close != null\) close\.setTextColor\(look\.text\);", cr), cr[-400:])

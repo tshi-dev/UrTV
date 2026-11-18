@@ -19,3 +19,7 @@ Mockups at 1920x1080, drawn as pages, not taken on a TV: the settings' first scr
 
 What a selectable look needs: a `GlassStyle.Look` of its own (both looks, dark and light) passing the same contrast test over every photo,
 and a setting beside «المظهر». No live blur, as now.
+
+## Split tv.html
+
+Move the largest rarely-shown part (measure first: games / sports takeover / settings panels) into a lazy file; target back under 746 KB. 4.4 raised the tv.html budget in tests/check.py from 746 KB to 775 KB (tv.html was 760,217 bytes with every 4.4 branch in).

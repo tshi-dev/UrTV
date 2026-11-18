@@ -65,7 +65,7 @@ for wf in sorted((ROOT / ".github/workflows").glob("*.yml")):
             check(f"{wf.name}:{n + 1} files block: every line a bare file name, no comment", bool(block) and all(re.fullmatch(r"[A-Za-z0-9_.\-*/]+", b) for b in block), block)
             check(f"{wf.name}:{n + 1} the publish step fails when a listed file matches nothing", "fail_on_unmatched_files: true" in "\n".join(lines[max(0, n - 2):n]), lines[max(0, n - 2):n])
             if "apk-next" in "\n".join(lines[max(0, n - 6):n]):
-                check("the apk-next release uploads exactly the two APKs and version.txt", block == ["urtv-screensaver.apk", "urtv-home.apk", "version.txt"], block)
+                check("the apk-next release uploads exactly the four APKs (4.3.3: and «إضافات تلفزيونك»; 4.4: and «إنقاذ تلفزيونك») and version.txt", block == ["urtv-screensaver.apk", "urtv-home.apk", "urtv-extras.apk", "urtv-rescue.apk", "version.txt"], block)
 
 check("the newest version shown is the one of the current channel: it is stored with its channel, a value from before a change is not shown, and a change reads it again",
       'putString("latestChannel", ch)' in up and 'updateChannel().equals(sp.getString("latestChannel", "latest"))' in prefs and "p.latestVersion()" in recv

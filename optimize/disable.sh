@@ -61,6 +61,20 @@ else
   echo "!! disable.sh: the TV did not say which packages it has or which were already off, so NOTHING was turned off (a restore could not be exact). Run the same command again." >&2
   exit 1
 fi
+# 4.3.3: whatever a list says, an app that answers Home on this TV (its stock home, the setup wizard, a maker's home) stays on: with it off some
+# TVs cannot start (a blank screen and a restart loop; couch-tv's TROUBLESHOOTING.md, github.com/Seagey/couch-tv, MIT). keep.txt names the Google
+# ones; this asks the TV for the rest. Ours (sa.urtv.*) is never in a list. If the TV does not say, keep.txt and core.txt still hold.
+if [ -n "$intended" ]; then
+  homes=$("$PY" -I optimize/tv.py "cmd package query-activities --brief -a android.intent.action.MAIN -c android.intent.category.HOME 2> /dev/null" 2> /dev/null | tr -d '\r' \
+          | sed 's/^[[:space:]]*//' | sed -n -E 's#^([A-Za-z0-9_.]+)/[A-Za-z0-9_.$]+$#\1#p' | grep -v '^sa\.urtv\.' | sort -u || true)
+  homeheld=$(printf '%s\n' "$intended" | grep -Fx -f <(printf '%s\n' "$homes" | grep . || echo '#none#') || true)
+  if [ -n "$homeheld" ]; then
+    echo "Left on, the TV starts with them (they answer Home): $(paste -sd' ' - <<< "$homeheld")" >&2
+    pkgs=$(printf '%s\n' "$pkgs" | awk 'NR==FNR { if ($0 != "") s[$0] = 1; next } !($0 in s)' <(printf '%s\n' "$homeheld") -)
+    intended=$(printf '%s\n' "$intended" | awk 'NR==FNR { if ($0 != "") s[$0] = 1; next } !($0 in s)' <(printf '%s\n' "$homeheld") -)
+    [ -n "$pkgs" ] || exit 0
+  fi
+fi
 # The TV's own answer: a package that asks for TV_INPUT_HARDWARE (its own «requested permissions» block, not a shared user's), or serves
 # android.media.tv.TvInputService or an input method, stays on whatever its name. From Android 6 (SDK 23) a readable dump with no permission block
 # asks for nothing, so it passes; an older one, or a dump that cannot be read, stays on (NOCHK). «hung system process» is Android's watchdog
@@ -91,7 +105,9 @@ if [ -n "$intended" ]; then
   fi
 fi
 prev=""; [ ! -f "$LEDGER" ] || prev=$(cat "$LEDGER")
-remember() { { printf '%s\n' "$prev"; printf '%s\n' "$1"; } | { grep -E '^[A-Za-z0-9_.]+$' || true; } | sort -u > "$LEDGER.tmp" && mv "$LEDGER.tmp" "$LEDGER"; }
+# 4.4 (reports, cause 10): never a package that was already off when the TV came to us (backup.txt's «disabled packages», taken once before any change)
+before_off=""; [ ! -f "$RUN/backup.txt" ] || before_off=$(sed -n '/^== disabled packages/,/^== /s/^package://p' "$RUN/backup.txt" | tr -d '\r')
+remember() { { printf '%s\n' "$prev"; printf '%s\n' "$1"; } | { grep -E '^[A-Za-z0-9_.]+$' || true; } | awk 'NR==FNR { if ($0 != "") s[$0] = 1; next } !($0 in s)' <(printf '%s\n' "$before_off") - | sort -u > "$LEDGER.tmp" && mv "$LEDGER.tmp" "$LEDGER"; }
 remember "$intended"   # written BEFORE the batch: a batch that dies half way is still undone by the restore
 printf '%s\n' "$pkgs" | awk '{print "pm disable-user --user 0 " $1}' | "$PY" -I optimize/tv.py --batch
 # confirmed by what the TV says is off now (read from the package manager, which is up to date at once)

@@ -293,6 +293,22 @@
    "en": "Muhammad Ayyub",
    "server": "https://cdn.mp3quran.net/audio/muhammad-ayyub/r1/",
    "surahs": 114
+  },
+  {
+   "id": "humaid",
+   "name": "أحمد طالب بن حميد",
+   "en": "Ahmed Talib bin Humaid",
+   "server": "https://cdn.mp3quran.net/audio/ahmad-humaid/r1/",
+   "surahs": 107,
+   "missing": [
+    9,
+    14,
+    16,
+    17,
+    23,
+    24,
+    33
+   ]
   }
  ]
 }

@@ -82,4 +82,19 @@ public interface Actions {
 
     /** 4.3: one photo for «صوري», a JPEG the phone re-encoded (no camera or location data); the screensaver keeps it (Own). */
     default Result photoAdd(byte[] jpeg) { return Result.fail("failed"); }
+    /** 4.4 «صوري»: {"ids":["1:…","2:…"], "count":2, "max":50}; empty when the screensaver app does not answer */
+    default Map<String, Object> photos() { return new java.util.LinkedHashMap<>(); }
+    /** 4.4: a small JPEG of the picked photo, null when it names none */
+    default byte[] photoThumb(String id) { return null; }
+    /** 4.4: delete the picked photo; ok "photo_deleted", or fail "photo_moved" (it moved or went meanwhile) */
+    default Result photoDelete(String id) { return Result.fail("failed"); }
+
+    /** 4.4: the mask of the photo just added (white: in front of the glass clock, black: the sky); the screensaver checks and keeps it beside that photo. */
+    default Result photoMask(byte[] png) { return Result.fail("failed"); }
+    /** 4.4 «صوتياتي»: the list and the caps */
+    default Map<String, Object> audio() { return new java.util.LinkedHashMap<>(); }
+    /** one piece of a sound file: ok "more" or "done", else a refusal code */
+    default Result audioPiece(long offset, long total, String name, byte[] data) { return Result.fail("failed"); }
+    /** use a file (as own, own_fajr, dua, none), or delete it */
+    default Result audioOp(String op, Long id, String as) { return Result.fail("failed"); }
 }

@@ -42,19 +42,21 @@ check('REVIEW reports checked/fixed/added counts for every country', len([c for 
 src = ROOT / 'android/app/src/main/java/sa/urtv/screensaver'
 java = (src / 'Cities.java').read_text(encoding='utf-8')
 original = re.findall(r'\{"[^"]+", "[-\d.]+", "[-\d.]+"(?:, "[^"]+")?\}', java)
-check('all 374 original city rows are byte-for-byte unchanged', len(original) == 374 and hashlib.sha256('\n'.join(original).encode()).hexdigest() == 'c48a06f40efe53347b707158686f75679534067a45d0ac70799cfee2a46ccd89')
+# 375: «أحد المسارحة» added from a user report (4.4), reviewed: the Jazan governorate's seat at 16.7079 N 42.9552 E (16°42′N 42°57′E), its
+# prayer times crosschecked (tests/prayer_crosscheck.tsv). The other 374 rows are exactly as before (without it: c48a06f4…ccd89).
+check('all 375 original city rows are byte-for-byte unchanged (374, and «أحد المسارحة» reviewed in 4.4)', len(original) == 375 and hashlib.sha256('\n'.join(original).encode()).hexdigest() == '86a7d8a66fc32a9eda6b1f9f4777730e2a44f6c32a824ac1df9f1d14f4dd39b8')
 with tempfile.TemporaryDirectory() as temp:
     temp = Path(temp)
-    subprocess.run(['javac', '-encoding', 'UTF-8', '-d', str(temp), *map(str, [src / 'Cities.java', src / 'CityMatch.java', src / 'TeamSearch.java', src / 'Location.java', src / 'PrayerMethod.java', ROOT / 'tests/WorldCitiesRun.java'])], check=True)
+    subprocess.run(['javac', '-encoding', 'UTF-8', '-d', str(temp), *map(str, [src / 'Cities.java', src / 'CityMatch.java', src / 'CitySearch.java', src / 'CitiesMore.java', src / 'TeamSearch.java', src / 'Location.java', src / 'PrayerMethod.java', ROOT / 'tests/WorldCitiesRun.java'])], check=True)
     result = subprocess.run(['java', '-Dfile.encoding=UTF-8', '-cp', str(temp), 'sa.urtv.screensaver.WorldCitiesRun'], capture_output=True, check=True).stdout.decode('utf-8').splitlines()
     decoded = [line.split('\t') for line in result if line.startswith('CITY\t')]
     world = [r for r in decoded if r[6]]
     actual = [(r[1], r[2], float(r[3]), float(r[4]), r[5], r[6], int(r[7])) for r in world]
     ids = {'MWL': 3, 'ISNA': 2, 'KARACHI': 1, 'KEMENAG': 20, 'JAKIM': 17, 'SINGAPORE': 11, 'DIYANET': 13, 'FRANCE_UOIF': 12, 'RUSSIA': 14, 'MOONSIGHTING': 15, 'EGYPT': 5, 'MOROCCO': 21}
-    expected = [(r['country'], r['name_ar'], r['lat'], r['lon'], r['tz'], r['name_en'], ids[r['method']]) for r in rows]
+    expected = [(r['country'], r['name_ar'], r['lat'], r['lon'], r['tz'], r['name_en'], 101 if r['country'] == 'LY' else ids[r['method']]) for r in rows]   # 4.4: Libya has its own method (id 101, the adopted community PR), the reviewed table says EGYPT
     check('all 3305 packed app rows decode exactly to the reviewed data', actual == expected)
     check('all 6610 Arabic/English world names find their city within its country', 'MATCHED\t6610' in result)
-    check('world picker labels show both complete names', all(r[8] == r[2] + ' · ' + r[6] for r in world))
+    check('world picker labels show both complete names', all(r[8] == r[2] + '، ' + r[6] for r in world))
     countries = [line.split('\t') for line in result if line.startswith('COUNTRY\t')]
     check('242 app countries resolve a numeric method and Arabic authority', len(countries) == 242 and all(r[4] == '&pm=' + r[3] and merge.arabic(r[5]) for r in countries))
     # Regenerate in a temporary tree: the test never edits the checked-out file.

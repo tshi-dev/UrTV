@@ -42,7 +42,7 @@ final class SetupRecovery {
             SetupEngine.Result r = s.engine.recoverIfCutOff();
             if (r != null && !pending(c)) {
                 try { store.put("home-retries.txt", ""); } catch (java.io.IOException ignored) { }
-                SetupSession.deleteKeyIfFinished(c);
+                SetupSession.keepKey(c);
             }
             return r;
         } catch (Exception e) {

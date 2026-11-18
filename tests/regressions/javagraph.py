@@ -129,7 +129,8 @@ def _heads(s):
         w = _PREV.search(pre.rstrip())
         if w and w.group(1) in _NOT:
             continue
-        yield name, m.start(1), a.end() - 1, arity(s[m.end():close - 1])
+        head = re.split(r"[;{}]", s[max(0, m.start() - 200):m.start()])[-1]
+        yield name, m.start(1), a.end() - 1, arity(s[m.end():close - 1]), bool(re.search(r"\bstatic\b", head))
 
 
 # a file whose class is a screen (an Activity, a View, a Dialog): its ENTRY methods and its own receivers run on the UI thread while the
@@ -140,11 +141,11 @@ _CLASS = re.compile(r"\b(?:class|interface|enum|record)\s+(\w+)")
 
 
 class Method:
-    __slots__ = ("cls", "name", "file", "line", "body", "sinks", "calls", "ui", "arity")
+    __slots__ = ("cls", "name", "file", "line", "body", "sinks", "calls", "ui", "arity", "static")
 
     def __init__(self, cls, name, file, line, body):
         self.cls, self.name, self.file, self.line, self.body = cls, name, file, line, body
-        self.sinks, self.calls, self.ui, self.arity = [], [], False, -1
+        self.sinks, self.calls, self.ui, self.arity, self.static = [], [], False, -1, False
 
     @property
     def key(self):
@@ -157,11 +158,12 @@ def methods_of(path, rel):
     top = _CLASS.search(s)
     cls = top.group(1) if top else path.stem
     out = []
-    for name, at, b0, n in _heads(s):
+    for name, at, b0, n, st in _heads(s):
         b1 = match_paren(s, b0)
         line = s.count("\n", 0, at) + 1
         out.append(Method(cls, name, rel, line, s[b0:b1]))
         out[-1].arity = n
+        out[-1].static = st
     ui = bool(_UI.search(s))
     for m in out:
         m.ui = ui
@@ -202,10 +204,13 @@ def load(apps=tuple(SRC), root=None):
             if n in _NOT:
                 continue
             targets = []
-            if q and q in byclass:
+            if q and q in byclass:   # `Foo.bar(`: Foo's static bar (an instance bar of the same name and arity is another method)
                 targets = [x for x in byclass[q] if x.name == n]
+                targets = [x for x in targets if x.static] or targets
             elif q is None or q == "this":
                 targets = [x for x in byname.get(n, []) if x.file == m.file]
+                if m.static and q is None:   # a static method calls its own class's static methods unqualified, never an instance one
+                    targets = [x for x in targets if x.static] or targets
             elif q in typesof[m.file] and typesof[m.file][q] in byclass:
                 targets = [x for x in byclass[typesof[m.file][q]] if x.name == n]
             if len(targets) > 1:   # overloads: the ones taking as many arguments as the call gives (Place.get(c) is not Place.get(c, f, t))

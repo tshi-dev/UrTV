@@ -50,14 +50,14 @@ final class Greeting {
     void update(int hour, ConfigSnapshot snap) {
         Config s = Config.of(snap);
         if (!s.on) {
-            greeting.setText(hour < 4 || hour >= 22 ? S.t("تصبح على خير") : hour < 12 ? S.t("صباح الخير") : S.t("مساء الخير"));
+            greeting.setText(GreetingText.withName(hour < 4 || hour >= 22 ? S.t("تصبح على خير") : hour < 12 ? S.t("صباح الخير") : S.t("مساء الخير"), snap.greetingName));
             weather.setVisibility(android.view.View.GONE);
             return;
         }
         DayParts d = null;
         try { d = DayParts.now(context, snap.placeFragment(), snap.placeTicket()); } catch (RuntimeException ignored) { }
-        greeting.setText(d == null ? (hour < 4 || hour >= 22 ? S.t("تصبح على خير") : hour < 12 ? S.t("صباح الخير") : S.t("مساء الخير"))
-                : GreetingText.greeting(GreetingText.part(System.currentTimeMillis(), d.fajr, d.dhuhr, d.asr, d.isha)));
+        greeting.setText(GreetingText.withName(d == null ? (hour < 4 || hour >= 22 ? S.t("تصبح على خير") : hour < 12 ? S.t("صباح الخير") : S.t("مساء الخير"))
+                : GreetingText.greeting(GreetingText.part(System.currentTimeMillis(), d.fajr, d.dhuhr, d.asr, d.isha)), snap.greetingName));
 
         SharedPreferences sp = prefs();
         long at = sp.getLong("at", 0);
@@ -67,6 +67,7 @@ final class Greeting {
                     + "\n" + GreetingText.sun(S.tv(d.sunLabel), d.sunClock, s.latin, s.clock24);   // «الشروق» / «الغروب»: DayParts keeps the Arabic (MainActivity compares it)
             weather.setText(line);
             weather.setVisibility(android.view.View.VISIBLE);
+            showIcon(GreetingText.icon(sp.getInt("code", -1), "الشروق".equals(d.sunLabel)));   // the next sun is the sunrise: it is night
         } else {
             weather.setVisibility(android.view.View.GONE);   // offline, or not asked yet: the greeting alone
         }
@@ -87,6 +88,7 @@ final class Greeting {
                 String url = "https://api.open-meteo.com/v1/forecast?latitude=" + s.lat + "&longitude=" + s.lon
                         + "&timezone=" + URLEncoder.encode(s.tz, "UTF-8") + "&current=temperature_2m,weather_code,visibility";
                 HttpURLConnection con = (HttpURLConnection) new URL(url).openConnection();
+                NetLog.count(String.valueOf(con.getURL()));   // G3: the request log (NetLog)
                 con.setConnectTimeout(6000);
                 con.setReadTimeout(8000);
                 con.setRequestProperty("User-Agent", "urtv-home");
@@ -127,6 +129,7 @@ final class Greeting {
             String url = "https://air-quality-api.open-meteo.com/v1/air-quality?latitude=" + s.lat + "&longitude=" + s.lon
                     + "&timezone=" + URLEncoder.encode(s.tz, "UTF-8") + "&current=pm10,dust";
             HttpURLConnection con = (HttpURLConnection) new URL(url).openConnection();
+            NetLog.count(String.valueOf(con.getURL()));   // G3: the request log (NetLog)
             con.setConnectTimeout(6000);
             con.setReadTimeout(8000);
             con.setRequestProperty("User-Agent", "urtv-home");
@@ -142,6 +145,29 @@ final class Greeting {
         } catch (Exception e) {
             return -1;   // no answer: the caller keeps the last good reading
         }
+    }
+
+    /** 4.3.3: the sky's drawing beside the weather line (GreetingText.icon), in the line's own colour; none for a code we do not know */
+    private void showIcon(String key) {
+        android.graphics.drawable.Drawable icon = null;
+        try {
+            int id = key == null ? 0 : ICONS.getOrDefault(key, 0);
+            if (id != 0) {
+                icon = context.getDrawable(id).mutate();
+                int size = Math.round(weather.getTextSize() * 1.6f);
+                icon.setBounds(0, 0, size, size);
+                icon.setTint(weather.getCurrentTextColor());
+            }
+        } catch (RuntimeException ignored) { icon = null; }   // a TV that cannot draw the vector: the line alone, as before
+        weather.setCompoundDrawablesRelative(icon, null, null, null);
+        weather.setCompoundDrawablePadding(icon == null ? 0 : Math.round(weather.getTextSize() * .5f));
+    }
+
+    private static final java.util.Map<String, Integer> ICONS = new java.util.HashMap<>();
+    static {
+        ICONS.put("sun", R.drawable.wx_sun); ICONS.put("moon", R.drawable.wx_moon); ICONS.put("part", R.drawable.wx_part);
+        ICONS.put("partnight", R.drawable.wx_partnight); ICONS.put("cloud", R.drawable.wx_cloud); ICONS.put("fog", R.drawable.wx_fog);
+        ICONS.put("rain", R.drawable.wx_rain); ICONS.put("snow", R.drawable.wx_snow); ICONS.put("storm", R.drawable.wx_storm);
     }
 
     private SharedPreferences prefs() {

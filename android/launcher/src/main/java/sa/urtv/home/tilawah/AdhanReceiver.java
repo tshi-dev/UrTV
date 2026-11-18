@@ -26,6 +26,7 @@ public class AdhanReceiver extends BroadcastReceiver {
         if (!alarm) {
             // boot, clock or timezone change, or the app was just updated: set the next alarm, and ask Aladhan for today
             AdhanScheduler.schedule(context);
+            DuaScheduler.schedule(context);   // 4.4: the duas' alarm too (a reboot, a clock or time-zone change, an update)
             PrayerTimes.refresh(context, null);
             return;
         }
@@ -42,16 +43,30 @@ public class AdhanReceiver extends BroadcastReceiver {
             if (due > 0) prefs.setLastDue(due); else prefs.setLastAlarmAt(now);
             int prayer = intent.getIntExtra(AdhanScheduler.EXTRA_PRAYER, -1);   // an alarm of an older version has none: the usual voice
             int front = AdhanFront.now(context);
-            boolean play = prefs.adhanOn() && AdhanPlan.mayPlay(prefs.adhanSaverOnly(), front);
+            int voice = prayer < 0 ? prefs.playVoiceFor(context, false) : prefs.playFor(context, prayer);   // 4.4 «أذان كل صلاة»
+            boolean silent = voice == PrayerSound.SILENT
+                    || QuietHours.silencesAdhan(prefs.quietOn(), prefs.quietNow(context), prefs.quietAdhan(), prayer);   // 4.4 «ساعات الهدوء»
+            boolean play = prefs.adhanOn() && AdhanPlan.mayPlay(prefs.adhanSaverOnly(), front) && !silent;
             boolean notice = prefs.adhanNotice();
-            if (play) MusicService.adhan(context, prefs.playVoiceFor(context, prayer == PrayerTimes.FAJR), null, 0, prayer);
+            if (play) MusicService.adhan(context, voice, null, 0, prayer);
+            else if (prefs.adhanOn() && silent) Log.i("UrTVAdhan", "adhan silent: this prayer is set to no sound (its time and card stay)");
             else if (prefs.adhanOn()) Log.i("UrTVAdhan", "adhan skipped: another app is in front (saver-only is on)");
             if (notice) AdhanNotice.show(context, prayer);
             boolean saver = AdhanPlan.startSaver(prefs.adhanSaverAt(), front) && AdhanSaver.start(context);   // after the adhan and the notice: nothing waits for it
             prefs.setLastAlarmNote(AdhanPlan.note(front, play, notice, saver), now);
         }
+        if (late == null && due > 0) iqama(context, prefs, intent.getIntExtra(AdhanScheduler.EXTRA_PRAYER, -1), due);   // 4.4 «الإقامة»: its alarm, from this adhan's time
         AdhanScheduler.schedule(context);
         PrayerTimes.refresh(context, null);
+    }
+
+    /** 4.4 «الإقامة»: the alarm at this prayer's iqama, when its sound or its notice is on (none on a Friday's Dhuhr) */
+    private static void iqama(Context c, Prefs prefs, int prayer, long due) {
+        if (!IqamaPlan.wanted(prefs.iqamaSound(), prefs.iqamaNotice())) return;
+        java.util.Calendar cal = java.util.Calendar.getInstance(sa.urtv.home.ZoneFix.zone(Place.get(c).tz), java.util.Locale.US);
+        cal.setTimeInMillis(due);
+        long at = IqamaPlan.at(prayer, due, cal.get(java.util.Calendar.DAY_OF_WEEK) == java.util.Calendar.FRIDAY);
+        if (at > 0) IqamaScheduler.set(c, prayer, at);
     }
 
     /**

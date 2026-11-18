@@ -75,7 +75,8 @@ final class HomeCard {
     static final String CHANGED = "sa.urtv.home.CARDS_CHANGED";
 
     /** The box in pixels, {width, height}, for that many cards; asked again whenever the screen is laid out. */
-    interface Sizer { int[] box(int cards); }
+    /** {width, height} of the box for that many cards; with {@code row} (4.4 «التخطيط: كنبة») {width, height, its distance from the screen's bottom} of the strip above the tray */
+    interface Sizer { int[] box(int cards, boolean row); }
 
     /** What the home screen does with the «المهام» card (and the stocks card): it gained or lost the focus, OK was pressed on it. */
     interface Live { void focus(View target, boolean has); void open(); default void markets() { } }
@@ -87,6 +88,8 @@ final class HomeCard {
     private WebView web;
     private String url;
     private volatile int cards;   // how many the page in `web` shows
+    /** how many cards the page shows now (0: none, or the football layout) */
+    int shownCards() { return cards; }
     private volatile boolean tasks;   // «المهام» is one of them: `target` exists
     private View target;
     private FrameLayout.LayoutParams targetParams;
@@ -102,6 +105,10 @@ final class HomeCard {
      * from the screen's top to above the favourites' tray, and FootballFocus puts a focus target over each. Nothing else changes.
      */
     private volatile boolean football;
+    /** 4.4 «التخطيط: كنبة»: the cards in one low strip above the apps tray, the screen's width (the page's #row=1); the big clock is then alone in the middle */
+    private volatile boolean row;
+    /** the cards are in the strip above the tray (not beside the clock) */
+    boolean inRow() { return row && cards > 0; }
     /** the layout the home showed last, for the report (a word, nothing else) */
     static volatile boolean footballShown;
     private FootballFocus.Host footballHost;
@@ -157,10 +164,9 @@ final class HomeCard {
     void fit() {
         if (web == null) return;
         if (footballFocus != null) { footballFocus.fit(); return; }   // the widgets' box is the screen's width, always: only where they start moves
-        int[] b = sizer.box(cards);
-        if (b[0] == params.width && b[1] == params.height) return;
-        params.width = b[0];
-        params.height = b[1];
+        int[] b = sizer.box(cards, row);
+        if (b[0] == params.width && b[1] == params.height && (!row || b[2] == params.bottomMargin)) return;
+        place(b);
         web.setLayoutParams(params);
         placeTarget();
         placeMarket();
@@ -174,6 +180,7 @@ final class HomeCard {
     void refresh() {
         resumed = true;
         idle.removeCallbacks(drop);
+        if (web != null && !loading) { idle.removeCallbacks(kickPull); idle.postDelayed(kickPull, 5_000); }
         if (web != null) resumeWeb();
         final int gen = ++refreshGen;
         new Thread(new Runnable() {
@@ -202,7 +209,7 @@ final class HomeCard {
         if (want.equals(url)) return;
         destroy();
         if (!guard.mayCreate(android.os.SystemClock.elapsedRealtime())) return;   // its renderer keeps dying: the cards stay off for now
-        create(want);
+        if (!create(want)) return;   // 4.3.5: no WebView on this TV: the home without its card, never a crash (WebViews)
         web.onResume();
         web.resumeTimers();
     }
@@ -230,6 +237,7 @@ final class HomeCard {
      *  launcher's only WebView (tests/home_card_test.py checks it), so whoever adds a second WebView has to revisit both. */
     void pause() {
         resumed = false;
+        idle.removeCallbacks(kickPull);   // 4.4 the alarms already set cover the next 8 days
         guardNext = web != null;
         if (web != null) { web.onPause(); web.pauseTimers(); }
         if (web != null && Ram.tight(activity)) idle.postDelayed(drop, IDLE_DROP_MS);   // P9: a weak TV does not keep a page it is not showing for long
@@ -237,6 +245,7 @@ final class HomeCard {
 
     void destroy() {
         if (web == null) return;
+        idle.removeCallbacks(kickPull);
         if (target != null) { parent.removeView(target); target = null; targetParams = null; }
         if (footballFocus != null) { footballFocus.remove(); footballFocus = null; }
         if (market != null) { parent.removeView(market); market = null; marketParams = null; }
@@ -271,12 +280,14 @@ final class HomeCard {
         String[] choice = HomeCardChoice.pick(frag, panel, sp.getString("frag", null), sp.getString("panel", null));
         football = HomeCardChoice.football(layout, choice) && footballHost != null;   // 4.3.4: «بدون» turns the football home's widgets off too
         footballShown = football;   // «أرسل تقرير» says which layout the home had
-        if (football) { cards = 0; tasks = false; stocks = false; stocksFirst = false; return withGlass(HomePage.fresh(activity, HomeCardChoice.footballUrl(choice))); }
+        if (football) { cards = 0; tasks = false; stocks = false; stocksFirst = false; row = false; return withGlass(HomePage.fresh(activity, HomeCardChoice.footballUrl(choice))); }
+        row = "couch".equals(layout);
         cards = HomeCardChoice.count(choice);
         tasks = HomeCardChoice.hasTasks(choice);
         stocks = HomeCardChoice.hasStocks(choice);
         stocksFirst = HomeCardChoice.stocksFirst(choice);
-        return withGlass(HomePage.fresh(activity, HomeCardChoice.liveUrl(choice)));   // the screensaver's newer page when it has one
+        String u = HomePage.fresh(activity, HomeCardChoice.liveUrl(choice));   // the screensaver's newer page when it has one
+        return withGlass(row && u != null && u.contains("#") ? u + "&row=1" : u);
     }
 
     /**
@@ -297,10 +308,30 @@ final class HomeCard {
         return m.ownInk ? q + "&hink=" + GlassStyle.rgba(m.text) + "&hsub=" + GlassStyle.rgba(m.sub) + "&hacc=" + GlassStyle.rgba(m.accent) : q;
     }
 
+    /** 4.4 the followed clubs' coming games: the app asks the page for them (spKickList, a JSON string) after it loads and every 15 minutes while the home is in
+     *  front; the page is given no JavaScript interface. KickoffScheduler keeps them and sets the alarm. */
+    static final long KICK_PULL_MS = 15 * 60 * 1000;
+    private final Runnable kickPull = new Runnable() { @Override public void run() {
+        if (web == null) return;
+        web.evaluateJavascript("typeof spKickList==='function'?spKickList():''", new ValueCallback<String>() {
+            @Override public void onReceiveValue(String v) {
+                try {
+                    Object o = v == null ? null : new org.json.JSONTokener(v).nextValue();
+                    if (o instanceof String && ((String) o).startsWith("[") && ((String) o).length() < 20_000)
+                        sa.urtv.home.sports.KickoffScheduler.handOver(activity.getApplicationContext(), (String) o);
+                } catch (org.json.JSONException ignored) { }
+            }
+        });
+        idle.removeCallbacks(this);
+        if (resumed) idle.postDelayed(this, KICK_PULL_MS);
+    } };
+
     @SuppressLint("SetJavaScriptEnabled")
     @SuppressWarnings("deprecation")
-    private void create(String u) {
-        web = new WebView(activity);
+    private boolean create(String u) {
+        WebView made = WebViews.make(activity);
+        if (made == null) return false;
+        web = made;
         web.setBackgroundColor(Color.TRANSPARENT);
         web.setFocusable(false);
         web.setFocusableInTouchMode(false);
@@ -323,6 +354,8 @@ final class HomeCard {
             @Override
             public void onPageFinished(WebView v, String u) {
                 loading = false;
+                idle.removeCallbacks(kickPull);
+                idle.postDelayed(kickPull, 20_000);   // 4.4 the page has read its games by then
                 if (footballFocus != null) {   // the widgets are laid out once the page is: where they start, the look, the targets
                     footballFocus.fit();
                     v.postDelayed(() -> { if (footballFocus != null) footballFocus.fit(); }, 1500);
@@ -353,6 +386,7 @@ final class HomeCard {
                     }
                 }
                 if (s.startsWith(OWN_BASE)) return ownPhoto(s.substring(OWN_BASE.length()));
+                NetLog.count(s);   // G3: what the card's page asks the network (the request log)
                 return super.shouldInterceptRequest(v, r);
             }
         });
@@ -363,7 +397,7 @@ final class HomeCard {
         // same as the screensaver: the page calls its data APIs directly from file://
         s.setAllowFileAccessFromFileURLs(true);
         s.setAllowUniversalAccessFromFileURLs(true);
-        s.setCacheMode(WebSettings.LOAD_NO_CACHE);
+        s.setCacheMode(WebSettings.LOAD_DEFAULT);   // G3: the HTTP cache (the page revalidates its data: fetchT, cache:'no-cache')
         // The page sizes its text to the screen; the TV's font size setting (Android scales WebView text by it) made
         // it larger than its boxes, so the left column spilled off screen and moved as the clock and the matches changed.
         s.setTextZoom(100);
@@ -373,12 +407,7 @@ final class HomeCard {
             params.leftMargin = params.topMargin = params.rightMargin = 0;
             params.width = dm.widthPixels;
             params.height = Math.round(FootballFocus.HEIGHT_1080 * dm.heightPixels / 1080f);
-        } else {
-            params.gravity = gravity0; params.leftMargin = left0; params.topMargin = top0; params.rightMargin = right0;
-            int[] b = sizer.box(cards);
-            params.width = b[0];
-            params.height = b[1];
-        }
+        } else place(sizer.box(cards, row));
         parent.addView(web, params);
         if (football) footballFocus = new FootballFocus(activity, parent, web, params, footballHost);
         if (tasks) addTarget();
@@ -386,6 +415,21 @@ final class HomeCard {
         url = u;
         loading = true;   // HomeSnapshot's picture stays until the page has painted (onPageFinished)
         web.loadUrl(u);
+        return true;
+    }
+
+    /** the cards' own place beside the clock, or (row) the strip above the tray: the screen's width less its margins, its distance from the bottom b[2] */
+    private void place(int[] b) {
+        if (row) {
+            params.gravity = android.view.Gravity.BOTTOM | android.view.Gravity.CENTER_HORIZONTAL;
+            params.leftMargin = params.rightMargin = params.topMargin = 0;
+            params.bottomMargin = b[2];
+        } else {
+            params.gravity = gravity0; params.leftMargin = left0; params.topMargin = top0; params.rightMargin = right0;
+            params.bottomMargin = 0;
+        }
+        params.width = b[0];
+        params.height = b[1];
     }
 
     /** The transparent button over the «المهام» card: it takes the focus like a pill, and OK opens the list. */

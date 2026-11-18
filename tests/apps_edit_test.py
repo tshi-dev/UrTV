@@ -23,13 +23,13 @@ fn = lambda text, name: text.split(name)[1].split("\n    }\n")[0]
 
 # ---- the model
 check("AppsEdit has no Android in it (the test runs it without the SDK)", "import android" not in edit)
-check("the hint line, in the style of «تعديل المفضلة»", 'HINT = S.n("اختر تطبيقًا لتحريكه · × للإخفاء · ارفعه للمفضلة · رجوع للإنهاء")' in edit)
+check("the hint line, in the style of «تعديل المفضلة»", 'HINT = S.n("اختر تطبيقًا لتحريكه، × للإخفاء، ارفعه للمفضلة، رجوع للإنهاء")' in edit)
 check("«تراجع» lasts as long as in «تعديل المفضلة» (FavEdit.UNDO_MS)", "undoUntil = now + FavEdit.UNDO_MS;" in edit)
 
 # ---- the order «كل التطبيقات» shows
 show = fn(main, "private void showApps(List<App> all, String[] wanted, int gen)")
 check("the grid is by name, then in the owner's saved order (AppsEdit.arrange); the favourites are topped up first, by package (AppsEdit.topUp, cases in tests/apps_edit_cases.tsv), never by label",
-      show.index("Collections.sort(rest, (x, y) -> x.label.compareToIgnoreCase(y.label));") < show.index("AppsEdit.topUp(have, other, MIN_DOCK)")
+      show.index("Collections.sort(rest, (x, y) -> x.label.compareToIgnoreCase(y.label));") < show.index("AppsEdit.topUp(have, other, AppsEdit.floor(Dock.exact(this), have.size(), MIN_DOCK))")
       < show.index("rest = inSavedOrder(rest);") and "AppsEdit.arrange(names, Dock.appsOrder(this))" in main and "dock.add(rest.remove(0));" not in show)
 check("the order is kept in the launcher's settings file as \"apps_order\"; nothing saved means by name, as always",
       'prefs(c).getString("apps_order", null)' in dock and 'e.putString("apps_order", String.join(",", order));' in dock)

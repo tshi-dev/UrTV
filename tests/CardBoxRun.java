@@ -21,5 +21,13 @@ public class CardBoxRun {
                 System.out.println("long " + d + " " + n + " " + long_[0] + " " + long_[1] + " " + clockLeft + " " + titleTop + " " + dockTop);
             }
         }
+        // 4.4 the strip with the big glass clock (its digits end at 542 of 1080): the owner's TV (the title at 683 px) and the model's
+        for (int titleTop : new int[] {683, 0}) {
+            int[] plain = CardBox.row(1920, 1080, 1.5f, titleTop), clock = CardBox.row(1920, 1080, 1.5f, titleTop, 542);
+            int endP = 1080 - plain[2], endC = 1080 - clock[2];
+            int[] stripP = {Math.round(48 * 1.5f), endP - plain[1], 1920 - Math.round(48 * 1.5f), endP}, stripC = {Math.round(48 * 1.5f), endC - clock[1], 1920 - Math.round(48 * 1.5f), endC};
+            int[] box = {601, 266, 1319, 542};
+            System.out.println("strip " + titleTop + " " + plain[1] + " " + clock[1] + " " + CardBox.overClock(stripP, box) + " " + CardBox.overClock(stripC, box) + " " + stripC[1]);
+        }
     }
 }

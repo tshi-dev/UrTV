@@ -28,7 +28,8 @@ check("the Settings key (176, 83 and TCL's 4077): a short press opens the TV's o
       and "heldMs >= LONG_MS ? OPEN_OUR_SETTINGS : OPEN_SETTINGS" in keys and "ParentalPolicy.OUR_SETTINGS" in main
       and "case RemoteKeys.OPEN_SETTINGS: {" in main and "new Intent(SettingsKey.NOTIFICATION_PANEL_ACTION)" in main and "launchGuarded(ParentalPolicy.REMOTE_SETTINGS, panel," in main
       and "guarded(ParentalPolicy.PILL_CENTER, null, ControlText.NAME, () -> control.open(anchor))" in main and "launchGuarded(ParentalPolicy.REMOTE_SETTINGS, new Intent(Settings.ACTION_SETTINGS)" in main
-      and "case RemoteKeys.OPEN_OUR_SETTINGS:   // a long press of the Settings key: OUR settings (the TV's own if our app is missing)\n                openOurSettings(true);" in main
+      and "case RemoteKeys.OPEN_OUR_SETTINGS:   // a long press of the Settings key: OUR settings (the TV's own if our app is missing)\n" in main
+      and "\n                else openOurSettings(true);" in main   # 4.3.3: kids mode without the screensaver app opens «الرقابة الأبوية» (kids_exit_test)
       and "SETTINGS" not in keys.split("private static Decision map")[1].split("default:")[0])
 check("MainActivity hands RemoteKeys how long the key has been down", "e.getRepeatCount(), e.getEventTime() - e.getDownTime()," in body)
 check("TCL's vendor keys 4062 Netflix, 4065 YouTube, 4099 Prime Video and 4077 Settings are mapped, and opensApp knows the app ones",

@@ -20,15 +20,16 @@ import java.util.Locale;
  *   am broadcast -n sa.urtv.screensaver/.SaverReceiver -a sa.urtv.screensaver.CITIES
  *   am broadcast -n sa.urtv.screensaver/.SaverReceiver -a sa.urtv.screensaver.SET
  *       [--es city 'الرس'] [--es lat 25.86 --es lon 43.49 --es tz Asia/Kuwait]   (tz is needed for a place that is not in the list) [--es teams '136013:Al-Hilal,150643:Al-Zulfi']
- *       [--es panel prayers] [--es panel2 hourly|none] [--es home_panel prayers,hourly,verse|none] [--es greeting on|off] [--es homephotos same|own] [--es homepacks id,id|none] [--es homeours on|off] [--es albummode seconds|ten|minute] [--es albumtitle on|off] [--es albumfit fit|fill] [--es albumsize normal|tall] [--es cleartext on|off] [--es looksync on|off] [--es surface quick|cards|tray:30..100:look|glass|graphite] [--es accent amber|gold|green|teal|sky|violet|rose|coral|default] [--es baropacity 30..100] [--es walldim 0..90] [--es focusstyle solid|frame|glow] [--es albummode seconds|minute] [--es albumdate on|off] [--es pillshidden markets,matches,center|none] [--es listenpill on|off] [--es updatebell on|off] [--es watchnext on|off] [--es appearance dark|light|auto] [--es look glass|graphite|navy|clean] [--es homelayout classic|football] [--es favbar 5|6|7|8|all] [--es pagesdark on|off] [--es adhanbar on|off] [--es yearstrip on|off] [--es minrating 7]
- *       [--es sunrise on|off] [--es prayerbar on|off] [--es wxmore on|off] [--es months default|levant] [--es verse day|3] [--es versekind both|verse|hadith] [--es seconds on|off] [--es backexit press|hold|three] [--es occasion on|off] [--es nightdim on|off] [--es taskspill on|off] [--es backsaver on|off] [--es genres Drama,Comedy] [--es langs English]
- *       [--es photos 30] [--es idle 10] [--es digits hindi|latin] [--es hijrioffset -2..2] [--es clock24 on|off] [--es ramtier low|mid|normal|auto] [--es lang ar|en]
- *       [--es cardstyle current|dark1|glass1|dark3|glass3] [--es national auto|off]
+ *       [--es panel prayers] [--es panel2 hourly|none] [--es home_panel prayers,hourly,verse|none] [--es greeting on|off] [--es greetingname NAME|off] [--es homephotos same|own] [--es homepacks id,id|none] [--es homeours on|off] [--es albummode seconds|ten|minute] [--es albumtitle on|off] [--es albumfit fit|fill] [--es albumsize normal|tall] [--es cleartext on|off] [--es looksync on|off] [--es surface quick|cards|tray:30..100:look|glass|graphite] [--es accent amber|gold|green|teal|sky|violet|rose|coral|default] [--es baropacity 30..100] [--es walldim 0..90] [--es focusstyle solid|frame|glow] [--es albummode seconds|minute] [--es albumdate on|off] [--es pillshidden markets,matches,center|none] [--es listenpill on|off] [--es updatebell on|off] [--es watchnext on|off] [--es appearance dark|light|auto] [--es look glass|graphite|navy|clean] [--es homelayout classic|couch|football] [--es favbar 5|6|7|8|all] [--es pagesdark on|off] [--es adhanbar on|off] [--es yearstrip on|off] [--es minrating 7]
+ *       [--es sunrise on|off] [--es prayerbar on|off] [--es wxmore on|off] [--es months default|levant] [--es verse day|3|10] [--es versekind both|verse|hadith] [--es seconds on|off] [--es backexit press|hold|three] [--es occasion on|off] [--es nightdim on|off] [--es taskspill on|off] [--es backsaver on|off] [--es genres Drama,Comedy] [--es langs English]
+ *       [--es photos 30] [--es idle 10] [--es digits hindi|latin] [--es hijrioffset -2..2] [--es clock24 on|off] [--es ramtier low|mid|normal|auto] [--es lite auto|on|off] [--es lang ar|en]
+ *       [--es design info|clean|big|frame|dayline] [--es bar none|prayers|slot|weather] [--es barat bottom|clock] [--es wx auto|usual|clock|corner|off]
+ *       [--es cardstyle current|dark1|glass1|dark3|glass3|boxes] [--es national auto|off] [--es scenepacks saudi,couch] [--es scenestay 10|20|60|300] [--es scenetime on|off] [--es sceneweather on|off] [--es background photos|scenes] [--es clock plain|glass] [--es appsstyle frame|zoom] [--es couch on|off]
  *       [--es markets tasi,gold,btc] [--es mkstyle arrows|prices] [--es mkbar on|off] [--es clocksize large|medium|small] [--es stocks 2222,1120,AAPL] [--es stkchg pct|amount]
  *       [--es leagues 'Saudi-Arabian Pro League,NBA']
  *       [--es prayermethod gulf|auto]   («طريقة الحساب»: auto = the country's own, gulf = the Gulf method for any place; an old «jafari» is taken as auto, 4.3 A4)
  *       [--es prayeradj on|off] [--es adj_fajr +2 --es adj_dhuhr 0 --es adj_asr 0 --es adj_maghrib -1 --es adj_isha 0]   («تعديل وقت الصلاة», minutes -20..20)
- *       [--es slot matches|weather|fasting|countdown|markets|none] [--es countdown 2026-12-01|clear --es cdname 'رحلة الصيف']
+ *       [--es slot matches|weather|fasting|countdown|markets|none] [--es countdown 2026-12-01|school|clear --es cdname 'رحلة الصيف']
  *   am broadcast -n sa.urtv.screensaver/.SaverReceiver -a sa.urtv.screensaver.UPDATE
  *   am broadcast -n sa.urtv.screensaver/.SaverReceiver -a sa.urtv.screensaver.TASKS
  *       --es op list | add --es text 'نص' | done --ei n 1 | del --ei n 1 | clear
@@ -49,6 +50,7 @@ import java.util.Locale;
  * pagesdark = the home's markets and matches pages in the dark look (on, the default) or in the home's look (off).
  * watchnext = «أكمل المشاهدة» under the home screen's favourites (on, the default, or off); it needs the home app's TV listings permission.
  * updatebell = the «جرس التحديثات» on the home screen (on, the default, or off: only the bell goes; it shows only while the Play Store has updates waiting).
+ * greetingname = a name after the home's greeting («صباح الخير، علاء»), at most 30 letters on one line, or off (the default: the greeting alone).
  * greeting = the greeting and the weather line above the home screen's clock (on, the default, or off: the plain good-morning).
  * favbar = how many favourites the home's tray shows whole at once: 5 (the default) to 10, or all (every favourite, up to 10, all whole: no scrolling). 4.3.1: 9 and 10 are whole sizes again (smaller tiles).
  * yearstrip = the slim year strip under the screensaver's clock (on, or off, the default).
@@ -66,6 +68,8 @@ import java.util.Locale;
  * "clear"; cdname = its name (up to 40 characters).
  * national = auto (as always from now: the quiet green look on National Day, 21-25 September, and Founding Day, 20-24 February) or off.
  * cardstyle = the look of the card beside the clock (Prefs.CARD_STYLES; current is the plain card).
+ * design = the screensaver's design (Prefs.SAVER_DESIGNS; info is the page as it always was); bar = a centred bar (none, prayers, slot: the left slot's
+ * item, weather), barat = where it goes (bottom, clock: under the clock); wx = the weather's place (auto: as the design has it).
  * panel2 = «بطاقة ثانية», a second card beside the clock while it is small (SecondCard): one of the screensaver's cards but the
  * first one, or none (the default). Kept with any clock size; the page shows it only beside the small clock.
  * mkbar = the markets line at the top, on (default) or off (the weather stays; the list is kept); clocksize = the screensaver's clock.
@@ -163,10 +167,15 @@ public class SaverReceiver extends BroadcastReceiver {
             } else {
                 if (city == null) {   // a short form of a built-in name: «مكة» for «مكة المكرمة»
                     List<String[]> hits = CityMatch.find(name);
-                    if (hits.size() == 1) city = hits.get(0);
-                    else if (hits.size() > 1) {
+                    if (hits.size() == 1) {
+                        city = hits.get(0);
+                        if (city.length > 5 && Cities.find(city[0], city[1], city[2]) == null) {   // 4.3.3: a place of the search list (CitiesMore): saved as a searched place, with its zone and country
+                            tz = city[3];
+                            cityCountry = city[5];
+                        }
+                    } else if (hits.size() > 1) {
                         List<String> names = new ArrayList<>();
-                        for (String[] h : hits) names.add(Cities.country(h) + "|" + (h.length > 4 ? h[4] : h[0]));
+                        for (String[] h : hits) names.add(Cities.country(h) + "|" + (h.length > 4 && h[4] != null && !h[4].isEmpty() ? h[4] : h[0]));
                         return "error: «" + name + "» fits several cities: " + Prefs.join(names, "، ") + " — give one of them in full";
                     }
                 }
@@ -247,11 +256,15 @@ public class SaverReceiver extends BroadcastReceiver {
         String months = i.getStringExtra("months");
         if (months != null && !"default".equals(months) && !"levant".equals(months)) return "error: months is one of default levant";
         String occasion = i.getStringExtra("occasion"), nightDim = i.getStringExtra("nightdim"), tasksPill = i.getStringExtra("taskspill");
-        String backSaver = i.getStringExtra("backsaver");
-        for (String[] x : new String[][] {{"occasion", occasion}, {"nightdim", nightDim}, {"taskspill", tasksPill}, {"backsaver", backSaver}})
+        String kickoffOn = i.getStringExtra("kickoff"), kickoffGoal = i.getStringExtra("kickoffgoal"), kickoffEnd = i.getStringExtra("kickoffend"), kickoffOver = i.getStringExtra("kickoffover");
+        if (kickoffOn != null && !kickoffOn.matches("on|off|silent|whistle")) return "error: kickoff is one of on off silent whistle";
+        for (String[] x : new String[][] {{"kickoffgoal", kickoffGoal}, {"kickoffend", kickoffEnd}, {"kickoffover", kickoffOver}})
+            if (x[1] != null && !"on".equals(x[1]) && !"off".equals(x[1])) return "error: " + x[0] + " is one of on off";
+        String backSaver = i.getStringExtra("backsaver"), fbHide = i.getStringExtra("fbhide"), dateNum = i.getStringExtra("datenum"), searchPill = i.getStringExtra("searchpill");
+        for (String[] x : new String[][] {{"occasion", occasion}, {"nightdim", nightDim}, {"taskspill", tasksPill}, {"backsaver", backSaver}, {"fbhide", fbHide}, {"datenum", dateNum}, {"searchpill", searchPill}})
             if (x[1] != null && !"on".equals(x[1]) && !"off".equals(x[1])) return "error: " + x[0] + " is one of on off";
         String verse = i.getStringExtra("verse");
-        if (verse != null && !QuoteEvery.valid(verse)) return "error: verse is one of day 3";
+        if (verse != null && !QuoteEvery.valid(verse)) return "error: verse is one of day 3 10";
         String verseKind = i.getStringExtra("versekind");
         if (verseKind != null && !VerseKind.valid(verseKind)) return "error: versekind is one of both verse hadith";
         String seconds = i.getStringExtra("seconds");
@@ -261,8 +274,21 @@ public class SaverReceiver extends BroadcastReceiver {
         String greeting = i.getStringExtra("greeting");
         if (greeting != null && !"on".equals(greeting) && !"off".equals(greeting))
             return "error: greeting is one of on off";
+        String greetingName = i.getStringExtra("greetingname");   // PR #45: the name after the greeting; off clears it
+        if (greetingName != null && !"off".equals(greetingName)
+                && (Prefs.cleanName(greetingName).isEmpty() || Prefs.cleanName(greetingName).length() > Prefs.NAME_MAX || !Prefs.cleanName(greetingName).equals(greetingName.trim().replaceAll("\\s+", " "))))
+            return "error: greetingname is a name of at most " + Prefs.NAME_MAX + " letters on one line, or off";
         String matchApp = i.getStringExtra("matchapp");   // 4.3 «تطبيق المباريات»: auto, none or an app's package
         if (matchApp != null && !Prefs.matchAppOk(matchApp)) return "error: matchapp is auto, none or an app's package name";
+        String keyApp = i.getStringExtra("keyapp");   // «أزرار الريموت»: BUTTON=PKG or BUTTON=default (this remote's buttons: RemoteButtons)
+        String keyAppKey = null, keyAppPkg = null;
+        if (keyApp != null) {
+            int eq = keyApp.indexOf('=');
+            keyAppKey = eq < 0 ? keyApp : keyApp.substring(0, eq);
+            keyAppPkg = eq < 0 ? "" : keyApp.substring(eq + 1);
+            if ("default".equals(keyAppPkg)) keyAppPkg = "";
+            if (!Prefs.remoteKeyOk(keyAppKey) || !Prefs.keyAppOk(keyAppPkg)) return "error: keyapp is BUTTON=PKG or BUTTON=default, BUTTON one of this remote's (optimize/dock.sh key)";
+        }
         String pillsHidden = i.getStringExtra("pillshidden");   // the home's quick buttons to hide: markets, matches, center (comma list), or none
         if (pillsHidden != null && !"none".equals(pillsHidden)) {
             for (String k : pillsHidden.split(",")) if (!java.util.Arrays.asList(Prefs.QUICK_BUTTONS).contains(k)) return "error: pillshidden is none or a list of " + android.text.TextUtils.join(" ", Prefs.QUICK_BUTTONS);
@@ -320,8 +346,23 @@ public class SaverReceiver extends BroadcastReceiver {
         if (surfaceP != null && !(surfaceP.length == 3 && Arrays.asList(GlassStyle.SURFACES).contains(surfaceP[0]) && surfaceP[1].matches("(100|[3-9][0-9])") && Arrays.asList(GlassStyle.FILLS).contains(surfaceP[2])))
             return "error: surface is quick|cards|tray, a number from 30 to 100, and one of look glass graphite";
         String homeLayout = i.getStringExtra("homelayout");
+        String preset = i.getStringExtra("preset");
+        String couch = i.getStringExtra("couch"), homeBg = i.getStringExtra("background"), homeClock = i.getStringExtra("clock"), appsStyle = i.getStringExtra("appsstyle");
+        if ("scenes".equals(homeLayout)) { homeLayout = null; couch = "on"; }   // 4.3.3's word: the scenes with the glass clock
+        if (couch != null && !"on".equals(couch) && !"off".equals(couch)) return "error: couch is on or off";
+        if (homeBg != null && !Arrays.asList(Prefs.HOME_BGS).contains(homeBg)) return "error: background is photos or scenes";
+        if (homeClock != null && !Arrays.asList(Prefs.HOME_CLOCKS).contains(homeClock)) return "error: clock is plain or glass";
+        if (appsStyle != null && !Arrays.asList(Prefs.HOME_APPS).contains(appsStyle) && !Arrays.asList(Prefs.APPS_STORED).contains(appsStyle))
+            return "error: appsstyle is banners, icons or tiles (frame or zoom: tiles with that focus)";
         if (homeLayout != null && !Arrays.asList(Prefs.HOME_LAYOUTS).contains(homeLayout))
             return "error: homelayout is one of " + Prefs.join(Arrays.asList(Prefs.HOME_LAYOUTS), " ");
+        String scenePacks = i.getStringExtra("scenepacks");   // 4.3.3 «حزم الآفاق»: saudi, couch, or both (comma between)
+        if (scenePacks != null && !scenePacks.matches("(saudi|couch)(,(saudi|couch))?"))
+            return "error: scenepacks is saudi, couch, or saudi,couch";
+        String sceneStay = i.getStringExtra("scenestay"), sceneTime = i.getStringExtra("scenetime"), sceneWeather = i.getStringExtra("sceneweather");
+        if (sceneStay != null && !Arrays.asList(Prefs.SCENE_STAYS).contains(sceneStay)) return "error: scenestay is one of 10 20 60 300";
+        if (sceneTime != null && !"on".equals(sceneTime) && !"off".equals(sceneTime)) return "error: scenetime is on or off";
+        if (sceneWeather != null && !"on".equals(sceneWeather) && !"off".equals(sceneWeather)) return "error: sceneweather is on or off";
         String favBar = i.getStringExtra("favbar");
         if (favBar != null) favBar = Prefs.favBarFix(favBar);   // kept as is since 4.3.1: 9 and 10 are whole sizes again
         if (favBar != null && !Arrays.asList(Prefs.FAV_BARS).contains(favBar))
@@ -341,6 +382,8 @@ public class SaverReceiver extends BroadcastReceiver {
         String ramtier = i.getStringExtra("ramtier");
         if (ramtier != null && !"auto".equals(ramtier) && Prefs.ramNamed(ramtier) < 0)
             return "error: ramtier is one of low mid normal auto";
+        String lite = i.getStringExtra("lite");   // A14 «الوضع الخفيف»
+        if (lite != null && !java.util.Arrays.asList(Prefs.LITE).contains(lite)) return "error: lite is one of auto on off";
         String lang = i.getStringExtra("lang");
         if (lang != null && !Tr.valid(lang))
             return "error: lang is one of ar en";
@@ -350,6 +393,11 @@ public class SaverReceiver extends BroadcastReceiver {
         String cardStyle = i.getStringExtra("cardstyle");
         if (cardStyle != null && !isChoice(Prefs.CARD_STYLES, cardStyle))
             return "error: cardstyle is one of " + choices(Prefs.CARD_STYLES);
+        String design = i.getStringExtra("design"), bar = i.getStringExtra("bar"), barAt = i.getStringExtra("barat"), wxAt = i.getStringExtra("wx");
+        if (design != null && !isChoice(Prefs.SAVER_DESIGNS, design)) return "error: design is one of " + choices(Prefs.SAVER_DESIGNS);
+        if (bar != null && !isChoice(Prefs.SAVER_BARS, bar)) return "error: bar is one of " + choices(Prefs.SAVER_BARS);
+        if (barAt != null && !isChoice(Prefs.BAR_PLACES, barAt)) return "error: barat is one of " + choices(Prefs.BAR_PLACES);
+        if (wxAt != null && !isChoice(Prefs.WX_PLACES, wxAt)) return "error: wx is one of " + choices(Prefs.WX_PLACES);
         String mkStyle = i.getStringExtra("mkstyle");
         if (mkStyle != null && !isChoice(Prefs.MK_STYLES, mkStyle))
             return "error: mkstyle is one of " + choices(Prefs.MK_STYLES);
@@ -385,8 +433,8 @@ public class SaverReceiver extends BroadcastReceiver {
         if (slot != null && !isChoice(Prefs.SLOTS, slot))
             return "error: slot is one of " + choices(Prefs.SLOTS);
         String cd = i.getStringExtra("countdown"), cdName = i.getStringExtra("cdname");
-        if (cd != null && !"clear".equals(cd) && !isDate(cd))
-            return "error: countdown is a date like 2026-12-01, or clear";
+        if (cd != null && !"clear".equals(cd) && !Prefs.SCHOOL.equals(cd) && !isDate(cd))
+            return "error: countdown is a date like 2026-12-01, school (the next school break), or clear";
         if (cdName != null && cd == null) return "error: cdname goes with countdown DATE";
         if (cdName != null && cdName.length() > 40) return "error: cdname is at most 40 characters";
         String idle = i.getStringExtra("idle");
@@ -433,9 +481,11 @@ public class SaverReceiver extends BroadcastReceiver {
         if (panel2 != null) p.setPanel2(panel2);
         if (homeCards != null) p.setHomePanels(homeCards);
         if (greeting != null) p.setGreeting("on".equals(greeting));
+        if (greetingName != null) p.setGreetingName("off".equals(greetingName) ? "" : greetingName);
         if (listenPill != null) p.setListenPill("on".equals(listenPill));
         if (pillsHidden != null) p.setPillsHidden(pillsHidden);
         if (matchApp != null) p.setMatchApp(matchApp);
+        if (keyAppKey != null) p.setKeyApp(keyAppKey, keyAppPkg);
         if (homePhotos != null) p.setHomePhotosSame("same".equals(homePhotos));
         if (homePacks != null) p.setHomePacksOn("none".equals(homePacks) ? new java.util.LinkedHashSet<String>() : PhotoPacks.parseOn(homePacks));
         if (homeOurs != null) p.setHomeOursOn("on".equals(homeOurs));
@@ -457,7 +507,16 @@ public class SaverReceiver extends BroadcastReceiver {
         if (focusX != null) p.setFocusStyle(focusX);
         if (syncX != null) p.setLookSync("on".equals(syncX));
         if (surfaceP != null) { int s = Arrays.asList(GlassStyle.SURFACES).indexOf(surfaceP[0]); p.setSurfacePercent(s, Integer.parseInt(surfaceP[1])); p.setSurfaceFill(s, surfaceP[2]); }
+        if (preset != null) p.setPreset(preset);   // «أشكال جاهزة» before any one row given beside it (that row then makes it «مخصّص»)
+        if (couch != null) p.setCouch("on".equals(couch));   // «شكل كنبة» first (it keeps or puts back the four), then any one choice given beside it
         if (homeLayout != null) p.setHomeLayout(homeLayout);
+        if (homeBg != null) p.setHomeBg(homeBg);
+        if (homeClock != null) p.setHomeClock(homeClock);
+        if (appsStyle != null) p.setAppsStyle(appsStyle);
+        if (scenePacks != null) p.setScenePacks(Arrays.asList(scenePacks.split(",")));
+        if (sceneStay != null) p.setSceneStay(sceneStay);
+        if (sceneTime != null) p.setSceneByTime("on".equals(sceneTime));
+        if (sceneWeather != null) p.setSceneByWeather("on".equals(sceneWeather));
         if (favBar != null) p.setFavBar(favBar);
         if (pagesDark != null) p.setPagesDark("on".equals(pagesDark));
         if (adhanBar != null) p.setAdhanBar("on".equals(adhanBar));
@@ -478,6 +537,13 @@ public class SaverReceiver extends BroadcastReceiver {
         if (nightDim != null) p.setNightDim("on".equals(nightDim));
         if (tasksPill != null) p.setTasksPill("on".equals(tasksPill));
         if (backSaver != null) p.setBackSaver("on".equals(backSaver));
+        if (fbHide != null) p.setFbHideDone("on".equals(fbHide));
+        if (kickoffOn != null) { if (kickoffOn.equals("on") || kickoffOn.equals("off")) p.setKickoff("on".equals(kickoffOn)); else { p.setKickoff(true); p.setKickoffWhistle("whistle".equals(kickoffOn)); } }
+        if (kickoffGoal != null) p.setKickoffGoal("on".equals(kickoffGoal));
+        if (kickoffEnd != null) p.setKickoffEnd("on".equals(kickoffEnd));
+        if (kickoffOver != null) p.setKickoffOver("on".equals(kickoffOver));
+        if (dateNum != null) p.setDateNum("on".equals(dateNum));
+        if (searchPill != null) p.setSearchPill("on".equals(searchPill));
         if (prayerMethod != null) p.setPrayerMethod(PrayerMethod.parse(prayerMethod));
         if (adj != null) p.setPrayerAdj(adj);
         if (hijriOffset != null) p.setHijriOffset(hijriOffset);
@@ -487,9 +553,14 @@ public class SaverReceiver extends BroadcastReceiver {
         if (digits != null) p.setDigits(digits);
         if (clock24 != null) p.setClock24("on".equals(clock24));
         if (ramtier != null) p.setRamTier(ramtier);
+        if (lite != null) p.setLite(lite);
         if (lang != null) p.setLang(lang);
         if (national != null) p.setNational(national);
         if (cardStyle != null) p.setCardStyle(cardStyle);
+        if (design != null) p.setDesign(design);
+        if (bar != null) p.setBar(bar);
+        if (barAt != null) p.setBarAt(barAt);
+        if (wxAt != null) p.setWxAt(wxAt);
         if (mkStyle != null) p.setMkStyle(mkStyle);
         if (markets != null) p.setMarkets(markets);
         if (mkBar != null) p.setMarketsOn("on".equals(mkBar));
@@ -635,16 +706,20 @@ public class SaverReceiver extends BroadcastReceiver {
             + "\npanel: " + p.panel() + "\npanel2: " + p.panel2()
             + "\nhome_panel: " + p.homePanel()
             + "\ngreeting: " + (p.greeting() ? "on" : "off")
+            + "\ngreetingname: " + (p.greetingName().isEmpty() ? "off" : p.greetingName())
             + "\nlistenpill: " + (p.listenPill() ? "on" : "off")
             + "\nhomephotos: " + (p.homePhotosSame() ? "same" : "own") + "\nhomepacks: " + (p.homePacksOn().isEmpty() ? "none" : PhotoPacks.joinOn(p.homePacksOn())) + "\nhomeours: " + (p.homeOursOn() ? "on" : "off") + "\nhomemine: " + (p.homeMine() == null ? "same" : p.homeMine()) + "\nalbummode: " + p.albumMode() + "\nalbumdate: " + (p.albumDate() ? "on" : "off") + "\nalbumtitle: " + (p.albumTitle() ? "on" : "off") + "\nalbumfit: " + p.albumFit() + "\nalbumsize: " + p.albumSize() + "\ncleartext: " + (p.clearText() ? "on" : "off") + "\nglow: " + p.glowMode()
-            + "\npillshidden: " + (p.pillsHidden().isEmpty() ? "none" : p.pillsHidden()) + "\nmatchapp: " + p.matchApp()
+            + "\npillshidden: " + (p.pillsHidden().isEmpty() ? "none" : p.pillsHidden()) + "\nmatchapp: " + p.matchApp() + "\nkeyapps: " + p.keyApps()
             + "\nupdatebell: " + (p.updateBell() ? "on" : "off")
             + "\nwatchnext: " + (p.watchNext() ? "on" : "off")
             + "\nappearance: " + p.appearance()
             + "\nlook: " + p.look()
             + "\naccent: " + (p.accent().isEmpty() ? "default" : p.accent()) + "\nbaropacity: " + p.barPercent() + "\nwalldim: " + p.wallDim() + "\nfocusstyle: " + p.focusStyle()
             + "\nlooksync: " + (p.lookSync() ? "on" : "off") + "\nsurface quick: " + p.surfacePercent(0) + " " + p.surfaceFill(0) + "\nsurface cards: " + p.surfacePercent(1) + " " + p.surfaceFill(1) + "\nsurface tray: " + p.surfacePercent(2) + " " + p.surfaceFill(2)
-            + "\nhomelayout: " + p.homeLayout()
+            + "\npreset: " + p.presetShow()
+            + "\ncouch: " + (!p.couchOn() ? "off" : "couch".equals(p.look3()) ? "on" : "on (custom)") + "\nhomelayout: " + p.homeLayout() + "\nbackground: " + p.homeBg() + "\nclock: " + p.homeClock() + "\nappsstyle: " + p.appsStyle()
+            + "\nscenepacks: " + Prefs.join(p.scenePacks(), ",") + "\nscenestay: " + p.sceneStay()
+            + "\nscenetime: " + (p.sceneByTime() ? "on" : "off") + "\nsceneweather: " + (p.sceneByWeather() ? "on" : "off")
             + "\nfavbar: " + p.favBar()
             + "\npagesdark: " + (p.pagesDark() ? "on" : "off")
             + "\nadhanbar: " + (p.adhanBar() ? "on" : "off")
@@ -654,7 +729,7 @@ public class SaverReceiver extends BroadcastReceiver {
             + "\nwxmore: " + (p.wxMore() ? "on" : "off") + "\nmonths: " + p.months() + "\nverse: " + p.quoteEvery()
             + "\nversekind: " + p.verseKind() + "\nseconds: " + (p.seconds() ? "on" : "off") + "\nbackexit: " + p.homeExit()
             + "\noccasion: " + (p.occasion() ? "on" : "off") + "\nnightdim: " + (p.nightDim() ? "on" : "off") + "\ntaskspill: " + (p.tasksPill() ? "on" : "off")
-            + "\nbacksaver: " + (p.backSaver() ? "on" : "off")
+            + "\nbacksaver: " + (p.backSaver() ? "on" : "off") + "\nfbhide: " + (p.fbHideDone() ? "on" : "off") + "\nkickoff: " + (!p.kickoff() ? "off" : p.kickoffWhistle() ? "on (whistle)" : "on (silent)") + "\nkickoffgoal: " + (p.kickoffGoal() ? "on" : "off") + "\nkickoffend: " + (p.kickoffEnd() ? "on" : "off") + "\nkickoffover: " + (p.kickoffOver() ? "on" : "off") + "\ndatenum: " + (p.dateNum() ? "on" : "off") + "\nsearchpill: " + (p.searchPill() ? "on" : "off")
             + "\nprayermethod: " + p.prayerMethod()
             + "\nprayeradj: " + (p.prayerAdjOn() ? "on" : "off") + " " + PrayerAdj.describe(p.prayerAdj())
             + "\nhijrioffset: " + HijriOffset.describe(p.hijriOffset())
@@ -663,9 +738,11 @@ public class SaverReceiver extends BroadcastReceiver {
             + "\ndigits: " + p.digits()
             + "\nclock24: " + ClockSetting.describe(p.clock24())
             + "\nramtier: " + p.ramTierSetting() + " (in use: " + new String[] {"low", "mid", "normal"}[Prefs.ramTier(c)] + ")"
+            + "\nlite: " + p.lite() + " (light now: " + (Prefs.lowRam(c) ? "yes" : "no") + ")"
             + "\nlang: " + p.lang()
             + "\nnational: " + p.national()
             + "\ncardstyle: " + p.cardStyle()
+            + "\ndesign: " + p.design() + "\nbar: " + p.bar() + "\nbarat: " + p.barAt() + "\nwx: " + p.wxAt()
             + "\nmarkets: " + (p.marketsOn() ? "" : "off ") + Prefs.join(p.markets(), ",") + "\nclocksize: " + p.clockSize() + "\nmkstyle: " + p.mkStyle()
             + "\nstocks: " + Prefs.join(p.stocks(), ",") + "\nstkchg: " + p.stkChg()
             + "\nslot: " + p.slot()

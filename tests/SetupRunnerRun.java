@@ -23,6 +23,10 @@ public class SetupRunnerRun {
         long clock;                 // added to now()
         final List<Runnable> laters = new ArrayList<>();
         SetupRunner.Preview seen;   // the start screen's plan, as the person saw it
+        String dropOn;              // 4.3.3: the first command containing this drops the connection (IOException), while drops are left
+        final List<Boolean> wanted = new ArrayList<>();   // 4.4: what the add-on was told (homeWanted)
+        public void homeWanted(boolean w) { wanted.add(w); }
+        int drops;
 
         Host(SetupEngineRun.FakeTv tv, SetupEngineRun.Mem store) { this.tv = tv; this.store = store; }
 
@@ -39,10 +43,14 @@ public class SetupRunnerRun {
                 lateLines = said.toString();
                 throw new IOException("debugging permission was not accepted on the TV");
             }
-            final SetupEngine e = new SetupEngine(tv, store, out, dead, ms -> { }, "2026-10-29 12:00:00");
+            final SetupEngine.Shell sh = cmd -> {
+                if (dropOn != null && drops > 0 && cmd.contains(dropOn)) { drops--; throw new IOException("Connection reset"); }
+                return tv.run(cmd);
+            };
+            final SetupEngine e = new SetupEngine(sh, store, out, dead, ms -> { }, "2026-10-29 12:00:00");
             return new SetupRunner.Session() {
                 public SetupEngine engine() { return e; }
-                public SetupEngine.Shell shell() { return tv; }
+                public SetupEngine.Shell shell() { return sh; }
                 public String exec(String command, java.io.InputStream data, long size) throws IOException {
                     execs.add(command);
                     long n = 0;
@@ -91,7 +99,7 @@ public class SetupRunnerRun {
             return new SetupInstall.Apks() {
                 public SetupInstall.Apk download(String url) {
                     downloads.add(url);
-                    String pkg = url.endsWith("urtv-screensaver.apk") ? "sa.urtv.screensaver" : url.contains("tv-bro") ? "com.phlox.tvwebbrowser" : url.contains("SmartTube") ? "org.smarttube.stable" : "x";
+                    String pkg = url.endsWith("urtv-screensaver.apk") ? "sa.urtv.screensaver" : url.endsWith("urtv-extras.apk") ? "sa.urtv.extras" : url.contains("tv-bro") ? "com.phlox.tvwebbrowser" : url.contains("SmartTube") ? "org.smarttube.stable" : "x";
                     final byte[] bytes = pkg.getBytes(java.nio.charset.StandardCharsets.UTF_8);
                     return new SetupInstall.Apk(pkg, 200, new java.util.HashSet<>(java.util.Collections.singleton(pkg.startsWith("sa.") ? apkSig : "cd".repeat(32))), bytes.length,
                         () -> { lastApk = bytes; return new java.io.ByteArrayInputStream(bytes); }, () -> { });
@@ -111,6 +119,13 @@ public class SetupRunnerRun {
     }
 
     static void line(String s) { System.out.println(s); }
+
+    /** the report's «Home:» value */
+    static String homeLine(String report) {
+        if (report == null) return "none";
+        for (String l : report.split("\n")) if (l.startsWith("Home: ")) return l.substring(6).trim();
+        return "none";
+    }
 
     /** Starts a run with the person at the TV (the host answers the start screen for them). */
     static SetupRunner.Start go(SetupRunner r, Host h, SetupRunner.Kind k, SetupRunner.Options o) {
@@ -168,6 +183,7 @@ public class SetupRunnerRun {
     }
 
     public static void main(String[] a) throws Exception {
+        SetupEngine.KEEP_STOCK_ON = false;   // these scenarios are the OLD switch's rules (the safe order, the wizard asked about the Wi-Fi); 4.3.2's keep-the-stock-home switch has its own scenarios (stockhome_test.py)
         line("PLAN " + String.join(",", SetupRunner.ids(SetupRunner.plan(SetupRunner.Kind.FULL))));
         // 1. the TV's button on a healthy TV: the five steps, in order, done; the end is the screen's old sentence; the key is let go once
         SetupRunner r = new SetupRunner();
@@ -224,7 +240,40 @@ public class SetupRunnerRun {
         go(r5, h5, SetupRunner.Kind.FULL, new SetupRunner.Options());
         Host h5b = new Host(SetupEngineRun.tv(), new SetupEngineRun.Mem()); h5b.refuse = "debugging permission was not accepted on the TV";
         SetupRunner r5b = new SetupRunner(); go(r5b, h5b, SetupRunner.Kind.UNDO, new SetupRunner.Options());
-        line("R5 " + r5.end().bad + " " + h5.finished + " " + r5.end().text.startsWith("تصحيح USB مطفأ") + " " + r5b.end().text.startsWith("لم تُقبل رسالة") + " running=" + r5.running());
+        line("R5 " + r5.end().bad + " " + h5.finished + " " + r5.end().text.startsWith("تصحيح USB مطفأ") + " " + r5b.end().text.equals(SetupRunner.NOT_ACCEPTED_TEXT) + " running=" + r5.running()
+            + " retry=" + r5.end().retry + "/" + r5b.end().retry);
+        // 5c. 4.4: «إلغاء» on the prompt (AdbClient ends the wait with CANCELLED): said plainly, «جهّز كل شي» again, nothing sent
+        SetupEngineRun.FakeTv t5c = SetupEngineRun.tv(); Host h5c = new Host(t5c, new SetupEngineRun.Mem()); h5c.refuse = AdbClient.CANCELLED;
+        SetupRunner r5c = new SetupRunner(); go(r5c, h5c, SetupRunner.Kind.FULL, new SetupRunner.Options());
+        line("R5c " + r5c.end().bad + " " + r5c.end().text.equals(SetupRunner.CANCELLED_TEXT) + " retry=" + r5c.end().retry
+            + " changes=" + (t5c.count("pm disable-user") + t5c.count("settings put") + t5c.count("cmd role add")) + " running=" + r5c.running());
+        // 5d. the rule: closed (focus back) + 6 s with no answer = «إلغاء»
+        SetupRunner r5d = new SetupRunner();
+        boolean d1 = r5d.promptCancelled(10_000);            // no prompt waiting
+        r5d.promptStartedForTest(1_000);
+        boolean d2 = r5d.promptCancelled(30_000);            // waiting, never seen closing
+        r5d.promptClosed(20_000);
+        boolean d3 = r5d.promptCancelled(25_000), d4 = r5d.promptCancelled(26_000);   // 5 s after it closed: not yet; 6 s: «إلغاء»
+        r5d.resetForTest();
+        boolean d5 = r5d.promptCancelled(40_000);            // the wait is over
+        line("R5d " + d1 + " " + d2 + " " + d3 + " " + d4 + " " + d5);
+        // 5e. 4.4 (step 88): the dialog never came (nothing covered the screen for 30 s): the wait ends with «ما ظهرت رسالة السماح؟…»; covered: it waits on
+        SetupRunner r5e = new SetupRunner();
+        r5e.promptStartedForTest(1_000);
+        boolean e1 = r5e.promptCancelled(30_000), e2 = r5e.promptCancelled(31_000);
+        String why5e = r5e.promptAbort();
+        SetupRunner r5f = new SetupRunner();
+        r5f.promptStartedForTest(1_000);
+        r5f.promptCoveredNow();
+        boolean f1 = r5f.promptCancelled(60_000);
+        line("R5e " + e1 + " " + e2 + " " + SetupRunner.NO_DIALOG_TEXT.equals(why5e) + " covered=" + f1 + " retry=" + new SetupRunner.End(SetupRunner.NO_DIALOG_TEXT, true).retry);
+        // the end sentence names what did not finish (no «التفاصيل فوق»)
+        java.util.List<SetupRunner.Step> ends = new java.util.ArrayList<>();
+        SetupRunner.Step sA = new SetupRunner.Step("home"); sA.state = SetupRunner.State.FAILED; sA.reason = "ما قدرنا.";
+        SetupRunner.Step sB = new SetupRunner.Step("extras"); sB.state = SetupRunner.State.SKIPPED; sB.reason = "";
+        SetupRunner.Step sC = new SetupRunner.Step("tweaks"); sC.state = SetupRunner.State.DONE;
+        ends.add(sA); ends.add(sB); ends.add(sC);
+        line("R5g " + SetupRunner.because(ends));
         // 6. the undo through the runner: one step, the old sentence
         SetupRunner r6 = new SetupRunner();
         SetupEngineRun.FakeTv t6 = SetupEngineRun.tv(); SetupEngineRun.Mem m6 = new SetupEngineRun.Mem(); Host h6 = new Host(t6, m6);
@@ -575,6 +624,81 @@ public class SetupRunnerRun {
         String st32 = states(r32b);
         line("R32 resumesAtBoot=" + resumes + " saidBeforeWait=" + saidFirst[0] + " resumed=" + resumed + " " + st32.substring(0, st32.indexOf(",grants"))
             + " kinds=[" + (after32.get("measure-kinds.txt") == null ? "" : after32.get("measure-kinds.txt").trim().split("\n")[0]) + "]");
+        // 33 (4.3.3). the TV's adb drops in the precheck (a Skyworth on Android 14, three times): a new connection, the step again, the run goes on to the end
+        SetupEngineRun.FakeTv t33 = SetupEngineRun.tv(); SetupEngineRun.Mem m33 = new SetupEngineRun.Mem(); Host h33 = new Host(t33, m33);
+        h33.dropOn = "getprop"; h33.drops = 1;
+        SetupRunner r33 = new SetupRunner();
+        go(r33, h33, SetupRunner.Kind.FULL, new SetupRunner.Options());
+        StringBuilder said33 = new StringBuilder(); for (SetupRunner.Line l : r33.linesSince(0)) said33.append(l.text).append('\n');
+        line("R33 opens=" + h33.opens + " done=" + states(r33).equals(FULLDONE(r33)) + " said=" + said33.toString().contains(SetupRunner.RECONNECT_LINE)
+            + " stamped=" + (m33.get(SetupReport.STEPS) != null && m33.get(SetupReport.STEPS).contains("reconnect precheck (the connection)")) + " bad=" + r33.end().bad);
+        // 33b. it keeps dropping: twice again at most, then it stops as before (the pointer kept for «جهّز كل شي», no boot resumes it by itself)
+        SetupEngineRun.Mem m33b = new SetupEngineRun.Mem(); Host h33b = new Host(SetupEngineRun.tv(), m33b); h33b.dropOn = "getprop"; h33b.drops = 99;
+        SetupRunner r33b = new SetupRunner();
+        go(r33b, h33b, SetupRunner.Kind.FULL, new SetupRunner.Options());
+        line("R33b opens=" + h33b.opens + " bad=" + r33b.end().bad + " pointer=" + SetupRunner.resumable(m33b) + " boot=" + SetupRunner.cutByRestart(m33b));
+        // 33c. a drop in the home switch (not a step to run twice) is never run again by itself
+        SetupEngineRun.FakeTv t33c = SetupEngineRun.tv(); SetupEngineRun.Mem m33c = new SetupEngineRun.Mem(); Host h33c = new Host(t33c, m33c);
+        h33c.dropOn = "cmd role add-role-holder --user 0 android.app.role.HOME sa.urtv.home"; h33c.drops = 1;
+        SetupRunner r33c = new SetupRunner();
+        go(r33c, h33c, SetupRunner.Kind.FULL, new SetupRunner.Options());
+        line("R33c " + !states(r33c).contains("home:DONE") + " reconnects=" + (m33c.get(SetupReport.STEPS) != null && m33c.get(SetupReport.STEPS).contains("reconnect home")));
+        // 34 (4.3.3). a restart nobody asked for cut a run in the middle (live=1, no await): the boot resumes it, twice at most; a run that ended is never resumed by a boot
+        SetupEngineRun.Mem m34 = new SetupEngineRun.Mem();
+        m34.put(SetupRunner.STATE_FILE, "kind=FULL\nextras=1\nat=tweaks\nphase=started\ntime=" + System.currentTimeMillis() + "\nlive=1\ns.precheck=DONE\t\ns.backup=DONE\t\n");
+        boolean b1 = SetupRunner.resumeAtBoot(m34), b2 = SetupRunner.resumeAtBoot(m34), b3 = SetupRunner.resumeAtBoot(m34);
+        SetupEngineRun.Mem m34e = new SetupEngineRun.Mem();
+        m34e.put(SetupRunner.STATE_FILE, "kind=FULL\nextras=1\nat=tweaks\nphase=started\ntime=" + System.currentTimeMillis() + "\ns.precheck=DONE\t\n");
+        SetupEngineRun.Mem m34w = new SetupEngineRun.Mem();
+        m34w.put(SetupRunner.STATE_FILE, "kind=FULL\nextras=1\nat=home\nphase=paused\ntime=" + System.currentTimeMillis() + "\nawait=wifi\n");
+        line("R34 " + b1 + " " + b2 + " " + b3 + " keyKept=" + SetupRunner.awaiting(m34e) + "/" + SetupRunner.awaiting(new SetupEngineRun.Mem()) + " ended=" + SetupRunner.resumeAtBoot(m34e) + " wifi=" + SetupRunner.resumeAtBoot(m34w));
+        // 34b. the resumed run goes on from its pointer to the end
+        SetupEngineRun.FakeTv t34 = SetupEngineRun.tv(); SetupEngineRun.Mem m34r = new SetupEngineRun.Mem(); Host h34 = new Host(t34, m34r);
+        m34r.put(SetupRunner.STATE_FILE, "kind=FULL\nextras=0\nat=tweaks\nphase=started\ntime=" + System.currentTimeMillis() + "\nlive=1\nauto=1\ns.precheck=DONE\t\ns.backup=DONE\t\ns.keep=DONE\t\ns.before=DONE\t\ns.grants=DONE\t\ns.safe=DONE\t\ns.community=DONE\t\n");
+        boolean at34 = SetupRunner.resumeAtBoot(m34r);
+        SetupRunner r34 = new SetupRunner();
+        boolean res34 = resume(r34, h34);
+        String st34 = states(r34);
+        line("R34b " + at34 + " " + res34 + " " + st34.substring(st34.indexOf("tweaks:"), st34.indexOf(",", st34.indexOf("tweaks:"))) + " home=" + st34.substring(st34.indexOf("home:"), st34.indexOf(",", st34.indexOf("home:"))) + " cleared=" + m34r.get(SetupRunner.STATE_FILE).isEmpty());
+        SetupEngine.KEEP_STOCK_ON = true;   // 4.4: the switch of today (the stock home stays on)
+        // 35 (4.4). a Google TV whose launcherx keeps the Home key whatever the role says: «جهّز كل شي» installs «إضافات تلفزيونك», turns it on over the TV's adb, and the Home key is checked the person's way
+        SetupEngineRun.FakeTv t35 = SetupEngineRun.tv(); t35.refuseSwitch = true; SetupEngineRun.Mem m35 = new SetupEngineRun.Mem(); Host h35 = new Host(t35, m35);
+        SetupRunner r35 = new SetupRunner();
+        go(r35, h35, SetupRunner.Kind.FULL, new SetupRunner.Options());
+        String st35 = states(r35);
+        if (System.getProperty("debug35") != null) for (SetupRunner.Line l : r35.linesSince(0)) System.out.println("L35 " + l.text);
+        line("R35 " + st35.substring(st35.indexOf("home:"), st35.indexOf(",", st35.indexOf("home:"))) + " extras=" + t35.installed.contains("sa.urtv.extras")
+            + " listed=" + t35.settings.getOrDefault("secure/enabled_accessibility_services", "").contains("ExtrasA11yService") + " switch=" + t35.settings.get("secure/accessibility_enabled")
+            + " role=" + t35.roleHolder + " stockOff=" + t35.off.contains(t35.stockPkg) + " wizardOff=" + t35.off.contains("com.google.android.tungsten.setupwraith")
+            + " fails=" + (m35.get(HomeFails.FILE) == null ? "none" : m35.get(HomeFails.FILE).trim()) + " reportHome=" + homeLine(m35.get(SetupReport.FILE)) + " safety=" + h35.dead.armed + "/" + h35.dead.disarmed);
+        // 35b. the TV refuses the first bind (TclAppBoot): the list off and on again, then it binds
+        SetupEngineRun.FakeTv t35b = SetupEngineRun.tv(); t35b.refuseSwitch = true; t35b.refuseBinds = 1; SetupEngineRun.Mem m35b = new SetupEngineRun.Mem(); Host h35b = new Host(t35b, m35b);
+        SetupRunner r35b = new SetupRunner();
+        go(r35b, h35b, SetupRunner.Kind.FULL, new SetupRunner.Options());
+        String st35b = states(r35b);
+        line("R35b " + st35b.substring(st35b.indexOf("home:"), st35b.indexOf(",", st35b.indexOf("home:"))) + " puts=" + t35b.extrasListPuts);
+        line("R35w told=" + h35b.wanted + " back=" + t35b.count("am start --activity-reorder-to-front -n sa.urtv.home/.setup.SetupActivity"));
+        // 35c. it never binds: said plainly, the stock home given Home back (never turned off), counted; the rest of the run done
+        SetupEngineRun.FakeTv t35c = SetupEngineRun.tv(); t35c.refuseSwitch = true; t35c.refuseBinds = 99; SetupEngineRun.Mem m35c = new SetupEngineRun.Mem(); Host h35c = new Host(t35c, m35c);
+        SetupRunner r35c = new SetupRunner();
+        go(r35c, h35c, SetupRunner.Kind.FULL, new SetupRunner.Options());
+        String st35c = states(r35c);
+        StringBuilder said35c = new StringBuilder(); for (SetupRunner.Line l : r35c.linesSince(0)) said35c.append(l.text).append('\n');
+        line("R35c " + st35c.substring(st35c.indexOf("home:"), st35c.indexOf(",", st35c.indexOf("home:"))) + " said=" + said35c.toString().contains("ما قدرنا نخلي زر الرئيسية يفتح تلفزيونك على هذا التلفزيون")
+            + " role=" + t35c.roleHolder + " stockOff=" + t35c.off.contains(t35c.stockPkg) + " fails=" + m35c.get(HomeFails.FILE).trim() + " after=" + st35c.contains("after:DONE") + " reportHome=" + homeLine(m35c.get(SetupReport.FILE)) + " safety=" + h35c.dead.armed + "/" + h35c.dead.disarmed);
+        // 35d. «تراجع» after 35: the add-on's service leaves the list (the TV had none: the switch back as it was)
+        SetupRunner r35d = new SetupRunner();
+        go(r35d, h35, SetupRunner.Kind.UNDO, new SetupRunner.Options());
+        line("R35d " + states(r35d) + " listed=" + t35.settings.getOrDefault("secure/enabled_accessibility_services", "none") + " switch=" + t35.settings.getOrDefault("secure/accessibility_enabled", "none"));
+        // 35e. 4.4 (step 88 T8): «تراجع» on a TV whose add-on was turned on elsewhere (dock.sh, an older build: nothing recorded): ours leaves the list, the TV's other service stays; the add-on hears «wanted no»
+        SetupEngineRun.FakeTv t35e = SetupEngineRun.tv(); SetupEngineRun.Mem m35e = new SetupEngineRun.Mem(); Host h35e = new Host(t35e, m35e);
+        t35e.settings.put("secure/enabled_accessibility_services", "com.example.keys/.Svc:" + sa.urtv.home.ExtrasWords.SERVICE);
+        t35e.settings.put("secure/accessibility_enabled", "1");
+        m35e.put(SetupEngine.HOME_WANTED, "1");
+        SetupRunner r35e = new SetupRunner();
+        go(r35e, h35e, SetupRunner.Kind.UNDO, new SetupRunner.Options());
+        line("R35e listed=" + t35e.settings.get("secure/enabled_accessibility_services") + " switch=" + t35e.settings.get("secure/accessibility_enabled") + " wanted=" + m35e.get(SetupEngine.HOME_WANTED));
+        SetupEngine.KEEP_STOCK_ON = false;
         line("R12 " + states(r12) + " backup=" + m12.get("backup.txt") + " changes=" + (t12.count("pm disable-user") + t12.count("settings put") + t12.count("cmd role add") + t12.count("appops set") + t12.count("pm grant") + t12.count("pm enable"))
             + " " + r12.end().bad + " " + r12.end().text);
     }

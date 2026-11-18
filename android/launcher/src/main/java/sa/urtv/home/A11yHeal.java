@@ -25,7 +25,8 @@ import java.util.List;
  */
 public final class A11yHeal extends BroadcastReceiver {
     static final String TAG = "UrTVA11y";
-    static final String TYPE = "sa.urtv.home/sa.urtv.home.TypeService", SLEEP = "sa.urtv.home/sa.urtv.home.SleepService";
+    /** 4.3.3: the one service is the add-on's («إضافات تلفزيونك», ExtrasWords.SERVICE); the home has none. The check heals it after the add-on's own update too, at the home's next start or boot. */
+    static final String TYPE = ExtrasWords.SERVICE, SLEEP = ExtrasWords.SERVICE;
     private static final String LIST = Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES, SWITCH = Settings.Secure.ACCESSIBILITY_ENABLED;
     /** time for Android to bind a service it is going to bind anyway, before we judge it is not running */
     private static final long SETTLE_MS = 8_000;
@@ -60,18 +61,23 @@ public final class A11yHeal extends BroadcastReceiver {
     /** One of our services is in the TV's list but Android does not run it (the phone page says so instead of doing nothing). */
     public static boolean stuck(Context c) {
         String list = read(c, LIST);
-        return (A11yList.has(list, TYPE) && !TypeService.enabled()) || (A11yList.has(list, SLEEP) && !SleepService.enabled());
+        return A11yList.has(list, TYPE) && !Extras.enabled();
     }
+
+    /** 4.4: «إضافات تلفزيونك» is in the TV's list (turned on), bound or not */
+    static boolean listed(Context c) { return A11yList.has(read(c, LIST), TYPE); }
+
+    /** 4.4: we may write the list (WRITE_SECURE_SETTINGS, granted with Family DNS): then a refused or lost bind is healed by us, else the person turns it off and on */
+    static boolean canHeal(Context c) { return c.checkSelfPermission(android.Manifest.permission.WRITE_SECURE_SETTINGS) == PackageManager.PERMISSION_GRANTED; }
 
     /** Our service is in the list AND Android runs it (bound): the carry's accessibility stage is done only then. */
     static boolean listedAndBound(Context c) {
         String list = read(c, LIST);
-        boolean typeOk = A11yList.has(list, TYPE) && TypeService.enabled(), sleepOk = A11yList.has(list, SLEEP) && SleepService.enabled();
-        return (A11yList.has(list, TYPE) || A11yList.has(list, SLEEP)) && !stuck(c) && (typeOk || sleepOk);
+        return A11yList.has(list, TYPE) && Extras.enabled();
     }
 
     static void check(Context c, String why) {
-        if (!"boot".equals(why)) {   // our own update: the mute and our entry as they were right before it (UpdateCarry), before the check below
+        if (!"boot".equals(why) && !why.startsWith("fix")) {   // (4.4: «fix-…», the add-on's bind healed from the offer or the bar, is no update) our own update: the mute and our entry as they were right before it (UpdateCarry), before the check below
             try { UpdateCarry.after(c, why); } catch (RuntimeException e) { Log.w(TAG, "carry " + why + " failed: " + e.getClass().getSimpleName()); }
         }
         try {

@@ -106,13 +106,14 @@ final class ClockZone {
             case "Africa/Casablanca": case "Africa/El_Aaiun": return "حساب المغرب";
             case "Africa/Algiers": return "حساب الجزائر";
             case "Africa/Tunis": return "حساب تونس";
+            case "Africa/Tripoli": return "حساب ليبيا";
             default: return "";
         }
     }
 
     /** «بتوقيت المنامة · حساب الخليج»; with Umm al-Qura «بتوقيت الرياض» as it always was. */
     static String label(String city, String calendar) {
-        return label(city) + (calendar.isEmpty() ? "" : " · " + S.tv(calendar));   // the calculations' names: the page's words (i18n/en/page.tsv)
+        return label(city) + (calendar.isEmpty() ? "" : S.sep() + S.tv(calendar));   // the calculations' names: the page's words (i18n/en/page.tsv)
     }
 
     /** The line shows when the city's clock is not the TV's, or when the calculation is not Umm al-Qura (its name is then worth saying). */

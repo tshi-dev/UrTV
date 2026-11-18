@@ -24,7 +24,23 @@ final class GameRegistry {
         new Game("letter-hive", "خلية الحروف", "فريقان يتسابقان على وصل الخلية", "LetterHiveActivity", false, true),
         new Game("word5", "خمّن الكلمة", "كلمة من خمسة حروف في ست محاولات", "Word5Activity", false, true),
         new Game("domino", "دومينو", "الدومينو كما تعرفونه، بالريموت", "DominoActivity", false, true),
+        new Game("forehead", "على جبيني", "الجوال على جبينك، والفريق يوصف لك الكلمة", "ForeheadActivity", true, true),
+        new Game("author", "من كاتبها؟", "الكل يكتب إجابة، وتخمّنون من كتبها", "AuthorActivity", true, true),
+        new Game("closest", "أقرب رقم", "خمّنوا الرقم، والأقرب يكسب", "ClosestActivity", true, true),
+        new Game("liar", "واحد يكذب", "ثلاثة يحكون وواحد منهم يكذب، فمن هو؟", "LiarActivity", true, true),
+        new Game("emoji", "اقرأ الإيموجي", "إيموجي يدل على كلمة، والأسرع يعرفها", "EmojiActivity", true, true),
+        new Game("link", "اربط الكلمات", "تلميح بكلمة واحدة يربط كلمات فريقك على اللوحة", "LinkActivity", true, true),
+        new Game("night", "ليل القرية", "ذئاب بين القرويين، من يكشفهم؟", "NightActivity", true, true),
+        new Game("draw", "ارسم وخمّن", "ارسم بإصبعك والباقي يخمّن", "DrawActivity", true, true),
+        new Game("quran-verse", "كمّل الآية", "أكمل الآية من أربعة خيارات", "QuranVerseActivity", true, true),
+        new Game("maths", "سباق الحساب", "أسرع من يحسب أولًا", "MathActivity", true, true),
+        new Game("logic", "ألغاز المنطق", "فكّروا قبل أن يسبقكم غيركم", "LogicActivity", true, true),
+        new Game("packs", "حزم المحتوى", "حجم ما حمّلتموه من الألعاب، واحتفظوا به أو احذفوه", "GamePacksActivity", false, true),
     };
+
+    /** the games that can be played with the phones (every game that has a phone mode: «الأسرع», the party games and the older games' phase 1): the list's tag and the «بالجوالات» filter use this list, so every game with the phone picture stays when the list is filtered; a game whose phone mode is added later goes here */
+    static final String[] PHONE_GAMES = {"quiz", "khanat", "missing-word", "letter-hive", "word5", "odd-one", "charades", "domino", "forehead", "author", "closest", "liar", "emoji", "link", "night", "draw", "quran-verse", "maths", "logic"};
+    static boolean inPhones(String id) { for (String g : PHONE_GAMES) if (g.equals(id)) return true; return false; }
 
     static Game byId(String id) { for (Game g : ALL) if (g.id.equals(id)) return g; return null; }
 

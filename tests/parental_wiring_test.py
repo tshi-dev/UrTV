@@ -33,7 +33,7 @@ def guarded_near(lines, i, back=3):
     return any("guarded(" in lines[k] or "launchGuarded(" in lines[k] for k in range(max(0, i - back), i + 1))
 
 # ---- 1. every way in asks
-sites = {"launch": {"launchGuarded", "openPackage", "startSaver", "openPassthroughInput", "openUpdates"},   # the helpers a guarded call reaches (openUpdates: the bell, which calls it only from guarded(...))
+sites = {"launch": {"launchGuarded", "openPackage", "startSaver", "openPassthroughInput", "openUpdates", "openSafePage"},   # the helpers a guarded call reaches (openUpdates: the bell, which calls it only from guarded(...)); openSafePage (4.3.5): the crash-loop page, which a dying home cannot put behind a PIN
          "openPackage": {"startSaver", "openPassthroughInput"}, "startSaver": set(), "openPassthroughInput": {"showInputsNow"},
          "showSleep": set(), "openUpdates": set(), "showInputsNow": set(), "showAppMenuNow": set()}
 for fn, inner in sites.items():
@@ -86,7 +86,8 @@ check("the home screen hands its own AdhanKeys to the keypad", "Parental.guard(t
 dispatch = "\n".join(main).split("private boolean dispatchKey(KeyEvent e) {")[1]
 check("the home screen still asks the adhan first of everything", dispatch.lstrip().startswith("// while the adhan plays") and "if (adhanTakes(e)) return true;" in dispatch[:400])
 check("adhanTakes is the adhan's old rule, unchanged: AdhanKeys.decide, then stopAdhan",
-      "adhanKeys.decide(e.getKeyCode(), e.getAction(), e.getRepeatCount(), adhan, adhanBar.getVisibility() == View.VISIBLE," in "\n".join(main)
+      # 4.4: a dua's card counts as the bar (its «إيقاف» focused is the bar focused); the rule itself is AdhanKeys' unchanged
+      "adhanKeys.decide(e.getKeyCode(), e.getAction(), e.getRepeatCount(), adhan, adhanBar.getVisibility() == View.VISIBLE || card," in "\n".join(main)
       and "if (stop == AdhanKeys.STOP) NowPlaying.stopAdhan(this);" in "\n".join(main))
 for n in ("ParentalActivity.java", "DockActivity.java"):
     check(f"{n}: its PIN keypad has the adhan's rule too", "Parental.adhanFirst(this)" in src(n) or "adhan = Parental.adhanFirst(this)" in src(n))
@@ -107,8 +108,9 @@ check("the lock never decides about tilawah's pages: the adhan's own screen (Adh
 
 # ---- 4. no accessibility service; the PIN is only a hash
 manifest_text = MAN.read_text(encoding="utf-8")
-check("only two accessibility services, both owner-enabled and named: the sleep one (reads nothing) and the phone remote's typing one",
-      manifest_text.count("android.accessibilityservice.AccessibilityService") == 2 and '".SleepService"' in manifest_text and '".TypeService"' in manifest_text)
+check("4.3.3: no accessibility service in the home; the one service is in the optional add-on «إضافات تلفزيونك», turned on by the owner",
+      manifest_text.count("android.accessibilityservice.AccessibilityService") == 0 and "accessibilityservice" not in manifest_text
+      and (ROOT / "android/extras/src/main/AndroidManifest.xml").read_text(encoding="utf-8").count("android.accessibilityservice.AccessibilityService") == 1)   # 4.3.3: none in the home, one in «إضافات تلفزيونك»
 check("no file of the family lock reads another app's screen or windows", not re.search(r"AccessibilityService|AccessibilityEvent|getRootInActiveWindow|UsageStats|getRunningTasks|FLAG_SECURE",
       "".join(src(n) for n in ("Parental.java", "PinPrompt.java", "PinUi.java", "ParentalActivity.java", "ParentalPolicy.java"))))
 check("the PIN is only ever passed to PinCrypto (create / verify)", not re.search(r'putString\([^)]*(code|first|second|pin)\b', parental))

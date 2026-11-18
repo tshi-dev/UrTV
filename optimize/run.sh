@@ -8,6 +8,9 @@
 #                              becomes summary-<n>.md so the new run's before/after starts clean)
 #   SKIP_LAUNCHER=1 optimize/run.sh   keep the TV's own home screen (firmware that won't let another app be Home)
 #   SKIP_EXTRAS=1 optimize/run.sh     without TV Bro and SmartTube
+#   optimize/run.sh --measure  4.4: the full before/after measure (a restart and 3 minutes each, and both screensavers' readings);
+#                              by default one quick reading before and one after (no restart, about 1 minute each), and the
+#                              screensavers' readings only on a weak TV (under 2.5 GB), where ours can be heavy. URTV_MEASURE=1 is the same.
 #   (a different TV than the one the setup started on is refused; for a new TV: optimize/venv/bin/python -I optimize/tv.py --new-tv)
 # Before: optimize/setup.sh and optimize/find-tv.sh. Optional packages the household gave up go in
 # optimize/lists/mine.txt (one per line, picked from lists/tcl-optional.txt) before running.
@@ -17,6 +20,10 @@ cd "$(dirname "$0")/.."
 PY="${PY:-optimize/venv/bin/python}"
 RUN=optimize/run
 mkdir -p "$RUN"
+# 4.4: --measure anywhere in the arguments (taken out of them): the full measure
+args=(); for a in "$@"; do if [ "$a" = --measure ]; then URTV_MEASURE=1; else args+=("$a"); fi; done
+set -- "${args[@]+"${args[@]}"}"
+MEASURE="${URTV_MEASURE:-0}"
 tv() { "$PY" -I optimize/tv.py "$@"; }
 # an app's version as the report says it: the name (4.0) and, from versionCode, the build: «4.0 (build 151)»
 appver() {
@@ -69,8 +76,8 @@ title() {
     probe)       echo "Connect and identify the TV" ;;
     backup)      echo "Save the TV's current state" ;;
     keep)        echo "Turn protected features back on if anything turned them off" ;;
-    before)      echo "Measure before (restart + 3 min)" ;;
-    before-saver) echo "Measure the TV's own screensaver (1 min)" ;;
+    before)      if [ "$MEASURE" = 1 ]; then echo "Measure before (restart + 3 min)"; else echo "Measure before (quick, about 1 min)"; fi ;;
+    before-saver) echo "Measure the TV's own screensaver (1 min; by default only on a weak TV)" ;;
     safe)        echo "Disable telemetry, ads and demos (lists/tcl-safe.txt)" ;;
     mine)        echo "Disable the household's optional picks (lists/mine.txt)" ;;
     community)   echo "A community list, if this model has one and ours doesn't know it" ;;
@@ -79,8 +86,8 @@ title() {
     launcher)    echo "Install the home screen (safety switch on)" ;;
     extras)      echo "Install TV Bro (web browser) and SmartTube (YouTube without ads)" ;;
     autostart)   echo "Let TCL start our apps at boot (auto-start)" ;;
-    after)       echo "Measure after (restart + 3 min)" ;;
-    after-saver) echo "Measure our screensaver (1 min)" ;;
+    after)       if [ "$MEASURE" = 1 ]; then echo "Measure after (restart + 3 min)"; else echo "Measure after (quick, about 1 min)"; fi ;;
+    after-saver) echo "Measure our screensaver (1 min; by default only on a weak TV)" ;;
     report)      echo "Write the report" ;;
   esac
 }
@@ -181,6 +188,14 @@ report() {
   echo "Undo everything: optimize/reset.sh"
 }
 
+# 4.4: the two screensavers' readings: with --measure, or on a weak TV (MemTotal under 2.5 GB in the «before» reading, Ram.low's line), where
+# ours can be heavy (heavy.py's advice needs both); a «before» that did not say the memory counts as weak (measured, as before)
+saver_measure() {
+  [ "$MEASURE" = 1 ] && return 0
+  local kb; kb=$(sed -n 's/^MemTotal:[[:space:]]*\([0-9][0-9]*\).*/\1/p' "$RUN/ram-before.txt" 2> /dev/null | head -1)
+  [ -z "$kb" ] || [ "$kb" -lt 2621440 ]
+}
+
 do_step() {
   case "$1" in
     precheck)    rc=0; optimize/precheck.sh > "$RUN/precheck.txt" 2>&1 || rc=$?   # 3: not an Android TV, stop (nothing was changed)
@@ -200,8 +215,9 @@ do_step() {
                    cp "$newest" "$RUN/backup.txt"
                  fi ;;
     keep)        optimize/keep.sh | tee "$RUN/keep.txt" ;;
-    before)      optimize/measure.sh before ;;
-    before-saver) optimize/measure.sh before-screensaver --screensaver ;;
+    before)      if [ "$MEASURE" = 1 ]; then optimize/measure.sh before; else optimize/measure.sh before --quick; fi ;;
+    before-saver) if saver_measure; then optimize/measure.sh before-screensaver --screensaver
+                 else echo "   skipped: not a weak TV (2.5 GB or more), so ours is not heavy here (the full measure: optimize/run.sh --measure)"; fi ;;
     safe)        check_list optimize/lists/tcl-safe.txt
                  optimize/disable.sh optimize/lists/tcl-safe.txt > /dev/null ;;
     mine)        if [ -s optimize/lists/mine.txt ]; then
@@ -217,8 +233,9 @@ do_step() {
                  else optimize/install.sh launcher; fi ;;
     extras)      if [ "${SKIP_EXTRAS:-}" = 1 ]; then echo "   skipped (SKIP_EXTRAS=1)"; else optimize/install.sh extras; fi ;;
     autostart)   optimize/autostart.sh ;;
-    after)       optimize/measure.sh after ;;
-    after-saver) optimize/measure.sh after-screensaver --screensaver ;;
+    after)       if [ "$MEASURE" = 1 ]; then optimize/measure.sh after; else optimize/measure.sh after --quick; fi ;;
+    after-saver) if saver_measure; then optimize/measure.sh after-screensaver --screensaver
+                 else echo "   skipped: not a weak TV (2.5 GB or more), so ours is not heavy here (the full measure: optimize/run.sh --measure)"; fi ;;
     report)      report > "$RUN/report.md"; cat "$RUN/report.md" ;;
   esac
 }
@@ -248,16 +265,45 @@ fi
 # A home switch that a restart cut off is undone from its journal first (see optimize/home-journal.sh). Never stops the run.
 jrecover || true
 
+# 4.4 setup speed: our APKs are downloaded in the background while the first steps run (the measure, the lists), so «screensaver» and «launcher»
+# find them ready (install.sh prefetch; a step that comes first downloads its own as before). Only while one of those steps is still to do.
+if [ ! -f "$RUN/.done-screensaver" ] || [ ! -f "$RUN/.done-launcher" ]; then
+  optimize/install.sh prefetch > "$RUN/prefetch.log" 2>&1 &
+fi
+
+# 4.4 (reports: 0-4 ADB drops a run; a Skyworth stopped at «screensaver» and «launcher» and waited 12 and 30 minutes to be run again): a step that
+# stopped ONLY because the TV stopped answering (tv.py gave up after its tries, or an install the TV went silent on) is not left for someone to
+# notice: the run waits for the TV (tv.py --wait, up to 10 minutes; a Wireless-debugging port is looked up again) and runs the same step once more,
+# as «run the same command again» would. Every step is safe to repeat (each checks what is done already). Any other stop, a !! line that asks for
+# something, the Wi-Fi pause (5), a command that may or may not have run: stops as before.
+DROPPED='^!! TV not answering after [0-9]+ tries|^!! The TV stopped answering while [^ ]+ was installing'
+run_step() {   # $1 step: its exit code; what it printed is also kept in the run folder's .step-out
+  local rc=0
+  set +e
+  ( set -e; do_step "$1" ) 2>&1 | tee "$RUN/.step-out"
+  rc=${PIPESTATUS[0]}
+  set -e
+  return "$rc"
+}
 for s in "${STEPS[@]}"; do
   [ -f "$RUN/.done-$s" ] && continue
   current=$s
   echo
   echo "▶ $(title "$s")"
   stamp "start $s"
-  do_step "$s"
+  rc=0; run_step "$s" || rc=$?
+  if [ "$rc" = 1 ] && grep -qE "$DROPPED" "$RUN/.step-out"; then
+    stamp "dropped $s (waiting for the TV, then the step again)"
+    echo "The TV stopped answering during this step: waiting for it (up to 10 minutes), then the same step again."
+    if tv --wait; then
+      rc=0; run_step "$s" || rc=$?
+    fi
+  fi
+  [ "$rc" = 0 ] || exit "$rc"
   touch "$RUN/.done-$s"
   stamp "done $s"
 done
+rm -f "$RUN/.step-out"
 # the heavy-screensaver line is advice for the owner, not a failure: it is shown but does not stop the run
 ADVICE='the screensaver may slow this TV'
 if grep '!!' "$RUN/report.md" | grep -qv "$ADVICE"; then

@@ -86,6 +86,21 @@ final class MissingWord {
         Object a = ((List<?>) o).get(0), b = ((List<?>) o).get(1);
         return a instanceof String && b instanceof String ? new String[]{(String) a, (String) b} : null;
     }
+    /** a word the way two spellings of it meet: no marks, no tatweel, alef forms are ا, ى is ي, ة is ه, case folded, the «ال» of a definite word and spaces dropped */
+    static String fold(String w) {
+        if (w == null) return "";
+        StringBuilder b = new StringBuilder();
+        for (int i = 0; i < w.length(); i++) {
+            char c = w.charAt(i);
+            if (Character.getType(c) == Character.NON_SPACING_MARK || c == '\u0640' || Character.isWhitespace(c)) continue;
+            b.append(c == 'أ' || c == 'إ' || c == 'آ' || c == 'ٱ' ? 'ا' : c == 'ى' ? 'ي' : c == 'ة' ? 'ه' : Character.toLowerCase(c));
+        }
+        String r = b.toString();
+        return r.length() > 3 && r.startsWith("ال") ? r.substring(2) : r;
+    }
+    /** the word typed on a phone is the hidden word (spelling variants meet; a different word does not) */
+    static boolean sameWord(String typed, String word) { String t = fold(typed); return !t.isEmpty() && t.equals(fold(word)); }
+
     static boolean oneBlank(String s) { int i = s.indexOf(BLANK); return i >= 0 && s.indexOf(BLANK, i + BLANK.length()) < 0; }
     private static boolean arabic(String s) { for (int i = 0; i < s.length(); i++) { char c = s.charAt(i); if (c >= 0x0600 && c <= 0x06FF) return true; } return false; }
 

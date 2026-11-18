@@ -40,6 +40,47 @@ final class Own {
 
     static File file(Context c, int n) { return new File(dir(c), n + ".jpg"); }
 
+    /** 4.4: photo n's mask for the glass clock (docs/OWN-PHOTO-MASK.md), a PNG beside it; it moves and goes with its photo */
+    static File mask(Context c, int n) { return new File(dir(c), n + ".mask.png"); }
+
+    /** a mask is taken only for the photo added last, and only this soon after it (the phone sends the two one after the other) */
+    static final long MASK_WINDOW_MS = 2 * 60 * 1000;
+
+    /**
+     * 4.4: keeps png as the mask of the last photo: null, or why not ("late": no photo was just added; "shape": not the photo's shape within 2 %;
+     * "tones": not mostly black and white, or all one of them; "cover": the scenery too little or too much, or no sky along the top; "edge": its top
+     * edge ragged; "bad": not a PNG). The shape is the photo's, the size any. The checks are MaskCheck's, the light form of our cut-outs' gate.
+     */
+    static synchronized String addMask(Context c, byte[] png) {
+        int n = count(c);
+        File photo = file(c, n);
+        if (n == 0 || System.currentTimeMillis() - photo.lastModified() > MASK_WINDOW_MS) return "late";
+        android.graphics.BitmapFactory.Options b = new android.graphics.BitmapFactory.Options();
+        b.inJustDecodeBounds = true;
+        android.graphics.BitmapFactory.decodeByteArray(png, 0, png.length, b);
+        android.graphics.BitmapFactory.Options p = new android.graphics.BitmapFactory.Options();
+        p.inJustDecodeBounds = true;
+        android.graphics.BitmapFactory.decodeFile(photo.getPath(), p);
+        if (b.outWidth <= 0 || b.outHeight <= 0 || !"image/png".equals(b.outMimeType) || p.outWidth <= 0) return "bad";
+        if (!MaskCheck.sameShape(b.outWidth, b.outHeight, p.outWidth, p.outHeight)) return "shape";
+        android.graphics.BitmapFactory.Options s = new android.graphics.BitmapFactory.Options();
+        s.inSampleSize = Math.max(1, Math.min(b.outWidth, b.outHeight) / 120);
+        android.graphics.Bitmap small = android.graphics.BitmapFactory.decodeByteArray(png, 0, png.length, s);
+        if (small == null) return "bad";
+        int sw = small.getWidth(), sh = small.getHeight();
+        int[] px = new int[sw * sh];
+        small.getPixels(px, 0, sw, 0, 0, sw, sh);
+        small.recycle();
+        if (!MaskCheck.twoTone(px)) return "tones";
+        if (!MaskCheck.cover(px, sw, sh)) return "cover";
+        if (!MaskCheck.smooth(px, sw, sh)) return "edge";
+        File tmp = new File(dir(c), "mask.tmp");
+        try (OutputStream o = new FileOutputStream(tmp)) { o.write(png); } catch (IOException e) { tmp.delete(); return "bad"; }
+        if (!tmp.renameTo(mask(c, n))) { tmp.delete(); return "bad"; }
+        new Prefs(c).bumpOwnRev();
+        return null;
+    }
+
     /** where ConfigProvider lets the shell write the next photo before SaverReceiver adds it */
     static File incoming(Context c) { return new File(dir(c), "in.tmp"); }
 
@@ -118,9 +159,47 @@ final class Own {
         int all = count(c);
         if (n < 1 || n > all) return false;
         file(c, n).delete();
-        for (int k = n + 1; k <= all; k++) file(c, k).renameTo(file(c, k - 1));
+        mask(c, n).delete();
+        for (int k = n + 1; k <= all; k++) {
+            file(c, k).renameTo(file(c, k - 1));
+            if (mask(c, k).isFile()) mask(c, k).renameTo(mask(c, k - 1));
+        }
         new Prefs(c).bumpOwnRev();
         return true;
+    }
+
+    /** 4.4: photo n's file time, the second half of its pick (OwnPick) */
+    static long stamp(Context c, int n) { return file(c, n).lastModified(); }
+
+    /**
+     * 4.4: deletes the photo the pick names (its mask goes with it, the ones after move up, the album and the rotation see it at once: delete
+     * bumps the revision). false when the pick no longer names that photo (deleted or moved meanwhile): nothing is deleted then.
+     */
+    static synchronized boolean deletePick(Context c, OwnPick p) {
+        return p != null && p.same(count(c), stamp(c, p.n)) && delete(c, p.n);
+    }
+
+    /** 4.4: a small copy of photo n for a grid (its long side about `side` px), null when it cannot be read */
+    static android.graphics.Bitmap thumb(Context c, int n, int side) {
+        BitmapFactory.Options o = new BitmapFactory.Options();
+        o.inJustDecodeBounds = true;
+        BitmapFactory.decodeFile(file(c, n).getPath(), o);
+        if (o.outWidth <= 0 || o.outHeight <= 0) return null;
+        int sample = 1;
+        while (Math.max(o.outWidth, o.outHeight) / (sample * 2) >= side) sample *= 2;
+        BitmapFactory.Options d = new BitmapFactory.Options();
+        d.inSampleSize = sample;
+        return BitmapFactory.decodeFile(file(c, n).getPath(), d);
+    }
+
+    /** 4.4: the same as a JPEG for the phone page (about 320 px, quality 70: a few KB), null when it cannot be read */
+    static byte[] thumbJpeg(Context c, int n) {
+        android.graphics.Bitmap b = thumb(c, n, 320);
+        if (b == null) return null;
+        java.io.ByteArrayOutputStream out = new java.io.ByteArrayOutputStream();
+        b.compress(android.graphics.Bitmap.CompressFormat.JPEG, 70, out);
+        b.recycle();
+        return out.toByteArray();
     }
 
     static synchronized void clear(Context c) {

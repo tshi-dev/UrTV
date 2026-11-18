@@ -5,8 +5,8 @@ tests/edit_keys_test.py, R11 tests/beta_channel_test.py and tests/beta_newest_te
 (the byte budget) and tests/market_names_test.py, R21 privacy_test.py. Here:
 
 - R4  no focus listener scrolls (fullScroll, pageScroll, arrowScroll) or moves the focus (requestFocus) of another view by itself;
-- R9  every app targets API 34; the home declares no accessibility service beyond the two it had at 4.3.4 (they move to the add-on in 4.4);
-- R10 the page's CSS uses no more of what WebView 66 lacks (inset, flex gap, min()/max(), clamp() outside calc()) than at 4.3.4;
+- R9  every app targets API 34; the home declares no accessibility service (4.4 moved them to the add-on);
+- R10 tests/webview66_test.py (every inset, clamp()/min()/max() and flex gap with its fallback) is there and run;
 - R12 no fixed clean-up list names Android's core (core.txt), and the setup's own copy of the core rules is core.txt;
 - R15 apk-latest keeps the Latest flag and its stable names, rescue included; no other release takes Latest;
 - R16 only master and next publish (a build of another branch is never installed over apk-next), and a local build is versionCode 1;
@@ -49,19 +49,16 @@ for gr in sorted((ROOT / "android").glob("*/build.gradle")):
 man = text("android/launcher/src/main/AndroidManifest.xml")
 a11y = sorted(re.findall(r'<service[^>]*android:name="([^"]+)"[^>]*android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE"', man, re.S))
 a11y += sorted(re.findall(r'<service[^>]*android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE"[^>]*android:name="([^"]+)"', man, re.S))
-KNOWN_A11Y = {".SleepService", ".TypeService"}   # 4.3.x; 4.4 moves them to the add-on (Play Protect «sensitive data»), and this set empties
-check("R9 the home declares no new accessibility service (Play Protect)", set(a11y) <= KNOWN_A11Y, sorted(set(a11y) - KNOWN_A11Y))
+KNOWN_A11Y = set()   # 4.4 moved SleepService and TypeService to the add-on (Play Protect «sensitive data»): the home declares none
+check("R9 the home declares no accessibility service (Play Protect; they live in the add-on)", set(a11y) <= KNOWN_A11Y, sorted(set(a11y) - KNOWN_A11Y))
 if set(a11y) < KNOWN_A11Y:
     print("NOTE an accessibility service left the home: remove it from KNOWN_A11Y")
 
-# R10: what the page's CSS uses that WebView 66 does not know, never more than at 4.3.4 (each has a fallback before it there)
-tpl = text("src/template.html")
-css = "\n".join(re.findall(r"<style[^>]*>(.*?)</style>", tpl, re.S))
-CEIL = {"inset:": (r"\binset\s*:", 13), "gap:": (r"(?<![-\w])gap\s*:", 62), "min()": (r"\bmin\(", 9), "max()": (r"\bmax\(", 3),
-        "clamp() outside calc()": (r"(?<!calc\()clamp\(", 37)}
-for name, (rx, ceil) in CEIL.items():
-    n = len(re.findall(rx, css))
-    check(f"R10 the page's CSS: {name} {n} times, at most {ceil} (WebView 66: add a fallback, then raise the ceiling in review)", n <= ceil, n)
+# R10: WebView 66 (Chrome 66) has no inset, clamp()/min()/max() or flex gap: tests/webview66_test.py (4.4, GitHub #19) checks that every
+# use has its fallback before it and that the flex-gap stand-in is there; it must stay and stay in run.sh (it replaced 4.3.4's count ceilings)
+wv = ROOT / "tests/webview66_test.py"
+check("R10 tests/webview66_test.py guards every inset/clamp()/min()/max()/flex gap of the page, and run.sh runs it",
+      wv.is_file() and "python3 tests/webview66_test.py" in text("tests/run.sh") and "has a plain value of the same property just before it" in wv.read_text(encoding="utf-8"))
 
 # R12
 core = [re.compile(l.strip()) for l in text("optimize/lists/core.txt").splitlines() if l.strip() and not l.lstrip().startswith("#")]

@@ -99,6 +99,19 @@ From [Unsplash](https://unsplash.com), under the [Unsplash License](https://unsp
 | `photos/_Fmibx42BVU.jpg` | YUNUS A KHALIFAH | [unsplash](https://unsplash.com/photos/panoramic-photography-of-desert-during-daytime-_Fmibx42BVU) |
 | `photos/rkRYbmPuhOE.jpg` | Stijn te Strake | [unsplash](https://unsplash.com/photos/birds-eye-photography-of-city-rkRYbmPuhOE) |
 
+## The scene home's Saudi pack (4.4: Riyadh in `android/launcher/src/main/assets/scenes/saudi/`, the four others in urtv-data `scenes/saudi.zip`)
+
+Each photo kept as it is (resized to 1920x1080 and compressed); its glass copy and its cut-out are made from it and carry its licence
+(`CREDITS.txt` in the folder says the same). The Couch TV pack is credited in `THIRD_PARTY_NOTICES.md`.
+
+| File | Photo | Photographer | Licence | Source |
+|---|---|---|---|---|
+| `scenes/saudi/riyadh.jpg` | Riyadh Skyline | B.alotaby | CC BY-SA 4.0 (the glass copy and the cut-out too) | https://commons.wikimedia.org/wiki/File:Riyadh_Skyline.jpg |
+| `scenes/saudi/alula.jpg` | Landscape at al-Ula, Saudi Arabia (15) | Richard Mortel | CC BY 2.0 | https://commons.wikimedia.org/wiki/File:Landscape_at_al-Ula,_Saudi_Arabia_(15).jpg |
+| `scenes/saudi/dunes.jpg` | `photos/r4ZSR0cKJw8.jpg` | NEOM | Unsplash License | https://unsplash.com/photos/a-desert-landscape-with-a-mountain-range-in-the-background-r4ZSR0cKJw8 |
+| `scenes/saudi/redsea.jpg` | `photos/NPDnHmYsl6Y.jpg` | NEOM | Unsplash License | https://unsplash.com/photos/a-person-swimming-in-the-ocean-with-a-mountain-in-the-background-NPDnHmYsl6Y |
+| `scenes/saudi/hisma.jpg` | `photos/bRRy9ucK1rY.jpg` | NEOM | Unsplash License | https://unsplash.com/photos/a-large-rock-formation-in-the-middle-of-a-desert-bRRy9ucK1rY |
+
 ## Photo packs (`photos/packs.json`, downloaded on request)
 
 Each pack's zip holds `credits.json` with the same lines, and the app shows them in «حقوق الصور» (never on a photo). CC0 and public domain

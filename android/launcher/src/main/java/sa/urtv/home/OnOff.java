@@ -28,10 +28,10 @@ public final class OnOff {
         return -1;
     }
 
-    /** Where the first word ends: at the first space, «·» or «•». */
+    /** Where the first word ends: at the first space or comma («،» or ",", and the old «·» or «•»). */
     public static int wordEnd(String value) {
         int i = 0;
-        while (i < value.length() && " ·• ".indexOf(value.charAt(i)) < 0) i++;
+        while (i < value.length() && " ·• ،,".indexOf(value.charAt(i)) < 0) i++;
         return i;
     }
 

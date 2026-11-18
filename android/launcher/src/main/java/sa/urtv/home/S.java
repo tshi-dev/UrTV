@@ -43,6 +43,9 @@ public final class S {
     public static String lang() { return lang; }
     public static boolean en() { return Tr.EN.equals(lang); }
 
+    /** Between two parts of one line: «، » with Arabic, ", " with English (4.4: no «·» or «•» on a screen) */
+    public static String sep() { return en() ? ", " : "، "; }
+
     /** the kept setting (no cross-process read): for a service or receiver that shows words, before t */
     public static void init(Context c) {
         Context a = c.getApplicationContext() != null ? c.getApplicationContext() : c;
@@ -55,8 +58,21 @@ public final class S {
     /** The person chose a language on the installer's start screen: kept here at once (the next screen is built in it); the screensaver, which holds the setting, is told by SetupLang. */
     public static void set(Context c, String v) {
         init(c);
+        setAt = android.os.SystemClock.elapsedRealtime();
         lang = Tr.norm(v);
         c.getApplicationContext().getSharedPreferences(PREFS, Context.MODE_PRIVATE).edit().putString("lang", lang).apply();
+    }
+
+    private static volatile long setAt;
+
+    /**
+     * 4.4 (step 88): a screen opened on its own (the setup page started in a fresh process) asks the screensaver BEFORE its configuration is made
+     * (attachBaseContext): the kept value could be an older one (the page came up in English while the home was Arabic). Not within 10 s of the
+     * person's own choice on that page (the screensaver's answer can be a few seconds old).
+     */
+    public static void refresh(Context c) {
+        if (setAt != 0 && android.os.SystemClock.elapsedRealtime() - setAt < 10_000) return;
+        try { remember(c, ConfigSnapshot.read(c)); } catch (RuntimeException ignored) { }
     }
 
     /** what the screensaver says now (Digits passes every snapshot on); a missing screensaver leaves the kept value */

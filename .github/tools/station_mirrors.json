@@ -1,0 +1,5 @@
+{
+ "v": 1,
+ "about": "4.4: more addresses of a live station, by its Arabic name in stations.json; checked once a day by check_stations.py, and the ones that play are published to the home app (stations/status.json). https only.",
+ "mirrors": {}
+}

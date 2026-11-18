@@ -39,6 +39,6 @@ check("the adhan path is untouched by the check (PLAY_ADHAN is excluded, its cas
 main = (L / "MainActivity.java").read_text(encoding="utf-8")
 sched = main[main.index("private void scheduleWallpaper"):main.index("private void scheduleWallpaper") + 300]
 check("scheduleWallpaper does nothing when home is not in front", re.search(r"removeCallbacks\(rotateWallpaper\);\s*if \(!resumed\) return;", sched), sched)
-check("onResume sets resumed first, onPause clears it", re.search(r"onResume\(\) \{\s*super\.onResume\(\);\s*resumed = true;", main) and re.search(r"onPause\(\) \{\s*super\.onPause\(\);\s*resumed = false;", main))
+check("onResume sets resumed first, onPause clears it", re.search(r"onResume\(\) \{\s*super\.onResume\(\);\s*(?:if \(sceneHome != null\) sceneHome\.start\(\);\s*)?resumed = true;", main) and re.search(r"onPause\(\) \{\s*super\.onPause\(\);\s*(?:if \(sceneHome != null\) sceneHome\.stop\(\);[^\n]*\s*)?resumed = false;", main))
 check("a slow own-photo check does not change the wallpaper after home was paused", "if (!isDestroyed() && resumed) nextWallpaper();" in main)
 sys.exit(1 if failed else 0)

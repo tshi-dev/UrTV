@@ -31,8 +31,8 @@ check("3. pairing: «left» comes from Android's user-leaving hint (the screensa
 check("3. pairing: the screen is still kept awake while control is on, and let go on pause", "keepAwake(control.isOn());" in pa and "keepAwake(false);" in pause)
 
 su = text(HOME + "setup/SetupActivity.java")
-check("setup: «ابدأ» is focused after the screen is laid out (one OK presses it)",
-      "first.post(new Runnable() { @Override public void run() { first.requestFocus(); } });" in su and "final TextView first = again != null ? again : start;" in su and "\n        start.requestFocus();" not in su)
+check("setup: «ابدأ» is focused after the screen is laid out (one OK presses it); 4.4: through the box, posted, after the words when they are longer than the box (read before focus)",
+      "page.focusFirst(first);" in su and "scroll.post(() -> {" in (ROOT / "android/launcher/src/main/java/sa/urtv/home/Box.java").read_text(encoding="utf-8") and "final TextView first = again != null ? again : start;" in su and "\n        start.requestFocus();" not in su)
 check("setup: the press's answer (the status line) is brought into sight", "status.requestRectangleOnScreen(" in su)
 
 ms = text(HOME + "tilawah/MusicService.java")

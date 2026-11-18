@@ -229,6 +229,7 @@ final class PrayerTimes {
                     + "?latitude=" + place.lat + "&longitude=" + place.lng
                     + "&latitudeAdjustmentMethod=3&method=" + place.method + "&timezonestring=" + URLEncoder.encode(place.tz, "UTF-8");
             HttpURLConnection con = (HttpURLConnection) new URL(url).openConnection();
+            sa.urtv.home.NetLog.count(String.valueOf(con.getURL()));   // G3: the request log (NetLog)
             con.setConnectTimeout(6000);
             con.setReadTimeout(8000);
             con.setRequestProperty("User-Agent", "urtv-home");
@@ -256,6 +257,7 @@ final class PrayerTimes {
             edit.putString(key, out.toString()).putBoolean("fetched_" + key, true).apply();
             forgetToday();
             AdhanScheduler.schedule(c);   // the alarm was set for the computed times: the new ones may differ by minutes
+            DuaScheduler.schedule(c);   // 4.4: the duas' too (one «بعد الظهر بـ ١٠ دقائق» was set from the computed Dhuhr)
             return true;
         } catch (Exception ignored) {
             // offline or Aladhan is down: the computed times are already right

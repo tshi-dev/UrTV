@@ -128,7 +128,7 @@ often describe the same bug in two ways, and both rows are kept when their guard
 | R-109 | Windows 11 reported as Windows 10 | platform.release() says 10; build number not used | 4.0 | `tests/share_test.py` | optimize | N |
 | R-110 | ADB key and saved TV kept inside the clone | Default paths pointed into the repository | 4.0 | `tests/key_home_test.py` | optimize | N |
 | R-111 | Reports could leak IPv6 addresses, emails, serials or Wi-Fi names | Scrub covered too few patterns | 4.0 | `tests/share_test.py` | optimize | N |
-| R-112 | Page JavaScript stopped on older WebView 66 (#19, #21) | Page used syntax Chrome 66 lacks | 4.0 | `tests/check.py` | page | Y |
+| R-112 | Page JavaScript stopped on older WebView 66 (#19, #21); 4.4: the photo and clock wrong there too | Page used syntax and CSS Chrome 66 lacks | 4.0 (JS), 4.4 (CSS) | `tests/check.py`, `tests/webview66_test.py` | page | Y |
 | R-113 | Quran and adhan stuttered or fought other sound (#35) | Audio focus not requested or handled | 4.0 | `tests/regressions/legacy_guards_test.py` | launcher | Y |
 | R-114 | Adhan at the wrong time after a preview or city change | A preview set the last-due guard; city change not rescheduled | 4.0 | `tests/tilawah_test.py` | launcher | N |
 | R-115 | TV volume not restored after the adhan | Several volume paths; a refused focus left it changed | 4.0 | `tests/player_logic_test.py` | launcher | Y |
@@ -274,6 +274,16 @@ often describe the same bug in two ways, and both rows are kept when their guard
 | R-256 | While moving an app in «ترتيب المفضلة» the remote's app, colour and media keys did nothing | the move mode took every key (QA-5) | 4.3.4 | `tests/qa_434_test.py`, `tests/regressions/key_handlers_test.py` | launcher | Y |
 | R-257 | After a cancelled PIN on «التطبيقات المخفية», the next «انقل» opened the hidden list or said there are none | the settings' hidden-list ask stayed set (review F1) | 4.3.4 | `tests/qa_434_test.py`, `tests/apps_edit_test.py` | launcher | Y |
 | R-258 | Menu inside an edit mode opened «المصادر» over it | the Inputs branch did not check for an edit mode (review F2) | 4.3.4 | `tests/qa_434_test.py` | launcher | Y |
+| R-259 | Setup page English while the home was Arabic; «2 apps chosen» for none (tester step 86/88) | the page language and the count were not read from the right state | 4.4 (build 386) | `tests/home_fix2_test.py` | launcher (setup) | Y |
+| R-260 | Setup page larger than the screen, cut at the top; QR at the far right (tester step 86) | the setup window was not fitted to the screen | 4.4 (build 376) | `tests/home_fix_test.py` | launcher (setup) | Y |
+| R-261 | Setup made a new ADB key at each start; the TV's key list filled up (tester step 86) | no single kept ADB key | 4.4 (build 376) | `tests/setup_engine_test.py` | launcher (setup) | N |
+| R-262 | «إلغاء» on the USB-debugging question: the setup hung or closed with no message (tester step 86) | the cancel was not handled as an answer | 4.4 (build 386) | `tests/setup_runner_test.py`, `tests/home_fix_test.py` | launcher (setup) | Y |
+| R-263 | Google TV kept its home: UrTV never the home after the setup (tester steps 86-88) | Google TV took the home role back; no Home-key catch or window watch | 4.4 (build 413) | `tests/home_fix_test.py`, `tests/home_fix2_test.py`, `tests/home_fix3_test.py`, `tests/build413_test.py` | launcher + extras (Google TV) | Y |
+| R-264 | The add-on was not bound after a reboot or a force-stop on the TCL (tester steps 85, 88) | nothing healed a listed but unbound accessibility service | 4.4 (build 413) | `tests/dock_sleep_test.py`, `tests/home_fix3_test.py`, `tests/extras_test.py` | extras (TCL) | Y |
+| R-265 | The setup skipped the home step after two old failures (tester step 88) | old failures counted against a new run | 4.4 (build 413) | `tests/setup_engine_test.py` | launcher (setup) | Y |
+| R-266 | Pressing Home quickly on our home paused the watch, and Google TV's home stayed (tester step 88) | a bring counted more than once per press | 4.4 (build 427) | `tests/home_fix3_test.py` | launcher (Google TV) | Y |
+| R-267 | The setup intro's first focus was on «English»: one OK switched the language (tester step 88) | the first focus went to the language switch | 4.4 (build 427) | `tests/fix159_test.py` | launcher (setup) | Y |
+| R-268 | Sideloaded apps missing from the home next to a Google home (GitHub #57) | apps without a TV activity were hidden | 4.4 | `tests/sideload_apps_test.py` | launcher (Google TV) | Y |
 
 ## Open findings of the gate (QA-n)
 
@@ -294,6 +304,18 @@ and adds a row above.
 - **QA-5** `DockActivity.dispatchKeyEvent` («ترتيب المفضلة»): while an app was moved every key was taken. **Fixed in 4.3.4**
   (R-256: FavEdit.owns, `tests/qa_434_test.py`).
 
+- **QA-6** (4.4, R1, the TCL freeze's shape) `Extras.enabled` is a provider call into the add-on's process on the UI thread (cached 2 s):
+  at the home's onResume and every minute tick (`updateHomeNudge -> A11yHeal.stuck`), and when «مركز التحكم» or «الإضافات» opens. A TCL
+  that killed the add-on starts its process there. **Open.** Fix: keep the add-on's answer from a background read, as ConfigSnapshot does.
+- **QA-7** (4.4, R1) the screensaver settings' render asks the home (`NowPlayingBridge.homeKey`) on the UI thread at every render
+  (open, return, each toggle). **Open.** Fix: ask once off the UI thread, keep the answer.
+- **QA-8** (4.4, R1, low) the control centre's adhan preview tile asks the screensaver for the place on the UI thread when pressed
+  (`Prefs.playFor -> Place.get`). **Open.**
+- **QA-9** (4.4, R1, low) «المباريات»'s onCreate queries and calls the screensaver to hand over kept follows (`HomeFollows.sync`), only
+  when the home kept some. **Open.**
+- **QA-10** (4.4, R1, low) the home's notice bar reads and parses the notices file (`ContentFile.read`, own disk, bounded) at every
+  minute tick and return (`updateHomeNudge -> dueNotice`). **Open.**
+
 The 4.3.4 review's F1 and F2: R-257, R-258.
 
 ## Watch
@@ -303,20 +325,6 @@ The 4.3.4 review's F1 and F2: R-257, R-258.
   key handler): `com.sony.dtv.tvlaunchercustomizer` (and `.overlay.apporder`), `com.sony.dtv.launcherxcustomizer`, `com.sony.dtv.moreapps`,
   `com.sony.dtv.sonyshelf`. If a Sony owner reports a dead APPS or GUIDE button, these are the candidates: add the one that answers it to
   `keep.txt` and a row here. Smoke S-20 checks it whenever a Sony TV is at hand.
-
-## Fixed on next (4.4), guarded there: rows to add when 4.4 reaches master
-
-Their guards exist only on `next`; each becomes a row above in the merge that brings 4.4 to master.
-
-- Setup page English while the home was Arabic; «2 apps chosen» for none (build 386, tester step 86/88): fix 2905cbf3, `tests/home_fix2_test.py` [origin/next only]
-- Setup page larger than the screen, cut at top; QR at far right (build 376 (4.4), tester step 86): tests/home_fix_test.py [origin/next only]
-- Setup made a new ADB key each start; TV key list filled up (build 376, tester step 86): tests/setup_engine_test.py (ONE ADB key) [origin/next only]
-- «إلغاء» on the USB question: setup hung or closed with no message (build 386 (not re-checked: no new key), tester step 86): tests/setup_runner_test.py (R5c) [origin/next only]; tests/home_fix_test.py [origin/next only]
-- Google TV kept Home: UrTV never the home after setup (role taken back) (build 413 (4.4, 20/20), tester step 86, 87, 88): tests/home_fix_test.py; tests/home_fix2_test.py; tests/home_fix3_test.py; tests/HomeWatchRun.java [origin/next only]
-- Add-on not bound after reboot or force-stop on the TCL (build 413, tester step 85, 88): tests/dock_sleep_test.py (extras-setup case) [origin/next only]; tests/home_fix3_test.py [origin/next only]; tests/autostart_test.py (write-settings, general)
-- Setup skipped the home step after two old failures (build 413, tester step 88): tests/setup_engine_test.py (HF) [origin/next only]
-- Pressing Home quickly on our home paused the watch (Google TV left) (build 427, tester step 88): tests/HomeWatchRun.java [origin/next only]
-- Setup intro's first focus on «English»: one OK switched the language (build 427, tester step 88): tests/fix159_test.py (4.4 box) [origin/next only]
 
 ## Known bugs, not fixed yet
 
@@ -348,4 +356,3 @@ Not regressions (they never worked); listed so a release review knows them. A fi
 - Settings key does nothing inside other apps; must leave app (HDR lost): Settings key handler lives in stock launcher, turned off by setup (GitHub #37)
 - Screensaver flashes then closes immediately on TCL 65C7K Google TV: Model allows only Google's dream (system Colors dream closes too) (GitHub #42)
 - Continue watching row never appears on Xiaomi: Unknown; Google TV may keep Watch Next private to Google home (GitHub #56)
-- Sideloaded apps missing from the home: Next to a Google home, apps without a TV activity were hidden (GitHub #57)

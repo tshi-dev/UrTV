@@ -29,6 +29,8 @@ final class NowPlayingBridge {
                 boolean any = cur.getInt(cur.getColumnIndexOrThrow("any_key")) == 1;
                 o.put("prayer", prayer);
                 o.put("any", any);
+                int named = cur.getColumnIndex("name");   // 4.4: a dua's name (a launcher before 4.4 has no such column)
+                if (named >= 0 && cur.getString(named) != null && !cur.getString(named).isEmpty()) o.put("name", cur.getString(named));
                 o.put("live", true);   // last: nothing half read counts as an adhan
             }
         } catch (Exception ignored) {
@@ -69,6 +71,46 @@ final class NowPlayingBridge {
         } finally {
             if (cur != null) try { cur.close(); } catch (Exception ignored) { }
         }
+    }
+
+    /** 4.4 kids mode is on in the launcher: the page draws no kick-off notice on the screensaver then. False when the launcher does not say (an older one). */
+    static boolean kidsOn(Context c) {
+        Cursor cur = null;
+        try {
+            cur = c.getApplicationContext().getContentResolver().query(Uri.parse("content://sa.urtv.home.nowplaying/kids"), null, null, null, null);
+            return cur != null && cur.getColumnIndex("on") >= 0 && cur.moveToFirst() && cur.getInt(cur.getColumnIndex("on")) == 1;
+        } catch (Exception ignored) {
+            return false;
+        } finally {
+            if (cur != null) try { cur.close(); } catch (Exception ignored) { }
+        }
+    }
+
+    /** 4.4 «جرّب التنبيه»: the launcher plays its kick-off whistle once (it checks our signature; never over the adhan); false when it could not be asked */
+    static boolean kickoffWhistle(Context c) {
+        try {
+            return c.getApplicationContext().getContentResolver().call(Uri.parse("content://sa.urtv.home.nowplaying"), "kickoff_whistle", null, null) != null;
+        } catch (Exception ignored) { return false; }
+    }
+
+    /**
+     * 4.4 «بدء شاشة التوقف بعد»: the launcher sets the TV's idle delay over its own adb (it checks our signature, and takes only the minutes we
+     * offer). Blocks for the adb link: call it off the UI thread. "ok", "no_link", "busy" or "bad"; "no_link" too when the launcher could not be asked.
+     */
+    static String setIdle(Context c, String minutes) {
+        try {
+            android.os.Bundle b = c.getApplicationContext().getContentResolver().call(Uri.parse("content://sa.urtv.home.nowplaying"), "set_idle", minutes, null);
+            String r = b == null ? null : b.getString("result");
+            return r == null ? "no_link" : r;
+        } catch (Exception ignored) { return "no_link"; }
+    }
+
+    /** 4.4 «زر الرئيسية يفتح تلفزيونك مباشرة»: the add-on's Home key catch through the launcher ("on", "off" or null to read); null when either did not answer */
+    static Boolean homeKey(Context c, String set) {
+        try {
+            android.os.Bundle b = c.getApplicationContext().getContentResolver().call(Uri.parse("content://sa.urtv.home.nowplaying"), "home_key", set, null);
+            return b == null || !b.containsKey("on") ? null : b.getBoolean("on");
+        } catch (Exception ignored) { return null; }
     }
 
     /** Ends the adhan that is playing in the launcher (it checks our signature, and stops only an adhan). */

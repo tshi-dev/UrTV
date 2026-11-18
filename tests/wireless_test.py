@@ -150,6 +150,8 @@ class Adb:
             if not self.paired or a[1] != f"192.168.1.20:{self.port}":
                 return res("error: device '%s' not found\n" % a[1], 1)
             return res("urtv-ok\n" if "urtv-ok" in a[3] else "1\n")
+        if a[0] == "disconnect":
+            self.forgot = getattr(self, "forgot", 0) + 1; return res("disconnected %s\n" % a[1])
         if a[0] == "-s" and a[2] == "pull":
             open(a[4], "w").write("x"); return res("1 file pulled\n")
         raise SystemExit("fake adb: " + str(a))
@@ -237,6 +239,18 @@ try:
 except SystemExit as e:
     check("tv.py: port lost and mDNS silent -> stops and says to ask for «IP address & Port»",
           "find-tv.sh connect" in str(e), str(e))
+try:   # 4.3.3: a restart where the new port is never found: the wait says how to give it by hand, then go on from the step
+    _t = tv.time; _c = [0.0]
+    tv.time = types.SimpleNamespace(time=lambda: _c.__setitem__(0, _c[0] + 5) or _c[0], sleep=lambda s: None)
+    tv.address_hint = lambda *a: ""
+    try:
+        with redirect_stderr(io.StringIO()), redirect_stdout(io.StringIO()):
+            tv.wait_for_tv(limit_s=30)
+    finally:
+        tv.time = _t
+    check("tv.py --wait: a Wireless-debugging TV that is not found again says to read «IP address & Port» and connect", False, "no exit")
+except SystemExit as e:
+    check("tv.py --wait: a Wireless-debugging TV that is not found again says to read «IP address & Port» and connect", "find-tv.sh connect" in str(e) and "Wireless debugging" in str(e), str(e))
 adb.hand_out = True
 adb.port = 38888
 pulled = os.path.join(tmp, "pulled")
@@ -333,6 +347,32 @@ rc, out = closed(set())
 check("--closed: the TV answers nothing at all: cannot tell (not «closed»)", rc == 2 and "Can't tell" in out and "OK" not in out, out)
 rc, out = closed({("192.168.1.99", 8009)}, host="192.168.1.99")
 check("--closed: another address than the remembered TV: its own 5555 only", rc == 0, out)
+
+# ---- 4.4 (reports, cause 5): a stale link that adb calls «already connected», and a TV that announces itself late after a restart
+class Stale:
+    def __init__(self): self.port, self.live, self.log = 41000, False, []
+    def run(self, argv, **kw):
+        a = argv[1:]; self.log.append(a)
+        def res(out, rc=0): return subprocess.CompletedProcess(argv, rc, out, "")
+        if a[0] == "connect": return res(f"already connected to {a[1]}\n" if a[1].endswith(":41000") else f"connected to {a[1]}\n")
+        if a[0] == "disconnect": return res("disconnected\n")
+        if a[0] == "-s" and a[2] == "shell":
+            if a[1].endswith(f":{self.port}") and (self.live or not a[1].endswith(":41000")): return res("urtv-ok\n")
+            return res("error: device offline\n", 1)
+        raise SystemExit("stale adb: " + str(a))
+st = Stale(); st.port = 42000; looks = []
+def late(svc, t):   # nothing on the first two listens, the TV on the third
+    looks.append(t)
+    return [{"instance": TV1, "host": "192.168.1.20", "port": 42000}] if len(looks) >= 3 else []
+c = w.AdbCli("192.168.1.20", {"port": 41000, "instance": TV1, "host": "192.168.1.20"}, 30, st.run, late)
+c.connect()
+check("cause 5: «already connected» to a dead port is not taken: adb forgets it, the TV is looked up again (longer listens), the new port connected",
+      c.connected and c.state["port"] == 42000 and ["disconnect", "192.168.1.20:41000"] in st.log and looks == [3.0, 5.0, 8.0], (st.log, looks))
+st2 = Stale(); st2.live = True; st2.port = 41000
+c2 = w.AdbCli("192.168.1.20", {"port": 41000, "instance": TV1, "host": "192.168.1.20"}, 30, st2.run, lambda *a: [])
+c2.connect()
+check("a live link is used as it is (one harmless command, no forget, no look-up)", c2.connected and not any(x[0] == "disconnect" for x in st2.log))
+check("rediscover: the listens grow, the first hit wins", w.rediscover({"instance": TV1}, late, (1.0, 2.0)) is not None)
 
 print("\nall wireless checks passed" if not failed else f"\n{failed} failed")
 sys.exit(1 if failed else 0)

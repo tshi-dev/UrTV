@@ -17,12 +17,12 @@ def check(what, ok, extra=""):
 def src(name): return (APP / name).read_text(encoding="utf-8")
 def code(s): return re.sub(r"/\*.*?\*/|//[^\n]*", "", s, flags=re.S)
 
-KIT = ["GameRegistry", "GameScore", "GameChips", "GameClock", "GameDataCheck"]   # no Android in these
+KIT = ["GameRegistry", "GameScore", "GameChips", "GameClock", "GameDataCheck", "SunPos", "GameNames"]   # no Android in these
 ENGINES = ["KhanatData", "KhanatEngine", "KhanatLayout", "MissingWord", "games/domino/Tile", "games/domino/DominoGame", "games/domino/DominoBot", "games/domino/Snake", "games/domino/DominoTable"]                           # each game's rules and data: no Android either
 if not shutil.which("javac"):
     print("SKIP games kit: no javac"); sys.exit(1)
 with tempfile.TemporaryDirectory() as tmp:
-    c = subprocess.run(["javac", "-nowarn", "-d", tmp, *(str(APP / f"{n}.java") for n in KIT + ENGINES), str(APP / "MiniJson.java"), str(ROOT / "tests/GamesKitTest.java")], capture_output=True, text=True)
+    c = subprocess.run(["javac", "-nowarn", "-d", tmp, *(str(APP / f"{n}.java") for n in KIT + ENGINES), str(APP / "MiniJson.java"), str(APP / "DigitsText.java"), str(ROOT / "tests/GamesKitTest.java")], capture_output=True, text=True)
     check("the kit's rules and every game's engine compile on a plain JVM (no Android in them)", c.returncode == 0, c.stderr[-800:])
     if c.returncode == 0:
         r = subprocess.run(["java", "-cp", tmp, "sa.urtv.screensaver.GamesKitTest", str(ROOT / "assets/games/khanat.json"), str(ROOT / "assets/games/missing-word.json")], capture_output=True, text=True, timeout=120)
@@ -39,7 +39,7 @@ for n in KIT + ENGINES:
 reg = src("GameRegistry.java"); hub = src("QuizGamesActivity.java"); base = src("GameActivity.java"); manifest = (ROOT / "android/app/src/main/AndroidManifest.xml").read_text(encoding="utf-8")
 games = re.findall(r'new Game\("([\w-]+)", "([^"]+)", "([^"]+)", "(\w+)", (true|false), (true|false)\)', reg)
 table = tr.load()
-check("the registry lists the eight games, one line each", [g[0] for g in games] == ["quiz", "khanat", "missing-word", "odd-one", "charades", "letter-hive", "word5", "domino"], [g[0] for g in games])
+check("the registry lists the games in this order, one line each (the new games are added at the end, «حزم المحتوى» last)", [g[0] for g in games][:8] == ["quiz", "khanat", "missing-word", "odd-one", "charades", "letter-hive", "word5", "domino"] and games[-1][0] == "packs" and len({g[0] for g in games}) == len(games), [g[0] for g in games])
 words = [ar for _, ar in tr.java_literals(hub.split("WORDS = {")[1].split("};")[0])]
 check("every name and line of the registry is marked for the English table in the games list (WORDS), in order, and has its English", words == [w for g in games for w in (g[1], g[2])] and all(w in table for w in words), [w for w in words if w not in table])
 for gid, name, line, act, phones, ready in games:
@@ -47,8 +47,8 @@ for gid, name, line, act, phones, ready in games:
         check(f"{gid}: ready, so its activity {act} exists, is in the manifest, not exported, landscape", (APP / f"{act}.java").is_file() and re.search(r'android:name="\.%s"\s+android:exported="false"\s+android:screenOrientation="landscape"' % act, manifest) is not None)
         if phones == "false":
             check(f"{gid}: played with one remote: it extends GameActivity and opens no server and no socket", f"class {act} extends GameActivity" in src(f"{act}.java") and not re.search(r"ServerSocket|QuizServer|QuizRoom|java\.net\.", src(f"{act}.java")))
-check("the list reads the registry: tiles four to a line, «قريبًا» for a game that is not ready, «بالجوالات» only for a game that needs phones, the default way said in the header",
-      "GameRegistry.ALL" in hub and "COLS = 4" in hub and '!live ? S.t("قريبًا") : g.phones ? S.t("بالجوالات") : ""' in hub and 'S.t("بدون جوالات: ريموت واحد يدور بينكم")' in hub and "GameRegistry.firstFocus(GamePrefs.last(this))" in hub)
+check("the list reads the registry: tiles four to a line, «قريبًا» for a game that is not ready, a phone picture (no word) only for a game played with phones, the default way said in the header",
+      "GameRegistry.ALL" in hub and "COLS = 4" in hub and 'if (!live) {' in hub and "else if (GameRegistry.inPhones(g.id)) {" in hub and "new GameIcons(this, GameIcons.PHONE)" in hub and 'S.t("بالجوالات"))' in hub and 'text(S.t("بالجوالات")' not in hub and 'S.t("بدون جوالات: ريموت واحد يدور بينكم")' in hub and "GameRegistry.firstFocus(GamePrefs.last(this))" in hub)
 check("the list opens a ready game by its registry line, and a game whose screen is missing says «قريبًا» instead of stopping the app", 'setClassName(this, getClass().getPackage().getName() + "." + g.activity)' in hub and "catch (RuntimeException notThere)" in hub)
 shown = code(hub + base + "".join(src(f"{g[3]}.java") for g in games if g[5] == "true" and g[4] == "false"))
 check("no «·» or «•» separator in what the games show, no rounded (pill) shape", not re.search("[·•]", shown) and "setCornerRadius" not in shown and "setCornerRadii" not in shown)
@@ -69,13 +69,34 @@ check("«إنهاء الجولة» while a hand-over is up drops it (cancelHandO
       "pauseCard = false; cancelHandOver(); onPauseChanged(false" in base and "protected final void cancelHandOver() { hand = 0; handDone = null;" in base and "static final int MAX = 10;" in src("GameScore.java")
       and len(re.findall(r"0xFF[0-9A-F]{6}", look.split("SIDES = {")[1].split("}")[0])) == 10 and "tiny ? 72 : small ? 90 : 142" in base and 236 + 9 * 72 + 64 <= 960 and 236 + 7 * 90 + 80 <= 960)
 check("the sounds are the existing tones (QuizSound), behind the one sound switch", "QuizSound.play(sound, which)" in base and "AudioTrack" not in base)
-check("one look, two sets (PAPER, NIGHT), decided in one place; a game writes no colour of its own",
-      "static final GameLook PAPER" in look and "NIGHT = new GameLook(true" in look and "static GameLook of(Context c)" in look
+check("one look: the paper by day and three night palettes, decided in one place (GamePrefs.nightNow); a game writes no colour of its own",
+      "static final GameLook PAPER" in look and "NIGHTS = {" in look and look.count("new GameLook(true") == 3 and "static GameLook of(Context c)" in look and "GamePrefs.nightNow(c) ? NIGHTS[GamePrefs.palette(c)] : PAPER" in look
       and all(not re.search(r"0xFF[0-9A-Fa-f]{6}", code(src(f"{g[3]}.java"))) for g in games if g[5] == "true" and g[4] == "false"))
-check("data: the kept copy must pass the published check, the starter its own; a download goes through Net with a size cap, is checked whole, written beside and renamed, the last good copy stays",
-      "published.parse(Bounded.readAll(in, GameDataCheck.BYTES_MAX))" in data and "starter.parse(Bounded.readAll(in, GameDataCheck.BYTES_MAX))" in data and "Net.get(BASE + name + \".json\", null, 15000, 20000, Math.min(maxBytes, GameDataCheck.BYTES_MAX))" in data
+check("data: the kept copy must pass the published check, the starter its own; a download goes through Net with a size cap (urtv-data first, DataHost), is checked whole, written beside and renamed, the last good copy stays",
+      "published.parse(Bounded.readAll(in, GameDataCheck.BYTES_MAX))" in data and "starter.parse(Bounded.readAll(in, GameDataCheck.BYTES_MAX))" in data and "DataHost.get(BASE + name + \".json\", 15000, 20000, Math.min(maxBytes, GameDataCheck.BYTES_MAX))" in data
       and "r.status != 200" in data and "if (published.parse(b) == null) return;" in data and "tmp.renameTo(f)" in data and "data-games/games/" in data and "org.json" not in data)
-check("nothing about the people playing is stored: only chips, the last game, the sound switch and item ids", set(re.findall(r'put\w+\("([\w.]+)"', prefs)) == {"chips.", "last", "sound", "recent."} and "FileOutputStream" not in base)
+check("nothing about the people playing is stored but the team and player names they chose to write (this TV only, «أسماء جديدة» forgets them): chips, the last game, the sound switch, the night look and its palette, the list's filter, and item ids", set(re.findall(r'put\w+\("([\w.]+)"', prefs)) == {"chips.", "last", "sound", "recent.", "night", "palette", "filter", "names.", "names.asked."} and "FileOutputStream" not in base)
+# the night look: contrast floors in every set, the switch and the sun
+def _lum(h):
+    r, g, b = [int(h[i:i + 2], 16) / 255 for i in (0, 2, 4)]
+    f = lambda c: c / 12.92 if c <= .03928 else ((c + .055) / 1.055) ** 2.4
+    return .2126 * f(r) + .7152 * f(g) + .0722 * f(b)
+def _ratio(a, b):
+    x, y = sorted((_lum(a), _lum(b)), reverse=True)
+    return (x + .05) / (y + .05)
+sets = re.findall(r"new GameLook\((true|false), " + ", ".join([r"0xFF(\w{6})"] * 10), look)
+floors = []
+for night, paper, ink, tile, deep, tick, saff, on_saff, on_deep, ok, pink in sets:
+    floors += [_ratio(ink, paper) >= 7, _ratio(ink, tile) >= 7, _ratio(paper, ink) >= 7, _ratio(on_deep, deep) >= 4.5, _ratio(on_saff, saff) >= 4.5, _ratio(on_deep, ok) >= (3 if night == "false" else 4.5), _ratio(pink, paper) >= (3 if night == "true" else 2.5)]
+    if night == "true": floors += [_ratio(saff, paper) >= 4.5, _ratio(ok, paper) >= 3, _ratio(on_deep, pink) >= 3]
+sides_night = re.findall(r"0xFF(\w{6})", look.split("SIDES_NIGHT = {")[1].split("}")[0])
+floors += [len(set(sides_night)) == 10] + [_ratio(c, p[1]) >= 5 for c in sides_night for p in sets if p[0] == "true"]
+check("night mode: all four sets meet the contrast floors (words 7:1, words on the green block and on saffron 4.5:1, the right answer's words 4.5:1 at night, saffron and the right green 3:1 or more on the night ground) and the ten dimmed team colours are ten different ones, each at least 5:1 on every night ground",
+      len(sets) == 4 and all(floors), (len(sets), floors))
+sw = src("QuizGamesActivity.java"); pf = src("GamePrefs.java")
+check("night mode: the switch is at the top of the games list (dark or light only, no automatic state; the three palettes), remembered per TV; the shared views read the same colours",
+      "headerButtons()" in sw and "GamePrefs.setNight(this, GamePrefs.night(this) == GamePrefs.NIGHT_ON ? GamePrefs.NIGHT_OFF : GamePrefs.NIGHT_ON)" in sw and "NIGHT_AUTO" not in pf and "NIGHT_AUTO" not in sw and "SunPos" not in pf and "تلقائي بعد المغرب" not in sw and "QuizActivity.applyLook(L)" in base and "applyLook(GameLook.of(this))" in src("QuizActivity.java")
+      and not re.search(r"0xFF(EFE8DA|16140F|FBF8F1|0E5A45)", code(src("QuizActivity.java")).split("static void applyLook")[1]) and "GameLook.SIDES[" not in "".join(code(src(g[3] + ".java")) for g in games if g[5] == "true" and g[3] != "QuizActivity"))
 lim = json.loads(json.dumps({"khanat": 200_000, "missing-word": 300_000}))
 check("the app's limits are docs/GAMES-DATA.md's: khanat 200 KB, 200 to 4,000 samples of 24; missing-word 300 KB, 100 to 5,000 items, 90 characters",
       "BYTES_MAX = 200_000, SAMPLES_MAX = 4000, SAMPLE_LEN = 24, PUBLISHED_MIN = 200" in src("KhanatData.java") and "BYTES_MAX = 300_000, ITEMS_MAX = 5000, PUBLISHED_MIN = 100" in src("MissingWord.java") and "TEXT_LEN = 90" in src("MissingWord.java"))
@@ -93,7 +114,7 @@ check("letter hive: after «اكشف الجواب» the host says who answered (
 check("the kit fits the question block's words to their box (fitSize: the size comes down until no line is taller than the box; a TextView clips what is taller, which cut the dots of a big letter and the line above the time bar)",
       "protected final float fitSize(" in ga and "fitSize(words, sizeFor(s, 104, 88, 72, 40, 70)" in ga and "fitSize(game.letter, 300, 360, 336, 1)" in kh and 'question(turn, S.t("الكلمة لك وحدك"), 340)' in ch and "TickTimer((int) (game.turnMs() / 1000), 288)" in ch)
 check("the games list fits each tile's title (two lines at most) and its line (three) by lowering the size before cutting; the English names are short",
-      "fit(display, title, 56, inner, 120, 2, 1f)" in qg and "fit(medium, about, 30, inner, 96, 3, 1.1f)" in qg and "setSingleLine" not in qg.split("TextView name")[1].split("tile.addView(name")[0])
+      "fit(display, title, 56, inner - 8, 112, 2, 1.15f)" in qg and "name.setIncludeFontPadding(true); name.setLineSpacing(0, 1.15f); name.setPadding(0, 0, 0, px(10))" in qg and "fit(medium, about, 30, inner, 96, 3, 1.1f)" in qg and "setSingleLine" not in qg.split("TextView name")[1].split("tile.addView(name")[0])
 tsv = {l.split("\t")[0]: l.split("\t")[1] for l in (ROOT / "i18n/en/saver.tsv").read_text(encoding="utf-8").splitlines() if "\t" in l}
 check("every game's English name is at most 14 characters and its English line at most 60 (a tile is 344 design pixels wide inside)",
       all(len(tsv.get(g[1], g[1])) <= 14 and len(tsv.get(g[2], g[2])) <= 60 for g in re.findall(r'new Game\("([a-z0-9-]+)", "([^"]+)", "([^"]+)"', src("GameRegistry.java"))), [(g[1], tsv.get(g[1])) for g in re.findall(r'new Game\("([a-z0-9-]+)", "([^"]+)", "([^"]+)"', src("GameRegistry.java")) if len(tsv.get(g[1], g[1])) > 14])
@@ -104,3 +125,31 @@ check("a key press redraws only what it changes: «خمّن الكلمة» repai
 
 check("«خمّن الكلمة»: ة ى ء take no colour of their own (only a typed letter's key does; ء is only a spelling of ا)", "int c = k < Word5Keys.LETTERS ? game.key(letterOf(k)) : 0;" in w5)
 sys.exit(1 if failed else 0)
+
+# ---- names written by the people playing (4.3.3)
+_ga = (APP / "GameActivity.java").read_text(encoding="utf-8")
+check("the base: team and player names come from what the people wrote (else the suggestions), the ready screen has a «الأسماء» button, the list has a reset, the keyboard is the TV's own",
+      'GameNames.resolve(GamePrefs.names(this, "teams")' in _ga and 'GameNames.resolve(GamePrefs.names(this, "players")' in _ga and 'S.t("الأسماء")' in _ga and 'S.t("أسماء جديدة")' in _ga and "GameNames.Pad" in _ga)
+for _g, _k in (("Khanat", "players\" : \"teams"), ("MissingWord", "teams"), ("Charades", "teams"), ("OddOne", "players"), ("DominoActivity", "teams"), ("LetterHive", "teams")):
+    _f = _g if _g.endswith("Activity") else _g + "Activity"
+    _t = (APP / f"{_f}.java").read_text(encoding="utf-8")
+    check(f"{_f}: names the kind of names it has and how many", "namesKind()" in _t and "namesCount()" in _t and _k.split('"')[0] in _t)
+check("no game builds its own default names any more: the only «لاعب %s» is the base's", sum((APP / f"{g}.java").read_text(encoding="utf-8").count('S.t("لاعب %s"') for g in ("KhanatActivity", "OddOneActivity", "MissingWordActivity", "CharadesActivity", "DominoActivity", "LetterHiveActivity")) == 0)
+
+check("the night colours start on the third palette (dim beige); a stored choice and an out-of-range value are handled in one place",
+      "PALETTE_DEFAULT = 2" in prefs and 'getInt("palette", PALETTE_DEFAULT)' in prefs and "? PALETTE_DEFAULT : v" in prefs)
+# ---- the owner's notes on the games list (build 413)
+gi = src("GameIcons.java")
+check("the three header buttons are pictures only (a moon, a palette, a phone), the state is the picture (filled = on, dots = the palette), TalkBack gets the words; no word is drawn on them",
+      "GameIcons.MOON" in qg and "GameIcons.PALETTE" in qg and "GameIcons.PHONE" in qg and "setContentDescription(label[i])" in qg and 'text(label[i]' not in qg and "static final int PHONE = 0, PALETTE = 1, MOON = 2" in gi and "Path.Op.DIFFERENCE" in gi
+      and not re.search(r"0x[0-9A-Fa-f]{8}|Color\.parseColor", gi))
+check("the line under the title sits beside the three buttons, never over them (they are 72 px at y 64, the line is 72 px at y 64 and starts after them), and the page title and the tile titles keep a taller line and a bottom padding so the tail of «ع» is not cut",
+      "mp.setMarginEnd(px(96 + 3 * 72 + 2 * 16 + 40)); mp.topMargin = px(64)" in qg and "float size = 72" in qg and "p.topMargin = px(64)" in qg and "page.setLineSpacing(0, 1.15f); page.setPadding(0, 0, 0, px(14))" in qg)
+check("the «بالجوالات» filter keeps every game that can be played with phones (PHONE_GAMES: «الأسرع», the older games' phone mode and the party games), each with the phone picture, and opens them with the phones switch on; only games without a phone mode (the packs page) are left out",
+      "(GameRegistry.inPhones(g.id) && g.ready)" in qg and 'go.putExtra("phones", true)' in qg and "else if (GameRegistry.inPhones(g.id)) {" in qg
+      and {"quiz", "khanat", "missing-word", "letter-hive", "word5", "odd-one", "charades", "domino"} <= set(re.findall(r'"([a-z0-9-]+)"', re.search(r"PHONE_GAMES = \{([^}]*)\}", src("GameRegistry.java")).group(1)))
+      and "packs" not in re.search(r"PHONE_GAMES = \{([^}]*)\}", src("GameRegistry.java")).group(1))
+check("a game's setup page never hides a row behind the start button: the rows that fit are shown (the list scrolls with the focus, with arrows when more are above or below)",
+      "int fit = Math.max(1, (int) ((840 - y) / step))" in base and "c.scroll = ws" in base and 'centered("▲"' in base and 'centered("▼"' in base and "int scroll;" in src("GameChips.java"))
+check("the team names are asked for the first time a game with names starts on this TV (then kept per TV and changed with «الأسماء»)",
+      "!GamePrefs.namesAsked(this, namesKind())" in base and "GamePrefs.setNamesAsked(this, nameKind)" in base and 'names.asked."' in prefs)

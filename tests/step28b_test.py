@@ -47,7 +47,7 @@ pf, rv, cpv, st = text(SA / "Prefs.java"), text(SA / "SaverReceiver.java"), text
 check("8: the setting: Prefs (on by default), the command's word checked before anything is set, `show` says it, the provider gives the home pages_dark, and the settings row is next to «المظهر»",
       'boolean pagesDark() { return sp.getBoolean("pagesDark", true); }' in pf and 'error: pagesdark is one of on off' in rv and 'p.setPagesDark("on".equals(pagesDark))' in rv
       and '"\\npagesdark: " + (p.pagesDark() ? "on" : "off")' in rv and '"pages_dark"' in cpv and 'p.pagesDark() ? "1" : "0"' in cpv
-      and st.index('row("المظهر"') < st.index('row("صفحات الأسهم والمباريات داكنة"') < st.index('row("الخروج من تلفزيونك"'))
+      and st.index('row("وضع الألوان"') < st.index('row("صفحات الأسهم والمباريات داكنة"') < st.index('row("الخروج من تلفزيونك"'))
 cfg, gs = text(HOME / "ConfigSnapshot.java"), text(HOME / "GlassSource.java")
 check("8: the home reads it (on for an older screensaver); Markets uses the dark look (GlassStyle.DARK over the same backdrop) while on, else the home's look; the matches page gets #pagedark=1",
       "boolean pagesDark = true;" in cfg and 'cur.getColumnIndex("pages_dark")' in cfg and "GlassStyle.Look l = GlassStyle.DARK;" in gs and "if (!ConfigSnapshot.read(a).pagesDark) return page(a, root);" in gs
@@ -133,7 +133,7 @@ import re as _re
 check("34-A: the English page's radial gradients go with their side (the top veil's centre at 100% 0% in English), checked by pixels in page.test",
       "radial-gradient\\(" in text(ROOT / "src/build.py") and "100 - int(m.group(2))" in text(ROOT / "src/build.py") and "top veil, ${file}: no hard edge" in text(ROOT / "tests/page.test.mjs"))
 check("34-B: while a symbol's exchange is open a market file older than 20 minutes is not trusted (Yahoo is asked, the older file only when Yahoo refuses), and a quiet «متأخر» shows beside the time",
-      "LATE_MS = 20*60000" in tp and "(!lax && sesOpen(sym) ? LATE_MS : MARKET_TRUST_MS)" in tp and "directQuote(j) || fileQuote(j.key, 1)" in tp and "' · ' + 'متأخر'" in tp and "? 'متأخر' : ''" in tp)
+      "LATE_MS = 20*60000" in tp and "(!lax && sesOpen(sym) ? LATE_MS : MARKET_TRUST_MS)" in tp and "directQuote(j) || fileQuote(j.key, 1)" in tp and "SEP + 'متأخر'" in tp and "? 'متأخر' : ''" in tp)
 
 # step 35 (release)
 check("35-1: LiveFeed and LiveProxy are gone, cleartext is for radiojar.com only (4.3.1: Egypt's radio is back at 1, played by ExoPlayer, and a number saved before moves up once)",

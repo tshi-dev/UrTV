@@ -8,7 +8,7 @@ package sa.urtv.home;
  */
 final class InputDisplay {
     static final int CEC_MAX = 40;   // characters (code points) kept of a device's own name
-    static final String STANDBY = S.n(" · وضع الاستعداد");
+    static final String STANDBY = S.n("، وضع الاستعداد");
 
     private InputDisplay() {}
 
