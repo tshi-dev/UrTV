@@ -56,4 +56,12 @@ notice = text(HOME / "UpdateNotice.java")
 check("the home's offer: an add-on whose file is absent at the release is never behind", "boolean extrasAbsent" in nrule and "extras > 0 && !extrasAbsent && extras < t" in nrule)
 check("the home's offer asks the release for the add-on's file off the main thread and keeps the answer per channel",
       "extras_absent_" in notice and "new Thread(" in notice and "UpdateRules.assetMissing(" in notice)
+
+act = text(HOME / "UpdateActivity.java")
+page = text(ROOT / "android/launcher/src/main/assets/phone/index.html")
+err = act.split("private View renderError")[1].split("private void reasonLine")[0]
+check("the failure screen says what failed (reasonLine) before the AI assistant line, for «cannot» and «failed»",
+      err.count("reasonLine(") == 2 and err.index("reasonLine(") < err.index("aiMessage()") and err.rindex("reasonLine(") < err.rindex("aiMessage()"))
+check("«cannot» carries the failed file in the status (detail: the word, why: the file)", 'set("error", "cannot", why, file)' in upd and "fileOf(pkg)" in download)
+check("the phone page names the file and puts the AI assistant line last", "(u.detail === 'download' && u.why" in page and "if (g) t += ' ' + UPWHY[u.reason]" in page)
 sys.exit(1 if failed else 0)

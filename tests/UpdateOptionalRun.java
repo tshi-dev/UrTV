@@ -27,6 +27,8 @@ public final class UpdateOptionalRun {
 
     static Set<String> set(String... s) { return new HashSet<>(Arrays.asList(s)); }
 
+    static String say(String why, String file) { return UpdateText.reason(why, file, UpdateText.ARABIC); }
+
     public static void main(String[] a) {
         // the owner's TV: home and screensaver 525, add-on 516, apk-beta says 525 and has no extras file
         Map<String, Long> tv = installed(525, 516, 525);
@@ -43,6 +45,15 @@ public final class UpdateOptionalRun {
         check("sizeOf's word for «not in the release» is neither a size nor «unknown»", UpdateRules.MISSING < 0 && UpdateRules.MISSING != -1);
         check("an add-on that is not installed (-1) never counts", UpdateRules.lowestInstalled(installed(525, -1, 525), set()) == 525);
         check("nothing installed gives 0 (as before)", UpdateRules.lowestInstalled(installed(-1, -1, -1), set()) == 0);
+
+        // the reasons the failure screen says
+        check("download names the file", "تعذّر تنزيل ملف urtv-extras.apk".equals(say("download", "urtv-extras.apk")));
+        check("download without a file says so generally", "تعذّر تنزيل ملف التحديث".equals(say("download", "")));
+        check("verification: a different key says the file does not match the app's signature", "الملف لا يطابق توقيع التطبيق".equals(say("other_key", "")) && "الملف لا يطابق توقيع التطبيق".equals(say("unsigned", "")));
+        check("network, storage, permission each have their own sentence", say("network", "") != null && say("space", "") != null && say("storage", "") != null && say("permission_screen", "") != null);
+        check("the sentences differ (network is not storage is not download)", !say("network", "").equals(say("space", "")) && !say("download", "").equals(say("network", "")));
+        check("an unknown word gives null (the screen then has only the generic line)", say("zzz", "") == null && say(null, "") == null);
+        check("a reason line is never the generic AI line", !say("exception", "").contains("الذكاء الاصطناعي"));
 
         System.out.println(failed == 0 ? "ALL PASS" : "FAILED " + failed);
         if (failed != 0) System.exit(1);
