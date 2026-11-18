@@ -55,7 +55,7 @@ check("four round toggles on top (Bluetooth, mirroring, the sleep timer, «أط�
 check("the focus: a solid fill in the look's colours with its ink, coming in over the one motion (Motion: 200 ms, couch-tv's curve)",
       "FOCUS_MS = (int) Motion.MS" in center and "anim.setInterpolator(Motion.ease());" in center and "ValueAnimator.ofArgb(shown, target)" in center and "anim.setDuration(FOCUS_MS)" in center and "int target = f ? FOCUSED : " in center and "ON_SUB" in center)
 check("«تخصيص»: a tick per item, the arrows move a row (Left/Right by the reading direction), at most eight rows, «إعادة الضبط» (the defaults), «تم»; Back goes back to the panel's main view; kept on this TV",
-      "MAX_ROWS = 8" in center and "tickedRows(now) >= MAX_ROWS" in center and "KeyEvent.KEYCODE_DPAD_RIGHT : KeyEvent.KEYCODE_DPAD_LEFT" in center and "private void reset()" in center
+      "MAX_ROWS = 10" in center and "tickedRows(now) >= MAX_ROWS" in center and "KeyEvent.KEYCODE_DPAD_RIGHT : KeyEvent.KEYCODE_DPAD_LEFT" in center and "private void reset()" in center
       and 'getSharedPreferences("control"' in center and "if (code == KeyEvent.KEYCODE_BACK) { if (e.getAction() == KeyEvent.ACTION_UP) showMain(); return true; }" in center
       and all(f'"{w}"' in center for w in ("تخصيص", "تم", "إعادة الضبط", "اختر ما يظهر ورتّبه بالأسهم")))
 check("«شاشة التوقف» is unticked until asked for (its pill is on the home); a toggle or a row that does not exist on this TV is not in the list",
@@ -167,6 +167,11 @@ check("4.3.3 «الأذان والإقامة»: the next prayer and its iqama fr
 no_javac = not shutil.which("javac")
 if no_javac:
     print("SKIP control center logic: no javac here")
+# ---- 4.4 review F4: the black screen and the adhan row are not cut by the cap
+check("the default rows (8 + adhan is among them, saver and apps off) and the black screen all fit: the cap is ten and «شاشة سوداء» is never counted or cut by it",
+      "MAX_ROWS = 10" in center and 'shown >= MAX_ROWS && !it.key.equals("black")' in center and 'if (!it.key.equals("update") && !it.key.equals("black")) shown++;' in center
+      and len([k for k in re.search(r'ROWS = \{([^}]*)\}', center).group(1).replace('"','').split(",") if k.strip() not in ("saver", "apps")]) <= 10)
+
 # ---- 4.3.1: ours before the TV's, the city beside it; a saved old default order follows the new one
 check("«إعدادات تلفزيونك» comes before the TV's «الإعدادات» by default, «المدينة» right after it; the old default order saved by the editor counts as never reordered",
       center.index('"ours", "games", "city", "adhan", "tv"') > 0 and 'OLD_DEFAULT = "net,sound,speed,tv,ours,saver"' in center and 'if (v.equals(OLD_DEFAULT)) v = "";' in center
