@@ -3278,3 +3278,14 @@ Pictures (PC only): optimize/run/step96/pics/upd-1.png … upd-6.png.
 - (2) home-577.png (tester/beta2/home-577.png, couch + scenes look): the greeting «تصبح على خير» is on its own line, the date is below it; no overlap. PASS.
 - (3) `saver.sh show` vs optimize/run/step98/before3/show.txt: identical except the version line. PASS.
 - Mute: on (verified Muted: true).
+
+## BETA 3 = build 581 (a7b77d8b, run 44620395479), 20 Nov, owner away, TV muted
+- Installed home, screensaver and add-on 581 over 577 with adb (data kept): versionCode 581/581/581, HOME role = UrTV.
+- (1) first Home press after the install: focus = sa.urtv.home MainActivity. PASS.
+- (2) light mode: `optimize/dock.sh lite-signals status` is NOT a valid command (the script prints its usage; no lite-signals key). Not run. Did not force the notice on the TV.
+- (3) adhan row text: NOT done (needs remote navigation to the adhan row; the screen-recording method needs the owner's OK to walk the settings).
+- (4) kids mode: not turned on (PIN). The phone page «الخروج من وضع الأطفال» button: NOT checked (needs remote to the phone page).
+- (5) QR «ما فتح؟» line: NOT checked (needs the QR screen, i.e. the report row under «حول»).
+- (6) add-on: versionCode 581; urtv-extras.apk = 7,783,987 bytes (7.8 MB). PASS.
+- (7) `saver.sh show` vs optimize/run/step98/before3/show.txt: identical except the version line before the power cycle AND after `tv.py --reboot`. PASS.
+- Mute: on after the reboot (verified Muted: true).
