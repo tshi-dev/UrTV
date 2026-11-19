@@ -107,6 +107,8 @@ These replace anything below that says otherwise:
 - **Movement:** «+٢» / «−١» as signed text in `--fgr` / `--flo`, and «–» in `--fs`. No arrows.
 - **Zones:** a `li.zl` 1 px line **before** a zone's first place, its name in muted text, so the label sits above the rows it names. An unnamed thin line closes a zone. A zone starting in a hidden stretch gets its line above that stretch's row.
 - **«N أندية أخرى» rows:** the same 1 px line with muted text.
+- **Zone labels follow the digits setting:** every number in a label goes through `ar()` («دوري أبطال آسيا ٢», never a fixed «2»). The kinds' words live in the page's string table with a `%s` for the number.
+- **No zone line at a card's edge:** a line is never the last thing before the card's bottom edge or the first after its top (below the column heads is fine). If a shortened table puts one there, it is dropped. Tested with a window that ends at a zone start.
 - **The «N أندية أخرى» rows:** plain muted text.
 - **Crests:** no placeholder.
 

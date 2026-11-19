@@ -231,7 +231,7 @@ function rows(items, full, ringAt){   // items: [club, index] or 'gapN' (N hidde
     out += row(x[0], x[1], full, ringAt === x[1]);
     last = r;
   });
-  return out;
+  return out.replace(/(<li class="tr zl[^"]*">(?:<span>[^<]*<\/span>)?<\/li>)+$/, '');   // never a zone line as the last thing before the card's bottom edge (the UI session)
 }
 const FL = {w:'ف', d:'ت', l:'خ'};
 const form = (s, next) => '<span class="fo">' + s.split('').map(c => `<span class="sqf ${c}">${FL[c]}</span>`).join('') + '</span>';
