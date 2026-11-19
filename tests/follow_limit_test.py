@@ -51,7 +51,7 @@ check("both lists of leagues: a tick past 8 waits for «أضف», at 24 it stays
       st.count("tickLeague((AlertDialog) d, on, i, ") == 2 and "on[i] = false;" in tick and "FollowLimit.full(FollowLimit.LEAGUES)" in tick
       and "prefs.setFollowWarned(FollowLimit.LEAGUES); on[i] = true; d.getListView().setItemChecked(i, true);" in tick)
 check("«الدوريات كاملة» (LeaguesActivity): the same warning and ceiling", "FollowLimit.check(FollowLimit.LEAGUES, v.size(), prefs.followWarned(FollowLimit.LEAGUES))" in la
-      and "prefs.setFollowWarned(FollowLimit.LEAGUES); toggleLeague(stored);" in la and "FollowLimit.full(FollowLimit.LEAGUES)" in la)
+      and "prefs.setFollowWarned(FollowLimit.LEAGUES); toggleLeague(stored, tag);" in la and "FollowLimit.full(FollowLimit.LEAGUES)" in la)
 check("the launcher's page asks the screensaver (behind the same permission as every phone_ call) and tells it «أضف»",
       prov.index("c.checkCallingPermission(PHONE_PERMISSION)") < prov.index('case "phone_follow_check"') and 'out.putString("state", FollowLimit.word(p.followState(kind)));' in prov
       and 'case "phone_follow_warned"' in prov and "p.setFollowWarned(kind);" in prov)
