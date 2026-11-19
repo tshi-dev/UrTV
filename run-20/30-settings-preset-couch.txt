@@ -1,0 +1,4 @@
+focus-before:  android.widget.LinearLayout [80,219][1211,297]
+t_change: 1795076964.787798806
+t_rec: 1795076962.784347375
+focus-after:  android.widget.LinearLayout [80,219][1211,297]

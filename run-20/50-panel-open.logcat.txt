@@ -1,0 +1,1 @@
+         1795076879.176   320   320 E SurfaceFlinger: [sa.urtv.screensaver/sa.urtv.screensaver.SettingsActivity#1] rejecting buffer: bufWidth=1184, bufHeight=442, front.active_legacy.{w=1184, h=461}
