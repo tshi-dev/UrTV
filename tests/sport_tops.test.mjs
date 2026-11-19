@@ -67,6 +67,10 @@ const FILES = { 'sports/4668.json': SAUDI, 'sports/4480.json': { v: 1, id: '4480
   const e = r.leagues[1];
   check('no archive table: TheSportsDB\'s, by its rank (not its order), top 3, its date', e.src === 'thesportsdb' && e.rows.map(x => x.id).join() === '133604,133610,133602'
     && e.rows[0].pts === 30 && e.rows[0].p === 11 && e.asOf === '2026-11-03' && e.round === 11, JSON.stringify(e));
+  const cr = await p.evaluate(() => { CRESTS['136013'] = { u: 'https://r2.thesportsdb.com/images/media/team/badge/x.png', d: 'data:image/png;base64,AAAA' }; const t = SPORTS.tops(3).leagues[0].rows; return [t[0].crest, 'crest' in t[1]]; });
+  check('a club whose crest the page has: its real crest (the small copy), the others no crest field (the name alone, no swatch)', cr[0] === 'data:image/png;base64,AAAA' && cr[1] === false, JSON.stringify(cr));
+  const sw = await p.evaluate(() => [spSw('136013'), spSw('999999')]);
+  check('the sports cards: a club is its crest or nothing (no colour swatch)', /^<img class="spcr" src="data:image\/png;base64,AAAA"/.test(sw[0]) && sw[1] === '', JSON.stringify(sw));
   const n5 = await p.evaluate(() => SPORTS.tops(5).leagues[0].rows.length);
   check('n is the number of clubs (4 when the table has 4)', n5 === 4, n5);
   await ctx.close();

@@ -10,8 +10,12 @@ const SP_COL = {'136013':['#1E4FA1','#FFFFFF'], '136022':['#F7C600','#1B3A8A'], 
   '147444':['#5B2C83','#FFFFFF'], '149112':['#C8102E','#FFFFFF'], '150638':['#1E4FA1','#F2C200'], '150637':['#111111','#2BB5A8'], '136137':['#0A7A3A','#FFFFFF']};
 const SP_KSA = '136137';
 const spCol = id => SP_COL[String(id)] || ['#8A8F98', '#5A5F68'];
-const spSw = id => { const c = spCol(id); return `<i class="spsw" style="--a:${c[0]};--b:${c[1]}"></i>`; };
-const spBand = id => { const c = spCol(id); return `<i class="spband" style="--a:${c[0]};--b:${c[1]}"></i>`; };
+// 4.4 beta 2 (the UI review, no decoration): a club is its real crest when the page has it (CRESTS, TheSportsDB's badge kept by club id),
+// else its name alone: no colour swatch, no placeholder, no letters
+const spCrestOf = id => { const c = typeof CRESTS !== 'undefined' && CRESTS[String(id)]; return (c && (c.d || c.u)) || ''; };
+const spCrest = (id, cls) => { const u = spCrestOf(id); return u ? `<img class="${cls}" src="${esc(u)}" alt="" onerror="this.remove()">` : ''; };
+const spSw = id => spCrest(id, 'spcr');
+const spBand = id => spCrest(id, 'spcrb');
 const spForm = f => f ? `<span class="spfm">${[...String(f).slice(0, 5)].map(x => `<i class="${x === 'w' ? 'w' : x === 'd' ? 'd' : 'l'}"></i>`).join('')}</span>` : '';
 const spName = (ev, side) => teamAr(ev['str' + side + 'Team'], ev['id' + side + 'Team']);
 const spWhen = ms => (fbDayOf(ms) === cityToday() ? '' : fbDayWord(fbDayOf(ms)) + ' ') + fbClock(ms);
@@ -28,6 +32,8 @@ const SPW = {noToday:'لا مباراة لفرقك اليوم', next:'القاد
 .week li.spr{display:block;text-align:center}
 .spsw{display:inline-block;width:.62em;height:.62em;border-radius:.14em;margin-inline-end:.35em;vertical-align:.02em;background:linear-gradient(90deg,var(--a) 50%,var(--b) 50%)}
 .spband{display:block;width:3.2em;height:.28em;border-radius:.14em;margin:0 auto .3em;background:linear-gradient(90deg,var(--a) 50%,var(--b) 50%)}
+.spcr{display:inline-block;width:.9em;height:.9em;object-fit:contain;vertical-align:-.12em;margin-inline-end:.35em}
+.spcrb{display:block;width:1.6em;height:1.6em;object-fit:contain;margin:0 auto .3em}
 .spfm{display:inline-flex;gap:.18em;vertical-align:middle}.spfm i{width:.5em;height:.5em;border-radius:.1em;display:inline-block}
 .spfm .w{background:#3BB273}.spfm .d{background:#9A9A9A}.spfm .l{background:#E05A4F}
 .spgame{display:flex;align-items:center;justify-content:center;gap:1.2em}
@@ -470,8 +476,9 @@ function honLeague(v, id, tab){
 
 // ---- 4.4 beta 2 «رياضي»: the top of every league the person follows, from the files the TV already has: the archive's sports/<id>.json
 // (a league's table, computed from its games), else TheSportsDB's table of the season the page's games say. Never invented: a league with
-// neither is left out; a cup has no table. {ready, leagues: [{id, name, season, round, asOf, src, rows: [{rank, id, name, pts, p}]}]};
+// neither is left out; a cup has no table. {ready, leagues: [{id, name, season, round, asOf, src, rows: [{rank, id, name, pts, p, crest?}]}]};
 // ready is false while a file is still asked (the card is drawn again when it answers: archDrawn)
+const spWithCrest = r => { const c = spCrestOf(r.id); return c ? Object.assign(r, {crest: c}) : r; };   // the real crest when the page has it, else no field
 function spTops(n){
   n = Math.max(1, Math.min(+n || 3, 10));
   let ready = true;
@@ -484,7 +491,7 @@ function spTops(n){
     if(own.length){
       const last = ((sp.last || []).map(g => g && g.t).filter(Boolean).sort().pop()) || sp.updated || '';
       leagues.push({id, name: lgName(id), season: String(sp.season || ''), round: Math.max(...own.map(r => +r.p || 0)), asOf: last, src: 'archive',
-        rows: own.slice(0, n).map((r, i) => ({rank: i + 1, id: String(r.id), name: clubNm(r.ar, r.n, String(r.id)), pts: +r.pts || 0, p: +r.p || 0}))});
+        rows: own.slice(0, n).map((r, i) => spWithCrest({rank: i + 1, id: String(r.id), name: clubNm(r.ar, r.n, String(r.id)), pts: +r.pts || 0, p: +r.p || 0}))});
       return;
     }
     if(sp && sp.cup) return;
@@ -494,7 +501,7 @@ function spTops(n){
     const rows = ((t && Array.isArray(t.table) && t.table) || []).filter(x => x && /^\d+$/.test(String(x.idTeam)) && +x.intRank > 0 && +x.intPlayed > 0)
       .sort((a, b) => +a.intRank - +b.intRank);
     if(rows.length) leagues.push({id, name: lgName(id), season: String(g.strSeason), round: Math.max(...rows.map(x => +x.intPlayed || 0)), asOf: String(rows[0].dateUpdated || ''),
-      src: 'thesportsdb', rows: rows.slice(0, n).map(x => ({rank: +x.intRank, id: String(x.idTeam), name: teamAr(x.strTeam, String(x.idTeam)), pts: +x.intPoints || 0, p: +x.intPlayed || 0}))});
+      src: 'thesportsdb', rows: rows.slice(0, n).map(x => spWithCrest({rank: +x.intRank, id: String(x.idTeam), name: teamAr(x.strTeam, String(x.idTeam)), pts: +x.intPoints || 0, p: +x.intPlayed || 0}))});
   });
   return {ready, leagues};
 }
