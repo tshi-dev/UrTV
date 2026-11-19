@@ -16,6 +16,12 @@ public class ExtrasCallProvider extends ContentProvider {
     @Override public Bundle call(String method, String arg, Bundle extras) {
         Bundle out = new Bundle();
         if (getContext() == null || method == null) return out;
+        // 4.4 beta 3 (the supervisor's hard condition): the paired route gives an adb shell; only our home, signed with our certificate, may use it
+        if (method.startsWith("pair_") && !SignDigest.callerIs(getContext(), PairGuard.HOME)) {
+            android.util.Log.w("UrTVPair", "refused: not our home");
+            out.putString(ExtrasWords.ERROR, "refused");
+            return out;
+        }
         switch (method) {
             case ExtrasWords.STATUS:
                 out.putBoolean(ExtrasWords.ON, ExtrasA11yService.enabled());
@@ -46,6 +52,38 @@ public class ExtrasCallProvider extends ContentProvider {
                 if (ExtrasWords.HOME_KEY_ON.equals(arg) || ExtrasWords.HOME_KEY_OFF.equals(arg)) ExtrasA11yService.setHomeKey(getContext(), ExtrasWords.HOME_KEY_ON.equals(arg));   // 4.4 R3
                 out.putBoolean(ExtrasWords.HOME_KEY, ExtrasA11yService.homeKey(getContext()));
                 break;
+            // 4.4 beta 3, wireless debugging: the home's setup only (the signature permission); each blocks the home's background thread, never a UI thread
+            case ExtrasWords.PAIR_ARM: sa.urtv.home.pair.PairHost.arm(); break;
+            case ExtrasWords.PAIR_DISARM: sa.urtv.home.pair.PairHost.disarm(); break;
+            case ExtrasWords.PAIR_RETRY: sa.urtv.home.pair.PairHost.retry(); break;
+            case ExtrasWords.PAIR_CODE: out.putString(ExtrasWords.RESULT, sa.urtv.home.pair.PairHost.submit(getContext(), arg)); break;
+            case ExtrasWords.PAIR_STATUS:
+                out.putString(ExtrasWords.STATE, sa.urtv.home.pair.PairHost.status());
+                out.putString(ExtrasWords.WHY, sa.urtv.home.pair.PairHost.why());
+                out.putBoolean(ExtrasWords.PAIRED, sa.urtv.home.pair.PairHost.paired(getContext()));
+                out.putBoolean(ExtrasWords.AVAILABLE, sa.urtv.home.pair.PairHost.available());
+                break;
+            case ExtrasWords.PAIR_OPEN:
+                try { out.putString(ExtrasWords.RESULT, sa.urtv.home.pair.PairHost.open(getContext())); }
+                catch (java.io.IOException e) { out.putString(ExtrasWords.ERROR, String.valueOf(e.getMessage())); }
+                break;
+            case ExtrasWords.PAIR_RUN:
+                try {
+                    String cmd = extras == null ? null : extras.getString(ExtrasWords.COMMAND);
+                    if (!PairGuard.allowed(cmd)) { android.util.Log.w("UrTVPair", "refused: not one of the setup's commands"); out.putString(ExtrasWords.ERROR, "not_allowed"); break; }
+                    out.putString(ExtrasWords.RESULT, sa.urtv.home.pair.PairHost.run(extras.getString(ExtrasWords.PAIR_ID), cmd));
+                } catch (java.io.IOException e) { out.putString(ExtrasWords.ERROR, "failed"); }
+                break;
+            case ExtrasWords.PAIR_EXEC:
+                try {
+                    android.net.Uri from = extras == null ? null : android.net.Uri.parse(extras.getString(ExtrasWords.URI, ""));
+                    if (from == null || !"sa.urtv.home.pairfiles".equals(from.getAuthority())) throw new java.io.IOException("not the home's file");   // only the home's own one-time file
+                    if (!PairGuard.allowed(extras.getString(ExtrasWords.COMMAND))) { android.util.Log.w("UrTVPair", "refused: not one of the setup's commands"); out.putString(ExtrasWords.ERROR, "not_allowed"); break; }
+                    out.putString(ExtrasWords.RESULT, sa.urtv.home.pair.PairHost.exec(getContext(), extras.getString(ExtrasWords.PAIR_ID), extras.getString(ExtrasWords.COMMAND, ""), from, extras.getLong(ExtrasWords.SIZE)));
+                } catch (java.io.IOException e) { out.putString(ExtrasWords.ERROR, "failed"); }
+                break;
+            case ExtrasWords.PAIR_CLOSE: sa.urtv.home.pair.PairHost.close(extras == null ? null : extras.getString(ExtrasWords.PAIR_ID)); break;
+            case ExtrasWords.PAIR_FORGET: sa.urtv.home.pair.PairHost.forget(getContext()); break;
             case ExtrasWords.KEY_APPS:   // «أزرار الريموت»: the home's choices changed
                 ExtrasA11yService.keyApps(getContext(), arg);
                 break;

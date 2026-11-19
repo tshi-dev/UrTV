@@ -22,7 +22,7 @@ final class SetupHost implements SetupRunner.Host {
     @Override public SetupRunner.Session open(int approvalMs, final AdbClient.Approval approval, SetupEngine.Out out) throws IOException {
         final SetupSession s;
         try {
-            s = SetupSession.open(app, approvalMs, new AdbClient.Approval() {
+            s = SetupSession.openAny(app, approvalMs, new AdbClient.Approval() {   // 4.4 beta 3: 5555 first; the paired route only when it does not answer
                 @Override public void waiting() {
                     SaverHold.begin(app);   // no screensaver over the prompt: one sent under it stays stuck until a restart
                     if (approval != null) approval.waiting();
@@ -35,8 +35,8 @@ final class SetupHost implements SetupRunner.Host {
         }
         return new SetupRunner.Session() {
             @Override public SetupEngine engine() { return s.engine; }
-            @Override public SetupEngine.Shell shell() { return s.adb::run; }
-            @Override public String exec(String command, java.io.InputStream data, long size) throws IOException { return s.adb.exec(command, data, size); }
+            @Override public SetupEngine.Shell shell() { return s::run; }
+            @Override public String exec(String command, java.io.InputStream data, long size) throws IOException { return s.exec(command, data, size); }
             @Override public void close() { s.close(); }
         };
     }

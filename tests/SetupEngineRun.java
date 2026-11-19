@@ -55,8 +55,20 @@ public class SetupEngineRun {
             return h + "/.home.HomeActivity";
         }
 
+        /** 4.4 beta 3: every command any scenario sends, for tests/pair_commands_test.py (URTV_CMDLOG names the file; nothing is written without it) */
+        static final java.util.Set<String> ALL = java.util.Collections.synchronizedSet(new java.util.TreeSet<String>());
+        static {
+            final String to = System.getenv("URTV_CMDLOG");
+            if (to != null) Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+                try (java.io.PrintWriter w = new java.io.PrintWriter(new java.io.OutputStreamWriter(new java.io.FileOutputStream(to, true), java.nio.charset.StandardCharsets.UTF_8))) {
+                    synchronized (ALL) { for (String c : ALL) w.println(c.replace("\\", "\\\\").replace("\n", "\\n")); }
+                } catch (java.io.IOException ignored) { }
+            }));
+        }
+
         public AdbClient.Result run(String command) {
             log.add(command);
+            ALL.add(command);
             String body = command.contains("\necho URTV_RC=") ? command.substring(0, command.indexOf("\necho URTV_RC=")) : command;
             if (silent) return new AdbClient.Result("", 0);
             String out = answer(body);

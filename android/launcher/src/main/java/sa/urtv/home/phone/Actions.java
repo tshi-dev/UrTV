@@ -97,4 +97,7 @@ public interface Actions {
     default Result audioPiece(long offset, long total, String name, byte[] data) { return Result.fail("failed"); }
     /** use a file (as own, own_fajr, dua, none), or delete it */
     default Result audioOp(String op, Long id, String as) { return Result.fail("failed"); }
+
+    /** 4.4 beta 3, wireless debugging: the six digits from the phone page (only while the TV's factory page armed it): "pairing", else "not_armed", "busy", "bad_code" or "no_addon". */
+    default Result adbPair(String code) { return Result.fail("not_armed"); }
 }

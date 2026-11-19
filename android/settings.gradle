@@ -2,7 +2,12 @@ pluginManagement {
     repositories { google(); mavenCentral(); gradlePluginPortal() }
 }
 dependencyResolutionManagement {
-    repositories { google(); mavenCentral() }
+    repositories {
+        google(); mavenCentral()
+        // 4.4 beta 3, wireless debugging in the add-on only: libadb-android and its SPAKE2 library are published on JitPack only; nothing else is taken from there
+        // (the group filter), and every file is checked against android/extras/pins.txt before the add-on builds (verifyPins)
+        maven { url 'https://jitpack.io'; content { includeGroupByRegex 'com\\.github\\.MuntashirAkon.*' } }
+    }
 }
 rootProject.name = 'urtv'
 include ':app', ':launcher', ':extras', ':rescue'

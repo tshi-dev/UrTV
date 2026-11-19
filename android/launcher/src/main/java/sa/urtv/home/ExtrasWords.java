@@ -26,6 +26,17 @@ public final class ExtrasWords {
      * role): the add-on asks the home whether it holds the role; RESULT is ROLE_OURS, ROLE_NOT or ROLE_UNKNOWN (no role before Android 10, or no answer)
      */
     public static final String HOME_ROLE = "home_role", ROLE_OURS = "ours", ROLE_NOT = "not", ROLE_UNKNOWN = "unknown";
+    /**
+     * 4.4 beta 3, wireless debugging (the libraries live in the add-on only; the home's setup asks through these). PAIR_ARM / PAIR_DISARM / PAIR_RETRY: the TV's factory
+     * page; PAIR_CODE (arg: the six digits, never logged): the phone page through the home, RESULT "ok", "not_armed", "busy" or "bad_code"; PAIR_STATUS: STATE, WHY,
+     * PAIRED, AVAILABLE; PAIR_OPEN: RESULT the connection's handle, or ERROR ("old_android", "not_paired", "no_port", "refused", "busy"); PAIR_RUN (extras PAIR_ID, COMMAND):
+     * RESULT the output with its URTV_RC marker; PAIR_EXEC (PAIR_ID, COMMAND, URI of the home's one-time file, SIZE): RESULT what the TV printed; PAIR_CLOSE (PAIR_ID);
+     * PAIR_FORGET. A failed run, exec or open answers ERROR, never an empty RESULT.
+     */
+    public static final String PAIR_ARM = "pair_arm", PAIR_DISARM = "pair_disarm", PAIR_RETRY = "pair_retry", PAIR_CODE = "pair_code", PAIR_STATUS = "pair_status",
+            PAIR_OPEN = "pair_open", PAIR_RUN = "pair_run", PAIR_EXEC = "pair_exec", PAIR_CLOSE = "pair_close", PAIR_FORGET = "pair_forget";
+    public static final String PAIR_ID = "pair_id", COMMAND = "command", URI = "uri", SIZE = "size", STATE = "state", WHY = "why", PAIRED = "paired", AVAILABLE = "available",
+            ERROR = "error";
     /** 4.4: WATCH's other two arguments: the person's chosen home is ours (the setup confirmed it) or not any more («تراجع»); WANTED is also the bundle's key */
     public static final String WANTED = "wanted", UNWANTED = "unwanted";
     /** 4.4 (step 88, R3; on by default on a Google TV from build 413): the add-on catches the remote's Home key itself and opens our home; WATCH's arguments, HOME_KEY the bundle's key */

@@ -506,6 +506,12 @@
             android:authorities="sa.urtv.home.extras"
             android:exported="true"
             android:permission="sa.urtv.permission.EXTRAS" />
+        <!-- 4.4 beta 3, the paired route's installs: one APK at a time under a random token, read only by our add-on (the same signature permission), deleted right after -->
+        <provider
+            android:name=".setup.PairFiles"
+            android:authorities="sa.urtv.home.pairfiles"
+            android:exported="true"
+            android:permission="sa.urtv.permission.EXTRAS" />
         <!-- the offer: install «إضافات تلفزيونك» or turn its service on (opened only when a feature that needs it was asked for) -->
         <activity android:name=".ExtrasActivity" android:exported="true" android:permission="sa.urtv.home.OPEN_EXTRAS" android:screenOrientation="landscape" android:theme="@android:style/Theme.Material.NoActionBar" />
 

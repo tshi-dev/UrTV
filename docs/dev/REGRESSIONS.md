@@ -308,6 +308,8 @@ often describe the same bug in two ways, and both rows are kept when their guard
 | R-300 | A TV with 2.4–3 GB that struggles in practice (memory running full, slow starts, the home killed for memory) never got «الوضع الخفيف» on «تلقائي» | «تلقائي» looked only at the specs (the low-RAM flag, under 2000 MB, two cores) | 4.4 | `tests/lite_auto_test.py` | launcher | N |
 | R-301 | A home killed by Android for memory right after it opened, again and again, never reached the safe page (the TV just kept reopening it) | the crash counter saw only Java crashes and hangs; a low-memory kill leaves no trace in the process | 4.4 | `tests/crash_loop_test.py` | launcher | N |
 | R-302 | No adhan at the prayer on a TV that ran short of space or was offline, and nothing said | the recordings sat in the cache Android empties under storage pressure, a failed fetch waited an hour, and a stream that could not come just ended | 4.4 | `tests/adhan_keep_test.py` | launcher | N |
+| R-303 | The add-on's wireless-debugging shell could have been used by another app, or for any command | the paired route gives an adb shell; a guard was needed: only sa.urtv.home with our certificate, only the setup's own command shapes, no injection | 4.4 | `tests/pair_commands_test.py` | extras launcher | N |
+| R-304 | «إعداد تلفزيوني» could not run on Google TV and Chromecast sets that have only «تصحيح الأخطاء اللاسلكي» (no adb on 5555) | the TV's own setup knew only 5555; now the add-on pairs by wireless debugging and the setup runs over it only when 5555 fails, and says why when it cannot | 4.4 | `tests/pair_test.py` | extras launcher | Y |
 
 ## Open findings of the gate (QA-n)
 

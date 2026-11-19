@@ -66,7 +66,7 @@ check("the fallback screen runs on Android 5 (the rescue's minSdk 21): no List.s
 hook = text(SETUP / "SetupHook.java")
 nj = hook[hook.index("private static void noJournal("):]
 check("at the home's start, a TV switched from the PC: asked of the app's own package manager first; adb only where this app's key exists (no «السماح بتصحيح USB؟» at a start), else told once",
-      "queryIntentActivities(" in nj and nj.index("if (!AdbKeys.exists(app))") < nj.index("SetupSession.open(") and "StockMigration.TOLD_MARK" in nj and "migrateStockNoJournal()" in nj
+      "queryIntentActivities(" in nj and nj.index("if (!AdbKeys.exists(app))") < nj.index("SetupSession.openAny(") and "StockMigration.TOLD_MARK" in nj and "migrateStockNoJournal()" in nj
       and "noJournal(app, store);" in hook)
 
 if not shutil.which("javac"):

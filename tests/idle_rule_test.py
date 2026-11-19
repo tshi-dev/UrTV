@@ -40,8 +40,8 @@ call = prov.split('if ("set_idle".equals(method)')[1].split("\n        }\n")[0]
 check("the provider checks the screensaver's key and answers SetupHook.setIdle", 'checkCallingPermission("sa.urtv.home.READ_NOW_PLAYING")' in call and "SetupHook.setIdle(getContext(), arg)" in call)
 si = hook.split("public static String setIdle(Context c, String minutes) {")[1].split("\n    }\n")[0]
 check("the home refuses other minutes before adb, waits for a running setup, needs the kept key",
-      si.index('return "bad"') < si.index('return "busy"') < si.index("AdbKeys.exists(app)") < si.index("SetupSession.open("))
-check("it runs only IdleSetRule's commands, after its probe", "s.adb.run(IdleSetRule.PROBE)" in si and "IdleSetRule.commands(ms, probe)" in si)
+      si.index('return "bad"') < si.index('return "busy"') < si.index("AdbKeys.exists(app)") < si.index("SetupSession.openAny("))
+check("it runs only IdleSetRule's commands, after its probe", "s.run(IdleSetRule.PROBE)" in si and "IdleSetRule.commands(ms, probe)" in si)
 check("the screensaver's minutes and the home's are the same list", 'IDLE_MINUTES = {"1", "2", "5", "10", "15", "30"}' in read(SAVER / "Prefs.java") and 'MINUTES = {"1", "2", "5", "10", "15", "30"}' in setrule)
 for w in ("أبداً (التلفزيون أوقف شاشة التوقف)", "لا تبدأ: التلفزيون أوقف شاشة التوقف", "جارٍ الضبط…", "إعداد التلفزيون شغّال الحين، جرّب بعده"):
     check("English and the marker for «" + w + "»", ("\n" + w + "\t") in en and 'S.n("' + w + '")' in words)

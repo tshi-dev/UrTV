@@ -40,8 +40,20 @@ check("the home ships WITHOUT any accessibility service (no service, no xml, no 
       and not (HOME / "TypeService.java").exists() and not (HOME / "SleepService.java").exists())
 check("the add-on is its own app (sa.urtv.extras), same key as the others, in the Gradle build",
       "applicationId 'sa.urtv.extras'" in gradle and "keyAlias 'urtv'" in gradle and "':extras'" in text(ROOT / "android/settings.gradle"))
-check("it has exactly one accessibility service, behind BIND_ACCESSIBILITY_SERVICE, and no internet",
-      xman.count("BIND_ACCESSIBILITY_SERVICE") == 1 and "android.permission.INTERNET" not in xman and "<activity" not in xman)
+# 4.4 beta 3 (the owner: the wireless-debugging libraries in the add-on only): INTERNET is there for one thing, the TLS connection to THIS TV's own adbd and its service
+# discovery on the local network (a socket needs it even to the TV itself). The guard is that nothing else of the add-on opens a connection.
+_xsrc = {f.relative_to(ROOT).as_posix(): f.read_text(encoding="utf-8") for f in (ROOT / "android/extras/src/main/java").rglob("*.java")}
+# (the pinned libraries, android/extras/pins.txt, are outside this scan of our own sources: pins.txt is their guard)
+_net = [p for p, t in _xsrc.items() if re.search(r"HttpURLConnection|URLConnection|new URL\(|new Socket\(|new ServerSocket\(|new DatagramSocket\(|createSocket\(|SocketChannel|openConnection\(|NsdManager|\.connect\(|WebView|DownloadManager", t) and "/sa/urtv/home/pair/" not in p]
+# the destination: every host given to the libraries' pair() and connect() is THIS TV's own (PairDiscovery's isOwn) or the loopback
+_pc = _xsrc.get("android/extras/src/main/java/sa/urtv/home/pair/PairClient.java", "")
+_pd = _xsrc.get("android/extras/src/main/java/sa/urtv/home/pair/PairDiscovery.java", "")
+check("the paired route talks only to this TV: pair() and connect() get a host from PairDiscovery (its own addresses only) or the loopback",
+      _pc.count("m.pair(where.host.getHostAddress()") == 1 and _pc.count("m.connect(where.host.getHostAddress()") == 1 and not re.search(r"m\.(pair|connect)\((?!where\.host\.getHostAddress\(\))", _pc)
+      and "new PairDiscovery.Found(java.net.InetAddress.getLoopbackAddress(), port)" in _pc and "PairDiscovery.find(" in _pc
+      and "boolean own = h != null && isOwn(h);" in _pd and "if (own) { got.set(new Found(h, info.getPort()));" in _pd and "NetworkInterface.getByInetAddress(a) != null" in _pd)
+check("it has exactly one accessibility service, behind BIND_ACCESSIBILITY_SERVICE; INTERNET only for wireless debugging: no connection outside its pair package",
+      xman.count("BIND_ACCESSIBILITY_SERVICE") == 1 and "<activity" not in xman and (("android.permission.INTERNET" not in xman) or (not _net and "/sa/urtv/home/pair/" in "".join(_xsrc))), _net)
 perm = 'android:protectionLevel="signature"'
 check("both apps declare sa.urtv.permission.EXTRAS as a signature permission, and each provider asks for it",
       perm in man and perm in xman and 'android:authorities="sa.urtv.extras.bridge"' in xman and 'android:authorities="sa.urtv.home.extras"' in man

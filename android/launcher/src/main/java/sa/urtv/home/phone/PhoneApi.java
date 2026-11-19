@@ -45,6 +45,8 @@ final class PhoneApi implements PhoneServer.Handler {
         if (r.path.equals("/u")) return post ? json(405, err("method")) : photosPage();
         // 4.3 «ارسم»: the drawing's own page; the strokes go to /api/draw behind the session
         if (r.path.equals("/d")) return post ? json(405, err("method")) : drawPage();
+        // 4.4 beta 3, the wireless-debugging pairing's own page (the code row): words and code only; the code goes to /api/adb_pair behind the session
+        if (r.path.equals("/a")) return post ? json(405, err("method")) : adbPage();
         // 4.4 «صوتياتي»: its own page, words and code only; the file goes to /api/audio_piece in pieces behind the session
         if (r.path.equals("/a")) return post ? json(405, err("method")) : audioPage();
         // the fonts are no secret, and CSS asks for them without the X-UrTV-Session header: no session, like the page itself
@@ -122,6 +124,7 @@ final class PhoneApi implements PhoneServer.Handler {
             case "/api/message": endpoint = "message"; break;   // 4.3 #53: a short message shown on the TV
             case "/api/photo_del": endpoint = "photodel"; break;   // 4.4 «صوري»: delete one photo (its pick)
             case "/api/audio": endpoint = "audio"; break;   // 4.4 «صوتياتي»: use a file, or delete it
+            case "/api/adb_pair": endpoint = "adbpair"; break;   // 4.4 beta 3: the wireless-debugging pairing's code (the TV's factory page armed it)
             case DRAW_PATH: endpoint = "draw"; break;   // 4.3 #53 «ارسم»: live strokes over the TV's screen
             default: return json(404, err("not_found"));
         }
@@ -163,6 +166,7 @@ final class PhoneApi implements PhoneServer.Handler {
             case "photodel": return result(a.photoDelete((String) v.get("id")));
             case "audio": return result(a.audioOp((String) v.get("op"), (Long) v.get("id"), (String) v.get("as")));
             case "draw": return result(a.draw((List<?>) v.get("s"), Boolean.TRUE.equals(v.get("clear"))));
+            case "adbpair": return result(a.adbPair((String) v.get("code")));
             case "cities": {
                 Map<String, Object> out = ok();
                 out.put("cities", a.cities((String) v.get("q")));
@@ -309,6 +313,11 @@ final class PhoneApi implements PhoneServer.Handler {
 
     static final String DRAW_PATH = "/api/draw";
 
+    private PhoneServer.Response adbPage() {
+        String html = control.page().adbHtml();
+        return html == null ? json(404, err("not_found")) : page(html);
+    }
+
     private PhoneServer.Response drawPage() {
         String html = control.page().drawHtml();
         return html == null ? json(404, err("not_found")) : page(html);
@@ -394,7 +403,7 @@ final class PhoneApi implements PhoneServer.Handler {
     /** For tests: the endpoints that need a session. */
     static List<String> sessionPaths() {
         List<String> l = new ArrayList<>();
-        for (String p : new String[] {"/api/state", "/api/key", "/api/text", "/api/set", "/api/quran", "/api/cities", "/api/update", "/api/launch", "/api/adhan_stop", "/api/do", "/api/apps", "/api/family", "/api/icon/com.example.app", "/api/backdrop", "/api/logout", "/api/portfolio", "/api/audio", PhoneServer.AUDIO_PATH, "/api/photos", "/api/photo_thumb/1:1", "/api/photo_del"}) l.add(p);
+        for (String p : new String[] {"/api/state", "/api/key", "/api/text", "/api/set", "/api/quran", "/api/cities", "/api/update", "/api/launch", "/api/adhan_stop", "/api/do", "/api/apps", "/api/family", "/api/icon/com.example.app", "/api/backdrop", "/api/logout", "/api/portfolio", "/api/audio", PhoneServer.AUDIO_PATH, "/api/adb_pair", "/api/photos", "/api/photo_thumb/1:1", "/api/photo_del"}) l.add(p);
         return l;
     }
 }
