@@ -128,7 +128,15 @@ These replace anything below that says otherwise:
 - **Values:** `dots` (the default, «نقاط ملونة»), `boxes` («مربعات»: small square colour-only boxes, `calc(var(--u)*6 + 10px)`), `boxes-letters` («مربعات بحروف»: square boxes with ف ت خ, 32 at 1080p lengths with the letter at 24 (16 px at 720p) and a gap of 8, all five inside the same 210 column as the dots). If a narrower table ever cannot hold five, it drops «له / عليه» first (the large-font rule), then shows the last 3; the test checks that no style's markers leave their column.
 - **The agent key:** `optimize/saver.sh formstyle dots|boxes|boxes-letters`, a `set1` line beside `cardstyle`, with its usage line in the
   header comment.
-- **On the TV:** in the sports settings, beside the other «المباريات» rows, as a choice list. Where to put it is decided with the UI session.
+- **On the TV (the UI session, 19 Nov):** CONTENT → «المباريات», directly after «الدوريات كاملة» and before «رياضات أخرى», as a choice list.
+  - The row is in `android/app/.../screensaver/SettingsActivity.java`, beside the «الدوريات كاملة» row.
+  - It is registered in all five places in `SettingsHub.java`: `ROWS`, `ORDER`, `SCOPES` (`"both"`), `ROWS_432` and `ORDER_432`.
+  - The value labels are «نقاط» (default) / «مربعات» / «مربعات بحروف».
+  - English is in `i18n/en/saver.tsv`: "Recent form style": Dots / Boxes / Boxes with letters.
+  - docs/SETTINGS-TREE.md is regenerated with the tree tool, not edited by hand.
+  - The UI session checks the row on the 720p large-font shot, and gets the sha when it is in.
+- **The UI session's approval of the looks:** dots stay the default. Boxes have square corners and no outline, and the letter keeps its
+  16 px floor at 720p.
 - **The page** reads it as `#formstyle=` and draws `.fdot`, `.fbox` or `.fbox.fbl`. The table, the home's table, the club page's «آخر خمس
   مباريات» and the quick view's results all use the same style.
 - **Docs:**
