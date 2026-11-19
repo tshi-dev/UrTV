@@ -1,0 +1,28 @@
+         1795107712.978   472   929 I ActivityManager: Force stopping sa.urtv.home appid=10077 user=0: from pid 7722
+         1795107715.109   472   929 I ActivityTaskManager: START u0 {flg=0x10000000 cmp=sa.urtv.home/.MainActivity} from uid 2000
+         1795107715.118   472   510 I ActivityManager: Start proc 7757:sa.urtv.home/u0a77 for pre-top-activity {sa.urtv.home/sa.urtv.home.MainActivity}
+         1795107715.179  7757  7757 I sa.urtv.home: Late-enabling -Xcheck:jni
+         1795107715.187  7757  7757 I sa.urtv.home: Unquickening 12 vdex files!
+         1795107715.188  7757  7757 W sa.urtv.home: Unexpected CPU variant for X86 using defaults: x86
+         1795107715.965  7757  7798 E ActivityThread: Failed to find provider info for sa.urtv.extras.bridge
+         1795107715.972  7757  7805 E ActivityThread: Failed to find provider info for sa.urtv.extras.bridge
+         1795107716.055  7757  7757 I TetheringManager: registerTetheringEventCallback:sa.urtv.home
+         1795107716.089  7757  7757 I UrTVHome: snapshot overlay: picture shown
+         1795107716.090  7757  7757 I UrTVHome: resume to first photo frame: 149 ms (small copy, disk), ram tier 0
+         1795107717.006   472   508 D ArtManagerInternalImpl: /data/misc/iorapd/sa.urtv.home/23/sa.urtv.home.MainActivity/compiled_traces/compiled_trace.pb doesn't exist
+         1795107717.006   472   508 I ActivityTaskManager: Displayed sa.urtv.home/.MainActivity: +1s894ms
+         1795107717.076  7757  7757 W sa.urtv.home: Accessing hidden method Landroid/os/Trace;->isTagEnabled(J)Z (greylist, reflection, allowed)
+         1795107717.076  7757  7757 W sa.urtv.home: Accessing hidden method Landroid/os/Trace;->traceBegin(JLjava/lang/String;)V (greylist, reflection, allowed)
+         1795107717.076  7757  7757 W sa.urtv.home: Accessing hidden method Landroid/os/Trace;->traceEnd(J)V (greylist, reflection, allowed)
+         1795107717.076  7757  7757 W sa.urtv.home: Accessing hidden method Landroid/os/Trace;->asyncTraceBegin(JLjava/lang/String;I)V (greylist, reflection, allowed)
+         1795107717.076  7757  7757 W sa.urtv.home: Accessing hidden method Landroid/os/Trace;->asyncTraceEnd(JLjava/lang/String;I)V (greylist, reflection, allowed)
+         1795107717.241   472   510 I ActivityManager: Start proc 7843:com.google.android.webview:sandboxed_process0:org.chromium.content.app.SandboxedProcessService0:0/u0i6 for  {sa.urtv.home/org.chromium.content.app.SandboxedProcessService0:0}
+         1795107717.326   472  3466 D ConnectivityService: requestNetwork for uid/pid:10077/7757 NetworkRequest [ TRACK_DEFAULT id=51, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED Uid: 10077 AdministratorUids: [] RequestorUid: 10077 RequestorPackageName: sa.urtv.home] ]
+         1795107717.327   472   650 D Ethernet: got request NetworkRequest [ TRACK_DEFAULT id=51, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED Uid: 10077 AdministratorUids: [] RequestorUid: 10077 RequestorPackageName: sa.urtv.home] ] with score 60 and providerId 2
+         1795107717.327   472   617 D WifiNetworkFactory: got request NetworkRequest [ TRACK_DEFAULT id=51, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED Uid: 10077 AdministratorUids: [] RequestorUid: 10077 RequestorPackageName: sa.urtv.home] ] with score 60 and providerId 2
+         1795107717.327   472   617 D UntrustedWifiNetworkFactory: got request NetworkRequest [ TRACK_DEFAULT id=51, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED Uid: 10077 AdministratorUids: [] RequestorUid: 10077 RequestorPackageName: sa.urtv.home] ] with score 60 and providerId 2
+         1795107717.342  7757  7836 W sa.urtv.home: Accessing hidden method Landroid/media/AudioManager;->getOutputLatency(I)I (greylist, reflection, allowed)
+         1795107718.769  7757  7757 I UrTVHome: snapshot overlay: gone after 2680 ms
+         1795107720.423  7757  7791 E ActivityThread: Failed to find provider info for sa.urtv.extras.bridge
+         1795107720.427  7757  7776 I sa.urtv.home: Waiting for a blocking GC ProfileSaver
+         1795107720.441  7757  7776 I sa.urtv.home: WaitForGcToComplete blocked ProfileSaver on RunEmptyCheckpoint for 13.493ms

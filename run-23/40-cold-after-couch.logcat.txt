@@ -1,0 +1,31 @@
+         1795107687.436   472  3982 I ActivityManager: Force stopping sa.urtv.home appid=10077 user=0: from pid 7335
+         1795107687.437   472  3982 I ActivityManager: Killing 3705:sa.urtv.home/u0a77 (adj 0): stop sa.urtv.home due to from pid 7335
+         1795107687.439   472  3982 W ActivityTaskManager: Force removing ActivityRecord{6562a90 u0 sa.urtv.home/.MainActivity t5 f}}: app died, no saved state
+         1795107687.547   472  1471 D ConnectivityService: ConnectivityService NetworkRequestInfo binderDied(NetworkRequest [ LISTEN id=46, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED&FOREGROUND Uid: 10077 AdministratorUids: [] RequestorUid: 10077 RequestorPackageName: sa.urtv.home] ], android.os.BinderProxy@2221878)
+         1795107687.550   472  1148 D ConnectivityService: ConnectivityService NetworkRequestInfo binderDied(NetworkRequest [ TRACK_DEFAULT id=45, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED Uid: 10077 AdministratorUids: [] RequestorUid: 10077 RequestorPackageName: sa.urtv.home] ], android.os.BinderProxy@c92b51)
+         1795107687.550   472   621 D ConnectivityService: releasing NetworkRequest [ TRACK_DEFAULT id=45, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED Uid: 10077 AdministratorUids: [] RequestorUid: 10077 RequestorPackageName: sa.urtv.home] ] (release request)
+         1795107690.235   472   712 I ActivityManager: Force stopping sa.urtv.home appid=10077 user=0: from pid 7477
+         1795107692.432   472   610 I ActivityTaskManager: START u0 {flg=0x10000000 cmp=sa.urtv.home/.MainActivity} from uid 2000
+         1795107692.467   472   510 I ActivityManager: Start proc 7515:sa.urtv.home/u0a77 for pre-top-activity {sa.urtv.home/sa.urtv.home.MainActivity}
+         1795107692.531  7515  7515 I sa.urtv.home: Late-enabling -Xcheck:jni
+         1795107692.543  7515  7515 I sa.urtv.home: Unquickening 12 vdex files!
+         1795107692.543  7515  7515 W sa.urtv.home: Unexpected CPU variant for X86 using defaults: x86
+         1795107693.409  7515  7558 E ActivityThread: Failed to find provider info for sa.urtv.extras.bridge
+         1795107693.413  7515  7562 E ActivityThread: Failed to find provider info for sa.urtv.extras.bridge
+         1795107693.514  7515  7515 I TetheringManager: registerTetheringEventCallback:sa.urtv.home
+         1795107693.569  7515  7515 I UrTVHome: snapshot overlay: picture shown
+         1795107693.569  7515  7515 I UrTVHome: resume to first photo frame: 201 ms (small copy, disk), ram tier 0
+         1795107694.537   472   508 D ArtManagerInternalImpl: /data/misc/iorapd/sa.urtv.home/23/sa.urtv.home.MainActivity/compiled_traces/compiled_trace.pb doesn't exist
+         1795107694.554   472   508 I ActivityTaskManager: Displayed sa.urtv.home/.MainActivity: +2s68ms
+         1795107694.669  7515  7515 W sa.urtv.home: Accessing hidden method Landroid/os/Trace;->isTagEnabled(J)Z (greylist, reflection, allowed)
+         1795107694.669  7515  7515 W sa.urtv.home: Accessing hidden method Landroid/os/Trace;->traceBegin(JLjava/lang/String;)V (greylist, reflection, allowed)
+         1795107694.669  7515  7515 W sa.urtv.home: Accessing hidden method Landroid/os/Trace;->traceEnd(J)V (greylist, reflection, allowed)
+         1795107694.669  7515  7515 W sa.urtv.home: Accessing hidden method Landroid/os/Trace;->asyncTraceBegin(JLjava/lang/String;I)V (greylist, reflection, allowed)
+         1795107694.669  7515  7515 W sa.urtv.home: Accessing hidden method Landroid/os/Trace;->asyncTraceEnd(JLjava/lang/String;I)V (greylist, reflection, allowed)
+         1795107694.769   472   510 I ActivityManager: Start proc 7599:com.google.android.webview:sandboxed_process0:org.chromium.content.app.SandboxedProcessService0:0/u0i5 for  {sa.urtv.home/org.chromium.content.app.SandboxedProcessService0:0}
+         1795107694.796   472   610 D ConnectivityService: requestNetwork for uid/pid:10077/7515 NetworkRequest [ TRACK_DEFAULT id=49, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED Uid: 10077 AdministratorUids: [] RequestorUid: 10077 RequestorPackageName: sa.urtv.home] ]
+         1795107694.797   472   617 D WifiNetworkFactory: got request NetworkRequest [ TRACK_DEFAULT id=49, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED Uid: 10077 AdministratorUids: [] RequestorUid: 10077 RequestorPackageName: sa.urtv.home] ] with score 60 and providerId 2
+         1795107694.797   472   617 D UntrustedWifiNetworkFactory: got request NetworkRequest [ TRACK_DEFAULT id=49, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED Uid: 10077 AdministratorUids: [] RequestorUid: 10077 RequestorPackageName: sa.urtv.home] ] with score 60 and providerId 2
+         1795107694.797   472   650 D Ethernet: got request NetworkRequest [ TRACK_DEFAULT id=49, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED Uid: 10077 AdministratorUids: [] RequestorUid: 10077 RequestorPackageName: sa.urtv.home] ] with score 60 and providerId 2
+         1795107694.816  7515  7605 W sa.urtv.home: Accessing hidden method Landroid/media/AudioManager;->getOutputLatency(I)I (greylist, reflection, allowed)
+         1795107696.199  7515  7515 I UrTVHome: snapshot overlay: gone after 2630 ms

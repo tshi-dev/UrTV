@@ -1,0 +1,58 @@
+Performing Streamed Install
+Success
+Performing Streamed Install
+Success
+== 01-preset-tv-to-couch
+/sdcard/01-preset-tv-to-couch.mp4: 1 file pulled, 0 skipped. 183.2 MB/s (1362567 bytes in 0.007s)
+== 02-preset-couch-to-tv
+/sdcard/02-preset-couch-to-tv.mp4: 1 file pulled, 0 skipped. 209.8 MB/s (766274 bytes in 0.003s)
+== 03-bg-photos-to-scenes
+/sdcard/03-bg-photos-to-scenes.mp4: 1 file pulled, 0 skipped. 144.3 MB/s (339057 bytes in 0.002s)
+== 04-bg-scenes-to-photos
+/sdcard/04-bg-scenes-to-photos.mp4: 1 file pulled, 0 skipped. 201.3 MB/s (599434 bytes in 0.003s)
+== 05-apps-tiles-to-banners
+/sdcard/05-apps-tiles-to-banners.mp4: 1 file pulled, 0 skipped. 132.5 MB/s (264735 bytes in 0.002s)
+== 06-apps-banners-to-icons
+/sdcard/06-apps-banners-to-icons.mp4: 1 file pulled, 0 skipped. 124.9 MB/s (260569 bytes in 0.002s)
+== 07-apps-icons-to-tiles
+/sdcard/07-apps-icons-to-tiles.mp4: 1 file pulled, 0 skipped. 137.7 MB/s (272353 bytes in 0.002s)
+== 08-clock-plain-to-glass
+/sdcard/08-clock-plain-to-glass.mp4: 1 file pulled, 0 skipped. 136.4 MB/s (246130 bytes in 0.002s)
+== 09-clock-glass-to-plain
+/sdcard/09-clock-glass-to-plain.mp4: 1 file pulled, 0 skipped. 126.3 MB/s (244113 bytes in 0.002s)
+== 10-layout-classic-to-football
+/sdcard/10-layout-classic-to-football.mp4: 1 file pulled, 0 skipped. 161.0 MB/s (397452 bytes in 0.002s)
+== 11-layout-football-to-classic
+/sdcard/11-layout-football-to-classic.mp4: 1 file pulled, 0 skipped. 166.5 MB/s (351713 bytes in 0.002s)
+== 20-back-after-couch
+/sdcard/20-back-after-couch.mp4: 1 file pulled, 0 skipped. 7.4 MB/s (329585 bytes in 0.043s)
+== 21-back-after-tv
+/sdcard/21-back-after-tv.mp4: 1 file pulled, 0 skipped. 191.6 MB/s (522780 bytes in 0.003s)
+== 22-back-after-apps-banners
+/sdcard/22-back-after-apps-banners.mp4: 1 file pulled, 0 skipped. 178.5 MB/s (686701 bytes in 0.004s)
+== 23-back-after-apps-tiles
+/sdcard/23-back-after-apps-tiles.mp4: 1 file pulled, 0 skipped. 176.1 MB/s (588146 bytes in 0.003s)
+== 40-cold-after-couch
+/sdcard/40-cold-after-couch.mp4: 1 file pulled, 0 skipped. 33.1 MB/s (738001 bytes in 0.021s)
+== 41-cold-after-tv
+/sdcard/41-cold-after-tv.mp4: 1 file pulled, 0 skipped. 188.7 MB/s (1679351 bytes in 0.008s)
+== 50-panel-open
+/sdcard/50-panel-open.mp4: 1 file pulled, 0 skipped. 103.4 MB/s (174406 bytes in 0.002s)
+== 51-panel-preview-couch
+/sdcard/51-panel-preview-couch.mp4: 1 file pulled, 0 skipped. 1.2 MB/s (52194 bytes in 0.042s)
+== 52-panel-back-saved
+/sdcard/52-panel-back-saved.mp4: 1 file pulled, 0 skipped. 74.2 MB/s (136193 bytes in 0.002s)
+Warning: Activity not started, intent has been delivered to currently running top-most instance.
+== 53-panel-ok-couch
+/sdcard/53-panel-ok-couch.mp4: 1 file pulled, 0 skipped. 103.5 MB/s (234510 bytes in 0.002s)
+== 54-panel-close
+/sdcard/54-panel-close.mp4: 1 file pulled, 0 skipped. 57.1 MB/s (86919 bytes in 0.001s)
+Warning: Activity not started, intent has been delivered to currently running top-most instance.
+== 55-panel-undo
+/sdcard/55-panel-undo.mp4: 1 file pulled, 0 skipped. 82.3 MB/s (151533 bytes in 0.002s)
+Warning: Activity not started, intent has been delivered to currently running top-most instance.
+== 30-settings-preset-couch
+/sdcard/30-settings-preset-couch.mp4: 1 file pulled, 0 skipped. 1.4 MB/s (60199 bytes in 0.042s)
+== 31-settings-preset-tv
+/sdcard/31-settings-preset-tv.mp4: 1 file pulled, 0 skipped. 54.7 MB/s (60199 bytes in 0.001s)
+done
