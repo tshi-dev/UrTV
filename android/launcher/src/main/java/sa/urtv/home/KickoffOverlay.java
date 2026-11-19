@@ -52,9 +52,8 @@ final class KickoffOverlay {
         box.setOrientation(LinearLayout.VERTICAL);
         box.setLayoutDirection(Dir.layout());
         GradientDrawable bg = new GradientDrawable();
-        bg.setColor(0xE60C0E12);
+        bg.setColor(0xFF0C0E12);   // the UI review: a flat opaque fill, no edge (nothing behind reads)
         bg.setCornerRadius(28 * u);
-        bg.setStroke(Math.max(1, (int) (2 * u)), 0x99E9C46A);
         box.setBackground(bg);
         int pad = (int) (28 * u);
         box.setPadding(pad, (int) (22 * u), pad, (int) (24 * u));

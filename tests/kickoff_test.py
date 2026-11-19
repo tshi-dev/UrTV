@@ -63,7 +63,7 @@ check("the add-on side: the provider answers «notice» (draws it) and says CAN_
       and "Extras.notice(b)" in ovn and "Extras.canDraw()" in ovn)
 check("the home's notice in its own window stays (no permission needed), and no TYPE_APPLICATION_OVERLAY is left anywhere in the home",
       "static boolean showIn(" in over and not [p.name for p in HOME.rglob("*.java") if "TYPE_APPLICATION_OVERLAY" in read(p)])
-check("the notice over another app: cream text on dark glass, top right (the add-on's window), 8 s", "CREAM = 0xFFFFF8EC" in xnote and "0xE60C0E12" in xnote and "Gravity.TOP | Gravity.RIGHT" in xnote and "SHOW_MS = 8_000L" in xnote, "colour")
+check("the notice over another app: cream text on the flat dark fill, top right (the add-on's window), 8 s", "CREAM = 0xFFFFF8EC" in xnote and "bg.setColor(0xFF0C0E12);" in xnote and "Gravity.TOP | Gravity.RIGHT" in xnote and "SHOW_MS = 8_000L" in xnote, "colour")
 check("the whistle is a notification sound that ducks the TV (never a music stream)", "USAGE_NOTIFICATION_EVENT" in whistle and "AUDIOFOCUS_GAIN_TRANSIENT_MAY_DUCK" in whistle)
 check("the home's card asks the page for its list (no JavaScript interface, only while in front)",
       "addJavascriptInterface" not in card and "spKickList()" in card and "idle.removeCallbacks(kickPull);   // 4.4" in card)
@@ -113,9 +113,16 @@ check("the clubs on the notice: no colour square anywhere (home, add-on, the pag
       "swatch(" not in over and "swatch(" not in xnote and "swatch(" not in tryj and "spsw" not in js.split("function spKick(", 1)[1].split("\n}", 1)[0]
       and "const sw = id => id ? spCrest(id, 'kcr') : '';" in js and "hid: String(e2.idHomeTeam), aid: String(e2.idAwayTeam)" in js
       and "hid: String(ev.idHomeTeam), aid: String(ev.idAwayTeam)" in js and "const spCrestOf = id =>" in js and 'onerror="this.remove()"' in js)
-check("…the notices' look and timing unchanged: 8 s, the top right, the slide of 450 ms, the dark glass with the gold edge, the names at 38 and the head at 24",
-      over.count("SHOW_MS = 8_000L") == 1 and "Gravity.TOP | Dir.start(true)" in over and over.count("setDuration(450)") == 2 and "bg.setColor(0xE60C0E12)" in over
-      and "bg.setStroke(Math.max(1, (int) (2 * u)), 0x99E9C46A)" in over and 'text(c, "  " + g.h + "   ×   " + g.a + "  ", CREAM, 38 * u, true)' in over
+_spk = js.split("#spkick{", 1)[1].split("@keyframes", 1)[0]
+check("the UI review: no edge on any notice (home, add-on, «جرّب التنبيه», the page; a goal's green edge too), a flat OPAQUE fill (.97 let the page's date read)",
+      not any("setStroke(" in x for x in (over, xnote, tryj)) and all("bg.setColor(0xFF0C0E12);" in x for x in (over, xnote, tryj))
+      and "border:" not in _spk and "background:rgb(12,14,18);" in _spk and "#spkick.goal{border-color" not in js)
+check("the UI review: the timer bar neutral (white at 35 %), square ends, 3 px at 1080 and 2 at 720, never gold",
+      "#spkick .kb{height:max(2px,.28vh);margin:0 -1.5vw;background:rgba(255,255,255,.35);border-radius:0;" in js and "#E9C46A" not in js.split("#spkick .kb{", 1)[1][:200]
+      and "bar.setBackgroundColor(0x59FFFFFF);" in tryj and "new LinearLayout.LayoutParams(-1, Math.max(2, Math.round(3 * u)))" in tryj and "g.setColor(GOLD)" not in tryj)
+check("…the notices' look and timing unchanged: 8 s, the top right, the slide of 450 ms, the names at 38 and the head at 24",
+      over.count("SHOW_MS = 8_000L") == 1 and "Gravity.TOP | Dir.start(true)" in over and over.count("setDuration(450)") == 2
+      and 'text(c, "  " + g.h + "   ×   " + g.a + "  ", CREAM, 38 * u, true)' in over
       and 'text(c, S.t("بدأت المباراة"), GOLD, 24 * u, false)' in over and "(int) (dm.widthPixels * 0.36f)" in over
       and "mid.addView(text(c, line, CREAM, 38 * u, true));" in xnote and "SHOW_MS = 8_000L" in xnote
       and "SHOW_MS = 8000" in tryj and "setDuration(450)" in tryj and "}, 8000);" in js.split("function spKick(", 1)[1].split("\n}", 1)[0])

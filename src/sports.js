@@ -61,16 +61,16 @@ html.sptake:not(.widget) .mid .clockwrap{display:none}
 html.sptake:not(.widget) .mid .week.sptk{grid-column:1/-1;font-size:1.25em}
 .spclk{font-weight:400;opacity:.85}
 /* the notice (spKick): the top right of the screensaver, 8 s, cream text on nearly solid dark glass (nothing reads through it) */
-#spkick{position:fixed;top:4.5vh;right:2.5vw;width:min(36vw,700px);z-index:60;border-radius:1.4vh;background:rgba(12,14,18,.97);
-  border:1px solid rgba(233,196,106,.6);box-shadow:0 1.2vh 3.2vh rgba(0,0,0,.5);color:#F4EBD8;padding:1.3vh 1.5vw 0;font-size:max(2.5vh,13px);line-height:1.45;overflow:hidden;
+#spkick{position:fixed;top:4.5vh;right:2.5vw;width:min(36vw,700px);z-index:60;border-radius:1.4vh;background:rgb(12,14,18);   /* the UI review: a flat opaque fill, no edge (even .97 let the page's date read through) */
+  
+  box-shadow:0 1.2vh 3.2vh rgba(0,0,0,.5);color:#F4EBD8;padding:1.3vh 1.5vw 0;font-size:max(2.5vh,13px);line-height:1.45;overflow:hidden;
   transition:transform .45s ease,opacity .45s ease;text-align:center}
 #spkick.out{transform:translateX(calc(100% + 4vw));opacity:0}   /* the top right in both languages (the owner's corner), so it leaves to the right */
 #spkick .kt{display:flex;justify-content:space-between;gap:1em;color:#F0D48E;font-weight:500}#spkick .kt i{font-style:normal;color:#E5DCC8;font-weight:400}
 #spkick .km{display:flex;align-items:center;justify-content:center;gap:1.1em;margin:1vh 0 1.2vh;font-size:1.55em;font-weight:700;color:#FFF8EC}
 #spkick .km .kcr{width:.9em;height:.9em;object-fit:contain;vertical-align:-.12em;margin:0 .3em}
-#spkick .kb{height:.35vh;margin:0 -1.5vw;background:#E9C46A;transform-origin:inline-end;animation:spkb 8s linear forwards}
+#spkick .kb{height:max(2px,.28vh);margin:0 -1.5vw;background:rgba(255,255,255,.35);border-radius:0;transform-origin:inline-end;animation:spkb 8s linear forwards}
 @keyframes spkb{to{transform:scaleX(0)}}
-#spkick.goal{border-color:#3BB273}
 /* on the home the page is only the card's own window: the goal and the final score (the kick-off is the launcher's own, at the screen's corner)
    as a band over the card's top, the card's size; in the couch strip one line, the clubs and the score */
 html.widget #spkick{top:.45em;left:.45em;right:.45em;width:auto;font-size:13px;border-radius:.7em;padding:.45em .9em 0}

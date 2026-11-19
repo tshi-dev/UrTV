@@ -53,9 +53,8 @@ final class KickoffTry {
         box.setLayoutDirection(Dir.layout());
         box.setFocusable(false);
         GradientDrawable bg = new GradientDrawable();
-        bg.setColor(0xE60C0E12);
+        bg.setColor(0xFF0C0E12);   // the UI review: a flat opaque fill, no edge (nothing behind reads)
         bg.setCornerRadius(18 * u);
-        bg.setStroke(Math.max(1, Math.round(2 * u)), 0x99F0D48E);
         box.setBackground(bg);
         int pad = Math.round(22 * u);
         box.setPadding(pad, Math.round(16 * u), pad, Math.round(18 * u));
@@ -66,11 +65,8 @@ final class KickoffTry {
         box.addView(top);
         box.addView(text(a, "  " + (S.en() ? "Al Hilal" : "الهلال") + "   ×   " + (S.en() ? "Al Nassr" : "النصر") + "  ", CREAM, 38 * u, true));   // sample clubs: names, not words to translate
         View bar = new View(a);
-        GradientDrawable g = new GradientDrawable();
-        g.setColor(GOLD);
-        g.setCornerRadius(2 * u);
-        bar.setBackground(g);
-        LinearLayout.LayoutParams bp = new LinearLayout.LayoutParams(-1, Math.max(2, Math.round(4 * u)));
+        bar.setBackgroundColor(0x59FFFFFF);   // the timer: neutral white at 35 %, square ends, 3 px at 1080 (2 at 720)
+        LinearLayout.LayoutParams bp = new LinearLayout.LayoutParams(-1, Math.max(2, Math.round(3 * u)));
         bp.topMargin = Math.round(12 * u);
         box.addView(bar, bp);
         bar.post(() -> { bar.setPivotX(Dir.rtl() ? 0 : bar.getWidth()); bar.animate().scaleX(0).setDuration(SHOW_MS).start(); });
