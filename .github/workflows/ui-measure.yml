@@ -86,7 +86,7 @@ jobs:
             git -C "$work" remote add origin "https://x-access-token:${{ github.token }}@github.com/${GITHUB_REPOSITORY}.git"; }
           mkdir -p "$work/$run"
           cp ui-out/*-sheet.jpg ui-out/*.txt ui-out/report.* "$work/$run"/ 2>/dev/null || true
-          python3 -c "import sys; from PIL import Image; [Image.open(f).convert('RGB').resize((960, 540)).save(sys.argv[1] + '/' + f.split('/')[-1][:-4] + '.jpg', quality=85) for f in sys.argv[2:]]" "$work/$run" $(ls ui-out/*-end.png ui-out/start.png ui-out/panel-*.png ui-out/settings-*.png ui-out/look-*.png 2>/dev/null)
+          python3 -c "import sys; from PIL import Image; [Image.open(f).convert('RGB').resize((960, 540)).save(sys.argv[1] + '/' + f.split('/')[-1][:-4] + '.jpg', quality=85) for f in sys.argv[2:]]" "$work/$run" $(ls ui-out/*-end.png ui-out/start.png ui-out/panel-*.png ui-out/settings-*.png ui-out/look-*.png ui-out/apps-*.png 2>/dev/null)
           cd "$work"
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
