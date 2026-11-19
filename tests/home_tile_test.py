@@ -73,8 +73,15 @@ back = ma[ma.index("public void onBackPressed()"):ma.index("// -----------------
 check("Back: the grid's Back to the dock as before; at the top it leaves when this app is not the default home",
       "dockCards.get(0).requestFocus();" in back and "else if (HomeBack.leaves(isDefaultHome(), false)) finish();" in back
       and 'new Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_HOME), PackageManager.MATCH_DEFAULT_ONLY' in back and "HomeBack.isDefaultHome(" in back)
+_java = {f.name: f.read_text(encoding="utf-8") for f in (ROOT / H).rglob("*.java")}
+# 4.4 beta 2 (R-287): the add-on asks whether our home HOLDS the role (Extras.homeRole: RoleManager's isRoleAvailable / isRoleHeld, read only, by name);
+# asking for it or taking it stays forbidden everywhere
 check("nothing in the code hands the home role to us or opens the HOME intent when opened from the tile",
-      not re.search(r"RoleManager|ROLE_HOME|ACTION_SET_DEFAULT", "".join(f.read_text(encoding="utf-8") for f in (ROOT / H).rglob("*.java"))))
+      not re.search(r"createRequestRoleIntent|addRoleHolder|ACTION_REQUEST_ROLE|ACTION_SET_DEFAULT|RoleManager\.ROLE_HOME|android\.app\.role\.RoleManager", "".join(_java.values())))
+_hr = _java.get("Extras.java", "").split("static String homeRole(Context c) {")[-1].split("\n    }\n")[0]
+check("the add-on's question (Extras.homeRole) only reads the HOME role: isRoleAvailable and isRoleHeld, nothing that changes it",
+      'getMethod("isRoleHeld", String.class)' in _hr and 'getMethod("isRoleAvailable", String.class)' in _hr
+      and not re.search(r"add|remove|request|clear", re.sub(r'"isRole(Held|Available)"|getMethod|getSystemService|getClass', "", _hr), re.I))
 check("the family lock and kids mode are not touched by the tile", "HomeTile" not in text(H + "Parental.java") + text(H + "ParentalPolicy.java") + text(H + "PhoneApps.java"))
 tilawah = text("android/launcher/src/main/AndroidManifest.xml")
 check("the tilawah entries are still there", ".tilawah." in tilawah or "tilawah" in tilawah)
