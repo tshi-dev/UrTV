@@ -86,7 +86,7 @@
   .tr .pt{width:calc(var(--u)*64);text-align:center;font-weight:700}
   .tr .pt.ptl{color:var(--flo)}
   .tr.th .pt{font-weight:400}
-  .tr .fo{width:calc(var(--u)*230);display:flex;justify-content:center;align-items:baseline;direction:ltr}
+  .tr .fo{width:calc(var(--u)*210);overflow:hidden;display:flex;justify-content:center;align-items:baseline;direction:ltr}
   .tr .fo.fh{direction:rtl;text-align:center;line-height:1.1;white-space:normal}
   .tr.th{height:auto;min-height:calc(var(--u)*38);padding-top:calc(var(--u)*4);padding-bottom:calc(var(--u)*4)}
   .fdot{display:inline-block;width:calc(var(--u)*6 + 8px);height:calc(var(--u)*6 + 8px);border-radius:50%;margin-left:calc(var(--u)*10);vertical-align:middle;flex:none}   /* the owner: colour only; 14 px at 1080p, 12 at 720p */
@@ -94,8 +94,8 @@
   /* «مربعات»: small square boxes, colour only, a little larger than the dots (16 px at 1080p, 14 at 720p), square corners, a gap */
   .fbox{display:inline-flex;align-items:center;justify-content:center;width:calc(var(--u)*6 + 10px);height:calc(var(--u)*6 + 10px);border-radius:0;font-style:normal;margin-left:calc(var(--u)*10);flex:none}
   .fbox.w{background:var(--fw)}.fbox.d{background:var(--fd)}.fbox.l{background:var(--fl)}
-  /* «مربعات بحروف»: the same square boxes with ف ت خ inside; just big enough for the 16 px floor at 720p (the box 24 px there, 36 at 1080p) */
-  .fbox.fbl{width:calc(var(--u)*36);height:calc(var(--u)*36);margin-left:calc(var(--u)*9);color:#fff;font-size:calc(var(--u)*24);font-weight:700}
+  /* «مربعات بحروف»: the same square boxes with ف ت خ inside; the letter at the 16 px floor at 720p in a 32 box (21 px there), five of them inside the dots' own column (210) */
+  .fbox.fbl{width:calc(var(--u)*32);height:calc(var(--u)*32);margin-left:calc(var(--u)*8);color:#fff;font-size:calc(var(--u)*24);font-weight:700}
   .fbox.fbl.d{color:#1B1F1D}
   .ft .fbox{margin:calc(var(--u)*8) 0 0}
 

@@ -447,8 +447,11 @@ The owner circled the coloured bars at the row edges on 3-table-full and called 
   - «نقاط ملونة»: the default, the colour-only dots.
   - «مربعات»: small square boxes, colour only. They are 16 px at 1080p and 14 at 720p, a little larger than the dots, with square corners
     and a gap between them.
-  - «مربعات بحروف»: the same square boxes with ف ت خ inside. To keep a letter at the 16 px floor at 720p, the box is 24 px there (36 at
-    1080p lengths), larger than the plain boxes, with a gap of 9.
+  - «مربعات بحروف»: the same square boxes with ف ت خ inside, **in the dots' own column (210)** (the owner: it must fit the table).
+    - The box is 32 at 1080p lengths (21 px at 720p), with the letter at 24 (the 16 px floor) and a gap of 8. Five of them take 200 of
+      the 210.
+    - Nothing else moves: «له / عليه» stay, and all five show.
+    - `render.mjs` fails if any style's markers leave their column.
   - The plain-letters style is dropped unless the owner asks again.
   - Mockups at 720p: `9-form-boxes`, `10-form-boxes-letters`, their large-font versions (`11`, `12`), and the club page with each (`13`, `14`).
   - All three fit at 720p and with the large font.

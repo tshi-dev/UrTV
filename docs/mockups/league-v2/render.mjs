@@ -52,6 +52,12 @@ for (const [w, h, tag] of sizes) {
       return bad.slice(0, 5);
     });
     if (out.length && !hash.includes('large')) { console.error(`${name} ${tag}: outside the safe area:`, out); process.exitCode = 1; }
+    // the form cell: every style's five markers inside the same column, never past it (the owner)
+    const fit = await page.evaluate(() => [...document.querySelectorAll('#root .tr .fo')].filter(f => {
+      const r = f.getBoundingClientRect(), k = [...f.children].map(c => c.getBoundingClientRect());
+      return k.length && (Math.min(...k.map(x => x.left)) < r.left - 0.5 || Math.max(...k.map(x => x.right)) > r.right + 0.5 || f.scrollWidth > f.clientWidth + 1);
+    }).length);
+    if (fit) { console.error(`${name} ${tag}: ${fit} form cells overflow their column`); process.exitCode = 1; }
     if (deco.length) { console.error(`${name} ${tag}:`, deco); process.exitCode = 1; }
     if (small.length) { console.error(`${name} ${tag}: text under the floor:`, small); process.exitCode = 1; }
     if (tag === '540p') continue;

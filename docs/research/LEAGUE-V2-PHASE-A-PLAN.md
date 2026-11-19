@@ -125,7 +125,7 @@ These replace anything below that says otherwise:
 
 ## 3a3. The setting «شكل آخر المباريات» (the owner, 19 Nov), built with phase (a)
 
-- **Values:** `dots` (the default, «نقاط ملونة»), `boxes` («مربعات»: small square colour-only boxes, `calc(var(--u)*6 + 10px)`), `boxes-letters` («مربعات بحروف»: square boxes with ف ت خ, 36 at 1080p lengths so the letter holds 16 px at 720p).
+- **Values:** `dots` (the default, «نقاط ملونة»), `boxes` («مربعات»: small square colour-only boxes, `calc(var(--u)*6 + 10px)`), `boxes-letters` («مربعات بحروف»: square boxes with ف ت خ, 32 at 1080p lengths with the letter at 24 (16 px at 720p) and a gap of 8, all five inside the same 210 column as the dots). If a narrower table ever cannot hold five, it drops «له / عليه» first (the large-font rule), then shows the last 3; the test checks that no style's markers leave their column.
 - **The agent key:** `optimize/saver.sh formstyle dots|boxes|boxes-letters`, a `set1` line beside `cardstyle`, with its usage line in the
   header comment.
 - **On the TV:** in the sports settings, beside the other «المباريات» rows, as a choice list. Where to put it is decided with the UI session.
