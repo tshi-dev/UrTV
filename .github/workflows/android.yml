@@ -104,6 +104,8 @@ jobs:
           for f in urtv-screensaver.apk urtv-home.apk urtv-extras.apk urtv-rescue.apk; do
             echo "$f:"; "$apksigner" verify --print-certs "$f" | grep -m2 -E 'certificate (DN|SHA-256)'
           done
+          # 4.4 beta 3: each APK's size in bytes (the add-on's before and after its wireless-debugging libraries; any size change shows here)
+          for f in urtv-screensaver.apk urtv-home.apk urtv-extras.apk urtv-rescue.apk; do echo "apk size: $f $(stat -c %s "$f") bytes"; done
 
       - uses: actions/upload-artifact@v4
         with:
