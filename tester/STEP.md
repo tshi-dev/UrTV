@@ -1,3 +1,11 @@
+«▶ STEP 105 (UI session request, 19 Nov), do it BEFORE step 104 (the clean-up): preset preview pictures from the real TV with real apps.
+ 1) Back up the owner's look first (`optimize/saver.sh show` + dock → optimize/run/step105/before/, PC only).
+ 2) For each key in: tv couch clean family sport calm couch-prayers clean-icons sport-night tv-glass → `optimize/saver.sh preset <key>`, wait 10 s on the home, `adb exec-out screencap -p > look-<key>.png`.
+ 3) Privacy before sending: no Wi-Fi name, no IP, no notification text with names; if the greeting shows the owner's name, turn «اسمك في التحية» off for the shots and put it back after. Check each picture by eye.
+ 4) Put the owner's own look back EXACTLY from the backup (not «preset tv»); compare `saver.sh show` with the backup and report «identical».
+ 5) Push the 10 PNGs to work/tester-report under tester/looks/ (they are our own app screens, so pushing is fine) and say so in REPORT.md. The UI session resizes them.
+ TV muted.»
+
 «▶ STEP 104 (owner, 19 Nov) — clean TV for the owner's iPhone setup video. WAIT: do NOT start it until the owner says in chat «خلصت، نظّف التلفزيون» (he is first doing the NEEDS-OWNER items at the TV himself). Then:
  1) Back up everything first: `optimize/saver.sh show` and the dock to optimize/run/step104/before/ (PC only, never pushed), plus `pm list packages -d` and `cmd role get-role-holders android.app.role.HOME`. Confirm the backup files are not empty before going on.
  2) Remove UrTV completely so the TV is like a first-time user's: uninstall sa.urtv.home, sa.urtv.screensaver, the extras add-on and the rescue app if present (`pm uninstall`, user 0 only if a plain uninstall is refused). Re-enable ONLY packages that UrTV's setup itself disabled, from the setup's own record (optimize/disable.sh's list / the setup report); never touch launcherx or setupwraith, never factory reset, never the family PIN.
