@@ -141,6 +141,41 @@ public final class Extras {
         }
     }
 
+    /**
+     * 4.4 beta 2 (the tester, build 525: the FIRST Home press after an update of this app opened the stock home): while this app was being replaced, the
+     * add-on judged its Home key catch with our home not installed for a moment, turned it off, and judged it again only when our home came to the front.
+     * After our replace, the person's choice the add-on holds is told to it again, as it is (WANTED or UNWANTED, never changed here): that makes it judge
+     * the catch again, now with our home installed. Works with an add-on that was not updated. Off the UI thread (a call into the add-on).
+     * A fixed word back for the log: rearmed, catch-off (the person's switch is off: nothing to arm), no-answer, no-addon.
+     */
+    static String rearmHomeKey(Context c) {
+        try {
+            Uri u = Uri.parse("content://" + ExtrasWords.EXTRAS_AUTHORITY);
+            Bundle now = c.getContentResolver().call(u, ExtrasWords.WATCH, null, null);
+            if (now == null) return "no-answer";
+            Bundle again = c.getContentResolver().call(u, ExtrasWords.WATCH, now.getBoolean(ExtrasWords.WANTED) ? ExtrasWords.WANTED : ExtrasWords.UNWANTED, null);
+            if (again == null) return "no-answer";
+            return again.getBoolean(ExtrasWords.HOME_KEY) ? "rearmed" : "catch-off";
+        } catch (RuntimeException e) {
+            return "no-addon";   // not installed (unknown authority) or not ours
+        }
+    }
+
+    /** 4.4 beta 2: whether this app holds the HOME role (Android 10+; RoleManager answers it for the app itself): ExtrasWords.ROLE_OURS, ROLE_NOT or ROLE_UNKNOWN */
+    private static final String ROLE_HOME = "android.app.role.HOME";
+
+    static String homeRole(Context c) {
+        if (android.os.Build.VERSION.SDK_INT < 29) return ExtrasWords.ROLE_UNKNOWN;
+        try {   // RoleManager by name (public API of Android 10; the class is not in the older SDKs the compile guards build against)
+            Object rm = c.getSystemService("role");
+            if (rm == null) return ExtrasWords.ROLE_UNKNOWN;
+            if (!Boolean.TRUE.equals(rm.getClass().getMethod("isRoleAvailable", String.class).invoke(rm, ROLE_HOME))) return ExtrasWords.ROLE_UNKNOWN;
+            return Boolean.TRUE.equals(rm.getClass().getMethod("isRoleHeld", String.class).invoke(rm, ROLE_HOME)) ? ExtrasWords.ROLE_OURS : ExtrasWords.ROLE_NOT;
+        } catch (ReflectiveOperationException | RuntimeException e) {
+            return ExtrasWords.ROLE_UNKNOWN;
+        }
+    }
+
     /** 4.4 R3 (on by default on a Google TV): the add-on catches the Home key itself; "on", "off" or null to read; null when the add-on did not answer */
     public static Boolean homeKey(Context c, String set) {
         try {

@@ -54,6 +54,9 @@ public class ExtrasBridge extends ContentProvider {
                 out.putBoolean(ExtrasWords.NEEDS_PIN, pkg == null || Parental.needsPin(c, ParentalPolicy.targets(ParentalPolicy.REMOTE_APP, pkg)));
                 break;
             }
+            case ExtrasWords.HOME_ROLE:   // 4.4 beta 2: the add-on's Home key catch and watch follow the role, not the resolver
+                out.putString(ExtrasWords.RESULT, Extras.homeRole(c));
+                break;
             case ExtrasWords.LEDGER:   // 4.4: «إنقاذ تلفزيونك» asks what our setup turned off (it turns those back on)
                 out.putString(ExtrasWords.RESULT, sa.urtv.home.setup.SetupHook.ledger(c));
                 break;

@@ -20,7 +20,7 @@ def text(p): return Path(p).read_text(encoding="utf-8")
 
 if shutil.which("javac") and shutil.which("java"):
     with tempfile.TemporaryDirectory() as tmp:
-        r = subprocess.run(["javac", "-encoding", "UTF-8", "-d", tmp, str(HOME / "HomeWatch.java"), str(ROOT / "tests/HomeWatchRun.java")], capture_output=True, text=True)
+        r = subprocess.run(["javac", "-encoding", "UTF-8", "-d", tmp, str(HOME / "HomeWatch.java"), str(HOME / "ExtrasWords.java"), str(ROOT / "tests/HomeWatchRun.java")], capture_output=True, text=True)
         check("HomeWatch compiles on a plain JVM (no Android in it)", r.returncode == 0, r.stderr)
         if r.returncode == 0:
             out = subprocess.run(["java", "-cp", tmp, "sa.urtv.home.HomeWatchRun"], capture_output=True, text=True).stdout
