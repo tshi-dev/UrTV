@@ -70,8 +70,8 @@ Not in phase (a): the league home, the live strip, the season strip, the club sh
 - **Badges:** the same runtime badge the game rows load. Until it arrives, and if it never does, a circle with the club's first letter
   holds its place (no layout move when it loads: a fixed 34 × 34 box).
 - **Zones (the owner, 19 Nov: no coloured edge bars):**
-  - a `li.zl` after a zone's last place, full width, with a 2 px line in `--fs` at 45 %;
-  - at the line's start, the places and the kind's words in muted text: «المراكز ١ إلى ٣: دوري أبطال آسيا للنخبة»;
+  - a `li.zl` after a zone's last place, full width, with a 1 px line in `--fs` at 60 %;
+  - at the line's start, the zone's name in muted text: «دوري أبطال آسيا للنخبة»;
   - a zone whose last place is hidden in a window gets its line before the next shown row;
   - no zone colours, no `--z*` tokens and no legend. The movement greens and reds and the form squares are data colours and stay, pending the UI audit.
   - The tokens are added to both `#mp` looks, light and `#pagedark=1`, with the values in the mockup.

@@ -21,7 +21,7 @@
 2. **الترتيب في الرئيسية نافذة على الجدول، لا الجدول كله.** تُظهر الأوائل الأربعة، وفريقك والفريقين حوله، وفرق الهبوط.
    وضغطة «موافق» تفتح الجدول كاملًا على شاشة واحدة: ١٨ صفًّا بلا تمرير، وكل الأعمدة.
 3. **لون وكلمة معًا، لا لون وحده.**
-   - المناطق: خط فاصل عادي بعرض الجدول تحت آخر مركز في كل منطقة، وفي أوله اسم المنطقة ومراكزها بنص باهت («المراكز ١ إلى ٣: دوري أبطال آسيا للنخبة»)، بلا ألوان ولا مفتاح، كما يفعل موقع دوري روشن وBBC. (قرار المالك ١٩ نوفمبر: لا أشرطة ملونة على حافة الصف.)
+   - المناطق: خط فاصل عادي بعرض الجدول تحت آخر مركز في كل منطقة، وعنده اسم المنطقة بنص باهت («دوري أبطال آسيا للنخبة»)، بلا ألوان ولا مفتاح، كما يفعل موقع دوري روشن وBBC. (قرار المالك ١٩ نوفمبر: لا أشرطة ملونة على حافة الصف.)
    - الشكل حروف «ف ت خ» في مربعات ملونة، والأحدث يمينًا.
    - الصعود والنزول سهم ورقم.
    - المباشر بالأحمر مع الدقيقة.
@@ -279,7 +279,7 @@ are in `tester/league-shots.md` on `work/tester-report`. Where a note here diffe
    - The home shows the table's top four, the followed club with one club either side, and the relegation places, with a line «٧ أندية أخرى، موافق: الجدول كاملًا» (hints say «موافق», never «OK», as in the rest of the app).
    - The full table is its own focused screen: the page header steps aside and all 18 rows show without scrolling, with every column. This follows Bundesliga's compact and detailed tables.
 3. **Colour plus a word.**
-   - **Zones (the owner, 19 Nov):** a plain full-width divider line under the last place of each zone, with the places and the zone's name in plain muted text at the line's start («المراكز ١ إلى ٣: دوري أبطال آسيا للنخبة»), as spl.com.sa and BBC do. No coloured edge bars, no colour chips, no legend row. (Superseded: a 6 px bar on the row's start edge (the right in RTL) with a legend in words under the table, like GOAL Arabic.
+   - **Zones (the owner, 19 Nov):** a plain full-width divider line under the last place of each zone, with the places and the zone's name in plain muted text at the line's start («دوري أبطال آسيا للنخبة»), as spl.com.sa and BBC do. No coloured edge bars, no colour chips, no legend row. (Superseded: a 6 px bar on the row's start edge (the right in RTL) with a legend in words under the table, like GOAL Arabic.
    - Form is ف ت خ in filled squares, newest nearest the points. The squares are not capsules.
    - Movement is ▲/▼ with the number of places.
    - Live is the red minute after the name and the points in red, with a «قبل المباريات الجارية» toggle.
@@ -369,8 +369,8 @@ The owner circled the coloured bars at the row edges on 3-table-full and called 
 (the full table, the home's window, the club page's window, the quick view behind its veil):
 - **No coloured edge accents anywhere.** A zone is a plain full-width divider line under its last place: after 3rd, after 4th, and after
   15th for the relegation places.
-  - At the start of each line is one plain, muted label naming the places and the zone: «المراكز ١ إلى ٣: دوري أبطال آسيا للنخبة»,
-    «المركز ٤: دوري أبطال آسيا ٢», «المراكز ١٦ إلى ١٨: الهبوط».
+  - At the start of each line is one plain, muted label naming the places and the zone: «دوري أبطال آسيا للنخبة», «دوري أبطال آسيا ٢»,
+    «الهبوط» (the UI session: the zone's name only, on a 1 px line).
   - In a window that hides a zone's last place, the line sits before the next shown row.
 - **No legend row:** no coloured squares and no zone colours. The arrows and the red «مباشر» minute need no key. The season strip's legend
   is a plain line too.

@@ -26,6 +26,19 @@ for (const [w, h, tag] of sizes) {
       });
       return out;
     });
+    // the owner's rule (19 Nov, no AI-look decoration): no gradient anywhere, and no rounded coloured element smaller than a row
+    const deco = await page.evaluate(() => {
+      const row = 40 * innerWidth / 1920, out = [];
+      document.querySelectorAll('#root *').forEach(el => {
+        const cs = getComputedStyle(el), r = el.getBoundingClientRect();
+        if (/gradient/.test(cs.backgroundImage)) out.push('gradient: ' + el.className);
+        const bg = cs.backgroundColor, filled = bg && !/rgba\(0, 0, 0, 0\)|transparent/.test(bg);
+        if (filled && parseFloat(cs.borderTopLeftRadius) + parseFloat(cs.borderTopRightRadius) > 0 && r.height > 0 && r.height < row - 0.5)
+          out.push('rounded fill smaller than a row: ' + el.className + ' ' + el.textContent.trim().slice(0, 12));
+      });
+      return out;
+    });
+    if (deco.length) { console.error(`${name} ${tag}:`, deco); process.exitCode = 1; }
     if (small.length) { console.error(`${name} ${tag}: text under the floor:`, small); process.exitCode = 1; }
     if (tag === '540p') continue;
     await page.screenshot({ path: path.join(dir, `${name}-${tag}.png`) });

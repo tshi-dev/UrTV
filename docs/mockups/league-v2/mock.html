@@ -66,7 +66,7 @@
   /* the zones (the owner, 19 Nov): no colour at all; a plain full-width line under the last place of a zone, its places and name in plain muted text at the line's start */
   .tr.zl{height:calc(var(--u)*28);border-top:0;color:var(--fs);font-size:calc(var(--u)*24);padding:0 calc(var(--u)*8)}
   .tr.zl span{white-space:nowrap;padding-left:calc(var(--u)*16)}
-  .tr.zl::after{content:'';flex:1;height:calc(var(--u)*2);background:var(--fs);opacity:.45}
+  .tr.zl::after{content:'';flex:1;height:1px;background:var(--fs);opacity:.6}
   .tr.zl + .tr{border-top:0}
   .tr.th{height:calc(var(--u)*38);color:var(--fs);font-size:calc(var(--u)*24);border-top:0}
   .tr.mine{background:var(--rowf)}
@@ -209,7 +209,7 @@ const CLUBS = [
   ['الحزم',2,3,6,12,17,'lldwl',1,0],['الرياض',2,2,7,10,18,'llwll',-1,0],['ضمك',2,2,7,9,18,'wlldl',0,0],['الخلود',1,4,6,10,17,'dlldl',0,3],
   ['الأخدود',1,4,6,8,19,'ldlll',1,3],['النجمة',1,2,8,7,24,'llwll',-1,3]];
 const MINE = 'الاتفاق';
-const ZLINES = {3: 'المراكز ١ إلى ٣: دوري أبطال آسيا للنخبة', 4: 'المركز ٤: دوري أبطال آسيا ٢', 15: 'المراكز ١٦ إلى ١٨: الهبوط'};   // after this place
+const ZLINES = {3: 'دوري أبطال آسيا للنخبة', 4: 'دوري أبطال آسيا ٢', 15: 'الهبوط'};   // after this place
 const zl = b => `<li class="tr zl"><span>${ZLINES[b]}</span></li>`;
 function rows(items, full, ringAt){   // items: [club, index] or 'gapN'; the zone lines go in their places, also across a hidden stretch
   let last = 0, out = '';
