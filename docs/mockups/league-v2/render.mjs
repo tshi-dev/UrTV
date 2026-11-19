@@ -5,7 +5,7 @@ import path from 'path';
 const require = createRequire(import.meta.url);
 const { chromium } = require('playwright');
 const dir = path.dirname(fileURLToPath(import.meta.url));
-const shots = [['1-league-home', 'home'], ['2-matchweeks', 'rounds'], ['3-table-full', 'table'], ['4-club-quick-view', 'club'], ['6-club-page', 'clubpage'], ['7-table-full-large', 'table,large'], ['8-league-home-large', 'home,large'], ['9-form-boxes', 'table,boxes'], ['10-form-letters', 'table,letters'], ['11-form-boxes-large', 'table,boxes,large'], ['12-form-letters-large', 'table,letters,large'], ['13-club-boxes', 'clubpage,boxes'], ['5-league-home-dark', 'home,dark']];
+const shots = [['1-league-home', 'home'], ['2-matchweeks', 'rounds'], ['3-table-full', 'table'], ['4-club-quick-view', 'club'], ['6-club-page', 'clubpage'], ['7-table-full-large', 'table,large'], ['8-league-home-large', 'home,large'], ['9-form-boxes', 'table,boxes'], ['10-form-boxes-letters', 'table,boxletters'], ['11-form-boxes-large', 'table,boxes,large'], ['12-form-boxes-letters-large', 'table,boxletters,large'], ['13-club-boxes', 'clubpage,boxes'], ['14-club-boxes-letters', 'clubpage,boxletters'], ['5-league-home-dark', 'home,dark']];
 const sizes = [[1920, 1080, '1080p'], [1280, 720, '720p'], [960, 540, '540p']];   // 540p: the size check only, no picture
 const browser = await chromium.launch();
 for (const [w, h, tag] of sizes) {
@@ -13,7 +13,7 @@ for (const [w, h, tag] of sizes) {
   for (const [name, hash] of shots) {
     if (tag !== '1080p' && hash.includes('dark')) continue;
     if (tag !== '720p' && hash.includes('large')) continue;   // the large font: checked at 720p
-    if (tag !== '720p' && /boxes|letters/.test(hash)) continue;   // the other form styles: checked at 720p
+    if (tag !== '720p' && /boxes|boxletters/.test(hash)) continue;   // the other form styles: checked at 720p
     await page.goto('file://' + path.join(dir, 'mock.html') + '#' + hash);
     await page.reload();
     await page.evaluate(() => document.fonts.ready);

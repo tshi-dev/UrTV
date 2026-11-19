@@ -443,9 +443,14 @@ The owner circled the coloured bars at the row edges on 3-table-full and called 
   still differ in lightness:
   - light look (L\*): win `#2E9E63` 58, draw `#C2C5BF` 79, loss `#B3261E` 40;
   - dark look: win `#1B8354` 48, draw `#4A4D53` 33, loss `#FF9A8F` 74.
-- **A new setting, «شكل آخر المباريات»:** «نقاط ملونة» (the default, as now), «مربعات» (coloured boxes with ف ت خ), «حروف» (ف ت خ as
-  coloured letters).
-  - Mockups: `9-form-boxes-720p`, `10-form-letters-720p`, their large-font versions (`11`, `12`), and the club page with boxes (`13`).
+- **A new setting, «شكل آخر المباريات»** (values `dots | boxes | boxes-letters`, after the owner's second look):
+  - «نقاط ملونة»: the default, the colour-only dots.
+  - «مربعات»: small square boxes, colour only. They are 16 px at 1080p and 14 at 720p, a little larger than the dots, with square corners
+    and a gap between them.
+  - «مربعات بحروف»: the same square boxes with ف ت خ inside. To keep a letter at the 16 px floor at 720p, the box is 24 px there (36 at
+    1080p lengths), larger than the plain boxes, with a gap of 9.
+  - The plain-letters style is dropped unless the owner asks again.
+  - Mockups at 720p: `9-form-boxes`, `10-form-boxes-letters`, their large-font versions (`11`, `12`), and the club page with each (`13`, `14`).
   - All three fit at 720p and with the large font.
   - `render.mjs` exempts only `.fdot` and `.fbox`, by class.
   - The setting is specified in the plan (§3a3). It is built with phase (a), not now.
