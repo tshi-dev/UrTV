@@ -437,6 +437,30 @@ The owner circled the coloured bars at the row edges on 3-table-full and called 
 
   Every text stays at or above the 16 px floor.
 
+### 7g. The owner's changes (19 Nov, on fbdf5698)
+
+- **The loss colour is the page's own red** (`--flo`, the red of «مباشر» and of a negative movement). Win and draw moved so the three
+  still differ in lightness:
+  - light look (L\*): win `#2E9E63` 58, draw `#C2C5BF` 79, loss `#B3261E` 40;
+  - dark look: win `#1B8354` 48, draw `#4A4D53` 33, loss `#FF9A8F` 74.
+- **A new setting, «شكل آخر المباريات»:** «نقاط ملونة» (the default, as now), «مربعات» (coloured boxes with ف ت خ), «حروف» (ف ت خ as
+  coloured letters).
+  - Mockups: `9-form-boxes-720p`, `10-form-letters-720p`, their large-font versions (`11`, `12`), and the club page with boxes (`13`).
+  - All three fit at 720p and with the large font.
+  - `render.mjs` exempts only `.fdot` and `.fbox`, by class.
+  - The setting is specified in the plan (§3a3). It is built with phase (a), not now.
+- **The column head is «آخر خمس مباريات»,** centred over its column, on the home table and the club page too. It fits on one line at 720p,
+  and wraps to two rather than shrink.
+- **Spacing:** the table panel has inner padding at the bottom (18) and the sides (20), and the rows 14 more. The last row and the row
+  numbers no longer touch the panel's edges.
+- **The 5 % safe area, found while checking this:** some earlier renders ran up to 20 px into the bottom and top margins at 720p.
+  - Fixed: the page has #mp's own outer padding back (56 at 1080p lengths, top and bottom);
+  - the full table's title, filters and hint share one row;
+  - the live strip is one line a game;
+  - rows are 38 with square corners;
+  - the round page's cards are three a row.
+  - `render.mjs` now fails on anything outside the 5 % safe area too, except the large-font renders, which scroll by design.
+
 ### 8. Questions for the owner
 
 1. **The home's tab name:** «الرئيسية», or «الآن» for a league in progress?

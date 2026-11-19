@@ -114,7 +114,7 @@ These replace anything below that says otherwise:
 
 ## 3a2. The owner's changes (19 Nov)
 
-- **Form:** five solid dots (`.fdot`, `calc(var(--u)*6 + 8px)`, `border-radius:50%`), colour only, apart in lightness (the study §7f). Every
+- **Form (default style):** five solid dots (`.fdot`, `calc(var(--u)*6 + 8px)`, `border-radius:50%`), colour only, apart in lightness (the study §7f). Every
   dot gets a text alternative for TalkBack («فوز، تعادل، خسارة …»). The size test exempts `.fdot` by name.
 - **Rows:**
   - the line `--rln`;
@@ -122,6 +122,26 @@ These replace anything below that says otherwise:
   - the followed row in bold with a flat fill `--mine` (a step darker than the zebra), no outline;
   - focus as today.
 - **Large font:** «له / عليه» hide first (`.gfa`). The table scrolls with the ring, and the home's champions card leaves the first screen.
+
+## 3a3. The setting «شكل آخر المباريات» (the owner, 19 Nov), built with phase (a)
+
+- **Values:** `dots` (the default, «نقاط ملونة»), `boxes` («مربعات»), `letters` («حروف»).
+- **The agent key:** `optimize/saver.sh formstyle dots|boxes|letters`, a `set1` line beside `cardstyle`, with its usage line in the
+  header comment.
+- **On the TV:** in the sports settings, beside the other «المباريات» rows, as a choice list. Where to put it is decided with the UI session.
+- **The page** reads it as `#formstyle=` and draws `.fdot`, `.fbox` or `.flet`. The table, the home's table, the club page's «آخر خمس
+  مباريات» and the quick view's results all use the same style.
+- **Docs:**
+  - a row in docs/SETTINGS.md with its command;
+  - the tree line in docs/SETTINGS-TREE.md;
+  - a FEATURES.md line with «الوكيل: `optimize/saver.sh formstyle boxes`»;
+  - `saver.sh export / import` carry it (the allow-list and its check).
+- **Tests:**
+  - the key's values (an unknown value refused), the export/import round trip, the tree and the docs rows (`tests/settings_tree_test.py`
+    and the settings key cases);
+  - the page drawing each style;
+  - for all three styles at 1280×720 and with the large font: the safe area, the 16 px floor, and the decoration check with `.fdot`
+    and `.fbox` exempt by class.
 
 ## 3b. After the UI session's review (18 Nov)
 

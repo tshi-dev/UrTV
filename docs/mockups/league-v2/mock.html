@@ -13,14 +13,14 @@
   html{--u:1px}
   html,body{background:#F4F2EC;font-family:'Thmanyah','IBM Plex Sans Arabic',sans-serif;overflow:hidden}
   /* #mp's light tokens, as they are */
-  #root{--fi:#1B1F1D;--fs:#5E635F;--fgr:#1B8354;--fam:#8A5600;--fring:#1B8354;--fln:#E4E1D8;--fbg:#fff;--rowf:#EEF6F1;--fw:#145A37;--fd:#B0B3AD;--fl:#E0604E;--rln:#D9D5CA;--zeb:#F8F7F3;--mine:#EFEDE6;--dlg:#F7F6F1;--btn:#fff;--pri:#21915F;
+  #root{--fi:#1B1F1D;--fs:#5E635F;--fgr:#1B8354;--fam:#8A5600;--fring:#1B8354;--fln:#E4E1D8;--fbg:#fff;--rowf:#EEF6F1;--fw:#2E9E63;--fd:#C2C5BF;--fl:var(--flo);--rln:#D9D5CA;--zeb:#F8F7F3;--mine:#EFEDE6;--dlg:#F7F6F1;--btn:#fff;--pri:#21915F;
     --veil:rgba(244,242,236,.72);--shd:rgba(40,36,24,.18);--flo:#B3261E;
     /* new: three zone colours, chosen to stay apart for the common colour-blindness types and on a washed-out TV panel */
     --z1:#1B8354;--z2:#2F6FB3;--z3:#B3261E;--sq:#E9E6DD}
   html.dark,html.dark body{background:#17181B}
-  html.dark #root{--fi:#FFFFFF;--fs:#DADCE0;--fgr:#8FE0B4;--fam:#F0B35A;--fring:#8FE0B4;--fln:rgba(255,255,255,.16);--fbg:#202227;--rowf:rgba(143,224,180,.14);--fw:#5FD39A;--fd:#5E6168;--fl:#E2604E;--rln:rgba(255,255,255,.24);--zeb:rgba(255,255,255,.035);--mine:rgba(255,255,255,.08);--dlg:#1D1F24;--btn:#2A2D33;--pri:#1B8354;
+  html.dark #root{--fi:#FFFFFF;--fs:#DADCE0;--fgr:#8FE0B4;--fam:#F0B35A;--fring:#8FE0B4;--fln:rgba(255,255,255,.16);--fbg:#202227;--rowf:rgba(143,224,180,.14);--fw:#1B8354;--fd:#4A4D53;--fl:var(--flo);--rln:rgba(255,255,255,.24);--zeb:rgba(255,255,255,.035);--mine:rgba(255,255,255,.08);--dlg:#1D1F24;--btn:#2A2D33;--pri:#1B8354;
     --veil:rgba(0,0,0,.66);--shd:rgba(0,0,0,.5);--flo:#FF9A8F;--z1:#5CC48E;--z2:#7FB0E8;--z3:#FF8A7E;--sq:rgba(255,255,255,.1)}
-  .pg{position:fixed;top:0;right:0;bottom:0;left:0;padding:calc(var(--u)*44) calc(var(--u)*120) calc(var(--u)*36);color:var(--fi);display:flex;flex-direction:column;font-size:calc(var(--u)*28)}
+  .pg{position:fixed;top:0;right:0;bottom:0;left:0;padding:calc(var(--u)*56) calc(var(--u)*120) calc(var(--u)*56);color:var(--fi);display:flex;flex-direction:column;font-size:calc(var(--u)*28)}
   .num{unicode-bidi:isolate}
 
   /* ---- header: the league, the round, the next game's countdown (a fixed box: the numbers change, nothing around them moves) */
@@ -47,25 +47,26 @@
 
   /* ---- the live strip: one card per game on now, the minute in the live colour, the score in the middle */
   .live{display:flex;margin-top:calc(var(--u)*16)}
-  .lv{flex:1;padding:calc(var(--u)*6) calc(var(--u)*24);margin-left:calc(var(--u)*20);border-radius:calc(var(--u)*20)}
+  .lv{flex:1;padding:calc(var(--u)*10) calc(var(--u)*24);margin-left:calc(var(--u)*20);border-radius:calc(var(--u)*20)}
   .lv:last-child{margin-left:0}
   .lv .m{color:var(--flo);font-size:calc(var(--u)*24);font-weight:500;display:flex;justify-content:space-between}
   .lv .m i{font-style:normal;color:var(--fs);font-weight:400}
-  .lv .s{display:flex;align-items:center;justify-content:space-between;margin-top:calc(var(--u)*6)}
+  .lv .s{flex:1;display:flex;align-items:center;justify-content:space-between;margin-right:calc(var(--u)*20)}
+  .lv{display:flex;align-items:center}
   .lv .s span{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:calc(var(--u)*28)}
   .lv .s span:last-child{text-align:left}
   .lv .s b{font-size:calc(var(--u)*40);font-weight:700;padding:0 calc(var(--u)*20);direction:ltr;unicode-bidi:isolate}
 
-  .cols{flex:1;min-height:0;display:flex;margin-top:calc(var(--u)*12)}
+  .cols{flex:1;min-height:0;display:flex;margin-top:calc(var(--u)*8)}
   .cols > div + div{margin-right:calc(var(--u)*28)}
 
   /* ---- the table */
-  .tb{list-style:none;padding:calc(var(--u)*6) calc(var(--u)*10)}
-  .tr{display:flex;align-items:center;height:calc(var(--u)*40);padding:0 calc(var(--u)*8);border-radius:calc(var(--u)*4);position:relative}
+  .tb{list-style:none;padding:calc(var(--u)*8) calc(var(--u)*20) calc(var(--u)*18)}
+  .tr{display:flex;align-items:center;height:calc(var(--u)*38);padding:0 calc(var(--u)*14);border-radius:0;position:relative}
   .tr + .tr{border-top:1px solid var(--rln)}
   .tr.zb{background:var(--zeb)}
   /* the zones (the owner, 19 Nov): no colour at all; a plain full-width line under the last place of a zone, its places and name in plain muted text at the line's start */
-  .tr.zl{height:calc(var(--u)*28);border-top:0;color:var(--fs);font-size:calc(var(--u)*24);padding:0 calc(var(--u)*8)}
+  .tr.zl{height:calc(var(--u)*30);border-top:0;color:var(--fs);font-size:calc(var(--u)*24);padding:0 calc(var(--u)*8)}
   .tr.zl span{white-space:nowrap;padding-left:calc(var(--u)*16)}
   .tr.zl::after{content:'';flex:1;height:1px;background:var(--fs);opacity:.6}
   .tr.zl + .tr{border-top:0}
@@ -85,9 +86,17 @@
   .tr .pt{width:calc(var(--u)*64);text-align:center;font-weight:700}
   .tr .pt.ptl{color:var(--flo)}
   .tr.th .pt{font-weight:400}
-  .tr .fo{width:calc(var(--u)*150);display:flex;justify-content:flex-end;align-items:baseline;direction:ltr}
+  .tr .fo{width:calc(var(--u)*210);display:flex;justify-content:center;align-items:baseline;direction:ltr}
+  .tr .fo.fh{direction:rtl;text-align:center;line-height:1.1;white-space:normal}
+  .tr.th{height:auto;min-height:calc(var(--u)*38);padding-top:calc(var(--u)*4);padding-bottom:calc(var(--u)*4)}
   .fdot{display:inline-block;width:calc(var(--u)*6 + 8px);height:calc(var(--u)*6 + 8px);border-radius:50%;margin-left:calc(var(--u)*10);vertical-align:middle;flex:none}   /* the owner: colour only; 14 px at 1080p, 12 at 720p */
   .fdot.w{background:var(--fw)}.fdot.d{background:var(--fd)}.fdot.l{background:var(--fl)}
+  /* «مربعات»: the coloured boxes, white letters (the second style); «حروف»: the letters alone in their colour (the third) */
+  .fbox{display:inline-flex;align-items:center;justify-content:center;width:calc(var(--u)*36);height:calc(var(--u)*36);border-radius:calc(var(--u)*6);color:#fff;font-style:normal;font-size:calc(var(--u)*24);font-weight:700;margin-left:calc(var(--u)*4);flex:none}
+  .fbox.w{background:var(--fw)}.fbox.d{background:#8D918C}.fbox.l{background:var(--fl)}
+  .flet{font-style:normal;font-size:calc(var(--u)*28);font-weight:700;margin-left:calc(var(--u)*12)}
+  .flet.w{color:var(--fgr)}.flet.d{color:var(--fs)}.flet.l{color:var(--flo)}
+  .ft .fbox,.ft .flet{margin:calc(var(--u)*8) 0 0}
 
   .tr.gapr{height:calc(var(--u)*30);color:var(--fs);font-size:calc(var(--u)*24);border-top:0}
   .tr.gapr span{white-space:nowrap;padding-left:calc(var(--u)*16)}
@@ -133,8 +142,8 @@
   .rs li.now{font-weight:700;color:var(--fi);font-size:calc(var(--u)*30)}
   .rs li.sel{font-weight:700;color:var(--fgr);box-shadow:inset 0 0 0 calc(var(--u)*3) var(--fring)}
   .gg{display:flex;flex-wrap:wrap;margin-top:calc(var(--u)*14);align-content:flex-start}
-  .gc{width:calc(50% - var(--u)*10);margin-bottom:calc(var(--u)*10);padding:calc(var(--u)*8) calc(var(--u)*24);border-radius:calc(var(--u)*20)}
-  .gc:nth-child(odd){margin-left:calc(var(--u)*20)}
+  .gc{width:calc((100% - var(--u)*40) / 3);margin-bottom:calc(var(--u)*10);padding:calc(var(--u)*8) calc(var(--u)*24);border-radius:calc(var(--u)*20)}
+  .gc{margin-left:calc(var(--u)*20)}.gc:nth-child(3n){margin-left:0}
   .gc .d{color:var(--fs);font-size:calc(var(--u)*24);display:flex;justify-content:space-between}
   .gc .d i{font-style:normal}
   .gc .s{display:flex;align-items:center;margin-top:calc(var(--u)*6)}
@@ -196,8 +205,9 @@
   .no-f{box-shadow:none!important}
   html.large .gfa{display:none}
   html.large .champcol{display:none}   /* the agreed rule: at 720p with the large font the champions card leaves the first screen (it is a tab) */
-  .pg.full{padding-top:calc(var(--u)*32);padding-bottom:calc(var(--u)*24)}
-  .pg.full .tr{height:calc(var(--u)*40)}
+  .pg:not(.full) .tb{padding-bottom:calc(var(--u)*12)}
+
+  .pg.full .tr{height:calc(var(--u)*38)}
   .pg.full .tr.zl{height:calc(var(--u)*28)}
   .pg.full .tr.th{height:calc(var(--u)*36)}
   .pg.full .legend{margin-top:calc(var(--u)*8)}
@@ -237,7 +247,8 @@ function rows(items, full, ringAt){   // items: [club, index] or 'gapN' (N hidde
   return out.replace(/(<li class="tr zl[^"]*">(?:<span>[^<]*<\/span>)?<\/li>)+$/, '');   // never a zone line as the last thing before the card's bottom edge (the UI session)
 }
 const FL = {w:'ف', d:'ت', l:'خ'};
-const dot = c => `<i class="fdot ${c}"></i>`;
+const FSTYLE = (location.hash.match(/(dots|boxes|letters)/) || [, 'dots'])[1];
+const dot = c => FSTYLE === 'boxes' ? `<i class="fbox ${c}">${FL[c]}</i>` : FSTYLE === 'letters' ? `<i class="flet ${c}">${FL[c]}</i>` : `<i class="fdot ${c}"></i>`;
 const form = (s, next) => '<span class="fo" style="align-items:center">' + s.split('').map(dot).join('') + '</span>';
 const mv = m => m > 0 ? `<span class="mv up num">+${D(m)}</span>` : m < 0 ? `<span class="mv dn num">−${D(-m)}</span>` : '<span class="mv eq">–</span>';   // the audit: signed numbers, no arrows
 const badge = n => '';   // the real crest loads at runtime (TheSportsDB); the mockups draw none, and nothing stands in for it while it loads
@@ -252,7 +263,7 @@ function row(c, i, full, ring){
 }
 const head = full => `<li class="tr th"><span class="rk">#</span><span class="mv"></span><span class="nm">النادي</span>`
   + (full ? '<span class="c">لعب</span><span class="c">فاز</span><span class="c">تعادل</span><span class="c">خسر</span><span class="c gfa">له</span><span class="c gfa">عليه</span><span class="c w">الفارق</span>' : '<span class="c">لعب</span><span class="c w">الفارق</span>')
-  + '<span class="pt">نقاط</span><span class="fo">آخر ٥</span></li>';
+  + '<span class="pt">نقاط</span><span class="fo fh">آخر خمس مباريات</span></li>';
 const gapRow = n => `<li class="tr gapr"><span>${n === 1 ? 'نادٍ آخر' : D(n) + ' أندية أخرى'}، موافق: الجدول كاملًا</span></li>`;
 const legend = extra => '<div class="legend">' + ''
   + '<span><span class="mv up" style="margin-left:6px">▲</span>عن الجولة الماضية</span>' + (extra || '') + '</div>';
@@ -277,7 +288,7 @@ const SCREENS = {
         <div class="nx"><div class="k">آخر بطولة</div><div class="v">دوري روشن ٢٠٢٥-٢٠٢٦</div></div></div>
       <ul class="tabs"><li class="on">النادي</li><li>المباريات</li><li>النتائج</li><li>البطولات</li><li>المواجهات</li><li>أزل النصر من فرقي</li><li class="hint">موافق يفتح، يمين ويسار بين الأقسام</li></ul>
       <div class="row2">
-        <div><h2>آخر ٥ <i>الأحدث يمينًا</i></h2><div class="fts">${tiles.reverse().map(x => `<div class="ft"><b>${x[0]}</b><span>${x[2]}</span>${dot(x[1])}</div>`).join('')}</div></div>
+        <div><h2>آخر خمس مباريات <i>الأحدث يمينًا</i></h2><div class="fts">${tiles.reverse().map(x => `<div class="ft"><b>${x[0]}</b><span>${x[2]}</span>${dot(x[1])}</div>`).join('')}</div></div>
         <div class="ncard card"><div><div class="k">المباراة القادمة، الجولة ١١</div><div class="v">النصر – الأهلي</div></div><div class="t">الليلة ٩:٠٠ م<i>بعد ساعة و٤٢ دقيقة</i></div></div>
       </div>
       <div class="cols">
@@ -296,8 +307,8 @@ const SCREENS = {
     const t = CLUBS.map((c, i) => [c, i]);
     const pick = [...t.slice(0, 4), 'gap1', t[5], t[6], t[7], 'gap7', ...t.slice(15)];
     return `<div class="pg">${HEAD(0, 'موافق يفتح، يمين ويسار بين الأقسام')}
-      <div class="live">${LIVE.map((g, i) => `<div class="lv card${i === 0 ? ' f' : ''}"><div class="m"><span>مباشر ${g[3]}</span><i>${g[4]}</i></div><div class="s"><span>${g[0]}</span><b>${g[1]}</b><span>${g[2]}</span></div></div>`).join('')}
-        <div class="lv card"><div class="m" style="color:var(--fs)"><span>انتهت</span><i>اليوم ٤:٣٥ م</i></div><div class="s"><span>الخليج</span><b style="color:var(--fi)">٢ : ٢</b><span>الفيحاء</span></div></div></div>
+      <div class="live">${LIVE.map((g, i) => `<div class="lv card${i === 0 ? ' f' : ''}"><div class="m"><span>مباشر ${g[3]}</span></div><div class="s"><span>${g[0]}</span><b>${g[1]}</b><span>${g[2]}</span></div></div>`).join('')}
+        <div class="lv card"><div class="m" style="color:var(--fs)"><span>انتهت</span></div><div class="s"><span>الخليج</span><b style="color:var(--fi)">٢ : ٢</b><span>الفيحاء</span></div></div></div>
       <div class="cols">
         <div style="width:calc(var(--u)*800)"><h2>الترتيب <i>مباشر: يتغير مع النتائج</i></h2>
           <ul class="tb card">${head(false)}${rows(pick, false, -1)}</ul></div>
@@ -326,9 +337,9 @@ const SCREENS = {
   },
   table(ring){
     // focused: the page's header and tabs step aside (Back brings them back), the 18 rows fit on one screen without a scroll
-    return `<div class="pg full"><div class="hd" style="align-items:baseline"><h1 style="font-size:calc(var(--u)*40)">الترتيب <span style="font-weight:400;color:var(--fs);font-size:calc(var(--u)*28)">دوري روشن السعودي، بعد الجولة ١٠ ومع مباريات الجولة ١١</span></h1></div>
-      <ul class="tabs" style="margin-top:calc(var(--u)*8)">${['الكل','على أرضه','خارج أرضه','قبل المباريات الجارية'].map((t, i) => `<li class="${i === 0 ? 'on' : ''}" style="font-size:calc(var(--u)*24)">${t}</li>`).join('')}<li class="hint">موافق على نادٍ: نظرة سريعة، رجوع: صفحة الدوري</li></ul>
-      <ul class="tb card" style="margin-top:calc(var(--u)*8)">${head(true)}${rows(CLUBS.map((c, i) => [c, i]), true, ring || 6)}</ul></div>`;
+    return `<div class="pg full"><div class="hd" style="align-items:flex-end;border-bottom:1px solid var(--fln)"><h1 style="font-size:calc(var(--u)*40);margin-bottom:calc(var(--u)*8)">الترتيب <span style="font-weight:400;color:var(--fs);font-size:calc(var(--u)*26)">بعد الجولة ١٠</span></h1>
+      <ul class="tabs" style="margin:0 calc(var(--u)*40) 0 auto;border:0">${['الكل','على أرضه','خارج أرضه','قبل المباريات الجارية'].map((t, i) => `<li class="${i === 0 ? 'on' : ''}" style="font-size:calc(var(--u)*24)">${t}</li>`).join('')}</ul><span style="color:var(--fs);font-size:calc(var(--u)*24);margin-bottom:calc(var(--u)*12)">موافق: نظرة سريعة</span></div>
+      <ul class="tb card" style="margin-top:calc(var(--u)*10)">${head(true)}${rows(CLUBS.map((c, i) => [c, i]), true, ring || 6)}</ul></div>`;
   },
   club(){
     return SCREENS.table(6) + `<div class="veil"></div><div class="sheet">
