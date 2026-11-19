@@ -242,6 +242,7 @@ python3 tests/clock_text_test.py
 python3 tests/clock_setting_test.py
 python3 tests/saver_clock24_test.py
 python3 tests/card_box_test.py
+python3 tests/no_decoration_test.py   # the owner (19 Nov): no AI-look decoration (accent bars, chips, decorative gradients, glows)
 python3 tests/card_fit_test.py   # 4.4 the owner: a home card that does not suit the look says so, and is swapped within its kind when the look changes
 python3 tests/glow_look_test.py
 python3 tests/unsplash_header_test.py

@@ -1752,7 +1752,7 @@ public class MainActivity extends Activity {
         ring.setCornerRadius(corner);
         ring.setStroke(inDock ? trayRingW() : dp(2), inDock ? trayRing() : 0xE6FFFFFF);
         ring.setOrientation(GradientDrawable.Orientation.TL_BR);
-        ring.setColors(inDock && !lightNow ? new int[]{(trayRing() & 0x00FFFFFF) | 0x38000000, trayRing() & 0x00FFFFFF, trayRing() & 0x00FFFFFF} : new int[]{0x26FFFFFF, 0x00FFFFFF, 0x00FFFFFF});   // a soft glow of the ring's own colour inside it on the dark looks
+        ring.setColor(0);   // the ring only (the owner, 19 Nov: no glow, no decoration)
         View shine = new View(this);
         shine.setBackground(ring);
         shine.setAlpha(0f);
