@@ -46,7 +46,7 @@ final class PhoneApi implements PhoneServer.Handler {
         // 4.3 «ارسم»: the drawing's own page; the strokes go to /api/draw behind the session
         if (r.path.equals("/d")) return post ? json(405, err("method")) : drawPage();
         // 4.4 beta 3, the wireless-debugging pairing's own page (the code row): words and code only; the code goes to /api/adb_pair behind the session
-        if (r.path.equals("/a")) return post ? json(405, err("method")) : adbPage();
+        if (r.path.equals("/q")) return post ? json(405, err("method")) : adbPage();   // not /a: «صوتياتي» is /a (the first match won, so its page was dead)
         // 4.4 «صوتياتي»: its own page, words and code only; the file goes to /api/audio_piece in pieces behind the session
         if (r.path.equals("/a")) return post ? json(405, err("method")) : audioPage();
         // the fonts are no secret, and CSS asks for them without the X-UrTV-Session header: no session, like the page itself

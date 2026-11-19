@@ -123,7 +123,7 @@ check("the page says plainly what it cannot do: keys to other apps, and text out
       "فعّل خدمة «إضافات تلفزيونك»" in page and "تحتاج أندرويد ١٣" in page and "يُكتب في حقلها بعد تفعيل خدمة إمكانية الوصول" in page and "/api/text" in page, "")
 # 4.4 beta 3: the one ADB-related thing on the page is the row that opens the pairing code page, shown only while the TV's own factory page armed the pairing (state.adb_pair); it changes nothing itself
 check("the page has no reset, uninstall, ADB or PIN-changing control (the row to the pairing code page, shown only while the TV armed it, is the one allowed mention)",
-      not re.search(r"reset|uninstall|adb|إعادة ضبط|حذف التطبيق", page.replace('id="adbRw" href="/a"', "").replace("$('adbRw').classList.toggle('hidden', !s.adb_pair);", ""), re.I), "")
+      not re.search(r"reset|uninstall|adb|إعادة ضبط|حذف التطبيق", page.replace('id="adbRw" href="/q"', "").replace("$('adbRw').classList.toggle('hidden', !s.adb_pair);", ""), re.I), "")
 
 # ---- docs and registration
 runsh = text(ROOT / "tests/run.sh")

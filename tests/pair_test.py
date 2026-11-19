@@ -93,4 +93,8 @@ notices = read(ROOT / "THIRD_PARTY_NOTICES.md")
 check("THIRD_PARTY_NOTICES: libadb-android (Apache-2.0 side), its LGPL-3.0 SPAKE2 library as a separate replaceable library with where its source is, Conscrypt, BouncyCastle; the licence texts",
       all(w in notices for w in ("libadb-android", "spake2-android", "LGPL-3.0", "Conscrypt", "BouncyCastle", "github.com/MuntashirAkon/spake2-java", "android/extras/build.gradle")) and (ROOT / "docs/licenses/LGPL-3.0.txt").exists() and (ROOT / "docs/licenses/GPL-3.0.txt").exists())
 print("FAILED" if failed else "all passed")
+# 4.4 beta 3 security review: two pages on the same route made «صوتياتي» dead (the first match wins): every phone page route is unique
+_api = (Path(__file__).resolve().parent.parent / "android/launcher/src/main/java/sa/urtv/home/phone/PhoneApi.java").read_text(encoding="utf-8")
+_routes = re.findall(r'if \(r\.path\.equals\("(/[a-z]+)"\)\)', _api)
+check("every single-letter phone page route is served by one page only (the pairing page is /q, «صوتياتي» /a)", len(_routes) == len(set(_routes)) and "/q" in _routes and "/a" in _routes, str([r for r in _routes if _routes.count(r) > 1]))
 sys.exit(1 if failed else 0)
