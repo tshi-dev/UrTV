@@ -1,0 +1,11 @@
+Performing Streamed Install
+Success
+Performing Streamed Install
+Success
+== 01-preset-tv-to-couch
+/sdcard/01-preset-tv-to-couch.mp4: 1 file pulled, 0 skipped. 199.1 MB/s (825485 bytes in 0.004s)
+== 02-preset-couch-to-tv
+/sdcard/02-preset-couch-to-tv.mp4: 1 file pulled, 0 skipped. 302.8 MB/s (1038164 bytes in 0.003s)
+== 03-bg-photos-to-scenes
+/sdcard/03-bg-photos-to-scenes.mp4: 1 file pulled, 0 skipped. 211.3 MB/s (378821 bytes in 0.002s)
+== 04-bg-scenes-to-photos

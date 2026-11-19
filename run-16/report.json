@@ -1,0 +1,44 @@
+[
+ {
+  "case": "01-preset-tv-to-couch",
+  "frames": 25,
+  "change_at": 2.0,
+  "focus_before": "android.widget.LinearLayout [172,72][362,132]",
+  "focus_after": "android.widget.LinearLayout [172,72][362,132]",
+  "first": 2.106,
+  "settled": 2.37,
+  "span": 0.264,
+  "changed_frames": 2,
+  "blank": [],
+  "flash": [],
+  "total_change": 32.48
+ },
+ {
+  "case": "02-preset-couch-to-tv",
+  "frames": 26,
+  "change_at": 2.0,
+  "focus_before": "android.widget.LinearLayout [172,72][362,132]",
+  "focus_after": "android.widget.LinearLayout [172,72][362,132]",
+  "first": 1.843,
+  "settled": 1.843,
+  "span": 0.0,
+  "changed_frames": 1,
+  "blank": [],
+  "flash": [],
+  "total_change": 31.4
+ },
+ {
+  "case": "03-bg-photos-to-scenes",
+  "frames": 9,
+  "change_at": 2.0,
+  "focus_before": "android.widget.LinearLayout [172,72][362,132]",
+  "focus_after": "android.widget.LinearLayout [172,72][362,132]",
+  "first": 1.227,
+  "settled": 1.227,
+  "span": 0.0,
+  "changed_frames": 1,
+  "blank": [],
+  "flash": [],
+  "total_change": 33.52
+ }
+]
