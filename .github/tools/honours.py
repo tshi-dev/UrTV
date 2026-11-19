@@ -30,7 +30,7 @@ import urllib.request
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from honours_study import same_club, season_keys   # noqa: E402
+from honours_study import same_club, season_keys, words   # noqa: E402
 
 V = 1
 UA = "UrTV-honours/1.0 (https://github.com/tshi-dev/UrTV; weekly, a few hundred requests)"
@@ -373,16 +373,35 @@ def champions(lg, items, archive, lab, wp, names):
         for r in out:
             if r.get("id"):
                 titles[r["id"]] = titles.get(r["id"], 0) + 1
+        # a season whose champion has no id could be one of these clubs under an older name: that club's count is not said
+        for r in out:
+            if not r.get("id"):
+                for cid in [c for c in titles if names.get(c) and r.get("en") and same_club(names[c][0], r["en"])]:
+                    titles.pop(cid, None)
         body["titles"] = titles
         if any(not r.get("id") for r in out):   # a champion the archive does not know (a club of long ago): its club's count is still right
             body["unnamed"] = sum(1 for r in out if not r.get("id"))
     return body, report
 
 
+def _jaccard(a, b):
+    wa, wb = words(a), words(b)
+    return len(wa & wb) / len(wa | wb) if wa and wb else 0.0
+
+
 def unique_id(en_names, names):
-    """the archive's club id whose name matches one of these names (one club only, else none)"""
-    hits = {cid for cid, (n, _) in names.items() for x in en_names if n and x and same_club(n, x)}
-    return hits.pop() if len(hits) == 1 else None
+    """the archive's club id whose name matches these names best: the clubs that share a word are scored by how much of their names they
+    share («Real Madrid» is Real Madrid, not Real Betis or Real Sociedad); one club alone with the best score, at least half, else none"""
+    scores = {}
+    for cid, (n, _) in names.items():
+        sc = max((_jaccard(n, x) for x in en_names if n and x), default=0.0)
+        if sc > 0:
+            scores[cid] = sc
+    if not scores:
+        return None
+    best = max(scores.values())
+    top = [cid for cid, sc in scores.items() if sc == best]
+    return top[0] if len(top) == 1 and best >= 0.5 else None
 
 
 # ---- a league's top scorers

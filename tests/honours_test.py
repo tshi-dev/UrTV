@@ -107,6 +107,16 @@ tmpi = Path(tempfile.mkdtemp())
 check("the clubs' names from the archive's index, this league's only (urtv-data has no sports/ files yet: run 1 had no ids)",
       h.archive_names(tmpi, "4668") == {"136014": ("Al-Nassr", "النصر")})
 
+RM = {"1": ("Real Madrid", "ريال مدريد"), "2": ("Real Betis", "ريال بيتيس"), "3": ("Real Sociedad", "ريال سوسيداد"), "4": ("Barcelona", "برشلونة")}
+check("a champion's club: the best match, not any shared word («Real Madrid Club de Fútbol» is Real Madrid, not Betis or Sociedad)",
+      h.unique_id(["Real Madrid Club de Fútbol"], RM) == "1" and h.unique_id(["FC Barcelona"], RM) == "4" and h.unique_id(["Real"], RM) is None)
+LABX = dict(LAB, QX={"en": "Al-Hilal Club", "ar": ""})
+NAMESX = dict(NAMES, **{"999": ("Hilal", "")})   # two clubs called Hilal: the 2020-21 champion «Al-Hilal Club» is not surely 136013
+itemsx = [item("Q20", "2020-08-01", "2021-05-30", ["QX"])] + items
+bx, _ = h.champions("4668", itemsx, ARCH, LABX, WP, NAMESX)
+check("a complete list with a champion whose club is not sure: the clubs it could be lose their count (never a count too low), the others keep it",
+      bx["complete"] and "136013" not in bx["titles"] and "999" not in bx["titles"] and bx["titles"].get("136015") == 2, (bx["complete"], bx.get("titles")))
+
 # ---- scorers
 SI = [item("Q23", "2023-08-01", "2024-05-30", ar="الدوري 2023–24", en="2023–24 Saudi Pro League"),
       item("Q24", "2024-08-01", "2025-05-30", ts=[("QR", 25)], en="2024–25 Saudi Pro League", ar="الدوري 2024–25")]
