@@ -32,7 +32,7 @@ check("an adaptive icon is masked as a launcher shows it (its middle 72 of 108, 
 check("the backing is chosen from the icon's own opaque pixels (white on white and a bare glyph read)", "if (Color.alpha(p) < 128) continue;" in main and "TileArt.backing(" in main)
 check("the focus reads on a light tile as on a dark one: the person's ring and a thin dark line inside it (inside the tile: the tray's room, tests/fav_bar_test.py, unchanged)",
       "new android.graphics.drawable.LayerDrawable(new Drawable[] {ring, inner});" in tile and "twoTone.setLayerInset(1, rw, rw, rw, rw);" in tile and "shine.setBackground(twoTone);" in tile
-      and "FOCUS_INNER = 0x8C000000" in main and "FOCUS_SCALE = 1.08f" in fav)
+      and "FOCUS_INNER = 0x8C000000" in main and "FOCUS_SCALE = 1.14f" in fav)
 if not shutil.which("javac"):
     print("SKIP the rules: no javac here"); sys.exit(1 if failed else 0)
 with tempfile.TemporaryDirectory() as tmp:

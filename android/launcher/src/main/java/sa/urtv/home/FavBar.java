@@ -18,8 +18,8 @@ final class FavBar {
     static final int TILE_W = 304, TILE_H = 170, TILE_RADIUS = 16, GAP = 24, PAD_SIDE = 30, PAD_TOP = 28;
     /** five tiles show; more scroll inside the tray */
     static final int SHOWN = 5;
-    /** the focused tile: 6 up and 1.08 from its centre, in 150 ms (4.4 beta 2: the tray has the room for ROOM_SCALE, the owner's 1.14 with no ring); a tile picked up to move: a little more, still inside */
-    static final float FOCUS_SCALE = 1.08f, LIFTED_SCALE = 1.12f;
+    /** the focused tile: 6 up and 1.14 from its centre with its shadow, in 150 ms (4.4 beta 2, the owner: no ring, the size shows the focus; it was 1.08 with a ring); a tile picked up to move: a little more, still inside */
+    static final float FOCUS_SCALE = 1.14f, LIFTED_SCALE = 1.16f;
     /** the focus the tray is made to hold (tests/fav_bar_test.py): 1.14, the owner's size for a focus with no ring */
     static final float ROOM_SCALE = 1.14f;
     /** 4.4 «شكل التطبيقات: تكبير وظل»: the focused app's size (the ring's look is FOCUS_SCALE) */
