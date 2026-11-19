@@ -3217,3 +3217,8 @@ Pictures (PC only): optimize/run/step96/pics/upd-1.png … upd-6.png.
 ## Owner check after the presets and icon pictures (19 Nov)
 - Presets («المظهر ← أشكال جاهزة»): PASS. The four suggestions show; after picking one, «الحالي» appears on it.
 - Icons («شكل التطبيقات»): owner says the square icons are not nice enough. Reviewed the PC screenshots (not pushed): logos sit small inside square tiles with lots of empty space; wide logos (Netflix, mbc, Apple TV) are squeezed; the dark tiles look alike in colour; the logos are different sizes. Suggestion: same tile size, bigger logo fill, one light or uniform background instead of the mixed dark tints.
+
+## Owner check, item 3 (19 Nov): league tabs «الأبطال» and «الهدّافون» — PASS; follow-add screen — FAIL (owner)
+- Owner: the league and club tabs all work.
+- FAIL: the screen for adding teams or leagues (الأفرقة/الدوريات) has a bad design: it freezes, and searching between clubs is slow (lag while typing or moving). Owner's words: «اضافة الأفرقة او الدوريات تصميم مو جيد أبدًا ويعلق ويقت البحث بين الأندية».
+- Needs: fix the layout and the list (the search list lags/freezes while moving); reproduce by opening «المباريات والأسواق» → add teams or leagues, then search between clubs. Not reproduced by adb.
