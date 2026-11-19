@@ -161,7 +161,7 @@
     display:flex;align-items:center;gap:.7em;margin-bottom:1vh;
     font-size:calc(1vw*var(--z,1));font-size:calc(clamp(12px,1vw,18px)*var(--z,1));font-weight:500;letter-spacing:0;color:var(--gold-3);
   }
-  .week .hd::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,rgba(var(--gold-rgb),.5),transparent)}
+  .week .hd::after{content:'';flex:1;height:1px;background:rgba(var(--gold-rgb),.32)}   /* the owner (19 Nov, no decoration): a plain line, no fade */
   .week .hd .srcl{order:2;font-weight:400;white-space:nowrap}   /* a source's credit after the line, at its end */
   /* 4.4 the owner: on the home a card's title kept clear of its rounded corner (--cr, each style's radius): its start inset by .6 of the radius */
   html.widget .week .hd{padding-inline-start:calc(var(--cr,12px)*.6)}
@@ -424,11 +424,11 @@
 
   html.cs-dark1 .week{--cr:26px;border-radius:26px;border-color:rgba(246,239,224,.10)}
   html.cs-dark1 .week::before{background:rgba(8,14,10,.52)}
-  html.cs-dark1 .week::after{box-shadow:inset -3px 0 0 var(--gold)}   /* a thin gold line on the edge facing the clock */
+  /* cs-dark1: no accent line on its edge any more (the owner, 19 Nov: no coloured edge bars) */
 
   html.cs-glass1 .week{--cr:34px;border-radius:34px;border-color:rgba(255,255,255,.22);box-shadow:0 24px 60px rgba(0,0,0,.35)}
-  html.cs-glass1 .week::before{background:linear-gradient(135deg,rgba(255,255,255,.16),rgba(255,255,255,.04) 45%,rgba(255,255,255,.02) 60%,rgba(255,255,255,.10))}
-  html.cs-glass1 .week::after{background:radial-gradient(60% 40% at 85% 0%,rgba(255,255,255,.22),transparent 70%);
+  html.cs-glass1 .week::before{background:rgba(255,255,255,.07)}   /* a flat glass fill (the owner, 19 Nov: no sheen) */
+  html.cs-glass1 .week::after{
     box-shadow:inset 0 1px 0 rgba(255,255,255,.45),inset 0 -1px 0 rgba(255,255,255,.08),inset 1px 0 0 rgba(255,255,255,.12)}
 
   /* framed: an inner gold frame with a diamond on its top and bottom edge, the header centred. The diamond is a square turned
@@ -457,7 +457,7 @@
   html.cs-dark3 .week .dia{background:#07160F}
 
   html.cs-glass3 .week{--cr:30px;border-radius:30px;border-color:rgba(255,255,255,.20);box-shadow:0 24px 60px rgba(0,0,0,.35)}
-  html.cs-glass3 .week::before{background:linear-gradient(135deg,rgba(120,200,150,.20),rgba(20,60,40,.10) 50%,rgba(var(--gold-rgb),.12))}
+  html.cs-glass3 .week::before{background:rgba(70,130,100,.14)}   /* flat (the owner, 19 Nov) */
   html.cs-glass3 .week::after{box-shadow:inset 0 1px 0 rgba(255,255,255,.40),inset 0 -1px 0 rgba(255,255,255,.06)}
   html.cs-glass3 .week .dia{background:rgb(30,60,44)}
 
@@ -483,7 +483,7 @@
   .greg{margin-top:.55vh;font-size:1.06vw;font-size:clamp(12px,1.06vw,21px);font-weight:300;color:var(--dim)}
   /* starts at the screen edge, under the first letters, and fades toward the middle */
   .rule{margin-top:1.2vh;width:9vw;width:clamp(100px,9vw,190px);height:1px;margin-left:auto;margin-right:0;
-    background:linear-gradient(270deg,var(--gold),rgba(var(--gold-rgb),0))}
+    background:rgba(var(--gold-rgb),.45)}   /* a plain line (the owner, 19 Nov) */
 
   /* the card keeps its width on the left; the clock is centred in the space between it and the right edge */
   .mid{display:grid;grid-template-columns:1fr minmax(0,auto);align-items:center;gap:4.5vw}   /* the clock keeps its width; the card takes what is left */
@@ -671,7 +671,7 @@
   .wxsub{margin-top:.55vh;font-size:1.06vw;font-size:clamp(12px,1.06vw,21px);font-weight:300;color:var(--dim);white-space:nowrap}
   .wxr:not(:empty)::before{content:'، ';white-space:pre;color:rgba(214,175,107,.7)}
   .wxt:empty,.wxd:empty,.wxr:empty,.wxdust:empty,.wxi:empty{display:none}
-  .rule.l{margin-left:0;margin-right:auto;background:linear-gradient(90deg,var(--gold),rgba(var(--gold-rgb),0))}
+  .rule.l{margin-left:0;margin-right:auto}
   .mk{margin-top:1.2vh;display:flex;justify-content:flex-end;gap:1.6em;white-space:nowrap;
     font-size:1.06vw;font-size:clamp(12px,1.06vw,21px);font-weight:400;color:#D8CDB6}
   .mk[hidden],.mkup[hidden]{display:none}
@@ -691,7 +691,7 @@
   .live{color:#EE8B70;font-weight:500}
   /* the bar before the adhan: slim, at the very top, across the screen; the header starts below it (3.1vh) */
   .adbar{position:fixed;left:0;right:0;top:0;height:2.9vh;min-height:16px;z-index:6;display:flex;align-items:center;justify-content:center;
-    background:linear-gradient(90deg,rgba(var(--gold-rgb),0),rgba(var(--gold-rgb),.34) 30%,rgba(var(--gold-rgb),.34) 70%,rgba(var(--gold-rgb),0));
+    background:rgba(var(--gold-rgb),.30);   /* flat across (the owner, 19 Nov) */
     color:var(--gold-hi);font-size:1.1vw;font-size:clamp(11px,1.1vw,21px);font-weight:500;letter-spacing:0;white-space:nowrap;pointer-events:none}
   .adbar[hidden]{display:none}
   html.widget .adbar{display:none}
@@ -812,7 +812,7 @@
   .fcm .ftm{flex-direction:column;gap:calc(var(--u)*4);font-size:calc(var(--u)*24)}
   .fcm .ftm .nm{max-width:100%}
   .fcw{text-align:center;font-size:calc(var(--u)*24)}
-  .fmk{flex:none;font-size:calc(var(--u)*18);font-weight:500;padding:calc(var(--u)*2) calc(var(--u)*8);border:1px solid currentColor;border-radius:calc(var(--u)*6);opacity:.85;white-space:nowrap}
+  .fmk{flex:none;font-size:calc(var(--u)*18);font-weight:500;opacity:.85;white-space:nowrap}   /* plain muted text, no box (the owner, 19 Nov) */
 
   /* ---- «المباريات» (#matchpage=1): the light look, sand paper and white cards, a green ring for the focus */
   html.mpage .stage,html.mpage .photo,html.mpage .veil,html.mpage .grain,html.mpage .top-veil,html.mpage .bottom-veil,html.mpage .dimmer,html.mpage #credit,html.mpage .adbar{display:none}
@@ -868,7 +868,7 @@
   .mdx.tight .mdt{gap:calc(var(--u)*10)}
   #mp-q{font:inherit;color:var(--fi);background:var(--fbg);border:1px solid var(--fln);border-radius:calc(var(--u)*12);padding:calc(var(--u)*4) calc(var(--u)*16);width:calc(var(--u)*560);outline:none}
   #mp .fnote{font-size:calc(var(--u)*22)}
-  #mp .fmk{opacity:1;color:var(--fs);border-color:var(--fln);background:var(--chip)}
+  #mp .fmk{opacity:1;color:var(--fs)}
   #mp .fnone{min-height:calc(var(--u)*240)}
   /* a game's card over the page */
   #mp-detail{position:fixed;top:0;right:0;bottom:0;left:0;background:var(--veil);display:flex;align-items:center;justify-content:center;color:var(--fi);font-size:calc(var(--u)*28)}
@@ -964,8 +964,8 @@ html.lowram .photo.settle, html.lowram .week ul.flip li, html.lowram .mrow.flip 
   html.sd-day .bottom-veil{display:block!important;height:38vh}
   .sd-dl{position:fixed;left:11.9vh;right:11.9vh;bottom:6.7vh;height:21vh;z-index:6;direction:rtl}
   .sd-dl::before{content:'';position:absolute;left:0;right:0;top:8.1vh;height:.75vh;border-radius:.4vh;background:rgba(255,255,255,.22)}
-  .sd-dl .done{position:absolute;right:0;top:8.1vh;height:.75vh;border-radius:.4vh;background:linear-gradient(to left,rgba(224,186,116,.45),#E0BA74)}
-  .sd-dl .now{position:absolute;top:7.05vh;width:3vh;height:3vh;margin-right:-1.5vh;border-radius:50%;background:#FFE9B8;box-shadow:0 0 0 .75vh rgba(255,233,184,.25),0 0 3vh rgba(255,233,184,.6)}
+  .sd-dl .done{position:absolute;right:0;top:8.1vh;height:.75vh;border-radius:.4vh;background:#E0BA74}
+  .sd-dl .now{position:absolute;top:7.05vh;width:3vh;height:3vh;margin-right:-1.5vh;border-radius:50%;background:#FFE9B8}
   /* the name above the line, the time well under it: the «now» dot (on the line) never sits on a time */
   .sd-dl .p{position:absolute;top:0;transform:translateX(50%);text-align:center;white-space:nowrap;color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.6)}
   .sd-dl .p b{display:block;font-size:3vh;font-weight:500;line-height:4.4vh}

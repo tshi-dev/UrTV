@@ -55,7 +55,10 @@ final class DockGrid extends LinearLayout {
         int n = getChildCount(), cols = FavBar.glassCols(n, rows), used = FavBar.glassRowsUsed(n, rows);
         int childH = n > 0 ? getChildAt(0).getMeasuredHeight() : 0;
         int gridW = cols * cell + (cols - 1) * gap, gridH = used * childH + (used - 1) * gap;
-        int x0 = (r - l - gridW) / 2, y0 = (b - t - gridH) / 2;   // centred both ways
+        // 4.4 beta 2 «محاذاة التطبيقات»: the grid where the row's gravity puts it (start, centre or end, as the other ways), centred up and down
+        int abs = android.view.Gravity.getAbsoluteGravity(getGravity(), getLayoutDirection()) & android.view.Gravity.HORIZONTAL_GRAVITY_MASK;
+        int x0 = abs == android.view.Gravity.LEFT ? getPaddingLeft() : abs == android.view.Gravity.RIGHT ? r - l - getPaddingRight() - gridW : (r - l - gridW) / 2;
+        int y0 = (b - t - gridH) / 2;
         boolean rtl = getLayoutDirection() == LAYOUT_DIRECTION_RTL;
         for (int i = 0; i < n; i++) {
             int[] rc = FavBar.glassCellAt(i, n, rows);

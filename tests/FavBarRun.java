@@ -13,8 +13,8 @@ public class FavBarRun {
             int five = FavBar.SHOWN * tileW + (FavBar.SHOWN - 1) * gap + 2 * padS;
             // the focused tile grown from its centre, lifted, with its ring: how far its top is from the tray's top, its side from the tray's side
             float grown = (FavBar.FOCUS_SCALE - 1) / 2f;
-            float overTop = tileH * grown + FavBar.px(FavBar.LIFT, h) + FavBar.px(FavBar.RING, h);
-            float overSide = tileW * grown + FavBar.px(FavBar.RING, h);
+            float overTop = tileH * grown + FavBar.px(FavBar.LIFT, h);   // 4.4 beta 2 (the owner): no ring on the icons, the size shows the focus
+            float overSide = tileW * grown;
             float lifted = (FavBar.LIFTED_SCALE - 1) / 2f;
             o.append(h).append(" tray ").append(x0).append(' ').append(x1).append(' ').append(top).append(' ').append(bottom)
              .append(" fits ").append(padT * 2 + tileH <= FavBar.px(FavBar.TRAY_H, h) + 1 ? 1 : 0)
@@ -29,7 +29,7 @@ public class FavBarRun {
             for (int n : new int[] {5, 6, 7, 8, 9, 10}) {
                 int tw = FavBar.tileW(h, n), th = tw * 9 / 16, inner = FavBar.px(1920 - 2 * FavBar.SIDE, h) - 2 * FavBar.px(FavBar.PAD_SIDE, h);
                 int row = n * tw + (n - 1) * FavBar.px(FavBar.GAP, h);
-                float over = tw * (FavBar.FOCUS_SCALE - 1) / 2f + FavBar.px(FavBar.RING, h);
+                float over = tw * (FavBar.FOCUS_SCALE - 1) / 2f;
                 o.append("bar ").append(h).append(' ').append(n).append(" tile ").append(tw).append(" row ").append(row).append(" inner ").append(inner)
                  .append(" slack ").append(inner - row).append(" ratio ").append(Math.abs(tw * 9 / 16f - th) < 1 ? 1 : 0)
                  .append(" ringRoom ").append(FavBar.px(FavBar.PAD_SIDE, h) - over >= 0 ? 1 : 0);

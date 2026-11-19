@@ -63,7 +63,7 @@ else:
     check("three cards across; two at 720p with the large font (the third takes turns)", rows[(1080, 1.0)][6] == 3 and rows[(1080, 1.3)][6] == 3 and rows[(720, 1.0)][6] == 3 and rows[(720, 1.3)][6] == 2, rows)
 
 # ---- a weak TV
-check("a weak TV: the focused tvOS icon does not grow (nor «كل التطبيقات»), the bar is a flat fill with its edge and reads no picture",
-      "float s = has && !(glassy && Ram.low(MainActivity.this))" in main and "scaleTo(v, has && !Ram.low(MainActivity.this) ? FavBar.ZOOM_SCALE : 1f);" in main
+check("a weak TV: the bar is a flat fill with its edge and reads no picture; the focused tvOS icon grows at once (the owner: no outline, so the size shows the focus)",
+      "if (glassy && Ram.low(MainActivity.this)) { v.animate().cancel(); v.setScaleX(s); v.setScaleY(s); }" in main and "scaleTo(v, has ? FavBar.ZOOM_SCALE : 1f);" in main
       and "glassBar.flat(Ram.low(this));" in main and "if (!glassWay() || loader.isShutdown() || Ram.low(this)) return;" in main and "if (backdrop != null && !flat) {" in bar)
 sys.exit(1 if failed else 0)

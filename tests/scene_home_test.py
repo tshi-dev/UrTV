@@ -272,7 +272,7 @@ check("the home: «الخلفية ← الآفاق» shows the scenes on any lay
 check("«حزم الآفاق» (the owner's «الآفاق», was «المشاهد»): «آفاق السعودية» and «آفاق عالمية» (the Couch TV pack), none chosen is the Saudi one; in «المظهر» ← «الخلفية والآفاق»",
       '{"saudi", "آفاق السعودية"}, {"couch", "آفاق عالمية"}' in prefs and 'if (out.isEmpty()) out.add("saudi");' in prefs
       and 'row("حزم الآفاق"' in st
-      and '{LOOK, H + "أشكال جاهزة والتخطيط", "المظهر على الرئيسية", "رجّع الشكل السابق", "أشكال جاهزة", "شكل شاشة الإعدادات", "شكل كنبة", "التخطيط", "وضع الألوان", "صفحات الأسهم والمباريات داكنة",' in hub
+      and '{LOOK, H + "أشكال جاهزة والتخطيط", "المظهر على الرئيسية", "رجّع الشكل السابق", "أشكال جاهزة", "شكل شاشة الإعدادات", "تخصيص", "رجّع بطاقاتك", "شكل كنبة", "التخطيط", "وضع الألوان", "صفحات الأسهم والمباريات داكنة",' in hub
       and 'H + "الخلفية والآفاق", "الخلفية", "حزم الآفاق", "بقاء كل أفق", "الأفق يتبع الوقت", "الأفق يتبع الطقس",' in hub and '{"الساعة", LOOK}, {"شكل التطبيقات", LOOK}, {"حجم شريط tvOS", LOOK}, {"صفوف شريط tvOS", LOOK}, {"حزم الآفاق", LOOK}' in hub)
 check("«بقاء كل أفق», «الأفق يتبع الوقت», «الأفق يتبع الطقس»: rows in «المظهر», off by default (20 s), given to the home, which picks night by the prayer times and fog by the greeting's weather",
       'row("بقاء كل أفق"' in st and 'row("الأفق يتبع الوقت"' in st and 'row("الأفق يتبع الطقس"' in st and 'sp.getBoolean("sceneByTime", false)' in prefs
@@ -300,7 +300,7 @@ check("4.4 «شكل التطبيقات»: بنرات, أيقونات or مربع
       'HOME_APPS = {"banners", "icons", "tiles", "glass"};' in prefs and '{"بنرات", "أيقونات", "مربعات ملونة", "tvOS"}' in prefs and 'APPS_STORED = {"banners", "icons", "frame", "zoom", "glass"};' in prefs
       and 'sp.getString("appsStyle", "frame")' in prefs and 'row("شكل التطبيقات"' in st
       and '"apps_style"' in prov and 'getStringExtra("appsstyle")' in recv and "appsstyle) " in read(ROOT / "optimize/saver.sh")
-      and "final boolean zoom = inDock && appsZoom;" in main_tile and "FavBar.ZOOM_SCALE" in main_tile and "alpha(has && (!zoom || glassy) ? 1f : 0f)" in main_tile
+      and "final boolean zoom = inDock && appsZoom;" in main_tile and "FavBar.ZOOM_SCALE" in main_tile and "alpha(has && !zoom ? 1f : 0f)" in main_tile
       and "placeZoomName(appsZoom && inBar ? f : null);" in main and 'java.util.Arrays.asList("zoom", "banners", "icons", "tiles").contains(v)' in snap
       and "appsZoom = FavBar.zoom(cfg.appsStyle);" in main)
 sys.exit(1 if failed else 0)

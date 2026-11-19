@@ -548,6 +548,12 @@ public class SettingsActivity extends Activity {
                     .addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION));   // the other style now, the focus on this row
                 finish();
             }); } });
+        // 4.4 beta 2 (the owner approved docs/mockups/full-look 05): «تخصيص», the look's parts gathered under one row (each still its own row
+        // below, so the search and a link reach it as before); a part changed since the look was chosen says «غيّرتها»
+        row("تخصيص", customLine(), R.drawable.ic_eye, new Runnable() { public void run() { pickCustom(); } });
+        // 4.4 beta 2 (the owner, docs/mockups/full-look 06): after «… بدون بطاقات», the hidden cards come back from here, fitted to the look
+        if (!prefs.hiddenCards().isEmpty()) row("رجّع بطاقاتك", "بطاقاتك قبل التصميم، بنفس ترتيبها", R.drawable.ic_eye,
+            new Runnable() { public void run() { prefs.restoreHiddenCards(); String n = prefs.takeFitNote(); render(); if (n != null) notice(n); } });
         if (!Prefs.PRESETS_REPLACE_COUCH) row("شكل كنبة", prefs.couchLabel(), R.drawable.ic_eye, new Runnable() { public void run() { flipCouch(); } });
         row("التخطيط", Prefs.homeLayoutLabel(prefs.homeLayout()), R.drawable.ic_eye, new Runnable() { public void run() { pickHomeLayout(); } });
         row("الخلفية", Prefs.homeBgLabel(prefs.homeBg()), R.drawable.ic_eye, new Runnable() { public void run() {
@@ -873,11 +879,26 @@ public class SettingsActivity extends Activity {
      * in the other layout on this row, as «شكل كنبة» did.
      */
     private void pickPreset() {
-        // the six looks, then «تركيبات مقترحة» (the owner): one tile that opens the four mixes when the focus is on it
-        final int n = Prefs.PRESETS.length, mixAt = n;
-        final String[] names = new String[n + 1], about = new String[n + 1], pics = new String[n + 1];
-        for (int i = 0; i < n; i++) { names[i] = Prefs.PRESET_NAMES[i]; about[i] = Prefs.PRESET_ABOUT[i]; pics[i] = Prefs.PRESETS[i]; }
-        names[mixAt] = "تركيبات مقترحة"; about[mixAt] = "شكل من الستة مع تغيير أو اثنين"; pics[mixAt] = "combos";
+        // 4.4 beta 2 (the owner approved docs/mockups/full-look 01): two parts, each under its plain heading: «تصميم كامل» (the looks that change
+        // everything, the settings screen too: Prefs.fullDesign) and «أشكال بسيطة» (the home only), then «تركيبات مقترحة» (one tile that opens
+        // the four mixes when the focus is on it). A heading is not a choice: the focus passes over it.
+        final List<Integer> order = new ArrayList<>();   // an index of Prefs.PRESETS, HEAD_FULL / HEAD_SIMPLE for a heading, MIX for the mixes' tile
+        order.add(HEAD_FULL);
+        for (int i = 0; i < Prefs.PRESETS.length; i++) if (Prefs.fullDesign(Prefs.PRESETS[i])) order.add(i);
+        order.add(HEAD_SIMPLE);
+        for (int i = 0; i < Prefs.PRESETS.length; i++) if (!Prefs.fullDesign(Prefs.PRESETS[i])) order.add(i);
+        order.add(MIX);
+        final int n = order.size(), mixAt = n - 1;
+        final String[] names = new String[n], about = new String[n], pics = new String[n];
+        final String[] keys = new String[n];
+        for (int k = 0; k < n; k++) {
+            int i = order.get(k);
+            if (i == HEAD_FULL) { names[k] = "تصميم كامل"; about[k] = "الرئيسية والتطبيقات والساعة والخلفية وشاشة الإعدادات"; continue; }
+            if (i == HEAD_SIMPLE) { names[k] = "أشكال بسيطة"; about[k] = "الرئيسية فقط، والإعدادات كما هي"; continue; }
+            if (i == MIX) { names[k] = "تركيبات مقترحة"; about[k] = "شكل من الستة مع تغيير أو اثنين"; pics[k] = "combos"; continue; }
+            names[k] = Prefs.PRESET_NAMES[i]; about[k] = Prefs.PRESET_ABOUT[i]; pics[k] = keys[k] = Prefs.PRESETS[i];
+            if (Prefs.PRESETS[i].equals(prefs.preset()) && prefs.presetCombo().isEmpty()) about[k] = String.format(java.util.Locale.ROOT, "الحالي، %s", about[k]);   // the owner: the one on now says so
+        }
         final FrameLayout frame = new FrameLayout(this);
         final LinearLayout box = new LinearLayout(this);
         box.setOrientation(LinearLayout.HORIZONTAL);
@@ -891,10 +912,22 @@ public class SettingsActivity extends Activity {
             @Override public int getCount() { return names.length; }
             @Override public Object getItem(int i) { return pics[i]; }
             @Override public long getItemId(int i) { return i; }
+            @Override public boolean areAllItemsEnabled() { return false; }
+            @Override public boolean isEnabled(int i) { return pics[i] != null; }   // a heading is not a choice
             @Override public View getView(int i, View old, android.view.ViewGroup parent) {
                 LinearLayout r = new LinearLayout(SettingsActivity.this);
                 r.setOrientation(LinearLayout.VERTICAL);
                 r.setPadding(dp(16), dp(8), dp(16), dp(8));
+                if (pics[i] == null) {   // a part's heading: its name and its one line, muted, never focused
+                    r.setPadding(dp(16), dp(i == 0 ? 2 : 14), dp(16), dp(4));
+                    TextView h = new TextView(SettingsActivity.this);
+                    h.setText(conv(names[i] + "، " + about[i]));
+                    h.setTextColor(look.sub);
+                    h.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
+                    h.setTypeface(font("Thmanyah-Medium"));
+                    r.addView(h);
+                    return r;
+                }
                 TextView t = new TextView(SettingsActivity.this);
                 t.setText(conv(names[i]));
                 t.setTextColor(focusColors(look.text, look.onFocus));
@@ -912,7 +945,7 @@ public class SettingsActivity extends Activity {
         });
         box.addView(lv, new LinearLayout.LayoutParams(0, dp(420), 1f));
         final ImageView pic = new ImageView(this);
-        pic.setScaleType(ImageView.ScaleType.CENTER_CROP);
+        pic.setScaleType(ImageView.ScaleType.FIT_CENTER);   // the owner: a look's picture whole, never cropped
         pic.setOutlineProvider(new ViewOutlineProvider() {
             @Override public void getOutline(View v, Outline o) { o.setRoundRect(0, 0, v.getWidth(), v.getHeight(), dp(18)); }
         });
@@ -922,9 +955,10 @@ public class SettingsActivity extends Activity {
         pp.gravity = Gravity.CENTER_VERTICAL;
         box.addView(pic, pp);
         final int[] shown = {-1};
+        final int nowAt = Math.max(1, java.util.Arrays.asList(keys).indexOf(prefs.preset()));
         final Runnable update = () -> {
             int i = lv.getSelectedItemPosition();
-            if (i < 0) i = Math.max(0, java.util.Arrays.asList(Prefs.PRESETS).indexOf(prefs.preset()));
+            if (i < 0 || pics[i] == null) i = nowAt;
             if (i == shown[0]) return;
             shown[0] = i;
             setAssetPicture(pic, "presets/" + pics[i] + ".jpg");
@@ -939,19 +973,133 @@ public class SettingsActivity extends Activity {
             @Override public void onNothingSelected(android.widget.AdapterView<?> p) { }
         });
         lv.setOnItemClickListener((p, v, pos, id) -> {
+            if (keys[pos] == null && pos != mixAt) return;   // a heading
             if (pos == mixAt) { mixes.open(v); return; }
             dialog.dismiss();
-            applyPreset(Prefs.PRESETS[pos]);
+            if (Prefs.fullDesign(keys[pos]) && !prefs.homePanels().isEmpty()) askCards(keys[pos]);   // the owner: asked once, Back cancels
+            else applyPreset(keys[pos]);
         });
         dialog.setOnKeyListener((d, code, e) -> code == android.view.KeyEvent.KEYCODE_BACK && e.getAction() == android.view.KeyEvent.ACTION_UP && mixes.close());
         dialog.setOnShowListener(d -> {
             dress(dialog);
             dialog.getWindow().setLayout(Math.min(getResources().getDisplayMetrics().widthPixels - dp(48), dp(940)), android.view.ViewGroup.LayoutParams.WRAP_CONTENT);
+            MixFocus.calm(dialog.getWindow());   // the owner: a quiet backdrop, the settings page behind does not show through
             lv.requestFocus();
-            lv.setSelection(prefs.presetCombo().isEmpty() ? Math.max(0, java.util.Arrays.asList(Prefs.PRESETS).indexOf(prefs.preset())) : mixAt - 1);
+            lv.setSelection(prefs.presetCombo().isEmpty() ? nowAt : mixAt);
             update.run();
         });
         dialog.setOnDismissListener(d -> { pic.setImageDrawable(null); mixes.release(); });
+        dialog.show();
+    }
+
+    private static final int HEAD_FULL = -1, HEAD_SIMPLE = -2, MIX = -3;
+
+    /** the parts «تخصيص» gathers, each the label of its own row (its action is that row's), and the look's field it is (null: none) */
+    private static final String[][] CUSTOM_PARTS = {
+        {"التخطيط", "layout"}, {"الخلفية", "bg"}, {"الساعة", "clock"}, {"شكل التطبيقات", "apps"}, {"شكل شاشة الإعدادات", null},
+        {"البطاقة الأولى", "cards"}, {"البطاقة الثانية", "cards"}, {"البطاقة الثالثة", "cards"}, {"وضع الألوان", "appearance"}};
+
+    /** «تخصيص»'s line: what changed since the look was chosen, or what it holds */
+    private String customLine() {
+        List<String> ch = prefs.presetChanged();
+        if (ch.isEmpty()) return "التخطيط والخلفية والساعة والتطبيقات والبطاقات";
+        StringBuilder b = new StringBuilder();
+        for (String c : ch) { if (b.length() > 0) b.append("، "); b.append(c); }
+        return String.format(java.util.Locale.ROOT, "غيّرت: %s", b);
+    }
+
+    /**
+     * «تخصيص»: the look's parts in one list, each with its value, «غيّرتها» on a part changed since the look was chosen; OK on one opens that part's
+     * own choice (its row's action, so there is one way to change it); then «رجّع بطاقاتك» while cards are hidden, and «رجّع شكلك المعتاد» while a look is on.
+     */
+    private void pickCustom() {
+        final List<String> labels = new ArrayList<>();
+        final List<Runnable> acts = new ArrayList<>();
+        List<String> changed = prefs.presetChanged();
+        for (String[] part : CUSTOM_PARTS) {
+            final Runnable act = actions.get(FocusKey.key(part[0]));
+            if (act == null) continue;   // a row not on this TV (a switch off): not offered
+            int k = part[1] == null ? -1 : java.util.Arrays.asList(Prefs.PRESET_FIELDS).indexOf(part[1]);
+            boolean mine = k >= 0 && changed.contains(Prefs.PRESET_FIELD_NAMES[k]);
+            labels.add(mine ? String.format(java.util.Locale.ROOT, "%s، غيّرتها", part[0]) : part[0]);
+            acts.add(act);
+        }
+        if (!prefs.hiddenCards().isEmpty()) { labels.add("رجّع بطاقاتك"); acts.add(() -> { prefs.restoreHiddenCards(); String n = prefs.takeFitNote(); render(); if (n != null) notice(n); }); }
+        if (!"tv".equals(prefs.preset()) || !prefs.presetCombo().isEmpty()) { labels.add("رجّع شكلك المعتاد"); acts.add(() -> applyPreset("tv")); }
+        final CharSequence[] shown = new CharSequence[labels.size()];
+        for (int i = 0; i < shown.length; i++) shown[i] = conv(labels.get(i));
+        new Dlg(this).setTitle("تخصيص").setItems(shown, (d, i) -> acts.get(i).run()).show();
+    }
+
+    /**
+     * 4.4 beta 2 (the owner approved docs/mockups/full-look 06): a full-design look and the home's cards. One question, two plain choices: the cards
+     * kept inside the design (each that does not fit it named with the one that takes its place, CardFit), or the pure design without cards (hidden,
+     * not lost: «رجّع بطاقاتك» in «المظهر», and «شكلك المعتاد»). Back cancels the change: nothing is applied half-way.
+     */
+    private void askCards(final String key) {
+        final String name = Prefs.presetName(key);
+        List<String> mine = prefs.homePanels();
+        List<String[]> swaps = new ArrayList<>();
+        String layout = Prefs.PRESET_VALUES[java.util.Arrays.asList(Prefs.PRESETS).indexOf(key)][0];
+        List<String> kept = CardFit.fitted(mine, "tvos".equals(key) ? "tvos" : layout == null ? prefs.homeLayout() : layout, swaps);
+        StringBuilder keptNames = new StringBuilder();
+        for (String c : kept) { if (keptNames.length() > 0) keptNames.append("، "); keptNames.append(Prefs.panelName(c)); }
+        String intro = mine.size() == 1 ? "عندك على الرئيسية بطاقة واحدة." : mine.size() == 2 ? "عندك على الرئيسية بطاقتان."
+            : String.format(java.util.Locale.ROOT, "عندك على الرئيسية %s بطاقات.", mine.size());
+        for (String[] w : swaps)
+            intro += " " + String.format(java.util.Locale.ROOT, "«%s» ما تناسب %s، فبنحط مكانها «%s».", Prefs.panelName(w[0]), name, Prefs.panelName(w[1]));
+        final String[] labels = {"خلّ بطاقاتي داخل التصميم", String.format(java.util.Locale.ROOT, "%s بدون بطاقات", name)};
+        final String[] subs = {String.format(java.util.Locale.ROOT, "%s، على %s", keptNames, name), "الساعة والتطبيقات فقط. بطاقاتك محفوظة، وترجّعها من «المظهر»"};
+        pickOneWithLines(String.format(java.util.Locale.ROOT, "%s: وش تبي مع بطاقاتك؟", name), intro, labels, subs, i -> applyPreset(key, i == 1));
+    }
+
+    private interface OnChoice { void on(int i); }
+
+    /** a short question: its line, then the choices each with its plain line under it; OK picks, Back cancels (nothing changes) */
+    private void pickOneWithLines(String title, String line, final String[] labels, final String[] subs, final OnChoice then) {
+        final LinearLayout box = new LinearLayout(this);
+        box.setOrientation(LinearLayout.VERTICAL);
+        box.setLayoutDirection(Dir.layout());
+        box.setPadding(dp(16), dp(4), dp(16), dp(8));
+        TextView intro = new TextView(this);
+        intro.setText(conv(line));
+        intro.setTextColor(look.sub);
+        intro.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
+        intro.setTypeface(font("Thmanyah-Regular"));
+        intro.setTextDirection(Dir.text());
+        intro.setPadding(dp(4), 0, dp(4), dp(12));
+        box.addView(intro);
+        final android.widget.ListView lv = new android.widget.ListView(this);
+        lv.setDividerHeight(dp(8));
+        lv.setDivider(new android.graphics.drawable.ColorDrawable(0));
+        lv.setSelector(GlassPaint.focused(this, look, 12));
+        lv.setAdapter(new android.widget.BaseAdapter() {
+            @Override public int getCount() { return labels.length; }
+            @Override public Object getItem(int i) { return labels[i]; }
+            @Override public long getItemId(int i) { return i; }
+            @Override public View getView(int i, View old, android.view.ViewGroup parent) {
+                LinearLayout r = new LinearLayout(SettingsActivity.this);
+                r.setOrientation(LinearLayout.VERTICAL);
+                r.setPadding(dp(16), dp(10), dp(16), dp(10));
+                TextView t = new TextView(SettingsActivity.this);
+                t.setText(conv(labels[i]));
+                t.setTextColor(focusColors(look.text, look.onFocus));
+                t.setTextSize(TypedValue.COMPLEX_UNIT_SP, 19);
+                t.setTypeface(font("Thmanyah-Medium"));
+                r.addView(t);
+                TextView a = new TextView(SettingsActivity.this);
+                a.setText(conv(subs[i]));
+                a.setTextColor(focusColors(look.sub, look.onFocusSub));
+                a.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
+                a.setTypeface(font("Thmanyah-Regular"));
+                r.addView(a);
+                return r;
+            }
+        });
+        box.addView(lv, new LinearLayout.LayoutParams(-1, -2));
+        final AlertDialog dialog = new Dlg(this).setTitle(title).setView(box).create();
+        lv.setOnItemClickListener((p, v, pos, id) -> { dialog.dismiss(); then.on(pos); });
+        dialog.setOnShowListener(d -> { dress(dialog); lv.requestFocus(); lv.setSelection(0); });
         dialog.show();
     }
 
@@ -1010,7 +1158,7 @@ public class SettingsActivity extends Activity {
             h.setTypeface(font("Thmanyah-Medium"));
             panel.addView(h);
             TextView sub = new TextView(SettingsActivity.this);
-            sub.setText(conv("كل واحدة شكل من الستة مع تغيير أو اثنين؛ اختيارها يضبطها كلها"));
+            sub.setText(conv("أربع تركيبات، كل وحدة شكل جاهز مع تغيير أو اثنين؛ اختيارها يضبطها كلها"));
             sub.setTextColor(look.sub);
             sub.setTextSize(TypedValue.COMPLEX_UNIT_SP, 13);
             sub.setTypeface(font("Thmanyah-Regular"));
@@ -1018,14 +1166,31 @@ public class SettingsActivity extends Activity {
             LinearLayout row = new LinearLayout(SettingsActivity.this);
             row.setOrientation(LinearLayout.HORIZONTAL);
             row.setLayoutDirection(Dir.layout());
+            // 4.4 beta 2 (the owner's test of build 525): every mix reachable, the list scrolls with the focus and says where it is («٢ من ٤»)
+            android.widget.HorizontalScrollView strip = new android.widget.HorizontalScrollView(SettingsActivity.this);
+            strip.setHorizontalScrollBarEnabled(false);
+            strip.setHorizontalFadingEdgeEnabled(true);
+            strip.setFadingEdgeLength(dp(40));
+            strip.addView(row);
+            final TextView where = new TextView(SettingsActivity.this);
+            where.setTextColor(look.sub);
+            where.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
+            where.setTypeface(font("Thmanyah-Regular"));
+            where.setPadding(0, dp(8), 0, 0);
+            final String now = prefs.presetCombo();
             for (final String[] c : Prefs.COMBOS) {
+                final int at = cards.size();
                 LinearLayout card = new LinearLayout(SettingsActivity.this);
                 card.setOrientation(LinearLayout.VERTICAL);
                 card.setPadding(dp(7), dp(7), dp(7), dp(9));
                 card.setFocusable(true);
-                card.setBackground(GlassPaint.focused(SettingsActivity.this, look, 14));
+                card.setBackground(MixFocus.card(SettingsActivity.this, look, 14));   // the owner: at rest a quiet panel, focused the fill with a white ring
+                card.setOnFocusChangeListener((v, has) -> {
+                    if (!has) return;
+                    where.setText(conv(String.format(java.util.Locale.ROOT, "التركيبة %s من %s", at + 1, Prefs.COMBOS.length)));
+                });
                 ImageView im = new ImageView(SettingsActivity.this);
-                im.setScaleType(ImageView.ScaleType.CENTER_CROP);
+                im.setScaleType(ImageView.ScaleType.FIT_CENTER);   // the whole picture, never cropped
                 im.setClipToOutline(true);
                 im.setOutlineProvider(new ViewOutlineProvider() {
                     @Override public void getOutline(View v, Outline o) { o.setRoundRect(0, 0, v.getWidth(), v.getHeight(), dp(10)); }
@@ -1044,6 +1209,14 @@ public class SettingsActivity extends Activity {
                 a.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12);
                 a.setTypeface(font("Thmanyah-Regular"));
                 card.addView(a, new LinearLayout.LayoutParams(dp(192), -2));
+                if (c[0].equals(now)) {   // the owner: the one on now says so
+                    TextView cur = new TextView(SettingsActivity.this);
+                    cur.setText(conv("الحالي"));
+                    cur.setTextColor(focusColors(MixFocus.NOW, MixFocus.NOW_ON_FOCUS));
+                    cur.setTextSize(TypedValue.COMPLEX_UNIT_SP, 13);
+                    cur.setTypeface(font("Thmanyah-Medium"));
+                    card.addView(cur, new LinearLayout.LayoutParams(dp(192), -2));
+                }
                 card.setOnClickListener(v -> { dialog.dismiss(); applyCombo(c[0]); });
                 card.setOnKeyListener((v, code, e) -> {   // up from a mix: moving away closes it, the focus back on the tile
                     if (code == android.view.KeyEvent.KEYCODE_DPAD_UP && e.getAction() == android.view.KeyEvent.ACTION_DOWN) { close(); return true; }
@@ -1055,7 +1228,8 @@ public class SettingsActivity extends Activity {
                 row.addView(card, cp);
                 cards.add(card);
             }
-            panel.addView(row);
+            panel.addView(strip, new LinearLayout.LayoutParams(-1, -2));
+            panel.addView(where);
             FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(-1, -1);
             frame.addView(panel, lp);
             panel.setVisibility(View.INVISIBLE);
@@ -1070,7 +1244,9 @@ public class SettingsActivity extends Activity {
             shown = true;
             panel.setVisibility(View.VISIBLE);
             panel.post(() -> {
-                cards.get(0).requestFocus();
+                int at = 0;   // the focus on the mix on now, else the first
+                for (int i = 0; i < Prefs.COMBOS.length; i++) if (Prefs.COMBOS[i][0].equals(prefs.presetCombo())) at = i;
+                cards.get(at).requestFocus();
                 animate(true, null);
             });
         }
@@ -1083,7 +1259,7 @@ public class SettingsActivity extends Activity {
             animate(false, () -> {
                 panel.setVisibility(View.INVISIBLE);
                 list.requestFocus();
-                list.setSelection(Prefs.PRESETS.length - 1);   // the focus to the look above the tile: it does not open again at once
+                list.setSelection(list.getCount() - 2);   // the focus to the look above the tile (the tile is last): it does not open again at once
             });
             return true;
         }
@@ -1138,9 +1314,10 @@ public class SettingsActivity extends Activity {
     }
 
     /** a look chosen: applied, and drawn again here; 4.4 beta 2 (the owner): only a full-design look («كنبة») changes the settings screen too */
-    private void applyPreset(String key) {
+    private void applyPreset(String key) { applyPreset(key, false); }
+    private void applyPreset(String key, boolean noCards) {
         String style = prefs.settingsStyle();
-        prefs.setPreset(key);
+        prefs.setPreset(key, noCards);
         afterLook(style);
     }
 
@@ -1439,9 +1616,9 @@ public class SettingsActivity extends Activity {
             if (!cat.equals(screen)) open(cat);
             else restoreFocus(lastRow.get(screen), 0, scroll.getScrollY());   // into the rows: the one last focused there, else the first
         });
-        if (cs != null) couchSection(card, bar, ic, n);
+        if (cs != null) couchSection(card, bar, ic, n, cat);
         card.setOnFocusChangeListener((x, has) -> {
-            if (cs != null) CouchStyle.focus(x, has, CouchStyle.SEC_SCALE); else
+            if (cs != null) couchSectionFocus(x, has); else
             x.setAlpha(has || cat.equals(screen) ? 1f : 0.82f);
             side.removeCallbacks(sideOpen);
             if (has && !SettingsHub.SEARCH.equals(cat) && !cat.equals(screen)) {   // the section's rows, the focus kept on the list
@@ -1585,28 +1762,51 @@ public class SettingsActivity extends Activity {
         }
     }
 
-    /** one section of the side in couch-tv's look: its icon in a rounded box, its name; white when focused, lit while it is the one shown */
-    private void couchSection(LinearLayout card, View bar, ImageView ic, TextView n) {
+    /**
+     * one section of the side in couch-tv's look, 4.4 beta 2 v2 (the owner approved docs/mockups/settings-style/couch-v2-*): a taller bar, the
+     * name only (no icon, no mark); white when focused, lit while it is the one shown. The focused bar shows its name large and, under it, one plain
+     * line of what is inside (SettingsHub.SHORT): it grows by its words, never by a scale, so a weak TV has no motion at all.
+     */
+    private void couchSection(LinearLayout card, View bar, ImageView ic, TextView n, String cat) {
         bar.setVisibility(View.GONE);
-        card.setMinimumHeight(cs.px(CouchStyle.SEC_H));
-        card.setPaddingRelative(cs.px(0.875f), cs.px(0.5f), cs.px(1.5f), cs.px(0.5f));
+        ic.setVisibility(View.GONE);
+        card.setOrientation(LinearLayout.VERTICAL);
+        card.setGravity(Gravity.CENTER_VERTICAL | Gravity.START);
+        card.setMinimumHeight(cs.px(CouchStyle.SEC2_H));
+        card.setPaddingRelative(cs.px(CouchStyle.SEC2_PAD_X), cs.px(CouchStyle.SEC2_PAD_Y), cs.px(CouchStyle.SEC2_PAD_X), cs.px(CouchStyle.SEC2_PAD_Y));
         card.setBackground(cs.card(0, CouchStyle.SEC_ON, CouchStyle.SEC_RADIUS));
-        ic.setDuplicateParentStateEnabled(true);
-        ic.setImageTintList(CouchStyle.ink(CouchStyle.SEC, CouchStyle.WHITE, CouchStyle.INK));
-        android.graphics.drawable.StateListDrawable box = new android.graphics.drawable.StateListDrawable();
-        box.addState(new int[] {android.R.attr.state_focused}, cs.round(CouchStyle.ICON_BOX_FOCUS, CouchStyle.SEC_ICON_RADIUS));
-        box.addState(new int[] {}, cs.round(CouchStyle.ICON_BOX, CouchStyle.SEC_ICON_RADIUS));
-        ic.setBackground(box);
-        int pad = (cs.px(CouchStyle.SEC_ICON_BOX) - cs.px(CouchStyle.SEC_ICON)) / 2;
-        ic.setPadding(pad, pad, pad, pad);
-        LinearLayout.LayoutParams ip = new LinearLayout.LayoutParams(cs.px(CouchStyle.SEC_ICON_BOX), cs.px(CouchStyle.SEC_ICON_BOX));
-        ic.setLayoutParams(ip);
         n.setDuplicateParentStateEnabled(true);
         n.setTextColor(CouchStyle.ink(CouchStyle.SEC, CouchStyle.WHITE, CouchStyle.INK));
-        n.setTextSize(TypedValue.COMPLEX_UNIT_PX, cs.px(CouchStyle.SEC_TEXT));
-        LinearLayout.LayoutParams tp = (LinearLayout.LayoutParams) n.getLayoutParams();
-        tp.setMarginStart(cs.px(1.25f));
+        n.setTextSize(TypedValue.COMPLEX_UNIT_PX, cs.px(CouchStyle.SEC2_TEXT));
+        n.setLayoutParams(new LinearLayout.LayoutParams(-1, -2));
+        TextView line = new TextView(this);
+        line.setTag(SEC_LINE);
+        line.setText(conv(SettingsHub.shortLine(cat)));
+        line.setTextColor(CouchStyle.INK_SUB);
+        line.setTextSize(TypedValue.COMPLEX_UNIT_PX, cs.px(CouchStyle.SEC2_LINE));
+        line.setTypeface(font("Thmanyah-Regular"));
+        line.setTextDirection(Dir.text());
+        line.setMaxLines(3);   // wraps (a large font at 720p), never cut with «…»
+        line.setVisibility(View.GONE);
+        card.addView(line, new LinearLayout.LayoutParams(-1, -2));
     }
+
+    /** a section's focus in «كنبة» v2: its name large and its line shown; back to the name alone when the focus leaves (a size change, no animation) */
+    private void couchSectionFocus(View card, boolean has) {
+        TextView n = null;
+        View line = card.findViewWithTag(SEC_LINE);
+        for (int k = 0; k < ((ViewGroup) card).getChildCount(); k++) {
+            View c = ((ViewGroup) card).getChildAt(k);
+            if (c instanceof TextView && c != line && c.getVisibility() == View.VISIBLE) { n = (TextView) c; break; }
+        }
+        if (n != null) {
+            n.setTextSize(TypedValue.COMPLEX_UNIT_PX, cs.px(has ? CouchStyle.SEC2_BIG : CouchStyle.SEC2_TEXT));
+            n.setTypeface(font(has ? "ThmanyahDisplay-Bold" : "Thmanyah-Medium"));
+        }
+        if (line != null && ((TextView) line).length() > 0) line.setVisibility(has ? View.VISIBLE : View.GONE);
+        card.setTranslationZ(has ? 8f : 0f);
+    }
+    private static final String SEC_LINE = "secLine";
 
     /** couch-tv's head of the rows: a breadcrumb (a picker's section) over the title */
     private void couchHead() {
@@ -3076,6 +3276,7 @@ public class SettingsActivity extends Activity {
         dialog.setOnShowListener(d -> {
             dress(dialog);
             dialog.getWindow().setLayout(Math.min(getResources().getDisplayMetrics().widthPixels - dp(48), dp(940)), android.view.ViewGroup.LayoutParams.WRAP_CONTENT);
+            MixFocus.calm(dialog.getWindow());   // the owner: a quiet backdrop, the settings page behind does not show through
             lv.requestFocus();
             lv.setSelection(Math.max(0, selected));
             handler.postDelayed(update, 50);

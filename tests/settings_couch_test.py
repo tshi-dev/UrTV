@@ -18,6 +18,23 @@ def check(name, ok, detail=""):
 
 st, cs, hub = ((APP / f).read_text(encoding="utf-8") for f in ("SettingsActivity.java", "CouchStyle.java", "SettingsHub.java"))
 num = lambda name: float(re.search(rf"\b{name} = ([0-9.]+)f", cs).group(1))
+
+# ---- 4.4 beta 2 «كنبة» v2 (the owner approved docs/mockups/settings-style/couch-v2-*): the first page's bars
+sec = st[st.index("    private void couchSection("):].split("\n    }\n")[0]
+secf = st[st.index("    private void couchSectionFocus("):].split("\n    }\n")[0]
+check("v2: a taller bar per section (5.75 rem, was 4.75), the name only: no icon, no bar mark",
+      num("SEC2_H") == 5.75 and "card.setMinimumHeight(cs.px(CouchStyle.SEC2_H));" in sec and "ic.setVisibility(View.GONE);" in sec and "bar.setVisibility(View.GONE);" in sec)
+check("v2: the focused bar shows its name large (2.75 rem) and one plain line of what is inside (SettingsHub.SHORT) that wraps, never cut",
+      num("SEC2_BIG") == 2.75 and "cs.px(has ? CouchStyle.SEC2_BIG : CouchStyle.SEC2_TEXT)" in secf and "line.setVisibility(has ? View.VISIBLE : View.GONE);" in secf
+      and "line.setMaxLines(3);" in sec and "setEllipsize" not in sec and "SettingsHub.shortLine(cat)" in sec)
+check("v2: the line is never smaller than the couch hint (1.4375 rem)", num("SEC2_LINE") >= num("HINT"))
+check("v2: it grows by its words, never by a scale or an animation, so a weak TV has no motion (the owner's light version)",
+      "animate()" not in secf and "setScale" not in secf and "if (cs != null) couchSectionFocus(x, has); else" in st)
+short = dict(zip(re.findall(r"\w+", hub.split("static final String[] SHORT_KEYS = {")[1].split("};")[0]),
+                 re.findall(r'"([^"]+)"', hub.split("static final String[] SHORT_LINES = {")[1].split("};")[0])))
+check("v2: every section has its line (search aside), plain words: no «*», no «·», no marks",
+      set(short) == {"LANG", "PLACE", "LOOK", "APPS", "BUTTONS", "PRAY", "CONTENT", "SAVER", "FAMILY", "UPDATE"}
+      and not any(ch in v for v in short.values() for ch in "*·✦•★") and short["LOOK"] == "الأشكال الجاهزة، والتخطيط، والخلفية، والساعة، والتطبيقات", short)
 check("couch-tv's sizes, in its rem (a 120th of the screen's width): the safe area 5 x 3.75, the side 36, the gap 4, a section and a row 4.75 high, radius 1.5",
       "rem = c.getResources().getDisplayMetrics().widthPixels / 120f;" in cs
       and (num("SAFE_X"), num("SAFE_Y"), num("SIDE"), num("GAP"), num("SEC_H"), num("ROW_H"), num("ROW_RADIUS"), num("SEC_RADIUS")) == (5, 3.75, 36, 4, 4.75, 4.75, 1.5, 1.5)
