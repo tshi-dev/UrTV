@@ -81,7 +81,7 @@ mkdir -p "$W/out_extras"
 inc=$(grep "^def shared = " "$ROOT/android/extras/build.gradle" | grep -o "'[A-Za-z]*\.java'" | tr -d "'")
 files=$(find "$ROOT/android/extras/src/main/java" -name '*.java'); for f in $inc; do [ -f "$ROOT/android/launcher/src/main/java/sa/urtv/home/$f" ] && files="$files $ROOT/android/launcher/src/main/java/sa/urtv/home/$f"; done
 # 4.4 beta 3: the add-on's wireless-debugging libraries, exactly the files pinned in android/extras/pins.txt («sha256 group:name:version file»): fetched once into the
-# cache (JitPack for com.github.MuntashirAkon, Maven Central for the rest), each checked against its SHA-256 (a wrong one is a FAIL, never used), an .aar's classes.jar
+# cache (JitPack for com.github.MuntashirAkon, Google's Maven for androidx, Maven Central for the rest), each checked against its SHA-256 (a wrong one is a FAIL, never used), an .aar's classes.jar
 # taken out. Where they cannot be fetched (offline, or JitPack not reachable) the add-on is SKIPPED here, never passed: CI's Build APKs builds it.
 sha256_of() { if command -v sha256sum >/dev/null 2>&1; then sha256sum "$1" | cut -d' ' -f1; else shasum -a 256 "$1" | cut -d' ' -f1; fi; }
 xcp="$JAR"; xskip=""
@@ -90,7 +90,7 @@ pins=$(grep -v '^#' "$ROOT/android/extras/pins.txt" 2>/dev/null | grep -v '^[[:s
 while read -r want gav fname; do
   [ -z "$want" ] && continue
   g=${gav%%:*}; rest=${gav#*:}; a=${rest%%:*}; v=${rest#*:}
-  case "$g" in com.github.MuntashirAkon*) repo=https://jitpack.io ;; *) repo=https://repo1.maven.org/maven2 ;; esac
+  case "$g" in com.github.MuntashirAkon*) repo=https://jitpack.io ;; androidx.*) repo=https://dl.google.com/android/maven2 ;; *) repo=https://repo1.maven.org/maven2 ;; esac
   dest="$CACHE/extras-libs/$fname"; mkdir -p "$CACHE/extras-libs"
   if [ ! -f "$dest" ] || [ "$(sha256_of "$dest")" != "$want" ]; then
     tmp=$(mktemp -p "$CACHE/extras-libs" dl.XXXXXX)

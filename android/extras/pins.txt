@@ -1,2 +1,13 @@
 # 4.4 beta 3: the SHA-256 of every file on the add-on's runtime classpath («sha256 group:name:version file»); checked by verifyPins before each build (android/extras/build.gradle).
 # A line is added only after the file was checked against its project's own release (the first CI build prints the «pin:» lines).
+# checked here against Maven Central's own files (SHA-256 recomputed from repo1.maven.org, and Central's .sha1 for conscrypt and bcprov), 2026-11-19:
+551ae4e301c571760d1791e647db6ed1dcb10d34dcae7aa12b67f220f2ce98d1 org.conscrypt:conscrypt-android:2.5.3 conscrypt-android-2.5.3.aar
+0ef9c4d9536719aaa1c92a7c694d87981fa9d4d64dd9479cc322a08aebbc651e org.bouncycastle:bcprov-jdk15to18:1.81 bcprov-jdk15to18-1.81.jar
+aa204a0c8b5f5564bf2b1a055e2550534b24217b23f63ea4cb762c908ff811d9 org.bouncycastle:bcpkix-jdk15to18:1.81 bcpkix-jdk15to18-1.81.jar
+82fc2c3bc17c06a6fc4e28b73adf1601a01b91a97f7b72c0cfbabaf8bf1f3fe7 org.bouncycastle:bcutil-jdk15to18:1.81 bcutil-jdk15to18-1.81.jar
+858b902696da9cf585ab9d98ffc1c2712269828354dfe9107e3711b084a36468 org.jetbrains.kotlin:kotlin-stdlib:1.9.24 kotlin-stdlib-1.9.24.jar
+ace2a10dc8e2d5fd34925ecac03e4988b2c0f851650c94b8cef49ba1bd111478 org.jetbrains:annotations:13.0 annotations-13.0.jar
+# as CI resolved them (Build APKs 44479449949; JitPack and Google's Maven are not reachable from the sandbox that wrote this, so not checked a second way yet):
+e6fcb495a20a507ca4a125afc9c554e838a84b3a15fbcc29f7deafd0f88bbb58 com.github.MuntashirAkon:libadb-android:3.1.1 libadb-android-3.1.1.aar
+8798fb6c04b5d53a6307ed9481e9afe563227abd4e8b9e917c8514fa850071bb com.github.MuntashirAkon.spake2-java:spake2-android:2.2.1 spake2-android-2.2.1.aar
+1e343917ebf27ba96fe4dc52b1cad7fd32b738fbc6355bb6cd5b3b305d7212d0 androidx.annotation:annotation-jvm:1.9.1 annotation-jvm-1.9.1.jar
