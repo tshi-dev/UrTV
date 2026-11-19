@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """4.4 «الرياضة»: the sports cards' files (.github/tools/sports_files.py), offline: sports/<league>.json from the archive's store (the table
-computed from the season's finished games, each club's last 5, the last 2 days, the next 7, a cup's knockout rounds), written by every
-archive build; f1/next.json from Jolpica-F1's answer, asked at most once a day, a failure keeps the last file; the workflow step.
+computed from the season's finished games, each club's last 5, the last 2 days, the next 7, a cup's knockout rounds; 4.5 its seasons and
+champions, and each past season's own file), written by every archive build; f1/next.json from Jolpica-F1's answer, asked at most once a day, a failure keeps the last file; the workflow step.
 Run: python3 tests/sports_files_test.py"""
 import datetime as dt
 import importlib.util
@@ -85,6 +85,32 @@ check("a qualifying round with the same number (weeks earlier) is not in the lea
 check("the F1 file is carried over by a build that does not ask for it", json.loads((out / "f1/next.json").read_text())["name"] == "Kept GP")
 size = (out / "sports/4668.json").stat().st_size
 check("the file is small", size < 20000, size)
+
+# 4.5 the past seasons (docs/HONOURS-STUDY.md): the store's seasons newest first, each past one its own file (final table, every result, its
+# champion when the archive is sure), and the champions in the league's file
+st = ma.Store()
+T4 = ["10", "20", "30", "40"]
+past = {f"p{h}{a}": {"id": f"p{h}{a}", "lg": "4668", "t": ts(-400 + 3 * i) + "Z", "r": str(i + 1), "h": h, "a": a, "hn": "T" + h, "an": "T" + a,
+                     "hs": "2" if h == "10" else "1", "as": "0" if h == "10" else "1", "st": "FT"} for i, (h, a) in enumerate((h, a) for h in T4 for a in T4 if h != a)}
+older = dict(list(past.items())[:5])   # a season the archive lacks games of: no champion said
+cur = {"c1": {"id": "c1", "lg": "4668", "t": ts(-2) + "Z", "r": "1", "h": "20", "a": "10", "hn": "T20", "an": "T10", "hs": "1", "as": "0", "st": "FT"},
+       "c2": {"id": "c2", "lg": "4668", "t": ts(5) + "Z", "r": "2", "h": "10", "a": "30", "hn": "T10", "an": "T30", "hs": None, "as": None, "st": "NS"}}
+st.leagues = {("4668", "2024-2025"): older, ("4668", "2025-2026"): past, ("4668", "2026-2027"): cur}
+o5 = Path(tempfile.mkdtemp())
+sf.derive(st, o5, Path(tempfile.mkdtemp()), now, "2026-11-18T00:00:00Z", {"10": {"ar": "العاشر"}, "20": {"ar": "العشرون"}}, {"4668": "دوري روشن السعودي"},
+          lambda o, p_, rel, body: (o / rel).parent.mkdir(parents=True, exist_ok=True) or (o / rel).write_text(json.dumps(body, ensure_ascii=False)))
+lf = json.loads((o5 / "sports/4668.json").read_text())
+check("4.5 the league's file: its seasons newest first, the current one is still the file's season", lf["seasons"] == ["2026-2027", "2025-2026", "2024-2025"]
+      and lf["season"] == "2026-2027", lf.get("seasons"))
+check("4.5 …and the champions the archive is sure of: the finished season's top, with points, the margin and the runner-up (Arabic names)",
+      [(c["s"], c["id"], c["ar"], c["pts"], c["gap"], c["vs"], c["var"]) for c in lf["champs"]] == [("2025-2026", "10", "العاشر", 12, 7, "20", "العشرون")], lf.get("champs"))
+sp = json.loads((o5 / "sports/4668/2025-2026.json").read_text())
+check("4.5 a past season's own file: its final table, every result newest first, its champion", sp["season"] == "2025-2026" and sp["table"][0]["id"] == "10"
+      and sp["table"][0]["pts"] == 12 and len(sp["results"]) == 12 and sp["results"][0]["t"] > sp["results"][-1]["t"] and sp["champ"]["id"] == "10", {k: sp[k] for k in ("season", "champ")})
+sp2 = json.loads((o5 / "sports/4668/2024-2025.json").read_text())
+check("4.5 a season with games missing: its table and results, no champion said", "champ" not in sp2 and len(sp2["results"]) == 5, sp2.get("champ"))
+check("4.5 the current season has no file of its own (sports/<id>.json is it)", not (o5 / "sports/4668/2026-2027.json").exists())
+check("4.5 a past season's file stays small (a full 34-round league is about 60 kB)", (o5 / "sports/4668/2025-2026.json").stat().st_size < 8000)
 
 answer = {"MRData": {"RaceTable": {"Races": [{"season": "2026", "round": "24", "raceName": "Abu Dhabi Grand Prix", "date": "2026-12-06", "time": "13:00:00Z",
           "Circuit": {"circuitName": "Yas Marina Circuit", "Location": {"country": "UAE", "locality": "Abu Dhabi"}},

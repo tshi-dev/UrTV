@@ -11,6 +11,7 @@ tests/edit_keys_test.py, R11 tests/beta_channel_test.py and tests/beta_newest_te
 - R12 no fixed clean-up list names Android's core (core.txt), and the setup's own copy of the core rules is core.txt;
 - R15 apk-latest keeps the Latest flag and its stable names, rescue included; no other release takes Latest;
 - R16 only master and next publish (a build of another branch is never installed over apk-next), and a local build is versionCode 1;
+- R18 dist/tv.html and tv-en.html under 500 KB, and no test's budget above it (the owner, 4.5);
 - R17 the CI runners and tools are pinned: no *-latest image, no action at a branch, npm and pip at exact versions.
 Run: python3 tests/regressions/lessons_test.py"""
 import re, sys
@@ -73,6 +74,21 @@ check("R9 the add-on holds SYSTEM_ALERT_WINDOW and the accessibility service, an
 wv = ROOT / "tests/webview66_test.py"
 check("R10 tests/webview66_test.py guards every inset/clamp()/min()/max()/flex gap of the page, and run.sh runs it",
       wv.is_file() and "python3 tests/webview66_test.py" in text("tests/run.sh") and "has a plain value of the same property just before it" in wv.read_text(encoding="utf-8"))
+
+# R18 (the owner, 4.5): the screensaver page stays under 500 KB (it was 775 KB in 4.4: the verses and hadith now load from dist/quotes.json);
+# no test may hold a higher budget, so a merge cannot raise it back
+PAGE_MAX = 500_000
+for name in ("tv.html", "tv-en.html"):
+    size = (ROOT / "dist" / name).stat().st_size
+    check(f"R18 dist/{name} is under 500 KB ({size:,} bytes)", size < PAGE_MAX, size)
+lim = dict((n, int(v.replace("_", ""))) for n, v in re.findall(r'\("(tv(?:-en)?\.html)", ([\d_]+)\)', text("tests/check.py")))
+check("R18 tests/check.py's budget for tv.html and tv-en.html is at most 500 KB", set(lim) == {"tv.html", "tv-en.html"} and max(lim.values()) <= PAGE_MAX, lim)
+higher = []
+for p in sorted((ROOT / "tests").glob("*_test.py")) + sorted((ROOT / "tests").glob("*.mjs")):
+    for m in re.finditer(r"(tv(?:-en)?\.html)[^\n]{0,200}?<\s*(\d{3}_?\d{3})\b", p.read_text(encoding="utf-8", errors="ignore")):
+        if int(m.group(2).replace("_", "")) > PAGE_MAX:
+            higher.append(f"{p.name}: {m.group(1)} < {m.group(2)}")
+check("R18 no other test allows the page more than 500 KB", not higher, higher)
 
 # R12
 core = [re.compile(l.strip()) for l in text("optimize/lists/core.txt").splitlines() if l.strip() and not l.lstrip().startswith("#")]

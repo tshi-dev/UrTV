@@ -1,0 +1,482 @@
+{
+"4328|2022-2023": {
+"state": "champion",
+"id": "133613",
+"name": "Manchester City",
+"how": "89 pts, 5 ahead of Arsenal",
+"games": 380
+},
+"4328|2023-2024": {
+"state": "champion",
+"id": "133613",
+"name": "Manchester City",
+"how": "91 pts, 2 ahead of Arsenal",
+"games": 380
+},
+"4328|2024-2025": {
+"state": "champion",
+"id": "133602",
+"name": "Liverpool",
+"how": "84 pts, 10 ahead of Arsenal",
+"games": 380
+},
+"4328|2025-2026": {
+"state": "champion",
+"id": "133604",
+"name": "Arsenal",
+"how": "85 pts, 7 ahead of Manchester City",
+"games": 380
+},
+"4328|2026-2027": {
+"state": "season not finished (280 games left)"
+},
+"4331|2022-2023": {
+"state": "champion",
+"id": "133664",
+"name": "Bayern Munich",
+"how": "71 pts, 0 ahead of Dortmund (level on points: goal difference decided here, the league's own tie-break may differ)",
+"games": 306
+},
+"4331|2023-2024": {
+"state": "champion",
+"id": "133666",
+"name": "Leverkusen",
+"how": "90 pts, 17 ahead of Stuttgart",
+"games": 306
+},
+"4331|2024-2025": {
+"state": "champion",
+"id": "133664",
+"name": "Bayern Munich",
+"how": "82 pts, 13 ahead of Bayer Leverkusen",
+"games": 306
+},
+"4331|2025-2026": {
+"state": "champion",
+"id": "133664",
+"name": "Bayern Munich",
+"how": "89 pts, 16 ahead of Borussia Dortmund",
+"games": 306
+},
+"4331|2026-2027": {
+"state": "season not finished (225 games left)"
+},
+"4332|2022-2023": {
+"state": "champion",
+"id": "133670",
+"name": "Napoli",
+"how": "90 pts, 16 ahead of Lazio",
+"games": 381
+},
+"4332|2023-2024": {
+"state": "champion",
+"id": "133681",
+"name": "Inter",
+"how": "94 pts, 19 ahead of Milan",
+"games": 380
+},
+"4332|2024-2025": {
+"state": "champion",
+"id": "133670",
+"name": "Napoli",
+"how": "82 pts, 1 ahead of Inter Milan",
+"games": 380
+},
+"4332|2025-2026": {
+"state": "champion",
+"id": "133681",
+"name": "Inter Milan",
+"how": "87 pts, 11 ahead of Napoli",
+"games": 380
+},
+"4332|2026-2027": {
+"state": "season not finished (270 games left)"
+},
+"4334|2022-2023": {
+"state": "champion",
+"id": "133714",
+"name": "Paris SG",
+"how": "85 pts, 1 ahead of Lens",
+"games": 380
+},
+"4334|2023-2024": {
+"state": "champion",
+"id": "133714",
+"name": "Paris SG",
+"how": "76 pts, 9 ahead of Monaco",
+"games": 306
+},
+"4334|2024-2025": {
+"state": "games missing (307 of a full 342): no champion said"
+},
+"4334|2025-2026": {
+"state": "season not finished (1 games left)"
+},
+"4334|2026-2027": {
+"state": "season not finished (216 games left)"
+},
+"4335|2022-2023": {
+"state": "champion",
+"id": "133739",
+"name": "Barcelona",
+"how": "88 pts, 10 ahead of Real Madrid",
+"games": 380
+},
+"4335|2023-2024": {
+"state": "champion",
+"id": "133738",
+"name": "Real Madrid",
+"how": "95 pts, 10 ahead of Barcelona",
+"games": 380
+},
+"4335|2024-2025": {
+"state": "champion",
+"id": "133739",
+"name": "Barcelona",
+"how": "88 pts, 4 ahead of Real Madrid",
+"games": 380
+},
+"4335|2025-2026": {
+"state": "champion",
+"id": "133739",
+"name": "Barcelona",
+"how": "94 pts, 8 ahead of Real Madrid",
+"games": 380
+},
+"4335|2026-2027": {
+"state": "season not finished (261 games left)"
+},
+"4337|2022-2023": {
+"state": "games missing (324 of a full 552): no champion said"
+},
+"4337|2023-2024": {
+"state": "games missing (315 of a full 420): no champion said"
+},
+"4337|2024-2025": {
+"state": "champion",
+"id": "133768",
+"name": "PSV Eindhoven",
+"how": "79 pts, 1 ahead of Ajax",
+"games": 308
+},
+"4337|2025-2026": {
+"state": "champion",
+"id": "133768",
+"name": "PSV Eindhoven",
+"how": "84 pts, 19 ahead of Feyenoord",
+"games": 307
+},
+"4337|2026-2027": {
+"state": "season not finished (198 games left)"
+},
+"4339|2022-2023": {
+"state": "champion",
+"id": "133804",
+"name": "Galatasaray",
+"how": "88 pts, 8 ahead of Fenerbahce",
+"games": 342
+},
+"4339|2023-2024": {
+"state": "champion",
+"id": "133804",
+"name": "Galatasaray",
+"how": "102 pts, 3 ahead of Fenerbahce",
+"games": 380
+},
+"4339|2024-2025": {
+"state": "champion",
+"id": "133804",
+"name": "Galatasaray",
+"how": "95 pts, 11 ahead of Fenerbahce",
+"games": 342
+},
+"4339|2025-2026": {
+"state": "champion",
+"id": "133804",
+"name": "Galatasaray",
+"how": "77 pts, 3 ahead of Fenerbahçe",
+"games": 306
+},
+"4339|2026-2027": {
+"state": "season not finished (207 games left)"
+},
+"4344|2022-2023": {
+"state": "champion",
+"id": "134108",
+"name": "Benfica",
+"how": "87 pts, 2 ahead of FC Porto",
+"games": 308
+},
+"4344|2023-2024": {
+"state": "champion",
+"id": "135708",
+"name": "Sporting CP",
+"how": "90 pts, 10 ahead of Benfica",
+"games": 308
+},
+"4344|2024-2025": {
+"state": "champion",
+"id": "135708",
+"name": "Sporting CP",
+"how": "82 pts, 2 ahead of Benfica",
+"games": 308
+},
+"4344|2025-2026": {
+"state": "champion",
+"id": "134114",
+"name": "FC Porto",
+"how": "88 pts, 6 ahead of Sporting CP",
+"games": 306
+},
+"4344|2026-2027": {
+"state": "season not finished (208 games left)"
+},
+"4346|2023": {
+"state": "games missing (493 of a full 812): no champion said"
+},
+"4346|2024": {
+"state": "season not finished (4 games left)"
+},
+"4346|2025": {
+"state": "games missing (531 of a full 870): no champion said"
+},
+"4346|2026-2027": {
+"state": "season not finished (14 games left)"
+},
+"4346|2026": {
+"state": "season under way (its last game is recent)"
+},
+"4480|2022-2023": {
+"state": "champion",
+"id": "133613",
+"name": "Manchester City",
+"how": "final (1 leg) Manchester City 1-0 Inter"
+},
+"4480|2023-2024": {
+"state": "champion",
+"id": "133738",
+"name": "Real Madrid",
+"how": "final (1 leg) Dortmund 0-2 Real Madrid"
+},
+"4480|2024-2025": {
+"state": "champion",
+"id": "133714",
+"name": "Paris SG",
+"how": "final (1 leg) Paris SG 5-0 Inter Milan"
+},
+"4480|2025-2026": {
+"state": "final level (penalties/away goals not in the archive)",
+"how": "final (1 leg) Paris SG 1-1 Arsenal"
+},
+"4480|2026-2027": {
+"state": "no final yet"
+},
+"4483|2026-2027": {
+"state": "no final yet"
+},
+"4484|2026-2027": {
+"state": "no final yet"
+},
+"4490|2026-2027": {
+"state": "no final yet"
+},
+"4520|2022-2023": {
+"state": "champion",
+"id": "136403",
+"name": "FAR Rabat",
+"how": "71 pts, 5 ahead of Wydad Casablanca",
+"games": 240
+},
+"4520|2023-2024": {
+"state": "champion",
+"id": "136404",
+"name": "Raja Casablanca",
+"how": "72 pts, 1 ahead of FAR Rabat",
+"games": 241
+},
+"4520|2024-2025": {
+"state": "games missing (244 of a full 306): no champion said"
+},
+"4520|2025-2026": {
+"state": "games missing (244 of a full 306): no champion said"
+},
+"4520|2026-2027": {
+"state": "season under way (its last game is recent)"
+},
+"4663|2022-2023": {
+"state": "champion",
+"id": "137679",
+"name": "Al-Duhail SC",
+"how": "51 pts, 4 ahead of Al-Arabi",
+"games": 132
+},
+"4663|2023-2024": {
+"state": "champion",
+"id": "137648",
+"name": "Al-Sadd",
+"how": "49 pts, 2 ahead of Al-Rayyan SC",
+"games": 132
+},
+"4663|2024-2025": {
+"state": "champion",
+"id": "137648",
+"name": "Al-Sadd",
+"how": "52 pts, 2 ahead of Al-Duhail SC",
+"games": 132
+},
+"4663|2025-2026": {
+"state": "games missing (133 of a full 156): no champion said"
+},
+"4663|2026-2027": {
+"state": "season not finished (54 games left)"
+},
+"4668|2022-2023": {
+"state": "champion",
+"id": "136018",
+"name": "Al Ittihad",
+"how": "72 pts, 5 ahead of Al Nassr FC",
+"games": 240
+},
+"4668|2023-2024": {
+"state": "champion",
+"id": "136013",
+"name": "Al Hilal",
+"how": "96 pts, 14 ahead of Al Nassr FC",
+"games": 306
+},
+"4668|2024-2025": {
+"state": "champion",
+"id": "136018",
+"name": "Al Ittihad",
+"how": "83 pts, 8 ahead of Al Hilal",
+"games": 306
+},
+"4668|2025-2026": {
+"state": "champion",
+"id": "136022",
+"name": "Al-Nassr",
+"how": "86 pts, 2 ahead of Al-Hilal",
+"games": 306
+},
+"4668|2026-2027": {
+"state": "season not finished (202 games left)"
+},
+"4678|2022-2023": {
+"state": "champion",
+"id": "137828",
+"name": "Shabab Al-Ahli Dubai",
+"how": "57 pts, 3 ahead of Al Ain",
+"games": 182
+},
+"4678|2023-2024": {
+"state": "champion",
+"id": "137835",
+"name": "Al Wasl",
+"how": "67 pts, 9 ahead of Shabab Al-Ahli Dubai",
+"games": 182
+},
+"4678|2024-2025": {
+"state": "champion",
+"id": "137828",
+"name": "Shabab Al-Ahli Dubai",
+"how": "63 pts, 12 ahead of Al Sharjah",
+"games": 182
+},
+"4678|2025-2026": {
+"state": "champion",
+"id": "137832",
+"name": "Al Ain",
+"how": "68 pts, 10 ahead of Shabab Al-Ahli Dubai",
+"games": 182
+},
+"4678|2026-2027": {
+"state": "season not finished (70 games left)"
+},
+"4719|2022": {
+"state": "champion",
+"id": "137716",
+"name": "Urawa Red Diamonds",
+"how": "final (2 legs) Al Hilal 1-2 Urawa Red Diamonds"
+},
+"4719|2023": {
+"state": "champion",
+"id": "137832",
+"name": "Al Ain",
+"how": "final (2 legs) Yokohama F Marinos 3-6 Al Ain"
+},
+"4719|2024-2025": {
+"state": "champion",
+"id": "137721",
+"name": "Al-Ahli Saudi FC",
+"how": "final (1 leg) Al-Ahli Saudi FC 2-0 Kawasaki Frontale"
+},
+"4719|2025-2026": {
+"state": "champion",
+"id": "137721",
+"name": "Al-Ahli",
+"how": "final (1 leg) Al-Ahli 1-0 Machida Zelvia"
+},
+"4719|2026-2027": {
+"state": "no final yet"
+},
+"4829|2022-2023": {
+"state": "champion",
+"id": "138995",
+"name": "Al Ahly SC",
+"how": "86 pts, 13 ahead of Pyramids FC",
+"games": 308
+},
+"4829|2023-2024": {
+"state": "season not finished (1 games left)"
+},
+"4829|2024-2025": {
+"state": "games missing (225 of a full 306): no champion said"
+},
+"4829|2025-2026": {
+"state": "games missing (322 of a full 420): no champion said"
+},
+"4829|2026-2027": {
+"state": "season not finished (110 games left)"
+},
+"5056|2022-2023": {
+"state": "champion",
+"id": "139016",
+"name": "Al-Shorta SC",
+"how": "82 pts, 4 ahead of Al-Quwa Al-Jawiya",
+"games": 380
+},
+"5056|2023-2024": {
+"state": "season not finished (1 games left)"
+},
+"5056|2024-2025": {
+"state": "season not finished (1 games left)"
+},
+"5056|2025-2026": {
+"state": "season not finished (7 games left)"
+},
+"5056|2026-2027": {
+"state": "season not finished (250 games left)"
+},
+"5627|2024-2025": {
+"state": "champion",
+"id": "150637",
+"name": "Neom",
+"how": "79 pts, 13 ahead of Al-Hazem",
+"games": 309
+},
+"5627|2025-2026": {
+"state": "season not finished (1 games left)"
+},
+"5627|2026-2027": {
+"state": "season not finished (77 games left)"
+},
+"5649|2024-2025": {
+"state": "champion",
+"id": "136018",
+"name": "Al Ittihad",
+"how": "final (1 leg) Al Ittihad 3-1 Al Qadsiah"
+},
+"5649|2025-2026": {
+"state": "no final yet"
+}
+}

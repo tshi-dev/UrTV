@@ -4,6 +4,9 @@
   sports/<leagueId>.json  one file per league, for every card of that league: its table computed from the store's current season (3 points
                           a win, 1 a draw; goal difference, goals for, name), each club's last 5 (newest first, "w" "d" "l"), the finished
                           games of the last 2 days, the games of the next 7 days, and for a cup the knockout games by round.
+                          4.5: the seasons the store keeps (newest first) and each one's champion when the archive is sure of it
+                          (honours_study.champion: a finished league's top, a cup's final; docs/HONOURS-STUDY.md).
+  sports/<leagueId>/<season>.json  4.5 each past season the store keeps: its final table (or a cup's rounds), every result, its champion.
   f1/next.json            the next Formula 1 race and its sessions from Jolpica-F1 (the free successor of Ergast), asked at most once a
                           day; a failed ask keeps the last file.
 
@@ -16,6 +19,8 @@ import json
 import shutil
 import urllib.request
 from pathlib import Path
+
+import honours_study   # 4.5 a season's champion, said only when the archive is sure
 
 V = 1
 LAST_DAYS, NEXT_DAYS, FORM = 2, 7, 5
@@ -173,6 +178,39 @@ def cup(games, names=None):
     return body or None
 
 
+def seasons_of(store, lg):
+    """the league's seasons in the store, newest first"""
+    return sorted({s for (l, s) in store.leagues if l == lg}, reverse=True)
+
+
+def champ_of(store, lg, season, now, names):
+    """{"s", "id", "n", "ar", and "pts" "gap" (a league) or "score" "legs" (a cup), "vs" "vn" "var"} when the archive is sure, else None"""
+    c = honours_study.champion(lg, list(store.leagues[(lg, season)].values()), now)
+    if c.get("state") != "champion":
+        return None
+    out = {"s": season, "id": c["id"], "n": c.get("name") or "", "ar": names.get(c["id"], {}).get("ar", ""), "vs": c.get("vs") or "",
+           "vn": c.get("vn") or "", "var": names.get(c.get("vs") or "", {}).get("ar", "")}
+    for k in ("pts", "gap", "score", "legs"):
+        if k in c:
+            out[k] = c[k]
+    return out
+
+
+def season_file(store, lg, season, now, stamp, names, ar=""):
+    """a past season: its final table (a cup: its rounds), every result newest first, its champion when the archive is sure"""
+    games = list(store.leagues[(lg, season)].values())
+    done = sorted((e for e in games if _done(e) and not e.get("pp")), key=lambda e: e["t"], reverse=True)
+    body = {"v": V, "id": lg, "en": store.name(lg), "ar": ar, "season": season, "updated": stamp, "table": table(games, names),
+            "results": [_game(e) for e in done]}
+    c = cup(games, names)
+    if c:
+        body["cup"] = c
+    ch = champ_of(store, lg, season, now, names)
+    if ch:
+        body["champ"] = ch
+    return body
+
+
 def league_file(store, lg, now, stamp, names, ar=""):
     season = season_now(store, lg, now)
     if not season:
@@ -186,11 +224,14 @@ def league_file(store, lg, now, stamp, names, ar=""):
     c = cup(games, names)
     if c:
         body["cup"] = c
+    body["seasons"] = seasons_of(store, lg)
+    body["champs"] = [ch for ch in (champ_of(store, lg, x, now, names) for x in body["seasons"]) if ch]
     return body
 
 
 def derive(store, out, prev, now, stamp, names, league_ar, emit):
-    """writes out/sports/<lg>.json for every league of the store; returns how many"""
+    """writes out/sports/<lg>.json for every league of the store, and 4.5 out/sports/<lg>/<season>.json for its past seasons; returns how many
+    leagues"""
     shutil.rmtree(out / "sports", ignore_errors=True)
     (out / "sports").mkdir(parents=True)
     n = 0
@@ -199,6 +240,9 @@ def derive(store, out, prev, now, stamp, names, league_ar, emit):
         if body:
             emit(out, prev, f"sports/{lg}.json", body)
             n += 1
+            for season in body["seasons"]:
+                if season != body["season"]:
+                    emit(out, prev, f"sports/{lg}/{season}.json", season_file(store, lg, season, now, stamp, names, league_ar.get(lg, "")))
     return n
 
 

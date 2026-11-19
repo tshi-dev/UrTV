@@ -45,7 +45,7 @@ Every guide to UrTV. The guides sit directly in this folder; developer and teste
 | [DEVELOPERS.md](DEVELOPERS.md) | الأدوات والبناء والإصدارات · scripts, the build and the releases |
 | [NETWORK.md](NETWORK.md) · [FETCHES.md](FETCHES.md) · [POWER.md](POWER.md) | الشبكة وما يعمل في الخلفية · the network and what runs in the background |
 | [OPTIMIZE.md](OPTIMIZE.md) | وش تعلّمنا على التلفزيونات · what we learned on real TVs |
-| [GAMES-KIT.md](GAMES-KIT.md) · [GAMES-DATA.md](GAMES-DATA.md) · [MATCH-ARCHIVE.md](MATCH-ARCHIVE.md) | الألعاب وأرشيف المباريات · the games and the match archive |
+| [GAMES-KIT.md](GAMES-KIT.md) · [GAMES-DATA.md](GAMES-DATA.md) · [MATCH-ARCHIVE.md](MATCH-ARCHIVE.md) · [HONOURS-STUDY.md](HONOURS-STUDY.md) | الألعاب وأرشيف المباريات ودراسة الأبطال والهدّافين · the games, the match archive, the honours study (4.5) |
 | [TEST-PLAN.md](TEST-PLAN.md) | خطة الاختبار اليدوي · the manual test plan |
 | [RECREATE-PROMPT.md](RECREATE-PROMPT.md) · [MULTI-TV-PROMPT.md](MULTI-TV-PROMPT.md) | أوامر لإعادة بناء الشاشة · prompts to rebuild the screen |
 | [dev/BACKLOG.md](dev/BACKLOG.md) | أفكار التصميم المؤجلة · the design backlog |

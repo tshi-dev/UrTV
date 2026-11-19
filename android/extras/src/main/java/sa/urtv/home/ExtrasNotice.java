@@ -1,7 +1,6 @@
 package sa.urtv.home;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.graphics.PixelFormat;
 import android.graphics.Typeface;
 import android.graphics.drawable.GradientDrawable;
@@ -88,9 +87,8 @@ final class ExtrasNotice {
         box.setOrientation(LinearLayout.VERTICAL);
         box.setLayoutDirection(rtl ? View.LAYOUT_DIRECTION_RTL : View.LAYOUT_DIRECTION_LTR);
         GradientDrawable bg = new GradientDrawable();
-        bg.setColor(0xE60C0E12);
+        bg.setColor(0xFF0C0E12);   // the UI review: a flat opaque fill, no edge (nothing behind reads)
         bg.setCornerRadius(28 * u);
-        bg.setStroke(Math.max(1, (int) (2 * u)), 0x99E9C46A);
         box.setBackground(bg);
         int pad = (int) (28 * u);
         box.setPadding(pad, (int) (22 * u), pad, (int) (24 * u));
@@ -103,9 +101,7 @@ final class ExtrasNotice {
             LinearLayout mid = new LinearLayout(c);
             mid.setGravity(Gravity.CENTER);
             mid.setPadding(0, (int) (16 * u), 0, 0);
-            mid.addView(swatch(c, c1, u));
-            mid.addView(text(c, line, CREAM, 38 * u, true));
-            mid.addView(swatch(c, c2, u));
+            mid.addView(text(c, line, CREAM, 38 * u, true));   // the clubs' names on the flat fill: no colour square (the UI review; the app keeps no crest)
             box.addView(mid);
         } else {   // a head and one line (the iqama)
             box.addView(text(c, head, GOLD, 24 * u, false));
@@ -126,19 +122,4 @@ final class ExtrasNotice {
         return t;
     }
 
-    /** the club's two colours, half and half, in a small square (no crest is bundled); a colour that does not parse is grey */
-    private static View swatch(Context c, String[] col, float u) {
-        int a = parse(col[0], 0xFF8A8F98), b = parse(col[1], 0xFF5A5F68);
-        GradientDrawable d = new GradientDrawable(GradientDrawable.Orientation.LEFT_RIGHT, new int[] {a, a, b, b});
-        d.setCornerRadius(5 * u);
-        View v = new View(c);
-        v.setBackground(d);
-        int s = (int) (26 * u);
-        v.setLayoutParams(new LinearLayout.LayoutParams(s, s));
-        return v;
-    }
-
-    private static int parse(String s, int fallback) {
-        try { return Color.parseColor(s); } catch (RuntimeException e) { return fallback; }
-    }
 }

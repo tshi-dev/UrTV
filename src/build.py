@@ -373,6 +373,9 @@ const qty = (n, u) => `${ar(n)} ${unitOf(n, u)}`;""", 1),
     ("ramadanDay:n => 'اليوم ' + ar(n) + ' من رمضان',", "ramadanDay:n => 'Ramadan day ' + ar(n),", 1),
     # team and people's names as the data has them, in English (no Arabic table, no transliteration, no Wikidata lookup)
     ("const teamAr = (s, id) => arName(s, 'team', id);", "const teamAr = (s, id) => String(s || '').trim();", 1),
+    # 4.5 a name the data has in both: the English one first (the Arabic only when the data has no English)
+    ("const clubNm = (a, en, id) => a || teamAr(en, id);", "const clubNm = (a, en, id) => teamAr(en, id) || a;", 1),
+    ("const plNm = x => x.ar || x.en || '';", "const plNm = x => x.en || x.ar || '';", 1),
     ("function translit(en){\n", "function translit(en){ return String(en || ''); }\nfunction translitAr(en){\n", 1),
     ("'morocco':'المغرب'}", "'morocco':'Morocco'}", 1),
     # the games

@@ -254,8 +254,8 @@ check(`polish: ${polished} cards at 1080p, nothing cut, nothing on top of anothe
   check('the takeover\'s heading: «مباراة اليوم» once and the time, no markup', !/[<>]|span/.test(hd) && (hd.match(/مباراة اليوم/g) || []).length === 1 && /٥:٠٠/.test(hd), hd);
   // the screensaver's notice: the top right in Arabic too, nearly solid, a readable size
   const k = await p.evaluate(async () => { spKick({ kind: 'goal', h: 'الهلال', a: 'النصر', hs: 2, as: 1, min: '67', lg: 'دوري روشن السعودي' }); await new Promise(r => setTimeout(r, 800)); const e = document.getElementById('spkick'), cs = getComputedStyle(e);
-    return { right: innerWidth - e.getBoundingClientRect().right, left: e.getBoundingClientRect().left, w: innerWidth, a: +(cs.backgroundColor.match(/[\d.]+/g) || [])[3], fs: parseFloat(getComputedStyle(e.querySelector('.km')).fontSize) }; });
-  check('the screensaver\'s notice: the top right in Arabic, nearly solid glass, the clubs at 20 CSS px or more (40 on a 1080p TV)', k.right < k.w * .05 && k.left > k.w / 2 && k.a >= .95 && k.fs >= 20, JSON.stringify(k));
+    return { right: innerWidth - e.getBoundingClientRect().right, left: e.getBoundingClientRect().left, w: innerWidth, a: (n => n.length > 3 ? +n[3] : n.length === 3 ? 1 : NaN)(cs.backgroundColor.match(/[\d.]+/g) || []), fs: parseFloat(getComputedStyle(e.querySelector('.km')).fontSize) }; });
+  check('the screensaver\'s notice: the top right in Arabic, solid (at least .95 opaque), the clubs at 20 CSS px or more (40 on a 1080p TV)', k.right < k.w * .05 && k.left > k.w / 2 && k.a >= .95 && k.fs >= 20, JSON.stringify(k));
   await ctx.close();
 }
 {   // on the home's card (the goal, the final score) and in the couch strip: inside the card's own window, over all of it, nothing cut
