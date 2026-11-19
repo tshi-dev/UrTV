@@ -105,7 +105,8 @@ Not in phase (a): the league home, the live strip, the season strip, the club sh
 These replace anything below that says otherwise:
 - **Form:** plain bold «ف ت خ» coloured as text (`--fgr`, `--fs`, `--flo`), with no `.sqf` boxes. The existing `formHtml` look fits, at the row's size.
 - **Movement:** «+٢» / «−١» as signed text in `--fgr` / `--flo`, and «–» in `--fs`. No arrows.
-- **Zones:** plain lines with a muted label (as above).
+- **Zones:** a `li.zl` 1 px line **before** a zone's first place, its name in muted text, so the label sits above the rows it names. An unnamed thin line closes a zone. A zone starting in a hidden stretch gets its line above that stretch's row.
+- **«N أندية أخرى» rows:** the same 1 px line with muted text.
 - **The «N أندية أخرى» rows:** plain muted text.
 - **Crests:** no placeholder.
 

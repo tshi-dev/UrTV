@@ -399,6 +399,20 @@ The owner circled the coloured bars at the row edges on 3-table-full and called 
 - **The cards:** the page's own white panels for now (as `#mp` has them). Flat sections with 1 px lines are the alternative, and that is
   the UI session's call.
 
+### 7e. Zone labels above their rows; the last audit points (19 Nov)
+
+- **Each zone's label sits directly above the rows it names** (the owner's rule: a label under a zone is read as naming the rows below
+  it).
+  - A plain 1 px line goes before the zone's first place, with the name in muted text at the line: «دوري أبطال آسيا للنخبة» above row 1
+    (the first line inside the table), «دوري أبطال آسيا ٢» above row 4, and «الهبوط» above row 16.
+  - A thin unnamed line closes a zone that the next rows are not in (before row 5).
+  - In a shortened table, a zone that starts in a hidden stretch gets its line above that stretch's «N أندية أخرى» row.
+- **«N أندية أخرى، موافق: الجدول كاملًا»:** the same plain 1 px line, with the text muted.
+- **The quick view:** one plain line, «فاز ٥، تعادل ٣، خسر ٣، له ١٦، عليه ١٤», with the numbers bold.
+- **Cards:** the UI session keeps the page's own white panels (`#mp-list ul`) for consistency with «المباريات», the club page and the honours
+  rows. A flat look for the whole matches page (sections on the sand with 1 px lines) would be one page-wide change, made later in one
+  place. That is a question for the owner (§8, question 7).
+
 ### 8. Questions for the owner
 
 1. **The home's tab name:** «الرئيسية», or «الآن» for a league in progress?
@@ -406,4 +420,5 @@ The owner circled the coloured bars at the row edges on 3-table-full and called 
 3. **Live points:** should the table move while games are on (provisional, in red), with a toggle back? Or should it stay as it was until full time?
 4. **Form order:** newest next to the points (right, as in the mockups), or newest at the far left?
 5. **Digits** follow the person's setting; is that agreed for the table too?
+7. **Cards (from the UI session):** keep the page's white panels, or make the whole matches page flat (sections on the sand, 1 px lines)? This would be one page-wide change, not for the league page alone.
 6. **Phase order:** (a) the table with zones, form and movement, plus the full-table screen; (b) the home with the live strip and the round; (c) the season strip; (d) the club sheet.

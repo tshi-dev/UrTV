@@ -68,6 +68,7 @@
   .tr.zl span{white-space:nowrap;padding-left:calc(var(--u)*16)}
   .tr.zl::after{content:'';flex:1;height:1px;background:var(--fs);opacity:.6}
   .tr.zl + .tr{border-top:0}
+  .tr.zl.bare{height:calc(var(--u)*12)}
   .tr.th{height:calc(var(--u)*38);color:var(--fs);font-size:calc(var(--u)*24);border-top:0}
   .tr.mine{background:var(--rowf)}
   .tr.mine .nm{font-weight:700}
@@ -87,7 +88,10 @@
   .sqf{font-size:calc(var(--u)*28);font-weight:700;margin-left:calc(var(--u)*12)}   /* the audit: no boxes, the letter alone in its colour */
   .sqf.w{color:var(--fgr)}.sqf.d{color:var(--fs)}.sqf.l{color:var(--flo)}
 
-  .tr.gapr{height:calc(var(--u)*30);color:var(--fs);font-size:calc(var(--u)*24);justify-content:center}
+  .tr.gapr{height:calc(var(--u)*30);color:var(--fs);font-size:calc(var(--u)*24);border-top:0}
+  .tr.gapr span{white-space:nowrap;padding-left:calc(var(--u)*16)}
+  .tr.gapr::after{content:'';flex:1;height:1px;background:var(--fs);opacity:.6}
+  .tr.gapr + .tr{border-top:0}
 
 
   /* ---- a game row (the round, the results): the day, the clubs, the time or the score */
@@ -209,16 +213,22 @@ const CLUBS = [
   ['الحزم',2,3,6,12,17,'lldwl',1,0],['الرياض',2,2,7,10,18,'llwll',-1,0],['ضمك',2,2,7,9,18,'wlldl',0,0],['الخلود',1,4,6,10,17,'dlldl',0,3],
   ['الأخدود',1,4,6,8,19,'ldlll',1,3],['النجمة',1,2,8,7,24,'llwll',-1,3]];
 const MINE = 'الاتفاق';
-const ZLINES = {3: 'دوري أبطال آسيا للنخبة', 4: 'دوري أبطال آسيا ٢', 15: 'الهبوط'};   // after this place
-const zl = b => `<li class="tr zl"><span>${ZLINES[b]}</span></li>`;
-function rows(items, full, ringAt){   // items: [club, index] or 'gapN'; the zone lines go in their places, also across a hidden stretch
+// zones (the owner, 19 Nov): a plain 1 px line BEFORE the first place of a zone, its name in muted text at the line, so the label always
+// sits above the rows it names; an unnamed line closes a zone that the next rows are not in
+const ZSTART = {1: 'دوري أبطال آسيا للنخبة', 4: 'دوري أبطال آسيا ٢', 5: '', 16: 'الهبوط'};
+const zl = b => ZSTART[b] ? `<li class="tr zl"><span>${ZSTART[b]}</span></li>` : '<li class="tr zl bare"></li>';
+function rows(items, full, ringAt){   // items: [club, index] or 'gapN' (N hidden places, a muted line of its own)
   let last = 0, out = '';
+  const bs = Object.keys(ZSTART).map(Number);
   items.forEach(x => {
-    if(typeof x === 'string'){ out += gapRow(+x.slice(3)); return; }
+    if(typeof x === 'string'){
+      const n = +x.slice(3);
+      bs.filter(b => b > last && b <= last + n && ZSTART[b]).forEach(b => { out += zl(b); });   // a named zone starting in the hidden stretch: above it
+      out += gapRow(n); last += n; return;
+    }
     const r = x[1] + 1;
-    Object.keys(ZLINES).map(Number).filter(b => b > last && b < r).forEach(b => { out += zl(b); });   // a zone's last place is hidden: its line before the next shown row
+    bs.filter(b => b > last && b <= r).forEach(b => { out += zl(b); });
     out += row(x[0], x[1], full, ringAt === x[1]);
-    if(ZLINES[r]) out += zl(r);
     last = r;
   });
   return out;
@@ -239,7 +249,7 @@ function row(c, i, full, ring){
 const head = full => `<li class="tr th"><span class="rk">#</span><span class="mv"></span><span class="nm">النادي</span>`
   + (full ? '<span class="c">لعب</span><span class="c">فاز</span><span class="c">تعادل</span><span class="c">خسر</span><span class="c">له</span><span class="c">عليه</span><span class="c w">الفارق</span>' : '<span class="c">لعب</span><span class="c w">الفارق</span>')
   + '<span class="pt">نقاط</span><span class="fo">آخر ٥</span></li>';
-const gapRow = n => `<li class="tr gapr">${n === 1 ? 'نادٍ آخر' : D(n) + ' أندية أخرى'}، موافق: الجدول كاملًا</li>`;
+const gapRow = n => `<li class="tr gapr"><span>${n === 1 ? 'نادٍ آخر' : D(n) + ' أندية أخرى'}، موافق: الجدول كاملًا</span></li>`;
 const legend = extra => '<div class="legend">' + ''
   + '<span><span class="mv up" style="margin-left:6px">▲</span>عن الجولة الماضية</span>' + (extra || '') + '</div>';
 
@@ -319,7 +329,7 @@ const SCREENS = {
   club(){
     return SCREENS.table(6) + `<div class="veil"></div><div class="sheet">
       <div class="sh-h">${badge('الاتفاق')}<div><b>الاتفاق</b><span>المركز ٧، ١٨ نقطة، لعب ١١</span></div></div>
-      <div class="stats"><div><span><i>فاز</i> <b class="num">٥</b>، <i>تعادل</i> <b class="num">٣</b>، <i>خسر</i> <b class="num">٣</b></span></div><div><span><i>له</i> <b class="num">١٦</b>، <i>عليه</i> <b class="num">١٤</b>، <i>الفارق</i> <b class="num">+٢</b></span></div></div>
+      <div class="stats"><div><span><i>فاز</i> <b class="num">٥</b>، <i>تعادل</i> <b class="num">٣</b>، <i>خسر</i> <b class="num">٣</b>، <i>له</i> <b class="num">١٦</b>، <i>عليه</i> <b class="num">١٤</b></span></div></div>
       <div class="sh-t">المباراة القادمة</div>
       <div class="nxg card"><b>الاتفاق – الرياض</b><span>غدًا ٦:٠٠ م<i>الجولة ١١، بعد يوم و٣ ساعات</i></span></div>
       <div class="sh-t">آخر النتائج</div>
