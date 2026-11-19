@@ -1,7 +1,6 @@
 package sa.urtv.home;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Handler;
@@ -17,7 +16,7 @@ import sa.urtv.home.sports.KickoffPlan;
 
 /**
  * 4.4 the kick-off notice in our own home's window (showIn: no permission, never focused), the top right, 8 seconds, then it slides away. Cream
- * text on dark glass, the two clubs' colours, no crest. Over another app the add-on draws the same notice (OverlayNotice, ExtrasNotice): the home
+ * text on dark glass, the two clubs' names on the flat fill (no colour square: the app keeps no crest). Over another app the add-on draws the same notice (OverlayNotice, ExtrasNotice): the home
  * holds no overlay permission (Play Protect).
  */
 final class KickoffOverlay {
@@ -66,9 +65,7 @@ final class KickoffOverlay {
         LinearLayout mid = new LinearLayout(c);
         mid.setGravity(Gravity.CENTER);
         mid.setPadding(0, (int) (16 * u), 0, 0);
-        mid.addView(swatch(c, g.hc, u));
         mid.addView(text(c, "  " + g.h + "   ×   " + g.a + "  ", CREAM, 38 * u, true));
-        mid.addView(swatch(c, g.ac, u));
         box.addView(mid);
         return box;
     }
@@ -81,16 +78,5 @@ final class KickoffOverlay {
         t.setSingleLine(true);
         if (bold) t.setTypeface(Typeface.DEFAULT_BOLD);
         return t;
-    }
-
-    /** the club's two colours, half and half, in a small square (no crest is bundled) */
-    private static View swatch(Context c, String[] col, float u) {
-        GradientDrawable d = new GradientDrawable(GradientDrawable.Orientation.LEFT_RIGHT, new int[] {Color.parseColor(col[0]), Color.parseColor(col[0]), Color.parseColor(col[1]), Color.parseColor(col[1])});
-        d.setCornerRadius(5 * u);
-        View v = new View(c);
-        v.setBackground(d);
-        int s = (int) (26 * u);
-        v.setLayoutParams(new LinearLayout.LayoutParams(s, s));
-        return v;
     }
 }

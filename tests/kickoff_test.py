@@ -107,6 +107,18 @@ js = read(ROOT / "src/sports.js")
 check("the page hands the launcher the time as digits in a string (13 digits are too long for the home's Json)", "t: String(fbKick(ev))" in js)
 check("the home's page keeps the list for the launcher; the screensaver page draws its own notice, never with no network",
       "function spKickList(){ return spHanded; }" in js and "if(CONFIG.widget || _Q.get('ko') === '0'" in js and "navigator.onLine === false" in js)
+# 4.4 beta 2, the UI review (the owner's no-decoration rule): no colour square or accent bar for the clubs on any of the three notices; the
+# page's shows a club's real crest only when it has one (CRESTS), the apps keep none (the names on the flat fill); the layout and timing as they were
+check("the clubs on the notice: no colour square anywhere (home, add-on, the page); the page's a real crest or nothing, by the club's id",
+      "swatch(" not in over and "swatch(" not in xnote and "swatch(" not in tryj and "spsw" not in js.split("function spKick(", 1)[1].split("\n}", 1)[0]
+      and "const sw = id => id ? spCrest(id, 'kcr') : '';" in js and "hid: String(e2.idHomeTeam), aid: String(e2.idAwayTeam)" in js
+      and "hid: String(ev.idHomeTeam), aid: String(ev.idAwayTeam)" in js and "const spCrestOf = id =>" in js and 'onerror="this.remove()"' in js)
+check("…the notices' look and timing unchanged: 8 s, the top right, the slide of 450 ms, the dark glass with the gold edge, the names at 38 and the head at 24",
+      over.count("SHOW_MS = 8_000L") == 1 and "Gravity.TOP | Dir.start(true)" in over and over.count("setDuration(450)") == 2 and "bg.setColor(0xE60C0E12)" in over
+      and "bg.setStroke(Math.max(1, (int) (2 * u)), 0x99E9C46A)" in over and 'text(c, "  " + g.h + "   ×   " + g.a + "  ", CREAM, 38 * u, true)' in over
+      and 'text(c, S.t("بدأت المباراة"), GOLD, 24 * u, false)' in over and "(int) (dm.widthPixels * 0.36f)" in over
+      and "mid.addView(text(c, line, CREAM, 38 * u, true));" in xnote and "SHOW_MS = 8_000L" in xnote
+      and "SHOW_MS = 8000" in tryj and "setDuration(450)" in tryj and "}, 8000);" in js.split("function spKick(", 1)[1].split("\n}", 1)[0])
 _kr = (ROOT / "android/launcher/src/main/java/sa/urtv/home/KickoffReceiver.java").read_text(encoding="utf-8") if "ROOT" in globals() else (Path(__file__).resolve().parent.parent / "android/launcher/src/main/java/sa/urtv/home/KickoffReceiver.java").read_text(encoding="utf-8")
 _ea = (Path(__file__).resolve().parent.parent / "android/launcher/src/main/java/sa/urtv/home/ExtrasActivity.java").read_text(encoding="utf-8")
 _run = _kr.split("private static void run(Context app) {")[1].split("private static void show(")[0]

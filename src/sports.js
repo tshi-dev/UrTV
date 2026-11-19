@@ -67,7 +67,7 @@ html.sptake:not(.widget) .mid .week.sptk{grid-column:1/-1;font-size:1.25em}
 #spkick.out{transform:translateX(calc(100% + 4vw));opacity:0}   /* the top right in both languages (the owner's corner), so it leaves to the right */
 #spkick .kt{display:flex;justify-content:space-between;gap:1em;color:#F0D48E;font-weight:500}#spkick .kt i{font-style:normal;color:#E5DCC8;font-weight:400}
 #spkick .km{display:flex;align-items:center;justify-content:center;gap:1.1em;margin:1vh 0 1.2vh;font-size:1.55em;font-weight:700;color:#FFF8EC}
-#spkick .km .spsw{width:.7em;height:.7em}
+#spkick .km .kcr{width:.9em;height:.9em;object-fit:contain;vertical-align:-.12em;margin:0 .3em}
 #spkick .kb{height:.35vh;margin:0 -1.5vw;background:#E9C46A;transform-origin:inline-end;animation:spkb 8s linear forwards}
 @keyframes spkb{to{transform:scaleX(0)}}
 #spkick.goal{border-color:#3BB273}
@@ -320,16 +320,16 @@ function spHandOff(){
   spHanded = JSON.stringify(list);
 }
 function spKickList(){ return spHanded; }
-// the notice: {kind: 'start'|'goal'|'end', h, a, hc, ac, lg, hs, as, min} for 8 s, then it slides away (the screensaver's kick-off; a goal or the final score on the home and the screensaver)
+// the notice: {kind: 'start'|'goal'|'end', h, a, hid, aid (the clubs' ids: their crests when the page has them), lg, hs, as, min} for 8 s, then it slides away (the screensaver's kick-off; a goal or the final score on the home and the screensaver)
 function spKick(json){
   let d; try{ d = typeof json === 'string' ? JSON.parse(json) : json; }catch(e){ return false; }
   if(!d || !d.h || !d.a) return false;
   const old = document.getElementById('spkick'); if(old) old.remove();
-  const sw = c => `<i class="spsw" style="--a:${esc((c || [])[0] || '#888')};--b:${esc((c || [])[1] || '#555')}"></i>`;
+  const sw = id => id ? spCrest(id, 'kcr') : '';   // the UI review: a club's real crest when the page has it, else its name alone (no colour square)
   const top = d.kind === 'goal' ? (d.min ? fw(SPW.minute, ar(d.min)) : SPW.live) : d.kind === 'end' ? SPW.ended : SPW.kickoff;
   const mid = d.kind === 'start' || !d.kind ? '×' : `${ar(+d.hs || 0)} - ${ar(+d.as || 0)}`;
   document.body.insertAdjacentHTML('beforeend', `<div id="spkick" class="out${d.kind === 'goal' ? ' goal' : ''}"><div class="kt"><span>${esc(top)}</span><i>${esc(d.lg || '')}</i></div>`
-    + `<div class="km"><span>${sw(d.hc)}${esc(d.h)}</span><span>${mid}</span><span>${esc(d.a)}${sw(d.ac)}</span></div><div class="kb"></div></div>`);
+    + `<div class="km"><span>${sw(d.hid)}${esc(d.h)}</span><span>${mid}</span><span>${esc(d.a)}${sw(d.aid)}</span></div><div class="kb"></div></div>`);
   const el = document.getElementById('spkick');
   requestAnimationFrame(() => el.classList.remove('out'));
   setTimeout(() => { el.classList.add('out'); setTimeout(() => el.remove(), 600); }, 8000);
@@ -351,7 +351,7 @@ function spSaverKick(){
     const now2 = Date.now(), e2 = matchEvents().find(e => String(e.idEvent) === id) || ev;
     if(SP.told.has('s' + id) || calledOff(e2) || navigator.onLine === false || Math.abs(fbKick(e2) - now2) > 900000) return;
     SP.told.add('s' + id);
-    spKick({kind: 'start', h: spName(e2, 'Home'), a: spName(e2, 'Away'), hc: spCol(e2.idHomeTeam), ac: spCol(e2.idAwayTeam), lg: fbRound(e2)});
+    spKick({kind: 'start', h: spName(e2, 'Home'), a: spName(e2, 'Away'), hid: String(e2.idHomeTeam), aid: String(e2.idAwayTeam), lg: fbRound(e2)});
   }, Math.max(0, fbKick(ev) - now));
 }
 // a goal and the final whistle of a followed club (&kogoal=1, &koend=1): from the scores the page already reloads; never on the first look
@@ -363,7 +363,7 @@ function spScoreWatch(now){
     const was = SP.score[id];
     SP.score[id] = {hs, as, live, done};
     if(!was || calledOff(ev)) return;
-    const base = {h: spName(ev, 'Home'), a: spName(ev, 'Away'), hc: spCol(ev.idHomeTeam), ac: spCol(ev.idAwayTeam), lg: fbRound(ev), hs, as};
+    const base = {h: spName(ev, 'Home'), a: spName(ev, 'Away'), hid: String(ev.idHomeTeam), aid: String(ev.idAwayTeam), lg: fbRound(ev), hs, as};
     if(end && done && !was.done && was.live) spKick({...base, kind: 'end'});
     else if(goal && live && (hs + as) > (was.hs + was.as)) spKick({...base, kind: 'goal', min: String(ev.strProgress || '').replace(/\D/g, '')});
   });
