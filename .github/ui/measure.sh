@@ -221,6 +221,33 @@ shots_apps() {   # SUFFIX
   key DPAD_LEFT; sleep 2
   adb exec-out screencap -p > "$OUT/apps-grid-c-$1.png"
 }
+
+# 4.4 beta 2 (the owner's TV on build 570: «كل التطبيقات» froze, keys still arriving, no ANR): the owner's look (couch, «تكبير وظل») and 30+
+# apps, the D-pad walked through the grid, up out of its first row into the tray and the control centre and back, BACK too. Each step: the
+# window with the focus, the focused view (dumpsys: a view whose flags read .F) and a hash of the screen. freeze.txt; a screen that stays the
+# same while the focus moves is written STUCK with its picture (freeze-NN.png)
+freeze_walk() {
+  adb shell "am broadcast -n sa.urtv.screensaver/.SaverReceiver -a sa.urtv.screensaver.SET --es preset couch" > /dev/null; sleep 6
+  adb shell "am broadcast -n sa.urtv.screensaver/.SaverReceiver -a sa.urtv.screensaver.SET --es appsstyle zoom" > /dev/null
+  adb shell am force-stop sa.urtv.home; sleep 1
+  start sa.urtv.home/.MainActivity; sleep 8
+  local f="$OUT/freeze.txt" last="" same=0 i=0
+  : > "$f"
+  for k in DPAD_DOWN DPAD_DOWN $(for r in 1 2 3 4 5 6; do echo DPAD_DOWN DPAD_DOWN DPAD_RIGHT DPAD_RIGHT DPAD_DOWN DPAD_UP DPAD_UP DPAD_UP DPAD_UP DPAD_UP DPAD_DOWN DPAD_DOWN DPAD_LEFT; done) BACK DPAD_DOWN DPAD_DOWN DPAD_UP DPAD_UP DPAD_UP DPAD_UP DPAD_DOWN; do
+    i=$((i + 1)); adb shell input keyevent "$k"; sleep 1
+    win=$(adb shell dumpsys window | grep -m1 mCurrentFocus | tr -d '\r' | sed 's/.*mCurrentFocus=//')
+    view=$(adb shell dumpsys activity top | grep -m1 -E '\{[0-9a-f]+ [A-Z.]{9} .F[A-Z.]{6} ' | tr -d '\r' | sed 's/^ *//' | cut -c1-160)
+    adb exec-out screencap -p > "$OUT/freeze-now.png"
+    h=$(md5sum "$OUT/freeze-now.png" | cut -c1-12)
+    if [ "$h" = "$last" ] && [ "$k" != BACK ]; then same=$((same + 1)); else same=0; fi
+    flag=""; [ $same -ge 2 ] && { flag=" STUCK"; cp "$OUT/freeze-now.png" "$OUT/freeze-$(printf %02d $i).png"; }
+    echo "$i $k screen=$h$flag | window=$win | view=$view" >> "$f"
+    last=$h
+  done
+  rm -f "$OUT/freeze-now.png"
+  echo "stuck steps: $(grep -c STUCK "$f")" >> "$f"
+}
+freeze_walk
 shots_apps 1080
 adb shell wm size 1280x720; adb shell wm density 213; adb shell settings put system font_scale 1.3
 adb shell am force-stop sa.urtv.home; sleep 2

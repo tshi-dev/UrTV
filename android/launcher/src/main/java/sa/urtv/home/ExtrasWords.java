@@ -25,6 +25,12 @@ public final class ExtrasWords {
      * 4.4 beta 2 (the owner's Google TV: Google TV's home stays on, and Android's HOME resolver names it the default even while our home holds the HOME
      * role): the add-on asks the home whether it holds the role; RESULT is ROLE_OURS, ROLE_NOT or ROLE_UNKNOWN (no role before Android 10, or no answer)
      */
+    /**
+     * beta 2 (the owner's TV, build 574: home, screensaver and add-on installed over the last build with adb; the FIRST Home opened the stock home): the add-on's own update
+     * unbinds its accessibility service and this TV binds it again only when the home heals it at the home's start. The add-on, at its MY_PACKAGE_REPLACED, asks the
+     * home to heal it now (A11yHeal, after its settle, on a thread); answers at once.
+     */
+    public static final String HEAL = "heal";
     public static final String HOME_ROLE = "home_role", ROLE_OURS = "ours", ROLE_NOT = "not", ROLE_UNKNOWN = "unknown";
     /**
      * 4.4 beta 3, wireless debugging (the libraries live in the add-on only; the home's setup asks through these). PAIR_ARM / PAIR_DISARM / PAIR_RETRY: the TV's factory

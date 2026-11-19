@@ -70,6 +70,7 @@ public class ExtrasA11yService extends AccessibilityService {
     @Override protected void onServiceConnected() {
         running = this;
         watchReplaced();   // beta 2: our home installed again (an update) re-arms the Home key catch and the watch
+        roleAnswer = getSharedPreferences("extras", MODE_PRIVATE).getString(ROLE_SEEN, null);   // beta 2 (build 574): the last answer at once, so the catch is right before the home answers
         refreshRole();   // beta 2: whether our home holds the HOME role (the resolver may name Google TV's home while it does)
         stockHomes = stockHomeActivities(this);
         keyChoices = KeyApps.parse(getSharedPreferences("extras", MODE_PRIVATE).getString(ExtrasWords.KEY_APPS, ""));
@@ -136,6 +137,7 @@ public class ExtrasA11yService extends AccessibilityService {
     private volatile long roleAskedAt;
     private final java.util.concurrent.atomic.AtomicBoolean roleAsking = new java.util.concurrent.atomic.AtomicBoolean();
     static final long ROLE_REASK_MS = 2_000;
+    static final String ROLE_SEEN = "role_seen";
 
     /** asks our home on a thread of its own; a changed answer judges the catch again on the main thread */
     private void refreshRole() {
@@ -149,6 +151,7 @@ public class ExtrasA11yService extends AccessibilityService {
                     if (r == null) return;   // an older home, or no answer: the last answer stays
                     boolean changed = !r.equals(roleAnswer);
                     roleAnswer = r;
+                    getSharedPreferences("extras", MODE_PRIVATE).edit().putString(ROLE_SEEN, r).apply();   // kept for the next connect (an update of this add-on)
                     if (!changed) return;
                     if (ExtrasWords.ROLE_OURS.equals(r)) Log.i("UrTVWatch", "role ours");
                     else Log.i("UrTVWatch", "role not ours");

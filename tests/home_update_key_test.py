@@ -69,5 +69,18 @@ check("the role is asked on a thread of its own (one at a time), at connect, aft
       and "refreshRole();" in svc.split("protected void onServiceConnected() {")[1].split("\n    }\n")[0]
       and "private final Runnable rearm = () -> { filterKeys(); refreshRole(); };" in svc and "if (android.os.SystemClock.uptimeMillis() - roleAskedAt > ROLE_REASK_MS) refreshRole();" in ev)
 check("no answer (an older home) keeps the last answer: never a guess", "if (r == null) return;" in rr)
+# build 574 (the owner's TV): home, screensaver and add-on installed over 570 with adb; the add-on's own update unbound its service until the home healed it at its start
+rep = (X / "ExtrasReplaced.java").read_text(encoding="utf-8")
+xm = (ROOT / "android/extras/src/main/AndroidManifest.xml").read_text(encoding="utf-8")
+check("build 574: the add-on's own update (MY_PACKAGE_REPLACED, a manifest receiver) asks the home to heal its service at once, on a thread",
+      'android:name="sa.urtv.home.ExtrasReplaced"' in xm and "android.intent.action.MY_PACKAGE_REPLACED" in xm.split('android:name="sa.urtv.home.ExtrasReplaced"')[1].split("</receiver>")[0]
+      and "askHome(app, ExtrasWords.HEAL, null, null)" in rep and '"extras-replaced").start();' in rep and "pending.finish();" in rep)
+check("the home answers HEAL at once and heals after its settle on its own thread (a «fix-…» why: not taken for its own update)",
+      "case ExtrasWords.HEAL:" in br and 'A11yHeal.healSoon(c, "fix-addon-replaced");' in br
+      and '"a11y-heal-addon").start();' in heal and "Thread.sleep(SETTLE_MS);" in heal.split("static void healSoon(")[1].split("\n    }\n")[0])
+con = svc.split("protected void onServiceConnected() {")[1].split("\n    }\n")[0]
+check("the add-on's service arms the catch at its connect with the last role answer it kept (no wait for the home), and keeps each new answer",
+      'roleAnswer = getSharedPreferences("extras", MODE_PRIVATE).getString(ROLE_SEEN, null);' in con and con.index("roleAnswer = getSharedPreferences") < con.index("filterKeys();")
+      and '.putString(ROLE_SEEN, r).apply();' in svc)
 print("FAILED" if failed else "all passed")
 sys.exit(1 if failed else 0)
