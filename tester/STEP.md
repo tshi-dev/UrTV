@@ -1,3 +1,8 @@
+«▶ STEP 105b (UI session, 19 Nov), with step 105: the owner's installed apps for the icon fix.
+ - Run `adb shell cmd package query-activities --brief -a android.intent.action.MAIN -c android.intent.category.LEANBACK_LAUNCHER` and the same with `-c android.intent.category.LAUNCHER`. Push the two package lists (package names only, nothing else) to work/tester-report as tester/apps/leanback.txt and tester/apps/launcher.txt.
+ - Screenshot the home's apps row and «كل التطبيقات» as they are now (on 525): tester/apps/now-bar.png, now-all.png (check them for privacy first).
+ - Later, when the supervisor posts the icon-fix build, the same two screenshots at 1080 and with the large font are the gate for beta 2.»
+
 «▶ STEP 105 (UI session request, 19 Nov), do it BEFORE step 104 (the clean-up): preset preview pictures from the real TV with real apps.
  1) Back up the owner's look first (`optimize/saver.sh show` + dock → optimize/run/step105/before/, PC only).
  2) For each key in: tv couch clean family sport calm couch-prayers clean-icons sport-night tv-glass → `optimize/saver.sh preset <key>`, wait 10 s on the home, `adb exec-out screencap -p > look-<key>.png`.
