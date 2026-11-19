@@ -3207,3 +3207,9 @@ Pictures (PC only): optimize/run/step96/pics/upd-1.png … upd-6.png.
 - «كل التطبيقات» (all-apps): NOT re-checked on 570 (needs the remote to reach the grid; blind D-pad is unreliable on the home).
 - «افتح الشاشة الأصلية», update screen after the fix, presets «تركيبات مقترحة», league tabs «الأبطال»/«الهدّافون», large-font check: NOT DONE (need the remote or the owner at the TV).
 - Step 104 (clean TV for the iPhone run): NOT started, waiting for the owner's «خلصت، نظّف التلفزيون».
+
+## Incident (19 Nov, my mistake): D-pad navigation in settings changed owner settings — restored
+- While trying to reach «المظهر ← أشكال جاهزة» by remote keys, the focus went into the content and the keys changed these owner values: panel verse→none, home_panel stocks→prayerrow, layout couch→classic, couch on→custom, appsstyle zoom→frame, kickoffgoal off→on, kickoffend off→on, preset couch (custom)→couch-prayers.
+- Restored: card verse, home-card stocks, homelayout couch, couch on, appsstyle zoom, kickoffgoal off, kickoffend off, and the preset back to couch. Verified with `saver.sh show` against optimize/run/step98/before3/show.txt: identical except two lines: the preset label shows «couch» (not «couch (custom)» as before — the app derives «(custom)» from the values, so it may differ again), and updatechannel is «beta» (owner turned beta on himself; the original was «next»).
+- Lesson: no more blind D-pad work in the settings; only screenshot-checked steps.
+- Owner's settings are otherwise the same as the backup; the TV is back on home, muted.
