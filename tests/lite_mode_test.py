@@ -44,8 +44,8 @@ cp, cs = text(SAVER / "ConfigProvider.java"), text(HOME / "ConfigSnapshot.java")
 check("the provider says «lite» (last column: an older home reads its columns by name), the home passes it to Ram",
       '"city_chosen", "lite", "scene_packs",' in cp and 'p.cityChosen() ? "1" : "0", p.lite(),' in cp and 'int li = cur.getColumnIndex("lite");' in cs and "if (li >= 0) Ram.lite(c, cur.getString(li));" in cs)
 st = text(SAVER / "SettingsActivity.java")
-check("the settings row «الوضع الخفيف» cycles auto, on, off, and says whether auto is on here (no «·»)",
-      'row("الوضع الخفيف", Prefs.liteLabel(prefs.lite(), Prefs.lowRam(this))' in st and 'prefs.setLite("auto".equals(v) ? "on" : "on".equals(v) ? "off" : "auto")' in st
+check("the settings row «الوضع الخفيف» cycles auto, on, off, and says whether auto is on here (no «·»); 4.4 beta 3: on «تلقائي», the home's line when this TV's signs turned it on",
+      'row("الوضع الخفيف", liteLine != null && !liteLine.isEmpty() ? liteLine : Prefs.liteLabel(prefs.lite(), Prefs.lowRam(this))' in st and 'final String liteLine = "auto".equals(prefs.lite()) ? liteLineSeen() : null;' in st and 'prefs.setLite("auto".equals(v) ? "on" : "on".equals(v) ? "off" : "auto")' in st
       and "·" not in pf.split("static String liteLabel")[1].split("\n")[0])
 rc, sh = text(SAVER / "SaverReceiver.java"), text(ROOT / "optimize/saver.sh")
 check("saver.sh lite auto|on|off, checked by the receiver, and `show` says lite:",
