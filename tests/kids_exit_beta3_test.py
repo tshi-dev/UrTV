@@ -29,7 +29,7 @@ home_tsv, saver_tsv = read(ROOT / "i18n/en/home.tsv"), read(ROOT / "i18n/en/save
 ex = main[main.index("    private void applyKidsExit() {"):]
 ex = ex[:ex.index("\n    }\n") + 6]
 check("the home: kids mode shows «الخروج من وضع الأطفال» in the row while it is on and only then, its OK opens «الرقابة الأبوية» (the PIN asked there)",
-      'kidsExitPill = pill(S.t(KIDS_LEAVE), R.drawable.ic_lock);' in main and "kidsExitPill.setOnClickListener(v -> openParental());" in main
+      'kidsExitPill = pill(S.t("الخروج من وضع الأطفال"), R.drawable.ic_lock);' in main and "kidsExitPill.setOnClickListener(v -> openParental());" in main
       and "boolean want = Parental.state(this).kids" in ex and "pillRow.addView(kidsExitPill" in ex and "pillRow.removeView(kidsExitPill);" in ex)
 check("…put in or taken out every time the control centre's place is (a return to the home, the minute tick), before that pill's own early return",
       main.index("applyKidsExit();") < main.index("boolean want = centerWanted(), has = centerPill.getParent() == pillRow;"))

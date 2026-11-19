@@ -1084,7 +1084,7 @@ public class MainActivity extends Activity {
             else guarded(ParentalPolicy.PILL_CENTER, null, ControlText.NAME, () -> control.open(v));
         });
         // 4.4 beta 3: kids mode shows its way out where the control centre was: «الرقابة الأبوية» (it asks the PIN when one is set)
-        kidsExitPill = pill(S.t(KIDS_LEAVE), R.drawable.ic_lock);
+        kidsExitPill = pill(S.t("الخروج من وضع الأطفال"), R.drawable.ic_lock);
         kidsExitPill.setOnClickListener(v -> openParental());
         // ---- end «مركز التحكم»
         // «الأسواق» and «المباريات»: the markets page and the games page, two more round buttons (step 27, the owner's TV photos)
@@ -1347,8 +1347,6 @@ public class MainActivity extends Activity {
         }
         wireFocus();
     }
-
-    static final String KIDS_LEAVE = S.n("الخروج من وضع الأطفال");
 
     /** 4.4 beta 3: kids mode's way out is a button in the row while kids mode is on (never a dead end); gone when it is off */
     private void applyKidsExit() {
