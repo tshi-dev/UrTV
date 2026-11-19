@@ -3229,3 +3229,9 @@ Pictures (PC only): optimize/run/step96/pics/upd-1.png … upd-6.png.
 - Hypothesis: the home or the control-centre overlay keeps focus and does not redraw/react after the key (focus stuck in the overlay, or the UI thread busy). Not proven.
 - Picture (PC only): optimize/run/step96/pics/freeze-160920.png.
 - Needs the owner's exact steps: which screen before the freeze (control centre, the apps row, settings, a league page), and whether Back or Home unfreezes it.
+
+## Freeze details from the owner (19 Nov): it happened on «كل التطبيقات» (all apps)
+- Owner was on the all-apps screen; it stopped moving while the remote still sent keys; the remote received the keys but the screen did not move.
+- Power off and on fixed it (after the restart: UrTV home, role UrTV, add-on still there).
+- After the restart four owner settings were different (panel none, home panel prayerrow, preset couch-prayers, apps style icons); restored to the backup (panel verse, home panel stocks, preset couch (custom), apps style zoom). Verified against before3/show.txt: identical except the version line.
+- Suspect: the all-apps grid (the one with the big focused tile and the grid of 15+ apps) holds focus or hangs on the redraw. Needs a repro on the all-apps screen with a log capture (logcat + gfxinfo) and the focused app name.
