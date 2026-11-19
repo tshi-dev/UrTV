@@ -31,6 +31,8 @@ android {
     buildTypes {
         release {
             minifyEnabled false
+            // 4.4 beta 3 (the owner): the release add-on carries Conscrypt's native code for ARM TVs only; debug builds (the Screens workflow's x86 emulator) keep every ABI
+            ndk { abiFilters 'armeabi-v7a', 'arm64-v8a' }
             signingConfig signingConfigs.findByName('release') ?: signingConfigs.debug
         }
     }

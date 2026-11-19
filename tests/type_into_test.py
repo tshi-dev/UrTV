@@ -53,7 +53,9 @@ check("4.3.3: the home has no accessibility service at all; the add-on has one, 
       and 'canRetrieveWindowContent="true"' in xml and 'android:accessibilityEventTypes="typeWindowStateChanged"' in xml
       and "getPackageName()" in ev_body and "getClassName()" in ev_body and not re.search(r"getText|getSource|getContentDescription|getRecord", ev_body))
 check("the two apps call each other only through providers guarded by a signature permission (our key): the home's bridge and, 4.4 beta 3, its one-time install files for the paired route",
-      'android:protectionLevel="signature"' in man and 'android:protectionLevel="signature"' in xman and man.count('android:permission="sa.urtv.permission.EXTRAS"') == 2 and 'android:name=".setup.PairFiles"' in man
+      'android:protectionLevel="signature"' in man and 'android:protectionLevel="signature"' in xman and man.count('android:permission="sa.urtv.permission.EXTRAS"') == 2
+      and re.search(r'<provider\s+android:name="\.setup\.PairFiles"[^>]*android:permission="sa\.urtv\.permission\.EXTRAS"', man) is not None
+      and "PairFiles.drop(c, token);" in text("android/launcher/src/main/java/sa/urtv/home/setup/PairRoute.java").split("SetupSession.Exec exec")[1].split("};")[0]
       and xman.count('android:permission="sa.urtv.permission.EXTRAS"') == 1 and 'PERMISSION = "sa.urtv.permission.EXTRAS"' in words)
 check("it only types when the service is on, the window names its package and is not ours, and the family lock and kids mode (also for the TV's settings and Wi-Fi screens) are asked of the home first; the home not answering refuses",
       "TypeInto.allowed(s != null, pkg, ours, pkg != null && !ours && needsPin, pkg != null && !ours && hidden, pkg != null && !ours && systemScreen)" in body
