@@ -158,7 +158,13 @@ if shutil.which("javac"):
     check("4.4 the owner (the date ran into the big clock's «2»): with the big glass clock the date, zone and prayer lines move up into the header "
           "clock's empty row (the header keeps its size); back where they were without it",
           "private void liftDate(boolean up)" in mainsrc and "liftDate(bigClock);" in mainsrc and "liftDate(true);" in mainsrc and "liftDate(false);" in mainsrc
-          and "-(date.getTop() - clock.getTop())" in mainsrc)
+          and "-Math.max(0, date.getTop() - clock.getTop())" in mainsrc)
+    # 4.4 beta 2 (the owner's TV, build 574: the date drawn over «مساء الخير», couch with the scenes): the lift is measured again on every layout of
+    # the date and the clock, so a line above it that comes, goes or wraps (the weather line, the greeting row) never leaves the date above its row
+    lift = mainsrc[mainsrc.index("    private void liftDate(boolean up) {"):mainsrc.index("    /** 4.4: the photo on the screen framed")]
+    check("the date never rides over the greeting: the lift is measured again on each layout of the date and the clock, and never lifts it above the clock's own row",
+          "date.addOnLayoutChangeListener(again);" in lift and "clock.addOnLayoutChangeListener(again);" in lift and "if (t != ot || b != ob) applyLift();" in lift
+          and "-Math.max(0, date.getTop() - clock.getTop())" in lift and "float dy = up ?" not in lift)
     check("ScenePlan's tiers are Ram's numbers", [r for r in rows if r[0] == "tiers"][0][1] == "0,1,2"
           and "public static final int LOW = 0, MID = 1, NORMAL = 2;" in ram)
 else:

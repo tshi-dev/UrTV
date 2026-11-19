@@ -48,7 +48,7 @@ jobs:
       - name: Stub apps for the favourites
         run: |
           pip install pillow==13.0.0 numpy==2.3.4 imageio-ffmpeg==0.6.0
-          bash .github/screens/make_stubs.sh stubs 8
+          bash .github/screens/make_stubs.sh stubs 32
       - name: Enable KVM
         run: |
           echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
@@ -86,7 +86,7 @@ jobs:
             git -C "$work" remote add origin "https://x-access-token:${{ github.token }}@github.com/${GITHUB_REPOSITORY}.git"; }
           mkdir -p "$work/$run"
           cp ui-out/*-sheet.jpg ui-out/*.txt ui-out/report.* "$work/$run"/ 2>/dev/null || true
-          python3 -c "import sys; from PIL import Image; [Image.open(f).convert('RGB').resize((960, 540)).save(sys.argv[1] + '/' + f.split('/')[-1][:-4] + '.jpg', quality=85) for f in sys.argv[2:]]" "$work/$run" $(ls ui-out/*-end.png ui-out/start.png ui-out/panel-*.png ui-out/settings-*.png ui-out/look-*.png ui-out/apps-*.png 2>/dev/null)
+          python3 -c "import sys; from PIL import Image; [Image.open(f).convert('RGB').resize((960, 540)).save(sys.argv[1] + '/' + f.split('/')[-1][:-4] + '.jpg', quality=85) for f in sys.argv[2:]]" "$work/$run" $(ls ui-out/*-end.png ui-out/start.png ui-out/panel-*.png ui-out/settings-*.png ui-out/look-*.png ui-out/apps-*.png ui-out/freeze-*.png 2>/dev/null)
           cd "$work"
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"

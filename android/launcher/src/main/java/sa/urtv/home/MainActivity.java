@@ -4133,11 +4133,22 @@ public class MainActivity extends Activity {
     private void liftDate(boolean up) {
         if (up != bigClockOn) { bigClockOn = up; if (homeCard != null) handler.post(homeCard::fit); }   // the strip moves clear of the digits (or back)
         if (clock == null || date == null) return;
-        Runnable apply = () -> {
-            float dy = up ? -(date.getTop() - clock.getTop()) : 0f;
-            for (View v : new View[] {date, zoneLine, prayerLine}) if (v != null) v.setTranslationY(dy);
-        };
-        if (up && clock.getHeight() == 0) clock.post(apply); else apply.run();
+        if (!liftWatch) {   // 4.4 beta 2 (the owner's TV, build 574: the date drawn over «مساء الخير»): the lift is measured again whenever the lines
+            liftWatch = true;   // above it move (the weather line coming, going or wrapping, the greeting row): a lift measured once went stale
+            View.OnLayoutChangeListener again = (v, l, t, r, b, ol, ot, or, ob) -> { if (t != ot || b != ob) applyLift(); };
+            date.addOnLayoutChangeListener(again);
+            clock.addOnLayoutChangeListener(again);
+        }
+        if (up && clock.getHeight() == 0) clock.post(this::applyLift); else applyLift();
+    }
+
+    private boolean liftWatch;
+
+    /** the lines under the header clock at the clock's own row while the big clock is on (never above it: the greeting and the weather stay clear), else in place */
+    private void applyLift() {
+        if (clock == null || date == null) return;
+        float dy = bigClockOn ? -Math.max(0, date.getTop() - clock.getTop()) : 0f;
+        for (View v : new View[] {date, zoneLine, prayerLine}) if (v != null && v.getTranslationY() != dy) v.setTranslationY(dy);
     }
 
     /** 4.4: the photo on the screen framed as its cut-out over the glass clock is (PhotoGlass: its crop, then the zoom k about the top centre); the one fading out keeps its own */
