@@ -13,12 +13,12 @@
   html{--u:1px}
   html,body{background:#F4F2EC;font-family:'Thmanyah','IBM Plex Sans Arabic',sans-serif;overflow:hidden}
   /* #mp's light tokens, as they are */
-  #root{--fi:#1B1F1D;--fs:#5E635F;--fgr:#1B8354;--fam:#8A5600;--fring:#1B8354;--fln:#E4E1D8;--fbg:#fff;--rowf:#EEF6F1;--dlg:#F7F6F1;--btn:#fff;--pri:#21915F;
+  #root{--fi:#1B1F1D;--fs:#5E635F;--fgr:#1B8354;--fam:#8A5600;--fring:#1B8354;--fln:#E4E1D8;--fbg:#fff;--rowf:#EEF6F1;--fw:#145A37;--fd:#B0B3AD;--fl:#E0604E;--rln:#D9D5CA;--zeb:#F8F7F3;--dlg:#F7F6F1;--btn:#fff;--pri:#21915F;
     --veil:rgba(244,242,236,.72);--shd:rgba(40,36,24,.18);--flo:#B3261E;
     /* new: three zone colours, chosen to stay apart for the common colour-blindness types and on a washed-out TV panel */
     --z1:#1B8354;--z2:#2F6FB3;--z3:#B3261E;--sq:#E9E6DD}
   html.dark,html.dark body{background:#17181B}
-  html.dark #root{--fi:#FFFFFF;--fs:#DADCE0;--fgr:#8FE0B4;--fam:#F0B35A;--fring:#8FE0B4;--fln:rgba(255,255,255,.16);--fbg:#202227;--rowf:rgba(143,224,180,.14);--dlg:#1D1F24;--btn:#2A2D33;--pri:#1B8354;
+  html.dark #root{--fi:#FFFFFF;--fs:#DADCE0;--fgr:#8FE0B4;--fam:#F0B35A;--fring:#8FE0B4;--fln:rgba(255,255,255,.16);--fbg:#202227;--rowf:rgba(143,224,180,.14);--fw:#5FD39A;--fd:#5E6168;--fl:#E2604E;--rln:rgba(255,255,255,.24);--zeb:rgba(255,255,255,.035);--dlg:#1D1F24;--btn:#2A2D33;--pri:#1B8354;
     --veil:rgba(0,0,0,.66);--shd:rgba(0,0,0,.5);--flo:#FF9A8F;--z1:#5CC48E;--z2:#7FB0E8;--z3:#FF8A7E;--sq:rgba(255,255,255,.1)}
   .pg{position:fixed;top:0;right:0;bottom:0;left:0;padding:calc(var(--u)*44) calc(var(--u)*120) calc(var(--u)*36);color:var(--fi);display:flex;flex-direction:column;font-size:calc(var(--u)*28)}
   .num{unicode-bidi:isolate}
@@ -61,8 +61,9 @@
 
   /* ---- the table */
   .tb{list-style:none;padding:calc(var(--u)*6) calc(var(--u)*10)}
-  .tr{display:flex;align-items:center;height:calc(var(--u)*40);padding:0 calc(var(--u)*8);border-radius:calc(var(--u)*12);position:relative}
-  .tr + .tr{border-top:1px solid var(--fln)}
+  .tr{display:flex;align-items:center;height:calc(var(--u)*40);padding:0 calc(var(--u)*8);border-radius:calc(var(--u)*4);position:relative}
+  .tr + .tr{border-top:1px solid var(--rln)}
+  .tr.zb{background:var(--zeb)}
   /* the zones (the owner, 19 Nov): no colour at all; a plain full-width line under the last place of a zone, its places and name in plain muted text at the line's start */
   .tr.zl{height:calc(var(--u)*28);border-top:0;color:var(--fs);font-size:calc(var(--u)*24);padding:0 calc(var(--u)*8)}
   .tr.zl span{white-space:nowrap;padding-left:calc(var(--u)*16)}
@@ -70,7 +71,7 @@
   .tr.zl + .tr{border-top:0}
   .tr.zl.bare{height:calc(var(--u)*12)}
   .tr.th{height:calc(var(--u)*38);color:var(--fs);font-size:calc(var(--u)*24);border-top:0}
-  .tr.mine{background:var(--rowf)}
+  .tr.mine{box-shadow:inset 0 0 0 2px var(--fring)}
   .tr.mine .nm{font-weight:700}
   .tr .rk{width:calc(var(--u)*44);text-align:center;font-weight:500}
   .tr .mv{width:calc(var(--u)*52);margin-left:calc(var(--u)*12);text-align:center;font-size:inherit;white-space:nowrap}
@@ -84,9 +85,9 @@
   .tr .pt{width:calc(var(--u)*64);text-align:center;font-weight:700}
   .tr .pt.ptl{color:var(--flo)}
   .tr.th .pt{font-weight:400}
-  .tr .fo{width:calc(var(--u)*210);display:flex;justify-content:flex-end;align-items:baseline;direction:ltr}
-  .sqf{font-size:calc(var(--u)*28);font-weight:700;margin-left:calc(var(--u)*12)}   /* the audit: no boxes, the letter alone in its colour */
-  .sqf.w{color:var(--fgr)}.sqf.d{color:var(--fs)}.sqf.l{color:var(--flo)}
+  .tr .fo{width:calc(var(--u)*150);display:flex;justify-content:flex-end;align-items:baseline;direction:ltr}
+  .fdot{display:inline-block;width:calc(var(--u)*6 + 8px);height:calc(var(--u)*6 + 8px);border-radius:50%;margin-left:calc(var(--u)*10);vertical-align:middle;flex:none}   /* the owner: colour only; 14 px at 1080p, 12 at 720p */
+  .fdot.w{background:var(--fw)}.fdot.d{background:var(--fd)}.fdot.l{background:var(--fl)}
 
   .tr.gapr{height:calc(var(--u)*30);color:var(--fs);font-size:calc(var(--u)*24);border-top:0}
   .tr.gapr span{white-space:nowrap;padding-left:calc(var(--u)*16)}
@@ -177,8 +178,8 @@
   .fts{display:flex}
   .ft{width:calc(var(--u)*128);margin-left:calc(var(--u)*14);text-align:center}
   .ft b{display:block;color:var(--fi);font-size:calc(var(--u)*34);font-weight:700;unicode-bidi:isolate}   /* the audit: no fill; RTL: the club's own goals first */
-  .ft em{display:block;font-style:normal;font-weight:700;font-size:calc(var(--u)*26);margin-top:calc(var(--u)*2)}
-  .ft em.w{color:var(--fgr)}.ft em.d{color:var(--fs)}.ft em.l{color:var(--flo)}
+  .ft .fdot{margin:calc(var(--u)*8) 0 0}
+
   .ft span{display:block;color:var(--fs);font-size:calc(var(--u)*24);margin-top:calc(var(--u)*6);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .ncard{flex:1;margin-right:calc(var(--u)*28);padding:calc(var(--u)*16) calc(var(--u)*28);display:flex;align-items:center;justify-content:space-between}
   .ncard .k{color:var(--fs);font-size:calc(var(--u)*24)}
@@ -193,6 +194,8 @@
   .hon li i b{display:block;color:var(--fi);font-weight:500;font-size:calc(var(--u)*24)}
   .src{color:var(--fs);font-size:calc(var(--u)*24);margin-top:calc(var(--u)*8)}
   .no-f{box-shadow:none!important}
+  html.large .gfa{display:none}
+  html.large .champcol{display:none}   /* the agreed rule: at 720p with the large font the champions card leaves the first screen (it is a tab) */
   .pg.full{padding-top:calc(var(--u)*32);padding-bottom:calc(var(--u)*24)}
   .pg.full .tr{height:calc(var(--u)*40)}
   .pg.full .tr.zl{height:calc(var(--u)*28)}
@@ -228,13 +231,14 @@ function rows(items, full, ringAt){   // items: [club, index] or 'gapN' (N hidde
     }
     const r = x[1] + 1;
     bs.filter(b => b > last && b <= r).forEach(b => { out += zl(b); });
-    out += row(x[0], x[1], full, ringAt === x[1]);
+    out += row(x[0], x[1], full, ringAt === x[1]).replace('<li class="tr', (x[1] % 2) ? '<li class="tr zb' : '<li class="tr');
     last = r;
   });
   return out.replace(/(<li class="tr zl[^"]*">(?:<span>[^<]*<\/span>)?<\/li>)+$/, '');   // never a zone line as the last thing before the card's bottom edge (the UI session)
 }
 const FL = {w:'ف', d:'ت', l:'خ'};
-const form = (s, next) => '<span class="fo">' + s.split('').map(c => `<span class="sqf ${c}">${FL[c]}</span>`).join('') + '</span>';
+const dot = c => `<i class="fdot ${c}"></i>`;
+const form = (s, next) => '<span class="fo" style="align-items:center">' + s.split('').map(dot).join('') + '</span>';
 const mv = m => m > 0 ? `<span class="mv up num">+${D(m)}</span>` : m < 0 ? `<span class="mv dn num">−${D(-m)}</span>` : '<span class="mv eq">–</span>';   // the audit: signed numbers, no arrows
 const badge = n => '';   // the real crest loads at runtime (TheSportsDB); the mockups draw none, and nothing stands in for it while it loads
 function row(c, i, full, ring){
@@ -242,12 +246,12 @@ function row(c, i, full, ring){
   const cls = ['tr', n === MINE ? 'mine' : '', ring ? 'f' : ''].join(' ');
   const nm = `<span class="nm"><span>${n}</span>${live ? `<em>${full ? 'مباشر ' : ''}${live}</em>` : ''}</span>`;
   const mid = full
-    ? `<span class="c">${D(p)}</span><span class="c">${D(w)}</span><span class="c">${D(d)}</span><span class="c">${D(l)}</span><span class="c">${D(gf)}</span><span class="c">${D(ga)}</span><span class="c w num">${gd > 0 ? '+' : ''}${D(gd)}</span>`
+    ? `<span class="c">${D(p)}</span><span class="c">${D(w)}</span><span class="c">${D(d)}</span><span class="c">${D(l)}</span><span class="c gfa">${D(gf)}</span><span class="c gfa">${D(ga)}</span><span class="c w num">${gd > 0 ? '+' : ''}${D(gd)}</span>`
     : `<span class="c">${D(p)}</span><span class="c w num">${gd > 0 ? '+' : ''}${D(gd)}</span>`;
   return `<li class="${cls}"><span class="rk">${D(i + 1)}</span>${mv(m)}${badge(n)}${nm}${mid}<span class="pt${live ? ' ptl' : ''}">${D(pts)}</span>${form(fo)}</li>`;
 }
 const head = full => `<li class="tr th"><span class="rk">#</span><span class="mv"></span><span class="nm">النادي</span>`
-  + (full ? '<span class="c">لعب</span><span class="c">فاز</span><span class="c">تعادل</span><span class="c">خسر</span><span class="c">له</span><span class="c">عليه</span><span class="c w">الفارق</span>' : '<span class="c">لعب</span><span class="c w">الفارق</span>')
+  + (full ? '<span class="c">لعب</span><span class="c">فاز</span><span class="c">تعادل</span><span class="c">خسر</span><span class="c gfa">له</span><span class="c gfa">عليه</span><span class="c w">الفارق</span>' : '<span class="c">لعب</span><span class="c w">الفارق</span>')
   + '<span class="pt">نقاط</span><span class="fo">آخر ٥</span></li>';
 const gapRow = n => `<li class="tr gapr"><span>${n === 1 ? 'نادٍ آخر' : D(n) + ' أندية أخرى'}، موافق: الجدول كاملًا</span></li>`;
 const legend = extra => '<div class="legend">' + ''
@@ -260,7 +264,7 @@ const HEAD = (tab, hint) => `<div class="hd"><div><h1>دوري روشن السع
 const LIVE = [['الشباب','١ : ١','التعاون',"٦٧'",'الشوط الثاني'],['الفتح','٠ : ٢','نيوم',"٣٤'",'الشوط الأول']];
 function gr(a, x, b, kind, small){
   const win = kind === 'sc' && x.split(':').map(s => s.trim());
-  return `<li class="gr"><span class="a">${a}</span><span class="x ${kind || ''}">${x}${small ? `<small>${small}</small>` : ''}</span><span class="b">${b}</span></li>`;
+  return `<li class="gr"><span class="a">${a}</span><span class="x ${kind || ''}">${x}${small ? (/^DOT/.test(small) ? `<small>${dot(small[3])}</small>` : `<small>${small}</small>`) : ''}</span><span class="b">${b}</span></li>`;
 }
 const SCORERS = [['كريستيانو رونالدو','النصر',11],['ماركوس ليوناردو','الهلال',9],['كريم بنزيما','الاتحاد',8],['إيفان توني','الأهلي',8]];
 
@@ -273,7 +277,7 @@ const SCREENS = {
         <div class="nx"><div class="k">آخر بطولة</div><div class="v">دوري روشن ٢٠٢٥-٢٠٢٦</div></div></div>
       <ul class="tabs"><li class="on">النادي</li><li>المباريات</li><li>النتائج</li><li>البطولات</li><li>المواجهات</li><li>أزل النصر من فرقي</li><li class="hint">موافق يفتح، يمين ويسار بين الأقسام</li></ul>
       <div class="row2">
-        <div><h2>آخر ٥ <i>الأحدث يمينًا</i></h2><div class="fts">${tiles.reverse().map(x => `<div class="ft"><b>${x[0]}</b><span>${x[2]}</span><em class="${x[1]}">${FL[x[1]]}</em></div>`).join('')}</div></div>
+        <div><h2>آخر ٥ <i>الأحدث يمينًا</i></h2><div class="fts">${tiles.reverse().map(x => `<div class="ft"><b>${x[0]}</b><span>${x[2]}</span>${dot(x[1])}</div>`).join('')}</div></div>
         <div class="ncard card"><div><div class="k">المباراة القادمة، الجولة ١١</div><div class="v">النصر – الأهلي</div></div><div class="t">الليلة ٩:٠٠ م<i>بعد ساعة و٤٢ دقيقة</i></div></div>
       </div>
       <div class="cols">
@@ -302,7 +306,7 @@ const SCREENS = {
             ${gr('الشباب','١ : ١','التعاون','on',"٦٧'")}${gr('الفتح','٠ : ٢','نيوم','on',"٣٤'")}${gr('النصر','٩:٠٠ م','الأهلي')}
             <li class="gd">غدًا، الأحد ٢٢ نوفمبر</li>${gr('الاتفاق','٦:٠٠ م','الرياض')}${gr('الأخدود','٨:٣٠ م','الخلود')}
             <li class="gd">أمس، الجمعة ٢٠ نوفمبر</li>${gr('الهلال','٣ : ١','الحزم','sc')}${gr('ضمك','٠ : ١','القادسية','sc')}</ul></div>
-        <div style="flex:1;min-width:0"><h2>الأبطال</h2>
+        <div class="champcol" style="flex:1;min-width:0"><h2>الأبطال</h2>
           <ul class="hon card"><li><span>٢٠٢٥-٢٠٢٦: النصر</span></li><li><span>٢٠٢٤-٢٠٢٥: الاتحاد</span></li><li><span>٢٠٢٣-٢٠٢٤: الهلال</span></li><li class="more" style="justify-content:center">كل الأبطال</li></ul>
           <h2 style="margin-top:calc(var(--u)*22)">هدّاف الموسم الماضي</h2>
           <ul class="hon card"><li style="flex-direction:column;align-items:flex-start;justify-content:center;padding:calc(var(--u)*8) calc(var(--u)*12)"><span>٢٠٢٥-٢٠٢٦: رونالدو</span><i>النصر، ٢٥ هدفًا</i></li></ul></div>
@@ -333,14 +337,17 @@ const SCREENS = {
       <div class="sh-t">المباراة القادمة</div>
       <div class="nxg card"><b>الاتفاق – الرياض</b><span>غدًا ٦:٠٠ م<i>الجولة ١١، بعد يوم و٣ ساعات</i></span></div>
       <div class="sh-t">آخر النتائج</div>
-      <ul class="gl card">${gr('الاتفاق','٢ : ٠','الحزم','sc','ف')}${gr('الشباب','١ : ١','الاتفاق','sc','ت')}${gr('الاتفاق','٣ : ١','الفيحاء','sc','ف')}</ul>
+      <ul class="gl card">${gr('الاتفاق','٢ : ٠','الحزم','sc','DOTw')}${gr('الشباب','١ : ١','الاتفاق','sc','DOTd')}${gr('الاتفاق','٣ : ١','الفيحاء','sc','DOTw')}</ul>
       <div class="btns" style="margin-top:calc(var(--u)*22)"><button class="pri fr">صفحة النادي</button><button>المواجهات</button><button>أزل من فرقي</button></div>
       <div class="peek">أعلى وأسفل: النادي الذي فوقه وتحته، رجوع: الجدول</div></div>`;
   }
 };
 const scr = (location.hash.slice(1) || 'home').split(',');
 if(scr.includes('dark')) document.documentElement.classList.add('dark');
-document.documentElement.style.setProperty('--u', (innerWidth / 1920) + 'px');
+// #…,large: Android's large font (×1.15) shown as the whole page ×1.15 (an over-estimate: the real setting grows the text, not the gaps);
+// the full table then drops «له / عليه» first (the UI session), and scrolls with the ring when it still does not fit
+if(scr.includes('large')) document.documentElement.classList.add('large');
+document.documentElement.style.setProperty('--u', (innerWidth / 1920 * (scr.includes('large') ? 1.15 : 1)) + 'px');
 document.getElementById('root').innerHTML = SCREENS[scr[0]]();
 </script>
 </body>

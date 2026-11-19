@@ -112,6 +112,17 @@ These replace anything below that says otherwise:
 - **The «N أندية أخرى» rows:** plain muted text.
 - **Crests:** no placeholder.
 
+## 3a2. The owner's changes (19 Nov)
+
+- **Form:** five solid dots (`.fdot`, `calc(var(--u)*6 + 8px)`, `border-radius:50%`), colour only, apart in lightness (the study §7f). Every
+  dot gets a text alternative for TalkBack («فوز، تعادل، خسارة …»). The size test exempts `.fdot` by name.
+- **Rows:**
+  - the line `--rln`;
+  - the zebra `--zeb` on alternate data rows (not on the zone or «N أندية أخرى» lines);
+  - the followed row outlined `inset 0 0 0 2px var(--fring)`;
+  - focus as today.
+- **Large font:** «له / عليه» hide first (`.gfa`). The table scrolls with the ring, and the home's champions card leaves the first screen.
+
 ## 3b. After the UI session's review (18 Nov)
 
 - **Built on the honours code.** work/45-honours, going into 4.4 beta 2, owns «الأبطال», «الهدّافون», the past seasons in the side column and

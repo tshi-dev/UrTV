@@ -5,13 +5,14 @@ import path from 'path';
 const require = createRequire(import.meta.url);
 const { chromium } = require('playwright');
 const dir = path.dirname(fileURLToPath(import.meta.url));
-const shots = [['1-league-home', 'home'], ['2-matchweeks', 'rounds'], ['3-table-full', 'table'], ['4-club-quick-view', 'club'], ['6-club-page', 'clubpage'], ['5-league-home-dark', 'home,dark']];
+const shots = [['1-league-home', 'home'], ['2-matchweeks', 'rounds'], ['3-table-full', 'table'], ['4-club-quick-view', 'club'], ['6-club-page', 'clubpage'], ['7-table-full-large', 'table,large'], ['8-league-home-large', 'home,large'], ['5-league-home-dark', 'home,dark']];
 const sizes = [[1920, 1080, '1080p'], [1280, 720, '720p'], [960, 540, '540p']];   // 540p: the size check only, no picture
 const browser = await chromium.launch();
 for (const [w, h, tag] of sizes) {
   const page = await browser.newPage({ viewport: { width: w, height: h }, deviceScaleFactor: 1 });
   for (const [name, hash] of shots) {
     if (tag !== '1080p' && hash.includes('dark')) continue;
+    if (tag !== '720p' && hash.includes('large')) continue;   // the large font: checked at 720p
     await page.goto('file://' + path.join(dir, 'mock.html') + '#' + hash);
     await page.reload();
     await page.evaluate(() => document.fonts.ready);
@@ -33,6 +34,7 @@ for (const [w, h, tag] of sizes) {
         const cs = getComputedStyle(el), r = el.getBoundingClientRect();
         if (/gradient/.test(cs.backgroundImage)) out.push('gradient: ' + el.className);
         const bg = cs.backgroundColor, filled = bg && !/rgba\(0, 0, 0, 0\)|transparent/.test(bg);
+        if (el.classList.contains('fdot')) return;   // the form's dot: the one data marker the owner allows (19 Nov)
         if (filled && parseFloat(cs.borderTopLeftRadius) + parseFloat(cs.borderTopRightRadius) > 0 && r.height > 0 && r.height < row - 0.5)
           out.push('rounded fill smaller than a row: ' + el.className + ' ' + el.textContent.trim().slice(0, 12));
       });

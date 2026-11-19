@@ -413,6 +413,30 @@ The owner circled the coloured bars at the row edges on 3-table-full and called 
   rows. A flat look for the whole matches page (sections on the sand with 1 px lines) would be one page-wide change, made later in one
   place. That is a question for the owner (§8, question 7).
 
+### 7f. The owner's changes (19 Nov): form as coloured dots, rows easier to follow
+
+- **Form is colour only.** Five equal solid dots per row: 14 px at 1080p, 12 px at 720p (`calc(--u*6 + 8px)`), with no border, glow or
+  gradient. The newest is next to the points.
+  - The colours differ in lightness as well as hue, for colour-blind readers.
+    - Light look (CIE L\*): win `#145A37` (33), loss `#E0604E` (57), draw `#B0B3AD` (72).
+    - Dark look: win `#5FD39A` (77), loss `#E2604E` (57), draw `#5E6168` (41).
+  - The club page's «آخر ٥» and the quick view's results use the same dot beside the plain score.
+  - The dot is the one element `render.mjs` exempts, by class (`fdot`), from "no rounded fill smaller than a row". The check stays for
+    everything else.
+- **Rows:**
+  - a firmer 1 px line between every row (`#D9D5CA` light, white at 24 % dark);
+  - a very light flat zebra (`#F8F7F3`, white at 3.5 % dark);
+  - the followed club's row has a full 2 px outline in the accent (`--fring`);
+  - the focused row keeps the page's ring and its light accent fill;
+  - no edge bars, and row corners down to 4.
+- **Large font, checked at 720p** (`7-table-full-large-720p.png`, `8-league-home-large-720p.png`; the page ×1.15, an over-estimate,
+  since the real setting grows the text only):
+  - the full table drops «له / عليه» first and scrolls with the ring for the last rows;
+  - the home's champions card leaves the first screen (it is a tab);
+  - the home's table scrolls with the ring for the relegation rows.
+
+  Every text stays at or above the 16 px floor.
+
 ### 8. Questions for the owner
 
 1. **The home's tab name:** «الرئيسية», or «الآن» for a league in progress?
