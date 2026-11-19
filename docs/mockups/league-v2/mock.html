@@ -13,12 +13,12 @@
   html{--u:1px}
   html,body{background:#F4F2EC;font-family:'Thmanyah','IBM Plex Sans Arabic',sans-serif;overflow:hidden}
   /* #mp's light tokens, as they are */
-  #root{--fi:#1B1F1D;--fs:#5E635F;--fgr:#1B8354;--fam:#8A5600;--fring:#1B8354;--fln:#E4E1D8;--fbg:#fff;--rowf:#EEF6F1;--fw:#145A37;--fd:#B0B3AD;--fl:#E0604E;--rln:#D9D5CA;--zeb:#F8F7F3;--dlg:#F7F6F1;--btn:#fff;--pri:#21915F;
+  #root{--fi:#1B1F1D;--fs:#5E635F;--fgr:#1B8354;--fam:#8A5600;--fring:#1B8354;--fln:#E4E1D8;--fbg:#fff;--rowf:#EEF6F1;--fw:#145A37;--fd:#B0B3AD;--fl:#E0604E;--rln:#D9D5CA;--zeb:#F8F7F3;--mine:#EFEDE6;--dlg:#F7F6F1;--btn:#fff;--pri:#21915F;
     --veil:rgba(244,242,236,.72);--shd:rgba(40,36,24,.18);--flo:#B3261E;
     /* new: three zone colours, chosen to stay apart for the common colour-blindness types and on a washed-out TV panel */
     --z1:#1B8354;--z2:#2F6FB3;--z3:#B3261E;--sq:#E9E6DD}
   html.dark,html.dark body{background:#17181B}
-  html.dark #root{--fi:#FFFFFF;--fs:#DADCE0;--fgr:#8FE0B4;--fam:#F0B35A;--fring:#8FE0B4;--fln:rgba(255,255,255,.16);--fbg:#202227;--rowf:rgba(143,224,180,.14);--fw:#5FD39A;--fd:#5E6168;--fl:#E2604E;--rln:rgba(255,255,255,.24);--zeb:rgba(255,255,255,.035);--dlg:#1D1F24;--btn:#2A2D33;--pri:#1B8354;
+  html.dark #root{--fi:#FFFFFF;--fs:#DADCE0;--fgr:#8FE0B4;--fam:#F0B35A;--fring:#8FE0B4;--fln:rgba(255,255,255,.16);--fbg:#202227;--rowf:rgba(143,224,180,.14);--fw:#5FD39A;--fd:#5E6168;--fl:#E2604E;--rln:rgba(255,255,255,.24);--zeb:rgba(255,255,255,.035);--mine:rgba(255,255,255,.08);--dlg:#1D1F24;--btn:#2A2D33;--pri:#1B8354;
     --veil:rgba(0,0,0,.66);--shd:rgba(0,0,0,.5);--flo:#FF9A8F;--z1:#5CC48E;--z2:#7FB0E8;--z3:#FF8A7E;--sq:rgba(255,255,255,.1)}
   .pg{position:fixed;top:0;right:0;bottom:0;left:0;padding:calc(var(--u)*44) calc(var(--u)*120) calc(var(--u)*36);color:var(--fi);display:flex;flex-direction:column;font-size:calc(var(--u)*28)}
   .num{unicode-bidi:isolate}
@@ -71,7 +71,7 @@
   .tr.zl + .tr{border-top:0}
   .tr.zl.bare{height:calc(var(--u)*12)}
   .tr.th{height:calc(var(--u)*38);color:var(--fs);font-size:calc(var(--u)*24);border-top:0}
-  .tr.mine{box-shadow:inset 0 0 0 2px var(--fring)}
+  .tr.mine{background:var(--mine)}   /* the followed club: bold and a flat fill a step darker than the zebra, no outline (the owner) */
   .tr.mine .nm{font-weight:700}
   .tr .rk{width:calc(var(--u)*44);text-align:center;font-weight:500}
   .tr .mv{width:calc(var(--u)*52);margin-left:calc(var(--u)*12);text-align:center;font-size:inherit;white-space:nowrap}

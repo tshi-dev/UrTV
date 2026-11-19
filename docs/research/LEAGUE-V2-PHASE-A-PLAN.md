@@ -119,7 +119,7 @@ These replace anything below that says otherwise:
 - **Rows:**
   - the line `--rln`;
   - the zebra `--zeb` on alternate data rows (not on the zone or «N أندية أخرى» lines);
-  - the followed row outlined `inset 0 0 0 2px var(--fring)`;
+  - the followed row in bold with a flat fill `--mine` (a step darker than the zebra), no outline;
   - focus as today.
 - **Large font:** «له / عليه» hide first (`.gfa`). The table scrolls with the ring, and the home's champions card leaves the first screen.
 

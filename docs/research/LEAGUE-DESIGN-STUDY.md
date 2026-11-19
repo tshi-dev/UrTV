@@ -426,7 +426,7 @@ The owner circled the coloured bars at the row edges on 3-table-full and called 
 - **Rows:**
   - a firmer 1 px line between every row (`#D9D5CA` light, white at 24 % dark);
   - a very light flat zebra (`#F8F7F3`, white at 3.5 % dark);
-  - the followed club's row has a full 2 px outline in the accent (`--fring`);
+  - the followed club's row: its name in bold and a light flat fill a step darker than the zebra (`#EFEDE6`; white at 8 % dark), **no outline** (the UI session, after the owner's «no outline» for icons and focus);
   - the focused row keeps the page's ring and its light accent fill;
   - no edge bars, and row corners down to 4.
 - **Large font, checked at 720p** (`7-table-full-large-720p.png`, `8-league-home-large-720p.png`; the page ×1.15, an over-estimate,
