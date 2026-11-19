@@ -3239,3 +3239,9 @@ Pictures (PC only): optimize/run/step96/pics/upd-1.png … upd-6.png.
 ## UI session items from the supervisor (6d1124f1), 19 Nov — status
 - (1) photo of the «تحديث تلفزيوني» row with the top-left overlap: NOT DONE. The row is under «حول» in the settings; reaching it needs remote navigation (no blind D-pad by rule), and the owner is away. Will take it when the owner is at the TV, or when he says the TV can be navigated.
 - (2) freeze capture: PREPARED, not run (no freeze happened since the power cycle). Will capture immediately if the owner reports a freeze: dumpsys window / activity top / gfxinfo / logcat 300 / the key before.
+
+## STEP 105 (19 Nov) — preset preview pictures from the real TV (owner away; TV muted; owner's look restored)
+- Captured with `adb exec-out`-equivalent screencaps after each `saver.sh preset KEY` (10 s wait, Home): tester/looks/look-{tv, couch, clean, family, sport, calm, couch-prayers, clean-icons, sport-night, tv-glass}.png (10 pictures, 1080p).
+- Privacy: checked each by eye: no owner's name, no Wi-Fi name, no IP, no notification text. The greeting line shows «مساء الخير» only.
+- Backup first: optimize/run/step105/before/show.txt (= step98 before3). The owner's look was then restored exactly (card verse, home-card stocks, homelayout couch, couch on, background scenes, appsstyle zoom); `saver.sh show` vs the backup: identical except the version line.
+- Findings from the looks (for the design side): (a) «sport» look: the title «المباريات القادمة» overlaps the date line at the top right (the date sits under the title); (b) «couch-prayers» shows the prayer card with the countdown bar, looks fine; (c) «clean-icons» uses the light icon tiles (the look we want for the apps row).
