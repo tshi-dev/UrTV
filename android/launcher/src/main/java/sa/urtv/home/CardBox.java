@@ -59,6 +59,24 @@ final class CardBox {
         return new int[]{screenW - 2 * dp(LEFT, density), h, Math.max(0, screenH - end)};
     }
 
+    /** 4.4 beta 2 «tvOS»: the row's height (a card's title and three lines at 1080, with room for the focused one's 1.04), and its gap above the bar */
+    static final float TVOS_ROW_HEIGHT = 0.235f;
+    static final int TVOS_GAP = 28;
+
+    /**
+     * «tvOS» (the owner approved docs/mockups/tvos-preset/): the cards in one row exactly as wide as the tvOS bar's tray (FavBar.SIDE from each side),
+     * ending TVOS_GAP (1080p px, scaled) above the block of the name and the bar; with the TV's large font the row is taller (up to 1.3), so a card's lines
+     * wrap and are never cut. {width, height, distance from the screen's bottom}.
+     */
+    static int[] tvosRow(int screenW, int screenH, int titleTop, float fontScale) {
+        int h = Math.round(screenH * TVOS_ROW_HEIGHT * Math.max(1f, Math.min(1.3f, fontScale)));
+        int end = titleTop > 0 ? titleTop - FavBar.px(TVOS_GAP, screenH) : Math.round(screenH * 0.74f);
+        return new int[]{screenW - 2 * FavBar.px(FavBar.SIDE, screenH), h, Math.max(0, screenH - end)};
+    }
+
+    /** «tvOS»: how many cards show across: three, two on a screen of 800 px or less with the TV's large font (1.15 and up) */
+    static int tvosSlots(int screenH, float fontScale) { return screenH <= 800 && fontScale >= 1.15f ? 2 : 3; }
+
     /** whether a card's box (left, top, right, bottom, px) covers any of the big clock's digits' box */
     static boolean overClock(int[] card, int[] clock) {
         return clock != null && card != null && card[0] < clock[2] && clock[0] < card[2] && card[1] < clock[3] && clock[1] < card[3];

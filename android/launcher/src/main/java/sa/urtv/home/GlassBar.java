@@ -11,25 +11,23 @@
  *
  * The idea is tvOS Launcher's: glass made from the picture behind it shrunk and blurred once, never a live blur, so a weak TV draws it for
  * nothing. Changed by UrTV: the picture is UrTV's own backdrop (GlassSource, the home's photo at 1/8, blurred once off the main thread when
- * the photo changes); this drawable only draws the part of it behind the bar, with a tint and a light edge. THIRD_PARTY_NOTICES.md has the notice.
+ * the photo changes); this drawable only draws the part of it behind the bar, with a tint and a 1 px edge. THIRD_PARTY_NOTICES.md has the notice.
  */
 package sa.urtv.home;
 
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.ColorFilter;
-import android.graphics.LinearGradient;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.PixelFormat;
 import android.graphics.Rect;
 import android.graphics.RectF;
-import android.graphics.Shader;
 import android.graphics.drawable.Drawable;
 
 /**
- * 4.5 «زجاجي»: the bar's liquid glass. The backdrop's piece behind the bar (by the bar's place on the screen), a tint, and a light edge, brighter
- * on top; with no backdrop yet, the tint alone (a little stronger). No blur here: tests/glass_test.py looks for a live one.
+ * 4.5 «زجاجي»: the bar's liquid glass. The backdrop's piece behind the bar (by the bar's place on the screen), a tint, and a 1 px edge of one
+ * colour (the owner: no gradient); with no backdrop yet (or on a weak TV, flat), the tint alone. No blur here: tests/glass_test.py looks for a live one.
  */
 final class GlassBar extends Drawable {
     private Bitmap backdrop;
@@ -55,6 +53,11 @@ final class GlassBar extends Drawable {
 
     void radius(float r) { radius = r; invalidateSelf(); }
 
+    private boolean flat;
+
+    /** 4.4 beta 2: a weak TV («الوضع الخفيف»): a flat fill of 16 % and the edge, no picture behind */
+    void flat(boolean f) { flat = f; invalidateSelf(); }
+
     /** a light look (the tint white and stronger, as on a pale photo), or a dark one */
     void light(boolean l) { light = l; invalidateSelf(); }
 
@@ -66,19 +69,19 @@ final class GlassBar extends Drawable {
         clip.addRoundRect(box, radius, radius, Path.Direction.CW);
         c.save();
         c.clipPath(clip);
-        if (backdrop != null) {
+        if (backdrop != null && !flat) {
             float sx = backdrop.getWidth() / (float) screenW, sy = backdrop.getHeight() / (float) screenH;
             src.set(Math.round((screenX + b.left) * sx), Math.round((screenY + b.top) * sy), Math.round((screenX + b.right) * sx), Math.round((screenY + b.bottom) * sy));
             src.intersect(0, 0, backdrop.getWidth(), backdrop.getHeight());
             if (!src.isEmpty()) c.drawBitmap(backdrop, src, b, photo);
         }
-        tint.setColor(light ? (backdrop != null ? 0x8CFFFFFF : 0xB8FFFFFF) : (backdrop != null ? 0x33FFFFFF : 0x40FFFFFF));
+        tint.setColor(flat ? (light ? 0xB8FFFFFF : 0x29FFFFFF) : light ? (backdrop != null ? 0x8CFFFFFF : 0xB8FFFFFF) : (backdrop != null ? 0x33FFFFFF : 0x40FFFFFF));
         c.drawRect(b, tint);
         c.restore();
         float w = Math.max(1f, b.height() / 90f);   // the edge: 1.5 px at a bar 135 high
         edge.setStyle(Paint.Style.STROKE);
         edge.setStrokeWidth(w);
-        edge.setShader(new LinearGradient(0, b.top, 0, b.bottom, 0x8CFFFFFF, 0x1AFFFFFF, Shader.TileMode.CLAMP));
+        edge.setColor(0x57FFFFFF);   // the owner: one 1 px edge, no gradient
         box.inset(w / 2f, w / 2f);
         c.drawRoundRect(box, Math.max(0, radius - w / 2f), Math.max(0, radius - w / 2f), edge);
     }

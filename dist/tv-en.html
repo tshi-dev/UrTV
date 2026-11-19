@@ -54,6 +54,22 @@
   html.row .week li{justify-content:center;text-align:center}
   html.widget .week{width:100%}
   
+  html.tvos .mid{padding:0 .5vw}
+  html.tvos .week,html.hcard.tvos .week{background:rgba(255,255,255,.16)!important;border:1px solid rgba(255,255,255,.34)!important;border-radius:1.8vw;border-radius:clamp(14px,1.8vw,30px);box-shadow:none!important}   
+  html.tvos.lowram .week,html.hcard.tvos.lowram .week{background:rgba(255,255,255,.2)!important;box-shadow:none!important}
+  html.tvos:not(.lowram) .week.lf{transform:scale(1.04);transition:transform .2s cubic-bezier(.2,.8,.2,1)}
+  
+  html.tvos .mid .week.fwide{grid-column:span 2}
+  html.tvos .week.frow4 ul{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:.4em}
+  html.tvos .week.frow4 li.fc{display:flex;flex-direction:column;align-items:center;gap:.2em;text-align:center}
+  html.tvos .week.frow4 li.fc:nth-child(n+5),html.tvos .week.frow4 li.fc .ep,html.tvos .week.frow4 li.fc .rg{display:none}
+  
+  html.row .week{position:relative}
+  html.row .week.turn{transition:opacity .25s cubic-bezier(.2,.8,.2,1)}
+  html.row .week.turnoff{opacity:0;pointer-events:none}
+  html.row.lowram .week.turn{transition:none}
+  html.row .week .turnmark{position:absolute;bottom:.5em;inset-inline-end:.9em;font-size:.8em;color:rgba(255,255,255,.62)}
+  
   html.hcard .week{background:var(--hpanel)!important;border-color:var(--hline)!important}
   html.hcard .week:not(.lf){box-shadow:none!important}   
   html.hcard[class*="cs-"] .week{background:none!important}
@@ -3002,7 +3018,36 @@ function buildCards(){
   });
   mid.classList.add('n' + CARDS.length);
   if(CARDS.length === 3) CARDS[2].el.classList.add('w3');
+  const FIT = (_Q.get('fit') || '').split(',');
+  CARDS.forEach(c => { if(FIT[c.i] === 'wide') c.el.classList.add('fwide'); if(FIT[c.i] === 'row4') c.el.classList.add('frow4'); });
   markLive();
+  rowOverflow(+(_Q.get('slots') || 3));
+}
+
+function rowOverflow(slots){
+  const root = document.documentElement, mid = document.querySelector('.mid');
+  if(!root.classList.contains('row') || !mid) return;
+  const wide = CARDS.find(c => c.el.classList.contains('fwide'));
+  if(wide) slots = Math.min(slots, 2);
+  if(slots < 1 || CARDS.length <= slots) return;
+  const fixed = wide ? [wide] : CARDS.slice(0, slots - 1), turn = CARDS.filter(c => !fixed.includes(c));
+  let col = 1;
+  fixed.forEach(c => { const span = c === wide ? 2 : 1; c.el.style.gridColumn = col + ' / span ' + span; c.el.style.gridRow = '1'; col += span; });
+  mid.style.gridTemplateColumns = 'repeat(' + col + ',minmax(0,1fr))';
+  turn.forEach((c, n) => {
+    c.el.style.gridColumn = String(col);
+    c.el.style.gridRow = '1';
+    c.el.classList.add('turn');
+    const m = document.createElement('span');
+    m.className = 'turnmark';
+    m.setAttribute('aria-hidden', 'true');
+    m.textContent = ar(n + 1) + '/' + ar(turn.length);
+    c.el.appendChild(m);
+  });
+  let k = 0;
+  const show = () => turn.forEach((c, n) => c.el.classList.toggle('turnoff', n !== k));
+  show();
+  setInterval(() => { if(document.hidden) return; k = (k + 1) % turn.length; show(); }, 20 * 1000);
 }
 
 const MIC_MARK = '<span class="micmark" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 14a3 3 0 0 0 3-3V5a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.92V21h2v-3.08A7 7 0 0 0 19 11z"/></svg></span>';
@@ -5264,6 +5309,7 @@ function addCardStyle(){
 function bootWidget(){
   document.documentElement.classList.add('widget');
   if(_Q.get('row') === '1') document.documentElement.classList.add('row');
+  if(_Q.get('tvos') === '1') document.documentElement.classList.add('tvos');
   if(CONFIG.lowram) document.documentElement.classList.add('lowram');
   addCardStyle();
   buildCards();

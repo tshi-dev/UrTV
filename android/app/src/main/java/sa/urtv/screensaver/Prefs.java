@@ -1326,8 +1326,10 @@ final class Prefs {
      * or the scenes) and «الساعة» (plain, or glass behind the photo's scenery). The presets «شكل تلفزيونك» (the default) and «شكل كنبة» set the three.
      * A layout «scenes» kept by a test build of 4.3.3 reads as our layout with the scenes and the glass clock.
      */
-    static final String[] HOME_LAYOUTS = {"classic", "couch", "football"};
-    static final String[] HOME_LAYOUT_NAMES = {"تلفزيونك", "كنبة", "كرة القدم"};
+    static final String[] HOME_LAYOUTS = {"classic", "couch", "football", "tvos"};
+    static final String[] HOME_LAYOUT_NAMES = {"تلفزيونك", "كنبة", "كرة القدم", "tvOS"};
+    /** 4.4 beta 2: «tvOS» is a layout of the full look «tvOS» only (the owner: no half look): «التخطيط» offers it only while it is the layout */
+    static final String TVOS_LAYOUT = "tvos";
     static final String[] HOME_BGS = {"photos", "scenes"};
     static final String[] HOME_BG_NAMES = {"صوري وحزم الصور", "الآفاق"};
     static final String[] HOME_CLOCKS = {"plain", "glass"};
@@ -1369,7 +1371,7 @@ final class Prefs {
     }
     static String homeLayoutLabel(String v) { int i = java.util.Arrays.asList(HOME_LAYOUTS).indexOf(v); return HOME_LAYOUT_NAMES[Math.max(0, i)]; }
     /** the look the home's cards are decided for (CardFit.LOOKS): «tvOS» with the full tvOS look, else the home's layout */
-    String cardLook() { return "tvos".equals(sp.getString("preset", "")) ? "tvos" : homeLayout(); }
+    String cardLook() { return homeLayout(); }   // 4.4 beta 2: the layout carries «tvOS» (set by the full look «tvOS»)
     String homeBg() { String v = sp.getString("homeBg", oldScenes() ? "scenes" : "photos"); return java.util.Arrays.asList(HOME_BGS).contains(v) ? v : "photos"; }
     void setHomeBg(String v) { if (java.util.Arrays.asList(HOME_BGS).contains(v)) sp.edit().putString("homeBg", v).apply(); }
     static String homeBgLabel(String v) { int i = java.util.Arrays.asList(HOME_BGS).indexOf(v); return HOME_BG_NAMES[Math.max(0, i)]; }
@@ -1431,11 +1433,12 @@ final class Prefs {
     void setUiSmooth(boolean on) { sp.edit().putBoolean("uiSmooth", on).apply(); }
     static final boolean PRESETS_REPLACE_COUCH = true;    // «أشكال جاهزة» replaces the «شكل كنبة» switch («كنبة» is the Couch look)
     static final boolean CLEAN_HIDES_BUTTONS = true;      // «صورة فقط» hides the home's round buttons (they stay in the control centre and the menu key)
-    static final String[] PRESETS = {"tv", "couch", "clean", "family", "sport", "calm"};
-    static final String[] PRESET_NAMES = {"شكلك المعتاد", "كنبة", "صورة فقط", "مواقيت يومي", "مباريات اليوم", "ليل هادئ"};
+    static final String[] PRESETS = {"tv", "couch", "tvos", "clean", "family", "sport", "calm"};
+    static final String[] PRESET_NAMES = {"شكلك المعتاد", "كنبة", "tvOS", "صورة فقط", "مواقيت يومي", "مباريات اليوم", "ليل هادئ"};
     static final String[] PRESET_ABOUT = {
         "اختياراتك كما كانت قبل أي شكل، والتطبيقات مربعات ملونة",
         "تخطيط كنبة، الآفاق، ساعة زجاجية خلف الصورة، التطبيقات أيقونات، داكن",
+        "تصميم tvOS كامل: بطاقاتك زجاجية فوق شريط tvOS، وصورك، وساعة عادية، وشاشة إعدادات tvOS",
         CLEAN_HIDES_BUTTONS ? "الصورة والساعة الزجاجية فقط، بلا بطاقات ولا تحية ولا أزرار" : "الصورة والساعة الزجاجية فقط، بلا بطاقات ولا تحية",
         "ساعة زجاجية، والصلوات الست في صف، ومواقيت اليوم في شاشة التوقف",
         "تخطيط كرة القدم، مباشر الآن ومباريات فرقك والترتيب، داكن",
@@ -1448,6 +1451,7 @@ final class Prefs {
     static final String[][] PRESET_VALUES = {
         {"classic", "photos", "plain", "tiles", null, null, null, null, null, null, null, null},
         {"couch", "scenes", "glass", "icons", null, null, null, "dark", null, "none", null, null},
+        {"tvos", "photos", "plain", "glass", null, null, null, null, null, null, null, null},
         {"classic", null, "glass", null, "none", "false", CLEAN_HIDES_BUTTONS ? "hidden" : null, null, null, "none", null, null},
         {"classic", null, "glass", null, "prayerrow", null, null, null, null, "prayers", null, null},
         {"football", null, "plain", null, "livenow,nextmatches,minitable", null, null, "dark", null, "matchday", null, null},
@@ -1597,8 +1601,14 @@ final class Prefs {
             sp.edit().putString("settingsStyle", full).apply();
         }
     }
-    /** the looks that are a whole design, with the settings screen of that design («tvOS» joins once its look and screen are approved and built) */
-    static final java.util.Map<String, String> FULL_DESIGN_STYLE = java.util.Collections.singletonMap("couch", "couch");
+    /** the looks that are a whole design, with the settings screen of that design: «كنبة» and «tvOS» (4.4 beta 2, approved and built) */
+    static final java.util.Map<String, String> FULL_DESIGN_STYLE = fullDesign();
+    private static java.util.Map<String, String> fullDesign() {
+        java.util.Map<String, String> m = new java.util.HashMap<>();
+        m.put("couch", "couch");
+        m.put("tvos", "tvos");
+        return java.util.Collections.unmodifiableMap(m);
+    }
     /** the rows changed since the look was chosen (their Arabic names), none while it is as chosen */
     List<String> presetChanged() {
         List<String> out = new ArrayList<>();

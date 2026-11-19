@@ -399,9 +399,13 @@ def glass_shots(out):
     saver("--es glasssize 100", "--es glassrows 1")
     shell("am force-stop sa.urtv.home")
     go_home()
+    shell("logcat -c")
     key(*["DPAD_LEFT"] * 14, "DPAD_CENTER")   # the last tile of the bar: «كل التطبيقات»
     time.sleep(6)
     (d / "glass-all-apps.png").write_bytes(adb("exec-out", "screencap", "-p", text=False).stdout)
+    # what happened (a picture is not a reason): the activity on top and any crash, in the log of this run
+    print("glass all apps, on top:", shell("dumpsys activity activities | grep -m 3 -E 'mResumedActivity|topResumedActivity'").strip()[:400])
+    print("glass all apps, log:", shell("logcat -d -s AndroidRuntime:E ActivityTaskManager:I UrTVHome:W | tail -n 25")[-3000:])
     key("BACK")
     time.sleep(3)
     key(*["DPAD_RIGHT"] * 14)
