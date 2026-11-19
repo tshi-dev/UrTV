@@ -3213,3 +3213,7 @@ Pictures (PC only): optimize/run/step96/pics/upd-1.png … upd-6.png.
 - Restored: card verse, home-card stocks, homelayout couch, couch on, appsstyle zoom, kickoffgoal off, kickoffend off, and the preset back to couch. Verified with `saver.sh show` against optimize/run/step98/before3/show.txt: identical except two lines: the preset label shows «couch» (not «couch (custom)» as before — the app derives «(custom)» from the values, so it may differ again), and updatechannel is «beta» (owner turned beta on himself; the original was «next»).
 - Lesson: no more blind D-pad work in the settings; only screenshot-checked steps.
 - Owner's settings are otherwise the same as the backup; the TV is back on home, muted.
+
+## Owner check after the presets and icon pictures (19 Nov)
+- Presets («المظهر ← أشكال جاهزة»): PASS. The four suggestions show; after picking one, «الحالي» appears on it.
+- Icons («شكل التطبيقات»): owner says the square icons are not nice enough. Reviewed the PC screenshots (not pushed): logos sit small inside square tiles with lots of empty space; wide logos (Netflix, mbc, Apple TV) are squeezed; the dark tiles look alike in colour; the logos are different sizes. Suggestion: same tile size, bigger logo fill, one light or uniform background instead of the mixed dark tints.
