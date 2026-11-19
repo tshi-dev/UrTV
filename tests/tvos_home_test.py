@@ -37,7 +37,7 @@ check("its picture in the app, small", (ROOT / "android/app/src/main/assets/pres
 
 # ---- the cards
 check("each slot's CardFit decision for the look and the background is a provider column (card_fit), the only copy the home and the page read",
-      '"card_fit"});' in prov and "CardFit.decide(cards.get(i), p.cardLook(), p.homeBg())" in prov and 'String cardLook() { return homeLayout(); }' in prefs
+      '"card_fit", "apps_align"});' in prov and "CardFit.decide(cards.get(i), p.cardLook(), p.homeBg())" in prov and 'String cardLook() { return homeLayout(); }' in prefs
       and 'getColumnIndex("card_fit")' in card and "CardFit" not in card.replace("CardFit:", "").replace("CardFit decision", ""))
 check("the home: the layout tvos is a row (as couch), the page told tvos, the decisions and how many show",
       'tvos = "tvos".equals(layout);' in card and "if (tvos) row = true;" in card and '"&tvos=1&fit=" + android.net.Uri.encode(fit) + "&slots=" + tvosSlots()' in card
@@ -64,6 +64,7 @@ else:
 
 # ---- a weak TV
 check("a weak TV: the focused tvOS icon grows at once like every icon (the owner, 19 Nov: no ring, so the size is the focus), the bar is a flat fill with its edge and reads no picture",
-      "float s = has ? (inDock ? (zoom ? FavBar.ZOOM_SCALE : FavBar.FOCUS_SCALE) : 1.1f) : 1f;" in main and "scaleTo(v, has ? FavBar.ZOOM_SCALE : 1f);" in main
+      "float s = has ? (inDock ? (zoom ? FavBar.ZOOM_SCALE : FavBar.FOCUS_SCALE) : 1.1f) : 1f;" in main
+      and "if (glassy && Ram.low(MainActivity.this)) { v.animate().cancel(); v.setScaleX(s); v.setScaleY(s); }" in main and "scaleTo(v, has ? FavBar.ZOOM_SCALE : 1f);" in main
       and "glassBar.flat(Ram.low(this));" in main and "if (!glassWay() || loader.isShutdown() || Ram.low(this)) return;" in main and "if (backdrop != null && !flat) {" in bar)
 sys.exit(1 if failed else 0)

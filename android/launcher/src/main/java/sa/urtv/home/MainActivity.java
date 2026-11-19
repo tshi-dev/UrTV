@@ -1890,6 +1890,7 @@ public class MainActivity extends Activity {
                 if ((dbg & DebugFlags.SHINE) == 0) shine.setAlpha(0f);   // the owner (19 Nov): no outline, the focus is the size, the lift and the shadow
                 label.animate().alpha(has ? 1f : 0f).translationY(has ? dp(4) : 0).setDuration(Motion.MS).setInterpolator(Motion.ease()).start();
             } else if ((dbg & DebugFlags.SHINE) == 0) shine.setAlpha(0f);
+            if (glassy && Ram.low(MainActivity.this)) { v.animate().cancel(); v.setScaleX(s); v.setScaleY(s); }   // 4.4 beta 2 (the owner: no outline): on a weak TV the tvOS icon grows too, set at once (nothing else shows the focus)
             if (!has) return;
             lastFocusedId = v.getId();
             optionsHint(inDock);
@@ -3489,6 +3490,7 @@ public class MainActivity extends Activity {
 
     /** The name (and the hint beside it) centred over the focused favourite, as it scrolls too; hidden when the focus is not in the bar. */
     private boolean nameShown;   // what the name row is fading to (placeName)
+    private boolean nameHiding;  // the row is fading out now (placeName runs on every scroll step: one fade, not one per step)
     private void placeName() {
         if (nameRow == null || nameRow.getWidth() == 0) return;
         View f = getCurrentFocus();
@@ -3497,7 +3499,11 @@ public class MainActivity extends Activity {
         if (appsZoom) inBar = false;   // «تكبير وظل»: the name is under the tile, not above the tray
         // this runs on every step of the tray's scroll: a new animator each step (cancel and restart, an invalidation each) is exactly what makes a scroll janky;
         // the name's fade starts only when it has to change
-        if (nameShown != inBar) { nameShown = inBar; nameRow.animate().alpha(inBar ? 1f : 0f).setDuration(FavBar.MS).start(); }
+        if (nameShown != inBar || (!inBar && nameRow.getAlpha() > 0f && !nameHiding)) {   // 4.4 beta 2: the row also fades when it was never shown (the zoom ways: it stayed beside the name over the icon)
+            nameShown = inBar;
+            nameHiding = !inBar;
+            nameRow.animate().alpha(inBar ? 1f : 0f).setDuration(FavBar.MS).withEndAction(() -> nameHiding = false).start();
+        }
         if (!inBar || nameCard == null) return;
         nameRow.setTranslationX(0);   // the name has ONE place: above the tray at its start edge (right in Arabic, left in English), never following a tile (build 180)
     }

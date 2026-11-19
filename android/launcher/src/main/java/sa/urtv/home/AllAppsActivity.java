@@ -142,7 +142,10 @@ public final class AllAppsActivity extends Activity {
         });
         panel.addView(grid, new LinearLayout.LayoutParams(-1, 0, 1f));
         setContentView(root);
-        grid.requestFocus();
+        // the keyboard only when the person goes to the search (the emulator: it opened with the window, and Back closed only it)
+        getWindow().setSoftInputMode(android.view.WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+        search.setFocusable(true);
+        search.setFocusableInTouchMode(false);
         load();
     }
 
@@ -163,7 +166,13 @@ public final class AllAppsActivity extends Activity {
                 got.add(it);
             }
             Collections.sort(got, (x, y) -> x.label.compareToIgnoreCase(y.label));
-            runOnUiThread(() -> { if (!alive) return; all.clear(); all.addAll(got); filter(null); });
+            runOnUiThread(() -> {
+                if (!alive) return;
+                all.clear();
+                all.addAll(got);
+                filter(null);
+                grid.post(() -> { if (alive && !shown.isEmpty()) { grid.setSelection(0); grid.requestFocus(); } });   // the first app has the focus once there is one (an empty grid could not take it)
+            });
             int size = FavBar.glassCell(getResources().getDisplayMetrics().heightPixels, 1.25f);
             for (int i = 0; i < got.size() && alive; i++) {
                 Item it = got.get(i);

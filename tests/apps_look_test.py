@@ -49,7 +49,7 @@ else:
     g = geo[(1080, "icons")]
     check("B at 1080: a 112 square, radius 24, 40 apart", g["cell"] == 112 and g["aspect"] == 1 and g["radius"] == 24 and g["gap"] == 40, g)
     g = geo[(1080, "tiles")]
-    check("C at 1080: today's tray, 304×170 tiles, 218 high", g["cell"] == 304 and g["row"] == 218, g)
+    check("C at 1080: today's tray, 304×170 tiles, 226 high (4.4 beta 2: room for the ×1.14 focus)", g["cell"] == 304 and g["row"] == 226, g)
     for h in (1080, 720):
         for way in ("banners", "icons", "tiles"):
             g = geo[(h, way)]
