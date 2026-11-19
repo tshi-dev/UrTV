@@ -468,8 +468,40 @@ function honLeague(v, id, tab){
   return v.season && v.season !== cur ? {pins, groups: tab ? honResults(v, id) : honTable(v, id)} : {pins};
 }
 
+// ---- 4.4 beta 2 «رياضي»: the top of every league the person follows, from the files the TV already has: the archive's sports/<id>.json
+// (a league's table, computed from its games), else TheSportsDB's table of the season the page's games say. Never invented: a league with
+// neither is left out; a cup has no table. {ready, leagues: [{id, name, season, round, asOf, src, rows: [{rank, id, name, pts, p}]}]};
+// ready is false while a file is still asked (the card is drawn again when it answers: archDrawn)
+function spTops(n){
+  n = Math.max(1, Math.min(+n || 3, 10));
+  let ready = true;
+  const ids = [...new Set(CONFIG.leagues.map(x => catId(x) || (LEAGUE_DATA[x] && ((LEAGUE_DATA[x].events || []).find(e => e && e.idLeague) || {}).idLeague)).filter(Boolean).map(String))];
+  const leagues = [];
+  ids.forEach(id => {
+    const sp = archWant('sports/' + id + '.json');
+    if(sp === undefined){ ready = false; return; }
+    const own = sp && !sp.cup && Array.isArray(sp.table) ? sp.table.filter(r => r && /^\d+$/.test(String(r.id)) && +r.p > 0) : [];
+    if(own.length){
+      const last = ((sp.last || []).map(g => g && g.t).filter(Boolean).sort().pop()) || sp.updated || '';
+      leagues.push({id, name: lgName(id), season: String(sp.season || ''), round: Math.max(...own.map(r => +r.p || 0)), asOf: last, src: 'archive',
+        rows: own.slice(0, n).map((r, i) => ({rank: i + 1, id: String(r.id), name: clubNm(r.ar, r.n, String(r.id)), pts: +r.pts || 0, p: +r.p || 0}))});
+      return;
+    }
+    if(sp && sp.cup) return;
+    const g = fbGames().find(ev => String(ev.idLeague) === id && ev.strSeason), u = g ? tableUrl(id, String(g.strSeason)) : '';
+    const t = u ? archWant(u) : null;
+    if(t === undefined){ ready = false; return; }
+    const rows = ((t && Array.isArray(t.table) && t.table) || []).filter(x => x && /^\d+$/.test(String(x.idTeam)) && +x.intRank > 0 && +x.intPlayed > 0)
+      .sort((a, b) => +a.intRank - +b.intRank);
+    if(rows.length) leagues.push({id, name: lgName(id), season: String(g.strSeason), round: Math.max(...rows.map(x => +x.intPlayed || 0)), asOf: String(rows[0].dateUpdated || ''),
+      src: 'thesportsdb', rows: rows.slice(0, n).map(x => ({rank: +x.intRank, id: String(x.idTeam), name: teamAr(x.strTeam, String(x.idTeam)), pts: +x.intPoints || 0, p: +x.intPlayed || 0}))});
+  });
+  return {ready, leagues};
+}
+
 SPORTS = {
   stamp: SP_STAMP,
+  tops: spTops,
   // 4.5 the honours: the league and club pages', and named parts for the league page v2's cards (docs/research/LEAGUE-V2-PHASE-A-PLAN.md §3c),
   // each card gated on has(id) so none is ever empty
   hon: {league: honLeague, club: honClub, has: honHas, champList: honChampList, champRow: honChampRow, top: honTop, scorers: honScorers,
