@@ -101,6 +101,7 @@ python3 tests/appearance_test.py   # the look and backgrounds page
 python3 tests/sync_look_test.py   # 4.3 «توحيد المظهر»: one material for the home's upper buttons, cards and apps bar in every look; off, each on its own
 python3 tests/home_packs_test.py   # photo packs on the home, shuffled
 python3 tests/update_notice_test.py   # the home offers the update screen when the screensaver is older or a newer build is out
+python3 tests/update_optional_test.py   # 4.4 R-288: an optional package whose file is absent at the release (the add-on on apk-beta) is skipped, never counted as behind and never a failed download
 python3 tests/shuffle_test.py   # the photo rotation is shuffled across «صورنا» and the packs
 python3 tests/reboot_test.py
 python3 tests/tv_identity_test.py
