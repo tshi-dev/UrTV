@@ -39,6 +39,9 @@ ucl = "| top_goal_scorer = {{nowrap|[[Erling Haaland]] ([[Manchester City F.C.|M
 check("a club in brackets after the player is not a player (UCL's infobox)", h.scorer_value(h.field(ucl, h.SCORER_FIELD["en"])[1]) == {"names": [("Erling Haaland", "Erling Haaland")], "goals": 12})
 check("two goal counts in one field: not plain, nothing said", h.scorer_value("[[A]] (20 goals)<br>[[B]] (16 goals)") is None)
 check("no player linked: nothing said (an unlinked text is not trusted)", h.scorer_value("Kodjo Laba (28 goals)") is None)
+check("an infobox on one line («| champions = | relegated = …»): an empty champion stays empty, never the next field",
+      h.field("{{Infobox | champions = | relegated = [[Al-Hazem]] }}", h.CHAMP_FIELD["en"]) == (None, "")
+      and h.champion_value("| relegated =") == "")
 check("the club's Arabic label without «نادي»", h.ar_club("نادي الهلال") == "الهلال" and h.ar_club("النادي الأهلي") == "الأهلي")
 
 # ---- season keys
@@ -93,6 +96,16 @@ dup = items + [item("Q26b", "2025-08-02", "2026-05-30", ["QN"])]
 body6, rep6 = h.champions("4668", dup, ARCH, LAB, WP, NAMES)
 check("two items for one season: the first kept, in the report, not complete", not body6["complete"] and any(r["why"] == "two Wikidata items for one season" for r in rep6), rep6)
 check("an old season no source names: not complete", not body4["complete"] and any(r["why"] == "no source names a champion" for r in rep4), rep4)
+
+under = items + [item("Q27", "2026-08-01", "2027-05-30", [], en="2026–27 Saudi Pro League")]
+WPU = {"en": dict(WP["en"], **{"2026–27 Saudi Pro League": EN}), "ar": {}}
+body7, _ = h.champions("4668", under, ARCH, LAB, WPU, NAMES)
+check("the season under way: its article's infobox never names a champion (run 1 named «relegated =» for 2026-27)", "2026-2027" not in [r["s"] for r in body7["seasons"]],
+      [r["s"] for r in body7["seasons"]][:3])
+tmpi = Path(tempfile.mkdtemp())
+(tmpi / "index.json").write_text(json.dumps({"teams": {"136014": {"en": "Al-Nassr", "ar": "النصر", "leagues": ["4668"]}, "900": {"en": "Other", "ar": "آخر", "leagues": ["4328"]}}}))
+check("the clubs' names from the archive's index, this league's only (urtv-data has no sports/ files yet: run 1 had no ids)",
+      h.archive_names(tmpi, "4668") == {"136014": ("Al-Nassr", "النصر")})
 
 # ---- scorers
 SI = [item("Q23", "2023-08-01", "2024-05-30", ar="الدوري 2023–24", en="2023–24 Saudi Pro League"),

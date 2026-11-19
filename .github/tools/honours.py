@@ -204,8 +204,9 @@ def ar_club(s):
 def field(wt, names):
     """the first infobox parameter called one of names, with a value: (name, its raw value) or (None, "")"""
     for m in re.finditer(r"\n\s*\|\s*([^=\n|]{2,40}?)\s*=\s*([^\n]*)", "\n" + (wt or "")):
-        if re.fullmatch(f"(?:{names})", m.group(1).strip(), re.I) and m.group(2).strip():
-            return m.group(1).strip(), m.group(2)
+        v = re.split(r"\s\|\s*[^=|\[\]{}<>]{2,40}?\s*=", m.group(2))[0]   # «| champions = | relegated = …» on one line: the next field is not the value
+        if re.fullmatch(f"(?:{names})", m.group(1).strip(), re.I) and v.strip() and not v.strip().startswith("|"):
+            return m.group(1).strip(), v
     return None, ""
 
 
@@ -250,7 +251,7 @@ def champion_value(v):
     if ls:
         return ls[0][1]
     t = re.sub(r"\s+", " ", re.sub(r"\(.*?\)|\[|\]", "", _plain(v))).strip()
-    return t if 0 < len(t) < 60 else ""
+    return t if 0 < len(t) < 60 and not re.search(r"[=|{}]", t) else ""
 
 
 AR_STOP = {"نادي", "النادي", "سبورت", "الرياضي", "السعودي", "لكرة", "القدم", "إف", "سي", "اف", "إس"}
@@ -273,6 +274,14 @@ def season_key(start, end, archive_seasons):
         if k in archive_seasons:
             return k
     return own
+
+
+def season_over(it, today=None):
+    """the season has ended: its end date passed, or with no end date it began more than 330 days ago"""
+    today = today or dt.date.today()
+    if it.get("end"):
+        return it["end"] < today.isoformat()
+    return bool(it.get("start")) and it["start"] < (today - dt.timedelta(days=330)).isoformat()
 
 
 def year_of(s):
@@ -302,12 +311,12 @@ def champions(lg, items, archive, lab, wp, names):
         if len(wins) == 1:
             wd = wins[0]
             src.append("wikidata"); en.append(lab[wd]["en"]); arn.append(lab[wd]["ar"])
-        elif not it["win"]:
+        elif not it["win"] and season_over(it):   # a season under way has no champion, whatever its article's infobox says
             for wiki in ("en", "ar"):
                 v = champion_value(field(wp.get(wiki, {}).get(it[wiki]), CHAMP_FIELD[wiki])[1]) if it[wiki] else ""
                 if v:
                     src.append("wikipedia-" + wiki)
-                    (en if wiki == "en" else arn).append(v)
+                    (en if wiki == "en" else arn).append(v if wiki == "en" else ar_club(v))
         seasons[s] = {"s": s, "start": it["start"], "src": src, "en": [x for x in en if x], "ar": [x for x in arn if x], "wd": wd, "item": True, "q": it["q"],
                       "url": [f"https://{w}.wikipedia.org/wiki/" + urllib.parse.quote(it[w].replace(" ", "_")) for w in ("ar", "en") if it[w]]}
     for s, c in arch.items():
@@ -332,7 +341,7 @@ def champions(lg, items, archive, lab, wp, names):
             continue
         c = e.get("arch")
         cid = c["id"] if c else unique_id(en, names)
-        row = {"s": s, "en": en[0] if en else "", "ar": (c or {}).get("ar") or (names.get(cid, ("", ""))[1] if cid else "") or (arn[0] if arn else ""),
+        row = {"s": s, "en": en[0] if en else "", "ar": (c or {}).get("ar") or (names.get(cid, ("", ""))[1] if cid else "") or (ar_club(arn[0]) if arn else ""),
                "src": "+".join(sorted(set(x.split("-")[0] for x in e["src"])))}
         if cid:
             row["id"] = cid
@@ -380,9 +389,7 @@ def unique_id(en_names, names):
 def scorers(lg, items, archive, lab, wp, ar_of_title):
     """(the league's scorers file body, report lines): the last SCORER_SEASONS seasons that have begun"""
     arch_seasons = set((archive or {}).get("seasons") or [])
-    today = dt.date.today()
-    over = lambda it: (it["end"] and it["end"] < today.isoformat()) or (not it["end"] and it["start"] < (today - dt.timedelta(days=330)).isoformat())
-    recent = [it for it in items if it["start"] and over(it)][-SCORER_SEASONS:]   # finished seasons: a top scorer «so far» goes stale in a week
+    recent = [it for it in items if it["start"] and season_over(it)][-SCORER_SEASONS:]   # finished seasons: a top scorer «so far» goes stale in a week
     seasons, report = {}, []
     for it in recent:
         s = season_key(it["start"], it["end"], arch_seasons)
@@ -438,8 +445,11 @@ def load_json(p):
 
 
 def archive_names(adir, lg):
-    """{club id: (its English name, its Arabic name)} from the league's tables (the current and the past seasons the archive keeps)"""
+    """{club id: (its English name, its Arabic name)}: the archive's index (every club it keeps, with its leagues), then the league's tables"""
     names = {}
+    for cid, t in (((load_json(Path(adir) / "index.json") or {}).get("teams")) or {}).items():
+        if isinstance(t, dict) and lg in (t.get("leagues") or []) and t.get("en"):
+            names[str(cid)] = (t["en"], t.get("ar") or "")
     files = [Path(adir) / f"sports/{lg}.json"] + sorted((Path(adir) / f"sports/{lg}").glob("*.json"))
     for f in files:
         for r in ((load_json(f) or {}).get("table") or []):

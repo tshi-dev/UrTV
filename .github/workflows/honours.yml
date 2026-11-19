@@ -35,10 +35,12 @@ jobs:
         run: |
           mkdir -p archive prev out
           t=$(mktemp -d)
-          if git fetch -q --depth=1 https://github.com/tshi-dev/urtv-data data 2>/dev/null && git archive FETCH_HEAD football/archive/sports | tar -x -C "$t"; then
+          if git fetch -q --depth=1 https://github.com/tshi-dev/urtv-data data 2>/dev/null && git archive FETCH_HEAD football/archive/index.json | tar -x -C "$t"; then
+            git archive FETCH_HEAD football/archive/sports 2>/dev/null | tar -x -C "$t" || echo "urtv-data has no sports/ yet: names from its index"
             cp -r "$t/football/archive/." archive/ && echo "urtv-data's archive"
           else
-            git fetch -q --depth=1 origin data-archive && git archive FETCH_HEAD sports | tar -x -C archive && echo "data-archive"
+            git fetch -q --depth=1 origin data-archive && git archive FETCH_HEAD index.json | tar -x -C archive && echo "data-archive"
+            git archive FETCH_HEAD sports 2>/dev/null | tar -x -C archive || echo "no sports/ in data-archive yet"
           fi
           git fetch -q --depth=1 origin data-honours 2>/dev/null && git archive FETCH_HEAD | tar -x -C prev || echo "no data-honours yet"
       - run: python3 -u .github/tools/honours.py --archive archive --prev prev --out out
