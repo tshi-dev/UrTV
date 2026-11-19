@@ -45,10 +45,19 @@ final class LeagueGroups {
 
     /** the search: every word of the query is in the Arabic or the English name (case and the Arabic tatweel/hamza forms ignored); a query shorter than 2 letters matches all */
     static boolean matches(String query, String... names) {
-        String q = fold(query);
-        if (q.length() < 2) return true;
+        return matchesFolded(fold(query), folded(names));
+    }
+
+    /** 4.4 beta 2 (the owner: the screen froze as he typed): a row's names folded once, when the list is read, not at every key */
+    static String folded(String... names) {
         StringBuilder all = new StringBuilder();
         for (String n : names) all.append(' ').append(fold(n));
+        return all.toString();
+    }
+
+    /** the same test on a query and names already folded (fold, folded) */
+    static boolean matchesFolded(String q, String all) {
+        if (q.length() < 2) return true;
         for (String w : q.split(" ")) if (!w.isEmpty() && all.indexOf(w) < 0) return false;
         return true;
     }

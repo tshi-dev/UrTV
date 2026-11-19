@@ -5368,7 +5368,11 @@ function mpAge(){
   const m = Math.round((Date.now() - at) / 60000);
   return esc(m < 60 ? fw(FB_W.ago, qty(Math.max(1, m), UNIT.min)) : fmtAgo(at)) + ' ' + src;
 }
+const MP_WIN = 60;   // 4.4 beta 2: rows drawn each side of the focus in a long list
+let mpQT = 0;          // 4.4 beta 2: the search field's draw waits for the typing to rest (MP_Q_MS)
+const MP_Q_MS = 150;
 function mpRender(){
+  clearTimeout(mpQT); mpQT = 0;
   if(!document.getElementById('mp')) return;
   const now = Date.now(), t = cityToday(now), V = MP.view ? mpView(MP.view) : null;
   MP.days = [-1, 0, 1, 2, 3, 4, 5].map(n => fbDayAdd(t, n));
@@ -5400,8 +5404,12 @@ function mpRender(){
   setHTML(document.getElementById('mp-side'), MP.leagues.map((g, i) =>
     `<li class="${(g.pick ? g.sel : i === MP.l) ? 'on' : ''}${g.pin ? ' pin' : ''}${MP.zone === 'leagues' && i === MP.l ? ' f' : ''}"><span>${esc(g.side || g.name)}</span><i>${g.pin ? fbGlyph('star') : g.pick ? esc(g.mark || '') : ar(g.count != null ? g.count : g.games.length)}</i></li>`).join(''));
   let n = 0;
+  // 4.4 beta 2 (the owner, build 570: «it freezes»): a long list (the chooser's 800 leagues) is drawn around the focus only, MP_WIN rows each side;
+  // each row keeps its number (data-r), so the focus and the keys are the same as with the whole list
+  const lo = MP.rows.length > MP_WIN * 2 + 20 ? Math.max(0, Math.min(MP.r - MP_WIN, MP.rows.length - MP_WIN * 2)) : 0, hi = lo ? lo + MP_WIN * 2 : MP.rows.length > MP_WIN * 2 + 20 ? MP_WIN * 2 : MP.rows.length;
+  const rowAt = (ev, i, g) => i < lo || i >= hi ? '' : ev.it ? mpItemRow(ev, i) : mpRow(ev, now, i, g.dated ? 2 : g.more);
   setHTML(document.getElementById('mp-list'), shown.length ? shown.map(g => `<section data-g="${esc(g.key)}"><h2>${g.nameHtml || esc(g.name)}</h2>`
-    + (g.games.length ? '<ul>' + g.games.map(ev => ev.it ? mpItemRow(ev, n++) : mpRow(ev, now, n++, g.dated ? 2 : g.more)).join('') + '</ul>' : '')
+    + (g.games.length ? '<ul>' + g.games.map(ev => rowAt(ev, n++, g)).join('') + '</ul>' : '')
     + (g.loading ? `<div class="fnone">${esc(matchesEmptyText())}</div>` : '') + (g.none && !g.games.length ? `<div class="fnone">${esc(g.none)}</div>` : '')
     + (g.foot ? `<div class="mpsrc">${esc(g.foot)}</div>` : '') + '</section>').join('')   // 4.5 a list's source (the honours)
     : `<div class="fnone">${V ? esc(V.empty || FB_W.noData) : MATCHES_LOADED && !(MP.wait && MP.day < t) ? fbNone(MP.day) : matchesEmptyText()}</div>`);
@@ -5682,6 +5690,7 @@ function mpKey(e){
   if(MP.zone !== 'days' && !MP.rows.length) MP.zone = 'days';   // a day with no game: the days are where the focus is
   if(MP.zone === 'days' && MP.tabs){   // a view's strip: its actions (◀ ▶ walk them, OK does one); the search field keeps its keys
     if(e.target && e.target.id === 'mp-q' && !['ArrowDown', 'ArrowUp', 'Enter'].includes(k)) return;
+    if(mpQT && e.target && e.target.id === 'mp-q') mpRender();   // a search still waiting: drawn now, so ▼ and OK act on its results
     if(k === fwd) MP.d = Math.min(MP.tabs.length - 1, MP.d + 1); else if(k === back) MP.d = Math.max(0, MP.d - 1);
     else if(k === 'ArrowDown' || (k === 'Enter' && e.target && e.target.id === 'mp-q')) MP.zone = MP.rows.length ? 'rows' : MP.leagues.length ? 'leagues' : 'days';
     else if(ok){ const x = MP.tabs[MP.d]; e.preventDefault(); if(x && x.act) x.act(); return; }
@@ -5721,7 +5730,7 @@ function bootMatchPage(){
   document.documentElement.style.setProperty('--u', (innerWidth / 1920) + 'px');
   addEventListener('resize', () => document.documentElement.style.setProperty('--u', (innerWidth / 1920) + 'px'));
   addEventListener('keydown', mpKey);
-  addEventListener('input', e => { if(e.target && e.target.id === 'mp-q'){ MP.q = e.target.value.slice(0, 40); MP.r = 0; mpRender(); } });
+  addEventListener('input', e => { if(e.target && e.target.id === 'mp-q'){ MP.q = e.target.value.slice(0, 40); MP.r = 0; clearTimeout(mpQT); mpQT = setTimeout(mpRender, MP_Q_MS); } });   // 4.4 beta 2: not a draw per key
   const want = _Q.get('event');   // OK on a game of the home: its card opens at once
   mpRender();
   const openWanted = () => { if(want && !MP.detail){ const ev = fbGames().find(x => String(x.idEvent) === want); if(ev){ MP.day = fbDayOf(fbKick(ev)); MP.picked = true; mpRender(); MP.r = MP.rows.indexOf(ev); mpOpen(ev); } } };

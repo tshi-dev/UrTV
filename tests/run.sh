@@ -363,6 +363,7 @@ python3 tests/home_snapshot_test.py   # The home's stand-in picture (HomeSnapsho
 python3 tests/idle_rule_test.py   # «تبدأ شاشة التوقف بعد 2147483 ثانية» (user report): the TV's idle delay was 2147483647 (Integer.MAX: the TV tu
 python3 tests/install_saver_test.py   # 4.3.2 «ثبّت الجزء الثاني»: a TV with only the home (a Fire TV, or installed with Downloader) must never meet a
 python3 tests/league_groups_test.py   # 4.3.1 «البطولات الكبرى» and «اختر دورياتك»: the big tournaments' list is one data file that resolves against t
+python3 tests/add_lag_test.py   # 4.4 beta 2: adding leagues and clubs never freezes (the search waits, folds once, ticks in place, off the UI thread)
 python3 tests/match_teams_button_test.py   # 4.3.1: «فرقي» in the matches page's header opens the settings' teams chooser (the page is made again on return
 python3 tests/net_test.py   # Net: the small GET the apps use for their own data files (IPv4 first, 4 s per address, a deadline, a size cap,
 python3 tests/phone_room_test.py   # «اللعب بالجوالات»: the generic phone room of the party games and the game-only server on a plain JVM (tests/Ph
@@ -444,6 +445,7 @@ node tests/sports_hist.test.mjs   # 4.4 the league page's table from the archive
 node tests/honours.test.mjs   # 4.5 the league page's seasons, «الأبطال», «الهدّافون» with their source, the club page's titles (docs/HONOURS-STUDY.md)
 node tests/sport_tops.test.mjs   # «رياضي»: SPORTS.tops(n), the top of every followed league from the files the TV has, never invented
 node tests/matches_archive.test.mjs   # «المباريات» with the match archive (data-archive): every followed team, yesterday's results, a club, a league, the chooser
+node tests/add_lag.test.mjs   # 4.4 beta 2: the page's chooser of 800 leagues draws round the focus; the club search draws once the typing rests
 node tests/phone_page.test.mjs
 node tests/sync_cards.test.mjs   # «توحيد المظهر» on the page: the cards in the material's fill, line and ink, readable on a light look
 node tests/couch_row.test.mjs   # 4.4 the page: «كنبة» (#row=1, the cards in one strip above the tray) and «مربعات» (today's prayers as boxes in a row, the next one lit with its countdown)

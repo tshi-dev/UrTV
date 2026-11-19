@@ -31,6 +31,9 @@ import java.util.Map;
  * tournaments as ticks the person can untick one by one), «السعودية», «أوروبا», «آسيا وأفريقيا», «العالم»; each row is a tick and the Arabic name; the count of the chosen leagues
  * (up to Prefs.MAX_LEAGUES, past Prefs.SOFT_LEAGUES after one warning) is in the header. Without a search a section shows the built-in leagues and the catalogue's best-known ones (top), with a search all of the catalogue.
  * The same settings as before (Prefs.leagues, Prefs.tournaments, Prefs.tournamentsOff); the big tournaments' list is assets/shared/tournaments.json.
+ * 4.4 beta 2 (the owner, build 570: «it freezes, the search lags»): the list was built again, every row and its glass, at each key and each tick. Now the
+ * search waits for the typing to rest (SEARCH_MS) and runs on names folded once (LeagueGroups.folded), the chosen leagues are read once a draw, a
+ * tick changes its own row (the focus stays), and a search shows at most MAX_FOUND of the catalogue's leagues, then says to type more.
  */
 public class LeaguesActivity extends Activity {
     @Override
@@ -53,7 +56,13 @@ public class LeaguesActivity extends Activity {
     private final Map<String, Typeface> fonts = new HashMap<>();
     private List<String[]> tournaments = new ArrayList<>();   // {id, ar, en}
     private List<String[]> catalogue = new ArrayList<>();     // {id, en, ar, country, country_ar, sport, top}
-    private String query = "";
+    private String query = "", drawn = null;   // drawn: the folded query the list shows (the same query is not drawn again)
+    static final long SEARCH_MS = 250;
+    static final int MAX_FOUND = 60;
+    private final android.os.Handler h = new android.os.Handler(android.os.Looper.getMainLooper());
+    private final Runnable searchNow = () -> { if (!isFinishing()) fill(); };
+    private List<String> foldedCat = new ArrayList<>();   // each catalogue row's names, folded once
+    private List<String> chosenNow = new ArrayList<>();    // prefs.leagues(), read once a draw
     private TextView countView;
     private EditText search;
 
@@ -64,7 +73,7 @@ public class LeaguesActivity extends Activity {
         prefs = new Prefs(this);
         tournaments = readTournaments();
         java.io.File cache = new java.io.File(getCacheDir(), "league-catalogue.json");
-        if (cache.isFile()) catalogue = SettingsActivity.catalogueRows(SettingsActivity.readFile(cache));
+        if (cache.isFile()) setCatalogue(SettingsActivity.catalogueRows(SettingsActivity.readFile(cache)));
         root = new FrameLayout(this);
         root.setLayoutDirection(Dir.layout());
         look = GlassSource.page(this, root);
@@ -99,7 +108,7 @@ public class LeaguesActivity extends Activity {
         search.addTextChangedListener(new TextWatcher() {
             @Override public void beforeTextChanged(CharSequence s, int a, int b2, int c) { }
             @Override public void onTextChanged(CharSequence s, int a, int b2, int c) { }
-            @Override public void afterTextChanged(Editable s) { query = s.toString(); fill(); }
+            @Override public void afterTextChanged(Editable s) { query = s.toString(); h.removeCallbacks(searchNow); h.postDelayed(searchNow, SEARCH_MS); }
         });
         col.addView(search, line(dp(12)));
         list = new LinearLayout(this);
@@ -119,9 +128,22 @@ public class LeaguesActivity extends Activity {
         if (!catalogue.isEmpty() && System.currentTimeMillis() - cache.lastModified() < CatalogueLeagues.FRESH_MS) return;
         new Thread(() -> {
             final List<String[]> got = SettingsActivity.catalogueRows(SettingsActivity.fetchCatalogue(cache));
-            runOnUiThread(() -> { if (!isFinishing() && !got.isEmpty()) { catalogue = got; fill(); } });
+            final List<String> folded = foldAll(got);   // off the UI thread too
+            runOnUiThread(() -> { if (!isFinishing() && !got.isEmpty()) { catalogue = got; foldedCat = folded; drawn = null; fill(); } });
         }, "catalogue").start();
     }
+
+    private void setCatalogue(List<String[]> rows) { catalogue = rows; foldedCat = foldAll(rows); }
+
+    /** {id, en, ar, country, country_ar, sport, top}: the names a search looks in, folded once */
+    static List<String> foldAll(List<String[]> rows) {
+        List<String> out = new ArrayList<>(rows.size());
+        for (String[] r : rows) out.add(LeagueGroups.folded(r[2], r[1], r[4], r[3]));
+        return out;
+    }
+
+    @Override
+    protected void onDestroy() { h.removeCallbacks(searchNow); super.onDestroy(); }
 
     private List<String[]> readTournaments() {
         List<String[]> out = new ArrayList<>();
@@ -140,11 +162,14 @@ public class LeaguesActivity extends Activity {
     private String name(String ar, String en) { return S.en() ? (en.isEmpty() ? ar : en) : (ar.isEmpty() ? en : ar); }
 
     private boolean chosen(String stored) {
-        for (String s : prefs.leagues()) if (CatalogueLeagues.same(s, stored)) return true;
+        for (String s : chosenNow) if (CatalogueLeagues.same(s, stored)) return true;
         return false;
     }
 
-    private void toggleLeague(String stored) {
+    private void toggleLeague(String stored) { toggleLeague(stored, null); }
+
+    /** a league ticked or unticked: its own row changes (tag), the count with it; the whole list is drawn again only when the row is not there */
+    private void toggleLeague(String stored, String tag) {
         List<String> v = new ArrayList<>(prefs.leagues());
         boolean had = false;
         for (int i = v.size() - 1; i >= 0; i--) if (CatalogueLeagues.same(v.get(i), stored)) { v.remove(i); had = true; }
@@ -153,7 +178,7 @@ public class LeaguesActivity extends Activity {
             if (st == FollowLimit.FULL) { dialog().setTitle(FollowLimit.full(FollowLimit.LEAGUES)).setPositiveButton("حسنًا", null).show(); return; }
             if (st == FollowLimit.WARN) {
                 dialog().setTitle(FollowLimit.warning(FollowLimit.LEAGUES))
-                    .setPositiveButton("أضف", (d, w) -> { prefs.setFollowWarned(FollowLimit.LEAGUES); toggleLeague(stored); })
+                    .setPositiveButton("أضف", (d, w) -> { prefs.setFollowWarned(FollowLimit.LEAGUES); toggleLeague(stored, tag); })
                     .setNegativeButton("لا", null)
                     .show();
                 return;
@@ -161,12 +186,22 @@ public class LeaguesActivity extends Activity {
             v.add(stored);
         }
         prefs.setList("leagues", v);
-        fill();
+        chosenNow = prefs.leagues();
+        View row = tag == null ? null : list.findViewWithTag(tag);
+        if (row instanceof LinearLayout) { paintTick((LinearLayout) row, !had); showCount(); }
+        else fill();
+    }
+
+    private void showCount() {
+        countView.setText(S.t("اخترت %s من %s", String.valueOf(chosenNow.size()), String.valueOf(Prefs.MAX_LEAGUES)));   // 4.4 of the ceiling (24); past 8 the warning says the rest
     }
 
     private WordsBuilder dialog() { return new WordsBuilder(this, look.light ? R.style.UrDialogLight : R.style.UrDialog); }
 
     private void fill() {
+        h.removeCallbacks(searchNow);
+        drawn = LeagueGroups.fold(query);
+        chosenNow = prefs.leagues();
         View focused = getCurrentFocus();
         Object want = focused == null ? null : focused.getTag();
         list.removeAllViews();
@@ -183,9 +218,13 @@ public class LeaguesActivity extends Activity {
             final boolean ticked = !off.contains(t[0]);
             list.addView(row("tour:" + t[0], on && ticked, name(t[1], t[2]), "", v -> {
                 List<String> now = new ArrayList<>(prefs.tournamentsOff());
-                if (!now.remove(t[0])) now.add(t[0]);
+                boolean was = now.remove(t[0]);
+                if (!was) now.add(t[0]);
                 prefs.setTournamentsOff(now);
-                fill();
+                paintTick((LinearLayout) v, prefs.tournaments() && was);   // its own row, and the switch's count
+                View all = list.findViewWithTag("tour:all");
+                if (all instanceof LinearLayout && ((LinearLayout) all).getChildCount() > 2)
+                    ((TextView) ((LinearLayout) all).getChildAt(2)).setText(conv(S.t("%s من %s", String.valueOf(LeagueGroups.onCount(ids, now)), String.valueOf(ids.size()))));
             }), line(dp(8)));
         }
         // the four sections: the built-in leagues, then the catalogue's
@@ -193,24 +232,31 @@ public class LeaguesActivity extends Activity {
         for (int i = 0; i < 4; i++) sections.add(new ArrayList<View>());
         for (final String[] l : Prefs.LEAGUES) {
             if (!LeagueGroups.matches(query, l[1], l[0])) continue;
-            sections.get(LeagueGroups.ofBuiltIn(l[0])).add(row("lg:" + l[0], chosen(l[0]), l[1], "", v -> toggleLeague(l[0])));
+            sections.get(LeagueGroups.ofBuiltIn(l[0])).add(row("lg:" + l[0], chosen(l[0]), l[1], "", v -> toggleLeague(l[0], "lg:" + l[0])));
         }
-        for (final String[] r : catalogue) {   // {id, en, ar, country, country_ar, sport, top}
+        int found = 0;
+        boolean more = false;
+        for (int k = 0; k < catalogue.size(); k++) {   // {id, en, ar, country, country_ar, sport, top}
+            final String[] r = catalogue.get(k);
             if (!"Soccer".equals(r[5]) && !r[5].isEmpty()) continue;
             if (ids.contains(r[0]) || builtInHas(r[1]) || (!searching && r[6].isEmpty())) continue;
-            if (searching && !LeagueGroups.matches(query, r[2], r[1], r[4], r[3])) continue;
+            if (searching && !LeagueGroups.matchesFolded(drawn, k < foldedCat.size() ? foldedCat.get(k) : LeagueGroups.folded(r[2], r[1], r[4], r[3]))) continue;
             final String stored = CatalogueLeagues.entry(r[0], r[2], r[1]);
             if (stored == null) continue;
+            if (searching && found >= MAX_FOUND) { more = true; break; }   // a short query matches hundreds: the first ones, and «type more»
+            found++;
             String shown = name(r[2], r[1]);
-            sections.get(LeagueGroups.ofCountry(r[3])).add(row("lg:id" + r[0], chosen("id" + r[0]), shown, S.en() || r[4].isEmpty() ? r[3] : r[4], v -> toggleLeague(stored)));
+            final String tag = "lg:id" + r[0];
+            sections.get(LeagueGroups.ofCountry(r[3])).add(row(tag, chosen("id" + r[0]), shown, S.en() || r[4].isEmpty() ? r[3] : r[4], v -> toggleLeague(stored, tag)));
         }
         for (int i = 0; i < 4; i++) {
             if (sections.get(i).isEmpty()) continue;
             list.addView(section(S.tv(TITLES[i])), line(dp(8)));
             for (View v : sections.get(i)) list.addView(v, line(dp(8)));
         }
+        if (more) list.addView(text(S.t("اكتب أكثر لترى بقية النتائج"), 18, "Regular", look.sub), line(dp(8)));
         if (searching && list.getChildCount() == 0) list.addView(text(S.t("لا توجد نتائج"), 18, "Regular", look.sub), line(dp(8)));
-        countView.setText(S.t("اخترت %s من %s", String.valueOf(prefs.leagues().size()), String.valueOf(Prefs.MAX_LEAGUES)));   // 4.4 of the ceiling (24); past 8 the warning says the rest
+        showCount();
         if (want != null && !(want instanceof String && ((String) want).isEmpty())) { View again = list.findViewWithTag(want); if (again != null) again.requestFocus(); }
     }
 
@@ -232,13 +278,9 @@ public class LeaguesActivity extends Activity {
         v.setLayoutDirection(Dir.layout());
         v.setGravity(Gravity.CENTER_VERTICAL);
         v.setPadding(dp(16), dp(10), dp(16), dp(10));
-        TextView tick = text(on ? "✓" : "", 22, "Medium", on ? look.base : look.text);
+        TextView tick = text("", 22, "Medium", look.text);
         tick.setGravity(Gravity.CENTER);
-        GradientDrawable g = new GradientDrawable();
-        g.setCornerRadius(dp(8));
-        g.setStroke(dp(3), look.sub);
-        if (on) g.setColor(look.accent);
-        tick.setBackground(g);
+        drawTick(tick, on);
         v.addView(tick, new LinearLayout.LayoutParams(dp(36), dp(36)));
         TextView n = text(name, 20, "Medium", look.text);
         LinearLayout.LayoutParams np = new LinearLayout.LayoutParams(0, -2, 1f);
@@ -257,6 +299,22 @@ public class LeaguesActivity extends Activity {
         v.setContentDescription(name);
         GlassPaint.card(v, look, 14);
         return v;
+    }
+
+    /** a row's tick, on or off, changed where it is (no new row, the focus stays); the row's focus colours taken again */
+    private void paintTick(LinearLayout row, boolean on) {
+        drawTick((TextView) row.getChildAt(0), on);
+        GlassPaint.follow(row, look);
+    }
+
+    private void drawTick(TextView tick, boolean on) {
+        tick.setText(on ? "✓" : "");
+        tick.setTextColor(on ? look.base : look.text);
+        GradientDrawable g = new GradientDrawable();
+        g.setCornerRadius(dp(8));
+        g.setStroke(dp(3), look.sub);
+        if (on) g.setColor(look.accent);
+        tick.setBackground(g);
     }
 
     // ---- small things ----
