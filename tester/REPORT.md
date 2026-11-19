@@ -3245,3 +3245,8 @@ Pictures (PC only): optimize/run/step96/pics/upd-1.png … upd-6.png.
 - Privacy: checked each by eye: no owner's name, no Wi-Fi name, no IP, no notification text. The greeting line shows «مساء الخير» only.
 - Backup first: optimize/run/step105/before/show.txt (= step98 before3). The owner's look was then restored exactly (card verse, home-card stocks, homelayout couch, couch on, background scenes, appsstyle zoom); `saver.sh show` vs the backup: identical except the version line.
 - Findings from the looks (for the design side): (a) «sport» look: the title «المباريات القادمة» overlaps the date line at the top right (the date sits under the title); (b) «couch-prayers» shows the prayer card with the countdown bar, looks fine; (c) «clean-icons» uses the light icon tiles (the look we want for the apps row).
+
+## STEP 105b (19 Nov): the owner's installed apps for the icon fix — partly done
+- tester/apps/leanback.txt (49 package names, LEANBACK_LAUNCHER) and tester/apps/launcher.txt (45 package names, LAUNCHER): package names only, extracted from `cmd package query-activities --brief`; no labels, no IPs, no account names (checked).
+- tester/apps/now-bar.png: the apps row as it is now on 525 (home, YouTube focused). Checked by eye: no name, no Wi-Fi name.
+- «كل التطبيقات» (all apps) picture NOT taken: it needs navigation to the grid, and the rule is no blind D-pad (the last attempt on the grid froze once).
