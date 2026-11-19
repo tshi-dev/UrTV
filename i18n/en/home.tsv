@@ -950,3 +950,8 @@ mp3 أو m4a أو ogg أو wav	mp3, m4a, ogg or wav
 لا صور هنا (jpg أو png أو webp)	No images here (jpg, png or webp)
 ما قدرنا نقرأ الصورة	We could not read the image
 الأيقونة الأصلية: اضغط «حفظ»	Original icon: press Save
+شغّلنا «الوضع الخفيف» تلقائيًا لأن %s مرتين هذا الأسبوع. تقدر تطفيه من الإعدادات في «الوضع الخفيف».	Light mode is on by itself because %s twice this week. You can turn it off in Settings, «Light mode».
+النظام أغلق UrTV لنقص الذاكرة	the system closed UrTV for lack of memory
+ذاكرة التلفزيون امتلأت	the TV's memory filled up
+التشغيل كان بطيئًا	starting was slow
+تلقائي: شغّال الآن لأن %s مرتين هذا الأسبوع	Automatic: on now because %s twice this week

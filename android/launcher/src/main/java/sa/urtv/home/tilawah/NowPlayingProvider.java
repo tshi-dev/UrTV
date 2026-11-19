@@ -95,6 +95,13 @@ public class NowPlayingProvider extends ContentProvider {
             if (on != null) b.putBoolean("on", on);
             return b;
         }
+        // 4.4 beta 3 «الوضع الخفيف» in the screensaver's settings (same key only): the row's line when this TV's own signs turned it on, "" otherwise
+        if ("lite_line".equals(method) && getContext() != null
+                && getContext().checkCallingPermission("sa.urtv.home.READ_NOW_PLAYING") == PackageManager.PERMISSION_GRANTED) {
+            Bundle b = new Bundle();
+            b.putString("result", sa.urtv.home.LiteAutoStore.rowLine(getContext()));
+            return b;
+        }
         // 4.4 «بدء شاشة التوقف بعد» in the screensaver's settings (same key only): the TV's idle delay over our adb (SetupHook.setIdle), the answer in "result"
         if ("set_idle".equals(method) && getContext() != null
                 && getContext().checkCallingPermission("sa.urtv.home.READ_NOW_PLAYING") == PackageManager.PERMISSION_GRANTED) {

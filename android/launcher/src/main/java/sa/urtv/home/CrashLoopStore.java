@@ -96,6 +96,8 @@ final class CrashLoopStore {
         if (drewMarked) return;
         drewMarked = true;
         final long now = System.currentTimeMillis();
+        CrashLoop was = state;   // 4.4 beta 3 (LiteAuto): a first frame slower than SLOW_MS is a sign of a weak TV
+        if (was != null && was.openedAt > 0 && now - was.openedAt > LiteAuto.SLOW_MS) LiteAutoStore.note(c, LiteAuto.SLOW);
         step(c, s -> s.drewFrame(now));
     }
 

@@ -305,6 +305,7 @@ often describe the same bug in two ways, and both rows are kept when their guard
 | R-290 | Home after the games, then «تلفزيونك» in «مركز التحكم» opened the games again instead of the hub (beta-1, build 525) | the screensaver app keeps one task (the hub at its root, the games on top) and the plain «تلفزيونك» entry had no CLEAR_TASK, so it resumed that task | 4.4 | `tests/games_open_test.py` | launcher | Y |
 | R-286 | The screensaver page grew to 775 KB (4.4); weak TVs waited on it at every start | the verses and hadith inline in tv.html, and each release raised the size budget | 4.5 | `tests/regressions/lessons_test.py`, `tests/check.py`, `tests/i18n_page_test.py` | page | N |
 | R-287 | After an update of the home (the add-on not updated), the first Home press on a Google TV opened the TV's own home; once UrTV had run, Home was ours again | while the home was being replaced the add-on judged its Home key catch with our home not installed for a moment, turned it off, and judged it again only when our home came to the front | 4.4 | `tests/home_update_key_test.py` | launcher extras | Y |
+| R-300 | A TV with 2.4–3 GB that struggles in practice (memory running full, slow starts, the home killed for memory) never got «الوضع الخفيف» on «تلقائي» | «تلقائي» looked only at the specs (the low-RAM flag, under 2000 MB, two cores) | 4.4 | `tests/lite_auto_test.py` | launcher | N |
 
 ## Open findings of the gate (QA-n)
 

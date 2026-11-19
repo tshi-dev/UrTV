@@ -71,6 +71,7 @@ public final class Ram {
             try {
                 android.content.SharedPreferences sp = c.getApplicationContext().getSharedPreferences("ram", Context.MODE_PRIVATE);
                 t = liteTier(t, sp.getString("lite", "auto"));   // A14 «الوضع الخفيف»
+                if (t != LOW && "auto".equals(sp.getString("lite", "auto")) && LiteAuto.on(sp.getString(LiteAuto.KEY, ""), System.currentTimeMillis())) t = LOW;   // 4.4 beta 3: this TV showed it is weak (LiteAuto)
                 int f = named(sp.getString("force", ""));
                 if (f >= 0) t = f;   // the tester's switch wins
             } catch (RuntimeException ignored) { }

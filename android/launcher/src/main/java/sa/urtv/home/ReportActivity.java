@@ -75,7 +75,7 @@ public class ReportActivity extends Activity {
         refresh[0] = () -> {
             for (int i = 0; i < rowsOf.length; i++) rowsOf[i].setText((Report.TOPICS[i][0].equals(topic) ? "✓ " : "") + S.tv(Report.TOPICS[i][1]));
             List<String> lines = Report.lines(homeV, saverV, Build.VERSION.RELEASE, Build.VERSION.SDK_INT, webView(), topic,
-                    GlassSource.lookName(this), GlassSource.light(this) ? "light" : "dark", HomeCard.footballShown ? "football" : "standard", errors);
+                    GlassSource.lookName(this), GlassSource.light(this) ? "light" : "dark", HomeCard.footballShown ? "football" : "standard", LiteAutoStore.report(this), errors);   // (the «ram» preferences Ram.tier already holds in memory)
             lines = Report.withChannel(lines, sa.urtv.home.phone.UpdateChannel.cached());   // 4.3.3 hotfix: the kept word, no query on the UI thread; «channel: beta|latest»: the nightly analysis splits the two
             shown.setText(String.join("\n", lines));
             qrBox.removeAllViews();
