@@ -189,6 +189,12 @@ These replace anything below that says otherwise:
 - At 720p with a TV's large font, the full table first drops «له / عليه», since the difference column says it, before any text gets smaller.
 - The real screens from the build go to the UI session before the push for the release.
 
+**Base (19 Nov):**
+- Phase (a) branches from `work/45-honours` at `95d1869c`, which has the beta-2 and qa-gate merges.
+- `SPORTS.hon` exports `league`, `club`, `has`, `champList`, `champRow`, `top`, `scorers`, `scorerSeasons` and `want`, tested in
+  `tests/honours.test.mjs`.
+- The honours data is on `data-honours`: 944 of 1,416 champion seasons have a club id, and every Saudi and La Liga season is identified.
+
 ## 4. Tests (written first, kept in `tests/run.sh`)
 
 | Test | What it proves |
