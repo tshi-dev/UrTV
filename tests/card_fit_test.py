@@ -77,7 +77,7 @@ check("a card the person picks is theirs: their pick clears the kept list (no sw
 check("the settings (4.4 beta 2, the owner): a home card that does not fit the look and background is shown off with its reason (CardFit.why), never applied; the swap said once after a look change",
       "String why = CardFit.why(values[i], cardLook, bg);" in st and "off[i] = !CardFit.fits(values[i], cardLook, bg) && !values[i].equals(current);" in st
       and "if (off != null && off[pos]) {" in st and "n.setAlpha(0.5f); a.setTextColor(OFF_REASON);" in st and "String fitNote = prefs.takeFitNote();" in st
-      and 'String cardLook() { return "tvos".equals(sp.getString("preset", "")) ? "tvos" : homeLayout(); }' in prefs)
+      and 'String cardLook() { return homeLayout(); }' in prefs and 'static final String[] HOME_LAYOUTS = {"classic", "couch", "football", "tvos"};' in prefs)
 note = st[st.index("    private void notice(String s) {"):].split("\n    }\n")[0]
 check("the swap's note is the app's own notice, not the system Toast (a capsule on some TVs: the owner's no-pills rule): bottom-centre, a small-radius rectangle, gone after 4 s, no key",
       "if (fitNote != null) notice(fitNote);" in st and "toast(fitNote)" not in st and "Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL" in note

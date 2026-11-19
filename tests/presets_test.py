@@ -19,23 +19,25 @@ prefs, st, hub, recv = ((APP / f).read_text(encoding="utf-8") for f in ("Prefs.j
 saver = (ROOT / "optimize/saver.sh").read_text(encoding="utf-8")
 arr = lambda name: re.findall(r'"([^"]*)"', prefs[prefs.index(f"static final String[] {name} = {{"):].split("};")[0].split("{", 1)[1])
 keys, names, fields = arr("PRESETS"), arr("PRESET_NAMES"), arr("PRESET_FIELDS")
-check("the six looks with the owner's names, in his order", keys == ["tv", "couch", "clean", "family", "sport", "calm"]
-      and names == ["شكلك المعتاد", "كنبة", "صورة فقط", "مواقيت يومي", "مباريات اليوم", "ليل هادئ"], (keys, names))
+check("the seven looks with the owner's names, in his order", keys == ["tv", "couch", "tvos", "clean", "family", "sport", "calm"]
+      and names == ["شكلك المعتاد", "كنبة", "tvOS", "صورة فقط", "مواقيت يومي", "مباريات اليوم", "ليل هادئ"], (keys, names))
 vals = prefs[prefs.index("static final String[][] PRESET_VALUES = {"):].split("};")[0]
 rows = re.findall(r"\n        \{(.*?)\}", vals)
-check("each look gives every field a value or null (the person's own)", len(rows) == 6 and all(len(re.split(r",\s(?![^()]*\))", r)) == len(fields) for r in rows),
+check("each look gives every field a value or null (the person's own)", len(rows) == 7 and all(len(re.split(r",\s(?![^()]*\))", r)) == len(fields) for r in rows),
       [len(re.split(r",\s(?![^()]*\))", r)) for r in rows])
 check("«كنبة» is the Couch look with the apps as icons, «شكلك المعتاد» the coloured tiles (when nothing of the person's was kept)",
       rows[1].startswith('"couch", "scenes", "glass", "icons"') and rows[0].startswith('"classic", "photos", "plain", "tiles"'), rows[:2])
-check("«مباريات اليوم» is the football layout with the new sports cards", '"football", null, "plain", null, "livenow,nextmatches,minitable"' in rows[4]
+check("«مباريات اليوم» is the football layout with the new sports cards", '"football", null, "plain", null, "livenow,nextmatches,minitable"' in rows[5]
       and all(f'{{"{c}", ' in prefs for c in ("livenow", "nextmatches", "minitable")), rows[4])
 check("the two open questions are flags, both on: it replaces «شكل كنبة»; «صورة فقط» hides the round buttons",
       "static final boolean PRESETS_REPLACE_COUCH = true;" in prefs and "static final boolean CLEAN_HIDES_BUTTONS = true;" in prefs
-      and 'CLEAN_HIDES_BUTTONS ? "hidden" : null' in rows[2] and 'if (!Prefs.PRESETS_REPLACE_COUCH) row("شكل كنبة"' in st)
+      and 'CLEAN_HIDES_BUTTONS ? "hidden" : null' in rows[3] and 'if (!Prefs.PRESETS_REPLACE_COUCH) row("شكل كنبة"' in st)
 hid = re.search(r'BUTTONS_HIDDEN = "([^"]*)";', prefs).group(1)
 check("«صورة فقط» (the owner): the sources, the tasks, the recitation, the markets, the games, the phone and the search hidden; «مركز التحكم» and «تحديث جديد» stay",
       sorted(hid.split("|")[0].split(",")) == ["inputs", "markets", "matches", "phone"] and hid.split("|")[1:] == ["false", "false", "false"]
       and '"inputs"' in prefs[prefs.index("QUICK_BUTTONS = {"):].split("}")[0], hid)
+check("4.4 beta 2 «tvOS» (the owner approved the full look): after «كنبة», the tvOS layout, the photos, the plain clock, the tvOS bar; the rest the person's own (no forced dark); it sets the tvOS settings screen",
+      rows[2] == '"tvos", "photos", "plain", "glass", null, null, null, null, null, null, null, null' and 'm.put("tvos", "tvos");' in prefs, rows[2])
 sp = prefs[prefs.index("    void setPreset(String key) {"):prefs.index("    /** the rows changed since the look was chosen")]   # 4.5: setPreset and the writePreset it holds the lock for
 check("the person's own values kept once (the first look chosen), put back before each look, and exactly by «شكلك المعتاد»",
       'if (before == null) { before = presetNow(); sp.edit().putString("presetBefore", before).apply(); }' in sp and "else presetPut(before);" in sp
@@ -45,17 +47,17 @@ check("a row changed after reads «مخصّص» (what the look set is kept, comp
       and not any(f in fields for f in ("city", "adhan", "teams", "pin", "lock")))
 check("a TV that had «شكل كنبة» on reads «كنبة», its four values kept as the person's own", 'if (!sp.contains("preset") && sp.getBoolean("couchOn", false))' in prefs
       and 'putString("preset", "couch").putString("presetBefore", before)' in prefs and 'if (PRESETS_REPLACE_COUCH) return "couch".equals(preset());' in prefs)
-check("the row is first in «المظهر» in both layouts, the picture picker opens from it; 4.4 beta 2 (the owner): only a full-design look («كنبة») changes the settings screen too, then they open again in it on this row; any other look is drawn again in place",
+check("the row is first in «المظهر» in both layouts, the picture picker opens from it; 4.4 beta 2 (the owner): only a full-design look («كنبة», 4.4 beta 2 «tvOS») changes the settings screen too, then they open again in it on this row; any other look is drawn again in place",
       'row("أشكال جاهزة", prefs.presetLabel()' in st and "private void pickPreset()" in st and '.putExtra("want", "أشكال جاهزة")' in st
       and "if (styleBefore.equals(prefs.settingsStyle())) { render(); return; }" in st
-      and 'FULL_DESIGN_STYLE = java.util.Collections.singletonMap("couch", "couch");' in prefs
+      and 'm.put("couch", "couch");' in prefs and 'm.put("tvos", "tvos");' in prefs and "FULL_DESIGN_STYLE = fullDesign();" in prefs
       and 'if (!sp.contains("settingsStyleBefore")) sp.edit().putString("settingsStyleBefore", settingsStyle()).apply();' in prefs
       and 'if (sb != null) sp.edit().putString("settingsStyle", sb).remove("settingsStyleBefore").apply();' in prefs
       and '"رجّع الشكل السابق", "أشكال جاهزة", "شكل شاشة الإعدادات", "شكل كنبة",' in hub and '{"أشكال جاهزة", LOOK}, {"شكل شاشة الإعدادات", LOOK}, {"شكل كنبة", LOOK}' in hub and '{"أشكال جاهزة", "look"}' in hub)
 pics = [ROOT / f"android/app/src/main/assets/presets/{k}.jpg" for k in keys]
 check("each look's picture is in the app, small (under 40 KB)", all(p.is_file() and p.stat().st_size < 40 * 1024 for p in pics), [p.name for p in pics if not p.is_file()])
-check("saver.sh preset tv|couch|clean|family|sport|calm; show says «preset: family» or «family (custom)»; given before any one row",
-      'preset)     set1 preset "${2:?usage: optimize/saver.sh preset tv|couch|clean|family|sport|calm|couch-prayers|clean-icons|sport-night|tv-glass}" ;;' in saver and '"\\npreset: " + p.presetShow()' in recv
+check("saver.sh preset tv|couch|tvos|clean|family|sport|calm; show says «preset: family» or «family (custom)»; given before any one row",
+      'preset)     set1 preset "${2:?usage: optimize/saver.sh preset tv|couch|tvos|clean|family|sport|calm|couch-prayers|clean-icons|sport-night|tv-glass}" ;;' in saver and '"\\npreset: " + p.presetShow()' in recv
       and recv.index("if (preset != null) p.setPreset(preset);") < recv.index("if (homeLayout != null) p.setHomeLayout(homeLayout);"))
 check("docs/SETTINGS.md has the row and its command", "`optimize/saver.sh preset family`" in (ROOT / "docs/SETTINGS.md").read_text(encoding="utf-8"))
 
@@ -80,7 +82,7 @@ check("a weak TV («الوضع الخفيف» on, or auto on a weak TV) only fad
       and 'return "on".equals(v) || ("auto".equals(v) && lowRam(c));' in prefs and ".alpha(in ? 1f : 0f).setDuration(PresetMotion.MS)" in pick)
 pics2 = [ROOT / f"android/app/src/main/assets/presets/{k}.jpg" for k in ["combos"] + ["combo-" + c[0] for c in combos]]
 check("the tile's and each mix's picture are in the app, small", all(p.is_file() and p.stat().st_size < 40 * 1024 for p in pics2), [p.name for p in pics2 if not p.is_file()])
-check("saver.sh preset takes a mix's key too", "preset tv|couch|clean|family|sport|calm|couch-prayers|clean-icons|sport-night|tv-glass}" in saver)
+check("saver.sh preset takes a mix's key too", "preset tv|couch|tvos|clean|family|sport|calm|couch-prayers|clean-icons|sport-night|tv-glass}" in saver)
 if shutil.which("javac"):
     with tempfile.TemporaryDirectory() as d:
         run = (ROOT / "tests/PresetMotionRun.java")

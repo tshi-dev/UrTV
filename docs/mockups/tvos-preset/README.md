@@ -10,5 +10,5 @@ rules). Nothing here is built; the owner approves first. The manner is tvOS Laun
 4. `tvos-home-light.png`: the weak TV (Ram.low): no live blur, no shadows, no growth: a flat translucent fill, the ring only.
 
 The bar is today's built «tvOS» way (FavBar.GLASS, 100 %, one row). The photo is one of UrTV's backgrounds; the app icons are neutral
-stand-ins (on the TV each installed app's own icon); the teams are plain discs (no club logos). Arabic first and right to left, no
+stand-ins (on the TV each installed app's own icon); the teams by name only (the owner: on the TV the club's real logo or nothing, never a stand-in shape); the cards and the bar a flat fill with a 1 px edge (no gradient, no highlight). Arabic first and right to left, no
 capsules, no «·». A look change goes through HomeLook.change() (the UI session's path), never a new one.

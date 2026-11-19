@@ -107,6 +107,15 @@ final class HomeCard {
     private volatile boolean football;
     /** 4.4 «التخطيط: كنبة»: the cards in one low strip above the apps tray, the screen's width (the page's #row=1); the big clock is then alone in the middle */
     private volatile boolean row;
+    /** 4.4 beta 2 the full look «tvOS» (layout tvos): the row above the tvOS bar, its cards as glass (the page's html.tvos), each slot's CardFit decision */
+    private volatile boolean tvos;
+    boolean tvos() { return tvos && cards > 0; }
+
+    /** «tvOS»: three cards across; two at 720p with the TV's large font (the third takes turns in the second slot, the page's rowOverflow) */
+    private int tvosSlots() {
+        android.util.DisplayMetrics dm = activity.getResources().getDisplayMetrics();
+        return CardBox.tvosSlots(dm.heightPixels, activity.getResources().getConfiguration().fontScale);
+    }
     /** the cards are in the strip above the tray (not beside the clock) */
     boolean inRow() { return row && cards > 0; }
     /** the layout the home showed last, for the report (a word, nothing else) */
@@ -268,7 +277,7 @@ final class HomeCard {
     }
 
     private String readUrl() {
-        String frag = null, panel = null, layout = null;
+        String frag = null, panel = null, layout = null, fit = "";
         try (Cursor c = activity.getContentResolver().query(CONFIG, null, null, null, null)) {
             if (c != null && c.moveToFirst()) {
                 frag = c.getString(0);
@@ -277,6 +286,8 @@ final class HomeCard {
                 if (all >= 0 && c.getString(all) != null) panel = c.getString(all);
                 int l = c.getColumnIndex("home_layout");   // «المظهر ← الواجهة»; an older screensaver says nothing: classic
                 layout = l >= 0 && c.getString(l) != null ? c.getString(l) : "classic";
+                int cf = c.getColumnIndex("card_fit");   // 4.4 beta 2: each slot's decision (CardFit: "", wide, row4, picks, no); an older screensaver has none
+                if (cf >= 0 && c.getString(cf) != null) fit = c.getString(cf);
             }
         } catch (RuntimeException e) {
             // the screensaver's settings are out of reach
@@ -294,13 +305,16 @@ final class HomeCard {
         String[] choice = HomeCardChoice.pick(frag, panel, sp.getString("frag", null), sp.getString("panel", null));
         football = HomeCardChoice.football(layout, choice) && footballHost != null;   // 4.3.4: «بدون» turns the football home's widgets off too
         footballShown = football;   // «أرسل تقرير» says which layout the home had
-        if (football) { cards = 0; tasks = false; stocks = false; stocksFirst = false; row = false; return withGlass(HomePage.fresh(activity, HomeCardChoice.footballUrl(choice))); }
+        if (football) { cards = 0; tasks = false; stocks = false; stocksFirst = false; row = false; tvos = false; return withGlass(HomePage.fresh(activity, HomeCardChoice.footballUrl(choice))); }
         row = "couch".equals(layout);
+        tvos = "tvos".equals(layout);
+        if (tvos) row = true;   // «tvOS»: a row too, above the tvOS bar (CardBox.tvosRow)
         cards = HomeCardChoice.count(choice);
         tasks = HomeCardChoice.hasTasks(choice);
         stocks = HomeCardChoice.hasStocks(choice);
         stocksFirst = HomeCardChoice.stocksFirst(choice);
         String u = HomePage.fresh(activity, HomeCardChoice.liveUrl(choice));   // the screensaver's newer page when it has one
+        if (tvos && u != null && u.contains("#")) u = u + "&tvos=1&fit=" + android.net.Uri.encode(fit) + "&slots=" + tvosSlots();   // the page's tvOS glass, how each slot fits, and how many show
         return withGlass(row && u != null && u.contains("#") ? u + "&row=1" : u);
     }
 

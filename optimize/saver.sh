@@ -278,7 +278,7 @@ case "${1:-}" in
   appearance) set1 appearance "${2:?usage: optimize/saver.sh appearance dark|light|auto}" ;;
   look) set1 look "${2:?usage: optimize/saver.sh look glass|graphite|navy|clean|sand}" ;;
   homelayout) set1 homelayout "${2:?usage: optimize/saver.sh homelayout classic|couch|football}" ;;
-  preset)     set1 preset "${2:?usage: optimize/saver.sh preset tv|couch|clean|family|sport|calm|couch-prayers|clean-icons|sport-night|tv-glass}" ;;
+  preset)     set1 preset "${2:?usage: optimize/saver.sh preset tv|couch|tvos|clean|family|sport|calm|couch-prayers|clean-icons|sport-night|tv-glass}" ;;
   couch)      set1 couch "${2:?usage: optimize/saver.sh couch on|off}" ;;
   lookback)   set1 lookback restore ;;
   lookpanel)  set1 lookpanel open ;;

@@ -34,5 +34,5 @@ UrTV's backgrounds (assets/backgrounds), the font a stand-in for Thmanyah.
 4. `tvos-settings-720-large.png`: 720p with the TV's large font: rows grow, no word is cut, the list moves with the focus.
 5. `tvos-settings-light.png`: the light version for a weak TV: the photo blurred once (as GlassSource does), flat fills, no shadows, no growth.
 
-Rules kept: Arabic first and right to left, rows are rectangles with rounded corners (no capsules), no «·». The rows, sections and values
+Rules kept: Arabic first and right to left, rows are rectangles with rounded corners (no capsules), no «·»; flat fills with a 1 px edge (the owner: no gradient, no highlight, no decoration). The rows, sections and values
 are today's (SettingsHub); only their look changes. «شكل شاشة الإعدادات» (the UI session's row) would offer it as «tvOS».

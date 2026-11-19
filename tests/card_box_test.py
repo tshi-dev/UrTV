@@ -13,7 +13,7 @@ if not shutil.which("javac"):
     print("SKIP card box: no javac here")
     sys.exit(0)
 with tempfile.TemporaryDirectory() as tmp:
-    subprocess.run(["javac", "-encoding", "UTF-8", "-d", tmp, str(ROOT / "android/launcher/src/main/java/sa/urtv/home/CardBox.java"),
+    subprocess.run(["javac", "-encoding", "UTF-8", "-d", tmp, str(ROOT / "android/launcher/src/main/java/sa/urtv/home/CardBox.java"), str(ROOT / "android/launcher/src/main/java/sa/urtv/home/FavBar.java"),
                     str(ROOT / "tests/CardBoxRun.java")], check=True)
     out = subprocess.run(["java", "-cp", tmp, "sa.urtv.home.CardBoxRun"], check=True, capture_output=True, text=True).stdout
 rows = [l.split() for l in out.splitlines() if not l.startswith('strip ')]

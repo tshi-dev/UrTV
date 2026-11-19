@@ -367,6 +367,7 @@ public class SaverReceiver extends BroadcastReceiver {
         String glassSize = i.getStringExtra("glasssize"), glassRows = i.getStringExtra("glassrows");
         if (glassSize != null && !Arrays.asList(Prefs.GLASS_SIZES).contains(glassSize)) return "error: glasssize is 50 to 150 in steps of 10";
         if (glassRows != null && !Arrays.asList(Prefs.GLASS_ROWS).contains(glassRows)) return "error: glassrows is 1, 2 or 3";
+        if (Prefs.TVOS_LAYOUT.equals(homeLayout)) return "error: tvos comes with the full look: optimize/saver.sh preset tvos";   // 4.4 beta 2: no half look
         if (homeLayout != null && !Arrays.asList(Prefs.HOME_LAYOUTS).contains(homeLayout))
             return "error: homelayout is one of " + Prefs.join(Arrays.asList(Prefs.HOME_LAYOUTS), " ");
         String scenePacks = i.getStringExtra("scenepacks");   // 4.3.3 «حزم الآفاق»: saudi, couch, or both (comma between)

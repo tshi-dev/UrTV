@@ -3765,11 +3765,17 @@ public class SettingsActivity extends Activity {
 
     /** «الواجهة»: the home's layout, «العادية» (the default), «كرة القدم» (the weather, the prayers and today's games over the same favourites bar) or «الآفاق» (4.3.3). */
     private void pickHomeLayout() {
-        final String[] labels = new String[Prefs.HOME_LAYOUTS.length];
-        for (int i = 0; i < labels.length; i++) labels[i] = Prefs.HOME_LAYOUT_NAMES[i];
+        // 4.4 beta 2 (the owner): «tvOS» comes with the full look «tvOS» only; listed here only while it is the layout, so the row never reads empty
+        final List<String> keys = new ArrayList<>(), names = new ArrayList<>();
+        for (int i = 0; i < Prefs.HOME_LAYOUTS.length; i++) {
+            if (Prefs.TVOS_LAYOUT.equals(Prefs.HOME_LAYOUTS[i]) && !Prefs.TVOS_LAYOUT.equals(prefs.homeLayout())) continue;
+            keys.add(Prefs.HOME_LAYOUTS[i]);
+            names.add(Prefs.HOME_LAYOUT_NAMES[i]);
+        }
+        final String[] labels = names.toArray(new String[0]);
         new Dlg(this).setTitle("التخطيط")
-            .setSingleChoiceItems(labels, java.util.Arrays.asList(Prefs.HOME_LAYOUTS).indexOf(prefs.homeLayout()), (d, i) -> {
-                prefs.setLookPart("layout", Prefs.HOME_LAYOUTS[i]);   // 4.5: the look before kept, the home told at once
+            .setSingleChoiceItems(labels, keys.indexOf(prefs.homeLayout()), (d, i) -> {
+                prefs.setLookPart("layout", keys.get(i));   // 4.5: the look before kept, the home told at once
                 d.dismiss();
                 render();
             })

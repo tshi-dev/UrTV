@@ -55,6 +55,23 @@
   html.row .week .hd{justify-content:flex-start;padding-top:calc(12px*.4);padding-top:max(6px,calc(var(--cr,12px)*.4))}html.row .week .hd::after{display:none}   /* 4.4 the owner: a card's title at the start (right) in every layout, clear of the rounded corner */
   html.row .week li{justify-content:center;text-align:center}
   html.widget .week{width:100%}
+  /* 4.4 beta 2 the full look «tvOS» (#tvos=1, the owner approved docs/mockups/tvos-preset/): each card a glass rectangle (no pill) over the home,
+     a flat translucent fill and a 1 px edge (the owner: no decoration), a stronger fill on a weak TV (lowram); the focused one a little bigger (not on a weak TV); the focus ring as always */
+  html.tvos .mid{padding:0 .5vw}
+  html.tvos .week,html.hcard.tvos .week{background:rgba(255,255,255,.16)!important;border:1px solid rgba(255,255,255,.34)!important;border-radius:1.8vw;border-radius:clamp(14px,1.8vw,30px);box-shadow:none!important}   /* the owner: a flat fill and a 1 px edge, no gradient, no highlight */
+  html.tvos.lowram .week,html.hcard.tvos.lowram .week{background:rgba(255,255,255,.2)!important;box-shadow:none!important}
+  html.tvos:not(.lowram) .week.lf{transform:scale(1.04);transition:transform .2s cubic-bezier(.2,.8,.2,1)}
+  /* each slot as the screensaver's CardFit decides (#fit=): a text card two cards wide, the coming days as a row of four (day, icon, high and low) */
+  html.tvos .mid .week.fwide{grid-column:span 2}
+  html.tvos .week.frow4 ul{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:.4em}
+  html.tvos .week.frow4 li.fc{display:flex;flex-direction:column;align-items:center;gap:.2em;text-align:center}
+  html.tvos .week.frow4 li.fc:nth-child(n+5),html.tvos .week.frow4 li.fc .ep,html.tvos .week.frow4 li.fc .rg{display:none}
+  /* rowOverflow: a row with more cards than slots: the last slot takes turns, a 250 ms crossfade (a cut on a weak TV), «١/٢» at its bottom end corner */
+  html.row .week{position:relative}
+  html.row .week.turn{transition:opacity .25s cubic-bezier(.2,.8,.2,1)}
+  html.row .week.turnoff{opacity:0;pointer-events:none}
+  html.row.lowram .week.turn{transition:none}
+  html.row .week .turnmark{position:absolute;bottom:.5em;inset-inline-end:.9em;font-size:.8em;color:rgba(255,255,255,.62)}
   /* the home's cards take the apps tray's glass (#hpanel= and #hline= from the launcher: FavBar's fill and line, as thin as «شفافية الشريط» says): one family in every look, no per-card tint */
   html.hcard .week{background:var(--hpanel)!important;border-color:var(--hline)!important}
   html.hcard .week:not(.lf){box-shadow:none!important}   /* the card styles' soft drop shadow (0 24px 60px) is cut at the card's box on the home: a straight-edged dark patch under the glass (step 52); the focus ring (.lf) stays */
@@ -3320,7 +3337,41 @@ function buildCards(){
   });
   mid.classList.add('n' + CARDS.length);
   if(CARDS.length === 3) CARDS[2].el.classList.add('w3');
+  // 4.4 beta 2: each slot's CardFit decision as the screensaver gives it (#fit=, never a table of our own): two cards wide, or a row of four
+  const FIT = (_Q.get('fit') || '').split(',');
+  CARDS.forEach(c => { if(FIT[c.i] === 'wide') c.el.classList.add('fwide'); if(FIT[c.i] === 'row4') c.el.classList.add('frow4'); });
   markLive();
+  rowOverflow(+(_Q.get('slots') || 3));
+}
+
+// 4.4 beta 2 (the owner approved the full looks): a row of cards with more cards than slots (a wide card, or two slots at 720p with the large font):
+// the cards before the last slot stay where they are and the rest take turns in it, every 20 s while the page is shown, a 250 ms crossfade (a cut on a
+// weak TV), «١/٢» at the slot's corner. A wide card always stays and the others take turns beside it, so the person's own cards are all shown in turn.
+// One behaviour for every row (tvOS, and «كنبة» at 720p with the large font).
+function rowOverflow(slots){
+  const root = document.documentElement, mid = document.querySelector('.mid');
+  if(!root.classList.contains('row') || !mid) return;
+  const wide = CARDS.find(c => c.el.classList.contains('fwide'));
+  if(wide) slots = Math.min(slots, 2);
+  if(slots < 1 || CARDS.length <= slots) return;
+  const fixed = wide ? [wide] : CARDS.slice(0, slots - 1), turn = CARDS.filter(c => !fixed.includes(c));
+  let col = 1;
+  fixed.forEach(c => { const span = c === wide ? 2 : 1; c.el.style.gridColumn = col + ' / span ' + span; c.el.style.gridRow = '1'; col += span; });
+  mid.style.gridTemplateColumns = 'repeat(' + col + ',minmax(0,1fr))';
+  turn.forEach((c, n) => {
+    c.el.style.gridColumn = String(col);
+    c.el.style.gridRow = '1';
+    c.el.classList.add('turn');
+    const m = document.createElement('span');
+    m.className = 'turnmark';
+    m.setAttribute('aria-hidden', 'true');
+    m.textContent = ar(n + 1) + '/' + ar(turn.length);
+    c.el.appendChild(m);
+  });
+  let k = 0;
+  const show = () => turn.forEach((c, n) => c.el.classList.toggle('turnoff', n !== k));
+  show();
+  setInterval(() => { if(document.hidden) return; k = (k + 1) % turn.length; show(); }, 20 * 1000);
 }
 
 // The launcher's «المهام» card is a button
@@ -5793,6 +5844,7 @@ function addCardStyle(){
 function bootWidget(){
   document.documentElement.classList.add('widget');
   if(_Q.get('row') === '1') document.documentElement.classList.add('row');   // 4.4 «التخطيط: كنبة»: the cards in one row above the apps tray
+  if(_Q.get('tvos') === '1') document.documentElement.classList.add('tvos');   // 4.4 beta 2 the full look «tvOS»: the same row, its cards as glass
   if(CONFIG.lowram) document.documentElement.classList.add('lowram');
   addCardStyle();   // «شكل البطاقة» applies to each of them
   buildCards();

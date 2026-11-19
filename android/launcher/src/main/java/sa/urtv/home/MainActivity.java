@@ -994,6 +994,7 @@ public class MainActivity extends Activity {
             dockTop = titleTop + tray.getTop();   // the tray's top (FavBar): the cards above end before it
             for (View c : dockCards) wide = Math.max(wide, Math.round(title.getPaint().measureText(((App) c.getTag()).label)));
         }
+        if (row && homeCard != null && homeCard.tvos()) return CardBox.tvosRow(dm.widthPixels, dm.heightPixels, titleTop, getResources().getConfiguration().fontScale);   // «tvOS»: above the bar, its width
         if (row) return CardBox.row(dm.widthPixels, dm.heightPixels, dm.density, titleTop, bigClockOn ? ScenePlan.fixedBox(dm.widthPixels, dm.heightPixels, false, Dir.rtl())[3] : -1);
         return CardBox.box(cards, dm.widthPixels, dm.heightPixels, dm.density, clockLeft, titleTop, dockTop, wide);
     }
@@ -1753,6 +1754,11 @@ public class MainActivity extends Activity {
         ring.setStroke(inDock ? trayRingW() : dp(2), inDock ? trayRing() : 0xE6FFFFFF);
         ring.setOrientation(GradientDrawable.Orientation.TL_BR);
         ring.setColors(inDock && !lightNow ? new int[]{(trayRing() & 0x00FFFFFF) | 0x38000000, trayRing() & 0x00FFFFFF, trayRing() & 0x00FFFFFF} : new int[]{0x26FFFFFF, 0x00FFFFFF, 0x00FFFFFF});   // a soft glow of the ring's own colour inside it on the dark looks
+        if (glassy) {   // 4.4 beta 2 (the owner): the tvOS icon's focus is a plain white ring inside its squircle (no glow, no gradient), never over a neighbour
+            ring.setColors(null);
+            ring.setColor(0);
+            ring.setStroke(Math.max(2, bar(3)), 0xF2FFFFFF);
+        }
         View shine = new View(this);
         shine.setBackground(ring);
         shine.setAlpha(0f);
@@ -1779,7 +1785,7 @@ public class MainActivity extends Activity {
         card.setOnFocusChangeListener((v, has) -> {
             final int dbg = dbgFocus;   // 0 normally: every switch below is off (dock.sh debug nolift|noglow|noshine|noscale|notitle|plainfocus)
             final boolean zoom = inDock && appsZoom;   // 4.4 «شكل التطبيقات: تكبير وظل»: larger with a soft shadow, no ring, the name under it
-            float s = has ? (inDock ? (zoom ? FavBar.ZOOM_SCALE : FavBar.FOCUS_SCALE) : 1.1f) : 1f;
+            float s = has && !(glassy && Ram.low(MainActivity.this)) ? (inDock ? (zoom ? FavBar.ZOOM_SCALE : FavBar.FOCUS_SCALE) : 1.1f) : 1f;   // 4.4 beta 2 «tvOS» on a weak TV: nothing grows
             // from the games of the football home: the tray goes back to its resting place (y 768) first, then the tile lifts (FavBar.DROP_MS)
             long wait = inDock && has && trayLowered ? FavBar.DROP_MS : 0;
             if (inDock && has) lowerTray(false);
@@ -1789,9 +1795,10 @@ public class MainActivity extends Activity {
                 if (inDock) v.animate().translationY(has ? -lift() : 0).translationZ(z)
                         .setInterpolator(Motion.ease()).setStartDelay(wait).setDuration(Motion.move(MainActivity.this)).start();
                 else v.animate().translationZ(z).setInterpolator(Motion.ease()).setDuration(Motion.move(MainActivity.this)).start();
-                if ((dbg & DebugFlags.SHINE) == 0) shine.animate().alpha(has && !zoom ? 1f : 0f).setDuration(Motion.MS).setInterpolator(Motion.ease()).start();
+                if ((dbg & DebugFlags.SHINE) == 0) shine.animate().alpha(has && (!zoom || glassy) ? 1f : 0f).setDuration(Motion.MS).setInterpolator(Motion.ease()).start();
                 label.animate().alpha(has ? 1f : 0f).translationY(has ? dp(4) : 0).setDuration(Motion.MS).setInterpolator(Motion.ease()).start();
             } else if ((dbg & DebugFlags.SHINE) == 0) shine.animate().alpha(has ? 1f : 0f).setDuration(Motion.MS).setInterpolator(Motion.ease()).start();
+            if (glassy && Ram.low(MainActivity.this)) shine.setAlpha(has ? 1f : 0f);   // a weak TV: the ring kept (nothing grows), set at once
             if (!has) return;
             lastFocusedId = v.getId();
             optionsHint(inDock);
@@ -3406,6 +3413,7 @@ public class MainActivity extends Activity {
             dockRow.setPadding(edge, edge, edge, edge);
             glassBar.radius(FavBar.glassBarRadius(sh, glassK));
             glassBar.light(lightNow);
+            glassBar.flat(Ram.low(this));   // a weak TV: a flat fill and its edge, no picture behind
             dockRow.glass(glassBar, glassRowsN, FavBar.glassCell(sh, glassK), FavBar.glassGap(sh, glassK), FavBar.glassPad(sh, glassK));
             readGlassBackdrop();
         } else if (dockRow != null) {
@@ -3429,7 +3437,7 @@ public class MainActivity extends Activity {
 
     /** the bar's picture: the home's backdrop (GlassSource), read off the main thread, given to the bar on it */
     private void readGlassBackdrop() {
-        if (!glassWay() || loader.isShutdown()) return;
+        if (!glassWay() || loader.isShutdown() || Ram.low(this)) return;   // a weak TV draws the bar flat: no picture read
         loader.execute(() -> {
             Bitmap b = GlassSource.backdrop(this);
             runOnUiThread(() -> { glassBar.backdrop(b); if (dockRow != null) dockRow.invalidate(); });
@@ -3466,7 +3474,7 @@ public class MainActivity extends Activity {
         card.addView(new AllAppsMark(this), new FrameLayout.LayoutParams(-1, -1));
         card.setOnClickListener(v -> openAllApps());
         card.setOnFocusChangeListener((v, has) -> {
-            scaleTo(v, has ? FavBar.ZOOM_SCALE : 1f);
+            scaleTo(v, has && !Ram.low(MainActivity.this) ? FavBar.ZOOM_SCALE : 1f);   // a weak TV: nothing grows
             v.animate().translationZ(has ? dp(2 * GlowLook.LIFT_DP) : 0).setInterpolator(Motion.ease()).setDuration(Motion.move(MainActivity.this)).start();
             if (!has) return;
             lastFocusedId = v.getId();
@@ -3529,6 +3537,8 @@ public class MainActivity extends Activity {
             zoomName.setAlpha(0f);
             zoomName.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO);   // the tile says its name itself
             hero.addView(zoomName, new FrameLayout.LayoutParams(-2, -2, Gravity.TOP | Gravity.START));
+            final View first = f;
+            zoomName.post(() -> { if (first.hasFocus()) placeZoomName(first); });   // 4.4 beta 2: setX is right only once the name is laid out (its left was 0, and in Arabic it stood 140 px off its icon)
         }
         Object tag = f.getTag();
         if (tag instanceof App) zoomName.setText(((App) tag).label);
