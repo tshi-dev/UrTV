@@ -209,3 +209,22 @@ public domain under CC0 1.0. Run the script again to make the same file.
 `android/launcher/src/main/res/raw/iqama_chime.ogg` (2.4 s, about 9 KB) is not taken from anywhere: it is synthesised by
 `.github/tools/make_iqama_chime.py` (a soft two-note bell, G5 then E5, numpy and ffmpeg) and dedicated to the public domain under CC0 1.0.
 Run the script again to make the same file.
+
+## Wireless-debugging pairing (4.4 beta 3, in «إضافات تلفزيونك» only): libadb-android, spake2-android, Conscrypt, BouncyCastle
+
+For Google TV and Chromecast sets that offer only «تصحيح الأخطاء اللاسلكي» (no adb on port 5555), «إعداد تلفزيوني» can pair the TV by wireless debugging, with the six digits typed on
+the phone page. These libraries are in the ADD-ON only (`sa.urtv.extras`, `android/extras/build.gradle`), never in the home or the screensaver; the home reaches them only through
+the add-on's signature-guarded provider. Every library file is pinned by SHA-256 in `android/extras/pins.txt` and checked before each build. The whole feature in the add-on is the package
+`android/extras/src/main/java/sa/urtv/home/pair/`; take it, its provider calls and the four `implementation` lines out together and the add-on builds and works as before.
+
+- **libadb-android** 3.1.1 (https://github.com/MuntashirAkon/libadb-android), Copyright 2021 Muntashir Al-Islam: dual licensed GPL-3.0-or-later OR Apache-2.0; **we use it under the
+  Apache-2.0 terms** (`docs/licenses/Apache-2.0.txt`). Used unmodified.
+- **spake2-android** (https://github.com/MuntashirAkon/spake2-java), Copyright 2021 Muntashir Al-Islam, a dependency of libadb-android: **LGPL-3.0** (`docs/licenses/LGPL-3.0.txt`,
+  which refers to the GPL-3.0 text in `docs/licenses/GPL-3.0.txt`). Used unmodified, and it stays a separate library: our code never copies from it, it is linked as an ordinary
+  dependency of the add-on. **Its source**: the repository above, at the version `android/extras/pins.txt` names (JitPack builds that tag). **To replace it** with a modified or
+  another build: change the version or the source of `com.github.MuntashirAkon:libadb-android` and its `spake2-android` dependency in `android/extras/build.gradle` (and its line in
+  `android/extras/pins.txt`) and build the add-on as `docs/DEVELOPERS.md` says; the whole source of the app is in this repository, so any version can be relinked.
+- **Conscrypt** 2.5.3 (https://github.com/google/conscrypt), Copyright The Android Open Source Project and others: Apache-2.0. It gives TLS 1.3, which the pairing needs.
+- **BouncyCastle** 1.81 (bcprov, bcpkix; https://www.bouncycastle.org/), Copyright The Legion of the Bouncy Castle Inc.: the Bouncy Castle licence (MIT style). It makes the add-on's
+  self-signed certificate.
+- The licence texts in `docs/licenses/` are the ones libadb-android and spake2-android ship.

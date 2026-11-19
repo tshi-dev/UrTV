@@ -1,0 +1,2 @@
+# 4.4 beta 3: the SHA-256 of every file on the add-on's runtime classpath («sha256 group:name:version file»); checked by verifyPins before each build (android/extras/build.gradle).
+# A line is added only after the file was checked against its project's own release (the first CI build prints the «pin:» lines).

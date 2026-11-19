@@ -52,8 +52,8 @@ check("4.3.3: the home has no accessibility service at all; the add-on has one, 
       "BIND_ACCESSIBILITY_SERVICE" not in man and "accessibilityservice" not in man and xman.count("BIND_ACCESSIBILITY_SERVICE") == 1 and "@xml/extras_service" in xman
       and 'canRetrieveWindowContent="true"' in xml and 'android:accessibilityEventTypes="typeWindowStateChanged"' in xml
       and "getPackageName()" in ev_body and "getClassName()" in ev_body and not re.search(r"getText|getSource|getContentDescription|getRecord", ev_body))
-check("the two apps call each other only through providers guarded by a signature permission (our key)",
-      'android:protectionLevel="signature"' in man and 'android:protectionLevel="signature"' in xman and man.count('android:permission="sa.urtv.permission.EXTRAS"') == 1
+check("the two apps call each other only through providers guarded by a signature permission (our key): the home's bridge and, 4.4 beta 3, its one-time install files for the paired route",
+      'android:protectionLevel="signature"' in man and 'android:protectionLevel="signature"' in xman and man.count('android:permission="sa.urtv.permission.EXTRAS"') == 2 and 'android:name=".setup.PairFiles"' in man
       and xman.count('android:permission="sa.urtv.permission.EXTRAS"') == 1 and 'PERMISSION = "sa.urtv.permission.EXTRAS"' in words)
 check("it only types when the service is on, the window names its package and is not ours, and the family lock and kids mode (also for the TV's settings and Wi-Fi screens) are asked of the home first; the home not answering refuses",
       "TypeInto.allowed(s != null, pkg, ours, pkg != null && !ours && needsPin, pkg != null && !ours && hidden, pkg != null && !ours && systemScreen)" in body

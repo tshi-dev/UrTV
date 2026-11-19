@@ -80,11 +80,40 @@ done
 mkdir -p "$W/out_extras"
 inc=$(grep "^def shared = " "$ROOT/android/extras/build.gradle" | grep -o "'[A-Za-z]*\.java'" | tr -d "'")
 files=$(find "$ROOT/android/extras/src/main/java" -name '*.java'); for f in $inc; do [ -f "$ROOT/android/launcher/src/main/java/sa/urtv/home/$f" ] && files="$files $ROOT/android/launcher/src/main/java/sa/urtv/home/$f"; done
-err=$(javac -encoding UTF-8 -proc:none -cp "$JAR" -d "$W/out_extras" $files 2>&1 | grep -v '^Picked up\|^Note:')
-if [ -n "$err" ] && echo "$err" | grep -q 'error'; then
-  echo "FAIL android compile: the extras module does not compile against $KIND"; echo "$err"; bad=1
+# 4.4 beta 3: the add-on's wireless-debugging libraries, exactly the files pinned in android/extras/pins.txt («sha256 group:name:version file»): fetched once into the
+# cache (JitPack for com.github.MuntashirAkon, Maven Central for the rest), each checked against its SHA-256 (a wrong one is a FAIL, never used), an .aar's classes.jar
+# taken out. Where they cannot be fetched (offline, or JitPack not reachable) the add-on is SKIPPED here, never passed: CI's Build APKs builds it.
+sha256_of() { if command -v sha256sum >/dev/null 2>&1; then sha256sum "$1" | cut -d' ' -f1; else shasum -a 256 "$1" | cut -d' ' -f1; fi; }
+xcp="$JAR"; xskip=""
+pins=$(grep -v '^#' "$ROOT/android/extras/pins.txt" 2>/dev/null | grep -v '^[[:space:]]*$')
+[ -z "$pins" ] && grep -q "implementation " "$ROOT/android/extras/build.gradle" && xskip="no file is pinned yet in android/extras/pins.txt"
+while read -r want gav fname; do
+  [ -z "$want" ] && continue
+  g=${gav%%:*}; rest=${gav#*:}; a=${rest%%:*}; v=${rest#*:}
+  case "$g" in com.github.MuntashirAkon*) repo=https://jitpack.io ;; *) repo=https://repo1.maven.org/maven2 ;; esac
+  dest="$CACHE/extras-libs/$fname"; mkdir -p "$CACHE/extras-libs"
+  if [ ! -f "$dest" ] || [ "$(sha256_of "$dest")" != "$want" ]; then
+    tmp=$(mktemp -p "$CACHE/extras-libs" dl.XXXXXX)
+    if ! curl -fsSL --max-time 120 -o "$tmp" "$repo/$(echo "$g" | tr . /)/$a/$v/$fname" 2>/dev/null; then rm -f "$tmp"; xskip="$fname cannot be fetched here"; break; fi
+    if [ "$(sha256_of "$tmp")" != "$want" ]; then rm -f "$tmp"; echo "FAIL android compile: $fname does not have its pinned SHA-256 (android/extras/pins.txt)"; bad=1; xskip="a pinned file differs"; break; fi
+    mv "$tmp" "$dest"
+  fi
+  case "$fname" in
+    *.aar) mkdir -p "$W/aar/$fname"; (cd "$W/aar/$fname" && unzip -q -o "$dest" classes.jar 2>/dev/null); [ -f "$W/aar/$fname/classes.jar" ] && xcp="$xcp:$W/aar/$fname/classes.jar" ;;
+    *.jar) xcp="$xcp:$dest" ;;
+  esac
+done <<EOP
+$pins
+EOP
+if [ -n "$xskip" ]; then
+  echo "SKIP android compile: the extras module ($xskip; CI's Build APKs builds it)"
 else
-  echo "PASS android compile: the extras module compiles against $KIND"
+  err=$(javac -encoding UTF-8 -proc:none -cp "$xcp" -d "$W/out_extras" $files 2>&1 | grep -v '^Picked up\|^Note:')
+  if [ -n "$err" ] && echo "$err" | grep -q 'error'; then
+    echo "FAIL android compile: the extras module does not compile against $KIND"; echo "$err"; bad=1
+  else
+    echo "PASS android compile: the extras module compiles against $KIND"
+  fi
 fi
 # 4.4 «إنقاذ تلفزيونك» (android/rescue): its own sources and the setup's files its build.gradle copies in (sharedSetup, sharedHome)
 mkdir -p "$W/out_rescue"

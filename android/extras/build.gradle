@@ -55,3 +55,38 @@ def copyShared = tasks.register('copyShared', Copy) {
     into "$buildDir/generated/shared/sa/urtv/home"
 }
 preBuild.dependsOn copyShared
+
+// 4.4 beta 3, wireless debugging (the package sa.urtv.home.pair; THIRD_PARTY_NOTICES.md): in this add-on ONLY, never in the home or the screensaver (the owner's rule).
+// libadb-android is dual GPL-3.0-or-later or Apache-2.0 (the Apache-2.0 side is used); its SPAKE2 library is LGPL-3.0 and stays a separate library; Conscrypt (Apache-2.0)
+// gives TLS 1.3; BouncyCastle (MIT style) makes the self-signed certificate. Exact versions; every file pinned by SHA-256 in pins.txt (verifyPins below).
+dependencies {
+    implementation 'com.github.MuntashirAkon:libadb-android:3.1.1'
+    implementation 'org.conscrypt:conscrypt-android:2.5.3'
+    implementation 'org.bouncycastle:bcprov-jdk15to18:1.81'
+    implementation 'org.bouncycastle:bcpkix-jdk15to18:1.81'
+}
+
+// Before every build: each file on the add-on's runtime classpath (the libraries above and everything they bring) has the SHA-256 written in pins.txt
+// («sha256 group:name:version file»), and every pinned file is there. A new, missing or changed file stops the build and prints its «pin:» line to check and copy.
+def verifyPins = tasks.register('verifyPins') {
+    def pinsFile = file('pins.txt')
+    inputs.file(pinsFile)
+    doLast {
+        def want = [:]
+        pinsFile.eachLine { line ->
+            def t = line.trim()
+            if (t && !t.startsWith('#')) { def parts = t.split(/\s+/, 2); want[parts[1]] = parts[0] }
+        }
+        def got = [:]
+        configurations.getByName('releaseRuntimeClasspath').resolvedConfiguration.resolvedArtifacts.each { ra ->
+            def md = java.security.MessageDigest.getInstance('SHA-256')
+            ra.file.withInputStream { ins -> byte[] buf = new byte[65536]; int n; while ((n = ins.read(buf)) > 0) md.update(buf, 0, n) }
+            got["${ra.moduleVersion.id} ${ra.file.name}".toString()] = md.digest().encodeHex().toString()
+        }
+        def bad = []
+        got.each { k, v -> println "pin: ${v} ${k}"; if (want[k] != v) bad << "${v} ${k}" }
+        want.each { k, v -> if (!got.containsKey(k)) bad << "missing ${k}" }
+        if (!bad.isEmpty()) throw new GradleException('android/extras/pins.txt: not pinned, changed or missing (check each, then copy its pin: line):\n' + bad.join('\n'))
+    }
+}
+preBuild.dependsOn verifyPins

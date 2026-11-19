@@ -58,7 +58,7 @@ public final class SetupHook {
             }
             new Thread(new Runnable() {
                 @Override public void run() {
-                    try (SetupSession s = SetupSession.open(app, 5000, null, new SetupEngine.Out() { @Override public void line(String text) { } })) {
+                    try (SetupSession s = SetupSession.openAny(app, 5000, null, new SetupEngine.Out() { @Override public void line(String text) { } })) {
                         final SetupEngine.Result r = s.engine.migrateStockHome();
                         if (r != null && r.status == SetupEngine.Status.DONE) {
                             new android.os.Handler(android.os.Looper.getMainLooper()).post(new Runnable() { @Override public void run() { Toast.makeText(app, StockMigration.NOTICE, Toast.LENGTH_LONG).show(); } });
@@ -94,7 +94,7 @@ public final class SetupHook {
         }
         new Thread(new Runnable() {
             @Override public void run() {
-                try (SetupSession s = SetupSession.open(app, 5000, null, new SetupEngine.Out() { @Override public void line(String text) { } })) {
+                try (SetupSession s = SetupSession.openAny(app, 5000, null, new SetupEngine.Out() { @Override public void line(String text) { } })) {
                     final SetupEngine.Result r = s.engine.migrateStockNoJournal();
                     if (r != null && r.status == SetupEngine.Status.DONE) {
                         new android.os.Handler(android.os.Looper.getMainLooper()).post(new Runnable() { @Override public void run() { Toast.makeText(app, StockMigration.NOTICE, Toast.LENGTH_LONG).show(); } });
@@ -134,7 +134,7 @@ public final class SetupHook {
      */
     public static boolean enableStock(Context c, String pkg) {
         if (!AdbKeys.exists(c)) return false;
-        try (SetupSession s = SetupSession.open(c, 5000, null, new SetupEngine.Out() { @Override public void line(String text) { } })) {
+        try (SetupSession s = SetupSession.openAny(c, 5000, null, new SetupEngine.Out() { @Override public void line(String text) { } })) {
             return StockEnable.run(s::run, pkg, sa.urtv.home.StockHome.known());
         } catch (Exception e) {
             return false;
@@ -206,7 +206,7 @@ public final class SetupHook {
             reapplyTried = now;
             new Thread(new Runnable() {
                 @Override public void run() {
-                    try (SetupSession s = SetupSession.open(app, 5000, null, new SetupEngine.Out() { @Override public void line(String text) { } })) {
+                    try (SetupSession s = SetupSession.openAny(app, 5000, null, new SetupEngine.Out() { @Override public void line(String text) { } })) {
                         boolean ok = s.engine.reapplyHomeRole();
                         android.util.Log.i(TAG, "home role: the TV took it back; re-applied once: " + (ok ? "ours again" : "not ours"));
                     } catch (Exception e) {
@@ -251,10 +251,10 @@ public final class SetupHook {
             final Context app = c.getApplicationContext();
             if (SetupRunner.get().running()) return "busy";
             if (!AdbKeys.exists(app)) { android.util.Log.i(TAG, "idle: no adb key (the setup never ran here)"); return "no_link"; }
-            try (SetupSession s = SetupSession.open(app, 5000, null, new SetupEngine.Out() { @Override public void line(String text) { } })) {
-                String probe = s.adb.run(IdleSetRule.PROBE).output;
+            try (SetupSession s = SetupSession.openAny(app, 5000, null, new SetupEngine.Out() { @Override public void line(String text) { } })) {
+                String probe = s.run(IdleSetRule.PROBE).output;
                 for (String cmd : IdleSetRule.commands(ms, probe)) {
-                    if (s.adb.run(cmd).code != 0) { android.util.Log.i(TAG, "idle: the TV refused a setting"); return "no_link"; }
+                    if (s.run(cmd).code != 0) { android.util.Log.i(TAG, "idle: the TV refused a setting"); return "no_link"; }
                 }
             }
             android.util.Log.i(TAG, "idle: set over adb");

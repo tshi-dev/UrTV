@@ -162,7 +162,7 @@ public class FactoryActivity extends Activity {
         busy = true;
         new Thread(() -> {
             SetupEngine.Result r;
-            try (SetupSession s = SetupSession.open(this, 60_000, null, line -> { })) {
+            try (SetupSession s = SetupSession.openAny(this, 60_000, null, line -> { })) {
                 r = s.engine.factoryOff();
                 if (r.status == SetupEngine.Status.DONE) new FileStore(this).put(BootGuard.FILE, BootGuard.fresh(System.currentTimeMillis()).text());
             } catch (Exception e) {
@@ -193,7 +193,7 @@ public class FactoryActivity extends Activity {
         busy = true;
         new Thread(() -> {
             SetupEngine.Result r;
-            try (SetupSession s = SetupSession.open(this, 60_000, null, line -> { })) {
+            try (SetupSession s = SetupSession.openAny(this, 60_000, null, line -> { })) {
                 r = s.engine.restoreFactory();
                 if (r.status == SetupEngine.Status.DONE) SetupSession.dropKey(this);   // 4.4 F20: the interface is back: the key goes
             } catch (Exception e) {

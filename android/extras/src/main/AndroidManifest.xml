@@ -10,6 +10,8 @@
     <!-- 4.4 «فوق تطبيق آخر»: the corner notice over another app (the kick-off alert, «تنبيه الإقامة») is drawn here, not by the home (Play Protect). Off until the person
          allows «الظهور فوق التطبيقات» for this app (the TV's screen, or `optimize/dock.sh overlay on`); the window takes no focus and no touch -->
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+    <!-- 4.4 beta 3, wireless debugging: the TLS connection to this TV's own adbd and its service discovery (NSD) on the local network; nothing goes outside the TV -->
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <!-- Android 11+: what it may see. The home (to call it and to bring it back), the HOME answerers (the watch, the Settings key), the settings it opens -->
     <queries>
