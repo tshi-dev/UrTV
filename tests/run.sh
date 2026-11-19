@@ -286,6 +286,7 @@ python3 tests/fix159_test.py
 python3 tests/a11y_heal_test.py
 python3 tests/saver_cards_test.py
 python3 tests/phone_qr_test.py
+python3 tests/kids_exit_beta3_test.py   # 4.4 beta 3: kids mode always shows its way out (the home row, the phone page); under every QR what to do when it does not open
 python3 tests/update_test.py
 python3 tests/update_cover_test.py   # step 41: the screensaver's cover over the home app's own replace (no last app in front)
 python3 tests/suggested_apps_test.py   # 4.3 «تطبيقات مقترحة»: the catalog, the pinned IPTV player, the settings screen, the setup boxes

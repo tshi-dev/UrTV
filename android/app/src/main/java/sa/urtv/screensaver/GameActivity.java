@@ -714,7 +714,7 @@ public abstract class GameActivity extends Activity {
     /** the lobby: the QR and the address at the start side, the phones that came in at the end, the start button (needs `min` phones) */
     protected final void drawPhoneLobby(int min, int max) {
         phoneSeen = phones.room.version();
-        title(S.t("اللعب بالجوالات"), S.t("امسح الرمز بكاميرا الجوال، أو افتح العنوان"));
+        title(S.t("اللعب بالجوالات"), S.t("امسح الرمز بكاميرا الجوال. ما فتح؟ اكتب العنوان في متصفح الجوال"));
         FrameLayout qrBox = stamp(0xFFFFFFFF, L.ink, 6, false);
         FrameLayout.LayoutParams qp = new FrameLayout.LayoutParams(-1, -1); qp.setMargins(px(14), px(14), px(14), px(14));
         qrBox.addView(new QuizActivity.QrView(this, QrCode.encode(phones.url + (en ? "?l=en" : ""))), qp);
