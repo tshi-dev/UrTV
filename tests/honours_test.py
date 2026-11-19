@@ -47,6 +47,14 @@ check("AFC 2022 (April to February): the archive's «2022»", h.season_key("2022
 check("MLS (a calendar year): «2024»", h.season_key("2024-02-21", "2024-12-07", set()) == "2024")
 check("an old season the archive does not keep: «1977-1978»", h.season_key("1977-09-01", "1978-05-01", {"2025-2026"}) == "1977-1978")
 
+check("an item with no start date: its English title says the season («2008–09 …», «1977–1978 …», «1977 …»), a title that names none gives none",
+      h.dates_of_title("2008–09 Süper Lig") == ("2008-08-01", "2009-05-31") and h.dates_of_title("1999–2000 Saudi Premier League") == ("1999-08-01", "2000-05-31")
+      and h.dates_of_title("Saudi Premier League 1977–1978") == ("1977-08-01", "1978-05-31") and h.dates_of_title("1977 Copa del Rey") == ("1977-03-01", "1977-11-30")
+      and h.dates_of_title("Süper Lig") == ("", "") and h.dates_of_title("2008–11 something") == ("", ""))
+ENT = {"Q8": {"claims": {"P3450": [{"mainsnak": {"snaktype": "value", "datavalue": {"value": {"id": "Q485568"}}}, "rank": "normal"}]},
+              "sitelinks": {"enwiki": {"title": "2008–09 Süper Lig"}}, "labels": {}}}
+check("…and the season items read that way (Wikidata dates only a few of the Süper Lig's 69)", h.seasons_from_entities(ENT, {"Q8": "4339"})[0]["start"] == "2008-08-01")
+
 # ---- champions
 def item(q, start, end, win=(), ts=(), ar="", en=""):
     return {"q": q, "lg": "4668", "start": start, "end": end, "win": list(win), "ts": list(ts), "ar": ar, "en": en}
@@ -77,6 +85,13 @@ body3, rep3 = h.champions("4668", gap, {"seasons": [], "champs": []}, LAB, WP, N
 check("a season missing (no item for 2022-23): not complete, no count", not body3["complete"] and "titles" not in body3 and any(r["why"] == "a gap in the seasons" for r in rep3), rep3)
 nowin = items[:3] + [item("Q24", "2024-08-01", "2025-05-30", [])]
 body4, rep4 = h.champions("4668", nowin, {"seasons": [], "champs": []}, LAB, {"en": {}, "ar": {}}, NAMES)
+undated = items + [item("Q00", "", "")]
+body5, rep5 = h.champions("4668", undated, ARCH, LAB, WP, NAMES)
+check("an item no date or title places: in the report, and the list is not complete (no count)", not body5["complete"] and "titles" not in body5
+      and any(r["why"] == "a season item with no date" for r in rep5), rep5)
+dup = items + [item("Q26b", "2025-08-02", "2026-05-30", ["QN"])]
+body6, rep6 = h.champions("4668", dup, ARCH, LAB, WP, NAMES)
+check("two items for one season: the first kept, in the report, not complete", not body6["complete"] and any(r["why"] == "two Wikidata items for one season" for r in rep6), rep6)
 check("an old season no source names: not complete", not body4["complete"] and any(r["why"] == "no source names a champion" for r in rep4), rep4)
 
 # ---- scorers

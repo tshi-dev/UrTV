@@ -82,7 +82,8 @@ def query_seasons(fetch):
     ents = {}
     qs = sorted(by_q)
     for i in range(0, len(qs), 50):
-        j = json.loads(fetch(WDAPI + "?" + urllib.parse.urlencode({"action": "wbgetentities", "ids": "|".join(qs[i:i + 50]), "props": "claims|sitelinks",
+        j = json.loads(fetch(WDAPI + "?" + urllib.parse.urlencode({"action": "wbgetentities", "ids": "|".join(qs[i:i + 50]), "props": "claims|sitelinks|labels",
+                                                                   "languages": "en",
                                                                    "sitefilter": "arwiki|enwiki", "format": "json"})))
         ents.update(j.get("entities") or {})
         time.sleep(PACE)
@@ -91,6 +92,21 @@ def query_seasons(fetch):
 
 def _value(snak):
     return ((snak or {}).get("datavalue") or {}).get("value") if (snak or {}).get("snaktype") == "value" else None
+
+
+def dates_of_title(title):
+    """a season item's title as (start, end) dates: «2008–09 …» or «2008-2009 …» a season over two years (August to May), «1977 …» one year
+    (March to November); ("", "") when the title names no season"""
+    m = re.search(r"(?<!\d)(1[89]\d\d|20\d\d)(?:\s*[–\-/]\s*(\d{4}|\d{2}))?(?!\d)", title or "")
+    if not m:
+        return "", ""
+    y1 = int(m.group(1))
+    if m.group(2):
+        y2 = int(m.group(2)) if len(m.group(2)) == 4 else y1 // 100 * 100 + int(m.group(2))
+        if y2 != y1 + 1:
+            return "", ""
+        return f"{y1}-08-01", f"{y2}-05-31"
+    return f"{y1}-03-01", f"{y1}-11-30"
 
 
 def seasons_from_entities(ents, by_q):
@@ -120,7 +136,10 @@ def seasons_from_entities(ents, by_q):
             amount = next((x.get("amount") for x in (_value(g) for g in (c.get("qualifiers") or {}).get("P1351", [])) if x and x.get("amount")), None)
             ts.append((v["id"], int(float(amount)) if amount and re.fullmatch(r"[+-]?\d+(\.0+)?", amount) else None))
         sl = e.get("sitelinks") or {}
-        out.append({"q": q, "lg": lg, "start": first_time("P580"), "end": first_time("P582"), "win": win, "ts": ts,
+        start, end = first_time("P580"), first_time("P582")
+        if not start:   # most older season items have no start date: their English title says the season («2008–09 Süper Lig», «1977 Copa…»)
+            start, end = dates_of_title((sl.get("enwiki") or {}).get("title") or ((e.get("labels") or {}).get("en") or {}).get("value", ""))
+        out.append({"q": q, "lg": lg, "start": start, "end": end, "win": win, "ts": ts,
                     "ar": (sl.get("arwiki") or {}).get("title", ""), "en": (sl.get("enwiki") or {}).get("title", "")})
     return sorted(out, key=lambda s: (s["lg"], s["start"]))
 
@@ -264,15 +283,19 @@ def year_of(s):
 def champions(lg, items, archive, lab, wp, names):
     """(the league's champions file body, its report lines). items: its Wikidata seasons; archive: its sports/<id>.json (or None);
     lab: Wikidata labels; wp: {wiki: {title: wikitext}}; names: {club id: (en, ar)} from the archive's tables"""
+    undated = False   # an item the list cannot place (no date, or two items for one season): never complete
     arch = {c["s"]: c for c in ((archive or {}).get("champs") or [])}
     arch_seasons = set((archive or {}).get("seasons") or [])
     seasons, report = {}, []
     for it in items:
         s = season_key(it["start"], it["end"], arch_seasons)
-        if not s:
+        if not s:   # an item no date and no title places: the list cannot be called complete
+            report.append({"lg": lg, "why": "a season item with no date", "item": it["q"]})
+            undated = True
             continue
         if s in seasons:   # two items read as one season (a league that changed its calendar): the first kept, said so
             report.append({"lg": lg, "s": s, "why": "two Wikidata items for one season", "items": [seasons[s].get("q"), it["q"]]})
+            undated = True   # which one is right is not known: the list is not called complete
             continue
         src, en, arn, wd = [], [], [], None
         wins = [w for w in it["win"] if w in lab]
@@ -328,7 +351,7 @@ def champions(lg, items, archive, lab, wp, names):
     # a history, not the archive's last seasons: the oldest season named is Wikidata's first item of the league, and older than the archive's
     first_item = min((it["start"] for it in items if it["start"]), default="")
     oldest_arch = min((year_of(s) for s in arch_seasons), default=9999)
-    if not out or not first_item or year_of(out[-1]["s"]) > year_of(first_item) or year_of(out[-1]["s"]) >= oldest_arch:
+    if undated or not out or not first_item or year_of(out[-1]["s"]) > year_of(first_item) or year_of(out[-1]["s"]) >= oldest_arch:
         complete = False
     body = {"v": V, "id": lg, "complete": complete, "seasons": out}
     held = sorted({r["s"] for r in report if r.get("why") == "sources disagree"}, reverse=True)
