@@ -356,7 +356,7 @@ public final class PhoneRun {
             && e.actions.calls.equals(Arrays.asList("launch:com.example.video", "launch:@tasks")), e.actions.calls.toString() + l1.body + l2.body);
         e.actions.calls.clear();
         boolean badLaunch = true;
-        for (String body : new String[] {"{}", "{\"target\":\"rm -rf /\"}", "{\"target\":\"@wifi\"}", "{\"target\":\"@urtv\"}", "{\"target\":\"@parental\"}", "{\"target\":\"x\"}", "{\"target\":5}",
+        for (String body : new String[] {"{}", "{\"target\":\"rm -rf /\"}", "{\"target\":\"@wifi\"}", "{\"target\":\"@urtv\"}", "{\"target\":\"@family\"}", "{\"target\":\"x\"}", "{\"target\":5}",
                 "{\"target\":\"com.example.video\",\"pin\":\"1234\"}", "{\"target\":\"com.example.video\",\"x\":1}", "{\"target\":\"intent:#Intent;end\"}", "{\"target\":\"com.example.video; reboot\"}"}) {
             badLaunch &= authed(e, "POST", "/api/launch", body, sess).status == 400;
         }
@@ -442,8 +442,8 @@ public final class PhoneRun {
         e.ctl.stop("owner");
 
         // Schema, directly
-        check("v2: Schema.target takes packages and our five pills only", Schema.target("com.example.video") && Schema.target("@tasks") && Schema.target("@saver") && Schema.target("@inputs")
-            && Schema.target("@settings") && Schema.target("@listen") && !Schema.target("@wifi") && !Schema.target("@urtv") && !Schema.target("@parental") && !Schema.target("a") && !Schema.target(null)
+        check("v2: Schema.target takes packages, our five pills and kids mode's way out (4.4 beta 3: «@parental», its PIN asked on the TV) only", Schema.target("com.example.video") && Schema.target("@tasks") && Schema.target("@saver") && Schema.target("@inputs")
+            && Schema.target("@settings") && Schema.target("@listen") && !Schema.target("@wifi") && !Schema.target("@urtv") && Schema.target("@parental") && !Schema.target("@family") && !Schema.target("a") && !Schema.target(null)
             && !Schema.target("com.example.") && !Schema.target("com..x") && !Schema.target(new StringBuilder("x").toString()), "");
         check("v2: Schema.packageName is bounded", !Schema.packageName("a." + "b".repeat(200)) && Schema.packageName("sa.urtv.home"), "");
         boolean unique = true;

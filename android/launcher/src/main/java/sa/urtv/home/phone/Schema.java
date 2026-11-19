@@ -25,7 +25,7 @@ public final class Schema {
     public static final int[] SLEEP_MINUTES = {0, 15, 30, 60, 90};
     public static final int[] SAVER_IDLE = {1, 2, 5, 10, 15, 30};
     public static final String[] DO_OPS = {"screensaver", "sleep_cancel"};
-    public static final String[] TOOLS = {"@tasks", "@saver", "@inputs", "@settings", "@listen"};
+    public static final String[] TOOLS = {"@tasks", "@saver", "@inputs", "@settings", "@listen", "@parental"};   // 4.4 beta 3: «@parental», kids mode's way out (its screen asks the PIN on the TV)
     /** «محفظتي»: the buys of one holding (Holdings.MAX_BUYS), each a quantity and a price, Western digits and «.» */
     public static final int MAX_BUYS = 20;
     public static final String BUY = "\\d{1,9}(\\.\\d{1,4})?:\\d{1,9}(\\.\\d{1,4})?";

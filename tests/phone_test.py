@@ -183,7 +183,7 @@ check("the favourites are looked up at most every few seconds and cleared on a p
 check("kids mode and the locks reach the phone at once: the cache is cleared when they change, and launch looks at kids mode again",
       "PhoneApps.invalidate();" in text(JAVA / "Parental.java") and text(JAVA / "Parental.java").count("PhoneApps.invalidate();") == 3
       and "ParentalPolicy.visible(Parental.state(app), target)" in apps_src)
-check("kids mode: a pill request from the phone is ignored by the home (it shows none)", 'if (t.startsWith("@") && Parental.state(this).kids) return;' in main_src)
+check("kids mode: a pill request from the phone is ignored by the home (it shows none); only its way out «@parental» opens (4.4 beta 3)", 'if (t.startsWith("@") && !"@parental".equals(t) && Parental.state(this).kids) return;' in main_src)
 check("cancelling the sleep timer from the phone is a PIN-protected change", '(endpoint.equals("do") && "sleep_cancel".equals(v.get("op")))' in api and 'only(body, "op", "pin")' in text(PHONE / "Schema.java"))
 check("the new settings are the app's lists", re.findall(r"MINUTES = \{([0-9, ]+)\}", text(JAVA / "SleepTimer.java"))[0].replace(" ", "") == "15,30,60,90"
       and re.findall(r"IDLE_MINUTES = \{([^}]*)\}", text(ROOT / "android/app/src/main/java/sa/urtv/screensaver/Prefs.java"))[0].replace('"', "").replace(" ", "") == "1,2,5,10,15,30", "")

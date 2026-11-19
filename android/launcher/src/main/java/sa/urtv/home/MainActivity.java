@@ -158,6 +158,7 @@ public class MainActivity extends Activity {
     private Pill searchPill;   // 4.3.3 «بحث»: the TV's own search inside the apps (GlobalSearch), off until the settings turn it on
     private Pill marketsPill, matchesPill, phonePill, updatePill;   // «تحديث»: an update is worth opening the update screen for (UpdateNotice)   // «الجوال» (C14): the phone remote's page
     private ImageView netIcon;   // C15: the connection in the top row (Wi-Fi, none)   // «الأسواق» and «المباريات»: they take the look like the others («رملي»: they stayed grey, step 28)
+    private Pill kidsExitPill;   // 4.4 beta 3 (a user: kids mode had no way out he could see): in the row in centerPill's place while kids mode is on
     private Pill centerPill;   // «مركز التحكم»: gold while the sleep timer runs; in the row except in kids mode (applyCenterPill)
     private ControlCenter control;   // the panel it opens
     private TextView adhanBar;
@@ -1082,6 +1083,9 @@ public class MainActivity extends Activity {
             if (cleanShown) openOurSettings(false);   // «UrTV النظيف»: the one button that stays is the settings
             else guarded(ParentalPolicy.PILL_CENTER, null, ControlText.NAME, () -> control.open(v));
         });
+        // 4.4 beta 3: kids mode shows its way out where the control centre was: «الرقابة الأبوية» (it asks the PIN when one is set)
+        kidsExitPill = pill(S.t("الخروج من وضع الأطفال"), R.drawable.ic_lock);
+        kidsExitPill.setOnClickListener(v -> openParental());
         // ---- end «مركز التحكم»
         // «الأسواق» and «المباريات»: the markets page and the games page, two more round buttons (step 27, the owner's TV photos)
         Pill marketsBtn = pill(S.t("الأسواق"), R.drawable.ic_markets);
@@ -1139,7 +1143,7 @@ public class MainActivity extends Activity {
         // reaches from 31 to 75 dp down, clear of the adhan bar (to 26) and the cards (from 84)
         int hang = dp((NowCard.HEIGHT - Pill.HEIGHT) / 2f);
         right.addView(nowCard, 0, sideLlp(-2, dp(NowCard.HEIGHT), 0, -hang, dp(Pill.GAP), -hang));
-        right.mains(centerPill, phonePill);   // the row is closed to these until the focus comes in
+        right.mains(centerPill, phonePill, kidsExitPill);   // the row is closed to these until the focus comes in (kids mode: its way out always shows)
         header.addView(right, new FrameLayout.LayoutParams(-2, -2, Dir.end() | Gravity.TOP));
         return header;
     }
@@ -1188,9 +1192,10 @@ public class MainActivity extends Activity {
         final String t = i.getStringExtra(PhoneApps.EXTRA_LAUNCH);
         if (t == null) return;
         i.removeExtra(PhoneApps.EXTRA_LAUNCH);
-        if (t.startsWith("@") && Parental.state(this).kids) return;   // kids mode shows no pills: the phone cannot open one either
+        if (t.startsWith("@") && !"@parental".equals(t) && Parental.state(this).kids) return;   // kids mode shows no pills: the phone cannot open one either (its way out it can)
         handler.post(() -> {
             switch (t) {
+                case "@parental": openParental(); break;   // 4.4 beta 3: kids mode's way out from the phone; the PIN is asked on the TV
                 case "@tasks": launchGuarded(ParentalPolicy.PILL_TASKS, new Intent(this, TasksActivity.class), "المهام"); break;
                 case "@saver": guarded(ParentalPolicy.PILL_SAVER, SAVER_PKG, "شاشة التوقف", this::startSaver); break;
                 case "@inputs": if (inputsPill != null) showInputs(inputsPill.getParent() == pillRow || pills.isEmpty() ? inputsPill : pills.get(0), ParentalPolicy.PILL_INPUTS); break;   // «زر المصادر» hidden: the list from the first button
@@ -1325,6 +1330,7 @@ public class MainActivity extends Activity {
      */
     private void applyCenterPill() {
         if (centerPill == null || pillRow == null) return;
+        applyKidsExit();
         boolean want = centerWanted(), has = centerPill.getParent() == pillRow;
         if (want == has) return;
         if (want) {
@@ -1338,6 +1344,23 @@ public class MainActivity extends Activity {
             pills.remove(centerPill);
             pillRow.removeView(centerPill);
             if (hadFocus && !pills.isEmpty()) pills.get(Math.max(0, Math.min(at, pills.size()) - 1)).requestFocus();
+        }
+        wireFocus();
+    }
+
+    /** 4.4 beta 3: kids mode's way out is a button in the row while kids mode is on (never a dead end); gone when it is off */
+    private void applyKidsExit() {
+        if (kidsExitPill == null || pillRow == null) return;
+        boolean want = Parental.state(this).kids, has = kidsExitPill.getParent() == pillRow;
+        if (want == has) return;
+        if (want) {
+            pills.add(0, kidsExitPill);
+            pillRow.addView(kidsExitPill, 1, sideLlp(-2, dp(Pill.HEIGHT), 0, 0, dp(Pill.GAP), 0));   // the first button (child 0 is «يُتلى الآن»)
+        } else {
+            boolean hadFocus = kidsExitPill.hasFocus();
+            pills.remove(kidsExitPill);
+            pillRow.removeView(kidsExitPill);
+            if (hadFocus && !pills.isEmpty()) pills.get(0).requestFocus();
         }
         wireFocus();
     }

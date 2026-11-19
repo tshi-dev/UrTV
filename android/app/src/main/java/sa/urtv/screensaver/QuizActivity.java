@@ -455,7 +455,7 @@ public class QuizActivity extends Activity {
         FrameLayout.LayoutParams qp = new FrameLayout.LayoutParams(-1, -1); qp.setMargins(px(14), px(14), px(14), px(14));
         qrBox.addView(qr, qp);
         root.addView(qrBox, at(288, 288, 96, 562));
-        TextView hint = text(S.t("امسح الرمز بكاميرا الجوال، أو افتح العنوان"), 34, inkA(0xCC), false);
+        TextView hint = text(S.t("امسح الرمز بكاميرا الجوال. ما فتح؟ اكتب العنوان في متصفح الجوال"), 34, inkA(0xCC), false);   // 4.4 beta 3: a camera may open it in its own browser or ask for https
         hint.setMaxLines(3);
         root.addView(hint, at(310, 130, 410, 562));
         // the whole address, host:port/code, left to right and isolated (a right-to-left line drops the last part), big, under the QR

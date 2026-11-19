@@ -277,6 +277,7 @@ header.top .sub{display:block;font-weight:400;font-size:14px;color:var(--dim)}
 <p id="famPin"></p><p id="famKids"></p><p id="famLocked"></p>
 <p>View only. Change these on the TV itself.</p>
 </div>
+<button id="kidsOut" class="wide hidden">Leave kids mode</button>
 <div class="card">
 <div class="ch"><span class="ic" data-i="tv"></span><div><h2>Connected phones</h2><p id="phones"></p></div></div>
 <button id="out" class="red wide">Disconnect</button>
@@ -644,6 +645,7 @@ header.top .sub{display:block;font-weight:400;font-size:14px;color:var(--dim)}
 		var a = 0, pills = 0; (fam.locked || []).forEach(function (x) { if (String(x).charAt(0) === '@') pills++; else a++; });
 		$('famPin').textContent = 'Parental controls: ' + (fam.pin_set ? 'On' : 'Off');
 		$('famKids').textContent = 'Kids mode: ' + (fam.kids ? 'On' : 'Off');
+		$('kidsOut').classList.toggle('hidden', !fam.kids);
 		$('famLocked').textContent = 'Locked: ' + nn(a, ['app', '2 apps', 'apps']) + ', ' + nn(pills, ['TV button', '2 TV buttons', 'TV buttons']);
 	}
 	function loadFamily() {
@@ -773,6 +775,7 @@ header.top .sub{display:block;font-weight:400;font-size:14px;color:var(--dim)}
 			apps = j.apps || []; $('appsNote').textContent = ''; drawApps(); drawTools(j.tools);
 		});
 	}
+	$('kidsOut').onclick = function () { launch('@parental'); };
 	function launch(target) {
 		api('/api/launch', { target: target }).then(function (j) { say(j); });
 	}

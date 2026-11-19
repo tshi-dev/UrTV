@@ -276,6 +276,7 @@ header.top .sub{display:block;font-weight:400;font-size:14px;color:var(--dim)}
 <p id="famPin"></p><p id="famKids"></p><p id="famLocked"></p>
 <p>للعرض فقط. التغيير من التلفزيون نفسه.</p>
 </div>
+<button id="kidsOut" class="wide hidden">الخروج من وضع الأطفال</button>
 <div class="card">
 <div class="ch"><span class="ic" data-i="tv"></span><div><h2>الجوالات المتصلة</h2><p id="phones"></p></div></div>
 <button id="out" class="red wide">قطع الاتصال</button>
@@ -643,6 +644,7 @@ header.top .sub{display:block;font-weight:400;font-size:14px;color:var(--dim)}
 		var a = 0, pills = 0; (fam.locked || []).forEach(function (x) { if (String(x).charAt(0) === '@') pills++; else a++; });
 		$('famPin').textContent = 'الرقابة الأبوية: ' + (fam.pin_set ? 'مفعّلة' : 'غير مفعّلة');
 		$('famKids').textContent = 'وضع الأطفال: ' + (fam.kids ? 'يعمل' : 'متوقف');
+		$('kidsOut').classList.toggle('hidden', !fam.kids);
 		$('famLocked').textContent = 'المقفل: ' + nn(a, ['تطبيق', 'تطبيقين', 'تطبيقات', 'تطبيقًا']) + ' و ' + pills + ' من أزرار التلفزيون';
 	}
 	function loadFamily() {
@@ -772,6 +774,7 @@ header.top .sub{display:block;font-weight:400;font-size:14px;color:var(--dim)}
 			apps = j.apps || []; $('appsNote').textContent = ''; drawApps(); drawTools(j.tools);
 		});
 	}
+	$('kidsOut').onclick = function () { launch('@parental'); };
 	function launch(target) {
 		api('/api/launch', { target: target }).then(function (j) { say(j); });
 	}

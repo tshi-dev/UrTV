@@ -233,6 +233,11 @@ public class PhoneActivity extends Activity implements PrivateScreen {
                 LinearLayout.LayoutParams qp = new LinearLayout.LayoutParams(dp(240), dp(240));
                 qp.topMargin = dp(8);
                 qrCol.addView(qr, qp);
+                // 4.4 beta 3 (a user: the QR opened «لا يمكن الوصول إلى هذا الموقع», the same link typed worked): the phone's camera can open it in
+                // its own browser or ask for https; the way that always works, said under the code
+                LinearLayout.LayoutParams hp = new LinearLayout.LayoutParams(-1, -2);
+                hp.topMargin = dp(8);
+                qrCol.addView(text(S.t("ما فتح؟ افتح متصفح الجوال واكتب العنوان بنفسك"), 13, "Regular", DIM, Gravity.CENTER), hp);
                 LinearLayout.LayoutParams cp = new LinearLayout.LayoutParams(dp(280), -2);
                 cp.setMarginStart(dp(36));
                 body.addView(qrCol, cp);
