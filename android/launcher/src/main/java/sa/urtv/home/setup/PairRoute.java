@@ -78,6 +78,10 @@ final class PairRoute {
         final String id = b.getString(ExtrasWords.RESULT);
         if (id == null) throw new IOException(b.getString(ExtrasWords.ERROR, "refused"));
         SetupEngine.Shell shell = command -> {
+            if (!sa.urtv.home.PairGuard.allowed(command)) {   // never a generic shell, even for our own code: only the setup's own commands
+                android.util.Log.w("UrTVFactory", "paired route: a command outside the setup's own was refused");
+                throw new IOException("not_allowed");
+            }
             Bundle in = new Bundle();
             in.putString(ExtrasWords.PAIR_ID, id);
             in.putString(ExtrasWords.COMMAND, command);
@@ -87,6 +91,7 @@ final class PairRoute {
             return AdbClient.withCode(text);
         };
         SetupSession.Exec exec = (command, data, size) -> {
+            if (!sa.urtv.home.PairGuard.allowed(command)) throw new IOException("not_allowed");
             String token = PairFiles.put(c, data, size);
             try {
                 Bundle in = new Bundle();

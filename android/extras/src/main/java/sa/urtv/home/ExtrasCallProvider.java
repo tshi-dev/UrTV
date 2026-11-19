@@ -16,6 +16,12 @@ public class ExtrasCallProvider extends ContentProvider {
     @Override public Bundle call(String method, String arg, Bundle extras) {
         Bundle out = new Bundle();
         if (getContext() == null || method == null) return out;
+        // 4.4 beta 3 (the supervisor's hard condition): the paired route gives an adb shell; only our home, signed with our certificate, may use it
+        if (method.startsWith("pair_") && !SignDigest.callerIs(getContext(), PairGuard.HOME)) {
+            android.util.Log.w("UrTVPair", "refused: not our home");
+            out.putString(ExtrasWords.ERROR, "refused");
+            return out;
+        }
         switch (method) {
             case ExtrasWords.STATUS:
                 out.putBoolean(ExtrasWords.ON, ExtrasA11yService.enabled());
@@ -62,13 +68,17 @@ public class ExtrasCallProvider extends ContentProvider {
                 catch (java.io.IOException e) { out.putString(ExtrasWords.ERROR, String.valueOf(e.getMessage())); }
                 break;
             case ExtrasWords.PAIR_RUN:
-                try { out.putString(ExtrasWords.RESULT, sa.urtv.home.pair.PairHost.run(extras == null ? null : extras.getString(ExtrasWords.PAIR_ID), extras == null ? "" : extras.getString(ExtrasWords.COMMAND, ""))); }
-                catch (java.io.IOException e) { out.putString(ExtrasWords.ERROR, "failed"); }
+                try {
+                    String cmd = extras == null ? null : extras.getString(ExtrasWords.COMMAND);
+                    if (!PairGuard.allowed(cmd)) { android.util.Log.w("UrTVPair", "refused: not one of the setup's commands"); out.putString(ExtrasWords.ERROR, "not_allowed"); break; }
+                    out.putString(ExtrasWords.RESULT, sa.urtv.home.pair.PairHost.run(extras.getString(ExtrasWords.PAIR_ID), cmd));
+                } catch (java.io.IOException e) { out.putString(ExtrasWords.ERROR, "failed"); }
                 break;
             case ExtrasWords.PAIR_EXEC:
                 try {
                     android.net.Uri from = extras == null ? null : android.net.Uri.parse(extras.getString(ExtrasWords.URI, ""));
                     if (from == null || !"sa.urtv.home.pairfiles".equals(from.getAuthority())) throw new java.io.IOException("not the home's file");   // only the home's own one-time file
+                    if (!PairGuard.allowed(extras.getString(ExtrasWords.COMMAND))) { android.util.Log.w("UrTVPair", "refused: not one of the setup's commands"); out.putString(ExtrasWords.ERROR, "not_allowed"); break; }
                     out.putString(ExtrasWords.RESULT, sa.urtv.home.pair.PairHost.exec(getContext(), extras.getString(ExtrasWords.PAIR_ID), extras.getString(ExtrasWords.COMMAND, ""), from, extras.getLong(ExtrasWords.SIZE)));
                 } catch (java.io.IOException e) { out.putString(ExtrasWords.ERROR, "failed"); }
                 break;

@@ -60,6 +60,10 @@ public class PairFiles extends ContentProvider {
 
     @Override public ParcelFileDescriptor openFile(Uri uri, String mode) throws FileNotFoundException {
         if (!"r".equals(mode)) throw new FileNotFoundException("read only");
+        if (getContext() == null || !sa.urtv.home.SignDigest.callerIs(getContext(), "sa.urtv.extras")) {   // only our add-on, signed with our certificate
+            android.util.Log.w("UrTVFactory", "pair file refused: not our add-on");
+            throw new FileNotFoundException("refused");
+        }
         String token = uri == null ? null : uri.getLastPathSegment();
         File f;
         synchronized (FILES) { f = token == null ? null : FILES.get(token); }
