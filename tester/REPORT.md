@@ -3250,3 +3250,12 @@ Pictures (PC only): optimize/run/step96/pics/upd-1.png … upd-6.png.
 - tester/apps/leanback.txt (49 package names, LEANBACK_LAUNCHER) and tester/apps/launcher.txt (45 package names, LAUNCHER): package names only, extracted from `cmd package query-activities --brief`; no labels, no IPs, no account names (checked).
 - tester/apps/now-bar.png: the apps row as it is now on 525 (home, YouTube focused). Checked by eye: no name, no Wi-Fi name.
 - «كل التطبيقات» (all apps) picture NOT taken: it needs navigation to the grid, and the rule is no blind D-pad (the last attempt on the grid froze once).
+
+## BETA 2 = build 574 (dd86d596, 19 Nov, owner away; TV muted)
+- Installed home, screensaver and add-on 574 over 570 with adb (data kept). Versions 574/574/574. Home role = UrTV; the first Home after the install opened the stock launcher again (same as the 525 finding); after `am start sa.urtv.home/.MainActivity` and the HOME_KEY status broadcast (home-key: on), Home opens UrTV.
+- Owner's settings: `saver.sh show` vs optimize/run/step98/before3 identical except the version line (before and after the install).
+- Power-cycle check (3): `tv.py --reboot`; after the reboot Home opens UrTV, mute on, role UrTV, settings identical to the backup. PASS.
+- (1) apps row: tester/beta2/apps-bar-574.png. Logos are big and clear, no dark tints, the focused YouTube tile has no outline (grow only). PASS. Finding: the greeting «مساء الخير» and the date line overlap the Wi-Fi icon and the top-right text (the greeting is drawn over the date). Annoying.
+- «كل التطبيقات» (all-apps-574.png): NOT done (needs remote navigation; the grid froze on 525).
+- (2) add teams with typing and timing: NOT done (needs remote; owner's TV).
+- (4) «تحديث تلفزيوني» overlap photo: NOT done (needs remote navigation to «حول»).
