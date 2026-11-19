@@ -3265,3 +3265,9 @@ Pictures (PC only): optimize/run/step96/pics/upd-1.png … upd-6.png.
 - Add teams (typing + timing): NOT done. Needs the settings navigation; blind moves in settings changed owner values before (see the step 105 incident), so not repeated without a screenshot step per row.
 - «تحديث تلفزيوني» overlap photo: NOT done (same reason: under «حول»).
 - Home after the restart, mute, role and the owner's settings: verified identical after the last check.
+
+## BETA 2 (574): all-apps reached (19 Nov, from a screen recording)
+- The recording (review frames at 0–15 s) showed the way: on the apps row, one DOWN opens «كل التطبيقات». Then UP returns to the row, HOME to the home.
+- tester/beta2/all-apps-574.png: the grid opens (MagiConnect, Gallery, Downloader, Downloader for TV, UrTV Player, TCL Channel, Safety Guard, OSN+, Media Player, TV-control tile, prime video, TV BRO, VLC…). Tiles are large with clear logos and no dark tints; the focused Downloader grows and shows its name under it. PASS for legibility. The grid's top row sits right under the apps row (no overlap). No freeze during the 3 s look.
+- Still NOT done: add teams (typing + timing) and the «تحديث تلفزيوني» overlap photo (both in settings; need the owner or the same recording method first).
+- Owner's settings after the return: identical to the backup except the version line.
