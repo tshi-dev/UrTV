@@ -4582,7 +4582,10 @@ const CARD_KINDS_TEST = ['shows','prayers','forecast','hourly','prayerrow','next
     // pages, and its dimming moved every pixel of the frame by a few levels (the 15 checks of 4.3: 1,994,324 px at most 9/255). The layout is what is compared.
     await o.p.addStyleTag({ content: '.photo{background-image:none!important;background-color:#4a4238!important;--dim:.5!important;--pdim:.5!important}'   // both names: the page of origin/next still reads --dim
       // 4.4: the cards and the bottom row changed their look on purpose (the card review); what is compared is the clock and where things are
-      + '.week,.bottom .panel{visibility:hidden!important}' });
+      + '.week,.bottom .panel{visibility:hidden!important}'
+      // 4.4 beta 2: the two thin lines at the top (.rule) are a plain line now, not a gold fade (the owner, 19 Nov: no decoration); their
+      // place is the same, the clock and every part's place are still compared
+      + '.rule{visibility:hidden!important}' });
     await o.p.evaluate(() => document.fonts.ready);
     await o.p.waitForFunction(() => typeof BUSY !== 'object' || !Object.values(BUSY).some(Boolean), null, { timeout: 8000 }).catch(() => {});
     let png = await o.p.screenshot({ animations: 'disabled' });
