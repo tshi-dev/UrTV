@@ -34,7 +34,7 @@ if __name__ == "__main__":
     html = f'''<!doctype html><html lang="ar"><head><meta charset="utf-8"><link rel="stylesheet" href="base.css"><style>
 html,body{{height:auto;overflow:visible}}body{{background:#121014;padding:40px 60px}}h1{{font-size:36px;margin-bottom:4px}}p{{font-size:20px;color:var(--dim);margin-bottom:14px}}
 table{{border-collapse:separate;border-spacing:0 3px;width:100%;font-size:19px}}th{{font-size:21px;text-align:center;padding:4px 8px;font-weight:600}}th small{{display:block;font-size:15px;color:var(--faint);font-weight:400}}
-td{{padding:3px 12px;text-align:center;background:rgba(255,255,255,.05)}}td.c{{text-align:right;width:28%}}td.y{{color:#9fe3b6}}td.n{{color:#f0a48a;background:rgba(240,120,90,.10)}}
+td{{padding:3px 12px;text-align:center;background:rgba(255,255,255,.05)}}td.c{{text-align:right;width:28%}}td.y{{color:#9fe3b6}}td.n{{color:#f0a48a}}
 .note{{position:static;margin-top:12px;font-size:19px;color:var(--gold)}}</style></head><body>
 <h1>أي بطاقة تناسب أي شكل وأي خلفية</h1><p>جدول واحد في الكود يقرر كل بطاقة مع كل شكل وكل خلفية، واختبار يتأكد ما في خانة بلا قرار.</p>
 <table><tr><th></th>{head}</tr>{rows}</table>
