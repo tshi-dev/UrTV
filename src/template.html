@@ -55,6 +55,23 @@
   html.row .week .hd{justify-content:flex-start;padding-top:calc(12px*.4);padding-top:max(6px,calc(var(--cr,12px)*.4))}html.row .week .hd::after{display:none}   /* 4.4 the owner: a card's title at the start (right) in every layout, clear of the rounded corner */
   html.row .week li{justify-content:center;text-align:center}
   html.widget .week{width:100%}
+  /* 4.4 beta 2 the full look «tvOS» (#tvos=1, the owner approved docs/mockups/tvos-preset/): each card a glass rectangle (no pill) over the home,
+     a flat translucent fill and a 1 px edge (the owner: no decoration), a stronger fill on a weak TV (lowram); the focused one a little bigger (not on a weak TV); the focus ring as always */
+  html.tvos .mid{padding:0 .5vw}
+  html.tvos .week,html.hcard.tvos .week{background:rgba(255,255,255,.16)!important;border:1px solid rgba(255,255,255,.34)!important;border-radius:1.8vw;border-radius:clamp(14px,1.8vw,30px);box-shadow:none!important}   /* the owner: a flat fill and a 1 px edge, no gradient, no highlight */
+  html.tvos.lowram .week,html.hcard.tvos.lowram .week{background:rgba(255,255,255,.2)!important;box-shadow:none!important}
+  html.tvos:not(.lowram) .week.lf{transform:scale(1.04);transition:transform .2s cubic-bezier(.2,.8,.2,1)}
+  /* each slot as the screensaver's CardFit decides (#fit=): a text card two cards wide, the coming days as a row of four (day, icon, high and low) */
+  html.tvos .mid .week.fwide{grid-column:span 2}
+  html.tvos .week.frow4 ul{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:.4em}
+  html.tvos .week.frow4 li.fc{display:flex;flex-direction:column;align-items:center;gap:.2em;text-align:center}
+  html.tvos .week.frow4 li.fc:nth-child(n+5),html.tvos .week.frow4 li.fc .ep,html.tvos .week.frow4 li.fc .rg{display:none}
+  /* rowOverflow: a row with more cards than slots: the last slot takes turns, a 250 ms crossfade (a cut on a weak TV), «١/٢» at its bottom end corner */
+  html.row .week{position:relative}
+  html.row .week.turn{transition:opacity .25s cubic-bezier(.2,.8,.2,1)}
+  html.row .week.turnoff{opacity:0;pointer-events:none}
+  html.row.lowram .week.turn{transition:none}
+  html.row .week .turnmark{position:absolute;bottom:.5em;inset-inline-end:.9em;font-size:.8em;color:rgba(255,255,255,.62)}
   /* the home's cards take the apps tray's glass (#hpanel= and #hline= from the launcher: FavBar's fill and line, as thin as «شفافية الشريط» says): one family in every look, no per-card tint */
   html.hcard .week{background:var(--hpanel)!important;border-color:var(--hline)!important}
   html.hcard .week:not(.lf){box-shadow:none!important}   /* the card styles' soft drop shadow (0 24px 60px) is cut at the card's box on the home: a straight-edged dark patch under the glass (step 52); the focus ring (.lf) stays */
@@ -144,7 +161,7 @@
     display:flex;align-items:center;gap:.7em;margin-bottom:1vh;
     font-size:calc(1vw*var(--z,1));font-size:calc(clamp(12px,1vw,18px)*var(--z,1));font-weight:500;letter-spacing:0;color:var(--gold-3);
   }
-  .week .hd::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,rgba(var(--gold-rgb),.5),transparent)}
+  .week .hd::after{content:'';flex:1;height:1px;background:rgba(var(--gold-rgb),.32)}   /* the owner (19 Nov, no decoration): a plain line, no fade */
   .week .hd .srcl{order:2;font-weight:400;white-space:nowrap}   /* a source's credit after the line, at its end */
   /* 4.4 the owner: on the home a card's title kept clear of its rounded corner (--cr, each style's radius): its start inset by .6 of the radius */
   html.widget .week .hd{padding-inline-start:calc(var(--cr,12px)*.6)}
@@ -407,11 +424,11 @@
 
   html.cs-dark1 .week{--cr:26px;border-radius:26px;border-color:rgba(246,239,224,.10)}
   html.cs-dark1 .week::before{background:rgba(8,14,10,.52)}
-  html.cs-dark1 .week::after{box-shadow:inset -3px 0 0 var(--gold)}   /* a thin gold line on the edge facing the clock */
+  /* cs-dark1: no accent line on its edge any more (the owner, 19 Nov: no coloured edge bars) */
 
   html.cs-glass1 .week{--cr:34px;border-radius:34px;border-color:rgba(255,255,255,.22);box-shadow:0 24px 60px rgba(0,0,0,.35)}
-  html.cs-glass1 .week::before{background:linear-gradient(135deg,rgba(255,255,255,.16),rgba(255,255,255,.04) 45%,rgba(255,255,255,.02) 60%,rgba(255,255,255,.10))}
-  html.cs-glass1 .week::after{background:radial-gradient(60% 40% at 85% 0%,rgba(255,255,255,.22),transparent 70%);
+  html.cs-glass1 .week::before{background:rgba(255,255,255,.07)}   /* a flat glass fill (the owner, 19 Nov: no sheen) */
+  html.cs-glass1 .week::after{
     box-shadow:inset 0 1px 0 rgba(255,255,255,.45),inset 0 -1px 0 rgba(255,255,255,.08),inset 1px 0 0 rgba(255,255,255,.12)}
 
   /* framed: an inner gold frame with a diamond on its top and bottom edge, the header centred. The diamond is a square turned
@@ -440,7 +457,7 @@
   html.cs-dark3 .week .dia{background:#07160F}
 
   html.cs-glass3 .week{--cr:30px;border-radius:30px;border-color:rgba(255,255,255,.20);box-shadow:0 24px 60px rgba(0,0,0,.35)}
-  html.cs-glass3 .week::before{background:linear-gradient(135deg,rgba(120,200,150,.20),rgba(20,60,40,.10) 50%,rgba(var(--gold-rgb),.12))}
+  html.cs-glass3 .week::before{background:rgba(70,130,100,.14)}   /* flat (the owner, 19 Nov) */
   html.cs-glass3 .week::after{box-shadow:inset 0 1px 0 rgba(255,255,255,.40),inset 0 -1px 0 rgba(255,255,255,.06)}
   html.cs-glass3 .week .dia{background:rgb(30,60,44)}
 
@@ -466,7 +483,7 @@
   .greg{margin-top:.55vh;font-size:1.06vw;font-size:clamp(12px,1.06vw,21px);font-weight:300;color:var(--dim)}
   /* starts at the screen edge, under the first letters, and fades toward the middle */
   .rule{margin-top:1.2vh;width:9vw;width:clamp(100px,9vw,190px);height:1px;margin-left:auto;margin-right:0;
-    background:linear-gradient(270deg,var(--gold),rgba(var(--gold-rgb),0))}
+    background:rgba(var(--gold-rgb),.45)}   /* a plain line (the owner, 19 Nov) */
 
   /* the card keeps its width on the left; the clock is centred in the space between it and the right edge */
   .mid{display:grid;grid-template-columns:1fr minmax(0,auto);align-items:center;gap:4.5vw}   /* the clock keeps its width; the card takes what is left */
@@ -654,7 +671,7 @@
   .wxsub{margin-top:.55vh;font-size:1.06vw;font-size:clamp(12px,1.06vw,21px);font-weight:300;color:var(--dim);white-space:nowrap}
   .wxr:not(:empty)::before{content:'، ';white-space:pre;color:rgba(214,175,107,.7)}
   .wxt:empty,.wxd:empty,.wxr:empty,.wxdust:empty,.wxi:empty{display:none}
-  .rule.l{margin-left:0;margin-right:auto;background:linear-gradient(90deg,var(--gold),rgba(var(--gold-rgb),0))}
+  .rule.l{margin-left:0;margin-right:auto}
   .mk{margin-top:1.2vh;display:flex;justify-content:flex-end;gap:1.6em;white-space:nowrap;
     font-size:1.06vw;font-size:clamp(12px,1.06vw,21px);font-weight:400;color:#D8CDB6}
   .mk[hidden],.mkup[hidden]{display:none}
@@ -674,7 +691,7 @@
   .live{color:#EE8B70;font-weight:500}
   /* the bar before the adhan: slim, at the very top, across the screen; the header starts below it (3.1vh) */
   .adbar{position:fixed;left:0;right:0;top:0;height:2.9vh;min-height:16px;z-index:6;display:flex;align-items:center;justify-content:center;
-    background:linear-gradient(90deg,rgba(var(--gold-rgb),0),rgba(var(--gold-rgb),.34) 30%,rgba(var(--gold-rgb),.34) 70%,rgba(var(--gold-rgb),0));
+    background:rgba(var(--gold-rgb),.30);   /* flat across (the owner, 19 Nov) */
     color:var(--gold-hi);font-size:1.1vw;font-size:clamp(11px,1.1vw,21px);font-weight:500;letter-spacing:0;white-space:nowrap;pointer-events:none}
   .adbar[hidden]{display:none}
   html.widget .adbar{display:none}
@@ -795,7 +812,7 @@
   .fcm .ftm{flex-direction:column;gap:calc(var(--u)*4);font-size:calc(var(--u)*24)}
   .fcm .ftm .nm{max-width:100%}
   .fcw{text-align:center;font-size:calc(var(--u)*24)}
-  .fmk{flex:none;font-size:calc(var(--u)*18);font-weight:500;padding:calc(var(--u)*2) calc(var(--u)*8);border:1px solid currentColor;border-radius:calc(var(--u)*6);opacity:.85;white-space:nowrap}
+  .fmk{flex:none;font-size:calc(var(--u)*18);font-weight:500;opacity:.85;white-space:nowrap}   /* plain muted text, no box (the owner, 19 Nov) */
 
   /* ---- «المباريات» (#matchpage=1): the light look, sand paper and white cards, a green ring for the focus */
   html.mpage .stage,html.mpage .photo,html.mpage .veil,html.mpage .grain,html.mpage .top-veil,html.mpage .bottom-veil,html.mpage .dimmer,html.mpage #credit,html.mpage .adbar{display:none}
@@ -852,7 +869,7 @@
   .mdx.tight .mdt{gap:calc(var(--u)*10)}
   #mp-q{font:inherit;color:var(--fi);background:var(--fbg);border:1px solid var(--fln);border-radius:calc(var(--u)*12);padding:calc(var(--u)*4) calc(var(--u)*16);width:calc(var(--u)*560);outline:none}
   #mp .fnote{font-size:calc(var(--u)*22)}
-  #mp .fmk{opacity:1;color:var(--fs);border-color:var(--fln);background:var(--chip)}
+  #mp .fmk{opacity:1;color:var(--fs)}
   #mp .fnone{min-height:calc(var(--u)*240)}
   /* a game's card over the page */
   #mp-detail{position:fixed;top:0;right:0;bottom:0;left:0;background:var(--veil);display:flex;align-items:center;justify-content:center;color:var(--fi);font-size:calc(var(--u)*28)}
@@ -948,8 +965,8 @@ html.lowram .photo.settle, html.lowram .week ul.flip li, html.lowram .mrow.flip 
   html.sd-day .bottom-veil{display:block!important;height:38vh}
   .sd-dl{position:fixed;left:11.9vh;right:11.9vh;bottom:6.7vh;height:21vh;z-index:6;direction:rtl}
   .sd-dl::before{content:'';position:absolute;left:0;right:0;top:8.1vh;height:.75vh;border-radius:.4vh;background:rgba(255,255,255,.22)}
-  .sd-dl .done{position:absolute;right:0;top:8.1vh;height:.75vh;border-radius:.4vh;background:linear-gradient(to left,rgba(224,186,116,.45),#E0BA74)}
-  .sd-dl .now{position:absolute;top:7.05vh;width:3vh;height:3vh;margin-right:-1.5vh;border-radius:50%;background:#FFE9B8;box-shadow:0 0 0 .75vh rgba(255,233,184,.25),0 0 3vh rgba(255,233,184,.6)}
+  .sd-dl .done{position:absolute;right:0;top:8.1vh;height:.75vh;border-radius:.4vh;background:#E0BA74}
+  .sd-dl .now{position:absolute;top:7.05vh;width:3vh;height:3vh;margin-right:-1.5vh;border-radius:50%;background:#FFE9B8}
   /* the name above the line, the time well under it: the «now» dot (on the line) never sits on a time */
   .sd-dl .p{position:absolute;top:0;transform:translateX(50%);text-align:center;white-space:nowrap;color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.6)}
   .sd-dl .p b{display:block;font-size:3vh;font-weight:500;line-height:4.4vh}
@@ -3321,7 +3338,41 @@ function buildCards(){
   });
   mid.classList.add('n' + CARDS.length);
   if(CARDS.length === 3) CARDS[2].el.classList.add('w3');
+  // 4.4 beta 2: each slot's CardFit decision as the screensaver gives it (#fit=, never a table of our own): two cards wide, or a row of four
+  const FIT = (_Q.get('fit') || '').split(',');
+  CARDS.forEach(c => { if(FIT[c.i] === 'wide') c.el.classList.add('fwide'); if(FIT[c.i] === 'row4') c.el.classList.add('frow4'); });
   markLive();
+  rowOverflow(+(_Q.get('slots') || 3));
+}
+
+// 4.4 beta 2 (the owner approved the full looks): a row of cards with more cards than slots (a wide card, or two slots at 720p with the large font):
+// the cards before the last slot stay where they are and the rest take turns in it, every 20 s while the page is shown, a 250 ms crossfade (a cut on a
+// weak TV), «١/٢» at the slot's corner. A wide card always stays and the others take turns beside it, so the person's own cards are all shown in turn.
+// One behaviour for every row (tvOS, and «كنبة» at 720p with the large font).
+function rowOverflow(slots){
+  const root = document.documentElement, mid = document.querySelector('.mid');
+  if(!root.classList.contains('row') || !mid) return;
+  const wide = CARDS.find(c => c.el.classList.contains('fwide'));
+  if(wide) slots = Math.min(slots, 2);
+  if(slots < 1 || CARDS.length <= slots) return;
+  const fixed = wide ? [wide] : CARDS.slice(0, slots - 1), turn = CARDS.filter(c => !fixed.includes(c));
+  let col = 1;
+  fixed.forEach(c => { const span = c === wide ? 2 : 1; c.el.style.gridColumn = col + ' / span ' + span; c.el.style.gridRow = '1'; col += span; });
+  mid.style.gridTemplateColumns = 'repeat(' + col + ',minmax(0,1fr))';
+  turn.forEach((c, n) => {
+    c.el.style.gridColumn = String(col);
+    c.el.style.gridRow = '1';
+    c.el.classList.add('turn');
+    const m = document.createElement('span');
+    m.className = 'turnmark';
+    m.setAttribute('aria-hidden', 'true');
+    m.textContent = ar(n + 1) + '/' + ar(turn.length);
+    c.el.appendChild(m);
+  });
+  let k = 0;
+  const show = () => turn.forEach((c, n) => c.el.classList.toggle('turnoff', n !== k));
+  show();
+  setInterval(() => { if(document.hidden) return; k = (k + 1) % turn.length; show(); }, 20 * 1000);
 }
 
 // The launcher's «المهام» card is a button
@@ -5809,6 +5860,7 @@ function addCardStyle(){
 function bootWidget(){
   document.documentElement.classList.add('widget');
   if(_Q.get('row') === '1') document.documentElement.classList.add('row');   // 4.4 «التخطيط: كنبة»: the cards in one row above the apps tray
+  if(_Q.get('tvos') === '1') document.documentElement.classList.add('tvos');   // 4.4 beta 2 the full look «tvOS»: the same row, its cards as glass
   if(CONFIG.lowram) document.documentElement.classList.add('lowram');
   addCardStyle();   // «شكل البطاقة» applies to each of them
   buildCards();

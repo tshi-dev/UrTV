@@ -207,7 +207,7 @@ check("Back inside «تخصيص» goes back to the panel's list, not out of it (
       and "scroller.scrollTo(0, 0)" in cc and cc.count("setAutoSizeTextTypeUniformWithConfiguration(11, 16, 1, TypedValue.COMPLEX_UNIT_SP)") == 2 and "PANEL_W * 0.30f" in cc)
 main_src = (ROOT / "android/launcher/src/main/java/sa/urtv/home/MainActivity.java").read_text(encoding="utf-8")
 check("the tray's scroll does no avoidable work per step: the name row's fade starts only when it changes, the Wi-Fi mark is touched only when it changes",
-      "if (nameShown != inBar) { nameShown = inBar;" in main_src and "if (netShown == (online ? 1 : 0) && netInk == ink) return;" in main_src)
+      "if (nameShown != inBar || (!inBar && nameRow.getAlpha() > 0f && !nameHiding)) {" in main_src and "if (netShown == (online ? 1 : 0) && netInk == ink) return;" in main_src)
 
 # ---- 4.3.1: ours before the TV's, the city beside it; a saved old default order follows the new one
 check("«إعدادات تلفزيونك» comes before the TV's «الإعدادات» by default, «المدينة» right after it; the old default order saved by the editor counts as never reordered",

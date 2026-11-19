@@ -41,11 +41,10 @@ final class TvosStyle {
                 light ? 0x1AFFFFFF : 0x14FFFFFF, 0x29FFFFFF, 0xF01C1E22, 0xFFFFFFFF, 0xFF111111, 0x8C000000, 0xCC14161A);
     }
 
-    /** the glyph's glass square: a soft white gradient with a light edge (flat on a weak TV) */
+    /** the glyph's glass square: a flat translucent fill and a 1 px edge (the owner: no gradient, no decoration) */
     Drawable glyphBox(float radius, int stroke) {
-        GradientDrawable g = light ? new GradientDrawable()
-                : new GradientDrawable(GradientDrawable.Orientation.TL_BR, new int[] {0x38FFFFFF, 0x0DFFFFFF});
-        if (light) g.setColor(0x14FFFFFF);
+        GradientDrawable g = new GradientDrawable();
+        g.setColor(light ? 0x1FFFFFFF : 0x1AFFFFFF);
         g.setCornerRadius(radius);
         g.setStroke(Math.max(1, stroke), light ? 0x1FFFFFFF : 0x38FFFFFF);
         return g;

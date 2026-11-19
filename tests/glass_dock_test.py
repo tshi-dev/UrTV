@@ -112,8 +112,10 @@ check("tvOS Launcher credited: its copyright and the Apache-2.0 notice in each a
       all("Copyright 2026 techgenius" in f and "Apache License, Version 2.0" in f and "Changed by UrTV" in f for f in (art, bar, editor))
       and "## tvOS Launcher" in notices and "Copyright 2026 techgenius" in notices)
 # our own mockups of the «tvOS» manner (docs/mockups/settings-style, tvos-preset: rendered from our own pages, their READMEs say so) are named after it
-check("nothing of tvOS Launcher's images in the apps or the pages (no file named after it outside our own mockups)",
-      not any("tvos" in p.name.lower() and p.suffix.lower() in (".png", ".jpg", ".jpeg", ".webp", ".svg", ".gif") for p in ROOT.rglob("*")
+# our own pictures of the «tvOS» manner (the mockups, and the preset's picture rendered from tvos-home-1080) are named after it; tvOS Launcher's own never
+own = {"android/app/src/main/assets/presets/tvos.jpg"}
+check("nothing of tvOS Launcher's images in the apps or the pages (no picture named after it but our own renders)",
+      not any("tvos" in p.name.lower() and p.suffix.lower() in (".png", ".jpg", ".jpeg", ".webp", ".svg", ".gif") and str(p.relative_to(ROOT)) not in own for p in ROOT.rglob("*")
               if ".git" not in p.parts and "node_modules" not in p.parts and "mockups" not in p.parts))
 
 # ---- the words

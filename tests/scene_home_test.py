@@ -258,7 +258,7 @@ check("off: the scenes' memory tier, font and pictures are asked for only when t
 
 # ---- the settings
 check("4.4 three choices: «التخطيط» (تلفزيونك, the default, كنبة or كرة القدم), «الخلفية» (photos, the default, or scenes), «الساعة» (plain, the default, or glass)",
-      'HOME_LAYOUTS = {"classic", "couch", "football"};' in prefs and '{"تلفزيونك", "كنبة", "كرة القدم"}' in prefs and 'HOME_BGS = {"photos", "scenes"};' in prefs
+      'HOME_LAYOUTS = {"classic", "couch", "football", "tvos"};' in prefs and '{"تلفزيونك", "كنبة", "كرة القدم", "tvOS"}' in prefs and 'HOME_BGS = {"photos", "scenes"};' in prefs
       and 'HOME_CLOCKS = {"plain", "glass"};' in prefs and 'sp.getString("homeBg", oldScenes() ? "scenes" : "photos")' in prefs and 'sp.getString("homeClock", oldScenes() ? "glass" : "plain")' in prefs)
 check("the presets set the three at once: «شكل تلفزيونك» (our layout, photos, plain clock; the default) and «شكل كنبة» (the couch layout, scenes, glass clock); any other mix reads «مخصّص»",
       # 4.4: Couch's apps are «أيقونات» (the owner); a TV set to Couch before («تكبير وظل», "zoom") still reads Couch (presetApps)
@@ -273,7 +273,7 @@ check("«حزم الآفاق» (the owner's «الآفاق», was «المشاه
       '{"saudi", "آفاق السعودية"}, {"couch", "آفاق عالمية"}' in prefs and 'if (out.isEmpty()) out.add("saudi");' in prefs
       and 'row("حزم الآفاق"' in st
       and '{LOOK, H + "أشكال جاهزة والتخطيط", "المظهر على الرئيسية", "رجّع الشكل السابق", "أشكال جاهزة", "شكل شاشة الإعدادات", "تخصيص", "رجّع بطاقاتك", "شكل كنبة", "التخطيط", "وضع الألوان", "صفحات الأسهم والمباريات داكنة",' in hub
-      and 'H + "الخلفية والآفاق", "الخلفية", "حزم الآفاق", "بقاء كل أفق", "الأفق يتبع الوقت", "الأفق يتبع الطقس",' in hub and '{"الساعة", LOOK}, {"شكل التطبيقات", LOOK}, {"حجم شريط tvOS", LOOK}, {"صفوف شريط tvOS", LOOK}, {"حزم الآفاق", LOOK}' in hub)
+      and 'H + "الخلفية والآفاق", "الخلفية", "حزم الآفاق", "بقاء كل أفق", "الأفق يتبع الوقت", "الأفق يتبع الطقس",' in hub and '{"الساعة", LOOK}, {"شكل التطبيقات", LOOK}, {"محاذاة التطبيقات", LOOK}, {"حجم شريط tvOS", LOOK}, {"صفوف شريط tvOS", LOOK}, {"حزم الآفاق", LOOK}' in hub)
 check("«بقاء كل أفق», «الأفق يتبع الوقت», «الأفق يتبع الطقس»: rows in «المظهر», off by default (20 s), given to the home, which picks night by the prayer times and fog by the greeting's weather",
       'row("بقاء كل أفق"' in st and 'row("الأفق يتبع الوقت"' in st and 'row("الأفق يتبع الطقس"' in st and 'sp.getBoolean("sceneByTime", false)' in prefs
       and 'sp.getBoolean("sceneByWeather", false)' in prefs and 'sp.getString("sceneStay", "20")' in prefs and '"scene_stay", "scene_time", "scene_weather"' in prov
@@ -300,7 +300,7 @@ check("4.4 «شكل التطبيقات»: بنرات, أيقونات or مربع
       'HOME_APPS = {"banners", "icons", "tiles", "glass"};' in prefs and '{"بنرات", "أيقونات", "مربعات ملونة", "tvOS"}' in prefs and 'APPS_STORED = {"banners", "icons", "frame", "zoom", "glass"};' in prefs
       and 'sp.getString("appsStyle", "frame")' in prefs and 'row("شكل التطبيقات"' in st
       and '"apps_style"' in prov and 'getStringExtra("appsstyle")' in recv and "appsstyle) " in read(ROOT / "optimize/saver.sh")
-      and "final boolean zoom = inDock && appsZoom;" in main_tile and "FavBar.ZOOM_SCALE" in main_tile and "alpha(has && !zoom ? 1f : 0f)" in main_tile
+      and "final boolean zoom = inDock && appsZoom;" in main_tile and "FavBar.ZOOM_SCALE" in main_tile and "shine.setAlpha(0f);   // the owner (19 Nov): no outline" in main_tile
       and "placeZoomName(appsZoom && inBar ? f : null);" in main and 'java.util.Arrays.asList("zoom", "banners", "icons", "tiles").contains(v)' in snap
       and "appsZoom = FavBar.zoom(cfg.appsStyle);" in main)
 sys.exit(1 if failed else 0)

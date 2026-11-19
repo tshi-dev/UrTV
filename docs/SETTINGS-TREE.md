@@ -62,18 +62,18 @@ the phone page's key, «مركز التحكم» the control centre's row that op
 ——— رجّع الشكل السابق [الرئيسية وشاشة التوقف]
     مثال للوكيل: optimize/saver.sh lookback
 ——— أشكال جاهزة [الرئيسية وشاشة التوقف]
-    الخيارات: شكلك المعتاد / كنبة / صورة فقط / مواقيت يومي / مباريات اليوم / ليل هادئ
+    الخيارات: شكلك المعتاد / كنبة / tvOS / صورة فقط / مواقيت يومي / مباريات اليوم / ليل هادئ
     مثال للوكيل: optimize/saver.sh preset family  (tv, couch, clean, family, sport, calm, or a mix: couch-prayers, clean-icons, sport-night, tv-glass)
-      القيم المقبولة: tv|couch|clean|family|sport|calm|couch-prayers|clean-icons|sport-night|tv-glass
+      القيم المقبولة: tv|couch|tvos|clean|family|sport|calm|couch-prayers|clean-icons|sport-night|tv-glass
 ——— شكل شاشة الإعدادات [كل التلفزيون]
     مثال للوكيل: optimize/saver.sh settingsstyle couch  (or `buttons`, `tvos`)
       القيم المقبولة: buttons|couch|tvos
 ——— تخصيص [الرئيسية وشاشة التوقف]
     مثال للوكيل: optimize/saver.sh preset tv
-      القيم المقبولة: tv|couch|clean|family|sport|calm|couch-prayers|clean-icons|sport-night|tv-glass
+      القيم المقبولة: tv|couch|tvos|clean|family|sport|calm|couch-prayers|clean-icons|sport-night|tv-glass
 ——— رجّع بطاقاتك [الرئيسية]
     مثال للوكيل: optimize/saver.sh preset tv  (the person's own look and cards back)
-      القيم المقبولة: tv|couch|clean|family|sport|calm|couch-prayers|clean-icons|sport-night|tv-glass
+      القيم المقبولة: tv|couch|tvos|clean|family|sport|calm|couch-prayers|clean-icons|sport-night|tv-glass
 ——— شكل كنبة [الرئيسية]
     الخيارات: مفعّل / متوقف
     الأصل: متوقف
@@ -81,7 +81,7 @@ the phone page's key, «مركز التحكم» the control centre's row that op
     مثال للوكيل: optimize/saver.sh couch on
       القيم المقبولة: on|off
 ——— التخطيط [الرئيسية]
-    الخيارات: تلفزيونك / كنبة / كرة القدم
+    الخيارات: تلفزيونك / كنبة / كرة القدم / tvOS
     الأصل: تلفزيونك
     مثال للوكيل: optimize/saver.sh homelayout classic  (تلفزيونك, the default)
       القيم المقبولة: classic|couch|football
@@ -171,6 +171,9 @@ the phone page's key, «مركز التحكم» the control centre's row that op
     الأصل: مربعات ملونة
     مثال للوكيل: optimize/saver.sh appsstyle tiles  («مربعات ملونة», the default: today's tray of tiles, its focus as it was: the ring, or `zoom` where that was chosen)
       القيم المقبولة: tiles|banners|icons|glass
+——— محاذاة التطبيقات [الرئيسية]
+    مثال للوكيل: optimize/saver.sh appsalign center  (or `right`, `left`)
+      القيم المقبولة: center|right|left
 ——— حجم شريط tvOS [الرئيسية]
     الخيارات: 50 / 60 / 70 / 80 / 90 / 100 / 110 / 120 / 130 / 140 / 150
     الأصل: 100
@@ -845,18 +848,18 @@ the phone page's key, «مركز التحكم» the control centre's row that op
 —— رجّع الشكل السابق [الرئيسية وشاشة التوقف]
    مثال للوكيل: optimize/saver.sh lookback
 —— أشكال جاهزة [الرئيسية وشاشة التوقف]
-   الخيارات: شكلك المعتاد / كنبة / صورة فقط / مواقيت يومي / مباريات اليوم / ليل هادئ
+   الخيارات: شكلك المعتاد / كنبة / tvOS / صورة فقط / مواقيت يومي / مباريات اليوم / ليل هادئ
    مثال للوكيل: optimize/saver.sh preset family  (tv, couch, clean, family, sport, calm, or a mix: couch-prayers, clean-icons, sport-night, tv-glass)
-     القيم المقبولة: tv|couch|clean|family|sport|calm|couch-prayers|clean-icons|sport-night|tv-glass
+     القيم المقبولة: tv|couch|tvos|clean|family|sport|calm|couch-prayers|clean-icons|sport-night|tv-glass
 —— شكل شاشة الإعدادات [كل التلفزيون]
    مثال للوكيل: optimize/saver.sh settingsstyle couch  (or `buttons`, `tvos`)
      القيم المقبولة: buttons|couch|tvos
 —— تخصيص [الرئيسية وشاشة التوقف]
    مثال للوكيل: optimize/saver.sh preset tv
-     القيم المقبولة: tv|couch|clean|family|sport|calm|couch-prayers|clean-icons|sport-night|tv-glass
+     القيم المقبولة: tv|couch|tvos|clean|family|sport|calm|couch-prayers|clean-icons|sport-night|tv-glass
 —— رجّع بطاقاتك [الرئيسية]
    مثال للوكيل: optimize/saver.sh preset tv  (the person's own look and cards back)
-     القيم المقبولة: tv|couch|clean|family|sport|calm|couch-prayers|clean-icons|sport-night|tv-glass
+     القيم المقبولة: tv|couch|tvos|clean|family|sport|calm|couch-prayers|clean-icons|sport-night|tv-glass
 —— شكل كنبة [الرئيسية]
    الخيارات: مفعّل / متوقف
    الأصل: متوقف
@@ -864,7 +867,7 @@ the phone page's key, «مركز التحكم» the control centre's row that op
    مثال للوكيل: optimize/saver.sh couch on
      القيم المقبولة: on|off
 —— التخطيط [الرئيسية]
-   الخيارات: تلفزيونك / كنبة / كرة القدم
+   الخيارات: تلفزيونك / كنبة / كرة القدم / tvOS
    الأصل: تلفزيونك
    مثال للوكيل: optimize/saver.sh homelayout classic  (تلفزيونك, the default)
      القيم المقبولة: classic|couch|football
@@ -883,6 +886,9 @@ the phone page's key, «مركز التحكم» the control centre's row that op
    الأصل: مربعات ملونة
    مثال للوكيل: optimize/saver.sh appsstyle tiles  («مربعات ملونة», the default: today's tray of tiles, its focus as it was: the ring, or `zoom` where that was chosen)
      القيم المقبولة: tiles|banners|icons|glass
+—— محاذاة التطبيقات [الرئيسية]
+   مثال للوكيل: optimize/saver.sh appsalign center  (or `right`, `left`)
+     القيم المقبولة: center|right|left
 —— حجم شريط tvOS [الرئيسية]
    الخيارات: 50 / 60 / 70 / 80 / 90 / 100 / 110 / 120 / 130 / 140 / 150
    الأصل: 100

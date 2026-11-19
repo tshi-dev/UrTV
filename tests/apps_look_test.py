@@ -49,7 +49,7 @@ else:
     g = geo[(1080, "icons")]
     check("B at 1080: a 112 square, radius 24, 40 apart", g["cell"] == 112 and g["aspect"] == 1 and g["radius"] == 24 and g["gap"] == 40, g)
     g = geo[(1080, "tiles")]
-    check("C at 1080: today's tray, 304×170 tiles, 218 high", g["cell"] == 304 and g["row"] == 218, g)
+    check("C at 1080: today's tray, 304×170 tiles, 226 high (4.4 beta 2: room for the ×1.14 focus)", g["cell"] == 304 and g["row"] == 226, g)
     for h in (1080, 720):
         for way in ("banners", "icons", "tiles"):
             g = geo[(h, way)]
@@ -69,8 +69,8 @@ check("each way its own cell, height and corner (FavBar.cellW, rowH, radius); th
 check("B: the launcher icon in its square (AspectFrame's ratio 1), read only for that way, cached and sized (artCache, fitted) for a weak TV",
       "card.ratio = FavBar.aspect(FavBar.ICONS);" in main and "float ratio = 9f / 16f;" in main and 'if (FavBar.ICONS.equals(appsLook)) {' in main
       and 'a.icon = artCache.get("i:" + a.pkg);' in main and 'artCache.put("i:" + a.pkg, a.icon = fitted(ri.loadIcon(pm), false));' in main)
-check("A: the TV banner (loadBanner), and an app with none its icon on its own colour",
-      "banner = ai.loadBanner(pm);" in main and "bg.setColor(app.isBanner && !icons ? 0xFF1C1C1E : darken(app.color, 0.45f));" in main)
+check("A: the TV banner (loadBanner); an app with none its own icon on a neutral tile (4.4 beta 2, the owner: never a dark tint of its colour; tests/tile_art_test.py)",
+      "banner = ai.loadBanner(pm);" in main and "app.composed && !icons ? 0 : TileArt.LIGHT" in main and "darken(" not in main)
 check("a new way makes the row again (its art and cells); the focus «تكبير وظل» per FavBar.zoom, the name under the row",
       "if (!wayNow.equals(appsLook)) {" in main and "applyAppsLook();\n            buildApps();" in main and "appsZoom = FavBar.zoom(cfg.appsStyle);" in main
       and "placeZoomName(appsZoom && inBar ? f : null);" in main)

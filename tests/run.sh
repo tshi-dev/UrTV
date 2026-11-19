@@ -246,6 +246,9 @@ python3 tests/clock_text_test.py
 python3 tests/clock_setting_test.py
 python3 tests/saver_clock24_test.py
 python3 tests/card_box_test.py
+python3 tests/no_decoration_test.py   # the owner (19 Nov): no AI-look decoration (accent bars, chips, decorative gradients, glows)
+python3 tests/apps_align_test.py   # 4.4 beta 2 «محاذاة التطبيقات»: the apps row centred by default, right or left
+python3 tests/tile_art_test.py   # 4.4 beta 2 (the owner's test of 525): an app's tile (banner, else its icon on a neutral tile; tiny, wide, white, transparent) and the grid's whole-row scroll
 python3 tests/card_fit_test.py   # 4.4 the owner: a home card that does not suit the look says so, and is swapped within its kind when the look changes
 python3 tests/glow_look_test.py
 python3 tests/unsplash_header_test.py
@@ -300,6 +303,7 @@ python3 tests/on_off_test.py   # on/off rows: the owner's choice I (green triang
 python3 tests/parental_text_test.py   # «الرقابة الأبوية»: the card and its two buttons, the count of locked apps (docs/UX-REVIEW.md)
 python3 tests/fav_bar_test.py   # the favourites bar: the tray, five tiles, the focus inside it, the one 40 px move (docs/PROPOSALS-NOV2.md §1)
 python3 tests/apps_look_test.py   # 4.4 «شكل التطبيقات»: بنرات / أيقونات / مربعات ملونة, centred, A and B with no tray and «تكبير وظل», nothing bundled
+python3 tests/tvos_home_test.py   # 4.4 beta 2 the full look «tvOS»: the preset, the layout only through it, the row above the bar, CardFit per slot, the weak TV
 python3 tests/settings_tvos_test.py   # 4.4 beta 2 «شكل شاشة الإعدادات: tvOS»: the 4.3.2 logic in the tvOS manner, light on a weak TV
 python3 tests/glass_dock_test.py   # 4.5 «زجاجي»: the glass bar's size and rows, «كل التطبيقات» as glass, «تغيير الأيقونة»; R1, R3, the tvOS Launcher credit
 python3 tests/called_off_test.py   # 4.3 A1-A3: a called-off game is never live or upcoming; a team's game read from the copy further on
@@ -443,6 +447,7 @@ node tests/matches_archive.test.mjs   # «المباريات» with the match ar
 node tests/phone_page.test.mjs
 node tests/sync_cards.test.mjs   # «توحيد المظهر» on the page: the cards in the material's fill, line and ink, readable on a light look
 node tests/couch_row.test.mjs   # 4.4 the page: «كنبة» (#row=1, the cards in one strip above the tray) and «مربعات» (today's prayers as boxes in a row, the next one lit with its countdown)
+node tests/tvos_row.test.mjs   # 4.4 beta 2 «tvOS»: the page's glass row, two cards wide, four days, rowOverflow
 node tests/card_title.test.mjs   # 4.4 the owner: a home card's title clear of its rounded corner and the rule, at the start, in every style and layout
 node tests/photo_mask_page.test.mjs   # 4.4 the phone page «صوري»: a photo with its mask, checked on the phone, previewed, sent after the photo; the page's own CSP
 node tests/reminder_page.test.mjs   # the screensaver's reminder card: its time, «الآن», «تم», the snooze, the keys, the adhan, English

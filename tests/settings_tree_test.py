@@ -24,7 +24,7 @@ lines = {re.sub(r" \[[^]]*\]$", "", re.sub(r"^—+ ", "", l)) for l in tree.spli
 missing = [x for x in rows if x not in lines and x != "بحث في الإعدادات"]
 check("every row of the settings is in the tree, once under its section", not missing, missing)
 check("the 4.4 look rows with where they show, their choices, the default apart from an example command and the values it accepts", all(x in tree for x in (
-      "——— التخطيط [الرئيسية]\n    الخيارات: تلفزيونك / كنبة / كرة القدم\n    الأصل: تلفزيونك\n    مثال للوكيل: optimize/saver.sh homelayout classic", "      القيم المقبولة: classic|couch|football",
+      "——— التخطيط [الرئيسية]\n    الخيارات: تلفزيونك / كنبة / كرة القدم / tvOS\n    الأصل: تلفزيونك\n    مثال للوكيل: optimize/saver.sh homelayout classic", "      القيم المقبولة: classic|couch|football",
       "——— شكل التطبيقات [الرئيسية]\n    الخيارات: بنرات / أيقونات / مربعات ملونة / tvOS\n    الأصل: مربعات ملونة", "مربعات / الشكل السابق\n    الأصل: الحالية")), "")
 unesc = lambda x: re.sub(r"\\u([0-9a-fA-F]{4})", lambda m: chr(int(m.group(1), 16)), x)
 scopes = {unesc(k): v for k, v in re.findall(r'\{"([^"]+)", "(home|saver|both|tv)"\}', hub[hub.index("static final String[][] SCOPES"):])}

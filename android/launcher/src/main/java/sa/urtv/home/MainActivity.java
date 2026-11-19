@@ -82,6 +82,8 @@ public class MainActivity extends Activity {
         Drawable art;
         Drawable icon;   // 4.4 «شكل التطبيقات: أيقونات»: the launcher icon, read only for that way (art is the banner when there is one)
         boolean isBanner;
+        /** 4.4 beta 2: no banner, so its art is its icon composed on a neutral tile (TileArt), drawn full-bleed like a banner */
+        boolean composed;
         int color;
     }
 
@@ -994,6 +996,7 @@ public class MainActivity extends Activity {
             dockTop = titleTop + tray.getTop();   // the tray's top (FavBar): the cards above end before it
             for (View c : dockCards) wide = Math.max(wide, Math.round(title.getPaint().measureText(((App) c.getTag()).label)));
         }
+        if (row && homeCard != null && homeCard.tvos()) return CardBox.tvosRow(dm.widthPixels, dm.heightPixels, titleTop, getResources().getConfiguration().fontScale);   // «tvOS»: above the bar, its width
         if (row) return CardBox.row(dm.widthPixels, dm.heightPixels, dm.density, titleTop, bigClockOn ? ScenePlan.fixedBox(dm.widthPixels, dm.heightPixels, false, Dir.rtl())[3] : -1);
         return CardBox.box(cards, dm.widthPixels, dm.heightPixels, dm.density, clockLeft, titleTop, dockTop, wide);
     }
@@ -1525,10 +1528,11 @@ public class MainActivity extends Activity {
             if (banner != null) artCache.put("b:" + a.pkg, banner = fitted(banner, true));
         }
         a.isBanner = banner != null;
+        Drawable raw = null;
         if (banner != null) a.art = banner;
         else {
             a.art = artCache.get("i:" + a.pkg);
-            if (a.art == null) artCache.put("i:" + a.pkg, a.art = fitted(ri.loadIcon(pm), false));
+            if (a.art == null) artCache.put("i:" + a.pkg, a.art = fitted(raw = ri.loadIcon(pm), false));
         }
         if (FavBar.ICONS.equals(appsLook)) {   // B: the launcher icon even where there is a banner, cached and sized as the art (fitted)
             if (!a.isBanner) a.icon = a.art;
@@ -1538,7 +1542,101 @@ public class MainActivity extends Activity {
             }
         }
         a.color = sampleColor(a.pkg, a.art);
+        if (!a.isBanner) {   // 4.4 beta 2 (the owner's test of 525): its own icon, large, on a neutral tile; never a dark tint of its colour
+            Drawable t = artCache.get("t:" + a.pkg);
+            if (t == null) {
+                t = composeTile(sharpIcon(ri, pm));
+                if (t != null) artCache.put("t:" + a.pkg, t);
+            }
+            if (t != null) { a.art = t; a.composed = true; }
+        }
         return a;
+    }
+
+    /**
+     * An app with no banner: its icon filling a 16:9 tile of the focused size, by TileArt's rules (an adaptive icon's background over the whole tile
+     * and its foreground large in the middle; a legacy icon trimmed, fitted large, on its own edge colour, or on LIGHT or DARK when its edge is bare).
+     * On the apps' loading thread; null (the old way) when it cannot be drawn.
+     */
+    private Drawable composeTile(Drawable icon) {
+        if (icon == null) return null;
+        int w = Math.round(getResources().getDisplayMetrics().widthPixels / (float) MIN_DOCK * 1.12f), h = w * 9 / 16;
+        try {
+            Bitmap tile = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
+            Canvas c = new Canvas(tile);
+            if (icon instanceof android.graphics.drawable.AdaptiveIconDrawable) {   // the app's own layers, edge to edge
+                android.graphics.drawable.AdaptiveIconDrawable ad = (android.graphics.drawable.AdaptiveIconDrawable) icon;
+                Drawable bg = ad.getBackground(), fg = ad.getForeground();
+                if (bg != null) { bg.setBounds(0, (h - w) / 2, w, (h - w) / 2 + w); bg.draw(c); }   // a square layer covering the 16:9 tile
+                else c.drawColor(TileArt.LIGHT);
+                int[] box = TileArt.box(TileArt.ADAPTIVE, w, h, 0, 0);
+                if (fg != null) { fg.setBounds((w - box[0]) / 2, (h - box[1]) / 2, (w + box[0]) / 2, (h + box[1]) / 2); fg.draw(c); }
+                return new BitmapDrawable(getResources(), tile);
+            }
+            int iw = icon.getIntrinsicWidth(), ih = icon.getIntrinsicHeight();
+            Drawable cut = iw > 0 && ih > 0 ? trimmed(icon, iw, ih) : null;   // its transparent padding off first
+            if (cut != null) { icon = cut; iw = icon.getIntrinsicWidth(); ih = icon.getIntrinsicHeight(); }
+            int[] box = TileArt.box(TileArt.kind(false, false, iw, ih), w, h, iw, ih);
+            Bitmap glyph = Bitmap.createBitmap(Math.max(1, box[0]), Math.max(1, box[1]), Bitmap.Config.ARGB_8888);
+            icon.setBounds(0, 0, box[0], box[1]);
+            icon.draw(new Canvas(glyph));
+            int gw = glyph.getWidth(), gh = glyph.getHeight();
+            // its own edge: the outermost pixels of the trimmed icon (a native-looking tile); a bare glyph: the backing it stands out from
+            int[] edge = new int[2 * gw + 2 * gh];
+            int k = 0;
+            for (int x = 0; x < gw; x++) { edge[k++] = glyph.getPixel(x, 0); edge[k++] = glyph.getPixel(x, gh - 1); }
+            for (int y = 0; y < gh; y++) { edge[k++] = glyph.getPixel(0, y); edge[k++] = glyph.getPixel(gw - 1, y); }
+            int bg = TileArt.edgeColour(edge);
+            if (bg == 0) {
+                double lum = 0; int n = 0, all = 0;
+                int step = Math.max(1, Math.min(gw, gh) / 24);
+                for (int y = 0; y < gh; y += step) for (int x = 0; x < gw; x += step) {
+                    int p = glyph.getPixel(x, y);
+                    all++;
+                    if (Color.alpha(p) < 128) continue;
+                    lum += TileArt.lum(p); n++;
+                }
+                bg = TileArt.backing(n == 0 ? -1f : (float) (lum / n), all == 0 ? 0f : n / (float) all);
+            }
+            c.drawColor(bg);
+            c.drawBitmap(glyph, (w - gw) / 2f, (h - gh) / 2f, new android.graphics.Paint(android.graphics.Paint.FILTER_BITMAP_FLAG | android.graphics.Paint.ANTI_ALIAS_FLAG));
+            glyph.recycle();
+            return new BitmapDrawable(getResources(), tile);
+        } catch (RuntimeException | OutOfMemoryError e) {
+            return null;
+        }
+    }
+
+    /** a legacy icon cut to its opaque pixels (TileArt.trim decides), or null when it has no margin worth cutting */
+    private Drawable trimmed(Drawable icon, int iw, int ih) {
+        float k = Math.min(1f, 512f / Math.max(iw, ih));
+        int w = Math.max(1, Math.round(iw * k)), h = Math.max(1, Math.round(ih * k));
+        try {
+            Bitmap bm = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
+            icon.setBounds(0, 0, w, h);
+            icon.draw(new Canvas(bm));
+            int l = w, t = h, r = -1, btm = -1;
+            for (int y = 0; y < h; y++) for (int x = 0; x < w; x++) if (Color.alpha(bm.getPixel(x, y)) > 16) { l = Math.min(l, x); t = Math.min(t, y); r = Math.max(r, x); btm = Math.max(btm, y); }
+            int[] cut = TileArt.trim(w, h, l, t, r, btm);
+            if (cut == null) { bm.recycle(); return null; }
+            Bitmap c = Bitmap.createBitmap(bm, cut[0], cut[1], cut[2], cut[3]);
+            if (c != bm) bm.recycle();
+            return new BitmapDrawable(getResources(), c);
+        } catch (RuntimeException | OutOfMemoryError e) {
+            return null;
+        }
+    }
+
+    /** the app's icon at the highest density it has (TileArt.DENSITY, xxxhdpi), so a tile is never drawn from a small picture; else the usual one */
+    private Drawable sharpIcon(ResolveInfo ri, PackageManager pm) {
+        try {
+            int id = ri.getIconResource();
+            if (id != 0) {
+                Drawable d = pm.getResourcesForApplication(ri.activityInfo.applicationInfo).getDrawableForDensity(id, TileArt.DENSITY, null);
+                if (d != null) return d;
+            }
+        } catch (PackageManager.NameNotFoundException | RuntimeException | OutOfMemoryError ignored) { }
+        return ri.loadIcon(pm);
     }
 
     /** On the main thread: the dock first, then the grid a few rows at a time, so a long list never holds up a frame. */
@@ -1724,7 +1822,7 @@ public class MainActivity extends Activity {
             }
         });
         GradientDrawable bg = new GradientDrawable();
-        bg.setColor(app.isBanner && !icons ? 0xFF1C1C1E : darken(app.color, 0.45f));
+        bg.setColor(app.isBanner && !icons ? 0xFF1C1C1E : app.composed && !icons ? 0 : TileArt.LIGHT);   // 4.4 beta 2 (the owner): never a dark tint of the app's colour
         if (glassy) bg.setColor(0);   // the squircle has its own colour
         card.setBackground(bg);
 
@@ -1738,7 +1836,7 @@ public class MainActivity extends Activity {
             img.setScaleType(ImageView.ScaleType.FIT_CENTER);
             card.addView(img, new FrameLayout.LayoutParams(-1, -1));
             img.setPadding(dp(10), dp(10), dp(10), dp(10));
-        } else if (app.isBanner) {
+        } else if (app.isBanner || app.composed) {   // a banner, or the icon already composed on its tile (TileArt): full-bleed
             img.setScaleType(ImageView.ScaleType.CENTER_CROP);
             card.addView(img, new FrameLayout.LayoutParams(-1, -1));
         } else {
@@ -1752,9 +1850,9 @@ public class MainActivity extends Activity {
         ring.setCornerRadius(corner);
         ring.setStroke(inDock ? trayRingW() : dp(2), inDock ? trayRing() : 0xE6FFFFFF);
         ring.setOrientation(GradientDrawable.Orientation.TL_BR);
-        ring.setColors(inDock && !lightNow ? new int[]{(trayRing() & 0x00FFFFFF) | 0x38000000, trayRing() & 0x00FFFFFF, trayRing() & 0x00FFFFFF} : new int[]{0x26FFFFFF, 0x00FFFFFF, 0x00FFFFFF});   // a soft glow of the ring's own colour inside it on the dark looks
+        ring.setColor(0);   // the ring only (the owner, 19 Nov: no glow, no decoration)
         View shine = new View(this);
-        shine.setBackground(ring);
+        shine.setBackground(ring);   // shown only while an app is carried in «تعديل المفضلة» (liftCard), never as the focus: the owner, «no outline»
         shine.setAlpha(0f);
         card.addView(shine, new FrameLayout.LayoutParams(-1, -1));
         addEditMarks(card, ring, shine);   // the × of «تعديل المفضلة» and «تعديل التطبيقات», shown only in the mode
@@ -1779,7 +1877,7 @@ public class MainActivity extends Activity {
         card.setOnFocusChangeListener((v, has) -> {
             final int dbg = dbgFocus;   // 0 normally: every switch below is off (dock.sh debug nolift|noglow|noshine|noscale|notitle|plainfocus)
             final boolean zoom = inDock && appsZoom;   // 4.4 «شكل التطبيقات: تكبير وظل»: larger with a soft shadow, no ring, the name under it
-            float s = has ? (inDock ? (zoom ? FavBar.ZOOM_SCALE : FavBar.FOCUS_SCALE) : 1.1f) : 1f;
+            float s = has ? (inDock ? (zoom ? FavBar.ZOOM_SCALE : FavBar.FOCUS_SCALE) : 1.1f) : 1f;   // the owner (19 Nov): the focus is the size, also on a weak TV and in «tvOS» (no ring); a weak TV sets it at once (Motion)
             // from the games of the football home: the tray goes back to its resting place (y 768) first, then the tile lifts (FavBar.DROP_MS)
             long wait = inDock && has && trayLowered ? FavBar.DROP_MS : 0;
             if (inDock && has) lowerTray(false);
@@ -1789,9 +1887,10 @@ public class MainActivity extends Activity {
                 if (inDock) v.animate().translationY(has ? -lift() : 0).translationZ(z)
                         .setInterpolator(Motion.ease()).setStartDelay(wait).setDuration(Motion.move(MainActivity.this)).start();
                 else v.animate().translationZ(z).setInterpolator(Motion.ease()).setDuration(Motion.move(MainActivity.this)).start();
-                if ((dbg & DebugFlags.SHINE) == 0) shine.animate().alpha(has && !zoom ? 1f : 0f).setDuration(Motion.MS).setInterpolator(Motion.ease()).start();
+                if ((dbg & DebugFlags.SHINE) == 0) shine.setAlpha(0f);   // the owner (19 Nov): no outline, the focus is the size, the lift and the shadow
                 label.animate().alpha(has ? 1f : 0f).translationY(has ? dp(4) : 0).setDuration(Motion.MS).setInterpolator(Motion.ease()).start();
-            } else if ((dbg & DebugFlags.SHINE) == 0) shine.animate().alpha(has ? 1f : 0f).setDuration(Motion.MS).setInterpolator(Motion.ease()).start();
+            } else if ((dbg & DebugFlags.SHINE) == 0) shine.setAlpha(0f);
+            if (glassy && Ram.low(MainActivity.this)) { v.animate().cancel(); v.setScaleX(s); v.setScaleY(s); }   // 4.4 beta 2 (the owner: no outline): on a weak TV the tvOS icon grows too, set at once (nothing else shows the focus)
             if (!has) return;
             lastFocusedId = v.getId();
             optionsHint(inDock);
@@ -2215,16 +2314,26 @@ public class MainActivity extends Activity {
         glideTo(Math.max(0, Math.min(y - (int) (getResources().getDisplayMetrics().heightPixels * 0.42f), max)));
     }
 
+    /** the first grid row on the screen while the focus is in the grid (GridWindow): the page moves a whole row at a time */
+    private int gridFirst;
+
     private void scrollToRow(View tileBox) {
         View row = (View) tileBox.getParent();
-        int y = grid.getTop() + row.getTop();
+        int at = grid.indexOfChild(row);
         int screenH = getResources().getDisplayMetrics().heightPixels;
-        // First grid row: slide the dock band up to the top edge; later rows centre on screen.
-        int target = grid.indexOfChild(row) == 0 && tvCards.isEmpty()
-                ? hero.getTop() + bottomBlock.getTop() + tray.getTop()   // the tray at the top edge
-                : y - (int) (screenH * 0.42f);
         int max = Math.max(0, content.getHeight() - scroll.getHeight());
-        glideTo(Math.max(0, Math.min(target, max)));
+        if (at == 0 && tvCards.isEmpty()) {   // the first grid row: the dock band slides up to the top edge (the tray, then the row under it)
+            gridFirst = 0;
+            glideTo(Math.max(0, Math.min(hero.getTop() + bottomBlock.getTop() + tray.getTop(), max)));
+            return;
+        }
+        // 4.4 beta 2 (the owner's test of 525: the first row cut at the top, the focused one partly off): whole rows only, the focused one always
+        // whole between a safe top and a safe bottom; the page moves only when the focus leaves the rows shown (GridWindow)
+        int n = grid.getChildCount();
+        int[] tops = new int[n], bottoms = new int[n];
+        for (int i = 0; i < n; i++) { View c = grid.getChildAt(i); tops[i] = grid.getTop() + c.getTop(); bottoms[i] = grid.getTop() + c.getBottom(); }
+        gridFirst = GridWindow.first(tops, bottoms, at, gridFirst, Math.round(screenH * GridWindow.SAFE_TOP), screenH - Math.round(screenH * GridWindow.SAFE_BOTTOM));
+        glideTo(Math.max(0, Math.min(tops[gridFirst] - Math.round(screenH * GridWindow.SAFE_TOP), max)));
     }
 
     // ---------------------------------------------------------------- inputs
@@ -3238,6 +3347,11 @@ public class MainActivity extends Activity {
         hiddenCard.setOnFocusChangeListener((v, has) -> scaleTo(v, has ? 1.1f : 1f));
         dressHiddenCard();
         hiddenBox.addView(hiddenCard, new LinearLayout.LayoutParams(-1, -2));
+        TextView room = text(11, "sans-serif-medium", Color.WHITE);   // 4.4 beta 2: the room of a tile's name under it, so its row is as tall as the others
+        room.setText(" ");
+        room.setAlpha(0f);
+        room.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO);
+        hiddenBox.addView(room, llp(-1, -2, 0, dp(10), 0, 0));
         return hiddenBox;
     }
 
@@ -3376,6 +3490,7 @@ public class MainActivity extends Activity {
 
     /** The name (and the hint beside it) centred over the focused favourite, as it scrolls too; hidden when the focus is not in the bar. */
     private boolean nameShown;   // what the name row is fading to (placeName)
+    private boolean nameHiding;  // the row is fading out now (placeName runs on every scroll step: one fade, not one per step)
     private void placeName() {
         if (nameRow == null || nameRow.getWidth() == 0) return;
         View f = getCurrentFocus();
@@ -3384,7 +3499,11 @@ public class MainActivity extends Activity {
         if (appsZoom) inBar = false;   // «تكبير وظل»: the name is under the tile, not above the tray
         // this runs on every step of the tray's scroll: a new animator each step (cancel and restart, an invalidation each) is exactly what makes a scroll janky;
         // the name's fade starts only when it has to change
-        if (nameShown != inBar) { nameShown = inBar; nameRow.animate().alpha(inBar ? 1f : 0f).setDuration(FavBar.MS).start(); }
+        if (nameShown != inBar || (!inBar && nameRow.getAlpha() > 0f && !nameHiding)) {   // 4.4 beta 2: the row also fades when it was never shown (the zoom ways: it stayed beside the name over the icon)
+            nameShown = inBar;
+            nameHiding = !inBar;
+            nameRow.animate().alpha(inBar ? 1f : 0f).setDuration(FavBar.MS).withEndAction(() -> nameHiding = false).start();
+        }
         if (!inBar || nameCard == null) return;
         nameRow.setTranslationX(0);   // the name has ONE place: above the tray at its start edge (right in Arabic, left in English), never following a tile (build 180)
     }
@@ -3406,6 +3525,7 @@ public class MainActivity extends Activity {
             dockRow.setPadding(edge, edge, edge, edge);
             glassBar.radius(FavBar.glassBarRadius(sh, glassK));
             glassBar.light(lightNow);
+            glassBar.flat(Ram.low(this));   // a weak TV: a flat fill and its edge, no picture behind
             dockRow.glass(glassBar, glassRowsN, FavBar.glassCell(sh, glassK), FavBar.glassGap(sh, glassK), FavBar.glassPad(sh, glassK));
             readGlassBackdrop();
         } else if (dockRow != null) {
@@ -3418,6 +3538,17 @@ public class MainActivity extends Activity {
     // ---- 4.5 «زجاجي»: the bar's size and rows, its glass, and its last tile «كل التطبيقات»
 
     /** the bar's size factor and rows (FavBar.glassK, glassRows, from «حجم شريط tvOS» and «صفوف شريط tvOS») */
+    /**
+     * 4.4 beta 2 (the owner): «محاذاة التطبيقات», the apps row in the middle (the default), at the right or at the left of the screen, in every look
+     * (the side is the screen's, the same in Arabic and English); a row wider than the screen scrolls with the focus as before. The clock never moves.
+     */
+    private String appsAlignNow = "center";
+    private void alignApps(String align) {
+        if (dockRow == null || align == null || align.equals(appsAlignNow)) return;
+        appsAlignNow = align;
+        dockRow.setGravity(FavBar.alignGravity(align));
+    }
+
     private volatile float glassK = 1f;
     private int glassRowsN = 1;
     private final GlassBar glassBar = new GlassBar();
@@ -3429,7 +3560,7 @@ public class MainActivity extends Activity {
 
     /** the bar's picture: the home's backdrop (GlassSource), read off the main thread, given to the bar on it */
     private void readGlassBackdrop() {
-        if (!glassWay() || loader.isShutdown()) return;
+        if (!glassWay() || loader.isShutdown() || Ram.low(this)) return;   // a weak TV draws the bar flat: no picture read
         loader.execute(() -> {
             Bitmap b = GlassSource.backdrop(this);
             runOnUiThread(() -> { glassBar.backdrop(b); if (dockRow != null) dockRow.invalidate(); });
@@ -3466,7 +3597,7 @@ public class MainActivity extends Activity {
         card.addView(new AllAppsMark(this), new FrameLayout.LayoutParams(-1, -1));
         card.setOnClickListener(v -> openAllApps());
         card.setOnFocusChangeListener((v, has) -> {
-            scaleTo(v, has ? FavBar.ZOOM_SCALE : 1f);
+            scaleTo(v, has ? FavBar.ZOOM_SCALE : 1f);   /* the owner (19 Nov, no ring): the size is the focus, also on a weak TV */   // a weak TV: nothing grows
             v.animate().translationZ(has ? dp(2 * GlowLook.LIFT_DP) : 0).setInterpolator(Motion.ease()).setDuration(Motion.move(MainActivity.this)).start();
             if (!has) return;
             lastFocusedId = v.getId();
@@ -3529,6 +3660,8 @@ public class MainActivity extends Activity {
             zoomName.setAlpha(0f);
             zoomName.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO);   // the tile says its name itself
             hero.addView(zoomName, new FrameLayout.LayoutParams(-2, -2, Gravity.TOP | Gravity.START));
+            final View first = f;
+            zoomName.post(() -> { if (first.hasFocus()) placeZoomName(first); });   // 4.4 beta 2: setX is right only once the name is laid out (its left was 0, and in Arabic it stood 140 px off its icon)
         }
         Object tag = f.getTag();
         if (tag instanceof App) zoomName.setText(((App) tag).label);
@@ -4032,6 +4165,7 @@ public class MainActivity extends Activity {
         ampm.setText(ClockText.suffix(h, h24));
         ampm.setVisibility(h24 ? View.GONE : View.VISIBLE);
         sceneTick(cfg);
+        alignApps(cfg.appsAlign);   // 4.4 beta 2 «محاذاة التطبيقات»
         String wayNow = FavBar.look(cfg.appsStyle);
         float kNow = FavBar.glassK(cfg.glassSize);
         int rowsNow = FavBar.glassRowsFit(getResources().getDisplayMetrics().heightPixels, kNow, FavBar.glassRows(cfg.glassRows));   // as many as fit at this size
@@ -4937,9 +5071,6 @@ public class MainActivity extends Activity {
         return Color.argb(Math.round(a * 255), Color.red(c), Color.green(c), Color.blue(c));
     }
 
-    private static int darken(int c, float f) {
-        return Color.rgb((int) (Color.red(c) * f), (int) (Color.green(c) * f), (int) (Color.blue(c) * f));
-    }
 
     /** The adhan's rule for a key; the PIN keypad (a dialog, with a key path of its own) asks it first too, so nothing in the family lock can hold the adhan. */
     private boolean adhanTakes(KeyEvent e) {

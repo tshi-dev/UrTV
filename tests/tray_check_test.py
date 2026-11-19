@@ -24,7 +24,7 @@ def node(cls, r, text="", focusable=False, focused=False):
     return f'<node class="{cls}" text="{text}" content-desc="" focusable="{str(focusable).lower()}" focused="{str(focused).lower()}" bounds="[{r[0]},{r[1]}][{r[2]},{r[3]}]"/>'
 
 
-def dump(tiles, label, tray=(128, 768, 1792, 986), focus=0):
+def dump(tiles, label, tray=(122, 760, 1798, 986), focus=0):   # 4.4 beta 2: the tray 6 px wider each side and 8 taller (room for the ×1.14 focus)
     ns = [node("android.widget.HorizontalScrollView", tray, focusable=True)]
     for i, r in enumerate(tiles):
         ns.append(node("android.widget.FrameLayout", r, focusable=True, focused=i == focus))
@@ -33,20 +33,20 @@ def dump(tiles, label, tray=(128, 768, 1792, 986), focus=0):
     return "<hierarchy>" + "".join(ns) + "</hierarchy>"
 
 
-def ar_tiles(shift=0):   # the first tile at the right, 304 wide, 24 apart, 24 inside the tray; the focused one grown (+12 each side, lifted 6)
+def ar_tiles(shift=0):   # the first tile at the right, 304 wide, 24 apart, 30 inside the tray (28 above and below); the focused one grown ×1.14 (+21 each side, +12 up and down) and lifted 6
     xs = [1464 - i * 328 + shift for i in range(5)]
-    t = [(x, 792, x + 304, 962) for x in xs]
-    t[0] = (xs[0] - 12, 780, xs[0] + 316, 974)
+    t = [(x, 788, x + 304, 958) for x in xs]
+    t[0] = (xs[0] - 21, 770, xs[0] + 325, 964)
     return t
 
 
 def tray_for(n):
-    return (128, 986 - tc.tray_height(n), 1792, 986)
+    return (122, 986 - tc.tray_height(n), 1798, 986)
 
 
-def en_n_tiles(n, first_focus=True):   # n whole tiles from the left, tile_size(n) wide, 24 apart, 24 inside the tray, centred in its height
+def en_n_tiles(n, first_focus=True):   # n whole tiles from the left, tile_size(n) wide, 24 apart, 30 inside the tray, centred in its height
     w, h = tc.tile_size(n)
-    y = 986 - tc.tray_height(n) + 24   # the tray is as high as its tiles with 24 above and below (step 28)
+    y = 986 - tc.tray_height(n) + 28   # the tray is as high as its tiles with 28 above and below (step 28; 24 before 4.4 beta 2)
     t = [(152 + k * (w + 24), y, 152 + k * (w + 24) + w, y + h) for k in range(n)]
     t[0] = (t[0][0] - 6, t[0][1] - 6, t[0][2] + 6, t[0][3] + 6) if first_focus else t[0]
     return t
@@ -55,7 +55,7 @@ def en_n_tiles(n, first_focus=True):   # n whole tiles from the left, tile_size(
 check("tile_size: 5 is 304x171, 7 is 210x118, 10 is 140x78 at 1080p (the bar-size setting)", [tc.tile_size(n) for n in (5, 7, 10)] == [(304, 171), (210, 118), (140, 78)], [tc.tile_size(n) for n in (5, 7, 10)])
 for n in (7, 10):
     f, m = tc.analyse(dump(en_n_tiles(n), (152, 704, 256, 752), tray=tray_for(n)), "en", "first", n=n, favs=n)
-    check(f"a good tray of {n} whole tiles passes (24 apart, 24 inside, the name at the left inner padding)", not f and m.get("whole") == n, (f, m.get("whole")))
+    check(f"a good tray of {n} whole tiles passes (24 apart, 30 inside, the name at the left inner padding)", not f and m.get("whole") == n, (f, m.get("whole")))
 t = en_n_tiles(7)
 f, _ = tc.analyse(dump(t[:6] + [(t[6][0] + 20, t[6][1], t[6][2] + 20, t[6][3])], (152, 704, 256, 752), tray=tray_for(7)), "en", "first", n=7, favs=7)
 check("7 set, one tile 20 px out of its place: found (not 24 apart)", any("not 24" in x for x in f), f)
@@ -67,7 +67,7 @@ check("a good tray in Arabic passes: five whole tiles inside the inner rect, the
 f, _ = tc.analyse(dump(ar_tiles()[:4] + [(128, 792, 168, 962)], good_label), "ar", "first")
 check("a sliver of a sixth tile (40 px) is found", any("sliver" in x for x in f), f)
 f, _ = tc.analyse(dump(ar_tiles(24), good_label), "ar", "first")
-check("tiles not 24 px inside the tray are found", any("inner rect" in x or "closer than" in x for x in f), f)
+check("tiles not 30 px inside the tray are found", any("inner rect" in x or "closer than" in x for x in f), f)
 f, _ = tc.analyse(dump(ar_tiles(), (1700, 704, 1790, 752)), "ar", "first")
 check("the name not at the start edge's inner padding is found (right edge 1790, not 1768)", any("name's right edge" in x for x in f), f)
 f, _ = tc.analyse(dump(ar_tiles(), (152, 704, 256, 752)), "ar", "first")
@@ -75,8 +75,8 @@ check("the mirrored name (above the leftmost tile, the owner's report) is found"
 f, _ = tc.analyse(dump(ar_tiles(), good_label, tray=(120, 768, 1800, 1066)), "ar", "first")
 check("a tray past the safe area (x 120..1800 and a bottom of 1066) is found", any("safe area" in x for x in f), f)
 low = [(r[0], r[1] + 40, r[2], r[3] + 40) for r in ar_tiles()]
-f, _ = tc.analyse(dump(low, (1664, 744, 1768, 792), tray=(128, 808, 1792, 986)), "ar", "first", lowered=True)
-check("lowered: the tray at 808..1026 is inside the safe area, ends at 1026 and its tiles are whole inside it", not f, f)
+f, _ = tc.analyse(dump(low, (1664, 744, 1768, 792), tray=(122, 800, 1798, 986)), "ar", "first", lowered=True)
+check("lowered: the tray at 800..1026 is inside the safe area, ends at 1026 and its tiles are whole inside it", not f, f)
 en_tiles = [(tc.W - r[2], r[1], tc.W - r[0], r[3]) for r in ar_tiles()]
 f, _ = tc.analyse(dump(en_tiles, (152, 704, 256, 752)), "en", "first")
 check("a good tray in English passes: the name at the left, the first tile at the left", not f, f)
@@ -85,7 +85,7 @@ check("the name is in one place: the same top and bottom with the focus on the f
 
 try:
     from PIL import Image, ImageDraw
-    tray = (128, 768, 1792, 986)
+    tray = (122, 760, 1798, 986)
     a = Image.new("RGB", (tc.W, tc.H), (40, 60, 90))
     b = a.copy()
     check("pixels: the strips beside the tray are equal when nothing is drawn outside it", not tc.strips_same(a, b, tray))
@@ -105,8 +105,8 @@ check("on «[shots]» the 8 pictures go to the data-screens branch (tray/<branch
 src = (ROOT / ".github/screens/tray_check.py").read_text(encoding="utf-8")
 check("the rendered check also takes the 8 pictures of the owner's question: sand and dark glass, bar size 5, 7, 10 and all on 12 apps, each judged by analyse() and for a name cut with «…»",
       "def shots(out, report, failures):" in src and 'for look in ("sand", "glass"):' in src and 'for setting in ("5", "7", "10", "all"):' in src and "n = shown(setting, 12)" in src and "seed_dock(12)" in src and "tray-{look}-{setting}.png" in src and "«…»" in src)
-f, _ = tc.analyse(dump(en_n_tiles(7), (152, 704, 256, 752), tray=(128, 768, 1792, 986)), "en", "first", n=7, favs=7)
-check("step 28: 7 tiles in a tray that kept its 218 height (an empty band under them): found", any("high" in x for x in f) and any("not 24 and 24" in x for x in f), f)
+f, _ = tc.analyse(dump(en_n_tiles(7), (152, 704, 256, 752), tray=(122, 760, 1798, 986)), "en", "first", n=7, favs=7)
+check("step 28: 7 tiles in a tray that kept its 226 height (an empty band under them): found", any("high" in x for x in f) and any("not 28 and 28" in x for x in f), f)
 ns_h = [{"cls": "android.widget.TextView", "text": "Stub 1", "desc": "", "focusable": False, "focused": False, "rect": (152, 764, 236, 819)},
         {"cls": "android.widget.TextView", "text": "Hold OK for options", "desc": "", "focusable": False, "focused": False, "rect": (268, 760, 520, 819)}]
 check("step 28: the hint beside the name (16 sp, as big as the name) is not taken for the name", tc.name_label(ns_h, (128, 837, 1792, 986))["text"] == "Stub 1")

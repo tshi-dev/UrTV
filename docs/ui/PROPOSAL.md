@@ -111,3 +111,10 @@ This work adds `FavBar.restyle(cells, way)` on top of it, plus `HomeLook.apply`.
 
 1. **Glass clock rule.** Since sweep 3 (6df8ffc2) the rule is `glassClock(cfg.homeClock, homeCard != null && homeCard.shownCards() > 0)`: the regular clock shows while any card shows (the owner's choice). `tests/sweep_test.py` and `tests/scene_home_test.py` pin it. The rule moves behind the cover unchanged.
 2. **The hint.** CouchStyle's `HINT` (1.4375 rem) and the hint on `CouchStyle.SUB` stay as they are. If CouchStyle becomes the only form, the classic `HINT_SP` 14 goes, and the hint is never smaller than that.
+
+## The owner's standing rule: no AI-look decoration (19 Nov)
+
+Nowhere in UrTV, mockups included: no coloured edge or accent bars, no rounded colour stripes, no decorative badges or chips, no gradient used as
+decoration, no letter-in-circle placeholder crests, no sparkle or emoji-like marks. Instead: plain 1 px dividers with a plain text label, colour on
+text only where it carries data (a result, a live minute, a reason), the real logo or nothing, flat fills. Kept because they work, not decorate:
+the readability scrims behind text on photos, a bar whose gradient is the data (cold to hot), the glass clock's own rendering.

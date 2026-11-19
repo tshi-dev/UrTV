@@ -206,4 +206,24 @@ for look in tv couch clean family sport calm couch-prayers clean-icons sport-nig
   adb exec-out screencap -p > "$OUT/look-$look.png"
 done
 adb shell "am broadcast -n sa.urtv.screensaver/.SaverReceiver -a sa.urtv.screensaver.SET --es preset tv" > /dev/null
+
+# 4.4 beta 2 (the owner's test of build 525, «شكل التطبيقات» and «كل التطبيقات»): the tray and the grid as drawn, at 1080 and at 720 with the
+# large font (apps-*.png, published): each app with no banner on its neutral tile (TileArt), the focus ring, the grid's whole rows
+shots_apps() {   # SUFFIX
+  adb shell "am broadcast -n sa.urtv.screensaver/.SaverReceiver -a sa.urtv.screensaver.SET --es appsstyle tiles" > /dev/null
+  start sa.urtv.home/.MainActivity; sleep 8
+  key DPAD_DOWN; sleep 2
+  adb exec-out screencap -p > "$OUT/apps-tray-$1.png"
+  key DPAD_DOWN; sleep 2
+  adb exec-out screencap -p > "$OUT/apps-grid-a-$1.png"
+  key DPAD_DOWN DPAD_DOWN DPAD_DOWN; sleep 2
+  adb exec-out screencap -p > "$OUT/apps-grid-b-$1.png"
+  key DPAD_LEFT; sleep 2
+  adb exec-out screencap -p > "$OUT/apps-grid-c-$1.png"
+}
+shots_apps 1080
+adb shell wm size 1280x720; adb shell wm density 213; adb shell settings put system font_scale 1.3
+adb shell am force-stop sa.urtv.home; sleep 2
+shots_apps 720-large
+adb shell settings put system font_scale 1.0; adb shell wm size 1920x1080; adb shell wm density 320
 echo done

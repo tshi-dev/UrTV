@@ -9,17 +9,19 @@ final class FavBar {
     private FavBar() {}
 
     /**
-     * the tray: 128 from each side (x 128 to 1792), 218 high, radius 24 (the material's outer corner, GlassStyle.RADIUS_OUTER; it was 32 before «توحيد المظهر»). BOTTOM = the 5 % safe area: the tray's bottom is never lower than 54 above
+     * the tray: 122 from each side (x 122 to 1798), 226 high (4.4 beta 2: 128 and 218 before; the room the ×1.14 focus needs, its bottom where it was), radius 24 (the material's outer corner, GlassStyle.RADIUS_OUTER; it was 32 before «توحيد المظهر»). BOTTOM = the 5 % safe area: the tray's bottom is never lower than 54 above
      * the screen's, even while it is lowered for a widget. At rest it stands WIDGET_DROP (40) higher, REST_BOTTOM above the screen's bottom
-     * (y 768 to 986), and lowering it puts it at y 808 to 1026 (build 179 review: it went to 1066, outside the safe area).
+     * (y 760 to 986), and lowering it puts it at y 800 to 1026 (build 179 review: it went to 1066, outside the safe area).
      */
-    static final int SIDE = 128, TRAY_H = 218, RADIUS = 24, BOTTOM = 54, REST_BOTTOM = BOTTOM + 40;
-    /** the tiles: 304×170 (a 16:9 banner), radius 16, 24 apart, and 24 from the tray's four sides: five tiles are exactly 24 + 5×304 + 4×24 + 24 = 1664 wide */
-    static final int TILE_W = 304, TILE_H = 170, TILE_RADIUS = 16, GAP = 24, PAD_SIDE = 24, PAD_TOP = 24;
+    static final int SIDE = 122, TRAY_H = 226, RADIUS = 24, BOTTOM = 54, REST_BOTTOM = BOTTOM + 40;
+    /** the tiles: 304×170 (a 16:9 banner), radius 16, 24 apart, 30 from the tray's sides and 28 above and below: five tiles are exactly 30 + 5×304 + 4×24 + 30 = 1676 wide */
+    static final int TILE_W = 304, TILE_H = 170, TILE_RADIUS = 16, GAP = 24, PAD_SIDE = 30, PAD_TOP = 28;
     /** five tiles show; more scroll inside the tray */
     static final int SHOWN = 5;
-    /** the focused tile: 6 up and 1.08 from its centre, a 3 px ring, in 150 ms; a tile picked up to move: a little more, still inside */
-    static final float FOCUS_SCALE = 1.08f, LIFTED_SCALE = 1.12f;
+    /** the focused tile: 6 up and 1.14 from its centre, in 150 ms (4.4 beta 2: the tray has the room for ROOM_SCALE, the owner's 1.14 with no ring); a tile picked up to move: a little more, still inside */
+    static final float FOCUS_SCALE = 1.14f, LIFTED_SCALE = 1.16f;
+    /** the focus the tray is made to hold (tests/fav_bar_test.py): 1.14, the owner's size for a focus with no ring */
+    static final float ROOM_SCALE = 1.14f;
     /** 4.4 «شكل التطبيقات: تكبير وظل»: the focused app's size (the ring's look is FOCUS_SCALE) */
     static final float ZOOM_SCALE = 1.14f;
     static final int LIFT = 6, RING = 3, MS = 200;   // 4.4 the same easing everywhere: Motion.MS (plain Java here, tests/fav_bar_test.py runs it)
@@ -236,6 +238,13 @@ final class FavBar {
         for (int i = 0; i < n; i++) row += cellW(look, screenH, Math.max(n, SHOWN), i);
         row += Math.max(0, n - 1) * gap(look, screenH) + 2 * padSide(look, screenH);
         return Math.max(0, (w - row) / 2);
+    }
+
+    /** 4.4 beta 2 «محاذاة التطبيقات»: the row's gravity (android.view.Gravity's values, plain ints so this stays plain Java): center, right or left */
+    static int alignGravity(String align) {
+        if ("right".equals(align)) return 0x05 | 0x10;   // the screen's right side (absolute, the same in Arabic and English), centred up and down
+        if ("left".equals(align)) return 0x03 | 0x10;    // the screen's left side (absolute), centred up and down
+        return 0x11;                                     // Gravity.CENTER
     }
 
     /** a length of the 1080p spec on a screen this many pixels high */

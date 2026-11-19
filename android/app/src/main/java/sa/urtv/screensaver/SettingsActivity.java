@@ -562,6 +562,9 @@ public class SettingsActivity extends Activity {
             pickOne("الساعة", Prefs.HOME_CLOCK_NAMES, java.util.Arrays.asList(Prefs.HOME_CLOCKS).indexOf(prefs.homeClock()), i -> prefs.setLookPart("clock", Prefs.HOME_CLOCKS[i])); } });
         row("شكل التطبيقات", Prefs.appsStyleLabel(prefs.appsStyle()), R.drawable.ic_eye, new Runnable() { public void run() {
             pickOne("شكل التطبيقات", Prefs.HOME_APPS_NAMES, java.util.Arrays.asList(Prefs.HOME_APPS).indexOf(Prefs.appsWay(prefs.appsStyle())), i -> prefs.setLookPart("apps", Prefs.HOME_APPS[i])); } });
+        // 4.4 beta 2 (the owner): «محاذاة التطبيقات», the apps row in the middle (the default), right or left, in every look; the clock never moves
+        row("محاذاة التطبيقات", Prefs.appsAlignLabel(prefs.appsAlign()), R.drawable.ic_eye, new Runnable() { public void run() {
+            pickOne("محاذاة التطبيقات", Prefs.APPS_ALIGN_NAMES, java.util.Arrays.asList(Prefs.APPS_ALIGNS).indexOf(prefs.appsAlign()), i -> { prefs.setAppsAlign(Prefs.APPS_ALIGNS[i]); prefs.lookChanged(); }); } });
         // 4.5 «زجاجي»: its size and rows (the two rows always here, so the way can be set up before it is chosen)
         row("حجم شريط tvOS", Prefs.glassSizeLabel(prefs.glassSize()), R.drawable.ic_eye, new Runnable() { public void run() {
             String[] names = new String[Prefs.GLASS_SIZES.length];
@@ -3966,11 +3969,17 @@ public class SettingsActivity extends Activity {
 
     /** «الواجهة»: the home's layout, «العادية» (the default), «كرة القدم» (the weather, the prayers and today's games over the same favourites bar) or «الآفاق» (4.3.3). */
     private void pickHomeLayout() {
-        final String[] labels = new String[Prefs.HOME_LAYOUTS.length];
-        for (int i = 0; i < labels.length; i++) labels[i] = Prefs.HOME_LAYOUT_NAMES[i];
+        // 4.4 beta 2 (the owner): «tvOS» comes with the full look «tvOS» only; listed here only while it is the layout, so the row never reads empty
+        final List<String> keys = new ArrayList<>(), names = new ArrayList<>();
+        for (int i = 0; i < Prefs.HOME_LAYOUTS.length; i++) {
+            if (Prefs.TVOS_LAYOUT.equals(Prefs.HOME_LAYOUTS[i]) && !Prefs.TVOS_LAYOUT.equals(prefs.homeLayout())) continue;
+            keys.add(Prefs.HOME_LAYOUTS[i]);
+            names.add(Prefs.HOME_LAYOUT_NAMES[i]);
+        }
+        final String[] labels = names.toArray(new String[0]);
         new Dlg(this).setTitle("التخطيط")
-            .setSingleChoiceItems(labels, java.util.Arrays.asList(Prefs.HOME_LAYOUTS).indexOf(prefs.homeLayout()), (d, i) -> {
-                prefs.setLookPart("layout", Prefs.HOME_LAYOUTS[i]);   // 4.5: the look before kept, the home told at once
+            .setSingleChoiceItems(labels, keys.indexOf(prefs.homeLayout()), (d, i) -> {
+                prefs.setLookPart("layout", keys.get(i));   // 4.5: the look before kept, the home told at once
                 d.dismiss();
                 render();
             })
