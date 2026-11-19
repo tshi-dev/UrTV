@@ -32,9 +32,9 @@ check("the kept copies live in the app's files (getFilesDir), the others stay in
 check("the player plays the kept copy first (cached() prefers it) and a copy anywhere counts (isCached)",
       "return kept.length() > MIN_BYTES ? kept : inCache(c, voice);" in ad and "kept(c, voice).length() > MIN_BYTES || inCache(c, voice).length() > MIN_BYTES" in ad)
 tick = ad.split("static void keepCheck(Context c) {")[1].split("\n    }\n")[0]
-check("the minute tick only hands off to the adhan-keep thread (nothing on the UI thread)", "KEEP.execute(() -> keepNow(app, TICK));" in tick and "File" not in tick and '"adhan-keep"' in ad)
+check("the minute tick only hands off to the adhan-keep thread (nothing on the UI thread)", "keeper.execute(() -> keepNow(app, TICK));" in tick and "File" not in tick and '"adhan-keep"' in ad)
 pc = ad.split("static void prefetchChosen(final Context c) {")[1].split("\n    }\n")[0]
-check("a voice change or a new alarm hands off too (no file looked at on the caller's thread)", "KEEP.execute(() -> keepNow(app, ASKED));" in pc and "isCached" not in pc)
+check("a voice change or a new alarm hands off too (no file looked at on the caller's thread)", "keeper.execute(() -> keepNow(app, ASKED));" in pc and "isCached" not in pc)
 kn = ad.split("private static void keepNow(Context c, int who) {")[1].split("\n    }\n")[0]
 check("the check: cache copies moved in, unchosen ones moved out, the saved list written, a fetch only when due and the screen is on",
       "moveIn(c, w)" in kn and "tidy(c, wanted);" in kn and "prefs.setAdhanSaved(AdhanKeep.savedText(saved));" in kn
@@ -42,7 +42,7 @@ check("the check: cache copies moved in, unchosen ones moved out, the saved list
       and kn.index("NetGate.backgroundOk") < kn.index("keepOne(c, w)") and "prefs.setPrefetchTried(now);" in kn)
 check("a fetch of a chosen voice writes straight into the kept folder (through .part, whole files only)", "return fetch(c, voice, kept(c, voice));" in ad and 'file.getName() + ".part"' in ad)
 check("the home's minute tick asks (AdhanSync, adhan on); the alarm writes the next adhan's time", "if (new Prefs(c).adhanOn()) Adhan.keepCheck(c);" in sync and "new Prefs(c).setNextAdhanAt(next.at);" in sched)
-check("«تلاوة» opened: the chosen ones are kept now, on the keep thread, before the daily round", "KEEP.submit(() -> keepNow(c, NOW)).get();" in ad)
+check("«تلاوة» opened: the chosen ones are kept now, on the keep thread, before the daily round", "keeper.submit(() -> keepNow(c, NOW)).get();" in ad)
 start = ms.split("prefs.setLastAdhan(System.currentTimeMillis());")[1].split("if (previewSeconds > 0)")[0]
 check("at the prayer: not saved and offline: a saved voice plays at once (not a stream that cannot come)", "} else if (!online() && (stand = standIn(voice)) > 0) {" in start and "playStandIn(stand);" in start)
 fail = ms.split("if (source == Prefs.SOURCE_ADHAN && retries >= 2) {")[1].split("if (source == Prefs.SOURCE_SURAH")[0]

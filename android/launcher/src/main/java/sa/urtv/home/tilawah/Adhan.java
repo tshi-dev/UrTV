@@ -186,7 +186,8 @@ final class Adhan {
     static boolean isCached(Context c, int voice) { return kept(c, voice).length() > MIN_BYTES || inCache(c, voice).length() > MIN_BYTES; }
 
     /** 4.4 beta 3: the keeping and checking, one at a time and never on the UI thread */
-    private static final java.util.concurrent.ExecutorService KEEP = java.util.concurrent.Executors.newSingleThreadExecutor(r -> {
+    // (named in lower case: tests/regressions/javagraph.py knows an executor by a lower-case name)
+    private static final java.util.concurrent.ExecutorService keeper = java.util.concurrent.Executors.newSingleThreadExecutor(r -> {
         Thread t = new Thread(r, "adhan-keep");
         t.setDaemon(true);
         return t;
@@ -205,7 +206,7 @@ final class Adhan {
      */
     static void keepCheck(Context c) {
         final Context app = c.getApplicationContext();
-        try { KEEP.execute(() -> keepNow(app, TICK)); } catch (RuntimeException ignored) { }   // a refused hand-off: the next tick asks again
+        try { keeper.execute(() -> keepNow(app, TICK)); } catch (RuntimeException ignored) { }   // a refused hand-off: the next tick asks again
     }
 
     /**
@@ -215,11 +216,11 @@ final class Adhan {
      */
     static void prefetchChosen(final Context c) {
         final Context app = c.getApplicationContext();
-        try { KEEP.execute(() -> keepNow(app, ASKED)); } catch (RuntimeException ignored) { }   // the minute tick asks again
+        try { keeper.execute(() -> keepNow(app, ASKED)); } catch (RuntimeException ignored) { }   // the minute tick asks again
     }
 
     /**
-     * On KEEP's thread. The chosen voices are moved from the cache into the kept folder (no network), the voices no longer chosen go back to the cache,
+     * On keeper's thread. The chosen voices are moved from the cache into the kept folder (no network), the voices no longer chosen go back to the cache,
      * and a missing one is fetched straight into the kept folder when the screen is on and it is due (see {@link #TICK}). What is saved is written for the player and «الأذان» to read.
      */
     /** who asks: the minute tick (AdhanKeep.due), a voice change or a new alarm (once an hour after a failure), «تلاوة» opened (now) */
@@ -299,8 +300,8 @@ final class Adhan {
             File dir = new File(c.getCacheDir(), "adhan");
             File[] old = dir.listFiles((d, n) -> n.startsWith("azan") && n.endsWith(".mp3"));
             if (old != null) for (File f : old) f.delete();
-            // beta 3: the chosen ones into the kept folder first, on KEEP's thread (one at a time with the tick); the person is in front: no wait
-            try { KEEP.submit(() -> keepNow(c, NOW)).get(); } catch (Exception e) { if (e instanceof InterruptedException) return; }
+            // beta 3: the chosen ones into the kept folder first, on keeper's thread (one at a time with the tick); the person is in front: no wait
+            try { keeper.submit(() -> keepNow(c, NOW)).get(); } catch (Exception e) { if (e instanceof InterruptedException) return; }
             for (int voice = 1; voice <= VOICES; voice++) {
                 if (voice == chosen || voice == fajr) continue;
                 download(c, voice);   // a failure here is that voice's: the next one is still asked for
