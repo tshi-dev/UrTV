@@ -3235,3 +3235,7 @@ Pictures (PC only): optimize/run/step96/pics/upd-1.png … upd-6.png.
 - Power off and on fixed it (after the restart: UrTV home, role UrTV, add-on still there).
 - After the restart four owner settings were different (panel none, home panel prayerrow, preset couch-prayers, apps style icons); restored to the backup (panel verse, home panel stocks, preset couch (custom), apps style zoom). Verified against before3/show.txt: identical except the version line.
 - Suspect: the all-apps grid (the one with the big focused tile and the grid of 15+ apps) holds focus or hangs on the redraw. Needs a repro on the all-apps screen with a log capture (logcat + gfxinfo) and the focused app name.
+
+## UI session items from the supervisor (6d1124f1), 19 Nov — status
+- (1) photo of the «تحديث تلفزيوني» row with the top-left overlap: NOT DONE. The row is under «حول» in the settings; reaching it needs remote navigation (no blind D-pad by rule), and the owner is away. Will take it when the owner is at the TV, or when he says the TV can be navigated.
+- (2) freeze capture: PREPARED, not run (no freeze happened since the power cycle). Will capture immediately if the owner reports a freeze: dumpsys window / activity top / gfxinfo / logcat 300 / the key before.
