@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <!-- the build: UTC time (YYYYMMDDHHMMSS) of the newest commit of the page's sources, put in by src/build.py. The app loads the page with the newer stamp (its own
      copy or a downloaded one), never by file time, and does not keep a download whose stamp is older than its own (Updater, PageStamp). -->
-<meta name="urtv-build" content="20261118120601">
+<meta name="urtv-build" content="20261119074504">
 <title>Your TV Screen</title>
 <style>
   @font-face{font-family:'Thmanyah';font-weight:300;font-style:normal;font-display:block;src:url("https://raw.githubusercontent.com/tshi-dev/UrTV/master/assets/fonts/Thmanyah-Light.woff2") format("woff2")}
@@ -797,6 +797,7 @@
   #mp-side::-webkit-scrollbar{display:none}
   #mp-side .fg svg{width:1em;height:1em;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linejoin:round}
   #mp-side li.pin i{color:var(--fgr)}
+  #mp .mpsrc{margin:calc(var(--u)*12) calc(var(--u)*8) 0;font-size:calc(var(--u)*24);color:var(--fs)}   
   #mp-days{overflow:hidden}
   
   .fm{display:inline-flex;gap:calc(var(--u)*10);font-size:calc(var(--u)*26);font-weight:700}
@@ -4391,6 +4392,7 @@ const FB_W = {
   am1:'1 min', am2:'2 min', amFew:'%s min', amMany:'%s min', taskText:'Match %s, starts %s',
   table:'Table', results:'Results', noTable:'No table right now', noTableL:'No table for this league', pts:'%s points', played:'played %s',
   h2hAll:'%s %s wins, %s draws, %s %s', h2hIn:'in %s meetings', h2hMore:'All meetings (%s)',
+  champs:'Champions', scorers:'Top scorers',
   myLeagues:'My leagues', add:'Add a league or a team', manage:'My teams settings', noTeams:'No team followed yet', noLeagues:'No league followed yet', allLands:'All countries',
   lgTeams:'Teams of this league', lgOpen:'Table and results', followedL:'%s added to your leagues', unfollowedL:'%s removed from your leagues', on:'Followed', find:'Find a team', found:'Search results', typeName:'Type a team name', full:'Limit reached: 8 leagues', fullL:'That is the most: 24 leagues, so the TV stays fast. Remove a league to add another', fullT:'That is the most: 40 teams, so the TV stays fast. Remove a team to add another', fullT20:'Limit reached: 20 teams',
   warnL:'More than 8 may slow a weak TV down. OK again: add, or Back', warnT:'More than 20 may slow a weak TV down. OK again: add, or Back', choose:'Choose a league',
@@ -4662,8 +4664,13 @@ function lgName(id){
   return FB_LEAGUES[id] || CONFIG.leagueNames[id] || (l && (l.ar || l.en)) || '#' + id;
 }
 function mpLeagueView(v){
-  const id = String(v.id), tab = v.tab || 0, now = Date.now(), groups = [];
-  const tabs = [FB_W.table, FB_W.results, FB_W.title].map((t, i) => ({t, on: i === tab, act: () => { v.tab = i; MP.l = MP.r = 0; mpRender(); }}));
+  const id = String(v.id), now = Date.now(), groups = [];
+  const H = SPORTS && SPORTS.hon, has = H ? H.has(id) : {};
+  const keys = [0, 1, 2].concat(has.champs ? [3] : [], has.scorers ? [4] : []), tab = keys.includes(v.tab || 0) ? v.tab || 0 : 0;
+  const tabs = keys.map(k => ({t: [FB_W.table, FB_W.results, FB_W.title, FB_W.champs, FB_W.scorers][k], k, on: k === tab, act: () => { v.tab = k; MP.l = MP.r = 0; mpRender(); }}));
+  const hv = H ? H.league(v, id, tab) : {pins: []};
+  const pins = hv.pins || [];
+  if(hv.groups) return {title: lgName(id), tabs, pins, groups: hv.groups};
   const res = tab < 2 ? archWant('results/' + id + '.json') : null;
   if(tab === 1){
     const by = new Map();
@@ -4679,7 +4686,7 @@ function mpLeagueView(v){
     const sp = archWant('sports/' + id + '.json');
     const own = sp && !sp.cup && Array.isArray(sp.table) && sp.table.filter(x => x && /^\d+$/.test(String(x.id)) && x.p > 0);
     let rows = [], t = null;
-    if(own && own.length) rows = own.map((x, i) => mpItem(ar(i + 1) + '. ' + (x.ar || teamAr(x.n, String(x.id))), fw(FB_W.pts, ar(+x.pts || 0)) + ', ' + fw(FB_W.played, ar(+x.p || 0)),
+    if(own && own.length) rows = own.map((x, i) => mpItem(ar(i + 1) + '. ' + clubNm(x.ar, x.n, String(x.id)), fw(FB_W.pts, ar(+x.pts || 0)) + ', ' + fw(FB_W.played, ar(+x.p || 0)),
       () => mpGo({k: 'club', id: String(x.id)})));
     else if(sp !== undefined){
       const g = fbGames().find(ev => String(ev.idLeague) === id && ev.strSeason), r0 = res && res.results && res.results[0];
@@ -4691,8 +4698,10 @@ function mpLeagueView(v){
     const waiting = sp === undefined || (!rows.length && t === undefined);
     groups.push({key: 't', name: FB_W.table, games: rows, none: waiting ? FB_W.loading : navigator.onLine === false ? FB_W.noTable : FB_W.noTableL});
   }
-  return {title: lgName(id), tabs, groups};
+  return {title: lgName(id), tabs, groups, pins};
 }
+const clubNm = (a, en, id) => teamAr(en, id) || a;
+const plNm = x => x.en || x.ar || '';
 const mpLeagueIds = () => [...new Set(CONFIG.ownLeagues.map(n => catId(n) || lgIdOf(n)).filter(Boolean))];
 const LG_IDS = {};
 function lgIdOf(name){
@@ -4816,8 +4825,8 @@ function mpRender(){
     }
     if(day !== MP.day){ MP.day = day; MP.d = MP.days.indexOf(day); MP.r = 0; MP.l = 0; }
   }
-  const groups = V ? V.groups : mpGroups(), pins = V ? [] : mpPins();
-  MP.leagues = pins.concat(groups);
+  const groups = V ? V.groups : mpGroups(), pins = V ? V.pins || [] : mpPins();
+  MP.leagues = pins.concat(V && pins.length ? [] : groups);
   if(!V && MP.zone !== 'leagues' && groups.length){ let n = 0; MP.leagues.forEach((g, i) => { if(!g.pin && MP.r >= n) MP.l = i; n += g.games.length; }); }
   MP.l = Math.max(0, Math.min(MP.l, MP.leagues.length - 1));
   const shown = MP.only ? groups.slice(MP.l, MP.l + 1) : groups;
@@ -4833,11 +4842,12 @@ function mpRender(){
     return `<li class="${d === MP.day ? 'on' : ''}${ring(i)}">${word}</li>`;
   }).join(''));
   setHTML(document.getElementById('mp-side'), MP.leagues.map((g, i) =>
-    `<li class="${i === MP.l ? 'on' : ''}${g.pin ? ' pin' : ''}${MP.zone === 'leagues' && i === MP.l ? ' f' : ''}"><span>${esc(g.side || g.name)}</span><i>${g.pin ? fbGlyph('star') : ar(g.count != null ? g.count : g.games.length)}</i></li>`).join(''));
+    `<li class="${(g.pick ? g.sel : i === MP.l) ? 'on' : ''}${g.pin ? ' pin' : ''}${MP.zone === 'leagues' && i === MP.l ? ' f' : ''}"><span>${esc(g.side || g.name)}</span><i>${g.pin ? fbGlyph('star') : g.pick ? esc(g.mark || '') : ar(g.count != null ? g.count : g.games.length)}</i></li>`).join(''));
   let n = 0;
   setHTML(document.getElementById('mp-list'), shown.length ? shown.map(g => `<section data-g="${esc(g.key)}"><h2>${g.nameHtml || esc(g.name)}</h2>`
     + (g.games.length ? '<ul>' + g.games.map(ev => ev.it ? mpItemRow(ev, n++) : mpRow(ev, now, n++, g.dated ? 2 : g.more)).join('') + '</ul>' : '')
-    + (g.loading ? `<div class="fnone">${esc(matchesEmptyText())}</div>` : '') + (g.none && !g.games.length ? `<div class="fnone">${esc(g.none)}</div>` : '') + '</section>').join('')
+    + (g.loading ? `<div class="fnone">${esc(matchesEmptyText())}</div>` : '') + (g.none && !g.games.length ? `<div class="fnone">${esc(g.none)}</div>` : '')
+    + (g.foot ? `<div class="mpsrc">${esc(g.foot)}</div>` : '') + '</section>').join('')
     : `<div class="fnone">${V ? esc(V.empty || FB_W.noData) : MATCHES_LOADED && !(MP.wait && MP.day < t) ? fbNone(MP.day) : matchesEmptyText()}</div>`);
   fillCrests(document.getElementById('mp'));
   const f = MP.zone === 'leagues' ? !MP.only && document.querySelectorAll('#mp-list section')[MP.l - pins.length] : document.querySelector('#mp-list li.f');
@@ -5035,6 +5045,7 @@ function mpClubView(v){
     if(!v.allH2h && ms.length > 10) rows.push(mpItem(fw(FB_W.h2hMore, ar(ms.length)), '', () => { v.allH2h = 1; mpRender(); }));
     groups.push({key: 'h2h', name: fw(FB_W.h2h, teamNameOf(vs)), games: rows, dated: 1, none: wait(h)});
   }
+  if(SPORTS && SPORTS.hon) groups.push(...SPORTS.hon.club(id, j));
   const tabs = [{t: fw(fbFollowed(id) ? FB_W.unfollowT : FB_W.followT, name), act: () => mpFollowTeam(id)}];
   if(v.vs) tabs.push({t: fw(FB_W.see, teamNameOf(vs)), act: () => { MP.view = {k: 'club', id: vs, vs: id}; MP.zone = 'rows'; MP.d = MP.l = MP.r = 0; MP.note = MP.ask = ''; mpRender(); }});
   const f = formOf(id);
@@ -5114,6 +5125,7 @@ function mpKey(e){
     if(k === 'ArrowDown') MP.l = Math.min(MP.leagues.length - 1, MP.l + 1);
     else if(k === 'ArrowUp'){ if(MP.l) MP.l--; else MP.zone = 'days'; }
     else if(pin && (k === fwd || ok)){ e.preventDefault(); return mpGo({k: 'league', id: pin}); }
+    else if(MP.leagues[MP.l] && MP.leagues[MP.l].pick && (k === fwd || ok)){ e.preventDefault(); return MP.leagues[MP.l].pick(); }
     else if(k === fwd || ok){ if(MP.rows.length) MP.zone = 'rows'; }
     else return;
     if(MP.only) MP.r = 0;
@@ -5124,7 +5136,7 @@ function mpKey(e){
     else if(k === back){ if(MP.leagues.length) MP.zone = 'leagues'; }
     else if(ok){ const x = MP.rows[MP.r]; e.preventDefault(); if(x && x.it){ if(x.act) x.act(); } else if(x) mpOpen(x); return; }
     else return;
-    if(!MP.only){ let n = 0; MP.leagues.forEach((g, i) => { if(MP.r >= n) MP.l = i; n += g.games.length; }); }
+    if(!MP.only){ let n = 0; MP.leagues.forEach((g, i) => { if(!g.pick && MP.r >= n) MP.l = i; n += g.games.length; }); }
   }
   e.preventDefault();
   mpRender();
@@ -5151,7 +5163,7 @@ function bootMatchPage(){
 
 let SPORTS = null;
 function loadSportsJs(){
-  if(SPORTS || !(CONFIG.cards.some(k => SPORT_KINDS.includes(k)) || (CONFIG.teamIds.length && _Q.get('ko') !== '0'))) return;
+  if(SPORTS || !(CONFIG.matchPage || CONFIG.cards.some(k => SPORT_KINDS.includes(k)) || (CONFIG.teamIds.length && _Q.get('ko') !== '0'))) return;
   const stamp = document.querySelector('meta[name="urtv-build"]').content, f = document.documentElement.lang === 'en' ? 'sports-en.js' : 'sports.js';
   const urls = [f, 'file:///android_asset/' + f, 'file:///android_asset/web/' + f, 'https://raw.githubusercontent.com/tshi-dev/UrTV/master/dist/' + f];
   const next = i => {
@@ -5160,6 +5172,7 @@ function loadSportsJs(){
     x.onload = () => {
       if(!x.responseText.includes('SPORTS_BUILD:' + stamp + ':')) return fail();
       const sc = document.createElement('script'); sc.textContent = x.responseText; document.head.appendChild(sc);
+      if(SPORTS && CONFIG.matchPage){ mpRender(); return; }
       if(SPORTS){ renderPanel(false, ...SPORT_KINDS); if(MATCHES_LOADED) SPORTS.load(); }
     };
     x.onerror = x.ontimeout = fail;
@@ -5170,7 +5183,7 @@ function loadSportsJs(){
 function boot(){
   if(CONFIG.lowram) document.documentElement.classList.add('lowram');
   pruneStorage();
-  if(CONFIG.matchPage){ bootMatchPage(); return; }
+  if(CONFIG.matchPage){ bootMatchPage(); loadSportsJs(); return; }
   if(CONFIG.football){ bootFootball(); loadSportsJs(); return; }
   if(CONFIG.widget){ bootWidget(); loadSportsJs(); return; }
   PAGE_FULL = true;

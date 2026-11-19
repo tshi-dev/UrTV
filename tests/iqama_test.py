@@ -40,7 +40,7 @@ ov = read(H / "OverlayNotice.java")
 xn = read(ROOT / "android/extras/src/main/java/sa/urtv/home/ExtrasNotice.java")
 check("the home asks the add-on to draw it; the add-on's window takes no focus and no key, 8 s, the kick-off's look; kids mode not known = as kids mode",
       "Extras.notice(b)" in ov and "TYPE_APPLICATION_OVERLAY" not in ov and "catch (RuntimeException e) { return true; }" in ov
-      and "FLAG_NOT_FOCUSABLE | WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE" in xn and "SHOW_MS = 8_000L" in xn and "0xE60C0E12" in xn)
+      and "FLAG_NOT_FOCUSABLE | WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE" in xn and "SHOW_MS = 8_000L" in xn and "0xFF0C0E12" in xn)   # 4.4 beta 2 (UI review): a flat opaque fill
 check("receiver and page in the manifest (not exported)", '<receiver android:name=".tilawah.IqamaReceiver" android:exported="false" />' in man and ".tilawah.IqamaActivity" in man)
 check("the adhan tab: a row «الإقامة» opens its page", "KIND_IQAMA = 20" in main and "startActivity(new Intent(this, IqamaActivity.class));" in main and 'S.t("الإقامة"), IqamaActivity.summary(' in main)
 check("the page: the sound (none, our bell, «صوتياتي»), its volume (left/right, heard), the notice", 'S.t("صوت الإقامة")' in act and 'S.t("نغمة قصيرة")' in act

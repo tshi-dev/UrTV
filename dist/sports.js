@@ -1,12 +1,14 @@
-const SP_STAMP = 'SPORTS_BUILD:20261118120601:';
+const SP_STAMP = 'SPORTS_BUILD:20261119074504:';
 const SP_COL = {'136013':['#1E4FA1','#FFFFFF'], '136022':['#F7C600','#1B3A8A'], '136018':['#F2C200','#111111'], '137721':['#0A7A3A','#FFFFFF'],
   '136020':['#FFFFFF','#1A1A1A'], '136017':['#0B8A3E','#D4232B'], '136015':['#C8102E','#F2C200'], '136011':['#1D6B3A','#FFFFFF'], '136012':['#F2C200','#2B5BA8'],
   '139080':['#F2C200','#0A7A3A'], '147445':['#111111','#E2001A'], '136014':['#F28C00','#1A1A1A'], '137852':['#E30613','#111111'], '136200':['#E30613','#FFFFFF'],
   '147444':['#5B2C83','#FFFFFF'], '149112':['#C8102E','#FFFFFF'], '150638':['#1E4FA1','#F2C200'], '150637':['#111111','#2BB5A8'], '136137':['#0A7A3A','#FFFFFF']};
 const SP_KSA = '136137';
 const spCol = id => SP_COL[String(id)] || ['#8A8F98', '#5A5F68'];
-const spSw = id => { const c = spCol(id); return `<i class="spsw" style="--a:${c[0]};--b:${c[1]}"></i>`; };
-const spBand = id => { const c = spCol(id); return `<i class="spband" style="--a:${c[0]};--b:${c[1]}"></i>`; };
+const spCrestOf = id => { const c = typeof CRESTS !== 'undefined' && CRESTS[String(id)]; return (c && (c.d || c.u)) || ''; };
+const spCrest = (id, cls) => { const u = spCrestOf(id); return u ? `<img class="${cls}" src="${esc(u)}" alt="" onerror="this.remove()">` : ''; };
+const spSw = id => spCrest(id, 'spcr');
+const spBand = id => spCrest(id, 'spcrb');
 const spForm = f => f ? `<span class="spfm">${[...String(f).slice(0, 5)].map(x => `<i class="${x === 'w' ? 'w' : x === 'd' ? 'd' : 'l'}"></i>`).join('')}</span>` : '';
 const spName = (ev, side) => teamAr(ev['str' + side + 'Team'], ev['id' + side + 'Team']);
 const spWhen = ms => (fbDayOf(ms) === cityToday() ? '' : fbDayWord(fbDayOf(ms)) + ' ') + fbClock(ms);
@@ -22,6 +24,8 @@ const SPW = {noToday:'لا مباراة لفرقك اليوم', next:'القاد
 .week li.spr{display:block;text-align:center}
 .spsw{display:inline-block;width:.62em;height:.62em;border-radius:.14em;margin-inline-end:.35em;vertical-align:.02em;background:linear-gradient(90deg,var(--a) 50%,var(--b) 50%)}
 .spband{display:block;width:3.2em;height:.28em;border-radius:.14em;margin:0 auto .3em;background:linear-gradient(90deg,var(--a) 50%,var(--b) 50%)}
+.spcr{display:inline-block;width:.9em;height:.9em;object-fit:contain;vertical-align:-.12em;margin-inline-end:.35em}
+.spcrb{display:block;width:1.6em;height:1.6em;object-fit:contain;margin:0 auto .3em}
 .spfm{display:inline-flex;gap:.18em;vertical-align:middle}.spfm i{width:.5em;height:.5em;border-radius:.1em;display:inline-block}
 .spfm .w{background:#3BB273}.spfm .d{background:#9A9A9A}.spfm .l{background:#E05A4F}
 .spgame{display:flex;align-items:center;justify-content:center;gap:1.2em}
@@ -49,16 +53,16 @@ html.sptake:not(.widget) .mid .clockwrap{display:none}
 html.sptake:not(.widget) .mid .week.sptk{grid-column:1/-1;font-size:1.25em}
 .spclk{font-weight:400;opacity:.85}
 /* the notice (spKick): the top right of the screensaver, 8 s, cream text on nearly solid dark glass (nothing reads through it) */
-#spkick{position:fixed;top:4.5vh;right:2.5vw;width:min(36vw,700px);z-index:60;border-radius:1.4vh;background:rgba(12,14,18,.97);
-  border:1px solid rgba(233,196,106,.6);box-shadow:0 1.2vh 3.2vh rgba(0,0,0,.5);color:#F4EBD8;padding:1.3vh 1.5vw 0;font-size:max(2.5vh,13px);line-height:1.45;overflow:hidden;
+#spkick{position:fixed;top:4.5vh;right:2.5vw;width:min(36vw,700px);z-index:60;border-radius:1.4vh;background:rgb(12,14,18);   /* the UI review: a flat opaque fill, no edge (even .97 let the page's date read through) */
+  
+  box-shadow:0 1.2vh 3.2vh rgba(0,0,0,.5);color:#F4EBD8;padding:1.3vh 1.5vw 0;font-size:max(2.5vh,13px);line-height:1.45;overflow:hidden;
   transition:transform .45s ease,opacity .45s ease;text-align:center}
 #spkick.out{transform:translateX(calc(100% + 4vw));opacity:0}   /* the top right in both languages (the owner's corner), so it leaves to the right */
 #spkick .kt{display:flex;justify-content:space-between;gap:1em;color:#F0D48E;font-weight:500}#spkick .kt i{font-style:normal;color:#E5DCC8;font-weight:400}
 #spkick .km{display:flex;align-items:center;justify-content:center;gap:1.1em;margin:1vh 0 1.2vh;font-size:1.55em;font-weight:700;color:#FFF8EC}
-#spkick .km .spsw{width:.7em;height:.7em}
-#spkick .kb{height:.35vh;margin:0 -1.5vw;background:#E9C46A;transform-origin:inline-end;animation:spkb 8s linear forwards}
+#spkick .km .kcr{width:.9em;height:.9em;object-fit:contain;vertical-align:-.12em;margin:0 .3em}
+#spkick .kb{height:max(2px,.28vh);margin:0 -1.5vw;background:rgba(255,255,255,.35);border-radius:0;transform-origin:inline-end;animation:spkb 8s linear forwards}
 @keyframes spkb{to{transform:scaleX(0)}}
-#spkick.goal{border-color:#3BB273}
 /* on the home the page is only the card's own window: the goal and the final score (the kick-off is the launcher's own, at the screen's corner)
    as a band over the card's top, the card's size; in the couch strip one line, the clubs and the score */
 html.widget #spkick{top:.45em;left:.45em;right:.45em;width:auto;font-size:13px;border-radius:.7em;padding:.45em .9em 0}
@@ -291,11 +295,11 @@ function spKick(json){
   let d; try{ d = typeof json === 'string' ? JSON.parse(json) : json; }catch(e){ return false; }
   if(!d || !d.h || !d.a) return false;
   const old = document.getElementById('spkick'); if(old) old.remove();
-  const sw = c => `<i class="spsw" style="--a:${esc((c || [])[0] || '#888')};--b:${esc((c || [])[1] || '#555')}"></i>`;
+  const sw = id => id ? spCrest(id, 'kcr') : '';
   const top = d.kind === 'goal' ? (d.min ? fw(SPW.minute, ar(d.min)) : SPW.live) : d.kind === 'end' ? SPW.ended : SPW.kickoff;
   const mid = d.kind === 'start' || !d.kind ? '×' : `${ar(+d.hs || 0)} - ${ar(+d.as || 0)}`;
   document.body.insertAdjacentHTML('beforeend', `<div id="spkick" class="out${d.kind === 'goal' ? ' goal' : ''}"><div class="kt"><span>${esc(top)}</span><i>${esc(d.lg || '')}</i></div>`
-    + `<div class="km"><span>${sw(d.hc)}${esc(d.h)}</span><span>${mid}</span><span>${esc(d.a)}${sw(d.ac)}</span></div><div class="kb"></div></div>`);
+    + `<div class="km"><span>${sw(d.hid)}${esc(d.h)}</span><span>${mid}</span><span>${esc(d.a)}${sw(d.aid)}</span></div><div class="kb"></div></div>`);
   const el = document.getElementById('spkick');
   requestAnimationFrame(() => el.classList.remove('out'));
   setTimeout(() => { el.classList.add('out'); setTimeout(() => el.remove(), 600); }, 8000);
@@ -315,7 +319,7 @@ function spSaverKick(){
     const now2 = Date.now(), e2 = matchEvents().find(e => String(e.idEvent) === id) || ev;
     if(SP.told.has('s' + id) || calledOff(e2) || navigator.onLine === false || Math.abs(fbKick(e2) - now2) > 900000) return;
     SP.told.add('s' + id);
-    spKick({kind: 'start', h: spName(e2, 'Home'), a: spName(e2, 'Away'), hc: spCol(e2.idHomeTeam), ac: spCol(e2.idAwayTeam), lg: fbRound(e2)});
+    spKick({kind: 'start', h: spName(e2, 'Home'), a: spName(e2, 'Away'), hid: String(e2.idHomeTeam), aid: String(e2.idAwayTeam), lg: fbRound(e2)});
   }, Math.max(0, fbKick(ev) - now));
 }
 function spScoreWatch(now){
@@ -326,14 +330,139 @@ function spScoreWatch(now){
     const was = SP.score[id];
     SP.score[id] = {hs, as, live, done};
     if(!was || calledOff(ev)) return;
-    const base = {h: spName(ev, 'Home'), a: spName(ev, 'Away'), hc: spCol(ev.idHomeTeam), ac: spCol(ev.idAwayTeam), lg: fbRound(ev), hs, as};
+    const base = {h: spName(ev, 'Home'), a: spName(ev, 'Away'), hid: String(ev.idHomeTeam), aid: String(ev.idAwayTeam), lg: fbRound(ev), hs, as};
     if(end && done && !was.done && was.live) spKick({...base, kind: 'end'});
     else if(goal && live && (hs + as) > (was.hs + was.as)) spKick({...base, kind: 'goal', min: String(ev.strProgress || '').replace(/\D/g, '')});
   });
 }
 
+const HW = {nowS:'الحالي', tableOf:'جدول الترتيب النهائي %s', resultsOf:'نتائج %s', scorersOf:'الهدّافون %s', champMark:'البطل',
+  undecided:'لم يُحسم بعد، افتح الجدول', ptsGap:'%s نقطة، بفارق %s عن %s', ptsLevel:'%s نقطة، بالتساوي مع %s', finalWon:'النهائي %s على %s',
+  goalsFew:'%s أهداف', goalsMany:'%s هدفًا', fromArchive:'من أرشيفنا', older:'قبل ذلك', srcChamps:'المصدر: نتائج المباريات وويكي بيانات',
+  srcChampsWp:'المصدر: نتائج المباريات وويكي بيانات وويكيبيديا (CC BY-SA 4.0)', srcScorers:'المصدر: ويكيبيديا وويكي بيانات (CC BY-SA 4.0)',
+  noScorers:'لا نعرف هدّاف هذا الموسم بعد', noChamps:'لا نعرف أبطال هذا الدوري بعد', honours:'البطولات', lastTitle:'آخرها %s',
+  title1:'لقب واحد', title2:'لقبان', titleFew:'%s ألقاب', titleMany:'%s لقبًا', titlesLast:'%s، آخرها %s',};
+const HON_BASE = DATA_OLD + 'data-honours/';
+const honWant = (kind, id) => archWant(HON_BASE + kind + '/' + id + '.json');
+const honSeasonName = x => ar(String(x));
+const honOk = x => /^\d{4}(-\d{4})?$/.test(String(x || ''));
+const honGoals = n => fw(n <= 10 ? HW.goalsFew : HW.goalsMany, ar(n));
+const honTitles = n => fw(n === 1 ? HW.title1 : n === 2 ? HW.title2 : n <= 10 ? HW.titleFew : HW.titleMany, ar(n));
+const honSeasons = sp => ((sp && Array.isArray(sp.seasons) && sp.seasons) || []).filter(honOk).map(String).slice(0, 8);
+function honPins(v, list, chosen){
+  if(list.length < 2) return [];
+  return list.map((x, i) => ({key: 'season' + x, side: honSeasonName(x), mark: i ? '' : HW.nowS, sel: x === chosen, games: [],
+    pick: () => { v.season = x; MP.zone = 'rows'; MP.r = 0; mpRender(); }}));
+}
+function honTable(v, id){
+  const f = archWant('sports/' + id + '/' + v.season + '.json'), ch = f && f.champ, rows = [];
+  ((f && !f.cup && Array.isArray(f.table) && f.table) || []).filter(x => x && /^\d+$/.test(String(x.id)) && x.p > 0).forEach((x, i) =>
+    rows.push(mpItem(ar(i + 1) + '. ' + clubNm(x.ar, x.n, String(x.id)), (ch && String(ch.id) === String(x.id) ? HW.champMark + '، ' : '')
+      + fw(FB_W.pts, ar(+x.pts || 0)) + '، ' + fw(FB_W.played, ar(+x.p || 0)), () => mpGo({k: 'club', id: String(x.id)}))));
+  if(!rows.length && ch) rows.push(honChampRow(v, ch));
+  return [{key: 't', name: fw(HW.tableOf, honSeasonName(v.season)), games: rows, none: f === undefined ? FB_W.loading : FB_W.noData}];
+}
+function honResults(v, id){
+  const f = archWant('sports/' + id + '/' + v.season + '.json'), by = new Map(), groups = [];
+  ((f && f.results) || []).map(g => archEv(g)).filter(Boolean).forEach(ev => { const k = fbRound(ev) || FB_W.results; if(!by.has(k)) by.set(k, []); by.get(k).push(ev); });
+  by.forEach((games, k) => groups.push({key: 'r' + groups.length, name: k, games, dated: 1}));
+  return groups.length ? groups : [{key: 'r', name: fw(HW.resultsOf, honSeasonName(v.season)), games: [], none: f === undefined ? FB_W.loading : FB_W.noData}];
+}
+function honChampList(id, sp){
+  const h = honWant('champions', id), list = ((h && Array.isArray(h.seasons) && h.seasons) || []).filter(c => c && honOk(c.s));
+  const have = new Set(list.map(c => String(c.s)).concat((h && h.held) || []));
+  const own = ((sp && sp.champs) || []).filter(c => c && honOk(c.s) && !have.has(String(c.s))).map(c => Object.assign({src: 'archive'}, c, {en: c.n}));
+  return {list: own.concat(list).sort((a, b) => String(b.s).localeCompare(String(a.s))), file: h};
+}
+function honChampRow(v, c){
+  const name = clubNm(c.ar, c.en || c.n, c.id ? String(c.id) : ''), them = c.vs || c.vn ? clubNm(c.var, c.vn, String(c.vs || '')) : '';
+  const sub = c.pts != null && them ? fw(c.gap ? HW.ptsGap : HW.ptsLevel, ar(c.pts), ...(c.gap ? [ar(c.gap), them] : [them]))
+    : Array.isArray(c.score) && them ? fw(HW.finalWon, ar(c.score[0]) + '-' + ar(c.score[1]), them) : '';
+  return mpItem(honSeasonName(c.s) + ': ' + name, sub, c.id ? () => mpGo({k: 'club', id: String(c.id)}) : () => {});
+}
+function honChamps(v, id, sp){
+  const {list, file} = honChampList(id, sp), cur = sp && honOk(sp.season) ? String(sp.season) : '';
+  const recent = [], older = [];
+  if(cur && !list.some(c => String(c.s) === cur))
+    recent.push(mpItem(honSeasonName(cur), HW.undecided, () => { v.tab = 0; v.season = undefined; MP.l = MP.r = 0; mpRender(); }));
+  list.forEach(c => (/archive/.test(String(c.src || '')) ? recent : older).push(honChampRow(v, c)));
+  const foot = list.some(c => /wikipedia/.test(String(c.src || ''))) ? HW.srcChampsWp : HW.srcChamps;
+  if(!list.length) return [{key: 'c', name: FB_W.champs, games: recent, none: file === undefined || sp === undefined ? FB_W.loading : HW.noChamps}];
+  return [{key: 'c', name: HW.fromArchive, games: recent, foot: older.length ? '' : foot}].filter(g => g.games.length)
+    .concat(older.length ? [{key: 'o', name: HW.older, games: older, foot}] : []);
+}
+function honScorerSeasons(sc, sp){
+  const all = new Set(honSeasons(sp).concat(Object.keys((sc && sc.seasons) || {}).filter(honOk)));
+  return [...all].sort((a, b) => b.localeCompare(a)).slice(0, 8);
+}
+const honTop = (sc, x) => ((sc && sc.seasons && sc.seasons[x] && sc.seasons[x].top) || []).filter(t => t && (t.ar || t.en) && +t.goals > 0);
+function honScorers(sc, x){
+  const top = honTop(sc, x);
+  return [{key: 's', name: x ? fw(HW.scorersOf, honSeasonName(x)) : FB_W.scorers, games: top.map(t => mpItem(plNm(t), honGoals(+t.goals), () => {})),
+    none: sc === undefined ? FB_W.loading : HW.noScorers, foot: top.length ? HW.srcScorers : ''}];
+}
+function honClub(id, j){
+  const lgs = new Set();
+  ((j && j.last) || []).concat((j && j.next) || []).forEach(g => g && g.lg && lgs.add(String(g.lg)));
+  fbGames().forEach(ev => { if(String(ev.idHomeTeam) === id || String(ev.idAwayTeam) === id) lgs.add(String(ev.idLeague || '')); });
+  const rows = [];
+  [...lgs].filter(x => /^\d+$/.test(x)).forEach(lg => {
+    const {list, file} = honChampList(lg, archWant('sports/' + lg + '.json')), won = list.filter(c => String(c.id || '') === id);
+    if(!won.length) return;
+    const n = file && file.complete && file.titles && +file.titles[id];
+    rows.push(mpItem(lgName(lg), n > 0 ? fw(HW.titlesLast, honTitles(n), honSeasonName(won[0].s)) : fw(HW.lastTitle, honSeasonName(won[0].s)),
+      () => { mpGo({k: 'league', id: lg, tab: 3}); MP.d = Math.max(0, (MP.tabs || []).findIndex(x => x.on)); }));
+  });
+  return rows.length ? [{key: 'hon', name: HW.honours, games: rows}] : [];
+}
+
+function honHas(id){
+  const sp = archWant('sports/' + id + '.json'), {list} = honChampList(id, sp), sc = honWant('scorers', id);
+  return {champs: list.length > 0, scorers: Object.keys((sc && sc.seasons) || {}).some(x => honTop(sc, x).length)};
+}
+function honLeague(v, id, tab){
+  const sp0 = archWant('sports/' + id + '.json'), cur = sp0 && sp0.season ? String(sp0.season) : '';
+  if(tab === 3) return {pins: [], groups: honChamps(v, id, sp0)};
+  if(tab === 4){ const sc = honWant('scorers', id), list = honScorerSeasons(sc, sp0), pick = v.season || list.find(x => honTop(sc, x).length) || list[0];
+    return {pins: honPins(v, list, pick), groups: honScorers(sc, pick)}; }
+  if(tab > 1) return {pins: []};
+  const pins = honPins(v, honSeasons(sp0), v.season || cur);
+  return v.season && v.season !== cur ? {pins, groups: tab ? honResults(v, id) : honTable(v, id)} : {pins};
+}
+
+const spWithCrest = r => { const c = spCrestOf(r.id); return c ? Object.assign(r, {crest: c}) : r; };
+function spTops(n){
+  n = Math.max(1, Math.min(+n || 3, 10));
+  let ready = true;
+  const ids = [...new Set(CONFIG.leagues.map(x => catId(x) || (LEAGUE_DATA[x] && ((LEAGUE_DATA[x].events || []).find(e => e && e.idLeague) || {}).idLeague)).filter(Boolean).map(String))];
+  const leagues = [];
+  ids.forEach(id => {
+    const sp = archWant('sports/' + id + '.json');
+    if(sp === undefined){ ready = false; return; }
+    const own = sp && !sp.cup && Array.isArray(sp.table) ? sp.table.filter(r => r && /^\d+$/.test(String(r.id)) && +r.p > 0) : [];
+    if(own.length){
+      const last = ((sp.last || []).map(g => g && g.t).filter(Boolean).sort().pop()) || sp.updated || '';
+      leagues.push({id, name: lgName(id), season: String(sp.season || ''), round: Math.max(...own.map(r => +r.p || 0)), asOf: last, src: 'archive',
+        rows: own.slice(0, n).map((r, i) => spWithCrest({rank: i + 1, id: String(r.id), name: clubNm(r.ar, r.n, String(r.id)), pts: +r.pts || 0, p: +r.p || 0}))});
+      return;
+    }
+    if(sp && sp.cup) return;
+    const g = fbGames().find(ev => String(ev.idLeague) === id && ev.strSeason), u = g ? tableUrl(id, String(g.strSeason)) : '';
+    const t = u ? archWant(u) : null;
+    if(t === undefined){ ready = false; return; }
+    const rows = ((t && Array.isArray(t.table) && t.table) || []).filter(x => x && /^\d+$/.test(String(x.idTeam)) && +x.intRank > 0 && +x.intPlayed > 0)
+      .sort((a, b) => +a.intRank - +b.intRank);
+    if(rows.length) leagues.push({id, name: lgName(id), season: String(g.strSeason), round: Math.max(...rows.map(x => +x.intPlayed || 0)), asOf: String(rows[0].dateUpdated || ''),
+      src: 'thesportsdb', rows: rows.slice(0, n).map(x => spWithCrest({rank: +x.intRank, id: String(x.idTeam), name: teamAr(x.strTeam, String(x.idTeam)), pts: +x.intPoints || 0, p: +x.intPlayed || 0}))});
+  });
+  return {ready, leagues};
+}
+
 SPORTS = {
   stamp: SP_STAMP,
+  tops: spTops,
+  hon: {league: honLeague, club: honClub, has: honHas, champList: honChampList, champRow: honChampRow, top: honTop, scorers: honScorers,
+    scorerSeasons: honScorerSeasons, want: honWant},
   load: spLoad,
   card(card, P){
     const now = Date.now();
