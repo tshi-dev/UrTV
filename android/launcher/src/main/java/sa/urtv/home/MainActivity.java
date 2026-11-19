@@ -1544,8 +1544,7 @@ public class MainActivity extends Activity {
         if (!a.isBanner) {   // 4.4 beta 2 (the owner's test of 525): its own icon, large, on a neutral tile; never a dark tint of its colour
             Drawable t = artCache.get("t:" + a.pkg);
             if (t == null) {
-                if (raw == null) raw = ri.loadIcon(pm);
-                t = composeTile(raw);
+                t = composeTile(sharpIcon(ri, pm));
                 if (t != null) artCache.put("t:" + a.pkg, t);
             }
             if (t != null) { a.art = t; a.composed = true; }
@@ -1554,48 +1553,52 @@ public class MainActivity extends Activity {
     }
 
     /**
-     * An app with no banner: its icon on a 16:9 tile of the focused size, by TileArt's rules (an adaptive icon masked to a rounded square, a
-     * square icon fitted, a tiny one enlarged at most MAX_UP, a wide logo in its wider box, on LIGHT or DARK, whichever stands out from it).
+     * An app with no banner: its icon filling a 16:9 tile of the focused size, by TileArt's rules (an adaptive icon's background over the whole tile
+     * and its foreground large in the middle; a legacy icon trimmed, fitted large, on its own edge colour, or on LIGHT or DARK when its edge is bare).
      * On the apps' loading thread; null (the old way) when it cannot be drawn.
      */
     private Drawable composeTile(Drawable icon) {
         if (icon == null) return null;
         int w = Math.round(getResources().getDisplayMetrics().widthPixels / (float) MIN_DOCK * 1.12f), h = w * 9 / 16;
-        boolean adaptive = icon instanceof android.graphics.drawable.AdaptiveIconDrawable;
-        int iw = icon.getIntrinsicWidth(), ih = icon.getIntrinsicHeight();
-        if (!adaptive && iw > 0 && ih > 0) {   // a legacy icon with empty transparent margins: only its visible part, so it is not drawn small
-            Drawable trimmed = trimmed(icon, iw, ih);
-            if (trimmed != null) { icon = trimmed; iw = icon.getIntrinsicWidth(); ih = icon.getIntrinsicHeight(); }
-        }
-        String kind = TileArt.kind(false, adaptive, iw, ih);
-        int[] box = TileArt.box(kind, w, h, iw, ih);
         try {
-            Bitmap glyph = Bitmap.createBitmap(Math.max(1, box[0]), Math.max(1, box[1]), Bitmap.Config.ARGB_8888);
-            Canvas gc = new Canvas(glyph);
-            if (adaptive) {   // as a launcher masks it: the middle of its 108 shown, in a rounded square
-                android.graphics.Path clip = new android.graphics.Path();
-                float rr = box[0] * TileArt.CORNER;
-                clip.addRoundRect(0, 0, box[0], box[1], rr, rr, android.graphics.Path.Direction.CW);
-                gc.clipPath(clip);
-                int big = Math.round(box[0] * TileArt.ADAPTIVE_BLEED), off = (big - box[0]) / 2;
-                icon.setBounds(-off, -off, big - off, big - off);
-            } else icon.setBounds(0, 0, box[0], box[1]);
-            icon.draw(gc);
-            // the icon's own lightness over its opaque pixels: the backing is the one it stands out from (white on white, a bare glyph)
-            double lum = 0; int n = 0, all = 0;
-            int step = Math.max(1, Math.min(glyph.getWidth(), glyph.getHeight()) / 24);
-            for (int y = 0; y < glyph.getHeight(); y += step) for (int x = 0; x < glyph.getWidth(); x += step) {
-                int p = glyph.getPixel(x, y);
-                all++;
-                if (Color.alpha(p) < 128) continue;
-                lum += TileArt.lum(p); n++;
-            }
-            int bg = TileArt.backing(n == 0 ? -1f : (float) (lum / n), all == 0 ? 0f : n / (float) all);
             Bitmap tile = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
             Canvas c = new Canvas(tile);
+            if (icon instanceof android.graphics.drawable.AdaptiveIconDrawable) {   // the app's own layers, edge to edge
+                android.graphics.drawable.AdaptiveIconDrawable ad = (android.graphics.drawable.AdaptiveIconDrawable) icon;
+                Drawable bg = ad.getBackground(), fg = ad.getForeground();
+                if (bg != null) { bg.setBounds(0, (h - w) / 2, w, (h - w) / 2 + w); bg.draw(c); }   // a square layer covering the 16:9 tile
+                else c.drawColor(TileArt.LIGHT);
+                int[] box = TileArt.box(TileArt.ADAPTIVE, w, h, 0, 0);
+                if (fg != null) { fg.setBounds((w - box[0]) / 2, (h - box[1]) / 2, (w + box[0]) / 2, (h + box[1]) / 2); fg.draw(c); }
+                return new BitmapDrawable(getResources(), tile);
+            }
+            int iw = icon.getIntrinsicWidth(), ih = icon.getIntrinsicHeight();
+            Drawable cut = iw > 0 && ih > 0 ? trimmed(icon, iw, ih) : null;   // its transparent padding off first
+            if (cut != null) { icon = cut; iw = icon.getIntrinsicWidth(); ih = icon.getIntrinsicHeight(); }
+            int[] box = TileArt.box(TileArt.kind(false, false, iw, ih), w, h, iw, ih);
+            Bitmap glyph = Bitmap.createBitmap(Math.max(1, box[0]), Math.max(1, box[1]), Bitmap.Config.ARGB_8888);
+            icon.setBounds(0, 0, box[0], box[1]);
+            icon.draw(new Canvas(glyph));
+            int gw = glyph.getWidth(), gh = glyph.getHeight();
+            // its own edge: the outermost pixels of the trimmed icon (a native-looking tile); a bare glyph: the backing it stands out from
+            int[] edge = new int[2 * gw + 2 * gh];
+            int k = 0;
+            for (int x = 0; x < gw; x++) { edge[k++] = glyph.getPixel(x, 0); edge[k++] = glyph.getPixel(x, gh - 1); }
+            for (int y = 0; y < gh; y++) { edge[k++] = glyph.getPixel(0, y); edge[k++] = glyph.getPixel(gw - 1, y); }
+            int bg = TileArt.edgeColour(edge);
+            if (bg == 0) {
+                double lum = 0; int n = 0, all = 0;
+                int step = Math.max(1, Math.min(gw, gh) / 24);
+                for (int y = 0; y < gh; y += step) for (int x = 0; x < gw; x += step) {
+                    int p = glyph.getPixel(x, y);
+                    all++;
+                    if (Color.alpha(p) < 128) continue;
+                    lum += TileArt.lum(p); n++;
+                }
+                bg = TileArt.backing(n == 0 ? -1f : (float) (lum / n), all == 0 ? 0f : n / (float) all);
+            }
             c.drawColor(bg);
-            android.graphics.Paint pt = new android.graphics.Paint(android.graphics.Paint.FILTER_BITMAP_FLAG | android.graphics.Paint.ANTI_ALIAS_FLAG);
-            c.drawBitmap(glyph, (w - glyph.getWidth()) / 2f, (h - glyph.getHeight()) / 2f, pt);
+            c.drawBitmap(glyph, (w - gw) / 2f, (h - gh) / 2f, new android.graphics.Paint(android.graphics.Paint.FILTER_BITMAP_FLAG | android.graphics.Paint.ANTI_ALIAS_FLAG));
             glyph.recycle();
             return new BitmapDrawable(getResources(), tile);
         } catch (RuntimeException | OutOfMemoryError e) {
@@ -1605,7 +1608,7 @@ public class MainActivity extends Activity {
 
     /** a legacy icon cut to its opaque pixels (TileArt.trim decides), or null when it has no margin worth cutting */
     private Drawable trimmed(Drawable icon, int iw, int ih) {
-        float k = Math.min(1f, 256f / Math.max(iw, ih));
+        float k = Math.min(1f, 512f / Math.max(iw, ih));
         int w = Math.max(1, Math.round(iw * k)), h = Math.max(1, Math.round(ih * k));
         try {
             Bitmap bm = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
@@ -1621,6 +1624,18 @@ public class MainActivity extends Activity {
         } catch (RuntimeException | OutOfMemoryError e) {
             return null;
         }
+    }
+
+    /** the app's icon at the highest density it has (TileArt.DENSITY, xxxhdpi), so a tile is never drawn from a small picture; else the usual one */
+    private Drawable sharpIcon(ResolveInfo ri, PackageManager pm) {
+        try {
+            int id = ri.getIconResource();
+            if (id != 0) {
+                Drawable d = pm.getResourcesForApplication(ri.activityInfo.applicationInfo).getDrawableForDensity(id, TileArt.DENSITY, null);
+                if (d != null) return d;
+            }
+        } catch (PackageManager.NameNotFoundException | RuntimeException | OutOfMemoryError ignored) { }
+        return ri.loadIcon(pm);
     }
 
     /** On the main thread: the dock first, then the grid a few rows at a time, so a long list never holds up a frame. */
@@ -1836,15 +1851,7 @@ public class MainActivity extends Activity {
         ring.setOrientation(GradientDrawable.Orientation.TL_BR);
         ring.setColor(0);   // the ring only (the owner, 19 Nov: no glow, no decoration)
         View shine = new View(this);
-        // 4.4 beta 2 (the owner's test of 525: a focus hard to see): the person's ring, and a thin dark line just inside it, so the focus reads on a
-        // light tile (an icon on TileArt.LIGHT) as on a dark one; inside the tile, so the tray's room is unchanged
-        int rw = inDock ? trayRingW() : dp(2);
-        GradientDrawable inner = new GradientDrawable();
-        inner.setCornerRadius(Math.max(0, corner - rw));
-        inner.setStroke(Math.max(2, rw * 2 / 3), FOCUS_INNER);
-        android.graphics.drawable.LayerDrawable twoTone = new android.graphics.drawable.LayerDrawable(new Drawable[] {ring, inner});
-        twoTone.setLayerInset(1, rw, rw, rw, rw);
-        shine.setBackground(twoTone);
+        shine.setBackground(ring);   // shown only while an app is carried in «تعديل المفضلة» (liftCard), never as the focus: the owner, «no outline»
         shine.setAlpha(0f);
         card.addView(shine, new FrameLayout.LayoutParams(-1, -1));
         addEditMarks(card, ring, shine);   // the × of «تعديل المفضلة» and «تعديل التطبيقات», shown only in the mode
@@ -1879,9 +1886,9 @@ public class MainActivity extends Activity {
                 if (inDock) v.animate().translationY(has ? -lift() : 0).translationZ(z)
                         .setInterpolator(Motion.ease()).setStartDelay(wait).setDuration(Motion.move(MainActivity.this)).start();
                 else v.animate().translationZ(z).setInterpolator(Motion.ease()).setDuration(Motion.move(MainActivity.this)).start();
-                if ((dbg & DebugFlags.SHINE) == 0) shine.animate().alpha(has && !zoom ? 1f : 0f).setDuration(Motion.MS).setInterpolator(Motion.ease()).start();
+                if ((dbg & DebugFlags.SHINE) == 0) shine.setAlpha(0f);   // the owner (19 Nov): no outline, the focus is the size, the lift and the shadow
                 label.animate().alpha(has ? 1f : 0f).translationY(has ? dp(4) : 0).setDuration(Motion.MS).setInterpolator(Motion.ease()).start();
-            } else if ((dbg & DebugFlags.SHINE) == 0) shine.animate().alpha(has ? 1f : 0f).setDuration(Motion.MS).setInterpolator(Motion.ease()).start();
+            } else if ((dbg & DebugFlags.SHINE) == 0) shine.setAlpha(0f);
             if (!has) return;
             lastFocusedId = v.getId();
             optionsHint(inDock);
@@ -3725,9 +3732,6 @@ public class MainActivity extends Activity {
 
     /** dp: the height of a button in the app menu's bottom row (an icon over a short name) */
     private static final int APP_BUTTON_H = 56;
-
-    /** the dark line inside a focused tile's ring (TileArt's light tiles): about 55 % black */
-    static final int FOCUS_INNER = 0x8C000000;
 
 
     /** where the Sources dropdown hangs: the first pill, or the first dock card when every quick button is hidden (review F21); null: nothing to hang it on */
