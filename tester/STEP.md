@@ -1,3 +1,13 @@
+«▶▶ BETA 3 = build 581 (apk-next 3.581, next a7b77d8b). Beta 2 (577) is LIVE on apk-beta. Install home, screensaver and add-on 581 over 577 with adb (keep data). Then, screenshot-checked only, one short report:
+ (1) the first Home press after the install opens UrTV;
+ (2) light mode: `optimize/dock.sh lite-signals status` reads fine; DON'T force the notice on the owner's TV;
+ (3) the adhan row text, via the screen-recording way you used: «المؤذن، المكان، محفوظ على التلفزيون» or «غير محفوظ…»;
+ (4) kids mode: DON'T turn it on (it needs the PIN); just check that the phone page shows the «الخروج من وضع الأطفال» button under the family card;
+ (5) a QR on the TV has the «ما فتح؟» line under it;
+ (6) the add-on version is 581, and the add-on APK size is around 7.8 MB;
+ (7) `saver.sh show` identical to the backup after a power cycle.
+ Wireless ADB pairing is NOT to be tried on this TV (it uses 5555).»
+
 «▶▶ BETA 2 = build 577 (next ffd6d80b). Replaces 574. Adds: (a) the add-on re-arms the Home catch by itself after ITS OWN update; (b) the greeting no longer overlaps the date (couch + scenes). Install home, screensaver AND add-on over 574 with adb (keep data). Then: (1) the FIRST Home press right after the install, with no `am start` before it: does it open UrTV? Also `logcat -s UrTVWatch` should show «replaced heal asked». (2) home-577.png: the greeting and date must not overlap. (3) `saver.sh show` identical to the backup. One short report.»
 
 «▶▶ BETA 2 = build 574 (apk-next 3.574, next 448652f8). Replaces 570. It adds: icons via TileArt in EVERY apps style (incl. «أيقونات»), safe settings saving (flush), the add-teams/leagues screen with no lag (debounced search, max 60 results), and the hint text. Install home, screensaver and add-on over 570 (keep data). Then, screenshot-checked only: (1) the apps row in the owner's current style + «كل التطبيقات»: apps-bar-574.png, all-apps-574.png (logos big, no dark tints, no outline); (2) «المباريات والأسواق» → add teams: type a club name, it should respond with no freeze (time it); (3) `saver.sh show`, then power-cycle the TV, `saver.sh show` again: must be identical; (4) the «تحديث تلفزيوني» overlap photo (update-overlap.png). If the «كل التطبيقات» freeze happens, capture it as described below before any key. One short report.»
