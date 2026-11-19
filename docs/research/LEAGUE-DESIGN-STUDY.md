@@ -420,5 +420,5 @@ The owner circled the coloured bars at the row edges on 3-table-full and called 
 3. **Live points:** should the table move while games are on (provisional, in red), with a toggle back? Or should it stay as it was until full time?
 4. **Form order:** newest next to the points (right, as in the mockups), or newest at the far left?
 5. **Digits** follow the person's setting; is that agreed for the table too?
-7. **Cards (from the UI session):** keep the page's white panels, or make the whole matches page flat (sections on the sand, 1 px lines)? This would be one page-wide change, not for the league page alone.
 6. **Phase order:** (a) the table with zones, form and movement, plus the full-table screen; (b) the home with the live strip and the round; (c) the season strip; (d) the club sheet.
+7. **Cards (from the UI session):** keep the page's white panels, or make the whole matches page flat (sections on the sand, 1 px lines)? This would be one page-wide change, not for the league page alone.
