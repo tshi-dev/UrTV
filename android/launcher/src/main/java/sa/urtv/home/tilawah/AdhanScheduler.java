@@ -49,6 +49,7 @@ final class AdhanScheduler {
         // the old alarm, so there is never one for the old time beside the new.
         PrayerTimes.Next next = PrayerTimes.nextAlarm(c, place);
         if (next == null) { am.cancel(pending(c, 0, -1)); return; }
+        new Prefs(c).setNextAdhanAt(next.at);   // beta 3: Adhan.keepCheck tries more often in the last 45 minutes before it
         if (new Prefs(c).adhanOn()) Adhan.prefetchChosen(c);   // the recording is on the TV before its prayer, not fetched while it should be playing
         PendingIntent pending = pending(c, next.at, next.index);
         try {

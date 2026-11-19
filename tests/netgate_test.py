@@ -69,8 +69,8 @@ check("PrayerTimes.refreshIfDue: a try is not counted with the display off",
       method(pt, "static void refreshIfDue(").index("NetGate.backgroundOk") < method(pt, "static void refreshIfDue(").index('"refresh_try"'))
 check("PrayerTimes.refreshNow itself has no gate (the adhan alarm path and the tests call refresh)", "NetGate" not in method(pt, "static boolean refreshNow("))
 ad = src(H / "tilawah/Adhan.java")
-check("Adhan.prefetchChosen: skipped with the display off, remembered for the home's return",
-      "NetGate.backgroundOk" in method(ad, "static void prefetchChosen(") and "skippedInStandby = true" in ad)
+check("Adhan.prefetchChosen: skipped with the display off, remembered for the home's return (4.4 beta 3: the gate is in keepNow, which prefetchChosen hands off to)",
+      "keepNow(app, ASKED)" in method(ad, "static void prefetchChosen(") and "NetGate.backgroundOk" in method(ad, "private static void keepNow(") and "skippedInStandby = true" in ad)
 check("AdhanSync: a skipped prefetch is made when the home is back (once, no polling)", "Adhan.prefetchIfSkipped(c)" in src(H / "tilawah/AdhanSync.java"))
 rec = src(H / "tilawah/AdhanReceiver.java")
 check("AdhanReceiver: the alarm plays and reschedules first, whatever the network (refresh after, gated inside)",

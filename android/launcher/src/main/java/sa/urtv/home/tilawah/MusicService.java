@@ -616,15 +616,36 @@ public class MusicService extends Service implements AudioManager.OnAudioFocusCh
         prefs.setLastAdhan(System.currentTimeMillis());   // for `music.sh adhan`; the duplicate guard is the alarm's own (AdhanReceiver)
         File cached = OwnAdhan.isOwn(voice) ? OwnAdhan.fileOf(this, voice) : Adhan.cached(this, voice);
         // the person's own files are always on the TV: nothing to fetch, nothing to retry from the network
+        int stand;
         if (OwnAdhan.isOwn(voice) || Adhan.isCached(this, voice)) {
             adhanFromCache = true;
             startUrl(cached.getAbsolutePath());
+        } else if (!online() && (stand = standIn(voice)) > 0) {
+            // beta 3: not on the TV and no network: another voice that is saved plays now, not a stream that cannot come
+            Log.i("UrTVAdhan", "adhan: voice " + voice + " not saved and offline: voice " + stand + " instead");
+            playStandIn(stand);
         } else {
             startUrl(Adhan.url(voice));
             // keep a copy for next time; it also rescues this one if the stream drops
             new Thread(() -> Adhan.download(this, voice), "adhan-fetch").start();
         }
         if (previewSeconds > 0) handler.postDelayed(previewStop, previewSeconds * 1000L);
+    }
+
+    /**
+     * beta 3: a saved voice to play instead of {@code voice}, or -1. The saved list is the one the keep check wrote (Prefs.adhanSaved); the one file
+     * picked is looked at again before it is used, as the start above looks at the chosen one.
+     */
+    private int standIn(int voice) {
+        int other = voice == prefs.fajrVoice() ? prefs.voice() : prefs.fajrVoice();
+        int v = AdhanKeep.stand(voice, other, AdhanKeep.parseSaved(prefs.adhanSaved(), Adhan.VOICES));
+        return v > 0 && Adhan.isCached(this, v) ? v : -1;
+    }
+
+    private void playStandIn(int stand) {
+        adhanFromCache = true;
+        adhanName = Adhan.name(stand);
+        startUrl(Adhan.cached(this, stand).getAbsolutePath());
     }
 
     /** Pauses the surah (or radio) and remembers where; true when it should come back after the adhan. */
@@ -1027,6 +1048,17 @@ public class MusicService extends Service implements AudioManager.OnAudioFocusCh
                 retries = 0;
                 startUrl(cached.getAbsolutePath());
                 return;
+            }
+            int stand = !adhanFromCache && duaNow == null ? standIn(adhanVoice) : -1;
+            if (stand > 0) {   // beta 3: another voice that is saved, rather than no adhan
+                Log.i("UrTVAdhan", "adhan: voice " + adhanVoice + " failed to stream: voice " + stand + " instead");
+                retries = 0;
+                playStandIn(stand);
+                return;
+            }
+            if (adhanLive) {   // beta 3: never a silent no-op: «الأذان» says it for a day
+                Log.w("UrTVAdhan", "adhan: no recording could play (not saved, stream failed)");
+                prefs.setAdhanMissed(System.currentTimeMillis());
             }
             finishAdhan();
             return;

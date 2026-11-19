@@ -208,6 +208,7 @@ python3 tests/photos_sh_test.py
 python3 tests/music_adhan_own_test.py
 python3 tests/own_adhan_test.py
 python3 tests/own_adhan_keep_test.py
+python3 tests/adhan_keep_test.py   # 4.4 beta 3: the chosen adhan recordings kept in the app files, a saved voice stands in, a missed adhan said
 python3 tests/player_logic_test.py
 python3 tests/stall_watch_test.py   # 4.3 A2: the live station's stall watchdog and ExoPlayer for HLS
 python3 tests/net_reconnect_test.py   # 4.4 radio: bigger buffer, pre-buffer, join again when the network is back, «يعيد الاتصال…»

@@ -141,14 +141,41 @@ final class Adhan {
     /** Where it was recorded, e.g. «الحرم المكي». */
     static String place(int voice) { return OwnAdhan.isOwn(voice) ? sa.urtv.home.S.tv(OwnAdhanText.PLACE) : (sa.urtv.home.S.en() ? PLACES_EN : PLACES)[clamp(voice) - 1]; }
 
-    /** Both, for the row that opens this list: «فاروق حضراوي — الحرم المكي». */
-    static String label(int voice) { return name(voice) + " — " + place(voice); }
+    /** Both, for the row that opens this list: «فاروق حضراوي، الحرم المكي» (4.4 beta 3, the UI session: no «—»; ", " in English). */
+    static String label(int voice) { return name(voice) + sa.urtv.home.S.sep() + place(voice); }
 
+    /**
+     * The copy the adhan plays from: the kept one (the app's files, beta 3) when it is there, else the cache's (the other voices, «تلاوة»'s daily round).
+     * Callers look at it off the UI thread, or where they did before (the player's start, one file).
+     */
     static File cached(Context c, int voice) {
+        File kept = kept(c, voice);
+        return kept.length() > MIN_BYTES ? kept : inCache(c, voice);
+    }
+
+    /** 4.4 beta 3: the usual and the Fajr voice live here, in the app's own files: Android does not empty this folder when the TV runs short of space */
+    static File kept(Context c, int voice) {
+        return new File(new File(c.getFilesDir(), "adhan"), "adhan-" + clamp(voice) + ".mp3");
+    }
+
+    private static File inCache(Context c, int voice) {
         return new File(new File(c.getCacheDir(), "adhan"), "adhan-" + clamp(voice) + ".mp3");
     }
 
     private static int clamp(int voice) { return voice < 1 || voice > VOICES ? 1 : voice; }
+
+    /** 4.4 beta 3: what «الأذان» says under the muezzin about the copy on the TV (prefs only: nothing is looked at on disk for it) */
+    static final String KEPT = sa.urtv.home.S.n("محفوظ على التلفزيون"),
+            NOT_KEPT = sa.urtv.home.S.n("غير محفوظ على التلفزيون بعد، نحمّله أول ما يتوفر الإنترنت"),
+            MISSED = sa.urtv.home.S.n("آخر أذان ما اشتغل لأنه ما كان محفوظًا على التلفزيون وما كان فيه إنترنت");
+
+    /** the row's words after the muezzin: a missed adhan (a day), else whether the chosen voices are on the TV; "" for the person's own recording */
+    static String keepNote(Prefs prefs, boolean own) {
+        if (AdhanKeep.missedShown(prefs.adhanMissed(), System.currentTimeMillis())) return sa.urtv.home.S.sep() + sa.urtv.home.S.tv(MISSED);
+        if (own || !prefs.adhanOn()) return "";
+        boolean all = AdhanKeep.allSaved(AdhanKeep.wanted(prefs.voice(), prefs.fajrVoice(), VOICES), AdhanKeep.parseSaved(prefs.adhanSaved(), VOICES));
+        return sa.urtv.home.S.sep() + sa.urtv.home.S.tv(all ? KEPT : NOT_KEPT);
+    }
 
     /** a recording shorter than this is a failed or cut-off download, not an adhan */
     private static final long MIN_BYTES = 100_000;
@@ -156,7 +183,15 @@ final class Adhan {
     /** the voices being downloaded now, so a stream and a prefetch never fetch the same file twice */
     private static final Set<Integer> LOADING = new HashSet<>();
 
-    static boolean isCached(Context c, int voice) { return cached(c, voice).length() > MIN_BYTES; }
+    static boolean isCached(Context c, int voice) { return kept(c, voice).length() > MIN_BYTES || inCache(c, voice).length() > MIN_BYTES; }
+
+    /** 4.4 beta 3: the keeping and checking, one at a time and never on the UI thread */
+    // (named in lower case: tests/regressions/javagraph.py knows an executor by a lower-case name)
+    private static final java.util.concurrent.ExecutorService keeper = java.util.concurrent.Executors.newSingleThreadExecutor(r -> {
+        Thread t = new Thread(r, "adhan-keep");
+        t.setDaemon(true);
+        return t;
+    });
 
     static volatile boolean skippedInStandby;
 
@@ -166,22 +201,88 @@ final class Adhan {
     }
 
     /**
+     * 4.4 beta 3: the home's minute tick (AdhanSync, on the UI thread: only a hand-off here). On its own thread: the chosen voices are kept on the TV,
+     * moved from the cache when they are there, else fetched when {@link AdhanKeep#due} says (an hour after a failed try, ten minutes before a prayer).
+     */
+    static void keepCheck(Context c) {
+        final Context app = c.getApplicationContext();
+        try { keeper.execute(() -> keepNow(app, TICK)); } catch (RuntimeException ignored) { }   // a refused hand-off: the next tick asks again
+    }
+
+    /**
      * The chosen voices (the usual one and the one for Fajr), on their own thread, unless they are on the TV already: asked for by the alarm
      * scheduler and the receiver, so the adhan plays from the cache at its prayer time and the screen «تلاوة» need not have been opened.
      * A failed try is not repeated for an hour.
      */
     static void prefetchChosen(final Context c) {
-        if (!sa.urtv.home.NetGate.backgroundOk(sa.urtv.home.NetGateAndroid.displayOn(c))) { skippedInStandby = true; return; }   // not now; AdhanSync asks once when the home is back
-        skippedInStandby = false;
-        final Prefs prefs = new Prefs(c);
-        final int chosen = prefs.voice(), fajr = prefs.fajrVoice();
+        final Context app = c.getApplicationContext();
+        try { keeper.execute(() -> keepNow(app, ASKED)); } catch (RuntimeException ignored) { }   // the minute tick asks again
+    }
+
+    /**
+     * On keeper's thread. The chosen voices are moved from the cache into the kept folder (no network), the voices no longer chosen go back to the cache,
+     * and a missing one is fetched straight into the kept folder when the screen is on and it is due (see {@link #TICK}). What is saved is written for the player and «الأذان» to read.
+     */
+    /** who asks: the minute tick (AdhanKeep.due), a voice change or a new alarm (once an hour after a failure), «تلاوة» opened (now) */
+    private static final int TICK = 0, ASKED = 1, NOW = 2;
+
+    private static void keepNow(Context c, int who) {
+        Prefs prefs = new Prefs(c);
+        int[] wanted = AdhanKeep.wanted(prefs.voice(), prefs.fajrVoice(), VOICES);
+        for (int w : wanted) if (kept(c, w).length() <= MIN_BYTES && inCache(c, w).length() > MIN_BYTES) moveIn(c, w);
+        tidy(c, wanted);
+        boolean[] saved = saved(c);
+        prefs.setAdhanSaved(AdhanKeep.savedText(saved));
         long now = System.currentTimeMillis();
-        if ((isCached(c, chosen) && isCached(c, fajr)) || now - prefs.prefetchTried() < TRY_AGAIN_MS) return;
+        boolean missing = !AdhanKeep.allSaved(wanted, saved);
+        if (!missing) { skippedInStandby = false; return; }
+        boolean due = who == NOW || (who == ASKED ? now - prefs.prefetchTried() >= TRY_AGAIN_MS || prefs.prefetchTried() > now
+                : AdhanKeep.due(true, now, prefs.prefetchTried(), prefs.nextAdhanAt()));
+        if (!due) return;
+        if (!sa.urtv.home.NetGate.backgroundOk(sa.urtv.home.NetGateAndroid.displayOn(c))) { skippedInStandby = true; return; }   // not now; asked again when the home is back
+        skippedInStandby = false;
         prefs.setPrefetchTried(now);
-        new Thread(() -> {
-            download(c, chosen);
-            if (fajr != chosen) download(c, fajr);
-        }, "adhan-chosen").start();
+        for (int w : wanted) if (!saved[w]) keepOne(c, w);
+        prefs.setAdhanSaved(AdhanKeep.savedText(saved(c)));
+    }
+
+    /** which voices are on the TV (kept or cached), index 1..VOICES */
+    static boolean[] saved(Context c) {
+        boolean[] out = new boolean[VOICES + 1];
+        for (int v = 1; v <= VOICES; v++) out[v] = isCached(c, v);
+        return out;
+    }
+
+    /** the cache's copy into the kept folder (the same disk: a rename) */
+    private static boolean moveIn(Context c, int voice) {
+        File to = kept(c, voice), dir = to.getParentFile();
+        if (dir != null && !dir.exists() && !dir.mkdirs()) return false;
+        return inCache(c, voice).renameTo(to);
+    }
+
+    /** a voice no longer chosen goes back to the cache (the space is Android's to take again) */
+    private static void tidy(Context c, int[] wanted) {
+        File[] files = new File(c.getFilesDir(), "adhan").listFiles((d, n) -> n.startsWith("adhan-") && n.endsWith(".mp3"));
+        if (files == null) return;
+        for (File f : files) {
+            int v;
+            try { v = Integer.parseInt(f.getName().substring(6, f.getName().length() - 4)); } catch (RuntimeException e) { continue; }
+            if (AdhanKeep.isWanted(v, wanted)) continue;
+            File to = inCache(c, v), dir = to.getParentFile();
+            if (to.length() > MIN_BYTES || (dir != null && !dir.exists() && !dir.mkdirs()) || !f.renameTo(to)) f.delete();
+        }
+    }
+
+    /** one chosen voice into the kept folder, fetched when it is nowhere on the TV */
+    private static boolean keepOne(Context c, int voice) {
+        if (kept(c, voice).length() > MIN_BYTES) return true;
+        if (inCache(c, voice).length() > MIN_BYTES) return moveIn(c, voice);
+        synchronized (LOADING) { if (!LOADING.add(voice)) return false; }   // another thread is fetching it
+        try {
+            return fetch(c, voice, kept(c, voice));
+        } finally {
+            synchronized (LOADING) { LOADING.remove(voice); }
+        }
     }
 
     /**
@@ -199,8 +300,8 @@ final class Adhan {
             File dir = new File(c.getCacheDir(), "adhan");
             File[] old = dir.listFiles((d, n) -> n.startsWith("azan") && n.endsWith(".mp3"));
             if (old != null) for (File f : old) f.delete();
-            download(c, chosen);
-            if (fajr != chosen) download(c, fajr);
+            // beta 3: the chosen ones into the kept folder first, on keeper's thread (one at a time with the tick); the person is in front: no wait
+            try { keeper.submit(() -> keepNow(c, NOW)).get(); } catch (Exception e) { if (e instanceof InterruptedException) return; }
             for (int voice = 1; voice <= VOICES; voice++) {
                 if (voice == chosen || voice == fajr) continue;
                 download(c, voice);   // a failure here is that voice's: the next one is still asked for
@@ -211,8 +312,8 @@ final class Adhan {
 
     /** Downloads one voice and keeps it only if it came whole; false when the network is not there or the file is short. */
     static boolean download(Context c, int voice) {
-        File file = cached(c, voice);
-        if (file.length() > MIN_BYTES) return true;
+        if (isCached(c, voice)) return true;
+        File file = inCache(c, voice);
         synchronized (LOADING) { if (!LOADING.add(voice)) return false; }   // another thread is fetching it
         try {
             return fetch(c, voice, file);

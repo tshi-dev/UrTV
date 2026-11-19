@@ -955,3 +955,6 @@ mp3 أو m4a أو ogg أو wav	mp3, m4a, ogg or wav
 ذاكرة التلفزيون امتلأت	the TV's memory filled up
 التشغيل كان بطيئًا	starting was slow
 تلقائي: شغّال الآن لأن %s مرتين هذا الأسبوع	Automatic: on now because %s twice this week
+محفوظ على التلفزيون	Saved on the TV
+غير محفوظ على التلفزيون بعد، نحمّله أول ما يتوفر الإنترنت	Not saved on the TV yet, downloaded as soon as there is internet
+آخر أذان ما اشتغل لأنه ما كان محفوظًا على التلفزيون وما كان فيه إنترنت	The last adhan did not play because it was not saved on the TV and there was no internet

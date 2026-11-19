@@ -19,6 +19,7 @@ public final class AdhanSync {
         Place p = Place.get(c, fragment, ticket);   // a null fragment: the last good place
         PrayerTimes.refreshIfDue(c, p);   // Aladhan's times for today, once the TV is online: the home screen agrees with the page
         Adhan.prefetchIfSkipped(c);   // a recording skipped in standby comes now; nothing is asked when none was skipped
+        if (new Prefs(c).adhanOn()) Adhan.keepCheck(c);   // beta 3: the chosen recordings are on the TV before the prayer (its own thread; a hand-off here)
         if (fragment == null) return;   // a failed read says nothing about the alarm
         SharedPreferences sp = c.getSharedPreferences("tilawah", Context.MODE_PRIVATE);
         if (!SchedIdentity.due(sp.getString("sched_identity", ""), p.identity())) return;
