@@ -243,6 +243,7 @@ python3 tests/clock_setting_test.py
 python3 tests/saver_clock24_test.py
 python3 tests/card_box_test.py
 python3 tests/no_decoration_test.py   # the owner (19 Nov): no AI-look decoration (accent bars, chips, decorative gradients, glows)
+python3 tests/apps_align_test.py   # 4.4 beta 2 «محاذاة التطبيقات»: the apps row centred by default, right or left
 python3 tests/tile_art_test.py   # 4.4 beta 2 (the owner's test of 525): an app's tile (banner, else its icon on a neutral tile; tiny, wide, white, transparent) and the grid's whole-row scroll
 python3 tests/card_fit_test.py   # 4.4 the owner: a home card that does not suit the look says so, and is swapped within its kind when the look changes
 python3 tests/glow_look_test.py

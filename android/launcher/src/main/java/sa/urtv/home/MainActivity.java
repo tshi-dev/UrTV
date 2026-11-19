@@ -3532,6 +3532,17 @@ public class MainActivity extends Activity {
     // ---- 4.5 «زجاجي»: the bar's size and rows, its glass, and its last tile «كل التطبيقات»
 
     /** the bar's size factor and rows (FavBar.glassK, glassRows, from «حجم شريط tvOS» and «صفوف شريط tvOS») */
+    /**
+     * 4.4 beta 2 (the owner): «محاذاة التطبيقات», the apps row in the middle (the default), at the right or at the left of the screen, in every look
+     * (the side is the screen's, the same in Arabic and English); a row wider than the screen scrolls with the focus as before. The clock never moves.
+     */
+    private String appsAlignNow = "center";
+    private void alignApps(String align) {
+        if (dockRow == null || align == null || align.equals(appsAlignNow)) return;
+        appsAlignNow = align;
+        dockRow.setGravity(FavBar.alignGravity(align));
+    }
+
     private volatile float glassK = 1f;
     private int glassRowsN = 1;
     private final GlassBar glassBar = new GlassBar();
@@ -4148,6 +4159,7 @@ public class MainActivity extends Activity {
         ampm.setText(ClockText.suffix(h, h24));
         ampm.setVisibility(h24 ? View.GONE : View.VISIBLE);
         sceneTick(cfg);
+        alignApps(cfg.appsAlign);   // 4.4 beta 2 «محاذاة التطبيقات»
         String wayNow = FavBar.look(cfg.appsStyle);
         float kNow = FavBar.glassK(cfg.glassSize);
         int rowsNow = FavBar.glassRowsFit(getResources().getDisplayMetrics().heightPixels, kNow, FavBar.glassRows(cfg.glassRows));   // as many as fit at this size

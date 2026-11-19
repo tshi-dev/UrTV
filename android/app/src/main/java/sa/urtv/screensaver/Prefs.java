@@ -1340,6 +1340,12 @@ final class Prefs {
      * "banners", "icons", or, for the tray, 4.4's first values: "frame" (the ring, the default) or "zoom" (bigger with a shadow), which
      * the person keeps (a TV that had «تكبير وظل» keeps it on its tiles). The launcher reads the stored value (FavBar.look, FavBar.zoom).
      */
+    /** 4.4 beta 2 (the owner): «محاذاة التطبيقات», where the apps row sits on the screen in every look: in the middle (the default), right or left */
+    static final String[] APPS_ALIGNS = {"center", "right", "left"};
+    static final String[] APPS_ALIGN_NAMES = {"وسط", "يمين", "يسار"};
+    String appsAlign() { String v = sp.getString("appsAlign", "center"); return java.util.Arrays.asList(APPS_ALIGNS).contains(v) ? v : "center"; }
+    void setAppsAlign(String v) { if (java.util.Arrays.asList(APPS_ALIGNS).contains(v)) sp.edit().putString("appsAlign", v).apply(); }
+    static String appsAlignLabel(String v) { int i = java.util.Arrays.asList(APPS_ALIGNS).indexOf(v); return APPS_ALIGN_NAMES[Math.max(0, i)]; }
     static final String[] HOME_APPS = {"banners", "icons", "tiles", "glass"};
     static final String[] HOME_APPS_NAMES = {"بنرات", "أيقونات", "مربعات ملونة", "tvOS"};   // 4.4 beta 2 (the owner): what comes from tvOS Launcher is named «tvOS»
     static final String[] APPS_STORED = {"banners", "icons", "frame", "zoom", "glass"};

@@ -273,7 +273,7 @@ check("«حزم الآفاق» (the owner's «الآفاق», was «المشاه
       '{"saudi", "آفاق السعودية"}, {"couch", "آفاق عالمية"}' in prefs and 'if (out.isEmpty()) out.add("saudi");' in prefs
       and 'row("حزم الآفاق"' in st
       and '{LOOK, H + "أشكال جاهزة والتخطيط", "المظهر على الرئيسية", "رجّع الشكل السابق", "أشكال جاهزة", "شكل شاشة الإعدادات", "تخصيص", "رجّع بطاقاتك", "شكل كنبة", "التخطيط", "وضع الألوان", "صفحات الأسهم والمباريات داكنة",' in hub
-      and 'H + "الخلفية والآفاق", "الخلفية", "حزم الآفاق", "بقاء كل أفق", "الأفق يتبع الوقت", "الأفق يتبع الطقس",' in hub and '{"الساعة", LOOK}, {"شكل التطبيقات", LOOK}, {"حجم شريط tvOS", LOOK}, {"صفوف شريط tvOS", LOOK}, {"حزم الآفاق", LOOK}' in hub)
+      and 'H + "الخلفية والآفاق", "الخلفية", "حزم الآفاق", "بقاء كل أفق", "الأفق يتبع الوقت", "الأفق يتبع الطقس",' in hub and '{"الساعة", LOOK}, {"شكل التطبيقات", LOOK}, {"محاذاة التطبيقات", LOOK}, {"حجم شريط tvOS", LOOK}, {"صفوف شريط tvOS", LOOK}, {"حزم الآفاق", LOOK}' in hub)
 check("«بقاء كل أفق», «الأفق يتبع الوقت», «الأفق يتبع الطقس»: rows in «المظهر», off by default (20 s), given to the home, which picks night by the prayer times and fog by the greeting's weather",
       'row("بقاء كل أفق"' in st and 'row("الأفق يتبع الوقت"' in st and 'row("الأفق يتبع الطقس"' in st and 'sp.getBoolean("sceneByTime", false)' in prefs
       and 'sp.getBoolean("sceneByWeather", false)' in prefs and 'sp.getString("sceneStay", "20")' in prefs and '"scene_stay", "scene_time", "scene_weather"' in prov

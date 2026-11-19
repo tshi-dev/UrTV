@@ -562,6 +562,9 @@ public class SettingsActivity extends Activity {
             pickOne("الساعة", Prefs.HOME_CLOCK_NAMES, java.util.Arrays.asList(Prefs.HOME_CLOCKS).indexOf(prefs.homeClock()), i -> prefs.setLookPart("clock", Prefs.HOME_CLOCKS[i])); } });
         row("شكل التطبيقات", Prefs.appsStyleLabel(prefs.appsStyle()), R.drawable.ic_eye, new Runnable() { public void run() {
             pickOne("شكل التطبيقات", Prefs.HOME_APPS_NAMES, java.util.Arrays.asList(Prefs.HOME_APPS).indexOf(Prefs.appsWay(prefs.appsStyle())), i -> prefs.setLookPart("apps", Prefs.HOME_APPS[i])); } });
+        // 4.4 beta 2 (the owner): «محاذاة التطبيقات», the apps row in the middle (the default), right or left, in every look; the clock never moves
+        row("محاذاة التطبيقات", Prefs.appsAlignLabel(prefs.appsAlign()), R.drawable.ic_eye, new Runnable() { public void run() {
+            pickOne("محاذاة التطبيقات", Prefs.APPS_ALIGN_NAMES, java.util.Arrays.asList(Prefs.APPS_ALIGNS).indexOf(prefs.appsAlign()), i -> { prefs.setAppsAlign(Prefs.APPS_ALIGNS[i]); prefs.lookChanged(); }); } });
         // 4.5 «زجاجي»: its size and rows (the two rows always here, so the way can be set up before it is chosen)
         row("حجم شريط tvOS", Prefs.glassSizeLabel(prefs.glassSize()), R.drawable.ic_eye, new Runnable() { public void run() {
             String[] names = new String[Prefs.GLASS_SIZES.length];

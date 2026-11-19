@@ -238,6 +238,13 @@ final class FavBar {
         return Math.max(0, (w - row) / 2);
     }
 
+    /** 4.4 beta 2 «محاذاة التطبيقات»: the row's gravity (android.view.Gravity's values, plain ints so this stays plain Java): center, right or left */
+    static int alignGravity(String align) {
+        if ("right".equals(align)) return 0x05 | 0x10;   // Gravity.RIGHT | CENTER_VERTICAL
+        if ("left".equals(align)) return 0x03 | 0x10;    // Gravity.LEFT | CENTER_VERTICAL
+        return 0x11;                                     // Gravity.CENTER
+    }
+
     /** a length of the 1080p spec on a screen this many pixels high */
     static int px(float spec, int screenH) { return Math.round(spec * screenH / 1080f); }
 

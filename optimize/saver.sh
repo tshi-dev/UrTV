@@ -282,6 +282,7 @@ case "${1:-}" in
   couch)      set1 couch "${2:?usage: optimize/saver.sh couch on|off}" ;;
   lookback)   set1 lookback restore ;;
   lookpanel)  set1 lookpanel open ;;
+  appsalign) set1 appsalign "${2:?usage: optimize/saver.sh appsalign center|right|left}" ;;   # 4.4 beta 2 «محاذاة التطبيقات» (center by default)
   settingsstyle) set1 settingsstyle "${2:?usage: optimize/saver.sh settingsstyle buttons|couch|tvos}" ;;   # 4.4 beta 2 «شكل شاشة الإعدادات» (buttons by default)
   lookpanelrow) set1 lookpanelrow "${2:?usage: optimize/saver.sh lookpanelrow on|off}" ;;   # «لوحة المظهر على الرئيسية» (off by default)
   lookundo)   set1 lookundo "${2:?usage: optimize/saver.sh lookundo on|off}" ;;   # «زر رجّع الشكل السابق» (off by default)

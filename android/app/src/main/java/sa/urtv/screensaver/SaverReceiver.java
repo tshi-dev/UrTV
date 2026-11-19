@@ -352,6 +352,8 @@ public class SaverReceiver extends BroadcastReceiver {
             String v = i.getStringExtra(k);
             if (v != null && !"on".equals(v) && !"off".equals(v)) return "error: " + k + " is on or off";
         }
+        String align = i.getStringExtra("appsalign");
+        if (align != null && !java.util.Arrays.asList(Prefs.APPS_ALIGNS).contains(align)) return "error: appsalign is one of center right left";
         String sstyle = i.getStringExtra("settingsstyle");
         if (sstyle != null && !java.util.Arrays.asList(Prefs.SETTINGS_STYLES).contains(sstyle)) return "error: settingsstyle is one of " + Prefs.join(java.util.Arrays.asList(Prefs.SETTINGS_STYLES), " ");
         String lookpanel = i.getStringExtra("lookpanel");
@@ -521,7 +523,8 @@ public class SaverReceiver extends BroadcastReceiver {
         if (focusX != null) p.setFocusStyle(focusX);
         if (syncX != null) p.setLookSync("on".equals(syncX));
         if (surfaceP != null) { int s = Arrays.asList(GlassStyle.SURFACES).indexOf(surfaceP[0]); p.setSurfacePercent(s, Integer.parseInt(surfaceP[1])); p.setSurfaceFill(s, surfaceP[2]); }
-        if (i.getStringExtra("settingsstyle") != null) p.setSettingsStyle(i.getStringExtra("settingsstyle"));   // 4.4 beta 2 «شكل شاشة الإعدادات»
+        if (i.getStringExtra("settingsstyle") != null) p.setSettingsStyle(i.getStringExtra("settingsstyle"));
+        if (i.getStringExtra("appsalign") != null) p.setAppsAlign(i.getStringExtra("appsalign"));   // 4.4 beta 2 «محاذاة التطبيقات»   // 4.4 beta 2 «شكل شاشة الإعدادات»
         if (i.getStringExtra("lookpanelrow") != null) p.setUiPanel("on".equals(i.getStringExtra("lookpanelrow")));
         if (i.getStringExtra("lookundo") != null) p.setUiUndo("on".equals(i.getStringExtra("lookundo")));
         if (i.getStringExtra("smoothlook") != null) p.setUiSmooth("on".equals(i.getStringExtra("smoothlook")));
