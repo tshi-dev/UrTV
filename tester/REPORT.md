@@ -3200,3 +3200,10 @@ Pictures (PC only): optimize/run/step96/pics/upd-1.png … upd-6.png.
 - Sent the report from the TV's «أرسل ملاحظة عن النسخة التجريبية» (QR, opened on the owner's TV, read on the PC and sent in Chrome). The report summary contained only the build, channel, Android version and the look settings. Problems listed by the owner: (1) update says update but fails; (2) settings focus on sub-screens and lag; (3) old frame 0.8 s at screensaver start; (4) after games then Home then control centre the games reopen; (5) next-match card shrinks/moves on focus; (6) app icons unclear and the all-apps grid cut at the top.
 - Not checked yet (owner away): «افتح الشاشة الأصلية», update screen after the fix, the presets, the apps bar and all-apps screenshots, league tabs.
 - Privacy check: the report link is on tshi-dev.github.io/UrTV (the project's own page); it carries no Wi-Fi name, account or IP.
+
+## Beta 2 (570) — remaining checks (19 Nov, owner away; TV muted)
+- Home after the update: PASS (first Home press lands on UrTV now, checked on 570 with the TV on the home).
+- Apps bar: the row shows the 5 focused-app tiles; focused YouTube tile is larger with no outline (grow only), not overlapping its neighbours at 1080p. Picture: optimize/run/step96/pics/beta2-home.png (PC only). Alignment: centred in the bar. PASS for focus outline/overlap; «محاذاة التطبيقات» setting not opened (needs the remote).
+- «كل التطبيقات» (all-apps): NOT re-checked on 570 (needs the remote to reach the grid; blind D-pad is unreliable on the home).
+- «افتح الشاشة الأصلية», update screen after the fix, presets «تركيبات مقترحة», league tabs «الأبطال»/«الهدّافون», large-font check: NOT DONE (need the remote or the owner at the TV).
+- Step 104 (clean TV for the iPhone run): NOT started, waiting for the owner's «خلصت، نظّف التلفزيون».
