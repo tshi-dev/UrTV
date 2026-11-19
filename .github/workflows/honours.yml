@@ -10,7 +10,7 @@ on:
   schedule:
     - cron: '17 3 * * 2'
   push:
-    branches: [master, next, work/45-honours]   # TEMPORARY (4.4 beta 2): one run from this branch to publish data-honours; removed in the next commit
+    branches: [master, next]
     paths:
       - '.github/tools/honours.py'
       - '.github/tools/honours_study.py'
