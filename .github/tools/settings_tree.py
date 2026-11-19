@@ -23,6 +23,8 @@ CHOICES = {
     "الخلفية": ("HOME_BGS", "HOME_BG_NAMES", "homeBg"),
     "الساعة": ("HOME_CLOCKS", "HOME_CLOCK_NAMES", "homeClock"),
     "شكل التطبيقات": ("HOME_APPS", "HOME_APPS_NAMES", "appsStyle"),
+    "حجم شريط tvOS": ("GLASS_SIZES", None, "glassSize"),
+    "صفوف شريط tvOS": ("GLASS_ROWS", "GLASS_ROWS_NAMES", "glassRows"),
     "حزم الآفاق": ("SCENE_PACKS", None, None),
     "بقاء كل أفق": ("SCENE_STAYS", "SCENE_STAY_NAMES", "sceneStay"),
     "الأفق يتبع الوقت": (None, None, "sceneByTime"),
@@ -66,7 +68,7 @@ MORE_CMDS = {
 for _id, _title in re.findall(r'b\("([a-z]+)", "([^"]+)"', (ROOT / "android/app/src/main/java/sa/urtv/screensaver/RemoteButtons.java").read_text(encoding="utf-8")):
     MORE_CMDS[_title] = [f"optimize/dock.sh key {_id} org.smarttube.stable", f"optimize/dock.sh key {_id} default"]
 # rows that are an action or open a screen of their own, not a value to set (nothing for a command to set)
-ACTIONS = {"اجعل UrTV الشاشة الرئيسية", "جرّب التنبيه", "تخلّص من واجهة المصنع", "رجّع واجهة المصنع", "قبل ما تحذف التطبيق…", "تفاصيل التطبيقات", "افتح تلاوة وأذان",
+ACTIONS = {"المظهر على الرئيسية", "اجعل UrTV الشاشة الرئيسية", "جرّب التنبيه", "تخلّص من واجهة المصنع", "رجّع واجهة المصنع", "قبل ما تحذف التطبيق…", "تفاصيل التطبيقات", "افتح تلاوة وأذان",
            "مباريات اليوم", "افتح صفحة الأسواق", "معاينة الشاشة", "تحديث تلفزيوني", "إعداد تلفزيوني", "مسح الملفات المؤقتة", "أرسل تقرير", "أرسل ملاحظة عن النسخة التجريبية", "مركز التحكم", "بحث في الإعدادات",
            "تعديل المفضلة", "ترتيب التطبيقات المفضلة", "ترتيب كل التطبيقات", "أسماء المصادر"}
 # rows the code gives no command (no saver.sh case, no receiver extra): set from the TV only

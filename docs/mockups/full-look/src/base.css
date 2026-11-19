@@ -1,0 +1,26 @@
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap');
+:root{--fg:#f4f2ee;--dim:rgba(244,242,238,.66);--faint:rgba(244,242,238,.42);--glass:rgba(30,30,34,.42);--edge:rgba(255,255,255,.16);--gold:#e8c46a;--green:#5fd38a;--k:1}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:1920px;height:1080px;overflow:clip;position:relative;background:#000;color:var(--fg);font-family:'IBM Plex Sans Arabic',sans-serif;direction:rtl}
+.bg{position:absolute;inset:0;background:url(../../../../android/launcher/src/main/assets/scenes/saudi/riyadh.jpg) center/cover}
+.shade{position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.25),rgba(0,0,0,0) 30%,rgba(0,0,0,.55))}
+.note{position:absolute;bottom:18px;left:40px;right:40px;font-size:20px;color:var(--gold);text-shadow:0 2px 6px #000}
+.tag{position:absolute;top:22px;left:40px;font-size:22px;color:#111;background:var(--gold);padding:8px 16px;border-radius:10px;font-weight:600}
+/* «كنبة»: the clock in the middle, our cards on the same glass as the clock, on the apps row's grid */
+.clock{position:absolute;top:120px;left:0;right:0;text-align:center;font-size:calc(230px*var(--k));font-weight:600;line-height:1;letter-spacing:-2px}
+.date{position:absolute;top:calc(120px + 250px*var(--k));left:0;right:0;text-align:center;font-size:calc(30px*var(--k));color:var(--dim)}
+.greet{position:absolute;top:44px;right:72px;font-size:calc(30px*var(--k));font-weight:600}
+.greet small{display:block;font-size:calc(20px*var(--k));color:var(--dim);font-weight:400}
+.cards{position:absolute;left:72px;right:72px;bottom:290px;display:flex;gap:28px}
+.card{flex:1;min-width:0;background:var(--glass);backdrop-filter:blur(26px);border:1px solid var(--edge);border-radius:22px;padding:20px 26px;box-shadow:0 18px 40px rgba(0,0,0,.25)}
+.card .h{font-size:calc(20px*var(--k));color:var(--dim)}
+.card .b{font-size:calc(38px*var(--k));font-weight:600;margin:4px 0 2px;line-height:1.25}
+.card .s{font-size:calc(21px*var(--k));color:var(--dim);line-height:1.4}
+.card .s b{color:var(--gold);font-weight:600}
+.card.f{outline:4px solid #fff;transform:scale(1.04)}
+.apps{position:absolute;left:72px;right:72px;bottom:70px;display:flex;gap:28px;justify-content:flex-start}
+.app{width:150px;height:150px;border-radius:34px;display:grid;place-items:center;font-size:56px;color:#fff;box-shadow:0 10px 26px rgba(0,0,0,.3)}
+.app.f{outline:5px solid #fff;transform:scale(1.08)}
+.appname{position:absolute;bottom:236px;right:72px;font-size:calc(24px*var(--k));font-weight:600}
+.light .card{backdrop-filter:none;background:rgba(24,24,28,.72);box-shadow:none}
+.light .app{box-shadow:none}.light .card.f,.light .app.f{transform:none}

@@ -89,6 +89,22 @@
 يعمل، نقاط السنة تحت الساعة، واليوم يلمع	On, A dot for each day under the clock, today glowing
 المناسبة القادمة	Next occasion
 ظاهرة، أسفل الشاشة في الوسط: كم باقي على رمضان والأعياد، والإفطار والإمساك في رمضان	Shown, Bottom center: days to Ramadan and Eid, and iftar and suhoor in Ramadan
+مخفية، كم باقي على رمضان والأعياد	Hidden, days to Ramadan and Eid
+رجّع الشكل السابق	Previous look
+المظهر على الرئيسية	Looks on the home screen
+الأشكال الجاهزة والتخطيط والخلفية والساعة وشكل التطبيقات، تراها على الرئيسية قبل ما تختار	Looks, layout, background, clock and app style, seen on the home screen before you choose
+التركيز يعرض الشكل على الرئيسية، وموافق يثبّته، ورجوع يرجّع شكلك	The focus shows the look on the home screen; OK keeps it, Back puts yours back
+كل جزء وحده	Each part on its own
+موافق يثبّت، ورجوع يرجّع الشكل المحفوظ	OK keeps it, Back puts the saved look back
+لوحة المظهر على الرئيسية	Looks panel on home
+مفعّلة، تعاين الشكل على الرئيسية قبل ما تختار	On, see a look on the home screen before you choose
+زر رجّع الشكل السابق	Previous look button
+مفعّل، أول صف بعد تغيير الشكل	On, the first row after the look changes
+تبديل الشكل بلا وميض	Switch looks without flicker
+شكل شاشة الإعدادات	Settings screen style
+أزرار	Buttons
+متوقف، كما كان	Off, as it was
+مفعّل، الرئيسية تتغير مرة وحدة بتلاشٍ قصير	On, the home screen changes once with a short fade
 تعتيم الليل	Night dimming
 يعمل، تغمق الشاشة من ٩ مساءً، وأغمق من ١١ إلى ٥ الفجر، وترجع ٧ الصباح	On, Dims from 9 pm, darkest 11 pm to 5 am, back at 7 am
 متوقف، نفس الإضاءة طول الليل	Off, Same brightness all night
@@ -1113,7 +1129,6 @@
 أشكال جاهزة والتخطيط	Ready looks and layout
 أشكال جاهزة والتخطيط، والخلفية والآفاق، والساعة والنص، والتطبيقات، والبطاقات، والصور.	Ready looks and layout, background and horizons, clock and text, apps, cards and photos.
 شكلك المعتاد	Your usual look
-منظر وساعة	View and clock
 صورة فقط	Photo only
 مواقيت يومي	My prayer day
 ليل هادئ	Quiet night
@@ -1133,7 +1148,7 @@
 تركيبات مقترحة	Suggested mixes
 شكل من الستة مع تغيير أو اثنين	One of the six looks with a change or two
 كل واحدة شكل من الستة مع تغيير أو اثنين؛ اختيارها يضبطها كلها	Each is one of the six looks with a change or two; choosing it sets it all
-منظر وساعة + مواقيت اليوم	View and clock + today's prayers
+كنبة + مواقيت اليوم	Couch + today's prayers
 الآفاق، ومربعات المواقيت في الصف	Horizons, and the prayer boxes in the row
 صورة فقط + أيقونات التطبيقات	Photo only + app icons
 الصورة والساعة، والتطبيقات أيقونات	The photo and the clock, the apps as icons
@@ -1547,3 +1562,42 @@
 النقاط	Scoring
 النهاية	The end
 تصفّح	Scroll
+حجم شريط tvOS	tvOS bar size
+صفوف شريط tvOS	tvOS bar rows
+صف واحد	One row
+صفّان	Two rows
+ثلاثة صفوف	Three rows
+tvOS	tvOS
+لغة التلفزيون، والأرقام، والتقويم، ونظام الساعة	The TV's language, the digits, the calendar and the clock
+المدينة، ومنها الطقس ومواقيت الصلاة	The city, and from it the weather and the prayer times
+الأشكال الجاهزة، والتخطيط، والخلفية، والساعة، والتطبيقات	The ready looks, the layout, the background, the clock and the apps
+أزرار الشاشة الرئيسية ومركز التحكم	The home screen's buttons and the control centre
+الأذان وتنبيهاته، وطريقة حساب المواقيت	The adhan and its alerts, and how the times are worked out
+فرقك ودورياتك، والأسواق، وجديد المسلسلات	Your teams and leagues, the markets and new episodes
+ما يظهر عليها، ومتى تبدأ	What it shows, and when it starts
+الرقابة الأبوية، وتصفية المواقع، والجوالات	Parental controls, safe browsing and the phones
+الإصدار والتحديث، وإرسال تقرير	The version and the update, and sending a report
+تصميم كامل	Full design
+الرئيسية والتطبيقات والساعة والخلفية وشاشة الإعدادات	The home, the apps, the clock, the background and the settings screen
+أشكال بسيطة	Simple looks
+الرئيسية فقط، والإعدادات كما هي	The home only, the settings as they are
+عندك على الرئيسية بطاقة واحدة.	You have one card on the home.
+عندك على الرئيسية بطاقتان.	You have two cards on the home.
+خلّ بطاقاتي داخل التصميم	Keep my cards in the design
+الساعة والتطبيقات فقط. بطاقاتك محفوظة، وترجّعها من «المظهر»	The clock and the apps only. Your cards are kept; bring them back from «Appearance»
+عندك على الرئيسية %s بطاقات.	You have %s cards on the home.
+«%s» ما تناسب %s، فبنحط مكانها «%s».	«%s» does not fit %s, so «%s» takes its place.
+%s بدون بطاقات	%s without cards
+%s، على %s	%s, on %s
+%s: وش تبي مع بطاقاتك؟	%s: what about your cards?
+رجّع بطاقاتك	Bring your cards back
+بطاقاتك قبل التصميم، بنفس ترتيبها	Your cards from before the design, in the same order
+تخصيص	Customise
+التخطيط والخلفية والساعة والتطبيقات والبطاقات	The layout, the background, the clock, the apps and the cards
+رجّع شكلك المعتاد	Back to your usual look
+غيّرت: %s	Changed: %s
+%s، غيّرتها	%s, changed by you
+أربع تركيبات، كل وحدة شكل جاهز مع تغيير أو اثنين؛ اختيارها يضبطها كلها	Four mixes, each a ready look with a change or two; choosing one sets it all
+الحالي	Current
+التركيبة %s من %s	Mix %s of %s
+الحالي، %s	Current, %s

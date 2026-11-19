@@ -80,7 +80,7 @@ check("nothing bundled: no app's banner or icon in the app's resources", not any
 
 # ---- the setting
 check("the setting: «بنرات» / «أيقونات» / «مربعات ملونة», stored banners, icons, or the tiles' first values (frame the default, zoom kept)",
-      'HOME_APPS = {"banners", "icons", "tiles"};' in prefs and '{"بنرات", "أيقونات", "مربعات ملونة"}' in prefs and 'APPS_STORED = {"banners", "icons", "frame", "zoom"};' in prefs
+      'HOME_APPS = {"banners", "icons", "tiles", "glass"};' in prefs and '{"بنرات", "أيقونات", "مربعات ملونة", "tvOS"}' in prefs and 'APPS_STORED = {"banners", "icons", "frame", "zoom", "glass"};' in prefs
       and 'sp.getString("appsStyle", "frame")' in prefs and "Prefs.appsWay(prefs.appsStyle())" in st)
 check("«مربعات ملونة» keeps the tiles' own focus when they are already the way, else the ring",
       'if ("tiles".equals(v)) { if (!"tiles".equals(appsWay(appsStyle()))) sp.edit().putString("appsStyle", "frame").apply(); return; }' in prefs)

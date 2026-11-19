@@ -57,9 +57,22 @@ the phone page's key, «مركز التحكم» the control centre's row that op
       القيم المقبولة: on|off
 — المظهر
 —— أشكال جاهزة والتخطيط
+——— المظهر على الرئيسية [الرئيسية]
+    مثال للوكيل: optimize/saver.sh lookpanel
+——— رجّع الشكل السابق [الرئيسية وشاشة التوقف]
+    مثال للوكيل: optimize/saver.sh lookback
 ——— أشكال جاهزة [الرئيسية وشاشة التوقف]
-    الخيارات: شكلك المعتاد / منظر وساعة / صورة فقط / مواقيت يومي / مباريات اليوم / ليل هادئ
+    الخيارات: شكلك المعتاد / كنبة / صورة فقط / مواقيت يومي / مباريات اليوم / ليل هادئ
     مثال للوكيل: optimize/saver.sh preset family  (tv, couch, clean, family, sport, calm, or a mix: couch-prayers, clean-icons, sport-night, tv-glass)
+      القيم المقبولة: tv|couch|clean|family|sport|calm|couch-prayers|clean-icons|sport-night|tv-glass
+——— شكل شاشة الإعدادات [كل التلفزيون]
+    مثال للوكيل: optimize/saver.sh settingsstyle couch  (or `buttons`, `tvos`)
+      القيم المقبولة: buttons|couch|tvos
+——— تخصيص [الرئيسية وشاشة التوقف]
+    مثال للوكيل: optimize/saver.sh preset tv
+      القيم المقبولة: tv|couch|clean|family|sport|calm|couch-prayers|clean-icons|sport-night|tv-glass
+——— رجّع بطاقاتك [الرئيسية]
+    مثال للوكيل: optimize/saver.sh preset tv  (the person's own look and cards back)
       القيم المقبولة: tv|couch|clean|family|sport|calm|couch-prayers|clean-icons|sport-night|tv-glass
 ——— شكل كنبة [الرئيسية]
     الخيارات: مفعّل / متوقف
@@ -79,6 +92,15 @@ the phone page's key, «مركز التحكم» the control centre's row that op
       القيم المقبولة: dark|light|auto
 ——— صفحات الأسهم والمباريات داكنة [الرئيسية]
     مثال للوكيل: optimize/saver.sh pagesdark off
+      القيم المقبولة: on|off
+——— لوحة المظهر على الرئيسية [الرئيسية]
+    مثال للوكيل: optimize/saver.sh lookpanelrow on  (or `off`)
+      القيم المقبولة: on|off
+——— زر رجّع الشكل السابق [الرئيسية وشاشة التوقف]
+    مثال للوكيل: optimize/saver.sh lookundo on  (or `off`)
+      القيم المقبولة: on|off
+——— تبديل الشكل بلا وميض [الرئيسية]
+    مثال للوكيل: optimize/saver.sh smoothlook on  (or `off`)
       القيم المقبولة: on|off
 —— الخلفية والآفاق
 ——— الخلفية [الرئيسية]
@@ -145,10 +167,20 @@ the phone page's key, «مركز التحكم» the control centre's row that op
       القيم المقبولة: on|off
 —— التطبيقات
 ——— شكل التطبيقات [الرئيسية]
-    الخيارات: بنرات / أيقونات / مربعات ملونة
+    الخيارات: بنرات / أيقونات / مربعات ملونة / tvOS
     الأصل: مربعات ملونة
     مثال للوكيل: optimize/saver.sh appsstyle tiles  («مربعات ملونة», the default: today's tray of tiles, its focus as it was: the ring, or `zoom` where that was chosen)
-      القيم المقبولة: tiles|banners|icons
+      القيم المقبولة: tiles|banners|icons|glass
+——— حجم شريط tvOS [الرئيسية]
+    الخيارات: 50 / 60 / 70 / 80 / 90 / 100 / 110 / 120 / 130 / 140 / 150
+    الأصل: 100
+    مثال للوكيل: optimize/saver.sh glasssize 70  (50 to 150 in steps of 10; `100` the default)
+      القيم المقبولة: 50..150 (steps of 10; 100 the default)
+——— صفوف شريط tvOS [الرئيسية]
+    الخيارات: صف واحد / صفّان / ثلاثة صفوف
+    الأصل: صف واحد
+    مثال للوكيل: optimize/saver.sh glassrows 2  (`1` the default, to `3`; «tvOS» only)
+      القيم المقبولة: 1|2|3
 ——— توهّج لون التطبيق [الرئيسية]
     مثال للوكيل: optimize/saver.sh glow light  (`off` = the default, `light` = a third of the strength, `on` = full)
       القيم المقبولة: off|light|on
@@ -808,9 +840,22 @@ the phone page's key, «مركز التحكم» the control centre's row that op
      مثال للوكيل: optimize/saver.sh watchnext off  (`on`, the default)
        القيم المقبولة: on|off
 — المظهر والخلفيات
+—— المظهر على الرئيسية [الرئيسية]
+   مثال للوكيل: optimize/saver.sh lookpanel
+—— رجّع الشكل السابق [الرئيسية وشاشة التوقف]
+   مثال للوكيل: optimize/saver.sh lookback
 —— أشكال جاهزة [الرئيسية وشاشة التوقف]
-   الخيارات: شكلك المعتاد / منظر وساعة / صورة فقط / مواقيت يومي / مباريات اليوم / ليل هادئ
+   الخيارات: شكلك المعتاد / كنبة / صورة فقط / مواقيت يومي / مباريات اليوم / ليل هادئ
    مثال للوكيل: optimize/saver.sh preset family  (tv, couch, clean, family, sport, calm, or a mix: couch-prayers, clean-icons, sport-night, tv-glass)
+     القيم المقبولة: tv|couch|clean|family|sport|calm|couch-prayers|clean-icons|sport-night|tv-glass
+—— شكل شاشة الإعدادات [كل التلفزيون]
+   مثال للوكيل: optimize/saver.sh settingsstyle couch  (or `buttons`, `tvos`)
+     القيم المقبولة: buttons|couch|tvos
+—— تخصيص [الرئيسية وشاشة التوقف]
+   مثال للوكيل: optimize/saver.sh preset tv
+     القيم المقبولة: tv|couch|clean|family|sport|calm|couch-prayers|clean-icons|sport-night|tv-glass
+—— رجّع بطاقاتك [الرئيسية]
+   مثال للوكيل: optimize/saver.sh preset tv  (the person's own look and cards back)
      القيم المقبولة: tv|couch|clean|family|sport|calm|couch-prayers|clean-icons|sport-night|tv-glass
 —— شكل كنبة [الرئيسية]
    الخيارات: مفعّل / متوقف
@@ -834,10 +879,20 @@ the phone page's key, «مركز التحكم» the control centre's row that op
    مثال للوكيل: optimize/saver.sh clock plain
      القيم المقبولة: plain|glass
 —— شكل التطبيقات [الرئيسية]
-   الخيارات: بنرات / أيقونات / مربعات ملونة
+   الخيارات: بنرات / أيقونات / مربعات ملونة / tvOS
    الأصل: مربعات ملونة
    مثال للوكيل: optimize/saver.sh appsstyle tiles  («مربعات ملونة», the default: today's tray of tiles, its focus as it was: the ring, or `zoom` where that was chosen)
-     القيم المقبولة: tiles|banners|icons
+     القيم المقبولة: tiles|banners|icons|glass
+—— حجم شريط tvOS [الرئيسية]
+   الخيارات: 50 / 60 / 70 / 80 / 90 / 100 / 110 / 120 / 130 / 140 / 150
+   الأصل: 100
+   مثال للوكيل: optimize/saver.sh glasssize 70  (50 to 150 in steps of 10; `100` the default)
+     القيم المقبولة: 50..150 (steps of 10; 100 the default)
+—— صفوف شريط tvOS [الرئيسية]
+   الخيارات: صف واحد / صفّان / ثلاثة صفوف
+   الأصل: صف واحد
+   مثال للوكيل: optimize/saver.sh glassrows 2  (`1` the default, to `3`; «tvOS» only)
+     القيم المقبولة: 1|2|3
 —— حزم الآفاق [الرئيسية]
    الخيارات: آفاق السعودية / آفاق عالمية
    الأصل: آفاق السعودية
@@ -863,6 +918,15 @@ the phone page's key, «مركز التحكم» the control centre's row that op
      القيم المقبولة: glass|graphite|navy|clean|sand
    مثال للوكيل: optimize/saver.sh appearance auto
      القيم المقبولة: dark|light|auto
+—— لوحة المظهر على الرئيسية [الرئيسية]
+   مثال للوكيل: optimize/saver.sh lookpanelrow on  (or `off`)
+     القيم المقبولة: on|off
+—— زر رجّع الشكل السابق [الرئيسية وشاشة التوقف]
+   مثال للوكيل: optimize/saver.sh lookundo on  (or `off`)
+     القيم المقبولة: on|off
+—— تبديل الشكل بلا وميض [الرئيسية]
+   مثال للوكيل: optimize/saver.sh smoothlook on  (or `off`)
+     القيم المقبولة: on|off
 — مركز التحكم
 —— مركز التحكم [الرئيسية]
    إجراء أو شاشة من التلفزيون (ما فيه قيمة يضبطها أمر)

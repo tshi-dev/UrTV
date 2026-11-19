@@ -8,6 +8,7 @@
 set -euo pipefail
 src=$1; folder=$2; msg=$3
 test -d "$src" || { echo "no pictures in $src: nothing is published"; exit 0; }
+src=$(cd "$src" && pwd)   # absolute: the copy below runs inside the clone of data-screens (a relative path pointed nowhere there)
 url="https://x-access-token:${GITHUB_TOKEN:?}@github.com/${GITHUB_REPOSITORY:?}.git"
 work=$(mktemp -d)
 if ! git clone --quiet --depth 20 --branch data-screens "$url" "$work"; then

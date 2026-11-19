@@ -44,7 +44,9 @@ python3 tests/tafsir_timer_test.py   # 4.4 review: a redraw of another card does
 python3 tests/motion_test.py   # 4.4 the same easing everywhere (Motion: 200 ms, couch-tv's curve; a fade with «الوضع الخفيف»)
 python3 tests/sweep_test.py   # 4.4 the consistency sweep: what it fixed stays fixed
 python3 tests/separators_test.py   # 4.4 no «·» or «•» on a screen, in either language (S.sep)
-python3 tests/settings_couch_test.py   # 4.4 «منظر وساعة»: the settings in couch-tv's style (its numbers, row kinds, pages, search, thumbnails), every registry row, Arabic mirrored
+python3 tests/settings_couch_test.py   # 4.4 «كنبة»: the settings in couch-tv's style (its numbers, row kinds, pages, search, thumbnails), every registry row, Arabic mirrored
+python3 tests/settings_one_form_test.py   # 4.5 one settings form for every look (Prefs.ONE_FORM): every row and tile of the 4.3.2 hub listed with its new place
+python3 tests/look_switch_test.py   # 4.5 a look applied whole: one write and signal, HomeLook's cover and one fade (a cut when light), undo on failure, no black card, focus kept, «رجّع الشكل السابق»
 
 python3 tests/settings_classic_test.py   # 4.4 «شكل كنبة» switches the settings screen too: every row in both layouts (4.3.2 and the side list), search in both, the switch in both
 python3 tests/settings_tree_test.py   # docs/SETTINGS-TREE.md is what the code says now (.github/tools/settings_tree.py)
@@ -295,6 +297,8 @@ python3 tests/on_off_test.py   # on/off rows: the owner's choice I (green triang
 python3 tests/parental_text_test.py   # «الرقابة الأبوية»: the card and its two buttons, the count of locked apps (docs/UX-REVIEW.md)
 python3 tests/fav_bar_test.py   # the favourites bar: the tray, five tiles, the focus inside it, the one 40 px move (docs/PROPOSALS-NOV2.md §1)
 python3 tests/apps_look_test.py   # 4.4 «شكل التطبيقات»: بنرات / أيقونات / مربعات ملونة, centred, A and B with no tray and «تكبير وظل», nothing bundled
+python3 tests/settings_tvos_test.py   # 4.4 beta 2 «شكل شاشة الإعدادات: tvOS»: the 4.3.2 logic in the tvOS manner, light on a weak TV
+python3 tests/glass_dock_test.py   # 4.5 «زجاجي»: the glass bar's size and rows, «كل التطبيقات» as glass, «تغيير الأيقونة»; R1, R3, the tvOS Launcher credit
 python3 tests/called_off_test.py   # 4.3 A1-A3: a called-off game is never live or upcoming; a team's game read from the copy further on
 python3 tests/usb_test.py   # 4.3 B8: the USB viewers are never off and always in the apps row (issue #50)
 python3 tests/sideload_apps_test.py   # #57: a sideloaded app shows on the home next to a Google home (only the TV's own phone-only helpers stay out)

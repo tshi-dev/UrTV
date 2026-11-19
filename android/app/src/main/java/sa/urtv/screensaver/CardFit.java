@@ -18,6 +18,74 @@ final class CardFit {
     /** the cards a short strip holds whole */
     static final String[] COMPACT = {"nextprayer", "prayerrow", "hourly", "verse", "hadith", "wisdom", "year", "smart", "countdown"};
 
+    // ---- 4.4 beta 2 (the owner approved docs/mockups/full-look, §٧): one table, every card with every look and every background
+
+    /** the looks a card is decided for: the home's layouts, and «tvOS» (the full tvOS look: glass cards above the tvOS bar) */
+    static final String[] LOOKS = {"classic", "football", "couch", "tvos"};
+    static final String[] LOOK_NAMES = {"تلفزيونك", "كرة القدم", "كنبة", "tvOS"};
+    /** the home's backgrounds (Prefs.HOME_BGS) */
+    static final String[] BGS = {"photos", "scenes"};
+    /** a decision: "" fits as it is; WIDE fits two cards wide; ROW4 fits drawn as a row of four; PICKS fits by picking only cards that fit; NO does not */
+    static final String FITS = "", WIDE = "wide", ROW4 = "row4", PICKS = "picks", NO = "no";
+    /** what each «fits, but» says, under the card's name */
+    static final String[][] HOW = {{WIDE, "بعرض بطاقتين"}, {ROW4, "صف من ٤ أيام"}, {PICKS, "من البطاقات المناسبة"}};
+    /** why a card does not fit a look (the one line under the dimmed choice) */
+    static final String[][] WHY = {{"couch", "ما تناسب كنبة: قائمة طويلة تنقطع في الشريط"}, {"tvos", "ما تناسب tvOS: أطول من بطاقة tvOS"}};
+
+    /**
+     * The table: each card (Prefs.PANELS' keys, «none» aside), then one decision per look × background, in LOOKS × BGS order
+     * (classic/photos, classic/scenes, football/photos, football/scenes, couch/photos, couch/scenes, tvos/photos, tvos/scenes).
+     * The background decides nothing today (each card sits on its own glass, a flat fill on a weak TV, readable on both), but it is a column of
+     * its own so a future background that cannot host a card says so here. tests/card_fit_test.py: every pair decided, and every card of PANELS in it.
+     */
+    static final String[][] TABLE = {
+        {"nextprayer", FITS, FITS, FITS, FITS, FITS, FITS, FITS, FITS},
+        {"prayerrow", FITS, FITS, FITS, FITS, FITS, FITS, FITS, FITS},
+        {"prayers", FITS, FITS, FITS, FITS, NO, NO, NO, NO},
+        {"hourly", FITS, FITS, FITS, FITS, FITS, FITS, FITS, FITS},
+        {"forecast", FITS, FITS, FITS, FITS, NO, NO, ROW4, ROW4},
+        {"nextmatch", FITS, FITS, FITS, FITS, NO, NO, FITS, FITS},
+        {"matchday", FITS, FITS, FITS, FITS, NO, NO, FITS, FITS},
+        {"livenow", FITS, FITS, FITS, FITS, NO, NO, FITS, FITS},
+        {"matches", FITS, FITS, FITS, FITS, NO, NO, NO, NO},
+        {"nextmatches", FITS, FITS, FITS, FITS, NO, NO, NO, NO},
+        {"minitable", FITS, FITS, FITS, FITS, NO, NO, NO, NO},
+        {"yesterday", FITS, FITS, FITS, FITS, NO, NO, NO, NO},
+        {"weekend", FITS, FITS, FITS, FITS, NO, NO, NO, NO},
+        {"cuppath", FITS, FITS, FITS, FITS, NO, NO, NO, NO},
+        {"formula", FITS, FITS, FITS, FITS, NO, NO, FITS, FITS},
+        {"national", FITS, FITS, FITS, FITS, NO, NO, FITS, FITS},
+        {"verse", FITS, FITS, FITS, FITS, FITS, FITS, WIDE, WIDE},
+        {"hadith", FITS, FITS, FITS, FITS, FITS, FITS, WIDE, WIDE},
+        {"wisdom", FITS, FITS, FITS, FITS, FITS, FITS, FITS, FITS},
+        {"adhkar", FITS, FITS, FITS, FITS, NO, NO, NO, NO},
+        {"shows", FITS, FITS, FITS, FITS, NO, NO, NO, NO},
+        {"stocks", FITS, FITS, FITS, FITS, NO, NO, NO, NO},
+        {"tasks", FITS, FITS, FITS, FITS, NO, NO, NO, NO},
+        {"year", FITS, FITS, FITS, FITS, FITS, FITS, FITS, FITS},
+        {"smart", FITS, FITS, FITS, FITS, PICKS, PICKS, PICKS, PICKS},
+        {"countdown", FITS, FITS, FITS, FITS, FITS, FITS, FITS, FITS},
+        {"today", FITS, FITS, FITS, FITS, NO, NO, FITS, FITS},
+        {"album", FITS, FITS, FITS, FITS, NO, NO, FITS, FITS},
+    };
+
+    /** the decision for a card on a look and a background; a card, look or background not in the table: FITS (as before 4.4 beta 2), «none» fits */
+    static String decide(String card, String look, String bg) {
+        int l = java.util.Arrays.asList(LOOKS).indexOf(look), b = java.util.Arrays.asList(BGS).indexOf(bg == null ? BGS[0] : bg);
+        if (l < 0 || b < 0 || card == null || "none".equals(card)) return FITS;
+        for (String[] r : TABLE) if (r[0].equals(card)) return r[1 + l * BGS.length + b];
+        return FITS;
+    }
+    static boolean fits(String card, String look, String bg) { return !NO.equals(decide(card, look, bg)); }
+    /** the one line under the card's name: why it does not fit, or how it fits («بعرض بطاقتين»), or "" */
+    static String why(String card, String look, String bg) {
+        String d = decide(card, look, bg);
+        String[][] from = NO.equals(d) ? WHY : HOW;
+        String key = NO.equals(d) ? look : d;
+        for (String[] w : from) if (w[0].equals(key)) return w[1];
+        return NO.equals(d) ? NOTE : "";
+    }
+
     /** each card's kind, and within a kind the nearest compact card (none: it stays, with its note) */
     static final String[][] NEAREST = {{"prayers", "prayerrow"}, {"forecast", "hourly"}, {"adhkar", "verse"}};
 
@@ -26,7 +94,7 @@ final class CardFit {
     static boolean compact(String card) { for (String c : COMPACT) if (c.equals(card)) return true; return false; }
 
     /** whether the card suits the home's layout («couch»: the strip) */
-    static boolean suits(String card, String layout) { return !"couch".equals(layout) || "none".equals(card) || compact(card); }
+    static boolean suits(String card, String layout) { return fits(card, layout, null); }
 
     /** the note under the card's name in the picker, or "" */
     static String note(String card, String layout) { return suits(card, layout) ? "" : NOTE; }

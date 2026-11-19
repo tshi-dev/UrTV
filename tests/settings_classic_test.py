@@ -26,8 +26,8 @@ check("every row of the registry has its place in both layouts (the side list an
       (set(new_rows) ^ set(old_rows)))
 check("…and every row is in its 4.3.2 section's order (none left at the end by accident)", all(r in old_order for r in old_rows), [r for r in old_rows if r not in old_order])
 check("the 4.4 rows sit in their natural 4.3.2 section: the switch and the look's rows in «المظهر والخلفيات», the Hijri shift with the clock, the caches with the update",
-      all(f'{{"{r}", "{c}"}}' in hub for r, c in (("أشكال جاهزة", "look"), ("شكل كنبة", "look"), ("التخطيط", "look"), ("حزم الآفاق", "look"), ("وضع الألوان", "look"), ("فرق التاريخ الهجري", "clock"),
-                                                 ("مسح الملفات المؤقتة", "update"))) and '{"look", "أشكال جاهزة", "شكل كنبة",' in hub)
+      all(f'{{"{r}", "{c}"}}' in hub for r, c in (("أشكال جاهزة", "look"), ("شكل شاشة الإعدادات", "look"), ("شكل كنبة", "look"), ("التخطيط", "look"), ("حزم الآفاق", "look"), ("وضع الألوان", "look"), ("فرق التاريخ الهجري", "clock"),
+                                                 ("مسح الملفات المؤقتة", "update"))) and '{"look", "المظهر على الرئيسية", "رجّع الشكل السابق", "أشكال جاهزة", "شكل شاشة الإعدادات", "تخصيص", "رجّع بطاقاتك", "شكل كنبة",' in hub)   # 4.5: the panel's row and the undo first
 
 if shutil.which("javac"):
     with tempfile.TemporaryDirectory() as tmp:
@@ -55,13 +55,15 @@ if shutil.which("javac"):
 else:
     print("SKIP the layouts on a JVM: no javac here")
 
-check("the screen follows the switch: off = 4.3.2 (SettingsHub.classic), set before anything is built", "classic = !prefs.couchOn();\n        SettingsHub.classic(classic);" in st
+check("the screen follows the switch: off = 4.3.2 (SettingsHub.classic), set before anything is built; 4.4 beta 2: only with «شكل شاشة الإعدادات» on «أزرار» (tests/settings_one_form_test.py)",
+      'classic = !"couch".equals(prefs.settingsStyle());' in st and "SettingsHub.classic(classic);" in st
       and st.index("SettingsHub.classic(classic);") < st.index("UpdateJob.schedule(this);"))
 check("4.3.2's own ways: its screens of buttons (hub, tile), Back up a screen, its section title on the side; the side list's only when on",
       "if (tiles) { hub(want, wasIndex); return; }" in st and "private View tile(final String cat, String name, int icon, String summary)" in st
       and "if (classic) {   // 4.3.2: Back goes up a screen" in st and "if (classic) classicHead(tiles); else {" in st and "private void classicSide()" in st)
-check("the switch is in both (its row is the registry's, in «المظهر» and in «المظهر والخلفيات»), and flipping it opens the settings again in the other layout, on it",
-      'row("شكل كنبة", prefs.couchLabel()' in st and "flipCouch()" in st and '.putExtra("want", "شكل كنبة")' in st and "finish();" in st[st.index("private void flipCouch()"):][:600])
+check("4.4 beta 2: «شكل شاشة الإعدادات» is in both (its row is the registry's, in «المظهر» and in «المظهر والخلفيات»), and choosing the other style opens the settings again in it, on that row",
+      'row("شكل شاشة الإعدادات", Prefs.settingsStyleLabel(prefs.settingsStyle())' in st and '.putExtra("want", "شكل شاشة الإعدادات")' in st
+      and "finish();" in st[st.index('row("شكل شاشة الإعدادات"'):][:900])
 check("one row registry: each row is built once by render (no second copy of a row's code for the old screen)", st.count('row("شكل كنبة"') == 1 and st.count('row("المدينة"') == 1
       and st.count('row("الأذان"') == 1)
 tree = (ROOT / "docs/SETTINGS-TREE.md").read_text(encoding="utf-8")

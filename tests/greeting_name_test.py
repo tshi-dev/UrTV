@@ -21,7 +21,7 @@ check("the name is empty by default and kept clean: folded spaces, no control or
       'sp.getString("greeting_name", "")' in prefs and "NAME_MAX = 30" in prefs and "static String cleanName(" in prefs and "n.substring(0, NAME_MAX)" in prefs)
 check("the provider gives it as «greeting_name» and the home reads it (none for an older screensaver)",
       '"greeting_name"' in prov and "p.greetingName()" in prov and 'getColumnIndex("greeting_name")' in snap and 'String greetingName = "";' in snap)
-check("both snapshot copies keep it", snap.count("c.greetingName = greetingName;") == 2)
+check("every snapshot copy keeps it (withFragment, asStale, and 4.5 withLook)", snap.count("c.greetingName = greetingName;") == 3)
 check("the greeting gets the name in both branches (weather on and off), through GreetingText.withName",
       greet.count("GreetingText.withName(") == 2 and greet.count("snap.greetingName") == 2 and "static String withName(" in gt and "\\u2068" in gt)
 check("the settings row opens a dialog, and «بدون اسم» clears it", 'row("اسمك في التحية"' in t(app + "SettingsActivity.java") and "private void askGreetingName()" in t(app + "SettingsActivity.java"))

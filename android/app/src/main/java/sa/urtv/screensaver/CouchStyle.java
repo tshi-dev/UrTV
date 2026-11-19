@@ -12,7 +12,7 @@ import android.graphics.drawable.StateListDrawable;
 import android.view.View;
 
 /**
- * 4.4 the owner: with the look «منظر وساعة» the settings are couch-tv's, exactly (Seagey/couch-tv, MIT: tv-home/web/app.css «Home settings»;
+ * 4.4 the owner: with the look «كنبة» the settings are couch-tv's, exactly (Seagey/couch-tv, MIT: tv-home/web/app.css «Home settings»;
  * docs/mockups/settings-couchtv/, approved). Its sizes are in its rem, a 120th of the screen's width (16 px on 1920), so they are the same share
  * of any screen; its colours and its 200 ms cubic-bezier(.2,.8,.2,1). Plain numbers and three small drawings (the toggle's ring, the choice's
  * tick, the chevron); SettingsActivity builds the views with them. The other looks keep the settings as they are.
@@ -39,6 +39,9 @@ final class CouchStyle {
         ROW = 0x14FFFFFF, SEC_ON = 0x21FFFFFF, ICON_BOX = 0x1AFFFFFF, ICON_BOX_FOCUS = 0x12000000, INK_SUB = 0x99000000, TYPE_BG = 0x1FFFFFFF,
         GREEN = 0xFF30D158, RING = 0x6BFFFFFF, RING_FOCUS = 0x52000000;
     static final float SEC_SCALE = 1.04f, ROW_SCALE = 1.02f;
+    /** 4.4 beta 2 «كنبة» v2 (docs/mockups/settings-style/couch-v2-*): a taller bar per section, no icon; the focused one grows by its words, its name
+     *  large and its one line under it (never by a scale), so nothing moves on a weak TV */
+    static final float SEC2_H = 5.75f, SEC2_TEXT = 2.125f, SEC2_BIG = 2.75f, SEC2_LINE = 1.4375f, SEC2_PAD_X = 1.75f, SEC2_PAD_Y = 0.875f;
     static final long MS = Motion.MS;
     static android.view.animation.Interpolator ease() { return Motion.ease(); }   // couch-tv's cubic-bezier(.2,.8,.2,1), the same everywhere
 

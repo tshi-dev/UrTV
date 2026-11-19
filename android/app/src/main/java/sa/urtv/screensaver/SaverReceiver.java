@@ -347,13 +347,26 @@ public class SaverReceiver extends BroadcastReceiver {
             return "error: surface is quick|cards|tray, a number from 30 to 100, and one of look glass graphite";
         String homeLayout = i.getStringExtra("homelayout");
         String preset = i.getStringExtra("preset");
+        String lookback = i.getStringExtra("lookback");
+        for (String k : new String[] {"lookpanelrow", "lookundo", "smoothlook"}) {   // 4.4 beta 2: the new look items' switches
+            String v = i.getStringExtra(k);
+            if (v != null && !"on".equals(v) && !"off".equals(v)) return "error: " + k + " is on or off";
+        }
+        String sstyle = i.getStringExtra("settingsstyle");
+        if (sstyle != null && !java.util.Arrays.asList(Prefs.SETTINGS_STYLES).contains(sstyle)) return "error: settingsstyle is one of " + Prefs.join(java.util.Arrays.asList(Prefs.SETTINGS_STYLES), " ");
+        String lookpanel = i.getStringExtra("lookpanel");
+        if (lookpanel != null && !"open".equals(lookpanel)) return "error: lookpanel is open";
+        if (lookback != null && !"restore".equals(lookback)) return "error: lookback is restore";
         String couch = i.getStringExtra("couch"), homeBg = i.getStringExtra("background"), homeClock = i.getStringExtra("clock"), appsStyle = i.getStringExtra("appsstyle");
         if ("scenes".equals(homeLayout)) { homeLayout = null; couch = "on"; }   // 4.3.3's word: the scenes with the glass clock
         if (couch != null && !"on".equals(couch) && !"off".equals(couch)) return "error: couch is on or off";
         if (homeBg != null && !Arrays.asList(Prefs.HOME_BGS).contains(homeBg)) return "error: background is photos or scenes";
         if (homeClock != null && !Arrays.asList(Prefs.HOME_CLOCKS).contains(homeClock)) return "error: clock is plain or glass";
         if (appsStyle != null && !Arrays.asList(Prefs.HOME_APPS).contains(appsStyle) && !Arrays.asList(Prefs.APPS_STORED).contains(appsStyle))
-            return "error: appsstyle is banners, icons or tiles (frame or zoom: tiles with that focus)";
+            return "error: appsstyle is banners, icons, tiles or glass (frame or zoom: tiles with that focus)";
+        String glassSize = i.getStringExtra("glasssize"), glassRows = i.getStringExtra("glassrows");
+        if (glassSize != null && !Arrays.asList(Prefs.GLASS_SIZES).contains(glassSize)) return "error: glasssize is 50 to 150 in steps of 10";
+        if (glassRows != null && !Arrays.asList(Prefs.GLASS_ROWS).contains(glassRows)) return "error: glassrows is 1, 2 or 3";
         if (homeLayout != null && !Arrays.asList(Prefs.HOME_LAYOUTS).contains(homeLayout))
             return "error: homelayout is one of " + Prefs.join(Arrays.asList(Prefs.HOME_LAYOUTS), " ");
         String scenePacks = i.getStringExtra("scenepacks");   // 4.3.3 «حزم الآفاق»: saudi, couch, or both (comma between)
@@ -507,12 +520,19 @@ public class SaverReceiver extends BroadcastReceiver {
         if (focusX != null) p.setFocusStyle(focusX);
         if (syncX != null) p.setLookSync("on".equals(syncX));
         if (surfaceP != null) { int s = Arrays.asList(GlassStyle.SURFACES).indexOf(surfaceP[0]); p.setSurfacePercent(s, Integer.parseInt(surfaceP[1])); p.setSurfaceFill(s, surfaceP[2]); }
+        if (i.getStringExtra("settingsstyle") != null) p.setSettingsStyle(i.getStringExtra("settingsstyle"));   // 4.4 beta 2 «شكل شاشة الإعدادات»
+        if (i.getStringExtra("lookpanelrow") != null) p.setUiPanel("on".equals(i.getStringExtra("lookpanelrow")));
+        if (i.getStringExtra("lookundo") != null) p.setUiUndo("on".equals(i.getStringExtra("lookundo")));
+        if (i.getStringExtra("smoothlook") != null) p.setUiSmooth("on".equals(i.getStringExtra("smoothlook")));
+        if ("restore".equals(i.getStringExtra("lookback"))) p.restorePreviousLook();   // 4.5 «رجّع الشكل السابق» (optimize/saver.sh lookback)
         if (preset != null) p.setPreset(preset);   // «أشكال جاهزة» before any one row given beside it (that row then makes it «مخصّص»)
         if (couch != null) p.setCouch("on".equals(couch));   // «شكل كنبة» first (it keeps or puts back the four), then any one choice given beside it
         if (homeLayout != null) p.setHomeLayout(homeLayout);
         if (homeBg != null) p.setHomeBg(homeBg);
         if (homeClock != null) p.setHomeClock(homeClock);
         if (appsStyle != null) p.setAppsStyle(appsStyle);
+        if (glassSize != null) p.setGlassSize(glassSize);   // 4.5 «زجاجي»
+        if (glassRows != null) p.setGlassRows(glassRows);
         if (scenePacks != null) p.setScenePacks(Arrays.asList(scenePacks.split(",")));
         if (sceneStay != null) p.setSceneStay(sceneStay);
         if (sceneTime != null) p.setSceneByTime("on".equals(sceneTime));
@@ -578,6 +598,8 @@ public class SaverReceiver extends BroadcastReceiver {
         if (leagues != null) p.setList("leagues", leagues);
         // the page reads its settings once, when it starts: a screensaver (or preview) already on the screen would go on showing the old ones
         c.sendBroadcast(new Intent(Prefs.CHANGED).setPackage(c.getPackageName()));
+        p.lookChanged();   // 4.5: the home reads them now too (a look, a part, the cards…), not at its next minute
+        if ("open".equals(i.getStringExtra("lookpanel"))) LookPanelActivity.open(c);   // optimize/saver.sh lookpanel: «المظهر» over the home
         return "saved\n" + describe(c, p);
     }
 

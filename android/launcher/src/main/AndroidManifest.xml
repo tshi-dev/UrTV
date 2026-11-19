@@ -25,6 +25,8 @@
     <!-- 4.4 «صوتياتي»: a sound file on a USB stick is read (and copied into the app) only when the person opens the stick in «صوتياتي» and allows it -->
     <uses-permission android:name="android.permission.READ_MEDIA_AUDIO" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" android:maxSdkVersion="32" />
+    <!-- 4.5 «تغيير الأيقونة»: an image from the TV's storage or a USB drive for an app's icon (asked only when the person chooses one) -->
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
     <!-- the adhan alarm, put back after a reboot or a clock change -->
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
@@ -62,6 +64,14 @@
     <permission
         android:name="sa.urtv.home.READ_GLASS"
         android:protectionLevel="signature" />
+
+    <!-- 4.5 the look: the screensaver's settings and «المظهر» tell the home a look changed, or show one before it is kept (Prefs.LOOK_CHANGED,
+         LookPanel's previews); only our two apps (same signing key) may send it, and the home's receiver asks for it -->
+    <permission
+        android:name="sa.urtv.home.LOOK"
+        android:protectionLevel="signature" />
+    <!-- held too: the screensaver sends LOOK_CHANGED to the home only if the home holds it (without it Android drops it: the home waited for the minute) -->
+    <uses-permission android:name="sa.urtv.home.LOOK" />
 
     <!-- «تحديث تلفزيوني»: only our two apps (same signing key) may open the update screen -->
     <permission
@@ -279,6 +289,20 @@
         </receiver>
 
         <!-- «ترتيب المفضلة»: the favourites as a list; also opened from the screensaver's settings -->
+        <!-- 4.5 «زجاجي»: «كل التطبيقات» as a glass window, and «تغيير الأيقونة»; only the home opens them (not exported) -->
+        <activity
+            android:name=".AllAppsActivity"
+            android:exported="false"
+            android:label="كل التطبيقات"
+            android:screenOrientation="landscape"
+            android:theme="@android:style/Theme.Material.NoActionBar" />
+        <activity
+            android:name=".IconEditorActivity"
+            android:exported="false"
+            android:label="تغيير الأيقونة"
+            android:screenOrientation="landscape"
+            android:theme="@android:style/Theme.Material.NoActionBar" />
+
         <activity
             android:name=".DockActivity"
             android:exported="true"
