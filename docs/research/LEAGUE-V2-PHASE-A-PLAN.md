@@ -24,7 +24,7 @@ switch or one line, never the structure.
    - `zones` per file: only for leagues and seasons in the list.
 2. **Page:** the league's «جدول الترتيب» tab becomes the full table. It has these columns:
    - rank, movement, badge, club, P, W, D, L, GF, GA, GD, Pts, last 5;
-   - a zone bar on each zoned row, with a legend in words underneath.
+   - a plain divider line under each zone's last place, with its places and name in muted text at the line's start (no colour, no legend; the owner, 19 Nov).
 
    «موافق» on a row opens the club (`mpClubView`, as today). The quick-view sheet comes in phase (d).
 3. **Focused mode:** «موافق» on the tab, or Down into the table, hides the page header so 18 rows fit without a scroll. Back shows the
@@ -69,9 +69,11 @@ Not in phase (a): the league home, the live strip, the season strip, the club sh
 - **Movement:** ▲n in green, ▼n in red, «–» in grey only when `mv === 0`. Nothing when `mv` is absent.
 - **Badges:** the same runtime badge the game rows load. Until it arrives, and if it never does, a circle with the club's first letter
   holds its place (no layout move when it loads: a fixed 34 × 34 box).
-- **Zones:** `border-right` (`border-left` in `tv-en.html`'s LTR) with a 6 px bar in `--z1`, `--z2` or `--z3`, by kind:
-  - continental places are green (`--z1`), the second continental tier blue (`--z2`), the relegation and playoff places red (`--z3`).
-  - The legend shows only the kinds this table uses.
+- **Zones (the owner, 19 Nov: no coloured edge bars):**
+  - a `li.zl` after a zone's last place, full width, with a 2 px line in `--fs` at 45 %;
+  - at the line's start, the places and the kind's words in muted text: «المراكز ١ إلى ٣: دوري أبطال آسيا للنخبة»;
+  - a zone whose last place is hidden in a window gets its line before the next shown row;
+  - no zone colours, no `--z*` tokens and no legend. The movement greens and reds and the form squares are data colours and stay, pending the UI audit.
   - The tokens are added to both `#mp` looks, light and `#pagedark=1`, with the values in the mockup.
 - **The followed club's row:** `--rowf` background and bold name, as the mockup shows. It also opens with the focus on it when the
   person follows a club of this league; otherwise the focus is on row 1.
@@ -163,7 +165,7 @@ Then `bash tests/run.sh` in full before the push (about 15 minutes, in CI where 
 
 1. CI: `movement()` + its tests.
 2. CI: `league_zones.json` (empty) + the check + its tests; the docs/MATCH-ARCHIVE.md lines.
-3. Page: the table markup, the form squares, the movement, the badge placeholders, the zone bar and the legend (light and dark), and
+3. Page: the table markup, the form squares, the movement, the crests (no placeholder), the zone lines (light and dark), and
    the English strings, with their tests.
 4. Page: focused mode and the Back order, with their tests.
 5. Page: the live toggle, with its tests.

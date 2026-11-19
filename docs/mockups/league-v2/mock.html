@@ -47,7 +47,7 @@
 
   /* ---- the live strip: one card per game on now, the minute in the live colour, the score in the middle */
   .live{display:flex;margin-top:calc(var(--u)*16)}
-  .lv{flex:1;padding:calc(var(--u)*10) calc(var(--u)*24);margin-left:calc(var(--u)*20);border-radius:calc(var(--u)*20)}
+  .lv{flex:1;padding:calc(var(--u)*6) calc(var(--u)*24);margin-left:calc(var(--u)*20);border-radius:calc(var(--u)*20)}
   .lv:last-child{margin-left:0}
   .lv .m{color:var(--flo);font-size:calc(var(--u)*24);font-weight:500;display:flex;justify-content:space-between}
   .lv .m i{font-style:normal;color:var(--fs);font-weight:400}
@@ -56,19 +56,23 @@
   .lv .s span:last-child{text-align:left}
   .lv .s b{font-size:calc(var(--u)*40);font-weight:700;padding:0 calc(var(--u)*20);direction:ltr;unicode-bidi:isolate}
 
-  .cols{flex:1;min-height:0;display:flex;margin-top:calc(var(--u)*18)}
+  .cols{flex:1;min-height:0;display:flex;margin-top:calc(var(--u)*12)}
   .cols > div + div{margin-right:calc(var(--u)*28)}
 
   /* ---- the table */
   .tb{list-style:none;padding:calc(var(--u)*6) calc(var(--u)*10)}
-  .tr{display:flex;align-items:center;height:calc(var(--u)*46);padding:0 calc(var(--u)*8);border-radius:calc(var(--u)*12);border-right:calc(var(--u)*6) solid transparent;position:relative}
+  .tr{display:flex;align-items:center;height:calc(var(--u)*40);padding:0 calc(var(--u)*8);border-radius:calc(var(--u)*12);position:relative}
   .tr + .tr{border-top:1px solid var(--fln)}
-  .tr.z1{border-right-color:var(--z1)}.tr.z2{border-right-color:var(--z2)}.tr.z3{border-right-color:var(--z3)}
+  /* the zones (the owner, 19 Nov): no colour at all; a plain full-width line under the last place of a zone, its places and name in plain muted text at the line's start */
+  .tr.zl{height:calc(var(--u)*28);border-top:0;color:var(--fs);font-size:calc(var(--u)*24);padding:0 calc(var(--u)*8)}
+  .tr.zl span{white-space:nowrap;padding-left:calc(var(--u)*16)}
+  .tr.zl::after{content:'';flex:1;height:calc(var(--u)*2);background:var(--fs);opacity:.45}
+  .tr.zl + .tr{border-top:0}
   .tr.th{height:calc(var(--u)*38);color:var(--fs);font-size:calc(var(--u)*24);border-top:0}
   .tr.mine{background:var(--rowf)}
   .tr.mine .nm{font-weight:700}
   .tr .rk{width:calc(var(--u)*44);text-align:center;font-weight:500}
-  .tr .mv{width:calc(var(--u)*52);text-align:center;font-size:inherit;white-space:nowrap}
+  .tr .mv{width:calc(var(--u)*52);margin-left:calc(var(--u)*12);text-align:center;font-size:inherit;white-space:nowrap}
   .mv.up{color:var(--z1)}.mv.dn{color:var(--z3)}.mv.eq{color:var(--fs);opacity:.6}
   .bd{width:calc(var(--u)*34);height:calc(var(--u)*34);border-radius:50%;background:var(--sq);color:var(--fs);font-size:calc(var(--u)*24);font-weight:700;display:flex;align-items:center;justify-content:center;margin:0 calc(var(--u)*10) 0 calc(var(--u)*12);flex:none}
   .tr .nm{flex:1;min-width:0;display:flex;align-items:baseline;white-space:nowrap}
@@ -83,7 +87,7 @@
   .sqf{width:calc(var(--u)*36);height:calc(var(--u)*36);border-radius:calc(var(--u)*6);color:#fff;font-size:calc(var(--u)*24);font-weight:700;display:flex;align-items:center;justify-content:center;margin-left:calc(var(--u)*4)}
   .sqf.w{background:var(--z1)}.sqf.d{background:#8D918C}.sqf.l{background:var(--z3)}
   .sqf.n{background:transparent;border:calc(var(--u)*2) dashed var(--fln);color:var(--fs)}
-  .tr.gapr{height:calc(var(--u)*30);color:var(--fs);font-size:calc(var(--u)*24);justify-content:center;border-top:1px dashed var(--fln)}
+  .tr.gapr{height:calc(var(--u)*26);color:var(--fs);font-size:calc(var(--u)*24);justify-content:center;border-top:1px dashed var(--fln)}
   .tr.gapr + .tr{border-top:1px dashed var(--fln)}
 
   /* ---- a game row (the round, the results): the day, the clubs, the time or the score */
@@ -185,7 +189,8 @@
   .src{color:var(--fs);font-size:calc(var(--u)*24);margin-top:calc(var(--u)*8)}
   .no-f{box-shadow:none!important}
   .pg.full{padding-top:calc(var(--u)*32);padding-bottom:calc(var(--u)*24)}
-  .pg.full .tr{height:calc(var(--u)*44)}
+  .pg.full .tr{height:calc(var(--u)*40)}
+  .pg.full .tr.zl{height:calc(var(--u)*28)}
   .pg.full .tr.th{height:calc(var(--u)*36)}
   .pg.full .legend{margin-top:calc(var(--u)*8)}
 </style>
@@ -203,25 +208,38 @@ const CLUBS = [
   ['الحزم',2,3,6,12,17,'lldwl',1,0],['الرياض',2,2,7,10,18,'llwll',-1,0],['ضمك',2,2,7,9,18,'wlldl',0,0],['الخلود',1,4,6,10,17,'dlldl',0,3],
   ['الأخدود',1,4,6,8,19,'ldlll',1,3],['النجمة',1,2,8,7,24,'llwll',-1,3]];
 const MINE = 'الاتفاق';
-const ZONES = [['z1','دوري أبطال آسيا للنخبة'],['z2','دوري أبطال آسيا ٢'],['z3','الهبوط']];
+const ZLINES = {3: 'المراكز ١ إلى ٣: دوري أبطال آسيا للنخبة', 4: 'المركز ٤: دوري أبطال آسيا ٢', 15: 'المراكز ١٦ إلى ١٨: الهبوط'};   // after this place
+const zl = b => `<li class="tr zl"><span>${ZLINES[b]}</span></li>`;
+function rows(items, full, ringAt){   // items: [club, index] or 'gapN'; the zone lines go in their places, also across a hidden stretch
+  let last = 0, out = '';
+  items.forEach(x => {
+    if(typeof x === 'string'){ out += gapRow(+x.slice(3)); return; }
+    const r = x[1] + 1;
+    Object.keys(ZLINES).map(Number).filter(b => b > last && b < r).forEach(b => { out += zl(b); });   // a zone's last place is hidden: its line before the next shown row
+    out += row(x[0], x[1], full, ringAt === x[1]);
+    if(ZLINES[r]) out += zl(r);
+    last = r;
+  });
+  return out;
+}
 const FL = {w:'ف', d:'ت', l:'خ'};
 const form = (s, next) => '<span class="fo">' + s.split('').map(c => `<span class="sqf ${c}">${FL[c]}</span>`).join('') + '</span>';
 const mv = m => m > 0 ? `<span class="mv up">▲${D(m)}</span>` : m < 0 ? `<span class="mv dn">▼${D(-m)}</span>` : '<span class="mv eq">–</span>';
-const badge = n => `<span class="bd">${n.replace(/^ال/, '').charAt(0)}</span>`;   // the real badge loads at runtime; this circle is its place-holder
+const badge = n => '';   // the real crest loads at runtime (TheSportsDB); the mockups draw none, and nothing stands in for it while it loads
 function row(c, i, full, ring){
   const [n, w, d, l, gf, ga, fo, m, z, live] = c, p = w + d + l, pts = w * 3 + d, gd = gf - ga;
-  const cls = ['tr', z ? 'z' + z : '', n === MINE ? 'mine' : '', ring ? 'f' : ''].join(' ');
+  const cls = ['tr', n === MINE ? 'mine' : '', ring ? 'f' : ''].join(' ');
   const nm = `<span class="nm"><span>${n}</span>${live ? `<em>${full ? 'مباشر ' : ''}${live}</em>` : ''}</span>`;
   const mid = full
     ? `<span class="c">${D(p)}</span><span class="c">${D(w)}</span><span class="c">${D(d)}</span><span class="c">${D(l)}</span><span class="c">${D(gf)}</span><span class="c">${D(ga)}</span><span class="c w num">${gd > 0 ? '+' : ''}${D(gd)}</span>`
     : `<span class="c">${D(p)}</span><span class="c w num">${gd > 0 ? '+' : ''}${D(gd)}</span>`;
   return `<li class="${cls}"><span class="rk">${D(i + 1)}</span>${mv(m)}${badge(n)}${nm}${mid}<span class="pt${live ? ' ptl' : ''}">${D(pts)}</span>${form(fo)}</li>`;
 }
-const head = full => `<li class="tr th"><span class="rk">#</span><span class="mv"></span><span class="bd" style="visibility:hidden"></span><span class="nm">النادي</span>`
+const head = full => `<li class="tr th"><span class="rk">#</span><span class="mv"></span><span class="nm">النادي</span>`
   + (full ? '<span class="c">لعب</span><span class="c">فاز</span><span class="c">تعادل</span><span class="c">خسر</span><span class="c">له</span><span class="c">عليه</span><span class="c w">الفارق</span>' : '<span class="c">لعب</span><span class="c w">الفارق</span>')
   + '<span class="pt">نقاط</span><span class="fo">آخر ٥، الأحدث يمينًا</span></li>';
 const gapRow = n => `<li class="tr gapr">${n === 1 ? 'نادٍ آخر' : D(n) + ' أندية أخرى'}، موافق: الجدول كاملًا</li>`;
-const legend = extra => '<div class="legend">' + ZONES.map(([z, t]) => `<span><i style="background:var(--${z})"></i>${t}</span>`).join('')
+const legend = extra => '<div class="legend">' + ''
   + '<span><span class="mv up" style="margin-left:6px">▲</span>عن الجولة الماضية</span>' + (extra || '') + '</div>';
 
 const HEAD = (tab, hint) => `<div class="hd"><div><h1>دوري روشن السعودي</h1><div class="sub"><b>الجولة ١١ من ٣٤</b>  موسم ٢٠٢٦-٢٠٢٧</div></div>
@@ -249,7 +267,7 @@ const SCREENS = {
       </div>
       <div class="cols">
         <div style="width:calc(var(--u)*760)"><h2>في الترتيب <i>موافق: الجدول كاملًا</i></h2>
-          <ul class="tb card">${head(false)}${t.slice(0, 6).map(x => row(x[0], x[1], false, x[1] === me)).join('')}</ul></div>
+          <ul class="tb card">${head(false)}${rows(t.slice(0, 6), false, me)}</ul></div>
         <div style="width:calc(var(--u)*470)"><h2>المباريات القادمة</h2>
           <ul class="gl card"><li class="gd">الجولة ١١، السبت ٢١ نوفمبر</li>${gr('النصر','٩:٠٠ م','الأهلي')}<li class="gd">الجولة ١٢، الجمعة ٢٨ نوفمبر</li>${gr('القادسية','٨:٠٠ م','النصر')}
             <li class="gd">الجولة ١٣، الخميس ٤ ديسمبر</li>${gr('النصر','٨:٣٠ م','الخلود')}<li class="gd">دوري أبطال آسيا للنخبة، الثلاثاء ٩ ديسمبر</li>${gr('الغرافة','٧:٠٠ م','النصر')}</ul></div>
@@ -267,7 +285,7 @@ const SCREENS = {
         <div class="lv card"><div class="m" style="color:var(--fs)"><span>انتهت</span><i>اليوم ٤:٣٥ م</i></div><div class="s"><span>الخليج</span><b style="color:var(--fi)">٢ : ٢</b><span>الفيحاء</span></div></div></div>
       <div class="cols">
         <div style="width:calc(var(--u)*800)"><h2>الترتيب <i>مباشر: يتغير مع النتائج</i></h2>
-          <ul class="tb card">${head(false)}${pick.map(x => typeof x === 'string' ? gapRow(+x.slice(3)) : row(x[0], x[1], false)).join('')}</ul></div>
+          <ul class="tb card">${head(false)}${rows(pick, false, -1)}</ul></div>
         <div style="width:calc(var(--u)*470)"><h2>الجولة ١١ <i>يمين ويسار: الجولات</i></h2>
           <ul class="gl card"><li class="gd">اليوم، السبت ٢١ نوفمبر</li>
             ${gr('الشباب','١ : ١','التعاون','on',"٦٧'")}${gr('الفتح','٠ : ٢','نيوم','on',"٣٤'")}${gr('النصر','٩:٠٠ م','الأهلي')}
@@ -287,7 +305,7 @@ const SCREENS = {
     return `<div class="pg">${HEAD(2, 'يمين ويسار: جولة قبل وبعد')}
       <div class="rn"><div class="cap"><b>الجولة ${D(R)}</b><span>من الخميس ٢٧ إلى السبت ٢٩ نوفمبر، ٩ مباريات، بعد ٦ أيام</span></div>
         <ul class="rs">${Array.from({length: 34}, (_, i) => i + 1).map(n => `<li class="${n < now ? 'pl' : ''}${n === now ? ' now' : ''}${n === R ? ' sel' : ''}">${D(n)}</li>`).join('')}</ul>
-        <div class="legend" style="margin-top:calc(var(--u)*10)"><span><i style="background:var(--sq)"></i>لُعبت</span><span><i style="border:2px solid var(--fgr)"></i>الجاري الآن</span><span><i style="background:var(--fgr)"></i>المختارة</span><span class="keys">أسفل: المباريات، موافق على مباراة: بطاقتها</span></div></div>
+        <div class="legend" style="margin-top:calc(var(--u)*10)"><span>المظلّلة لُعبت، والمؤطّرة الجارية الآن</span><span class="keys">أسفل: المباريات، موافق على مباراة: بطاقتها</span></div></div>
       <div class="gg">${games.map((g, i) => `<div class="gc card"><div class="d"><span>${g[0]}</span><i>${i === 7 ? 'قمة الجولة' : ''}</i></div>
         <div class="s"><span>${badge(g[2])}${g[2]}</span><b>${g[1]}</b><span>${badge(g[3])}${g[3]}</span></div></div>`).join('')}</div></div>`;
   },
@@ -295,8 +313,7 @@ const SCREENS = {
     // focused: the page's header and tabs step aside (Back brings them back), the 18 rows fit on one screen without a scroll
     return `<div class="pg full"><div class="hd" style="align-items:baseline"><h1 style="font-size:calc(var(--u)*40)">الترتيب <span style="font-weight:400;color:var(--fs);font-size:calc(var(--u)*28)">دوري روشن السعودي، بعد الجولة ١٠ ومع مباريات الجولة ١١</span></h1></div>
       <ul class="tabs" style="margin-top:calc(var(--u)*8)">${['الكل','على أرضه','خارج أرضه','قبل المباريات الجارية'].map((t, i) => `<li class="${i === 0 ? 'on' : ''}" style="font-size:calc(var(--u)*24)">${t}</li>`).join('')}<li class="hint">موافق على نادٍ: نظرة سريعة، رجوع: صفحة الدوري</li></ul>
-      <ul class="tb card" style="margin-top:calc(var(--u)*8)">${head(true)}${CLUBS.map((c, i) => row(c, i, true, i === (ring || 6))).join('')}</ul>
-      ${legend('<span><em style="font-style:normal;color:var(--flo);margin-left:8px">مباشر</em>نقاط مؤقتة</span>')}</div>`;
+      <ul class="tb card" style="margin-top:calc(var(--u)*8)">${head(true)}${rows(CLUBS.map((c, i) => [c, i]), true, ring || 6)}</ul></div>`;
   },
   club(){
     return SCREENS.table(6) + `<div class="veil"></div><div class="sheet">

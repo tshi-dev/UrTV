@@ -21,7 +21,7 @@
 2. **الترتيب في الرئيسية نافذة على الجدول، لا الجدول كله.** تُظهر الأوائل الأربعة، وفريقك والفريقين حوله، وفرق الهبوط.
    وضغطة «موافق» تفتح الجدول كاملًا على شاشة واحدة: ١٨ صفًّا بلا تمرير، وكل الأعمدة.
 3. **لون وكلمة معًا، لا لون وحده.**
-   - شريط المنطقة على الحافة اليمنى للصف، ومفتاح بالكلمات تحت الجدول.
+   - المناطق: خط فاصل عادي بعرض الجدول تحت آخر مركز في كل منطقة، وفي أوله اسم المنطقة ومراكزها بنص باهت («المراكز ١ إلى ٣: دوري أبطال آسيا للنخبة»)، بلا ألوان ولا مفتاح، كما يفعل موقع دوري روشن وBBC. (قرار المالك ١٩ نوفمبر: لا أشرطة ملونة على حافة الصف.)
    - الشكل حروف «ف ت خ» في مربعات ملونة، والأحدث يمينًا.
    - الصعود والنزول سهم ورقم.
    - المباشر بالأحمر مع الدقيقة.
@@ -32,7 +32,7 @@
    - التركيز حلقة خضراء واحدة كما هو الآن.
 5. **لا شيء يتحرك من مكانه، والصفحة خفيفة.**
    - الأرقام المتغيرة (العدّ، النتيجة، الدقيقة) في صناديق ثابتة العرض، فلا يزحزح تغيرها ما حولها.
-   - الشعارات تُحمّل وقت العرض، ومكانها دائرة بحرف حتى تصل.
+   - الشعارات تُحمّل وقت العرض، ولا شيء مكانها حتى تصل (لا دائرة بحرف).
    - لا خطوط ولا صور جديدة.
    - المسافات بهوامش، لا `gap`، ولا `inset` ولا `clamp` ولا `min()`.
    - التقدير: ١٢ إلى ١٨ ك.ب. من الكود في `tv.html`.
@@ -228,7 +228,7 @@ are in `tester/league-shots.md` on `work/tester-report`. Where a note here diffe
 [6-club-page-1080p.png](../mockups/league-v2/6-club-page-1080p.png) / [720p](../mockups/league-v2/6-club-page-720p.png)
 
 - **Header:**
-  - the badge (runtime, a letter circle until it loads), the name, and «الثاني في دوري روشن السعودي، ٢٦ نقطة من ١١ مباراة»;
+  - the crest (runtime; nothing stands in for it while it loads), the name, and «الثاني في دوري روشن السعودي، ٢٦ نقطة من ١١ مباراة»;
   - on the left, «آخر بطولة» from the honours champions files.
 - **Tabs:**
   - «النادي» (this overview), then «المباريات», «النتائج», «البطولات» and «المواجهات»: today's club view's groups;
@@ -279,7 +279,7 @@ are in `tester/league-shots.md` on `work/tester-report`. Where a note here diffe
    - The home shows the table's top four, the followed club with one club either side, and the relegation places, with a line «٧ أندية أخرى، موافق: الجدول كاملًا» (hints say «موافق», never «OK», as in the rest of the app).
    - The full table is its own focused screen: the page header steps aside and all 18 rows show without scrolling, with every column. This follows Bundesliga's compact and detailed tables.
 3. **Colour plus a word.**
-   - Zones are a 6 px bar on the row's start edge (the right in RTL) with a legend in words under the table, like GOAL Arabic.
+   - **Zones (the owner, 19 Nov):** a plain full-width divider line under the last place of each zone, with the places and the zone's name in plain muted text at the line's start («المراكز ١ إلى ٣: دوري أبطال آسيا للنخبة»), as spl.com.sa and BBC do. No coloured edge bars, no colour chips, no legend row. (Superseded: a 6 px bar on the row's start edge (the right in RTL) with a legend in words under the table, like GOAL Arabic.
    - Form is ف ت خ in filled squares, newest nearest the points. The squares are not capsules.
    - Movement is ▲/▼ with the number of places.
    - Live is the red minute after the name and the points in red, with a «قبل المباريات الجارية» toggle.
@@ -291,7 +291,7 @@ are in `tester/league-shots.md` on `work/tester-report`. Where a note here diffe
 5. **Nothing jumps, nothing heavy.**
    - Changing numbers sit in fixed-width boxes, so the layout never moves (the clock rule). These are the countdown, the live score and the minute.
    - Number runs are isolated with `unicode-bidi:isolate`; this is the Kooora "jumbled" lesson.
-   - Badges load at runtime; a letter circle holds their place.
+   - Crests load at runtime; nothing stands in for them while they load (no letter-in-circle placeholder).
    - No new fonts or images. Margins instead of `gap`, nothing from R10's list.
    - The digits stay as the person set them. The mockups use Arabic-Indic, the app's default.
 
@@ -362,6 +362,27 @@ The UI session approved the direction and all ten decisions, with these changes,
 - **Scope:** the honours work (work/45-honours, 4.4 beta 2) already builds «الأبطال», «الهدّافون», the past seasons in the side column, and
   the club's «البطولات». v2 builds on that code and wording, and makes no second version. The split is agreed with the honours worker
   before phase (a).
+
+### 7c. The owner's verdict on the zone bars (19 Nov)
+
+The owner circled the coloured bars at the row edges on 3-table-full and called them "AI slop". These changes are now in every mockup
+(the full table, the home's window, the club page's window, the quick view behind its veil):
+- **No coloured edge accents anywhere.** A zone is a plain full-width divider line under its last place: after 3rd, after 4th, and after
+  15th for the relegation places.
+  - At the start of each line is one plain, muted label naming the places and the zone: «المراكز ١ إلى ٣: دوري أبطال آسيا للنخبة»,
+    «المركز ٤: دوري أبطال آسيا ٢», «المراكز ١٦ إلى ١٨: الهبوط».
+  - In a window that hides a zone's last place, the line sits before the next shown row.
+- **No legend row:** no coloured squares and no zone colours. The arrows and the red «مباشر» minute need no key. The season strip's legend
+  is a plain line too.
+- **No letter-in-circle crest placeholders:** the real crest loads at runtime, and nothing stands in for it while it loads.
+- **Still in the mockups, for the UI session's audit of AI-look patterns:**
+  - the form squares and the club's score tiles (coloured fills with ف ت خ);
+  - the dashed lines of the «٧ أندية أخرى» rows;
+  - the round strip's squares;
+  - the quick view's five stat boxes;
+  - the rounded white cards.
+
+  These are the #mp page's own cards and the data colours the big sites use. The audit decides which stay.
 
 ### 8. Questions for the owner
 
