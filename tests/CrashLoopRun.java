@@ -14,6 +14,8 @@ public final class CrashLoopRun {
                 case "o": s = s.opened(Long.parseLong(p[1])); break;
                 case "d": s = s.drewFrame(Long.parseLong(p[1])); break;
                 case "q": System.out.println(s.safe(Long.parseLong(p[1])) ? "safe" : "home"); break;
+                // 4.4 beta 3: «k at front now»: Android said the last process was killed for memory at «at», in front (1) or not (0), read now
+                case "k": { String[] v = p[1].split(" "); s = s.lowMemoryKill(Long.parseLong(v[0]), "1".equals(v[1]), Long.parseLong(v[2])); break; }
                 case "x": s = s.cleared(); break;
                 case "p": s = CrashLoop.parse(p[1].replace("|", "\n")); break;
                 default: System.out.println(s.text().replace("\n", "|"));

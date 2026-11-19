@@ -306,6 +306,7 @@ often describe the same bug in two ways, and both rows are kept when their guard
 | R-286 | The screensaver page grew to 775 KB (4.4); weak TVs waited on it at every start | the verses and hadith inline in tv.html, and each release raised the size budget | 4.5 | `tests/regressions/lessons_test.py`, `tests/check.py`, `tests/i18n_page_test.py` | page | N |
 | R-287 | After an update of the home (the add-on not updated), the first Home press on a Google TV opened the TV's own home; once UrTV had run, Home was ours again | while the home was being replaced the add-on judged its Home key catch with our home not installed for a moment, turned it off, and judged it again only when our home came to the front | 4.4 | `tests/home_update_key_test.py` | launcher extras | Y |
 | R-300 | A TV with 2.4–3 GB that struggles in practice (memory running full, slow starts, the home killed for memory) never got «الوضع الخفيف» on «تلقائي» | «تلقائي» looked only at the specs (the low-RAM flag, under 2000 MB, two cores) | 4.4 | `tests/lite_auto_test.py` | launcher | N |
+| R-301 | A home killed by Android for memory right after it opened, again and again, never reached the safe page (the TV just kept reopening it) | the crash counter saw only Java crashes and hangs; a low-memory kill leaves no trace in the process | 4.4 | `tests/crash_loop_test.py` | launcher | N |
 
 ## Open findings of the gate (QA-n)
 
