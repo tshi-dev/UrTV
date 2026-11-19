@@ -1,0 +1,3 @@
+t_change: 1795096237.355523136
+t_rec: 1795096235.353855515
+focus-after: android:id/select_dialog_listview android.widget.ListView [432,498][1488,706]
