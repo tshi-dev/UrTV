@@ -3259,3 +3259,9 @@ Pictures (PC only): optimize/run/step96/pics/upd-1.png … upd-6.png.
 - «كل التطبيقات» (all-apps-574.png): NOT done (needs remote navigation; the grid froze on 525).
 - (2) add teams with typing and timing: NOT done (needs remote; owner's TV).
 - (4) «تحديث تلفزيوني» overlap photo: NOT done (needs remote navigation to «حول»).
+
+## BETA 2 (574) — the owner away: what I could reach by remote, screenshot-checked (19 Nov)
+- «كل التطبيقات» (all-apps): NOT reached. From YouTube the right keys do nothing; the left keys scroll the row (Jellyfin, S, MovieBox, Spotify, Apple TV…) and stop at Jellyfin. The grid tile is not on this row (not found by 16 steps). Picture: tester/beta2/apps-row-scrolled-574.png. Needs the owner (or a known way to the grid).
+- Add teams (typing + timing): NOT done. Needs the settings navigation; blind moves in settings changed owner values before (see the step 105 incident), so not repeated without a screenshot step per row.
+- «تحديث تلفزيوني» overlap photo: NOT done (same reason: under «حول»).
+- Home after the restart, mute, role and the owner's settings: verified identical after the last check.
