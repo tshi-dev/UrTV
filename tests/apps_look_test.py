@@ -70,7 +70,7 @@ check("B: the launcher icon in its square (AspectFrame's ratio 1), read only for
       "card.ratio = FavBar.aspect(FavBar.ICONS);" in main and "float ratio = 9f / 16f;" in main and 'if (FavBar.ICONS.equals(appsLook)) {' in main
       and 'a.icon = artCache.get("i:" + a.pkg);' in main and 'artCache.put("i:" + a.pkg, a.icon = fitted(ri.loadIcon(pm), false));' in main)
 check("A: the TV banner (loadBanner); an app with none its own icon on a neutral tile (4.4 beta 2, the owner: never a dark tint of its colour; tests/tile_art_test.py)",
-      "banner = ai.loadBanner(pm);" in main and "app.composed && !icons ? 0 : TileArt.LIGHT" in main and "darken(" not in main)
+      "banner = ai.loadBanner(pm);" in main and "app.composed && !icons || icons && app.iconComposed ? 0 : TileArt.LIGHT" in main and "darken(" not in main)
 check("a new way makes the row again (its art and cells); the focus «تكبير وظل» per FavBar.zoom, the name under the row",
       "if (!wayNow.equals(appsLook)) {" in main and "applyAppsLook();\n            buildApps();" in main and "appsZoom = FavBar.zoom(cfg.appsStyle);" in main
       and "placeZoomName(appsZoom && inBar ? f : null);" in main)

@@ -23,6 +23,20 @@ final class TeamSearch {
         final String id, en, ar;
         final String[] leagues, alt;
         final String sport;   // TheSportsDB's strSport: "Soccer", "Basketball", "American Football"
+        private List<List<String>> words;   // 4.4 beta 2: its names normalised once (the first search), not at every search
+
+        synchronized List<List<String>> words() {
+            if (words == null) {
+                List<List<String>> w = new ArrayList<>();
+                List<String> names = new ArrayList<>();
+                names.add(en);
+                names.add(ar);
+                if (alt != null) Collections.addAll(names, alt);
+                for (String x : names) if (x != null && !x.isEmpty()) w.add(normalize(x));
+                words = w;
+            }
+            return words;
+        }
         Team(String id, String en, String ar, String[] leagues, String[] alt) { this(id, en, ar, leagues, alt, "Soccer"); }
         Team(String id, String en, String ar, String[] leagues, String[] alt, String sport) {
             this.id = id; this.en = en; this.ar = ar; this.leagues = leagues; this.alt = alt; this.sport = sport;
@@ -157,11 +171,7 @@ final class TeamSearch {
             for (int n = 0; n < teams.size(); n++) {
                 Team t = teams.get(n);
                 int best = 9;
-                List<String> names = new ArrayList<>();
-                names.add(t.en);
-                names.add(t.ar);
-                if (t.alt != null) Collections.addAll(names, t.alt);
-                for (String x : names) if (x != null && !x.isEmpty()) best = Math.min(best, tier(q, normalize(x)));
+                for (List<String> w : t.words()) best = Math.min(best, tier(q, w));
                 if (best < 9) ranked.add(new int[] {GROUP[best], t.saudi() ? 0 : 1, best, n});
             }
             Collections.sort(ranked, new Comparator<int[]>() {

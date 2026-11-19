@@ -25,7 +25,7 @@ tile = main[main.index("    private View tile(App app, boolean inDock) {"):main.
 comp = main[main.index("    private Drawable composeTile(Drawable icon) {"):main.index("    /** a legacy icon cut to its opaque pixels")]
 check("no dark tint of the app's colour behind a tile any more (darken is gone)", "darken(" not in main)
 check("an app with a banner: its banner fills the tile; with none, its icon composed to fill the tile, drawn full-bleed the same way",
-      "} else if (app.isBanner || app.composed) {" in tile and "app.composed && !icons ? 0 : TileArt.LIGHT" in tile)
+      "} else if (app.isBanner || app.composed) {" in tile and "app.composed && !icons || icons && app.iconComposed ? 0 : TileArt.LIGHT" in tile)
 check("composed once per app on the apps' loading thread (appOf), cached, never on the main thread, from the icon at xxxhdpi",
       'Drawable t = artCache.get("t:" + a.pkg);' in main and "t = composeTile(sharpIcon(ri, pm));" in main and "getDrawableForDensity(id, TileArt.DENSITY, null)" in main
       and main.index("t = composeTile(sharpIcon(ri, pm));") < main.index("    /** On the main thread: the dock first") and "composeTile" not in tile)
@@ -63,4 +63,10 @@ fwin = main[main.index("    private void scrollToRow(View tileBox) {"):]
 check("…the home scrolls by it (the first row shown at the safe top); from the tray, the first row as before",
       "gridFirst = GridWindow.first(tops, bottoms, at, gridFirst," in fwin and "glideTo(Math.max(0, Math.min(tops[gridFirst] - Math.round(screenH * GridWindow.SAFE_TOP), max)));" in fwin)
 check("every grid row the same height: «المخفية» keeps the room of a tile's name under it", 'room.setText(" ");' in main and "hiddenBox.addView(room," in main)
+check("«أيقونات» too (the owner, build 570): each app's square composed by TileArt's rules, cached per app, drawn full-bleed with no backing of ours; the small padded icon only when it cannot be composed",
+      'q = composeTile(sharpIcon(ri, pm), side, side);' in main and 'artCache.put("q:" + a.pkg, q);' in main and "if (q != null) { a.icon = q; a.iconComposed = true; }" in main
+      and "} else if (icons && app.iconComposed) {" in main and "icons && app.iconComposed ? 0 : TileArt.LIGHT" in main
+      and main.index("} else if (icons && app.iconComposed) {") < main.index("} else if (icons) {"))
+check("every way draws TileArt's art: the tiles and «تكبير وظل» the 16:9 tile, «أيقونات» the square, the banners the app's banner",
+      "private Drawable composeTile(Drawable icon, int w, int h) {" in main and "return composeTile(icon, w, w * 9 / 16);" in main)
 sys.exit(1 if failed else 0)

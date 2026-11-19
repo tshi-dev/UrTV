@@ -27,7 +27,7 @@ sent = "c.sendBroadcast(new Intent(Prefs.CHANGED).setPackage(c.getPackageName())
 check("SaverReceiver.set sends it, to this app only, after everything is saved and before the answer", sent in setter
       and setter.index('p.setList("leagues", leagues);') < setter.index(sent) < setter.index('return "saved\\n"'), setter[-400:])
 check("and never on a refusal: every `return \"error:` comes before the saves, so none reaches the broadcast",
-      setter.rindex('return "error:') < setter.index("if (city != null) p.setCity("), "")
+      setter.replace('if (!p.flush()) return "error: the settings could not be written', '').rindex('return "error:') < setter.index("if (city != null) p.setCity("), "")   # 4.4 R-305: the flush's own error comes after the saves on purpose (nothing was written, nothing is broadcast)
 for name, src, flag in (("the dream", dream, "attached"), ("the preview", preview, "alive")):
     check(f"{name} listens for it while it is on the screen (registered when it starts, unregistered when it ends)",
           "InternalReceivers.register(this, changed, new IntentFilter(Prefs.CHANGED))" in src and "unregisterReceiver(changed)" in src, "")

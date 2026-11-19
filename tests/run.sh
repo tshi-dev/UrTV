@@ -41,6 +41,7 @@ python3 tests/ram_tier_test.py   # the three memory tiers (LOW under 2000 MB, MI
 python3 tests/lite_auto_test.py   # 4.4 beta 3: «الوضع الخفيف» تلقائي also from what this TV shows (memory low in front, a slow first frame, a low-memory kill): said once, never on the UI thread
 python3 tests/scene_home_test.py   # 4.3.3 «المشاهد»: the scene rules per tier on a JVM, the Saudi pack's files and sizes, the Couch TV download checks, the wiring
 python3 tests/presets_test.py   # 4.4 «أشكال جاهزة»: six looks, the person's own values kept and put back, «مخصّص», the flags, saver.sh preset
+python3 tests/saver_flush_test.py   # R-305: «saved» only after the settings file is written to the TV's storage (a lost write came back after a power cycle)
 python3 tests/settings_smooth_test.py   # 4.4 «smoother» settings: one section built per render, the side list opens on a rest, focus recolours only, 120 ms scale, live search
 
 python3 tests/webview66_test.py   # #19 WebView 66: a fallback before each inset/clamp/min/max, flex gap as margins, the Hijri date without Umm al-Qura
@@ -367,6 +368,7 @@ python3 tests/home_snapshot_test.py   # The home's stand-in picture (HomeSnapsho
 python3 tests/idle_rule_test.py   # «تبدأ شاشة التوقف بعد 2147483 ثانية» (user report): the TV's idle delay was 2147483647 (Integer.MAX: the TV tu
 python3 tests/install_saver_test.py   # 4.3.2 «ثبّت الجزء الثاني»: a TV with only the home (a Fire TV, or installed with Downloader) must never meet a
 python3 tests/league_groups_test.py   # 4.3.1 «البطولات الكبرى» and «اختر دورياتك»: the big tournaments' list is one data file that resolves against t
+python3 tests/add_lag_test.py   # 4.4 beta 2: adding leagues and clubs never freezes (the search waits, folds once, ticks in place, off the UI thread)
 python3 tests/match_teams_button_test.py   # 4.3.1: «فرقي» in the matches page's header opens the settings' teams chooser (the page is made again on return
 python3 tests/net_test.py   # Net: the small GET the apps use for their own data files (IPv4 first, 4 s per address, a deadline, a size cap,
 python3 tests/phone_room_test.py   # «اللعب بالجوالات»: the generic phone room of the party games and the game-only server on a plain JVM (tests/Ph
@@ -448,6 +450,7 @@ node tests/sports_hist.test.mjs   # 4.4 the league page's table from the archive
 node tests/honours.test.mjs   # 4.5 the league page's seasons, «الأبطال», «الهدّافون» with their source, the club page's titles (docs/HONOURS-STUDY.md)
 node tests/sport_tops.test.mjs   # «رياضي»: SPORTS.tops(n), the top of every followed league from the files the TV has, never invented
 node tests/matches_archive.test.mjs   # «المباريات» with the match archive (data-archive): every followed team, yesterday's results, a club, a league, the chooser
+node tests/add_lag.test.mjs   # 4.4 beta 2: the page's chooser of 800 leagues draws round the focus; the club search draws once the typing rests
 node tests/phone_page.test.mjs
 node tests/sync_cards.test.mjs   # «توحيد المظهر» on the page: the cards in the material's fill, line and ink, readable on a light look
 node tests/couch_row.test.mjs   # 4.4 the page: «كنبة» (#row=1, the cards in one strip above the tray) and «مربعات» (today's prayers as boxes in a row, the next one lit with its countdown)

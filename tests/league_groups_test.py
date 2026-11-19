@@ -48,7 +48,7 @@ check("the page is told tour=1 and tourx= only while the switch is on; nothing w
 check("«الدوريات كاملة» opens the one-screen chooser", "LeaguesActivity.class" in st and 'android:name=".LeaguesActivity"' in read(ROOT / "android/app/src/main/AndroidManifest.xml"))
 check("the chooser: the search field on top, «البطولات الكبرى» first, then السعودية، أوروبا، آسيا وأفريقيا، العالم, a tick and the Arabic name on each row, the count of the chosen in the header",
       act.index("search = new EditText") < act.index('S.t("البطولات الكبرى")') and 'S.n("السعودية"), S.n("أوروبا"), S.n("آسيا وأفريقيا"), S.n("العالم")' in act and "S.t(\"اخترت %s من %s\"" in act
-      and 'text(on ? "✓" : ""' in act and "AlertDialog" not in act)
+      and 'tick.setText(on ? "✓" : "");' in act and "drawTick(tick, on);" in act and "AlertDialog" not in act)
 check("the chooser keeps the cap (Prefs.MAX_LEAGUES), takes the tournaments out of the rest (no duplicate) and the best-known catalogue leagues without a search, all of it with one", "Prefs.MAX_LEAGUES" in act
       and "ids.contains(r[0])" in act and "r[6].isEmpty()" in act and "searching" in act)
 check("no TheSportsDB request for the tournaments from the TV: the page asks the one file, no league id of the set goes into #leagues=", "tournaments" in prefs and "thesportsdb" not in act.lower())

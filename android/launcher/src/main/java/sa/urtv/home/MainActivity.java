@@ -84,6 +84,7 @@ public class MainActivity extends Activity {
         boolean isBanner;
         /** 4.4 beta 2: no banner, so its art is its icon composed on a neutral tile (TileArt), drawn full-bleed like a banner */
         boolean composed;
+        boolean iconComposed;   // «أيقونات»: icon is its square composed by TileArt (full-bleed)
         int color;
     }
 
@@ -1542,6 +1543,15 @@ public class MainActivity extends Activity {
                 a.icon = artCache.get("i:" + a.pkg);
                 if (a.icon == null) artCache.put("i:" + a.pkg, a.icon = fitted(ri.loadIcon(pm), false));
             }
+            // 4.4 beta 2 (the owner, build 570: small logos in squares, wide ones squeezed): the icon composed on its own square by TileArt's rules,
+            // as the tiles are (an adaptive icon's layers edge to edge, a legacy one trimmed and large on its edge colour), drawn full-bleed
+            Drawable q = artCache.get("q:" + a.pkg);
+            if (q == null) {
+                int side = Math.round(getResources().getDisplayMetrics().heightPixels * FavBar.ICON / 1080f * FavBar.ROOM_SCALE);
+                q = composeTile(sharpIcon(ri, pm), side, side);
+                if (q != null) artCache.put("q:" + a.pkg, q);
+            }
+            if (q != null) { a.icon = q; a.iconComposed = true; }
         }
         a.color = sampleColor(a.pkg, a.art);
         if (!a.isBanner) {   // 4.4 beta 2 (the owner's test of 525): its own icon, large, on a neutral tile; never a dark tint of its colour
@@ -1561,8 +1571,13 @@ public class MainActivity extends Activity {
      * On the apps' loading thread; null (the old way) when it cannot be drawn.
      */
     private Drawable composeTile(Drawable icon) {
-        if (icon == null) return null;
-        int w = Math.round(getResources().getDisplayMetrics().widthPixels / (float) MIN_DOCK * 1.12f), h = w * 9 / 16;
+        int w = Math.round(getResources().getDisplayMetrics().widthPixels / (float) MIN_DOCK * 1.12f);
+        return composeTile(icon, w, w * 9 / 16);
+    }
+
+    /** the same rules on a tile of w x h (a square for «أيقونات»: the owner, build 570, «the square icons are not nice») */
+    private Drawable composeTile(Drawable icon, int w, int h) {
+        if (icon == null || w <= 0 || h <= 0) return null;
         try {
             Bitmap tile = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
             Canvas c = new Canvas(tile);
@@ -1824,7 +1839,7 @@ public class MainActivity extends Activity {
             }
         });
         GradientDrawable bg = new GradientDrawable();
-        bg.setColor(app.isBanner && !icons ? 0xFF1C1C1E : app.composed && !icons ? 0 : TileArt.LIGHT);   // 4.4 beta 2 (the owner): never a dark tint of the app's colour
+        bg.setColor(app.isBanner && !icons ? 0xFF1C1C1E : app.composed && !icons || icons && app.iconComposed ? 0 : TileArt.LIGHT);   // 4.4 beta 2 (the owner): never a dark tint of the app's colour
         if (glassy) bg.setColor(0);   // the squircle has its own colour
         card.setBackground(bg);
 
@@ -1834,7 +1849,10 @@ public class MainActivity extends Activity {
             img.setImageDrawable(app.icon);
             img.setScaleType(ImageView.ScaleType.FIT_XY);
             card.addView(img, new FrameLayout.LayoutParams(-1, -1));
-        } else if (icons) {   // B: the icon filling its square, a little inside
+        } else if (icons && app.iconComposed) {   // B: its square composed by TileArt (beta 2), full-bleed like the tiles
+            img.setScaleType(ImageView.ScaleType.FIT_XY);
+            card.addView(img, new FrameLayout.LayoutParams(-1, -1));
+        } else if (icons) {   // B: the icon filling its square, a little inside (only when it could not be composed)
             img.setScaleType(ImageView.ScaleType.FIT_CENTER);
             card.addView(img, new FrameLayout.LayoutParams(-1, -1));
             img.setPadding(dp(10), dp(10), dp(10), dp(10));

@@ -249,9 +249,10 @@ const ids = (p, key) => p.evaluate(k => ((MP.leagues.find(x => x.key === k) || {
   await p.waitForTimeout(300);
   check('search: the field has the focus', await p.evaluate(() => document.activeElement && document.activeElement.id === 'mp-q'));
   await p.keyboard.type('نصر');
-  await p.waitForTimeout(100);
+  await p.waitForTimeout(400);   // 4.4 beta 2: the list is drawn once the typing rests (MP_Q_MS)
   check('search: an Arabic part of the name finds the club', (await p.$$eval('#mp-list li', ls => ls.map(l => l.textContent))).join() === 'النصر');
   await p.evaluate(() => { const q = document.getElementById('mp-q'); q.value = 'psv'; q.dispatchEvent(new Event('input', {bubbles: true})); });
+  await p.waitForTimeout(400);
   check('search: …and an English one', (await p.$$eval('#mp-list li', ls => ls.map(l => l.textContent))).join() === 'آيندهوفن');
   await p.keyboard.press('ArrowDown'); await p.keyboard.press('Enter');
   check('search: ▼ then OK opens the club', await p.evaluate(() => MP.view.k === 'club' && MP.view.id === '133601'));

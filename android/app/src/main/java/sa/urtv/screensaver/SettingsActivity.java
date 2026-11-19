@@ -2489,6 +2489,7 @@ public class SettingsActivity extends Activity {
 
     /** Followed teams: untick to remove, or add one (presets, league browsing, search). Up to 20. */
     private void manageTeams() {
+        warmTeams();   // 4.4 beta 2: the club list read now, off the UI thread, so «إضافة فريق» opens and searches without a freeze
         final List<String> cur = prefs.teams();
         String[] labels = new String[cur.size()];
         final boolean[] keep = new boolean[cur.size()];
@@ -2564,22 +2565,38 @@ public class SettingsActivity extends Activity {
         labels[Prefs.LEAGUES.length] = "المنتخبات";
         new Dlg(this).setTitle("الدوري")
             .setItems(labels, (d, i) -> {
-                String league = i < Prefs.LEAGUES.length ? Prefs.LEAGUES[i][0] : Teams.NATIONAL;
-                List<TeamSearch.Team> clubs = Teams.inLeague(this, league);
-                if (!clubs.isEmpty()) showOurs(clubs, labels[i], false);
-                else if (i < Prefs.LEAGUES.length)
-                    fetch(SPORTS + "search_all_teams.php?l=" + Uri.encode(league), json -> showTeams(slot, json, labels[i], league));
-                else toast("تعذّر تحميل القائمة، جرّب البحث عن الفريق");
+                final String league = i < Prefs.LEAGUES.length ? Prefs.LEAGUES[i][0] : Teams.NATIONAL;
+                final android.content.Context app = getApplicationContext();
+                new Thread(() -> {
+                    final List<TeamSearch.Team> clubs = Teams.inLeague(app, league);   // 4.4 beta 2: read off the UI thread
+                    runOnUiThread(() -> {
+                        if (isFinishing()) return;
+                        if (!clubs.isEmpty()) showOurs(clubs, labels[i], false);
+                        else if (i < Prefs.LEAGUES.length)
+                            fetch(SPORTS + "search_all_teams.php?l=" + Uri.encode(league), json -> showTeams(slot, json, labels[i], league));
+                        else toast("تعذّر تحميل القائمة، جرّب البحث عن الفريق");
+                    });
+                }, "teams-league").start();
             }).show();
     }
 
+    /** 4.4 beta 2 (the owner, build 570: «the search between clubs lags»): the club list (teams.json) read and searched off the UI thread */
+    private static void warmTeams(final android.content.Context c) { new Thread(() -> Teams.all(c), "teams-load").start(); }
+    private void warmTeams() { warmTeams(getApplicationContext()); }
+
     private void searchTeam(final int slot) {
         ask("اسم الفريق بالعربية أو الإنجليزية (مثل الهلال أو \u2066Real Madrid\u2069)", q -> {
-            List<TeamSearch.Team> found = Teams.search(this, q);
-            if (!found.isEmpty()) showOurs(found.subList(0, Math.min(found.size(), 30)), "اختر الفريق", true);
-            else if (!Arabic.hasArabic(q))   // a club outside our list: TheSportsDB's search, in English only
-                fetch(SPORTS + "searchteams.php?t=" + Uri.encode(q), json -> showTeams(slot, json, "اختر الفريق", null));
-            else toast("لا توجد نتائج، جرّب اسم الفريق بالإنجليزية");
+            final android.content.Context app = getApplicationContext();
+            new Thread(() -> {
+                final List<TeamSearch.Team> found = Teams.search(app, q);   // the list read and searched here, never on the UI thread
+                runOnUiThread(() -> {
+                    if (isFinishing()) return;
+                    if (!found.isEmpty()) showOurs(found.subList(0, Math.min(found.size(), 30)), "اختر الفريق", true);
+                    else if (!Arabic.hasArabic(q))   // a club outside our list: TheSportsDB's search, in English only
+                        fetch(SPORTS + "searchteams.php?t=" + Uri.encode(q), json -> showTeams(slot, json, "اختر الفريق", null));
+                    else toast("لا توجد نتائج، جرّب اسم الفريق بالإنجليزية");
+                });
+            }, "team-search").start();
         });
     }
 
