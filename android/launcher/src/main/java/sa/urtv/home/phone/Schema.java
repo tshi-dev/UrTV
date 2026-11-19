@@ -107,6 +107,12 @@ public final class Schema {
                 return c;
             }
             case "logout": return only(body);
+            case "adbpair": {   // 4.4 beta 3, wireless debugging: the six digits of the TV's «إقران الجهاز برمز الإقران» dialog (digits only; never logged)
+                Clean c = only(body, "code");
+                if (!c.ok()) return c;
+                if (!(body.get("code") instanceof String) || !((String) body.get("code")).matches("\\d{6}")) return no("bad code");
+                return c;
+            }
             case "audio": {   // 4.4 «صوتياتي»: {"op":"use","id":3,"as":"own"} or {"op":"delete","id":3}
                 Clean c = only(body, "op", "id", "as");
                 if (!c.ok()) return c;

@@ -117,11 +117,13 @@ au = text(ROOT / "android/launcher/src/main/assets/phone/audio.html")   # 4.4 «
 served |= {"/api/photo_thumb/"} if 'static final String THUMB_PATH = "/api/photo_thumb/";' in api else set()   # 4.4 «صوري»: one photo's small picture
 ph = text(ROOT / "android/launcher/src/main/assets/phone/photos.html")   # 4.4: the photos on the TV and their delete (the page's other calls are raw routes)
 used_ph = {u for u in re.findall(r"['\"](/api/[a-z_/]+)['\"]", ph) if u in ("/api/photos", "/api/photo_del", "/api/photo_thumb/")}
-used = set(re.findall(r"['\"](/api/[a-z_/]+)['\"]", page)) | set(re.findall(r"['\"](/api/[a-z_/]+)['\"]", pf)) | set(re.findall(r"['\"](/api/[a-z_/]+)['\"]", au)) | used_ph
+used = set(re.findall(r"['\"](/api/[a-z_/]+)['\"]", page)) | set(re.findall(r"['\"](/api/[a-z_/]+)['\"]", pf)) | set(re.findall(r"['\"](/api/[a-z_/]+)['\"]", text(ROOT / "android/launcher/src/main/assets/phone/adb.html"))) | set(re.findall(r"['\"](/api/[a-z_/]+)['\"]", au)) | used_ph   # 4.4 beta 3: + the pairing code page (adb.html)
 check("every call of the page (and of portfolio.html and audio.html) is an endpoint the server has, and the reverse", used == served, (used ^ served))
 check("the page says plainly what it cannot do: keys to other apps, and text outside our screens",
       "فعّل خدمة «إضافات تلفزيونك»" in page and "تحتاج أندرويد ١٣" in page and "يُكتب في حقلها بعد تفعيل خدمة إمكانية الوصول" in page and "/api/text" in page, "")
-check("the page has no reset, uninstall, ADB or PIN-changing control", not re.search(r"reset|uninstall|adb|إعادة ضبط|حذف التطبيق", page, re.I), "")
+# 4.4 beta 3: the one ADB-related thing on the page is the row that opens the pairing code page, shown only while the TV's own factory page armed the pairing (state.adb_pair); it changes nothing itself
+check("the page has no reset, uninstall, ADB or PIN-changing control (the row to the pairing code page, shown only while the TV armed it, is the one allowed mention)",
+      not re.search(r"reset|uninstall|adb|إعادة ضبط|حذف التطبيق", page.replace('id="adbRw" href="/a"', "").replace("$('adbRw').classList.toggle('hidden', !s.adb_pair);", ""), re.I), "")
 
 # ---- docs and registration
 runsh = text(ROOT / "tests/run.sh")
@@ -164,8 +166,14 @@ check("the home runs the request through the very guard of a tap, for the favour
       and "for (String[] a : PhoneApps.apps(this)) shown |= a[0].equals(t);" in main_src)
 check("kids mode shows the phone no pills and no app outside the allowed list", "if (st.kids) return out;" in apps_src and 'Parental.state(app).kids' in apps_src)
 check("the family summary is read only and never carries the PIN", "public static Map<String, Object> family(" in apps_src and "pin_set" in apps_src and "Parental.pin(" not in apps_src and "PinStore" not in apps_src)
-check("the phone has no way to change the family lock, reset, uninstall or reach ADB: no such call anywhere in the phone package",
-      not re.search(r"setLocked|setKids|setAllowed|adbSet|adbReset|adbLock|turnOff\(|\.uninstall\(|deletePackage|uninstallPackage|Runtime\.getRuntime|ProcessBuilder|\"adb\"|pm clear|factory", "".join(text(p) for p in PHONE.glob("*.java"))), "")
+# 4.4 beta 3: the only way from the phone to ADB is to hand six digits to PairBridge.submit, taken only while the TV's own factory page armed the pairing (behind the family PIN)
+_phone = "".join(text(p) for p in PHONE.glob("*.java"))
+_allowed = _phone
+for _w in ("(the TV's factory page armed it)", "the TV's factory page armed it", "(only while the TV's factory page armed it)", "PairBridge.submit(app, code)", "PairBridge.status(app)", "PairBridge.why()"):
+    _allowed = _allowed.replace(_w, "")
+check("the phone has no way to change the family lock, reset, uninstall or reach ADB: no such call anywhere in the phone package (but PairBridge.submit's six digits, taken only while the TV armed the pairing)",
+      not re.search(r"setLocked|setKids|setAllowed|adbSet|adbReset|adbLock|turnOff\(|\.uninstall\(|deletePackage|uninstallPackage|Runtime\.getRuntime|ProcessBuilder|\"adb\"|pm clear|factory", _allowed)
+      and _phone.count("PairBridge.") == 3 and 'if (!armedHere()) return "not_armed";' in text(JAVA / "setup/PairBridge.java"), "")
 check("Back, Home and the arrows reach every app through our accessibility services when one is on (RemoteNav says which call; our own screens keep dispatchKeyEvent): see tests/remote_nav_test.py",
       'PhoneApps.pressKey(key)' in actions_src and "performGlobalAction(st.code)" in text(ROOT / "android/extras/src/main/java/sa/urtv/home/ExtrasA11yService.java") and "GLOBAL_BACK = 1" in text(JAVA / "RemoteNav.java") and "a.dispatchKeyEvent" in actions_src)
 check("the adhan stop and the sleep timer go through the app's own code", "MusicService.stopAdhan(c)" in text(til / "PhoneBridge.java") and "SleepTimer.start(" in apps_src and "SleepTimer.MINUTES" in apps_src)

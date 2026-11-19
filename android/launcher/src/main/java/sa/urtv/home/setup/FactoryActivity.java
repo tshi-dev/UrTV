@@ -32,8 +32,11 @@ public class FactoryActivity extends Activity {
     /** Home pressed: the screen is done, not left behind the home (step 47: a clean-mode screen came back to the front when Settings opened later) */
     @Override protected void onUserLeaveHint() {
         super.onUserLeaveHint();
+        if (going) return;   // 4.4 beta 3: this screen opened the phone page, the developer options or the add-on's install itself (the pairing): it stays behind them
         finish();
     }
+
+    private boolean going;
 
     @Override protected void attachBaseContext(android.content.Context b) { super.attachBaseContext(S.wrap(b)); }
 
@@ -59,7 +62,7 @@ public class FactoryActivity extends Activity {
     }
 
     /** Back always leaves (a check or a step in progress goes on by itself on its thread; the ledger and the safety switch do not depend on this screen) */
-    @Override public void onBackPressed() { finish(); }
+    @Override public void onBackPressed() { leavePairing(); finish(); }
 
     // ---------------------------------------------------------------- the first page
 
@@ -105,10 +108,157 @@ public class FactoryActivity extends Activity {
                     if (why.contains("debugging is off")) break;   // the port is closed: no other address opens it
                 }
             }
-            if (o == null) o = new SetupEngine.FactoryOffer(whyNot(why), "", new ArrayList<String>());
+            if (o == null) {
+                // 4.4 beta 3 (the owner: every Google TV and Chromecast with only «تصحيح الأخطاء اللاسلكي»): 5555 did not answer; the paired route through the add-on
+                String route = PairRoute.why(this);
+                android.util.Log.i("UrTVFactory", "5555 did not answer; paired route: " + route);
+                if ("old_android".equals(route)) {   // fail closed: today's reason, and that this TV has no wireless debugging
+                    o = new SetupEngine.FactoryOffer(whyNot(why) + "\n\n" + S.t("هذا التلفزيون ما فيه التصحيح اللاسلكي (أندرويد ١٠ أو أقدم). شغّل «تصحيح USB» من خيارات المطوّر، وأعد تشغيل التلفزيون، وجرّب من جديد."), "", new ArrayList<String>());
+                } else if ("paired".equals(route)) {
+                    o = pairedOffer();
+                } else {
+                    final boolean needAddon = "no_addon".equals(route) || "old_addon".equals(route);
+                    ui.post(() -> { if (!isFinishing() && !isDestroyed()) { busy = false; pairPage(needAddon); } });
+                    return;
+                }
+            }
             final SetupEngine.FactoryOffer res = o;
             ui.post(() -> { if (isFinishing() || isDestroyed()) return; busy = false; offer = res; if (res.refusal != null) refused(res.refusal); else plan(); });
         }, "factory-check").start();
+    }
+
+    /** on the factory-check thread: the offer over the paired route; a failure is the refusal with what to do (wireless debugging off after a restart, or the connection refused) */
+    private SetupEngine.FactoryOffer pairedOffer() {
+        try (SetupSession s = PairRoute.open(this, line -> { })) {
+            SetupEngine.FactoryOffer o = s.engine.factoryOffer();
+            android.util.Log.i("UrTVFactory", "offer (paired route): " + (o.refusal == null ? "ok, " + o.packages.size() + " packages" : "refused: " + o.refusal));
+            return o;
+        } catch (Exception e) {
+            String m = String.valueOf(e.getMessage());
+            android.util.Log.w("UrTVFactory", "paired route failed: " + m);
+            return new SetupEngine.FactoryOffer("no_port".equals(m)
+                ? S.t("التصحيح اللاسلكي انطفأ بعد إعادة التشغيل (هذا التلفزيون يطفيه كل مرة). شغّله من خيارات المطوّر، وارجع هنا: ما تحتاج تقرن من جديد.")
+                : S.t("تم الإقران لكن ما قدرنا نتصل بالتلفزيون بعده. تأكد أن «تصحيح الأخطاء اللاسلكي» شغّال وجرّب من جديد."), "", new ArrayList<String>());
+        }
+    }
+
+    // ---------------------------------------------------------------- pairing from the phone (4.4 beta 3; the pairing itself runs in the add-on)
+
+    private volatile boolean pairShown;
+    private TextView pairLine;
+    /** the state is asked of the add-on on this thread, never the UI thread; the words are put on the screen after */
+    private final java.util.concurrent.ExecutorService pairAsk = java.util.concurrent.Executors.newSingleThreadExecutor(r -> new Thread(r, "factory-pair"));
+    private final Runnable pairTick = new Runnable() {
+        @Override public void run() {
+            if (!pairShown || isFinishing() || isDestroyed()) return;
+            try {
+                pairAsk.execute(() -> {
+                    final String st = PairBridge.status(FactoryActivity.this), why = PairBridge.why();
+                    ui.post(() -> {
+                        if (!pairShown || isFinishing() || isDestroyed()) return;
+                        pairLine.setText(pairWords(st, why));
+                        if ("paired".equals(st)) { pairShown = false; pairAsk.execute(() -> PairBridge.disarm(FactoryActivity.this)); checkPaired(); return; }
+                        ui.postDelayed(pairTick, 1000);
+                    });
+                });
+            } catch (RuntimeException ignored) { }
+        }
+    };
+
+    private String pairWords(String st, String why) {
+        if ("armed".equals(st)) return S.t("جاهز: اكتب الرمز من صفحة الجوال.");
+        if ("pairing".equals(st)) return S.t("نقرن…");
+        if ("failed".equals(st)) {
+            return "no_dialog".equals(why) ? S.t("ما ظهرت نافذة «إقران الجهاز برمز الإقران». افتحها وجرّب الرمز من جديد.")
+                : "wrong".equals(why) ? S.t("ما انقبل الرمز. اكتب الرمز الجديد الظاهر على التلفزيون.") : S.t("ما قدرنا نقرن. جرّب من جديد.");
+        }
+        return S.t("اضغط «ابدأ الإقران».");
+    }
+
+    /** 5555 did not answer: pair this TV by wireless debugging, the six digits typed on the phone page while Settings keeps its dialog open ({@code needAddon}: install the add-on first) */
+    private void pairPage(boolean needAddon) {
+        col.removeAllViews();
+        pairShown = true;
+        col.addView(text(S.t("إقران التلفزيون من الجوال"), 22, "Medium", look.text), lp(dp(8)));
+        col.addView(text(S.t("هذا التلفزيون ما عرض سؤال «السماح بتصحيح USB؟» لتطبيقنا. نقدر نقرنه بالتصحيح اللاسلكي، وتحتاج جوالك لأن رمز الإقران يظهر في نافذة لازم تبقى مفتوحة."), 17, "Regular", look.sub), lp(dp(12)));
+        View first = null;
+        if (needAddon) {
+            col.addView(text(S.t("الإقران اللاسلكي يحتاج «إضافات تلفزيونك». ثبّتها أول (ما تحتاج كمبيوتر)، وبعدها ارجع هنا."), 17, "Medium", look.accent), lp(dp(8)));
+            LinearLayout r0 = row();
+            first = button(S.t("ثبّت إضافات تلفزيونك"), v -> {
+                going = true;
+                try { startActivity(new android.content.Intent().setClassName(getPackageName(), "sa.urtv.home.ExtrasActivity")); } catch (RuntimeException e) { android.util.Log.w("UrTVFactory", "the add-on's install screen did not open"); }
+            });
+            r0.addView(first, bw(false));
+        }
+        for (String step : new String[] {S.t("١. اضغط «ابدأ الإقران»، وافتح صفحة الجوال وامسح رمزها (لو جوالك متصل ما تحتاج)."),
+                S.t("٢. من خيارات المطوّر شغّل «تصحيح الأخطاء اللاسلكي» ثم اضغط «إقران الجهاز برمز الإقران». يظهر رمز من ٦ أرقام: اترك النافذة مفتوحة."),
+                S.t("٣. في صفحة الجوال افتح «إقران التلفزيون» واكتب الرمز."),
+                S.t("٤. ارجع هنا بزر الرجوع: يكمل الفحص وحده.")})
+            col.addView(text(step, 17, "Regular", look.text), lp(dp(6)));
+        LinearLayout row = row();
+        View start = button(S.t("ابدأ الإقران"), v -> pin(() -> {
+            pairLine.setText(S.t("نفحص هذا التلفزيون…"));
+            try {
+                pairAsk.execute(() -> {   // the add-on is asked off the UI thread; a refusal is said on the line, never silent
+                    final boolean armed = PairBridge.arm(FactoryActivity.this);
+                    ui.post(() -> {
+                        if (isFinishing() || isDestroyed()) return;
+                        if (!armed) { pairLine.setText(S.t("الإقران اللاسلكي يحتاج «إضافات تلفزيونك». ثبّتها أول (ما تحتاج كمبيوتر)، وبعدها ارجع هنا.")); return; }
+                        pairLine.setText(pairWords("armed", ""));
+                        going = true;
+                        try { startActivity(new android.content.Intent().setClassName(getPackageName(), "sa.urtv.home.PhoneActivity")); } catch (RuntimeException e) { android.util.Log.w("UrTVFactory", "the phone page's screen did not open"); }
+                    });
+                });
+            } catch (RuntimeException ignored) { }
+        }));
+        row.addView(start, bw(false));
+        row.addView(button(S.t("افتح خيارات المطوّر"), v -> {
+            going = true;
+            try { startActivity(new android.content.Intent(android.provider.Settings.ACTION_APPLICATION_DEVELOPMENT_SETTINGS)); }
+            catch (RuntimeException e) { try { startActivity(new android.content.Intent(android.provider.Settings.ACTION_SETTINGS)); } catch (RuntimeException ignored) { } }
+        }), bw(true));
+        pairLine = text(pairWords("off", ""), 17, "Medium", look.accent);   // each state and failure is said here, under the buttons (never a toast)
+        col.addView(pairLine, lp(dp(12)));
+        LinearLayout row2 = row();
+        row2.addView(button(S.t("رجوع"), v -> { leavePairing(); finish(); }), bw(false));
+        focus(first != null ? first : start);
+        ui.removeCallbacks(pairTick);
+        ui.postDelayed(pairTick, 1000);
+    }
+
+    /** paired: the check goes on over the paired connection */
+    private void checkPaired() {
+        message(S.t("نفحص هذا التلفزيون…"), "", null);
+        busy = true;
+        new Thread(() -> {
+            final SetupEngine.FactoryOffer res = pairedOffer();
+            ui.post(() -> { if (isFinishing() || isDestroyed()) return; busy = false; offer = res; if (res.refusal != null) refused(res.refusal); else plan(); });
+        }, "factory-check-paired").start();
+    }
+
+    /** leaving the pairing: the add-on is told off the UI thread */
+    private void leavePairing() {
+        if (!pairShown) return;
+        pairShown = false;
+        final android.content.Context app = getApplicationContext();
+        try { pairAsk.execute(() -> PairBridge.disarm(app)); } catch (RuntimeException ignored) { }
+    }
+
+    @Override protected void onResume() {
+        super.onResume();
+        going = false;
+        if (pairShown) { ui.removeCallbacks(pairTick); ui.postDelayed(pairTick, 300); }
+    }
+
+    @Override protected void onPause() {
+        super.onPause();
+        ui.removeCallbacks(pairTick);
+    }
+
+    @Override protected void onDestroy() {
+        super.onDestroy();
+        pairAsk.shutdown();   // a question already asked finishes; nothing new
     }
 
     /** how long each path waits for «السماح بتصحيح USB؟» (the first-run setup tells the person after 20 s that the question may be stuck) */

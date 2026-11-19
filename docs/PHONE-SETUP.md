@@ -90,8 +90,11 @@ never this app), and the speed tweaks last. If the app is closed in the middle o
 
 - **The person's own photos** for the screensaver (`optimize/photos.sh`): they are on a computer or phone, not on the TV.
 - **Sending the report by itself**: it is shown as a QR code; the person sends it from their phone if they want (`optimize/share.sh` sends it from a computer).
-- **TVs that only have «Wireless debugging»** (some Android 11+ sets, no «USB debugging» on port 5555): the app cannot pair with them. The first pairing needs a phone
-  (path 2: `adb pair` in Termux, then `adb tcpip 5555`) or a computer; after that the TV-alone path works until the TV restarts.
+- **TVs that only have «Wireless debugging»** (Google TV and Chromecast sets, some Android 11+ sets; no «USB debugging» on port 5555): from 4.4 beta 3 the TV pairs itself
+  with «إضافات تلفزيونك» installed: «تخلّص من واجهة المصنع» → «ابدأ» offers «إقران التلفزيون من الجوال» when 5555 does not answer; the six digits of the TV's
+  «إقران الجهاز برمز الإقران» are typed on the phone page («إقران التلفزيون»), and «إعداد تلفزيوني» then runs over that pairing. The pairing lasts, but these TVs turn
+  wireless debugging off at every restart: turn it on again in Developer options (no new pairing). Before beta 3, or without the add-on: path 2 (`adb pair` in Termux,
+  then `adb tcpip 5555`) or a computer.
 - `CACHED_LIMIT` and حماية العائلة (DNS) stay on the computer path.
 
 | It says | Do |

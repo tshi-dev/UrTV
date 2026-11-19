@@ -72,6 +72,23 @@ check("the one-time file: random token, read only, deleted right after the insta
       "UUID.randomUUID()" in files and 'if (!"r".equals(mode))' in files and "PairFiles.drop(c, token);" in route and 'android:name=".setup.PairFiles"' in read(ROOT / "android/launcher/src/main/AndroidManifest.xml"))
 check("the add-on's key goes with ours (dropKey)", "PairRoute.forget(c);" in sess)
 
+# the screens (the UI session's approved wording)
+fac = read(SETUP / "FactoryActivity.java")
+pp = fac.split("private void pairPage(boolean needAddon) {")[1].split("\n    }\n")[0]
+check("the factory page offers the pairing only after 5555 did not answer; Android 10 or older and a paired TV whose wireless debugging is off are said, never silent",
+      fac.index("for (int path = 0; path < 2") < fac.index("String route = PairRoute.why(this);") and "أندرويد ١٠ أو أقدم" in fac and '"no_port".equals(m)' in fac and "ما تحتاج تقرن من جديد" in fac)
+check("no add-on: the line and «ثبّت إضافات تلفزيونك» (the existing installer screen) come first", "if (needAddon) {" in pp and '"sa.urtv.home.ExtrasActivity"' in pp and "ثبّت إضافات تلفزيونك" in pp)
+check("«ابدأ الإقران» is behind the family PIN, and the add-on is asked off the UI thread (the state too)",
+      'View start = button(S.t("ابدأ الإقران"), v -> pin(() -> {' in pp and "pairAsk.execute(() -> {" in pp and "pairAsk.execute(() -> {" in fac.split("private final Runnable pairTick")[1].split("};")[0])
+check("each state and failure is the line under the buttons, never a toast", "Toast" not in fac and "pairLine.setText(" in fac)
+check("the approved wording: «٦» on the Arabic pages, «أولًا», no «·» placeholder, no «✓»",
+      "يظهر رمز من ٦ أرقام" in fac and "6 أرقام" not in fac and "·" not in pp)
+adb = read(ROOT / "android/launcher/src/main/assets/phone/adb.html")
+check("the phone page: «رمز الإقران (٦ أرقام)» as a label, no placeholder, «الرمز ٦ أرقام.», «تم الإقران. ارجع إلى التلفزيون.», «أولًا»",
+      "رمز الإقران (٦ أرقام)" in adb and "placeholder" not in adb and "الرمز ٦ أرقام." in adb and "تم الإقران. ارجع إلى التلفزيون." in adb and "✓" not in adb and "أولًا" in adb and "أولاً" not in adb)
+idx = read(ROOT / "android/launcher/src/main/assets/phone/index.html")
+check("the phone page's row shows only while the TV armed the pairing; the home asks the add-on only while armed here",
+      "$('adbRw').classList.toggle('hidden', !s.adb_pair);" in idx and 'if (!armedHere()) return "off";' in read(SETUP / "PairBridge.java"))
 notices = read(ROOT / "THIRD_PARTY_NOTICES.md")
 check("THIRD_PARTY_NOTICES: libadb-android (Apache-2.0 side), its LGPL-3.0 SPAKE2 library as a separate replaceable library with where its source is, Conscrypt, BouncyCastle; the licence texts",
       all(w in notices for w in ("libadb-android", "spake2-android", "LGPL-3.0", "Conscrypt", "BouncyCastle", "github.com/MuntashirAkon/spake2-java", "android/extras/build.gradle")) and (ROOT / "docs/licenses/LGPL-3.0.txt").exists() and (ROOT / "docs/licenses/GPL-3.0.txt").exists())

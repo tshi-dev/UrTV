@@ -33,6 +33,7 @@ public final class PhoneControl {
         default String drawHtml() { return null; }
         /** 4.4 «صوتياتي» from the phone (assets/phone/audio.html) */
         default String audioHtml() { return null; }
+        default String adbHtml() { return null; }
     }
 
     public enum Start { OK, NO_WIFI, FAILED, ALREADY_ON }
