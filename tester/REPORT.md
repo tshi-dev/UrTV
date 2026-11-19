@@ -3222,3 +3222,10 @@ Pictures (PC only): optimize/run/step96/pics/upd-1.png … upd-6.png.
 - Owner: the league and club tabs all work.
 - FAIL: the screen for adding teams or leagues (الأفرقة/الدوريات) has a bad design: it freezes, and searching between clubs is slow (lag while typing or moving). Owner's words: «اضافة الأفرقة او الدوريات تصميم مو جيد أبدًا ويعلق ويقت البحث بين الأندية».
 - Needs: fix the layout and the list (the search list lags/freezes while moving); reproduce by opening «المباريات والأسواق» → add teams or leagues, then search between clubs. Not reproduced by adb.
+
+## Owner: the screen froze, the remote still reaches the app (19 Nov ~16:09, TV muted)
+- Owner: the screen stopped moving while the remote keeps working.
+- adb at the time: the home (sa.urtv.home MainActivity) is the top resumed activity; the control-centre bar is drawn at the top with «مركز التحكم» focused. Key events (DPAD_DOWN, keycode 20) ARE delivered to the home window (InputDispatcher, 16:09:33), so input works and the UI thread did not give an ANR (no «ANR in» in the last 200 log lines; no new /data/anr files).
+- Hypothesis: the home or the control-centre overlay keeps focus and does not redraw/react after the key (focus stuck in the overlay, or the UI thread busy). Not proven.
+- Picture (PC only): optimize/run/step96/pics/freeze-160920.png.
+- Needs the owner's exact steps: which screen before the freeze (control centre, the apps row, settings, a league page), and whether Back or Home unfreezes it.
