@@ -384,6 +384,21 @@ The owner circled the coloured bars at the row edges on 3-table-full and called 
 
   These are the #mp page's own cards and the data colours the big sites use. The audit decides which stay.
 
+### 7d. The UI session's audit of AI-look patterns (19 Nov), applied
+
+- **Form:** no boxes. «ف ت خ» are plain bold letters coloured as text only (green, grey, red), newest next to the points. The column head
+  is «آخر ٥».
+- **The club's «آخر ٥»:** plain score text («٤ : ٠», the club's goals first), the opponent under it, and the result letter in coloured text.
+  No fill.
+- **Movement:** plain signed numbers, «+٢» in green and «−١» in red, and «–» for no change. No ▲▼.
+- **Live:** the red «مباشر ٦٧'» stays.
+- **«٧ أندية أخرى، موافق: الجدول كاملًا»:** a plain muted text row, with no dashed lines.
+- **The season strip:** plain numbers. Played rounds are muted, the current one is bold, and the selected one carries the page's focus ring.
+  No shaded or filled squares.
+- **The quick view:** plain label and value lines («فاز ٥، تعادل ٣، خسر ٣» and «له ١٦، عليه ١٤، الفارق +٢») between 1 px lines. No boxes.
+- **The cards:** the page's own white panels for now (as `#mp` has them). Flat sections with 1 px lines are the alternative, and that is
+  the UI session's call.
+
 ### 8. Questions for the owner
 
 1. **The home's tab name:** «الرئيسية», or «الآن» for a league in progress?

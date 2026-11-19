@@ -73,7 +73,7 @@
   .tr.mine .nm{font-weight:700}
   .tr .rk{width:calc(var(--u)*44);text-align:center;font-weight:500}
   .tr .mv{width:calc(var(--u)*52);margin-left:calc(var(--u)*12);text-align:center;font-size:inherit;white-space:nowrap}
-  .mv.up{color:var(--z1)}.mv.dn{color:var(--z3)}.mv.eq{color:var(--fs);opacity:.6}
+  .mv.up{color:var(--fgr)}.mv.dn{color:var(--flo)}.mv.eq{color:var(--fs)}
   .bd{width:calc(var(--u)*34);height:calc(var(--u)*34);border-radius:50%;background:var(--sq);color:var(--fs);font-size:calc(var(--u)*24);font-weight:700;display:flex;align-items:center;justify-content:center;margin:0 calc(var(--u)*10) 0 calc(var(--u)*12);flex:none}
   .tr .nm{flex:1;min-width:0;display:flex;align-items:baseline;white-space:nowrap}
   .tr .nm span{overflow:hidden;text-overflow:ellipsis}
@@ -83,12 +83,12 @@
   .tr .pt{width:calc(var(--u)*64);text-align:center;font-weight:700}
   .tr .pt.ptl{color:var(--flo)}
   .tr.th .pt{font-weight:400}
-  .tr .fo{width:calc(var(--u)*200);display:flex;justify-content:flex-end;direction:ltr}
-  .sqf{width:calc(var(--u)*36);height:calc(var(--u)*36);border-radius:calc(var(--u)*6);color:#fff;font-size:calc(var(--u)*24);font-weight:700;display:flex;align-items:center;justify-content:center;margin-left:calc(var(--u)*4)}
-  .sqf.w{background:var(--z1)}.sqf.d{background:#8D918C}.sqf.l{background:var(--z3)}
-  .sqf.n{background:transparent;border:calc(var(--u)*2) dashed var(--fln);color:var(--fs)}
-  .tr.gapr{height:calc(var(--u)*26);color:var(--fs);font-size:calc(var(--u)*24);justify-content:center;border-top:1px dashed var(--fln)}
-  .tr.gapr + .tr{border-top:1px dashed var(--fln)}
+  .tr .fo{width:calc(var(--u)*210);display:flex;justify-content:flex-end;align-items:baseline;direction:ltr}
+  .sqf{font-size:calc(var(--u)*28);font-weight:700;margin-left:calc(var(--u)*12)}   /* the audit: no boxes, the letter alone in its colour */
+  .sqf.w{color:var(--fgr)}.sqf.d{color:var(--fs)}.sqf.l{color:var(--flo)}
+
+  .tr.gapr{height:calc(var(--u)*30);color:var(--fs);font-size:calc(var(--u)*24);justify-content:center}
+
 
   /* ---- a game row (the round, the results): the day, the clubs, the time or the score */
   .gl{list-style:none;padding:calc(var(--u)*6) calc(var(--u)*10)}
@@ -123,12 +123,12 @@
   .rn .cap b{font-size:calc(var(--u)*40);font-weight:700}
   .rn .cap span{color:var(--fs);font-size:calc(var(--u)*24)}
   .rs{list-style:none;display:flex;margin-top:calc(var(--u)*14)}
-  .rs li{width:calc(var(--u)*44);height:calc(var(--u)*48);margin-left:calc(var(--u)*4.4);border-radius:calc(var(--u)*8);display:flex;align-items:center;justify-content:center;font-size:calc(var(--u)*24);color:var(--fs);background:var(--fbg);border:1px solid var(--fln);flex:none}
-  .rs li.pl{background:var(--sq);border-color:transparent}
-  .rs li.now{border:calc(var(--u)*2) solid var(--fgr);color:var(--fgr);font-weight:700}
-  .rs li.sel{background:var(--fgr);color:#fff;font-weight:700;border-color:var(--fgr);box-shadow:0 0 0 calc(var(--u)*3) var(--dlg),0 0 0 calc(var(--u)*6) var(--fring)}
-  .gg{display:flex;flex-wrap:wrap;margin-top:calc(var(--u)*20);align-content:flex-start}
-  .gc{width:calc(50% - var(--u)*10);margin-bottom:calc(var(--u)*14);padding:calc(var(--u)*12) calc(var(--u)*24);border-radius:calc(var(--u)*20)}
+  .rs li{width:calc(var(--u)*44);height:calc(var(--u)*48);margin-left:calc(var(--u)*4.4);border-radius:calc(var(--u)*8);display:flex;align-items:center;justify-content:center;font-size:calc(var(--u)*26);color:var(--fi);flex:none}
+  .rs li.pl{color:var(--fs)}
+  .rs li.now{font-weight:700;color:var(--fi);font-size:calc(var(--u)*30)}
+  .rs li.sel{font-weight:700;color:var(--fgr);box-shadow:inset 0 0 0 calc(var(--u)*3) var(--fring)}
+  .gg{display:flex;flex-wrap:wrap;margin-top:calc(var(--u)*14);align-content:flex-start}
+  .gc{width:calc(50% - var(--u)*10);margin-bottom:calc(var(--u)*10);padding:calc(var(--u)*8) calc(var(--u)*24);border-radius:calc(var(--u)*20)}
   .gc:nth-child(odd){margin-left:calc(var(--u)*20)}
   .gc .d{color:var(--fs);font-size:calc(var(--u)*24);display:flex;justify-content:space-between}
   .gc .d i{font-style:normal}
@@ -147,11 +147,11 @@
   .sh-h .bd{width:calc(var(--u)*96);height:calc(var(--u)*96);font-size:calc(var(--u)*40);margin:0 0 0 calc(var(--u)*28)}
   .sh-h b{display:block;font-size:calc(var(--u)*46);font-weight:700;line-height:1.15}
   .sh-h span{display:block;color:var(--fs);font-size:calc(var(--u)*26);margin-top:calc(var(--u)*4)}
-  .stats{display:flex;margin-top:calc(var(--u)*24)}
-  .stats div{flex:1;text-align:center;background:var(--fbg);border:1px solid var(--fln);border-radius:calc(var(--u)*18);padding:calc(var(--u)*12) 0;margin-left:calc(var(--u)*14)}
-  .stats div:last-child{margin-left:0}
-  .stats b{display:block;font-size:calc(var(--u)*38);font-weight:700}
-  .stats i{font-style:normal;color:var(--fs);font-size:calc(var(--u)*24)}
+  .stats{margin-top:calc(var(--u)*22);font-size:calc(var(--u)*30)}
+  .stats div{display:flex;justify-content:space-between;padding:calc(var(--u)*10) 0}
+  .stats div + div{border-top:1px solid var(--fln)}
+  .stats b{font-weight:700}
+  .stats i{font-style:normal;color:var(--fs)}
   .sh-t{font-size:calc(var(--u)*24);color:var(--fs);margin:calc(var(--u)*22) 0 calc(var(--u)*10)}
   .nxg{padding:calc(var(--u)*14) calc(var(--u)*24);display:flex;align-items:center;justify-content:space-between}
   .nxg b{font-size:calc(var(--u)*30);font-weight:500}
@@ -172,8 +172,9 @@
   .row2{display:flex;margin-top:calc(var(--u)*22)}
   .fts{display:flex}
   .ft{width:calc(var(--u)*128);margin-left:calc(var(--u)*14);text-align:center}
-  .ft b{display:block;border-radius:calc(var(--u)*12);color:#fff;font-size:calc(var(--u)*30);font-weight:700;padding:calc(var(--u)*10) 0;unicode-bidi:isolate}   /* RTL: the club's own goals first, on the right */
-  .ft b.w{background:var(--z1)}.ft b.d{background:#8D918C}.ft b.l{background:var(--z3)}
+  .ft b{display:block;color:var(--fi);font-size:calc(var(--u)*34);font-weight:700;unicode-bidi:isolate}   /* the audit: no fill; RTL: the club's own goals first */
+  .ft em{display:block;font-style:normal;font-weight:700;font-size:calc(var(--u)*26);margin-top:calc(var(--u)*2)}
+  .ft em.w{color:var(--fgr)}.ft em.d{color:var(--fs)}.ft em.l{color:var(--flo)}
   .ft span{display:block;color:var(--fs);font-size:calc(var(--u)*24);margin-top:calc(var(--u)*6);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .ncard{flex:1;margin-right:calc(var(--u)*28);padding:calc(var(--u)*16) calc(var(--u)*28);display:flex;align-items:center;justify-content:space-between}
   .ncard .k{color:var(--fs);font-size:calc(var(--u)*24)}
@@ -224,7 +225,7 @@ function rows(items, full, ringAt){   // items: [club, index] or 'gapN'; the zon
 }
 const FL = {w:'ف', d:'ت', l:'خ'};
 const form = (s, next) => '<span class="fo">' + s.split('').map(c => `<span class="sqf ${c}">${FL[c]}</span>`).join('') + '</span>';
-const mv = m => m > 0 ? `<span class="mv up">▲${D(m)}</span>` : m < 0 ? `<span class="mv dn">▼${D(-m)}</span>` : '<span class="mv eq">–</span>';
+const mv = m => m > 0 ? `<span class="mv up num">+${D(m)}</span>` : m < 0 ? `<span class="mv dn num">−${D(-m)}</span>` : '<span class="mv eq">–</span>';   // the audit: signed numbers, no arrows
 const badge = n => '';   // the real crest loads at runtime (TheSportsDB); the mockups draw none, and nothing stands in for it while it loads
 function row(c, i, full, ring){
   const [n, w, d, l, gf, ga, fo, m, z, live] = c, p = w + d + l, pts = w * 3 + d, gd = gf - ga;
@@ -237,7 +238,7 @@ function row(c, i, full, ring){
 }
 const head = full => `<li class="tr th"><span class="rk">#</span><span class="mv"></span><span class="nm">النادي</span>`
   + (full ? '<span class="c">لعب</span><span class="c">فاز</span><span class="c">تعادل</span><span class="c">خسر</span><span class="c">له</span><span class="c">عليه</span><span class="c w">الفارق</span>' : '<span class="c">لعب</span><span class="c w">الفارق</span>')
-  + '<span class="pt">نقاط</span><span class="fo">آخر ٥، الأحدث يمينًا</span></li>';
+  + '<span class="pt">نقاط</span><span class="fo">آخر ٥</span></li>';
 const gapRow = n => `<li class="tr gapr">${n === 1 ? 'نادٍ آخر' : D(n) + ' أندية أخرى'}، موافق: الجدول كاملًا</li>`;
 const legend = extra => '<div class="legend">' + ''
   + '<span><span class="mv up" style="margin-left:6px">▲</span>عن الجولة الماضية</span>' + (extra || '') + '</div>';
@@ -262,7 +263,7 @@ const SCREENS = {
         <div class="nx"><div class="k">آخر بطولة</div><div class="v">دوري روشن ٢٠٢٥-٢٠٢٦</div></div></div>
       <ul class="tabs"><li class="on">النادي</li><li>المباريات</li><li>النتائج</li><li>البطولات</li><li>المواجهات</li><li>أزل النصر من فرقي</li><li class="hint">موافق يفتح، يمين ويسار بين الأقسام</li></ul>
       <div class="row2">
-        <div><h2>آخر ٥ <i>الأحدث يمينًا</i></h2><div class="fts">${tiles.reverse().map(x => `<div class="ft"><b class="${x[1]}">${x[0]}</b><span>${x[2]}</span></div>`).join('')}</div></div>
+        <div><h2>آخر ٥ <i>الأحدث يمينًا</i></h2><div class="fts">${tiles.reverse().map(x => `<div class="ft"><b>${x[0]}</b><span>${x[2]}</span><em class="${x[1]}">${FL[x[1]]}</em></div>`).join('')}</div></div>
         <div class="ncard card"><div><div class="k">المباراة القادمة، الجولة ١١</div><div class="v">النصر – الأهلي</div></div><div class="t">الليلة ٩:٠٠ م<i>بعد ساعة و٤٢ دقيقة</i></div></div>
       </div>
       <div class="cols">
@@ -305,7 +306,7 @@ const SCREENS = {
     return `<div class="pg">${HEAD(2, 'يمين ويسار: جولة قبل وبعد')}
       <div class="rn"><div class="cap"><b>الجولة ${D(R)}</b><span>من الخميس ٢٧ إلى السبت ٢٩ نوفمبر، ٩ مباريات، بعد ٦ أيام</span></div>
         <ul class="rs">${Array.from({length: 34}, (_, i) => i + 1).map(n => `<li class="${n < now ? 'pl' : ''}${n === now ? ' now' : ''}${n === R ? ' sel' : ''}">${D(n)}</li>`).join('')}</ul>
-        <div class="legend" style="margin-top:calc(var(--u)*10)"><span>المظلّلة لُعبت، والمؤطّرة الجارية الآن</span><span class="keys">أسفل: المباريات، موافق على مباراة: بطاقتها</span></div></div>
+        <div class="legend" style="margin-top:calc(var(--u)*10)"><span>الباهتة لُعبت، والعريضة الجارية الآن</span><span class="keys">أسفل: المباريات، موافق على مباراة: بطاقتها</span></div></div>
       <div class="gg">${games.map((g, i) => `<div class="gc card"><div class="d"><span>${g[0]}</span><i>${i === 7 ? 'قمة الجولة' : ''}</i></div>
         <div class="s"><span>${badge(g[2])}${g[2]}</span><b>${g[1]}</b><span>${badge(g[3])}${g[3]}</span></div></div>`).join('')}</div></div>`;
   },
@@ -318,7 +319,7 @@ const SCREENS = {
   club(){
     return SCREENS.table(6) + `<div class="veil"></div><div class="sheet">
       <div class="sh-h">${badge('الاتفاق')}<div><b>الاتفاق</b><span>المركز ٧، ١٨ نقطة، لعب ١١</span></div></div>
-      <div class="stats"><div><b>٥</b><i>فاز</i></div><div><b>٣</b><i>تعادل</i></div><div><b>٣</b><i>خسر</i></div><div><b>١٦</b><i>له</i></div><div><b>١٤</b><i>عليه</i></div></div>
+      <div class="stats"><div><span><i>فاز</i> <b class="num">٥</b>، <i>تعادل</i> <b class="num">٣</b>، <i>خسر</i> <b class="num">٣</b></span></div><div><span><i>له</i> <b class="num">١٦</b>، <i>عليه</i> <b class="num">١٤</b>، <i>الفارق</i> <b class="num">+٢</b></span></div></div>
       <div class="sh-t">المباراة القادمة</div>
       <div class="nxg card"><b>الاتفاق – الرياض</b><span>غدًا ٦:٠٠ م<i>الجولة ١١، بعد يوم و٣ ساعات</i></span></div>
       <div class="sh-t">آخر النتائج</div>

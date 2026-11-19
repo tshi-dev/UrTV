@@ -100,6 +100,15 @@ Not in phase (a): the league home, the live strip, the season strip, the club sh
   - New strings go in `i18n/en/page.tsv`: column heads, the legend words, the kinds, the toggle.
   - The layout mirrors through the existing LTR rules (`en_css`).
 
+## 3a. The audit (19 Nov): what the rows draw now
+
+These replace anything below that says otherwise:
+- **Form:** plain bold «ف ت خ» coloured as text (`--fgr`, `--fs`, `--flo`), with no `.sqf` boxes. The existing `formHtml` look fits, at the row's size.
+- **Movement:** «+٢» / «−١» as signed text in `--fgr` / `--flo`, and «–» in `--fs`. No arrows.
+- **Zones:** plain lines with a muted label (as above).
+- **The «N أندية أخرى» rows:** plain muted text.
+- **Crests:** no placeholder.
+
 ## 3b. After the UI session's review (18 Nov)
 
 - **Built on the honours code.** work/45-honours, going into 4.4 beta 2, owns «الأبطال», «الهدّافون», the past seasons in the side column and
