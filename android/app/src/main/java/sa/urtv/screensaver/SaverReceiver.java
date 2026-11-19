@@ -600,6 +600,9 @@ public class SaverReceiver extends BroadcastReceiver {
         if (langs != null) p.setList("langs", langs);
         if (events != null) p.setList("events", events);
         if (leagues != null) p.setList("leagues", leagues);
+        // R-305: «saved» only once the file is on the TV's storage (apply() queues the write and never says if it failed; show reads the memory, so a
+        // write that never reached the disk looked saved until the next power cycle brought the older values back)
+        if (!p.flush()) return "error: the settings could not be written to the TV's storage (is it full?): nothing is saved";
         // the page reads its settings once, when it starts: a screensaver (or preview) already on the screen would go on showing the old ones
         c.sendBroadcast(new Intent(Prefs.CHANGED).setPackage(c.getPackageName()));
         p.lookChanged();   // 4.5: the home reads them now too (a look, a part, the cards…), not at its next minute

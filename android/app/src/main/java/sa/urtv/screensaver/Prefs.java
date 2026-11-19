@@ -141,6 +141,10 @@ final class Prefs {
         ZoneFix.report(pageZone());   // issue #55: the page's last word on the city's zone, after a restart too
     }
 
+    /** R-305: every write still queued by apply() forced to the disk now (an empty commit writes the whole file when it is behind the memory, and
+     *  retries one that failed); false when the file could not be written. Only from a receiver or a thread of its own, never from a key press. */
+    boolean flush() { return sp.edit().commit(); }
+
     /** {name, latitude, longitude}; Riyadh until the user picks */
     String[] city() {
         return new String[] {sp.getString("cityName", "الرياض"), sp.getString("cityLat", "24.6877"), sp.getString("cityLon", "46.7219")};

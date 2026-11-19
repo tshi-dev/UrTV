@@ -38,6 +38,7 @@ python3 tests/party_games_test.py   # «واحد مو معنا» and «بدون 
 python3 tests/ram_tier_test.py   # the three memory tiers (LOW under 2000 MB, MID under 2600, NORMAL), one rule per app, the test switch
 python3 tests/scene_home_test.py   # 4.3.3 «المشاهد»: the scene rules per tier on a JVM, the Saudi pack's files and sizes, the Couch TV download checks, the wiring
 python3 tests/presets_test.py   # 4.4 «أشكال جاهزة»: six looks, the person's own values kept and put back, «مخصّص», the flags, saver.sh preset
+python3 tests/saver_flush_test.py   # R-305: «saved» only after the settings file is written to the TV's storage (a lost write came back after a power cycle)
 python3 tests/settings_smooth_test.py   # 4.4 «smoother» settings: one section built per render, the side list opens on a rest, focus recolours only, 120 ms scale, live search
 
 python3 tests/webview66_test.py   # #19 WebView 66: a fallback before each inset/clamp/min/max, flex gap as margins, the Hijri date without Umm al-Qura
