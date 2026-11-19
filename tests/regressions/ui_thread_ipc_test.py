@@ -86,6 +86,8 @@ class A extends android.app.Activity {
     private void later() {
         new Thread(() -> { ConfigSnapshot.read(this); runOnUiThread(() -> shown()); }).start();
         pool.execute(new Runnable() { public void run() { getContentResolver().query(null, null, null, null, null); } });
+        Store.BG.execute(() -> getContentResolver().query(null, null, null, null, null));   // an UPPER_CASE executor constant
+        EXITS.submit(() -> ConfigSnapshot.read(this));
     }
     private void shown() { getSharedPreferences("p", 0).edit().putInt("a", 1).commit(); }
 }

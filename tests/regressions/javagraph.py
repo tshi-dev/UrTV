@@ -66,7 +66,9 @@ def match_paren(s, i):
 
 # an executor is a field or a call's result (`clockReads.execute(`, `Executors.newX().submit(`), never one of our classes
 # (`AdhanScheduler.schedule(c, p)` is a plain call)
-_OFF = re.compile(r"\bnew\s+Thread\s*\(|(?:\b[a-z_]\w*|\))\s*\.\s*(execute|submit|schedule|scheduleAtFixedRate|scheduleWithFixedDelay)\s*\(")
+# an executor is a field, a constant or a call's result: `clockReads.execute(`, `LiteAutoStore.BG.execute(` (an UPPER_CASE constant, two letters
+# or more), `Executors.newX().submit(`. A CamelCase name is one of our classes (`AdhanScheduler.schedule(c, p)` is a plain call), never an executor.
+_OFF = re.compile(r"\bnew\s+Thread\s*\(|(?:\b[a-z_]\w*|\b[A-Z][A-Z0-9_]+\b|\))\s*\.\s*(execute|submit|schedule|scheduleAtFixedRate|scheduleWithFixedDelay)\s*\(")
 _BACK = re.compile(r"\brunOnUiThread\s*\(|\.\s*(post|postDelayed|postAtFrontOfQueue)\s*\(")
 
 
