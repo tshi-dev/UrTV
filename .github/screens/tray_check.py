@@ -24,7 +24,8 @@ from pathlib import Path
 
 W, H = 1920, 1080
 SAFE = (96, 54, 1824, 1026)   # x0 y0 x1 y1: the 5 % safe area
-INSET = 24                    # the tray's padding on all four sides
+INSET = 30                    # the tray's padding at the sides (FavBar.PAD_SIDE; 24 before 4.4 beta 2 gave the ×1.14 focus its room)
+INSET_TOP = 28                # above and below the tiles (FavBar.PAD_TOP)
 TILE_W, TILE_H = 304, 170
 
 
@@ -35,8 +36,8 @@ def tile_size(n=5):
 
 
 def tray_height(n=5):
-    """the tray's height when n show: the tile's height with 24 above and below it (FavBar.trayH: 218 for five)"""
-    return round(tile_size(n)[0] * 170 / 304) + 48
+    """the tray's height when n show: the tile's height with 28 above and below it (FavBar.trayH: 226 for five)"""
+    return round(tile_size(n)[0] * 170 / 304) + 2 * INSET_TOP
 MAX_SHOWN, SHOWN = 10, 5      # FavBar.MAX_SHOWN and FavBar.SHOWN (tests/tray_check_test.py keeps them equal): up to ten whole tiles since 4.3.1, five by default
 
 
@@ -47,7 +48,7 @@ def shown(setting, favs):
     return max(SHOWN, min(MAX_SHOWN, int(setting)))
 
 
-LIFT_ROOM = 8                 # the focused tile (lifted 6, grown 1.08, ringed) keeps at least this much between it and the tray's edge
+LIFT_ROOM = 8                 # the focused tile (lifted 6, grown 1.14, no ring: the owner) keeps at least this much between it and the tray's edge
 
 
 def rect(bounds):
@@ -111,10 +112,10 @@ def analyse(xml_text, lang, focus, lowered=False, label_required=True, n=5, favs
     tray = find_tray(ns)
     if not tray:
         return ["no tray found in the dump"], {}
-    if lowered:   # the accessibility bounds are cut at the screen's safe-area clip (986) while the tray is moved 40 px down: judge it by its top (808) and its resting height
-        if tray[1] != 808:
-            return [f"lowered, the tray starts at {tray[1]}, not 808"], {"tray": list(tray)}
-        tray = (tray[0], tray[1], tray[2], tray[1] + (986 - 768))
+    if lowered:   # the accessibility bounds are cut at the screen's safe-area clip (986) while the tray is moved 40 px down: judge it by its top (800; 808 before 4.4 beta 2's taller tray) and its resting height
+        if tray[1] != 800:
+            return [f"lowered, the tray starts at {tray[1]}, not 800"], {"tray": list(tray)}
+        tray = (tray[0], tray[1], tray[2], tray[1] + (986 - 760))
     fails, m = [], {"tray": list(tray)}
     x0, y0, x1, y1 = SAFE
     if tray[0] < x0 or tray[1] < y0 or tray[2] > x1 or tray[3] > y1:
@@ -124,7 +125,7 @@ def analyse(xml_text, lang, focus, lowered=False, label_required=True, n=5, favs
     m["tiles"] = [list(t["rect"]) for t in ts]
     if len(ts) < 3:
         fails.append(f"only {len(ts)} tiles found")
-    inner = (tray[0] + INSET, tray[1] + INSET, tray[2] - INSET, tray[3] - INSET)
+    inner = (tray[0] + INSET, tray[1] + INSET_TOP, tray[2] - INSET, tray[3] - INSET_TOP)
     for t in ts:
         r = t["rect"]
         w = r[2] - r[0]
@@ -146,8 +147,8 @@ def analyse(xml_text, lang, focus, lowered=False, label_required=True, n=5, favs
         if steady:
             above, below = steady[0][1] - tray[1], tray[3] - steady[0][3]
             m["inset"] = [above, below]
-            if abs(above - below) > 3 or abs(above - 24) > 4:
-                fails.append(f"the tiles sit {above} px under the tray's top and {below} above its bottom, not 24 and 24")
+            if abs(above - below) > 3 or abs(above - INSET_TOP) > 4:
+                fails.append(f"the tiles sit {above} px under the tray's top and {below} above its bottom, not {INSET_TOP} and {INSET_TOP}")
     whole = sorted([t["rect"] for t in ts if t["rect"][2] - t["rect"][0] >= tw - 8], key=lambda r: r[0])
     m["whole"] = len(whole)
     if focus == "first" and not lowered and len(whole) < min(n, favs):
@@ -497,7 +498,7 @@ def run(out):
     xf, pf = settled_dump(out, "football-lowered", tries=1, need_tile=False)
     nf = nodes(xf)
     tf = find_tray(nf)
-    low = bool(tf) and tf[1] == 808
+    low = bool(tf) and tf[1] == 800
     report["football"] = {"tray": list(tf) if tf else None, "lowered_seen": low, "failures": []}
     if low:
         ff = analyse(xf, "ar", "first", lowered=True, label_required=False)[0]   # the focus is on the widget: the name is hidden then
@@ -506,7 +507,7 @@ def run(out):
     else:
         # the matches widget needs today's games; without them it takes no focus here and the tray is not lowered (or the home has scrolled): not measured, said so
         print("football summary:\n" + summary(xf))
-        print(f"football: NOT MEASURED - the tray is at {tf}, not lowered to y 808 (no games on the emulator, so the matches widget did not take the focus)")
+        print(f"football: NOT MEASURED - the tray is at {tf}, not lowered to y 800 (no games on the emulator, so the matches widget did not take the focus)")
     saver("--es homelayout classic")
     # the markets page, for a person to look at (no assertions): the PNG is in the artifact
     try:

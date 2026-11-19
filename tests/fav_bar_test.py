@@ -13,7 +13,7 @@ def check(name, ok, detail=""):
     failed += not ok
 
 main = (HOME / "MainActivity.java").read_text(encoding="utf-8")
-check("the tray is a HorizontalScrollView with the bar's own glass, 218 high, in the safe area (128 from the sides, 54 from the bottom)",
+check("the tray is a HorizontalScrollView with the bar's own glass, 226 high, in the safe area (122 from the sides, 54 from the bottom)",
       "tray = new TraySnap(this);" in main and "new LinearLayout.LayoutParams(-1, bar(FavBar.TRAY_H))" in main
       and "bar(FavBar.SIDE), 0, bar(FavBar.SIDE), bar(FavBar.REST_BOTTOM)" in main and "tray.setClipToPadding(true);" in main)
 check("the tray wears the home's one material (4.3 «توحيد المظهر»: the look's panel when on, FavBar's own white glass by default when off), never the palette's band",
@@ -55,11 +55,11 @@ for line in out:
     tray = list(map(int, line.split(" tray ")[1].split(" fits ")[0].split()))
     g = {k: float(line.split(f" {k} ")[1].split()[0]) for k in ("fits", "five", "width", "padS", "padT", "topRoom", "sideRoom", "liftedTopRoom", "dropped", "safe", "screen")}
     if h == 1080:
-        check("1080p: the tray rests at x 128 to 1792 and y 768 to 986", tray == [128, 1792, 768, 986], tray)
+        check("1080p: the tray rests at x 122 to 1798 and y 760 to 986 (4.4 beta 2: room for the focus at ×1.14; its bottom, and so the clock, where it was)", tray == [122, 1798, 760, 986], tray)
     check(f"{h}p: the tiles and their padding fill the tray's height", g["fits"] == 1, g)
-    check(f"{h}p: five tiles, their gaps and a 24 px inset on both sides are exactly the tray's width (no room for a sixth, no sliver)", abs(g["five"] - g["width"]) <= 5, g)
-    check(f"{h}p: the inset is 24 px (1080p) on all four sides", g["padS"] == g["padT"] == 24 * h / 1080 and g["padS"] == g["padT"], g)
-    check(f"{h}p: the focused tile, lifted and grown with its ring, stays at least 8 px (1080p) inside the tray's top and sides",
+    check(f"{h}p: five tiles, their gaps and a 30 px inset on both sides are exactly the tray's width (no room for a sixth, no sliver)", abs(g["five"] - g["width"]) <= 5, g)
+    check(f"{h}p: the inset is 30 px (1080p) at the sides and 28 above and below (4.4 beta 2: the room the ×1.14 focus needs)", g["padS"] == round(30 * h / 1080) and g["padT"] == round(28 * h / 1080), g)
+    check(f"{h}p: the focused tile, lifted and grown to ×1.14 (FavBar.ROOM_SCALE: the owner's size with no ring), stays at least 8 px (1080p) inside the tray's top and sides",
           g["topRoom"] >= 8 * h / 1080 - 1 and g["sideRoom"] >= 8 * h / 1080 - 1, g)
     check(f"{h}p: a tile picked up to move stays inside the tray", g["liftedTopRoom"] >= 0, g)
     check(f"{h}p: dropped 40 px for a widget, the fully lowered tray still ends inside the safe area (y 1026 at 1080p)", g["dropped"] <= g["safe"], g)
@@ -85,8 +85,8 @@ shown = [l for l in out if l.startswith("shown ")][0].split()[1:]
 check("bar size: «5» is 5, «7» is 7 even with 3 favourites (the tray keeps its size), «10» is 10 (4.3.1: all ten show whole, no scrolling), «all» is the favourites up to 10 but never fewer than 5, a number out of range or a word is clamped / 5",
       shown == ["5", "7", "10", "8", "5", "10", "10", "5", "5", "5"], shown)
 th = [l for l in out if l.startswith("trayh ")][0].split()
-check("step 28: the tray is as high as its tiles with the same 24 above and below (218 for 5, 165 for 7, 149 for 8), and the focused tile lifts 6 only for 5 and 6 tiles (none at 7 and more: it stays on its own centre line)",
-      th[1:4] == ["218", "165", "149"] and th[5:8] == ["6", "6", "0"], th)
+check("step 28: the tray is as high as its tiles with the same 28 above and below (226 for 5, 173 for 7, 157 for 8), and the focused tile lifts 6 only for 5 and 6 tiles (none at 7 and more: it stays on its own centre line)",
+      th[1:4] == ["226", "173", "157"] and th[5:8] == ["6", "6", "0"], th)
 check("1080p: a tile is the spec's 304", [l for l in out if l.startswith("tile1080")][0].split()[1] == "304")
 side = [l for l in out if l.startswith("side ")][0].split()[1:]
 check("◀ ▶: English (left to right) ▶ goes to the next favourite and ◀ stays at the first; Arabic ▶ goes to the one before; the edges stay (tester step 20)",
