@@ -61,6 +61,19 @@ public final class A11yHeal extends BroadcastReceiver {
     }
 
     /** The home's first show in this process: the same check, a moment later. */
+    /** beta 2: the add-on asked (its own update): the same check after the settle, on a thread of its own (a «fix-…» why: no UpdateCarry) */
+    static void healSoon(Context c, final String why) {
+        final Context app = c.getApplicationContext();
+        try {
+            new Thread(() -> {
+                try { Thread.sleep(SETTLE_MS); } catch (InterruptedException e) { return; }
+                check(app, why);
+            }, "a11y-heal-addon").start();
+        } catch (RuntimeException e) {
+            Log.w(TAG, "heal " + why + ": not started");
+        }
+    }
+
     static void onStart(final Context c) {
         if (checkedThisProcess) return;
         checkedThisProcess = true;

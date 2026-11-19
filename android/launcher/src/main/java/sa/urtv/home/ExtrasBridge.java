@@ -57,6 +57,10 @@ public class ExtrasBridge extends ContentProvider {
             case ExtrasWords.HOME_ROLE:   // 4.4 beta 2: the add-on's Home key catch and watch follow the role, not the resolver
                 out.putString(ExtrasWords.RESULT, Extras.homeRole(c));
                 break;
+            case ExtrasWords.HEAL:   // beta 2: the add-on was just replaced; its service bound again by the home's heal (the call returns at once)
+                A11yHeal.healSoon(c, "fix-addon-replaced");
+                out.putBoolean(ExtrasWords.RESULT, true);
+                break;
             case ExtrasWords.LEDGER:   // 4.4: «إنقاذ تلفزيونك» asks what our setup turned off (it turns those back on)
                 out.putString(ExtrasWords.RESULT, sa.urtv.home.setup.SetupHook.ledger(c));
                 break;

@@ -39,6 +39,15 @@
             <meta-data android:name="android.accessibilityservice" android:resource="@xml/extras_service" />
         </service>
 
+        <!-- beta 2: this add-on's own update asks the home to bind its service again at once (ExtrasReplaced); only the system sends MY_PACKAGE_REPLACED -->
+        <receiver
+            android:name="sa.urtv.home.ExtrasReplaced"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
+            </intent-filter>
+        </receiver>
+
         <provider
             android:name="sa.urtv.home.ExtrasCallProvider"
             android:authorities="sa.urtv.extras.bridge"
