@@ -3271,3 +3271,10 @@ Pictures (PC only): optimize/run/step96/pics/upd-1.png … upd-6.png.
 - tester/beta2/all-apps-574.png: the grid opens (MagiConnect, Gallery, Downloader, Downloader for TV, UrTV Player, TCL Channel, Safety Guard, OSN+, Media Player, TV-control tile, prime video, TV BRO, VLC…). Tiles are large with clear logos and no dark tints; the focused Downloader grows and shows its name under it. PASS for legibility. The grid's top row sits right under the apps row (no overlap). No freeze during the 3 s look.
 - Still NOT done: add teams (typing + timing) and the «تحديث تلفزيوني» overlap photo (both in settings; need the owner or the same recording method first).
 - Owner's settings after the return: identical to the backup except the version line.
+
+## BETA 2 = build 577 (09a0bf21 / ffd6d80b), 19 Nov evening, owner away, TV muted
+- Installed home, screensaver and add-on 577 over 574 with adb (data kept): versionCode 577/577/577, HOME role = UrTV.
+- (1) FIRST Home press right after the install (no am start before it): focus = sa.urtv.home MainActivity. PASS. UrTVWatch log: «stock window another screen», «role ours wanted yes», «decision not its home screen»: the watch saw the stock window, and the home was on UrTV on the next check; «replaced heal asked» was NOT in the log (not seen on this install).
+- (2) home-577.png (tester/beta2/home-577.png, couch + scenes look): the greeting «تصبح على خير» is on its own line, the date is below it; no overlap. PASS.
+- (3) `saver.sh show` vs optimize/run/step98/before3/show.txt: identical except the version line. PASS.
+- Mute: on (verified Muted: true).
