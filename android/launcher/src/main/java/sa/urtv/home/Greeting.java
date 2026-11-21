@@ -50,14 +50,14 @@ final class Greeting {
     void update(int hour, ConfigSnapshot snap) {
         Config s = Config.of(snap);
         if (!s.on) {
-            greeting.setText(hour < 4 || hour >= 22 ? S.t("تصبح على خير") : hour < 12 ? S.t("صباح الخير") : S.t("مساء الخير"));
+            greeting.setText(GreetingText.withName(hour < 4 || hour >= 22 ? S.t("تصبح على خير") : hour < 12 ? S.t("صباح الخير") : S.t("مساء الخير"), snap.greetName));
             weather.setVisibility(android.view.View.GONE);
             return;
         }
         DayParts d = null;
         try { d = DayParts.now(context, snap.placeFragment(), snap.placeTicket()); } catch (RuntimeException ignored) { }
-        greeting.setText(d == null ? (hour < 4 || hour >= 22 ? S.t("تصبح على خير") : hour < 12 ? S.t("صباح الخير") : S.t("مساء الخير"))
-                : GreetingText.greeting(GreetingText.part(System.currentTimeMillis(), d.fajr, d.dhuhr, d.asr, d.isha)));
+        greeting.setText(GreetingText.withName(d == null ? (hour < 4 || hour >= 22 ? S.t("تصبح على خير") : hour < 12 ? S.t("صباح الخير") : S.t("مساء الخير"))
+                : GreetingText.greeting(GreetingText.part(System.currentTimeMillis(), d.fajr, d.dhuhr, d.asr, d.isha)), snap.greetName));   // «اسمك في التحية»
 
         SharedPreferences sp = prefs();
         long at = sp.getLong("at", 0);

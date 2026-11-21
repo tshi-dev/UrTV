@@ -38,6 +38,8 @@ python3 tests/setup_engine_test.py
 python3 tests/saver_hold_test.py
 python3 tests/mute_keep_test.py   # a muted TV stays muted after its own sleep or a restart (step 27)
 python3 tests/fix181_test.py   # step 27: the update flow end, tasks, reset, setup, markets sources
+python3 tests/greet_name_test.py   # «اسمك في التحية»: greetname from the command and the settings to the home's greeting (the words: greeting_test.py)
+python3 tests/matches_today_test.py   # «بطاقة المباريات لليوم فقط»: matchestoday from the command to the page (the card itself: page.test.mjs)
 python3 tests/step28b_test.py   # step 28b: home card ▲, matches day, fx fallback, station retry, Tadawul fulldayPrice, adhan on a muted TV
 python3 tests/reciter_order_test.py   # step 27: favourite reciters and the letter index
 python3 tests/setup_runner_test.py

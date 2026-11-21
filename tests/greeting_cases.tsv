@@ -34,3 +34,9 @@ seen	2466	4000	399	4 km: at most «غبار»
 seen	2466	800	2466	800 m: «غبار كثيف» possible
 seen	220	-1	220	no visibility known: the level as before
 seen	220	6000	220	6 km and 220: «غبار»
+name	مساء الخير		مساء الخير	no name: the greeting alone, as always
+name	مساء الخير	أبو فهد	مساء الخير أبو فهد	the name after the greeting, one space
+name	صباح الخير	  أبو   فهد  	صباح الخير أبو فهد	spaces before, after and between are made one
+name	مساء الخير	أبو\nفهد	مساء الخير أبو فهد	a line break is a space: the greeting stays one line
+name	مساء الخير	   	مساء الخير	only spaces: no name
+name	مساء الخير	عبدالرحمن بن عبدالعزيز الفلاني	مساء الخير عبدالرحمن بن عبدالعز	at most 20 characters

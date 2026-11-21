@@ -26,6 +26,7 @@ final class ConfigSnapshot {
     boolean pillHidden(String key) { return ("," + pillsHidden + ",").contains("," + key + ","); }
     String tweaks = "";   // «اللون والتحكم» (GlassStyle.setTweaks); an older screensaver says nothing: the look as it is
     boolean pagesDark = true;   // «صفحات الأسهم والمباريات داكنة»: an older screensaver says nothing: on, the default
+    String greetName = "";   // «اسمك في التحية»: a name after the greeting; an older screensaver says nothing: none
     /** «المظهر»: auto, light or dark (Look.mode); an older screensaver does not say: dark, as the home always was */
     private final String appearance;
     private final String look;   // «المظهر ← الشكل» (GlassStyle.look): an older screensaver says nothing: glass
@@ -49,7 +50,7 @@ final class ConfigSnapshot {
     }
 
     /** The same values with another fragment (the one kept on disk). */
-    private ConfigSnapshot withFragment(String f) { ConfigSnapshot c = new ConfigSnapshot(f, greetingOn, adhanBarOn, listenPillOn, updateBellOn, appearance, watchNextOn, look, stale, placeTicket); c.favBar = favBar; c.tweaks = tweaks; c.pagesDark = pagesDark; c.pillsHidden = pillsHidden; c.matchApp = matchApp; c.cityChosen = cityChosen; return c; }
+    private ConfigSnapshot withFragment(String f) { ConfigSnapshot c = new ConfigSnapshot(f, greetingOn, adhanBarOn, listenPillOn, updateBellOn, appearance, watchNextOn, look, stale, placeTicket); c.favBar = favBar; c.tweaks = tweaks; c.pagesDark = pagesDark; c.greetName = greetName; c.pillsHidden = pillsHidden; c.matchApp = matchApp; c.cityChosen = cityChosen; return c; }
 
     private static volatile String savedFragment;   // what this process last wrote (or read) of the kept fragment
 
@@ -67,7 +68,7 @@ final class ConfigSnapshot {
     }
 
     /** The same values, marked as an old copy. */
-    ConfigSnapshot asStale() { ConfigSnapshot c = new ConfigSnapshot(fragment, greetingOn, adhanBarOn, listenPillOn, updateBellOn, appearance, watchNextOn, look, true, placeTicket); c.favBar = favBar; c.tweaks = tweaks; c.pagesDark = pagesDark; c.pillsHidden = pillsHidden; c.matchApp = matchApp; c.cityChosen = cityChosen; return c; }
+    ConfigSnapshot asStale() { ConfigSnapshot c = new ConfigSnapshot(fragment, greetingOn, adhanBarOn, listenPillOn, updateBellOn, appearance, watchNextOn, look, true, placeTicket); c.favBar = favBar; c.tweaks = tweaks; c.pagesDark = pagesDark; c.greetName = greetName; c.pillsHidden = pillsHidden; c.matchApp = matchApp; c.cityChosen = cityChosen; return c; }
 
     /**
      * The settings fragment for the PRAYER PLACE (Place, the adhan alarm, the day parts): null when this is an old copy, so that only a real
@@ -121,7 +122,7 @@ final class ConfigSnapshot {
         boolean greeting = true, bar = true, listenPill = true, updateBell = true, watchNext = true;
         String appearance = null, look = null, favBar = "5", tweaks = "";
         boolean pagesDark = true;
-        String pillsHidden = "", matchApp = "auto";
+        String pillsHidden = "", matchApp = "auto", greetName = "";
         boolean cityChosen = true;
         try (Cursor cur = c.getContentResolver().query(URI, null, null, null, null)) {
             if (cur != null && cur.moveToFirst()) {
@@ -150,6 +151,8 @@ final class ConfigSnapshot {
                 if (ma >= 0 && cur.getString(ma) != null) matchApp = cur.getString(ma);
                 int pz = cur.getColumnIndex("page_zone");   // 4.3 (issue #55): the page's offset for the city's zone; an older screensaver says nothing
                 if (pz >= 0 && cur.getString(pz) != null) ZoneFix.report(cur.getString(pz));
+                int gn = cur.getColumnIndex("greet_name");   // an older screensaver does not say: no name
+                if (gn >= 0 && cur.getString(gn) != null) greetName = cur.getString(gn);
                 int cc = cur.getColumnIndex("city_chosen");
                 if (cc >= 0 && "0".equals(cur.getString(cc))) cityChosen = false;
                 int fb = cur.getColumnIndex("fav_bar");   // an older screensaver does not say: 5
@@ -169,6 +172,7 @@ final class ConfigSnapshot {
         made.pillsHidden = pillsHidden;
         made.matchApp = matchApp;
         made.cityChosen = cityChosen;
+        made.greetName = greetName;
         return made;
     }
 

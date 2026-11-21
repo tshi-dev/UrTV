@@ -113,6 +113,10 @@
 الآية والحديث	Verse or hadith
 الشاشة الرئيسية (تلفزيونك)	Home screen (Your TV)
 التحية والطقس	Greeting & weather
+اسمك في التحية	Your name in the greeting
+بدون · «مساء الخير» وحدها	None · «Good evening» alone
+اسمك في التحية (فاضي = بدون)	Your name in the greeting (empty = none)
+مثال: أبو محمد	e.g. Abu Mohammed
 الأذان	Adhan
 تشغيله وصوته وصوت الفجر والمختصر والإيقاف بأي زر والمستوى	On/off, voice, Fajr voice, short adhan, stop with any key, volume
 افتح تلاوة وأذان	Open Quran and Adhan
@@ -498,6 +502,9 @@
 صفحات الأسهم والمباريات داكنة	Dark stocks & matches pages
 مفعّل · بالمظهر الداكن دائمًا	On · always dark
 متوقف · تتبع مظهر الرئيسية	Off · follows the home's look
+بطاقة المباريات لليوم فقط	Matches card: today only
+يعمل · مباريات اليوم فقط، كل مباراة في يومها	On · only today's matches, each on its day
+متوقف · أقرب مباريات الأسبوع	Off · the week's next matches
 بلا أشخاص	No people
 بلا أشخاص في الواجهة	No people in the front
 زر الأسواق	Markets button

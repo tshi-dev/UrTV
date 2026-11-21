@@ -645,6 +645,7 @@ final class Prefs {
             + "&teams=" + join(teamIds(), ",")
             + "&events=" + join(list("events"), ",")
             + leaguesFragment()
+            + (matchesToday() ? "&mtoday=1" : "")   // «بطاقة المباريات لليوم فقط»: only when on, so the page's address is as before
             + "&panel=" + panel()
             + SecondCard.fragment(panel2(), SAVER_PANELS)
             + "&week=" + ("none".equals(panel()) ? "0" : "1")   // for a page older than #panel
@@ -1037,6 +1038,19 @@ final class Prefs {
     /** The greeting and the weather line on the launcher's home screen (default on). Off: the plain good-morning it had. */
     boolean greeting() { return sp.getBoolean("greeting", true); }
     void setGreeting(boolean v) { sp.edit().putBoolean("greeting", v).apply(); }
+    /** «اسمك في التحية»: a name after the home's greeting («مساء الخير أبو محمد»); "" = none, the default. At most this many characters
+     *  (the home's GreetingText.NAME_MAX, which cleans it the same way before it shows it) */
+    static final int GREET_NAME_MAX = 20;
+    /** one line: line breaks and other control characters as spaces, the spaces made one, trimmed (never cut) */
+    static String oneLine(String raw) {
+        if (raw == null) return "";
+        StringBuilder b = new StringBuilder();
+        raw.codePoints().forEach(c -> b.appendCodePoint(Character.isISOControl(c) || Character.isWhitespace(c) ? ' ' : c));
+        return b.toString().trim().replaceAll(" {2,}", " ");
+    }
+    static boolean greetNameOk(String raw) { String n = oneLine(raw); return n.codePointCount(0, n.length()) <= GREET_NAME_MAX; }
+    String greetName() { String n = oneLine(sp.getString("greetName", "")); return greetNameOk(n) ? n : ""; }
+    void setGreetName(String v) { String n = oneLine(v); if (greetNameOk(n)) sp.edit().putString("greetName", n).apply(); }
 
     /**
      * «زر تلاوة وأذان» on the launcher's home screen (default shown). Hidden removes only the button: the adhan, its alarm and bar, the
@@ -1088,6 +1102,9 @@ final class Prefs {
     /** «صفحات الأسهم والمباريات داكنة»: the home's markets and matches pages in the dark look whatever the home's look (on, the default), or in the home's look as before (off) */
     boolean pagesDark() { return sp.getBoolean("pagesDark", true); }
     void setPagesDark(boolean v) { sp.edit().putBoolean("pagesDark", v).apply(); }
+    /** «بطاقة المباريات لليوم فقط»: the «المباريات» card shows only the games of the city's day (on), or the week's as always (off, the default) */
+    boolean matchesToday() { return sp.getBoolean("matchesToday", false); }
+    void setMatchesToday(boolean v) { sp.edit().putBoolean("matchesToday", v).apply(); }
     boolean watchNext() { return sp.getBoolean("watchNext", true); }
     void setWatchNext(boolean v) { sp.edit().putBoolean("watchNext", v).apply(); }
     void setUpdateBell(boolean v) { sp.edit().putBoolean("updateBell", v).apply(); }

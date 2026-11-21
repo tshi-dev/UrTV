@@ -20,6 +20,25 @@ final class GreetingText {
         return NIGHT;
     }
 
+    /** «اسمك في التحية»: at most this many characters of the name after the greeting (the screensaver's settings keep the same limit) */
+    static final int NAME_MAX = 20;
+
+    /** the name as shown: line breaks and other control characters as spaces, the spaces made one, at most NAME_MAX characters; "" = none */
+    static String name(String raw) {
+        if (raw == null) return "";
+        StringBuilder b = new StringBuilder();
+        raw.codePoints().forEach(c -> b.appendCodePoint(Character.isISOControl(c) || Character.isWhitespace(c) ? ' ' : c));
+        String n = b.toString().trim().replaceAll(" {2,}", " ");
+        if (n.codePointCount(0, n.length()) > NAME_MAX) n = n.substring(0, n.offsetByCodePoints(0, NAME_MAX)).trim();
+        return n;
+    }
+
+    /** «مساء الخير أبو فهد»: the greeting and the name after it; with no name the greeting alone, as always */
+    static String withName(String greeting, String raw) {
+        String n = name(raw);
+        return n.isEmpty() ? greeting : greeting + " " + n;
+    }
+
     static String greeting(int part) {
         switch (part) {
             case MORNING: return S.t("صباح الخير");

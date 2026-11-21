@@ -301,6 +301,9 @@ public class SettingsActivity extends Activity {
 
         row("الدوريات كاملة", leaguesLabel(), R.drawable.ic_trophy,
             new Runnable() { public void run() { startActivity(new Intent(SettingsActivity.this, LeaguesActivity.class)); } });   // 4.3.1 «اختر دورياتك»: one screen (the older dialogs below stay for saver.sh's sake)
+        // «بطاقة المباريات لليوم فقط»: the «المباريات» card (beside the clock, on the home) shows only the games of the city's day; off by default
+        row("بطاقة المباريات لليوم فقط", prefs.matchesToday() ? "يعمل · مباريات اليوم فقط، كل مباراة في يومها" : "متوقف · أقرب مباريات الأسبوع", R.drawable.ic_trophy,
+            new Runnable() { public void run() { prefs.setMatchesToday(!prefs.matchesToday()); render(); } });
 
         row("رياضات أخرى", labels(Prefs.EVENTS, prefs.list("events"), "بدون"), R.drawable.ic_trophy,
             new Runnable() { public void run() { pickMany("events", "رياضات أخرى", Prefs.EVENTS, "بدون اختيار = بدون"); } });
@@ -423,6 +426,11 @@ public class SettingsActivity extends Activity {
         }
         row("التحية والطقس", prefs.greeting() ? "تعمل" : "متوقفة", R.drawable.ic_eye,
             new Runnable() { public void run() { prefs.setGreeting(!prefs.greeting()); render(); } });
+        // «اسمك في التحية»: a name after the greeting («مساء الخير أبو محمد»), typed on the TV; empty = none
+        noConv = true;   // the name as typed: its digits are not turned
+        row("اسمك في التحية", prefs.greetName().isEmpty() ? Words.of("بدون · «مساء الخير» وحدها") : prefs.greetName(), R.drawable.ic_eye,
+            new Runnable() { public void run() { askGreetName(); } });
+        noConv = false;
         // the adhan's settings (on or off, the voice, the Fajr voice, short, any key stops it, the volume): the same screen as the player's adhan tab,
         // opened through the home (behind its family lock), so they are reachable with the «تلاوة وأذان» button hidden too
         row("الأذان", "تشغيله وصوته وصوت الفجر والمختصر والإيقاف بأي زر والمستوى", R.drawable.ic_settings,
@@ -1764,6 +1772,21 @@ public class SettingsActivity extends Activity {
         List<String> out = new ArrayList<>();
         for (String k : prefs.stocks()) out.add(Stocks.label(k, S.en()));   // «أرامكو 2222»: the code and the company it is
         return Prefs.join(out, S.en() ? ", " : "، ");
+    }
+
+    /** «اسمك في التحية»: one line, at most Prefs.GREET_NAME_MAX characters (the field stops there); empty = none */
+    private void askGreetName() {
+        final EditText in = new EditText(this);
+        in.setHint(Words.of("مثال: أبو محمد"));
+        in.setText(prefs.greetName());
+        in.setSingleLine(true);
+        in.setInputType(InputType.TYPE_CLASS_TEXT);
+        in.setFilters(new android.text.InputFilter[] {new android.text.InputFilter.LengthFilter(Prefs.GREET_NAME_MAX)});
+        new Dlg(this).setTitle("اسمك في التحية (فاضي = بدون)")
+            .setView(in)
+            .setPositiveButton("حفظ", (d, w) -> { prefs.setGreetName(in.getText().toString()); render(); })
+            .setNegativeButton("إلغاء", null).show();
+        in.requestFocus();
     }
 
     /** Codes (2222 = أرامكو, also ٢٢٢٢), company names (الراجحي) and US tickers (AAPL), separated by spaces or commas (Stocks). */

@@ -18,6 +18,7 @@
 #   optimize/saver.sh home-card verse,hourly,year  on the home screen (launcher): up to 3 cards, same choices and nextprayer (home only), in this order
 #                                                  (one value works too; none = off). Two sit side by side, a third under them
 #   optimize/saver.sh greeting off                 home screen: the greeting (by prayer time) and the weather line under it: on (default) or off
+#   optimize/saver.sh greetname 'أبو محمد'        home screen: a name after the greeting («مساء الخير أبو محمد»), up to 20 characters ('' = none)
 #   optimize/saver.sh listenpill off               home screen: the «تلاوة وأذان» button: on (default) or off. Off removes only the button: the adhan, its alarm and bar, the
 #                                                  any-key stop, the «يُتلى الآن» card and the Quran stay; the screen opens from the app menu (long OK on an app) or the card
 #   optimize/saver.sh watchnext off                home screen: «أكمل المشاهدة» under the favourites: on (default) or off. It shows once the home app may
@@ -51,6 +52,7 @@
 #                                                  of apk-latest: next or latest (default). `beta` is the same as the row «النسخ التجريبية» (the apk-beta release). Same signature, newer-version and permission checks. Put it back to latest after
 #   optimize/saver.sh reciter-fav add sudais      the ★ of a reciter in «تلاوة وأذان ← القرّاء» (`remove` takes it off): favourites are listed first under «المفضلون»; ids are `optimize/music.sh reciters`'s
 #   optimize/saver.sh pagesdark off               «صفحات الأسهم والمباريات داكنة» (الشاشة الرئيسية): the home's markets and matches pages in the dark look (on, the default) or in the home's look (off)
+#   optimize/saver.sh matchestoday on            «بطاقة المباريات لليوم فقط»: the «المباريات» card shows only today's games (off, the default: the week's)
 #   optimize/saver.sh favbar 7                    the favourites bar's size («التطبيقات والمفضلة ← تطبيقات في الشريط»): how many apps show whole at once, 5 (default) to 10, or all (every favourite, 8 in view and the rest scroll); 9 and 10 are taken as 8
 #   optimize/saver.sh yearstrip on                 the slim year strip under the screensaver's clock (365 dots in 7 rows, today lit, no words): on or off (default)
 #   optimize/saver.sh sunrise on                   the prayer panel counts to the sunrise after Fajr's iqama, and tells it for 30 minutes: on or off (default)
@@ -228,6 +230,8 @@ case "${1:-}" in
             set1 panel2 "${2:?usage: optimize/saver.sh card2 hourly | none   (shown beside the small clock: optimize/saver.sh clocksize small)}" ;;
   home-card)set1 home_panel "${2?usage: optimize/saver.sh home-card verse,hourly,year | none}" ;;
   greeting) set1 greeting "${2:?usage: optimize/saver.sh greeting on|off}" ;;
+  greetname) [ $# -ge 2 ] || { echo "usage: optimize/saver.sh greetname 'أبو محمد' ('' = none)"; exit 1; }
+             set1 greetname "$2" ;;
   listenpill) set1 listenpill "${2:?usage: optimize/saver.sh listenpill on|off}" ;;
   updatebell) set1 updatebell "${2:?usage: optimize/saver.sh updatebell on|off}" ;;
   watchnext) set1 watchnext "${2:?usage: optimize/saver.sh watchnext on|off}" ;;
@@ -262,6 +266,7 @@ case "${1:-}" in
     out=$("$PY" -I optimize/tv.py "am broadcast -n sa.urtv.home/.tilawah.MusicReceiver -a sa.urtv.home.RECITER_FAV --es op $op --es id $id" | tr -d '\r') || out=""
     case "$out" in *'data="saved'*) echo "reciter-fav $op $id: saved" ;; *error:*) echo "!! $(printf '%s\n' "$out" | sed -n 's/.*data="\(error:[^"]*\)".*/\1/p' | head -1)"; exit 1 ;; *) echo "!! the home app did not answer (is it installed and up to date?)"; exit 1 ;; esac ;;
   pagesdark) set1 pagesdark "${2:?usage: optimize/saver.sh pagesdark on|off}" ;;
+  matchestoday) case "${2:-}" in on|off) set1 matchestoday "$2" ;; *) echo "usage: optimize/saver.sh matchestoday on|off"; exit 1 ;; esac ;;
   favbar)    set1 favbar "${2:?usage: optimize/saver.sh favbar 5|6|7|8|9|10|all}" ;;
   yearstrip)set1 yearstrip "${2:?usage: optimize/saver.sh yearstrip on|off}" ;;
   sunrise)  set1 sunrise "${2:?usage: optimize/saver.sh sunrise on|off}" ;;

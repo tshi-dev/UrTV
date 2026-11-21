@@ -3025,6 +3025,46 @@ for (const panel of ['shows', 'prayers', 'forecast', 'hourly', 'prayerrow', 'nex
     check('matches: an answer with no games says «لا مباريات هذا الأسبوع»', s === 'لا مباريات هذا الأسبوع' && c === 'لا مباريات هذا الأسبوع', s + ' | ' + c);
     await o.ctx.close();
   }
+  // «بطاقة المباريات لليوم فقط» (#mtoday=1): the card keeps the city's day only; off (the default) it is the week's as before.
+  // Saturday 12:00 in Riyadh: a result at 08:00 today and a game at 20:00 today stay; yesterday's result, a game at 00:30 tonight (Sunday
+  // in Riyadh, still Saturday in UTC) and Sunday's evening game go
+  {
+    const AT = new Date('2026-11-21T09:00:00Z');
+    const g = (id, away, awayId, ts, done) => Object.assign({ idEvent: id, strHomeTeam: 'Al-Hilal', idHomeTeam: '136013', strAwayTeam: away, idAwayTeam: awayId,
+      strSport: 'Soccer', strTimestamp: ts }, done ? { strStatus: 'FT', intHomeScore: '2', intAwayScore: '1' } : { strStatus: 'NS' });
+    const NEXT = [g('t1', 'Al-Nassr', '136022', '2026-11-21T17:00:00Z'), g('n1', 'Al-Qadsiah', '136015', '2026-11-21T21:30:00Z'),
+      g('n2', 'Al-Ittihad', '136018', '2026-11-22T17:00:00Z')];
+    const LAST = [g('r1', 'Al-Ahli', '137721', '2026-11-21T05:00:00Z', true), g('y1', 'Al-Shabab', '136020', '2026-11-20T17:00:00Z', true)];
+    const run = async (hash, next, last) => {
+      const ctx = await browser.newContext({ viewport: { width: 1920, height: 1080 } });
+      await ctx.route(/^https?:/, (r) => {
+        const u = new URL(r.request().url());
+        if (!/thesportsdb/.test(u.host)) return r.abort();
+        return ok(r, u.pathname.endsWith('eventsnext.php') ? { events: next } : u.pathname.endsWith('eventslast.php') ? { results: last } : {});
+      });
+      const p = await ctx.newPage(), errors = [];
+      p.on('pageerror', e => errors.push(e.message));
+      await p.clock.setFixedTime(AT);
+      await p.goto(page('tv.html') + '#teams=136013&panel=matches&tz=Asia/Riyadh&gap=0' + hash);
+      await p.waitForTimeout(900);
+      const r = await p.evaluate(() => {
+        const c = CARDS.find(x => x.kind === 'matches');
+        return { rows: matchRows(c).map(h => { const d = document.createElement('div'); d.innerHTML = h; return d.textContent.replace(/\s+/g, ' ').trim(); }),
+          hd: document.getElementById('week-hd').textContent.trim(), list: document.getElementById('week-list').innerText.trim() };
+      });
+      await ctx.close();
+      return Object.assign(r, { errors });
+    };
+    const on = await run('&mtoday=1', NEXT, LAST), all = on.rows.join(' | ');
+    check('matches today only: today\'s result (08:00) and today\'s game (20:00) stay; yesterday\'s, 00:30 tonight (Sunday in Riyadh) and Sunday\'s go; titled «مباريات اليوم»',
+      on.rows.length === 2 && /الأهلي/.test(all) && /النصر/.test(all) && !/الشباب|القادسية|الاتحاد/.test(all) && on.hd === 'مباريات اليوم' && !on.errors.length,
+      JSON.stringify(on));
+    const off = await run('', NEXT, LAST), allOff = off.rows.join(' | ');
+    check('matches today only: off (the default), the card is the week\'s as before, under its old title',
+      off.rows.length === 5 && /الاتحاد/.test(allOff) && /القادسية/.test(allOff) && /الشباب/.test(allOff) && off.hd !== 'مباريات اليوم' && !off.errors.length, JSON.stringify(off));
+    const none = await run('&mtoday=1', [NEXT[2]], [LAST[1]]);
+    check('matches today only: a day with no game says «لا مباريات اليوم»', none.rows.length === 0 && none.list === 'لا مباريات اليوم' && !none.errors.length, JSON.stringify(none));
+  }
   // the offset of this TV: 0-29 minutes, drawn once and kept
   {
     const o = await session('teams=', (r) => r.abort());
