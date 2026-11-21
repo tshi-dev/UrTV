@@ -134,6 +134,7 @@ python3 tests/key_home_test.py
 python3 tests/dock_names_test.py
 python3 tests/dock_input_names_test.py
 python3 tests/input_names_test.py
+python3 tests/input_fav_test.py
 python3 tests/input_display_test.py
 python3 tests/tv_vendor_test.py   # «المصادر» on any TV: the live TV app and source picker found on the TV (TCL, CultraView, MediaTek…)
 python3 tests/dock_sleep_test.py

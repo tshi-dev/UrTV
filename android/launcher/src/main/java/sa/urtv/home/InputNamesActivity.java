@@ -53,7 +53,7 @@ public class InputNamesActivity extends Activity {
         col.setPadding(0, dp(36), 0, dp(48));
         frame.addView(col, new FrameLayout.LayoutParams(dp(600), -2, Gravity.CENTER_HORIZONTAL));
         col.addView(text(S.t("أسماء المصادر"), 26, "Medium", TEXT, false), right(0));
-        col.addView(text(S.t("اختيار على مصدر لتغيير اسمه في قائمة «المصادر» (مثل PS5). اترك الاسم فارغاً لرجوع اسم التلفزيون."), 14, "Regular", DIM, false), right(dp(24)));
+        col.addView(text(S.t("اختيار على مصدر لتغيير اسمه في قائمة «المصادر» (مثل PS5). اترك الاسم فارغاً لرجوع اسم التلفزيون. ومن نفس المربع تضيفه للمفضلة أو تشيله."), 14, "Regular", DIM, false), right(dp(24)));
         list = new LinearLayout(this);
         list.setOrientation(LinearLayout.VERTICAL);
         col.addView(list, new LinearLayout.LayoutParams(-1, -2));
@@ -154,6 +154,7 @@ public class InputNamesActivity extends Activity {
             .setView(in)
             .setPositiveButton(S.t("حفظ"), null)   // set below: a name that can't be kept leaves the box open
             .setNegativeButton(S.t("إلغاء"), null)
+            .setNeutralButton(InputFav.has(Dock.saved(this), id) ? S.t("شيله من المفضلة") : S.t("أضفه للمفضلة"), null)   // set below
             .create();
         editor.setOnDismissListener(d -> editor = null);
         editor.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
@@ -165,6 +166,16 @@ public class InputNamesActivity extends Activity {
             editor.dismiss();
             toast(name.isEmpty() ? S.t("رجع اسم التلفزيون") : S.t("تم حفظ الاسم"));
             render(indexOf(id));
+        });
+        editor.getButton(AlertDialog.BUTTON_NEUTRAL).setOnClickListener(v -> {   // the input as a favourite tile (InputFav)
+            java.util.List<String> before = Dock.saved(this);
+            boolean had = InputFav.has(before, id);
+            java.util.List<String> after = InputFav.toggle(before, id, Dock.MAX);
+            if (!had && !InputFav.has(after, id)) { toast(S.t("%s كحد أقصى", Digits.of(String.valueOf(Dock.MAX)))); return; }
+            Dock.prefs(this).edit().putString("dock", android.text.TextUtils.join(",", after)).apply();
+            sendBroadcast(new android.content.Intent(Dock.CHANGED).setPackage(getPackageName()));
+            editor.dismiss();
+            toast(had ? S.t("انشال من المفضلة") : S.t("انضاف للمفضلة"));
         });
         in.requestFocus();
     }
