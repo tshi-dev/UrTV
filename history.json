@@ -1,0 +1,940 @@
+{
+ "4328": {
+  "2022-2023": {
+   "at": "2026-11-16T20:39:29Z",
+   "complete": true,
+   "current": false,
+   "expected": 380,
+   "expected_sure": true,
+   "finished": 380,
+   "games": 380,
+   "teams": 20
+  },
+  "2023-2024": {
+   "at": "2026-11-16T20:39:31Z",
+   "complete": true,
+   "current": false,
+   "expected": 380,
+   "expected_sure": true,
+   "finished": 380,
+   "games": 380,
+   "teams": 20
+  },
+  "2024-2025": {
+   "at": "2026-11-16T20:39:34Z",
+   "complete": true,
+   "current": false,
+   "expected": 380,
+   "expected_sure": true,
+   "finished": 380,
+   "games": 380,
+   "teams": 20
+  },
+  "2025-2026": {
+   "at": "2026-11-16T20:39:37Z",
+   "complete": true,
+   "current": false,
+   "expected": 380,
+   "expected_sure": true,
+   "finished": 380,
+   "games": 380,
+   "teams": 20
+  },
+  "2026-2027": {
+   "at": "2026-11-21T08:20:37Z",
+   "complete": false,
+   "current": true,
+   "expected": 380,
+   "expected_sure": true,
+   "finished": 100,
+   "games": 380,
+   "teams": 20
+  }
+ },
+ "4331": {
+  "2022-2023": {
+   "at": "2026-11-16T20:40:00Z",
+   "complete": true,
+   "current": false,
+   "expected": 306,
+   "expected_sure": true,
+   "finished": 308,
+   "games": 308,
+   "teams": 19
+  },
+  "2023-2024": {
+   "at": "2026-11-16T20:40:02Z",
+   "complete": true,
+   "current": false,
+   "expected": 306,
+   "expected_sure": true,
+   "finished": 308,
+   "games": 308,
+   "teams": 19
+  },
+  "2024-2025": {
+   "at": "2026-11-16T20:40:05Z",
+   "complete": true,
+   "current": false,
+   "expected": 306,
+   "expected_sure": true,
+   "finished": 308,
+   "games": 308,
+   "teams": 19
+  },
+  "2025-2026": {
+   "at": "2026-11-16T20:40:08Z",
+   "complete": true,
+   "current": false,
+   "expected": 306,
+   "expected_sure": true,
+   "finished": 308,
+   "games": 308,
+   "teams": 19
+  },
+  "2026-2027": {
+   "at": "2026-11-21T08:20:55Z",
+   "complete": false,
+   "current": true,
+   "expected": 306,
+   "expected_sure": true,
+   "finished": 82,
+   "games": 306,
+   "teams": 18
+  }
+ },
+ "4332": {
+  "2022-2023": {
+   "at": "2026-11-16T20:39:48Z",
+   "complete": true,
+   "current": false,
+   "expected": 380,
+   "expected_sure": true,
+   "finished": 381,
+   "games": 381,
+   "teams": 20
+  },
+  "2023-2024": {
+   "at": "2026-11-16T20:39:50Z",
+   "complete": true,
+   "current": false,
+   "expected": 380,
+   "expected_sure": true,
+   "finished": 380,
+   "games": 380,
+   "teams": 20
+  },
+  "2024-2025": {
+   "at": "2026-11-16T20:39:53Z",
+   "complete": true,
+   "current": false,
+   "expected": 380,
+   "expected_sure": true,
+   "finished": 380,
+   "games": 380,
+   "teams": 20
+  },
+  "2025-2026": {
+   "at": "2026-11-16T20:39:56Z",
+   "complete": true,
+   "current": false,
+   "expected": 380,
+   "expected_sure": true,
+   "finished": 380,
+   "games": 380,
+   "teams": 20
+  },
+  "2026-2027": {
+   "at": "2026-11-21T08:20:47Z",
+   "complete": false,
+   "current": true,
+   "expected": 380,
+   "expected_sure": true,
+   "finished": 110,
+   "games": 380,
+   "teams": 20
+  }
+ },
+ "4334": {
+  "2022-2023": {
+   "at": "2026-11-16T20:40:03Z",
+   "complete": true,
+   "current": false,
+   "expected": 380,
+   "expected_sure": true,
+   "finished": 380,
+   "games": 380,
+   "teams": 20
+  },
+  "2023-2024": {
+   "at": "2026-11-16T20:40:06Z",
+   "complete": true,
+   "current": false,
+   "expected": 306,
+   "expected_sure": true,
+   "finished": 308,
+   "games": 308,
+   "teams": 19
+  },
+  "2024-2025": {
+   "at": "2026-11-16T20:40:09Z",
+   "complete": true,
+   "current": false,
+   "expected": 306,
+   "expected_sure": true,
+   "finished": 308,
+   "games": 308,
+   "teams": 19
+  },
+  "2025-2026": {
+   "at": "2026-11-16T20:40:11Z",
+   "complete": true,
+   "current": false,
+   "expected": 306,
+   "expected_sure": true,
+   "finished": 309,
+   "games": 310,
+   "teams": 21
+  },
+  "2026-2027": {
+   "at": "2026-11-21T08:21:01Z",
+   "complete": false,
+   "current": true,
+   "expected": 306,
+   "expected_sure": true,
+   "finished": 91,
+   "games": 306,
+   "teams": 18
+  }
+ },
+ "4335": {
+  "2022-2023": {
+   "at": "2026-11-16T20:39:35Z",
+   "complete": true,
+   "current": false,
+   "expected": 380,
+   "expected_sure": true,
+   "finished": 380,
+   "games": 380,
+   "teams": 20
+  },
+  "2023-2024": {
+   "at": "2026-11-16T20:39:37Z",
+   "complete": true,
+   "current": false,
+   "expected": 380,
+   "expected_sure": true,
+   "finished": 380,
+   "games": 380,
+   "teams": 20
+  },
+  "2024-2025": {
+   "at": "2026-11-16T20:39:40Z",
+   "complete": true,
+   "current": false,
+   "expected": 380,
+   "expected_sure": true,
+   "finished": 380,
+   "games": 380,
+   "teams": 20
+  },
+  "2025-2026": {
+   "at": "2026-11-16T20:39:43Z",
+   "complete": true,
+   "current": false,
+   "expected": 380,
+   "expected_sure": true,
+   "finished": 380,
+   "games": 380,
+   "teams": 20
+  },
+  "2026-2027": {
+   "at": "2026-11-21T08:20:45Z",
+   "complete": false,
+   "current": true,
+   "expected": 380,
+   "expected_sure": true,
+   "finished": 120,
+   "games": 380,
+   "teams": 20
+  }
+ },
+ "4337": {
+  "2022-2023": {
+   "at": "2026-11-16T20:40:25Z",
+   "complete": true,
+   "current": false,
+   "expected": 306,
+   "expected_sure": true,
+   "finished": 324,
+   "games": 324,
+   "teams": 24
+  },
+  "2023-2024": {
+   "at": "2026-11-16T20:40:28Z",
+   "complete": true,
+   "current": false,
+   "expected": 306,
+   "expected_sure": true,
+   "finished": 321,
+   "games": 321,
+   "teams": 24
+  },
+  "2024-2025": {
+   "at": "2026-11-16T20:40:30Z",
+   "complete": true,
+   "current": false,
+   "expected": 306,
+   "expected_sure": true,
+   "finished": 321,
+   "games": 321,
+   "teams": 24
+  },
+  "2025-2026": {
+   "at": "2026-11-16T20:40:33Z",
+   "complete": true,
+   "current": false,
+   "expected": 306,
+   "expected_sure": true,
+   "finished": 317,
+   "games": 317,
+   "teams": 24
+  },
+  "2026-2027": {
+   "at": "2026-11-21T08:21:09Z",
+   "complete": false,
+   "current": true,
+   "expected": 306,
+   "expected_sure": true,
+   "finished": 108,
+   "games": 306,
+   "teams": 18
+  }
+ },
+ "4339": {
+  "2022-2023": {
+   "at": "2026-11-16T20:37:58Z",
+   "complete": true,
+   "current": false,
+   "expected": 342,
+   "expected_sure": true,
+   "finished": 342,
+   "games": 342,
+   "teams": 19
+  },
+  "2023-2024": {
+   "at": "2026-11-16T20:38:01Z",
+   "complete": true,
+   "current": false,
+   "expected": 380,
+   "expected_sure": true,
+   "finished": 380,
+   "games": 380,
+   "teams": 20
+  },
+  "2024-2025": {
+   "at": "2026-11-16T20:38:03Z",
+   "complete": true,
+   "current": false,
+   "expected": 342,
+   "expected_sure": true,
+   "finished": 342,
+   "games": 342,
+   "teams": 19
+  },
+  "2025-2026": {
+   "at": "2026-11-16T20:38:06Z",
+   "complete": true,
+   "current": false,
+   "expected": 306,
+   "expected_sure": true,
+   "finished": 306,
+   "games": 306,
+   "teams": 18
+  },
+  "2026-2027": {
+   "at": "2026-11-21T08:19:35Z",
+   "complete": false,
+   "current": true,
+   "expected": 306,
+   "expected_sure": true,
+   "finished": 99,
+   "games": 306,
+   "teams": 18
+  }
+ },
+ "4344": {
+  "2022-2023": {
+   "at": "2026-11-16T20:40:15Z",
+   "complete": true,
+   "current": false,
+   "expected": 306,
+   "expected_sure": true,
+   "finished": 308,
+   "games": 308,
+   "teams": 19
+  },
+  "2023-2024": {
+   "at": "2026-11-16T20:40:17Z",
+   "complete": true,
+   "current": false,
+   "expected": 306,
+   "expected_sure": true,
+   "finished": 308,
+   "games": 308,
+   "teams": 19
+  },
+  "2024-2025": {
+   "at": "2026-11-16T20:40:20Z",
+   "complete": true,
+   "current": false,
+   "expected": 306,
+   "expected_sure": true,
+   "finished": 308,
+   "games": 308,
+   "teams": 19
+  },
+  "2025-2026": {
+   "at": "2026-11-16T20:40:23Z",
+   "complete": true,
+   "current": false,
+   "expected": 306,
+   "expected_sure": true,
+   "finished": 308,
+   "games": 308,
+   "teams": 19
+  },
+  "2026-2027": {
+   "at": "2026-11-21T08:21:01Z",
+   "complete": false,
+   "current": true,
+   "expected": 306,
+   "expected_sure": true,
+   "finished": 98,
+   "games": 306,
+   "teams": 18
+  }
+ },
+ "4346": {
+  "2023": {
+   "at": "2026-11-16T20:39:11Z",
+   "complete": true,
+   "current": false,
+   "expected": null,
+   "expected_sure": false,
+   "finished": 521,
+   "games": 521,
+   "teams": 29
+  },
+  "2024": {
+   "at": "2026-11-16T20:39:13Z",
+   "complete": true,
+   "current": false,
+   "expected": null,
+   "expected_sure": false,
+   "finished": 522,
+   "games": 526,
+   "teams": 29
+  },
+  "2025": {
+   "at": "2026-11-16T20:39:16Z",
+   "complete": true,
+   "current": false,
+   "expected": null,
+   "expected_sure": false,
+   "finished": 540,
+   "games": 540,
+   "teams": 30
+  },
+  "2026": {
+   "at": "2026-11-16T20:39:19Z",
+   "complete": true,
+   "current": false,
+   "expected": null,
+   "expected_sure": false,
+   "finished": 510,
+   "games": 510,
+   "teams": 30
+  },
+  "2026-2027": {
+   "at": "2026-11-21T08:20:26Z",
+   "complete": false,
+   "current": true,
+   "expected": null,
+   "expected_sure": false,
+   "finished": 2,
+   "games": 18,
+   "teams": 18
+  }
+ },
+ "4480": {
+  "2022-2023": {
+   "at": "2026-11-16T20:37:54Z",
+   "complete": true,
+   "current": false,
+   "expected": null,
+   "expected_sure": false,
+   "finished": 214,
+   "games": 214,
+   "teams": 78
+  },
+  "2023-2024": {
+   "at": "2026-11-16T20:37:57Z",
+   "complete": true,
+   "current": false,
+   "expected": null,
+   "expected_sure": false,
+   "finished": 214,
+   "games": 214,
+   "teams": 78
+  },
+  "2024-2025": {
+   "at": "2026-11-16T20:38:00Z",
+   "complete": true,
+   "current": false,
+   "expected": null,
+   "expected_sure": false,
+   "finished": 279,
+   "games": 279,
+   "teams": 81
+  },
+  "2025-2026": {
+   "at": "2026-11-16T20:38:02Z",
+   "complete": true,
+   "current": false,
+   "expected": null,
+   "expected_sure": false,
+   "finished": 281,
+   "games": 281,
+   "teams": 82
+  },
+  "2026-2027": {
+   "at": "2026-11-21T08:19:28Z",
+   "complete": false,
+   "current": true,
+   "expected": null,
+   "expected_sure": false,
+   "finished": 162,
+   "games": 234,
+   "teams": 81
+  }
+ },
+ "4520": {
+  "2022-2023": {
+   "at": "2026-11-16T20:44:13Z",
+   "complete": true,
+   "current": false,
+   "expected": 240,
+   "expected_sure": false,
+   "finished": 240,
+   "games": 240,
+   "teams": 16
+  },
+  "2023-2024": {
+   "at": "2026-11-16T20:44:15Z",
+   "complete": true,
+   "current": false,
+   "expected": 240,
+   "expected_sure": false,
+   "finished": 241,
+   "games": 241,
+   "teams": 16
+  },
+  "2024-2025": {
+   "at": "2026-11-17T09:16:57Z",
+   "complete": true,
+   "current": false,
+   "expected": 306,
+   "expected_sure": false,
+   "finished": 244,
+   "games": 244,
+   "teams": 18
+  },
+  "2025-2026": {
+   "at": "2026-11-17T09:16:59Z",
+   "complete": true,
+   "current": false,
+   "expected": 306,
+   "expected_sure": false,
+   "finished": 244,
+   "games": 244,
+   "teams": 18
+  },
+  "2026-2027": {
+   "at": "2026-11-21T08:20:18Z",
+   "complete": false,
+   "current": true,
+   "expected": 240,
+   "expected_sure": false,
+   "finished": 55,
+   "games": 55,
+   "teams": 16
+  }
+ },
+ "4663": {
+  "2022-2023": {
+   "at": "2026-11-16T20:42:41Z",
+   "complete": true,
+   "current": false,
+   "expected": 132,
+   "expected_sure": false,
+   "finished": 132,
+   "games": 132,
+   "teams": 12
+  },
+  "2023-2024": {
+   "at": "2026-11-16T20:42:44Z",
+   "complete": true,
+   "current": false,
+   "expected": 132,
+   "expected_sure": false,
+   "finished": 132,
+   "games": 132,
+   "teams": 12
+  },
+  "2024-2025": {
+   "at": "2026-11-16T20:42:46Z",
+   "complete": true,
+   "current": false,
+   "expected": 132,
+   "expected_sure": false,
+   "finished": 132,
+   "games": 132,
+   "teams": 12
+  },
+  "2025-2026": {
+   "at": "2026-11-17T09:16:36Z",
+   "complete": true,
+   "current": false,
+   "expected": 156,
+   "expected_sure": false,
+   "finished": 133,
+   "games": 133,
+   "teams": 13
+  },
+  "2026-2027": {
+   "at": "2026-11-21T08:20:03Z",
+   "complete": false,
+   "current": true,
+   "expected": 132,
+   "expected_sure": false,
+   "finished": 58,
+   "games": 132,
+   "teams": 12
+  }
+ },
+ "4668": {
+  "2022-2023": {
+   "at": "2026-11-16T20:33:55Z",
+   "complete": true,
+   "current": false,
+   "expected": 240,
+   "expected_sure": true,
+   "finished": 240,
+   "games": 240,
+   "teams": 16
+  },
+  "2023-2024": {
+   "at": "2026-11-16T20:33:58Z",
+   "complete": true,
+   "current": false,
+   "expected": 306,
+   "expected_sure": true,
+   "finished": 306,
+   "games": 306,
+   "teams": 18
+  },
+  "2024-2025": {
+   "at": "2026-11-16T20:34:01Z",
+   "complete": true,
+   "current": false,
+   "expected": 306,
+   "expected_sure": true,
+   "finished": 306,
+   "games": 306,
+   "teams": 18
+  },
+  "2025-2026": {
+   "at": "2026-11-16T20:34:04Z",
+   "complete": true,
+   "current": false,
+   "expected": 306,
+   "expected_sure": true,
+   "finished": 306,
+   "games": 306,
+   "teams": 18
+  },
+  "2026-2027": {
+   "at": "2026-11-21T08:19:30Z",
+   "complete": false,
+   "current": true,
+   "expected": 306,
+   "expected_sure": true,
+   "finished": 105,
+   "games": 306,
+   "teams": 18
+  }
+ },
+ "4678": {
+  "2022-2023": {
+   "at": "2026-11-16T20:42:42Z",
+   "complete": true,
+   "current": false,
+   "expected": 182,
+   "expected_sure": false,
+   "finished": 182,
+   "games": 182,
+   "teams": 14
+  },
+  "2023-2024": {
+   "at": "2026-11-16T20:42:45Z",
+   "complete": true,
+   "current": false,
+   "expected": 182,
+   "expected_sure": false,
+   "finished": 182,
+   "games": 182,
+   "teams": 14
+  },
+  "2024-2025": {
+   "at": "2026-11-16T20:42:48Z",
+   "complete": true,
+   "current": false,
+   "expected": 182,
+   "expected_sure": false,
+   "finished": 182,
+   "games": 182,
+   "teams": 14
+  },
+  "2025-2026": {
+   "at": "2026-11-16T20:42:50Z",
+   "complete": true,
+   "current": false,
+   "expected": 182,
+   "expected_sure": false,
+   "finished": 182,
+   "games": 182,
+   "teams": 14
+  },
+  "2026-2027": {
+   "at": "2026-11-21T08:20:12Z",
+   "complete": false,
+   "current": true,
+   "expected": 182,
+   "expected_sure": false,
+   "finished": 53,
+   "games": 119,
+   "teams": 14
+  }
+ },
+ "4719": {
+  "2022": {
+   "at": "2026-11-16T20:38:13Z",
+   "complete": true,
+   "current": false,
+   "expected": null,
+   "expected_sure": false,
+   "finished": 137,
+   "games": 143,
+   "teams": 47
+  },
+  "2023": {
+   "at": "2026-11-16T20:38:15Z",
+   "complete": true,
+   "current": false,
+   "expected": null,
+   "expected_sure": false,
+   "finished": 162,
+   "games": 163,
+   "teams": 53
+  },
+  "2024-2025": {
+   "at": "2026-11-16T20:38:18Z",
+   "complete": true,
+   "current": false,
+   "expected": null,
+   "expected_sure": false,
+   "finished": 121,
+   "games": 122,
+   "teams": 27
+  },
+  "2025-2026": {
+   "at": "2026-11-16T20:38:20Z",
+   "complete": true,
+   "current": false,
+   "expected": null,
+   "expected_sure": false,
+   "finished": 117,
+   "games": 121,
+   "teams": 26
+  },
+  "2026-2027": {
+   "at": "2026-11-21T08:19:46Z",
+   "complete": false,
+   "current": true,
+   "expected": null,
+   "expected_sure": false,
+   "finished": 67,
+   "games": 132,
+   "teams": 36
+  }
+ },
+ "4829": {
+  "2022-2023": {
+   "at": "2026-11-16T20:38:20Z",
+   "complete": true,
+   "current": false,
+   "expected": null,
+   "expected_sure": false,
+   "finished": 308,
+   "games": 308,
+   "teams": 18
+  },
+  "2023-2024": {
+   "at": "2026-11-16T20:38:22Z",
+   "complete": true,
+   "current": false,
+   "expected": null,
+   "expected_sure": false,
+   "finished": 271,
+   "games": 272,
+   "teams": 17
+  },
+  "2024-2025": {
+   "at": "2026-11-16T20:38:25Z",
+   "complete": true,
+   "current": false,
+   "expected": null,
+   "expected_sure": false,
+   "finished": 225,
+   "games": 225,
+   "teams": 18
+  },
+  "2025-2026": {
+   "at": "2026-11-16T20:38:28Z",
+   "complete": true,
+   "current": false,
+   "expected": null,
+   "expected_sure": false,
+   "finished": 322,
+   "games": 322,
+   "teams": 21
+  },
+  "2026-2027": {
+   "at": "2026-11-21T08:19:50Z",
+   "complete": false,
+   "current": true,
+   "expected": null,
+   "expected_sure": false,
+   "finished": 80,
+   "games": 190,
+   "teams": 20
+  }
+ },
+ "5056": {
+  "2022-2023": {
+   "at": "2026-11-16T20:42:49Z",
+   "complete": true,
+   "current": false,
+   "expected": 380,
+   "expected_sure": false,
+   "finished": 380,
+   "games": 380,
+   "teams": 20
+  },
+  "2023-2024": {
+   "at": "2026-11-16T20:42:52Z",
+   "complete": true,
+   "current": false,
+   "expected": 380,
+   "expected_sure": false,
+   "finished": 384,
+   "games": 385,
+   "teams": 20
+  },
+  "2024-2025": {
+   "at": "2026-11-16T20:42:55Z",
+   "complete": true,
+   "current": false,
+   "expected": 380,
+   "expected_sure": false,
+   "finished": 390,
+   "games": 393,
+   "teams": 20
+  },
+  "2025-2026": {
+   "at": "2026-11-17T09:16:49Z",
+   "complete": true,
+   "current": false,
+   "expected": 420,
+   "expected_sure": false,
+   "finished": 380,
+   "games": 387,
+   "teams": 21
+  },
+  "2026-2027": {
+   "at": "2026-11-21T08:20:11Z",
+   "complete": false,
+   "current": true,
+   "expected": 380,
+   "expected_sure": false,
+   "finished": 137,
+   "games": 380,
+   "teams": 20
+  }
+ },
+ "5627": {
+  "2024-2025": {
+   "at": "2026-11-16T20:45:00Z",
+   "complete": true,
+   "current": false,
+   "expected": 306,
+   "expected_sure": false,
+   "finished": 309,
+   "games": 309,
+   "teams": 18
+  },
+  "2025-2026": {
+   "at": "2026-11-16T20:45:03Z",
+   "complete": true,
+   "current": false,
+   "expected": 306,
+   "expected_sure": false,
+   "finished": 308,
+   "games": 309,
+   "teams": 18
+  },
+  "2026-2027": {
+   "at": "2026-11-21T08:20:28Z",
+   "complete": false,
+   "current": true,
+   "expected": 306,
+   "expected_sure": false,
+   "finished": 95,
+   "games": 171,
+   "teams": 18
+  }
+ },
+ "5649": {
+  "2024-2025": {
+   "at": "2026-11-16T20:38:33Z",
+   "complete": true,
+   "current": false,
+   "expected": null,
+   "expected_sure": false,
+   "finished": 31,
+   "games": 31,
+   "teams": 32
+  },
+  "2025-2026": {
+   "at": "2026-11-21T08:19:55Z",
+   "complete": false,
+   "current": true,
+   "expected": null,
+   "expected_sure": false,
+   "finished": 31,
+   "games": 31,
+   "teams": 32
+  }
+ }
+}
