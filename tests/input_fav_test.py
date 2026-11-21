@@ -18,7 +18,7 @@ fav, main, names = src("InputFav.java"), src("MainActivity.java"), src("InputNam
 check("no Android in InputFav", "import android" not in fav)
 check("the home builds a tile for each favourite input, from the TV's reported inputs", "InputFav.isInput(w) ? inputApp(w) : null" in main and "InputLabels.reported(this)" in main.split("private App inputApp(String entry)")[1][:600])
 check("OK on it switches to that input behind the «المصادر» lock (the tuner through openLiveTv)", "openFavouriteInput(app)" in main and "guarded(ParentalPolicy.PILL_INPUTS, null, app.label" in main and "openPassthroughInput(t)" in main.split("private void openFavouriteInput")[1][:700])
-check("no app menu on an input tile", "if (InputFav.isInput(app.pkg)) return true;" in main)
+check("no app menu on an input tile (long OK and the Menu key both go through showAppMenu)", "if (InputFav.isInput(pkg)) return;" in main.split("private void showAppMenu(")[1][:300])
 check("saving the favourites keeps a favourite input (it is not a package)", "isInstalled(p) || InputFav.isInput(p)" in main)
 check("«أسماء المصادر» adds or takes it off from the name box, at most Dock.MAX, and tells the home", "InputFav.toggle(before, id, Dock.MAX)" in names and "new android.content.Intent(Dock.CHANGED)" in names)
 en = (ROOT / "i18n/en/home.tsv").read_text(encoding="utf-8")

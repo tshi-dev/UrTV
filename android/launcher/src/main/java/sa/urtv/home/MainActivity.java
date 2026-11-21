@@ -2003,10 +2003,7 @@ public class MainActivity extends Activity {
         });
 
         // a long OK (or the remote's Menu key, dispatchKeyEvent): the app's options (AppOptions); each of them is in the settings too
-        card.setOnLongClickListener(v -> {   // an input has no app menu: it is taken off in «أسماء المصادر» or in «تعديل المفضلة»
-            if (InputFav.isInput(app.pkg)) return true;
-            optionsHintUsed(); showAppMenu(v, app.pkg, inDock); return true;
-        });
+        card.setOnLongClickListener(v -> { optionsHintUsed(); showAppMenu(v, app.pkg, inDock); return true; });
         cardByPkg.put(app.pkg, card);
 
         (inDock ? dockCards : gridCards).add(card);
@@ -3472,6 +3469,7 @@ public class MainActivity extends Activity {
     }
 
     private void showAppMenu(View anchor, String pkg, boolean inDock) {
+        if (InputFav.isInput(pkg)) return;   // a favourite input has no app menu: it is taken off in «أسماء المصادر» or «تعديل المفضلة»
         guarded(ParentalPolicy.MENU, null, S.t("قائمة التطبيق"), () -> showAppMenuNow(anchor, pkg, inDock));
     }
 
