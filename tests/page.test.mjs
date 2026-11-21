@@ -2712,8 +2712,8 @@ for (const [width, height] of [[1920, 1080], [1280, 720], [960, 540]]) {
   await o.ctx.close();
 }
 
-// ---- the live game grows: a followed team under way shows alone, big: score, minute, «مباشر», both crests where there are crests
-// (the launcher's card), names on one line; when it ends the card goes back to the list. The bottom slot does the same.
+// ---- the live game grows: a followed team under way shows big, on top: score, minute, «مباشر», both crests where there are crests
+// (the launcher's card), names on one line, and the card's other games under it; when it ends the card is the list again. The bottom slot shows it alone.
 const LIVE_EV = (over = {}) => ({ idEvent: 'L1', strHomeTeam: 'Manchester United', strAwayTeam: 'Borussia Monchengladbach', idHomeTeam: '100', idAwayTeam: '101', strSport: 'Soccer',
   strTimestamp: new Date(Date.now() - 67 * 60000).toISOString(), strStatus: '2H', strProgress: '67', intHomeScore: 2, intAwayScore: 1,
   strHomeTeamBadge: BADGE(100), strAwayTeamBadge: BADGE(101), ...over });
@@ -2726,12 +2726,12 @@ for (const [width, height, label] of [[461, 250, 'launcher card'], [1920, 1080, 
     await setup({});
     await p.waitForTimeout(250);
     const r = await p.evaluate(() => { const li = [...document.querySelectorAll('#week-list li')], big = document.querySelector('#week-list li.lv'), t = big && big.querySelector('.lvt');
-      return { n: li.length, big: !!big, text: big ? big.textContent.replace(/\s+/g, ' ').trim() : '', crests: big ? [...big.querySelectorAll('img.cr')].filter(i => i.src.startsWith('data:image/png')).length : 0,
+      return { n: li.length, big: !!big, first: !!li[0] && li[0].classList.contains('lv'), next: li[1] ? li[1].textContent : '', text: big ? big.textContent.replace(/\s+/g, ' ').trim() : '', crests: big ? [...big.querySelectorAll('img.cr')].filter(i => i.src.startsWith('data:image/png')).length : 0,
         oneLine: t ? t.scrollWidth <= t.clientWidth + .5 && [...t.querySelectorAll('.tm')].every(x => x.getClientRects().length === 1) : false,
         score: big ? big.querySelector('.sc').getBoundingClientRect().height : 0, norm: parseFloat(getComputedStyle(document.querySelector('#week-list li.lv .tm')).fontSize),
         base: parseFloat(getComputedStyle(document.querySelector('.week')).fontSize), dots: document.getElementById('week-list').textContent.includes('…') }; });
     const tag = `live game big, ${label} ${width}x${height} ${digits}`;
-    check(`${tag}: only that game, big: «مباشر», the minute and the score; no script errors`, !errors.length && r.n === 1 && r.big && /مباشر/.test(r.text) && /الدقيقة|Minute|67|٦٧/.test(r.text)
+    check(`${tag}: that game on top, big: «مباشر», the minute and the score; the game to come under it; no script errors`, !errors.length && r.n === 2 && r.big && r.first && /الأهلي/.test(r.next) && /مباشر/.test(r.text) && /الدقيقة|Minute|67|٦٧/.test(r.text)
       && (digits === 'latin' ? /2 - 1/.test(r.text) : /٢ - ١/.test(r.text)) && !r.dots, JSON.stringify(r) + errors.join('; '));
     check(`${tag}: both crests, the names on one line (the long ones shortened if they must be)`, r.crests === 2 && r.oneLine, JSON.stringify(r));
     // the game ends: the list is back, with its result

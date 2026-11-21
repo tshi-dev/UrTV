@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <!-- the build: UTC time (YYYYMMDDHHMMSS) of the newest commit of the page's sources, put in by src/build.py. The app loads the page with the newer stamp (its own
      copy or a downloaded one), never by file time, and does not keep a download whose stamp is older than its own (Updater, PageStamp). -->
-<meta name="urtv-build" content="20261118061304">
+<meta name="urtv-build" content="20261121160443">
 <title>شاشة تلفزيونك</title>
 <style>
   @font-face{font-family:'Thmanyah';font-weight:300;font-style:normal;font-display:block;src:url("https://raw.githubusercontent.com/tshi-dev/UrTV/master/assets/fonts/Thmanyah-Light.woff2") format("woff2")}
@@ -189,6 +189,7 @@
   .week li.prow .pc.next i{color:var(--gold-3)}
   
   .week li.lv{display:block;white-space:normal;text-align:center;border-bottom:none;padding:.5vh 0 .2vh}
+  .week li.lv:not(:last-child){border-bottom:1px solid rgba(var(--gold-rgb),.16);padding-bottom:.7vh}
   .week li.lv .lvm{font-size:.8em;color:#E6DCC4;margin-bottom:.35em}
   .week li.lv .lvt{display:flex;align-items:center;justify-content:center;gap:.55em;white-space:nowrap;overflow:hidden;
     font-size:calc(clamp(21px,2vw,38px)*var(--z,1)*var(--k,1));font-weight:500;line-height:1.35}
@@ -3056,9 +3057,10 @@ function renderCard(card, animate, keepSize){
   }
   const per = card.cap || (P === 'matches' ? MATCH_ROWS : WEEK_ROWS);
   if((P === 'matches' || P === 'stocks' || P === 'tasks') && rows.length > per){        // page through, like the shows
-    if(P === 'matches'){   // fixed pages, each game once a lap; the last holds what is left
-      const pages = Math.ceil(rows.length / per), start = (card.page % pages) * per;
-      rows = rows.slice(start, start + per);
+    if(P === 'matches'){   // fixed pages, each game once a lap; the last holds what is left; a live game on top of each
+      const pin = rows.filter(r => r.startsWith('<li class="lv"')), rest = rows.slice(pin.length), each = Math.max(1, per - pin.length);
+      const pages = Math.ceil(rest.length / each), start = (card.page % pages) * each;
+      rows = [...pin, ...rest.slice(start, start + each)];
     }else{
       const start = (card.page * per) % rows.length;
       rows = Array.from({length: per}, (_, i) => rows[(start + i) % rows.length]);
@@ -3446,10 +3448,11 @@ function matchEvents(){
 // ... in time order
 function matchRows(card){
   const now = Date.now();
-  const live = focusGames(now, true);   // a followed team is playing: that game alone, big
-  if(live.length) return live.map(ev => liveRow(ev));
-  let evs = matchEvents();
+  const live = focusGames(now, true);   // a followed team is playing: that game big, on top; the matches card lists the rest under it
   const smart = card && card.kind === 'smart';
+  if(live.length && (!card || smart)) return live.map(ev => liveRow(ev));
+  const lid = new Set(live.map(ev => ev.idEvent));
+  let evs = matchEvents().filter(ev => !lid.has(ev.idEvent));
   if(smart){ const ids = new Set(focusGames(now).map(ev => ev.idEvent)); evs = evs.filter(ev => ids.has(ev.idEvent)); }   // only the game that brought the smart card here
   const today = todayOnly(card) ? FMT_DATE.format(new Date(now)) : '';
   const others = smart ? [] : eventRows(now).filter(o => !today || FMT_DATE.format(new Date(o.t)) === today);
@@ -3463,7 +3466,7 @@ function matchRows(card){
   // a card with no crest at all is as it was
   const anyCrest = shown.some(x => crestImg(x.ev, 'Home') || crestImg(x.ev, 'Away'));
   const crestOrGap = (ev, side) => crestImg(ev, side) || (anyCrest ? '<span class="crgap"></span>' : '');
-  return [...shown
+  const rest = [...shown
     .map(({ev, t, r}) => {
       const d = new Date(t), scored = ev.intHomeScore != null && ev.intAwayScore != null;
       const mid = scored && now >= t ? `<span class="sc">${ar(+ev.intHomeScore)} - ${ar(+ev.intAwayScore)}</span>` : '<span class="x">×</span>';
@@ -3478,6 +3481,7 @@ function matchRows(card){
       const club = (id, name, home) => `<span class="tm">${home ? '' : crestOrGap(ev, 'Away')}<span class="nm">${esc(teamAr(name, id))}</span>${home ? crestOrGap(ev, 'Home') : ''}</span>`;
       return {t, r, html: `<li class="mg"><span class="mr">${club(ev.idHomeTeam, ev.strHomeTeam, true)} ${mid} ${club(ev.idAwayTeam, ev.strAwayTeam, false)} ${dateEl} <span class="dt">${when}</span></span></li>`};
     }), ...others.map(o => (Object.assign({}, o, {r: o.t <= now ? 1 : 2})))].sort(byRank).map(x => x.html);
+  return live.length ? [...live.map(ev => liveRow(ev)), ...rest] : rest;
 }
 
 // ---- «الأسهم»: the watchlist card. A Tadawul code
