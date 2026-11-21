@@ -37,6 +37,12 @@ public class SleepService extends AccessibilityService {
         return r;
     }
 
+    /** The TV's own power menu («إعادة التشغيل», «إيقاف التشغيل»…); false when the service is off or the TV has none. */
+    static boolean powerMenu() {
+        SleepService s = running;
+        return s != null && s.performGlobalAction(GLOBAL_ACTION_POWER_DIALOG);
+    }
+
     /** Turn the screen off now; false when the service is off or this Android is older than 9. */
     static boolean sleepNow() {
         SleepService s = running;

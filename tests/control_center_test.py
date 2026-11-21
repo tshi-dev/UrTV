@@ -41,6 +41,11 @@ check("the sleep timer's tile and «أطفئ الآن» end the same way (SleepT
 check("«أطفئ الآن» with the service off: the tile says «يحتاج تفعيل، اضغط للتفعيل», OK opens the TV's accessibility settings behind the sleep lock (ParentalPolicy.SLEEP_ACCESSIBILITY) with a line «فعّل «تلفزيونك: إطفاء الشاشة»»; no silent fallback to sound off and the screensaver, no notice and no delay; a long OK does the same",
       "SleepService.enabled()" in center and "ParentalPolicy.SLEEP_ACCESSIBILITY" in center and 'S.t("يحتاج تفعيل، اضغط للتفعيل")' in center and 'S.t("فعّل «%s»", act.getString(R.string.sleep_service_label))' in center
       and "SLEEP_OFF_NOTICE" not in center and "SLEEP_OFF_NOTICE" not in text and "offPending" not in center and "ui.postDelayed(" not in center.split("private void turnOffNow()")[1].split("// ------")[0] and "مو شغّالة" not in text)
+check("«إعادة التشغيل»: a row that opens the TV's own power menu through the sleep service (an app cannot restart Android); service off: as «أطفئ الآن»; no menu: a line about the remote's power key",
+      'tile("restart", S.t("إعادة التشغيل")' in center and "R.drawable.ic_restart" in center and (ROOT / "android/launcher/src/main/res/drawable/ic_restart.xml").exists()
+      and "if (!SleepService.enabled()) { turnOffNow(); return; }" in center and "restart.hold = off.hold;" in center
+      and "performGlobalAction(GLOBAL_ACTION_POWER_DIALOG)" in src("SleepService.java") and "if (!SleepService.powerMenu())" in center
+      and "permission.REBOOT" not in center)
 check("«إعدادات تلفزيونك» opens our settings (the screensaver app's SettingsActivity) through «قفل الإعدادات» (@urtv), the tile only when that app is there",
       "host.openOurSettings()" in center and "ParentalPolicy.OUR_SETTINGS, null" in main and 'SAVER_PKG + ".SettingsActivity"' in main
       and "case OUR_SETTINGS:" in policy and "t.add(OWN_SETTINGS)" in policy.split("case OUR_SETTINGS:")[1][:200]
@@ -50,7 +55,7 @@ check("the side panel: 560 px of 1920 wide inside the 5 % safe area, a clear ful
       and "panel.animate().translationX(0).setDuration(SLIDE_MS).setInterpolator(new DecelerateInterpolator())" in center and "Dir.start() | Gravity.TOP" in center
       and "new ScrollView(act)" in center and "ControlLayout" not in center and not (HOME / "ControlLayout.java").exists())
 check("four round toggles on top (Bluetooth, mirroring, the sleep timer, «أطفئ الآن»), then rows with a short value each (network, sound, speed, the TV's settings, ours); ellipsized one-line values",
-      'TOGGLES = {"bluetooth", "mirror", "sleep", "off"}' in center and 'ROWS = {"net", "sound", "speed", "ours", "games", "city", "tv", "saver"}' in center and "GradientDrawable.OVAL" in center
+      'TOGGLES = {"bluetooth", "mirror", "sleep", "off"}' in center and 'ROWS = {"net", "sound", "speed", "ours", "games", "city", "tv", "restart", "saver"}' in center and "GradientDrawable.OVAL" in center
       and "t.setSingleLine(true);" in center and "TruncateAt.END" in center and "ControlText.networkDetail" not in center)
 check("the focus: a solid fill in the look's colours with its ink, coming in over 170 ms (ease-out)",
       "FOCUS_MS = 170" in center and "ValueAnimator.ofArgb(shown, target)" in center and "anim.setDuration(FOCUS_MS)" in center and "int target = f ? FOCUSED : " in center and "ON_SUB" in center)
@@ -126,8 +131,8 @@ check("the tile is there only when one resolves, opens it behind the TV's settin
 check("Wi-Fi and Bluetooth side by side, first (docs/UX-REVIEW.md): the network tile, then Bluetooth, then the rest",
       center.index('tile("net"') < center.index('tile("bluetooth"') < center.index('tile("sound"') < center.index('tile("speed"')
       < center.index('tile("sleep"') < center.index('tile("off"') < center.index('tile("mirror"') < center.index('tile("saver"'))
-check("at most thirteen tiles: sleep, off, network, speed, sound, mirroring, Bluetooth, screensaver, the city, the games, ours, the build line, the TV's settings",
-      len(re.findall(r'tile\("[a-z]+"', center)) == 13, re.findall(r'tile\("[a-z]+"', center))
+check("at most fourteen tiles: sleep, off, network, speed, sound, mirroring, Bluetooth, screensaver, the city, the games, ours, the build line, the TV's settings, restart",
+      len(re.findall(r'tile\("[a-z]+"', center)) == 14, re.findall(r'tile\("[a-z]+"', center))
 # ---- no traffic before OK
 check("the only network code is the speed test's, and it is started by the tile's OK on a worker thread",
       "new SpeedTest()" in center and "HttpURLConnection" not in center and "new Thread(" in center.split("private void speedTest")[1]

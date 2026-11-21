@@ -72,7 +72,7 @@ final class ControlCenter {
     /** the round toggles, in this order; every other item is a row */
     static final String[] TOGGLES = {"bluetooth", "mirror", "sleep", "off"};
     /** the rows' order before the person moves any; «شاشة التوقف» is unticked until they ask for it (its own pill is on the home) */
-    static final String[] ROWS = {"net", "sound", "speed", "ours", "games", "city", "tv", "saver"};   // 4.3.1: ours before the TV's, the city beside it
+    static final String[] ROWS = {"net", "sound", "speed", "ours", "games", "city", "tv", "restart", "saver"};   // 4.3.1: ours before the TV's, the city beside it; then «إعادة التشغيل»
     /** the order before 4.3.1 (ours after the TV's): saved by anyone who opened the editor, never a choice, so it follows the new default */
     static final String OLD_DEFAULT = "net,sound,speed,tv,ours,saver";
     static final String[] DEFAULT_OFF = {"saver"};
@@ -183,6 +183,11 @@ final class ControlCenter {
             dismiss();
             host.launchGuarded(ParentalPolicy.SLEEP_ACCESSIBILITY, new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS), "إعدادات التلفزيون");
         };
+        // «إعادة التشغيل»: an app cannot restart Android (the REBOOT permission is the system's); the sleep service opens the TV's own power menu
+        Item restart = tile("restart", S.t("إعادة التشغيل"), SleepService.enabled() ? S.t("يفتح قائمة الطاقة") : S.t("يحتاج تفعيل، اضغط للتفعيل"),
+                R.drawable.ic_restart, null);
+        restart.action = () -> powerMenu();
+        restart.hold = off.hold;
         // «انعكاس الشاشة»: the TV's own mirroring app (ControlText.MIRROR_APPS), only when one is installed; locked as that app's own tile is
         final Intent mirror = mirrorIntent();
         if (mirror != null)
@@ -890,6 +895,19 @@ final class ControlCenter {
         dismiss();
         android.widget.Toast.makeText(act, S.t("فعّل «%s»", act.getString(R.string.sleep_service_label)), android.widget.Toast.LENGTH_LONG).show();
         host.launchGuarded(ParentalPolicy.SLEEP_ACCESSIBILITY, new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS), "إعدادات التلفزيون");
+    }
+
+    // ---------------------------------------------------------------- «إعادة التشغيل»
+
+    /**
+     * The TV's power menu (its «إعادة التشغيل» is there on most TVs) through the sleep service. With the service off: the same line and
+     * accessibility settings as «أطفئ الآن». A TV that has no such menu: a line saying to hold the remote's power key.
+     */
+    private void powerMenu() {
+        if (!SleepService.enabled()) { turnOffNow(); return; }
+        dismiss();
+        if (!SleepService.powerMenu())
+            android.widget.Toast.makeText(act, S.t("اضغط زر الطاقة في الريموت ضغطة طويلة واختر «إعادة التشغيل»"), android.widget.Toast.LENGTH_LONG).show();
     }
 
     // ---------------------------------------------------------------- «اختبار السرعة»
