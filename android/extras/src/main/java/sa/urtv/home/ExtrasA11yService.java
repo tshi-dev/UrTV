@@ -361,7 +361,7 @@ public class ExtrasA11yService extends AccessibilityService {
                 SettingsKey.filterWanted(front, stockHome, lowRam, homeKeyLost, Build.VERSION.SDK_INT)
                 || KeyApps.filterWanted(front, KeyApps.anyChosen(keyChoices), KeyButton.filterSafe())   // «أزرار الريموت»: only for a button given an app
                 || KeyApps.globalWanted(KeyButton.TV, wanted(this) || oursChosen(), KeyButton.filterSafe())   // beta 3: a TCL's YouTube button (a global key)
-                || homeKeyActive());   // 4.4 R3: the Home key caught here (on by default on a Google TV, only while the person's home is ours)
+                || (homeKeyActive() && KeyButton.filterSafe()));   // 4.4 R3: the Home key caught here (on by default on a Google TV, only while the person's home is ours); never where any filter breaks the remote (Xiaomi, TCL's Android 11)
             AccessibilityServiceInfo info = getServiceInfo();
             if (info == null) return;
             boolean has = (info.flags & AccessibilityServiceInfo.FLAG_REQUEST_FILTER_KEY_EVENTS) != 0;

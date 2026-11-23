@@ -177,9 +177,11 @@ final class RemoteButtons {
 
     /**
      * TCL's Android 11 changes the volume twice for one press while any key filter is on (Free My TV #325): there the filter outside our
-     * home is never asked for these buttons (TypeService.filterKeys).
+     * home is never asked for these buttons (TypeService.filterKeys). 4.4 beta 3 (a Xiaomi box, remote XMRM-M3): with the filter on after our setup
+     * the remote's app buttons stopped working (Prime aside) and volume went to the TV instead of the box; on Xiaomi the filter is never asked for
+     * outside our home either (the Home key's catch included: the window watch brings our home back instead).
      */
     static boolean filterSafe(int tv, int sdk) {
-        return !(tv == TCL && sdk == 30);
+        return !(tv == TCL && sdk == 30) && tv != XIAOMI && tv != XIAOMI_AFKR0 && tv != XIAOMI_PATCHWALL_ONLY;
     }
 }

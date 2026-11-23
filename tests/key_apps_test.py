@@ -32,7 +32,7 @@ check("on our home a chosen button that is installed is answered first (Xiaomi's
       and "if (ParentalPolicy.visible(Parental.state(this), pkg)) guarded(ParentalPolicy.REMOTE_APP, pkg, labelOf(pkg), () -> openPackage(pkg));" in main_key)
 check("the add-on (over other apps) asks for keys only while a button was given an app and a filter is safe here; it looks only at this remote's app buttons",
       "|| KeyApps.filterWanted(front, KeyApps.anyChosen(keyChoices), KeyButton.filterSafe())" in ts and "if (appKey(e)) return true;" in ts
-      and "if (!KeyButton.filterSafe()) return false;" in ts and "String id = KeyButton.of(e);" in ts and "if (id == null) return false;" in ts
+      and "if (!KeyButton.filterSafe()) return false;" in ts and "|| (homeKeyActive() && KeyButton.filterSafe()));" in ts and "String id = KeyButton.of(e);" in ts and "if (id == null) return false;" in ts
       and "RemoteButtons.idOf(TV, e.getKeyCode(), e.getScanCode(), pad, vendor, product)" in kb)
 check("over other apps: kids mode's hidden app stays closed, the PIN or a home that does not answer opens our home (which asks the PIN, then opens the app, only a chosen one)",
       'r.getBoolean(ExtrasWords.HIDDEN, true)) { log("key app=hidden"); return; }' in ts and "if (r == null || r.getBoolean(ExtrasWords.NEEDS_PIN, true))" in ts
@@ -71,6 +71,7 @@ want = {
     "TCL 190": "youtube", "TCL 4065": "youtube", "TCL 4062": "netflix", "TCL 4020": "tclchannel", "TCL gamepad 190": "null", "TCL arrow": "null",
     "Sony 196 scan 496": "core", "Sony 191 scan 758": "netflix", "Sony VIDEO_APP scan 485": "youtube", "Sony 3004": "sonyliv", "Sony 196 unknown scan": "null",
     "onn other remote": "null", "onn its remote": "freetv", "Hisense 295": "prime", "filter TCL 11": "false", "filter TCL 12": "true",
+    "filter Xiaomi AFKR0": "false", "filter Xiaomi MiTV-M": "false", "filter Xiaomi PatchWall": "false", "filter Sony": "true",   # 4.4 beta 3 (XMRM-M3): no key filter outside our home on Xiaomi
     "valid pkg": "true", "valid shell": "false",
     "outside default passes": "0", "outside home passes": "0", "outside other key passes": "0", "outside chosen opens": "2:org.smarttube.stable",
     "outside repeat eaten": "1", "outside release eaten": "1", "outside next press opens": "2",
