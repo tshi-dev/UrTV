@@ -50,6 +50,6 @@ check("7. after a Home check the setup page is brought back at once (the TV's se
 hk = svc[svc.index("static boolean homeKey(Context c)"):svc.index("/** 4.4: the setup's word")]
 check("8. R3 (the Home key caught by the add-on): a switch, on by default on a Google TV from build 413 (tests/build413_test.py), set through the home's adb-only receiver; fixed-word logs",
       'getBoolean(ExtrasWords.HOME_KEY, false)' in hk and "if (e.getKeyCode() == KeyEvent.KEYCODE_HOME && homeKeyActive()) return homeKeyCaught(e);" in svc
-      and "|| homeKeyActive());" in svc and 'case "sa.urtv.home.HOME_KEY":' in text(HOME / "DockReceiver.java")
+      and "|| (homeKeyActive() && KeyButton.filterSafe()));" in svc and 'case "sa.urtv.home.HOME_KEY":' in text(HOME / "DockReceiver.java")
       and 'android:name="sa.urtv.home.HOME_KEY"' in text(ROOT / "android/launcher/src/main/AndroidManifest.xml") and "`optimize/dock.sh home-key on|off|status`" in text(ROOT / "docs/HOMEDOCTOR.md"))
 sys.exit(1 if failed else 0)

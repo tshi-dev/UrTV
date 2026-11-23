@@ -43,6 +43,10 @@ public final class KeyAppsRun {
         say("Hisense 295", RemoteButtons.idOf(RemoteButtons.HISENSE, 295, 0, false, -1, -1));
         say("filter TCL 11", RemoteButtons.filterSafe(tcl, 30));
         say("filter TCL 12", RemoteButtons.filterSafe(tcl, 31));
+        say("filter Xiaomi AFKR0", RemoteButtons.filterSafe(RemoteButtons.XIAOMI_AFKR0, 30));
+        say("filter Xiaomi MiTV-M", RemoteButtons.filterSafe(RemoteButtons.XIAOMI, 28));
+        say("filter Xiaomi PatchWall", RemoteButtons.filterSafe(RemoteButtons.XIAOMI_PATCHWALL_ONLY, 30));
+        say("filter Sony", RemoteButtons.filterSafe(RemoteButtons.SONY, 30));
         say("valid pkg", KeyApps.validChoice("net.mbc.shahidTV"));
         say("valid shell", KeyApps.validChoice("a.b; reboot"));
 
