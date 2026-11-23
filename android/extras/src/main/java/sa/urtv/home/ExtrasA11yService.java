@@ -422,7 +422,7 @@ public class ExtrasA11yService extends AccessibilityService {
             if (own != null) { choice = own; global = true; }
         }
         if (KeyApps.chosen(choice) && e.getAction() == KeyEvent.ACTION_DOWN && e.getRepeatCount() == 0 && launchIntent(this, choice) == null) {
-            if (global) log("youtube key=app missing");   // said, never a silent nothing: the key goes on to the TV as before
+            if (global) log("key app=noyoutube");   // said, never a silent nothing: the key goes on to the TV as before
             choice = "";   // its app was removed: the button's own again (asked once a press)
         }
         int k = keyApps.decide(id, e.getKeyCode(), e.getAction(), e.getRepeatCount(), e.getEventTime(), global ? false : homeFront, choice, KeyButton.burstMs());   // global: our screen never sees it either

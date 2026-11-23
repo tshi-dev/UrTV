@@ -88,7 +88,7 @@ svc = (ROOT / "android/extras/src/main/java/sa/urtv/home/ExtrasA11yService.java"
 ak = svc.split("private boolean appKey(KeyEvent e) {")[1].split("\n    }\n")[0]
 check("beta 3: on its default, a TCL's YouTube button opens its own app from the add-on while our home is the home, our screen in front or not; the owner's choice wins; a missing app is said",
       "KeyApps.globalOwn(KeyButton.TV, id, wanted(this) || oursChosen())" in ak and "if (!KeyApps.chosen(choice)) {" in ak and "global ? false : homeFront" in ak
-      and 'log("youtube key=app missing")' in ak)
+      and 'log("key app=noyoutube")' in ak)
 check("beta 3: the add-on asks for key events for it (a TCL, our home the person's, the filter safe)",
       "KeyApps.globalWanted(KeyButton.TV, wanted(this) || oursChosen(), KeyButton.filterSafe())" in svc.split("private void filterKeys() {")[1].split("\n    }\n")[0])
 for k, v in want.items():
