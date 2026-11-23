@@ -1718,6 +1718,7 @@ async function loadPrayers(){
     buildPrayers(t);
     PRAYERS_DAY = want + '|api';
     try{ localStorage.setItem(PT, JSON.stringify({d: want, t})); }catch(_){}
+    try{ for(let i = localStorage.length - 1; i >= 0; i--){ const k = localStorage.key(i); if(k && k.startsWith('ptimes:') && k !== PT) localStorage.removeItem(k); } }catch(_){}   // 4.4 beta 3: one place's day kept, an old place's or method's let go
   }catch(e){
     if(!PRAYERS.length || PRAYERS_DAY.slice(0, 10) !== want){   // today's times already here are kept
       try{ buildPrayers(computePrayers()); PRAYERS_DAY = want + '|calc'; }catch(_){}
@@ -2407,6 +2408,9 @@ const leagueSlug = n => String(n).toLowerCase().replace(/[^a-z0-9]+/g, '-').repl
 let LEAGUE_DATA = (()=>{ try{ return JSON.parse(localStorage.getItem('leagueData') || '{}') || {}; }catch(e){ return {}; } })();   // name -> its file
 const STALE_ASK_H = 6, STALE_ASKED = new Set();   // a past game with no result: asked for once, 6 h after its kick-off
 let LIVE_PATCH = {};   // idEvent -> {at, ev}: lookupevent's newer word on a game, used while newer than the league's file
+// 4.4 beta 3 («heavy after a week»): a patch older than LIVE_PATCH_KEEP_MS is older than any league file the page still reads: let go (the page runs for days)
+const LIVE_PATCH_KEEP_MS = 3 * 86400000;
+function pruneLivePatch(now){ for(const k in LIVE_PATCH){ const p = LIVE_PATCH[k]; if(!p || !(now - p.at < LIVE_PATCH_KEEP_MS)) delete LIVE_PATCH[k]; } }
 const catId = name => (/^id(\d{1,6})$/.exec(name) || [])[1];   // a catalogue league: its TheSportsDB id
 // 4.3 a catalogue league (#leagues=id…): its next and last games from TheSportsDB, one request after the other (step: the queue's
 // gap); the answer kept like a file's, so a failed refresh keeps the last one. -> 1 when it answered
@@ -2502,6 +2506,7 @@ const loadLive = guarded('live', async function(){
   // a game 6 h past kick-off with no result: ask once
   const stale = matchEvents().filter(ev => !STALE_ASKED.has(ev.idEvent) && now - toDate(ev).getTime() > STALE_ASK_H * 3600000 && pendingResult(ev, now)).slice(0, LEAGUE_LIVE_MAX);
   stale.forEach(ev => STALE_ASKED.add(ev.idEvent));
+  pruneLivePatch(now);
   const jobs = [   // one lookup at a time, a pause between
     ...Object.entries(MATCHES).map(([id, ev]) => async () => {
       if(!live(ev)) return;

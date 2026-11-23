@@ -189,6 +189,7 @@ final class HomeCard {
     void refresh() {
         resumed = true;
         idle.removeCallbacks(drop);
+        idle.removeCallbacks(night);   // in use again: never let go now
         if (web != null && !loading) { idle.removeCallbacks(kickPull); idle.postDelayed(kickPull, 5_000); }
         if (web != null) resumeWeb();
         final int gen = ++refreshGen;
@@ -214,6 +215,19 @@ final class HomeCard {
     static final long IDLE_DROP_MS = 10 * 60 * 1000;
     private final android.os.Handler idle = new android.os.Handler(android.os.Looper.getMainLooper());
     private final Runnable drop = new Runnable() { @Override public void run() { if (!resumed) destroy(); } };
+
+    /** 4.4 beta 3 (NightRebuild): when the page was built (elapsedRealtime, the TV's sleep counted) */
+    private long builtAt;
+    /** NightRebuild: while the home is away, the page is let go once a day at night (never in use); the next return builds it again */
+    private final Runnable night = new Runnable() {
+        @Override public void run() {
+            if (resumed || web == null) return;
+            if (NightRebuild.due(false, android.os.SystemClock.elapsedRealtime() - builtAt, java.util.Calendar.getInstance().get(java.util.Calendar.HOUR_OF_DAY))) {
+                android.util.Log.i("UrTVCard", "card rebuild=nightly");   // a fixed word
+                destroy();
+            } else idle.postDelayed(this, NightRebuild.CHECK_MS);
+        }
+    };
 
     /** «UrTV النظيف» without the card: its page is not made (and the one that was is let go) */
     void hide(boolean on) { hidden = on; if (on) destroy(); }
@@ -294,11 +308,14 @@ final class HomeCard {
         keepStill();   // 4.4 beta 3 (users of 4.3.6: «البطاقات تصير صورة سوداء» on the way back): the last frame stays in the card's place
         if (web != null) { web.onPause(); web.pauseTimers(); }
         if (web != null && Ram.tight(activity)) idle.postDelayed(drop, IDLE_DROP_MS);   // P9: a weak TV does not keep a page it is not showing for long
+        idle.removeCallbacks(night);
+        if (web != null) idle.post(night);   // NightRebuild: asked now, then every half hour while away
     }
 
     void destroy() {
         if (web == null) return;
         idle.removeCallbacks(kickPull);
+        idle.removeCallbacks(night);
         if (target != null) { parent.removeView(target); target = null; targetParams = null; }
         if (footballFocus != null) { footballFocus.remove(); footballFocus = null; }
         if (market != null) { parent.removeView(market); market = null; marketParams = null; }
@@ -393,6 +410,7 @@ final class HomeCard {
         WebView made = WebViews.make(activity);
         if (made == null) return false;
         web = made;
+        builtAt = android.os.SystemClock.elapsedRealtime();
         web.setBackgroundColor(Color.TRANSPARENT);
         web.setFocusable(false);
         web.setFocusableInTouchMode(false);
