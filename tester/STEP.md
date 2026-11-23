@@ -1,3 +1,11 @@
+«▶▶ BETA 3 = build 608 (next d304a68b). Replaces 581. Adds 11 fixes: the control-centre crash (#67), the frozen screen (a cover that never fades), the YouTube remote key, the stuck USB-debugging prompt, the prayer method at boot, Xiaomi keys, the inputs list, side-loaded apps in «كل التطبيقات», Wi-Fi protection, a nightly page rebuild, the tournaments tick (#64). Install home, screensaver and add-on 608 over the current build with adb (keep data). Screenshot-checked only, one short report:
+ (1) the first Home after the install opens UrTV;
+ (2) settings → «مركز التحكم» card → OK, 5 times: no crash (the #67 path);
+ (3) power-cycle the TV, then press keys at once while the home loads: the screen must move (no frozen picture); logcat for «frozen-screen recovered» if it ever triggers;
+ (4) the remote's YouTube key opens YouTube;
+ (5) prayer times after the reboot show the owner's city method (not Umm al-Qura if his city isn't Mecca);
+ (6) `saver.sh show` identical to the backup.»
+
 «▶▶ BETA 3 = build 581 (apk-next 3.581, next a7b77d8b). Beta 2 (577) is LIVE on apk-beta. Install home, screensaver and add-on 581 over 577 with adb (keep data). Then, screenshot-checked only, one short report:
  (1) the first Home press after the install opens UrTV;
  (2) light mode: `optimize/dock.sh lite-signals status` reads fine; DON'T force the notice on the owner's TV;
