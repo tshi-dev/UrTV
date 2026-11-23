@@ -32,7 +32,7 @@ check("on our home a chosen button that is installed is answered first (Xiaomi's
       and "if (ParentalPolicy.visible(Parental.state(this), pkg)) guarded(ParentalPolicy.REMOTE_APP, pkg, labelOf(pkg), () -> openPackage(pkg));" in main_key)
 check("the add-on (over other apps) asks for keys only while a button was given an app and a filter is safe here; it looks only at this remote's app buttons",
       "|| KeyApps.filterWanted(front, KeyApps.anyChosen(keyChoices), KeyButton.filterSafe())" in ts and "if (appKey(e)) return true;" in ts
-      and "if (!KeyButton.filterSafe()) return false;" in ts and "|| (homeKeyActive() && KeyButton.filterSafe()));" in ts and "String id = KeyButton.of(e);" in ts and "if (id == null) return false;" in ts
+      and "if (!KeyButton.filterSafe()) return false;" in ts and "|| homeKeyActive());" in ts and "KeyButton.homeCatchSafe()" in ts.split("private boolean homeKeyActive()")[1].split("\n")[0] and "String id = KeyButton.of(e);" in ts and "if (id == null) return false;" in ts
       and "RemoteButtons.idOf(TV, e.getKeyCode(), e.getScanCode(), pad, vendor, product)" in kb)
 check("over other apps: kids mode's hidden app stays closed, the PIN or a home that does not answer opens our home (which asks the PIN, then opens the app, only a chosen one)",
       'r.getBoolean(ExtrasWords.HIDDEN, true)) { log("key app=hidden"); return; }' in ts and "if (r == null || r.getBoolean(ExtrasWords.NEEDS_PIN, true))" in ts
