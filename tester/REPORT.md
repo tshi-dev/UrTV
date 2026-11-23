@@ -3318,3 +3318,12 @@ Pictures (PC only): optimize/run/step96/pics/upd-1.png … upd-6.png.
 - (6) saver.sh show vs optimize/run/step98/before3/show.txt: same as before (updatechannel beta and the new «backtwice: on» line from 612 as before; not owner's choice yet).
 - Mute: a toggle during the check unmuted it; toggled back: Muted true (verified).
 - Owner's setup: home on UrTV (focus restored to home), settings unchanged from the backup except the two lines above.
+
+## BETA 3 = build 614 (a9aaa522, run 45188034063), 23 Nov, owner away, TV muted
+ALL PASS is NOT claimed: (4) is NOT done.
+- (1) first Home press after the install: PASS (focus sa.urtv.home MainActivity; screenshot 1-first-home.png).
+- (2) saver.sh show: «backtwice: off» PASS; nothing else differs from the backup except updatechannel beta (owner's).
+- (3) Back twice fast on the UrTV home: PASS. Focus stayed on sa.urtv.home MainActivity, the screensaver did not start (3-back-twice.png).
+- (4) settings → screensaver section, row «رجوع مرتين يفتح شاشة التوقف» reads «متوقف»: NOT DONE. The settings screen is reached from the home's top-left icon; I could not reach it in a safe, screenshot-checked sequence this time (the control bar is the only path I got to). Needs the owner or a later pass.
+- (5) control centre once, OK then Back: PASS (panel opened, Back returned to the bar; logcat: no FATAL/AndroidRuntime for sa.urtv.*; screenshot 5-ok.png).
+- Mute: on (verified Muted: true). Home is on UrTV.
