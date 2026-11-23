@@ -33,6 +33,7 @@ the same network. Note the build in the report's first line.
   On a Google TV: Home from an app, quickly, five times: UrTV each time; after a restart the add-on works (Home, sleep). Apps
   installed outside the store are on the home.
   Rows: R-263, R-264, R-266, R-268, R-009, R-054, R-058, R-069, R-121, R-122, R-139, R-046, R-055.
+  Also R-306: on a TCL with the TV's Google TV home kept and ours as the home, the remote's YouTube button opens YouTube (or the app chosen for it).
 
 ## Settings and update (4 min)
 
