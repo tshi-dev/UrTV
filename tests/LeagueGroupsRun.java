@@ -17,6 +17,26 @@ public final class LeagueGroupsRun {
             && LeagueGroups.matches("الامم", "دوري الأمم الأوروبية", "") && LeagueGroups.matches("nations uefa", "x", "UEFA Nations League") && !LeagueGroups.matches("copa del", "كأس إيطاليا", "Coppa Italia")
             && LeagueGroups.matches("", "x") && LeagueGroups.matches("a", "x") && LeagueGroups.matches("كاس", "كأس العالم", ""));
         check("the count of the tournaments ticked", LeagueGroups.onCount(Arrays.asList("1", "2", "3"), Arrays.asList("2")) == 2 && LeagueGroups.onCount(Arrays.asList("1"), Arrays.asList()) == 1);
+        java.util.List<String> ids = Arrays.asList("4480", "4481", "4429"), off = Arrays.asList("4481");
+        java.util.List<String> p = LeagueGroups.pressTournament(ids, off, false, "4480");
+        check("#64: a tournament pressed while the switch is off: only it ticked (the others unticked), so its tick shows and the count is 1",
+            p.equals(Arrays.asList("4481", "4429")) && LeagueGroups.shownCount(ids, p, true) == 1 && !p.contains("4480"));
+        java.util.List<String> q = LeagueGroups.pressTournament(ids, off, true, "4480"), r = LeagueGroups.pressTournament(ids, off, true, "4481");
+        check("#64: the switch on: a press flips that tournament alone (unticked, or ticked back), nothing else changes", q.contains("4480") && q.contains("4481") && q.size() == 2
+            && r.isEmpty() && off.equals(Arrays.asList("4481")));
+        check("#64: the count beside the switch is the ticks shown: 0 while off (no tick shows), the ticked ones while on", LeagueGroups.shownCount(ids, off, false) == 0
+            && LeagueGroups.shownCount(ids, off, true) == 2);
+        boolean match = true;   // every state and every press: the count equals the ticks the rows show (row ticked = switch on and not unticked)
+        for (int mask = 0; mask < 8; mask++) for (int sw = 0; sw < 2; sw++) for (String id : ids) {
+            java.util.List<String> o = new java.util.ArrayList<>();
+            for (int i = 0; i < 3; i++) if ((mask >> i & 1) == 1) o.add(ids.get(i));
+            java.util.List<String> after = LeagueGroups.pressTournament(ids, o, sw == 1, id);
+            int ticks = 0;
+            for (String x : ids) if (!after.contains(x)) ticks++;
+            match &= LeagueGroups.shownCount(ids, after, true) == ticks;
+            match &= sw == 1 || after.size() == ids.size() - 1 && !after.contains(id);
+        }
+        check("#64: after any press from any state, the switch is on and the count is the ticks the rows show", match);
         System.exit(0);
     }
 }

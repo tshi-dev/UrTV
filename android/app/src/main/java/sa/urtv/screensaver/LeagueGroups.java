@@ -73,4 +73,17 @@ final class LeagueGroups {
         for (String id : ids) if (!off.contains(id)) n++;
         return n;
     }
+
+    /** #64: the count beside «كل البطولات الكبرى», the ticks the person sees: none while the switch is off */
+    static int shownCount(List<String> ids, List<String> off, boolean on) { return on ? onCount(ids, off) : 0; }
+
+    /** #64: the unticked list after a press on one tournament. Switch on: that one flips. Switch off: the switch turns on (the caller sets it)
+     *  with that tournament alone ticked, so the tick shows and the count is 1. */
+    static List<String> pressTournament(List<String> ids, List<String> off, boolean on, String id) {
+        List<String> now = new java.util.ArrayList<>();
+        if (!on) { for (String x : ids) if (!x.equals(id)) now.add(x); return now; }
+        now.addAll(off);
+        if (!now.remove(id)) now.add(id);
+        return now;
+    }
 }

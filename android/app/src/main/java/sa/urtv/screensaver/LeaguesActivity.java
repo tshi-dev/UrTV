@@ -212,19 +212,19 @@ public class LeaguesActivity extends Activity {
         // the big tournaments: the switch, then each one
         list.addView(section(S.t("البطولات الكبرى")), line(dp(8)));
         final boolean on = prefs.tournaments();
-        list.addView(row("tour:all", on, S.t("كل البطولات الكبرى"), S.t("%s من %s", String.valueOf(LeagueGroups.onCount(ids, off)), String.valueOf(ids.size())), v -> { prefs.setTournaments(!prefs.tournaments()); fill(); }), line(dp(8)));
+        list.addView(row("tour:all", on, S.t("كل البطولات الكبرى"), S.t("%s من %s", String.valueOf(LeagueGroups.shownCount(ids, off, on)), String.valueOf(ids.size())), v -> { prefs.setTournaments(!prefs.tournaments()); fill(); }), line(dp(8)));
         for (final String[] t : tournaments) {
             if (!LeagueGroups.matches(query, t[1], t[2])) continue;
             final boolean ticked = !off.contains(t[0]);
             list.addView(row("tour:" + t[0], on && ticked, name(t[1], t[2]), "", v -> {
-                List<String> now = new ArrayList<>(prefs.tournamentsOff());
-                boolean was = now.remove(t[0]);
-                if (!was) now.add(t[0]);
+                boolean onNow = prefs.tournaments();
+                List<String> now = LeagueGroups.pressTournament(ids, prefs.tournamentsOff(), onNow, t[0]);
                 prefs.setTournamentsOff(now);
-                paintTick((LinearLayout) v, prefs.tournaments() && was);   // its own row, and the switch's count
+                if (!onNow) { prefs.setTournaments(true); fill(); return; }   // #64: the switch was off: on, this one alone ticked, every row redrawn
+                paintTick((LinearLayout) v, !now.contains(t[0]));   // its own row, and the switch's count
                 View all = list.findViewWithTag("tour:all");
                 if (all instanceof LinearLayout && ((LinearLayout) all).getChildCount() > 2)
-                    ((TextView) ((LinearLayout) all).getChildAt(2)).setText(conv(S.t("%s من %s", String.valueOf(LeagueGroups.onCount(ids, now)), String.valueOf(ids.size()))));
+                    ((TextView) ((LinearLayout) all).getChildAt(2)).setText(conv(S.t("%s من %s", String.valueOf(LeagueGroups.shownCount(ids, now, true)), String.valueOf(ids.size()))));
             }), line(dp(8)));
         }
         // the four sections: the built-in leagues, then the catalogue's

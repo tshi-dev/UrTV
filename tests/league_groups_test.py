@@ -53,6 +53,9 @@ check("the chooser keeps the cap (Prefs.MAX_LEAGUES), takes the tournaments out 
       and "ids.contains(r[0])" in act and "r[6].isEmpty()" in act and "searching" in act)
 check("no TheSportsDB request for the tournaments from the TV: the page asks the one file, no league id of the set goes into #leagues=", "tournaments" in prefs and "thesportsdb" not in act.lower())
 tpl = read(ROOT / "src/template.html")
+check("#64 (lehyani07): a tournament pressed while «كل البطولات الكبرى» is off turns the switch on with it alone ticked and redraws; the switch's count is the ticks shown",
+      "LeagueGroups.pressTournament(ids, prefs.tournamentsOff(), onNow, t[0])" in act and "if (!onNow) { prefs.setTournaments(true); fill(); return; }" in act
+      and "LeagueGroups.shownCount(ids, off, on)" in act and "LeagueGroups.shownCount(ids, now, true)" in act and "onCount(ids, off))" not in act)
 check("the page: the file after the person's own leagues (a game both have is the league's), nothing from a file older than 36 h, the unticked left out, nothing loaded when off, the cards' rows after the teams' and the leagues' with at most 3",
       "CONFIG.leagues.concat(CONFIG.tour ? ['tournaments'] : [])" in tpl and "> 36 * 3600000" in tpl and "CONFIG.tourOff.includes(String(ev.idLeague))" in tpl and "if(CONFIG.tour) try{" in tpl
       and "(ev.tour ? 100 : 0)" in tpl and "filter(y => y.ev.tour).length < 3" in tpl)
@@ -65,7 +68,7 @@ if shutil.which("javac") and shutil.which("java"):
             lines = [l.split("\t") for l in out.splitlines() if "\t" in l]
             for n, v in lines:
                 check(n, v == "ok")
-            check("every case ran", len(lines) == 4, out)
+            check("every case ran", len(lines) == 8, out)
 else:
     check("java is installed", False)
 sys.exit(1 if failed else 0)

@@ -49,7 +49,7 @@ tog = act.split("private void toggleLeague(String stored, String tag) {", 1)[1].
 check("…a tick changes its own row in place (the focus stays, no list built again); the whole list only when the row is not there",
       "paintTick((LinearLayout) row, !had); showCount();" in tog and tog.count("fill()") == 1 and "else fill();" in tog
       and 'toggleLeague(l[0], "lg:" + l[0])' in act and "toggleLeague(stored, tag)" in act and "GlassPaint.follow(row, look);" in act)
-check("…a tournament's tick too, with the switch's count", "paintTick((LinearLayout) v, prefs.tournaments() && was);" in act and 'list.findViewWithTag("tour:all")' in act)
+check("…a tournament's tick too, with the switch's count", "paintTick((LinearLayout) v, !now.contains(t[0]));" in act and 'list.findViewWithTag("tour:all")' in act)
 check("…the waiting draw is dropped when the screen closes", "protected void onDestroy() { h.removeCallbacks(searchNow);" in act)
 srch = st.split("private void searchTeam(final int slot) {", 1)[1].split("\n    }\n", 1)[0]
 check("«الفرق المتابعة»: the club search runs off the UI thread (the list read and searched in a thread), its results shown on the UI thread",
