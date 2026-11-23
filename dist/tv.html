@@ -1564,6 +1564,7 @@ async function loadPrayers(){
     buildPrayers(t);
     PRAYERS_DAY = want + '|api';
     try{ localStorage.setItem(PT, JSON.stringify({d: want, t})); }catch(_){}
+    try{ for(let i = localStorage.length - 1; i >= 0; i--){ const k = localStorage.key(i); if(k && k.startsWith('ptimes:') && k !== PT) localStorage.removeItem(k); } }catch(_){}
   }catch(e){
     if(!PRAYERS.length || PRAYERS_DAY.slice(0, 10) !== want){
       try{ buildPrayers(computePrayers()); PRAYERS_DAY = want + '|calc'; }catch(_){}
@@ -2170,6 +2171,8 @@ const leagueSlug = n => String(n).toLowerCase().replace(/[^a-z0-9]+/g, '-').repl
 let LEAGUE_DATA = (()=>{ try{ return JSON.parse(localStorage.getItem('leagueData') || '{}') || {}; }catch(e){ return {}; } })();
 const STALE_ASK_H = 6, STALE_ASKED = new Set();
 let LIVE_PATCH = {};
+const LIVE_PATCH_KEEP_MS = 3 * 86400000;
+function pruneLivePatch(now){ for(const k in LIVE_PATCH){ const p = LIVE_PATCH[k]; if(!p || !(now - p.at < LIVE_PATCH_KEEP_MS)) delete LIVE_PATCH[k]; } }
 const catId = name => (/^id(\d{1,6})$/.exec(name) || [])[1];
 async function loadCatalogueLeague(name, step){
   const id = catId(name), evs = [];
@@ -2257,6 +2260,7 @@ const loadLive = guarded('live', async function(){
   const theirs = CONFIG.leagues.length ? leagueGames().filter(ev => live(ev) && !own.has(ev.idEvent)).slice(0, LEAGUE_LIVE_MAX) : [];
   const stale = matchEvents().filter(ev => !STALE_ASKED.has(ev.idEvent) && now - toDate(ev).getTime() > STALE_ASK_H * 3600000 && pendingResult(ev, now)).slice(0, LEAGUE_LIVE_MAX);
   stale.forEach(ev => STALE_ASKED.add(ev.idEvent));
+  pruneLivePatch(now);
   const jobs = [
     ...Object.entries(MATCHES).map(([id, ev]) => async () => {
       if(!live(ev)) return;

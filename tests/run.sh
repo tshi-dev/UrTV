@@ -150,6 +150,7 @@ python3 tests/cities_world_test.py
 python3 tests/cities_more_test.py   # 4.3.3 the offline city search: the list (GeoNames + Wikidata), its generator, the ranking
 python3 tests/cities_md_test.py
 python3 tests/home_card_test.py
+python3 tests/night_rebuild_test.py
 python3 tests/football_off_test.py   # 4.3.4: «بدون» turns the football home's widgets off
 python3 tests/home_page_test.py   # the home's cards on the screensaver's newer page (its stocks stayed stale on the APK's own)
 python3 tests/perf_idle_test.py
