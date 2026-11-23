@@ -60,6 +60,22 @@ final class KeyApps {
         return !homeFront && anyChosen && filterSafe;
     }
 
+    /**
+     * 4.4 beta 3 (three TCL reports, Smart TV and Smart TV Pro, Android 14: «زر يوتيوب في الريموت ما يفتح شي»; and the G08 notes): on a TCL the YouTube button
+     * (BUTTON_3) is a GLOBAL key: Android hands it only to the stock launcher's GlobalKeyListener_Receiver, never to the window in front, so with our home as the
+     * person's home it reached nobody (no UrTVKeys line on our screen; the stock home put back made it work). An accessibility key filter does see it (the G08
+     * report). So while our home is the person's home, the button on its default opens its own app (YouTube) from the add-on, our screen in front or not; a
+     * choice the owner made wins as before. null: not such a button here (the TV's own way, as before).
+     */
+    static String globalOwn(int tv, String id, boolean oursHome) {
+        return oursHome && tv == RemoteButtons.TCL && "youtube".equals(id) ? RemoteButtons.YOUTUBE_APP : null;
+    }
+
+    /** the add-on asks for key events for {@link #globalOwn}: a TCL, our home the person's, the filter safe there */
+    static boolean globalWanted(int tv, boolean oursHome, boolean filterSafe) {
+        return oursHome && filterSafe && tv == RemoteButtons.TCL;
+    }
+
     /** the button goes on as it would have */
     static final int PASS = 0;
     /** the repeats and the release of a press that acted, and the rest of a Xiaomi burst */

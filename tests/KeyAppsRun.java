@@ -84,6 +84,16 @@ public final class KeyAppsRun {
         say("holding after open", r.holding(190));
         r.decide("youtube", 190, 1, 0, 9400, false, st, 0);
         say("not holding after release", r.holding(190));
+        // beta 3 (TCL reports): the YouTube button is a global key; on its default it opens its own app from the add-on while our home is the home
+        say("global TCL youtube ours", KeyApps.globalOwn(RemoteButtons.TCL, "youtube", true));
+        say("global TCL youtube not ours", KeyApps.globalOwn(RemoteButtons.TCL, "youtube", false));
+        say("global TCL netflix", KeyApps.globalOwn(RemoteButtons.TCL, "netflix", true));
+        say("global Sony youtube", KeyApps.globalOwn(RemoteButtons.SONY, "youtube", true));
+        say("global wanted TCL", KeyApps.globalWanted(RemoteButtons.TCL, true, true));
+        say("global wanted TCL 11", KeyApps.globalWanted(RemoteButtons.TCL, true, false));
+        say("global wanted not ours", KeyApps.globalWanted(RemoteButtons.TCL, false, true));
+        KeyApps.Outside g = new KeyApps.Outside();
+        say("global over our home opens", g.decide("youtube", 190, 0, 0, 20000, false, KeyApps.globalOwn(RemoteButtons.TCL, "youtube", true), 0) + ":" + g.pkg);
         System.out.print(out);
     }
 }
