@@ -28,6 +28,12 @@ License, Copyright (c) 2026 Seagey, the same text as below. With the look «كن
 no code of it is used), and the scene packs' rows show a thumbnail of one of couch-tv's scene photos (`assets/scene-thumbs/couch.jpg`), under the
 same license.
 
+With «شكل التطبيقات: أيقونات», an installed app that couch-tv has a face for shows couch-tv's face for it
+(`tv-home/web/app-icons/*.png`, copied to `android/launcher/src/main/assets/couch-faces/`; the one table is
+`android/launcher/src/main/java/sa/urtv/home/CouchFaces.java`), under the same license. The names and logos on those faces are their
+owners' trademarks (10 Play, 7plus, 9Now, ABC iview, Apple TV, Binge, Crunchyroll, DAZN, Disney+, Foxtel Go, HBO Max, Kayo, Netflix, Paramount+, Prime Video, RaiPlay, SBS On Demand, Spotify, Stan, Stremio, Twitch, VRT MAX, VTM GO, YouTube); each is shown only to launch the person's own installed app, and is
+removed on request by deleting its line in CouchFaces and its file.
+
 ## talkies
 
 The home screen's spring motion (`android/launcher/src/main/java/sa/urtv/home/Spring.java`) and the ideas for the channel and

@@ -1569,6 +1569,13 @@ public class MainActivity extends Activity {
             // 4.4 beta 2 (the owner, build 570: small logos in squares, wide ones squeezed): the icon composed on its own square by TileArt's rules,
             // as the tiles are (an adaptive icon's layers edge to edge, a legacy one trimmed and large on its edge colour), drawn full-bleed
             Drawable q = artCache.get("q:" + a.pkg);
+            String face = q == null ? CouchFaces.face(a.pkg) : null;   // 4.4 beta 4: couch-tv's face for the apps it has (one table, CouchFaces)
+            if (face != null) {
+                try (java.io.InputStream in = getAssets().open(CouchFaces.asset(face))) {
+                    android.graphics.Bitmap fb = android.graphics.BitmapFactory.decodeStream(in);
+                    if (fb != null) artCache.put("q:" + a.pkg, q = new BitmapDrawable(getResources(), fb));
+                } catch (java.io.IOException | RuntimeException | OutOfMemoryError e) { q = null; }
+            }
             if (q == null) {
                 int side = Math.round(getResources().getDisplayMetrics().heightPixels * FavBar.ICON / 1080f * FavBar.ROOM_SCALE);
                 q = composeTile(sharpIcon(ri, pm), side, side);
