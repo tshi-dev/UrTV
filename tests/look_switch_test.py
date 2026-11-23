@@ -71,7 +71,7 @@ check("a change that throws: the look shown before is applied again, still behin
       "() -> { if (before != null) updateClock(before); }" in sl and "catch (RuntimeException e)" in look and "undo.run()" in look)
 ch = body(look, "    void change(final Runnable apply, final Runnable undo, final Ready ready) {")
 check("the cover is on the screen before the change is made, and goes only once the new state has drawn (at most WAIT_MS), after one more frame",
-      ch.index("root.addView(cover") < ch.index("run(apply, undo);\n        final long start") and "t >= MIN_MS && safe(ready)" in ch and "t < WAIT_MS" in ch and "AfterFrame.run(root, HomeLook.this::reveal)" in ch)
+      ch.index("root.addView(cover") < ch.index("run(apply, undo);\n        final ImageView mine = cover;") and "t >= MIN_MS && safe(ready)" in ch and "t < WAIT_MS" in ch and "AfterFrame.run(root, HomeLook.this::reveal)" in ch)
 check("one fade of 250 ms on Motion's curve; «الوضع الخفيف» (Ram.low) a cut; the picture half size, recycled after",
       "FADE_MS = 250" in look and "setInterpolator(Motion.ease())" in look and "if (Ram.low(activity)) { done(c); return; }" in look
       and "getWidth() / 2" in look and "shot.recycle()" in look)
