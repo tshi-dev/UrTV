@@ -22,7 +22,7 @@ hide = main[main.index("    private void hideSnapshot() {"):main.index("    // -
 check("the start picture: its fade, and a direct removal a little after it even when the fade never ends",
       "withEndAction(" in hide and "HomeSnapshot.FADE_MS + 400);" in hide and "removeView(v); }" in hide)
 check("the card's page hidden until its first frame comes back by its own timer too (B7: 700 ms; a new page: HomeLook.WAIT_MS)",
-      "w.postDelayed(new Runnable() { @Override public void run() { w.setAlpha(1f); dropStill(); } }, 700);" in card   # beta 3: the timer also drops the still (the card is let go, R-313) and "}, HomeLook.WAIT_MS);" in card)
+      "w.postDelayed(new Runnable() { @Override public void run() { w.setAlpha(1f); dropStill(); } }, 700);" in card and "}, HomeLook.WAIT_MS);" in card)   # beta 3: the timer also drops the still (the card is let go, R-313)
 w = main[main.index("    // ---- 4.4 beta 3, the frozen screen"):]
 w = w[:w.index("    public boolean dispatchKeyEvent") if "    public boolean dispatchKeyEvent" in w else len(w)]
 check("every key down (not a repeat) runs the watchdog first", "if (e.getAction() == KeyEvent.ACTION_DOWN && e.getRepeatCount() == 0) watchKey();" in main)
