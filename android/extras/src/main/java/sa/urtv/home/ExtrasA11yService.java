@@ -270,7 +270,7 @@ public class ExtrasA11yService extends AccessibilityService {
     }
 
     /** the catch acts: on, and the person's home is ours (the setup's word, or Android's default home); never over a home the person kept */
-    private boolean homeKeyActive() { return homeKey(this) && (wanted(this) || oursChosen()); }
+    private boolean homeKeyActive() { return homeKey(this) && KeyButton.homeCatchSafe() && (wanted(this) || oursChosen()); }   // beta 3: never on Xiaomi (its remote's app buttons and volume), kept on a TCL
 
     /** whether Android sends us the keys now (the catch can act) */
     private boolean homeKeyFiltering() {
@@ -361,7 +361,7 @@ public class ExtrasA11yService extends AccessibilityService {
                 SettingsKey.filterWanted(front, stockHome, lowRam, homeKeyLost, Build.VERSION.SDK_INT)
                 || KeyApps.filterWanted(front, KeyApps.anyChosen(keyChoices), KeyButton.filterSafe())   // «أزرار الريموت»: only for a button given an app
                 || KeyApps.globalWanted(KeyButton.TV, wanted(this) || oursChosen(), KeyButton.filterSafe())   // beta 3: a TCL's YouTube button (a global key)
-                || (homeKeyActive() && KeyButton.filterSafe()));   // 4.4 R3: the Home key caught here (on by default on a Google TV, only while the person's home is ours); never where any filter breaks the remote (Xiaomi, TCL's Android 11)
+                || homeKeyActive());   // 4.4 R3: the Home key caught here (on by default on a Google TV, only while the person's home is ours; never on Xiaomi: homeKeyActive)
             AccessibilityServiceInfo info = getServiceInfo();
             if (info == null) return;
             boolean has = (info.flags & AccessibilityServiceInfo.FLAG_REQUEST_FILTER_KEY_EVENTS) != 0;

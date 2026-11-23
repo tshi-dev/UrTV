@@ -182,6 +182,14 @@ final class RemoteButtons {
      * outside our home either (the Home key's catch included: the window watch brings our home back instead).
      */
     static boolean filterSafe(int tv, int sdk) {
-        return !(tv == TCL && sdk == 30) && tv != XIAOMI && tv != XIAOMI_AFKR0 && tv != XIAOMI_PATCHWALL_ONLY;
+        return !(tv == TCL && sdk == 30) && !xiaomi(tv);
     }
+
+    static boolean xiaomi(int tv) { return tv == XIAOMI || tv == XIAOMI_AFKR0 || tv == XIAOMI_PATCHWALL_ONLY; }
+
+    /**
+     * beta 3 (build 608, the owner's TCL: the first Home after the update opened the stock home again): the Home key's catch is off on Xiaomi ONLY. A TCL on
+     * Android 11 keeps it (its double volume step is the remote-buttons' filter only, filterSafe), as every build before 608 did.
+     */
+    static boolean homeCatchSafe(int tv) { return !xiaomi(tv); }
 }
