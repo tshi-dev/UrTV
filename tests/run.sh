@@ -239,6 +239,8 @@ python3 tests/loudness_test.py   # the recitation and the adhan lifted inside th
 python3 tests/seek_burst_test.py
 python3 tests/pill_text_test.py
 python3 tests/control_center_test.py
+python3 tests/control_center_token_test.py   # 4.4 beta 3, GitHub #67: «مركز التحكم» opens only over a live window (one retry once attached; never BadTokenException)
+python3 tests/back_twice_test.py   # 4.4 beta 3: «رجوع مرتين يفتح شاشة التوقف» (on by default, never a single Back, never in kids mode); the cards keep their last frame on the way back
 python3 tests/tasks_card_test.py
 python3 tests/reminders_test.py   # «المهام» with a time: the alarm, the cards, the keys, saver.sh, the phone's date and time (the page's card: reminder_page.test.mjs)
 python3 tests/now_playing_test.py
@@ -435,6 +437,7 @@ node tests/prayer_crosscheck_page.mjs
 node tests/prayer_crosscheck_world_page.mjs
 node tests/hijri_crosscheck_page.mjs
 node tests/page.test.mjs
+node tests/pack_fallback.test.mjs   # 4.4 beta 3: a pack or «صوري» photo that does not load never leaves the screensaver black (a bundled photo shows)
 node tests/tafsir.test.mjs   # «التفسير الميسر» (#tafsir=1): every verse of the deck has its tafsir, whole, in pages of three lines at most, never «…»
 node tests/saver_designs.test.mjs   # 4.4 the screensaver's designs (the owner approved them): each shows what it should; a prayer's name and time never touch
 node tests/lone_card_fit.test.mjs   # 4.4 the owner: a lone card on the launcher is fitted to its box, never a row cut at the bottom

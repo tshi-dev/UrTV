@@ -32,6 +32,17 @@ final class HomeBack {
         return row != null && row != taken;
     }
 
+    /** 4.4 beta 3 «رجوع مرتين يفتح شاشة التوقف»: two Backs this close (ms) start the screensaver */
+    static final long TWICE_MS = 1000;
+
+    /**
+     * A second Back within TWICE_MS of the first, on the default home with nothing to go back to, starts the screensaver (on by default). Never in
+     * kids mode and never without the screensaver app; a single Back does what it always did (the first one only starts the count).
+     */
+    static boolean twice(boolean on, long now, long lastBack, boolean defaultHome, boolean gridScrolled, boolean kids, boolean saverThere) {
+        return on && defaultHome && !gridScrolled && !kids && saverThere && lastBack > 0 && now - lastBack >= 0 && now - lastBack <= TWICE_MS;
+    }
+
     /** Is this app the one Home resolves to? {@code resolvedPackage} is the package of the activity the HOME intent resolves to (null: none, or a chooser). */
     static boolean isDefaultHome(String resolvedPackage, String ownPackage) {
         return resolvedPackage != null && resolvedPackage.equals(ownPackage);

@@ -243,11 +243,42 @@ final class HomeCard {
             final WebView w = web;
             w.setAlpha(0f);
             w.postVisualStateCallback(++guardId, new WebView.VisualStateCallback() {
-                @Override public void onComplete(long id) { if (w.getAlpha() < 1f) w.setAlpha(1f); }
+                @Override public void onComplete(long id) { if (w.getAlpha() < 1f) w.setAlpha(1f); dropStill(); }
             });
-            w.postDelayed(new Runnable() { @Override public void run() { w.setAlpha(1f); } }, 700);
-        }
+            w.postDelayed(new Runnable() { @Override public void run() { w.setAlpha(1f); dropStill(); } }, 700);
+        } else dropStill();
         guardNext = false;
+    }
+
+    /**
+     * 4.4 beta 3: the card's last frame, drawn once into a picture as an app comes in front, shown in the page's place (the same box, under it)
+     * until the page has drawn again after the return: the way back shows the cards as they were, never a black or empty box. A page that cannot
+     * be drawn this way leaves a clear picture (the box as before: no worse). Dropped as soon as the page is back, or with it.
+     */
+    private android.widget.ImageView still;
+
+    private void keepStill() {
+        if (web == null || web.getWidth() <= 0 || web.getHeight() <= 0 || !(web.getLayoutParams() instanceof FrameLayout.LayoutParams)) return;
+        dropStill();
+        try {
+            android.graphics.Bitmap b = android.graphics.Bitmap.createBitmap(web.getWidth(), web.getHeight(), android.graphics.Bitmap.Config.ARGB_8888);
+            web.draw(new android.graphics.Canvas(b));
+            still = new android.widget.ImageView(activity);
+            still.setImageBitmap(b);
+            still.setScaleType(android.widget.ImageView.ScaleType.FIT_XY);
+            still.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO);
+            still.setTranslationX(web.getTranslationX());
+            still.setTranslationY(web.getTranslationY());
+            parent.addView(still, parent.indexOfChild(web), new FrameLayout.LayoutParams((FrameLayout.LayoutParams) web.getLayoutParams()));
+        } catch (RuntimeException | OutOfMemoryError e) {
+            still = null;   // no picture: the card as before
+        }
+    }
+
+    private void dropStill() {
+        if (still == null) return;
+        parent.removeView(still);
+        still = null;
     }
 
     /** the card was paused (an app was in front): the next return holds the card until its first frame (B7) */
@@ -260,6 +291,7 @@ final class HomeCard {
         resumed = false;
         idle.removeCallbacks(kickPull);   // 4.4 the alarms already set cover the next 8 days
         guardNext = web != null;
+        keepStill();   // 4.4 beta 3 (users of 4.3.6: «البطاقات تصير صورة سوداء» on the way back): the last frame stays in the card's place
         if (web != null) { web.onPause(); web.pauseTimers(); }
         if (web != null && Ram.tight(activity)) idle.postDelayed(drop, IDLE_DROP_MS);   // P9: a weak TV does not keep a page it is not showing for long
     }
@@ -270,6 +302,7 @@ final class HomeCard {
         if (target != null) { parent.removeView(target); target = null; targetParams = null; }
         if (footballFocus != null) { footballFocus.remove(); footballFocus = null; }
         if (market != null) { parent.removeView(market); market = null; marketParams = null; }
+        dropStill();
         parent.removeView(web);
         web.destroy();
         web = null;

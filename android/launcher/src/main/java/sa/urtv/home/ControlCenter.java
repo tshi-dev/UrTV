@@ -87,6 +87,7 @@ final class ControlCenter {
     private int PANEL, LINE, FOCUSED, TILE, TEXT, SUB, ON, ON_SUB, ACCENT, RING;
 
     private final Activity act;
+    private boolean retryPending;   // #67: one open waiting for the home's window to be attached
     private final Host host;
     private final Handler ui = new Handler(Looper.getMainLooper());
     private final float density;
@@ -165,6 +166,24 @@ final class ControlCenter {
     /** …starting on an item (its key) or on «تخصيص» ("custom"): for the debug pictures; null is the panel as the person finds it */
     void open(View anchor, String start) {
         if (showing()) return;
+        // 4.4 beta 3 (GitHub #67, a TCL TV on Android 11: «Unable to add window -- token null is not valid»): opened from Settings or after the
+        // PIN, the home's window may not be attached yet. Never over a finishing or gone activity; with no window token, once more when the
+        // anchor's window is attached (one retry, never a loop); a refusal by the window manager is caught, never a crash.
+        if (act.isFinishing() || act.isDestroyed() || anchor == null) return;
+        if (anchor.getWindowToken() == null || !anchor.isAttachedToWindow()) {
+            if (retryPending) return;
+            retryPending = true;
+            final String at = start;
+            anchor.addOnAttachStateChangeListener(new View.OnAttachStateChangeListener() {
+                @Override public void onViewAttachedToWindow(View v) {
+                    v.removeOnAttachStateChangeListener(this);
+                    v.post(() -> { retryPending = false; if (v.getWindowToken() != null && !act.isFinishing() && !act.isDestroyed()) open(v, at); });
+                }
+                @Override public void onViewDetachedFromWindow(View v) { }
+            });
+            if (anchor.isAttachedToWindow()) anchor.post(() -> { retryPending = false; if (anchor.getWindowToken() != null && !act.isFinishing() && !act.isDestroyed()) open(anchor, at); });
+            return;
+        }
         GlassStyle.Look l = GlassSource.look(act);   // the look of now, before any row is made
         PANEL = GlassStyle.over(l.dialog, l.base); LINE = l.line; FOCUSED = l.focus; TILE = l.panel; TEXT = l.text; SUB = l.sub;
         ON = l.onFocus; ON_SUB = l.onFocusSub; ACCENT = l.accent; RING = l.ring;
@@ -298,7 +317,12 @@ final class ControlCenter {
         // the slide: from beyond its own edge to its place in Motion.MS on the one curve; a weak TV («الوضع الخفيف») and the wide page fade in where they stand
         final boolean fade = wideNow || Ram.low(anchor.getContext());
         if (fade) panel.setAlpha(0f); else panel.setTranslationX((rtl ? 1 : -1) * (panelW + margin));
-        pw.showAtLocation(anchor.getRootView(), Gravity.NO_GRAVITY, 0, 0);   // the whole screen, from its corner
+        try {
+            pw.showAtLocation(anchor.getRootView(), Gravity.NO_GRAVITY, 0, 0);   // the whole screen, from its corner
+        } catch (android.view.WindowManager.BadTokenException | IllegalStateException e) {   // #67: the window went between the check and the show
+            pw = null;
+            return;
+        }
         panel.post(() -> { if (fade) panel.animate().alpha(1f).setDuration(SLIDE_MS).setInterpolator(Motion.ease()).start();
             else panel.animate().translationX(0).setDuration(SLIDE_MS).setInterpolator(Motion.ease()).start(); });
     }
