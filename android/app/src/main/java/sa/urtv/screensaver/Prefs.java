@@ -157,6 +157,10 @@ final class Prefs {
     void setCity(String name, String lat, String lon, String tz, String country) {
         String[] builtin = Cities.find(name, lat, lon);
         String code = country == null ? "" : country.trim().toUpperCase(java.util.Locale.ROOT);
+        if (builtin == null && (tz == null || tz.isEmpty())) {   // 4.4 beta 3: a place of one's own without its zone takes the nearest built-in city's, never the TV's (OwnPlace)
+            String[] near = OwnPlace.near(lat, lon);
+            if (near != null) { tz = near[0]; if (code.isEmpty()) code = near[1]; }
+        }
         if (code.isEmpty()) code = builtin != null ? Cities.country(builtin) : Location.codeOf(tz);
         sp.edit().putString("cityName", name).putString("cityLat", lat).putString("cityLon", lon)
             .putString("cityTz", tz).putString("cityCountry", code).apply();
@@ -167,7 +171,10 @@ final class Prefs {
         String code = sp.getString("cityCountry", "");
         if (!code.isEmpty()) return code;
         String[] c = city(), builtin = Cities.find(c[0], c[1], c[2]);
-        if (builtin == null) return Location.codeOf(cityTz());   // a place of one's own: from its zone, never saved (the TV's zone may change)
+        if (builtin == null) {   // a place of one's own saved without its country
+            String[] near = sp.getString("cityTz", "").isEmpty() ? ownPlace(c) : null;   // its own zone saved: that zone's country, as before
+            return near != null ? near[1] : Location.codeOf(cityTz());   // else from its zone, never saved (the TV's zone may change)
+        }
         code = Cities.country(builtin);
         if (!code.isEmpty()) sp.edit().putString("cityCountry", code).apply();   // a city saved before 4.1 has none: found once, kept (a user report on 4.1: lag)
         return code;
@@ -184,7 +191,24 @@ final class Prefs {
         if (!own.isEmpty()) return own;
         String[] c = city(), x = Cities.find(c[0], c[1], c[2]);   // the map, not a scan of every city (Cities.find)
         if (x != null) return x.length > 3 && x[3] != null ? x[3] : TZ;   // the Gulf and world cities carry their own
+        String[] near = ownPlace(c);
+        if (near != null) return near[0];
         return java.util.TimeZone.getDefault().getID();
+    }
+
+    /**
+     * 4.4 beta 3 (a Bahrain user: Umm al-Qura at every start): a place of one's own saved without its zone took the TV's zone at every read, wrong at a
+     * cold start before the TV has set it. The nearest built-in city's zone and country (OwnPlace), found once and saved with the place; null when
+     * nothing is near (the TV's zone then, as before).
+     */
+    private String[] ownPlace(String[] c) {
+        String[] near = OwnPlace.near(c[1], c[2]);
+        if (near == null) return null;
+        SharedPreferences.Editor e = sp.edit();
+        if (sp.getString("cityTz", "").isEmpty()) e.putString("cityTz", near[0]);
+        if (sp.getString("cityCountry", "").isEmpty()) e.putString("cityCountry", near[1]);
+        e.apply();
+        return near;
     }
 
     /** «طريقة الحساب»: auto resolves the saved country to a numeric #pm; explicit legacy choices retain their existing values. */
