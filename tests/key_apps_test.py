@@ -80,7 +80,17 @@ want = {
     "filter outside chosen": "true", "filter home front": "false", "filter all default": "false", "filter wanted TCL 11": "false",
     "after home burst eaten": "1", "after home release eaten": "1", "after home later opens": "2",
     "no burst window opens": "2", "holding after open": "true", "not holding after release": "false",
+    "global TCL youtube ours": "com.google.android.youtube.tv", "global TCL youtube not ours": "null", "global TCL netflix": "null", "global Sony youtube": "null",
+    "global wanted TCL": "true", "global wanted TCL 11": "false", "global wanted not ours": "false",
+    "global over our home opens": "2:com.google.android.youtube.tv",
 }
+svc = (ROOT / "android/extras/src/main/java/sa/urtv/home/ExtrasA11yService.java").read_text(encoding="utf-8")
+ak = svc.split("private boolean appKey(KeyEvent e) {")[1].split("\n    }\n")[0]
+check("beta 3: on its default, a TCL's YouTube button opens its own app from the add-on while our home is the home, our screen in front or not; the owner's choice wins; a missing app is said",
+      "KeyApps.globalOwn(KeyButton.TV, id, wanted(this) || oursChosen())" in ak and "if (!KeyApps.chosen(choice)) {" in ak and "global ? false : homeFront" in ak
+      and 'log("youtube key=app missing")' in ak)
+check("beta 3: the add-on asks for key events for it (a TCL, our home the person's, the filter safe)",
+      "KeyApps.globalWanted(KeyButton.TV, wanted(this) || oursChosen(), KeyButton.filterSafe())" in svc.split("private void filterKeys() {")[1].split("\n    }\n")[0])
 for k, v in want.items():
     check(f"key apps: {k}", got.get(k) == v, f"{got.get(k)!r}, wanted {v!r}")
 sys.exit(1 if failed else 0)
