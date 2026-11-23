@@ -25,6 +25,8 @@ final class HomeLook {
     static final long FADE_MS = 250;
     /** the longest the cover waits for the new state (the cards' page loading on a weak TV); then it fades anyway */
     static final long WAIT_MS = 1500;
+    /** 4.4 beta 3 (the owner's TV, 21 Nov: the screen stood still while the home worked under it): the cover never outlives this, faded or not */
+    static final long HARD_MS = 4000;
     /** the least it waits, so the change's own reads (the cards' url, read off the UI thread) have started */
     static final long MIN_MS = 120;
 
@@ -51,6 +53,7 @@ final class HomeLook {
         Bitmap b = snapshot(root);
         if (b == null) { run(apply, undo); return; }   // no picture (no memory for it): the change in place, as before 4.5
         shot = b;
+        coverAt = SystemClock.uptimeMillis();
         cover = new ImageView(activity);
         cover.setImageBitmap(b);
         cover.setScaleType(ImageView.ScaleType.FIT_XY);
@@ -59,6 +62,8 @@ final class HomeLook {
         cover.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO);
         root.addView(cover, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
         run(apply, undo);
+        final ImageView mine = cover;
+        ui.postDelayed(() -> { if (cover == mine) done(mine); }, HARD_MS);   // the reveal's fade may never end (no frames: the screen off, a stalled start)
         final long start = SystemClock.uptimeMillis();
         ui.post(new Runnable() {
             @Override public void run() {
@@ -86,6 +91,18 @@ final class HomeLook {
         if (Ram.low(activity)) { done(c); return; }   // «الوضع الخفيف» (Ram.low, as Motion.move): a cut, never a fade
         c.animate().alpha(0f).setDuration(FADE_MS).setInterpolator(Motion.ease()).withEndAction(() -> done(c)).start();
     }
+
+    /** the cover off now, with no fade (the frozen-screen watchdog, a key long after the change); false when there is none */
+    boolean drop() {
+        if (cover == null) return false;
+        cover.animate().cancel();
+        done(cover);
+        return true;
+    }
+
+    /** when the cover went up (SystemClock.uptimeMillis), 0 with none */
+    long since() { return cover == null ? 0 : coverAt; }
+    private long coverAt;
 
     private void done(ImageView c) {
         ViewGroup p = (ViewGroup) c.getParent();

@@ -606,6 +606,44 @@ public class MainActivity extends Activity {
         snapOverlay = null;
         android.util.Log.i("UrTVHome", "snapshot overlay: gone after " + (android.os.SystemClock.elapsedRealtime() - snapShownAt) + " ms");
         v.animate().alpha(0f).setDuration(HomeSnapshot.FADE_MS).withEndAction(() -> { if (homeRoot != null) homeRoot.removeView(v); }).start();
+        // 4.4 beta 3: the fade's end may never come (no frames: the screen off, a stalled start); the picture goes anyway, a little after it
+        handler.postDelayed(() -> { if (v.getParent() instanceof ViewGroup) ((ViewGroup) v.getParent()).removeView(v); }, HomeSnapshot.FADE_MS + 400);
+    }
+
+    // ---- 4.4 beta 3, the frozen screen (the owner's TV, 21 Nov, and the tester's «كل التطبيقات»: keys reached the home, OK opened an app,
+    // the screen stood still, no ANR): a picture left over the working home. Every cover has a hard end (HomeLook.HARD_MS, the start picture's
+    // own); and the watchdog: a key with nothing drawn for FROZEN_MS after it, or a cover older than its end at a key, drops every cover,
+    // draws again and logs the fixed word «frozen-screen recovered».
+    static final long FROZEN_MS = 2000;
+    private long lastDrawAt, keyAt;
+    private boolean drawWatch;
+    private final Runnable frozenCheck = () -> { if (lastDrawAt < keyAt) recoverFrozen("no frame after a key"); };
+
+    private void watchKey() {
+        if (!drawWatch && getWindow() != null) {
+            drawWatch = true;
+            getWindow().getDecorView().getViewTreeObserver().addOnDrawListener(() -> lastDrawAt = SystemClock.uptimeMillis());
+        }
+        long now = SystemClock.uptimeMillis();
+        keyAt = now;
+        if (coverStuck(now)) { recoverFrozen("a cover past its end"); return; }
+        handler.removeCallbacks(frozenCheck);
+        handler.postDelayed(frozenCheck, FROZEN_MS);
+    }
+
+    /** a cover still up after the longest it may stay */
+    private boolean coverStuck(long now) {
+        boolean look = homeLook != null && homeLook.since() > 0 && now - homeLook.since() > HomeLook.HARD_MS;
+        boolean snap = snapOverlay != null && SystemClock.elapsedRealtime() - snapShownAt > HomeSnapshot.LIVE_WAIT_MS + HomeSnapshot.FADE_MS + 400;
+        return look || snap;
+    }
+
+    private void recoverFrozen(String why) {
+        boolean any = homeLook != null && homeLook.drop();
+        if (snapOverlay != null) { View v = snapOverlay; snapOverlay = null; v.animate().cancel(); if (v.getParent() instanceof ViewGroup) ((ViewGroup) v.getParent()).removeView(v); any = true; }
+        if (homeRoot != null) homeRoot.invalidate();
+        if (getWindow() != null) getWindow().getDecorView().invalidate();
+        android.util.Log.w("UrTVHome", "frozen-screen recovered (" + why + (any ? ", a cover dropped" : "") + ")");
     }
 
     /** 4.3.1 hotfix: the small (480 px) copy of the photo in front: in memory and on disk, drawn in the first frame of a start or a return when no photo is in a view (WallFirstFrame) */
@@ -5155,6 +5193,7 @@ public class MainActivity extends Activity {
 
     @Override
     public boolean dispatchKeyEvent(KeyEvent e) {
+        if (e.getAction() == KeyEvent.ACTION_DOWN && e.getRepeatCount() == 0) watchKey();   // 4.4 beta 3: the frozen-screen watchdog
         if (e.getAction() != KeyEvent.ACTION_DOWN || !DebugFlags.on(this, "keytrace")) return dispatchKey(e);
         KeyTrace trace = KeyTrace.begin(this, e);   // debug only: where the time of this key goes (dock.sh debug keytrace on)
         boolean r = dispatchKey(e);

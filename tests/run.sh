@@ -239,6 +239,7 @@ python3 tests/loudness_test.py   # the recitation and the adhan lifted inside th
 python3 tests/seek_burst_test.py
 python3 tests/pill_text_test.py
 python3 tests/control_center_test.py
+python3 tests/frozen_screen_test.py   # 4.4 beta 3: every cover over the home ends by a deadline; the key watchdog «frozen-screen recovered»
 python3 tests/tasks_card_test.py
 python3 tests/reminders_test.py   # «المهام» with a time: the alarm, the cards, the keys, saver.sh, the phone's date and time (the page's card: reminder_page.test.mjs)
 python3 tests/now_playing_test.py
