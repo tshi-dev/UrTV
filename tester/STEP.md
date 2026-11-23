@@ -1,3 +1,11 @@
+«▶▶ BETA 3 = build 614 (next a9aaa522). Replaces 612. Only change: «رجوع مرتين يفتح شاشة التوقف» moved to the SCREENSAVER settings section and is OFF by default (R-315). Install home, screensaver and add-on 614 over 612 with adb (keep data). Screenshot after every key, no blind D-pad, TV muted. One short report, PASS/FAIL each:
+ (1) the FIRST Home press right after the install opens UrTV;
+ (2) `saver.sh show` reads «backtwice: off», and nothing else differs from the backup (updatechannel beta is the owner's);
+ (3) on the UrTV home, Back twice fast: the screensaver must NOT start;
+ (4) settings → screensaver section: the row «رجوع مرتين يفتح شاشة التوقف» is there and reads «متوقف»; it is gone from the home-bar rows. Change nothing.
+ (5) control centre once, OK then Back: no crash.
+ If all PASS, say «ALL PASS» on the first line of the report.»
+
 «▶▶ BETA 3 = build 612, the rest (owner, 23 Nov: «I'll never be at the TV, the tester does all»). You do (2) to (5) yourself, by adb keys. Take a screenshot after EVERY key and read it before the next one (no blind D-pad). TV muted, never the PIN. One short report, PASS/FAIL each:
  (2) settings → «مركز التحكم» card → OK, then Back. Do it 5 times, then check logcat for FATAL or AndroidRuntime from sa.urtv.*.
  (3) `adb reboot`. As soon as `adb wait-for-device` returns, send DPAD_RIGHT/LEFT every 0.5 s for 20 s. The home must move in the screenshots (no stuck picture). Then `logcat -d | grep -i "frozen-screen"`.
