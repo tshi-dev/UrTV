@@ -3299,3 +3299,13 @@ Pictures (PC only): optimize/run/step96/pics/upd-1.png … upd-6.png.
 - (5) prayer method after reboot: not checked on the TV (no screen read); the settings dump shows no prayer-method change from the backup.
 - (6) saver.sh show vs optimize/run/step98/before3/show.txt: two differences: updatechannel beta (owner turned beta on earlier; original was next) and a NEW line «backtwice: on» added by build 608 (a default of the new build, not an owner choice). Needs the owner's decision (keep, or set off).
 - Mute: on after the reboot (verified Muted: true).
+
+## BETA 3 = build 612 (1da2cb48, run 45136477817), 23 Nov, owner away, TV muted
+- Installed home, screensaver and add-on 612 over 608 with adb (data kept): versionCode 612/612/612, HOME role = UrTV.
+- (1) FIRST Home press right after the install (no am start before it): focus = sa.urtv.home MainActivity. PASS (the first-Home fix works on this TV).
+- (2) control-centre card OK x5: NOT done (remote navigation on the owner's TV).
+- (3) power cycle: done (tv.py --reboot). After the reboot, Home opens UrTV, mute on. Pressing keys during the load: NOT done.
+- (4) remote YouTube key: NOT done (no adb key mapped here).
+- (5) prayer method after reboot: NOT checked on screen.
+- (6) saver.sh show vs optimize/run/step98/before3/show.txt: identical except updatechannel beta (owner's earlier choice) and the NEW line «backtwice: on» (a build default, still needs the owner's decision).
+- Mute: on after the reboot (verified Muted: true).
