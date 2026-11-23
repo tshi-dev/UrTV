@@ -24,9 +24,12 @@ check("one table: package and face, each package once", len(rows) > 20 and len({
 check("every face the table names is a file, and every file is named (one line and one file take a brand away)", named == files, (named ^ files))
 check("the faces are small (each under 40 KB, all under 1 MB)", all(f.stat().st_size < 40_000 for f in D.glob("*.png")) and sum(f.stat().st_size for f in D.glob("*.png")) < 1_000_000)
 icons = main[main.index('Drawable q = artCache.get("q:" + a.pkg);'):main.index("if (q != null) { a.icon = q; a.iconComposed = true; }")]
-check("«أيقونات»: an installed app's face first (appOf runs only for the apps on the TV), else TileArt of its own icon; drawn full-bleed as a composed square",
-      "String face = q == null ? CouchFaces.face(a.pkg) : null;" in icons and "getAssets().open(CouchFaces.asset(face))" in icons
-      and icons.index("CouchFaces.face(") < icons.index("composeTile(sharpIcon(ri, pm), side, side)") and "if (q == null) {" in icons)
+check("«أيقونات»: an installed app's face first, else TileArt of its own icon; drawn full-bleed as a composed square",
+      "android.graphics.Bitmap fb = faces.get(a.pkg);" in icons and icons.index("faces.get(a.pkg)") < icons.index("composeTile(sharpIcon(ri, pm), side, side)"))
+lf = main[main.index("    private void loadFaces(PackageManager pm) {"):main.index("    private App appOf(")]
+check("the faces are decoded once, on the apps' loader thread (never on the UI thread: appOf only reads them), and only for installed apps",
+      "getAssets().open(CouchFaces.asset(f[1]))" in lf and "pm.getPackageInfo(f[0], 0);" in lf and "if (facesRead) return;" in lf
+      and "if (FavBar.ICONS.equals(appsLook)) loadFaces(getPackageManager());" in main and "decodeStream" not in icons)
 notice = (ROOT / "THIRD_PARTY_NOTICES.md").read_text(encoding="utf-8")
 check("the notice: couch-tv's MIT licence covers the faces, the marks are their owners', shown only to launch the person's installed app",
       "assets/couch-faces/" in notice and "Copyright (c) 2026 Seagey" in notice and "trademarks" in notice and "CouchFaces" in notice)

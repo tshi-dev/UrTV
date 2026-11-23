@@ -1505,6 +1505,7 @@ public class MainActivity extends Activity {
         final String[] wanted = dockApps.clone();
         if (loader.isShutdown()) return;
         loader.execute(() -> {
+            if (FavBar.ICONS.equals(appsLook)) loadFaces(getPackageManager());   // 4.4 beta 4: couch-tv's faces, once, here on the loader
             final List<App> all = loadApps(wanted);
             runOnUiThread(() -> { if (gen == appsGen && !isDestroyed()) showApps(all, wanted, gen); });
         });
@@ -1540,6 +1541,22 @@ public class MainActivity extends Activity {
     }
 
     /** One app's name, art and colour (off the main thread for the whole list; on it for the one app «المخفية» brings back). */
+    /** 4.4 beta 4: couch-tv's faces (CouchFaces) of the installed apps, decoded once on the apps' loader thread, never on the UI thread; appOf only reads them */
+    private final java.util.Map<String, android.graphics.Bitmap> faces = new java.util.concurrent.ConcurrentHashMap<>();
+    private volatile boolean facesRead;
+
+    private void loadFaces(PackageManager pm) {
+        if (facesRead) return;
+        facesRead = true;
+        for (String[] f : CouchFaces.FACES) {
+            try { pm.getPackageInfo(f[0], 0); } catch (PackageManager.NameNotFoundException e) { continue; }   // only an installed app
+            try (java.io.InputStream in = getAssets().open(CouchFaces.asset(f[1]))) {
+                android.graphics.Bitmap fb = android.graphics.BitmapFactory.decodeStream(in);
+                if (fb != null) faces.put(f[0], fb);
+            } catch (java.io.IOException | RuntimeException | OutOfMemoryError ignored) { }
+        }
+    }
+
     private App appOf(ResolveInfo ri, PackageManager pm, Map<String, String> given) {
         ActivityInfo ai = ri.activityInfo;
         App a = new App();
@@ -1569,13 +1586,7 @@ public class MainActivity extends Activity {
             // 4.4 beta 2 (the owner, build 570: small logos in squares, wide ones squeezed): the icon composed on its own square by TileArt's rules,
             // as the tiles are (an adaptive icon's layers edge to edge, a legacy one trimmed and large on its edge colour), drawn full-bleed
             Drawable q = artCache.get("q:" + a.pkg);
-            String face = q == null ? CouchFaces.face(a.pkg) : null;   // 4.4 beta 4: couch-tv's face for the apps it has (one table, CouchFaces)
-            if (face != null) {
-                try (java.io.InputStream in = getAssets().open(CouchFaces.asset(face))) {
-                    android.graphics.Bitmap fb = android.graphics.BitmapFactory.decodeStream(in);
-                    if (fb != null) artCache.put("q:" + a.pkg, q = new BitmapDrawable(getResources(), fb));
-                } catch (java.io.IOException | RuntimeException | OutOfMemoryError e) { q = null; }
-            }
+            if (q == null) { android.graphics.Bitmap fb = faces.get(a.pkg); if (fb != null) artCache.put("q:" + a.pkg, q = new BitmapDrawable(getResources(), fb)); }   // 4.4 beta 4: couch-tv's face (decoded on the loader: loadFaces)
             if (q == null) {
                 int side = Math.round(getResources().getDisplayMetrics().heightPixels * FavBar.ICON / 1080f * FavBar.ROOM_SCALE);
                 q = composeTile(sharpIcon(ri, pm), side, side);
