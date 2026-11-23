@@ -82,6 +82,7 @@ the same network. Note the build in the report's first line.
   notifications question each time; reciter index readable; rows on the 8 px scale. ADB: `optimize/music.sh adhan test` on a muted TV:
   heard, then the TV muted again at its old volume; the sleep pill right after a restart.
   Rows: R-036, R-047, R-113, R-115, R-068, R-140, R-191, R-203, R-190, R-045, R-151, R-129, R-175, R-176, R-104.
+  Also R-308: with a city of your own outside Saudi Arabia (e.g. in Bahrain), turn the TV off at the wall and on: the first prayer times are the country's calculation, not Umm al-Qura.
 
 ## Phone, tasks, setup, games (1 min each, quick)
 
