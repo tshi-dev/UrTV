@@ -11,3 +11,7 @@ com\.google\.android\.(permissioncontroller|packageinstaller|ext\.services|ext\.
 com\.cltv\.mal
 com\.mediatek\.(tis|tv\.service|tv\.agent)
 android\.ext\.(services|shared)
+# 4.4 beta 3 (a Xiaomi box: Wi-Fi dropped and did not reconnect to saved networks after a setup): the connectivity path on any TV, by its usual
+# names: Wi-Fi, connectivity, captive portal login, network recommendation and scoring, carrier config, MediaTek's network service
+.*(wifi|connectivity|captiveportal|networkrecommendation|networkscor|carrierconfig).*
+com\.mediatek\.network
