@@ -18,6 +18,7 @@ the same network. Note the build in the report's first line.
   Also: switch «اللغة» and back, then move at once (the home made again answers at once); open a reminder card and press OK.
   On a TV with the add-on: the same at the minute tick; open «مركز التحكم», press the adhan preview; open «المباريات».
   Rows: R-269, R-270, R-271, R-272, R-001, R-002, R-042, R-254, R-255.
+  Also R-310 (a Xiaomi box at hand): after the setup, the remote's app buttons open their apps and volume changes the box's volume as before.
 - **S-02 Return to the home.** From YouTube, Home: the photo is there at once (no black, no blur), all favourites (not five), the tray's
   tiles inside it, the name under the focused tile, no other app comes to the front afterwards; «كل التطبيقات» lists the store and the
   maker's apps, no «تلفزيونك UrTV» tile, app names in one language.
