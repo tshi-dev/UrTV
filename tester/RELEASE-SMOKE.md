@@ -40,6 +40,7 @@ the same network. Note the build in the report's first line.
   opens the games (not settings, not an old preview) and Back returns to the home; «أطفئ الآن» says what it needs. After playing a
   game, Home, then «تلفزيونك» in it: the hub, not the game left on top.
   Rows: R-007, R-095, R-096, R-093, R-246, R-290.
+  Also R-309: «المصادر» lists the TV's HDMI inputs; on a TV that reports none, «الإعدادات» is there, never a list without a way to the inputs.
 - **S-06 Settings, single press.** Open the screensaver settings and press OK on 5 rows in a row, fast: each opens on the first press.
   The focused row is readable, the list does not slide sideways, dialogs are not see-through, no second line ends with «..», hints and
   footers inside the screen, the month names whole, the version with its build, focus stays on «UrTV النظيف» after it, «صوري» once,
