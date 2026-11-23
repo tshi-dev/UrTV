@@ -128,3 +128,4 @@ S-01 PASS
 S-02 FAIL the favourites showed five apps after Home (R-030)
 ...
 ```
+- **S-23 Match page channels.** On a match of a league with a verified broadcaster, «شاهد المباراة» opens UrTV Player with the broadcaster's name (Arabic and English) in the channel search, not the club's. Rows: R-314
