@@ -113,6 +113,12 @@ the same network. Note the build in the report's first line.
   changes nothing; with it, after the step Home still opens UrTV; uninstall UrTV from the TV's Settings: the TV opens «تلفزيونك بدون شاشة
   رئيسية» by itself (never a black screen, never a chooser); «افتح الإعدادات» and an app of the list open; turn the stock home on by hand:
   the next Home opens it, and the rescue screen does not come back. The full steps are in tester/STEP.md. Rows: R-282.
+- **S-22 Beta 3 field reports.** On a TCL Smart TV (Android 14): the remote's YouTube button opens YouTube with UrTV as the home. After a
+  restart no «السماح بتصحيح USB؟» shows over the home by itself. A Bahrain place of one's own keeps Bahrain's prayer method after a restart. On a
+  Xiaomi box the app buttons and the volume work after the setup and the Wi-Fi keeps its saved networks; «المصادر» lists HDMI 1, HDMI 2 and
+  the aerial where the TV has them; an app installed from outside the store that declares HOME (cinemana) is in «كل التطبيقات»; after a
+  week the home is not heavier (the card's page is let go).
+  Rows: R-306, R-307, R-308, R-309, R-310, R-311, R-312, R-313.
 
 ## The report
 
