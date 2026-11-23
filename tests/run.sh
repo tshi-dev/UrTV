@@ -437,6 +437,7 @@ node tests/prayer_crosscheck_page.mjs
 node tests/prayer_crosscheck_world_page.mjs
 node tests/hijri_crosscheck_page.mjs
 node tests/page.test.mjs
+node tests/pack_fallback.test.mjs   # 4.4 beta 3: a pack or «صوري» photo that does not load never leaves the screensaver black (a bundled photo shows)
 node tests/tafsir.test.mjs   # «التفسير الميسر» (#tafsir=1): every verse of the deck has its tafsir, whole, in pages of three lines at most, never «…»
 node tests/saver_designs.test.mjs   # 4.4 the screensaver's designs (the owner approved them): each shows what it should; a prayer's name and time never touch
 node tests/lone_card_fit.test.mjs   # 4.4 the owner: a lone card on the launcher is fitted to its box, never a row cut at the bottom

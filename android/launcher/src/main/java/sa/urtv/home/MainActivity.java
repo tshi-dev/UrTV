@@ -4289,8 +4289,8 @@ public class MainActivity extends Activity {
         updatePrayerLine();
         applyListenPill(cfg.listenPillOn);
         applyTasksPill(cfg.tasksPillOn());
-        backTwice = cfg.backTwice();   // 4.4 beta 3 «رجوع مرتين يفتح شاشة التوقف»
         Dock.followBackSaver(this, cfg.backSaver());   // «الرجوع يفتح شاشة التوقف» changed in the screensaver's settings: read at the next Back
+        backTwice = cfg.backTwice();   // 4.4 beta 3 «رجوع مرتين يفتح شاشة التوقف»
         Dock.followKeyApps(this, cfg.keyApps);   // «أزرار الريموت» changed in the screensaver's settings: read at the next key (and told to the add-on)
         applyUpdateBell(cfg.updateBellOn);   // [updates bell]
         applyBarSize(cfg.favBar);   // «تطبيقات في الشريط»
