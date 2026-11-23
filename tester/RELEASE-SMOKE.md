@@ -28,6 +28,7 @@ the same network. Note the build in the report's first line.
   In «ترتيب المفضلة» move an app and press a colour key (it acts); Menu inside an edit mode opens nothing over it; cancel the PIN on
   «التطبيقات المخفية», then long-press «انقل» on an app: it moves that app.
   Rows: R-005, R-008, R-010, R-256, R-257, R-258.
+  Also R-311: an app installed from outside the store that also declares itself a home (e.g. «cinemana leanback») shows in «كل التطبيقات».
 - **S-04 The remote's own buttons.** On the home and in an app: Netflix, YouTube, Prime (when the remote has them), the mic, a colour
   key, Settings (the TV's settings or ours, as the row says), the TV/Live key (the tuner, not the last HDMI), the input key.
   On a Google TV: Home from an app, quickly, five times: UrTV each time; after a restart the add-on works (Home, sleep). Apps
