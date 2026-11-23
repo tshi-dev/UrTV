@@ -633,6 +633,9 @@ public class SettingsActivity extends Activity {
         // Back on our home (nothing to go back to) starts the screensaver; the home takes it on its next tick or return (Dock.followBackSaver)
         row("الرجوع يفتح شاشة التوقف", prefs.backSaver() ? "مفعّل" : "متوقف", R.drawable.ic_eye,
             new Runnable() { public void run() { prefs.setBackSaver(!prefs.backSaver()); render(); } });
+        // 4.4 beta 3: Back twice within a second on our home starts the screensaver (on by default; a single Back is untouched)
+        row("رجوع مرتين يفتح شاشة التوقف", prefs.backTwice() ? "مفعّل" : "متوقف", R.drawable.ic_eye,
+            new Runnable() { public void run() { prefs.setBackTwice(!prefs.backTwice()); render(); } });
         // 4.4 (build 413, T9): «إضافات تلفزيونك» catches the remote's Home key and opens this home directly (Google TV's home never starts); on by
         // default on a Google TV. Shown only when the add-on answers (installed and on)
         final Boolean homeKey = homeKeySeen();   // 4.4 (QA-7, R1): the home's last answer; asked on a thread, never at a render

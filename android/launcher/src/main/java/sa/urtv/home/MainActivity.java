@@ -774,7 +774,18 @@ public class MainActivity extends Activity {
         else if (HomeBack.leaves(isDefaultHome(), false)) finish();
         // «الرجوع يفتح شاشة التوقف» (off by default): nothing to go back to, so the screensaver, behind its own lock as on its pill
         else if (HomeBack.startsSaver(Dock.backSaver(this), true, false, isInstalled(SAVER_PKG))) guarded(ParentalPolicy.PILL_SAVER, SAVER_PKG, "شاشة التوقف", this::startSaver);
+        // 4.4 beta 3 «رجوع مرتين يفتح شاشة التوقف» (on by default): a second Back within a second starts the screensaver; the first does nothing more than before
+        else {
+            long now = android.os.SystemClock.uptimeMillis();
+            if (HomeBack.twice(backTwice, now, lastBack, true, false, Parental.state(this).kids, isInstalled(SAVER_PKG))) {
+                lastBack = 0;
+                guarded(ParentalPolicy.PILL_SAVER, SAVER_PKG, "شاشة التوقف", this::startSaver);
+            } else lastBack = now;
+        }
     }
+
+    private long lastBack;   // «رجوع مرتين»: when the last Back that did nothing came
+    private volatile boolean backTwice = true;   // ConfigSnapshot.backTwice, taken with the settings
 
     /** Is this app the home the TV goes to on Home? (Not when the stock home is kept and this was opened from its tile.) */
     private boolean isDefaultHome() {
@@ -4278,6 +4289,7 @@ public class MainActivity extends Activity {
         updatePrayerLine();
         applyListenPill(cfg.listenPillOn);
         applyTasksPill(cfg.tasksPillOn());
+        backTwice = cfg.backTwice();   // 4.4 beta 3 «رجوع مرتين يفتح شاشة التوقف»
         Dock.followBackSaver(this, cfg.backSaver());   // «الرجوع يفتح شاشة التوقف» changed in the screensaver's settings: read at the next Back
         Dock.followKeyApps(this, cfg.keyApps);   // «أزرار الريموت» changed in the screensaver's settings: read at the next key (and told to the add-on)
         applyUpdateBell(cfg.updateBellOn);   // [updates bell]

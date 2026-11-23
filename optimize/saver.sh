@@ -80,6 +80,7 @@
 #   optimize/saver.sh kickoffgoal on              …a goal's score in the corner too (off = the default); kickoffend on: the final score
 #   optimize/saver.sh kickoffover on              …over another app too (off = the default; needs the add-on «إضافات تلفزيونك» (optimize/install.sh addon) with its «الظهور فوق التطبيقات»: optimize/dock.sh overlay on)
 #   optimize/saver.sh taskspill off                home screen: the «المهام» button: on (default) or off. Off removes only the button: the tasks stay, in the «المهام» card and on the phone
+#   optimize/saver.sh backtwice off                home screen: «رجوع مرتين يفتح شاشة التوقف», Back twice within a second starts the screensaver: on (default) or off
 #   optimize/saver.sh verse 3                      the verse-or-hadith card (card verse): day (default: a verse one day, a hadith the next), 3 or 10 (a new one every 3 or 10 minutes)
 #   optimize/saver.sh versekind verse              what that card shows: both (default: a verse, then a hadith), verse (verses only) or hadith (hadith only)
 #   optimize/saver.sh genres Drama,Comedy          episodes card: Drama Comedy Action Crime Thriller Mystery
@@ -314,6 +315,7 @@ case "${1:-}" in
   occasion) set1 occasion "${2:?usage: optimize/saver.sh occasion on|off}" ;;
   nightdim) set1 nightdim "${2:?usage: optimize/saver.sh nightdim on|off}" ;;
   taskspill) set1 taskspill "${2:?usage: optimize/saver.sh taskspill on|off}" ;;
+  backtwice) set1 backtwice "${2:?usage: optimize/saver.sh backtwice on|off}" ;;
   fbhide)   set1 fbhide "${2:?usage: optimize/saver.sh fbhide on|off}" ;;
   kickoff)  set1 kickoff "${2:?usage: optimize/saver.sh kickoff on|off|silent|whistle}" ;;
   kickoffgoal) set1 kickoffgoal "${2:?usage: optimize/saver.sh kickoffgoal on|off}" ;;

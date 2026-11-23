@@ -58,6 +58,7 @@ import java.util.Locale;
  * months = default («أكتوبر») or levant («تشرين الأول»), the Gregorian month's names on both screens.
  * occasion, nightdim, taskspill = on (the default, as always) or off: «المناسبة القادمة» at the bottom middle of the screensaver (the
  * countdown to Ramadan and the feasts), «تعتيم الليل» (the screensaver darker at night), the «المهام» button on the home screen.
+ * backtwice = on (the default) or off: «رجوع مرتين يفتح شاشة التوقف», Back twice within a second on our home starts the screensaver
  * backsaver = on or off (the default): «الرجوع يفتح شاشة التوقف», Back on our home starts the screensaver; the home follows it when it
  * changes (optimize/dock.sh backsaver sends it beside the home's own switch, so the row says what the home does).
  * verse = day (the default: a verse one day, a hadith the next) or 3 (a new one every 3 minutes): the verse-or-hadith card (QuoteEvery).
@@ -260,8 +261,8 @@ public class SaverReceiver extends BroadcastReceiver {
         if (kickoffOn != null && !kickoffOn.matches("on|off|silent|whistle")) return "error: kickoff is one of on off silent whistle";
         for (String[] x : new String[][] {{"kickoffgoal", kickoffGoal}, {"kickoffend", kickoffEnd}, {"kickoffover", kickoffOver}})
             if (x[1] != null && !"on".equals(x[1]) && !"off".equals(x[1])) return "error: " + x[0] + " is one of on off";
-        String backSaver = i.getStringExtra("backsaver"), fbHide = i.getStringExtra("fbhide"), dateNum = i.getStringExtra("datenum"), searchPill = i.getStringExtra("searchpill");
-        for (String[] x : new String[][] {{"occasion", occasion}, {"nightdim", nightDim}, {"taskspill", tasksPill}, {"backsaver", backSaver}, {"fbhide", fbHide}, {"datenum", dateNum}, {"searchpill", searchPill}})
+        String backSaver = i.getStringExtra("backsaver"), backTwice = i.getStringExtra("backtwice"), fbHide = i.getStringExtra("fbhide"), dateNum = i.getStringExtra("datenum"), searchPill = i.getStringExtra("searchpill");
+        for (String[] x : new String[][] {{"occasion", occasion}, {"nightdim", nightDim}, {"taskspill", tasksPill}, {"backsaver", backSaver}, {"backtwice", backTwice}, {"fbhide", fbHide}, {"datenum", dateNum}, {"searchpill", searchPill}})
             if (x[1] != null && !"on".equals(x[1]) && !"off".equals(x[1])) return "error: " + x[0] + " is one of on off";
         String verse = i.getStringExtra("verse");
         if (verse != null && !QuoteEvery.valid(verse)) return "error: verse is one of day 3 10";
@@ -561,6 +562,7 @@ public class SaverReceiver extends BroadcastReceiver {
         if (nightDim != null) p.setNightDim("on".equals(nightDim));
         if (tasksPill != null) p.setTasksPill("on".equals(tasksPill));
         if (backSaver != null) p.setBackSaver("on".equals(backSaver));
+        if (backTwice != null) p.setBackTwice("on".equals(backTwice));
         if (fbHide != null) p.setFbHideDone("on".equals(fbHide));
         if (kickoffOn != null) { if (kickoffOn.equals("on") || kickoffOn.equals("off")) p.setKickoff("on".equals(kickoffOn)); else { p.setKickoff(true); p.setKickoffWhistle("whistle".equals(kickoffOn)); } }
         if (kickoffGoal != null) p.setKickoffGoal("on".equals(kickoffGoal));
@@ -758,7 +760,7 @@ public class SaverReceiver extends BroadcastReceiver {
             + "\nwxmore: " + (p.wxMore() ? "on" : "off") + "\nmonths: " + p.months() + "\nverse: " + p.quoteEvery()
             + "\nversekind: " + p.verseKind() + "\nseconds: " + (p.seconds() ? "on" : "off") + "\nbackexit: " + p.homeExit()
             + "\noccasion: " + (p.occasion() ? "on" : "off") + "\nnightdim: " + (p.nightDim() ? "on" : "off") + "\ntaskspill: " + (p.tasksPill() ? "on" : "off")
-            + "\nbacksaver: " + (p.backSaver() ? "on" : "off") + "\nfbhide: " + (p.fbHideDone() ? "on" : "off") + "\nkickoff: " + (!p.kickoff() ? "off" : p.kickoffWhistle() ? "on (whistle)" : "on (silent)") + "\nkickoffgoal: " + (p.kickoffGoal() ? "on" : "off") + "\nkickoffend: " + (p.kickoffEnd() ? "on" : "off") + "\nkickoffover: " + (p.kickoffOver() ? "on" : "off") + "\ndatenum: " + (p.dateNum() ? "on" : "off") + "\nsearchpill: " + (p.searchPill() ? "on" : "off")
+            + "\nbacksaver: " + (p.backSaver() ? "on" : "off") + "\nbacktwice: " + (p.backTwice() ? "on" : "off") + "\nfbhide: " + (p.fbHideDone() ? "on" : "off") + "\nkickoff: " + (!p.kickoff() ? "off" : p.kickoffWhistle() ? "on (whistle)" : "on (silent)") + "\nkickoffgoal: " + (p.kickoffGoal() ? "on" : "off") + "\nkickoffend: " + (p.kickoffEnd() ? "on" : "off") + "\nkickoffover: " + (p.kickoffOver() ? "on" : "off") + "\ndatenum: " + (p.dateNum() ? "on" : "off") + "\nsearchpill: " + (p.searchPill() ? "on" : "off")
             + "\nprayermethod: " + p.prayerMethod()
             + "\nprayeradj: " + (p.prayerAdjOn() ? "on" : "off") + " " + PrayerAdj.describe(p.prayerAdj())
             + "\nhijrioffset: " + HijriOffset.describe(p.hijriOffset())

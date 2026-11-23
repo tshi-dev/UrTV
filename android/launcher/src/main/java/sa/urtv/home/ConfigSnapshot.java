@@ -349,6 +349,8 @@ final class ConfigSnapshot {
      * «الرجوع يفتح شاشة التوقف» on the screensaver's settings: «&backsaver=1» only while on. null when there is no real answer (an old copy,
      * or no screensaver), so nothing is moved on a guess; Dock.followBackSaver moves the home's switch only when this one changes.
      */
+    /** 4.4 beta 3 «رجوع مرتين يفتح شاشة التوقف»: on unless the screensaver says off (an older one says nothing: on) */
+    boolean backTwice() { return fragment == null || !(fragment.contains("&backtwice=0") || fragment.startsWith("backtwice=0")); }
     Boolean backSaver() { return stale || fragment == null ? null : (fragment.contains("&backsaver=1") || fragment.startsWith("backsaver=1")); }
 
     boolean latin() { return fragment != null && (fragment.contains("&digits=latin") || fragment.startsWith("digits=latin")); }
