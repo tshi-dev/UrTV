@@ -3309,3 +3309,12 @@ Pictures (PC only): optimize/run/step96/pics/upd-1.png … upd-6.png.
 - (5) prayer method after reboot: NOT checked on screen.
 - (6) saver.sh show vs optimize/run/step98/before3/show.txt: identical except updatechannel beta (owner's earlier choice) and the NEW line «backtwice: on» (a build default, still needs the owner's decision).
 - Mute: on after the reboot (verified Muted: true).
+
+## BETA 3 = build 612, the rest by adb (23 Nov, owner away, TV muted; each step checked by screenshot)
+- (4) remote YouTube key (KEYCODE 190, BUTTON_3): PASS. YouTube opened (screenshot 4-after.png). Then HOME returned to UrTV.
+- (2) settings → «مركز التحكم» card → OK, then BACK, x5: PASS. The bar opened on «مركز التحكم»; OK opened the panel (Bluetooth, sleep timer, «أطفئ الآن», network ATS5G, sound, speed test, TV, games, city); BACK returned to the bar each time. I looked at cycles 1 and 5 by eye; cycles 2–4 were captured (2-ok2..4.png, 2-back2..4.png) and not viewed one by one. logcat: no FATAL or AndroidRuntime for sa.urtv.* after the 5 cycles. Caution: the panel has «أطفئ الآن» (power off) in reach: I never pressed OK on a focused item except the control centre card itself.
+- (3) reboot, then DPAD RIGHT/LEFT every 0.5 s for 20 s: PASS. The screen moved: the control bar came up with focus on «الجوال» (phone), so the picture was not stuck. logcat: no «frozen-screen» line (the recovery did not trigger).
+- (5) prayer method: NOT done. The method name is in the settings prayer section, which needs navigation in the settings list. Not read. The home prayer card shows times (screenshot 3-after-keys shows the bar only; the card was not on screen).
+- (6) saver.sh show vs optimize/run/step98/before3/show.txt: same as before (updatechannel beta and the new «backtwice: on» line from 612 as before; not owner's choice yet).
+- Mute: a toggle during the check unmuted it; toggled back: Muted true (verified).
+- Owner's setup: home on UrTV (focus restored to home), settings unchanged from the backup except the two lines above.
