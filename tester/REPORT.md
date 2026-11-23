@@ -3289,3 +3289,13 @@ Pictures (PC only): optimize/run/step96/pics/upd-1.png … upd-6.png.
 - (6) add-on: versionCode 581; urtv-extras.apk = 7,783,987 bytes (7.8 MB). PASS.
 - (7) `saver.sh show` vs optimize/run/step98/before3/show.txt: identical except the version line before the power cycle AND after `tv.py --reboot`. PASS.
 - Mute: on after the reboot (verified Muted: true).
+
+## BETA 3 = build 608 (d304a68b, run 45128005135), 23 Nov, owner away, TV muted
+- Installed home, screensaver and add-on 608 over 581 with adb (data kept): versionCode 608/608/608, HOME role = UrTV.
+- (1) first Home after the install: FAIL. It opened the stock launcher (launcherx) first, the same as on 525/570. After `am start sa.urtv.home/.MainActivity` plus the HOME_KEY status broadcast (home-key: on), Home opens UrTV. The 608 build does not fix the first-Home catch.
+- (2) settings → control-centre card OK x5: NOT done (needs remote navigation on the owner's TV).
+- (3) power cycle with immediate key presses: the reboot itself was done (tv.py --reboot); home opened on UrTV after the reboot; no frozen picture seen in the check. Pressing keys while the home loads: NOT done. No «frozen-screen recovered» log check.
+- (4) remote YouTube key: NOT done (no adb key mapped for it here).
+- (5) prayer method after reboot: not checked on the TV (no screen read); the settings dump shows no prayer-method change from the backup.
+- (6) saver.sh show vs optimize/run/step98/before3/show.txt: two differences: updatechannel beta (owner turned beta on earlier; original was next) and a NEW line «backtwice: on» added by build 608 (a default of the new build, not an owner choice). Needs the owner's decision (keep, or set off).
+- Mute: on after the reboot (verified Muted: true).
