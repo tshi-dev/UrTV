@@ -1,3 +1,10 @@
+«▶▶ BETA 3 = build 612, the rest (owner, 23 Nov: «I'll never be at the TV, the tester does all»). You do (2) to (5) yourself, by adb keys. Take a screenshot after EVERY key and read it before the next one (no blind D-pad). TV muted, never the PIN. One short report, PASS/FAIL each:
+ (2) settings → «مركز التحكم» card → OK, then Back. Do it 5 times, then check logcat for FATAL or AndroidRuntime from sa.urtv.*.
+ (3) `adb reboot`. As soon as `adb wait-for-device` returns, send DPAD_RIGHT/LEFT every 0.5 s for 20 s. The home must move in the screenshots (no stuck picture). Then `logcat -d | grep -i "frozen-screen"`.
+ (4) YouTube key: from the UrTV home, `input keyevent 190` (BUTTON_3, the TCL YouTube key). YouTube must open. Then `logcat -d | grep "key app"`. If 190 opens nothing, try `getevent -l` is NOT needed: just report it.
+ (5) prayer: a screenshot of the home's prayer card, plus settings → the prayer section «طريقة الحساب». Report the method name and the city. Change nothing.
+ Leave «الرجوع مرتين» as it is. Restore the home screen at the end.»
+
 «▶▶ BETA 3 = build 612 (next 1da2cb48). Replaces 608. Adds the first-Home fix (the Home catch was off on TCL Android 11+ since 608). Install home, screensaver and add-on 612 over the current build with adb (keep data). Then run the same 6 checks as 608, screenshot-checked only, one short report. Check (1) first: the FIRST Home press right after the install, with no `am start` before it, must open UrTV.»
 
 «▶▶ BETA 3 = build 608 (next d304a68b). Replaces 581. Adds 11 fixes: the control-centre crash (#67), the frozen screen (a cover that never fades), the YouTube remote key, the stuck USB-debugging prompt, the prayer method at boot, Xiaomi keys, the inputs list, side-loaded apps in «كل التطبيقات», Wi-Fi protection, a nightly page rebuild, the tournaments tick (#64). Install home, screensaver and add-on 608 over the current build with adb (keep data). Screenshot-checked only, one short report:
