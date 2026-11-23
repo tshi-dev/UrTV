@@ -64,6 +64,8 @@ final class AdbClient implements Closeable {
 
     /** the words of the IOException a «إلغاء» on the prompt ends with (SetupRunner.friendly says it to the person) */
     static final String CANCELLED = "the person pressed Cancel on «Allow USB debugging?»";
+    /** beta 3: a step with no approval wait met a key the TV does not trust: it stops without raising the prompt */
+    static final String NOT_TRUSTED = "the TV does not trust the key yet (no prompt offered)";
 
     /** android.util.Base64 on the TV, java.util.Base64 in the tests. */
     interface Base64Coder { String encode(byte[] bytes); }
@@ -140,6 +142,11 @@ final class AdbClient implements Closeable {
                     adb.send(AUTH, AUTH_SIGNATURE, 0, sign(keys.getPrivate(), m.data));
                     signed = true;
                     note("signature sent (the TV does not know the key yet if it asks again)");
+                } else if (!offeredKey && approvalMs <= 0) {
+                    // beta 3 (a user's photo: «السماح بتصحيح USB؟» over our home, no key answered it): a background step with no one to answer (the home's start
+                    // hooks, the boot receiver) never offers the key: the TV shows no prompt that nobody waits for; it uses a key the TV already trusts, or stops
+                    note("the TV does not trust the key; no prompt offered (nobody is waiting for it)");
+                    throw new IOException(NOT_TRUSTED);
                 } else if (!offeredKey) {
                     // Unknown key: send the public one; the TV shows "Allow USB debugging?".
                     adb.send(AUTH, AUTH_RSAPUBLICKEY, 0, publicKeyBlob(keys.getPublic(), b64));
