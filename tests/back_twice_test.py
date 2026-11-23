@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""4.4 beta 3: «رجوع مرتين يفتح شاشة التوقف» (the owner promised it to a user; on by default): two Backs within a second on our home start the
+"""4.4 beta 3: «رجوع مرتين يفتح شاشة التوقف» (the owner promised it to a user; OFF by default since the owner decided it, in the screensaver's settings): two Backs within a second on our home start the
 screensaver; a single Back does what it always did; never in kids mode, never inside a dialog (a dialog takes Back itself), never without the
 screensaver app. And the way back to the home (users of 4.3.6: «البطاقات تصير صورة سوداء وترجع»): the cards' last frame stays in their place
 until the page has drawn again, never a black or empty box. HomeBack.twice runs on a JVM; the wiring is read from the source.
@@ -34,9 +34,9 @@ check("the home: only a Back that did nothing else counts (after the nudge, the 
       and 'guarded(ParentalPolicy.PILL_SAVER, SAVER_PKG, "شاشة التوقف", this::startSaver);' in back and "} else lastBack = now;" in back
       and back.index("HomeBack.startsSaver(") < back.index("HomeBack.twice("))
 check("the home reads it with the settings (on unless the screensaver says off; an older one says nothing: on)",
-      "backTwice = cfg.backTwice();" in main and 'return fragment == null || !(fragment.contains("&backtwice=0")' in snap)
-check("the screensaver: on by default, sent only when off, a row of «الأزرار السريعة», saver.sh backtwice on|off and `show`",
-      'sp.getBoolean("backTwice", true)' in prefs and '(backTwice() ? "" : "&backtwice=0")' in prefs and f'row("{ROW}", prefs.backTwice() ? "مفعّل" : "متوقف"' in st
+      "backTwice = cfg.backTwice();" in main and 'return fragment != null && (fragment.contains("&backtwice=1")' in snap and "private volatile boolean backTwice = false;" in main)
+check("the screensaver: OFF by default, sent only when on, a row of the screensaver's settings, saver.sh backtwice on|off and `show`",
+      'sp.getBoolean("backTwice", false)' in prefs and '(backTwice() ? "&backtwice=1" : "")' in prefs and f'row("{ROW}", prefs.backTwice() ? "مفعّل" : "متوقف"' in st
       and 'if (backTwice != null) p.setBackTwice("on".equals(backTwice));' in recv and '"\\nbacktwice: "' in recv
       and "backtwice) set1 backtwice" in read(ROOT / "optimize/saver.sh") and hub.count(ROW) == 5)
 check("its words have their English and the docs say it", f"{ROW}\t" in read(ROOT / "i18n/en/saver.tsv") and ROW in read(ROOT / "docs/SETTINGS.md"))
@@ -46,4 +46,10 @@ check("the cards on the way back: the last frame is kept as an app comes in fron
       "keepStill();" in pause and pause.index("keepStill();") < pause.index("web.onPause();") and "web.draw(new android.graphics.Canvas(b));" in card
       and "parent.addView(still, parent.indexOfChild(web)" in card and res.count("dropStill();") == 3 and "        dropStill();\n        parent.removeView(web);" in card
       and "catch (RuntimeException | OutOfMemoryError e)" in card[card.index("private void keepStill()"):])
+# the owner's decision (beta 3): the row is among the screensaver's own rows (before «الشريط في الوسط»), not the home bar's; a person who chose it keeps it (the stored key), the rest are off
+i = st.index('row("%s"' % ROW)
+check("the row sits with the screensaver's display rows, after the design row and before the bar row, never among the home's buttons",
+      st.index('row("تصميم شاشة التوقف"') < i < st.index('row("الشريط في الوسط"') and st.index('row("الرجوع يفتح شاشة التوقف"') > i)
+check("the hub finds it under the screensaver, not the home buttons", '{"%s", BUTTONS}' % ROW not in hub and '{"%s", "home"}' % ROW not in hub and hub.count('{"%s", "saver"}' % ROW) == 2)
+
 sys.exit(1 if failed else 0)

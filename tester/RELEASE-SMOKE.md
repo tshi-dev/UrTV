@@ -117,8 +117,8 @@ the same network. Note the build in the report's first line.
   restart no «السماح بتصحيح USB؟» shows over the home by itself. A Bahrain place of one's own keeps Bahrain's prayer method after a restart. On a
   Xiaomi box the app buttons and the volume work after the setup and the Wi-Fi keeps its saved networks; «المصادر» lists HDMI 1, HDMI 2 and
   the aerial where the TV has them; an app installed from outside the store that declares HOME (cinemana) is in «كل التطبيقات»; after a
-  week the home is not heavier (the card's page is let go).
-  Rows: R-306, R-307, R-308, R-309, R-310, R-311, R-312, R-313.
+  week the home is not heavier (the card's page is let go). «رجوع مرتين يفتح شاشة التوقف» is off on a fresh install and sits in the screensaver's settings; turned on, two Backs within a second on the home start the screensaver.
+  Rows: R-306, R-307, R-308, R-309, R-310, R-311, R-312, R-313, R-315.
 
 ## The report
 

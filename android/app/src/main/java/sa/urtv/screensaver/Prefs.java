@@ -689,7 +689,7 @@ final class Prefs {
      */
     boolean backSaver() { return sp.getBoolean("backSaver", false); }
     /** 4.4 beta 3 «رجوع مرتين يفتح شاشة التوقف» (on by default): Back twice within a second on our home starts the screensaver */
-    boolean backTwice() { return sp.getBoolean("backTwice", true); }
+    boolean backTwice() { return sp.getBoolean("backTwice", false); }
     /** 4.3.3 «المباريات المنتهية» on the football home: shown (the default, as always) or hidden; #fbhide=1 only while hidden */
     boolean fbHideDone() { return sp.getBoolean("fbHideDone", false); }
     /** 4.3.3 «التاريخ بالأرقام»: the dates in words (the default, as always) or as day/month/year, Hijri and Gregorian; #datenum=1 only while on. The digits stay «الأرقام»'s. */
@@ -910,7 +910,7 @@ final class Prefs {
             + (lowRam(ctx) ? "&lowram=1" : midRam(ctx) ? "&midram=1" : "")   // a weak TV (a user report on 4.1, lag): the page's slower timers, no seconds, no transitions
             + HomeExit.fragment(homeExit())
             + (occasion() ? "" : "&occasion=0") + (nightDim() ? "" : "&nightdim=0") + (tasksPill() ? "" : "&taskspill=0")
-            + (backSaver() ? "&backsaver=1" : "") + (backTwice() ? "" : "&backtwice=0")
+            + (backSaver() ? "&backsaver=1" : "") + (backTwice() ? "&backtwice=1" : "")
             + (fbHideDone() ? "&fbhide=1" : "") + (kickoff() ? "" : "&ko=0") + (kickoffGoal() ? "&kogoal=1" : "") + (kickoffEnd() ? "&koend=1" : "") + (dateNum() ? "&datenum=1" : "") + (searchPill() ? "&searchpill=1" : "")   // the football home without the games that ended
             + "&cardstyle=" + cardStyle()
             + "&design=" + design() + "&bar=" + bar() + "&barat=" + barAt() + "&wx=" + wxAt()

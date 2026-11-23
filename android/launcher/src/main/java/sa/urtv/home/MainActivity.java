@@ -823,7 +823,7 @@ public class MainActivity extends Activity {
     }
 
     private long lastBack;   // «رجوع مرتين»: when the last Back that did nothing came
-    private volatile boolean backTwice = true;   // ConfigSnapshot.backTwice, taken with the settings
+    private volatile boolean backTwice = false;   // ConfigSnapshot.backTwice, taken with the settings
 
     /** Is this app the home the TV goes to on Home? (Not when the stock home is kept and this was opened from its tile.) */
     private boolean isDefaultHome() {

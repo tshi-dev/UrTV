@@ -310,8 +310,8 @@ the phone page's key, «مركز التحكم» the control centre's row that op
      القيم المقبولة: on|off
 —— الرجوع يفتح شاشة التوقف [الرئيسية]
    مثال للوكيل: optimize/dock.sh backsaver on  (`off` = the default: Back does nothing at the top of the home, as always; no argument says `back-saver: on|off`)
-—— رجوع مرتين يفتح شاشة التوقف [الرئيسية]
-   مثال للوكيل: optimize/saver.sh backtwice off  (`on` = the default: two Backs within a second on the home start the screensaver; a single Back does what it always did; never in kids mode)
+—— رجوع مرتين يفتح شاشة التوقف [شاشة التوقف]
+   مثال للوكيل: optimize/saver.sh backtwice on  (`off` = the default; `on`: two Backs within a second on the home start the screensaver; a single Back does what it always did; never in kids mode)
      القيم المقبولة: on|off
 —— زر الرئيسية يفتح تلفزيونك مباشرة [الرئيسية]
    مثال للوكيل: optimize/dock.sh home-key on\|off\|status
@@ -775,8 +775,8 @@ the phone page's key, «مركز التحكم» the control centre's row that op
        القيم المقبولة: on|off
 ———— الرجوع يفتح شاشة التوقف [الرئيسية]
      مثال للوكيل: optimize/dock.sh backsaver on  (`off` = the default: Back does nothing at the top of the home, as always; no argument says `back-saver: on|off`)
-———— رجوع مرتين يفتح شاشة التوقف [الرئيسية]
-     مثال للوكيل: optimize/saver.sh backtwice off  (`on` = the default: two Backs within a second on the home start the screensaver; a single Back does what it always did; never in kids mode)
+———— رجوع مرتين يفتح شاشة التوقف [شاشة التوقف]
+     مثال للوكيل: optimize/saver.sh backtwice on  (`off` = the default; `on`: two Backs within a second on the home start the screensaver; a single Back does what it always did; never in kids mode)
        القيم المقبولة: on|off
 ———— زر الرئيسية يفتح تلفزيونك مباشرة [الرئيسية]
      مثال للوكيل: optimize/dock.sh home-key on\|off\|status

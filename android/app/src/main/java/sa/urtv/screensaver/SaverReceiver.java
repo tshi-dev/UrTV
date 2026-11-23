@@ -58,7 +58,7 @@ import java.util.Locale;
  * months = default («أكتوبر») or levant («تشرين الأول»), the Gregorian month's names on both screens.
  * occasion, nightdim, taskspill = on (the default, as always) or off: «المناسبة القادمة» at the bottom middle of the screensaver (the
  * countdown to Ramadan and the feasts), «تعتيم الليل» (the screensaver darker at night), the «المهام» button on the home screen.
- * backtwice = on (the default) or off: «رجوع مرتين يفتح شاشة التوقف», Back twice within a second on our home starts the screensaver
+ * backtwice = on or off (the default): «رجوع مرتين يفتح شاشة التوقف», Back twice within a second on our home starts the screensaver
  * backsaver = on or off (the default): «الرجوع يفتح شاشة التوقف», Back on our home starts the screensaver; the home follows it when it
  * changes (optimize/dock.sh backsaver sends it beside the home's own switch, so the row says what the home does).
  * verse = day (the default: a verse one day, a hadith the next) or 3 (a new one every 3 minutes): the verse-or-hadith card (QuoteEvery).
