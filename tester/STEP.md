@@ -1,3 +1,5 @@
+«▶▶ BETA 3 = build 612 (next 1da2cb48). Replaces 608. Adds the first-Home fix (the Home catch was off on TCL Android 11+ since 608). Install home, screensaver and add-on 612 over the current build with adb (keep data). Then run the same 6 checks as 608, screenshot-checked only, one short report. Check (1) first: the FIRST Home press right after the install, with no `am start` before it, must open UrTV.»
+
 «▶▶ BETA 3 = build 608 (next d304a68b). Replaces 581. Adds 11 fixes: the control-centre crash (#67), the frozen screen (a cover that never fades), the YouTube remote key, the stuck USB-debugging prompt, the prayer method at boot, Xiaomi keys, the inputs list, side-loaded apps in «كل التطبيقات», Wi-Fi protection, a nightly page rebuild, the tournaments tick (#64). Install home, screensaver and add-on 608 over the current build with adb (keep data). Screenshot-checked only, one short report:
  (1) the first Home after the install opens UrTV;
  (2) settings → «مركز التحكم» card → OK, 5 times: no crash (the #67 path);
