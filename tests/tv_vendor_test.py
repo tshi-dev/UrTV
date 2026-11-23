@@ -60,6 +60,18 @@ check("an input nobody took: the picker, then the system's inputs panel, then th
       "TvVendor.inputFallback(inputPickerPkg != null, panel != null, signal != null, liveTvPkg != null)" in op and 'launchGuarded(ParentalPolicy.INPUT_PICKER, panel, "كل المصادر")' in op)
 check("«المصادر» with no picker of the TV's own lists «كل المصادر» for the system's inputs panel when it answers",
       "Intent panel = inputPickerPkg == null ? systemInputs() : null;" in main)
+# 4.4 beta 3 (a beta user: «المصادر» without HDMI 1, HDMI 2 or aerial): never a list without a way to the inputs
+labels = (ROOT / "android/launcher/src/main/java/sa/urtv/home/InputLabels.java").read_text(encoding="utf-8")
+rep = labels.split("static List<TvInputInfo> reported(Context c) {")[1].split("\n    }\n")[0]
+lst = labels.split("static boolean listed(boolean passthrough, int type) {")[1].split("\n    }\n")[0]
+check("the inputs: a passthrough input, or a physical socket a TV reports without the passthrough mark (HDMI, AV...), never the tuner",
+      "listed(t.isPassthroughInput(), t.getType()) && !t.isHidden(c)" in rep and "if (passthrough) return true;" in lst
+      and all(f"TvInputInfo.TYPE_{k}" in lst for k in ("HDMI", "COMPOSITE", "COMPONENT", "SVIDEO", "SCART", "VGA", "DVI", "DISPLAY_PORT")) and "TYPE_TUNER" not in lst)
+check("a TV's input service that throws gives no rows, never a crash of the popup (InputLabels keeps no log: the names are private)",
+      "} catch (RuntimeException e) {" in rep and "inputs.clear();" in rep and "Log." not in labels)
+check("no input reported and no picker or panel: the TV's settings are offered even beside «البث التلفزيوني»",
+      "if (rows.isEmpty() || (inputs.isEmpty() && inputPickerPkg == null && panel == null))" in inputs
+      and inputs.index("rows.isEmpty() || (inputs.isEmpty()") > inputs.index('S.t("البث التلفزيوني")'))
 check("the panel's action is in the manifest's <queries> (Android 11 would hide it)",
       'com.android.tv.action.VIEW_INPUTS' in (ROOT / "android/launcher/src/main/AndroidManifest.xml").read_text(encoding="utf-8"))
 tail_cases = True

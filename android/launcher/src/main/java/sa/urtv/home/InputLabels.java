@@ -17,13 +17,32 @@ final class InputLabels {
 
     /** The inputs the sources popup lists (HDMI, AV...), in the TV's own names' order. */
     static List<TvInputInfo> reported(Context c) {
-        TvInputManager tim = (TvInputManager) c.getSystemService(Context.TV_INPUT_SERVICE);
         List<TvInputInfo> inputs = new ArrayList<>();
-        if (tim != null) for (TvInputInfo t : tim.getTvInputList()) {
-            if (t.isPassthroughInput() && !t.isHidden(c)) inputs.add(t);
+        try {
+            TvInputManager tim = (TvInputManager) c.getSystemService(Context.TV_INPUT_SERVICE);
+            if (tim != null) for (TvInputInfo t : tim.getTvInputList()) {
+                if (listed(t.isPassthroughInput(), t.getType()) && !t.isHidden(c)) inputs.add(t);
+            }
+            Collections.sort(inputs, (x, y) -> own(c, x).compareToIgnoreCase(own(c, y)));
+        } catch (RuntimeException e) {   // 4.4 beta 3: a TV's input service that throws: no rows, and the popup offers the TV's own way (MainActivity.showInputsNow)
+            inputs.clear();
         }
-        Collections.sort(inputs, (x, y) -> own(c, x).compareToIgnoreCase(own(c, y)));
         return inputs;
+    }
+
+    /**
+     * 4.4 beta 3 (a beta user: no HDMI 1, HDMI 2 in «المصادر»): a passthrough input, as before, or a physical socket a TV reports without the passthrough mark (some
+     * vendors' HDMI and AV inputs carry channels of their own). The tuner stays out: «البث التلفزيوني» is its row.
+     */
+    static boolean listed(boolean passthrough, int type) {
+        if (passthrough) return true;
+        switch (type) {
+            case TvInputInfo.TYPE_HDMI: case TvInputInfo.TYPE_COMPOSITE: case TvInputInfo.TYPE_COMPONENT: case TvInputInfo.TYPE_SVIDEO:
+            case TvInputInfo.TYPE_SCART: case TvInputInfo.TYPE_VGA: case TvInputInfo.TYPE_DVI: case TvInputInfo.TYPE_DISPLAY_PORT:
+                return true;
+            default:
+                return false;
+        }
     }
 
     /** The TV's own name for it. */
