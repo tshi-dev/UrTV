@@ -239,6 +239,7 @@ python3 tests/loudness_test.py   # the recitation and the adhan lifted inside th
 python3 tests/seek_burst_test.py
 python3 tests/pill_text_test.py
 python3 tests/control_center_test.py
+python3 tests/control_center_token_test.py   # 4.4 beta 3, GitHub #67: «مركز التحكم» opens only over a live window (one retry once attached; never BadTokenException)
 python3 tests/tasks_card_test.py
 python3 tests/reminders_test.py   # «المهام» with a time: the alarm, the cards, the keys, saver.sh, the phone's date and time (the page's card: reminder_page.test.mjs)
 python3 tests/now_playing_test.py
