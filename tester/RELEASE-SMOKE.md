@@ -94,6 +94,7 @@ the same network. Note the build in the report's first line.
   OK, the language switch labels whole, the screen stays for the run, the factory page keeps the screen on; on a test TV a full run
   passes the USB question and ends with UrTV as the home, casting, the remote keys, USB viewer and inputs still working.
   Rows: R-259, R-260, R-262, R-265, R-267, R-017, R-040, R-052, R-061, R-073, R-133, R-134, R-145, R-162, R-173, R-244, R-169, R-043, R-172, R-041, R-038, R-283, R-285, R-287 (on a Google TV: update the home over the last build with `pm install -r`, then the FIRST Home press opens UrTV), R-304 (on a TV with only wireless debugging, «جهّز كل شي» pairs once, and when pairing is refused it says why).
+  Also R-307: after the setup, a restart and an hour of use, no «السماح بتصحيح USB؟» dialog appears over the home on its own.
 - **S-17 English.** «اللغة» English for a minute: app captions, the grid heading, Tilawah footers, the favourites left to right, the
   long-press hint. Back to Arabic. Rows: R-142, R-143, R-144, R-185.
 - **S-18 Games.** «الأسرع» with one phone: room code shown, digits as set, the podium right; «خمّن الكلمة» takes a common word and has
