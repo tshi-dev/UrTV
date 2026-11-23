@@ -4,7 +4,7 @@ plain JVM. No Android, no TV needed.
 
     python3 tests/adb_client_test.py
 """
-import subprocess, sys, tempfile
+import re, subprocess, sys, tempfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -34,6 +34,7 @@ with tempfile.TemporaryDirectory() as tmp:
     got = {l.split()[0]: l for l in out}
     check("framing: command, args, length, checksum and the XOR magic of one message", got.get("frame") == "frame true 1 0 9 true true 33", got.get("frame"))
     check("the signed block: 00 01 FF… 00, the SHA-1 prefix, then the 20-byte token", got.get("padded") == "padded true", got.get("padded"))
+    check("beta 3: with no approval wait (the home's start hooks, the boot receiver) an unknown key is never offered: no «السماح بتصحيح USB؟» that nobody waits for", got.get("noprompt") == "noprompt true 0", got.get("noprompt"))
     check("the public key in adbd's format: 64 words, n0inv, n, R², exponent 65537, the name", got.get("blob") == "blob true true true", got.get("blob"))
     # tester step 18: adbd logged «Invalid base64 key» before «sending prompt». Our key, byte for byte against AOSP's own encoder
     # (android_pubkey_encode, and adb's client: base64 of the 524-byte RSAPublicKey, " user@host", a NUL), computed here from the modulus alone
@@ -65,4 +66,8 @@ with tempfile.TemporaryDirectory() as tmp:
     check("exec: a file shorter than its size is an error, never a half install", got.get("execShort") == "execShort the file ended before its size", got.get("execShort"))
     check("Android 8 to 10 (the first connection hangs): a new connection that only signs gets in, and the command runs",
           got.get("legacy") == "legacy true true 0 true", got.get("legacy"))
+
+_hooks = (ROOT / "android/launcher/src/main/java/sa/urtv/home/setup/SetupHook.java").read_text(encoding="utf-8") + (ROOT / "android/launcher/src/main/java/sa/urtv/home/setup/SetupRecovery.java").read_text(encoding="utf-8") + (ROOT / "android/launcher/src/main/java/sa/urtv/home/setup/SetupBootReceiver.java").read_text(encoding="utf-8")
+check("beta 3: the home's start hooks, its recovery and the boot receiver open adb with no approval wait (never a prompt nobody waits for)",
+      not re.search(r"SetupSession\.open(Any)?\((app|c), [1-9]", _hooks) and _hooks.count("SetupSession.openAny(") >= 7)
 sys.exit(1 if failed else 0)

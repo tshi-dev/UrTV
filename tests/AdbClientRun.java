@@ -252,6 +252,11 @@ public class AdbClientRun {
         // 3b the same blob for tests/adb_client_test.py's independent check (AOSP's android_pubkey_encode, in Python): the modulus, then the bytes
         line("blobraw " + ((java.security.interfaces.RSAPublicKey) keys.getPublic()).getModulus().toString(16) + " "
             + ((java.security.interfaces.RSAPublicKey) keys.getPublic()).getPublicExponent() + " " + java.util.Base64.getEncoder().encodeToString(blob));
+        // 3c beta 3: no approval wait (a background step: the home's start hooks, the boot receiver): an unknown key is never offered, no prompt shows
+        FakeAdbd quiet = new FakeAdbd("accept");
+        String why = "connected";
+        try { AdbClient.connect("127.0.0.1", quiet.port(), keys, 34, 0, null, B64).close(); } catch (IOException e) { why = String.valueOf(e.getMessage()); }
+        line("noprompt " + AdbClient.NOT_TRUSTED.equals(why) + " " + quiet.prompts.get());
         // 4 an unknown key, accepted on the TV: the prompt is announced, the command runs, the code is read
         FakeAdbd d = new FakeAdbd("accept");
         final boolean[] waited = {false};
