@@ -3829,7 +3829,10 @@ public class MainActivity extends Activity {
         Intent panel = inputPickerPkg == null ? systemInputs() : null;   // #54: no picker of the TV's own: the system's inputs panel, when it answers
         if (panel != null) rows.add(inputRow(S.t("كل المصادر"), () -> launchGuarded(ParentalPolicy.INPUT_PICKER, panel, "كل المصادر")));
 
-        if (rows.isEmpty()) rows.add(inputRow(S.t("الإعدادات"), () -> launchGuarded(ParentalPolicy.PILL_TV_SETTINGS, new Intent(Settings.ACTION_SETTINGS), "إعدادات التلفزيون")));
+        // 4.4 beta 3 (a beta user: no HDMI 1, HDMI 2 or aerial): with no input reported and no picker or panel of the TV's own, the TV's settings are offered even beside
+        // «البث التلفزيوني», never a list without a way to the inputs
+        if (rows.isEmpty() || (inputs.isEmpty() && inputPickerPkg == null && panel == null))
+            rows.add(inputRow(S.t("الإعدادات"), () -> launchGuarded(ParentalPolicy.PILL_TV_SETTINGS, new Intent(Settings.ACTION_SETTINGS), "إعدادات التلفزيون")));
         for (TextView r : rows) {
             r.setOnClickListener(v -> { pw.dismiss(); ((Runnable) v.getTag()).run(); });
             list.addView(r, new LinearLayout.LayoutParams(-1, dp(36)));

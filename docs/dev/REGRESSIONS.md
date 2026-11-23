@@ -311,6 +311,7 @@ often describe the same bug in two ways, and both rows are kept when their guard
 | R-302 | No adhan at the prayer on a TV that ran short of space or was offline, and nothing said | the recordings sat in the cache Android empties under storage pressure, a failed fetch waited an hour, and a stream that could not come just ended | 4.4 | `tests/adhan_keep_test.py` | launcher | N |
 | R-303 | The add-on's wireless-debugging shell could have been used by another app, or for any command | the paired route gives an adb shell; a guard was needed: only sa.urtv.home with our certificate, only the setup's own command shapes, no injection | 4.4 | `tests/pair_commands_test.py` | extras launcher | N |
 | R-304 | «إعداد تلفزيوني» could not run on Google TV and Chromecast sets that have only «تصحيح الأخطاء اللاسلكي» (no adb on 5555) | the TV's own setup knew only 5555; now the add-on pairs by wireless debugging and the setup runs over it only when 5555 fails, and says why when it cannot | 4.4 | `tests/pair_test.py` | extras launcher | Y |
+| R-309 | «المصادر» showed no HDMI 1, HDMI 2 or aerial (a beta user) | only passthrough inputs were listed, and with «البث التلفزيوني» present the settings row never came; now physical sockets reported without the passthrough mark are listed, a throwing input service gives no rows, and with no input, picker or panel the settings row is always there | 4.4 | `tests/tv_vendor_test.py` | launcher | Y |
 
 ## Open findings of the gate (QA-n)
 
