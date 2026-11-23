@@ -319,6 +319,7 @@ python3 tests/glass_dock_test.py   # 4.5 «زجاجي»: the glass bar's size an
 python3 tests/called_off_test.py   # 4.3 A1-A3: a called-off game is never live or upcoming; a team's game read from the copy further on
 python3 tests/usb_test.py   # 4.3 B8: the USB viewers are never off and always in the apps row (issue #50)
 python3 tests/sideload_apps_test.py   # #57: a sideloaded app shows on the home next to a Google home (only the TV's own phone-only helpers stay out)
+python3 tests/home_apps_test.py
 python3 tests/kids_exit_test.py   # 4.3.3: kids mode always has a way out to «الرقابة الأبوية» (the long OK box, Menu, star, a long Settings key), behind the PIN
 python3 tests/date_num_test.py   # the home's date with its year; «التاريخ بالأرقام» on the home and the screensaver
 python3 tests/global_search_test.py   # «بحث» on the home: the TV's own search inside the apps, off by default

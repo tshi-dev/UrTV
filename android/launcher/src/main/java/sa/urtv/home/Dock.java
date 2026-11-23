@@ -169,7 +169,7 @@ final class Dock {
                 android.content.pm.ApplicationInfo app = ri.activityInfo.applicationInfo;
                 boolean system = app != null && (app.flags & (android.content.pm.ApplicationInfo.FLAG_SYSTEM
                         | android.content.pm.ApplicationInfo.FLAG_UPDATED_SYSTEM_APP)) != 0;
-                String reason = AppRule.reason(hidden.contains(p), shown.contains(p), config.contains(p), homes.contains(p), UsbViewers.is(p),
+                String reason = AppRule.reason(hidden.contains(p), shown.contains(p), config.contains(p), AppRule.otherHome(homes.contains(p), p, system), UsbViewers.is(p),
                         googleHome, category.equals(Intent.CATEGORY_LAUNCHER), system);   // #57: a sideloaded app shows even without a TV activity
                 if (reason == null) out.put(p, ri);
                 else if (why != null) why.put(p, reason);
