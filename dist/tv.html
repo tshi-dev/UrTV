@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <!-- the build: UTC time (YYYYMMDDHHMMSS) of the newest commit of the page's sources, put in by src/build.py. The app loads the page with the newer stamp (its own
      copy or a downloaded one), never by file time, and does not keep a download whose stamp is older than its own (Updater, PageStamp). -->
-<meta name="urtv-build" content="20261123055402">
+<meta name="urtv-build" content="20261123132212">
 <title>شاشة تلفزيونك</title>
 <style>
   @font-face{font-family:'Thmanyah';font-weight:300;font-style:normal;font-display:block;src:url("https://raw.githubusercontent.com/tshi-dev/UrTV/master/assets/fonts/Thmanyah-Light.woff2") format("woff2")}
@@ -1149,6 +1149,7 @@ const CONFIG = {
   wxMore: _Q.get('wxmore') === '1',
   months: _Q.get('months') === 'levant' ? 'levant' : 'default',
   adhanBar: _Q.get('adhanbar') !== '0',
+  adhanLead: _Q.get('adhanlead') === '15' ? 15 : 10,
   prayerAdj: (a => a.length === 5 && a.every(x => /^-?\d{1,2}$/.test(x.trim())) ? a.map(x => Math.max(-20, Math.min(20, parseInt(x, 10)))) : [0,0,0,0,0])(
     (_Q.get('adj') || '').split(',')),
   hijri: (v => /^-?[0-2]$/.test(v) ? +v || 0 : 0)(_Q.get('hijri') || ''),
@@ -1203,7 +1204,7 @@ if(CONFIG.clear){
     .replace(/(--fs:)(?:#4B514D|#5E635F)/g, '$1' + ink).replace(/(--fs:)(?:rgba\(255,255,255,\.74\)|#DADCE0)/g, '$1' + dark)
     .replace(/(--dim:)#C3B8A2/g, '$1' + dark).replace(/(^|[^-\w])(color:)#(?:B9AE96|A79C85|9C9279|8F8670|CFC5AD|D8CDB6|E6DCC4|9FB8A8)\b/gi, '$1$2' + dark);
 }
-const SNAP_LOOK = ['citynote', 'cardstyle', 'panel', 'panel2', 'week', 'clocksize', 'adhanbar', 'yearstrip', 'national', 'photos', 'adj', 'own', 'ownmode', 'packs', 'ours', 'gap'];
+const SNAP_LOOK = ['citynote', 'cardstyle', 'panel', 'panel2', 'week', 'clocksize', 'adhanbar', 'adhanlead', 'yearstrip', 'national', 'photos', 'adj', 'own', 'ownmode', 'packs', 'ours', 'gap'];
 function snapLink(){
   return location.hash.replace(/^#/, '').split('&').filter(kv => kv && !SNAP_LOOK.includes(kv.split('=')[0])).join('&');
 }
@@ -1607,7 +1608,6 @@ function isFriday(){
 }
 function prayerName(x){ return x.key === 'Dhuhr' && isFriday() ? 'الجمعة' : x.name; }
 
-const ADHAN_BAR_MIN = 10;
 const untilAdhan = leftMin => humanRemaining(Math.max(60, Math.round(leftMin * 60)));
 let ADHAN_LIVE = null;
 const ADHAN_PRAYER_NAMES = {0:'الفجر', 2:'الظهر', 3:'العصر', 4:'المغرب', 5:'العشاء'};
@@ -1631,7 +1631,7 @@ function adhanBarText(){
   const p = riyadhParts(), mins = p.h*60 + p.mi + p.s/60;
   for(const x of PRAYERS){
     const at = x.h*60 + x.mi, toAdhan = at - mins;
-    if(toAdhan > 0 && toAdhan <= ADHAN_BAR_MIN) return 'أذان ' + prayerName(x) + ' بعد ' + untilAdhan(toAdhan);
+    if(toAdhan > 0 && toAdhan <= CONFIG.adhanLead) return 'أذان ' + prayerName(x) + ' بعد ' + untilAdhan(toAdhan);
     const gap = x.key === 'Dhuhr' && isFriday() ? 0 : (CONFIG.iqama[x.key] || 0);
     if(mins >= at && mins < at + gap) return 'إقامة ' + prayerName(x) + ' بعد ' + humanRemaining(Math.max(60, Math.ceil(at + gap - mins)*60));
   }

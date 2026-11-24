@@ -413,8 +413,13 @@ public class SettingsActivity extends Activity {
         // 4.3.3 «التاريخ بالأرقام»: the Hijri and the Gregorian as day/month/year on the screensaver and the home, in the digits above
         row("التاريخ بالأرقام", prefs.dateNum() ? "مفعّل" : "متوقف", R.drawable.ic_language,
             new Runnable() { public void run() { prefs.setDateNum(!prefs.dateNum()); render(); } });
-        row("تنبيه قبل الأذان", prefs.adhanBar() ? "يعمل، شريط في أعلى الشاشة آخر ١٠ دقائق، ثم حتى الإقامة" : "متوقف", R.drawable.ic_eye,
-            new Runnable() { public void run() { prefs.setAdhanBar(!prefs.adhanBar()); render(); } });
+        // OK goes round: on with 10 minutes, on with 15 minutes (4.4 beta 4), off
+        row("تنبيه قبل الأذان", prefs.adhanBar() ? (prefs.adhanLead() == 15 ? "يعمل، شريط في أعلى الشاشة آخر ١٥ دقيقة، ثم حتى الإقامة" : "يعمل، شريط في أعلى الشاشة آخر ١٠ دقائق، ثم حتى الإقامة") : "متوقف", R.drawable.ic_eye,
+            new Runnable() { public void run() {
+                if (!prefs.adhanBar()) { prefs.setAdhanLead(10); prefs.setAdhanBar(true); }
+                else if (prefs.adhanLead() == 10) prefs.setAdhanLead(15);
+                else prefs.setAdhanBar(false);
+                render(); } });
         // from PR #28 and the requests: each off until chosen, OK flips it
         row("الشروق بعد الفجر", prefs.sunrise() ? "يعمل، بعد إقامة الفجر: كم باقي على الشروق، ثم نصف ساعة بعده" : "متوقف", R.drawable.ic_eye,
             new Runnable() { public void run() { prefs.setSunrise(!prefs.sunrise()); render(); } });

@@ -321,6 +321,7 @@ often describe the same bug in two ways, and both rows are kept when their guard
 | R-313 | «After about a week of use it gets very heavy» (a user) | the home card's page ran for days in one renderer on TVs that are not weak, and kept old live-game patches and old places' prayer times; now the page is let go once a day at night while the home is not in front (built again at the return, never in use), and the page drops patches older than 3 days and ptimes: keys of another place or method | 4.4 | `tests/night_rebuild_test.py` | launcher page | Y |
 | R-314 | «شاهد المباراة»: UrTV Player's channel search started with the club name and found nothing (a user) | the page sent only one channel name (the page's language) and none with no verified row, so the Player seeded the search with the home team | 4.4 | `tests/match_app_test.py` | launcher page | Y |
 | R-315 | «رجوع مرتين يفتح شاشة التوقف» was on for everyone and sat among the home's buttons (the owner's decision) | the default was on in the settings, the snapshot and the home's field; the row was in the home-bar group | 4.4 | `tests/back_twice_test.py` | launcher and app | Y |
+| R-316 | The bar before the adhan could not start earlier than 10 minutes (a request) | the lead was a constant in the page and the home; it is now 10 (default) or 15, stored, sent only when 15, and read by both | 4.4 | `tests/adhan_bar_test.py` | launcher and page | Y |
 
 ## Open findings of the gate (QA-n)
 

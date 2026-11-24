@@ -221,7 +221,9 @@ public class SaverReceiver extends BroadcastReceiver {
             }
             if (homeCards.size() > Prefs.HOME_CARDS) return "error: home_panel is at most " + Prefs.HOME_CARDS + " cards";
         }
-        String adhanBar = i.getStringExtra("adhanbar");
+        String adhanBar = i.getStringExtra("adhanbar"), adhanLead = i.getStringExtra("adhanlead");
+        if (adhanLead != null && !"10".equals(adhanLead) && !"15".equals(adhanLead))
+            return "error: adhanlead is one of 10 15";
         if (adhanBar != null && !"on".equals(adhanBar) && !"off".equals(adhanBar))
             return "error: adhanbar is one of on off";
         String updateChannel = i.getStringExtra("updatechannel");
@@ -545,6 +547,7 @@ public class SaverReceiver extends BroadcastReceiver {
         if (favBar != null) p.setFavBar(favBar);
         if (pagesDark != null) p.setPagesDark("on".equals(pagesDark));
         if (adhanBar != null) p.setAdhanBar("on".equals(adhanBar));
+        if (adhanLead != null) p.setAdhanLead(Integer.parseInt(adhanLead));
         if (updateChannel != null && !updateChannel.equals(p.updateChannel())) {   // another release now: the number shown as the newest is read again
             p.setUpdateChannel(updateChannel);
             Updater.refreshLatestAsync(c);
@@ -753,7 +756,7 @@ public class SaverReceiver extends BroadcastReceiver {
             + "\nscenetime: " + (p.sceneByTime() ? "on" : "off") + "\nsceneweather: " + (p.sceneByWeather() ? "on" : "off")
             + "\nfavbar: " + p.favBar()
             + "\npagesdark: " + (p.pagesDark() ? "on" : "off")
-            + "\nadhanbar: " + (p.adhanBar() ? "on" : "off")
+            + "\nadhanbar: " + (p.adhanBar() ? "on" : "off") + "\nadhanlead: " + p.adhanLead()
             + "\nupdatechannel: " + p.updateChannel()
             + "\nyearstrip: " + (p.yearStrip() ? "on" : "off")
             + "\nsunrise: " + (p.sunrise() ? "on" : "off") + "\nprayerbar: " + (p.prayerBar() ? "on" : "off")

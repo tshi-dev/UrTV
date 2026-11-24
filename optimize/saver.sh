@@ -59,6 +59,7 @@
 #   optimize/saver.sh scenestay 60                how long each scene stays («بقاء كل أفق»): 10, 20 (default), 60 or 300 seconds
 #   optimize/saver.sh scenetime on                «الأفق يتبع الوقت»: the night scenes from Maghrib to Fajr, the others by day (off by default)
 #   optimize/saver.sh sceneweather on             «الأفق يتبع الطقس»: the fog scenes while the city is foggy (off by default)
+#   optimize/saver.sh adhanlead 15                 how early the slim bar starts: 10 minutes before the adhan (default) or 15; it stays until the adhan (the bar must be on)
 #   optimize/saver.sh adhanbar off                 the slim bar before the adhan (last 10 minutes, then until the iqama) on the screensaver and the home screen: on (default) or off
 #   optimize/saver.sh updatechannel next          TESTING ONLY (agents; no screen shows it): «تحديث تلفزيوني» reads the version and the APKs from the apk-next release instead
 #                                                  of apk-latest: next or latest (default). `beta` is the same as the row «النسخ التجريبية» (the apk-beta release). Same signature, newer-version and permission checks. Put it back to latest after
@@ -298,6 +299,7 @@ case "${1:-}" in
   scenetime)  set1 scenetime "${2:?usage: optimize/saver.sh scenetime on|off}" ;;
   sceneweather) set1 sceneweather "${2:?usage: optimize/saver.sh sceneweather on|off}" ;;
   adhanbar) set1 adhanbar "${2:?usage: optimize/saver.sh adhanbar on|off}" ;;
+  adhanlead) set1 adhanlead "${2:?usage: optimize/saver.sh adhanlead 10|15}" ;;
   updatechannel) set1 updatechannel "${2:?usage: optimize/saver.sh updatechannel beta|latest|next   (next is testing only)}" ;;
   reciter-fav)
     op="${2:?usage: optimize/saver.sh reciter-fav add|remove <reciter id>}"; id="${3:?usage: optimize/saver.sh reciter-fav add|remove <reciter id>}"

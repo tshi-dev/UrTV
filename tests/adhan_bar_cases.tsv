@@ -20,3 +20,7 @@
 600	290	700	900	1065	1155	0	hindi	-	between prayers: nothing
 0	290	700	900	1065	1155	0	hindi	-	midnight: nothing
 283	290	700	900	1065	1155	0	hindi	أذان الفجر بعد ٧ دقائق	Fajr: seven minutes before
+1050	290	700	900	1065	1155	0	hindi	أذان المغرب بعد ١٥ دقيقة	beta 4: exactly 15 minutes before Maghrib with the 15 lead	15
+1049	290	700	900	1065	1155	0	hindi	-	beta 4: just over 15 minutes: nothing	15
+1050	290	700	900	1065	1155	0	hindi	-	beta 4: 15 minutes before with the default lead: nothing (10 stays the default)	
+1065	290	700	900	1065	1155	0	hindi	إقامة المغرب بعد ١٠ دقائق	beta 4: from the adhan the iqama countdown goes on, whatever the lead	15

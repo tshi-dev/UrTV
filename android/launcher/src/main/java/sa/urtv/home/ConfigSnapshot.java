@@ -350,6 +350,8 @@ final class ConfigSnapshot {
      * or no screensaver), so nothing is moved on a guess; Dock.followBackSaver moves the home's switch only when this one changes.
      */
     /** 4.4 beta 3 «رجوع مرتين يفتح شاشة التوقف»: on unless the screensaver says off (an older one says nothing: on) */
+    /** 4.4 beta 4: the bar's lead, 15 only when the fragment says so (&adhanlead=15), otherwise 10 */
+    int adhanLead() { return fragment != null && (fragment.contains("&adhanlead=15") || fragment.startsWith("adhanlead=15")) ? 15 : 10; }
     boolean backTwice() { return fragment != null && (fragment.contains("&backtwice=1") || fragment.startsWith("backtwice=1")); }
     Boolean backSaver() { return stale || fragment == null ? null : (fragment.contains("&backsaver=1") || fragment.startsWith("backsaver=1")); }
 

@@ -29,7 +29,7 @@ final class AdhanBar {
                 return AdhanBarText.playing(NowPlaying.adhanPrayer(), friday, NowPlaying.adhanStopKey(c));
             }
             DayParts d = DayParts.now(c, snap.placeFragment(), snap.placeTicket());
-            return AdhanBarText.text(System.currentTimeMillis(), new long[]{d.fajr, d.dhuhr, d.asr, d.maghrib, d.isha}, d.friday, snap.latin());
+            return AdhanBarText.text(System.currentTimeMillis(), new long[]{d.fajr, d.dhuhr, d.asr, d.maghrib, d.isha}, d.friday, snap.latin(), snap.adhanLead());
         } catch (RuntimeException e) {
             return null;
         }

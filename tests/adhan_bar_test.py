@@ -27,4 +27,13 @@ for c, g in zip(cases, got):
 if len(got) < len(cases):
     print("FAIL fewer answers than cases")
     failed += 1
+# 4.4 beta 4: the lead (10 or 15, 10 the default; the bar stays until the adhan), through the setting, the fragment, the page and the command
+_a, _h, _t = (ROOT / "android/app/src/main/java/sa/urtv/screensaver").joinpath("Prefs.java").read_text(encoding="utf-8"), (ROOT / "android/launcher/src/main/java/sa/urtv/home/ConfigSnapshot.java").read_text(encoding="utf-8"), (ROOT / "src/template.html").read_text(encoding="utf-8")
+_r = (ROOT / "android/app/src/main/java/sa/urtv/screensaver/SaverReceiver.java").read_text(encoding="utf-8")
+_ok = ('sp.getInt("adhanLead", 10) == 15 ? 15 : 10' in _a and '(adhanLead() == 15 ? "&adhanlead=15" : "")' in _a
+       and '(fragment.contains("&adhanlead=15")' in _h and "adhanLead: _Q.get('adhanlead') === '15' ? 15 : 10" in _t and "toAdhan <= CONFIG.adhanLead" in _t
+       and 'return "error: adhanlead is one of 10 15";' in _r and "adhanlead) set1 adhanlead" in (ROOT / "optimize/saver.sh").read_text(encoding="utf-8")
+       and "snap.adhanLead()" in (ROOT / "android/launcher/src/main/java/sa/urtv/home/AdhanBar.java").read_text(encoding="utf-8"))
+print(("PASS " if _ok else "FAIL ") + "adhan bar lead: stored (10 default), sent only when 15, read by the home and the page, set by saver.sh adhanlead, and checked by the receiver")
+failed += not _ok
 sys.exit(1 if failed else 0)

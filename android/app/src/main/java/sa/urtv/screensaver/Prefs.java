@@ -655,6 +655,9 @@ final class Prefs {
     /** The slim bar before the adhan, on the screensaver and on the home screen (default on); sent to the page as #adhanbar=. */
     boolean adhanBar() { return sp.getBoolean("adhanBar", true); }
     void setAdhanBar(boolean v) { sp.edit().putBoolean("adhanBar", v).apply(); }
+    /** 4.4 beta 4: how many minutes before the adhan the bar starts, 10 (the default) or 15; it stays until the adhan. Sent only when 15. */
+    int adhanLead() { return sp.getInt("adhanLead", 10) == 15 ? 15 : 10; }
+    void setAdhanLead(int v) { sp.edit().putInt("adhanLead", v == 15 ? 15 : 10).apply(); }
 
     /** From PR #28, each off by default and sent to the page only when on: the sunrise after Fajr in the bottom-right panel (#sunrise=1),
      *  the bar of the time between two prayers under it (#prayerbar=1), and the humidity and wind at the top left (#wxmore=1). */
@@ -914,7 +917,7 @@ final class Prefs {
             + (fbHideDone() ? "&fbhide=1" : "") + (kickoff() ? "" : "&ko=0") + (kickoffGoal() ? "&kogoal=1" : "") + (kickoffEnd() ? "&koend=1" : "") + (dateNum() ? "&datenum=1" : "") + (searchPill() ? "&searchpill=1" : "")   // the football home without the games that ended
             + "&cardstyle=" + cardStyle()
             + "&design=" + design() + "&bar=" + bar() + "&barat=" + barAt() + "&wx=" + wxAt()
-            + "&adhanbar=" + (adhanBar() ? "1" : "0")
+            + "&adhanbar=" + (adhanBar() ? "1" : "0") + (adhanLead() == 15 ? "&adhanlead=15" : "")
             + "&yearstrip=" + (yearStrip() ? "1" : "0")
             + (sunrise() ? "&sunrise=1" : "") + (prayerBar() ? "&prayerbar=1" : "") + (wxMore() ? "&wxmore=1" : "")
             + ("levant".equals(months()) ? "&months=levant" : "")

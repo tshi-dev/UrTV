@@ -1239,6 +1239,7 @@ const CONFIG = {
   months: _Q.get('months') === 'levant' ? 'levant' : 'default',
   // the slim bar before the adhan: #adhanbar=0 turns it off (anything else = on)
   adhanBar: _Q.get('adhanbar') !== '0',
+  adhanLead: _Q.get('adhanlead') === '15' ? 15 : 10,   // 4.4 beta 4: the bar starts 15 minutes before when chosen (10 is the default)
   // «تعديل وقت الصلاة»: #adj=0,2,0,0,-1 = minutes added to الفجر الظهر العصر المغرب العشاء
   // such numbers = none). The sunrise is not a prayer and is never moved. The screensaver sends it only while the setting is on.
   prayerAdj: (a => a.length === 5 && a.every(x => /^-?\d{1,2}$/.test(x.trim())) ? a.map(x => Math.max(-20, Math.min(20, parseInt(x, 10)))) : [0,0,0,0,0])(
@@ -1322,7 +1323,7 @@ if(CONFIG.clear){
     .replace(/(--fs:)(?:#4B514D|#5E635F)/g, '$1' + ink).replace(/(--fs:)(?:rgba\(255,255,255,\.74\)|#DADCE0)/g, '$1' + dark)
     .replace(/(--dim:)#C3B8A2/g, '$1' + dark).replace(/(^|[^-\w])(color:)#(?:B9AE96|A79C85|9C9279|8F8670|CFC5AD|D8CDB6|E6DCC4|9FB8A8)\b/gi, '$1$2' + dark);
 }
-const SNAP_LOOK = ['citynote', 'cardstyle', 'panel', 'panel2', 'week', 'clocksize', 'adhanbar', 'yearstrip', 'national', 'photos', 'adj', 'own', 'ownmode', 'packs', 'ours', 'gap'];
+const SNAP_LOOK = ['citynote', 'cardstyle', 'panel', 'panel2', 'week', 'clocksize', 'adhanbar', 'adhanlead', 'yearstrip', 'national', 'photos', 'adj', 'own', 'ownmode', 'packs', 'ours', 'gap'];
 function snapLink(){
   return location.hash.replace(/^#/, '').split('&').filter(kv => kv && !SNAP_LOOK.includes(kv.split('=')[0])).join('&');
 }
@@ -1764,7 +1765,6 @@ function prayerName(x){ return x.key === 'Dhuhr' && isFriday() ? 'الجمعة' 
 
 // ---- the bar before the adhan: the last 10 minutes «أذان المغرب بعد ٨ دقائق», then to the iqama «إقامة المغرب بعد ١٢ دقيقة»
 // none for a Friday's Dhuhr, «أذان الجمعة»). #adhanbar=0 turns it off.
-const ADHAN_BAR_MIN = 10;
 // «٤ دقائق»: what is left to an adhan, in the same words at the same second on the bar and in the panel below
 // rounded second; never less than one)
 const untilAdhan = leftMin => humanRemaining(Math.max(60, Math.round(leftMin * 60)));
@@ -1794,7 +1794,7 @@ function adhanBarText(){
   const p = riyadhParts(), mins = p.h*60 + p.mi + p.s/60;
   for(const x of PRAYERS){
     const at = x.h*60 + x.mi, toAdhan = at - mins;
-    if(toAdhan > 0 && toAdhan <= ADHAN_BAR_MIN) return 'أذان ' + prayerName(x) + ' بعد ' + untilAdhan(toAdhan);
+    if(toAdhan > 0 && toAdhan <= CONFIG.adhanLead) return 'أذان ' + prayerName(x) + ' بعد ' + untilAdhan(toAdhan);
     const gap = x.key === 'Dhuhr' && isFriday() ? 0 : (CONFIG.iqama[x.key] || 0);
     if(mins >= at && mins < at + gap) return 'إقامة ' + prayerName(x) + ' بعد ' + humanRemaining(Math.max(60, Math.ceil(at + gap - mins)*60));
   }

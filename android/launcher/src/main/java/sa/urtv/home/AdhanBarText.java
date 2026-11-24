@@ -21,11 +21,14 @@ final class AdhanBarText {
      * @param friday a Friday's Dhuhr has no iqama countdown (the khutba comes first)
      * @return the bar's words, or null when it is not showing
      */
-    static String text(long now, long[] adhan, boolean friday, boolean latin) {
+    static String text(long now, long[] adhan, boolean friday, boolean latin) { return text(now, adhan, friday, latin, BEFORE_MIN); }
+
+    /** `lead` = how many minutes before the adhan the bar starts (10, or 15 when the person chose it) */
+    static String text(long now, long[] adhan, boolean friday, boolean latin, int lead) {
         for (int i = 0; i < 5; i++) {
             double toAdhan = (adhan[i] - now) / 60000.0;
             String name = S.tv(i == 1 && friday ? "الجمعة" : NAMES[i]);
-            if (toAdhan > 0 && toAdhan <= BEFORE_MIN) return S.t("أذان %s بعد %s", name, minutes((int) Math.ceil(toAdhan), latin));
+            if (toAdhan > 0 && toAdhan <= lead) return S.t("أذان %s بعد %s", name, minutes((int) Math.ceil(toAdhan), latin));
             int gap = i == 1 && friday ? 0 : IQAMA[i];
             double toIqama = (adhan[i] + gap * 60000L - now) / 60000.0;
             if (now >= adhan[i] && toIqama > 0) return S.t("إقامة %s بعد %s", name, minutes((int) Math.ceil(toIqama), latin));
