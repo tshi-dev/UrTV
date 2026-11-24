@@ -1554,6 +1554,7 @@ public class MainActivity extends Activity {
         final String[] wanted = dockApps.clone();
         if (loader.isShutdown()) return;
         loader.execute(() -> {
+            if (FavBar.ICONS.equals(appsLook)) loadFaces(getPackageManager());   // 4.4 beta 4: couch-tv's faces, once, here on the loader
             final List<App> all = loadApps(wanted);
             runOnUiThread(() -> { if (gen == appsGen && !isDestroyed()) showApps(all, wanted, gen); });
         });
@@ -1589,6 +1590,22 @@ public class MainActivity extends Activity {
     }
 
     /** One app's name, art and colour (off the main thread for the whole list; on it for the one app «المخفية» brings back). */
+    /** 4.4 beta 4: couch-tv's faces (CouchFaces) of the installed apps, decoded once on the apps' loader thread, never on the UI thread; appOf only reads them */
+    private final java.util.Map<String, android.graphics.Bitmap> faces = new java.util.concurrent.ConcurrentHashMap<>();
+    private volatile boolean facesRead;
+
+    private void loadFaces(PackageManager pm) {
+        if (facesRead) return;
+        facesRead = true;
+        for (String[] f : CouchFaces.FACES) {
+            try { pm.getPackageInfo(f[0], 0); } catch (PackageManager.NameNotFoundException e) { continue; }   // only an installed app
+            try (java.io.InputStream in = getAssets().open(CouchFaces.asset(f[1]))) {
+                android.graphics.Bitmap fb = android.graphics.BitmapFactory.decodeStream(in);
+                if (fb != null) faces.put(f[0], fb);
+            } catch (java.io.IOException | RuntimeException | OutOfMemoryError ignored) { }
+        }
+    }
+
     private App appOf(ResolveInfo ri, PackageManager pm, Map<String, String> given) {
         ActivityInfo ai = ri.activityInfo;
         App a = new App();
@@ -1618,6 +1635,7 @@ public class MainActivity extends Activity {
             // 4.4 beta 2 (the owner, build 570: small logos in squares, wide ones squeezed): the icon composed on its own square by TileArt's rules,
             // as the tiles are (an adaptive icon's layers edge to edge, a legacy one trimmed and large on its edge colour), drawn full-bleed
             Drawable q = artCache.get("q:" + a.pkg);
+            if (q == null) { android.graphics.Bitmap fb = faces.get(a.pkg); if (fb != null) artCache.put("q:" + a.pkg, q = new BitmapDrawable(getResources(), fb)); }   // 4.4 beta 4: couch-tv's face (decoded on the loader: loadFaces)
             if (q == null) {
                 int side = Math.round(getResources().getDisplayMetrics().heightPixels * FavBar.ICON / 1080f * FavBar.ROOM_SCALE);
                 q = composeTile(sharpIcon(ri, pm), side, side);
@@ -3058,6 +3076,7 @@ public class MainActivity extends Activity {
             dockRow.addView(box, dockCell(i, order.size()));
             dockCards.add(card);
         }
+        if (settingsBox != null) dockRow.addView(settingsBox);   // «أيقونات» (couch-tv): «الإعدادات» then «كل التطبيقات», the last two
         if (allAppsBox != null) { dockRow.addView(allAppsBox); relayDock(); }   // «زجاجي»: «كل التطبيقات» stays the last
         wireFocus();
     }
@@ -3273,7 +3292,8 @@ public class MainActivity extends Activity {
         if (oldBox != null && oldBox.getParent() instanceof ViewGroup) ((ViewGroup) oldBox.getParent()).removeView(oldBox);
         gridCards.remove(card);
         View added = tile(app, true);   // tile() puts it in dockCards and cardByPkg
-        dockRow.addView(added, allAppsBox != null && allAppsBox.getParent() == dockRow ? dockRow.indexOfChild(allAppsBox) : dockRow.getChildCount());   // before «كل التطبيقات» of «زجاجي»
+        View endFirst = settingsBox != null && settingsBox.getParent() == dockRow ? settingsBox : allAppsBox;   // before the end tiles
+        dockRow.addView(added, endFirst != null && endFirst.getParent() == dockRow ? dockRow.indexOfChild(endFirst) : dockRow.getChildCount());   // before «كل التطبيقات» of «زجاجي»
         for (int i = 0; i < dockRow.getChildCount(); i++) dockRow.getChildAt(i).setLayoutParams(dockCell(i, dockRow.getChildCount()));
         Toast.makeText(this, S.t("أُضيف إلى المفضلة: %s", app.label), Toast.LENGTH_SHORT).show();
     }
@@ -3586,7 +3606,7 @@ public class MainActivity extends Activity {
     private void placeName() {
         if (nameRow == null || nameRow.getWidth() == 0) return;
         View f = getCurrentFocus();
-        boolean inBar = f != null && (dockCards.contains(f) || f == allAppsCard) && edit == null;
+        boolean inBar = f != null && (dockCards.contains(f) || f == allAppsCard || f == settingsCard) && edit == null;
         placeZoomName(appsZoom && inBar ? f : null);
         if (appsZoom) inBar = false;   // «تكبير وظل»: the name is under the tile, not above the tray
         // this runs on every step of the tray's scroll: a new animator each step (cancel and restart, an invalidation each) is exactly what makes a scroll janky;
@@ -3645,7 +3665,7 @@ public class MainActivity extends Activity {
     private int glassRowsN = 1;
     private final GlassBar glassBar = new GlassBar();
     /** «كل التطبيقات», the bar's last tile in «زجاجي» (not a favourite: never in dockCards); null in the other ways */
-    private View allAppsBox, allAppsCard;
+    private View allAppsBox, allAppsCard, settingsBox, settingsCard;
     static final int REQ_ALL_APPS = 451, REQ_ICON = 452;
 
     private boolean glassWay() { return FavBar.GLASS.equals(appsLook); }
@@ -3669,8 +3689,12 @@ public class MainActivity extends Activity {
     private void addAllAppsTile() {
         allAppsBox = null;
         allAppsCard = null;
-        if (!glassWay()) return;
-        int sh = getResources().getDisplayMetrics().heightPixels, corner = FavBar.glassRadius(sh, glassK);
+        settingsBox = null;
+        settingsCard = null;
+        boolean icons = FavBar.ICONS.equals(appsLook);   // 4.4 beta 4 (couch-tv): «أيقونات» ends with «الإعدادات» and «كل التطبيقات» (their «المزيد») too
+        if (!glassWay() && !icons) return;
+        int sh = getResources().getDisplayMetrics().heightPixels, corner = icons ? FavBar.radius(FavBar.ICONS, sh) : FavBar.glassRadius(sh, glassK);
+        if (icons) addSettingsTile(corner);
         AspectFrame card = new AspectFrame(this);
         card.ratio = 1f;
         card.setId(View.generateViewId());
@@ -3707,6 +3731,47 @@ public class MainActivity extends Activity {
         dockRow.addView(box);
         relayDock();
     }
+
+    /** 4.4 beta 4 (couch-tv's bar ends with its settings and «More»): «الإعدادات» in «أيقونات», a quiet square with the gear, OK opens our settings */
+    private void addSettingsTile(int corner) {
+        AspectFrame card = new AspectFrame(this);
+        card.ratio = 1f;
+        card.setId(View.generateViewId());
+        card.setFocusable(true);
+        card.setClickable(true);
+        card.setContentDescription(S.t("الإعدادات"));
+        card.setClipToOutline(true);
+        card.setOutlineProvider(new ViewOutlineProvider() {
+            @Override public void getOutline(View v, Outline o) { o.setRoundRect(0, 0, v.getWidth(), v.getHeight(), corner); }
+        });
+        GradientDrawable bg = new GradientDrawable();
+        bg.setCornerRadius(corner);
+        bg.setColor(0x38FFFFFF);   // a flat frosted fill, no ring (the owner's rule)
+        card.setBackground(bg);
+        ImageView gear = new ImageView(this);
+        gear.setImageResource(R.drawable.ic_settings);
+        gear.setColorFilter(Color.WHITE);
+        gear.setScaleType(ImageView.ScaleType.FIT_CENTER);
+        int pad = Math.round(FavBar.px(FavBar.ICON, sh()) * 0.3f);
+        gear.setPadding(pad, pad, pad, pad);
+        card.addView(gear, new FrameLayout.LayoutParams(-1, -1));
+        card.setOnClickListener(v -> openOurSettings(false));
+        card.setOnFocusChangeListener((v, has) -> {
+            scaleTo(v, has ? FavBar.ZOOM_SCALE : 1f);
+            v.animate().translationZ(has ? dp(2 * GlowLook.LIFT_DP) : 0).setInterpolator(Motion.ease()).setDuration(Motion.move(MainActivity.this)).start();
+            if (has) { lastFocusedId = v.getId(); nameCard = v; placeName(); }
+        });
+        LinearLayout box = new LinearLayout(this);
+        box.setOrientation(LinearLayout.VERTICAL);
+        box.setClipChildren(false);
+        box.setClipToPadding(false);
+        box.addView(card, new LinearLayout.LayoutParams(-1, -2));
+        settingsBox = box;
+        settingsCard = card;
+        dockRow.addView(box);
+    }
+
+    private int sh() { return getResources().getDisplayMetrics().heightPixels; }
 
     /** «تغيير الأيقونة» (IconEditorActivity); the bar is made again when it saved */
     private void editIcon(String pkg) {
@@ -3758,6 +3823,7 @@ public class MainActivity extends Activity {
         Object tag = f.getTag();
         if (tag instanceof App) zoomName.setText(((App) tag).label);
         else if (f == allAppsCard) zoomName.setText(S.t("كل التطبيقات"));
+        else if (f == settingsCard) zoomName.setText(S.t("الإعدادات"));
         zoomName.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
         int[] a = new int[2], h = new int[2], t = new int[2];
         f.getLocationInWindow(a);
@@ -4224,8 +4290,23 @@ public class MainActivity extends Activity {
     /** the lines under the header clock at the clock's own row while the big clock is on (never above it: the greeting and the weather stay clear), else in place */
     private void applyLift() {
         if (clock == null || date == null) return;
-        float dy = bigClockOn ? -Math.max(0, date.getTop() - clock.getTop()) : 0f;
-        for (View v : new View[] {date, zoneLine, prayerLine}) if (v != null && v.getTranslationY() != dy) v.setTranslationY(dy);
+        float dy = bigClockOn ? -Math.max(0, date.getTop() - clock.getTop()) : 0f, dx = 0f;
+        // 4.4 beta 4 (the owner: «كنبة» as couch-tv): with the big clock and the cards in their row, the date sits centred just above the digits
+        // (couch-tv's date over its clock); the zone and prayer lines follow it. Anything else: the lift as before, no sideways move.
+        if (bigClockOn && homeCard != null && homeCard.inRow() && date.getWidth() > 0) {
+            android.util.DisplayMetrics dm = getResources().getDisplayMetrics();
+            int[] box = ScenePlan.fixedBox(dm.widthPixels, dm.heightPixels, false, Dir.rtl());
+            int[] at = new int[2];
+            date.getLocationInWindow(at);
+            float x0 = at[0] - date.getTranslationX(), y0 = at[1] - date.getTranslationY();   // where the date is laid out, before any move
+            dx = (box[0] + box[2]) / 2f - date.getWidth() / 2f - x0;
+            dy = box[1] - date.getHeight() - dp(10) - y0;
+        }
+        for (View v : new View[] {date, zoneLine, prayerLine}) {
+            if (v == null) continue;
+            if (v.getTranslationY() != dy) v.setTranslationY(dy);
+            if (v.getTranslationX() != dx) v.setTranslationX(dx);
+        }
     }
 
     /** 4.4: the photo on the screen framed as its cut-out over the glass clock is (PhotoGlass: its crop, then the zoom k about the top centre); the one fading out keeps its own */
