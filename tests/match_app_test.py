@@ -38,6 +38,9 @@ check("4.3 step 64: «مباريات اليوم وبكرة» below «فرقك»:
 check("the page sends the game only: names, competition, kick-off, channel names (no stream, no link)",
       re.search(r"return \{home_ar: .*?away_en: .*?competition_en: .*?kickoff: String\(fbKick\(ev\)\), channels: .*?\};", tpl, re.S) is not None
       and not re.search(r"mpFacts[^}]*(url|link|stream)", tpl.split("function mpFacts")[1][:900]))
+check("beta 4: the channels the page sends are the verified row's name in both languages (the Player's channels are named after the broadcaster), none with no verified row",
+      "names: [r.ar, r.en].filter((x, i, a) => typeof x === 'string' && x && a.indexOf(x) === i)" in tpl
+      and "channels: m && m.mark ? [String(m.mark)].concat((m.names || []).filter(x => x !== m.mark)) : []" in tpl)
 check("the setting: the screensaver's Prefs.matchApp (auto by default), its row, its provider column, saver.sh and the docs",
       'sp.getString("matchApp", MATCH_AUTO)' in read(A / "Prefs.java") and 'row("تطبيق المباريات"' in read(A / "SettingsActivity.java")
       and '"match_app"' in read(A / "ConfigProvider.java") and 'cur.getColumnIndex("match_app")' in read(H / "ConfigSnapshot.java")

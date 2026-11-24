@@ -4959,7 +4959,7 @@ function markOf(ev, now = Date.now()){
   const r = (Array.isArray(BROADCAST) ? BROADCAST : []).find(x => x && String(x.idLeague) === String(ev.idLeague || '') && x.confidence === 'high'
     && x.whole === true && /^\d{4}-\d{2}-\d{2}$/.test(x.verified || '') && /^https:\/\//.test(x.source || '')
     && now >= seasonBound(x.from, false) && now <= seasonBound(x.until, true));
-  return r ? {mark: FB_EN ? r.en : r.ar, detail: (FB_EN ? r.detail_en : r.detail_ar) || (FB_EN ? r.en : r.ar), app: Array.isArray(r.app) ? r.app.filter(x => typeof x === 'string').join(',') : ''} : null;
+  return r ? {mark: FB_EN ? r.en : r.ar, names: [r.ar, r.en].filter((x, i, a) => typeof x === 'string' && x && a.indexOf(x) === i), detail: (FB_EN ? r.detail_en : r.detail_ar) || (FB_EN ? r.en : r.ar), app: Array.isArray(r.app) ? r.app.filter(x => typeof x === 'string').join(',') : ''} : null;
 }
 const FB_DUR = 110 * 60000;   // a football game with its half-time
 const fbKick = ev => toDate(ev).getTime();
@@ -5487,7 +5487,7 @@ function mpDetailRender(){
 function mpFacts(ev){
   const arOnly = x => hasArabic(String(x || '')) ? String(x) : '', m = markOf(ev);
   return {home_ar: arOnly(teamAr(ev.strHomeTeam, ev.idHomeTeam)), home_en: String(ev.strHomeTeam || ''), away_ar: arOnly(teamAr(ev.strAwayTeam, ev.idAwayTeam)),
-    away_en: String(ev.strAwayTeam || ''), competition_ar: arOnly(leagueName(ev)), competition_en: String(ev.strLeague || ''), kickoff: String(fbKick(ev)), channels: m && m.mark ? [String(m.mark)] : []};
+    away_en: String(ev.strAwayTeam || ''), competition_ar: arOnly(leagueName(ev)), competition_en: String(ev.strLeague || ''), kickoff: String(fbKick(ev)), channels: m && m.mark ? [String(m.mark)].concat((m.names || []).filter(x => x !== m.mark)) : []};   // 4.4 beta 4: the verified channel's name in both languages (the Player's channels are named after the broadcaster); with no verified row, none: never a guess
 }
 function mpOpen(ev){ MP.detail = ev; MP.btn = mpButtons(ev, Date.now())[0] && /^(watch|player|install)$/.test(mpButtons(ev, Date.now())[0].k) ? 0 : -1;   // «شاهد على …» is ringed when it is there
    MP.note = ''; mpDetailRender(); }
