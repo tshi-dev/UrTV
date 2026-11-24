@@ -1,3 +1,16 @@
+«▶▶ BETA 4 = build 616 (next 598b7b26): the «كنبة» look as couch-tv (owner, 24 Nov: «show me all of it on my TV, the couch and everything»). Install home, screensaver and add-on 616 over 614 with adb (keep data). Screenshot after every key, no blind D-pad, TV muted, never the PIN. Push all shots to tester/beta4/ (check for personal data first: no Wi-Fi name, IP or account).
+ First take a `saver.sh show` backup (beta4/show-before.txt).
+ Setup for the shots (the UI owner's condition): the look «كنبة»; الخلفية «الآفاق» with the scene packs downloaded (wait until done); «شكل التطبيقات: أيقونات».
+ Then take the shots:
+ (1) home, nothing focused: b4-home.png. The big glass clock is centred, the date is above it, the cards are in one strip under it.
+ (2) focus on each of the first 6 apps, then the bar's last two tiles «الإعدادات» and «كل التطبيقات»: b4-app-1..6.png, b4-settings-tile.png, b4-allapps-tile.png. Expect couch-tv app faces, grow and shadow, no outline.
+ (3) OK on «كل التطبيقات»: b4-allapps.png. Back. OK on «الإعدادات»: b4-settings.png. Back.
+ (4) large font (TV settings font size large, then back to normal after): b4-home-largefont.png.
+ (5) the match page, on any game: b4-match.png; then «شاهد المباراة» if shown: b4-watch.png (note which search text the Player opens with). Back to home.
+ (6) the screensaver (`saver.sh start` or wait): b4-saver.png.
+ (7) first Home press after the install opens UrTV; control centre once with no crash.
+ LEAVE the TV on the «كنبة» look with these settings: the owner wants to see it himself. Everything else as in the backup. One short report listing each shot plus PASS/FAIL notes.»
+
 «▶▶ BETA 3 = build 614 (next a9aaa522). Replaces 612. Only change: «رجوع مرتين يفتح شاشة التوقف» moved to the SCREENSAVER settings section and is OFF by default (R-315). Install home, screensaver and add-on 614 over 612 with adb (keep data). Screenshot after every key, no blind D-pad, TV muted. One short report, PASS/FAIL each:
  (1) the FIRST Home press right after the install opens UrTV;
  (2) `saver.sh show` reads «backtwice: off», and nothing else differs from the backup (updatechannel beta is the owner's);
