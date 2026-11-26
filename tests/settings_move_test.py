@@ -52,7 +52,7 @@ for bad in st.get("refuse", []):          # a value the TV refuses (answers erro
         out("error: refused by the fake TV: " + bad)
 ENUM = {"digits": ["hindi", "latin"], "clocksize": ["large", "medium", "small"], "mkstyle": ["arrows", "prices"],
         "cardstyle": ["current", "dark1", "glass1", "dark3", "glass3"], "prayermethod": ["auto", "gulf"],
-        "sunrise": ["on", "off"], "prayerbar": ["on", "off"], "wxmore": ["on", "off"], "pagesdark": ["on", "off"], "months": ["default", "levant"],
+        "sunrise": ["on", "off"], "prayerbar": ["on", "off"], "wxmore": ["on", "off"], "pagesdark": ["on", "off"], "matchestoday": ["on", "off"], "months": ["default", "levant"],
         "greeting": ["on", "off"], "listenpill": ["on", "off"], "updatebell": ["on", "off"], "adhanbar": ["on", "off"], "clock24": ["on", "off"], "mkbar": ["on", "off"], "prayeradj": ["on", "off"],
         "favbar": ["5", "6", "7", "8", "9", "10", "all"], "homephotos": ["same", "own"], "homeours": ["on", "off"], "albummode": ["seconds", "ten", "minute"], "albumdate": ["on", "off"], "albumtitle": ["on", "off"], "cleartext": ["on", "off"], "albumfit": ["fit", "fill"], "albumsize": ["normal", "tall"],
         "accent": ["default", "amber", "gold", "green", "teal", "sky", "violet", "rose", "coral"], "focusstyle": ["solid", "frame", "glow"]}
@@ -69,7 +69,7 @@ if "SaverReceiver" in cmd and cmd.endswith(".GET"):
         f"mkstyle: {s['mkstyle']}", "stocks: 2222", "slot: matches", "countdown: none", "idle: 10", "genres: ", "langs: ", "events: ",
         "leagues: ", "autoupdate: on", "pin: 4321", "wifi: HomeNet", "tasks: buy milk", "updatechannel: " + s.get("updatechannel", "stable"), "favbar: " + s.get("favbar", "5")]
         + ([f"country: {s['country']}"] if "country" in s else [])
-        + [f"{k}: {s[k]}" for k in ("homephotos", "homepacks", "homeours", "pillshidden", "albummode", "albumdate", "albumtitle", "albumfit", "albumsize", "cleartext", "accent", "baropacity", "walldim", "focusstyle") if k in s]   # 4.3: only a screensaver that has them says them
+        + [f"{k}: {s[k]}" for k in ("homephotos", "homepacks", "homeours", "pillshidden", "albummode", "albumdate", "albumtitle", "albumfit", "albumsize", "cleartext", "accent", "baropacity", "walldim", "focusstyle", "matchestoday") if k in s]   # 4.3: only a screensaver that has them says them
         + ([] if st.get("old_app") else [f"panel2: {s['panel2']}", f"sunrise: {s['sunrise']}", f"prayerbar: {s['prayerbar']}",
                                           f"wxmore: {s['wxmore']}", f"pagesdark: {s.get('pagesdark', 'on')}", f"months: {s['months']}"])))
 if "SaverReceiver" in cmd and re.search(r"screensaver\.SET( |$)", cmd):
@@ -140,7 +140,7 @@ BASE = {
               "cardstyle": "current", "markets": ["tasi", "spx", "btc"], "mkbar": "on", "clocksize": "large", "mkstyle": "arrows",
               "panel2": "none", "sunrise": "off", "prayerbar": "off", "wxmore": "off", "pagesdark": "on", "months": "default", "updatechannel": "stable", "favbar": "5",
               "homephotos": "same", "homepacks": "none", "homeours": "on", "pillshidden": "none", "albummode": "seconds", "albumdate": "on", "albumtitle": "on", "albumfit": "fit", "albumsize": "normal", "cleartext": "off",
-              "accent": "default", "baropacity": "100", "walldim": "0", "focusstyle": "solid"},
+              "accent": "default", "baropacity": "100", "walldim": "0", "focusstyle": "solid", "matchestoday": "off"},
     "adhan": {"on": "on", "voice": 1, "fajr_voice": 10, "short": "off", "stopkey": "on", "volume": 70},
 }
 CONFIGURED = copy.deepcopy(BASE)
@@ -150,7 +150,7 @@ CONFIGURED["saver"].update({"city": ["الدوحة", "25.2854", "51.531"], "tz":
                             "cardstyle": "glass1", "markets": ["gold", "btc"], "mkbar": "off", "clocksize": "medium", "mkstyle": "prices",
                             "panel2": "hourly", "sunrise": "on", "prayerbar": "on", "wxmore": "on", "pagesdark": "off", "months": "levant", "favbar": "7",
                             "homephotos": "own", "homepacks": "nature,sea", "homeours": "off", "pillshidden": "markets,center", "albummode": "minute", "albumdate": "off", "albumtitle": "off", "albumfit": "fill", "albumsize": "tall", "cleartext": "on",
-                            "accent": "teal", "baropacity": "70", "walldim": "30", "focusstyle": "frame"})
+                            "accent": "teal", "baropacity": "70", "walldim": "30", "focusstyle": "frame", "matchestoday": "on"})
 CONFIGURED["saver"]["adj"] = {"fajr": 2, "dhuhr": 0, "asr": -3, "maghrib": 1, "isha": 0}
 CONFIGURED["favs"] = ["afasy", "sudais"]
 CONFIGURED["adhan"] = {"on": "off", "voice": 3, "fajr_voice": 13, "short": "on", "stopkey": "off", "volume": 40}
@@ -642,6 +642,17 @@ check("saver.sh: pillshidden, homephotos, homepacks and homeours are commands, e
       all(f"  {k}) set1 {k} " in saver_src and f"optimize/saver.sh {k} " in saver_src.split("set -euo")[0] for k in ("pillshidden", "homephotos", "homepacks", "homeours")))
 docs = (ROOT / "docs/SETTINGS.md").read_text(encoding="utf-8")
 check("docs/SETTINGS.md: a row says each command", all(f"optimize/saver.sh {k} " in docs for k in ("pillshidden", "homephotos", "homepacks", "homeours")))
+# ---- «بطاقة المباريات لليوم فقط»: matchestoday, an on/off switch like pagesdark
+exp = json.loads(Tv("mt1", CONFIGURED).run("export")[1])
+exp0 = json.loads(Tv("mt0", BASE).run("export")[1])
+check("export: matchestoday as the TV reports it (on here, off on a default TV)", exp.get("matchestoday") is True and exp0.get("matchestoday") is False, (exp.get("matchestoday"), exp0.get("matchestoday")))
+t = Tv("mt2", BASE)
+rc, out, err = t.run("import", write("mt2.json", {"schema": 1, "matchestoday": True}), "--yes")
+check("import: matchestoday reaches the TV", rc == 0 and t.data()["saver"]["matchestoday"] == "on", (rc, out, err))
+refused("matchestoday text", lambda d: d.update(matchestoday="on"), "matchestoday must be true or false")
+old = copy.deepcopy(BASE); old["saver"].pop("matchestoday")
+rc, out, err = Tv("mt3", old).run("import", write("mt3.json", {"schema": 1, "matchestoday": True}), "--yes")
+check("import: a TV whose apps do not report matchestoday refuses it, nothing sent", rc != 0 and "does not report matchestoday" in err, (rc, out, err))
 # ---- C17 «ألبوم صوري»: the card kind album and its two settings
 exp = json.loads(Tv("al1", CONFIGURED).run("export")[1])
 check("export: album_mode, album_date and the three of 4.3.1 (album_title, album_fit, album_size) are in the file", exp.get("album_mode") == "minute" and exp.get("album_date") is False
