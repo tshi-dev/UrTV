@@ -869,7 +869,7 @@
   .mpt li.zb{background:var(--zeb)}
   .mpt li.mine{background:var(--mine)}
   .mpt li.mine .nm{font-weight:700}
-  .mpt li.f{box-shadow:inset 0 0 0 calc(var(--u)*3) var(--fring);background:var(--rowf)}
+  .mpt li.f{position:relative;z-index:1;transform:scale(1.012);box-shadow:0 calc(var(--u)*4) calc(var(--u)*14) var(--shd);background:var(--rowf)}   /* focus: scale and shadow, never an outline (the owner's rule) */
   .mpt li.th{color:var(--fs);font-size:calc(var(--u)*24)}
   .mpt li.zl{min-height:calc(var(--u)*30);color:var(--fs);font-size:calc(var(--u)*24);padding:0 calc(var(--u)*8)}
   .mpt li.zl span{white-space:nowrap;margin-inline-end:calc(var(--u)*16)}

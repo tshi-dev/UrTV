@@ -83,6 +83,17 @@ const zl = p => p.evaluate(() => [...document.querySelectorAll('#mp-list ul.mpt 
   check('no script error', !errors.length, errors.join('|'));
   await ctx.close();
 }
+for (const hash of ['', 'formstyle=boxes', 'formstyle=boxes-letters', 'pagedark=1']) {   // the owner's rule: focus is scale and shadow, never an outline or a border
+  const { p, ctx } = await open('teams=' + ID(6) + '&' + hash, { live: true });
+  const r = await p.evaluate(() => [MP.rows.findIndex(x => x.tg), MP.rows.findIndex(x => x.tr && x.tr.id === '136006')].map(i => {
+    MP.zone = 'rows'; MP.r = i; mpRender();
+    const li = document.querySelector('#mp-list ul.mpt li.f'), cs = getComputedStyle(li);
+    return { cls: li.className, outline: cs.outlineStyle, ring: ['Right', 'Bottom', 'Left'].some(k => parseFloat(cs['border' + k + 'Width']) > 0),
+      inset: /inset/.test(cs.boxShadow), shadow: cs.boxShadow !== 'none', scale: cs.transform !== 'none' };
+  }));
+  check(`focus on a table row and on the toggle (${hash || 'dots'}): no outline, no inset ring, a shadow and a scale`, r.every(x => x.outline === 'none' && !x.ring && !x.inset && x.shadow && x.scale), JSON.stringify(r));
+  await ctx.close();
+}
 {   // focused mode
   const { p, ctx } = await open('teams=' + ID(0));
   const st = () => p.evaluate(() => [document.getElementById('mp').classList.contains('mp-focus'), getComputedStyle(document.querySelector('#mp header')).display, getComputedStyle(document.getElementById('mp-days')).display, MP.zone]);
