@@ -1,0 +1,5 @@
+11-26 16:13:24.400 23550 23550 W UrTVHome: frozen-screen recovered (no frame after a key)
+11-26 16:13:28.781 23550 23550 W UrTVHome: frozen-screen recovered (no frame after a key)
+11-26 16:13:33.114 23550 23550 W UrTVHome: frozen-screen recovered (no frame after a key)
+11-26 16:13:41.793 23550 23550 W UrTVHome: frozen-screen recovered (no frame after a key)
+11-26 16:13:46.115 23550 23550 W UrTVHome: frozen-screen recovered (no frame after a key)

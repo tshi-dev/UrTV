@@ -3351,3 +3351,11 @@ ALL PASS is NOT claimed: (4) is NOT done.
 - SceneHome log: no lines at all (nothing failed, nothing logged). bg-log.txt has the settings lines.
 - Left: scenes, scenepacks couch, scenestay 10 (was saudi, 20; the owner's old value in bg-before.txt), lite auto.
 - City name boxed out in the pushed shots (the 616 shots re-boxed too).
+
+## UI ROUND, 616 (run on 620), 26 Nov, owner away, TV muted
+- A) update entry overlap: top bar reached with 2 DPAD_UP (focus «مركز التحكم»), a-topbar.png. There is NO «تحديث تلفزيوني» entry in the bar on 620 (no update waiting), so the overlap could not be checked: NOT TESTED.
+- B) end tiles: FAIL/NOT DONE. From the home one DPAD_DOWN opened the «كل التطبيقات» screen straight away (b-down.png), and the following DPAD_LEFT presses showed no visible focus (b-left5.png). The log then holds 5 «frozen-screen recovered (no frame after a key)» lines (e-log.txt, 16:13:24 to 16:13:46), so keys inside all-apps did not redraw. Pressed BACK, home OK. Needs a look: a key in all-apps with no frame.
+- C) 720p (`wm size 1280x720`, HOME, 5 s): FAIL as seen: the home shows only the clock and weather, NO app row and NO card (c-720p.png). After `wm size reset` the TV reports Physical 3840x2160, Override 1920x1080 (the same as before, shots stayed 1920x1080). B at 720p not done.
+- D) large font (font_scale 1.3, HOME, 5 s): layout intact, apps row and card present, no overlap seen (d-largefont.png); text not clearly bigger in the shot. font_scale set back to 1.0 (read: 1.0).
+- E) black check: PASS. Home at 2 s and 10 s shows the lake scene, not black (e-2s, e-10s). SceneHome log: no lines; only the five frozen-screen lines above, all during step B.
+- City name boxed out in all shots.
