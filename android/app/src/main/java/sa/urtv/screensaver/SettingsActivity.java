@@ -387,6 +387,9 @@ public class SettingsActivity extends Activity {
 
         row("الدوريات كاملة", leaguesLabel(), R.drawable.ic_trophy,
             new Runnable() { public void run() { startActivity(new Intent(SettingsActivity.this, LeaguesActivity.class)); } });   // 4.3.1 «اختر دورياتك»: one screen (the older dialogs below stay for saver.sh's sake)
+        // «بطاقة المباريات لليوم فقط»: the «المباريات» card (beside the clock, on the home) shows only the games of the city's day; off by default
+        row("بطاقة المباريات لليوم فقط", prefs.matchesToday() ? "يعمل · مباريات اليوم فقط، كل مباراة في يومها" : "متوقف · أقرب مباريات الأسبوع", R.drawable.ic_trophy,
+            new Runnable() { public void run() { prefs.setMatchesToday(!prefs.matchesToday()); render(); } });
 
         row("رياضات أخرى", labels(Prefs.EVENTS, prefs.list("events"), "بدون"), R.drawable.ic_trophy,
             new Runnable() { public void run() { pickMany("events", "رياضات أخرى", Prefs.EVENTS, "بدون اختيار = بدون"); } });

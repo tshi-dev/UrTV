@@ -20,7 +20,7 @@ import java.util.Locale;
  *   am broadcast -n sa.urtv.screensaver/.SaverReceiver -a sa.urtv.screensaver.CITIES
  *   am broadcast -n sa.urtv.screensaver/.SaverReceiver -a sa.urtv.screensaver.SET
  *       [--es city 'الرس'] [--es lat 25.86 --es lon 43.49 --es tz Asia/Kuwait]   (tz is needed for a place that is not in the list) [--es teams '136013:Al-Hilal,150643:Al-Zulfi']
- *       [--es panel prayers] [--es panel2 hourly|none] [--es home_panel prayers,hourly,verse|none] [--es greeting on|off] [--es greetingname NAME|off] [--es homephotos same|own] [--es homepacks id,id|none] [--es homeours on|off] [--es albummode seconds|ten|minute] [--es albumtitle on|off] [--es albumfit fit|fill] [--es albumsize normal|tall] [--es cleartext on|off] [--es looksync on|off] [--es surface quick|cards|tray:30..100:look|glass|graphite] [--es accent amber|gold|green|teal|sky|violet|rose|coral|default] [--es baropacity 30..100] [--es walldim 0..90] [--es focusstyle solid|frame|glow] [--es albummode seconds|minute] [--es albumdate on|off] [--es pillshidden markets,matches,center|none] [--es listenpill on|off] [--es updatebell on|off] [--es watchnext on|off] [--es appearance dark|light|auto] [--es look glass|graphite|navy|clean] [--es homelayout classic|couch|football] [--es favbar 5|6|7|8|all] [--es pagesdark on|off] [--es adhanbar on|off] [--es yearstrip on|off] [--es minrating 7]
+ *       [--es panel prayers] [--es panel2 hourly|none] [--es home_panel prayers,hourly,verse|none] [--es greeting on|off] [--es matchestoday on|off] [--es greetingname NAME|off] [--es homephotos same|own] [--es homepacks id,id|none] [--es homeours on|off] [--es albummode seconds|ten|minute] [--es albumtitle on|off] [--es albumfit fit|fill] [--es albumsize normal|tall] [--es cleartext on|off] [--es looksync on|off] [--es surface quick|cards|tray:30..100:look|glass|graphite] [--es accent amber|gold|green|teal|sky|violet|rose|coral|default] [--es baropacity 30..100] [--es walldim 0..90] [--es focusstyle solid|frame|glow] [--es albummode seconds|minute] [--es albumdate on|off] [--es pillshidden markets,matches,center|none] [--es listenpill on|off] [--es updatebell on|off] [--es watchnext on|off] [--es appearance dark|light|auto] [--es look glass|graphite|navy|clean] [--es homelayout classic|couch|football] [--es favbar 5|6|7|8|all] [--es pagesdark on|off] [--es adhanbar on|off] [--es yearstrip on|off] [--es minrating 7]
  *       [--es sunrise on|off] [--es prayerbar on|off] [--es wxmore on|off] [--es months default|levant] [--es verse day|3|10] [--es versekind both|verse|hadith] [--es seconds on|off] [--es backexit press|hold|three] [--es occasion on|off] [--es nightdim on|off] [--es taskspill on|off] [--es backsaver on|off] [--es genres Drama,Comedy] [--es langs English]
  *       [--es photos 30] [--es idle 10] [--es digits hindi|latin] [--es hijrioffset -2..2] [--es clock24 on|off] [--es ramtier low|mid|normal|auto] [--es lite auto|on|off] [--es lang ar|en]
  *       [--es design info|clean|big|frame|dayline] [--es bar none|prayers|slot|weather] [--es barat bottom|clock] [--es wx auto|usual|clock|corner|off]
@@ -47,6 +47,7 @@ import java.util.Locale;
  * appearance = «المظهر ← الإضاءة» of the home screen: dark (the default), light, or auto (light from sunrise until Maghrib in the city).
  * look = «المظهر ← الشكل» of all our screens: glass (the default), graphite, navy or clean.
  * listenpill = the «تلاوة وأذان» button on the home screen (on, the default, or off: only the button goes, the adhan and the Quran stay).
+ * matchestoday = the «المباريات» card shows only today's games, in the city's day (on), or the week's as always (off, the default).
  * pagesdark = the home's markets and matches pages in the dark look (on, the default) or in the home's look (off).
  * watchnext = «أكمل المشاهدة» under the home screen's favourites (on, the default, or off); it needs the home app's TV listings permission.
  * updatebell = the «جرس التحديثات» on the home screen (on, the default, or off: only the bell goes; it shows only while the Play Store has updates waiting).
@@ -324,6 +325,9 @@ public class SaverReceiver extends BroadcastReceiver {
         String watchNext = i.getStringExtra("watchnext");
         if (watchNext != null && !"on".equals(watchNext) && !"off".equals(watchNext))
             return "error: watchnext is one of on off";
+        String matchesToday = i.getStringExtra("matchestoday");
+        if (matchesToday != null && !"on".equals(matchesToday) && !"off".equals(matchesToday))
+            return "error: matchestoday is one of on off";
         String pagesDark = i.getStringExtra("pagesdark");
         if (pagesDark != null && !"on".equals(pagesDark) && !"off".equals(pagesDark))
             return "error: pagesdark is one of on off";
@@ -546,6 +550,7 @@ public class SaverReceiver extends BroadcastReceiver {
         if (sceneWeather != null) p.setSceneByWeather("on".equals(sceneWeather));
         if (favBar != null) p.setFavBar(favBar);
         if (pagesDark != null) p.setPagesDark("on".equals(pagesDark));
+        if (matchesToday != null) p.setMatchesToday("on".equals(matchesToday));
         if (adhanBar != null) p.setAdhanBar("on".equals(adhanBar));
         if (adhanLead != null) p.setAdhanLead(Integer.parseInt(adhanLead));
         if (updateChannel != null && !updateChannel.equals(p.updateChannel())) {   // another release now: the number shown as the newest is read again
@@ -755,6 +760,7 @@ public class SaverReceiver extends BroadcastReceiver {
             + "\nscenepacks: " + Prefs.join(p.scenePacks(), ",") + "\nscenestay: " + p.sceneStay()
             + "\nscenetime: " + (p.sceneByTime() ? "on" : "off") + "\nsceneweather: " + (p.sceneByWeather() ? "on" : "off")
             + "\nfavbar: " + p.favBar()
+            + "\nmatchestoday: " + (p.matchesToday() ? "on" : "off")
             + "\npagesdark: " + (p.pagesDark() ? "on" : "off")
             + "\nadhanbar: " + (p.adhanBar() ? "on" : "off") + "\nadhanlead: " + p.adhanLead()
             + "\nupdatechannel: " + p.updateChannel()

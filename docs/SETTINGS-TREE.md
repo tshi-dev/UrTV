@@ -412,6 +412,9 @@ the phone page's key, «مركز التحكم» the control centre's row that op
       القيم المقبولة: 'دوري روشن السعودي' ('' = none; optimize/saver.sh show lists the ones set)
     مثال للوكيل: optimize/saver.sh leagues 'Saudi-Arabian Pro League'
       القيم المقبولة: 'دوري روشن السعودي' ('' = none; optimize/saver.sh show lists the ones set)
+——— بطاقة المباريات لليوم فقط [الرئيسية]
+    مثال للوكيل: optimize/saver.sh matchestoday on  (`off` = the default: the week's next games, as always)
+      القيم المقبولة: on|off
 ——— رياضات أخرى [الرئيسية وشاشة التوقف]
     مثال للوكيل: optimize/saver.sh events f1,ufc,boxing  (`""` = none)
       القيم المقبولة: f1,ufc,boxing ('' = none)
@@ -989,6 +992,9 @@ the phone page's key, «مركز التحكم» the control centre's row that op
        القيم المقبولة: 'دوري روشن السعودي' ('' = none; optimize/saver.sh show lists the ones set)
      مثال للوكيل: optimize/saver.sh leagues 'Saudi-Arabian Pro League'
        القيم المقبولة: 'دوري روشن السعودي' ('' = none; optimize/saver.sh show lists the ones set)
+———— بطاقة المباريات لليوم فقط [الرئيسية]
+     مثال للوكيل: optimize/saver.sh matchestoday on  (`off` = the default: the week's next games, as always)
+       القيم المقبولة: on|off
 ———— رياضات أخرى [الرئيسية وشاشة التوقف]
      مثال للوكيل: optimize/saver.sh events f1,ufc,boxing  (`""` = none)
        القيم المقبولة: f1,ufc,boxing ('' = none)

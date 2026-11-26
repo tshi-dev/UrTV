@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <!-- the build: UTC time (YYYYMMDDHHMMSS) of the newest commit of the page's sources, put in by src/build.py. The app loads the page with the newer stamp (its own
      copy or a downloaded one), never by file time, and does not keep a download whose stamp is older than its own (Updater, PageStamp). -->
-<meta name="urtv-build" content="20261123132212">
+<meta name="urtv-build" content="20261124144743">
 <title>Your TV Screen</title>
 <style>
   @font-face{font-family:'Thmanyah';font-weight:300;font-style:normal;font-display:block;src:url("https://raw.githubusercontent.com/tshi-dev/UrTV/master/assets/fonts/Thmanyah-Light.woff2") format("woff2")}
@@ -1109,6 +1109,7 @@ const CONFIG = {
     minRating: _num('minrating', 7),
   },
   weekWindowDays: 7,
+  matchesToday: _Q.get('mtoday') === '1',
   photoMinutes: (m => [0.5,1,5,10,15,30,60].includes(m) ? m : 30)(_num('photos', 30)),
   own: Math.max(0, Math.min(50, Math.floor(_num('own', 0)))),
   albumMs: _Q.get('albummode') === 'minute' ? 60000 : _Q.get('albummode') === 'ten' ? 10000 : 4000,
@@ -2434,9 +2435,11 @@ function packPages(slots, per){
   }
   return pages;
 }
-function matchesEmptyText(){
-  return MATCHES_LOADED ? 'No matches this week' : MATCH_FAIL_AT ? 'Update failed' : 'Loading…';
+function matchesEmptyText(card){
+  return MATCHES_LOADED ? (todayOnly(card) ? 'No matches today' : 'No matches this week') : MATCH_FAIL_AT ? 'Update failed' : 'Loading…';
 }
+const todayOnly = card => !!(CONFIG.matchesToday && card && card.kind === 'matches');
+const gameDay = (ev, t) => timeTbd(ev) && ev.dateEvent ? ev.dateEvent : FMT_DATE.format(new Date(t));
 const matchesStaleNote = () => MATCH_OK_AT && MATCH_FAIL_AT > MATCH_OK_AT ? fmtAgo(MATCH_OK_AT) : '';
 function renderMatches(turn){
   if(!SLOT_MATCHES) return;
@@ -3217,15 +3220,15 @@ function renderCard(card, animate, keepSize){
   else if(P === 'wisdom'){ const q = wisdomOfDay(); paintHd(hd, q.title); rows = q.rows; }
   else if(P === 'adhkar'){ const q = adhkarCard(card); paintHd(hd, q.title, q.hd); rows = q.rows; }
   else if(P === 'stocks'){ const q = stocksCard(); paintHd(hd, '', q.hd); rows = q.rows; }
-  const title = PANEL_TITLE[card.kind === 'nextmatch' ? 'nextmatch' : P];
+  const title = todayOnly(card) ? 'Today’s matches' : PANEL_TITLE[card.kind === 'nextmatch' ? 'nextmatch' : P];
   if(P === 'matches' && matchesStaleNote()) paintHd(hd, '', `<span>${title}</span><span class="until">${matchesStaleNote()}</span>`);
   else if(P === 'tasks' && !OLD_LOOK && CONFIG.tasks.length) paintHd(hd, '', `<span>${PANEL_TITLE.tasks}</span><span class="until near">${qty(CONFIG.tasks.length, UNIT.task)}</span>`);
   else if(title && !SPORT_KINDS.includes(P)) paintHd(hd, title);
   if(!rows.length){
     if(P === 'matches' && !MATCHES_LOADED && ul.firstElementChild && !ul.firstElementChild.classList.contains('empty')) return;
-    if(P === 'matches' && ul.firstElementChild && ul.firstElementChild.classList.contains('empty') && ul.firstElementChild.textContent === matchesEmptyText()) return;
+    if(P === 'matches' && ul.firstElementChild && ul.firstElementChild.classList.contains('empty') && ul.firstElementChild.textContent === matchesEmptyText(card)) return;
     ul.classList.remove('flip');
-    setHTML(ul, `<li class="empty">${P === 'matches' ? matchesEmptyText() : P === 'tasks' ? 'No tasks today' : 'No data right now'}</li>`);
+    setHTML(ul, `<li class="empty">${P === 'matches' ? matchesEmptyText(card) : P === 'tasks' ? 'No tasks today' : 'No data right now'}</li>`);
     return;
   }
   const per = card.cap || (P === 'matches' ? MATCH_ROWS : WEEK_ROWS);
@@ -3599,13 +3602,15 @@ function matchRows(card){
   let evs = matchEvents();
   const smart = card && card.kind === 'smart';
   if(smart){ const ids = new Set(focusGames(now).map(ev => ev.idEvent)); evs = evs.filter(ev => ids.has(ev.idEvent)); }
+  const today = todayOnly(card) ? FMT_DATE.format(new Date(now)) : '';
   const one = card && card.kind === 'nextmatch';
   if(one){ const n = nextTeamGame(now); evs = n ? evs.filter(ev => ev.idEvent === n.idEvent) : []; }
-  const others = smart || one ? [] : eventRows(now);
+  const others = smart || one ? [] : eventRows(now).filter(o => !today || FMT_DATE.format(new Date(o.t)) === today);
   const shown = evs.map(ev => ({ev, t: toDate(ev).getTime(), r: gameRank(ev, now) + (ev.tour ? 100 : 0)}))
     .filter(x => finishedRecently(x.ev, now) || pendingResult(x.ev, now)
       || (now < x.t + durMs(x.ev) && !FINAL.includes((x.ev.strStatus || '').toUpperCase())
           && x.t - now <= CONFIG.weekWindowDays * 86400000))
+    .filter(x => !today || gameDay(x.ev, x.t) === today)
     .sort(byRank).filter((x, i, a) => !x.ev.tour || a.slice(0, i).filter(y => y.ev.tour).length < 3);
   const anyCrest = shown.some(x => crestImg(x.ev, 'Home') || crestImg(x.ev, 'Away'));
   const crestOrGap = (ev, side) => crestImg(ev, side) || (anyCrest ? '<span class="crgap"></span>' : '');

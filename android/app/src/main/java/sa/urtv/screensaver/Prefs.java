@@ -656,6 +656,9 @@ final class Prefs {
     boolean adhanBar() { return sp.getBoolean("adhanBar", true); }
     void setAdhanBar(boolean v) { sp.edit().putBoolean("adhanBar", v).apply(); }
     /** 4.4 beta 4: how many minutes before the adhan the bar starts, 10 (the default) or 15; it stays until the adhan. Sent only when 15. */
+    /** «بطاقة المباريات لليوم فقط»: the «المباريات» card shows only the games of the city's day (on), or the week's as always (off, the default) */
+    boolean matchesToday() { return sp.getBoolean("matchesToday", false); }
+    void setMatchesToday(boolean v) { sp.edit().putBoolean("matchesToday", v).apply(); }
     int adhanLead() { return sp.getInt("adhanLead", 10) == 15 ? 15 : 10; }
     void setAdhanLead(int v) { sp.edit().putInt("adhanLead", v == 15 ? 15 : 10).apply(); }
 
@@ -919,6 +922,7 @@ final class Prefs {
             + "&design=" + design() + "&bar=" + bar() + "&barat=" + barAt() + "&wx=" + wxAt()
             + "&adhanbar=" + (adhanBar() ? "1" : "0") + (adhanLead() == 15 ? "&adhanlead=15" : "")
             + "&yearstrip=" + (yearStrip() ? "1" : "0")
+            + (matchesToday() ? "&mtoday=1" : "")   // «بطاقة المباريات لليوم فقط»: only when on, so the page's address is as before
             + (sunrise() ? "&sunrise=1" : "") + (prayerBar() ? "&prayerbar=1" : "") + (wxMore() ? "&wxmore=1" : "")
             + ("levant".equals(months()) ? "&months=levant" : "")
             + prayerAdjFragment()   // 4.3.3: the person's own minutes, and a published correction where they set none (PrayerFix)
