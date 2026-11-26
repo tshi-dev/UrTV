@@ -62,6 +62,19 @@ for (const file of ['tv.html', 'tv-en.html']) {
   check(`${file} between the Asr adhan and its iqama: Asr is lit and no box has a countdown`, /^\d{1,2}:\d{2}/.test(cur.asr) && inWin.next.length === 1 && inWin.cds === 0 && !inWin.next[0].cd,
     JSON.stringify([cur.asr, inWin.cds, inWin.next]));
 }
+// 4.4 beta 4 (the owner: «كنبة» as couch-tv, the big clock always centred): the strip is 208 px at 1080p and 139 at 720p (CardBox.row); the cards fill it
+// less 6.25vh above and below (182 of 208), the same height, inside the box at 720p too; the focus is a 3% scale and a short shadow, no ring
+for (const [w, h] of [[1676, 208], [1117, 139]]) {
+  const s = await page('tv.html', w, h, 'panel=prayers&home_panel=prayers,verse&row=1');
+  const top = Math.round(h * .0625), bot = h - top;
+  check(`tv.html #row=1 at ${w}x${h}: the cards ${top} to ${bot} (6.25vh of room above and below for the focus), side by side, inside the box`,
+    s.cards.length === 2 && s.cards.every(b => Math.abs(b[1] - top) <= 1 && Math.abs(b[3] - bot) <= 1 && b[0] >= 0 && b[2] <= w), JSON.stringify(s.cards));
+}
+{
+  const css = (await import('node:fs')).readFileSync(path.join(ROOT, 'src/template.html'), 'utf8');
+  const rule = css.split('\n').find(l => l.includes('html.row.widget .week.lf,')) || '';
+  check('the strip\'s focus: a 3% scale and a short shadow, no ring', /transform:scale\(1\.03\)/.test(rule) && /box-shadow:0 4px 10px/.test(rule) && !/inset/.test(rule), rule);
+}
 await browser.close();
 if (failed) { console.log(`\n${failed} failed`); process.exit(1); }
 console.log('\nall passed');

@@ -72,6 +72,13 @@
   html.row .week.turnoff{opacity:0;pointer-events:none}
   html.row.lowram .week.turn{transition:none}
   html.row .week .turnmark{position:absolute;bottom:.5em;inset-inline-end:.9em;font-size:.8em;color:rgba(255,255,255,.62)}
+  /* 4.4 beta 4 (the owner: «كنبة» as couch-tv, the big clock always centred, the strip between its digits and the apps row: 208 px at 1080p, 139 at
+     720p): the cards fill the strip less 6.25vh above and below (182 of 208), the same height, centred; 1vw at the sides. That room is the focus's: a
+     3% scale and a short soft shadow, no ring (the owner: the focus is the size and a shadow). More than fits (720p, the large font): fitCards steps the
+     cards down inside the same box; the strip never grows. */
+  html.row .mid{box-sizing:border-box;min-height:100vh;padding-top:6.25vh;padding-bottom:6.25vh;padding-left:1vw;padding-right:1vw}
+  html.row.widget .week.lf,html.row.widget .week.live.lf,html.row.widget .week.tap.lf{transform:scale(1.03);box-shadow:0 4px 10px rgba(0,0,0,.4)!important;border-color:transparent!important;transition:transform .2s cubic-bezier(.2,.8,.2,1)}
+  html.row.lowram .week.lf{transform:none;transition:none}
   /* the home's cards take the apps tray's glass (#hpanel= and #hline= from the launcher: FavBar's fill and line, as thin as «شفافية الشريط» says): one family in every look, no per-card tint */
   html.hcard .week{background:var(--hpanel)!important;border-color:var(--hline)!important}
   html.hcard .week:not(.lf){box-shadow:none!important}   /* the card styles' soft drop shadow (0 24px 60px) is cut at the card's box on the home: a straight-edged dark patch under the glass (step 52); the focus ring (.lf) stays */
