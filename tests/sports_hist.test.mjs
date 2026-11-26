@@ -85,6 +85,7 @@ const groupsText = p => p.evaluate(() => document.getElementById('mp').innerText
   const { p, ctx, errors } = await open('teams=136013', { 'teams/136013.json': TEAM, 'h2h/136013-136014.json': { v: 1, pair: '136013-136014', meetings: MEET } });
   await p.evaluate(() => mpGo({ k: 'club', id: '136013', vs: '136014' }));
   await p.waitForTimeout(1000);
+  await p.evaluate(() => { MP.view.tab = 4; mpRender(); });   // 4.4 beta 5: the meetings are the club page's «المواجهات» tab
   const t = await groupsText(p);
   const other = await p.evaluate(() => teamNameOf('136014'));   // the page's own name for the other club
   check('(b) the all-time count from the club\'s side: «الهلال ١٥ فوز، ٩ تعادل، <the other> ١٠», in ٣٤ meetings', !errors.length && t.includes('الهلال ١٥ فوز، ٩ تعادل، ' + other + ' ١٠') && t.includes('في ٣٤ مواجهة'), other + ' :: ' + t.slice(0, 400) + errors.join('|'));

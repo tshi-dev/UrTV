@@ -459,6 +459,17 @@ function honClub(id, j){
   });
   return rows.length ? [{key: 'hon', name: HW.honours, games: rows}] : [];
 }
+// 4.4 beta 5 the club page's header: its latest title of any competition the archive or the weekly file names ({lg, s}), null when none
+function honLastTitle(id, j){
+  const lgs = new Set();
+  ((j && j.last) || []).concat((j && j.next) || []).forEach(g => g && g.lg && lgs.add(String(g.lg)));
+  let best = null;
+  [...lgs].filter(x => /^\d+$/.test(x)).forEach(lg => {
+    const w = honChampList(lg, archWant('sports/' + lg + '.json')).list.find(c => String(c.id || '') === id);
+    if(w && (!best || String(w.s) > best.s)) best = {lg, s: String(w.s)};
+  });
+  return best;
+}
 
 // which of the league's honours have data (a tab without it is not shown): «الأبطال» when the weekly file or the archive names a champion,
 // «الهدّافون» when the scorers file has a season
@@ -514,7 +525,7 @@ SPORTS = {
   tops: spTops,
   // 4.5 the honours: the league and club pages', and named parts for the league page v2's cards (docs/research/LEAGUE-V2-PHASE-A-PLAN.md §3c),
   // each card gated on has(id) so none is ever empty
-  hon: {league: honLeague, club: honClub, has: honHas, champList: honChampList, champRow: honChampRow, top: honTop, scorers: honScorers,
+  hon: {league: honLeague, club: honClub, lastTitle: honLastTitle, has: honHas, champList: honChampList, champRow: honChampRow, top: honTop, scorers: honScorers,
     scorerSeasons: honScorerSeasons, want: honWant},
   load: spLoad,
   card(card, P){

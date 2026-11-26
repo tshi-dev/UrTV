@@ -908,6 +908,18 @@
   .mpt li.mptg{min-height:calc(var(--u)*48);color:var(--fs)}
   .mptg span{padding:calc(var(--u)*4) calc(var(--u)*16);border-bottom:calc(var(--u)*4) solid transparent;margin-inline-end:calc(var(--u)*16)}
   .mptg span.on{color:var(--fgr);font-weight:700;border-bottom-color:var(--fgr)}
+  /* 4.4 beta 5 the club page's overview (mockup 6): its last five as score tiles (its goals first, newest at the start), the next game beside them */
+  .mpcl{display:flex;align-items:stretch;margin-bottom:calc(var(--u)*8)}
+  .mpcl > div{background:var(--fbg);border:1px solid var(--fln);border-radius:calc(var(--u)*24);padding:calc(var(--u)*16) calc(var(--u)*24)}
+  .mpcl .cl5{flex:none;display:flex;margin-inline-end:calc(var(--u)*24)}
+  .mpcl .tl{width:calc(var(--u)*130);text-align:center;display:flex;flex-direction:column;align-items:center}
+  .mpcl .tl b{font-size:calc(var(--u)*34);font-weight:700;direction:ltr;unicode-bidi:isolate;white-space:nowrap}
+  .mpcl .tl span{color:var(--fs);font-size:calc(var(--u)*24);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;margin:calc(var(--u)*6) 0}
+  .mpcl .tl .fo{display:flex;justify-content:center}
+  .mpcl .clnx{flex:1;min-width:0}
+  .mpcl .clnx i{display:block;font-style:normal;color:var(--fs);font-size:calc(var(--u)*24)}
+  .mpcl .clnx b{display:block;font-size:calc(var(--u)*34);font-weight:700;margin:calc(var(--u)*6) 0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .mpcl .clnx em{display:block;font-style:normal;color:var(--fgr);font-size:calc(var(--u)*26);min-height:calc(var(--u)*34)}
   #mp.mp-focus header,#mp.mp-focus #mp-days,#mp.mp-focus #mp-list h2{display:none}   /* focused mode: the table alone (a cut, no slide), the side's seasons stay */
   .mdf{display:flex;align-items:baseline;gap:calc(var(--u)*16)}
   .mdt .rk{color:var(--fs);font-size:calc(var(--u)*24)}
@@ -4967,6 +4979,8 @@ const FB_W = {
   table:'جدول الترتيب', results:'النتائج', noTable:'الترتيب غير متاح الآن', noTableL:'الترتيب غير متاح لهذا الدوري', pts:'%s نقطة', played:'لعب %s',
   h2hAll:'%s %s فوز، %s تعادل، %s %s', h2hIn:'في %s مواجهة', h2hMore:'كل المواجهات (%s)',
   champs:'الأبطال', scorers:'الهدّافون',
+  cTabs:'النادي|المباريات|النتائج|البطولات|المواجهات', places:'الأول|الثاني|الثالث|الرابع|الخامس|السادس|السابع|الثامن|التاسع|العاشر|الحادي عشر|الثاني عشر|الثالث عشر|الرابع عشر|الخامس عشر|السادس عشر|السابع عشر|الثامن عشر|التاسع عشر|العشرون',
+  placeN:'المركز %s', standing:'%s في %s، %s نقطة من %s مباراة', lastTitle:'آخر بطولة: %s %s', inTable:'في الترتيب', nextGame:'المباراة القادمة', last5:'آخر خمس مباريات',
   tCols:'النادي|لعب|فاز|تعادل|خسر|له|عليه|الفارق|نقاط|آخر خمس مباريات', fWords:'فوز|تعادل|خسارة', fSay:'آخر خمس مباريات: %s', tAll:'الكل', tLive:'مع المباريات الجارية',
   zones:{acle:'دوري أبطال آسيا للنخبة', acl2:'دوري أبطال آسيا %s', ucl:'دوري أبطال أوروبا', uel:'الدوري الأوروبي', uecl:'دوري المؤتمر الأوروبي', po:'الملحق', down:'الهبوط'},
   myLeagues:'دورياتي', add:'أضف دوريًا أو فريقًا', manage:'إعدادات فرقي', noTeams:'ما تتابع فريقًا بعد', noLeagues:'ما تتابع دوريًا بعد', allLands:'كل الدول',
@@ -5379,7 +5393,7 @@ function mptGroup(o){
   const games = [];
   if(live.length) games.push(Object.assign(mpItem(FB_W.tLive, '', () => { o.flip(); }), {tg: 1, on: !!o.live}));
   rows.forEach(x => games.push(Object.assign(mpItem(clubNm(x.ar, x.n, x.id), '', () => mpGo({k: 'club', id: x.id})), {tr: x})));
-  return {key: 't', name: o.name || FB_W.table, games, table: {zones: Array.isArray(o.zones) ? o.zones : [], champ: o.champ ? String(o.champ) : '', champW: o.champW || '', past: !!o.past, n: rows.length},
+  return {key: 't', name: o.name || FB_W.table, games, table: {zones: Array.isArray(o.zones) ? o.zones : [], champ: o.champ ? String(o.champ) : '', champW: o.champW || '', past: !!o.past, n: rows.length, self: o.self ? String(o.self) : ''},
     focus: Math.max(0, games.findIndex(g => g.tr && fbFollowed(g.tr.id))) || (live.length ? 1 : 0)};
 }
 // …drawn: the column heads, then each row (rank, movement, crest, club, P W D L GF GA GD Pts, the last five); a zone's name on a thin line
@@ -5393,12 +5407,13 @@ function mptHtml(g, start){
   g.games.forEach((x, j) => {
     const i = start + j;
     if(x.tg){ out = `<li class="mptg${sel(i)}" data-r="${i}"><span class="${x.on ? '' : 'on'}">${esc(FB_W.tAll)}</span><span class="${x.on ? 'on' : ''}">${esc(FB_W.tLive)}</span></li>` + out; return; }   // above the column heads
-    const r = x.tr, place = ++k, z = t.zones.find(z => z.from === place), end = t.zones.find(z => z.to === place - 1);
+    const r = x.tr, place = r.rk || ++k, first = j === g.games.findIndex(y => y.tr);
+    const z = t.zones.find(z => z.from === place || (first && z.from < place && place <= z.to)), end = t.zones.find(z => z.to === place - 1);   // a window: the zone it starts in is named above it
     if(z) out += `<li class="zl"><span>${esc(zl(z.k))}</span></li>`;
     else if(end) out += '<li class="zl bare"></li>';
     const gd = (+r.gf || 0) - (+r.ga || 0), mv = r.mv === undefined || r.mv === null || t.past ? '' : +r.mv > 0 ? `<span class="mv up">+${ar(+r.mv)}</span>` : +r.mv < 0 ? `<span class="mv dn">−${ar(-r.mv)}</span>` : '<span class="mv eq">–</span>';
     const crest = CRESTS_ON && CRESTS[r.id] ? `<img class="cr" data-t="${esc(r.id)}" alt="">` : '';
-    out += `<li class="tr${place % 2 ? '' : ' zb'}${fbFollowed(r.id) ? ' mine' : ''}${sel(i)}" data-r="${i}"><span class="rk">${ar(place)}</span>${mv || '<span class="mv"></span>'}<span class="bd">${crest}</span>`
+    out += `<li class="tr${place % 2 ? '' : ' zb'}${(t.self ? r.id === t.self : fbFollowed(r.id)) ? ' mine' : ''}${sel(i)}" data-r="${i}"><span class="rk">${ar(place)}</span>${mv || '<span class="mv"></span>'}<span class="bd">${crest}</span>`
       + `<span class="nm"><span>${esc(x.t)}</span>${r.lv ? `<em>${esc(r.lv)}</em>` : ''}${t.champ === r.id ? `<small>${esc(t.champW || '')}</small>` : ''}</span>`
       + [r.p, r.w, r.d, r.l, r.gf, r.ga].map((v, c) => `<span class="c${c > 3 ? ' gfa' : ''}">${ar(+v || 0)}</span>`).join('')
       + `<span class="c w">${gd > 0 ? '+' + ar(gd) : gd < 0 ? '−' + ar(-gd) : ar(0)}</span><span class="pt${r.lv ? ' ptl' : ''}">${ar(+r.pts || 0)}</span>${formMarks(r.f)}</li>`;
@@ -5529,7 +5544,7 @@ function mpRender(){
   const lo = MP.rows.length > MP_WIN * 2 + 20 ? Math.max(0, Math.min(MP.r - MP_WIN, MP.rows.length - MP_WIN * 2)) : 0, hi = lo ? lo + MP_WIN * 2 : MP.rows.length > MP_WIN * 2 + 20 ? MP_WIN * 2 : MP.rows.length;
   const rowAt = (ev, i, g) => i < lo || i >= hi ? '' : ev.it ? mpItemRow(ev, i) : mpRow(ev, now, i, g.dated ? 2 : g.more);
   setHTML(document.getElementById('mp-list'), shown.length ? shown.map(g => `<section data-g="${esc(g.key)}"><h2>${g.nameHtml || esc(g.name)}</h2>`
-    + (g.games.length ? g.table ? mptHtml(g, (n += g.games.length) - g.games.length) : '<ul>' + g.games.map(ev => rowAt(ev, n++, g)).join('') + '</ul>' : '')
+    + (g.html || '') + (g.games.length ? g.table ? mptHtml(g, (n += g.games.length) - g.games.length) : '<ul>' + g.games.map(ev => rowAt(ev, n++, g)).join('') + '</ul>' : '')
     + (g.loading ? `<div class="fnone">${esc(matchesEmptyText())}</div>` : '') + (g.none && !g.games.length ? `<div class="fnone">${esc(g.none)}</div>` : '')
     + (g.foot ? `<div class="mpsrc">${esc(g.foot)}</div>` : '') + '</section>').join('')   // 4.5 a list's source (the honours)
     : `<div class="fnone">${V ? esc(V.empty || FB_W.noData) : MATCHES_LOADED && !(MP.wait && MP.day < t) ? fbNone(MP.day) : matchesEmptyText()}</div>`);
@@ -5724,6 +5739,21 @@ function mpFollowTeam(id){
 }
 function mpReload(){ try{ Promise.resolve(loadMatches()).then(() => { fbRender(); mpRender(); }).catch(() => {}); }catch(e){} }
 // A2 a club: its coming games by round, its last results, its meetings with the other club (of the game it was opened from, else of its next game)
+// 4.4 beta 5 (the club page, mockup 6): tabs by key, 0 «النادي» (the overview), 1 «المباريات», 2 «النتائج», 3 «البطولات» (when the honours name a
+// title), 4 «المواجهات» (when there is another club); follow / unfollow last. Everything from the club's file, its league's table file and the
+// honours files: nothing is said that they do not say.
+function mpClubLeague(id, j){   // the league whose table (the archive's) has the club: {lg, sp, rows, i}; the one with the most games played
+  const lgs = new Set();
+  ((j && j.last) || []).concat((j && j.next) || []).forEach(g => g && g.lg && lgs.add(String(g.lg)));
+  fbGames().forEach(ev => { if(String(ev.idHomeTeam) === id || String(ev.idAwayTeam) === id) lgs.add(String(ev.idLeague || '')); });
+  let best = null;
+  [...lgs].filter(x => /^\d+$/.test(x)).forEach(lg => {
+    const sp = archWant('sports/' + lg + '.json'), rows = sp && !sp.cup && Array.isArray(sp.table) ? sp.table.filter(x => x && /^\d+$/.test(String(x.id)) && x.p > 0) : [];
+    const i = rows.findIndex(x => String(x.id) === id);
+    if(i >= 0 && (!best || +rows[i].p > +best.rows[best.i].p)) best = {lg, sp, rows, i};
+  });
+  return best;
+}
 function mpClubView(v){
   const id = String(v.id), j = archWant('teams/' + id + '.json'), name = teamNameOf(id, j), now = Date.now();
   const its = ev => String(ev.idHomeTeam) === id || String(ev.idAwayTeam) === id;
@@ -5733,23 +5763,53 @@ function mpClubView(v){
   const last = lastOwn.concat(archNew(lastOwn, ((j && j.last) || []).map(g => archEv(g, j)).filter(Boolean))).sort((a, b) => fbKick(b) - fbKick(a)).slice(0, 10);
   const vs = String(v.vs || (coming[0] ? (String(coming[0].idHomeTeam) === id ? coming[0].idAwayTeam : coming[0].idHomeTeam) : '') || '');
   const h = /^\d+$/.test(vs) ? archWant('h2h/' + [id, vs].sort((a, b) => a - b).join('-') + '.json') : null;
-  const wait = x => x === undefined ? FB_W.loading : FB_W.noData, groups = [], by = new Map();
+  const wait = x => x === undefined ? FB_W.loading : FB_W.noData, byRound = [], by = new Map();
   coming.forEach(ev => { const k = fbRound(ev) || FB_W.upcoming; if(!by.has(k)) by.set(k, []); by.get(k).push(ev); });
-  by.forEach((games, k) => groups.push({key: 'n' + groups.length, name: k, games, dated: 1}));
-  if(!coming.length) groups.push({key: 'n', name: FB_W.upcoming, games: [], none: wait(j)});
-  groups.push({key: 'last', name: FB_W.last, games: last, dated: 1, none: wait(j)});
+  by.forEach((games, k) => byRound.push({key: 'n' + byRound.length, name: k, games, dated: 1}));
+  if(!coming.length) byRound.push({key: 'n', name: FB_W.upcoming, games: [], none: wait(j)});
+  const lastG = {key: 'last', name: FB_W.last, games: last, dated: 1, none: wait(j)};
+  let h2hG = null;
   if(/^\d+$/.test(vs)){   // 4.4 the all-time count first (every stored meeting), then the meetings: 10, and all of them after «كل المواجهات»
     const ms = ((h && h.meetings) || []).map(g => archEv(g)).filter(Boolean), all = h2hAll(id, vs), rows = [];
     if(all) rows.push(mpItem(fw(FB_W.h2hAll, name, ar(all.a), ar(all.d), teamNameOf(vs), ar(all.b)), fw(FB_W.h2hIn, ar(all.n)), () => {}));
     rows.push(...(v.allH2h ? ms : ms.slice(0, 10)));
     if(!v.allH2h && ms.length > 10) rows.push(mpItem(fw(FB_W.h2hMore, ar(ms.length)), '', () => { v.allH2h = 1; mpRender(); }));
-    groups.push({key: 'h2h', name: fw(FB_W.h2h, teamNameOf(vs)), games: rows, dated: 1, none: wait(h)});
+    h2hG = {key: 'h2h', name: fw(FB_W.h2h, teamNameOf(vs)), games: rows, dated: 1, none: wait(h)};
   }
-  if(SPORTS && SPORTS.hon) groups.push(...SPORTS.hon.club(id, j));   // 4.5 its titles (dist/sports.js)
-  const tabs = [{t: fw(fbFollowed(id) ? FB_W.unfollowT : FB_W.followT, name), act: () => mpFollowTeam(id)}];
+  const hon = SPORTS && SPORTS.hon ? SPORTS.hon.club(id, j) : [];   // 4.5 its titles (dist/sports.js)
+  const keys = [0, 1, 2].concat(hon.length ? [3] : [], h2hG ? [4] : []), tab = keys.includes(v.tab || 0) ? v.tab || 0 : 0;
+  const tabs = keys.map(k => ({t: FB_W.cTabs.split('|')[k], k, on: k === tab, act: () => { v.tab = k; MP.l = MP.r = 0; mpRender(); }}));
+  tabs.push({t: fw(fbFollowed(id) ? FB_W.unfollowT : FB_W.followT, name), act: () => mpFollowTeam(id)});
   if(v.vs) tabs.push({t: fw(FB_W.see, teamNameOf(vs)), act: () => { MP.view = {k: 'club', id: vs, vs: id}; MP.zone = 'rows'; MP.d = MP.l = MP.r = 0; MP.note = MP.ask = ''; mpRender(); }});
-  const f = formOf(id);
-  return {title: name, tabs, groups, sub: f.length ? `<span class="fmh">${FB_W.form}</span>${formHtml(f)}` : ''};
+  // the header: its place, points and games in its league's table; its latest title
+  const L = mpClubLeague(id, j), t = SPORTS && SPORTS.hon && SPORTS.hon.lastTitle ? SPORTS.hon.lastTitle(id, j) : null, pl = FB_W.places.split('|');
+  const sub = [L ? fw(FB_W.standing, L.i < pl.length ? pl[L.i] : fw(FB_W.placeN, ar(L.i + 1)), lgName(L.lg), ar(+L.rows[L.i].pts || 0), ar(+L.rows[L.i].p || 0)) : '',
+    t ? fw(FB_W.lastTitle, lgName(t.lg), ar(t.s)) : ''].filter(Boolean).map(esc).join('، ');
+  let groups, focus = null;
+  if(tab === 1) groups = byRound;
+  else if(tab === 2) groups = [lastG];
+  else if(tab === 3) groups = hon;
+  else if(tab === 4) groups = [h2hG];
+  else {
+    // the overview: the last five as tiles and the next game, its place in the table (OK: the full table), the coming games, its titles
+    const r5 = last.slice(0, 5).filter(fbScored), nx = coming[0];
+    const tile = ev => { const home = String(ev.idHomeTeam) === id, gf = +(home ? ev.intHomeScore : ev.intAwayScore), ga = +(home ? ev.intAwayScore : ev.intHomeScore);
+      return `<div class="tl"><b>${ar(gf)} : ${ar(ga)}</b><span>${esc(teamNameOf(home ? ev.idAwayTeam : ev.idHomeTeam))}</span>${formMarks([gf > ga ? 'w' : gf === ga ? 'd' : 'l'])}</div>`; };
+    const nxHtml = nx ? `<div class="clnx"><i>${esc(FB_W.nextGame + (fbRound(nx) ? '، ' + fbRound(nx) : ''))}</i><b>${esc(teamNameOf(nx.idHomeTeam) + ' – ' + teamNameOf(nx.idAwayTeam))}</b>`
+      + `<em>${esc(fbDayWord(fbDayOf(fbKick(nx))) + ' ' + fbClock(fbKick(nx)))}</em><i>${esc(fbSentence(nx) || '')}</i></div>` : '';
+    const top = r5.length || nxHtml ? `<div class="mpcl">${r5.length ? `<div class="cl5">${r5.map(tile).join('')}</div>` : ''}${nxHtml}</div>` : '';
+    groups = top ? [{key: 'top', name: FB_W.last5, games: [], html: top, count: ''}] : [];
+    if(L){
+      const lo = Math.max(0, Math.min(L.i - 2, L.rows.length - 5)), win = L.rows.slice(lo, lo + 5).map((x, k) => Object.assign({}, x, {rk: lo + k + 1}));
+      const g = mptGroup({id: L.lg, rows: win, zones: L.sp.zones, name: FB_W.inTable, self: id});
+      focus = L.i - lo;   // the focus on its own row
+      g.games = g.games.filter(x => x.tr).map(x => Object.assign(x, {act: () => mpGo({k: 'league', id: L.lg})}));   // OK on its rows: the full table
+      groups.push(g);
+    }
+    groups.push({key: 'n', name: FB_W.upcoming, games: coming.slice(0, 4), dated: 1, none: wait(j)});
+    groups.push(...hon);
+  }
+  return {title: name, tabs, groups, sub, focus};
 }
 function mpAct(){
   // one focus: OK acts on the button that is RINGED on screen
