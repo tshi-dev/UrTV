@@ -620,7 +620,7 @@ public class MainActivity extends Activity {
     // draws again and logs the fixed word «frozen-screen recovered».
     static final long FROZEN_MS = 2000;
     private long lastDrawAt, keyAt;
-    private boolean drawWatch;
+    private boolean drawWatch, frozenLogged;   // frozenLogged: the quiet recovery (no cover) was logged once this run
     private final Runnable frozenCheck = () -> { if (lastDrawAt < keyAt) recoverFrozen("no frame after a key"); };
 
     private void watchKey() {
@@ -648,7 +648,10 @@ public class MainActivity extends Activity {
         if (snapOverlay != null) { View v = snapOverlay; snapOverlay = null; v.animate().cancel(); if (v.getParent() instanceof ViewGroup) ((ViewGroup) v.getParent()).removeView(v); any = true; }
         if (homeRoot != null) homeRoot.invalidate();
         if (getWindow() != null) getWindow().getDecorView().invalidate();
-        android.util.Log.w("UrTVHome", "frozen-screen recovered (" + why + (any ? ", a cover dropped" : "") + ")");
+        // 4.4 beta 4 (the tester's TCL, build 620: one line every few seconds with nothing dropped, its frames unseen by the listener): the redraw
+        // runs every time; the line is written when a cover was dropped, and only once a run when nothing was
+        if (any || !frozenLogged) android.util.Log.w("UrTVHome", "frozen-screen recovered (" + why + (any ? ", a cover dropped" : "") + ")");
+        if (!any) frozenLogged = true;
     }
 
     /** 4.3.1 hotfix: the small (480 px) copy of the photo in front: in memory and on disk, drawn in the first frame of a start or a return when no photo is in a view (WallFirstFrame) */

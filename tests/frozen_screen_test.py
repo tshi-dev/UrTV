@@ -33,4 +33,7 @@ rec = main[main.index("    private void recoverFrozen(String why) {"):]
 rec = rec[:rec.index("\n    }\n") + 6]
 check("recovering drops every cover (the look's and the start picture), draws again, and logs the fixed word «frozen-screen recovered»",
       "homeLook.drop()" in rec and "snapOverlay = null;" in rec and "removeView(v)" in rec and "getDecorView().invalidate();" in rec and '"frozen-screen recovered (' in rec)
+check("a recovery with no cover is logged once a run (build 620: a line every few seconds); one that dropped a cover is logged every time; the redraw always runs",
+      "if (any || !frozenLogged) android.util.Log.w(" in rec and "if (!any) frozenLogged = true;" in rec
+      and rec.index("getDecorView().invalidate();") < rec.index("if (any || !frozenLogged)") and "private boolean drawWatch, frozenLogged;" in main)
 sys.exit(1 if failed else 0)
