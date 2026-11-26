@@ -249,16 +249,16 @@ public class MainActivity extends Activity {
     @Override
     protected void onCreate(Bundle b) {
         super.onCreate(b);
-        android.content.res.Configuration built = getResources().getConfiguration();   // the size and density the layout is made for (onConfigurationChanged)
-        builtWidthDp = built.screenWidthDp;
-        builtHeightDp = built.screenHeightDp;
-        builtDensityDpi = built.densityDpi;
         if (CrashLoopStore.safe(this)) {   // 4.3.5 (R7): the home died twice right after starting: the safe page, never a black screen
             safeRedirect = true;
             openSafePage();
             finish();
             return;
         }
+        android.content.res.Configuration built = getResources().getConfiguration();   // the size and density the layout is made for (onConfigurationChanged)
+        builtWidthDp = built.screenWidthDp;
+        builtHeightDp = built.screenHeightDp;
+        builtDensityDpi = built.densityDpi;
         CrashLoopStore.opened(this);   // 4.3.5: the screen must draw its first frame within 20 s, or the next start counts a hang (CrashLoop)
         getWindow().getDecorView().getViewTreeObserver().addOnDrawListener(firstDraw);
         if (DebugFlags.on(this, "keytrace")) KeyTrace.install();
