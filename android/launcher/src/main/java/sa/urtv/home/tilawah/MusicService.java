@@ -926,6 +926,10 @@ public class MusicService extends Service implements AudioManager.OnAudioFocusCh
     private boolean watchStall() {
         boolean live = source == Prefs.SOURCE_RADIO && radioAddress != null && wish.wants();
         StallWatch.Verdict v = stall.check(SystemClock.elapsedRealtime(), live, prepared, playing, rebufferStart, position);
+        if (v == StallWatch.Verdict.OK && stall.idleTooLong(SystemClock.elapsedRealtime(), live, prepared, playing, buffering, waitingFocus || resumeOnFocus)) {
+            Log.w(TAG, "station ready but not playing for " + StallWatch.IDLE_MS / 1000 + " s (" + playerKind + ", host " + hostOf(currentUrl) + ", error " + error + "): started again");
+            v = StallWatch.Verdict.RESTART;   // 4.4 beta 4: ready, wanted, silent and not loading: the same quiet restart as a stall
+        }
         if (v == StallWatch.Verdict.OK) return false;
         if (v == StallWatch.Verdict.RESTART) {
             stallRestarts++;

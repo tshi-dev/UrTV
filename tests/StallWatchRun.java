@@ -40,6 +40,18 @@ public final class StallWatchRun {
         w.reset();
         check("the person's own pick clears the count", w.restarts() == 0);
 
+        // 4.4 beta 4: ready, wanted, silent and not loading (the tester's station 8: state 0, position 23, no error) is stuck after IDLE_MS
+        w = new StallWatch();
+        boolean idle = false;
+        for (int i = 0; i < 19; i++) idle |= w.idleTooLong(t + i * 1000, true, true, false, false, false);
+        check("ready but silent for 19 s: left alone", !idle);
+        check("ready but silent for 20 s: stuck, restarted", w.idleTooLong(t + 20_000, true, true, false, false, false) && !w.idleTooLong(t + 21_000, true, true, false, false, false));
+        w = new StallWatch();
+        idle = false;
+        for (int i = 0; i < 60; i++) idle |= w.idleTooLong(t + i * 1000, true, true, true, false, false) | w.idleTooLong(t + i * 1000, true, true, false, true, false)
+            | w.idleTooLong(t + i * 1000, true, true, false, false, true) | w.idleTooLong(t + i * 1000, false, true, false, false, false) | w.idleTooLong(t + i * 1000, true, false, false, false, false);
+        check("playing, loading, waiting for the sound on purpose, not wanted or not ready: never stuck", !idle);
+
         check("HLS: SBA's .m3u8 (and with a query) goes to ExoPlayer", StallWatch.isHls("https://live.kwikmotion.com/sbrksaquranradiolive/ksaquranradio/playlist.m3u8")
             && StallWatch.isHls("https://x.example/live/index.M3U8?token=1"));
         check("not HLS: mp3quran's radio, radiojar, a surah, a path with m3u8 elsewhere, null", !StallWatch.isHls("https://backup.qurango.net/radio/abdulrahman_alsudaes")

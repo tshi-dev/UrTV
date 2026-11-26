@@ -45,5 +45,8 @@ else:
             for line in out.splitlines():
                 name, res = line.rsplit("\t", 1)
                 check(name, res == "ok")
-            check("every watchdog case ran", len(out.splitlines()) == 12, len(out.splitlines()))
+            check("every watchdog case ran", len(out.splitlines()) == 15, len(out.splitlines()))
+svc = (T / "MusicService.java").read_text(encoding="utf-8")
+check("beta 4: the watchdog also restarts a station that is ready, wanted, silent and not loading (never one waiting for the sound on purpose)",
+      "stall.idleTooLong(SystemClock.elapsedRealtime(), live, prepared, playing, buffering, waitingFocus || resumeOnFocus)" in svc.split("private boolean watchStall()")[1].split("if (v == StallWatch.Verdict.OK) return false;")[0])
 sys.exit(1 if failed else 0)
