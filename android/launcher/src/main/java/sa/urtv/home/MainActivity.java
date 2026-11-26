@@ -1573,7 +1573,55 @@ public class MainActivity extends Activity {
             if (FavBar.GLASS.equals(appsLook)) glassIcon(app, ri, pm);
             out.add(app);
         }
+        for (String w : wanted) {   // an input the owner put in the favourites («أسماء المصادر»): a tile of its own (InputFav)
+            App in = InputFav.isInput(w) ? inputApp(w) : null;
+            if (in != null) out.add(in);
+        }
         return out;
+    }
+
+    /**
+     * A favourite input as a tile: its name (the owner's, else the CEC device's, else the TV's), the sources icon composed on a tile as an app
+     * with no banner is. Null when the TV no longer reports it (it keeps its place, as an app that is gone for now). On the loading thread.
+     */
+    private App inputApp(String entry) {
+        String id = InputFav.idOf(entry);
+        TvInputInfo found = null;
+        try {
+            for (TvInputInfo t : InputLabels.reported(this)) if (InputLabels.key(t).equals(id)) { found = t; break; }
+        } catch (RuntimeException e) {
+            return null;
+        }
+        if (found == null) return null;
+        App a = new App();
+        a.pkg = entry;
+        a.label = InputLabels.label(this, found, InputLabels.given(this));
+        a.category = Intent.CATEGORY_LEANBACK_LAUNCHER;
+        Drawable icon = getDrawable(R.drawable.ic_input);
+        Drawable t = composeTile(icon);
+        a.art = t != null ? t : icon;
+        a.composed = t != null;
+        if (FavBar.ICONS.equals(appsLook) || FavBar.GLASS.equals(appsLook)) {
+            int side = Math.round(getResources().getDisplayMetrics().heightPixels * FavBar.ICON / 1080f * FavBar.ROOM_SCALE);
+            Drawable q = composeTile(getDrawable(R.drawable.ic_input), side, side);
+            a.icon = q != null ? q : icon;
+            a.iconComposed = q != null;
+        }
+        a.color = sampleColor(entry, a.art);
+        return a;
+    }
+
+    /** OK on a favourite input: that input, behind the same family lock as the «المصادر» button (it is the same switch). */
+    private void openFavouriteInput(App app) {
+        String id = InputFav.idOf(app.pkg);
+        guarded(ParentalPolicy.PILL_INPUTS, null, app.label, () -> {
+            for (TvInputInfo t : InputLabels.reported(this)) {
+                if (!InputLabels.key(t).equals(id)) continue;
+                if (t.getType() == TvInputInfo.TYPE_TUNER) openLiveTv(); else openPassthroughInput(t);
+                return;
+            }
+            Toast.makeText(this, S.t("التلفزيون ما عاد يعرض هذا المصدر"), Toast.LENGTH_SHORT).show();
+        });
     }
 
     /**
@@ -1980,7 +2028,8 @@ public class MainActivity extends Activity {
             if (lightNow || "sand".equals(lookNow)) label.setTextColor(palette().ink);
         }
 
-        card.setOnClickListener(v -> guarded(inDock ? ParentalPolicy.TILE : ParentalPolicy.GRID, app.pkg, app.label, () -> launch(new Intent(Intent.ACTION_MAIN)
+        if (InputFav.isInput(app.pkg)) card.setOnClickListener(v -> openFavouriteInput(app));   // a favourite input (InputFav): switch to it
+        else card.setOnClickListener(v -> guarded(inDock ? ParentalPolicy.TILE : ParentalPolicy.GRID, app.pkg, app.label, () -> launch(new Intent(Intent.ACTION_MAIN)
                 .addCategory(app.category)
                 .setComponent(app.component)
                 .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED))));
@@ -3480,7 +3529,7 @@ public class MainActivity extends Activity {
     /** Only installed apps are kept, so the dock never holds a removed app's slot. */
     private void saveDock(List<String> dock, String focusPkg) {
         List<String> installed = new ArrayList<>();
-        for (String p : dock) if (isInstalled(p)) installed.add(p);
+        for (String p : dock) if (isInstalled(p) || InputFav.isInput(p)) installed.add(p);   // a favourite input stays (InputFav)
         String dockNow = android.text.TextUtils.join(",", installed);
         if (!dockNow.equals(prefs().getString("dock", null))) prefs().edit().putString("dock", dockNow).apply();   // P6: written when it changed, not at every build
         dockApps = installed.toArray(new String[0]);
@@ -3489,6 +3538,7 @@ public class MainActivity extends Activity {
     }
 
     private void showAppMenu(View anchor, String pkg, boolean inDock) {
+        if (InputFav.isInput(pkg)) return;   // a favourite input has no app menu: it is taken off in «أسماء المصادر» or «تعديل المفضلة»
         guarded(ParentalPolicy.MENU, null, S.t("قائمة التطبيق"), () -> showAppMenuNow(anchor, pkg, inDock));
     }
 
