@@ -63,7 +63,7 @@ async function open(files, { en = false, width = 1920, height = 1080 } = {}) {
 const ALL = { 'sports/4668.json': SPORTS, 'sports/4668/2025-2026.json': PAST, 'results/4668.json': { v: 1, id: '4668', results: [] },
   'h:champions/4668.json': CHAMPS, 'h:scorers/4668.json': SCORERS, 'teams/136013.json': TEAM };
 const side = p => p.evaluate(() => [...document.querySelectorAll('#mp-side li')].map(li => li.innerText.replace(/\s+/g, ' ').trim()));
-const rows = p => p.evaluate(() => [...document.querySelectorAll('#mp li.mpg')].map(li => li.innerText.replace(/\s+/g, ' ').trim()));
+const rows = p => p.evaluate(() => [...document.querySelectorAll('#mp li.mpg, #mp ul.mpt li.tr')].map(li => li.innerText.replace(/\s+/g, ' ').trim()));   // 4.4 beta 5: a table's rows are the full table's
 const text = p => p.evaluate(() => document.getElementById('mp').innerText.replace(/\s+/g, ' '));
 const key = async (p, k, n = 1) => { for (let i = 0; i < n; i++) { await p.keyboard.press(k); await p.waitForTimeout(60); } await p.waitForTimeout(300); };
 
@@ -73,13 +73,13 @@ const key = async (p, k, n = 1) => { for (let i = 0; i < n; i++) { await p.keybo
   await p.waitForTimeout(800);
   const s = await side(p);
   check('the side: the archive\'s seasons, the current one first and marked «الحالي»', s.length === 4 && /^٢٠٢٦-٢٠٢٧ الحالي$/.test(s[0]) && s[1] === '٢٠٢٥-٢٠٢٦', JSON.stringify(s));
-  check('the current season: its table as before', /^١\. الهلال/.test((await rows(p))[0] || ''), JSON.stringify(await rows(p)));
+  check('the current season: its table (4.4 beta 5 the full table\'s rows)', /^١ الهلال /.test((await rows(p))[0] || ''), JSON.stringify(await rows(p)));
   await key(p, 'ArrowRight');   // ◀ in RTL is ArrowRight: to the side
   await key(p, 'ArrowDown');
   await key(p, 'Enter');
   const r = await rows(p), t = await text(p);
   check('OK on 2025-26: its final table from its own file, the champion said on its row, OK on a row is that club',
-    !errors.length && t.includes('جدول الترتيب النهائي ٢٠٢٥-٢٠٢٦') && /^١\. النصر البطل، ٨٦ نقطة، لعب ٣٤$/.test(r[0] || '') && r.length === 3, JSON.stringify(r) + errors.join('|'));
+    !errors.length && t.includes('جدول الترتيب النهائي ٢٠٢٥-٢٠٢٦') && /^١ النصر البطل ٣٤ .* ٨٦$/.test(r[0] || '') && r.length === 3, JSON.stringify(r) + errors.join('|'));
   const lit = await p.evaluate(() => document.querySelector('#mp-side li.on').innerText.trim());
   check('…the chosen season is the lit one in the side', lit.startsWith('٢٠٢٥-٢٠٢٦'), lit);
   await p.evaluate(() => MP.tabs[1].act());
@@ -103,7 +103,7 @@ const key = async (p, k, n = 1) => { for (let i = 0; i < n; i++) { await p.keybo
   check('the focus starts on «لم يُحسم بعد»', await p.evaluate(() => /لم يُحسم بعد/.test((document.querySelector('#mp li.mpg.f') || {}).innerText || '')));
   const v = await p.evaluate(() => { MP.zone = 'rows'; MP.r = 0; MP.rows[0].act(); return [MP.view.tab || 0, MP.view.season || '']; });
   await p.waitForTimeout(300);
-  check('OK on «لم يُحسم بعد»: the season under way\'s table', JSON.stringify(v) === '[0,""]' && /^١\. الهلال/.test((await rows(p))[0] || ''), JSON.stringify(v));
+  check('OK on «لم يُحسم بعد»: the season under way\'s table', JSON.stringify(v) === '[0,""]' && /^١ الهلال /.test((await rows(p))[0] || ''), JSON.stringify(v));
   const c = await p.evaluate(() => { MP.view.tab = 3; mpRender(); MP.zone = 'rows'; MP.r = 1; MP.rows[1].act(); return MP.view.k + ':' + MP.view.id; });
   check('OK on a champion: that club\'s page', c === 'club:136014', c);
   check('no «·» or «•»', !/[·•]/.test(t), '');
@@ -201,7 +201,7 @@ const key = async (p, k, n = 1) => { for (let i = 0; i < n; i++) { await p.keybo
   check('English «Top scorers»: the English name, «25 goals», the source in English', r2[0] === 'Cristiano Ronaldo 25 goals' && (await text(p)).includes('Source: Wikipedia and Wikidata (CC BY-SA 4.0)'), JSON.stringify(r2));
   await p.evaluate(() => { MP.view.tab = 0; mpRender(); });
   await p.waitForTimeout(300);
-  check('English: the archive\'s table shows the English names too (not the Arabic ones the file has)', /^1\. Al-Hilal/.test((await rows(p))[0] || ''), JSON.stringify(await rows(p)));
+  check('English: the archive\'s table shows the English names too (not the Arabic ones the file has)', /^1 Al-Hilal /.test((await rows(p))[0] || ''), JSON.stringify(await rows(p)));
   await ctx.close();
 }
 for (const [w, h] of [[1280, 720], [960, 540]]) {   // 720p: the five tabs and the seasons fit, nothing wider than the screen

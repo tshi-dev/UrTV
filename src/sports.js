@@ -393,7 +393,10 @@ function honPins(v, list, chosen){
 }
 function honTable(v, id){
   const f = archWant('sports/' + id + '/' + v.season + '.json'), ch = f && f.champ, rows = [];
-  ((f && !f.cup && Array.isArray(f.table) && f.table) || []).filter(x => x && /^\d+$/.test(String(x.id)) && x.p > 0).forEach((x, i) =>
+  const own = ((f && !f.cup && Array.isArray(f.table) && f.table) || []).filter(x => x && /^\d+$/.test(String(x.id)) && x.p > 0);
+  if(own.length && typeof mptGroup === 'function')   // 4.4 beta 5 the full table's rows (no movement, no zones, no live toggle), «البطل» after the champion's name
+    return [mptGroup({id, rows: own, past: 1, champ: ch && ch.id, champW: HW.champMark, name: fw(HW.tableOf, honSeasonName(v.season))})];
+  own.forEach((x, i) =>
     rows.push(mpItem(ar(i + 1) + '. ' + clubNm(x.ar, x.n, String(x.id)), (ch && String(ch.id) === String(x.id) ? HW.champMark + '، ' : '')
       + fw(FB_W.pts, ar(+x.pts || 0)) + '، ' + fw(FB_W.played, ar(+x.p || 0)), () => mpGo({k: 'club', id: String(x.id)}))));
   if(!rows.length && ch) rows.push(honChampRow(v, ch));   // a cup's season: its champion
@@ -456,6 +459,17 @@ function honClub(id, j){
   });
   return rows.length ? [{key: 'hon', name: HW.honours, games: rows}] : [];
 }
+// 4.4 beta 5 the club page's header: its latest title of any competition the archive or the weekly file names ({lg, s}), null when none
+function honLastTitle(id, j){
+  const lgs = new Set();
+  ((j && j.last) || []).concat((j && j.next) || []).forEach(g => g && g.lg && lgs.add(String(g.lg)));
+  let best = null;
+  [...lgs].filter(x => /^\d+$/.test(x)).forEach(lg => {
+    const w = honChampList(lg, archWant('sports/' + lg + '.json')).list.find(c => String(c.id || '') === id);
+    if(w && (!best || String(w.s) > best.s)) best = {lg, s: String(w.s)};
+  });
+  return best;
+}
 
 // which of the league's honours have data (a tab without it is not shown): «الأبطال» when the weekly file or the archive names a champion,
 // «الهدّافون» when the scorers file has a season
@@ -511,7 +525,7 @@ SPORTS = {
   tops: spTops,
   // 4.5 the honours: the league and club pages', and named parts for the league page v2's cards (docs/research/LEAGUE-V2-PHASE-A-PLAN.md §3c),
   // each card gated on has(id) so none is ever empty
-  hon: {league: honLeague, club: honClub, has: honHas, champList: honChampList, champRow: honChampRow, top: honTop, scorers: honScorers,
+  hon: {league: honLeague, club: honClub, lastTitle: honLastTitle, has: honHas, champList: honChampList, champRow: honChampRow, top: honTop, scorers: honScorers,
     scorerSeasons: honScorerSeasons, want: honWant},
   load: spLoad,
   card(card, P){

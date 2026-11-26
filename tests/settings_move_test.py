@@ -51,7 +51,7 @@ for bad in st.get("refuse", []):          # a value the TV refuses (answers erro
     if bad in cmd:
         out("error: refused by the fake TV: " + bad)
 ENUM = {"digits": ["hindi", "latin"], "clocksize": ["large", "medium", "small"], "mkstyle": ["arrows", "prices"],
-        "cardstyle": ["current", "dark1", "glass1", "dark3", "glass3"], "prayermethod": ["auto", "gulf"],
+        "cardstyle": ["current", "dark1", "glass1", "dark3", "glass3"], "formstyle": ["dots", "boxes", "boxes-letters"], "prayermethod": ["auto", "gulf"],
         "sunrise": ["on", "off"], "prayerbar": ["on", "off"], "wxmore": ["on", "off"], "pagesdark": ["on", "off"], "matchestoday": ["on", "off"], "months": ["default", "levant"],
         "greeting": ["on", "off"], "listenpill": ["on", "off"], "updatebell": ["on", "off"], "adhanbar": ["on", "off"], "clock24": ["on", "off"], "mkbar": ["on", "off"], "prayeradj": ["on", "off"],
         "favbar": ["5", "6", "7", "8", "9", "10", "all"], "homephotos": ["same", "own"], "homeours": ["on", "off"], "albummode": ["seconds", "ten", "minute"], "albumdate": ["on", "off"], "albumtitle": ["on", "off"], "cleartext": ["on", "off"], "albumfit": ["fit", "fill"], "albumsize": ["normal", "tall"],
@@ -64,7 +64,7 @@ if "SaverReceiver" in cmd and cmd.endswith(".GET"):
         "teams: " + ", ".join(s["teams"]), f"panel: {s['panel']}", f"home_panel: {s['home_panel']}",
         f"greeting: {s['greeting']}", f"listenpill: {s['listenpill']}", f"updatebell: {s['updatebell']}", f"adhanbar: {s['adhanbar']}", "yearstrip: off", f"prayermethod: {s['prayermethod']}",
         f"prayeradj: {s['prayeradj']} {adj}", f"hijrioffset: {s['hijri']}", "minrating: 0", "photos: 30", f"digits: {s['digits']}",
-        f"clock24: {s['clock24']}", "national: auto", f"cardstyle: {s['cardstyle']}",
+        f"clock24: {s['clock24']}", "national: auto", f"cardstyle: {s['cardstyle']}", f"formstyle: {s.get('formstyle', 'dots')}",
         "markets: " + ("" if s["mkbar"] == "on" else "off ") + ",".join(s["markets"]), f"clocksize: {s['clocksize']}",
         f"mkstyle: {s['mkstyle']}", "stocks: 2222", "slot: matches", "countdown: none", "idle: 10", "genres: ", "langs: ", "events: ",
         "leagues: ", "autoupdate: on", "pin: 4321", "wifi: HomeNet", "tasks: buy milk", "updatechannel: " + s.get("updatechannel", "stable"), "favbar: " + s.get("favbar", "5")]
@@ -137,7 +137,7 @@ BASE = {
     "saver": {"city": ["الرياض", "24.6877", "46.7219"], "tz": "Asia/Riyadh", "teams": ["136013|الهلال", "136137|المنتخب السعودي"],
               "panel": "verse", "home_panel": "none", "greeting": "on", "listenpill": "on", "updatebell": "on", "adhanbar": "on", "prayermethod": "auto", "prayeradj": "off",
               "adj": {"fajr": 0, "dhuhr": 0, "asr": 0, "maghrib": 0, "isha": 0}, "hijri": "0", "digits": "hindi", "clock24": "off",
-              "cardstyle": "current", "markets": ["tasi", "spx", "btc"], "mkbar": "on", "clocksize": "large", "mkstyle": "arrows",
+              "cardstyle": "current", "formstyle": "dots", "markets": ["tasi", "spx", "btc"], "mkbar": "on", "clocksize": "large", "mkstyle": "arrows",
               "panel2": "none", "sunrise": "off", "prayerbar": "off", "wxmore": "off", "pagesdark": "on", "months": "default", "updatechannel": "stable", "favbar": "5",
               "homephotos": "same", "homepacks": "none", "homeours": "on", "pillshidden": "none", "albummode": "seconds", "albumdate": "on", "albumtitle": "on", "albumfit": "fit", "albumsize": "normal", "cleartext": "off",
               "accent": "default", "baropacity": "100", "walldim": "0", "focusstyle": "solid", "matchestoday": "off"},
@@ -147,7 +147,7 @@ CONFIGURED = copy.deepcopy(BASE)
 CONFIGURED["saver"].update({"city": ["الدوحة", "25.2854", "51.531"], "tz": "Asia/Qatar", "teams": ["136022|النصر", "133738|ريال مدريد"],
                             "panel": "prayers", "home_panel": "verse,hourly", "greeting": "off", "listenpill": "off", "updatebell": "off", "adhanbar": "off",
                             "prayermethod": "gulf", "prayeradj": "on", "hijri": "-1", "digits": "latin", "clock24": "on",
-                            "cardstyle": "glass1", "markets": ["gold", "btc"], "mkbar": "off", "clocksize": "medium", "mkstyle": "prices",
+                            "cardstyle": "glass1", "formstyle": "boxes-letters", "markets": ["gold", "btc"], "mkbar": "off", "clocksize": "medium", "mkstyle": "prices",
                             "panel2": "hourly", "sunrise": "on", "prayerbar": "on", "wxmore": "on", "pagesdark": "off", "months": "levant", "favbar": "7",
                             "homephotos": "own", "homepacks": "nature,sea", "homeours": "off", "pillshidden": "markets,center", "albummode": "minute", "albumdate": "off", "albumtitle": "off", "albumfit": "fill", "albumsize": "tall", "cleartext": "on",
                             "accent": "teal", "baropacity": "70", "walldim": "30", "focusstyle": "frame", "matchestoday": "on"})
@@ -284,6 +284,7 @@ refused("tz a number", lambda d: d["city"].update(tz=3), "city.tz must be text")
 refused("digits unknown", lambda d: d.update(digits="roman"), "digits must be one of hindi latin")
 refused("digits a number", lambda d: d.update(digits=1), "digits must be one of")
 refused("card style unknown", lambda d: d.update(card_style="neon"), "card_style must be one of")
+refused("4.4 beta 5 form style unknown («شكل آخر المباريات»)", lambda d: d.update(form_style="pills"), "form_style must be one of")
 refused("clock size unknown", lambda d: d.update(clock_size="huge"), "clock_size must be one of")
 refused("clock24 not a boolean", lambda d: d.update(clock24="on"), "clock24 must be true or false")
 refused("greeting not a boolean", lambda d: d.update(greeting=1), "greeting must be true or false")

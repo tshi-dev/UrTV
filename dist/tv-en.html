@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <!-- the build: UTC time (YYYYMMDDHHMMSS) of the newest commit of the page's sources, put in by src/build.py. The app loads the page with the newer stamp (its own
      copy or a downloaded one), never by file time, and does not keep a download whose stamp is older than its own (Updater, PageStamp). -->
-<meta name="urtv-build" content="20261124144743">
+<meta name="urtv-build" content="20261126104745">
 <title>Your TV Screen</title>
 <style>
   @font-face{font-family:'Thmanyah';font-weight:300;font-style:normal;font-display:block;src:url("https://raw.githubusercontent.com/tshi-dev/UrTV/master/assets/fonts/Thmanyah-Light.woff2") format("woff2")}
@@ -777,7 +777,7 @@
   
   html.mpage .stage,html.mpage .photo,html.mpage .veil,html.mpage .grain,html.mpage .top-veil,html.mpage .bottom-veil,html.mpage .dimmer,html.mpage #credit,html.mpage .adbar{display:none}
   html.mpage,html.mpage body{background:#F4F2EC}
-  #mp,#mp-detail{--fi:#1B1F1D;--fs:#5E635F;--fgr:#1B8354;--fam:#8A5600;--fring:#1B8354;--fln:#E4E1D8;--fbg:#fff;--chip:#fff;--rowf:#EEF6F1;--dlg:#F7F6F1;--btn:#fff;--pri:#21915F;--veil:rgba(244,242,236,.72);--shd:rgba(40,36,24,.18);--flo:#B3261E}
+  #mp,#mp-detail{--fi:#1B1F1D;--fs:#5E635F;--fgr:#1B8354;--fam:#8A5600;--fring:#1B8354;--fln:#E4E1D8;--fbg:#fff;--chip:#fff;--rowf:#EEF6F1;--dlg:#F7F6F1;--btn:#fff;--pri:#21915F;--veil:rgba(244,242,236,.72);--shd:rgba(40,36,24,.18);--flo:#B3261E;--rln:#D9D5CA;--zeb:#F8F7F3;--mine:#EFEDE6;--fw:#2E9E63;--fd:#C2C5BF}
   #mp{position:fixed;top:0;left:0;bottom:0;right:0;padding:calc(var(--u)*64) calc(var(--u)*120) calc(var(--u)*56);color:var(--fi);display:flex;flex-direction:column;font-size:calc(var(--u)*28)}
   #mp header{display:flex;justify-content:space-between;align-items:baseline;gap:calc(var(--u)*24);flex-wrap:wrap}   
   #mp h1{font-size:calc(var(--u)*64);font-weight:700}
@@ -822,6 +822,65 @@
   .fm-d{color:var(--fs)}
   .fm-l{color:var(--flo)}
   .fmh{margin-inline-end:calc(var(--u)*12)}
+  
+  #mp-list ul.mpt{padding:calc(var(--u)*8)}
+  .mpt li{display:flex;align-items:center;min-height:calc(var(--u)*40);padding:0 calc(var(--u)*14)}
+  .mpt li.tr + li.tr{border-top:1px solid var(--rln)}
+  .mpt li.zb{background:var(--zeb)}
+  .mpt li.mine{background:var(--mine)}
+  .mpt li.mine .nm{font-weight:700}
+  .mpt li.f{position:relative;z-index:1;transform:scale(1.012);box-shadow:0 calc(var(--u)*4) calc(var(--u)*14) var(--shd);background:var(--rowf)}   
+  .mpt li.th{color:var(--fs);font-size:calc(var(--u)*24)}
+  .mpt li.zl{min-height:calc(var(--u)*30);color:var(--fs);font-size:calc(var(--u)*24);padding:0 calc(var(--u)*8)}
+  .mpt li.zl span{white-space:nowrap;margin-inline-end:calc(var(--u)*16)}
+  .mpt li.zl::after{content:'';flex:1;height:1px;background:var(--fs);opacity:.6}
+  .mpt li.zl.bare{min-height:calc(var(--u)*12)}
+  .mpt .rk{width:calc(var(--u)*44);flex:none;text-align:center;font-weight:500;unicode-bidi:isolate}
+  .mpt .mv{width:calc(var(--u)*52);flex:none;margin-inline-start:calc(var(--u)*12);text-align:center;white-space:nowrap;unicode-bidi:isolate}
+  .mpt .mv.up{color:var(--fgr)}
+  .mpt .mv.dn{color:var(--flo)}
+  .mpt .mv.eq{color:var(--fs)}
+  .mpt .bd{width:calc(var(--u)*34);height:calc(var(--u)*34);flex:none;margin-inline-start:calc(var(--u)*12);margin-inline-end:calc(var(--u)*10);display:flex;align-items:center;justify-content:center}
+  .mpt .bd img{width:100%;height:100%;object-fit:contain}
+  .mpt .nm{flex:1;min-width:0;display:flex;align-items:baseline;white-space:nowrap}
+  .mpt .nm span{overflow:hidden;text-overflow:ellipsis}
+  .mpt .nm em{flex:none;font-style:normal;color:var(--flo);font-size:calc(var(--u)*24);font-weight:500;margin-inline-start:calc(var(--u)*10);min-width:calc(var(--u)*72);unicode-bidi:isolate}
+  .mpt .nm small{flex:none;color:var(--fs);font-size:calc(var(--u)*24);margin-inline-start:calc(var(--u)*10)}
+  .mpt .c{width:calc(var(--u)*56);flex:none;text-align:center;color:var(--fs);unicode-bidi:isolate}
+  .mpt .c.w{width:calc(var(--u)*70)}
+  .mpt .pt{width:calc(var(--u)*64);flex:none;text-align:center;font-weight:700;unicode-bidi:isolate}
+  .mpt .pt.ptl{color:var(--flo)}
+  .mpt li.th .pt{font-weight:400}
+  .mpt .fo{width:calc(var(--u)*210);flex:none;display:flex;justify-content:center;align-items:center;overflow:hidden}
+  .mpt li.th .fo{white-space:nowrap}
+  .mpt.nga .gfa{display:none}
+  .mpt.f3 .fo i:nth-child(n+4){display:none}
+  .fdot,.fbox{display:inline-block;flex:none;margin-inline-start:calc(var(--u)*10);font-style:normal;vertical-align:middle}
+  .fdot:first-child,.fbox:first-child{margin-inline-start:0}
+  .fdot{width:calc(var(--u)*6 + 8px);height:calc(var(--u)*6 + 8px);border-radius:50%}
+  .fbox{width:calc(var(--u)*6 + 10px);height:calc(var(--u)*6 + 10px);border-radius:0}
+  .fbox.fbl{display:inline-flex;align-items:center;justify-content:center;width:calc(var(--u)*32);height:calc(var(--u)*32);margin-inline-start:calc(var(--u)*8);color:#fff;font-size:calc(var(--u)*24);font-weight:700}
+  .fbox.fbl:first-child{margin-inline-start:0}
+  .fdot.w,.fbox.w{background:var(--fw)}
+  .fdot.d,.fbox.d{background:var(--fd)}
+  .fdot.l,.fbox.l{background:var(--flo)}
+  .fbox.fbl.d{color:#1B1F1D}
+  .mpt li.mptg{min-height:calc(var(--u)*48);color:var(--fs)}
+  .mptg span{padding:calc(var(--u)*4) calc(var(--u)*16);border-bottom:calc(var(--u)*4) solid transparent;margin-inline-end:calc(var(--u)*16)}
+  .mptg span.on{color:var(--fgr);font-weight:700;border-bottom-color:var(--fgr)}
+  
+  .mpcl{display:flex;align-items:stretch;margin-bottom:calc(var(--u)*8)}
+  .mpcl > div{background:var(--fbg);border:1px solid var(--fln);border-radius:calc(var(--u)*24);padding:calc(var(--u)*16) calc(var(--u)*24)}
+  .mpcl .cl5{flex:none;display:flex;margin-inline-end:calc(var(--u)*24)}
+  .mpcl .tl{width:calc(var(--u)*130);text-align:center;display:flex;flex-direction:column;align-items:center}
+  .mpcl .tl b{font-size:calc(var(--u)*34);font-weight:700;direction:ltr;unicode-bidi:isolate;white-space:nowrap}
+  .mpcl .tl span{color:var(--fs);font-size:calc(var(--u)*24);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;margin:calc(var(--u)*6) 0}
+  .mpcl .tl .fo{display:flex;justify-content:center}
+  .mpcl .clnx{flex:1;min-width:0}
+  .mpcl .clnx i{display:block;font-style:normal;color:var(--fs);font-size:calc(var(--u)*24)}
+  .mpcl .clnx b{display:block;font-size:calc(var(--u)*34);font-weight:700;margin:calc(var(--u)*6) 0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .mpcl .clnx em{display:block;font-style:normal;color:var(--fgr);font-size:calc(var(--u)*26);min-height:calc(var(--u)*34)}
+  #mp.mp-focus header,#mp.mp-focus #mp-days,#mp.mp-focus #mp-list h2{display:none}   
   .mdf{display:flex;align-items:baseline;gap:calc(var(--u)*16)}
   .mdt .rk{color:var(--fs);font-size:calc(var(--u)*24)}
   .mdv{text-align:center;color:var(--fs);margin:calc(var(--u)*-8) 0 calc(var(--u)*20)}   
@@ -874,7 +933,7 @@
   .mdn{min-height:calc(var(--u)*36);margin-top:calc(var(--u)*16);text-align:center;color:var(--fgr);font-size:calc(var(--u)*24)}
   
   html.mpage.mpdark,html.mpage.mpdark body{background:#17181B}
-  html.mpdark #mp,html.mpdark #mp-detail{--fi:#FFFFFF;--fs:#DADCE0;--fgr:#8FE0B4;--fam:#F0B35A;--fring:#8FE0B4;--fln:rgba(255,255,255,.16);--fbg:#202227;--chip:rgba(255,255,255,.08);--rowf:rgba(143,224,180,.14);--dlg:#1D1F24;--btn:#2A2D33;--pri:#1B8354;--veil:rgba(0,0,0,.66);--shd:rgba(0,0,0,.5);--flo:#FF9A8F}
+  html.mpdark #mp,html.mpdark #mp-detail{--fi:#FFFFFF;--fs:#DADCE0;--fgr:#8FE0B4;--fam:#F0B35A;--fring:#8FE0B4;--fln:rgba(255,255,255,.16);--fbg:#202227;--chip:rgba(255,255,255,.08);--rowf:rgba(143,224,180,.14);--dlg:#1D1F24;--btn:#2A2D33;--pri:#1B8354;--veil:rgba(0,0,0,.66);--shd:rgba(0,0,0,.5);--flo:#FF9A8F;--rln:rgba(255,255,255,.24);--zeb:rgba(255,255,255,.035);--mine:rgba(255,255,255,.08);--fw:#1B8354;--fd:#4A4D53}
 
 html.lowram *, html.lowram *::before, html.lowram *::after { transition: none !important; }
 
@@ -1165,6 +1224,7 @@ const CONFIG = {
   dateNum: _Q.get('datenum') === '1',
   matchPage: _Q.get('matchpage') === '1',
   pageDark: _Q.get('pagedark') === '1',
+  formStyle: (v => ['boxes', 'boxes-letters'].includes(v) ? v : 'dots')(_Q.get('formstyle')),
 };
 const OLD_LOOK = CONFIG.cardStyle === 'classic';
 document.documentElement.style.setProperty('--walldim', (CONFIG.wallDim / 100).toFixed(2));
@@ -4447,6 +4507,10 @@ const FB_W = {
   table:'Table', results:'Results', noTable:'No table right now', noTableL:'No table for this league', pts:'%s points', played:'played %s',
   h2hAll:'%s %s wins, %s draws, %s %s', h2hIn:'in %s meetings', h2hMore:'All meetings (%s)',
   champs:'Champions', scorers:'Top scorers',
+  cTabs:'Club|Games|Results|Titles|Head to head', places:'1st|2nd|3rd|4th|5th|6th|7th|8th|9th|10th|11th|12th|13th|14th|15th|16th|17th|18th|19th|20th',
+  placeN:'Place %s', standing:'%s in %s, %s points from %s games', lastTitle:'Latest title: %s %s', inTable:'In the table', nextGame:'Next game', last5:'Last five games',
+  tCols:'Club|P|W|D|L|GF|GA|GD|Pts|Last five', fWords:'win|draw|loss', fSay:'Last five games: %s', tAll:'All', tLive:'With the live games',
+  zones:{acle:'AFC Champions League Elite', acl2:'AFC Champions League %s', ucl:'UEFA Champions League', uel:'Europa League', uecl:'Conference League', po:'Play-off', down:'Relegation'},
   myLeagues:'My leagues', add:'Add a league or a team', manage:'My teams settings', noTeams:'No team followed yet', noLeagues:'No league followed yet', allLands:'All countries',
   lgTeams:'Teams of this league', lgOpen:'Table and results', followedL:'%s added to your leagues', unfollowedL:'%s removed from your leagues', on:'Followed', find:'Find a team', found:'Search results', typeName:'Type a team name', full:'Limit reached: 8 leagues', fullL:'That is the most: 24 leagues, so the TV stays fast. Remove a league to add another', fullT:'That is the most: 40 teams, so the TV stays fast. Remove a team to add another', fullT20:'Limit reached: 20 teams',
   warnL:'More than 8 may slow a weak TV down. OK again: add, or Back', warnT:'More than 20 may slow a weak TV down. OK again: add, or Back', choose:'Choose a league',
@@ -4721,10 +4785,12 @@ function mpLeagueView(v){
   const id = String(v.id), now = Date.now(), groups = [];
   const H = SPORTS && SPORTS.hon, has = H ? H.has(id) : {};
   const keys = [0, 1, 2].concat(has.champs ? [3] : [], has.scorers ? [4] : []), tab = keys.includes(v.tab || 0) ? v.tab || 0 : 0;
-  const tabs = keys.map(k => ({t: [FB_W.table, FB_W.results, FB_W.title, FB_W.champs, FB_W.scorers][k], k, on: k === tab, act: () => { v.tab = k; MP.l = MP.r = 0; mpRender(); }}));
+  const tabs = keys.map(k => ({t: [FB_W.table, FB_W.results, FB_W.title, FB_W.champs, FB_W.scorers][k], k, on: k === tab, act: () => {
+    if(k === tab && k === 0 && MP.rows.length){ MP.zone = 'rows'; MP.fx = 1; return mpRender(); }
+    v.tab = k; MP.l = MP.r = 0; MP.fx = 0; mpRender(); }}));
   const hv = H ? H.league(v, id, tab) : {pins: []};
   const pins = hv.pins || [];
-  if(hv.groups) return {title: lgName(id), tabs, pins, groups: hv.groups};
+  if(hv.groups) return {title: lgName(id), tabs, pins, groups: hv.groups, fx: hv.groups.some(g => g.table) ? 1 : 0};
   const res = tab < 2 ? archWant('results/' + id + '.json') : null;
   if(tab === 1){
     const by = new Map();
@@ -4740,8 +4806,10 @@ function mpLeagueView(v){
     const sp = archWant('sports/' + id + '.json');
     const own = sp && !sp.cup && Array.isArray(sp.table) && sp.table.filter(x => x && /^\d+$/.test(String(x.id)) && x.p > 0);
     let rows = [], t = null;
-    if(own && own.length) rows = own.map((x, i) => mpItem(ar(i + 1) + '. ' + clubNm(x.ar, x.n, String(x.id)), fw(FB_W.pts, ar(+x.pts || 0)) + ', ' + fw(FB_W.played, ar(+x.p || 0)),
-      () => mpGo({k: 'club', id: String(x.id)})));
+    if(own && own.length){
+      const g = mptGroup({id, rows: own, zones: sp.zones, live: v.live, flip: () => { v.live = !v.live; mpRender(); }});
+      return {title: lgName(id), tabs, pins, groups: [g], focus: g.focus, fx: 1};
+    }
     else if(sp !== undefined){
       const g = fbGames().find(ev => String(ev.idLeague) === id && ev.strSeason), r0 = res && res.results && res.results[0];
       const season = String((g && g.strSeason) || (r0 && r0.s) || '');
@@ -4800,6 +4868,56 @@ function formOf(id){
     .map(ev => { const h = +ev.intHomeScore, a = +ev.intAwayScore; return h === a ? 'd' : (h > a) === (String(ev.idHomeTeam) === id) ? 'w' : 'l'; });
 }
 const formHtml = f => f.length ? `<span class="fm">${f.map(x => `<i class="fm-${x}">${FB_W.marks['wdl'.indexOf(x)]}</i>`).join('')}</span>` : '';
+const formMarks = f => { f = (Array.isArray(f) ? f : String(f || '').split('')).filter(x => 'wdl'.includes(x) && x).slice(0, 5);
+  const say = fw(FB_W.fSay, f.map(x => FB_W.fWords.split('|')['wdl'.indexOf(x)]).join(', ')), st = CONFIG.formStyle;
+  return f.length ? `<span class="fo" role="img" aria-label="${esc(say)}">${f.map(x => st === 'dots' ? `<i class="fdot ${x}"></i>` : st === 'boxes' ? `<i class="fbox ${x}"></i>`
+    : `<i class="fbox fbl ${x}">${FB_W.marks['wdl'.indexOf(x)]}</i>`).join('')}</span>` : '<span class="fo"></span>'; };
+function mptGroup(o){
+  const now = Date.now(), lg = String(o.id || ''), live = !o.past ? fbGames().filter(ev => String(ev.idLeague) === lg && fbLive(ev, now) && fbScored(ev)) : [];
+  let rows = (o.rows || []).map(x => Object.assign({}, x, {id: String(x.id)}));
+  if(o.live && live.length){
+    live.forEach(ev => [[ev.idHomeTeam, +ev.intHomeScore, +ev.intAwayScore], [ev.idAwayTeam, +ev.intAwayScore, +ev.intHomeScore]].forEach(([id, gf, ga]) => {
+      const r = rows.find(x => x.id === String(id)); if(!r) return;
+      r.p = +r.p + 1; r.gf = +r.gf + gf; r.ga = +r.ga + ga; r.pts = +r.pts + (gf > ga ? 3 : gf === ga ? 1 : 0); r.lv = fbStatus(ev, now);
+    }));
+    rows.sort((a, b) => (b.pts - a.pts) || ((b.gf - b.ga) - (a.gf - a.ga)) || (b.gf - a.gf) || String(a.n || '').localeCompare(String(b.n || '')));
+  }
+  const games = [];
+  if(live.length) games.push(Object.assign(mpItem(FB_W.tLive, '', () => { o.flip(); }), {tg: 1, on: !!o.live}));
+  rows.forEach(x => games.push(Object.assign(mpItem(clubNm(x.ar, x.n, x.id), '', () => mpGo({k: 'club', id: x.id})), {tr: x})));
+  return {key: 't', name: o.name || FB_W.table, games, table: {zones: Array.isArray(o.zones) ? o.zones : [], champ: o.champ ? String(o.champ) : '', champW: o.champW || '', past: !!o.past, n: rows.length, self: o.self ? String(o.self) : ''},
+    focus: Math.max(0, games.findIndex(g => g.tr && fbFollowed(g.tr.id))) || (live.length ? 1 : 0)};
+}
+function mptHtml(g, start){
+  const t = g.table, cols = ['#'].concat(FB_W.tCols.split('|')), sel = i => i === MP.r && MP.zone === 'rows' && !MP.detail ? ' f' : '';
+  const zl = k => { const w = FB_W.zones[k] || ''; return w.includes('%s') ? fw(w, ar(2)) : w; };
+  let out = `<li class="th"><span class="rk">${cols[0]}</span><span class="mv"></span><span class="bd"></span><span class="nm">${esc(cols[1])}</span>`
+    + cols.slice(2, 10).map((c, i) => `<span class="${i === 7 ? 'pt' : 'c'}${i === 4 || i === 5 ? ' gfa' : ''}${i === 6 ? ' w' : ''}">${esc(c)}</span>`).join('') + `<span class="fo">${esc(cols[10])}</span></li>`;
+  let k = 0;
+  g.games.forEach((x, j) => {
+    const i = start + j;
+    if(x.tg){ out = `<li class="mptg${sel(i)}" data-r="${i}"><span class="${x.on ? '' : 'on'}">${esc(FB_W.tAll)}</span><span class="${x.on ? 'on' : ''}">${esc(FB_W.tLive)}</span></li>` + out; return; }
+    const r = x.tr, place = r.rk || ++k, first = j === g.games.findIndex(y => y.tr);
+    const z = t.zones.find(z => z.from === place || (first && z.from < place && place <= z.to)), end = t.zones.find(z => z.to === place - 1);
+    if(z) out += `<li class="zl"><span>${esc(zl(z.k))}</span></li>`;
+    else if(end) out += '<li class="zl bare"></li>';
+    const gd = (+r.gf || 0) - (+r.ga || 0), mv = r.mv === undefined || r.mv === null || t.past ? '' : +r.mv > 0 ? `<span class="mv up">+${ar(+r.mv)}</span>` : +r.mv < 0 ? `<span class="mv dn">−${ar(-r.mv)}</span>` : '<span class="mv eq">–</span>';
+    const crest = CRESTS_ON && CRESTS[r.id] ? `<img class="cr" data-t="${esc(r.id)}" alt="">` : '';
+    out += `<li class="tr${place % 2 ? '' : ' zb'}${(t.self ? r.id === t.self : fbFollowed(r.id)) ? ' mine' : ''}${sel(i)}" data-r="${i}"><span class="rk">${ar(place)}</span>${mv || '<span class="mv"></span>'}<span class="bd">${crest}</span>`
+      + `<span class="nm"><span>${esc(x.t)}</span>${r.lv ? `<em>${esc(r.lv)}</em>` : ''}${t.champ === r.id ? `<small>${esc(t.champW || '')}</small>` : ''}</span>`
+      + [r.p, r.w, r.d, r.l, r.gf, r.ga].map((v, c) => `<span class="c${c > 3 ? ' gfa' : ''}">${ar(+v || 0)}</span>`).join('')
+      + `<span class="c w">${gd > 0 ? '+' + ar(gd) : gd < 0 ? '−' + ar(-gd) : ar(0)}</span><span class="pt${r.lv ? ' ptl' : ''}">${ar(+r.pts || 0)}</span>${formMarks(r.f)}</li>`;
+  });
+  return `<ul class="mpt">${out}</ul>`;
+}
+function mptFit(){
+  document.querySelectorAll('#mp-list ul.mpt').forEach(u => {
+    u.classList.remove('nga', 'f3');
+    const tight = () => [...u.querySelectorAll('li.tr .nm')].some(n => n.clientWidth < n.scrollWidth || n.clientWidth < n.closest('li').clientWidth * .18);
+    if(tight()) u.classList.add('nga');
+    if(tight()) u.classList.add('f3');
+  });
+}
 function h2hLine(ev){
   const h = String(ev.idHomeTeam), a = String(ev.idAwayTeam), r = h2hOf(h, a);
   return r ? fw(FB_W.h2hSum, r.n === 1 ? FB_W.h2h1 : r.n === 2 ? FB_W.h2h2 : fw(FB_W.h2hN, ar(r.n)), teamAr(ev.strHomeTeam, h), ar(r.a), ar(r.d), teamAr(ev.strAwayTeam, a), ar(r.b)) : '';
@@ -4889,7 +5007,10 @@ function mpRender(){
   MP.l = Math.max(0, Math.min(MP.l, MP.leagues.length - 1));
   const shown = MP.only ? groups.slice(MP.l, MP.l + 1) : groups;
   MP.rows = []; shown.forEach(g => g.games.forEach(ev => MP.rows.push(ev)));
+  if(V && V.focus != null && MP.view && !MP.view.fseen){ MP.view.fseen = 1; MP.r = V.focus; }
   MP.r = Math.max(0, Math.min(MP.r, MP.rows.length - 1));
+  if(!(V && V.fx && MP.zone === 'rows' && !MP.detail)) MP.fx = 0;
+  const mpEl = document.getElementById('mp'); mpEl.classList.toggle('mp-focus', !!MP.fx);
   setText(document.getElementById('mp-h'), V ? V.title : FB_W.title);
   if(V) setHTML(document.getElementById('mp-age'), MP.note ? esc(MP.note) : V.sub || '', true); else setHTML(document.getElementById('mp-age'), mpAge());
   const tb = document.getElementById('mp-teams'); if(tb){ tb.classList.toggle('f', MP.zone === 'head'); tb.hidden = !!V; }
@@ -4905,11 +5026,12 @@ function mpRender(){
   const lo = MP.rows.length > MP_WIN * 2 + 20 ? Math.max(0, Math.min(MP.r - MP_WIN, MP.rows.length - MP_WIN * 2)) : 0, hi = lo ? lo + MP_WIN * 2 : MP.rows.length > MP_WIN * 2 + 20 ? MP_WIN * 2 : MP.rows.length;
   const rowAt = (ev, i, g) => i < lo || i >= hi ? '' : ev.it ? mpItemRow(ev, i) : mpRow(ev, now, i, g.dated ? 2 : g.more);
   setHTML(document.getElementById('mp-list'), shown.length ? shown.map(g => `<section data-g="${esc(g.key)}"><h2>${g.nameHtml || esc(g.name)}</h2>`
-    + (g.games.length ? '<ul>' + g.games.map(ev => rowAt(ev, n++, g)).join('') + '</ul>' : '')
+    + (g.html || '') + (g.games.length ? g.table ? mptHtml(g, (n += g.games.length) - g.games.length) : '<ul>' + g.games.map(ev => rowAt(ev, n++, g)).join('') + '</ul>' : '')
     + (g.loading ? `<div class="fnone">${esc(matchesEmptyText())}</div>` : '') + (g.none && !g.games.length ? `<div class="fnone">${esc(g.none)}</div>` : '')
     + (g.foot ? `<div class="mpsrc">${esc(g.foot)}</div>` : '') + '</section>').join('')
     : `<div class="fnone">${V ? esc(V.empty || FB_W.noData) : MATCHES_LOADED && !(MP.wait && MP.day < t) ? fbNone(MP.day) : matchesEmptyText()}</div>`);
   fillCrests(document.getElementById('mp'));
+  mptFit();
   const f = MP.zone === 'leagues' ? !MP.only && document.querySelectorAll('#mp-list section')[MP.l - pins.length] : document.querySelector('#mp-list li.f');
   if(f) f.scrollIntoView({block: MP.zone === 'leagues' ? 'start' : 'nearest'});
   const sf = document.querySelector('#mp-side li.on'); if(sf) sf.scrollIntoView({block: 'nearest'});
@@ -4982,6 +5104,7 @@ function mpOpen(ev){ MP.detail = ev; MP.btn = mpButtons(ev, Date.now())[0] && /^
    MP.note = ''; mpDetailRender(); }
 function mpBack(){
   if(MP.detail){ MP.detail = null; document.getElementById('mp-detail').hidden = true; mpRender(); return 'closed'; }
+  if(MP.fx){ MP.fx = 0; MP.zone = 'days'; mpRender(); return 'closed'; }
   if(!MP.view) return 'out';
   const v = MP.stack.pop() || null;
   MP.view = v; MP.ask = ''; MP.note = '';
@@ -4991,7 +5114,7 @@ function mpBack(){
 }
 function mpGo(v){
   if(MP.view){ MP.view.at = {zone: MP.zone, d: MP.d, l: MP.l, r: MP.r}; MP.stack.push(MP.view); } else { MP.stack = []; MP.saved = {zone: MP.zone, d: MP.d, l: MP.l, r: MP.r}; }
-  MP.view = v; MP.zone = v.k === 'find' ? 'days' : 'rows'; MP.d = 0; MP.l = 0; MP.r = 0; MP.ask = ''; MP.note = '';
+  MP.view = v; MP.zone = v.k === 'find' ? 'days' : 'rows'; MP.d = 0; MP.l = 0; MP.r = 0; MP.ask = ''; MP.note = ''; MP.fx = 0;
   mpRender();
 }
 function mpView(v){
@@ -5084,6 +5207,18 @@ function mpFollowTeam(id){
   mpRender();
 }
 function mpReload(){ try{ Promise.resolve(loadMatches()).then(() => { fbRender(); mpRender(); }).catch(() => {}); }catch(e){} }
+function mpClubLeague(id, j){
+  const lgs = new Set();
+  ((j && j.last) || []).concat((j && j.next) || []).forEach(g => g && g.lg && lgs.add(String(g.lg)));
+  fbGames().forEach(ev => { if(String(ev.idHomeTeam) === id || String(ev.idAwayTeam) === id) lgs.add(String(ev.idLeague || '')); });
+  let best = null;
+  [...lgs].filter(x => /^\d+$/.test(x)).forEach(lg => {
+    const sp = archWant('sports/' + lg + '.json'), rows = sp && !sp.cup && Array.isArray(sp.table) ? sp.table.filter(x => x && /^\d+$/.test(String(x.id)) && x.p > 0) : [];
+    const i = rows.findIndex(x => String(x.id) === id);
+    if(i >= 0 && (!best || +rows[i].p > +best.rows[best.i].p)) best = {lg, sp, rows, i};
+  });
+  return best;
+}
 function mpClubView(v){
   const id = String(v.id), j = archWant('teams/' + id + '.json'), name = teamNameOf(id, j), now = Date.now();
   const its = ev => String(ev.idHomeTeam) === id || String(ev.idAwayTeam) === id;
@@ -5093,23 +5228,51 @@ function mpClubView(v){
   const last = lastOwn.concat(archNew(lastOwn, ((j && j.last) || []).map(g => archEv(g, j)).filter(Boolean))).sort((a, b) => fbKick(b) - fbKick(a)).slice(0, 10);
   const vs = String(v.vs || (coming[0] ? (String(coming[0].idHomeTeam) === id ? coming[0].idAwayTeam : coming[0].idHomeTeam) : '') || '');
   const h = /^\d+$/.test(vs) ? archWant('h2h/' + [id, vs].sort((a, b) => a - b).join('-') + '.json') : null;
-  const wait = x => x === undefined ? FB_W.loading : FB_W.noData, groups = [], by = new Map();
+  const wait = x => x === undefined ? FB_W.loading : FB_W.noData, byRound = [], by = new Map();
   coming.forEach(ev => { const k = fbRound(ev) || FB_W.upcoming; if(!by.has(k)) by.set(k, []); by.get(k).push(ev); });
-  by.forEach((games, k) => groups.push({key: 'n' + groups.length, name: k, games, dated: 1}));
-  if(!coming.length) groups.push({key: 'n', name: FB_W.upcoming, games: [], none: wait(j)});
-  groups.push({key: 'last', name: FB_W.last, games: last, dated: 1, none: wait(j)});
+  by.forEach((games, k) => byRound.push({key: 'n' + byRound.length, name: k, games, dated: 1}));
+  if(!coming.length) byRound.push({key: 'n', name: FB_W.upcoming, games: [], none: wait(j)});
+  const lastG = {key: 'last', name: FB_W.last, games: last, dated: 1, none: wait(j)};
+  let h2hG = null;
   if(/^\d+$/.test(vs)){
     const ms = ((h && h.meetings) || []).map(g => archEv(g)).filter(Boolean), all = h2hAll(id, vs), rows = [];
     if(all) rows.push(mpItem(fw(FB_W.h2hAll, name, ar(all.a), ar(all.d), teamNameOf(vs), ar(all.b)), fw(FB_W.h2hIn, ar(all.n)), () => {}));
     rows.push(...(v.allH2h ? ms : ms.slice(0, 10)));
     if(!v.allH2h && ms.length > 10) rows.push(mpItem(fw(FB_W.h2hMore, ar(ms.length)), '', () => { v.allH2h = 1; mpRender(); }));
-    groups.push({key: 'h2h', name: fw(FB_W.h2h, teamNameOf(vs)), games: rows, dated: 1, none: wait(h)});
+    h2hG = {key: 'h2h', name: fw(FB_W.h2h, teamNameOf(vs)), games: rows, dated: 1, none: wait(h)};
   }
-  if(SPORTS && SPORTS.hon) groups.push(...SPORTS.hon.club(id, j));
-  const tabs = [{t: fw(fbFollowed(id) ? FB_W.unfollowT : FB_W.followT, name), act: () => mpFollowTeam(id)}];
+  const hon = SPORTS && SPORTS.hon ? SPORTS.hon.club(id, j) : [];
+  const keys = [0, 1, 2].concat(hon.length ? [3] : [], h2hG ? [4] : []), tab = keys.includes(v.tab || 0) ? v.tab || 0 : 0;
+  const tabs = keys.map(k => ({t: FB_W.cTabs.split('|')[k], k, on: k === tab, act: () => { v.tab = k; MP.l = MP.r = 0; mpRender(); }}));
+  tabs.push({t: fw(fbFollowed(id) ? FB_W.unfollowT : FB_W.followT, name), act: () => mpFollowTeam(id)});
   if(v.vs) tabs.push({t: fw(FB_W.see, teamNameOf(vs)), act: () => { MP.view = {k: 'club', id: vs, vs: id}; MP.zone = 'rows'; MP.d = MP.l = MP.r = 0; MP.note = MP.ask = ''; mpRender(); }});
-  const f = formOf(id);
-  return {title: name, tabs, groups, sub: f.length ? `<span class="fmh">${FB_W.form}</span>${formHtml(f)}` : ''};
+  const L = mpClubLeague(id, j), t = SPORTS && SPORTS.hon && SPORTS.hon.lastTitle ? SPORTS.hon.lastTitle(id, j) : null, pl = FB_W.places.split('|');
+  const sub = [L ? fw(FB_W.standing, L.i < pl.length ? pl[L.i] : fw(FB_W.placeN, ar(L.i + 1)), lgName(L.lg), ar(+L.rows[L.i].pts || 0), ar(+L.rows[L.i].p || 0)) : '',
+    t ? fw(FB_W.lastTitle, lgName(t.lg), ar(t.s)) : ''].filter(Boolean).map(esc).join(', ');
+  let groups, focus = null;
+  if(tab === 1) groups = byRound;
+  else if(tab === 2) groups = [lastG];
+  else if(tab === 3) groups = hon;
+  else if(tab === 4) groups = [h2hG];
+  else {
+    const r5 = last.slice(0, 5).filter(fbScored), nx = coming[0];
+    const tile = ev => { const home = String(ev.idHomeTeam) === id, gf = +(home ? ev.intHomeScore : ev.intAwayScore), ga = +(home ? ev.intAwayScore : ev.intHomeScore);
+      return `<div class="tl"><b>${ar(gf)} : ${ar(ga)}</b><span>${esc(teamNameOf(home ? ev.idAwayTeam : ev.idHomeTeam))}</span>${formMarks([gf > ga ? 'w' : gf === ga ? 'd' : 'l'])}</div>`; };
+    const nxHtml = nx ? `<div class="clnx"><i>${esc(FB_W.nextGame + (fbRound(nx) ? ', ' + fbRound(nx) : ''))}</i><b>${esc(teamNameOf(nx.idHomeTeam) + ' – ' + teamNameOf(nx.idAwayTeam))}</b>`
+      + `<em>${esc(fbDayWord(fbDayOf(fbKick(nx))) + ' ' + fbClock(fbKick(nx)))}</em><i>${esc(fbSentence(nx) || '')}</i></div>` : '';
+    const top = r5.length || nxHtml ? `<div class="mpcl">${r5.length ? `<div class="cl5">${r5.map(tile).join('')}</div>` : ''}${nxHtml}</div>` : '';
+    groups = top ? [{key: 'top', name: FB_W.last5, games: [], html: top, count: ''}] : [];
+    if(L){
+      const lo = Math.max(0, Math.min(L.i - 2, L.rows.length - 5)), win = L.rows.slice(lo, lo + 5).map((x, k) => Object.assign({}, x, {rk: lo + k + 1}));
+      const g = mptGroup({id: L.lg, rows: win, zones: L.sp.zones, name: FB_W.inTable, self: id});
+      focus = L.i - lo;
+      g.games = g.games.filter(x => x.tr).map(x => Object.assign(x, {act: () => mpGo({k: 'league', id: L.lg})}));
+      groups.push(g);
+    }
+    groups.push({key: 'n', name: FB_W.upcoming, games: coming.slice(0, 4), dated: 1, none: wait(j)});
+    groups.push(...hon);
+  }
+  return {title: name, tabs, groups, sub, focus};
 }
 function mpAct(){
   const ev = MP.detail, ringed = document.querySelector('#mp-detail .mdb button.f, #mp-detail .mdq button.f');
@@ -5172,7 +5335,7 @@ function mpKey(e){
     if(e.target && e.target.id === 'mp-q' && !['ArrowDown', 'ArrowUp', 'Enter'].includes(k)) return;
     if(mpQT && e.target && e.target.id === 'mp-q') mpRender();
     if(k === fwd) MP.d = Math.min(MP.tabs.length - 1, MP.d + 1); else if(k === back) MP.d = Math.max(0, MP.d - 1);
-    else if(k === 'ArrowDown' || (k === 'Enter' && e.target && e.target.id === 'mp-q')) MP.zone = MP.rows.length ? 'rows' : MP.leagues.length ? 'leagues' : 'days';
+    else if(k === 'ArrowDown' || (k === 'Enter' && e.target && e.target.id === 'mp-q')){ MP.zone = MP.rows.length ? 'rows' : MP.leagues.length ? 'leagues' : 'days'; if(MP.zone === 'rows') MP.fx = 1; }
     else if(ok){ const x = MP.tabs[MP.d]; e.preventDefault(); if(x && x.act) x.act(); return; }
     else if(k !== 'ArrowUp') return;
   } else if(MP.zone === 'days'){

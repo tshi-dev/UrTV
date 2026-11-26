@@ -43,7 +43,7 @@ MIGRATIONS = {}
 # the table in `paths()` below. Never a deny-list: anything not named here (the TV also answers with other lines) is never read
 # into the file.
 # TODO(parental PIN, branch work/parental): the PIN must NEVER be added here, and must never be exported by any other way.
-ALLOWED_TOP = ("schema", "city", "digits", "prayer", "hijri_offset", "clock24", "clock_size", "card_style", "cards",
+ALLOWED_TOP = ("schema", "city", "digits", "prayer", "hijri_offset", "clock24", "clock_size", "card_style", "form_style", "cards",
                "greeting", "listen_pill", "update_bell", "markets", "teams", "adhan", "sunrise", "prayerbar", "wxmore", "months",
                "lang", "fav_bar", "reciter_favs", "pagesdark", "matchestoday", "pills_hidden", "home_photos", "home_packs", "home_ours", "album_mode", "album_date", "album_title", "album_fit", "album_size", "clear_text", "glow",
                "accent", "bar_opacity", "wall_dim", "focus_style", "look_sync")
@@ -54,6 +54,7 @@ ALLOWED_TOP = ("schema", "city", "digits", "prayer", "hijri_offset", "clock24", 
 DIGITS = ("hindi", "latin")
 PRAYER_METHODS = ("auto", "gulf")   # 4.3 A4: an older file's «jafari» is imported as «auto» (no longer offered)
 CARD_STYLES = ("current", "dark1", "glass1", "dark3", "glass3", "boxes", "classic")
+FORM_STYLES = ("dots", "boxes", "boxes-letters")   # 4.4 beta 5 «شكل آخر المباريات»
 CLOCK_SIZES = ("large", "medium", "small")
 MK_STYLES = ("arrows", "prices")
 MONTHS = ("default", "levant")
@@ -165,7 +166,7 @@ def read_tv(keep_own=False):
         s["city"] = {"name": m.group(1), "lat": float(m.group(2)), "lon": float(m.group(3)), "tz": g["timezone"]}
         if "country" in g and re.fullmatch(r"(?:[A-Z]{2})?", g["country"]):
             s["city"]["country"] = g["country"]
-    for key, name in (("digits", "digits"), ("clock_size", "clocksize"), ("card_style", "cardstyle")):
+    for key, name in (("digits", "digits"), ("clock_size", "clocksize"), ("card_style", "cardstyle"), ("form_style", "formstyle")):
         if name in g:
             s[key] = g[name]
     if "clock24" in g:
@@ -319,7 +320,7 @@ def flat(s):
         out["city"] = (c["name"], float(c["lat"]), float(c["lon"]), c["tz"])
         if "country" in c:
             out["city"] += (c["country"],)
-    for k in ("digits", "clock24", "clock_size", "card_style", "greeting", "listen_pill", "update_bell", "hijri_offset", "sunrise", "prayerbar", "wxmore", "months",
+    for k in ("digits", "clock24", "clock_size", "card_style", "form_style", "greeting", "listen_pill", "update_bell", "hijri_offset", "sunrise", "prayerbar", "wxmore", "months",
               "lang", "fav_bar", "pagesdark", "matchestoday", "home_photos", "home_ours", "album_mode", "album_date", "album_title", "album_fit", "album_size", "clear_text", "glow",
               "accent", "bar_opacity", "wall_dim", "focus_style", "look_sync"):
         if k in s:
@@ -499,7 +500,7 @@ def validate(d):
                 out["city"] = {k: c[k] for k in ("name", "lat", "lon", "tz")}
                 if "country" in c:
                     out["city"]["country"] = c["country"].upper()
-    for key, allowed in (("digits", DIGITS), ("clock_size", CLOCK_SIZES), ("card_style", CARD_STYLES)):
+    for key, allowed in (("digits", DIGITS), ("clock_size", CLOCK_SIZES), ("card_style", CARD_STYLES), ("form_style", FORM_STYLES)):
         if key in d and choice(d[key], allowed, key, errs):
             out[key] = d[key]
     if "months" in d and choice(d["months"], MONTHS, "months", errs):
@@ -752,6 +753,8 @@ def ops(values, names):
             es("clocksize", v)
         elif p == "card_style":
             es("cardstyle", v)
+        elif p == "form_style":
+            es("formstyle", v)
         elif p in ("greeting", "sunrise", "prayerbar", "wxmore", "pagesdark", "matchestoday"):
             es(p, flag(v))
         elif p == "months":

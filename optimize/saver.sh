@@ -96,6 +96,7 @@
 #   optimize/saver.sh idle 10                      the TV starts the screensaver after N idle minutes: 1 2 5 10 15 30
 #                                                  (the TV's own timer; left alone unless you run this)
 #   optimize/saver.sh cardstyle glass1             look of the card beside the clock: current dark1 glass1 dark3 glass3 boxes classic
+#   optimize/saver.sh formstyle boxes              «شكل آخر المباريات», a club's last five in the league's table: dots (default) boxes boxes-letters
 #   optimize/saver.sh design clean                 the screensaver's design: info (default, as it always was) clean big frame dayline
 #   optimize/saver.sh bar prayers                  a centred bar: none (default) prayers slot (the left slot's item) weather
 #   optimize/saver.sh barat clock                  where the bar goes: bottom (default) clock (under the clock)
@@ -342,6 +343,7 @@ case "${1:-}" in
   minrating)set1 minrating "${2:?usage: optimize/saver.sh minrating 7}" ;;
   photos)   set1 photos "${2:?usage: optimize/saver.sh photos 30s|1|5|10|15|30|60 (minutes; 30s = every 30 seconds)}" ;;
   cardstyle)set1 cardstyle "${2:?usage: optimize/saver.sh cardstyle current|dark1|glass1|dark3|glass3|boxes}" ;;
+  formstyle)set1 formstyle "${2:?usage: optimize/saver.sh formstyle dots|boxes|boxes-letters}" ;;
   design)   set1 design "${2:?usage: optimize/saver.sh design info|clean|big|frame|dayline}" ;;
   bar)      set1 bar "${2:?usage: optimize/saver.sh bar none|prayers|slot|weather}" ;;
   barat)    set1 barat "${2:?usage: optimize/saver.sh barat bottom|clock}" ;;

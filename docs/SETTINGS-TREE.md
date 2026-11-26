@@ -416,6 +416,10 @@ the phone page's key, «مركز التحكم» the control centre's row that op
 ——— بطاقة المباريات لليوم فقط [الرئيسية]
     مثال للوكيل: optimize/saver.sh matchestoday on  (`off` = the default: the week's next games, as always)
       القيم المقبولة: on|off
+——— شكل آخر المباريات [الرئيسية وشاشة التوقف]
+    الخيارات: نقاط / مربعات / مربعات بحروف
+    الأصل: نقاط
+    مثال للوكيل: optimize/saver.sh formstyle <dots, boxes, boxes-letters>
 ——— رياضات أخرى [الرئيسية وشاشة التوقف]
     مثال للوكيل: optimize/saver.sh events f1,ufc,boxing  (`""` = none)
       القيم المقبولة: f1,ufc,boxing ('' = none)
@@ -997,6 +1001,10 @@ the phone page's key, «مركز التحكم» the control centre's row that op
 ———— بطاقة المباريات لليوم فقط [الرئيسية]
      مثال للوكيل: optimize/saver.sh matchestoday on  (`off` = the default: the week's next games, as always)
        القيم المقبولة: on|off
+———— شكل آخر المباريات [الرئيسية وشاشة التوقف]
+     الخيارات: نقاط / مربعات / مربعات بحروف
+     الأصل: نقاط
+     مثال للوكيل: optimize/saver.sh formstyle <dots, boxes, boxes-letters>
 ———— رياضات أخرى [الرئيسية وشاشة التوقف]
      مثال للوكيل: optimize/saver.sh events f1,ufc,boxing  (`""` = none)
        القيم المقبولة: f1,ufc,boxing ('' = none)

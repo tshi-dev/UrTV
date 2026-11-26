@@ -20,6 +20,14 @@ import sports_files as sf   # noqa: E402
 failed = 0
 
 
+def _raises(f):
+    try:
+        f()
+    except ValueError:
+        return True
+    return False
+
+
 def check(name, ok, detail=""):
     global failed
     print(("PASS " if ok else "FAIL ") + name + ("" if ok else f"  -> {detail}"))
@@ -111,6 +119,53 @@ sp2 = json.loads((o5 / "sports/4668/2024-2025.json").read_text())
 check("4.5 a season with games missing: its table and results, no champion said", "champ" not in sp2 and len(sp2["results"]) == 5, sp2.get("champ"))
 check("4.5 the current season has no file of its own (sports/<id>.json is it)", not (o5 / "sports/4668/2026-2027.json").exists())
 check("4.5 a past season's file stays small (a full 34-round league is about 60 kB)", (o5 / "sports/4668/2025-2026.json").stat().st_size < 8000)
+
+# 4.4 beta 5, league page phase (a) (docs/research/LEAGUE-V2-PHASE-A-PLAN.md §2): each row's movement since the last round, and the zones only from
+# the hand-kept, reviewed list (.github/tools/league_zones.json), for its league and season
+def mg(i, h, a, r, hs, as_, d=None, st="FT"):
+    return {"id": i, "lg": "4668", "t": ts(d if d is not None else -40 + 3 * int(r)) + "Z", "r": r, "h": h, "a": a, "hn": "T" + h, "an": "T" + a, "hs": hs, "as": as_, "st": st}
+# round 1: 10 beat 20 3-0, 30 beat 40 1-0 -> 10, 30, 40, 20; round 2: 20 beat 10 4-0, 40 beat 30 2-0 -> 20, 40, 10, 30 (20 up 3, 10 down 2 ...)
+mvg = [mg("a", "10", "20", "1", "3", "0"), mg("b", "30", "40", "1", "1", "0"), mg("c", "20", "10", "2", "4", "0"), mg("d", "40", "30", "2", "2", "0")]
+rows = sf.table(mvg, {})
+mv = sf.movement(mvg, {})
+check("phase a: movement is the place before the highest finished round minus the place now (up positive, down negative)",
+      [r["id"] for r in rows] == ["20", "40", "10", "30"] and mv == {"20": 3, "40": 1, "10": -2, "30": -2}, ([r["id"] for r in rows], mv))
+check("phase a: no movement after round 1 (no table before it)", sf.movement(mvg[:2], {}) == {}, sf.movement(mvg[:2], {}))
+txt = [dict(g, r="Week " + g["r"]) for g in mvg]
+check("phase a: no movement when the rounds are not numbers", sf.movement(txt, {}) == {}, sf.movement(txt, {}))
+same = [mg("a", "10", "20", "1", "3", "0"), mg("b", "30", "40", "1", "1", "0"), mg("c", "10", "30", "2", "1", "1"), mg("d", "20", "40", "2", "0", "0")]
+check("phase a: a club in the same place: 0 (the page draws «–»)", sf.movement(same, {}).get("10") == 0, sf.movement(same, {}))
+late = mvg + [mg("e", "50", "10", "2", "1", "0", d=-2)]   # club 50's first game: no place before
+check("phase a: a club with no row before the round has no movement", "50" not in sf.movement(late, {}) and sf.movement(late, {}).get("20") is not None, sf.movement(late, {}))
+pp = mvg + [mg("p", "10", "40", "1", "0", "1", d=-1)]   # round 1's postponed game, played after round 2: it counts in round 1
+check("phase a: a postponed game played late counts in its own round (in the table before round 2, though played after it)",
+      sf.movement(pp, {}) == {"40": 2, "20": 2, "30": -1, "10": -3}, sf.movement(pp, {}))
+ok_z = {"4668": {"2026-2027": [{"from": 1, "to": 1, "k": "acle"}, {"from": 4, "to": 4, "k": "down"}]}}
+check("phase a: the zones list is checked: overlap, past the club count, an unknown kind or a bad range are refused", sf.check_zones(ok_z) is None
+      and all(_raises(lambda z=z: sf.check_zones(z)) for z in ({"1": {"s": [{"from": 1, "to": 3, "k": "ucl"}, {"from": 3, "to": 4, "k": "uel"}]}},
+                                                               {"1": {"s": [{"from": 1, "to": 2, "k": "champions"}]}},
+                                                               {"1": {"s": [{"from": 3, "to": 2, "k": "ucl"}]}},
+                                                               {"1": {"s": [{"from": 0, "to": 2, "k": "ucl"}]}})))
+zf = json.loads((ROOT / ".github/tools/league_zones.json").read_text())
+check("phase a: league_zones.json passes the same check, and ships empty (each entry is added later, sourced, after the owner says yes)", sf.check_zones(zf) is None and zf == {}, zf)
+st2 = ma.Store()
+st2.leagues = {("4668", "2026-2027"): {g["id"]: g for g in mvg}}
+lf2 = sf.league_file(st2, "4668", now, "x", {}, zones=ok_z)
+check("phase a: the league's file carries mv on each row and the season's zones", [r.get("mv") for r in lf2["table"]] == [3, 1, -2, -2] and lf2["zones"] == ok_z["4668"]["2026-2027"], lf2)
+lf3 = sf.league_file(st2, "4668", now, "x", {}, zones={"4668": {"2025-2026": ok_z["4668"]["2026-2027"]}})
+check("phase a: a list for another season: no zones (a stale rule never shows)", "zones" not in lf3 and "zones" not in sf.league_file(st2, "4668", now, "x", {}, zones={}), lf3.get("zones"))
+check("phase a: a list that runs past the league's clubs stops the build", _raises(lambda: sf.league_file(st2, "4668", now, "x", {}, zones={"4668": {"2026-2027": [{"from": 3, "to": 5, "k": "down"}]}})))
+check("phase a: a past season's file has no movement and no zones", all("mv" not in r for r in sp["table"]) and "zones" not in sp)
+cupmv = [dict(g, lg="4719") for g in mvg] + [mg("k", "10", "40", "16", "1", "0", d=-1)]
+check("phase a: a cup's file has no movement (a tournament of the list, or a file with knockout rounds); a league's first rounds keep theirs",
+      sf.movement_for(cupmv, {}, True) == {} and sf.movement_for(mvg, {}, False) == mv and sf.is_cup("4480", None) and sf.is_cup("4719", None)
+      and sf.is_cup("1", {"rounds": [1]}) and not sf.is_cup("4668", {"phase": {}}))
+st3 = ma.Store()
+st3.leagues = {("4719", "2026-2027"): {g["id"]: dict(g, lg="4719") for g in mvg}}
+check("phase a: …so the AFC Elite's league phase file has no mv", all("mv" not in r for r in sf.league_file(st3, "4719", now, "x", {}, zones={})["table"]))
+wfl = (ROOT / ".github/workflows/league-fixtures.yml").read_text()
+check("phase a: the archive's CI job checks out the tournaments list (the cups) beside teams.json", "assets/shared/tournaments.json" in wfl)
+check("phase a: docs/MATCH-ARCHIVE.md has a line on mv and on zones", all(w in (ROOT / "docs/MATCH-ARCHIVE.md").read_text() for w in ("`mv`", "`zones`", "league_zones.json")))
 
 answer = {"MRData": {"RaceTable": {"Races": [{"season": "2026", "round": "24", "raceName": "Abu Dhabi Grand Prix", "date": "2026-12-06", "time": "13:00:00Z",
           "Circuit": {"circuitName": "Yas Marina Circuit", "Location": {"country": "UAE", "locality": "Abu Dhabi"}},

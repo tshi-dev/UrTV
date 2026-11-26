@@ -162,6 +162,7 @@ python3 tests/league_fixtures_test.py
 python3 tests/match_archive_test.py   # 4.3.1 the match archive: append-only, a corrected score, the live window, the backfill names
 python3 tests/sports_files_test.py   # 4.4 the sports cards' files: sports/<league>.json from the store, f1/next.json once a day
 python3 tests/honours_study_test.py   # 4.5 honours study: a season's champion from our archive only when sure (both legs of a final, never MLS's table leader)
+python3 tests/form_style_test.py   # 4.4 beta 5 «شكل آخر المباريات»: the row, SettingsHub, saver.sh formstyle, export/import, docs
 python3 tests/honours_test.py   # 4.5 honours: champions and top scorers from the archive, Wikidata and Wikipedia, weekly (docs/HONOURS-STUDY.md)
 python3 tests/kickoff_test.py   # 4.4 «تنبيه بداية المباراة»: the rules on a JVM (KickoffRun.java), the whistle, the defaults, the settings, saver.sh and dock.sh overlay
 python3 tests/overlay_offer_test.py   # 4.4 the add-on's «فوق تطبيق آخر» offered once on the first run (rule on a JVM, the bar, the once-flag, the changelog line)
@@ -461,6 +462,8 @@ node tests/football_page.test.mjs   # the football home's widgets and «المب
 node tests/sports_cards.test.mjs   # 4.4 «الرياضة»: the sports cards (dist/sports.js) on the home, the couch row and the screensaver, the takeover, only the page's own build
 node tests/many_follows.test.mjs   # 4.4 40 clubs and 24 leagues in the page: the extra ones asked every 2nd load, files 4 at a time, the bar built once a minute, the warning's two OKs, «فرقي» at 720p
 node tests/sports_hist.test.mjs   # 4.4 the league page's table from the archive first (TheSportsDB's after it, a plain line when neither), the club page's all-time meetings
+node tests/club_page.test.mjs   # 4.4 beta 5 the club page (mockup 6): tabs, its place and latest title, the last five as tiles, the next game, the table round it; nothing the files do not say
+node tests/league_table.test.mjs   # 4.4 beta 5 the league's full table (phase a): movement, zones, form styles, focused mode, live toggle, sizes at 720p and 540p
 node tests/honours.test.mjs   # 4.5 the league page's seasons, «الأبطال», «الهدّافون» with their source, the club page's titles (docs/HONOURS-STUDY.md)
 node tests/sport_tops.test.mjs   # «رياضي»: SPORTS.tops(n), the top of every followed league from the files the TV has, never invented
 node tests/matches_archive.test.mjs   # «المباريات» with the match archive (data-archive): every followed team, yesterday's results, a club, a league, the chooser
