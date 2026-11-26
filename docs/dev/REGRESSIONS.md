@@ -325,6 +325,7 @@ often describe the same bug in two ways, and both rows are kept when their guard
 | R-318 | The Saudi Quran radio (HLS) cut out and came back on the same address that ran dry (a user) | a stall restarted the station on the same address, its alt was tried only after every try failed | 4.4 | `tests/station_sources_test.py` | launcher | Y |
 | R-317 | «مصدر في المفضلة» (PR #66): an input (HDMI 1) in the favourites row | a favourite input is kept by the dock save, drawn only while the TV reports it, switched to behind the «المصادر» lock, with no app menu | 4.4 | `tests/input_fav_test.py` | launcher | Y |
 | R-319 | Beta 4 on a TCL: with «الآفاق» on the home was plain black (the tester) | the only scene failed to decode and nothing took its place (the timer stops with one scene); now it is logged and the wall photos show until a scene draws | 4.4 | `tests/scene_blank_test.py` | launcher | Y |
+| R-320 | «بطاقة المباريات لليوم فقط» (PR #65, off by default): the matches card kept the week's games | the card showed the week's next games whatever the day; with the setting on it keeps the city's day only (a game with no time keeps its own date) | 4.4 | `tests/matches_today_test.py` | launcher page | Y |
 
 ## Open findings of the gate (QA-n)
 
