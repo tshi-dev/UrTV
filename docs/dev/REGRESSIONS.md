@@ -326,6 +326,7 @@ often describe the same bug in two ways, and both rows are kept when their guard
 | R-317 | «مصدر في المفضلة» (PR #66): an input (HDMI 1) in the favourites row | a favourite input is kept by the dock save, drawn only while the TV reports it, switched to behind the «المصادر» lock, with no app menu | 4.4 | `tests/input_fav_test.py` | launcher | Y |
 | R-319 | Beta 4 on a TCL: with «الآفاق» on the home was plain black (the tester) | the only scene failed to decode and nothing took its place (the timer stops with one scene); now it is logged and the wall photos show until a scene draws | 4.4 | `tests/scene_blank_test.py` | launcher | Y |
 | R-320 | «بطاقة المباريات لليوم فقط» (PR #65, off by default): the matches card kept the week's games | the card showed the week's next games whatever the day; with the setting on it keeps the city's day only (a game with no time keeps its own date) | 4.4 | `tests/matches_today_test.py` | launcher page | Y |
+| R-321 | With «بدون» as the home's card the clock stayed the small one top right (the tester, beta 4) | HomeCardChoice.count counted «بدون» as one card, so the glass clock (off while a card shows) never came back; it now counts none | 4.4 | `tests/home_card_count_test.py` | launcher | Y |
 
 ## Open findings of the gate (QA-n)
 

@@ -153,6 +153,7 @@ python3 tests/own_place_test.py
 python3 tests/cities_world_test.py
 python3 tests/cities_more_test.py   # 4.3.3 the offline city search: the list (GeoNames + Wikidata), its generator, the ranking
 python3 tests/cities_md_test.py
+python3 tests/home_card_count_test.py   # 4.4 beta 4: «بدون» counts no card (the glass clock comes back)
 python3 tests/home_card_test.py
 python3 tests/night_rebuild_test.py
 python3 tests/football_off_test.py   # 4.3.4: «بدون» turns the football home's widgets off

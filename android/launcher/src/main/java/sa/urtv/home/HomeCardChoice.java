@@ -28,6 +28,7 @@ final class HomeCardChoice {
     /** How many cards a pick shows (1 to 3); the prayers alone when nothing is known. */
     static int count(String[] choice) {
         if (choice == null) return 1;
+        if (choice[1] == null || choice[1].isEmpty() || "none".equals(choice[1])) return 0;   // 4.4 beta 4: «بدون» shows none (it counted 1: the glass clock stayed off with no card at all)
         return Math.max(1, Math.min(3, choice[1].split(",").length));
     }
 
