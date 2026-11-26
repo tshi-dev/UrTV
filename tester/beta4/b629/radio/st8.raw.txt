@@ -1,0 +1,37 @@
+=== st8 t=0
+      package=sa.urtv.home
+11-26 19:29:33.545  1179  1179 V AudioMediaPlayerWrapper: trySendMediaUpdate(): Metadata has been updated for sa.urtv.home
+11-26 19:29:33.545  1179  1179 I MediaPlayerList: sendMediaUpdate: Creating a one item queue for a player with no queue
+11-26 19:29:33.545  1179  1179 D MediaPlayerList: sendMediaUpdate state=PlaybackState {state=PAUSED(2), position=0, buffered position=0, speed=0.0, updated=270320508, actions=567, custom actions=[], active item id=-1, error=null}
+11-26 19:29:33.545  1179  1179 D AvrcpTargetJni: sendMediaUpdateNative
+11-26 19:29:33.545  1179  1179 I bt_stack: [INFO:avrcp_service.cc(530)] virtual void bluetooth::avrcp::AvrcpService::SendMediaUpdate(bool, bool, bool) track_changed=0 :  play_state=1 :  queue=0
+11-26 19:29:34.111 29821  5938 D SharedPreferencesImpl: Time required to fsync /data/user/0/sa.urtv.home/shared_prefs/tilawah.xml: [<1: 0, <2: 0, <4: 16, <8: 47, <16: 1, <32: 5, <64: 0, <128: 0, <256: 0, <512: 1, <1024: 0, <2048: 0, <4096: 0, <8192: 0, <16384: 0, >=16384: 0]
+=== st8 t=32
+      package=sa.urtv.home
+11-26 19:30:04.754   672  1459 I ActivityManager: Broadcasting: Intent { act=sa.urtv.home.GET_PLAYER flg=0x400000 cmp=sa.urtv.home/.tilawah.MusicReceiver }
+11-26 19:30:04.755   672  1459 I ActivityManager: Enqueued broadcast Intent { act=sa.urtv.home.GET_PLAYER flg=0x400000 cmp=sa.urtv.home/.tilawah.MusicReceiver }: 0
+11-26 19:30:04.771   672   840 I ActivityManager: Broadcast completed: result=0, data="playing=0|source=radio|reciter=|reciter_name=|surah=0|surah_name=|station=8|station_name=ياسر الدوسري|pos=23|dur=0|sleep=0|adhan=off|voice=1|fajr_voice=10|prayer_sound=fajr:,dhuhr:,asr:,maghrib:,isha:|q
+11-26 19:30:04.879 29821  5850 I sa.urtv.home: Background concurrent copying GC freed 85462(4568KB) AllocSpace objects, 111(4860KB) LOS objects, 49% free, 11MB/22MB, paused 107us,74us total 116.318ms
+=== st8 t=64
+      package=sa.urtv.home
+11-26 19:30:30.539   672  1459 I ActivityManager: Broadcasting: Intent { act=sa.urtv.home.GET_PLAYER flg=0x400000 cmp=sa.urtv.home/.tilawah.MusicReceiver }
+11-26 19:30:30.540   672  1459 I ActivityManager: Enqueued broadcast Intent { act=sa.urtv.home.GET_PLAYER flg=0x400000 cmp=sa.urtv.home/.tilawah.MusicReceiver }: 0
+11-26 19:30:30.555   672   840 I ActivityManager: Broadcast completed: result=0, data="playing=0|source=radio|reciter=|reciter_name=|surah=0|surah_name=|station=8|station_name=ياسر الدوسري|pos=23|dur=0|sleep=0|adhan=off|voice=1|fajr_voice=10|prayer_sound=fajr:,dhuhr:,asr:,maghrib:,isha:|q
+11-26 19:30:36.524   672  1459 I ActivityManager: Broadcasting: Intent { act=sa.urtv.home.GET_PLAYER flg=0x400000 cmp=sa.urtv.home/.tilawah.MusicReceiver }
+11-26 19:30:36.525   672  1459 I ActivityManager: Enqueued broadcast Intent { act=sa.urtv.home.GET_PLAYER flg=0x400000 cmp=sa.urtv.home/.tilawah.MusicReceiver }: 0
+11-26 19:30:36.538   672   840 I ActivityManager: Broadcast completed: result=0, data="playing=0|source=radio|reciter=|reciter_name=|surah=0|surah_name=|station=8|station_name=ياسر الدوسري|pos=23|dur=0|sleep=0|adhan=off|voice=1|fajr_voice=10|prayer_sound=fajr:,dhuhr:,asr:,maghrib:,isha:|q
+=== st8 t=95
+      package=sa.urtv.home
+11-26 19:31:08.184   672  1459 I ActivityManager: Broadcasting: Intent { act=sa.urtv.home.GET_PLAYER flg=0x400000 cmp=sa.urtv.home/.tilawah.MusicReceiver }
+11-26 19:31:08.185   672  1459 I ActivityManager: Enqueued broadcast Intent { act=sa.urtv.home.GET_PLAYER flg=0x400000 cmp=sa.urtv.home/.tilawah.MusicReceiver }: 0
+11-26 19:31:08.201   672   840 I ActivityManager: Broadcast completed: result=0, data="playing=0|source=radio|reciter=|reciter_name=|surah=0|surah_name=|station=8|station_name=ياسر الدوسري|pos=23|dur=0|sleep=0|adhan=off|voice=1|fajr_voice=10|prayer_sound=fajr:,dhuhr:,asr:,maghrib:,isha:|q
+=== st8 t=127
+      package=sa.urtv.home
+11-26 19:31:40.119   672 24733 I ActivityManager: Broadcasting: Intent { act=sa.urtv.home.GET_PLAYER flg=0x400000 cmp=sa.urtv.home/.tilawah.MusicReceiver }
+11-26 19:31:40.120   672 24733 I ActivityManager: Enqueued broadcast Intent { act=sa.urtv.home.GET_PLAYER flg=0x400000 cmp=sa.urtv.home/.tilawah.MusicReceiver }: 0
+11-26 19:31:40.135   672   840 I ActivityManager: Broadcast completed: result=0, data="playing=0|source=radio|reciter=|reciter_name=|surah=0|surah_name=|station=8|station_name=ياسر الدوسري|pos=23|dur=0|sleep=0|adhan=off|voice=1|fajr_voice=10|prayer_sound=fajr:,dhuhr:,asr:,maghrib:,isha:|q
+=== st8 t=159
+      package=sa.urtv.home
+11-26 19:32:11.884   672 24733 I ActivityManager: Broadcasting: Intent { act=sa.urtv.home.GET_PLAYER flg=0x400000 cmp=sa.urtv.home/.tilawah.MusicReceiver }
+11-26 19:32:11.885   672 24733 I ActivityManager: Enqueued broadcast Intent { act=sa.urtv.home.GET_PLAYER flg=0x400000 cmp=sa.urtv.home/.tilawah.MusicReceiver }: 0
+11-26 19:32:11.902   672   840 I ActivityManager: Broadcast completed: result=0, data="playing=0|source=radio|reciter=|reciter_name=|surah=0|surah_name=|station=8|station_name=ياسر الدوسري|pos=23|dur=0|sleep=0|adhan=off|voice=1|fajr_voice=10|prayer_sound=fajr:,dhuhr:,asr:,maghrib:,isha:|q

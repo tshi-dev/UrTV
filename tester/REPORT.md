@@ -3377,3 +3377,25 @@ ALL PASS is NOT claimed: (4) is NOT done.
 5. Screensaver start for start-saver.sh (b629/e-dreams.txt): `am start Somnambulator` does start it but **late**: at +8 s `mCurrentDream=null` and topResumed is sa.urtv.home; a second run showed it only at about **+41 s**. When running: `mCurrentDream=DreamRecord{…ScreenDream}` and `topResumedActivity=…sa.urtv.screensaver/android.service.dreams.DreamActivity`. `cmd dreams start-dreaming` fails here: «Must be root to call Dream shell commands». So «not started» is a false negative from the 6 s waits: poll up to ~60 s for `mCurrentDream=DreamRecord`.
 6. Radio and channels round: starting now, will be reported separately under «RADIO AND CHANNELS, 629».
 - TV state now: home-card stocks, background scenes, scenepacks couch, scenestay 10 (my test values; the owner's old ones are in show-before.txt). Muted. City name boxed out in the pushed shots.
+
+## RADIO AND CHANNELS, 629 — radio part (26 Nov)
+Method: `music.sh radio N` (adb, no UI), status sampled about every 6 s (playing, pos, rebuffers, errors, stall_restarts, reconnects), media_session and logcat every 30 s. Raw: tester/beta4/radio-b629 = tester/beta4/b629/radio/ (stN.csv, stN.raw.txt, no IPs). Cut = state not playing or position not moving for 5 s+, apart from start-up.
+Note: `music.sh stations` lists 11 names and skips Egypt and Khayyat; the real `radio N` list is 0-12 (13 stations): 0 السعودية, 1 مصر, 2 الشاطري, 3 السديس, 4 الشريم, 5 المعيقلي, 6 العفاسي, 7 الغامدي, 8 الدوسري, 9 عبدالباسط, 10 المنشاوي, 11 العجمي, 12 خياط. N above 12 plays 12.
+
+| Station | Result | Cuts | Note |
+|---|---|---|---|
+| 2 الشاطري | PASS 3 min | 0 | rebuffers 0, errors 0 |
+| 3 السديس | PASS 3 min | 0 | same |
+| 4 الشريم | PASS 3 min | 0 | same |
+| 5 المعيقلي | PASS 3 min | 0 | same |
+| 6 العفاسي | PASS 3 min | 0 | same |
+| 7 الغامدي | PASS 3 min | 0 | same |
+| 8 الدوسري | **FAIL** | never played | state stays 0 with position stuck at 23 for the 3 min, no error line |
+| 9 عبدالباسط | **FAIL** | never played | at +39 s «radio no_answer (20 s, host backup.qurango.net)», category=timeout |
+| 10, 11, 12 | **FAIL** | never played | same no_answer |
+| 0 السعودية (20 min planned) | **FAIL** | never played | it played fine at the start of the session; here state 0 for all 1200 s |
+| 1 مصر (10 min planned) | **FAIL** | never played | state 0 for 600 s |
+
+Main finding: after station 8 stalled, the player stayed stuck. Every later start (9, 10, 11, 12, then Saudi and Egypt, then again by hand: 0, 1, 8, 9) ended in «no_answer 20 s», although the network was fine (ping of the host and of google answered, Wi-Fi enabled). It never recovered by itself, no stall_restarts and no reconnects were counted (both stayed 0: the S-26 stall handling did not fire). After `am force-stop sa.urtv.home` + HOME, station 0 and station 2 played again at once (playing=1, position moving). So: one stalled station wedges the radio player until the app restarts. The 20-min Saudi and 10-min Egypt cut counts could therefore not be measured; they need a re-run on a build that recovers. Whether 8 and 9 are bad on their own (8 was at position 23 and then silent) is not known: I did not re-test them after the restart.
+Mute: Muted was false after the app restart (volume 18); I pressed KEYCODE_VOLUME_MUTE and checked Muted: true. Something between the force-stop and my check unmuted it, and I cannot say when; about 1 minute of station 0 and 2 test playback may have been audible. It is muted now.
+Live channels part: not run yet (needs the home and Player lists by D-pad with a shot per key).

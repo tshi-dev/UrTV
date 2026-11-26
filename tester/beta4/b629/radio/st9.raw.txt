@@ -1,0 +1,33 @@
+=== st9 t=0
+      package=sa.urtv.home
+11-26 19:32:42.599  1179  1179 I bt_stack: [INFO:avrcp_service.cc(530)] virtual void bluetooth::avrcp::AvrcpService::SendMediaUpdate(bool, bool, bool) track_changed=1 :  play_state=1 :  queue=1
+11-26 19:32:42.599  1179  1179 V AudioMediaPlayerWrapper: onPlaybackStateChanged(): sa.urtv.home : PlaybackState {state=BUFFERING(6), position=0, buffered position=0, speed=0.0, updated=270509563, actions=567, custom actions=[], active item id=-1, error=null}
+11-26 19:32:42.599  1179  1179 W AudioMediaPlayerWrapper: onPlaybackStateChanged(): sa.urtv.home tried to update with no new data
+11-26 19:32:43.598   672  2699 I ActivityManager: Broadcasting: Intent { act=sa.urtv.home.GET_PLAYER flg=0x400000 cmp=sa.urtv.home/.tilawah.MusicReceiver }
+11-26 19:32:43.598   672  2699 I ActivityManager: Enqueued broadcast Intent { act=sa.urtv.home.GET_PLAYER flg=0x400000 cmp=sa.urtv.home/.tilawah.MusicReceiver }: 0
+11-26 19:32:43.613   672   840 I ActivityManager: Broadcast completed: result=0, data="playing=0|source=radio|reciter=|reciter_name=|surah=0|surah_name=|station=9|station_name=عبدالباسط عبدالصمد|pos=0|dur=0|sleep=0|adhan=off|voice=1|fajr_voice=10|prayer_sound=fajr:,dhuhr:,asr:,maghr
+=== st9 t=32
+      package=sa.urtv.home
+11-26 19:33:15.574   672  1325 I ActivityManager: Broadcasting: Intent { act=sa.urtv.home.GET_PLAYER flg=0x400000 cmp=sa.urtv.home/.tilawah.MusicReceiver }
+11-26 19:33:15.575   672  1325 I ActivityManager: Enqueued broadcast Intent { act=sa.urtv.home.GET_PLAYER flg=0x400000 cmp=sa.urtv.home/.tilawah.MusicReceiver }: 0
+11-26 19:33:15.600   672   840 I ActivityManager: Broadcast completed: result=0, data="playing=0|source=radio|reciter=|reciter_name=|surah=0|surah_name=|station=9|station_name=عبدالباسط عبدالصمد|pos=0|dur=0|sleep=0|adhan=off|voice=1|fajr_voice=10|prayer_sound=fajr:,dhuhr:,asr:,maghr
+=== st9 t=64
+
+11-26 19:33:47.669   672  2699 I ActivityManager: Broadcasting: Intent { act=sa.urtv.home.GET_PLAYER flg=0x400000 cmp=sa.urtv.home/.tilawah.MusicReceiver }
+11-26 19:33:47.670   672  2699 I ActivityManager: Enqueued broadcast Intent { act=sa.urtv.home.GET_PLAYER flg=0x400000 cmp=sa.urtv.home/.tilawah.MusicReceiver }: 0
+11-26 19:33:47.686   672   840 I ActivityManager: Broadcast completed: result=0, data="playing=0|source=radio|reciter=|reciter_name=|surah=0|surah_name=|station=9|station_name=عبدالباسط عبدالصمد|pos=0|dur=0|sleep=0|adhan=off|voice=1|fajr_voice=10|prayer_sound=fajr:,dhuhr:,asr:,maghr
+=== st9 t=96
+
+11-26 19:34:19.669   672   985 I ActivityManager: Broadcasting: Intent { act=sa.urtv.home.GET_PLAYER flg=0x400000 cmp=sa.urtv.home/.tilawah.MusicReceiver }
+11-26 19:34:19.670   672   985 I ActivityManager: Enqueued broadcast Intent { act=sa.urtv.home.GET_PLAYER flg=0x400000 cmp=sa.urtv.home/.tilawah.MusicReceiver }: 0
+11-26 19:34:19.685   672   840 I ActivityManager: Broadcast completed: result=0, data="playing=0|source=radio|reciter=|reciter_name=|surah=0|surah_name=|station=9|station_name=عبدالباسط عبدالصمد|pos=0|dur=0|sleep=0|adhan=off|voice=1|fajr_voice=10|prayer_sound=fajr:,dhuhr:,asr:,maghr
+=== st9 t=127
+
+11-26 19:34:51.247   672   985 I ActivityManager: Broadcasting: Intent { act=sa.urtv.home.GET_PLAYER flg=0x400000 cmp=sa.urtv.home/.tilawah.MusicReceiver }
+11-26 19:34:51.248   672   985 I ActivityManager: Enqueued broadcast Intent { act=sa.urtv.home.GET_PLAYER flg=0x400000 cmp=sa.urtv.home/.tilawah.MusicReceiver }: 0
+11-26 19:34:51.269   672   840 I ActivityManager: Broadcast completed: result=0, data="playing=0|source=radio|reciter=|reciter_name=|surah=0|surah_name=|station=9|station_name=عبدالباسط عبدالصمد|pos=0|dur=0|sleep=0|adhan=off|voice=1|fajr_voice=10|prayer_sound=fajr:,dhuhr:,asr:,maghr
+=== st9 t=159
+
+11-26 19:35:23.547   672   985 I ActivityManager: Broadcasting: Intent { act=sa.urtv.home.GET_PLAYER flg=0x400000 cmp=sa.urtv.home/.tilawah.MusicReceiver }
+11-26 19:35:23.547   672   985 I ActivityManager: Enqueued broadcast Intent { act=sa.urtv.home.GET_PLAYER flg=0x400000 cmp=sa.urtv.home/.tilawah.MusicReceiver }: 0
+11-26 19:35:23.572   672   840 I ActivityManager: Broadcast completed: result=0, data="playing=0|source=radio|reciter=|reciter_name=|surah=0|surah_name=|station=9|station_name=عبدالباسط عبدالصمد|pos=0|dur=0|sleep=0|adhan=off|voice=1|fajr_voice=10|prayer_sound=fajr:,dhuhr:,asr:,maghr

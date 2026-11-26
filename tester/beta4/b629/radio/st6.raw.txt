@@ -1,0 +1,48 @@
+=== st6 t=0
+      package=sa.urtv.home
+11-26 19:23:17.329   672   791 D MediaSessionStack: findMediaButtonSession session.getUid() = 10162
+11-26 19:23:17.329   672   791 D MediaSessionStack: findMediaButtonSession checkPlaybackActiveState OK
+11-26 19:23:17.329  1179  1179 W AudioMediaPlayerWrapper: onMetadataChanged(): sa.urtv.home tried to update with no new data
+11-26 19:23:17.329 29821 29821 D MediaSession: setActive active = true
+11-26 19:23:17.330  1179  1179 V AudioMediaPlayerWrapper: onPlaybackStateChanged(): sa.urtv.home : PlaybackState {state=PLAYING(3), position=0, buffered position=0, speed=1.0, updated=269944295, actions=567, custom actions=[], active item id=-1, error=null}
+11-26 19:23:17.331  1179  1179 W AudioMediaPlayerWrapper: onPlaybackStateChanged(): sa.urtv.home tried to update with no new data
+=== st6 t=32
+      package=sa.urtv.home
+11-26 19:23:49.407   672 24733 D MediaSessionStack: findMediaButtonSession session.getUid() = 10162
+11-26 19:23:49.407   672 24733 D MediaSessionStack: findMediaButtonSession checkPlaybackActiveState OK
+11-26 19:23:49.408 29821 29821 D MediaSession: setActive active = true
+11-26 19:23:49.408  1179  1179 W AudioMediaPlayerWrapper: onMetadataChanged(): sa.urtv.home tried to update with no new data
+11-26 19:23:49.408  1179  1179 V AudioMediaPlayerWrapper: onPlaybackStateChanged(): sa.urtv.home : PlaybackState {state=PLAYING(3), position=0, buffered position=0, speed=1.0, updated=269976374, actions=567, custom actions=[], active item id=-1, error=null}
+11-26 19:23:49.409  1179  1179 W AudioMediaPlayerWrapper: onPlaybackStateChanged(): sa.urtv.home tried to update with no new data
+=== st6 t=63
+      package=sa.urtv.home
+11-26 19:24:21.475   672 24733 D MediaSessionStack: findMediaButtonSession session.getUid() = 10162
+11-26 19:24:21.476   672 24733 D MediaSessionStack: findMediaButtonSession checkPlaybackActiveState OK
+11-26 19:24:21.476  1179  1179 W AudioMediaPlayerWrapper: onMetadataChanged(): sa.urtv.home tried to update with no new data
+11-26 19:24:21.476 29821 29821 D MediaSession: setActive active = true
+11-26 19:24:21.478  1179  1179 V AudioMediaPlayerWrapper: onPlaybackStateChanged(): sa.urtv.home : PlaybackState {state=PLAYING(3), position=0, buffered position=0, speed=1.0, updated=270008441, actions=567, custom actions=[], active item id=-1, error=null}
+11-26 19:24:21.479  1179  1179 W AudioMediaPlayerWrapper: onPlaybackStateChanged(): sa.urtv.home tried to update with no new data
+=== st6 t=95
+      package=sa.urtv.home
+11-26 19:24:53.547   672 24733 D MediaSessionStack: findMediaButtonSession session.getUid() = 10162
+11-26 19:24:53.547   672 24733 D MediaSessionStack: findMediaButtonSession checkPlaybackActiveState OK
+11-26 19:24:53.547 29821 29821 D MediaSession: setActive active = true
+11-26 19:24:53.548  1179  1179 W AudioMediaPlayerWrapper: onMetadataChanged(): sa.urtv.home tried to update with no new data
+11-26 19:24:53.548  1179  1179 V AudioMediaPlayerWrapper: onPlaybackStateChanged(): sa.urtv.home : PlaybackState {state=PLAYING(3), position=0, buffered position=0, speed=1.0, updated=270040513, actions=567, custom actions=[], active item id=-1, error=null}
+11-26 19:24:53.549  1179  1179 W AudioMediaPlayerWrapper: onPlaybackStateChanged(): sa.urtv.home tried to update with no new data
+=== st6 t=128
+      package=sa.urtv.home
+11-26 19:25:26.142   433   433 I mediatek,cec 1c080400.cec: [mtk_cec_sendframe] len = 1
+11-26 19:25:26.142   433   433 I mediatek,cec 1c080400.cec: [mtk_cec_sendframe] header = b
+11-26 19:25:26.142   433   433 I mediatek,cec 1c080400.cec: [mtk_cec_sendframe] opcode = 0
+11-26 19:25:26.186   433   433 I mediatek,cec 1c080400.cec: [mtk_cec_sendframe] len = 1
+11-26 19:25:26.186   433   433 I mediatek,cec 1c080400.cec: [mtk_cec_sendframe] header = c
+11-26 19:25:26.186   433   433 I mediatek,cec 1c080400.cec: [mtk_cec_sendframe] opcode = 0
+=== st6 t=159
+      package=sa.urtv.home
+11-26 19:25:57.695   672 24733 D MediaSessionStack: findMediaButtonSession session.getUid() = 10162
+11-26 19:25:57.695   672 24733 D MediaSessionStack: findMediaButtonSession checkPlaybackActiveState OK
+11-26 19:25:57.695 29821 29821 D MediaSession: setActive active = true
+11-26 19:25:57.696  1179  1179 W AudioMediaPlayerWrapper: onMetadataChanged(): sa.urtv.home tried to update with no new data
+11-26 19:25:57.696  1179  1179 V AudioMediaPlayerWrapper: onPlaybackStateChanged(): sa.urtv.home : PlaybackState {state=PLAYING(3), position=0, buffered position=0, speed=1.0, updated=270104661, actions=567, custom actions=[], active item id=-1, error=null}
+11-26 19:25:57.696  1179  1179 W AudioMediaPlayerWrapper: onPlaybackStateChanged(): sa.urtv.home tried to update with no new data
