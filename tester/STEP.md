@@ -1,3 +1,13 @@
+▶▶ BETA 4 = next c64dc215 (26 Nov, late) — do this FIRST, before the games review
+0. Install from apk-next once version.txt shows the commit c64dc215 (Build APKs on next). Keep data. TV muted, check Muted: true. Before AND after every app restart run `logcat -d -s UrTVMute` and keep the lines (they say «by=us» or «by=not us»).
+1. «كنبة» clock, the owner's choice: like couch-tv the big glass clock stays centred WITH a card. `homelayout couch`, `home-card stocks`, HOME: shot. Expect the big clock centred, the stocks strip under it (cards about 182 tall, centred, no outline), the apps row under that, and NO small clock top-right. Then `home-card matches`: shot. Then `home-card none`: shot, the clock must be in the SAME place in all three. Also check the date is not under the greeting (R-324).
+2. 720p: `wm size 1280x720` + `wm density 213`, HOME, shot with stocks: clock, strip and apps row all visible, no overlap. Reset both.
+3. Radio re-test (R-323). Start each station the way a user does, NOT by the adb broadcast (Android blocks that from the background, which is why Saudi and Egypt «never played»): open the radio from the home by D-pad with a shot per key, or press HOME first so the home is in front and then `music.sh radio N`; if logcat shows «Background start not allowed», it does not count, start it from the UI. Order: 8 الدوسري first (the one that wedged), then 9-12, then 0 السعودية 20 min, 1 مصر 10 min, then 2-7 1 min each. Per station: `logcat -d -s MusicService:V UrTVHome:V` plus your status csv. Report: did 8 recover by itself (stall_restarts > 0, next source), and did any station after it still hit no_answer.
+4. `music.sh stations` must now list 13.
+5. `start-saver.sh` must report started (it now waits up to 60 s).
+6. Then the live channels part, then the GAMES REVIEW below.
+Restore the owner's settings afterwards, same as last round. City name boxed out in every shot.
+
 ▶▶ BETA 4 = build 629 (next 5688e2c3). Install it over 624, keeping data, and check versionCode and mute. It fixes the clock with «بدون», 720p after a size change, DOWN going into an old grid in «أيقونات», and the noisy frozen-screen log. Re-check these on 629 (adb only, a screenshot after every key, no blind OK):
 1. `optimize/saver.sh home-card none`, then HOME, wait 10 s, shot: the big glass clock centred, the date above it, no strip. Then `home-card stocks`, HOME, shot: the small clock top-right and the strip (by design).
 2. `logcat -d | grep SceneHome` after HOME: write «scene 1 of N». If N is 1, the scene packs have not downloaded yet; write that.
