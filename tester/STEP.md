@@ -1,3 +1,10 @@
+▶▶ BETA 4 = build 620 (next 261fc729). Install it FIRST: home, screensaver and extras from apk-next 620 over 616 by adb, keeping data. Check versionCode 620 and that the TV is still muted. Then do the rounds queued below («couch backgrounds», «UI ROUND», «radio and channels») on 620, not 616. Add these new checks:
+- S-24 prealert: `optimize/saver.sh adhanlead 15`, then read `optimize/saver.sh show` (adhanlead 15). If a prayer falls within the session, take a shot at about 14 minutes before it: the bar on the home. Afterwards set it back with `adhanlead 10`.
+- S-25 «مصدر في المفضلة» (#66): screensaver settings, «أسماء المصادر», an HDMI input, then its «في المفضلة» action (screenshot after each key). Expect a tile for that input in the favourites. Remove it again afterwards.
+- S-26 radio stall: in the radio round, note whether a stall now switches source within about 15 s (the log shows the alt URL host) instead of retrying the same one.
+- R-319 scene fallback: in the backgrounds round, `logcat -d | grep SceneHome` should name any scene that fails. The home must never stay black: if all scenes fail, the wall photos show.
+Report under «BETA 4 = 620».
+
 ▶▶ ADD TO «BETA 4 couch backgrounds» (do it in that round, before the radio round):
 - After each Home in that round: `logcat -d | grep -i scene` and the `optimize/saver.sh show` lines for background, lite and ramtier. Save them to tester/beta4/bg-log.txt with no coordinates or IPs.
 - Then `optimize/saver.sh home-card none`, Home, wait 20 s, take b4-nocard.png (expect the glass clock centred and no strip), then `logcat -d | grep -i scene` again. Afterwards `optimize/saver.sh home-card stocks` to put it back.
