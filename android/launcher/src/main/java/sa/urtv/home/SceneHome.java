@@ -165,6 +165,7 @@ final class SceneHome extends FrameLayout {
         if (!on || scenes.isEmpty()) return;
         final int at = ScenePlan.next(index, scenes.size());
         final ScenePlan.Scene sc = scenes.get(at);
+        Log.i("SceneHome", "scene " + (at + 1) + " of " + scenes.size() + ": " + sc.pack + "/" + sc.id + ", the next in " + (scenes.size() < 2 ? "never (one scene)" : ScenePlan.stayMs(tier, staySeconds) / 1000 + " s"));
         final int w = getWidth() > 0 ? getWidth() : getResources().getDisplayMetrics().widthPixels;
         final int h = getHeight() > 0 ? getHeight() : getResources().getDisplayMetrics().heightPixels;
         final int g = gen;
