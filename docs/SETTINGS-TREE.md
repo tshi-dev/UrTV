@@ -143,7 +143,8 @@ the phone page's key, «مركز التحكم» the control centre's row that op
     الأصل: معلومات
     مثال للوكيل: optimize/saver.sh design <info, clean, big, frame, dayline>  (`info` = «معلومات», the screensaver as it always was, the default)
 ——— رجوع مرتين يفتح شاشة التوقف [شاشة التوقف]
-    لا أمر موثّق بعد
+    مثال للوكيل: optimize/saver.sh backtwice on
+      القيم المقبولة: on|off
 ——— الشريط في الوسط [شاشة التوقف]
     الخيارات: بدون / الصلوات / الخانة اليسرى / الطقس
     الأصل: بدون
@@ -666,7 +667,8 @@ the phone page's key, «مركز التحكم» the control centre's row that op
      الأصل: معلومات
      مثال للوكيل: optimize/saver.sh design <info, clean, big, frame, dayline>  (`info` = «معلومات», the screensaver as it always was, the default)
 ———— رجوع مرتين يفتح شاشة التوقف [شاشة التوقف]
-     لا أمر موثّق بعد
+     مثال للوكيل: optimize/saver.sh backtwice on
+       القيم المقبولة: on|off
 ———— الشريط في الوسط [شاشة التوقف]
      الخيارات: بدون / الصلوات / الخانة اليسرى / الطقس
      الأصل: بدون
