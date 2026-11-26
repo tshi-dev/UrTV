@@ -93,6 +93,75 @@ def table(games, names):
     return sorted(rows.values(), key=lambda r: (-r["pts"], -(r["gf"] - r["ga"]), -r["gf"], r["n"]))
 
 
+def movement(games, names):
+    """4.4 beta 5 (league page phase a): {club id: places moved} since the highest finished round, from the table without that round's games
+    (a postponed game counts in its own round). Up is positive. Empty when a finished game's round is not a number or the round is the first;
+    a club with no row before it has none."""
+    done = [g for g in games if _done(g)]
+    rounds = [str(g.get("r") or "").strip() for g in done]
+    if not done or not all(r.isdigit() for r in rounds):
+        return {}
+    top = max(int(r) for r in rounds)
+    before = [g for g in done if int(str(g["r"]).strip()) != top]
+    if not before:
+        return {}
+    was = {r["id"]: i for i, r in enumerate(table(before, names))}
+    return {r["id"]: was[r["id"]] - i for i, r in enumerate(table(games, names)) if r["id"] in was}
+
+
+def movement_for(games, names, is_cup):
+    """a cup's file has no movement"""
+    return {} if is_cup else movement(games, names)
+
+
+TOURNAMENTS_FILE = Path(__file__).resolve().parents[2] / "assets/shared/tournaments.json"
+
+
+def cup_ids():
+    """the big tournaments' ids (the reviewed list the TV's «البطولات الكبرى» uses): a cup, even in its league phase"""
+    try:
+        return {t["id"] for t in json.loads(TOURNAMENTS_FILE.read_text(encoding="utf-8"))["tournaments"]}
+    except (OSError, ValueError, KeyError, TypeError):
+        return set()
+
+
+def is_cup(lg, c):
+    """a league of the tournaments list, or a file with knockout rounds; a league's first 8 matchdays look like a cup's phase but are not"""
+    return lg in cup_ids() or bool(c and c.get("rounds"))
+
+
+ZONE_KINDS = ("acle", "acl2", "ucl", "uel", "uecl", "po", "down")
+ZONES_FILE = Path(__file__).resolve().parent / "league_zones.json"
+
+
+def check_zones(zones, clubs=None):
+    """the hand-kept zones list: {league: {season: [{from, to, k}]}}; raises ValueError on a range that is wrong, overlaps another, runs past
+    the clubs (when known) or names an unknown kind"""
+    if not isinstance(zones, dict):
+        raise ValueError("zones: not a list by league")
+    for lg, by_season in zones.items():
+        for season, zs in (by_season or {}).items():
+            taken = set()
+            for z in zs:
+                a, b, k = z.get("from"), z.get("to"), z.get("k")
+                if not (isinstance(a, int) and isinstance(b, int) and 1 <= a <= b):
+                    raise ValueError(f"zones {lg} {season}: bad range {z}")
+                if k not in ZONE_KINDS:
+                    raise ValueError(f"zones {lg} {season}: unknown kind {k}")
+                if clubs is not None and b > clubs:
+                    raise ValueError(f"zones {lg} {season}: {z} runs past {clubs} clubs")
+                if taken & set(range(a, b + 1)):
+                    raise ValueError(f"zones {lg} {season}: {z} overlaps")
+                taken |= set(range(a, b + 1))
+    return None
+
+
+def load_zones():
+    z = json.loads(ZONES_FILE.read_text(encoding="utf-8")) if ZONES_FILE.exists() else {}
+    check_zones(z)
+    return z
+
+
 PHASE_MAX = 8   # a cup's league or group phase: TheSportsDB's rounds 1..8 (UCL's and AFC's league phase 8, the old group stages 6)
 
 
@@ -211,7 +280,7 @@ def season_file(store, lg, season, now, stamp, names, ar=""):
     return body
 
 
-def league_file(store, lg, now, stamp, names, ar=""):
+def league_file(store, lg, now, stamp, names, ar="", zones=None):
     season = season_now(store, lg, now)
     if not season:
         return None
@@ -219,9 +288,18 @@ def league_file(store, lg, now, stamp, names, ar=""):
     lo, hi = now - dt.timedelta(days=LAST_DAYS), now + dt.timedelta(days=NEXT_DAYS)
     last = sorted((e for e in games if _done(e) and lo <= (_t(e) or lo - dt.timedelta(1)) <= now), key=lambda e: e["t"], reverse=True)
     nxt = sorted((e for e in games if not _done(e) and not e.get("pp") and now - dt.timedelta(hours=3) <= (_t(e) or lo) <= hi), key=lambda e: e["t"])
-    body = {"v": V, "id": lg, "en": store.name(lg), "ar": ar, "season": season, "updated": stamp,
-            "table": table(games, names), "last": [_game(e) for e in last], "next": [_game(e) for e in nxt]}
+    rows = table(games, names)
     c = cup(games, names)
+    mv = movement_for(games, names, is_cup(lg, c))
+    for r in rows:
+        if r["id"] in mv:
+            r["mv"] = mv[r["id"]]
+    body = {"v": V, "id": lg, "en": store.name(lg), "ar": ar, "season": season, "updated": stamp,
+            "table": rows, "last": [_game(e) for e in last], "next": [_game(e) for e in nxt]}
+    zs = ((load_zones() if zones is None else zones).get(lg) or {}).get(season)
+    if zs:
+        check_zones({lg: {season: zs}}, len(rows))
+        body["zones"] = zs
     if c:
         body["cup"] = c
     body["seasons"] = seasons_of(store, lg)
