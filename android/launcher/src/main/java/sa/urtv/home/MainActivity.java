@@ -4239,6 +4239,8 @@ public class MainActivity extends Activity {
     /** «الساعة: زجاجية» as drawn now: the setting, but never while cards show (in any layout they can cover part of it) */
     static boolean glassClock(String homeClock, boolean cardsShown) { return "glass".equals(homeClock) && !cardsShown; }
 
+    private boolean sceneBlank;   // no scene could be drawn: the wall photos are shown under the scene layer (SceneHome.Backdrop)
+
     private void sceneTick(ConfigSnapshot cfg) {
         boolean on = "scenes".equals(cfg.homeBg);   // 4.4 «الخلفية ← الآفاق» (any layout); the glass clock is «الساعة»'s own choice
         // 4.4 the owner (sweep 2, option 2; sweep 3: every layout): the cards (the couch strip under the clock, or the box beside it, which can reach
@@ -4249,6 +4251,10 @@ public class MainActivity extends Activity {
         if (!on && sceneHome == null && !scenesOn) return;   // the home as it was (the default): nothing of the scenes is made, read, timed or downloaded
         if (on && sceneHome == null) {   // chosen: the layer is made now, over the photos and under the dimming and the scrims
             sceneHome = new SceneHome(this, Ram.tier(this), font("display"));
+            sceneHome.backdrop(new SceneHome.Backdrop() {   // 4.4 beta 4: no scene draws: the wall photos instead of a black home
+                @Override public void blank() { sceneBlank = true; scenesOn = false; wallBack.setVisibility(View.VISIBLE); wallFront.setVisibility(View.VISIBLE); nextWallpaper(); }
+                @Override public void drawn() { sceneBlank = false; scenesOn = true; handler.removeCallbacks(rotateWallpaper); wallGen++; for (ImageView w : new ImageView[] {wallBack, wallFront}) { w.setImageDrawable(null); w.setVisibility(View.INVISIBLE); } }
+            });
             sceneBackdrop.addView(sceneHome, sceneBackdrop.indexOfChild(wallFront) + 1, new FrameLayout.LayoutParams(-1, -1));
         }
         if (on) {
@@ -4269,7 +4275,7 @@ public class MainActivity extends Activity {
             sceneBackdrop.removeView(sceneHome);
             sceneHome = null;
         }
-        if (on != scenesOn) {
+        if (on != scenesOn && !sceneBlank) {   // (blank: the wall photos stand in until a scene draws)
             scenesOn = on;
             if (on) {   // the ordinary photos let go: no rotation, a photo on its way is not shown, the two layers emptied
                 handler.removeCallbacks(rotateWallpaper);
@@ -4277,7 +4283,7 @@ public class MainActivity extends Activity {
                 for (ImageView w : new ImageView[] {wallBack, wallFront}) w.setImageDrawable(null);
             } else nextWallpaper();   // back to the home as it was: its photo again
         }
-        int show = on ? View.INVISIBLE : View.VISIBLE;   // INVISIBLE: the header keeps its size, nothing under it moves
+        int show = on && !sceneBlank ? View.INVISIBLE : View.VISIBLE;   // INVISIBLE: the header keeps its size, nothing under it moves
         boolean bigClock = glass;   // the glass clock (the scene's, or the photo's) takes the header clock's place; with «الساعة: عادية» the header clock stays
         clock.setVisibility(bigClock ? View.INVISIBLE : View.VISIBLE);
         if (bigClock) ampm.setVisibility(View.INVISIBLE);
