@@ -30,4 +30,10 @@ final class StationSources {
 
     /** the source after i, round and round */
     static int next(int i, int n) { return n <= 0 ? 0 : (i + 1) % n; }
+
+    /**
+     * 4.4 beta 4 (a user: the Saudi Quran radio, an HLS stream, cuts out while the Egypt station is fine): a stall (StallWatch) restarts the station on the
+     * next source when it has one (its «alt»), not on the same address that just ran dry; with one source, the same.
+     */
+    static int afterStall(int i, int n) { return n > 1 ? next(i, n) : Math.max(0, i); }
 }

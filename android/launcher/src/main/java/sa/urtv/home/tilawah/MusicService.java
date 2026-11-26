@@ -935,6 +935,12 @@ public class MusicService extends Service implements AudioManager.OnAudioFocusCh
             rebufferStart = 0;
             ticking = false;
             reconnecting = true;   // 4.4: «يعيد الاتصال…» on the screens while it joins again
+            if (radioSources.size() > 1) {   // 4.4 beta 4: the source that ran dry is left for the next one (the «alt»), round and round
+                radioSource = StationSources.afterStall(radioSource, radioSources.size());
+                radioAddress = radioSources.get(radioSource);
+                radioAlt = radioSources.get(StationSources.next(radioSource, radioSources.size()));
+                Log.i(TAG, "stall: source " + (radioSource + 1) + " of " + radioSources.size() + ", " + hostOf(radioAddress));
+            }
             startRadio(radioAddress, 0);
             return true;
         }
