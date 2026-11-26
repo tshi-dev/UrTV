@@ -1,0 +1,11 @@
+panel: none
+panel2: none
+preset: couch
+background: scenes
+appsstyle: icons
+scenepacks: saudi
+scenestay: 20
+adhanlead: 10
+ramtier: auto (in use: mid)
+lite: auto (light now: no)
+slot: matches

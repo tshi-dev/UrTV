@@ -1,0 +1,12 @@
+build 620, 26 Nov. After HOME with scenes/couch: SceneHome log lines: none (empty).
+before: background: scenes
+before: scenepacks: saudi
+before: scenestay: 20
+before: ramtier: auto (in use: mid)
+before: lite: auto (light now: no)
+lite-signals: auto-on-t0-s2-o0
+after: background: scenes
+after: scenepacks: couch
+after: scenestay: 10
+after: ramtier: auto (in use: mid)
+after: lite: auto (light now: no)

@@ -3339,3 +3339,15 @@ ALL PASS is NOT claimed: (4) is NOT done.
 - Notice: «الوضع الخفيف» (lite) was switched on by itself once ("playback slow twice this week") before the setup; `lite: auto (light now: no)` afterwards.
 - Mute: Muted true after the install (verified).
 - Shots show the city name in the weather line (الرس); no Wi-Fi name, IP or account.
+
+## BETA 4 = 620 install + «BETA 4 couch backgrounds», 26 Nov, owner away, TV muted
+- Install: home, screensaver, extras 620 (run 45812285493, 261fc729) over 616, versionCode 620 on all three, Muted true after install: PASS.
+- Used saver.sh/dock.sh from origin/next (my checkout's saver.sh has no scenepacks/home-card).
+- 1 before: tester/beta4/bg-before.txt (background scenes, scenepacks saudi, scenestay 20, lite auto/no).
+- 2-3 scenes + couch pack + scenestay 10, home restart: PASS, the home shows a lake/mountain scene, not black (b4-bg-1, b4-bg-2). FAIL: the scene did NOT change between 15 s shots (same lake both times; the idle screensaver took over at about 45 s).
+- 4 saudi,couch: PASS, a Riyadh night scene on the home (b4-bg-both.png). lite stayed «auto, light now: no» (lite-signals auto-on-t0-s2-o0), so no black wall and lite-off was not needed.
+- 5 screensaver: start-saver.sh said «not started», but the shot b4-saver-bg.png shows it running over a mountain scene: PASS by the picture, the start command is unreliable.
+- home-card none: b4-nocard.png: the strip is gone (PASS) but the clock is still top-right, NOT a centred glass clock: FAIL against the expected couch-tv. Same layout as on 616. home-card restored to stocks.
+- SceneHome log: no lines at all (nothing failed, nothing logged). bg-log.txt has the settings lines.
+- Left: scenes, scenepacks couch, scenestay 10 (was saudi, 20; the owner's old value in bg-before.txt), lite auto.
+- City name boxed out in the pushed shots (the 616 shots re-boxed too).
