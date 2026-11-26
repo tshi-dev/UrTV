@@ -24,4 +24,7 @@ check("a change of width, height or density makes the home again; before it is b
       and "c.screenWidthDp != builtWidthDp || c.screenHeightDp != builtHeightDp || c.densityDpi != builtDensityDpi) recreate();" in cc)
 check("nothing else (the dark look, the keyboard) makes it again", cc.count("recreate()") == 1)
 check("the watchdog counts a focus move as a frame", "addOnGlobalFocusChangeListener((o, n) -> lastDrawAt = SystemClock.uptimeMillis());" in main.split("private void watchKey()")[1][:900])
+check("the date's lift is measured from the clock's row (clockRow's top plus the clock's own), never the clock's own 0: the date stays under the greeting",
+      "int clockTop = (clock.getParent() instanceof View ? ((View) clock.getParent()).getTop() : 0) + clock.getTop();" in main
+      and "-Math.max(0, date.getTop() - clockTop)" in main and "left.addView(clockRow," in main and "clockRow.addView(clock);" in main)
 sys.exit(1 if failed else 0)

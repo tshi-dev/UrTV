@@ -16,10 +16,27 @@ final class StallWatch {
     private int n;
 
     /** A new station (or the person's own pick): nothing is held against it. */
-    void reset() { lastPos = -1; lastMoveAt = -1; n = 0; }
+    void reset() { lastPos = -1; lastMoveAt = -1; n = 0; idleSince = -1; }
 
     /** A new player for the same station (after a quiet restart): the position starts again, the count of restarts stays. */
-    void newPlayer() { lastPos = -1; lastMoveAt = -1; }
+    void newPlayer() { lastPos = -1; lastMoveAt = -1; idleSince = -1; }
+
+    /**
+     * 4.4 beta 4 (the tester, build 629: station 8 stood at «state 0, position 23» for 3 minutes, no error, no restart, and the S-26 stall handling never
+     * fired): a station that is ready, that the person wants, and that is not playing and not loading (the player was ready but the sound was
+     * refused, or it never started) is stuck however still it stays. After IDLE_MS of that, true (the caller starts it again, on the next source).
+     * `waiting` is a pause on purpose (another app has the sound: FocusRule waits for it): never stuck.
+     */
+    static final long IDLE_MS = 20_000;
+    private long idleSince = -1;
+
+    boolean idleTooLong(long now, boolean live, boolean prepared, boolean playing, boolean buffering, boolean waiting) {
+        if (!live || !prepared || playing || buffering || waiting) { idleSince = -1; return false; }
+        if (idleSince < 0) { idleSince = now; return false; }
+        if (now - idleSince < IDLE_MS) return false;
+        idleSince = -1;
+        return true;
+    }
 
     /**
      * now: elapsedRealtime. live: a station is on and the person wants it to play. playing/prepared: the player's state. rebufferSince: when the

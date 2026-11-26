@@ -57,6 +57,7 @@ python3 tests/look_switch_test.py   # 4.5 a look applied whole: one write and si
 
 python3 tests/settings_classic_test.py   # 4.4 «شكل كنبة» switches the settings screen too: every row in both layouts (4.3.2 and the side list), search in both, the switch in both
 python3 tests/settings_tree_test.py   # docs/SETTINGS-TREE.md is what the code says now (.github/tools/settings_tree.py)
+python3 tests/version_tap_styles_test.py   # the owner's pass: the version note is wired to versionTap the same in every settings style and layout
 python3 tests/scene_zoom_test.py   # 4.4 the owner: the clock where it is, the picture lower: more of the digits above the scenery (the visible share on a JVM over the scene's real cut-out)
 python3 tests/photo_masks_gate_test.py   # 4.4 the gate every cut-out passes before it is published: fringe, stairs, floating pieces, the digits' fit (FIT / FRONT-ONLY / REJECT)
 python3 tests/photo_glass_test.py   # 4.4 «الساعة: زجاجية» over our photos: which cut-out, where the digits go (on a JVM), made only while chosen, never «الحرمين»
@@ -224,6 +225,7 @@ python3 tests/player_logic_test.py
 python3 tests/stall_watch_test.py   # 4.3 A2: the live station's stall watchdog and ExoPlayer for HLS
 python3 tests/net_reconnect_test.py   # 4.4 radio: bigger buffer, pre-buffer, join again when the network is back, «يعيد الاتصال…»
 python3 tests/station_sources_test.py   # 4.4 radio: every source of a station in turn (alt, mirrors)
+python3 tests/music_stations_test.py   # 4.4 beta 4: music.sh stations lists the installed app's stations; start-saver.sh waits for a slow dream
 python3 tests/station_status_test.py    # 4.4 radio: a station dead three checks in a row is hidden (stations/status.json)
 python3 tests/radio_week_test.py        # 4.4 radio: the stations' troubles of the last 7 days, kept and reported
 python3 tests/surah_recover_test.py      # 4.4: a surah through ExoPlayer (file buffer, Range resume), on from its place, no loop of prepares

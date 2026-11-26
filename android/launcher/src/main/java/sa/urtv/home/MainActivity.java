@@ -4365,7 +4365,11 @@ public class MainActivity extends Activity {
     /** the lines under the header clock at the clock's own row while the big clock is on (never above it: the greeting and the weather stay clear), else in place */
     private void applyLift() {
         if (clock == null || date == null) return;
-        float dy = bigClockOn ? -Math.max(0, date.getTop() - clock.getTop()) : 0f, dx = 0f;
+        // 4.4 beta 4 (the tester, build 629, «بدون» as the home card: the date drawn over «مساء الخير» and the Wi-Fi icon): the clock is in its own row
+        // (clockRow), the date in the column: the clock's top in the column's own measure is its row's top plus its own, never its own alone (that was 0, so
+        // the date went up to the top of the column, over the greeting)
+        int clockTop = (clock.getParent() instanceof View ? ((View) clock.getParent()).getTop() : 0) + clock.getTop();
+        float dy = bigClockOn ? -Math.max(0, date.getTop() - clockTop) : 0f, dx = 0f;
         // 4.4 beta 4 (the owner: «كنبة» as couch-tv): with the big clock and the cards in their row, the date sits centred just above the digits
         // (couch-tv's date over its clock); the zone and prayer lines follow it. Anything else: the lift as before, no sideways move.
         if (bigClockOn && homeCard != null && homeCard.inRow() && date.getWidth() > 0) {

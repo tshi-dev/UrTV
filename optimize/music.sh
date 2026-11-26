@@ -157,12 +157,23 @@ case "$command" in
 
   reciters|stations)
     [ $# -eq 0 ] || usage
-    "$PY" - "$command" <<'PY'
-import json, pathlib, sys
+    # the list the INSTALLED app plays from (its own assets: `radio N` counts in it), else this folder's copy (a checkout older than the TV's app can
+    # have fewer stations: the tester's had 11 of the app's 13)
+    apk=$(tv "pm path sa.urtv.home" 2> /dev/null | head -n 1 | sed 's/^package://' | tr -d '\r') || apk=""
+    onTv=""
+    if [ -n "$apk" ]; then onTv=$(tv "unzip -p $apk assets/quran/$command.json" 2> /dev/null | tr -d '\r' || true); fi
+    ONTV="$onTv" "$PY" - "$command" <<'PY'
+import json, os, pathlib, sys
 sys.stdout.reconfigure(encoding="utf-8")
 which = sys.argv[1]
 path = pathlib.Path("android/launcher/src/main/assets/quran") / (which + ".json")
-for i, item in enumerate(json.loads(path.read_text(encoding="utf-8"))[which]):
+try:
+    data = json.loads(os.environ.get("ONTV", "")).get(which) or None
+except ValueError:
+    data = None
+if data is None:
+    data = json.loads(path.read_text(encoding="utf-8"))[which]
+for i, item in enumerate(data):
     if which == "reciters":
         print(f'{i}\t{item["id"]}\t{item["name"]}')
     else:
