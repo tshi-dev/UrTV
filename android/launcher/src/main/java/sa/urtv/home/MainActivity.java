@@ -249,16 +249,16 @@ public class MainActivity extends Activity {
     @Override
     protected void onCreate(Bundle b) {
         super.onCreate(b);
-        android.content.res.Configuration built = getResources().getConfiguration();   // the size and density the layout is made for (onConfigurationChanged)
-        builtWidthDp = built.screenWidthDp;
-        builtHeightDp = built.screenHeightDp;
-        builtDensityDpi = built.densityDpi;
         if (CrashLoopStore.safe(this)) {   // 4.3.5 (R7): the home died twice right after starting: the safe page, never a black screen
             safeRedirect = true;
             openSafePage();
             finish();
             return;
         }
+        android.content.res.Configuration built = getResources().getConfiguration();   // the size and density the layout is made for (onConfigurationChanged)
+        builtWidthDp = built.screenWidthDp;
+        builtHeightDp = built.screenHeightDp;
+        builtDensityDpi = built.densityDpi;
         CrashLoopStore.opened(this);   // 4.3.5: the screen must draw its first frame within 20 s, or the next start counts a hang (CrashLoop)
         getWindow().getDecorView().getViewTreeObserver().addOnDrawListener(firstDraw);
         if (DebugFlags.on(this, "keytrace")) KeyTrace.install();
@@ -620,7 +620,7 @@ public class MainActivity extends Activity {
     // draws again and logs the fixed word «frozen-screen recovered».
     static final long FROZEN_MS = 2000;
     private long lastDrawAt, keyAt;
-    private boolean drawWatch;
+    private boolean drawWatch, frozenLogged;   // frozenLogged: the quiet recovery (no cover) was logged once this run
     private final Runnable frozenCheck = () -> { if (lastDrawAt < keyAt) recoverFrozen("no frame after a key"); };
 
     private void watchKey() {
@@ -648,7 +648,10 @@ public class MainActivity extends Activity {
         if (snapOverlay != null) { View v = snapOverlay; snapOverlay = null; v.animate().cancel(); if (v.getParent() instanceof ViewGroup) ((ViewGroup) v.getParent()).removeView(v); any = true; }
         if (homeRoot != null) homeRoot.invalidate();
         if (getWindow() != null) getWindow().getDecorView().invalidate();
-        android.util.Log.w("UrTVHome", "frozen-screen recovered (" + why + (any ? ", a cover dropped" : "") + ")");
+        // 4.4 beta 4 (the tester's TCL, build 620: one line every few seconds with nothing dropped, its frames unseen by the listener): the redraw
+        // runs every time; the line is written when a cover was dropped, and only once a run when nothing was
+        if (any || !frozenLogged) android.util.Log.w("UrTVHome", "frozen-screen recovered (" + why + (any ? ", a cover dropped" : "") + ")");
+        if (!any) frozenLogged = true;
     }
 
     /** 4.3.1 hotfix: the small (480 px) copy of the photo in front: in memory and on disk, drawn in the first frame of a start or a return when no photo is in a view (WallFirstFrame) */
@@ -2088,7 +2091,10 @@ public class MainActivity extends Activity {
 
     private void wireFocus() {
         footballHeader();   // the home card was just made again (or not): «الواجهة» may have changed with it
-        int d = dockCards.size(), g = gridCards.size();
+        boolean onHome = homeGrid();
+        grid.setVisibility(onHome ? View.VISIBLE : View.GONE);
+        if (!onHome) appsLabel.setVisibility(View.GONE);
+        int d = dockCards.size(), g = onHome ? gridCards.size() : 0;
         // the «المهام» card (and the stocks card), when among the home cards, is a stop between the pills and the dock
         List<View> targets = homeCard == null ? Collections.<View>emptyList() : homeCard.targets();
         View card = targets.isEmpty() ? null : targets.get(0);
@@ -3285,9 +3291,17 @@ public class MainActivity extends Activity {
         appsLifted = null;
         wireFocus();   // the grid's own ways again
         View f = focusPkg == null ? null : cardByPkg.get(focusPkg);
-        if (f != null && gridCards.contains(f)) f.requestFocus();
+        if (f != null && gridCards.contains(f) && homeGrid()) f.requestFocus();
         else if (!dockCards.isEmpty()) dockCards.get(0).requestFocus();
     }
+
+    /**
+     * 4.4 beta 4 (couch-tv, build 620: one DOWN on the home landed in the apps): «أيقونات» is one row ending with «كل التطبيقات», so the home has
+     * no apps grid under it; DOWN from the row goes to the cards row or stays. «تعديل التطبيقات» shows the grid while it is on.
+     */
+    static boolean homeGrid(String appsLook, boolean appsEditOn) { return appsEditOn || !FavBar.ICONS.equals(appsLook); }
+
+    private boolean homeGrid() { return homeGrid(appsLook, appsEdit != null); }
 
     /** One key while the mode is on. True: it is ours (FavEdit.owns), as in «تعديل المفضلة». */
     private boolean appsEditKey(KeyEvent e) {

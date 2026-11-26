@@ -268,6 +268,7 @@ python3 tests/apps_align_test.py   # 4.4 beta 2 «محاذاة التطبيقا�
 python3 tests/tile_art_test.py   # 4.4 beta 2 (the owner's test of 525): an app's tile (banner, else its icon on a neutral tile; tiny, wide, white, transparent) and the grid's whole-row scroll
 python3 tests/couch_faces_test.py   # 4.4 beta 4: couch-tv's app faces for «أيقونات» (one table, MIT notice, the marks listed)
 python3 tests/couch_copy_test.py   # 4.4 beta 4: «كنبة» as couch-tv: the bar's «الإعدادات» and «كل التطبيقات», the date over the big clock
+python3 tests/icons_no_home_grid_test.py   # 4.4 beta 4: «أيقونات» has no apps grid on the home; DOWN from the row never lands in the apps
 python3 tests/card_fit_test.py   # 4.4 the owner: a home card that does not suit the look says so, and is swapped within its kind when the look changes
 python3 tests/glow_look_test.py
 python3 tests/unsplash_header_test.py
