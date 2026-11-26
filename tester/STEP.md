@@ -1,3 +1,10 @@
+▶▶ WHEN IDLE (after «BETA 4 couch backgrounds»), radio and channels, build 616. TV stays muted (silent playback is fine: judge by state and position, never unmute). adb only, a screenshot after every key, no blind OK.
+1. Quran radio, all 13 stations (UrTV «تلاوة وأذان» → radio). Open each in turn and let it play 3 minutes. Every 30 s, log `dumpsys media_session` (state and position) and `logcat -d -t 200 | grep -i -E "exo|media|hls|urtv"`. A station passes when the state stays PLAYING and the position keeps moving for 3 minutes. Write any stall, rebuffer or error and its time.
+2. «إذاعة القرآن الكريم - السعودية» (the station users report cutting out): let it play 20 minutes, logging every 30 s as above. Count the cuts (state not PLAYING, or the position not moving for more than 5 s). Then do the same 10 minutes on «مصر» to compare.
+3. Live channels: every channel list the home and the Player offer («شاهد المباراة» channels and any live TV list). Open each channel for 30 s. Pass means the video plays, judged by a screenshot plus media_session. Write the ones that fail and their error text.
+4. One screenshot of the radio page while it plays (rad-1.png), one of a failing channel if any (chan-fail-N.png). Black box over the city name before pushing.
+5. Report under «RADIO AND CHANNELS, 616» in REPORT.md as a table: name, PASS/FAIL, cuts, note. Push the shots and the logs (tester/beta4/radio/, no IPs or account names). Leave the TV muted, on the home.
+
 ▶▶ BETA 4 = build 616, couch backgrounds (26 Nov). Owner away, TV muted, adb only, a screenshot after every key, no blind OK.
 1. Before: `optimize/saver.sh show` lines for background, scenepacks, scenestay, lite; push them as tester/beta4/bg-before.txt (no coordinates).
 2. Set: `optimize/saver.sh background scenes`, `optimize/saver.sh scenepacks couch`, `optimize/saver.sh scenestay 10`. Restart the home (HOME key), wait 20 s.
