@@ -2,6 +2,14 @@
 - After each Home in that round: `logcat -d | grep -i scene` and the `optimize/saver.sh show` lines for background, lite and ramtier. Save them to tester/beta4/bg-log.txt with no coordinates or IPs.
 - Then `optimize/saver.sh home-card none`, Home, wait 20 s, take b4-nocard.png (expect the glass clock centred and no strip), then `logcat -d | grep -i scene` again. Afterwards `optimize/saver.sh home-card stocks` to put it back.
 
+▶▶ UI ROUND, build 616. Do it after «BETA 4 couch backgrounds» and before the radio round. adb only, `adb exec-out screencap -p > NN.png` after every key, no blind OK. If the focus is not where the step expects, stop that step and write what you see.
+A) The «تحديث تلفزيوني» overlap: HOME, then DPAD_UP until the top buttons are focused (a shot each time). Then DPAD_LEFT or RIGHT to the update entry (a shot each time). Then one shot after 3 s with nothing pressed.
+B) Focus on the end tiles: HOME, DPAD_DOWN to the apps row (shot), then DPAD_RIGHT or LEFT along the row (watch the shot) to «كل التطبيقات», then «الإعدادات» (a shot each), then one step back (shot).
+C) 720p: `adb shell wm size 1280x720`, then HOME, wait 5 s, shot. Repeat B, then `adb shell wm size reset` (always, even if a step failed).
+D) Large font: `adb shell settings put system font_scale 1.3`, then HOME, wait 5 s, shot. Repeat B, then `adb shell settings put system font_scale 1.0` (always).
+E) Black check: HOME, shots at 2 s and 10 s, then save `adb logcat -d | grep -iE "scene|frozen"` as text.
+Push to tester/beta4/ui/ with the city name boxed out. In REPORT.md, write PASS/FAIL per step under «UI ROUND, 616».
+
 ▶▶ WHEN IDLE (after «BETA 4 couch backgrounds»), radio and channels, build 616. TV stays muted (silent playback is fine: judge by state and position, never unmute). adb only, a screenshot after every key, no blind OK.
 1. Quran radio, all 13 stations (UrTV «تلاوة وأذان» → radio). Open each in turn and let it play 3 minutes. Every 30 s, log `dumpsys media_session` (state and position) and `logcat -d -t 200 | grep -i -E "exo|media|hls|urtv"`. A station passes when the state stays PLAYING and the position keeps moving for 3 minutes. Write any stall, rebuffer or error and its time.
 2. «إذاعة القرآن الكريم - السعودية» (the station users report cutting out): let it play 20 minutes, logging every 30 s as above. Count the cuts (state not PLAYING, or the position not moving for more than 5 s). Then do the same 10 minutes on «مصر» to compare.
