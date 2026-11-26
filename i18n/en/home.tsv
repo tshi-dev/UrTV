@@ -184,7 +184,7 @@ HDMI ARC (مضخم أو ساوند بار)	HDMI ARC (amplifier or soundbar)
 إزالة	Remove
 أُضيف %s	Added %s
 أسماء المصادر	Input names
-اختيار على مصدر لتغيير اسمه في قائمة «المصادر» (مثل PS5). اترك الاسم فارغاً لرجوع اسم التلفزيون.	Press OK on an input to rename it in the “Inputs” list (like PS5). Leave the name empty to bring back the TV’s name.
+اختيار على مصدر لتغيير اسمه في قائمة «المصادر» (مثل PS5). اترك الاسم فارغاً لرجوع اسم التلفزيون. ومن نفس المربع تضيفه للمفضلة أو تشيله.	Press OK on an input to rename it in the “Inputs” list (like PS5). Leave the name empty to bring back the TV’s name. From the same box you can add it to the favourites or take it off.
 التلفزيون ما أبلغ عن مصادر (HDMI أو غيرها).	The TV reported no inputs (HDMI or others).
 اسم المصدر: %s	Input name: %s
 حفظ	Save
@@ -959,3 +959,8 @@ mp3 أو m4a أو ogg أو wav	mp3, m4a, ogg or wav
 غير محفوظ على التلفزيون بعد، نحمّله أول ما يتوفر الإنترنت	Not saved on the TV yet, downloaded as soon as there is internet
 آخر أذان ما اشتغل لأنه ما كان محفوظًا على التلفزيون وما كان فيه إنترنت	The last adhan did not play because it was not saved on the TV and there was no internet
 ما فتح؟ افتح متصفح الجوال واكتب العنوان بنفسك	Didn't open? Open the phone's browser and type the address yourself
+التلفزيون ما عاد يعرض هذا المصدر	The TV no longer lists this input
+شيله من المفضلة	Take off the favourites
+أضفه للمفضلة	Add to the favourites
+انشال من المفضلة	Taken off the favourites
+انضاف للمفضلة	Added to the favourites
