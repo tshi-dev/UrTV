@@ -1,3 +1,7 @@
+▶▶ ADD TO «BETA 4 couch backgrounds» (do it in that round, before the radio round):
+- After each Home in that round: `logcat -d | grep -i scene` and the `optimize/saver.sh show` lines for background, lite and ramtier. Save them to tester/beta4/bg-log.txt with no coordinates or IPs.
+- Then `optimize/saver.sh home-card none`, Home, wait 20 s, take b4-nocard.png (expect the glass clock centred and no strip), then `logcat -d | grep -i scene` again. Afterwards `optimize/saver.sh home-card stocks` to put it back.
+
 ▶▶ WHEN IDLE (after «BETA 4 couch backgrounds»), radio and channels, build 616. TV stays muted (silent playback is fine: judge by state and position, never unmute). adb only, a screenshot after every key, no blind OK.
 1. Quran radio, all 13 stations (UrTV «تلاوة وأذان» → radio). Open each in turn and let it play 3 minutes. Every 30 s, log `dumpsys media_session` (state and position) and `logcat -d -t 200 | grep -i -E "exo|media|hls|urtv"`. A station passes when the state stays PLAYING and the position keeps moving for 3 minutes. Write any stall, rebuffer or error and its time.
 2. «إذاعة القرآن الكريم - السعودية» (the station users report cutting out): let it play 20 minutes, logging every 30 s as above. Count the cuts (state not PLAYING, or the position not moving for more than 5 s). Then do the same 10 minutes on «مصر» to compare.
