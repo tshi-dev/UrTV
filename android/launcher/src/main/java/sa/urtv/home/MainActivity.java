@@ -249,6 +249,10 @@ public class MainActivity extends Activity {
     @Override
     protected void onCreate(Bundle b) {
         super.onCreate(b);
+        android.content.res.Configuration built = getResources().getConfiguration();   // the size and density the layout is made for (onConfigurationChanged)
+        builtWidthDp = built.screenWidthDp;
+        builtHeightDp = built.screenHeightDp;
+        builtDensityDpi = built.densityDpi;
         if (CrashLoopStore.safe(this)) {   // 4.3.5 (R7): the home died twice right after starting: the safe page, never a black screen
             safeRedirect = true;
             openSafePage();
@@ -623,6 +627,7 @@ public class MainActivity extends Activity {
         if (!drawWatch && getWindow() != null) {
             drawWatch = true;
             getWindow().getDecorView().getViewTreeObserver().addOnDrawListener(() -> lastDrawAt = SystemClock.uptimeMillis());
+            getWindow().getDecorView().getViewTreeObserver().addOnGlobalFocusChangeListener((o, n) -> lastDrawAt = SystemClock.uptimeMillis());   // 4.4 beta 4: a focus move is drawn by the render thread (a zoom needs no draw pass): not a frozen screen
         }
         long now = SystemClock.uptimeMillis();
         keyAt = now;
@@ -5341,6 +5346,21 @@ public class MainActivity extends Activity {
     static void keyFromService(KeyEvent e) {
         MainActivity a = front.get();
         if (a != null && a.resumed && !a.isDestroyed()) a.dispatchKeyEvent(e);
+    }
+
+    /**
+     * 4.4 beta 4 (the tester: `wm size 1280x720` at runtime left the home with only the clock and the weather; the app row and the card were laid out in
+     * the old size, off the new screen): the home declares configChanges for the screen's size and density, so Android does not make it again; the
+     * layout is built from the screen's pixels, so a change of size or of density makes the home again (what a restart does). Nothing else (the dark
+     * look, the keyboard) does.
+     */
+    private int builtWidthDp, builtHeightDp, builtDensityDpi;
+
+    @Override
+    public void onConfigurationChanged(android.content.res.Configuration c) {
+        super.onConfigurationChanged(c);
+        if (builtWidthDp == 0) return;
+        if (c.screenWidthDp != builtWidthDp || c.screenHeightDp != builtHeightDp || c.densityDpi != builtDensityDpi) recreate();
     }
 
     @Override
