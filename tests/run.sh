@@ -253,6 +253,7 @@ python3 tests/control_center_token_test.py   # 4.4 beta 3, GitHub #67: «مرك�
 python3 tests/back_twice_test.py   # 4.4 beta 3: «رجوع مرتين يفتح شاشة التوقف» (on by default, never a single Back, never in kids mode); the cards keep their last frame on the way back
 python3 tests/frozen_screen_test.py   # 4.4 beta 3: every cover over the home ends by a deadline; the key watchdog «frozen-screen recovered»
 python3 tests/config_change_test.py   # 4.4 beta 4: a change of the screen's size or density makes the home again; a focus move is a frame
+python3 tests/glass_clock_rule_test.py   # 4.4 beta 4: in «كنبة» the big glass clock stays centred with a card; the strip fits at 720p
 python3 tests/tasks_card_test.py
 python3 tests/reminders_test.py   # «المهام» with a time: the alarm, the cards, the keys, saver.sh, the phone's date and time (the page's card: reminder_page.test.mjs)
 python3 tests/now_playing_test.py
