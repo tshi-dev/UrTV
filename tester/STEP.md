@@ -1,3 +1,12 @@
+▶▶ BETA 4 = build 629 (next 5688e2c3). Install it over 624, keeping data, and check versionCode and mute. It fixes the clock with «بدون», 720p after a size change, DOWN going into an old grid in «أيقونات», and the noisy frozen-screen log. Re-check these on 629 (adb only, a screenshot after every key, no blind OK):
+1. `optimize/saver.sh home-card none`, then HOME, wait 10 s, shot: the big glass clock centred, the date above it, no strip. Then `home-card stocks`, HOME, shot: the small clock top-right and the strip (by design).
+2. `logcat -d | grep SceneHome` after HOME: write «scene 1 of N». If N is 1, the scene packs have not downloaded yet; write that.
+3. UI round B again: HOME, take a shot with focus on the first app, DPAD_DOWN, shot. Nothing may open. Then DPAD_LEFT along the row to «كل التطبيقات» and «الإعدادات» (a shot each). Watch for no «frozen-screen» spam in the logcat.
+4. UI round C again: `wm size 1280x720`, HOME, wait 3 s, shot: apps row and card present. Then `wm size reset` (always).
+5. While the screensaver runs: `dumpsys dreams | grep -i dream` and `dumpsys activity activities | grep -m1 topResumed`, saved as text (to fix start-saver.sh).
+6. Then do the radio and channels round on 629.
+Report under «BETA 4 = 629», with the city name boxed out.
+
 ▶▶ BETA 4 = build 624 (next be11b0d2). This replaces 620: install 624 instead (or over 620 if it is already on), keeping data. Do every round queued below on 624. One more check:
 - S-28 «بطاقة المباريات لليوم فقط» (#65): in the screensaver settings, find the row (screenshot after each key) and turn it on. The matches card on the home then shows only today's games. Turn it off again afterwards (off is the default).
 Report under «BETA 4 = 624».
