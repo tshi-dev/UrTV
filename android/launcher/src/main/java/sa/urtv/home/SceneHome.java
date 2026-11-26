@@ -6,6 +6,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Typeface;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -100,6 +101,16 @@ final class SceneHome extends FrameLayout {
 
     boolean on() { return on; }
 
+    /**
+     * 4.4 beta 4 (a TV showed a black home with «الآفاق» on): when no scene can be drawn (every one of them failed to decode in a row, or the only one did),
+     * the home is told (blank) to show its wall photos again; the first scene that draws tells it (drawn) to hand the backdrop back. Both on the UI thread.
+     */
+    interface Backdrop { void blank(); void drawn(); }
+    private Backdrop backdrop;
+    private int failRun;
+    private boolean blankSaid;
+    void backdrop(Backdrop b) { backdrop = b; }
+
     /** The scene home turned off: the timer, the pictures and the decoding thread go (MainActivity then drops the whole layer). */
     void shutdown() {
         on = false;
@@ -170,7 +181,16 @@ final class SceneHome extends FrameLayout {
             final float zoom = 1f;   // the scene's frame is its zoom (the masks gate chose it); the clock never moves
             ui.post(() -> {
                 if (g != gen || !on) return;
-                if (photo == null || (withClock && glass == null)) { index = at; schedule(); return; }   // a missing file: the next one, never a blank home
+                if (photo == null || (withClock && glass == null)) {   // a missing file: the next one, never a blank home
+                    failRun++;
+                    Log.w("SceneHome", "scene " + sc.pack + "/" + sc.id + " could not be decoded (photo " + (photo != null) + ", glass " + (glass != null) + ", tier " + tier + "): " + failRun + " in a row");
+                    if (failRun >= Math.max(1, scenes.size()) && !blankSaid && backdrop != null) { blankSaid = true; backdrop.blank(); }   // none of them draws: the wall photos
+                    index = at;
+                    schedule();
+                    return;
+                }
+                failRun = 0;
+                if (blankSaid && backdrop != null) { blankSaid = false; backdrop.drawn(); }
                 back.photoBm = photo; back.glassBm = glass; back.maskBm = mask;
                 back.photo.setImageBitmap(photo);
                 back.clock.setScene(glass, withClock ? ScenePlan.clockBox(sc, w, h, cardsShown, rtl) : null, sc.dark);
