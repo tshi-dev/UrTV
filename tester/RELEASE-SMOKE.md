@@ -129,3 +129,4 @@ S-02 FAIL the favourites showed five apps after Home (R-030)
 ...
 ```
 - **S-23 Match page channels.** On a match of a league with a verified broadcaster, «شاهد المباراة» opens UrTV Player with the broadcaster's name (Arabic and English) in the channel search, not the club's. Rows: R-314
+- **S-25 An input in the favourites.** In «أسماء المصادر» choose an input, press «أضفه للمفضلة»: its tile (the input's name) is in the favourites row on the home; OK switches to that input (a kids lock on «المصادر» stops it); a long OK opens no app menu; «شيله من المفضلة» takes it off. Rows: R-317
