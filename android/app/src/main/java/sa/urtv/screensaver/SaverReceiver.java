@@ -24,7 +24,7 @@ import java.util.Locale;
  *       [--es sunrise on|off] [--es prayerbar on|off] [--es wxmore on|off] [--es months default|levant] [--es verse day|3|10] [--es versekind both|verse|hadith] [--es seconds on|off] [--es backexit press|hold|three] [--es occasion on|off] [--es nightdim on|off] [--es taskspill on|off] [--es backsaver on|off] [--es genres Drama,Comedy] [--es langs English]
  *       [--es photos 30] [--es idle 10] [--es digits hindi|latin] [--es hijrioffset -2..2] [--es clock24 on|off] [--es ramtier low|mid|normal|auto] [--es lite auto|on|off] [--es lang ar|en]
  *       [--es design info|clean|big|frame|dayline] [--es bar none|prayers|slot|weather] [--es barat bottom|clock] [--es wx auto|usual|clock|corner|off]
- *       [--es cardstyle current|dark1|glass1|dark3|glass3|boxes] [--es national auto|off] [--es scenepacks saudi,couch] [--es scenestay 10|20|60|300] [--es scenetime on|off] [--es sceneweather on|off] [--es background photos|scenes] [--es clock plain|glass] [--es appsstyle frame|zoom] [--es couch on|off]
+ *       [--es cardstyle current|dark1|glass1|dark3|glass3|boxes] [--es formstyle dots|boxes|boxes-letters] [--es national auto|off] [--es scenepacks saudi,couch] [--es scenestay 10|20|60|300] [--es scenetime on|off] [--es sceneweather on|off] [--es background photos|scenes] [--es clock plain|glass] [--es appsstyle frame|zoom] [--es couch on|off]
  *       [--es markets tasi,gold,btc] [--es mkstyle arrows|prices] [--es mkbar on|off] [--es clocksize large|medium|small] [--es stocks 2222,1120,AAPL] [--es stkchg pct|amount]
  *       [--es leagues 'Saudi-Arabian Pro League,NBA']
  *       [--es prayermethod gulf|auto]   («طريقة الحساب»: auto = the country's own, gulf = the Gulf method for any place; an old «jafari» is taken as auto, 4.3 A4)
@@ -69,6 +69,7 @@ import java.util.Locale;
  * "clear"; cdname = its name (up to 40 characters).
  * national = auto (as always from now: the quiet green look on National Day, 21-25 September, and Founding Day, 20-24 February) or off.
  * cardstyle = the look of the card beside the clock (Prefs.CARD_STYLES; current is the plain card).
+ * formstyle = «شكل آخر المباريات», a club's last five in the league's table (Prefs.FORM_STYLES; dots is the default).
  * design = the screensaver's design (Prefs.SAVER_DESIGNS; info is the page as it always was); bar = a centred bar (none, prayers, slot: the left slot's
  * item, weather), barat = where it goes (bottom, clock: under the clock); wx = the weather's place (auto: as the design has it).
  * panel2 = «بطاقة ثانية», a second card beside the clock while it is small (SecondCard): one of the screensaver's cards but the
@@ -410,6 +411,9 @@ public class SaverReceiver extends BroadcastReceiver {
         String cardStyle = i.getStringExtra("cardstyle");
         if (cardStyle != null && !isChoice(Prefs.CARD_STYLES, cardStyle))
             return "error: cardstyle is one of " + choices(Prefs.CARD_STYLES);
+        String formStyle = i.getStringExtra("formstyle");
+        if (formStyle != null && !isChoice(Prefs.FORM_STYLES, formStyle))
+            return "error: formstyle is one of " + choices(Prefs.FORM_STYLES);
         String design = i.getStringExtra("design"), bar = i.getStringExtra("bar"), barAt = i.getStringExtra("barat"), wxAt = i.getStringExtra("wx");
         if (design != null && !isChoice(Prefs.SAVER_DESIGNS, design)) return "error: design is one of " + choices(Prefs.SAVER_DESIGNS);
         if (bar != null && !isChoice(Prefs.SAVER_BARS, bar)) return "error: bar is one of " + choices(Prefs.SAVER_BARS);
@@ -583,6 +587,7 @@ public class SaverReceiver extends BroadcastReceiver {
         if (lang != null) p.setLang(lang);
         if (national != null) p.setNational(national);
         if (cardStyle != null) p.setCardStyle(cardStyle);
+        if (formStyle != null) p.setFormStyle(formStyle);
         if (design != null) p.setDesign(design);
         if (bar != null) p.setBar(bar);
         if (barAt != null) p.setBarAt(barAt);
@@ -772,7 +777,7 @@ public class SaverReceiver extends BroadcastReceiver {
             + "\nlite: " + p.lite() + " (light now: " + (Prefs.lowRam(c) ? "yes" : "no") + ")"
             + "\nlang: " + p.lang()
             + "\nnational: " + p.national()
-            + "\ncardstyle: " + p.cardStyle()
+            + "\ncardstyle: " + p.cardStyle() + "\nformstyle: " + p.formStyle()
             + "\ndesign: " + p.design() + "\nbar: " + p.bar() + "\nbarat: " + p.barAt() + "\nwx: " + p.wxAt()
             + "\nmarkets: " + (p.marketsOn() ? "" : "off ") + Prefs.join(p.markets(), ",") + "\nclocksize: " + p.clockSize() + "\nmkstyle: " + p.mkStyle()
             + "\nstocks: " + Prefs.join(p.stocks(), ",") + "\nstkchg: " + p.stkChg()

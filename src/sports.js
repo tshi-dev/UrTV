@@ -393,7 +393,10 @@ function honPins(v, list, chosen){
 }
 function honTable(v, id){
   const f = archWant('sports/' + id + '/' + v.season + '.json'), ch = f && f.champ, rows = [];
-  ((f && !f.cup && Array.isArray(f.table) && f.table) || []).filter(x => x && /^\d+$/.test(String(x.id)) && x.p > 0).forEach((x, i) =>
+  const own = ((f && !f.cup && Array.isArray(f.table) && f.table) || []).filter(x => x && /^\d+$/.test(String(x.id)) && x.p > 0);
+  if(own.length && typeof mptGroup === 'function')   // 4.4 beta 5 the full table's rows (no movement, no zones, no live toggle), «البطل» after the champion's name
+    return [mptGroup({id, rows: own, past: 1, champ: ch && ch.id, champW: HW.champMark, name: fw(HW.tableOf, honSeasonName(v.season))})];
+  own.forEach((x, i) =>
     rows.push(mpItem(ar(i + 1) + '. ' + clubNm(x.ar, x.n, String(x.id)), (ch && String(ch.id) === String(x.id) ? HW.champMark + '، ' : '')
       + fw(FB_W.pts, ar(+x.pts || 0)) + '، ' + fw(FB_W.played, ar(+x.p || 0)), () => mpGo({k: 'club', id: String(x.id)}))));
   if(!rows.length && ch) rows.push(honChampRow(v, ch));   // a cup's season: its champion

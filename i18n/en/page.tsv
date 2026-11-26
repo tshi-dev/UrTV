@@ -619,6 +619,15 @@
 كل المواجهات (%s)	All meetings (%s)
 الأبطال	Champions
 الهدّافون	Top scorers
+النادي|لعب|فاز|تعادل|خسر|له|عليه|الفارق|نقاط|آخر خمس مباريات	Club|P|W|D|L|GF|GA|GD|Pts|Last five
+فوز|تعادل|خسارة	win|draw|loss
+آخر خمس مباريات: %s	Last five games: %s
+مع المباريات الجارية	With the live games
+دوري أبطال آسيا %s	AFC Champions League %s
+الدوري الأوروبي	Europa League
+دوري المؤتمر الأوروبي	Conference League
+الملحق	Play-off
+الهبوط	Relegation
 الحالي	Current
 جدول الترتيب النهائي %s	Final table %s
 نتائج %s	Results %s

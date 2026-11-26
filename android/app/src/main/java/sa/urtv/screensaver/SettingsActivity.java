@@ -387,6 +387,9 @@ public class SettingsActivity extends Activity {
 
         row("الدوريات كاملة", leaguesLabel(), R.drawable.ic_trophy,
             new Runnable() { public void run() { startActivity(new Intent(SettingsActivity.this, LeaguesActivity.class)); } });   // 4.3.1 «اختر دورياتك»: one screen (the older dialogs below stay for saver.sh's sake)
+        // 4.4 beta 5 «شكل آخر المباريات»: a club's last five in the league's table (the page of «المباريات»): dots, boxes, boxes with ف ت خ
+        row("شكل آخر المباريات", Prefs.formStyleLabel(prefs.formStyle()), R.drawable.ic_eye,
+            new Runnable() { public void run() { pickChoice("شكل آخر المباريات", Prefs.FORM_STYLES, prefs.formStyle(), v -> prefs.setFormStyle(v)); } });
 
         row("رياضات أخرى", labels(Prefs.EVENTS, prefs.list("events"), "بدون"), R.drawable.ic_trophy,
             new Runnable() { public void run() { pickMany("events", "رياضات أخرى", Prefs.EVENTS, "بدون اختيار = بدون"); } });

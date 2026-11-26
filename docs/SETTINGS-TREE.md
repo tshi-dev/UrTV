@@ -142,6 +142,8 @@ the phone page's key, «مركز التحكم» the control centre's row that op
     الخيارات: معلومات / نظيفة / ساعة كبيرة / لوحة / خط اليوم
     الأصل: معلومات
     مثال للوكيل: optimize/saver.sh design <info, clean, big, frame, dayline>  (`info` = «معلومات», the screensaver as it always was, the default)
+——— رجوع مرتين يفتح شاشة التوقف [شاشة التوقف]
+    لا أمر موثّق بعد
 ——— الشريط في الوسط [شاشة التوقف]
     الخيارات: بدون / الصلوات / الخانة اليسرى / الطقس
     الأصل: بدون
@@ -310,9 +312,6 @@ the phone page's key, «مركز التحكم» the control centre's row that op
      القيم المقبولة: on|off
 —— الرجوع يفتح شاشة التوقف [الرئيسية]
    مثال للوكيل: optimize/dock.sh backsaver on  (`off` = the default: Back does nothing at the top of the home, as always; no argument says `back-saver: on|off`)
-—— رجوع مرتين يفتح شاشة التوقف [شاشة التوقف]
-   مثال للوكيل: optimize/saver.sh backtwice on  (`off` = the default; `on`: two Backs within a second on the home start the screensaver; a single Back does what it always did; never in kids mode)
-     القيم المقبولة: on|off
 —— زر الرئيسية يفتح تلفزيونك مباشرة [الرئيسية]
    مثال للوكيل: optimize/dock.sh home-key on\|off\|status
 —— زر يوتيوب في الريموت [الرئيسية]
@@ -411,6 +410,10 @@ the phone page's key, «مركز التحكم» the control centre's row that op
       القيم المقبولة: 'دوري روشن السعودي' ('' = none; optimize/saver.sh show lists the ones set)
     مثال للوكيل: optimize/saver.sh leagues 'Saudi-Arabian Pro League'
       القيم المقبولة: 'دوري روشن السعودي' ('' = none; optimize/saver.sh show lists the ones set)
+——— شكل آخر المباريات [الرئيسية وشاشة التوقف]
+    الخيارات: نقاط / مربعات / مربعات بحروف
+    الأصل: نقاط
+    مثال للوكيل: optimize/saver.sh formstyle <dots, boxes, boxes-letters>
 ——— رياضات أخرى [الرئيسية وشاشة التوقف]
     مثال للوكيل: optimize/saver.sh events f1,ufc,boxing  (`""` = none)
       القيم المقبولة: f1,ufc,boxing ('' = none)
@@ -659,6 +662,8 @@ the phone page's key, «مركز التحكم» the control centre's row that op
      الخيارات: معلومات / نظيفة / ساعة كبيرة / لوحة / خط اليوم
      الأصل: معلومات
      مثال للوكيل: optimize/saver.sh design <info, clean, big, frame, dayline>  (`info` = «معلومات», the screensaver as it always was, the default)
+———— رجوع مرتين يفتح شاشة التوقف [شاشة التوقف]
+     لا أمر موثّق بعد
 ———— الشريط في الوسط [شاشة التوقف]
      الخيارات: بدون / الصلوات / الخانة اليسرى / الطقس
      الأصل: بدون
@@ -775,9 +780,6 @@ the phone page's key, «مركز التحكم» the control centre's row that op
        القيم المقبولة: on|off
 ———— الرجوع يفتح شاشة التوقف [الرئيسية]
      مثال للوكيل: optimize/dock.sh backsaver on  (`off` = the default: Back does nothing at the top of the home, as always; no argument says `back-saver: on|off`)
-———— رجوع مرتين يفتح شاشة التوقف [شاشة التوقف]
-     مثال للوكيل: optimize/saver.sh backtwice on  (`off` = the default; `on`: two Backs within a second on the home start the screensaver; a single Back does what it always did; never in kids mode)
-       القيم المقبولة: on|off
 ———— زر الرئيسية يفتح تلفزيونك مباشرة [الرئيسية]
      مثال للوكيل: optimize/dock.sh home-key on\|off\|status
 ———— زر يوتيوب في الريموت [الرئيسية]
@@ -987,6 +989,10 @@ the phone page's key, «مركز التحكم» the control centre's row that op
        القيم المقبولة: 'دوري روشن السعودي' ('' = none; optimize/saver.sh show lists the ones set)
      مثال للوكيل: optimize/saver.sh leagues 'Saudi-Arabian Pro League'
        القيم المقبولة: 'دوري روشن السعودي' ('' = none; optimize/saver.sh show lists the ones set)
+———— شكل آخر المباريات [الرئيسية وشاشة التوقف]
+     الخيارات: نقاط / مربعات / مربعات بحروف
+     الأصل: نقاط
+     مثال للوكيل: optimize/saver.sh formstyle <dots, boxes, boxes-letters>
 ———— رياضات أخرى [الرئيسية وشاشة التوقف]
      مثال للوكيل: optimize/saver.sh events f1,ufc,boxing  (`""` = none)
        القيم المقبولة: f1,ufc,boxing ('' = none)

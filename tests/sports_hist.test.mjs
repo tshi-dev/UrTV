@@ -50,7 +50,7 @@ async function open(hash, files) {
   await p.waitForTimeout(1200);
   return { p, ctx, errors, asked };
 }
-const rows = p => p.evaluate(() => [...document.querySelectorAll('#mp li.mpg')].map(li => li.innerText.replace(/\s+/g, ' ').trim()));
+const rows = p => p.evaluate(() => [...document.querySelectorAll('#mp li.mpg, #mp ul.mpt li.tr')].map(li => li.innerText.replace(/\s+/g, ' ').trim()));   // 4.4 beta 5: a table's rows are the full table's
 const groupsText = p => p.evaluate(() => document.getElementById('mp').innerText.replace(/\s+/g, ' '));
 
 {   // (a) the archive's table first: its order, the Arabic names, points and games played; TheSportsDB is not asked
@@ -58,8 +58,8 @@ const groupsText = p => p.evaluate(() => document.getElementById('mp').innerText
   await p.evaluate(() => mpGo({ k: 'league', id: '4668' }));
   await p.waitForTimeout(800);
   const r = await rows(p);
-  check('(a) the league table from the archive\'s own file: in order, Arabic names, points and games played', !errors.length && /^١\. الهلال/.test(r[0] || '') && /٢٦ نقطة، لعب ١٠/.test(r[0] || '')
-    && /^٢\. النصر/.test(r[1] || '') && r.length === 3, JSON.stringify(r) + errors.join('|'));
+  check('(a) the league table from the archive\'s own file: in order, Arabic names, points and games played', !errors.length && /^١ الهلال ١٠ .* ٢٦$/.test(r[0] || '')
+    && /^٢ النصر /.test(r[1] || '') && r.length === 3, JSON.stringify(r) + errors.join('|'));
   check('(a) …and TheSportsDB\'s table is not asked then', !asked.some(u => u.includes('lookuptable')), asked.filter(u => u.includes('lookup')).join());
   const opened = await p.evaluate(() => { MP.zone = 'rows'; MP.r = 0; const x = MP.rows && MP.rows[0]; if (x && x.act) x.act(); return MP.view && MP.view.k + ':' + MP.view.id; });
   check('(a) OK on a row opens that club\'s page', opened === 'club:136013', opened);

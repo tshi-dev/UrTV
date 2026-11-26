@@ -30,6 +30,7 @@ CHOICES = {
     "الأفق يتبع الوقت": (None, None, "sceneByTime"),
     "الأفق يتبع الطقس": (None, None, "sceneByWeather"),
     "شكل البطاقة": ("CARD_STYLES", None, "cardStyle"),
+    "شكل آخر المباريات": ("FORM_STYLES", None, "formStyle"),
     "حجم الساعة": ("CLOCK_SIZES", None, "clockSize"),
     "تصميم شاشة التوقف": ("SAVER_DESIGNS", None, "design"),
     "الشريط في الوسط": ("SAVER_BARS", None, "bar"),
