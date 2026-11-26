@@ -1,3 +1,7 @@
+▶▶ BETA 4 = build 624 (next be11b0d2). This replaces 620: install 624 instead (or over 620 if it is already on), keeping data. Do every round queued below on 624. One more check:
+- S-28 «بطاقة المباريات لليوم فقط» (#65): in the screensaver settings, find the row (screenshot after each key) and turn it on. The matches card on the home then shows only today's games. Turn it off again afterwards (off is the default).
+Report under «BETA 4 = 624».
+
 ▶▶ BETA 4 = build 620 (next 261fc729). Install it FIRST: home, screensaver and extras from apk-next 620 over 616 by adb, keeping data. Check versionCode 620 and that the TV is still muted. Then do the rounds queued below («couch backgrounds», «UI ROUND», «radio and channels») on 620, not 616. Add these new checks:
 - S-24 prealert: `optimize/saver.sh adhanlead 15`, then read `optimize/saver.sh show` (adhanlead 15). If a prayer falls within the session, take a shot at about 14 minutes before it: the bar on the home. Afterwards set it back with `adhanlead 10`.
 - S-25 «مصدر في المفضلة» (#66): screensaver settings, «أسماء المصادر», an HDMI input, then its «في المفضلة» action (screenshot after each key). Expect a tile for that input in the favourites. Remove it again afterwards.
