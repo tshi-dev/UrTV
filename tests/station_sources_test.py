@@ -34,6 +34,7 @@ public static void main(String[] a) {
   out("at most six", StationSources.of("https://a/1", null, many, null).size() == StationSources.MAX && StationSources.MAX == 6);
   out("an address with a space or far too long is left out", StationSources.of("https://a/1", "https://b /2", null, null).size() == 1);
   out("the next one, round and round", StationSources.next(0, 3) == 1 && StationSources.next(2, 3) == 0 && StationSources.next(0, 1) == 0 && StationSources.next(0, 0) == 0);
+  out("beta 4: a stall takes the alt (the next source), round and round; with one source, the same", StationSources.afterStall(0, 2) == 1 && StationSources.afterStall(1, 2) == 0 && StationSources.afterStall(0, 1) == 0 && StationSources.afterStall(0, 0) == 0);
 } }"""
     with tempfile.TemporaryDirectory() as tmp:
         Path(tmp, "SrcRun.java").write_text(run)
@@ -44,5 +45,7 @@ public static void main(String[] a) {
             for line in out.splitlines():
                 name, res = line.rsplit("\t", 1)
                 check(name, res == "ok")
-            check("every case ran", len(out.splitlines()) == 5, len(out.splitlines()))
+            check("every case ran", len(out.splitlines()) == 6, len(out.splitlines()))
+check("beta 4: a stalled station restarts on the next source (the Saudi HLS stream runs dry: its alt takes over), not on the address that ran dry",
+      "radioSource = StationSources.afterStall(radioSource, radioSources.size());" in svc.split("private boolean watchStall()")[1].split("startRadio(radioAddress, 0);")[0], "")
 sys.exit(1 if failed else 0)

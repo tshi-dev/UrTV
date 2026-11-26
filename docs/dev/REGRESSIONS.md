@@ -322,6 +322,7 @@ often describe the same bug in two ways, and both rows are kept when their guard
 | R-314 | «شاهد المباراة»: UrTV Player's channel search started with the club name and found nothing (a user) | the page sent only one channel name (the page's language) and none with no verified row, so the Player seeded the search with the home team | 4.4 | `tests/match_app_test.py` | launcher page | Y |
 | R-315 | «رجوع مرتين يفتح شاشة التوقف» was on for everyone and sat among the home's buttons (the owner's decision) | the default was on in the settings, the snapshot and the home's field; the row was in the home-bar group | 4.4 | `tests/back_twice_test.py` | launcher and app | Y |
 | R-316 | The bar before the adhan could not start earlier than 10 minutes (a request) | the lead was a constant in the page and the home; it is now 10 (default) or 15, stored, sent only when 15, and read by both | 4.4 | `tests/adhan_bar_test.py` | launcher and page | Y |
+| R-318 | The Saudi Quran radio (HLS) cut out and came back on the same address that ran dry (a user) | a stall restarted the station on the same address, its alt was tried only after every try failed | 4.4 | `tests/station_sources_test.py` | launcher | Y |
 
 ## Open findings of the gate (QA-n)
 

@@ -130,3 +130,4 @@ S-02 FAIL the favourites showed five apps after Home (R-030)
 ```
 - **S-23 Match page channels.** On a match of a league with a verified broadcaster, «شاهد المباراة» opens UrTV Player with the broadcaster's name (Arabic and English) in the channel search, not the club's. Rows: R-314
 - **S-24 The bar 15 minutes before the adhan.** In the screensaver's settings press OK on «تنبيه قبل الأذان» until it says 15 minutes: 15 minutes before a prayer the bar shows on the home and on the screensaver and stays until the adhan; on 10 (the default) it starts at 10. Rows: R-316
+- **S-26 A stalled radio station takes its alt.** Play the Saudi Quran radio; when it runs dry for about 12 seconds the line «يعيد الاتصال…» shows and it comes back (logcat: `stall: source 2 of`), not silent. Rows: R-318
