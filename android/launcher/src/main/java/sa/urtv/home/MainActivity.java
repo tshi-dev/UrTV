@@ -2088,7 +2088,10 @@ public class MainActivity extends Activity {
 
     private void wireFocus() {
         footballHeader();   // the home card was just made again (or not): «الواجهة» may have changed with it
-        int d = dockCards.size(), g = gridCards.size();
+        boolean onHome = homeGrid();
+        grid.setVisibility(onHome ? View.VISIBLE : View.GONE);
+        if (!onHome) appsLabel.setVisibility(View.GONE);
+        int d = dockCards.size(), g = onHome ? gridCards.size() : 0;
         // the «المهام» card (and the stocks card), when among the home cards, is a stop between the pills and the dock
         List<View> targets = homeCard == null ? Collections.<View>emptyList() : homeCard.targets();
         View card = targets.isEmpty() ? null : targets.get(0);
@@ -3285,9 +3288,17 @@ public class MainActivity extends Activity {
         appsLifted = null;
         wireFocus();   // the grid's own ways again
         View f = focusPkg == null ? null : cardByPkg.get(focusPkg);
-        if (f != null && gridCards.contains(f)) f.requestFocus();
+        if (f != null && gridCards.contains(f) && homeGrid()) f.requestFocus();
         else if (!dockCards.isEmpty()) dockCards.get(0).requestFocus();
     }
+
+    /**
+     * 4.4 beta 4 (couch-tv, build 620: one DOWN on the home landed in the apps): «أيقونات» is one row ending with «كل التطبيقات», so the home has
+     * no apps grid under it; DOWN from the row goes to the cards row or stays. «تعديل التطبيقات» shows the grid while it is on.
+     */
+    static boolean homeGrid(String appsLook, boolean appsEditOn) { return appsEditOn || !FavBar.ICONS.equals(appsLook); }
+
+    private boolean homeGrid() { return homeGrid(appsLook, appsEdit != null); }
 
     /** One key while the mode is on. True: it is ours (FavEdit.owns), as in «تعديل المفضلة». */
     private boolean appsEditKey(KeyEvent e) {
