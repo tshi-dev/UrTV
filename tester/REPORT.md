@@ -3327,3 +3327,15 @@ ALL PASS is NOT claimed: (4) is NOT done.
 - (4) settings → screensaver section, row «رجوع مرتين يفتح شاشة التوقف» reads «متوقف»: NOT DONE. The settings screen is reached from the home's top-left icon; I could not reach it in a safe, screenshot-checked sequence this time (the control bar is the only path I got to). Needs the owner or a later pass.
 - (5) control centre once, OK then Back: PASS (panel opened, Back returned to the bar; logcat: no FATAL/AndroidRuntime for sa.urtv.*; screenshot 5-ok.png).
 - Mute: on (verified Muted: true). Home is on UrTV.
+
+## BETA 4 = build 616 (598b7b26, run 45417150235), 26 Nov, owner away, TV muted — PARTIAL, not ALL PASS
+- Installed home, screensaver, extras 616 over 614 by adb (keep data); versionCode 616. Backup: beta4/show-before.txt (city coordinates removed before pushing).
+- Setup: `preset couch` applied through the SaverReceiver SET (it also turned «panel» from verse to none), `appsstyle icons`; look/background/scene pack «saudi» were already as asked. The TV is left on this setup; the owner's old values are in the backup (panel verse, appsstyle zoom).
+- (1) b4-home.png: FAIL against the expected look. The home is still the old layout: the clock is top-right (not centred), the date under it, a big stocks card, and the app icons in a bar at the bottom. No centred glass clock, no single strip of cards. Restarting the home app did not change it. First shots also showed the scene background late (black first).
+- (2) b4-app-1..5 (YouTube, Crunchyroll, Netflix, Shahid, Apple TV): taken after each key, the focused tile grows and its name shows. b4-app-6 (Spotify): no focus visible, so it is NOT a valid shot.
+- Settings tile and all-apps tile shots: NOT valid (after the 6th key the focus was in the top bar, «تلاوة وأذان»), so I did not press OK there: (3) NOT DONE (no blind OK).
+- (4) large font, (5) match page and «شاهد المباراة», (6) screensaver shot: NOT DONE.
+- (7) first Home after the install opened UrTV (topResumed sa.urtv.home MainActivity); control centre not re-checked.
+- Notice: «الوضع الخفيف» (lite) was switched on by itself once ("playback slow twice this week") before the setup; `lite: auto (light now: no)` afterwards.
+- Mute: Muted true after the install (verified).
+- Shots show the city name in the weather line (الرس); no Wi-Fi name, IP or account.
