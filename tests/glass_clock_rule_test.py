@@ -30,17 +30,21 @@ public static void main(String[] a) {
   o("couch, no card: the glass clock (the same place)", GlassClockRule.glass("glass", false, true));
   o("another layout, no card: the glass clock", GlassClockRule.glass("glass", false, false));
   o("another layout, a card beside the clock: the regular clock (option 2 stays)", !GlassClockRule.glass("glass", true, false));
-  // the strip under the always-centred clock fits at 1080p and at 720p (density 213 dpi): the digits end above the strip's top, and the strip keeps its height
+  // the strip under the always-centred clock (the UI session's spacing, 1080 spec scaled with FavBar.px): its top is 32 under the digits, its bottom 28 over the
+  // apps row with the focus growth (810), on the tray's own sides; the same at 1080p and at 720p (density 213)
   int[][] screens = {{1920, 1080, 2000}, {1280, 720, 1331}};   // w, h, density x 1000
-  boolean fits = true;
+  boolean fits = true, exact = true;
   for (int[] sc : screens) for (int titleTop : new int[] {-1, Math.round(sc[1] * 0.9f)}) {
     float d = sc[2] / 1000f;
     int clockBottom = ScenePlan.fixedBox(sc[0], sc[1], false, true)[3];
     int[] r = CardBox.row(sc[0], sc[1], d, titleTop, clockBottom);
-    int top = sc[1] - r[2] - r[1];
-    fits &= r[1] >= Math.round(sc[1] * CardBox.ROW_HEIGHT) && top >= clockBottom && r[0] > 0;
+    int top = sc[1] - r[2] - r[1], bottom = sc[1] - r[2];
+    fits &= top >= clockBottom + FavBar.px(32, sc[1]) && bottom <= FavBar.px(810 - 28, sc[1]) && r[1] > 0;
+    exact &= r[0] == sc[0] - 2 * FavBar.px(FavBar.SIDE, sc[1]) && bottom == FavBar.px(782, sc[1]) && r[2] == sc[1] - FavBar.px(782, sc[1]);
   }
-  o("the strip under the big clock keeps its height and starts below the digits, at 1080p and at 720p (density 213)", fits);
+  o("the strip starts 32 under the digits and ends 28 over the apps row (growth 8 included), at 1080p and at 720p", fits);
+  int[] r1080 = CardBox.row(1920, 1080, 2f, -1, 542), r720 = CardBox.row(1280, 720, 1.331f, -1, ScenePlan.fixedBox(1280, 720, false, true)[3]);
+  o("on the tray's own sides (SIDE 122), 208 high and 298 from the bottom at 1080p, 139 high and 199 at 720p", exact && r1080[1] == 208 && r1080[2] == 298 && r720[1] == 139 && r720[2] == 199 && r1080[0] == 1920 - 244);
   o("«الساعة: عادية»: never the glass clock, with or without cards", !GlassClockRule.glass("plain", false, true) && !GlassClockRule.glass("plain", true, true) && !GlassClockRule.glass(null, false, false));
 } }"""
 with tempfile.TemporaryDirectory() as tmp:
@@ -52,5 +56,5 @@ with tempfile.TemporaryDirectory() as tmp:
         for line in out.splitlines():
             n, res = line.rsplit("\t", 1)
             check(n, res == "ok")
-        check("every case ran", len(out.splitlines()) == 6, len(out.splitlines()))
+        check("every case ran", len(out.splitlines()) == 7, len(out.splitlines()))
 sys.exit(1 if failed else 0)

@@ -52,7 +52,18 @@ final class CardBox {
      * (the owner: the stocks card over the big «2:08»): it starts 12 dp under them and is that much shorter (a card in it then shows fewer rows);
      * clockBottom -1: no big clock
      */
+    /** 4.4 beta 4 (the owner: «كنبة» as couch-tv, the big clock always centred): the strip's gaps, 1080p px scaled with FavBar.px, 720p the exact 2/3: under the digits, over the apps row */
+    static final int GAP_CLOCK = 32, GAP_APPS = 28;
+
+    /** the apps row's top at 1080p with the focused tile's growth (ICON 112 + 2 x PAD_TOP 28 above REST_BOTTOM 94 = 818, less 8 for the 1.14 focus): 810 */
+    static final int APPS_FOCUS_TOP = 1080 - FavBar.REST_BOTTOM - (FavBar.ICON + 2 * FavBar.PAD_TOP) - 8;
+
     static int[] row(int screenW, int screenH, float density, int titleTop, int clockBottom) {
+        if (clockBottom >= 0) {   // the big glass clock is on: the strip is between its digits and the apps row, on the tray's own sides (the UI session's spacing)
+            int top = clockBottom + FavBar.px(GAP_CLOCK, screenH);
+            int bottom = FavBar.px(APPS_FOCUS_TOP - GAP_APPS, screenH);
+            return new int[]{screenW - 2 * FavBar.px(FavBar.SIDE, screenH), Math.max(0, bottom - top), Math.max(0, screenH - bottom)};
+        }
         int h = Math.round(screenH * ROW_HEIGHT);
         int end = titleTop > 0 ? titleTop - dp(8, density) : Math.round(screenH * 0.74f);
         if (clockBottom >= 0) h = Math.max(0, Math.min(h, end - clockBottom - dp(12, density)));
