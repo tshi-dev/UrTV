@@ -30,6 +30,19 @@ D) Large font: `adb shell settings put system font_scale 1.3`, then HOME, wait 5
 E) Black check: HOME, shots at 2 s and 10 s, then save `adb logcat -d | grep -iE "scene|frozen"` as text.
 Push to tester/beta4/ui/ with the city name boxed out. In REPORT.md, write PASS/FAIL per step under «UI ROUND, 616».
 
+▶▶ GAMES REVIEW (after the build 629 re-checks and the radio round). The owner wants every game on the TV reviewed. TV muted, adb only, a screenshot after every key, no blind OK. Never type any code, and never use the family PIN.
+For EACH game in the games list (UrTV → «ألعاب»; the order of the list):
+1. Open it and read its «!» how-to panel (shot). Start one short round with the remote only: 2 players or teams, the default settings. Play at least 3 turns or until a round ends (a shot after each key).
+2. Write, per game:
+   - What it is: the goal in one line, and how a turn works with the remote.
+   - Players: how many, and whether it needs phones (the phone picture on the tile, or a QR step).
+   - Remote-only? Yes, or no plus exactly which step needs a phone.
+   - What worked and what got in the way: focus lost, unclear keys, text too small at 3 m, slow, a dead end, Back not working, an ugly layout.
+   - Ideas to make it better (concrete: a key, a screen, a rule, the pace).
+   - For a phone game: how it could be played with one remote instead (turns passed around, hidden answers shown one player at a time, buzz keys on the remote's colour or number keys, and so on).
+3. Shots to tester/games/<game-id>/, with no names or personal data (player names stay as the defaults).
+Write it all as tester/GAMES-REVIEW.md: a table first (game, players, phones yes/no, works yes/no, top fix), then one section per game. Push it to work/tester-report.
+
 ▶▶ WHEN IDLE (after «BETA 4 couch backgrounds»), radio and channels, build 616. TV stays muted (silent playback is fine: judge by state and position, never unmute). adb only, a screenshot after every key, no blind OK.
 1. Quran radio, all 13 stations (UrTV «تلاوة وأذان» → radio). Open each in turn and let it play 3 minutes. Every 30 s, log `dumpsys media_session` (state and position) and `logcat -d -t 200 | grep -i -E "exo|media|hls|urtv"`. A station passes when the state stays PLAYING and the position keeps moving for 3 minutes. Write any stall, rebuffer or error and its time.
 2. «إذاعة القرآن الكريم - السعودية» (the station users report cutting out): let it play 20 minutes, logging every 30 s as above. Count the cuts (state not PLAYING, or the position not moving for more than 5 s). Then do the same 10 minutes on «مصر» to compare.
