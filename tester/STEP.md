@@ -1,3 +1,12 @@
+▶▶ BETA 4 = build 616, couch backgrounds (26 Nov). Owner away, TV muted, adb only, a screenshot after every key, no blind OK.
+1. Before: `optimize/saver.sh show` lines for background, scenepacks, scenestay, lite; push them as tester/beta4/bg-before.txt (no coordinates).
+2. Set: `optimize/saver.sh background scenes`, `optimize/saver.sh scenepacks couch`, `optimize/saver.sh scenestay 10`. Restart the home (HOME key), wait 20 s.
+3. Shots of the home: b4-bg-1.png now, then b4-bg-2.png and b4-bg-3.png 15 s apart (the scene should change). If the background stays black, run `optimize/dock.sh lite-signals status`, write the line, then `optimize/saver.sh lite off`, HOME, wait 20 s, b4-bg-lite-off.png.
+4. Then `optimize/saver.sh scenepacks saudi,couch`, HOME, wait 20 s, b4-bg-both.png.
+5. Screensaver over the same backgrounds: start it (`optimize/saver.sh test` or the dream start you used before), wait 20 s, b4-saver-bg.png, then BACK.
+6. Before pushing any shot: paint a black box over the weather line at the top right (the city name). Push the shots to tester/beta4/ and write PASS/FAIL per step in REPORT.md under «BETA 4 couch backgrounds».
+7. Leave the TV on background scenes, scenepacks couch; lite back to what step 1 read.
+
 «▶▶ BETA 4 = build 616 (next 598b7b26): the «كنبة» look as couch-tv (owner, 24 Nov: «show me all of it on my TV, the couch and everything»). Install home, screensaver and add-on 616 over 614 with adb (keep data). Screenshot after every key, no blind D-pad, TV muted, never the PIN. Push all shots to tester/beta4/ (check for personal data first: no Wi-Fi name, IP or account).
  First take a `saver.sh show` backup (beta4/show-before.txt).
  Setup for the shots (the UI owner's condition): the look «كنبة»; الخلفية «الآفاق» with the scene packs downloaded (wait until done); «شكل التطبيقات: أيقونات».
