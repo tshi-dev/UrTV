@@ -3359,3 +3359,10 @@ ALL PASS is NOT claimed: (4) is NOT done.
 - D) large font (font_scale 1.3, HOME, 5 s): layout intact, apps row and card present, no overlap seen (d-largefont.png); text not clearly bigger in the shot. font_scale set back to 1.0 (read: 1.0).
 - E) black check: PASS. Home at 2 s and 10 s shows the lake scene, not black (e-2s, e-10s). SceneHome log: no lines; only the five frozen-screen lines above, all during step B.
 - City name boxed out in all shots.
+
+## BETA 4 = 624 (be11b0d2, run 45825297148), 26 Nov, owner away, TV muted
+- Install: home, screensaver, extras 624 over 620 by adb, versionCode 624 on all three, Muted true: PASS.
+- A beta notice dialog («انت على النسخة التجريبية… أرسل ملاحظة / تمام») appeared on the first launch and stayed on screen. Focus started on «أرسل ملاحظة»; I moved RIGHT (shot, focus on «تمام»), then OK. It closed and the home was normal. I did NOT send a note.
+- S-28 «بطاقة المباريات لليوم فقط»: set with `saver.sh matchestoday on` (NOT through the settings row: the row was not looked for, the UI path is still unreliable). With home-card matches the card header reads «مباريات اليوم» (b4-624-matchestoday-on.png; the card body was behind the dialog, no games seen). `show` read «matchestoday: on». Set back: matchestoday off, home-card stocks (show confirms both). PASS for the setting and the header; the «today only» game list itself NOT verified; the settings row NOT found.
+- Not re-run on 624: couch backgrounds, UI round, radio and channels, S-24/S-25/S-26, R-319. The 620 results are in the reports above (backgrounds PASS except scene change and the centred clock; UI round B and 720p FAIL).
+- City name boxed out in the pushed shots.
