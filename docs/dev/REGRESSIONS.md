@@ -331,6 +331,7 @@ often describe the same bug in two ways, and both rows are kept when their guard
 | R-323 | A radio station stood at «state 0, position 23» for minutes with no error and no restart (the tester, build 629, the Dosari station) | the stall watchdog only looked at a station that was playing or loading: one that was ready but silent (the sound refused) was never stuck | 4.4 | `tests/stall_watch_test.py` | launcher | Y |
 | R-324 | With «بدون» as the home's card the date was drawn over the greeting and the Wi-Fi icon (the tester) | the date's lift to the clock's row was measured from the clock's own top (0 in its row), not its row's, so the date went to the top of the column | 4.4 | `tests/config_change_test.py` | launcher | Y |
 | R-325 | `music.sh stations` listed 11 stations while `radio N` has 13; `start-saver.sh` said «not started» for a dream that started at 8 s (the tester) | the list came from a stale checkout; the script waited a fixed 6 s | 4.4 | `tests/music_stations_test.py` | optimize | N |
+| R-326 | In «كنبة» a card (stocks, matches) took the big glass clock away: the small clock top right came back and the clock moved (the owner, typed) | glassClock was glass and no card (option 2); in the couch strip the cards sit under the clock, so the glass clock now stays (GlassClockRule) | 4.4 | `tests/glass_clock_rule_test.py` | launcher | Y |
 
 ## Open findings of the gate (QA-n)
 

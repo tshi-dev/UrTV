@@ -15,7 +15,7 @@ def check(name, ok, detail=""):
 
 main = (ROOT / "android/launcher/src/main/java/sa/urtv/home/MainActivity.java").read_text(encoding="utf-8")
 check("the home reads the glass clock from the shown cards, which are none for «بدون»",
-      "boolean glass = glassClock(cfg.homeClock, homeCard != null && homeCard.shownCards() > 0);" in main)
+      "boolean glass = glassClock(cfg.homeClock, homeCard != null && homeCard.shownCards() > 0, homeCard != null && homeCard.inRow());" in main)
 if not (shutil.which("javac") and shutil.which("java")):
     print("SKIP HomeCardChoice.count: no javac here (CI compiles it)")
     sys.exit(1 if failed else 0)

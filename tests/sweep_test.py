@@ -47,7 +47,7 @@ check("sweep2, the top row: its bar never rounder than 8 dp, a labelled button 6
 check("sweep2, the settings hint: the rows' secondary size (14 sp; couch-tv its info line, 1.4375 rem) in the secondary colour, no longer 12 sp",
       "static final int HINT_SP = 14;" in s and "hint.setTextSize(TypedValue.COMPLEX_UNIT_SP, HINT_SP);" in s and "hint.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12);" not in s
       and "hint.setTextColor(CouchStyle.SUB);" in s and "HINT = 1.4375f," in (APP / "CouchStyle.java").read_text(encoding="utf-8"))
-check("sweep2 option 2 (the owner): «الساعة: زجاجية» with any card showing (the couch strip, or the box beside it: sweep 3, the owner circled it) shows the regular clock; the glass clock again without cards",
-      'static boolean glassClock(String homeClock, boolean cardsShown) { return "glass".equals(homeClock) && !cardsShown; }' in main
-      and "boolean glass = glassClock(cfg.homeClock, homeCard != null && homeCard.shownCards() > 0);" in main and "boolean bigClock = glass;" in main)
+check("sweep2 option 2 (the owner), 4.4 beta 4 reversed for «كنبة» (the owner, typed): «الساعة: زجاجية» with a card BESIDE the clock shows the regular clock (the glass clock again without cards); with the couch strip under it the glass clock stays (GlassClockRule)",
+      'static boolean glassClock(String homeClock, boolean cardsShown, boolean inRow) { return GlassClockRule.glass(homeClock, cardsShown, inRow); }' in main
+      and "boolean glass = glassClock(cfg.homeClock, homeCard != null && homeCard.shownCards() > 0, homeCard != null && homeCard.inRow());" in main and "boolean bigClock = glass;" in main)
 sys.exit(1 if failed else 0)

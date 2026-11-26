@@ -4256,7 +4256,7 @@ public class MainActivity extends Activity {
      * header's clock (the greeting, the date and the rest of the home stay as they are); any other layout: the home as it was.
      */
     /** «الساعة: زجاجية» as drawn now: the setting, but never while cards show (in any layout they can cover part of it) */
-    static boolean glassClock(String homeClock, boolean cardsShown) { return "glass".equals(homeClock) && !cardsShown; }
+    static boolean glassClock(String homeClock, boolean cardsShown, boolean inRow) { return GlassClockRule.glass(homeClock, cardsShown, inRow); }
 
     private boolean sceneBlank;   // no scene could be drawn: the wall photos are shown under the scene layer (SceneHome.Backdrop)
 
@@ -4265,7 +4265,7 @@ public class MainActivity extends Activity {
         // 4.4 the owner (sweep 2, option 2; sweep 3: every layout): the cards (the couch strip under the clock, or the box beside it, which can reach
         // the glass clock's box) would sit over the glass clock, so while any card shows the header's regular clock takes its place (the scene stays);
         // the glass clock comes back when the cards are off. Read every minute (updateClock).
-        boolean glass = glassClock(cfg.homeClock, homeCard != null && homeCard.shownCards() > 0);
+        boolean glass = glassClock(cfg.homeClock, homeCard != null && homeCard.shownCards() > 0, homeCard != null && homeCard.inRow());
         photoGlassTick(cfg, !on && glass);
         if (!on && sceneHome == null && !scenesOn) return;   // the home as it was (the default): nothing of the scenes is made, read, timed or downloaded
         if (on && sceneHome == null) {   // chosen: the layer is made now, over the photos and under the dimming and the scrims
