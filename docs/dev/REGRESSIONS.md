@@ -327,6 +327,7 @@ often describe the same bug in two ways, and both rows are kept when their guard
 | R-319 | Beta 4 on a TCL: with «الآفاق» on the home was plain black (the tester) | the only scene failed to decode and nothing took its place (the timer stops with one scene); now it is logged and the wall photos show until a scene draws | 4.4 | `tests/scene_blank_test.py` | launcher | Y |
 | R-320 | «بطاقة المباريات لليوم فقط» (PR #65, off by default): the matches card kept the week's games | the card showed the week's next games whatever the day; with the setting on it keeps the city's day only (a game with no time keeps its own date) | 4.4 | `tests/matches_today_test.py` | launcher page | Y |
 | R-321 | With «بدون» as the home's card the clock stayed the small one top right (the tester, beta 4) | HomeCardChoice.count counted «بدون» as one card, so the glass clock (off while a card shows) never came back; it now counts none | 4.4 | `tests/home_card_count_test.py` | launcher | Y |
+| R-322 | `wm size 1280x720` with the home up: only the clock and the weather, no apps and no card (the tester); and five false «frozen-screen recovered» in one round of keys | the home handles size and density changes itself but never laid out again; a focus zoom is drawn without a draw pass, so the watchdog saw no frame | 4.4 | `tests/config_change_test.py` | launcher | Y |
 
 ## Open findings of the gate (QA-n)
 
