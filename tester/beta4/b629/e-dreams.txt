@@ -1,0 +1,20 @@
+## dumpsys dreams | grep -i dream
+DREAM MANAGER (dumpsys dreams)
+mCurrentDream=DreamRecord{token=android.os.Binder@ea73a10, name=ComponentInfo{sa.urtv.screensaver/sa.urtv.screensaver.ScreenDream}, userId=0, isPreview=false, canDoze=false, isDozing=false, isWaking=false, dozeScreenState=0, dozeScreenBrightness=-1}
+mDreamsOnlyEnabledForDockUser=false
+mDreamsEnabledSetting=true
+mDreamsActivatedOnDockByDefault=true
+mDreamsActivatedOnChargeByDefault=false
+mWhenToDream=3
+mKeepDreamingWhenUnpluggingDefault=false
+Dreamland:
+  mCurrentDream:
+    mName=ComponentInfo{sa.urtv.screensaver/sa.urtv.screensaver.ScreenDream}
+    mService=android.service.dreams.IDreamService$Stub$Proxy@944c909
+
+## topResumed
+      topResumedActivity=ActivityRecord{42d35b8 u0 sa.urtv.screensaver/android.service.dreams.DreamActivity t12545}
+Failed to write while dumping service activity: Broken pipe
+## settings
+sa.urtv.screensaver/.ScreenDream
+1
