@@ -5392,7 +5392,7 @@ function mptHtml(g, start){
   let k = 0;
   g.games.forEach((x, j) => {
     const i = start + j;
-    if(x.tg){ out += `<li class="mptg${sel(i)}" data-r="${i}"><span class="${x.on ? '' : 'on'}">${esc(FB_W.tAll)}</span><span class="${x.on ? 'on' : ''}">${esc(FB_W.tLive)}</span></li>`; return; }
+    if(x.tg){ out = `<li class="mptg${sel(i)}" data-r="${i}"><span class="${x.on ? '' : 'on'}">${esc(FB_W.tAll)}</span><span class="${x.on ? 'on' : ''}">${esc(FB_W.tLive)}</span></li>` + out; return; }   // above the column heads
     const r = x.tr, place = ++k, z = t.zones.find(z => z.from === place), end = t.zones.find(z => z.to === place - 1);
     if(z) out += `<li class="zl"><span>${esc(zl(z.k))}</span></li>`;
     else if(end) out += '<li class="zl bare"></li>';
