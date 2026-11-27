@@ -2,6 +2,7 @@ package sa.urtv.home.tilawah;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -64,6 +65,10 @@ public class AdhanActivity extends Activity {
             @Override public void onNothingSelected(AdapterView<?> parent) { }
         });
         list.setOnItemClickListener((parent, view, position, id) -> {
+            if (position == fileRow()) {   // 4.4 beta 4 «أذاني من ملف»: «صوتياتي» opens to add a file, and it becomes this adhan
+                startActivity(new Intent(this, AudioActivity.class).putExtra(AudioActivity.EXTRA_USE, fajr ? "own_fajr" : "own"));
+                return;
+            }
             int voice = voiceAt(position);
             if (fajr) {
                 if (voice == Prefs.OWN_FAJR) { prefs.setFajrOwn(true); prefs.setFajrOwnSecond(true); }
@@ -84,6 +89,15 @@ public class AdhanActivity extends Activity {
             highlight(list.getSelectedView());
         });
     }
+
+    @Override protected void onResume() {
+        super.onResume();
+        int o = OwnAdhan.exists(this) ? 1 : 0, of = fajr && OwnAdhan.fajrExists(this) ? 1 : 0;
+        if (adapter != null && (o != own || of != ownFajr)) { own = o; ownFajr = of; adapter.notifyDataSetChanged(); }   // a file added from «أذاني من ملف» is a row now
+    }
+
+    /** the last row, after every voice: «أذاني من ملف» */
+    private int fileRow() { return voices.length + own + ownFajr; }
 
     /** the voice a row stands for: 0 (the person's own), or 1..21 */
     private int voiceAt(int position) {
@@ -113,17 +127,25 @@ public class AdhanActivity extends Activity {
     }
 
     private final class Voices extends BaseAdapter {
-        @Override public int getCount() { return voices.length + own + ownFajr; }
-        @Override public Object getItem(int position) { return voiceAt(position); }
+        @Override public int getCount() { return voices.length + own + ownFajr + 1; }
+        @Override public Object getItem(int position) { return position == fileRow() ? -1 : voiceAt(position); }
         @Override public long getItemId(int position) { return position; }
 
         @Override public View getView(int position, View convertView, ViewGroup parent) {
             View view = convertView != null ? convertView
                     : LayoutInflater.from(parent.getContext()).inflate(R.layout.item_row, parent, false);
             resetRow(view);
-            int voice = voiceAt(position);
             TextView name = view.findViewById(R.id.name);
             TextView detail = view.findViewById(R.id.detail);
+            if (position == fileRow()) {
+                name.setText(sa.urtv.home.S.t("أذاني من ملف"));
+                name.setTypeface(Ui.font(AdhanActivity.this, "Thmanyah-Medium.otf"));
+                detail.setText(sa.urtv.home.S.t("أضف من فلاشة أو التنزيلات"));
+                detail.setTypeface(Ui.font(AdhanActivity.this, "Thmanyah-Light.otf"));
+                detail.setTextColor(getColorStateList(R.color.dim));
+                return view;
+            }
+            int voice = voiceAt(position);
             name.setText(Adhan.name(voice));
             name.setTypeface(Ui.font(AdhanActivity.this, "Thmanyah-Medium.otf"));
             int playing = chosenVoice();
