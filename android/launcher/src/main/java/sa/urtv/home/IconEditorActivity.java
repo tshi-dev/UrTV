@@ -304,7 +304,7 @@ public final class IconEditorActivity extends Activity {
         });
     }
 
-    private static void walk(File dir, int depth, List<File> out) {
+    static void walk(File dir, int depth, List<File> out) {
         if (out.size() >= MAX_IMAGES || depth > DEPTH || dir == null) return;
         File[] all = dir.listFiles();
         if (all == null) return;
@@ -361,10 +361,12 @@ public final class IconEditorActivity extends Activity {
         if (s != null) stripNote.setText(s);
     }
 
-    private List<File> usbRoots() {
+    private List<File> usbRoots() { return usbRoots(this); }
+
+    static List<File> usbRoots(android.content.Context c) {
         List<File> out = new ArrayList<>();
         try {
-            StorageManager sm = (StorageManager) getSystemService(STORAGE_SERVICE);
+            StorageManager sm = (StorageManager) c.getSystemService(STORAGE_SERVICE);
             for (StorageVolume v : sm.getStorageVolumes()) {
                 if (!v.isRemovable() || !android.os.Environment.MEDIA_MOUNTED.equals(v.getState())) continue;
                 File d = Build.VERSION.SDK_INT >= 30 ? v.getDirectory() : (v.getUuid() == null ? null : new File("/storage/" + v.getUuid()));
