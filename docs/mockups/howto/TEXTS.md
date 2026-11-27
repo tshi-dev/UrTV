@@ -7,7 +7,7 @@ Every text is written from the game's real rules: its SPEC (`games/<id>/SPEC.md`
 ---
 
 ## 1. الأسرع (quiz): phones only
-**الهدف** الكل يجاوب من جواله، والأسرع والأدق يجمع أكبر عدد من النقاط. / Everyone answers on their own phone; the fastest right answers score most.
+**الهدف** الكل يجاوب من جواله، والأسرع والأدق ياخذ نقاط أكثر. / Everyone answers on their own phone; the fastest right answers score most.
 **كيف تلعب**
 1. اختاروا الفئة والمستوى وعدد الأسئلة بالأسهم و«اختيار»، ثم «افتح الغرفة». / Pick the category, level and number of questions, then open the room.
 2. كل لاعب يمسح الرمز أو يفتح العنوان في جواله ويكتب اسمه. / Each player scans the code or opens the address on their phone and types a name.
@@ -21,7 +21,7 @@ Every text is written from the game's real rules: its SPEC (`games/<id>/SPEC.md`
 **الهدف** لكل حرف تظهر خانات (حيوان، نبات، جماد، بلاد، اسم): اكتبوا كلمة لكل خانة تبدأ بالحرف قبل الآخرين. / A letter appears; fill every box (animal, plant, thing, country, name) with a word starting with it.
 **كيف تلعب**
 1. اختاروا الجولات والوقت ونوع اللعب (فرق أو أفراد) ثم «ابدأ». / Pick rounds, time and teams or individuals, then start.
-2. يدور الحرف ثم يثبت: اكتبوا على ورقة أو قولوا إجاباتكم. / The letter spins and stops: write on paper, or just say your answers.
+2. الحرف يلف ثم يوقف: اكتبوا على ورقة أو قولوا أجوبتكم. / The letter spins and stops: write on paper, or just say your answers.
 3. من يخلّص أول يضغط «اختيار» ويقول «خلّصنا»، ثم تختارون من خلّص أول. / Whoever finishes first presses OK; then you pick who it was.
 4. تُكشف الخانات واحدة واحدة: اتفقوا بصوت عالٍ، وعلّموا لكل فريق «صحيحة» أو «مكررة» أو «بدون» بـ«اختيار». زر «أمثلة» يُظهر أمثلة للحرف. / The boxes are revealed one by one: agree aloud and mark each team valid, same, or none. «أمثلة» shows samples.
 **بالجوالات** كل جوال لاعب: يكتب إجاباته، وتظهر على التلفزيون عند الكشف، ويقترح اللعب أحكامًا أولية يغيّرها المضيف. / Each phone is a player and types its answers; they show at the reveal with a first guess of the marks that the host can change.
@@ -134,7 +134,7 @@ Every text is written from the game's real rules: its SPEC (`games/<id>/SPEC.md`
 **النهاية** بعد 3 أو 5 أو 6 جولات يفوز الأعلى. / After 3, 5 or 6 rounds the highest wins.
 
 ## 13. اقرأ الإيموجي (Read the Emoji): phones only
-**الهدف** اعرف الكلمة التي يدل عليها سطر الإيموجي قبل الباقين. / Work out the word a line of emoji stands for, before the others.
+**الهدف** اعرف الكلمة اللي يدل عليها سطر الإيموجي قبل الباقين. / Work out the word a line of emoji stands for, before the others.
 **كيف تلعب**
 1. من 2 إلى 10 جوالات. يظهر سطر إيموجي (🍚🍗 = كبسة). / 2 to 10 phones; a line of emoji shows.
 2. اختر الجواب الصحيح من أربعة في جوالك. / Pick the right one of four on your phone.
