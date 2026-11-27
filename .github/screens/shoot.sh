@@ -138,6 +138,8 @@ shot settings-c-tvos-prayer 2
 key BACK BACK
 saver --es settingsstyle buttons
 
+# 4.4 beta 4 (the findability review §5): the presses to each target in every settings style, counted by moving the focus as a person would
+python3 .github/screens/presses.py "$OUT" || echo "presses: the walk stopped"
 adb logcat -d -s AndroidRuntime:E > "$OUT/crashes.txt"
 ls "$OUT"
 exit 0
