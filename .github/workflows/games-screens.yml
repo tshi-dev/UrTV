@@ -78,7 +78,7 @@ jobs:
           name: games-screens
           path: screens-out
 
-      - name: Publish to data-screens (its own folders: games-latest and games-run-*; the other pictures are not touched, no force push)
+      - name: "Publish to data-screens (own folders games-latest and games-run-N, the other pictures untouched, no force push)"
         run: |
           set -e
           run="games-run-${GITHUB_RUN_NUMBER}-$(date -u +%m%d-%H%M)"
