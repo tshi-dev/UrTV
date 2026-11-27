@@ -28,7 +28,7 @@ known.
 
 | id | problem | proposed fix | source | severity |
 |---|---|---|---|---|
-| W1: #182, #238, #307, #322, #393, #560 | `full.book` = صحيح مسلم with a number that is the dataset's running index, not the standard (Abd al-Baqi) number the screen prints: 6929, 7512, 6989, 6855, 6544, 2232. The dataset has no `arabicnumber` for these rows, so `apply_hadith_report.py` fell back to the index. | Print the standard number: #182 → 2732, #307 → 2759, #322 → 2700, #393 → 2565, #560 → 963 (2732 and 963: the next row of the same narration carries 2732.03 / 963.02; 2759, 2700, 2565: the rows around them are numbered 2758.03–2760.01, 2699.02–2701, 2564.03–2565.03); #238 (حديث أبي اليسر) lies between 3005 and 3014, standard 3006, to confirm on sunnah.com. Pipeline fix: when `arabicnumber` is empty, take it from the neighbouring row of the same narration, or skip. | fawazahmed0/hadith-api `ara-muslim` rows 6930 (2732.03), 2233 (963.02); sunnah.com/muslim | wrong |
+| W1: #182, #238, #307, #322, #393, #560 (on screen: #307, #393; the others are filtered out by length) | **Fixed in this branch** (commit «Hadith: the standard (Abd al-Baqi) number…»). `full.book` = صحيح مسلم with a number that is the dataset's running index, not the standard (Abd al-Baqi) number the screen prints: 6929, 7512, 6989, 6855, 6544, 2232. The dataset has no `arabicnumber` for these rows, so `apply_hadith_report.py` fell back to the index. | Print the standard number: #182 → 2732, #307 → 2759, #322 → 2700, #393 → 2565, #560 → 963 (2732 and 963: the next row of the same narration carries 2732.03 / 963.02; 2759, 2700, 2565: the rows around them are numbered 2758.03–2760.01, 2699.02–2701, 2564.03–2565.03); #238 (حديث أبي اليسر) lies between 3005 and 3014, standard 3006, to confirm on sunnah.com. Pipeline fix: when `arabicnumber` is empty, take it from the neighbouring row of the same narration, or skip. | fawazahmed0/hadith-api `ara-muslim` rows 6930 (2732.03), 2233 (963.02); sunnah.com/muslim | wrong |
 | #449 | Ibn Majah 4181 «إن لكل دين خلقا…»: Al-Albani Hasan, but Shuaib al-Arnaut **and** Zubair Ali Zai grade it Daif | Keep only if the owner accepts Al-Albani alone; otherwise drop | grades in `full.grades` | doubtful |
 | #589 | Ibn Majah 3062 «ماء زمزم لما شرب له»: Al-Albani Sahih, Shuaib al-Arnaut and Zubair Ali Zai Daif | as #449 | `full.grades` | doubtful |
 | #60, #92, #109, #112, #117, #142, #143, #176, #183, #185, #189, #249, #258, #289, #296, #321, #331, #332, #343, #369, #370, #382, #398, #405, #424, #428, #431, #437, #466, #474, #497, #501, #536, #545, #546, #549, #568, #570, #608, #653, #660, #663 | Shown with Al-Albani's grade (Sahih/Hasan), but Zubair Ali Zai grades this narration Daif (the build does not count him). Al-Albani's grade is the project rule, so this is information, not an error. | None unless the owner wants a stricter rule | `full.grades` | doubtful (low) |
@@ -43,3 +43,15 @@ known.
 
 Not verified: the grades of al-Tirmidhi's own wording come from the book text; sunnah.com and dorar.net were not reachable,
 so no grade was cross-checked outside the dataset.
+
+## للمالك: أربعة أحاديث تحتاج قرارك
+
+الدرجات من بيانات المشروع نفسها (`full.grades`). وسبب التضعيف مأخوذ من الراوي الظاهر في الإسناد كما يذكره أهل الجرح
+(تقريب التهذيب لابن حجر)، ولم أتحقق منه من موقع حديثي في هذه الجلسة.
+
+| # | أول الحديث | المصدر | الدرجة | من ضعّفه، ولماذا | المقترح |
+|---|---|---|---|---|---|
+| 449 | «إن لكل دين خلقًا، وخلق الإسلام الحياء» | سنن ابن ماجه ٤١٨١ | حسّنه الألباني | ضعّفه شعيب الأرنؤوط وزبير علي زئي؛ في إسناده معاوية بن يحيى (الصدفي)، وهو ضعيف عند أهل الجرح | يُحذف من الشاشة، أو يبقى مع «حسّنه الألباني، وضعّفه غيره» |
+| 589 | «ماء زمزم لما شُرب له» | سنن ابن ماجه ٣٠٦٢ | صحّحه الألباني | ضعّفه شعيب الأرنؤوط وزبير علي زئي؛ في إسناده عبد الله بن المؤمّل، وهو ضعيف، وأبو الزبير مدلّس وقد عنعن (الإسناد هنا «سمعت»، فيبقى الضعف من ابن المؤمّل) | يبقى مع الملاحظة نفسها، فالخلاف فيه مشهور؛ أو يُحذف إن أردتَ ما لا خلاف فيه |
+| 117 | «سُئل رسول الله ﷺ عن الرجل يجد البلل… إنما النساء شقائق الرجال» | سنن أبي داود ٢٣٦ | حسّنه الألباني، وحسّنه الأرنؤوط لغيره | ضعّفه زبير علي زئي؛ في إسناده عبد الله بن عمر العُمَري، وهو ضعيف من قِبل حفظه | يُحذف من الشاشة: موضوعه (الاحتلام والغسل) لا يناسب شاشة العائلة، وإن كان الحديث مقبولًا |
+| 478 | «استأذنتُ ربي أن أستغفر لها فلم يؤذن لي… فزوروا القبور فإنها تذكّر الموت» | صحيح مسلم ٩٧٦ | صحيح (مسلم) | لا تضعيف؛ الملاحظة في المناسبة فقط: يذكر أمّ النبي ﷺ ومنع الاستغفار لها دون شرح | يُحذف من الشاشة، أو يُعرض المقطع «فزوروا القبور فإنها تذكّر الموت» وحده |

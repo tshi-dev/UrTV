@@ -19,8 +19,9 @@ proposal for the owner (the public banks are built from `work/games-data`, so a 
 
 ## Ranked: fix first
 
-1. **hadith W1** (wrong, on screen): six hadith from Sahih Muslim show a running index instead of the standard number
-   (e.g. «صحيح مسلم، ٦٩٨٩» for 2759). Fix the numbers and the fallback in `apply_hadith_report.py`.
+1. **hadith W1** (wrong; two on screen): six Sahih Muslim narrations carried a running index instead of the standard number
+   (e.g. «صحيح مسلم، ٦٩٨٩» for 2759). **Fixed on this branch**; the fallback in `apply_hadith_report.py` still needs the
+   same fix, or the next CI run brings the index back.
 2. **khanat K1** (wrong): «ألمانيا» under م and «ألوان» under و: the letter rule of the game is broken.
 3. **odd-one `family`** (wrong): «صديق، جار، ضيف، معلم، عريس، عروس» counted as family; rounds become disputable.
 4. **quiz geo-cap-Q233** (wrong label): Malta's capital shown as «البلد».
