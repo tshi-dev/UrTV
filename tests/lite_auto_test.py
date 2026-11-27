@@ -46,6 +46,7 @@ check("two signals 8 days apart: off", got.get("FAR") == "FAR false", got.get("F
 check("why: a low-memory kill comes first", got.get("KIND") == "KIND oom", got.get("KIND"))
 check("a signal from the future (the clock went back) counts nothing", got.get("FUTURE") == "FUTURE false", got.get("FUTURE"))
 check("a damaged text: only well-formed signals count", got.get("JUNK") == "JUNK 2 true", got.get("JUNK"))
+check("one burst of low-memory callbacks is one signal, two seconds apart turn nothing on, four hours apart do (review F99)", got.get("BURST") == "BURST 1 false" and got.get("TWOSEC") == "TWOSEC false" and got.get("APART") == "APART true", (got.get("BURST"), got.get("TWOSEC"), got.get("APART")))
 check("at most 20 kept, signals older than 14 days let go", got.get("KEEP") == "KEEP 20" and got.get("OLD") == "OLD 1", (got.get("KEEP"), got.get("OLD")))
 rl = store.split("public static String rowLine(Context c) {")[1].split("\n    }\n")[0]
 npp = (ROOT / "android/launcher/src/main/java/sa/urtv/home/tilawah/NowPlayingProvider.java").read_text(encoding="utf-8")
