@@ -3,7 +3,7 @@
 What was read: `docs/GAMES-KIT.md`, `GAMES-PARTY.md`, `GAMES-PHONES.md`, `GAMES-NEW.md`, `GAMES-QURAN.md`, `GAMES-DATA.md`, `DOMINO.md`, `docs/mockups/howto/TEXTS.md`, `GameRegistry`, every `*Activity` of the games and every engine under `games/`.
 What was not read: the private repo `tshi-dev/urtv-games-dev` (adding it was refused in this session), so nothing unreleased is covered, and the encrypted banks (`assets/games/*.gb`) were not opened. Nothing here changes a question, a fact or a source. No code was changed.
 
-Words in the screens below are plain Gulf Arabic, for the owner to approve first. Design for every new screen: no pills, no «·», focus is scale and shadow only, colours from `GameLook`.
+Words in the screens below are plain Gulf Arabic, for the owner to approve first. Design for every new screen: no pills, no middle-dot separators, focus is scale and shadow only, colours from `GameLook`.
 
 ## The picture in one paragraph
 
