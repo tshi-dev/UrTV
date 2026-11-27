@@ -67,7 +67,7 @@ HDMI ARC (مضخم أو ساوند بار)	HDMI ARC (amplifier or soundbar)
 ص	AM
 م	PM
 ، وضع الاستعداد	, standby
-أكمل المشاهدة	Continue watching
+كمّل المشاهدة	Continue watching
 الموسم %s	Season %s
 الحلقة %s	Episode %s
 تفاصيل التطبيق	App info
@@ -86,6 +86,7 @@ HDMI ARC (مضخم أو ساوند بار)	HDMI ARC (amplifier or soundbar)
 تحديثات التطبيقات	App updates
 متجر Play	Play Store
 إعدادات التلفزيون	TV settings
+إعدادات الجهاز	Device settings
 تحديث تلفزيوني	Update Your TV
 تراجع	Undo
 تعديل المفضلة	Edit favorites
@@ -108,7 +109,7 @@ HDMI ARC (مضخم أو ساوند بار)	HDMI ARC (amplifier or soundbar)
 هذا مقفل بالرمز الأبوي	This is locked with the parental PIN
 «%s» مقفل بالرمز الأبوي	“%s” is locked with the parental PIN
 الرمز غير صحيح، بقي %s محاولات	Wrong PIN, %s tries left
-الرمز غير صحيح	Wrong PIN
+الرمز غلط	Wrong PIN
 رمز جديد	New PIN
 اختر رمزاً من أربعة أرقام	Choose a 4-digit PIN
 تأكيد الرمز	Confirm PIN
@@ -174,7 +175,7 @@ HDMI ARC (مضخم أو ساوند بار)	HDMI ARC (amplifier or soundbar)
 تغيّر الرمز	PIN changed
 عُيّن الرمز	PIN set
 الخروج من وضع الأطفال	Leave kids mode
-علّم تطبيقاً واحداً على الأقل «يظهر للأطفال» أولاً	Mark at least one app “Shown to kids” first
+حدّد تطبيق واحد على الأقل «يظهر للأطفال» أول	Mark at least one app “Shown to kids” first
 ترتيب المفضلة	Arrange favorites
 اختيار على تطبيق لتحريكه بالأسهم (أعلى/أسفل) ثم اختيار لتثبيته. من %s إلى %s تطبيقات.	Press OK on an app, move it with the arrows (up/down), then OK to drop it. %s to %s apps.
 المفضلة %s من %s	Favorites: %s of %s
@@ -370,7 +371,7 @@ HDMI ARC (مضخم أو ساوند بار)	HDMI ARC (amplifier or soundbar)
 فُتح القفل	Unlocked
 قُفل، ويطلب الرمز	Locked: it asks for the PIN
 الرقابة الأبوية متوقفة	Parental controls are off
-ضع رمزًا من أربعة أرقام، ثم اختر ما يُقفل. بدون رمز لا يُقفل شيء، والشاشة الرئيسية كما هي.	Set a four-digit PIN, then choose what to lock. Without a PIN nothing is locked and the home screen stays as it is.
+حط رمز من أربعة أرقام، واختر وش يتقفل. بدون رمز ما يتقفل شيء، والشاشة الرئيسية مثل ما هي.	Set a four-digit PIN, then choose what to lock. Without a PIN nothing is locked and the home screen stays as it is.
 ما الذي يُقفل؟	What gets locked?
 فعّل الرقابة الأبوية	Turn on parental controls
 الرقابة الأبوية مفعّلة	Parental controls are on
@@ -728,7 +729,7 @@ HDMI ARC (مضخم أو ساوند بار)	HDMI ARC (amplifier or soundbar)
 يُنسخ الملف إلى التلفزيون ولا يُشغَّل من الفلاشة	The file is copied to the TV, never played from the stick
 من الجوال	From the phone
 صفحة الجوال، ثم «صوتياتي»	The phone page, then «My sounds»
-افتح صفحة الجوال من «أسهل من الجوال»، ثم «صوتياتي»، واختر الملف	Open the phone page from «Easier from the phone», then «My sounds», and pick the file
+افتح صفحة الجوال من زر «الجوال» في الشاشة الرئيسية، ثم «صوتياتي»، واختر الملف	Open the phone page from the «Phone» button on the home screen, then «My sounds», and pick the file
 الملفات: %1$s من %2$s	Files: %1$s of %2$s
 لا ملفات بعد	No files yet
 أضف من الفلاشة أو من الجوال	Add from a stick or from the phone
@@ -970,7 +971,7 @@ mp3 أو m4a أو ogg أو wav	mp3, m4a, ogg or wav
 ما وجدنا فلاشة ولا ملفات في التنزيلات: ركّب الفلاشة وانتظر ثواني	No USB stick and nothing in Downloads: plug the stick in and wait a few seconds
 أذاني من ملف	My adhan from a file
 لا صور هنا (jpg أو png أو webp). ركّب الفلاشة وانتظر ثواني ثم ارجع وافتحها	No photos here (jpg, png or webp). Plug the stick in, wait a few seconds, then open this again
-اضغط اختيار على صورة لإضافتها إلى صوري	Press OK on a photo to add it to My photos
+اضغط «اختيار» على صورة لإضافتها إلى صوري	Press OK on a photo to add it to My photos
 بدون إذن قراءة الصور ما نقدر نشوف الفلاشة. تقدر تضيف من الجوال	Without permission to read photos we cannot see the stick. You can add from the phone
 يضيف «%s»…	Adding “%s”…
 ثبّت أو حدّث تطبيق «شاشة تلفزيونك» أولاً	Install or update the “Your TV screen” app first

@@ -38,7 +38,7 @@ check("the home reads it with the settings (on unless the screensaver says off; 
 check("the screensaver: OFF by default, sent only when on, a row of the screensaver's settings, saver.sh backtwice on|off and `show`",
       'sp.getBoolean("backTwice", false)' in prefs and '(backTwice() ? "&backtwice=1" : "")' in prefs and f'row("{ROW}", prefs.backTwice() ? "مفعّل" : "متوقف"' in st
       and 'if (backTwice != null) p.setBackTwice("on".equals(backTwice));' in recv and '"\\nbacktwice: "' in recv
-      and "backtwice) set1 backtwice" in read(ROOT / "optimize/saver.sh") and hub.count(ROW) == 5)
+      and "backtwice) set1 backtwice" in read(ROOT / "optimize/saver.sh") and hub.count(ROW) == 3)   # 4.4 beta 4: one tree (ROWS, ORDER, SCOPES)
 check("its words have their English and the docs say it", f"{ROW}\t" in read(ROOT / "i18n/en/saver.tsv") and ROW in read(ROOT / "docs/SETTINGS.md"))
 pause = card[card.index("    void pause() {"):card.index("    void destroy() {")]
 res = card[card.index("    private void resumeWeb() {"):card.index("    private android.widget.ImageView still;")]
@@ -50,6 +50,6 @@ check("the cards on the way back: the last frame is kept as an app comes in fron
 i = st.index('row("%s"' % ROW)
 check("the row sits with the screensaver's display rows, after the design row and before the bar row, never among the home's buttons",
       st.index('row("تصميم شاشة التوقف"') < i < st.index('row("الشريط في الوسط"') and st.index('row("الرجوع يفتح شاشة التوقف"') > i)
-check("the hub finds it under the screensaver, not the home buttons", '{"%s", BUTTONS}' % ROW not in hub and '{"%s", "home"}' % ROW not in hub and hub.count('{"%s", "saver"}' % ROW) == 2)
+check("the hub finds it under the screensaver, not the home buttons", '{"%s", BUTTONS}' % ROW not in hub and '{"%s", "home"}' % ROW not in hub and '{"%s", SAVER}' % ROW in hub and hub.count('{"%s", "saver"}' % ROW) == 1)
 
 sys.exit(1 if failed else 0)

@@ -246,6 +246,7 @@ python3 tests/prayer_summary_test.py   # 4.4 beta 4: one summary rule for the se
 python3 tests/adhan_from_file_test.py   # 4.4 beta 4 «أذاني من ملف»: the last row of «المؤذن», «التنزيلات» beside the USB stick
 python3 tests/photo_from_file_test.py   # 4.4 beta 4: photos from a stick or Downloads into «صوري», the screensaver app with no storage permission
 python3 tests/tester_auto_test.py   # 4.4 beta 4: the automatic tester round (tester/auto): its parsing on saved answers, the whole round on a stand-in TV, the putting back, never a blind key
+python3 tests/pray_rows_test.py   # 4.4 beta 4: «المؤذن», «الأدعية والتذكيرات», «صوتياتي» as rows of «الصلاة والأذان», the dua count from the phone
 python3 tests/quiet_hours_test.py   # 4.4 touch «ساعات الهدوء»
 python3 tests/kahf_template_test.py   # 4.4 touch: the Friday Kahf, ready
 python3 tests/fade_in_test.py   # 4.4 touch «يبدأ بهدوء»
@@ -361,6 +362,7 @@ python3 tests/parental_policy_test.py
 python3 tests/parental_wiring_test.py
 python3 tests/dock_pin_test.py
 python3 tests/i18n_test.py   # «اللغة»: the translation table, its completeness, Arabic byte for byte (docs/ENGLISH.md)
+python3 tests/ar_style_test.py   # docs/STYLE-AR.md: the Arabic wording check warns (never fails), the approved Saudi wording is in the app
 # English phase 1 (the screensaver app): its new tests go right under this line
 python3 tests/i18n_saver_test.py   # the settings in English (Words, WordMatch, Places), Arabic as it was, «اللغة» in «المزيد»
 #
@@ -401,6 +403,7 @@ python3 tests/net_test.py   # Net: the small GET the apps use for their own data
 python3 tests/phone_room_test.py   # «اللعب بالجوالات»: the generic phone room of the party games and the game-only server on a plain JVM (tests/Ph
 python3 tests/radio_fault_test.py   # 4.3.1 «الإذاعة»: why a station stopped, in one plain line (no internet / the station did not answer / format n
 python3 tests/settings_sections_test.py   # 4.3.2 «الإعدادات تكون مضبوطة»: every option lives in the one section it belongs to, in a set order, found by a
+python3 tests/settings_findability_test.py   # 4.4 beta 4 (the owner, the findability review): one tree in every settings style, every audited row reachable within section ← row ← picker, the hidden features found by their words
 python3 tests/setup_row_test.py   # 4.3.1 «إعداد تلفزيوني» is a row of the settings (Home screen) that always opens the setup, even when UrTV is a
 python3 tests/step46_test.py   # The tester's step 46 findings (build 214, a real TCL), the ones that are pinned in the source: «تطبيقات مقترحة
 python3 tests/step47_test.py   # The tester's step 47 findings (build 222, a real TCL) that are pinned in the source: the update screen opened

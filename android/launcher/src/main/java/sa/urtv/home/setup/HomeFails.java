@@ -1,7 +1,7 @@
 package sa.urtv.home.setup;
 
 /**
- * 4.4 «اجعل UrTV الشاشة الرئيسية», not pushed: the home switch is tried only when the person asks (the setup's home step, or the settings' row that opens it). Where it
+ * 4.4 «خلّ UrTV هي الشاشة الرئيسية», not pushed: the home switch is tried only when the person asks (the setup's home step, or the settings' row that opens it). Where it
  * was tried and did not make UrTV the home TWICE on this TV (the in-app switch or the TV-side setup, home-fails.txt counts both: they are the same SetupEngine.home), the
  * in-app path stops offering it: the home step says so in one line, and the setup screen shows the way that works on such a TV, an AI helper on a computer with
  * docs/SETUP-PROMPT.md (a QR to it). A switch that worked starts the count again. No Android in here (tests/HomeFailsRun.java).

@@ -45,7 +45,7 @@ public class ClosestActivity extends GameActivity {
     private void startWithPhones() {
         int n = phones.room.count();
         if (n < ClosestGame.MIN_PLAYERS) return;
-        if (n > ClosestGame.MAX_PLAYERS) { toast(S.t("اللعبة تتسع لعشرة لاعبين")); return; }
+        if (n > ClosestGame.MAX_PLAYERS) { toast(S.t("اللعبة تاخذ لين عشرة لاعبين")); return; }
         phones.room.start(); phoneLobby = false;
         names = phones.room.names().toArray(new String[0]);
         List<ClosestGame.Item> picks = ClosestGame.pick(bank, ClosestGame.QUESTIONS[chips.picked("count")], chips.picked("kids") == 1, new HashSet<>(GamePrefs.recent(this, id())), rnd);

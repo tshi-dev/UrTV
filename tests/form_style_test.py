@@ -26,8 +26,8 @@ check("Prefs: the three values with their labels, dots the default (an unknown s
 check("the page is told #formstyle= only when it is not the default (the default fragment is unchanged)", '("dots".equals(formStyle()) ? "" : "&formstyle=" + formStyle())' in prefs)
 i, j, k = act.find('row("الدوريات كاملة"'), act.find('row("شكل آخر المباريات"'), act.find('row("رياضات أخرى"')
 check("the row: right after «الدوريات كاملة», before «رياضات أخرى», a choice list", 0 < i < j < k and 'pickChoice("شكل آخر المباريات", Prefs.FORM_STYLES' in act, (i, j, k))
-for name, pat in (("ROWS", r'static final String\[\]\[\] ROWS = \{'), ("ORDER", r'static final String\[\]\[\] ORDER = \{'), ("ROWS_432", r'ROWS_432 = \{'),
-                  ("ORDER_432", r'ORDER_432 = \{'), ("SCOPES", r'SCOPES = \{')):
+for name, pat in (("ROWS", r'static final String\[\]\[\] ROWS = \{'), ("ORDER", r'static final String\[\]\[\] ORDER = \{'),   # 4.4 beta 4: one tree, so no *_432 tables
+                  ("SCOPES", r'SCOPES = \{')):
     m = re.search(pat, hub)
     body = hub[m.end():hub.find("};", m.end())] if m else ""
     check(f"SettingsHub.{name} has it, after «الدوريات كاملة»", "شكل آخر المباريات" in body and body.find("الدوريات كاملة") < body.find("شكل آخر المباريات"))

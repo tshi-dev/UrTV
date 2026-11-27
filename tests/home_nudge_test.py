@@ -51,8 +51,8 @@ check("a debug shot starts it without a setup (DebugNudgeShot, declared in the d
       (ROOT / "android/launcher/src/debug/java/sa/urtv/home/DebugNudgeShot.java").is_file() and "DebugNudgeShot" in (ROOT / "android/launcher/src/debug/AndroidManifest.xml").read_text(encoding="utf-8")
       and "DebugNudgeShot" not in (ROOT / "android/launcher/src/main/AndroidManifest.xml").read_text(encoding="utf-8"))
 saver = (ROOT / "android/app/src/main/java/sa/urtv/screensaver/SettingsActivity.java").read_text(encoding="utf-8")
-check("settings: «اجعل UrTV الشاشة الرئيسية» opens the launcher's «إعداد تلفزيوني» when we are not the Home and says «✓ UrTV هو الشاشة الرئيسية» when we are; the manifest lets the app see the Home resolver",
-      'row("اجعل UrTV الشاشة الرئيسية", isHome ? "✓ UrTV هو الشاشة الرئيسية"' in saver and '"sa.urtv.home.setup.SetupActivity"' in saver and "if (!isHome) openSetup();" in saver
+check("settings: «خلّ UrTV هي الشاشة الرئيسية» opens the launcher's «إعداد تلفزيوني» when we are not the Home and says «✓ UrTV هو الشاشة الرئيسية» when we are; the manifest lets the app see the Home resolver",
+      'row("خلّ UrTV هي الشاشة الرئيسية", isHome ? "✓ UrTV هو الشاشة الرئيسية"' in saver and '"sa.urtv.home.setup.SetupActivity"' in saver and "if (!isHome) openSetup();" in saver
       and "android.intent.category.HOME" in (ROOT / "android/app/src/main/AndroidManifest.xml").read_text(encoding="utf-8"))
 # ---- 4.3.1 the city question: the same bar, one at a time
 tail = main.split("private void updateHomeNudge", 1)[1][:4200]
@@ -75,8 +75,8 @@ check("the question is the nudge's bar: due only while no city was chosen (the s
 check("the home asks the screensaver (city_chosen column; an older one says nothing = chosen, nobody is asked), and its words are in the English table",
       '"city_chosen"' in (ROOT / "android/app/src/main/java/sa/urtv/screensaver/ConfigProvider.java").read_text(encoding="utf-8") and "boolean cityChosen = true;" in (HOME / "ConfigSnapshot.java").read_text(encoding="utf-8")
       and all(w in tsv for w in ("اختر مدينتك للطقس والصلاة\t", "اختر المدينة\t", "للطقس والصلاة\t")))
-check("the screensaver app opens the chooser on the extra (onCreate and onNewIntent), on the one city row (4.3.3: «الموقع والطقس», whose button shows the current city)",
+check("the screensaver app opens the chooser on the extra (onCreate and onNewIntent), on the one city row (4.4 beta 4: «اللغة والموقع», whose button shows the current city)",
       'getBooleanExtra("pickCity", false)' in saver and "onNewIntent" in saver and "pickCity();" in saver.split("onNewIntent", 1)[1][:300]
-      and (SAVER_HUB := (ROOT / "android/app/src/main/java/sa/urtv/screensaver/SettingsHub.java").read_text(encoding="utf-8")).split("CATEGORIES = {", 1)[1].count("{PLACE, \"الموقع والطقس\"") == 1
-      and "case SettingsHub.PLACE: return Words.city(prefs.city());" in saver)
+      and (SAVER_HUB := (ROOT / "android/app/src/main/java/sa/urtv/screensaver/SettingsHub.java").read_text(encoding="utf-8")).split("CATEGORIES = {", 1)[1].count("{LANG, \"اللغة والموقع\"") == 1 and '{"المدينة", LANG}' in SAVER_HUB
+      and 'case SettingsHub.LANG: return langLabel() + "، " + Words.city(prefs.city());' in saver)
 sys.exit(1 if failed else 0)

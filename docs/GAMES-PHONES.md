@@ -10,7 +10,7 @@ One switch, «اللعب بالجوالات», in the setup of «واحد مو �
 - With the switch on, «ابدأ» opens a lobby: the QR, the four-digit room code, the address, the phones that came in (as many as 12). Start needs 3 phones
   for «واحد مو معنا» (10 at most) and 2 for «بدون كلام». The phones are the players, in the order they came; their names are the players' names.
 - **واحد مو معنا**: every phone shows its own word at once (the one outside gets «أنت برا السالفة»), then «شفتها». The TV goes on when all have tapped, or when
-  the host presses OK. The vote is on the phones (a name, never your own, or «ما أدري»); the TV counts when all have voted, or on «احسب الأصوات». The
+  the host presses OK. The vote is on the phones (a name, never your own, or «ما أدري»); the TV counts when all have voted, or on «عدّوا الأصوات». The
   most votes wins; a tie, or no name, is «ما اتفقنا». The remote's own vote grid still works.
 - **بدون كلام**: the turns go round the phones. The actor's phone shows the word (a secret card, «شفتها» starts the clock), then the word with
   «صح», «تخطّي» and, in «وصّف» with fouls on, «مخالفة». The TV never shows the word in this mode, not even on «شوف الكلمة».

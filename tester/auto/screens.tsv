@@ -8,21 +8,21 @@ layout	football	كرة القدم
 card	none	بلا بطاقة		
 card	stocks	الأسهم		
 card	matches	المباريات		
-# section: an opened settings section. value = the extras after `am start -n sa.urtv.screensaver/.SettingsActivity`; marker = a row name that must be on that screen.
+# section: the sections of the ONE settings tree of 4.4 beta 4, in its order. value = the extras after `am start --activity-clear-task -n sa.urtv.screensaver/.SettingsActivity`; marker = a row that is always drawn near the top of that section (from the UI session's list, work/44b4-settings-ia).
+section	pray	الصلاة والأذان	--es screen pray --es hubAt pray	الأذان لكل صلاة
+section	photos	صوري والخلفيات	--es screen photos --es hubAt photos	احذف صورة
+section	look	الشكل	--es screen look --es hubAt look	التخطيط
+section	saver	شاشة التوقف	--es screen saver --es hubAt saver	بدء شاشة التوقف بعد
+section	apps	التطبيقات والأزرار	--es screen apps --es hubAt apps	الخروج من تلفزيونك
+section	content	المباريات والأسواق	--es screen content --es hubAt content	مباريات اليوم
+section	family	العائلة والجوال	--es screen family --es hubAt family	الرقابة الأبوية
+section	lang	اللغة والموقع	--es screen lang --es hubAt lang	المدينة
+section	update	حول والتحديث	--es screen update --es hubAt update	تحديث تلفزيوني
 section	search	بحث في الإعدادات	--es screen search --es hubAt search	بحث في الإعدادات
-section	lang	اللغة	--es screen lang --es hubAt lang	اللغة
-section	place	الموقع والطقس	--es screen place --es hubAt place	المدينة
-section	look	المظهر	--es screen look --es hubAt look	المظهر
-section	apps	التطبيقات	--es screen apps --es hubAt apps	التطبيقات
-section	buttons	الأزرار السريعة	--es screen buttons --es hubAt buttons	مركز التحكم
-section	pray	الصلاة والأذان	--es screen pray --es hubAt pray	الأذان
-section	content	المباريات والأسواق	--es screen content --es hubAt content	الفرق المتابعة
-section	saver	شاشة التوقف	--es screen saver --es hubAt saver	معاينة الشاشة
-section	family	العائلة والأمان	--es screen family --es hubAt family	الرقابة الأبوية
-section	update	حول	--es screen update --es hubAt update	الإصدار
-# style: the settings styles, each opened to every section above. key = what `saver.sh` takes for the look of the settings (see `saver.sh preset`): tv = the buttons one, couch = كنبة.
-style	tv	أزرار	preset tv	
-style	couch	كنبة	preset couch	
+# style: the settings styles, each opened to every section above. value = the word of `--es settingsstyle` in am broadcast -n sa.urtv.screensaver/.SaverReceiver -a sa.urtv.screensaver.SET
+style	buttons	أزرار	buttons	
+style	couch	كنبة	couch	
+style	tvos	tvOS	tvos	
 # adhan: the per-prayer states set by command and read back (music.sh adhan state <prayer> <state>)
 adhan	fajr	الفجر		
 adhan	dhuhr	الظهر		

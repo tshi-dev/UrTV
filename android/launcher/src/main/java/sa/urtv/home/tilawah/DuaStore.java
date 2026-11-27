@@ -26,11 +26,13 @@ final class DuaStore {
         long lastDue;
         /** 4.4 touch «يبدأ بهدوء»: rises from silence in three seconds (on for a new one) */
         boolean fade = true;
+        /** 4.4 beta 4: added from «صوتياتي» (the phone or a file) and not looked at on the TV since: the settings row says «جديد من الجوال: N» */
+        boolean fresh;
 
         Dua copy() {
             Dua d = new Dua();
             d.id = id; d.name = name; d.sound = sound; d.rule = rule.copy() != null ? rule.copy() : new DuaRule();
-            d.volume = volume; d.overOthers = overOthers; d.on = on; d.lastDue = lastDue; d.fade = fade;
+            d.volume = volume; d.overOthers = overOthers; d.on = on; d.lastDue = lastDue; d.fade = fade; d.fresh = fresh;
             return d;
         }
     }
@@ -60,10 +62,18 @@ final class DuaStore {
                 d.on = o.optBoolean("on", true);
                 d.lastDue = o.optLong("last", 0);
                 d.fade = o.optBoolean("fade", true);
+                d.fresh = o.optBoolean("fresh", false);
                 out.add(d);
             }
         } catch (Exception ignored) { }
         return out;
+    }
+
+    /** how many duas wait to be timed on the TV: added from «صوتياتي» and not opened since */
+    static int freshCount(Context c) {
+        int n = 0;
+        for (Dua d : list(c)) if (d.fresh) n++;
+        return n;
     }
 
     static Dua get(Context c, int id) {
@@ -76,7 +86,7 @@ final class DuaStore {
         try {
             for (Dua d : items) {
                 a.put(new JSONObject().put("id", d.id).put("name", d.name).put("sound", d.sound).put("rule", d.rule.text())
-                        .put("volume", d.volume).put("over", d.overOthers).put("on", d.on).put("last", d.lastDue).put("fade", d.fade));
+                        .put("volume", d.volume).put("over", d.overOthers).put("on", d.on).put("last", d.lastDue).put("fade", d.fade).put("fresh", d.fresh));
             }
         } catch (Exception ignored) { }
         sp(c).edit().putString("items", a.toString()).commit();

@@ -42,7 +42,7 @@ public class QuizGamesActivity extends Activity {
         S.n("ارسم وخمّن"), S.n("ارسم بإصبعك والباقي يخمّن"),
         S.n("كمّل الآية"), S.n("أكمل الآية من أربعة خيارات"),
         S.n("سباق الحساب"), S.n("أسرع من يحسب أولًا"),
-        S.n("ألغاز المنطق"), S.n("فكّروا قبل أن يسبقكم غيركم"),
+        S.n("ألغاز المنطق"), S.n("فكّروا قبل لا يسبقكم غيركم"),
         S.n("حزم المحتوى"), S.n("حجم ما حمّلتموه من الألعاب، واحتفظوا به أو احذفوه"),
     };
     /** the words of the three little buttons (spoken by TalkBack, never drawn): «وضع ليلي» is off or on (no automatic state), the three night palettes */

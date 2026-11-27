@@ -90,44 +90,53 @@ sleep 25
 shot saver-now-playing 2
 music sa.urtv.home.STOP
 
-# ---- 4.4 «شكل كنبة» off (the default): the 4.3.2 settings screen, its first screen of buttons, then «المظهر والخلفيات» with the switch first
+# ---- 4.4 beta 4 (the owner, docs/research/SETTINGS-FINDABILITY.md): ONE tree of nine sections in every settings style. «أزرار» (the default): the
+# first screen of buttons (the search wide on top), then «الصلاة والأذان», then «صوري والخلفيات» with its add and delete first
 start sa.urtv.screensaver/.SettingsActivity
-shot settings-00-classic-hub 3
-for i in 1 2 3 4 5 6; do key DPAD_DOWN; done
-key DPAD_CENTER
-shot settings-00-classic-look 2
+shot settings-a-buttons-hub 3
+key DPAD_DOWN DPAD_CENTER
+shot settings-a-buttons-prayer 2
+key BACK DPAD_LEFT DPAD_CENTER
+shot settings-a-buttons-photos 2
+key BACK DPAD_DOWN DPAD_RIGHT DPAD_CENTER
+for i in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16; do key DPAD_DOWN; done
+shot settings-a-buttons-look-cards 1
 key BACK BACK
-# ---- «شكل كنبة» on: the side list on the right, the rows on the left; they open on «اللغة», the focus on its item; ▼ shows the next section's
-# rows at once (the focus stays on the list), OK goes into the rows, Back comes back to the section's item
-saver --es couch on
+# «كنبة»: the side list on the right, the rows on the left; it opens on «الصلاة والأذان», the focus on its item; ▼ shows the next section's rows at once
+saver --es settingsstyle couch
 start sa.urtv.screensaver/.SettingsActivity
-shot settings-01-lang 3
+shot settings-b-couch-prayer 3
 key DPAD_DOWN
-shot settings-02-place 2
+shot settings-b-couch-photos 2
 key DPAD_DOWN
-shot settings-03-look 2
+shot settings-b-couch-look 2
 key DPAD_CENTER
-for i in 1 2 3 4 5 6 7 8 9; do key DPAD_DOWN; done
-shot settings-04-look-further 1
+for i in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16; do key DPAD_DOWN; done
+shot settings-b-couch-look-cards 1
 key BACK DPAD_DOWN
-shot settings-05-apps 2
+shot settings-b-couch-saver 2
 key DPAD_DOWN
-shot settings-06-buttons 2
+shot settings-b-couch-apps 2
 key DPAD_DOWN
-shot settings-07-prayer 2
+shot settings-b-couch-matches 2
 key DPAD_DOWN
-shot settings-08-matches-and-markets 2
+shot settings-b-couch-family 2
 key DPAD_DOWN
-shot settings-09-saver 2
+shot settings-b-couch-lang 2
 key DPAD_DOWN
-shot settings-10-family 2
-key DPAD_DOWN
-shot settings-11-about 2
+shot settings-b-couch-about 2
 for i in 1 2 3 4 5 6 7 8 9 10; do key DPAD_UP; done
 key DPAD_CENTER
-shot settings-12-search 2
+shot settings-b-couch-search 2
 key BACK BACK
-saver --es couch off
+# tvOS: the same buttons and sections in its own look
+saver --es settingsstyle tvos
+start sa.urtv.screensaver/.SettingsActivity
+shot settings-c-tvos-hub 3
+key DPAD_DOWN DPAD_CENTER
+shot settings-c-tvos-prayer 2
+key BACK BACK
+saver --es settingsstyle buttons
 
 adb logcat -d -s AndroidRuntime:E > "$OUT/crashes.txt"
 ls "$OUT"

@@ -144,8 +144,16 @@ for (const platform of ['webos', 'tizen']) {
     const hash = await p.evaluate(() => location.hash);
     check(L('the page starts again with the new settings in its link'), /clock=24/.test(hash) && /pm=jafari/.test(hash) && /gap=0/.test(hash) && /city=/.test(hash), hash);
     check(L('the 24-hour clock shows (no ص / م)'), await p.evaluate(() => getComputedStyle(document.getElementById('ck-ap')).display === 'none'));
-    check(L('no calculation named under the clock for a Saudi city (4.3 A4: the country\'s own only)'), !/الجعفري|·/.test((await text(p, '#clock-sub')) || ''), await text(p, '#clock-sub'));
+    check(L('a method the person chose (الجعفري, not the country\'s own) is named under the clock (4.4 beta 4: Ja\'fari is back), with no «·»'), /الجعفري/.test((await text(p, '#clock-sub')) || '') && !/·/.test((await text(p, '#clock-sub')) || ''), await text(p, '#clock-sub'));
     check(L('no script error after the restart'), errors.length === 0, errors.join(' | '));
+    await ctx.close();
+  }
+
+  // a Saudi city with the default calculation (Umm al-Qura) names no method under the clock (4.3 A4: the country's own is not worth a line)
+  {
+    const { p, ctx, errors } = await open(platform, { hash: '#gap=0' });
+    check(L('a Saudi city with the default calculation names no method under the clock'), !/الحساب|·/.test((await text(p, '#clock-sub')) || ''), await text(p, '#clock-sub'));
+    check(L('no script error on the default page'), errors.length === 0, errors.join(' | '));
     await ctx.close();
   }
 

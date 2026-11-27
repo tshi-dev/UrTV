@@ -28,7 +28,7 @@ check("the name is centred over the focused favourite, follows it as the tray sc
       "placeName();" in main and "tray.setOnScrollChangeListener((v, x, y, ox, oy) -> placeName());" in main
       and "addOnGlobalFocusChangeListener((was, now) -> { KeyTrace.focusChanged(); placeName(); })" in main and "nameRow.animate().alpha(inBar ? 1f : 0f)" in main)
 bottom_adds = re.findall(r"bottom\.addView\((\w+)", main)
-check("the tray always rests at y 768 (1080p): the first screen's bottom block holds only the name and the tray, so «أكمل المشاهدة» (its own row below) never lifts it",
+check("the tray always rests at y 768 (1080p): the first screen's bottom block holds only the name and the tray, so «كمّل المشاهدة» (its own row below) never lifts it",
       bottom_adds == ["titleRow", "tray"] and "content.addView(tvRowsBox" in main and "bottom.addView(tvRowsBox" not in main
       and "lp(-1, -2, Gravity.BOTTOM, bar(FavBar.SIDE), 0, bar(FavBar.SIDE), bar(FavBar.REST_BOTTOM))" in main, bottom_adds)
 check("…and nothing else moves it: no translation or margin of the tray or its block but lowerTray's 40 px",

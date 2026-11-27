@@ -51,13 +51,14 @@ check("the TV: «اختر صورة لحذفها» beside «حذف كل صوري�
       '"اختر صورة لحذفها", "حذف كل صوري"' in sett and "pickOwnToDelete()" in sett and 'd.setTitle("حذف هذه الصورة؟");' in sett
       and 'd.setPositiveButton("نعم"' in sett and "Own.deletePick(this, OwnPick.parse(pick))" in sett and "confirmClearOwn()" in sett)
 check("the TV's grid makes its small pictures off the screen's thread", '"own-thumbs").start();' in sett)
-for word, row in (("حذف الصور", "صوري"), ("حذف صوره", "صوري"), ("صوري", "صوري"), ("المخفيه", "ترتيب كل التطبيقات"),
-                  ("اظهار التطبيقات المخفيه", "ترتيب كل التطبيقات"), ("التطبيقات المخفيه", "ترتيب كل التطبيقات")):
+# 4.4 beta 4 (the findability review): the words go to the rows that do it at once, «احذف صورة» and «التطبيقات المخفية»
+for word, row in (("حذف الصور", "احذف صورة"), ("حذف صوره", "احذف صورة"), ("صوري", "صوري"), ("المخفيه", "التطبيقات المخفية"),
+                  ("اظهار التطبيقات المخفيه", "التطبيقات المخفية"), ("تعديل التطبيقات", "ترتيب كل التطبيقات")):
     check(f"search: «{word}» finds «{row}»", '{"%s", "%s"}' % (word, row) in hub)
-check("one alias table and one search for both layouts (the 4.3.2 screen and the side list), and the rows are in both",
-      hub.count("static final String[][] ALIASES") == 1 and "private static String[][] order() { return classic ? ORDER_432 : ORDER; }" in hub
-      and all(f'"{r}"' in hub[hub.index(f"static final String[][] {o} = "):hub.index("};", hub.index(f"static final String[][] {o} = "))]
-              for o in ("ORDER", "ORDER_432") for r in ("صوري", "ترتيب كل التطبيقات")))
+check("one alias table, one search and one tree for every settings style (4.4 beta 4), and the rows are in its order",
+      hub.count("static final String[][] ALIASES") == 1 and "private static String[][] order() { return ORDER; }" in hub and "ORDER_432" not in hub
+      and all(f'"{r}"' in hub[hub.index("static final String[][] ORDER = "):hub.index("};", hub.index("static final String[][] ORDER = "))]
+              for r in ("صوري", "احذف صورة", "ترتيب كل التطبيقات", "التطبيقات المخفية")))
 if shutil.which("javac"):
     run = """package sa.urtv.screensaver;
 public class PickRun { static void out(String n, boolean ok) { System.out.println(n + "\\t" + (ok ? "ok" : "bad")); }

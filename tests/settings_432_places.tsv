@@ -1,0 +1,182 @@
+# The 4.3.2 settings screen (the classic hub, «أزرار» until 4.4 beta 4), frozen when its tables left SettingsHub: every row with its old section,
+# every button with its name and the row it ran at once. tests/settings_one_form_test.py checks each lands in the one tree (an old link keeps working).
+renamed	وضع الألوان	الألوان والإضاءة
+row	الأذان	adhan
+row	الأذان لكل صلاة	adhan
+row	الدولة	place
+row	المدينة	place
+row	طريقة الحساب	place
+row	تعديل وقت الصلاة	place
+row	الأرقام	clock
+row	التاريخ بالأرقام	clock
+row	أسماء الأشهر الميلادية	clock
+row	نظام الساعة	clock
+row	إظهار الثواني	clock
+row	فرق التاريخ الهجري	clock
+row	افتح تلاوة وأذان	listen
+row	زر تلاوة وأذان	listen
+row	المظهر على الرئيسية	look
+row	لوحة المظهر على الرئيسية	look
+row	زر رجّع الشكل السابق	look
+row	تبديل الشكل بلا وميض	look
+row	رجّع الشكل السابق	look
+row	أشكال جاهزة	look
+row	شكل شاشة الإعدادات	look
+row	تخصيص	look
+row	رجّع بطاقاتك	look
+row	شكل كنبة	look
+row	التخطيط	look
+row	الخلفية	look
+row	الساعة	look
+row	شكل التطبيقات	look
+row	محاذاة التطبيقات	look
+row	حجم شريط tvOS	look
+row	صفوف شريط tvOS	look
+row	حزم الآفاق	look
+row	بقاء كل أفق	look
+row	الأفق يتبع الوقت	look
+row	الأفق يتبع الطقس	look
+row	وضع الألوان	look
+row	مركز التحكم	control
+row	الجوالات المسموح لها	phone
+row	تحديث تلفزيوني	update
+row	التحديث التلقائي للصفحة	update
+row	تحديث صفحة شاشة التوقف	update
+row	النسخ التجريبية	update
+row	أرسل ملاحظة عن النسخة التجريبية	update
+row	مسح الملفات المؤقتة	update
+row	أرسل تقرير	report
+row	مصادر البيانات	update
+row	معاينة الشاشة	saver
+row	تنبيه قبل الأذان	saver
+row	الشروق بعد الفجر	saver
+row	شريط الوقت بين الصلاتين	saver
+row	الرطوبة والرياح	saver
+row	شريط السنة تحت الساعة	saver
+row	سرعة ألبوم صوري	saver
+row	تاريخ الصورة في ألبوم صوري	saver
+row	عنوان ألبوم صوري	saver
+row	شكل صورة ألبوم صوري	saver
+row	حجم ألبوم صوري	saver
+row	توهّج لون التطبيق	saver
+row	نص أوضح	saver
+row	المناسبة القادمة	saver
+row	تعتيم الليل	saver
+row	المناسبات الوطنية	saver
+row	حجم الساعة	saver
+row	تصميم شاشة التوقف	saver
+row	الشريط في الوسط	saver
+row	مكان الشريط	saver
+row	مكان الطقس	saver
+row	الخانة اليسرى	saver
+row	العدّ التنازلي	saver
+row	المحتوى	saver
+row	بطاقة ثانية	saver
+row	شكل البطاقة	saver
+row	تبديل الآية والحديث	saver
+row	الآية والحديث	saver
+row	تبديل الصورة كل	saver
+row	صور شاشة التوقف	saver
+row	صوري	saver
+row	بدء شاشة التوقف بعد	saver
+row	الوضع الخفيف	saver
+row	خلّ UrTV هي الشاشة الرئيسية	home
+row	إعداد تلفزيوني	home
+row	رجّع واجهة المصنع	home
+row	تخلّص من واجهة المصنع	home
+row	قبل ما تحذف التطبيق…	home
+row	⁦UrTV⁩ النظيف	home
+row	صفحات الأسهم والمباريات داكنة	home
+row	البطاقة الأولى	home
+row	البطاقة الثانية	home
+row	البطاقة الثالثة	home
+row	التحية والطقس	home
+row	اسمك في التحية	home
+row	زر المصادر	home
+row	زر الأسواق	home
+row	زر المباريات	home
+row	زر الجوال	home
+row	زر البحث	home
+row	زر مركز التحكم	home
+row	زر المهام	home
+row	الرجوع يفتح شاشة التوقف	home
+row	رجوع مرتين يفتح شاشة التوقف	saver
+row	زر الرئيسية يفتح تلفزيونك مباشرة	home
+row	زر يوتيوب في الريموت	home
+row	زر نتفليكس في الريموت	home
+row	زر Prime Video في الريموت	home
+row	زر ديزني بلس في الريموت	home
+row	زر Paramount Plus في الريموت	home
+row	زر Free TV في الريموت	home
+row	الزر المخصص ★ في الريموت	home
+row	زر BRAVIA CORE في الريموت	home
+row	زر Crunchyroll في الريموت	home
+row	زر Google Play في الريموت	home
+row	زر SonyLIV في الريموت	home
+row	زر Tabii في الريموت	home
+row	زر TCL Channel في الريموت	home
+row	زر Okko في الريموت	home
+row	زر VK في الريموت	home
+row	زر Rutube في الريموت	home
+row	زر KION في الريموت	home
+row	زر Wink في الريموت	home
+row	زر IVI في الريموت	home
+row	الخروج من تلفزيونك	home
+row	جرس التحديثات	home
+row	كمّل المشاهدة	home
+row	مباريات اليوم	content
+row	الفرق المتابعة	content
+row	تطبيق المباريات	content
+row	الدوريات كاملة	content
+row	بطاقة المباريات لليوم فقط	content
+row	رياضات أخرى	content
+row	إخفاء المباريات المنتهية	content
+row	تنبيه بداية المباراة	content
+row	صوت التنبيه	content
+row	عند الهدف	content
+row	صافرة النهاية	content
+row	فوق تطبيق آخر	content
+row	جرّب التنبيه	content
+row	افتح صفحة الأسواق	content
+row	شريط الأسواق	content
+row	الأسواق	content
+row	عرض الأسواق	content
+row	قائمة الأسهم	content
+row	تغيّر الأسهم	content
+row	تطبيقات في الشريط	apps
+row	ترتيب التطبيقات المفضلة	apps
+row	تطبيقات مقترحة	apps
+row	أسماء المصادر	apps
+row	تعديل المفضلة	apps
+row	ترتيب كل التطبيقات	apps
+row	قفل التطبيقات	apps
+row	تفاصيل التطبيقات	apps
+row	التصنيفات	shows
+row	اللغات	shows
+row	مسلسلات مختارة	shows
+row	أقل تقييم	shows
+row	الرقابة الأبوية	parental
+row	تصفية المواقع	family
+row	اللغة	lang
+row	بحث في الإعدادات	search
+tile	city	المدينة	المدينة
+tile	adhan	الأذان	الأذان
+tile	place	الموقع والصلاة	
+tile	clock	الساعة والأرقام	
+tile	listen	تلاوة وأذان	
+tile	cards	البطاقات	
+tile	look	المظهر والخلفيات	
+tile	control	مركز التحكم	مركز التحكم
+tile	phone	التحكم من الجوال	الجوالات المسموح لها
+tile	update	تحديث تلفزيوني	
+tile	report	أرسل تقرير	أرسل تقرير
+tile	more	المزيد	
+tile	saver	شاشة التوقف	
+tile	home	الشاشة الرئيسية	
+tile	content	المباريات والأسواق	
+tile	apps	التطبيقات والمفضلة	
+tile	shows	جديد المسلسلات	
+tile	parental	الرقابة الأبوية	الرقابة الأبوية
+tile	family	تصفية المواقع	تصفية المواقع
+tile	lang	اللغة	اللغة
+tile	search	بحث في الإعدادات	بحث في الإعدادات

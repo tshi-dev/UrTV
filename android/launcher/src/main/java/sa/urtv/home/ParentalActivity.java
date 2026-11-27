@@ -108,7 +108,7 @@ public class ParentalActivity extends Activity {
 
         // the card and its two buttons (docs/UX-REVIEW.md): off, «فعّل الرقابة الأبوية» and «ما الذي يُقفل؟»; on, «التطبيقات المقفلة» and «غيّر الرمز»
         if (!s.pinSet) {
-            list.addView(card(S.t("الرقابة الأبوية متوقفة"), S.t("ضع رمزًا من أربعة أرقام، ثم اختر ما يُقفل. بدون رمز لا يُقفل شيء، والشاشة الرئيسية كما هي.")), cardParams());
+            list.addView(card(S.t("الرقابة الأبوية متوقفة"), S.t("حط رمز من أربعة أرقام، واختر وش يتقفل. بدون رمز ما يتقفل شيء، والشاشة الرئيسية مثل ما هي.")), cardParams());
             View what = button(S.t("ما الذي يُقفل؟"), v -> explain());
             View start = primary(button(S.t("فعّل الرقابة الأبوية"), v -> choosePin(false)));
             list.addView(buttons(what, start), rowParams());
@@ -184,7 +184,7 @@ public class ParentalActivity extends Activity {
             return;
         }
         if (!ParentalPolicy.canStartKids(s)) {
-            toast(S.t("علّم تطبيقاً واحداً على الأقل «يظهر للأطفال» أولاً"));
+            toast(S.t("حدّد تطبيق واحد على الأقل «يظهر للأطفال» أول"));
             return;
         }
         Parental.setKids(this, true);

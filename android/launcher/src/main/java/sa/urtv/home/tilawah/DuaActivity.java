@@ -111,6 +111,7 @@ public class DuaActivity extends RowScreen {
     }
 
     private void keep() {
+        edit.fresh = false;   // any change made on the TV is the dua timed, or looked at
         if (!DuaStore.put(this, edit)) { toast(S.t("وصلت الحد: %s", Ui.arabic(DuaStore.MAX))); return; }
         DuaScheduler.schedule(this);
     }

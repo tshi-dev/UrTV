@@ -70,14 +70,14 @@ button.main{background:var(--acc);color:var(--ink);border:0}button.sec{backgroun
 </div>
 <p id="state" role="status"></p>
 <div id="onTv" class="hidden"><h2 id="tvHead">على التلفزيون</h2><div id="grid"></div></div>
-<p id="none" class="hidden"><span id="t4">افتح صفحة الجوال وامسح الرمز من «أسهل من الجوال» على التلفزيون أولاً.</span> <a href="/" id="t5">صفحة الجوال</a></p>
+<p id="none" class="hidden"><span id="t4">افتح صفحة الجوال وامسح الرمز من زر «الجوال» في الشاشة الرئيسية على التلفزيون أولًا.</span> <a href="/" id="t5">صفحة الجوال</a></p>
 <script nonce="__NONCE__">
 (function () {
   try { var th = localStorage.getItem('urtvTheme'); if (th === 'light' || th === 'dark') document.documentElement.setAttribute('data-theme', th); } catch (e) { }
   var EN = document.documentElement.lang === 'en';
   var W = EN ? {
     t1: 'My photos on the TV', t2: 'Pick photos from your phone: they are made smaller here before they are sent, without where or when they were taken. The screensaver shows them with «My photos».',
-    t3: 'Pick photos', t4: 'Open the phone page and scan the code from «Easier from the phone» on the TV first.', t5: 'Phone page',
+    t3: 'Pick photos', t4: 'Open the phone page and scan the code from the «Phone» button on the TV\'s home screen first.', t5: 'Phone page',
     sending: 'Sending {n} of {all}…', done: '{n} photos are on the TV ✓', full: 'The TV holds as many photos as it can. Delete some on the TV first.',
     camera: 'This photo still had its camera data and was not sent.', refused: 'The TV did not take a photo.', failed: 'Not sent: check the Wi-Fi and try again.', no_session: 'The session ended.',
     onTv: 'On the TV: {n} of {max}', del: 'Delete', ask: 'Delete this photo from the TV?', deleted: 'Deleted from the TV ✓', moved: 'The photos changed on the TV: the list is fresh now, try again.',

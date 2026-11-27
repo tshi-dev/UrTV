@@ -63,6 +63,7 @@ public class SettingsActivity extends Activity {
     private TextView hint;
     private LinearLayout side;       // 4.3.3 the side list (the mockup): «الإعدادات», the search and the ten sections, always there on the right; the rows on the left
     private final java.util.Map<String, View> sideItems = new java.util.LinkedHashMap<>();   // each section's item in the side list, by its key
+    private boolean keyed;           // 4.4 beta 4: a key was pressed since the settings opened (before it, a redraw never takes the focus into the rows)
     private boolean sideFocus;       // the next render() leaves the focus on the side list (a section shown while the focus moves along the list)
     /** 4.4 the owner: «شكل كنبة» off = the 4.3.2 settings screen (a first screen of big buttons, «البطاقات» and «المزيد» screens of buttons, Back up a
      *  screen); on = the side list. The same rows either way (render builds each once); SettingsHub says where they sit in the layout chosen. */
@@ -107,7 +108,7 @@ public class SettingsActivity extends Activity {
         final boolean askCity = getIntent().getBooleanExtra("pickCity", false);   // the home's «المدينة» (control center, the question bar): 4.3.3 the one city row, its chooser open
         getIntent().removeExtra("pickCity");
         if (askCity) cityRow();
-        if (screen == null && !classic) { screen = SettingsHub.LANG; sideFocus = true; }   // the side list: the first section shown, the focus on its item there
+        if (screen == null && !classic) { screen = SettingsHub.PRAY; sideFocus = true; }   // the side list: the first section shown, the focus on its item there
         final boolean askTeams = getIntent().getBooleanExtra("manageTeams", false);   // 4.3.1: the matches page's «فرقي»
         getIntent().removeExtra("manageTeams");
         // the glass look of all our screens: the home's photo, small and blurred once (GlassSource), under its veil; glass tiles and rows
@@ -201,8 +202,8 @@ public class SettingsActivity extends Activity {
      * an old link) lands on that row, the focus on it, and its chooser opens over it. The phone page sets the same choice (SaverReceiver).
      */
     private void cityRow() {
-        screen = SettingsHub.PLACE;
-        hubAt = SettingsHub.PLACE;
+        screen = SettingsHub.LANG;   // 4.4 beta 4: the city is in «اللغة والموقع»
+        hubAt = SettingsHub.LANG;
         entering = true;
         forceWant = "المدينة";
     }
@@ -250,6 +251,7 @@ public class SettingsActivity extends Activity {
     /** Back on a category's rows (or on «البطاقات», «المزيد») goes back to the screen its button is on, the focus on that button; on the first screen it leaves. */
     @Override public boolean dispatchKeyEvent(android.view.KeyEvent e) {
         if (e.getAction() == android.view.KeyEvent.ACTION_DOWN) returnWant = null;   // the person moves: the focus is theirs again
+        if (e.getAction() == android.view.KeyEvent.ACTION_DOWN) keyed = true;   // 4.4 beta 4: from now on a redraw keeps the row the person is on
         if (okHold.key(e.getKeyCode(), e.getAction(), android.os.SystemClock.uptimeMillis())) {
             // a build waited for this release: the row that saw the press takes its click first, then the list is built
             boolean done = super.dispatchKeyEvent(e);
@@ -324,7 +326,11 @@ public class SettingsActivity extends Activity {
         if (fitNote != null) notice(fitNote);
         List<View> before = rows();
         View had = entering ? null : focusedRow();
-        if (screen == null && !classic) screen = SettingsHub.LANG;
+        // 4.4 beta 4: a render while no row has the focus (the home's answer about the adhan arriving just after the settings open on «الصلاة
+        // والأذان», before the side item's focus has even landed) keeps it on the side list; only the person's key takes it into the rows (the
+        // emulator's shots: it jumped to the first row)
+        if (!classic && !entering && (had == null || !keyed) && page == null && !SettingsHub.SEARCH.equals(screen)) sideFocus = true;   // no row had it (the side item, or its focus still on the way): the side list keeps it
+        if (screen == null && !classic) screen = SettingsHub.PRAY;
         final boolean tiles = classic && SettingsHub.hasTiles(screen);   // 4.3.2: the first screen, «البطاقات», «المزيد» are buttons, not rows
         if (returnWant != null && System.currentTimeMillis() > returnUntil) returnWant = null;
         final String want = forceWant != null ? forceWant : returnWant != null && !entering ? returnWant : entering ? (tiles ? (hubAt != null ? "hub:" + hubAt : null) : lastRow.get(screen)) : had == null ? null : (String) had.getTag();
@@ -355,7 +361,7 @@ public class SettingsActivity extends Activity {
             if (page != null) pageRows(); else searchRows();
             return;
         }
-        if (screen == null || on(SettingsHub.PLACE))   // on the categories and on «الموقع والصلاة»
+        if (screen == null || on(SettingsHub.LANG))   // on the categories and on «اللغة والموقع» (the city)
             if (prefs.cityNoteDue()) line(Location.note(Words.city(prefs.city())), look.accent, dp(14));   // still the install's Riyadh: say where to change it
         actions.clear();
 
@@ -369,12 +375,12 @@ public class SettingsActivity extends Activity {
 
         row("طريقة الحساب", PrayerMethod.label(prefs.prayerMethod(), prefs.cityCountry(), prefs.cityTz()), R.drawable.ic_place,
             new Runnable() { public void run() { pickPrayerMethod(); } });
-        row("تعديل وقت الصلاة", prefs.prayerAdjOn() ? "يعمل، لكل صلاة دقائقها، من −٢٠ إلى +٢٠ (الشروق لا يتغيّر)" : "متوقف، الأوقات كما تُحسب", R.drawable.ic_eye,
+        row("تعديل وقت الصلاة", prefs.prayerAdjOn() ? "مفعّل، لكل صلاة دقائقها من −٢٠ إلى +٢٠ (الشروق ثابت)" : "متوقف، الأوقات كما تُحسب", R.drawable.ic_eye,
             new Runnable() { public void run() { prefs.setPrayerAdjOn(!prefs.prayerAdjOn()); render(); } });
         if (prefs.prayerAdjOn()) for (int k = 0; k < PrayerAdj.COUNT; k++) adjRow(k);
         String fixed = PrayerFix.applied(prefs.prayerAdjOn(), prefs.prayerAdj(), prefs.prayerFixKnown(() -> { if (!isFinishing() && !isDestroyed()) render(); }));   // 4.3.3: never silent
         if (!fixed.isEmpty()) { line("تصحيح منشور لأوقات اليوم، وتعديلك لأي صلاة يبقى هو المعتمد", look.sub, 0); line(fixed, look.sub, 0); }
-        if (on(SettingsHub.PLACE) || on(SettingsHub.PRAY)) line(Location.HELP, look.sub, 0);
+        if (on(SettingsHub.LANG) || on(SettingsHub.PRAY)) line(Location.HELP, look.sub, 0);
 
         header("المباريات");
         // «المباريات»: the home app's page of the games (docs/PROPOSALS-NOV2.md §1), the days and the leagues, the followed teams first
@@ -420,7 +426,7 @@ public class SettingsActivity extends Activity {
         row("التاريخ بالأرقام", prefs.dateNum() ? "مفعّل" : "متوقف", R.drawable.ic_language,
             new Runnable() { public void run() { prefs.setDateNum(!prefs.dateNum()); render(); } });
         // OK goes round: on with 10 minutes, on with 15 minutes (4.4 beta 4), off
-        row("تنبيه قبل الأذان", prefs.adhanBar() ? (prefs.adhanLead() == 15 ? "يعمل، شريط في أعلى الشاشة آخر ١٥ دقيقة، ثم حتى الإقامة" : "يعمل، شريط في أعلى الشاشة آخر ١٠ دقائق، ثم حتى الإقامة") : "متوقف", R.drawable.ic_eye,
+        row("تنبيه قبل الأذان", prefs.adhanBar() ? (prefs.adhanLead() == 15 ? "يعمل، شريط في أعلى الشاشة آخر ١٥ دقيقة، ثم حتى الإقامة" : "مفعّل، شريط أعلى الشاشة آخر ١٠ دقائق، ويبقى لين الإقامة") : "متوقف", R.drawable.ic_eye,
             new Runnable() { public void run() {
                 if (!prefs.adhanBar()) { prefs.setAdhanLead(10); prefs.setAdhanBar(true); }
                 else if (prefs.adhanLead() == 10) prefs.setAdhanLead(15);
@@ -429,7 +435,7 @@ public class SettingsActivity extends Activity {
         // from PR #28 and the requests: each off until chosen, OK flips it
         row("الشروق بعد الفجر", prefs.sunrise() ? "يعمل، بعد إقامة الفجر: كم باقي على الشروق، ثم نصف ساعة بعده" : "متوقف", R.drawable.ic_eye,
             new Runnable() { public void run() { prefs.setSunrise(!prefs.sunrise()); render(); } });
-        row("شريط الوقت بين الصلاتين", prefs.prayerBar() ? "يعمل، خط رفيع تحت الصلاة القادمة يمتلئ حتى وقتها" : "متوقف", R.drawable.ic_eye,
+        row("شريط الوقت بين الصلاتين", prefs.prayerBar() ? "مفعّل، خط رفيع تحت الصلاة الجاية يمتلي لين يجي وقتها" : "متوقف", R.drawable.ic_eye,
             new Runnable() { public void run() { prefs.setPrayerBar(!prefs.prayerBar()); render(); } });
         row("الرطوبة والرياح", prefs.wxMore() ? "يعمل، تحت المدينة أعلى اليسار" : "متوقف", R.drawable.ic_eye,
             new Runnable() { public void run() { prefs.setWxMore(!prefs.wxMore()); render(); } });
@@ -444,7 +450,7 @@ public class SettingsActivity extends Activity {
             new Runnable() { public void run() { prefs.setAlbumDate(!prefs.albumDate()); render(); } });
         row("عنوان ألبوم صوري", prefs.albumTitle() ? "ظاهر فوق الصورة" : "مخفي", R.drawable.ic_eye,
             new Runnable() { public void run() { prefs.setAlbumTitle(!prefs.albumTitle()); render(); } });
-        row("شكل صورة ألبوم صوري", "fill".equals(prefs.albumFit()) ? "تملأ البطاقة وأعلاها يبقى" : "كاملة بلا قص", R.drawable.ic_eye,
+        row("شكل صورة ألبوم صوري", "fill".equals(prefs.albumFit()) ? "تعبّي البطاقة ويبان أعلاها" : "كاملة بلا قص", R.drawable.ic_eye,
             new Runnable() { public void run() { prefs.setAlbumFit("fill".equals(prefs.albumFit()) ? "fit" : "fill"); render(); } });
         row("حجم ألبوم صوري", "tall".equals(prefs.albumSize()) ? "طويل بضعف الارتفاع" : "عادي", R.drawable.ic_eye,
             new Runnable() { public void run() { prefs.setAlbumSize("tall".equals(prefs.albumSize()) ? "normal" : "tall"); render(); } });
@@ -459,7 +465,7 @@ public class SettingsActivity extends Activity {
         row("نص أوضح", prefs.clearText() ? "مفعّل الكلام الرمادي بلون النص الكامل" : "متوقف", R.drawable.ic_eye,
             new Runnable() { public void run() { prefs.setClearText(!prefs.clearText()); render(); } });
         // shown by default as always; OK hides it (and shows it again)
-        row("المناسبة القادمة", prefs.occasion() ? "ظاهرة، أسفل الشاشة في الوسط: كم باقي على رمضان والأعياد، والإفطار والإمساك في رمضان" : "مخفية، كم باقي على رمضان والأعياد", R.drawable.ic_eye,
+        row("المناسبة القادمة", prefs.occasion() ? "ظاهرة، تحت في النص: كم باقي على رمضان والأعياد، والإفطار والإمساك في رمضان" : "مخفية، كم باقي على رمضان والأعياد", R.drawable.ic_eye,
             new Runnable() { public void run() { prefs.setOccasion(!prefs.occasion()); render(); } });
         row("تعتيم الليل", prefs.nightDim() ? "يعمل، تغمق الشاشة من ٩ مساءً، وأغمق من ١١ إلى ٥ الفجر، وترجع ٧ الصباح" : "متوقف، نفس الإضاءة طول الليل", R.drawable.ic_eye,
             new Runnable() { public void run() { prefs.setNightDim(!prefs.nightDim()); render(); } });
@@ -515,6 +521,16 @@ public class SettingsActivity extends Activity {
             row("بطاقة ثانية", Prefs.panelLabel(prefs.panel2(), "بدون"), R.drawable.ic_eye, new Runnable() { public void run() { pickPanel2(); } });
         row("شكل البطاقة", Prefs.cardStyleLabel(prefs.cardStyle()), R.drawable.ic_eye,
             new Runnable() { public void run() { pickCardStyle(); } });
+        // 4.4 beta 4 (the owner, «شكل البطاقات»): a size step and the corners, for the home's cards and the screensaver's (the page draws both);
+        // in «كنبة» the strip's height is fixed, so the line says «أكبر» is as big as it gets there
+        row("حجم البطاقات", Prefs.cardSizeLabel(prefs.cardSize()) + ("couch".equals(prefs.homeLayout()) && "l".equals(prefs.cardSize()) ? "، وفي «كنبة» بقدر الشريط" : ""), R.drawable.ic_eye,
+            new Runnable() { public void run() {
+                pickOne("حجم البطاقات", Prefs.CARD_SIZE_NAMES, java.util.Arrays.asList(Prefs.CARD_SIZES).indexOf(prefs.cardSize()), k -> prefs.setCardSize(Prefs.CARD_SIZES[k]));
+            } });
+        row("زوايا البطاقات", Prefs.cardCornerLabel(prefs.cardCorner()), R.drawable.ic_eye,
+            new Runnable() { public void run() {
+                pickOne("زوايا البطاقات", Prefs.CARD_CORNER_NAMES, java.util.Arrays.asList(Prefs.CARD_CORNERS).indexOf(prefs.cardCorner()), k -> prefs.setCardCorner(Prefs.CARD_CORNERS[k]));
+            } });
         // «تبديل الآية والحديث»: only while the verse-or-hadith card is shown somewhere (here, as the second card, or on the home screen)
         if ("verse".equals(prefs.panel()) || "verse".equals(prefs.panel2()) || prefs.homePanels().contains("verse"))
             row("تبديل الآية والحديث", QuoteEvery.label(prefs.quoteEvery()), R.drawable.ic_sync,
@@ -525,12 +541,12 @@ public class SettingsActivity extends Activity {
                 new Runnable() { public void run() { pickVerseKind(); } });
 
         header("الشاشة الرئيسية (تلفزيونك)");
-        // «اجعل UrTV الشاشة الرئيسية»: not the Home yet, OK opens «إعداد تلفزيوني» (the launcher's, the one place the switch is done); the Home already, it says so
+        // «خلّ UrTV هي الشاشة الرئيسية»: not the Home yet, OK opens «إعداد تلفزيوني» (the launcher's, the one place the switch is done); the Home already, it says so
         final boolean isHome = isOurHome();
-        row("اجعل UrTV الشاشة الرئيسية", isHome ? "✓ UrTV هو الشاشة الرئيسية" : "اضغط وكمّل إعداد تلفزيوني (دقيقتان)", R.drawable.ic_eye,
+        row("خلّ UrTV هي الشاشة الرئيسية", isHome ? "✓ UrTV هو الشاشة الرئيسية" : "اضغط وكمّل إعداد تلفزيوني (دقيقتان)", R.drawable.ic_eye,
             new Runnable() { public void run() { if (!isHome) openSetup(); } });
         // «إعداد تلفزيوني» (4.3.1): always there, even when UrTV is already the home, to run «جهّز كل شي» again (after a system update) or «تراجع»
-        row("إعداد تلفزيوني", "شغّل الإعداد من جديد، أو تراجع عن تغييراته", R.drawable.ic_eye, new Runnable() { public void run() { openSetup(); } });
+        row("إعداد تلفزيوني", "شغّل الإعداد من جديد، أو رجّع اللي غيّره", R.drawable.ic_eye, new Runnable() { public void run() { openSetup(); } });
         // «تخلّص من واجهة المصنع»: who the TV's home screen is (the launcher's FactoryActivity: the checks, two confirmations, the PIN); «رجّع واجهة المصنع» while it is on
         homeCleanSeen();
         final boolean factoryOn = Boolean.TRUE.equals(factorySeen);
@@ -543,7 +559,7 @@ public class SettingsActivity extends Activity {
             new Runnable() { public void run() { uninstallWarning(factoryOn); } });
         // «UrTV النظيف»: the essentials only; the launcher's CleanActivity says what it does first and asks for the confirmation (and the family PIN)
         // the line says «مفعّل» (the on/off rule: the value starts with the state word) while the mask is on; the home answers (read once per visit, the last answer kept)
-        row("\u2066UrTV\u2069 النظيف", Boolean.TRUE.equals(homeCleanSeen()) ? "مفعّل الأساسيات فقط، وبضغطة ترجع الشاشة الكاملة" : "الأساسيات فقط، وبضغطة ترجع الشاشة الكاملة", R.drawable.ic_eye, new Runnable() { public void run() { openClean(); } });
+        row("\u2066UrTV\u2069 النظيف", Boolean.TRUE.equals(homeCleanSeen()) ? "مفعّل، الأساسيات بس، وبضغطة ترجع الشاشة كاملة" : "الأساسيات فقط، وبضغطة ترجع الشاشة الكاملة", R.drawable.ic_eye, new Runnable() { public void run() { openClean(); } });
         // «المظهر»: one page for everything about the look of both apps (AppearanceActivity), each choice with its picture
         // 4.3.3 «الواجهة»: the home as it was (the default), the football home, or «الآفاق» (a scene with the glass clock behind its scenery); and the scene packs
         // 4.4 the owner: one switch; on applies the Couch preset and keeps the person's own values, off puts them back (Prefs.setCouch)
@@ -595,12 +611,12 @@ public class SettingsActivity extends Activity {
             new Runnable() { public void run() { prefs.setSceneByTime(!prefs.sceneByTime()); render(); } });
         row("الأفق يتبع الطقس", prefs.sceneByWeather() ? "مفعّل (أفق الضباب وقت الضباب)" : "متوقف", R.drawable.ic_eye,
             new Runnable() { public void run() { prefs.setSceneByWeather(!prefs.sceneByWeather()); render(); } });
-        row("وضع الألوان", "الشكل: " + Prefs.lookLabel(prefs.look()) + "، والإضاءة: " + Prefs.appearanceLabel(prefs.appearance()), R.drawable.ic_eye,
+        row("الألوان والإضاءة", "الشكل: " + Prefs.lookLabel(prefs.look()) + "، والإضاءة: " + Prefs.appearanceLabel(prefs.appearance()), R.drawable.ic_eye,
             new Runnable() { public void run() { startActivity(new Intent(SettingsActivity.this, AppearanceActivity.class)); } });
         row("صفحات الأسهم والمباريات داكنة", prefs.pagesDark() ? "مفعّل، بالمظهر الداكن دائمًا" : "متوقف، تتبع مظهر الرئيسية", R.drawable.ic_eye,
             new Runnable() { public void run() { prefs.setPagesDark(!prefs.pagesDark()); render(); } });
         // 4.4 beta 2 (the owner, «with a protective way»): the new look items, each its own switch, off by default and after an update
-        row("لوحة المظهر على الرئيسية", prefs.uiPanel() ? "مفعّلة، تعاين الشكل على الرئيسية قبل ما تختار" : "متوقفة", R.drawable.ic_eye,
+        row("لوحة المظهر على الرئيسية", prefs.uiPanel() ? "مفعّلة، تشوف الشكل على الرئيسية قبل ما تختار" : "متوقفة", R.drawable.ic_eye,
             new Runnable() { public void run() { prefs.setUiPanel(!prefs.uiPanel()); render(); } });
         row("زر رجّع الشكل السابق", prefs.uiUndo() ? "مفعّل، أول صف بعد تغيير الشكل" : "متوقف", R.drawable.ic_eye,
             new Runnable() { public void run() { prefs.setUiUndo(!prefs.uiUndo()); render(); } });
@@ -624,6 +640,13 @@ public class SettingsActivity extends Activity {
         // 4.4 beta 4: the sound and the screen of each of the five prayers apart (the home's screen, behind the same lock)
         row("الأذان لكل صلاة", prayersValue(), R.drawable.ic_settings,
             new Runnable() { public void run() { openHome("prayers"); } });
+        // 4.4 beta 4 (the UI session's tree): the three screens of the تلاوة app that were only reached through «الأذان»: the muezzin, the duas and reminders, and my sounds
+        row("المؤذن", homeValue("adhan_voice", "name", "اختر صوت المؤذن"), R.drawable.ic_settings,
+            new Runnable() { public void run() { openHome("voice"); } });
+        row("الأدعية والتذكيرات", duasValue(), R.drawable.ic_settings,
+            new Runnable() { public void run() { openHome("duas"); } });
+        row("صوتياتي", "أدعيتك وأذاني من ملفاتك", R.drawable.ic_settings,
+            new Runnable() { public void run() { openHome("sounds"); } });
         // «تلاوة وأذان» itself, through the home (behind its family lock), as its button there opens it
         row("افتح تلاوة وأذان", "القرآن والإذاعات ومواقيت الأذان", R.drawable.ic_play,
             new Runnable() { public void run() { openHome("listen"); } });
@@ -631,7 +654,7 @@ public class SettingsActivity extends Activity {
         row("زر تلاوة وأذان", prefs.listenPill() ? "ظاهر" : "مخفي، الأذان والتلاوة تعمل، وتفتح الشاشة من «افتح تلاوة وأذان» هنا أو من بطاقة «يُتلى الآن»", R.drawable.ic_eye,
             new Runnable() { public void run() { prefs.setListenPill(!prefs.listenPill()); render(); } });
         // #52: the other quick buttons of the home can be hidden too; a hidden one only leaves the row (its page opens from elsewhere: the markets and games by the phone, the Control Center by the Quick Settings key)
-        row("زر المصادر", prefs.pillHidden("inputs") ? "مخفي، المصادر تفتح من زر المصادر في الريموت ومن مركز التحكم" : "ظاهر", R.drawable.ic_eye,
+        row("زر المصادر", prefs.pillHidden("inputs") ? "مخفي، والمصادر تنفتح من زرّها في الريموت ومن مركز التحكم" : "ظاهر", R.drawable.ic_eye,
             new Runnable() { public void run() { prefs.setPillHidden("inputs", !prefs.pillHidden("inputs")); render(); } });
         row("زر الأسواق", prefs.pillHidden("markets") ? "مخفي" : "ظاهر", R.drawable.ic_eye,
             new Runnable() { public void run() { prefs.setPillHidden("markets", !prefs.pillHidden("markets")); render(); } });
@@ -678,8 +701,8 @@ public class SettingsActivity extends Activity {
         // 4.3 «تطبيقات مقترحة»: SmartTube, TV Bro and VLC, each with why and its install (the home app's screen)
         row("تطبيقات مقترحة", "تطبيقات نرشّحها، وتثبّتها من هنا", R.drawable.ic_star,
             new Runnable() { public void run() { openSuggested(); } });
-        // «أكمل المشاهدة»: on or off; turned on while the home app may not read the TV's list yet, it opens the home app's one question
-        row("أكمل المشاهدة", watchNextLabel(), R.drawable.ic_play,
+        // «كمّل المشاهدة»: on or off; turned on while the home app may not read the TV's list yet, it opens the home app's one question
+        row("كمّل المشاهدة", watchNextLabel(), R.drawable.ic_play,
             new Runnable() { public void run() {
                 if (prefs.watchNext() && !homeMayReadWatchNext()) { openWatchNextPermission(); return; }   // on, not allowed yet: the question
                 prefs.setWatchNext(!prefs.watchNext());
@@ -696,6 +719,9 @@ public class SettingsActivity extends Activity {
         // «كل التطبيقات»: the home screen's «تعديل التطبيقات», or the order by name again (what is hidden stays hidden)
         row("ترتيب كل التطبيقات", "تحريكها وإخفاؤها وإرجاع المخفية، أو الرجوع للترتيب الأصلي", R.drawable.ic_star,
             new Runnable() { public void run() { pickAppsOrder(); } });
+        // 4.4 beta 4: the row the hide message names (the findability review: it did not exist; the way was five screens deep)
+        row("التطبيقات المخفية", "أرجع تطبيقًا أخفيته", R.drawable.ic_star,
+            new Runnable() { public void run() { openAppsOrder(false, true); } });
         // what an app's options box does (a long OK or Menu on the app, docs/UX-REVIEW.md) is here too: move, hide and the favourites
         // above, the locks and the app's details here
         row("قفل التطبيقات", "اختر التطبيقات التي تطلب الرمز", R.drawable.ic_lock,
@@ -715,7 +741,7 @@ public class SettingsActivity extends Activity {
         row("أرسل تقرير", "رمز QR يفتح صفحة الإرسال في جوالك", R.drawable.ic_settings,
             new Runnable() { public void run() { openReport(); } });
         // 4.4 «مصادر البيانات»: where the data comes from, once, here (Sources); on the cards a source is a tiny dim line at most
-        row("مصادر البيانات", "من أين تأتي البيانات، وترخيص كل مصدر", R.drawable.ic_report, new Runnable() { public void run() { showSources(); } });
+        row("مصادر البيانات", "من وين تجي البيانات، وترخيص كل مصدر", R.drawable.ic_report, new Runnable() { public void run() { showSources(); } });
 
         // «الرقابة الأبوية» (docs/UX-REVIEW.md): the home's own page (the PIN, the locked apps, kids mode); it asks for the PIN itself
         row("الرقابة الأبوية", "رمز يقفل التطبيقات والإعدادات، ووضع الأطفال", R.drawable.ic_lock,
@@ -749,6 +775,11 @@ public class SettingsActivity extends Activity {
             new Runnable() { public void run() { pickPhotoMinutes(); } });
         row("صور شاشة التوقف", packsLabel(), R.drawable.ic_eye,
             new Runnable() { public void run() { startActivity(new Intent(SettingsActivity.this, PhotoPacksActivity.class)); } });
+        // 4.4 beta 4 (the findability review: deleting a photo took ~41 presses, adding one was never said): «صوري والخلفيات» opens with them
+        row("أضف صوري من الجوال", "من صفحة الجوال: «صوري»، تضيف وتحذف", R.drawable.ic_phone,
+            new Runnable() { public void run() { openPhoneControl(); } });
+        row("احذف صورة", Own.count(this) == 0 ? "ما فيه صور بعد" : "اختر من صورك", R.drawable.ic_eye,
+            new Runnable() { public void run() { if (Own.count(SettingsActivity.this) == 0) toast("ما فيه صور بعد: أضفها من الجوال"); else pickOwnToDelete(); } });
         row("صوري (" + arabicNum(Own.count(this)) + "/" + arabicNum(Own.max(this)) + ")", ownLabel(), R.drawable.ic_eye,
             new Runnable() { public void run() { pickOwn(); } });
         // 4.4 beta 4: the photos of a USB stick or of Downloads, picked in the home (which holds the read permission; this app has none) and handed to «صوري»
@@ -853,7 +884,7 @@ public class SettingsActivity extends Activity {
 
     private void showFound(String query) {
         final List<String[]> found = SettingsHub.search(query);
-        if (found.isEmpty()) { toast("لا يوجد صف بهذا الاسم"); return; }
+        if (found.isEmpty()) { toast("ما فيه صف بهذا الاسم"); return; }
         int n = Math.min(found.size(), 12);
         String[] labels = new String[n];
         for (int i = 0; i < n; i++) labels[i] = conv(found.get(i)[0]) + S.sep() + conv(SettingsHub.name(found.get(i)[1]));
@@ -1022,7 +1053,7 @@ public class SettingsActivity extends Activity {
     /** the parts «تخصيص» gathers, each the label of its own row (its action is that row's), and the look's field it is (null: none) */
     private static final String[][] CUSTOM_PARTS = {
         {"التخطيط", "layout"}, {"الخلفية", "bg"}, {"الساعة", "clock"}, {"شكل التطبيقات", "apps"}, {"شكل شاشة الإعدادات", null},
-        {"البطاقة الأولى", "cards"}, {"البطاقة الثانية", "cards"}, {"البطاقة الثالثة", "cards"}, {"وضع الألوان", "appearance"}};
+        {"البطاقة الأولى", "cards"}, {"البطاقة الثانية", "cards"}, {"البطاقة الثالثة", "cards"}, {"الألوان والإضاءة", "appearance"}};
 
     /** «تخصيص»'s line: what changed since the look was chosen, or what it holds */
     private String customLine() {
@@ -1074,7 +1105,7 @@ public class SettingsActivity extends Activity {
         for (String[] w : swaps)
             intro += " " + String.format(java.util.Locale.ROOT, "«%s» ما تناسب %s، فبنحط مكانها «%s».", Prefs.panelName(w[0]), name, Prefs.panelName(w[1]));
         final String[] labels = {"خلّ بطاقاتي داخل التصميم", String.format(java.util.Locale.ROOT, "%s بدون بطاقات", name)};
-        final String[] subs = {String.format(java.util.Locale.ROOT, "%s، على %s", keptNames, name), "الساعة والتطبيقات فقط. بطاقاتك محفوظة، وترجّعها من «المظهر»"};
+        final String[] subs = {String.format(java.util.Locale.ROOT, "%s، على %s", keptNames, name), "الساعة والتطبيقات بس. بطاقاتك محفوظة، وترجّعها من «المظهر»"};
         pickOneWithLines(String.format(java.util.Locale.ROOT, "%s: وش تبي مع بطاقاتك؟", name), intro, labels, subs, i -> applyPreset(key, i == 1));
     }
 
@@ -1498,35 +1529,22 @@ public class SettingsActivity extends Activity {
         return card;
     }
 
+    /** a section button's line under its name (the first screen of «أزرار» and tvOS): what is set now in it */
     private String classicSummary(String cat) {
         switch (cat) {
-            case "adhan": {
+            case "pray": {
                 Boolean on = homeAdhanSeen();   // the home's switch as last known; null when the home cannot say (not installed, or older)
-                return on == null ? "تشغيله وصوته ومؤذن الفجر" : on ? OnOff.ON_WORD : OnOff.OFF_WORD;
+                String m = PrayerMethod.label(prefs.prayerMethod(), prefs.cityCountry(), prefs.cityTz());
+                return on == null ? m : (on ? "الأذان يعمل" : "الأذان متوقف") + S.sep() + m;
             }
-            case "city": return Words.city(prefs.city());
-            case "place": return Words.city(prefs.city()) + S.sep() + PrayerMethod.label(prefs.prayerMethod(), prefs.cityCountry(), prefs.cityTz());
-            case "clock": return ClockSetting.label(prefs.clock24()) + S.sep() + Prefs.digitsLabel(prefs.digits());
-            case "listen": return "زرها " + (prefs.listenPill() ? "ظاهر" : "مخفي");
-            case "cards": return "شاشة التوقف، الشاشة الرئيسية";
+            case "photos": return "صوري " + arabicNum(Own.count(this)) + S.sep() + packsLabel();
             case "look": return Prefs.lookLabel(prefs.look()) + S.sep() + Prefs.appearanceLabel(prefs.appearance());
-            case "control": return "مؤقت النوم والشبكة والصوت";
-            case "phone": return "تشغيله وإيقافه وربط جوال";
-            case "update": return Updater.versionLines(this)[0];
-            case "report": return "";
-            case "more": return "";
             case "saver": return idleSummary() + S.sep() + Prefs.panelLabel(prefs.panel());
-            case "home": {
-                List<String> cards = new ArrayList<>();
-                for (String k : prefs.homePanels()) cards.add(Prefs.panelLabel(k, "بدون"));
-                return cards.isEmpty() ? "بدون بطاقات، التحية والطقس" : Prefs.join(cards, "، ");
-            }
+            case "apps": return "المفضلة والمخفية والأزرار";
             case "content": return "الفرق " + arabicNum(prefs.teams().size()) + "، الأسواق " + (prefs.marketsOn() ? arabicNum(prefs.markets().size()) : "مخفية");
-            case "apps": return "ترتيب المفضلة وتعديلها، وأسماء المصادر";
-            case "shows": return labels(Prefs.GENRES, prefs.list("genres"), "الكل");
-            case "parental": return "الرمز والتطبيقات المقفلة";
-            case "family": return "تفعيل أو إيقاف";
-            case "lang": return langLabel();
+            case "family": return "الرقابة الأبوية والجوالات";
+            case "lang": return langLabel() + S.sep() + Words.city(prefs.city());
+            case "update": return Updater.versionLines(this)[0];
             case "search": return "اكتب كلمة وانتقل إلى الصف";
             default: return "";
         }
@@ -1534,26 +1552,15 @@ public class SettingsActivity extends Activity {
 
     private static int classicIcon(String cat) {
         switch (cat) {
-            case "city": return R.drawable.ic_place;
-            case "adhan": return R.drawable.ic_bell;
-            case "place": return R.drawable.ic_place;
-            case "clock": return R.drawable.ic_clock;
-            case "listen": return R.drawable.ic_listen;
-            case "cards": return R.drawable.ic_category;
-            case "look": return R.drawable.ic_eye;
-            case "control": return R.drawable.ic_center;
-            case "phone": return R.drawable.ic_phone;
-            case "update": return R.drawable.ic_sync;
-            case "report": return R.drawable.ic_report;
-            case "more": return R.drawable.ic_more;
+            case "pray": return R.drawable.ic_bell;
+            case "photos": return R.drawable.ic_eye;
+            case "look": return R.drawable.ic_category;
             case "saver": return R.drawable.ic_screensaver;
-            case "home": return R.drawable.ic_star;
-            case "content": return R.drawable.ic_trophy;
             case "apps": return R.drawable.ic_star;
-            case "shows": return R.drawable.ic_play;
-            case "parental": return R.drawable.ic_lock;
+            case "content": return R.drawable.ic_trophy;
             case "family": return R.drawable.ic_shield;
             case "lang": return R.drawable.ic_language;
+            case "update": return R.drawable.ic_sync;
             case "search": return R.drawable.ic_search;
             default: return R.drawable.ic_settings;
         }
@@ -2105,10 +2112,9 @@ public class SettingsActivity extends Activity {
         switch (cat) {
             case SettingsHub.SEARCH: return R.drawable.ic_search;
             case SettingsHub.LANG: return R.drawable.ic_language;
-            case SettingsHub.PLACE: return R.drawable.ic_place;
-            case SettingsHub.LOOK: return R.drawable.ic_eye;
+            case SettingsHub.PHOTOS: return R.drawable.ic_eye;
+            case SettingsHub.LOOK: return R.drawable.ic_category;
             case SettingsHub.APPS: return R.drawable.ic_star;
-            case SettingsHub.BUTTONS: return R.drawable.ic_center;
             case SettingsHub.PRAY: return R.drawable.ic_listen;
             case SettingsHub.CONTENT: return R.drawable.ic_trophy;
             case SettingsHub.SAVER: return R.drawable.ic_screensaver;
@@ -2122,11 +2128,10 @@ public class SettingsActivity extends Activity {
     private String hubSummary(String cat) {
         switch (cat) {
             case SettingsHub.SEARCH: return "اكتب كلمة وانتقل إلى الصف";
-            case SettingsHub.LANG: return langLabel() + "، " + ClockSetting.label(prefs.clock24());
-            case SettingsHub.PLACE: return Words.city(prefs.city());
+            case SettingsHub.LANG: return langLabel() + "، " + Words.city(prefs.city());
+            case SettingsHub.PHOTOS: return "صوري " + arabicNum(Own.count(this)) + "، " + packsLabel();
             case SettingsHub.LOOK: return Prefs.lookLabel(prefs.look()) + "، " + Prefs.appearanceLabel(prefs.appearance());
-            case SettingsHub.APPS: return "شريط التطبيقات وترتيبه وأقفاله";
-            case SettingsHub.BUTTONS: return "أزرار الرئيسية ومركز التحكم";
+            case SettingsHub.APPS: return "المفضلة والمخفية والأزرار";
             case SettingsHub.PRAY: {
                 Boolean on = homeAdhanSeen();   // the home's switch as last known; null when the home cannot say (not installed, or older)
                 String m = PrayerMethod.label(prefs.prayerMethod(), prefs.cityCountry(), prefs.cityTz());
@@ -2134,7 +2139,7 @@ public class SettingsActivity extends Activity {
             }
             case SettingsHub.CONTENT: return "الفرق " + arabicNum(prefs.teams().size()) + "، الأسواق " + (prefs.marketsOn() ? arabicNum(prefs.markets().size()) : "مخفية");
             case SettingsHub.SAVER: return idleSummary();
-            case SettingsHub.FAMILY: return "الرقابة الأبوية وتصفية المواقع والجوالات";
+            case SettingsHub.FAMILY: return "الرقابة الأبوية والجوالات";
             case SettingsHub.UPDATE: return Updater.versionLines(this)[0];
             default: return "";
         }
@@ -2200,6 +2205,46 @@ public class SettingsActivity extends Activity {
         }
         String v = PrayerSummary.of(prayersSeen, n -> DigitsText.convert(String.valueOf(n), latinDigits));
         return v != null ? v : "الصوت والشاشة لكل صلاة على حدة";   // the home has not answered yet
+    }
+
+    private final java.util.Map<String, String> homeSeen = new java.util.HashMap<>();   // the home's last answers by path, kept on disk too (hub_seen)
+    private final java.util.Set<String> homeAsked = new java.util.HashSet<>();
+
+    /**
+     * A value the launcher keeps (its provider's path, one column), for a row's second line: the last answer at once (kept on disk), one question on a thread each time
+     * the settings come to the front, the row drawn again only when the answer is another. `fallback` while the home has not answered.
+     */
+    private String homeValue(final String path, final String column, String fallback) {
+        String seen = homeSeen.get(path);
+        if (seen == null) { seen = getSharedPreferences("hub_seen", MODE_PRIVATE).getString("home_" + path, ""); homeSeen.put(path, seen); }
+        if (homeAsked.add(path)) {
+            new Thread(() -> {
+                String got = "";
+                android.database.Cursor c = null;
+                try {
+                    c = getContentResolver().query(Uri.parse("content://sa.urtv.home.nowplaying/" + path), null, null, null, null);
+                    if (c != null && c.moveToFirst() && c.getColumnIndex(column) >= 0) got = c.getString(c.getColumnIndex(column));
+                } catch (RuntimeException ignored) {
+                } finally { if (c != null) c.close(); }
+                final String answer = got == null ? "" : got;
+                runOnUiThread(() -> {
+                    if (isFinishing() || isDestroyed() || answer.isEmpty()) return;
+                    boolean changed = !answer.equals(homeSeen.get(path));
+                    homeSeen.put(path, answer);
+                    getSharedPreferences("hub_seen", MODE_PRIVATE).edit().putString("home_" + path, answer).apply();
+                    if (changed) render();
+                });
+            }, "hub-" + path).start();
+        }
+        return seen.isEmpty() ? fallback : seen;
+    }
+
+    /** «الأدعية والتذكيرات»: «جديد من الجوال: N» while duas added from «صوتياتي» wait to be timed on the TV, else what the row is */
+    private String duasValue() {
+        String n = homeValue("duas_new", "n", "");
+        int k = 0;
+        try { k = Integer.parseInt(n); } catch (NumberFormatException ignored) { }
+        return k > 0 ? "جديد من الجوال: " + DigitsText.convert(String.valueOf(k), latinDigits) : "أدعية وتذكيرات بوقتها، بصوتك أو بصوتنا";
     }
 
     private Boolean cleanSeen, factorySeen;   // «UrTV النظيف» and «واجهة المصنع» off, as the home last said
@@ -2531,7 +2576,7 @@ public class SettingsActivity extends Activity {
     private void offerExtras() {
         try {
             startActivity(new Intent().setClassName("sa.urtv.home", "sa.urtv.home.ExtrasActivity").putExtra("sa.urtv.home.EXTRAS_FOR", "overlay"));
-            toast("«فوق تطبيق آخر» يحتاج «إضافات تلفزيونك»: نفتح لك تثبيتها");
+            toast("«فوق تطبيق آخر» يحتاج «إضافات تلفزيونك»: بنفتح لك تثبيتها");
         } catch (RuntimeException e) {
             toast("«فوق تطبيق آخر» يحتاج «إضافات تلفزيونك»، ولم نقدر نفتح تثبيتها");
         }
@@ -2624,7 +2669,7 @@ public class SettingsActivity extends Activity {
                         if (!clubs.isEmpty()) showOurs(clubs, labels[i], false);
                         else if (i < Prefs.LEAGUES.length)
                             fetch(SPORTS + "search_all_teams.php?l=" + Uri.encode(league), json -> showTeams(slot, json, labels[i], league));
-                        else toast("تعذّر تحميل القائمة، جرّب البحث عن الفريق");
+                        else toast("ما قدرنا نحمّل القائمة، جرّب تدوّر على الفريق");
                     });
                 }, "teams-league").start();
             }).show();
@@ -2793,7 +2838,7 @@ public class SettingsActivity extends Activity {
                 if (cancelled[0] || isFinishing()) return;
                 wait.dismiss();
                 List<String[]> rows = catalogueRows(got);
-                if (rows.isEmpty()) { catalogueBusy = false; toast("لا يوجد اتصال"); return; }
+                if (rows.isEmpty()) { catalogueBusy = false; toast("ما فيه اتصال"); return; }
                 catalogueGroups(rows);
             });
         }, "catalogue").start();
@@ -2929,7 +2974,7 @@ public class SettingsActivity extends Activity {
             }
             new Dlg(this).setTitle("اختر المسلسل")
                 .setItems(rows, (d, i) -> {
-                    for (String s : prefs.shows()) if (s.startsWith(ids[i] + "|")) { toast("مضاف مسبقاً"); return; }
+                    for (String s : prefs.shows()) if (s.startsWith(ids[i] + "|")) { toast("مضاف من قبل"); return; }
                     List<String> v = prefs.shows();
                     v.add(ids[i] + "|" + names[i]);
                     prefs.setList("shows", v);
@@ -2975,7 +3020,7 @@ public class SettingsActivity extends Activity {
         try {
             startActivity(new Intent().setClassName("sa.urtv.home", "sa.urtv.home.MarketsActivity"));
         } catch (ActivityNotFoundException e) {
-            toast("حدّث الواجهة الرئيسية «تلفزيونك» لتظهر صفحة الأسواق");
+            toast("حدّث الواجهة الرئيسية «تلفزيونك» عشان تطلع صفحة الأسواق");
         } catch (RuntimeException e) {
             toast("ثبّت الواجهة الرئيسية «تلفزيونك» أولاً");
         }
@@ -3582,7 +3627,7 @@ public class SettingsActivity extends Activity {
         if (prefs.countdownDate().isEmpty()) {
             // 4.4: the next school break needs no date from anyone (the official calendar comes with the data); another date, from the computer
             new Dlg(this).setTitle("العدّ التنازلي")
-                .setMessage("لم يُحدَّد تاريخ. اختر «إجازات المدارس» لأقرب إجازة، أو يحدد المساعد تاريخًا آخر على الكمبيوتر.")
+                .setMessage("ما فيه تاريخ محدد. اختر «إجازات المدارس» لأقرب إجازة، أو يحدد المساعد تاريخ ثاني من الكمبيوتر.")
                 .setPositiveButton(Prefs.SCHOOL_LABEL, (d, w) -> { prefs.setCountdown(Prefs.SCHOOL, ""); render(); })
                 .setNegativeButton("إلغاء", null).show();
             return;
@@ -3670,14 +3715,14 @@ public class SettingsActivity extends Activity {
     }
 
     private String ownLabel() {
-        if (Own.count(this) == 0) return "لا توجد صور، يضيفها مساعدك الذكي";
+        if (Own.count(this) == 0) return "لا توجد صور، أضفها من الجوال";
         return Own.ONLY.equals(Own.mode(this)) ? "صوري فقط" : Own.ALBUM.equals(Own.mode(this)) ? "للألبوم فقط" : "تُضاف إلى صور التطبيق";
     }
 
     /** «صوري»: photos only arrive through the owner's assistant; here the owner picks how they show, or removes them all. */
     private void pickOwn() {
         if (Own.count(this) == 0) {
-            toast("اطلب من مساعدك الذكي إضافة صورك (حتى ١٠)");
+            toast("أضف صورك من الجوال: «أضف صوري من الجوال» (حتى ١٠)");
             return;
         }
         String[] items = {"تُضاف إلى صور التطبيق", "صوري فقط", "للألبوم فقط، خارج دوران الصور", "اختر صورة لحذفها", "حذف كل صوري"};
@@ -3830,7 +3875,7 @@ public class SettingsActivity extends Activity {
     private String idleSummary() {
         int k = IdleRule.kind(Prefs.idleMs(this));
         if (k == IdleRule.UNKNOWN) return "يبدأ وقت ما يحدده التلفاز";
-        if (k == IdleRule.NEVER) return "لا تبدأ: التلفزيون أوقف شاشة التوقف";
+        if (k == IdleRule.NEVER) return "ما تشتغل: التلفزيون موقّف شاشة التوقف";
         return "تبدأ بعد " + idleLabel();
     }
 
@@ -4713,7 +4758,7 @@ public class SettingsActivity extends Activity {
             final String result = body;
             runOnUiThread(() -> {
                 if (isFinishing()) return;
-                if (result == null) { toast("لا يوجد اتصال"); return; }
+                if (result == null) { toast("ما فيه اتصال"); return; }
                 try { then.got(result); } catch (Exception e) { toast("تعذرت قراءة النتائج"); }
             });
         }).start();

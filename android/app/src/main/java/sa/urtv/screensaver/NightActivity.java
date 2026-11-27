@@ -31,7 +31,7 @@ public class NightActivity extends GameActivity {
     private void startWithPhones() {
         int n = phones.room.count();
         if (n < NightGame.MIN_PLAYERS) return;
-        if (n > NightGame.MAX_PLAYERS) { toast(S.t("اللعبة تتسع لعشرة لاعبين")); return; }
+        if (n > NightGame.MAX_PLAYERS) { toast(S.t("اللعبة تاخذ لين عشرة لاعبين")); return; }
         phones.room.start(); phoneLobby = false;
         names = phones.room.names().toArray(new String[0]);
         game = new NightGame(n, rnd); toRoles();
@@ -44,7 +44,7 @@ public class NightActivity extends GameActivity {
         for (int i = 0; i < game.players; i++) {
             int r = game.role[i];
             String text = r == NightGame.WOLF ? S.t("أنت ذئب") : r == NightGame.GUARD ? S.t("أنت الحارس") : r == NightGame.SEER ? S.t("أنت العرّاف") : S.t("أنت قروي");
-            String note = r == NightGame.WOLF ? (game.wolvesAlive() > 1 ? S.t("معك: %s", wolvesText(i)) : S.t("أنت الذئب الوحيد")) : r == NightGame.GUARD ? S.t("كل ليلة تحمي واحدًا") : r == NightGame.SEER ? S.t("كل ليلة تسأل عن واحد: ذئب أو لا") : S.t("اكتشفوا الذئاب بالكلام والتصويت");
+            String note = r == NightGame.WOLF ? (game.wolvesAlive() > 1 ? S.t("معك: %s", wolvesText(i)) : S.t("أنت الذئب الوحيد")) : r == NightGame.GUARD ? S.t("كل ليلة تحمي واحدًا") : r == NightGame.SEER ? S.t("كل ليلة تسأل عن واحد: ذئب أو لا") : S.t("اكشفوا الذئاب بالسوالف والتصويت");
             phones.room.card(i, GamePhoneRoom.SECRET, names[i], text, note, null, null, -1);
         }
         redraw();
@@ -59,7 +59,7 @@ public class NightActivity extends GameActivity {
             for (int j = 0; j < game.players; j++) if (game.alive[j] && j != i && !(r == NightGame.WOLF && game.role[j] == NightGame.WOLF)) acts.add(j);
             if (r == NightGame.GUARD) acts.add(i);   // the guard may protect themselves
             int[] a = new int[acts.size()]; for (int k = 0; k < a.length; k++) a[k] = acts.get(k);
-            phones.room.card(i, GamePhoneRoom.PICK, names[i], r == NightGame.WOLF ? S.t("من تبعدون الليلة؟") : r == NightGame.GUARD ? S.t("من تحمي الليلة؟") : S.t("عن من تسأل الليلة؟"), "", names, a, -1);
+            phones.room.card(i, GamePhoneRoom.PICK, names[i], r == NightGame.WOLF ? S.t("من تبعدون الليلة؟") : r == NightGame.GUARD ? S.t("مين تحمي الليلة؟") : S.t("عن من تسأل الليلة؟"), "", names, a, -1);
         }
         redraw();
     }
@@ -154,7 +154,7 @@ public class NightActivity extends GameActivity {
             case NIGHT:
                 root.setBackgroundColor(L.deep);
                 root.addView(centered(S.t("الليلة %s", num(game.night)), 56, L.saff, true), at(1728, 80, 96, 160));
-                root.addView(centered(S.t("القرية نائمة"), 160, L.onDeep, true), at(1728, 220, 96, 320));
+                root.addView(centered(S.t("القرية نايمة"), 160, L.onDeep, true), at(1728, 220, 96, 320));
                 root.addView(centered(S.t("الذئاب والحارس والعرّاف يختارون في جوالاتهم"), 52, L.onDeep, false), at(1728, 90, 96, 600));
                 hints(S.t("اختيار"), S.t("طلع الصباح"), S.t("رجوع"), S.t("إيقاف"));
                 break;
@@ -172,7 +172,7 @@ public class NightActivity extends GameActivity {
                 question(S.t("مين يطلع من القرية؟"), S.t("صوّتوا من جوالاتكم"), 330);
                 root.addView(centered(S.t("صوّت %s من %s", num(game.votes()), num(game.aliveCount())), 64, L.ink, true), at(1728, 90, 96, 460));
                 root.addView(centered(S.t("باقي في القرية: %s", aliveLine()), 44, L.ink(0xCC), true), at(1728, 110, 96, 620));
-                hints(S.t("اختيار"), S.t("اعدّ الأصوات"), S.t("رجوع"), S.t("إيقاف"));
+                hints(S.t("اختيار"), S.t("عدّوا الأصوات"), S.t("رجوع"), S.t("إيقاف"));
                 break;
             case VOTED:
                 question(S.t("نتيجة التصويت"), game.voteOut < 0 ? S.t("تعادل، ما أحد طلع") : S.t("طلع من القرية: %s", names[game.voteOut]), 420);
@@ -181,7 +181,7 @@ public class NightActivity extends GameActivity {
                 hints(S.t("اختيار"), S.t("الليل"), S.t("رجوع"), S.t("إيقاف"));
                 break;
             default: {
-                question(S.t("انتهت اللعبة"), game.winner == NightGame.VILLAGE_WINS ? S.t("فازت القرية") : game.winner == NightGame.WOLVES_WIN ? S.t("فاز الذئاب") : S.t("أُنهيت"), 330);
+                question(S.t("خلصت اللعبة"), game.winner == NightGame.VILLAGE_WINS ? S.t("فازت القرية") : game.winner == NightGame.WOLVES_WIN ? S.t("فاز الذئاب") : S.t("أُنهيت"), 330);
                 StringBuilder w = new StringBuilder();
                 for (int i = 0; i < game.players; i++) w.append(w.length() > 0 ? (en ? ",  " : "،  ") : "").append(names[i]).append(": ").append(roleName(game.role[i]));
                 android.widget.TextView t = centered(w.toString(), 40, L.ink, true); t.setMaxLines(4);

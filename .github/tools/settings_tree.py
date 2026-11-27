@@ -31,6 +31,8 @@ CHOICES = {
     "الأفق يتبع الطقس": (None, None, "sceneByWeather"),
     "شكل البطاقة": ("CARD_STYLES", None, "cardStyle"),
     "شكل آخر المباريات": ("FORM_STYLES", None, "formStyle"),
+    "حجم البطاقات": ("CARD_SIZES", "CARD_SIZE_NAMES", "cardSize"),
+    "زوايا البطاقات": ("CARD_CORNERS", "CARD_CORNER_NAMES", "cardCorner"),
     "حجم الساعة": ("CLOCK_SIZES", None, "clockSize"),
     "تصميم شاشة التوقف": ("SAVER_DESIGNS", None, "design"),
     "الشريط في الوسط": ("SAVER_BARS", None, "bar"),
@@ -53,7 +55,7 @@ YES, NO = "مفعّل", "متوقف"
 MORE_CMDS = {
     "شكل كنبة": ["optimize/saver.sh couch on"],
     "نظام الساعة": ["optimize/saver.sh clock24 on"], "الدولة": ["optimize/saver.sh city '<name>' <lat> <lon> <time zone> SA"],
-    "وضع الألوان": ["optimize/saver.sh look navy", "optimize/saver.sh appearance auto"], "إظهار الثواني": ["optimize/saver.sh seconds on"],
+    "الألوان والإضاءة": ["optimize/saver.sh look navy", "optimize/saver.sh appearance auto"], "إظهار الثواني": ["optimize/saver.sh seconds on"],
     "البطاقة الأولى": ["optimize/saver.sh home-card prayers,hourly,verse"], "البطاقة الثانية": ["optimize/saver.sh home-card prayers,hourly,verse"],
     "البطاقة الثالثة": ["optimize/saver.sh home-card prayers,hourly,verse"],
     "سرعة ألبوم صوري": ["optimize/saver.sh albummode ten"], "شكل صورة ألبوم صوري": ["optimize/saver.sh albumfit fill"], "حجم ألبوم صوري": ["optimize/saver.sh albumsize tall"],
@@ -69,7 +71,7 @@ MORE_CMDS = {
 for _id, _title in re.findall(r'b\("([a-z]+)", "([^"]+)"', (ROOT / "android/app/src/main/java/sa/urtv/screensaver/RemoteButtons.java").read_text(encoding="utf-8")):
     MORE_CMDS[_title] = [f"optimize/dock.sh key {_id} org.smarttube.stable", f"optimize/dock.sh key {_id} default"]
 # rows that are an action or open a screen of their own, not a value to set (nothing for a command to set)
-ACTIONS = {"المظهر على الرئيسية", "اجعل UrTV الشاشة الرئيسية", "جرّب التنبيه", "تخلّص من واجهة المصنع", "رجّع واجهة المصنع", "قبل ما تحذف التطبيق…", "تفاصيل التطبيقات", "افتح تلاوة وأذان",
+ACTIONS = {"الأدعية والتذكيرات", "صوتياتي", "أضف صوري من الجوال", "احذف صورة", "التطبيقات المخفية", "المظهر على الرئيسية", "خلّ UrTV هي الشاشة الرئيسية", "جرّب التنبيه", "تخلّص من واجهة المصنع", "رجّع واجهة المصنع", "قبل ما تحذف التطبيق…", "تفاصيل التطبيقات", "افتح تلاوة وأذان",
            "مباريات اليوم", "افتح صفحة الأسواق", "معاينة الشاشة", "تحديث تلفزيوني", "إعداد تلفزيوني", "مسح الملفات المؤقتة", "أرسل تقرير", "أرسل ملاحظة عن النسخة التجريبية", "مركز التحكم", "بحث في الإعدادات",
            "تعديل المفضلة", "ترتيب التطبيقات المفضلة", "ترتيب كل التطبيقات", "أسماء المصادر"}
 # rows the code gives no command (no saver.sh case, no receiver extra): set from the TV only
@@ -215,29 +217,6 @@ def hub():
     return out
 
 
-def hub432():
-    """the 4.3.2 screen («شكل كنبة» off): [(depth, name, items)], a screen of buttons («البطاقات», «المزيد») with its sections under it (depth 2)"""
-    src = read(APP / "SettingsHub.java")
-    cats = re.findall(r'\{"([a-z]+)", "([^"]+)", "[^"]*", (null|"[a-z]+"), "([^"]*)"\}', src[src.index("CATEGORIES_432 = {"):src.index("ROWS_432 = {")])
-    order = {}
-    for m in re.finditer(r'\{"([a-z]+)", ((?:H \+ )?"[^}]*)\}', src[src.index("ORDER_432 = {"):src.index("OLD_432 = {")]):
-        order[m.group(1)] = [(bool(h), strings('"' + t + '"')[0]) for h, t in re.findall(r'(H \+ )?"([^"]*)"', m.group(2))]
-    out = []
-    def put(key, depth):
-        k, name, parent, direct = next(c for c in cats if c[0] == key)
-        kids = [c[0] for c in cats if c[2] == f'"{key}"']
-        items = order.get(key, [])
-        if direct and not items:   # a button that runs one row at once
-            items = [(False, strings('"' + direct + '"')[0])]
-        out.append((depth, name, items))
-        for c in kids:
-            put(c, depth + 1)
-    for c in cats:
-        if c[2] == "null":
-            put(c[0], 1)
-    return out
-
-
 def build():
     prefs = read(APP / "Prefs.java")
     cmds, uses, scope = commands(), usages(), scopes()
@@ -294,13 +273,10 @@ def build():
                 if text in by_control:
                     lines.append(pad + "مركز التحكم: " + ", ".join(by_control[text]))
 
+    lines.append("— بحث في الإعدادات")   # the first button (the wide one) and the side list's first item: a word finds a row in any section
     for cat, items in hub():
         lines.append("— " + cat)
         section(1, items, lines)
-    old = ["الإعدادات"]
-    for depth, name, items in hub432():
-        old.append("—" * depth + " " + name)
-        section(depth, items, old)
     head = ("# شجرة الإعدادات\n\n"
             "كل إعداد في التلفزيون بمكانه الكامل، مولّدة من الكود (`.github/tools/settings_tree.py`: SettingsHub وPrefs وdocs/SETTINGS.md وصفحة الجوال ومركز التحكم).\n"
             "لا تعدّلها باليد: شغّل الأداة بعد أي تغيير في الإعدادات، و`tests/settings_tree_test.py` يفشل إذا صارت قديمة.\n\n"
@@ -308,9 +284,9 @@ def build():
             "Every setting of the TV with its full path, generated from the code; do not edit by hand. [ ] says where it shows (the home, the screensaver,\n"
             "both, or the whole TV); «الأصل» is the default, «مثال للوكيل» one example of the agent's command with the values it accepts under it; «صفحة الجوال»\n"
             "the phone page's key, «مركز التحكم» the control centre's row that opens it; «من التلفزيون فقط» a row with no command on purpose.\n\n")
-    return (head + "## «شكل كنبة» مفعّل: الشاشة الجديدة (القائمة الجانبية)\n\n```text\n" + "\n".join(lines) + "\n```\n\n"
-            + "## «شكل كنبة» متوقف (الأصل): شاشة ٤.٣.٢ (أزرار كبيرة، و«البطاقات» و«المزيد» شاشتا أزرار)\n\n"
-            + "نفس الصفوف ونفس القيم؛ يتغيّر مكانها فقط. كل صف تحت زره في شاشة ٤.٣.٢.\n\n```text\n" + "\n".join(old) + "\n```\n")
+    return (head + "## شجرة واحدة لكل أشكال شاشة الإعدادات (أزرار، كنبة، tvOS)\n\n"
+            + "٤.٤ التجريبية ٤ (مراجعة سهولة الوصول، docs/research/SETTINGS-FINDABILITY.md): الأقسام التسعة نفسها في كل شكل؛ «أزرار» وtvOS تعرضها أزرارًا في أول شاشة،\n"
+            + "و«كنبة» قائمة جانبية. لا شيء أعمق من: القسم ← الصف ← اختياره.\n\n```text\n" + "\n".join(lines) + "\n```\n")
 
 
 def main():

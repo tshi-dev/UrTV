@@ -33,7 +33,7 @@ public class GamePacksActivity extends GameActivity {
     }
 
     @Override protected void draw() {
-        title(S.t("حزم المحتوى"), S.t("المحتوى الكبير يُحمَّل ولا يأتي مع التطبيق"));
+        title(S.t("حزم المحتوى"), S.t("المحتوى الكبير يتحمّل، وما يجي مع التطبيق"));
         if (rows.isEmpty()) { root.addView(centered(S.t("ما فيه حزم الآن"), 64, L.ink(0xCC), true), at(1728, 100, 96, 360)); hints(S.t("رجوع"), S.t("الألعاب")); return; }
         first = scrollTo(rows.size(), sel, first, FIT);
         for (int i = first; i < rows.size() && i < first + FIT; i++) {

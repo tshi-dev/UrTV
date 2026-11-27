@@ -49,7 +49,7 @@ import java.util.Locale;
  * listenpill = the «تلاوة وأذان» button on the home screen (on, the default, or off: only the button goes, the adhan and the Quran stay).
  * matchestoday = the «المباريات» card shows only today's games, in the city's day (on), or the week's as always (off, the default).
  * pagesdark = the home's markets and matches pages in the dark look (on, the default) or in the home's look (off).
- * watchnext = «أكمل المشاهدة» under the home screen's favourites (on, the default, or off); it needs the home app's TV listings permission.
+ * watchnext = «كمّل المشاهدة» under the home screen's favourites (on, the default, or off); it needs the home app's TV listings permission.
  * updatebell = the «جرس التحديثات» on the home screen (on, the default, or off: only the bell goes; it shows only while the Play Store has updates waiting).
  * greetingname = a name after the home's greeting («صباح الخير، علاء»), at most 30 letters on one line, or off (the default: the greeting alone).
  * greeting = the greeting and the weather line above the home screen's clock (on, the default, or off: the plain good-morning).
@@ -71,6 +71,7 @@ import java.util.Locale;
  * national = auto (as always from now: the quiet green look on National Day, 21-25 September, and Founding Day, 20-24 February) or off.
  * cardstyle = the look of the card beside the clock (Prefs.CARD_STYLES; current is the plain card).
  * formstyle = «شكل آخر المباريات», a club's last five in the league's table (Prefs.FORM_STYLES; dots is the default).
+ * cardsize = s|m|l, cardcorner = style|sharp|soft|round: «حجم البطاقات» and «زوايا البطاقات» (4.4 beta 4; m and style change nothing).
  * design = the screensaver's design (Prefs.SAVER_DESIGNS; info is the page as it always was); bar = a centred bar (none, prayers, slot: the left slot's
  * item, weather), barat = where it goes (bottom, clock: under the clock); wx = the weather's place (auto: as the design has it).
  * panel2 = «بطاقة ثانية», a second card beside the clock while it is small (SecondCard): one of the screensaver's cards but the
@@ -420,6 +421,9 @@ public class SaverReceiver extends BroadcastReceiver {
         String formStyle = i.getStringExtra("formstyle");
         if (formStyle != null && !isChoice(Prefs.FORM_STYLES, formStyle))
             return "error: formstyle is one of " + choices(Prefs.FORM_STYLES);
+        String cardSize = i.getStringExtra("cardsize"), cardCorner = i.getStringExtra("cardcorner");
+        if (cardSize != null && !java.util.Arrays.asList(Prefs.CARD_SIZES).contains(cardSize)) return "error: cardsize is one of s, m, l";
+        if (cardCorner != null && !java.util.Arrays.asList(Prefs.CARD_CORNERS).contains(cardCorner)) return "error: cardcorner is one of style, sharp, soft, round";
         String design = i.getStringExtra("design"), bar = i.getStringExtra("bar"), barAt = i.getStringExtra("barat"), wxAt = i.getStringExtra("wx");
         if (design != null && !isChoice(Prefs.SAVER_DESIGNS, design)) return "error: design is one of " + choices(Prefs.SAVER_DESIGNS);
         if (bar != null && !isChoice(Prefs.SAVER_BARS, bar)) return "error: bar is one of " + choices(Prefs.SAVER_BARS);
@@ -596,6 +600,8 @@ public class SaverReceiver extends BroadcastReceiver {
         if (national != null) p.setNational(national);
         if (cardStyle != null) p.setCardStyle(cardStyle);
         if (formStyle != null) p.setFormStyle(formStyle);
+        if (cardSize != null) p.setCardSize(cardSize);
+        if (cardCorner != null) p.setCardCorner(cardCorner);
         if (design != null) p.setDesign(design);
         if (bar != null) p.setBar(bar);
         if (barAt != null) p.setBarAt(barAt);
@@ -787,6 +793,8 @@ public class SaverReceiver extends BroadcastReceiver {
             + "\nlang: " + p.lang()
             + "\nnational: " + p.national()
             + "\ncardstyle: " + p.cardStyle() + "\nformstyle: " + p.formStyle()
+            + "\ncardstyle: " + p.cardStyle()
+            + "\ncardsize: " + p.cardSize() + "\ncardcorner: " + p.cardCorner()
             + "\ndesign: " + p.design() + "\nbar: " + p.bar() + "\nbarat: " + p.barAt() + "\nwx: " + p.wxAt()
             + "\nmarkets: " + (p.marketsOn() ? "" : "off ") + Prefs.join(p.markets(), ",") + "\nclocksize: " + p.clockSize() + "\nmkstyle: " + p.mkStyle()
             + "\nstocks: " + Prefs.join(p.stocks(), ",") + "\nstkchg: " + p.stkChg()

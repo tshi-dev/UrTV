@@ -21,7 +21,7 @@
 #   optimize/saver.sh greeting off                 home screen: the greeting (by prayer time) and the weather line under it: on (default) or off
 #   optimize/saver.sh listenpill off               home screen: the «تلاوة وأذان» button: on (default) or off. Off removes only the button: the adhan, its alarm and bar, the
 #                                                  any-key stop, the «يُتلى الآن» card and the Quran stay; the screen opens from the app menu (long OK on an app) or the card
-#   optimize/saver.sh watchnext off                home screen: «أكمل المشاهدة» under the favourites: on (default) or off. It shows once the home app may
+#   optimize/saver.sh watchnext off                home screen: «كمّل المشاهدة» under the favourites: on (default) or off. It shows once the home app may
 #                                                  read the TV's Watch Next list (the owner allows it once from the settings row)
 #   optimize/saver.sh updatebell off               home screen: the «جرس التحديثات» bell: on (default) or off. It shows only while the Play Store has app updates waiting;
 #                                                  off removes only the bell
@@ -97,6 +97,8 @@
 #                                                  (the TV's own timer; left alone unless you run this)
 #   optimize/saver.sh cardstyle glass1             look of the card beside the clock: current dark1 glass1 dark3 glass3 boxes classic
 #   optimize/saver.sh formstyle boxes              «شكل آخر المباريات», a club's last five in the league's table: dots (default) boxes boxes-letters
+#   optimize/saver.sh cardsize l                   the cards' size: s m (default) l
+#   optimize/saver.sh cardcorner soft              the cards' corners: style (default, each card style's own) sharp soft round
 #   optimize/saver.sh design clean                 the screensaver's design: info (default, as it always was) clean big frame dayline
 #   optimize/saver.sh bar prayers                  a centred bar: none (default) prayers slot (the left slot's item) weather
 #   optimize/saver.sh barat clock                  where the bar goes: bottom (default) clock (under the clock)
@@ -344,6 +346,8 @@ case "${1:-}" in
   photos)   set1 photos "${2:?usage: optimize/saver.sh photos 30s|1|5|10|15|30|60 (minutes; 30s = every 30 seconds)}" ;;
   cardstyle)set1 cardstyle "${2:?usage: optimize/saver.sh cardstyle current|dark1|glass1|dark3|glass3|boxes}" ;;
   formstyle)set1 formstyle "${2:?usage: optimize/saver.sh formstyle dots|boxes|boxes-letters}" ;;
+  cardsize)set1 cardsize "${2:?usage: optimize/saver.sh cardsize s|m|l}" ;;
+  cardcorner)set1 cardcorner "${2:?usage: optimize/saver.sh cardcorner style|sharp|soft|round}" ;;
   design)   set1 design "${2:?usage: optimize/saver.sh design info|clean|big|frame|dayline}" ;;
   bar)      set1 bar "${2:?usage: optimize/saver.sh bar none|prayers|slot|weather}" ;;
   barat)    set1 barat "${2:?usage: optimize/saver.sh barat bottom|clock}" ;;

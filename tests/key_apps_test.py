@@ -49,8 +49,8 @@ check("the choice is checked and must be installed before it is saved", "KeyApps
 A = ROOT / "android/app/src/main/java/sa/urtv/screensaver"
 sa, sh, pv, pr = (A / "SettingsActivity.java").read_text(encoding="utf-8"), (A / "SettingsHub.java").read_text(encoding="utf-8"), (A / "ConfigProvider.java").read_text(encoding="utf-8"), (A / "Prefs.java").read_text(encoding="utf-8")
 titles = re.findall(r'b\("[a-z]+", "([^"]+)"', rb)
-check("on the TV: a row in «الأزرار السريعة» only for each button this remote has, each a list of the TV's apps with «الافتراضي» first",
-      "RemoteButtons.buttons(Prefs.remoteTv())" in sa and "pickKeyApp(k.id, k.title)" in sa and titles and all(t.endswith(" في الريموت") and f'{{"{t}", BUTTONS}}' in sh for t in titles), titles)
+check("on the TV: a row in «التطبيقات والأزرار» ← «أزرار الريموت» (4.4 beta 4) only for each button this remote has, each a list of the TV's apps with «الافتراضي» first",
+      "RemoteButtons.buttons(Prefs.remoteTv())" in sa and "pickKeyApp(k.id, k.title)" in sa and titles and all(t.endswith(" في الريموت") and f'{{"{t}", APPS}}' in sh for t in titles) and 'H + "أزرار الريموت"' in sh, titles)
 check("the screensaver hands the choices to the home (key_apps), and the home takes them only when they change", '"key_apps"' in pv and "p.keyApps()" in pv and "Dock.followKeyApps(this, cfg.keyApps);" in main and 'cur.getColumnIndex("key_apps")' in (HOME / "ConfigSnapshot.java").read_text(encoding="utf-8"))
 check("the row says when a button works on our home only: no «إضافات تلفزيونك» (or its service off), or TCL's Android 11; no «•» in it",
       "، على الشاشة الرئيسية فقط في هذا التلفزيون" in sa and "، على الشاشة الرئيسية فقط (وفوق التطبيقات مع «إضافات تلفزيونك»)" in sa and "•" not in sa[sa.index("private String keyAppLabel"):sa.index("private void pickKeyApp")]

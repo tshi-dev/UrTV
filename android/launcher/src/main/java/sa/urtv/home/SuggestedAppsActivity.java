@@ -28,7 +28,7 @@ import java.util.Map;
 import sa.urtv.home.phone.UpdateRules;
 
 /**
- * 4.3 «تطبيقات مقترحة», opened from the screensaver's settings (الإعدادات ← المزيد ← التطبيقات والمفضلة): each suggested app (SuggestedApps) with its
+ * 4.3 «تطبيقات مقترحة», opened from the screensaver's settings (الإعدادات ← التطبيقات والأزرار): each suggested app (SuggestedApps) with its
  * one line, and one button. Installed: «افتح». A Play Store app: «افتح المتجر» (its page; the owner installs it there). Otherwise «ثبّت»: the file
  * is downloaded into this app's cache from its own GitHub releases only (SuggestedApps), at most UpdateRules.MAX_APK_BYTES, over https; the file must
  * be that package; then Android's own install screen asks the owner (PackageInstaller). Back closes.

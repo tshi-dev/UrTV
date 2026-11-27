@@ -44,7 +44,7 @@ check("«أطفئ الآن» without «إضافات تلفزيونك» (4.3.3): 
 check("«إعدادات تلفزيونك» opens our settings (the screensaver app's SettingsActivity) through «قفل الإعدادات» (@urtv), the tile only when that app is there",
       "host.openOurSettings()" in center and "ParentalPolicy.OUR_SETTINGS, null" in main and 'SAVER_PKG + ".SettingsActivity"' in main
       and "case OUR_SETTINGS:" in policy and "t.add(OWN_SETTINGS)" in policy.split("case OUR_SETTINGS:")[1][:200]
-      and center.index("if (host.saverInstalled())") < center.index('"تلفزيونك"') < center.index('"tv", S.t("الإعدادات")'))
+      and center.index("if (host.saverInstalled())") < center.index('"تلفزيونك"') < center.index('"tv", S.t("إعدادات الجهاز")'))   # 4.4 beta 4: the TV's own settings tile is «إعدادات الجهاز» (the findability review)
 check("the side panel: 560 px of 1920 wide inside the 5 % safe area, a clear full-screen popup it slides across in the one motion (Motion: 200 ms, couch-tv's curve; a fade with «الوضع الخفيف»), a press outside closes it, what does not fit scrolls",
       "PANEL_W = 560f / 1920f, SAFE = 0.05f" in center and "SLIDE_MS = (int) Motion.MS" in center and "new PopupWindow(root, W, H, true)" in center and "root.setOnClickListener(v -> dismiss());" in center
       and "panel.animate().translationX(0).setDuration(SLIDE_MS).setInterpolator(Motion.ease())" in center and "final boolean fade = wideNow || Ram.low(anchor.getContext());" in center and "Dir.start() | Gravity.TOP" in center

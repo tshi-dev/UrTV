@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """G4 (4.3.3): less work before the home's first frame. A cold start no longer looks for the TV's live TV app and source picker (a dozen package manager calls;
-the inputs list and «التلفزيون» ask each time they open); a return no longer waits on the main thread for the screensaver's provider («أكمل المشاهدة» reads its
+the inputs list and «التلفزيون» ask each time they open); a return no longer waits on the main thread for the screensaver's provider («كمّل المشاهدة» reads its
 setting on the row's own thread), for the package manager and the update record (showUpdateResult reads them on a thread and opens the screen after), or for the
 changed-packages check (after the first frame: AfterFrame).
 
@@ -30,7 +30,7 @@ check("findTvApps is asked where its answers are used: the inputs list and «ا�
 check("every use of liveTvPkg / inputPickerPkg is in the inputs list, its rows (openPassthroughInput) or openLiveTv, each after a findTvApps",
       all(any(n in main[:m.start()].rsplit("private void ", 1)[1][:40] for n in ("showInputsNow", "openPassthroughInput", "openLiveTv", "findTvApps")) for m in re.finditer(r"\b(liveTvPkg|inputPickerPkg)\b(?! *=)", main) if m.start() > main.index("private String liveTvPkg")+40))
 load = body("private void loadTvRows() {", "\n    }\n")
-check("«أكمل المشاهدة»: the setting (a provider query) is read inside the row's own thread, never before it",
+check("«كمّل المشاهدة»: the setting (a provider query) is read inside the row's own thread, never before it",
       load.index("tvLoader.execute(") < load.index("ConfigSnapshot.read(") and "ConfigSnapshot.read(this)" not in load)
 up = body("private void showUpdateResult() {", "\n    }\n")
 check("showUpdateResult: the package manager and the record are read on a thread, the screen opens on the main thread, only while the home is in front",

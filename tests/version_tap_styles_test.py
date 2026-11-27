@@ -24,7 +24,7 @@ check("nothing about the style (classic, couch, tvOS, the look) stands between t
 row = st[st.index("private View row(String label"):st.index("private View offscreen()")]
 check("row() puts the row in the list in the couch way and in the classic (and tvOS) way", row.count("list.addView(couch, clp);") == 1 and row.count("list.addView(card, lp);") == 1)
 check("a row of another section is not built, so the note exists only where the row is (never twice)", "if (!on(cat)) return offscreen();" in row)
-check("the row is one section's row in both layouts (the side list and 4.3.2): «تحديث صفحة شاشة التوقف» is UPDATE and «update», never left out", '{"تحديث صفحة شاشة التوقف", UPDATE}' in hub and '{"تحديث صفحة شاشة التوقف", "update"}' in hub)
+check("the row is one section's row in every settings style (one tree, 4.4 beta 4): «تحديث صفحة شاشة التوقف» is UPDATE, in its order, never left out", '{"تحديث صفحة شاشة التوقف", UPDATE}' in hub and '"التحديث التلقائي للصفحة", "تحديث صفحة شاشة التوقف"' in hub)
 note = st[st.index("private TextView note(View last"):st.index("return t;", st.index("private TextView note(View last"))]
 check("note() puts the lines in the list (the last row scrolls them into view); nothing on them says there is a pass", "list.addView(t);" in note and "setBackground" not in note and "setTag" not in note)
 tap = st[st.index("private void versionTap()"):st.index("private void versionTap()") + 400]

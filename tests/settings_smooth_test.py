@@ -19,11 +19,10 @@ st, hub = ((APP / f).read_text(encoding="utf-8") for f in ("SettingsActivity.jav
 rowfn = st[st.index("    private View row(String label, String value, int icon, final Runnable onClick) {"):].split("\n    }\n")[0]
 views_per_row = len(re.findall(r"= new (?:android\.widget\.)?(?:LinearLayout|ImageView|TextView)\(this\)", rowfn)) + 1   # and the mark (onMark)
 side = collections.Counter(c for _, c in re.findall(r'\{"([^"]+)", ([A-Z]+)\}', hub[hub.index("static final String[][] ROWS = {"):hub.index("static final String[][] HEADERS = {")]))
-old = collections.Counter(c for _, c in re.findall(r'\{"([^"]+)", "([a-z]+)"\}', hub[hub.index("ROWS_432 = {"):hub.index("HEADERS_432 = {")]))
 total = sum(side.values())
 print(f"NUMBERS one render, before: every row of every section built, {total} rows, about {total * views_per_row} views")
-print(f"NUMBERS one render, after: the section's own rows only: side list {min(side.values())} to {max(side.values())} rows (mean {total / len(side):.1f}), "
-      f"4.3.2 {min(old.values())} to {max(old.values())} (mean {total / len(old):.1f}); a 4.3.2 screen of buttons builds none (it built {total})")
+print(f"NUMBERS one render, after: the section's own rows only, in every style (one tree, 4.4 beta 4): {min(side.values())} to {max(side.values())} rows "
+      f"(mean {total / len(side):.1f}); a screen of buttons builds none (it built {total})")
 side_ms = re.search(r"SIDE_MS = (\d+)", st)
 print(f"NUMBERS a focus move in the side list, before: a whole render ({total} rows); after: none until the focus rests {side_ms.group(1) if side_ms else '?'} ms")
 check("a row of another section is not built: its action is kept (the search runs it) and row() gives one shared view, never added",

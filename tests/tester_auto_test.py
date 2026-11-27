@@ -38,7 +38,7 @@ check("a dream: mCurrentDream or DreamActivity; null is none", lib.dreaming("mCu
 check("mute: only the music stream's block counts", lib.muted("- STREAM_MUSIC:\n Muted: true\n- STREAM_ALARM:\n Muted: false") and not lib.muted("- STREAM_MUSIC:\n Muted: false\n- STREAM_ALARM:\n Muted: true"))
 xml = '<node text="" focused="true" bounds="[0,0][100,100]"/><node text="الأذان" focused="false" bounds="[10,10][90,50]"/><node text="x" focused="false" bounds="[200,0][300,10]"/>'
 check("the focused row's name (a child's text when the row itself has none), and a text on the screen", lib.focused(xml) == "الأذان" and lib.has_text(xml, "الأذان") and not lib.has_text(xml, "غير موجود"))
-check("the volume, the city, the adhan state of a prayer", lib.music_volume("volume is 7 in range [0..15]") == 7 and lib.city("version=4\ncity=الرياض\nx") == "الرياض"
+check("the settings style, the volume, the city, the adhan state of a prayer", lib.settings_style("a=1\nsettingsstyle=couch\n") == "couch" and lib.settings_style("nothing") == "" and lib.music_volume("volume is 7 in range [0..15]") == 7 and lib.city("version=4\ncity=الرياض\nx") == "الرياض"
       and lib.adhan_state("prayer_sound=fajr:silent,dhuhr:|prayer_screen=fajr:on,dhuhr:off", "fajr") == "screen" and lib.adhan_state("prayer_sound=fajr:silent,dhuhr:|prayer_screen=fajr:on,dhuhr:off", "dhuhr") == "sound"
       and lib.adhan_state("nothing", "fajr") == "")
 
@@ -73,7 +73,7 @@ check("a clean round on the stand-in: exit 0, GREEN, report.md written", r.retur
 by = {}
 for s in steps:
     by[s[1]] = by.get(s[1], 0) + 1
-check("every step passed: 9 layouts, 22 settings screens, saver, 2 stations, 2 displays, 2 font, 20 adhan states, games", by.get("FAIL", 0) == 0 and by.get("PASS", 0) == 9 + 22 + 1 + 2 + 2 + 2 + 20 + 1 + 1 and "SKIP" not in by,
+check("every step passed: install, 9 layouts, 30 settings screens (3 styles × 10 sections), saver, 2 stations, 2 displays, 2 font, 20 adhan states, games", by.get("FAIL", 0) == 0 and by.get("PASS", 0) == 1 + 9 + 30 + 1 + 2 + 2 + 2 + 20 + 1 and "SKIP" not in by,
       (by, [s for s in steps if s[1] != "PASS"][:5]))
 metrics = {l.split("\t")[0] for l in (out / "metrics.tsv").read_text(encoding="utf-8").splitlines()}
 check("the health numbers are in: cold starts, memory, jank, crashes, ANRs, frozen lines", {"cold_start_home_ms", "cold_start_saver_ms", "pss_home_kb", "pss_saver_kb", "jank_home_pct", "jank_home_p99_ms", "crashes", "anrs", "frozen_lines"} <= metrics, metrics)
@@ -83,8 +83,8 @@ try:
     pil = True
 except ImportError:
     pil = False
-check("39 screenshots (9 layouts, 22 settings screens, saver, 2 stations, 2 display, 2 font, games), and with Pillow the city boxed copy of each where it is on the screen",
-      len(shots) == 39 and (not pil or len(list((out / "shots").glob("*-city.png"))) == 39), (len(shots), len(list((out / "shots").glob("*-city.png")))))
+check("47 screenshots (9 layouts, 30 settings screens, saver, 2 stations, 2 display, 2 font, games), and with Pillow the city boxed copy of each where it is on the screen",
+      len(shots) == 47 and (not pil or len(list((out / "shots").glob("*-city.png"))) == 47), (len(shots), len(list((out / "shots").glob("*-city.png")))))
 lines = cmds.splitlines()
 check("put back at the end: the settings imported, the display size, the volume (7), then Home and a look at the mute", "saver import" in cmds and "settings-before.json --yes" in cmds
       and "wm size reset; wm density reset" in cmds and "cmd media_session volume --stream 3 --set 7" in cmds
@@ -114,5 +114,5 @@ check("it never touches the family PIN, the setup wizard, the old launcher or th
       not re.search(r"setupwraith|launcherx|\bpm (uninstall|disable|clear)|svc wifi|wpa|dock\.sh pin|reboot|KEYCODE_(VOLUME_)?MUTE|KEYCODE_POWER|KEYCODE_SLEEP", code), re.findall(r"setupwraith|launcherx|pm uninstall|svc wifi|reboot|KEYCODE_MUTE", code))
 check("no address, serial, Wi-Fi name, user name or personal path in it", not re.search(r"\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b|/home/|/Users/|[A-Z0-9]{12,}", code), "")
 check("every step has its words in the header and its data file rows (screens.tsv: layouts, cards, sections, styles, prayers)", all(w in (ROOT / "tester/auto/round.sh").read_text(encoding="utf-8") for w in ("install", "layouts", "settings", "saver", "radio", "display", "font", "adhan", "games", "health"))
-      and len([l for l in (ROOT / "tester/auto/screens.tsv").read_text(encoding="utf-8").splitlines() if l.startswith(("layout\t", "card\t", "section\t", "style\t", "adhan\t"))]) == 3 + 3 + 11 + 2 + 5)
+      and len([l for l in (ROOT / "tester/auto/screens.tsv").read_text(encoding="utf-8").splitlines() if l.startswith(("layout\t", "card\t", "section\t", "style\t", "adhan\t"))]) == 3 + 3 + 10 + 3 + 5)
 sys.exit(1 if failed else 0)

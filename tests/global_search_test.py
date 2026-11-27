@@ -18,7 +18,7 @@ gs, main, prefs, recv, st, hub, saver, man = (src(HOME / "GlobalSearch.java"), s
     src(APP / "SettingsActivity.java"), src(APP / "SettingsHub.java"), src(ROOT / "optimize/saver.sh"), src(ROOT / "android/launcher/src/main/AndroidManifest.xml"))
 
 check("off by default: the setting is false until chosen, and #searchpill=1 only while on", 'sp.getBoolean("searchPill", false)' in prefs and '(searchPill() ? "&searchpill=1" : "")' in prefs)
-check("a row in the settings (the home's category), saver.sh searchpill on|off, and saver.sh show", 'row("زر البحث", prefs.searchPill() ? "ظاهر" : "مخفي"' in st and '{"زر البحث", BUTTONS}' in hub
+check("a row in the settings («التطبيقات والأزرار», 4.4 beta 4), saver.sh searchpill on|off, and saver.sh show", 'row("زر البحث", prefs.searchPill() ? "ظاهر" : "مخفي"' in st and '{"زر البحث", APPS}' in hub
       and "set1 searchpill" in saver and 'p.setSearchPill("on".equals(searchPill));' in recv and '"\\nsearchpill: "' in recv)
 check("the TV's own search: GLOBAL_SEARCH, then ASSIST, only one that resolves; both in the manifest's <queries>",
       '"android.search.action.GLOBAL_SEARCH", Intent.ACTION_ASSIST' in gs and "resolveActivity(i, PackageManager.MATCH_DEFAULT_ONLY) != null" in gs

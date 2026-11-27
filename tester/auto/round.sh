@@ -134,6 +134,7 @@ fi
 SETTINGS_SAVED=1
 $SAVER show > "$OUT/raw/show-before.txt" 2>&1
 CITY=$($LIB city "$OUT/raw/show-before.txt")
+STYLE_BEFORE=$($LIB style "$OUT/raw/show-before.txt")
 tv "cmd media_session volume --stream 3 --get" 2> /dev/null | tr -d '\r' > "$OUT/raw/volume-before.txt"
 SAVED_VOL=$($LIB volume "$OUT/raw/volume-before.txt")
 tv "dumpsys audio" 2> /dev/null | tr -d '\r' > "$OUT/raw/audio-before.txt"
@@ -176,8 +177,8 @@ fi
 if want settings; then
   echo "settings…"
   while IFS=$'\t' read -r _ stkey stname stcmd _ <&3; do
-    # shellcheck disable=SC2086
-    $SAVER $stcmd > /dev/null 2>&1 || { step "settings-$stkey" FAIL "saver.sh $stcmd refused"; continue; }
+    tv "am broadcast -n $SAVER_PKG/.SaverReceiver -a $SAVER_PKG.SET --es settingsstyle $stcmd" > "$OUT/raw/style-$stkey.txt" 2>&1 || { step "settings-$stkey" FAIL "the settings style $stcmd was not accepted"; continue; }
+    nap 2
     while IFS=$'\t' read -r _ seckey secname extras marker <&4; do
       name="settings-$stkey-$seckey"
       # shellcheck disable=SC2086
@@ -189,7 +190,7 @@ if want settings; then
       fi
     done 4< <(rows section)
   done 3< <(rows style)
-  $SAVER preset tv > /dev/null 2>&1
+  if [ -n "$STYLE_BEFORE" ]; then tv "am broadcast -n $SAVER_PKG/.SaverReceiver -a $SAVER_PKG.SET --es settingsstyle $STYLE_BEFORE" > /dev/null 2>&1; fi   # back to the style the TV had
   key KEYCODE_HOME
 fi
 

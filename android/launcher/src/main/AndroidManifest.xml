@@ -4,7 +4,7 @@
 
     <uses-permission android:name="android.permission.INTERNET" />   <!-- hosted wallpapers, the optional card -->
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
-    <!-- «أكمل المشاهدة»: the TV's Watch Next list; asked once in WatchNextActivity, nothing read without it -->
+    <!-- «كمّل المشاهدة»: the TV's Watch Next list; asked once in WatchNextActivity, nothing read without it -->
     <uses-permission android:name="android.permission.READ_TV_LISTINGS" />
     <uses-permission android:name="com.android.providers.tv.permission.READ_EPG_DATA" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -325,11 +325,11 @@
             android:screenOrientation="landscape"
             android:theme="@android:style/Theme.Material.NoActionBar" />
 
-        <!-- «أكمل المشاهدة»: the one question for the TV's Watch Next list; opened from the screensaver's settings row, behind its PIN like DockActivity -->
+        <!-- «كمّل المشاهدة»: the one question for the TV's Watch Next list; opened from the screensaver's settings row, behind its PIN like DockActivity -->
         <activity
             android:name=".WatchNextActivity"
             android:exported="true"
-            android:label="أكمل المشاهدة"
+            android:label="كمّل المشاهدة"
             android:screenOrientation="landscape"
             android:theme="@android:style/Theme.Material.NoActionBar" />
 

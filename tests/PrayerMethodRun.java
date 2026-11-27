@@ -96,7 +96,7 @@ public final class PrayerMethodRun {
         check("note: due on the first three starts while no city was set, never once one was",
                 Location.noteDue(true, false, 0) && Location.noteDue(true, false, 2) && !Location.noteDue(true, false, 3) && !Location.noteDue(true, true, 0), "");
         check("note: never on a TV that had the app before and was updated, whatever its city", !Location.noteDue(false, false, 0) && !Location.noteDue(false, true, 0), "");
-        check("note: its words", Location.note("الرياض").equals("المدينة: الرياض. لتغييرها: الإعدادات ثم الموقع"), Location.note("الرياض"));
+        check("note: its words", Location.note("الرياض").equals("المدينة: الرياض. لتغييرها: الإعدادات ثم اللغة والموقع"), Location.note("الرياض"));
         System.exit(failed == 0 ? 0 : 1);
     }
 }

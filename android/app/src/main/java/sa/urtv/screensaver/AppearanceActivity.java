@@ -188,7 +188,7 @@ public class AppearanceActivity extends Activity {
                 cells.add(tile("sync:off", new Mock(Mock.SYNC, "off", home), w(OnOff.OFF_WORD), !on, v -> { prefs.setLookSync(false); render(); }));
                 grid(cells, 3);
                 col.addView(text(w(on ? "مفعّل: الأزرار العلوية والبطاقات وشريط التطبيقات بمادة وحدة. غيّر شفافية الشريط أو اللون فيتغيّر الثلاثة معًا."
-                        : "متوقف: لكل سطح شفافيته وتعبئته. الشكل واللون وشكل التركيز يبقون للكل."), 16, "Regular", look.sub), line(dp(16)));
+                        : "متوقف: كل سطح له شفافيته وتعبئته. الشكل واللون وشكل التركيز واحد للكل."), 16, "Regular", look.sub), line(dp(16)));
                 if (!on) for (int i = 0; i < GlassStyle.SURFACES.length; i++) {
                     final int s = i;
                     col.addView(stepper("surface" + s, w(GlassStyle.SURFACE_NAMES[s]) + "، " + w("الشفافية"), prefs.surfacePercent(s), 30, 100, 10, v -> { prefs.setSurfacePercent(s, v); render(); }), line(dp(8)));

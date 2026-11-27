@@ -66,7 +66,7 @@
 المدينة	City
 طريقة الحساب	Calculation method
 تعديل وقت الصلاة	Adjust prayer times
-يعمل، لكل صلاة دقائقها، من −٢٠ إلى +٢٠ (الشروق لا يتغيّر)	On, Minutes per prayer, −20 to +20 (sunrise stays)
+مفعّل، لكل صلاة دقائقها من −٢٠ إلى +٢٠ (الشروق ثابت)	On, Minutes per prayer, −20 to +20 (sunrise stays)
 متوقف، الأوقات كما تُحسب	Off, Times as calculated
 تصحيح منشور لأوقات اليوم، وتعديلك لأي صلاة يبقى هو المعتمد	A published correction applies to today's times; your own adjustment of a prayer always wins
 المباريات	Matches
@@ -77,18 +77,18 @@
 العرض	Display
 الأرقام	Digits
 تنبيه قبل الأذان	Adhan alert
-يعمل، شريط في أعلى الشاشة آخر ١٠ دقائق، ثم حتى الإقامة	On, A bar at the top for the last 10 minutes, then until iqama
+مفعّل، شريط أعلى الشاشة آخر ١٠ دقائق، ويبقى لين الإقامة	On, A bar at the top for the last 10 minutes, then until iqama
 الشروق بعد الفجر	Sunrise after Fajr
 يعمل، بعد إقامة الفجر: كم باقي على الشروق، ثم نصف ساعة بعده	On, After Fajr iqama: time left to sunrise, then half an hour after
 شريط الوقت بين الصلاتين	Prayer progress bar
-يعمل، خط رفيع تحت الصلاة القادمة يمتلئ حتى وقتها	On, A thin line under the next prayer fills until its time
+مفعّل، خط رفيع تحت الصلاة الجاية يمتلي لين يجي وقتها	On, A thin line under the next prayer fills until its time
 الرطوبة والرياح	Humidity & wind
 يعمل، تحت المدينة أعلى اليسار	On, Under the city, top left
 أسماء الأشهر الميلادية	Gregorian month names
 شريط السنة تحت الساعة	Year strip under the clock
 يعمل، نقاط السنة تحت الساعة، واليوم يلمع	On, A dot for each day under the clock, today glowing
 المناسبة القادمة	Next occasion
-ظاهرة، أسفل الشاشة في الوسط: كم باقي على رمضان والأعياد، والإفطار والإمساك في رمضان	Shown, Bottom center: days to Ramadan and Eid, and iftar and suhoor in Ramadan
+ظاهرة، تحت في النص: كم باقي على رمضان والأعياد، والإفطار والإمساك في رمضان	Shown, Bottom center: days to Ramadan and Eid, and iftar and suhoor in Ramadan
 مخفية، كم باقي على رمضان والأعياد	Hidden, days to Ramadan and Eid
 رجّع الشكل السابق	Previous look
 المظهر على الرئيسية	Looks on the home screen
@@ -97,7 +97,7 @@
 كل جزء وحده	Each part on its own
 موافق يثبّت، ورجوع يرجّع الشكل المحفوظ	OK keeps it, Back puts the saved look back
 لوحة المظهر على الرئيسية	Looks panel on home
-مفعّلة، تعاين الشكل على الرئيسية قبل ما تختار	On, see a look on the home screen before you choose
+مفعّلة، تشوف الشكل على الرئيسية قبل ما تختار	On, see a look on the home screen before you choose
 زر رجّع الشكل السابق	Previous look button
 مفعّل، أول صف بعد تغيير الشكل	On, the first row after the look changes
 تبديل الشكل بلا وميض	Switch looks without flicker
@@ -117,7 +117,7 @@
 الأسواق (أعلى اليسار)	Markets (top left)
 صفحة الأسواق	Markets page
 تاسي وقائمتك والذهب والعملات، ومحفظتك	TASI, your list, gold, currencies and your portfolio
-حدّث الواجهة الرئيسية «تلفزيونك» لتظهر صفحة الأسواق	Update the UrTV home screen to get the markets page
+حدّث الواجهة الرئيسية «تلفزيونك» عشان تطلع صفحة الأسواق	Update the UrTV home screen to get the markets page
 شريط الأسواق	Markets bar
 مخفي، يبقى طقس اليوم فقط	Hidden, Today’s weather only
 الأسواق	Markets
@@ -148,7 +148,7 @@
 ظاهر عند وجود تحديثات للتطبيقات	Shown when app updates are waiting
 ترتيب التطبيقات المفضلة	Order favorites
 قائمة ترتّب فيها المفضلة بالأسهم	Arrange your favorites with the arrows
-أكمل المشاهدة	Continue watching
+كمّل المشاهدة	Continue watching
 أسماء المصادر	Input names
 غيّر اسم كل مصدر، مثل PS5	Rename each input, like PS5
 تعديل المفضلة	Edit favorites
@@ -211,7 +211,7 @@
 اختر المكان	Choose the place
 مكان من اختيارك	Your own place
 المدينة تحدد الوقت والطقس؛ طريقة الحساب تحدد مواقيت الصلاة	The city sets the time and weather; the method sets the prayer times
-المدينة: %s. لتغييرها: الإعدادات ثم الموقع	City: %s. To change it: Settings, then Location
+المدينة: %s. لتغييرها: الإعدادات ثم اللغة والموقع	City: %s. To change it: Settings, then Language and location
 # ---- teams, leagues, shows
 لا توجد فرق متابعة	No followed teams
 الفرق المتابعة (ألغِ التحديد للحذف)	Followed teams (untick to remove)
@@ -223,7 +223,7 @@
 بحث عن أي فريق أو منتخب	Search any club or national team
 المنتخبات	National teams
 الدوري	League
-تعذّر تحميل القائمة، جرّب البحث عن الفريق	Couldn’t load the list. Try searching for the team
+ما قدرنا نحمّل القائمة، جرّب تدوّر على الفريق	Couldn’t load the list. Try searching for the team
 اسم الفريق بالعربية أو الإنجليزية (مثل الهلال أو ⁦Real Madrid⁩)	Team name in English or Arabic (like Real Madrid)
 اختر الفريق	Choose the team
 لا توجد نتائج، جرّب اسم الفريق بالإنجليزية	No results. Try the team’s English name
@@ -241,7 +241,7 @@
 إضافة مسلسل	Add a show
 اسم المسلسل	Show name
 اختر المسلسل	Choose the show
-مضاف مسبقاً	Already added
+مضاف من قبل	Already added
 تمت إضافة %s	Added %s
 جارٍ جلب الاسم بالعربية…	Getting the Arabic name…
 # ---- the home app's screens
@@ -287,7 +287,7 @@
 إعداد التلفزيون شغّال الحين، جرّب بعده	The TV setup is running now; try after it
 نحتاج نضبطها من الرئيسية: شغّل «إعداد تلفزيوني» من إعدادات الرئيسية مرة ووافق على سؤال تصحيح USB، ثم اختر الوقت هنا من جديد.	The home has to set it: run “Your TV setup” once from the home’s settings and accept the USB debugging question, then choose the time here again.
 أبداً (التلفزيون أوقف شاشة التوقف)	Never (the TV turned the screensaver off)
-لا تبدأ: التلفزيون أوقف شاشة التوقف	Does not start: the TV turned the screensaver off
+ما تشتغل: التلفزيون موقّف شاشة التوقف	Does not start: the TV turned the screensaver off
 يحدده التلفاز	Set by the TV
 %s ثانية	%s sec
 دقيقة واحدة	1 minute
@@ -297,7 +297,7 @@
 ٣٠ ثانية	30 seconds
 جارٍ التحقق…	Checking…
 جارٍ البحث…	Searching…
-لا يوجد اتصال	No connection
+ما فيه اتصال	No connection
 تعذرت قراءة النتائج	Couldn’t read the results
 # ---- the look
 الشكل: %s	Style: %s
@@ -586,7 +586,7 @@
 عنوان ألبوم صوري	Album title
 ظاهر فوق الصورة	Shown above the photo
 شكل صورة ألبوم صوري	Album photo shape
-تملأ البطاقة وأعلاها يبقى	Fills the card, the top stays
+تعبّي البطاقة ويبان أعلاها	Fills the card, the top stays
 كاملة بلا قص	Whole, not cropped
 حجم ألبوم صوري	Album size
 نص أوضح	Clearer text
@@ -608,7 +608,7 @@
 تطبيقات نرشّحها، وتثبّتها من هنا	Apps we suggest, installed from here
 تطبيقات مقترحة	Suggested apps
 تعذّر التنزيل، حاول مرة ثانية	Download failed, try again
-اجعل UrTV الشاشة الرئيسية	Make UrTV your home screen
+خلّ UrTV هي الشاشة الرئيسية	Make UrTV your home screen
 ✓ UrTV هو الشاشة الرئيسية	✓ UrTV is your home screen
 اضغط وكمّل إعداد تلفزيوني (دقيقتان)	Press and finish Set Up Your TV (two minutes)
 سينمائي	Cinema
@@ -671,7 +671,7 @@
 السطر	Row
 الاختيار	Choice
 لا توجد شبكة محلية. وصّل التلفزيون بالواي فاي	No local network. Connect the TV to Wi-Fi
-تعذّر فتح الغرفة	Could not open the room
+ما انفتحت الغرفة	Could not open the room
 الكل يجاوب من جواله، والأسرع يكسب	Everyone answers on their phone, the fastest wins
 لاعبين	players
 امسح الرمز بكاميرا الجوال. ما فتح؟ اكتب العنوان في متصفح الجوال	Scan the code with the phone's camera. Didn't open? Type the address in the phone's browser
@@ -690,7 +690,7 @@
 جاوب الجميع	Everyone answered
 لا فائز هذه المرة	No winner this time
 تعادل في المركز الأول	A tie for first place
-انتهت اللعبة	Game over
+خلصت اللعبة	Game over
 الفائز: %s	Winner: %s
 العب مرة أخرى	Play again
 تغيير الإعدادات	Change the settings
@@ -707,7 +707,7 @@
 الأسهم بين الألعاب، اختيار لفتح اللعبة، رجوع للأقسام	Arrows between games, OK opens a game, Back for the sections
 انقطعت الشبكة، أُغلقت الغرفة	The network is gone, the room is closed
 جارٍ تنزيل قائمة الدوريات…	Downloading the list of leagues…
-مفعّل الأساسيات فقط، وبضغطة ترجع الشاشة الكاملة	On: the essentials only, one press brings the full screen back
+مفعّل، الأساسيات بس، وبضغطة ترجع الشاشة كاملة	On: the essentials only, one press brings the full screen back
 صوري في شاشة التوقف	My photos on the screensaver
 صوري فقط في شاشة التوقف	My photos only on the screensaver
 صوري مع صورنا في شاشة التوقف	My photos with ours on the screensaver
@@ -935,7 +935,7 @@
 لون الشكل	The look’s colour
 الشفافية	Strength
 مفعّل: الأزرار العلوية والبطاقات وشريط التطبيقات بمادة وحدة. غيّر شفافية الشريط أو اللون فيتغيّر الثلاثة معًا.	On: the upper buttons, the cards and the apps bar are one material. Change the tray strength or the colour and all three change together.
-متوقف: لكل سطح شفافيته وتعبئته. الشكل واللون وشكل التركيز يبقون للكل.	Off: each surface has its own strength and fill. The look, the colour and the focus style stay for all.
+متوقف: كل سطح له شفافيته وتعبئته. الشكل واللون وشكل التركيز واحد للكل.	Off: each surface has its own strength and fill. The look, the colour and the focus style stay for all.
 رجّع واجهة المصنع	Restore factory home
 تخلّص من واجهة المصنع	Drop the factory home
 مفعّل واجهة المصنع معطّلة، وبضغطة ترجع	On, the factory interface is off; one press brings it back
@@ -950,7 +950,7 @@
 آسيا وأفريقيا	Asia and Africa
 العالم	World
 إعداد تلفزيوني	Your TV setup
-شغّل الإعداد من جديد، أو تراجع عن تغييراته	Run the setup again, or undo its changes
+شغّل الإعداد من جديد، أو رجّع اللي غيّره	Run the setup again, or undo its changes
 تغيير المدينة	Change city
 قبل ما تحذف التطبيق…	Before you delete the app…
 واجهة المصنع معطّلة الحين: ارجعها قبل ما تحذف UrTV	The factory interface is off now: turn it back on before deleting UrTV
@@ -961,12 +961,12 @@
 شوفوا التلفزيون	Look at the TV
 شوفوا كلماتكم في جوالاتكم	Look at your word on your phone
 كل واحد يشوف كلمته	Everyone sees their own word
-اللعبة تتسع لعشرة لاعبين	The game has room for ten players
+اللعبة تاخذ لين عشرة لاعبين	The game has room for ten players
 الممثل يشوف الكلمة في جواله	The actor sees the word on their phone
 الوقت يبدأ لما تضغط شفتها	The time starts when you tap Got it
 ابدأ الوقت	Start the time
 صوّتوا من جوالاتكم	Vote on your phones
-احسب الأصوات	Count the votes
+عدّوا الأصوات	Count the votes
 اختيار الأصوات أو الأصابع	Count the votes or the fingers
 كل واحد بجواله، والريموت للمضيف	Everyone on their phone, the remote for the host
 شافوا %s من %s	%s of %s have seen it
@@ -1019,7 +1019,7 @@
 مركز التحكم والجوال والرقابة الأبوية	Control center, phone and parental controls
 اكتب كلمة وانتقل إلى الصف	Type a word and jump to the row
 اكتب كلمة، مثل: صوت، لون، مدينة	Type a word, such as: sound, colour, city
-لا يوجد صف بهذا الاسم	No setting by that name
+ما فيه صف بهذا الاسم	No setting by that name
 الأزرار	Buttons
 فرق التاريخ الهجري	Hijri date shift
 يومان قبل	Two days earlier
@@ -1149,7 +1149,7 @@
 مخصّص (%s، وتغيّر: %s)	Custom (%s, changed: %s)
 مخصّص (%s، وتغيّر أكثر من صف)	Custom (%s, more than one row changed)
 زر المصادر	Sources button
-مخفي، المصادر تفتح من زر المصادر في الريموت ومن مركز التحكم	Hidden, sources open from the remote's input key and from the control centre
+مخفي، والمصادر تنفتح من زرّها في الريموت ومن مركز التحكم	Hidden, sources open from the remote's input key and from the control centre
 تركيبات مقترحة	Suggested mixes
 شكل من الستة مع تغيير أو اثنين	One of the six looks with a change or two
 كل واحدة شكل من الستة مع تغيير أو اثنين؛ اختيارها يضبطها كلها	Each is one of the six looks with a change or two; choosing it sets it all
@@ -1168,7 +1168,7 @@
 
 حزم المحتوى	Content packs
 حجم ما حمّلتموه من الألعاب، واحتفظوا به أو احذفوه	What you downloaded for the games: keep it or delete it
-المحتوى الكبير يُحمَّل ولا يأتي مع التطبيق	Big content is downloaded, it does not come with the app
+المحتوى الكبير يتحمّل، وما يجي مع التطبيق	Big content is downloaded, it does not come with the app
 ما فيه حزم الآن	No packs right now
 محمّلة	Downloaded
 غير محمّلة	Not downloaded
@@ -1260,12 +1260,11 @@
 أنت قروي	You are a villager
 أُنهيت	Ended
 ابدأ الليل	Start the night
-اعدّ الأصوات	Count the votes
-اكتشفوا الذئاب بالكلام والتصويت	Find the wolves by talking and voting
+اكشفوا الذئاب بالسوالف والتصويت	Find the wolves by talking and voting
 الحارس أنقذ أحدًا، ما أحد طلع	The guard saved someone, nobody left
 الذئاب والحارس والعرّاف يختارون في جوالاتهم	Wolves, guard and seer choose on their phones
 العب مرة ثانية	Play again
-القرية نائمة	The village sleeps
+القرية نايمة	The village sleeps
 القرية نائمة، نم أنت أيضًا	The village sleeps, sleep too
 الليل	Night
 تعادل، ما أحد طلع	A tie, nobody left
@@ -1287,7 +1286,7 @@
 ليل القرية	Village Night
 ما أحد طلع الليلة	Nobody left tonight
 من تبعدون الليلة؟	Who do you send away tonight?
-من تحمي الليلة؟	Who do you protect tonight?
+مين تحمي الليلة؟	Who do you protect tonight?
 مين يطلع من القرية؟	Who leaves the village?
 نتيجة التصويت	Vote result
 ذئاب بين القرويين، من يكشفهم؟	Wolves among villagers, who finds them?
@@ -1344,7 +1343,7 @@
 ألغاز المنطق	Logic Puzzles
 اختاروا الجواب من جوالاتكم	Pick the answer on your phones
 اختر الجواب	Pick the answer
-فكّروا قبل أن يسبقكم غيركم	Think before the others beat you to it
+فكّروا قبل لا يسبقكم غيركم	Think before the others beat you to it
 اللغز %s من %s	Puzzle %s of %s
 
 # ---- 4.4 the screensaver designs
@@ -1367,9 +1366,9 @@
 حديث اليوم	Hadith of the day
 حديث اليوم وحده؛ مع بطاقة «آية أو حديث اليوم» تبقى تلك للآية	The hadith of the day alone; beside «Verse or hadith of the day» that one keeps to the verse
 إجازات المدارس	School breaks
-لم يُحدَّد تاريخ. اختر «إجازات المدارس» لأقرب إجازة، أو يحدد المساعد تاريخًا آخر على الكمبيوتر.	No date set. Choose “School breaks” for the next break, or the helper sets another date on the computer.
+ما فيه تاريخ محدد. اختر «إجازات المدارس» لأقرب إجازة، أو يحدد المساعد تاريخ ثاني من الكمبيوتر.	No date set. Choose “School breaks” for the next break, or the helper sets another date on the computer.
 مصادر البيانات	Data sources
-من أين تأتي البيانات، وترخيص كل مصدر	Where the data comes from, and each source's licence
+من وين تجي البيانات، وترخيص كل مصدر	Where the data comes from, and each source's licence
 الإعداد	Setting
 كتب السنة	The books of Sunnah
 المصورون	The photographers
@@ -1398,7 +1397,7 @@
 %s سؤال	%s questions
 يعمل، لكنه يحتاج «إضافات تلفزيونك»	On, but it needs “UrTV Extras”
 يعمل لو سمحت للإضافة بالظهور فوق التطبيقات	On, if you allow the add-on to show over other apps
-«فوق تطبيق آخر» يحتاج «إضافات تلفزيونك»: نفتح لك تثبيتها	“Over another app” needs “UrTV Extras”: opening its install for you
+«فوق تطبيق آخر» يحتاج «إضافات تلفزيونك»: بنفتح لك تثبيتها	“Over another app” needs “UrTV Extras”: opening its install for you
 «فوق تطبيق آخر» يحتاج «إضافات تلفزيونك»، ولم نقدر نفتح تثبيتها	“Over another app” needs “UrTV Extras”, and its install could not be opened
 إضافة أكثر من ٨ قد تبطّئ التلفزيون إذا كان ضعيف	More than 8 may slow a weak TV down
 إضافة أكثر من ٢٠ قد تبطّئ التلفزيون إذا كان ضعيف	More than 20 may slow a weak TV down
@@ -1421,7 +1420,7 @@
 اكتبوا الرقم من جوالاتكم	Type the number on your phones
 اكتبوا الإجابة من جوالاتكم	Type the answer on your phones
 خمّن %s من %s	%s of %s guessed
-هل جاوب صح؟	Was it right?
+جاوب صح؟	Was it right?
 اضغطوا «أنا!» في جوالاتكم، وأسرعكم يجاوب	Press «Me!» on your phones: the fastest answers
 ما أحد صوّت	Nobody voted
 الأكثر: %s	Most: %s
@@ -1429,7 +1428,7 @@
 جاوب صح: %s	Got it right: %s
 اكتب الرمز	Type the code
 # ---- «طريقة اللعب»: the games' how-to panel (the texts are docs/mockups/howto/TEXTS.md)
-الكل يجاوب من جواله، والأسرع والأدق يجمع أكبر عدد من النقاط.	Everyone answers on their own phone; the fastest right answers score most.
+الكل يجاوب من جواله، والأسرع والأدق ياخذ نقاط أكثر.	Everyone answers on their own phone; the fastest right answers score most.
 اللعبة كلها بالجوالات، والريموت للمضيف.	The whole game is on phones; the remote is the host's.
 الجواب الصحيح 500 + حتى 500 حسب الوقت الباقي. ثلاث إجابات صحيحة متتالية: +50، والرابعة +100، والخامسة وما بعدها +150. الخطأ أو عدم الجواب: صفر.	A right answer is 500 plus up to 500 for the time left; a streak adds 50, 100, then 150. Wrong or none: 0.
 بعد آخر سؤال يظهر منصة أول ثلاثة (▼ للقائمة كاملة): «العب مرة أخرى» أو «تغيير الإعدادات» أو «خروج».	After the last question: the podium of the first three (▼ for the full list), then play again, change settings or exit.
@@ -1442,7 +1441,7 @@
 10 لإجابة صحيحة لم يكتبها غيرك، 5 إذا كتبها غيرك أيضًا، صفر لا شيء. من خلّص أول وكل خاناته صحيحة: +5.	10 for a valid answer nobody else gave, 5 if another side gave it too, 0 for none; +5 for the first to finish with every box valid.
 بعد آخر جولة (3 أو 5 أو 8) يفوز الأعلى نقاطًا؛ التعادل في المركز الأول تحسمه جولة فاصلة بخانة واحدة.	After the last round (3, 5 or 8) the highest score wins; a tie for first is settled by one tie-break round.
 اختاروا الجولات والوقت ونوع اللعب (فرق أو أفراد) ثم «ابدأ».	Pick rounds, time and teams or individuals, then start.
-يدور الحرف ثم يثبت: اكتبوا على ورقة أو قولوا إجاباتكم.	The letter spins and stops: write on paper, or just say your answers.
+الحرف يلف ثم يوقف: اكتبوا على ورقة أو قولوا أجوبتكم.	The letter spins and stops: write on paper, or just say your answers.
 من يخلّص أول يضغط «اختيار» ويقول «خلّصنا»، ثم تختارون من خلّص أول.	Whoever finishes first presses OK; then you pick who it was.
 تُكشف الخانات واحدة واحدة: اتفقوا بصوت عالٍ، وعلّموا لكل فريق «صحيحة» أو «مكررة» أو «بدون» بـ«اختيار». زر «أمثلة» يُظهر أمثلة للحرف.	The boxes are revealed one by one: agree aloud and mark each team valid, same, or none. «Examples» shows samples.
 جملة ناقصة كلمة: قولوا الكلمة الصحيحة.	A sentence with a word missing: say the word.
@@ -1520,7 +1519,7 @@
 كل واحد من الثلاثة يشوف سرًّا على جواله: «احكِ قصة حقيقية» (اثنان) أو «اكذب» (واحد).	Each of the three sees a secret: tell a true story (two) or lie (one).
 يحكون قصصهم (60 أو 90 أو 120 ثانية) والباقون يسألون.	They tell their stories and the others question them.
 يصوّت الباقون من جوالاتهم: من كذب؟	The others vote on their phones: who lied?
-اعرف الكلمة التي يدل عليها سطر الإيموجي قبل الباقين.	Work out the word a line of emoji stands for, before the others.
+اعرف الكلمة اللي يدل عليها سطر الإيموجي قبل الباقين.	Work out the word a line of emoji stands for, before the others.
 أول جواب صحيح 3 نقاط، الثاني 2، وكل صحيح بعدهما 1.	First right answer 3, second 2, every other right one 1.
 بعد 10 أو 15 أو 20 لغزًا يفوز الأعلى.	After 10, 15 or 20 puzzles the highest wins.
 من 2 إلى 10 جوالات. يظهر سطر إيموجي (🍚🍗 = كبسة).	2 to 10 phones; a line of emoji shows.
@@ -1589,7 +1588,7 @@ tvOS	tvOS
 عندك على الرئيسية بطاقة واحدة.	You have one card on the home.
 عندك على الرئيسية بطاقتان.	You have two cards on the home.
 خلّ بطاقاتي داخل التصميم	Keep my cards in the design
-الساعة والتطبيقات فقط. بطاقاتك محفوظة، وترجّعها من «المظهر»	The clock and the apps only. Your cards are kept; bring them back from «Appearance»
+الساعة والتطبيقات بس. بطاقاتك محفوظة، وترجّعها من «المظهر»	The clock and the apps only. Your cards are kept; bring them back from «Appearance»
 عندك على الرئيسية %s بطاقات.	You have %s cards on the home.
 «%s» ما تناسب %s، فبنحط مكانها «%s».	«%s» does not fit %s, so «%s» takes its place.
 %s بدون بطاقات	%s without cards
@@ -1627,6 +1626,52 @@ tvOS	tvOS
 العصر	Asr
 المغرب	Maghrib
 العشاء	Isha
+# 4.4 beta 4: the findability review's tree (SettingsHub), its new rows and lines
+صوري والخلفيات	Photos, backgrounds
+التطبيقات والأزرار	Apps and buttons
+العائلة والجوال	Family and phone
+اللغة والموقع	Language and location
+حول والتحديث	About and updates
+المواقيت	Prayer times
+الخلفيات	Backgrounds
+أزرار الريموت	Remote buttons
+فتحها بزر الرجوع	Opening it with Back
+الأداء	Performance
+الأذان والمؤذن وأذان كل صلاة، والتنبيهات والأدعية، وطريقة حساب المواقيت.	The adhan, the muezzin and each prayer's adhan, the alerts and duas, and how prayer times are worked out.
+إضافة صورك وحذفها، وألبوم صوري، وخلفية الشاشة الرئيسية وصور شاشة التوقف.	Adding and deleting your photos, the My photos album, the home background and the screensaver's photos.
+أشكال جاهزة والتخطيط، والألوان والإضاءة، والبطاقات، والساعة، والتطبيقات.	Presets and layout, colours and lighting, cards, the clock and the apps.
+متى تبدأ، وتصميمها، وما بجانب الساعة، وفتحها بزر الرجوع.	When it starts, its design, what is beside the clock, and opening it with Back.
+واجهة التلفزيون، وشريط التطبيقات والمخفية والأقفال، والأزرار السريعة وأزرار الريموت.	The TV's home, the apps bar, hidden apps and locks, the quick buttons and the remote's buttons.
+الرقابة الأبوية، وتصفية المواقع للعائلة، والجوالات المسموح لها.	Parental controls, family site filtering and the allowed phones.
+لغة التلفزيون والأرقام والتقويم، والمدينة ومنها الطقس ومواقيت الصلاة.	The TV's language, digits and calendar, and the city, which sets the weather and prayer times.
+الإصدار والتحديث، وإعداد التلفزيون، وإرسال تقرير، والأداء.	Version and updates, TV setup, sending a report, and performance.
+الأذان والمؤذن والتنبيهات والأدعية	The adhan, muezzin, alerts and duas
+أضف صورك أو احذفها، والخلفيات	Add or delete your photos, and backgrounds
+الأشكال الجاهزة، والألوان، والبطاقات، والساعة	Presets, colours, cards and the clock
+متى تبدأ، وما يظهر عليها	When it starts, and what it shows
+شريط التطبيقات والمخفية، والأزرار	The apps bar, hidden apps and buttons
+اللغة والأرقام، والمدينة والطقس	Language and digits, city and weather
+المفضلة والمخفية والأزرار	Favourites, hidden apps and buttons
+الرقابة الأبوية والجوالات	Parental controls and phones
+أضف صوري من الجوال	Add photos from phone
+من صفحة الجوال: «صوري»، تضيف وتحذف	On the phone page: «My photos», add and delete
+احذف صورة	Delete a photo
+اختر من صورك	Pick from your photos
+ما فيه صور بعد	No photos yet
+ما فيه صور بعد: أضفها من الجوال	No photos yet: add them from the phone
+لا توجد صور، أضفها من الجوال	No photos, add them from the phone
+أضف صورك من الجوال: «أضف صوري من الجوال» (حتى ١٠)	Add your photos from the phone: «Add photos from phone» (up to 10)
+أرجع تطبيقًا أخفيته	Bring back an app you hid
+حجم البطاقات	Card size
+زوايا البطاقات	Card corners
+أصغر	Smaller
+أكبر	Bigger
+كما في الشكل	As in the style
+حادة	Sharp
+ناعمة	Soft
+أنعم	Softer
+الألوان والإضاءة	Colours and lighting
+وفي «كنبة» بقدر الشريط	as big as the strip in «Couch»
 أضف من فلاشة أو التنزيلات	Add from USB or Downloads
 صور من فلاشة USB أو من التنزيلات تُضاف إلى صوري	Photos from a USB stick or from Downloads are added to My photos
 جوال	Phones
@@ -1637,3 +1682,10 @@ tvOS	tvOS
 مو في قائمة الكلمات، إدخال مرة ثانية إذا أنت متأكد	Not in our word list. Press Enter again if you are sure
 ما فتح؟ اكتب هذا العنوان في متصفح الجوال	Did not open? Type this address in the phone's browser
 امسح الرمز بكاميرا الجوال	Scan the code with the phone's camera
+المؤذن	Muezzin
+اختر صوت المؤذن	Pick the muezzin
+الأدعية والتذكيرات	Duas and reminders
+أدعية وتذكيرات بوقتها، بصوتك أو بصوتنا	Duas and reminders at their time, with your sound or ours
+صوتياتي	My sounds
+أدعيتك وأذاني من ملفاتك	Your duas and your adhan, from your files
+جديد من الجوال: %s	New from the phone: %s

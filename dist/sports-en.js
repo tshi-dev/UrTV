@@ -1,4 +1,4 @@
-const SP_STAMP = 'SPORTS_BUILD:20261127111808:';
+const SP_STAMP = 'SPORTS_BUILD:20261127170205:';
 const SP_COL = {'136013':['#1E4FA1','#FFFFFF'], '136022':['#F7C600','#1B3A8A'], '136018':['#F2C200','#111111'], '137721':['#0A7A3A','#FFFFFF'],
   '136020':['#FFFFFF','#1A1A1A'], '136017':['#0B8A3E','#D4232B'], '136015':['#C8102E','#F2C200'], '136011':['#1D6B3A','#FFFFFF'], '136012':['#F2C200','#2B5BA8'],
   '139080':['#F2C200','#0A7A3A'], '147445':['#111111','#E2001A'], '136014':['#F28C00','#1A1A1A'], '137852':['#E30613','#111111'], '136200':['#E30613','#FFFFFF'],
@@ -341,7 +341,7 @@ const HW = {nowS:'Current', tableOf:'Final table %s', resultsOf:'Results %s', sc
   goalsFew:'%s goals', goalsMany:'%s goals', fromArchive:'From our archive', older:'Earlier', srcChamps:'Source: match results and Wikidata',
   srcChampsWp:'Source: match results, Wikidata and Wikipedia (CC BY-SA 4.0)', srcScorers:'Source: Wikipedia and Wikidata (CC BY-SA 4.0)',
   noScorers:'This season’s top scorer is not known yet', noChamps:'This league’s champions are not known yet', honours:'Titles', lastTitle:'latest %s',
-  title1:'one title', title2:'two titles', titleFew:'%s titles', titleMany:'%s titles', titlesLast:'%s, latest %s',};
+  lgScorer:'Top scorer, %s', title1:'one title', title2:'two titles', titleFew:'%s titles', titleMany:'%s titles', titlesLast:'%s, latest %s',};
 const HON_BASE = DATA_OLD + 'data-honours/';
 const honWant = (kind, id) => archWant(HON_BASE + kind + '/' + id + '.json');
 const honSeasonName = x => ar(String(x));
@@ -415,6 +415,12 @@ function honClub(id, j){
     const n = file && file.complete && file.titles && +file.titles[id];
     rows.push(mpItem(lgName(lg), n > 0 ? fw(HW.titlesLast, honTitles(n), honSeasonName(won[0].s)) : fw(HW.lastTitle, honSeasonName(won[0].s)),
       () => { mpGo({k: 'league', id: lg, tab: 3}); MP.d = Math.max(0, (MP.tabs || []).findIndex(x => x.on)); }));
+  });
+  [...lgs].filter(x => /^\d+$/.test(x)).forEach(lg => {
+    const sc = honWant('scorers', lg), x = honScorerSeasons(sc, null).find(k => { const t = honTop(sc, k); return t.length === 1 && String(t[0].team || '') === id; });
+    if(!x) return;
+    const t = honTop(sc, x)[0];
+    rows.push(mpItem(fw(HW.lgScorer, lgName(lg)), honSeasonName(x) + ': ' + plNm(t) + ', ' + honGoals(+t.goals), () => { mpGo({k: 'league', id: lg, tab: 4}); }));
   });
   return rows.length ? [{key: 'hon', name: HW.honours, games: rows}] : [];
 }

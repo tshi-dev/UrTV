@@ -485,7 +485,7 @@ public class MainActivity extends Activity {
         applyClean();   // «UrTV النظيف» changed while another screen was in front (after the card refresh: applyClean may hide the card)
         if (reminder != null) reminder.refresh(true);   // a card that came due while another app was in front; the alarm follows the tasks (both off the UI thread: QA-3)
         readAnimationScale();
-        loadTvRows();   // what one watched since: «أكمل المشاهدة» moves on
+        loadTvRows();   // what one watched since: «كمّل المشاهدة» moves on
         showUpdateResult();
         wireFocus();   // the «المهام» card may have come or gone with the settings
         View last = lastFocusedId == View.NO_ID ? null : findViewById(lastFocusedId);
@@ -1016,7 +1016,7 @@ public class MainActivity extends Activity {
         tray.getViewTreeObserver().addOnGlobalFocusChangeListener((oldFocus, newFocus) -> tray.wholeOnly());   // the focused tile is the one that may stand partly out
         bottom.addView(tray, new LinearLayout.LayoutParams(-1, bar(FavBar.TRAY_H)));
 
-        // «أكمل المشاهدة»: its own row below the first screen (the owner: the tray never moves for it), ▼ from the tray scrolls the home up
+        // «كمّل المشاهدة»: its own row below the first screen (the owner: the tray never moves for it), ▼ from the tray scrolls the home up
         // to it and ▲ brings the tray back; the tray's sides and padding, so its cards sit exactly under the favourites' cells
         tvRowsBox = new LinearLayout(this);
         tvRowsBox.setOrientation(LinearLayout.VERTICAL);
@@ -1226,6 +1226,13 @@ public class MainActivity extends Activity {
             case "photos":   // the settings' «أضف من فلاشة أو التنزيلات» under «صوري»: the photos of a stick or of Downloads, added to «صوري»
                 handler.post(() -> launchGuarded(ParentalPolicy.PILL_SAVER_SETTINGS, new Intent(this, PhotoAddActivity.class), S.t("أضف من فلاشة أو التنزيلات")));   // behind the lock of the screensaver's settings
                 break;
+            case "voice": case "duas": case "sounds": {   // the settings' «المؤذن», «الأدعية والتذكيرات», «صوتياتي»: the تلاوة app's screens, behind the same lock as the adhan's settings
+                final String cls = "voice".equals(what) ? "AdhanActivity" : "duas".equals(what) ? "DuaActivity" : "AudioActivity";
+                final String shown = "voice".equals(what) ? S.t("المؤذن") : "duas".equals(what) ? S.t("الأدعية والتذكيرات") : S.t("صوتياتي");
+                if (getResources().getBoolean(R.bool.show_listening))
+                    handler.post(() -> launchGuarded(ParentalPolicy.PILL_LISTEN, new Intent().setClassName(getPackageName(), "sa.urtv.home.tilawah." + cls), shown));
+                break;
+            }
             case "prayers":   // the settings' «الأذان لكل صلاة»: sound and screen for each of the five, behind the same lock as the adhan's settings
                 if (getResources().getBoolean(R.bool.show_listening))
                     handler.post(() -> launchGuarded(ParentalPolicy.PILL_LISTEN, new Intent(this, sa.urtv.home.tilawah.PrayerSoundActivity.class), S.t("الأذان لكل صلاة")));
@@ -1906,7 +1913,7 @@ public class MainActivity extends Activity {
     private LinearLayout.LayoutParams dockCell(int i, int n) { return dockCell(i, n, n, appsLook); }
 
     /** cell {@code i} of {@code n} in a row whose tiles are as wide as the tray's when {@code favs} favourites are shown (the watch-next rows share the tray's cells) */
-    private LinearLayout.LayoutParams dockCell(int i, int n, int favs) { return dockCell(i, n, favs, FavBar.TILES); }   // «أكمل المشاهدة»: the tray's cells, whatever the way
+    private LinearLayout.LayoutParams dockCell(int i, int n, int favs) { return dockCell(i, n, favs, FavBar.TILES); }   // «كمّل المشاهدة»: the tray's cells, whatever the way
 
     private LinearLayout.LayoutParams dockCell(int i, int n, int favs, String way) {
         int h = getResources().getDisplayMetrics().heightPixels, gap = FavBar.gap(way, h);   // 4.4 «شكل التطبيقات»: each way its own cell
@@ -2176,7 +2183,7 @@ public class MainActivity extends Activity {
                 if (dn >= 0) c.setNextFocusDownId(((ViewGroup) dockRow.getChildAt(dn)).getChildAt(0).getId());
             }
         }
-        for (int r = 0; r < tvCards.size(); r++) {   // «أكمل المشاهدة»: a row up to the one above (the favourites), down to the next (the apps)
+        for (int r = 0; r < tvCards.size(); r++) {   // «كمّل المشاهدة»: a row up to the one above (the favourites), down to the next (the apps)
             List<View> row = tvCards.get(r);
             for (int i = 0; i < row.size(); i++) {
                 View c = row.get(i);
@@ -2292,7 +2299,7 @@ public class MainActivity extends Activity {
         else motionPosted = false;
     }
 
-    // ---------------------------------------------------------------- «أكمل المشاهدة»
+    // ---------------------------------------------------------------- «كمّل المشاهدة»
     private LinearLayout tvRowsBox;
     private final List<List<View>> tvCards = new ArrayList<>();   // the row's cards, in order (the focus wiring; one row at most)
     private int tvRowsGen;   // a load that finishes after a newer one started is dropped
@@ -2303,7 +2310,7 @@ public class MainActivity extends Activity {
     private static final long TV_PICTURES_MS = 8000;   // the pictures of one visit; what is not there by then keeps its title
     private String tvShownSig = "";
     private List<TvRows.Row> tvShown = new ArrayList<>();
-    private int tvCells;   // the cells «أكمل المشاهدة» was cut into (the favourites' count then): built again when that changes
+    private int tvCells;   // the cells «كمّل المشاهدة» was cut into (the favourites' count then): built again when that changes
     private final java.util.Map<TvRows.Item, ImageView> tvPics = new java.util.HashMap<>();
     private final java.util.Map<TvRows.Item, TextView> tvPlain = new java.util.HashMap<>();
     private final java.util.Set<TvRows.Item> tvPictured = new java.util.HashSet<>();
@@ -2369,7 +2376,7 @@ public class MainActivity extends Activity {
     }
 
     /**
-     * «أكمل المشاهدة»: its name, then as many cards as there are favourites, each a favourite's width right under one (MainActivity.rowCell,
+     * «كمّل المشاهدة»: its name, then as many cards as there are favourites, each a favourite's width right under one (MainActivity.rowCell,
      * the band's padding): no row that runs off the screen, nothing cut. Fewer cards keep the favourites' widths, the rest is empty.
      */
     private void showTvRows(List<TvRows.Row> rows) {
@@ -2484,7 +2491,7 @@ public class MainActivity extends Activity {
         return box;
     }
 
-    /** «أكمل المشاهدة» below the first screen: the row (its name over it) a little above the screen's middle. */
+    /** «كمّل المشاهدة» below the first screen: the row (its name over it) a little above the screen's middle. */
     private void scrollToTvRow(View line) {
         int y = tvRowsBox.getTop() + line.getTop();
         int max = Math.max(0, content.getHeight() - scroll.getHeight());
@@ -2856,7 +2863,7 @@ public class MainActivity extends Activity {
         boolean askOverlay = (overlayDue || overlayOnScreen) && !askStock && !askUpdate && !askExtras && !kids && !quiet && !sa.urtv.home.setup.SetupHold.on();
         if (askOverlay && !overlayOnScreen) { overlayOnScreen = true; overlayShownAt = android.os.SystemClock.elapsedRealtime(); }   // marked seen when the person answers it or leaves after a few seconds of seeing it (onPause), not on first appearance
         boolean askCity = !askStock && !askUpdate && !askExtras && !askOverlay && mismatch == null && CityAskRule.show(isInstalled(SAVER_PKG), cityChosenNow, java.util.TimeZone.getDefault().getID(), kids, np.getLong("city_later_until", 0), nowMs);
-        // 4.4: no bar asks to make UrTV the home any more (it is not pushed: the settings' row «اجعل UrTV الشاشة الرئيسية» is the way in for whoever wants it)
+        // 4.4: no bar asks to make UrTV the home any more (it is not pushed: the settings' row «خلّ UrTV هي الشاشة الرئيسية» is the way in for whoever wants it)
         boolean show = askStock || askUpdate || askExtras || askOverlay || askCity;   // never two at once: the stock home back, the update, the add-on, then the city
         NoticeRule.Notice notice = show || kids ? null : dueNotice();   // 4.3.3: a notice only when the bar has nothing else to say
         show |= notice != null;

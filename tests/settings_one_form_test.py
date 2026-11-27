@@ -25,7 +25,7 @@ st = (APP / "SettingsActivity.java").read_text(encoding="utf-8")
 prefs = (APP / "Prefs.java").read_text(encoding="utf-8")
 check("4.4 beta 2: «شكل شاشة الإعدادات» is its own setting, «أزرار» (4.3.2) unless the TV showed the couch screen before the update (it keeps what it shows)",
       'static final String[] SETTINGS_STYLES = {"buttons", "couch", "tvos"};' in prefs and 'static final String[] SETTINGS_STYLE_NAMES = {"أزرار", "كنبة", "tvOS"};' in prefs
-      and 'v = couchOn() || sp.getBoolean("uiOneForm", false) ? "couch" : "buttons";' in prefs and 'e.putString("settingsStyleBefore", "buttons");' in prefs
+      and 'v = couchOn() || sp.getBoolean("uiOneForm", false) || SIDE_FOR_NEW_SETUPS && FreshInstall.is(ctx) ? "couch" : "buttons";' in prefs and "static final boolean SIDE_FOR_NEW_SETUPS = false;" in prefs and 'e.putString("settingsStyleBefore", "buttons");' in prefs
       and 'classic = !"couch".equals(prefs.settingsStyle());' in st and 'row("شكل شاشة الإعدادات", Prefs.settingsStyleLabel(prefs.settingsStyle())' in st)
 check("only existing styles are offered (no dead option), from the one list the row, the command and the check read",
       "pickOne(\"شكل شاشة الإعدادات\", Prefs.SETTINGS_STYLE_NAMES" in st and "Prefs.SETTINGS_STYLES" in (APP / "SaverReceiver.java").read_text(encoding="utf-8"))
@@ -39,7 +39,8 @@ if not shutil.which("javac"):
 with tempfile.TemporaryDirectory() as tmp:
     subprocess.run(["javac", "-encoding", "UTF-8", "-d", tmp, str(APP / "SettingsHub.java"), str(APP / "FocusKey.java"), str(ROOT / "tests/OneFormRun.java")],
                    check=True, capture_output=True)
-    out = subprocess.run(["java", "-Dfile.encoding=UTF-8", "-cp", tmp, "sa.urtv.screensaver.OneFormRun"], check=True, capture_output=True).stdout.decode("utf-8")
+    out = subprocess.run(["java", "-Dfile.encoding=UTF-8", "-cp", tmp, "sa.urtv.screensaver.OneFormRun", str(ROOT / "tests/settings_432_places.tsv")],   # 4.4 beta 4: the 4.3.2 places, frozen
+                         check=True, capture_output=True).stdout.decode("utf-8")
 rows = [l.split("\t")[1:] for l in out.splitlines() if l.startswith("row\t")]
 tiles = [l.split("\t")[1:] for l in out.splitlines() if l.startswith("tile\t")]
 lost = [r[0] for r in rows if r[2] == "null"]
