@@ -212,5 +212,5 @@ check("…and the scroll goes up and down only: nothing can move the page sidewa
       and "scroll = new UpDownScroll(this);" in st)
 check("beta 4 «الأذان لكل صلاة»: in the hub right after «الأذان» in «الصلاة والأذان» (both orders), found by its words, and its value is the home's summary (not a fixed line)",
       by.get("pray", [])[by["pray"].index("الأذان") + 1] == "الأذان لكل صلاة" and '{"الأذان لكل صلاة", PRAY}' in hub and '{"الأذان لكل صلاة", "adhan"}' in hub
-      and all(f'{{"{w}", "الأذان لكل صلاة"}}' in hub for w in ("اذان الفجر", "كتم الاذان", "الاذان علي الشاشه")) and 'row("الأذان لكل صلاة", prayersValue()' in st and '"content://sa.urtv.home.nowplaying/adhan_prayers"' in st)
+      and all(f'{{"{w}", "الأذان لكل صلاة"}}' in hub for w in ("اذان الفجر", "كتم الاذان", "الاذان الشاشه")) and 'row("الأذان لكل صلاة", prayersValue()' in st and '"content://sa.urtv.home.nowplaying/adhan_prayers"' in st)
 sys.exit(1 if failed else 0)
