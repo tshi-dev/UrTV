@@ -8,6 +8,8 @@ if [ "${1:-}" = "regressions" ]; then shift; exec python3 tests/regressions/run.
 python3 tests/check.py
 python3 tests/arabic_spacing_test.py   # Arabic letters stay joined: no letter-spacing on anything that can hold Arabic
 python3 tests/tilawah_test.py
+python3 tests/no_banned_names_test.py   # the owner: no Palestine and no Israel in any game or quiz
+python3 tests/hadith_number_test.py   # Sahih Muslim: the standard number, never the dataset index
 python3 tests/prayer_math_test.py
 python3 tests/prayer_crosscheck_test.py
 python3 tests/prayer_crosscheck_world_test.py
