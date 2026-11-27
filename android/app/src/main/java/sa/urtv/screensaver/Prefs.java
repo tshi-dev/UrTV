@@ -533,6 +533,20 @@ final class Prefs {
     String cardStyle() { return sp.getString("cardStyle", "current"); }
     void setCardStyle(String v) { sp.edit().putString("cardStyle", v).apply(); }
 
+    // 4.4 beta 4 (the owner, the findability review: «شكل البطاقات»): the cards' size, one step either way, and their corners; the defaults change
+    // nothing («عادي», «كما في الشكل»: each card style keeps its own radius). The page reads #csize= and #ccorner= (its .week); never a pill: the
+    // roundest is 26 px on a card 160 px and more high.
+    static final String[] CARD_SIZES = {"s", "m", "l"};
+    static final String[] CARD_SIZE_NAMES = {"أصغر", "عادي", "أكبر"};
+    static final String[] CARD_CORNERS = {"style", "sharp", "soft", "round"};
+    static final String[] CARD_CORNER_NAMES = {"كما في الشكل", "حادة", "ناعمة", "أنعم"};
+    String cardSize() { String v = sp.getString("cardSize", "m"); return java.util.Arrays.asList(CARD_SIZES).contains(v) ? v : "m"; }
+    void setCardSize(String v) { if (java.util.Arrays.asList(CARD_SIZES).contains(v)) sp.edit().putString("cardSize", v).apply(); }
+    String cardCorner() { String v = sp.getString("cardCorner", "style"); return java.util.Arrays.asList(CARD_CORNERS).contains(v) ? v : "style"; }
+    void setCardCorner(String v) { if (java.util.Arrays.asList(CARD_CORNERS).contains(v)) sp.edit().putString("cardCorner", v).apply(); }
+    static String cardSizeLabel(String v) { int i = java.util.Arrays.asList(CARD_SIZES).indexOf(v); return CARD_SIZE_NAMES[i < 0 ? 1 : i]; }
+    static String cardCornerLabel(String v) { int i = java.util.Arrays.asList(CARD_CORNERS).indexOf(v); return CARD_CORNER_NAMES[i < 0 ? 0 : i]; }
+
     static String cardStyleLabel(String v) {
         for (String[] c : CARD_STYLES) if (c[0].equals(v)) return c[1];
         return CARD_STYLES[0][1];
@@ -919,6 +933,7 @@ final class Prefs {
             + (backSaver() ? "&backsaver=1" : "") + (backTwice() ? "&backtwice=1" : "")
             + (fbHideDone() ? "&fbhide=1" : "") + (kickoff() ? "" : "&ko=0") + (kickoffGoal() ? "&kogoal=1" : "") + (kickoffEnd() ? "&koend=1" : "") + (dateNum() ? "&datenum=1" : "") + (searchPill() ? "&searchpill=1" : "")   // the football home without the games that ended
             + "&cardstyle=" + cardStyle()
+            + ("m".equals(cardSize()) ? "" : "&csize=" + cardSize()) + ("style".equals(cardCorner()) ? "" : "&ccorner=" + cardCorner())
             + "&design=" + design() + "&bar=" + bar() + "&barat=" + barAt() + "&wx=" + wxAt()
             + "&adhanbar=" + (adhanBar() ? "1" : "0") + (adhanLead() == 15 ? "&adhanlead=15" : "")
             + "&yearstrip=" + (yearStrip() ? "1" : "0")
@@ -1453,10 +1468,16 @@ final class Prefs {
     static final String[] SETTINGS_STYLES = {"buttons", "couch", "tvos"};
     static final String[] SETTINGS_STYLE_NAMES = {"أزرار", "كنبة", "tvOS"};
     /** the style; read the first time after the update as the screen the TV shows now («كنبة» with the look «كنبة», else «أزرار»): no surprise switch */
+    /**
+     * 4.4 beta 4 (the findability review, §3): a TV set up from now on could open the settings in the side list («كنبة»), the tree's natural form. It is
+     * a default change, so it waits for the owner: false keeps «أزرار» for every TV, new or old. An installed TV is never switched by this.
+     */
+    static final boolean SIDE_FOR_NEW_SETUPS = false;
+
     String settingsStyle() {
         String v = sp.getString("settingsStyle", null);
         if (v == null) {
-            v = couchOn() || sp.getBoolean("uiOneForm", false) ? "couch" : "buttons";
+            v = couchOn() || sp.getBoolean("uiOneForm", false) || SIDE_FOR_NEW_SETUPS && FreshInstall.is(ctx) ? "couch" : "buttons";
             SharedPreferences.Editor e = sp.edit().putString("settingsStyle", v);
             if (couchOn() && !sp.getBoolean("uiOneForm", false)) e.putString("settingsStyleBefore", "buttons");   // the look «كنبة» gave it: «شكلك المعتاد» gives the buttons back, as before
             e.apply();

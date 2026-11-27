@@ -39,10 +39,10 @@ for l in out:
 canon = {f[1]: f[2] for f in (l.split("\t") for l in out) if f[0] == "canon"}
 rows = [(f[1], f[2], int(f[3])) for f in (l.split("\t") for l in out) if f[0] == "row"]
 
-check("the sections (4.3.3): the search, then the ten in the owner's list; no shortcut beside them, none is deeper",
-      re.findall(r'\{(?:SEARCH|LANG|PLACE|LOOK|APPS|BUTTONS|PRAY|CONTENT|SAVER|FAMILY|UPDATE), "([^"]+)"', hub[hub.index("CATEGORIES"):hub.index("OLD")])
-      == ["بحث في الإعدادات", "اللغة", "الموقع والطقس", "المظهر", "التطبيقات", "الأزرار السريعة", "الصلاة والأذان", "المباريات والأسواق", "شاشة التوقف",
-          "العائلة والأمان", "حول"])
+check("the sections (4.4 beta 4, the findability review): the search, then nine, the most used first; no shortcut beside them, none is deeper",
+      re.findall(r'\{(?:SEARCH|LANG|PLACE|LOOK|APPS|BUTTONS|PRAY|CONTENT|SAVER|FAMILY|UPDATE|PHOTOS), "([^"]+)"', hub[hub.index("CATEGORIES"):hub.index("OLD")])
+      == ["بحث في الإعدادات", "الصلاة والأذان", "صوري والخلفيات", "الشكل", "شاشة التوقف", "التطبيقات والأزرار", "المباريات والأسواق", "العائلة والجوال",
+          "اللغة والموقع", "حول والتحديث"])
 # every row of the hub is in the order of its own section, once; only the two shortcut rows (no screen of their own) are not
 ranked = [r for r in rows if r[2] >= 0]
 check("every row is in its section's order (only the search's own row is not)",
@@ -50,34 +50,36 @@ check("every row is in its section's order (only the search's own row is not)",
 orders = {}
 blk = hub[hub.index("static final String[][] ORDER"):]
 blk = blk[:blk.index("};")]
-for m in re.finditer(r"\{(LANG|PLACE|LOOK|APPS|BUTTONS|PRAY|CONTENT|SAVER|FAMILY|UPDATE), ((?:H \+ )?\"[^}]*)\},", blk):
+for m in re.finditer(r"\{(LANG|PLACE|LOOK|APPS|BUTTONS|PRAY|CONTENT|SAVER|FAMILY|UPDATE|PHOTOS), ((?:H \+ )?\"[^}]*)\},", blk):
     orders[m.group(1).lower()] = [e for h, e in re.findall(r'(H \+ )?"([^"]+)"', m.group(2)) if not h]
 by = {}
 for n, c, _ in rows: by.setdefault(c, []).append(n)
 check("ORDER holds each row of its section exactly once (and its headers), nothing stale, nothing left out",
       all(sorted(v) == sorted(by.get(k, [])) for k, v in orders.items()) and set(orders) == set(by) - {"search"},
       {k: sorted(set(by.get(k, [])) ^ set(v)) for k, v in orders.items()})
-check("the places the owner asked for (4.3.3): the clock's look and the photos in «المظهر», the language, digits, months and 12/24 in «اللغة», the city and the weather in «الموقع والطقس», the favourites in «التطبيقات»",
-      all(n in by["look"] for n in ("حجم الساعة", "إظهار الثواني", "نص أوضح", "توهّج لون التطبيق", "صوري", "البطاقة الأولى"))
-      and all(n in by["lang"] for n in ("اللغة", "الأرقام", "أسماء الأشهر الميلادية", "نظام الساعة")) and sorted(by["place"]) == sorted(["المدينة", "الدولة", "التحية والطقس", "اسمك في التحية", "الرطوبة والرياح"])
+check("the places of the findability review (4.4 beta 4): the clock's look and the cards in «الشكل», the photos with their add and delete in «صوري والخلفيات», the language and the city with the weather in «اللغة والموقع», the favourites and the buttons in «التطبيقات والأزرار»",
+      all(n in by["look"] for n in ("إظهار الثواني", "نص أوضح", "توهّج لون التطبيق", "البطاقة الأولى", "حجم البطاقات", "زوايا البطاقات"))
+      and all(n in by["photos"] for n in ("أضف صوري من الجوال", "احذف صورة", "صوري", "صور شاشة التوقف", "الخلفية"))
+      and all(n in by["lang"] for n in ("اللغة", "الأرقام", "أسماء الأشهر الميلادية", "نظام الساعة", "المدينة", "الدولة", "التحية والطقس", "اسمك في التحية", "الرطوبة والرياح"))
+      and "place" not in by and "buttons" not in by and all(n in by["apps"] for n in ("مركز التحكم", "التطبيقات المخفية", "زر يوتيوب في الريموت"))
       and all(n in by["content"] for n in ("التصنيفات", "اللغات", "مسلسلات مختارة", "أقل تقييم"))
       and all(n in by["apps"] for n in ("تطبيقات في الشريط", "ترتيب كل التطبيقات", "قفل التطبيقات"))
       and sorted(by["family"]) == sorted(["الرقابة الأبوية", "تصفية المواقع", "الجوالات المسموح لها"]), {k: len(v) for k, v in by.items()})
 check("the Hijri shift is a row (it was a shell command only), in «اللغة»", 'row("فرق التاريخ الهجري"' in st and "فرق التاريخ الهجري" in by["lang"])
 check("search: a typed word finds the row by its name (الأذان first), by an alias (صوت → الأذان), by its section's name",
       search["الأذان"][0][0] == "الأذان" and ["الأذان", "pray"] in search["صوت"] and ["الجوالات المسموح لها", "family"] in search["جوال"] and ["فرق التاريخ الهجري", "lang"] in search["هجري"]
-      and ["مركز التحكم", "buttons"] in search["نوم"] and ["إظهار الثواني", "look"] in search["ثواني"])
+      and ["مركز التحكم", "apps"] in search["نوم"] and ["إظهار الثواني", "look"] in search["ثواني"])
 check("search: letters are folded (الاذان = الأذان, اسواق finds الأسواق), an alias works in Latin letters (pin), nothing for a word nobody knows or for nothing",
       search["الاذان"] == search["الأذان"] and any(r[0] == "افتح صفحة الأسواق" for r in search["اسواق"]) and ["الرقابة الأبوية", "family"] in search["pin"]
       and search["zzzz"] == [] and search[""] == [])
 check("search: never answers with the search's own row, and «مدينة» finds the one city row", all(r[0] != "بحث في الإعدادات" for v in search.values() for r in v)
-      and search["مدينه"][0] == ["المدينة", "place"] and all(r[0] != "تغيير المدينة" for r in search["مدينه"]))
+      and search["مدينه"][0] == ["المدينة", "lang"] and all(r[0] != "تغيير المدينة" for r in search["مدينه"]))
 occ = ["المناسبة القادمة", "saver"]
 check("4.5 (a user: «can I remove the Ramadan countdown?»): «المناسبة القادمة» is found by رمضان, a whole question, العيد or عيد, العد التنازلي and الإفطار with or without its hamza",
       all(occ in search[q] for q in ("رمضان", "كم باقي على رمضان", "العيد", "عيد", "العد التنازلي", "الإفطار", "الافطار")), {q: search[q][:3] for q in ("رمضان", "عيد", "الإفطار")})
 check("4.5 the other names people use: الأسهم and تاسي find «الأسواق», سكرين سيفر and screensaver find the screensaver's rows (تاسي not «يوم التأسيس»), ثيم finds «أشكال جاهزة»; a short word (على) finds no alias, only rows whose name holds it",
       ["الأسواق", "content"] in search["الأسهم"] and ["الأسواق", "content"] in search["تاسي"] and ["بدء شاشة التوقف بعد", "saver"] in search["سكرين سيفر"]
-      and ["تصميم شاشة التوقف", "look"] in search["screensaver"] and all(r[0] != "المناسبات الوطنية" for r in search["تاسي"]) and any(r[0] == "أشكال جاهزة" for r in search["ثيم"]) and all("على" in r[0] for r in search["على"]),
+      and ["تصميم شاشة التوقف", "saver"] in search["screensaver"] and all(r[0] != "المناسبات الوطنية" for r in search["تاسي"]) and any(r[0] == "أشكال جاهزة" for r in search["ثيم"]) and all("على" in r[0] for r in search["على"]),
       {q: search[q][:3] for q in ("الأسهم", "سكرين سيفر", "ثيم", "على")})
 names = {n for n, _, _ in rows}
 targets = re.findall(r'\{"[^"]+", "([^"]+)"\}', hub[hub.index("ALIASES = {"):hub.index("};", hub.index("ALIASES = {"))])
@@ -86,14 +88,14 @@ check("the row says what it is even while hidden: «مخفية، كم باقي �
       and "مخفية، كم باقي على رمضان والأعياد\tHidden, days to Ramadan and Eid" in (ROOT / "i18n/en/saver.tsv").read_text(encoding="utf-8"))
 check("the old section keys land in their new section (a stored or passed one keeps working); a current key stays; an unknown one is nothing",
       canon.get("cards") == "saver" and canon.get("more") == "content" and canon.get("clock") == "lang" and canon.get("listen") == "pray" and canon.get("home") == "apps"
-      and canon.get("shows") == "content" and canon.get("phone") == "family" and canon.get("parental") == "family" and canon.get("control") == "buttons"
-      and canon.get("city") == "place" and canon.get("adhan") == "pray" and canon.get("report") == "update" and canon.get("look") == "look" and canon.get("nope") == "null", canon)
+      and canon.get("shows") == "content" and canon.get("phone") == "family" and canon.get("parental") == "family" and canon.get("control") == "apps"
+      and canon.get("city") == "lang" and canon.get("place") == "lang" and canon.get("buttons") == "apps" and canon.get("adhan") == "pray" and canon.get("report") == "update" and canon.get("look") == "look" and canon.get("nope") == "null", canon)
 check("the activity: a section is opened from a link by its canonical key, and the search opens the row's section with the focus on that row",
       "SettingsHub.canon(getIntent().getStringExtra(\"screen\"))" in st and "forceWant = found.get(i)[0];" in st and "open(found.get(i)[1]);" in st
       and "SettingsHub.search(query)" in st and 'row("بحث في الإعدادات"' in st)
 city = st[st.index("private void cityRow()"):].split("\n    }\n")[0]
-check("4.3.3 the city in one place: every way to it (pickCity from the home's «المدينة», the control center, the question bar; a new intent too) opens «الموقع والطقس» on «المدينة» with its chooser",
-      'screen = SettingsHub.PLACE;' in city and 'forceWant = "المدينة";' in city and "if (askCity) cityRow();" in st
+check("4.3.3 the city in one place: every way to it (pickCity from the home's «المدينة», the control center, the question bar; a new intent too) opens «اللغة والموقع» on «المدينة» with its chooser",
+      'screen = SettingsHub.LANG;' in city and 'forceWant = "المدينة";' in city and "if (askCity) cityRow();" in st
       and "if (askCity) root.post(new Runnable() { public void run() { pickCity(); } });" in st
       and 'in.removeExtra("pickCity"); cityRow(); render(); pickCity(); }' in st
       and st.count('row("المدينة"') == 1 and 'row("تغيير المدينة"' not in st)

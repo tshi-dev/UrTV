@@ -253,10 +253,10 @@ else:
     side = round(page * 0.36) - 36
     tile_text = (page - 12) / 2 - (16 + 26) - 10 - (36 + 8) - 18
     row_text = page - side - 36 - (24 + 20) - 9 - (28 + 6) - 18 - 14
-    cat = dict(re.findall(r'\{(?:SEARCH|LANG|PLACE|LOOK|APPS|BUTTONS|PRAY|CONTENT|SAVER|FAMILY|UPDATE), "([^"]+)", "([^"]*)"', hub))
+    cat = dict(re.findall(r'\{(?:SEARCH|LANG|PLACE|LOOK|APPS|BUTTONS|PRAY|CONTENT|SAVER|FAMILY|UPDATE|PHOTOS), "([^"]+)", "([^"]*)"', hub))
     over = [f"{table[n]} {width(table[n], 24):.0f}>{tile_text:.0f}" for n in cat if width(table[n], 24) > tile_text]
     check(f"every button's name fits on its one line in English (24 sp, {tile_text:.0f} dp)", not over, over)
-    names = set(re.findall(r'\brow\("([^"]+)"', st)) | set(re.findall(r'\{"([^"]+)", (?:SEARCH|LANG|PLACE|LOOK|APPS|BUTTONS|PRAY|CONTENT|SAVER|FAMILY|UPDATE)\}', hub))
+    names = set(re.findall(r'\brow\("([^"]+)"', st)) | set(re.findall(r'\{"([^"]+)", (?:SEARCH|LANG|PLACE|LOOK|APPS|BUTTONS|PRAY|CONTENT|SAVER|FAMILY|UPDATE|PHOTOS)\}', hub))
     over = [f"{table[n]} {width(table[n] + ' (20/20)', 21):.0f}>{row_text:.0f}" for n in names if n in table and width(table[n] + " (20/20)", 21) > row_text]
     check(f"every row's name fits on its one line in English, with a count after it (21 sp, {row_text:.0f} dp)", not over, over)
 

@@ -33,8 +33,8 @@ check("v2: it grows by its words, never by a scale or an animation, so a weak TV
 short = dict(zip(re.findall(r"\w+", hub.split("static final String[] SHORT_KEYS = {")[1].split("};")[0]),
                  re.findall(r'"([^"]+)"', hub.split("static final String[] SHORT_LINES = {")[1].split("};")[0])))
 check("v2: every section has its line (search aside), plain words: no «*», no «·», no marks",
-      set(short) == {"LANG", "PLACE", "LOOK", "APPS", "BUTTONS", "PRAY", "CONTENT", "SAVER", "FAMILY", "UPDATE"}
-      and not any(ch in v for v in short.values() for ch in "*·✦•★") and short["LOOK"] == "الأشكال الجاهزة، والتخطيط، والخلفية، والساعة، والتطبيقات", short)
+      set(short) == {"PRAY", "PHOTOS", "LOOK", "SAVER", "APPS", "CONTENT", "FAMILY", "LANG", "UPDATE"}
+      and not any(ch in v for v in short.values() for ch in "*·✦•★") and short["PHOTOS"] == "أضف صورك أو احذفها، والخلفيات", short)
 check("couch-tv's sizes, in its rem (a 120th of the screen's width): the safe area 5 x 3.75, the side 36, the gap 4, a section and a row 4.75 high, radius 1.5",
       "rem = c.getResources().getDisplayMetrics().widthPixels / 120f;" in cs
       and (num("SAFE_X"), num("SAFE_Y"), num("SIDE"), num("GAP"), num("SEC_H"), num("ROW_H"), num("ROW_RADIUS"), num("SEC_RADIUS")) == (5, 3.75, 36, 4, 4.75, 4.75, 1.5, 1.5)

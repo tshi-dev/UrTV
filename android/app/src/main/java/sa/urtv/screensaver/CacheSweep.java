@@ -3,7 +3,7 @@ package sa.urtv.screensaver;
 import java.io.File;
 
 /**
- * 4.3.3 «مسح الملفات المؤقتة» (الإعدادات ← حول): what a sweep may delete, and nothing else. The app's cache folder and the image and data caches
+ * 4.3.3 «مسح الملفات المؤقتة» (الإعدادات ← حول والتحديث): what a sweep may delete, and nothing else. The app's cache folder and the image and data caches
  * named by the caller, never the settings, the person's own photos, the downloaded packs, the adhan's sound files, or an app file waiting to
  * be installed (*.apk). Plain Java (tests/CacheSweepRun.java runs it on real folders). The same class is in both apps.
  */

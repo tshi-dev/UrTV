@@ -41,14 +41,14 @@ a{color:var(--acc)}
 <button id="pair" type="button">إقران</button>
 </div>
 <p id="state" role="status"></p>
-<p id="none" class="hidden"><span id="t4">افتح صفحة الجوال وامسح الرمز من «أسهل من الجوال» على التلفزيون أولًا.</span> <a href="/" id="t5">صفحة الجوال</a></p>
+<p id="none" class="hidden"><span id="t4">افتح صفحة الجوال وامسح الرمز من زر «الجوال» في الشاشة الرئيسية على التلفزيون أولًا.</span> <a href="/" id="t5">صفحة الجوال</a></p>
 <script nonce="__NONCE__">
 (function () {
   try { var th = localStorage.getItem('urtvTheme'); if (th === 'light' || th === 'dark') document.documentElement.setAttribute('data-theme', th); } catch (e) { }
   var EN = document.documentElement.lang === 'en';
   var W = EN ? {
     t1: 'Pair the TV', s1: 'On the TV: Developer options, then turn on «Wireless debugging».', s2: 'Press «Pair device with pairing code»: a 6-digit code appears. Leave that window open.',
-    s3: 'Type the code here and press «Pair».', pair: 'Pair', t4: 'Open the phone page and scan the code from «Easier from the phone» on the TV first.', t5: 'Phone page',
+    s3: 'Type the code here and press «Pair».', pair: 'Pair', t4: 'Open the phone page and scan the code from the «Phone» button on the TV\'s home screen first.', t5: 'Phone page',
     ph: 'Pairing code', t6: 'Pairing code (6 digits)', off: 'Start on the TV: «Get rid of the factory interface», then «Start».', bad: 'The code is six digits.', pairing: 'Pairing…', paired: 'Paired. Go back to the TV.',
     no_dialog: 'The TV shows no pairing window. Open «Pair device with pairing code» there and try again.', wrong: 'The code was not accepted. Check it and try again.', failed: 'Could not pair. Check the Wi-Fi and try again.',
     busy: 'Pairing is running…', no_session: 'The session ended. Open the phone page and scan the code again.'

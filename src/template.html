@@ -72,6 +72,10 @@
   html.row .week.turnoff{opacity:0;pointer-events:none}
   html.row.lowram .week.turn{transition:none}
   html.row .week .turnmark{position:absolute;bottom:.5em;inset-inline-end:.9em;font-size:.8em;color:rgba(255,255,255,.62)}
+  /* 4.4 beta 4 (the owner, «شكل البطاقات»): one size step either way (the cards' own fit, fitCards, still keeps them inside their box on the home),
+     and three corners that override the card style's own radius; the roundest is 26 px, so a card is never a pill */
+  html.csz-s .week{zoom:.88}html.csz-l .week{zoom:1.12}
+  html.ccr-sharp .week{--cr:8px;border-radius:8px!important}html.ccr-soft .week{--cr:16px;border-radius:16px!important}html.ccr-round .week{--cr:26px;border-radius:26px!important}
   /* 4.4 beta 4 (the owner: «كنبة» as couch-tv, the big clock always centred, the strip between its digits and the apps row: 208 px at 1080p, 139 at
      720p): the cards fill the strip less 6.25vh above and below (182 of 208), the same height, centred; 1vw at the sides. That room is the focus's: a
      3% scale and a short soft shadow, no ring (the owner: the focus is the size and a shadow). More than fits (720p, the large font): fitCards steps the
@@ -5899,6 +5903,10 @@ function boot(){
 // «شكل البطاقة»: html.cs-<style>; «مربعات» is html.pbx (the prayers card's own look: the other cards stay as they are)
 function addCardStyle(){
   if(CONFIG.cardStyle !== 'current') document.documentElement.classList.add(CONFIG.cardStyle === 'boxes' ? 'pbx' : OLD_LOOK ? 'cso' : 'cs-' + CONFIG.cardStyle);
+  // 4.4 beta 4 (the owner, «شكل البطاقات»): the cards' size step and corners (#csize=s|l, #ccorner=sharp|soft|round); absent: as they were
+  { const z = _Q.get('csize'), r = _Q.get('ccorner');
+    if(z === 's' || z === 'l') document.documentElement.classList.add('csz-' + z);
+    if(r === 'sharp' || r === 'soft' || r === 'round') document.documentElement.classList.add('ccr-' + r); }
 }
 
 // The launcher's cards: the chosen ones only

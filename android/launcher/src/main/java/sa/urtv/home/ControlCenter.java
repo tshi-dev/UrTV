@@ -255,7 +255,7 @@ final class ControlCenter {
         }
         String upd = host.updateLine();
         if (upd != null) tile("update", upd, "", R.drawable.ic_update, () -> { dismiss(); host.openUpdate(); });
-        tile("tv", S.t("الإعدادات"), S.t("إعدادات التلفزيون"), R.drawable.ic_settings,
+        tile("tv", S.t("إعدادات الجهاز"), S.t("إعدادات التلفزيون"), R.drawable.ic_settings,
                 () -> { dismiss(); host.launchGuarded(ParentalPolicy.PILL_TV_SETTINGS, new Intent(Settings.ACTION_SETTINGS), "إعدادات التلفزيون"); });
         // PR #18 «إدارة التطبيقات»: the TV's own apps screen (remove, stop, permissions); unticked until asked for, only when one of the actions resolves
         final Intent apps = appsIntent();

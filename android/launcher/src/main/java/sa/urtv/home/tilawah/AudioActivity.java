@@ -46,7 +46,7 @@ public class AudioActivity extends RowScreen {
                 out.add(Row.head(S.t("إضافة")));
                 out.add(Row.of(S.t("من فلاشة USB"), S.t("يُنسخ الملف إلى التلفزيون ولا يُشغَّل من الفلاشة"), AudioActivity.this::openUsb));
                 out.add(Row.of(S.t("من الجوال"), S.t("صفحة الجوال، ثم «صوتياتي»"),
-                        () -> toast(S.t("افتح صفحة الجوال من «أسهل من الجوال»، ثم «صوتياتي»، واختر الملف"))));
+                        () -> toast(S.t("افتح صفحة الجوال من زر «الجوال» في الشاشة الرئيسية، ثم «صوتياتي»، واختر الملف"))));
                 List<AudioStore.Item> items = AudioStore.list(AudioActivity.this);
                 boolean big = AudioStore.big(AudioActivity.this);
                 out.add(Row.head(S.t("الملفات: %1$s من %2$s", AudioRules.size(AudioStore.used(AudioActivity.this)), AudioRules.size(AudioRules.totalMax(big)))));

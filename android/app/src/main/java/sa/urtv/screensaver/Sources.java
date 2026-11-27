@@ -1,7 +1,7 @@
 package sa.urtv.screensaver;
 
 /**
- * 4.4 «مصادر البيانات» (الإعدادات ← حول), the owner's rule for every card and screen: where the data comes from is said once, here, with what each
+ * 4.4 «مصادر البيانات» (الإعدادات ← حول والتحديث), the owner's rule for every card and screen: where the data comes from is said once, here, with what each
  * source gives and on what terms, and OK on one goes to the row of what it gives. On the cards a source is at most a tiny dim line (60% of
  * the line it sits by, half its light: the page's .srcl), or nothing; a credit a licence asks for on screen stays, that small (Open-Meteo's, TVmaze's).
  * Plain Java: tests/sources_rule_test.py reads it.
