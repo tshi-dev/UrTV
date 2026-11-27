@@ -619,7 +619,7 @@ public class SettingsActivity extends Activity {
         row("الأذان", "تشغيله وصوته وصوت الفجر والمختصر والإيقاف بأي زر والمستوى", R.drawable.ic_settings,
             new Runnable() { public void run() { openAdhanSettings(); } });
         // 4.4 beta 4: the sound and the screen of each of the five prayers apart (the home's screen, behind the same lock)
-        row("الأذان لكل صلاة", "الصوت والشاشة لكل صلاة على حدة", R.drawable.ic_settings,
+        row("الأذان لكل صلاة", prayersValue(), R.drawable.ic_settings,
             new Runnable() { public void run() { openHome("prayers"); } });
         // «تلاوة وأذان» itself, through the home (behind its family lock), as its button there opens it
         row("افتح تلاوة وأذان", "القرآن والإذاعات ومواقيت الأذان", R.drawable.ic_play,
@@ -2164,6 +2164,43 @@ public class SettingsActivity extends Activity {
             }, "hub-adhan").start();
         }
         return adhanSeen;
+    }
+
+    private String prayersSeen;        // the five states as the home last said them ("00200"), kept on disk too
+    private boolean prayersAsked;
+
+    /** «الأذان لكل صلاة»'s value: «كلها صوت وشاشة» when no prayer differs, else the first that does («الفجر: شاشة فقط»), or the count («٢ مختلفة»); asked as the adhan's is */
+    private String prayersValue() {
+        if (prayersSeen == null) prayersSeen = getSharedPreferences("hub_seen", MODE_PRIVATE).getString("adhan_prayers", "");
+        if (!prayersAsked) {
+            prayersAsked = true;
+            new Thread(() -> {
+                String got = "";
+                android.database.Cursor c = null;
+                try {
+                    c = getContentResolver().query(Uri.parse("content://sa.urtv.home.nowplaying/adhan_prayers"), null, null, null, null);
+                    if (c != null && c.moveToFirst() && c.getColumnIndex("states") >= 0) got = c.getString(c.getColumnIndex("states"));
+                } catch (RuntimeException ignored) {
+                } finally { if (c != null) c.close(); }
+                final String answer = got == null ? "" : got;
+                runOnUiThread(() -> {
+                    if (isFinishing() || isDestroyed() || answer.isEmpty()) return;
+                    boolean changed = !answer.equals(prayersSeen);
+                    prayersSeen = answer;
+                    getSharedPreferences("hub_seen", MODE_PRIVATE).edit().putString("adhan_prayers", answer).apply();
+                    if (changed) render();
+                });
+            }, "hub-prayers").start();
+        }
+        String st = prayersSeen;
+        if (st == null || st.length() != 5) return "الصوت والشاشة لكل صلاة على حدة";   // the home has not answered yet
+        String[] names = {"الفجر", "الظهر", "العصر", "المغرب", "العشاء"};
+        String[] words = {"صوت وشاشة", "صوت فقط", "شاشة فقط", "لا شيء"};
+        int differ = 0, first = -1;
+        for (int i = 0; i < 5; i++) if (st.charAt(i) != '0') { differ++; if (first < 0) first = i; }
+        if (differ == 0) return "كلها صوت وشاشة";
+        if (differ == 1) return names[first] + ": " + words[Math.max(0, Math.min(3, st.charAt(first) - '0'))];
+        return DigitsText.convert(String.valueOf(differ), latinDigits) + " مختلفة";
     }
 
     private Boolean cleanSeen, factorySeen;   // «UrTV النظيف» and «واجهة المصنع» off, as the home last said
