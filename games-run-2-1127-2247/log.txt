@@ -1,0 +1,70 @@
+Performing Streamed Install
+Success
+Performing Streamed Install
+Success
+shot list-00 174268
+shot callaloud-setup-before 123297
+shot callaloud-setup-remote-on 123072
+shot callaloud-a-question 107568
+shot callaloud-b-reveal 107568
+shot callaloud-c-who-first 107568
+shot callaloud-c2-who-first-focus 107568
+shot callaloud-d-next-with-score 107568
+shot forehead-setup-before 107497
+shot forehead-setup-remote-on 107497
+shot forehead-a-cover 107497
+shot forehead-b-room 107497
+shot forehead-c-next-word 107497
+shot liar-setup-before 107101
+shot liar-setup-remote-on 107101
+shot liar-a-pass 107101
+shot liar-b-secret 107101
+shot liar-d-talk 107101
+shot liar-e-hands-vote 107101
+shot liar-e2-hands-vote-focus 107101
+shot liar-f-result 107101
+shot closest-setup-before 104790
+shot closest-setup-remote-on 104790
+shot closest-a-paper 104790
+shot closest-b-reveal 104790
+shot closest-c-first-place 104790
+shot closest-c2-second-place 104790
+shot closest-d-next-with-score 104790
+shot old-missing-word-score-cells 104676
+shot old-khanat-score-cells 114216
+shot list-01-tags 177965
+shot list-02-tags-first-row 177965
+callaloud-a-question.png
+callaloud-b-reveal.png
+callaloud-c-who-first.png
+callaloud-c2-who-first-focus.png
+callaloud-d-next-with-score.png
+callaloud-setup-before.png
+callaloud-setup-remote-on.png
+closest-a-paper.png
+closest-b-reveal.png
+closest-c-first-place.png
+closest-c2-second-place.png
+closest-d-next-with-score.png
+closest-setup-before.png
+closest-setup-remote-on.png
+crashes.txt
+forehead-a-cover.png
+forehead-b-room.png
+forehead-c-next-word.png
+forehead-setup-before.png
+forehead-setup-remote-on.png
+liar-a-pass.png
+liar-b-secret.png
+liar-d-talk.png
+liar-e-hands-vote.png
+liar-e2-hands-vote-focus.png
+liar-f-result.png
+liar-setup-before.png
+liar-setup-remote-on.png
+list-00.png
+list-01-tags.png
+list-02-tags-first-row.png
+log.txt
+old-khanat-score-cells.png
+old-missing-word-score-cells.png
