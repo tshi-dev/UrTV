@@ -15,6 +15,17 @@ adb shell wm density 320
 adb install -r -g "$SAVER_APK" || adb install -r "$SAVER_APK"
 adb install -r -g "$HOME_APK" || adb install -r "$HOME_APK"
 
+# the party games are held back by the release file (the live one opens them only for the owner's pass); this emulator is given its own kept copy that opens them for everyone, so
+# the screens can be taken: the debug build's private files through run-as (nothing of the app is changed; a fresh file is not fetched again for three hours)
+cat > "$OUT/gr.json" <<'JSON'
+{"v":1,"games":{"forehead":{"a":"now","b":"now","native":true},"author":{"a":"now","b":"now","native":true},"closest":{"a":"now","b":"now","native":true},"liar":{"a":"now","b":"now","native":true},"emoji":{"a":"now","b":"now","native":true},"link":{"a":"now","b":"now","native":true},"night":{"a":"now","b":"now","native":true},"draw":{"a":"now","b":"now","native":true},"quran-verse":{"a":"now","b":"now","native":true},"maths":{"a":"now","b":"now","native":true},"logic":{"a":"now","b":"now","native":true}},"codes":[]}
+JSON
+adb push "$OUT/gr.json" /data/local/tmp/gr.json > /dev/null
+adb shell run-as sa.urtv.screensaver mkdir -p files/content
+adb shell run-as sa.urtv.screensaver cp /data/local/tmp/gr.json files/content/games-release.json
+adb shell run-as sa.urtv.screensaver ls -la files/content
+rm -f "$OUT/gr.json"
+
 key() { for k in "$@"; do adb shell input keyevent "$k"; sleep 0.7; done; }
 shot() { sleep "${2:-1.5}"; adb exec-out screencap -p > "$OUT/$1.png"; echo "shot $1 $(stat -c %s "$OUT/$1.png" 2>/dev/null)"; }
 
