@@ -57,7 +57,7 @@ for ar in ["محفوظ على التلفزيون", "غير محفوظ على ا�
 
 if shutil.which("javac") and shutil.which("java"):
     with tempfile.TemporaryDirectory() as tmp:
-        r = subprocess.run(["javac", "-encoding", "UTF-8", "-d", tmp, str(T / "AdhanKeep.java"), str(ROOT / "tests/AdhanKeepRun.java")], capture_output=True, text=True)
+        r = subprocess.run(["javac", "-encoding", "UTF-8", "-d", tmp, str(T / "AdhanKeep.java"), str(T / "AdhanVoices.java"), str(ROOT / "tests/AdhanKeepRun.java")], capture_output=True, text=True)
         check("AdhanKeep compiles on a plain JVM", r.returncode == 0, r.stderr[-400:])
         if r.returncode == 0:
             out = subprocess.run(["java", "-cp", tmp, "sa.urtv.home.tilawah.AdhanKeepRun"], capture_output=True, text=True, timeout=60).stdout
@@ -67,6 +67,7 @@ if shutil.which("javac") and shutil.which("java"):
                 "due_nothing_missing": "false", "due_never_tried": "true", "due_tried_10min_far": "false", "due_tried_61min_far": "true",
                 "due_tried_10min_soon": "true", "due_tried_5min_soon": "false", "due_clock_back": "true",
                 "parse": "4,10", "stand_other_first": "10", "stand_lowest": "4", "stand_never_self": "-1", "stand_none": "-1",
+                "stand_fajr_never_at_dhuhr_other": "4", "stand_fajr_never_at_dhuhr_lowest": "-1", "stand_fajr_prayer_may_use_a_plain_one": "1", "stand_dhuhr_plain_other_ok": "5",   # F92
                 "all_saved": "true false", "missed": "true false false false",
             }
             for k, v in want.items():

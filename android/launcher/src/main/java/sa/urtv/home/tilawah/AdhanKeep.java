@@ -39,12 +39,13 @@ final class AdhanKeep {
 
     /**
      * The saved voice to play when {@code voice} cannot be: the other chosen voice first (the Fajr one for the usual, and the other way), then the
-     * lowest saved; -1 when none is saved. {@code saved[v]} for v in 1..count.
+     * lowest saved; -1 when none is saved. {@code saved[v]} for v in 1..count. 4.4 beta 4 (review F92): at any prayer but Fajr a Fajr recording (10, 13, 17, 20: «الصلاة خير
+     * من النوم») never stands in, whatever is saved ({@code fajrPrayer} false); better the plain one the other way, or none.
      */
-    static int stand(int voice, int other, boolean[] saved) {
+    static int stand(int voice, int other, boolean[] saved, boolean fajrPrayer) {
         if (saved == null) return -1;
-        if (other != voice && other >= 1 && other < saved.length && saved[other]) return other;
-        for (int v = 1; v < saved.length; v++) if (v != voice && saved[v]) return v;
+        if (other != voice && other >= 1 && other < saved.length && saved[other] && (fajrPrayer || !AdhanVoices.isFajr(other))) return other;
+        for (int v = 1; v < saved.length; v++) if (v != voice && saved[v] && (fajrPrayer || !AdhanVoices.isFajr(v))) return v;
         return -1;
     }
 

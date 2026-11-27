@@ -46,4 +46,15 @@ final class InputFav {
         out.add(t);
         return out;
     }
+
+    /**
+     * The row an editor of apps saves: its apps, then the inputs the saved list holds that it did not show (an editor of apps lists only
+     * apps; saving its row alone dropped the HDMI favourite, review F100). Never past {@code max}: the apps come first.
+     */
+    static List<String> keepInputs(List<String> saved, List<String> row, int max) {
+        List<String> out = new ArrayList<>(row);
+        if (saved == null) return out;
+        for (String e : saved) if (isInput(e) && !out.contains(e) && out.size() < max) out.add(e);
+        return out;
+    }
 }

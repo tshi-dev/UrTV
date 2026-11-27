@@ -33,7 +33,8 @@ with tempfile.TemporaryDirectory() as tmp:
 iid = "com.tcl.tvinput/.passthroughinput.TvPassThroughService/HW1413744128"
 want = {"token": "@input:" + iid, "isInput token": "true", "isInput app": "false", "isInput bare prefix": "false", "idOf": iid,
         "added": "com.netflix.ninja,net.mbc.shahidTV,@input:" + iid, "has": "true", "removed": "com.netflix.ninja,net.mbc.shahidTV",
-        "full": "2", "comma refused": "2", "original untouched": "2"}
+        "full": "2", "comma refused": "2", "original untouched": "2",
+        "keep inputs": "a,b,@input:" + iid, "keep inputs full": "a,b", "keep inputs none": "a"}
 for k, v in want.items():
     check(f"input fav: {k}", got.get(k) == v, f"{got.get(k)!r}, wanted {v!r}")
 sys.exit(1 if failed else 0)

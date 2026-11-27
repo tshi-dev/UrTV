@@ -638,7 +638,7 @@ public class MusicService extends Service implements AudioManager.OnAudioFocusCh
      */
     private int standIn(int voice) {
         int other = voice == prefs.fajrVoice() ? prefs.voice() : prefs.fajrVoice();
-        int v = AdhanKeep.stand(voice, other, AdhanKeep.parseSaved(prefs.adhanSaved(), Adhan.VOICES));
+        int v = AdhanKeep.stand(voice, other, AdhanKeep.parseSaved(prefs.adhanSaved(), Adhan.VOICES), adhanPrayer() == PrayerTimes.FAJR);   // F92: the Fajr recording never stands in at another prayer
         return v > 0 && Adhan.isCached(this, v) ? v : -1;
     }
 
