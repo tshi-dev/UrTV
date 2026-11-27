@@ -21,7 +21,10 @@ check("PhotoAddActivity: the JPEG is made by screenJpeg (long-side sub-sample, e
 check("an out-of-memory is said («ما قدرنا نقرأ الصورة»), never a crash", "catch (RuntimeException | OutOfMemoryError e)" in pa)
 if not shutil.which("javac"):
     print("SKIP the sizes on a JVM: no javac")
-    sys.exit(1 if failed else 0)
+    H2 = H
+check("both the screen's photo and the icon editor's pictures are turned upright after decoding (review F98)",
+      "PhotoTurn.upright(f, b)" in (H2 / "PhotoAddActivity.java").read_text(encoding="utf-8") and "PhotoTurn.upright(f, BitmapFactory.decodeFile" in (H2 / "IconEditorActivity.java").read_text(encoding="utf-8"))
+sys.exit(1 if failed else 0)
 with tempfile.TemporaryDirectory() as tmp:
     r = subprocess.run(["javac", "-encoding", "UTF-8", "-d", tmp, str(H / "PhotoSize.java"), str(ROOT / "tests/PhotoSizeRun.java")], capture_output=True, text=True)
     check("PhotoSize compiles on a JVM", r.returncode == 0, r.stderr[-400:])
@@ -30,5 +33,8 @@ with tempfile.TemporaryDirectory() as tmp:
         for line in out:
             n, res = line.rsplit("\t", 1)
             check(n, res == "ok")
-        check("every check ran", len(out) == 9, len(out))
+        check("every check ran", len(out) == 11, len(out))
+H2 = H
+check("both the screen's photo and the icon editor's pictures are turned upright after decoding (review F98)",
+      "PhotoTurn.upright(f, b)" in (H2 / "PhotoAddActivity.java").read_text(encoding="utf-8") and "PhotoTurn.upright(f, BitmapFactory.decodeFile" in (H2 / "IconEditorActivity.java").read_text(encoding="utf-8"))
 sys.exit(1 if failed else 0)

@@ -328,7 +328,7 @@ public final class IconEditorActivity extends Activity {
             while (side / (s * 2) >= max) s *= 2;
             o = new BitmapFactory.Options();
             o.inSampleSize = s;
-            return BitmapFactory.decodeFile(f.getPath(), o);
+            return PhotoTurn.upright(f, BitmapFactory.decodeFile(f.getPath(), o));   // review F98
         } catch (RuntimeException | OutOfMemoryError e) {
             return null;
         }

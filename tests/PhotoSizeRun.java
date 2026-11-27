@@ -5,6 +5,12 @@ public final class PhotoSizeRun {
     static void c(String n, boolean ok) { System.out.println(n + "\t" + (ok ? "ok" : "FAIL")); }
 
     public static void main(String[] a) {
+        c("EXIF 6 (a portrait phone photo) is turned 90 clockwise, 8 is 270, 3 is 180, 1 and junk are left (review F98)",
+                java.util.Arrays.equals(PhotoSize.orient(6), new int[]{90, 0}) && java.util.Arrays.equals(PhotoSize.orient(8), new int[]{270, 0})
+                && java.util.Arrays.equals(PhotoSize.orient(3), new int[]{180, 0}) && java.util.Arrays.equals(PhotoSize.orient(1), new int[]{0, 0})
+                && java.util.Arrays.equals(PhotoSize.orient(0), new int[]{0, 0}) && java.util.Arrays.equals(PhotoSize.orient(99), new int[]{0, 0}));
+        c("the mirrored tags 2, 4, 5, 7 mirror too", java.util.Arrays.equals(PhotoSize.orient(2), new int[]{0, 1}) && java.util.Arrays.equals(PhotoSize.orient(4), new int[]{180, 1})
+                && java.util.Arrays.equals(PhotoSize.orient(5), new int[]{270, 1}) && java.util.Arrays.equals(PhotoSize.orient(7), new int[]{90, 1}));
         c("a 12 MP photo (4032 x 3024) for a 1920 screen is sub-sampled by 2 (2016 x 1512, 12 MB), never decoded whole (the old short-side rule gave 1)", PhotoSize.sample(4032, 3024, 1920) == 2);
         c("a portrait photo is read by its long side too", PhotoSize.sample(3024, 4032, 1920) == 2 && PhotoSize.sample(3000, 6000, 1920) == 2);
         c("a photo that is not bigger than the limit is not sub-sampled", PhotoSize.sample(1920, 1080, 1920) == 1 && PhotoSize.sample(1280, 720, 1920) == 1);

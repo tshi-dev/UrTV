@@ -152,6 +152,7 @@ public final class PhotoAddActivity extends Activity {
         o.inSampleSize = PhotoSize.sample(bounds.outWidth, bounds.outHeight, maxLong);
         Bitmap b = BitmapFactory.decodeFile(f.getPath(), o);
         if (b == null) return null;
+        b = PhotoTurn.upright(f, b);   // review F98: a portrait photo is stored sideways with a tag
         int[] to = PhotoSize.fit(b.getWidth(), b.getHeight(), maxLong);
         if (to[0] != b.getWidth() || to[1] != b.getHeight()) {
             Bitmap scaled = Bitmap.createScaledBitmap(b, to[0], to[1], true);

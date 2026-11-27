@@ -29,4 +29,21 @@ public final class PhotoSize {
 
     /** quality steps to try, best first: the first whose JPEG fits {@link #MAX_JPEG_BYTES} is sent */
     public static final int[] QUALITIES = {88, 80, 72, 64, 56};
+
+    /**
+     * What an EXIF orientation tag (1 to 8, as ExifInterface reads it) asks of the decoded picture: {degrees clockwise, mirror left-right 1 or 0}. A portrait photo from a
+     * camera is stored sideways with a tag; BitmapFactory ignores it (review F98). Anything else is {0, 0}.
+     */
+    public static int[] orient(int exif) {
+        switch (exif) {
+            case 2: return new int[]{0, 1};
+            case 3: return new int[]{180, 0};
+            case 4: return new int[]{180, 1};
+            case 5: return new int[]{270, 1};
+            case 6: return new int[]{90, 0};
+            case 7: return new int[]{90, 1};
+            case 8: return new int[]{270, 0};
+            default: return new int[]{0, 0};
+        }
+    }
 }
