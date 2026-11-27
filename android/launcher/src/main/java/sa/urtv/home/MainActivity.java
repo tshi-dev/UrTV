@@ -1224,7 +1224,7 @@ public class MainActivity extends Activity {
                 if (getResources().getBoolean(R.bool.show_listening)) handler.post(() -> launchGuarded(ParentalPolicy.PILL_LISTEN, adhanSettingsIntent(), S.t("إعدادات الأذان")));
                 break;
             case "photos":   // the settings' «أضف من فلاشة أو التنزيلات» under «صوري»: the photos of a stick or of Downloads, added to «صوري»
-                handler.post(() -> startActivity(new Intent(this, PhotoAddActivity.class)));
+                handler.post(() -> launchGuarded(ParentalPolicy.PILL_SAVER_SETTINGS, new Intent(this, PhotoAddActivity.class), S.t("أضف من فلاشة أو التنزيلات")));   // behind the lock of the screensaver's settings
                 break;
             case "prayers":   // the settings' «الأذان لكل صلاة»: sound and screen for each of the five, behind the same lock as the adhan's settings
                 if (getResources().getBoolean(R.bool.show_listening))
