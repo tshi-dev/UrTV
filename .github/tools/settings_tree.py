@@ -43,7 +43,7 @@ CHOICES = {
 }
 # the phone page's «set» keys (phone/Schema.java) and the row each one changes; None: not a row of the settings (a one-off action)
 PHONE = {"city": "المدينة", "home_cards": "البطاقة الأولى", "adhan_on": "الأذان", "adhan_short": "الأذان", "adhan_stopkey": "الأذان", "adhan_voice": "الأذان",
-         "adhan_fajr_voice": "الأذان", "adhan_volume": "الأذان", "sleep_minutes": None, "saver_idle": "بدء شاشة التوقف بعد", "lang": "اللغة",
+         "adhan_fajr_voice": "الأذان", "adhan_volume": "الأذان", "adhan_prayers": "الأذان لكل صلاة", "sleep_minutes": None, "saver_idle": "بدء شاشة التوقف بعد", "lang": "اللغة",
          "fav_bar": "تطبيقات في الشريط"}
 # the control centre's rows (ControlCenter.ROWS) that open a setting's row; the others are actions or screens of their own
 CONTROL = {"net": None, "sound": None, "speed": None, "ours": None, "games": None, "city": "المدينة", "tv": None, "apps": None, "saver": None, "adhan": None, "black": None}

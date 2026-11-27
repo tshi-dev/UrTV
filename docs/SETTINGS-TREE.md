@@ -381,6 +381,7 @@ the phone page's key, «مركز التحكم» the control centre's row that op
    مثال للوكيل: optimize/music.sh adhan screen <prayer> on|off
    مثال للوكيل: optimize/music.sh adhan
    مثال للوكيل: optimize/music.sh adhan prayer <fajr|dhuhr|asr|maghrib|isha> <general|silent|own|own_fajr|1-21>
+   صفحة الجوال: adhan_prayers
 —— تنبيه قبل الأذان [الرئيسية وشاشة التوقف]
    مثال للوكيل: optimize/saver.sh adhanbar off  (or `on`)
      القيم المقبولة: on|off
@@ -573,6 +574,7 @@ the phone page's key, «مركز التحكم» the control centre's row that op
    مثال للوكيل: optimize/music.sh adhan screen <prayer> on|off
    مثال للوكيل: optimize/music.sh adhan
    مثال للوكيل: optimize/music.sh adhan prayer <fajr|dhuhr|asr|maghrib|isha> <general|silent|own|own_fajr|1-21>
+   صفحة الجوال: adhan_prayers
 — الموقع والصلاة
 —— الموقع
 ——— الدولة [كل التلفزيون]
