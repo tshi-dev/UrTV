@@ -47,7 +47,7 @@ public class AdhanReceiver extends BroadcastReceiver {
             boolean silent = voice == PrayerSound.SILENT
                     || QuietHours.silencesAdhan(prefs.quietOn(), prefs.quietNow(context), prefs.quietAdhan(), prayer);   // 4.4 «ساعات الهدوء»
             boolean play = prefs.adhanOn() && AdhanPlan.mayPlay(prefs.adhanSaverOnly(), front) && !silent;
-            boolean notice = prefs.adhanNotice();
+            boolean notice = prefs.adhanNotice() && prefs.screenOn(prayer);   // 4.4 beta 4: a prayer set to no screen has no notice either
             if (play) MusicService.adhan(context, voice, null, 0, prayer);
             else if (prefs.adhanOn() && silent) Log.i("UrTVAdhan", "adhan silent: this prayer is set to no sound (its time and card stay)");
             else if (prefs.adhanOn()) Log.i("UrTVAdhan", "adhan skipped: another app is in front (saver-only is on)");

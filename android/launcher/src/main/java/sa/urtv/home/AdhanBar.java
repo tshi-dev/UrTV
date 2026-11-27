@@ -15,21 +15,23 @@ final class AdhanBar {
 
     /** An adhan for a prayer is playing and the bar is on: the bar names it and says how to stop it (a key stops it: AdhanKeys). */
     static boolean playing(ConfigSnapshot snap) {
-        return snap.adhanBarOn && NowPlaying.adhanLive() && NowPlaying.duaName() == null;   // 4.4: a dua has its card (DuaCard), not the bar
+        return snap.adhanBarOn && NowPlaying.adhanLive() && NowPlaying.duaName() == null && !sa.urtv.home.tilawah.PrayerScreen.hiddenNow(NowPlaying.adhanPrayer());   // 4.4: a dua has its card (DuaCard), not the bar
     }
 
     /** What the bar says now, or null: it is off, nothing is near, or the times are out of reach. */
     static String text(Context c, ConfigSnapshot snap) {
         if (!snap.adhanBarOn) return null;
+        sa.urtv.home.tilawah.PrayerScreen.mask(c);   // loaded before the adhan's own check below (4.4 beta 4)
         if (NowPlaying.duaName() != null) return null;   // 4.4: a dua plays: its card says it
         try {
             if (NowPlaying.adhanLive()) {
+                if (sa.urtv.home.tilawah.PrayerScreen.hiddenNow(NowPlaying.adhanPrayer())) return null;   // 4.4 beta 4: this prayer is set to no screen
                 boolean friday = false;
                 try { friday = DayParts.now(c, snap.placeFragment(), snap.placeTicket()).friday; } catch (RuntimeException ignored) { }
                 return AdhanBarText.playing(NowPlaying.adhanPrayer(), friday, NowPlaying.adhanStopKey(c));
             }
             DayParts d = DayParts.now(c, snap.placeFragment(), snap.placeTicket());
-            return AdhanBarText.text(System.currentTimeMillis(), new long[]{d.fajr, d.dhuhr, d.asr, d.maghrib, d.isha}, d.friday, snap.latin(), snap.adhanLead());
+            return AdhanBarText.text(System.currentTimeMillis(), new long[]{d.fajr, d.dhuhr, d.asr, d.maghrib, d.isha}, d.friday, snap.latin(), snap.adhanLead(), sa.urtv.home.tilawah.PrayerScreen.mask(c));
         } catch (RuntimeException e) {
             return null;
         }

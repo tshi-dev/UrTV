@@ -17,7 +17,7 @@ public final class AdhanBarRun {
             long now = Math.round(Double.parseDouble(f[0]) * 60000);
             long[] at = new long[5];
             for (int i = 0; i < 5; i++) at[i] = Math.round(Double.parseDouble(f[i + 1]) * 60000);
-            String r = AdhanBarText.text(now, at, "1".equals(f[6]), "latin".equals(f[7]), f.length > 10 && !f[10].isEmpty() ? Integer.parseInt(f[10]) : 10);
+            String r = AdhanBarText.text(now, at, "1".equals(f[6]), "latin".equals(f[7]), f.length > 10 && !f[10].isEmpty() ? Integer.parseInt(f[10]) : 10, f.length > 11 && !f[11].isEmpty() ? Integer.parseInt(f[11]) : 0);
             out.append(r == null ? "-" : r).append('\n');
         }
         System.out.write(out.toString().getBytes(StandardCharsets.UTF_8));

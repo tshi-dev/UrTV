@@ -1781,6 +1781,9 @@ const untilAdhan = leftMin => humanRemaining(Math.max(60, Math.round(leftMin * 6
 // the bar names it and says how to stop it
 // as the launcher's bar (AdhanBarText.playing). Any key
 let ADHAN_LIVE = null;
+let ADHAN_HIDE = 0;   // 4.4 beta 4: the prayers that do not show on the screen (the launcher's «الأذان لكل صلاة»: bit p of the prayer's number, 0 Fajr 2 Dhuhr 3 Asr 4 Maghrib 5 Isha)
+const ADHAN_BIT = {Fajr: 0, Dhuhr: 2, Asr: 3, Maghrib: 4, Isha: 5};
+const adhanHidden = k => k != null && ((ADHAN_HIDE >> k) & 1) === 1;
 const ADHAN_PRAYER_NAMES = {0:'الفجر', 2:'الظهر', 3:'العصر', 4:'المغرب', 5:'العشاء'};
 function adhanLiveText(){
   if(!ADHAN_LIVE) return '';
@@ -1793,15 +1796,17 @@ function adhanLiveTick(){
   // asked every 3 s whenever the app answers (a call to the app's provider, about a millisecond)
   let s = null;
   try{ const raw = window.UrtvNative.adhan(); s = raw ? JSON.parse(raw) : null; }catch(e){}
+  ADHAN_HIDE = s && typeof s.hide === 'number' ? s.hide | 0 : 0;
   ADHAN_LIVE = s && s.live && typeof s.prayer === 'number' && isFinite(s.prayer) ? {prayer: +s.prayer, any: !!s.any, name: typeof s.name === 'string' ? s.name.slice(0, 60) : ''} : null;
   tickAdhanBar();
 }
 function adhanBarText(){
   if(!CONFIG.adhanBar) return '';
-  if(ADHAN_LIVE) return adhanLiveText();
+  if(ADHAN_LIVE) return ADHAN_LIVE.name || !adhanHidden(ADHAN_LIVE.prayer) ? adhanLiveText() : '';   // a dua has its own name; an adhan of a prayer that does not show says nothing
   if(!PRAYERS.length) return '';
   const p = riyadhParts(), mins = p.h*60 + p.mi + p.s/60;
   for(const x of PRAYERS){
+    if(adhanHidden(ADHAN_BIT[x.key])) continue;   // 4.4 beta 4: this prayer does not show on the screen
     const at = x.h*60 + x.mi, toAdhan = at - mins;
     if(toAdhan > 0 && toAdhan <= CONFIG.adhanLead) return 'أذان ' + prayerName(x) + ' بعد ' + untilAdhan(toAdhan);
     const gap = x.key === 'Dhuhr' && isFriday() ? 0 : (CONFIG.iqama[x.key] || 0);

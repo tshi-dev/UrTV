@@ -618,6 +618,9 @@ public class SettingsActivity extends Activity {
         // opened through the home (behind its family lock), so they are reachable with the «تلاوة وأذان» button hidden too
         row("الأذان", "تشغيله وصوته وصوت الفجر والمختصر والإيقاف بأي زر والمستوى", R.drawable.ic_settings,
             new Runnable() { public void run() { openAdhanSettings(); } });
+        // 4.4 beta 4: the sound and the screen of each of the five prayers apart (the home's screen, behind the same lock)
+        row("الأذان لكل صلاة", "الصوت والشاشة لكل صلاة على حدة", R.drawable.ic_settings,
+            new Runnable() { public void run() { openHome("prayers"); } });
         // «تلاوة وأذان» itself, through the home (behind its family lock), as its button there opens it
         row("افتح تلاوة وأذان", "القرآن والإذاعات ومواقيت الأذان", R.drawable.ic_play,
             new Runnable() { public void run() { openHome("listen"); } });

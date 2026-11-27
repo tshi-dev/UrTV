@@ -131,6 +131,20 @@ public class MusicReceiver extends BroadcastReceiver {
                 setResultData("saved\nprayer_sound=" + prayerSounds(prefs));
                 return;
             }
+            case "sa.urtv.home.PRAYER_SCREEN": {   // 4.4 beta 4 optimize/music.sh adhan screen <prayer> on|off: a prayer shows on the screen (the bar, «تنبيه عند الأذان») or not
+                int p = intent.getIntExtra("prayer", -1);
+                if (!(p == 0 || p == 2 || p == 3 || p == 4 || p == 5)) { setResultData("error: prayer is 0,2,3,4,5"); return; }
+                prefs.setScreenOn(p, intent.getBooleanExtra("on", true));
+                setResultData("saved\nprayer_screen=" + prayerScreens(prefs));
+                return;
+            }
+            case "sa.urtv.home.PRAYER_STATE": {   // 4.4 beta 4: a prayer's sound and screen together (the settings' picker and the phone page): state 0..3 (PrayerScreen)
+                int p = intent.getIntExtra("prayer", -1), st = intent.getIntExtra("state", -1);
+                if (!(p == 0 || p == 2 || p == 3 || p == 4 || p == 5) || st < 0 || st > 3) { setResultData("error: prayer is 0,2,3,4,5 and state 0..3"); return; }
+                prefs.setPrayerState(p, st);
+                setResultData("saved\nprayer_sound=" + prayerSounds(prefs) + "\nprayer_screen=" + prayerScreens(prefs));
+                return;
+            }
             case "sa.urtv.home.ADHAN_TAKBIR":   // optimize/music.sh adhan takbir on|off
                 prefs.setAdhanTakbir(intent.getBooleanExtra("on", false));
                 setResultData("saved\ntakbir=" + (prefs.adhanTakbir() ? "on" : "off") + "\nshort=" + (prefs.adhanShort() ? "on" : "off"));
@@ -275,6 +289,13 @@ public class MusicReceiver extends BroadcastReceiver {
         return b.toString();
     }
 
+    private static String prayerScreens(Prefs prefs) {
+        String[] names = {"fajr", "", "dhuhr", "asr", "maghrib", "isha"};
+        StringBuilder b = new StringBuilder();
+        for (int p : PrayerTimes.PRAYERS) b.append(b.length() > 0 ? "," : "").append(names[p]).append(':').append(prefs.screenOn(p) ? "on" : "off");
+        return b.toString();
+    }
+
     private static String prayerSounds(Prefs prefs) {
         String[] names = {"fajr", "", "dhuhr", "asr", "maghrib", "isha"};
         StringBuilder b = new StringBuilder();
@@ -329,6 +350,7 @@ public class MusicReceiver extends BroadcastReceiver {
                 + "|voice=" + (prefs.playVoice(context) == Prefs.OWN ? "own" : String.valueOf(prefs.voice()))
                 + "|fajr_voice=" + (prefs.playFajrVoice(context) == Prefs.OWN_FAJR ? "own_fajr" : prefs.playFajrVoice(context) == Prefs.OWN ? "own" : String.valueOf(prefs.fajrVoice()))
                 + "|prayer_sound=" + prayerSounds(prefs)
+                + "|prayer_screen=" + prayerScreens(prefs)
                 + "|quiet=" + quietText(prefs)
                 + "|friday_dhuhr=" + (prefs.fridayDhuhr() ? "on" : "off")
                 + "|adhan_short=" + (prefs.adhanShort() ? "on" : "off")

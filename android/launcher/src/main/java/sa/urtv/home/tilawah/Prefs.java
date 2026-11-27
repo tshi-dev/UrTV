@@ -105,6 +105,26 @@ final class Prefs {
     String prayerSound(int prayer) { String c = sp.getString("pp_" + prayer, ""); return PrayerSound.valid(c) ? c : ""; }
     void setPrayerSound(int prayer, String choice) { sp.edit().putString("pp_" + prayer, PrayerSound.valid(choice) ? choice : "").apply(); }
 
+    /** 4.4 beta 4: does this prayer show on the screen (the bar, «تنبيه عند الأذان»)? On unless its flag is off; a prayer of no number (an older alarm) shows. */
+    boolean screenOn(int prayer) { return prayer < 0 || prayer > 5 || sp.getBoolean("ps_" + prayer, true); }
+    void setScreenOn(int prayer, boolean on) {
+        if (prayer < 0 || prayer > 5) return;
+        sp.edit().putBoolean("ps_" + prayer, on).apply();
+        PrayerScreen.cache(hideMask());
+    }
+    /** the hidden prayers as PrayerScreen.hidden reads them */
+    int hideMask() { int m = 0; for (int p : PrayerScreen.IDS) if (!screenOn(p)) m |= 1 << p; return m; }
+    /** the prayer's sound is off (PrayerSound «silent») */
+    boolean soundOff(int prayer) { return "silent".equals(prayerSound(prayer)); }
+    /** the four states at once: a prayer's sound and its screen (PrayerScreen) */
+    int prayerState(int prayer) { return PrayerScreen.state(!soundOff(prayer), screenOn(prayer)); }
+    void setPrayerState(int prayer, int state) {
+        boolean wantSound = PrayerScreen.sound(state);
+        if (wantSound && soundOff(prayer)) setPrayerSound(prayer, "");   // heard again: the general adhan, as before
+        else if (!wantSound && !soundOff(prayer)) setPrayerSound(prayer, "silent");
+        setScreenOn(prayer, PrayerScreen.screen(state));
+    }
+
     /** 4.4 «ساعات الهدوء»: off by default; 23:00 to 05:00 when first turned on; the adhan in it heard by default */
     boolean quietOn() { return sp.getBoolean("quiet_on", false); }
     int quietFrom() { return Math.floorMod(sp.getInt("quiet_from", 23 * 60), 1440); }
