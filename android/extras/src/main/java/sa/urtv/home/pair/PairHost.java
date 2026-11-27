@@ -6,8 +6,6 @@ import android.util.Log;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -22,9 +20,9 @@ public final class PairHost {
 
     static final String TAG = "UrTVPair";
     private static final PairState STATE = new PairState();
-    private static final Map<String, PairClient.Connection> OPEN = new HashMap<>();
     /** how many connections may be open at once (the setup uses one; a stuck caller cannot pile them up) */
     static final int MAX_OPEN = 2;
+    private static final ConnPool<PairClient.Connection> OPEN = new ConnPool<>(MAX_OPEN, c -> { try { c.close(); } catch (RuntimeException ignored) { } });
 
     public static boolean available() { return PairClient.available(); }
 
@@ -78,7 +76,6 @@ public final class PairHost {
     public static String open(Context c) throws IOException {
         if (!available()) throw new IOException("old_android");
         if (!paired(c)) throw new IOException("not_paired");
-        synchronized (OPEN) { if (OPEN.size() >= MAX_OPEN) throw new IOException("busy"); }
         PairClient.Connection conn;
         try {
             conn = PairClient.connect(c.getApplicationContext(), line -> Log.i(TAG, line));
@@ -87,17 +84,15 @@ public final class PairHost {
             throw new IOException(m.contains("service of this TV found") ? "no_port" : m.contains("not paired") ? "not_paired" : "refused");
         }
         String id = UUID.randomUUID().toString();
-        synchronized (OPEN) { OPEN.put(id, conn); }
+        OPEN.add(id, conn);   // full: the oldest (a caller that died) is closed and goes (ConnPool, review F95)
         Log.i(TAG, "connection open");
         return id;
     }
 
     private static PairClient.Connection get(String id) throws IOException {
-        synchronized (OPEN) {
-            PairClient.Connection conn = id == null ? null : OPEN.get(id);
-            if (conn == null) throw new IOException("closed");
-            return conn;
-        }
+        PairClient.Connection conn = OPEN.get(id);
+        if (conn == null) throw new IOException("closed");
+        return conn;
     }
 
     /** one shell command, its output with the `URTV_RC=` marker (the home splits it as AdbClient.withCode) */
@@ -113,14 +108,13 @@ public final class PairHost {
     }
 
     public static void close(String id) {
-        PairClient.Connection conn;
-        synchronized (OPEN) { conn = id == null ? null : OPEN.remove(id); }
-        if (conn != null) { conn.close(); Log.i(TAG, "connection closed"); }
+        OPEN.remove(id);
+        Log.i(TAG, "connection closed");
     }
 
     /** the home's setup ended with nothing pending: the key and its mark go (the TV forgets it with «إلغاء تراخيص تصحيح USB») */
     public static void forget(Context c) {
-        synchronized (OPEN) { for (PairClient.Connection conn : OPEN.values()) conn.close(); OPEN.clear(); }
+        OPEN.clear();
         PairClient.forget(c);
         STATE.disarm();
         Log.i(TAG, "pairing forgotten");
