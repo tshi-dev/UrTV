@@ -122,7 +122,7 @@ Common issues on those pages: (1) the header line «امسح الرمز بكام
 - Remote-only idea: not recommended (drawing needs a touch screen); at most a «pick from a list» version with a cursor.
 
 ## Ranked fixes (top 10)
-1. **Mark phone-only games on the list** (and on the setup page): all 16 tiles carry the same phone badge in both modes; 8 games cannot be played without phones. Show «جوال» only on those, and show «ريموت» on the rest.
+1. **Mark phone-only games on the list** (and on the setup page): all 16 tiles carry the same phone badge in both modes; 9 of the 16 games cannot be played without phones. Show «جوال» only on those, and show «ريموت» on the rest.
 2. **The first OK on «ابدأ» is inconsistent**: sometimes the names page (خمس خانات, واحد مو معنا), sometimes the game (بدون كلام, خلية الحروف, دومينو). Make «ابدأ» always start, with names as an optional «الأسماء» button.
 3. **Domino: the opponent hand is tofu boxes** (▯▯▯▯▯▯▯): draw small tile backs.
 4. **Hex board letters are unreadable** (dark on dark) for the cells you are not on.
