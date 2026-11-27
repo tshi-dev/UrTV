@@ -143,6 +143,7 @@ python3 tests/input_fav_test.py
 python3 tests/look_panel_affinity_test.py
 python3 tests/audio_adhan_thread_test.py
 python3 tests/pair_pool_test.py
+python3 tests/pair_retry_test.py
 python3 tests/input_display_test.py
 python3 tests/tv_vendor_test.py   # «المصادر» on any TV: the live TV app and source picker found on the TV (TCL, CultraView, MediaTek…)
 python3 tests/dock_sleep_test.py

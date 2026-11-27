@@ -51,6 +51,8 @@ public final class PairBridge {
     public static String submit(Context c, String typed) {
         if (!armedHere()) return "not_armed";
         android.util.Log.i("UrTVFactory", "pairing: a code arrived from the phone page");   // the code itself is never a log line
+        // a wrong code leaves the add-on «failed» and the TV says «اكتب الرمز الجديد»: the next code is a new try, so arm it again first (review F94)
+        if ("failed".equals(PairRoute.state(c))) retry(c);
         return PairRoute.submit(c, typed);
     }
 }
