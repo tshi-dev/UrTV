@@ -1,6 +1,6 @@
 # The family games' kit: how a game is built
 
-Every family game but «الأسرع» is played with **one remote and no phones** (games/COMMON.md). The kit is what makes them one family in the «ورقة» look (design/43 `quiz-B*`): it was taken out of «الأسرع» (docs/QUIZ.md), which stays as it is, with its own pinned tests. The phone mode is a later phase: it will drive the same engines.
+Seven family games are played with **one remote and no phones** (خمس خانات، الكلمة المفقودة، واحد مو معنا، بدون كلام، خلية الحروف، خمّن الكلمة، دومينو; each has an optional phone mode, `PHONE_GAMES` in `GameRegistry`). «الأسرع» and the ten party games (docs/GAMES-NEW.md) need phones today; a remote-only way to play them is under review (docs/research/GAMES-REVIEW-CODE.md). The kit is what makes them one family in the «ورقة» look (design/43 `quiz-B*`): it was taken out of «الأسرع» (docs/QUIZ.md), which stays as it is, with its own pinned tests. The phone mode is a later phase: it will drive the same engines.
 
 **Where:** package `sa.urtv.screensaver` (the saver app, `android/app`), beside the quiz, because the helpers every screen uses (`S`, `Dir`, `DigitsText`, `Prefs`, `Net`, `MiniJson`, `Bounded`) are package-private there. Every kit class starts with `Game`.
 
