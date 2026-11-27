@@ -12,6 +12,7 @@
     lib.py muted FILE                   `dumpsys audio` -> yes|no (is STREAM_MUSIC muted)
     lib.py volume FILE                  `cmd media_session volume --stream 3 --get` -> the music volume number
     lib.py city FILE                    `saver.sh show` -> the city's name
+    lib.py style FILE                   `saver.sh show` -> buttons|couch|tvos (or empty)
     lib.py adhan-state FILE PRAYER      `music.sh adhan` status -> both|sound|screen|none for that prayer
     lib.py focused FILE                 `uiautomator dump` XML -> the text of the focused node (empty when none)
     lib.py has-text FILE TEXT           `uiautomator dump` XML -> yes|no (is TEXT on the screen)
@@ -165,6 +166,12 @@ def city(text):
     """the city's name in `saver.sh show` («city=الرياض», or a line «city: الرياض» / «المدينة: الرياض»), else empty"""
     m = re.search(r"(?:^|[|\s])(?:city|المدينة)[ \t]*[=:][ \t]*([^|\n]+)", text, re.M)
     return m.group(1).strip() if m else ""
+
+
+def settings_style(text):
+    """the settings style in `saver.sh show` («settingsstyle=couch»): buttons, couch or tvos; empty when it is not said (the saved settings put it back)"""
+    m = re.search(r"settingsstyle[ \t]*[=:][ \t]*(buttons|couch|tvos)", text)
+    return m.group(1) if m else ""
 
 
 def adhan_state(text, prayer):
@@ -337,6 +344,8 @@ def main(a):
         print("" if v is None else v)
     elif cmd == "city":
         print(city(_read(a[2])))
+    elif cmd == "style":
+        print(settings_style(_read(a[2])))
     elif cmd == "adhan-state":
         print(adhan_state(_read(a[2]), a[3]))
     elif cmd == "focused":

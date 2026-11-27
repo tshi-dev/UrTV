@@ -38,7 +38,7 @@ def log(line):
 
 
 STATIONS = ["إذاعة القرآن الكريم", "محطة ثانية"]
-MARKERS = ["بحث في الإعدادات", "اللغة", "المدينة", "المظهر", "التطبيقات", "مركز التحكم", "الأذان", "الفرق المتابعة", "معاينة الشاشة", "الرقابة الأبوية", "الإصدار", "الأسرع"]
+MARKERS = ["بحث في الإعدادات", "الأذان لكل صلاة", "احذف صورة", "التخطيط", "بدء شاشة التوقف بعد", "الخروج من تلفزيونك", "مباريات اليوم", "الرقابة الأبوية", "المدينة", "تحديث تلفزيوني", "الأسرع"]
 
 
 def xml():
@@ -110,7 +110,7 @@ def saver(a):
     if a[:1] == ["export"]:
         print('{"city":"الرياض"}')
     elif a[:1] == ["show"]:
-        print("version=4.4\ncity=الرياض\nhomelayout=classic")
+        print("version=4.4\ncity=الرياض\nhomelayout=classic\nsettingsstyle=couch")
     elif a[:1] == ["homelayout"] and a[1:2] and a[1] not in ("classic", "couch", "football"):
         sys.exit(1)
 
