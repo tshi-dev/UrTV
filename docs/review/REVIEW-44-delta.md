@@ -5,7 +5,7 @@ Reviewer: a fresh independent review session (read-only), with five fresh subage
 Date: 2026-11-27
 Read: 307 commits, 728 files changed, 101139 insertions(+), 2511 deletions(-) (the games' json data only parsed and run through games/check.py and check_words.py; dist/ not read, src/ instead)
 API surface diff (`api_surface_diff.py --base 987aa209`): PASS, 0 new UI-thread paths to a cross-process call. New: the signature permission `sa.urtv.home.LOOK` (both apps) and the exported `.LookPanelActivity` behind it; the launcher provider `sa.urtv.home.pairfiles` (EXTRAS, signature); `READ_MEDIA_IMAGES` in the launcher; `INTERNET` in the add-on (the paired route); DockReceiver's new actions (DUMP). Against v4.3.517: PASS.
-Regressions group: see the record in docs/dev/reviews/4.4.md (run locally on 1210cac9)
+Regressions group (`bash tests/run.sh regressions` on 1210cac9, in the review container): 176/182 passed; FAIL tests/regressions/attribution_test.py (F91); tests/check.py and the four page .mjs tests could not run here (no fontTools, no playwright in this container: environment, not code), CI's run decides them
 
 Gate record: the findings below are also in `docs/dev/reviews/4.4.md` (F87–F119), whose Range now ends at 1210cac9. **Status: PENDING.** `review_gate.py` fails while F87–F91 (high) are open.
 
