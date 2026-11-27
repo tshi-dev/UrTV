@@ -21,7 +21,7 @@ is `games/` on branch `work/games-data` (`make_games_data.py starter`), so **fix
 | odd-one `clothes` | «نظارة، ساعة» (accessories), «كم» (a part of a garment) as clothes | Drop or move to an «إكسسوارات» topic | — | doubtful |
 | odd-one `farm` | «قطة، كلب، حمامة» as farm animals | Drop, or keep only «كلب» | — | doubtful |
 | odd-one `dishes` «أكلات عربية» | «برياني» is South Asian (common in the Gulf, but not Arab in origin) | Drop or rename the topic «أكلات» | en.wikipedia.org/wiki/Biryani | doubtful |
-| charades + odd-one `arab_countries` | 21 of the 22 Arab League members; Palestine is missing (the quiz leaves it out on purpose, VERIFY.md) | Owner's decision; players will notice its absence | arableagueonline.org members list | doubtful (sensitive) |
+| charades + odd-one `arab_countries` | 21 of the 22 Arab League members; Palestine is missing (the quiz leaves it out on purpose, VERIFY.md) | Owner's decision; players will notice its absence | en.wikipedia.org/wiki/Arab_League (member states) | doubtful (sensitive) |
 | khanat `ن/saudi_city` | «نيوم» is a project and region, not a city | Replace with «النماص» | en.wikipedia.org/wiki/Neom | doubtful |
 | khanat `غ/object`, `ق/object` | «الغميضة» (a game), «قفز الحبل» (an activity) are not objects | «غطاء», «قفل» | — | wording |
 | khanat `ا/country`, `ج/animal` | «الإمارات» and «الإمارات العربية المتحدة» both; «جراد» and «جرادة» both | Keep one of each | — | style (duplicate) |
