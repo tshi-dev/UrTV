@@ -247,6 +247,9 @@ python3 tests/photo_from_file_test.py   # 4.4 beta 4: photos from a stick or Dow
 python3 tests/tester_auto_test.py   # 4.4 beta 4: the automatic tester round (tester/auto): its parsing on saved answers, the whole round on a stand-in TV, the putting back, never a blind key
 python3 tests/pray_rows_test.py   # 4.4 beta 4: «المؤذن», «الأدعية والتذكيرات», «صوتياتي» as rows of «الصلاة والأذان», the dua count from the phone
 python3 tests/music_adhan_state_test.py   # 4.4 beta 4: `music.sh adhan state <prayer> <state>` is reached (R-333); `adhan state` alone is still the status
+python3 tests/setup_cancel_test.py   # 4.4 beta 4 review F87 (R-262): «إلغاء» is its own message with its retry, also when the paired route exists
+python3 tests/extras_trust_test.py   # 4.4 beta 4 review F88: the add-on's provider is called only when its owner is the add-on signed as the home
+python3 tests/photo_size_test.py   # 4.4 beta 4 review F89 (R-336): a 12 MP photo is sub-sampled by its long side and sent under 700 KB
 python3 tests/quiet_hours_test.py   # 4.4 touch «ساعات الهدوء»
 python3 tests/kahf_template_test.py   # 4.4 touch: the Friday Kahf, ready
 python3 tests/fade_in_test.py   # 4.4 touch «يبدأ بهدوء»

@@ -1,34 +1,34 @@
 #!/usr/bin/env python3
-"""G3 (4.3.3): a downloaded photo is kept at the TV's own screen size: PhotoShrink.screenMax (the screen's long side, between 1280 and 1920; 1920 when not known),
-so a TV that draws its screen at 1280x720 keeps 1280 px photos; a weak TV 1280 (the screensaver: LOW or MID as before; the home: LOW, the «خفيف» profile). The rule
-is run on a plain JVM (the same arithmetic, read from the source), the wiring is read from the sources. WebP is not used: a JPEG decodes faster on a weak TV's CPU
-and the photos come from the host as JPEG.
-
-    python3 tests/photo_size_test.py
-"""
-import re, sys
+"""4.4 beta 4, review F89: «أضف من فلاشة أو التنزيلات» on a normal phone photo. The decode read the screen's long-side limit as a short-side one, so a 12 MP photo was decoded whole (about 48 MB)
+and its 3 to 5 MB JPEG sent through Binder (about 1 MB at most): «ثبّت أو حدّث…» or an out-of-memory. PhotoSize does the sizes (sub-sample by the long side, fit exactly, a JPEG that fits one call)
+and PhotoAddActivity uses it. Run: python3 tests/photo_size_test.py"""
+import shutil, subprocess, sys, tempfile
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parent.parent
-SAVER = ROOT / "android/app/src/main/java/sa/urtv/screensaver"
-HOME = ROOT / "android/launcher/src/main/java/sa/urtv/home"
+ROOT = Path(__file__).resolve().parents[1]
+H = ROOT / "android/launcher/src/main/java/sa/urtv/home"
 failed = 0
-def check(what, ok, extra=""):
+def check(name, ok, detail=""):
     global failed
-    print(("PASS " if ok else "FAIL ") + what + ("" if ok else "  -> " + str(extra)))
-    if not ok: failed += 1
-def text(p): return Path(p).read_text(encoding="utf-8")
+    print(("PASS " if ok else "FAIL ") + name + ("" if ok else "  -> " + str(detail)[:500]))
+    failed += not ok
+rd = lambda p: Path(p).read_text(encoding="utf-8")
 
-ps = text(SAVER / "PhotoShrink.java")
-check("both PhotoShrink copies are the same code", ps.split("\n", 1)[1] == text(HOME / "PhotoShrink.java").split("\n", 1)[1])
-m = re.search(r"static int screenMax\(int screenLong\) \{ return screenLong <= 0 \? MAX : Math\.max\(LOW, Math\.min\(MAX, screenLong\)\); \}", ps)
-check("the rule: the screen's long side between LOW and MAX, MAX when not known", m is not None and "static final int MAX = 1920" in ps and "static final int LOW = 1280;" in ps)
-rule = lambda s: 1920 if s <= 0 else max(1280, min(1920, s))
-check("a 720p screen: 1280; 1080p: 1920; a 4K UI: 1920; a 1366 screen: 1366; unknown: 1920", [rule(x) for x in (1280, 1920, 3840, 1366, 0)] == [1280, 1920, 1920, 1366, 1920])
-check("the screen size is the app's own display metrics (what the WebView and the home draw at)", "c.getResources().getDisplayMetrics()" in ps)
-check("the screensaver's downloaded photos: a weak TV 1280 as before, else the screen's size",
-      "Prefs.tightRam(c) ? PhotoShrink.toSize(data, LOW_PX) : PhotoShrink.toSize(data, PhotoShrink.screenMax(c))" in text(SAVER / "PhotoCache.java"))
-check("the home's downloaded photos: «خفيف» (Ram.low) 1280, else the screen's size",
-      "PhotoShrink.toSize(data, Ram.low(this) ? PhotoShrink.LOW : PhotoShrink.screenMax(this))" in text(HOME / "MainActivity.java"))
-check("the disk caches keep their caps (40 MB of photos at most)", "CACHE_MAX = 40L << 20" in text(SAVER / "Bounded.java") and "Bounded.fitting(sizes, Bounded.CACHE_MAX)" in text(SAVER / "PhotoCache.java"))
+pa = rd(H / "PhotoAddActivity.java")
+check("PhotoAddActivity: the JPEG is made by screenJpeg (long-side sub-sample, exact fit, the first quality that fits 700 KB), not by the icon editor's short-side decode",
+      "static byte[] screenJpeg(File f, int maxLong)" in pa and "PhotoSize.sample(bounds.outWidth, bounds.outHeight, maxLong)" in pa and "PhotoSize.fit(" in pa and "PhotoSize.QUALITIES" in pa
+      and "PhotoSize.MAX_JPEG_BYTES" in pa and "IconEditorActivity.decode(f, PhotoShrink.screenMax" not in pa)
+check("an out-of-memory is said («ما قدرنا نقرأ الصورة»), never a crash", "catch (RuntimeException | OutOfMemoryError e)" in pa)
+if not shutil.which("javac"):
+    print("SKIP the sizes on a JVM: no javac")
+    sys.exit(1 if failed else 0)
+with tempfile.TemporaryDirectory() as tmp:
+    r = subprocess.run(["javac", "-encoding", "UTF-8", "-d", tmp, str(H / "PhotoSize.java"), str(ROOT / "tests/PhotoSizeRun.java")], capture_output=True, text=True)
+    check("PhotoSize compiles on a JVM", r.returncode == 0, r.stderr[-400:])
+    if r.returncode == 0:
+        out = subprocess.run(["java", "-cp", tmp, "sa.urtv.home.PhotoSizeRun"], capture_output=True, text=True).stdout.splitlines()
+        for line in out:
+            n, res = line.rsplit("\t", 1)
+            check(n, res == "ok")
+        check("every check ran", len(out) == 9, len(out))
 sys.exit(1 if failed else 0)

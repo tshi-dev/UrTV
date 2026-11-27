@@ -27,8 +27,7 @@ public final class Extras {
     private static Bundle call(String method, String arg, Bundle extras) {
         Context c = app;
         if (c == null) return null;
-        try { return c.getContentResolver().call(Uri.parse("content://" + ExtrasWords.EXTRAS_AUTHORITY), method, arg, extras); }
-        catch (RuntimeException e) { return null; }   // not installed (unknown authority), or another key: «off»
+        return ExtrasTrust.call(c, method, arg, extras);   // F88: only when the app that owns the authority is the add-on, signed as this home is; null: not installed, not trusted, or another key: «off»
     }
 
     /** 4.4 (QA-6, R1): the last REAL answer (null: none yet; a failed call keeps the one before), and when it was asked */
@@ -124,8 +123,7 @@ public final class Extras {
 
     /** «أزرار الريموت»: the owner's choices to the add-on (it filters keys over other apps only for a button given an app); quiet without the add-on */
     static void keyApps(Context c, String line) {
-        try { c.getContentResolver().call(Uri.parse("content://" + ExtrasWords.EXTRAS_AUTHORITY), ExtrasWords.KEY_APPS, line, null); }
-        catch (RuntimeException e) { /* no add-on, or another key: the home answers its own buttons */ }
+        ExtrasTrust.call(c, ExtrasWords.KEY_APPS, line, null);   // no add-on, not trusted, or another key: the home answers its own buttons
     }
 
     /**
@@ -133,12 +131,8 @@ public final class Extras {
      * our home forward even when the TV gave the HOME role back to its own home. Quiet without the add-on.
      */
     public static boolean homeWanted(Context c, boolean wanted) {
-        try {
-            Bundle b = c.getContentResolver().call(Uri.parse("content://" + ExtrasWords.EXTRAS_AUTHORITY), ExtrasWords.WATCH, wanted ? ExtrasWords.WANTED : ExtrasWords.UNWANTED, null);
-            return b != null;
-        } catch (RuntimeException e) {
-            return false;   // no add-on: told again at the next start of the home
-        }
+        Bundle b = ExtrasTrust.call(c, ExtrasWords.WATCH, wanted ? ExtrasWords.WANTED : ExtrasWords.UNWANTED, null);
+        return b != null;   // false with no add-on (or one that is not ours): told again at the next start of the home
     }
 
     /**
@@ -149,11 +143,11 @@ public final class Extras {
      * A fixed word back for the log: rearmed, catch-off (the person's switch is off: nothing to arm), no-answer, no-addon.
      */
     static String rearmHomeKey(Context c) {
+        if (!ExtrasTrust.ok(c)) return "no-addon";   // not installed, or not ours (F88)
         try {
-            Uri u = Uri.parse("content://" + ExtrasWords.EXTRAS_AUTHORITY);
-            Bundle now = c.getContentResolver().call(u, ExtrasWords.WATCH, null, null);
+            Bundle now = ExtrasTrust.call(c, ExtrasWords.WATCH, null, null);
             if (now == null) return "no-answer";
-            Bundle again = c.getContentResolver().call(u, ExtrasWords.WATCH, now.getBoolean(ExtrasWords.WANTED) ? ExtrasWords.WANTED : ExtrasWords.UNWANTED, null);
+            Bundle again = ExtrasTrust.call(c, ExtrasWords.WATCH, now.getBoolean(ExtrasWords.WANTED) ? ExtrasWords.WANTED : ExtrasWords.UNWANTED, null);
             if (again == null) return "no-answer";
             return again.getBoolean(ExtrasWords.HOME_KEY) ? "rearmed" : "catch-off";
         } catch (RuntimeException e) {
@@ -178,13 +172,8 @@ public final class Extras {
 
     /** 4.4 R3 (on by default on a Google TV): the add-on catches the Home key itself; "on", "off" or null to read; null when the add-on did not answer */
     public static Boolean homeKey(Context c, String set) {
-        try {
-            Bundle b = c.getContentResolver().call(Uri.parse("content://" + ExtrasWords.EXTRAS_AUTHORITY), ExtrasWords.WATCH,
-                "on".equals(set) ? ExtrasWords.HOME_KEY_ON : "off".equals(set) ? ExtrasWords.HOME_KEY_OFF : null, null);
-            return b == null ? null : b.getBoolean(ExtrasWords.HOME_KEY);
-        } catch (RuntimeException e) {
-            return null;
-        }
+        Bundle b = ExtrasTrust.call(c, ExtrasWords.WATCH, "on".equals(set) ? ExtrasWords.HOME_KEY_ON : "off".equals(set) ? ExtrasWords.HOME_KEY_OFF : null, null);
+        return b == null ? null : b.getBoolean(ExtrasWords.HOME_KEY);
     }
 
     /** the Home-button watch: "on", "off", or null to only read it; null back when the add-on did not answer */

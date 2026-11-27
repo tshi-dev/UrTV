@@ -738,7 +738,7 @@ final class SetupRunner {
         } catch (IOException ex) {
             String why;
             synchronized (this) { why = promptAbort; promptAbort = null; }
-            e = new End(why != null && AdbClient.CANCELLED.equals(ex.getMessage()) ? why : cutText(ex.getMessage(), host.store()), true);
+            e = new End(why != null && AdbClient.cancelled(ex.getMessage()) ? why : cutText(ex.getMessage(), host.store()), true);
         } catch (RuntimeException ex) {
             e = new End("حدث خطأ غير متوقع، ما غيّرنا شيئاً بعده. جرّب «تراجع» ثم أعد.", true);
         }
@@ -961,7 +961,7 @@ final class SetupRunner {
         String cut = CUT;
         if (m == null) return cut;
         if (m.startsWith("debugging is off")) return "تصحيح USB مطفأ في التلفزيون. فعّله (خيارات المطوّر ← تصحيح USB) ثم اضغط «جهّز كل شي».";
-        if (m.equals(AdbClient.CANCELLED)) return CANCELLED_TEXT;
+        if (AdbClient.cancelled(m)) return CANCELLED_TEXT;
         if (m.contains("permission was not accepted")) return NOT_ACCEPTED_TEXT;   // a prompt left unanswered (e.g. under the screensaver) blocks every later one until adbd restarts: TV test, 30 Oct
         if (m.contains("TLS")) return "هذا التلفزيون يطلب التصحيح اللاسلكي؛ استخدم «تصحيح USB» العادي.";
         if (m.startsWith("the TV did not come back")) return "ما رجع الاتصال بالتلفزيون بعد إعادة تشغيله. تأكد أن «تصحيح USB» ما زال مفعّلاً، ثم اضغط «جهّز كل شي» ليكمل الإعداد من حيث توقف.";

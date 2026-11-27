@@ -22,11 +22,8 @@ import sa.urtv.home.ExtrasWords;
 final class PairRoute {
     private PairRoute() { }
 
-    private static final Uri ADDON = Uri.parse("content://" + ExtrasWords.EXTRAS_AUTHORITY);
-
     private static Bundle call(Context c, String method, String arg, Bundle extras) {
-        try { return c.getContentResolver().call(ADDON, method, arg, extras); }
-        catch (RuntimeException e) { return null; }   // the add-on is not installed (unknown authority) or not ours
+        return sa.urtv.home.ExtrasTrust.call(c, method, arg, extras);   // F88: the app that owns the authority must be the add-on, signed as this home is; null: not installed, not ours, or no answer
     }
 
     /**

@@ -64,6 +64,9 @@ final class AdbClient implements Closeable {
 
     /** the words of the IOException a «إلغاء» on the prompt ends with (SetupRunner.friendly says it to the person) */
     static final String CANCELLED = "the person pressed Cancel on «Allow USB debugging?»";
+
+    /** a failure message that is the Cancel (also with a reason added after it): never compared with equals, a route may add its word */
+    static boolean cancelled(String message) { return message != null && message.startsWith(CANCELLED); }
     /** beta 3: a step with no approval wait met a key the TV does not trust: it stops without raising the prompt */
     static final String NOT_TRUSTED = "the TV does not trust the key yet (no prompt offered)";
 

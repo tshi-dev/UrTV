@@ -63,7 +63,8 @@ check("the code, an address or a command's text is never a log line (fixed words
 route, sess, files = read(SETUP / "PairRoute.java"), read(SETUP / "SetupSession.java"), read(SETUP / "PairFiles.java")
 check("5555 stays first: openAny tries the TV's own adb, and only when it fails the paired route", sess.index("return open(c, approvalMs, approval, out);") < sess.index("return PairRoute.open(c, out);"))
 check("fails closed: when neither answers, the 5555 reason is kept and the paired route's word added (no_addon, old_addon, old_android, not_paired, no_port, refused)",
-      'throw new IOException(first.getMessage() + "; paired route: " + why);' in sess and 'throw new IOException(first.getMessage() + "; paired route: " + second.getMessage());' in sess
+      'throw new IOException(PairFallback.message(first.getMessage(), why));' in sess and 'throw new IOException(PairFallback.message(first.getMessage(), second.getMessage()));' in sess   # 4.4 beta 4 (F87): a Cancel is thrown as it was
+      and 'return answered(firstMessage) ? firstMessage : firstMessage + "; paired route: " + pairedWhy;' in read(SETUP / "PairFallback.java")
       and all(w in route for w in ('"no_addon"', '"old_addon"', '"old_android"', '"not_paired"', '"paired"')))
 check("the whole run, its restores and the home's start hooks go through openAny (the paired route where 5555 does not answer)",
       "SetupSession.openAny(app, approvalMs" in read(SETUP / "SetupHost.java") and "SetupSession.openAny(" in read(SETUP / "SetupBootReceiver.java") and "SetupSession.openAny(" in read(SETUP / "SetupRecovery.java")
