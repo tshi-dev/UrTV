@@ -23,8 +23,8 @@ public final class PrayerMethodRun {
                 && PrayerMethod.searchable("LB") && PrayerMethod.searchable("MA") && PrayerMethod.searchable("DZ") && PrayerMethod.searchable("TN") && !PrayerMethod.searchable("PS")
                 && !PrayerMethod.searchable("IL") && !PrayerMethod.searchable("il") && !PrayerMethod.searchable("EH") && PrayerMethod.searchable("LY") && PrayerMethod.searchable("US") && PrayerMethod.searchable("NO") && !PrayerMethod.searchable("") && !PrayerMethod.searchable(null), "");
         check("label: the Ja'fari names itself, whatever the zone (the Leva Institute, Qum)",
-                PrayerMethod.label("jafari", "Asia/Riyadh").equals("جعفري، معهد ليفا في قم") && PrayerMethod.label("jafari", "Africa/Cairo").equals("جعفري، معهد ليفا في قم")
-                && PrayerMethod.label("jafari", "Asia/Riyadh", "SA").equals("جعفري، معهد ليفا في قم"), "");
+                PrayerMethod.label("jafari", "Asia/Riyadh").equals("جعفري (شيعة)") && PrayerMethod.label("jafari", "Africa/Cairo").equals("جعفري (شيعة)")
+                && PrayerMethod.label("jafari", "Asia/Riyadh", "SA").equals("جعفري (شيعة)"), "");
         check("label: auto names the country's calculation by the zone",
                 PrayerMethod.label("auto", "Asia/Riyadh").equals("تلقائي، أم القرى") && PrayerMethod.label("auto", "Asia/Kuwait").equals("تلقائي، الكويت")
                 && PrayerMethod.label("auto", "Asia/Qatar").equals("تلقائي، قطر") && PrayerMethod.label("auto", "Asia/Dubai").equals("تلقائي، الإمارات")

@@ -73,7 +73,7 @@ final class PrayerMethod {
     }
 
     static String label(String saved, String tz) {
-        return JAFARI.equals(saved) ? "جعفري، معهد ليفا في قم" : GULF.equals(saved) ? "الخليج" : "تلقائي، " + authority(tz);
+        return JAFARI.equals(saved) ? "جعفري (شيعة)" : GULF.equals(saved) ? "الخليج" : "تلقائي، " + authority(tz);
     }
 
     static String authority(String country, String tz) { return authority(methodId(country, tz)); }
