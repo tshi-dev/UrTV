@@ -23,13 +23,18 @@ import sa.urtv.home.S;
 public class AudioActivity extends RowScreen {
     /** pick a file and give its id back (RESULT_OK, "id") */
     static final String EXTRA_PICK = "pick";
+    /** 4.4 beta 4: «أذاني من ملف» in «المؤذن»: "own" or "own_fajr": the file added here becomes that adhan at once (nothing else is asked) and the screen closes */
+    static final String EXTRA_USE = "use";
     private static final int ASK_READ = 7;
 
     private boolean pick;
+    private String useAs;
     private MediaPlayer preview;
 
     @Override protected void onCreate(android.os.Bundle state) {
         pick = getIntent().getBooleanExtra(EXTRA_PICK, false);
+        String u = getIntent().getStringExtra(EXTRA_USE);
+        useAs = "own".equals(u) || "own_fajr".equals(u) ? u : null;
         super.onCreate(state);
     }
 
@@ -44,7 +49,7 @@ public class AudioActivity extends RowScreen {
             @Override public String tagline() { return pick ? S.t("اختر الصوت") : S.t("أدعية وتذكيرات وأذانك الخاص، محفوظة في التلفزيون"); }
             @Override public void rows(List<Row> out) {
                 out.add(Row.head(S.t("إضافة")));
-                out.add(Row.of(S.t("من فلاشة USB"), S.t("يُنسخ الملف إلى التلفزيون ولا يُشغَّل من الفلاشة"), AudioActivity.this::openUsb));
+                out.add(Row.of(S.t("أضف من فلاشة أو التنزيلات"), S.t("يُنسخ الملف إلى التلفزيون ولا يُشغَّل من الفلاشة"), AudioActivity.this::openUsb));
                 out.add(Row.of(S.t("من الجوال"), S.t("صفحة الجوال، ثم «صوتياتي»"),
                         () -> toast(S.t("افتح صفحة الجوال من زر «الجوال» في الشاشة الرئيسية، ثم «صوتياتي»، واختر الملف"))));
                 List<AudioStore.Item> items = AudioStore.list(AudioActivity.this);
@@ -148,18 +153,18 @@ public class AudioActivity extends RowScreen {
     private void openUsb() {
         if (!mayRead()) { askRead(); return; }
         List<File> roots = usbRoots();
-        if (roots.isEmpty()) { toast(S.t("ما وجدنا فلاشة: ركّبها في التلفزيون وانتظر ثواني")); return; }
+        if (roots.isEmpty()) { toast(S.t("ما وجدنا فلاشة ولا ملفات في التنزيلات: ركّب الفلاشة وانتظر ثواني")); return; }
         if (roots.size() == 1) { openFolder(roots.get(0), roots.get(0)); return; }
         open(new Page() {
-            @Override public String title() { return S.t("من فلاشة USB"); }
+            @Override public String title() { return S.t("أضف من فلاشة أو التنزيلات"); }
             @Override public String tagline() { return S.t("اختر الفلاشة"); }
-            @Override public void rows(List<Row> out) { for (File r : roots) out.add(Row.of(r.getName(), "", () -> openFolder(r, r))); }
+            @Override public void rows(List<Row> out) { for (File r : roots) out.add(Row.of(r.equals(downloads()) ? S.t("التنزيلات") : r.getName(), "", () -> openFolder(r, r))); }
         });
     }
 
     private void openFolder(File root, File dir) {
         open(new Page() {
-            @Override public String title() { return S.t("من فلاشة USB"); }
+            @Override public String title() { return S.t("أضف من فلاشة أو التنزيلات"); }
             @Override public String tagline() { return dir.equals(root) ? S.t("يُنسخ الملف إلى التلفزيون ولا يُشغَّل من الفلاشة") : dir.getName(); }
             @Override public void rows(List<Row> out) {
                 File[] all = dir.listFiles();
@@ -194,6 +199,13 @@ public class AudioActivity extends RowScreen {
                 refresh();
                 if (pick) { hand(a.item); return; }
                 AudioStore.Item it = a.item;
+                if (useAs != null) {   // «أذاني من ملف»: it is that adhan now, no question
+                    String why = AudioUse.set(this, it, useAs);
+                    if ("too_long".equals(why)) toast(S.t("الأذان خمس دقائق على الأكثر"));
+                    else if (why != null) toast(S.t("تعذّر نسخ الملف"));
+                    else { toast(S.t("صار أذانك ✓")); finish(); }
+                    return;
+                }
                 ask(it.name, S.t("وصل للتلفزيون ✓ استخدمه لـ"), false,
                         new String[]{S.t("أذاني الخاص"), S.t("أذان الفجر الخاص"), S.t("احفظه فقط")},
                         new Runnable[]{() -> use(it, "own"), () -> use(it, "own_fajr"), null});
@@ -206,9 +218,19 @@ public class AudioActivity extends RowScreen {
     @Override void back() { if (depth > 0) depth--; super.back(); }
     private boolean pagesAboveFirst() { return depth > 0; }
 
-    /** the removable volumes Android sees now (a USB stick, an SD card) */
+    /** the TV's «التنزيلات» folder, or null when it is not there */
+    private static File downloads() {
+        try {
+            File d = android.os.Environment.getExternalStoragePublicDirectory(android.os.Environment.DIRECTORY_DOWNLOADS);
+            return d != null && d.isDirectory() ? d : null;
+        } catch (RuntimeException e) { return null; }
+    }
+
+    /** the places to add from: «التنزيلات» of the TV, and the removable volumes Android sees now (a USB stick, an SD card) */
     private List<File> usbRoots() {
         List<File> out = new ArrayList<>();
+        File dl = downloads();
+        if (dl != null) out.add(dl);
         try {
             StorageManager sm = (StorageManager) getSystemService(STORAGE_SERVICE);
             for (StorageVolume v : sm.getStorageVolumes()) {
