@@ -192,6 +192,8 @@ public class AudioActivity extends RowScreen {
         toast(S.t("ينسخ «%s»…", f.getName()));
         new Thread(() -> {
             AudioStore.Added a = AudioStore.add(this, f, f.getName());
+            // «أذاني من ملف»: the copy into the adhan and what follows it run here, off the screen's thread (review F93); the screen only says the result
+            final String why = a.item != null && !pick && useAs != null ? AudioUse.set(this, a.item, useAs) : null;
             runOnUiThread(() -> {
                 if (isFinishing()) return;
                 if (a.item == null) { toast(AudioStore.refusal(this, a.why)); return; }
@@ -200,7 +202,6 @@ public class AudioActivity extends RowScreen {
                 if (pick) { hand(a.item); return; }
                 AudioStore.Item it = a.item;
                 if (useAs != null) {   // «أذاني من ملف»: it is that adhan now, no question
-                    String why = AudioUse.set(this, it, useAs);
                     if ("too_long".equals(why)) toast(S.t("الأذان خمس دقائق على الأكثر"));
                     else if (why != null) toast(S.t("تعذّر نسخ الملف"));
                     else { toast(S.t("صار أذانك ✓")); finish(); }

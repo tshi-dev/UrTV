@@ -21,7 +21,7 @@ check("«المؤذن» ends with «أذاني من ملف», for the Fajr list 
       and "voices.length + own + ownFajr + 1" in ad)
 check("coming back, the list knows the new own recording (onResume)", "protected void onResume()" in ad and "adapter.notifyDataSetChanged();" in ad)
 check("«صوتياتي» with a use: the copied file becomes that adhan at once and the screen closes; only own and own_fajr are taken",
-      'u = getIntent().getStringExtra(EXTRA_USE)' in au and '"own".equals(u) || "own_fajr".equals(u) ? u : null' in au and "AudioUse.set(this, it, useAs)" in au and "finish();" in au)
+      'u = getIntent().getStringExtra(EXTRA_USE)' in au and '"own".equals(u) || "own_fajr".equals(u) ? u : null' in au and "AudioUse.set(this, a.item, useAs)" in au and "finish();" in au)
 check("«أضف من فلاشة أو التنزيلات»: the TV's Downloads folder is a place beside the sticks, named «التنزيلات»",
       "DIRECTORY_DOWNLOADS" in au and "if (dl != null) out.add(dl);" in au and 'S.t("التنزيلات")' in au and 'S.t("أضف من فلاشة أو التنزيلات")' in au)
 man = rd(ROOT / "android/launcher/src/main/AndroidManifest.xml")

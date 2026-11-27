@@ -38,7 +38,7 @@ final class AudioUse {
             if (fajr) { prefs.setFajrOwn(true); prefs.setFajrOwnSecond(true); }
             else { prefs.setOwnChosen(true); if (!prefs.fajrOwnSecond()) prefs.setFajrOwn(true); }   // as music.sh adhan add does
             sp(c).edit().putInt(fajr ? "own_fajr_from" : "own_from", it.id).apply();
-            AdhanScheduler.schedule(c);
+            AdhanScheduler.scheduleSoon(c);   // the place is a question to the screensaver: never on the screen's thread (review F93)
             return null;
         }
         if ("dua".equals(as)) {   // a new dua for this sound, off until its time is set on the TV («الأدعية والتذكيرات»)
