@@ -78,7 +78,7 @@
 افحص التحديث	Check for updates
 ثبّت	Install
 الرقابة الأبوية	Parental controls
-للعرض فقط. التغيير من التلفزيون نفسه.	View only. Change these on the TV itself.
+للعرض بس، والتغيير من التلفزيون نفسه.	View only. Change these on the TV itself.
 الجوالات المتصلة	Connected phones
 قطع الاتصال	Disconnect
 اكتب الرقم السري.	Enter the PIN.
@@ -95,19 +95,19 @@
 التلفزيون ما حفظ البطاقات. أعد المحاولة، وإن تكرر حدّث تطبيق «شاشة تلفزيونك».	The TV didn’t save the cards. Try again, and if it happens again, update the Your TV Screen app.
 اكتب الرقم السري أولًا.	Enter the PIN first.
 الرقم السري غير صحيح.	Wrong PIN.
-مهلًا، طلبات كثيرة.	Slow down: too many requests.
+شوي شوي، طلبات كثيرة.	Slow down: too many requests.
 انتهت الجلسة.	Session ended.
 طلب غير مقبول.	Request not accepted.
 هناك طلب آخر ينتظر موافقة التلفزيون.	Another request is waiting for the TV.
-الرمز غير صحيح أو منتهٍ.	Wrong or expired code.
+الرمز غلط أو انتهى.	Wrong or expired code.
 توقف التحكم لكثرة المحاولات الخاطئة.	Control stopped after too many wrong tries.
 ما وجد التلفزيون هذا التطبيق.	The TV couldn’t find this app.
 كُتب النص في الحقل.	Typed into the field.
-أُضيف النص مهمةً.	Added as a task.
+انضاف النص كمهمة.	Added as a task.
 نُسخ النص إلى حافظة التلفزيون (لا يوجد حقل نصي مفتوح في شاشاتنا).	Copied to the TV’s clipboard (no text field is open on our screens).
 فُتح على التلفزيون	Opened on the TV
 اكتب الرقم السري على التلفزيون	Enter the PIN on the TV
-لا يوجد أذان الآن.	No adhan is playing.
+ما فيه أذان الحين.	No adhan is playing.
 تمت الكتابة في التطبيق	Typed in the app
 فتحنا البحث في التطبيق بكلماتك	Searched the app for your words
 التطبيق الذي أمامك ما فيه خانة كتابة نقدر نكتب فيها. نسخنا النص على التلفزيون، والصقه من داخل التطبيق إن أمكن.	This app has no field we can type in. We copied the text on the TV: paste it in the app if you can.
@@ -123,16 +123,16 @@
 اكتمل التحديث.	Update complete.
 تعذّر التحديث.	Update failed.
 لا يوجد اتصال بالإنترنت أو الملف غير متاح.	No internet, or the file isn’t available.
-رُفض: توقيع الملف يختلف عن التطبيق المثبّت.	Refused: the file’s signature differs from the installed app’s.
+انرفض: توقيع الملف غير توقيع التطبيق المثبّت.	Refused: the file’s signature differs from the installed app’s.
 رُفض: الملف ليس للتطبيق المطلوب.	Refused: the file is for another app.
 رُفض: الملف أو التطبيق بلا توقيع يمكن مقارنته.	Refused: the file or the app has no signature to compare.
 رُفض: تعذّرت قراءة الملف.	Refused: the file can’t be read.
-اسمح لتطبيق تلفزيونك بالتثبيت من إعدادات التلفزيون ثم أعد المحاولة.	Allow Your TV to install apps in the TV’s settings, then try again.
+اسمح لتطبيق تلفزيونك بالتثبيت من إعدادات التلفزيون وجرّب مرة ثانية.	Allow Your TV to install apps in the TV’s settings, then try again.
 التحديث من التلفزيون ما يشتغل على هذا الجهاز. اطلب من مساعد الذكاء الاصطناعي على جهازك: حدّث تلفزيوني (github.com/tshi-dev/UrTV)	Updating from the TV doesn’t work on this device. Ask the AI assistant on your computer: update my TV (github.com/tshi-dev/UrTV)
 ما اكتمل التحديث. اطلب من مساعد الذكاء الاصطناعي على جهازك: حدّث تلفزيوني (github.com/tshi-dev/UrTV)	The update didn’t finish. Ask the AI assistant on your computer: update my TV (github.com/tshi-dev/UrTV)
 ألغيت التثبيت على التلفزيون.	You cancelled the install on the TV.
 رفض مثبّت أندرويد الملف.	Android’s installer refused the file.
-لا توجد مساحة كافية.	Not enough storage.
+المساحة ما تكفي.	Not enough storage.
 تعذّر تنزيل ملف التحديث.	Couldn’t download the update file.
 حدث خطأ غير متوقع أثناء التحديث.	Something went wrong during the update.
 التلفزيون غير متصل بالواي فاي أو الإيثرنت.	The TV isn’t on Wi-Fi or Ethernet.

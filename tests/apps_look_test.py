@@ -63,7 +63,7 @@ else:
 check("the row is centred in every way (CENTER, in a tray that fills the screen's tray width)", "dockRow.setGravity(Gravity.CENTER);" in main and "tray.setFillViewport(true);" in main)
 check("A and B have no tray, no side inset; C wears the home's material as always",
       "tray.setBackground(FavBar.TILES.equals(appsLook) ? dockBand : null);" in main and "FavBar.padSide(appsLook" in main)
-check("each way its own cell, height and corner (FavBar.cellW, rowH, radius); the row under it («أكمل المشاهدة») keeps the tray's cells",
+check("each way its own cell, height and corner (FavBar.cellW, rowH, radius); the row under it («كمّل المشاهدة») keeps the tray's cells",
       "FavBar.cellW(way, h, FavBar.shown(barSetting, favs), i)" in main and "FavBar.rowH(appsLook" in main and "o.setRoundRect(0, 0, v.getWidth(), v.getHeight(), corner);" in main
       and "return dockCell(i, n, favs, FavBar.TILES); }" in main and "return dockCell(i, n, n, appsLook); }" in main)
 check("B: the launcher icon in its square (AspectFrame's ratio 1), read only for that way, cached and sized (artCache, fitted) for a weak TV",

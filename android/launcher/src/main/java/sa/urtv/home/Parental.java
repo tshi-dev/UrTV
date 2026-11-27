@@ -204,7 +204,7 @@ final class Parental {
                             toast(a, tooMany(r.waitMs));
                             cancelled.run();
                         } else {
-                            toast(a, r.triesLeft > 0 && r.triesLeft < PinStore.TRIES ? S.t("الرمز غير صحيح، بقي %s محاولات", Digits.of(String.valueOf(r.triesLeft))) : S.t("الرمز غير صحيح"));
+                            toast(a, r.triesLeft > 0 && r.triesLeft < PinStore.TRIES ? S.t("الرمز غير صحيح، بقي %s محاولات", Digits.of(String.valueOf(r.triesLeft))) : S.t("الرمز غلط"));
                             ask(a, before, name, targets, allowed, cancelled);
                         }
                     });

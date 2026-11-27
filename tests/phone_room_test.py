@@ -37,7 +37,7 @@ for name, a in (("odd-one", odd), ("charades", cha)):
     check(f"{name}: no socket, no server and no java.net in the game's own screen (the room is the base's)", not __import__("re").search(r"ServerSocket|QuizServer|QuizRoom|java\.net\.", a))
 check("odd-one: the word goes only to its own phone, the outsider gets «أنت برا السالفة», the vote cannot be for yourself",
       'phones.room.card(p, GamePhoneRoom.SECRET, names[p], w == null ? S.t("أنت برا السالفة") : w.text(en)' in odd and 'S.t("مين اللي مو معنا؟"), "", names, null, i)' in odd)
-check("odd-one: a tie or no name is «ما اتفقنا»; the start needs 3 phones and takes 10 at most", "else if (c[i] == best && best > 0) who = OddOneGame.NOBODY" in odd and "OddOneGame.MIN_PLAYERS" in odd and 'S.t("اللعبة تتسع لعشرة لاعبين")' in odd)
+check("odd-one: a tie or no name is «ما اتفقنا»; the start needs 3 phones and takes 10 at most", "else if (c[i] == best && best > 0) who = OddOneGame.NOBODY" in odd and "OddOneGame.MIN_PLAYERS" in odd and 'S.t("اللعبة تاخذ لين عشرة لاعبين")' in odd)
 check("charades: the word is on the actor's phone alone (the TV never draws it, never peeks it), the clock starts when the actor taps",
       "game.wordVisible() && !onPhones()" in cha and "if (onPhones()) return; game.peek();" in cha and "game.ready(); game.hide();" in cha and "phones.room.replied(actor)" in cha and "if (game.phase == CharadesGame.Phase.PLAY) game.hide();" in cha)
 check("the base opens a room only on the person's switch, closes it with the screen, and says so when there is no local network",

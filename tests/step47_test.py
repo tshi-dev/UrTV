@@ -26,7 +26,7 @@ check("the clean-mode screens (CleanActivity, FactoryActivity) are out of recent
 st = src("android/app/src/main/java/sa/urtv/screensaver/SettingsActivity.java")
 prov = src("android/launcher/src/main/java/sa/urtv/home/tilawah/NowPlayingProvider.java")
 check("the settings' «UrTV النظيف» row says «مفعّل» (the on/off rule: the value starts with the state word) while the mask is on: the home answers .../clean_on, read once per visit, the last answer kept, nothing set from there",
-      '"clean_on".equals(uri.getLastPathSegment())' in prov and 'getSharedPreferences("clean_mode"' in prov and "homeCleanSeen()" in st and '"مفعّل الأساسيات فقط، وبضغطة ترجع الشاشة الكاملة"' in st and "nowplaying/clean_on" in st)
+      '"clean_on".equals(uri.getLastPathSegment())' in prov and 'getSharedPreferences("clean_mode"' in prov and "homeCleanSeen()" in st and '"مفعّل، الأساسيات بس، وبضغطة ترجع الشاشة كاملة"' in st and "nowplaying/clean_on" in st)
 ap = src("android/app/src/main/java/sa/urtv/screensaver/AppearanceActivity.java")
 check("the screensaver's and the home's «صوري» tiles are named by where they show (…في شاشة التوقف, …في الرئيسية): never the same name one above the other",
       'w("صوري في شاشة التوقف")' in ap and 'w("صوري في الرئيسية")' in ap and 'w("صوري فقط في الرئيسية")' in ap and 'w("بدون صوري في الرئيسية")' in ap

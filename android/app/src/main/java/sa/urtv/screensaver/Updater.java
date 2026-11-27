@@ -166,7 +166,7 @@ final class Updater {
             sp.edit().putString(etagKey(lang), con.getHeaderField("ETag")).apply();
             return "تم التحديث";
         } catch (Exception e) {
-            return "لا يوجد اتصال";
+            return "ما فيه اتصال";
         } finally {
             if (con != null) con.disconnect();
         }

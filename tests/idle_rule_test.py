@@ -28,7 +28,7 @@ lab = act.split("private String idleLabel() {")[1].split("\n    }\n")[0]
 check("the row says never for IdleRule.NEVER, before any number is made", "case IdleRule.NEVER: return IDLE_NEVER;" in lab and lab.index("NEVER") < lab.index("ثانية"))
 check("the never words", 'IDLE_NEVER = "أبداً (التلفزيون أوقف شاشة التوقف)";' in act)
 check("the hub lines never say «تبدأ بعد أبداً»", "تبدأ بعد \" + idleLabel()" not in act.replace(act.split("private String idleSummary() {")[1].split("\n    }\n")[0], "")
-      and 'if (k == IdleRule.NEVER) return "لا تبدأ: التلفزيون أوقف شاشة التوقف";' in act)
+      and 'if (k == IdleRule.NEVER) return "ما تشتغل: التلفزيون موقّف شاشة التوقف";' in act)
 pick = act.split("private void pickIdle() {")[1].split("\n    }\n")[0]
 st = act.split("private void setIdle(final String minutes) {")[1].split("\n    static final String IDLE_NO_LINK")[0]
 check("«تغيير» no longer opens the maker's settings (they have no screensaver timer)", "openDreamSettings" not in pick and "openDreamSettings" not in st)
@@ -43,7 +43,7 @@ check("the home refuses other minutes before adb, waits for a running setup, nee
       si.index('return "bad"') < si.index('return "busy"') < si.index("AdbKeys.exists(app)") < si.index("SetupSession.openAny("))
 check("it runs only IdleSetRule's commands, after its probe", "s.run(IdleSetRule.PROBE)" in si and "IdleSetRule.commands(ms, probe)" in si)
 check("the screensaver's minutes and the home's are the same list", 'IDLE_MINUTES = {"1", "2", "5", "10", "15", "30"}' in read(SAVER / "Prefs.java") and 'MINUTES = {"1", "2", "5", "10", "15", "30"}' in setrule)
-for w in ("أبداً (التلفزيون أوقف شاشة التوقف)", "لا تبدأ: التلفزيون أوقف شاشة التوقف", "جارٍ الضبط…", "إعداد التلفزيون شغّال الحين، جرّب بعده"):
+for w in ("أبداً (التلفزيون أوقف شاشة التوقف)", "ما تشتغل: التلفزيون موقّف شاشة التوقف", "جارٍ الضبط…", "إعداد التلفزيون شغّال الحين، جرّب بعده"):
     check("English and the marker for «" + w + "»", ("\n" + w + "\t") in en and 'S.n("' + w + '")' in words)
 nl = act.split('IDLE_NO_LINK = "')[1].split('";')[0]
 check("the no-link line has its English and marker", ("\n" + nl + "\t") in en and 'S.n("' + nl + '")' in words)

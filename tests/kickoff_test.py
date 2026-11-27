@@ -84,7 +84,7 @@ check("the five rows in the settings, in both layouts (the hub's tables)", all(f
 check("«فوق تطبيق آخر» opens the TV's own permission screen for the ADD-ON (the home has none)", "MANAGE_OVERLAY_PERMISSION" in act and '"package:sa.urtv.extras"' in act and '"package:sa.urtv.home"' not in act)
 check("without the add-on the person is told on screen (Arabic, with its English entry) and the add-on's offer opens; the row says it needs the add-on",
       "if (Boolean.FALSE.equals(extrasHere)) { offerExtras(); return; }" in act and '"sa.urtv.home.ExtrasActivity"' in act and '"sa.urtv.home.EXTRAS_FOR", "overlay"' in act
-      and "«فوق تطبيق آخر» يحتاج «إضافات تلفزيونك»: نفتح لك تثبيتها" in act and "يعمل، لكنه يحتاج «إضافات تلفزيونك»" in act
+      and "«فوق تطبيق آخر» يحتاج «إضافات تلفزيونك»: بنفتح لك تثبيتها" in act and "يعمل، لكنه يحتاج «إضافات تلفزيونك»" in act
       and all("\t" in l for l in read(ROOT / "i18n/en/saver.tsv").splitlines() if "فوق تطبيق آخر» يحتاج" in l)
       and "«فوق تطبيق آخر» يحتاج «إضافات تلفزيونك» وهي غير مثبّتة" in xact and '"overlay".equals(' in xact and "allowOverlay()" in xact
       and '"package:" + ExtrasWords.PACKAGE' in xact and 'android:name="sa.urtv.home.OPEN_EXTRAS"' in man)

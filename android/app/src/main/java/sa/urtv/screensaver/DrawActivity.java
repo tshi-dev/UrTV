@@ -68,7 +68,7 @@ public class DrawActivity extends GameActivity {
     private void startWithPhones() {
         int n = phones.room.count();
         if (n < DrawGame.MIN_PLAYERS) return;
-        if (n > DrawGame.MAX_PLAYERS) { toast(S.t("اللعبة تتسع لعشرة لاعبين")); return; }
+        if (n > DrawGame.MAX_PLAYERS) { toast(S.t("اللعبة تاخذ لين عشرة لاعبين")); return; }
         phones.room.start(); phoneLobby = false;
         names = phones.room.names().toArray(new String[0]);
         List<String> recent = new ArrayList<>(GamePrefs.recent(this, id())); Collections.reverse(recent);

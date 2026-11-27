@@ -48,7 +48,7 @@ Everything is placed on the **1920 x 1080 design**, scaled to the screen; the sa
 | an answer stamp | `answer(tab, words, STAMP \| STAMP_FOCUS \| STAMP_RIGHT \| STAMP_WRONG)`: the letter tab is drawn on the glyph's ink (the quiz's `InkLetter`); `letter(i)` gives أ ب ج د or A B C D |
 | the sides' bar | `sidesBar(score, names, turn, y)`: colour square, name, points; the side whose turn it is in ink (from seven sides: no name, the tile is too narrow) |
 | rank rows | `board(score, names, withLast)`: the place as a big numeral (saffron for first), «+10», the total; shared places; rows of 128 up to 5 sides, 80 up to 8, 64 for 9 and 10 |
-| the end | `podium(score, names, sel)`: «انتهت اللعبة», the winner / a tie / nobody, the buttons `endLabels()` (العب مرة أخرى، تغيير الإعدادات، خروج), three blocks (512 / 400 / 300), confetti |
+| the end | `podium(score, names, sel)`: «خلصت اللعبة», the winner / a tie / nobody, the buttons `endLabels()` (العب مرة أخرى، تغيير الإعدادات، خروج), three blocks (512 / 400 / 300), confetti |
 | buttons | `button(label, focused)`, `buttons(labels, sel, w, y)`, `keyButtons(sel, n, ok, d)` (the new focus, or `-1 - index` when OK chose) |
 | the bottom line | `hints("▲ ▼", "السطر", …)`: pairs of key and what it does, so every screen says its next key in words |
 | quick setup | `setup(chips, startLabel)` draws up to seven rows and the start button; `keySetup(chips, back, ok, dx, dy)` returns true when OK is pressed on the button; `soundChip(chips)` adds «الصوت»; `remembered(chips)` loads last time's |

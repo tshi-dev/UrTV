@@ -203,7 +203,7 @@ the phone page's key, «مركز التحكم» the control centre's row that op
     مثال للوكيل: optimize/saver.sh home-card prayers,hourly,verse
 ——— البطاقة الثالثة [الرئيسية]
     مثال للوكيل: optimize/saver.sh home-card prayers,hourly,verse
-——— أكمل المشاهدة [الرئيسية]
+——— كمّل المشاهدة [الرئيسية]
     مثال للوكيل: optimize/saver.sh watchnext off  (`on`, the default)
       القيم المقبولة: on|off
 —— الصور
@@ -244,7 +244,7 @@ the phone page's key, «مركز التحكم» the control centre's row that op
       القيم المقبولة: on|off
 — التطبيقات
 —— الشاشة الرئيسية للتلفزيون
-——— اجعل UrTV الشاشة الرئيسية [كل التلفزيون]
+——— خلّ UrTV هي الشاشة الرئيسية [كل التلفزيون]
     إجراء أو شاشة من التلفزيون (ما فيه قيمة يضبطها أمر)
 ——— تخلّص من واجهة المصنع [كل التلفزيون]
     إجراء أو شاشة من التلفزيون (ما فيه قيمة يضبطها أمر)
@@ -747,7 +747,7 @@ the phone page's key, «مركز التحكم» the control centre's row that op
      صفحة الجوال: saver_idle
 —— الشاشة الرئيسية
 ——— الشاشة الرئيسية (تلفزيونك)
-———— اجعل UrTV الشاشة الرئيسية [كل التلفزيون]
+———— خلّ UrTV هي الشاشة الرئيسية [كل التلفزيون]
      إجراء أو شاشة من التلفزيون (ما فيه قيمة يضبطها أمر)
 ———— إعداد تلفزيوني [كل التلفزيون]
      إجراء أو شاشة من التلفزيون (ما فيه قيمة يضبطها أمر)
@@ -868,7 +868,7 @@ the phone page's key, «مركز التحكم» the control centre's row that op
 ———— جرس التحديثات [الرئيسية]
      مثال للوكيل: optimize/saver.sh updatebell off  (`on` brings it back; default on, so nothing changes for anyone; `saver.sh show` says `updatebell:`)
        القيم المقبولة: on|off
-———— أكمل المشاهدة [الرئيسية]
+———— كمّل المشاهدة [الرئيسية]
      مثال للوكيل: optimize/saver.sh watchnext off  (`on`, the default)
        القيم المقبولة: on|off
 — المظهر والخلفيات

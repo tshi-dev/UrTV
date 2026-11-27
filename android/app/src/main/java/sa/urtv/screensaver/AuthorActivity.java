@@ -46,7 +46,7 @@ public class AuthorActivity extends GameActivity {
     private void startWithPhones() {
         int n = phones.room.count();
         if (n < AuthorGame.MIN_PLAYERS) return;
-        if (n > AuthorGame.MAX_PLAYERS) { toast(S.t("اللعبة تتسع لعشرة لاعبين")); return; }
+        if (n > AuthorGame.MAX_PLAYERS) { toast(S.t("اللعبة تاخذ لين عشرة لاعبين")); return; }
         phones.room.start(); phoneLobby = false;
         names = phones.room.names().toArray(new String[0]);
         List<AuthorGame.Prompt> picks = AuthorGame.pick(bank, AuthorGame.QUESTIONS[chips.picked("count")], chips.picked("kids") == 1, new HashSet<>(GamePrefs.recent(this, id())), rnd);

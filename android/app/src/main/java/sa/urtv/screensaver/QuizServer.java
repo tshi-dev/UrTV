@@ -210,7 +210,7 @@ final class QuizServer {
     static final String LOCKED_PAGE = "<!doctype html><meta charset=utf-8><meta name=viewport content=\"width=device-width,initial-scale=1\"><body style=\"font:24px sans-serif;margin:24px;background:#EFE8DA;color:#16140F\"><p dir=rtl>محاولات كثيرة، جرّب بعد دقيقة</p><p dir=ltr>Too many tries, try again in a minute</p>";
 
     /** what a phone with an old or wrong code sees: the message and nothing else */
-    static final String WRONG_CODE = "<!doctype html><meta charset=utf-8><meta name=viewport content=\"width=device-width,initial-scale=1\"><body style=\"font:24px sans-serif;margin:24px;background:#EFE8DA;color:#16140F\"><p dir=rtl>الرمز غير صحيح</p><p dir=ltr>Wrong code</p>";
+    static final String WRONG_CODE = "<!doctype html><meta charset=utf-8><meta name=viewport content=\"width=device-width,initial-scale=1\"><body style=\"font:24px sans-serif;margin:24px;background:#EFE8DA;color:#16140F\"><p dir=rtl>الرمز غلط</p><p dir=ltr>Wrong code</p>";
 
     private static int num(String s, int d) { try { return Integer.parseInt(s.trim()); } catch (RuntimeException e) { return d; } }
 

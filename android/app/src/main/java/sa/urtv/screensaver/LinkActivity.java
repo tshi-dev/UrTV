@@ -49,7 +49,7 @@ public class LinkActivity extends GameActivity {
     private void startWithPhones() {
         int n = phones.room.count();
         if (n < 4) return;
-        if (n > 10) { toast(S.t("اللعبة تتسع لعشرة لاعبين")); return; }
+        if (n > 10) { toast(S.t("اللعبة تاخذ لين عشرة لاعبين")); return; }
         phones.room.start(); phoneLobby = false;
         names = teamNames(2);
         game = new LinkGame(LinkGame.pick(bank, new HashSet<>(GamePrefs.recent(this, id())), rnd), rnd);
@@ -125,7 +125,7 @@ public class LinkActivity extends GameActivity {
         boolean end = screen == Screen.END;
         band(200);
         String head;
-        if (end) head = game.winner == 0 ? S.t("انتهت اللعبة") : game.lostByEnd ? S.t("فاز %s: الكلمة الأخيرة وقعت على الثاني", names[game.winner - 1]) : S.t("فاز %s", names[game.winner - 1]);
+        if (end) head = game.winner == 0 ? S.t("خلصت اللعبة") : game.lostByEnd ? S.t("فاز %s: الكلمة الأخيرة وقعت على الثاني", names[game.winner - 1]) : S.t("فاز %s", names[game.winner - 1]);
         else head = game.phase == LinkGame.Phase.CLUE ? S.t("دور %s: الكابتن يعطي التلميح", names[game.turn - 1]) : S.t("دور %s: باقي %s", names[game.turn - 1], num(game.guessesLeft));
         root.addView(text(head, 64, L.onDeep, true), at(1500, 90, 96, 30));
         for (int t = 1; t <= 2; t++) {

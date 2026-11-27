@@ -290,7 +290,7 @@ public class EngineGameActivity extends GameActivity {
     }
     private void buzzArea(boolean reveal) {
         if (reveal) { String w = eng.item().answers.isEmpty() ? "" : eng.item().answers.get(0); if (!w.isEmpty()) typedWord(w); return; }
-        if (eng.buzzer >= 0) { FrameLayout t = stamp(L.saff, L.ink, 12, false); t.addView(centered(names[eng.buzzer], 112, L.onSaff, true), new FrameLayout.LayoutParams(-1, -1)); root.addView(t, at(1728, 240, 96, 470)); root.addView(centered(S.t("هل جاوب صح؟"), 56, L.ink, true), at(1728, 80, 96, 740)); }
+        if (eng.buzzer >= 0) { FrameLayout t = stamp(L.saff, L.ink, 12, false); t.addView(centered(names[eng.buzzer], 112, L.onSaff, true), new FrameLayout.LayoutParams(-1, -1)); root.addView(t, at(1728, 240, 96, 470)); root.addView(centered(S.t("جاوب صح؟"), 56, L.ink, true), at(1728, 80, 96, 740)); }
         else root.addView(centered(S.t("اضغطوا «أنا!» في جوالاتكم، وأسرعكم يجاوب"), 64, L.ink, true), at(1728, 120, 96, 540));
     }
     /** after the round: who was right and what each side has */

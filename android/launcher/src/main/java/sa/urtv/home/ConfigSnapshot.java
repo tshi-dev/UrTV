@@ -17,7 +17,7 @@ final class ConfigSnapshot {
     final String fragment;
     /** an older screensaver does not say: on, the default */
     final boolean greetingOn, adhanBarOn, listenPillOn, updateBellOn;
-    /** «أكمل المشاهدة» under the favourites; an older screensaver does not say: on (the row still needs the TV listings permission) */
+    /** «كمّل المشاهدة» under the favourites; an older screensaver does not say: on (the row still needs the TV listings permission) */
     final boolean watchNextOn;
     /** «تطبيقات في الشريط»: "5" to "10" or "all"; an older screensaver does not say: 5, as the tray always was */
     String favBar = "5";

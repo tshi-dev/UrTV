@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""«أكمل المشاهدة» on the home screen (the idea from talkies, MIT): one row right under the favourites from the TV's Watch Next list.
+"""«كمّل المشاهدة» on the home screen (the idea from talkies, MIT): one row right under the favourites from the TV's Watch Next list.
 After the TV test of 3.145 the owner wanted only that row (the apps' own rows looked like ads, and the rows were «a mess»: gaps, a card
 cut at the left, English titles, the clock and the photo gone). TvRowsPick runs for real here (tests/TvRowsRun.java); the reading,
 the permission, the setting and the home's wiring are checked in the source. Needs javac.
@@ -21,11 +21,11 @@ settings = read(ROOT / "android/app/src/main/java/sa/urtv/screensaver/SettingsAc
 fn = lambda src, name: src[src.index(name):].split("\n    }\n")[0]
 
 load = fn(main, "private void loadTvRows()")
-# ---- only «أكمل المشاهدة» (the owner, after the TV test of 3.145)
+# ---- only «كمّل المشاهدة» (the owner, after the TV test of 3.145)
 check("only the TV's Watch Next list is read: no apps' rows, no chooser of rows (ChannelsActivity is gone)",
       "PreviewPrograms" not in rows and "TvContract.Channels" not in rows and "arrange" not in rows and "arrange" not in pick
       and not (HOME / "ChannelsActivity.java").exists() and "ChannelsActivity" not in manifest and "ChannelsActivity" not in settings)
-check("the row's name is ours whatever the apps call it (Arabic, or English with «اللغة»)", "name.setText(S.tv(TvRowsPick.WATCH_NEXT_TITLE));" in main and 'WATCH_NEXT_TITLE = S.n("أكمل المشاهدة")' in pick)
+check("the row's name is ours whatever the apps call it (Arabic, or English with «اللغة»)", "name.setText(S.tv(TvRowsPick.WATCH_NEXT_TITLE));" in main and 'WATCH_NEXT_TITLE = S.n("كمّل المشاهدة")' in pick)
 show = fn(main, "private void showTvRows(List<TvRows.Row> rows)")
 check("the row is its own row below the first screen (the owner: the tray never moves for it), with the tray's sides and padding",
       "content.addView(tvRowsBox, llp(-1, -2, bar(FavBar.SIDE), 0, bar(FavBar.SIDE), 0));" in main and "bottom.addView(tvRowsBox" not in main
@@ -63,11 +63,11 @@ check("the setting: on by default, in the provider after the other columns, --es
       and 'watchnext) set1 watchnext' in saver)
 check("the home reads it (an older screensaver says nothing: on) and shows no row when it is off", 'cur.getColumnIndex("watch_next")' in snap
       and "if (!TvRows.allowed(this) || !ConfigSnapshot.read(getApplicationContext()).watchNextOn) {" in load)
-row = settings[settings.index('row("أكمل المشاهدة"'):settings.index('render(); } });', settings.index('row("أكمل المشاهدة"'))]
+row = settings[settings.index('row("كمّل المشاهدة"'):settings.index('render(); } });', settings.index('row("كمّل المشاهدة"'))]
 check("the settings row: OK turns it on or off; on and not allowed yet, OK asks the one question (the home app's WatchNextActivity)",
       "prefs.setWatchNext(!prefs.watchNext());" in row and "if (prefs.watchNext() && !homeMayReadWatchNext()) { openWatchNextPermission(); return; }" in row
       and '"sa.urtv.home.WatchNextActivity"' in settings and 'checkPermission("android.permission.READ_TV_LISTINGS", "sa.urtv.home")' in settings)
-check("in the settings menu, under «المظهر» (4.3.3, with the cards)", '{"أكمل المشاهدة", LOOK}' in read(ROOT / "android/app/src/main/java/sa/urtv/screensaver/SettingsHub.java"))
+check("in the settings menu, under «المظهر» (4.3.3, with the cards)", '{"كمّل المشاهدة", LOOK}' in read(ROOT / "android/app/src/main/java/sa/urtv/screensaver/SettingsHub.java"))
 
 # ---- permission and privacy
 check("the launcher declares the TV listings permissions", '<uses-permission android:name="android.permission.READ_TV_LISTINGS" />' in manifest
@@ -102,11 +102,11 @@ check("the row has its own thread (never the apps' loader); their words are show
 check("coming back to the home with the same row rebuilds nothing; a rebuild puts the focus back on the same card",
       "if (!sig.equals(tvShownSig)) { tvShownSig = sig; showTvRows(rows); }" in load
       and "tvCards.get(0).get(Math.min(hadAt, tvCards.get(0).size() - 1)).requestFocus();" in main)
-check("the row is read again each time the home comes back to the front («أكمل المشاهدة» moves on)", "loadTvRows();   // what one watched since" in fn(main, "protected void onResume()"))
+check("the row is read again each time the home comes back to the front («كمّل المشاهدة» moves on)", "loadTvRows();   // what one watched since" in fn(main, "protected void onResume()"))
 check("talkies is credited (THIRD_PARTY_NOTICES.md, and in the classes)", "Copyright (c) 2026 TechPP" in read(ROOT / "THIRD_PARTY_NOTICES.md")
       and all("talkies" in x and "THIRD_PARTY_NOTICES.md" in x for x in (rows, pick, screen)))
 check("documented: SETTINGS.md, FEATURES.md and TEST-PLAN.md, and «صفوف القنوات» is gone from them",
-      "saver.sh watchnext off" in read(ROOT / "docs/SETTINGS.md") and "**أكمل المشاهدة:**" in read(ROOT / "docs/FEATURES.md")
+      "saver.sh watchnext off" in read(ROOT / "docs/SETTINGS.md") and "**كمّل المشاهدة:**" in read(ROOT / "docs/FEATURES.md")
       and "No other rows" in read(ROOT / "docs/TEST-PLAN.md") and not any("صفوف القنوات" in read(ROOT / d) for d in ("docs/SETTINGS.md", "docs/FEATURES.md", "docs/TEST-PLAN.md")))
 
 # ---- TvRowsPick, for real
@@ -117,8 +117,8 @@ with tempfile.TemporaryDirectory() as tmp:
     subprocess.run(["javac", "-encoding", "UTF-8", "-d", tmp, str(ROOT / "tests/i18n_home_stub/S.java"), str(ROOT / "android/launcher/src/main/java/sa/urtv/home/Tr.java"), str(HOME / "TvRowsPick.java"), str(HOME / "DigitsText.java"), str(ROOT / "tests/TvRowsRun.java")], check=True)
     out = subprocess.run(["java", "-Dfile.encoding=UTF-8", "-cp", tmp, "sa.urtv.home.TvRowsRun"], check=True, capture_output=True).stdout.decode("utf-8")
 r = dict(l.split(" = ", 1) for l in out.split("\n") if " = " in l)
-check("«أكمل المشاهدة» is called so", r["watchnext_title"] == "أكمل المشاهدة", r["watchnext_title"])
-check("«أكمل المشاهدة»: what one is in the middle of, and the next episode; not a new season or a watchlist; not hidden, not of an app that is gone",
+check("«كمّل المشاهدة» is called so", r["watchnext_title"] == "كمّل المشاهدة", r["watchnext_title"])
+check("«كمّل المشاهدة»: what one is in the middle of, and the next episode; not a new season or a watchlist; not hidden, not of an app that is gone",
       (r["wn_continue"], r["wn_next"], r["wn_new"], r["wn_watchlist"], r["wn_hidden"], r["wn_no_app"]) == ("true", "true", "false", "false", "false", "false"))
 check("the line under a card: «الموسم ٢، الحلقة ١، Netflix», digits as the setting says", r["meta_episode"] == "الموسم ٢، الحلقة ١، Netflix" and r["meta_latin"] == "الموسم 2، الحلقة 10، Netflix",
       (r["meta_episode"], r["meta_latin"]))
@@ -134,7 +134,7 @@ check("a small picture is taken as it is; a picture with no size is none", r["sa
 check("a content:// picture only from the publishing app's own provider", (r["provider_own"], r["provider_other"], r["provider_none"]) == ("true", "false", "false"))
 check("the rows' signature tells the same rows from changed ones", r["sig_same"] == "true" and r["sig_diff"] == "false", (r["sig_same"], r["sig_diff"]))
 # ---- the TV test of 3.147: one huge card filled two thirds of the screen and pushed the favourites up over the clock
-check("«أكمل المشاهدة» is never one cell: before the favourites are on screen it is cut as the least of them (5), then as they are",
+check("«كمّل المشاهدة» is never one cell: before the favourites are on screen it is cut as the least of them (5), then as they are",
       r["cells_before"] == "5" and r["cells_after"] == "7", (r["cells_before"], r["cells_after"]))
 check("at 960x540 dp a card is a favourite tile's size: 148.8x83.7 dp with 5 favourites, 64.4x36.2 with 10 (one cell would be 824x463.5)",
       r["card_5"] == "148.8x83.7" and r["card_10"] == "64.4x36.2" and r["card_1"] == "824.0x463.5", (r["card_5"], r["card_10"], r["card_1"]))
@@ -149,8 +149,8 @@ with tempfile.TemporaryDirectory() as tmp:
     subprocess.run(["javac", "-encoding", "UTF-8", "-d", tmp, str(ROOT / "tests/i18n_home_stub/S.java"), str(ROOT / "android/launcher/src/main/java/sa/urtv/home/Tr.java"), str(HOME / "TvRowsPick.java"), str(HOME / "DigitsText.java"), str(ROOT / "tests/TvRowsRun.java")], check=True)
     out = subprocess.run(["java", "-Dfile.encoding=UTF-8", "-cp", tmp, "sa.urtv.home.TvRowsRun"], check=True, capture_output=True).stdout.decode("utf-8")
 r = dict(l.split(" = ", 1) for l in out.split("\n") if " = " in l)
-check("«أكمل المشاهدة» is called so", r["watchnext_title"] == "أكمل المشاهدة", r["watchnext_title"])
-check("«أكمل المشاهدة»: what one is in the middle of, and the next episode; not a new season or a watchlist; not hidden, not of an app that is gone",
+check("«كمّل المشاهدة» is called so", r["watchnext_title"] == "كمّل المشاهدة", r["watchnext_title"])
+check("«كمّل المشاهدة»: what one is in the middle of, and the next episode; not a new season or a watchlist; not hidden, not of an app that is gone",
       (r["wn_continue"], r["wn_next"], r["wn_new"], r["wn_watchlist"], r["wn_hidden"], r["wn_no_app"]) == ("true", "true", "false", "false", "false", "false"))
 check("the line under a card: «الموسم ٢، الحلقة ١، Netflix», digits as the setting says", r["meta_episode"] == "الموسم ٢، الحلقة ١، Netflix" and r["meta_latin"] == "الموسم 2، الحلقة 10، Netflix",
       (r["meta_episode"], r["meta_latin"]))
@@ -167,7 +167,7 @@ check("a content:// picture only from the publishing app's own provider", (r["pr
 check("the rows' signature tells the same rows from changed ones", r["sig_same"] == "true" and r["sig_diff"] == "false", (r["sig_same"], r["sig_diff"]))
 check("how far in: a fraction up to 1, unknown without a position or a length",
       r["progress_half"] == "0.5" and r["progress_over"] == "1.0" and r["progress_unknown"] == "-1.0 -1.0", (r["progress_half"], r["progress_over"], r["progress_unknown"]))
-check("the apps' channels are asked only while a row of one is shown (every return to the home screen loads the rows): not with only «أكمل المشاهدة» or nothing shown",
+check("the apps' channels are asked only while a row of one is shown (every return to the home screen loads the rows): not with only «كمّل المشاهدة» or nothing shown",
       (r["needs_unchosen"], r["needs_only_wn"], r["needs_nothing"], r["needs_other"]) == ("true", "false", "false", "true"), (r["needs_unchosen"], r["needs_only_wn"], r["needs_nothing"], r["needs_other"]))
 check("TvRows.load uses it (the channel queries are the cost), and the settings' list (arrange) still asks every channel",
       "TvRowsPick.needsChannels(p.getString(\"shown\", null)) ? found(c)" in (HOME / "TvRows.java").read_text() and "TvRowsPick.arrange(found(c)" in (HOME / "TvRows.java").read_text())

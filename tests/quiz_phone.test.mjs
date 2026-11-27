@@ -107,7 +107,7 @@ const stampCheck = (p, n = 4) => p.evaluate(n => {
 // 1. the whole game, for ar/en x dark/light at 360x740
 // ======================================================================================
 const STR = {
-  ar: { inn: 'أنت داخل', saved: 'سجّلنا جوابك', right: 'صح', wrong: 'غلط', pts: '+' + AD(820), end: 'أنت الثالث', score: AD(2480), closed: 'أُغلقت الغرفة', bad: 'الرمز غير صحيح', paused: 'اللعبة متوقفة', wait: 'انتظر السؤال التالي', timeup: 'انتهى الوقت', cnt: [AD(1), AD(1), AD(3), AD(1)], q: QA },
+  ar: { inn: 'أنت داخل', saved: 'سجّلنا جوابك', right: 'صح', wrong: 'غلط', pts: '+' + AD(820), end: 'أنت الثالث', score: AD(2480), closed: 'أُغلقت الغرفة', bad: 'الرمز غلط', paused: 'اللعبة متوقفة', wait: 'انتظر السؤال التالي', timeup: 'انتهى الوقت', cnt: [AD(1), AD(1), AD(3), AD(1)], q: QA },
   en: { inn: "You're in", saved: 'Answer saved', right: 'Right', wrong: 'Wrong', pts: '+820', end: "You're 3rd", score: '2480', closed: 'The room is closed', bad: 'The code is not right', paused: 'Game paused', wait: 'Wait for the next question', timeup: "Time's up", cnt: ['1', '1', '3', '1'], q: QE }
 };
 for (const lang of ['ar', 'en']) for (const theme of ['dark', 'light']) {
@@ -258,7 +258,7 @@ await run('time over', async () => {
 await run('join errors', async () => {
   const { p, ctx, server } = await open({});
   await p.click('#go');
-  check('join: empty name is refused before any request', server.of('/api/join').length === 0 && (await txt(p)).includes('اكتب اسمك أولًا'));
+  check('join: empty name is refused before any request', server.of('/api/join').length === 0 && (await txt(p)).includes('اكتب اسمك أول'));
   await p.fill('#nm', 'ABCDEFGHIJKLMNOP');
   check('join: name field stops at 12 characters', await p.inputValue('#nm') === 'ABCDEFGHIJKL');
   for (const [e, w] of [['full', 'الغرفة ممتلئة'], ['locked', 'انتظر دقيقة'], ['name', 'اكتب اسمًا آخر'], ['rate', 'حاول مرة ثانية']]) {
@@ -268,7 +268,7 @@ await run('join errors', async () => {
     check('join error ' + e + ': message shown, form stays', !!(await p.$('#nm')));
   }
   server.joinReply = { ok: false, e: 'code' }; await p.click('#go'); await at(p, 'bad');
-  check('join error code: wrong code screen', (await txt(p)).includes('الرمز غير صحيح'));
+  check('join error code: wrong code screen', (await txt(p)).includes('الرمز غلط'));
   await ctx.close();
 });
 await run('remember', async () => {
