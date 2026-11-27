@@ -32,8 +32,9 @@ A change after a gate went green starts the list again from gate 1 for the chang
 
 ## How to run the emulator round
 
-1. Push the commit to run to the branch `work/auto-round`: `git push --force origin <sha>:refs/heads/work/auto-round` (a push runs the workflow file of that commit; a
-   `workflow_dispatch` needs the file on the default branch, which it has after `master` has it).
+1. Push the commit to run as a NEW branch, never forced: `git push origin <sha>:refs/heads/work/auto-round-<shortsha>` (a push of a branch named `work/auto-round-*` runs the
+   workflow file of that commit; a `workflow_dispatch` needs the file on the default branch, which it has after `master` has it). The same sha again needs a new name
+   (`work/auto-round-<shortsha>-2`). Delete the trigger branches when the run is read (`git push origin --delete work/auto-round-<shortsha>`).
 2. The run builds the debug apps of that commit, boots the TV emulator and runs `tester/auto/round.sh` (`tester/auto/ci/run.sh`). The job is red when the round is RED.
 3. The report: `https://raw.githubusercontent.com/tshi-dev/UrTV/data-screens/<run>/auto/report.md` (the run's name is in the job's summary), with the shots beside it and
    `metrics.tsv`, `steps.tsv`, `raw/`. The verdict is the last section of the report: `GREEN` or `RED` with its reasons.
@@ -45,3 +46,4 @@ Newest first. One line per change of a gate: the date, the gate, the sha, the re
 
 - 27 Nov: gates 1 and 2 green on beta 4 `46dcad40`; beta 5 `194af9eb` (beta 4 + games-remote + the sports zones of six leagues) dispatched. Gate 3 found FAIL by `review_gate.py` (the review ends at `987aa209`).
   The emulator round (gate 4) written: `tester/auto/round.sh`, `tester/auto/ci/`, `.github/workflows/auto-round.yml`; first run to come.
+- 27 Nov: the emulator round is started by a push of a new `work/auto-round-<shortsha>` branch (no force-push, the supervisor's rule); the first run, 46078178406, was started by the one force-push of `work/auto-round` before the rule was said, that branch stays unused.

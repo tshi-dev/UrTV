@@ -7,10 +7,10 @@ name: Auto round
 # section in every style, the adhan states, crashes, ANRs, frozen screens, memory.
 
 on:
-  # a push to work/auto-round runs the file of THAT commit (a workflow_dispatch needs the file on the default branch): to run a commit X,
-  #   git push --force origin X:refs/heads/work/auto-round
+  # a push of a NEW branch work/auto-round-<shortsha> runs the file of THAT commit (a workflow_dispatch needs the file on the default branch); we never force-push:
+  # to run a commit X,  git push origin X:refs/heads/work/auto-round-$(git rev-parse --short X)
   push:
-    branches: [work/auto-round]
+    branches: ['work/auto-round-*']
   workflow_dispatch:
     inputs:
       ref:

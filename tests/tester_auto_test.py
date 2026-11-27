@@ -135,7 +135,7 @@ check("--skip: the steps left out say so in the report (SKIP), run nothing, and 
       and "wm size 1280x720" not in cmds_s and "KEYCODE_DPAD_CENTER" not in cmds_s, (rs.returncode, steps_s[:3]))
 wf = (ROOT / ".github/workflows/auto-round.yml").read_text(encoding="utf-8")
 check("the workflow: a push to work/auto-round or a dispatch, the apps built from the ref, an Android TV emulator, tester/auto/ci/run.sh, published to data-screens in <run>/auto, red when the round is RED",
-      "branches: [work/auto-round]" in wf and "workflow_dispatch:" in wf and "inputs.ref || github.sha" in wf and "reactivecircus/android-emulator-runner@v2" in wf and "target: android-tv" in wf
+      "branches: ['work/auto-round-*']" in wf and "--force" not in wf.replace("--force-with-lease", "") and "git push --force" not in wf and "workflow_dispatch:" in wf and "inputs.ref || github.sha" in wf and "reactivecircus/android-emulator-runner@v2" in wf and "target: android-tv" in wf
       and "tester/auto/ci/run.sh" in wf and "--branch data-screens" in wf and '"$run/auto"' in wf and '[ "$verdict" = GREEN ]' in wf and "FONTS_TOKEN" in wf)
 run_ci = (ROOT / "tester/auto/ci/run.sh").read_text(encoding="utf-8")
 check("run.sh on the emulator: the TV client is the adb shim, the emulator's limits, no network means no radio, and the CI checkout only",
