@@ -4,6 +4,7 @@ https://raw.githubusercontent.com/tshi-dev/UrTV/data-screens/games-latest/callal
 https://raw.githubusercontent.com/tshi-dev/UrTV/data-screens/games-latest/callaloud-c2-who-first-focus.png
 https://raw.githubusercontent.com/tshi-dev/UrTV/data-screens/games-latest/callaloud-d-next-with-score.png
 https://raw.githubusercontent.com/tshi-dev/UrTV/data-screens/games-latest/callaloud-setup-before.png
+https://raw.githubusercontent.com/tshi-dev/UrTV/data-screens/games-latest/callaloud-setup-prefilled.png
 https://raw.githubusercontent.com/tshi-dev/UrTV/data-screens/games-latest/callaloud-setup-remote-on.png
 https://raw.githubusercontent.com/tshi-dev/UrTV/data-screens/games-latest/closest-a-paper.png
 https://raw.githubusercontent.com/tshi-dev/UrTV/data-screens/games-latest/closest-b-reveal.png
