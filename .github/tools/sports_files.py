@@ -157,8 +157,15 @@ def check_zones(zones, clubs=None):
 
 
 def load_zones():
+    """the reviewed list: every zone carries its source (src, an https address: the competition's regulations or the season's page), added
+    only after the owner says yes"""
     z = json.loads(ZONES_FILE.read_text(encoding="utf-8")) if ZONES_FILE.exists() else {}
     check_zones(z)
+    for lg, by_season in z.items():
+        for season, zs in by_season.items():
+            for x in zs:
+                if not str(x.get("src") or "").startswith("https://"):
+                    raise ValueError(f"zones {lg} {season}: {x} has no source")
     return z
 
 
@@ -297,9 +304,8 @@ def league_file(store, lg, now, stamp, names, ar="", zones=None):
     body = {"v": V, "id": lg, "en": store.name(lg), "ar": ar, "season": season, "updated": stamp,
             "table": rows, "last": [_game(e) for e in last], "next": [_game(e) for e in nxt]}
     zs = ((load_zones() if zones is None else zones).get(lg) or {}).get(season)
-    if zs:
-        check_zones({lg: {season: zs}}, len(rows))
-        body["zones"] = zs
+    if zs and max(z["to"] for z in zs) <= len(rows):   # a table still short of the league's clubs (a season's first days, a club with no game yet): no zones,
+        body["zones"] = zs                               # never a build stopped for every league (the list itself is checked when it is read)
     if c:
         body["cup"] = c
     body["seasons"] = seasons_of(store, lg)

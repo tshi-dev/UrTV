@@ -147,14 +147,27 @@ check("phase a: the zones list is checked: overlap, past the club count, an unkn
                                                                {"1": {"s": [{"from": 3, "to": 2, "k": "ucl"}]}},
                                                                {"1": {"s": [{"from": 0, "to": 2, "k": "ucl"}]}})))
 zf = json.loads((ROOT / ".github/tools/league_zones.json").read_text())
-check("phase a: league_zones.json passes the same check, and ships empty (each entry is added later, sourced, after the owner says yes)", sf.check_zones(zf) is None and zf == {}, zf)
+# the reviewed list: each line approved by the owner and sourced (its own commit); a new line changes this test too
+REVIEWED = {}
+check("phase a: league_zones.json passes the same check and holds the owner's approved lines only (beta 5: relegation, the places the rules fix)",
+      sf.check_zones(zf) is None and {(lg, s_): [(x["from"], x["to"], x["k"]) for x in zs] for lg, by in zf.items() for s_, zs in by.items()} == REVIEWED, zf)
+check("phase a: every zone in the list carries its source (an https address), and load_zones refuses one without",
+      all(str(x.get("src", "")).startswith("https://") for by in zf.values() for zs in by.values() for x in zs) and sf.load_zones() == zf)
+_keep = sf.ZONES_FILE
+_t = Path(tempfile.mkdtemp()) / "z.json"
+_t.write_text(json.dumps({"1": {"s": [{"from": 1, "to": 2, "k": "down"}]}}))
+sf.ZONES_FILE = _t
+check("phase a: …a zone with no source stops the build", _raises(sf.load_zones))
+sf.ZONES_FILE = _keep
 st2 = ma.Store()
 st2.leagues = {("4668", "2026-2027"): {g["id"]: g for g in mvg}}
 lf2 = sf.league_file(st2, "4668", now, "x", {}, zones=ok_z)
 check("phase a: the league's file carries mv on each row and the season's zones", [r.get("mv") for r in lf2["table"]] == [3, 1, -2, -2] and lf2["zones"] == ok_z["4668"]["2026-2027"], lf2)
 lf3 = sf.league_file(st2, "4668", now, "x", {}, zones={"4668": {"2025-2026": ok_z["4668"]["2026-2027"]}})
 check("phase a: a list for another season: no zones (a stale rule never shows)", "zones" not in lf3 and "zones" not in sf.league_file(st2, "4668", now, "x", {}, zones={}), lf3.get("zones"))
-check("phase a: a list that runs past the league's clubs stops the build", _raises(lambda: sf.league_file(st2, "4668", now, "x", {}, zones={"4668": {"2026-2027": [{"from": 3, "to": 5, "k": "down"}]}})))
+check("phase a: a table shorter than the zones (a season's first days): no zones, and the build goes on (never stopped for every league)",
+      "zones" not in sf.league_file(st2, "4668", now, "x", {}, zones={"4668": {"2026-2027": [{"from": 3, "to": 5, "k": "down"}]}}))
+check("phase a: …and the real list with a 2-club table: no zones, no error", "zones" not in sf.league_file(st2, "4668", now, "x", {}))
 check("phase a: a past season's file has no movement and no zones", all("mv" not in r for r in sp["table"]) and "zones" not in sp)
 cupmv = [dict(g, lg="4719") for g in mvg] + [mg("k", "10", "40", "16", "1", "0", d=-1)]
 check("phase a: a cup's file has no movement (a tournament of the list, or a file with knockout rounds); a league's first rounds keep theirs",
