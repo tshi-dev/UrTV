@@ -38,5 +38,21 @@
     "src": "https://en.wikipedia.org/wiki/2026%E2%80%9327_Serie_A"
    }
   ]
+ },
+ "4331": {
+  "2026-2027": [
+   {
+    "from": 16,
+    "to": 16,
+    "k": "po",
+    "src": "https://en.wikipedia.org/wiki/2026%E2%80%9327_Bundesliga"
+   },
+   {
+    "from": 17,
+    "to": 18,
+    "k": "down",
+    "src": "https://en.wikipedia.org/wiki/2026%E2%80%9327_Bundesliga"
+   }
+  ]
  }
 }
