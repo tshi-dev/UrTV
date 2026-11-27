@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="referrer" content="no-referrer">
+<meta name="color-scheme" content="dark light">
+<title>الأذان لكل صلاة</title>
+<style>
+/* 4.4 beta 4 «الأذان لكل صلاة» from the phone: its own small page (the main page is at its size limit). The five prayers, each with its sound and its
+   screen: «صوت وشاشة»، «صوت فقط»، «شاشة فقط»، «لا شيء». Read from /api/state (adhan.prayers) and set with /api/set (adhan_prayers: five digits), behind the
+   session of the main page. «اللغة» English: the TV sends <html lang="en">. */
+:root { --bg:#17181b; --card:rgba(30,33,39,.92); --line:rgba(255,255,255,.12); --acc:#54c08a; --text:#fff; --dim:#dadce0; --ink:#14161a; --bad:#ff8a80 }
+@media (prefers-color-scheme: light) { :root:not([data-theme="dark"]) { --bg:#f6f4ef; --card:#fff; --line:#e3dfd5; --acc:#166a45; --text:#1b1f1d; --dim:#545a57; --ink:#fff; --bad:#b3261e } }
+:root[data-theme="light"] { --bg:#f6f4ef; --card:#fff; --line:#e3dfd5; --acc:#166a45; --text:#1b1f1d; --dim:#545a57; --ink:#fff; --bad:#b3261e }
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+@font-face{font-family:'Thmanyah';font-weight:400;font-display:swap;src:url(/fonts/Thmanyah-Regular.woff2) format("woff2")}
+html,body{margin:0;color:var(--text);background:var(--bg);font:16px/1.45 'Thmanyah',system-ui,-apple-system,"Segoe UI",Tahoma,sans-serif}
+body{max-width:560px;margin:0 auto;padding:24px 16px calc(32px + env(safe-area-inset-bottom))}
+h1{font-size:24px;margin:16px 0 4px}
+p{margin:8px 0;color:var(--dim);font-size:14px}
+.hidden{display:none !important}
+label.main{display:block;text-align:center;min-height:56px;line-height:56px;background:var(--acc);color:var(--ink);font-weight:700;border-radius:16px;margin:16px 0 8px;cursor:pointer}
+input[type=file]{position:absolute;opacity:0;width:1px;height:1px}
+#state{font-weight:700;color:var(--text);min-height:1.5em}
+.bar{height:6px;border-radius:3px;background:var(--line);margin:8px 0}.bar i{display:block;height:6px;width:0;border-radius:3px;background:var(--acc)}
+.f{display:flex;align-items:center;justify-content:space-between;gap:12px;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:14px 16px;margin:10px 0}
+.f b{font-size:17px}
+.f select{font:inherit;font-size:15px;color:var(--text);background:transparent;border:1px solid var(--line);border-radius:10px;min-height:40px;padding:0 8px}
+.f small{color:var(--dim);font-size:13px}
+.use{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+.use button{flex:1;min-width:30%;min-height:40px;font:inherit;font-size:14px;color:var(--text);background:transparent;border:1px solid var(--line);border-radius:10px}
+.use button.on{border-color:var(--acc);color:var(--acc);font-weight:700}
+.use button.del{flex:0 0 auto;min-width:64px;color:var(--bad)}
+a{color:var(--acc)}
+</style>
+</head>
+<body>
+<h1 id="t1">الأذان لكل صلاة</h1>
+<p id="t2">اختر لكل صلاة: صوت وشاشة، أو الصوت فقط، أو الشاشة فقط، أو لا شيء.</p>
+<div id="list"></div>
+<p id="state" role="status"></p>
+<p id="none" class="hidden"><span id="t4">افتح صفحة الجوال وامسح الرمز من «أسهل من الجوال» على التلفزيون أولاً.</span> <a href="/" id="t5">صفحة الجوال</a></p>
+<script nonce="__NONCE__">
+(function () {
+  try { var th = localStorage.getItem('urtvTheme'); if (th === 'light' || th === 'dark') document.documentElement.setAttribute('data-theme', th); } catch (e) { }
+  var EN = document.documentElement.lang === 'en';
+  var W = EN ? {
+    t1: 'Adhan for each prayer', t2: 'For each prayer pick: sound and screen, sound only, screen only, or none.',
+    t4: 'Open the phone page and scan the code from «Easier from the phone» on the TV first.', t5: 'Phone page',
+    names: ['Fajr', 'Dhuhr', 'Asr', 'Maghrib', 'Isha'], states: ['Sound and screen', 'Sound only', 'Screen only', 'None'],
+    saved: 'Saved ✓', failed: 'Not saved: check the Wi-Fi and try again.', no_session: 'The session ended.', pin: 'The family PIN (4 digits):', old: 'This TV has not got this setting: update its apps.'
+  } : {
+    names: ['الفجر', 'الظهر', 'العصر', 'المغرب', 'العشاء'], states: ['صوت وشاشة', 'صوت فقط', 'شاشة فقط', 'لا شيء'],
+    saved: 'انحفظ ✓', failed: 'ما انحفظ: تأكد من الواي فاي وجرّب مرة ثانية.', no_session: 'انتهت الجلسة.', pin: 'رمز الرقابة الأبوية (٤ أرقام):', old: 'هذا التلفزيون ما عنده هذا الإعداد: حدّث تطبيقاته.'
+  };
+  var $ = function (id) { return document.getElementById(id); };
+  if (EN) ['t1', 't2', 't4', 't5'].forEach(function (k) { $(k).textContent = W[k]; });
+  var sess = null, now = '00000';
+  try { sess = sessionStorage.getItem('urtv'); } catch (e) { }
+  if (!sess) $('none').classList.remove('hidden');
+  function say(t) { $('state').textContent = t; }
+  function call(url, body) {
+    var h = {}; if (sess) h['X-UrTV-Session'] = sess;
+    var o = { method: body === undefined ? 'GET' : 'POST', credentials: 'same-origin', headers: h, cache: 'no-store' };
+    if (body !== undefined) { h['Content-Type'] = 'application/json'; o.body = JSON.stringify(body); }
+    return fetch(url, o).then(function (r) { return r.json(); }, function () { return { ok: false, error: 'failed' }; }).catch(function () { return { ok: false, error: 'failed' }; });
+  }
+  function draw() {
+    var box = $('list'); box.textContent = '';
+    W.names.forEach(function (n, i) {
+      var d = document.createElement('div'); d.className = 'f';
+      var b = document.createElement('b'); b.textContent = n; d.appendChild(b);
+      var sl = document.createElement('select'); sl.setAttribute('aria-label', n);
+      W.states.forEach(function (w, k) { var o = document.createElement('option'); o.value = String(k); o.textContent = w; if (now.charAt(i) === String(k)) o.selected = true; sl.appendChild(o); });
+      sl.onchange = function () { var v = now.split(''); v[i] = this.value; save(v.join('')); };
+      d.appendChild(sl); box.appendChild(d);
+    });
+  }
+  function save(next, pin) {
+    var body = { adhan_prayers: next }; if (pin) body.pin = pin;
+    call('/api/set', body).then(function (j) {
+      if (j && j.ok) { now = next; say(W.saved); return; }
+      var e = j && j.error;
+      if ((e === 'pin_required' || e === 'pin_wrong') && sess) { var p = window.prompt(W.pin); if (p && /^[0-9]{4}$/.test(p)) { save(next, p); return; } }
+      say(e === 'no_session' ? W.no_session : e === 'unknown key' || e === 'bad adhan_prayers' ? W.old : W.failed);
+      load();
+    });
+  }
+  function load() {
+    if (!sess) return;
+    call('/api/state').then(function (s) {
+      if (!s || !s.ok) { if (s && s.error === 'no_session') say(W.no_session); return; }
+      var p = s.adhan && s.adhan.prayers;
+      if (typeof p !== 'string' || p.length !== 5) { say(W.old); return; }
+      now = p; draw();
+    });
+  }
+  load();
+})();
+</script>
+</body>
+</html>

@@ -34,6 +34,13 @@ check("the screensaver: the bridge asks the launcher for the mask and the page's
 act = rd(T / "PrayerSoundActivity.java")
 check("the home's screen «الأذان لكل صلاة»: each prayer one row with its state, OK opens the four states (one focus target each), the muezzin below",
       'PrayerScreen.word(prefs.prayerState(p))' in act and "for (int st : new int[] {PrayerScreen.BOTH, PrayerScreen.SOUND_ONLY, PrayerScreen.SCREEN_ONLY, PrayerScreen.NONE})" in act)
+ph = ROOT / "android/launcher/src/main/java/sa/urtv/home/phone"
+sc, pb, pa = rd(ph / "Schema.java"), rd(T / "PhoneBridge.java"), rd(ph / "PhoneApi.java")
+pg, ix = rd(ROOT / "android/launcher/src/main/assets/phone/prayers.html"), rd(ROOT / "android/launcher/src/main/assets/phone/index.html")
+check("the phone: adhan_prayers is five digits 0..3 (Schema), set prayer by prayer and said in the state (PhoneBridge)",
+      '"adhan_prayers"' in sc and 'matches("[0-3]{5}")' in sc and 'prefs.setPrayerState(PrayerScreen.IDS[i], st.charAt(i) - \'0\')' in pb and 'adhan.put("prayers", prayers.toString());' in pb)
+check("the phone: its own page /y (the main page is at its limit), linked from the main page, reads adhan.prayers and sets adhan_prayers, asks the family PIN when it is wanted",
+      'r.path.equals("/y")' in pa and 'href="/y"' in ix and len(ix.encode()) < 64 * 1024 and "s.adhan.prayers" in pg and "adhan_prayers: next" in pg and "pin_required" in pg)
 if not (shutil.which("javac") and shutil.which("java")):
     print("SKIP PrayerScreen: no javac here (CI compiles it)")
     sys.exit(1 if failed else 0)

@@ -49,6 +49,8 @@ final class PhoneApi implements PhoneServer.Handler {
         if (r.path.equals("/q")) return post ? json(405, err("method")) : adbPage();   // not /a: «صوتياتي» is /a (the first match won, so its page was dead)
         // 4.4 «صوتياتي»: its own page, words and code only; the file goes to /api/audio_piece in pieces behind the session
         if (r.path.equals("/a")) return post ? json(405, err("method")) : audioPage();
+        // 4.4 beta 4 «الأذان لكل صلاة»: its own small page (the main page is at its size limit); it reads /api/state and sets adhan_prayers behind the session
+        if (r.path.equals("/y")) return post ? json(405, err("method")) : prayersPage();
         // the fonts are no secret, and CSS asks for them without the X-UrTV-Session header: no session, like the page itself
         if (r.path.startsWith("/fonts/")) return post ? json(405, err("method")) : font(r.path.substring("/fonts/".length()));
 
@@ -325,6 +327,11 @@ final class PhoneApi implements PhoneServer.Handler {
 
     private PhoneServer.Response photosPage() {
         String html = control.page().photosHtml();
+        return html == null ? json(404, err("not_found")) : page(html);
+    }
+
+    private PhoneServer.Response prayersPage() {
+        String html = control.page().prayersHtml();
         return html == null ? json(404, err("not_found")) : page(html);
     }
 

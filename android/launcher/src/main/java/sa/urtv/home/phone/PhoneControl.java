@@ -34,6 +34,7 @@ public final class PhoneControl {
         /** 4.4 «صوتياتي» from the phone (assets/phone/audio.html) */
         default String audioHtml() { return null; }
         default String adbHtml() { return null; }
+        default String prayersHtml() { return null; }   // 4.4 beta 4 «الأذان لكل صلاة»
     }
 
     public enum Start { OK, NO_WIFI, FAILED, ALREADY_ON }

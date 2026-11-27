@@ -26,6 +26,9 @@ public final class PhoneBridge {
         adhan.put("short", prefs.adhanShort());
         adhan.put("stopkey", prefs.adhanStopKey());
         adhan.put("volume", (long) prefs.adhanVolume());
+        StringBuilder prayers = new StringBuilder();   // 4.4 beta 4: the five states, as the settings and the provider say them
+        for (int p : PrayerScreen.IDS) prayers.append(prefs.prayerState(p));
+        adhan.put("prayers", prayers.toString());
         List<Object> voices = new ArrayList<>();
         for (int v = 1; v <= Adhan.VOICES; v++) {
             Map<String, Object> m = new LinkedHashMap<>();
@@ -108,6 +111,10 @@ public final class PhoneBridge {
         }
         if (v.containsKey("adhan_voice") && AdhanSettings.voice(c, prefs, ((Long) v.get("adhan_voice")).intValue()) != null) return "refused";
         if (v.containsKey("adhan_fajr_voice") && AdhanSettings.fajrVoice(c, prefs, ((Long) v.get("adhan_fajr_voice")).intValue()) != null) return "refused";
+        if (v.containsKey("adhan_prayers")) {   // five digits 0..3 (Schema checked): the sound and the screen of each prayer
+            String st = (String) v.get("adhan_prayers");
+            for (int i = 0; i < PrayerScreen.IDS.length; i++) prefs.setPrayerState(PrayerScreen.IDS[i], st.charAt(i) - '0');
+        }
         if (v.containsKey("adhan_volume")) AdhanSettings.volume(prefs, ((Long) v.get("adhan_volume")).intValue());
         if (v.containsKey("adhan_short")) prefs.setAdhanShort((Boolean) v.get("adhan_short"));
         if (v.containsKey("adhan_stopkey")) prefs.setAdhanStopKey((Boolean) v.get("adhan_stopkey"));
