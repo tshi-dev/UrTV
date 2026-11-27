@@ -2,24 +2,24 @@ Performing Streamed Install
 Success
 Performing Streamed Install
 Success
-shot home-00-idle 1889571
-shot home-01-top 1891341
-shot home-pill-1 1891341
-shot home-pill-2 1891341
-shot home-pill-3 1891341
-shot home-pill-4 1888707
-shot home-pill-5 1887538
-shot home-pill-6 1887577
-shot home-pill-7 1885524
-shot home-pill-8 1886411
-shot home-pill-left-1 1887942
-shot home-pill-left-2 1887942
-shot home-pill-left-3 1887942
-shot home-pill-left-4 1887942
-shot home-tasks-card-focused 1634366
+shot home-00-idle 1890019
+shot home-01-top 1892287
+shot home-pill-1 1892287
+shot home-pill-2 1892287
+shot home-pill-3 1889619
+shot home-pill-4 1887288
+shot home-pill-5 1888070
+shot home-pill-6 1886311
+shot home-pill-7 1887082
+shot home-pill-8 1886706
+shot home-pill-left-1 1888354
+shot home-pill-left-2 1888354
+shot home-pill-left-3 1888354
+shot home-pill-left-4 1888354
+shot home-tasks-card-focused 1635556
 
 Exception occurred while executing 'start':
-java.lang.SecurityException: Permission Denial: starting Intent { flg=0x10008000 cmp=sa.urtv.home/.tilawah.MainActivity } from null (pid=4991, uid=2000) not exported from uid 10077
+java.lang.SecurityException: Permission Denial: starting Intent { flg=0x10008000 cmp=sa.urtv.home/.tilawah.MainActivity } from null (pid=5058, uid=2000) not exported from uid 10077
 	at com.android.server.wm.ActivityStackSupervisor.checkStartAnyActivityPermission(ActivityStackSupervisor.java:1032)
 	at com.android.server.wm.ActivityStarter.executeRequest(ActivityStarter.java:1001)
 	at com.android.server.wm.ActivityStarter.execute(ActivityStarter.java:671)
@@ -36,14 +36,14 @@ java.lang.SecurityException: Permission Denial: starting Intent { flg=0x10008000
 	at com.android.server.am.ActivityManagerService.onTransact(ActivityManagerService.java:2883)
 	at android.os.Binder.execTransactInternal(Binder.java:1159)
 	at android.os.Binder.execTransact(Binder.java:1123)
-shot tilawah-01-readers 1634366
-shot tilawah-02-readers-down 1641251
+shot tilawah-01-readers 1628703
+shot tilawah-02-readers-down 1642096
 shot tilawah-03-surah-grid 158871
 shot tilawah-04-surah-grid-focus 158871
-shot tilawah-05-player 109009
+shot tilawah-05-player 109409
 
 Exception occurred while executing 'start':
-java.lang.SecurityException: Permission Denial: starting Intent { flg=0x10008000 cmp=sa.urtv.home/.tilawah.MainActivity } from null (pid=5307, uid=2000) not exported from uid 10077
+java.lang.SecurityException: Permission Denial: starting Intent { flg=0x10008000 cmp=sa.urtv.home/.tilawah.MainActivity } from null (pid=5348, uid=2000) not exported from uid 10077
 	at com.android.server.wm.ActivityStackSupervisor.checkStartAnyActivityPermission(ActivityStackSupervisor.java:1032)
 	at com.android.server.wm.ActivityStarter.executeRequest(ActivityStarter.java:1001)
 	at com.android.server.wm.ActivityStarter.execute(ActivityStarter.java:671)
@@ -65,7 +65,7 @@ shot tilawah-07-adhan-tab 158871
 shot tilawah-08-adhan-volume-row 158871
 
 Exception occurred while executing 'start':
-java.lang.SecurityException: Permission Denial: starting Intent { flg=0x10008000 cmp=sa.urtv.home/.tilawah.AdhanActivity } from null (pid=5473, uid=2000) not exported from uid 10077
+java.lang.SecurityException: Permission Denial: starting Intent { flg=0x10008000 cmp=sa.urtv.home/.tilawah.AdhanActivity } from null (pid=5524, uid=2000) not exported from uid 10077
 	at com.android.server.wm.ActivityStackSupervisor.checkStartAnyActivityPermission(ActivityStackSupervisor.java:1032)
 	at com.android.server.wm.ActivityStarter.executeRequest(ActivityStarter.java:1001)
 	at com.android.server.wm.ActivityStarter.execute(ActivityStarter.java:671)
@@ -84,25 +84,25 @@ java.lang.SecurityException: Permission Denial: starting Intent { flg=0x10008000
 	at android.os.Binder.execTransact(Binder.java:1123)
 shot tilawah-09-adhan-voices 158871
 shot tilawah-10-adhan-voices-focus 158871
-shot home-now-playing 1537355
-shot home-now-playing-card-focused 1548482
-shot saver-now-playing 2437290
-shot settings-a-buttons-hub 321319
+shot home-now-playing 1536388
+shot home-now-playing-card-focused 1545860
+shot saver-now-playing 2393398
+shot settings-a-buttons-hub 323239
 shot settings-a-buttons-prayer 459578
 shot settings-a-buttons-photos 442467
 shot settings-a-buttons-look-cards 444216
 shot settings-b-couch-prayer 478197
 shot settings-b-couch-photos 483220
 shot settings-b-couch-look 477152
-shot settings-b-couch-look-cards 518384
-shot settings-b-couch-saver 1634785
-shot settings-b-couch-apps 1634785
-shot settings-b-couch-matches 1634785
-shot settings-b-couch-family 1634785
-shot settings-b-couch-lang 1634785
-shot settings-b-couch-about 1634785
+shot settings-b-couch-look-cards 518349
+shot settings-b-couch-saver 1622058
+shot settings-b-couch-apps 1622058
+shot settings-b-couch-matches 1622058
+shot settings-b-couch-family 1622058
+shot settings-b-couch-lang 1622058
+shot settings-b-couch-about 1622058
 shot settings-b-couch-search 394777
-shot settings-c-tvos-hub 261458
+shot settings-c-tvos-hub 263307
 shot settings-c-tvos-prayer 362148
 crashes.txt
 home-00-idle.png
