@@ -98,6 +98,7 @@
             android:exported="true"
             android:permission="sa.urtv.home.LOOK"
             android:excludeFromRecents="true"
+            android:taskAffinity="sa.urtv.screensaver.look"
             android:theme="@android:style/Theme.Translucent.NoTitleBar" />
 
         <!-- «الألعاب»: the hub's third window, the games list, and «الأسرع» (the live quiz: the TV side; its game-only server is not the remote's pairing) -->
