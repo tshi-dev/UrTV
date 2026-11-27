@@ -22,6 +22,8 @@ public final class PairHost {
     private static final PairState STATE = new PairState();
     /** how many connections may be open at once (the setup uses one; a stuck caller cannot pile them up) */
     static final int MAX_OPEN = 2;
+    /** the longest one command and one file push may take over the paired route before the call ends with «timeout» and the connection is closed */
+    static final long RUN_MS = 120_000, EXEC_MS = 600_000;
     private static final ConnPool<PairClient.Connection> OPEN = new ConnPool<>(MAX_OPEN, c -> { try { c.close(); } catch (RuntimeException ignored) { } });
 
     public static boolean available() { return PairClient.available(); }
@@ -96,14 +98,17 @@ public final class PairHost {
     }
 
     /** one shell command, its output with the `URTV_RC=` marker (the home splits it as AdbClient.withCode) */
-    public static String run(String id, String command) throws IOException { return get(id).run(command); }
+    public static String run(String id, String command) throws IOException {
+        final PairClient.Connection conn = get(id);
+        return Deadline.call(() -> conn.run(command), RUN_MS, () -> close(id));   // a stalled link ends the call and the connection (review F96)
+    }
 
     /** a command fed {@code size} bytes read from the home's own file (a one-time content address the home made for it) */
     public static String exec(Context c, String id, String command, Uri from, long size) throws IOException {
         PairClient.Connection conn = get(id);
         try (InputStream in = c.getContentResolver().openInputStream(from)) {
             if (in == null) throw new IOException("the file is not there");
-            return conn.exec(command, in, size);
+            return Deadline.call(() -> conn.exec(command, in, size), EXEC_MS, () -> close(id));
         }
     }
 
