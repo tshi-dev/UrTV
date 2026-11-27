@@ -1,13 +1,13 @@
-# Automatic round: emulator-1
+# Automatic round: emulator-2
 
 ## Health metrics
 
 | metric | now | limit | previous | change | verdict |
 |---|---|---|---|---|---|
-| cold_start_home_ms | 1036ms | max 20000 |  |  | ok |
-| cold_start_saver_ms | 863ms | max 20000 |  |  | ok |
-| pss_home_kb | 40923KB | max 350000 |  |  | ok |
-| pss_saver_kb | 37995KB | max 350000 |  |  | ok |
+| cold_start_home_ms | 1035ms | max 20000 |  |  | ok |
+| cold_start_saver_ms | 832ms | max 20000 |  |  | ok |
+| pss_home_kb | 39784KB | max 350000 |  |  | ok |
+| pss_saver_kb | 37246KB | max 350000 |  |  | ok |
 | crashes | 0 | zero 0 |  |  | ok |
 | anrs | 0 | zero 0 |  |  | ok |
 | frozen_lines | 0 | zero 0 |  |  | ok |
@@ -16,25 +16,15 @@
 
 | step | result | what |
 |---|---|---|
-| radio | SKIP | left out of this round (--skip / ROUND_SKIP) |
-| layout-classic-none | FAIL | كلاسيكي، بلا بطاقة: the home did not come to the front:     mResumedActivity: ActivityRecord{380a4d9 u0 com.google.android.tvlauncher/.MainActivity t4} |
-| Failed to write while dumping service activity: Broken pipe |  |  |
-| layout-classic-stocks | FAIL | كلاسيكي، الأسهم: the home did not come to the front:     mResumedActivity: ActivityRecord{380a4d9 u0 com.google.android.tvlauncher/.MainActivity t4} |
-| Failed to write while dumping service activity: Broken pipe |  |  |
-| layout-classic-matches | FAIL | كلاسيكي، المباريات: the home did not come to the front:     mResumedActivity: ActivityRecord{380a4d9 u0 com.google.android.tvlauncher/.MainActivity t4} |
-| Failed to write while dumping service activity: Broken pipe |  |  |
-| layout-couch-none | FAIL | كنبة، بلا بطاقة: the home did not come to the front:     mResumedActivity: ActivityRecord{380a4d9 u0 com.google.android.tvlauncher/.MainActivity t4} |
-| Failed to write while dumping service activity: Broken pipe |  |  |
-| layout-couch-stocks | FAIL | كنبة، الأسهم: the home did not come to the front:     mResumedActivity: ActivityRecord{380a4d9 u0 com.google.android.tvlauncher/.MainActivity t4} |
-| Failed to write while dumping service activity: Broken pipe |  |  |
-| layout-couch-matches | FAIL | كنبة، المباريات: the home did not come to the front:     mResumedActivity: ActivityRecord{380a4d9 u0 com.google.android.tvlauncher/.MainActivity t4} |
-| Failed to write while dumping service activity: Broken pipe |  |  |
-| layout-football-none | FAIL | كرة القدم، بلا بطاقة: the home did not come to the front:     mResumedActivity: ActivityRecord{380a4d9 u0 com.google.android.tvlauncher/.MainActivity t4} |
-| Failed to write while dumping service activity: Broken pipe |  |  |
-| layout-football-stocks | FAIL | كرة القدم، الأسهم: the home did not come to the front:     mResumedActivity: ActivityRecord{380a4d9 u0 com.google.android.tvlauncher/.MainActivity t4} |
-| Failed to write while dumping service activity: Broken pipe |  |  |
-| layout-football-matches | FAIL | كرة القدم، المباريات: the home did not come to the front:     mResumedActivity: ActivityRecord{380a4d9 u0 com.google.android.tvlauncher/.MainActivity t4} |
-| Failed to write while dumping service activity: Broken pipe |  |  |
+| layout-classic-none | FAIL | كلاسيكي، بلا بطاقة: the home did not come to the front:     mResumedActivity: ActivityRecord{4d28a85 u0 com.google.android.tvlauncher/.MainActivity t4} |
+| layout-classic-stocks | FAIL | كلاسيكي، الأسهم: the home did not come to the front:     mResumedActivity: ActivityRecord{4d28a85 u0 com.google.android.tvlauncher/.MainActivity t4} |
+| layout-classic-matches | FAIL | كلاسيكي، المباريات: the home did not come to the front:     mResumedActivity: ActivityRecord{4d28a85 u0 com.google.android.tvlauncher/.MainActivity t4} |
+| layout-couch-none | FAIL | كنبة، بلا بطاقة: the home did not come to the front:     mResumedActivity: ActivityRecord{4d28a85 u0 com.google.android.tvlauncher/.MainActivity t4} |
+| layout-couch-stocks | FAIL | كنبة، الأسهم: the home did not come to the front:     mResumedActivity: ActivityRecord{4d28a85 u0 com.google.android.tvlauncher/.MainActivity t4} |
+| layout-couch-matches | FAIL | كنبة، المباريات: the home did not come to the front:     mResumedActivity: ActivityRecord{4d28a85 u0 com.google.android.tvlauncher/.MainActivity t4} |
+| layout-football-none | FAIL | كرة القدم، بلا بطاقة: the home did not come to the front:     mResumedActivity: ActivityRecord{4d28a85 u0 com.google.android.tvlauncher/.MainActivity t4} |
+| layout-football-stocks | FAIL | كرة القدم، الأسهم: the home did not come to the front:     mResumedActivity: ActivityRecord{4d28a85 u0 com.google.android.tvlauncher/.MainActivity t4} |
+| layout-football-matches | FAIL | كرة القدم، المباريات: the home did not come to the front:     mResumedActivity: ActivityRecord{4d28a85 u0 com.google.android.tvlauncher/.MainActivity t4} |
 | settings-buttons-pray | PASS | أزرار ← الصلاة والأذان: «الأذان لكل صلاة» is on the screen |
 | settings-buttons-photos | PASS | أزرار ← صوري والخلفيات: «احذف صورة» is on the screen |
 | settings-buttons-look | PASS | أزرار ← الشكل: «التخطيط» is on the screen |
@@ -66,36 +56,46 @@
 | settings-tvos-update | PASS | tvOS ← حول والتحديث: «تحديث تلفزيوني» is on the screen |
 | settings-tvos-search | PASS | tvOS ← بحث في الإعدادات: «بحث في الإعدادات» is on the screen |
 | saver-start | PASS | a dream runs |
-| display-720p-home | FAIL | the home was not in front at 720p:     mResumedActivity: ActivityRecord{380a4d9 u0 com.google.android.tvlauncher/.MainActivity t4} |
-| Failed to write while dumping service activity: Broken pipe |  |  |
+| radio-0 | FAIL | the تلاوة screen did not open:     mResumedActivity: ActivityRecord{4d28a85 u0 com.google.android.tvlauncher/.MainActivity t4} |
+| radio-1 | FAIL | the تلاوة screen did not open:     mResumedActivity: ActivityRecord{4d28a85 u0 com.google.android.tvlauncher/.MainActivity t4} |
+| radio-2 | FAIL | the تلاوة screen did not open:     mResumedActivity: ActivityRecord{4d28a85 u0 com.google.android.tvlauncher/.MainActivity t4} |
+| radio-3 | FAIL | the تلاوة screen did not open:     mResumedActivity: ActivityRecord{4d28a85 u0 com.google.android.tvlauncher/.MainActivity t4} |
+| radio-4 | FAIL | the تلاوة screen did not open:     mResumedActivity: ActivityRecord{4d28a85 u0 com.google.android.tvlauncher/.MainActivity t4} |
+| radio-5 | FAIL | the تلاوة screen did not open:     mResumedActivity: ActivityRecord{4d28a85 u0 com.google.android.tvlauncher/.MainActivity t4} |
+| radio-6 | FAIL | the تلاوة screen did not open:     mResumedActivity: ActivityRecord{4d28a85 u0 com.google.android.tvlauncher/.MainActivity t4} |
+| radio-7 | FAIL | the تلاوة screen did not open:     mResumedActivity: ActivityRecord{4d28a85 u0 com.google.android.tvlauncher/.MainActivity t4} |
+| radio-8 | FAIL | the تلاوة screen did not open:     mResumedActivity: ActivityRecord{4d28a85 u0 com.google.android.tvlauncher/.MainActivity t4} |
+| radio-9 | FAIL | the تلاوة screen did not open:     mResumedActivity: ActivityRecord{4d28a85 u0 com.google.android.tvlauncher/.MainActivity t4} |
+| radio-10 | FAIL | the تلاوة screen did not open:     mResumedActivity: ActivityRecord{4d28a85 u0 com.google.android.tvlauncher/.MainActivity t4} |
+| radio-11 | FAIL | the تلاوة screen did not open:     mResumedActivity: ActivityRecord{4d28a85 u0 com.google.android.tvlauncher/.MainActivity t4} |
+| radio-12 | FAIL | the تلاوة screen did not open:     mResumedActivity: ActivityRecord{4d28a85 u0 com.google.android.tvlauncher/.MainActivity t4} |
+| display-720p-home | FAIL | the home was not in front at 720p:     mResumedActivity: ActivityRecord{4d28a85 u0 com.google.android.tvlauncher/.MainActivity t4} |
 | display-720p-settings | PASS | the settings at 720p |
 | font-large-home | FAIL | the home was not in front at the large font |
 | font-large-settings | PASS | the settings at font scale 1.3 |
 | adhan-fajr-both | PASS | الفجر: both |
-| adhan-fajr-sound | FAIL | الفجر: set sound, the status says «both» |
-| adhan-fajr-screen | FAIL | الفجر: set screen, the status says «both» |
-| adhan-fajr-none | FAIL | الفجر: set none, the status says «both» |
+| adhan-fajr-sound | PASS | الفجر: sound |
+| adhan-fajr-screen | PASS | الفجر: screen |
+| adhan-fajr-none | PASS | الفجر: none |
 | adhan-dhuhr-both | PASS | الظهر: both |
-| adhan-dhuhr-sound | FAIL | الظهر: set sound, the status says «both» |
-| adhan-dhuhr-screen | FAIL | الظهر: set screen, the status says «both» |
-| adhan-dhuhr-none | FAIL | الظهر: set none, the status says «both» |
+| adhan-dhuhr-sound | PASS | الظهر: sound |
+| adhan-dhuhr-screen | PASS | الظهر: screen |
+| adhan-dhuhr-none | PASS | الظهر: none |
 | adhan-asr-both | PASS | العصر: both |
-| adhan-asr-sound | FAIL | العصر: set sound, the status says «both» |
-| adhan-asr-screen | FAIL | العصر: set screen, the status says «both» |
-| adhan-asr-none | FAIL | العصر: set none, the status says «both» |
+| adhan-asr-sound | PASS | العصر: sound |
+| adhan-asr-screen | PASS | العصر: screen |
+| adhan-asr-none | PASS | العصر: none |
 | adhan-maghrib-both | PASS | المغرب: both |
-| adhan-maghrib-sound | FAIL | المغرب: set sound, the status says «both» |
-| adhan-maghrib-screen | FAIL | المغرب: set screen, the status says «both» |
-| adhan-maghrib-none | FAIL | المغرب: set none, the status says «both» |
+| adhan-maghrib-sound | PASS | المغرب: sound |
+| adhan-maghrib-screen | PASS | المغرب: screen |
+| adhan-maghrib-none | PASS | المغرب: none |
 | adhan-isha-both | PASS | العشاء: both |
-| adhan-isha-sound | FAIL | العشاء: set sound, the status says «both» |
-| adhan-isha-screen | FAIL | العشاء: set screen, the status says «both» |
-| adhan-isha-none | FAIL | العشاء: set none, the status says «both» |
-| games-list | FAIL | the games list was not on the screen:     mResumedActivity: ActivityRecord{380a4d9 u0 com.google.android.tvlauncher/.MainActivity t4} |
-| Failed to write while dumping service activity: Broken pipe |  |  |
-| jank | FAIL | the home was not in front for the walk: no key was sent (    mResumedActivity: ActivityRecord{380a4d9 u0 com.google.android.tvlauncher/.MainActivity t4} |
-| Failed to write while dumping service activity: Broken pipe) |  |  |
+| adhan-isha-sound | PASS | العشاء: sound |
+| adhan-isha-screen | PASS | العشاء: screen |
+| adhan-isha-none | PASS | العشاء: none |
+| games-list | FAIL | the games list was not on the screen:     mResumedActivity: ActivityRecord{4d28a85 u0 com.google.android.tvlauncher/.MainActivity t4} |
+| jank | FAIL | the home was not in front for the walk: no key was sent (    mResumedActivity: ActivityRecord{4d28a85 u0 com.google.android.tvlauncher/.MainActivity t4}) |
 
 ## Verdict
 
-RED: step layout-classic-none failed; step layout-classic-stocks failed; step layout-classic-matches failed; step layout-couch-none failed; step layout-couch-stocks failed; step layout-couch-matches failed; step layout-football-none failed; step layout-football-stocks failed; step layout-football-matches failed; step display-720p-home failed; step font-large-home failed; step adhan-fajr-sound failed; step adhan-fajr-screen failed; step adhan-fajr-none failed; step adhan-dhuhr-sound failed; step adhan-dhuhr-screen failed; step adhan-dhuhr-none failed; step adhan-asr-sound failed; step adhan-asr-screen failed; step adhan-asr-none failed; step adhan-maghrib-sound failed; step adhan-maghrib-screen failed; step adhan-maghrib-none failed; step adhan-isha-sound failed; step adhan-isha-screen failed; step adhan-isha-none failed; step games-list failed; step jank failed
+RED: step layout-classic-none failed; step layout-classic-stocks failed; step layout-classic-matches failed; step layout-couch-none failed; step layout-couch-stocks failed; step layout-couch-matches failed; step layout-football-none failed; step layout-football-stocks failed; step layout-football-matches failed; step radio-0 failed; step radio-1 failed; step radio-2 failed; step radio-3 failed; step radio-4 failed; step radio-5 failed; step radio-6 failed; step radio-7 failed; step radio-8 failed; step radio-9 failed; step radio-10 failed; step radio-11 failed; step radio-12 failed; step display-720p-home failed; step font-large-home failed; step games-list failed; step jank failed
