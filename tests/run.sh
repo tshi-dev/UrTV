@@ -245,6 +245,7 @@ python3 tests/prayer_summary_test.py   # 4.4 beta 4: one summary rule for the se
 python3 tests/adhan_from_file_test.py   # 4.4 beta 4 «أذاني من ملف»: the last row of «المؤذن», «التنزيلات» beside the USB stick
 python3 tests/photo_from_file_test.py   # 4.4 beta 4: photos from a stick or Downloads into «صوري», the screensaver app with no storage permission
 python3 tests/tester_auto_test.py   # 4.4 beta 4: the automatic tester round (tester/auto): its parsing on saved answers, the whole round on a stand-in TV, the putting back, never a blind key
+python3 tests/pray_rows_test.py   # 4.4 beta 4: «المؤذن», «الأدعية والتذكيرات», «صوتياتي» as rows of «الصلاة والأذان», the dua count from the phone
 python3 tests/quiet_hours_test.py   # 4.4 touch «ساعات الهدوء»
 python3 tests/kahf_template_test.py   # 4.4 touch: the Friday Kahf, ready
 python3 tests/fade_in_test.py   # 4.4 touch «يبدأ بهدوء»

@@ -47,6 +47,7 @@ final class AudioUse {
             d.name = it.name;
             d.sound = "a:" + it.id;
             d.on = false;
+            d.fresh = true;
             d.rule.at = DuaRule.AFTER; d.rule.prayer = PrayerTimes.FAJR; d.rule.offset = 15;
             return DuaStore.put(c, d) ? null : "duas_full";   // 4.4: the duas' list is full (not the files' «too_many»)
         }
