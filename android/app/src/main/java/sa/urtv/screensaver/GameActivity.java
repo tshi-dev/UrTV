@@ -465,23 +465,7 @@ public abstract class GameActivity extends Activity {
 
     /** the sides' bar: one tile per side (colour square, name, points), the side whose turn it is filled with ink; 88 px high at `y`.
      *  From seven sides on a tile is too narrow for a name at a readable size: the colour square and the points only. */
-    protected final void sidesBar(GameScore s, String[] names, int turn, float y) {
-        float gap = 16, w = Math.min(560, (1728 - (s.n - 1) * gap) / s.n);
-        boolean small = s.n > 4;
-        for (int i = 0; i < s.n; i++) {
-            boolean on = i == turn;
-            LinearLayout t = new LinearLayout(this); t.setOrientation(LinearLayout.HORIZONTAL); t.setGravity(Gravity.CENTER_VERTICAL); t.setLayoutDirection(Dir.layout());
-            t.setBackground(shape(on ? L.ink : L.tile, L.ink, 6, false)); t.setPadding(px(small ? 14 : 20), 0, px(small ? 14 : 20), 0);
-            LinearLayout.LayoutParams sp = new LinearLayout.LayoutParams(px(small ? 24 : 36), px(small ? 24 : 36)); sp.setMarginEnd(px(small ? 10 : 16));
-            t.addView(box(L.sides[i % L.sides.length], on ? L.onInk : L.ink, 3, false), sp);
-            float f = small ? 30 : 40;
-            TextView nm = text(s.n > 6 ? "" : clip(names[i], f, w - (small ? 130 : 200)), f, on ? L.onInk : L.ink, true); nm.setSingleLine(true);
-            t.addView(nm, new LinearLayout.LayoutParams(0, -2, 1f));
-            TextView sc = text(num(s.points[i]), small ? 40 : 56, on ? L.saff : L.ink, true); sc.setTextDirection(View.TEXT_DIRECTION_LTR);
-            t.addView(sc);
-            root.addView(t, at(w, 88, 96 + i * (w + gap), y));
-        }
-    }
+    protected final void sidesBar(GameScore s, String[] names, int turn, float y) { scoreBarH(s, names, turn, y, 88); }
 
     /** a card whose focus is scale and shadow only (the fill and the line stay as they are): the look of the one-remote modes (docs/GAMES-REMOTE.md) */
     protected final TextView focusCard(String label, float size, boolean focused) {
@@ -491,11 +475,13 @@ public abstract class GameActivity extends Activity {
         return v;
     }
     /** the sides' bar with each score in its own cell (a rule, the number big, «نقطة» small under it), so a name and its score never touch; the side whose turn it is stands out by scale and shadow; 112 px high at `y` */
-    protected final void scoreBar(GameScore s, String[] names, int turn, float y) {
+    protected final void scoreBar(GameScore s, String[] names, int turn, float y) { scoreBarH(s, names, turn, y, 112); }
+    /** the same bar `h` high (88 in the old games' layouts: the «نقطة» label is left out under 112, the cell and its rule stay) */
+    private void scoreBarH(GameScore s, String[] names, int turn, float y, float h) {
         float gap = 16, w = Math.min(560, (1728 - (s.n - 1) * gap) / s.n); boolean small = s.n > 4;
         for (int i = 0; i < s.n; i++) {
             LinearLayout t = new LinearLayout(this); t.setOrientation(LinearLayout.VERTICAL); t.setBackground(shape(L.tile, L.ink, 4, false));
-            t.addView(rect(L.sides[i % L.sides.length]), new LinearLayout.LayoutParams(-1, px(16)));
+            t.addView(rect(L.sides[i % L.sides.length]), new LinearLayout.LayoutParams(-1, px(h >= 112 ? 16 : 12)));
             LinearLayout row = new LinearLayout(this); row.setOrientation(LinearLayout.HORIZONTAL); row.setLayoutDirection(Dir.layout());
             TextView nm = centered(s.n > 6 ? "" : clip(names[i], small ? 30 : 40, w - (small ? 130 : 180)), small ? 30 : 40, L.ink, true); nm.setSingleLine(true);
             row.addView(nm, new LinearLayout.LayoutParams(0, -1, 1f));
@@ -503,11 +489,11 @@ public abstract class GameActivity extends Activity {
             LinearLayout cell = new LinearLayout(this); cell.setOrientation(LinearLayout.VERTICAL); cell.setGravity(Gravity.CENTER);
             TextView sc = centered(num(s.points[i]), small ? 44 : 52, L.ink, true); sc.setTextDirection(View.TEXT_DIRECTION_LTR); sc.setIncludeFontPadding(false);
             cell.addView(sc, new LinearLayout.LayoutParams(-2, -2));
-            if (!small) cell.addView(centered(S.t("نقطة"), 22, L.ink(0xA6), false), new LinearLayout.LayoutParams(-2, -2));
+            if (!small && h >= 112) cell.addView(centered(S.t("نقطة"), 22, L.ink(0xA6), false), new LinearLayout.LayoutParams(-2, -2));
             row.addView(cell, new LinearLayout.LayoutParams(px(small ? 90 : 130), -1));
             t.addView(row, new LinearLayout.LayoutParams(-1, 0, 1f));
             if (i == turn) { t.setScaleX(1.06f); t.setScaleY(1.06f); t.setElevation(px(24)); }
-            root.addView(t, at(w, 112, 96 + i * (w + gap), y));
+            root.addView(t, at(w, h, 96 + i * (w + gap), y));
         }
     }
 

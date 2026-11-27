@@ -57,4 +57,6 @@ check("«على جبيني» is a mode of «بدون كلام»: the forehead's 
 new = code(ca) + code(base[base.index("protected final TextView focusCard"):base.index("protected final void board")])
 check("the new screens follow our rules: no colour of their own, no «·», no pill or rounded shape, focus by scale and shadow", not re.search(r"0xFF[0-9A-Fa-f]{6}", code(ca)) and "·" not in new and "•" not in new and "setCornerRadius" not in new and "setScaleX(1.06f)" in base and "setElevation(px(24))" in base)
 check("the encrypted banks stay closed: only GameBundles opens a .gb, in memory", ".gb" not in code(ca) and "FileOutputStream" not in code(ca) and "openFileOutput" not in code(ca))
+check("the score cells are everywhere: the old sidesBar draws through the same bar (88 high, so no old layout moves), the new screens use it at 112 with the «نقطة» label",
+      "protected final void sidesBar(GameScore s, String[] names, int turn, float y) { scoreBarH(s, names, turn, y, 88); }" in base and "scoreBarH(s, names, turn, y, 112)" in base and "h >= 112" in base and "t.setBackground(shape(on ? L.ink" not in base)
 print("failed" if failed else "ok"); sys.exit(1 if failed else 0)
