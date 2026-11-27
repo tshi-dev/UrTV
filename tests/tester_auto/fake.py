@@ -69,7 +69,7 @@ def tv(cmd):
             put("playing", "1")
             if os.environ.get("FAKE_MUTE_ON_RADIO") == "1":
                 put("muted", "1")
-    if "dumpsys activity activities" in cmd and "grep -m1" in cmd:
+    if "dumpsys activity activities" in cmd and "grep -m1" in cmd and not cmd.startswith("dumpsys dreams"):
         f = st("front")
         print(f"  mResumedActivity: ActivityRecord{{1 u0 {f}/.MainActivity t5}}" if f else "  mResumedActivity: ActivityRecord{1 u0 com.other.app/.Main t5}")
     elif "uiautomator dump" in cmd:
