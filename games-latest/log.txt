@@ -2,42 +2,42 @@ Performing Streamed Install
 Success
 Performing Streamed Install
 Success
-screens-out/gr.json: 1 file pushed, 0 skipped. 8.1 MB/s (522 bytes in 0.000s)
+screens-out/gr.json: 1 file pushed, 0 skipped. 6.6 MB/s (522 bytes in 0.000s)
 total 24
-drwxrwxrwx 2 u0_a76 u0_a76 4096 2026-11-27 23:01 .
-drwxrwxrwx 3 u0_a76 u0_a76 4096 2026-11-27 23:01 ..
--rw-rw-rw- 1 u0_a76 u0_a76  522 2026-11-27 23:01 games-release.json
+drwxrwxrwx 2 u0_a76 u0_a76 4096 2026-11-27 23:09 .
+drwxrwxrwx 3 u0_a76 u0_a76 4096 2026-11-27 23:09 ..
+-rw-rw-rw- 1 u0_a76 u0_a76  522 2026-11-27 23:09 games-release.json
 shot list-00 174268
 shot callaloud-setup-before 99588
 shot callaloud-setup-remote-on 101146
 shot callaloud-setup-prefilled 102706
-shot callaloud-a-question 85954
-shot callaloud-b-reveal 83279
-shot callaloud-c-who-first 73822
-shot callaloud-c2-who-first-focus 73454
-shot callaloud-d-next-with-score 81442
+shot callaloud-a-question 72875
+shot callaloud-b-reveal 70852
+shot callaloud-c-who-first 73101
+shot callaloud-c2-who-first-focus 72801
+shot callaloud-d-next-with-score 77152
 shot forehead-setup-before 107775
 shot forehead-setup-remote-on 109214
 shot forehead-a-cover 108402
-shot forehead-b-room 113968
-shot forehead-c-next-word 105468
+shot forehead-b-room 135473
+shot forehead-c-next-word 114985
 shot liar-setup-before 107311
 shot liar-setup-remote-on 112985
-shot liar-a-pass 64990
-shot liar-b-secret 72527
-shot liar-d-talk 100975
-shot liar-e-hands-vote 91735
-shot liar-e2-hands-vote-focus 91404
-shot liar-f-result 54045
+shot liar-a-pass 64545
+shot liar-b-secret 74006
+shot liar-d-talk 100927
+shot liar-e-hands-vote 92260
+shot liar-e2-hands-vote-focus 91593
+shot liar-f-result 53935
 shot closest-setup-before 101742
 shot closest-setup-remote-on 107514
-shot closest-a-paper 115827
-shot closest-b-reveal 100022
-shot closest-c-first-place 88680
-shot closest-c2-second-place 92357
-shot closest-d-next-with-score 123706
-shot old-missing-word-score-cells 110076
-shot old-khanat-score-cells 83786
+shot closest-a-paper 116282
+shot closest-b-reveal 97145
+shot closest-c-first-place 88181
+shot closest-c2-second-place 91516
+shot closest-d-next-with-score 117541
+shot old-missing-word-score-cells 119148
+shot old-khanat-score-cells 85068
 shot list-01-tags 174268
 shot list-02-tags-first-row 175037
 callaloud-a-question.png

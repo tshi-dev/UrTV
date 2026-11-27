@@ -1,0 +1,77 @@
+Performing Streamed Install
+Success
+Performing Streamed Install
+Success
+screens-out/gr.json: 1 file pushed, 0 skipped. 6.6 MB/s (522 bytes in 0.000s)
+total 24
+drwxrwxrwx 2 u0_a76 u0_a76 4096 2026-11-27 23:09 .
+drwxrwxrwx 3 u0_a76 u0_a76 4096 2026-11-27 23:09 ..
+-rw-rw-rw- 1 u0_a76 u0_a76  522 2026-11-27 23:09 games-release.json
+shot list-00 174268
+shot callaloud-setup-before 99588
+shot callaloud-setup-remote-on 101146
+shot callaloud-setup-prefilled 102706
+shot callaloud-a-question 72875
+shot callaloud-b-reveal 70852
+shot callaloud-c-who-first 73101
+shot callaloud-c2-who-first-focus 72801
+shot callaloud-d-next-with-score 77152
+shot forehead-setup-before 107775
+shot forehead-setup-remote-on 109214
+shot forehead-a-cover 108402
+shot forehead-b-room 135473
+shot forehead-c-next-word 114985
+shot liar-setup-before 107311
+shot liar-setup-remote-on 112985
+shot liar-a-pass 64545
+shot liar-b-secret 74006
+shot liar-d-talk 100927
+shot liar-e-hands-vote 92260
+shot liar-e2-hands-vote-focus 91593
+shot liar-f-result 53935
+shot closest-setup-before 101742
+shot closest-setup-remote-on 107514
+shot closest-a-paper 116282
+shot closest-b-reveal 97145
+shot closest-c-first-place 88181
+shot closest-c2-second-place 91516
+shot closest-d-next-with-score 117541
+shot old-missing-word-score-cells 119148
+shot old-khanat-score-cells 85068
+shot list-01-tags 174268
+shot list-02-tags-first-row 175037
+callaloud-a-question.png
+callaloud-b-reveal.png
+callaloud-c-who-first.png
+callaloud-c2-who-first-focus.png
+callaloud-d-next-with-score.png
+callaloud-setup-before.png
+callaloud-setup-prefilled.png
+callaloud-setup-remote-on.png
+closest-a-paper.png
+closest-b-reveal.png
+closest-c-first-place.png
+closest-c2-second-place.png
+closest-d-next-with-score.png
+closest-setup-before.png
+closest-setup-remote-on.png
+crashes.txt
+forehead-a-cover.png
+forehead-b-room.png
+forehead-c-next-word.png
+forehead-setup-before.png
+forehead-setup-remote-on.png
+liar-a-pass.png
+liar-b-secret.png
+liar-d-talk.png
+liar-e-hands-vote.png
+liar-e2-hands-vote-focus.png
+liar-f-result.png
+liar-setup-before.png
+liar-setup-remote-on.png
+list-00.png
+list-01-tags.png
+list-02-tags-first-row.png
+log.txt
+old-khanat-score-cells.png
+old-missing-word-score-cells.png
