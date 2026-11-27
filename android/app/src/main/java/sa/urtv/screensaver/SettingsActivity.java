@@ -250,7 +250,8 @@ public class SettingsActivity extends Activity {
 
     /** Back on a category's rows (or on «البطاقات», «المزيد») goes back to the screen its button is on, the focus on that button; on the first screen it leaves. */
     @Override public boolean dispatchKeyEvent(android.view.KeyEvent e) {
-        if (e.getAction() == android.view.KeyEvent.ACTION_DOWN) { returnWant = null; keyed = true; }   // the person moves: the focus is theirs again
+        if (e.getAction() == android.view.KeyEvent.ACTION_DOWN) returnWant = null;   // the person moves: the focus is theirs again
+        if (e.getAction() == android.view.KeyEvent.ACTION_DOWN) keyed = true;   // 4.4 beta 4: from now on a redraw keeps the row the person is on
         if (okHold.key(e.getKeyCode(), e.getAction(), android.os.SystemClock.uptimeMillis())) {
             // a build waited for this release: the row that saw the press takes its click first, then the list is built
             boolean done = super.dispatchKeyEvent(e);

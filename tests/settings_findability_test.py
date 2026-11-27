@@ -104,7 +104,7 @@ check("the phone link has one name: the help says the home's «الجوال» bu
       all("أسهل من الجوال" not in p and "Easier from the phone" not in p for p in phone)
       and "أسهل من الجوال" not in (ROOT / "android/launcher/src/main/java/sa/urtv/home/tilawah/AudioActivity.java").read_text(encoding="utf-8"))
 check("«كنبة» opens on «الصلاة والأذان» with the focus on its item, and keeps it there when the home's answer about the adhan redraws the rows (the emulator's shot: it jumped to the first row)",
-      "if (!classic && !entering && (had == null || !keyed) && page == null && !SettingsHub.SEARCH.equals(screen)) sideFocus = true;" in st_src and "keyed = true; }" in st_src
+      "if (!classic && !entering && (had == null || !keyed) && page == null && !SettingsHub.SEARCH.equals(screen)) sideFocus = true;" in st_src and "KeyEvent.ACTION_DOWN) keyed = true;" in st_src
       and st_src.index("if (!classic && !entering && (had == null || !keyed) && page == null && !SettingsHub.SEARCH.equals(screen)) sideFocus = true;") < st_src.index("if (sideFocus) {   // the focus stays on"))
 city_note = (APP / "Location.java").read_text(encoding="utf-8")
 check("the city's note names the section it is in now («اللغة والموقع»), on the TV and on the page", "لتغييرها: الإعدادات ثم اللغة والموقع" in city_note
