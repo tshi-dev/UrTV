@@ -1,0 +1,87 @@
+{
+  "schema": 1,
+  "city": {
+    "name": "الرياض",
+    "lat": 24.6877,
+    "lon": 46.7219,
+    "tz": "Asia/Riyadh",
+    "country": "SA"
+  },
+  "digits": "hindi",
+  "clock_size": "large",
+  "card_style": "current",
+  "clock24": false,
+  "greeting": true,
+  "sunrise": false,
+  "prayerbar": false,
+  "wxmore": false,
+  "pagesdark": true,
+  "matchestoday": false,
+  "months": "default",
+  "lang": "ar",
+  "listen_pill": true,
+  "update_bell": true,
+  "pills_hidden": [],
+  "home_photos": "same",
+  "home_packs": [],
+  "accent": "default",
+  "focus_style": "solid",
+  "bar_opacity": 100,
+  "wall_dim": 0,
+  "album_mode": "seconds",
+  "album_date": true,
+  "glow": "off",
+  "clear_text": false,
+  "album_title": true,
+  "album_fit": "fit",
+  "album_size": "normal",
+  "look_sync": true,
+  "home_ours": true,
+  "fav_bar": "5",
+  "prayer": {
+    "method": "auto",
+    "adjust_on": false,
+    "adjust": {
+      "fajr": 0,
+      "dhuhr": 0,
+      "asr": 0,
+      "maghrib": 0,
+      "isha": 0
+    }
+  },
+  "hijri_offset": 0,
+  "cards": {
+    "panel": "verse",
+    "panel2": "none",
+    "home": []
+  },
+  "markets": {
+    "on": true,
+    "list": [
+      "tasi",
+      "spx",
+      "btc"
+    ],
+    "style": "arrows"
+  },
+  "teams": [
+    {
+      "id": "136013",
+      "name": "الهلال"
+    },
+    {
+      "id": "136137",
+      "name": "المنتخب السعودي"
+    }
+  ],
+  "reciter_favs": [],
+  "adhan": {
+    "on": false,
+    "voice": 1,
+    "fajr_voice": 10,
+    "short": false,
+    "stopkey": true,
+    "volume": 30,
+    "bar": true
+  }
+}
