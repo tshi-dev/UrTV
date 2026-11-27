@@ -1,0 +1,344 @@
+[
+{
+"id": "mt-rid-sq64",
+"type": "riddle",
+"category": "maths-logic",
+"difficulty": 2,
+"age": "all",
+"question": {
+"ar": "ما العدد الذي إذا ضربته في نفسه كان الناتج ٦٤؟",
+"en": "Which number multiplied by itself gives 64?"
+},
+"answer": {
+"ar": "٨",
+"en": "8"
+},
+"source": [
+"computed:solved-by-search"
+],
+"verified": true
+},
+{
+"id": "mt-rid-third12",
+"type": "riddle",
+"category": "maths-logic",
+"difficulty": 2,
+"age": "all",
+"question": {
+"ar": "عدد ثلثه ١٢. ما هو؟",
+"en": "A number's third is 12. What is it?"
+},
+"answer": {
+"ar": "٣٦",
+"en": "36"
+},
+"source": [
+"computed:solved-by-search"
+],
+"verified": true
+},
+{
+"id": "mt-rid-plus_half",
+"type": "riddle",
+"category": "maths-logic",
+"difficulty": 2,
+"age": "all",
+"question": {
+"ar": "عدد إذا أضفت إليه نصفه صار ٣٠. ما هو؟",
+"en": "A number plus its half is 30. What is it?"
+},
+"answer": {
+"ar": "٢٠",
+"en": "20"
+},
+"source": [
+"computed:solved-by-search"
+],
+"verified": true
+},
+{
+"id": "mt-rid-lin",
+"type": "riddle",
+"category": "maths-logic",
+"difficulty": 2,
+"age": "all",
+"question": {
+"ar": "فكّرت في عدد، ضاعفته ثم أضفت ٧ فصار ٣١. ما العدد؟",
+"en": "I doubled a number and added 7 to get 31. Which number?"
+},
+"answer": {
+"ar": "١٢",
+"en": "12"
+},
+"source": [
+"computed:solved-by-search"
+],
+"verified": true
+},
+{
+"id": "mt-rid-consec",
+"type": "riddle",
+"category": "maths-logic",
+"difficulty": 2,
+"age": "all",
+"question": {
+"ar": "ثلاثة أعداد متتالية مجموعها ٤٨. ما أصغرها؟",
+"en": "Three consecutive numbers add up to 48. What is the smallest?"
+},
+"answer": {
+"ar": "١٥",
+"en": "15"
+},
+"source": [
+"computed:solved-by-search"
+],
+"verified": true
+},
+{
+"id": "mt-rid-quarter",
+"type": "riddle",
+"category": "maths-logic",
+"difficulty": 2,
+"age": "all",
+"question": {
+"ar": "ربع عدد يساوي ٢٥. ما العدد؟",
+"en": "A quarter of a number is 25. What is it?"
+},
+"answer": {
+"ar": "٢٥",
+"en": "25"
+},
+"source": [
+"computed:solved-by-search"
+],
+"verified": true
+},
+{
+"id": "mt-rid-balance",
+"type": "riddle",
+"category": "maths-logic",
+"difficulty": 2,
+"age": "all",
+"question": {
+"ar": "إذا أضفنا ١٥ إلى عدد حصلنا على ما يساوي ثلاثة أمثاله ناقص ٥. ما العدد؟",
+"en": "Adding 15 to a number gives three times it minus 5. Which number?"
+},
+"answer": {
+"ar": "١٠",
+"en": "10"
+},
+"source": [
+"computed:solved-by-search"
+],
+"verified": true
+},
+{
+"id": "mt-rid-dozen",
+"type": "riddle",
+"category": "maths-logic",
+"difficulty": 2,
+"age": "all",
+"question": {
+"ar": "كم دزينة في ١٤٤ قطعة؟",
+"en": "How many dozens are in 144 items?"
+},
+"answer": {
+"ar": "١٢",
+"en": "12"
+},
+"source": [
+"computed:solved-by-search"
+],
+"verified": true
+},
+{
+"id": "mt-rid-hand4",
+"type": "riddle",
+"category": "maths-logic",
+"difficulty": 2,
+"age": "all",
+"question": {
+"ar": "في مجلس ٤ أشخاص، صافح كلٌّ منهم كل الآخرين مرة واحدة. كم مصافحة حدثت؟",
+"en": "4 people each shake hands once with every other person. How many handshakes?"
+},
+"answer": {
+"ar": "٦",
+"en": "6"
+},
+"source": [
+"computed:solved-by-search"
+],
+"verified": true
+},
+{
+"id": "mt-rid-hand5",
+"type": "riddle",
+"category": "maths-logic",
+"difficulty": 2,
+"age": "all",
+"question": {
+"ar": "في مجلس ٥ أشخاص، صافح كلٌّ منهم كل الآخرين مرة واحدة. كم مصافحة حدثت؟",
+"en": "5 people each shake hands once with every other person. How many handshakes?"
+},
+"answer": {
+"ar": "١٠",
+"en": "10"
+},
+"source": [
+"computed:solved-by-search"
+],
+"verified": true
+},
+{
+"id": "mt-rid-hand6",
+"type": "riddle",
+"category": "maths-logic",
+"difficulty": 2,
+"age": "all",
+"question": {
+"ar": "في مجلس ٦ أشخاص، صافح كلٌّ منهم كل الآخرين مرة واحدة. كم مصافحة حدثت؟",
+"en": "6 people each shake hands once with every other person. How many handshakes?"
+},
+"answer": {
+"ar": "١٥",
+"en": "15"
+},
+"source": [
+"computed:solved-by-search"
+],
+"verified": true
+},
+{
+"id": "mt-rid-hand8",
+"type": "riddle",
+"category": "maths-logic",
+"difficulty": 2,
+"age": "all",
+"question": {
+"ar": "في مجلس ٨ أشخاص، صافح كلٌّ منهم كل الآخرين مرة واحدة. كم مصافحة حدثت؟",
+"en": "8 people each shake hands once with every other person. How many handshakes?"
+},
+"answer": {
+"ar": "٢٨",
+"en": "28"
+},
+"source": [
+"computed:solved-by-search"
+],
+"verified": true
+},
+{
+"id": "mt-rid-hand10",
+"type": "riddle",
+"category": "maths-logic",
+"difficulty": 2,
+"age": "all",
+"question": {
+"ar": "في مجلس ١٠ أشخاص، صافح كلٌّ منهم كل الآخرين مرة واحدة. كم مصافحة حدثت؟",
+"en": "10 people each shake hands once with every other person. How many handshakes?"
+},
+"answer": {
+"ar": "٤٥",
+"en": "45"
+},
+"source": [
+"computed:solved-by-search"
+],
+"verified": true
+},
+{
+"id": "mt-rid-age40",
+"type": "riddle",
+"category": "maths-logic",
+"difficulty": 2,
+"age": "all",
+"question": {
+"ar": "عمر الأب ٤٠ وعمر ابنه ١٠. بعد كم سنة يصير عمر الأب ضعف عمر الابن؟",
+"en": "A father is 40 and his son is 10. In how many years will the father be twice as old?"
+},
+"answer": {
+"ar": "٢٠",
+"en": "20"
+},
+"source": [
+"computed:solved-by-search"
+],
+"verified": true
+},
+{
+"id": "mt-rid-age36",
+"type": "riddle",
+"category": "maths-logic",
+"difficulty": 2,
+"age": "all",
+"question": {
+"ar": "عمر الأب ٣٦ وعمر ابنه ٦. بعد كم سنة يصير عمر الأب ضعف عمر الابن؟",
+"en": "A father is 36 and his son is 6. In how many years will the father be twice as old?"
+},
+"answer": {
+"ar": "٢٤",
+"en": "24"
+},
+"source": [
+"computed:solved-by-search"
+],
+"verified": true
+},
+{
+"id": "mt-rid-clock3",
+"type": "riddle",
+"category": "maths-logic",
+"difficulty": 2,
+"age": "all",
+"question": {
+"ar": "كم درجة بين عقربي الساعة عند الساعة ٣:٠٠ (الزاوية الأصغر)؟",
+"en": "How many degrees between the clock hands at 3:00 (the smaller angle)?"
+},
+"answer": {
+"ar": "٩٠",
+"en": "90"
+},
+"source": [
+"computed:solved-by-search"
+],
+"verified": true
+},
+{
+"id": "mt-rid-clock6",
+"type": "riddle",
+"category": "maths-logic",
+"difficulty": 2,
+"age": "all",
+"question": {
+"ar": "كم درجة بين عقربي الساعة عند الساعة ٦:٠٠ (الزاوية الأصغر)؟",
+"en": "How many degrees between the clock hands at 6:00 (the smaller angle)?"
+},
+"answer": {
+"ar": "١٨٠",
+"en": "180"
+},
+"source": [
+"computed:solved-by-search"
+],
+"verified": true
+},
+{
+"id": "mt-rid-clock9",
+"type": "riddle",
+"category": "maths-logic",
+"difficulty": 2,
+"age": "all",
+"question": {
+"ar": "كم درجة بين عقربي الساعة عند الساعة ٩:٠٠ (الزاوية الأصغر)؟",
+"en": "How many degrees between the clock hands at 9:00 (the smaller angle)?"
+},
+"answer": {
+"ar": "٩٠",
+"en": "90"
+},
+"source": [
+"computed:solved-by-search"
+],
+"verified": true
+}
+]

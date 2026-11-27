@@ -1,0 +1,242 @@
+[
+{
+"id": "mt-est-0",
+"type": "estimate",
+"category": "maths-logic",
+"difficulty": 2,
+"age": "all",
+"question": {
+"ar": "كم ثانية في اليوم؟",
+"en": "How many seconds are in a day?"
+},
+"answer": {
+"ar": "٨٦٤٠٠ ثانية",
+"en": "86400 seconds"
+},
+"value": 86400,
+"unit": {
+"ar": "ثانية",
+"en": "seconds"
+},
+"source": [
+"computed:arithmetic"
+],
+"verified": true
+},
+{
+"id": "mt-est-1",
+"type": "estimate",
+"category": "maths-logic",
+"difficulty": 2,
+"age": "all",
+"question": {
+"ar": "كم دقيقة في الأسبوع؟",
+"en": "How many minutes are in a week?"
+},
+"answer": {
+"ar": "١٠٠٨٠ دقيقة",
+"en": "10080 minutes"
+},
+"value": 10080,
+"unit": {
+"ar": "دقيقة",
+"en": "minutes"
+},
+"source": [
+"computed:arithmetic"
+],
+"verified": true
+},
+{
+"id": "mt-est-2",
+"type": "estimate",
+"category": "maths-logic",
+"difficulty": 2,
+"age": "all",
+"question": {
+"ar": "كم ساعة في الأسبوع؟",
+"en": "How many hours are in a week?"
+},
+"answer": {
+"ar": "١٦٨ ساعة",
+"en": "168 hours"
+},
+"value": 168,
+"unit": {
+"ar": "ساعة",
+"en": "hours"
+},
+"source": [
+"computed:arithmetic"
+],
+"verified": true
+},
+{
+"id": "mt-est-3",
+"type": "estimate",
+"category": "maths-logic",
+"difficulty": 2,
+"age": "all",
+"question": {
+"ar": "كم رجلًا لـ ١٢ دجاجة؟",
+"en": "How many legs do 12 chickens have?"
+},
+"answer": {
+"ar": "٢٤ رجل",
+"en": "24 legs"
+},
+"value": 24,
+"unit": {
+"ar": "رجل",
+"en": "legs"
+},
+"source": [
+"computed:arithmetic"
+],
+"verified": true
+},
+{
+"id": "mt-est-4",
+"type": "estimate",
+"category": "maths-logic",
+"difficulty": 2,
+"age": "all",
+"question": {
+"ar": "كم إصبعًا في ١٠ أيدٍ؟",
+"en": "How many fingers are on 10 hands?"
+},
+"answer": {
+"ar": "٥٠ إصبع",
+"en": "50 fingers"
+},
+"value": 50,
+"unit": {
+"ar": "إصبع",
+"en": "fingers"
+},
+"source": [
+"computed:arithmetic"
+],
+"verified": true
+},
+{
+"id": "mt-est-5",
+"type": "estimate",
+"category": "maths-logic",
+"difficulty": 2,
+"age": "all",
+"question": {
+"ar": "كم ملّيمتر في المتر؟",
+"en": "How many millimetres are in a metre?"
+},
+"answer": {
+"ar": "١٠٠٠ ملّيمتر",
+"en": "1000 millimetres"
+},
+"value": 1000,
+"unit": {
+"ar": "ملّيمتر",
+"en": "millimetres"
+},
+"source": [
+"computed:arithmetic"
+],
+"verified": true
+},
+{
+"id": "mt-est-6",
+"type": "estimate",
+"category": "maths-logic",
+"difficulty": 2,
+"age": "all",
+"question": {
+"ar": "كم مترًا في ٥ كيلومترات؟",
+"en": "How many metres are in 5 kilometres?"
+},
+"answer": {
+"ar": "٥٠٠٠ متر",
+"en": "5000 metres"
+},
+"value": 5000,
+"unit": {
+"ar": "متر",
+"en": "metres"
+},
+"source": [
+"computed:arithmetic"
+],
+"verified": true
+},
+{
+"id": "mt-est-7",
+"type": "estimate",
+"category": "maths-logic",
+"difficulty": 2,
+"age": "all",
+"question": {
+"ar": "كم دقيقة في ٣ ساعات؟",
+"en": "How many minutes are in 3 hours?"
+},
+"answer": {
+"ar": "١٨٠ دقيقة",
+"en": "180 minutes"
+},
+"value": 180,
+"unit": {
+"ar": "دقيقة",
+"en": "minutes"
+},
+"source": [
+"computed:arithmetic"
+],
+"verified": true
+},
+{
+"id": "mt-est-8",
+"type": "estimate",
+"category": "maths-logic",
+"difficulty": 2,
+"age": "all",
+"question": {
+"ar": "كم يومًا في ١٢ أسبوعًا؟",
+"en": "How many days are in 12 weeks?"
+},
+"answer": {
+"ar": "٨٤ يوم",
+"en": "84 days"
+},
+"value": 84,
+"unit": {
+"ar": "يوم",
+"en": "days"
+},
+"source": [
+"computed:arithmetic"
+],
+"verified": true
+},
+{
+"id": "mt-est-9",
+"type": "estimate",
+"category": "maths-logic",
+"difficulty": 2,
+"age": "all",
+"question": {
+"ar": "كم حرفًا في الأبجدية العربية؟",
+"en": "How many letters are in the Arabic alphabet?"
+},
+"answer": {
+"ar": "٢٨ حرف",
+"en": "28 letters"
+},
+"value": 28,
+"unit": {
+"ar": "حرف",
+"en": "letters"
+},
+"source": [
+"computed:arithmetic"
+],
+"verified": true
+}
+]

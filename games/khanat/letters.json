@@ -1,0 +1,3319 @@
+{
+"letters": [
+"ا",
+"ب",
+"ت",
+"ج",
+"ح",
+"خ",
+"د",
+"ذ",
+"ر",
+"ز",
+"س",
+"ش",
+"ص",
+"ط",
+"ع",
+"غ",
+"ف",
+"ق",
+"ك",
+"ل",
+"م",
+"ن",
+"ه",
+"و",
+"ي"
+],
+"rare_letters": [
+"ث",
+"ض",
+"ظ"
+],
+"hard_letters": [
+"خ",
+"ذ",
+"ش",
+"ص",
+"ط",
+"غ",
+"ز",
+"و",
+"ي"
+],
+"boxes": [
+"animal",
+"plant",
+"object",
+"country",
+"name"
+],
+"extra_boxes": [
+"food",
+"job",
+"saudi_city",
+"city"
+],
+"samples": {
+"ا": {
+"animal": [
+{
+"ar": "أرنب",
+"en": "rabbit",
+"source": "curated"
+},
+{
+"ar": "إوزة",
+"en": "goose",
+"source": "curated"
+},
+{
+"ar": "أسد",
+"en": "lion",
+"source": "curated"
+},
+{
+"ar": "أرنب بري",
+"en": "hare",
+"source": "curated"
+},
+{
+"ar": "أخطبوط",
+"en": "octopus",
+"source": "curated"
+}
+],
+"plant": [
+{
+"ar": "أناناس",
+"en": "pineapple",
+"source": "curated"
+},
+{
+"ar": "أفوكادو",
+"en": "avocado",
+"source": "curated"
+}
+],
+"object": [
+{
+"ar": "أريكة",
+"en": "sofa",
+"source": "curated"
+},
+{
+"ar": "إبريق",
+"en": "jug",
+"source": "curated"
+},
+{
+"ar": "إبرة",
+"en": "needle",
+"source": "curated"
+},
+{
+"ar": "أرجوحة",
+"en": "swing",
+"source": "curated"
+}
+],
+"food": [
+{
+"ar": "آيس كريم",
+"en": "ice cream",
+"source": "curated"
+},
+{
+"ar": "أم علي",
+"en": "om ali",
+"source": "curated"
+}
+],
+"saudi_city": [
+{
+"ar": "أبها",
+"en": "Abha",
+"source": "curated"
+},
+{
+"ar": "الأحساء",
+"en": "Al-Ahsa",
+"source": "curated"
+}
+],
+"country": [
+{
+"ar": "الأردن",
+"en": "Jordan",
+"source": "curated"
+},
+{
+"ar": "الإمارات",
+"en": "UAE",
+"source": "curated"
+},
+{
+"ar": "الأرجنتين",
+"en": "Argentina",
+"source": "https://www.wikidata.org/wiki/Q414"
+},
+{
+"ar": "إيران",
+"en": "Iran",
+"source": "https://www.wikidata.org/wiki/Q794"
+},
+{
+"ar": "الإمارات العربية المتحدة",
+"en": "United Arab Emirates",
+"source": "https://www.wikidata.org/wiki/Q878"
+},
+{
+"ar": "إسبانيا",
+"en": "Spain",
+"source": "https://www.wikidata.org/wiki/Q29"
+},
+{
+"ar": "إيطاليا",
+"en": "Italy",
+"source": "https://www.wikidata.org/wiki/Q38"
+},
+{
+"ar": "أستراليا",
+"en": "Australia",
+"source": "https://www.wikidata.org/wiki/Q408"
+},
+{
+"ar": "إندونيسيا",
+"en": "Indonesia",
+"source": "https://www.wikidata.org/wiki/Q252"
+}
+],
+"name": [
+{
+"ar": "أحمد",
+"en": "",
+"source": "curated"
+},
+{
+"ar": "إبراهيم",
+"en": "",
+"source": "curated"
+},
+{
+"ar": "أنس",
+"en": "",
+"source": "curated"
+},
+{
+"ar": "أسامة",
+"en": "",
+"source": "curated"
+},
+{
+"ar": "أمل",
+"en": "",
+"source": "curated"
+},
+{
+"ar": "أسماء",
+"en": "",
+"source": "curated"
+},
+{
+"ar": "إيمان",
+"en": "",
+"source": "curated"
+}
+],
+"city": [
+{
+"ar": "إسلام آباد",
+"en": "Islamabad",
+"source": "https://www.wikidata.org/wiki/Q1362"
+},
+{
+"ar": "أبو ظبي",
+"en": "Abu Dhabi",
+"source": "https://www.wikidata.org/wiki/Q1519"
+},
+{
+"ar": "أنقرة",
+"en": "Ankara",
+"source": "https://www.wikidata.org/wiki/Q3640"
+},
+{
+"ar": "أثينا",
+"en": "Athens",
+"source": "https://www.wikidata.org/wiki/Q1524"
+},
+{
+"ar": "أوتاوا",
+"en": "Ottawa",
+"source": "https://www.wikidata.org/wiki/Q1930"
+}
+]
+},
+"ب": {
+"animal": [
+{
+"ar": "بقرة",
+"en": "cow",
+"source": "curated"
+},
+{
+"ar": "بطة",
+"en": "duck",
+"source": "curated"
+},
+{
+"ar": "بغل",
+"en": "mule",
+"source": "curated"
+},
+{
+"ar": "باندا",
+"en": "panda",
+"source": "curated"
+},
+{
+"ar": "بومة",
+"en": "owl",
+"source": "curated"
+},
+{
+"ar": "ببغاء",
+"en": "parrot",
+"source": "curated"
+},
+{
+"ar": "بطريق",
+"en": "penguin",
+"source": "curated"
+},
+{
+"ar": "بجعة",
+"en": "swan",
+"source": "curated"
+},
+{
+"ar": "بلبل",
+"en": "nightingale",
+"source": "curated"
+},
+{
+"ar": "بعوضة",
+"en": "mosquito",
+"source": "curated"
+}
+],
+"plant": [
+{
+"ar": "برتقال",
+"en": "orange",
+"source": "curated"
+},
+{
+"ar": "بطيخ",
+"en": "watermelon",
+"source": "curated"
+},
+{
+"ar": "بلح",
+"en": "fresh dates",
+"source": "curated"
+},
+{
+"ar": "بصل",
+"en": "onion",
+"source": "curated"
+},
+{
+"ar": "بطاطس",
+"en": "potato",
+"source": "curated"
+},
+{
+"ar": "باذنجان",
+"en": "eggplant",
+"source": "curated"
+},
+{
+"ar": "بروكلي",
+"en": "broccoli",
+"source": "curated"
+},
+{
+"ar": "بازلاء",
+"en": "peas",
+"source": "curated"
+},
+{
+"ar": "بامية",
+"en": "okra",
+"source": "curated"
+},
+{
+"ar": "بقدونس",
+"en": "parsley",
+"source": "curated"
+}
+],
+"object": [
+{
+"ar": "باب",
+"en": "door",
+"source": "curated"
+},
+{
+"ar": "برطمان",
+"en": "jar",
+"source": "curated"
+},
+{
+"ar": "برجل",
+"en": "compass",
+"source": "curated"
+},
+{
+"ar": "بطارية",
+"en": "battery",
+"source": "curated"
+},
+{
+"ar": "بالون",
+"en": "balloon",
+"source": "curated"
+},
+{
+"ar": "بنطلون",
+"en": "trousers",
+"source": "curated"
+},
+{
+"ar": "بيجامة",
+"en": "pyjamas",
+"source": "curated"
+},
+{
+"ar": "بدلة",
+"en": "suit",
+"source": "curated"
+}
+],
+"food": [
+{
+"ar": "بيض",
+"en": "egg",
+"source": "curated"
+},
+{
+"ar": "بيتزا",
+"en": "pizza",
+"source": "curated"
+},
+{
+"ar": "برغر",
+"en": "burger",
+"source": "curated"
+},
+{
+"ar": "بطاطس مقلية",
+"en": "fries",
+"source": "curated"
+},
+{
+"ar": "بسكويت",
+"en": "biscuit",
+"source": "curated"
+},
+{
+"ar": "بقلاوة",
+"en": "baklava",
+"source": "curated"
+},
+{
+"ar": "بودينغ",
+"en": "pudding",
+"source": "curated"
+},
+{
+"ar": "برياني",
+"en": "biryani",
+"source": "curated"
+}
+],
+"job": [
+{
+"ar": "بائع",
+"en": "seller",
+"source": "curated"
+}
+],
+"saudi_city": [
+{
+"ar": "بريدة",
+"en": "Buraydah",
+"source": "curated"
+},
+{
+"ar": "الباحة",
+"en": "Al-Baha",
+"source": "curated"
+}
+],
+"country": [
+{
+"ar": "البحرين",
+"en": "Bahrain",
+"source": "curated"
+},
+{
+"ar": "باكستان",
+"en": "Pakistan",
+"source": "https://www.wikidata.org/wiki/Q843"
+},
+{
+"ar": "البرازيل",
+"en": "Brazil",
+"source": "https://www.wikidata.org/wiki/Q155"
+}
+],
+"name": [
+{
+"ar": "بدر",
+"en": "",
+"source": "curated"
+},
+{
+"ar": "باسل",
+"en": "",
+"source": "curated"
+},
+{
+"ar": "بلال",
+"en": "",
+"source": "curated"
+},
+{
+"ar": "بشاير",
+"en": "",
+"source": "curated"
+}
+],
+"city": [
+{
+"ar": "بوينس آيرس",
+"en": "Buenos Aires",
+"source": "https://www.wikidata.org/wiki/Q1486"
+},
+{
+"ar": "بغداد",
+"en": "Baghdad",
+"source": "https://www.wikidata.org/wiki/Q1530"
+},
+{
+"ar": "بيروت",
+"en": "Beirut",
+"source": "https://www.wikidata.org/wiki/Q3820"
+},
+{
+"ar": "برازيليا",
+"en": "Brasília",
+"source": "https://www.wikidata.org/wiki/Q2844"
+},
+{
+"ar": "باريس",
+"en": "Paris",
+"source": "https://www.wikidata.org/wiki/Q90"
+},
+{
+"ar": "برلين",
+"en": "Berlin",
+"source": "https://www.wikidata.org/wiki/Q64"
+}
+]
+},
+"ت": {
+"animal": [
+{
+"ar": "تمساح",
+"en": "crocodile",
+"source": "curated"
+},
+{
+"ar": "تونة",
+"en": "tuna",
+"source": "curated"
+}
+],
+"plant": [
+{
+"ar": "تفاح",
+"en": "apple",
+"source": "curated"
+},
+{
+"ar": "تين",
+"en": "fig",
+"source": "curated"
+},
+{
+"ar": "تمر",
+"en": "dates",
+"source": "curated"
+},
+{
+"ar": "توت",
+"en": "berries",
+"source": "curated"
+}
+],
+"object": [
+{
+"ar": "تلفاز",
+"en": "television",
+"source": "curated"
+},
+{
+"ar": "تنورة",
+"en": "skirt",
+"source": "curated"
+}
+],
+"food": [
+{
+"ar": "تونة",
+"en": "tuna",
+"source": "curated"
+},
+{
+"ar": "تمر محشي",
+"en": "stuffed dates",
+"source": "curated"
+},
+{
+"ar": "تبولة",
+"en": "tabbouleh",
+"source": "curated"
+}
+],
+"saudi_city": [
+{
+"ar": "تبوك",
+"en": "Tabuk",
+"source": "curated"
+}
+],
+"country": [
+{
+"ar": "تونس",
+"en": "Tunisia",
+"source": "curated"
+},
+{
+"ar": "تركيا",
+"en": "Turkey",
+"source": "https://www.wikidata.org/wiki/Q43"
+}
+],
+"name": [
+{
+"ar": "تركي",
+"en": "",
+"source": "curated"
+},
+{
+"ar": "تالا",
+"en": "",
+"source": "curated"
+}
+],
+"city": [
+{
+"ar": "تونس",
+"en": "Tunis",
+"source": "https://www.wikidata.org/wiki/Q3572"
+}
+]
+},
+"ج": {
+"animal": [
+{
+"ar": "جمل",
+"en": "camel",
+"source": "curated"
+},
+{
+"ar": "جرادة",
+"en": "locust",
+"source": "curated"
+},
+{
+"ar": "جندب",
+"en": "grasshopper",
+"source": "curated"
+},
+{
+"ar": "جراد",
+"en": "swarm locust",
+"source": "curated"
+}
+],
+"plant": [
+{
+"ar": "جوافة",
+"en": "guava",
+"source": "curated"
+},
+{
+"ar": "جريب فروت",
+"en": "grapefruit",
+"source": "curated"
+},
+{
+"ar": "جزر",
+"en": "carrot",
+"source": "curated"
+},
+{
+"ar": "جرجير",
+"en": "arugula",
+"source": "curated"
+}
+],
+"object": [
+{
+"ar": "جدار",
+"en": "wall",
+"source": "curated"
+},
+{
+"ar": "جدول",
+"en": "timetable",
+"source": "curated"
+},
+{
+"ar": "جهاز ألعاب",
+"en": "console",
+"source": "curated"
+},
+{
+"ar": "جورب",
+"en": "sock",
+"source": "curated"
+},
+{
+"ar": "جرار",
+"en": "tractor",
+"source": "curated"
+}
+],
+"food": [
+{
+"ar": "جبن",
+"en": "cheese",
+"source": "curated"
+},
+{
+"ar": "جيلي",
+"en": "jelly",
+"source": "curated"
+},
+{
+"ar": "جريش",
+"en": "jareesh",
+"source": "curated"
+}
+],
+"saudi_city": [
+{
+"ar": "جدة",
+"en": "Jeddah",
+"source": "curated"
+},
+{
+"ar": "جازان",
+"en": "Jazan",
+"source": "curated"
+},
+{
+"ar": "الجبيل",
+"en": "Jubail",
+"source": "curated"
+}
+],
+"country": [
+{
+"ar": "الجزائر",
+"en": "Algeria",
+"source": "curated"
+},
+{
+"ar": "جيبوتي",
+"en": "Djibouti",
+"source": "curated"
+},
+{
+"ar": "جزر القمر",
+"en": "Comoros",
+"source": "curated"
+}
+],
+"name": [
+{
+"ar": "جاسم",
+"en": "",
+"source": "curated"
+},
+{
+"ar": "جود",
+"en": "",
+"source": "curated"
+},
+{
+"ar": "جواهر",
+"en": "",
+"source": "curated"
+},
+{
+"ar": "جنى",
+"en": "",
+"source": "curated"
+}
+],
+"city": [
+{
+"ar": "الجزائر العاصمة",
+"en": "Algiers",
+"source": "https://www.wikidata.org/wiki/Q3561"
+},
+{
+"ar": "جاكرتا",
+"en": "Jakarta",
+"source": "https://www.wikidata.org/wiki/Q3630"
+}
+]
+},
+"ح": {
+"animal": [
+{
+"ar": "حصان",
+"en": "horse",
+"source": "curated"
+},
+{
+"ar": "حمار",
+"en": "donkey",
+"source": "curated"
+},
+{
+"ar": "حمامة",
+"en": "pigeon",
+"source": "curated"
+},
+{
+"ar": "حبارى",
+"en": "bustard",
+"source": "curated"
+},
+{
+"ar": "حوت",
+"en": "whale",
+"source": "curated"
+},
+{
+"ar": "حصان البحر",
+"en": "seahorse",
+"source": "curated"
+},
+{
+"ar": "حبار",
+"en": "squid",
+"source": "curated"
+},
+{
+"ar": "حلزون",
+"en": "snail",
+"source": "curated"
+},
+{
+"ar": "حرباء",
+"en": "chameleon",
+"source": "curated"
+}
+],
+"object": [
+{
+"ar": "حقيبة",
+"en": "bag",
+"source": "curated"
+},
+{
+"ar": "حاسوب",
+"en": "computer",
+"source": "curated"
+},
+{
+"ar": "حبل",
+"en": "rope",
+"source": "curated"
+},
+{
+"ar": "حذاء",
+"en": "shoe",
+"source": "curated"
+},
+{
+"ar": "حزام",
+"en": "belt",
+"source": "curated"
+},
+{
+"ar": "حافلة",
+"en": "bus",
+"source": "curated"
+}
+],
+"food": [
+{
+"ar": "حمص",
+"en": "hummus",
+"source": "curated"
+},
+{
+"ar": "حلاوة",
+"en": "halwa",
+"source": "curated"
+},
+{
+"ar": "حنيني",
+"en": "hanini",
+"source": "curated"
+},
+{
+"ar": "حليب",
+"en": "milk",
+"source": "curated"
+},
+{
+"ar": "حليب بالشوكولاتة",
+"en": "chocolate milk",
+"source": "curated"
+}
+],
+"job": [
+{
+"ar": "حداد",
+"en": "blacksmith",
+"source": "curated"
+},
+{
+"ar": "حلاق",
+"en": "barber",
+"source": "curated"
+}
+],
+"saudi_city": [
+{
+"ar": "حائل",
+"en": "Hail",
+"source": "curated"
+}
+],
+"name": [
+{
+"ar": "حمد",
+"en": "",
+"source": "curated"
+},
+{
+"ar": "حسن",
+"en": "",
+"source": "curated"
+},
+{
+"ar": "حسين",
+"en": "",
+"source": "curated"
+},
+{
+"ar": "حصة",
+"en": "",
+"source": "curated"
+}
+]
+},
+"خ": {
+"animal": [
+{
+"ar": "خروف",
+"en": "sheep",
+"source": "curated"
+},
+{
+"ar": "خنفساء",
+"en": "beetle",
+"source": "curated"
+}
+],
+"plant": [
+{
+"ar": "خوخ",
+"en": "peach",
+"source": "curated"
+},
+{
+"ar": "خيار",
+"en": "cucumber",
+"source": "curated"
+}
+],
+"object": [
+{
+"ar": "خزانة",
+"en": "wardrobe",
+"source": "curated"
+},
+{
+"ar": "خلاط",
+"en": "blender",
+"source": "curated"
+},
+{
+"ar": "خريطة",
+"en": "map",
+"source": "curated"
+},
+{
+"ar": "خرطوم",
+"en": "hose",
+"source": "curated"
+},
+{
+"ar": "خيمة",
+"en": "tent",
+"source": "curated"
+}
+],
+"food": [
+{
+"ar": "خبز",
+"en": "bread",
+"source": "curated"
+}
+],
+"job": [
+{
+"ar": "خباز",
+"en": "baker",
+"source": "curated"
+},
+{
+"ar": "خياط",
+"en": "tailor",
+"source": "curated"
+}
+],
+"saudi_city": [
+{
+"ar": "الخبر",
+"en": "Khobar",
+"source": "curated"
+},
+{
+"ar": "خميس مشيط",
+"en": "Khamis Mushait",
+"source": "curated"
+}
+],
+"name": [
+{
+"ar": "خالد",
+"en": "",
+"source": "curated"
+},
+{
+"ar": "خديجة",
+"en": "",
+"source": "curated"
+}
+],
+"city": [
+{
+"ar": "الخرطوم",
+"en": "Khartoum",
+"source": "https://www.wikidata.org/wiki/Q1963"
+}
+]
+},
+"د": {
+"animal": [
+{
+"ar": "دجاجة",
+"en": "hen",
+"source": "curated"
+},
+{
+"ar": "ديك",
+"en": "rooster",
+"source": "curated"
+},
+{
+"ar": "ديك رومي",
+"en": "turkey",
+"source": "curated"
+},
+{
+"ar": "دلفين",
+"en": "dolphin",
+"source": "curated"
+},
+{
+"ar": "دودة",
+"en": "worm",
+"source": "curated"
+},
+{
+"ar": "دعسوقة",
+"en": "ladybird",
+"source": "curated"
+}
+],
+"object": [
+{
+"ar": "درج",
+"en": "stairs",
+"source": "curated"
+},
+{
+"ar": "دلة",
+"en": "dallah",
+"source": "curated"
+},
+{
+"ar": "دفتر",
+"en": "notebook",
+"source": "curated"
+},
+{
+"ar": "دباسة",
+"en": "stapler",
+"source": "curated"
+},
+{
+"ar": "دلو",
+"en": "bucket",
+"source": "curated"
+},
+{
+"ar": "دمية",
+"en": "doll",
+"source": "curated"
+},
+{
+"ar": "دراجة",
+"en": "bicycle",
+"source": "curated"
+},
+{
+"ar": "دومينو",
+"en": "dominoes",
+"source": "curated"
+},
+{
+"ar": "دراجة نارية",
+"en": "motorcycle",
+"source": "curated"
+},
+{
+"ar": "دراجة ثلاثية",
+"en": "tricycle",
+"source": "curated"
+}
+],
+"food": [
+{
+"ar": "دجاج",
+"en": "chicken",
+"source": "curated"
+},
+{
+"ar": "دونات",
+"en": "donut",
+"source": "curated"
+}
+],
+"saudi_city": [
+{
+"ar": "الدمام",
+"en": "Dammam",
+"source": "curated"
+}
+],
+"name": [
+{
+"ar": "دانة",
+"en": "",
+"source": "curated"
+},
+{
+"ar": "ديما",
+"en": "",
+"source": "curated"
+}
+],
+"city": [
+{
+"ar": "الدوحة",
+"en": "Doha",
+"source": "https://www.wikidata.org/wiki/Q3861"
+},
+{
+"ar": "دمشق",
+"en": "Damascus",
+"source": "https://www.wikidata.org/wiki/Q3766"
+}
+]
+},
+"ذ": {
+"animal": [
+{
+"ar": "ذئب",
+"en": "wolf",
+"source": "curated"
+},
+{
+"ar": "ذبابة",
+"en": "fly",
+"source": "curated"
+}
+],
+"plant": [
+{
+"ar": "ذرة",
+"en": "corn",
+"source": "curated"
+}
+]
+},
+"ر": {
+"animal": [
+{
+"ar": "رخمة",
+"en": "vulture",
+"source": "curated"
+},
+{
+"ar": "روبيان",
+"en": "shrimp",
+"source": "curated"
+}
+],
+"plant": [
+{
+"ar": "رمان",
+"en": "pomegranate",
+"source": "curated"
+}
+],
+"object": [
+{
+"ar": "ركوة",
+"en": "coffee pot",
+"source": "curated"
+},
+{
+"ar": "ريموت",
+"en": "remote",
+"source": "curated"
+},
+{
+"ar": "راديو",
+"en": "radio",
+"source": "curated"
+},
+{
+"ar": "روبوت",
+"en": "robot",
+"source": "curated"
+}
+],
+"job": [
+{
+"ar": "رسام",
+"en": "painter",
+"source": "curated"
+},
+{
+"ar": "رجل إطفاء",
+"en": "firefighter",
+"source": "curated"
+},
+{
+"ar": "رائد فضاء",
+"en": "astronaut",
+"source": "curated"
+}
+],
+"saudi_city": [
+{
+"ar": "الرياض",
+"en": "Riyadh",
+"source": "curated"
+}
+],
+"name": [
+{
+"ar": "راشد",
+"en": "",
+"source": "curated"
+},
+{
+"ar": "رائد",
+"en": "",
+"source": "curated"
+},
+{
+"ar": "ريم",
+"en": "",
+"source": "curated"
+},
+{
+"ar": "ريما",
+"en": "",
+"source": "curated"
+},
+{
+"ar": "رنا",
+"en": "",
+"source": "curated"
+},
+{
+"ar": "رغد",
+"en": "",
+"source": "curated"
+},
+{
+"ar": "رهف",
+"en": "",
+"source": "curated"
+},
+{
+"ar": "رحمة",
+"en": "",
+"source": "curated"
+}
+],
+"city": [
+{
+"ar": "الرباط",
+"en": "Rabat",
+"source": "https://www.wikidata.org/wiki/Q3551"
+},
+{
+"ar": "الرياض",
+"en": "Riyadh",
+"source": "https://www.wikidata.org/wiki/Q3692"
+},
+{
+"ar": "روما",
+"en": "Rome",
+"source": "https://www.wikidata.org/wiki/Q220"
+}
+],
+"country": [
+{
+"ar": "روسيا",
+"en": "Russia",
+"source": "https://www.wikidata.org/wiki/Q159"
+}
+]
+},
+"ز": {
+"animal": [
+{
+"ar": "زرافة",
+"en": "giraffe",
+"source": "curated"
+},
+{
+"ar": "زنبور",
+"en": "wasp",
+"source": "curated"
+}
+],
+"object": [
+{
+"ar": "زحليقة",
+"en": "slide",
+"source": "curated"
+},
+{
+"ar": "زورق",
+"en": "speedboat",
+"source": "curated"
+}
+],
+"food": [
+{
+"ar": "زبدة",
+"en": "butter",
+"source": "curated"
+},
+{
+"ar": "زبيب",
+"en": "raisins",
+"source": "curated"
+},
+{
+"ar": "زنجبيل",
+"en": "ginger",
+"source": "curated"
+}
+],
+"name": [
+{
+"ar": "زياد",
+"en": "",
+"source": "curated"
+},
+{
+"ar": "زينب",
+"en": "",
+"source": "curated"
+}
+]
+},
+"س": {
+"animal": [
+{
+"ar": "سنجاب",
+"en": "squirrel",
+"source": "curated"
+},
+{
+"ar": "سمكة",
+"en": "fish",
+"source": "curated"
+},
+{
+"ar": "سلحفاة",
+"en": "turtle",
+"source": "curated"
+},
+{
+"ar": "سرطان",
+"en": "crab",
+"source": "curated"
+},
+{
+"ar": "سلمون",
+"en": "salmon",
+"source": "curated"
+},
+{
+"ar": "سحلية",
+"en": "lizard",
+"source": "curated"
+}
+],
+"plant": [
+{
+"ar": "سبانخ",
+"en": "spinach",
+"source": "curated"
+}
+],
+"object": [
+{
+"ar": "سرير",
+"en": "bed",
+"source": "curated"
+},
+{
+"ar": "سجادة",
+"en": "carpet",
+"source": "curated"
+},
+{
+"ar": "ستارة",
+"en": "curtain",
+"source": "curated"
+},
+{
+"ar": "سقف",
+"en": "ceiling",
+"source": "curated"
+},
+{
+"ar": "سكين",
+"en": "knife",
+"source": "curated"
+},
+{
+"ar": "سبورة",
+"en": "board",
+"source": "curated"
+},
+{
+"ar": "سلم",
+"en": "ladder",
+"source": "curated"
+},
+{
+"ar": "ساعة ذكية",
+"en": "smartwatch",
+"source": "curated"
+},
+{
+"ar": "سماعة",
+"en": "headphones",
+"source": "curated"
+},
+{
+"ar": "سيارة لعبة",
+"en": "toy car",
+"source": "curated"
+},
+{
+"ar": "سترة",
+"en": "jacket",
+"source": "curated"
+},
+{
+"ar": "ساعة",
+"en": "watch",
+"source": "curated"
+},
+{
+"ar": "سيارة",
+"en": "car",
+"source": "curated"
+},
+{
+"ar": "سفينة",
+"en": "ship",
+"source": "curated"
+},
+{
+"ar": "سيارة إسعاف",
+"en": "ambulance",
+"source": "curated"
+}
+],
+"food": [
+{
+"ar": "سمك",
+"en": "fish",
+"source": "curated"
+},
+{
+"ar": "سمبوسة",
+"en": "samosa",
+"source": "curated"
+},
+{
+"ar": "ساندويتش",
+"en": "sandwich",
+"source": "curated"
+},
+{
+"ar": "سلطة",
+"en": "salad",
+"source": "curated"
+},
+{
+"ar": "سليق",
+"en": "saleeg",
+"source": "curated"
+},
+{
+"ar": "سحلب",
+"en": "sahlab",
+"source": "curated"
+}
+],
+"job": [
+{
+"ar": "سائق",
+"en": "driver",
+"source": "curated"
+}
+],
+"saudi_city": [
+{
+"ar": "سكاكا",
+"en": "Sakaka",
+"source": "curated"
+}
+],
+"country": [
+{
+"ar": "السعودية",
+"en": "Saudi Arabia",
+"source": "curated"
+},
+{
+"ar": "سوريا",
+"en": "Syria",
+"source": "curated"
+},
+{
+"ar": "السودان",
+"en": "Sudan",
+"source": "curated"
+},
+{
+"ar": "سلطنة عمان",
+"en": "Oman",
+"source": "https://www.wikidata.org/wiki/Q842"
+}
+],
+"name": [
+{
+"ar": "سلطان",
+"en": "",
+"source": "curated"
+},
+{
+"ar": "سعود",
+"en": "",
+"source": "curated"
+},
+{
+"ar": "سلمان",
+"en": "",
+"source": "curated"
+},
+{
+"ar": "سامي",
+"en": "",
+"source": "curated"
+},
+{
+"ar": "سارة",
+"en": "",
+"source": "curated"
+},
+{
+"ar": "سلمى",
+"en": "",
+"source": "curated"
+},
+{
+"ar": "سميرة",
+"en": "",
+"source": "curated"
+},
+{
+"ar": "سعاد",
+"en": "",
+"source": "curated"
+}
+],
+"city": [
+{
+"ar": "سول",
+"en": "Seoul",
+"source": "https://www.wikidata.org/wiki/Q8684"
+}
+]
+},
+"ش": {
+"animal": [
+{
+"ar": "شاهين",
+"en": "peregrine",
+"source": "curated"
+}
+],
+"plant": [
+{
+"ar": "شمام",
+"en": "melon",
+"source": "curated"
+},
+{
+"ar": "شمندر",
+"en": "beetroot",
+"source": "curated"
+}
+],
+"object": [
+{
+"ar": "شوكة",
+"en": "fork",
+"source": "curated"
+},
+{
+"ar": "شاشة",
+"en": "screen",
+"source": "curated"
+},
+{
+"ar": "شاحن",
+"en": "charger",
+"source": "curated"
+},
+{
+"ar": "شماغ",
+"en": "shemagh",
+"source": "curated"
+},
+{
+"ar": "شاحنة",
+"en": "truck",
+"source": "curated"
+}
+],
+"food": [
+{
+"ar": "شوربة",
+"en": "soup",
+"source": "curated"
+},
+{
+"ar": "شاورما",
+"en": "shawarma",
+"source": "curated"
+},
+{
+"ar": "شوكولاتة",
+"en": "chocolate",
+"source": "curated"
+},
+{
+"ar": "شيبس",
+"en": "chips",
+"source": "curated"
+},
+{
+"ar": "شاي",
+"en": "tea",
+"source": "curated"
+},
+{
+"ar": "شاي أخضر",
+"en": "green tea",
+"source": "curated"
+}
+],
+"job": [
+{
+"ar": "شرطي",
+"en": "police officer",
+"source": "curated"
+}
+],
+"name": [
+{
+"ar": "شهد",
+"en": "",
+"source": "curated"
+}
+]
+},
+"ص": {
+"animal": [
+{
+"ar": "صقر",
+"en": "falcon",
+"source": "curated"
+},
+{
+"ar": "صرصور",
+"en": "cricket",
+"source": "curated"
+}
+],
+"object": [
+{
+"ar": "صينية",
+"en": "tray",
+"source": "curated"
+},
+{
+"ar": "صلصال",
+"en": "clay",
+"source": "curated"
+},
+{
+"ar": "صاروخ",
+"en": "rocket",
+"source": "curated"
+}
+],
+"job": [
+{
+"ar": "صياد",
+"en": "fisherman",
+"source": "curated"
+},
+{
+"ar": "صيدلي",
+"en": "pharmacist",
+"source": "curated"
+}
+],
+"country": [
+{
+"ar": "الصومال",
+"en": "Somalia",
+"source": "curated"
+}
+],
+"name": [
+{
+"ar": "صالح",
+"en": "",
+"source": "curated"
+}
+]
+},
+"ط": {
+"animal": [
+{
+"ar": "طاووس",
+"en": "peacock",
+"source": "curated"
+}
+],
+"plant": [
+{
+"ar": "طماطم",
+"en": "tomato",
+"source": "curated"
+}
+],
+"object": [
+{
+"ar": "طاولة",
+"en": "table",
+"source": "curated"
+},
+{
+"ar": "طبق",
+"en": "plate",
+"source": "curated"
+},
+{
+"ar": "طباشير",
+"en": "chalk",
+"source": "curated"
+},
+{
+"ar": "طابعة",
+"en": "printer",
+"source": "curated"
+},
+{
+"ar": "طائرة ورقية",
+"en": "kite",
+"source": "curated"
+},
+{
+"ar": "طاقية",
+"en": "cap",
+"source": "curated"
+},
+{
+"ar": "طائرة",
+"en": "airplane",
+"source": "curated"
+}
+],
+"job": [
+{
+"ar": "طبيب",
+"en": "doctor",
+"source": "curated"
+},
+{
+"ar": "طيار",
+"en": "pilot",
+"source": "curated"
+},
+{
+"ar": "طباخ",
+"en": "cook",
+"source": "curated"
+},
+{
+"ar": "طبيب أسنان",
+"en": "dentist",
+"source": "curated"
+}
+],
+"saudi_city": [
+{
+"ar": "الطائف",
+"en": "Taif",
+"source": "curated"
+}
+],
+"name": [
+{
+"ar": "طارق",
+"en": "",
+"source": "curated"
+}
+],
+"city": [
+{
+"ar": "طرابلس",
+"en": "Tripoli",
+"source": "https://www.wikidata.org/wiki/Q3579"
+},
+{
+"ar": "طهران",
+"en": "Tehran",
+"source": "https://www.wikidata.org/wiki/Q3616"
+},
+{
+"ar": "طوكيو",
+"en": "Tokyo",
+"source": "https://www.wikidata.org/wiki/Q1490"
+}
+]
+},
+"ع": {
+"animal": [
+{
+"ar": "عجل",
+"en": "calf",
+"source": "curated"
+},
+{
+"ar": "عصفور",
+"en": "sparrow",
+"source": "curated"
+},
+{
+"ar": "عنكبوت",
+"en": "spider",
+"source": "curated"
+}
+],
+"plant": [
+{
+"ar": "عنب",
+"en": "grapes",
+"source": "curated"
+}
+],
+"object": [
+{
+"ar": "عباءة",
+"en": "abaya",
+"source": "curated"
+},
+{
+"ar": "عقال",
+"en": "agal",
+"source": "curated"
+},
+{
+"ar": "عربة",
+"en": "cart",
+"source": "curated"
+}
+],
+"food": [
+{
+"ar": "عسل",
+"en": "honey",
+"source": "curated"
+},
+{
+"ar": "عدس",
+"en": "lentils",
+"source": "curated"
+},
+{
+"ar": "علكة",
+"en": "gum",
+"source": "curated"
+},
+{
+"ar": "عصيدة",
+"en": "aseeda",
+"source": "curated"
+},
+{
+"ar": "عصير",
+"en": "juice",
+"source": "curated"
+},
+{
+"ar": "عصير برتقال",
+"en": "orange juice",
+"source": "curated"
+},
+{
+"ar": "عصير مانجو",
+"en": "mango juice",
+"source": "curated"
+},
+{
+"ar": "عصير تفاح",
+"en": "apple juice",
+"source": "curated"
+}
+],
+"job": [
+{
+"ar": "عالم",
+"en": "scientist",
+"source": "curated"
+}
+],
+"saudi_city": [
+{
+"ar": "العلا",
+"en": "AlUla",
+"source": "curated"
+},
+{
+"ar": "عرعر",
+"en": "Arar",
+"source": "curated"
+}
+],
+"country": [
+{
+"ar": "العراق",
+"en": "Iraq",
+"source": "curated"
+},
+{
+"ar": "عمان",
+"en": "Oman",
+"source": "curated"
+}
+],
+"name": [
+{
+"ar": "عبدالله",
+"en": "",
+"source": "curated"
+},
+{
+"ar": "عمر",
+"en": "",
+"source": "curated"
+},
+{
+"ar": "علي",
+"en": "",
+"source": "curated"
+},
+{
+"ar": "عادل",
+"en": "",
+"source": "curated"
+},
+{
+"ar": "عثمان",
+"en": "",
+"source": "curated"
+},
+{
+"ar": "عائشة",
+"en": "",
+"source": "curated"
+},
+{
+"ar": "العنود",
+"en": "",
+"source": "curated"
+}
+],
+"city": [
+{
+"ar": "عَمَّان",
+"en": "Amman",
+"source": "https://www.wikidata.org/wiki/Q3805"
+}
+]
+},
+"غ": {
+"animal": [
+{
+"ar": "غزال",
+"en": "gazelle",
+"source": "curated"
+},
+{
+"ar": "غراب",
+"en": "crow",
+"source": "curated"
+}
+],
+"object": [
+{
+"ar": "غلاية",
+"en": "kettle",
+"source": "curated"
+},
+{
+"ar": "غسالة",
+"en": "washing machine",
+"source": "curated"
+},
+{
+"ar": "غراء",
+"en": "glue",
+"source": "curated"
+},
+{
+"ar": "الغميضة",
+"en": "hide and seek",
+"source": "curated"
+},
+{
+"ar": "غواصة",
+"en": "submarine",
+"source": "curated"
+}
+],
+"name": [
+{
+"ar": "غادة",
+"en": "",
+"source": "curated"
+},
+{
+"ar": "غلا",
+"en": "",
+"source": "curated"
+}
+]
+},
+"ف": {
+"animal": [
+{
+"ar": "فرس",
+"en": "mare",
+"source": "curated"
+},
+{
+"ar": "فيل",
+"en": "elephant",
+"source": "curated"
+},
+{
+"ar": "فهد",
+"en": "cheetah",
+"source": "curated"
+},
+{
+"ar": "فرس النهر",
+"en": "hippo",
+"source": "curated"
+},
+{
+"ar": "فلامنغو",
+"en": "flamingo",
+"source": "curated"
+},
+{
+"ar": "فقمة",
+"en": "seal",
+"source": "curated"
+},
+{
+"ar": "فراشة",
+"en": "butterfly",
+"source": "curated"
+},
+{
+"ar": "فأر",
+"en": "mouse",
+"source": "curated"
+}
+],
+"plant": [
+{
+"ar": "فراولة",
+"en": "strawberry",
+"source": "curated"
+},
+{
+"ar": "فلفل",
+"en": "pepper",
+"source": "curated"
+},
+{
+"ar": "فجل",
+"en": "radish",
+"source": "curated"
+},
+{
+"ar": "فاصوليا",
+"en": "beans",
+"source": "curated"
+}
+],
+"object": [
+{
+"ar": "فرن",
+"en": "oven",
+"source": "curated"
+},
+{
+"ar": "فنجان",
+"en": "small cup",
+"source": "curated"
+},
+{
+"ar": "فأس",
+"en": "axe",
+"source": "curated"
+},
+{
+"ar": "فرشاة",
+"en": "brush",
+"source": "curated"
+},
+{
+"ar": "فأرة",
+"en": "mouse",
+"source": "curated"
+},
+{
+"ar": "فقاعات",
+"en": "bubbles",
+"source": "curated"
+},
+{
+"ar": "فستان",
+"en": "dress",
+"source": "curated"
+}
+],
+"food": [
+{
+"ar": "فلافل",
+"en": "falafel",
+"source": "curated"
+},
+{
+"ar": "فطيرة",
+"en": "pie",
+"source": "curated"
+},
+{
+"ar": "فول",
+"en": "fava beans",
+"source": "curated"
+},
+{
+"ar": "فشار",
+"en": "popcorn",
+"source": "curated"
+},
+{
+"ar": "فتة",
+"en": "fatteh",
+"source": "curated"
+}
+],
+"job": [
+{
+"ar": "فلاح",
+"en": "farmer",
+"source": "curated"
+}
+],
+"name": [
+{
+"ar": "فهد",
+"en": "",
+"source": "curated"
+},
+{
+"ar": "فيصل",
+"en": "",
+"source": "curated"
+},
+{
+"ar": "فاطمة",
+"en": "",
+"source": "curated"
+}
+],
+"country": [
+{
+"ar": "فرنسا",
+"en": "France",
+"source": "https://www.wikidata.org/wiki/Q142"
+}
+]
+},
+"ق": {
+"animal": [
+{
+"ar": "قطة",
+"en": "cat",
+"source": "curated"
+},
+{
+"ar": "قرد",
+"en": "monkey",
+"source": "curated"
+},
+{
+"ar": "قنفذ",
+"en": "hedgehog",
+"source": "curated"
+},
+{
+"ar": "قطا",
+"en": "sandgrouse",
+"source": "curated"
+},
+{
+"ar": "قرش",
+"en": "shark",
+"source": "curated"
+},
+{
+"ar": "قنديل البحر",
+"en": "jellyfish",
+"source": "curated"
+}
+],
+"plant": [
+{
+"ar": "قرنبيط",
+"en": "cauliflower",
+"source": "curated"
+},
+{
+"ar": "قرع",
+"en": "pumpkin",
+"source": "curated"
+}
+],
+"object": [
+{
+"ar": "قدر",
+"en": "pot",
+"source": "curated"
+},
+{
+"ar": "قلم",
+"en": "pen",
+"source": "curated"
+},
+{
+"ar": "قلم رصاص",
+"en": "pencil",
+"source": "curated"
+},
+{
+"ar": "قمر صناعي",
+"en": "satellite",
+"source": "curated"
+},
+{
+"ar": "قفز الحبل",
+"en": "jump rope",
+"source": "curated"
+},
+{
+"ar": "قطار لعبة",
+"en": "toy train",
+"source": "curated"
+},
+{
+"ar": "قميص",
+"en": "shirt",
+"source": "curated"
+},
+{
+"ar": "قبعة",
+"en": "hat",
+"source": "curated"
+},
+{
+"ar": "قفاز",
+"en": "gloves",
+"source": "curated"
+},
+{
+"ar": "قطار",
+"en": "train",
+"source": "curated"
+},
+{
+"ar": "قارب",
+"en": "boat",
+"source": "curated"
+}
+],
+"food": [
+{
+"ar": "قرصان",
+"en": "qursan",
+"source": "curated"
+},
+{
+"ar": "قهوة",
+"en": "coffee",
+"source": "curated"
+},
+{
+"ar": "قهوة عربية",
+"en": "arabic coffee",
+"source": "curated"
+},
+{
+"ar": "قهوة تركية",
+"en": "turkish coffee",
+"source": "curated"
+}
+],
+"job": [
+{
+"ar": "قاض",
+"en": "judge",
+"source": "curated"
+}
+],
+"country": [
+{
+"ar": "قطر",
+"en": "Qatar",
+"source": "curated"
+}
+],
+"city": [
+{
+"ar": "القاهرة",
+"en": "Cairo",
+"source": "https://www.wikidata.org/wiki/Q85"
+}
+]
+},
+"ك": {
+"animal": [
+{
+"ar": "كلب",
+"en": "dog",
+"source": "curated"
+},
+{
+"ar": "كنغر",
+"en": "kangaroo",
+"source": "curated"
+},
+{
+"ar": "كنعد",
+"en": "kingfish",
+"source": "curated"
+}
+],
+"plant": [
+{
+"ar": "كمثرى",
+"en": "pear",
+"source": "curated"
+},
+{
+"ar": "كرز",
+"en": "cherry",
+"source": "curated"
+},
+{
+"ar": "كيوي",
+"en": "kiwi",
+"source": "curated"
+},
+{
+"ar": "كوسا",
+"en": "zucchini",
+"source": "curated"
+},
+{
+"ar": "كزبرة",
+"en": "coriander",
+"source": "curated"
+}
+],
+"object": [
+{
+"ar": "كرسي",
+"en": "chair",
+"source": "curated"
+},
+{
+"ar": "كوب",
+"en": "cup",
+"source": "curated"
+},
+{
+"ar": "كتاب",
+"en": "book",
+"source": "curated"
+},
+{
+"ar": "كماشة",
+"en": "pliers",
+"source": "curated"
+},
+{
+"ar": "كاميرا",
+"en": "camera",
+"source": "curated"
+},
+{
+"ar": "كرة",
+"en": "ball",
+"source": "curated"
+}
+],
+"food": [
+{
+"ar": "كعكة",
+"en": "cake",
+"source": "curated"
+},
+{
+"ar": "كنافة",
+"en": "kunafa",
+"source": "curated"
+},
+{
+"ar": "كراميل",
+"en": "caramel",
+"source": "curated"
+},
+{
+"ar": "كبسة",
+"en": "kabsa",
+"source": "curated"
+},
+{
+"ar": "كليجا",
+"en": "kleicha",
+"source": "curated"
+},
+{
+"ar": "كبة",
+"en": "kibbeh",
+"source": "curated"
+},
+{
+"ar": "كاكاو",
+"en": "cocoa",
+"source": "curated"
+},
+{
+"ar": "كركديه",
+"en": "hibiscus",
+"source": "curated"
+}
+],
+"job": [
+{
+"ar": "كهربائي",
+"en": "electrician",
+"source": "curated"
+}
+],
+"country": [
+{
+"ar": "الكويت",
+"en": "Kuwait",
+"source": "curated"
+},
+{
+"ar": "كوريا الجنوبية",
+"en": "South Korea",
+"source": "https://www.wikidata.org/wiki/Q884"
+},
+{
+"ar": "كندا",
+"en": "Canada",
+"source": "https://www.wikidata.org/wiki/Q16"
+}
+],
+"name": [
+{
+"ar": "كريم",
+"en": "",
+"source": "curated"
+}
+],
+"city": [
+{
+"ar": "كانبرا",
+"en": "Canberra",
+"source": "https://www.wikidata.org/wiki/Q3114"
+}
+]
+},
+"ل": {
+"animal": [
+{
+"ar": "لقلق",
+"en": "stork",
+"source": "curated"
+}
+],
+"plant": [
+{
+"ar": "ليمون",
+"en": "lemon",
+"source": "curated"
+},
+{
+"ar": "لفت",
+"en": "turnip",
+"source": "curated"
+}
+],
+"object": [
+{
+"ar": "لوحة مفاتيح",
+"en": "keyboard",
+"source": "curated"
+},
+{
+"ar": "لوح",
+"en": "tablet",
+"source": "curated"
+},
+{
+"ar": "لغز",
+"en": "puzzle",
+"source": "curated"
+}
+],
+"food": [
+{
+"ar": "لحم",
+"en": "meat",
+"source": "curated"
+},
+{
+"ar": "لقيمات",
+"en": "luqaimat",
+"source": "curated"
+},
+{
+"ar": "لبن",
+"en": "laban",
+"source": "curated"
+},
+{
+"ar": "ليمون بالنعناع",
+"en": "lemonade",
+"source": "curated"
+}
+],
+"country": [
+{
+"ar": "لبنان",
+"en": "Lebanon",
+"source": "curated"
+},
+{
+"ar": "ليبيا",
+"en": "Libya",
+"source": "curated"
+}
+],
+"name": [
+{
+"ar": "لينا",
+"en": "",
+"source": "curated"
+},
+{
+"ar": "لمى",
+"en": "",
+"source": "curated"
+},
+{
+"ar": "لطيفة",
+"en": "",
+"source": "curated"
+},
+{
+"ar": "لجين",
+"en": "",
+"source": "curated"
+}
+],
+"city": [
+{
+"ar": "لندن",
+"en": "London",
+"source": "https://www.wikidata.org/wiki/Q84"
+}
+]
+},
+"م": {
+"animal": [
+{
+"ar": "ماعز",
+"en": "goat",
+"source": "curated"
+},
+{
+"ar": "محار",
+"en": "oyster",
+"source": "curated"
+}
+],
+"plant": [
+{
+"ar": "موز",
+"en": "banana",
+"source": "curated"
+},
+{
+"ar": "مانجو",
+"en": "mango",
+"source": "curated"
+},
+{
+"ar": "مشمش",
+"en": "apricot",
+"source": "curated"
+},
+{
+"ar": "ملفوف",
+"en": "cabbage",
+"source": "curated"
+}
+],
+"object": [
+{
+"ar": "مكتب",
+"en": "desk",
+"source": "curated"
+},
+{
+"ar": "مرآة",
+"en": "mirror",
+"source": "curated"
+},
+{
+"ar": "مصباح",
+"en": "lamp",
+"source": "curated"
+},
+{
+"ar": "مفتاح",
+"en": "key",
+"source": "curated"
+},
+{
+"ar": "مروحة",
+"en": "fan",
+"source": "curated"
+},
+{
+"ar": "مكيف",
+"en": "air conditioner",
+"source": "curated"
+},
+{
+"ar": "ملعقة",
+"en": "spoon",
+"source": "curated"
+},
+{
+"ar": "مقلاة",
+"en": "frying pan",
+"source": "curated"
+},
+{
+"ar": "ميكروويف",
+"en": "microwave",
+"source": "curated"
+},
+{
+"ar": "مصفاة",
+"en": "strainer",
+"source": "curated"
+},
+{
+"ar": "مسطرة",
+"en": "ruler",
+"source": "curated"
+},
+{
+"ar": "ممحاة",
+"en": "eraser",
+"source": "curated"
+},
+{
+"ar": "مدرسة",
+"en": "school",
+"source": "curated"
+},
+{
+"ar": "مكتبة",
+"en": "library",
+"source": "curated"
+},
+{
+"ar": "مقلمة",
+"en": "pencil case",
+"source": "curated"
+}
+],
+"food": [
+{
+"ar": "معكرونة",
+"en": "pasta",
+"source": "curated"
+},
+{
+"ar": "مهلبية",
+"en": "muhallabia",
+"source": "curated"
+},
+{
+"ar": "مكسرات",
+"en": "nuts",
+"source": "curated"
+},
+{
+"ar": "مندي",
+"en": "mandi",
+"source": "curated"
+},
+{
+"ar": "مطبق",
+"en": "mutabbaq",
+"source": "curated"
+},
+{
+"ar": "مضغوطة",
+"en": "madghoot",
+"source": "curated"
+},
+{
+"ar": "مطازيز",
+"en": "matazeez",
+"source": "curated"
+},
+{
+"ar": "مقلوبة",
+"en": "maqluba",
+"source": "curated"
+},
+{
+"ar": "منسف",
+"en": "mansaf",
+"source": "curated"
+},
+{
+"ar": "مرقوق",
+"en": "margoog",
+"source": "curated"
+},
+{
+"ar": "متبل",
+"en": "mutabbal",
+"source": "curated"
+},
+{
+"ar": "ماء",
+"en": "water",
+"source": "curated"
+},
+{
+"ar": "ماء بارد",
+"en": "cold water",
+"source": "curated"
+}
+],
+"job": [
+{
+"ar": "معلم",
+"en": "teacher",
+"source": "curated"
+},
+{
+"ar": "مهندس",
+"en": "engineer",
+"source": "curated"
+},
+{
+"ar": "ممرض",
+"en": "nurse",
+"source": "curated"
+},
+{
+"ar": "محامي",
+"en": "lawyer",
+"source": "curated"
+},
+{
+"ar": "ميكانيكي",
+"en": "mechanic",
+"source": "curated"
+},
+{
+"ar": "مزارع",
+"en": "farmer",
+"source": "curated"
+}
+],
+"saudi_city": [
+{
+"ar": "مكة المكرمة",
+"en": "Mecca",
+"source": "curated"
+},
+{
+"ar": "المدينة المنورة",
+"en": "Medina",
+"source": "curated"
+}
+],
+"country": [
+{
+"ar": "مصر",
+"en": "Egypt",
+"source": "curated"
+},
+{
+"ar": "المغرب",
+"en": "Morocco",
+"source": "curated"
+},
+{
+"ar": "موريتانيا",
+"en": "Mauritania",
+"source": "curated"
+},
+{
+"ar": "المملكة المتحدة",
+"en": "United Kingdom",
+"source": "https://www.wikidata.org/wiki/Q145"
+},
+{
+"ar": "مالي",
+"en": "Mali",
+"source": "https://www.wikidata.org/wiki/Q183"
+},
+{
+"ar": "المكسيك",
+"en": "Mexico",
+"source": "https://www.wikidata.org/wiki/Q96"
+}
+],
+"name": [
+{
+"ar": "محمد",
+"en": "",
+"source": "curated"
+},
+{
+"ar": "ماجد",
+"en": "",
+"source": "curated"
+},
+{
+"ar": "ماهر",
+"en": "",
+"source": "curated"
+},
+{
+"ar": "مشعل",
+"en": "",
+"source": "curated"
+},
+{
+"ar": "منصور",
+"en": "",
+"source": "curated"
+},
+{
+"ar": "مصطفى",
+"en": "",
+"source": "curated"
+},
+{
+"ar": "مريم",
+"en": "",
+"source": "curated"
+},
+{
+"ar": "منى",
+"en": "",
+"source": "curated"
+},
+{
+"ar": "ملاك",
+"en": "",
+"source": "curated"
+},
+{
+"ar": "موضي",
+"en": "",
+"source": "curated"
+}
+],
+"city": [
+{
+"ar": "المنامة",
+"en": "Manama",
+"source": "https://www.wikidata.org/wiki/Q3882"
+},
+{
+"ar": "مدينة الكويت",
+"en": "Kuwait City",
+"source": "https://www.wikidata.org/wiki/Q35178"
+},
+{
+"ar": "مسقط",
+"en": "Muscat",
+"source": "https://www.wikidata.org/wiki/Q3826"
+},
+{
+"ar": "مدريد",
+"en": "Madrid",
+"source": "https://www.wikidata.org/wiki/Q2807"
+},
+{
+"ar": "موسكو",
+"en": "Moscow",
+"source": "https://www.wikidata.org/wiki/Q649"
+},
+{
+"ar": "مدينة مكسيكو",
+"en": "Mexico City",
+"source": "https://www.wikidata.org/wiki/Q1489"
+}
+]
+},
+"ن": {
+"animal": [
+{
+"ar": "نعجة",
+"en": "ewe",
+"source": "curated"
+},
+{
+"ar": "ناقة",
+"en": "she-camel",
+"source": "curated"
+},
+{
+"ar": "نمر",
+"en": "leopard",
+"source": "curated"
+},
+{
+"ar": "نسر",
+"en": "eagle",
+"source": "curated"
+},
+{
+"ar": "نعامة",
+"en": "ostrich",
+"source": "curated"
+},
+{
+"ar": "نورس",
+"en": "seagull",
+"source": "curated"
+},
+{
+"ar": "نجمة البحر",
+"en": "starfish",
+"source": "curated"
+},
+{
+"ar": "نملة",
+"en": "ant",
+"source": "curated"
+},
+{
+"ar": "نحلة",
+"en": "bee",
+"source": "curated"
+}
+],
+"plant": [
+{
+"ar": "نارنج",
+"en": "bitter orange",
+"source": "curated"
+},
+{
+"ar": "نعناع",
+"en": "mint",
+"source": "curated"
+}
+],
+"object": [
+{
+"ar": "نافذة",
+"en": "window",
+"source": "curated"
+},
+{
+"ar": "نظارة",
+"en": "glasses",
+"source": "curated"
+},
+{
+"ar": "نعل",
+"en": "sandal",
+"source": "curated"
+}
+],
+"food": [
+{
+"ar": "نقانق",
+"en": "hot dog",
+"source": "curated"
+}
+],
+"job": [
+{
+"ar": "نجار",
+"en": "carpenter",
+"source": "curated"
+}
+],
+"saudi_city": [
+{
+"ar": "نجران",
+"en": "Najran",
+"source": "curated"
+},
+{
+"ar": "النماص",
+"en": "Al-Namas",
+"source": "curated"
+}
+],
+"name": [
+{
+"ar": "نايف",
+"en": "",
+"source": "curated"
+},
+{
+"ar": "ناصر",
+"en": "",
+"source": "curated"
+},
+{
+"ar": "نواف",
+"en": "",
+"source": "curated"
+},
+{
+"ar": "نورة",
+"en": "",
+"source": "curated"
+},
+{
+"ar": "نادية",
+"en": "",
+"source": "curated"
+}
+],
+"city": [
+{
+"ar": "نيو دلهي",
+"en": "New Delhi",
+"source": "https://www.wikidata.org/wiki/Q987"
+}
+]
+},
+"ه": {
+"animal": [
+{
+"ar": "هدهد",
+"en": "hoopoe",
+"source": "curated"
+},
+{
+"ar": "هامور",
+"en": "grouper",
+"source": "curated"
+}
+],
+"object": [
+{
+"ar": "هاتف",
+"en": "phone",
+"source": "curated"
+},
+{
+"ar": "هليكوبتر",
+"en": "helicopter",
+"source": "curated"
+}
+],
+"food": [
+{
+"ar": "هريس",
+"en": "harees",
+"source": "curated"
+}
+],
+"name": [
+{
+"ar": "هاني",
+"en": "",
+"source": "curated"
+},
+{
+"ar": "هند",
+"en": "",
+"source": "curated"
+},
+{
+"ar": "هيا",
+"en": "",
+"source": "curated"
+},
+{
+"ar": "هدى",
+"en": "",
+"source": "curated"
+}
+],
+"country": [
+{
+"ar": "الهند",
+"en": "India",
+"source": "https://www.wikidata.org/wiki/Q668"
+}
+]
+},
+"و": {
+"animal": [
+{
+"ar": "وحيد القرن",
+"en": "rhinoceros",
+"source": "curated"
+},
+{
+"ar": "وعل",
+"en": "ibex",
+"source": "curated"
+},
+{
+"ar": "وشق",
+"en": "lynx",
+"source": "curated"
+}
+],
+"object": [
+{
+"ar": "وسادة",
+"en": "pillow",
+"source": "curated"
+},
+{
+"ar": "وعاء",
+"en": "bowl",
+"source": "curated"
+},
+{
+"ar": "وشاح",
+"en": "scarf",
+"source": "curated"
+}
+],
+"name": [
+{
+"ar": "وليد",
+"en": "",
+"source": "curated"
+},
+{
+"ar": "وفاء",
+"en": "",
+"source": "curated"
+}
+],
+"country": [
+{
+"ar": "الولايات المتحدة",
+"en": "United States",
+"source": "https://www.wikidata.org/wiki/Q30"
+}
+],
+"city": [
+{
+"ar": "واشنطن العاصمة",
+"en": "Washington, D.C.",
+"source": "https://www.wikidata.org/wiki/Q61"
+}
+]
+},
+"ي": {
+"animal": [
+{
+"ar": "يعسوب",
+"en": "dragonfly",
+"source": "curated"
+},
+{
+"ar": "يرقة",
+"en": "caterpillar",
+"source": "curated"
+}
+],
+"food": [
+{
+"ar": "ينسون",
+"en": "anise",
+"source": "curated"
+}
+],
+"saudi_city": [
+{
+"ar": "ينبع",
+"en": "Yanbu",
+"source": "curated"
+}
+],
+"country": [
+{
+"ar": "اليمن",
+"en": "Yemen",
+"source": "curated"
+},
+{
+"ar": "اليونان",
+"en": "Greece",
+"source": "https://www.wikidata.org/wiki/Q41"
+},
+{
+"ar": "اليابان",
+"en": "Japan",
+"source": "https://www.wikidata.org/wiki/Q17"
+}
+],
+"name": [
+{
+"ar": "يوسف",
+"en": "",
+"source": "curated"
+},
+{
+"ar": "ياسر",
+"en": "",
+"source": "curated"
+}
+]
+}
+}
+}
