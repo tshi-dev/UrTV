@@ -2195,15 +2195,8 @@ public class SettingsActivity extends Activity {
                 });
             }, "hub-prayers").start();
         }
-        String st = prayersSeen;
-        if (st == null || st.length() != 5) return "الصوت والشاشة لكل صلاة على حدة";   // the home has not answered yet
-        String[] names = {"الفجر", "الظهر", "العصر", "المغرب", "العشاء"};
-        String[] words = {"صوت وشاشة", "صوت فقط", "شاشة فقط", "لا شيء"};
-        int differ = 0, first = -1;
-        for (int i = 0; i < 5; i++) if (st.charAt(i) != '0') { differ++; if (first < 0) first = i; }
-        if (differ == 0) return "كلها صوت وشاشة";
-        if (differ == 1) return names[first] + ": " + words[Math.max(0, Math.min(3, st.charAt(first) - '0'))];
-        return DigitsText.convert(String.valueOf(differ), latinDigits) + " مختلفة";
+        String v = PrayerSummary.of(prayersSeen, n -> DigitsText.convert(String.valueOf(n), latinDigits));
+        return v != null ? v : "الصوت والشاشة لكل صلاة على حدة";   // the home has not answered yet
     }
 
     private Boolean cleanSeen, factorySeen;   // «UrTV النظيف» and «واجهة المصنع» off, as the home last said

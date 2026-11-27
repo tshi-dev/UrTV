@@ -44,17 +44,15 @@ public final class PrayerScreen {
     /** the same for the i-th prayer of the five (0..4), the bar's order */
     static boolean hiddenAt(int mask, int i) { return i >= 0 && i < IDS.length && hidden(mask, IDS[i]); }
 
-    /** the short summary for the settings row: «كلها» when every prayer has its sound and its screen, else the ones that do not, by name */
-    static String summary(int[] states, String[] names) {
-        boolean all = true;
-        for (int s : states) all &= s == BOTH;
-        if (all) return sa.urtv.home.S.t("كلها");
-        StringBuilder b = new StringBuilder();
-        for (int i = 0; i < states.length; i++) {
-            if (states[i] == BOTH) continue;
-            if (b.length() > 0) b.append(sa.urtv.home.S.sep());
-            b.append(names[i]).append(": ").append(word(states[i]));
-        }
-        return b.toString();
+    /**
+     * The short summary for the settings row and the player's row (one rule, tests/prayer_summary_cases.tsv pins it here and in the screensaver's PrayerSummary):
+     * «كلها صوت وشاشة» when no prayer differs, one that does by name («الفجر: شاشة فقط»), else how many («٢ مختلفة»); num writes the count in the digits of the setting
+     */
+    static String summary(int[] states, String[] names, java.util.function.IntFunction<String> num) {
+        int differ = 0, first = -1;
+        for (int i = 0; i < states.length; i++) if (states[i] != BOTH) { differ++; if (first < 0) first = i; }
+        if (differ == 0) return sa.urtv.home.S.t("كلها صوت وشاشة");
+        if (differ == 1) return names[first] + ": " + word(states[first]);
+        return sa.urtv.home.S.t("%s مختلفة", num.apply(differ));
     }
 }

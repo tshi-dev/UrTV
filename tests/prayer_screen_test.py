@@ -39,7 +39,7 @@ if not (shutil.which("javac") and shutil.which("java")):
     sys.exit(1 if failed else 0)
 with tempfile.TemporaryDirectory() as tmp:
     stub = Path(tmp, "stub"); stub.mkdir()
-    Path(stub, "S.java").write_text("package sa.urtv.home; public final class S { public static String t(String s) { return s; } public static String sep() { return \"، \"; } public static String n(String s) { return s; } }", encoding="utf-8")
+    Path(stub, "S.java").write_text("package sa.urtv.home; public final class S { public static String t(String s, Object... a) { return a.length == 0 ? s : String.format(s, a); } public static String sep() { return \"، \"; } public static String n(String s) { return s; } }", encoding="utf-8")
     Path(stub, "Context.java").write_text("package android.content; public class Context { }", encoding="utf-8")
     Path(stub, "Prefs.java").write_text("package sa.urtv.home.tilawah; public final class Prefs { public Prefs(android.content.Context c) { } public int hideMask() { return 0; } }", encoding="utf-8")
     r = subprocess.run(["javac", "-encoding", "UTF-8", "-d", tmp, str(Path(stub, "S.java")), str(Path(stub, "Context.java")), str(Path(stub, "Prefs.java")), str(T / "PrayerScreen.java"), str(ROOT / "tests/PrayerScreenRun.java")], capture_output=True, text=True)

@@ -20,7 +20,7 @@ check("the default is the general adhan (an empty word): nothing changes for a T
 check("the alarm plays the prayer's own choice; a silent prayer still shows its notice and its screensaver", "prefs.playFor(context, prayer)" in recv
       and "boolean play = prefs.adhanOn() && AdhanPlan.mayPlay(prefs.adhanSaverOnly(), front) && !silent;" in recv and recv.index("boolean notice = prefs.adhanNotice() && prefs.screenOn(prayer);") > recv.index("boolean silent"))
 check("music.sh adhan prayer, its status, and the line in docs/SETTINGS.md", '"sa.urtv.home.PRAYER_SOUND"' in rec and "|prayer_sound=" in rec
-      and "adhan prayer <fajr|dhuhr|asr|maghrib|isha>" in read(ROOT / "optimize/music.sh") and "| the adhan per prayer (4.4) | أذان كل صلاة |" in read(ROOT / "docs/SETTINGS.md"))
+      and "adhan prayer <fajr|dhuhr|asr|maghrib|isha>" in read(ROOT / "optimize/music.sh") and "| the adhan per prayer, the sound (4.4) | أذان كل صلاة |" in read(ROOT / "docs/SETTINGS.md"))
 check("the adhan tab opens it and says which prayers are silent", "startActivity(new Intent(this, PrayerSoundActivity.class));" in read(T / "MainActivity.java")
       and "PrayerSoundActivity.summary(prefs)" in read(T / "MainActivity.java"))
 if shutil.which("javac"):

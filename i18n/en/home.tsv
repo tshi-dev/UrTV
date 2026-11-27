@@ -961,7 +961,8 @@ mp3 أو m4a أو ogg أو wav	mp3, m4a, ogg or wav
 صوت فقط	Sound only
 شاشة فقط	Screen only
 لا شيء	None
-كلها	All
+كلها صوت وشاشة	All with sound and screen
+%s مختلفة	%s different
 الأذان لكل صلاة	Adhan for each prayer
 لكل صلاة: صوتها وظهورها على الشاشة (الشريط والتنبيه)، كلٌّ على حدة	For each prayer: its sound and whether it shows on the screen (the bar and the notice), apart
 الحالي	Current
