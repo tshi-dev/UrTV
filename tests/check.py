@@ -209,12 +209,13 @@ shown = [json.dumps(h["parts"], ensure_ascii=False) for h in hadith]
 check("no verse or hadith twice", len({v["text"] for v in verses}) == len(verses) and len(set(shown)) == len(shown))
 raw = json.loads((ROOT / "assets/shared/hadith.json").read_text(encoding="utf-8"))
 sys.path.insert(0, str(ROOT / "src"))
-from build import narration_parts, simple_parts, weak_in_tirmidhi, weak_by_scholars, albani_accepts, HADITH_MAX_WORDS, ISNAD_MAX_WORDS, js_json   # noqa: E402
+from build import narration_parts, simple_parts, weak_in_tirmidhi, tirmidhi_grade, accepted_grade, excerpt, HADITH_MAX_WORDS, ISNAD_MAX_WORDS, js_json   # noqa: E402
 embedded = js_json({"c": "</script><b>"})
 check("embedded JSON cannot end its <script>", "</" not in embedded and json.loads(embedded)["c"] == "</script><b>", embedded)
 sys.path.insert(0, str(ROOT / ".github/tools"))
 from verify_hadith import norm as plain   # noqa: E402  (the six-book check's own matching)
-form = lambda h: json.dumps(simple_parts(narration_parts(h["full"]["text"])), ensure_ascii=False)
+form = lambda h: json.dumps([["q", excerpt(h["full"]["text"], h["text"])]] if h.get("show") == "text"
+                           else simple_parts(narration_parts(h["full"]["text"])), ensure_ascii=False)
 found = {form(h) for h in raw if h.get("found") and h.get("full")}
 check("hadith on screen come from narrations found in the six books", set(shown) <= found, len(set(shown) - found))
 full_text = {plain(h["full"]["text"]) for h in raw if h.get("full")}
@@ -222,21 +223,34 @@ spelled = lambda t: plain(t.replace("ﷺ", " صلى الله عليه وسلم "
 cut = [t[:40] for h in hadith for k, t in h["parts"] if k == "q" and not any(spelled(t) in f for f in full_text)]
 check("his words on screen are the book's words, uncut", not cut, cut)
 opener = lambda h: plain(h["parts"][0][1]).split()[1:2]
-not_a_name = [plain(h["parts"][0][1])[:30] for h in hadith if h["parts"][0][0] != "n" or not h["parts"][0][1].startswith("عن ")
+short = {form(h) for h in raw if h.get("show") == "text"}
+not_a_name = [plain(h["parts"][0][1])[:30] for h in hadith if json.dumps(h["parts"], ensure_ascii=False) not in short and (h["parts"][0][0] != "n" or not h["parts"][0][1].startswith("عن "))
               or opener(h)[0] in ("رسول", "النبي", "لي", "لنا", "قال", "سمع", "يقول", "ابا", "ابو", "ابيه", "جده", "اذناي", "رجل", "انسا", "سعدا")]
 check("each hadith starts from the companion («عن أبي هريرة …»)", not not_a_name, not_a_name)
 check("each full narration holds the words it was found by",
       all(plain(h["text"]) in plain(h["full"]["text"]) for h in raw if h.get("full")),
       [h["text"] for h in raw if h.get("full") and plain(h["text"]) not in plain(h["full"]["text"])])
-weak = {form(h) for h in raw if h.get("full") and weak_in_tirmidhi(h["full"]["text"])}
-check("no hadith al-Tirmidhi grades only غريب/ضعيف, or as a companion's words, is shown", weak and not (weak & set(shown)), len(weak & set(shown)))
+grade_of = lambda h: accepted_grade(h["full"]["book"], h["full"].get("grades"), h["full"]["text"])
+unaccepted = {form(h) for h in raw if h.get("full") and grade_of(h) is None}
+check("no hadith is shown unless a recognised scholar grades it صحيح or حسن (the owner's rule)", not (unaccepted & set(shown)), len(unaccepted & set(shown)))
+by_text = {h["text"]: h for h in raw}
+pinned = {"إن لكل دين خلقا وخلق الإسلام الحياء": "حسن عند الألباني", "ماء زمزم لما شرب له": "صحيح عند الألباني"}
+on_screen = {json.dumps(h["parts"], ensure_ascii=False): h["source"] for h in hadith}
+check("the owner keeps «إن لكل دين خلقا» and «ماء زمزم لما شرب له», with the grade on screen",
+      all(on_screen.get(form(by_text[t]), "").endswith(g) for t, g in pinned.items()), [on_screen.get(form(by_text[t])) for t in pinned])
+excerpts = {"النساء شقائق الرجال": "سنن أبي داود، ٢٣٦", "فزوروا القبور فإنها تذكر الموت": "صحيح مسلم، ٩٧٦"}
+check("the owner's short forms: only «النساء شقائق الرجال» and «فزوروا القبور فإنها تذكر الموت», with their source",
+      all(by_text[t].get("show") == "text" and len(json.loads(form(by_text[t]))) == 1 and on_screen.get(form(by_text[t]), "").startswith(src)
+          for t, src in excerpts.items()) and not any(plain("استأذنت ربي") in plain(t) for h in hadith for _, t in h["parts"]))
+sunan_shown = [h["source"] for h in hadith if not h["source"].startswith(("صحيح البخاري", "صحيح مسلم"))]
+check("every hadith from the Sunan on screen says its grade", all(h.count("،") >= 2 for h in sunan_shown),
+      [s for s in sunan_shown if s.count("،") < 2][:3])
 long_chain = {form(h) for h in raw if h.get("full") and (lambda w: w and w[0][0] == "n" and len(w[0][1].split()) > ISNAD_MAX_WORDS)(narration_parts(h["full"]["text"]))}
 check(f"no hadith with an isnad over {ISNAD_MAX_WORDS} words is shown", not (long_chain & set(shown)), len(long_chain & set(shown)))
-graded_weak = {form(h) for h in raw if h.get("full") and weak_by_scholars(h["full"].get("grades"))}
-check("no hadith the scholars grade weak (Al-Albani first) is shown", not (graded_weak & set(shown)), len(graded_weak & set(shown)))
-not_albani = [f"{h['full']['book']} {h['full']['number']}" for h in raw if h.get("found")
-              and not (h.get("full") and albani_accepts(h["full"]["book"], h["full"].get("grades")))]
-check("no hadith in the data unless Bukhari, Muslim, or Al-Albani grades it Sahih/Hasan/Hasan Sahih", not not_albani, not_albani)
+# the data may keep a narration the screen leaves out (al-Tirmidhi's «موقوفا» note): the grade alone decides here
+not_accepted = [f"{h['full']['book']} {h['full']['number']}" for h in raw if h.get("found") and not (h.get("full") and (
+                accepted_grade(h["full"]["book"], h["full"].get("grades"), "") is not None or tirmidhi_grade(h["full"]["text"])))]
+check("no hadith in the data unless Bukhari, Muslim, or a recognised scholar grades it Sahih/Hasan", not not_accepted, not_accepted)
 sunan = [h for h in raw if h.get("full") and h["full"]["book"] not in ("صحيح البخاري", "صحيح مسلم")]
 check("every narration from the four Sunan carries the scholars' grades", all(h["full"].get("grades") for h in sunan),
       [h["text"][:30] for h in sunan if not h["full"].get("grades")])

@@ -44,6 +44,6 @@ check("the words have their English", "الخروج من وضع الأطفال\t
       and "امسح الرمز بكاميرا الجوال. ما فتح؟ اكتب العنوان في متصفح الجوال\t" in saver_tsv)
 check("the QRs: a full http:// address (the phone's and the games'), and under each what to do when the camera's link does not open",
       'url = "http://" + lan.getHostAddress() + ":" + port + "/" + code;' in quiz and "ما فتح؟ افتح متصفح الجوال واكتب العنوان بنفسك" in phone_act
-      and "امسح الرمز بكاميرا الجوال. ما فتح؟ اكتب العنوان في متصفح الجوال" in quiz and "امسح الرمز بكاميرا الجوال. ما فتح؟ اكتب العنوان في متصفح الجوال" in game
+      and "امسح الرمز بكاميرا الجوال. ما فتح؟ اكتب العنوان في متصفح الجوال" in quiz and 'S.t("امسح الرمز بكاميرا الجوال")' in game and 'S.t("ما فتح؟ اكتب هذا العنوان في متصفح الجوال")' in game   # the games' room page says it in two places now (the long line was cut after «اكتب»)
       and "امسح الرمز بكاميرا الجوال، أو افتح العنوان" not in quiz + game)
 sys.exit(1 if failed else 0)

@@ -8,6 +8,8 @@ if [ "${1:-}" = "regressions" ]; then shift; exec python3 tests/regressions/run.
 python3 tests/check.py
 python3 tests/arabic_spacing_test.py   # Arabic letters stay joined: no letter-spacing on anything that can hold Arabic
 python3 tests/tilawah_test.py
+python3 tests/no_banned_names_test.py   # the owner: no Palestine and no Israel in any game or quiz
+python3 tests/hadith_number_test.py   # Sahih Muslim: the standard number, never the dataset index
 python3 tests/prayer_math_test.py
 python3 tests/prayer_crosscheck_test.py
 python3 tests/prayer_crosscheck_world_test.py
@@ -242,6 +244,7 @@ python3 tests/prayer_screen_test.py   # 4.4 beta 4 «الأذان لكل صلا�
 python3 tests/prayer_summary_test.py   # 4.4 beta 4: one summary rule for the settings row and the player's row, driven by one case table
 python3 tests/adhan_from_file_test.py   # 4.4 beta 4 «أذاني من ملف»: the last row of «المؤذن», «التنزيلات» beside the USB stick
 python3 tests/photo_from_file_test.py   # 4.4 beta 4: photos from a stick or Downloads into «صوري», the screensaver app with no storage permission
+python3 tests/tester_auto_test.py   # 4.4 beta 4: the automatic tester round (tester/auto): its parsing on saved answers, the whole round on a stand-in TV, the putting back, never a blind key
 python3 tests/quiet_hours_test.py   # 4.4 touch «ساعات الهدوء»
 python3 tests/kahf_template_test.py   # 4.4 touch: the Friday Kahf, ready
 python3 tests/fade_in_test.py   # 4.4 touch «يبدأ بهدوء»
@@ -451,6 +454,7 @@ node tests/quiz_e2e.test.mjs   # «الأسرع»: two phones against the real r
 python3 tests/games_data_test.py   # the games' data: the forms, the limits, the bundled starters
 python3 tests/howto_test.py   # «طريقة اللعب»: the small «!» on a start screen and the panel behind it, the texts of the 19 games (rules on a plain JVM, the three places a text lives, the Android side by its source)
 python3 tests/games_kit_test.py   # the games' kit, the registry and the list, «خمس خانات» and «الكلمة المفقودة» (their rules on a plain JVM)
+python3 tests/games_fixes_test.py   # the tester's ten game bugs of build 629: the tile and setup words, «ابدأ», the Domino backs, the hex letters, «بدون كلام»'s cover, «ه» and the letter names, «خمّن الكلمة», the how-to, the room page, the setup rows
 python3 tests/domino_test.py   # «دومينو»: the rules and the computer players on a plain JVM, whole games from seeds (docs/DOMINO.md)
 #
 python3 tests/tvports_test.py   # BETA LG/Samsung packages: manifests, files, sizes (docs/LG-SAMSUNG.md)

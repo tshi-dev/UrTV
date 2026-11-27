@@ -40,13 +40,14 @@ final class GameHowToView extends FrameLayout {
         LinearLayout row = new LinearLayout(c); row.setOrientation(LinearLayout.HORIZONTAL); row.setLayoutDirection(Dir.layout()); row.setPadding(px(96), px(24), px(96), px(48));
         LinearLayout startCol = new LinearLayout(c); startCol.setOrientation(LinearLayout.VERTICAL);
         startCol.addView(tag(t("هدف اللعبة"), L.ink, L.onInk), wrap());
-        TextView goal = label(t(ct.goal), 38 * k, L.ink, true); goal.setLineSpacing(0, 1.25f); startCol.addView(goal, topMargin(8));
+        TextView goal = label(t(ct.goal), 38 * k, L.ink, true); goal.setLineSpacing(0, 1.25f); goal.setIncludeFontPadding(true); goal.setPadding(0, 0, 0, px(12)); startCol.addView(goal, topMargin(8));
         startCol.addView(tag(t("كيف تلعب"), L.deep, L.onDeep), topMargin(24));
         for (int i = 0; i < ct.steps.size(); i++) {
             LinearLayout step = new LinearLayout(c); step.setOrientation(LinearLayout.HORIZONTAL); step.setLayoutDirection(Dir.layout());
             TextView n = label(num(i + 1), 38 * k, L.onInk, true); n.setGravity(Gravity.CENTER); n.setTextAlignment(View.TEXT_ALIGNMENT_CENTER); n.setBackgroundColor(L.ink);
             step.addView(n, new LinearLayout.LayoutParams(px(60 * k), px(60 * k)));
-            TextView s = label(t(ct.steps.get(i)), 36 * k, L.ink, false); s.setLineSpacing(0, 1.25f);
+            TextView s = label(t(ct.steps.get(i)), 36 * k, L.ink, false); s.setLineSpacing(0, 1.25f); s.setIncludeFontPadding(true); s.setPadding(0, 0, 0, px(12));   // the second line keeps its dots: the line box is not cut under the glyphs
+            step.setClipChildren(false); step.setClipToPadding(false);
             LinearLayout.LayoutParams sp = new LinearLayout.LayoutParams(0, -2, 1f); sp.setMarginStart(px(18)); step.addView(s, sp);
             startCol.addView(step, topMargin(14));
         }

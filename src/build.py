@@ -177,6 +177,32 @@ def albani_grade(grades):
     return ""
 
 
+RECOGNISED = [("albani", "الألباني"), ("arnaut", "شعيب الأرنؤوط"), ("shakir", "أحمد شاكر"), ("bashar", "بشار عواد")]
+ACCEPTS = {"sahih", "hasan", "hasan sahih", "sahih lighairihi", "hasan lighairihi"}   # a grade of the hadith, not «… isnaad»
+
+
+def accepted_grade(book, grades, text):
+    """The owner's rule (2026-11-27): a hadith stays when a recognised scholar grades it صحيح or حسن, and the screen
+    says who. Bukhari and Muslim: "" (their own standard). al-Tirmidhi: his own «حسن/صحيح» first. Then Al-Albani, Shuaib
+    al-Arnaut, Ahmad Shakir, Bashar Awad, in that order: the first who grades it Sahih or Hasan ("صحيح عند الألباني").
+    None: no recognised scholar accepts it, or al-Tirmidhi says it is a companion's own words (موقوف): not shown."""
+    if book in ("صحيح البخاري", "صحيح مسلم"):
+        return ""
+    bare = re.sub(HARAKAT, "", text)
+    if "قال أبو عيسى" in bare and ("ولم يرفعه" in bare or "موقوفا" in bare):   # as weak_in_tirmidhi
+        return None
+    if book == "جامع الترمذي" and not weak_in_tirmidhi(text):
+        own = tirmidhi_grade(text)
+        if own:
+            return own
+    for key, name in RECOGNISED:
+        for g in grades or []:
+            grade = " ".join(re.sub(r"[^a-z ]", " ", g.get("grade", "").lower()).split())
+            if key in g.get("name", "").lower() and grade in ACCEPTS:
+                return f"{GRADE_AR[grade]} عند {name}"
+    return None
+
+
 def tirmidhi_grade(text):
     bare = re.sub(HARAKAT, "", text)
     if "قال أبو عيسى" not in bare:
@@ -195,11 +221,20 @@ def weak_in_tirmidhi(text):
     return not re.search("حديث حسن|حديث صحيح|حسن صحيح", note) or "ولم يرفعه" in bare or "موقوفا" in bare
 
 
+def excerpt(narration, words):
+    """`words` as the book writes them inside `narration` (harakat and all): the owner's short form of a hadith."""
+    pattern = HARAKAT.join(re.escape(c) if c != " " else r"\s+" for c in words) + HARAKAT
+    m = re.search(pattern, narration)
+    if not m:
+        raise SystemExit(f"src/build.py: «{words}» is not in its narration")
+    return m.group(0)
+
+
 def hadith_for_screen():
     """assets/shared/hadith.json -> each hadith from its companion on (simple_parts) if it fits the card, with the
-    book, its number and a grade: al-Tirmidhi's own, or for the other Sunan Al-Albani's. One a scholar grades weak,
-    one from the four Sunan Al-Albani does not grade Sahih, Hasan or Hasan Sahih, or one al-Tirmidhi does not grade
-    حسن or صحيح, is not shown."""
+    book, its number and the grade of the scholar who accepts it (accepted_grade); one no recognised scholar grades
+    Sahih or Hasan is not shown. An entry with "show": "text" (the owner's choice) shows only its words (`text`, an
+    exact excerpt of the narration) with the same source line."""
     digits = str.maketrans("0123456789", "٠١٢٣٤٥٦٧٨٩")
     out = []
     for h in json.loads((ROOT / "assets/shared/hadith.json").read_text(encoding="utf-8")):
@@ -212,12 +247,13 @@ def hadith_for_screen():
         parts = simple_parts(whole)
         if not parts:
             continue
+        if h.get("show") == "text":
+            parts = [["q", excerpt(full["text"], h["text"])]]
         words = sum(len(p[1].split()) for p in parts)
-        if weak_in_tirmidhi(full["text"]) or weak_by_scholars(full.get("grades")) \
-                or not albani_accepts(full["book"], full.get("grades")):
+        grade = accepted_grade(full["book"], full.get("grades"), full["text"])
+        if grade is None:
             continue
         if any(k == "q" for k, _ in parts) and words <= HADITH_MAX_WORDS:
-            grade = tirmidhi_grade(full["text"]) or albani_grade(full.get("grades"))
             source = f"{full['book']}، {str(full['number']).translate(digits)}" + (f"، {grade}" if grade else "")   # 4.4: «،», never «·»
             out.append({"parts": parts, "source": source})
     return out

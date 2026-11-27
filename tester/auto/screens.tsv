@@ -1,0 +1,31 @@
+# kind	key	name	value	marker
+# Read by round.sh: data, so the settings tree can change without touching the script. Tab separated; # lines are notes.
+# layout: the home layouts and the cards: key = what `saver.sh homelayout` takes. name = Arabic name. marker: a word that is on the home in that layout.
+layout	classic	كلاسيكي		
+layout	couch	كنبة		
+layout	football	كرة القدم		
+# card: `saver.sh home-card <key>` (none = no card)
+card	none	بلا بطاقة		
+card	stocks	الأسهم		
+card	matches	المباريات		
+# section: an opened settings section. value = the extras after `am start -n sa.urtv.screensaver/.SettingsActivity`; marker = a row name that must be on that screen.
+section	search	بحث في الإعدادات	--es screen search --es hubAt search	بحث في الإعدادات
+section	lang	اللغة	--es screen lang --es hubAt lang	اللغة
+section	place	الموقع والطقس	--es screen place --es hubAt place	المدينة
+section	look	المظهر	--es screen look --es hubAt look	المظهر
+section	apps	التطبيقات	--es screen apps --es hubAt apps	التطبيقات
+section	buttons	الأزرار السريعة	--es screen buttons --es hubAt buttons	مركز التحكم
+section	pray	الصلاة والأذان	--es screen pray --es hubAt pray	الأذان
+section	content	المباريات والأسواق	--es screen content --es hubAt content	الفرق المتابعة
+section	saver	شاشة التوقف	--es screen saver --es hubAt saver	معاينة الشاشة
+section	family	العائلة والأمان	--es screen family --es hubAt family	الرقابة الأبوية
+section	update	حول	--es screen update --es hubAt update	الإصدار
+# style: the settings styles, each opened to every section above. key = what `saver.sh` takes for the look of the settings (see `saver.sh preset`): tv = the buttons one, couch = كنبة.
+style	tv	أزرار	preset tv	
+style	couch	كنبة	preset couch	
+# adhan: the per-prayer states set by command and read back (music.sh adhan state <prayer> <state>)
+adhan	fajr	الفجر		
+adhan	dhuhr	الظهر		
+adhan	asr	العصر		
+adhan	maghrib	المغرب		
+adhan	isha	العشاء		

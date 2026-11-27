@@ -33,12 +33,49 @@ GRADED = {"ara-abudawud": "eng-abudawud", "ara-tirmidhi": "eng-tirmidhi", "ara-n
 ALBANI_OK = {"sahih", "hasan", "hasan sahih"}   # src/build.py has the same rule
 
 
+RECOGNISED = ("albani", "arnaut", "shakir", "bashar")   # src/build.py accepted_grade: the same scholars
+ACCEPTS = {"sahih", "hasan", "hasan sahih", "sahih lighairihi", "hasan lighairihi"}
+
+
+def scholar_accepts(book, grades, text=""):
+    """The owner's rule (2026-11-27): Bukhari, Muslim, or a recognised scholar grades it Sahih or Hasan (al-Tirmidhi's
+    own «حسن/صحيح» counts). The screen (src/build.py accepted_grade) shows that scholar's grade."""
+    if albani_accepts(book, grades):
+        return True
+    if book == "جامع الترمذي" and re.search("حسن|صحيح", norm(text).split("قال ابو عيسي", 1)[-1] if "قال ابو عيسي" in norm(text) else ""):
+        return True
+    return any(k in g.get("name", "").lower() and " ".join(re.sub(r"[^a-z ]", " ", g.get("grade", "").lower()).split()) in ACCEPTS
+               for g in grades or [] for k in RECOGNISED)
+
+
 def albani_accepts(book, grades):
     """Bukhari and Muslim: yes. The four Sunan: only if Al-Albani grades the narration Sahih, Hasan or Hasan Sahih."""
     if book in ("صحيح البخاري", "صحيح مسلم"):
         return True
     albani = [g.get("grade", "") for g in grades or [] if "albani" in g.get("name", "").lower()]
     return bool(albani) and all(" ".join(re.sub(r"[^a-z ]", " ", a.lower()).split()) in ALBANI_OK for a in albani)
+
+
+def standard_number(rows, n):
+    """The standard (Abd al-Baqi) number of row n of a book whose rows carry `arabicnumber` (Sahih Muslim: "55.01").
+    Some rows have none; their running index (hadithnumber) is NOT a number anyone can look up. Then: the next row of
+    the same text if it has one; else the numbered rows around it, when they leave one number only (2699.02 | ? | 2701
+    -> 2700); else None (do not guess: 2564.03 | ? | 2565.03 could be either)."""
+    def num(r):
+        a = (r or {}).get("arabicnumber")
+        return int(float(a)) if a not in (None, "") else None
+    row = rows.get(n)
+    if num(row) is not None:
+        return num(row)
+    nxt = rows.get(n + 1)
+    if row and nxt and nxt.get("text") == row.get("text") and num(nxt) is not None:
+        return num(nxt)
+    keys = sorted(rows)
+    before = [num(rows[k]) for k in keys if k < n and num(rows[k]) is not None]
+    after = [num(rows[k]) for k in keys if k > n and num(rows[k]) is not None]
+    if before and after and after[0] == before[-1] + 2:
+        return before[-1] + 1
+    return None
 
 
 def norm(s):
@@ -88,10 +125,11 @@ def main():
             isnad = lambda t: len(t.split('"')[0].split())
             order = list(BOOKS)
             ed, n = min(((f["edition"], f["number"]) for f in found), key=lambda e: (
-                not albani_accepts(BOOKS[e[0]], grade_of(*e)), isnad(raw[e[0]][e[1]]["text"]) > ISNAD_MAX_WORDS, order.index(e[0]),
+                not scholar_accepts(BOOKS[e[0]], grade_of(*e), raw[e[0]][e[1]]["text"]), isnad(raw[e[0]][e[1]]["text"]) > ISNAD_MAX_WORDS, order.index(e[0]),
                 not graded(raw[e[0]][e[1]]["text"]), len(raw[e[0]][e[1]]["text"])))
             src = raw[ed][n]
             full = {"book": BOOKS[ed], "number": n, "arabicnumber": src.get("arabicnumber"),
+                    "standard": standard_number(raw[ed], n) if ed == "ara-muslim" else n,
                     "reference": src.get("reference"), "grades": grade_of(ed, n), "text": src["text"]}
         report.append({"text": h["text"], "found": found, "full": full})
         print("OK " if found else "NOT FOUND", h["text"], [(f["book"], f["number"]) for f in found][:6])
