@@ -18,8 +18,8 @@ public class PrayerSoundActivity extends RowScreen {
 
     @Override Page first() {
         return new Page() {
-            @Override public String title() { return S.t("أذان كل صلاة"); }
-            @Override public String tagline() { return S.t("الصلاة الصامتة يبقى وقتها وبطاقتها وتنبيهها، بلا صوت"); }
+            @Override public String title() { return S.t("الأذان لكل صلاة"); }
+            @Override public String tagline() { return S.t("لكل صلاة: صوتها وظهورها على الشاشة (الشريط والتنبيه)، كلٌّ على حدة"); }
             @Override public void rows(List<Row> out) {
                 // 4.4: the common wish in one OK: every prayer heard, Fajr silent (its time, card and notice stay); OK again: all five heard
                 out.add(Row.of(S.t("كل الصلوات بصوت عدا الفجر"), allButFajr(prefs) ? S.t("مفعّل") : S.t("متوقف"), () -> {
@@ -31,7 +31,7 @@ public class PrayerSoundActivity extends RowScreen {
                     refresh();
                 }));
                 out.add(Row.head(S.t("كل صلاة")));
-                for (int p : PrayerTimes.PRAYERS) out.add(Row.of(S.tv(PrayerTimes.NAMES[p]), word(p), () -> choose(p)));
+                for (int p : PrayerTimes.PRAYERS) out.add(Row.of(S.tv(PrayerTimes.NAMES[p]), PrayerScreen.word(prefs.prayerState(p)), () -> choose(p)));
                 // touch «أذان الجمعة»: a silent Dhuhr is heard on Fridays
                 out.add(Row.of(S.t("أذان الجمعة"), prefs.fridayDhuhr() ? S.t("مفعّل: الظهر يُسمع يوم الجمعة ولو كان صامتًا") : S.t("متوقف"),
                         () -> { prefs.setFridayDhuhr(!prefs.fridayDhuhr()); refresh(); }));
@@ -53,14 +53,17 @@ public class PrayerSoundActivity extends RowScreen {
     private void choose(int prayer) {
         open(new Page() {
             @Override public String title() { return S.tv(PrayerTimes.NAMES[prayer]); }
-            @Override public String tagline() { return word(prayer); }
+            @Override public String tagline() { return PrayerScreen.word(prefs.prayerState(prayer)); }
             @Override public void rows(List<Row> out) {
+                // 4.4 beta 4: the four states, one focus target each (the UI session: no two toggles in one row); the muezzin below is for the sound
+                int now = prefs.prayerState(prayer);
+                for (int st : new int[] {PrayerScreen.BOTH, PrayerScreen.SOUND_ONLY, PrayerScreen.SCREEN_ONLY, PrayerScreen.NONE})
+                    out.add(Row.of(PrayerScreen.word(st), st == now ? S.t("الحالي") : "", () -> { prefs.setPrayerState(prayer, st); back(); }));
+                out.add(Row.head(S.t("المؤذن")));
                 int general = prefs.playVoiceFor(PrayerSoundActivity.this, prayer == PrayerTimes.FAJR);
                 out.add(Row.of(S.t("مثل الأذان العام"), Adhan.name(general), () -> set(prayer, "")));
-                out.add(Row.of(S.t("صامت"), S.t("الوقت والبطاقة يبقون، بلا صوت"), () -> set(prayer, "silent")));
                 if (OwnAdhan.exists(PrayerSoundActivity.this)) out.add(Row.of(S.tv(OwnAdhanText.NAME), "", () -> set(prayer, "own")));
                 if (OwnAdhan.fajrExists(PrayerSoundActivity.this)) out.add(Row.of(S.tv(OwnAdhanText.NAME_FAJR), "", () -> set(prayer, "own_fajr")));
-                out.add(Row.head(S.t("مؤذن")));
                 for (int v = 1; v <= Adhan.VOICES; v++) {
                     if (AdhanVoices.isFajr(v) && prayer != PrayerTimes.FAJR) continue;   // «الصلاة خير من النوم»: Fajr only
                     final String c = "v" + v;
@@ -84,13 +87,9 @@ public class PrayerSoundActivity extends RowScreen {
 
     /** the adhan tab's line: «الخمس بصوت», or which ones are silent */
     static String summary(Prefs prefs) {
-        StringBuilder silent = new StringBuilder();
-        int n = 0;
-        for (int p : PrayerTimes.PRAYERS) {
-            if (!"silent".equals(prefs.prayerSound(p))) continue;
-            if (n++ > 0) silent.append(S.t("، "));
-            silent.append(S.tv(PrayerTimes.NAMES[p]));
-        }
-        return n == 0 ? S.t("الخمس بصوت") : n == 5 ? S.t("الخمس صامتة") : S.t("صامت: %s", silent.toString());
+        int[] st = new int[PrayerScreen.IDS.length];
+        String[] names = new String[st.length];
+        for (int i = 0; i < st.length; i++) { st[i] = prefs.prayerState(PrayerScreen.IDS[i]); names[i] = S.tv(PrayerTimes.NAMES[PrayerScreen.IDS[i]]); }
+        return PrayerScreen.summary(st, names);
     }
 }

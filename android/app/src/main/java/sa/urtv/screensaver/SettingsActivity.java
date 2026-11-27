@@ -621,6 +621,9 @@ public class SettingsActivity extends Activity {
         // opened through the home (behind its family lock), so they are reachable with the «تلاوة وأذان» button hidden too
         row("الأذان", "تشغيله وصوته وصوت الفجر والمختصر والإيقاف بأي زر والمستوى", R.drawable.ic_settings,
             new Runnable() { public void run() { openAdhanSettings(); } });
+        // 4.4 beta 4: the sound and the screen of each of the five prayers apart (the home's screen, behind the same lock)
+        row("الأذان لكل صلاة", "الصوت والشاشة لكل صلاة على حدة", R.drawable.ic_settings,
+            new Runnable() { public void run() { openHome("prayers"); } });
         // «تلاوة وأذان» itself, through the home (behind its family lock), as its button there opens it
         row("افتح تلاوة وأذان", "القرآن والإذاعات ومواقيت الأذان", R.drawable.ic_play,
             new Runnable() { public void run() { openHome("listen"); } });
@@ -3591,10 +3594,10 @@ public class SettingsActivity extends Activity {
     }
 
     private void pickPrayerMethod() {
-        final String[] values = {PrayerMethod.AUTO, PrayerMethod.GULF};   // 4.3 A4: the Ja'fari is no longer offered
-        String[] labels = {PrayerMethod.label(PrayerMethod.AUTO, prefs.cityCountry(), prefs.cityTz()), PrayerMethod.label(PrayerMethod.GULF, prefs.cityCountry(), prefs.cityTz())};
+        final String[] values = {PrayerMethod.AUTO, PrayerMethod.GULF, PrayerMethod.JAFARI};
+        String[] labels = {PrayerMethod.label(PrayerMethod.AUTO, prefs.cityCountry(), prefs.cityTz()), PrayerMethod.label(PrayerMethod.GULF, prefs.cityCountry(), prefs.cityTz()), PrayerMethod.label(PrayerMethod.JAFARI, prefs.cityCountry(), prefs.cityTz())};
         new Dlg(this).raw().setTitle("طريقة الحساب")
-            .setSingleChoiceItems(labels, PrayerMethod.GULF.equals(prefs.prayerMethod()) ? 1 : 0,
+            .setSingleChoiceItems(labels, PrayerMethod.JAFARI.equals(prefs.prayerMethod()) ? 2 : PrayerMethod.GULF.equals(prefs.prayerMethod()) ? 1 : 0,
                 (d, i) -> { prefs.setPrayerMethod(values[i]); d.dismiss(); render(); })
             .show();
     }

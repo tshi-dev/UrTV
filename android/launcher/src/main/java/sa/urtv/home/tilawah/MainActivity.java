@@ -611,7 +611,7 @@ public class MainActivity extends Activity {
                 int playVoice = prefs.playVoice(MainActivity.this);
                 rows.add(new Row(false, KIND_VOICE, getString(R.string.adhan_voice), Adhan.label(playVoice) + Adhan.keepNote(prefs, OwnAdhan.isOwn(playVoice)), -1));   // beta 3: saved on the TV, or the last adhan missed
                 // 4.4 «أذان كل صلاة»: which prayers are heard, and with what
-                rows.add(new Row(false, KIND_PRAYER_SOUND, sa.urtv.home.S.t("أذان كل صلاة"), PrayerSoundActivity.summary(prefs), -1));
+                rows.add(new Row(false, KIND_PRAYER_SOUND, sa.urtv.home.S.t("الأذان لكل صلاة"), PrayerSoundActivity.summary(prefs), -1));
                 // 4.4 «الأدعية والتذكيرات»: sounds the person picks, played at their times like the adhan
                 int duasOn = 0;
                 for (DuaStore.Dua d : DuaStore.list(MainActivity.this)) if (d.on) duasOn++;

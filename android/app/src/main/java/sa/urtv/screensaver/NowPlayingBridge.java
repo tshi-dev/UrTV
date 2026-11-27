@@ -37,11 +37,15 @@ final class NowPlayingBridge {
         } finally {
             if (cur != null) try { cur.close(); } catch (Exception ignored) { }
         }
+        try {   // 4.4 beta 4: the prayers that do not show on the screen (the launcher's «الأذان لكل صلاة»), for the page's bar; an older launcher says nothing: none hidden
+            Cursor hc = c.getApplicationContext().getContentResolver().query(Uri.parse("content://sa.urtv.home.nowplaying/adhan_prayers"), null, null, null, null);
+            if (hc != null) try { if (hc.getColumnIndex("hide") >= 0 && hc.moveToFirst()) o.put("hide", hc.getInt(hc.getColumnIndex("hide"))); } finally { hc.close(); }
+        } catch (Exception ignored) { }
         return o;
     }
 
     /**
-     * The launcher's «إعداد تلفزيوني» is waiting for the TV's «السماح بتصحيح USB؟» (a prompt sent under the screensaver stays stuck until a
+     * The launcher's «إعداد تلفزيوني' is waiting for the TV's «السماح بتصحيح USB؟» (a prompt sent under the screensaver stays stuck until a
      * restart): the screensaver ends at once while this is true. False when the launcher does not say (an older one, not installed, refused).
      */
     static boolean setupWaiting(Context c) {

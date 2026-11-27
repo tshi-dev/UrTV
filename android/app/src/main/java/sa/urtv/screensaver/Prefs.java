@@ -214,7 +214,7 @@ final class Prefs {
     }
 
     /** «طريقة الحساب»: auto resolves the saved country to a numeric #pm; explicit legacy choices retain their existing values. */
-    String prayerMethod() { String v = sp.getString("prayerMethod", "auto"); return PrayerMethod.GULF.equals(v) ? PrayerMethod.GULF : PrayerMethod.AUTO; }   // 4.3 A4: a saved «jafari» is «تلقائي»
+    String prayerMethod() { String v = sp.getString("prayerMethod", "auto"); return PrayerMethod.JAFARI.equals(v) ? PrayerMethod.JAFARI : PrayerMethod.GULF.equals(v) ? PrayerMethod.GULF : PrayerMethod.AUTO; }
     void setPrayerMethod(String v) { sp.edit().putString("prayerMethod", v).apply(); }
 
     /** 4.4 the clubs: 20 as before without a word, then one warning once (FollowLimit), at most 40 */

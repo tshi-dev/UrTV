@@ -10,6 +10,8 @@ final class AdhanBarText {
     static final int BEFORE_MIN = 10;
     /** minutes from adhan to iqama for Fajr, Dhuhr, Asr, Maghrib and Isha: what the page's «الإقامة بعد» has always used */
     static final int[] IQAMA = {25, 20, 20, 10, 20};
+    /** the bar's prayers (Fajr, Dhuhr, Asr, Maghrib, Isha) as PrayerTimes numbers, for the hidden mask */
+    private static final int[] HIDE_BIT = {0, 2, 3, 4, 5};
 
     private static final String[] NAMES = {S.n("الفجر"), S.n("الظهر"), S.n("العصر"), S.n("المغرب"), S.n("العشاء")};
 
@@ -24,8 +26,12 @@ final class AdhanBarText {
     static String text(long now, long[] adhan, boolean friday, boolean latin) { return text(now, adhan, friday, latin, BEFORE_MIN); }
 
     /** `lead` = how many minutes before the adhan the bar starts (10, or 15 when the person chose it) */
-    static String text(long now, long[] adhan, boolean friday, boolean latin, int lead) {
+    static String text(long now, long[] adhan, boolean friday, boolean latin, int lead) { return text(now, adhan, friday, latin, lead, 0); }
+
+    /** `hide`: the prayers that do not show on the screen (bit p of the prayer's number: sa.urtv.home.tilawah.PrayerScreen), neither before nor to the iqama */
+    static String text(long now, long[] adhan, boolean friday, boolean latin, int lead, int hide) {
         for (int i = 0; i < 5; i++) {
+            if (hide != 0 && (hide >> HIDE_BIT[i] & 1) != 0) continue;
             double toAdhan = (adhan[i] - now) / 60000.0;
             String name = S.tv(i == 1 && friday ? "الجمعة" : NAMES[i]);
             if (toAdhan > 0 && toAdhan <= lead) return S.t("أذان %s بعد %s", name, minutes((int) Math.ceil(toAdhan), latin));

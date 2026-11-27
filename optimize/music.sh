@@ -130,6 +130,8 @@ Usage: optimize/music.sh <command> [arguments]
   adhan stopkey on | off  any key stops the adhan while it plays (default on; off: only OK on the adhan bar)
   adhan stop              stop the adhan that is playing
   adhan volume <0-100|tv> «مستوى صوت الأذان»: percent of the TV's maximum, or tv (the TV's volume as it is)
+  adhan screen <fajr|dhuhr|asr|maghrib|isha> on|off   that prayer shows on the screen (the bar before and after its adhan, «تنبيه عند الأذان»): on by default; its sound is `adhan prayer <name> silent`
+  adhan state <fajr|dhuhr|asr|maghrib|isha> both|sound|screen|none   a prayer's sound and screen together: «صوت وشاشة» / «صوت فقط» / «شاشة فقط» / «لا شيء»
   adhan prayer-volume <fajr|dhuhr|asr|maghrib|isha> <general|tv|0-100>   that prayer's own level (default general)
   adhan iqama <off|chime|aN>    «صوت الإقامة» at the iqama (default off; aN: a sound of «صوتياتي», its number in audio_ids= of music.sh adhan)
   adhan iqama-volume <10-100>   its volume (default 30)
@@ -234,7 +236,7 @@ PY
         out=$(tv "am broadcast -n sa.urtv.home/.tilawah.MusicReceiver -a sa.urtv.home.GET_PLAYER")
         data=$(printf '%s\n' "$out" | sed -n 's/.*data="\(.*\)"/\1/p' | tail -n 1)
         [ -n "$data" ] || { echo "No status from sa.urtv.home. Is the app installed and the TV reachable?" >&2; exit 1; }
-        printf '%s\n' "$data" | tr '|' '\n' | grep -E '^(adhan=|voice=|fajr_voice=|prayer_sound=|quiet=|friday_dhuhr=|adhan_short=|adhan_takbir=|adhan_stopkey=|adhan_saver_only=|adhan_saver_at=|adhan_notice=|adhan_alarm_last=|adhan_live=|adhan_volume=|adhan_volume_tv=|prayer_volume=|iqama=|audio_ids=|adhan_exact=|adhan_next|adhan_last|source=|playing=)'
+        printf '%s\n' "$data" | tr '|' '\n' | grep -E '^(adhan=|voice=|fajr_voice=|prayer_sound=|prayer_screen=|quiet=|friday_dhuhr=|adhan_short=|adhan_takbir=|adhan_stopkey=|adhan_saver_only=|adhan_saver_at=|adhan_notice=|adhan_alarm_last=|adhan_live=|adhan_volume=|adhan_volume_tv=|prayer_volume=|iqama=|audio_ids=|adhan_exact=|adhan_next|adhan_last|source=|playing=)'
         own=$(printf '%s\n' "$data" | tr '|' '\n' | sed -n 's/^own_bytes=//p')
         if [ "${own:-0}" -gt 0 ] 2> /dev/null; then
           echo "own=$((own / 1024)) KB (your own recording; adhan voice own uses it, adhan own-clear removes it)"
@@ -393,6 +395,20 @@ PY
         esac
         out=$(tv "am broadcast -n sa.urtv.home/.tilawah.MusicReceiver -a sa.urtv.home.IQAMA $extra")
         case "$out" in *saved*) printf '%s\n' "$out" | grep '^iqama=';; *) echo "Refused: the home app is older than 4.4, or $2 is not a choice for $1 (aN must be in audio_ids=; the volume is 10-100)." >&2; exit 1;; esac
+        ;;
+      screen)
+        [ $# -eq 3 ] || usage
+        case "$2" in fajr) p=0;; dhuhr) p=2;; asr) p=3;; maghrib) p=4;; isha) p=5;; *) usage;; esac
+        case "$3" in on) on=true;; off) on=false;; *) usage;; esac
+        out=$(tv "am broadcast -n sa.urtv.home/.tilawah.MusicReceiver -a sa.urtv.home.PRAYER_SCREEN --ei prayer $p --ez on $on")
+        case "$out" in *saved*) echo "$2: screen $3.";; *) echo "Refused: the home app is older than 4.4 beta 4, or $3 is not on or off." >&2; exit 1;; esac
+        ;;
+      state)
+        [ $# -eq 3 ] || usage
+        case "$2" in fajr) p=0;; dhuhr) p=2;; asr) p=3;; maghrib) p=4;; isha) p=5;; *) usage;; esac
+        case "$3" in both) s=0;; sound) s=1;; screen) s=2;; none) s=3;; *) usage;; esac
+        out=$(tv "am broadcast -n sa.urtv.home/.tilawah.MusicReceiver -a sa.urtv.home.PRAYER_STATE --ei prayer $p --ei state $s")
+        case "$out" in *saved*) echo "$2: $3.";; *) echo "Refused: the home app is older than 4.4 beta 4, or $3 is not both, sound, screen or none." >&2; exit 1;; esac
         ;;
       prayer-volume)
         [ $# -eq 3 ] || usage

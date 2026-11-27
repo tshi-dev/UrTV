@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <!-- the build: UTC time (YYYYMMDDHHMMSS) of the newest commit of the page's sources, put in by src/build.py. The app loads the page with the newer stamp (its own
      copy or a downloaded one), never by file time, and does not keep a download whose stamp is older than its own (Updater, PageStamp). -->
-<meta name="urtv-build" content="20261126122349">
+<meta name="urtv-build" content="20261126221007">
 <title>Your TV Screen</title>
 <style>
   @font-face{font-family:'Thmanyah';font-weight:300;font-style:normal;font-display:block;src:url("https://raw.githubusercontent.com/tshi-dev/UrTV/master/assets/fonts/Thmanyah-Light.woff2") format("woff2")}
@@ -1251,9 +1251,9 @@ CONFIG.ownLeagues = CONFIG.leagues.slice();
 if((CONFIG.football || CONFIG.matchPage) && !CONFIG.leagues.length) CONFIG.leagues = ['Saudi-Arabian Pro League'];
 if(MP_MORE) CONFIG.leagues = CONFIG.leagues.concat(MP_TOP);
 const RESOLVED_METHOD = [1,2,3,4,5,8,9,10,11,12,13,14,15,16,17,18,19,20,21,23,100,101].includes(+_Q.get('pm')) ? +_Q.get('pm') : null;
-CONFIG.prayerMethod = _Q.get('pm') === 'gulf' ? 8
+CONFIG.prayerMethod = _Q.get('pm') === 'jafari' ? 0 : _Q.get('pm') === 'gulf' ? 8
   : RESOLVED_METHOD !== null ? RESOLVED_METHOD : ({'Asia/Kuwait':9, 'Asia/Qatar':10, 'Asia/Dubai':16, 'Asia/Bahrain':8, 'Asia/Muscat':100, 'Africa/Cairo':5, 'Asia/Amman':23, 'Asia/Damascus':5, 'Asia/Beirut':5, 'Asia/Gaza':5, 'Asia/Hebron':5, 'Asia/Jerusalem':5, 'Africa/Casablanca':21, 'Africa/El_Aaiun':21, 'Africa/Algiers':19, 'Africa/Tunis':18, 'Africa/Tripoli':101})[CONFIG.timezone] || 4;
-const CAL_LABEL = {1:'University of Islamic Sciences, Karachi',2:'ISNA',3:'Muslim World League',11:'MUIS Singapore',12:'UOIF France',13:'Diyanet Turkey',14:'Spiritual Administration of Muslims of Russia',15:'Moonsighting Committee',17:'JAKIM Malaysia',20:'Kemenag Indonesia', 8:'Gulf method', 100:'Oman method', 9:'Kuwait method', 10:'Qatar method', 16:'UAE method', 5:'Egyptian method', 23:'Jordan method', 21:'Morocco method', 19:'Algeria method', 18:'Tunisia method', 101:'Libya method'};
+const CAL_LABEL = {0:'Jafari method',1:'University of Islamic Sciences, Karachi',2:'ISNA',3:'Muslim World League',11:'MUIS Singapore',12:'UOIF France',13:'Diyanet Turkey',14:'Spiritual Administration of Muslims of Russia',15:'Moonsighting Committee',17:'JAKIM Malaysia',20:'Kemenag Indonesia', 8:'Gulf method', 100:'Oman method', 9:'Kuwait method', 10:'Qatar method', 16:'UAE method', 5:'Egyptian method', 23:'Jordan method', 21:'Morocco method', 19:'Algeria method', 18:'Tunisia method', 101:'Libya method'};
 const clockSubText = () => 'Time in ' + CONFIG.city + (CAL_LABEL[CONFIG.prayerMethod] ? SEP + CAL_LABEL[CONFIG.prayerMethod] : '');
 CONFIG.panel2 = (p => CARD_KINDS.includes(p) && p !== 'nextprayer' && p !== CONFIG.panel ? p : 'none')(_Q.get('panel2') || '');
 const PAIR = !CONFIG.widget && CONFIG.clockSize === 'small' && CONFIG.panel !== 'none' && CONFIG.panel2 !== 'none';
@@ -1547,6 +1547,7 @@ const PRAYER_METHODS = {
   15: {fajr:0, isha:0, ishaMin:0, maghrib:.833, tune:[0,0,0,0]},
   17: {fajr:20, isha:18, ishaMin:0, maghrib:.833, tune:[0,0,0,0]},
   20: {fajr:20, isha:18, ishaMin:0, maghrib:.833, tune:[0,0,0,0]},
+  0:  {fajr:16,   isha:14,   ishaMin:0,  maghrib:4,    tune:[0,0,0,0]},
   4:  {fajr:18.5, isha:0,    ishaMin:90, maghrib:.833, tune:[0,0,0,0]},
   8:  {fajr:19.5, isha:0,    ishaMin:90, maghrib:.833, tune:[0,0,0,0]},
   9:  {fajr:18,   isha:17.5, ishaMin:0,  maghrib:.833, tune:[0,0,0,0]},
@@ -1680,6 +1681,9 @@ function prayerName(x){ return x.key === 'Dhuhr' && isFriday() ? 'Jumuah' : x.na
 
 const untilAdhan = leftMin => humanRemaining(Math.max(60, Math.round(leftMin * 60)));
 let ADHAN_LIVE = null;
+let ADHAN_HIDE = 0;
+const ADHAN_BIT = {Fajr: 0, Dhuhr: 2, Asr: 3, Maghrib: 4, Isha: 5};
+const adhanHidden = k => k != null && ((ADHAN_HIDE >> k) & 1) === 1;
 const ADHAN_PRAYER_NAMES = {0:'Fajr', 2:'Dhuhr', 3:'Asr', 4:'Maghrib', 5:'Isha'};
 function adhanLiveText(){
   if(!ADHAN_LIVE) return '';
@@ -1691,15 +1695,17 @@ function adhanLiveTick(){
   if(CONFIG.widget || !CONFIG.adhanBar || !(window.UrtvNative && window.UrtvNative.adhan)) return;
   let s = null;
   try{ const raw = window.UrtvNative.adhan(); s = raw ? JSON.parse(raw) : null; }catch(e){}
+  ADHAN_HIDE = s && typeof s.hide === 'number' ? s.hide | 0 : 0;
   ADHAN_LIVE = s && s.live && typeof s.prayer === 'number' && isFinite(s.prayer) ? {prayer: +s.prayer, any: !!s.any, name: typeof s.name === 'string' ? s.name.slice(0, 60) : ''} : null;
   tickAdhanBar();
 }
 function adhanBarText(){
   if(!CONFIG.adhanBar) return '';
-  if(ADHAN_LIVE) return adhanLiveText();
+  if(ADHAN_LIVE) return ADHAN_LIVE.name || !adhanHidden(ADHAN_LIVE.prayer) ? adhanLiveText() : '';
   if(!PRAYERS.length) return '';
   const p = riyadhParts(), mins = p.h*60 + p.mi + p.s/60;
   for(const x of PRAYERS){
+    if(adhanHidden(ADHAN_BIT[x.key])) continue;
     const at = x.h*60 + x.mi, toAdhan = at - mins;
     if(toAdhan > 0 && toAdhan <= CONFIG.adhanLead) return prayerName(x) + ' adhan in ' + untilAdhan(toAdhan);
     const gap = x.key === 'Dhuhr' && isFriday() ? 0 : (CONFIG.iqama[x.key] || 0);
@@ -3509,7 +3515,13 @@ function forecastRows(){
 }
 
 const CRESTS_ON = USES('matches');
-const CREST_PX = 48, CREST_KEEP = 60, CREST_PER_ROUND = 10;
+const CREST_PX = 48, CREST_KEEP = 60, CREST_PER_ROUND = 10, CREST_MAX = 400;
+function crestTrim(map, inView){
+  const keys = Object.keys(map), keep = Math.min(CREST_MAX, Math.max(CREST_KEEP, inView.size + CREST_PER_ROUND));
+  let over = keys.length - keep;
+  for(const k of keys){ if(over <= 0) break; if(!inView.has(k)){ delete map[k]; over--; } }
+  for(const k of Object.keys(map)){ if(over <= 0) break; delete map[k]; over--; }
+}
 let CRESTS = {};
 try{ CRESTS = JSON.parse(localStorage.getItem('crests') || '{}') || {}; }catch(e){}
 function crestOf(ev, side){
@@ -3528,7 +3540,7 @@ function fillCrests(root){
     const c = CRESTS[i.dataset.t], src = c && (c.d || c.u);
     if(!src) return;
     if(!c.d) i.onerror = () => i.remove();
-    if(i.getAttribute('src') !== src) i.src = src;
+    if(i.getAttribute('src') !== src){ i.decoding = 'sync'; i.src = src; }
   });
 }
 function crestShrink(blob){
@@ -3574,7 +3586,9 @@ async function loadCrests(){
       delete CRESTS[id]; CRESTS[id] = d ? {u, d} : {u}; got++;
     }
     if(!got) return;
-    Object.keys(CRESTS).slice(0, Math.max(0, Object.keys(CRESTS).length - CREST_KEEP)).forEach(k => delete CRESTS[k]);
+    const inView = new Set();
+    for(const ev of matchEvents()) for(const side of ['Home', 'Away']){ const c = crestOf(ev, side); if(c) inView.add(c.id); }
+    crestTrim(CRESTS, inView);
     try{ localStorage.setItem('crests', JSON.stringify(CRESTS)); }catch(e){}
     renderPanel(false, 'matches');
   }finally{ CREST_BUSY = false; }

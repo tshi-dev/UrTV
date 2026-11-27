@@ -387,7 +387,7 @@ the phone page's key, «مركز التحكم» the control centre's row that op
 —— شريط الوقت بين الصلاتين [شاشة التوقف]
    مثال للوكيل: optimize/saver.sh prayerbar on  (`off` = the default)
 —— طريقة الحساب [كل التلفزيون]
-   مثال للوكيل: optimize/saver.sh prayermethod gulf
+   مثال للوكيل: optimize/saver.sh prayermethod jafari
 —— تعديل وقت الصلاة [كل التلفزيون]
    مثال للوكيل: optimize/saver.sh prayeradj fajr +2 maghrib -1 …  (fajr dhuhr asr maghrib isha, whole minutes from -20 to +20, the others stay)
    مثال للوكيل: optimize/saver.sh prayeradj on
@@ -577,7 +577,7 @@ the phone page's key, «مركز التحكم» the control centre's row that op
     صفحة الجوال: city
     مركز التحكم: city
 ——— طريقة الحساب [كل التلفزيون]
-    مثال للوكيل: optimize/saver.sh prayermethod gulf
+    مثال للوكيل: optimize/saver.sh prayermethod jafari
 ——— تعديل وقت الصلاة [كل التلفزيون]
     مثال للوكيل: optimize/saver.sh prayeradj fajr +2 maghrib -1 …  (fajr dhuhr asr maghrib isha, whole minutes from -20 to +20, the others stay)
     مثال للوكيل: optimize/saver.sh prayeradj on

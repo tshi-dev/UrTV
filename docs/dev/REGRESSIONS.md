@@ -332,6 +332,8 @@ often describe the same bug in two ways, and both rows are kept when their guard
 | R-324 | With «بدون» as the home's card the date was drawn over the greeting and the Wi-Fi icon (the tester) | the date's lift to the clock's row was measured from the clock's own top (0 in its row), not its row's, so the date went to the top of the column | 4.4 | `tests/config_change_test.py` | launcher | Y |
 | R-325 | `music.sh stations` listed 11 stations while `radio N` has 13; `start-saver.sh` said «not started» for a dream that started at 8 s (the tester) | the list came from a stale checkout; the script waited a fixed 6 s | 4.4 | `tests/music_stations_test.py` | optimize | N |
 | R-326 | In «كنبة» a card (stocks, matches) took the big glass clock away: the small clock top right came back and the clock moved (the owner, typed) | glassClock was glass and no card (option 2); in the couch strip the cards sit under the clock, so the glass clock now stays (GlassClockRule) | 4.4 | `tests/glass_clock_rule_test.py` | launcher | Y |
+| R-327 | Club logos disappeared and came back on the matches cards (users on X, 27 Nov) | the crest cache kept the 60 newest fetched, so with more clubs on the page (whole leagues) each round threw out crests still shown, fetched again next round | 4.4 | `tests/crest_keep.test.mjs` | launcher page | Y |
+| R-328 | The Ja'fari prayer calculation was gone from «طريقة الحساب» (users on X; the owner reversed his 4.3 A4 decision) | 4.3 A4 removed it from the page, the launcher, the app and saver.sh; restored with Aladhan's method 0 (the Leva Research Institute, Qum: Fajr 16°, Isha 14°, Maghrib 4°), a saved «jafari» loads again | 4.4 | `tests/prayer_method_test.py` | launcher page app | Y |
 
 ## Open findings of the gate (QA-n)
 
@@ -421,3 +423,4 @@ Not regressions (they never worked); listed so a release review knows them. A fi
 - Settings key does nothing inside other apps; must leave app (HDR lost): Settings key handler lives in stock launcher, turned off by setup (GitHub #37)
 - Screensaver flashes then closes immediately on TCL 65C7K Google TV: Model allows only Google's dream (system Colors dream closes too) (GitHub #42)
 - Continue watching row never appears on Xiaomi: Unknown; Google TV may keep Watch Next private to Google home (GitHub #56)
+| R-329 | The adhan could not be kept off the screen for one prayer (the owner: «sound and screen separately for each of the five») | the per-prayer sound existed; the bar and the notice were all-or-nothing | 4.4 | `tests/prayer_screen_test.py`, `tests/adhan_bar_test.py` | a prayer set to «صوت فقط» or «لا شيء» has no bar before it, none while it plays, no iqama countdown and no «تنبيه عند الأذان»; the others are as before | Y |

@@ -405,6 +405,7 @@ python3 tests/your_tv_hub_test.py   # «تلفزيونك» (YourTvHubActivity): 
 python3 tests/rescue_code_test.py   # the rescue app's Downloader code: the same on the setup page and in docs/RESCUE.md
 python3 tests/run_list_test.py   # every test file is run by this script (CI runs nothing else)
 
+node tests/crest_keep.test.mjs   # 4.4 beta 4: the crest cache never throws out a club that is on the page
 node tests/es2017_parse.test.mjs   # #19: the built pages parse as ES2017 (Android 9 TVs stuck on WebView 66)
 node tests/date_num.test.mjs   # «التاريخ بالأرقام» on the screensaver page: day/month/year in the digits chosen
 node tests/wx_icon.test.mjs   # the screensaver's weather line: the condition's icon beside the temperature
