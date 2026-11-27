@@ -107,6 +107,40 @@ rep4 = (out4 / "report.md").read_text(encoding="utf-8") if (out4 / "report.md").
 check("NEVER PRESSES BLIND: when no app of ours comes to the front, no D-pad key is sent (not to the walk, a station list or a settings screen), and the round is red",
       r4.returncode == 1 and "DPAD" not in cmds4 and "no key was sent" in rep4 and "RED" in rep4, (r4.returncode, cmds4.count("DPAD"), rep4[-300:]))
 
+
+# ---- the CI emulator: the shim for optimize/tv.py, the emulator's limits, the steps left out, the workflow
+with tempfile.TemporaryDirectory() as tmp:
+    fake_adb = Path(tmp, "adb")
+    fake_adb.write_text("#!/usr/bin/env bash\necho \"$@\" >> \"$ADB_LOG\"\ncase \"$1 $2\" in\n  'exec-out screencap') printf 'PNGDATA' ;;\n  'shell echo hi') echo hi ;;\n  *) echo \"out of: $*\" ;;\nesac\n", encoding="utf-8")
+    fake_adb.chmod(0o755)
+    env = dict(os.environ, PATH=f"{tmp}:{os.environ['PATH']}", ADB_LOG=f"{tmp}/adb.log")
+    shim = [sys.executable, str(ROOT / "tester/auto/ci/tv_adb.py")]
+    one = subprocess.run(shim + ["echo hi"], env=env, capture_output=True, text=True)
+    shot = subprocess.run(shim + ["--shot", f"{tmp}/s.png"], env=env, capture_output=True, text=True)
+    batch = subprocess.run(shim + ["--batch"], env=env, input="date\n# a note\nid\n", capture_output=True, text=True)
+    tr = subprocess.run(shim + ["--transport"], env=env, capture_output=True, text=True)
+    log = Path(tmp, "adb.log").read_text(encoding="utf-8")
+    check("the emulator shim: a command goes to `adb shell`, a shot is `adb exec-out screencap -p` written to the file, a batch prints «$ cmd» and its answer, the transport is adb",
+          one.stdout.strip() == "hi" and Path(tmp, "s.png").read_bytes() == b"PNGDATA" and "$ date\nout of: shell date" in batch.stdout and "$ id" in batch.stdout and "a note" not in batch.stdout
+          and tr.stdout.strip() == "adb" and "shell echo hi" in log and "exec-out screencap -p" in log, (one.stdout, batch.stdout, log))
+os.environ["ROUND_THRESHOLDS"] = str(ROOT / "tester/auto/ci/thresholds-emulator.tsv")
+check("the emulator's limits are looser for what the machine decides and the same for what the app decides (ROUND_THRESHOLDS)",
+      lib.thresholds()["cold_start_home_ms"][0] > 4000 and lib.thresholds()["crashes"][:2] == (0.0, "zero") and lib.thresholds()["frozen_lines"][:2] == (0.0, "zero"))
+del os.environ["ROUND_THRESHOLDS"]
+check("without it the real TV's limits", lib.thresholds()["cold_start_home_ms"][0] == 4000)
+rs, outs, cmds_s = run(args=("--skip", "radio,display"))
+steps_s = [l.split("\t") for l in (outs / "steps.tsv").read_text(encoding="utf-8").splitlines()]
+check("--skip: the steps left out say so in the report (SKIP), run nothing, and the round is still green",
+      rs.returncode == 0 and ["radio", "SKIP"] == steps_s[0][:2] and ["display", "SKIP"] == steps_s[1][:2] and not any(s[0].startswith(("radio-", "display-")) for s in steps_s)
+      and "wm size 1280x720" not in cmds_s and "KEYCODE_DPAD_CENTER" not in cmds_s, (rs.returncode, steps_s[:3]))
+wf = (ROOT / ".github/workflows/auto-round.yml").read_text(encoding="utf-8")
+check("the workflow: a push to work/auto-round or a dispatch, the apps built from the ref, an Android TV emulator, tester/auto/ci/run.sh, published to data-screens in <run>/auto, red when the round is RED",
+      "branches: [work/auto-round]" in wf and "workflow_dispatch:" in wf and "inputs.ref || github.sha" in wf and "reactivecircus/android-emulator-runner@v2" in wf and "target: android-tv" in wf
+      and "tester/auto/ci/run.sh" in wf and "--branch data-screens" in wf and '"$run/auto"' in wf and '[ "$verdict" = GREEN ]' in wf and "FONTS_TOKEN" in wf)
+run_ci = (ROOT / "tester/auto/ci/run.sh").read_text(encoding="utf-8")
+check("run.sh on the emulator: the TV client is the adb shim, the emulator's limits, no network means no radio, and the CI checkout only",
+      "cp tester/auto/ci/tv_adb.py optimize/tv.py" in run_ci and "ROUND_THRESHOLDS=tester/auto/ci/thresholds-emulator.tsv" in run_ci and 'SKIP="${SKIP:+$SKIP,}radio"' in run_ci and not (ROOT / "optimize/tv.py").read_text(encoding="utf-8").startswith('#!/usr/bin/env python3\n"""A stand-in'))
+
 # ---- what the script must never do
 src = (ROOT / "tester/auto/round.sh").read_text(encoding="utf-8") + (ROOT / "tester/auto/lib.py").read_text(encoding="utf-8")
 code = "\n".join(l for l in src.splitlines() if not l.lstrip().startswith("#"))

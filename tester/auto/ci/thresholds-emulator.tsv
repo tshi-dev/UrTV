@@ -1,0 +1,11 @@
+# metric	limit	how	note
+# The limits of the round on the CI emulator (an x86 Android TV image on a software GPU, a shared runner): looser than a real TV for what the machine decides
+# (start times, jank), the same for what the app decides (crashes, ANRs, frozen screens). Memory is kept: the app's own.
+cold_start_home_ms	20000	max	am start -W TotalTime of the home, cold; a software emulator is slow, this catches a hang
+cold_start_saver_ms	20000	max	the same for the screensaver app's settings
+pss_home_kb	350000	max	dumpsys meminfo TOTAL PSS of the home after the walk
+pss_saver_kb	350000	max	the same for the screensaver app
+jank_home_pct	60	max	software rendering janks: only a collapse is red
+crashes	0	zero	FATAL EXCEPTION of our packages in logcat -b crash since the round began
+anrs	0	zero	ANR and crash entries of our packages in dropbox since the round began
+frozen_lines	0	zero	Choreographer skips of 120 frames or more in our processes, and the frozen-screen lines

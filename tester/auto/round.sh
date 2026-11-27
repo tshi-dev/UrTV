@@ -26,7 +26,7 @@ WALK_S="${WALK_S:-20}"
 [ "${ROUND_FAST:-0}" = 1 ] && WALK_S=0
 STATION_S="${STATION_S:-30}"
 
-TAG=apk-next BUILD="" DOINSTALL=1 ONLY="" PREV=""
+TAG=apk-next BUILD="" DOINSTALL=1 ONLY="" PREV="" SKIP="${ROUND_SKIP:-}"
 while [ $# -gt 0 ]; do
   case "$1" in
     --tag) TAG="${2:?--tag NAME}"; shift 2 ;;
@@ -34,13 +34,17 @@ while [ $# -gt 0 ]; do
     --no-install) DOINSTALL=0; shift ;;
     --only) ONLY="${2:?--only a,b,c}"; shift 2 ;;
     --prev) PREV="${2:?--prev DIR}"; shift 2 ;;
+    --skip) SKIP="${2:?--skip a,b}"; shift 2 ;;   # steps left out (and said so in the report): the CI emulator leaves out what it cannot do
     *) sed -n '2,12p' "$0"; exit 2 ;;
   esac
 done
 
 tv() { $TV "$@"; }                        # the TV's shell (or a tv.py option such as --shot FILE)
 nap() { [ "${ROUND_FAST:-0}" = 1 ] || sleep "$1"; }
-want() { [ -z "$ONLY" ] || case ",$ONLY," in *",$1,"*) true ;; *) false ;; esac; }
+want() {
+  case ",$SKIP," in *",$1,"*) return 1 ;; esac   # left out on purpose
+  [ -z "$ONLY" ] || case ",$ONLY," in *",$1,"*) true ;; *) false ;; esac
+}
 
 # ---- where it writes
 stamp=$(date +%Y%m%d-%H%M)
@@ -54,6 +58,7 @@ if [ -z "$PREV" ]; then   # the newest other folder of out/
   PREV=$(ls -1dt "$(dirname "$OUT")"/*/ 2> /dev/null | grep -v "/$BUILD/\$" | head -n 1 | sed 's#/$##') || PREV=""
 fi
 
+for s in ${SKIP//,/ }; do printf '%s\t%s\t%s\n' "$s" SKIP "left out of this round (--skip / ROUND_SKIP)" >> "$OUT/steps.tsv"; done
 step() { printf '%s\t%s\t%s\n' "$1" "$2" "$3" >> "$OUT/steps.tsv"; echo "  $2  $1  $3"; }
 metric() { printf '%s\t%s\t%s\n' "$1" "$2" "$3" >> "$OUT/metrics.tsv"; echo "  metric $1 = $2$3"; }
 rows() { grep -v '^#' tester/auto/screens.tsv | awk -F'\t' -v k="$1" '$1 == k'; }   # the rows of one kind

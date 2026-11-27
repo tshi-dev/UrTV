@@ -242,7 +242,7 @@ def box(xml, needle, src, dst):
 def thresholds(path=None):
     """key -> (limit, how): how is «max» (red when over) or «min» (red when under) or «zero» (red when not 0); lines starting with # are notes"""
     out = {}
-    with open(path or os.path.join(HERE, "thresholds.tsv"), encoding="utf-8") as f:
+    with open(path or os.environ.get("ROUND_THRESHOLDS") or os.path.join(HERE, "thresholds.tsv"), encoding="utf-8") as f:   # ROUND_THRESHOLDS: another file (the emulator's)
         for ln in f:
             if not ln.strip() or ln.startswith("#"):
                 continue

@@ -1,0 +1,122 @@
+name: Auto round
+
+# The automatic tester round (tester/auto/round.sh, tester/auto/README.md) on an Android TV emulator: the apps of a branch (debug builds, as screens.yml) are put
+# on the emulator and every step of the round runs unattended, with its health numbers. The report, the shots and the numbers go to the data-screens branch, in
+# <run>/auto/ :  https://github.com/tshi-dev/UrTV/tree/data-screens/<run>/auto  (report.md first). The job is red when the round is RED.
+# It is not the tester's real TV (the real one is the owner's PC with round.sh); it catches what does not depend on the TV: the layouts, every settings
+# section in every style, the adhan states, crashes, ANRs, frozen screens, memory.
+
+on:
+  # a push to work/auto-round runs the file of THAT commit (a workflow_dispatch needs the file on the default branch): to run a commit X,
+  #   git push --force origin X:refs/heads/work/auto-round
+  push:
+    branches: [work/auto-round]
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: 'branch or sha to run (the apps are built from it); a push runs the pushed commit'
+        default: 
+      skip:
+        description: 'steps to leave out, comma separated (install layouts settings saver radio display font adhan games health)'
+        default: ''
+
+permissions:
+  contents: write
+
+concurrency:
+  group: auto-round
+  cancel-in-progress: false
+
+jobs:
+  round:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.ref || github.sha }}
+      # Thmanyah comes from the private fonts repository, as in android.yml: built in, never committed
+      - uses: actions/checkout@v4
+        with:
+          repository: tshi-dev/urtv-fonts
+          token: ${{ secrets.FONTS_TOKEN }}
+          path: .fonts-private
+      - name: Private fonts
+        run: |
+          cp .fonts-private/web/*.woff2 assets/fonts/
+          mkdir -p android/launcher/src/main/assets/fonts
+          cp .fonts-private/android/*.otf android/launcher/src/main/assets/fonts/
+          rm -rf .fonts-private
+
+      - name: Build the page
+        run: python3 src/build.py
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.9'
+
+      - name: Build debug APKs
+        env:
+          URTV_BRANCH: ${{ inputs.ref || github.ref_name }}
+        run: gradle -p android assembleDebug --no-daemon
+
+      - name: Enable KVM
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+
+      - name: The round on an Android TV emulator
+        uses: reactivecircus/android-emulator-runner@v2
+        env:
+          BUILD_NAME: emulator-${{ github.run_number }}
+        with:
+          api-level: 30
+          target: android-tv
+          arch: x86
+          profile: tv_1080p
+          disable-animations: true
+          emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim -camera-back none
+          script: bash tester/auto/ci/run.sh android/app/build/outputs/apk/debug/app-debug.apk android/launcher/build/outputs/apk/debug/launcher-debug.apk auto-out ${{ inputs.skip }}
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: auto-round
+          path: auto-out
+
+      - name: Publish to data-screens
+        if: always()
+        run: |
+          set -e
+          run="auto-${GITHUB_RUN_NUMBER}-$(date -u +%m%d-%H%M)"
+          [ -d auto-out/auto ] || { echo "no round output to publish"; exit 1; }
+          verdict=$(grep -m1 -o 'RED:\|GREEN:' auto-out/auto/report.md | tr -d ':' || echo UNKNOWN)
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          for try in 1 2 3 4; do
+            work=$(mktemp -d)
+            git clone --quiet --depth 20 --branch data-screens "https://x-access-token:${{ github.token }}@github.com/${GITHUB_REPOSITORY}.git" "$work" || {
+              git init --quiet "$work"; git -C "$work" checkout --quiet -b data-screens
+              git -C "$work" remote add origin "https://x-access-token:${{ github.token }}@github.com/${GITHUB_REPOSITORY}.git"; }
+            cd "$work"
+            ls -d auto-* 2>/dev/null | sort | head -n -9 | xargs -r rm -rf   # the last 10 rounds stay
+            rm -rf "$run"; mkdir -p "$run/auto"
+            cp -r "$GITHUB_WORKSPACE"/auto-out/auto/. "$run/auto/"
+            find "$run/auto/raw" -type f -size +1500k -delete 2>/dev/null || true   # a whole logcat is not published
+            rm -rf latest-auto; cp -r "$run" latest-auto
+            git add -A
+            git commit --quiet -m "Auto round ${verdict} of ${GITHUB_SHA::7} (run ${GITHUB_RUN_NUMBER})" || true
+            if git push origin data-screens; then break; fi
+            cd "$GITHUB_WORKSPACE"; sleep $((try * 5))
+          done
+          link="https://github.com/${GITHUB_REPOSITORY}/tree/data-screens/$run/auto"
+          raw="https://raw.githubusercontent.com/${GITHUB_REPOSITORY}/data-screens/$run/auto/report.md"
+          echo "Auto round $verdict: $link   (report: $raw)"
+          { echo "## Auto round: $verdict"; echo; echo "- report: $raw"; echo "- all: $link"; echo; cat "$GITHUB_WORKSPACE/auto-out/auto/report.md"; } >> "$GITHUB_STEP_SUMMARY"
+          [ "$verdict" = GREEN ]
