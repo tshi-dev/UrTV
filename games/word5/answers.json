@@ -222,7 +222,7 @@
 {
 "word": "صرصور",
 "display": "صرصور",
-"en": "cricket",
+"en": "cockroach",
 "category": "insects",
 "difficulty": 2,
 "age": "all",
@@ -432,7 +432,7 @@
 {
 "word": "نقانق",
 "display": "نقانق",
-"en": "hot dog",
+"en": "sausages",
 "category": "food",
 "difficulty": 3,
 "age": "all",
@@ -2030,16 +2030,6 @@
 "verified": true
 },
 {
-"word": "تخدير",
-"display": "تخدير",
-"en": "",
-"category": "dictionary",
-"difficulty": 2,
-"age": "all",
-"source": "https://www.wikidata.org/wiki/Lexeme:L1476483",
-"verified": true
-},
-{
 "word": "تخصيب",
 "display": "تخصيب",
 "en": "",
@@ -3114,7 +3104,7 @@
 "display": "زغاية",
 "en": "",
 "category": "dictionary",
-"difficulty": 2,
+"difficulty": 3,
 "age": "all",
 "source": "https://www.wikidata.org/wiki/Lexeme:L1449988",
 "verified": true
@@ -3890,16 +3880,6 @@
 "verified": true
 },
 {
-"word": "مسكون",
-"display": "مسكون",
-"en": "",
-"category": "dictionary",
-"difficulty": 3,
-"age": "all",
-"source": "https://www.wikidata.org/wiki/Lexeme:L1482121",
-"verified": true
-},
-{
 "word": "مسكين",
 "display": "مسكين",
 "en": "",
@@ -3924,19 +3904,9 @@
 "display": "مشاية",
 "en": "",
 "category": "dictionary",
-"difficulty": 2,
-"age": "all",
-"source": "https://www.wikidata.org/wiki/Lexeme:L1498768",
-"verified": true
-},
-{
-"word": "مشرحه",
-"display": "مشرحة",
-"en": "",
-"category": "dictionary",
 "difficulty": 3,
 "age": "all",
-"source": "https://www.wikidata.org/wiki/Lexeme:L1475608",
+"source": "https://www.wikidata.org/wiki/Lexeme:L1498768",
 "verified": true
 },
 {
@@ -3967,16 +3937,6 @@
 "difficulty": 3,
 "age": "all",
 "source": "https://www.wikidata.org/wiki/Lexeme:L1372739",
-"verified": true
-},
-{
-"word": "مشيمه",
-"display": "مشيمة",
-"en": "",
-"category": "dictionary",
-"difficulty": 2,
-"age": "all",
-"source": "https://www.wikidata.org/wiki/Lexeme:L1487101",
 "verified": true
 },
 {
@@ -4094,7 +4054,7 @@
 "display": "مقروض",
 "en": "",
 "category": "dictionary",
-"difficulty": 2,
+"difficulty": 3,
 "age": "all",
 "source": "https://www.wikidata.org/wiki/Lexeme:L1477836",
 "verified": true
@@ -4134,7 +4094,7 @@
 "display": "ملحون",
 "en": "",
 "category": "dictionary",
-"difficulty": 2,
+"difficulty": 3,
 "age": "all",
 "source": "https://www.wikidata.org/wiki/Lexeme:L1477922",
 "verified": true

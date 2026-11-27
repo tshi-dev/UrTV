@@ -1,11 +1,20 @@
 #!/usr/bin/env python3
 """Checks games/data/*.json. Run: python3 games/check.py [dir]. Exit 1 on any problem."""
+import unicodedata
 import json, sys, os, glob, re
 
 TYPES = {"quiz", "truefalse", "proverb", "estimate", "riddle", "word", "charades", "topics"}
 CATS = {"general", "geography", "science", "animals", "history", "islamic", "language",
         "saudi-gulf", "sports", "food", "maths-logic", "kids"}
 BANNED = ["israel", "western sahara", "إسرائيل", "الصحراء الغربية", "·"]
+# The owner (2026-11-27): no Palestine and no Israel in any game or quiz, in any spelling (harakat, hamza forms and
+# tatweel folded first). Hadith and verses are not game data and are not checked here.
+NAMES = re.compile(r"اسرا[ءئي]?يل|فلسطين|israel|isreal|palestin|filast", re.I)
+def names_in(text):
+    t = unicodedata.normalize("NFKD", text)   # ë -> e, أ -> ا + hamza mark
+    t = re.sub("[\u0300-\u036F\u064B-\u065F\u0670\u0640]", "", t)
+    t = re.sub("[أإآٱ]", "ا", t)
+    return sorted(set(m.group(0) for m in NAMES.finditer(t)))
 Q_MAX, A_MAX = 90, 28
 ARABIC = re.compile(r"[؀-ۿ]")
 errors = []
@@ -46,6 +55,7 @@ def check_item(f, it, ftype):
         blob = json.dumps(it, ensure_ascii=False).lower()
         for b in BANNED:
             if b in blob: err(f, i, f"banned text {b!r}")
+        for b in names_in(blob): err(f, i, f"banned name {b!r} (the owner: no Palestine, no Israel)")
         return
     if not bi(it["question"]): return err(f, i, "question needs ar and en")
     if len(it["question"]["ar"]) > Q_MAX: err(f, i, f"question ar {len(it['question']['ar'])} > {Q_MAX}")
@@ -71,6 +81,7 @@ def check_item(f, it, ftype):
     blob = json.dumps(it, ensure_ascii=False).lower()
     for b in BANNED:
         if b in blob: err(f, i, f"banned text {b!r}")
+    for b in names_in(blob): err(f, i, f"banned name {b!r} (the owner: no Palestine, no Israel)")
 
 def main():
     d = sys.argv[1] if len(sys.argv) > 1 else os.path.join(os.path.dirname(os.path.abspath(__file__)), "data")

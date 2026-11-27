@@ -1,11 +1,20 @@
 #!/usr/bin/env python3
 """Checks the non-question data of the family games: odd-one, charades, khanat, word5, missing-word, letter-hive.
 Run: python3 games/check_words.py [games-dir]. Exit 1 on any problem."""
+import unicodedata
 import json, os, re, sys
 
 ROOT = sys.argv[1] if len(sys.argv) > 1 else os.path.dirname(os.path.abspath(__file__))
 LET28 = "ابتثجحخدذرزسشصضطظعغفقكلمنهوي"
 BAD = ["·", "israel", "إسرائيل", "الصحراء الغربية", "western sahara"]
+# The owner (2026-11-27): no Palestine and no Israel in any game or quiz, in any spelling (harakat, hamza forms and
+# tatweel folded first). Hadith and verses are not game data and are not checked here.
+NAMES = re.compile(r"اسرا[ءئي]?يل|فلسطين|israel|isreal|palestin|filast", re.I)
+def names_in(text):
+    t = unicodedata.normalize("NFKD", text)   # ë -> e, أ -> ا + hamza mark
+    t = re.sub("[\u0300-\u036F\u064B-\u065F\u0670\u0640]", "", t)
+    t = re.sub("[أإآٱ]", "ا", t)
+    return sorted(set(m.group(0) for m in NAMES.finditer(t)))
 errors = []
 def err(where, msg): errors.append(f"{where}: {msg}")
 def load(rel):
@@ -21,6 +30,7 @@ def clean(where, blob):
     b = json.dumps(blob, ensure_ascii=False).lower()
     for x in BAD:
         if x in b: err(where, f"banned text {x!r}")
+    for x in names_in(b): err(where, f"banned name {x!r} (the owner: no Palestine, no Israel)")
 
 # odd-one
 d = load("odd-one/topics.json")
@@ -95,6 +105,10 @@ if d and L:
     for l, v in d["index"].items():
         for i in v:
             if i not in ids: err("letter-hive", f"unknown question id {i}")
+# the owner's decisions of 2026-11-27 (games/tools/owner_fixes.py): a rebuild must not undo one
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "tools"))
+import owner_fixes
+for m in owner_fixes.missing(ROOT): err("owner_fixes", f"not applied: {m} (run games/tools/owner_fixes.py)")
 for e in errors: print(e)
 print(f"words check: {len(errors)} problems")
 sys.exit(1 if errors else 0)

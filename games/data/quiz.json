@@ -864,7 +864,7 @@
 "en": "Georgetown"
 },
 {
-"ar": "البلد",
+"ar": "فاليتا",
 "en": "Valletta"
 }
 ],
@@ -1066,7 +1066,7 @@
 "en": "Tallinn"
 },
 {
-"ar": "لبلانة",
+"ar": "ليوبليانا",
 "en": "Ljubljana"
 }
 ],
@@ -2303,7 +2303,7 @@
 },
 "wrong": [
 {
-"ar": "البلد",
+"ar": "فاليتا",
 "en": "Valletta"
 },
 {
@@ -2408,7 +2408,7 @@
 "en": "Port of Spain"
 },
 {
-"ar": "البلد",
+"ar": "فاليتا",
 "en": "Valletta"
 },
 {
@@ -2816,8 +2816,8 @@
 "en": "North America"
 },
 {
-"ar": "أفريقيا",
-"en": "Africa"
+"ar": "أمريكا الجنوبية",
+"en": "South America"
 }
 ],
 "source": [
@@ -4284,7 +4284,7 @@
 "en": "What is the capital of Slovenia?"
 },
 "answer": {
-"ar": "لبلانة",
+"ar": "ليوبليانا",
 "en": "Ljubljana"
 },
 "wrong": [
@@ -4347,7 +4347,7 @@
 "difficulty": 3,
 "age": "all",
 "question": {
-"ar": "لبلانة هي عاصمة أي دولة؟",
+"ar": "ليوبليانا هي عاصمة أي دولة؟",
 "en": "Ljubljana is the capital of which country?"
 },
 "answer": {
@@ -4688,7 +4688,7 @@
 "en": "What is the capital of North Macedonia?"
 },
 "answer": {
-"ar": "إسكوبية",
+"ar": "سكوبيه",
 "en": "Skopje"
 },
 "wrong": [
@@ -4751,7 +4751,7 @@
 "difficulty": 3,
 "age": "all",
 "question": {
-"ar": "إسكوبية هي عاصمة أي دولة؟",
+"ar": "سكوبيه هي عاصمة أي دولة؟",
 "en": "Skopje is the capital of which country?"
 },
 "answer": {
@@ -5363,7 +5363,7 @@
 "en": "What is the capital of Malta?"
 },
 "answer": {
-"ar": "البلد",
+"ar": "فاليتا",
 "en": "Valletta"
 },
 "wrong": [
@@ -5426,7 +5426,7 @@
 "difficulty": 3,
 "age": "all",
 "question": {
-"ar": "البلد هي عاصمة أي دولة؟",
+"ar": "فاليتا هي عاصمة أي دولة؟",
 "en": "Valletta is the capital of which country?"
 },
 "answer": {
@@ -5819,40 +5819,6 @@
 "source": [
 "https://www.wikidata.org/wiki/Q244",
 "https://www.wikidata.org/wiki/Q36168"
-],
-"verified": true
-},
-{
-"id": "geo-cap-Q252",
-"type": "quiz",
-"category": "geography",
-"difficulty": 1,
-"age": "kids",
-"question": {
-"ar": "ما عاصمة إندونيسيا؟",
-"en": "What is the capital of Indonesia?"
-},
-"answer": {
-"ar": "جاكرتا",
-"en": "Jakarta"
-},
-"wrong": [
-{
-"ar": "تيمفو",
-"en": "Thimphu"
-},
-{
-"ar": "بانجول",
-"en": "Banjul"
-},
-{
-"ar": "برازافيل",
-"en": "Brazzaville"
-}
-],
-"source": [
-"https://www.wikidata.org/wiki/Q252",
-"https://www.wikidata.org/wiki/Q3630"
 ],
 "verified": true
 },
@@ -6313,8 +6279,8 @@
 "en": "Asia"
 },
 {
-"ar": "أفريقيا",
-"en": "Africa"
+"ar": "أوقيانوسيا",
+"en": "Oceania"
 },
 {
 "ar": "أمريكا الجنوبية",
@@ -7216,8 +7182,8 @@
 },
 "wrong": [
 {
-"ar": "أفريقيا",
-"en": "Africa"
+"ar": "أوقيانوسيا",
+"en": "Oceania"
 },
 {
 "ar": "أمريكا الشمالية",
@@ -7426,7 +7392,7 @@
 "en": "Ulaanbaatar"
 },
 {
-"ar": "البلد",
+"ar": "فاليتا",
 "en": "Valletta"
 }
 ],
@@ -7922,7 +7888,7 @@
 },
 "wrong": [
 {
-"ar": "البلد",
+"ar": "فاليتا",
 "en": "Valletta"
 },
 {
@@ -9189,40 +9155,6 @@
 "verified": true
 },
 {
-"id": "geo-cap-Q697",
-"type": "quiz",
-"category": "geography",
-"difficulty": 3,
-"age": "all",
-"question": {
-"ar": "ما عاصمة ناورو؟",
-"en": "What is the capital of Nauru?"
-},
-"answer": {
-"ar": "يارين",
-"en": "Yaren"
-},
-"wrong": [
-{
-"ar": "هونيارا",
-"en": "Honiara"
-},
-{
-"ar": "جاكرتا",
-"en": "Jakarta"
-},
-{
-"ar": "بورت فيلا",
-"en": "Port Vila"
-}
-],
-"source": [
-"https://www.wikidata.org/wiki/Q697",
-"https://www.wikidata.org/wiki/Q31026"
-],
-"verified": true
-},
-{
 "id": "geo-cont-Q697",
 "type": "quiz",
 "category": "geography",
@@ -9252,40 +9184,6 @@
 ],
 "source": [
 "https://www.wikidata.org/wiki/Q697"
-],
-"verified": true
-},
-{
-"id": "geo-rev-Q697",
-"type": "quiz",
-"category": "geography",
-"difficulty": 3,
-"age": "all",
-"question": {
-"ar": "يارين هي عاصمة أي دولة؟",
-"en": "Yaren is the capital of which country?"
-},
-"answer": {
-"ar": "ناورو",
-"en": "Nauru"
-},
-"wrong": [
-{
-"ar": "سلطنة عمان",
-"en": "Oman"
-},
-{
-"ar": "غواتيمالا",
-"en": "Guatemala"
-},
-{
-"ar": "الأوروغواي",
-"en": "Uruguay"
-}
-],
-"source": [
-"https://www.wikidata.org/wiki/Q697",
-"https://www.wikidata.org/wiki/Q31026"
 ],
 "verified": true
 },
@@ -12002,8 +11900,8 @@
 "en": "Asia"
 },
 {
-"ar": "أمريكا الجنوبية",
-"en": "South America"
+"ar": "أفريقيا",
+"en": "Africa"
 },
 {
 "ar": "أوقيانوسيا",
@@ -12098,7 +11996,7 @@
 },
 "wrong": [
 {
-"ar": "لبلانة",
+"ar": "ليوبليانا",
 "en": "Ljubljana"
 },
 {
@@ -12711,7 +12609,7 @@
 "en": "Paris"
 },
 {
-"ar": "إسكوبية",
+"ar": "سكوبيه",
 "en": "Skopje"
 }
 ],
@@ -14291,7 +14189,7 @@
 "en": "Naypyidaw"
 },
 {
-"ar": "إسكوبية",
+"ar": "سكوبيه",
 "en": "Skopje"
 }
 ],
@@ -15166,7 +15064,7 @@
 "en": "San José"
 },
 {
-"ar": "إسكوبية",
+"ar": "سكوبيه",
 "en": "Skopje"
 }
 ],
@@ -15580,40 +15478,6 @@
 "verified": true
 },
 {
-"id": "geo-cap-Q983",
-"type": "quiz",
-"category": "geography",
-"difficulty": 3,
-"age": "all",
-"question": {
-"ar": "ما عاصمة غينيا الاستوائية؟",
-"en": "What is the capital of Equatorial Guinea?"
-},
-"answer": {
-"ar": "سيوداد دي لا باز",
-"en": "Ciudad de la Paz"
-},
-"wrong": [
-{
-"ar": "باستير",
-"en": "Basseterre"
-},
-{
-"ar": "سانتياغو",
-"en": "Santiago"
-},
-{
-"ar": "كتمندو",
-"en": "Kathmandu"
-}
-],
-"source": [
-"https://www.wikidata.org/wiki/Q983",
-"https://www.wikidata.org/wiki/Q1140136"
-],
-"verified": true
-},
-{
 "id": "geo-cont-Q983",
 "type": "quiz",
 "category": "geography",
@@ -15643,40 +15507,6 @@
 ],
 "source": [
 "https://www.wikidata.org/wiki/Q983"
-],
-"verified": true
-},
-{
-"id": "geo-rev-Q983",
-"type": "quiz",
-"category": "geography",
-"difficulty": 3,
-"age": "all",
-"question": {
-"ar": "سيوداد دي لا باز هي عاصمة أي دولة؟",
-"en": "Ciudad de la Paz is the capital of which country?"
-},
-"answer": {
-"ar": "غينيا الاستوائية",
-"en": "Equatorial Guinea"
-},
-"wrong": [
-{
-"ar": "ليسوتو",
-"en": "Lesotho"
-},
-{
-"ar": "فرنسا",
-"en": "France"
-},
-{
-"ar": "الفلبين",
-"en": "Philippines"
-}
-],
-"source": [
-"https://www.wikidata.org/wiki/Q983",
-"https://www.wikidata.org/wiki/Q1140136"
 ],
 "verified": true
 },
@@ -15788,7 +15618,7 @@
 "difficulty": 2,
 "age": "all",
 "question": {
-"ar": "ما الرمز الكيميائي لعنصر هيدروجين؟",
+"ar": "ما الرمز الكيميائي لعنصر الهيدروجين؟",
 "en": "What is the chemical symbol of hydrogen?"
 },
 "answer": {
@@ -15826,20 +15656,20 @@
 "en": "Which element has the chemical symbol H?"
 },
 "answer": {
-"ar": "هيدروجين",
+"ar": "الهيدروجين",
 "en": "hydrogen"
 },
 "wrong": [
 {
-"ar": "هولميوم",
+"ar": "الهولميوم",
 "en": "holmium"
 },
 {
-"ar": "بولونيوم",
+"ar": "البولونيوم",
 "en": "polonium"
 },
 {
-"ar": "سيريوم",
+"ar": "السيريوم",
 "en": "cerium"
 }
 ],
@@ -15860,20 +15690,20 @@
 "en": "Which element has atomic number 1?"
 },
 "answer": {
-"ar": "هيدروجين",
+"ar": "الهيدروجين",
 "en": "hydrogen"
 },
 "wrong": [
 {
-"ar": "روثينيوم",
+"ar": "الروثينيوم",
 "en": "ruthenium"
 },
 {
-"ar": "سيريوم",
+"ar": "السيريوم",
 "en": "cerium"
 },
 {
-"ar": "روديوم",
+"ar": "الروديوم",
 "en": "rhodium"
 }
 ],
@@ -15891,7 +15721,7 @@
 "difficulty": 2,
 "age": "all",
 "question": {
-"ar": "ما الرمز الكيميائي لعنصر هيليوم؟",
+"ar": "ما الرمز الكيميائي لعنصر الهيليوم؟",
 "en": "What is the chemical symbol of helium?"
 },
 "answer": {
@@ -15929,20 +15759,20 @@
 "en": "Which element has the chemical symbol He?"
 },
 "answer": {
-"ar": "هيليوم",
+"ar": "الهيليوم",
 "en": "helium"
 },
 "wrong": [
 {
-"ar": "كادميوم",
+"ar": "الكادميوم",
 "en": "cadmium"
 },
 {
-"ar": "كالسيوم",
+"ar": "الكالسيوم",
 "en": "calcium"
 },
 {
-"ar": "ألومنيوم",
+"ar": "الألومنيوم",
 "en": "aluminium"
 }
 ],
@@ -15963,20 +15793,20 @@
 "en": "Which element has atomic number 2?"
 },
 "answer": {
-"ar": "هيليوم",
+"ar": "الهيليوم",
 "en": "helium"
 },
 "wrong": [
 {
-"ar": "زركونيوم",
+"ar": "الزركونيوم",
 "en": "zirconium"
 },
 {
-"ar": "رينيوم",
+"ar": "الرينيوم",
 "en": "rhenium"
 },
 {
-"ar": "كروم",
+"ar": "الكروم",
 "en": "chromium"
 }
 ],
@@ -15994,7 +15824,7 @@
 "difficulty": 2,
 "age": "all",
 "question": {
-"ar": "ما الرمز الكيميائي لعنصر ليثيوم؟",
+"ar": "ما الرمز الكيميائي لعنصر الليثيوم؟",
 "en": "What is the chemical symbol of lithium?"
 },
 "answer": {
@@ -16032,20 +15862,20 @@
 "en": "Which element has the chemical symbol Li?"
 },
 "answer": {
-"ar": "ليثيوم",
+"ar": "الليثيوم",
 "en": "lithium"
 },
 "wrong": [
 {
-"ar": "إتيربيوم",
+"ar": "الإتيربيوم",
 "en": "ytterbium"
 },
 {
-"ar": "سترونتيوم",
+"ar": "السترونتيوم",
 "en": "strontium"
 },
 {
-"ar": "زينون",
+"ar": "الزينون",
 "en": "xenon"
 }
 ],
@@ -16066,20 +15896,20 @@
 "en": "Which element has atomic number 3?"
 },
 "answer": {
-"ar": "ليثيوم",
+"ar": "الليثيوم",
 "en": "lithium"
 },
 "wrong": [
 {
-"ar": "تانتالوم",
+"ar": "التانتالوم",
 "en": "tantalum"
 },
 {
-"ar": "ديسبروسيوم",
+"ar": "الديسبروسيوم",
 "en": "dysprosium"
 },
 {
-"ar": "براسوديميوم",
+"ar": "البراسوديميوم",
 "en": "praseodymium"
 }
 ],
@@ -16097,7 +15927,7 @@
 "difficulty": 2,
 "age": "all",
 "question": {
-"ar": "ما الرمز الكيميائي لعنصر بيريليوم؟",
+"ar": "ما الرمز الكيميائي لعنصر البيريليوم؟",
 "en": "What is the chemical symbol of beryllium?"
 },
 "answer": {
@@ -16135,20 +15965,20 @@
 "en": "Which element has the chemical symbol Be?"
 },
 "answer": {
-"ar": "بيريليوم",
+"ar": "البيريليوم",
 "en": "beryllium"
 },
 "wrong": [
 {
-"ar": "روديوم",
+"ar": "الروديوم",
 "en": "rhodium"
 },
 {
-"ar": "كادميوم",
+"ar": "الكادميوم",
 "en": "cadmium"
 },
 {
-"ar": "غادولينيوم",
+"ar": "الغادولينيوم",
 "en": "gadolinium"
 }
 ],
@@ -16169,20 +15999,20 @@
 "en": "Which element has atomic number 4?"
 },
 "answer": {
-"ar": "بيريليوم",
+"ar": "البيريليوم",
 "en": "beryllium"
 },
 "wrong": [
 {
-"ar": "غادولينيوم",
+"ar": "الغادولينيوم",
 "en": "gadolinium"
 },
 {
-"ar": "بلاتين",
+"ar": "البلاتين",
 "en": "platinum"
 },
 {
-"ar": "أرغون",
+"ar": "الأرغون",
 "en": "argon"
 }
 ],
@@ -16200,7 +16030,7 @@
 "difficulty": 2,
 "age": "all",
 "question": {
-"ar": "ما الرمز الكيميائي لعنصر بورون؟",
+"ar": "ما الرمز الكيميائي لعنصر البورون؟",
 "en": "What is the chemical symbol of boron?"
 },
 "answer": {
@@ -16238,20 +16068,20 @@
 "en": "Which element has the chemical symbol B?"
 },
 "answer": {
-"ar": "بورون",
+"ar": "البورون",
 "en": "boron"
 },
 "wrong": [
 {
-"ar": "تربيوم",
+"ar": "التربيوم",
 "en": "terbium"
 },
 {
-"ar": "جرمانيوم",
+"ar": "الجرمانيوم",
 "en": "germanium"
 },
 {
-"ar": "سكانديوم",
+"ar": "السكانديوم",
 "en": "scandium"
 }
 ],
@@ -16272,20 +16102,20 @@
 "en": "Which element has atomic number 5?"
 },
 "answer": {
-"ar": "بورون",
+"ar": "البورون",
 "en": "boron"
 },
 "wrong": [
 {
-"ar": "كالسيوم",
+"ar": "الكالسيوم",
 "en": "calcium"
 },
 {
-"ar": "رينيوم",
+"ar": "الرينيوم",
 "en": "rhenium"
 },
 {
-"ar": "نيوديميوم",
+"ar": "النيوديميوم",
 "en": "neodymium"
 }
 ],
@@ -16303,7 +16133,7 @@
 "difficulty": 2,
 "age": "all",
 "question": {
-"ar": "ما الرمز الكيميائي لعنصر كربون؟",
+"ar": "ما الرمز الكيميائي لعنصر الكربون؟",
 "en": "What is the chemical symbol of carbon?"
 },
 "answer": {
@@ -16341,20 +16171,20 @@
 "en": "Which element has the chemical symbol C?"
 },
 "answer": {
-"ar": "كربون",
+"ar": "الكربون",
 "en": "carbon"
 },
 "wrong": [
 {
-"ar": "باريوم",
+"ar": "الباريوم",
 "en": "barium"
 },
 {
-"ar": "نيوديميوم",
+"ar": "النيوديميوم",
 "en": "neodymium"
 },
 {
-"ar": "سيزيوم",
+"ar": "السيزيوم",
 "en": "caesium"
 }
 ],
@@ -16375,20 +16205,20 @@
 "en": "Which element has atomic number 6?"
 },
 "answer": {
-"ar": "كربون",
+"ar": "الكربون",
 "en": "carbon"
 },
 "wrong": [
 {
-"ar": "كالسيوم",
+"ar": "الكالسيوم",
 "en": "calcium"
 },
 {
-"ar": "رينيوم",
+"ar": "الرينيوم",
 "en": "rhenium"
 },
 {
-"ar": "براسوديميوم",
+"ar": "البراسوديميوم",
 "en": "praseodymium"
 }
 ],
@@ -16406,7 +16236,7 @@
 "difficulty": 2,
 "age": "all",
 "question": {
-"ar": "ما الرمز الكيميائي لعنصر نيتروجين؟",
+"ar": "ما الرمز الكيميائي لعنصر النيتروجين؟",
 "en": "What is the chemical symbol of nitrogen?"
 },
 "answer": {
@@ -16444,20 +16274,20 @@
 "en": "Which element has the chemical symbol N?"
 },
 "answer": {
-"ar": "نيتروجين",
+"ar": "النيتروجين",
 "en": "nitrogen"
 },
 "wrong": [
 {
-"ar": "كريبتون",
+"ar": "الكريبتون",
 "en": "krypton"
 },
 {
-"ar": "باريوم",
+"ar": "الباريوم",
 "en": "barium"
 },
 {
-"ar": "ساماريوم",
+"ar": "الساماريوم",
 "en": "samarium"
 }
 ],
@@ -16478,20 +16308,20 @@
 "en": "Which element has atomic number 7?"
 },
 "answer": {
-"ar": "نيتروجين",
+"ar": "النيتروجين",
 "en": "nitrogen"
 },
 "wrong": [
 {
-"ar": "إتيربيوم",
+"ar": "الإتيربيوم",
 "en": "ytterbium"
 },
 {
-"ar": "ديسبروسيوم",
+"ar": "الديسبروسيوم",
 "en": "dysprosium"
 },
 {
-"ar": "بورون",
+"ar": "البورون",
 "en": "boron"
 }
 ],
@@ -16509,7 +16339,7 @@
 "difficulty": 2,
 "age": "all",
 "question": {
-"ar": "ما الرمز الكيميائي لعنصر فلور؟",
+"ar": "ما الرمز الكيميائي لعنصر الفلور؟",
 "en": "What is the chemical symbol of fluorine?"
 },
 "answer": {
@@ -16547,20 +16377,20 @@
 "en": "Which element has the chemical symbol F?"
 },
 "answer": {
-"ar": "فلور",
+"ar": "الفلور",
 "en": "fluorine"
 },
 "wrong": [
 {
-"ar": "هافنيوم",
+"ar": "الهافنيوم",
 "en": "hafnium"
 },
 {
-"ar": "يود",
+"ar": "اليود",
 "en": "iodine"
 },
 {
-"ar": "ألومنيوم",
+"ar": "الألومنيوم",
 "en": "aluminium"
 }
 ],
@@ -16581,20 +16411,20 @@
 "en": "Which element has atomic number 9?"
 },
 "answer": {
-"ar": "فلور",
+"ar": "الفلور",
 "en": "fluorine"
 },
 "wrong": [
 {
-"ar": "تيلوريوم",
+"ar": "التيلوريوم",
 "en": "tellurium"
 },
 {
-"ar": "منغنيز",
+"ar": "المنغنيز",
 "en": "manganese"
 },
 {
-"ar": "كروم",
+"ar": "الكروم",
 "en": "chromium"
 }
 ],
@@ -16612,7 +16442,7 @@
 "difficulty": 2,
 "age": "all",
 "question": {
-"ar": "ما الرمز الكيميائي لعنصر مغنسيوم؟",
+"ar": "ما الرمز الكيميائي لعنصر المغنسيوم؟",
 "en": "What is the chemical symbol of magnesium?"
 },
 "answer": {
@@ -16650,20 +16480,20 @@
 "en": "Which element has the chemical symbol Mg?"
 },
 "answer": {
-"ar": "مغنسيوم",
+"ar": "المغنسيوم",
 "en": "magnesium"
 },
 "wrong": [
 {
-"ar": "ليثيوم",
+"ar": "الليثيوم",
 "en": "lithium"
 },
 {
-"ar": "جرمانيوم",
+"ar": "الجرمانيوم",
 "en": "germanium"
 },
 {
-"ar": "أوزميوم",
+"ar": "الأوزميوم",
 "en": "osmium"
 }
 ],
@@ -16684,20 +16514,20 @@
 "en": "Which element has atomic number 12?"
 },
 "answer": {
-"ar": "مغنسيوم",
+"ar": "المغنسيوم",
 "en": "magnesium"
 },
 "wrong": [
 {
-"ar": "ليثيوم",
+"ar": "الليثيوم",
 "en": "lithium"
 },
 {
-"ar": "ساماريوم",
+"ar": "الساماريوم",
 "en": "samarium"
 },
 {
-"ar": "لانثانوم",
+"ar": "اللانثانوم",
 "en": "lanthanum"
 }
 ],
@@ -16715,7 +16545,7 @@
 "difficulty": 2,
 "age": "all",
 "question": {
-"ar": "ما الرمز الكيميائي لعنصر ألومنيوم؟",
+"ar": "ما الرمز الكيميائي لعنصر الألومنيوم؟",
 "en": "What is the chemical symbol of aluminium?"
 },
 "answer": {
@@ -16753,20 +16583,20 @@
 "en": "Which element has the chemical symbol Al?"
 },
 "answer": {
-"ar": "ألومنيوم",
+"ar": "الألومنيوم",
 "en": "aluminium"
 },
 "wrong": [
 {
-"ar": "سيليكون",
+"ar": "السيليكون",
 "en": "silicon"
 },
 {
-"ar": "زرنيخ",
+"ar": "الزرنيخ",
 "en": "arsenic"
 },
 {
-"ar": "سيريوم",
+"ar": "السيريوم",
 "en": "cerium"
 }
 ],
@@ -16787,20 +16617,20 @@
 "en": "Which element has atomic number 13?"
 },
 "answer": {
-"ar": "ألومنيوم",
+"ar": "الألومنيوم",
 "en": "aluminium"
 },
 "wrong": [
 {
-"ar": "غادولينيوم",
+"ar": "الغادولينيوم",
 "en": "gadolinium"
 },
 {
-"ar": "زينون",
+"ar": "الزينون",
 "en": "xenon"
 },
 {
-"ar": "روثينيوم",
+"ar": "الروثينيوم",
 "en": "ruthenium"
 }
 ],
@@ -16818,7 +16648,7 @@
 "difficulty": 2,
 "age": "all",
 "question": {
-"ar": "ما الرمز الكيميائي لعنصر سيليكون؟",
+"ar": "ما الرمز الكيميائي لعنصر السيليكون؟",
 "en": "What is the chemical symbol of silicon?"
 },
 "answer": {
@@ -16856,20 +16686,20 @@
 "en": "Which element has the chemical symbol Si?"
 },
 "answer": {
-"ar": "سيليكون",
+"ar": "السيليكون",
 "en": "silicon"
 },
 "wrong": [
 {
-"ar": "هافنيوم",
+"ar": "الهافنيوم",
 "en": "hafnium"
 },
 {
-"ar": "كلور",
+"ar": "الكلور",
 "en": "chlorine"
 },
 {
-"ar": "بزموت",
+"ar": "البزموت",
 "en": "bismuth"
 }
 ],
@@ -16890,20 +16720,20 @@
 "en": "Which element has atomic number 14?"
 },
 "answer": {
-"ar": "سيليكون",
+"ar": "السيليكون",
 "en": "silicon"
 },
 "wrong": [
 {
-"ar": "هيليوم",
+"ar": "الهيليوم",
 "en": "helium"
 },
 {
-"ar": "بولونيوم",
+"ar": "البولونيوم",
 "en": "polonium"
 },
 {
-"ar": "إتيربيوم",
+"ar": "الإتيربيوم",
 "en": "ytterbium"
 }
 ],
@@ -16921,7 +16751,7 @@
 "difficulty": 2,
 "age": "all",
 "question": {
-"ar": "ما الرمز الكيميائي لعنصر فسفور؟",
+"ar": "ما الرمز الكيميائي لعنصر الفسفور؟",
 "en": "What is the chemical symbol of phosphorus?"
 },
 "answer": {
@@ -16959,20 +16789,20 @@
 "en": "Which element has the chemical symbol P?"
 },
 "answer": {
-"ar": "فسفور",
+"ar": "الفسفور",
 "en": "phosphorus"
 },
 "wrong": [
 {
-"ar": "إربيوم",
+"ar": "الإربيوم",
 "en": "erbium"
 },
 {
-"ar": "أرغون",
+"ar": "الأرغون",
 "en": "argon"
 },
 {
-"ar": "براسوديميوم",
+"ar": "البراسوديميوم",
 "en": "praseodymium"
 }
 ],
@@ -16993,20 +16823,20 @@
 "en": "Which element has atomic number 15?"
 },
 "answer": {
-"ar": "فسفور",
+"ar": "الفسفور",
 "en": "phosphorus"
 },
 "wrong": [
 {
-"ar": "زرنيخ",
+"ar": "الزرنيخ",
 "en": "arsenic"
 },
 {
-"ar": "زنك",
+"ar": "الزنك",
 "en": "zinc"
 },
 {
-"ar": "سيزيوم",
+"ar": "السيزيوم",
 "en": "caesium"
 }
 ],
@@ -17024,7 +16854,7 @@
 "difficulty": 2,
 "age": "all",
 "question": {
-"ar": "ما الرمز الكيميائي لعنصر كبريت؟",
+"ar": "ما الرمز الكيميائي لعنصر الكبريت؟",
 "en": "What is the chemical symbol of sulfur?"
 },
 "answer": {
@@ -17062,20 +16892,20 @@
 "en": "Which element has the chemical symbol S?"
 },
 "answer": {
-"ar": "كبريت",
+"ar": "الكبريت",
 "en": "sulfur"
 },
 "wrong": [
 {
-"ar": "زنك",
+"ar": "الزنك",
 "en": "zinc"
 },
 {
-"ar": "لانثانوم",
+"ar": "اللانثانوم",
 "en": "lanthanum"
 },
 {
-"ar": "زركونيوم",
+"ar": "الزركونيوم",
 "en": "zirconium"
 }
 ],
@@ -17096,20 +16926,20 @@
 "en": "Which element has atomic number 16?"
 },
 "answer": {
-"ar": "كبريت",
+"ar": "الكبريت",
 "en": "sulfur"
 },
 "wrong": [
 {
-"ar": "تانتالوم",
+"ar": "التانتالوم",
 "en": "tantalum"
 },
 {
-"ar": "بلاتين",
+"ar": "البلاتين",
 "en": "platinum"
 },
 {
-"ar": "بزموت",
+"ar": "البزموت",
 "en": "bismuth"
 }
 ],
@@ -17127,7 +16957,7 @@
 "difficulty": 2,
 "age": "all",
 "question": {
-"ar": "ما الرمز الكيميائي لعنصر كلور؟",
+"ar": "ما الرمز الكيميائي لعنصر الكلور؟",
 "en": "What is the chemical symbol of chlorine?"
 },
 "answer": {
@@ -17165,20 +16995,20 @@
 "en": "Which element has the chemical symbol Cl?"
 },
 "answer": {
-"ar": "كلور",
+"ar": "الكلور",
 "en": "chlorine"
 },
 "wrong": [
 {
-"ar": "زنك",
+"ar": "الزنك",
 "en": "zinc"
 },
 {
-"ar": "أرغون",
+"ar": "الأرغون",
 "en": "argon"
 },
 {
-"ar": "سيليكون",
+"ar": "السيليكون",
 "en": "silicon"
 }
 ],
@@ -17199,20 +17029,20 @@
 "en": "Which element has atomic number 17?"
 },
 "answer": {
-"ar": "كلور",
+"ar": "الكلور",
 "en": "chlorine"
 },
 "wrong": [
 {
-"ar": "بلاتين",
+"ar": "البلاتين",
 "en": "platinum"
 },
 {
-"ar": "سيليكون",
+"ar": "السيليكون",
 "en": "silicon"
 },
 {
-"ar": "فاناديوم",
+"ar": "الفاناديوم",
 "en": "vanadium"
 }
 ],
@@ -17230,7 +17060,7 @@
 "difficulty": 2,
 "age": "all",
 "question": {
-"ar": "ما الرمز الكيميائي لعنصر أرغون؟",
+"ar": "ما الرمز الكيميائي لعنصر الأرغون؟",
 "en": "What is the chemical symbol of argon?"
 },
 "answer": {
@@ -17268,20 +17098,20 @@
 "en": "Which element has the chemical symbol Ar?"
 },
 "answer": {
-"ar": "أرغون",
+"ar": "الأرغون",
 "en": "argon"
 },
 "wrong": [
 {
-"ar": "جرمانيوم",
+"ar": "الجرمانيوم",
 "en": "germanium"
 },
 {
-"ar": "رادون",
+"ar": "الرادون",
 "en": "radon"
 },
 {
-"ar": "غاليوم",
+"ar": "الغاليوم",
 "en": "gallium"
 }
 ],
@@ -17302,20 +17132,20 @@
 "en": "Which element has atomic number 18?"
 },
 "answer": {
-"ar": "أرغون",
+"ar": "الأرغون",
 "en": "argon"
 },
 "wrong": [
 {
-"ar": "روبيديوم",
+"ar": "الروبيديوم",
 "en": "rubidium"
 },
 {
-"ar": "كلور",
+"ar": "الكلور",
 "en": "chlorine"
 },
 {
-"ar": "باريوم",
+"ar": "الباريوم",
 "en": "barium"
 }
 ],
@@ -17333,7 +17163,7 @@
 "difficulty": 2,
 "age": "all",
 "question": {
-"ar": "ما الرمز الكيميائي لعنصر كالسيوم؟",
+"ar": "ما الرمز الكيميائي لعنصر الكالسيوم؟",
 "en": "What is the chemical symbol of calcium?"
 },
 "answer": {
@@ -17371,20 +17201,20 @@
 "en": "Which element has the chemical symbol Ca?"
 },
 "answer": {
-"ar": "كالسيوم",
+"ar": "الكالسيوم",
 "en": "calcium"
 },
 "wrong": [
 {
-"ar": "رينيوم",
+"ar": "الرينيوم",
 "en": "rhenium"
 },
 {
-"ar": "غادولينيوم",
+"ar": "الغادولينيوم",
 "en": "gadolinium"
 },
 {
-"ar": "كوبالت",
+"ar": "الكوبالت",
 "en": "cobalt"
 }
 ],
@@ -17405,20 +17235,20 @@
 "en": "Which element has atomic number 20?"
 },
 "answer": {
-"ar": "كالسيوم",
+"ar": "الكالسيوم",
 "en": "calcium"
 },
 "wrong": [
 {
-"ar": "جرمانيوم",
+"ar": "الجرمانيوم",
 "en": "germanium"
 },
 {
-"ar": "زركونيوم",
+"ar": "الزركونيوم",
 "en": "zirconium"
 },
 {
-"ar": "سيليكون",
+"ar": "السيليكون",
 "en": "silicon"
 }
 ],
@@ -17436,7 +17266,7 @@
 "difficulty": 2,
 "age": "all",
 "question": {
-"ar": "ما الرمز الكيميائي لعنصر سكانديوم؟",
+"ar": "ما الرمز الكيميائي لعنصر السكانديوم؟",
 "en": "What is the chemical symbol of scandium?"
 },
 "answer": {
@@ -17474,20 +17304,20 @@
 "en": "Which element has the chemical symbol Sc?"
 },
 "answer": {
-"ar": "سكانديوم",
+"ar": "السكانديوم",
 "en": "scandium"
 },
 "wrong": [
 {
-"ar": "غادولينيوم",
+"ar": "الغادولينيوم",
 "en": "gadolinium"
 },
 {
-"ar": "كروم",
+"ar": "الكروم",
 "en": "chromium"
 },
 {
-"ar": "بزموت",
+"ar": "البزموت",
 "en": "bismuth"
 }
 ],
@@ -17504,7 +17334,7 @@
 "difficulty": 2,
 "age": "all",
 "question": {
-"ar": "ما الرمز الكيميائي لعنصر فاناديوم؟",
+"ar": "ما الرمز الكيميائي لعنصر الفاناديوم؟",
 "en": "What is the chemical symbol of vanadium?"
 },
 "answer": {
@@ -17542,20 +17372,20 @@
 "en": "Which element has the chemical symbol V?"
 },
 "answer": {
-"ar": "فاناديوم",
+"ar": "الفاناديوم",
 "en": "vanadium"
 },
 "wrong": [
 {
-"ar": "بورون",
+"ar": "البورون",
 "en": "boron"
 },
 {
-"ar": "روبيديوم",
+"ar": "الروبيديوم",
 "en": "rubidium"
 },
 {
-"ar": "هيليوم",
+"ar": "الهيليوم",
 "en": "helium"
 }
 ],
@@ -17572,7 +17402,7 @@
 "difficulty": 2,
 "age": "all",
 "question": {
-"ar": "ما الرمز الكيميائي لعنصر كروم؟",
+"ar": "ما الرمز الكيميائي لعنصر الكروم؟",
 "en": "What is the chemical symbol of chromium?"
 },
 "answer": {
@@ -17610,20 +17440,20 @@
 "en": "Which element has the chemical symbol Cr?"
 },
 "answer": {
-"ar": "كروم",
+"ar": "الكروم",
 "en": "chromium"
 },
 "wrong": [
 {
-"ar": "فسفور",
+"ar": "الفسفور",
 "en": "phosphorus"
 },
 {
-"ar": "ألومنيوم",
+"ar": "الألومنيوم",
 "en": "aluminium"
 },
 {
-"ar": "فاناديوم",
+"ar": "الفاناديوم",
 "en": "vanadium"
 }
 ],
@@ -17640,7 +17470,7 @@
 "difficulty": 2,
 "age": "all",
 "question": {
-"ar": "ما الرمز الكيميائي لعنصر منغنيز؟",
+"ar": "ما الرمز الكيميائي لعنصر المنغنيز؟",
 "en": "What is the chemical symbol of manganese?"
 },
 "answer": {
@@ -17678,20 +17508,20 @@
 "en": "Which element has the chemical symbol Mn?"
 },
 "answer": {
-"ar": "منغنيز",
+"ar": "المنغنيز",
 "en": "manganese"
 },
 "wrong": [
 {
-"ar": "هيليوم",
+"ar": "الهيليوم",
 "en": "helium"
 },
 {
-"ar": "روبيديوم",
+"ar": "الروبيديوم",
 "en": "rubidium"
 },
 {
-"ar": "يوروبيوم",
+"ar": "اليوروبيوم",
 "en": "europium"
 }
 ],
@@ -17708,7 +17538,7 @@
 "difficulty": 2,
 "age": "all",
 "question": {
-"ar": "ما الرمز الكيميائي لعنصر كوبالت؟",
+"ar": "ما الرمز الكيميائي لعنصر الكوبالت؟",
 "en": "What is the chemical symbol of cobalt?"
 },
 "answer": {
@@ -17746,20 +17576,20 @@
 "en": "Which element has the chemical symbol Co?"
 },
 "answer": {
-"ar": "كوبالت",
+"ar": "الكوبالت",
 "en": "cobalt"
 },
 "wrong": [
 {
-"ar": "فلور",
+"ar": "الفلور",
 "en": "fluorine"
 },
 {
-"ar": "يوروبيوم",
+"ar": "اليوروبيوم",
 "en": "europium"
 },
 {
-"ar": "نيتروجين",
+"ar": "النيتروجين",
 "en": "nitrogen"
 }
 ],
@@ -17776,7 +17606,7 @@
 "difficulty": 2,
 "age": "all",
 "question": {
-"ar": "ما الرمز الكيميائي لعنصر نيكل؟",
+"ar": "ما الرمز الكيميائي لعنصر النيكل؟",
 "en": "What is the chemical symbol of nickel?"
 },
 "answer": {
@@ -17814,20 +17644,20 @@
 "en": "Which element has the chemical symbol Ni?"
 },
 "answer": {
-"ar": "نيكل",
+"ar": "النيكل",
 "en": "nickel"
 },
 "wrong": [
 {
-"ar": "باريوم",
+"ar": "الباريوم",
 "en": "barium"
 },
 {
-"ar": "غاليوم",
+"ar": "الغاليوم",
 "en": "gallium"
 },
 {
-"ar": "إتريوم",
+"ar": "الإتريوم",
 "en": "yttrium"
 }
 ],
@@ -17844,7 +17674,7 @@
 "difficulty": 2,
 "age": "all",
 "question": {
-"ar": "ما الرمز الكيميائي لعنصر زنك؟",
+"ar": "ما الرمز الكيميائي لعنصر الزنك؟",
 "en": "What is the chemical symbol of zinc?"
 },
 "answer": {
@@ -17882,20 +17712,20 @@
 "en": "Which element has the chemical symbol Zn?"
 },
 "answer": {
-"ar": "زنك",
+"ar": "الزنك",
 "en": "zinc"
 },
 "wrong": [
 {
-"ar": "ألومنيوم",
+"ar": "الألومنيوم",
 "en": "aluminium"
 },
 {
-"ar": "إربيوم",
+"ar": "الإربيوم",
 "en": "erbium"
 },
 {
-"ar": "بلاتين",
+"ar": "البلاتين",
 "en": "platinum"
 }
 ],
@@ -17912,7 +17742,7 @@
 "difficulty": 2,
 "age": "all",
 "question": {
-"ar": "ما الرمز الكيميائي لعنصر غاليوم؟",
+"ar": "ما الرمز الكيميائي لعنصر الغاليوم؟",
 "en": "What is the chemical symbol of gallium?"
 },
 "answer": {
@@ -17950,20 +17780,20 @@
 "en": "Which element has the chemical symbol Ga?"
 },
 "answer": {
-"ar": "غاليوم",
+"ar": "الغاليوم",
 "en": "gallium"
 },
 "wrong": [
 {
-"ar": "تانتالوم",
+"ar": "التانتالوم",
 "en": "tantalum"
 },
 {
-"ar": "نيكل",
+"ar": "النيكل",
 "en": "nickel"
 },
 {
-"ar": "باريوم",
+"ar": "الباريوم",
 "en": "barium"
 }
 ],
@@ -17980,7 +17810,7 @@
 "difficulty": 2,
 "age": "all",
 "question": {
-"ar": "ما الرمز الكيميائي لعنصر جرمانيوم؟",
+"ar": "ما الرمز الكيميائي لعنصر الجرمانيوم؟",
 "en": "What is the chemical symbol of germanium?"
 },
 "answer": {
@@ -18018,20 +17848,20 @@
 "en": "Which element has the chemical symbol Ge?"
 },
 "answer": {
-"ar": "جرمانيوم",
+"ar": "الجرمانيوم",
 "en": "germanium"
 },
 "wrong": [
 {
-"ar": "كلور",
+"ar": "الكلور",
 "en": "chlorine"
 },
 {
-"ar": "بلاتين",
+"ar": "البلاتين",
 "en": "platinum"
 },
 {
-"ar": "تكنيشيوم",
+"ar": "التكنيشيوم",
 "en": "technetium"
 }
 ],
@@ -18048,7 +17878,7 @@
 "difficulty": 2,
 "age": "all",
 "question": {
-"ar": "ما الرمز الكيميائي لعنصر زرنيخ؟",
+"ar": "ما الرمز الكيميائي لعنصر الزرنيخ؟",
 "en": "What is the chemical symbol of arsenic?"
 },
 "answer": {
@@ -18086,20 +17916,20 @@
 "en": "Which element has the chemical symbol As?"
 },
 "answer": {
-"ar": "زرنيخ",
+"ar": "الزرنيخ",
 "en": "arsenic"
 },
 "wrong": [
 {
-"ar": "ساماريوم",
+"ar": "الساماريوم",
 "en": "samarium"
 },
 {
-"ar": "تكنيشيوم",
+"ar": "التكنيشيوم",
 "en": "technetium"
 },
 {
-"ar": "هيدروجين",
+"ar": "الهيدروجين",
 "en": "hydrogen"
 }
 ],
@@ -18116,7 +17946,7 @@
 "difficulty": 2,
 "age": "all",
 "question": {
-"ar": "ما الرمز الكيميائي لعنصر سيلينيوم؟",
+"ar": "ما الرمز الكيميائي لعنصر السيلينيوم؟",
 "en": "What is the chemical symbol of selenium?"
 },
 "answer": {
@@ -18154,20 +17984,20 @@
 "en": "Which element has the chemical symbol Se?"
 },
 "answer": {
-"ar": "سيلينيوم",
+"ar": "السيلينيوم",
 "en": "selenium"
 },
 "wrong": [
 {
-"ar": "فلور",
+"ar": "الفلور",
 "en": "fluorine"
 },
 {
-"ar": "بيريليوم",
+"ar": "البيريليوم",
 "en": "beryllium"
 },
 {
-"ar": "إريديوم",
+"ar": "الإريديوم",
 "en": "iridium"
 }
 ],
@@ -18184,7 +18014,7 @@
 "difficulty": 2,
 "age": "all",
 "question": {
-"ar": "ما الرمز الكيميائي لعنصر كريبتون؟",
+"ar": "ما الرمز الكيميائي لعنصر الكريبتون؟",
 "en": "What is the chemical symbol of krypton?"
 },
 "answer": {
@@ -18222,20 +18052,20 @@
 "en": "Which element has the chemical symbol Kr?"
 },
 "answer": {
-"ar": "كريبتون",
+"ar": "الكريبتون",
 "en": "krypton"
 },
 "wrong": [
 {
-"ar": "بورون",
+"ar": "البورون",
 "en": "boron"
 },
 {
-"ar": "ألومنيوم",
+"ar": "الألومنيوم",
 "en": "aluminium"
 },
 {
-"ar": "جرمانيوم",
+"ar": "الجرمانيوم",
 "en": "germanium"
 }
 ],
@@ -18252,7 +18082,7 @@
 "difficulty": 2,
 "age": "all",
 "question": {
-"ar": "ما الرمز الكيميائي لعنصر روبيديوم؟",
+"ar": "ما الرمز الكيميائي لعنصر الروبيديوم؟",
 "en": "What is the chemical symbol of rubidium?"
 },
 "answer": {
@@ -18290,20 +18120,20 @@
 "en": "Which element has the chemical symbol Rb?"
 },
 "answer": {
-"ar": "روبيديوم",
+"ar": "الروبيديوم",
 "en": "rubidium"
 },
 "wrong": [
 {
-"ar": "هافنيوم",
+"ar": "الهافنيوم",
 "en": "hafnium"
 },
 {
-"ar": "ثاليوم",
+"ar": "الثاليوم",
 "en": "thallium"
 },
 {
-"ar": "نيتروجين",
+"ar": "النيتروجين",
 "en": "nitrogen"
 }
 ],
@@ -18320,7 +18150,7 @@
 "difficulty": 2,
 "age": "all",
 "question": {
-"ar": "ما الرمز الكيميائي لعنصر سترونتيوم؟",
+"ar": "ما الرمز الكيميائي لعنصر السترونتيوم؟",
 "en": "What is the chemical symbol of strontium?"
 },
 "answer": {
@@ -18358,20 +18188,20 @@
 "en": "Which element has the chemical symbol Sr?"
 },
 "answer": {
-"ar": "سترونتيوم",
+"ar": "السترونتيوم",
 "en": "strontium"
 },
 "wrong": [
 {
-"ar": "فلور",
+"ar": "الفلور",
 "en": "fluorine"
 },
 {
-"ar": "إتيربيوم",
+"ar": "الإتيربيوم",
 "en": "ytterbium"
 },
 {
-"ar": "أوزميوم",
+"ar": "الأوزميوم",
 "en": "osmium"
 }
 ],
@@ -18388,7 +18218,7 @@
 "difficulty": 2,
 "age": "all",
 "question": {
-"ar": "ما الرمز الكيميائي لعنصر إتريوم؟",
+"ar": "ما الرمز الكيميائي لعنصر الإتريوم؟",
 "en": "What is the chemical symbol of yttrium?"
 },
 "answer": {
@@ -18426,20 +18256,20 @@
 "en": "Which element has the chemical symbol Y?"
 },
 "answer": {
-"ar": "إتريوم",
+"ar": "الإتريوم",
 "en": "yttrium"
 },
 "wrong": [
 {
-"ar": "زرنيخ",
+"ar": "الزرنيخ",
 "en": "arsenic"
 },
 {
-"ar": "إتيربيوم",
+"ar": "الإتيربيوم",
 "en": "ytterbium"
 },
 {
-"ar": "كبريت",
+"ar": "الكبريت",
 "en": "sulfur"
 }
 ],
@@ -18456,7 +18286,7 @@
 "difficulty": 2,
 "age": "all",
 "question": {
-"ar": "ما الرمز الكيميائي لعنصر زركونيوم؟",
+"ar": "ما الرمز الكيميائي لعنصر الزركونيوم؟",
 "en": "What is the chemical symbol of zirconium?"
 },
 "answer": {
@@ -18494,20 +18324,20 @@
 "en": "Which element has the chemical symbol Zr?"
 },
 "answer": {
-"ar": "زركونيوم",
+"ar": "الزركونيوم",
 "en": "zirconium"
 },
 "wrong": [
 {
-"ar": "نيكل",
+"ar": "النيكل",
 "en": "nickel"
 },
 {
-"ar": "كالسيوم",
+"ar": "الكالسيوم",
 "en": "calcium"
 },
 {
-"ar": "براسوديميوم",
+"ar": "البراسوديميوم",
 "en": "praseodymium"
 }
 ],
@@ -18524,7 +18354,7 @@
 "difficulty": 2,
 "age": "all",
 "question": {
-"ar": "ما الرمز الكيميائي لعنصر موليبدنوم؟",
+"ar": "ما الرمز الكيميائي لعنصر الموليبدنوم؟",
 "en": "What is the chemical symbol of molybdenum?"
 },
 "answer": {
@@ -18562,20 +18392,20 @@
 "en": "Which element has the chemical symbol Mo?"
 },
 "answer": {
-"ar": "موليبدنوم",
+"ar": "الموليبدنوم",
 "en": "molybdenum"
 },
 "wrong": [
 {
-"ar": "براسوديميوم",
+"ar": "البراسوديميوم",
 "en": "praseodymium"
 },
 {
-"ar": "نيوديميوم",
+"ar": "النيوديميوم",
 "en": "neodymium"
 },
 {
-"ar": "زينون",
+"ar": "الزينون",
 "en": "xenon"
 }
 ],
@@ -18592,7 +18422,7 @@
 "difficulty": 2,
 "age": "all",
 "question": {
-"ar": "ما الرمز الكيميائي لعنصر تكنيشيوم؟",
+"ar": "ما الرمز الكيميائي لعنصر التكنيشيوم؟",
 "en": "What is the chemical symbol of technetium?"
 },
 "answer": {
@@ -18630,20 +18460,20 @@
 "en": "Which element has the chemical symbol Tc?"
 },
 "answer": {
-"ar": "تكنيشيوم",
+"ar": "التكنيشيوم",
 "en": "technetium"
 },
 "wrong": [
 {
-"ar": "روديوم",
+"ar": "الروديوم",
 "en": "rhodium"
 },
 {
-"ar": "زنك",
+"ar": "الزنك",
 "en": "zinc"
 },
 {
-"ar": "كالسيوم",
+"ar": "الكالسيوم",
 "en": "calcium"
 }
 ],
@@ -18660,7 +18490,7 @@
 "difficulty": 2,
 "age": "all",
 "question": {
-"ar": "ما الرمز الكيميائي لعنصر روثينيوم؟",
+"ar": "ما الرمز الكيميائي لعنصر الروثينيوم؟",
 "en": "What is the chemical symbol of ruthenium?"
 },
 "answer": {
@@ -18698,20 +18528,20 @@
 "en": "Which element has the chemical symbol Ru?"
 },
 "answer": {
-"ar": "روثينيوم",
+"ar": "الروثينيوم",
 "en": "ruthenium"
 },
 "wrong": [
 {
-"ar": "بروميثيوم",
+"ar": "البروميثيوم",
 "en": "promethium"
 },
 {
-"ar": "فلور",
+"ar": "الفلور",
 "en": "fluorine"
 },
 {
-"ar": "رادون",
+"ar": "الرادون",
 "en": "radon"
 }
 ],
@@ -18728,7 +18558,7 @@
 "difficulty": 2,
 "age": "all",
 "question": {
-"ar": "ما الرمز الكيميائي لعنصر روديوم؟",
+"ar": "ما الرمز الكيميائي لعنصر الروديوم؟",
 "en": "What is the chemical symbol of rhodium?"
 },
 "answer": {
@@ -18766,20 +18596,20 @@
 "en": "Which element has the chemical symbol Rh?"
 },
 "answer": {
-"ar": "روديوم",
+"ar": "الروديوم",
 "en": "rhodium"
 },
 "wrong": [
 {
-"ar": "تكنيشيوم",
+"ar": "التكنيشيوم",
 "en": "technetium"
 },
 {
-"ar": "جرمانيوم",
+"ar": "الجرمانيوم",
 "en": "germanium"
 },
 {
-"ar": "أوزميوم",
+"ar": "الأوزميوم",
 "en": "osmium"
 }
 ],
@@ -18796,7 +18626,7 @@
 "difficulty": 2,
 "age": "all",
 "question": {
-"ar": "ما الرمز الكيميائي لعنصر بلاديوم؟",
+"ar": "ما الرمز الكيميائي لعنصر البلاديوم؟",
 "en": "What is the chemical symbol of palladium?"
 },
 "answer": {
@@ -18834,20 +18664,20 @@
 "en": "Which element has the chemical symbol Pd?"
 },
 "answer": {
-"ar": "بلاديوم",
+"ar": "البلاديوم",
 "en": "palladium"
 },
 "wrong": [
 {
-"ar": "بيريليوم",
+"ar": "البيريليوم",
 "en": "beryllium"
 },
 {
-"ar": "ألومنيوم",
+"ar": "الألومنيوم",
 "en": "aluminium"
 },
 {
-"ar": "إتيربيوم",
+"ar": "الإتيربيوم",
 "en": "ytterbium"
 }
 ],
@@ -18864,7 +18694,7 @@
 "difficulty": 2,
 "age": "all",
 "question": {
-"ar": "ما الرمز الكيميائي لعنصر كادميوم؟",
+"ar": "ما الرمز الكيميائي لعنصر الكادميوم؟",
 "en": "What is the chemical symbol of cadmium?"
 },
 "answer": {
@@ -18902,20 +18732,20 @@
 "en": "Which element has the chemical symbol Cd?"
 },
 "answer": {
-"ar": "كادميوم",
+"ar": "الكادميوم",
 "en": "cadmium"
 },
 "wrong": [
 {
-"ar": "إربيوم",
+"ar": "الإربيوم",
 "en": "erbium"
 },
 {
-"ar": "رينيوم",
+"ar": "الرينيوم",
 "en": "rhenium"
 },
 {
-"ar": "سيزيوم",
+"ar": "السيزيوم",
 "en": "caesium"
 }
 ],
@@ -18932,7 +18762,7 @@
 "difficulty": 2,
 "age": "all",
 "question": {
-"ar": "ما الرمز الكيميائي لعنصر تيلوريوم؟",
+"ar": "ما الرمز الكيميائي لعنصر التيلوريوم؟",
 "en": "What is the chemical symbol of tellurium?"
 },
 "answer": {
@@ -18970,20 +18800,20 @@
 "en": "Which element has the chemical symbol Te?"
 },
 "answer": {
-"ar": "تيلوريوم",
+"ar": "التيلوريوم",
 "en": "tellurium"
 },
 "wrong": [
 {
-"ar": "رادون",
+"ar": "الرادون",
 "en": "radon"
 },
 {
-"ar": "سيريوم",
+"ar": "السيريوم",
 "en": "cerium"
 },
 {
-"ar": "روديوم",
+"ar": "الروديوم",
 "en": "rhodium"
 }
 ],
@@ -19000,7 +18830,7 @@
 "difficulty": 2,
 "age": "all",
 "question": {
-"ar": "ما الرمز الكيميائي لعنصر يود؟",
+"ar": "ما الرمز الكيميائي لعنصر اليود؟",
 "en": "What is the chemical symbol of iodine?"
 },
 "answer": {
@@ -19038,20 +18868,20 @@
 "en": "Which element has the chemical symbol I?"
 },
 "answer": {
-"ar": "يود",
+"ar": "اليود",
 "en": "iodine"
 },
 "wrong": [
 {
-"ar": "سيريوم",
+"ar": "السيريوم",
 "en": "cerium"
 },
 {
-"ar": "سيزيوم",
+"ar": "السيزيوم",
 "en": "caesium"
 },
 {
-"ar": "ديسبروسيوم",
+"ar": "الديسبروسيوم",
 "en": "dysprosium"
 }
 ],
@@ -19068,7 +18898,7 @@
 "difficulty": 2,
 "age": "all",
 "question": {
-"ar": "ما الرمز الكيميائي لعنصر زينون؟",
+"ar": "ما الرمز الكيميائي لعنصر الزينون؟",
 "en": "What is the chemical symbol of xenon?"
 },
 "answer": {
@@ -19106,20 +18936,20 @@
 "en": "Which element has the chemical symbol Xe?"
 },
 "answer": {
-"ar": "زينون",
+"ar": "الزينون",
 "en": "xenon"
 },
 "wrong": [
 {
-"ar": "سيريوم",
+"ar": "السيريوم",
 "en": "cerium"
 },
 {
-"ar": "إتريوم",
+"ar": "الإتريوم",
 "en": "yttrium"
 },
 {
-"ar": "موليبدنوم",
+"ar": "الموليبدنوم",
 "en": "molybdenum"
 }
 ],
@@ -19136,7 +18966,7 @@
 "difficulty": 3,
 "age": "all",
 "question": {
-"ar": "ما الرمز الكيميائي لعنصر بلاتين؟",
+"ar": "ما الرمز الكيميائي لعنصر البلاتين؟",
 "en": "What is the chemical symbol of platinum?"
 },
 "answer": {
@@ -19174,20 +19004,20 @@
 "en": "Which element has the chemical symbol Pt?"
 },
 "answer": {
-"ar": "بلاتين",
+"ar": "البلاتين",
 "en": "platinum"
 },
 "wrong": [
 {
-"ar": "جرمانيوم",
+"ar": "الجرمانيوم",
 "en": "germanium"
 },
 {
-"ar": "نيتروجين",
+"ar": "النيتروجين",
 "en": "nitrogen"
 },
 {
-"ar": "ديسبروسيوم",
+"ar": "الديسبروسيوم",
 "en": "dysprosium"
 }
 ],
@@ -20995,8 +20825,8 @@
 },
 "wrong": [
 {
-"ar": "الرحمن",
-"en": "Ar-Rahmaan"
+"ar": "الملك",
+"en": "Al-Mulk"
 },
 {
 "ar": "البينة",
@@ -21564,8 +21394,8 @@
 "en": "Faatir"
 },
 {
-"ar": "البلد",
-"en": "Al-Balad"
+"ar": "فاليتا",
+"en": "Valletta"
 }
 ],
 "source": [
@@ -21758,8 +21588,8 @@
 "en": "Aal-i-Imraan"
 },
 {
-"ar": "البلد",
-"en": "Al-Balad"
+"ar": "فاليتا",
+"en": "Valletta"
 },
 {
 "ar": "الروم",
@@ -21886,8 +21716,8 @@
 },
 "wrong": [
 {
-"ar": "البلد",
-"en": "Al-Balad"
+"ar": "فاليتا",
+"en": "Valletta"
 },
 {
 "ar": "الفاتحة",
@@ -22051,8 +21881,8 @@
 },
 "wrong": [
 {
-"ar": "البلد",
-"en": "Al-Balad"
+"ar": "فاليتا",
+"en": "Valletta"
 },
 {
 "ar": "الصافات",
@@ -22112,8 +21942,8 @@
 "en": "Which surah comes right after Surah Al-Fajr?"
 },
 "answer": {
-"ar": "البلد",
-"en": "Al-Balad"
+"ar": "فاليتا",
+"en": "Valletta"
 },
 "wrong": [
 {
@@ -23474,8 +23304,8 @@
 "en": "Al-Mutaffifin"
 },
 {
-"ar": "البلد",
-"en": "Al-Balad"
+"ar": "فاليتا",
+"en": "Valletta"
 },
 {
 "ar": "الذاريات",
@@ -23507,8 +23337,8 @@
 "en": "Ghafir"
 },
 {
-"ar": "البلد",
-"en": "Al-Balad"
+"ar": "فاليتا",
+"en": "Valletta"
 },
 {
 "ar": "النور",
@@ -25308,7 +25138,7 @@
 "difficulty": 2,
 "age": "all",
 "question": {
-"ar": "ما اسم الظبي الأبيض ذو القرنين الطويلين المنتشر في صحاري الجزيرة العربية؟",
+"ar": "ما اسم الظبي الأبيض ذي القرنين الطويلين المنتشر في صحاري الجزيرة العربية؟",
 "en": "Which pale antelope with long straight horns lives in Arabian deserts?"
 },
 "answer": {
@@ -25344,7 +25174,7 @@
 "difficulty": 1,
 "age": "kids",
 "question": {
-"ar": "كم سنامًا للجمل العربي (الهجين)؟",
+"ar": "كم سنامًا للجمل العربي؟",
 "en": "How many humps does the Arabian camel have?"
 },
 "answer": {
@@ -26122,7 +25952,7 @@
 "en": "Gibraltar"
 },
 {
-"ar": "مونت بلانك",
+"ar": "مون بلان",
 "en": "Mont Blanc"
 }
 ],
@@ -26213,7 +26043,7 @@
 "difficulty": 1,
 "age": "all",
 "question": {
-"ar": "في أي دولة تقع الهرم الأكبر في الجيزة؟",
+"ar": "في أي دولة يقع الهرم الأكبر في الجيزة؟",
 "en": "In which country is the Great Pyramid of Giza?"
 },
 "answer": {
@@ -26482,8 +26312,8 @@
 "en": "Isha"
 },
 {
-"ar": "الجمعة",
-"en": "Jumuah"
+"ar": "الوتر",
+"en": "Witr"
 }
 ],
 "source": [
@@ -26720,8 +26550,8 @@
 "difficulty": 3,
 "age": "all",
 "question": {
-"ar": "أي عالم من العصر الذهبي كتب بالعربية في الرياضيات والفلك والجغرافيا؟",
-"en": "Which Islamic Golden Age scholar wrote in Arabic on mathematics, astronomy and geography?"
+"ar": "من العالِم الذي اشتُقّت من اسمه كلمة «خوارزمية»؟",
+"en": "Which scholar's name gave us the word «algorithm»?"
 },
 "answer": {
 "ar": "الخوارزمي",
@@ -26742,10 +26572,10 @@
 }
 ],
 "source": [
-"https://en.wikipedia.org/wiki/Muhammad_ibn_Musa_al-Khwarizmi"
+"https://en.wikipedia.org/wiki/Algorithm"
 ],
 "evidence": [
-"mathematics, astronomy, and geography"
+"al-Khwarizmi"
 ],
 "verified": true
 },
@@ -29475,7 +29305,7 @@
 "age": "kids",
 "question": {
 "ar": "كم ضلعًا في الشكل الثماني؟",
-"en": "How many sides does a octagon have?"
+"en": "How many sides does an octagon have?"
 },
 "answer": {
 "ar": "٨",
@@ -30068,7 +29898,7 @@
 "difficulty": 1,
 "age": "kids",
 "question": {
-"ar": "إلى أي مجموعة ينتمي حيوان أسد؟",
+"ar": "إلى أي مجموعة من الحيوانات ينتمي الأسد؟",
 "en": "Which group does the lion belong to?"
 },
 "answer": {
@@ -30095,46 +29925,13 @@
 "verified": true
 },
 {
-"id": "an-class-Q152",
-"type": "quiz",
-"category": "animals",
-"difficulty": 1,
-"age": "kids",
-"question": {
-"ar": "إلى أي مجموعة ينتمي حيوان سمكة؟",
-"en": "Which group does the fish belong to?"
-},
-"answer": {
-"ar": "أسماك",
-"en": "fish"
-},
-"wrong": [
-{
-"ar": "ثدييات",
-"en": "mammals"
-},
-{
-"ar": "طيور",
-"en": "birds"
-},
-{
-"ar": "زواحف",
-"en": "reptiles"
-}
-],
-"source": [
-"https://www.wikidata.org/wiki/Q152"
-],
-"verified": true
-},
-{
 "id": "an-class-Q2934",
 "type": "quiz",
 "category": "animals",
 "difficulty": 1,
 "age": "kids",
 "question": {
-"ar": "إلى أي مجموعة ينتمي حيوان ماعز؟",
+"ar": "إلى أي مجموعة من الحيوانات ينتمي الماعز؟",
 "en": "Which group does the goat belong to?"
 },
 "answer": {
@@ -30167,7 +29964,7 @@
 "difficulty": 1,
 "age": "kids",
 "question": {
-"ar": "إلى أي مجموعة ينتمي حيوان نمر؟",
+"ar": "إلى أي مجموعة من الحيوانات ينتمي النمر؟",
 "en": "Which group does the leopard belong to?"
 },
 "answer": {
@@ -30200,7 +29997,7 @@
 "difficulty": 1,
 "age": "kids",
 "question": {
-"ar": "إلى أي مجموعة ينتمي حيوان حمار؟",
+"ar": "إلى أي مجموعة من الحيوانات ينتمي الحمار؟",
 "en": "Which group does the donkey belong to?"
 },
 "answer": {
@@ -30233,7 +30030,7 @@
 "difficulty": 1,
 "age": "kids",
 "question": {
-"ar": "إلى أي مجموعة ينتمي حيوان سنجاب؟",
+"ar": "إلى أي مجموعة من الحيوانات ينتمي السنجاب؟",
 "en": "Which group does the squirrel belong to?"
 },
 "answer": {
@@ -30266,7 +30063,7 @@
 "difficulty": 1,
 "age": "kids",
 "question": {
-"ar": "إلى أي مجموعة ينتمي حيوان وحيد القرن؟",
+"ar": "إلى أي مجموعة من الحيوانات ينتمي وحيد القرن؟",
 "en": "Which group does the rhinoceros belong to?"
 },
 "answer": {
@@ -30299,7 +30096,7 @@
 "difficulty": 1,
 "age": "kids",
 "question": {
-"ar": "إلى أي مجموعة ينتمي حيوان فهد؟",
+"ar": "إلى أي مجموعة من الحيوانات ينتمي الفهد؟",
 "en": "Which group does the cheetah belong to?"
 },
 "answer": {
@@ -30332,7 +30129,7 @@
 "difficulty": 1,
 "age": "kids",
 "question": {
-"ar": "إلى أي مجموعة ينتمي حيوان زرافة؟",
+"ar": "إلى أي مجموعة من الحيوانات ينتمي الزرافة؟",
 "en": "Which group does the giraffe belong to?"
 },
 "answer": {
@@ -30365,7 +30162,7 @@
 "difficulty": 1,
 "age": "kids",
 "question": {
-"ar": "إلى أي مجموعة ينتمي حيوان قنفذ؟",
+"ar": "إلى أي مجموعة من الحيوانات ينتمي القنفذ؟",
 "en": "Which group does the hedgehog belong to?"
 },
 "answer": {
@@ -30630,40 +30427,6 @@
 "verified": true
 },
 {
-"id": "geo-lang-Q1032",
-"type": "quiz",
-"category": "geography",
-"difficulty": 3,
-"age": "all",
-"question": {
-"ar": "ما اللغة الرسمية في النيجر؟",
-"en": "What is the official language of Niger?"
-},
-"answer": {
-"ar": "الفرنسية",
-"en": "French"
-},
-"wrong": [
-{
-"ar": "التايلندية",
-"en": "Thai"
-},
-{
-"ar": "الأذرية",
-"en": "Azerbaijani"
-},
-{
-"ar": "الأوزبكية",
-"en": "Uzbek"
-}
-],
-"source": [
-"https://www.wikidata.org/wiki/Q1032",
-"https://www.wikidata.org/wiki/Q56475"
-],
-"verified": true
-},
-{
 "id": "geo-lang-Q1033",
 "type": "quiz",
 "category": "geography",
@@ -30762,40 +30525,6 @@
 "source": [
 "https://www.wikidata.org/wiki/Q1044",
 "https://www.wikidata.org/wiki/Q1860"
-],
-"verified": true
-},
-{
-"id": "geo-lang-Q115",
-"type": "quiz",
-"category": "geography",
-"difficulty": 3,
-"age": "all",
-"question": {
-"ar": "ما اللغة الرسمية في إثيوبيا؟",
-"en": "What is the official language of Ethiopia?"
-},
-"answer": {
-"ar": "الأمهرية",
-"en": "Amharic"
-},
-"wrong": [
-{
-"ar": "اللتوانية",
-"en": "Lithuanian"
-},
-{
-"ar": "الهوسية",
-"en": "Hausa"
-},
-{
-"ar": "الآيسلندية",
-"en": "Icelandic"
-}
-],
-"source": [
-"https://www.wikidata.org/wiki/Q115",
-"https://www.wikidata.org/wiki/Q28244"
 ],
 "verified": true
 },
@@ -32578,7 +32307,7 @@
 "en": "What is the official language of Laos?"
 },
 "answer": {
-"ar": "لاو",
+"ar": "اللاوية",
 "en": "Lao"
 },
 "wrong": [
@@ -33632,7 +33361,7 @@
 "en": "What is the currency of Mozambique?"
 },
 "answer": {
-"ar": "مثقال موزنبيقي",
+"ar": "مثقال موزمبيقي",
 "en": "Mozambican metical"
 },
 "wrong": [
@@ -33713,7 +33442,7 @@
 "en": "Romanian leu"
 },
 {
-"ar": "بوتسوانا بولا",
+"ar": "بولا بوتسواني",
 "en": "Botswana pula"
 }
 ],
@@ -33841,7 +33570,7 @@
 },
 "wrong": [
 {
-"ar": "لو ملداوي",
+"ar": "ليو مولدوفي",
 "en": "Moldovan leu"
 },
 {
@@ -34113,7 +33842,7 @@
 },
 "wrong": [
 {
-"ar": "كوردبا نيكاراغوا",
+"ar": "كوردوبا نيكاراغوي",
 "en": "Nicaraguan córdoba"
 },
 {
@@ -34257,7 +33986,7 @@
 "en": "Pakistani rupee"
 },
 {
-"ar": "كوردبا نيكاراغوا",
+"ar": "كوردوبا نيكاراغوي",
 "en": "Nicaraguan córdoba"
 }
 ],
@@ -34427,7 +34156,7 @@
 "en": "birr"
 },
 {
-"ar": "لو ملداوي",
+"ar": "ليو مولدوفي",
 "en": "Moldovan leu"
 }
 ],
@@ -34559,7 +34288,7 @@
 "en": "Trinidad and Tobago dollar"
 },
 {
-"ar": "جوردة هايتية",
+"ar": "غورد هايتي",
 "en": "gourde"
 },
 {
@@ -34623,7 +34352,7 @@
 },
 "wrong": [
 {
-"ar": "كوردبا نيكاراغوا",
+"ar": "كوردوبا نيكاراغوي",
 "en": "Nicaraguan córdoba"
 },
 {
@@ -34652,7 +34381,7 @@
 "en": "What is the currency of Moldova?"
 },
 "answer": {
-"ar": "لو ملداوي",
+"ar": "ليو مولدوفي",
 "en": "Moldovan leu"
 },
 "wrong": [
@@ -34827,8 +34556,8 @@
 },
 "wrong": [
 {
-"ar": "بوليفار السيادي",
-"en": "sovereign bolivar"
+"ar": "بوليفار فنزويلي",
+"en": "Venezuelan bolívar"
 },
 {
 "ar": "روبل روسي",
@@ -34895,8 +34624,8 @@
 },
 "wrong": [
 {
-"ar": "بوليفار السيادي",
-"en": "sovereign bolivar"
+"ar": "بوليفار فنزويلي",
+"en": "Venezuelan bolívar"
 },
 {
 "ar": "رنمينبي",
@@ -34924,7 +34653,7 @@
 "en": "What is the currency of Kazakhstan?"
 },
 "answer": {
-"ar": "تنك قزاقستاني",
+"ar": "تينغ كازاخستاني",
 "en": "Kazakhstani tenge"
 },
 "wrong": [
@@ -35103,7 +34832,7 @@
 "en": "kina"
 },
 {
-"ar": "بوتسوانا بولا",
+"ar": "بولا بوتسواني",
 "en": "Botswana pula"
 },
 {
@@ -35137,7 +34866,7 @@
 "en": "Peruvian sol"
 },
 {
-"ar": "جوردة هايتية",
+"ar": "غورد هايتي",
 "en": "gourde"
 },
 {
@@ -35175,7 +34904,7 @@
 "en": "Paraguayan guaraní"
 },
 {
-"ar": "كوردبا نيكاراغوا",
+"ar": "كوردوبا نيكاراغوي",
 "en": "Nicaraguan córdoba"
 }
 ],
@@ -35273,7 +35002,7 @@
 "en": "Iranian rial"
 },
 {
-"ar": "لو ملداوي",
+"ar": "ليو مولدوفي",
 "en": "Moldovan leu"
 },
 {
@@ -35613,7 +35342,7 @@
 "en": "United Arab Emirates dirham"
 },
 {
-"ar": "جوردة هايتية",
+"ar": "غورد هايتي",
 "en": "gourde"
 },
 {
@@ -35808,7 +35537,7 @@
 "en": "What is the currency of Tonga?"
 },
 "answer": {
-"ar": "بانجا تونجي",
+"ar": "بانغا تونغي",
 "en": "Tongan paʻanga"
 },
 "wrong": [
@@ -35817,8 +35546,8 @@
 "en": "Sudanese pound"
 },
 {
-"ar": "بوليفار السيادي",
-"en": "sovereign bolivar"
+"ar": "بوليفار فنزويلي",
+"en": "Venezuelan bolívar"
 },
 {
 "ar": "درهم مغربي",
@@ -35847,7 +35576,7 @@
 },
 "wrong": [
 {
-"ar": "جوردة هايتية",
+"ar": "غورد هايتي",
 "en": "gourde"
 },
 {
@@ -36182,8 +35911,8 @@
 "en": "What is the currency of Venezuela?"
 },
 "answer": {
-"ar": "بوليفار السيادي",
-"en": "sovereign bolivar"
+"ar": "بوليفار فنزويلي",
+"en": "Venezuelan bolívar"
 },
 "wrong": [
 {
@@ -36297,7 +36026,7 @@
 "en": "Turkish lira"
 },
 {
-"ar": "لو ملداوي",
+"ar": "ليو مولدوفي",
 "en": "Moldovan leu"
 }
 ],
@@ -36467,7 +36196,7 @@
 "en": "Swedish krona"
 },
 {
-"ar": "كوردبا نيكاراغوا",
+"ar": "كوردوبا نيكاراغوي",
 "en": "Nicaraguan córdoba"
 }
 ],
@@ -36561,7 +36290,7 @@
 },
 "wrong": [
 {
-"ar": "لو ملداوي",
+"ar": "ليو مولدوفي",
 "en": "Moldovan leu"
 },
 {
@@ -36595,8 +36324,8 @@
 },
 "wrong": [
 {
-"ar": "بوليفار السيادي",
-"en": "sovereign bolivar"
+"ar": "بوليفار فنزويلي",
+"en": "Venezuelan bolívar"
 },
 {
 "ar": "هريفنا أوكرانية",
@@ -36633,7 +36362,7 @@
 "en": "leone"
 },
 {
-"ar": "جوردة هايتية",
+"ar": "غورد هايتي",
 "en": "gourde"
 },
 {
@@ -36705,7 +36434,7 @@
 "en": "Argentine peso"
 },
 {
-"ar": "بوتسوانا بولا",
+"ar": "بولا بوتسواني",
 "en": "Botswana pula"
 }
 ],
@@ -36828,7 +36557,7 @@
 "en": "What is the currency of Haiti?"
 },
 "answer": {
-"ar": "جوردة هايتية",
+"ar": "غورد هايتي",
 "en": "gourde"
 },
 "wrong": [
@@ -36969,11 +36698,11 @@
 },
 "wrong": [
 {
-"ar": "بانجا تونجي",
+"ar": "بانغا تونغي",
 "en": "Tongan paʻanga"
 },
 {
-"ar": "كوردبا نيكاراغوا",
+"ar": "كوردوبا نيكاراغوي",
 "en": "Nicaraguan córdoba"
 },
 {
@@ -36998,7 +36727,7 @@
 "en": "What is the currency of Nicaragua?"
 },
 "answer": {
-"ar": "كوردبا نيكاراغوا",
+"ar": "كوردوبا نيكاراغوي",
 "en": "Nicaraguan córdoba"
 },
 "wrong": [
@@ -37041,7 +36770,7 @@
 "en": "Mexican peso"
 },
 {
-"ar": "تنك قزاقستاني",
+"ar": "تينغ كازاخستاني",
 "en": "Kazakhstani tenge"
 },
 {
@@ -37071,7 +36800,7 @@
 },
 "wrong": [
 {
-"ar": "جوردة هايتية",
+"ar": "غورد هايتي",
 "en": "gourde"
 },
 {
@@ -37109,7 +36838,7 @@
 "en": "Malawian kwacha"
 },
 {
-"ar": "بانجا تونجي",
+"ar": "بانغا تونغي",
 "en": "Tongan paʻanga"
 },
 {
@@ -37275,7 +37004,7 @@
 },
 "wrong": [
 {
-"ar": "مثقال موزنبيقي",
+"ar": "مثقال موزمبيقي",
 "en": "Mozambican metical"
 },
 {
@@ -37547,7 +37276,7 @@
 },
 "wrong": [
 {
-"ar": "لو ملداوي",
+"ar": "ليو مولدوفي",
 "en": "Moldovan leu"
 },
 {
@@ -37623,8 +37352,8 @@
 "en": "Moroccan dirham"
 },
 {
-"ar": "بوليفار السيادي",
-"en": "sovereign bolivar"
+"ar": "بوليفار فنزويلي",
+"en": "Venezuelan bolívar"
 }
 ],
 "source": [
@@ -37725,7 +37454,7 @@
 "en": "Egyptian pound"
 },
 {
-"ar": "لو ملداوي",
+"ar": "ليو مولدوفي",
 "en": "Moldovan leu"
 }
 ],
@@ -38052,7 +37781,7 @@
 "en": "What is the currency of Botswana?"
 },
 "answer": {
-"ar": "بوتسوانا بولا",
+"ar": "بولا بوتسواني",
 "en": "Botswana pula"
 },
 "wrong": [
@@ -38269,7 +37998,7 @@
 "en": "Rwandan franc"
 },
 {
-"ar": "لو ملداوي",
+"ar": "ليو مولدوفي",
 "en": "Moldovan leu"
 }
 ],

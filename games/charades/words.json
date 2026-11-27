@@ -604,7 +604,7 @@
 {
 "id": "chc-43f4129c",
 "ar": "نسر",
-"en": "eagle",
+"en": "vulture",
 "category": "birds",
 "difficulty": 1,
 "age": "kids",
@@ -856,7 +856,7 @@
 {
 "id": "chc-2d2a3dc7",
 "ar": "بلبل",
-"en": "nightingale",
+"en": "bulbul",
 "category": "birds",
 "difficulty": 3,
 "age": "all",
@@ -1304,7 +1304,7 @@
 {
 "id": "chc-da8c9f80",
 "ar": "صرصور",
-"en": "cricket",
+"en": "cockroach",
 "category": "insects",
 "difficulty": 2,
 "age": "all",
@@ -2438,7 +2438,7 @@
 {
 "id": "chc-533c33c9",
 "ar": "نقانق",
-"en": "hot dog",
+"en": "sausages",
 "category": "food",
 "difficulty": 3,
 "age": "all",
@@ -8074,7 +8074,7 @@
 {
 "id": "chc-e78ed0db",
 "ar": "برج المملكة",
-"en": "Kingdom Tower",
+"en": "Kingdom Centre",
 "category": "landmarks",
 "difficulty": 1,
 "age": "kids",

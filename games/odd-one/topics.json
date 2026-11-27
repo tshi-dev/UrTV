@@ -109,26 +109,20 @@
 "source": "curated"
 },
 {
-"ar": "حمامة",
-"en": "pigeon",
-"difficulty": 3,
-"source": "curated"
-},
-{
-"ar": "قطة",
-"en": "cat",
-"difficulty": 3,
-"source": "curated"
-},
-{
-"ar": "كلب",
-"en": "dog",
-"difficulty": 3,
-"source": "curated"
-},
-{
 "ar": "بغل",
 "en": "mule",
+"difficulty": 3,
+"source": "curated"
+},
+{
+"ar": "جاموس",
+"en": "buffalo",
+"difficulty": 3,
+"source": "curated"
+},
+{
+"ar": "تيس",
+"en": "billy goat",
 "difficulty": 3,
 "source": "curated"
 }
@@ -282,7 +276,7 @@
 },
 {
 "ar": "نسر",
-"en": "eagle",
+"en": "vulture",
 "difficulty": 1,
 "source": "curated"
 },
@@ -396,7 +390,7 @@
 },
 {
 "ar": "بلبل",
-"en": "nightingale",
+"en": "bulbul",
 "difficulty": 3,
 "source": "curated"
 }
@@ -604,7 +598,7 @@
 },
 {
 "ar": "صرصور",
-"en": "cricket",
+"en": "cockroach",
 "difficulty": 2,
 "source": "curated"
 },
@@ -1120,7 +1114,7 @@
 },
 {
 "ar": "نقانق",
-"en": "hot dog",
+"en": "sausages",
 "difficulty": 3,
 "source": "curated"
 },
@@ -1523,12 +1517,6 @@
 {
 "ar": "ثريد",
 "en": "tharid",
-"difficulty": 3,
-"source": "curated"
-},
-{
-"ar": "برياني",
-"en": "biryani",
 "difficulty": 3,
 "source": "curated"
 },
@@ -1995,18 +1983,6 @@
 "source": "curated"
 },
 {
-"ar": "نظارة",
-"en": "glasses",
-"difficulty": 3,
-"source": "curated"
-},
-{
-"ar": "ساعة",
-"en": "watch",
-"difficulty": 3,
-"source": "curated"
-},
-{
 "ar": "نعل",
 "en": "sandal",
 "difficulty": 3,
@@ -2027,12 +2003,6 @@
 {
 "ar": "بدلة",
 "en": "suit",
-"difficulty": 3,
-"source": "curated"
-},
-{
-"ar": "كم",
-"en": "sleeve",
 "difficulty": 3,
 "source": "curated"
 }
@@ -3776,7 +3746,7 @@
 },
 {
 "ar": "برج المملكة",
-"en": "Kingdom Tower",
+"en": "Kingdom Centre",
 "difficulty": 1,
 "source": "curated"
 },
@@ -4091,44 +4061,38 @@
 "source": "curated"
 },
 {
-"ar": "عريس",
-"en": "groom",
-"difficulty": 3,
-"source": "curated"
-},
-{
-"ar": "عروس",
-"en": "bride",
-"difficulty": 3,
-"source": "curated"
-},
-{
-"ar": "جار",
-"en": "neighbor",
-"difficulty": 3,
-"source": "curated"
-},
-{
-"ar": "صديق",
-"en": "friend",
-"difficulty": 3,
-"source": "curated"
-},
-{
-"ar": "ضيف",
-"en": "guest",
-"difficulty": 3,
-"source": "curated"
-},
-{
-"ar": "معلم",
-"en": "teacher",
-"difficulty": 3,
-"source": "curated"
-},
-{
 "ar": "ابن العم",
 "en": "cousin",
+"difficulty": 3,
+"source": "curated"
+},
+{
+"ar": "حفيدة",
+"en": "granddaughter",
+"difficulty": 2,
+"source": "curated"
+},
+{
+"ar": "زوج",
+"en": "husband",
+"difficulty": 2,
+"source": "curated"
+},
+{
+"ar": "زوجة",
+"en": "wife",
+"difficulty": 2,
+"source": "curated"
+},
+{
+"ar": "ابن الخال",
+"en": "cousin (maternal)",
+"difficulty": 3,
+"source": "curated"
+},
+{
+"ar": "بنت العم",
+"en": "cousin (paternal)",
 "difficulty": 3,
 "source": "curated"
 }
