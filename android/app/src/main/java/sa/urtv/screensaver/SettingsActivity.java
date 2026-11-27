@@ -751,6 +751,9 @@ public class SettingsActivity extends Activity {
             new Runnable() { public void run() { startActivity(new Intent(SettingsActivity.this, PhotoPacksActivity.class)); } });
         row("صوري (" + arabicNum(Own.count(this)) + "/" + arabicNum(Own.max(this)) + ")", ownLabel(), R.drawable.ic_eye,
             new Runnable() { public void run() { pickOwn(); } });
+        // 4.4 beta 4: the photos of a USB stick or of Downloads, picked in the home (which holds the read permission; this app has none) and handed to «صوري»
+        row("أضف من فلاشة أو التنزيلات", "صور من فلاشة USB أو من التنزيلات تُضاف إلى صوري", R.drawable.ic_eye,
+            new Runnable() { public void run() { openHome("photos"); } });
         row("بدء شاشة التوقف بعد", idleLabel(), R.drawable.ic_screensaver,
             new Runnable() { public void run() { pickIdle(); } });
 

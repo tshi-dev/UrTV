@@ -220,6 +220,8 @@ the phone page's key, «مركز التحكم» the control centre's row that op
     مثال للوكيل: optimize/photos.sh show  (a screenshot with them; it waits 70 s for the page to settle, so allow 80 s)
     مثال للوكيل: optimize/saver.sh homemine mix  (with «صورنا»)
       القيم المقبولة: same|mix|only|off
+——— أضف من فلاشة أو التنزيلات [الرئيسية وشاشة التوقف]
+    مثال للوكيل: optimize/photos.sh add <files they named>
 ——— تبديل الصورة كل [شاشة التوقف]
     مثال للوكيل: optimize/saver.sh photos <1, 5, 10, 15, 30, 60>  (minutes; 30 = the default)
     مثال للوكيل: optimize/saver.sh photos 30s  (every 30 seconds)
@@ -742,6 +744,8 @@ the phone page's key, «مركز التحكم» the control centre's row that op
      مثال للوكيل: optimize/photos.sh show  (a screenshot with them; it waits 70 s for the page to settle, so allow 80 s)
      مثال للوكيل: optimize/saver.sh homemine mix  (with «صورنا»)
        القيم المقبولة: same|mix|only|off
+———— أضف من فلاشة أو التنزيلات [الرئيسية وشاشة التوقف]
+     مثال للوكيل: optimize/photos.sh add <files they named>
 ———— بدء شاشة التوقف بعد [شاشة التوقف]
      مثال للوكيل: optimize/saver.sh idle <1, 2, 5, 10, 15, 30>  (minutes; the TV's own timer)
      صفحة الجوال: saver_idle
