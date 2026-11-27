@@ -246,6 +246,7 @@ python3 tests/adhan_from_file_test.py   # 4.4 beta 4 «أذاني من ملف»:
 python3 tests/photo_from_file_test.py   # 4.4 beta 4: photos from a stick or Downloads into «صوري», the screensaver app with no storage permission
 python3 tests/tester_auto_test.py   # 4.4 beta 4: the automatic tester round (tester/auto): its parsing on saved answers, the whole round on a stand-in TV, the putting back, never a blind key
 python3 tests/pray_rows_test.py   # 4.4 beta 4: «المؤذن», «الأدعية والتذكيرات», «صوتياتي» as rows of «الصلاة والأذان», the dua count from the phone
+python3 tests/music_adhan_state_test.py   # 4.4 beta 4: `music.sh adhan state <prayer> <state>` is reached (R-333); `adhan state` alone is still the status
 python3 tests/quiet_hours_test.py   # 4.4 touch «ساعات الهدوء»
 python3 tests/kahf_template_test.py   # 4.4 touch: the Friday Kahf, ready
 python3 tests/fade_in_test.py   # 4.4 touch «يبدأ بهدوء»

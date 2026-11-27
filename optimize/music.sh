@@ -45,6 +45,16 @@ if [ -z "${PY:-}" ]; then
   fi
 fi
 tv() { "$PY" -I optimize/tv.py "$@"; }
+# 4.4 beta 4: one prayer's sound and screen together: `adhan state fajr|dhuhr|asr|maghrib|isha both|sound|screen|none` (called from the `state)` of the adhan's words)
+prayer_state() {   # $1 = state, $2 = the prayer, $3 = the state
+  [ $# -eq 3 ] || usage
+  local p s out
+  case "$2" in fajr) p=0;; dhuhr) p=2;; asr) p=3;; maghrib) p=4;; isha) p=5;; *) usage;; esac
+  case "$3" in both) s=0;; sound) s=1;; screen) s=2;; none) s=3;; *) usage;; esac
+  out=$(tv "am broadcast -n sa.urtv.home/.tilawah.MusicReceiver -a sa.urtv.home.PRAYER_STATE --ei prayer $p --ei state $s")
+  case "$out" in *saved*) echo "$2: $3.";; *) echo "Refused: the home app is older than 4.4 beta 4, or $3 is not both, sound, screen or none." >&2; exit 1;; esac
+}
+
 FFMPEG="${FFMPEG:-ffmpeg}"
 FFPROBE="${FFPROBE:-ffprobe}"
 OWN_STAGE=/data/local/tmp/urtv-own
@@ -232,7 +242,7 @@ PY
     what="${1:-state}"
     case "$what" in
       state)
-        [ $# -le 1 ] || usage
+        if [ $# -gt 1 ]; then prayer_state "$@"; exit 0; fi   # 4.4 beta 4: `adhan state <prayer> <state>` is the per-prayer state, `adhan state` alone the status (the second `state)` below was never reached)
         out=$(tv "am broadcast -n sa.urtv.home/.tilawah.MusicReceiver -a sa.urtv.home.GET_PLAYER")
         data=$(printf '%s\n' "$out" | sed -n 's/.*data="\(.*\)"/\1/p' | tail -n 1)
         [ -n "$data" ] || { echo "No status from sa.urtv.home. Is the app installed and the TV reachable?" >&2; exit 1; }
@@ -402,13 +412,6 @@ PY
         case "$3" in on) on=true;; off) on=false;; *) usage;; esac
         out=$(tv "am broadcast -n sa.urtv.home/.tilawah.MusicReceiver -a sa.urtv.home.PRAYER_SCREEN --ei prayer $p --ez on $on")
         case "$out" in *saved*) echo "$2: screen $3.";; *) echo "Refused: the home app is older than 4.4 beta 4, or $3 is not on or off." >&2; exit 1;; esac
-        ;;
-      state)
-        [ $# -eq 3 ] || usage
-        case "$2" in fajr) p=0;; dhuhr) p=2;; asr) p=3;; maghrib) p=4;; isha) p=5;; *) usage;; esac
-        case "$3" in both) s=0;; sound) s=1;; screen) s=2;; none) s=3;; *) usage;; esac
-        out=$(tv "am broadcast -n sa.urtv.home/.tilawah.MusicReceiver -a sa.urtv.home.PRAYER_STATE --ei prayer $p --ei state $s")
-        case "$out" in *saved*) echo "$2: $3.";; *) echo "Refused: the home app is older than 4.4 beta 4, or $3 is not both, sound, screen or none." >&2; exit 1;; esac
         ;;
       prayer-volume)
         [ $# -eq 3 ] || usage

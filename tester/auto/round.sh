@@ -59,12 +59,12 @@ if [ -z "$PREV" ]; then   # the newest other folder of out/
 fi
 
 for s in ${SKIP//,/ }; do printf '%s\t%s\t%s\n' "$s" SKIP "left out of this round (--skip / ROUND_SKIP)" >> "$OUT/steps.tsv"; done
-step() { printf '%s\t%s\t%s\n' "$1" "$2" "$3" >> "$OUT/steps.tsv"; echo "  $2  $1  $3"; }
+step() { local msg="${3//$'\n'/ }"; msg="${msg//$'\t'/ }"; printf '%s\t%s\t%s\n' "$1" "$2" "$msg" >> "$OUT/steps.tsv"; echo "  $2  $1  $msg"; }   # one line a step, whatever it was given
 metric() { printf '%s\t%s\t%s\n' "$1" "$2" "$3" >> "$OUT/metrics.tsv"; echo "  metric $1 = $2$3"; }
 rows() { grep -v '^#' tester/auto/screens.tsv | awk -F'\t' -v k="$1" '$1 == k'; }   # the rows of one kind
 
 # ---- reading the screen (never a key before it)
-front() { tv "dumpsys activity activities | grep -m1 -E 'topResumedActivity|mResumedActivity'" 2> /dev/null | tr -d '\r'; }
+front() { tv "dumpsys activity activities 2> /dev/null | grep -m1 -E 'topResumedActivity|mResumedActivity'" 2> /dev/null | tr -d '\r' | head -n 1; }   # one line, never dumpsys's own «Broken pipe»
 on_top() {   # $1 package: is it the front app (asked up to 6 times, 2 s apart)
   local i
   for i in 1 2 3 4 5 6; do

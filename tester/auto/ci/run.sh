@@ -24,6 +24,9 @@ export PY=python3
   for p in sa.urtv.home sa.urtv.screensaver; do echo "$p $(adb shell dumpsys package $p | grep -m1 versionName | tr -d '\r ')"; done; } > "$OUT/device.txt"
 cat "$OUT/device.txt"
 
+# our home is the Home of this TV (the emulator's own launcher is the default until it is told: the Home key would bring that one, and every step that waits for our home would fail)
+adb shell cmd package set-home-activity sa.urtv.home/.MainActivity || echo "(the home could not be made the default)"
+
 # a city, so the home has its clock, prayers and weather (and the round has a city to box on the shots)
 python3 -I optimize/tv.py "am start -W -n sa.urtv.home/.MainActivity" > /dev/null
 sleep 15
