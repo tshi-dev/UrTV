@@ -3401,3 +3401,8 @@ Mute: Muted was false after the app restart (volume 18); I pressed KEYCODE_VOLUM
 Live channels part: not run yet (needs the home and Player lists by D-pad with a shot per key).
 - Settings restored from the backup after the 629 round: panel verse, appsstyle zoom, scenepacks saudi, scenestay 20, preset couch (custom), home_panel stocks (unchanged from the backup), matchestoday off, adhanlead 10. `saver.sh show` diff against the backup: only the build/version lines differ. TV muted (Muted: true), on the home.
 - Live channels part and S-24/S-25/S-26/R-319 are still not done on 629.
+
+## GAMES REVIEW (27 Nov, build 629 / versionCode 628)
+Done: all 16 games reviewed with the remote only; the full text, the table and the ranked top 10 fixes are in tester/GAMES-REVIEW.md, shots in tester/games/. Short version: 8 games play fully on one remote (خمس خانات, الكلمة المفقودة, واحد مو معنا, بدون كلام, خلية الحروف, خمّن الكلمة, دومينو; and the best flow is «واحد مو معنا»), 8 need phones and stop at the room page (الأسرع, على جبيني, من كاتبها؟, أقرب رقم, واحد يكذب, اقرأ الإيموجي, اربط الكلمات, ليل القرية, ارسم وخمّن: that is 9, see the file; ارسم وخمّن has no remote variant). Biggest finds: all tiles show the phone badge so you cannot tell which need phones; the first OK on «ابدأ» is inconsistent; domino opponent hand is tofu boxes; hex letters unreadable; ه looks like ٥ and ٠ is a diamond (room code «◆٨٢١»).
+Counting fix: games needing phones = 9 (الأسرع, على جبيني, من كاتبها؟, أقرب رقم, واحد يكذب, اقرأ الإيموجي, اربط الكلمات, ليل القرية, ارسم وخمّن), games playable with the remote = 7; 7 + 9 = 16.
+TV state: muted, on the home, header play-style switch left on its default. Not done yet on 629: live channels, S-24/25/26, R-319.
