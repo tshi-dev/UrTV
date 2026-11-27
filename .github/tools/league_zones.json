@@ -18,5 +18,15 @@
     "src": "https://www.premierleague.com/en/news/4657245/202526-premier-league-relegation-faq"
    }
   ]
+ },
+ "4335": {
+  "2026-2027": [
+   {
+    "from": 18,
+    "to": 20,
+    "k": "down",
+    "src": "https://en.wikipedia.org/wiki/2026%E2%80%9327_La_Liga"
+   }
+  ]
  }
 }
