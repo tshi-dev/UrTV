@@ -35,6 +35,7 @@ public final class PhoneHost {
                 @Override public String photosHtml() { return photosPage(app, actions.lang()); }
                 @Override public String drawHtml() { return onePage(app, "phone/draw.html", actions.lang()); }
                 @Override public String audioHtml() { return onePage(app, "phone/audio.html", actions.lang()); }
+                @Override public String prayersHtml() { return onePage(app, "phone/prayers.html", actions.lang()); }
                 @Override public String adbHtml() { return onePage(app, "phone/adb.html", actions.lang()); }
             }, new java.util.function.Predicate<java.net.InetAddress>() {
                 @Override public boolean test(java.net.InetAddress a) { return Guard.privateClient(a); }

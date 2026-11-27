@@ -157,7 +157,7 @@ public final class Schema {
     }
 
     private static Clean set(Map<String, Object> b) {
-        Clean c = only(b, "city", "home_cards", "adhan_on", "adhan_voice", "adhan_fajr_voice", "adhan_short", "adhan_stopkey", "adhan_volume", "sleep_minutes", "saver_idle", "lang", "fav_bar", "pin");
+        Clean c = only(b, "city", "home_cards", "adhan_on", "adhan_voice", "adhan_fajr_voice", "adhan_short", "adhan_stopkey", "adhan_volume", "adhan_prayers", "sleep_minutes", "saver_idle", "lang", "fav_bar", "pin");
         if (!c.ok()) return c;
         if (!pin(b)) return no("bad pin");
         boolean any = false;
@@ -178,6 +178,7 @@ public final class Schema {
                 }
                 case "adhan_on": case "adhan_short": case "adhan_stopkey": if (!(v instanceof Boolean)) return no("bad " + k); break;
                 case "adhan_voice": case "adhan_fajr_voice": if (!range(v, 1, ADHAN_VOICES)) return no("bad " + k); break;
+                case "adhan_prayers": if (!(v instanceof String) || !((String) v).matches("[0-3]{5}")) return no("bad adhan_prayers"); break;   // 4.4 beta 4: each prayer's sound and screen, five digits (Fajr Dhuhr Asr Maghrib Isha)
                 case "adhan_volume": if (!range(v, 10, 100)) return no("bad adhan_volume"); break;
                 case "sleep_minutes": if (!oneOf(v, SLEEP_MINUTES)) return no("bad sleep_minutes"); break;
                 case "saver_idle": if (!oneOf(v, SAVER_IDLE)) return no("bad saver_idle"); break;
