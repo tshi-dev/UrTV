@@ -53,6 +53,15 @@ public class NowPlayingProvider extends ContentProvider {
                     "none".equals(getContext().getSharedPreferences("clean_mode", android.content.Context.MODE_PRIVATE).getString("prayer", "line")) ? 0 : 1   /* CleanMode.PRAYER, read only: the saver's page keeps its next-prayer line unless «بطاقة الصلاة» is «بدون» */});
             return a;
         }
+        if (uri != null && "adhan_prayers".equals(uri.getLastPathSegment())) {
+            // 4.4 beta 4 (the screensaver's settings row «الأذان لكل صلاة» and its page's bar): per prayer, the four states (PrayerScreen) as five digits in the prayers' order, and the hidden mask
+            Prefs pr = new Prefs(getContext());
+            StringBuilder st = new StringBuilder();
+            for (int p : PrayerScreen.IDS) st.append(pr.prayerState(p));
+            MatrixCursor a = new MatrixCursor(new String[]{"states", "hide"});
+            a.addRow(new Object[]{st.toString(), pr.hideMask()});
+            return a;
+        }
         if (uri != null && "adhan".equals(uri.getLastPathSegment())) {
             // 4.4: a third column, the dua's name while a dua or reminder plays ("" for an adhan): an older screensaver reads the first two only
             MatrixCursor a = new MatrixCursor(new String[]{"prayer", "any_key", "name"});

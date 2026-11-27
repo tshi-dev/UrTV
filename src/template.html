@@ -1297,13 +1297,13 @@ if((CONFIG.football || CONFIG.matchPage) && !CONFIG.leagues.length) CONFIG.leagu
 if(MP_MORE) CONFIG.leagues = CONFIG.leagues.concat(MP_TOP);
 // The cards on this page: the screensaver's one
 // an older launcher sends the one card as #panel=). Each kind once, in order.
-// the prayer calculation (Aladhan's id; 100 = Oman's ministry, ours)
+// the prayer calculation (Aladhan's id; 100 = Oman's ministry, ours): #pm=jafari or #pm=gulf everywhere, else the country's by the zone, else Umm al-Qura 4; PrayerMath.methodFor
 // (launcher) and PrayerMethod (app) say the same, tests/prayer_method_test.py compares them
 const RESOLVED_METHOD = [1,2,3,4,5,8,9,10,11,12,13,14,15,16,17,18,19,20,21,23,100,101].includes(+_Q.get('pm')) ? +_Q.get('pm') : null;
-CONFIG.prayerMethod = _Q.get('pm') === 'gulf' ? 8
+CONFIG.prayerMethod = _Q.get('pm') === 'jafari' ? 0 : _Q.get('pm') === 'gulf' ? 8
   : RESOLVED_METHOD !== null ? RESOLVED_METHOD : ({'Asia/Kuwait':9, 'Asia/Qatar':10, 'Asia/Dubai':16, 'Asia/Bahrain':8, 'Asia/Muscat':100, 'Africa/Cairo':5, 'Asia/Amman':23, 'Asia/Damascus':5, 'Asia/Beirut':5, 'Asia/Gaza':5, 'Asia/Hebron':5, 'Asia/Jerusalem':5, 'Africa/Casablanca':21, 'Africa/El_Aaiun':21, 'Africa/Algiers':19, 'Africa/Tunis':18, 'Africa/Tripoli':101})[CONFIG.timezone] || 4;
 // the calculation's name under the clock, none for Umm al-Qura (ClockZone.calendar says the same on the home screen)
-const CAL_LABEL = {1:'جامعة العلوم الإسلامية بكراتشي',2:'الجمعية الإسلامية لأمريكا الشمالية',3:'رابطة العالم الإسلامي',11:'المجلس الإسلامي السنغافوري',12:'اتحاد المنظمات الإسلامية في فرنسا',13:'رئاسة الشؤون الدينية التركية',14:'الإدارة الدينية لمسلمي روسيا',15:'لجنة رصد الهلال العالمية',17:'إدارة التنمية الإسلامية الماليزية',20:'وزارة الشؤون الدينية الإندونيسية', 8:'حساب الخليج', 100:'حساب عُمان', 9:'حساب الكويت', 10:'حساب قطر', 16:'حساب الإمارات', 5:'حساب الهيئة المصرية', 23:'حساب الأردن', 21:'حساب المغرب', 19:'حساب الجزائر', 18:'حساب تونس', 101:'حساب ليبيا'};
+const CAL_LABEL = {0:'الحساب الجعفري',1:'جامعة العلوم الإسلامية بكراتشي',2:'الجمعية الإسلامية لأمريكا الشمالية',3:'رابطة العالم الإسلامي',11:'المجلس الإسلامي السنغافوري',12:'اتحاد المنظمات الإسلامية في فرنسا',13:'رئاسة الشؤون الدينية التركية',14:'الإدارة الدينية لمسلمي روسيا',15:'لجنة رصد الهلال العالمية',17:'إدارة التنمية الإسلامية الماليزية',20:'وزارة الشؤون الدينية الإندونيسية', 8:'حساب الخليج', 100:'حساب عُمان', 9:'حساب الكويت', 10:'حساب قطر', 16:'حساب الإمارات', 5:'حساب الهيئة المصرية', 23:'حساب الأردن', 21:'حساب المغرب', 19:'حساب الجزائر', 18:'حساب تونس', 101:'حساب ليبيا'};
 const clockSubText = () => 'بتوقيت ' + CONFIG.city + (CAL_LABEL[CONFIG.prayerMethod] ? SEP + CAL_LABEL[CONFIG.prayerMethod] : '');
 // «بطاقة ثانية» (#panel2=): a second card beside the small clock only
 // or when it is the first card again or the next prayer
@@ -1625,6 +1625,7 @@ const PRAYER_METHODS = {
   15: {fajr:0, isha:0, ishaMin:0, maghrib:.833, tune:[0,0,0,0]}, // seasonal twilight below
   17: {fajr:20, isha:18, ishaMin:0, maghrib:.833, tune:[0,0,0,0]},
   20: {fajr:20, isha:18, ishaMin:0, maghrib:.833, tune:[0,0,0,0]},
+  0:  {fajr:16,   isha:14,   ishaMin:0,  maghrib:4,    tune:[0,0,0,0]},      // Ja'fari: Aladhan's method 0, the Leva Research Institute, Qum (Shia Ithna-Ashari): Fajr 16°, Isha 14°, Maghrib 4° below the horizon (aladhan.com/calculation-methods)
   4:  {fajr:18.5, isha:0,    ishaMin:90, maghrib:.833, tune:[0,0,0,0]},      // Umm al-Qura
   8:  {fajr:19.5, isha:0,    ishaMin:90, maghrib:.833, tune:[0,0,0,0]},      // Gulf (Bahrain; Oman by #pm=gulf)
   9:  {fajr:18,   isha:17.5, ishaMin:0,  maghrib:.833, tune:[0,0,0,0]},      // Kuwait
@@ -1780,6 +1781,9 @@ const untilAdhan = leftMin => humanRemaining(Math.max(60, Math.round(leftMin * 6
 // the bar names it and says how to stop it
 // as the launcher's bar (AdhanBarText.playing). Any key
 let ADHAN_LIVE = null;
+let ADHAN_HIDE = 0;   // 4.4 beta 4: the prayers that do not show on the screen (the launcher's «الأذان لكل صلاة»: bit p of the prayer's number, 0 Fajr 2 Dhuhr 3 Asr 4 Maghrib 5 Isha)
+const ADHAN_BIT = {Fajr: 0, Dhuhr: 2, Asr: 3, Maghrib: 4, Isha: 5};
+const adhanHidden = k => k != null && ((ADHAN_HIDE >> k) & 1) === 1;
 const ADHAN_PRAYER_NAMES = {0:'الفجر', 2:'الظهر', 3:'العصر', 4:'المغرب', 5:'العشاء'};
 function adhanLiveText(){
   if(!ADHAN_LIVE) return '';
@@ -1792,15 +1796,17 @@ function adhanLiveTick(){
   // asked every 3 s whenever the app answers (a call to the app's provider, about a millisecond)
   let s = null;
   try{ const raw = window.UrtvNative.adhan(); s = raw ? JSON.parse(raw) : null; }catch(e){}
+  ADHAN_HIDE = s && typeof s.hide === 'number' ? s.hide | 0 : 0;
   ADHAN_LIVE = s && s.live && typeof s.prayer === 'number' && isFinite(s.prayer) ? {prayer: +s.prayer, any: !!s.any, name: typeof s.name === 'string' ? s.name.slice(0, 60) : ''} : null;
   tickAdhanBar();
 }
 function adhanBarText(){
   if(!CONFIG.adhanBar) return '';
-  if(ADHAN_LIVE) return adhanLiveText();
+  if(ADHAN_LIVE) return ADHAN_LIVE.name || !adhanHidden(ADHAN_LIVE.prayer) ? adhanLiveText() : '';   // a dua has its own name; an adhan of a prayer that does not show says nothing
   if(!PRAYERS.length) return '';
   const p = riyadhParts(), mins = p.h*60 + p.mi + p.s/60;
   for(const x of PRAYERS){
+    if(adhanHidden(ADHAN_BIT[x.key])) continue;   // 4.4 beta 4: this prayer does not show on the screen
     const at = x.h*60 + x.mi, toAdhan = at - mins;
     if(toAdhan > 0 && toAdhan <= CONFIG.adhanLead) return 'أذان ' + prayerName(x) + ' بعد ' + untilAdhan(toAdhan);
     const gap = x.key === 'Dhuhr' && isFriday() ? 0 : (CONFIG.iqama[x.key] || 0);

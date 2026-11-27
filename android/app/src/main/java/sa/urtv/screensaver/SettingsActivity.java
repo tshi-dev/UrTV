@@ -618,6 +618,9 @@ public class SettingsActivity extends Activity {
         // opened through the home (behind its family lock), so they are reachable with the «تلاوة وأذان» button hidden too
         row("الأذان", "تشغيله وصوته وصوت الفجر والمختصر والإيقاف بأي زر والمستوى", R.drawable.ic_settings,
             new Runnable() { public void run() { openAdhanSettings(); } });
+        // 4.4 beta 4: the sound and the screen of each of the five prayers apart (the home's screen, behind the same lock)
+        row("الأذان لكل صلاة", prayersValue(), R.drawable.ic_settings,
+            new Runnable() { public void run() { openHome("prayers"); } });
         // «تلاوة وأذان» itself, through the home (behind its family lock), as its button there opens it
         row("افتح تلاوة وأذان", "القرآن والإذاعات ومواقيت الأذان", R.drawable.ic_play,
             new Runnable() { public void run() { openHome("listen"); } });
@@ -2163,6 +2166,36 @@ public class SettingsActivity extends Activity {
         return adhanSeen;
     }
 
+    private String prayersSeen;        // the five states as the home last said them ("00200"), kept on disk too
+    private boolean prayersAsked;
+
+    /** «الأذان لكل صلاة»'s value: «كلها صوت وشاشة» when no prayer differs, else the first that does («الفجر: شاشة فقط»), or the count («٢ مختلفة»); asked as the adhan's is */
+    private String prayersValue() {
+        if (prayersSeen == null) prayersSeen = getSharedPreferences("hub_seen", MODE_PRIVATE).getString("adhan_prayers", "");
+        if (!prayersAsked) {
+            prayersAsked = true;
+            new Thread(() -> {
+                String got = "";
+                android.database.Cursor c = null;
+                try {
+                    c = getContentResolver().query(Uri.parse("content://sa.urtv.home.nowplaying/adhan_prayers"), null, null, null, null);
+                    if (c != null && c.moveToFirst() && c.getColumnIndex("states") >= 0) got = c.getString(c.getColumnIndex("states"));
+                } catch (RuntimeException ignored) {
+                } finally { if (c != null) c.close(); }
+                final String answer = got == null ? "" : got;
+                runOnUiThread(() -> {
+                    if (isFinishing() || isDestroyed() || answer.isEmpty()) return;
+                    boolean changed = !answer.equals(prayersSeen);
+                    prayersSeen = answer;
+                    getSharedPreferences("hub_seen", MODE_PRIVATE).edit().putString("adhan_prayers", answer).apply();
+                    if (changed) render();
+                });
+            }, "hub-prayers").start();
+        }
+        String v = PrayerSummary.of(prayersSeen, n -> DigitsText.convert(String.valueOf(n), latinDigits));
+        return v != null ? v : "الصوت والشاشة لكل صلاة على حدة";   // the home has not answered yet
+    }
+
     private Boolean cleanSeen, factorySeen;   // «UrTV النظيف» and «واجهة المصنع» off, as the home last said
     private boolean cleanAsked;
 
@@ -3588,10 +3621,10 @@ public class SettingsActivity extends Activity {
     }
 
     private void pickPrayerMethod() {
-        final String[] values = {PrayerMethod.AUTO, PrayerMethod.GULF};   // 4.3 A4: the Ja'fari is no longer offered
-        String[] labels = {PrayerMethod.label(PrayerMethod.AUTO, prefs.cityCountry(), prefs.cityTz()), PrayerMethod.label(PrayerMethod.GULF, prefs.cityCountry(), prefs.cityTz())};
+        final String[] values = {PrayerMethod.AUTO, PrayerMethod.GULF, PrayerMethod.JAFARI};
+        String[] labels = {PrayerMethod.label(PrayerMethod.AUTO, prefs.cityCountry(), prefs.cityTz()), PrayerMethod.label(PrayerMethod.GULF, prefs.cityCountry(), prefs.cityTz()), PrayerMethod.label(PrayerMethod.JAFARI, prefs.cityCountry(), prefs.cityTz())};
         new Dlg(this).raw().setTitle("طريقة الحساب")
-            .setSingleChoiceItems(labels, PrayerMethod.GULF.equals(prefs.prayerMethod()) ? 1 : 0,
+            .setSingleChoiceItems(labels, PrayerMethod.JAFARI.equals(prefs.prayerMethod()) ? 2 : PrayerMethod.GULF.equals(prefs.prayerMethod()) ? 1 : 0,
                 (d, i) -> { prefs.setPrayerMethod(values[i]); d.dismiss(); render(); })
             .show();
     }

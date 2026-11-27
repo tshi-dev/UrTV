@@ -1,0 +1,8 @@
+# states (the home's five digits: Fajr Dhuhr Asr Maghrib Isha; 0 sound and screen, 1 sound only, 2 screen only, 3 none)<TAB>expected
+00000	كلها صوت وشاشة
+20000	الفجر: شاشة فقط
+02000	الظهر: شاشة فقط
+00100	العصر: صوت فقط
+00003	العشاء: لا شيء
+11000	٢ مختلفة
+23133	٥ مختلفة

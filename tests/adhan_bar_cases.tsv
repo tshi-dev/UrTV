@@ -24,3 +24,6 @@
 1049	290	700	900	1065	1155	0	hindi	-	beta 4: just over 15 minutes: nothing	15
 1050	290	700	900	1065	1155	0	hindi	-	beta 4: 15 minutes before with the default lead: nothing (10 stays the default)	
 1065	290	700	900	1065	1155	0	hindi	إقامة المغرب بعد ١٠ دقائق	beta 4: from the adhan the iqama countdown goes on, whatever the lead	15
+1055	290	700	900	1065	1155	0	hindi	-	beta 4: Maghrib set to no screen (bit 4 = 16): 10 minutes before it, no bar		16
+1065	290	700	900	1065	1155	0	hindi	-	beta 4: Maghrib set to no screen: no iqama countdown either		16
+1055	290	700	900	1065	1155	0	hindi	أذان المغرب بعد ١٠ دقائق	beta 4: another prayer hidden (Fajr, bit 0): Maghrib still shows		1

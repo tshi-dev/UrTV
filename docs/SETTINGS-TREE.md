@@ -376,6 +376,11 @@ the phone page's key, «مركز التحكم» the control centre's row that op
 —— الأذان [كل التلفزيون]
    مثال للوكيل: optimize/music.sh adhan
    صفحة الجوال: adhan_on, adhan_short, adhan_stopkey, adhan_voice, adhan_fajr_voice, adhan_volume
+—— الأذان لكل صلاة [كل التلفزيون]
+   مثال للوكيل: optimize/music.sh adhan state <fajr|dhuhr|asr|maghrib|isha> <both|sound|screen|none>
+   مثال للوكيل: optimize/music.sh adhan screen <prayer> on|off
+   مثال للوكيل: optimize/music.sh adhan
+   مثال للوكيل: optimize/music.sh adhan prayer <fajr|dhuhr|asr|maghrib|isha> <general|silent|own|own_fajr|1-21>
 —— تنبيه قبل الأذان [الرئيسية وشاشة التوقف]
    مثال للوكيل: optimize/saver.sh adhanbar off  (or `on`)
      القيم المقبولة: on|off
@@ -387,7 +392,7 @@ the phone page's key, «مركز التحكم» the control centre's row that op
 —— شريط الوقت بين الصلاتين [شاشة التوقف]
    مثال للوكيل: optimize/saver.sh prayerbar on  (`off` = the default)
 —— طريقة الحساب [كل التلفزيون]
-   مثال للوكيل: optimize/saver.sh prayermethod gulf
+   مثال للوكيل: optimize/saver.sh prayermethod jafari
 —— تعديل وقت الصلاة [كل التلفزيون]
    مثال للوكيل: optimize/saver.sh prayeradj fajr +2 maghrib -1 …  (fajr dhuhr asr maghrib isha, whole minutes from -20 to +20, the others stay)
    مثال للوكيل: optimize/saver.sh prayeradj on
@@ -563,6 +568,11 @@ the phone page's key, «مركز التحكم» the control centre's row that op
 —— الأذان [كل التلفزيون]
    مثال للوكيل: optimize/music.sh adhan
    صفحة الجوال: adhan_on, adhan_short, adhan_stopkey, adhan_voice, adhan_fajr_voice, adhan_volume
+—— الأذان لكل صلاة [كل التلفزيون]
+   مثال للوكيل: optimize/music.sh adhan state <fajr|dhuhr|asr|maghrib|isha> <both|sound|screen|none>
+   مثال للوكيل: optimize/music.sh adhan screen <prayer> on|off
+   مثال للوكيل: optimize/music.sh adhan
+   مثال للوكيل: optimize/music.sh adhan prayer <fajr|dhuhr|asr|maghrib|isha> <general|silent|own|own_fajr|1-21>
 — الموقع والصلاة
 —— الموقع
 ——— الدولة [كل التلفزيون]
@@ -573,7 +583,7 @@ the phone page's key, «مركز التحكم» the control centre's row that op
     صفحة الجوال: city
     مركز التحكم: city
 ——— طريقة الحساب [كل التلفزيون]
-    مثال للوكيل: optimize/saver.sh prayermethod gulf
+    مثال للوكيل: optimize/saver.sh prayermethod jafari
 ——— تعديل وقت الصلاة [كل التلفزيون]
     مثال للوكيل: optimize/saver.sh prayeradj fajr +2 maghrib -1 …  (fajr dhuhr asr maghrib isha, whole minutes from -20 to +20, the others stay)
     مثال للوكيل: optimize/saver.sh prayeradj on

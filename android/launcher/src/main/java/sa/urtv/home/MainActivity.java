@@ -1223,6 +1223,10 @@ public class MainActivity extends Activity {
             case "adhan":
                 if (getResources().getBoolean(R.bool.show_listening)) handler.post(() -> launchGuarded(ParentalPolicy.PILL_LISTEN, adhanSettingsIntent(), S.t("إعدادات الأذان")));
                 break;
+            case "prayers":   // the settings' «الأذان لكل صلاة»: sound and screen for each of the five, behind the same lock as the adhan's settings
+                if (getResources().getBoolean(R.bool.show_listening))
+                    handler.post(() -> launchGuarded(ParentalPolicy.PILL_LISTEN, new Intent(this, sa.urtv.home.tilawah.PrayerSoundActivity.class), S.t("الأذان لكل صلاة")));
+                break;
             case "listen":   // the settings' «تلاوة وأذان» ← «افتح تلاوة وأذان»: the same as the button
                 if (getResources().getBoolean(R.bool.show_listening))
                     handler.post(() -> launchGuarded(ParentalPolicy.PILL_LISTEN, new Intent(this, sa.urtv.home.tilawah.MainActivity.class), "تلاوة وأذان"));
