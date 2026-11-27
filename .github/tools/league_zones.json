@@ -28,5 +28,15 @@
     "src": "https://en.wikipedia.org/wiki/2026%E2%80%9327_La_Liga"
    }
   ]
+ },
+ "4332": {
+  "2026-2027": [
+   {
+    "from": 18,
+    "to": 20,
+    "k": "down",
+    "src": "https://en.wikipedia.org/wiki/2026%E2%80%9327_Serie_A"
+   }
+  ]
  }
 }
