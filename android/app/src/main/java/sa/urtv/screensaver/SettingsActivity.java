@@ -63,6 +63,7 @@ public class SettingsActivity extends Activity {
     private TextView hint;
     private LinearLayout side;       // 4.3.3 the side list (the mockup): «الإعدادات», the search and the ten sections, always there on the right; the rows on the left
     private final java.util.Map<String, View> sideItems = new java.util.LinkedHashMap<>();   // each section's item in the side list, by its key
+    private boolean keyed;           // 4.4 beta 4: a key was pressed since the settings opened (before it, a redraw never takes the focus into the rows)
     private boolean sideFocus;       // the next render() leaves the focus on the side list (a section shown while the focus moves along the list)
     /** 4.4 the owner: «شكل كنبة» off = the 4.3.2 settings screen (a first screen of big buttons, «البطاقات» and «المزيد» screens of buttons, Back up a
      *  screen); on = the side list. The same rows either way (render builds each once); SettingsHub says where they sit in the layout chosen. */
@@ -249,7 +250,7 @@ public class SettingsActivity extends Activity {
 
     /** Back on a category's rows (or on «البطاقات», «المزيد») goes back to the screen its button is on, the focus on that button; on the first screen it leaves. */
     @Override public boolean dispatchKeyEvent(android.view.KeyEvent e) {
-        if (e.getAction() == android.view.KeyEvent.ACTION_DOWN) returnWant = null;   // the person moves: the focus is theirs again
+        if (e.getAction() == android.view.KeyEvent.ACTION_DOWN) { returnWant = null; keyed = true; }   // the person moves: the focus is theirs again
         if (okHold.key(e.getKeyCode(), e.getAction(), android.os.SystemClock.uptimeMillis())) {
             // a build waited for this release: the row that saw the press takes its click first, then the list is built
             boolean done = super.dispatchKeyEvent(e);
@@ -324,9 +325,10 @@ public class SettingsActivity extends Activity {
         if (fitNote != null) notice(fitNote);
         List<View> before = rows();
         View had = entering ? null : focusedRow();
-        // 4.4 beta 4: a render while the focus is on the side list (the home's answer about the adhan arriving just after the settings open on
-        // «الصلاة والأذان») keeps it there; only the person's key takes it into the rows (the emulator's shot: it jumped to the first row)
-        if (!classic && !entering && had == null) { View f = getCurrentFocus(); if (f != null && sideItems.containsValue(f)) sideFocus = true; }
+        // 4.4 beta 4: a render while no row has the focus (the home's answer about the adhan arriving just after the settings open on «الصلاة
+        // والأذان», before the side item's focus has even landed) keeps it on the side list; only the person's key takes it into the rows (the
+        // emulator's shots: it jumped to the first row)
+        if (!classic && !entering && (had == null || !keyed) && page == null && !SettingsHub.SEARCH.equals(screen)) sideFocus = true;   // no row had it (the side item, or its focus still on the way): the side list keeps it
         if (screen == null && !classic) screen = SettingsHub.PRAY;
         final boolean tiles = classic && SettingsHub.hasTiles(screen);   // 4.3.2: the first screen, «البطاقات», «المزيد» are buttons, not rows
         if (returnWant != null && System.currentTimeMillis() > returnUntil) returnWant = null;
