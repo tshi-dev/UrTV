@@ -1,13 +1,17 @@
-# Automatic round: emulator-2
+# Automatic round: emulator-3
 
 ## Health metrics
 
 | metric | now | limit | previous | change | verdict |
 |---|---|---|---|---|---|
-| cold_start_home_ms | 1035ms | max 20000 |  |  | ok |
-| cold_start_saver_ms | 832ms | max 20000 |  |  | ok |
-| pss_home_kb | 39784KB | max 350000 |  |  | ok |
-| pss_saver_kb | 37246KB | max 350000 |  |  | ok |
+| cold_start_home_ms | 1136ms | max 20000 |  |  | ok |
+| cold_start_saver_ms | 866ms | max 20000 |  |  | ok |
+| jank_home_frames | 66 |  |  |  | no limit |
+| jank_home_pct | 100.0% | max 60 |  |  | RED |
+| jank_home_p90_ms | 48ms |  |  |  | no limit |
+| jank_home_p99_ms | 57ms |  |  |  | no limit |
+| pss_home_kb | 59649KB | max 350000 |  |  | ok |
+| pss_saver_kb | 36911KB | max 350000 |  |  | ok |
 | crashes | 0 | zero 0 |  |  | ok |
 | anrs | 0 | zero 0 |  |  | ok |
 | frozen_lines | 0 | zero 0 |  |  | ok |
@@ -16,15 +20,16 @@
 
 | step | result | what |
 |---|---|---|
-| layout-classic-none | FAIL | كلاسيكي، بلا بطاقة: the home did not come to the front:     mResumedActivity: ActivityRecord{4d28a85 u0 com.google.android.tvlauncher/.MainActivity t4} |
-| layout-classic-stocks | FAIL | كلاسيكي، الأسهم: the home did not come to the front:     mResumedActivity: ActivityRecord{4d28a85 u0 com.google.android.tvlauncher/.MainActivity t4} |
-| layout-classic-matches | FAIL | كلاسيكي، المباريات: the home did not come to the front:     mResumedActivity: ActivityRecord{4d28a85 u0 com.google.android.tvlauncher/.MainActivity t4} |
-| layout-couch-none | FAIL | كنبة، بلا بطاقة: the home did not come to the front:     mResumedActivity: ActivityRecord{4d28a85 u0 com.google.android.tvlauncher/.MainActivity t4} |
-| layout-couch-stocks | FAIL | كنبة، الأسهم: the home did not come to the front:     mResumedActivity: ActivityRecord{4d28a85 u0 com.google.android.tvlauncher/.MainActivity t4} |
-| layout-couch-matches | FAIL | كنبة، المباريات: the home did not come to the front:     mResumedActivity: ActivityRecord{4d28a85 u0 com.google.android.tvlauncher/.MainActivity t4} |
-| layout-football-none | FAIL | كرة القدم، بلا بطاقة: the home did not come to the front:     mResumedActivity: ActivityRecord{4d28a85 u0 com.google.android.tvlauncher/.MainActivity t4} |
-| layout-football-stocks | FAIL | كرة القدم، الأسهم: the home did not come to the front:     mResumedActivity: ActivityRecord{4d28a85 u0 com.google.android.tvlauncher/.MainActivity t4} |
-| layout-football-matches | FAIL | كرة القدم، المباريات: the home did not come to the front:     mResumedActivity: ActivityRecord{4d28a85 u0 com.google.android.tvlauncher/.MainActivity t4} |
+| radio | SKIP | left out of this round (--skip / ROUND_SKIP) |
+| layout-classic-none | PASS | كلاسيكي، بلا بطاقة: the home is in front (look at shots/layout-classic-none.png) |
+| layout-classic-stocks | PASS | كلاسيكي، الأسهم: the home is in front (look at shots/layout-classic-stocks.png) |
+| layout-classic-matches | PASS | كلاسيكي، المباريات: the home is in front (look at shots/layout-classic-matches.png) |
+| layout-couch-none | PASS | كنبة، بلا بطاقة: the home is in front (look at shots/layout-couch-none.png) |
+| layout-couch-stocks | PASS | كنبة، الأسهم: the home is in front (look at shots/layout-couch-stocks.png) |
+| layout-couch-matches | PASS | كنبة، المباريات: the home is in front (look at shots/layout-couch-matches.png) |
+| layout-football-none | PASS | كرة القدم، بلا بطاقة: the home is in front (look at shots/layout-football-none.png) |
+| layout-football-stocks | PASS | كرة القدم، الأسهم: the home is in front (look at shots/layout-football-stocks.png) |
+| layout-football-matches | PASS | كرة القدم، المباريات: the home is in front (look at shots/layout-football-matches.png) |
 | settings-buttons-pray | PASS | أزرار ← الصلاة والأذان: «الأذان لكل صلاة» is on the screen |
 | settings-buttons-photos | PASS | أزرار ← صوري والخلفيات: «احذف صورة» is on the screen |
 | settings-buttons-look | PASS | أزرار ← الشكل: «التخطيط» is on the screen |
@@ -56,22 +61,9 @@
 | settings-tvos-update | PASS | tvOS ← حول والتحديث: «تحديث تلفزيوني» is on the screen |
 | settings-tvos-search | PASS | tvOS ← بحث في الإعدادات: «بحث في الإعدادات» is on the screen |
 | saver-start | PASS | a dream runs |
-| radio-0 | FAIL | the تلاوة screen did not open:     mResumedActivity: ActivityRecord{4d28a85 u0 com.google.android.tvlauncher/.MainActivity t4} |
-| radio-1 | FAIL | the تلاوة screen did not open:     mResumedActivity: ActivityRecord{4d28a85 u0 com.google.android.tvlauncher/.MainActivity t4} |
-| radio-2 | FAIL | the تلاوة screen did not open:     mResumedActivity: ActivityRecord{4d28a85 u0 com.google.android.tvlauncher/.MainActivity t4} |
-| radio-3 | FAIL | the تلاوة screen did not open:     mResumedActivity: ActivityRecord{4d28a85 u0 com.google.android.tvlauncher/.MainActivity t4} |
-| radio-4 | FAIL | the تلاوة screen did not open:     mResumedActivity: ActivityRecord{4d28a85 u0 com.google.android.tvlauncher/.MainActivity t4} |
-| radio-5 | FAIL | the تلاوة screen did not open:     mResumedActivity: ActivityRecord{4d28a85 u0 com.google.android.tvlauncher/.MainActivity t4} |
-| radio-6 | FAIL | the تلاوة screen did not open:     mResumedActivity: ActivityRecord{4d28a85 u0 com.google.android.tvlauncher/.MainActivity t4} |
-| radio-7 | FAIL | the تلاوة screen did not open:     mResumedActivity: ActivityRecord{4d28a85 u0 com.google.android.tvlauncher/.MainActivity t4} |
-| radio-8 | FAIL | the تلاوة screen did not open:     mResumedActivity: ActivityRecord{4d28a85 u0 com.google.android.tvlauncher/.MainActivity t4} |
-| radio-9 | FAIL | the تلاوة screen did not open:     mResumedActivity: ActivityRecord{4d28a85 u0 com.google.android.tvlauncher/.MainActivity t4} |
-| radio-10 | FAIL | the تلاوة screen did not open:     mResumedActivity: ActivityRecord{4d28a85 u0 com.google.android.tvlauncher/.MainActivity t4} |
-| radio-11 | FAIL | the تلاوة screen did not open:     mResumedActivity: ActivityRecord{4d28a85 u0 com.google.android.tvlauncher/.MainActivity t4} |
-| radio-12 | FAIL | the تلاوة screen did not open:     mResumedActivity: ActivityRecord{4d28a85 u0 com.google.android.tvlauncher/.MainActivity t4} |
-| display-720p-home | FAIL | the home was not in front at 720p:     mResumedActivity: ActivityRecord{4d28a85 u0 com.google.android.tvlauncher/.MainActivity t4} |
+| display-720p-home | PASS | the home at 1280x720, density 213 |
 | display-720p-settings | PASS | the settings at 720p |
-| font-large-home | FAIL | the home was not in front at the large font |
+| font-large-home | PASS | the home at font scale 1.3 |
 | font-large-settings | PASS | the settings at font scale 1.3 |
 | adhan-fajr-both | PASS | الفجر: both |
 | adhan-fajr-sound | PASS | الفجر: sound |
@@ -93,9 +85,8 @@
 | adhan-isha-sound | PASS | العشاء: sound |
 | adhan-isha-screen | PASS | العشاء: screen |
 | adhan-isha-none | PASS | العشاء: none |
-| games-list | FAIL | the games list was not on the screen:     mResumedActivity: ActivityRecord{4d28a85 u0 com.google.android.tvlauncher/.MainActivity t4} |
-| jank | FAIL | the home was not in front for the walk: no key was sent (    mResumedActivity: ActivityRecord{4d28a85 u0 com.google.android.tvlauncher/.MainActivity t4}) |
+| games-list | FAIL | the games list was not on the screen:     mResumedActivity: ActivityRecord{90d9c77 u0 sa.urtv.home/.MainActivity t7} |
 
 ## Verdict
 
-RED: step layout-classic-none failed; step layout-classic-stocks failed; step layout-classic-matches failed; step layout-couch-none failed; step layout-couch-stocks failed; step layout-couch-matches failed; step layout-football-none failed; step layout-football-stocks failed; step layout-football-matches failed; step radio-0 failed; step radio-1 failed; step radio-2 failed; step radio-3 failed; step radio-4 failed; step radio-5 failed; step radio-6 failed; step radio-7 failed; step radio-8 failed; step radio-9 failed; step radio-10 failed; step radio-11 failed; step radio-12 failed; step display-720p-home failed; step font-large-home failed; step games-list failed; step jank failed
+RED: jank_home_pct = 100.0% (limit max 60); step games-list failed

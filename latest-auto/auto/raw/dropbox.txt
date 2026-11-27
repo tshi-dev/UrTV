@@ -1,12 +1,12 @@
-Drop box contents: 9 entries
+Drop box contents: 10 entries
 Max entries: 1000
 Low priority rate limit period: 2000 ms
 Low priority tags: {data_app_wtf, keymaster, system_server_wtf, system_app_strictmode, system_app_wtf, system_server_strictmode, data_app_strictmode, netstats}
 
 ========================================
-2026-11-27 23:03:58 system_server_wtf (text, 1416 bytes)
+2026-11-27 23:23:57 system_server_wtf (text, 1416 bytes)
 Process: system_server
-PID: 468
+PID: 469
 UID: 1000
 Flags: 0x30c8be09
 Package: android v30 (11)
@@ -31,7 +31,7 @@ android.util.Log$TerribleFailure: Shared lib without setting: SharedLibraryInfo{
 	at com.android.internal.os.ZygoteInit.main(ZygoteInit.java:925)
 
 ========================================
-2026-11-27 23:03:59 system_server_wtf (text, 1217 bytes)
+2026-11-27 23:23:58 system_server_wtf (text, 1217 bytes)
 Process: system_server
 Subject: TrustManagerService
 Build: google/sdk_google_atv_x86/generic_x86:11/RTU1.221129.002/9351025:user/dev-keys
@@ -53,7 +53,7 @@ android.util.Log$TerribleFailure: EXTRA_USER_HANDLE missing or invalid, value=0
 	at com.android.internal.os.ZygoteInit.main(ZygoteInit.java:925)
 
 ========================================
-2026-11-27 23:03:59 system_server_wtf (text, 1214 bytes)
+2026-11-27 23:23:59 system_server_wtf (text, 1214 bytes)
 Process: system_server
 Subject: UserspaceRebootLogger
 Build: google/sdk_google_atv_x86/generic_x86:11/RTU1.221129.002/9351025:user/dev-keys
@@ -74,14 +74,14 @@ android.util.Log$TerribleFailure: Userspace reboot is not supported.
 	at com.android.server.ServiceThread.run(ServiceThread.java:44)
 
 ========================================
-2026-11-27 23:03:59 system_app_wtf (text, 1411 bytes)
+2026-11-27 23:23:59 system_app_wtf (text, 1412 bytes)
 Process: com.android.bluetooth
-PID: 663
+PID: 664
 UID: 1002
 Flags: 0x30c8be45
 Package: com.android.bluetooth v30 (11)
 Foreground: No
-Process-Runtime: 946
+Process-Runtime: 1048
 Subject: HeadsetSystemInterface
 Build: google/sdk_google_atv_x86/generic_x86:11/RTU1.221129.002/9351025:user/dev-keys
 
@@ -103,12 +103,12 @@ android.util.Log$TerribleFailure: Could not bind to IBluetoothHeadsetPhone Servi
 	at com.android.internal.os.ZygoteInit.main(ZygoteInit.java:947)
 
 ========================================
-2026-11-27 23:04:03 system_server_wtf (text, 1242 bytes)
+2026-11-27 23:24:03 system_server_wtf (text, 1242 bytes)
 Process: system_server
 Subject: ActivityManager
 Build: google/sdk_google_atv_x86/generic_x86:11/RTU1.221129.002/9351025:user/dev-keys
 
-android.util.Log$TerribleFailure: Sending non-protected broadcast com.android.systemui.demo from system 681:com.android.systemui/u0a67 pkg com.android.systemui
+android.util.Log$TerribleFailure: Sending non-protected broadcast com.android.systemui.demo from system 684:com.android.systemui/u0a67 pkg com.android.systemui
 	at android.util.Log.wtf(Log.java:313)
 	at android.util.Log.wtf(Log.java:307)
 	at com.android.server.am.ActivityManagerService.checkBroadcastFromSystem(ActivityManagerService.java:15913)
@@ -124,14 +124,18 @@ Caused by: java.lang.Throwable
 	... 7 more
 
 ========================================
-2026-11-27 23:04:08 system_app_wtf (text, 1927 bytes)
+2026-11-27 23:24:07 event_log (text, 34 bytes)
+1795821846947,0,0,event_log_start
+
+========================================
+2026-11-27 23:24:08 system_app_wtf (text, 1927 bytes)
 Process: com.google.android.providers.media.module
-PID: 1157
-UID: 10075
+PID: 1145
+UID: 10074
 Flags: 0x28c83e45
 Package: com.google.android.providers.media.module v30 (11)
 Foreground: No
-Process-Runtime: 9126
+Process-Runtime: 9032
 Subject: MediaUpgradeReceiver
 Build: google/sdk_google_atv_x86/generic_x86:11/RTU1.221129.002/9351025:user/dev-keys
 
@@ -158,11 +162,7 @@ Caused by: java.lang.NullPointerException: Attempt to invoke interface method 'v
 	... 9 more
 
 ========================================
-2026-11-27 23:04:10 event_log (text, 34 bytes)
-1795820650130,0,0,event_log_start
-
-========================================
-2026-11-27 23:04:10 SYSTEM_BOOT (text, 547 bytes)
+2026-11-27 23:24:08 SYSTEM_BOOT (text, 547 bytes)
 isPrevious: false
 Build: google/sdk_google_atv_x86/generic_x86:11/RTU1.221129.002/9351025:user/dev-keys
 Hardware: goldfish_x86
@@ -173,12 +173,12 @@ Kernel: Linux version 5.4.86-android11-2-00040-g29b2beadc627-ab7157994 (build-us
 
 
 ========================================
-2026-11-27 23:04:20 system_server_wtf (text, 895 bytes)
+2026-11-27 23:24:18 system_server_wtf (text, 895 bytes)
 Process: system_server
 Subject: ActivityManager
 Build: google/sdk_google_atv_x86/generic_x86:11/RTU1.221129.002/9351025:user/dev-keys
 
-android.util.Log$TerribleFailure: Timeout waiting for provider com.google.android.tv/10051 for provider com.google.android.tv.common.preferences providerRunning=false caller=unknown/10051
+android.util.Log$TerribleFailure: Timeout waiting for provider com.google.android.tv/10050 for provider com.google.android.tv.common.preferences providerRunning=false caller=unknown/10050
 	at android.util.Log.wtf(Log.java:313)
 	at android.util.Slog.wtf(Slog.java:94)
 	at com.android.server.am.ActivityManagerService.getContentProviderImpl(ActivityManagerService.java:7487)
@@ -187,4 +187,37 @@ android.util.Log$TerribleFailure: Timeout waiting for provider com.google.androi
 	at com.android.server.am.ActivityManagerService.onTransact(ActivityManagerService.java:2883)
 	at android.os.Binder.execTransactInternal(Binder.java:1154)
 	at android.os.Binder.execTransact(Binder.java:1123)
+
+========================================
+2026-11-27 23:30:06 system_app_crash (text, 1920 bytes)
+Process: com.google.android.backdrop
+PID: 7152
+UID: 10047
+Flags: 0x30883e45
+Package: com.google.android.backdrop v1007000 (1.7.0)
+Foreground: Yes
+Process-Runtime: 75
+Build: google/sdk_google_atv_x86/generic_x86:11/RTU1.221129.002/9351025:user/dev-keys
+Crash-Tag: window_resize
+
+java.lang.RuntimeException: Unable to start activity ComponentInfo{com.google.android.backdrop/android.service.dreams.DreamActivity}: java.lang.ClassCastException: android.os.BinderProxy cannot be cast to android.service.dreams.DreamService$DreamActivityCallback
+	at android.app.ActivityThread.performLaunchActivity(ActivityThread.java:3449)
+	at android.app.ActivityThread.handleLaunchActivity(ActivityThread.java:3601)
+	at android.app.servertransaction.LaunchActivityItem.execute(LaunchActivityItem.java:85)
+	at android.app.servertransaction.TransactionExecutor.executeCallbacks(TransactionExecutor.java:135)
+	at android.app.servertransaction.TransactionExecutor.execute(TransactionExecutor.java:95)
+	at android.app.ActivityThread$H.handleMessage(ActivityThread.java:2066)
+	at android.os.Handler.dispatchMessage(Handler.java:106)
+	at android.os.Looper.loop(Looper.java:223)
+	at android.app.ActivityThread.main(ActivityThread.java:7656)
+	at java.lang.reflect.Method.invoke(Native Method)
+	at com.android.internal.os.RuntimeInit$MethodAndArgsCaller.run(RuntimeInit.java:592)
+	at com.android.internal.os.ZygoteInit.main(ZygoteInit.java:947)
+Caused by: java.lang.ClassCastException: android.os.BinderProxy cannot be cast to android.service.dreams.DreamService$DreamActivityCallback
+	at android.service.dreams.DreamActivity.onCreate(DreamActivity.java:57)
+	at android.app.Activity.performCreate(Activity.java:8000)
+	at android.app.Activity.performCreate(Activity.java:7984)
+	at android.app.Instrumentation.callActivityOnCreate(Instrumentation.java:1309)
+	at android.app.ActivityThread.performLaunchActivity(ActivityThread.java:3422)
+	... 11 more
 
