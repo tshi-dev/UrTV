@@ -540,6 +540,16 @@ final class Prefs {
     static final String[] CARD_SIZE_NAMES = {"أصغر", "عادي", "أكبر"};
     static final String[] CARD_CORNERS = {"style", "sharp", "soft", "round"};
     static final String[] CARD_CORNER_NAMES = {"كما في الشكل", "حادة", "ناعمة", "أنعم"};
+    /**
+     * 4.4 beta 4 (the owner's idea, docs/mockups/couch-side-cards/): small cards down the left of «كنبة». "off" (no column), "a" (the next prayer and the
+     * hours' weather) or "b" (and the followed club's next match). SIDE_CARDS_DEFAULT is the owner's pick: changing this one word turns it on for every TV
+     * that never chose; one chosen with saver.sh sidecards stays. The home reads it from the page's fragment (#sidecards=), SideCards.
+     */
+    static final String SIDE_CARDS_DEFAULT = "off";
+    static final String[] SIDE_CARDS = {"off", "a", "b"};
+    String sideCards() { String v = sp.getString("sideCards", SIDE_CARDS_DEFAULT); return java.util.Arrays.asList(SIDE_CARDS).contains(v) ? v : "off"; }
+    void setSideCards(String v) { if (java.util.Arrays.asList(SIDE_CARDS).contains(v)) sp.edit().putString("sideCards", v).apply(); }
+
     String cardSize() { String v = sp.getString("cardSize", "m"); return java.util.Arrays.asList(CARD_SIZES).contains(v) ? v : "m"; }
     void setCardSize(String v) { if (java.util.Arrays.asList(CARD_SIZES).contains(v)) sp.edit().putString("cardSize", v).apply(); }
     String cardCorner() { String v = sp.getString("cardCorner", "style"); return java.util.Arrays.asList(CARD_CORNERS).contains(v) ? v : "style"; }
@@ -934,6 +944,7 @@ final class Prefs {
             + (fbHideDone() ? "&fbhide=1" : "") + (kickoff() ? "" : "&ko=0") + (kickoffGoal() ? "&kogoal=1" : "") + (kickoffEnd() ? "&koend=1" : "") + (dateNum() ? "&datenum=1" : "") + (searchPill() ? "&searchpill=1" : "")   // the football home without the games that ended
             + "&cardstyle=" + cardStyle()
             + ("m".equals(cardSize()) ? "" : "&csize=" + cardSize()) + ("style".equals(cardCorner()) ? "" : "&ccorner=" + cardCorner())
+            + ("off".equals(sideCards()) ? "" : "&sidecards=" + sideCards())
             + "&design=" + design() + "&bar=" + bar() + "&barat=" + barAt() + "&wx=" + wxAt()
             + "&adhanbar=" + (adhanBar() ? "1" : "0") + (adhanLead() == 15 ? "&adhanlead=15" : "")
             + "&yearstrip=" + (yearStrip() ? "1" : "0")

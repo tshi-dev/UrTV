@@ -154,6 +154,7 @@ public class MainActivity extends Activity {
     private ConfigSnapshot lastCfg;
     private PopupWindow inputsPopup;
     private HomeCard homeCard;
+    private SideCards sideCards;   // 4.4 beta 4: «كنبة»'s small cards down the left (off by default: #sidecards=, the owner's pick)
     private NowCard nowCard;   // «يُتلى الآن»: at the right end of the pills row while a surah or a station is on
     private Pill searchPill;   // 4.3.3 «بحث»: the TV's own search inside the apps (GlobalSearch), off until the settings turn it on
     private Pill marketsPill, matchesPill, phonePill, updatePill;   // «تحديث»: an update is worth opening the update screen for (UpdateNotice)   // «الجوال» (C14): the phone remote's page
@@ -241,7 +242,7 @@ public class MainActivity extends Activity {
 
     // the cards were changed from the phone while the home screen is in front: follow now, not at the next return
     private final BroadcastReceiver cardsChanged = new BroadcastReceiver() {
-        @Override public void onReceive(Context c, Intent i) { if (resumed) { homeCard.refresh(); wireFocus(); } }
+        @Override public void onReceive(Context c, Intent i) { if (resumed) { homeCard.refresh(); refreshSideCards(); wireFocus(); } }
     };
 
     // ---------------------------------------------------------------- lifecycle
@@ -482,6 +483,7 @@ public class MainActivity extends Activity {
         updateClock();
         updateNowPlaying();
         homeCard.refresh();
+        refreshSideCards();
         applyClean();   // «UrTV النظيف» changed while another screen was in front (after the card refresh: applyClean may hide the card)
         if (reminder != null) reminder.refresh(true);   // a card that came due while another app was in front; the alarm follows the tasks (both off the UI thread: QA-3)
         readAnimationScale();
@@ -745,9 +747,21 @@ public class MainActivity extends Activity {
     /** the photos were let go (onTrimMemory): the next onResume shows one at once */
     private boolean wallTrimmed;
 
+    /** 4.4 beta 4 SideCards: the screensaver's settings read on the loader, the column placed (or taken away) on the UI thread */
+    private void refreshSideCards() {
+        if (sideCards == null) sideCards = new SideCards(this, (android.view.ViewGroup) findViewById(android.R.id.content));
+        final SideCards side = sideCards;
+        if (loader.isShutdown()) return;
+        loader.execute(() -> {
+            final String u = side.read();
+            runOnUiThread(() -> { if (!isFinishing() && !isDestroyed()) side.show(u); });
+        });
+    }
+
     @Override
     protected void onDestroy() {
         if (safeRedirect) { super.onDestroy(); return; }   // nothing of the screen was made (CrashLoop)
+        if (sideCards != null) sideCards.drop();
         unregisterReceiver(packages);
         KeyTrace.release();
         unregisterReceiver(dockChanged);

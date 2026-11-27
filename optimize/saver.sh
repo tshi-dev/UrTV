@@ -98,6 +98,7 @@
 #   optimize/saver.sh cardstyle glass1             look of the card beside the clock: current dark1 glass1 dark3 glass3 boxes classic
 #   optimize/saver.sh cardsize l                   the cards' size: s m (default) l
 #   optimize/saver.sh cardcorner soft              the cards' corners: style (default, each card style's own) sharp soft round
+#   optimize/saver.sh sidecards a                  «كنبة»'s small cards on the left: off (default) a (prayer, weather) b (and the next match)
 #   optimize/saver.sh design clean                 the screensaver's design: info (default, as it always was) clean big frame dayline
 #   optimize/saver.sh bar prayers                  a centred bar: none (default) prayers slot (the left slot's item) weather
 #   optimize/saver.sh barat clock                  where the bar goes: bottom (default) clock (under the clock)
@@ -346,6 +347,7 @@ case "${1:-}" in
   cardstyle)set1 cardstyle "${2:?usage: optimize/saver.sh cardstyle current|dark1|glass1|dark3|glass3|boxes}" ;;
   cardsize)set1 cardsize "${2:?usage: optimize/saver.sh cardsize s|m|l}" ;;
   cardcorner)set1 cardcorner "${2:?usage: optimize/saver.sh cardcorner style|sharp|soft|round}" ;;
+  sidecards)set1 sidecards "${2:?usage: optimize/saver.sh sidecards off|a|b}" ;;
   design)   set1 design "${2:?usage: optimize/saver.sh design info|clean|big|frame|dayline}" ;;
   bar)      set1 bar "${2:?usage: optimize/saver.sh bar none|prayers|slot|weather}" ;;
   barat)    set1 barat "${2:?usage: optimize/saver.sh barat bottom|clock}" ;;
