@@ -74,8 +74,8 @@ check("…and neither has its English", "Standard (January, February, March)" in
 # the matches and markets pages by keys (docs/SETTINGS.md has the path)
 hub = text(APP / "SettingsHub.java")
 cats = re.findall(r'^\s*\{([A-Z]+), "', hub[hub.index("CATEGORIES = {"):], re.M)
-check("side list order (4.3.3): the search, then the ten sections", cats[:11] == ["SEARCH", "LANG", "PLACE", "LOOK", "APPS", "BUTTONS", "PRAY", "CONTENT", "SAVER", "FAMILY", "UPDATE"], cats[:11])
-check("«المباريات والأسواق» is the eighth item of the side list, six under «اللغة» where the settings open (▼ ×6)", cats.index("CONTENT") == 7 and cats.index("LANG") == 1)
+check("side list order (4.4 beta 4, the findability review): the search, then the nine sections, the most used first", cats[:10] == ["SEARCH", "PRAY", "PHOTOS", "LOOK", "SAVER", "APPS", "CONTENT", "FAMILY", "LANG", "UPDATE"], cats[:10])
+check("«المباريات والأسواق» is the seventh item of the side list, five under «الصلاة والأذان» where the settings open (▼ ×5)", cats.index("CONTENT") == 6 and cats.index("PRAY") == 1)
 rows = re.findall(r'^\s*row\("([^"]+)"', settings[settings.index("private void render()"):], re.M)
 content = ["مباريات اليوم", "الفرق المتابعة (", "الدوريات كاملة", "رياضات أخرى", "افتح صفحة الأسواق"]
 order = [r for r in rows if any(r.startswith(c) for c in content)]

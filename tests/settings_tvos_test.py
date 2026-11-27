@@ -25,7 +25,7 @@ check("«tvOS» is the third choice of «شكل شاشة الإعدادات» (s
       'SETTINGS_STYLES = {"buttons", "couch", "tvos"};' in prefs and 'SETTINGS_STYLE_NAMES = {"أزرار", "كنبة", "tvOS"};' in prefs
       and "Prefs.SETTINGS_STYLES" in recv and "settingsstyle buttons|couch|tvos" in saver)
 check("an update changes nothing: the style read the first time is the screen the TV shows (never tvOS by itself)",
-      'v = couchOn() || sp.getBoolean("uiOneForm", false) ? "couch" : "buttons";' in prefs)
+      'v = couchOn() || sp.getBoolean("uiOneForm", false) || SIDE_FOR_NEW_SETUPS && FreshInstall.is(ctx) ? "couch" : "buttons";' in prefs and "static final boolean SIDE_FOR_NEW_SETUPS = false;" in prefs)   # 4.4 beta 4: the side list for new setups waits for the owner (off)
 check("the 4.3.2 logic: classic stays true with tvOS (its screens, Back up a screen, search), TvosStyle only draws",
       'classic = !"couch".equals(prefs.settingsStyle());' in st and 'if ("tvos".equals(prefs.settingsStyle())) ts = new TvosStyle(this);' in st
       and "if (ts != null) { tvosHead(); return; }" in st)

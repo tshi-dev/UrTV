@@ -75,8 +75,8 @@ check("the question is the nudge's bar: due only while no city was chosen (the s
 check("the home asks the screensaver (city_chosen column; an older one says nothing = chosen, nobody is asked), and its words are in the English table",
       '"city_chosen"' in (ROOT / "android/app/src/main/java/sa/urtv/screensaver/ConfigProvider.java").read_text(encoding="utf-8") and "boolean cityChosen = true;" in (HOME / "ConfigSnapshot.java").read_text(encoding="utf-8")
       and all(w in tsv for w in ("اختر مدينتك للطقس والصلاة\t", "اختر المدينة\t", "للطقس والصلاة\t")))
-check("the screensaver app opens the chooser on the extra (onCreate and onNewIntent), on the one city row (4.3.3: «الموقع والطقس», whose button shows the current city)",
+check("the screensaver app opens the chooser on the extra (onCreate and onNewIntent), on the one city row (4.4 beta 4: «اللغة والموقع», whose button shows the current city)",
       'getBooleanExtra("pickCity", false)' in saver and "onNewIntent" in saver and "pickCity();" in saver.split("onNewIntent", 1)[1][:300]
-      and (SAVER_HUB := (ROOT / "android/app/src/main/java/sa/urtv/screensaver/SettingsHub.java").read_text(encoding="utf-8")).split("CATEGORIES = {", 1)[1].count("{PLACE, \"الموقع والطقس\"") == 1
-      and "case SettingsHub.PLACE: return Words.city(prefs.city());" in saver)
+      and (SAVER_HUB := (ROOT / "android/app/src/main/java/sa/urtv/screensaver/SettingsHub.java").read_text(encoding="utf-8")).split("CATEGORIES = {", 1)[1].count("{LANG, \"اللغة والموقع\"") == 1 and '{"المدينة", LANG}' in SAVER_HUB
+      and 'case SettingsHub.LANG: return langLabel() + "، " + Words.city(prefs.city());' in saver)
 sys.exit(1 if failed else 0)

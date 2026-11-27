@@ -79,8 +79,8 @@ check("the screensaver's defaults: on, the whistle, goal off, the final whistle 
 check("the page is told only what is not the default (&ko=0, &kogoal=1, &koend=1)", '(kickoff() ? "" : "&ko=0")' in prefs and '"&kogoal=1"' in prefs and '"&koend=1"' in prefs)
 check("the provider gives the column «kickoff»", '"kickoff", "greeting_name", "ui_smooth", "glass_size", "glass_rows", "card_fit", "apps_align"});' in prov and 'p.kickoffColumn(), p.greetingName(), p.uiSmooth() ? "1" : "0", p.glassSize(), p.glassRows(), cardFit(p, cards), p.appsAlign()});' in prov)
 rows = ["تنبيه بداية المباراة", "صوت التنبيه", "عند الهدف", "صافرة النهاية", "فوق تطبيق آخر"]
-check("the five rows in the settings, in both layouts (the hub's tables)", all(f'row("{r}"' in act for r in rows) and all(hub.count(f'"{r}"') >= 4 for r in rows),
-      [r for r in rows if hub.count(f'"{r}"') < 4])
+check("the five rows in the settings, in the one tree of every settings style (4.4 beta 4): «المباريات والأسواق» in ROWS and in its ORDER", all(f'row("{r}"' in act for r in rows)
+      and all(f'{{"{r}", CONTENT}}' in hub and hub.count(f'"{r}"') >= 3 for r in rows), [r for r in rows if hub.count(f'"{r}"') < 3 or f'{{"{r}", CONTENT}}' not in hub])
 check("«فوق تطبيق آخر» opens the TV's own permission screen for the ADD-ON (the home has none)", "MANAGE_OVERLAY_PERMISSION" in act and '"package:sa.urtv.extras"' in act and '"package:sa.urtv.home"' not in act)
 check("without the add-on the person is told on screen (Arabic, with its English entry) and the add-on's offer opens; the row says it needs the add-on",
       "if (Boolean.FALSE.equals(extrasHere)) { offerExtras(); return; }" in act and '"sa.urtv.home.ExtrasActivity"' in act and '"sa.urtv.home.EXTRAS_FOR", "overlay"' in act
