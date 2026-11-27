@@ -3,7 +3,7 @@ package sa.urtv.home;
 import java.util.List;
 
 /**
- * «أكمل المشاهدة» under the favourites (the idea from talkies, MIT: THIRD_PARTY_NOTICES.md): which Watch Next entries count, the line
+ * «كمّل المشاهدة» under the favourites (the idea from talkies, MIT: THIRD_PARTY_NOTICES.md): which Watch Next entries count, the line
  * under a card, which links a card may open and which pictures may be read, and how small a picture is made. No Android in here:
  * tests/TvRowsRun.java runs it.
  */
@@ -11,15 +11,15 @@ final class TvRowsPick {
     private TvRowsPick() { }
 
     static final String WATCH_NEXT = "watchnext";
-    static final String WATCH_NEXT_TITLE = S.n("أكمل المشاهدة");
+    static final String WATCH_NEXT_TITLE = S.n("كمّل المشاهدة");
 
     // android.media.tv.TvContract.WatchNextPrograms' types: what one is in the middle of (0), its next episode (1); a new
     // season (2) and a watchlist (3) are the app's promotion, not something watched
     static final int WATCH_NEXT_TYPE_CONTINUE = 0, WATCH_NEXT_TYPE_NEXT = 1;
 
-    /** A Watch Next entry shown in «أكمل المشاهدة»: continue or next episode, browsable, from an app that is on the TV. */
+    /** A Watch Next entry shown in «كمّل المشاهدة»: continue or next episode, browsable, from an app that is on the TV. */
     /**
-     * How many cells «أكمل المشاهدة» is cut into: as many as the favourites, so a card is a favourite tile's size. Before the favourites are
+     * How many cells «كمّل المشاهدة» is cut into: as many as the favourites, so a card is a favourite tile's size. Before the favourites are
      * on screen (both load in the background, the row may come first) the least the favourites can be, never one cell: one cell was the
      * whole screen's width, a 16:9 card two thirds of the screen tall, the favourites pushed up over the clock (the TV test of 3.147).
      */

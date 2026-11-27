@@ -104,7 +104,7 @@ This work adds `FavBar.restyle(cells, way)` on top of it, plus `HomeLook.apply`.
    - `dockRow`'s side padding (`FavBar.padSide`);
    - its height (`applyTrayHeight` → `FavBar.rowH`).
 4. **Keep the rest as it is:**
-   - «أكمل المشاهدة» stays on `dockCell(i, n, favs)`, the tiles' geometry, whatever the way;
+   - «كمّل المشاهدة» stays on `dockCell(i, n, favs)`, the tiles' geometry, whatever the way;
    - focus is kept by package (`cardByPkg`).
 
 ## Agreed with the sweep session (for phase 3)

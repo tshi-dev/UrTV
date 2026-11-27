@@ -27,7 +27,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Reads «أكمل المشاهدة» for the home screen from Android TV's Watch Next list (the way talkies does, MIT: THIRD_PARTY_NOTICES.md): what
+ * Reads «كمّل المشاهدة» for the home screen from Android TV's Watch Next list (the way talkies does, MIT: THIRD_PARTY_NOTICES.md): what
  * one is in the middle of and the next episode. Only that row: the rows apps publish were the owner's «a mess, they look like ads»
  * (the TV test of 3.145). Needs READ_TV_LISTINGS, which the owner allows once in WatchNextActivity; without it nothing is read and the
  * home has no row, as before. Two steps, both blocking, off the main thread: {@link #load} the
@@ -60,7 +60,7 @@ final class TvRows {
 
     static boolean allowed(Context c) { return c.checkSelfPermission(PERMISSION) == PackageManager.PERMISSION_GRANTED; }
 
-    /** «أكمل المشاهدة» with its cards' words, no pictures yet; none without the permission or with nothing in it. */
+    /** «كمّل المشاهدة» with its cards' words, no pictures yet; none without the permission or with nothing in it. */
     static List<Row> load(Context c) {
         List<Row> out = new ArrayList<>();
         if (!allowed(c)) return out;
@@ -102,7 +102,7 @@ final class TvRows {
         if (files != null) for (File f : files) if (!keep.contains(f.getName())) f.delete();
     }
 
-    /** «أكمل المشاهدة»: continue and next-episode entries, newest first (TvRowsPick.watchNextShown). */
+    /** «كمّل المشاهدة»: continue and next-episode entries, newest first (TvRowsPick.watchNextShown). */
     private static List<Item> watchNext(Context c) {
         List<Item> out = new ArrayList<>();
         PackageManager pm = c.getPackageManager();
@@ -131,7 +131,7 @@ final class TvRows {
                 out.add(it);
             }
         } catch (RuntimeException e) {
-            // no permission, or no TV provider: an empty «أكمل المشاهدة» (not shown)
+            // no permission, or no TV provider: an empty «كمّل المشاهدة» (not shown)
         }
         return out;
     }

@@ -37,7 +37,7 @@ removed on request by deleting its line in CouchFaces and its file.
 ## talkies
 
 The home screen's spring motion (`android/launcher/src/main/java/sa/urtv/home/Spring.java`) and the ideas for the channel and
-«أكمل المشاهدة» rows and the automatic light and dark look are from talkies (https://github.com/rajupp/talkies), under this license:
+«كمّل المشاهدة» rows and the automatic light and dark look are from talkies (https://github.com/rajupp/talkies), under this license:
 
 ```
 MIT License

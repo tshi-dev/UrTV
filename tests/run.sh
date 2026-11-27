@@ -360,6 +360,7 @@ python3 tests/parental_policy_test.py
 python3 tests/parental_wiring_test.py
 python3 tests/dock_pin_test.py
 python3 tests/i18n_test.py   # «اللغة»: the translation table, its completeness, Arabic byte for byte (docs/ENGLISH.md)
+python3 tests/ar_style_test.py   # docs/STYLE-AR.md: the Arabic wording check warns (never fails), the approved Saudi wording is in the app
 # English phase 1 (the screensaver app): its new tests go right under this line
 python3 tests/i18n_saver_test.py   # the settings in English (Words, WordMatch, Places), Arabic as it was, «اللغة» in «المزيد»
 #

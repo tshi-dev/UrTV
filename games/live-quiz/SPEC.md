@@ -53,7 +53,7 @@ The game **needs phones**. If fewer than 2 phones have joined after 60 seconds (
 - **Host leaves or Back is pressed:** the pause card opens (متابعة، إنهاء اللعبة، الرئيسية); the question clock stops while it is open; ending shows the podium so far.
 - **Only one player left:** the game continues as a solo race for the score; it does not end by itself.
 - **TV loses network mid-game:** the room closes with a message on every phone.
-- **A phone page opened with a wrong or old code:** «الرمز غير صحيح»; the page offers nothing else.
+- **A phone page opened with a wrong or old code:** «الرمز غلط»; the page offers nothing else.
 - **Large text, RTL, small phones:** buttons never shrink below 56 px high; answer text wraps up to 3 lines and then shrinks to a floor of 18 px.
 
 ## Data

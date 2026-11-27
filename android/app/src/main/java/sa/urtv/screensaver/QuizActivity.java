@@ -405,7 +405,7 @@ public class QuizActivity extends Activity {
             url = "http://" + lan.getHostAddress() + ":" + port + "/" + code;
         } catch (java.io.IOException e) {
             closeRoom();
-            Toast.makeText(this, S.t("تعذّر فتح الغرفة"), Toast.LENGTH_LONG).show();
+            Toast.makeText(this, S.t("ما انفتحت الغرفة"), Toast.LENGTH_LONG).show();
             return;
         }
         roomOpened = System.currentTimeMillis(); shownPhase = QuizRoom.Phase.LOBBY; shownVersion = -1; shownIndex = -1;
@@ -702,7 +702,7 @@ public class QuizActivity extends Activity {
 
     private void drawEnd() {
         List<QuizRoom.Player> r = room.ranked();
-        title(S.t("انتهت اللعبة"), r.isEmpty() ? null : r.get(0).score <= 0 ? S.t("لا فائز هذه المرة") : r.size() > 1 && r.get(1).score == r.get(0).score ? S.t("تعادل في المركز الأول") : S.t("الفائز: %s", r.get(0).name));
+        title(S.t("خلصت اللعبة"), r.isEmpty() ? null : r.get(0).score <= 0 ? S.t("لا فائز هذه المرة") : r.size() > 1 && r.get(1).score == r.get(0).score ? S.t("تعادل في المركز الأول") : S.t("الفائز: %s", r.get(0).name));
         String[] labels = {S.t("العب مرة أخرى"), S.t("تغيير الإعدادات"), S.t("خروج")};
         for (int i = 0; i < 3; i++) root.addView(button(labels[i], sel == i, 520), at(520, 96, 96 + i * (520 + 24), 232));
         int[] cols = {OKB, SAFF, 0xFFF08A6E}; float[] hs = {512, 400, 300}; int[] place = {1, 0, 2};   // heights of 1st, 2nd, 3rd (the winner tallest, in the middle); on the screen 2nd, 1st, 3rd from the left

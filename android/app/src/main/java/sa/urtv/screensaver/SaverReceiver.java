@@ -49,7 +49,7 @@ import java.util.Locale;
  * listenpill = the «تلاوة وأذان» button on the home screen (on, the default, or off: only the button goes, the adhan and the Quran stay).
  * matchestoday = the «المباريات» card shows only today's games, in the city's day (on), or the week's as always (off, the default).
  * pagesdark = the home's markets and matches pages in the dark look (on, the default) or in the home's look (off).
- * watchnext = «أكمل المشاهدة» under the home screen's favourites (on, the default, or off); it needs the home app's TV listings permission.
+ * watchnext = «كمّل المشاهدة» under the home screen's favourites (on, the default, or off); it needs the home app's TV listings permission.
  * updatebell = the «جرس التحديثات» on the home screen (on, the default, or off: only the bell goes; it shows only while the Play Store has updates waiting).
  * greetingname = a name after the home's greeting («صباح الخير، علاء»), at most 30 letters on one line, or off (the default: the greeting alone).
  * greeting = the greeting and the weather line above the home screen's clock (on, the default, or off: the plain good-morning).

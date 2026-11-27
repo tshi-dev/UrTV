@@ -31,9 +31,9 @@ check("one OK on the settings' row lands on a first page, not on the check: a pl
 check("it lists exactly what it will turn off, by readable name (the TV's label, else the package), says «تعطيل لا حذف», what stays protected and how to undo",
       "names(offer.packages)" in act and "getApplicationLabel" in act and "تعطيل لا حذف" in act and "يبقى محميًّا ولا نلمسه" in act and "للتراجع: «رجّع واجهة المصنع»" in act)
 saver = (ROOT / "android/app/src/main/java/sa/urtv/screensaver/SettingsActivity.java").read_text(encoding="utf-8")
-check("its own row in the settings next to «اجعل UrTV الشاشة الرئيسية», on or off clean mode: not on CleanActivity any more; the row turns into «رجّع واجهة المصنع» while it is on; the activity is exported only behind the signature permission",
+check("its own row in the settings next to «خلّ UrTV هي الشاشة الرئيسية», on or off clean mode: not on CleanActivity any more; the row turns into «رجّع واجهة المصنع» while it is on; the activity is exported only behind the signature permission",
       "FactoryActivity" not in clean and "setup.FactoryActivity" not in mainsrc and 'row("رجّع واجهة المصنع", "مفعّل' in saver
-      and saver.index('"تخلّص من واجهة المصنع"') > saver.index('"اجعل UrTV الشاشة الرئيسية"') and saver.index('"تخلّص من واجهة المصنع"') < saver.index('"\\u2066UrTV\\u2069 النظيف"')
+      and saver.index('"تخلّص من واجهة المصنع"') > saver.index('"خلّ UrTV هي الشاشة الرئيسية"') and saver.index('"تخلّص من واجهة المصنع"') < saver.index('"\\u2066UrTV\\u2069 النظيف"')
       and '"sa.urtv.home.setup.FactoryActivity"' in saver
       and re.search(r'android:name="\.setup\.FactoryActivity"\s+android:exported="true"\s+android:permission="sa\.urtv\.home\.OPEN_CLEAN"', man) is not None)
 adb = (SETUP / "AdbClient.java").read_text(encoding="utf-8"); ses = (SETUP / "SetupSession.java").read_text(encoding="utf-8")

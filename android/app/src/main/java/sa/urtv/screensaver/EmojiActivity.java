@@ -45,7 +45,7 @@ public class EmojiActivity extends GameActivity {
     private void startWithPhones() {
         int n = phones.room.count();
         if (n < EmojiGame.MIN_PLAYERS) return;
-        if (n > EmojiGame.MAX_PLAYERS) { toast(S.t("اللعبة تتسع لعشرة لاعبين")); return; }
+        if (n > EmojiGame.MAX_PLAYERS) { toast(S.t("اللعبة تاخذ لين عشرة لاعبين")); return; }
         phones.room.start(); phoneLobby = false;
         names = phones.room.names().toArray(new String[0]);
         boolean kids = chips.picked("kids") == 1;

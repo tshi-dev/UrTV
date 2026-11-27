@@ -31,7 +31,7 @@ check("the styles this test walks are every style the settings have (Prefs.SETTI
 # the audit's rows (section A), as the TV labelled them; the renames of the review, and «زر … في الريموت» as one of its rows
 audit = (ROOT / "docs/research/SETTINGS-AUDIT.md").read_text(encoding="utf-8")
 part = audit[audit.index("## A."):audit.index("## B.")]
-RENAMED = {"وضع الألوان": "الألوان والإضاءة", "UrTV النظيف": "\u2066UrTV\u2069 النظيف"}   # the code isolates the Latin name
+RENAMED = {"وضع الألوان": "الألوان والإضاءة", "UrTV النظيف": "\u2066UrTV\u2069 النظيف", "أكمل المشاهدة": "كمّل المشاهدة", "اجعل UrTV الشاشة الرئيسية": "خلّ UrTV هي الشاشة الرئيسية"}   # + the Saudi wording (4.4 beta 4)   # the code isolates the Latin name
 labels = []
 for n, lab in re.findall(r"^\|\s*(\d+)\s*\|[^|]*\|\s*([^|]+?)\s*\|", part, re.M):
     lab = re.sub(r"\s*…?\s*\(.*\)$", "", lab).strip()   # «صوري (n/max)», «زر يوتيوب في الريموت … (one row per key)»

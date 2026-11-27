@@ -245,7 +245,7 @@ await T('text other apps', async () => {
   check('the mode is remembered (localStorage)', await p.evaluate(() => localStorage.getItem('urtvTxtMode')) === 'append');
   await S.ctx.close();
 
-  const words = [['typed', 'كُتب النص'], ['task', 'أُضيف النص'], ['copied', 'نُسخ النص'], ['typed_other', 'تمت الكتابة في التطبيق'], ['typed_other_nosearch', 'والبحث يحتاج أندرويد ١١']];
+  const words = [['typed', 'كُتب النص'], ['task', 'انضاف النص'], ['copied', 'نُسخ النص'], ['typed_other', 'تمت الكتابة في التطبيق'], ['typed_other_nosearch', 'والبحث يحتاج أندرويد ١١']];
   for (const [r, msg] of words) {
     const W = await boot({ cfg: { textAnswer: { ok: true, result: r } } });
     await W.p.fill('#txt', 'نص'); await W.p.click('#txtGo');

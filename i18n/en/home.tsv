@@ -67,7 +67,7 @@ HDMI ARC (مضخم أو ساوند بار)	HDMI ARC (amplifier or soundbar)
 ص	AM
 م	PM
 ، وضع الاستعداد	, standby
-أكمل المشاهدة	Continue watching
+كمّل المشاهدة	Continue watching
 الموسم %s	Season %s
 الحلقة %s	Episode %s
 تفاصيل التطبيق	App info
@@ -109,7 +109,7 @@ HDMI ARC (مضخم أو ساوند بار)	HDMI ARC (amplifier or soundbar)
 هذا مقفل بالرمز الأبوي	This is locked with the parental PIN
 «%s» مقفل بالرمز الأبوي	“%s” is locked with the parental PIN
 الرمز غير صحيح، بقي %s محاولات	Wrong PIN, %s tries left
-الرمز غير صحيح	Wrong PIN
+الرمز غلط	Wrong PIN
 رمز جديد	New PIN
 اختر رمزاً من أربعة أرقام	Choose a 4-digit PIN
 تأكيد الرمز	Confirm PIN
@@ -175,7 +175,7 @@ HDMI ARC (مضخم أو ساوند بار)	HDMI ARC (amplifier or soundbar)
 تغيّر الرمز	PIN changed
 عُيّن الرمز	PIN set
 الخروج من وضع الأطفال	Leave kids mode
-علّم تطبيقاً واحداً على الأقل «يظهر للأطفال» أولاً	Mark at least one app “Shown to kids” first
+حدّد تطبيق واحد على الأقل «يظهر للأطفال» أول	Mark at least one app “Shown to kids” first
 ترتيب المفضلة	Arrange favorites
 اختيار على تطبيق لتحريكه بالأسهم (أعلى/أسفل) ثم اختيار لتثبيته. من %s إلى %s تطبيقات.	Press OK on an app, move it with the arrows (up/down), then OK to drop it. %s to %s apps.
 المفضلة %s من %s	Favorites: %s of %s
@@ -371,7 +371,7 @@ HDMI ARC (مضخم أو ساوند بار)	HDMI ARC (amplifier or soundbar)
 فُتح القفل	Unlocked
 قُفل، ويطلب الرمز	Locked: it asks for the PIN
 الرقابة الأبوية متوقفة	Parental controls are off
-ضع رمزًا من أربعة أرقام، ثم اختر ما يُقفل. بدون رمز لا يُقفل شيء، والشاشة الرئيسية كما هي.	Set a four-digit PIN, then choose what to lock. Without a PIN nothing is locked and the home screen stays as it is.
+حط رمز من أربعة أرقام، واختر وش يتقفل. بدون رمز ما يتقفل شيء، والشاشة الرئيسية مثل ما هي.	Set a four-digit PIN, then choose what to lock. Without a PIN nothing is locked and the home screen stays as it is.
 ما الذي يُقفل؟	What gets locked?
 فعّل الرقابة الأبوية	Turn on parental controls
 الرقابة الأبوية مفعّلة	Parental controls are on

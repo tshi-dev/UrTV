@@ -62,7 +62,7 @@ public class OddOneActivity extends GameActivity {
     private void startWithPhones() {
         int n = phones.room.count();
         if (n < OddOneGame.MIN_PLAYERS) return;
-        if (n > OddOneGame.MAX_PLAYERS) { toast(S.t("اللعبة تتسع لعشرة لاعبين")); return; }
+        if (n > OddOneGame.MAX_PLAYERS) { toast(S.t("اللعبة تاخذ لين عشرة لاعبين")); return; }
         phones.room.start(); phoneLobby = false;
         begin(n, phones.room.names().toArray(new String[0]));
     }
@@ -172,7 +172,7 @@ public class OddOneActivity extends GameActivity {
             case HANDS: {
                 title(S.t("مين اللي مو معنا؟"), phoneVote() ? S.t("صوّتوا من جوالاتكم") : S.t("أشّروا كلكم على ثلاثة"));
                 int n = game.players, rows = (n + COLS - 1) / COLS;
-                if (phoneVote()) root.addView(button(S.t("احسب الأصوات"), sel == n + 1), at(640, 104, 800, 284 + rows * 160));
+                if (phoneVote()) root.addView(button(S.t("عدّوا الأصوات"), sel == n + 1), at(640, 104, 800, 284 + rows * 160));
                 for (int i = 0; i < n; i++) root.addView(button(names[i], sel == i), at(326, 136, 96 + (i % COLS) * 350, 260 + (i / COLS) * 160));
                 root.addView(button(S.t("ما اتفقنا"), sel == n), at(640, 104, 96, 284 + rows * 160));
                 if (phoneVote()) root.addView(centered(S.t("صوّت %s من %s", num(phones.room.repliedCount()), num(n)), 56, L.ink(0xCC), true), at(1728, 90, 96, 480 + rows * 160));

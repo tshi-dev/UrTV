@@ -11,7 +11,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 /**
- * «أكمل المشاهدة»: the one question the row needs, Android's own «Allow» for the TV's Watch Next list (READ_TV_LISTINGS; the idea from
+ * «كمّل المشاهدة»: the one question the row needs, Android's own «Allow» for the TV's Watch Next list (READ_TV_LISTINGS; the idea from
  * talkies, MIT: THIRD_PARTY_NOTICES.md). Opened by the screensaver's settings row when it is turned on; closes by itself when that is
  * allowed already, or once it is. Behind «قفل الإعدادات» like «ترتيب المفضلة». `am start -n sa.urtv.home/.WatchNextActivity`.
  */
@@ -34,7 +34,7 @@ public class WatchNextActivity extends Activity {
         glass(root);   // the glass look: the home's photo, small and blurred once, under its veil
         LinearLayout col = new LinearLayout(this);
         col.setOrientation(LinearLayout.VERTICAL);
-        col.addView(text(S.t("أكمل المشاهدة"), 28, "Medium", TEXT), right(dp(10)));
+        col.addView(text(S.t("كمّل المشاهدة"), 28, "Medium", TEXT), right(dp(10)));
         col.addView(text(S.t("تحت المفضلة: ما وقفته في نصه والحلقة الجاية، من تطبيقاتك. تحتاج الواجهة إذن قراءة هذه القائمة من التلفزيون مرة واحدة، ولا يُرسل شيء خارج التلفزيون."), 15, "Regular", DIM), right(dp(26)));
         allow = card(S.t("السماح"), v -> requestPermissions(new String[]{TvRows.PERMISSION, TvRows.EPG}, ASK));
         col.addView(allow, new LinearLayout.LayoutParams(dp(220), -2, Dir.start()));
@@ -51,7 +51,7 @@ public class WatchNextActivity extends Activity {
         String[] targets = ParentalPolicy.targets(ParentalPolicy.ARRANGE_SCREEN, null);
         if (!Parental.needsPin(this, targets)) { verified = true; allow.requestFocus(); return; }
         screen.setVisibility(View.INVISIBLE);
-        Parental.guard(this, Parental.adhanFirst(this), "أكمل المشاهدة", targets, () -> {
+        Parental.guard(this, Parental.adhanFirst(this), "كمّل المشاهدة", targets, () -> {
             verified = true;
             screen.setVisibility(View.VISIBLE);
             allow.requestFocus();

@@ -50,7 +50,7 @@ check("settings: a row for each (speed, date, title, shape, size) in the setting
       all(f'row("{n}"' in settings for n in ("سرعة ألبوم صوري", "تاريخ الصورة في ألبوم صوري", "عنوان ألبوم صوري", "شكل صورة ألبوم صوري", "حجم ألبوم صوري"))
       and all(f'{{"{n}", PHOTOS}}' in text(SAVER / "SettingsHub.java") for n in ("سرعة ألبوم صوري", "عنوان ألبوم صوري", "شكل صورة ألبوم صوري", "حجم ألبوم صوري"))
       and all(f"{n}\t" in text(ROOT / "i18n/en/saver.tsv") for n in ("سرعة ألبوم صوري", "عنوان ألبوم صوري", "شكل صورة ألبوم صوري", "حجم ألبوم صوري", "كل ١٠ ثوانٍ", "طويل بضعف الارتفاع")))
-check("settings: no «·» or «•» in the new rows' words", all(c not in s_ for s_ in ("ظاهر تحت الصورة", "ظاهر فوق الصورة", "تملأ البطاقة وأعلاها يبقى", "طويل بضعف الارتفاع", "كل ١٠ ثوانٍ") for c in "·•"))
+check("settings: no «·» or «•» in the new rows' words", all(c not in s_ for s_ in ("ظاهر تحت الصورة", "ظاهر فوق الصورة", "تعبّي البطاقة ويبان أعلاها", "طويل بضعف الارتفاع", "كل ١٠ ثوانٍ") for c in "·•"))
 check("photos mode «album» (4.3.1): the photos are the album card's alone: Own.ALBUM, the page leaves them out of the rotation (#ownmode=album), the home's wallpaper follows as «off», photos.sh and the receiver accept it, the tile and the dialog offer it",
       'ALBUM = "album"' in ownj and "(ONLY.equals(m) || ALBUM.equals(m)) && count(c) > 0 ? m : MIX" in ownj
       and "_Q.get('ownmode') === 'album' ? 'album'" in page and "own = CONFIG.ownMode === 'album' ? [] : ownPhotos()" in page

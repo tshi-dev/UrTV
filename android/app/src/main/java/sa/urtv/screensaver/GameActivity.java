@@ -513,11 +513,11 @@ public abstract class GameActivity extends Activity {
     /** the three buttons of every end screen */
     protected final String[] endLabels() { return new String[]{S.t("العب مرة أخرى"), S.t("تغيير الإعدادات"), S.t("خروج")}; }
 
-    /** the end: «انتهت اللعبة», who won (or a tie, or nobody), the three buttons (`sel` has the focus), the podium of the first three and the fanfare's confetti */
+    /** the end: «خلصت اللعبة», who won (or a tie, or nobody), the three buttons (`sel` has the focus), the podium of the first three and the fanfare's confetti */
     protected final void podium(GameScore s, String[] names, int sel) {
         int[] r = s.ranked();
         String small = s.n == 1 ? S.t("%s نقطة", num(s.points[0])) : s.nobody() ? S.t("لا فائز هذه المرة") : s.tie() ? S.t("تعادل في المركز الأول") : S.t("الفائز: %s", names[r[0]]);
-        title(S.t("انتهت اللعبة"), small);
+        title(S.t("خلصت اللعبة"), small);
         buttons(endLabels(), sel, 520, 232);
         int[] cols = {L.ok, L.saff, 0xFFF08A6E}; float[] hs = {512, 400, 300}; int[] place = {1, 0, 2};   // 1st tallest and in the middle; on the screen 2nd, 1st, 3rd
         for (int k = 0; k < 3; k++) {
@@ -720,7 +720,7 @@ public abstract class GameActivity extends Activity {
         if (phones != null) return true;
         if (QuizActivity.lanAddress() == null) { toast(S.t("لا توجد شبكة محلية. وصّل التلفزيون بالواي فاي")); return false; }
         phones = PhonePlay.open(this);
-        if (phones == null) { toast(S.t("تعذّر فتح الغرفة")); return false; }
+        if (phones == null) { toast(S.t("ما انفتحت الغرفة")); return false; }
         return true;
     }
     protected final void closePhones() { phoneLobby = false; if (phones != null) { phones.close(); phones = null; } }

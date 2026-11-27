@@ -102,7 +102,7 @@ public class KhanatActivity extends GameActivity {
     private void startWithPhones() {
         int n = phones.room.count();
         if (n < 2) return;
-        if (n > GameScore.MAX) { toast(S.t("اللعبة تتسع لعشرة لاعبين")); return; }
+        if (n > GameScore.MAX) { toast(S.t("اللعبة تاخذ لين عشرة لاعبين")); return; }
         phones.room.start(); phoneLobby = false;
         begin(n, phones.room.names().toArray(new String[0]));
     }

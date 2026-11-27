@@ -182,7 +182,7 @@ the phone page's key, «مركز التحكم» the control centre's row that op
     مثال للوكيل: optimize/saver.sh home-card prayers,hourly,verse
 ——— البطاقة الثالثة [الرئيسية]
     مثال للوكيل: optimize/saver.sh home-card prayers,hourly,verse
-——— أكمل المشاهدة [الرئيسية]
+——— كمّل المشاهدة [الرئيسية]
     مثال للوكيل: optimize/saver.sh watchnext off  (`on`, the default)
       القيم المقبولة: on|off
 —— الساعة والنص
@@ -287,7 +287,7 @@ the phone page's key, «مركز التحكم» the control centre's row that op
       القيم المقبولة: on|off
 — التطبيقات والأزرار
 —— الشاشة الرئيسية للتلفزيون
-——— اجعل UrTV الشاشة الرئيسية [كل التلفزيون]
+——— خلّ UrTV هي الشاشة الرئيسية [كل التلفزيون]
     إجراء أو شاشة من التلفزيون (ما فيه قيمة يضبطها أمر)
 ——— تخلّص من واجهة المصنع [كل التلفزيون]
     إجراء أو شاشة من التلفزيون (ما فيه قيمة يضبطها أمر)

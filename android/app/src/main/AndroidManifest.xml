@@ -58,7 +58,7 @@
             <action android:name="android.intent.action.MAIN" />
             <category android:name="android.intent.category.LAUNCHER" />
         </intent>
-        <!-- «اجعل UrTV الشاشة الرئيسية»: who answers the Home key now -->
+        <!-- «خلّ UrTV هي الشاشة الرئيسية»: who answers the Home key now -->
         <intent>
             <action android:name="android.intent.action.MAIN" />
             <category android:name="android.intent.category.HOME" />

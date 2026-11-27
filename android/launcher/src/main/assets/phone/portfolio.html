@@ -84,8 +84,8 @@ input{width:100%;min-height:52px;background:var(--tile)}
   var LOC = EN ? 'en-US' : 'ar-SA-u-nu-arab';
   var MSG = {
     portfolio_closed: 'افتح «محفظتي» على التلفزيون أولًا، ثم أعد المحاولة.', no_session: 'انتهت الجلسة. امسح الرمز من «أسهل من الجوال» على التلفزيون.',
-    unknown_code: 'ما وجدنا هذا الرمز في ملف الأسعار.', full: 'المحفظة ممتلئة.', bad_request: 'تحقق من الأرقام.', slow_down: 'مهلًا، طلبات كثيرة.',
-    failed: 'ما نجح الحفظ.', wrong: 'الرمز غير صحيح أو منتهٍ.', busy: 'هناك طلب آخر ينتظر موافقة التلفزيون.', locked: 'توقف التحكم لكثرة المحاولات الخاطئة.'
+    unknown_code: 'ما وجدنا هذا الرمز في ملف الأسعار.', full: 'المحفظة ممتلئة.', bad_request: 'تحقق من الأرقام.', slow_down: 'شوي شوي، طلبات كثيرة.',
+    failed: 'ما نجح الحفظ.', wrong: 'الرمز غلط أو انتهى.', busy: 'هناك طلب آخر ينتظر موافقة التلفزيون.', locked: 'توقف التحكم لكثرة المحاولات الخاطئة.'
   };
   var sess = null, data = null, pick = null, many = false, poll = null;
   try { sess = sessionStorage.getItem('urtv'); } catch (e) { }
