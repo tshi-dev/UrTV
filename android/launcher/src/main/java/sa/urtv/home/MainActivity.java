@@ -1226,6 +1226,13 @@ public class MainActivity extends Activity {
             case "photos":   // the settings' «أضف من فلاشة أو التنزيلات» under «صوري»: the photos of a stick or of Downloads, added to «صوري»
                 handler.post(() -> launchGuarded(ParentalPolicy.PILL_SAVER_SETTINGS, new Intent(this, PhotoAddActivity.class), S.t("أضف من فلاشة أو التنزيلات")));   // behind the lock of the screensaver's settings
                 break;
+            case "voice": case "duas": case "sounds": {   // the settings' «المؤذن», «الأدعية والتذكيرات», «صوتياتي»: the تلاوة app's screens, behind the same lock as the adhan's settings
+                final String cls = "voice".equals(what) ? "AdhanActivity" : "duas".equals(what) ? "DuaActivity" : "AudioActivity";
+                final String shown = "voice".equals(what) ? S.t("المؤذن") : "duas".equals(what) ? S.t("الأدعية والتذكيرات") : S.t("صوتياتي");
+                if (getResources().getBoolean(R.bool.show_listening))
+                    handler.post(() -> launchGuarded(ParentalPolicy.PILL_LISTEN, new Intent().setClassName(getPackageName(), "sa.urtv.home.tilawah." + cls), shown));
+                break;
+            }
             case "prayers":   // the settings' «الأذان لكل صلاة»: sound and screen for each of the five, behind the same lock as the adhan's settings
                 if (getResources().getBoolean(R.bool.show_listening))
                     handler.post(() -> launchGuarded(ParentalPolicy.PILL_LISTEN, new Intent(this, sa.urtv.home.tilawah.PrayerSoundActivity.class), S.t("الأذان لكل صلاة")));

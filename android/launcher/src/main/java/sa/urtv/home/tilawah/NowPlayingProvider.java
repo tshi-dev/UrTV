@@ -62,6 +62,19 @@ public class NowPlayingProvider extends ContentProvider {
             a.addRow(new Object[]{st.toString(), pr.hideMask()});
             return a;
         }
+        if (uri != null && "adhan_voice".equals(uri.getLastPathSegment())) {
+            // 4.4 beta 4 (the screensaver's settings row «المؤذن»): the muezzin of the prayers now (his name, or «أذاني»), and the Fajr one
+            Prefs pr = new Prefs(getContext());
+            MatrixCursor a = new MatrixCursor(new String[]{"name", "fajr"});
+            a.addRow(new Object[]{Adhan.name(pr.playVoice(getContext())), Adhan.name(pr.playFajrVoice(getContext()))});
+            return a;
+        }
+        if (uri != null && "duas_new".equals(uri.getLastPathSegment())) {
+            // 4.4 beta 4 (the settings row «الأدعية والتذكيرات»): how many duas added from «صوتياتي» still wait to be timed on the TV
+            MatrixCursor a = new MatrixCursor(new String[]{"n"});
+            a.addRow(new Object[]{DuaStore.freshCount(getContext())});
+            return a;
+        }
         if (uri != null && "adhan".equals(uri.getLastPathSegment())) {
             // 4.4: a third column, the dua's name while a dua or reminder plays ("" for an adhan): an older screensaver reads the first two only
             MatrixCursor a = new MatrixCursor(new String[]{"prayer", "any_key", "name"});

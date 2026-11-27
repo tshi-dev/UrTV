@@ -637,6 +637,13 @@ public class SettingsActivity extends Activity {
         // 4.4 beta 4: the sound and the screen of each of the five prayers apart (the home's screen, behind the same lock)
         row("الأذان لكل صلاة", prayersValue(), R.drawable.ic_settings,
             new Runnable() { public void run() { openHome("prayers"); } });
+        // 4.4 beta 4 (the UI session's tree): the three screens of the تلاوة app that were only reached through «الأذان»: the muezzin, the duas and reminders, and my sounds
+        row("المؤذن", homeValue("adhan_voice", "name", "اختر صوت المؤذن"), R.drawable.ic_settings,
+            new Runnable() { public void run() { openHome("voice"); } });
+        row("الأدعية والتذكيرات", duasValue(), R.drawable.ic_settings,
+            new Runnable() { public void run() { openHome("duas"); } });
+        row("صوتياتي", "أدعيتك وأذاني من ملفاتك", R.drawable.ic_settings,
+            new Runnable() { public void run() { openHome("sounds"); } });
         // «تلاوة وأذان» itself, through the home (behind its family lock), as its button there opens it
         row("افتح تلاوة وأذان", "القرآن والإذاعات ومواقيت الأذان", R.drawable.ic_play,
             new Runnable() { public void run() { openHome("listen"); } });
@@ -2195,6 +2202,46 @@ public class SettingsActivity extends Activity {
         }
         String v = PrayerSummary.of(prayersSeen, n -> DigitsText.convert(String.valueOf(n), latinDigits));
         return v != null ? v : "الصوت والشاشة لكل صلاة على حدة";   // the home has not answered yet
+    }
+
+    private final java.util.Map<String, String> homeSeen = new java.util.HashMap<>();   // the home's last answers by path, kept on disk too (hub_seen)
+    private final java.util.Set<String> homeAsked = new java.util.HashSet<>();
+
+    /**
+     * A value the launcher keeps (its provider's path, one column), for a row's second line: the last answer at once (kept on disk), one question on a thread each time
+     * the settings come to the front, the row drawn again only when the answer is another. `fallback` while the home has not answered.
+     */
+    private String homeValue(final String path, final String column, String fallback) {
+        String seen = homeSeen.get(path);
+        if (seen == null) { seen = getSharedPreferences("hub_seen", MODE_PRIVATE).getString("home_" + path, ""); homeSeen.put(path, seen); }
+        if (homeAsked.add(path)) {
+            new Thread(() -> {
+                String got = "";
+                android.database.Cursor c = null;
+                try {
+                    c = getContentResolver().query(Uri.parse("content://sa.urtv.home.nowplaying/" + path), null, null, null, null);
+                    if (c != null && c.moveToFirst() && c.getColumnIndex(column) >= 0) got = c.getString(c.getColumnIndex(column));
+                } catch (RuntimeException ignored) {
+                } finally { if (c != null) c.close(); }
+                final String answer = got == null ? "" : got;
+                runOnUiThread(() -> {
+                    if (isFinishing() || isDestroyed() || answer.isEmpty()) return;
+                    boolean changed = !answer.equals(homeSeen.get(path));
+                    homeSeen.put(path, answer);
+                    getSharedPreferences("hub_seen", MODE_PRIVATE).edit().putString("home_" + path, answer).apply();
+                    if (changed) render();
+                });
+            }, "hub-" + path).start();
+        }
+        return seen.isEmpty() ? fallback : seen;
+    }
+
+    /** «الأدعية والتذكيرات»: «جديد من الجوال: N» while duas added from «صوتياتي» wait to be timed on the TV, else what the row is */
+    private String duasValue() {
+        String n = homeValue("duas_new", "n", "");
+        int k = 0;
+        try { k = Integer.parseInt(n); } catch (NumberFormatException ignored) { }
+        return k > 0 ? "جديد من الجوال: " + DigitsText.convert(String.valueOf(k), latinDigits) : "أدعية وتذكيرات بوقتها، بصوتك أو بصوتنا";
     }
 
     private Boolean cleanSeen, factorySeen;   // «UrTV النظيف» and «واجهة المصنع» off, as the home last said

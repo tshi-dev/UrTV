@@ -21,6 +21,9 @@ the phone page's key, «مركز التحكم» the control centre's row that op
 —— الأذان [كل التلفزيون]
    مثال للوكيل: optimize/music.sh adhan
    صفحة الجوال: adhan_on, adhan_short, adhan_stopkey, adhan_voice, adhan_fajr_voice, adhan_volume
+—— المؤذن [كل التلفزيون]
+   مثال للوكيل: optimize/music.sh adhan add FILE  (or `--fajr FILE`)
+   مثال للوكيل: optimize/music.sh adhan
 —— الأذان لكل صلاة [كل التلفزيون]
    مثال للوكيل: optimize/music.sh adhan state <fajr|dhuhr|asr|maghrib|isha> <both|sound|screen|none>
    مثال للوكيل: optimize/music.sh adhan screen <prayer> on|off
@@ -32,6 +35,10 @@ the phone page's key, «مركز التحكم» the control centre's row that op
      القيم المقبولة: on|off
    مثال للوكيل: optimize/saver.sh adhanlead 15  (or `10`, the default)
      القيم المقبولة: 10|15
+—— الأدعية والتذكيرات [كل التلفزيون]
+   إجراء أو شاشة من التلفزيون (ما فيه قيمة يضبطها أمر)
+—— صوتياتي [كل التلفزيون]
+   مثال للوكيل: optimize/music.sh adhan add FILE
 —— الشروق بعد الفجر [الرئيسية وشاشة التوقف]
    مثال للوكيل: optimize/saver.sh sunrise on  (`off` = the default, the panel as always)
      القيم المقبولة: on|off
