@@ -118,6 +118,7 @@ class Store:
     def __init__(self):
         self.leagues = {}   # (lg, season) -> {key: event}
         self.meta = {}      # lg -> {"en": name}
+        self.merged = 0     # 4.4 (#70, review F90) copies put() removed from another season of the same game: counted as dropped by the guard
 
     def load(self, root):
         n = 0
@@ -151,6 +152,7 @@ class Store:
                     if stage(e) < stage(b2[k]):
                         return ""
                     del b2[k]
+                    self.merged += 1   # every removed copy is counted, so the «store shrank» guard never mistakes it for a loss
         old = bucket.get(k)
         if old is None:
             bucket[k] = e
@@ -390,7 +392,7 @@ def build(args):
             r = store.put(e)
             if r:
                 counts[r] += 1
-    dropped = store.prune(now) + store.dedupe()   # 4.4 (#70) a game kept once even when the store has it under two seasons
+    dropped = store.prune(now) + store.dedupe() + store.merged   # 4.4 (#70, F90) every copy removed, by put() or dedupe(), counts as dropped
     after = store.total()
     if after < before - dropped:   # the store only grows (a season past KEEP_SEASONS aside): anything else is a bug, and nothing is pushed
         raise SystemExit(f"the store shrank from {before} to {after} events: not pushed")
