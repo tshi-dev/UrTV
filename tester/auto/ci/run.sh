@@ -25,7 +25,9 @@ export PY=python3
 cat "$OUT/device.txt"
 
 # our home is the Home of this TV (the emulator's own launcher is the default until it is told: the Home key would bring that one, and every step that waits for our home would fail)
+adb shell cmd role add-role-holder --user 0 android.app.role.HOME sa.urtv.home || echo "(the Home role could not be given)"
 adb shell cmd package set-home-activity sa.urtv.home/.MainActivity || echo "(the home could not be made the default)"
+echo "home resolves to: $(adb shell cmd package resolve-activity --brief -c android.intent.category.HOME -a android.intent.action.MAIN | tr -d '\r' | tail -n 1)" | tee -a "$OUT/device.txt"
 
 # a city, so the home has its clock, prayers and weather (and the round has a city to box on the shots)
 python3 -I optimize/tv.py "am start -W -n sa.urtv.home/.MainActivity" > /dev/null

@@ -16,7 +16,17 @@ import sys
 ADB = "adb"
 
 
+HOME_START = "am start -a android.intent.action.MAIN -c android.intent.category.HOME -n sa.urtv.home/.MainActivity"
+
+
+def rewrite(cmd):
+    """The Home key on the emulator brings the emulator's own launcher when it could not be told to prefer ours (run 2 of the round: tvlauncher in front at every
+    layout step): there the key is sent as the Home intent to our home, which is what the key does on a TV whose Home it is."""
+    return HOME_START if cmd.strip() in ("input keyevent KEYCODE_HOME", "input keyevent 3") else cmd
+
+
 def shell(cmd):
+    cmd = rewrite(cmd)
     r = subprocess.run([ADB, "shell", cmd], capture_output=True, text=True, errors="replace")
     return r.returncode, (r.stdout or "") + (r.stderr or "")
 

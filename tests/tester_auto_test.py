@@ -141,6 +141,12 @@ run_ci = (ROOT / "tester/auto/ci/run.sh").read_text(encoding="utf-8")
 check("run.sh on the emulator: the TV client is the adb shim, the emulator's limits, no network means no radio, and the CI checkout only",
       "cp tester/auto/ci/tv_adb.py optimize/tv.py" in run_ci and "ROUND_THRESHOLDS=tester/auto/ci/thresholds-emulator.tsv" in run_ci and 'SKIP="${SKIP:+$SKIP,}radio"' in run_ci and not (ROOT / "optimize/tv.py").read_text(encoding="utf-8").startswith('#!/usr/bin/env python3\n"""A stand-in'))
 
+import importlib.util
+_sp = importlib.util.spec_from_file_location("tv_adb_shim", ROOT / "tester/auto/ci/tv_adb.py"); _m = importlib.util.module_from_spec(_sp); _sp.loader.exec_module(_m)
+check("the emulator shim sends the Home key as the Home intent to our home (run 2: the emulator's launcher answered every Home key), and nothing else is changed",
+      _m.rewrite("input keyevent KEYCODE_HOME") == _m.HOME_START and _m.rewrite("input keyevent 3") == _m.HOME_START and "sa.urtv.home/.MainActivity" in _m.HOME_START
+      and _m.rewrite("input keyevent KEYCODE_BACK") == "input keyevent KEYCODE_BACK" and _m.rewrite("dumpsys window") == "dumpsys window")
+
 # ---- what the script must never do
 src = (ROOT / "tester/auto/round.sh").read_text(encoding="utf-8") + (ROOT / "tester/auto/lib.py").read_text(encoding="utf-8")
 code = "\n".join(l for l in src.splitlines() if not l.lstrip().startswith("#"))
