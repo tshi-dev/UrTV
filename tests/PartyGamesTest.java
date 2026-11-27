@@ -23,7 +23,9 @@ public final class PartyGamesTest {
     /** a round to its points by hands: `who` is accused, the odd one's guess is `right` */
     static void round(OddOneGame g, int who, boolean right) { deal(g); talk(g); g.accuse(who); g.afterReveal(); if (g.phase == OddOneGame.Phase.GUESS) { g.showWord(); g.guess(right); } }
     static CharadesGame cha(boolean describe, int teams, int seconds, int turns, boolean fouls, long seed) {
-        return new CharadesGame(new CharadesWords.Deck(words, describe, false, null, new Random(seed)), describe, teams, seconds, turns, fouls, () -> now[0]);
+        CharadesGame g = new CharadesGame(new CharadesWords.Deck(words, describe, false, null, new Random(seed)), describe, teams, seconds, turns, fouls, () -> now[0]);
+        g.coverNext = false;   // the rules below are the phones' way (the word goes to the actor's phone); the one-remote cover has its own checks at the end
+        return g;
     }
     /** a whole turn with `n` right words, then the clock runs out */
     static void turn(CharadesGame g, int n) {
@@ -208,6 +210,28 @@ public final class PartyGamesTest {
         boolean again = g.phase == OddOneGame.Phase.DEAL && g.dealPlayer() == 0 && g.word.id.equals(w) && g.odd == o; deal(g); g.nextSpeaker(); g.redeal();
         check("odd-one: before the first speaker the words can be dealt again (the same word, the same odd one); not once the talk began", again && g.phase == OddOneGame.Phase.TALK);
         check("charades: a published file needs 200 words, the bundled starter 100", CharadesWords.parse(MiniJson.parse(chaJson), 200) == null && CharadesWords.parse(MiniJson.parse(chaJson), 100) != null);
+        }
+        {   // the one-remote way: the next word never shows by itself (the TV is where the guessers look), the clock waits while it is open
+        CharadesGame g = new CharadesGame(new CharadesWords.Deck(words, false, false, null, new Random(3)), false, 2, 60, 3, false, () -> now[0]);
+        g.ready(); g.hide(); now[0] += 2000; String first = g.word.text[0];
+        boolean ok1 = g.correct() && g.got == 1 && g.covered() && !g.wordVisible() && !first.equals(g.word.text[0] + "x");
+        check("charades, one remote: after «صح» the next word is drawn but stays covered, not on the TV", ok1);
+        int sc = g.score[g.team]; now[0] += 1000; boolean again = g.correct();
+        check("charades, one remote: «صح» on a covered word counts nothing (the actor has not seen it)", !again && g.score[g.team] == sc && g.got == 1);
+        now[0] += 1000; boolean skipCovered = g.skip();
+        check("charades, one remote: «تخطّي» does nothing on a covered word", !skipCovered && g.skips == 0 && g.covered());
+        long left = g.leftMs(); now[0] += 500; boolean up = g.uncover(); long atOpen = g.leftMs(); now[0] += 3000;
+        check("charades, one remote: OK shows the word, and the clock stands still while it is open", up && g.wordVisible() && !g.covered() && g.leftMs() == atOpen && atOpen <= left);
+        now[0] += 1500; g.tick();
+        check("charades, one remote: it closes by itself after 4 s and the clock goes on from where it stood", !g.wordVisible() && g.leftMs() == atOpen);
+        now[0] += 1000; boolean run = g.leftMs() == atOpen - 1000;
+        check("charades, one remote: the clock runs again once the word is closed", run);
+        now[0] += 1000; g.correct(); g.peek(); boolean peeked = g.wordVisible() && !g.covered();
+        check("charades, one remote: ▲ on a covered word opens it too (the old «شوف الكلمة» key)", peeked);
+        g.pause(); boolean frozen = g.paused() && !g.wordVisible(); long lp = g.leftMs(); now[0] += 9000; g.resume();
+        check("charades, one remote: Back (pause) hides an open word and keeps the time that was left", frozen && g.leftMs() == lp);
+        CharadesGame h = cha(false, 2, 60, 3, false, 3); h.coverNext = true; h.ready(); h.hide(); now[0] += 1000; h.correct();
+        check("charades, phones: with the cover off the new word shows at once as before (it is on the phone, never on the TV)", cha(false, 2, 60, 3, false, 3).coverNext == false && h.covered());
         }
         System.exit(failed == 0 ? 0 : 1);
     }

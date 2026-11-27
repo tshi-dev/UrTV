@@ -218,12 +218,19 @@ public class KhanatActivity extends GameActivity {
         }
     }
 
+    /** the Arabic letters' names (alef, baa ...): said under the letter, because «ه» and the digit «٥» are drawn alike; in English, or for a letter not in the table, nothing */
+    static final String LETTERS = "األف أألف بباء تتاء ثثاء ججيم ححاء خخاء ددال ذذال رراء ززاي سسين ششين صصاد ضضاد ططاء ظظاء ععين غغين ففاء ققاف ككاف للام مميم ننون ههاء وواو يياء";
+    static String letterName(String letter, boolean english) {
+        if (english || letter == null || letter.length() != 1) return "";
+        for (String t : LETTERS.split(" ")) if (t.charAt(0) == letter.charAt(0)) return " " + t.substring(1);
+        return "";
+    }
     private void drawLetter() {
         root.setBackgroundColor(L.deep);
         root.addView(centered(roundLine(), 56, L.saff, true), at(1728, 80, 96, 120));
         spinView = centered(settled ? game.letter : "", 480, L.onDeep, true);
         root.addView(spinView, at(1728, 600, 96, 220));
-        root.addView(centered(S.t("حرف هذه الجولة"), 48, L.onDeep, false), at(1728, 72, 96, 860));
+        root.addView(centered(S.t("حرف هذه الجولة") + (settled ? letterName(game.letter, en) : ""), 48, L.onDeep, false), at(1728, 72, 96, 860));   // «هاء» under the letter: ه and ٥ are drawn alike
     }
 
     /** the boxes of this round as a line of tiles at `y` */
@@ -241,7 +248,7 @@ public class KhanatActivity extends GameActivity {
         band(528);
         root.addView(text(roundLine(), 40, L.saff, true), at(1100, 56, 96, 54));
         root.addView(centered(game.letter, fitSize(game.letter, 300, 360, 336, 1), L.onDeep, true), at(360, 336, 96, 108));   // the whole letter, dots included, above the ticks (452)
-        TextView say = text(S.t("كلمة لكل خانة تبدأ بهذا الحرف"), 72, L.onDeep, true); say.setMaxLines(2);
+        TextView say = text(en ? S.t("كلمة لكل خانة تبدأ بهذا الحرف") : S.t("كلمة لكل خانة تبدأ بحرف %s", letterName(game.letter, false).trim()), 72, L.onDeep, true); say.setMaxLines(2);   // the letter's name too: ه and ٥ look alike
         root.addView(say, at(880, 220, 500, 190));
         int secs = SECONDS[chips.picked("time")];
         if (secs > 0) { timer = new TickTimer(secs, 452); timer.set(clock.leftSeconds(System.currentTimeMillis())); }

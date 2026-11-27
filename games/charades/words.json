@@ -1,0 +1,9918 @@
+[
+{
+"id": "chc-b559b727",
+"ar": "بقرة",
+"en": "cow",
+"category": "farm",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-4ca311ee",
+"ar": "خروف",
+"en": "sheep",
+"category": "farm",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-d45697ef",
+"ar": "ماعز",
+"en": "goat",
+"category": "farm",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-678574ea",
+"ar": "جمل",
+"en": "camel",
+"category": "farm",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-7365f702",
+"ar": "حصان",
+"en": "horse",
+"category": "farm",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-856addfc",
+"ar": "حمار",
+"en": "donkey",
+"category": "farm",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-1c5316b6",
+"ar": "دجاجة",
+"en": "hen",
+"category": "farm",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-df4cfcd1",
+"ar": "ديك",
+"en": "rooster",
+"category": "farm",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-f39211e4",
+"ar": "بطة",
+"en": "duck",
+"category": "farm",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-03d8a736",
+"ar": "أرنب",
+"en": "rabbit",
+"category": "farm",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-a6458be3",
+"ar": "ثور",
+"en": "bull",
+"category": "farm",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-21757f7c",
+"ar": "عجل",
+"en": "calf",
+"category": "farm",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-9e157cc7",
+"ar": "نعجة",
+"en": "ewe",
+"category": "farm",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-a969d9c3",
+"ar": "ناقة",
+"en": "she-camel",
+"category": "farm",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-b60df149",
+"ar": "فرس",
+"en": "mare",
+"category": "farm",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-aa8b7ffb",
+"ar": "ديك رومي",
+"en": "turkey",
+"category": "farm",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-a22cf958",
+"ar": "إوزة",
+"en": "goose",
+"category": "farm",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-d404b548",
+"ar": "حمامة",
+"en": "pigeon",
+"category": "farm",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-89d8c9d0",
+"ar": "قطة",
+"en": "cat",
+"category": "farm",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-ec0c56b3",
+"ar": "كلب",
+"en": "dog",
+"category": "farm",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-fba97643",
+"ar": "بغل",
+"en": "mule",
+"category": "farm",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-36f1ee31",
+"ar": "أسد",
+"en": "lion",
+"category": "wild",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-22caf60a",
+"ar": "فيل",
+"en": "elephant",
+"category": "wild",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-ac51ed2c",
+"ar": "زرافة",
+"en": "giraffe",
+"category": "wild",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-616b14dd",
+"ar": "نمر",
+"en": "leopard",
+"category": "wild",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-6471586d",
+"ar": "قرد",
+"en": "monkey",
+"category": "wild",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-47750d49",
+"ar": "ذئب",
+"en": "wolf",
+"category": "wild",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-3174cb4b",
+"ar": "ثعلب",
+"en": "fox",
+"category": "wild",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-9ce5ff27",
+"ar": "دب",
+"en": "bear",
+"category": "wild",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-7f683efb",
+"ar": "غزال",
+"en": "gazelle",
+"category": "wild",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-5cc47045",
+"ar": "ضبع",
+"en": "hyena",
+"category": "wild",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-c90db6d5",
+"ar": "فهد",
+"en": "cheetah",
+"category": "wild",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-5ee36c9f",
+"ar": "وحيد القرن",
+"en": "rhinoceros",
+"category": "wild",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-d28913aa",
+"ar": "فرس النهر",
+"en": "hippo",
+"category": "wild",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-879c94f1",
+"ar": "كنغر",
+"en": "kangaroo",
+"category": "wild",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-9466a579",
+"ar": "باندا",
+"en": "panda",
+"category": "wild",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-b176b804",
+"ar": "سنجاب",
+"en": "squirrel",
+"category": "wild",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-afd90629",
+"ar": "قنفذ",
+"en": "hedgehog",
+"category": "wild",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-50e49329",
+"ar": "أرنب بري",
+"en": "hare",
+"category": "wild",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-f6ac026f",
+"ar": "وعل",
+"en": "ibex",
+"category": "wild",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-f6a0163e",
+"ar": "ظبي",
+"en": "deer",
+"category": "wild",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-5a63b9ab",
+"ar": "وشق",
+"en": "lynx",
+"category": "wild",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-cc1e7707",
+"ar": "صقر",
+"en": "falcon",
+"category": "birds",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-43f4129c",
+"ar": "نسر",
+"en": "vulture",
+"category": "birds",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-dbb1d4c8",
+"ar": "بومة",
+"en": "owl",
+"category": "birds",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-ca4f00f2",
+"ar": "ببغاء",
+"en": "parrot",
+"category": "birds",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-f17b099a",
+"ar": "بطريق",
+"en": "penguin",
+"category": "birds",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-4cc86259",
+"ar": "نعامة",
+"en": "ostrich",
+"category": "birds",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-06d54b31",
+"ar": "طاووس",
+"en": "peacock",
+"category": "birds",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-21c5e10c",
+"ar": "بجعة",
+"en": "swan",
+"category": "birds",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-5ddd8f6a",
+"ar": "لقلق",
+"en": "stork",
+"category": "birds",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-e2882a5d",
+"ar": "هدهد",
+"en": "hoopoe",
+"category": "birds",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-dc543869",
+"ar": "غراب",
+"en": "crow",
+"category": "birds",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-fae3b134",
+"ar": "عصفور",
+"en": "sparrow",
+"category": "birds",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-d95cc08a",
+"ar": "بط",
+"en": "duck",
+"category": "birds",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-0f7061a9",
+"ar": "نورس",
+"en": "seagull",
+"category": "birds",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-ec974c28",
+"ar": "فلامنغو",
+"en": "flamingo",
+"category": "birds",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-d04c00bc",
+"ar": "رخمة",
+"en": "vulture",
+"category": "birds",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-c4c36d5a",
+"ar": "شاهين",
+"en": "peregrine",
+"category": "birds",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-74d81623",
+"ar": "حبارى",
+"en": "bustard",
+"category": "birds",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-2da6a46c",
+"ar": "قطا",
+"en": "sandgrouse",
+"category": "birds",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-2d2a3dc7",
+"ar": "بلبل",
+"en": "bulbul",
+"category": "birds",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-b6949e90",
+"ar": "دلفين",
+"en": "dolphin",
+"category": "sea",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-6c5afad3",
+"ar": "حوت",
+"en": "whale",
+"category": "sea",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-6ce6e11e",
+"ar": "سمكة",
+"en": "fish",
+"category": "sea",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-ddbb33aa",
+"ar": "قرش",
+"en": "shark",
+"category": "sea",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-bf325674",
+"ar": "أخطبوط",
+"en": "octopus",
+"category": "sea",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-fc1763cf",
+"ar": "سلحفاة",
+"en": "turtle",
+"category": "sea",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-dd7010ed",
+"ar": "سرطان",
+"en": "crab",
+"category": "sea",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-b4b350ba",
+"ar": "روبيان",
+"en": "shrimp",
+"category": "sea",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-37466ead",
+"ar": "نجمة البحر",
+"en": "starfish",
+"category": "sea",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-ab54f749",
+"ar": "حصان البحر",
+"en": "seahorse",
+"category": "sea",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-d5a45223",
+"ar": "قنديل البحر",
+"en": "jellyfish",
+"category": "sea",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-bbc3dceb",
+"ar": "فقمة",
+"en": "seal",
+"category": "sea",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-89d506f9",
+"ar": "تمساح",
+"en": "crocodile",
+"category": "sea",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-4e08c17f",
+"ar": "ضفدع",
+"en": "frog",
+"category": "sea",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-ec363a48",
+"ar": "حبار",
+"en": "squid",
+"category": "sea",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-bc5ac5a1",
+"ar": "محار",
+"en": "oyster",
+"category": "sea",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-4d0ef9d3",
+"ar": "سلمون",
+"en": "salmon",
+"category": "sea",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-f6ce8721",
+"ar": "تونة",
+"en": "tuna",
+"category": "sea",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-3db2cbc2",
+"ar": "هامور",
+"en": "grouper",
+"category": "sea",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-d2058265",
+"ar": "كنعد",
+"en": "kingfish",
+"category": "sea",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-189fadb8",
+"ar": "نملة",
+"en": "ant",
+"category": "insects",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-f3e89394",
+"ar": "نحلة",
+"en": "bee",
+"category": "insects",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-c91f3731",
+"ar": "فراشة",
+"en": "butterfly",
+"category": "insects",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-fbbf43f8",
+"ar": "ذبابة",
+"en": "fly",
+"category": "insects",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-ab9cf471",
+"ar": "جرادة",
+"en": "locust",
+"category": "insects",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-5f670ff7",
+"ar": "خنفساء",
+"en": "beetle",
+"category": "insects",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-de7477df",
+"ar": "دودة",
+"en": "worm",
+"category": "insects",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-ccba07f9",
+"ar": "عنكبوت",
+"en": "spider",
+"category": "insects",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-493e64d4",
+"ar": "بعوضة",
+"en": "mosquito",
+"category": "insects",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-a27f4e08",
+"ar": "يعسوب",
+"en": "dragonfly",
+"category": "insects",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-0e2c65fe",
+"ar": "حلزون",
+"en": "snail",
+"category": "insects",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-da8c9f80",
+"ar": "صرصور",
+"en": "cockroach",
+"category": "insects",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-560bde22",
+"ar": "دعسوقة",
+"en": "ladybird",
+"category": "insects",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-f09768db",
+"ar": "يرقة",
+"en": "caterpillar",
+"category": "insects",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-4aecfbce",
+"ar": "زنبور",
+"en": "wasp",
+"category": "insects",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-20d70bd6",
+"ar": "جندب",
+"en": "grasshopper",
+"category": "insects",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-9bf0ac43",
+"ar": "حرباء",
+"en": "chameleon",
+"category": "insects",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-104a9bd4",
+"ar": "سحلية",
+"en": "lizard",
+"category": "insects",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-20bdbf09",
+"ar": "فأر",
+"en": "mouse",
+"category": "insects",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-91a2f4a5",
+"ar": "جراد",
+"en": "swarm locust",
+"category": "insects",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-873c2a10",
+"ar": "ضب",
+"en": "dhab lizard",
+"category": "insects",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-37f92076",
+"ar": "تفاح",
+"en": "apple",
+"category": "fruits",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-66dbc2e1",
+"ar": "موز",
+"en": "banana",
+"category": "fruits",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-6ee62d81",
+"ar": "برتقال",
+"en": "orange",
+"category": "fruits",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-0d5ed7ec",
+"ar": "عنب",
+"en": "grapes",
+"category": "fruits",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-939b66af",
+"ar": "فراولة",
+"en": "strawberry",
+"category": "fruits",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-81deadd5",
+"ar": "بطيخ",
+"en": "watermelon",
+"category": "fruits",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-2e1a9f5e",
+"ar": "مانجو",
+"en": "mango",
+"category": "fruits",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-02eb95b4",
+"ar": "أناناس",
+"en": "pineapple",
+"category": "fruits",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-27166bb1",
+"ar": "رمان",
+"en": "pomegranate",
+"category": "fruits",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-98ec5b65",
+"ar": "تين",
+"en": "fig",
+"category": "fruits",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-27b8558c",
+"ar": "خوخ",
+"en": "peach",
+"category": "fruits",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-02ee085b",
+"ar": "كمثرى",
+"en": "pear",
+"category": "fruits",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-847cae21",
+"ar": "كرز",
+"en": "cherry",
+"category": "fruits",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-4dd419c8",
+"ar": "ليمون",
+"en": "lemon",
+"category": "fruits",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-24083df9",
+"ar": "شمام",
+"en": "melon",
+"category": "fruits",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-8e05216b",
+"ar": "جوافة",
+"en": "guava",
+"category": "fruits",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-3caf7a32",
+"ar": "تمر",
+"en": "dates",
+"category": "fruits",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-f4c77da5",
+"ar": "مشمش",
+"en": "apricot",
+"category": "fruits",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-44160a2e",
+"ar": "توت",
+"en": "berries",
+"category": "fruits",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-ca9cb7ff",
+"ar": "كيوي",
+"en": "kiwi",
+"category": "fruits",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-ab0d29ed",
+"ar": "أفوكادو",
+"en": "avocado",
+"category": "fruits",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-e7288c9a",
+"ar": "جريب فروت",
+"en": "grapefruit",
+"category": "fruits",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-23306adc",
+"ar": "نارنج",
+"en": "bitter orange",
+"category": "fruits",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-2ab4ef43",
+"ar": "بلح",
+"en": "fresh dates",
+"category": "fruits",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-ef7a1102",
+"ar": "طماطم",
+"en": "tomato",
+"category": "vegetables",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-9e1bfa85",
+"ar": "خيار",
+"en": "cucumber",
+"category": "vegetables",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-e7761d78",
+"ar": "جزر",
+"en": "carrot",
+"category": "vegetables",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-f562cafd",
+"ar": "بصل",
+"en": "onion",
+"category": "vegetables",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-69ce289b",
+"ar": "ثوم",
+"en": "garlic",
+"category": "vegetables",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-fad07453",
+"ar": "بطاطس",
+"en": "potato",
+"category": "vegetables",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-0d008d69",
+"ar": "باذنجان",
+"en": "eggplant",
+"category": "vegetables",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-a797e7d9",
+"ar": "كوسا",
+"en": "zucchini",
+"category": "vegetables",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-fd83870a",
+"ar": "فلفل",
+"en": "pepper",
+"category": "vegetables",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-8633cbe1",
+"ar": "ملفوف",
+"en": "cabbage",
+"category": "vegetables",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-90174069",
+"ar": "خس",
+"en": "lettuce",
+"category": "vegetables",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-0356559c",
+"ar": "سبانخ",
+"en": "spinach",
+"category": "vegetables",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-f2796e41",
+"ar": "قرنبيط",
+"en": "cauliflower",
+"category": "vegetables",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-b61b9b35",
+"ar": "بروكلي",
+"en": "broccoli",
+"category": "vegetables",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-c367b23e",
+"ar": "ذرة",
+"en": "corn",
+"category": "vegetables",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-14b0f6d7",
+"ar": "فجل",
+"en": "radish",
+"category": "vegetables",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-5a941230",
+"ar": "لفت",
+"en": "turnip",
+"category": "vegetables",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-a010adaf",
+"ar": "شمندر",
+"en": "beetroot",
+"category": "vegetables",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-6ca84ada",
+"ar": "قرع",
+"en": "pumpkin",
+"category": "vegetables",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-d5f9e957",
+"ar": "بازلاء",
+"en": "peas",
+"category": "vegetables",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-b778b5ae",
+"ar": "فاصوليا",
+"en": "beans",
+"category": "vegetables",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-71342c8a",
+"ar": "بامية",
+"en": "okra",
+"category": "vegetables",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-2ce75e8d",
+"ar": "جرجير",
+"en": "arugula",
+"category": "vegetables",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-755e051e",
+"ar": "كزبرة",
+"en": "coriander",
+"category": "vegetables",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-62cc7b0b",
+"ar": "بقدونس",
+"en": "parsley",
+"category": "vegetables",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-efa5a626",
+"ar": "نعناع",
+"en": "mint",
+"category": "vegetables",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-0ff3c361",
+"ar": "خبز",
+"en": "bread",
+"category": "food",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-34045f2b",
+"ar": "رز",
+"en": "rice",
+"category": "food",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-c19ff58e",
+"ar": "جبن",
+"en": "cheese",
+"category": "food",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-ed201112",
+"ar": "بيض",
+"en": "egg",
+"category": "food",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-fd2a80c8",
+"ar": "عسل",
+"en": "honey",
+"category": "food",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-0d89daa4",
+"ar": "زبدة",
+"en": "butter",
+"category": "food",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-d9dee28e",
+"ar": "شوربة",
+"en": "soup",
+"category": "food",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-31ed2dbe",
+"ar": "معكرونة",
+"en": "pasta",
+"category": "food",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-9838077b",
+"ar": "بيتزا",
+"en": "pizza",
+"category": "food",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-dd659e88",
+"ar": "برغر",
+"en": "burger",
+"category": "food",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-9035675f",
+"ar": "سمك",
+"en": "fish",
+"category": "food",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-e2303d23",
+"ar": "دجاج",
+"en": "chicken",
+"category": "food",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-4e71be69",
+"ar": "لحم",
+"en": "meat",
+"category": "food",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-1c0d71e9",
+"ar": "حمص",
+"en": "hummus",
+"category": "food",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-2f6d7b1d",
+"ar": "فلافل",
+"en": "falafel",
+"category": "food",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-8b6cb480",
+"ar": "شاورما",
+"en": "shawarma",
+"category": "food",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-c51c745a",
+"ar": "سمبوسة",
+"en": "samosa",
+"category": "food",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-1c862f65",
+"ar": "هريس",
+"en": "harees",
+"category": "food",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-81787124",
+"ar": "فطيرة",
+"en": "pie",
+"category": "food",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-4c6d7902",
+"ar": "عدس",
+"en": "lentils",
+"category": "food",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-86b27ba6",
+"ar": "فول",
+"en": "fava beans",
+"category": "food",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-533c33c9",
+"ar": "نقانق",
+"en": "sausages",
+"category": "food",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-dde8a9dc",
+"ar": "بطاطس مقلية",
+"en": "fries",
+"category": "food",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-f6687ad6",
+"ar": "ساندويتش",
+"en": "sandwich",
+"category": "food",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-d6649519",
+"ar": "سلطة",
+"en": "salad",
+"category": "food",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-a2eb1324",
+"ar": "كعكة",
+"en": "cake",
+"category": "sweets",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-861da7e5",
+"ar": "شوكولاتة",
+"en": "chocolate",
+"category": "sweets",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-285d9275",
+"ar": "بسكويت",
+"en": "biscuit",
+"category": "sweets",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-c28e33f9",
+"ar": "آيس كريم",
+"en": "ice cream",
+"category": "sweets",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-a3cee191",
+"ar": "كنافة",
+"en": "kunafa",
+"category": "sweets",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-05b695a6",
+"ar": "بقلاوة",
+"en": "baklava",
+"category": "sweets",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-fa494d17",
+"ar": "لقيمات",
+"en": "luqaimat",
+"category": "sweets",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-205a8ecd",
+"ar": "حلاوة",
+"en": "halwa",
+"category": "sweets",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-162f6811",
+"ar": "مهلبية",
+"en": "muhallabia",
+"category": "sweets",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-b8846acc",
+"ar": "أم علي",
+"en": "om ali",
+"category": "sweets",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-b3754667",
+"ar": "جيلي",
+"en": "jelly",
+"category": "sweets",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-bc496649",
+"ar": "علكة",
+"en": "gum",
+"category": "sweets",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-2c438197",
+"ar": "كراميل",
+"en": "caramel",
+"category": "sweets",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-582e7920",
+"ar": "دونات",
+"en": "donut",
+"category": "sweets",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-53d71b16",
+"ar": "بودينغ",
+"en": "pudding",
+"category": "sweets",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-fcad7dd2",
+"ar": "فشار",
+"en": "popcorn",
+"category": "sweets",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-515bed25",
+"ar": "شيبس",
+"en": "chips",
+"category": "sweets",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-c9c239f1",
+"ar": "مكسرات",
+"en": "nuts",
+"category": "sweets",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-055c3220",
+"ar": "زبيب",
+"en": "raisins",
+"category": "sweets",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-f98e868f",
+"ar": "تمر محشي",
+"en": "stuffed dates",
+"category": "sweets",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-8f86e36a",
+"ar": "ماء",
+"en": "water",
+"category": "drinks",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-50809503",
+"ar": "عصير",
+"en": "juice",
+"category": "drinks",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-18a4d144",
+"ar": "شاي",
+"en": "tea",
+"category": "drinks",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-65bc7a54",
+"ar": "قهوة",
+"en": "coffee",
+"category": "drinks",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-db63e9eb",
+"ar": "لبن",
+"en": "laban",
+"category": "drinks",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-6a4934e1",
+"ar": "حليب",
+"en": "milk",
+"category": "drinks",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-ecaa7677",
+"ar": "كاكاو",
+"en": "cocoa",
+"category": "drinks",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-60fb2733",
+"ar": "عصير برتقال",
+"en": "orange juice",
+"category": "drinks",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-c6588201",
+"ar": "ليمون بالنعناع",
+"en": "lemonade",
+"category": "drinks",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-e9a538d9",
+"ar": "شاي أخضر",
+"en": "green tea",
+"category": "drinks",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-6bfa074e",
+"ar": "قهوة عربية",
+"en": "arabic coffee",
+"category": "drinks",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-bd85c4b8",
+"ar": "زنجبيل",
+"en": "ginger",
+"category": "drinks",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-fdb8015d",
+"ar": "ينسون",
+"en": "anise",
+"category": "drinks",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-056487bb",
+"ar": "كركديه",
+"en": "hibiscus",
+"category": "drinks",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-0a521eb1",
+"ar": "سحلب",
+"en": "sahlab",
+"category": "drinks",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-5f18db11",
+"ar": "عصير مانجو",
+"en": "mango juice",
+"category": "drinks",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-68329f79",
+"ar": "حليب بالشوكولاتة",
+"en": "chocolate milk",
+"category": "drinks",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-9a70241f",
+"ar": "ماء بارد",
+"en": "cold water",
+"category": "drinks",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-0c0e9780",
+"ar": "قهوة تركية",
+"en": "turkish coffee",
+"category": "drinks",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-d891dfe3",
+"ar": "عصير تفاح",
+"en": "apple juice",
+"category": "drinks",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-053beb3d",
+"ar": "كبسة",
+"en": "kabsa",
+"category": "dishes",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-39d6b2f6",
+"ar": "مندي",
+"en": "mandi",
+"category": "dishes",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-415f6e84",
+"ar": "مطبق",
+"en": "mutabbaq",
+"category": "dishes",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-fca169c2",
+"ar": "جريش",
+"en": "jareesh",
+"category": "dishes",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-10c4ce64",
+"ar": "سليق",
+"en": "saleeg",
+"category": "dishes",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-9346fe31",
+"ar": "مضغوطة",
+"en": "madghoot",
+"category": "dishes",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-e80d1f26",
+"ar": "حنيني",
+"en": "hanini",
+"category": "dishes",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-a8a5f6a0",
+"ar": "مطازيز",
+"en": "matazeez",
+"category": "dishes",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-499aa41c",
+"ar": "كليجا",
+"en": "kleicha",
+"category": "dishes",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-3abbfb3b",
+"ar": "مقلوبة",
+"en": "maqluba",
+"category": "dishes",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-e4cb8f1c",
+"ar": "منسف",
+"en": "mansaf",
+"category": "dishes",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-67f0d5d5",
+"ar": "مرقوق",
+"en": "margoog",
+"category": "dishes",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-4de545f5",
+"ar": "قرصان",
+"en": "qursan",
+"category": "dishes",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-ac309c25",
+"ar": "عصيدة",
+"en": "aseeda",
+"category": "dishes",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-a1127abc",
+"ar": "ثريد",
+"en": "tharid",
+"category": "dishes",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-bcc63aef",
+"ar": "برياني",
+"en": "biryani",
+"category": "dishes",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-9091fa97",
+"ar": "فتة",
+"en": "fatteh",
+"category": "dishes",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-44092a7a",
+"ar": "كبة",
+"en": "kibbeh",
+"category": "dishes",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-0676616e",
+"ar": "تبولة",
+"en": "tabbouleh",
+"category": "dishes",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-7e657a0d",
+"ar": "متبل",
+"en": "mutabbal",
+"category": "dishes",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-471e98a3",
+"ar": "طبيب",
+"en": "doctor",
+"category": "jobs",
+"difficulty": 1,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-9552dc58",
+"ar": "معلم",
+"en": "teacher",
+"category": "jobs",
+"difficulty": 1,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-7aa976a6",
+"ar": "مهندس",
+"en": "engineer",
+"category": "jobs",
+"difficulty": 1,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-fcfd04cf",
+"ar": "طيار",
+"en": "pilot",
+"category": "jobs",
+"difficulty": 1,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-be66de13",
+"ar": "ممرض",
+"en": "nurse",
+"category": "jobs",
+"difficulty": 1,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-f51d01dd",
+"ar": "نجار",
+"en": "carpenter",
+"category": "jobs",
+"difficulty": 1,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-68b55872",
+"ar": "خباز",
+"en": "baker",
+"category": "jobs",
+"difficulty": 1,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-0378bb7d",
+"ar": "طباخ",
+"en": "cook",
+"category": "jobs",
+"difficulty": 1,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-66bf159c",
+"ar": "حداد",
+"en": "blacksmith",
+"category": "jobs",
+"difficulty": 1,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-ccdd22b6",
+"ar": "فلاح",
+"en": "farmer",
+"category": "jobs",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-513c9c14",
+"ar": "صياد",
+"en": "fisherman",
+"category": "jobs",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-2e4239e0",
+"ar": "سائق",
+"en": "driver",
+"category": "jobs",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-a9b71a68",
+"ar": "رسام",
+"en": "painter",
+"category": "jobs",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-3f799ae9",
+"ar": "شرطي",
+"en": "police officer",
+"category": "jobs",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-fd17f1d5",
+"ar": "قاض",
+"en": "judge",
+"category": "jobs",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-5d326e24",
+"ar": "محامي",
+"en": "lawyer",
+"category": "jobs",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-9e1c5d39",
+"ar": "صيدلي",
+"en": "pharmacist",
+"category": "jobs",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-a80ae465",
+"ar": "طبيب أسنان",
+"en": "dentist",
+"category": "jobs",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-c7999375",
+"ar": "كهربائي",
+"en": "electrician",
+"category": "jobs",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-feb5ee37",
+"ar": "ميكانيكي",
+"en": "mechanic",
+"category": "jobs",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-e3efe95d",
+"ar": "خياط",
+"en": "tailor",
+"category": "jobs",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-6d709e6b",
+"ar": "حلاق",
+"en": "barber",
+"category": "jobs",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-4297db2a",
+"ar": "بائع",
+"en": "seller",
+"category": "jobs",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-9bb9c0e8",
+"ar": "رجل إطفاء",
+"en": "firefighter",
+"category": "jobs",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-4007b2e6",
+"ar": "رائد فضاء",
+"en": "astronaut",
+"category": "jobs",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-01537abc",
+"ar": "مزارع",
+"en": "farmer",
+"category": "jobs",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-b7a458c6",
+"ar": "عالم",
+"en": "scientist",
+"category": "jobs",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-9ec02109",
+"ar": "كرة القدم",
+"en": "football",
+"category": "sports",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-462d88a3",
+"ar": "كرة السلة",
+"en": "basketball",
+"category": "sports",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-4aed167b",
+"ar": "كرة الطائرة",
+"en": "volleyball",
+"category": "sports",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-2f4e5a9a",
+"ar": "السباحة",
+"en": "swimming",
+"category": "sports",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-5015de85",
+"ar": "الجري",
+"en": "running",
+"category": "sports",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-b0cf0950",
+"ar": "التنس",
+"en": "tennis",
+"category": "sports",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-43f98f7d",
+"ar": "الملاكمة",
+"en": "boxing",
+"category": "sports",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-44e74d54",
+"ar": "الجودو",
+"en": "judo",
+"category": "sports",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-eff10908",
+"ar": "الكاراتيه",
+"en": "karate",
+"category": "sports",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-311e8582",
+"ar": "الفروسية",
+"en": "horse riding",
+"category": "sports",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-9a3775c3",
+"ar": "رمي الرمح",
+"en": "javelin",
+"category": "sports",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-ce4e60bb",
+"ar": "ركوب الدراجات",
+"en": "cycling",
+"category": "sports",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-65657968",
+"ar": "الغولف",
+"en": "golf",
+"category": "sports",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-e1a8e668",
+"ar": "الهوكي",
+"en": "hockey",
+"category": "sports",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-08a42545",
+"ar": "الرماية",
+"en": "archery",
+"category": "sports",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-e7e682df",
+"ar": "الجمباز",
+"en": "gymnastics",
+"category": "sports",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-8356a347",
+"ar": "رفع الأثقال",
+"en": "weightlifting",
+"category": "sports",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-22046d26",
+"ar": "التزلج",
+"en": "skiing",
+"category": "sports",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-fc07c608",
+"ar": "الغوص",
+"en": "diving",
+"category": "sports",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-bdc12e1c",
+"ar": "التجديف",
+"en": "rowing",
+"category": "sports",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-fb1e83f0",
+"ar": "كرة اليد",
+"en": "handball",
+"category": "sports",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-963fd924",
+"ar": "تنس الطاولة",
+"en": "table tennis",
+"category": "sports",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-b6ed1473",
+"ar": "المصارعة",
+"en": "wrestling",
+"category": "sports",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-3107866c",
+"ar": "الكريكيت",
+"en": "cricket",
+"category": "sports",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-cc57f5c4",
+"ar": "البلياردو",
+"en": "billiards",
+"category": "sports",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-298727cf",
+"ar": "الشطرنج",
+"en": "chess",
+"category": "sports",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-cd25f71b",
+"ar": "ثوب",
+"en": "thobe",
+"category": "clothes",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-580ed9b1",
+"ar": "قميص",
+"en": "shirt",
+"category": "clothes",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-f191eb62",
+"ar": "بنطلون",
+"en": "trousers",
+"category": "clothes",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-bd608042",
+"ar": "حذاء",
+"en": "shoe",
+"category": "clothes",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-09e4350d",
+"ar": "جورب",
+"en": "sock",
+"category": "clothes",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-6851f465",
+"ar": "قبعة",
+"en": "hat",
+"category": "clothes",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-d8a79cf8",
+"ar": "معطف",
+"en": "coat",
+"category": "clothes",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-a309355e",
+"ar": "سترة",
+"en": "jacket",
+"category": "clothes",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-9906f074",
+"ar": "فستان",
+"en": "dress",
+"category": "clothes",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-5a95b47e",
+"ar": "عباءة",
+"en": "abaya",
+"category": "clothes",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-0207e653",
+"ar": "شماغ",
+"en": "shemagh",
+"category": "clothes",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-0fa82286",
+"ar": "عقال",
+"en": "agal",
+"category": "clothes",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-0ffc0285",
+"ar": "طاقية",
+"en": "cap",
+"category": "clothes",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-3b47c72d",
+"ar": "حزام",
+"en": "belt",
+"category": "clothes",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-4f27aa03",
+"ar": "قفاز",
+"en": "gloves",
+"category": "clothes",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-80d742f4",
+"ar": "وشاح",
+"en": "scarf",
+"category": "clothes",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-4d1fc415",
+"ar": "نظارة",
+"en": "glasses",
+"category": "clothes",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-0985723f",
+"ar": "ساعة",
+"en": "watch",
+"category": "clothes",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-b59f3b96",
+"ar": "نعل",
+"en": "sandal",
+"category": "clothes",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-6dd74ccb",
+"ar": "بيجامة",
+"en": "pyjamas",
+"category": "clothes",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-5da23188",
+"ar": "تنورة",
+"en": "skirt",
+"category": "clothes",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-cf3af9af",
+"ar": "بدلة",
+"en": "suit",
+"category": "clothes",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-0ae4e0e9",
+"ar": "كم",
+"en": "sleeve",
+"category": "clothes",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-d1a1bf08",
+"ar": "سيارة",
+"en": "car",
+"category": "vehicles",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-b57f91f8",
+"ar": "حافلة",
+"en": "bus",
+"category": "vehicles",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-b87e2fbc",
+"ar": "طائرة",
+"en": "airplane",
+"category": "vehicles",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-23f115c9",
+"ar": "قطار",
+"en": "train",
+"category": "vehicles",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-124357f7",
+"ar": "دراجة",
+"en": "bicycle",
+"category": "vehicles",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-45acd4f5",
+"ar": "سفينة",
+"en": "ship",
+"category": "vehicles",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-45d3a391",
+"ar": "قارب",
+"en": "boat",
+"category": "vehicles",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-0011b54b",
+"ar": "شاحنة",
+"en": "truck",
+"category": "vehicles",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-977c4ba4",
+"ar": "هليكوبتر",
+"en": "helicopter",
+"category": "vehicles",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-17806b5a",
+"ar": "دراجة نارية",
+"en": "motorcycle",
+"category": "vehicles",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-6d8b38cb",
+"ar": "صاروخ",
+"en": "rocket",
+"category": "vehicles",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-51bb073f",
+"ar": "غواصة",
+"en": "submarine",
+"category": "vehicles",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-df2481ca",
+"ar": "جرار",
+"en": "tractor",
+"category": "vehicles",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-d5add25f",
+"ar": "سيارة إسعاف",
+"en": "ambulance",
+"category": "vehicles",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-14317926",
+"ar": "مترو",
+"en": "metro",
+"category": "vehicles",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-1b9aaf8a",
+"ar": "عربة",
+"en": "cart",
+"category": "vehicles",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-bab40bfb",
+"ar": "سيارة أجرة",
+"en": "taxi",
+"category": "vehicles",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-a9a982f7",
+"ar": "منطاد",
+"en": "balloon",
+"category": "vehicles",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-cf4206a7",
+"ar": "دراجة ثلاثية",
+"en": "tricycle",
+"category": "vehicles",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-478bb11d",
+"ar": "زورق",
+"en": "speedboat",
+"category": "vehicles",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-fc314666",
+"ar": "كرسي",
+"en": "chair",
+"category": "home",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-892deeee",
+"ar": "طاولة",
+"en": "table",
+"category": "home",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-e0f948a7",
+"ar": "سرير",
+"en": "bed",
+"category": "home",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-45d5f43a",
+"ar": "خزانة",
+"en": "wardrobe",
+"category": "home",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-b2d87c02",
+"ar": "أريكة",
+"en": "sofa",
+"category": "home",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-5599e8c1",
+"ar": "مكتب",
+"en": "desk",
+"category": "home",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-4ef097f7",
+"ar": "رف",
+"en": "shelf",
+"category": "home",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-5fa4643c",
+"ar": "مرآة",
+"en": "mirror",
+"category": "home",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-38d5b385",
+"ar": "سجادة",
+"en": "carpet",
+"category": "home",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-b7a3a74f",
+"ar": "وسادة",
+"en": "pillow",
+"category": "home",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-05172102",
+"ar": "ستارة",
+"en": "curtain",
+"category": "home",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-8af6aaa9",
+"ar": "مصباح",
+"en": "lamp",
+"category": "home",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-3b25b51a",
+"ar": "باب",
+"en": "door",
+"category": "home",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-9460f358",
+"ar": "نافذة",
+"en": "window",
+"category": "home",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-ab3e1ccf",
+"ar": "سقف",
+"en": "ceiling",
+"category": "home",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-090988c2",
+"ar": "جدار",
+"en": "wall",
+"category": "home",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-c4550fe4",
+"ar": "درج",
+"en": "stairs",
+"category": "home",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-b2e8115b",
+"ar": "مفتاح",
+"en": "key",
+"category": "home",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-ab1e79cc",
+"ar": "ثلاجة",
+"en": "fridge",
+"category": "home",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-8fe7d7c6",
+"ar": "مروحة",
+"en": "fan",
+"category": "home",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-188f9e8e",
+"ar": "مكيف",
+"en": "air conditioner",
+"category": "home",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-ec137485",
+"ar": "ملعقة",
+"en": "spoon",
+"category": "kitchen",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-dc604dd9",
+"ar": "شوكة",
+"en": "fork",
+"category": "kitchen",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-0d1c744b",
+"ar": "سكين",
+"en": "knife",
+"category": "kitchen",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-ff1f8434",
+"ar": "طبق",
+"en": "plate",
+"category": "kitchen",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-5bc33edc",
+"ar": "كوب",
+"en": "cup",
+"category": "kitchen",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-455bc350",
+"ar": "مقلاة",
+"en": "frying pan",
+"category": "kitchen",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-a86d4073",
+"ar": "قدر",
+"en": "pot",
+"category": "kitchen",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-6526340d",
+"ar": "إبريق",
+"en": "jug",
+"category": "kitchen",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-7ac6af7f",
+"ar": "غلاية",
+"en": "kettle",
+"category": "kitchen",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-0a9048bd",
+"ar": "فرن",
+"en": "oven",
+"category": "kitchen",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-4c97ec9c",
+"ar": "ميكروويف",
+"en": "microwave",
+"category": "kitchen",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-9eb67d97",
+"ar": "خلاط",
+"en": "blender",
+"category": "kitchen",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-9481eb36",
+"ar": "صينية",
+"en": "tray",
+"category": "kitchen",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-fa23468f",
+"ar": "ركوة",
+"en": "coffee pot",
+"category": "kitchen",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-d62b324f",
+"ar": "دلة",
+"en": "dallah",
+"category": "kitchen",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-58ba4faa",
+"ar": "فنجان",
+"en": "small cup",
+"category": "kitchen",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-d256c287",
+"ar": "برطمان",
+"en": "jar",
+"category": "kitchen",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-4ca1eb71",
+"ar": "غسالة",
+"en": "washing machine",
+"category": "kitchen",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-23df7f6d",
+"ar": "مصفاة",
+"en": "strainer",
+"category": "kitchen",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-78db2a00",
+"ar": "قلم",
+"en": "pen",
+"category": "school",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-0d27d5eb",
+"ar": "كتاب",
+"en": "book",
+"category": "school",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-ecd4af16",
+"ar": "دفتر",
+"en": "notebook",
+"category": "school",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-73394cea",
+"ar": "مسطرة",
+"en": "ruler",
+"category": "school",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-8816307d",
+"ar": "ممحاة",
+"en": "eraser",
+"category": "school",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-2bcbcb64",
+"ar": "حقيبة",
+"en": "bag",
+"category": "school",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-b3f919e4",
+"ar": "سبورة",
+"en": "board",
+"category": "school",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-9b4e68c3",
+"ar": "مدرسة",
+"en": "school",
+"category": "school",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-f080a230",
+"ar": "مكتبة",
+"en": "library",
+"category": "school",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-bbc2f9df",
+"ar": "خريطة",
+"en": "map",
+"category": "school",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-6f59ef41",
+"ar": "حاسوب",
+"en": "computer",
+"category": "school",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-0b98df80",
+"ar": "مقلمة",
+"en": "pencil case",
+"category": "school",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-fb5ef23c",
+"ar": "برجل",
+"en": "compass",
+"category": "school",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-a3f49bf9",
+"ar": "قلم رصاص",
+"en": "pencil",
+"category": "school",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-d01cff46",
+"ar": "مبراة",
+"en": "sharpener",
+"category": "school",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-ae56c3a5",
+"ar": "ملف",
+"en": "folder",
+"category": "school",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-5f642874",
+"ar": "دباسة",
+"en": "stapler",
+"category": "school",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-c2263c9d",
+"ar": "غراء",
+"en": "glue",
+"category": "school",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-32b35077",
+"ar": "طباشير",
+"en": "chalk",
+"category": "school",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-dce434d5",
+"ar": "جدول",
+"en": "timetable",
+"category": "school",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-8a79900e",
+"ar": "مطرقة",
+"en": "hammer",
+"category": "tools",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-63cff345",
+"ar": "مفك",
+"en": "screwdriver",
+"category": "tools",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-6cf93984",
+"ar": "منشار",
+"en": "saw",
+"category": "tools",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-4aeb8455",
+"ar": "مسمار",
+"en": "nail",
+"category": "tools",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-d7cff752",
+"ar": "مقص",
+"en": "scissors",
+"category": "tools",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-8479e39a",
+"ar": "إبرة",
+"en": "needle",
+"category": "tools",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-1f6a859b",
+"ar": "فأس",
+"en": "axe",
+"category": "tools",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-155202bc",
+"ar": "مفتاح ربط",
+"en": "wrench",
+"category": "tools",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-22af5fad",
+"ar": "سلم",
+"en": "ladder",
+"category": "tools",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-d73c915e",
+"ar": "فرشاة",
+"en": "brush",
+"category": "tools",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-489e9aaa",
+"ar": "حبل",
+"en": "rope",
+"category": "tools",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-36ab33c4",
+"ar": "مقياس",
+"en": "tape measure",
+"category": "tools",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-75dc603b",
+"ar": "مثقاب",
+"en": "drill",
+"category": "tools",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-393d7146",
+"ar": "كماشة",
+"en": "pliers",
+"category": "tools",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-f4eaaa1c",
+"ar": "ملقط",
+"en": "tweezers",
+"category": "tools",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-963ca346",
+"ar": "معول",
+"en": "pickaxe",
+"category": "tools",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-9bb8abff",
+"ar": "مجرفة",
+"en": "shovel",
+"category": "tools",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-e997e391",
+"ar": "دلو",
+"en": "bucket",
+"category": "tools",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-3f80aacf",
+"ar": "خرطوم",
+"en": "hose",
+"category": "tools",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-ef369742",
+"ar": "مسجد",
+"en": "mosque",
+"category": "places",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-4a27deb9",
+"ar": "مستشفى",
+"en": "hospital",
+"category": "places",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-98e369f7",
+"ar": "مطار",
+"en": "airport",
+"category": "places",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-16c73be6",
+"ar": "سوق",
+"en": "market",
+"category": "places",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-21a777de",
+"ar": "حديقة",
+"en": "park",
+"category": "places",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-485afe57",
+"ar": "شاطئ",
+"en": "beach",
+"category": "places",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-0219262d",
+"ar": "جبل",
+"en": "mountain",
+"category": "places",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-c39ba5fc",
+"ar": "صحراء",
+"en": "desert",
+"category": "places",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-fd2ca721",
+"ar": "نهر",
+"en": "river",
+"category": "places",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-3c7b56ce",
+"ar": "بحر",
+"en": "sea",
+"category": "places",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-2ef9d756",
+"ar": "جزيرة",
+"en": "island",
+"category": "places",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-fd0a8875",
+"ar": "غابة",
+"en": "forest",
+"category": "places",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-32f476bc",
+"ar": "قلعة",
+"en": "castle",
+"category": "places",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-20aefc45",
+"ar": "متحف",
+"en": "museum",
+"category": "places",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-2df8d65b",
+"ar": "ملعب",
+"en": "stadium",
+"category": "places",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-c31e3581",
+"ar": "مزرعة",
+"en": "farm",
+"category": "places",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-87cc3dd0",
+"ar": "مطعم",
+"en": "restaurant",
+"category": "places",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-f879f70c",
+"ar": "بنك",
+"en": "bank",
+"category": "places",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-c4c54273",
+"ar": "جسر",
+"en": "bridge",
+"category": "places",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-531d21bc",
+"ar": "محطة",
+"en": "station",
+"category": "places",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-757be7aa",
+"ar": "شمس",
+"en": "sun",
+"category": "nature",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-a6b3ca34",
+"ar": "قمر",
+"en": "moon",
+"category": "nature",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-9258053e",
+"ar": "نجمة",
+"en": "star",
+"category": "nature",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-b3f51329",
+"ar": "سحابة",
+"en": "cloud",
+"category": "nature",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-41892f96",
+"ar": "مطر",
+"en": "rain",
+"category": "nature",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-9b7b0aed",
+"ar": "ثلج",
+"en": "snow",
+"category": "nature",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-ea8d662a",
+"ar": "رعد",
+"en": "thunder",
+"category": "nature",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-8ea60afd",
+"ar": "برق",
+"en": "lightning",
+"category": "nature",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-d089c4dc",
+"ar": "قوس قزح",
+"en": "rainbow",
+"category": "nature",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-9717790e",
+"ar": "ريح",
+"en": "wind",
+"category": "nature",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-4c23f090",
+"ar": "بحيرة",
+"en": "lake",
+"category": "nature",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-61b7087d",
+"ar": "واحة",
+"en": "oasis",
+"category": "nature",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-92af76ee",
+"ar": "وادي",
+"en": "valley",
+"category": "nature",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-ed127ab5",
+"ar": "شلال",
+"en": "waterfall",
+"category": "nature",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-76cd0737",
+"ar": "بركان",
+"en": "volcano",
+"category": "nature",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-9dbcd900",
+"ar": "كهف",
+"en": "cave",
+"category": "nature",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-47a834af",
+"ar": "تل",
+"en": "hill",
+"category": "nature",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-05707957",
+"ar": "صخرة",
+"en": "rock",
+"category": "nature",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-1ac350d7",
+"ar": "رمل",
+"en": "sand",
+"category": "nature",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-862f8c5d",
+"ar": "ضباب",
+"en": "fog",
+"category": "nature",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-1bba3b53",
+"ar": "رأس",
+"en": "head",
+"category": "body",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-abf2fb68",
+"ar": "يد",
+"en": "hand",
+"category": "body",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-a5d93554",
+"ar": "رجل",
+"en": "leg",
+"category": "body",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-675b46a5",
+"ar": "عين",
+"en": "eye",
+"category": "body",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-c87ea215",
+"ar": "أذن",
+"en": "ear",
+"category": "body",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-d466b7d3",
+"ar": "أنف",
+"en": "nose",
+"category": "body",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-7f3b9d0b",
+"ar": "فم",
+"en": "mouth",
+"category": "body",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-790c480f",
+"ar": "سن",
+"en": "tooth",
+"category": "body",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-6e2177a1",
+"ar": "لسان",
+"en": "tongue",
+"category": "body",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-28e3a74a",
+"ar": "شعر",
+"en": "hair",
+"category": "body",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-7432a0c2",
+"ar": "وجه",
+"en": "face",
+"category": "body",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-82f1b4b7",
+"ar": "قلب",
+"en": "heart",
+"category": "body",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-bd61d693",
+"ar": "بطن",
+"en": "stomach",
+"category": "body",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-1925e3f6",
+"ar": "ظهر",
+"en": "back",
+"category": "body",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-87719738",
+"ar": "كتف",
+"en": "shoulder",
+"category": "body",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-10b0774d",
+"ar": "ركبة",
+"en": "knee",
+"category": "body",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-905bfca8",
+"ar": "إصبع",
+"en": "finger",
+"category": "body",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-ad783f94",
+"ar": "قدم",
+"en": "foot",
+"category": "body",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-76a7d5a5",
+"ar": "رقبة",
+"en": "neck",
+"category": "body",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-d31ee32f",
+"ar": "ذراع",
+"en": "arm",
+"category": "body",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-1382f1d7",
+"ar": "حاجب",
+"en": "eyebrow",
+"category": "body",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-590571a5",
+"ar": "أحمر",
+"en": "red",
+"category": "colors",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-072bf8b9",
+"ar": "أزرق",
+"en": "blue",
+"category": "colors",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-48b4b590",
+"ar": "أخضر",
+"en": "green",
+"category": "colors",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-25fbddb7",
+"ar": "أصفر",
+"en": "yellow",
+"category": "colors",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-cb52310b",
+"ar": "برتقالي",
+"en": "orange",
+"category": "colors",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-013ff80b",
+"ar": "بنفسجي",
+"en": "purple",
+"category": "colors",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-836d81cd",
+"ar": "وردي",
+"en": "pink",
+"category": "colors",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-6fca68bb",
+"ar": "أبيض",
+"en": "white",
+"category": "colors",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-bc1fde52",
+"ar": "أسود",
+"en": "black",
+"category": "colors",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-cd8d5b73",
+"ar": "بني",
+"en": "brown",
+"category": "colors",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-1a1680d5",
+"ar": "رمادي",
+"en": "gray",
+"category": "colors",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-0b639abc",
+"ar": "ذهبي",
+"en": "golden",
+"category": "colors",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-1485ba4f",
+"ar": "فضي",
+"en": "silver",
+"category": "colors",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-567fd777",
+"ar": "سماوي",
+"en": "sky blue",
+"category": "colors",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-8ead1ed9",
+"ar": "زهري",
+"en": "rose",
+"category": "colors",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-9365f714",
+"ar": "كحلي",
+"en": "navy",
+"category": "colors",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-0fcb0202",
+"ar": "بيج",
+"en": "beige",
+"category": "colors",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-bcd083be",
+"ar": "تركوازي",
+"en": "turquoise",
+"category": "colors",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-533b787a",
+"ar": "عنابي",
+"en": "maroon",
+"category": "colors",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-455e0ea0",
+"ar": "خمري",
+"en": "burgundy",
+"category": "colors",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-b9e9459c",
+"ar": "هاتف",
+"en": "phone",
+"category": "tech",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-0501f06f",
+"ar": "تلفاز",
+"en": "television",
+"category": "tech",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-e0196909",
+"ar": "كاميرا",
+"en": "camera",
+"category": "tech",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-95d9339b",
+"ar": "ساعة ذكية",
+"en": "smartwatch",
+"category": "tech",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-647a7d0f",
+"ar": "سماعة",
+"en": "headphones",
+"category": "tech",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-ed6e86e4",
+"ar": "شاشة",
+"en": "screen",
+"category": "tech",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-868a7378",
+"ar": "لوحة مفاتيح",
+"en": "keyboard",
+"category": "tech",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-5bbabd71",
+"ar": "فأرة",
+"en": "mouse",
+"category": "tech",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-1f56b94d",
+"ar": "طابعة",
+"en": "printer",
+"category": "tech",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-0924aec3",
+"ar": "شاحن",
+"en": "charger",
+"category": "tech",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-1a8488a3",
+"ar": "بطارية",
+"en": "battery",
+"category": "tech",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-c1bb51ad",
+"ar": "ريموت",
+"en": "remote",
+"category": "tech",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-38008898",
+"ar": "راديو",
+"en": "radio",
+"category": "tech",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-4ca8f62f",
+"ar": "روبوت",
+"en": "robot",
+"category": "tech",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-f688b63e",
+"ar": "قمر صناعي",
+"en": "satellite",
+"category": "tech",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-f93d9c33",
+"ar": "لوح",
+"en": "tablet",
+"category": "tech",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-0780ed31",
+"ar": "مكبر صوت",
+"en": "speaker",
+"category": "tech",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-69c543ec",
+"ar": "جهاز ألعاب",
+"en": "console",
+"category": "tech",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-68d77d98",
+"ar": "مسجل",
+"en": "recorder",
+"category": "tech",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-c1ee4c69",
+"ar": "كرة",
+"en": "ball",
+"category": "toys",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-636ca717",
+"ar": "دمية",
+"en": "doll",
+"category": "toys",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-b6bd837f",
+"ar": "طائرة ورقية",
+"en": "kite",
+"category": "toys",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-725c7326",
+"ar": "مكعبات",
+"en": "blocks",
+"category": "toys",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-d5c4a265",
+"ar": "لغز",
+"en": "puzzle",
+"category": "toys",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-3fb5c784",
+"ar": "بالون",
+"en": "balloon",
+"category": "toys",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-5a3b97a8",
+"ar": "أرجوحة",
+"en": "swing",
+"category": "toys",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-1539df0c",
+"ar": "زحليقة",
+"en": "slide",
+"category": "toys",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-ea36fb5a",
+"ar": "قفز الحبل",
+"en": "jump rope",
+"category": "toys",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-40272e5c",
+"ar": "الغميضة",
+"en": "hide and seek",
+"category": "toys",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-3bc9268d",
+"ar": "مصاصة",
+"en": "lollipop",
+"category": "toys",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-7bec8764",
+"ar": "سيارة لعبة",
+"en": "toy car",
+"category": "toys",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-72d1dec2",
+"ar": "قطار لعبة",
+"en": "toy train",
+"category": "toys",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-8fed14a7",
+"ar": "مكعب روبيك",
+"en": "rubiks cube",
+"category": "toys",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-400c1890",
+"ar": "ألوان",
+"en": "crayons",
+"category": "toys",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-4ef35764",
+"ar": "صلصال",
+"en": "clay",
+"category": "toys",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-bec18e8e",
+"ar": "فقاعات",
+"en": "bubbles",
+"category": "toys",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-48d8b6fb",
+"ar": "خيمة",
+"en": "tent",
+"category": "toys",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-dacc21b7",
+"ar": "دومينو",
+"en": "dominoes",
+"category": "toys",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-ec7f247f",
+"ar": "الرياض",
+"en": "Riyadh",
+"category": "saudi_cities",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-7a1c0096",
+"ar": "جدة",
+"en": "Jeddah",
+"category": "saudi_cities",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-b629dd95",
+"ar": "مكة المكرمة",
+"en": "Mecca",
+"category": "saudi_cities",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-4fedbdb0",
+"ar": "المدينة المنورة",
+"en": "Medina",
+"category": "saudi_cities",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-822c2b16",
+"ar": "الدمام",
+"en": "Dammam",
+"category": "saudi_cities",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-fcaf1acf",
+"ar": "الطائف",
+"en": "Taif",
+"category": "saudi_cities",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-ffece824",
+"ar": "تبوك",
+"en": "Tabuk",
+"category": "saudi_cities",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-770a684a",
+"ar": "أبها",
+"en": "Abha",
+"category": "saudi_cities",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-f87e4eba",
+"ar": "بريدة",
+"en": "Buraydah",
+"category": "saudi_cities",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-9b1ce346",
+"ar": "حائل",
+"en": "Hail",
+"category": "saudi_cities",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-8bbaac78",
+"ar": "نجران",
+"en": "Najran",
+"category": "saudi_cities",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-27bc996f",
+"ar": "جازان",
+"en": "Jazan",
+"category": "saudi_cities",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-cb5178b1",
+"ar": "الخبر",
+"en": "Khobar",
+"category": "saudi_cities",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-75b5bbf8",
+"ar": "الجبيل",
+"en": "Jubail",
+"category": "saudi_cities",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-b4166677",
+"ar": "ينبع",
+"en": "Yanbu",
+"category": "saudi_cities",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-000cf89f",
+"ar": "الأحساء",
+"en": "Al-Ahsa",
+"category": "saudi_cities",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-1d07ef9b",
+"ar": "العلا",
+"en": "AlUla",
+"category": "saudi_cities",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-f82c4194",
+"ar": "الباحة",
+"en": "Al-Baha",
+"category": "saudi_cities",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-f035e259",
+"ar": "عرعر",
+"en": "Arar",
+"category": "saudi_cities",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-344e05eb",
+"ar": "سكاكا",
+"en": "Sakaka",
+"category": "saudi_cities",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-6e6b3223",
+"ar": "الظهران",
+"en": "Dhahran",
+"category": "saudi_cities",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-c2cd7396",
+"ar": "خميس مشيط",
+"en": "Khamis Mushait",
+"category": "saudi_cities",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-5b7e0426",
+"ar": "نيوم",
+"en": "NEOM",
+"category": "saudi_cities",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-3f8cbd03",
+"ar": "السعودية",
+"en": "Saudi Arabia",
+"category": "arab_countries",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-9f5f187b",
+"ar": "مصر",
+"en": "Egypt",
+"category": "arab_countries",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-1b890085",
+"ar": "الأردن",
+"en": "Jordan",
+"category": "arab_countries",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-4b74973d",
+"ar": "العراق",
+"en": "Iraq",
+"category": "arab_countries",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-827e1566",
+"ar": "الكويت",
+"en": "Kuwait",
+"category": "arab_countries",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-76394460",
+"ar": "قطر",
+"en": "Qatar",
+"category": "arab_countries",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-2a0041a3",
+"ar": "البحرين",
+"en": "Bahrain",
+"category": "arab_countries",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-b9493df4",
+"ar": "عمان",
+"en": "Oman",
+"category": "arab_countries",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-1ccd12e7",
+"ar": "الإمارات",
+"en": "UAE",
+"category": "arab_countries",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-0cdfe5e0",
+"ar": "اليمن",
+"en": "Yemen",
+"category": "arab_countries",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-aec612ef",
+"ar": "لبنان",
+"en": "Lebanon",
+"category": "arab_countries",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-1166d28b",
+"ar": "سوريا",
+"en": "Syria",
+"category": "arab_countries",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-94b11d17",
+"ar": "المغرب",
+"en": "Morocco",
+"category": "arab_countries",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-cd77976e",
+"ar": "الجزائر",
+"en": "Algeria",
+"category": "arab_countries",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-ba84e974",
+"ar": "تونس",
+"en": "Tunisia",
+"category": "arab_countries",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-251aff72",
+"ar": "ليبيا",
+"en": "Libya",
+"category": "arab_countries",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-5becaf4c",
+"ar": "السودان",
+"en": "Sudan",
+"category": "arab_countries",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-45cbb460",
+"ar": "موريتانيا",
+"en": "Mauritania",
+"category": "arab_countries",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-49ce4aab",
+"ar": "الصومال",
+"en": "Somalia",
+"category": "arab_countries",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-7176f0b0",
+"ar": "جيبوتي",
+"en": "Djibouti",
+"category": "arab_countries",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-ad5a695e",
+"ar": "جزر القمر",
+"en": "Comoros",
+"category": "arab_countries",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-b66e1b9d",
+"ar": "الأهرامات",
+"en": "pyramids",
+"category": "landmarks",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-83406f9b",
+"ar": "برج إيفل",
+"en": "Eiffel Tower",
+"category": "landmarks",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-7f7f7ca7",
+"ar": "سور الصين",
+"en": "Great Wall",
+"category": "landmarks",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-2b3f50ec",
+"ar": "برج خليفة",
+"en": "Burj Khalifa",
+"category": "landmarks",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-e78ed0db",
+"ar": "برج المملكة",
+"en": "Kingdom Centre",
+"category": "landmarks",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-6fb265f4",
+"ar": "ساعة مكة",
+"en": "Makkah Clock Tower",
+"category": "landmarks",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-f5608078",
+"ar": "تمثال الحرية",
+"en": "Statue of Liberty",
+"category": "landmarks",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-7d828282",
+"ar": "برج بيزا",
+"en": "Pisa Tower",
+"category": "landmarks",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-3af1192e",
+"ar": "الكولوسيوم",
+"en": "Colosseum",
+"category": "landmarks",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-b94a36b6",
+"ar": "تاج محل",
+"en": "Taj Mahal",
+"category": "landmarks",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-c196418b",
+"ar": "البوابة الذهبية",
+"en": "Golden Gate",
+"category": "landmarks",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-530ce134",
+"ar": "قصر المصمك",
+"en": "Masmak Fort",
+"category": "landmarks",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-510c29ac",
+"ar": "حي الطريف",
+"en": "At-Turaif",
+"category": "landmarks",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-3385c364",
+"ar": "الحِجر",
+"en": "Hegra",
+"category": "landmarks",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-b833b75f",
+"ar": "الكورنيش",
+"en": "Corniche",
+"category": "landmarks",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-3a8f7804",
+"ar": "برج العرب",
+"en": "Burj Al Arab",
+"category": "landmarks",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-7de0b64e",
+"ar": "نافورة الملك فهد",
+"en": "King Fahd Fountain",
+"category": "landmarks",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-4c8a10de",
+"ar": "مبنى الكابيتول",
+"en": "Capitol Building",
+"category": "landmarks",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-d81975c4",
+"ar": "نهر النيل",
+"en": "Nile",
+"category": "landmarks",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-17938e6f",
+"ar": "قصر الحمراء",
+"en": "Alhambra",
+"category": "landmarks",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-464425bc",
+"ar": "عيد الفطر",
+"en": "Eid al-Fitr",
+"category": "occasions",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-11d7faa9",
+"ar": "عيد الأضحى",
+"en": "Eid al-Adha",
+"category": "occasions",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-8b6c945c",
+"ar": "رمضان",
+"en": "Ramadan",
+"category": "occasions",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-4139ca62",
+"ar": "اليوم الوطني",
+"en": "National Day",
+"category": "occasions",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-e26d64f9",
+"ar": "يوم التأسيس",
+"en": "Founding Day",
+"category": "occasions",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-5a2ce995",
+"ar": "عيد ميلاد",
+"en": "birthday",
+"category": "occasions",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-1b8fcc32",
+"ar": "زواج",
+"en": "wedding",
+"category": "occasions",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-4bb0cb4c",
+"ar": "تخرج",
+"en": "graduation",
+"category": "occasions",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-6af03bcf",
+"ar": "قدوم ضيف",
+"en": "guest arrival",
+"category": "occasions",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-a74ecc3b",
+"ar": "سفر",
+"en": "travel",
+"category": "occasions",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-16b77b0f",
+"ar": "مولود جديد",
+"en": "newborn",
+"category": "occasions",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-fd28af58",
+"ar": "حفلة",
+"en": "party",
+"category": "occasions",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-fbd8c9ca",
+"ar": "نزهة",
+"en": "picnic",
+"category": "occasions",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-0a34289e",
+"ar": "مخيم",
+"en": "camping",
+"category": "occasions",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-d2e147ce",
+"ar": "قرقيعان",
+"en": "garangao",
+"category": "occasions",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-be9a351c",
+"ar": "عيد صديق",
+"en": "friends party",
+"category": "occasions",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-8b57b2e6",
+"ar": "هدية",
+"en": "gift",
+"category": "occasions",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-3422b157",
+"ar": "عزيمة",
+"en": "invitation to a meal",
+"category": "occasions",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-d28f0ae0",
+"ar": "سحور",
+"en": "suhoor",
+"category": "occasions",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-2499377a",
+"ar": "إفطار",
+"en": "iftar",
+"category": "occasions",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-6b435a50",
+"ar": "أب",
+"en": "father",
+"category": "family",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-5a5bc757",
+"ar": "أم",
+"en": "mother",
+"category": "family",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-a92dc065",
+"ar": "أخ",
+"en": "brother",
+"category": "family",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-f44d558c",
+"ar": "أخت",
+"en": "sister",
+"category": "family",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-9fb88aa8",
+"ar": "جد",
+"en": "grandfather",
+"category": "family",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-6481b9c4",
+"ar": "ابن",
+"en": "son",
+"category": "family",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-2bff8fd6",
+"ar": "بنت",
+"en": "daughter",
+"category": "family",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-60af83df",
+"ar": "عم",
+"en": "uncle",
+"category": "family",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-28f85252",
+"ar": "عمة",
+"en": "aunt",
+"category": "family",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-d186bd98",
+"ar": "خال",
+"en": "maternal uncle",
+"category": "family",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-6442e53c",
+"ar": "خالة",
+"en": "maternal aunt",
+"category": "family",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-e52b749c",
+"ar": "حفيد",
+"en": "grandson",
+"category": "family",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-519f3c6c",
+"ar": "طفل",
+"en": "child",
+"category": "family",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-8d62c3c7",
+"ar": "عريس",
+"en": "groom",
+"category": "family",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-ef1dc9cd",
+"ar": "عروس",
+"en": "bride",
+"category": "family",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-a62af5ce",
+"ar": "جار",
+"en": "neighbor",
+"category": "family",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-c479734e",
+"ar": "صديق",
+"en": "friend",
+"category": "family",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-a472463f",
+"ar": "ضيف",
+"en": "guest",
+"category": "family",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-9ea64713",
+"ar": "ابن العم",
+"en": "cousin",
+"category": "family",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-a9b0aa76",
+"ar": "فرحان",
+"en": "happy",
+"category": "feelings",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-8dbba75f",
+"ar": "حزين",
+"en": "sad",
+"category": "feelings",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-70daa8f3",
+"ar": "غاضب",
+"en": "angry",
+"category": "feelings",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-df944736",
+"ar": "خائف",
+"en": "scared",
+"category": "feelings",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-b66c4017",
+"ar": "متعب",
+"en": "tired",
+"category": "feelings",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-55f1bc2c",
+"ar": "جائع",
+"en": "hungry",
+"category": "feelings",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-e2b085ee",
+"ar": "عطشان",
+"en": "thirsty",
+"category": "feelings",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-2c38473c",
+"ar": "مندهش",
+"en": "surprised",
+"category": "feelings",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-067044f3",
+"ar": "ضاحك",
+"en": "laughing",
+"category": "feelings",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-b3257bb9",
+"ar": "باكي",
+"en": "crying",
+"category": "feelings",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-85e4a122",
+"ar": "نعسان",
+"en": "sleepy",
+"category": "feelings",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-fed8e52b",
+"ar": "خجول",
+"en": "shy",
+"category": "feelings",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-637e4c32",
+"ar": "متحمس",
+"en": "excited",
+"category": "feelings",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-902b0f0f",
+"ar": "قلقان",
+"en": "worried",
+"category": "feelings",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-7a430dee",
+"ar": "فخور",
+"en": "proud",
+"category": "feelings",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-992759e3",
+"ar": "مريض",
+"en": "sick",
+"category": "feelings",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-f92b2c5b",
+"ar": "مسرور",
+"en": "delighted",
+"category": "feelings",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-2a74a5e9",
+"ar": "مستغرب",
+"en": "puzzled",
+"category": "feelings",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-cd73ac67",
+"ar": "محرج",
+"en": "embarrassed",
+"category": "feelings",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-f9f47bbc",
+"ar": "هادئ",
+"en": "calm",
+"category": "feelings",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-bbd767e0",
+"ar": "يأكل",
+"en": "eats",
+"category": "actions",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-f8359b64",
+"ar": "ينام",
+"en": "sleeps",
+"category": "actions",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-ec4de741",
+"ar": "يركض",
+"en": "runs",
+"category": "actions",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-ee5f6601",
+"ar": "يسبح",
+"en": "swims",
+"category": "actions",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-618cd666",
+"ar": "يقفز",
+"en": "jumps",
+"category": "actions",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-5ded767d",
+"ar": "يرقص",
+"en": "dances",
+"category": "actions",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-3dd8b459",
+"ar": "يطبخ",
+"en": "cooks",
+"category": "actions",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-5660f271",
+"ar": "يغسل",
+"en": "washes",
+"category": "actions",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-5c1b0dde",
+"ar": "يرسم",
+"en": "draws",
+"category": "actions",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-0302d7f8",
+"ar": "يكتب",
+"en": "writes",
+"category": "actions",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-c8b8cbc1",
+"ar": "يقرأ",
+"en": "reads",
+"category": "actions",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-366c7325",
+"ar": "يضحك",
+"en": "laughs",
+"category": "actions",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-5c67d1eb",
+"ar": "يبكي",
+"en": "cries",
+"category": "actions",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-37d4b9af",
+"ar": "يتسلق",
+"en": "climbs",
+"category": "actions",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-d1d9e549",
+"ar": "يطير",
+"en": "flies",
+"category": "actions",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-fc57d0c4",
+"ar": "يقود",
+"en": "drives",
+"category": "actions",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-a11f3212",
+"ar": "يصور",
+"en": "takes a photo",
+"category": "actions",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-4c940a94",
+"ar": "يمشي",
+"en": "walks",
+"category": "actions",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-5f9e7e18",
+"ar": "يغني",
+"en": "sings",
+"category": "actions",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-56e621cd",
+"ar": "يلعب",
+"en": "plays",
+"category": "actions",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-4fe509d6",
+"ar": "يشرب",
+"en": "drinks",
+"category": "actions",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-6055c11c",
+"ar": "يستحم",
+"en": "showers",
+"category": "actions",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-6191cdb1",
+"ar": "يفتح",
+"en": "opens",
+"category": "actions",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-8bbeaf8a",
+"ar": "ينظف",
+"en": "cleans",
+"category": "actions",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-d81e09ee",
+"ar": "صيف",
+"en": "summer",
+"category": "weather",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-fb8549b6",
+"ar": "شتاء",
+"en": "winter",
+"category": "weather",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-1b25609a",
+"ar": "ربيع",
+"en": "spring",
+"category": "weather",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-b07b20ed",
+"ar": "خريف",
+"en": "autumn",
+"category": "weather",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-2bf0c13b",
+"ar": "غبار",
+"en": "dust",
+"category": "weather",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-6955ad85",
+"ar": "عاصفة",
+"en": "storm",
+"category": "weather",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-2cf9a39b",
+"ar": "حر",
+"en": "heat",
+"category": "weather",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-544475f7",
+"ar": "برد",
+"en": "cold",
+"category": "weather",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-6656ed66",
+"ar": "غيم",
+"en": "clouds",
+"category": "weather",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-f4433cf7",
+"ar": "سيل",
+"en": "flood",
+"category": "weather",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-ef759593",
+"ar": "صحو",
+"en": "clear sky",
+"category": "weather",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-2febeda6",
+"ar": "رطوبة",
+"en": "humidity",
+"category": "weather",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-75f6d831",
+"ar": "حرارة",
+"en": "temperature",
+"category": "weather",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-ae0adcdf",
+"ar": "مظلة",
+"en": "umbrella",
+"category": "weather",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-9fcfe897",
+"ar": "رياح",
+"en": "winds",
+"category": "weather",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-2c9a9e68",
+"ar": "قطرة ندى",
+"en": "dew",
+"category": "weather",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-a6805640",
+"ar": "جمر",
+"en": "embers",
+"category": "weather",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-7dd70b4a",
+"ar": "شروق",
+"en": "sunrise",
+"category": "weather",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-912cba79",
+"ar": "غروب",
+"en": "sunset",
+"category": "weather",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-79a60352",
+"ar": "أرض",
+"en": "earth",
+"category": "spaces",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-f1d1eeb8",
+"ar": "مريخ",
+"en": "Mars",
+"category": "spaces",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-e75c25b5",
+"ar": "مشتري",
+"en": "Jupiter",
+"category": "spaces",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-88fc1080",
+"ar": "زحل",
+"en": "Saturn",
+"category": "spaces",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-ce178019",
+"ar": "زهرة",
+"en": "Venus",
+"category": "spaces",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-c2db774a",
+"ar": "عطارد",
+"en": "Mercury",
+"category": "spaces",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-55b5f19f",
+"ar": "نبتون",
+"en": "Neptune",
+"category": "spaces",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-8b72bd63",
+"ar": "أورانوس",
+"en": "Uranus",
+"category": "spaces",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-48c007c9",
+"ar": "نجم",
+"en": "star",
+"category": "spaces",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-269ed6aa",
+"ar": "مجرة",
+"en": "galaxy",
+"category": "spaces",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-05694825",
+"ar": "مذنب",
+"en": "comet",
+"category": "spaces",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-3cea62de",
+"ar": "تلسكوب",
+"en": "telescope",
+"category": "spaces",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-55923caf",
+"ar": "كوكب",
+"en": "planet",
+"category": "spaces",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-6e64e71c",
+"ar": "مدار",
+"en": "orbit",
+"category": "spaces",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-997d2a6f",
+"ar": "محطة فضائية",
+"en": "space station",
+"category": "spaces",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+},
+{
+"id": "chc-fd497f2d",
+"ar": "كسوف",
+"en": "eclipse",
+"category": "spaces",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"describe"
+],
+"source": "curated",
+"verified": "curated"
+}
+]

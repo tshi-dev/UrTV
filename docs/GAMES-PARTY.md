@@ -26,7 +26,7 @@ Two family games played with **one remote and no phones** (pass-and-play). Specs
 - **Teams 2 to 4**, 45 / 60 / 90 seconds (default 60), 3 turns each. «أطفال» takes kids words of level 1 only. «وصّف» has the words that cannot be acted as well.
 - **Turn:** pass screen → OK shows the actor the word, the clock waits → OK hides it and **the clock starts**.
 - **Keys on the clock:** OK «صح» (+1 and the next word at once), LEFT «تخطّي» (free, 3 a turn), UP shows the word again for 3 seconds (free), DOWN «مخالفة» (only in «وصّف» with the setting on: -1, never below 0).
-- **The first word** comes through the kit's hand-over. **A new word** stays up 4 seconds or until OK, with «الباقين: غطّوا عيونكم» under it. «صح» is ignored for 0.6 seconds after a new word came, so a double press does not throw it away.
+- **The first word** comes through the kit's hand-over. **A new word** (one remote) waits behind a cover, «الكلمة الجاية جاهزة»: nothing of it is on the TV until the actor presses OK (or ▲), then it stays up 4 seconds or until OK and the clock stands still while it is open. With phones the word is on the actor's phone and no cover is used. «صح» is ignored for 0.6 seconds after a new word came, so a double press does not throw it away.
 - **The clock at 0:** the bell, the open word is shown to everyone, the turn passes. Back hides the word first and stops the clock; before the clock started it returns to the pass screen with the same word.
 - **A tie for first:** sudden death between the tied teams only, one word each, 30 seconds, no skip; up to 3 goes, then they share the win.
 - **Deck:** used up → shuffled again and the screen says so; never the same word twice in a row.

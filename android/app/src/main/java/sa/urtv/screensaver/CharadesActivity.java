@@ -74,6 +74,7 @@ public class CharadesActivity extends GameActivity {
         boolean describe = chips.picked("mode") == 1;
         game = new CharadesGame(new CharadesWords.Deck(words, describe, chips.picked("age") == 1, recent, rnd), describe, TEAMS[chips.picked("teams")],
             CharadesGame.SECONDS[chips.picked("time")], CharadesGame.DEFAULT_TURNS, chips.picked("foul") == 1, System::currentTimeMillis);
+        game.coverNext = !onPhones();   // with one remote a new word waits behind a cover (the TV is where the guessers look); with phones it is on the actor's phone
         score = new GameScore(game.teams); names = teamNames(game.teams);
         pass();
     }
@@ -160,6 +161,12 @@ public class CharadesActivity extends GameActivity {
                     root.addView(centered(S.t("الباقين: غطّوا عيونكم"), 56, L.ink(0xCC), true), at(1728, 84, 96, 730));
                     if (game.canSkip()) hints(S.t("اختيار"), S.t("أخفِ الكلمة"), "◀", S.t("تخطّي"));
                     else hints(S.t("اختيار"), S.t("أخفِ الكلمة"));
+                } else if (game.covered() && !onPhones()) {   // the next word waits: nothing of it on the TV until the actor asks
+                    question(turn, S.t("الكلمة الجاية جاهزة"), 340);
+                    timer = new TickTimer((int) (game.turnMs() / 1000), 288);
+                    root.addView(centered(S.t("الممثل: اضغط اختيار لتشوفها"), 88, L.ink, true), at(1728, 140, 96, 400));
+                    root.addView(centered(S.t("الباقين: غطّوا عيونكم قبل ما يضغط"), 56, L.ink(0xCC), true), at(1728, 84, 96, 730));
+                    hints(S.t("اختيار"), S.t("شوف الكلمة"), S.t("رجوع"), S.t("إيقاف"));
                 } else {
                     question(turn, game.describe ? S.t("وصّفها بدون ما تقولها") : S.t("مثّلها بدون كلام"), 420);
                     timer = new TickTimer((int) (game.turnMs() / 1000), 360);
@@ -214,6 +221,8 @@ public class CharadesActivity extends GameActivity {
         boolean left = dx == (rtl ? 1 : -1);   // the arrow that points left on the remote, in both languages
         if (game.wordVisible()) {
             if (ok) game.hide(); else if (left) game.skip(); else return;
+        } else if (game.covered()) {
+            if (ok || dy < 0) game.uncover(); else return;   // the new word shows only when the actor asks
         } else if (ok) {
             if (!game.correct()) return;
             play(QuizSound.CHIME);

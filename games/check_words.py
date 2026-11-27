@@ -1,0 +1,114 @@
+#!/usr/bin/env python3
+"""Checks the non-question data of the family games: odd-one, charades, khanat, word5, missing-word, letter-hive.
+Run: python3 games/check_words.py [games-dir]. Exit 1 on any problem."""
+import unicodedata
+import json, os, re, sys
+
+ROOT = sys.argv[1] if len(sys.argv) > 1 else os.path.dirname(os.path.abspath(__file__))
+LET28 = "ابتثجحخدذرزسشصضطظعغفقكلمنهوي"
+BAD = ["·", "israel", "إسرائيل", "الصحراء الغربية", "western sahara"]
+# The owner (2026-11-27): no Palestine and no Israel in any game or quiz, in any spelling (harakat, hamza forms and
+# tatweel folded first). Hadith and verses are not game data and are not checked here.
+NAMES = re.compile(r"اسرا[ءئي]?يل|فلسطين|israel|isreal|palestin|filast", re.I)
+def names_in(text):
+    t = unicodedata.normalize("NFKD", text)   # ë -> e, أ -> ا + hamza mark
+    t = re.sub("[\u0300-\u036F\u064B-\u065F\u0670\u0640]", "", t)
+    t = re.sub("[أإآٱ]", "ا", t)
+    return sorted(set(m.group(0) for m in NAMES.finditer(t)))
+errors = []
+def err(where, msg): errors.append(f"{where}: {msg}")
+def load(rel):
+    p = os.path.join(ROOT, rel)
+    if not os.path.exists(p): err(rel, "missing"); return None
+    return json.load(open(p, encoding="utf-8"))
+def norm(s):
+    s = re.sub(r"[ً-ٰٟـۖ-ۭ]", "", s)
+    return re.sub("[أإآٱ]", "ا", s).replace("ة", "ه").replace("ى", "ي")
+def src_ok(s): return s == "curated" or (isinstance(s, str) and s.startswith("https://"))
+def ver_ok(v): return v is True or v == "curated"
+def clean(where, blob):
+    b = json.dumps(blob, ensure_ascii=False).lower()
+    for x in BAD:
+        if x in b: err(where, f"banned text {x!r}")
+    for x in names_in(b): err(where, f"banned name {x!r} (the owner: no Palestine, no Israel)")
+
+# odd-one
+d = load("odd-one/topics.json")
+if d:
+    clean("odd-one", d)
+    if len(d["topics"]) < 30: err("odd-one", f"{len(d['topics'])} topics, need 30")
+    for t in d["topics"]:
+        w = t["words"]
+        if not 20 <= len(w) <= 40: err("odd-one/" + t["id"], f"{len(w)} words, need 20 to 40")
+        if len({norm(x["ar"]) for x in w}) != len(w): err("odd-one/" + t["id"], "duplicate word")
+        for x in w:
+            if not (x["ar"].strip() and x["en"].strip() and 1 <= x["difficulty"] <= 3 and src_ok(x["source"]) and len(x["ar"]) <= 18):
+                err("odd-one/" + t["id"], f"bad word {x}")
+# charades
+d = load("charades/words.json")
+if d:
+    clean("charades", d)
+    if len({x["id"] for x in d}) != len(d): err("charades", "duplicate id")
+    if len(d) < 600: err("charades", f"{len(d)} words, need 600")
+    if {x["difficulty"] for x in d} != {1, 2, 3} or not any(x["age"] == "kids" for x in d): err("charades", "need 3 levels and a kids deck")
+    if len({norm(x["ar"]) for x in d}) != len(d): err("charades", "duplicate word")
+    for x in d:
+        if not (x["ar"] and x["en"] and x["age"] in ("kids", "all") and x["difficulty"] in (1, 2, 3) and ver_ok(x["verified"])
+                and src_ok(x["source"]) and x["modes"] and len(x["ar"]) <= 18): err("charades/" + x["id"], "bad entry")
+# khanat
+d = load("khanat/letters.json")
+if d:
+    clean("khanat", d)
+    if len(d["letters"]) != 25 or len(set(d["letters"])) != 25: err("khanat", "need 25 distinct letters")
+    for l, boxes in d["samples"].items():
+        for b, lst in boxes.items():
+            for x in lst:
+                if norm(x["ar"])[:1] != l and not norm(x["ar"]).startswith("ال" + l): err("khanat", f"{x['ar']} does not start with {l}")
+                if not src_ok(x["source"]): err("khanat", "sample without source")
+# word5
+a, acc = load("word5/answers.json"), load("word5/accepted.json")
+if a and acc is not None:
+    clean("word5", a)
+    S = set(acc)
+    if acc != sorted(S): err("word5/accepted", "must be a sorted array without duplicates")
+    for w in acc:
+        if not re.fullmatch(f"[{LET28}]{{5}}", w): err("word5/accepted", f"bad entry {w!r}")
+    if len({x["word"] for x in a}) != len(a): err("word5/answers", "duplicate word")
+    for x in a:
+        if not re.fullmatch(f"[{LET28}]{{5}}", x["word"]): err("word5/answers", f"bad word {x['word']!r}")
+        elif norm(x["display"]) != x["word"]: err("word5/answers", f"display does not normalize to word: {x['word']}")
+        elif x["word"] not in S: err("word5/answers", f"answer not in accepted: {x['word']}")
+        if not (ver_ok(x["verified"]) and src_ok(x["source"]) and (x["en"] or x["category"] == "dictionary")): err("word5/answers", f"bad entry {x['word']}")
+    if len(a) < 400: err("word5/answers", f"only {len(a)} answers, need at least 400")   # was 500: the review pass of 2026-11 removed 64 rare or unsuitable words on purpose
+    if len(acc) < 2000: err("word5/accepted", f"only {len(acc)} accepted words, need at least 2000")
+# missing-word
+d = load("missing-word/items.json")
+if d:
+    clean("missing-word", d)
+    if len({x["id"] for x in d}) != len(d): err("missing-word", "duplicate id")
+    for x in d:
+        t = x["text"]["ar"]
+        if t.count("___") != 1 or len(t) > 90 or not x["answer"]["ar"].strip(): err("missing-word/" + x["id"], "bad blank or length")
+        if x["deck"] == "saying":
+            if not ((x["verified"] == "repo" and x["source"] == ["repo:assets/shared/wisdom.json"]) or (x["verified"] == "curated" and x["source"] == ["curated"])): err("missing-word/" + x["id"], "saying must be repo-checked or curated")
+        elif x["verified"] is not True or not all(src_ok(s) for s in x["source"]): err("missing-word/" + x["id"], "fact needs https sources and verified true")
+# letter-hive
+d, L = load("letter-hive/index.json"), load("letter-hive/letters.json")
+if d and L:
+    if len(L) != 28: err("letter-hive", f"{len(L)} letters, the board uses all 28")
+    if sum(1 for l in L if len(d["index"].get(l, [])) >= 12) < 18: err("letter-hive", "fewer than 18 letters have 12 or more questions")
+    if set(d.get("short_letters", [])) != {l for l in L if len(d["index"].get(l, [])) < 12}: err("letter-hive", "short_letters does not match the index")
+    ids = set()
+    for f in ("quiz", "truefalse"):
+        p = os.path.join(ROOT, "data", f + ".json")
+        if os.path.exists(p): ids |= {i["id"] for i in json.load(open(p, encoding="utf-8"))}
+    for l, v in d["index"].items():
+        for i in v:
+            if i not in ids: err("letter-hive", f"unknown question id {i}")
+# the owner's decisions of 2026-11-27 (games/tools/owner_fixes.py): a rebuild must not undo one
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "tools"))
+import owner_fixes
+for m in owner_fixes.missing(ROOT): err("owner_fixes", f"not applied: {m} (run games/tools/owner_fixes.py)")
+for e in errors: print(e)
+print(f"words check: {len(errors)} problems")
+sys.exit(1 if errors else 0)

@@ -299,7 +299,7 @@ public class LetterHiveActivity extends GameActivity {
                 line.setColor(L.ink); line.setStrokeWidth(px(focused || lit ? 14 : 5)); line.setAlpha(won && !lit ? 0x66 : 0xFF);
                 cv.drawPath(path, line);
                 String s = String.valueOf(game.board.letter[i]);
-                ink.setTextSize(r * 1.05f); ink.setColor(L.onSaff); ink.setAlpha(won && !lit ? 0x66 : owner != HiveBoard.FREE && !focused ? 0xB3 : 0xFF);
+                ink.setTextSize(r * 1.05f); ink.setColor(owner == HiveBoard.FREE && !focused ? L.ink : L.onSaff);   // a free cell is the tile's colour (dark at night): its letter is the ink; a taken or focused cell is a bright colour: dark words ink.setAlpha(won && !lit ? 0x66 : owner != HiveBoard.FREE && !focused ? 0xB3 : 0xFF);
                 ink.getTextBounds(s, 0, 1, bounds);   // centred on the glyph's ink, not the font's line box
                 cv.drawText(s, x - bounds.exactCenterX(), y - bounds.exactCenterY(), ink);
             }

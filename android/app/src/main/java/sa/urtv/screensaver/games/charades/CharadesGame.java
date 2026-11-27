@@ -30,7 +30,9 @@ public final class CharadesGame {
     public boolean timeUp;                 // TURN_END: the clock ended it (ring the bell, show the word to everyone)
     public int sudden;                     // 0, or which sudden-death go this is (1 to SUDDEN_MAX)
     private List<Integer> tied = new ArrayList<>(); private int tiedAt;
-    private boolean visible, started; private long hideAt, guardUntil, deadline, leftAtPause = -1;
+    private boolean visible, started, covered; private long hideAt, guardUntil, deadline, leftAtPause = -1, held = -1;
+    /** a new word waits behind a cover (the TV is where the guessers look: it never shows a word by itself); off with phones (the word is on the actor's phone) */
+    public boolean coverNext = true;
 
     public CharadesGame(CharadesWords.Deck deck, boolean describe, int teams, int seconds, int turns, boolean fouls, Clock clock) {
         this.deck = deck; this.describe = describe; this.teams = Math.max(MIN_TEAMS, Math.min(MAX_TEAMS, teams)); this.seconds = Math.max(10, seconds);
@@ -38,7 +40,7 @@ public final class CharadesGame {
         score = new int[this.teams];
         begin();
     }
-    private void begin() { got = skips = fouled = 0; timeUp = false; started = visible = false; word = null; leftAtPause = -1; phase = Phase.PASS; }
+    private void begin() { got = skips = fouled = 0; timeUp = false; started = visible = covered = false; word = null; leftAtPause = -1; held = -1; phase = Phase.PASS; }
 
     public int round() { return turn / teams; }
     public long turnMs() { return sudden > 0 ? SUDDEN_MS : seconds * 1000L; }
@@ -54,22 +56,31 @@ public final class CharadesGame {
         visible = true; hideAt = Long.MAX_VALUE; phase = Phase.PLAY;
     }
     public boolean wordVisible() { return phase == Phase.PLAY && visible; }
+    /** a new word is drawn and waits hidden: the actor presses OK (the guessers cover their eyes) to see it, and the clock stands still while it is open */
+    public boolean covered() { return phase == Phase.PLAY && covered; }
+    private void reveal(long openMs) {
+        covered = false; visible = true; hideAt = clock.now() + openMs;
+        if (started && held < 0) held = Math.max(0, deadline - clock.now());   // the clock waits while the word is on the TV
+    }
+    private void close() { visible = false; if (held >= 0) { deadline = clock.now() + held; held = -1; } }
     public boolean clockRunning() { return phase == Phase.PLAY && started && !paused(); }
     public long leftMs() {
         if (phase != Phase.PLAY || !started) return phase == Phase.TURN_END ? 0 : turnMs();
-        return leftAtPause >= 0 ? leftAtPause : Math.max(0, deadline - clock.now());
+        return leftAtPause >= 0 ? leftAtPause : held >= 0 ? held : Math.max(0, deadline - clock.now());
     }
     /** the one key of the game: on an open word it hides it (the first time, that starts the clock); on a hidden word it is «صح» */
-    public void ok() { if (wordVisible()) hide(); else correct(); }
+    public void ok() { if (covered()) reveal(WORD_MS); else if (wordVisible()) hide(); else correct(); }
+    /** OK on the cover: the new word shows for WORD_MS (or until OK) */
+    public boolean uncover() { if (!covered() || paused()) return false; reveal(WORD_MS); return true; }
     public void hide() {
         if (!wordVisible() || paused()) return;
-        visible = false;
+        close();
         guardUntil = clock.now() + GUARD_MS;   // the second press of a quick double OK on «أخفِ الكلمة» must not count a word
         if (!started) { started = true; deadline = clock.now() + turnMs(); }
     }
     /** «صح»: a point, and the next word is shown at once. Ignored for GUARD_MS after a new word came (a double press would throw it away). */
     public boolean correct() {
-        if (phase != Phase.PLAY || !started || visible || paused() || clock.now() < guardUntil) return false;
+        if (phase != Phase.PLAY || !started || visible || covered || paused() || clock.now() < guardUntil) return false;
         score[team]++; got++;
         if (sudden > 0) { word = null; phase = Phase.TURN_END; return true; }
         next(); return true;
@@ -77,14 +88,15 @@ public final class CharadesGame {
     public boolean canSkip() { return phase == Phase.PLAY && started && !paused() && skips < SKIPS_MAX && sudden == 0; }
     /** «تخطّي»: another word, no point lost, SKIPS_MAX a turn */
     public boolean skip() {
-        if (!canSkip() || clock.now() < guardUntil) return false;
+        if (!canSkip() || covered || clock.now() < guardUntil) return false;
         skips++; next(); return true;
     }
     private void next() {
-        word = deck.draw(); visible = true; hideAt = clock.now() + WORD_MS; guardUntil = clock.now() + GUARD_MS;
+        word = deck.draw(); guardUntil = clock.now() + GUARD_MS;
+        if (coverNext) { visible = false; covered = true; } else { visible = true; hideAt = clock.now() + WORD_MS; }
     }
     /** the actor forgot: the word again for PEEK_MS (free) */
-    public void peek() { if (phase == Phase.PLAY && started && !visible && !paused()) { visible = true; hideAt = clock.now() + PEEK_MS; } }
+    public void peek() { if (covered()) { uncover(); return; } if (phase == Phase.PLAY && started && !visible && !paused()) { visible = true; hideAt = clock.now() + PEEK_MS; } }
     public boolean canFoul() { return fouls && phase == Phase.PLAY && started && !paused(); }
     /** «مخالفة» («وصّف» only, the setting on): the describer said a part of the word: -1, never below 0 */
     public boolean foul() {
@@ -94,7 +106,7 @@ public final class CharadesGame {
     }
 
     // ---- TURN_END → the next turn, sudden death or END
-    private void endTurn() { timeUp = true; visible = false; phase = Phase.TURN_END; }
+    private void endTurn() { timeUp = true; visible = covered = false; held = -1; phase = Phase.TURN_END; }
     /** OK on the turn's result */
     public void nextTurn() {
         if (phase != Phase.TURN_END) return;
@@ -111,7 +123,7 @@ public final class CharadesGame {
         sudden++; tiedAt = 0; team = tied.get(0); begin();
     }
     /** «إنهاء الجولة» from the pause card: this turn ends now with what it has */
-    public void dropTurn() { if (phase == Phase.PASS || phase == Phase.PLAY) { leftAtPause = -1; word = null; timeUp = false; visible = false; phase = Phase.TURN_END; } }
+    public void dropTurn() { if (phase == Phase.PASS || phase == Phase.PLAY) { leftAtPause = -1; word = null; timeUp = false; visible = covered = false; held = -1; phase = Phase.TURN_END; } }
     /** the teams in sudden death now (empty outside it) */
     public List<Integer> suddenTeams() { return sudden > 0 ? new ArrayList<>(tied) : new ArrayList<Integer>(); }
     private List<Integer> leaders() {
@@ -136,7 +148,7 @@ public final class CharadesGame {
         if (paused()) return;
         if (phase == Phase.PLAY && !started) { visible = false; phase = Phase.PASS; }
         visible = false;
-        leftAtPause = phase == Phase.PLAY ? Math.max(0, deadline - clock.now()) : 0;
+        leftAtPause = phase == Phase.PLAY ? (held >= 0 ? held : Math.max(0, deadline - clock.now())) : 0; held = -1;
     }
     public void resume() {
         if (!paused()) return;
@@ -146,8 +158,8 @@ public final class CharadesGame {
     /** call a few times a second: hides a word whose time is over, ends the turn at 0. True when something changed. */
     public boolean tick() {
         if (phase != Phase.PLAY || paused()) return false;
-        if (started && clock.now() >= deadline) { endTurn(); return true; }
-        if (visible && started && clock.now() >= hideAt) { visible = false; return true; }
+        if (started && held < 0 && clock.now() >= deadline) { endTurn(); return true; }
+        if (visible && started && clock.now() >= hideAt) { close(); return true; }
         return false;
     }
 }

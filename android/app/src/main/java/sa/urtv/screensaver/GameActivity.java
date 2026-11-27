@@ -157,6 +157,11 @@ public abstract class GameActivity extends Activity {
             }
             return true;
         }
+        int colour = k == KeyEvent.KEYCODE_PROG_RED ? 1 : k == KeyEvent.KEYCODE_PROG_GREEN ? 2 : k == KeyEvent.KEYCODE_PROG_YELLOW ? 3 : k == KeyEvent.KEYCODE_PROG_BLUE ? 4 : 0;
+        if (colour != 0 && !howtoOpen && namesMode == 0 && !pauseCard && hand == 0) {   // the remote's colour keys: a game may use them as shortcuts (1 red, 2 green, 3 yellow, 4 blue)
+            if (e.getAction() == KeyEvent.ACTION_DOWN) { if (onColourKey(colour)) { colourUsed = colour; return true; } }
+            else if (colourUsed == colour) { colourUsed = 0; return true; }
+        }
         boolean back = k == KeyEvent.KEYCODE_BACK || k == KeyEvent.KEYCODE_ESCAPE;
         boolean ok = k == KeyEvent.KEYCODE_DPAD_CENTER || k == KeyEvent.KEYCODE_ENTER || k == KeyEvent.KEYCODE_NUMPAD_ENTER || k == KeyEvent.KEYCODE_BUTTON_A;
         int dx = k == KeyEvent.KEYCODE_DPAD_LEFT ? -1 : k == KeyEvent.KEYCODE_DPAD_RIGHT ? 1 : 0;
@@ -545,7 +550,7 @@ public abstract class GameActivity extends Activity {
     /** the ready screen: up to seven rows of chips (tighter from the seventh) and the big start button, which has the focus when the screen opens (OK starts with last time's choices) */
     protected final void setup(GameChips c, String startLabel) {
         c.hasHelp = howtoContent() != null;
-        titleInset = c.hasHelp ? 80 : 0;   // the small line makes room for the «!» at the end corner
+        titleInset = (c.hasHelp ? 80 : 0) + 168;   // the small line makes room for the «!» at the end corner
         title(gameName(), S.t("جهّز اللعبة"));
         titleInset = 0;
         if (c.hasHelp) {   // the «!»: a small mark at the top end corner, quiet like a hint key; with the focus the same size in a saffron ring
@@ -553,9 +558,17 @@ public abstract class GameActivity extends Activity {
             TextView mark = centered("!", 34, L.ink, true); mark.setBackground(shape(L.tile, L.ink, 4, false));
             root.addView(mark, atEnd(48, 48, 96, 70));
         }
-        int n = c.rows.size(); boolean tight = n > 6;
-        float y = tight ? 224 : 232, rowH = tight ? 76 : 88, gap = 14, step = rowH + gap;
-        int fit = Math.max(1, (int) ((840 - y) / step));   // the rows that stand above the start button (it begins at 856): nothing hides behind it
+        {   // how this game is played, in a word at the end corner (left of the «!»): «جوال» when it needs phones (or the phones switch is on), else «ريموت»
+            GameChips.Row ph = c.get("phones");
+            boolean phones = GameRegistry.needsPhones(id()) || (ph != null && ph.picked == 1);
+            TextView tag = centered(phones ? S.t("جوال") : S.t("ريموت"), 30, phones ? L.onSaff : L.ink, true); tag.setSingleLine(true);
+            tag.setBackground(shape(phones ? L.saff : L.tile, phones ? L.saff : L.ink, 3, false));
+            root.addView(tag, atEnd(144, 48, c.hasHelp ? 168 : 96, 70));
+        }
+        int n = c.rows.size();
+        float y = n > 6 ? 224 : 232, gap = 12;
+        float rowH = Math.min(88, Math.max(56, (840 - y) / Math.max(1, n) - gap)), step = rowH + gap;   // every row fits above the start button (down to 56 px), so «اللعب بالجوالات» and «الصوت» are never under the fold
+        int fit = Math.max(1, (int) ((840 - y) / step + 0.02f));   // the rows that stand above the start button (it begins at 856): nothing hides behind it
         int ws = c.scroll;
         if (c.row < n) { if (c.row < ws) ws = c.row; if (c.row >= ws + fit) ws = c.row - fit + 1; }
         ws = Math.max(0, Math.min(ws, Math.max(0, n - fit))); c.scroll = ws;
@@ -572,9 +585,9 @@ public abstract class GameActivity extends Activity {
     private float chipRow(GameChips c, int r, float y, float hgt, float gap) {
         GameChips.Row row = c.rows.get(r);
         float cx = 420, avail = 1728 - (cx - 96);
-        root.addView(text(row.label, hgt >= 88 ? 44 : 40, L.ink, true), at(300, hgt, 96, y + 8));
+        root.addView(text(row.label, Math.min(44, hgt * 0.55f), L.ink, true), at(300, hgt, 96, y + 8));
         android.graphics.Paint paint = new android.graphics.Paint(); paint.setTypeface(display());
-        float f = hgt >= 88 ? 40 : 36; float[] w = new float[row.opts.length]; float total;
+        float f = Math.max(30, Math.min(40, hgt * 0.5f)); float[] w = new float[row.opts.length]; float total;
         do {
             paint.setTextSize(f * scale); total = 14 * (row.opts.length - 1);
             for (int i = 0; i < row.opts.length; i++) { w[i] = Math.max(112, paint.measureText(row.opts[i]) / scale + 56); total += w[i]; }
@@ -601,7 +614,6 @@ public abstract class GameActivity extends Activity {
         if (c.help) { openHowTo(); return false; }   // OK on the «!»
         if (c.onButton()) {
             if (c.btn == 1) { openNames(); return false; }
-            if (namesKind() != null && !GamePrefs.namesAsked(this, namesKind())) { openNames(); return false; }   // the first time on this TV the names are asked for before the game starts; after that they are kept
             return true;
         }
         if (!c.pick()) { toast(S.t("قريبًا")); return false; }
@@ -611,6 +623,9 @@ public abstract class GameActivity extends Activity {
         redraw();
         return false;
     }
+    private int colourUsed;
+    /** a colour key of the remote (1 red, 2 green, 3 yellow, 4 blue) on a game's own screen: true when the game used it */
+    protected boolean onColourKey(int colour) { return false; }
     /** a chip was picked: switch off what can no longer be offered (GameChips.setOff) */
     protected void onChips(GameChips c) { }
 
@@ -714,7 +729,7 @@ public abstract class GameActivity extends Activity {
     /** the lobby: the QR and the address at the start side, the phones that came in at the end, the start button (needs `min` phones) */
     protected final void drawPhoneLobby(int min, int max) {
         phoneSeen = phones.room.version();
-        title(S.t("اللعب بالجوالات"), S.t("امسح الرمز بكاميرا الجوال. ما فتح؟ اكتب العنوان في متصفح الجوال"));
+        title(S.t("اللعب بالجوالات"), S.t("امسح الرمز بكاميرا الجوال"));   // one short line: the longer one was cut after «اكتب»
         FrameLayout qrBox = stamp(0xFFFFFFFF, L.ink, 6, false);
         FrameLayout.LayoutParams qp = new FrameLayout.LayoutParams(-1, -1); qp.setMargins(px(14), px(14), px(14), px(14));
         qrBox.addView(new QuizActivity.QrView(this, QrCode.encode(phones.url + (en ? "?l=en" : ""))), qp);
@@ -722,8 +737,19 @@ public abstract class GameActivity extends Activity {
         FrameLayout codeBox = stamp(L.saff, L.ink, 6, false);
         codeBox.addView(centered(DigitsText.convert(phones.code, latin), 120, L.onSaff, true), new FrameLayout.LayoutParams(-1, -1));
         root.addView(codeBox, at(360, 150, 96, 630));
-        TextView addr = text("\u2066" + phones.url.replace("http://", "") + "\u2069", 36, L.ink, true); addr.setTextDirection(View.TEXT_DIRECTION_LTR); addr.setSingleLine(true);
-        root.addView(addr, at(560, 56, 96, 800));
+        // the middle column: what to type, the address BIG, and the code in Latin digits too (the Arabic zero is drawn as a dot, easy to misread)
+        TextView how = text(S.t("ما فتح؟ اكتب هذا العنوان في متصفح الجوال"), 38, L.ink, false); how.setMaxLines(3);
+        root.addView(how, at(552, 130, 504, 250));
+        String url = phones.url.replace("http://", "");
+        float us = 56; while (us > 30 && measure(url, us) > 552 - 40) us -= 2;
+        FrameLayout addrBox = stamp(L.tile, L.ink, 6, false);
+        TextView addr = centered("\u2066" + url + "\u2069", us, L.ink, true); addr.setTextDirection(View.TEXT_DIRECTION_LTR); addr.setSingleLine(true);
+        addrBox.addView(addr, new FrameLayout.LayoutParams(-1, -1));
+        root.addView(addrBox, at(552, 130, 504, 400));
+        FrameLayout latinBox = stamp(L.tile, L.ink, 6, false);
+        TextView lc = centered("\u2066" + phones.code + "\u2069", 120, L.ink, true); lc.setTextDirection(View.TEXT_DIRECTION_LTR);
+        latinBox.addView(lc, new FrameLayout.LayoutParams(-1, -1));
+        root.addView(latinBox, at(552, 150, 504, 630));
         java.util.List<String> names = phones.room.names();
         for (int i = 0; i < names.size(); i++) {
             FrameLayout st = stamp(L.tile, L.ink, 6, false);
