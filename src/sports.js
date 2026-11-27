@@ -377,7 +377,7 @@ const HW = {nowS:'الحالي', tableOf:'جدول الترتيب النهائي
   goalsFew:'%s أهداف', goalsMany:'%s هدفًا', fromArchive:'من أرشيفنا', older:'قبل ذلك', srcChamps:'المصدر: نتائج المباريات وويكي بيانات',
   srcChampsWp:'المصدر: نتائج المباريات وويكي بيانات وويكيبيديا (CC BY-SA 4.0)', srcScorers:'المصدر: ويكيبيديا وويكي بيانات (CC BY-SA 4.0)',
   noScorers:'لا نعرف هدّاف هذا الموسم بعد', noChamps:'لا نعرف أبطال هذا الدوري بعد', honours:'البطولات', lastTitle:'آخرها %s',
-  title1:'لقب واحد', title2:'لقبان', titleFew:'%s ألقاب', titleMany:'%s لقبًا', titlesLast:'%s، آخرها %s',};
+  lgScorer:'هدّاف %s', title1:'لقب واحد', title2:'لقبان', titleFew:'%s ألقاب', titleMany:'%s لقبًا', titlesLast:'%s، آخرها %s',};
 const HON_BASE = DATA_OLD + 'data-honours/';   // the weekly job's branch (.github/workflows/honours.yml); a move to urtv-data adds it to DATA_MAP and the apps' DataHost together
 const honWant = (kind, id) => archWant(HON_BASE + kind + '/' + id + '.json');
 const honSeasonName = x => ar(String(x));
@@ -456,6 +456,14 @@ function honClub(id, j){
     const n = file && file.complete && file.titles && +file.titles[id];
     rows.push(mpItem(lgName(lg), n > 0 ? fw(HW.titlesLast, honTitles(n), honSeasonName(won[0].s)) : fw(HW.lastTitle, honSeasonName(won[0].s)),
       () => { mpGo({k: 'league', id: lg, tab: 3}); MP.d = Math.max(0, (MP.tabs || []).findIndex(x => x.on)); }));
+  });
+  // 4.4 «هدّاف الدوري»: the newest season whose lone top scorer the scorers file gives this club («team»: from the season article's link after
+  // the player, matched to one club of that season's table in the archive); nothing when the file does not say
+  [...lgs].filter(x => /^\d+$/.test(x)).forEach(lg => {
+    const sc = honWant('scorers', lg), x = honScorerSeasons(sc, null).find(k => { const t = honTop(sc, k); return t.length === 1 && String(t[0].team || '') === id; });
+    if(!x) return;
+    const t = honTop(sc, x)[0];
+    rows.push(mpItem(fw(HW.lgScorer, lgName(lg)), honSeasonName(x) + ': ' + plNm(t) + '، ' + honGoals(+t.goals), () => { mpGo({k: 'league', id: lg, tab: 4}); }));
   });
   return rows.length ? [{key: 'hon', name: HW.honours, games: rows}] : [];
 }
