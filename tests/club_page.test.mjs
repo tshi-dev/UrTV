@@ -69,13 +69,25 @@ const ALL = { 'teams/136001.json': TEAM, 'sports/4668.json': SPORTS, 'h:champion
   check('OK on a row of the window: the full table', go === 'league:4668', go);
   await p.evaluate(() => mpBack());
   const t = await p.evaluate(() => document.getElementById('mp-list').innerText);
-  check('the overview also has the coming games and «البطولات»; no scorer line (the scorers file names no club)', t.includes('المباريات القادمة') && t.includes('البطولات') && !t.includes('هدّاف'), t.slice(0, 300));
+  check('the overview also has the coming games and «البطولات»; no scorer line (no scorers file here)', t.includes('المباريات القادمة') && t.includes('البطولات') && !t.includes('هدّاف'), t.slice(0, 300));
   await p.evaluate(() => { MP.view.tab = 2; mpRender(); });
   check('«النتائج»: its last results (all ten kept, six here)', await p.evaluate(() => MP.rows.length === 6));
   await p.evaluate(() => { MP.view.tab = 1; mpRender(); });
   check('«المباريات»: its coming games by round', await p.evaluate(() => MP.rows.length === 1 && /الجولة ١١/.test(document.getElementById('mp-list').innerText)));
   check('no script error', !errors.length, errors.join('|'));
   await ctx.close();
+}
+{   // 4.4 «هدّاف الدوري»: only when the scorers file gives this club's id («team», from the season article, matched to the archive's table)
+  const SC = { v: 1, id: '4668', lic: 'CC BY-SA 4.0', seasons: { '2025-2026': { top: [{ en: 'Cristiano Ronaldo', ar: 'كريستيانو رونالدو', goals: 35, team: ID(1) }], src: [] },
+    '2024-2025': { top: [{ en: 'Aleksandar Mitrović', ar: 'ألكسندر ميتروفيتش', goals: 28, team: ID(0) }], src: [] } } };
+  const { p, ctx, errors } = await open(Object.assign({ 'h:scorers/4668.json': SC }, ALL));
+  const t = await p.evaluate(() => document.getElementById('mp-list').innerText.replace(/\s+/g, ' '));
+  check('«هدّاف الدوري»: its own player\'s season only (not another club\'s scorer), with the goals', t.includes('هدّاف دوري روشن ٢٠٢٥-٢٠٢٦: كريستيانو رونالدو، ٣٥ هدفًا')
+    && !t.includes('ميتروفيتش'), t.slice(t.indexOf('البطولات'), t.indexOf('البطولات') + 200) + errors.join('|'));
+  await ctx.close();
+  const o2 = await open(Object.assign({ 'h:scorers/4668.json': { v: 1, id: '4668', seasons: { '2025-2026': { top: [{ en: 'Cristiano Ronaldo', ar: 'كريستيانو رونالدو', goals: 35 }], src: [] } } } }, ALL));
+  check('…a scorer with no club in the file: no line (never guessed from the name)', !(await o2.p.evaluate(() => document.getElementById('mp-list').innerText.includes('هدّاف'))));
+  await o2.ctx.close();
 }
 {   // nothing invented: no table file, no honours: no place, no title, no window; the tiles and the games stay
   const { p, ctx, errors } = await open({ 'teams/136001.json': TEAM });

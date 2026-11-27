@@ -132,6 +132,22 @@ sb2, _ = h.scorers("4668", one, ARCH, LAB, {"en": {"2025–26 Saudi Pro League":
                                                    "2026–27 Saudi Pro League": EN.replace("35 goals", "9 goals")}, "ar": {}}, {})
 check("one source with a plain field: published (the Latin name when no Arabic is known)", sb2["seasons"].get("2025-2026", {}).get("top") == [{"en": "Julián Quiñones", "ar": "", "goals": 33}], sb2)
 check("the season under way has no top scorer yet (an infobox's «so far» would be a week old)", "2026-2027" not in sb2["seasons"], list(sb2["seasons"]))
+# 4.4 a top scorer's club («team»), for the club page's «هدّاف الدوري»: only from the English article's link after the player, and only when it
+# is exactly one club of that season's table in our archive; anything less: no team (never guessed)
+check("scorer_club: the link in the brackets after the player", h.scorer_club(ucl.split("=", 1)[1]) == [("Manchester City F.C.", "Manchester City")]
+      and h.scorer_club("[[Cristiano Ronaldo]]<br>(35 goals)") == [])
+ENC = EN.replace("[[Cristiano Ronaldo]]<br>(35 goals)", "[[Cristiano Ronaldo]] ([[Al Nassr FC|Al-Nassr]])<br>35 goals")
+POOL = {"136013": ("Al-Hilal", "الهلال"), "136014": ("Al-Nassr", "النصر"), "136015": ("Al-Ittihad", "الاتحاد")}
+sc3, _ = h.scorers("4668", [SI[0]], ARCH, LAB, {"en": {"2023–24 Saudi Pro League": ENC}, "ar": {}}, {}, POOL, {"2023-2024": set(POOL)})
+check("scorers: the club after the player, one club of that season's table: its id as «team»", sc3["seasons"]["2023-2024"]["top"][0].get("team") == "136014", sc3["seasons"])
+sc4, _ = h.scorers("4668", [SI[0]], ARCH, LAB, {"en": {"2023–24 Saudi Pro League": ENC}, "ar": {}}, {}, POOL, {"2023-2024": {"136013", "136015"}})
+sc5, _ = h.scorers("4668", [SI[0]], ARCH, LAB, {"en": {"2023–24 Saudi Pro League": EN}, "ar": {}}, {}, POOL, {"2023-2024": set(POOL)})
+sc6, _ = h.scorers("4668", [SI[0]], ARCH, LAB, {"en": {"2023–24 Saudi Pro League": ENC}, "ar": {}}, {}, POOL, {})
+check("scorers: no team when the club is not in that season's table, when the article names no club, or when the archive has no table of the season",
+      all("team" not in x["seasons"]["2023-2024"]["top"][0] for x in (sc4, sc5, sc6)), [x["seasons"]["2023-2024"]["top"] for x in (sc4, sc5, sc6)])
+shr = EN.replace("[[Cristiano Ronaldo]]<br>(35 goals)", "[[A B]] ([[Al Nassr FC|Al-Nassr]])<br>[[C D]] ([[Al Hilal SFC|Al-Hilal]])<br>35 goals each")
+sc7, _ = h.scorers("4668", [SI[0]], ARCH, LAB, {"en": {"2023–24 Saudi Pro League": shr}, "ar": {}}, {}, POOL, {"2023-2024": set(POOL)})
+check("scorers: a shared top scorer gets no team (which club is whose is not said surely)", all("team" not in t for t in (sc7["seasons"].get("2023-2024") or {"top": []})["top"]), sc7["seasons"])
 
 # ---- a run: Wikidata does not answer -> nothing written; it answers -> the files, the licence, a league with nothing keeps its last file
 tmp = Path(tempfile.mkdtemp())
