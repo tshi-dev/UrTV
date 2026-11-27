@@ -90,6 +90,6 @@ public class PrayerSoundActivity extends RowScreen {
         int[] st = new int[PrayerScreen.IDS.length];
         String[] names = new String[st.length];
         for (int i = 0; i < st.length; i++) { st[i] = prefs.prayerState(PrayerScreen.IDS[i]); names[i] = S.tv(PrayerTimes.NAMES[PrayerScreen.IDS[i]]); }
-        return PrayerScreen.summary(st, names);
+        return PrayerScreen.summary(st, names, n -> sa.urtv.home.DigitsText.convert(String.valueOf(n), sa.urtv.home.Digits.latin()));
     }
 }
