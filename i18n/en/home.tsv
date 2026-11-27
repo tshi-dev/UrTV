@@ -965,7 +965,15 @@ mp3 أو m4a أو ogg أو wav	mp3, m4a, ogg or wav
 الأذان لكل صلاة	Adhan for each prayer
 لكل صلاة: صوتها وظهورها على الشاشة (الشريط والتنبيه)، كلٌّ على حدة	For each prayer: its sound and whether it shows on the screen (the bar and the notice), apart
 الحالي	Current
-أضف من فلاشة أو التنزيلات	Add from a USB stick or Downloads
+أضف من فلاشة أو التنزيلات	Add from USB or Downloads
 التنزيلات	Downloads
 ما وجدنا فلاشة ولا ملفات في التنزيلات: ركّب الفلاشة وانتظر ثواني	No USB stick and nothing in Downloads: plug the stick in and wait a few seconds
 أذاني من ملف	My adhan from a file
+لا صور هنا (jpg أو png أو webp). ركّب الفلاشة وانتظر ثواني ثم ارجع وافتحها	No photos here (jpg, png or webp). Plug the stick in, wait a few seconds, then open this again
+اضغط OK على صورة لإضافتها إلى صوري	Press OK on a photo to add it to My photos
+بدون إذن قراءة الصور ما نقدر نشوف الفلاشة. تقدر تضيف من الجوال	Without permission to read photos we cannot see the stick. You can add from the phone
+يضيف «%s»…	Adding “%s”…
+ثبّت أو حدّث تطبيق «شاشة تلفزيونك» أولاً	Install or update the “Your TV screen” app first
+أضيفت إلى صوري ✓	Added to My photos ✓
+صوري ممتلئة: احذف بعضها أولاً	My photos is full: delete some first
+ما قدرنا نضيف هذه الصورة	We could not add this photo

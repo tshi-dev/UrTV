@@ -297,6 +297,12 @@
             android:screenOrientation="landscape"
             android:theme="@android:style/Theme.Material.NoActionBar" />
         <activity
+            android:name=".PhotoAddActivity"
+            android:exported="false"
+            android:label="أضف من فلاشة أو التنزيلات"
+            android:screenOrientation="landscape"
+            android:theme="@android:style/Theme.Material.NoActionBar" />
+        <activity
             android:name=".IconEditorActivity"
             android:exported="false"
             android:label="تغيير الأيقونة"
