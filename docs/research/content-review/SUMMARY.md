@@ -43,6 +43,17 @@ proposal for the owner (the public banks are built from `work/games-data`, so a 
 - The pack reviewers checked most facts from knowledge and opened the cited article only where in doubt (about 25 per pack); every «not verified» row in the private reports says so.
 - `qbank/reviewed*/` working files and packs q09–q17 of urtv-games-content were outside the asked scope (q01–q08 + qbank's compiled `bank-extra.json`).
 
+## ما نُفّذ بعد موافقة المالك (2026-11-27)
+
+1. قاعدة الحديث: يبقى كل حديث صحّحه أو حسّنه عالم معتبر (الألباني، شعيب الأرنؤوط، أحمد شاكر، بشار عواد، أو الترمذي نفسه)
+   وتظهر درجته واسم من حكم بها؛ ٤٤٩ و٥٨٩ باقيان. ٥١٤ حديثًا على الشاشة (كانت ٥٠١). commit b87fd1e8.
+2. حديث ١١٧ يظهر «النِّسَاءُ شَقَائِقُ الرِّجَالِ» وحده، وحديث ٤٧٨ «فَزُورُوا الْقُبُورَ فَإِنَّهَا تُذَكِّرُ الْمَوْتَ» وحده، بمصدرهما. b87fd1e8.
+3. لا فلسطين ولا إسرائيل في أي لعبة أو مسابقة: لم تكن في البنوك العامة؛ حُذفت من «خمّن» (guess.gb) ومن ٢٤ بندًا خاصًا؛
+   واختبار يمنع عودتها بأي كتابة: tests/no_banned_names_test.py هنا، games/check.py وcheck_words.py على work/games-data،
+   وtests/no_banned_names_test.py في المستودع الخاص. 804fdd5b، 010553a3.
+4. تصحيحات المسابقة والألعاب كما في الجداول أدناه، في games/tools/owner_fixes.py على work/games-data (تُطبَّق بعد كل
+   إعادة بناء، وcheck_words.py يفشل إن غاب أحدها)، ثم الملفات المضمّنة هنا. 010553a3، 804fdd5b.
+
 ## قائمة قرارات المالك (البنوك العامة)
 
 كل تغيير لإجابة، وكل حذف، وكل بند مشكوك فيه، بمعرّفه، مع المقترح. ما نُفّذ فعلًا في هذا الفرع: أرقام صحيح مسلم الستة فقط
