@@ -1831,8 +1831,8 @@ for (const [width, height] of [[461, 250], [1920, 1080], [960, 540]]) {   // lon
     const r = await p.evaluate(() => { const n = document.getElementById('citynote'), b = n.getBoundingClientRect(), w = document.querySelector('.week').getBoundingClientRect();
       return { text: n.textContent, size: parseFloat(getComputedStyle(n).fontSize), shown: !n.hidden && b.height > 0, lines: Math.round(b.height / parseFloat(getComputedStyle(n).lineHeight || 20)), inside: b.left >= 0 && b.right <= innerWidth && b.bottom <= innerHeight,
         clear: b.right <= w.left + 1 || b.left >= w.right - 1 || b.bottom <= w.top || b.top >= w.bottom }; });
-    check(`first-run note at ${width}x${height}, clock ${clock}: «المدينة: الرياض. لتغييرها: الإعدادات ثم الموقع» in one line under the city, 14–22 px, clear of the card, no script errors`,
-      !errors.length && r.text === 'المدينة: الرياض. لتغييرها: الإعدادات ثم الموقع' && r.size >= 14 && r.size <= 22 && (width < 1920 || r.size >= 20) && r.shown && r.inside && r.clear, JSON.stringify(r) + errors.join('; '));
+    check(`first-run note at ${width}x${height}, clock ${clock}: «المدينة: الرياض. لتغييرها: الإعدادات ثم اللغة والموقع» in one line under the city, 14–22 px, clear of the card, no script errors`,
+      !errors.length && r.text === 'المدينة: الرياض. لتغييرها: الإعدادات ثم اللغة والموقع' && r.size >= 14 && r.size <= 22 && (width < 1920 || r.size >= 20) && r.shown && r.inside && r.clear, JSON.stringify(r) + errors.join('; '));
     await ctx.close();
   }
   {   // never on the launcher's cards, and it goes after ten minutes

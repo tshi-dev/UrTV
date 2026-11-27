@@ -5847,7 +5847,7 @@ function boot(){
   if(cs) cs.textContent = clockSubText();
   const cn = document.getElementById('citynote');
   if(cn && CONFIG.cityNote){   // Location.note in the app says the same in the settings' top row
-    cn.textContent = 'المدينة: ' + CONFIG.city + '. لتغييرها: الإعدادات ثم الموقع';   // words, not arrows (not in Thmanyah)
+    cn.textContent = 'المدينة: ' + CONFIG.city + '. لتغييرها: الإعدادات ثم اللغة والموقع';   // words, not arrows (not in Thmanyah)
     cn.hidden = false;
     setTimeout(() => { cn.hidden = true; }, 10*60*1000);
   }

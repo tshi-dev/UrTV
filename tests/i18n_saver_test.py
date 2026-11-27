@@ -140,7 +140,7 @@ CASES = [  # what the screen builds, and its English (the digits are turned afte
     ("العشاء −٢٠ د", "Isha −٢٠ min"),
     ("تعذر التحديث (404)", "Update failed (404)"),
     ("الإصدار الحالي: ٤٫٣", "Current version: ٤٫٣"),
-    ("المدينة: الرياض. لتغييرها: الإعدادات ثم الموقع", "City: Riyadh. To change it: Settings, then Location"),
+    ("المدينة: الرياض. لتغييرها: الإعدادات ثم اللغة والموقع", "City: Riyadh. To change it: Settings, then Language and location"),
     ("منطقة الرياض  (32)", "Riyadh Region (32)"),
     ("5 دقائق", "5 min"),
     ("١٥ دقيقة", "15 min"),   # an entry of its own (the phone page's option) wins over «%s دقيقة»

@@ -324,6 +324,9 @@ public class SettingsActivity extends Activity {
         if (fitNote != null) notice(fitNote);
         List<View> before = rows();
         View had = entering ? null : focusedRow();
+        // 4.4 beta 4: a render while the focus is on the side list (the home's answer about the adhan arriving just after the settings open on
+        // «الصلاة والأذان») keeps it there; only the person's key takes it into the rows (the emulator's shot: it jumped to the first row)
+        if (!classic && !entering && had == null) { View f = getCurrentFocus(); if (f != null && sideItems.containsValue(f)) sideFocus = true; }
         if (screen == null && !classic) screen = SettingsHub.PRAY;
         final boolean tiles = classic && SettingsHub.hasTiles(screen);   // 4.3.2: the first screen, «البطاقات», «المزيد» are buttons, not rows
         if (returnWant != null && System.currentTimeMillis() > returnUntil) returnWant = null;
