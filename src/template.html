@@ -3826,7 +3826,16 @@ function forecastRows(){
 // The launcher's page is a file:// document and the badge host may send no Access-Control-Allow-Origin
 // the answer is no picture). The club keeps its address alone and the row shows a plain <img> of it, which needs no CORS.
 const CRESTS_ON = USES('matches');
-const CREST_PX = 48, CREST_KEEP = 60, CREST_PER_ROUND = 10;
+const CREST_PX = 48, CREST_KEEP = 60, CREST_PER_ROUND = 10, CREST_MAX = 400;
+// 4.4 beta 4 (users on X, 27 Nov: the club logos disappear and come back): the kept crests were cut to the 60 newest, so with more clubs on the page than that
+// (the whole leagues: up to 24) each round of fetches threw out crests still on the page, which were fetched again next round: forever. Now the cut leaves
+// the clubs in view alone (up to CREST_MAX), the oldest others first.
+function crestTrim(map, inView){
+  const keys = Object.keys(map), keep = Math.min(CREST_MAX, Math.max(CREST_KEEP, inView.size + CREST_PER_ROUND));
+  let over = keys.length - keep;
+  for(const k of keys){ if(over <= 0) break; if(!inView.has(k)){ delete map[k]; over--; } }
+  for(const k of Object.keys(map)){ if(over <= 0) break; delete map[k]; over--; }   // still too many: the oldest, whatever is in view
+}
 let CRESTS = {};   // team id -> {u: badge address, d: data: URI of the small copy, none when only the address could be kept}
 try{ CRESTS = JSON.parse(localStorage.getItem('crests') || '{}') || {}; }catch(e){}
 function crestOf(ev, side){
@@ -3845,7 +3854,7 @@ function fillCrests(root){   // the rows carry the club's id only; the picture i
     const c = CRESTS[i.dataset.t], src = c && (c.d || c.u);
     if(!src) return;
     if(!c.d) i.onerror = () => i.remove();   // an address that shows nothing (gone, or no picture): the name alone
-    if(i.getAttribute('src') !== src) i.src = src;
+    if(i.getAttribute('src') !== src){ i.decoding = 'sync'; i.src = src; }   // 4.4 beta 4: a kept copy is drawn in the same frame, never a blank one
   });
 }
 function crestShrink(blob){   // -> a data: URI no larger than CREST_PX, '' when it is not a picture
@@ -3891,7 +3900,9 @@ async function loadCrests(){
       delete CRESTS[id]; CRESTS[id] = d ? {u, d} : {u}; got++;   // no copy: the address alone, asked for once
     }
     if(!got) return;
-    Object.keys(CRESTS).slice(0, Math.max(0, Object.keys(CRESTS).length - CREST_KEEP)).forEach(k => delete CRESTS[k]);
+    const inView = new Set();
+    for(const ev of matchEvents()) for(const side of ['Home', 'Away']){ const c = crestOf(ev, side); if(c) inView.add(c.id); }
+    crestTrim(CRESTS, inView);
     try{ localStorage.setItem('crests', JSON.stringify(CRESTS)); }catch(e){}
     renderPanel(false, 'matches');
   }finally{ CREST_BUSY = false; }

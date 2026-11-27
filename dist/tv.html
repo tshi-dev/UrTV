@@ -3443,7 +3443,13 @@ function forecastRows(){
 }
 
 const CRESTS_ON = USES('matches');
-const CREST_PX = 48, CREST_KEEP = 60, CREST_PER_ROUND = 10;
+const CREST_PX = 48, CREST_KEEP = 60, CREST_PER_ROUND = 10, CREST_MAX = 400;
+function crestTrim(map, inView){
+  const keys = Object.keys(map), keep = Math.min(CREST_MAX, Math.max(CREST_KEEP, inView.size + CREST_PER_ROUND));
+  let over = keys.length - keep;
+  for(const k of keys){ if(over <= 0) break; if(!inView.has(k)){ delete map[k]; over--; } }
+  for(const k of Object.keys(map)){ if(over <= 0) break; delete map[k]; over--; }
+}
 let CRESTS = {};
 try{ CRESTS = JSON.parse(localStorage.getItem('crests') || '{}') || {}; }catch(e){}
 function crestOf(ev, side){
@@ -3462,7 +3468,7 @@ function fillCrests(root){
     const c = CRESTS[i.dataset.t], src = c && (c.d || c.u);
     if(!src) return;
     if(!c.d) i.onerror = () => i.remove();
-    if(i.getAttribute('src') !== src) i.src = src;
+    if(i.getAttribute('src') !== src){ i.decoding = 'sync'; i.src = src; }
   });
 }
 function crestShrink(blob){
@@ -3508,7 +3514,9 @@ async function loadCrests(){
       delete CRESTS[id]; CRESTS[id] = d ? {u, d} : {u}; got++;
     }
     if(!got) return;
-    Object.keys(CRESTS).slice(0, Math.max(0, Object.keys(CRESTS).length - CREST_KEEP)).forEach(k => delete CRESTS[k]);
+    const inView = new Set();
+    for(const ev of matchEvents()) for(const side of ['Home', 'Away']){ const c = crestOf(ev, side); if(c) inView.add(c.id); }
+    crestTrim(CRESTS, inView);
     try{ localStorage.setItem('crests', JSON.stringify(CRESTS)); }catch(e){}
     renderPanel(false, 'matches');
   }finally{ CREST_BUSY = false; }
