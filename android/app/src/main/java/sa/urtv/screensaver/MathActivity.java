@@ -34,7 +34,7 @@ public class MathActivity extends GameActivity {
     private boolean onPhones() { return phones != null && phones.room.phase() == GamePhoneRoom.Phase.PLAY; }
 
     private void start() {
-        if (remoteOn(chips)) { startActivity(new android.content.Intent(this, CallAloudActivity.class).putExtra("src", "maths")); finish(); return; }   // «اللعب بالريموت بس»: the answers are called aloud (CallAloudActivity)
+        if (remoteOn(chips)) { startActivity(remoteIntent(CallAloudActivity.class, chips).putExtra("src", "maths")); finish(); return; }   // «اللعب بالريموت بس»: the answers are called aloud (CallAloudActivity)
         if (!openPhones()) return;
         screen = Screen.LOBBY; phoneLobby = true; redraw();
     }

@@ -54,6 +54,7 @@ public class CharadesActivity extends GameActivity {
             chips.get("phones").picked = 0;
         }
         onChips(chips);
+        if (behind) new android.os.Handler(android.os.Looper.getMainLooper()).post(this::start);   // the forehead's setup page was the setup: straight to the cover
     }
     /** «مخالفة» belongs to «وصّف» only */
     @Override protected void onChips(GameChips c) { c.setOff("foul", 1, c.picked("mode") == 0); }
@@ -160,7 +161,7 @@ public class CharadesActivity extends GameActivity {
                 root.addView(centered(S.t("ولّ ظهرك للتلفزيون"), 128, L.onDeep, true), at(1728, 170, 96, 150));
                 root.addView(centered(S.t("اللي يخمّن من %s", names[game.team]), 72, L.saff, true), at(1728, 110, 96, 340));
                 root.addView(centered(S.t("الباقين: شوفوا الكلمة ووصّفوها بدون ما تقولونها"), 52, L.onDeep, true), at(1728, 100, 96, 520));
-                root.addView(button(S.t("جاهزين، ابدأوا الوقت"), true), at(672, 112, 624, 720));
+                root.addView(focusCard(S.t("جاهزين، ابدأوا الوقت"), 56, true), at(672, 112, 624, 720));
                 hints(S.t("اختيار"), S.t("يبدأ الوقت"), S.t("رجوع"), S.t("إيقاف"));
                 break;
             case ACTOR:
@@ -177,8 +178,8 @@ public class CharadesActivity extends GameActivity {
                     question(turn, S.t("وصّفوها بدون ما تقولونها"), 340);
                     timer = new TickTimer((int) (game.turnMs() / 1000), 288);
                     root.addView(centered(w, sizeFor(w, 200, 136, 96, 12, 24), L.ink, true), at(1728, 360, 96, 330));
-                    root.addView(centered(S.t("اللي يخمّن: ولّ ظهرك للتلفزيون"), 56, L.ink(0xCC), true), at(1728, 84, 96, 700));
-                    sidesBar(score, names, game.team, 800);
+                    root.addView(centered(S.t("اللي يخمّن: ولّ ظهرك للتلفزيون"), 52, L.ink(0xCC), true), at(1728, 84, 96, 672));
+                    sidesBar(score, names, game.team, 820);
                     if (game.canSkip()) hints(S.t("اختيار"), S.t("صح والكلمة اللي بعدها"), "◀", S.t("تخطّي (باقي %s)", num(CharadesGame.SKIPS_MAX - game.skips)));
                     else hints(S.t("اختيار"), S.t("صح والكلمة اللي بعدها"));
                 } else if (game.wordVisible() && !onPhones()) {

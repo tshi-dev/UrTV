@@ -51,6 +51,8 @@ public class CallAloudActivity extends GameActivity {
         if (src.equals("emoji")) chips.add("kids", S.t("للأطفال"), new String[]{S.tv(ON_OFF[0]), S.tv(ON_OFF[1])}, 0);
         if (src.equals("maths")) chips.add("level", S.t("المستوى"), new String[]{S.t("سهل"), S.t("متوسط"), S.t("صعب")}, 1);
         remembered(soundChip(chips));
+        android.content.Intent in = getIntent();   // the choices of the phone game's setup page go along
+        for (String k : new String[] {"count", "time", "kids", "level"}) { GameChips.Row r = chips.get(k); int v = in == null ? -1 : in.getIntExtra(k, -1); if (r != null && v >= 0 && v < r.opts.length) r.picked = v; }
     }
     @Override protected void onPause() { super.onPause(); keep(); }
     /** what was asked waits in the next games on this TV (the same list as the phone game's); a made-up logic puzzle is not kept, as there */

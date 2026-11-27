@@ -59,6 +59,8 @@ shot list-00 2
 tile 12
 remote_on callaloud
 key DPAD_CENTER; sleep 3
+shot callaloud-setup-prefilled 1
+key DPAD_CENTER; sleep 3
 shot callaloud-a-question 2
 key DPAD_CENTER
 shot callaloud-b-reveal 1

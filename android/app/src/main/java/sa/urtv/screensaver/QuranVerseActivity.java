@@ -41,7 +41,7 @@ public class QuranVerseActivity extends GameActivity {
     private boolean onPhones() { return phones != null && phones.room.phase() == GamePhoneRoom.Phase.PLAY; }
 
     private void start() {
-        if (remoteOn(chips)) { startActivity(new android.content.Intent(this, CallAloudActivity.class).putExtra("src", "quran-verse")); finish(); return; }   // «اللعب بالريموت بس»: the answers are called aloud (CallAloudActivity)
+        if (remoteOn(chips)) { startActivity(remoteIntent(CallAloudActivity.class, chips).putExtra("src", "quran-verse")); finish(); return; }   // «اللعب بالريموت بس»: the answers are called aloud (CallAloudActivity)
         if (bank == null) { toast(S.t("قريبًا")); return; }
         if (!openPhones()) return;
         screen = Screen.LOBBY; phoneLobby = true; redraw();

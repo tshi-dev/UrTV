@@ -42,7 +42,7 @@ check("the setting «اللعب بالريموت بس» is one row (remoteChip) 
       and all("remoteChip(chips);" in src(f) for f in phone_games)
       and sum(1 for f in APP.glob("*Activity.java") if "remoteChip(chips)" in f.read_text(encoding="utf-8")) == 7)
 check("OFF changes nothing: each activity leaves the phone road as it was unless the row is on (a redirect, or a branch on `remoteOn`)",
-      all(f'if (remoteOn(chips)) {{ startActivity(new android.content.Intent(this, CallAloudActivity.class).putExtra("src", "{g}")); finish(); return; }}' in src(f) for f, g in phone_games.items())
+      all(f'if (remoteOn(chips)) {{ startActivity(remoteIntent(CallAloudActivity.class, chips).putExtra("src", "{g}")); finish(); return; }}' in src(f) for f, g in phone_games.items())
       and "if (remoteOn(chips)) {   // «اللعب بالريموت بس»: «على جبيني» is a mode of «بدون كلام»" in fo and "paper = remoteOn(chips);" in cl and "if (remoteOn(chips)) { startRemote(); return; }" in li)
 check("«نادوا الجواب»: one screen for the four games (emoji, logic, verses, sums), in the manifest, its ids apart from the phone games' (so the remembered chips never mix), and its words only from the games' own sources",
       'android:name=".CallAloudActivity"' in manifest and 'return src + "-remote";' in ca and "EmojiGame.parse(GameBundles.load(this, \"emoji\"))" in ca and "LogicItems.bank(GameBundles.load(this, \"logic\"))" in ca

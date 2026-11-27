@@ -247,7 +247,7 @@ public abstract class GameActivity extends Activity {
         root.addView(centered(S.t("سلّموا الريموت لـ %s", handName), 128, L.onDeep, true), at(1728, 180, 96, 220));
         root.addView(centered(S.t("الباقين: غطّوا عيونكم"), 72, L.saff, true), at(1728, 110, 96, 430));
         if (hand == 2) { handCount = centered(num(HAND_COUNT_MS / 1000), 200, L.onDeep, true); root.addView(handCount, at(1728, 260, 96, 600)); }
-        else root.addView(button(S.t("أنا جاهز"), true), at(640, 120, 640, 660));
+        else root.addView(focusCard(S.t("أنا جاهز"), 44, true), at(640, 120, 640, 660));
     }
     private void keyHand(boolean back, boolean ok) {
         if (hand == 3) {
@@ -558,6 +558,12 @@ public abstract class GameActivity extends Activity {
 
     /** «اللعب بالريموت بس» (docs/GAMES-REMOTE.md): a row of the setup of a phone game that has a one-remote way; OFF by default (and kept per game like every chip) */
     protected final GameChips remoteChip(GameChips c) { return c.add("remote", S.t("اللعب بالريموت بس"), new String[]{S.tv(ON_OFF[0]), S.tv(ON_OFF[1])}, 0); }
+    /** the one-remote screen opened from a phone game's setup: the choices already made go along (count, time, for kids, level), so nothing is asked twice */
+    protected final android.content.Intent remoteIntent(Class<?> to, GameChips c) {
+        android.content.Intent in = new android.content.Intent(this, to);
+        for (String k : new String[] {"count", "time", "kids", "level"}) if (c.get(k) != null) in.putExtra(k, c.picked(k));
+        return in;
+    }
     protected final boolean remoteOn(GameChips c) { return c.get("remote") != null && c.picked("remote") == 1; }
     /** the chips every game shares: «الصوت» (one switch for all the remote-only games) */
     protected final GameChips soundChip(GameChips c) { c.add("sound", S.t("الصوت"), new String[]{S.tv(SOUND_OPTS[0]), S.tv(SOUND_OPTS[1])}, 0); c.get("sound").picked = sound ? 0 : 1; return c; }
