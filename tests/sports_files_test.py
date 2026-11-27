@@ -148,7 +148,7 @@ check("phase a: the zones list is checked: overlap, past the club count, an unkn
                                                                {"1": {"s": [{"from": 0, "to": 2, "k": "ucl"}]}})))
 zf = json.loads((ROOT / ".github/tools/league_zones.json").read_text())
 # the reviewed list: each line approved by the owner and sourced (its own commit); a new line changes this test too
-REVIEWED = {("4668", "2026-2027"): [(16, 18, "down")]}
+REVIEWED = {("4668", "2026-2027"): [(16, 18, "down")], ("4328", "2026-2027"): [(18, 20, "down")]}
 check("phase a: league_zones.json passes the same check and holds the owner's approved lines only (beta 5: relegation, the places the rules fix)",
       sf.check_zones(zf) is None and {(lg, s_): [(x["from"], x["to"], x["k"]) for x in zs] for lg, by in zf.items() for s_, zs in by.items()} == REVIEWED, zf)
 check("phase a: every zone in the list carries its source (an https address), and load_zones refuses one without",
