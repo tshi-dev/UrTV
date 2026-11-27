@@ -21,6 +21,22 @@ ORDER = [("صحيح البخاري", "البخاري"), ("صحيح مسلم", "�
 DATA = Path(__file__).resolve().parents[2] / "assets/shared/hadith.json"
 
 
+def standard(f, old):
+    """The number the screen prints. Sahih Muslim's rows in the dataset are numbered by a running index; only the
+    standard (Abd al-Baqi) number may be printed: the check's `standard`, else `arabicnumber` (55.01 -> 55), else the
+    number already in hadith.json for this text in this book (a hand-checked fix), else None. Never the index."""
+    if f["book"] != "صحيح مسلم":
+        return f["number"]
+    if f.get("standard") is not None:
+        return int(f["standard"])
+    if f.get("arabicnumber"):
+        return int(float(f["arabicnumber"]))
+    kept = (old or {}).get("full") or {}
+    if kept.get("book") == f["book"] and kept.get("text") == f["text"] and kept.get("number") != f["number"]:
+        return kept["number"]
+    return None
+
+
 def main():
     report = {r["text"]: r["found"] for r in json.loads(Path(sys.argv[1]).read_text(encoding="utf-8"))}
     narration = {r["text"]: r.get("full") for r in json.loads(Path(sys.argv[1]).read_text(encoding="utf-8"))}
@@ -44,7 +60,10 @@ def main():
         if not f or not albani_accepts(f["book"], f.get("grades")):
             weak.append(h["text"])
             continue
-        number = int(float(f["arabicnumber"])) if f.get("arabicnumber") else f["number"]   # Muslim: 55.01 -> 55
+        number = standard(f, h)
+        if number is None:
+            weak.append(h["text"] + f"  (no standard number for {f['book']} row {f['number']})")
+            continue
         key = (f["book"], number)
         if key in seen:
             print(f"same narration as «{seen[key]}»: {h['text']}")

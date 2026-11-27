@@ -41,6 +41,28 @@ def albani_accepts(book, grades):
     return bool(albani) and all(" ".join(re.sub(r"[^a-z ]", " ", a.lower()).split()) in ALBANI_OK for a in albani)
 
 
+def standard_number(rows, n):
+    """The standard (Abd al-Baqi) number of row n of a book whose rows carry `arabicnumber` (Sahih Muslim: "55.01").
+    Some rows have none; their running index (hadithnumber) is NOT a number anyone can look up. Then: the next row of
+    the same text if it has one; else the numbered rows around it, when they leave one number only (2699.02 | ? | 2701
+    -> 2700); else None (do not guess: 2564.03 | ? | 2565.03 could be either)."""
+    def num(r):
+        a = (r or {}).get("arabicnumber")
+        return int(float(a)) if a not in (None, "") else None
+    row = rows.get(n)
+    if num(row) is not None:
+        return num(row)
+    nxt = rows.get(n + 1)
+    if row and nxt and nxt.get("text") == row.get("text") and num(nxt) is not None:
+        return num(nxt)
+    keys = sorted(rows)
+    before = [num(rows[k]) for k in keys if k < n and num(rows[k]) is not None]
+    after = [num(rows[k]) for k in keys if k > n and num(rows[k]) is not None]
+    if before and after and after[0] == before[-1] + 2:
+        return before[-1] + 1
+    return None
+
+
 def norm(s):
     s = re.sub("[ؐ-ًؚ-ٰٟۖ-ۭـ]", "", s)   # harakat, tatweel
     s = re.sub("[إأآٱ]", "ا", s).replace("ى", "ي").replace("ة", "ه").replace("ؤ", "و").replace("ئ", "ي")
@@ -92,6 +114,7 @@ def main():
                 not graded(raw[e[0]][e[1]]["text"]), len(raw[e[0]][e[1]]["text"])))
             src = raw[ed][n]
             full = {"book": BOOKS[ed], "number": n, "arabicnumber": src.get("arabicnumber"),
+                    "standard": standard_number(raw[ed], n) if ed == "ara-muslim" else n,
                     "reference": src.get("reference"), "grades": grade_of(ed, n), "text": src["text"]}
         report.append({"text": h["text"], "found": found, "full": full})
         print("OK " if found else "NOT FOUND", h["text"], [(f["book"], f["number"]) for f in found][:6])
