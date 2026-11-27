@@ -47,4 +47,13 @@ check("apply: no standard number and none kept: None (the entry is dropped, neve
       ap.standard(f, None) is None and ap.standard(f, {"full": {"book": MUSLIM, "number": 7512, "text": "t"}}) is None)
 check("apply: the other books keep their number", ap.standard({"book": "صحيح البخاري", "number": 1, "text": "t"}, None) == 1)
 
+# the owner's rule (2026-11-27): a recognised scholar's Sahih or Hasan keeps a narration
+SUNAN = "سنن ابن ماجه"
+check("accept: Al-Albani Hasan, others weak (Ibn Majah 4181)", vh.scholar_accepts(SUNAN, [
+    {"name": "Al-Albani", "grade": "Hasan"}, {"name": "Shuaib Al Arnaut", "grade": "Daif"}]))
+check("accept: no Al-Albani, Shuaib al-Arnaut Hasan Lighairihi", vh.scholar_accepts(SUNAN, [{"name": "Shuaib Al Arnaut", "grade": "Hasan Lighairihi"}]))
+check("refuse: weak for everyone, or only Zubair Ali Zai Sahih", not vh.scholar_accepts(SUNAN, [{"name": "Al-Albani", "grade": "Daif"}])
+      and not vh.scholar_accepts(SUNAN, [{"name": "Zubair Ali Zai", "grade": "Sahih"}]))
+check("refuse: a chain-only grade (Sahih Isnaad) is not a grade of the hadith", not vh.scholar_accepts(SUNAN, [{"name": "Al-Albani", "grade": "Sahih Isnaad"}]))
+
 sys.exit(1 if fails else 0)

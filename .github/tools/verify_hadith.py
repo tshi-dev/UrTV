@@ -33,6 +33,21 @@ GRADED = {"ara-abudawud": "eng-abudawud", "ara-tirmidhi": "eng-tirmidhi", "ara-n
 ALBANI_OK = {"sahih", "hasan", "hasan sahih"}   # src/build.py has the same rule
 
 
+RECOGNISED = ("albani", "arnaut", "shakir", "bashar")   # src/build.py accepted_grade: the same scholars
+ACCEPTS = {"sahih", "hasan", "hasan sahih", "sahih lighairihi", "hasan lighairihi"}
+
+
+def scholar_accepts(book, grades, text=""):
+    """The owner's rule (2026-11-27): Bukhari, Muslim, or a recognised scholar grades it Sahih or Hasan (al-Tirmidhi's
+    own «حسن/صحيح» counts). The screen (src/build.py accepted_grade) shows that scholar's grade."""
+    if albani_accepts(book, grades):
+        return True
+    if book == "جامع الترمذي" and re.search("حسن|صحيح", norm(text).split("قال ابو عيسي", 1)[-1] if "قال ابو عيسي" in norm(text) else ""):
+        return True
+    return any(k in g.get("name", "").lower() and " ".join(re.sub(r"[^a-z ]", " ", g.get("grade", "").lower()).split()) in ACCEPTS
+               for g in grades or [] for k in RECOGNISED)
+
+
 def albani_accepts(book, grades):
     """Bukhari and Muslim: yes. The four Sunan: only if Al-Albani grades the narration Sahih, Hasan or Hasan Sahih."""
     if book in ("صحيح البخاري", "صحيح مسلم"):
@@ -110,7 +125,7 @@ def main():
             isnad = lambda t: len(t.split('"')[0].split())
             order = list(BOOKS)
             ed, n = min(((f["edition"], f["number"]) for f in found), key=lambda e: (
-                not albani_accepts(BOOKS[e[0]], grade_of(*e)), isnad(raw[e[0]][e[1]]["text"]) > ISNAD_MAX_WORDS, order.index(e[0]),
+                not scholar_accepts(BOOKS[e[0]], grade_of(*e), raw[e[0]][e[1]]["text"]), isnad(raw[e[0]][e[1]]["text"]) > ISNAD_MAX_WORDS, order.index(e[0]),
                 not graded(raw[e[0]][e[1]]["text"]), len(raw[e[0]][e[1]]["text"])))
             src = raw[ed][n]
             full = {"book": BOOKS[ed], "number": n, "arabicnumber": src.get("arabicnumber"),
