@@ -108,15 +108,21 @@ focus_walk() {   # $1 text, $2 the key, $3 at most how many presses: press only 
 }
 
 # ---- what is put back at the end
-SAVED_FONT="" SAVED_VOL="" SAVED_MUTED="" DISPLAY_CHANGED=0 FONT_CHANGED=0 SETTINGS_SAVED=0
+WM_BACK="wm size reset; wm density reset" LAYOUT_BEFORE="" PANEL_BEFORE="" SAVED_FONT="" SAVED_VOL="" SAVED_MUTED="" DISPLAY_CHANGED=0 FONT_CHANGED=0 SETTINGS_SAVED=0
 restore() {
   trap - EXIT
   echo "putting everything back…"
-  if [ "$DISPLAY_CHANGED" = 1 ]; then tv "wm size reset; wm density reset" > /dev/null 2>&1; fi
+  if [ "$DISPLAY_CHANGED" = 1 ]; then tv "$WM_BACK" > /dev/null 2>&1; fi
   if [ "$FONT_CHANGED" = 1 ]; then
     if [ -z "$SAVED_FONT" ] || [ "$SAVED_FONT" = null ]; then tv "settings delete system font_scale" > /dev/null 2>&1; else tv "settings put system font_scale $SAVED_FONT" > /dev/null 2>&1; fi
   fi
   [ "$SETTINGS_SAVED" = 1 ] && $SAVER import "$OUT/settings-before.json" --yes > "$OUT/raw/restore-settings.txt" 2>&1
+  # what the export does not hold (review F102): the home's layout and card, the adhan of each prayer
+  if [ -n "$LAYOUT_BEFORE" ]; then $SAVER homelayout "$LAYOUT_BEFORE" > /dev/null 2>&1; fi
+  if [ -n "$PANEL_BEFORE" ]; then $SAVER home-card "$PANEL_BEFORE" > /dev/null 2>&1; fi
+  if [ -s "$OUT/raw/adhan-before.txt" ]; then
+    while read -r pk pst; do [ -n "$pk" ] && $MUSIC adhan state "$pk" "$pst" > /dev/null 2>&1; done < <($LIB adhan-all "$OUT/raw/adhan-before.txt")
+  fi
   if [ -n "$SAVED_VOL" ]; then tv "cmd media_session volume --stream 3 --set $SAVED_VOL" > /dev/null 2>&1; fi
   tv "input keyevent KEYCODE_HOME" > /dev/null 2>&1
   local now
@@ -138,6 +144,10 @@ if ! $SAVER export > "$OUT/settings-before.json" 2> "$OUT/raw/export.err" || [ !
 fi
 SETTINGS_SAVED=1
 $SAVER show > "$OUT/raw/show-before.txt" 2>&1
+LAYOUT_BEFORE=$($LIB kv "$OUT/raw/show-before.txt" homelayout); PANEL_BEFORE=$($LIB kv "$OUT/raw/show-before.txt" home_panel)
+$MUSIC adhan 2> /dev/null | tr -d '\r' > "$OUT/raw/adhan-before.txt"
+tv "wm size; wm density" 2> /dev/null | tr -d '\r' > "$OUT/raw/wm-before.txt"
+WM_BACK=$($LIB wm-back "$OUT/raw/wm-before.txt")
 CITY=$($LIB city "$OUT/raw/show-before.txt")
 STYLE_BEFORE=$($LIB style "$OUT/raw/show-before.txt")
 tv "cmd media_session volume --stream 3 --get" 2> /dev/null | tr -d '\r' > "$OUT/raw/volume-before.txt"
@@ -250,7 +260,7 @@ if want display; then
   # shellcheck disable=SC2086
   tv "am start --activity-clear-task -n $SAVER_PKG/.SettingsActivity $(rows section | awk -F'\t' '$2 == "pray" {print $4}')" > /dev/null 2>&1
   if on_top "$SAVER_PKG"; then shot display-720p-settings; step "display-720p-settings" PASS "the settings at 720p"; else step "display-720p-settings" FAIL "the settings were not in front at 720p"; fi
-  tv "wm size reset; wm density reset" > /dev/null 2>&1; DISPLAY_CHANGED=0; nap 4
+  tv "$WM_BACK" > /dev/null 2>&1; DISPLAY_CHANGED=0; nap 4
   key KEYCODE_HOME
 fi
 

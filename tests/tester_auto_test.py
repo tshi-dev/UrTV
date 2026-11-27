@@ -147,6 +147,16 @@ check("the emulator shim sends the Home key as the Home intent to our home (run 
       _m.rewrite("input keyevent KEYCODE_HOME") == _m.HOME_START and _m.rewrite("input keyevent 3") == _m.HOME_START and "sa.urtv.home/.MainActivity" in _m.HOME_START
       and _m.rewrite("input keyevent KEYCODE_BACK") == "input keyevent KEYCODE_BACK" and _m.rewrite("dumpsys window") == "dumpsys window")
 
+# a TV that was not on the defaults is put back as it was (review F102): the adhan of a prayer, the home layout, the screen's size and density
+r2, out2, cmds2 = run({"FAKE_ADHAN_START": "fajr:screen,dhuhr:sound,asr:none,maghrib:both,isha:both", "FAKE_LAYOUT_START": "couch", "FAKE_WM_START": "1"})
+last = lambda pre: [l for l in cmds2.splitlines() if l.startswith(pre)][-1:]
+check("the round puts back the adhan of each prayer, the home layout and the screen's size and density it found",
+      ["music adhan state fajr screen"] == last("music adhan state fajr") and ["music adhan state dhuhr sound"] == last("music adhan state dhuhr") and ["music adhan state asr none"] == last("music adhan state asr")
+      and ["saver homelayout couch"] == last("saver homelayout") and ["tv wm size 1600x900; wm density 280"] == last("tv wm size 1"), (last("music adhan state fajr"), last("saver homelayout"), last("tv wm size 1")))
+check("lib: the adhan of all prayers, a show line and the wm override",
+      lib.adhan_all("prayer_sound=fajr:silent,dhuhr:|prayer_screen=fajr:on,dhuhr:off") == ["fajr screen", "dhuhr sound"] and lib.kv("a=1\nhomelayout=couch\n", "homelayout") == "couch"
+      and lib.wm_back("Physical size: 1920x1080\nOverride size: 1280x720\nPhysical density: 320\n") == "wm size 1280x720; wm density reset" and lib.wm_back("Physical size: 1920x1080") == "wm size reset; wm density reset")
+
 # ---- what the script must never do
 src = (ROOT / "tester/auto/round.sh").read_text(encoding="utf-8") + (ROOT / "tester/auto/lib.py").read_text(encoding="utf-8")
 code = "\n".join(l for l in src.splitlines() if not l.lstrip().startswith("#"))

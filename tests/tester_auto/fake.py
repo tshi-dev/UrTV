@@ -56,6 +56,9 @@ def tv(cmd):
     log("tv " + cmd)
     if cmd.startswith("--shot"):
         return
+    if cmd.startswith("wm size;") and os.environ.get("FAKE_WM_START"):
+        print("Physical size: 1920x1080\nOverride size: 1600x900\nPhysical density: 320\nOverride density: 280")
+        return
     for part in re.split(r";\s*", cmd):
         m = re.match(r"am start .*-n (\S+)", part)
         if m:
@@ -110,14 +113,16 @@ def saver(a):
     if a[:1] == ["export"]:
         print('{"city":"الرياض"}')
     elif a[:1] == ["show"]:
-        print("version=4.4\ncity=الرياض\nhomelayout=classic\nsettingsstyle=couch")
+        print("version=4.4\ncity=الرياض\nhomelayout=" + st("layout", os.environ.get("FAKE_LAYOUT_START", "classic")) + "\nsettingsstyle=couch")
     elif a[:1] == ["homelayout"] and a[1:2] and a[1] not in ("classic", "couch", "football"):
         sys.exit(1)
+    elif a[:1] == ["homelayout"] and a[1:2]:
+        put("layout", a[1])
 
 
 def music(a):
     log("music " + " ".join(a))
-    states = {k.split(":")[0]: k.split(":")[1] for k in st("adhan", "fajr:both,dhuhr:both,asr:both,maghrib:both,isha:both").split(",")}
+    states = {k.split(":")[0]: k.split(":")[1] for k in st("adhan", os.environ.get("FAKE_ADHAN_START", "fajr:both,dhuhr:both,asr:both,maghrib:both,isha:both")).split(",")}
     if a[:1] == ["stations"]:
         for i, n in enumerate(STATIONS):
             print(f"{i}  {n}")

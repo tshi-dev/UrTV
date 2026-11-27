@@ -185,6 +185,30 @@ def adhan_state(text, prayer):
     return "both" if sound and screen else "sound" if sound else "screen" if screen else "none"
 
 
+def adhan_all(text):
+    """«fajr both» lines, one per prayer the status says, in the order of the status (round.sh puts them back by `music.sh adhan state`; review F102)"""
+    out = []
+    for m in re.finditer(r"prayer_sound=[^|\n]*", text):
+        for p in re.findall(r"(\w+):", m.group(0).split("=", 1)[1]):
+            st = adhan_state(text, p)
+            if st:
+                out.append(f"{p} {st}")
+    return out
+
+
+def kv(text, key):
+    """a «key=value» line of `saver.sh show` (empty when it is not there)"""
+    m = re.search(rf"^{re.escape(key)}[ \t]*=[ \t]*(\S+)", text, re.M)
+    return m.group(1) if m else ""
+
+
+def wm_back(text):
+    """From `wm size; wm density` output, the command that puts the screen back as it was: the Override lines when there are some, else a reset"""
+    size = re.search(r"Override size:[ \t]*(\d+x\d+)", text)
+    dens = re.search(r"Override density:[ \t]*(\d+)", text)
+    return f"wm size {size.group(1) if size else 'reset'}; wm density {dens.group(1) if dens else 'reset'}"
+
+
 def _nodes(xml):
     for m in re.finditer(r"<node\b([^>]*)>", xml):
         a = dict(re.findall(r'([\w-]+)="([^"]*)"', m.group(1)))
@@ -348,6 +372,13 @@ def main(a):
         print(settings_style(_read(a[2])))
     elif cmd == "adhan-state":
         print(adhan_state(_read(a[2]), a[3]))
+    elif cmd == "adhan-all":
+        for x in adhan_all(_read(a[2])):
+            print(x)
+    elif cmd == "kv":
+        print(kv(_read(a[2]), a[3]))
+    elif cmd == "wm-back":
+        print(wm_back(_read(a[2])))
     elif cmd == "focused":
         print(focused(_read(a[2])))
     elif cmd == "has-text":
