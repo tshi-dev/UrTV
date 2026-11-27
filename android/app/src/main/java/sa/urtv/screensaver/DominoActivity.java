@@ -470,11 +470,12 @@ public class DominoActivity extends GameActivity {
                 float x = px(rtl ? 1728 - start : start);
                 paint.setStyle(Paint.Style.FILL); paint.setColor(L.ink);
                 c.drawText(num(g.count(i)), x, px(31), paint);
-                float bx = x + dir * px(56);
-                for (int k = 0; k < g.count(i); k++) {
-                    float l = bx + dir * k * px(18), r = l + dir * px(12);
-                    paint.setStyle(Paint.Style.FILL); paint.setColor(L.tile); c.drawRect(Math.min(l, r), px(6), Math.max(l, r), px(34), paint);
-                    paint.setStyle(Paint.Style.STROKE); paint.setStrokeWidth(px(3)); paint.setColor(L.ink); c.drawRect(Math.min(l, r), px(6), Math.max(l, r), px(34), paint);
+                float bx = x + dir * px(56), step = Math.min(26, (w - 76) / Math.max(1, g.count(i)));
+                for (int k = 0; k < g.count(i); k++) {   // a small tile back: a solid green block with the line across the middle (never an empty box: it was read as a missing letter)
+                    float l = bx + dir * k * px(step), r = l + dir * px(20), lo = Math.min(l, r), hi = Math.max(l, r);
+                    paint.setStyle(Paint.Style.FILL); paint.setColor(L.deep); c.drawRect(lo, px(3), hi, px(37), paint);
+                    paint.setColor(L.onDeep); c.drawRect(lo + px(3), px(19), hi - px(3), px(21), paint);
+                    paint.setStyle(Paint.Style.STROKE); paint.setStrokeWidth(px(2)); paint.setColor(L.ink); c.drawRect(lo, px(3), hi, px(37), paint);
                 }
             }
         }

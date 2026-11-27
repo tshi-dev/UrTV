@@ -115,7 +115,7 @@ public class Word5Activity extends GameActivity {
         }
         shake = false;
         // only what a key changes is drawn again (a key press used to rebuild the whole board: 46 % janky frames while typing)
-        if (back) { if (game.delete()) { message = ""; typedChanged(); } else openPause(); return; }
+        if (back) { openPause(); return; }   // Back pauses at once: a letter is deleted with «حذف» (or the red key), never by Back
         if (!ok) {
             // the keys are Arabic: «next» is to the left in both languages, and dx is already turned toward the end of the interface's line
             int was = keys.key();
@@ -131,7 +131,14 @@ public class Word5Activity extends GameActivity {
                 if (game.typing().length() == Word5Text.LENGTH) { int was = keys.key(); keys.set(Word5Keys.ENTER); drawKey(was); drawKey(Word5Keys.ENTER); }   // a full row: the next OK enters it
                 typedChanged();
             } else play(QuizSound.LOW);
-        } else {
+        } else enterGuess();
+    }
+    private void enterGuess() {
+        {
+            if (game.typing().length() == Word5Text.LENGTH && !words.accepts(game.typing()) && !game.typing().equals(maybe)) {   // not in the list (a typo like «ابتثج»): said once, nothing is lost; the same word entered again is taken
+                maybe = game.typing(); message = S.t("مو في قائمة الكلمات، إدخال مرة ثانية إذا أنت متأكد"); shake = true; play(QuizSound.LOW); redraw(); return;
+            }
+            maybe = "";
             Word5Game.Entered e = game.enter();
             if (e == Word5Game.Entered.SHORT) { message = S.t("الكلمة خمسة حروف"); play(QuizSound.LOW); refreshLine(); return; }
             else if (e == Word5Game.Entered.UNKNOWN) { message = S.t("ما نعرف هذي الكلمة"); shake = true; keys.set(Word5Keys.DELETE); play(QuizSound.LOW); }
@@ -140,6 +147,15 @@ public class Word5Activity extends GameActivity {
             redraw();
         }
     }
+
+    /** the colour keys: green is «إدخال», red is «حذف» (green moves the focus to «إدخال») */
+    @Override protected boolean onColourKey(int colour) {
+        if (screen != Screen.PLAY || game == null || game.over()) return false;
+        if (colour == 2) { int was = keys.key(); keys.set(Word5Keys.ENTER); drawKey(was); drawKey(Word5Keys.ENTER); enterGuess(); return true; }
+        if (colour == 1) { if (game.delete()) { message = ""; typedChanged(); } return true; }
+        return false;
+    }
+    private String maybe = "";   // a guess that is not in the list: «إدخال» again takes it (the list is short, a real word may be missing)
 
     /** the keyboard key a letter key types: ة is ه, ى is ي and ء is ا (Word5Text folds them the same way) */
     private int letterOf(int k) {
@@ -235,7 +251,7 @@ public class Word5Activity extends GameActivity {
 
     private void drawHints() {
         if (hintsRow != null) root.removeView(hintsRow);
-        hints(S.t("الأسهم"), S.t("الحرف"), S.t("اختيار"), S.t("اكتب"), S.t("رجوع"), game.typing().isEmpty() ? S.t("توقف") : S.t("حذف"));
+        hints(S.t("الأسهم"), S.t("الحرف"), S.t("اختيار"), S.t("اكتب"), S.t("أخضر"), S.t("إدخال"), S.t("رجوع"), S.t("توقف"));
         hintsRow = root.getChildAt(root.getChildCount() - 1);
     }
 

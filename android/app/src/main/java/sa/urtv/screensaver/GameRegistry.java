@@ -73,6 +73,13 @@ final class GameRegistry {
     static String[] howto(String id) { for (String[] r : HOWTO) if (r[0].equals(id)) return r; return null; }
     /** the games of this list that are held back: the hub shows one only when the release file (GameReleaseStore.nativeOn) has turned it on for this TV's group; the eight others and «packs» are always shown */
     static final String[] HELD = {"forehead", "author", "closest", "liar", "emoji", "link", "night", "draw", "quran-verse", "maths", "logic"};
+    /** the game cannot be played without phones (the tile and the setup page say «جوال», every other game says «ريموت»): «الأسرع» and the party games, every game of the engine */
+    static boolean needsPhones(String id) {
+        if (id == null) return false;
+        if (id.startsWith("e:") || id.startsWith("e-")) return true;
+        for (Game g : ALL) if (g.id.equals(id)) return g.phones;
+        return false;
+    }
     static boolean held(String id) { for (String g : HELD) if (g.equals(id)) return true; return false; }
 
     static Game byId(String id) { for (Game g : ALL) if (g.id.equals(id)) return g; return null; }

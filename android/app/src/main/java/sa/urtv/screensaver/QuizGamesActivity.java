@@ -160,10 +160,12 @@ public class QuizGamesActivity extends Activity {
                 EngineIcons mark = new EngineIcons(this, d == null ? "star" : d.icon, L.ink); mark.setBackgroundColor(accent); mark.setPadding(px(8), px(6), px(8), px(6));
                 LinearLayout.LayoutParams kp = new LinearLayout.LayoutParams(px(52), px(52)); kp.gravity = Gravity.START;
                 tile.addView(mark, kp);
-            } else if (GameRegistry.inPhones(g.id)) {   // plays with phones: a phone picture on a saffron square, no word (TalkBack says «بالجوالات»)
-                GameIcons mark = new GameIcons(this, GameIcons.PHONE).set(true, 0, L.onSaff, L.saff); mark.setBackgroundColor(L.saff); mark.setPadding(px(8), px(6), px(8), px(6));
-                mark.setContentDescription(S.t("بالجوالات"));
-                LinearLayout.LayoutParams kp = new LinearLayout.LayoutParams(px(52), px(52)); kp.gravity = Gravity.START;
+            } else if (!g.id.equals("packs")) {   // how it is played, in a word: «جوال» on a saffron square (it needs phones; in the «بالجوالات» view every game is played with them), «ريموت» in an outlined one (one remote)
+                boolean ph = filter == 1 || GameRegistry.needsPhones(g.id);
+                TextView mark = text(ph ? S.t("جوال") : S.t("ريموت"), 30, ph ? L.onSaff : focus ? L.onInk : L.ink, true); mark.setSingleLine(true); mark.setGravity(Gravity.CENTER);
+                GradientDrawable mb = new GradientDrawable(); mb.setColor(ph ? L.saff : focus ? L.ink : L.tile); mb.setStroke(px(3), ph ? L.saff : focus ? L.onInk : L.ink); mark.setBackground(mb);
+                mark.setPadding(px(16), px(4), px(16), px(4)); mark.setContentDescription(ph ? S.t("بالجوالات") : S.t("ريموت"));
+                LinearLayout.LayoutParams kp = new LinearLayout.LayoutParams(-2, px(52)); kp.gravity = Gravity.START;
                 tile.addView(mark, kp);
             }
             tile.addView(new View(this), new LinearLayout.LayoutParams(1, 0, 1f));
