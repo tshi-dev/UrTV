@@ -1,0 +1,195 @@
+Performing Streamed Install
+Success
+Performing Streamed Install
+Success
+shot home-00-idle 1860589
+shot home-01-top 1863222
+shot home-pill-1 1860589
+shot home-pill-2 1859643
+shot home-pill-3 1859624
+shot home-pill-4 1857969
+shot home-pill-5 1858877
+shot home-pill-6 1858469
+shot home-pill-7 1858469
+shot home-pill-8 1858469
+shot home-pill-left-1 1859870
+shot home-pill-left-2 1859870
+shot home-pill-left-3 1859852
+shot home-pill-left-4 1859837
+shot home-tasks-card-focused 1630531
+
+Exception occurred while executing 'start':
+java.lang.SecurityException: Permission Denial: starting Intent { flg=0x10008000 cmp=sa.urtv.home/.tilawah.MainActivity } from null (pid=5035, uid=2000) not exported from uid 10077
+	at com.android.server.wm.ActivityStackSupervisor.checkStartAnyActivityPermission(ActivityStackSupervisor.java:1032)
+	at com.android.server.wm.ActivityStarter.executeRequest(ActivityStarter.java:1001)
+	at com.android.server.wm.ActivityStarter.execute(ActivityStarter.java:671)
+	at com.android.server.wm.ActivityTaskManagerService.startActivityAndWait(ActivityTaskManagerService.java:1338)
+	at com.android.server.am.ActivityManagerService.startActivityAndWait(ActivityManagerService.java:3687)
+	at com.android.server.am.ActivityManagerShellCommand.runStartActivity(ActivityManagerShellCommand.java:538)
+	at com.android.server.am.ActivityManagerShellCommand.onCommand(ActivityManagerShellCommand.java:185)
+	at android.os.BasicShellCommandHandler.exec(BasicShellCommandHandler.java:98)
+	at android.os.ShellCommand.exec(ShellCommand.java:44)
+	at com.android.server.am.ActivityManagerService.onShellCommand(ActivityManagerService.java:10523)
+	at android.os.Binder.shellCommand(Binder.java:929)
+	at android.os.Binder.onTransact(Binder.java:813)
+	at android.app.IActivityManager$Stub.onTransact(IActivityManager.java:5027)
+	at com.android.server.am.ActivityManagerService.onTransact(ActivityManagerService.java:2883)
+	at android.os.Binder.execTransactInternal(Binder.java:1159)
+	at android.os.Binder.execTransact(Binder.java:1123)
+shot tilawah-01-readers 1623294
+shot tilawah-02-readers-down 1636848
+shot tilawah-03-surah-grid 158871
+shot tilawah-04-surah-grid-focus 158871
+shot tilawah-05-player 109249
+
+Exception occurred while executing 'start':
+java.lang.SecurityException: Permission Denial: starting Intent { flg=0x10008000 cmp=sa.urtv.home/.tilawah.MainActivity } from null (pid=5337, uid=2000) not exported from uid 10077
+	at com.android.server.wm.ActivityStackSupervisor.checkStartAnyActivityPermission(ActivityStackSupervisor.java:1032)
+	at com.android.server.wm.ActivityStarter.executeRequest(ActivityStarter.java:1001)
+	at com.android.server.wm.ActivityStarter.execute(ActivityStarter.java:671)
+	at com.android.server.wm.ActivityTaskManagerService.startActivityAndWait(ActivityTaskManagerService.java:1338)
+	at com.android.server.am.ActivityManagerService.startActivityAndWait(ActivityManagerService.java:3687)
+	at com.android.server.am.ActivityManagerShellCommand.runStartActivity(ActivityManagerShellCommand.java:538)
+	at com.android.server.am.ActivityManagerShellCommand.onCommand(ActivityManagerShellCommand.java:185)
+	at android.os.BasicShellCommandHandler.exec(BasicShellCommandHandler.java:98)
+	at android.os.ShellCommand.exec(ShellCommand.java:44)
+	at com.android.server.am.ActivityManagerService.onShellCommand(ActivityManagerService.java:10523)
+	at android.os.Binder.shellCommand(Binder.java:929)
+	at android.os.Binder.onTransact(Binder.java:813)
+	at android.app.IActivityManager$Stub.onTransact(IActivityManager.java:5027)
+	at com.android.server.am.ActivityManagerService.onTransact(ActivityManagerService.java:2883)
+	at android.os.Binder.execTransactInternal(Binder.java:1159)
+	at android.os.Binder.execTransact(Binder.java:1123)
+shot tilawah-06-stations-or-adhan-tab 158871
+shot tilawah-07-adhan-tab 158871
+shot tilawah-08-adhan-volume-row 158871
+
+Exception occurred while executing 'start':
+java.lang.SecurityException: Permission Denial: starting Intent { flg=0x10008000 cmp=sa.urtv.home/.tilawah.AdhanActivity } from null (pid=5564, uid=2000) not exported from uid 10077
+	at com.android.server.wm.ActivityStackSupervisor.checkStartAnyActivityPermission(ActivityStackSupervisor.java:1032)
+	at com.android.server.wm.ActivityStarter.executeRequest(ActivityStarter.java:1001)
+	at com.android.server.wm.ActivityStarter.execute(ActivityStarter.java:671)
+	at com.android.server.wm.ActivityTaskManagerService.startActivityAndWait(ActivityTaskManagerService.java:1338)
+	at com.android.server.am.ActivityManagerService.startActivityAndWait(ActivityManagerService.java:3687)
+	at com.android.server.am.ActivityManagerShellCommand.runStartActivity(ActivityManagerShellCommand.java:538)
+	at com.android.server.am.ActivityManagerShellCommand.onCommand(ActivityManagerShellCommand.java:185)
+	at android.os.BasicShellCommandHandler.exec(BasicShellCommandHandler.java:98)
+	at android.os.ShellCommand.exec(ShellCommand.java:44)
+	at com.android.server.am.ActivityManagerService.onShellCommand(ActivityManagerService.java:10523)
+	at android.os.Binder.shellCommand(Binder.java:929)
+	at android.os.Binder.onTransact(Binder.java:813)
+	at android.app.IActivityManager$Stub.onTransact(IActivityManager.java:5027)
+	at com.android.server.am.ActivityManagerService.onTransact(ActivityManagerService.java:2883)
+	at android.os.Binder.execTransactInternal(Binder.java:1159)
+	at android.os.Binder.execTransact(Binder.java:1123)
+shot tilawah-09-adhan-voices 158871
+shot tilawah-10-adhan-voices-focus 158871
+shot home-now-playing 1536317
+shot home-now-playing-card-focused 1546052
+shot saver-now-playing 1885604
+shot settings-a-buttons-hub 322239
+shot settings-a-buttons-prayer 469857
+shot settings-a-buttons-photos 442344
+shot settings-a-buttons-look-cards 433415
+shot settings-b-couch-prayer 494984
+shot settings-b-couch-photos 499533
+shot settings-b-couch-look 480637
+shot settings-b-couch-look-cards 475525
+shot settings-b-couch-saver 474894
+shot settings-b-couch-apps 499429
+shot settings-b-couch-matches 487497
+shot settings-b-couch-family 429114
+shot settings-b-couch-lang 473497
+shot settings-b-couch-about 526689
+shot settings-b-couch-search 372062
+shot settings-c-tvos-hub 327901
+shot settings-c-tvos-prayer 449920
+shot home-side-cards-a 1064315
+shot home-side-cards-b 1064315
+buttons	احذف صورة	6	6	OK	احذف صورة ما فيه صور بعد، الرئيسية وشاشة التوقف ›
+buttons	أذاني من ملف	44	6	MISSED	أذان عُمان عُمان أذان تونس تونس أذان المالديف المالديف
+buttons	الأدعية والتذكيرات	7	7	OK	إضافة دعاء أو تذكير صوت من «صوتياتي» سورة الكهف يوم الجمعة جاهز: قارئ من «تلاوة»
+buttons	التطبيقات المخفية	10	12	OK	الجوال الجوال
+buttons	حجم البطاقات	9	12	OK	أصغر عادي أكبر
+buttons	بحث في الإعدادات	1	2	OK	اكتب كلمة، مثل: صوت، لون، مدينة
+couch	احذف صورة	5	6	OK	احذف صورة ما فيه صور بعد، الرئيسية وشاشة التوقف
+couch	أذاني من ملف	43	6	MISSED	أذان عُمان عُمان أذان تونس تونس أذان المالديف المالديف
+couch	الأدعية والتذكيرات	6	7	OK	إضافة دعاء أو تذكير صوت من «صوتياتي» سورة الكهف يوم الجمعة جاهز: قارئ من «تلاوة»
+couch	التطبيقات المخفية	11	12	OK	شاشة تلفزيونك مباريات فرقك الاتفاق × الهلال اليوم ٥:٢٠ م بعد ١٤ ساعة الفجر بعد ٢
+couch	حجم البطاقات	9	12	OK	عادي
+couch	بحث في الإعدادات	2	2	OK	
+tvos	احذف صورة	6	6	OK	احذف صورة ما فيه صور بعد، الرئيسية وشاشة التوقف ›
+tvos	أذاني من ملف	44	6	MISSED	أذان عُمان عُمان أذان تونس تونس أذان المالديف المالديف
+tvos	الأدعية والتذكيرات	7	7	OK	إضافة دعاء أو تذكير صوت من «صوتياتي» سورة الكهف يوم الجمعة جاهز: قارئ من «تلاوة»
+tvos	التطبيقات المخفية	12	12	OK	شاشة تلفزيونك مباريات فرقك الاتفاق × الهلال اليوم ٥:٢٠ م بعد ١٤ ساعة الفجر بعد ٢
+tvos	حجم البطاقات	10	12	OK	أصغر عادي أكبر
+tvos	بحث في الإعدادات	1	2	OK	اكتب كلمة، مثل: صوت، لون، مدينة
+any	HOME → الإعدادات (Settings key held)	13	4	MISSED	
+crashes.txt
+home-00-idle.png
+home-01-top.png
+home-now-playing-card-focused.png
+home-now-playing.png
+home-pill-1.png
+home-pill-2.png
+home-pill-3.png
+home-pill-4.png
+home-pill-5.png
+home-pill-6.png
+home-pill-7.png
+home-pill-8.png
+home-pill-left-1.png
+home-pill-left-2.png
+home-pill-left-3.png
+home-pill-left-4.png
+home-side-cards-a.png
+home-side-cards-b.png
+home-tasks-card-focused.png
+log.txt
+presses-buttons-0.png
+presses-buttons-1.png
+presses-buttons-2.png
+presses-buttons-3.png
+presses-buttons-4.png
+presses-buttons-5.png
+presses-couch-0.png
+presses-couch-1.png
+presses-couch-2.png
+presses-couch-3.png
+presses-couch-4.png
+presses-couch-5.png
+presses-tvos-0.png
+presses-tvos-1.png
+presses-tvos-2.png
+presses-tvos-3.png
+presses-tvos-4.png
+presses-tvos-5.png
+presses.txt
+saver-now-playing.png
+settings-a-buttons-hub.png
+settings-a-buttons-look-cards.png
+settings-a-buttons-photos.png
+settings-a-buttons-prayer.png
+settings-b-couch-about.png
+settings-b-couch-apps.png
+settings-b-couch-family.png
+settings-b-couch-lang.png
+settings-b-couch-look-cards.png
+settings-b-couch-look.png
+settings-b-couch-matches.png
+settings-b-couch-photos.png
+settings-b-couch-prayer.png
+settings-b-couch-saver.png
+settings-b-couch-search.png
+settings-c-tvos-hub.png
+settings-c-tvos-prayer.png
+tilawah-01-readers.png
+tilawah-02-readers-down.png
+tilawah-03-surah-grid.png
+tilawah-04-surah-grid-focus.png
+tilawah-05-player.png
+tilawah-06-stations-or-adhan-tab.png
+tilawah-07-adhan-tab.png
+tilawah-08-adhan-volume-row.png
+tilawah-09-adhan-voices.png
+tilawah-10-adhan-voices-focus.png
