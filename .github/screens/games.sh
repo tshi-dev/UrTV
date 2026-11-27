@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Runs on the CI emulator (.github/workflows/games-screens.yml): the one-remote modes of the family games, shot with screencap, the setting «اللعب بالريموت بس» turned on in each
 # game's own setup page with the remote's keys (nothing is written behind the app's back).   games.sh SAVER_APK HOME_APK OUT_DIR
-# Best effort: every shot is taken whatever is on the screen; the log says what was pressed.
+# Best effort: every shot is taken whatever is on the screen; the log says what was pressed. (re-shot after the liar rounds' bar fix)
 set +e
 SAVER_APK=$1; HOME_APK=$2; OUT=$3
 mkdir -p "$OUT"

@@ -59,4 +59,6 @@ check("the new screens follow our rules: no colour of their own, no «·», no p
 check("the encrypted banks stay closed: only GameBundles opens a .gb, in memory", ".gb" not in code(ca) and "FileOutputStream" not in code(ca) and "openFileOutput" not in code(ca))
 check("the score cells are everywhere: the old sidesBar draws through the same bar (88 high, so no old layout moves), the new screens use it at 112 with the «نقطة» label",
       "protected final void sidesBar(GameScore s, String[] names, int turn, float y) { scoreBarH(s, names, turn, y, 88); }" in base and "scoreBarH(s, names, turn, y, 112)" in base and "h >= 112" in base and "t.setBackground(shape(on ? L.ink" not in base)
+check("«واحد يكذب»: the rounds' screens draw the players' bar at the bottom in both ways (the rank rows stood over the question block with 5 or more players), and «+٢ للكذّاب» keeps its plus with its number (an isolate)",
+      "board(" not in code(li) and code(li).count("scoreBar(score, names, -1, 820);") == 2 and '"\\u2066+" + num(game.gained[game.liar()]) + "\\u2069"' in li)
 print("failed" if failed else "ok"); sys.exit(1 if failed else 0)

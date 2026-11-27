@@ -179,7 +179,7 @@ public class LiarActivity extends GameActivity {
                 timer = new TickTimer((int) (tellMs / 1000), 428); timer.set((int) ((tellMs - (System.currentTimeMillis() - phaseAt) + 999) / 1000));
                 root.addView(centered(tellersText(), 72, L.ink, true), at(1728, 110, 96, 540));
                 root.addView(centered(S.t("كل واحد يحكي قصته، والباقي يسألون"), 56, L.ink(0xCC), true), at(1728, 80, 96, 680));
-                if (remote) scoreBar(score, names, -1, 820); else board(score, names, false);
+                scoreBar(score, names, -1, 820);
                 hints(S.t("اختيار"), S.t("نصوّت"), S.t("رجوع"), S.t("إيقاف"));
                 break;
             case VOTE:
@@ -201,8 +201,8 @@ public class LiarActivity extends GameActivity {
                 StringBuilder got = new StringBuilder();
                 for (int p = 0; p < game.players; p++) if (game.voteOf(p) == game.liar()) got.append(got.length() > 0 ? (en ? ", " : "، ") : "").append(names[p]);
                 root.addView(centered(got.length() == 0 ? S.t("ما أحد عرفه") : S.t("عرفوه: %s", got.toString()), 60, L.ink, true), at(1728, 90, 96, 460));
-                root.addView(centered(S.t("+%s للكذّاب", num(game.gained[game.liar()])), 52, L.ink(0xCC), true), at(1728, 80, 96, 580));
-                if (remote) scoreBar(score, names, -1, 820); else board(score, names, false);
+                root.addView(centered(S.t("%s للكذّاب", "\u2066+" + num(game.gained[game.liar()]) + "\u2069"), 52, L.ink(0xCC), true), at(1728, 80, 96, 580));
+                scoreBar(score, names, -1, 820);
                 hints(S.t("اختيار"), S.t("اللي بعده"), S.t("رجوع"), S.t("إيقاف"));
                 break;
             }
