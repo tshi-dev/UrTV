@@ -55,4 +55,8 @@ check("the workflow checks the games data (check.py and check_words.py) before i
       wf.index("games/check_words.py") < wf.index("make_games_data.py build") < wf.index("make_games_data.py --verify") < wf.index("git push -f origin data-games") and "git add quiz games" in wf and "--orphan data-games" in wf)
 src = (ROOT / ".github/tools/make_games_data.py").read_text(encoding="utf-8")
 check("the tool and its docs carry no personal data and no AI lines", "Claude" not in src + wf and "Co-Authored" not in src + wf)
+# 4.4 beta 4: the bundled word5 starter is its own list (511 words minus 7, kept above Word5Test's 500), NOT the games/word5/answers.json source (about 443 after the
+# content review). Do not regenerate the starter from the source: it would fall under 500 and fail Word5Test.
+_w5 = json.loads((ROOT / "assets/games/word5-answers.json").read_text(encoding="utf-8"))["w"]
+check("the bundled word5 starter keeps 500 words or more (it is not rebuilt from games/word5/answers.json, which the review shrank)", len(_w5) >= 500 and len({json.dumps(x, ensure_ascii=False) for x in _w5}) == len(_w5), len(_w5))
 sys.exit(1 if failed else 0)
