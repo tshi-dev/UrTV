@@ -145,6 +145,12 @@ class Store:
                 del bucket[dk]
         elif any(x.get("src") == "tsdb" and date_key(x) == k for x in bucket.values()):
             return ""   # a backfilled copy of a game TheSportsDB already gave
+        if e.get("id"):   # 4.4 (#70) one game, one copy: TheSportsDB can move a game to another season label (MLS 2026 and 2026-2027); the copy
+            for (l2, s2), b2 in self.leagues.items():   # with a result is never replaced by a stale one, and the one kept is the newest report
+                if l2 == lg and s2 != season and k in b2:
+                    if stage(e) < stage(b2[k]):
+                        return ""
+                    del b2[k]
         old = bucket.get(k)
         if old is None:
             bucket[k] = e
@@ -155,6 +161,31 @@ class Store:
             return ""
         bucket[k] = e
         return "updated"
+
+    def dedupe(self):
+        """4.4 (#70) a game stored under two seasons of its league (the same id): one copy kept, the one with a result (else the one in the season
+        with the most games, the league's own); returns how many copies went"""
+        dropped = 0
+        by_lg = {}
+        for (lg, season), b in self.leagues.items():
+            by_lg.setdefault(lg, []).append((season, b))
+        for lg, buckets in by_lg.items():
+            seen = {}
+            for season, b in sorted(buckets, key=lambda x: -len(x[1])):
+                for k in [k for k in b if not k.startswith("d:")]:
+                    if k not in seen:
+                        seen[k] = b
+                        continue
+                    keep = seen[k]
+                    if stage(b[k]) > stage(keep[k]):
+                        del keep[k]
+                        seen[k] = b
+                    else:
+                        del b[k]
+                    dropped += 1
+        for key in [key for key, b in self.leagues.items() if not b]:
+            del self.leagues[key]
+        return dropped
 
     def total(self):
         return sum(len(v) for v in self.leagues.values())
@@ -359,7 +390,7 @@ def build(args):
             r = store.put(e)
             if r:
                 counts[r] += 1
-    dropped = store.prune(now)
+    dropped = store.prune(now) + store.dedupe()   # 4.4 (#70) a game kept once even when the store has it under two seasons
     after = store.total()
     if after < before - dropped:   # the store only grows (a season past KEEP_SEASONS aside): anything else is a bug, and nothing is pushed
         raise SystemExit(f"the store shrank from {before} to {after} events: not pushed")
