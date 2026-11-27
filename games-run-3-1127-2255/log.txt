@@ -1,0 +1,75 @@
+Performing Streamed Install
+Success
+Performing Streamed Install
+Success
+screens-out/gr.json: 1 file pushed, 0 skipped. 5.5 MB/s (522 bytes in 0.000s)
+total 24
+drwxrwxrwx 2 u0_a76 u0_a76 4096 2026-11-27 22:51 .
+drwxrwxrwx 3 u0_a76 u0_a76 4096 2026-11-27 22:51 ..
+-rw-rw-rw- 1 u0_a76 u0_a76  522 2026-11-27 22:51 games-release.json
+shot list-00 174268
+shot callaloud-setup-before 99588
+shot callaloud-setup-remote-on 101146
+shot callaloud-a-question 102706
+shot callaloud-b-reveal 72627
+shot callaloud-c-who-first 70650
+shot callaloud-c2-who-first-focus 70650
+shot callaloud-d-next-with-score 72754
+shot forehead-setup-before 107775
+shot forehead-setup-remote-on 109214
+shot forehead-a-cover 120940
+shot forehead-b-room 100338
+shot forehead-c-next-word 117192
+shot liar-setup-before 107311
+shot liar-setup-remote-on 112985
+shot liar-a-pass 60139
+shot liar-b-secret 81225
+shot liar-d-talk 92164
+shot liar-e-hands-vote 92446
+shot liar-e2-hands-vote-focus 92020
+shot liar-f-result 71621
+shot closest-setup-before 101742
+shot closest-setup-remote-on 107514
+shot closest-a-paper 115827
+shot closest-b-reveal 100022
+shot closest-c-first-place 88680
+shot closest-c2-second-place 92357
+shot closest-d-next-with-score 115021
+shot old-missing-word-score-cells 113574
+shot old-khanat-score-cells 84137
+shot list-01-tags 174268
+shot list-02-tags-first-row 175037
+callaloud-a-question.png
+callaloud-b-reveal.png
+callaloud-c-who-first.png
+callaloud-c2-who-first-focus.png
+callaloud-d-next-with-score.png
+callaloud-setup-before.png
+callaloud-setup-remote-on.png
+closest-a-paper.png
+closest-b-reveal.png
+closest-c-first-place.png
+closest-c2-second-place.png
+closest-d-next-with-score.png
+closest-setup-before.png
+closest-setup-remote-on.png
+crashes.txt
+forehead-a-cover.png
+forehead-b-room.png
+forehead-c-next-word.png
+forehead-setup-before.png
+forehead-setup-remote-on.png
+liar-a-pass.png
+liar-b-secret.png
+liar-d-talk.png
+liar-e-hands-vote.png
+liar-e2-hands-vote-focus.png
+liar-f-result.png
+liar-setup-before.png
+liar-setup-remote-on.png
+list-00.png
+list-01-tags.png
+list-02-tags-first-row.png
+log.txt
+old-khanat-score-cells.png
+old-missing-word-score-cells.png
