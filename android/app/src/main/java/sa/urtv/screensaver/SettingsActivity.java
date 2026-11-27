@@ -1771,6 +1771,7 @@ public class SettingsActivity extends Activity {
         find.setFocusable(true);
         find.setClickable(true);
         find.setTag(SIDE);
+        find.setContentDescription(conv("بحث في الإعدادات"));   // 4.4 beta 4: the icon has a name (a screen reader, and the emulator's count, could not find it)
         find.setImageDrawable(getDrawable(R.drawable.ic_search).mutate());
         find.setImageTintList(CouchStyle.ink(CouchStyle.TEXT, CouchStyle.WHITE, CouchStyle.INK));
         int pad = (cs.px(CouchStyle.FIND) - cs.px(CouchStyle.SEC_ICON)) / 2;

@@ -107,7 +107,7 @@ def settings(style):
 TARGETS = [
     ("احذف صورة", 6, [("صوري والخلفيات", True), ("احذف صورة", True)]),
     ("أذاني من ملف", 6, [("الصلاة والأذان", True), ("المؤذن", True), ("أذاني من ملف", True)]),
-    ("الأدعية والتذكيرات", 6, [("الصلاة والأذان", True), ("الأدعية والتذكيرات", True)]),
+    ("الأدعية والتذكيرات", 7, [("الصلاة والأذان", True), ("الأدعية والتذكيرات", True)]),
     ("التطبيقات المخفية", 12, [("التطبيقات والأزرار", True), ("التطبيقات المخفية", True)]),
     ("حجم البطاقات", 12, [("الشكل", True), ("حجم البطاقات", True)]),
     ("بحث في الإعدادات", 2, [("بحث في الإعدادات", True)]),   # the search's field; the word «جعفري» is typed there (no presses of the arrows)
@@ -137,8 +137,8 @@ def main():
             adb("shell", "input", "keyevent", "KEYCODE_BACK")
             adb("shell", "input", "keyevent", "KEYCODE_BACK")
     # from HOME: the remote's Settings key held opens «تلفزيونك», then its «الإعدادات»
-    adb("shell", "input", "keyevent", "KEYCODE_HOME")
-    time.sleep(3)
+    adb("shell", "am", "start", "-W", "--activity-clear-task", "-n", f"{HOME}/.MainActivity")   # our home in front (the emulator's own launcher is the default one)
+    time.sleep(4)
     w = Walk()
     adb("shell", "input", "keyevent", "--longpress", "KEYCODE_SETTINGS")
     w.n += 1
