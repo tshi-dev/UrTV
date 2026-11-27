@@ -21,19 +21,22 @@ public class CharadesActivity extends GameActivity {
     static final GameDataCheck.Parser<List<CharadesWords.Word>> STARTER = raw -> CharadesWords.parse(GameDataCheck.root(raw, '{'), CharadesWords.STARTER_MIN);
     private static final int[] TEAMS = {2, 3, 4};
 
-    private enum Screen { SETUP, LOBBY, ACTOR, PLAY, TURN_END, END }
+    private enum Screen { SETUP, LOBBY, ACTOR, BACK, PLAY, TURN_END, END }
     private Screen screen = Screen.SETUP;
     private GameChips chips; private List<CharadesWords.Word> words; private CharadesGame game; private GameScore score; private String[] names;
     private int sel, actor, passes; private TickTimer timer; private final Random rnd = new Random();
+    private boolean behind;   // «على جبيني» with one remote (opened by ForeheadActivity): the word on the TV for all but the guesser
     private CharadesWords.Word pushed; private boolean pushedSkip, pushedFoul;   // what the actor's phone shows now
 
     @Override protected String id() { return "charades"; }
+    @Override protected String gameName() { return behind ? S.tv(GameRegistry.byId("forehead").name) : super.gameName(); }
     @Override protected boolean inPlay() { return screen != Screen.SETUP && screen != Screen.LOBBY && screen != Screen.END; }
     @Override protected String namesKind() { return "teams"; }
     @Override protected int namesCount() { return TEAMS[chips.picked("teams")]; }
 
     @Override protected void onCreate(Bundle b) {
         super.onCreate(b);
+        behind = getIntent() != null && getIntent().getBooleanExtra("behind", false);
         words = GameData.load(this, "charades", PUBLISHED, STARTER);
         GameData.refresh(this, "charades", PUBLISHED, BYTES_MAX);
         String[] teams = new String[TEAMS.length], secs = new String[CharadesGame.SECONDS.length];
@@ -44,6 +47,12 @@ public class CharadesActivity extends GameActivity {
             .add("phones", S.t("اللعب بالجوالات"), new String[]{S.tv(ON_OFF[0]), S.tv(ON_OFF[1])}, 0);
         remembered(soundChip(chips));
         chips.get("phones").picked = getIntent().getBooleanExtra("phones", false) ? 1 : 0;   // off unless the «بالجوالات» page opened this game; never kept from last time
+        if (behind) {   // opened by «على جبيني» in «اللعب بالريموت بس»: its teams, time and kids filter (the two lists have the same values)
+            chips.get("teams").picked = Math.max(0, Math.min(TEAMS.length - 1, getIntent().getIntExtra("teams", 0)));
+            chips.get("time").picked = Math.max(0, Math.min(CharadesGame.SECONDS.length - 1, getIntent().getIntExtra("time", 1)));
+            chips.get("age").picked = getIntent().getIntExtra("kids", 0) == 1 ? 1 : 0;
+            chips.get("phones").picked = 0;
+        }
         onChips(chips);
     }
     /** «مخالفة» belongs to «وصّف» only */
@@ -71,15 +80,17 @@ public class CharadesActivity extends GameActivity {
     private boolean onPhones() { return phones != null && phones.room.phase() == GamePhoneRoom.Phase.PLAY; }
     private void begin() {
         List<String> recent = new ArrayList<>(GamePrefs.recent(this, id())); Collections.reverse(recent);
-        boolean describe = chips.picked("mode") == 1;
+        boolean describe = behind || chips.picked("mode") == 1;   // «على جبيني» uses the «وصّف» words
         game = new CharadesGame(new CharadesWords.Deck(words, describe, chips.picked("age") == 1, recent, rnd), describe, TEAMS[chips.picked("teams")],
             CharadesGame.SECONDS[chips.picked("time")], CharadesGame.DEFAULT_TURNS, chips.picked("foul") == 1, System::currentTimeMillis);
+        game.behind = behind && !onPhones();
         game.coverNext = !onPhones();   // with one remote a new word waits behind a cover (the TV is where the guessers look); with phones it is on the actor's phone
         score = new GameScore(game.teams); names = teamNames(game.teams);
         pass();
     }
     /** the team's actor takes the remote and sees the first word alone; hiding it starts the clock */
     private void pass() {
+        if (game.behind) { screen = Screen.BACK; redraw(); return; }   // the guesser turns their back first; OK starts the clock
         screen = Screen.PLAY;
         final CharadesGame g = game; final int turn = g.turn, sudden = g.sudden, team = g.team;
         g.ready();
@@ -144,6 +155,14 @@ public class CharadesActivity extends GameActivity {
         switch (screen) {
             case SETUP: setup(chips, S.t("ابدأ")); break;
             case LOBBY: drawPhoneLobby(2, 12); break;
+            case BACK:
+                root.setBackgroundColor(L.deep);
+                root.addView(centered(S.t("ولّ ظهرك للتلفزيون"), 128, L.onDeep, true), at(1728, 170, 96, 150));
+                root.addView(centered(S.t("اللي يخمّن من %s", names[game.team]), 72, L.saff, true), at(1728, 110, 96, 340));
+                root.addView(centered(S.t("الباقين: شوفوا الكلمة ووصّفوها بدون ما تقولونها"), 52, L.onDeep, true), at(1728, 100, 96, 520));
+                root.addView(button(S.t("جاهزين، ابدأوا الوقت"), true), at(672, 112, 624, 720));
+                hints(S.t("اختيار"), S.t("يبدأ الوقت"), S.t("رجوع"), S.t("إيقاف"));
+                break;
             case ACTOR:
                 question(S.t("دور %s", names[game.team]), S.t("الممثل يشوف الكلمة في جواله"), 420);
                 root.addView(centered(phones.room.name(actor), 120, L.ink, true), at(1728, 180, 96, 520));
@@ -153,7 +172,16 @@ public class CharadesActivity extends GameActivity {
             case PLAY: {
                 sync();
                 String turn = S.t("دور %s", names[game.team]);
-                if (game.wordVisible() && !onPhones()) {
+                if (game.behind && game.wordVisible()) {   // the word for the room; the guesser's back is to the TV
+                    String w = game.word.text(en);
+                    question(turn, S.t("وصّفوها بدون ما تقولونها"), 340);
+                    timer = new TickTimer((int) (game.turnMs() / 1000), 288);
+                    root.addView(centered(w, sizeFor(w, 200, 136, 96, 12, 24), L.ink, true), at(1728, 360, 96, 330));
+                    root.addView(centered(S.t("اللي يخمّن: ولّ ظهرك للتلفزيون"), 56, L.ink(0xCC), true), at(1728, 84, 96, 700));
+                    sidesBar(score, names, game.team, 800);
+                    if (game.canSkip()) hints(S.t("اختيار"), S.t("صح والكلمة اللي بعدها"), "◀", S.t("تخطّي (باقي %s)", num(CharadesGame.SKIPS_MAX - game.skips)));
+                    else hints(S.t("اختيار"), S.t("صح والكلمة اللي بعدها"));
+                } else if (game.wordVisible() && !onPhones()) {
                     String w = game.word.text(en);
                     question(turn, S.t("الكلمة لك وحدك"), 340);   // 340 high so the line stands whole above the ticks
                     timer = new TickTimer((int) (game.turnMs() / 1000), 288);
@@ -200,6 +228,7 @@ public class CharadesActivity extends GameActivity {
             if (back) { closePhones(); screen = Screen.SETUP; redraw(); } else if (ok) startWithPhones();
             return;
         }
+        if (screen == Screen.BACK) { if (back) openPause(); else if (ok) { game.ready(); if (game.phase == CharadesGame.Phase.END) end(); else { screen = Screen.PLAY; redraw(); } } return; }
         if (screen == Screen.END) {
             if (back) { finish(); return; }
             int v = keyButtons(sel, 3, ok, dx);
@@ -219,6 +248,12 @@ public class CharadesActivity extends GameActivity {
             return;
         }
         boolean left = dx == (rtl ? 1 : -1);   // the arrow that points left on the remote, in both languages
+        if (game.behind && game.phase == CharadesGame.Phase.PLAY) {   // the word stays on the TV: OK is «صح» (the next word at once), left is «تخطّي»
+            if (ok) { if (!game.correct()) return; play(QuizSound.CHIME); if (game.phase == CharadesGame.Phase.TURN_END) turnEnded(); }
+            else if (left) { if (!game.skip()) return; }
+            else return;
+            redraw(); return;
+        }
         if (game.wordVisible()) {
             if (ok) game.hide(); else if (left) game.skip(); else return;
         } else if (game.covered()) {

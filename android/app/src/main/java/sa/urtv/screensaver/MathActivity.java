@@ -28,11 +28,13 @@ public class MathActivity extends GameActivity {
         for (int i = 0; i < qs.length; i++) qs[i] = num(MathGame.QUESTIONS[i]);
         for (int i = 0; i < secs.length; i++) secs[i] = S.t("%s ثانية", num(MathGame.SECONDS[i]));
         chips = new GameChips().add("count", S.t("الأسئلة"), qs, 0).add("level", S.t("المستوى"), new String[] {S.t("سهل"), S.t("متوسط"), S.t("صعب")}, 1).add("time", S.t("الوقت"), secs, 1);
+        remoteChip(chips);
         remembered(soundChip(chips));
     }
     private boolean onPhones() { return phones != null && phones.room.phase() == GamePhoneRoom.Phase.PLAY; }
 
     private void start() {
+        if (remoteOn(chips)) { startActivity(new android.content.Intent(this, CallAloudActivity.class).putExtra("src", "maths")); finish(); return; }   // «اللعب بالريموت بس»: the answers are called aloud (CallAloudActivity)
         if (!openPhones()) return;
         screen = Screen.LOBBY; phoneLobby = true; redraw();
     }

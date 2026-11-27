@@ -33,6 +33,7 @@ public class QuranVerseActivity extends GameActivity {
         for (int i = 0; i < qs.length; i++) qs[i] = num(EmojiGame.QUESTIONS[i]);
         for (int i = 0; i < secs.length; i++) secs[i] = S.t("%s ثانية", num(EmojiGame.SECONDS[i]));
         chips = new GameChips().add("count", S.t("الأسئلة"), qs, 0).add("time", S.t("الوقت"), secs, 1).add("kids", S.t("للأطفال"), new String[]{S.tv(ON_OFF[0]), S.tv(ON_OFF[1])}, 0);
+        remoteChip(chips);
         remembered(soundChip(chips));
     }
     @Override protected void onPause() { super.onPause(); keep(); }
@@ -40,6 +41,7 @@ public class QuranVerseActivity extends GameActivity {
     private boolean onPhones() { return phones != null && phones.room.phase() == GamePhoneRoom.Phase.PLAY; }
 
     private void start() {
+        if (remoteOn(chips)) { startActivity(new android.content.Intent(this, CallAloudActivity.class).putExtra("src", "quran-verse")); finish(); return; }   // «اللعب بالريموت بس»: the answers are called aloud (CallAloudActivity)
         if (bank == null) { toast(S.t("قريبًا")); return; }
         if (!openPhones()) return;
         screen = Screen.LOBBY; phoneLobby = true; redraw();

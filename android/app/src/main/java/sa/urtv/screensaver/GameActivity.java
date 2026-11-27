@@ -483,6 +483,34 @@ public abstract class GameActivity extends Activity {
         }
     }
 
+    /** a card whose focus is scale and shadow only (the fill and the line stay as they are): the look of the one-remote modes (docs/GAMES-REMOTE.md) */
+    protected final TextView focusCard(String label, float size, boolean focused) {
+        TextView v = centered(label, size, L.ink, true); v.setSingleLine(true);
+        v.setBackground(shape(L.tile, L.ink, 6, false));
+        if (focused) { v.setScaleX(1.06f); v.setScaleY(1.06f); v.setElevation(px(24)); }
+        return v;
+    }
+    /** the sides' bar with each score in its own cell (a rule, the number big, «نقطة» small under it), so a name and its score never touch; the side whose turn it is stands out by scale and shadow; 112 px high at `y` */
+    protected final void scoreBar(GameScore s, String[] names, int turn, float y) {
+        float gap = 16, w = Math.min(560, (1728 - (s.n - 1) * gap) / s.n); boolean small = s.n > 4;
+        for (int i = 0; i < s.n; i++) {
+            LinearLayout t = new LinearLayout(this); t.setOrientation(LinearLayout.VERTICAL); t.setBackground(shape(L.tile, L.ink, 4, false));
+            t.addView(rect(L.sides[i % L.sides.length]), new LinearLayout.LayoutParams(-1, px(16)));
+            LinearLayout row = new LinearLayout(this); row.setOrientation(LinearLayout.HORIZONTAL); row.setLayoutDirection(Dir.layout());
+            TextView nm = centered(s.n > 6 ? "" : clip(names[i], small ? 30 : 40, w - (small ? 130 : 180)), small ? 30 : 40, L.ink, true); nm.setSingleLine(true);
+            row.addView(nm, new LinearLayout.LayoutParams(0, -1, 1f));
+            row.addView(rect(L.ink), new LinearLayout.LayoutParams(px(4), -1));
+            LinearLayout cell = new LinearLayout(this); cell.setOrientation(LinearLayout.VERTICAL); cell.setGravity(Gravity.CENTER);
+            TextView sc = centered(num(s.points[i]), small ? 44 : 52, L.ink, true); sc.setTextDirection(View.TEXT_DIRECTION_LTR); sc.setIncludeFontPadding(false);
+            cell.addView(sc, new LinearLayout.LayoutParams(-2, -2));
+            if (!small) cell.addView(centered(S.t("نقطة"), 22, L.ink(0xA6), false), new LinearLayout.LayoutParams(-2, -2));
+            row.addView(cell, new LinearLayout.LayoutParams(px(small ? 90 : 130), -1));
+            t.addView(row, new LinearLayout.LayoutParams(-1, 0, 1f));
+            if (i == turn) { t.setScaleX(1.06f); t.setScaleY(1.06f); t.setElevation(px(24)); }
+            root.addView(t, at(w, 112, 96 + i * (w + gap), y));
+        }
+    }
+
     /** the rank rows from y 236: the place as a big numeral in an ink box (saffron for first), the side, what it just won («+10») and its total; shared places */
     protected final void board(GameScore s, String[] names, boolean withLast) {
         boolean small = s.n > 5, tiny = s.n > 8;   // 5 rows of 128, 8 of 80, 10 of 64: the last row always ends above y 960
@@ -542,6 +570,9 @@ public abstract class GameActivity extends Activity {
 
     // ---------------------------------------------------------------- the quick setup
 
+    /** «اللعب بالريموت بس» (docs/GAMES-REMOTE.md): a row of the setup of a phone game that has a one-remote way; OFF by default (and kept per game like every chip) */
+    protected final GameChips remoteChip(GameChips c) { return c.add("remote", S.t("اللعب بالريموت بس"), new String[]{S.tv(ON_OFF[0]), S.tv(ON_OFF[1])}, 0); }
+    protected final boolean remoteOn(GameChips c) { return c.get("remote") != null && c.picked("remote") == 1; }
     /** the chips every game shares: «الصوت» (one switch for all the remote-only games) */
     protected final GameChips soundChip(GameChips c) { c.add("sound", S.t("الصوت"), new String[]{S.tv(SOUND_OPTS[0]), S.tv(SOUND_OPTS[1])}, 0); c.get("sound").picked = sound ? 0 : 1; return c; }
     /** the chips of last time for this game (call after every add) */
@@ -560,7 +591,7 @@ public abstract class GameActivity extends Activity {
         }
         {   // how this game is played, in a word at the end corner (left of the «!»): «جوال» when it needs phones (or the phones switch is on), else «ريموت»
             GameChips.Row ph = c.get("phones");
-            boolean phones = GameRegistry.needsPhones(id()) || (ph != null && ph.picked == 1);
+            boolean phones = (GameRegistry.needsPhones(id()) && !remoteOn(c)) || (ph != null && ph.picked == 1);
             TextView tag = centered(phones ? S.t("جوال") : S.t("ريموت"), 30, phones ? L.onSaff : L.ink, true); tag.setSingleLine(true);
             tag.setBackground(shape(phones ? L.saff : L.tile, phones ? L.saff : L.ink, 3, false));
             root.addView(tag, atEnd(144, 48, c.hasHelp ? 168 : 96, 70));
