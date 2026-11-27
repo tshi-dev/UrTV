@@ -103,7 +103,7 @@ public final class PhotoAddActivity extends Activity {
                 if (!alive) return;
                 files.clear();
                 files.addAll(found);
-                note.setText(found.isEmpty() ? S.t("لا صور هنا (jpg أو png أو webp). ركّب الفلاشة وانتظر ثواني ثم ارجع وافتحها") : S.t("اضغط OK على صورة لإضافتها إلى صوري"));
+                note.setText(found.isEmpty() ? S.t("لا صور هنا (jpg أو png أو webp). ركّب الفلاشة وانتظر ثواني ثم ارجع وافتحها") : S.t("اضغط اختيار على صورة لإضافتها إلى صوري"));
                 adapter.notifyDataSetChanged();
             });
         });
