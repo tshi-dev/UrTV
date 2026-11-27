@@ -138,6 +138,14 @@ shot settings-c-tvos-prayer 2
 key BACK BACK
 saver --es settingsstyle buttons
 
+# 4.4 beta 4: «كنبة»'s side cards, A (two) and B (three), on the home in the «كنبة» layout; then off again (the default)
+saver --es homelayout couch --es clock glass
+for opt in a b; do
+  saver --es sidecards $opt
+  adb shell input keyevent KEYCODE_HOME; sleep 8
+  shot home-side-cards-$opt 2
+done
+saver --es sidecards off
 # 4.4 beta 4 (the findability review §5): the presses to each target in every settings style, counted by moving the focus as a person would
 python3 .github/screens/presses.py "$OUT" || echo "presses: the walk stopped"
 adb logcat -d -s AndroidRuntime:E > "$OUT/crashes.txt"
