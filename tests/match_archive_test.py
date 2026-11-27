@@ -366,5 +366,37 @@ check("docs/MATCH-ARCHIVE.md describes every file a client reads", all(x in doc 
       "h2h/&lt;lowId&gt;-&lt;highId&gt;.json", "results/&lt;leagueId&gt;.json", "store/&lt;leagueId&gt;/&lt;season&gt;.json")))
 check("the doc's format number is the code's", f"now `{ma.V}`" in doc and f"at most {ma.LAST}" in doc and f"at most {ma.RESULTS_MAX}" in doc)
 
+# 4.4 issue #70: TheSportsDB listed MLS games of 2026 under «2026» and again under «2026-2027» (the same ids); the second copy stayed «NS»
+# after the first got its result, so the health check counted «games played with no result». One copy per id, the one with a result.
+import datetime as _dt   # noqa: E402
+ago = lambda d: (_dt.datetime.now(_dt.timezone.utc) - _dt.timedelta(days=d)).strftime("%Y-%m-%dT%H:%M:%S")
+mls = [ev("m1", "1", "2", ago(4), "3", "2", "FT", lg="4346", season="2026"), ev("m2", "3", "4", ago(3), "2", "1", "FT", lg="4346", season="2026"),
+       ev("m3", "5", "6", ago(5), "1", "0", "FT", lg="4346", season="2026")]
+stale = [ev("m1", "1", "2", ago(4), lg="4346", season="2026-2027"), ev("m2", "3", "4", ago(3), lg="4346", season="2026-2027")]
+st = ma.Store()   # the store as urtv-data has it now: both copies (a load of two files)
+for e in mls + stale:
+    c = ma.compact(e)
+    st.leagues.setdefault((c["lg"], c["s"]), {})[c["id"]] = c
+gone = st.dedupe()
+ids = {k: s_ for (lg, s_), b in st.leagues.items() for k in b}
+check("#70 dedupe: a game under two seasons is kept once, the copy with its result (the stale «NS» one goes)", gone == 2 and st.total() == 3
+      and all(st.leagues[("4346", "2026")][k]["st"] == "FT" for k in ("m1", "m2")) and ("4346", "2026-2027") not in st.leagues, (gone, ids))
+st2 = ma.Store()   # the next run: the result first, then the stale copy under the other label: refused, never a step back
+for e in mls + stale:
+    st2.put(ma.compact(e))
+check("#70 put: a stale copy under another season never replaces the one with a result, and is not stored twice",
+      st2.total() == 3 and all(e_["st"] == "FT" for e_ in st2.events()), [(k, e_["s"], e_["st"]) for (lg, s_), b in st2.leagues.items() for k, e_ in b.items()])
+st3 = ma.Store()   # the other way: the season label moves with a newer report (same or better stage): moved, one copy
+st3.put(ma.compact(stale[0])); st3.put(ma.compact(mls[0]))
+check("#70 put: the newer copy with a result moves the game to its season (one copy)", st3.total() == 1 and ("4346", "2026") in st3.leagues and not st3.leagues.get(("4346", "2026-2027")))
+prev70 = Path(tempfile.mkdtemp())   # a whole build on a store with the duplicates: no «without result», nothing «shrank»
+(prev70 / "store/4346").mkdir(parents=True)
+for season, evs in (("2026", mls), ("2026-2027", stale)):
+    (prev70 / f"store/4346/{season}.json").write_text(json.dumps({"id": "4346", "season": season, "league": "American Major League Soccer",
+                                                                    "events": {e["idEvent"]: ma.compact(e) for e in evs}}))
+o70 = build(leagues_dir([], lg="4346"), prev70)
+h70 = json.loads((o70 / "health.json").read_text())
+check("#70 build: the duplicates go (not a «store shrank» failure), and MLS has no game «without result»", h70["followed"]["4346"]["without_result"] == 0
+      and not any("4346" in p_ for p_ in h70["problems"]) and len(store_events(o70)) == 3, {k: h70[k] for k in ("problems", "events")})
 print("\n%s" % ("ALL PASS" if not failed else f"{failed} FAILED"))
 sys.exit(1 if failed else 0)
