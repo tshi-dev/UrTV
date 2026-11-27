@@ -1,3 +1,17 @@
+▶▶ BETA 4 = next 46dcad40 (27 Nov, night). This replaces the c64dc215 block. Do this FIRST.
+0. Update your checkout (git fetch; it has tester/auto/). Wait until apk-next/version.txt is newer than 3.633 (the Build APKs run on next 46dcad40). TV muted, and check Muted: true. Save `saver.sh show` as show-before.txt.
+1. AUTOMATIC: run `tester/auto/round.sh` (it installs apk-next keeping data, then runs layouts, settings, saver, radio, display, font, adhan, games and health). Read the verdict at the bottom of report.md. Push tester/auto/out/<build>/ to work/tester-report. Box the city in shots (it makes -city.png copies; push only those).
+2. MANUAL (shot per key, never blind), for what the script can't judge:
+   a. «كنبة» with stocks and with matches: the big glass clock is centred WITH the strip under it, no small clock top-right, and the clock is in the same place as with none.
+   b. Settings, new tree, in «كنبة» and «الأزرار»: count the presses from HOME to (1) «أذاني من ملف» in «المؤذن», (2) «الأدعية والتذكيرات», (3) «احذف صورة», (4) the search for «جعفري». Write the counts.
+   c. «طريقة الحساب» → «جعفري»: shot of the prayer times card after choosing it, then set it back.
+   d. «الأذان لكل صلاة»: set one prayer to «لا شيء» and check the status, then set it back.
+   e. Games: list badges («جوال» on 9, «ريموت» on 7); «ابدأ» starts at once in خمس خانات and واحد مو معنا; domino opponent tile backs; hex letters readable; «بدون كلام» next word covered.
+   f. A hadith on the saver shows its grading line.
+   g. Run `logcat -d -s UrTVMute` and keep the lines.
+3. Then the live channels part (30 s each), as before.
+Restore the owner's settings from show-before.txt at the end; muted. Never the family PIN, no factory reset, never touch launcherx/setupwraith, never type any games code.
+
 ▶▶ BETA 4 = next c64dc215 (26 Nov, late) — do this FIRST, before the games review
 0. Install from apk-next once version.txt shows the commit c64dc215 (Build APKs on next). Keep data. TV muted, check Muted: true. Before AND after every app restart run `logcat -d -s UrTVMute` and keep the lines (they say «by=us» or «by=not us»).
 1. «كنبة» clock, the owner's choice: like couch-tv the big glass clock stays centred WITH a card. `homelayout couch`, `home-card stocks`, HOME: shot. Expect the big clock centred, the stocks strip under it (cards about 182 tall, centred, no outline), the apps row under that, and NO small clock top-right. Then `home-card matches`: shot. Then `home-card none`: shot, the clock must be in the SAME place in all three. Also check the date is not under the greeting (R-324).
