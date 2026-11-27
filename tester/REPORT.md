@@ -3405,3 +3405,23 @@ Live channels part: not run yet (needs the home and Player lists by D-pad with a
 ## GAMES REVIEW (27 Nov, build 629 / versionCode 628)
 Done: all 16 games reviewed with the remote only; the full text, the table and the ranked top 10 fixes are in tester/GAMES-REVIEW.md, shots in tester/games/. Short version: 7 of the 16 games play fully on one remote (خمس خانات, الكلمة المفقودة, واحد مو معنا, بدون كلام, خلية الحروف, خمّن الكلمة, دومينو; the best flow is «واحد مو معنا»); the other 9 need phones and stop at the room page (الأسرع, على جبيني, من كاتبها؟, أقرب رقم, واحد يكذب, اقرأ الإيموجي, اربط الكلمات, ليل القرية, ارسم وخمّن; ارسم وخمّن has no sensible remote variant). Biggest finds: all tiles show the phone badge so you cannot tell which need phones; the first OK on «ابدأ» is inconsistent; domino opponent hand is tofu boxes; hex letters unreadable; ه looks like ٥ and ٠ is a diamond (room code «◆٨٢١»).
 TV state: muted, on the home, header play-style switch left on its default. Not done yet on 629: live channels, S-24/25/26, R-319.
+
+## BETA 4 = next 46dcad40 (build 654, 28 Nov, night) — partial
+Installed: 654 was on the TV (versionCode 654 home, screensaver, extras); `install.sh launcher` stops with «the safety switch put the stock home back (ADB was too slow)», so every round after it used `--no-install`. The default Home is still the stock launcherx (that is how it was before).
+Files: tester/beta4/b654/auto/ (report-r1/r4/r5.md and steps-r*.tsv; no raw/, no city/Wi-Fi), couch-stocks/matches/none.png (city boxed).
+
+What the automatic round says (honest reading, not the RED verdicts):
+- layouts 9/9 PASS. settings 30/30 PASS (buttons, couch, tvOS × 10 sections) and font 1.3 PASS, but ONLY after I raised the TV idle from 45 s to 10 min: with the owner's 45 s the screensaver starts in the middle of the round and every later step «fails» (settings, radio 7–12, games, font). round.sh should set a long idle itself (and put 45000 back) or press HOME first.
+- Harness bugs found: (1) lib.py prints Arabic with cp1252 on Windows (need PYTHONUTF8=1); (2) the «front» read breaks with «Broken pipe» (`dumpsys activity | head`); (3) `games` step starts `.QuizGamesActivity`, which is not exported (SecurityException) — use the hub → «الألعاب»; (4) `music.sh adhan state <prayer> <state>` is shadowed by the first `state)` branch (line 234), so it always prints the usage → the adhan step reports FAIL for 20 checks; the broadcast itself works (see 2d); (5) radio step: 13/13 «not playing» although `music.sh radio 0` with the home in front plays at once (playing=1, exo, no error) — the UI walk fails, probably a TCL app (com.tcl.ui_mediaCenter) taking the front; (6) cold_start_home_ms reads 0ms (parse), jank_home 22.6 % / 25.1 % (limit 15) on two runs — real or the dream/harness, not separated; (7) install.sh launcher «safety switch» above.
+- The round restored everything except `homelayout` (it stayed classic); I put it back to couch with `saver.sh homelayout couch`. Diff of `saver.sh show` before/after now: only the build line and two new keys (cardsize m, cardcorner style).
+
+Manual items:
+- 2a PASS: «كنبة» with stocks, matches and none: the big glass clock is centred in the same place in all three, the strip sits under it (cards stocks/matches), no small clock top-right. With «none» the date moves to the top right under the weather, close to the sunrise line.
+- 2d PASS (app side): Fajr set to «لا شيء» by broadcast: status prayer_sound fajr:silent and prayer_screen fajr:off; set back to both, status back to default.
+- 2f PASS: the saver's hadith card shows its grading line («… صحيح عند الألباني»).
+- 2g: `logcat -d -s UrTVMute` returns nothing (0 lines) in all rounds today.
+- 2b NOT DONE: I could not find the route to the settings from HOME. The apps row ends at Jellyfin after 8 LEFT presses (no «الإعدادات» tile); UP, UP lands on the header «مركز التحكم» and OK opens a quick panel (network, sound, speed test, تلفزيونك, الألعاب, المدينة, الأذان والإقامة) that has no settings entry. Which key path is the supervisor's «from HOME»?
+- 2c جعفري, 2e games badges: not done.
+- Radio by hand: `music.sh radio 0` from the home: playing, exo, pos advancing, no error; stopped afterwards.
+Live channels: not done.
+TV state: muted (Muted: true), home in front, idle back to 45000, display 1920x1080 override as before, font 1.0, settings as before (home-card stocks, couch).
