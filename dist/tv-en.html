@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <!-- the build: UTC time (YYYYMMDDHHMMSS) of the newest commit of the page's sources, put in by src/build.py. The app loads the page with the newer stamp (its own
      copy or a downloaded one), never by file time, and does not keep a download whose stamp is older than its own (Updater, PageStamp). -->
-<meta name="urtv-build" content="20261127170307">
+<meta name="urtv-build" content="20261127224237">
 <title>Your TV Screen</title>
 <style>
   @font-face{font-family:'Thmanyah';font-weight:300;font-style:normal;font-display:block;src:url("https://raw.githubusercontent.com/tshi-dev/UrTV/master/assets/fonts/Thmanyah-Light.woff2") format("woff2")}
@@ -71,6 +71,9 @@
   html.row .week .turnmark{position:absolute;bottom:.5em;inset-inline-end:.9em;font-size:.8em;color:rgba(255,255,255,.62)}
   
   html.csz-s .week{zoom:.88}html.csz-l .week{zoom:1.12}
+  
+  html.side .mid,html.side .mid.n2,html.side .mid.n3{grid-template-columns:minmax(0,1fr)!important;grid-auto-rows:1fr;gap:5.5vh;align-content:stretch;min-height:100vh;box-sizing:border-box;padding:1vh 1vw}
+  html.side .mid{align-items:stretch}html.side .mid .week{grid-column:auto!important;grid-row:auto!important;min-height:0;display:flex;flex-direction:column;justify-content:center}
   html.ccr-sharp .week{--cr:8px;border-radius:8px!important}html.ccr-soft .week{--cr:16px;border-radius:16px!important}html.ccr-round .week{--cr:26px;border-radius:26px!important}
   
   html.row .mid{box-sizing:border-box;min-height:100vh;padding-top:6.25vh;padding-bottom:6.25vh;padding-right:1vw;padding-left:1vw}
@@ -5362,6 +5365,7 @@ function addCardStyle(){
 function bootWidget(){
   document.documentElement.classList.add('widget');
   if(_Q.get('row') === '1') document.documentElement.classList.add('row');
+  if(_Q.get('side') === '1') document.documentElement.classList.add('side');
   if(_Q.get('tvos') === '1') document.documentElement.classList.add('tvos');
   if(CONFIG.lowram) document.documentElement.classList.add('lowram');
   addCardStyle();
