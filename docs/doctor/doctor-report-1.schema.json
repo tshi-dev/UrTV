@@ -1,0 +1,1810 @@
+{
+ "$schema": "https://json-schema.org/draft/2020-12/schema",
+ "$id": "https://tshi-dev.github.io/UrTV/doctor/doctor-report-1.schema.json",
+ "title": "urtv-doctor/1: one report of «فحص تلفزيونك» (docs/doctor/PLAN.md, section 4). Draft for the owner's review: phase 2 builds against it.",
+ "type": "object",
+ "additionalProperties": false,
+ "required": [
+  "schema",
+  "app",
+  "install",
+  "time",
+  "tv",
+  "urtv",
+  "checks",
+  "consent",
+  "hash"
+ ],
+ "properties": {
+  "schema": {
+   "const": "urtv-doctor/1"
+  },
+  "app": {
+   "type": "object",
+   "additionalProperties": false,
+   "properties": {
+    "version": {
+     "$ref": "#/$defs/tok"
+    },
+    "build": {
+     "type": "integer",
+     "minimum": 0,
+     "maximum": 1000000000
+    },
+    "cert": {
+     "type": "string",
+     "pattern": "^[0-9a-f]{64}$"
+    },
+    "channel": {
+     "enum": [
+      "latest",
+      "beta",
+      "next"
+     ]
+    }
+   },
+   "required": [
+    "version",
+    "build",
+    "cert",
+    "channel"
+   ]
+  },
+  "install": {
+   "type": "string",
+   "pattern": "^[0-9A-HJKMNP-TV-Z]{26}$"
+  },
+  "time": {
+   "type": "object",
+   "additionalProperties": false,
+   "properties": {
+    "net": {
+     "type": [
+      "string",
+      "null"
+     ],
+     "pattern": "^\\d{4}-\\d\\d-\\d\\dT\\d\\d:\\d\\d:\\d\\dZ$"
+    },
+    "source": {
+     "enum": [
+      "date-header",
+      "none"
+     ]
+    },
+    "offset_s": {
+     "type": [
+      "integer",
+      "null"
+     ],
+     "minimum": -1000000000,
+     "maximum": 1000000000
+    }
+   },
+   "required": [
+    "net",
+    "source",
+    "offset_s"
+   ]
+  },
+  "tv": {
+   "type": "object",
+   "additionalProperties": false,
+   "properties": {
+    "maker": {
+     "$ref": "#/$defs/tok"
+    },
+    "model": {
+     "$ref": "#/$defs/tok"
+    },
+    "device": {
+     "$ref": "#/$defs/tok"
+    },
+    "android": {
+     "$ref": "#/$defs/tok"
+    },
+    "sdk": {
+     "type": "integer",
+     "minimum": 0,
+     "maximum": 1000000000
+    },
+    "build_id": {
+     "$ref": "#/$defs/tok"
+    },
+    "patch": {
+     "$ref": "#/$defs/tok"
+    },
+    "leanback": {
+     "type": "boolean"
+    },
+    "google_tv": {
+     "type": "boolean"
+    }
+   },
+   "required": [
+    "maker",
+    "model",
+    "device",
+    "android",
+    "sdk",
+    "build_id",
+    "patch",
+    "leanback",
+    "google_tv"
+   ]
+  },
+  "urtv": {
+   "type": "object",
+   "additionalProperties": false,
+   "properties": {
+    "installed": {
+     "type": "boolean"
+    },
+    "apps": {
+     "type": "array",
+     "items": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+       "pkg": {
+        "enum": [
+         "sa.urtv.home",
+         "sa.urtv.screensaver",
+         "sa.urtv.extras",
+         "sa.urtv.rescue",
+         "sa.urtv.doctor"
+        ]
+       },
+       "version": {
+        "$ref": "#/$defs/tok"
+       },
+       "build": {
+        "type": "integer",
+        "minimum": 0,
+        "maximum": 1000000000
+       },
+       "enabled": {
+        "type": "boolean"
+       },
+       "ours": {
+        "type": "boolean"
+       }
+      },
+      "required": [
+       "pkg",
+       "version",
+       "build",
+       "enabled",
+       "ours"
+      ]
+     },
+     "maxItems": 5
+    }
+   },
+   "required": [
+    "installed",
+    "apps"
+   ]
+  },
+  "checks": {
+   "type": "array",
+   "maxItems": 32,
+   "items": {
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+     "id",
+     "verdict",
+     "why",
+     "raw"
+    ],
+    "properties": {
+     "id": {
+      "enum": [
+       "D1",
+       "D2",
+       "D3",
+       "D4",
+       "D5",
+       "D6",
+       "H1",
+       "H2",
+       "H3",
+       "H4",
+       "H5",
+       "H6",
+       "K1",
+       "K2",
+       "N1",
+       "N2",
+       "T1",
+       "Q1",
+       "W1",
+       "C1"
+      ]
+     },
+     "verdict": {
+      "enum": [
+       "PASS",
+       "WARN",
+       "FAIL",
+       "UNKNOWN",
+       "SKIP"
+      ]
+     },
+     "why": {
+      "$ref": "#/$defs/tok"
+     },
+     "raw": {}
+    },
+    "allOf": [
+     {
+      "if": {
+       "properties": {
+        "id": {
+         "const": "D1"
+        }
+       }
+      },
+      "then": {
+       "properties": {
+        "raw": {
+         "anyOf": [
+          {
+           "type": "object",
+           "additionalProperties": false,
+           "properties": {
+            "maker": {
+             "$ref": "#/$defs/tok"
+            },
+            "model": {
+             "$ref": "#/$defs/tok"
+            },
+            "device": {
+             "$ref": "#/$defs/tok"
+            },
+            "android": {
+             "$ref": "#/$defs/tok"
+            },
+            "sdk": {
+             "type": "integer",
+             "minimum": 0,
+             "maximum": 1000000000
+            },
+            "build_id": {
+             "$ref": "#/$defs/tok"
+            },
+            "patch": {
+             "$ref": "#/$defs/tok"
+            },
+            "leanback": {
+             "type": "boolean"
+            },
+            "google_tv": {
+             "type": "boolean"
+            }
+           },
+           "required": [
+            "maker",
+            "model",
+            "device",
+            "android",
+            "sdk",
+            "build_id",
+            "patch",
+            "leanback",
+            "google_tv"
+           ]
+          },
+          {
+           "type": "null"
+          }
+         ]
+        }
+       }
+      }
+     },
+     {
+      "if": {
+       "properties": {
+        "id": {
+         "const": "D2"
+        }
+       }
+      },
+      "then": {
+       "properties": {
+        "raw": {
+         "anyOf": [
+          {
+           "type": "object",
+           "additionalProperties": false,
+           "properties": {
+            "pkg": {
+             "anyOf": [
+              {
+               "$ref": "#/$defs/tok"
+              },
+              {
+               "type": "null"
+              }
+             ]
+            },
+            "version": {
+             "anyOf": [
+              {
+               "$ref": "#/$defs/tok"
+              },
+              {
+               "type": "null"
+              }
+             ]
+            },
+            "major": {
+             "type": [
+              "integer",
+              "null"
+             ],
+             "minimum": 0,
+             "maximum": 1000000000
+            }
+           },
+           "required": [
+            "pkg",
+            "version",
+            "major"
+           ]
+          },
+          {
+           "type": "null"
+          }
+         ]
+        }
+       }
+      }
+     },
+     {
+      "if": {
+       "properties": {
+        "id": {
+         "const": "D3"
+        }
+       }
+      },
+      "then": {
+       "properties": {
+        "raw": {
+         "anyOf": [
+          {
+           "type": "object",
+           "additionalProperties": false,
+           "properties": {
+            "from_entries": {
+             "type": [
+              "boolean",
+              "null"
+             ]
+            },
+            "flat": {
+             "type": [
+              "boolean",
+              "null"
+             ]
+            },
+            "match_all": {
+             "type": [
+              "boolean",
+              "null"
+             ]
+            },
+            "replace_all": {
+             "type": [
+              "boolean",
+              "null"
+             ]
+            },
+            "all_settled": {
+             "type": [
+              "boolean",
+              "null"
+             ]
+            },
+            "opt_chain": {
+             "type": [
+              "boolean",
+              "null"
+             ]
+            },
+            "nullish": {
+             "type": [
+              "boolean",
+              "null"
+             ]
+            },
+            "flex_gap": {
+             "type": [
+              "boolean",
+              "null"
+             ]
+            },
+            "clamp": {
+             "type": [
+              "boolean",
+              "null"
+             ]
+            },
+            "error": {
+             "anyOf": [
+              {
+               "$ref": "#/$defs/tok"
+              },
+              {
+               "type": "null"
+              }
+             ]
+            }
+           },
+           "required": [
+            "from_entries",
+            "flat",
+            "match_all",
+            "replace_all",
+            "all_settled",
+            "opt_chain",
+            "nullish",
+            "flex_gap",
+            "clamp",
+            "error"
+           ]
+          },
+          {
+           "type": "null"
+          }
+         ]
+        }
+       }
+      }
+     },
+     {
+      "if": {
+       "properties": {
+        "id": {
+         "const": "D4"
+        }
+       }
+      },
+      "then": {
+       "properties": {
+        "raw": {
+         "anyOf": [
+          {
+           "type": "object",
+           "additionalProperties": false,
+           "properties": {
+            "total_mb": {
+             "type": "integer",
+             "minimum": 0,
+             "maximum": 1000000000
+            },
+            "avail_mb": {
+             "type": "integer",
+             "minimum": 0,
+             "maximum": 1000000000
+            },
+            "low_ram": {
+             "type": "boolean"
+            },
+            "low_now": {
+             "type": "boolean"
+            },
+            "mem_class": {
+             "type": "integer",
+             "minimum": 0,
+             "maximum": 1000000000
+            },
+            "cores": {
+             "type": "integer",
+             "minimum": 0,
+             "maximum": 1000000000
+            },
+            "abi64": {
+             "type": "boolean"
+            },
+            "max_mhz": {
+             "type": [
+              "integer",
+              "null"
+             ],
+             "minimum": 0,
+             "maximum": 1000000000
+            },
+            "tier": {
+             "enum": [
+              "LOW",
+              "MID",
+              "HIGH"
+             ]
+            },
+            "lite": {
+             "anyOf": [
+              {
+               "$ref": "#/$defs/tok"
+              },
+              {
+               "type": "null"
+              }
+             ]
+            },
+            "lite_auto": {
+             "anyOf": [
+              {
+               "$ref": "#/$defs/tok"
+              },
+              {
+               "type": "null"
+              }
+             ]
+            }
+           },
+           "required": [
+            "total_mb",
+            "avail_mb",
+            "low_ram",
+            "low_now",
+            "mem_class",
+            "cores",
+            "abi64",
+            "max_mhz",
+            "tier",
+            "lite",
+            "lite_auto"
+           ]
+          },
+          {
+           "type": "null"
+          }
+         ]
+        }
+       }
+      }
+     },
+     {
+      "if": {
+       "properties": {
+        "id": {
+         "const": "D5"
+        }
+       }
+      },
+      "then": {
+       "properties": {
+        "raw": {
+         "anyOf": [
+          {
+           "type": "object",
+           "additionalProperties": false,
+           "properties": {
+            "free_mb": {
+             "type": "integer",
+             "minimum": 0,
+             "maximum": 1000000000
+            },
+            "total_mb": {
+             "type": "integer",
+             "minimum": 0,
+             "maximum": 1000000000
+            }
+           },
+           "required": [
+            "free_mb",
+            "total_mb"
+           ]
+          },
+          {
+           "type": "null"
+          }
+         ]
+        }
+       }
+      }
+     },
+     {
+      "if": {
+       "properties": {
+        "id": {
+         "const": "D6"
+        }
+       }
+      },
+      "then": {
+       "properties": {
+        "raw": {
+         "anyOf": [
+          {
+           "type": "object",
+           "additionalProperties": false,
+           "properties": {
+            "asked": {
+             "enum": [
+              "yes",
+              "no"
+             ]
+            },
+            "removable": {
+             "type": "integer",
+             "minimum": 0,
+             "maximum": 1000000000
+            },
+            "mounted": {
+             "type": "integer",
+             "minimum": 0,
+             "maximum": 1000000000
+            },
+            "unmountable": {
+             "type": "integer",
+             "minimum": 0,
+             "maximum": 1000000000
+            },
+            "readable": {
+             "type": [
+              "boolean",
+              "null"
+             ]
+            }
+           },
+           "required": [
+            "asked",
+            "removable",
+            "mounted",
+            "unmountable",
+            "readable"
+           ]
+          },
+          {
+           "type": "null"
+          }
+         ]
+        }
+       }
+      }
+     },
+     {
+      "if": {
+       "properties": {
+        "id": {
+         "const": "H1"
+        }
+       }
+      },
+      "then": {
+       "properties": {
+        "raw": {
+         "anyOf": [
+          {
+           "type": "object",
+           "additionalProperties": false,
+           "properties": {
+            "home": {
+             "anyOf": [
+              {
+               "$ref": "#/$defs/tok"
+              },
+              {
+               "type": "null"
+              }
+             ]
+            },
+            "ours": {
+             "type": "boolean"
+            },
+            "role": {
+             "type": [
+              "boolean",
+              "null"
+             ]
+            },
+            "others": {
+             "type": "array",
+             "items": {
+              "$ref": "#/$defs/tok"
+             },
+             "maxItems": 6
+            },
+            "provisioned": {
+             "type": [
+              "integer",
+              "null"
+             ],
+             "minimum": 0,
+             "maximum": 1000000000
+            },
+            "setup_complete": {
+             "type": [
+              "integer",
+              "null"
+             ],
+             "minimum": 0,
+             "maximum": 1000000000
+            },
+            "wizard_home": {
+             "type": "boolean"
+            }
+           },
+           "required": [
+            "home",
+            "ours",
+            "role",
+            "others",
+            "provisioned",
+            "setup_complete",
+            "wizard_home"
+           ]
+          },
+          {
+           "type": "null"
+          }
+         ]
+        }
+       }
+      }
+     },
+     {
+      "if": {
+       "properties": {
+        "id": {
+         "const": "H2"
+        }
+       }
+      },
+      "then": {
+       "properties": {
+        "raw": {
+         "anyOf": [
+          {
+           "type": "object",
+           "additionalProperties": false,
+           "properties": {
+            "boots": {
+             "type": "integer",
+             "minimum": 0,
+             "maximum": 1000000000
+            },
+            "ok": {
+             "type": "integer",
+             "minimum": 0,
+             "maximum": 1000000000
+            },
+            "last_ok": {
+             "type": [
+              "boolean",
+              "null"
+             ]
+            },
+            "home_fails": {
+             "type": [
+              "integer",
+              "null"
+             ],
+             "minimum": 0,
+             "maximum": 1000000000
+            },
+            "crash_loop": {
+             "type": [
+              "boolean",
+              "null"
+             ]
+            }
+           },
+           "required": [
+            "boots",
+            "ok",
+            "last_ok",
+            "home_fails",
+            "crash_loop"
+           ]
+          },
+          {
+           "type": "null"
+          }
+         ]
+        }
+       }
+      }
+     },
+     {
+      "if": {
+       "properties": {
+        "id": {
+         "const": "H3"
+        }
+       }
+      },
+      "then": {
+       "properties": {
+        "raw": {
+         "anyOf": [
+          {
+           "type": "object",
+           "additionalProperties": false,
+           "properties": {
+            "apps": {
+             "type": "array",
+             "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+               "pkg": {
+                "enum": [
+                 "sa.urtv.home",
+                 "sa.urtv.screensaver",
+                 "sa.urtv.extras",
+                 "sa.urtv.rescue",
+                 "sa.urtv.doctor"
+                ]
+               },
+               "version": {
+                "$ref": "#/$defs/tok"
+               },
+               "build": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 1000000000
+               },
+               "enabled": {
+                "type": "boolean"
+               },
+               "ours": {
+                "type": "boolean"
+               }
+              },
+              "required": [
+               "pkg",
+               "version",
+               "build",
+               "enabled",
+               "ours"
+              ]
+             },
+             "maxItems": 5
+            },
+            "newest": {
+             "type": [
+              "integer",
+              "null"
+             ],
+             "minimum": 0,
+             "maximum": 1000000000
+            },
+            "mismatch": {
+             "enum": [
+              "SAME",
+              "SAVER_OLDER",
+              "HOME_OLDER",
+              "NONE"
+             ]
+            }
+           },
+           "required": [
+            "apps",
+            "newest",
+            "mismatch"
+           ]
+          },
+          {
+           "type": "null"
+          }
+         ]
+        }
+       }
+      }
+     },
+     {
+      "if": {
+       "properties": {
+        "id": {
+         "const": "H4"
+        }
+       }
+      },
+      "then": {
+       "properties": {
+        "raw": {
+         "anyOf": [
+          {
+           "type": "object",
+           "additionalProperties": false,
+           "properties": {
+            "on": {
+             "type": "boolean"
+            },
+            "ours": {
+             "type": "array",
+             "items": {
+              "$ref": "#/$defs/tok"
+             },
+             "maxItems": 4
+            },
+            "others": {
+             "type": "integer",
+             "minimum": 0,
+             "maximum": 1000000000
+            },
+            "others_filter_keys": {
+             "type": "integer",
+             "minimum": 0,
+             "maximum": 1000000000
+            },
+            "ours_lost": {
+             "type": [
+              "boolean",
+              "null"
+             ]
+            },
+            "home_key_catch": {
+             "type": [
+              "boolean",
+              "null"
+             ]
+            }
+           },
+           "required": [
+            "on",
+            "ours",
+            "others",
+            "others_filter_keys",
+            "ours_lost",
+            "home_key_catch"
+           ]
+          },
+          {
+           "type": "null"
+          }
+         ]
+        }
+       }
+      }
+     },
+     {
+      "if": {
+       "properties": {
+        "id": {
+         "const": "H5"
+        }
+       }
+      },
+      "then": {
+       "properties": {
+        "raw": {
+         "anyOf": [
+          {
+           "type": "object",
+           "additionalProperties": false,
+           "properties": {
+            "checked": {
+             "type": "integer",
+             "minimum": 0,
+             "maximum": 1000000000
+            },
+            "visible": {
+             "type": "integer",
+             "minimum": 0,
+             "maximum": 1000000000
+            },
+            "off_ours": {
+             "type": "array",
+             "items": {
+              "$ref": "#/$defs/tok"
+             },
+             "maxItems": 10
+            },
+            "off_tv": {
+             "type": "integer",
+             "minimum": 0,
+             "maximum": 1000000000
+            },
+            "off_unknown": {
+             "type": "array",
+             "items": {
+              "$ref": "#/$defs/tok"
+             },
+             "maxItems": 10
+            },
+            "recognizer": {
+             "type": "boolean"
+            },
+            "speech_activity": {
+             "type": "boolean"
+            }
+           },
+           "required": [
+            "checked",
+            "visible",
+            "off_ours",
+            "off_tv",
+            "off_unknown",
+            "recognizer",
+            "speech_activity"
+           ]
+          },
+          {
+           "type": "null"
+          }
+         ]
+        }
+       }
+      }
+     },
+     {
+      "if": {
+       "properties": {
+        "id": {
+         "const": "H6"
+        }
+       }
+      },
+      "then": {
+       "properties": {
+        "raw": {
+         "anyOf": [
+          {
+           "type": "object",
+           "additionalProperties": false,
+           "properties": {
+            "timeout_ms": {
+             "type": [
+              "integer",
+              "null"
+             ],
+             "minimum": -1000000000,
+             "maximum": 1000000000
+            },
+            "enabled": {
+             "type": [
+              "integer",
+              "null"
+             ],
+             "minimum": 0,
+             "maximum": 1000000000
+            },
+            "ours_chosen": {
+             "type": [
+              "boolean",
+              "null"
+             ]
+            },
+            "readable": {
+             "type": "boolean"
+            },
+            "idle_set_ms": {
+             "type": [
+              "integer",
+              "null"
+             ],
+             "minimum": 0,
+             "maximum": 1000000000
+            },
+            "dream_installed": {
+             "type": "boolean"
+            }
+           },
+           "required": [
+            "timeout_ms",
+            "enabled",
+            "ours_chosen",
+            "readable",
+            "idle_set_ms",
+            "dream_installed"
+           ]
+          },
+          {
+           "type": "null"
+          }
+         ]
+        }
+       }
+      }
+     },
+     {
+      "if": {
+       "properties": {
+        "id": {
+         "const": "K1"
+        }
+       }
+      },
+      "then": {
+       "properties": {
+        "raw": {
+         "anyOf": [
+          {
+           "type": "object",
+           "additionalProperties": false,
+           "properties": {
+            "up": {
+             "enum": [
+              "got",
+              "left",
+              "missing",
+              "skipped",
+              "none"
+             ]
+            },
+            "down": {
+             "enum": [
+              "got",
+              "left",
+              "missing",
+              "skipped",
+              "none"
+             ]
+            },
+            "left": {
+             "enum": [
+              "got",
+              "left",
+              "missing",
+              "skipped",
+              "none"
+             ]
+            },
+            "right": {
+             "enum": [
+              "got",
+              "left",
+              "missing",
+              "skipped",
+              "none"
+             ]
+            },
+            "ok": {
+             "enum": [
+              "got",
+              "left",
+              "missing",
+              "skipped",
+              "none"
+             ]
+            },
+            "back": {
+             "enum": [
+              "got",
+              "left",
+              "missing",
+              "skipped",
+              "none"
+             ]
+            },
+            "home": {
+             "enum": [
+              "got",
+              "left",
+              "missing",
+              "skipped",
+              "none"
+             ]
+            },
+            "color": {
+             "enum": [
+              "got",
+              "left",
+              "missing",
+              "skipped",
+              "none"
+             ]
+            },
+            "app": {
+             "enum": [
+              "got",
+              "left",
+              "missing",
+              "skipped",
+              "none"
+             ]
+            },
+            "settings": {
+             "enum": [
+              "got",
+              "left",
+              "missing",
+              "skipped",
+              "none"
+             ]
+            },
+            "voice": {
+             "enum": [
+              "got",
+              "left",
+              "missing",
+              "skipped",
+              "none"
+             ]
+            }
+           },
+           "required": [
+            "up",
+            "down",
+            "left",
+            "right",
+            "ok",
+            "back",
+            "home",
+            "color",
+            "app",
+            "settings",
+            "voice"
+           ]
+          },
+          {
+           "type": "null"
+          }
+         ]
+        }
+       }
+      }
+     },
+     {
+      "if": {
+       "properties": {
+        "id": {
+         "const": "K2"
+        }
+       }
+      },
+      "then": {
+       "properties": {
+        "raw": {
+         "anyOf": [
+          {
+           "type": "object",
+           "additionalProperties": false,
+           "properties": {
+            "n": {
+             "type": "integer",
+             "minimum": 0,
+             "maximum": 1000000000
+            },
+            "median_ms": {
+             "type": "integer",
+             "minimum": 0,
+             "maximum": 1000000000
+            },
+            "worst_ms": {
+             "type": "integer",
+             "minimum": 0,
+             "maximum": 1000000000
+            },
+            "frame_ms": {
+             "type": "integer",
+             "minimum": 0,
+             "maximum": 1000000000
+            },
+            "repeats": {
+             "type": "integer",
+             "minimum": 0,
+             "maximum": 1000000000
+            }
+           },
+           "required": [
+            "n",
+            "median_ms",
+            "worst_ms",
+            "frame_ms",
+            "repeats"
+           ]
+          },
+          {
+           "type": "null"
+          }
+         ]
+        }
+       }
+      }
+     },
+     {
+      "if": {
+       "properties": {
+        "id": {
+         "const": "N1"
+        }
+       }
+      },
+      "then": {
+       "properties": {
+        "raw": {
+         "anyOf": [
+          {
+           "type": "object",
+           "additionalProperties": false,
+           "properties": {
+            "transport": {
+             "enum": [
+              "wifi",
+              "ethernet",
+              "other",
+              "none"
+             ]
+            },
+            "validated": {
+             "type": "boolean"
+            },
+            "captive": {
+             "type": "boolean"
+            },
+            "private_dns": {
+             "type": [
+              "boolean",
+              "null"
+             ]
+            },
+            "probe": {
+             "enum": [
+              "204",
+              "200",
+              "30x",
+              "fail",
+              "skipped"
+             ]
+            }
+           },
+           "required": [
+            "transport",
+            "validated",
+            "captive",
+            "private_dns",
+            "probe"
+           ]
+          },
+          {
+           "type": "null"
+          }
+         ]
+        }
+       }
+      }
+     },
+     {
+      "if": {
+       "properties": {
+        "id": {
+         "const": "N2"
+        }
+       }
+      },
+      "then": {
+       "properties": {
+        "raw": {
+         "anyOf": [
+          {
+           "type": "object",
+           "additionalProperties": false,
+           "properties": {
+            "hosts": {
+             "type": "array",
+             "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+               "h": {
+                "$ref": "#/$defs/tok"
+               },
+               "ok": {
+                "type": "boolean"
+               },
+               "dns_ms": {
+                "type": [
+                 "integer",
+                 "null"
+                ],
+                "minimum": 0,
+                "maximum": 1000000000
+               },
+               "ms": {
+                "type": [
+                 "integer",
+                 "null"
+                ],
+                "minimum": 0,
+                "maximum": 1000000000
+               },
+               "fail": {
+                "enum": [
+                 "",
+                 "dns",
+                 "timeout",
+                 "tls",
+                 "http"
+                ]
+               },
+               "http": {
+                "type": [
+                 "integer",
+                 "null"
+                ],
+                "minimum": 0,
+                "maximum": 1000000000
+               }
+              },
+              "required": [
+               "h",
+               "ok",
+               "dns_ms",
+               "ms",
+               "fail",
+               "http"
+              ]
+             },
+             "maxItems": 16
+            }
+           },
+           "required": [
+            "hosts"
+           ]
+          },
+          {
+           "type": "null"
+          }
+         ]
+        }
+       }
+      }
+     },
+     {
+      "if": {
+       "properties": {
+        "id": {
+         "const": "T1"
+        }
+       }
+      },
+      "then": {
+       "properties": {
+        "raw": {
+         "anyOf": [
+          {
+           "type": "object",
+           "additionalProperties": false,
+           "properties": {
+            "offset_s": {
+             "type": [
+              "integer",
+              "null"
+             ],
+             "minimum": -1000000000,
+             "maximum": 1000000000
+            },
+            "auto_time": {
+             "type": [
+              "integer",
+              "null"
+             ],
+             "minimum": 0,
+             "maximum": 1000000000
+            },
+            "auto_zone": {
+             "type": [
+              "integer",
+              "null"
+             ],
+             "minimum": 0,
+             "maximum": 1000000000
+            },
+            "zone_same": {
+             "type": [
+              "boolean",
+              "null"
+             ]
+            }
+           },
+           "required": [
+            "offset_s",
+            "auto_time",
+            "auto_zone",
+            "zone_same"
+           ]
+          },
+          {
+           "type": "null"
+          }
+         ]
+        }
+       }
+      }
+     },
+     {
+      "if": {
+       "properties": {
+        "id": {
+         "const": "Q1"
+        }
+       }
+      },
+      "then": {
+       "properties": {
+        "raw": {
+         "anyOf": [
+          {
+           "type": "object",
+           "additionalProperties": false,
+           "properties": {
+            "stations": {
+             "type": "array",
+             "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+               "n": {
+                "$ref": "#/$defs/tok"
+               },
+               "ok": {
+                "type": "boolean"
+               },
+               "first_ms": {
+                "type": [
+                 "integer",
+                 "null"
+                ],
+                "minimum": 0,
+                "maximum": 1000000000
+               },
+               "kb16_ms": {
+                "type": [
+                 "integer",
+                 "null"
+                ],
+                "minimum": 0,
+                "maximum": 1000000000
+               },
+               "alt": {
+                "type": "boolean"
+               },
+               "http": {
+                "type": [
+                 "integer",
+                 "null"
+                ],
+                "minimum": 0,
+                "maximum": 1000000000
+               },
+               "audio": {
+                "type": [
+                 "boolean",
+                 "null"
+                ]
+               }
+              },
+              "required": [
+               "n",
+               "ok",
+               "first_ms",
+               "kb16_ms",
+               "alt",
+               "http",
+               "audio"
+              ]
+             },
+             "maxItems": 24
+            },
+            "week": {
+             "anyOf": [
+              {
+               "type": "object",
+               "additionalProperties": false,
+               "properties": {
+                "stalls": {
+                 "type": "integer",
+                 "minimum": 0,
+                 "maximum": 1000000000
+                },
+                "errors": {
+                 "type": "integer",
+                 "minimum": 0,
+                 "maximum": 1000000000
+                },
+                "reconnects": {
+                 "type": "integer",
+                 "minimum": 0,
+                 "maximum": 1000000000
+                },
+                "rebuffers": {
+                 "type": "integer",
+                 "minimum": 0,
+                 "maximum": 1000000000
+                }
+               },
+               "required": [
+                "stalls",
+                "errors",
+                "reconnects",
+                "rebuffers"
+               ]
+              },
+              {
+               "type": "null"
+              }
+             ]
+            }
+           },
+           "required": [
+            "stations",
+            "week"
+           ]
+          },
+          {
+           "type": "null"
+          }
+         ]
+        }
+       }
+      }
+     },
+     {
+      "if": {
+       "properties": {
+        "id": {
+         "const": "W1"
+        }
+       }
+      },
+      "then": {
+       "properties": {
+        "raw": {
+         "anyOf": [
+          {
+           "type": "object",
+           "additionalProperties": false,
+           "properties": {
+            "warm_ms": {
+             "type": "array",
+             "items": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 1000000000
+             },
+             "maxItems": 3
+            },
+            "cold_ms": {
+             "type": [
+              "integer",
+              "null"
+             ],
+             "minimum": 0,
+             "maximum": 1000000000
+            },
+            "slow_first_frame": {
+             "type": [
+              "boolean",
+              "null"
+             ]
+            }
+           },
+           "required": [
+            "warm_ms",
+            "cold_ms",
+            "slow_first_frame"
+           ]
+          },
+          {
+           "type": "null"
+          }
+         ]
+        }
+       }
+      }
+     },
+     {
+      "if": {
+       "properties": {
+        "id": {
+         "const": "C1"
+        }
+       }
+      },
+      "then": {
+       "properties": {
+        "raw": {
+         "anyOf": [
+          {
+           "type": "object",
+           "additionalProperties": false,
+           "properties": {
+            "days": {
+             "type": "integer",
+             "minimum": 0,
+             "maximum": 1000000000
+            },
+            "crash": {
+             "type": "integer",
+             "minimum": 0,
+             "maximum": 1000000000
+            },
+            "anr": {
+             "type": "integer",
+             "minimum": 0,
+             "maximum": 1000000000
+            },
+            "native": {
+             "type": "integer",
+             "minimum": 0,
+             "maximum": 1000000000
+            },
+            "low_memory": {
+             "type": "integer",
+             "minimum": 0,
+             "maximum": 1000000000
+            },
+            "init": {
+             "type": "integer",
+             "minimum": 0,
+             "maximum": 1000000000
+            },
+            "classes": {
+             "type": "array",
+             "items": {
+              "$ref": "#/$defs/tok"
+             },
+             "maxItems": 5
+            },
+            "loop": {
+             "type": [
+              "boolean",
+              "null"
+             ]
+            }
+           },
+           "required": [
+            "days",
+            "crash",
+            "anr",
+            "native",
+            "low_memory",
+            "init",
+            "classes",
+            "loop"
+           ]
+          },
+          {
+           "type": "null"
+          }
+         ]
+        }
+       }
+      }
+     }
+    ]
+   }
+  },
+  "consent": {
+   "type": "object",
+   "additionalProperties": false,
+   "properties": {
+    "city": {
+     "type": "boolean"
+    },
+    "note": {
+     "type": "boolean"
+    }
+   },
+   "required": [
+    "city",
+    "note"
+   ]
+  },
+  "city": {
+   "type": "string",
+   "pattern": "^[A-Za-z][A-Za-z .'-]{0,39}$"
+  },
+  "note": {
+   "type": "string",
+   "maxLength": 300
+  },
+  "hash": {
+   "type": "string",
+   "pattern": "^[0-9a-f]{64}$"
+  }
+ },
+ "$defs": {
+  "tok": {
+   "type": "string",
+   "pattern": "^[A-Za-z0-9._:,/+-]{0,64}$"
+  }
+ }
+}
