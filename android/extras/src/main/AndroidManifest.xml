@@ -30,8 +30,11 @@
         android:label="@string/app_name"
         android:icon="@mipmap/ic_extras">
 
+        <!-- R-500: directBootAware, so a locked boot binds it (Android 11 skipped it and wrote accessibility_enabled=0; a TCL never bound it after); it reads
+             nothing until the unlock (ExtrasA11yService.onServiceConnected) -->
         <service
             android:name="sa.urtv.home.ExtrasA11yService"
+            android:directBootAware="true"
             android:exported="true"
             android:label="@string/service_label"
             android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE">

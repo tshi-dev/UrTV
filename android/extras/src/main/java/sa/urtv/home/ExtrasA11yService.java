@@ -67,7 +67,38 @@ public class ExtrasA11yService extends AccessibilityService {
     /** 4.4: the stock homes' packages (only their windows are looked at further) */
     private Set<String> stockPackages = new HashSet<>();
 
+    /**
+     * 4.4 (R-500, LAUNCHERS-GITHUB idea 3): the service is directBootAware, so Android 11 binds it at a locked boot instead of skipping it and writing
+     * accessibility_enabled=0 (a TCL then never bound it after the unlock). Our settings live in the storage that opens at the unlock, so while the
+     * user is locked nothing is read: every key and window goes on untouched, and the rest of the start waits for ACTION_USER_UNLOCKED.
+     */
+    private android.content.BroadcastReceiver unlock;
+
+    static boolean unlocked(Context c) {
+        try {
+            android.os.UserManager um = (android.os.UserManager) c.getSystemService(Context.USER_SERVICE);
+            return um == null || um.isUserUnlocked();
+        } catch (RuntimeException e) {
+            return true;
+        }
+    }
+
+    /** R-500: a locked boot: the start waits for the unlock, then runs as always (onServiceConnected again) */
+    private void startAfterUnlock() {
+        if (unlock != null) return;
+        Log.i("UrTVWatch", "locked boot start after unlock");
+        unlock = new android.content.BroadcastReceiver() {
+            @Override public void onReceive(Context c, Intent i) {
+                try { unregisterReceiver(this); } catch (RuntimeException ignored) { }
+                unlock = null;
+                onServiceConnected();
+            }
+        };
+        try { registerReceiver(unlock, new IntentFilter(Intent.ACTION_USER_UNLOCKED)); } catch (RuntimeException e) { unlock = null; }
+    }
+
     @Override protected void onServiceConnected() {
+        if (!unlocked(this)) { startAfterUnlock(); return; }   // R-500: nothing is read before the unlock
         running = this;
         watchReplaced();   // beta 2: our home installed again (an update) re-arms the Home key catch and the watch
         roleAnswer = getSharedPreferences("extras", MODE_PRIVATE).getString(ROLE_SEEN, null);   // beta 2 (build 574): the last answer at once, so the catch is right before the home answers
@@ -96,6 +127,7 @@ public class ExtrasA11yService extends AccessibilityService {
     }
     @Override public boolean onUnbind(Intent i) {
         running = null;
+        if (unlock != null) { try { unregisterReceiver(unlock); } catch (RuntimeException ignored) { } unlock = null; }
         if (replaced != null) { try { unregisterReceiver(replaced); } catch (RuntimeException ignored) { } replaced = null; }
         return super.onUnbind(i);
     }
@@ -172,6 +204,7 @@ public class ExtrasA11yService extends AccessibilityService {
 
     @Override public void onAccessibilityEvent(AccessibilityEvent e) {
         if (e == null || e.getEventType() != AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED || e.getPackageName() == null) return;
+        if (running != this) return;   // R-500: a locked boot, not started yet (nothing read before the unlock)
         String pkg = e.getPackageName().toString(), cls = e.getClassName() == null ? null : e.getClassName().toString();
         if (pkg.equals("com.android.systemui") || pkg.equals("android")) return;   // a volume bar or a system dialog over the app: the app in front did not change
         String before = prevPkg;   // 4.4 R2g: the app in front before this window (kept in memory only, never logged)
@@ -421,6 +454,7 @@ public class ExtrasA11yService extends AccessibilityService {
 
     @Override protected boolean onKeyEvent(KeyEvent e) {
         try {   // 4.3.6: never throws into Android's key dispatch; anything unexpected gives the key back untouched
+            if (running != this) return false;   // R-500: a locked boot, not started yet: the key goes on untouched (our settings are not readable yet)
             if (!keyFilter(this)) return false;   // R-408: off, every key goes on untouched (a key that came while the switch turned)
             return keyEvent(e);
         } catch (Throwable t) {
