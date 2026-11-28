@@ -1,6 +1,6 @@
 DREAM MANAGER (dumpsys dreams)
 
-mCurrentDreamToken=android.os.Binder@ce53e5a
+mCurrentDreamToken=android.os.Binder@21a1378
 mCurrentDreamName=ComponentInfo{com.google.android.backdrop/com.google.android.backdrop.Backdrop}
 mCurrentDreamUserId=0
 mCurrentDreamIsTest=false
@@ -14,13 +14,13 @@ getDozeComponent()=null
 
 Dreamland:
   mCurrentDream:
-    mToken=android.os.Binder@ce53e5a
+    mToken=android.os.Binder@21a1378
     mName=ComponentInfo{com.google.android.backdrop/com.google.android.backdrop.Backdrop}
     mIsTest=false
     mCanDoze=false
     mUserId=0
     mBound=true
-    mService=android.service.dreams.IDreamService$Stub$Proxy@a37288b
+    mService=android.service.dreams.IDreamService$Stub$Proxy@dd90a51
     mSentStartBroadcast=true
     mWakingGently=false
-    mResumedActivity: ActivityRecord{e7f03fc u0 com.google.android.backdrop/android.service.dreams.DreamActivity t10}
+    mResumedActivity: ActivityRecord{d2e89f8 u0 com.google.android.backdrop/android.service.dreams.DreamActivity t10}

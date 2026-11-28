@@ -1,11 +1,11 @@
-cold_start_home_ms	1163	ms
-cold_start_saver_ms	856	ms
+cold_start_home_ms	1071	ms
+cold_start_saver_ms	897	ms
 jank_home_frames	66	
 jank_home_pct	100.0	%
-jank_home_p90_ms	44	ms
-jank_home_p99_ms	48	ms
-pss_home_kb	60721	KB
-pss_saver_kb	39044	KB
+jank_home_p90_ms	53	ms
+jank_home_p99_ms	57	ms
+pss_home_kb	56908	KB
+pss_saver_kb	39636	KB
 crashes	0	
 anrs	0	
 frozen_lines	0	

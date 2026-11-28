@@ -1,1 +1,1 @@
-FAIL: the screen shows neither the photos nor the empty note (see photos.xml)
+FAIL: Android 10 lists no photo in /sdcard/Download («لا صور هنا»): the home needs requestLegacyExternalStorage (review F97)
