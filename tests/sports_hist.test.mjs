@@ -61,8 +61,8 @@ const groupsText = p => p.evaluate(() => document.getElementById('mp').innerText
   check('(a) the league table from the archive\'s own file: in order, Arabic names, points and games played', !errors.length && /^١ الهلال ١٠ .* ٢٦$/.test(r[0] || '')
     && /^٢ النصر /.test(r[1] || '') && r.length === 3, JSON.stringify(r) + errors.join('|'));
   check('(a) …and TheSportsDB\'s table is not asked then', !asked.some(u => u.includes('lookuptable')), asked.filter(u => u.includes('lookup')).join());
-  const opened = await p.evaluate(() => { MP.zone = 'rows'; MP.r = 0; const x = MP.rows && MP.rows[0]; if (x && x.act) x.act(); return MP.view && MP.view.k + ':' + MP.view.id; });
-  check('(a) OK on a row opens that club\'s page', opened === 'club:136013', opened);
+  const opened = await p.evaluate(() => { MP.zone = 'rows'; MP.r = 0; const x = MP.rows && MP.rows[0]; if (x && x.act) x.act(); MP.qv.b = 0; dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' })); return MP.view && MP.view.k + ':' + MP.view.id; });
+  check('(a) OK on a row opens that club\'s page (4.4: through its quick view\'s «صفحة النادي»)', opened === 'club:136013', opened);
   await ctx.close();
 }
 {   // (a) no archive file for the league (before master publishes it, or a league it does not hold): TheSportsDB's, as before

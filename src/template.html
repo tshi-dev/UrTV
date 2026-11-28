@@ -931,6 +931,34 @@
   .mpcl .clnx i{display:block;font-style:normal;color:var(--fs);font-size:calc(var(--u)*24)}
   .mpcl .clnx b{display:block;font-size:calc(var(--u)*34);font-weight:700;margin:calc(var(--u)*6) 0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .mpcl .clnx em{display:block;font-style:normal;color:var(--fgr);font-size:calc(var(--u)*26);min-height:calc(var(--u)*34)}
+  /* 4.4 a club's quick view (mockup 4): a sheet at the table's end side, the table and its lit row stay in sight; focus is scale and shadow */
+  #mp-qv{--fi:#1B1F1D;--fs:#5E635F;--fgr:#1B8354;--fln:#E4E1D8;--fbg:#fff;--dlg:#F7F6F1;--btn:#fff;--pri:#21915F;--shd:rgba(40,36,24,.18);--flo:#B3261E;--fw:#2E9E63;--fd:#C2C5BF;
+    position:fixed;top:calc(var(--u)*36);bottom:calc(var(--u)*36);inset-inline-end:calc(var(--u)*72);width:calc(var(--u)*820);background:var(--dlg);color:var(--fi);border-radius:calc(var(--u)*32);
+    box-shadow:0 calc(var(--u)*24) calc(var(--u)*70) var(--shd);padding:calc(var(--u)*44) calc(var(--u)*44);font-size:calc(var(--u)*28);overflow:hidden}
+  html.mpdark #mp-qv{--fi:#FFFFFF;--fs:#DADCE0;--fgr:#8FE0B4;--fln:rgba(255,255,255,.16);--fbg:#202227;--dlg:#1D1F24;--btn:#2A2D33;--pri:#1B8354;--shd:rgba(0,0,0,.5);--flo:#FF9A8F;--fw:#1B8354;--fd:#4A4D53}
+  #mp-qv h3{font-size:calc(var(--u)*48);font-weight:700}
+  #mp-qv .qs{color:var(--fs);margin-top:calc(var(--u)*6)}
+  #mp-qv .qc{margin-top:calc(var(--u)*20)}
+  #mp-qv h4{font-size:calc(var(--u)*24);font-weight:400;color:var(--fs);margin:calc(var(--u)*24) 0 calc(var(--u)*10)}
+  #mp-qv .qn,#mp-qv ul{background:var(--fbg);border:1px solid var(--fln);border-radius:calc(var(--u)*24);padding:calc(var(--u)*14) calc(var(--u)*22);list-style:none}
+  #mp-qv .qn{display:flex;justify-content:space-between;align-items:center}
+  #mp-qv .qn b{font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+  #mp-qv .qn span{text-align:end;flex:none;margin-inline-start:calc(var(--u)*16)}
+  #mp-qv .qn em{display:block;font-style:normal;color:var(--fgr)}
+  #mp-qv .qn i{display:block;font-style:normal;color:var(--fs);font-size:calc(var(--u)*24)}
+  #mp-qv li{display:flex;align-items:center;min-height:calc(var(--u)*56)}
+  #mp-qv li + li{border-top:1px solid var(--fln)}
+  #mp-qv li span{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  #mp-qv li span:last-child{text-align:end}
+  #mp-qv li b{width:calc(var(--u)*130);flex:none;text-align:center;direction:ltr;unicode-bidi:isolate}
+  #mp-qv li .fo{flex:none;width:calc(var(--u)*30);display:flex;justify-content:center}
+  #mp-qv .qb{display:flex;margin-top:calc(var(--u)*26)}
+  #mp-qv .qb button{flex:1;font:inherit;color:var(--fi);background:var(--btn);border:1px solid var(--fln);border-radius:calc(var(--u)*18);padding:calc(var(--u)*18) calc(var(--u)*12);margin-inline-end:calc(var(--u)*14);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  #mp-qv .qb button:last-child{margin-inline-end:0}
+  #mp-qv .qb button.pri{background:var(--pri);color:#fff;border-color:var(--pri)}
+  #mp-qv .qb button:focus{outline:none}
+  #mp-qv .qb button.f{transform:scale(1.05);box-shadow:0 calc(var(--u)*8) calc(var(--u)*22) var(--shd)}
+  #mp-qv .qh{color:var(--fs);font-size:calc(var(--u)*24);text-align:center;margin-top:calc(var(--u)*18)}
   #mp.mp-focus header,#mp.mp-focus #mp-days,#mp.mp-focus #mp-list h2{display:none}   /* focused mode: the table alone (a cut, no slide), the side's seasons stay */
   .mdf{display:flex;align-items:baseline;gap:calc(var(--u)*16)}
   .mdt .rk{color:var(--fs);font-size:calc(var(--u)*24)}
@@ -5016,7 +5044,8 @@ const FB_W = {
   champs:'الأبطال', scorers:'الهدّافون',
   cTabs:'النادي|المباريات|النتائج|البطولات|المواجهات', places:'الأول|الثاني|الثالث|الرابع|الخامس|السادس|السابع|الثامن|التاسع|العاشر|الحادي عشر|الثاني عشر|الثالث عشر|الرابع عشر|الخامس عشر|السادس عشر|السابع عشر|الثامن عشر|التاسع عشر|العشرون',
   placeN:'المركز %s', standing:'%s في %s، %s نقطة من %s مباراة', lastTitle:'آخر بطولة: %s %s', inTable:'في الترتيب', nextGame:'المباراة القادمة', last5:'آخر خمس مباريات',
-  tCols:'النادي|لعب|فاز|تعادل|خسر|له|عليه|الفارق|نقاط|آخر خمس مباريات', fWords:'فوز|تعادل|خسارة', fSay:'آخر خمس مباريات: %s', tAll:'الكل', tLive:'مع المباريات الجارية', tHome:'على أرضه', tAway:'خارج أرضه',
+  tCols:'النادي|لعب|فاز|تعادل|خسر|له|عليه|الفارق|نقاط|آخر خمس مباريات', fWords:'فوز|تعادل|خسارة', fSay:'آخر خمس مباريات: %s', qvLine:'المركز %s، %s نقطة، لعب %s', qvCounts:'فاز %s، تعادل %s، خسر %s، له %s، عليه %s', qvPage:'صفحة النادي', qvH2h:'المواجهات', qvOn:'أضف لفرقي', qvOff:'أزل من فرقي',
+  qvHint:'أعلى وأسفل: النادي الذي فوقه وتحته، رجوع: الجدول', tAll:'الكل', tLive:'مع المباريات الجارية', tHome:'على أرضه', tAway:'خارج أرضه',
   zones:{acle:'دوري أبطال آسيا للنخبة', acl2:'دوري أبطال آسيا %s', ucl:'دوري أبطال أوروبا', uel:'الدوري الأوروبي', uecl:'دوري المؤتمر الأوروبي', po:'الملحق', down:'الهبوط'},
   myLeagues:'دورياتي', add:'أضف دوريًا أو فريقًا', manage:'إعدادات فرقي', noTeams:'ما تتابع فريقًا بعد', noLeagues:'ما تتابع دوريًا بعد', allLands:'كل الدول',
   lgTeams:'فرق هذا الدوري', lgOpen:'الترتيب والنتائج', followedL:'أُضيف %s إلى دورياتك', unfollowedL:'أُزيل %s من دورياتك', on:'متابَع', find:'ابحث عن فريق', found:'نتائج البحث', typeName:'اكتب اسم الفريق', full:'وصلت للحد: ٨ دوريات', fullL:'هذا الحد الأعلى: ٢٤ دوريًا حتى يبقى التلفزيون سريعًا. أزل دوريًا لتضيف غيره', fullT:'هذا الحد الأعلى: ٤٠ فريقًا حتى يبقى التلفزيون سريعًا. أزل فريقًا لتضيف غيره', fullT20:'وصلت للحد: ٢٠ فريقًا',
@@ -5436,7 +5465,7 @@ function mptGroup(o){
   }
   const games = [];
   if(views.length > 1) games.push(Object.assign(mpItem(FB_W.tAll, '', () => o.flip(views[(views.indexOf(view) + 1) % views.length])), {tg: 1, views, view}));
-  rows.forEach(x => games.push(Object.assign(mpItem(clubNm(x.ar, x.n, x.id), '', () => mpGo({k: 'club', id: x.id})), {tr: x})));
+  rows.forEach(x => games.push(Object.assign(mpItem(clubNm(x.ar, x.n, x.id), '', () => o.self || o.past ? mpGo({k: 'club', id: x.id}) : mpQvOpen()), {tr: x})));   // 4.4 OK: the club's quick view
   return {key: 't', name: o.name || FB_W.table, games, table: {zones: Array.isArray(o.zones) && (view === 'all' || view === 'live') ? o.zones : [], champ: o.champ ? String(o.champ) : '', champW: o.champW || '', past: !!o.past, n: rows.length, self: o.self ? String(o.self) : ''},
     focus: Math.max(0, games.findIndex(g => g.tr && fbFollowed(g.tr.id))) || (views.length > 1 ? 1 : 0)};
 }
@@ -5600,6 +5629,7 @@ function mpRender(){
   const q = document.getElementById('mp-q');
   if(q){ if(MP.zone === 'days' && document.activeElement !== q){ q.value = MP.q || ''; q.focus(); } else if(MP.zone !== 'days') q.blur(); }
   if(MP.detail) mpDetailRender();
+  mpQvRender();
 }
 function mpLine(ev){   // «مع الصلاة»: the prayers around the game on one line, the game a green bar on it
   const k = fbKick(ev), list = fbPrayers(fbDayOf(k));
@@ -5668,6 +5698,7 @@ function mpOpen(ev){ MP.detail = ev; MP.btn = mpButtons(ev, Date.now())[0] && /^
    MP.note = ''; mpDetailRender(); }
 function mpBack(){   // the launcher's Back: closes the card first, then a view (the one under it, at last the day as it was); 'out' when there is nothing to close
   if(MP.detail){ MP.detail = null; document.getElementById('mp-detail').hidden = true; mpRender(); return 'closed'; }
+  if(MP.qv){ MP.qv = null; mpRender(); return 'closed'; }   // 4.4 the quick view, then focused mode
   if(MP.fx){ MP.fx = 0; MP.zone = 'days'; mpRender(); return 'closed'; }   // 4.4 beta 5 the card, then focused mode, then the view under it
   if(!MP.view) return 'out';
   const v = MP.stack.pop() || null;
@@ -5679,7 +5710,7 @@ function mpBack(){   // the launcher's Back: closes the card first, then a view 
 // 4.3.3 the page's other views, on its own look (the strip, the side list, the list): a club, a league; MP.view is the open one, MP.stack the ones under it
 function mpGo(v){
   if(MP.view){ MP.view.at = {zone: MP.zone, d: MP.d, l: MP.l, r: MP.r}; MP.stack.push(MP.view); } else { MP.stack = []; MP.saved = {zone: MP.zone, d: MP.d, l: MP.l, r: MP.r}; }
-  MP.view = v; MP.zone = v.k === 'find' ? 'days' : 'rows'; MP.d = 0; MP.l = 0; MP.r = 0; MP.ask = ''; MP.note = ''; MP.fx = 0;
+  MP.view = v; MP.zone = v.k === 'find' ? 'days' : 'rows'; MP.d = 0; MP.l = 0; MP.r = 0; MP.ask = ''; MP.note = ''; MP.fx = 0; MP.qv = null;
   mpRender();
 }
 function mpView(v){
@@ -5786,6 +5817,51 @@ function mpReload(){ try{ Promise.resolve(loadMatches()).then(() => { fbRender()
 // 4.4 beta 5 (the club page, mockup 6): tabs by key, 0 «النادي» (the overview), 1 «المباريات», 2 «النتائج», 3 «البطولات» (when the honours name a
 // title), 4 «المواجهات» (when there is another club); follow / unfollow last. Everything from the club's file, its league's table file and the
 // honours files: nothing is said that they do not say.
+// 4.4 a club's quick view (mockup 4, phase d): from the table's own row and the club's file; ▲ ▼ the club above or below (the table's row
+// moves with it), ◀ ▶ the buttons, OK one, Back closes it (the table again). MP.qv: the button index; the club is the table's focused row
+function mpQvOpen(){ MP.qv = {b: 0}; mpRender(); }
+function mpQvClub(){ const x = MP.rows[MP.r]; return x && x.tr ? x : null; }
+function mpQvButtons(id){ return [{k: 'page', t: FB_W.qvPage}, {k: 'h2h', t: FB_W.qvH2h}, {k: 'follow', t: fbFollowed(id) ? FB_W.qvOff : FB_W.qvOn}]; }   // short: the club's name is the sheet's title
+function mpQvRender(){
+  const el = document.getElementById('mp-qv'), x = MP.qv && mpQvClub();
+  if(!el) return;
+  if(!x){ el.hidden = true; return; }
+  const r = x.tr, id = r.id, j = archWant('teams/' + id + '.json'), now = Date.now(), its = ev => String(ev.idHomeTeam) === id || String(ev.idAwayTeam) === id;
+  const place = MP.rows.filter(y => y.tr).indexOf(x) + 1;
+  const own = fbGames().filter(ev => its(ev) && !fbDone(ev, now));
+  const nx = own.concat(archNew(own, ((j && j.next) || []).map(g => archEv(g, j)).filter(ev => ev && !fbDone(ev, now)))).sort((a, b) => fbKick(a) - fbKick(b))[0];
+  const lastOwn = fbGames().filter(ev => its(ev) && fbDone(ev, now) && fbScored(ev));
+  const last = lastOwn.concat(archNew(lastOwn, ((j && j.last) || []).map(g => archEv(g, j)).filter(ev => ev && fbScored(ev)))).sort((a, b) => fbKick(b) - fbKick(a)).slice(0, 3);
+  const res = ev => { const home = String(ev.idHomeTeam) === id, gf = +(home ? ev.intHomeScore : ev.intAwayScore), ga = +(home ? ev.intAwayScore : ev.intHomeScore); return gf > ga ? 'w' : gf === ga ? 'd' : 'l'; };
+  const btns = mpQvButtons(id, x.t);
+  MP.qv.b = Math.max(0, Math.min(MP.qv.b, btns.length - 1));
+  setHTML(el, `<h3>${esc(x.t)}</h3><div class="qs">${esc(fw(FB_W.qvLine, ar(place), ar(+r.pts || 0), ar(+r.p || 0)))}</div>`
+    + `<div class="qc">${esc(fw(FB_W.qvCounts, ar(+r.w || 0), ar(+r.d || 0), ar(+r.l || 0), ar(+r.gf || 0), ar(+r.ga || 0)))}</div>`
+    + (nx ? `<h4>${esc(FB_W.nextGame)}</h4><div class="qn"><b>${esc(teamNameOf(nx.idHomeTeam) + ' – ' + teamNameOf(nx.idAwayTeam))}</b><span><em>${esc(fbDayWord(fbDayOf(fbKick(nx))) + ' ' + fbClock(fbKick(nx)))}</em><i>${esc(fbRound(nx) || '')}</i></span></div>` : '')
+    + (last.length ? `<h4>${esc(FB_W.last)}</h4><ul>${last.map(ev => `<li><span>${esc(teamNameOf(ev.idHomeTeam))}</span><b>${ar(+ev.intHomeScore)} : ${ar(+ev.intAwayScore)}</b>${formMarks([res(ev)])}<span>${esc(teamNameOf(ev.idAwayTeam))}</span></li>`).join('')}</ul>` : '')
+    + `<div class="qb">${btns.map((b, i) => `<button tabindex="-1" class="${i === 0 ? 'pri' : ''}${i === MP.qv.b ? ' f' : ''}" data-k="${b.k}">${esc(b.t)}</button>`).join('')}</div><div class="qh">${esc(MP.note || FB_W.qvHint)}</div>`);   // a follow's «اضغط مرة ثانية» is said here (the header may be hidden)
+  el.hidden = false;
+  fillCrests(el);
+}
+function mpQvKey(e, fwd, back){
+  const k = e.key, x = mpQvClub();
+  if(!x){ MP.qv = null; return false; }
+  const btns = mpQvButtons(x.tr.id, x.t);
+  if(k === 'Escape' || k === 'Backspace'){ mpBack(); return true; }
+  if(k === 'ArrowDown' || k === 'ArrowUp'){ let i = MP.r; do { i += k === 'ArrowDown' ? 1 : -1; } while(MP.rows[i] && !MP.rows[i].tr); if(MP.rows[i]) MP.r = i; }
+  else if(k === fwd) MP.qv.b = Math.min(btns.length - 1, MP.qv.b + 1);
+  else if(k === back) MP.qv.b = Math.max(0, MP.qv.b - 1);
+  else if(k === 'Enter' || k === ' '){
+    const b = btns[MP.qv.b], id = x.tr.id;
+    if(b.k === 'follow'){ mpFollowTeam(id); return true; }   // its second OK confirms, as everywhere
+    MP.qv = null;
+    mpGo(b.k === 'page' ? {k: 'club', id} : {k: 'club', id, tab: 4});
+    return true;
+  }
+  else return false;
+  mpRender();
+  return true;
+}
 function mpClubLeague(id, j){   // the league whose table (the archive's) has the club: {lg, sp, rows, i}; the one with the most games played
   const lgs = new Set();
   ((j && j.last) || []).concat((j && j.next) || []).forEach(g => g && g.lg && lgs.add(String(g.lg)));
@@ -5907,6 +5983,7 @@ function mpKey(e){
     else return;
     e.preventDefault(); return mpDetailRender();
   }
+  if(MP.qv && MP.zone === 'rows'){ if(mpQvKey(e, fwd, back)) e.preventDefault(); return; }   // 4.4 the club's quick view has the keys while it is open
   if(MP.view && MP.zone === 'head') MP.zone = 'days';
   if(MP.zone === 'head'){   // 4.3.1 «فرقي»: OK opens the teams chooser of the settings (the page is made again when it comes back), ▼ goes to the days
     if(ok){ e.preventDefault(); return mpGo({k: 'mine'}); }   // 4.3.3 the page's own «فرقي» (the settings' chooser is one of its actions)
@@ -5952,7 +6029,7 @@ function bootMatchPage(){
   document.documentElement.classList.add('mpage');
   document.documentElement.classList.toggle('mpdark', !!CONFIG.pageDark);
   document.body.insertAdjacentHTML('beforeend', `<div id="mp"><header><h1 id="mp-h">${FB_W.title}</h1><span id="mp-age"></span>${window.UrtvMatches && window.UrtvMatches.openTeams ? `<button id="mp-teams" type="button" tabindex="-1">${FB_W.teams}</button>` : ''}</header>`
-    + '<ul id="mp-days"></ul><div class="mpb"><ul id="mp-side"></ul><div id="mp-list"></div></div></div><div id="mp-detail" hidden></div>');
+    + '<ul id="mp-days"></ul><div class="mpb"><ul id="mp-side"></ul><div id="mp-list"></div></div></div><div id="mp-detail" hidden></div><div id="mp-qv" hidden></div>');
   document.documentElement.style.setProperty('--u', (innerWidth / 1920) + 'px');
   addEventListener('resize', () => document.documentElement.style.setProperty('--u', (innerWidth / 1920) + 'px'));
   addEventListener('keydown', mpKey);

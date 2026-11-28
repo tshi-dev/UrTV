@@ -78,8 +78,30 @@ const zl = p => p.evaluate(() => [...document.querySelectorAll('#mp-list ul.mpt 
   check('alternate rows on the zebra', t[1].zb && !t[0].zb && t[3].zb, JSON.stringify(t.slice(0, 4).map(r => r.zb)));
   check('no live game: no toggle', !(await p.evaluate(() => !!document.querySelector('ul.mpt li.mptg'))));
   check('the zone lines are not focusable (▼ walks the clubs only)', await p.evaluate(() => MP.rows.length === 18 && MP.rows.every(x => x.tr)));
-  const opened = await p.evaluate(() => { MP.zone = 'rows'; MP.r = 6; mpRender(); dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' })); return MP.view.k + ':' + MP.view.id; });
-  check('OK on row 7 opens that club', opened === 'club:' + ID(6), opened);
+  // 4.4 (phase d) OK on a row: the club's quick view; its «صفحة النادي» is the club's page
+  const key = k => p.evaluate(k => { dispatchEvent(new KeyboardEvent('keydown', { key: k })); }, k);
+  await p.evaluate(() => { MP.zone = 'rows'; MP.r = 6; mpRender(); });
+  await key('Enter');
+  const qv = await p.evaluate(() => { const q = document.getElementById('mp-qv'); return [!q.hidden, q.querySelector('h3').textContent, q.querySelector('.qs').textContent, q.querySelector('.qc').textContent,
+    [...q.querySelectorAll('.qb button')].map(b => b.textContent + (b.classList.contains('f') ? '*' : '')).join('|'), MP.view.k, document.querySelector('ul.mpt li.f .nm span').textContent]; });
+  check('OK on row 7: the club\'s quick view (its place, points, played; W D L GF GA; «صفحة النادي» lit), the table still there with its row lit',
+    qv[0] && qv[1] === 'الاتفاق' && qv[2] === 'المركز ٧، ٢٢ نقطة، لعب ١١' && qv[3] === 'فاز ٦، تعادل ١، خسر ٤، له ٢٤، عليه ١٤' && qv[4] === 'صفحة النادي*|المواجهات|أزل من فرقي'
+    && qv[5] === 'league' && qv[6] === 'الاتفاق', JSON.stringify(qv));
+  await key('ArrowDown');
+  const down = await p.evaluate(() => document.querySelector('#mp-qv h3').textContent + '|' + document.querySelector('ul.mpt li.f .nm span').textContent);
+  check('▼ in the quick view: the club below (the table\'s lit row moves with it)', down === 'الشباب|الشباب', down);
+  await key('ArrowUp');
+  const fwd = await p.evaluate(() => Dir_rtl() ? 'ArrowLeft' : 'ArrowRight');
+  await key(fwd);
+  check('◀ ▶ walk the buttons', await p.evaluate(() => document.querySelector('#mp-qv .qb button.f').dataset.k === 'h2h'));
+  check('no button text cut or ending in «…»', await p.evaluate(() => [...document.querySelectorAll('#mp-qv .qb button')].every(b => b.scrollWidth <= b.clientWidth + 1)));
+  const fb = await p.evaluate(() => { const b = document.querySelector('#mp-qv .qb button.f'), cs = getComputedStyle(b); return [cs.outlineStyle, cs.transform !== 'none', cs.boxShadow !== 'none' && !/inset/.test(cs.boxShadow)]; });
+  check('a lit button is scale and shadow, no outline or ring', JSON.stringify(fb) === '["none",true,true]', JSON.stringify(fb));
+  const b1 = await p.evaluate(() => [mpBack(), document.getElementById('mp-qv').hidden, MP.view.k]);
+  check('رجوع: the quick view closes first (the table stays)', JSON.stringify(b1) === '["closed",true,"league"]', JSON.stringify(b1));
+  await key('Enter'); await key(await p.evaluate(() => Dir_rtl() ? 'ArrowRight' : 'ArrowLeft')); await key('Enter');
+  const opened = await p.evaluate(() => MP.view.k + ':' + MP.view.id);
+  check('OK on «صفحة النادي»: that club\'s page', opened === 'club:' + ID(6), opened);
   check('no script error', !errors.length, errors.join('|'));
   await ctx.close();
 }
