@@ -354,7 +354,7 @@ final class ConfigSnapshot {
     String lang() { return Tr.fromFragment(fragment); }
 
     /** «زر المهام»: «&taskspill=0» is in the fragment only while the button is hidden; an older screensaver (or none) says nothing: shown */
-    boolean tasksPillOn() { return fragment == null || !(fragment.contains("&taskspill=0") || fragment.startsWith("taskspill=0") || partOff("tasks")); }   // 4.4 «أجزاء UrTV» too
+    boolean tasksPillOn() { return fragment == null || !(fragment.contains("&taskspill=0") || fragment.startsWith("taskspill=0")); }
 
     /**
      * «الرجوع يفتح شاشة التوقف» on the screensaver's settings: «&backsaver=1» only while on. null when there is no real answer (an old copy,
