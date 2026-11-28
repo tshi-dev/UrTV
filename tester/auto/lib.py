@@ -258,6 +258,10 @@ def _focused_index(nodes):
     return min(cand, key=lambda i: ("WebView" in nodes[i].get("class", ""), area(i)))
 
 
+def _within(inner, outer):
+    return outer is not None and inner is not None and outer[0] <= inner[0] and inner[2] <= outer[2] and outer[1] <= inner[1] and inner[3] <= outer[3]
+
+
 def focused(xml):
     """the text of the focused node of a uiautomator dump, else of the first one inside it that has a text (a row's name sits in a child)"""
     nodes = list(_nodes(xml))
@@ -267,8 +271,18 @@ def focused(xml):
             if _label(a):
                 return _label(a)
             box = a["_box"]
-            for c in nodes[i + 1:]:
-                if box and c["_box"] and box[0] <= c["_box"][0] and c["_box"][2] <= box[2] and box[1] <= c["_box"][1] and c["_box"][3] <= box[3] and _label(c):
+            inside = [c for c in nodes[i + 1:] if box and c["_box"] and _within(c["_box"], box)]
+            # a list is focused as a whole: its row is the one marked selected (the first row with a text is only the top one on the
+            # screen; auto-19 played the station two rows down from the one it named)
+            for k, c in enumerate(inside):
+                if c.get("selected") == "true":
+                    if _label(c):
+                        return _label(c)
+                    for d in inside[k + 1:]:
+                        if _within(d["_box"], c["_box"]) and _label(d):
+                            return _label(d)
+            for c in inside:
+                if _label(c):
                     return _label(c)
             return ""
     return ""

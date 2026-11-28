@@ -44,6 +44,11 @@ two = ('<node class="android.webkit.WebView" text="شاشة تلفزيونك" fo
 check("the focus is the view over a page, not the page's WebView that says focused too (emulator run 10: the walk read the page's title and stopped); the way to a name is the arrow toward it",
       lib.focused(two) == "الأسواق" and lib.focus_key(two) == "الأسواق@[96,168][1018,461]" and lib.toward(two, "مركز التحكم") == "UP"
       and lib.toward(two, "الأسواق") == "here" and lib.toward(two, "غير موجود") == "none", (lib.focused(two), lib.focus_key(two), lib.toward(two, "مركز التحكم")))
+rows = "".join(f'<node text="" selected="{str(n == 4).lower()}" focused="false" bounds="[0,{n * 100}][800,{n * 100 + 90}]"/><node text="{t}" bounds="[10,{n * 100 + 5}][700,{n * 100 + 50}]"/>'
+               for n, t in enumerate(["سعود الشريم", "ماهر المعيقلي", "مشاري العفاسي", "سعد الغامدي", "ياسر الدوسري"], start=2))
+lst = '<node text="" class="android.widget.ListView" focused="true" bounds="[0,200][800,700]"/>' + rows
+check("a focused list: its selected row is the one named, not the top one on the screen (auto-19: OK on «السديس» played «ماهر المعيقلي»)",
+      lib.focused(lst) == "مشاري العفاسي" and lib.focused(lst.replace('selected="true"', 'selected="false"')) == "سعود الشريم", lib.focused(lst))
 check("the settings style, the volume, the city, the adhan state of a prayer", lib.settings_style("a=1\nsettingsstyle=couch\n") == "couch" and lib.settings_style("nothing") == "" and lib.music_volume("volume is 7 in range [0..15]") == 7 and lib.city("version=4\ncity=الرياض\nx") == "الرياض"
       and lib.adhan_state("prayer_sound=fajr:silent,dhuhr:|prayer_screen=fajr:on,dhuhr:off", "fajr") == "screen" and lib.adhan_state("prayer_sound=fajr:silent,dhuhr:|prayer_screen=fajr:on,dhuhr:off", "dhuhr") == "sound"
       and lib.adhan_state("nothing", "fajr") == "")
