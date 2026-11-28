@@ -244,6 +244,15 @@ def focused(xml):
     return ""
 
 
+def focus_key(xml):
+    """where the focus is: the focused node's place on the screen and its name («label@[l,t][r,b]»), empty when nothing has it; two places with the
+    same name (or none, as a card drawn by a page) are told apart"""
+    for a in _nodes(xml):
+        if a.get("focused") == "true":
+            return focused(xml) + "@" + a.get("bounds", "")
+    return ""
+
+
 def has_text(xml, needle):
     return any(needle in _label(a) for a in _nodes(xml))
 
@@ -396,6 +405,8 @@ def main(a):
         print(wm_back(_read(a[2])))
     elif cmd == "focused":
         print(focused(_read(a[2])))
+    elif cmd == "focus-key":
+        print(focus_key(_read(a[2])))
     elif cmd == "has-text":
         print("yes" if has_text(_read(a[2]), a[3]) else "no")
     elif cmd == "box":
