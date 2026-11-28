@@ -81,11 +81,11 @@ public class SettingsActivity extends Activity {
     @Override
     protected void attachBaseContext(android.content.Context base) {
         android.content.Context en = S.wrap(base);
-        if (S.en()) { super.attachBaseContext(en); return; }
+        if (S.en()) { super.attachBaseContext(TextScale.fit(en)); return; }   // 4.4 beta 4: the words scaled to the screen (TextScale)
         android.content.res.Configuration c = new android.content.res.Configuration(base.getResources().getConfiguration());
         c.setLocale(new java.util.Locale("ar"));
         c.setLayoutDirection(new java.util.Locale("ar"));
-        super.attachBaseContext(base.createConfigurationContext(c));
+        super.attachBaseContext(TextScale.fit(base.createConfigurationContext(c)));
     }
 
     private FrameLayout root;

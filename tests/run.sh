@@ -401,6 +401,7 @@ python3 tests/i18n_test.py   # «اللغة»: the translation table, its comple
 python3 tests/ar_style_test.py   # docs/STYLE-AR.md: the Arabic wording check warns (never fails), the approved Saudi wording is in the app
 # English phase 1 (the screensaver app): its new tests go right under this line
 python3 tests/i18n_saver_test.py   # the settings in English (Words, WordMatch, Places), Arabic as it was, «اللغة» in «المزيد»
+python3 tests/text_scale_test.py   # 4.4 beta 4: the settings' words scaled to the screen (720p and 1080p)
 #
 # English phase 2 (the page): its new tests go right under this line
 python3 tests/i18n_page_test.py   # dist/tv-en.html: built beside tv.html (byte for byte), current, under budget; the app and the home card pick it
