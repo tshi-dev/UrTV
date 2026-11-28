@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- made by .github/tools/icons/make.js: change it there -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp" android:height="108dp" android:viewportWidth="108" android:viewportHeight="108">
+    <path android:pathData="M43,34Q38,31 38,37V71Q38,77 43,74L72,57Q76,54 72,51Z" android:fillColor="#FFFFFFFF"/>
+</vector>

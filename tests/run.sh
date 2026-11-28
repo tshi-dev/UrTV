@@ -223,6 +223,7 @@ python3 tests/updates_bell_test.py
 python3 tests/versions_test.py
 python3 tests/version_name_test.py
 python3 tests/home_tile_test.py
+python3 tests/icons_family_test.py   # 4.4 the family's icons: adaptive vectors and the flattened PNGs (docs/mockups/icons)
 python3 tests/back_saver_test.py
 python3 tests/back_saver_row_test.py
 python3 tests/channel_test.py

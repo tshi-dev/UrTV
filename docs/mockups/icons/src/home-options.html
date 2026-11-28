@@ -1,0 +1,56 @@
+<!doctype html><html><head><meta charset="utf-8"><link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@600;700&display=swap" rel="stylesheet"><style>
+body{margin:0;width:2260px;font:20px 'IBM Plex Sans Arabic',sans-serif;direction:rtl}
+.half{padding:30px 44px 20px}.dark{background:#111317;color:#eee}.light{background:#ecebe7;color:#222}
+h1{margin:0 0 6px;font-size:30px}.sub{opacity:.65;font-size:17px;margin-bottom:22px}
+.opt{margin:0 0 26px}.opt h2{margin:0 0 12px;font-size:23px}.opt h2 span{opacity:.6;font-weight:600;font-size:17px;margin-right:12px}
+.row{display:flex;gap:26px;align-items:center;height:215px;padding-right:18px}
+.b{direction:ltr;width:320px;height:180px;border-radius:10px;overflow:hidden;flex:none;position:relative}.b svg,.b img{display:block;width:320px;height:180px}
+.b.f{transform:scale(1.12);box-shadow:0 14px 34px rgba(0,0,0,.55);margin-left:22px}
+.b .l{position:absolute;inset:0}
+</style></head><body><div id="out"></div><script>
+// one family: the adaptive icon (108 units, the 66 safe circle in the middle) and the 320x180 banner, as SVG strings
+const BG = `<defs><linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#14402f"/><stop offset="1" stop-color="#061a12"/></linearGradient>
+<linearGradient id="au" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#F6DC9E"/><stop offset="1" stop-color="#C79A43"/></linearGradient></defs>`;
+const W = 5;   // one stroke weight for every glyph (108 units)
+const TV = `<rect x="29" y="33" width="50" height="36" rx="6" fill="none" stroke="url(#au)" stroke-width="${W}"/><path d="M47,78h14M54,69v9" stroke="url(#au)" stroke-width="${W}" stroke-linecap="round"/>`;
+const INNER = {
+  home:   `<circle cx="60" cy="47" r="5" fill="url(#au)"/><path d="M35,63 Q46,52 54,57 T74,60" fill="none" stroke="url(#au)" stroke-width="${W*0.8}" stroke-linecap="round"/>`,
+  saver:  `<path d="M57,41 a10,10 0 1,0 9,15 a8,8 0 1,1 -9,-15z" fill="url(#au)"/>`,
+  rescue: `<path d="M47,48 a8.5,8.5 0 1,1 1.5,9" fill="none" stroke="url(#au)" stroke-width="${W*0.8}" stroke-linecap="round"/><path d="M42,44 l5,4.5 l-5.5,3.5" fill="none" stroke="url(#au)" stroke-width="${W*0.8}" stroke-linecap="round" stroke-linejoin="round"/>`,
+  extras: `<path d="M54,43v16M46,51h16" stroke="url(#au)" stroke-width="${W*0.9}" stroke-linecap="round"/>`,
+  doctor: `<path d="M45,51.5l6,6l12,-12" fill="none" stroke="url(#au)" stroke-width="${W}" stroke-linecap="round" stroke-linejoin="round"/>`,
+};
+const PLAY = `<path d="M43,34 Q38,31 38,37 V71 Q38,77 43,74 L72,57 Q76,54 72,51 Z" fill="url(#au)"/>`;
+function glyph(app) { return app === 'player' ? PLAY : TV + INNER[app]; }
+function icon(app) { return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 108 108">${BG}<rect width="108" height="108" fill="url(#bg)"/>${glyph(app)}</svg>`; }
+function fg(app) { return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 108 108">${BG}${glyph(app)}</svg>`; }
+const NAMES = { home: 'تلفزيونك', saver: 'شاشة التوقف', rescue: 'إنقاذ تلفزيونك', extras: 'إضافات تلفزيونك', player: 'مشغّل تلفزيونك', doctor: 'فحص تلفزيونك' };
+function banner(app, font) {
+  const name = NAMES[app], size = name.length > 13 ? 26 : name.length > 10 ? 29 : name.length > 9 ? 32 : 42;
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 180">${BG}<rect width="320" height="180" fill="url(#bg)"/>
+  <g transform="translate(206 36) scale(1)"><rect width="108" height="108" rx="24" fill="#0b2a1f" opacity=".9"/>${glyph(app)}</g>
+  <text x="196" y="${app === 'home' ? 100 : 98}" text-anchor="end" font-family="${font}" font-weight="700" font-size="${size}" fill="#F7F3EA">${name}</text>
+  <text x="196" y="128" text-anchor="end" font-family="${font}" font-weight="600" font-size="15" letter-spacing="2" fill="#E3C07A">UrTV</text></svg>`;
+}
+const BGS=`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 180"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#14402f"/><stop offset="1" stop-color="#061a12"/></linearGradient>
+<linearGradient id="s" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#E08A3C" stop-opacity=".55"/><stop offset=".22" stop-color="#B8662E" stop-opacity=".28"/><stop offset=".5" stop-color="#7a4a22" stop-opacity="0"/></linearGradient></defs>
+<rect width="320" height="180" fill="url(#g)"/>SUN</svg>`;
+const green=BGS.replace('SUN',''), sunset=BGS.replace('SUN','<rect width="320" height="180" fill="url(#s)"/>');
+const home={
+ a:'<img src="../../../../../android/launcher/src/main/res/drawable-xxhdpi/banner.png">',
+ b:green+'<img class="l" src="home/tile.png"><img class="l" src="home/text.png">',
+ c:sunset+'<img class="l" src="home/tile.png"><img class="l" src="home/text.png">'};
+const titles={a:['أ. صورة الغروب','شعار اليوم كما هو'],b:['ب. أخضر مثل العائلة','نفس خلفية الخمسة الباقين'],c:['ج. أخضر مع غروب خفيف','الخلفية الخضراء، وتحتها لمسة غروب']};
+const others=['saver','rescue','extras','player','doctor'];
+let h='';
+for (const cls of ['dark','light']) {
+  h+=`<div class="half ${cls}"><h1>${cls==='dark'?'شعار الرئيسية في صف التطبيقات: خلفية داكنة':'خلفية فاتحة'}</h1><div class="sub">الأول عليه التركيز. اسم الرئيسية بخط ثمانية من الشعار الحقيقي؛ أسماء الخمسة الباقين بخط بديل هنا، وتنرسم بثمانية عند البناء.</div>`;
+  for (const k of ['a','b','c']) {
+    h+=`<div class="opt"><h2>${titles[k][0]}<span>${titles[k][1]}</span></h2><div class="row"><div class="b f">${home[k]}</div>`;
+    for (const o of others) h+=`<div class="b">${banner(o,"IBM Plex Sans Arabic")}</div>`;
+    h+='</div></div>';
+  }
+  h+='</div>';
+}
+document.getElementById('out').innerHTML=h;
+</script></body></html>

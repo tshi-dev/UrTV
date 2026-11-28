@@ -28,7 +28,8 @@
     <application
         android:allowBackup="false"
         android:label="@string/app_name"
-        android:icon="@mipmap/ic_extras">
+        android:icon="@mipmap/ic_extras"
+        android:banner="@drawable/banner">
 
         <service
             android:name="sa.urtv.home.ExtrasA11yService"
