@@ -1,3 +1,5 @@
+▶▶ BETA BACK (28 Nov): next is now 2c220685 (beta 4: fixes A+B+C, setup tools, radio fixes; all CI green). apk-next will rebuild with a number above 687. ONLY AFTER the 4.3.7 rc test, the icons check and the doctor run are done and pushed: `APK_TAG=apk-next optimize/install.sh all` (check version.txt > 3.687 first), then one `tester/auto/round.sh` round on it → tester/beta4-2c22/REPORT.md.
+
 ▶▶ DOCTOR BETA, FIRST REAL-TV RUN (28 Nov). After the 4.3.7 rc test and the icons check. TV muted. Change nothing on the TV beyond installing this app.
 APK: https://github.com/tshi-dev/urtv-doctor/releases/download/doctor-beta/urtv-doctor.apk  sha256 c799c1ebdfc4c671b11d9a509a0944d9b76f03844a702123ab743d3c0ca6b505 (verify it), version 1.0.0.1001, package sa.urtv.doctor. `adb install -r` it.
 1. Unattended run: `adb shell am start -n sa.urtv.doctor/.MainActivity --ez auto true --ez send false`, wait for it to finish, then `logcat -d -s UrTVDoctor:V` → raw/auto.txt. Time from start to the result.
