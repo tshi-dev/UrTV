@@ -5581,6 +5581,7 @@ public class MainActivity extends Activity {
         // while the adhan plays: OK on its bar stops it, and with «إيقاف الأذان بأي زر» any key does; that press is consumed whole
         if (adhanTakes(e)) return true;
         if (reminder != null && reminder.key(e)) return true;   // a reminder's card is up: the first press is the card's
+        if (VoiceKeys.is(e.getKeyCode())) return super.dispatchKeyEvent(e);   // 4.4 (R-404): the voice / search key is Android's, untouched by everything below
         // the remote's shortcut keys (YouTube, Netflix, Settings, the star): with the stock launcher off nothing else answers them
         if (e.getAction() == KeyEvent.ACTION_DOWN && e.getRepeatCount() == 0)
             android.util.Log.d("UrTVKeys", "key=" + e.getKeyCode() + " scan=" + e.getScanCode());   // for the TV test: does the shortcut key reach the home screen at all? (codes only)

@@ -414,6 +414,7 @@ python3 tests/fragment_keep_test.py   # 4.3.2 (a user's adhan times and prayer c
 python3 tests/glow_mode_test.py   # «توهّج لون التطبيق» (4.3.1): the glow behind the focused app is OFF by default (new installs and old ones), ha
 python3 tests/google_tv_home_test.py   # Google TV (user reports: TCL G10/G08, Changhong Android 14, Sony BRAVIA VH21, Xiaomi MiTV-AFMU0/1): since 4.3
 python3 tests/home_snapshot_test.py   # The home's stand-in picture (HomeSnapshot): the rules pinned from the source: what the key is made of, the age
+python3 tests/voice_keys_test.py   # R-404: SEARCH, ASSIST and VOICE_ASSIST go to Android untouched (the home after the adhan and a reminder, the add-on first)
 python3 tests/role_boot_test.py   # R-401: the HOME role read again at boot and logged; given back once, else the home says so once
 python3 tests/city_keep_test.py   # R-403: the city is committed and kept; a settings file without a city gets it back (a TCL A11 power cycle)
 python3 tests/idle_keep_test.py   # R-400: the idle delay the person chose goes back at boot when the firmware reset it to «never» (Skyworth A11)
