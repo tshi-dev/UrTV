@@ -66,7 +66,7 @@ with tempfile.TemporaryDirectory() as tmp:
     fake.chmod(0o755)
     r = subprocess.run(["bash", str(t / "optimize/keep.sh")], capture_output=True, text=True, cwd=tmp, env={**os.environ, "PY": str(fake)})
     out = r.stdout + r.stderr
-    check("#4 a kept package the TV had off before UrTV (backup.txt) and won't turn on: «the TV's own, not a failure» (R-380 wording), no !!, exit 0",
-          pkg in "".join(text(ROOT / "optimize/lists/keep.txt").split()) and r.returncode == 0 and "the TV's own, not a failure" in out and "!!" not in out,
+    check("#4 a kept package the TV had off before UrTV (backup.txt) and won't turn on: «left off by the TV itself», no !!, exit 0",
+          pkg in "".join(text(ROOT / "optimize/lists/keep.txt").split()) and r.returncode == 0 and "left off by the TV itself" in out and "!!" not in out,
           f"rc={r.returncode} {out}")
 sys.exit(1 if failed else 0)
