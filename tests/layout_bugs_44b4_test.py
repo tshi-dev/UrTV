@@ -52,7 +52,10 @@ check("(h) the reciter letters wear the look's own text and focus ink (R.color.s
 card = (H / "ReminderCard.java").read_text(encoding="utf-8")
 check("(h) the reminder card stands 16 dp under the clock column (never above 60 dp) and goes up only as far as the screen's bottom needs",
       "if (y > 0) top = Math.max(top, y + dp(16));" in card and "if (card.getHeight() > 0 && room > 0) top = Math.min(top, room);" in card
-      and "card.post(this::place);" in card and "reminder.under(new ReminderCard.Under() {" in main and "return at[1] + clockBlock.getHeight();" in main)
+      and "card.post(this::place);" in card and "reminder.under(new ReminderCard.Under() {" in main and "shownBottom((ViewGroup) clockBlock)" in main)
+check("(h) the clock column ends at its lowest drawn line: the big clock leaves the small one INVISIBLE and lifts the date (the emulator: the card 72 dp low, over the apps)",
+      "if (c.getVisibility() != View.VISIBLE || c.getHeight() == 0) continue;" in main
+      and "low = Math.max(low, Math.round(c.getTop() + inner + c.getTranslationY()));" in main and "return low == 0 ? g.getHeight() : low;" in main)
 check("(h) with the big clock it keeps clear of the digits: beside them under the clock column, as wide as that room allows, its two buttons one over the other when narrow; too narrow there, under the digits (the emulator: over the digits, then over the apps row)",
       "return ScenePlan.fixedBox(dm.widthPixels, dm.heightPixels, beside, Dir.rtl());" in main and "int side = Dir.rtl() ? parent.getWidth() - big[2] : big[0];" in card
       and "if (floor > 0 && card.getHeight() > 0 && above < top && above >= (y > 0 ? y + dp(8) : dp(16))) top = above;" in card and "@Override public int floor() {" in main

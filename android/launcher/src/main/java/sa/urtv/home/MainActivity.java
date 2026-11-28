@@ -1058,7 +1058,7 @@ public class MainActivity extends Activity {
                 if (clockBlock == null || clockBlock.getHeight() == 0 || !clockBlock.isShown()) return -1;
                 int[] at = new int[2];
                 clockBlock.getLocationInWindow(at);
-                return at[1] + clockBlock.getHeight();
+                return at[1] + (clockBlock instanceof ViewGroup ? shownBottom((ViewGroup) clockBlock) : clockBlock.getHeight());   // with the big clock the small one is INVISIBLE and the date lifted: its box ends far below
             }
             @Override public int[] bigClock() {
                 if (!bigClockOn) return null;
@@ -5824,5 +5824,23 @@ public class MainActivity extends Activity {
     static final class HomeScrollView extends android.widget.ScrollView {
         HomeScrollView(Context c) { super(c); }
         @Override protected int computeScrollDeltaToGetChildRectOnScreen(android.graphics.Rect r) { return 0; }
+    }
+
+    /** The lowest edge, in the group, of what is drawn in it: INVISIBLE and GONE children skipped, translations counted. */
+    static int shownBottom(ViewGroup g) {
+        int low = drawnBottom(g);
+        return low == 0 ? g.getHeight() : low;
+    }
+
+    private static int drawnBottom(ViewGroup g) {   // 0: nothing drawn in it
+        int low = 0;
+        for (int i = 0; i < g.getChildCount(); i++) {
+            View c = g.getChildAt(i);
+            if (c.getVisibility() != View.VISIBLE || c.getHeight() == 0) continue;
+            int inner = c instanceof ViewGroup ? drawnBottom((ViewGroup) c) : c.getHeight();
+            if (inner == 0) continue;
+            low = Math.max(low, Math.round(c.getTop() + inner + c.getTranslationY()));
+        }
+        return low;
     }
 }
