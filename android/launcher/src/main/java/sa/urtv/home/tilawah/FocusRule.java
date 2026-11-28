@@ -64,6 +64,18 @@ final class FocusRule {
         return Look.AGAIN;
     }
 
+    /**
+     * 4.4 beta 4 (Xiaomi A9: the Quran radio stopped after the screensaver): the screensaver took the sound for good while it showed, the watch
+     * above gave up after TAKE_BACK_MS, and nothing asked again when it ended. When the dream ends: take the sound back if it was lost during
+     * the dream, the person still wants it (no pause, stop or other pick meanwhile), and the loss is at most DREAM_BACK_MS old (a screensaver
+     * that ran all night does not start the radio in the morning).
+     */
+    static final long DREAM_BACK_MS = 2 * 3600_000L;
+
+    static boolean afterDream(boolean lostInDream, boolean waiting, boolean wanted, long sinceLossMs) {
+        return lostInDream && waiting && wanted && sinceLossMs >= 0 && sinceLossMs <= DREAM_BACK_MS;
+    }
+
     /** the quiet looks in a row after this one */
     static int quietAfter(boolean othersPlay, int mode, int quietSoFar) {
         return !othersPlay && mode == MODE_NORMAL ? quietSoFar + 1 : 0;

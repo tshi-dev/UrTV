@@ -264,6 +264,7 @@ python3 tests/audio_upload_test.py      # 4.4 «صوتياتي»: one upload at 
 python3 tests/surah_places_test.py      # 4.4 «تلاوة وأذان»: each surah its place, saved while it plays, the sleep timer and the adhan, the letters, the card
 python3 tests/dua_time_test.py         # 4.4 the duas after midnight, on a DST day, the Hijri shift; the adhan's previews
 python3 tests/focus_rule_test.py   # 4.3.3 G1: the player keeps on behind the screensaver and the TV's settings; another sound pauses it and it comes back
+python3 tests/dream_back_test.py   # 4.4 beta 4: a sound lost to the screensaver comes back when it ends
 python3 tests/surah_set_test.py   # 4.3.3: a reciter with «missing» surahs; the player steps over them
 python3 tests/audio_library_test.py   # 4.4 «صوتياتي»: sound files from a USB stick or the phone, kept in the app; the caps; the own adhan from them
 python3 tests/dua_test.py   # 4.4 «الأدعية والتذكيرات»: the rule (days, both calendars, prayer times), the alarm, playing like the adhan, the card

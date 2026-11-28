@@ -181,6 +181,28 @@ public class MusicService extends Service implements AudioManager.OnAudioFocusCh
             if (source == Prefs.SOURCE_ADHAN) finishAdhan();
         }
     };
+    /** 4.4 beta 4: the screensaver is on (ACTION_DREAMING_STARTED/STOPPED); a sound lost to it is taken back when it ends (FocusRule.afterDream) */
+    private boolean dreaming, lostInDream;
+    private long lostInDreamAt;
+    private final BroadcastReceiver dream = new BroadcastReceiver() {
+        @Override public void onReceive(Context c, Intent i) {
+            if (Intent.ACTION_DREAMING_STARTED.equals(i.getAction())) { dreaming = true; return; }
+            dreaming = false;
+            boolean back = FocusRule.afterDream(lostInDream, resumeOnFocus, wish.wants() && player != null && prepared && !playing, SystemClock.elapsedRealtime() - lostInDreamAt);
+            lostInDream = false;
+            if (!back) return;
+            if (!requestFocus()) { Log.i(TAG, "focus: after the screensaver, asked back, refused"); return; }
+            Log.i(TAG, "focus: the screensaver ended, the sound taken back");
+            endFocusWatch();
+            try { player.setVolume(1f, 1f); player.start(); } catch (IllegalStateException e) { return; }
+            playing = true;
+            resumeOnFocus = false;
+            waitingFocus = false;
+            playbackStarted();
+            updateSession();
+            updateNotification();
+        }
+    };
     private final Runnable tick = new Runnable() {
         @Override public void run() {
             if (!ticking) return;
@@ -381,6 +403,8 @@ public class MusicService extends Service implements AudioManager.OnAudioFocusCh
         });
         session.setActive(true);
         registerReceiver(screenOff, new IntentFilter(Intent.ACTION_SCREEN_OFF));
+        registerReceiver(dream, new IntentFilter(Intent.ACTION_DREAMING_STARTED));   // system broadcasts (no export flag); one receiver, two filters
+        registerReceiver(dream, new IntentFilter(Intent.ACTION_DREAMING_STOPPED));
         watchNetwork();   // 4.4: join again the moment the network is back
     }
 
@@ -435,6 +459,7 @@ public class MusicService extends Service implements AudioManager.OnAudioFocusCh
         stopTick();
         handler.removeCallbacksAndMessages(null);
         try { unregisterReceiver(screenOff); } catch (IllegalArgumentException ignored) {}
+        try { unregisterReceiver(dream); } catch (IllegalArgumentException ignored) {}
         if (netBack != null) {
             try { ((android.net.ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE)).unregisterNetworkCallback(netBack); } catch (RuntimeException ignored) { }
             netBack = null;
@@ -1416,6 +1441,7 @@ public class MusicService extends Service implements AudioManager.OnAudioFocusCh
                     updateNotification();
                 }
                 waitingFocus = resumeOnFocus;
+                if (dreaming && resumeOnFocus) { lostInDream = true; lostInDreamAt = SystemClock.elapsedRealtime(); }   // 4.4 beta 4: taken back when the screensaver ends
                 if (change == FocusRule.LOSS && resumeOnFocus) startFocusWatch();
                 Log.i(TAG, "focus lost (" + change + "): paused" + (change == FocusRule.LOSS ? ", watching for " + FocusRule.TAKE_BACK_MS / 1000 + " s" : " until it comes back"));
                 break;
