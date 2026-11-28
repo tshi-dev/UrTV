@@ -1,17 +1,17 @@
-# Automatic round: emulator-19
+# Automatic round: emulator-22
 
 ## Health metrics
 
 | metric | now | limit | previous | change | verdict |
 |---|---|---|---|---|---|
-| cold_start_home_ms | 1194ms | max 20000 |  |  | ok |
-| cold_start_saver_ms | 877ms | max 20000 |  |  | ok |
-| jank_home_frames | 50 |  |  |  | no limit |
+| cold_start_home_ms | 1411ms | max 20000 |  |  | ok |
+| cold_start_saver_ms | 1009ms | max 20000 |  |  | ok |
+| jank_home_frames | 63 |  |  |  | no limit |
 | jank_home_pct | 100.0% | max 100 |  |  | ok |
-| jank_home_p90_ms | 44ms |  |  |  | no limit |
-| jank_home_p99_ms | 53ms |  |  |  | no limit |
-| pss_home_kb | 61682KB | max 350000 |  |  | ok |
-| pss_saver_kb | 38858KB | max 350000 |  |  | ok |
+| jank_home_p90_ms | 57ms |  |  |  | no limit |
+| jank_home_p99_ms | 85ms |  |  |  | no limit |
+| pss_home_kb | 58756KB | max 350000 |  |  | ok |
+| pss_saver_kb | 32624KB | max 350000 |  |  | ok |
 | crashes | 0 | zero 0 |  |  | ok |
 | anrs | 0 | zero 0 |  |  | ok |
 | frozen_lines | 0 | zero 0 |  |  | ok |
@@ -20,6 +20,7 @@
 
 | step | result | what |
 |---|---|---|
+| radio | SKIP | left out of this round (--skip / ROUND_SKIP) |
 | layout-classic-none | PASS | كلاسيكي، بلا بطاقة: the home is in front (look at shots/layout-classic-none.png) |
 | layout-classic-stocks | PASS | كلاسيكي، الأسهم: the home is in front (look at shots/layout-classic-stocks.png) |
 | layout-classic-matches | PASS | كلاسيكي، المباريات: the home is in front (look at shots/layout-classic-matches.png) |
@@ -69,19 +70,6 @@
 | settings-tvos-update | PASS | tvOS ← حول والتحديث: «تحديث تلفزيوني» is on the screen |
 | settings-tvos-search | PASS | tvOS ← بحث في الإعدادات: «بحث في الإعدادات» is on the screen |
 | saver-start | PASS | a dream runs |
-| radio-0 | PASS | إذاعة القرآن الكريم - السعودية: playing |
-| radio-1 | PASS | إذاعة القرآن الكريم - مصر: playing |
-| radio-2 | PASS | الشيخ أبو بكر الشاطري: playing |
-| radio-3 | PASS | عبدالرحمن السديس: playing |
-| radio-4 | PASS | سعود الشريم: playing |
-| radio-5 | PASS | ماهر المعيقلي: playing |
-| radio-6 | PASS | مشاري العفاسي: playing |
-| radio-7 | PASS | سعد الغامدي: playing |
-| radio-8 | PASS | ياسر الدوسري: playing |
-| radio-9 | PASS | عبدالباسط عبدالصمد: playing |
-| radio-10 | PASS | محمد صديق المنشاوي: playing |
-| radio-11 | PASS | أحمد العجمي: playing |
-| radio-12 | FAIL | الشيخ عبدالله خياط: not playing after 20 s (another app was in front: mResumedActivity: ActivityRecord{a86da10 u0 com.google.android.youtube.tv/com.google.android.apps.youtube.tv.activity.MainActivity t11}) (see raw/radio-12.log) |
 | display-720p-home | PASS | the home at 1280x720, density 213 |
 | display-720p-settings | PASS | the settings at 720p |
 | font-large-home | PASS | the home at font scale 1.3 |
@@ -110,4 +98,4 @@
 
 ## Verdict
 
-RED: step radio-12 failed
+GREEN: every metric within its limit, no step failed.

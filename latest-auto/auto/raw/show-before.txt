@@ -1,4 +1,4 @@
-version: 4.4 (build 19)
+version: 4.4 (build 22)
 city: الرياض (24.6877, 46.7219)
 timezone: Asia/Riyadh
 country: SA
