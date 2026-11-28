@@ -481,7 +481,7 @@ public class MainActivity extends Activity {
             t.setTextSize(16);   // 16 sp at least (11 was unreadable on a TV, step 28); the letters no reciter starts with are not drawn, so the lit ones have the room
             t.setGravity(android.view.Gravity.CENTER);
             t.setIncludeFontPadding(false);
-            t.setTextColor(0xFFE7DCC4);
+            t.setTextColor(getColorStateList(R.color.sand));   // the look's own text and focus ink (the tester, step 37: the fixed cream was nearly invisible in «رملي»)
             t.setOnFocusChangeListener((v, has) -> {
                 v.setBackgroundResource(has ? R.drawable.tab_bg : 0);
                 v.setSelected(has);

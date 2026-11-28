@@ -173,6 +173,29 @@ adb logcat -d -s UrTVSide:I > "$OUT/side-cards.txt"   # which cards each column 
 saver --es sidecards off --es home_panel matches,prayerrow,hourly
 # 4.4 beta 4 (the findability review §5): the presses to each target in every settings style, counted by moving the focus as a person would
 python3 .github/screens/presses.py "$OUT" || echo "presses: the walk stopped"
+# ---- 4.4 beta 4 known bugs (the supervisor's a, h): (a) a bar of a few apps is as wide as its tiles; (h) «رملي»: the reciter letters in the look's
+# own ink, and a reminder card under the clock's column, not over it
+saver --es homelayout classic --es appsstyle zoom --es home_panel none
+start sa.urtv.home/.MainActivity
+shot bug-a-dock-few-apps 10
+saver --es look sand
+due=$(adb shell "TZ=Asia/Riyadh date '+%Y-%m-%d %H:%M'" | tr -d '\r')   # the city of these shots is Riyadh: a reminder due now
+adb shell "am broadcast -n sa.urtv.screensaver/.SaverReceiver -a sa.urtv.screensaver.TASKS --es op add --es text 'موعد الطبيب' --es at '$due' --es where home" > /dev/null
+start sa.urtv.home/.MainActivity
+shot bug-h-sand-reminder 10
+key DPAD_CENTER   # «تم»: the card goes
+# تلاوة is not exported (an adb start is refused): from the home by its button, the way a person opens it
+start sa.urtv.home/.MainActivity
+sleep 4
+key DPAD_UP
+focus_to "تلاوة وأذان" 10 DPAD_LEFT || focus_to "تلاوة وأذان" 12 DPAD_RIGHT
+key DPAD_CENTER
+sleep 4
+key DPAD_RIGHT   # from the list to the letters (the start edge is the right in Arabic)
+shot bug-h-sand-letters 3
+key BACK BACK
+saver --es look glass --es home_panel matches,prayerrow,hourly
+
 adb logcat -d -s AndroidRuntime:E > "$OUT/crashes.txt"
 ls "$OUT"
 exit 0

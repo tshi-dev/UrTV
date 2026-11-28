@@ -65,7 +65,7 @@ final class ReminderCard {
         head.addView(words, wp);
         box.addView(head, new LinearLayout.LayoutParams(-1, -2));
 
-        LinearLayout buttons = new LinearLayout(c);
+        buttons = new LinearLayout(c);
         ok = button(S.t("تم"), true);
         later = button("", false);
         buttons.addView(ok, new LinearLayout.LayoutParams(0, dp(40), 1f));
@@ -82,6 +82,49 @@ final class ReminderCard {
         p.setMarginStart(dp(60));
         p.topMargin = dp(60);
         root.addView(card, p);
+    }
+
+    /** where the home's clock column ends (window px; -1: not known), and the big clock's digits' box while it shows (null: none) */
+    interface Under { int bottom(); int[] bigClock(); int floor(); }   // floor: the apps row's top (window px; -1: not known)
+    private LinearLayout buttons;
+
+    /** the two buttons side by side, or (a narrow card, beside the big clock) one over the other, each the card's width */
+    private void stack(boolean narrow) {
+        if ((buttons.getOrientation() == LinearLayout.VERTICAL) == narrow) return;
+        buttons.setOrientation(narrow ? LinearLayout.VERTICAL : LinearLayout.HORIZONTAL);
+        LinearLayout.LayoutParams a = new LinearLayout.LayoutParams(narrow ? -1 : 0, dp(40), narrow ? 0f : 1f);
+        LinearLayout.LayoutParams b = new LinearLayout.LayoutParams(narrow ? -1 : 0, dp(40), narrow ? 0f : 1f);
+        if (narrow) b.topMargin = dp(8); else b.setMarginStart(dp(8));
+        ok.setLayoutParams(a);
+        later.setLayoutParams(b);
+    }
+    private Under under;
+    void under(Under u) { under = u; }
+
+    /**
+     * 4.4 beta 4 (the tester, step 37: in «رملي» the card lay over the clock): the card's top is 16 dp under the clock column (the greeting, the
+     * weather, the clock, the date and its lines), never above 60 dp; when that would take its bottom off the screen it goes up as far as needed
+     */
+    private void place() {
+        FrameLayout.LayoutParams p = (FrameLayout.LayoutParams) card.getLayoutParams();
+        int top = dp(60), y = under == null ? -1 : under.bottom(), width = dp(380);
+        if (y > 0) top = Math.max(top, y + dp(16));
+        int[] big = under == null ? null : under.bigClock();
+        View parent = card.getParent() instanceof View ? (View) card.getParent() : null;
+        if (big != null && parent != null && parent.getWidth() > 0) {   // the emulator's shot: under the digits it lay over the apps row
+            int side = Dir.rtl() ? parent.getWidth() - big[2] : big[0];   // the room beside the digits on the card's side (its start)
+            int room = side - dp(60) - dp(16);
+            if (room >= dp(200)) width = Math.min(width, room);   // beside them, under the clock column, as wide as that room allows
+            else top = Math.max(top, big[3] + dp(16));   // too narrow there: under the digits
+        }
+        stack(width < dp(320));   // narrow: «تم» over «ذكّرني بعد ١٠ دقائق», never cut
+        if (p.width != width) { p.width = width; card.setLayoutParams(p); }
+        int room = (card.getParent() instanceof View ? ((View) card.getParent()).getHeight() : 0) - card.getHeight() - dp(16);
+        if (card.getHeight() > 0 && room > 0) top = Math.min(top, room);
+        int floor = under == null ? -1 : under.floor();   // run 32: its bottom touched the focused tile; it ends 8 dp above the apps row when it can
+        int above = floor - card.getHeight() - dp(8);     // without going back over the clock column (the bug it fixes)
+        if (floor > 0 && card.getHeight() > 0 && above < top && above >= (y > 0 ? y + dp(8) : dp(16))) top = above;
+        if (p.topMargin != top) { p.topMargin = top; card.setLayoutParams(p); }
     }
 
     boolean showing() { return card.getVisibility() == View.VISIBLE; }
@@ -140,6 +183,8 @@ final class ReminderCard {
             if (row.sound && chimed.add(ReminderPlan.key(row))) chime();   // once for a card, not again when the home comes back
         }
         sub.setText(ReminderText.when(row, now, zone, Digits.clock24(), Digits.latin()));
+        place();
+        card.post(this::place);   // again once the card has its height (the bottom of a small screen)
     }
 
     void hide() {
