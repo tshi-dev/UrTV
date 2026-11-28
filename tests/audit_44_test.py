@@ -40,8 +40,8 @@ for name in ("تنبيه قبل الأذان", "الشروق بعد الفجر",
     lines = [v for n, x in rows if n == name for v in re.findall(r'"([^"]*)"', x)]
     long = [v for v in lines if words_after_state(v) > 8]
     check(f"settings: «{name}»'s second line is at most 8 words after its state", lines and not long, long or "row not found")
-check("settings: «النسخ التجريبية» says its state, and only the on line says what it does",
-      'prefs.betaOn() ? "مفعّل، تجيك التحديثات قبل الكل" : "متوقف"' in sa)
+check("settings: «النسخ التجريبية» says its state and, in both, that beta updates come first with small bugs sometimes (said before it is turned on)",
+      'prefs.betaOn() ? "مفعّل، تجيك التحديثات قبل الكل، وفيها أخطاء أحيانًا" : "متوقف، تحديثات قبل الكل، وفيها أخطاء أحيانًا"' in sa)
 
 # ---- the games
 lob = games[games.index("protected final void drawPhoneLobby"):]

@@ -800,7 +800,7 @@ public class SettingsActivity extends Activity {
         View last = row("تحديث صفحة شاشة التوقف", "ينزّل أحدث صفحة للشاشة فقط، لتحديث التطبيقين: «تحديث تلفزيوني» في نفس القسم", R.drawable.ic_sync, new Runnable() { public void run() { updateNow(); } });
         if (last.getParent() == list) { TextView ver = note(last, Updater.versionLines(this)); ver.setFocusable(true); ver.setClickable(true); ver.setOnClickListener(v -> versionTap()); }
         // «النسخ التجريبية» (4.3.3): the beta release first, off by default. Off again never downgrades: the newer build stays until the normal one reaches its number
-        row("النسخ التجريبية", prefs.betaOn() ? "مفعّل، تجيك التحديثات قبل الكل" : "متوقف", R.drawable.ic_sync, new Runnable() { public void run() { toggleBeta(); } });
+        row("النسخ التجريبية", prefs.betaOn() ? "مفعّل، تجيك التحديثات قبل الكل، وفيها أخطاء أحيانًا" : "متوقف، تحديثات قبل الكل، وفيها أخطاء أحيانًا", R.drawable.ic_sync, new Runnable() { public void run() { toggleBeta(); } });
         // only while it is on: the report screen (its QR code carries «channel: beta» and the versions), the person types their words on the phone page
         if (prefs.betaOn()) row("أرسل ملاحظة عن النسخة التجريبية", "رمز QR يفتح صفحة الإرسال في جوالك، وتكتب ملاحظتك هناك", R.drawable.ic_settings,
             new Runnable() { public void run() { openReport(); } });
