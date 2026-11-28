@@ -1062,6 +1062,7 @@ public class MainActivity extends Activity {
      * would reach into it. Before the screen is laid out the numbers come from the screen's size alone.
      */
     private int[] homeCardBox(int cards, boolean row) {
+        if (date != null) handler.post(this::applyLift);   // 4.4 beta 4 (run 28: the date beside the weather for the first minute): the cards placed, the date follows now, not at the next tick
         android.util.DisplayMetrics dm = getResources().getDisplayMetrics();
         int clockLeft = 0, titleTop = 0, dockTop = 0, wide = 0;
         if (clockBlock != null && clockBlock.getWidth() > 0) clockLeft = ((View) clockBlock.getParent()).getLeft() + clockBlock.getLeft();
@@ -3730,6 +3731,7 @@ public class MainActivity extends Activity {
 
     /** 4.4 «شكل التطبيقات: تكبير وظل»: the focused app's name under the tray, centred on its tile (null: hidden); made the first time it is needed */
     private TextView zoomName;
+    private int zoomWaits;   // frames waited for the row's first layout (placeZoomName)
     private volatile boolean appsZoom;
     /** 4.4 «شكل التطبيقات»: FavBar.BANNERS, ICONS or TILES (today's tray); read off the main thread by appOf */
     private volatile String appsLook = FavBar.TILES;
@@ -3935,6 +3937,11 @@ public class MainActivity extends Activity {
             final View first = f;
             zoomName.post(() -> { if (first.hasFocus()) placeZoomName(first); });   // 4.4 beta 2: setX is right only once the name is laid out (its left was 0, and in Arabic it stood 140 px off its icon)
         }
+        if (!f.isLaidOut() || f.getWidth() == 0 || !tray.isLaidOut()) {   // 4.4 beta 4 (run 27: «يوتيوب» at the screen's corner): the first focus came before the row was laid out
+            if (zoomWaits++ < 30) f.post(() -> { if (f.hasFocus()) placeZoomName(f); });   // a few frames at most, never a loop
+            return;
+        }
+        zoomWaits = 0;
         Object tag = f.getTag();
         if (tag instanceof App) zoomName.setText(((App) tag).label);
         else if (f == allAppsCard) zoomName.setText(S.t("كل التطبيقات"));
