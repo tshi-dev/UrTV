@@ -183,7 +183,7 @@ public class MusicReceiver extends BroadcastReceiver {
                 break;
             case MusicService.ACTION_PLAY_RADIO: {
                 int index = intent.getIntExtra("station", -1);
-                String name = intent.getStringExtra("station");
+                String name = index < 0 ? intent.getStringExtra("station") : null;   // the string only when the int is missing (the same key read both ways logged a ClassCastException)
                 if (index < 0 && name != null) index = cat.stationIndex(name);
                 if (index < 0) return;
                 service.putExtra(MusicService.EXTRA_STATION, index);

@@ -410,19 +410,17 @@ Not regressions (they never worked); listed so a release review knows them. A fi
 - Setup «Done» did nothing; TV unmuted about 20 s after a restart: open; not re-checked (tester step 39)
 - Control centre: last row title cut; «تخصيص» starts scrolled; Back closes all: open; panel redesigned later, not re-checked (tester step 46)
 - Home tray jank back to 9-19% (was 0.5% on 260): open; 286 9.3%, 292 19%, 300 about 9% (tester step 71, 73, 76)
-- League chooser tick boxes drawn empty in every state: open (tester step 71)
+- League chooser tick boxes drawn empty in every state (tester step 71): the code fills and ticks them (`LeaguesActivity.drawTick`, the #64 fix R-350); not re-checked on a TV
 - UrTV Player tile gone from suggested apps; Open Shelf card past safe area: open (tester step 71)
 - Radio stopped silently when the TV updated System WebView: open: home process killed, no error, no restart (tester step 71)
 - Iqama bar drawn over the apps page's first row: open (tester step 71)
-- Matches page source line runs into the big title: open (tester step 73)
-- Dock of 3 apps leaves a wide empty bar; music.sh stations hides station 12: open (tester step 76)
+- Matches page source line runs into the big title (tester step 73): R-021 fixed it in 4.3.2 and its guard still passes on 4.4; not re-seen on a TV since that report, so a TV that shows it again is a regression of R-021 (extend its guard)
+- Dock of 3 apps leaves a wide empty bar: open (tester step 76); the stations part was R-325
 - Setup result says the Home step failed while Home works: open: judged before the add-on bound; last seen 427 (tester step 88, 92)
 - Reinstall loses the setup record: «تراجع» and rescue leave 18 apps off: open: record lives in app data (tester step 92)
 - Rescue leaves our screensaver when nothing recorded the TV's own: open (design question) (tester step 93)
-- ClassCastException in MusicReceiver on «music.sh radio N»: open: station read as String, sent as Integer (tester step 33)
-- Settings key does nothing inside other apps; must leave app (HDR lost): Settings key handler lives in stock launcher, turned off by setup (GitHub #37)
 - Screensaver flashes then closes immediately on TCL 65C7K Google TV: Model allows only Google's dream (system Colors dream closes too) (GitHub #42)
-- Continue watching row never appears on Xiaomi: Unknown; Google TV may keep Watch Next private to Google home (GitHub #56)
+- Continue watching row never appears on Xiaomi (GitHub #56): the row now says «ما يشارك» when the TV's provider holds no row and logs the permission state and the row counts (R-354, tag UrTVRows); why Xiaomi's provider is empty is open until a report shows that log line
 | R-329 | The adhan could not be kept off the screen for one prayer (the owner: «sound and screen separately for each of the five») | the per-prayer sound existed; the bar and the notice were all-or-nothing | 4.4 | `tests/prayer_screen_test.py`, `tests/prayer_summary_test.py`, `tests/adhan_bar_test.py` | a prayer set to «صوت فقط» or «لا شيء» has no bar before it, none while it plays, no iqama countdown and no «تنبيه عند الأذان»; the others are as before | Y |
 | R-330 | An own adhan could only be added by going to «صوتياتي», finding the file, and choosing its use (the owner: add from USB or Downloads, for the own adhan and the Fajr one) | the USB browser existed but with no Downloads and no way from «المؤذن» | 4.4 | `tests/adhan_from_file_test.py` | «المؤذن» ends with «أذاني من ملف»: it opens «أضف من فلاشة أو التنزيلات», and the file chosen is the adhan at once (Fajr list: the Fajr adhan) | Y |
 | R-331 | Photos could only reach «صوري» from the phone or by the assistant (the owner: add from USB or Downloads on the TV) | the screensaver app has no file reading, and gets none | 4.4 | `tests/photo_from_file_test.py` | Settings › شاشة التوقف › «أضف من فلاشة أو التنزيلات»: a grid of the photos on a stick or in Downloads; OK adds one to «صوري», the screensaver app's manifest has no storage permission | Y |
@@ -449,4 +447,5 @@ Not regressions (they never worked); listed so a release review knows them. A fi
 | R-352 | A QR that did not open on a phone left the person with nothing to do (X, 19 Nov) | the QR was a full `http://` address already, but no text told how to type it | 4.4 | `tests/games_fixes_test.py` | «ما فتح؟ اكتب العنوان» under each QR (`QuizActivity`, `GameActivity`) | N |
 | R-353 | A QR «لا يمكن الوصول» could not be told from a request that never reached the TV (X, 19 Nov) | the phone page server logged nothing about a request | 4.4 | `tests/phone_request_log_test.py` | each request is logged as the path and the browser family only (`RequestLog`, tag UrTVPhone), never an address, query, token or user agent | N |
 | R-354 | «كمّل المشاهدة» said «يعمل» and showed nothing on a Xiaomi TV, and nobody could tell why (GitHub #56) | the row stayed hidden when the TV's provider held no row at all; nothing was logged | 4.4 | `tests/tv_rows_test.py` | the row shows a «ما يشارك» card (opens nothing) when the provider holds no row, and each load logs `watchnext epg=… provider_rows=N shown=M` (tag UrTVRows) | N |
-| R-355 | No way to show the Gregorian date alone (GitHub #15, the backlog part) | the Hijri line was always shown | 4.4 | `tests/hijri_line_test.py` | «التاريخ الهجري» (يظهر / ما يظهر) in the settings and `saver.sh hijri on|off`: off drops the Hijri line on the screensaver, the home's cards and the home's date line | N |
+| R-355 | No way to show the Gregorian date alone (GitHub #15, the backlog part) | the Hijri line was always shown | 4.4 | `tests/hijri_line_test.py` | «التاريخ الهجري» (يظهر / ما يظهر) in the settings and `saver.sh hijri on` or `off`: off drops the Hijri line on the screensaver, the home's cards and the home's date line | N |
+| R-356 | `music.sh radio N` made Android log a ClassCastException in `MusicReceiver` (tester step 33) | the station key was read with `getIntExtra` and then `getStringExtra` | 4.4 | `tests/music_receiver_station_test.py` | the string is read only when the int is missing | N |
