@@ -301,6 +301,12 @@ if want radio; then
       open_tilawah || break
       opened=1
       # the tabs are «القرّاء», «الإذاعات», «الأذان» (the first at the start side, so Arabic puts «الإذاعات» to the LEFT of it, English to the right): walk to the tab by its name
+      # the screen opens with the focus on the list or its letter rail (run 17: on «ع»), where LEFT and RIGHT do not change the tab: UP first, until a tab has it
+      for up in 1 2 3 4; do
+        dump "$OUT/raw/focus.xml"
+        case "$($LIB focused "$OUT/raw/focus.xml")" in "القرّاء"|"الإذاعات"|"الأذان") break ;; esac
+        key KEYCODE_DPAD_UP; nap 1
+      done
       focus_walk "الإذاعات" KEYCODE_DPAD_LEFT 3 || focus_walk "الإذاعات" KEYCODE_DPAD_RIGHT 6 || break
       nap 1
       focus_walk "$sname" KEYCODE_DPAD_DOWN 30 || break

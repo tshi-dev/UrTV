@@ -62,7 +62,8 @@ def xml():
     for m in MARKERS:
         nodes.append(f'<node text="{m}" focused="false" bounds="[100,100][400,160]" />')
     if st("opened") == "1":   # the tabs: «الإذاعات» is focused until the walk moved to it (LEFT, the Arabic side), then the list below
-        nodes.append(f'<node text="القرّاء" focused="{"true" if st("tab", "0") == "0" else "false"}" bounds="[500,40][800,100]" />')
+        nodes.append(f'<node text="ع" focused="{"true" if st("tab", "r") == "r" else "false"}" bounds="[1700,600][1760,660]" />')   # the screen opens with the focus on the letter rail (run 17), not on a tab
+        nodes.append(f'<node text="القرّاء" focused="{"true" if st("tab", "r") == "0" else "false"}" bounds="[500,40][800,100]" />')
         nodes.append(f'<node text="الإذاعات" focused="{"true" if st("tab") == "1" else "false"}" bounds="[100,40][400,100]" />')
     for i, n in enumerate(STATIONS if st("opened") == "1" else []):
         nodes.append(f'<node text="{n}" focused="{"true" if i == focused else "false"}" bounds="[100,{200 + i * 60}][600,{250 + i * 60}]" />')
@@ -89,7 +90,7 @@ def tv(cmd):
         if "KEYCODE_HOME" in part:
             put("front", "" if os.environ.get("FAKE_FRONT") == "none" else "sa.urtv.home")
             put("opened", "0")
-            put("tab", "0")
+            put("tab", "r")
             put("where", "apps")
         where = st("where") if st("front") == "sa.urtv.home" else ""
         if where in HOME_LABEL:   # the home's own focus (the reach step)
@@ -117,7 +118,9 @@ def tv(cmd):
                 handled = False   # a key the reach step does not use (OK on the «تلاوة وأذان» pill, say) goes on to the rest
             if handled:
                 continue
-        if "KEYCODE_DPAD_LEFT" in part and st("opened") == "1":
+        if "KEYCODE_DPAD_UP" in part and st("opened") == "1" and st("tab", "r") == "r":
+            put("tab", "0")   # UP from the list's letter rail reaches the tabs
+        elif "KEYCODE_DPAD_LEFT" in part and st("opened") == "1" and st("tab", "r") == "0":
             put("tab", "1")
         if "KEYCODE_DPAD_DOWN" in part and st("opened") == "1" and st("tab") == "1":
             put("tab", "2")   # DOWN from the tab lands on the first row
