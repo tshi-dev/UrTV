@@ -4,7 +4,7 @@
 # accessibility service switched on.
 #   remote26.sh HOME_APK EXTRAS_APK OUT_DIR      (EXTRAS_APK «none» on a release that has no add-on: 4.3.x, where the service is the home's own TypeService)
 # Two passes: A) the home alone, B) the add-on installed and its service enabled. Each pass presses the D-pad 30 times in the home. A key that the system
-# does not answer in 8 seconds (adb's input waits for the key to be finished) is a freeze; the focus has to land on at least 3 different places (a frozen remote gives 1; run 1: 5 and 3). The verdict
+# does not answer in 8 seconds (adb's input waits for the key to be finished) is a freeze; the focus has to change at least 4 times in the 30 keys and at least once after the 10th («moves briefly, then nothing» gives none late). The verdict
 # is in OUT_DIR/remote26/result.txt («PASS» or «FAIL …»). Never run this on a person's machine.
 set +e
 HOME_APK=$1; EXTRAS_APK=$2; OUT=$3/remote26
@@ -23,7 +23,7 @@ adb shell cmd package set-home-activity sa.urtv.home/.MainActivity > /dev/null 2
 
 # one pass: 30 keys; the focused place after each (uiautomator), the longest answer
 walk() {
-  tag=$1; slow=0; places=""; keys="DPAD_DOWN DPAD_DOWN DPAD_RIGHT DPAD_RIGHT DPAD_DOWN DPAD_LEFT DPAD_UP DPAD_RIGHT DPAD_DOWN DPAD_DOWN"
+  tag=$1; slow=0; places=""; prev=none; moves=0; late=0; keys="DPAD_DOWN DPAD_DOWN DPAD_RIGHT DPAD_RIGHT DPAD_DOWN DPAD_LEFT DPAD_UP DPAD_RIGHT DPAD_DOWN DPAD_DOWN"
   adb shell input keyevent KEYCODE_HOME; sleep 3
   adb shell am start -W -n sa.urtv.home/.MainActivity > /dev/null 2>&1; sleep 10
   n=0
@@ -40,12 +40,14 @@ walk() {
       f=$(grep -o '<node[^>]*focused="true"[^>]*>' "$OUT/$tag-$n.xml" 2>/dev/null | grep -o 'bounds="[^"]*"' | head -n 1)
       places="$places
 $f"
+      if [ "$f" != "$prev" ]; then moves=$((moves + 1)); [ "$n" -gt 10 ] && late=$((late + 1)); fi   # a change of the focused place after this key
+      prev="$f"
     done
   done
   distinct=$(echo "$places" | sed '/^$/d' | sort -u | wc -l)
   adb exec-out screencap -p > "$OUT/$tag.png" 2> /dev/null
-  echo "$tag: $n keys, $slow slow, $distinct different focused places"
-  [ "$slow" = 0 ] && [ "$distinct" -ge 3 ]
+  echo "$tag: $n keys, $slow slow, $distinct different focused places, the focus changed $moves times ($late after the 10th key)"
+  [ "$slow" = 0 ] && [ "$moves" -ge 4 ] && [ "$late" -ge 1 ]   # «the remote moves briefly, then nothing» (row 765) is few changes and none late
 }
 
 fail=""
