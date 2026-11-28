@@ -2496,7 +2496,7 @@ public class MainActivity extends Activity {
         shine.setAlpha(0f);
         card.addView(shine, new FrameLayout.LayoutParams(-1, -1));
         box.addView(card, new LinearLayout.LayoutParams(-1, -2));
-        card.setOnClickListener(v -> guarded(ParentalPolicy.GRID, it.pkg, it.title, () -> TvRows.open(this, it)));   // the app's own lock first
+        if (!it.empty) card.setOnClickListener(v -> guarded(ParentalPolicy.GRID, it.pkg, it.title, () -> TvRows.open(this, it)));   // the app's own lock first; the «ما يشارك» card opens nothing
         card.setOnFocusChangeListener((v, has) -> {
             scaleTo(v, has ? 1.12f : 1f);   // as a favourite
             v.animate().translationZ(has ? dp(GlowLook.LIFT_DP) : 0).setInterpolator(Motion.ease()).setDuration(Motion.move(MainActivity.this)).start();
