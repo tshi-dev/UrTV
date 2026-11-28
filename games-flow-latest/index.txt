@@ -1,0 +1,13 @@
+https://raw.githubusercontent.com/tshi-dev/UrTV/data-screens/games-flow-latest/crashes.txt
+https://raw.githubusercontent.com/tshi-dev/UrTV/data-screens/games-flow-latest/flow-01-list-header.png
+https://raw.githubusercontent.com/tshi-dev/UrTV/data-screens/games-flow-latest/flow-02-oddone-setup.png
+https://raw.githubusercontent.com/tshi-dev/UrTV/data-screens/games-flow-latest/flow-03-oddone-remote-start.png
+https://raw.githubusercontent.com/tshi-dev/UrTV/data-screens/games-flow-latest/flow-04-oddone-remote-handover-count.png
+https://raw.githubusercontent.com/tshi-dev/UrTV/data-screens/games-flow-latest/flow-05-oddone-remote-secret.png
+https://raw.githubusercontent.com/tshi-dev/UrTV/data-screens/games-flow-latest/flow-06-oddone-phones-on-setup.png
+https://raw.githubusercontent.com/tshi-dev/UrTV/data-screens/games-flow-latest/flow-07-oddone-phones-lobby.png
+https://raw.githubusercontent.com/tshi-dev/UrTV/data-screens/games-flow-latest/flow-08-liar-setup.png
+https://raw.githubusercontent.com/tshi-dev/UrTV/data-screens/games-flow-latest/flow-09-liar-lobby.png
+https://raw.githubusercontent.com/tshi-dev/UrTV/data-screens/games-flow-latest/flow-10-quiz-setup.png
+https://raw.githubusercontent.com/tshi-dev/UrTV/data-screens/games-flow-latest/flow-11-quiz-room.png
+https://raw.githubusercontent.com/tshi-dev/UrTV/data-screens/games-flow-latest/log.txt
