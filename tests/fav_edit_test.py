@@ -24,7 +24,7 @@ check("FavEdit has no Android in it (the test runs it without the SDK)", "import
 leave = main.split("private void leaveEdit()")[1].split("\n    }\n")[0]
 check("BACK saves through Dock.save, the store «ترتيب المفضلة» and dock.sh use", "Dock.save(this, row)" in leave)
 check("…and nowhere else writes the order: no preference of its own in the mode", not re.search(r'putString\("dock"', main.split("«تعديل المفضلة»")[1].split("private void saveDock")[0]))
-check("«ترتيب المفضلة» saves through Dock.save", "Dock.save(this, row)" in arrange)
+check("«ترتيب المفضلة» saves through Dock.save, keeping the saved HDMI favourites its apps-only row does not show (review F100)", "Dock.save(this, InputFav.keepInputs(Dock.saved(this), row, Dock.MAX))" in arrange and "Dock.save(this, row)" not in arrange)
 check("dock.sh's SET_DOCK saves through Dock.saveExact (4.4, cause 11: exactly the apps chosen; tests/dock_exact_test.py)", re.search(r"Dock\.saveExact\(c, row\)", receiver) is not None)
 check("Dock.save keeps the order in the \"dock\" preference and tells the home screen", 'putString("dock"' in dock.split("static void save")[1] and "CHANGED" in dock.split("static void save")[1])
 check("an unchanged row is not saved (no top-up kept by a visit)", "if (e.changed())" in leave)

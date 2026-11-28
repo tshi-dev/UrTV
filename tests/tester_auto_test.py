@@ -91,7 +91,7 @@ check("put back at the end: the settings imported, the display size, the volume 
       and max(i for i, l in enumerate(lines) if "KEYCODE_HOME" in l) < max(i for i, l in enumerate(lines) if l.startswith("tv dumpsys audio")), lines[-6:])
 check("the font was set to 1.3 and put back to what it was (1.0)", "settings put system font_scale 1.3" in cmds and "settings put system font_scale 1.0" in cmds)
 check("the build is installed over the installed one with the tag (apk-next)", "install saver tag=apk-next" in cmds and "install launcher tag=apk-next" in cmds)
-check("the stations were found by their row's name before OK (the focus walk), and the saver start was asked", cmds.count("KEYCODE_DPAD_CENTER") == 2 and "startsaver" in cmds)
+check("the تلاوة screen is opened from the home by its pill (OK on it, 2 stations: 4 OKs in all), the stations were found by their row's name before OK (the focus walk), and the saver start was asked", cmds.count("KEYCODE_DPAD_CENTER") == 4 and "startsaver" in cmds)
 # the second round shows the first one's column
 r1b, out1b, _ = run(args=("--prev", str(out)))
 rep1b = (out1b / "report.md").read_text(encoding="utf-8") if (out1b / "report.md").exists() else ""

@@ -46,7 +46,9 @@ def xml():
     nodes = []
     for m in MARKERS:
         nodes.append(f'<node text="{m}" focused="false" bounds="[100,100][400,160]" />')
-    for i, n in enumerate(STATIONS):
+    if st("opened") != "1":
+        nodes.append('<node text="تلاوة وأذان" focused="true" bounds="[100,40][400,100]" />')
+    for i, n in enumerate(STATIONS if st("opened") == "1" else []):
         nodes.append(f'<node text="{n}" focused="{"true" if i == focused else "false"}" bounds="[100,{200 + i * 60}][600,{250 + i * 60}]" />')
     nodes.append('<node text="الرياض" focused="false" bounds="[800,40][1000,100]" />')
     return '<?xml version="1.0"?><hierarchy>' + "".join(nodes) + "</hierarchy>"
@@ -66,9 +68,13 @@ def tv(cmd):
             put("focus", "0")
         if "KEYCODE_HOME" in part:
             put("front", "" if os.environ.get("FAKE_FRONT") == "none" else "sa.urtv.home")
+            put("opened", "0")
         if "KEYCODE_DPAD_DOWN" in part:
             put("focus", str(min(len(STATIONS) - 1, int(st("focus", "0") or 0) + 1)))
-        if "KEYCODE_DPAD_CENTER" in part and st("front") == "sa.urtv.home":
+        if "KEYCODE_DPAD_CENTER" in part and st("front") == "sa.urtv.home" and st("opened") != "1":
+            put("opened", "1")   # OK on the «تلاوة وأذان» pill opens the screen (it is not exported: the round never starts it)
+            put("focus", "0")
+        elif "KEYCODE_DPAD_CENTER" in part and st("front") == "sa.urtv.home":
             put("playing", "1")
             if os.environ.get("FAKE_MUTE_ON_RADIO") == "1":
                 put("muted", "1")

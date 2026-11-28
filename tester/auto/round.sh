@@ -108,6 +108,13 @@ focus_walk() {   # $1 text, $2 the key, $3 at most how many presses: press only 
   return 1
 }
 
+open_tilawah() {   # the تلاوة screen as a person opens it: Home, the «تلاوة وأذان» pill, OK (the screen is not exported: no `am start` from adb can open it, which is why the walk pressed on the home itself)
+  key KEYCODE_HOME; nap 3
+  on_top "$HOME_PKG" || return 1
+  focus_walk "تلاوة وأذان" KEYCODE_DPAD_UP 4 || focus_walk "تلاوة وأذان" KEYCODE_DPAD_RIGHT 10 || focus_walk "تلاوة وأذان" KEYCODE_DPAD_LEFT 20 || return 1
+  key KEYCODE_DPAD_CENTER; nap 3
+}
+
 # ---- what is put back at the end
 SAVED_IDLE="" WM_BACK="wm size reset; wm density reset" LAYOUT_BEFORE="" PANEL_BEFORE="" SAVED_FONT="" SAVED_VOL="" SAVED_MUTED="" DISPLAY_CHANGED=0 FONT_CHANGED=0 SETTINGS_SAVED=0
 restore() {
@@ -239,8 +246,7 @@ if want radio; then
     tries=0; other=""; opened=0; found=0
     while :; do   # the station from the screen: if another app took the front on the way (a TV's own media centre), say who and try once more
       tries=$((tries + 1)); opened=0; found=0
-      tv "am start -n $HOME_PKG/.tilawah.MainActivity" > /dev/null 2>&1
-      on_top "$HOME_PKG" || break
+      open_tilawah || break
       opened=1
       key KEYCODE_DPAD_RIGHT; nap 1   # one tab to the right: the stations (looked at below: the row must be found by its name, or nothing is pressed)
       focus_walk "$sname" KEYCODE_DPAD_DOWN 30 || break
@@ -256,7 +262,10 @@ if want radio; then
       [ "$tries" -ge 2 ] && break
       key KEYCODE_HOME; nap 2
     done
-    if [ "$opened" = 0 ]; then step "$name" FAIL "the تلاوة screen did not open: $(front)"; continue; fi
+    if [ "$opened" = 0 ]; then
+      shot "$name"; cp "$OUT/raw/focus.xml" "$OUT/raw/$name-notfound.xml" 2> /dev/null
+      step "$name" FAIL "the «تلاوة وأذان» pill was not reached from the home with the arrow keys (the screen is in shots/$name.png and raw/$name-notfound.xml): $(front)"; key KEYCODE_HOME; nap 2; continue
+    fi
     if [ "$found" = 0 ]; then
       shot "$name"; cp "$OUT/raw/last.xml" "$OUT/raw/$name-notfound.xml" 2> /dev/null   # what the screen showed instead (the next round's reader needs it)
       step "$name" FAIL "the row «$sname» was not found on the stations tab (no key pressed on it; the screen is in shots/$name.png and raw/$name-notfound.xml)"; key KEYCODE_HOME; nap 2; continue
