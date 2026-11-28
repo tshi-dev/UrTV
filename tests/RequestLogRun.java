@@ -3,7 +3,7 @@ package sa.urtv.home.phone;
 /** For tests/phone_request_log_test.py: RequestLog's rules, one "name<TAB>got" line per check. */
 public final class RequestLogRun {
     public static void main(String[] a) {
-        String chrome = "Mozilla/5.0 (Linux; Android 14; SM-S918B) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Mobile Safari/537.36";
+        String chrome = "Mozilla/5.0 (Linux; Android 14; SM-S918B) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120 Mobile Safari/537.36";
         String iphone = "Mozilla/5.0 (iPhone; CPU iPhone OS 17_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.1 Mobile/15E148 Safari/604.1";
         System.out.println("android chrome\t" + RequestLog.family(chrome));
         System.out.println("iphone\t" + RequestLog.family(iphone));
