@@ -40,4 +40,9 @@ for module, name in APPS:
 gen = (ROOT / ".github/tools/icons/make.js").read_text(encoding="utf-8")
 check("the three apps of the family are the generator's, and the home is not (it waits for the owner's pick of its banner)",
       all(f"module: '{m}', name: '{n}'" in gen for m, n in APPS) and "module: 'launcher'" not in gen)
+ban = (ROOT / ".github/tools/icons/banners.js").read_text(encoding="utf-8")
+check("the banners: drawn only in Thmanyah (it stops without the private fonts, never a stand-in), the rescue first, then the other four",
+      "ThmanyahDisplay-Bold.woff2" in ban and "process.exit(2)" in ban and ban.index("app: 'rescue'") < ban.index("app: 'saver'") < ban.index("app: 'extras'")
+      and "app: 'doctor'" in ban and "app: 'player'" in ban and "app: 'home'" not in ban)
+check("the banners are 320×180 and 1.5× and 2× of it, at drawable-xhdpi, -xxhdpi and -xxxhdpi", "[['xhdpi', 320], ['xxhdpi', 480], ['xxxhdpi', 640]]" in ban)
 raise SystemExit(1 if failed else 0)

@@ -15,6 +15,7 @@ const GLYPH = {
                   { d: 'M42,44l5,4.5l-5.5,3.5', stroke: W * 0.8, cap: 'round', join: 'round' }],
   extras: [...TV, { d: 'M54,43v16M46,51h16', stroke: W * 0.9, cap: 'round' }],
   doctor: [...TV, { d: 'M45,51.5l6,6l12,-12', stroke: W, cap: 'round', join: 'round' }],
+  player: [{ d: 'M43,34Q38,31 38,37V71Q38,77 43,74L72,57Q76,54 72,51Z', fill: true }],   // the player keeps its play mark (no TV frame)
 };
 // the apps of this repository that take the family now (the home waits for the owner's pick of its banner)
 const APPS = [
@@ -23,7 +24,9 @@ const APPS = [
   { app: 'extras', module: 'extras', name: 'ic_extras' },
 ];
 // the doctor app lives in its own repository: its set is written to docs/mockups/icons/doctor/res for its session to copy (name ic_launcher)
-const HANDOFF = [{ app: 'doctor', dir: 'docs/mockups/icons/doctor/res', name: 'ic_launcher' }];
+const HANDOFF = [{ app: 'doctor', dir: 'docs/mockups/icons/doctor/res', name: 'ic_launcher' },
+                 { app: 'player', dir: 'docs/mockups/icons/player/res', name: 'ic_launcher' }];   // the player's repository: the supervisor brings it over
+
 const BG = ['#14402F', '#061A12'], GOLD = ['#F6DC9E', '#C79A43'];
 
 const AAPT = 'xmlns:android="http://schemas.android.com/apk/res/android" xmlns:aapt="http://schemas.android.com/aapt"';
@@ -45,9 +48,11 @@ const monochrome = (app) => vd(GLYPH[app].map(e => vdPath(e, true)).join(''), 'x
 const adaptive = (n) => `<?xml version="1.0" encoding="utf-8"?>\n<!-- made by .github/tools/icons/make.js: change it there -->\n<adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">\n    <background android:drawable="@drawable/${n}_bg"/>\n    <foreground android:drawable="@drawable/${n}_fg"/>\n    <monochrome android:drawable="@drawable/${n}_mono"/>\n</adaptive-icon>\n`;
 
 // the same model as SVG, for the flattened PNGs (the full 108 square: a legacy icon shows it all, with rounded corners)
-function svg(app) {
-  const els = GLYPH[app].map(e => e.fill ? `<path d="${e.d}" fill="url(#au)"/>`
+// the glyph as SVG elements painted with the gradient «au» (the banners use it too: banners.js)
+const glyphSvg = app => GLYPH[app].map(e => e.fill ? `<path d="${e.d}" fill="url(#au)"/>`
     : `<path d="${e.d}" fill="none" stroke="url(#au)" stroke-width="${e.stroke}" stroke-linecap="${e.cap || 'butt'}" stroke-linejoin="${e.join || 'miter'}"/>`).join('');
+function svg(app) {
+  const els = glyphSvg(app);
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="14 14 80 80"><defs>
 <linearGradient id="bg" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="108" y2="108"><stop offset="0" stop-color="${BG[0]}"/><stop offset="1" stop-color="${BG[1]}"/></linearGradient>
 <linearGradient id="au" gradientUnits="userSpaceOnUse" x1="29" y1="31" x2="79" y2="78"><stop offset="0" stop-color="${GOLD[0]}"/><stop offset="1" stop-color="${GOLD[1]}"/></linearGradient>
@@ -55,9 +60,11 @@ function svg(app) {
 <g clip-path="url(#r)"><rect width="108" height="108" fill="url(#bg)"/>${els}</g></svg>`;
 }
 
+module.exports = { BG, GOLD, glyphSvg };
+
 function write(rel, text) { const p = path.join(ROOT, rel); fs.mkdirSync(path.dirname(p), { recursive: true }); fs.writeFileSync(p, text); }
 
-(async () => {
+if (require.main === module) (async () => {
   const sets = [...APPS.map(a => ({ ...a, res: `android/${a.module}/src/main/res` })), ...HANDOFF.map(h => ({ ...h, res: h.dir }))];
   for (const { app, name, res } of sets) {
     // drawable-v26: the gradients need API 24, and only the adaptive icon (API 26) reads them; older TVs take the PNGs
