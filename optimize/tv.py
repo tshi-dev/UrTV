@@ -695,6 +695,28 @@ def address_hint(host=None):
             f"if that is the TV, its address changed. Ask the person, then: optimize/find-tv.sh use {found[0]})")
 
 
+ASLEEP = ("Asleep", "Dozing")   # dumpsys power's mWakefulness while the TV is in standby (Dreaming is a screensaver: awake)
+POWER_ASK = ("The TV answers but its screen stays in standby. Ask the person, in Arabic: «اضغط زر التشغيل (Power) في الريموت مرة وحدة عشان "
+             "تصحى الشاشة». Waiting for the screen (a WAKEUP is sent every 10 s).")
+
+
+def wakefulness(dev):
+    """mWakefulness from dumpsys power (Awake, Asleep, Dozing, Dreaming), or "" when the TV does not say."""
+    out = dev.shell("dumpsys power | grep -m1 mWakefulness=", read_timeout_s=15) or ""
+    m = re.search(r"mWakefulness=(\w+)", out)
+    return m.group(1) if m else ""
+
+
+def wake_up(dev):
+    """4.4 (reports: the setup gave up on a TV that came back from its restart in standby): WAKEUP while it sleeps; True once it is
+    awake (or does not say), False while it still sleeps."""
+    if wakefulness(dev) not in ASLEEP:
+        return True
+    dev.shell("input keyevent KEYCODE_WAKEUP", read_timeout_s=15)
+    time.sleep(3)
+    return wakefulness(dev) not in ASLEEP
+
+
 def wait_for_tv(limit_s=WAIT_S, before=None, restart=False):
     """Try every 10 s until the TV answers and has finished booting, up to 10 minutes (a few TVs take that long to restart).
     The same address and the same port are used throughout (5555, or the remembered Wireless-debugging port, looked up again by
@@ -704,6 +726,8 @@ def wait_for_tv(limit_s=WAIT_S, before=None, restart=False):
     boots can't be told apart, only once it was seen not answering."""
     start = time.time()
     down = False   # seen not answering, or still booting, since we started
+    asked = False   # the person was asked to press Power (once)
+    asleep = False   # the last answer: back from the restart, but the screen in standby
     next_hint, hinted = start + HINT_EVERY_S, set()
     while time.time() - start < limit_s:
         try:
@@ -711,22 +735,34 @@ def wait_for_tv(limit_s=WAIT_S, before=None, restart=False):
             dev.connect(rsa_keys=[signer()], auth_timeout_s=30)
             booted = dev.shell("getprop sys.boot_completed", read_timeout_s=15).strip()
             now = boot_marker(dev) if restart else None
+            back = booted == "1" and (not restart or is_new_boot(before, now) or (is_new_boot(before, now) is None and down))
+            awake = wake_up(dev) if back else False   # back from the restart in standby: woken, else the person presses Power
+            asleep = back and not awake
             dev.close()
             if booted != "1":
                 down = True
-            elif not restart or is_new_boot(before, now) or (is_new_boot(before, now) is None and down):
+            elif back and awake:
                 print(f"TV is back ({int(time.time() - start)} s)")
                 return
+            elif back and not asked:
+                asked = True
+                print(POWER_ASK, file=sys.stderr)
         except Exception:  # noqa: BLE001
-            down = True
+            down, asleep = True, False
         if time.time() >= next_hint:
             next_hint += HINT_EVERY_S
             print(f"   (still waiting for the TV: {int(time.time() - start) // 60} min)", file=sys.stderr)
+            if down and not asked and time.time() - start >= 3 * HINT_EVERY_S:   # silent for 3 minutes: it may be in a deep standby
+                asked = True
+                print("   (if the TV's screen is off, ask the person, in Arabic: «اضغط زر التشغيل (Power) في الريموت مرة وحدة»)", file=sys.stderr)
             hint = address_hint()
             if hint and hint not in hinted:
                 hinted.add(hint)
                 print(hint, file=sys.stderr)
         time.sleep(10)
+    if asleep:
+        sys.exit("!! The TV came back from its restart but its screen stayed in standby for 10 minutes, even after WAKEUP. Ask the person "
+                 "to press Power on the remote (in Arabic: «اضغط زر التشغيل في الريموت»), then run the same command again (it goes on from its step).")
     if restart and not down:
         sys.exit("!! The TV kept answering but never restarted: it may have ignored the reboot. Restart it from its "
                  "own menu (not with this command again), then go on.")
