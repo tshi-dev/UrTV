@@ -346,6 +346,24 @@ public class ExtrasA11yService extends AccessibilityService {
 
     private static boolean stockHomeOn(Context c) { return !stockHomeActivities(c).isEmpty(); }
 
+    /** R-407: a weak TV whose stock home was turned off (filterKeys) */
+    private volatile boolean stockOff;
+
+    /** R-407: some stock home is installed but off (the HOME answerers with the disabled ones, against the enabled ones) */
+    private static boolean stockHomeOff(Context c) {
+        try {
+            Intent home = new Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_HOME);
+            PackageManager pm = c.getPackageManager();
+            List<String> all = new ArrayList<>();
+            Set<String> enabled = new HashSet<>();
+            for (ResolveInfo ri : pm.queryIntentActivities(home, 0)) if (ri.activityInfo != null) enabled.add(ri.activityInfo.packageName);
+            for (ResolveInfo ri : pm.queryIntentActivities(home, PackageManager.MATCH_DISABLED_COMPONENTS)) if (ri.activityInfo != null) all.add(ri.activityInfo.packageName);
+            return SettingsKey.stockHomeOff(all, enabled, HOME_PKG);
+        } catch (RuntimeException e) {
+            return false;
+        }
+    }
+
     private static boolean installed(Context c, String pkg) {
         try { c.getPackageManager().getPackageInfo(pkg, 0); return true; } catch (PackageManager.NameNotFoundException e) { return false; }
     }
@@ -356,12 +374,14 @@ public class ExtrasA11yService extends AccessibilityService {
         try {
             boolean front = homeFront, lowRam = Ram.low(this);
             if (!front && !lowRam) stockHome = stockHomeOn(this);   // one package query, only when the home leaves (none on a weak TV: no filter there)
+            if (!front && lowRam) { stockHome = stockHomeOn(this); stockOff = stockHomeOff(this); }   // R-407: a weak TV: one query when the home leaves, for the Settings key
             if (homeKeyLost == null) homeKeyLost = homeKeyLost(this);
             boolean want = Build.VERSION.SDK_INT >= SettingsKey.MIN_FILTER_SDK && (   // 4.3.6: no key filter at all below Android 9 (a Percee OTT box on 8.0 froze)
                 SettingsKey.filterWanted(front, stockHome, lowRam, homeKeyLost, Build.VERSION.SDK_INT)
                 || KeyApps.filterWanted(front, KeyApps.anyChosen(keyChoices), KeyButton.filterSafe())   // «أزرار الريموت»: only for a button given an app
                 || KeyApps.globalWanted(KeyButton.TV, wanted(this) || oursChosen(), KeyButton.filterSafe())   // beta 3: a TCL's YouTube, Netflix, Prime buttons (R-406)
                 || KeyApps.xiaomiGtvWanted(KeyButton.xiaomiGtv(), wanted(this) || oursChosen())   // R-406: a Xiaomi Google TV's YouTube button
+                || SettingsKey.lowRamCatch(front, stockHome, lowRam, stockOff, Build.VERSION.SDK_INT)   // R-407: a weak TV whose stock home is off: its Settings key opens Android's settings
                 || homeKeyActive());   // 4.4 R3: the Home key caught here (on by default on a Google TV, only while the person's home is ours; never on Xiaomi: homeKeyActive)
             AccessibilityServiceInfo info = getServiceInfo();
             if (info == null) return;

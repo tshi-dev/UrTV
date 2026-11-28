@@ -414,6 +414,7 @@ python3 tests/fragment_keep_test.py   # 4.3.2 (a user's adhan times and prayer c
 python3 tests/glow_mode_test.py   # «توهّج لون التطبيق» (4.3.1): the glow behind the focused app is OFF by default (new installs and old ones), ha
 python3 tests/google_tv_home_test.py   # Google TV (user reports: TCL G10/G08, Changhong Android 14, Sony BRAVIA VH21, Xiaomi MiTV-AFMU0/1): since 4.3
 python3 tests/home_snapshot_test.py   # The home's stand-in picture (HomeSnapshot): the rules pinned from the source: what the key is made of, the age
+python3 tests/settings_low_ram_test.py   # R-407: a weak TV whose stock home is off: its Settings key opens Android's settings over other apps
 python3 tests/app_keys_default_test.py   # R-406: TCL's YouTube, Netflix, Prime buttons and a Xiaomi Google TV's YouTube open their own app from the add-on
 python3 tests/xiaomi_home_catch_test.py   # R-405: the Home catch back on the Xiaomi Google TVs of docs/TVS.md only; R-310 for every other Xiaomi
 python3 tests/voice_keys_test.py   # R-404: SEARCH, ASSIST and VOICE_ASSIST go to Android untouched (the home after the adhan and a reminder, the add-on first)

@@ -129,6 +129,26 @@ final class SettingsKey {
     }
     /** NOTIFICATION_PANEL_ACTION is Android 11's (NotificationManager.ACTION_TOGGLE_NOTIFICATION_HANDLER_PANEL): before it the answer is always «lost» (review F7) */
     static final int PANEL_ACTION_SDK = 30;
+    /**
+     * 4.4 (R-407): a weak TV whose stock home was turned off (our setup's «تخلّص من واجهة المصنع» or a community list): there the Settings key did nothing at all
+     * outside our home (the stock home held its handler; filterWanted asks for no key on a weak TV). So on such a TV, and only while another app is in front,
+     * the service listens and the Settings key opens Android's settings ({@link #decide}). Every other key still goes back at once; a weak TV with its stock
+     * home on, or none to turn off, keeps «never» as before (the lag of a filter on a 2 GB TV, a 4.1 report).
+     */
+    static boolean lowRamCatch(boolean homeFront, boolean stockHome, boolean lowRam, boolean stockHomeOff, int sdk) {
+        return sdk >= MIN_FILTER_SDK && lowRam && !homeFront && !stockHome && stockHomeOff;
+    }
+
+    /** some stock home is installed but turned off: a HOME answerer (disabled ones included) that is a stock home ({@link #stockHomeOn}) and not enabled */
+    static boolean stockHomeOff(Iterable<String> allHomePackages, java.util.Collection<String> enabledHomePackages, String ours) {
+        if (allHomePackages == null) return false;
+        for (String p : allHomePackages) {
+            if (p == null || (enabledHomePackages != null && enabledHomePackages.contains(p))) continue;
+            if (stockHomeOn(java.util.Collections.singletonList(p), ours)) return true;
+        }
+        return false;
+    }
+
     /** The enabled HOME answerers (packages) include a stock home: one that is not ours, not the setup wizard, not a settings app's fallback. */
     static boolean stockHomeOn(Iterable<String> homePackages, String ours) {
         if (homePackages == null) return false;
