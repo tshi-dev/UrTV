@@ -23,9 +23,12 @@ def check(name, ok, detail=""):
 fit = main[main.index("    private void fitTray() {"):]
 fit = fit[:fit.index("\n    }\n") + 6]
 check("(a) in «بطاقات» the bar is as wide as its tiles and its own padding, placed where the apps are; wider than the screen it keeps the full width",
-      "FavBar.TILES.equals(appsLook) && tvCards.isEmpty()" in fit and "w += c.getMeasuredWidth() + m.leftMargin + m.rightMargin;" in fit
+      "if (FavBar.TILES.equals(appsLook) && parent.getWidth() > 0) {" in fit and "w += c.getMeasuredWidth() + m.leftMargin + m.rightMargin;" in fit
       and "if (w > dockRow.getPaddingLeft() + dockRow.getPaddingRight() && w < room) want = w;" in fit
       and "int g = FavBar.alignGravity(appsAlignNow) & Gravity.HORIZONTAL_GRAVITY_MASK;" in fit, fit[:300])
+check("(a) «كمّل المشاهدة» under it moves with it: the same frame (the bar's box and the row both have FavBar.SIDE at each side), the bar's own start and end",
+      "int left = g == Gravity.LEFT ? 0 : g == Gravity.RIGHT ? free : free / 2;" in fit and "int l = bar(FavBar.SIDE) + left, r = bar(FavBar.SIDE) + free - left;" in fit
+      and "hero.addView(bottom, lp(-1, -2, Gravity.BOTTOM, bar(FavBar.SIDE), 0, bar(FavBar.SIDE)" in main and "content.addView(tvRowsBox, llp(-1, -2, bar(FavBar.SIDE), 0, bar(FavBar.SIDE), 0));" in main)
 check("(a) it follows the row: each layout of the tiles (one post at a time), the look, the alignment, and «كمّل المشاهدة» coming or going",
       "if (!trayFitQueued) { trayFitQueued = true; handler.post(this::fitTray); }" in main and main.count("fitTray();") >= 3
       and "fitTray();   // the bar is the screen's width while the row is under it" in main)
@@ -49,7 +52,10 @@ check("(h) the reciter letters wear the look's own text and focus ink (R.color.s
 card = (H / "ReminderCard.java").read_text(encoding="utf-8")
 check("(h) the reminder card stands 16 dp under the clock column (never above 60 dp) and goes up only as far as the screen's bottom needs",
       "if (y > 0) top = Math.max(top, y + dp(16));" in card and "if (card.getHeight() > 0 && room > 0) top = Math.min(top, room);" in card
-      and "card.post(this::place);" in card and "reminder.under(() -> {" in main and "return at[1] + clockBlock.getHeight();" in main)
+      and "card.post(this::place);" in card and "reminder.under(() -> {" in main and "y = at[1] + clockBlock.getHeight();" in main)
+check("(h) with the big clock it stands under the digits too (the emulator's shot: under the clock column only, it lay over them)",
+      "y = Math.max(y, ScenePlan.fixedBox(dm.widthPixels, dm.heightPixels, beside, Dir.rtl())[3]);" in main)
 shoot = (ROOT / ".github/screens/shoot.sh").read_text(encoding="utf-8")
+check("the letters' shot opens تلاوة by its button (not exported: an adb start is refused)", 'focus_to "تلاوة وأذان" 10 DPAD_LEFT' in shoot)
 check("the emulator's shots of them", all(f"shot {n} " in shoot for n in ("bug-a-dock-few-apps", "bug-h-sand-reminder", "bug-h-sand-letters")))
 sys.exit(1 if failed else 0)

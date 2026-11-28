@@ -1053,11 +1053,19 @@ public class MainActivity extends Activity {
         grid.setClipToPadding(false);
         content.addView(grid, llp(-1, -2, dp(68), 0, dp(68), dp(160)));
         reminder = new ReminderCard(this, root);   // «المهام» with a time: its card is the topmost view
-        reminder.under(() -> {   // under the clock column, never over it (the tester, step 37)
-            if (clockBlock == null || clockBlock.getHeight() == 0 || !clockBlock.isShown()) return -1;
-            int[] at = new int[2];
-            clockBlock.getLocationInWindow(at);
-            return at[1] + clockBlock.getHeight();
+        reminder.under(() -> {   // under the clock column, never over it (the tester, step 37), and under the big clock's digits while it shows
+            int y = -1;
+            if (clockBlock != null && clockBlock.getHeight() > 0 && clockBlock.isShown()) {
+                int[] at = new int[2];
+                clockBlock.getLocationInWindow(at);
+                y = at[1] + clockBlock.getHeight();
+            }
+            if (bigClockOn) {   // the emulator's shot (bug-h-sand-reminder): under the clock column only, the card lay over the big digits
+                android.util.DisplayMetrics dm = getResources().getDisplayMetrics();
+                boolean beside = homeCard != null && homeCard.shownCards() > 0 && !homeCard.inRow();
+                y = Math.max(y, ScenePlan.fixedBox(dm.widthPixels, dm.heightPixels, beside, Dir.rtl())[3]);
+            }
+            return y;
         });
         return root;
     }
@@ -3788,7 +3796,7 @@ public class MainActivity extends Activity {
     /**
      * 4.4 beta 4 (the tester, step 76: a dock of three apps left a wide empty bar): in «بطاقات», the one way with a bar, the bar is as wide as its
      * tiles and its own padding, placed where the apps are (the centre, the right or the left); a row wider than the screen keeps the full width and
-     * scrolls as before. With «كمّل المشاهدة» under it the bar keeps the full width: those cards sit exactly under its cells.
+     * scrolls as before. «كمّل المشاهدة» under it moves by the same amount (the same side margins, the same frame), so its cards stay under the cells.
      */
     private void fitTray() {
         trayFitQueued = false;
@@ -3796,18 +3804,25 @@ public class MainActivity extends Activity {
         LinearLayout.LayoutParams lp = (LinearLayout.LayoutParams) tray.getLayoutParams();
         View parent = (View) tray.getParent();
         int want = -1;
-        if (FavBar.TILES.equals(appsLook) && tvCards.isEmpty() && parent.getWidth() > 0) {
+        int room = parent.getWidth() - parent.getPaddingLeft() - parent.getPaddingRight();
+        if (FavBar.TILES.equals(appsLook) && parent.getWidth() > 0) {
             int w = dockRow.getPaddingLeft() + dockRow.getPaddingRight();
             for (int i = 0; i < dockRow.getChildCount(); i++) {
                 View c = dockRow.getChildAt(i);
                 ViewGroup.MarginLayoutParams m = (ViewGroup.MarginLayoutParams) c.getLayoutParams();
                 w += c.getMeasuredWidth() + m.leftMargin + m.rightMargin;
             }
-            int room = parent.getWidth() - parent.getPaddingLeft() - parent.getPaddingRight();
             if (w > dockRow.getPaddingLeft() + dockRow.getPaddingRight() && w < room) want = w;
         }
         int g = FavBar.alignGravity(appsAlignNow) & Gravity.HORIZONTAL_GRAVITY_MASK;
         if (lp.width != want || lp.gravity != g) { lp.width = want; lp.gravity = g; tray.setLayoutParams(lp); }
+        if (tvRowsBox != null && tvRowsBox.getLayoutParams() instanceof ViewGroup.MarginLayoutParams) {   // the row under it, the bar's own start and end
+            int free = want < 0 ? 0 : Math.max(0, room - want);
+            int left = g == Gravity.LEFT ? 0 : g == Gravity.RIGHT ? free : free / 2;
+            ViewGroup.MarginLayoutParams t = (ViewGroup.MarginLayoutParams) tvRowsBox.getLayoutParams();
+            int l = bar(FavBar.SIDE) + left, r = bar(FavBar.SIDE) + free - left;
+            if (t.leftMargin != l || t.rightMargin != r) { t.leftMargin = l; t.rightMargin = r; tvRowsBox.setLayoutParams(t); }
+        }
     }
 
     private volatile float glassK = 1f;

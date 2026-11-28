@@ -183,10 +183,17 @@ due=$(adb shell "TZ=Asia/Riyadh date '+%Y-%m-%d %H:%M'" | tr -d '\r')   # the ci
 adb shell "am broadcast -n sa.urtv.screensaver/.SaverReceiver -a sa.urtv.screensaver.TASKS --es op add --es text 'موعد الطبيب' --es at '$due' --es where home" > /dev/null
 start sa.urtv.home/.MainActivity
 shot bug-h-sand-reminder 10
-start sa.urtv.home/.tilawah.MainActivity
+key DPAD_CENTER   # «تم»: the card goes
+# تلاوة is not exported (an adb start is refused): from the home by its button, the way a person opens it
+start sa.urtv.home/.MainActivity
+sleep 4
+key DPAD_UP
+focus_to "تلاوة وأذان" 10 DPAD_LEFT || focus_to "تلاوة وأذان" 12 DPAD_RIGHT
+key DPAD_CENTER
+sleep 4
 key DPAD_RIGHT   # from the list to the letters (the start edge is the right in Arabic)
 shot bug-h-sand-letters 3
-key BACK
+key BACK BACK
 saver --es look glass --es home_panel matches,prayerrow,hourly
 
 adb logcat -d -s AndroidRuntime:E > "$OUT/crashes.txt"
