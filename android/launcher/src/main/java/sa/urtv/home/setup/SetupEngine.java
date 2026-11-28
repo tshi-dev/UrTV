@@ -276,11 +276,14 @@ final class SetupEngine {
         List<String> rest = new ArrayList<>(prev);
         rest.removeAll(back);
         store.put("disabled-by-us.txt", ledgerText(rest, new ArrayList<String>(), store.get(SetupPrep.BACKUP)));
-        out.line("رجّعنا شغّالاً تطبيقاً من تطبيقات الريموت كنا أوقفناه قبل: " + String.join(" ", back));
+        out.line("رجّعنا شغّالاً ما كنا أوقفناه قبل من تطبيقات الريموت أو الحسابات: " + String.join(" ", back));
     }
 
     /** Named, not «everything protected»: the factory step turns the stock home off on purpose and writes it in the ledger (it is protected too). */
-    static final String[] HEAL = {"com.tcl.partnercustomizer"};
+    static final String[] HEAL = {"com.tcl.partnercustomizer",
+        // 4.4 (a TCL on Android 12: the Assistant and the accounts page showed errors after the setup): accounts, sign-in, sync and the Assistant
+        "com.google.android.partnersetup", "com.google.android.syncadapters.calendar", "com.google.android.syncadapters.contacts",
+        "com.google.android.sss.authbridge", "com.google.android.backuptransport", "com.tcl.usercenter", "com.tcl.assistant"};
 
     /** The ledger's names that were turned off by mistake (HEAL) and are off now. */
     static List<String> healed(List<String> ledger, Set<String> off) {

@@ -221,6 +221,7 @@ python3 tests/channel_test.py
 python3 tests/app_fixes_test.py
 python3 tests/keep_test.py
 python3 tests/keep_restore_test.py
+python3 tests/accounts_keep_test.py   # R-450: no list turns off an account, sign-in, sync, partner-setup or Assistant app; an earlier run's are turned back on
 python3 tests/community_test.py
 python3 tests/connectivity_keep_test.py
 python3 tests/input_guard_test.py

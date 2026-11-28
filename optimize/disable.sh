@@ -62,9 +62,9 @@ else
   exit 1
 fi
 # 4.4 (report row 765, R-362): an app an earlier run turned off (the ledger) that keep.txt names now (com.tcl.partnercustomizer: a TCL OTT box on Android 8 lost its
-# remote) is turned back on and leaves the ledger; only what the ledger holds and the TV says is off now, never what the maker had off
+# remote; 4.4: the accounts, sign-in, sync and Assistant apps, SetupEngine.HEAL) is turned back on and leaves the ledger; only what the ledger holds and the TV says is off now, never what the maker had off
 if [ -s "$LEDGER" ]; then
-  healed=$(grep -E '^[A-Za-z0-9_.]+$' "$LEDGER" | grep -Fx -f <(grep -vE '^[[:space:]]*(#|$)' "$KEEP" | awk '{print $1}') | grep -Fx 'com.tcl.partnercustomizer' | grep -Fx -f <(printf '%s\n' "$was_off" | grep . || echo '#none#') || true)
+  healed=$(grep -E '^[A-Za-z0-9_.]+$' "$LEDGER" | grep -Fx -f <(grep -vE '^[[:space:]]*(#|$)' "$KEEP" | awk '{print $1}') | grep -Fx -e com.tcl.partnercustomizer -e com.google.android.partnersetup -e com.google.android.syncadapters.calendar -e com.google.android.syncadapters.contacts -e com.google.android.sss.authbridge -e com.google.android.backuptransport -e com.tcl.usercenter -e com.tcl.assistant | grep -Fx -f <(printf '%s\n' "$was_off" | grep . || echo '#none#') || true)
   if [ -n "$healed" ]; then
     echo "Turned back on, they are on the never-turn-off list now: $(paste -sd' ' - <<< "$healed")" >&2
     printf '%s\n' "$healed" | awk '{print "pm enable --user 0 " $1}' | "$PY" -I optimize/tv.py --batch
