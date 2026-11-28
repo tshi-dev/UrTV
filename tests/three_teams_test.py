@@ -17,11 +17,12 @@ read = lambda p: p.read_text(encoding="utf-8")
 prefs, prov, settings, snap, page = read(APP / "Prefs.java"), read(APP / "ConfigProvider.java"), read(APP / "SettingsActivity.java"), read(HOME / "ConfigSnapshot.java"), read(ROOT / "src/template.html")
 
 check("saver: a team is added at the end of the list (past 20 only after the warning, up to 40: 4.4 FollowLimit), never in place of another",
-      "MAX_TEAMS = FollowLimit.MAX_TEAMS;" in prefs and "if (FollowLimit.check(FollowLimit.TEAMS, v.size(), followWarned(FollowLimit.TEAMS)) != FollowLimit.ADD) return false;" in prefs and 'v.add(id + "|" + name.replace("|", " ").replace(";", " "));' in prefs)
+      "MAX_TEAMS = FollowLimit.MAX_TEAMS;" in prefs and "if (FollowLimit.check(FollowLimit.TEAMS, v.size(), followWarned(FollowLimit.TEAMS), teamCap()) != FollowLimit.ADD) return false;" in prefs and 'v.add(id + "|" + name.replace("|", " ").replace(";", " "));' in prefs)
 check("saver: the fragment carries every followed team's id", '+ "&teams=" + join(teamIds(), ",")' in prefs and "for (String t : teams()) ids.add(t.split(\"\\\\|\", 2)[0]);" in prefs)
 check("saver: «الفرق المتابعة» keeps the ticked ones, all of them", "for (int i = 0; i < cur.size(); i++) if (keep[i]) v.add(cur.get(i));" in settings)
 check("launcher: the provider's first column is the fragment, read whole", "fragment = cur.getString(0);" in snap)
-check("page: #teams= read up to 40 ids (4.4: FollowLimit's ceiling)", ".map(x=>(x||'').trim()).filter(x=>/^\\d+$/.test(x)).slice(0, 40)," in page)
+check("page: #teams= read whole, ids only (4.4 R-472: the screensaver keeps the ceiling, 40 unless the person raised it)",
+      ".map(x=>(x||'').trim()).filter(x=>/^\\d{1,9}$/.test(x))," in page and ".slice(0, 40)," not in page.split("teamIds:", 1)[1].split("sportsKey", 1)[0])
 check("page: every followed team is asked (the server, then its archive file beside the queue; 4.4: past 20 every 2nd load, tests/many_follows.test.mjs)",
       "for(const [i, id] of CONFIG.teamIds.entries()){" in page and "if(!followDue(i, SOFT_TEAMS, !ASKED_TEAMS.has(id))) continue;" in page
       and "arch = inBatches(CONFIG.teamIds, 4, async id => { archN.push(await archTeam(id).catch(() => 0)); })" in page)

@@ -373,6 +373,9 @@ python3 tests/apps_look_test.py   # 4.4 «شكل التطبيقات»: بنرا�
 python3 tests/card_focus_grid_test.py   # 4.4 beta 4: the widget focus and the all-apps grid
 python3 tests/banner_fit_test.py   # 4.4 beta 4: a banner of another shape is shown whole on its tile
 python3 tests/tvos_home_test.py   # 4.4 beta 2 the full look «tvOS»: the preset, the layout only through it, the row above the bar, CardFit per slot, the weak TV
+python3 tests/overlay_need_test.py   # 4.4 GitHub #42 (R-473): SYSTEM_ALERT_WINDOW declared, asked only on a TV that needs it
+python3 tests/team_cap_test.py   # 4.4 the owner (R-472): «حد الفرق» 40 by default, 80 or none after the warning; saver.sh teamcap
+python3 tests/side_new_setups_test.py   # 4.4 the owner (R-470): a fresh install opens the settings in «كنبة», an update never switches
 python3 tests/settings_tvos_test.py   # 4.4 beta 2 «شكل شاشة الإعدادات: tvOS»: the 4.3.2 logic in the tvOS manner, light on a weak TV
 python3 tests/glass_dock_test.py   # 4.5 «زجاجي»: the glass bar's size and rows, «كل التطبيقات» as glass, «تغيير الأيقونة»; R1, R3, the tvOS Launcher credit
 python3 tests/called_off_test.py   # 4.3 A1-A3: a called-off game is never live or upcoming; a team's game read from the copy further on

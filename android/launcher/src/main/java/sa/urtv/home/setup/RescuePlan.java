@@ -65,6 +65,15 @@ final class RescuePlan {
         return p;
     }
 
+    /**
+     * 4.4 the owner (R-471, tester step 93): the rescue never changes the screensaver. It does not know what the TV had before our setup (only the home
+     * recorded that, for «تراجع»), and the system's default dream is not always one this TV runs (#42): ours stays, and the person is told where to change it.
+     * {@code comps}: screensaver_components as the TV says it.
+     */
+    static boolean keepsOurSaver(String comps) { return comps != null && comps.contains(SAVER + "/"); }
+    static final String SAVER = "sa.urtv.screensaver";
+    static final String SAVER_KEPT = "شاشة التوقف بقيت شاشة UrTV.\nتغيّرها من إعدادات التلفزيون ← شاشة التوقف.";
+
     /** a «pm list packages…; echo END_OF_LIST» answer: the names, or null when the end marker is missing (the TV did not say: never «nothing») */
     static Set<String> packages(String out) {
         if (out == null || !out.contains("END_OF_LIST")) return null;

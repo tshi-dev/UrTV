@@ -119,6 +119,37 @@ final class Prefs {
         return Build.VERSION.SDK_INT >= 23 && Settings.System.canWrite(c);
     }
 
+    /**
+     * 4.4 GitHub #42 (R-473, OverlayNeed): does this TV need «الظهور فوق التطبيقات» for the screensaver now? Reads the grant; while it is
+     * there it is noted (overlayHad), so a grant lost later is known, and the request may open by itself again once.
+     */
+    boolean overlayNeeded() {
+        boolean can = Build.VERSION.SDK_INT < 23 || Settings.canDrawOverlays(ctx);
+        if (can) {
+            if (!sp.getBoolean("overlayHad", false) || sp.getBoolean("overlayAsked", false) || sp.getInt("overlayQuick", 0) != 0)
+                sp.edit().putBoolean("overlayHad", true).putBoolean("overlayAsked", false).putInt("overlayQuick", 0).apply();
+            return false;
+        }
+        return OverlayNeed.needed(Build.VERSION.SDK_INT, googleTv(), false, sp.getBoolean("overlayHad", false), sp.getInt("overlayQuick", 0));
+    }
+    /** one more end of our screensaver (OverlayNeed.afterDream) */
+    void noteDreamEnd(long shownMs, boolean keyed, boolean own) {
+        int before = sp.getInt("overlayQuick", 0), after = OverlayNeed.afterDream(before, shownMs, keyed, own);
+        if (after != before) sp.edit().putInt("overlayQuick", after).apply();
+    }
+    boolean overlayAsked() { return sp.getBoolean("overlayAsked", false); }
+    void setOverlayAsked() { sp.edit().putBoolean("overlayAsked", true).apply(); }
+    /** a Google TV build (its home, launcherx, is on the TV); asked once per process (a settings redraw reads it) */
+    private static Boolean googleTvKnown;
+    private boolean googleTv() {
+        Boolean g = googleTvKnown;
+        if (g == null) {
+            try { ctx.getPackageManager().getPackageInfo("com.google.android.apps.tv.launcherx", 0); g = true; } catch (Exception e) { g = false; }
+            googleTvKnown = g;
+        }
+        return g;
+    }
+
     /** The TV's idle delay in ms; readable without any permission. -1 when the TV does not say. */
     static long idleMs(Context c) {
         return Settings.System.getLong(c.getContentResolver(), Settings.System.SCREEN_OFF_TIMEOUT, -1);
@@ -222,7 +253,7 @@ final class Prefs {
     String prayerMethod() { String v = sp.getString("prayerMethod", "auto"); return PrayerMethod.JAFARI.equals(v) ? PrayerMethod.JAFARI : PrayerMethod.GULF.equals(v) ? PrayerMethod.GULF : PrayerMethod.AUTO; }
     void setPrayerMethod(String v) { sp.edit().putString("prayerMethod", v).apply(); }
 
-    /** 4.4 the clubs: 20 as before without a word, then one warning once (FollowLimit), at most 40 */
+    /** 4.4 the clubs: 20 as before without a word, then one warning once (FollowLimit), at most 40 (the person may raise it: teamCap) */
     static final int SOFT_TEAMS = FollowLimit.SOFT_TEAMS, MAX_TEAMS = FollowLimit.MAX_TEAMS;
     /**
      * Whole leagues followed (#leagues=): the page downloads one small file for each built-in one, every 30 minutes; a league of the
@@ -236,8 +267,12 @@ final class Prefs {
     void setFollowWarned(String kind) { sp.edit().putBoolean("followWarned_" + kind, true).apply(); }
     /** what one more league or club means now: FollowLimit.ADD, WARN or FULL */
     int followState(String kind) {
-        return FollowLimit.check(kind, FollowLimit.LEAGUES.equals(kind) ? leagues().size() : teams().size(), followWarned(kind));
+        return FollowLimit.check(kind, FollowLimit.LEAGUES.equals(kind) ? leagues().size() : teams().size(), followWarned(kind), teamCap());
     }
+
+    /** 4.4 the owner (R-472) «حد الفرق»: 40 by default, 80 or 0 (none) after the warning (FollowLimit.TEAM_CAP_WARNING); saver.sh teamcap */
+    int teamCap() { try { return FollowLimit.teamCap(sp.getInt("teamCap", FollowLimit.MAX_TEAMS)); } catch (ClassCastException e) { return FollowLimit.MAX_TEAMS; } }
+    void setTeamCap(int v) { sp.edit().putInt("teamCap", FollowLimit.teamCap(v)).apply(); }
 
     /** The league of LEAGUES that name (English as TheSportsDB spells it, the Arabic label, or its slug) means, else null. */
     static String[] leagueByName(String name) {
@@ -328,7 +363,7 @@ final class Prefs {
     boolean addTeam(String id, String name) {
         List<String> v = teams();
         for (String t : v) if (t.startsWith(id + "|")) return false;
-        if (FollowLimit.check(FollowLimit.TEAMS, v.size(), followWarned(FollowLimit.TEAMS)) != FollowLimit.ADD) return false;   // the ceiling, or the warning not yet answered
+        if (FollowLimit.check(FollowLimit.TEAMS, v.size(), followWarned(FollowLimit.TEAMS), teamCap()) != FollowLimit.ADD) return false;   // the ceiling, or the warning not yet answered
         v.add(id + "|" + name.replace("|", " ").replace(";", " "));
         setList("teams", v);
         return true;
@@ -1493,9 +1528,11 @@ final class Prefs {
     /** the style; read the first time after the update as the screen the TV shows now («كنبة» with the look «كنبة», else «أزرار»): no surprise switch */
     /**
      * 4.4 beta 4 (the findability review, §3): a TV set up from now on could open the settings in the side list («كنبة»), the tree's natural form. It is
-     * a default change, so it waits for the owner: false keeps «أزرار» for every TV, new or old. An installed TV is never switched by this.
+     * a default change: 4.4 the owner approved it (true). Only a fresh install (FreshInstall: never updated over an older version) gets «كنبة»; an
+     * installed TV is never switched by this (an update keeps the screen it showed). BootReceiver fixes the style at the first boot, so a TV whose
+     * app updated itself before the person opened the settings still counts as new.
      */
-    static final boolean SIDE_FOR_NEW_SETUPS = false;
+    static final boolean SIDE_FOR_NEW_SETUPS = true;
 
     String settingsStyle() {
         String v = sp.getString("settingsStyle", null);

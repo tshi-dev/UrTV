@@ -20,7 +20,7 @@ import java.util.Locale;
  *   am broadcast -n sa.urtv.screensaver/.SaverReceiver -a sa.urtv.screensaver.CITIES
  *   am broadcast -n sa.urtv.screensaver/.SaverReceiver -a sa.urtv.screensaver.SET
  *       [--es city 'الرس'] [--es lat 25.86 --es lon 43.49 --es tz Asia/Kuwait]   (tz is needed for a place that is not in the list) [--es teams '136013:Al-Hilal,150643:Al-Zulfi']
- *       [--es panel prayers] [--es panel2 hourly|none] [--es home_panel prayers,hourly,verse|none] [--es greeting on|off] [--es matchestoday on|off] [--es greetingname NAME|off] [--es homephotos same|own] [--es homepacks id,id|none] [--es homeours on|off] [--es albummode seconds|ten|minute] [--es albumtitle on|off] [--es albumfit fit|fill] [--es albumsize normal|tall] [--es cleartext on|off] [--es looksync on|off] [--es surface quick|cards|tray:30..100:look|glass|graphite] [--es accent amber|gold|green|teal|sky|violet|rose|coral|default] [--es baropacity 30..100] [--es walldim 0..90] [--es focusstyle solid|frame|glow] [--es albummode seconds|minute] [--es albumdate on|off] [--es pillshidden markets,matches,center|none] [--es listenpill on|off] [--es updatebell on|off] [--es watchnext on|off] [--es appearance dark|light|auto] [--es look glass|graphite|navy|clean] [--es homelayout classic|couch|football] [--es favbar 5|6|7|8|all] [--es pagesdark on|off] [--es adhanbar on|off] [--es yearstrip on|off] [--es minrating 7]
+ *       [--es panel prayers] [--es panel2 hourly|none] [--es home_panel prayers,hourly,verse|none] [--es greeting on|off] [--es matchestoday on|off] [--es teamcap 40|80|0] [--es greetingname NAME|off] [--es homephotos same|own] [--es homepacks id,id|none] [--es homeours on|off] [--es albummode seconds|ten|minute] [--es albumtitle on|off] [--es albumfit fit|fill] [--es albumsize normal|tall] [--es cleartext on|off] [--es looksync on|off] [--es surface quick|cards|tray:30..100:look|glass|graphite] [--es accent amber|gold|green|teal|sky|violet|rose|coral|default] [--es baropacity 30..100] [--es walldim 0..90] [--es focusstyle solid|frame|glow] [--es albummode seconds|minute] [--es albumdate on|off] [--es pillshidden markets,matches,center|none] [--es listenpill on|off] [--es updatebell on|off] [--es watchnext on|off] [--es appearance dark|light|auto] [--es look glass|graphite|navy|clean] [--es homelayout classic|couch|football] [--es favbar 5|6|7|8|all] [--es pagesdark on|off] [--es adhanbar on|off] [--es yearstrip on|off] [--es minrating 7]
  *       [--es sunrise on|off] [--es prayerbar on|off] [--es wxmore on|off] [--es months default|levant] [--es verse day|3|10] [--es versekind both|verse|hadith] [--es seconds on|off] [--es backexit press|hold|three] [--es occasion on|off] [--es nightdim on|off] [--es taskspill on|off] [--es backsaver on|off] [--es genres Drama,Comedy] [--es langs English]
  *       [--es photos 30] [--es idle 10] [--es digits hindi|latin] [--es hijrioffset -2..2] [--es hijriline on|off] [--es clock24 on|off] [--es ramtier low|mid|normal|auto] [--es lite auto|on|off] [--es lang ar|en]
  *       [--es design info|clean|big|frame|dayline] [--es bar none|prayers|slot|weather] [--es barat bottom|clock] [--es wx auto|usual|clock|corner|off]
@@ -187,6 +187,9 @@ public class SaverReceiver extends BroadcastReceiver {
                 if (city == null) return "error: city not in the built-in list; give --es lat and --es lon too (CITIES lists them)";
             }
         }
+        String teamCap = i.getStringExtra("teamcap");   // 4.4 the owner (R-472): 40 (the default), 80, or 0 = no limit; read first, so «teams» in the same call is held to it
+        if (teamCap != null && !teamCap.matches("40|80|0")) return "error: teamcap is one of 40 80 0 (0 = no limit)";
+        int ceiling = FollowLimit.teamCeiling(teamCap != null ? Integer.parseInt(teamCap) : p.teamCap());
         List<String> teams = null;
         String t = i.getStringExtra("teams");
         if (t != null) {
@@ -204,7 +207,7 @@ public class SaverReceiver extends BroadcastReceiver {
                     : en.isEmpty() ? "#" + kv[0] : Arabic.team(c, en);
                 teams.add(kv[0] + "|" + ar.replace("|", " ").replace(";", " "));
             }
-            if (teams.size() > Prefs.MAX_TEAMS) return "error: at most " + Prefs.MAX_TEAMS + " teams";
+            if (teams.size() > ceiling) return "error: at most " + ceiling + " teams (optimize/saver.sh teamcap 80, or 0 for no limit, raises it)";
         }
         String panel = i.getStringExtra("panel"), home = i.getStringExtra("home_panel");
         if (panel != null && Prefs.homeOnly(panel)) return "error: " + panel + " is a home-screen card only (the screensaver's panel already shows it): optimize/saver.sh home-card " + panel;
@@ -512,6 +515,7 @@ public class SaverReceiver extends BroadcastReceiver {
         }
         if (idleKept != null) IdleKeep.keep(c, idleKept);
         if (city != null) p.setCity(city[0], city[1], city[2], tz == null ? "" : tz, cityCountry);
+        if (teamCap != null) p.setTeamCap(Integer.parseInt(teamCap));
         if (teams != null) p.setList("teams", teams);
         if (panel != null) p.setPanel(panel);
         if (panel2 != null) p.setPanel2(panel2);
@@ -778,6 +782,7 @@ public class SaverReceiver extends BroadcastReceiver {
             + "\nscenetime: " + (p.sceneByTime() ? "on" : "off") + "\nsceneweather: " + (p.sceneByWeather() ? "on" : "off")
             + "\nfavbar: " + p.favBar()
             + "\nmatchestoday: " + (p.matchesToday() ? "on" : "off")
+            + "\nteamcap: " + p.teamCap()
             + "\npagesdark: " + (p.pagesDark() ? "on" : "off")
             + "\nadhanbar: " + (p.adhanBar() ? "on" : "off") + "\nadhanlead: " + p.adhanLead()
             + "\nupdatechannel: " + p.updateChannel()

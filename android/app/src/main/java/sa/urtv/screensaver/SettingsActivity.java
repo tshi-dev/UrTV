@@ -244,6 +244,8 @@ public class SettingsActivity extends Activity {
         if (back != null) { returnWant = back; returnUntil = System.currentTimeMillis() + 4000; }   // the home answers a moment later and the list is built again: that build keeps the focus on this row too, until a key is pressed (it landed on the row above)
         forceWant = back;   // back from another screen: the focus goes to the row or button that opened it, in the SAME render that builds the list again (it landed on the one above)
         render();
+        // 4.4 #42 (R-473): a TV that needs «الظهور فوق التطبيقات» for the screensaver is asked once by itself (OverlayNeed), never another TV
+        if (OverlayNeed.openByItself(prefs.overlayNeeded(), prefs.overlayAsked())) askSaverOverlay();
         // the home writes its state a moment after «UrTV النظيف» closes: one more question 1.5 s later, drawn only when the answer differs
         root.postDelayed(() -> { if (!isFinishing() && !isDestroyed()) { cleanAsked = false; homeCleanSeen(); } }, 1500);
     }
@@ -385,8 +387,11 @@ public class SettingsActivity extends Activity {
         header("المباريات");
         // «المباريات»: the home app's page of the games (docs/PROPOSALS-NOV2.md §1), the days and the leagues, the followed teams first
         row("مباريات اليوم", "الأيام والدوريات، وفرقك أولاً", R.drawable.ic_trophy, new Runnable() { public void run() { openMatches(); } });
-        row("الفرق المتابعة (" + arabicNum(prefs.teams().size()) + "/" + arabicNum(Prefs.MAX_TEAMS) + ")", teamsLabel(),
+        row("الفرق المتابعة (" + arabicNum(prefs.teams().size()) + (prefs.teamCap() == 0 ? "" : "/" + arabicNum(prefs.teamCap())) + ")", teamsLabel(),
             R.drawable.ic_trophy, new Runnable() { public void run() { manageTeams(); } });
+        // 4.4 the owner (R-472): the clubs' ceiling, 40 by default; raised to 80 or none only after the warning (FollowLimit.TEAM_CAP_WARNING)
+        row("حد الفرق", FollowLimit.teamCapName(prefs.teamCap()) + (prefs.teamCap() == FollowLimit.MAX_TEAMS ? "، الأصل" : ""), R.drawable.ic_trophy,
+            new Runnable() { public void run() { pickTeamCap(); } });
 
         // 4.3 «تطبيق المباريات»: «شاهد المباراة» on a game opens it (UrTV Player is told which game; another app just opens)
         row("تطبيق المباريات", matchAppLabel(), R.drawable.ic_play, new Runnable() { public void run() { pickMatchApp(); } });
@@ -790,6 +795,8 @@ public class SettingsActivity extends Activity {
             new Runnable() { public void run() { openHome("photos"); } });
         row("بدء شاشة التوقف بعد", idleLabel(), R.drawable.ic_screensaver,
             new Runnable() { public void run() { pickIdle(); } });
+        if (prefs.overlayNeeded())   // 4.4 #42 (R-473): only on a TV that needs it
+            row("إذن شاشة التوقف", OverlayNeed.WHY, R.drawable.ic_screensaver, new Runnable() { public void run() { askSaverOverlay(); } });
 
         header("التطبيق");
         View autoRow = row("التحديث التلقائي للصفحة", prefs.autoUpdate() ? "يعمل، عند بدء الشاشة، كل ٦ ساعات" : "متوقف", R.drawable.ic_sync, new Runnable() { public void run() {
@@ -2555,6 +2562,21 @@ public class SettingsActivity extends Activity {
         toast("هذا التلفزيون يخفي هذا الإذن، فيُعطى من الكمبيوتر");
     }
 
+    /** 4.4 #42 (R-473): the plain request; «اسمح» opens the TV's own screen for this app (a TV that hides it: the computer's command, said) */
+    private void askSaverOverlay() {
+        prefs.setOverlayAsked();
+        new Dlg(this).setTitle(OverlayNeed.TITLE).setMessage(OverlayNeed.WHY + "\n" + OverlayNeed.HOW)
+            .setPositiveButton("اسمح", (d, w) -> {
+                Intent i = new Intent("android.settings.action.MANAGE_OVERLAY_PERMISSION", Uri.parse("package:" + getPackageName()));
+                try {
+                    if (getPackageManager().resolveActivity(i, 0) != null) { startActivity(i); return; }
+                } catch (RuntimeException ignored) { }
+                toast(OverlayNeed.HIDDEN);
+            })
+            .setNegativeButton("مو الحين", null)
+            .show();
+    }
+
     /** «إضافات تلفزيونك» is installed (only read); never in a render: extrasLook asks on a thread */
     private static boolean extrasInstalled(android.content.pm.PackageManager pm) {
         try { pm.getPackageInfo("sa.urtv.extras", 0); return true; } catch (Exception e) { return false; }
@@ -2620,11 +2642,26 @@ public class SettingsActivity extends Activity {
     private void askFollow(final String kind, final Runnable go) {
         int st = prefs.followState(kind);
         if (st == FollowLimit.ADD) { go.run(); return; }
-        if (st == FollowLimit.FULL) { new Dlg(this).setTitle(FollowLimit.full(kind)).setPositiveButton("حسنًا", null).show(); return; }
+        if (st == FollowLimit.FULL) { new Dlg(this).setTitle(FollowLimit.full(kind, prefs.teamCap())).setPositiveButton("حسنًا", null).show(); return; }
         new Dlg(this).setTitle(FollowLimit.warning(kind))
             .setPositiveButton("أضف", (d, w) -> { prefs.setFollowWarned(kind); go.run(); })
             .setNegativeButton("لا", null)
             .show();
+    }
+
+    /** 4.4 the owner (R-472) «حد الفرق»: 40, 80 or none; a higher one only after «كثرة الفرق ممكن تبطّئ التلفزيون» and «ارفع الحد» (lower: at once, no club removed) */
+    private void pickTeamCap() {
+        final int from = prefs.teamCap();
+        int at = 0;
+        for (int k = 0; k < FollowLimit.TEAM_CAPS.length; k++) if (FollowLimit.TEAM_CAPS[k] == from) at = k;
+        pickOne("حد الفرق", FollowLimit.TEAM_CAP_NAMES, at, k -> {
+            final int to = FollowLimit.TEAM_CAPS[k];
+            if (!FollowLimit.raises(from, to)) { prefs.setTeamCap(to); return; }
+            new Dlg(this).setTitle(FollowLimit.TEAM_CAP_WARNING)
+                .setPositiveButton("ارفع الحد", (d, w) -> { prefs.setTeamCap(to); render(); })
+                .setNegativeButton("لا", null)
+                .show();
+        });
     }
 
     /** 4.4 the same in a list of ticks (the count is the dialog's own): past the soft limit the tick waits for the warning's «أضف», at the ceiling it stays off */
