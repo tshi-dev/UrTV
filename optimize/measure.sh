@@ -90,11 +90,25 @@ printf '%s\n' \
   "echo '== biggest'; dumpsys meminfo | sed -n '/Total [PR]SS by process/,/^$/p' | head -16" \
   "echo '== tweaks'; for k in window_animation_scale transition_animation_scale animator_duration_scale cached_apps_freezer; do echo \"\$k=\$(settings get global \$k)\"; done; echo \"max_cached_processes=\$(device_config get activity_manager max_cached_processes)\"" \
   "echo '== our apps'; for p in sa.urtv.screensaver sa.urtv.home; do echo \"\$p: \$(dumpsys meminfo \$p 2> /dev/null | grep -m1 -E '^ *TOTAL')\"; done" \
-  | tv --batch > "$out"
+  | tv --batch > "$out" || read_rc=$?
+# 4.4: the reading failed (the batch stopped, or no MemTotal or MemAvailable: a kernel older than 3.14): /proc/meminfo alone and whole, so the
+# free RAM is still read (the batch's lines stay the same as the TV-side setup's, tests/setup_report_test.py)
+if [ "${read_rc:-0}" != 0 ] || ! grep -q '^MemTotal:' "$out" 2> /dev/null || ! grep -q '^MemAvailable:' "$out" 2> /dev/null; then
+  echo "(the reading did not give the free memory: reading /proc/meminfo alone)"
+  { echo '== memory (again)'; tv "cat /proc/meminfo" 2> /dev/null | tr -d '\r'; } >> "$out" || true
+fi
 [ "$mode" = --screensaver ] && tv "input keyevent KEYCODE_HOME" > /dev/null
 
 kb() { local v; v=$(sed -n "s/^$1:[[:space:]]*\([0-9][0-9]*\).*/\1/p" "$out" | sed -n 1p); echo "${v:-0}"; }   # the first number on that exact line; 0 if the TV has none
-avail=$(( $(kb MemAvailable) / 1024 )); total=$(( $(kb MemTotal) / 1024 ))
+# free RAM: MemAvailable; a kernel older than 3.14 has none (some Android 7 TVs): MemFree + Buffers + Cached; else Android's «Free RAM» (dumpsys)
+avail_kb=$(kb MemAvailable); free_from=
+if [ "$avail_kb" = 0 ] && [ "$(kb MemFree)" != 0 ]; then avail_kb=$(( $(kb MemFree) + $(kb Buffers) + $(kb Cached) )); free_from="MemFree+Buffers+Cached (no MemAvailable)"; fi
+if [ "$avail_kb" = 0 ]; then
+  fr=$(sed -n 's/^ *Free RAM: *\([0-9,]*\)K.*/\1/p' "$out" | sed -n 1p | tr -d ,)
+  [ -z "$fr" ] || { avail_kb=$fr; free_from="Android's Free RAM (no /proc/meminfo free lines)"; }
+fi
+[ -z "$free_from" ] || echo "free RAM read from $free_from"
+avail=$(( avail_kb / 1024 )); total=$(( $(kb MemTotal) / 1024 ))
 swap=$(( ($(kb SwapTotal) - $(kb SwapFree)) / 1024 ))
 procs=$(sed -n '/== processes/{n;n;p;}' "$out" | tr -dc '0-9')
 cpus=$(grep -m1 -oE '[0-9]+%cpu' "$out" | tr -dc '0-9' || true)        # e.g. 400%cpu = 4 cores
@@ -102,7 +116,12 @@ idle=$(grep -m1 -oE '[0-9]+%idle' "$out" | tr -dc '0-9' || true)       # summed 
 [ -n "$cpus" ] && [ -n "$idle" ] && [ "$cpus" -gt 0 ] && idle=$(( idle * 100 / cpus ))
 disabled=$(sed -n '/== disabled packages/{n;n;p;}' "$out" | tr -dc '0-9')
 if [ "$avail" -eq 0 ] || [ "$total" -eq 0 ] || [ "$avail" -gt "$total" ]; then   # a TV whose meminfo we misread (one said 292396 MB free of 1683)
-  avail="not measured (memory read failed)"; total=
+  if [ "${read_rc:-0}" != 0 ] && ! grep -q '^MemTotal:' "$out" 2> /dev/null; then why="the TV did not answer the memory read"
+  elif [ "$total" -eq 0 ]; then why="no MemTotal in /proc/meminfo"
+  elif [ "$avail" -eq 0 ]; then why="no free-memory line: MemAvailable, MemFree, Free RAM"
+  else why="misread: $avail MB free of $total"; fi
+  echo "free RAM: not measured ($why)"
+  avail="not measured ($why)"; total=
 fi
 [ -f "$RUN/summary.md" ] || printf '| state | free RAM (MB%s) | swap used (MB) | processes | CPU idle | disabled packages |\n|---|---|---|---|---|---|\n' "${total:+ of $total}" > "$RUN/summary.md"
 if [ -f "$RUN/summary.md" ] && grep -q "^| $label |" "$RUN/summary.md"; then   # a repeated reading replaces its row
