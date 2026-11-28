@@ -1,0 +1,99 @@
+name: Games flow screens
+
+# Real pictures of the Android screens, for looking at a design without a TV: both apps are built (debug, same key), put on an Android TV
+# emulator (1920x1080), driven with the remote's keys, and screencap's PNGs are pushed to the data-screens branch, one folder per run
+# plus latest/:  https://raw.githubusercontent.com/tshi-dev/UrTV/data-screens/latest/<name>.png  (the list: latest/index.txt).
+# The script that takes them is .github/screens/shoot.sh; a shot that cannot be taken is skipped, never fails the run.
+
+on:
+  push:
+    branches: [work/44-games-owner]
+    paths: ['.github/screens/games-flow.sh', '.github/workflows/games-flow-screens.yml']
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: games-flow-screens-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  shots:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      # Thmanyah comes from the private fonts repository, as in android.yml: built in, never committed
+      - uses: actions/checkout@v4
+        with:
+          repository: tshi-dev/urtv-fonts
+          token: ${{ secrets.FONTS_TOKEN }}
+          path: .fonts-private
+      - name: Private fonts
+        run: |
+          cp .fonts-private/web/*.woff2 assets/fonts/
+          mkdir -p android/launcher/src/main/assets/fonts
+          cp .fonts-private/android/*.otf android/launcher/src/main/assets/fonts/
+          rm -rf .fonts-private
+
+      - name: Build the page
+        run: python3 src/build.py
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.9'
+
+      # debug builds: both get the debug key, so the apps' signature permissions work between them
+      - name: Build debug APKs
+        env:
+          URTV_BRANCH: ${{ github.ref_name }}
+        run: gradle -p android assembleDebug --no-daemon
+
+      - name: Enable KVM
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+
+      - name: Take the pictures on an Android TV emulator
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 30
+          target: android-tv
+          arch: x86
+          profile: tv_1080p
+          disable-animations: true
+          emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim -camera-back none
+          script: bash .github/screens/games-flow.sh android/app/build/outputs/apk/debug/app-debug.apk android/launcher/build/outputs/apk/debug/launcher-debug.apk screens-out
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: games-flow-screens
+          path: screens-out
+
+      - name: "Publish to data-screens (own folders games-flow-latest and games-flow-run-N, the other pictures untouched, no force push)"
+        run: |
+          set -e
+          run="games-flow-run-${GITHUB_RUN_NUMBER}-$(date -u +%m%d-%H%M)"
+          work=$(mktemp -d)
+          git clone --quiet --depth 20 --branch data-screens "https://x-access-token:${{ github.token }}@github.com/${GITHUB_REPOSITORY}.git" "$work"
+          cd "$work"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          ls -d games-flow-run-* 2>/dev/null | sort | head -n -4 | xargs -r rm -rf
+          rm -rf games-flow-latest "$run"; mkdir -p "$run"
+          cp "$GITHUB_WORKSPACE"/screens-out/*.png "$run"/ || true
+          cp "$GITHUB_WORKSPACE"/screens-out/*.txt "$run"/ || true
+          cp -r "$run" games-flow-latest
+          ls "$run" | sed "s#^#https://raw.githubusercontent.com/${GITHUB_REPOSITORY}/data-screens/games-flow-latest/#" > games-flow-latest/index.txt
+          git add -A
+          git commit --quiet -m "Games screens of ${GITHUB_SHA::7} (run ${GITHUB_RUN_NUMBER})" || true
+          for i in 1 2 3; do git push origin data-screens && break; git pull --rebase --quiet origin data-screens; done
+          echo "Pictures: https://raw.githubusercontent.com/${GITHUB_REPOSITORY}/data-screens/games-flow-latest/index.txt"
