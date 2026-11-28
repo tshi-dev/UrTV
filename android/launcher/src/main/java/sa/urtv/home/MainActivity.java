@@ -534,6 +534,7 @@ public class MainActivity extends Activity {
         if (control != null) control.dismiss();   // its speed test stops with it
         if (appOptions != null) { appOptions.dismiss(); appOptions = null; }
         homeCard.pause();
+        if (sideCards != null) sideCards.pause();
         if (reminder != null) reminder.hide();
     }
 
@@ -754,7 +755,7 @@ public class MainActivity extends Activity {
         if (loader.isShutdown()) return;
         loader.execute(() -> {
             final String u = side.read();
-            runOnUiThread(() -> { if (!isFinishing() && !isDestroyed()) side.show(u); });
+            runOnUiThread(() -> { if (!isFinishing() && !isDestroyed() && resumed) side.show(u); });   // never after onPause (it resumes the page's timers)
         });
     }
 

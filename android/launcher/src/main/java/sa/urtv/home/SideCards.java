@@ -72,7 +72,7 @@ final class SideCards {
     /** On the UI thread: show what read() gave (null takes the column away whole). */
     void show(String url) {
         if (url == null) { drop(); return; }
-        if (url.equals(shown) && web != null) return;
+        if (url.equals(shown) && web != null) { run(); return; }
         if (web == null) {
             web = WebViews.make(activity);
             if (web == null) return;
@@ -92,6 +92,19 @@ final class SideCards {
         }
         shown = url;
         web.loadUrl(url);
+        run();
+    }
+
+    /** the home is in front (show is called from its onResume only): the page runs. pauseTimers()/resumeTimers() are process-wide, and HomeCard's
+     *  card may be «بدون» (no page of its own to resume them), so the column resumes them itself (tests/home_card_test.py) */
+    private void run() {
+        web.onResume();
+        web.resumeTimers();
+    }
+
+    /** the home's onPause, with HomeCard.pause(): no timers or network while an app is in front */
+    void pause() {
+        if (web != null) { web.onPause(); web.pauseTimers(); }
     }
 
     /** the column goes, page and all */

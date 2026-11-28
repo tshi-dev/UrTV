@@ -43,8 +43,14 @@ timers = [p.name for p in launcher if "pauseTimers" in p.read_text(encoding="utf
 ma = (ROOT / "android/launcher/src/main/java/sa/urtv/home/MatchesActivity.java").read_text(encoding="utf-8")
 ma_ok = ("protected void onResume() {\n        super.onResume();\n        if (web != null) { web.onResume(); web.resumeTimers(); }" in ma
          and "protected void onPause() {\n        super.onPause();\n        if (web != null) { web.onPause(); web.pauseTimers(); }" in ma)
-card_ok = sorted(makers) == ["HomeCard.java", "MatchesActivity.java"] and sorted(timers) == ["HomeCard.java", "MatchesActivity.java"] and ma_ok
-print(("PASS " if card_ok else "FAIL ") + "the launcher's WebViews are HomeCard's and «المباريات»'s, each pausing the process-wide timers when it goes and resuming them when it comes"
+# «كنبة»'s side cards (SideCards, 4.4 beta 4) are the third, in the home itself: they pause with HomeCard in the home's onPause and resume in show(),
+# which runs only while the home is in front (HomeCard's card may be «بدون», with no page to resume the timers)
+sc = (ROOT / "android/launcher/src/main/java/sa/urtv/home/SideCards.java").read_text(encoding="utf-8")
+sc_ok = ("web.onResume();\n        web.resumeTimers();" in sc and "if (web != null) { web.onPause(); web.pauseTimers(); }" in sc
+         and "homeCard.pause();\n        if (sideCards != null) sideCards.pause();" in (ROOT / "android/launcher/src/main/java/sa/urtv/home/MainActivity.java").read_text(encoding="utf-8")
+         and "!isDestroyed() && resumed) side.show(u);" in (ROOT / "android/launcher/src/main/java/sa/urtv/home/MainActivity.java").read_text(encoding="utf-8"))
+card_ok = sorted(makers) == ["HomeCard.java", "MatchesActivity.java", "SideCards.java"] and sorted(timers) == ["HomeCard.java", "MatchesActivity.java", "SideCards.java"] and ma_ok and sc_ok
+print(("PASS " if card_ok else "FAIL ") + "the launcher's WebViews are HomeCard's, «المباريات»'s and «كنبة»'s side cards', each pausing the process-wide timers when it goes and resuming them when it comes"
       + ("" if card_ok else f"  -> WebViews: {makers}, pauseTimers in: {timers}; revisit HomeCard.pause()/refresh() before adding another"))
 
 javac, java = shutil.which("javac"), shutil.which("java")
