@@ -1,0 +1,8 @@
+Starting: Intent { act=android.settings.SETTINGS }
+Warning: Activity not started, its current task has been brought to the front
+Status: ok
+LaunchState: HOT
+Activity: com.android.tv.settings/.MainSettings
+TotalTime: 184
+WaitTime: 189
+Complete
