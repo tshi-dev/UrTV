@@ -560,7 +560,7 @@ public class SaverReceiver extends BroadcastReceiver {
         if (i.getStringExtra("smoothlook") != null) p.setUiSmooth("on".equals(i.getStringExtra("smoothlook")));
         if ("restore".equals(i.getStringExtra("lookback"))) p.restorePreviousLook();   // 4.5 «رجّع الشكل السابق» (optimize/saver.sh lookback)
         if (start != null) p.applyStart(start);   // a start sets a look and the parts; a row given beside it then changes only that row
-        if (partP != null) { p.setPartOff(partP[0], "off".equals(partP[1])); p.lookChanged(); }
+        if (partP != null) p.setPartOff(partP[0], "off".equals(partP[1]));   // the home is told after the flush, below
         if (preset != null) p.setPreset(preset);   // «أشكال جاهزة» before any one row given beside it (that row then makes it «مخصّص»)
         if (couch != null) p.setCouch("on".equals(couch));   // «شكل كنبة» first (it keeps or puts back the four), then any one choice given beside it
         if (homeLayout != null) p.setHomeLayout(homeLayout);

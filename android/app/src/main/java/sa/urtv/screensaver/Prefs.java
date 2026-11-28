@@ -1017,6 +1017,7 @@ final class Prefs {
             + "&cardstyle=" + cardStyle()
             + ("m".equals(cardSize()) ? "" : "&csize=" + cardSize()) + ("style".equals(cardCorner()) ? "" : "&ccorner=" + cardCorner())
             + ("off".equals(sideCards()) ? "" : "&sidecards=" + sideCards())
+            + (tasksPill() && partOff(Parts.TASKS) ? "&taskspill=0" : "")   // the tasks part off hides the button too
             + (partsOff().isEmpty() ? "" : "&off=" + partsOff())   // 4.4 «أجزاء UrTV»: the pages leave out what is off (only when one is)
             + (startSeen() ? "" : "&ask=1")   // 4.4 «ابدأ بـ» not answered yet: the home opens it once
             + "&design=" + design() + "&bar=" + bar() + "&barat=" + barAt() + "&wx=" + wxAt()

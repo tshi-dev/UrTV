@@ -62,16 +62,16 @@ check("the pages (the home's cards and the screensaver) are told «&off=» only 
 check("the home's cards and the football layout follow the parts", "if (panel != null) panel = HomeCardChoice.withoutParts(panel, partsFrag);" in card
       and 'if ("football".equals(layout) && PartsHome.offIn(partsFrag, "matches")) layout = "classic";' in card)
 check("the home's buttons: تلاوة, the tasks, the markets and the matches go with their parts; the adhan bar with the prayers",
-      'if (PartsHome.offIn(fragment, "tilawah")) listenPill = false;' in snap and 'partOff("tasks")' in snap and 'if (PartsHome.offIn(fragment, "prayer")) bar = false;' in snap
+      'if (PartsHome.offIn(fragment, "tilawah")) listenPill = false;' in snap and '(tasksPill() && partOff(Parts.TASKS) ? "&taskspill=0" : "")' in prefs and 'if (PartsHome.offIn(fragment, "prayer")) bar = false;' in snap
       and 'if (cfg.partOff("markets")) hiddenQuick.add("markets");' in main and 'if (cfg.partOff("matches")) hiddenQuick.add("matches");' in main)
 check("the home: «يُتلى الآن» with تلاوة, the weather line with the weather, the control centre's games, screensaver and adhan tiles",
-      'ConfigSnapshot.ui(this).partOff("tilawah")) { nowCard.setVisibility(View.GONE); return; }' in main and 'if (snap.partOff("weather")) {' in greet
+      'if (ConfigSnapshot.ui(this).partOff("tilawah")) { nowCard.setVisibility(View.GONE); return; }' in main and 'if (snap.partOff("weather")) {' in greet
       and 'String[][] partTiles = {{"games", "games"}, {"saver", "saver"}, {"adhan", "prayer"}};' in center)
 check("the owner: «المواقيت والأذان» off silences the adhan and the iqama (the next alarm is still set), and its rows say so",
       'sa.urtv.home.PartsHome.off(context, "prayer") ? "the prayer part is off"' in read(HOME / "tilawah/AdhanReceiver.java")
       and 'PartsHome.off(app, "prayer")' in read(HOME / "tilawah/IqamaReceiver.java") and "(إيقافها يوقف الأذان)" in sa and "والأذان ما يشتغل" in sa)
 check("the duas and the tasks: no card while their part is off, the next alarm still set",
-      'if (sa.urtv.home.PartsHome.off(c, "duas")) { DuaScheduler.schedule(c); return; }' in read(HOME / "tilawah/DuaReceiver.java")
+      '|| sa.urtv.home.PartsHome.off(c, "duas")) { DuaScheduler.schedule(c); return; }' in read(HOME / "tilawah/DuaReceiver.java")
       and 'if (PartsHome.off(c, "tasks")) { ReminderScheduler.schedule(c); return; }' in read(HOME / "ReminderReceiver.java"))
 hand = read(HOME / "setup/SaverHandoff.java")
 check("the owner: «شاشة التوقف» off gives the TV its own screensaver (the one the setup kept); on gives ours back only after our own hand-off",
