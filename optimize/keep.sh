@@ -93,7 +93,7 @@ if [ -n "$still" ]; then
   fi
   kept=$(grep -Fxvf <(printf '%s\n' "${ours:-}") <<< "$still" || true)
   # not a failure: the TV's own (a TCL outside Alexa's regions ships com.tcl.smartalexa off and refuses pm enable for it)
-  [ -z "$kept" ] || echo "   the TV's own, not a failure: off before UrTV, and this TV does not let it be turned on (pm enable refused): $(paste -sd' ' - <<< "$kept")"
+  [ -z "$kept" ] || echo "   left off by the TV itself (the TV's own, not a failure): off before UrTV, and this TV does not let it be turned on (pm enable refused): $(paste -sd' ' - <<< "$kept")"
   if [ -n "$ours" ]; then echo "!! still off, tell the person: $(paste -sd' ' - <<< "$ours")"; exit 1; fi
 fi
 echo "Protected features: all on."
