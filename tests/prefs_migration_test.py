@@ -65,7 +65,7 @@ check("4.4 reads each with the type 4.3.6 wrote", not typed, typed)
 check("4.4 adds no remove of a key 4.3.6 wrote (an update must not drop a setting)", not removed, removed)
 un = (ROOT / "android/launcher/src/main/java/sa/urtv/home/UpdateNotice.java").read_text(encoding="utf-8")
 nw = un.split("private static int newest(Context c) {")[1].split("\n    }\n")[0] if "private static int newest(Context c) {" in un else ""
-check("the update notice's 4.3 read counts for its channel until 4.4's first read", 'sp.contains("newest_" + ch)' in nw
-      and 'ch.equals(sp.getString("channel", "")) ? sp.getInt("newest", 0) : 0' in nw)
+check("the update notice's 4.3 read counts for its channel until 4.4's first read", 'sp.contains("newest_" + channel(c))' in nw
+      and 'channel(c).equals(sp.getString("channel", "")) ? sp.getInt("newest", 0) : 0' in nw and nw.index('getInt("newest_"') < nw.index('getInt("newest", 0)'))
 print("failed" if failed else "ok")
 raise SystemExit(1 if failed else 0)

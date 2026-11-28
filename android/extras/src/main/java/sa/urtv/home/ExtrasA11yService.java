@@ -295,7 +295,8 @@ public class ExtrasA11yService extends AccessibilityService {
 
     static void setKeyFilter(Context c, boolean on) {
         c.getSharedPreferences("extras", MODE_PRIVATE).edit().putBoolean(ExtrasWords.KEY_FILTER, on).apply();
-        Log.i("UrTVWatch", on ? "key filter on" : "key filter off");
+        if (on) Log.i("UrTVWatch", "key filter on");
+        else Log.i("UrTVWatch", "key filter off");
         ExtrasA11yService s = running;
         if (s != null) s.main.post(s::filterKeys);
     }

@@ -38,10 +38,10 @@ final class UpdateNotice {
 
     private static int newest(Context c) {
         android.content.SharedPreferences sp = c.getSharedPreferences(PREFS, Context.MODE_PRIVATE);
-        String ch = channel(c);
-        if (sp.contains("newest_" + ch)) return sp.getInt("newest_" + ch, 0);
-        // R-411: 4.3 kept one read as "newest" + "channel"; after the update to 4.4 that read counts for its own channel until the first 4.4 read (up to 12 h later)
-        return ch.equals(sp.getString("channel", "")) ? sp.getInt("newest", 0) : 0;
+        int n = sp.getInt("newest_" + channel(c), 0);
+        if (n != 0 || sp.contains("newest_" + channel(c))) return n;
+        // R-411: 4.3 kept one read as "newest" + "channel"; after the update that read counts, on its own channel only, until 4.4's first read (up to 12 h later)
+        return channel(c).equals(sp.getString("channel", "")) ? sp.getInt("newest", 0) : 0;
     }
 
     /** R-288: the last read found no add-on file in this channel's release (a 404): the add-on is then never «behind» */

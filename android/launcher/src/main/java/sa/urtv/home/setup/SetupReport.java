@@ -249,9 +249,9 @@ final class SetupReport {
         String opens = homeKeyOpens();
         out.add("Home: " + opens);
         out.add(homeHow());
+        if (installed != null && installed.contains(RescuePlan.LAUNCHERX)) out.add(googleTvLine(watchBound));
         String wizard = WizardHome.reportLine(opens, Boolean.TRUE.equals(homeCatch()));   // R-409: the wizard keeps Home: how it works here, in plain words
         if (wizard != null) out.add(wizard);
-        if (installed != null && installed.contains(RescuePlan.LAUNCHERX)) out.add(googleTvLine(watchBound));
         String saver = tv.tail1("settings get secure screensaver_components").trim();
         out.add("Screensaver: " + (saver.matches("[A-Za-z0-9_.$/,]+") ? saver : "?"));
         out.add("WebView: " + SetupEngine.webviewLine(tv.text("dumpsys webviewupdate")));   // 4.3.5: package and version (a TV without one: none)

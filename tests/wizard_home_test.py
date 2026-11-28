@@ -23,7 +23,8 @@ check("the host turns the add-on's Home key catch on", 'Extras.homeKey(app, "on"
 check("the engine remembers what the Home key opened, and asks WizardHome", "homeKeyFront = front;" in eng and "WizardHome.holds(homeKeyFront," in eng)
 wh = eng.split("Result wizardHome(boolean catchOn) {")[1].split("\n    }\n")[0]
 check("the result: DONE with the catch on, the plain words either way, the report's word kept", "store.put(WizardHome.FILE" in wh and "Status.DONE" in wh and "out.line(said);" in wh)
-check("the report adds its line after «Home:»", "WizardHome.reportLine(opens, Boolean.TRUE.equals(homeCatch()))" in rep and rep.index('out.add("Home: " + opens);') < rep.index("WizardHome.reportLine("))
+check("the report adds its line after «Home:» and the Google TV line", "WizardHome.reportLine(opens, Boolean.TRUE.equals(homeCatch()))" in rep
+      and rep.index('out.add("Home: " + opens);') < rep.index("out.add(googleTvLine(watchBound));") < rep.index("WizardHome.reportLine("))
 check("the wizard is never turned off for this (KEEP_STOCK_ON stays)", "static boolean KEEP_STOCK_ON = true;" in eng and "disable" not in wh)
 
 if not shutil.which("javac"):
