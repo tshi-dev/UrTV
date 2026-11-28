@@ -213,7 +213,11 @@ def music(a):
         for i, n in enumerate(STATIONS):
             print(f"{i}  {n}")
     elif a[:1] == ["status"]:
-        print("source=radio" if st("playing") == "1" else "source=none")
+        if st("playing") == "1":   # the real status line: «playing=1|source=radio|station=N|station_name=…»; FAKE_RADIO_OFFSET: the app plays another row than the focused one (emulator run 19)
+            n = min(len(STATIONS) - 1, int(st("focus", "0") or 0) + int(os.environ.get("FAKE_RADIO_OFFSET", "0")))
+            print(f"playing=1|source=radio|station={n}|station_name={STATIONS[n]}|foreground=1")
+        else:
+            print("playing=0|source=none|station=-1|station_name=")
     elif a[:2] == ["adhan", "state"]:   # the state words set the general sound or silence: a prayer's own recording is lost (as the real PRAYER_STATE does)
         sound = a[3] in ("both", "sound")
         d[a[2]] = ["" if sound else "silent", "on" if a[3] in ("both", "screen") else "off"]

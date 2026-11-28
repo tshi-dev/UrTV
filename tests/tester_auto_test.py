@@ -176,6 +176,13 @@ check("the round puts back, exactly as the TV kept them (the fake prints what th
       st2.get("layout") == "couch" and st2.get("card") == "matches" and st2.get("sstyle") == "tvos"
       and st2.get("adhan_tokens") == "fajr=silent/on,dhuhr=v7/off,asr=silent/off,maghrib=own/on,isha=/on"
       and ["tv wm size 1600x900; wm density 280"] == last("tv wm size 1"), (st2.get("layout"), st2.get("card"), st2.get("sstyle"), st2.get("adhan_tokens"), last("tv wm size 1")))
+ONLY_RADIO = ("--skip", "layouts,reach,settings,saver,display,font,adhan,games,health")
+rr0, outr0, _ = run(args=ONLY_RADIO)
+rr1, outr1, _ = run({"FAKE_RADIO_OFFSET": "1"}, args=ONLY_RADIO)
+sr0 = (outr0 / "steps.tsv").read_text(encoding="utf-8") if (outr0 / "steps.tsv").exists() else ""
+sr1 = (outr1 / "steps.tsv").read_text(encoding="utf-8") if (outr1 / "steps.tsv").exists() else ""
+check("radio: a station the app plays is the station of the row that had OK (the name in the status line); the app playing another row (run 19: two rows below) is a FAIL that names both",
+      "radio-0\tPASS" in sr0 and "radio-0\tFAIL" not in sr0 and "radio-0\tFAIL" in sr1 and "played" in sr1, (sr0[:300], sr1[:400]))
 r3, out3, cmds3 = run({"FAKE_STYLE_START": ""})
 steps3 = (out3 / "steps.tsv").read_text(encoding="utf-8") if (out3 / "steps.tsv").exists() else ""
 check("a build whose `saver.sh show` does not say the settings style gets no style walk (SKIP, said), so nothing is left in the last style",

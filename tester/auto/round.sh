@@ -311,6 +311,7 @@ if want radio; then
       nap 1
       focus_walk "$sname" KEYCODE_DPAD_DOWN 30 || break
       found=1
+      nap 1; dump "$OUT/raw/focus.xml"; at=$($LIB focused "$OUT/raw/focus.xml")   # the row that has the focus the moment OK is pressed (run 19: «OK» on one row played the station two rows below)
       tv "dumpsys audio" 2> /dev/null | tr -d '\r' > "$OUT/raw/audio-$name-before.txt"
       key KEYCODE_DPAD_CENTER
       nap "$STATION_S"
@@ -332,7 +333,9 @@ if want radio; then
     fi
     shot "$name"
     was=$($LIB muted "$OUT/raw/audio-$name-before.txt"); is=$($LIB muted "$OUT/raw/audio-$name-after.txt")
-    if grep -q 'source=radio' "$OUT/raw/$name-status.txt" && [ "$was$is" != nono ] && [ "$was" = "$is" ]; then step "$name" PASS "$sname: playing, the mute unchanged ($is)"
+    played=$(sed -n 's/.*station_name=\([^|]*\).*/\1/p' "$OUT/raw/$name-status.txt" | head -n 1)   # the station the app says it plays (empty on an old build: not judged)
+    if grep -q 'source=radio' "$OUT/raw/$name-status.txt" && [ -n "$played" ] && [ "$played" != "$sname" ]; then step "$name" FAIL "OK on the row «$sname» played «$played» (the focus was on «$at» when OK was pressed; shots/$name.png, raw/$name-status.txt)"
+    elif grep -q 'source=radio' "$OUT/raw/$name-status.txt" && [ "$was$is" != nono ] && [ "$was" = "$is" ]; then step "$name" PASS "$sname: playing, the mute unchanged ($is)"
     elif ! grep -q 'source=radio' "$OUT/raw/$name-status.txt"; then step "$name" FAIL "$sname: not playing after ${STATION_S} s${other:+ (another app was in front: $other)} (see raw/$name.log)"
     elif [ "$was" != "$is" ]; then step "$name" FAIL "$sname: the mute changed from $was to $is (raw/$name.log says who)"
     else step "$name" PASS "$sname: playing"; fi
