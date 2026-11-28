@@ -762,11 +762,11 @@
   #fb-wx{inset-inline-start:calc(var(--u)*1418);width:calc(var(--u)*382)}
   .fbc{height:100%;background:var(--fbg);border:1px solid var(--fln);border-radius:calc(var(--u)*28);box-shadow:inset 0 1px 0 var(--fhl),0 20px 50px rgba(0,0,0,.18);
     padding:calc(var(--u)*24);overflow:hidden;transition:box-shadow .15s ease-out}
-  /* the audit (H11): the focused widget grows a little with a deeper shadow, no ring (the owner: the focus is the size and a shadow); the full-screen
-     page leaves room round each widget, so nothing is cut */
-  .fbw .fbc{transition:box-shadow .15s ease-out,transform .2s cubic-bezier(.2,.8,.2,1)}
-  .fbw.f .fbc{transform:scale(1.03);box-shadow:inset 0 1px 0 var(--fhl),0 24px 48px rgba(0,0,0,.45)}
-  html.lowram .fbw.f .fbc{transform:none}
+  /* 4.4 beta 4 (a user: the card looked smaller with the focus): the owner's focus is the size and a shadow, no ring; an inset ring took 3 units
+     off every side of the focused card. A 3 % scale fits the 24-unit gaps between the widgets */
+  .fbc{transition:box-shadow .15s ease-out,transform .2s cubic-bezier(.2,.8,.2,1)}
+  .fbw.f .fbc{transform:scale(1.03);box-shadow:inset 0 1px 0 var(--fhl),0 22px 44px rgba(0,0,0,.42)}
+  html.lowram .fbc{transition:none}
   #fb svg{width:1em;height:1em;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
   .fg{display:inline-flex;font-size:calc(var(--u)*26)}
   .fnone{display:flex;height:100%;align-items:center;justify-content:center;color:var(--fs);text-align:center}
@@ -1514,6 +1514,16 @@ function hijriAt(d){
 // the same for a date held as UTC noon of a day
 const hijriUtc = d => CONFIG.hijri ? new Date(d.getTime() + CONFIG.hijri*86400000) : d;
 
+// 4.4 beta 4 (a user: a wrong Gregorian year on the screensaver): the app compares the TV's clock with the network's (ClockCheck); when it is far
+// off, the date line says so instead of a date that is wrong. Nothing changes while it is right or not known (no app, no network yet).
+const CLOCK_OFF = 'ساعة التلفزيون غير مضبوطة';
+function clockOff(){ try{ return !!(window.UrtvNative && window.UrtvNative.clockOff && String(window.UrtvNative.clockOff()) === '1'); }catch(e){ return false; } }
+function clockOffLine(){
+  const off = clockOff();
+  document.documentElement.classList.toggle('clockoff', off);
+  if(off) setText(document.getElementById('greg'), CLOCK_OFF);
+  return off;
+}
 function tickDates(){
   const now = new Date();
   document.documentElement.classList.toggle('nohijri', !!CONFIG.noHijri);
@@ -1551,6 +1561,7 @@ function tickDates(){
     setText(document.getElementById('hijri'), wd + n('islamic-umalqura', hijriAt(now)) + ' هـ');
     setText(document.getElementById('greg'), wd + n('gregory', now));
   }catch(e){}
+  clockOffLine();   // last: over whichever date was written
 }
 
 const PRAYER_KEYS = ['Fajr','Dhuhr','Asr','Maghrib','Isha'];
@@ -1733,7 +1744,10 @@ async function loadPrayers(){
   const url = `https://api.aladhan.com/v1/timings/${want}`
             + `?latitude=${CONFIG.latitude}&longitude=${CONFIG.longitude}`
             + `&method=${CONFIG.prayerMethod}&latitudeAdjustmentMethod=3&timezonestring=${encodeURIComponent(CONFIG.timezone)}`;
-  const PT = 'ptimes:' + CONFIG.latitude + ',' + CONFIG.longitude + ',' + CONFIG.prayerMethod;   // today's answer, kept: the next start shows the same minutes, not the computed ones
+  // today's answer, kept: the next start shows the same minutes, not the computed ones. 4.4 beta 4 (Maghrib about 2 h off for a place of one's
+  // own in another zone): Aladhan writes the times in the zone it was asked for, so the zone is in the key; a place whose zone was corrected
+  // (or saved before it had one) never takes the times of its old zone.
+  const PT = 'ptimes:' + CONFIG.latitude + ',' + CONFIG.longitude + ',' + CONFIG.prayerMethod + ',' + CONFIG.timezone;
   if(!PRAYERS.length) try{
     let kept = null; try{ kept = JSON.parse(localStorage.getItem(PT) || 'null'); }catch(_){}
     if(kept && kept.d === want){ buildPrayers(kept.t); PRAYERS_DAY = want + '|api'; } else { buildPrayers(computePrayers()); PRAYERS_DAY = want + '|calc'; }   // else computed: not «—»
@@ -2115,6 +2129,10 @@ const saveTeamData = () => { try{ const k = o => Object.fromEntries(CONFIG.teamI
   localStorage.setItem('teamData', JSON.stringify({at: Date.now(), m: k(MATCHES), r: k(RESULTS), n: k(NEXT_LIST)})); }catch(e){} };
 let MATCH_RETRIED = false;
 let MATCH_OK_AT = 0, MATCH_FAIL_AT = 0;   // when a refresh last answered, and when the last one got no answer at all (0 = never)
+// 4.4 beta 4 (a user: «تعذّر التحديث» on the screensaver, then the data came): a first load that gets no answer is asked again soon, and the
+// card keeps «جارٍ التحميل…» until that retry also failed (FIRST_FAILS_SHOWN tries in all); a TV just woken often has no network for some seconds
+const FIRST_FAILS_SHOWN = 2, firstRetryMs = n => n < FIRST_FAILS_SHOWN ? Math.min(15000, CONFIG.retryMs) : CONFIG.retryMs;
+let MATCH_FAILS = 0, WEEK_FAILS = 0;   // the first load's tries that got no answer (back to 0 once one answers)
 try{ MATCH_OK_AT = +localStorage.getItem(LS.matches) || 0; }catch(e){}
 
 // ---------- politeness: one request at a time, a pause between, one run of a loader at a time, a per-TV offset ----------
@@ -2726,7 +2744,7 @@ function packPages(slots, per){
 }
 // loading, failed and empty are three different things
 function matchesEmptyText(card){
-  return MATCHES_LOADED ? (todayOnly(card) ? 'لا مباريات اليوم' : 'لا مباريات هذا الأسبوع') : MATCH_FAIL_AT ? 'تعذّر التحديث' : 'جارٍ التحميل…';
+  return MATCHES_LOADED ? (todayOnly(card) ? 'لا مباريات اليوم' : 'لا مباريات هذا الأسبوع') : MATCH_FAIL_AT && MATCH_FAILS >= FIRST_FAILS_SHOWN ? 'تعذّر التحديث' : 'جارٍ التحميل…';
 }
 // #mtoday=1: the matches card only (not the slot, smart or today)
 const todayOnly = card => !!(CONFIG.matchesToday && card && card.kind === 'matches');
@@ -2897,11 +2915,11 @@ const loadMatches = guarded('matches', async function(){
   try{ localStorage.setItem('archTeams', JSON.stringify(Object.fromEntries(CONFIG.teamIds.filter(i => ARCH_T[i]).map(i => [i, ARCH_T[i]])))); }catch(e){}
   if(!answered && (CONFIG.teamIds.length || CONFIG.leagues.length)){   // no answer: keep what is shown, and say so when there is nothing else
     MATCH_FAIL_AT = Date.now();
-    if(!MATCHES_LOADED) setTimeout(loadMatches, CONFIG.retryMs);   // a first load that failed tries again soon, then the normal period
+    if(!MATCHES_LOADED) setTimeout(loadMatches, firstRetryMs(++MATCH_FAILS));   // a first load that failed tries again soon, then the normal period
     renderMatches(); renderPanel(false, 'matches'); renderSlot();
     return;
   }
-  MATCHES_LOADED = true; MATCH_OK_AT = Date.now(); MATCH_FAIL_AT = 0; saveTeamData();
+  MATCHES_LOADED = true; MATCH_OK_AT = Date.now(); MATCH_FAIL_AT = 0; MATCH_FAILS = 0; saveTeamData();
   try{ localStorage.setItem(LS.matches, String(MATCH_OK_AT)); }catch(e){}
   renderMatches();
   renderPanel(false, 'matches');
@@ -3225,7 +3243,17 @@ function staleMark(v){
 }
 
 // One tick for the markets line and the stocks card
-const WITH_LINE = !CONFIG.widget && (CONFIG.mkBar || CONFIG.slot === 'markets');   // no line in the launcher's page; hidden = no requests (unless the slot shows them)
+let WITH_LINE = !CONFIG.widget && (CONFIG.mkBar || CONFIG.slot === 'markets');   // no line in the launcher's page; hidden = no requests (unless the slot shows them)
+// 4.4 beta 4 (a user: «شريط الأسواق» turned off, the screensaver on the screen kept it): the app pushes the change into the running page
+// (ScreenDream, PagePush) instead of waiting for the next start: the line hides or shows, and its requests stop or start with it. true: done here.
+window.urtvMkBar = on => {
+  CONFIG.mkBar = !!on;
+  WITH_LINE = !CONFIG.widget && (CONFIG.mkBar || CONFIG.slot === 'markets');
+  const mk = document.querySelector('.mk'); if(mk) mk.hidden = !CONFIG.mkBar;
+  const up = document.getElementById('mk-up'); if(up && !CONFIG.mkBar) up.hidden = true;
+  if(CONFIG.mkBar) try{ Promise.resolve(loadMarkets()).catch(() => {}); }catch(e){}   // its prices now (a run under way is not doubled: guarded)
+  return true;
+};
 const loadMarkets = guarded('markets', async function(){
   const jobs = new Map();   // Yahoo symbol -> {key, cg, intra, tk: its markets, sk: its stocks}
   const job = (key, cg, intra) => {
@@ -3319,13 +3347,13 @@ const loadWeek = guarded('week', async function(){
   const whole = answered > 0 && failed === 0;
   if(!whole && !(answered > 0 && !WEEK_POOL.length && out.length)){
     WEEK_FAIL_AT = Date.now();
-    if(!WEEK_OK_AT) setTimeout(loadWeek, CONFIG.retryMs);   // a first load that failed tries again soon
+    if(!WEEK_OK_AT) setTimeout(loadWeek, firstRetryMs(++WEEK_FAILS));   // a first load that failed tries again soon
     renderPanel(false, 'shows');
     return;
   }
   WEEK_POOL = out.sort((a,b)=> (b.picked - a.picked) || (b.prem - a.prem) || a.date.localeCompare(b.date)).slice(0, 50);
   CARDS.forEach(c => { if(c.kind === 'shows') c.page = 0; });
-  WEEK_OK_AT = Date.now(); WEEK_FAIL_AT = 0;
+  WEEK_OK_AT = Date.now(); WEEK_FAIL_AT = 0; WEEK_FAILS = 0;
   WEEK_LOADED = true;
   renderPanel(false, 'shows');
 });
@@ -3338,7 +3366,7 @@ let WEEK_POOL = [], WEEK_LOADED = false;
 function renderWeekPage(card, animate){
   const ul = card.ul;
   if(!WEEK_POOL.length){
-    if(!WEEK_LOADED && !WEEK_FAIL_AT) return;   // the saved list stays until the first answer
+    if(!WEEK_LOADED && (!WEEK_FAIL_AT || WEEK_FAILS < FIRST_FAILS_SHOWN)) return;   // the saved list (or «جارٍ التحميل…») stays until the first answer or a failed retry
     if(!WEEK_LOADED && ul.firstElementChild && !ul.firstElementChild.classList.contains('empty')) return;
     ul.classList.remove('flip');
     setHTML(ul, `<li class="empty">${WEEK_LOADED ? 'لا جديد هذا الأسبوع' : 'تعذّر التحديث'}</li>`);
@@ -4592,6 +4620,34 @@ function photoSet(n){
 // fails gives way to the next of theirs; none loads, or none in time
 // it when they arrive).
 const OWN_WAIT_MS = 6000;
+// 4.4 beta 4 (photos stayed black on some Google TVs): a photo that does not load is said in the app's log (UrtvNative.photoError: what failed
+// and the file's name only, never an address or a path; a browser: the console), so a report shows why; nothing else changes.
+function photoLog(what, url){
+  const name = String(url || '').split(/[?#]/)[0].split('/').pop().slice(0, 60);
+  try{ if(window.UrtvNative && window.UrtvNative.photoError) window.UrtvNative.photoError(String(what), name); else console.warn('photo: ' + what + ' ' + name); }catch(e){}
+}
+// and when, this long after the start, no photo is on the screen or the one there does not load (every load failed, or the rotation threw),
+// a bundled one that loads is shown, and that is said
+const PHOTO_GUARD_MS = 8000;
+function photoGuard(){
+  if(CONFIG.widget) return;   // the launcher's card: no photo of its own
+  const bundled = k => {
+    if(k >= BGS.length){ photoLog('bundled', ''); return; }
+    const b = BGS[k], img = new Image();
+    img.onload = () => showBackground(b.u, b);
+    img.onerror = () => bundled(k + 1);
+    img.src = b.u;
+  };
+  setTimeout(() => {
+    const ph = document.querySelector('.photo');
+    if(!ph || !BGS.length) return;
+    const m = /url\(["']?(.*?)["']?\)/.exec(ph.style.backgroundImage || ''), cur = m && m[1];
+    if(!cur){ photoLog('none', ''); bundled(0); return; }
+    const img = new Image();
+    img.onerror = () => { photoLog('shown', cur); if(ph.style.backgroundImage.indexOf(cur) >= 0) bundled(0); };
+    img.src = cur;
+  }, PHOTO_GUARD_MS);
+}
 let BG_SLOT = -1, PREFETCHED = false, BG_TURN = 0;
 function showOwn(pick, own, local){
   const at = own.indexOf(pick), order = own.slice(at).concat(own.slice(0, at)), turn = ++BG_TURN;
@@ -4601,7 +4657,7 @@ function showOwn(pick, own, local){
     if(i >= order.length){ clearTimeout(t); bundled(); return; }
     const img = new Image();
     img.onload = () => { clearTimeout(t); if(turn === BG_TURN) showBackground(order[i].url, order[i].b); };
-    img.onerror = () => next(i + 1);
+    img.onerror = () => { photoLog('own', order[i].url); next(i + 1); };
     img.src = order[i].url;
   };
   next(0);
@@ -4635,11 +4691,11 @@ function applyBackground(force){
     const t = setTimeout(fallback, 1200);
     const img = new Image();
     img.onload = () => { done = true; clearTimeout(t); showBackground(url, b); };
-    img.onerror = () => { clearTimeout(t); fallback(); done = true; };
+    img.onerror = () => { photoLog('hosted', url); clearTimeout(t); fallback(); done = true; };
     img.src = url;
     // fetch the rest of the set once, quietly, so the app has each one on disk before its turn
     if(!PREFETCHED && set.length){ PREFETCHED = true; setTimeout(() => set.forEach(x => { new Image().src = PHOTO_BASE + x.f; }), 20000); }
-  } catch(e) {}
+  } catch(e) { photoLog('error', (e && e.name) || ''); }   // 4.4 beta 4: was silent (a black screen with no word in the log)
 }
 
 // Last painted panels, shown at once on the next start while fresh data loads.
@@ -5871,6 +5927,7 @@ function boot(){
   }
   document.title = 'شاشة تلفزيونك';
   applyBackground(true);
+  photoGuard();   // 4.4 beta 4: no photo, or one that does not load, 8 s on: a bundled one
   loadPhotoIndex().then(() => applyBackground(true));
   setInterval(() => applyBackground(false), (CONFIG.photoMinutes < 1 ? 5 : 60)*1000);   // 30 s photos: looked at every 5 s
   tickClock(); tickDates(); tickOccasion(); renderSlot();

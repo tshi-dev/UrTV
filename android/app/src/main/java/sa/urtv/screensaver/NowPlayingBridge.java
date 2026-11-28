@@ -248,6 +248,29 @@ final class NowPlayingBridge {
         } catch (RuntimeException ignored) { }
     }
 
+    /** 4.4 beta 4: "1" when the TV's clock is far from the network's (ClockCheck), "0" when it is right, "" while it is not known: the page then says «ساعة التلفزيون غير مضبوطة» instead of a date */
+    @JavascriptInterface
+    public String clockOff() {
+        int s = ClockCheck.state();
+        return s < 0 ? "" : String.valueOf(s);
+    }
+
+    private static volatile long photoLoggedAt;
+    private static volatile int photoLogged;
+
+    /**
+     * 4.4 beta 4 (photos stayed black on some Google TVs): the page says a photo did not load. One line under UrTVSaver: what failed (hosted, own,
+     * bundled, shown, none, error) and the file's name only; at most 20 lines in 10 minutes, so a page that fails every minute does not fill the log.
+     */
+    @JavascriptInterface
+    public void photoError(String what, String name) {
+        long now = android.os.SystemClock.elapsedRealtime();
+        if (now - photoLoggedAt > 600_000L) { photoLoggedAt = now; photoLogged = 0; }
+        if (++photoLogged > 20) return;
+        String w = what == null ? "" : what.replaceAll("[^a-z]", ""), n = name == null ? "" : name.replaceAll("[^A-Za-z0-9._-]", "");
+        android.util.Log.w("UrTVSaver", "photo: " + (w.length() > 12 ? w.substring(0, 12) : w) + " did not load" + (n.isEmpty() ? "" : " (" + (n.length() > 60 ? n.substring(0, 60) : n) + ")"));
+    }
+
     /** «تم» on the card: that task is done (a repeating reminder moves to its next time) */
     @JavascriptInterface
     public void reminderDone(long id) { new Prefs(app).doneTaskId(id); }

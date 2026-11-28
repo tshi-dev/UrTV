@@ -24,7 +24,7 @@ check("a surah goes to ExoPlayer (the adhan stays on MediaPlayer), MediaPlayer w
       and "if (radio || surah) {" in pb and "getConstructor(Context.class, boolean.class).newInstance(c, radio)" in pb and "return new Platform();" in pb)
 check("the old one-argument constructor stays (a live station)", "public ExoPlayback(Context c) { this(c, true); }" in exo and "public ExoPlayback(Context c, boolean live) {" in exo)
 check("a file's buffer: 60 s kept, up to 240 s read ahead, playing after 2.5 s, 5 s after a gap; time over size",
-      "FILE_MIN_BUFFER_MS = 60_000, FILE_MAX_BUFFER_MS = 240_000, FILE_START_MS = 2_500, FILE_RESTART_MS = 5_000" in exo
+      "FILE_MIN_BUFFER_MS = 120_000, FILE_MAX_BUFFER_MS = 300_000, FILE_START_MS = 5_000, FILE_RESTART_MS = 10_000" in exo   # 4.4 beta 4: bigger (tests/surah_buffer_test.py)
       and "setBufferDurationsMs(FILE_MIN_BUFFER_MS, FILE_MAX_BUFFER_MS, FILE_START_MS, FILE_RESTART_MS)" in exo and ".setPrioritizeTimeOverSizeThresholds(true)" in exo)
 check("a dropped read is retried 12 times (Media3 resumes it from its byte: a Range request)", "FILE_RETRIES = 12" in exo and "new DefaultLoadErrorHandlingPolicy(live ? RETRIES : FILE_RETRIES)" in exo)
 check("an MP3 with no seek table can still be sought («متابعة» goes on from its place)", "setConstantBitrateSeekingEnabled(true).setConstantBitrateSeekingAlwaysEnabled(true)" in exo)

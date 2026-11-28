@@ -13,13 +13,17 @@ python3 tests/hadith_number_test.py   # Sahih Muslim: the standard number, never
 python3 tests/prayer_math_test.py
 python3 tests/prayer_crosscheck_test.py
 python3 tests/prayer_crosscheck_world_test.py
+python3 tests/prayer_cache_zone_test.py   # 4.4 beta 4: the kept prayer times are the zone's
 python3 tests/hijri_crosscheck_test.py
 python3 tests/prayer_method_test.py
 python3 tests/place_choice_test.py
 python3 tests/prayer_adj_test.py
 python3 tests/hijri_offset_test.py
 python3 tests/saver_hijri_test.py
+python3 tests/clock_skew_test.py   # 4.4 beta 4: the TV clock against the network's
+python3 tests/photo_log_test.py   # 4.4 beta 4: photo load errors in the log, a bundled photo stands in
 python3 tests/upload_test.py
+python3 tests/photo_twin_test.py   # 4.4 beta 4: the same photo is kept once
 python3 tests/install_extras_test.py
 python3 tests/share_test.py
 python3 tests/install_versions_test.py
@@ -41,6 +45,7 @@ python3 tests/step52_test.py   # the tester's step 52 findings in the source: th
 python3 tests/party_games_test.py   # «واحد مو معنا» and «بدون كلام / وصّف»: the rules on a plain JVM, the bundled word files
 python3 tests/ram_tier_test.py   # the three memory tiers (LOW under 2000 MB, MID under 2600, NORMAL), one rule per app, the test switch
 python3 tests/lite_auto_test.py   # 4.4 beta 3: «الوضع الخفيف» تلقائي also from what this TV shows (memory low in front, a slow first frame, a low-memory kill): said once, never on the UI thread
+python3 tests/cpu_class_test.py   # 4.4 beta 4: the processor's class turns lite mode on
 python3 tests/matches_today_test.py   # «بطاقة المباريات لليوم فقط» (PR #65): the setting from the command to the page
 python3 tests/scene_blank_test.py   # 4.4 beta 4: no scene draws: logged, and the wall photos instead of a black home
 python3 tests/scene_home_test.py   # 4.3.3 «المشاهد»: the scene rules per tier on a JVM, the Saudi pack's files and sizes, the Couch TV download checks, the wiring
@@ -157,6 +162,7 @@ python3 tests/ledger_keep_test.py
 python3 tests/side_cards_clean_test.py
 python3 tests/dua_usb_pick_test.py
 python3 tests/input_display_test.py
+python3 tests/input_once_test.py   # 4.4 beta 4: each socket once in «المصادر»
 python3 tests/tv_vendor_test.py   # «المصادر» on any TV: the live TV app and source picker found on the TV (TCL, CultraView, MediaTek…)
 python3 tests/dock_sleep_test.py
 python3 tests/find_tv_test.py
@@ -254,12 +260,14 @@ python3 tests/music_stations_test.py   # 4.4 beta 4: music.sh stations lists the
 python3 tests/station_status_test.py    # 4.4 radio: a station dead three checks in a row is hidden (stations/status.json)
 python3 tests/radio_week_test.py        # 4.4 radio: the stations' troubles of the last 7 days, kept and reported
 python3 tests/surah_recover_test.py      # 4.4: a surah through ExoPlayer (file buffer, Range resume), on from its place, no loop of prepares
+python3 tests/surah_buffer_test.py   # 4.4 beta 4: a surah's buffer (two hours over a weak link) and its MP3 decoder
 python3 tests/adhan_level_test.py        # 4.4 «مستوى صوت الأذان»: 0-100 or like the TV, per prayer; «كل الصلوات بصوت عدا الفجر»
 python3 tests/iqama_test.py             # 4.4 «الإقامة»: a sound and a notice at the iqama (off by default; never in kids mode over other apps)
 python3 tests/audio_upload_test.py      # 4.4 «صوتياتي»: one upload at a time, no lock held over a copy, the iqama on delete, the page's words
 python3 tests/surah_places_test.py      # 4.4 «تلاوة وأذان»: each surah its place, saved while it plays, the sleep timer and the adhan, the letters, the card
 python3 tests/dua_time_test.py         # 4.4 the duas after midnight, on a DST day, the Hijri shift; the adhan's previews
 python3 tests/focus_rule_test.py   # 4.3.3 G1: the player keeps on behind the screensaver and the TV's settings; another sound pauses it and it comes back
+python3 tests/dream_back_test.py   # 4.4 beta 4: a sound lost to the screensaver comes back when it ends
 python3 tests/surah_set_test.py   # 4.3.3: a reciter with «missing» surahs; the player steps over them
 python3 tests/audio_library_test.py   # 4.4 «صوتياتي»: sound files from a USB stick or the phone, kept in the app; the caps; the own adhan from them
 python3 tests/dua_test.py   # 4.4 «الأدعية والتذكيرات»: the rule (days, both calendars, prayer times), the alarm, playing like the adhan, the card
@@ -291,6 +299,7 @@ python3 tests/glass_clock_rule_test.py   # 4.4 beta 4: in «كنبة» the big g
 python3 tests/tasks_card_test.py
 python3 tests/reminders_test.py   # «المهام» with a time: the alarm, the cards, the keys, saver.sh, the phone's date and time (the page's card: reminder_page.test.mjs)
 python3 tests/now_playing_test.py
+python3 tests/now_card_close_test.py   # 4.4 beta 4: Back closes «يُتلى الآن», paused 10 minutes it hides
 python3 tests/digits_text_test.py
 python3 tests/page_stamp_test.py
 python3 tests/greeting_test.py
@@ -361,6 +370,8 @@ python3 tests/on_off_test.py   # on/off rows: the owner's choice I (green triang
 python3 tests/parental_text_test.py   # «الرقابة الأبوية»: the card and its two buttons, the count of locked apps (docs/UX-REVIEW.md)
 python3 tests/fav_bar_test.py   # the favourites bar: the tray, five tiles, the focus inside it, the one 40 px move (docs/PROPOSALS-NOV2.md §1)
 python3 tests/apps_look_test.py   # 4.4 «شكل التطبيقات»: بنرات / أيقونات / مربعات ملونة, centred, A and B with no tray and «تكبير وظل», nothing bundled
+python3 tests/card_focus_grid_test.py   # 4.4 beta 4: the widget focus and the all-apps grid
+python3 tests/banner_fit_test.py   # 4.4 beta 4: a banner of another shape is shown whole on its tile
 python3 tests/tvos_home_test.py   # 4.4 beta 2 the full look «tvOS»: the preset, the layout only through it, the row above the bar, CardFit per slot, the weak TV
 python3 tests/settings_tvos_test.py   # 4.4 beta 2 «شكل شاشة الإعدادات: tvOS»: the 4.3.2 logic in the tvOS manner, light on a weak TV
 python3 tests/glass_dock_test.py   # 4.5 «زجاجي»: the glass bar's size and rows, «كل التطبيقات» as glass, «تغيير الأيقونة»; R1, R3, the tvOS Launcher credit
@@ -391,6 +402,7 @@ python3 tests/i18n_test.py   # «اللغة»: the translation table, its comple
 python3 tests/ar_style_test.py   # docs/STYLE-AR.md: the Arabic wording check warns (never fails), the approved Saudi wording is in the app
 # English phase 1 (the screensaver app): its new tests go right under this line
 python3 tests/i18n_saver_test.py   # the settings in English (Words, WordMatch, Places), Arabic as it was, «اللغة» in «المزيد»
+python3 tests/text_scale_test.py   # 4.4 beta 4: the settings' words scaled to the screen (720p and 1080p)
 #
 # English phase 2 (the page): its new tests go right under this line
 python3 tests/i18n_page_test.py   # dist/tv-en.html: built beside tv.html (byte for byte), current, under budget; the app and the home card pick it
@@ -417,6 +429,9 @@ python3 tests/rescue_home_test.py   # 4.4 (R7): the rescue's fallback home: arme
 python3 tests/fragment_keep_test.py   # 4.3.2 (a user's adhan times and prayer card disappeared after 4.3.1): the home keeps the screensaver's last RE
 python3 tests/glow_mode_test.py   # «توهّج لون التطبيق» (4.3.1): the glow behind the focused app is OFF by default (new installs and old ones), ha
 python3 tests/home_snapshot_test.py   # The home's stand-in picture (HomeSnapshot): the rules pinned from the source: what the key is made of, the age
+python3 tests/snapshot_own_test.py   # 4.4 beta 4: the home's start picture is its own screen
+python3 tests/page_push_test.py   # 4.4 beta 4: the markets line change is pushed into the running page
+python3 tests/cover_wait_test.py   # 4.4 beta 4: the start picture gives way in 1.5 s, never into the next minute
 python3 tests/install_saver_test.py   # 4.3.2 «ثبّت الجزء الثاني»: a TV with only the home (a Fire TV, or installed with Downloader) must never meet a
 python3 tests/league_groups_test.py   # 4.3.1 «البطولات الكبرى» and «اختر دورياتك»: the big tournaments' list is one data file that resolves against t
 python3 tests/add_lag_test.py   # 4.4 beta 2: adding leagues and clubs never freezes (the search waits, folds once, ticks in place, off the UI thread)
@@ -435,6 +450,8 @@ python3 tests/step47_test.py   # The tester's step 47 findings (build 222, a rea
 python3 tests/tournaments_fixtures_test.py   # 4.3.1 the CI tool of «البطولات الكبرى» (.github/tools/tournaments_fixtures.py) with TheSportsDB mocked: three
 python3 tests/vector_drawables_test.py   # Every vector drawable's pathData must be one the Android Gradle plugin's own vector parser reads (the release
 python3 tests/wall_first_frame_test.py   # Hotfix 4.3: the home never shows black on the way back (a user's Mi Box on 4.3: the cards on black for a few s
+python3 tests/wall_turn_test.py   # 4.4 beta 4: the home's photo moves on by the timer only
+python3 tests/wall_keep_test.py   # 4.4 beta 4: the return puts the kept photo back before its first frame
 python3 tests/your_tv_hub_test.py   # «تلفزيونك» (YourTvHubActivity): what opening the app shows: four windows (the markets, the matches, the games,
 python3 tests/rescue_code_test.py   # the rescue app's Downloader code: the same on the setup page and in docs/RESCUE.md
 python3 tests/run_list_test.py   # every test file is run by this script (CI runs nothing else)
@@ -487,6 +504,11 @@ node tests/prayer_crosscheck_page.mjs
 node tests/prayer_crosscheck_world_page.mjs
 node tests/hijri_crosscheck_page.mjs
 node tests/page.test.mjs
+node tests/mkbar_push.test.mjs   # 4.4 beta 4: «شريط الأسواق» on or off reaches the running page
+node tests/clock_off.test.mjs   # 4.4 beta 4: a TV clock far off: «ساعة التلفزيون غير مضبوطة» instead of a wrong date
+node tests/photo_log.test.mjs   # 4.4 beta 4: a photo that does not load is said, and a bundled one that loads stands in
+node tests/lite_cpu.test.mjs   # 4.4 beta 4: «الوضع الخفيف» stays light (no animation, under 2 % main thread)
+node tests/fb_focus.test.mjs   # 4.4 beta 4: the football widgets' focus is a scale and a shadow
 node tests/pack_fallback.test.mjs   # 4.4 beta 3: a pack or «صوري» photo that does not load never leaves the screensaver black (a bundled photo shows)
 node tests/tafsir.test.mjs   # «التفسير الميسر» (#tafsir=1): every verse of the deck has its tafsir, whole, in pages of three lines at most, never «…»
 node tests/saver_designs.test.mjs   # 4.4 the screensaver's designs (the owner approved them): each shows what it should; a prayer's name and time never touch
@@ -524,6 +546,7 @@ python3 tests/saver_prayerfix_test.py   # 4.4 review: the late prayer correction
 python3 tests/saver_kids_keep_test.py   # 4.4 review: the kids copy keeps its last real answer (F3)
 #
 python3 tests/keep_settle_test.py   # R-380 protected features stay on across the restarts (keep.sh marks settle.sh, keep once more after the last restart)
+python3 tests/doctor_offer_test.py
 # 4.4 the PC-side setup fixes (R-363 to R-380): one test per fix
 python3 tests/share_decode_test.py   # R-363 share.py reads the TV as UTF-8 (Windows)
 python3 tests/sigpipe_test.py   # R-364 no exit 141 from an early reader in a pipefail pipeline

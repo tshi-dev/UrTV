@@ -44,6 +44,7 @@ public class SuggestedAppsActivity extends Activity {
         S.n("يوتيوب بلا إعلانات، مصمَّم للريموت"), S.n("متصفح إنترنت يشتغل بالريموت"), S.n("يشغّل الفيديو والصوت من ذاكرة USB ومن الشبكة"),
         S.n("متجر لتطبيقات التلفزيون المفتوحة المصدر، يثبّتها من صفحاتها على GitHub. تطبيق من طرف ثالث، ما جرّبناه بأنفسنا. التطبيقات اللي يثبّتها على مسؤوليتك."),
         S.n("مشغّل تلفزيونك للفيديو والقوائم، من إصدارات تلفزيونك نفسها"),
+        S.n("فحص تلفزيونك"), S.n("يفحص تلفزيونك ويقول لك وش فيه، مجاني"),   // 4.3.7: its name (the only Arabic one) and its line
     };
 
     private GlassStyle.Look look;
@@ -87,6 +88,7 @@ public class SuggestedAppsActivity extends Activity {
         for (SuggestedApps.App a : SuggestedApps.forTv(Build.VERSION.SDK_INT)) {
             // a MIRROR app (UrTV Player) gets a tile only once a release of it is really there: never a tile that cannot install
             if (a.kind == SuggestedApps.Kind.MIRROR && !SuggestedApps.mirrorShown(mirrorAnswer(a), System.currentTimeMillis())) continue;
+            if (a.kind == SuggestedApps.Kind.FLAG && !DoctorOfferStore.listed(this)) continue;   // 4.3.7 «فحص تلفزيونك»: only while urtv-data's flag is on
             shown.add(a);
         }
         for (int i = 0; i < shown.size(); i += 2) {
@@ -107,7 +109,7 @@ public class SuggestedAppsActivity extends Activity {
                 head.setLayoutDirection(Dir.layout());
                 head.setGravity(Gravity.CENTER_VERTICAL);
                 head.addView(iconFor(a), new LinearLayout.LayoutParams(dp(36), dp(36)));
-                TextView name = text(a.name, 20, "Medium", look.text);
+                TextView name = text(S.tv(a.name), 20, "Medium", look.text);
                 LinearLayout.LayoutParams np = new LinearLayout.LayoutParams(0, -2, 1f);
                 np.setMarginStart(dp(12));
                 head.addView(name, np);
@@ -151,6 +153,12 @@ public class SuggestedAppsActivity extends Activity {
     private void act(SuggestedApps.App a) {
         boolean update = a == SuggestedApps.PLAYER_APP && installed(a.pkg) && MirrorInstall.known(this) != null;   // installed over, its data kept
         if (installed(a.pkg) && !update) { open(a.pkg); return; }
+        if (a.kind == SuggestedApps.Kind.FLAG) {   // 4.3.7: nothing is installed by us: Downloader's code, on the tile
+            String code = DoctorOfferStore.listedCode(this);
+            TextView t = buttons.get(a.id);
+            if (t != null && !code.isEmpty()) t.setText(S.t("افتح Downloader واكتب الرمز") + " " + code);
+            return;
+        }
         if (a.kind == SuggestedApps.Kind.STORE) { store(a.pkg); return; }
         if (busy) return;
         busy = true;

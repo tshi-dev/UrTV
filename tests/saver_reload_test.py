@@ -34,6 +34,8 @@ for name, src, flag in (("the dream", dream, "attached"), ("the preview", previe
     handler = src.split("onReceive(Context c, Intent i) {")[1].split("\n        }\n")[0]
     # 4.4 review F1: the receiver hands over to rebuildIfChanged (a change during the async start is kept and looked at once the page exists)
     rebuild = (src.split("private void rebuildIfChanged(Context c) {")[1] if "private void rebuildIfChanged(Context c) {" in src else src.split("private void rebuild() {")[1]).split("\n    }\n")[0]
+    if "private void rebuild() {" in src and "rebuild();" in rebuild:   # 4.4 beta 4 (PagePush): rebuildIfChanged hands a change the page cannot take to rebuild()
+        rebuild += src.split("private void rebuild() {")[1].split("\n    }\n")[0]
     check(f"{name} throws the old page away and builds a new one, only while it is up",
           f"if (!{flag}" in (handler + rebuild) and "web == null) return;" in rebuild and "ScreenView.release(old)" in rebuild and "show(" in rebuild
           and rebuild.index("ScreenView.release(old)") < rebuild.index("show("), rebuild)

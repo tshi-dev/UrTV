@@ -102,6 +102,8 @@
         <package android:name="sa.urtv.extras" />
         <!-- 4.3 «شاهد المباراة»: UrTV Player (its certificate is checked before it is told a game) -->
         <package android:name="com.urtv.player" />
+        <!-- 4.3.7 «فحص تلفزيونك»: whether the diagnostic app is installed (the offer after an update is never made when it is) -->
+        <package android:name="sa.urtv.doctor" />
         <!-- «صفحته في المتجر» only when the Play Store is on the TV -->
         <package android:name="com.android.vending" />
         <!-- the Settings key's SystemUI handler: whether it resolves (SettingsKey.NOTIFICATION_PANEL_ACTION, a Haier MatrixTV has none) -->

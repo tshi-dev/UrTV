@@ -9,7 +9,11 @@ public final class SuggestedAppsRun {
     public static void main(String[] x) {
         SuggestedApps.App tube = SuggestedApps.byId("smarttube"), vlc = SuggestedApps.byId("vlc");
         check("no Lumen and no pinned third-party file: GitHub releases, Play Store pages, and our own mirrored Player only", SuggestedApps.byId("lumen") == null
-            && SuggestedApps.Kind.values().length == 3 && SuggestedApps.Kind.valueOf("MIRROR") != null && java.util.Arrays.stream(SuggestedApps.ALL).noneMatch(e -> e.kind == SuggestedApps.Kind.MIRROR));
+            && SuggestedApps.Kind.values().length == 4 && SuggestedApps.Kind.valueOf("MIRROR") != null && SuggestedApps.Kind.valueOf("FLAG") != null && java.util.Arrays.stream(SuggestedApps.ALL).noneMatch(e -> e.kind == SuggestedApps.Kind.MIRROR));
+        SuggestedApps.App doc = SuggestedApps.byId("doctor");
+        check("4.3.7 «فحص تلفزيونك» is a FLAG entry: sa.urtv.doctor, no file, no repository, no certificate (nothing of it is downloaded by us), not a box of the setup, and in the catalog last",
+            doc != null && doc.kind == SuggestedApps.Kind.FLAG && "sa.urtv.doctor".equals(doc.pkg) && doc.file == null && doc.repo == null && !doc.inSetup() && !SuggestedApps.forSetup(30).contains(doc)
+            && SuggestedApps.all().get(SuggestedApps.all().size() - 1) == doc);
         check("TiviMate is gone from the suggestions", SuggestedApps.byId("tivimate") == null);
         check("a GitHub app only from its own repository's releases, an .apk, no way out", SuggestedApps.githubOk(tube, "https://github.com/yuliskov/SmartTube/releases/download/29.1/SmartTube_stable_29.1_arm64-v8a.apk")
             && !SuggestedApps.githubOk(tube, "https://github.com/evil/SmartTube/releases/download/29.1/a.apk") && !SuggestedApps.githubOk(tube, "https://github.com/yuliskov/SmartTube/releases/download/../x.apk")

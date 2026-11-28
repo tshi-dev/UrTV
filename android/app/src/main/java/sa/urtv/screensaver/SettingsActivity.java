@@ -81,11 +81,11 @@ public class SettingsActivity extends Activity {
     @Override
     protected void attachBaseContext(android.content.Context base) {
         android.content.Context en = S.wrap(base);
-        if (S.en()) { super.attachBaseContext(en); return; }
+        if (S.en()) { super.attachBaseContext(TextScale.fit(en)); return; }   // 4.4 beta 4: the words scaled to the screen (TextScale)
         android.content.res.Configuration c = new android.content.res.Configuration(base.getResources().getConfiguration());
         c.setLocale(new java.util.Locale("ar"));
         c.setLayoutDirection(new java.util.Locale("ar"));
-        super.attachBaseContext(base.createConfigurationContext(c));
+        super.attachBaseContext(TextScale.fit(base.createConfigurationContext(c)));
     }
 
     private FrameLayout root;
@@ -508,7 +508,7 @@ public class SettingsActivity extends Activity {
 
         header("الأسواق (أعلى اليسار)");
         row("شريط الأسواق", prefs.marketsOn() ? "مفعّل" : "مخفي، يبقى طقس اليوم فقط", R.drawable.ic_eye,
-            new Runnable() { public void run() { prefs.setMarketsOn(!prefs.marketsOn()); render(); } });
+            new Runnable() { public void run() { prefs.setMarketsOn(!prefs.marketsOn()); render(); sendBroadcast(new android.content.Intent(Prefs.CHANGED).setPackage(getPackageName())); } });   // 4.4 beta 4: a screensaver that is up takes it at once (ScreenDream, PagePush)
         row("الأسواق (" + arabicNum(prefs.markets().size()) + "/" + arabicNum(Prefs.MAX_MARKETS) + ")", marketsLabel(),
             R.drawable.ic_trophy, new Runnable() { public void run() { pickMarkets(); } });
         row("عرض الأسواق", Prefs.mkStyleLabel(prefs.mkStyle()), R.drawable.ic_eye,
