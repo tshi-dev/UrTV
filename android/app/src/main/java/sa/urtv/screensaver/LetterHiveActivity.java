@@ -61,9 +61,8 @@ public class LetterHiveActivity extends GameActivity {
         chips.add("options", S.t("زر الخيارات"), new String[] {S.tv(ON_OFF[1]), S.tv(ON_OFF[0])}, 0);
         chips.add("steal", S.t("فرصة للفريق الآخر"), new String[] {S.tv(ON_OFF[0]), S.tv(ON_OFF[1])}, 0);
         chips.add("next", S.t("من يختار الحرف"), new String[] {S.t("من يجاوب صح يختار الحرف"), S.t("بالتناوب")}, 0);
-        chips.add("phones", S.t("اللعب بالجوالات"), new String[] {S.tv(ON_OFF[0]), S.tv(ON_OFF[1])}, 0);
+        modeChip(chips);
         remembered(soundChip(chips));
-        chips.get("phones").picked = getIntent().getBooleanExtra("phones", false) ? 1 : 0;   // off unless the «بالجوالات» view opened this game; never kept from last time
     }
 
     private long clock() { return (pausedAt != 0 ? pausedAt : System.currentTimeMillis()) - pausedFor; }
@@ -82,6 +81,8 @@ public class LetterHiveActivity extends GameActivity {
         phones.room.start(); phoneLobby = false;
         begin();
     }
+    @Override protected Runnable remoteWay() { return () -> { screen = Screen.SETUP; redraw(); start(); }; }
+    @Override protected GameChips lobbyChips() { return chips; }
     private void start() {
         if (chips.picked("phones") == 1) {
             if (!onPhones()) { if (!openPhones()) return; screen = Screen.LOBBY; phoneLobby = true; redraw(); return; }

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Runs on the CI emulator (.github/workflows/games-screens.yml): the BEFORE of the owner's «phone or no phone» review (docs/research/GAMES-FLOW.md): the flow as it is today, shot with screencap, the setting «اللعب بالريموت بس» turned on in each
+# Runs on the CI emulator (.github/workflows/games-flow-screens.yml): the AFTER of the owner's «phone or no phone» review (docs/research/GAMES-FLOW.md): the built flow, shot with screencap and the remote's keys: the list, the first row «كيف تلعبون؟», the room, the way out to the remote.
 # game's own setup page with the remote's keys (nothing is written behind the app's back).   games.sh SAVER_APK HOME_APK OUT_DIR
 # Best effort: every shot is taken whatever is on the screen; the log says what was pressed. (re-shot after the liar rounds' bar fix)
 set +e
@@ -47,40 +47,41 @@ tile() {   # go to tile $1 from $CUR, then open it
 leave() { key BACK DPAD_DOWN DPAD_DOWN DPAD_CENTER; sleep 2; }   # the pause card: «الرئيسية»
 
 list
-shot flow-01-list-header 2     # the header says «بدون جوالات: ريموت واحد يدور بينكم»; the tiles say «جوال» or «ريموت»
+shot after-00-list-tags 2     # no header sentence, no phone button: the tiles say «ريموت», «جوالات» or «ريموت أو جوالات» in one outlined style
 
-# ---- an old game both ways: «واحد مو معنا» (the switch «اللعب بالجوالات» is in its setup, off every time)
+# ---- an old game both ways: «واحد مو معنا»: the first row of its setup is «كيف تلعبون؟»
 tile 3
-shot flow-02-oddone-setup 1
-key DPAD_CENTER; sleep 3
-shot flow-03-oddone-remote-start 2        # no phones: what the first press shows
-key DPAD_CENTER; sleep 3.5
-shot flow-04-oddone-remote-handover-count 0.5
-shot flow-05-oddone-remote-secret 3
+shot after-01-oddone-setup-remote 1       # ريموت واحد (the default): every row, the start button has the focus
+key DPAD_UP DPAD_UP DPAD_UP DPAD_UP DPAD_UP DPAD_LEFT DPAD_CENTER   # up to «كيف تلعبون؟», one chip toward the end: «جوالات», OK
+shot after-02-oddone-setup-phones 1       # the number of players is gone (the phones decide), no «الأسماء» beside «ابدأ»
+key DPAD_DOWN DPAD_DOWN DPAD_DOWN DPAD_DOWN DPAD_DOWN DPAD_DOWN DPAD_CENTER; sleep 3
+shot after-03-oddone-room-short 2         # the room: QR and the address (Latin), «ناقص ٣», «ابدأ» grey but with the focus, «نلعب بالريموت» beside it
+key DPAD_CENTER; sleep 1
+shot after-04-oddone-room-ok-while-short 1  # OK on the grey «ابدأ»: nothing jumps, the line stays
+key DPAD_LEFT
+shot after-05-oddone-room-remote-focus 1  # the focus on «نلعب بالريموت»
+key DPAD_CENTER; sleep 4
+shot after-06-oddone-remote-started 2     # the same game on the one remote
 key BACK BACK; sleep 1
 key DPAD_DOWN DPAD_DOWN DPAD_CENTER; sleep 2
 list
 tile 3
-key DPAD_UP DPAD_UP DPAD_LEFT DPAD_CENTER
-shot flow-06-oddone-phones-on-setup 1
-key DPAD_DOWN DPAD_DOWN DPAD_CENTER; sleep 3
-shot flow-07-oddone-phones-lobby 2       # the room: QR, code, address; the start waits for 3 phones
-key BACK; sleep 1
+shot after-07-oddone-setup-remembered 1   # the choice is remembered: «ريموت واحد»
 leave
 
-# ---- a party game: «واحد يكذب» (phones only, or «اللعب بالريموت بس»)
+# ---- a party game: «واحد يكذب» (phones only): «ابدأ» alone in the room, no way out button
 tile 11
-shot flow-08-liar-setup 1                # two opposite switches in the family: «اللعب بالجوالات» here and «اللعب بالريموت بس» there
+shot after-08-liar-setup 1
 key DPAD_CENTER; sleep 3
-shot flow-09-liar-lobby 2
+shot after-09-liar-room 2
 key BACK; sleep 1
 leave
 
 # ---- «الأسرع»: phones only
 tile 0
-shot flow-10-quiz-setup 1
+shot after-10-quiz-setup 1
 key DPAD_CENTER; sleep 3
-shot flow-11-quiz-room 2
+shot after-11-quiz-room 2
 
 adb logcat -d -s AndroidRuntime:E > "$OUT/crashes.txt"
 ls "$OUT"

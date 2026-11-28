@@ -30,9 +30,9 @@ def src(n): return (APP / n).read_text(encoding="utf-8")
 odd, cha, ga, gl, reg = src("OddOneActivity.java"), src("CharadesActivity.java"), src("GameActivity.java"), src("QuizGamesActivity.java"), src("GameRegistry.java")
 page = (ROOT / "assets/quiz/game.html").read_text(encoding="utf-8")
 for name, a in (("odd-one", odd), ("charades", cha)):
-    check(f"{name}: the switch «اللعب بالجوالات» is a chip that is off unless the phones' page opened the game, and is never kept from last time",
-          '.add("phones", S.t("اللعب بالجوالات"), new String[]{S.tv(ON_OFF[0]), S.tv(ON_OFF[1])}, 0)' in a and 'chips.get("phones").picked = getIntent().getBooleanExtra("phones", false) ? 1 : 0' in a
-          and a.index("remembered(soundChip(chips))") < a.index('getBooleanExtra("phones"'))
+    check(f"{name}: «كيف تلعبون؟» (ريموت واحد or جوالات) is the first row, a chip kept per game like the others, with no extra from the list forcing it",
+          "modeChip(chips);" in a and 'getBooleanExtra("phones"' not in a and a.index("modeChip(chips)") < a.index("remembered(soundChip(chips))")
+          and 'c.add("phones", S.t("كيف تلعبون؟"), new String[]{S.t("ريموت واحد"), S.t("جوالات")}, 0)' in ga and 'c.first("phones")' in ga)
     check(f"{name}: with the switch off the room is closed and the game is the remote's, as before", "closePhones();   // the switch is off" in a and "begin(" in a)
     check(f"{name}: no socket, no server and no java.net in the game's own screen (the room is the base's)", not __import__("re").search(r"ServerSocket|QuizServer|QuizRoom|java\.net\.", a))
 check("odd-one: the word goes only to its own phone, the outsider gets «أنت برا السالفة», the vote cannot be for yourself",
@@ -42,36 +42,35 @@ check("charades: the word is on the actor's phone alone (the TV never draws it, 
       "game.wordVisible() && !onPhones()" in cha and "if (onPhones()) return; game.peek();" in cha and "game.ready(); game.hide();" in cha and "phones.room.replied(actor)" in cha and "if (game.phase == CharadesGame.Phase.PLAY) game.hide();" in cha)
 check("the base opens a room only on the person's switch, closes it with the screen, and says so when there is no local network",
       "protected final boolean openPhones()" in ga and "protected void onDestroy() { closePhones(); super.onDestroy(); }" in ga and 'S.t("لا توجد شبكة محلية. وصّل التلفزيون بالواي فاي")' in ga)
-check("the games list: a filter beside the night switch («عرض»: الكل or بالجوالات), kept; «بالجوالات» shows every game that has a phone mode and opens them with the phones switch on",
-      'PHONE_GAMES = {"quiz", "khanat", "missing-word", "letter-hive", "word5", "odd-one", "charades", "domino"' in reg and "(GameRegistry.inPhones(g.id) && g.ready)" in gl and "GamePrefs.setFilter(this, filter)" in gl and 'go.putExtra("phones", true)' in gl
-      and "static void setFilter" in src("GamePrefs.java"))
+check("the games list: no phones filter and no extra: the tile says «ريموت», «جوالات» or «ريموت أو جوالات», and the choice is the game's first row",
+      'PHONE_GAMES = {"quiz", "khanat", "missing-word", "letter-hive", "word5", "odd-one", "charades", "domino"' in reg and "filter" not in gl and 'putExtra("phones"' not in gl and "GameRegistry.way(g.id)" in gl)
 check("the phone page: no outside address, no innerHTML or eval, text built with text nodes; it talks only to /api/",
       not __import__("re").search(r"https?://(?!www\.w3\.org)", page) and "innerHTML" not in page and "eval(" not in page and page.count("/api/") == 10 and "createTextNode" in page)
 check("the game-only server holds no game rules: it routes a PhoneRoom (the quiz's room and this one) and nothing else", "private final PhoneRoom room;" in src("QuizServer.java") and "implements PhoneRoom" in src("QuizRoom.java") and "implements PhoneRoom" in src("GamePhoneRoom.java"))
-check("docs/GAMES-PHONES.md says the switch is off by default and what is not in phase 1", "Off by default, every time" in (ROOT / "docs/GAMES-PHONES.md").read_text(encoding="utf-8") and "Not in phase 1" in (ROOT / "docs/GAMES-PHONES.md").read_text(encoding="utf-8"))
+check("docs/GAMES-PHONES.md says the switch is off by default and what is not in phase 1", "FIRST row" in (ROOT / "docs/GAMES-PHONES.md").read_text(encoding="utf-8") and "Not in phase 1" in (ROOT / "docs/GAMES-PHONES.md").read_text(encoding="utf-8"))
 mw = src("MissingWordActivity.java")
 check("missing-word: the switch is off unless the phones' view opened the game and is never kept; off, the room is closed and the game is the remote's",
-      'chips.get("phones").picked = getIntent().getBooleanExtra("phones", false) ? 1 : 0' in mw and "closePhones();   // the switch is off" in mw and mw.index("remembered(soundChip(chips))") < mw.index('getBooleanExtra("phones"'))
+      'getBooleanExtra("phones"' not in mw and "modeChip(chips);" in mw and "closePhones();   // the switch is off" in mw and mw.index("modeChip(chips)") < mw.index("remembered(soundChip(chips))"))
 check("missing-word: every phone is a team (1 to 4) with its own name; the statement goes to the phone whose turn it is, the others wait; a right word is judged at once, any other goes to the host with what was typed",
       "begin(n, phones.room.names()" in mw and "i == game.turn" in mw and "MissingWord.sameWord(word, game.current().word(en))" in mw and "} else go(Screen.SHOWN);" in mw and 'S.t("كتب %s: %s", team, typed)' in mw)
 hv = src("LetterHiveActivity.java")
 check("letter-hive: the switch is off unless the phones' view opened the game and is never kept; off, the room is closed and the game is the remote's",
-      'chips.get("phones").picked = getIntent().getBooleanExtra("phones", false) ? 1 : 0' in hv and "} else closePhones();   // the switch is off" in hv and hv.index("remembered(soundChip(chips))") < hv.index('getBooleanExtra("phones"'))
+      'getBooleanExtra("phones"' not in hv and "modeChip(chips);" in hv and "} else closePhones();   // the switch is off" in hv and hv.index("modeChip(chips)") < hv.index("remembered(soundChip(chips))"))
 check("letter-hive: every phone has the buzzer while a question is open, the first press is who answers, the host still marks (the judge starts on that team)",
       "GamePhoneRoom.ACT_BUZZ" in hv and "phones.room.firstReplied()" in hv and "teamOf(buzzed)" in hv and "game.judge(who)" in hv)
 w5 = src("Word5Activity.java")
 check("word5: the switch is off unless the phones' view opened the game and is never kept; off, the room is closed and the game is the remote's",
-      'chips.get("phones").picked = getIntent().getBooleanExtra("phones", false) ? 1 : 0' in w5 and "} else closePhones();   // the switch is off" in w5 and w5.index("remembered(soundChip(chips))") < w5.index('getBooleanExtra("phones"'))
+      'getBooleanExtra("phones"' not in w5 and "modeChip(chips);" in w5 and "} else closePhones();   // the switch is off" in w5 and w5.index("modeChip(chips)") < w5.index("remembered(soundChip(chips))"))
 check("word5: everyone types the guess on their own phone, the first one in is entered by the game's own rules (unknown or short words cost no try), the TV keyboard stays",
       "phones.room.firstReplied()" in w5 and "Word5Text.normalize(" in w5 and "game.enter()" in w5 and "GamePhoneRoom.TEXT" in w5 and "keys.move(" in w5)
 kh = src("KhanatActivity.java")
 check("khanat: the switch is off unless the phones' view opened the game and is never kept; off, the room is closed and the game is the remote's",
-      'chips.get("phones").picked = getIntent().getBooleanExtra("phones", false) ? 1 : 0' in kh and "closePhones();   // the switch is off" in kh and kh.index("remembered(soundChip(chips))") < kh.index('getBooleanExtra("phones"'))
+      'getBooleanExtra("phones"' not in kh and "modeChip(chips);" in kh and "closePhones();   // the switch is off" in kh and kh.index("modeChip(chips)") < kh.index("remembered(soundChip(chips))"))
 check("khanat: every phone is a player with a form of the round's boxes; the first to send ends the writing after a short grace; the answers are shown on the tiles, a first guess is marked (none, same, valid) and the host can change any tile",
       "GamePhoneRoom.TEXT" in kh and "phones.room.firstReplied()" in kh and "graceAt = now + 8000" in kh and "private void autoMark()" in kh and "game.set(i, !ok ? KhanatEngine.NONE" in kh and "typedAns[i][game.box]" in kh and "game.cycle(sel)" in kh)
 dm = src("DominoActivity.java")
 check("domino: the switch is off unless the phones' view opened the game and is never kept; off, the room is closed and the game is the remote's",
-      'chips.get("phones").picked = getIntent().getBooleanExtra("phones", false) ? 1 : 0' in dm and "closePhones();   // the switch is off" in dm and dm.index("remembered(soundChip(chips))") < dm.index('getBooleanExtra("phones"'))
+      'getBooleanExtra("phones"' not in dm and "modeChip(chips);" in dm and "closePhones();   // the switch is off" in dm and dm.index("modeChip(chips)") < dm.index("remembered(soundChip(chips))"))
 check("domino: a hand is only ever sent to its owner's phone (the others wait), never drawn on the TV in this mode, and the choices go through the table's own rules (select, selectEnd, ok)",
       "phones.room.card(p, GamePhoneRoom.PICK, names[p]" in dm and "phones.room.hold(i, S.t(\"دور %s\", names[p]))" in dm and "if (onPhones() && (st == DominoTable.State.HANDOVER" in dm
       and "tb.selectEnd(" in dm and "tb.select(" in dm and "int c = tb.ok();" in dm)

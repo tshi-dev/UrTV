@@ -80,6 +80,8 @@ final class GameRegistry {
         for (Game g : ALL) if (g.id.equals(id)) return g.phones;
         return false;
     }
+    /** how a game can be played, for the tile's tag: 0 one remote only, 1 the remote or phones (the player chooses on the setup page), 2 phones only */
+    static int way(String id) { return needsPhones(id) ? 2 : inPhones(id) ? 1 : 0; }
     static boolean held(String id) { for (String g : HELD) if (g.equals(id)) return true; return false; }
 
     static Game byId(String id) { for (Game g : ALL) if (g.id.equals(id)) return g; return null; }

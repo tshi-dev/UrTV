@@ -47,8 +47,8 @@ for gid, name, line, act, phones, ready in games:
         check(f"{gid}: ready, so its activity {act} exists, is in the manifest, not exported, landscape", (APP / f"{act}.java").is_file() and re.search(r'android:name="\.%s"\s+android:exported="false"\s+android:screenOrientation="landscape"' % act, manifest) is not None)
         if phones == "false":
             check(f"{gid}: played with one remote: it extends GameActivity and opens no server and no socket", f"class {act} extends GameActivity" in src(f"{act}.java") and not re.search(r"ServerSocket|QuizServer|QuizRoom|java\.net\.", src(f"{act}.java")))
-check("the list reads the registry: tiles four to a line, «قريبًا» for a game that is not ready, each tile says how the game is played in a word («جوال» for a game that needs phones, «ريموت» for the others), the default way said in the header",
-      "GameRegistry.ALL" in hub and "COLS = 4" in hub and 'if (!live) {' in hub and "GameRegistry.needsPhones(g.id)" in hub and 'S.t("جوال") : S.t("ريموت")' in hub and 'text(S.t("بالجوالات")' not in hub and 'S.t("بدون جوالات: ريموت واحد يدور بينكم")' in hub and "GameRegistry.firstFocus(shown(), GamePrefs.last(this))" in hub)
+check("the list reads the registry: tiles four to a line, «قريبًا» for a game that is not ready, each tile says how the game is played in a word, one quiet outlined tag for all («ريموت», «جوالات», «ريموت أو جوالات»: GameRegistry.way), no sentence in the header",
+      "GameRegistry.ALL" in hub and "COLS = 4" in hub and 'if (!live) {' in hub and "GameRegistry.way(g.id)" in hub and "GameActivity.wayWord(way)" in hub and 'text(S.t("بالجوالات")' not in hub and 'بدون جوالات' not in hub and "mark.setBackground(mb)" in hub and "mb.setColor(0)" in hub and "GameRegistry.firstFocus(shown(), GamePrefs.last(this))" in hub)
 check("the list opens a ready game by its registry line, and a game whose screen is missing says «قريبًا» instead of stopping the app", 'setClassName(this, getClass().getPackage().getName() + "." + g.activity)' in hub and "catch (RuntimeException notThere)" in hub)
 shown = code(hub + base + "".join(src(f"{g[3]}.java") for g in games if g[5] == "true" and g[4] == "false"))
 check("no «·» or «•» separator in what the games show, no rounded (pill) shape", not re.search("[·•]", shown) and "setCornerRadius" not in shown and "setCornerRadii" not in shown)
@@ -139,13 +139,13 @@ check("the night colours start on the third palette (dim beige); a stored choice
       "PALETTE_DEFAULT = 2" in prefs and 'getInt("palette", PALETTE_DEFAULT)' in prefs and "? PALETTE_DEFAULT : v" in prefs)
 # ---- the owner's notes on the games list (build 413)
 gi = src("GameIcons.java")
-check("the three header buttons are pictures only (a moon, a palette, a phone), the state is the picture (filled = on, dots = the palette), TalkBack gets the words; no word is drawn on them",
-      "GameIcons.MOON" in qg and "GameIcons.PALETTE" in qg and "GameIcons.PHONE" in qg and "setContentDescription(label[i])" in qg and 'text(label[i]' not in qg and "static final int PHONE = 0, PALETTE = 1, MOON = 2" in gi and "Path.Op.DIFFERENCE" in gi
+check("the two header buttons are pictures only (a moon, a palette; the phone filter is gone: the way is chosen on the game's own page), the state is the picture (filled = on, dots = the palette), TalkBack gets the words; no word is drawn on them",
+      "GameIcons.MOON" in qg and "GameIcons.PALETTE" in qg and "GameIcons.PHONE" not in qg and "setContentDescription(label[i])" in qg and 'text(label[i]' not in qg and "static final int PHONE = 0, PALETTE = 1, MOON = 2" in gi and "Path.Op.DIFFERENCE" in gi
       and not re.search(r"0x[0-9A-Fa-f]{8}|Color\.parseColor", gi))
-check("the line under the title sits beside the three buttons, never over them (they are 72 px at y 64, the line is 72 px at y 64 and starts after them), and the page title and the tile titles keep a taller line and a bottom padding so the tail of «ع» is not cut",
-      "mp.setMarginEnd(px(96 + 3 * 72 + 2 * 16 + 40)); mp.topMargin = px(64)" in qg and "float size = 72" in qg and "p.topMargin = px(64)" in qg and "page.setLineSpacing(0, 1.15f); page.setPadding(0, 0, 0, px(14))" in qg)
-check("the «بالجوالات» filter keeps every game that can be played with phones (PHONE_GAMES: «الأسرع», the older games' phone mode and the party games), each with its word on the tile, and opens them with the phones switch on; only games without a phone mode (the packs page) are left out",
-      "(GameRegistry.inPhones(g.id) && g.ready)" in qg and 'go.putExtra("phones", true)' in qg and "GameRegistry.needsPhones(g.id)" in qg
+check("the header has no explaining line any more (the buttons are 72 px at y 64), and the page title and the tile titles keep a taller line and a bottom padding so the tail of «ع» is not cut",
+      "TextView mode" not in qg and "float size = 72" in qg and "p.topMargin = px(64)" in qg and "page.setLineSpacing(0, 1.15f); page.setPadding(0, 0, 0, px(14))" in qg)
+check("the list has no phones filter (the games' own first row «كيف تلعبون؟» chooses): no filter, no phones extra; every game that has a phone mode is still in PHONE_GAMES, only the packs page is not",
+      "filter" not in qg and 'putExtra("phones"' not in qg and "FILTER_WORDS" not in qg
       and {"quiz", "khanat", "missing-word", "letter-hive", "word5", "odd-one", "charades", "domino"} <= set(re.findall(r'"([a-z0-9-]+)"', re.search(r"PHONE_GAMES = \{([^}]*)\}", src("GameRegistry.java")).group(1)))
       and "packs" not in re.search(r"PHONE_GAMES = \{([^}]*)\}", src("GameRegistry.java")).group(1))
 check("a game's setup page never hides a row behind the start button: the rows that fit are shown (the list scrolls with the focus, with arrows when more are above or below)",

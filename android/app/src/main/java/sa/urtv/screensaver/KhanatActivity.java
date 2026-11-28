@@ -42,10 +42,9 @@ public class KhanatActivity extends GameActivity {
             .add("mode", S.t("نوع اللعب"), new String[]{S.t("فرق"), S.t("أفراد")}, 0)
             .add("count", S.t("العدد"), new String[]{num(2), num(3), num(4), num(5), num(6), num(7), num(8), num(9), num(10)}, 0)
             .add("boxes", S.t("الخانات"), new String[]{num(5), S.t("%s مع أكلة", num(6)), S.t("%s مع مدينة سعودية", num(6))}, 0)
-            .add("hard", S.t("حروف صعبة"), new String[]{S.tv(ON_OFF[0]), S.tv(ON_OFF[1])}, 0)
-            .add("phones", S.t("اللعب بالجوالات"), new String[]{S.tv(ON_OFF[0]), S.tv(ON_OFF[1])}, 0);
+            .add("hard", S.t("حروف صعبة"), new String[]{S.tv(ON_OFF[0]), S.tv(ON_OFF[1])}, 0);
+            modeChip(chips);
         remembered(soundChip(chips));
-        chips.get("phones").picked = getIntent().getBooleanExtra("phones", false) ? 1 : 0;   // off unless the «بالجوالات» view opened this game; never kept from last time
         onChips(chips);
     }
 
@@ -107,6 +106,9 @@ public class KhanatActivity extends GameActivity {
         begin(n, phones.room.names().toArray(new String[0]));
     }
 
+    @Override protected String[] phoneHidden() { return new String[] {"count"}; }
+    @Override protected Runnable remoteWay() { return () -> { screen = Screen.SETUP; redraw(); start(); }; }
+    @Override protected GameChips lobbyChips() { return chips; }
     private void start() {
         if (chips.picked("phones") == 1) {
             if (!onPhones()) { if (data == null || data.letters(en, false).size() < 10) { toast(S.t("قريبًا")); return; } if (!openPhones()) return; screen = Screen.LOBBY; phoneLobby = true; redraw(); return; }

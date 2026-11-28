@@ -49,9 +49,8 @@ public class Word5Activity extends GameActivity {
         chips = new GameChips();
         chips.add("tries", S.t("المحاولات"), new String[] {num(Word5Game.TRIES[0]), num(Word5Game.TRIES[1]), num(Word5Game.TRIES[2])}, 0);
         chips.add("kids", S.t("الفئة"), new String[] {S.t("للجميع"), S.t("أطفال")}, 0);
-        chips.add("phones", S.t("اللعب بالجوالات"), new String[] {S.tv(ON_OFF[0]), S.tv(ON_OFF[1])}, 0);
+        modeChip(chips);
         remembered(soundChip(chips));
-        chips.get("phones").picked = getIntent().getBooleanExtra("phones", false) ? 1 : 0;   // off unless the «بالجوالات» view opened this game; never kept from last time
     }
 
     private boolean onPhones() { return phones != null && phones.room.phase() == GamePhoneRoom.Phase.PLAY; }
@@ -83,6 +82,8 @@ public class Word5Activity extends GameActivity {
         phones.room.start(); phoneLobby = false;
         begin();
     }
+    @Override protected Runnable remoteWay() { return () -> { screen = Screen.SETUP; redraw(); start(); }; }
+    @Override protected GameChips lobbyChips() { return chips; }
     private void start() {
         if (words == null) { toast(S.t("قريبًا")); return; }
         if (chips.picked("phones") == 1) {
