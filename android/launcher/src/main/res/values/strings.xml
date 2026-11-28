@@ -25,6 +25,7 @@
     <string name="stop_now">إيقاف التشغيل الآن</string>
     <string name="sleep_left">يتوقف بعد %1$s دقيقة</string>
     <string name="hint_main">يمين/يسار بين الأقسام، اختيار للفتح، رجوع للواجهة</string>
+    <string name="hint_surah">اختيار يشغّل السورة، رجوع للقرّاء</string>
     <string name="hint_player">اختيار: تشغيل/إيقاف، يمين/يسار: ١٠ ثوانٍ، أسفل مؤقت النوم، رجوع للقائمة</string>
     <string name="hint_adhan">اختيار: إيقاف/تشغيل، أسفل مؤقت النوم، رجوع للقائمة</string>
     <string name="back">رجوع</string>

@@ -70,7 +70,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:text="@string/hint_main"
+            android:text="@string/hint_surah"
             android:textColor="@color/dim"
             android:textSize="13sp" />
     </LinearLayout>

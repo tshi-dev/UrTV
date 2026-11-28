@@ -593,10 +593,8 @@ public class MainActivity extends Activity {
                 // with the next one marked, then the muezzin and the rest
                 PrayerTimes times = PrayerTimes.today(MainActivity.this);
                 PrayerTimes.Next next = PrayerTimes.next(MainActivity.this);
+                // the audit («ما تخلي شيء مكرر»): the switch says on or off; the time left is said once, on the next prayer's own row below it
                 String toggle = prefs.adhanOn() ? getString(R.string.adhan_on) : getString(R.string.adhan_off);
-                if (prefs.adhanOn() && next != null) {
-                    toggle += sa.urtv.home.S.sep() + sa.urtv.home.S.tv(next.name()) + " " + PrayerTimes.remaining(next.at - System.currentTimeMillis());
-                }
                 rows.add(new Row(false, KIND_ADHAN_TOGGLE, getString(R.string.adhan_auto), toggle, -1));
                 if (prefs.adhanOn() && !AdhanScheduler.exactAllowed(MainActivity.this)) {   // the alarm may be minutes late
                     rows.add(new Row(false, KIND_EXACT, getString(R.string.adhan_exact_title), getString(R.string.adhan_exact_detail), -1));

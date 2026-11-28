@@ -734,10 +734,13 @@ public abstract class GameActivity extends Activity {
         FrameLayout.LayoutParams qp = new FrameLayout.LayoutParams(-1, -1); qp.setMargins(px(14), px(14), px(14), px(14));
         qrBox.addView(new QuizActivity.QrView(this, QrCode.encode(phones.url + (en ? "?l=en" : ""))), qp);
         root.addView(qrBox, at(360, 360, 96, 250));
+        // the room's code once, in Latin digits (the Arabic zero is drawn as a dot, easy to misread); the audit: it was shown twice, Arabic here and Latin
+        // in the middle column
         FrameLayout codeBox = stamp(L.saff, L.ink, 6, false);
-        codeBox.addView(centered(DigitsText.convert(phones.code, latin), 120, L.onSaff, true), new FrameLayout.LayoutParams(-1, -1));
+        TextView code = centered("\u2066" + phones.code + "\u2069", 120, L.onSaff, true); code.setTextDirection(View.TEXT_DIRECTION_LTR);
+        codeBox.addView(code, new FrameLayout.LayoutParams(-1, -1));
         root.addView(codeBox, at(360, 150, 96, 630));
-        // the middle column: what to type, the address BIG, and the code in Latin digits too (the Arabic zero is drawn as a dot, easy to misread)
+        // the middle column: what to type, and the address BIG
         TextView how = text(S.t("ما فتح؟ اكتب هذا العنوان في متصفح الجوال"), 38, L.ink, false); how.setMaxLines(3);
         root.addView(how, at(552, 130, 504, 250));
         String url = phones.url.replace("http://", "");
@@ -746,10 +749,6 @@ public abstract class GameActivity extends Activity {
         TextView addr = centered("\u2066" + url + "\u2069", us, L.ink, true); addr.setTextDirection(View.TEXT_DIRECTION_LTR); addr.setSingleLine(true);
         addrBox.addView(addr, new FrameLayout.LayoutParams(-1, -1));
         root.addView(addrBox, at(552, 130, 504, 400));
-        FrameLayout latinBox = stamp(L.tile, L.ink, 6, false);
-        TextView lc = centered("\u2066" + phones.code + "\u2069", 120, L.ink, true); lc.setTextDirection(View.TEXT_DIRECTION_LTR);
-        latinBox.addView(lc, new FrameLayout.LayoutParams(-1, -1));
-        root.addView(latinBox, at(552, 150, 504, 630));
         java.util.List<String> names = phones.room.names();
         for (int i = 0; i < names.size(); i++) {
             FrameLayout st = stamp(L.tile, L.ink, 6, false);
