@@ -28,7 +28,7 @@ public class KhanatActivity extends GameActivity {
 
     private KhanatData data; private GameChips chips; private KhanatEngine game; private String[] names = new String[0];
     private Screen screen = Screen.SETUP; private int sel; private boolean examples;
-    private final GameClock clock = new GameClock(); private TickTimer timer; private long letterAt; private TextView spinView; private boolean settled; private final Random rnd = new Random();
+    private final GameClock clock = new GameClock(); private TickTimer timer; private long letterAt; private GlyphView spinView; private boolean settled; private final Random rnd = new Random();
 
     @Override protected String id() { return "khanat"; }
 
@@ -42,10 +42,9 @@ public class KhanatActivity extends GameActivity {
             .add("mode", S.t("نوع اللعب"), new String[]{S.t("فرق"), S.t("أفراد")}, 0)
             .add("count", S.t("العدد"), new String[]{num(2), num(3), num(4), num(5), num(6), num(7), num(8), num(9), num(10)}, 0)
             .add("boxes", S.t("الخانات"), new String[]{num(5), S.t("%s مع أكلة", num(6)), S.t("%s مع مدينة سعودية", num(6))}, 0)
-            .add("hard", S.t("حروف صعبة"), new String[]{S.tv(ON_OFF[0]), S.tv(ON_OFF[1])}, 0)
-            .add("phones", S.t("اللعب بالجوالات"), new String[]{S.tv(ON_OFF[0]), S.tv(ON_OFF[1])}, 0);
+            .add("hard", S.t("حروف صعبة"), new String[]{S.tv(ON_OFF[0]), S.tv(ON_OFF[1])}, 0);
+            modeChip(chips);
         remembered(soundChip(chips));
-        chips.get("phones").picked = getIntent().getBooleanExtra("phones", false) ? 1 : 0;   // off unless the «بالجوالات» view opened this game; never kept from last time
         onChips(chips);
     }
 
@@ -107,6 +106,9 @@ public class KhanatActivity extends GameActivity {
         begin(n, phones.room.names().toArray(new String[0]));
     }
 
+    @Override protected String[] phoneHidden() { return new String[] {"count"}; }
+    @Override protected Runnable remoteWay() { return () -> { screen = Screen.SETUP; redraw(); start(); }; }
+    @Override protected GameChips lobbyChips() { return chips; }
     private void start() {
         if (chips.picked("phones") == 1) {
             if (!onPhones()) { if (data == null || data.letters(en, false).size() < 10) { toast(S.t("قريبًا")); return; } if (!openPhones()) return; screen = Screen.LOBBY; phoneLobby = true; redraw(); return; }
@@ -139,8 +141,8 @@ public class KhanatActivity extends GameActivity {
     @Override protected void onTick(long now) {
         if (screen == Screen.LETTER) {
             long t = now - letterAt;
-            if (!settled && t < SPIN_MS) { if (spinView != null) { List<String> all = data.letters(en, false); spinView.setText(all.get(rnd.nextInt(all.size()))); } }   // the wheel: a letter every tick
-            else if (!settled) { settled = true; if (spinView != null) spinView.setText(game.letter); play(QuizSound.CHIME); }
+            if (!settled && t < SPIN_MS) { if (spinView != null) { List<String> all = data.letters(en, false); spinView.set(all.get(rnd.nextInt(all.size()))); } }   // the wheel: a letter every tick
+            else if (!settled) { settled = true; if (spinView != null) spinView.set(game.letter); play(QuizSound.CHIME); }
             else if (t >= LETTER_MS) beginWriting();
         } else if (screen == Screen.WRITING && clock.running()) {
             if (timer != null) timer.set(clock.leftSeconds(now));
@@ -228,7 +230,7 @@ public class KhanatActivity extends GameActivity {
     private void drawLetter() {
         root.setBackgroundColor(L.deep);
         root.addView(centered(roundLine(), 56, L.saff, true), at(1728, 80, 96, 120));
-        spinView = centered(settled ? game.letter : "", 480, L.onDeep, true);
+        spinView = glyph(settled ? game.letter : "", 480, L.onDeep);
         root.addView(spinView, at(1728, 600, 96, 220));
         root.addView(centered(S.t("حرف هذه الجولة") + (settled ? letterName(game.letter, en) : ""), 48, L.onDeep, false), at(1728, 72, 96, 860));   // «هاء» under the letter: ه and ٥ are drawn alike
     }
@@ -247,7 +249,7 @@ public class KhanatActivity extends GameActivity {
     private void drawWriting() {
         band(528);
         root.addView(text(roundLine(), 40, L.saff, true), at(1100, 56, 96, 54));
-        root.addView(centered(game.letter, fitSize(game.letter, 300, 360, 336, 1), L.onDeep, true), at(360, 336, 96, 108));   // the whole letter, dots included, above the ticks (452)
+        root.addView(glyph(game.letter, fitSize(game.letter, 300, 360, 336, 1), L.onDeep), at(360, 336, 96, 108));   // the whole letter, dots included, above the ticks (452)
         TextView say = text(en ? S.t("كلمة لكل خانة تبدأ بهذا الحرف") : S.t("كلمة لكل خانة تبدأ بحرف %s", letterName(game.letter, false).trim()), 72, L.onDeep, true); say.setMaxLines(2);   // the letter's name too: ه and ٥ look alike
         root.addView(say, at(880, 220, 500, 190));
         int secs = SECONDS[chips.picked("time")];
@@ -276,7 +278,7 @@ public class KhanatActivity extends GameActivity {
         root.addView(text(S.t("الخانة %s من %s", num(game.box + 1), num(game.boxes.length)), 40, L.saff, true), at(1100, 56, 96, 54));
         root.addView(text(S.t("%s بحرف", boxName(key)), 112, L.onDeep, true), at(1300, 150, 96, 122));
         FrameLayout lt = stamp(L.saff, 0, 0, false);
-        lt.addView(centered(game.letter, 144, L.onSaff, true), new FrameLayout.LayoutParams(-1, -1));
+        lt.addView(glyph(game.letter, 144, L.onSaff), new FrameLayout.LayoutParams(-1, -1));
         root.addView(lt, atEnd(232, 200, 96, 54));
         boolean compact = KhanatLayout.rows(n) > 1;
         for (int i = 0; i < n; i++) {

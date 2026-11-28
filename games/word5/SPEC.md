@@ -20,6 +20,7 @@ Phones can be the keyboard (typing Arabic is natural there), the TV shows the bo
 3. ة → ه.
 4. ى → ي.
 5. The 28 letters of the keyboard are: ا ب ت ث ج ح خ د ذ ر ز س ش ص ض ط ظ ع غ ف ق ك ل م ن ه و ي. A word with ء ؤ ئ is not in the lists (it cannot be typed), so the keyboard has no hamza keys; all lists are filtered to exactly these 28 letters.
+5b. **ة and ه are one letter for the rules (decided after the owner's note on «ه and ة»).** The answer, the accepted list, the colours and the keyboard's key colours all use the folded letter, so «مدرسة» and «مدرسه» are the same guess. The bug was in what the TILE showed: it drew the folded letter, so typing ة showed ه. The tile now shows what the player typed (`Word5Game.typingShown`, `guessShown`; the same for ى and ء, and for أ إ آ typed on a phone), and the ة, ى and ء keys take the colour of their letter (ه, ي, ا). `Word5Test` runs the whole bank: each answer is won by its own spelling and by the same word with ة typed as ه, with the typed letter on the tile.
 6. A word has to be five letters after normalization. The word shown to the player (the answer reveal) is the original spelling kept in `answers.json` (`display`).
 Feedback with repeated letters follows the standard rule: green first, then yellow for the remaining count of that letter in the answer, the rest gray.
 

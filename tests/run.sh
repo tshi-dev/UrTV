@@ -500,6 +500,8 @@ python3 tests/games_data_test.py   # the games' data: the forms, the limits, the
 python3 tests/howto_test.py   # «طريقة اللعب»: the small «!» on a start screen and the panel behind it, the texts of the 19 games (rules on a plain JVM, the three places a text lives, the Android side by its source)
 python3 tests/games_kit_test.py   # the games' kit, the registry and the list, «خمس خانات» and «الكلمة المفقودة» (their rules on a plain JVM)
 python3 tests/games_fixes_test.py   # the tester's ten game bugs of build 629: the tile and setup words, «ابدأ», the Domino backs, the hex letters, «بدون كلام»'s cover, «ه» and the letter names, «خمّن الكلمة», the how-to, the room page, the setup rows
+python3 tests/games_flow_test.py   # the phone / no-phone flow: one mode row on the game's page, no phones filter, the room as one block, the way out to the remote
+python3 tests/glyph_centre_shots.py   # every letter in the middle of its tile: GlyphCentre on a JVM, the ink measuring on drawn images, the glyph views in the word game and «خمس خانات» (CI also measures real shots)
 python3 tests/domino_test.py   # «دومينو»: the rules and the computer players on a plain JVM, whole games from seeds (docs/DOMINO.md)
 #
 python3 tests/tvports_test.py   # BETA LG/Samsung packages: manifests, files, sizes (docs/LG-SAMSUNG.md)

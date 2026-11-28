@@ -51,7 +51,7 @@ check("the registry's table says exactly what docs/mockups/howto/TEXTS.md (the r
 # ---- the Android side
 base, view, quiz, chips = src("GameActivity.java"), src("GameHowToView.java"), src("QuizActivity.java"), src("GameChips.java")
 check("GameActivity: the «!» is a small 48 x 48 mark at the end corner (a saffron ring with the focus), the small line makes room (80), up from the first row reaches it, OK opens the panel",
-      "atEnd(48, 48, 96, 70)" in base and "atEnd(64, 64, 88, 62)" in base and "titleInset = (c.hasHelp ? 80 : 0) + 168" in base and "if (c.help) { openHowTo(); return false; }" in base and "if (dy < 0 && row == 0 && hasHelp) { help = true; return true; }" in chips
+      "atEnd(48, 48, 96, 70)" in base and "atEnd(64, 64, 88, 62)" in base and "titleInset = (c.hasHelp ? 80 : 0) + 168" in base and "if (c.help) { openHowTo(); return false; }" in base and "if (dy < 0 && step(row, -1) == row && hasHelp) { help = true; return true; }" in chips
       and "focus = !c.help && c.row == r" in base and "c.onButton() && c.btn == 0 && !c.help" in base)
 check("GameActivity: Menu opens the panel (and closes it), a round is paused first (the clocks stop), a secret on the screen or the names keep it closed; Back closes it, ▲ ▼ scroll, no other key reaches the game; no tick runs while it is open",
       "k == KeyEvent.KEYCODE_MENU" in base and "if (inPlay() && !pauseCard) openPause(); openHowTo();" in base and "namesMode == 0 && hand == 0" in base and "if (back) closeHowTo(); else if (dy != 0 && howtoView != null) howtoView.scroll(dy); return true;" in base

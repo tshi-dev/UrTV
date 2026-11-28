@@ -1,12 +1,9 @@
 # اللعب بالجوالات (4.3.3, phase 1)
 
-One switch, «اللعب بالجوالات», in the setup of «واحد مو معنا» and «بدون كلام». **Off by default, every time** (it is not remembered from last time; only the
-«بالجوالات» page of the games list turns it on for the game it opens). Off, nothing changes: one remote, the hand-over screen, no socket.
+One row, «كيف تلعبون؟» (ريموت واحد / جوالات), the FIRST row of the setup of the seven older games, **kept per game** like every chip (the list has no phones filter and no extra). «ريموت واحد»: nothing changes, one remote, the hand-over screen, no socket.
 
 ## What the person sees
-- The games list has a filter at the top, beside the night switch: **«عرض: الكل / بالجوالات»**. «الكل» (the default) shows every game; «بالجوالات» shows only the games
-  that can be played with phones (`GameRegistry.PHONE_GAMES`), and opens the party games with the phones switch already on. The choice is kept. In both views the
-  party games can be played with one remote (switch off).
+- The games list has no filter: the tile says «ريموت», «جوالات» or «ريموت أو جوالات», and the choice is made on the game's own page (docs/research/GAMES-FLOW.md).
 - With the switch on, «ابدأ» opens a lobby: the QR, the four-digit room code, the address, the phones that came in (as many as 12). Start needs 3 phones
   for «واحد مو معنا» (10 at most) and 2 for «بدون كلام». The phones are the players, in the order they came; their names are the players' names.
 - **واحد مو معنا**: every phone shows its own word at once (the one outside gets «أنت برا السالفة»), then «شفتها». The TV goes on when all have tapped, or when

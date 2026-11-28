@@ -66,7 +66,7 @@ public final class PartyGamesTest {
         check("odd-one deal: Back hides the secret first, and nothing opens while paused", hidden && stillHidden && !g.paused() && g.dealPlayer() == 1);
         deal(g);
         int[] o = g.order(); boolean circle = true; for (int i = 1; i < 5; i++) circle &= o[i] == (o[0] + i) % 5;
-        check("odd-one talk: after the last player the talk starts; the order is the seats in a circle from a random first speaker", g.phase == OddOneGame.Phase.TALK && circle && g.speaker() == o[0] && g.talkTotal() == 5);
+        check("odd-one talk: after the last player the talk starts; the order is the seats in a circle from a first speaker who is never the odd one", g.phase == OddOneGame.Phase.TALK && circle && g.speaker() == o[0] && g.talkTotal() == 5);
         g.dealBack(); boolean back = g.phase == OddOneGame.Phase.DEAL && g.dealPlayer() == 4; g.show(); g.hide();
         check("odd-one talk: before anyone spoke, «رجّعها» still gives the last player his word again", back && g.phase == OddOneGame.Phase.TALK);
         now[0] += 12000; long left = g.talkLeftMs(); g.pause(); now[0] += 60000; g.resume();
@@ -232,6 +232,22 @@ public final class PartyGamesTest {
         check("charades, one remote: Back (pause) hides an open word and keeps the time that was left", frozen && g.leftMs() == lp);
         CharadesGame h = cha(false, 2, 60, 3, false, 3); h.coverNext = true; h.ready(); h.hide(); now[0] += 1000; h.correct();
         check("charades, phones: with the cover off the new word shows at once as before (it is on the phone, never on the TV)", cha(false, 2, 60, 3, false, 3).coverNext == false && h.covered());
+        }
+        {   // R-481: the odd one is never the first to talk (he would be exposed at once); the others start in turn, the seats go round from there
+            int firstOdd = 0, games = 0; int[] firstCount = new int[5]; boolean circle = true, laps = true;
+            for (long seed = 0; seed < 20000; seed++) {
+                OddOneGame g = odd(5, 3, false, seed); deal(g);
+                int first = g.speaker(); games++;
+                if (first == g.odd) firstOdd++;
+                firstCount[first]++;
+                int[] o = g.order(); for (int i = 0; i < 5; i++) circle &= o[i] == (first + i) % 5;
+                OddOneGame two = new OddOneGame(topics, 4, 3, 2, false, null, null, () -> now[0], new Random(seed)); deal(two); laps &= two.speaker() != two.odd;
+            }
+            int others = 0, min = Integer.MAX_VALUE, max = 0; for (int p = 0; p < 5; p++) { min = Math.min(min, firstCount[p]); max = Math.max(max, firstCount[p]); }
+            check("odd-one: in 20000 games of 5 the odd one was never the first speaker (" + firstOdd + "), also with two laps of 4; the order is still the seats in a circle", firstOdd == 0 && circle && laps);
+            check("odd-one: every seat starts about as often as the others (a seat is the odd one 1 time in 5, and then it cannot start): the fewest " + min + ", the most " + max + " of " + games, min > games / 5 * 3 / 4 && max < games / 5 * 5 / 4);
+            OddOneGame r = odd(4, 3, false, 11); deal(r); int f0 = r.speaker(); r.redeal(); deal(r);
+            check("odd-one: «نعيد التوزيع» keeps the odd one, and the first speaker is still not him", r.speaker() != r.odd && f0 != r.odd);
         }
         System.exit(failed == 0 ? 0 : 1);
     }

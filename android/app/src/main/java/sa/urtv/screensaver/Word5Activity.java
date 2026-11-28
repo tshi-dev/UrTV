@@ -49,9 +49,8 @@ public class Word5Activity extends GameActivity {
         chips = new GameChips();
         chips.add("tries", S.t("المحاولات"), new String[] {num(Word5Game.TRIES[0]), num(Word5Game.TRIES[1]), num(Word5Game.TRIES[2])}, 0);
         chips.add("kids", S.t("الفئة"), new String[] {S.t("للجميع"), S.t("أطفال")}, 0);
-        chips.add("phones", S.t("اللعب بالجوالات"), new String[] {S.tv(ON_OFF[0]), S.tv(ON_OFF[1])}, 0);
+        modeChip(chips);
         remembered(soundChip(chips));
-        chips.get("phones").picked = getIntent().getBooleanExtra("phones", false) ? 1 : 0;   // off unless the «بالجوالات» view opened this game; never kept from last time
     }
 
     private boolean onPhones() { return phones != null && phones.room.phase() == GamePhoneRoom.Phase.PLAY; }
@@ -64,7 +63,10 @@ public class Word5Activity extends GameActivity {
         String[] t = phones.room.typed(seat);
         String w = Word5Text.normalize(t == null ? "" : t[0]).replace(" ", "");
         while (game.delete()) { }   // a clean row
-        for (int i = 0; i < w.length(); i++) { int k = Word5Text.ALPHABET.indexOf(w.charAt(i)); if (k < 0 || !game.type(k)) break; }
+        String raw = (t == null ? "" : t[0]).replace(" ", "");   // what was typed: the tile shows it, the rules use the folded letter
+        java.util.List<Character> typed = new java.util.ArrayList<>();
+        for (int i = 0; i < raw.length(); i++) { char c = raw.charAt(i); String f = Word5Text.normalize(String.valueOf(c)); if (f.length() == 1) typed.add(c); }
+        for (int i = 0; i < w.length(); i++) { int k = Word5Text.ALPHABET.indexOf(w.charAt(i)); if (k < 0 || !game.type(k, typed.size() == w.length() ? typed.get(i) : w.charAt(i))) break; }
         Word5Game.Entered e = game.enter();
         String who = phones.room.name(seat);
         if (e == Word5Game.Entered.SHORT) { message = S.t("%s: الكلمة خمسة حروف", who); play(QuizSound.LOW); }
@@ -83,6 +85,8 @@ public class Word5Activity extends GameActivity {
         phones.room.start(); phoneLobby = false;
         begin();
     }
+    @Override protected Runnable remoteWay() { return () -> { screen = Screen.SETUP; redraw(); start(); }; }
+    @Override protected GameChips lobbyChips() { return chips; }
     private void start() {
         if (words == null) { toast(S.t("قريبًا")); return; }
         if (chips.picked("phones") == 1) {
@@ -126,7 +130,7 @@ public class Word5Activity extends GameActivity {
         int k = keys.key();
         if (k == Word5Keys.DELETE) { if (game.delete()) { message = ""; typedChanged(); } }
         else if (k != Word5Keys.ENTER) {
-            if (game.type(letterOf(k))) {
+            if (game.type(letterOf(k), shownOf(k).charAt(0))) {
                 message = "";
                 if (game.typing().length() == Word5Text.LENGTH) { int was = keys.key(); keys.set(Word5Keys.ENTER); drawKey(was); drawKey(Word5Keys.ENTER); }   // a full row: the next OK enters it
                 typedChanged();
@@ -162,6 +166,8 @@ public class Word5Activity extends GameActivity {
         return k == Word5Keys.TAA ? Word5Text.ALPHABET.indexOf('ه') : k == Word5Keys.YAA ? Word5Text.ALPHABET.indexOf('ي') : k == Word5Keys.HAMZA ? Word5Text.ALPHABET.indexOf('ا') : k;
     }
     private static final String EXTRA = "ةىء";
+    /** the character a key shows and types on the tile: the letter, or one of ة ى ء as typed */
+    private static String shownOf(int k) { return k < Word5Keys.LETTERS ? String.valueOf(Word5Text.ALPHABET.charAt(k)) : String.valueOf(EXTRA.charAt(k - Word5Keys.TAA)); }
 
     // ---------------------------------------------------------------- the screens
 
@@ -205,12 +211,12 @@ public class Word5Activity extends GameActivity {
         boolean end = screen == Screen.END;
         if (rowViews[r] != null) for (View v : rowViews[r]) root.removeView(v);
         rowViews[r] = new java.util.ArrayList<>();
-        String shown = r < game.row() ? game.guess(r) : r == game.row() && !end ? game.typing() : "";
+        String shown = r < game.row() ? game.guessShown(r) : r == game.row() && !end ? game.typingShown() : "";   // what the player typed (ة stays ة); the colours are the rules'
         int[] cs = r < game.row() ? game.colours(r) : null;
         boolean current = r == game.row() && !end;
         for (int i = 0; i < 5; i++) {
             final FrameLayout t = cs != null ? stamp(colour(cs[i]), L.ink, 6, false) : stamp(L.tile, current ? L.ink : L.ink(0x59), current && i == shown.length() ? 12 : 6, false);
-            if (i < shown.length()) t.addView(centered(String.valueOf(shown.charAt(i)), tile * .62f, cs == null ? L.ink : cs[i] == Word5Game.GREEN ? L.onDeep : cs[i] == Word5Game.YELLOW ? L.onSaff : L.onInk, true), new FrameLayout.LayoutParams(-1, -1));
+            if (i < shown.length()) t.addView(glyph(String.valueOf(shown.charAt(i)), tile * .62f, cs == null ? L.ink : cs[i] == Word5Game.GREEN ? L.onDeep : cs[i] == Word5Game.YELLOW ? L.onSaff : L.onInk), new FrameLayout.LayoutParams(-1, -1));
             root.addView(t, at(tile, tile, 96 + col(i, tile, gridW, 5), 96 + r * (tile + GAP)));
             rowViews[r].add(t);
             if (current && shake && animate) t.animate().translationX(px(16)).setDuration(60).withEndAction(() -> t.animate().translationX(-px(16)).setDuration(90).withEndAction(() -> t.animate().translationX(0).setDuration(60)));
@@ -230,10 +236,10 @@ public class Word5Activity extends GameActivity {
             at = Math.min(col(first, kw, keyW, 7), col(first + 1, kw, keyW, 7));
             v = button(k == Word5Keys.ENTER ? S.t("إدخال") : S.t("حذف"), focus);
         } else {
-            int c = k < Word5Keys.LETTERS ? game.key(letterOf(k)) : 0;   // ة ى ء are only spellings of ه ي ا: they never take a colour of their own (only a typed letter's key does)
+            int c = game.key(letterOf(k));   // ة ى ء are spellings of ه ي ا (one letter for the rules): they take their letter's colour, so a ه that came out green is green on ة too
             FrameLayout key = stamp(focus ? L.ink : c == 0 ? L.tile : colour(c), L.ink, focus && c != 0 ? 12 : 6, false);
             int wordsColour = focus ? (c == Word5Game.GREEN ? L.ok : c == Word5Game.YELLOW ? L.saff : L.onInk) : c == 0 ? L.ink : c == Word5Game.GREEN ? L.onDeep : c == Word5Game.YELLOW ? L.onSaff : L.onInk;
-            TextView lt = centered(k < Word5Keys.LETTERS ? String.valueOf(Word5Text.ALPHABET.charAt(k)) : String.valueOf(EXTRA.charAt(k - Word5Keys.TAA)), 72, wordsColour, true);
+            View lt = glyph(shownOf(k), 72, wordsColour);
             if (focus && c == Word5Game.GRAY) lt.setAlpha(.55f);
             key.addView(lt, new FrameLayout.LayoutParams(-1, -1));
             v = key;

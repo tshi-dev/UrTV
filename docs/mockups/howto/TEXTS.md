@@ -66,7 +66,7 @@ Every text is written from the game's real rules: its SPEC (`games/<id>/SPEC.md`
 **كيف تلعب**
 1. الفريق الأول يصل يمين اللوحة بيسارها، والثاني أعلاها بأسفلها. / The first team joins right to left, the second top to bottom.
 2. الفريق صاحب الدور يحرّك الإطار بالأسهم إلى خلية حرّة ويضغط «اختيار»؛ يظهر سؤال جوابه يبدأ بحرف الخلية. / The team in turn moves the frame to a free cell and presses OK: a question appears whose answer starts with the cell's letter.
-3. جاوبوا بصوت عالٍ. «خيارات» تُظهر أربعة خيارات. «اكشف الجواب» تُظهره. / Answer aloud. «خيارات» shows four options. Reveal shows the answer.
+3. جاوبوا بصوت عالٍ. «خيارات» تُظهر خيارات كلها تبدأ بحرف الخلية. «اكشف الجواب» تُظهره. / Answer aloud. «خيارات» shows choices that all start with the cell's letter. Reveal shows the answer.
 4. المضيف يختار من جاوب صح: الخلية له. «ما أحد»: تبقى الخلية حرّة. / The host picks who was right: the cell is theirs. «ما أحد»: it stays free.
 5. من جاوب صح يختار الحرف التالي (أو بالتناوب، حسب الإعداد). / Whoever was right picks the next letter (or by turns, per the setting).
 **بالجوالات** على كل سؤال أسرع من يضغط زر الجرس في جواله هو من يجاوب. الجوالات تأخذ الفريقين بالتناوب. / On each question the first phone to press the buzzer answers; phones take the two teams in turn.

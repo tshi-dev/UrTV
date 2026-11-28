@@ -45,10 +45,11 @@ check("settings: «النسخ التجريبية» says its state and, in both, 
 
 # ---- the games
 lob = games[games.index("protected final void drawPhoneLobby"):]
-check("games: the room's code once, in Latin digits", lob.count('centered("\\u2066" + phones.code + "\\u2069", 120') == 1 and "latinBox" not in lob)
-check("games: the «الكل» header is true (one remote, but for the games marked «جوال»), and only those are marked",
-      'S.t("ريموت واحد يدور بينكم، إلا اللي عليها «جوال»")' in hub and "بدون جوالات" not in hub
-      and 'filter == 0 && GameRegistry.needsPhones(g.id)' in hub and 'S.t("ريموت")' not in hub)
+check("games: the room's code once, in Latin digits: inside the address only (the games' new room, after the audit), no code box of its own",
+      'centered("\\u2066" + phones.code' not in lob and "latinBox" not in lob and lob.count("root.addView(addrBox, ") == 1
+      and 'String url = phones.url.replace("http://", "");   // Latin digits always, the code is the end of it' in lob)
+check("games: the list's header says no sentence, and each tile says how it is played in one quiet word («ريموت» / «جوالات» / «ريموت أو جوالات»)",
+      "بدون جوالات" not in hub and 'S.t("ريموت واحد يدور بينكم' not in hub and "GameActivity.wayWord(way)" in hub and "mb.setColor(0)" in hub)
 
 # ---- تلاوة وأذان
 check("تلاوة: the adhan switch says on or off; the time left is on the next prayer's row only",

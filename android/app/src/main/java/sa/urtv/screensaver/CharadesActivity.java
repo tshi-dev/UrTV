@@ -40,10 +40,9 @@ public class CharadesActivity extends GameActivity {
         for (int i = 0; i < teams.length; i++) teams[i] = num(TEAMS[i]);
         for (int i = 0; i < secs.length; i++) secs[i] = S.t("%s ثانية", num(CharadesGame.SECONDS[i]));
         chips = new GameChips().add("mode", S.t("الطريقة"), new String[]{S.t("بدون كلام"), S.t("وصّف")}, 0).add("teams", S.t("الفرق"), teams, 0).add("time", S.t("الوقت"), secs, 1)
-            .add("age", S.t("الكلمات"), new String[]{S.t("للجميع"), S.t("للأطفال")}, 0).add("foul", S.t("المخالفات"), new String[]{S.tv(ON_OFF[0]), S.tv(ON_OFF[1])}, 0)
-            .add("phones", S.t("اللعب بالجوالات"), new String[]{S.tv(ON_OFF[0]), S.tv(ON_OFF[1])}, 0);
+            .add("age", S.t("الكلمات"), new String[]{S.t("للجميع"), S.t("للأطفال")}, 0).add("foul", S.t("المخالفات"), new String[]{S.tv(ON_OFF[0]), S.tv(ON_OFF[1])}, 0);
+            modeChip(chips);
         remembered(soundChip(chips));
-        chips.get("phones").picked = getIntent().getBooleanExtra("phones", false) ? 1 : 0;   // off unless the «بالجوالات» page opened this game; never kept from last time
         onChips(chips);
     }
     /** «مخالفة» belongs to «وصّف» only */
@@ -56,6 +55,8 @@ public class CharadesActivity extends GameActivity {
         GamePrefs.remember(this, id(), r);
     }
 
+    @Override protected Runnable remoteWay() { return () -> { screen = Screen.SETUP; redraw(); start(); }; }
+    @Override protected GameChips lobbyChips() { return chips; }
     private void start() {
         if (words == null) { toast(S.t("قريبًا")); return; }
         if (chips.picked("phones") == 1) { if (!openPhones()) return; screen = Screen.LOBBY; phoneLobby = true; redraw(); return; }
