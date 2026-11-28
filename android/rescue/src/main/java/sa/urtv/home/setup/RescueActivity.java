@@ -114,6 +114,7 @@ public class RescueActivity extends Activity {
             said.append(p.enabled.isEmpty() ? "ما كان شيء من تطبيقات التلفزيون موقوفاً.\n" : "شغّلنا " + back + " من " + p.enabled.size() + " تطبيقاً كان موقوفاً.\n");
             said.append(p.home.isEmpty() ? "ما عرفنا الشاشة الأصلية: اختر الشاشة الرئيسية من إعدادات التلفزيون ← التطبيقات.\n" : "زر الرئيسية يفتح الشاشة الأصلية الآن.\n");
             if (p.a11yChanged) said.append("أطفأنا «إضافات تلفزيونك».\n");
+            if (RescuePlan.keepsOurSaver(lastLine(adb.run("settings get secure screensaver_components").output))) said.append(RescuePlan.SAVER_KEPT).append('\n');   // 4.4 (R-471): kept, said
             if (!p.home.isEmpty()) {   // 4.4 (R7): the stock home has Home again: the fallback home steps aside (two homes would ask the person which one)
                 try {
                     getPackageManager().setComponentEnabledSetting(new android.content.ComponentName(this, RescueHome.ALIAS_CLASS),

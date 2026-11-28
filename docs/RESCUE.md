@@ -24,7 +24,7 @@ UrTV ما يوقف الشاشة الأصلية للتلفزيون ولا «وس�
 2. في Downloader اكتب **8042301** (أو الرابط كامل: `https://github.com/tshi-dev/UrTV/releases/download/apk-latest/urtv-rescue.apk`)، وثبّت **«إنقاذ تلفزيونك»**.
 3. افتحه واضغط **«رجّع التلفزيون كما كان»**. لو سألك التلفزيون «السماح بتصحيح USB؟» اختر **«السماح دائماً»**.
 
-يشغّل كل ما أوقفه إعدادنا والشاشة الأصلية ووسيط الإعداد، ويرجّع زر الرئيسية للشاشة الأصلية، ويطفي «إضافات تلفزيونك». ما يحذف شيئاً. يحتاج «تصحيح USB» مفعّلاً (الإعدادات ← تفضيلات الجهاز ← حول ← اضغط «Build» سبع مرات ← خيارات المطوّر ← تصحيح USB).
+يشغّل كل ما أوقفه إعدادنا والشاشة الأصلية ووسيط الإعداد، ويرجّع زر الرئيسية للشاشة الأصلية، ويطفي «إضافات تلفزيونك». ما يحذف شيئاً. شاشة التوقف تبقى شاشة UrTV، وتغيّرها من إعدادات التلفزيون ← شاشة التوقف. يحتاج «تصحيح USB» مفعّلاً (الإعدادات ← تفضيلات الجهاز ← حول ← اضغط «Build» سبع مرات ← خيارات المطوّر ← تصحيح USB).
 
 ## ٣. من جوال أندرويد
 
@@ -75,7 +75,7 @@ pm enable com.google.android.apps.tv.launcherx; pm enable com.google.android.tvl
 UrTV never turns the TV's own home or its setup wizard off (since 4.3.2), so it cannot leave a black screen. If anything goes wrong, put the TV back with one of these routes, easiest first:
 
 1. **The TV alone (remote only).** Settings → Apps → Default apps → Home app → the stock home (Google TV / Android TV Home); not every TV has it. If the stock home was turned off: Settings → Apps → See all apps → Show system apps → Google TV Home (or Android TV Home) → Enable; the same for the setup wizard. Press Home.
-2. **On the TV: «إنقاذ تلفزيونك» (UrTV Rescue), no phone.** Remote's Settings key → Apps → Downloader → Open; in Downloader enter **8042301** (or the whole link: `https://github.com/tshi-dev/UrTV/releases/download/apk-latest/urtv-rescue.apk`), install, open, press «رجّع التلفزيون كما كان». Accept «Allow USB debugging?» with «Always allow». It turns on what our setup turned off, the stock home and the setup wizard, gives Home back to the stock home and turns «إضافات تلفزيونك» off. Nothing is removed. Needs USB debugging on.
+2. **On the TV: «إنقاذ تلفزيونك» (UrTV Rescue), no phone.** Remote's Settings key → Apps → Downloader → Open; in Downloader enter **8042301** (or the whole link: `https://github.com/tshi-dev/UrTV/releases/download/apk-latest/urtv-rescue.apk`), install, open, press «رجّع التلفزيون كما كان». Accept «Allow USB debugging?» with «Always allow». It turns on what our setup turned off, the stock home and the setup wizard, gives Home back to the stock home and turns «إضافات تلفزيونك» off. Nothing is removed. The screensaver stays ours (the owner, 4.4): the rescue says so and where to change it (the TV's Settings, Screen saver). Needs USB debugging on.
 3. **Android phone** (Bugjaeger or Remote ADB Shell, free on Play): same Wi-Fi, connect to the TV's address on port 5555, accept the prompt, paste the line above.
 4. **iPhone: iSH Shell** (free, App Store), same Wi-Fi, network debugging on the TV (port 5555): `apk update && apk add android-tools`, `adb connect TV_ADDRESS:5555`, accept the prompt, `adb shell`, paste the same line. Slow; keep iSH in front while it runs (iOS pauses it in the background).
 5. **Any computer with Chrome, nothing installed: Tango** (tangoapp.dev, open source, MIT). Needs a USB data cable to the TV: most TVs' USB ports only take a flash drive, so this works on streaming boxes whose port takes a data cable. A browser cannot reach the TV over Wi-Fi without a helper program. Add → pick the TV → accept the prompt → Shell → paste the same line.
