@@ -1,0 +1,28 @@
+<!doctype html><html><head><meta charset="utf-8"><style>
+body{margin:0;width:1600px;font:18px sans-serif;background:#888}
+.half{padding:24px 32px}.dark{background:#141414;color:#eee}.light{background:#ecebe7;color:#222}
+h2{margin:0 0 14px;font-size:22px}
+.row{display:flex;align-items:center;gap:28px;margin-bottom:18px}
+.name{width:150px;font-weight:600}
+.i96{width:96px;height:96px}.i48{width:48px;height:48px}
+.ad{position:relative;width:96px;height:96px;border-radius:22px;overflow:hidden}.ad img{position:absolute;inset:-12.5%;width:125%;height:125%}
+.ad.s{width:48px;height:48px;border-radius:11px}
+.ban{width:320px;height:180px;border-radius:8px;overflow:hidden;background:#000;display:grid;place-items:center}
+.ban img{width:100%;height:100%}.ban img.sq{object-fit:fill}
+.note{font-size:15px;opacity:.75;width:420px}
+</style></head><body>
+<script>
+const apps=[
+ ['UrTV (الرئيسية)','<img class="i96" src="home-icon.png">','<img class="i48" src="home-icon.png">','<img src="home-banner.png">','PNG icon and banner (320, 480)'],
+ ['شاشة التوقف','<img class="i96" src="saver-icon.png">','<img class="i48" src="saver-icon.png">','<img src="saver-banner.png">','PNG icon and banner'],
+ ['إنقاذ تلفزيونك','<img class="i96" src="rescue-icon.png">','<img class="i48" src="rescue-icon.png">','<img class="sq" src="rescue-icon.png">','banner = the square icon (@mipmap/ic_rescue), 192 px stretched to 320×180: not a rectangle, soft'],
+ ['إضافات تلفزيونك','<img class="i96" src="extras-icon.png">','<img class="i48" src="extras-icon.png">','<span style="color:#888">no banner</span>','PNG icon only'],
+ ['UrTV Player','<div class="ad"><img src="ic_bg.svg"><img src="ic_fg.svg"></div>','<div class="ad s"><img src="ic_bg.svg"><img src="ic_fg.svg"></div>','<img src="player-banner.webp">','adaptive vector icon, banner webp 640×360 (public repo; the private UrTV-Player-new not seen)'],
+ ['فحص تلفزيونك (doctor)','<img class="i96" src="icon.svg">','<img class="i48" src="icon.svg">','<img src="banner.svg">','vector icon (not adaptive) and vector banner'],
+];
+for (const cls of ['dark','light']) {
+  document.write(`<div class="half ${cls}"><h2>${cls==='dark'?'On a dark home':'On a light home'}</h2>`);
+  for (const a of apps) document.write(`<div class="row"><div class="name">${a[0]}</div>${a[1]}${a[2]}<div class="ban">${a[3]}</div><div class="note">${a[4]}</div></div>`);
+  document.write('</div>');
+}
+</script></body></html>
