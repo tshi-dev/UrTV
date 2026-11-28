@@ -320,10 +320,36 @@ def league_file(store, lg, now, stamp, names, ar="", zones=None):
     return body
 
 
+ROUNDS_MIN_SHARE, ROUNDS_MAX = 0.9, 60
+
+
+def rounds_file(store, lg, now, stamp):
+    """4.4 the league page's matchweek strip: every game of the current season by round, {v, id, season, of, now, rounds: {r: [[id, t, h, a,
+    hn, an, hs, as, st], ...]}}; None for a cup, or when fewer than 90 % of the season's games have a round number (the page then keeps its
+    plain list). «now»: the lowest round that still has a game to play, else the last"""
+    season = season_now(store, lg, now)
+    if not season:
+        return None
+    games = [e for e in store.leagues[(lg, season)].values() if not e.get("pp")]
+    if not games or is_cup(lg, cup(games)):
+        return None
+    num = [e for e in games if str(e.get("r") or "").strip().isdigit() and 0 < int(str(e["r"]).strip()) <= ROUNDS_MAX]
+    if len(num) < ROUNDS_MIN_SHARE * len(games):
+        return None
+    by = {}
+    for e in sorted(num, key=lambda e: e["t"]):
+        by.setdefault(str(int(e["r"])), []).append([e.get("id") or "", e["t"], e["h"], e["a"], e.get("hn") or "", e.get("an") or "",
+                                                    e.get("hs"), e.get("as"), e.get("st") or ""])
+    of = max(int(r) for r in by)
+    left = sorted(int(r) for r, gs in by.items() if any(not _done({"hs": g[6], "as": g[7], "st": g[8]}) for g in gs))
+    return {"v": V, "id": lg, "season": season, "updated": stamp, "of": of, "now": left[0] if left else of, "rounds": by}
+
+
 def derive(store, out, prev, now, stamp, names, league_ar, emit):
     """writes out/sports/<lg>.json for every league of the store, and 4.5 out/sports/<lg>/<season>.json for its past seasons; returns how many
     leagues"""
     shutil.rmtree(out / "sports", ignore_errors=True)
+    shutil.rmtree(out / "rounds", ignore_errors=True)   # 4.4 a league that no longer has round numbers keeps no stale file
     (out / "sports").mkdir(parents=True)
     n = 0
     for lg in sorted({l for (l, _) in store.leagues}):
@@ -331,6 +357,9 @@ def derive(store, out, prev, now, stamp, names, league_ar, emit):
         if body:
             emit(out, prev, f"sports/{lg}.json", body)
             n += 1
+            rf = rounds_file(store, lg, now, stamp)   # 4.4 the matchweek strip's games (leagues with round numbers only)
+            if rf:
+                emit(out, prev, f"rounds/{lg}.json", rf)
             for season in body["seasons"]:
                 if season != body["season"]:
                     emit(out, prev, f"sports/{lg}/{season}.json", season_file(store, lg, season, now, stamp, names, league_ar.get(lg, "")))

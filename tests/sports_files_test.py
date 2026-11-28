@@ -189,6 +189,19 @@ check("home/away: each row's home and away counts [p, w, d, l, gf, ga, pts] add 
 check("home/away: a club with no home game yet has hm all 0", sf.table(mvg[:1], {}, split=True)[-1]["hm"] == [0] * 7 or sf.table(mvg[:1], {}, split=True)[0]["aw"] == [0] * 7)
 check("home/away: not in a past season's file, nor in a plain table (cups' groups)", all("hm" not in r for r in sp["table"]) and "hm" not in sf.table(mvg, {})[0])
 
+# 4.4 the matchweek strip: rounds/<id>.json, every game of the current season by round, for a league whose games have round numbers
+rf = sf.rounds_file(st2, "4668", now, "x")
+check("rounds: every game of the season by its round, in time order, with the number of rounds and the round under way",
+      rf and rf["of"] == 2 and sorted(rf["rounds"]) == ["1", "2"] and [g[0] for g in rf["rounds"]["1"]] == ["a", "b"] and rf["rounds"]["2"][0][6] == "4" and rf["now"] == 2, rf)
+fut = mvg + [mg("f", "10", "30", "3", None, None, d=5, st="NS")]
+st4 = ma.Store(); st4.leagues = {("4668", "2026-2027"): {g["id"]: g for g in fut}}
+check("rounds: «now» is the lowest round that still has a game to play", sf.rounds_file(st4, "4668", now, "x")["now"] == 3)
+st5 = ma.Store(); st5.leagues = {("4668", "2026-2027"): {g["id"]: dict(g, r="Week " + g["r"]) for g in mvg}}
+check("rounds: no file when fewer than 90 % of the games have a round number (the page keeps its list)", sf.rounds_file(st5, "4668", now, "x") is None)
+check("rounds: no file for a cup (the tournaments list)", sf.rounds_file(st3, "4719", now, "x") is None)
+check("rounds: every build writes rounds/<id>.json beside sports/<id>.json for such a league", (o5 / "rounds/4668.json").exists()
+      and json.loads((o5 / "rounds/4668.json").read_text())["of"] >= 1 and (o5 / "rounds/4668.json").stat().st_size < 30000)
+
 answer = {"MRData": {"RaceTable": {"Races": [{"season": "2026", "round": "24", "raceName": "Abu Dhabi Grand Prix", "date": "2026-12-06", "time": "13:00:00Z",
           "Circuit": {"circuitName": "Yas Marina Circuit", "Location": {"country": "UAE", "locality": "Abu Dhabi"}},
           "FirstPractice": {"date": "2026-12-04", "time": "09:30:00Z"}, "Qualifying": {"date": "2026-12-05", "time": "14:00:00Z"}}]}}}

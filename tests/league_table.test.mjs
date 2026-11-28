@@ -174,6 +174,38 @@ for (const hash of ['', 'formstyle=boxes', 'formstyle=boxes-letters', 'pagedark=
   check('no script error', !errors.length, errors.join('|'));
   await ctx.close();
 }
+{   // 4.4 the matchweek strip (mockup 2): rounds/<id>.json; 34 rounds, 1-11 played, 12 under way; ◀ ▶ a round; the round's games; OK a game's card
+  const RD = { v: 1, id: '4668', season: '2026-2027', of: 34, now: 12, rounds: {} };
+  for (let r = 1; r <= 34; r++) RD.rounds[String(r)] = [0, 1, 2].map(k => { const t = new Date(NOW + (r - 12) * 7 * 86400000 + k * 3600000).toISOString().slice(0, 19) + 'Z';
+    return ['r' + r + '-' + k, t, ID(k * 2), ID(k * 2 + 1), 'Club ' + k * 2, 'Club ' + (k * 2 + 1), r < 12 ? '2' : null, r < 12 ? '1' : null, r < 12 ? 'FT' : 'NS']; });
+  const { p, ctx, errors } = await open('teams=' + ID(0), { files: { 'rounds/4668.json': RD } });
+  await p.evaluate(() => { MP.view.tab = 2; MP.l = MP.r = 0; MP.zone = 'rows'; mpRender(); });
+  const st = () => p.evaluate(() => { const li = document.querySelector('#mp-list li.mprs'); return li && { n: li.children.length, on: (li.querySelector('.on') || {}).textContent, cur: (li.querySelector('.cur') || {}).textContent,
+    pl: li.querySelectorAll('.pl').length, first: li.children[0].textContent, games: MP.rows.filter(x => !x.rs).map(x => x.idEvent), h2: document.querySelector('#mp-list section h2').textContent, f: li.classList.contains('f') }; });
+  const a = await st();
+  check('the strip: 15 rounds round the one under way (12 chosen and green, 1-11 played and muted), the round\'s 3 games under it, the focus on the strip',
+    a && a.n === 15 && a.on === '١٢' && a.cur === '١٢' && a.first === '٥' && a.pl === 7 && JSON.stringify(a.games) === '["r12-0","r12-1","r12-2"]' && a.h2 === 'الجولة ١٢' && a.f, JSON.stringify(a) + errors.join('|'));
+  const fwd = await p.evaluate(() => Dir_rtl() ? 'ArrowLeft' : 'ArrowRight');
+  await p.keyboard.press(fwd);
+  const b = await st();
+  check('◀ (the next round in RTL): round 13 and its games', b.on === '١٣' && JSON.stringify(b.games) === '["r13-0","r13-1","r13-2"]', JSON.stringify(b));
+  for (let i = 0; i < 30; i++) await p.keyboard.press(fwd);
+  const c = await st();
+  check('the last round is reachable and the strip stays in its box (15 numbers, the last one 34)', c.on === '٣٤' && c.n === 15 && await p.evaluate(() => { const li = document.querySelector('#mp-list li.mprs'); return li.scrollWidth <= li.clientWidth + 1; }), JSON.stringify(c));
+  await p.keyboard.press('ArrowDown'); await p.keyboard.press('Enter');
+  check('▼ then OK: the game\'s card', await p.evaluate(() => !!MP.detail && MP.detail.idEvent === 'r34-0'));
+  await p.evaluate(() => mpBack());
+  const fs = await p.evaluate(() => { MP.r = 0; MP.zone = 'rows'; mpRender(); const cs = getComputedStyle(document.querySelector('#mp-list li.mprs')); return [cs.outlineStyle, /inset/.test(cs.boxShadow), cs.transform !== 'none']; });
+  check('the strip\'s focus is scale and shadow, no outline or ring', JSON.stringify(fs) === '["none",false,true]', JSON.stringify(fs));
+  check('no script error', !errors.length, errors.join('|'));
+  await ctx.close();
+}
+{   // a league with no rounds file (a cup, no round numbers): the games tab as before, no strip
+  const { p, ctx } = await open('teams=' + ID(0));
+  await p.evaluate(() => { MP.view.tab = 2; MP.l = MP.r = 0; mpRender(); });
+  check('no rounds file: no strip', !(await p.evaluate(() => !!document.querySelector('#mp-list li.mprs'))));
+  await ctx.close();
+}
 for (const [style, cls, n] of [['boxes', 'fbox w', ''], ['boxes-letters', 'fbox fbl w', 'ف']]) {   // «شكل آخر المباريات»
   const { p, ctx } = await open('formstyle=' + style + '&teams=' + ID(0));
   const t = await table(p);

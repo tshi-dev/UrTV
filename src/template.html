@@ -959,6 +959,13 @@
   #mp-qv .qb button:focus{outline:none}
   #mp-qv .qb button.f{transform:scale(1.05);box-shadow:0 calc(var(--u)*8) calc(var(--u)*22) var(--shd)}
   #mp-qv .qh{color:var(--fs);font-size:calc(var(--u)*24);text-align:center;margin-top:calc(var(--u)*18)}
+  /* 4.4 the matchweek strip: fixed boxes, the chosen round green and underlined like a tab (no box round it), focus is scale and shadow */
+  #mp-list li.mprs{display:flex;justify-content:center;align-items:center;min-height:calc(var(--u)*72);padding:0 calc(var(--u)*16)}
+  .mprs span{width:calc(var(--u)*56);flex:none;text-align:center;padding:calc(var(--u)*6) 0;border-bottom:calc(var(--u)*4) solid transparent;unicode-bidi:isolate}
+  .mprs span.pl{color:var(--fs)}
+  .mprs span.cur{font-weight:700}
+  .mprs span.on{color:var(--fgr);font-weight:700;border-bottom-color:var(--fgr)}
+  #mp-list li.mprs.f{position:relative;z-index:1;transform:scale(1.012);box-shadow:0 calc(var(--u)*4) calc(var(--u)*14) var(--shd);background:var(--rowf)}
   #mp.mp-focus header,#mp.mp-focus #mp-days,#mp.mp-focus #mp-list h2{display:none}   /* focused mode: the table alone (a cut, no slide), the side's seasons stay */
   .mdf{display:flex;align-items:baseline;gap:calc(var(--u)*16)}
   .mdt .rk{color:var(--fs);font-size:calc(var(--u)*24)}
@@ -5353,6 +5360,7 @@ function mpLeagueView(v){
     ((res && res.results) || []).map(g => archEv(g)).filter(Boolean).forEach(ev => { const d = fbDayOf(fbKick(ev)); if(!by.has(d)) by.set(d, []); by.get(d).push(ev); });
     by.forEach((games, d) => groups.push({key: 'd' + d, name: mpDayName(d), games}));
     if(!by.size) groups.push({key: 'r', name: FB_W.results, games: [], none: res === undefined ? FB_W.loading : FB_W.noData});
+  } else if(tab === 2 && mpRounds(v, id, groups)){   // 4.4 a league with round numbers: the matchweek strip and the chosen round's games
   } else if(tab === 2){
     const by = new Map();
     fbGames().filter(ev => String(ev.idLeague) === id && !fbDone(ev, now)).forEach(ev => { const k = fbRound(ev); if(!by.has(k)) by.set(k, []); by.get(k).push(ev); });
@@ -5379,6 +5387,23 @@ function mpLeagueView(v){
     groups.push({key: 't', name: FB_W.table, games: rows, none: waiting ? FB_W.loading : navigator.onLine === false ? FB_W.noTable : FB_W.noTableL});   // 4.4 (c): this league has none, said so
   }
   return {title: lgName(id), tabs, groups, pins};
+}
+// 4.4 the matchweek strip (mockup 2, phase c): rounds/<id>.json (CI: every game of the season by round, only for a league whose games have
+// round numbers); a row of round numbers (played ones muted, the one under way bold, the chosen one green), ◀ ▶ a round before or after,
+// ▼ the round's games (the page's own copy of a game when it has one: its live score). false when the league has no such file (the list as before)
+const MP_RS = 15;   // round numbers drawn round the chosen one (they fit at 720p)
+function mpRounds(v, id, groups){
+  const rf = archWant('rounds/' + id + '.json'), rounds = rf && rf.rounds;
+  if(!rounds || !(+rf.of > 0)) return false;
+  const of = +rf.of, rd = v.rd = Math.max(1, Math.min(of, +v.rd || +rf.now || 1)), now = Date.now(), own = new Map(fbGames().map(ev => [String(ev.idEvent), ev]));
+  const evOf = g => own.get(String(g[0])) || archEv({id: g[0], lg: id, t: g[1], h: g[2], a: g[3], hn: g[4], an: g[5], hs: g[6], as: g[7], st: g[8], r: String(rd), s: rf.season});
+  const done = r => (rounds[r] || []).length && rounds[r].every(g => { const ev = evOf(g); return ev && fbDone(ev, now); });
+  const lo = Math.max(1, Math.min(rd - Math.floor(MP_RS / 2), of - MP_RS + 1)), hi = Math.min(of, lo + MP_RS - 1), nums = [];
+  for(let r = lo; r <= hi; r++) nums.push({r, pl: done(String(r)), cur: r === +rf.now, on: r === rd});
+  const strip = Object.assign(mpItem(fw(FB_W.round, ar(rd)), '', () => {}), {rs: nums, step: d => { v.rd = Math.max(1, Math.min(of, rd + d)); mpRender(); }});
+  const games = (rounds[String(rd)] || []).map(evOf).filter(Boolean).sort((a, b) => fbKick(a) - fbKick(b));
+  groups.push({key: 'rs', name: fw(FB_W.round, ar(rd)), games: [strip].concat(games), dated: 1});
+  return true;
 }
 // 4.5 the names a file has in both languages: the page's own first (English: the English one; build.py EN_CODE)
 const clubNm = (a, en, id) => a || teamAr(en, id);
@@ -5615,7 +5640,7 @@ function mpRender(){
   // 4.4 beta 2 (the owner, build 570: «it freezes»): a long list (the chooser's 800 leagues) is drawn around the focus only, MP_WIN rows each side;
   // each row keeps its number (data-r), so the focus and the keys are the same as with the whole list
   const lo = MP.rows.length > MP_WIN * 2 + 20 ? Math.max(0, Math.min(MP.r - MP_WIN, MP.rows.length - MP_WIN * 2)) : 0, hi = lo ? lo + MP_WIN * 2 : MP.rows.length > MP_WIN * 2 + 20 ? MP_WIN * 2 : MP.rows.length;
-  const rowAt = (ev, i, g) => i < lo || i >= hi ? '' : ev.it ? mpItemRow(ev, i) : mpRow(ev, now, i, g.dated ? 2 : g.more);
+  const rowAt = (ev, i, g) => i < lo || i >= hi ? '' : ev.rs ? `<li class="mprs${i === MP.r && MP.zone === 'rows' && !MP.detail ? ' f' : ''}" data-r="${i}">${ev.rs.map(x => `<span class="${[x.pl ? 'pl' : '', x.cur ? 'cur' : '', x.on ? 'on' : ''].join(' ').trim()}">${ar(x.r)}</span>`).join('')}</li>` : ev.it ? mpItemRow(ev, i) : mpRow(ev, now, i, g.dated ? 2 : g.more);
   setHTML(document.getElementById('mp-list'), shown.length ? shown.map(g => `<section data-g="${esc(g.key)}"><h2>${g.nameHtml || esc(g.name)}</h2>`
     + (g.html || '') + (g.games.length ? g.table ? mptHtml(g, (n += g.games.length) - g.games.length) : '<ul>' + g.games.map(ev => rowAt(ev, n++, g)).join('') + '</ul>' : '')
     + (g.loading ? `<div class="fnone">${esc(matchesEmptyText())}</div>` : '') + (g.none && !g.games.length ? `<div class="fnone">${esc(g.none)}</div>` : '')
@@ -6017,6 +6042,7 @@ function mpKey(e){
   } else {
     if(k === 'ArrowDown') MP.r = Math.min(MP.rows.length - 1, MP.r + 1);
     else if(k === 'ArrowUp'){ if(MP.r) MP.r--; else MP.zone = 'days'; }
+    else if(MP.rows[MP.r] && MP.rows[MP.r].rs && (k === fwd || k === back)){ e.preventDefault(); return MP.rows[MP.r].step(k === fwd ? 1 : -1); }   // 4.4 the matchweek strip: a round after or before
     else if(k === back){ if(MP.leagues.length) MP.zone = 'leagues'; }
     else if(ok){ const x = MP.rows[MP.r]; e.preventDefault(); if(x && x.it){ if(x.act) x.act(); } else if(x) mpOpen(x); return; }
     else return;
