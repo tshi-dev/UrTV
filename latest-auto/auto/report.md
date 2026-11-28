@@ -1,17 +1,17 @@
-# Automatic round: emulator-3
+# Automatic round: emulator-4
 
 ## Health metrics
 
 | metric | now | limit | previous | change | verdict |
 |---|---|---|---|---|---|
-| cold_start_home_ms | 1136ms | max 20000 |  |  | ok |
-| cold_start_saver_ms | 866ms | max 20000 |  |  | ok |
-| jank_home_frames | 66 |  |  |  | no limit |
-| jank_home_pct | 100.0% | max 60 |  |  | RED |
-| jank_home_p90_ms | 48ms |  |  |  | no limit |
-| jank_home_p99_ms | 57ms |  |  |  | no limit |
-| pss_home_kb | 59649KB | max 350000 |  |  | ok |
-| pss_saver_kb | 36911KB | max 350000 |  |  | ok |
+| cold_start_home_ms | 1066ms | max 20000 |  |  | ok |
+| cold_start_saver_ms | 847ms | max 20000 |  |  | ok |
+| jank_home_frames | 67 |  |  |  | no limit |
+| jank_home_pct | 100.0% | max 100 |  |  | ok |
+| jank_home_p90_ms | 44ms |  |  |  | no limit |
+| jank_home_p99_ms | 48ms |  |  |  | no limit |
+| pss_home_kb | 63004KB | max 350000 |  |  | ok |
+| pss_saver_kb | 39326KB | max 350000 |  |  | ok |
 | crashes | 0 | zero 0 |  |  | ok |
 | anrs | 0 | zero 0 |  |  | ok |
 | frozen_lines | 0 | zero 0 |  |  | ok |
@@ -20,7 +20,6 @@
 
 | step | result | what |
 |---|---|---|
-| radio | SKIP | left out of this round (--skip / ROUND_SKIP) |
 | layout-classic-none | PASS | كلاسيكي، بلا بطاقة: the home is in front (look at shots/layout-classic-none.png) |
 | layout-classic-stocks | PASS | كلاسيكي، الأسهم: the home is in front (look at shots/layout-classic-stocks.png) |
 | layout-classic-matches | PASS | كلاسيكي، المباريات: the home is in front (look at shots/layout-classic-matches.png) |
@@ -61,6 +60,19 @@
 | settings-tvos-update | PASS | tvOS ← حول والتحديث: «تحديث تلفزيوني» is on the screen |
 | settings-tvos-search | PASS | tvOS ← بحث في الإعدادات: «بحث في الإعدادات» is on the screen |
 | saver-start | PASS | a dream runs |
+| radio-0 | FAIL | the تلاوة screen did not open: mResumedActivity: ActivityRecord{791504f u0 com.google.android.backdrop/android.service.dreams.DreamActivity t10} |
+| radio-1 | FAIL | the تلاوة screen did not open: mResumedActivity: ActivityRecord{791504f u0 com.google.android.backdrop/android.service.dreams.DreamActivity t10} |
+| radio-2 | FAIL | the تلاوة screen did not open: mResumedActivity: ActivityRecord{791504f u0 com.google.android.backdrop/android.service.dreams.DreamActivity t10} |
+| radio-3 | FAIL | the تلاوة screen did not open: mResumedActivity: ActivityRecord{791504f u0 com.google.android.backdrop/android.service.dreams.DreamActivity t10} |
+| radio-4 | FAIL | the تلاوة screen did not open: mResumedActivity: ActivityRecord{791504f u0 com.google.android.backdrop/android.service.dreams.DreamActivity t10} |
+| radio-5 | FAIL | the تلاوة screen did not open: mResumedActivity: ActivityRecord{791504f u0 com.google.android.backdrop/android.service.dreams.DreamActivity t10} |
+| radio-6 | FAIL | the تلاوة screen did not open: mResumedActivity: ActivityRecord{791504f u0 com.google.android.backdrop/android.service.dreams.DreamActivity t10} |
+| radio-7 | FAIL | the تلاوة screen did not open: mResumedActivity: ActivityRecord{791504f u0 com.google.android.backdrop/android.service.dreams.DreamActivity t10} |
+| radio-8 | FAIL | the تلاوة screen did not open: mResumedActivity: ActivityRecord{791504f u0 com.google.android.backdrop/android.service.dreams.DreamActivity t10} |
+| radio-9 | FAIL | the تلاوة screen did not open: mResumedActivity: ActivityRecord{791504f u0 com.google.android.backdrop/android.service.dreams.DreamActivity t10} |
+| radio-10 | FAIL | the تلاوة screen did not open: mResumedActivity: ActivityRecord{791504f u0 com.google.android.backdrop/android.service.dreams.DreamActivity t10} |
+| radio-11 | FAIL | the تلاوة screen did not open: mResumedActivity: ActivityRecord{791504f u0 com.google.android.backdrop/android.service.dreams.DreamActivity t10} |
+| radio-12 | FAIL | the تلاوة screen did not open: mResumedActivity: ActivityRecord{791504f u0 com.google.android.backdrop/android.service.dreams.DreamActivity t10} |
 | display-720p-home | PASS | the home at 1280x720, density 213 |
 | display-720p-settings | PASS | the settings at 720p |
 | font-large-home | PASS | the home at font scale 1.3 |
@@ -85,8 +97,8 @@
 | adhan-isha-sound | PASS | العشاء: sound |
 | adhan-isha-screen | PASS | العشاء: screen |
 | adhan-isha-none | PASS | العشاء: none |
-| games-list | FAIL | the games list was not on the screen:     mResumedActivity: ActivityRecord{90d9c77 u0 sa.urtv.home/.MainActivity t7} |
+| games-list | PASS | the games list is on the screen (the badges: look at shots/games-list.png) |
 
 ## Verdict
 
-RED: jank_home_pct = 100.0% (limit max 60); step games-list failed
+RED: step radio-0 failed; step radio-1 failed; step radio-2 failed; step radio-3 failed; step radio-4 failed; step radio-5 failed; step radio-6 failed; step radio-7 failed; step radio-8 failed; step radio-9 failed; step radio-10 failed; step radio-11 failed; step radio-12 failed

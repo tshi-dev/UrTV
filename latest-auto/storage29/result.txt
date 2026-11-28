@@ -1,0 +1,1 @@
+FAIL: the screen could not be opened from the shell (not exported, and adb root was refused): the check cannot tell

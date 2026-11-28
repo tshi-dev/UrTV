@@ -1,6 +1,6 @@
 Broadcasting: Intent { act=sa.urtv.screensaver.SET flg=0x400000 cmp=sa.urtv.screensaver/.SaverReceiver (has extras) }
 Broadcast completed: result=0, data="saved
-version: 4.4 (build 3)
+version: 4.4 (build 4)
 city: الرياض (24.6877, 46.7219)
 timezone: Asia/Riyadh
 country: SA
@@ -99,7 +99,7 @@ stocks: 2222,1120,7010,2010
 stkchg: pct
 slot: matches
 countdown: none
-idle: 2147483s
+idle: 10
 genres: 
 langs: 
 events: 
