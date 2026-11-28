@@ -76,7 +76,7 @@ final class ControlCenter {
     /** the round toggles, in this order; every other item is a row */
     static final String[] TOGGLES = {"bluetooth", "mirror", "sleep", "off"};
     /** the rows' order before the person moves any; «شاشة التوقف» is unticked until they ask for it (its own pill is on the home) */
-    static final String[] ROWS = {"net", "sound", "speed", "ours", "games", "city", "adhan", "tv", "apps", "saver", "black"};   // 4.3.1: ours before the TV's, the city beside it; 4.3.3: «الأذان والإقامة»; 4.4 #62: the black screen
+    static final String[] ROWS = {"net", "sound", "speed", "games", "city", "adhan", "tv", "apps", "saver", "black"};   // 4.3.1: ours before the TV's, the city beside it; 4.3.3: «الأذان والإقامة»; 4.4 #62: the black screen
     /** the order before 4.3.1 (ours after the TV's): saved by anyone who opened the editor, never a choice, so it follows the new default */
     static final String OLD_DEFAULT = "net,sound,speed,tv,ours,saver";
     static final String[] DEFAULT_OFF = {"saver", "apps"};
@@ -252,7 +252,8 @@ final class ControlCenter {
             saver.hold = () -> { dismiss(); host.openSaverSettings(); };   // a shortcut: its settings are in «إعدادات تلفزيونك» ← البطاقات
             tile("city", S.t("المدينة"), S.t("للطقس والصلاة"), R.drawable.ic_place, () -> { dismiss(); host.openCity(); });
             tile("games", S.t("الألعاب"), S.t("العب مع العائلة"), R.drawable.ic_play, () -> { dismiss(); host.openGames(); });
-            tile("ours", S.t("تلفزيونك"), S.t("الألعاب والمباريات والإعدادات"), R.drawable.ic_home, () -> { dismiss(); host.openOurSettings(); });
+            // the owner (the audit, H6): two ways to the settings, this panel's «الإعدادات» and the gear in the apps row; «تلفزيونك» (games,
+            // matches and settings) was a third, and the games and the matches have their own ways
             tile("settings", S.t("الإعدادات"), S.t("كل الخيارات"), R.drawable.ic_settings, () -> { dismiss(); host.openSettings(); });
         }
         String upd = host.updateLine();

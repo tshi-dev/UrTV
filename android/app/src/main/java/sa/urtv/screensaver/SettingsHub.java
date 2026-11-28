@@ -205,7 +205,9 @@ final class SettingsHub {
 
     /** the words shown for a scope, at the row's end; "" for none */
     static String scopeWords(String row) {
-        for (String[] r : SCOPES) if (r[0].equals(row)) return "home".equals(r[1]) ? "الرئيسية" : "saver".equals(r[1]) ? "شاشة التوقف" : "both".equals(r[1]) ? "الرئيسية وشاشة التوقف" : "كل التلفزيون";
+        // the owner (the audit, S1): said only on a row that reaches more than one place, and short; a row of one place says nothing (its
+        // section says where)
+        for (String[] r : SCOPES) if (r[0].equals(row)) return "both".equals(r[1]) ? "الرئيسية والتوقف" : "tv".equals(r[1]) ? "كل التلفزيون" : "";
         return "";
     }
 
