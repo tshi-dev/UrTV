@@ -66,8 +66,8 @@ d = tempfile.mkdtemp()
 for name, body in (("getprop", 'echo "$SDK"'), ("cmd", 'echo "cmd $*" >> "$LOG"'), ("pm", "true"), ("am", "true"), ("input", "true"), ("sleep", "true"), ("date", "echo 0")):
     p = os.path.join(d, name); open(p, "w").write(f"#!/bin/sh\n{body}\n"); os.chmod(p, 0o755)
 src = open(os.path.join(ROOT, "optimize", "deadman.sh"), encoding="utf-8").read()
-check("deadman.sh asks for the role only from SDK 29", '[ "$(getprop ro.build.version.sdk)" -ge 29 ] 2> /dev/null && cmd role add-role-holder' in src)
-for sdk, want in (("28", False), ("30", True)):
+check("deadman.sh skips the role only below SDK 29", '[ "${sdk:-99}" -lt 29 ] 2> /dev/null || cmd role add-role-holder' in src)
+for sdk, want in (("28", False), ("30", True), ("", True)):   # "": the TV did not say (tests/deadman_test.py has no getprop): asked, as before
     log = os.path.join(d, f"log{sdk}")
     tail = src[src.index('pm enable "${STOCK%%/*}"'):]
     subprocess.run(["sh", "-c", 'STOCK=com.stock/.Main; ' + tail], env={**os.environ, "PATH": d + ":" + os.environ["PATH"], "SDK": sdk, "LOG": log}, capture_output=True)
