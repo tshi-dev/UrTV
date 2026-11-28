@@ -2113,6 +2113,10 @@ const saveTeamData = () => { try{ const k = o => Object.fromEntries(CONFIG.teamI
   localStorage.setItem('teamData', JSON.stringify({at: Date.now(), m: k(MATCHES), r: k(RESULTS), n: k(NEXT_LIST)})); }catch(e){} };
 let MATCH_RETRIED = false;
 let MATCH_OK_AT = 0, MATCH_FAIL_AT = 0;   // when a refresh last answered, and when the last one got no answer at all (0 = never)
+// 4.4 beta 4 (a user: «تعذّر التحديث» on the screensaver, then the data came): a first load that gets no answer is asked again soon, and the
+// card keeps «جارٍ التحميل…» until that retry also failed (FIRST_FAILS_SHOWN tries in all); a TV just woken often has no network for some seconds
+const FIRST_FAILS_SHOWN = 2, firstRetryMs = n => n < FIRST_FAILS_SHOWN ? Math.min(15000, CONFIG.retryMs) : CONFIG.retryMs;
+let MATCH_FAILS = 0, WEEK_FAILS = 0;   // the first load's tries that got no answer (back to 0 once one answers)
 try{ MATCH_OK_AT = +localStorage.getItem(LS.matches) || 0; }catch(e){}
 
 // ---------- politeness: one request at a time, a pause between, one run of a loader at a time, a per-TV offset ----------
@@ -2724,7 +2728,7 @@ function packPages(slots, per){
 }
 // loading, failed and empty are three different things
 function matchesEmptyText(card){
-  return MATCHES_LOADED ? (todayOnly(card) ? 'لا مباريات اليوم' : 'لا مباريات هذا الأسبوع') : MATCH_FAIL_AT ? 'تعذّر التحديث' : 'جارٍ التحميل…';
+  return MATCHES_LOADED ? (todayOnly(card) ? 'لا مباريات اليوم' : 'لا مباريات هذا الأسبوع') : MATCH_FAIL_AT && MATCH_FAILS >= FIRST_FAILS_SHOWN ? 'تعذّر التحديث' : 'جارٍ التحميل…';
 }
 // #mtoday=1: the matches card only (not the slot, smart or today)
 const todayOnly = card => !!(CONFIG.matchesToday && card && card.kind === 'matches');
@@ -2895,11 +2899,11 @@ const loadMatches = guarded('matches', async function(){
   try{ localStorage.setItem('archTeams', JSON.stringify(Object.fromEntries(CONFIG.teamIds.filter(i => ARCH_T[i]).map(i => [i, ARCH_T[i]])))); }catch(e){}
   if(!answered && (CONFIG.teamIds.length || CONFIG.leagues.length)){   // no answer: keep what is shown, and say so when there is nothing else
     MATCH_FAIL_AT = Date.now();
-    if(!MATCHES_LOADED) setTimeout(loadMatches, CONFIG.retryMs);   // a first load that failed tries again soon, then the normal period
+    if(!MATCHES_LOADED) setTimeout(loadMatches, firstRetryMs(++MATCH_FAILS));   // a first load that failed tries again soon, then the normal period
     renderMatches(); renderPanel(false, 'matches'); renderSlot();
     return;
   }
-  MATCHES_LOADED = true; MATCH_OK_AT = Date.now(); MATCH_FAIL_AT = 0; saveTeamData();
+  MATCHES_LOADED = true; MATCH_OK_AT = Date.now(); MATCH_FAIL_AT = 0; MATCH_FAILS = 0; saveTeamData();
   try{ localStorage.setItem(LS.matches, String(MATCH_OK_AT)); }catch(e){}
   renderMatches();
   renderPanel(false, 'matches');
@@ -3317,13 +3321,13 @@ const loadWeek = guarded('week', async function(){
   const whole = answered > 0 && failed === 0;
   if(!whole && !(answered > 0 && !WEEK_POOL.length && out.length)){
     WEEK_FAIL_AT = Date.now();
-    if(!WEEK_OK_AT) setTimeout(loadWeek, CONFIG.retryMs);   // a first load that failed tries again soon
+    if(!WEEK_OK_AT) setTimeout(loadWeek, firstRetryMs(++WEEK_FAILS));   // a first load that failed tries again soon
     renderPanel(false, 'shows');
     return;
   }
   WEEK_POOL = out.sort((a,b)=> (b.picked - a.picked) || (b.prem - a.prem) || a.date.localeCompare(b.date)).slice(0, 50);
   CARDS.forEach(c => { if(c.kind === 'shows') c.page = 0; });
-  WEEK_OK_AT = Date.now(); WEEK_FAIL_AT = 0;
+  WEEK_OK_AT = Date.now(); WEEK_FAIL_AT = 0; WEEK_FAILS = 0;
   WEEK_LOADED = true;
   renderPanel(false, 'shows');
 });
@@ -3336,7 +3340,7 @@ let WEEK_POOL = [], WEEK_LOADED = false;
 function renderWeekPage(card, animate){
   const ul = card.ul;
   if(!WEEK_POOL.length){
-    if(!WEEK_LOADED && !WEEK_FAIL_AT) return;   // the saved list stays until the first answer
+    if(!WEEK_LOADED && (!WEEK_FAIL_AT || WEEK_FAILS < FIRST_FAILS_SHOWN)) return;   // the saved list (or «جارٍ التحميل…») stays until the first answer or a failed retry
     if(!WEEK_LOADED && ul.firstElementChild && !ul.firstElementChild.classList.contains('empty')) return;
     ul.classList.remove('flip');
     setHTML(ul, `<li class="empty">${WEEK_LOADED ? 'لا جديد هذا الأسبوع' : 'تعذّر التحديث'}</li>`);

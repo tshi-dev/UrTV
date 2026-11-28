@@ -2989,7 +2989,7 @@ for (const panel of ['shows', 'prayers', 'forecast', 'hourly', 'prayerrow', 'nex
     await o.p.evaluate(HOME_SEED() + ' renderPanel(false);');
     const r = await o.p.evaluate(() => { const c = CARDS[0].el.getBoundingClientRect(), t = document.getElementById('week-list').innerText;
       return { kinds: CARDS.map(x => x.kind).join(), cs: document.documentElement.className.match(/cs-\S+/)?.[0] || '', inside: c.left >= -.5 && c.right <= innerWidth + .5 && c.bottom <= innerHeight + .5, h: Math.round(c.height),
-        text: t.length, dots: t.includes('…'), bg: getComputedStyle(document.body).backgroundColor }; });
+        text: t.length, dots: t.replace(/جارٍ التحميل…/g, '').includes('…'), bg: getComputedStyle(document.body).backgroundColor }; });   // 4.4 beta 4: offline, matches and shows say «جارٍ التحميل…» until their retry (15 s): the page's own word, not a cut text
     check(`preview ${panel} / ${style}: the card alone on a transparent page, in its style, inside the ${PREVIEW.join('x')} box, no script errors`,
       !o.errors.length && r.kinds === panel && r.cs === (style === 'current' ? '' : 'cs-' + style) && r.inside && r.text > 0 && !r.dots && r.bg === 'rgba(0, 0, 0, 0)', JSON.stringify(r) + o.errors.join('; '));
     await o.ctx.close();
@@ -3054,8 +3054,11 @@ for (const panel of ['shows', 'prayers', 'forecast', 'hourly', 'prayerrow', 'nex
             strTimestamp: new Date(Date.now() + 3 * 36e5).toISOString() }] });
     });
     await o.p.waitForTimeout(700);
+    const s0 = await slot(o.p), c0 = await card(o.p);   // 4.4 beta 4: one try that got no answer is asked again before anything is said
+    check('matches: the first try failed, its retry is still to come: the slot and the card still say «جارٍ التحميل…»', s0 === 'جارٍ التحميل…' && c0 === 'جارٍ التحميل…', s0 + ' | ' + c0);
+    await o.p.waitForTimeout(1600);   // the retry (1.5 s) failed too
     const s1 = await slot(o.p), c1 = await card(o.p);
-    check('matches: requests that failed with nothing saved say «تعذّر التحديث», in the slot and the card', s1 === 'تعذّر التحديث' && c1 === 'تعذّر التحديث', s1 + ' | ' + c1);
+    check('matches: requests that failed with nothing saved (the first try and its retry) say «تعذّر التحديث», in the slot and the card', s1 === 'تعذّر التحديث' && c1 === 'تعذّر التحديث', s1 + ' | ' + c1);
     down = false;
     await o.p.waitForTimeout(1800);
     const s2 = await slot(o.p);
@@ -3169,10 +3172,13 @@ for (const panel of ['shows', 'prayers', 'forecast', 'hourly', 'prayerrow', 'nex
     check('shows: a day that did not answer keeps the old list, marked with since when', /Good Show/.test(t2) && !/Other Show/.test(t2) && /آخر تحديث/.test(hd2), t2 + ' | ' + hd2);
     await o.ctx.close();
     phase = 'down';
-    const q = await session('teams=&panel=shows&gap=0&retry=60000', (r, u) => /tvmaze/.test(u.host) ? r.fulfill({ status: 503, body: '', headers: hdr }) : r.abort());
+    const q = await session('teams=&panel=shows&gap=0&retry=1500', (r, u) => /tvmaze/.test(u.host) ? r.fulfill({ status: 503, body: '', headers: hdr }) : r.abort());
     await q.p.waitForTimeout(1000);
+    const t0 = await card(q.p);   // 4.4 beta 4: the first failure is asked again before it is said
+    check('shows: the first try failed and its retry is still to come: not «تعذّر التحديث» yet', t0 !== 'تعذّر التحديث' && !/لا جديد/.test(t0), t0);
+    await q.p.waitForTimeout(1800);
     const t3 = await card(q.p);
-    check('shows: a total failure says «تعذّر التحديث», not «لا جديد»', t3 === 'تعذّر التحديث', t3);
+    check('shows: a total failure (the first try and its retry) says «تعذّر التحديث», not «لا جديد»', t3 === 'تعذّر التحديث', t3);
     await q.ctx.close();
   }
 }

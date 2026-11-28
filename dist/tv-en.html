@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <!-- the build: UTC time (YYYYMMDDHHMMSS) of the newest commit of the page's sources, put in by src/build.py. The app loads the page with the newer stamp (its own
      copy or a downloaded one), never by file time, and does not keep a download whose stamp is older than its own (Updater, PageStamp). -->
-<meta name="urtv-build" content="20261128113930">
+<meta name="urtv-build" content="20261128130123">
 <title>Your TV Screen</title>
 <style>
   @font-face{font-family:'Thmanyah';font-weight:300;font-style:normal;font-display:block;src:url("https://raw.githubusercontent.com/tshi-dev/UrTV/master/assets/fonts/Thmanyah-Light.woff2") format("woff2")}
@@ -1919,6 +1919,8 @@ const saveTeamData = () => { try{ const k = o => Object.fromEntries(CONFIG.teamI
   localStorage.setItem('teamData', JSON.stringify({at: Date.now(), m: k(MATCHES), r: k(RESULTS), n: k(NEXT_LIST)})); }catch(e){} };
 let MATCH_RETRIED = false;
 let MATCH_OK_AT = 0, MATCH_FAIL_AT = 0;
+const FIRST_FAILS_SHOWN = 2, firstRetryMs = n => n < FIRST_FAILS_SHOWN ? Math.min(15000, CONFIG.retryMs) : CONFIG.retryMs;
+let MATCH_FAILS = 0, WEEK_FAILS = 0;
 try{ MATCH_OK_AT = +localStorage.getItem(LS.matches) || 0; }catch(e){}
 
 const sleep = ms => new Promise(r => setTimeout(r, ms));
@@ -2457,7 +2459,7 @@ function packPages(slots, per){
   return pages;
 }
 function matchesEmptyText(card){
-  return MATCHES_LOADED ? (todayOnly(card) ? 'No matches today' : 'No matches this week') : MATCH_FAIL_AT ? 'Update failed' : 'Loading…';
+  return MATCHES_LOADED ? (todayOnly(card) ? 'No matches today' : 'No matches this week') : MATCH_FAIL_AT && MATCH_FAILS >= FIRST_FAILS_SHOWN ? 'Update failed' : 'Loading…';
 }
 const todayOnly = card => !!(CONFIG.matchesToday && card && card.kind === 'matches');
 const gameDay = (ev, t) => timeTbd(ev) && ev.dateEvent ? ev.dateEvent : FMT_DATE.format(new Date(t));
@@ -2608,11 +2610,11 @@ const loadMatches = guarded('matches', async function(){
   try{ localStorage.setItem('archTeams', JSON.stringify(Object.fromEntries(CONFIG.teamIds.filter(i => ARCH_T[i]).map(i => [i, ARCH_T[i]])))); }catch(e){}
   if(!answered && (CONFIG.teamIds.length || CONFIG.leagues.length)){
     MATCH_FAIL_AT = Date.now();
-    if(!MATCHES_LOADED) setTimeout(loadMatches, CONFIG.retryMs);
+    if(!MATCHES_LOADED) setTimeout(loadMatches, firstRetryMs(++MATCH_FAILS));
     renderMatches(); renderPanel(false, 'matches'); renderSlot();
     return;
   }
-  MATCHES_LOADED = true; MATCH_OK_AT = Date.now(); MATCH_FAIL_AT = 0; saveTeamData();
+  MATCHES_LOADED = true; MATCH_OK_AT = Date.now(); MATCH_FAIL_AT = 0; MATCH_FAILS = 0; saveTeamData();
   try{ localStorage.setItem(LS.matches, String(MATCH_OK_AT)); }catch(e){}
   renderMatches();
   renderPanel(false, 'matches');
@@ -2991,13 +2993,13 @@ const loadWeek = guarded('week', async function(){
   const whole = answered > 0 && failed === 0;
   if(!whole && !(answered > 0 && !WEEK_POOL.length && out.length)){
     WEEK_FAIL_AT = Date.now();
-    if(!WEEK_OK_AT) setTimeout(loadWeek, CONFIG.retryMs);
+    if(!WEEK_OK_AT) setTimeout(loadWeek, firstRetryMs(++WEEK_FAILS));
     renderPanel(false, 'shows');
     return;
   }
   WEEK_POOL = out.sort((a,b)=> (b.picked - a.picked) || (b.prem - a.prem) || a.date.localeCompare(b.date)).slice(0, 50);
   CARDS.forEach(c => { if(c.kind === 'shows') c.page = 0; });
-  WEEK_OK_AT = Date.now(); WEEK_FAIL_AT = 0;
+  WEEK_OK_AT = Date.now(); WEEK_FAIL_AT = 0; WEEK_FAILS = 0;
   WEEK_LOADED = true;
   renderPanel(false, 'shows');
 });
@@ -3009,7 +3011,7 @@ let WEEK_POOL = [], WEEK_LOADED = false;
 function renderWeekPage(card, animate){
   const ul = card.ul;
   if(!WEEK_POOL.length){
-    if(!WEEK_LOADED && !WEEK_FAIL_AT) return;
+    if(!WEEK_LOADED && (!WEEK_FAIL_AT || WEEK_FAILS < FIRST_FAILS_SHOWN)) return;
     if(!WEEK_LOADED && ul.firstElementChild && !ul.firstElementChild.classList.contains('empty')) return;
     ul.classList.remove('flip');
     setHTML(ul, `<li class="empty">${WEEK_LOADED ? 'Nothing new this week' : 'Update failed'}</li>`);
