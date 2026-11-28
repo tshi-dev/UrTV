@@ -15,6 +15,8 @@ Blockers and majors (high) open: F87, F88, F89, F90, F91.
 
 ## Findings
 
+(The statuses in this section are as of the first pass, 1210cac9; what is fixed now is in «The fixes of the first pass» below and in docs/dev/reviews/4.4.md.)
+
 ### F87 [high] [open] «إلغاء» on the USB-debugging question ends as «انقطع الاتصال» with no retry (R-262 back) (delta D-S1)
 
 - Where: `android/launcher/src/main/java/sa/urtv/home/setup/SetupSession.java:48-60` (openAny); read at `setup/SetupRunner.java:56, :741, :964`
@@ -213,3 +215,114 @@ Blockers and majors (high) open: F87, F88, F89, F90, F91.
 
 - Where: `.github/tools/honours.py` (http: `int(retry-after)` crashes on an HTTP-date; a Wikipedia batch missing some pages shrinks a league's list; only fully empty bodies fall back)
 - Smallest fix: parse Retry-After as a date too; fall back per league when the new list is shorter than the published one.
+
+# Second pass: 1210cac9..05fd9d72
+
+Range: 1210cac9..05fd9d72 (72 commits, 146 files, 3324 insertions, 302 deletions: the review fixes, work/44b4-presses, the left list, the layout bugs, reach-fix)
+Reviewer: a fresh independent review session with three fresh subagents: a verifier of F87–F102 (each fix read; each test run with the fix reverted in a separate worktree, then with it), and two reviewers of the new code (android; everything else). Each new high and each reopened finding was checked against the code by the session.
+Date: 2026-11-28
+API surface diff (`--base 1210cac9`): PASS, 0 new UI-thread paths to a cross-process call; new: the rescue's exported LedgerReceiver (permission sa.urtv.permission.EXTRAS, signature); MainActivity.onResume calls refreshSideCards.
+Gate record: `docs/dev/reviews/4.4.md`, Range end moved to 05fd9d72. **Status: PENDING**: F91 (the owner's decision) and F120 are high and open.
+
+## The fixes of the first pass
+
+Every test below FAILS with its fix reverted and PASSES at 05fd9d72. «grep» = the test reads the source text; «compile» = it fails before only because the class is new.
+
+| Finding | Fix | Verdict | Test | Kind |
+|---|---|---|---|---|
+| F87 | 108add7f | fixed | setup_cancel_test, PairFallbackRun | JVM case + grep |
+| F88 | 108add7f | fixed (every call through ExtrasTrust) | extras_trust_test | JVM + grep |
+| F89 | 108add7f | fixed; message left (F132) | photo_size_test, PhotoSizeRun | JVM + grep |
+| F90 | 1892d00f | fixed; count one loose (F132) | match_archive_test | real build |
+| F91 | — | open, the owner's decision; also fe512bc4 | attribution_test | — |
+| F92 | 849e63c5 | fixed | adhan_keep_test, AdhanKeepRun | JVM |
+| F93 | 12fb4ad4 | **partly**: the older use() path still copies on the UI thread; reopened | audio_adhan_thread_test | grep |
+| F94 | 75d117ee | fixed | pair_retry_test | grep |
+| F95 | 7b5f061d | fixed; eviction of a busy connection (F131) | pair_pool_test, ConnPoolRun | compile + JVM |
+| F96 | e6c947bc | **partly**: the connect step has no limit; reopened | pair_deadline_test, DeadlineRun | compile + JVM |
+| F97 | 452fad87 | fixed (API 29 emulator) | look_panel_affinity_test | grep |
+| F98 | 06607586 | fixed | photo_size_test (orient) | compile + JVM |
+| F99 | 1d52de7a | fixed for one kind; two kinds left (F132) | lite_auto_test, LiteAutoRun | JVM |
+| F100 | 849e63c5 | **partly**: «تعديل المفضلة» not fixed; a full row drops the input; reopened | input_fav_test, InputFavRun, fav_edit_test | compile + grep |
+| F101 | cb860bbf | fixed | look_panel_affinity_test | grep |
+| F102 | 2c95f3c2 | **partly**: on a real TV the layout, card, settings style and a prayer's own voice are not put back (the stand-in prints `key=value`, the TV `key: value`); reopened | tester_auto_test | stand-in TV |
+
+The reopened findings keep their text in the record, with a «Verified (second pass)» line saying what is left.
+
+## New findings
+
+### F120 [high] [open] The rescue's copy of the setup ledger never arrives, and after a reinstall it is not used (second pass, R1)
+
+- Where: `android/launcher/src/main/java/sa/urtv/home/setup/LedgerPush.java:31-32`; `android/rescue/src/main/java/sa/urtv/home/setup/RescueActivity.java:104-106`; `setup/SetupHook.java:152-157` (ledger)
+- What a person sees: the case Left list (c) says it fixes (tester step 92): UrTV reinstalled, its data wiped; «إنقاذ تلفزيونك» → «إنقاذ» still leaves the 18 apps off.
+- Why: (1) the rescue app is installed by adb and never opened, so it is in the stopped state, and Android drops even an explicit broadcast to it without FLAG_INCLUDE_STOPPED_PACKAGES; the home then saves `last = now`, so worthPushing stays false and the copy is never sent again, even after the rescue is opened. (2) RescueActivity uses the copy only when `fromHome == null`; a reinstalled home answers SetupHook.ledger, which is `"\n"` (never null), so the empty ledger wins.
+- Smallest fix: `.addFlags(Intent.FLAG_INCLUDE_STOPPED_PACKAGES)`, and save `last` only once the rescue confirms (an ordered broadcast with a result code); use the copy when `RescuePlan.ledger(fromHome).isEmpty()` too (or merge both: plan only enables what is off now). A test of both halves (the flag; the «\n» answer → the copy).
+
+### F121 [medium] [open] The «كنبة» side cards' WebView is not released when memory is trimmed (second pass, R2)
+
+- Where: `android/launcher/src/main/java/sa/urtv/home/MainActivity.java:546-555` (onTrimMemory destroys homeCard only); SideCards has no Ram.tight idle drop (HomeCard:321, P9)
+- What a person sees: a LOW/MID RAM TV on «كنبة» with sidecards a or b: a second renderer page stays in memory while another app is in front (the 4.1 lag that trim exists for).
+- Smallest fix: `if (sideCards != null) sideCards.drop();` beside homeCard.destroy() (onResume's refreshSideCards makes it again).
+
+### F122 [medium] [open] The side cards still show on «UrTV النظيف» (second pass, R3)
+
+- Where: `MainActivity.java:751-758` (refreshSideCards), `:4245-4268` (applyClean)
+- What a person sees: «كنبة», sidecards on, the clean home on: the prayer, weather and match cards are drawn on a home meant to be bare (the column is added to android.R.id.content, above everything).
+- Smallest fix: refreshSideCards shows nothing when cleanShown; applyClean calls refreshSideCards.
+
+### F123 [medium] [open] «كمّل المشاهدة» says «ما يشارك» when the read was refused or the TV has no provider (second pass, R4)
+
+- Where: `android/launcher/src/main/java/sa/urtv/home/TvRows.java:71-81, :127-150`
+- What a person sees: a TV where the EPG read throws (SecurityException) or has no TvProvider: a card that blames the apps, and a dead focusable card in the D-pad path; wrong for GitHub #56 (TvRowsPick says the card is only for «the provider answered»).
+- Why: counted[0] stays 0 on an exception or a null cursor; the catch swallows it and nothingShared(0) shows the card.
+- Smallest fix: an `answered` flag set only on a non-null cursor without exception; the card only when answered and 0 rows.
+
+### F124 [low] [open] «توقفت الإذاعة فجأة» is offered after a normal power-off (second pass, R5)
+
+- Where: `tilawah/MusicService.java:232, :242, :1259`; `tilawah/ResumeOffer.java` (due)
+- Why: playing_at is cleared only by pause/stop; turning the TV off while the radio plays leaves it, so the next home start offers it for up to 24 h (never auto-started).
+- Smallest fix: clear playing_at on ACTION_SHUTDOWN / screen off, or a shorter MAX_AGE_MS.
+
+### F125 [low] [open] A stale ledger copy is never cleared, and the copy is pushed only at the home's process start (second pass, R6)
+
+- Where: `setup/LedgerKeep.java` (keep, worthPushing), `HomeApp.java:12`
+- Why: an empty list is never pushed, so after «تراجع» the rescue keeps the old list and «إنقاذ» later re-enables packages the person turned off on purpose; a run's ledger written mid-process is lost if the home is wiped before its next start.
+- Smallest fix: push a «cleared» marker after an undo; call LedgerPush.maybe where disabled-by-us.txt / community-applied.txt are written.
+
+### F126 [low] [open] A dead renderer leaves the side cards' layout listener behind (second pass, R7)
+
+- Where: `SideCards.java:157` vs `:119`
+- Smallest fix: removeOnGlobalLayoutListener(fitter) in onRenderProcessGone.
+
+### F127 [low] [open] The phone page logs a line for every request (second pass, R8)
+
+- Where: `phone/PhoneServer.java:134-135` (RequestLog at INFO)
+- Why: /api/state polls, every key press and draw stroke each write a line; the logcat ring loses the setup/UrTVFactory lines a report needs. Privacy checked: no IP, PIN, code, query or user name is logged.
+- Smallest fix: one line per path per minute, or only page paths and failures.
+
+### F128 [low] [open] Three new tests pass (SKIP, exit 0) without javac (second pass, T1)
+
+- Where: `tests/side_cards_test.py`, `tests/extras_trust_test.py`, `tests/setup_cancel_test.py`
+- Why: hijri_line, pair_*, ledger_keep, resume_offer count a missing javac as a failure; these three do not, so the F87/F88 rules are silently not run there (CI has javac).
+- Smallest fix: count SKIP as a failure, as the others do.
+
+### F129 [low] [open] `tests/photo_size_test.py` lost its G3 checks when it was rewritten for F89 (second pass, T2)
+
+- Where: `tests/photo_size_test.py` (108add7f): the screenMax clamp (1280..1920) and the home's `Ram.low(this) ? PhotoShrink.LOW : PhotoShrink.screenMax(this)` wiring are no longer checked.
+- Smallest fix: add the two checks back (or F89 in a file of its own).
+
+### F130 [low] [open] auto-round leaves a work/auto-round-<sha> branch per run; storage29.sh guards only on SDK 29 (second pass, T3)
+
+- Where: `.github/workflows/auto-round.yml`; `tester/auto/ci/storage29.sh` (device_provisioned, adb root, a debug-signed install -r on any Android 10 device on adb). `${{ inputs.skip }}` in `script:` is still there (F117).
+- Smallest fix: delete the run branch after the summary (or keep the last N); storage29.sh refuses unless it sees the emulator (ro.kernel.qemu=1).
+
+### F131 [low] [open] ConnPool closes a connection that is in use when a third caller opens (second pass, S1)
+
+- Where: `android/extras/src/main/java/sa/urtv/home/pair/ConnPool.java` (MAX_OPEN 2, evict the oldest)
+- Why: setup, the boot restore and reapplyHomeRole at once: the oldest live connection is closed mid-command (before: «busy»); no idle rule.
+- Smallest fix: evict the oldest idle one (a last-used time), and answer busy only when all are in a call.
+
+### F132 [low] [open] Leftovers of F89, F90, F99 (second pass, S2)
+
+- Where: `PhotoAddActivity.java:131` (a null from call() still says «ثبّت أو حدّث تطبيق «شاشة تلفزيونك» أولاً» while the app is installed); `.github/tools/match_archive.py:155` (`merged += 1` also for a move that is new in its bucket, loosening the shrink guard by one each); `LiteAuto` (two kinds seconds apart, TRIM then an OOM kill or SLOW, still turn lite mode on for 14 days).
+- Smallest fix: «ما قدرنا نضيف» when the screensaver is installed; count only when the bucket held k; one signal per burst across kinds.
