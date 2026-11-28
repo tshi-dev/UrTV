@@ -188,6 +188,8 @@ public final class SetupHook {
     }
 
     private static volatile long reapplyTried;
+    /** R-502: the boot's «give the role back» runs now (roleAtBoot is called again 25 s and 60 s after the boot: BootRecheck) */
+    private static volatile boolean roleGiving;
 
     /**
      * The person's chosen home is ours (HOME_WANTED) and the switch is done, but Android's default home is not ours any more: the TV took the role back
@@ -300,6 +302,8 @@ public final class SetupHook {
                 return;
             }
             if (d != sa.urtv.home.RoleBootRule.REASSERT) return;
+            if (roleGiving) return;   // R-502: a late boot look while the boot's own try still runs: never two at once
+            roleGiving = true;
             reapplyTried = System.currentTimeMillis();   // the home's start does not try it again at once
             new Thread(new Runnable() {
                 @Override public void run() {
@@ -310,6 +314,8 @@ public final class SetupHook {
                     } catch (Exception e) {
                         reapplyTried = 0;   // adb not up yet: the home's start tries again (reapplyIfLost)
                         android.util.Log.i(TAG, "home role at boot: not ours; adb did not answer yet");
+                    } finally {
+                        roleGiving = false;
                     }
                 }
             }, "home-role-boot").start();

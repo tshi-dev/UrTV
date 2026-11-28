@@ -39,7 +39,9 @@ public final class A11yHeal extends BroadcastReceiver {
             UpdateCarry.after(app, "alarm", intent.getLongExtra("gen", -1));
             return;
         }
+        if (intent != null && BootRecheck.ACTION.equals(intent.getAction())) { BootRecheck.look(app, this); return; }   // R-502: 25 s and 60 s after the boot
         final String why = intent != null && Intent.ACTION_MY_PACKAGE_REPLACED.equals(intent.getAction()) ? "replaced" : "boot";
+        if ("boot".equals(why)) BootRecheck.arm(app);   // R-502: two late looks at HOME and the key service (settings only, nothing brought to the front)
         if ("replaced".equals(why)) UpdateCarry.after(app, "replaced");   // at once, before the wait (arms the alarms)
         if ("replaced".equals(why)) rearm(app, "replaced");   // beta 2: the add-on's Home key catch judged again, now that we are installed
         final PendingResult pending = goAsync();
