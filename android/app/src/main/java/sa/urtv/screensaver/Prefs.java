@@ -133,6 +133,7 @@ final class Prefs {
     Prefs(Context c) {
         ctx = c;
         sp = c.getSharedPreferences("settings", Context.MODE_PRIVATE);
+        if (!sp.contains("cityName")) CityKeep.restore(c, sp);   // R-403: a settings file that came back without its city (a power cut on a TCL A11) gets the kept one
         if (!sp.contains("tournaments")) sp.edit().putBoolean("tournaments", sp.getAll().isEmpty()).apply();   // 4.3.1 «البطولات الكبرى»: on for a new install (nothing saved yet), off for one that already had settings
         GlassStyle.setTweaks(tweaks());
         if (ZoneFix.logger == null) ZoneFix.logger = line -> android.util.Log.i("UrTVZone", line);
@@ -164,6 +165,11 @@ final class Prefs {
         if (code.isEmpty()) code = builtin != null ? Cities.country(builtin) : Location.codeOf(tz);
         sp.edit().putString("cityName", name).putString("cityLat", lat).putString("cityLon", lon)
             .putString("cityTz", tz).putString("cityCountry", code).apply();
+        // R-403: forced to the disk at once, and kept (a power cut right after the choice lost the queued apply()); off the UI thread (a key press calls this)
+        final String fTz = tz, fCode = code;
+        final Context app = ctx.getApplicationContext() != null ? ctx.getApplicationContext() : ctx;
+        try { new Thread(() -> { try { sp.edit().commit(); CityKeep.save(app, name, lat, lon, fTz, fCode); } catch (RuntimeException ignored) { } }, "city-keep").start(); }
+        catch (RuntimeException ignored) { }
     }
 
     /** Also migrates pre-world built-in cities without guessing from a shared time zone. */
