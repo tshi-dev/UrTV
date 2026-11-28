@@ -390,6 +390,7 @@ case "${1:-}" in
       "error: idle not allowed"*)
         case "$2" in 1|2|5|10|15|30) ;; *) echo "error: idle is one of 1 2 5 10 15 30"; exit 1 ;; esac
         "$PY" -I optimize/tv.py "settings put system screen_off_timeout $(($2 * 60000))"
+        send SET "--es idlekept $v" >/dev/null || true   # R-400: the app keeps it, to put it back if the firmware resets it to «never» at boot
         echo "idle: $2 (set from the shell)" ;;
       error:*) echo "$out"; exit 1 ;;
       *) echo "$out" ;;
