@@ -1,3 +1,11 @@
+▶▶ ICONS CHECK, ALL OUR APPS (28 Nov, owner: «check all our icons; the rescue one isn't a rectangle and is all pixels»). Do it after the 4.3.7 rc test, before the diagnostics. Read-only: change nothing.
+Apps: sa.urtv.home, the screensaver, the rescue app, the player, and every other package of ours on the TV (`pm list packages | grep -i urtv`).
+For each one:
+1. In Android TV's app list (Settings → Apps → see all, and the system apps row/launcher if the TV has one): shot. Is the banner a clean full 16:9 rectangle (no black/white bars, no square icon in a box, no blur or pixels, nothing cropped)?
+2. On our own home: the apps row and the «كل التطبيقات» page: shot the tile focused and unfocused.
+3. Pull what the TV actually uses: `dumpsys package <pkg> | grep -iE "icon|banner"` and `cmd package resolve-activity --brief -c android.intent.category.LEANBACK_LAUNCHER <pkg>`. Also pull the APK and list the resources: `unzip -l` on it, then grep banner/ic_launcher with densities and sizes; `aapt2 dump badging` if available. Note any missing xhdpi/xxhdpi banner, banners under 320×180, and a missing android:banner.
+Write tester/icons/REPORT.md: a table of app | where | ok/problem | what's wrong, with the shots. Name the rescue banner problem exactly (size, density, which file). Push to work/tester-report.
+
 ▶▶ 4.3.7 RELEASE CANDIDATE, FULL TEST (28 Nov). Owner is out of the house: you may start now. Do this BEFORE the diagnostics block.
 Build: https://github.com/tshi-dev/UrTV/releases/tag/apk-437rc (prerelease, version.txt 3.683). Its build number 683 is HIGHER than the beta on the TV, so it installs over it keeping data: `APK_TAG=apk-437rc optimize/install.sh all`. Do NOT reinstall apk-next 680 afterwards (Android refuses a lower build); the beta comes back with the next apk-next build (684+) which I will announce.
 TV muted; save `saver.sh show` first.
