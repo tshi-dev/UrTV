@@ -32,6 +32,7 @@ public class ReminderReceiver extends BroadcastReceiver {
             ReminderScheduler.schedule(c);
             return;
         }
+        if (PartsHome.off(c, "tasks")) { ReminderScheduler.schedule(c); return; }   // 4.4 «أجزاء UrTV»: «المهام والتذكيرات» off, no card; the next is still set
         long now = System.currentTimeMillis();
         deliver(c, now);
         ReminderScheduler.schedule(c);

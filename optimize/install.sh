@@ -760,6 +760,10 @@ if [ "$what" = launcher ] || [ "$what" = all ]; then
         fi
         # c. the new home started and confirmed in front («Status: ok» and on screen), the stock home still on;
         SAFE_STAGE=home_start; jstep home_start
+        # 4.4 «ابدأ بـ»: the home opens the screensaver's chooser once on a TV that has not answered it, and this check wants the home in front:
+        # answered «خلّه مثل ما هو» first (nothing changes; the person's start is `saver.sh start KEY`, docs/SETUP-PROMPT.md)
+        shown=$(bash optimize/saver.sh show 2> /dev/null | tr -d '\r') || true
+        if grep -q '^start: not asked yet' <<< "$shown"; then bash optimize/saver.sh start same > /dev/null 2>&1 || true; fi
         res=$("$PY" -I optimize/tv.py "am start -W -a android.intent.action.MAIN -c android.intent.category.HOME -n sa.urtv.home/.MainActivity") || return 1
         front=no
         if grep -qF 'Status: ok' <<< "$res" && ! grep -qi '^Error' <<< "$res"; then

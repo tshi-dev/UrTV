@@ -103,6 +103,11 @@
 #   optimize/saver.sh cardstyle glass1             look of the card beside the clock: current dark1 glass1 dark3 glass3 boxes classic
 #   optimize/saver.sh cardsize l                   the cards' size: s m (default) l
 #   optimize/saver.sh cardcorner soft              the cards' corners: style (default, each card style's own) sharp soft round
+#   optimize/saver.sh start clean                  4.4 «ابدأ بـ»: how the TV starts: clean (نظيف), full (كامل), couch (كنبة), prayer (مصلّي), sport (رياضة),
+#                                                 kids (للصغار: then dock.sh pin set), simple (بسيط), or same (خلّه مثل ما هو: nothing changes, the welcome is
+#                                                 not shown). A look and the parts; the city, the teams, the locks and each part's own settings are kept
+#   optimize/saver.sh part matches off            4.4 «أجزاء UrTV»: a part off disappears from the home, the screensaver, the settings and their search; on
+#                                                 brings it back as it was. prayer off silences the adhan too; saver off gives the TV its own screensaver
 #   optimize/saver.sh sidecards a                  «كنبة»'s small cards on the left: off (default) a (prayer, weather) b (and the next match)
 #   optimize/saver.sh design clean                 the screensaver's design: info (default, as it always was) clean big frame dayline
 #   optimize/saver.sh bar prayers                  a centred bar: none (default) prayers slot (the left slot's item) weather
@@ -367,6 +372,8 @@ case "${1:-}" in
   cardsize)set1 cardsize "${2:?usage: optimize/saver.sh cardsize s|m|l}" ;;
   cardcorner)set1 cardcorner "${2:?usage: optimize/saver.sh cardcorner style|sharp|soft|round}" ;;
   sidecards)set1 sidecards "${2:?usage: optimize/saver.sh sidecards off|a|b}" ;;
+  start)    set1 start "${2:?usage: optimize/saver.sh start clean|full|couch|prayer|sport|kids|simple|same}" ;;
+  part)     set1 part "${2:?usage: optimize/saver.sh part prayer|tilawah|matches|markets|weather|cards|saver|games|tasks|duas off|on}:${3:?usage: optimize/saver.sh part ID off|on}" ;;
   design)   set1 design "${2:?usage: optimize/saver.sh design info|clean|big|frame|dayline}" ;;
   bar)      set1 bar "${2:?usage: optimize/saver.sh bar none|prayers|slot|weather}" ;;
   barat)    set1 barat "${2:?usage: optimize/saver.sh barat bottom|clock}" ;;

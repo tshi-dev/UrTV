@@ -30,6 +30,7 @@ adb shell cmd package set-home-activity sa.urtv.home/.MainActivity || echo "(the
 echo "home resolves to: $(adb shell cmd package resolve-activity --brief -c android.intent.category.HOME -a android.intent.action.MAIN | tr -d '\r' | tail -n 1)" | tee -a "$OUT/device.txt"
 
 # a city, so the home has its clock, prayers and weather (and the round has a city to box on the shots)
+bash optimize/saver.sh start same || echo "(«ابدأ بـ» could not be answered)"   # 4.4: before the home's first start, or the chooser stands over the round
 python3 -I optimize/tv.py "am start -W -n sa.urtv.home/.MainActivity" > /dev/null
 sleep 15
 bash optimize/saver.sh city الرياض || echo "(the city could not be set)"

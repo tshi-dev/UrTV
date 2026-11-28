@@ -50,6 +50,7 @@ python3 tests/matches_today_test.py   # «بطاقة المباريات لليو
 python3 tests/scene_blank_test.py   # 4.4 beta 4: no scene draws: logged, and the wall photos instead of a black home
 python3 tests/scene_home_test.py   # 4.3.3 «المشاهد»: the scene rules per tier on a JVM, the Saudi pack's files and sizes, the Couch TV download checks, the wiring
 python3 tests/presets_test.py   # 4.4 «أشكال جاهزة»: six looks, the person's own values kept and put back, «مخصّص», the flags, saver.sh preset
+python3 tests/parts_test.py   # 4.4 «ابدأ بـ» and «أجزاء UrTV»: each part off goes everywhere, on comes back as it was
 python3 tests/saver_flush_test.py   # R-305: «saved» only after the settings file is written to the TV's storage (a lost write came back after a power cycle)
 python3 tests/settings_smooth_test.py   # 4.4 «smoother» settings: one section built per render, the side list opens on a rest, focus recolours only, 120 ms scale, live search
 

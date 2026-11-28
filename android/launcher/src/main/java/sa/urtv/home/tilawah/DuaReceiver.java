@@ -14,7 +14,8 @@ import android.util.Log;
  */
 public class DuaReceiver extends BroadcastReceiver {
     @Override public void onReceive(Context c, Intent intent) {
-        if (intent == null || !DuaScheduler.ACTION.equals(intent.getAction())) { DuaScheduler.schedule(c); return; }
+        // 4.4 «أجزاء UrTV»: «الأدعية» off, none plays; the next is still set
+        if (intent == null || !DuaScheduler.ACTION.equals(intent.getAction()) || sa.urtv.home.PartsHome.off(c, "duas")) { DuaScheduler.schedule(c); return; }
         long due = intent.getLongExtra(DuaScheduler.EXTRA_DUE, 0), now = System.currentTimeMillis();
         DuaStore.Dua chosen = null;
         DuaDays days = new DuaDays(c);

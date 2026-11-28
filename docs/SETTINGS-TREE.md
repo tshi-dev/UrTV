@@ -150,6 +150,12 @@ the phone page's key, «مركز التحكم» the control centre's row that op
     الأصل: تلفزيونك
     مثال للوكيل: optimize/saver.sh homelayout classic  (تلفزيونك, the default)
       القيم المقبولة: classic|couch|football
+——— ابدأ من جديد [كل التلفزيون]
+    مثال للوكيل: optimize/saver.sh start clean  (`full`, `couch`, `prayer`, `sport`, `kids`, `simple`, `same`)
+      القيم المقبولة: clean|full|couch|prayer|sport|kids|simple|same
+——— أجزاء UrTV [كل التلفزيون]
+    مثال للوكيل: optimize/saver.sh part matches off  (`on` brings it back)
+      القيم المقبولة: prayer|tilawah|matches|markets|weather|cards|saver|games|tasks|duas off|on
 ——— الألوان والإضاءة [الرئيسية]
     مثال للوكيل: optimize/saver.sh look navy
       القيم المقبولة: glass|graphite|navy|clean|sand
