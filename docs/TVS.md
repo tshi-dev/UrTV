@@ -83,7 +83,7 @@ User reports (and the tester's own TV) since 4.3: on TCL G10/G08, Changhong (And
 is ours, yet the Home key opens Google TV's home (`launcherx`), which the firmware starts by name. The add-on «إضافات تلفزيونك» is the
 answer: its Home watch brings UrTV forward after each Home press («the person's home is ours», set by «جهّز كل شي» or
 `optimize/dock.sh home-watch on`). The in-TV setup's report says `Google TV: Home works through the add-on's watch…` (or that the
-watch is NOT bound). Never turn `launcherx` off (some Google TVs then cannot start).
+watch is NOT bound). Never turn `launcherx` off (some Google TVs then cannot start). On Xiaomi the add-on's Home key catch is off (R-310: its remote's app buttons and volume), except on the Xiaomi Google TVs listed in `RemoteButtons.XIAOMI_GTV_HOME_CATCH` (MiTV-AFMU0/1, MiTV-AXTU0, MiTV-MZTU0; R-405): add a model there only from a report of that TV.
 
 ## When the setup wizard owns the Wi-Fi (TCL G08/G10/G14, Google TV sets)
 
@@ -106,7 +106,11 @@ again; after «كمّل» it reads the owner again and switches in that order if
 Read only, on any set: `optimize/venv/bin/python -I optimize/tv.py "dumpsys wifi" | grep -o 'cname=[^ ]*' | sort | uniq -c`
 says who owns the saved networks (no names are printed).
 
+**Home opens by itself from the TV's settings** (a TCL on Android 11, R-412): `adb logcat -s UrTVHomeCaller` right after it says who started HOME (`system` for the Home key or Android itself, `the TV's settings`, `a maker's app`); send that line with the option's name in a report.
+
 ## The remote's shortcut keys
+
+**A key remapper of the person's** (an accessibility service that filters keys, like Button Mapper) and the add-on «إضافات تلفزيونك» both ask Android for the remote's keys; Android gives a key to each in turn, and a key the first one keeps never reaches the other. Where the remapper stops working, `optimize/dock.sh key-filter off` turns our filter off (R-408): the remapper gets every key, and the add-on's Home catch, Settings key and app buttons over other apps stop.
 
 After the home switch the stock launcher is switched off, and the remote's shortcut keys (Settings, YouTube, Netflix, the star)
 stopped working. Six reports: Haier MatrixTV (A14), TCL G08 (three), Xiaomi MiTV-MZTU0, Changhong dangni (A14). A report found the
@@ -118,7 +122,7 @@ which is off with it. Our home now answers these keys **while it is in front**:
 |---|---|---|---|---|
 | YouTube | `KEYCODE_BUTTON_3` (190) | opens `com.google.android.youtube.tv`, only if installed | the six reports above | key number from the report and Android's reference; needs a TV |
 | Netflix | `KEYCODE_BUTTON_4` (191) | opens `com.netflix.ninja`, only if installed | the six reports above | same; needs a TV |
-| TCL Netflix / YouTube / Prime Video | vendor keycodes 4062 / 4065 / 4099 (1000 and up: they reach only the window in front, so the home answers them) | open `com.netflix.ninja` / `com.google.android.youtube.tv` / `com.amazon.amazonvideo.livingroom`, only if installed; otherwise the key is passed on | the 2 Nov reports (`UrTVKeys`: `key=4065`) | key numbers from the reports; needs a TCL |
+| TCL Netflix / YouTube / Prime Video | vendor keycodes 4062 / 4065 / 4099 (1000 and up: they reach only the window in front, so the home answers them; over other apps «إضافات تلفزيونك» opens them while UrTV is the home, except on TCL's Android 11 where no key filter is asked for; R-406) | open `com.netflix.ninja` / `com.google.android.youtube.tv` / `com.amazon.amazonvideo.livingroom`, only if installed; otherwise the key is passed on | the 2 Nov reports (`UrTVKeys`: `key=4065`) | key numbers from the reports; needs a TCL |
 | TCL Guard | vendor keycode 4140 | nothing: the press, its repeats and its release are consumed (it would open TCL's memory cleaner, `com.tcl.guard`, which kills apps in the background, our adhan among them) | a TCL 65P735 in the Clean Your TV notes (`TclPhoneWindowManager`) | needs a TCL with a Guard key |
 | TCL Settings (G05) | vendor keycode 4077 | opens **our** settings, like 176 and 83 | the 2 Nov report (`UrTVKeys`: `key=4077`) | needs a TCL G05 |
 | Settings | `KEYCODE_SETTINGS` (176), and on a TCL (seen on the owner's, build 144) `KEYCODE_NOTIFICATION` (83) | opens **our** settings (the screensaver app's `SettingsActivity`, the same screen as the «إعدادات تلفزيونك» tile of «مركز التحكم»), behind «قفل الإعدادات» (`@urtv`); without that app it falls back to the TV's own settings (behind `@tvsettings`). The TV's own settings stay on the «الإعدادات» pill and tile | the six reports above; the TCL's own log line (`UrTVKeys`) said 83; the step-6 test of 3.145 found the key opened Android's own settings (`com.android.tv.settings`), which was the old rule, not a missed key | 176 is Android's reference number; 83 is what a TCL sends. The YouTube and Netflix keys never reach the app there (the system takes them first: they open, our log shows nothing) |

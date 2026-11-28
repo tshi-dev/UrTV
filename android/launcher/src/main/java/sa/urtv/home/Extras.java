@@ -158,7 +158,7 @@ public final class Extras {
     /** 4.4 beta 2: whether this app holds the HOME role (Android 10+; RoleManager answers it for the app itself): ExtrasWords.ROLE_OURS, ROLE_NOT or ROLE_UNKNOWN */
     private static final String ROLE_HOME = "android.app.role.HOME";
 
-    static String homeRole(Context c) {
+    public static String homeRole(Context c) {
         if (android.os.Build.VERSION.SDK_INT < 29) return ExtrasWords.ROLE_UNKNOWN;
         try {   // RoleManager by name (public API of Android 10; the class is not in the older SDKs the compile guards build against)
             Object rm = c.getSystemService("role");
@@ -174,6 +174,12 @@ public final class Extras {
     public static Boolean homeKey(Context c, String set) {
         Bundle b = ExtrasTrust.call(c, ExtrasWords.WATCH, "on".equals(set) ? ExtrasWords.HOME_KEY_ON : "off".equals(set) ? ExtrasWords.HOME_KEY_OFF : null, null);
         return b == null ? null : b.getBoolean(ExtrasWords.HOME_KEY);
+    }
+
+    /** 4.4 (R-408): «فلتر أزرار الريموت» in the add-on: "on", "off" or null to read; null when the add-on did not answer */
+    public static Boolean keyFilter(Context c, String set) {
+        Bundle b = ExtrasTrust.call(c, ExtrasWords.WATCH, "on".equals(set) ? ExtrasWords.KEY_FILTER_ON : "off".equals(set) ? ExtrasWords.KEY_FILTER_OFF : null, null);
+        return b == null || !b.containsKey(ExtrasWords.KEY_FILTER) ? null : b.getBoolean(ExtrasWords.KEY_FILTER);
     }
 
     /** the Home-button watch: "on", "off", or null to only read it; null back when the add-on did not answer */

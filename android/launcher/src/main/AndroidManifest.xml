@@ -490,6 +490,8 @@
                 <action android:name="sa.urtv.home.BACK_SAVER" />
                 <action android:name="sa.urtv.home.HOME_WANTED" />
                 <action android:name="sa.urtv.home.HOME_KEY" />
+                <action android:name="sa.urtv.home.KEY_FILTER" />
+                <action android:name="sa.urtv.home.BOOT_HOME" />
                 <action android:name="sa.urtv.home.PHONE_MESSAGE" />
                 <action android:name="sa.urtv.home.PIN_SET" />
                 <action android:name="sa.urtv.home.PIN_LOCK" />

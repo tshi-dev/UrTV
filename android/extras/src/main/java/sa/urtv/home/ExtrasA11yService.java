@@ -270,7 +270,7 @@ public class ExtrasA11yService extends AccessibilityService {
     }
 
     /** the catch acts: on, and the person's home is ours (the setup's word, or Android's default home); never over a home the person kept */
-    private boolean homeKeyActive() { return homeKey(this) && KeyButton.homeCatchSafe() && (wanted(this) || oursChosen()); }   // beta 3: never on Xiaomi (its remote's app buttons and volume), kept on a TCL
+    private boolean homeKeyActive() { return homeKey(this) && KeyButton.homeCatchSafe() && (wanted(this) || oursChosen()); }   // beta 3: never on Xiaomi (its remote's app buttons and volume) but its Google TVs of RemoteButtons.XIAOMI_GTV_HOME_CATCH (R-405); kept on a TCL
 
     /** whether Android sends us the keys now (the catch can act) */
     private boolean homeKeyFiltering() {
@@ -282,6 +282,21 @@ public class ExtrasA11yService extends AccessibilityService {
         c.getSharedPreferences("extras", MODE_PRIVATE).edit().putBoolean(ExtrasWords.HOME_KEY, on).apply();
         if (on) Log.i("UrTVWatch", "home key catch on");
         else Log.i("UrTVWatch", "home key catch off");
+        ExtrasA11yService s = running;
+        if (s != null) s.main.post(s::filterKeys);
+    }
+
+    /**
+     * 4.4 (R-408): «فلتر أزرار الريموت», on by default. A third-party key remapper (an accessibility service that filters keys too) stopped working with ours on:
+     * Android hands a key to the filtering services in turn, and the one that keeps a key (our Home catch, the Settings key, a remote button) leaves the other
+     * nothing. Off: this service never asks for the remote's keys (KeyFilterSwitch); the Home window watch, the sleep timer and the phone's remote stay.
+     */
+    static boolean keyFilter(Context c) { return c.getSharedPreferences("extras", MODE_PRIVATE).getBoolean(ExtrasWords.KEY_FILTER, true); }
+
+    static void setKeyFilter(Context c, boolean on) {
+        c.getSharedPreferences("extras", MODE_PRIVATE).edit().putBoolean(ExtrasWords.KEY_FILTER, on).apply();
+        if (on) Log.i("UrTVWatch", "key filter on");
+        else Log.i("UrTVWatch", "key filter off");
         ExtrasA11yService s = running;
         if (s != null) s.main.post(s::filterKeys);
     }
@@ -346,6 +361,24 @@ public class ExtrasA11yService extends AccessibilityService {
 
     private static boolean stockHomeOn(Context c) { return !stockHomeActivities(c).isEmpty(); }
 
+    /** R-407: a weak TV whose stock home was turned off (filterKeys) */
+    private volatile boolean stockOff;
+
+    /** R-407: some stock home is installed but off (the HOME answerers with the disabled ones, against the enabled ones) */
+    private static boolean stockHomeOff(Context c) {
+        try {
+            Intent home = new Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_HOME);
+            PackageManager pm = c.getPackageManager();
+            List<String> all = new ArrayList<>();
+            Set<String> enabled = new HashSet<>();
+            for (ResolveInfo ri : pm.queryIntentActivities(home, 0)) if (ri.activityInfo != null) enabled.add(ri.activityInfo.packageName);
+            for (ResolveInfo ri : pm.queryIntentActivities(home, PackageManager.MATCH_DISABLED_COMPONENTS)) if (ri.activityInfo != null) all.add(ri.activityInfo.packageName);
+            return SettingsKey.stockHomeOff(all, enabled, HOME_PKG);
+        } catch (RuntimeException e) {
+            return false;
+        }
+    }
+
     private static boolean installed(Context c, String pkg) {
         try { c.getPackageManager().getPackageInfo(pkg, 0); return true; } catch (PackageManager.NameNotFoundException e) { return false; }
     }
@@ -356,12 +389,16 @@ public class ExtrasA11yService extends AccessibilityService {
         try {
             boolean front = homeFront, lowRam = Ram.low(this);
             if (!front && !lowRam) stockHome = stockHomeOn(this);   // one package query, only when the home leaves (none on a weak TV: no filter there)
+            if (!front && lowRam) { stockHome = stockHomeOn(this); stockOff = stockHomeOff(this); }   // R-407: a weak TV: one query when the home leaves, for the Settings key
             if (homeKeyLost == null) homeKeyLost = homeKeyLost(this);
             boolean want = Build.VERSION.SDK_INT >= SettingsKey.MIN_FILTER_SDK && (   // 4.3.6: no key filter at all below Android 9 (a Percee OTT box on 8.0 froze)
                 SettingsKey.filterWanted(front, stockHome, lowRam, homeKeyLost, Build.VERSION.SDK_INT)
                 || KeyApps.filterWanted(front, KeyApps.anyChosen(keyChoices), KeyButton.filterSafe())   // «أزرار الريموت»: only for a button given an app
-                || KeyApps.globalWanted(KeyButton.TV, wanted(this) || oursChosen(), KeyButton.filterSafe())   // beta 3: a TCL's YouTube button (a global key)
+                || KeyApps.globalWanted(KeyButton.TV, wanted(this) || oursChosen(), KeyButton.filterSafe())   // beta 3: a TCL's YouTube, Netflix, Prime buttons (R-406)
+                || KeyApps.xiaomiGtvWanted(KeyButton.xiaomiGtv(), wanted(this) || oursChosen())   // R-406: a Xiaomi Google TV's YouTube button
+                || SettingsKey.lowRamCatch(front, stockHome, lowRam, stockOff, Build.VERSION.SDK_INT)   // R-407: a weak TV whose stock home is off: its Settings key opens Android's settings
                 || homeKeyActive());   // 4.4 R3: the Home key caught here (on by default on a Google TV, only while the person's home is ours; never on Xiaomi: homeKeyActive)
+            want = KeyFilterSwitch.want(keyFilter(this), want);   // R-408: the person turned our key filter off (a key remapper of theirs)
             AccessibilityServiceInfo info = getServiceInfo();
             if (info == null) return;
             boolean has = (info.flags & AccessibilityServiceInfo.FLAG_REQUEST_FILTER_KEY_EVENTS) != 0;
@@ -384,6 +421,7 @@ public class ExtrasA11yService extends AccessibilityService {
 
     @Override protected boolean onKeyEvent(KeyEvent e) {
         try {   // 4.3.6: never throws into Android's key dispatch; anything unexpected gives the key back untouched
+            if (!keyFilter(this)) return false;   // R-408: off, every key goes on untouched (a key that came while the switch turned)
             return keyEvent(e);
         } catch (Throwable t) {
             log("settings key=error");   // one fixed word: never the key or the exception's text
@@ -392,6 +430,7 @@ public class ExtrasA11yService extends AccessibilityService {
     }
 
     private boolean keyEvent(KeyEvent e) {
+        if (VoiceKeys.is(e.getKeyCode())) return false;   // 4.4 (R-404): the voice / search key goes back at once, untouched (never the Home catch, an app button or the Settings key)
         if (e.getKeyCode() == KeyEvent.KEYCODE_HOME && homeKeyActive()) return homeKeyCaught(e);   // 4.4 R3: on by default on a Google TV, the person's home ours
         if (appKey(e)) return true;   // «أزرار الريموت»: a button the owner gave an app; every other key goes on below, untouched
         Boolean lost = homeKeyLost;
@@ -412,20 +451,38 @@ public class ExtrasA11yService extends AccessibilityService {
 
     /** true: a button given an app that is on this TV, answered here (its press opens the app, its repeats and release are eaten); false: as before */
     private boolean appKey(KeyEvent e) {
+        if (KeyButton.xiaomiGtv()) return xiaomiGtvKey(e);   // R-406: a Xiaomi Google TV: only its buttons' own apps (owner choices stay off on Xiaomi, R-310)
         if (!KeyButton.filterSafe()) return false;   // TCL's Android 11: never (the filter is not asked for there either)
         String id = KeyButton.of(e);
         if (id == null) return false;   // every other key: untouched, nothing read or kept
         String choice = keyChoices.get(id);
         boolean global = false;
-        if (!KeyApps.chosen(choice)) {   // beta 3: a TCL's YouTube button is a global key no window gets while our home is the home: its own app from here
+        if (!KeyApps.chosen(choice)) {   // beta 3: a TCL's YouTube button is a global key no window gets while our home is the home: its own app from here (R-406: Netflix, Prime too)
             String own = KeyApps.globalOwn(KeyButton.TV, id, wanted(this) || oursChosen());
             if (own != null) { choice = own; global = true; }
         }
         if (KeyApps.chosen(choice) && e.getAction() == KeyEvent.ACTION_DOWN && e.getRepeatCount() == 0 && launchIntent(this, choice) == null) {
-            if (global) log("key app=noyoutube");   // said, never a silent nothing: the key goes on to the TV as before
+            if (global) log("key app=noyoutube");   // the word kept (R-306): any button's own app missing   // said, never a silent nothing: the key goes on to the TV as before
             choice = "";   // its app was removed: the button's own again (asked once a press)
         }
         int k = keyApps.decide(id, e.getKeyCode(), e.getAction(), e.getRepeatCount(), e.getEventTime(), global ? false : homeFront, choice, KeyButton.burstMs());   // global: our screen never sees it either
+        if (k == KeyApps.OPEN) {
+            final String pkg = keyApps.pkg;
+            new Thread(() -> openKeyApp(pkg), "extras-key-app").start();
+        }
+        return k != KeyApps.PASS;
+    }
+
+    /**
+     * R-406: a Xiaomi Google TV (RemoteButtons.XIAOMI_GTV_HOME_CATCH, whose Home catch keeps a key filter on): a button with an app of its own (YouTube) opens it while
+     * our home is the person's, as on a TCL; every other key and button goes back untouched. Xiaomi's burst is one press (KeyButton.burstMs).
+     */
+    private boolean xiaomiGtvKey(KeyEvent e) {
+        String id = KeyButton.of(e);
+        if (id == null) return false;
+        String own = KeyApps.xiaomiGtvOwn(KeyButton.TV, true, id, wanted(this) || oursChosen());
+        if (own != null && e.getAction() == KeyEvent.ACTION_DOWN && e.getRepeatCount() == 0 && launchIntent(this, own) == null) { log("key app=noyoutube"); own = ""; }
+        int k = keyApps.decide(id, e.getKeyCode(), e.getAction(), e.getRepeatCount(), e.getEventTime(), false, own, KeyButton.burstMs());
         if (k == KeyApps.OPEN) {
             final String pkg = keyApps.pkg;
             new Thread(() -> openKeyApp(pkg), "extras-key-app").start();

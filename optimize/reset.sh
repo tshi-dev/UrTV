@@ -20,6 +20,18 @@ done
 restore_rc=0
 restore_out=$(optimize/restore.sh "${lists[@]}" 2>&1) || restore_rc=$?
 { grep -E '^(!!|Note:)' <<< "$restore_out" || true; } >&2
+# R-402 (a G-TEN on Android 15): a TV whose own home is in no list and not in the journal (set up on the TV, or before the journal) never
+# matched, so the reset always stopped here. Then the TV's own HOME apps are read, after restore turned them back on: system apps only, never
+# ours, the setup wizard or a Settings stand-in.
+if [ -z "$stockpkg" ]; then
+  sys_pkgs=$(tv "pm list packages -s" 2> /dev/null | tr -d '\r' | sed -n 's/^package://p' || true)
+  for p in $(tv "cmd package query-activities --brief -a android.intent.action.MAIN -c android.intent.category.HOME" 2> /dev/null | tr -d '\r' \
+             | grep -oE '[A-Za-z0-9_.]+/[A-Za-z0-9_.$]+' | cut -d/ -f1 | sort -u || true); do
+    case "$p" in sa.urtv.*|sa.yourtv.*|com.abdullah.*|com.google.android.tungsten.setupwraith|com.android.settings|com.android.tv.settings) continue ;; esac
+    grep -qxF "$p" <<< "$sys_pkgs" || continue
+    stock_re="$stock_re|$p"
+  done
+fi
 stock=no
 for _ in 1 2 3 4; do   # a cold stock home can take a while to come up
   tv "input keyevent KEYCODE_HOME" > /dev/null

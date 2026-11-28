@@ -763,10 +763,28 @@ final class SetupEngine {
         for (int i = 0; i < 3 && !ok; i++) {
             sh.run("input keyevent KEYCODE_HOME");
             sleeper.sleep(3000);
-            ok = ours(lastLine(text("dumpsys activity activities | grep -E 'mResumedActivity|topResumedActivity' | head -n 1")));
+            String front = lastLine(text("dumpsys activity activities | grep -E 'mResumedActivity|topResumedActivity' | head -n 1"));
+            homeKeyFront = front;   // R-409: what Home opened, for wizardHoldsHome
+            ok = ours(front);
         }
         backToSetup();
         return ok;
+    }
+
+    /** R-409: the resumed line the last Home of homeKeyOpensOurs left (null before a check) */
+    private String homeKeyFront;
+
+    /** 4.4 (R-409): the setup wizard keeps Home on this TV: the last Home opened it, or Android's HOME resolves to it (a TCL/Xiaomi of Android 11/14) */
+    boolean wizardHoldsHome() throws IOException {
+        return WizardHome.holds(homeKeyFront, lastLine(text("cmd package resolve-activity --brief -c android.intent.category.HOME -a android.intent.action.MAIN")));
+    }
+
+    /** R-409: the result when the wizard keeps Home: our home stays the TV's home (confirmed by finishWatch), Home opens ours through the add-on's catch */
+    Result wizardHome(boolean catchOn) {
+        try { store.put(WizardHome.FILE, catchOn ? "on\n" : "off\n"); } catch (IOException ignored) { }   // the report's line
+        String said = catchOn ? WizardHome.SAID_CATCH : WizardHome.SAID_NO_CATCH;
+        out.line(said);
+        return new Result(catchOn ? Status.DONE : Status.FAILED, said);
     }
 
     /** 4.4 (step 88): the setup page in front again after a check put another screen over it (the TV's settings, the Home key) */

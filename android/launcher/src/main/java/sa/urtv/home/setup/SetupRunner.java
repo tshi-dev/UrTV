@@ -101,6 +101,8 @@ final class SetupRunner {
         default void freshKey() { }
         /** 4.4: «إضافات تلفزيونك» learns whether the person's chosen home is ours (its watch then works without the HOME role); quiet without it */
         default void homeWanted(boolean wanted) { }
+        /** 4.4 (R-409): the setup wizard owns Home here: «إضافات تلفزيونك»'s Home key catch turned on (true when the add-on said on); quiet without it */
+        default boolean homeCatchOn() { return false; }
         void sleep(int ms) throws IOException;
         long now();
         /** A file of the app's assets (setup/community.txt), null when it is not there. */
@@ -245,6 +247,9 @@ final class SetupRunner {
                 // ours even when the TV gives the HOME role back to Google TV (after a 15/15 setup it said «role stock wanted no → ours not chosen»)
                 if (on.status == SetupEngine.Status.DONE) c.host.homeWanted(true);
                 r = c.engine.finishWatch(on.status == SetupEngine.Status.DONE);
+                // 4.4 (R-409): the setup wizard keeps Home (TCL/Xiaomi, Android 11/14: it owns the saved Wi-Fi, so it stays on): the add-on's Home key catch is turned
+                // on (the window watch looks at stock homes only, never the wizard), and the result says plainly how Home works here; the «تلفزيونك» tile stays the way in
+                if (on.status == SetupEngine.Status.DONE && r.status != SetupEngine.Status.DONE && c.engine.wizardHoldsHome()) r = c.engine.wizardHome(c.host.homeCatchOn());
             }
             c.runner.wantScreen();   // the stock home and then ours come in front: our home opens this screen again
             return r;

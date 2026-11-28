@@ -3850,6 +3850,7 @@ public class SettingsActivity extends Activity {
         if (Prefs.canWriteSettings(this)) {
             try {
                 Settings.System.putInt(getContentResolver(), Settings.System.SCREEN_OFF_TIMEOUT, Integer.parseInt(minutes) * 60000);
+                IdleKeep.keep(this, minutes);   // R-400: put back at boot if the firmware resets it to «never»
                 render();
                 return;
             } catch (SecurityException e) {
@@ -3861,7 +3862,7 @@ public class SettingsActivity extends Activity {
             final String r = NowPlayingBridge.setIdle(getApplicationContext(), minutes);
             runOnUiThread(() -> {
                 if (isFinishing()) return;
-                if ("ok".equals(r)) toast("تم");
+                if ("ok".equals(r)) { IdleKeep.keep(getApplicationContext(), minutes); toast("تم"); }
                 else if ("busy".equals(r)) toast("إعداد التلفزيون شغّال الحين، جرّب بعده");
                 else new Dlg(this).setTitle("بدء شاشة التوقف بعد").setMessage(IDLE_NO_LINK).setPositiveButton("تم", null).show();
                 render();

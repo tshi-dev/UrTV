@@ -461,6 +461,7 @@ public class MainActivity extends Activity {
             try { guarded(ParentalPolicy.WIDGET_MATCHES, null, S.t("إعداد تلفزيوني"), () -> launch(new Intent(this, sa.urtv.home.setup.SetupActivity.class).addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT))); } catch (RuntimeException ignored) { }   // the person opened this screen already (its own lock was passed then)
         }
         Extras.refresh();   // 4.4 (QA-6): the add-on's state, asked on a thread (the screens read the kept answer)
+        if (RoleNotice.pending() != null) AfterFrame.run(getWindow().getDecorView(), this::roleNotice);   // 4.4 (R-401): a boot found the TV took Home back
         checkOverlayOffer();   // 4.4: once, for whoever used «فوق تطبيق آخر» on 4.3.x (the settings and the add-on are asked on a thread)
         { final Context app = getApplicationContext(); clockReads.execute(() -> notices.load(app)); }   // 4.4 (QA-10): the notices file, off the UI thread
         sa.urtv.home.phone.PhoneUpdater.homeIsUp(getApplicationContext());   // an update cover waiting in front for this home closes now
@@ -808,6 +809,7 @@ public class MainActivity extends Activity {
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
         setIntent(intent);
+        logHomeCaller(intent);   // 4.4 (R-412): who started HOME (fixed words; a TCL A11's settings sent the person here)
         Parental.SESSION.clear();
         if (edit != null) leaveEdit();   // Home while editing: the order so far is kept
         if (appsEdit != null) leaveAppsEdit();
@@ -5482,6 +5484,24 @@ public class MainActivity extends Activity {
         if (HomeNotice.show(homeRoot, text, font("regular"), Ram.low(this))) LiteAutoStore.shown(this);
     }
 
+    /** 4.4 (R-401): the TV took Home back at a boot: said once, as liteNotice (never over the adhan, a kick-off notice or «الوضع الخفيف»'s own line) */
+    private void roleNotice() {
+        String text = RoleNotice.pending();
+        if (text == null || !resumed || isDestroyed() || isFinishing()) return;
+        if (NowPlaying.adhanLive() || KickoffOverlay.showing() || LiteAutoStore.pending() != null) return;
+        if (HomeNotice.show(homeRoot, text, font("regular"), Ram.low(this))) RoleNotice.shown();
+    }
+
+    /** R-412: a HOME start of our home: the kind of app that asked for it (HomeCaller), one fixed-word line */
+    private void logHomeCaller(Intent intent) {
+        try {
+            if (intent == null || intent.getCategories() == null || !intent.getCategories().contains(Intent.CATEGORY_HOME)) return;
+            android.net.Uri r = android.os.Build.VERSION.SDK_INT >= 22 ? getReferrer() : null;
+            String pkg = r != null && "android-app".equals(r.getScheme()) ? r.getHost() : null;
+            android.util.Log.i("UrTVHomeCaller", "home started by: " + HomeCaller.word(pkg));
+        } catch (RuntimeException ignored) { }
+    }
+
     private Typeface font(String family) {
         String file = family.contains("display") ? "ThmanyahDisplay-Bold"
                 : family.contains("thin") || family.contains("light") ? "Thmanyah-Light"
@@ -5578,6 +5598,7 @@ public class MainActivity extends Activity {
         // while the adhan plays: OK on its bar stops it, and with «إيقاف الأذان بأي زر» any key does; that press is consumed whole
         if (adhanTakes(e)) return true;
         if (reminder != null && reminder.key(e)) return true;   // a reminder's card is up: the first press is the card's
+        if (VoiceKeys.is(e.getKeyCode())) return super.dispatchKeyEvent(e);   // 4.4 (R-404): the voice / search key is Android's, untouched by everything below
         // the remote's shortcut keys (YouTube, Netflix, Settings, the star): with the stock launcher off nothing else answers them
         if (e.getAction() == KeyEvent.ACTION_DOWN && e.getRepeatCount() == 0)
             android.util.Log.d("UrTVKeys", "key=" + e.getKeyCode() + " scan=" + e.getScanCode());   // for the TV test: does the shortcut key reach the home screen at all? (codes only)

@@ -68,8 +68,25 @@ final class KeyApps {
      * choice the owner made wins as before. null: not such a button here (the TV's own way, as before).
      */
     static String globalOwn(int tv, String id, boolean oursHome) {
-        return oursHome && tv == RemoteButtons.TCL && "youtube".equals(id) ? RemoteButtons.YOUTUBE_APP : null;
+        if (!oursHome || tv != RemoteButtons.TCL || id == null) return null;
+        // 4.4 (R-406): Netflix (4062) and Prime Video (4099) did nothing over other apps too, once our home was the person's: every TCL button with an app of
+        // its own (YouTube, Netflix, Prime Video) opens it; TCL Channel has none known and stays the TV's
+        RemoteButtons.Button b = RemoteButtons.byId(tv, id);
+        return b == null ? null : b.own;
     }
+
+    /**
+     * 4.4 (R-406): a Xiaomi Google TV of RemoteButtons.XIAOMI_GTV_HOME_CATCH, where the Home catch keeps a key filter on (R-405): its remote's buttons with an
+     * app of their own (YouTube) open it from the add-on while our home is the person's. Owner choices stay off on every Xiaomi (R-310). null: not here.
+     */
+    static String xiaomiGtvOwn(int tv, boolean xiaomiGtv, String id, boolean oursHome) {
+        if (!oursHome || !xiaomiGtv || id == null) return null;
+        RemoteButtons.Button b = RemoteButtons.byId(tv, id);
+        return b == null ? null : b.own;
+    }
+
+    /** the add-on asks for key events for {@link #xiaomiGtvOwn}: such a Xiaomi, our home the person's */
+    static boolean xiaomiGtvWanted(boolean xiaomiGtv, boolean oursHome) { return xiaomiGtv && oursHome; }
 
     /** the add-on asks for key events for {@link #globalOwn}: a TCL, our home the person's, the filter safe there */
     static boolean globalWanted(int tv, boolean oursHome, boolean filterSafe) {

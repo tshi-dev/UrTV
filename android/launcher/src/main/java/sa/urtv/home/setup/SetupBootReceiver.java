@@ -16,7 +16,9 @@ public class SetupBootReceiver extends BroadcastReceiver {
         factoryGuard(app);
         homeGuard(app);
         SetupHook.tellWatch(app);   // 4.4: the add-on's watch knows the person's home after a restart
-        SetupHook.reapplyIfLost(app);   // 4.4: the TV took the HOME role back by itself: given back once
+        SetupHook.roleAtBoot(app);   // 4.4 (R-401): the holder read again and logged; the role given back once, else the home says so once
+        SetupHook.reapplyIfLost(app);   // 4.4: the TV took the HOME role back by itself: given back once (after roleAtBoot, which marks its own try: never twice)
+        bootHome(app);   // 4.4 (R-410): «ابدأ بالرئيسية بعد التشغيل» (on by default on Changhong and Skyworth: they boot into Live TV after a power cut)
         try {   // a planned restart, or (4.3.3) one nobody asked for in the middle of the run: it goes on from its pointer (its own thread; it waits for a pending home first)
             if (SetupRunner.resumeAtBoot(new FileStore(app))) SetupRunner.get().resume(new SetupHost(app));
         } catch (java.io.IOException | RuntimeException ignored) {
@@ -34,6 +36,26 @@ public class SetupBootReceiver extends BroadcastReceiver {
                 }
             }
         }, "setup-boot").start();
+    }
+
+    /** R-410: our home in front a few seconds after the boot, when the setting is on and the person's home is ours (never during a setup or a pending switch) */
+    private void bootHome(final Context app) {
+        try {
+            final FileStore st = new FileStore(app);
+            final boolean busy = SetupRecovery.pending(app) || SetupRunner.awaitingRestart(st) || SetupRunner.cutByRestart(st);   // read only (the resume call counts a resume)
+            final boolean ours = "1".equals(String.valueOf(new FileStore(app).get(SetupEngine.HOME_WANTED)).trim()) || SetupHook.oursIsDefault(app);
+            if (!sa.urtv.home.BootHome.on(app)) return;
+            final PendingResult pending = goAsync();
+            new Thread(new Runnable() {
+                @Override public void run() {
+                    try { Thread.sleep(sa.urtv.home.BootHome.DELAY_MS); sa.urtv.home.BootHome.bring(app, ours, busy); }
+                    catch (InterruptedException | RuntimeException ignored) { }
+                    finally { pending.finish(); }
+                }
+            }, "boot-home").start();
+        } catch (Exception ignored) {
+            // the boot must not be broken by this
+        }
     }
 
     /**

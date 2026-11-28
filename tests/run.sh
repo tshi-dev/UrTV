@@ -133,6 +133,7 @@ python3 tests/settle_test.py
 python3 tests/measure_transport_test.py
 python3 tests/measure_space_test.py   # measure.sh with a run folder whose path has spaces (macOS Application Support)
 python3 tests/restore_complete_test.py
+python3 tests/reset_home_read_test.py   # R-402: reset.sh reads the TV's own home when the journal names none (G-TEN A15)
 python3 tests/reset_restore_rc_test.py
 python3 tests/failclosed_test.py
 python3 tests/key_home_test.py
@@ -541,3 +542,15 @@ python3 tests/dock_order_test.py   # R-378 the favourites: the first on the righ
 python3 tests/tvs_doc_test.py   # R-379 TVs with no ADB in their menus
 # «regressions» (docs/dev/REGRESSIONS.md): the gate's own tests, and any guard of the register this file does not run by name above
 python3 tests/regressions/run.py --rest
+python3 tests/home_caller_test.py   # R-412: each HOME start of our home logs the kind of app that asked (diagnosis for a TCL A11 settings option)
+python3 tests/prefs_migration_test.py   # R-411: every preference key 4.3.6 wrote is still read by 4.4 with its type, and none is newly removed
+python3 tests/boot_home_test.py   # R-410: «ابدأ بالرئيسية بعد التشغيل»: our home in front after a boot, on by default on Changhong and Skyworth only
+python3 tests/wizard_home_test.py   # R-409: the setup wizard keeps Home: the add-on's Home key catch on by default, said plainly in the result and the report
+python3 tests/key_filter_switch_test.py   # R-408: «فلتر أزرار الريموت»: dock.sh key-filter off and the add-on never filters the remote's keys (a key remapper)
+python3 tests/settings_low_ram_test.py   # R-407: a weak TV whose stock home is off: its Settings key opens Android's settings over other apps
+python3 tests/app_keys_default_test.py   # R-406: TCL's YouTube, Netflix, Prime buttons and a Xiaomi Google TV's YouTube open their own app from the add-on
+python3 tests/xiaomi_home_catch_test.py   # R-405: the Home catch back on the Xiaomi Google TVs of docs/TVS.md only; R-310 for every other Xiaomi
+python3 tests/voice_keys_test.py   # R-404: SEARCH, ASSIST and VOICE_ASSIST go to Android untouched (the home after the adhan and a reminder, the add-on first)
+python3 tests/role_boot_test.py   # R-401: the HOME role read again at boot and logged; given back once, else the home says so once
+python3 tests/city_keep_test.py   # R-403: the city is committed and kept; a settings file without a city gets it back (a TCL A11 power cycle)
+python3 tests/idle_keep_test.py   # R-400: the idle delay the person chose goes back at boot when the firmware reset it to «never» (Skyworth A11)

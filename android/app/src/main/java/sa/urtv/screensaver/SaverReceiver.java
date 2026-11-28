@@ -85,7 +85,8 @@ import java.util.Locale;
  * digits = hindi (١٢٣, as always) or latin (123). photos = minutes between background photos, or 30s on a TV with 2 GB (PhotoInterval). idle = minutes before the TV starts the
  * screensaver (Prefs.IDLE_MINUTES): this is the system's screen_off_timeout, which a receiver (it runs as this
  * app, not as the shell) may write only when the app holds WRITE_SETTINGS; otherwise it says so and
- * optimize/saver.sh sets it from the shell instead. Nothing changes unless the extra is given.
+ * optimize/saver.sh sets it from the shell instead (and then sends idlekept = the same minutes, only kept to put back at boot: IdleKeep, R-400).
+ * Nothing changes unless the extra is given.
  *
  * The answer is in the "data" of am's output. Unknown values are refused with a message, nothing half-saved.
  */
@@ -475,6 +476,9 @@ public class SaverReceiver extends BroadcastReceiver {
                 return "error: idle not allowed: this app may not change system settings on this TV"
                     + " (the TV's own screensaver settings can, or the shell: settings put system screen_off_timeout)";
         }
+        String idleKept = i.getStringExtra("idlekept");   // R-400: saver.sh set the delay from the shell; only kept here, to put back at boot
+        if (idleKept != null && !Arrays.asList(Prefs.IDLE_MINUTES).contains(idleKept))
+            return "error: idlekept is one of " + Prefs.join(Arrays.asList(Prefs.IDLE_MINUTES), " ");
         List<String> genres = codes(i.getStringExtra("genres"), Prefs.GENRES);
         List<String> langs = codes(i.getStringExtra("langs"), Prefs.LANGS);
         if (genres != null && genres.contains(null)) return "error: genres are " + names(Prefs.GENRES);
@@ -501,10 +505,12 @@ public class SaverReceiver extends BroadcastReceiver {
             try {
                 if (!Settings.System.putInt(c.getContentResolver(), Settings.System.SCREEN_OFF_TIMEOUT, Integer.parseInt(idle) * 60000))
                     return "error: idle not allowed: the TV did not take the change";   // S11: putInt says false when it was not written
+                IdleKeep.keep(c, idle);   // R-400: put back at boot if the firmware resets it to «never»
             } catch (SecurityException e) {
                 return "error: idle not allowed: the TV refused the change";
             }
         }
+        if (idleKept != null) IdleKeep.keep(c, idleKept);
         if (city != null) p.setCity(city[0], city[1], city[2], tz == null ? "" : tz, cityCountry);
         if (teams != null) p.setList("teams", teams);
         if (panel != null) p.setPanel(panel);

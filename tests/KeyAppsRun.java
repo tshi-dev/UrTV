@@ -92,6 +92,8 @@ public final class KeyAppsRun {
         say("global TCL youtube ours", KeyApps.globalOwn(RemoteButtons.TCL, "youtube", true));
         say("global TCL youtube not ours", KeyApps.globalOwn(RemoteButtons.TCL, "youtube", false));
         say("global TCL netflix", KeyApps.globalOwn(RemoteButtons.TCL, "netflix", true));
+        say("global TCL prime", KeyApps.globalOwn(RemoteButtons.TCL, "prime", true));   // R-406
+        say("global TCL channel", KeyApps.globalOwn(RemoteButtons.TCL, "tclchannel", true));
         say("global Sony youtube", KeyApps.globalOwn(RemoteButtons.SONY, "youtube", true));
         say("global wanted TCL", KeyApps.globalWanted(RemoteButtons.TCL, true, true));
         say("global wanted TCL 11", KeyApps.globalWanted(RemoteButtons.TCL, true, false));
