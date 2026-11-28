@@ -72,7 +72,7 @@ def tv(cmd):
             put("playing", "1")
             if os.environ.get("FAKE_MUTE_ON_RADIO") == "1":
                 put("muted", "1")
-    if "dumpsys activity activities" in cmd and "grep -m1" in cmd and not cmd.startswith("dumpsys dreams"):
+    if "dumpsys activity activities" in cmd and not cmd.startswith("dumpsys dreams"):
         f = st("front")
         print(f"  mResumedActivity: ActivityRecord{{1 u0 {f}/.MainActivity t5}}" if f else "  mResumedActivity: ActivityRecord{1 u0 com.other.app/.Main t5}")
     elif "uiautomator dump" in cmd:
@@ -104,6 +104,10 @@ def tv(cmd):
         print("2026-11-27 16:00:00")
     elif cmd.startswith("settings get system font_scale"):
         print("1.0")
+    elif cmd.startswith("settings get system screen_off_timeout"):
+        print(st("idle", "45000"))
+    elif cmd.startswith("settings put system screen_off_timeout"):
+        put("idle", cmd.split()[-1])
     elif cmd.startswith("pidof"):
         print("123")
 

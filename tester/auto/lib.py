@@ -39,7 +39,7 @@ def _read(path):
 def start_time(text):
     """`am start -W` says «TotalTime: 523» (ms to the first frame); a cold start is the one that matters. None when it said nothing."""
     m = re.search(r"TotalTime:\s*(\d+)", text)
-    return int(m.group(1)) if m else None
+    return int(m.group(1)) or None if m else None   # 0 is not a time: the system had already started the app again (tester b654: cold_start_home_ms read 0)
 
 
 def pss(text):
@@ -183,6 +183,14 @@ def adhan_state(text, prayer):
         return ""
     sound, screen = snd.group(1) != "silent", scr.group(1) == "on"
     return "both" if sound and screen else "sound" if sound else "screen" if screen else "none"
+
+
+def front_app(text):
+    """The front app's line of `dumpsys activity activities` («mResumedActivity: ActivityRecord{… u0 pkg/.Act t4}» or «topResumedActivity»), the first one; empty when there is none"""
+    for l in text.splitlines():
+        if "topResumedActivity" in l or "mResumedActivity" in l:
+            return l.strip()
+    return ""
 
 
 def adhan_all(text):
@@ -338,6 +346,11 @@ def report(outdir, prevdir=None):
 
 
 def main(a):
+    for stream in (sys.stdout, sys.stderr, sys.stdin):   # Arabic on a Windows console (cp1252) is UTF-8 here, whatever the console says (tester b654)
+        try:
+            stream.reconfigure(encoding="utf-8")
+        except (AttributeError, ValueError):
+            pass
     if len(a) < 2:
         sys.stdout.write(__doc__)
         return 2
@@ -372,6 +385,8 @@ def main(a):
         print(settings_style(_read(a[2])))
     elif cmd == "adhan-state":
         print(adhan_state(_read(a[2]), a[3]))
+    elif cmd == "front-app":
+        print(front_app(sys.stdin.read()))
     elif cmd == "adhan-all":
         for x in adhan_all(_read(a[2])):
             print(x)

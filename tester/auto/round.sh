@@ -10,6 +10,7 @@
 # What it reads is in tester/auto/lib.py (tested by tests/tester_auto_test.py); what it opens is in tester/auto/screens.tsv; its limits are in thresholds.tsv.
 # Stand-ins for a test: ROUND_TV (default «optimize/venv/bin/python -I optimize/tv.py»), ROUND_SAVER, ROUND_MUSIC, ROUND_INSTALL, ROUND_STARTSAVER, ROUND_FAST=1 (no waiting).
 set -uo pipefail
+export PYTHONUTF8=1   # Arabic on a Windows console (cp1252) must not break lib.py (tester b654)
 cd "$(dirname "$0")/../.."
 PY="${PY:-optimize/venv/bin/python}"
 TV="${ROUND_TV:-$PY -I optimize/tv.py}"
@@ -64,7 +65,7 @@ metric() { printf '%s\t%s\t%s\n' "$1" "$2" "$3" >> "$OUT/metrics.tsv"; echo "  m
 rows() { grep -v '^#' tester/auto/screens.tsv | awk -F'\t' -v k="$1" '$1 == k'; }   # the rows of one kind
 
 # ---- reading the screen (never a key before it)
-front() { tv "dumpsys activity activities 2> /dev/null | grep -m1 -E 'topResumedActivity|mResumedActivity'" 2> /dev/null | tr -d '\r' | head -n 1; }   # one line, never dumpsys's own «Broken pipe»
+front() { tv "dumpsys activity activities" 2> /dev/null | tr -d '\r' | $LIB front-app; }   # the whole dump is read here, in Python: nothing is piped to head on the TV (its «Broken pipe» line, tester b654)
 on_top() {   # $1 package: is it the front app (asked up to 6 times, 2 s apart)
   local i
   for i in 1 2 3 4 5 6; do
@@ -108,7 +109,7 @@ focus_walk() {   # $1 text, $2 the key, $3 at most how many presses: press only 
 }
 
 # ---- what is put back at the end
-WM_BACK="wm size reset; wm density reset" LAYOUT_BEFORE="" PANEL_BEFORE="" SAVED_FONT="" SAVED_VOL="" SAVED_MUTED="" DISPLAY_CHANGED=0 FONT_CHANGED=0 SETTINGS_SAVED=0
+SAVED_IDLE="" WM_BACK="wm size reset; wm density reset" LAYOUT_BEFORE="" PANEL_BEFORE="" SAVED_FONT="" SAVED_VOL="" SAVED_MUTED="" DISPLAY_CHANGED=0 FONT_CHANGED=0 SETTINGS_SAVED=0
 restore() {
   trap - EXIT
   echo "putting everything back…"
@@ -123,6 +124,7 @@ restore() {
   if [ -s "$OUT/raw/adhan-before.txt" ]; then
     while read -r pk pst; do [ -n "$pk" ] && $MUSIC adhan state "$pk" "$pst" > /dev/null 2>&1; done < <($LIB adhan-all "$OUT/raw/adhan-before.txt")
   fi
+  if [ -n "$SAVED_IDLE" ]; then tv "settings put system screen_off_timeout $SAVED_IDLE" > /dev/null 2>&1; fi   # the owner's idle (45 s, say), not the round's 10 minutes
   if [ -n "$SAVED_VOL" ]; then tv "cmd media_session volume --stream 3 --set $SAVED_VOL" > /dev/null 2>&1; fi
   tv "input keyevent KEYCODE_HOME" > /dev/null 2>&1
   local now
@@ -148,6 +150,9 @@ LAYOUT_BEFORE=$($LIB kv "$OUT/raw/show-before.txt" homelayout); PANEL_BEFORE=$($
 $MUSIC adhan 2> /dev/null | tr -d '\r' > "$OUT/raw/adhan-before.txt"
 tv "wm size; wm density" 2> /dev/null | tr -d '\r' > "$OUT/raw/wm-before.txt"
 WM_BACK=$($LIB wm-back "$OUT/raw/wm-before.txt")
+# a long idle for the round: with the owner's 45 s the saver started in the middle of it and every later step failed (tester b654); put back in restore()
+SAVED_IDLE=$(tv "settings get system screen_off_timeout" 2> /dev/null | tr -d '\r' | tail -n 1)
+case "$SAVED_IDLE" in ''|*[!0-9]*) SAVED_IDLE="" ;; *) tv "settings put system screen_off_timeout 600000" > /dev/null 2>&1 ;; esac
 CITY=$($LIB city "$OUT/raw/show-before.txt")
 STYLE_BEFORE=$($LIB style "$OUT/raw/show-before.txt")
 tv "cmd media_session volume --stream 3 --get" 2> /dev/null | tr -d '\r' > "$OUT/raw/volume-before.txt"
@@ -191,6 +196,7 @@ fi
 # ---- the settings, each style opened to each section
 if want settings; then
   echo "settings…"
+  key KEYCODE_HOME; nap 2   # every part starts from the home (tester b654)
   while IFS=$'\t' read -r _ stkey stname stcmd _ <&3; do
     tv "am broadcast -n $SAVER_PKG/.SaverReceiver -a $SAVER_PKG.SET --es settingsstyle $stcmd" > "$OUT/raw/style-$stkey.txt" 2>&1 || { step "settings-$stkey" FAIL "the settings style $stcmd was not accepted"; continue; }
     nap 2
@@ -224,25 +230,38 @@ fi
 # ---- every radio station, started the way a person starts it (the تلاوة screen, the stations tab, the station's row, OK), 30 s each with the logs
 if want radio; then
   echo "radio…"
+  key KEYCODE_HOME; nap 2   # every part starts from the home (tester b654)
   $MUSIC stations 2> /dev/null | tr -d '\r' > "$OUT/raw/stations.txt"
   while IFS= read -r line <&3; do
     idx=$(sed -n 's/^[[:space:]]*\([0-9][0-9]*\)[^0-9].*$/\1/p' <<< "$line"); sname=$(sed -n 's/^[[:space:]]*[0-9][0-9]*[^[:alnum:]]*\(.*\)$/\1/p' <<< "$line")
     [ -n "$idx" ] || continue
     name="radio-$idx"
-    tv "am start -n $HOME_PKG/.tilawah.MainActivity" > /dev/null 2>&1
-    if ! on_top "$HOME_PKG"; then step "$name" FAIL "the تلاوة screen did not open: $(front)"; continue; fi
-    key KEYCODE_DPAD_RIGHT; nap 1   # one tab to the right: the stations (looked at below: the row must be found by its name, or nothing is pressed)
-    if ! focus_walk "$sname" KEYCODE_DPAD_DOWN 30; then step "$name" FAIL "the row «$sname» was not found on the stations tab (no key pressed on it)"; key KEYCODE_BACK; continue; fi
-    tv "dumpsys audio" 2> /dev/null | tr -d '\r' > "$OUT/raw/audio-$name-before.txt"
-    key KEYCODE_DPAD_CENTER
-    nap "$STATION_S"
-    tv "logcat -d -s MusicService:V UrTVMute:V" 2> /dev/null | tr -d '\r' > "$OUT/raw/$name.log"
-    $MUSIC status 2> /dev/null | tr -d '\r' > "$OUT/raw/$name-status.txt"
-    tv "dumpsys audio" 2> /dev/null | tr -d '\r' > "$OUT/raw/audio-$name-after.txt"
+    tries=0; other=""; opened=0; found=0
+    while :; do   # the station from the screen: if another app took the front on the way (a TV's own media centre), say who and try once more
+      tries=$((tries + 1)); opened=0; found=0
+      tv "am start -n $HOME_PKG/.tilawah.MainActivity" > /dev/null 2>&1
+      on_top "$HOME_PKG" || break
+      opened=1
+      key KEYCODE_DPAD_RIGHT; nap 1   # one tab to the right: the stations (looked at below: the row must be found by its name, or nothing is pressed)
+      focus_walk "$sname" KEYCODE_DPAD_DOWN 30 || break
+      found=1
+      tv "dumpsys audio" 2> /dev/null | tr -d '\r' > "$OUT/raw/audio-$name-before.txt"
+      key KEYCODE_DPAD_CENTER
+      nap "$STATION_S"
+      tv "logcat -d -s MusicService:V UrTVMute:V" 2> /dev/null | tr -d '\r' > "$OUT/raw/$name.log"
+      $MUSIC status 2> /dev/null | tr -d '\r' > "$OUT/raw/$name-status.txt"
+      tv "dumpsys audio" 2> /dev/null | tr -d '\r' > "$OUT/raw/audio-$name-after.txt"
+      grep -q 'source=radio' "$OUT/raw/$name-status.txt" && break
+      front | grep -q "$HOME_PKG" || other=$(front)
+      [ "$tries" -ge 2 ] && break
+      key KEYCODE_HOME; nap 2
+    done
+    if [ "$opened" = 0 ]; then step "$name" FAIL "the تلاوة screen did not open: $(front)"; continue; fi
+    if [ "$found" = 0 ]; then step "$name" FAIL "the row «$sname» was not found on the stations tab (no key pressed on it)"; key KEYCODE_BACK; continue; fi
     shot "$name"
     was=$($LIB muted "$OUT/raw/audio-$name-before.txt"); is=$($LIB muted "$OUT/raw/audio-$name-after.txt")
     if grep -q 'source=radio' "$OUT/raw/$name-status.txt" && [ "$was$is" != nono ] && [ "$was" = "$is" ]; then step "$name" PASS "$sname: playing, the mute unchanged ($is)"
-    elif ! grep -q 'source=radio' "$OUT/raw/$name-status.txt"; then step "$name" FAIL "$sname: not playing after ${STATION_S} s (see raw/$name.log)"
+    elif ! grep -q 'source=radio' "$OUT/raw/$name-status.txt"; then step "$name" FAIL "$sname: not playing after ${STATION_S} s${other:+ (another app was in front: $other)} (see raw/$name.log)"
     elif [ "$was" != "$is" ]; then step "$name" FAIL "$sname: the mute changed from $was to $is (raw/$name.log says who)"
     else step "$name" PASS "$sname: playing"; fi
     $MUSIC stop > /dev/null 2>&1
@@ -267,6 +286,7 @@ fi
 # ---- the largest font
 if want font; then
   echo "font…"
+  key KEYCODE_HOME; nap 2   # every part starts from the home (tester b654)
   tv "settings put system font_scale 1.3" > /dev/null 2>&1; FONT_CHANGED=1; nap 4
   key KEYCODE_HOME; nap 6
   if on_top "$HOME_PKG"; then shot font-large-home; step "font-large-home" PASS "the home at font scale 1.3"; else step "font-large-home" FAIL "the home was not in front at the large font"; fi
@@ -297,7 +317,8 @@ fi
 # ---- the games list
 if want games; then
   echo "games…"
-  tv "am start --activity-clear-task -n $SAVER_PKG/.QuizGamesActivity" > /dev/null 2>&1
+  key KEYCODE_HOME; nap 2   # every part starts from the home (tester b654)
+  tv "am start --activity-clear-task -n $SAVER_PKG/.YourTvHubActivity --es open games" > /dev/null 2>&1
   if on_top "$SAVER_PKG" && see "الأسرع"; then shot games-list; step "games-list" PASS "the games list is on the screen (the badges: look at shots/games-list.png)"
   else shot games-list; step "games-list" FAIL "the games list was not on the screen: $(front)"; fi
   key KEYCODE_HOME
@@ -306,15 +327,19 @@ fi
 # ---- health: cold starts, memory, jank over a scripted walk, crashes, ANRs, frozen lines
 if want health; then
   echo "health…"
+  key KEYCODE_HOME; nap 2   # every part starts from the home (tester b654)
   for who in home saver; do
     if [ "$who" = home ]; then pkg=$HOME_PKG; act=$HOME_PKG/.MainActivity; else pkg=$SAVER_PKG; act=$SAVER_PKG/.SettingsActivity; fi
     tv "am force-stop $pkg" > /dev/null 2>&1; nap 3
     tv "am start -W -n $act" 2> /dev/null | tr -d '\r' > "$OUT/raw/start-$who.txt"
     t=$($LIB start-time "$OUT/raw/start-$who.txt")
-    if [ -n "$t" ]; then metric "cold_start_${who}_ms" "$t" ms; else step "cold-start-$who" FAIL "am start -W said no TotalTime (raw/start-$who.txt)"; fi
+    if [ -n "$t" ]; then metric "cold_start_${who}_ms" "$t" ms
+    elif grep -q "TotalTime" "$OUT/raw/start-$who.txt"; then step "cold-start-$who" SKIP "the system had already started it again after the force-stop (TotalTime 0): no cold start was measured, nothing is read as 0 ms"
+    else step "cold-start-$who" FAIL "am start -W said no TotalTime (raw/start-$who.txt)"; fi
   done
   key KEYCODE_HOME; nap 6
   if on_top "$HOME_PKG"; then
+    for k in RIGHT RIGHT LEFT LEFT DOWN UP; do key "KEYCODE_DPAD_$k"; done; nap 2   # a warm-up walk, not counted: the first frames after a start are cold caches, not the home's jank
     tv "dumpsys gfxinfo $HOME_PKG reset" > /dev/null 2>&1
     walk_end=$((SECONDS + WALK_S)); n=0
     while [ "$SECONDS" -lt "$walk_end" ] || [ "$n" -lt 6 ]; do   # a scripted D-pad walk: right, right, left, left, down, up; 250 ms apart

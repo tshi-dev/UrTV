@@ -84,6 +84,19 @@ jobs:
           emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim -camera-back none
           script: bash tester/auto/ci/run.sh android/app/build/outputs/apk/debug/app-debug.apk android/launcher/build/outputs/apk/debug/launcher-debug.apk auto-out ${{ inputs.skip }}
 
+      # review F97: the same photo from Downloads on Android 10 (API 29), where scoped storage hides it from File.listFiles; its result goes beside the round's report
+      - name: Photos from Downloads on Android 10
+        if: always()
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 29
+          target: android-tv
+          arch: x86
+          profile: tv_1080p
+          disable-animations: true
+          emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim -camera-back none
+          script: bash tester/auto/ci/storage29.sh android/launcher/build/outputs/apk/debug/launcher-debug.apk auto-out
+
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -108,6 +121,7 @@ jobs:
             ls -d auto-* 2>/dev/null | sort | head -n -9 | xargs -r rm -rf   # the last 10 rounds stay
             rm -rf "$run"; mkdir -p "$run/auto"
             cp -r "$GITHUB_WORKSPACE"/auto-out/auto/. "$run/auto/"
+            [ -d "$GITHUB_WORKSPACE/auto-out/storage29" ] && cp -r "$GITHUB_WORKSPACE/auto-out/storage29" "$run/"   # the Android 10 photos check (review F97)
             find "$run/auto/raw" -type f -size +1500k -delete 2>/dev/null || true   # a whole logcat is not published
             rm -rf latest-auto; cp -r "$run" latest-auto
             git add -A
@@ -120,3 +134,10 @@ jobs:
           echo "Auto round $verdict: $link   (report: $raw)"
           { echo "## Auto round: $verdict"; echo; echo "- report: $raw"; echo "- all: $link"; echo; cat "$GITHUB_WORKSPACE/auto-out/auto/report.md"; } >> "$GITHUB_STEP_SUMMARY"
           [ "$verdict" = GREEN ]
+
+      - name: Android 10 photos verdict
+        if: always()
+        run: |
+          [ -s auto-out/storage29/result.txt ] || { echo "the Android 10 check left no result"; exit 1; }
+          cat auto-out/storage29/result.txt
+          grep -q '^PASS' auto-out/storage29/result.txt

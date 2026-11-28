@@ -157,6 +157,28 @@ check("lib: the adhan of all prayers, a show line and the wm override",
       lib.adhan_all("prayer_sound=fajr:silent,dhuhr:|prayer_screen=fajr:on,dhuhr:off") == ["fajr screen", "dhuhr sound"] and lib.kv("a=1\nhomelayout=couch\n", "homelayout") == "couch"
       and lib.wm_back("Physical size: 1920x1080\nOverride size: 1280x720\nPhysical density: 320\n") == "wm size 1280x720; wm density reset" and lib.wm_back("Physical size: 1920x1080") == "wm size reset; wm density reset")
 
+# the tester's first real-TV round (b654): what it found in the round itself
+import os
+u = subprocess.run([sys.executable, str(ROOT / "tester/auto/lib.py"), "city", str(Path(out) / "raw" / "show-before.txt")], env=dict(os.environ, PYTHONUTF8="0", PYTHONIOENCODING="cp1252"), capture_output=True)
+check("lib.py prints Arabic as UTF-8 even when the console says cp1252 (Windows)", u.returncode == 0 and "الرياض".encode("utf-8") in u.stdout, (u.returncode, u.stdout[:60], u.stderr[-200:]))
+check("the front app is read from the whole dump in Python, and a start time of 0 is no time",
+      lib.front_app("x\n  mResumedActivity: ActivityRecord{1 u0 a.b/.C t5}\n  mResumedActivity: second\n") == "mResumedActivity: ActivityRecord{1 u0 a.b/.C t5}" and lib.front_app("nothing") == ""
+      and lib.start_time("TotalTime: 523") == 523 and lib.start_time("TotalTime: 0") is None and lib.start_time("") is None)
+puts = [l for l in cmds.splitlines() if "screen_off_timeout" in l and " put " in l]
+check("the round sets a long idle for itself and puts the owner's back last (45 s here)", len(puts) >= 2 and puts[0].endswith(" 600000") and puts[-1].endswith(" 45000"), puts)
+check("the games list is opened through the hub (QuizGamesActivity is not exported), and the radio retry names the app that took the front",
+      "YourTvHubActivity --es open games" in cmds and ".QuizGamesActivity" not in cmds and "another app was in front" in (ROOT / "tester/auto/round.sh").read_text(encoding="utf-8"))
+
+emu = {l.split("\t")[0]: l.split("\t")[1] for l in (ROOT / "tester/auto/ci/thresholds-emulator.tsv").read_text(encoding="utf-8").splitlines() if l and not l.startswith("#")}
+real = {l.split("\t")[0]: l.split("\t")[1] for l in (ROOT / "tester/auto/thresholds.tsv").read_text(encoding="utf-8").splitlines() if l and not l.startswith("#")}
+check("the emulator does not judge jank (a software GPU: 100 %, run 3); the real-TV limit stays 15; the crash limits are the same on both", emu.get("jank_home_pct") == "100" and real.get("jank_home_pct") == "15" and emu.get("crashes") == real.get("crashes") == "0")
+
+wf29 = (ROOT / ".github/workflows/auto-round.yml").read_text(encoding="utf-8")
+sc29 = (ROOT / "tester/auto/ci/storage29.sh").read_text(encoding="utf-8")
+check("Android 10 (API 29): the round's workflow lists the photos of Downloads on an API 29 TV emulator, and goes red when it lists none (review F97)",
+      "api-level: 29" in wf29 and "tester/auto/ci/storage29.sh" in wf29 and "grep -q '^PASS' auto-out/storage29/result.txt" in wf29
+      and '"$SDK" = 29' in sc29 and "/sdcard/Download" in sc29 and "PhotoAddActivity" in sc29 and "لا صور هنا" in sc29)
+
 # ---- what the script must never do
 src = (ROOT / "tester/auto/round.sh").read_text(encoding="utf-8") + (ROOT / "tester/auto/lib.py").read_text(encoding="utf-8")
 code = "\n".join(l for l in src.splitlines() if not l.lstrip().startswith("#"))

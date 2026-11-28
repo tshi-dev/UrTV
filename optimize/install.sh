@@ -659,7 +659,10 @@ if [ "$what" = launcher ] || [ "$what" = all ]; then
           *) WIZARD_KEPT=yes; echo "The setup wizard answers Home, but the TV did not say who owns its saved Wi-Fi: the wizard is left on, so the network is not lost." ;;   # (if Home then does not open ours, this TV keeps its own home: one plain result, rc 6)
         esac
       fi
-      # 2. Arm the safety switch on the TV: it restores the stock home in 300 s unless we confirm (slow ADB needs time).
+      # 2. Arm the safety switch on the TV: it restores the stock home in 300 s unless we confirm (slow ADB needs time). A TV where the switch already fired
+      #    first (the line «ADB was too slow», which leaves optimize/run/safety-slow) gets 900 s on the next try: the same command again fits it.
+      SAFETY_S=300
+      [ -f "${URTV_RUN_DIR:-optimize/run}/safety-slow" ] && SAFETY_S=900
       #    It carries a nonce (a marker of an older switch cannot disarm this one), and it must show it is alive before
       #    anything is changed. The journal records what the switch changes, to undo it if the TV restarts in the middle.
       local old_nonce role wiz stk
@@ -689,7 +692,7 @@ if [ "$what" = launcher ] || [ "$what" = all ]; then
         "${old_nonce:+touch /data/local/tmp/home_ok.$old_nonce}" \
         "rm -f /data/local/tmp/home_ok /data/local/tmp/home_ok.$NONCE" \
         "for f in /data/local/tmp/home_ok.* /data/local/tmp/home_pid.* /data/local/tmp/home_hb.*; do case \$f in *.$NONCE|*.${old_nonce:-none}|*'*') ;; *) rm -f \$f ;; esac; done" \
-        "if command -v setsid > /dev/null 2>&1; then setsid sh /data/local/tmp/deadman.sh $STOCK 300 $NONCE < /dev/null > /dev/null 2>&1 & else nohup sh /data/local/tmp/deadman.sh $STOCK 300 $NONCE < /dev/null > /dev/null 2>&1 & fi" \
+        "if command -v setsid > /dev/null 2>&1; then setsid sh /data/local/tmp/deadman.sh $STOCK $SAFETY_S $NONCE < /dev/null > /dev/null 2>&1 & else nohup sh /data/local/tmp/deadman.sh $STOCK $SAFETY_S $NONCE < /dev/null > /dev/null 2>&1 & fi" \
         | grep . | "$PY" -I optimize/tv.py --batch || return 1
       # alive = its pid answers and its heartbeat is under 25 s old (it writes one every 10 s)
       alive=no
@@ -870,7 +873,8 @@ if [ "$what" = launcher ] || [ "$what" = all ]; then
     fi
     st=$(jget state); who=${res%%/*}
     if [ -n "$spkg" ] && [ "$who" = "$spkg" ] && [ "$stk" = enabled ] && [ "$st" = restored ]; then
-      echo "!! The safety switch put the stock home back (ADB was too slow): Home answers with $spkg, it is enabled, and the journal says restored. Nothing is broken: run the same command again."
+      mkdir -p "${URTV_RUN_DIR:-optimize/run}"; : > "${URTV_RUN_DIR:-optimize/run}/safety-slow"
+      echo "!! The safety switch put the stock home back (ADB was too slow): Home answers with $spkg, it is enabled, and the journal says restored. Nothing is broken: run the same command again (it gives the switch 15 minutes this time)."
     elif [ "$who" = sa.urtv.home ]; then
       echo "!! The home switch did not finish its check (code $code), but Home answers with the new launcher now (the stock home is $stk, the journal says ${st:-nothing}). Run the same command again: it checks the switch and stops the safety switch."
     elif [ "$stk" = disabled ]; then
