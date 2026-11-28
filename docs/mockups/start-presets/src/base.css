@@ -15,3 +15,6 @@ html,body{width:1920px;height:1080px;overflow:clip;position:relative;background:
 .mark{display:inline-flex;gap:3px;margin-inline-end:10px;vertical-align:middle}
 .mark i{width:0;height:0;border-top:7px solid transparent;border-bottom:7px solid transparent;border-right:10px solid var(--green)}
 .on-w{color:var(--green)}.off-w{color:var(--faint)}
+/* a list row: UrTV's settings focus, the look's fill with dark ink, a small lift; tiles and cards keep .f's scale and shadow */
+.r.f{transform:scale(1.02);box-shadow:0 14px 34px rgba(0,0,0,.45)}
+.r.f .box:not(.on){border-color:#8a8a8a}

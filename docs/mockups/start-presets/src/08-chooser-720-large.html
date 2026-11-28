@@ -3,7 +3,9 @@
 html,body{width:1280px;height:720px}
 h1{position:absolute;top:22px;right:56px;font-size:52px;font-weight:700}
 .sub{position:absolute;top:96px;right:58px;left:56px;font-size:24px;color:var(--dim)}
-.grid{position:absolute;top:150px;right:56px;left:56px;display:grid;grid-template-columns:repeat(3,1fr);gap:20px 24px}
+.grid{position:absolute;top:180px;right:56px;left:56px;display:grid;grid-template-columns:repeat(4,1fr);gap:20px 22px}
+.mini{display:grid;grid-template-columns:1fr 1fr;gap:3px;aspect-ratio:16/9}.mini img{aspect-ratio:auto;height:100%;width:100%;object-fit:cover}
+.what{position:absolute;right:56px;left:56px;top:470px;font-size:24px;line-height:1.5}.what b{display:block;font-size:20px;color:var(--faint);font-weight:500}
 .c{background:var(--panel);border-radius:18px;overflow:hidden}
 .c img{display:block;width:100%;aspect-ratio:16/9;object-fit:cover}
 .c .n{padding:8px 16px 10px;font-size:30px;font-weight:600;line-height:1.2}
@@ -16,12 +18,10 @@ h1{position:absolute;top:22px;right:56px;font-size:52px;font-weight:700}
 <h1>ابدأ بـ</h1>
 <div class="sub">اختر كيف يبدأ تلفزيونك. تقدر تغيّره بعدين.</div>
 <div class="grid">
- <div class="c f"><img src="../04-clean-home.png"><div class="n">نظيف<small>الساعة والتطبيقات، وبس</small></div></div>
- <div class="c"><img src="../../home-riyadh.png"><div class="n">كامل<small>كل شي، وتختار وش تشيل</small></div></div>
- <div class="c"><img src="../07-couch-home.png"><div class="n">كنبة<small>ساعة كبيرة، بلا بطاقات</small></div></div>
- <div class="c"><img src="../../presets/preset-family.jpg"><div class="n">مصلّي<small>المواقيت والأذان</small></div></div>
- <div class="c"><img src="../../presets/preset-sport.jpg"><div class="n">رياضة<small>مباريات اليوم وفرقك</small></div></div>
- <div class="c"><img src="../06-kids-home.png"><div class="n">للصغار<small>تطبيقاتهم والألعاب</small></div></div>
+ <div class="c f"><img src="../04-clean-home.png"><div class="n">نظيف<small>الساعة والتطبيقات</small></div></div>
+ <div class="c"><img src="../../home-riyadh.png"><div class="n">كامل<small>كل شي</small></div></div>
+ <div class="c"><img src="../07-couch-home.png"><div class="n">كنبة<small>ساعة كبيرة</small></div></div>
+ <div class="c"><div class="mini"><img src="../../presets/preset-family.jpg"><img src="../../presets/preset-sport.jpg"><img src="../06-kids-home.png"><img src="../05-simple-home.png"></div><div class="n">المزيد<small>أربع بدايات</small></div></div>
 </div>
-<div class="fade"></div><div class="cap">720p بخط كبير: ثلاث في الصف، والباقي (بسيط، مثل ما هو) تحت بالنزول. ما يشتغل ووش لا يطلع للمركّز عليه بدل السطر.</div>
+<div class="what"><b>ما يشتغل، وتضيفه متى ما تبي</b>البطاقات، والمباريات، والأسواق، وتلاوة وأذان، والأذان، وشاشة التوقف</div><div class="cap">720p بخط كبير: الأربع في صف واحد، وتحتها وش ما يشتغل.</div>
 </body></html>
