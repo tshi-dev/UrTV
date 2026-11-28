@@ -1251,6 +1251,11 @@ public class MainActivity extends Activity {
                 if (getResources().getBoolean(R.bool.show_listening))
                     handler.post(() -> launchGuarded(ParentalPolicy.PILL_LISTEN, new Intent(this, sa.urtv.home.tilawah.PrayerSoundActivity.class), S.t("الأذان لكل صلاة")));
                 break;
+            case "ownadhan":   // 4.4 beta 4 the settings' «أذاني من ملف» (the emulator's count: inside «المؤذن» it was ~37 presses): «صوتياتي» asking for the file that becomes the adhan
+                if (getResources().getBoolean(R.bool.show_listening))
+                    handler.post(() -> launchGuarded(ParentalPolicy.PILL_LISTEN, new Intent(this, sa.urtv.home.tilawah.AudioActivity.class)
+                        .putExtra(sa.urtv.home.tilawah.AudioActivity.EXTRA_USE, "own"), S.t("أذاني من ملف")));
+                break;
             case "listen":   // the settings' «تلاوة وأذان» ← «افتح تلاوة وأذان»: the same as the button
                 if (getResources().getBoolean(R.bool.show_listening))
                     handler.post(() -> launchGuarded(ParentalPolicy.PILL_LISTEN, new Intent(this, sa.urtv.home.tilawah.MainActivity.class), "تلاوة وأذان"));

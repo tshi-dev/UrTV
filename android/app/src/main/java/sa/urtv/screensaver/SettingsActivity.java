@@ -640,6 +640,9 @@ public class SettingsActivity extends Activity {
         // 4.4 beta 4 (the UI session's tree): the three screens of the تلاوة app that were only reached through «الأذان»: the muezzin, the duas and reminders, and my sounds
         row("المؤذن", homeValue("adhan_voice", "name", "اختر صوت المؤذن"), R.drawable.ic_settings,
             new Runnable() { public void run() { openHome("voice"); } });
+        // 4.4 beta 4 (the emulator's count of the findability review: as «المؤذن»'s last choice it was ~37 presses): one's own adhan, a row of its own
+        row("أذاني من ملف", "من فلاشة أو التنزيلات أو الجوال، ويصير هو الأذان", R.drawable.ic_settings,
+            new Runnable() { public void run() { openHome("ownadhan"); } });
         row("الأدعية والتذكيرات", duasValue(), R.drawable.ic_settings,
             new Runnable() { public void run() { openHome("duas"); } });
         row("صوتياتي", "أدعيتك وأذاني من ملفاتك", R.drawable.ic_settings,

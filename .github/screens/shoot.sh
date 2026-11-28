@@ -142,7 +142,7 @@ saver --es settingsstyle buttons
 saver --es homelayout couch --es clock glass
 for opt in a b; do
   saver --es sidecards $opt
-  adb shell input keyevent KEYCODE_HOME; sleep 8
+  start sa.urtv.home/.MainActivity; sleep 8   # our home (the emulator's own launcher answers HOME)
   shot home-side-cards-$opt 2
 done
 saver --es sidecards off

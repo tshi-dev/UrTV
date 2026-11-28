@@ -106,7 +106,7 @@ def settings(style):
 # (name, the doc's target from the settings' first screen, the steps: a text to reach then OK)
 TARGETS = [
     ("احذف صورة", 6, [("صوري والخلفيات", True), ("احذف صورة", True)]),
-    ("أذاني من ملف", 6, [("الصلاة والأذان", True), ("المؤذن", True), ("أذاني من ملف", True)]),
+    ("أذاني من ملف", 6, [("الصلاة والأذان", True), ("أذاني من ملف", True)]),   # its own row (4.4 beta 4); also «المؤذن»'s first choice
     ("الأدعية والتذكيرات", 7, [("الصلاة والأذان", True), ("الأدعية والتذكيرات", True)]),
     ("التطبيقات المخفية", 12, [("التطبيقات والأزرار", True), ("التطبيقات المخفية", True)]),
     ("حجم البطاقات", 12, [("الشكل", True), ("حجم البطاقات", True)]),
@@ -136,18 +136,8 @@ def main():
             print(lines[-1], flush=True)
             adb("shell", "input", "keyevent", "KEYCODE_BACK")
             adb("shell", "input", "keyevent", "KEYCODE_BACK")
-    # from HOME: the remote's Settings key held opens «تلفزيونك», then its «الإعدادات»
-    adb("shell", "am", "start", "-W", "--activity-clear-task", "-n", f"{HOME}/.MainActivity")   # our home in front (the emulator's own launcher is the default one)
-    time.sleep(4)
-    w = Walk()
-    adb("shell", "input", "keyevent", "--longpress", "KEYCODE_SETTINGS")
-    w.n += 1
-    time.sleep(2)
-    got = w.goto("الإعدادات", budget=12)
-    if got:
-        w.ok()
-    lines.append(f"any\tHOME → الإعدادات (Settings key held)\t{w.n}\t4\t{'OK' if got and w.n <= 4 else 'OVER' if got else 'MISSED'}\t{w.where()}")
-    print(lines[-1], flush=True)
+    # from HOME: not counted here. The emulator's own launcher takes the Settings key and HOME, so it cannot be measured on it; on a TV the
+    # remote's Settings key held opens «تلفزيونك» (1) and its «الإعدادات» is 3 more (docs/research/SETTINGS-AUDIT.md, section D)
     open(f"{OUT}/presses.txt", "w", encoding="utf-8").write("\n".join(lines) + "\n")
 
 
