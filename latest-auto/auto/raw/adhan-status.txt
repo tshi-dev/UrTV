@@ -1,5 +1,5 @@
 playing=0
-source=none
+source=radio
 adhan=off
 voice=1
 fajr_voice=10

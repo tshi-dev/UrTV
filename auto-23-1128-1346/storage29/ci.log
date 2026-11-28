@@ -1,0 +1,28 @@
+api 29
+Performing Streamed Install
+Success
+assets/backgrounds/9hWJs7iblh8.jpg: 1 file pushed, 0 skipped. 923.0 MB/s (118125 bytes in 0.000s)
+Starting: Intent { cmp=sa.urtv.home/.PhotoAddActivity }
+Security exception: Permission Denial: starting Intent { flg=0x10000000 cmp=sa.urtv.home/.PhotoAddActivity } from null (pid=4186, uid=2000) not exported from uid 10051
+
+java.lang.SecurityException: Permission Denial: starting Intent { flg=0x10000000 cmp=sa.urtv.home/.PhotoAddActivity } from null (pid=4186, uid=2000) not exported from uid 10051
+	at com.android.server.wm.ActivityStackSupervisor.checkStartAnyActivityPermission(ActivityStackSupervisor.java:1043)
+	at com.android.server.wm.ActivityStarter.startActivity(ActivityStarter.java:760)
+	at com.android.server.wm.ActivityStarter.startActivity(ActivityStarter.java:583)
+	at com.android.server.wm.ActivityStarter.startActivityMayWait(ActivityStarter.java:1289)
+	at com.android.server.wm.ActivityStarter.execute(ActivityStarter.java:514)
+	at com.android.server.wm.ActivityTaskManagerService.startActivityAsUser(ActivityTaskManagerService.java:1067)
+	at com.android.server.wm.ActivityTaskManagerService.startActivityAsUser(ActivityTaskManagerService.java:1041)
+	at com.android.server.am.ActivityManagerService.startActivityAsUser(ActivityManagerService.java:3508)
+	at com.android.server.am.ActivityManagerShellCommand.runStartActivity(ActivityManagerShellCommand.java:518)
+	at com.android.server.am.ActivityManagerShellCommand.onCommand(ActivityManagerShellCommand.java:172)
+	at android.os.ShellCommand.exec(ShellCommand.java:104)
+	at com.android.server.am.ActivityManagerService.onShellCommand(ActivityManagerService.java:9825)
+	at android.os.Binder.shellCommand(Binder.java:881)
+	at android.os.Binder.onTransact(Binder.java:765)
+	at android.app.IActivityManager$Stub.onTransact(IActivityManager.java:4516)
+	at com.android.server.am.ActivityManagerService.onTransact(ActivityManagerService.java:2741)
+	at android.os.Binder.execTransactInternal(Binder.java:1021)
+	at android.os.Binder.execTransact(Binder.java:994)
+Starting: Intent { cmp=sa.urtv.home/.PhotoAddActivity }
+PASS: the photo in Downloads is listed on Android 10

@@ -1,1 +1,1 @@
-FAIL: on Android 8 the remote froze or the focus did not move: the home with the add-on's service on (see addon-*.xml, addon.png);
+PASS: on Android 8 the D-pad moves the focus in the home, alone and with the add-on's service on (30 keys each, none held)
