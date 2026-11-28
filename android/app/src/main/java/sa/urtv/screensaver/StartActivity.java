@@ -140,8 +140,8 @@ public class StartActivity extends Activity {
         if (st == null || st[4] == null) { on.setText(""); offLine.setText(""); return; }
         List<String> yes = new ArrayList<>(), no = new ArrayList<>();
         for (String[] p : Parts.ALL) (Parts.off(st[4], p[0]) ? no : yes).add(p[1]);
-        on.setText(conv(String.format("يشتغل: %s", Prefs.join(yes, "، "))));
-        offLine.setText(no.isEmpty() ? "" : conv(String.format("ما يشتغل، وتضيفه متى ما تبي: %s", Prefs.join(no, "، "))));   // «المواقيت والأذان» in it says the adhan
+        on.setText(conv(String.format(java.util.Locale.ROOT, "يشتغل: %s", Prefs.join(yes, "، "))));
+        offLine.setText(no.isEmpty() ? "" : conv(String.format(java.util.Locale.ROOT, "ما يشتغل، وتضيفه متى ما تبي: %s", Prefs.join(no, "، "))));   // «المواقيت والأذان» in it says the adhan
     }
 
     private void choose(String key) {

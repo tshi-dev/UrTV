@@ -4786,7 +4786,7 @@ public class SettingsActivity extends Activity {
         final boolean[] on = new boolean[all.length];
         String off = prefs.partsOff();
         for (int i = 0; i < all.length; i++) {
-            labels[i] = Parts.PRAYER.equals(all[i][0]) ? String.format("%s (إيقافها يوقف الأذان)", all[i][1]) : all[i][1];
+            labels[i] = Parts.PRAYER.equals(all[i][0]) ? String.format(java.util.Locale.ROOT, "%s (إيقافها يوقف الأذان)", all[i][1]) : all[i][1];
             on[i] = !Parts.off(off, all[i][0]);
         }
         new Dlg(this).multi(() -> {
