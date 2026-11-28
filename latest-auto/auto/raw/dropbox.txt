@@ -1,12 +1,12 @@
-Drop box contents: 8 entries
+Drop box contents: 7 entries
 Max entries: 1000
 Low priority rate limit period: 2000 ms
 Low priority tags: {data_app_wtf, keymaster, system_server_wtf, system_app_strictmode, system_app_wtf, system_server_strictmode, data_app_strictmode, netstats}
 
 ========================================
-2026-11-28 01:13:22 system_server_wtf (text, 1416 bytes)
+2026-11-28 01:38:40 system_server_wtf (text, 1416 bytes)
 Process: system_server
-PID: 465
+PID: 472
 UID: 1000
 Flags: 0x30c8be09
 Package: android v30 (11)
@@ -31,7 +31,7 @@ android.util.Log$TerribleFailure: Shared lib without setting: SharedLibraryInfo{
 	at com.android.internal.os.ZygoteInit.main(ZygoteInit.java:925)
 
 ========================================
-2026-11-28 01:13:22 system_server_wtf (text, 1217 bytes)
+2026-11-28 01:38:40 system_server_wtf (text, 1217 bytes)
 Process: system_server
 Subject: TrustManagerService
 Build: google/sdk_google_atv_x86/generic_x86:11/RTU1.221129.002/9351025:user/dev-keys
@@ -53,35 +53,14 @@ android.util.Log$TerribleFailure: EXTRA_USER_HANDLE missing or invalid, value=0
 	at com.android.internal.os.ZygoteInit.main(ZygoteInit.java:925)
 
 ========================================
-2026-11-28 01:13:23 system_server_wtf (text, 1214 bytes)
-Process: system_server
-Subject: UserspaceRebootLogger
-Build: google/sdk_google_atv_x86/generic_x86:11/RTU1.221129.002/9351025:user/dev-keys
-
-android.util.Log$TerribleFailure: Userspace reboot is not supported.
-	at android.util.Log.wtf(Log.java:313)
-	at android.util.Slog.wtf(Slog.java:94)
-	at com.android.server.UserspaceRebootLogger.shouldLogUserspaceRebootEvent(UserspaceRebootLogger.java:95)
-	at com.android.server.am.ActivityManagerService.maybeLogUserspaceRebootEvent(ActivityManagerService.java:2383)
-	at com.android.server.am.ActivityManagerService.finishBooting(ActivityManagerService.java:5572)
-	at com.android.server.am.ActivityManagerService.bootAnimationComplete(ActivityManagerService.java:5619)
-	at com.android.server.wm.WindowManagerService.performEnableScreen(WindowManagerService.java:3475)
-	at com.android.server.wm.WindowManagerService.access$1100(WindowManagerService.java:319)
-	at com.android.server.wm.WindowManagerService$H.handleMessage(WindowManagerService.java:4919)
-	at android.os.Handler.dispatchMessage(Handler.java:106)
-	at android.os.Looper.loop(Looper.java:223)
-	at android.os.HandlerThread.run(HandlerThread.java:67)
-	at com.android.server.ServiceThread.run(ServiceThread.java:44)
-
-========================================
-2026-11-28 01:13:23 system_app_wtf (text, 1412 bytes)
+2026-11-28 01:38:40 system_app_wtf (text, 1411 bytes)
 Process: com.android.bluetooth
-PID: 662
+PID: 666
 UID: 1002
 Flags: 0x30c8be45
 Package: com.android.bluetooth v30 (11)
 Foreground: No
-Process-Runtime: 1046
+Process-Runtime: 618
 Subject: HeadsetSystemInterface
 Build: google/sdk_google_atv_x86/generic_x86:11/RTU1.221129.002/9351025:user/dev-keys
 
@@ -103,12 +82,33 @@ android.util.Log$TerribleFailure: Could not bind to IBluetoothHeadsetPhone Servi
 	at com.android.internal.os.ZygoteInit.main(ZygoteInit.java:947)
 
 ========================================
-2026-11-28 01:13:27 system_server_wtf (text, 1242 bytes)
+2026-11-28 01:38:41 system_server_wtf (text, 1214 bytes)
+Process: system_server
+Subject: UserspaceRebootLogger
+Build: google/sdk_google_atv_x86/generic_x86:11/RTU1.221129.002/9351025:user/dev-keys
+
+android.util.Log$TerribleFailure: Userspace reboot is not supported.
+	at android.util.Log.wtf(Log.java:313)
+	at android.util.Slog.wtf(Slog.java:94)
+	at com.android.server.UserspaceRebootLogger.shouldLogUserspaceRebootEvent(UserspaceRebootLogger.java:95)
+	at com.android.server.am.ActivityManagerService.maybeLogUserspaceRebootEvent(ActivityManagerService.java:2383)
+	at com.android.server.am.ActivityManagerService.finishBooting(ActivityManagerService.java:5572)
+	at com.android.server.am.ActivityManagerService.bootAnimationComplete(ActivityManagerService.java:5619)
+	at com.android.server.wm.WindowManagerService.performEnableScreen(WindowManagerService.java:3475)
+	at com.android.server.wm.WindowManagerService.access$1100(WindowManagerService.java:319)
+	at com.android.server.wm.WindowManagerService$H.handleMessage(WindowManagerService.java:4919)
+	at android.os.Handler.dispatchMessage(Handler.java:106)
+	at android.os.Looper.loop(Looper.java:223)
+	at android.os.HandlerThread.run(HandlerThread.java:67)
+	at com.android.server.ServiceThread.run(ServiceThread.java:44)
+
+========================================
+2026-11-28 01:38:45 system_server_wtf (text, 1242 bytes)
 Process: system_server
 Subject: ActivityManager
 Build: google/sdk_google_atv_x86/generic_x86:11/RTU1.221129.002/9351025:user/dev-keys
 
-android.util.Log$TerribleFailure: Sending non-protected broadcast com.android.systemui.demo from system 679:com.android.systemui/u0a67 pkg com.android.systemui
+android.util.Log$TerribleFailure: Sending non-protected broadcast com.android.systemui.demo from system 682:com.android.systemui/u0a67 pkg com.android.systemui
 	at android.util.Log.wtf(Log.java:313)
 	at android.util.Log.wtf(Log.java:307)
 	at com.android.server.am.ActivityManagerService.checkBroadcastFromSystem(ActivityManagerService.java:15913)
@@ -124,11 +124,11 @@ Caused by: java.lang.Throwable
 	... 7 more
 
 ========================================
-2026-11-28 01:13:33 event_log (text, 34 bytes)
-1795828412989,0,0,event_log_start
+2026-11-28 01:38:48 event_log (text, 34 bytes)
+1795829928060,0,0,event_log_start
 
 ========================================
-2026-11-28 01:13:33 SYSTEM_BOOT (text, 547 bytes)
+2026-11-28 01:38:49 SYSTEM_BOOT (text, 547 bytes)
 isPrevious: false
 Build: google/sdk_google_atv_x86/generic_x86:11/RTU1.221129.002/9351025:user/dev-keys
 Hardware: goldfish_x86
@@ -137,20 +137,4 @@ Bootloader: unknown
 Radio: null
 Kernel: Linux version 5.4.86-android11-2-00040-g29b2beadc627-ab7157994 (build-user@build-host) (Android (6443078 based on r383902) clang version 11.0.1 (https://android.googlesource.com/toolchain/llvm-project b397f81060ce6d701042b782172ed13bee898b79), LLD 11.0.1 (/buildbot/tmp/tmp6_m7QH b397f81060ce6d701042b782172ed13bee898b79)) #1 SMP PREEMPT Fri Feb 19 11:59:46 UTC 2021
 
-
-========================================
-2026-11-28 01:13:45 system_server_wtf (text, 895 bytes)
-Process: system_server
-Subject: ActivityManager
-Build: google/sdk_google_atv_x86/generic_x86:11/RTU1.221129.002/9351025:user/dev-keys
-
-android.util.Log$TerribleFailure: Timeout waiting for provider com.google.android.tv/10048 for provider com.google.android.tv.common.preferences providerRunning=false caller=unknown/10048
-	at android.util.Log.wtf(Log.java:313)
-	at android.util.Slog.wtf(Slog.java:94)
-	at com.android.server.am.ActivityManagerService.getContentProviderImpl(ActivityManagerService.java:7487)
-	at com.android.server.am.ActivityManagerService.getContentProvider(ActivityManagerService.java:7595)
-	at android.app.IActivityManager$Stub.onTransact(IActivityManager.java:2381)
-	at com.android.server.am.ActivityManagerService.onTransact(ActivityManagerService.java:2883)
-	at android.os.Binder.execTransactInternal(Binder.java:1154)
-	at android.os.Binder.execTransact(Binder.java:1123)
 

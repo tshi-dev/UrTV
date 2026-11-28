@@ -1,17 +1,17 @@
-# Automatic round: emulator-5
+# Automatic round: emulator-6
 
 ## Health metrics
 
 | metric | now | limit | previous | change | verdict |
 |---|---|---|---|---|---|
-| cold_start_home_ms | 1157ms | max 20000 |  |  | ok |
-| cold_start_saver_ms | 910ms | max 20000 |  |  | ok |
-| jank_home_frames | 53 |  |  |  | no limit |
+| cold_start_home_ms | 1163ms | max 20000 |  |  | ok |
+| cold_start_saver_ms | 856ms | max 20000 |  |  | ok |
+| jank_home_frames | 66 |  |  |  | no limit |
 | jank_home_pct | 100.0% | max 100 |  |  | ok |
-| jank_home_p90_ms | 48ms |  |  |  | no limit |
-| jank_home_p99_ms | 61ms |  |  |  | no limit |
-| pss_home_kb | 58970KB | max 350000 |  |  | ok |
-| pss_saver_kb | 38574KB | max 350000 |  |  | ok |
+| jank_home_p90_ms | 44ms |  |  |  | no limit |
+| jank_home_p99_ms | 48ms |  |  |  | no limit |
+| pss_home_kb | 60721KB | max 350000 |  |  | ok |
+| pss_saver_kb | 39044KB | max 350000 |  |  | ok |
 | crashes | 0 | zero 0 |  |  | ok |
 | anrs | 0 | zero 0 |  |  | ok |
 | frozen_lines | 0 | zero 0 |  |  | ok |
@@ -60,19 +60,19 @@
 | settings-tvos-update | PASS | tvOS ← حول والتحديث: «تحديث تلفزيوني» is on the screen |
 | settings-tvos-search | PASS | tvOS ← بحث في الإعدادات: «بحث في الإعدادات» is on the screen |
 | saver-start | PASS | a dream runs |
-| radio-0 | FAIL | the row «إذاعة القرآن الكريم - السعودية» was not found on the stations tab (no key pressed on it) |
-| radio-1 | FAIL | the تلاوة screen did not open: mResumedActivity: ActivityRecord{fc1748f u0 com.google.android.tvlauncher/.MainActivity t4} |
-| radio-2 | FAIL | the تلاوة screen did not open: mResumedActivity: ActivityRecord{fc1748f u0 com.google.android.tvlauncher/.MainActivity t4} |
-| radio-3 | FAIL | the تلاوة screen did not open: mResumedActivity: ActivityRecord{fc1748f u0 com.google.android.tvlauncher/.MainActivity t4} |
-| radio-4 | FAIL | the تلاوة screen did not open: mResumedActivity: ActivityRecord{fc1748f u0 com.google.android.tvlauncher/.MainActivity t4} |
-| radio-5 | FAIL | the تلاوة screen did not open: mResumedActivity: ActivityRecord{fc1748f u0 com.google.android.tvlauncher/.MainActivity t4} |
-| radio-6 | FAIL | the تلاوة screen did not open: mResumedActivity: ActivityRecord{fc1748f u0 com.google.android.tvlauncher/.MainActivity t4} |
-| radio-7 | FAIL | the تلاوة screen did not open: mResumedActivity: ActivityRecord{fc1748f u0 com.google.android.tvlauncher/.MainActivity t4} |
-| radio-8 | FAIL | the تلاوة screen did not open: mResumedActivity: ActivityRecord{fc1748f u0 com.google.android.tvlauncher/.MainActivity t4} |
-| radio-9 | FAIL | the تلاوة screen did not open: mResumedActivity: ActivityRecord{fc1748f u0 com.google.android.tvlauncher/.MainActivity t4} |
-| radio-10 | FAIL | the تلاوة screen did not open: mResumedActivity: ActivityRecord{fc1748f u0 com.google.android.tvlauncher/.MainActivity t4} |
-| radio-11 | FAIL | the تلاوة screen did not open: mResumedActivity: ActivityRecord{fc1748f u0 com.google.android.tvlauncher/.MainActivity t4} |
-| radio-12 | FAIL | the تلاوة screen did not open: mResumedActivity: ActivityRecord{fc1748f u0 com.google.android.tvlauncher/.MainActivity t4} |
+| radio-0 | FAIL | the row «إذاعة القرآن الكريم - السعودية» was not found on the stations tab (no key pressed on it; the screen is in shots/radio-0.png and raw/radio-0-notfound.xml) |
+| radio-1 | FAIL | the row «إذاعة القرآن الكريم - مصر» was not found on the stations tab (no key pressed on it; the screen is in shots/radio-1.png and raw/radio-1-notfound.xml) |
+| radio-2 | FAIL | the row «الشيخ أبو بكر الشاطري» was not found on the stations tab (no key pressed on it; the screen is in shots/radio-2.png and raw/radio-2-notfound.xml) |
+| radio-3 | FAIL | the row «عبدالرحمن السديس» was not found on the stations tab (no key pressed on it; the screen is in shots/radio-3.png and raw/radio-3-notfound.xml) |
+| radio-4 | FAIL | the row «سعود الشريم» was not found on the stations tab (no key pressed on it; the screen is in shots/radio-4.png and raw/radio-4-notfound.xml) |
+| radio-5 | FAIL | the row «ماهر المعيقلي» was not found on the stations tab (no key pressed on it; the screen is in shots/radio-5.png and raw/radio-5-notfound.xml) |
+| radio-6 | FAIL | the row «مشاري العفاسي» was not found on the stations tab (no key pressed on it; the screen is in shots/radio-6.png and raw/radio-6-notfound.xml) |
+| radio-7 | FAIL | the row «سعد الغامدي» was not found on the stations tab (no key pressed on it; the screen is in shots/radio-7.png and raw/radio-7-notfound.xml) |
+| radio-8 | FAIL | the row «ياسر الدوسري» was not found on the stations tab (no key pressed on it; the screen is in shots/radio-8.png and raw/radio-8-notfound.xml) |
+| radio-9 | FAIL | the row «عبدالباسط عبدالصمد» was not found on the stations tab (no key pressed on it; the screen is in shots/radio-9.png and raw/radio-9-notfound.xml) |
+| radio-10 | FAIL | the row «محمد صديق المنشاوي» was not found on the stations tab (no key pressed on it; the screen is in shots/radio-10.png and raw/radio-10-notfound.xml) |
+| radio-11 | FAIL | the row «أحمد العجمي» was not found on the stations tab (no key pressed on it; the screen is in shots/radio-11.png and raw/radio-11-notfound.xml) |
+| radio-12 | FAIL | the row «الشيخ عبدالله خياط» was not found on the stations tab (no key pressed on it; the screen is in shots/radio-12.png and raw/radio-12-notfound.xml) |
 | display-720p-home | PASS | the home at 1280x720, density 213 |
 | display-720p-settings | PASS | the settings at 720p |
 | font-large-home | PASS | the home at font scale 1.3 |
