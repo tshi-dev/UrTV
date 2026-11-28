@@ -1,12 +1,12 @@
-Drop box contents: 8 entries
+Drop box contents: 9 entries
 Max entries: 1000
 Low priority rate limit period: 2000 ms
 Low priority tags: {data_app_wtf, keymaster, system_server_wtf, system_app_strictmode, system_app_wtf, system_server_strictmode, data_app_strictmode, netstats}
 
 ========================================
-2026-11-28 12:55:52 system_server_wtf (text, 1416 bytes)
+2026-11-28 13:50:19 system_server_wtf (text, 1416 bytes)
 Process: system_server
-PID: 469
+PID: 476
 UID: 1000
 Flags: 0x30c8be09
 Package: android v30 (11)
@@ -31,7 +31,7 @@ android.util.Log$TerribleFailure: Shared lib without setting: SharedLibraryInfo{
 	at com.android.internal.os.ZygoteInit.main(ZygoteInit.java:925)
 
 ========================================
-2026-11-28 12:55:53 system_server_wtf (text, 1217 bytes)
+2026-11-28 13:50:19 system_server_wtf (text, 1217 bytes)
 Process: system_server
 Subject: TrustManagerService
 Build: google/sdk_google_atv_x86/generic_x86:11/RTU1.221129.002/9351025:user/dev-keys
@@ -53,7 +53,7 @@ android.util.Log$TerribleFailure: EXTRA_USER_HANDLE missing or invalid, value=0
 	at com.android.internal.os.ZygoteInit.main(ZygoteInit.java:925)
 
 ========================================
-2026-11-28 12:55:53 system_server_wtf (text, 1214 bytes)
+2026-11-28 13:50:20 system_server_wtf (text, 1214 bytes)
 Process: system_server
 Subject: UserspaceRebootLogger
 Build: google/sdk_google_atv_x86/generic_x86:11/RTU1.221129.002/9351025:user/dev-keys
@@ -74,14 +74,14 @@ android.util.Log$TerribleFailure: Userspace reboot is not supported.
 	at com.android.server.ServiceThread.run(ServiceThread.java:44)
 
 ========================================
-2026-11-28 12:55:54 system_app_wtf (text, 1412 bytes)
+2026-11-28 13:50:20 system_app_wtf (text, 1412 bytes)
 Process: com.android.bluetooth
-PID: 664
+PID: 674
 UID: 1002
 Flags: 0x30c8be45
 Package: com.android.bluetooth v30 (11)
 Foreground: No
-Process-Runtime: 1044
+Process-Runtime: 1018
 Subject: HeadsetSystemInterface
 Build: google/sdk_google_atv_x86/generic_x86:11/RTU1.221129.002/9351025:user/dev-keys
 
@@ -103,7 +103,7 @@ android.util.Log$TerribleFailure: Could not bind to IBluetoothHeadsetPhone Servi
 	at com.android.internal.os.ZygoteInit.main(ZygoteInit.java:947)
 
 ========================================
-2026-11-28 12:55:58 system_server_wtf (text, 1242 bytes)
+2026-11-28 13:50:24 system_server_wtf (text, 1242 bytes)
 Process: system_server
 Subject: ActivityManager
 Build: google/sdk_google_atv_x86/generic_x86:11/RTU1.221129.002/9351025:user/dev-keys
@@ -124,11 +124,45 @@ Caused by: java.lang.Throwable
 	... 7 more
 
 ========================================
-2026-11-28 12:56:02 event_log (text, 34 bytes)
-1795870561941,0,0,event_log_start
+2026-11-28 13:50:32 event_log (text, 34 bytes)
+1795873832133,0,0,event_log_start
 
 ========================================
-2026-11-28 12:56:02 SYSTEM_BOOT (text, 547 bytes)
+2026-11-28 13:50:33 system_app_wtf (text, 1928 bytes)
+Process: com.google.android.providers.media.module
+PID: 1255
+UID: 10071
+Flags: 0x28c83e45
+Package: com.google.android.providers.media.module v30 (11)
+Foreground: No
+Process-Runtime: 11755
+Subject: MediaUpgradeReceiver
+Build: google/sdk_google_atv_x86/generic_x86:11/RTU1.221129.002/9351025:user/dev-keys
+
+android.util.Log$TerribleFailure: Error during upgrade of media db internal.db
+	at android.util.Log.wtf(Log.java:313)
+	at android.util.Log.wtf(Log.java:307)
+	at com.android.providers.media.MediaUpgradeReceiver.onReceive(MediaUpgradeReceiver.java:78)
+	at android.app.ActivityThread.handleReceiver(ActivityThread.java:4032)
+	at android.app.ActivityThread.access$1400(ActivityThread.java:237)
+	at android.app.ActivityThread$H.handleMessage(ActivityThread.java:1924)
+	at android.os.Handler.dispatchMessage(Handler.java:106)
+	at android.os.Looper.loop(Looper.java:223)
+	at android.app.ActivityThread.main(ActivityThread.java:7656)
+	at java.lang.reflect.Method.invoke(Native Method)
+	at com.android.internal.os.RuntimeInit$MethodAndArgsCaller.run(RuntimeInit.java:592)
+	at com.android.internal.os.ZygoteInit.main(ZygoteInit.java:947)
+Caused by: java.lang.NullPointerException: Attempt to invoke interface method 'void com.android.providers.media.DatabaseHelper$OnLegacyMigrationListener.onStarted(android.content.ContentProviderClient, java.lang.String)' on a null object reference
+	at com.android.providers.media.DatabaseHelper.migrateFromLegacy(DatabaseHelper.java:848)
+	at com.android.providers.media.DatabaseHelper.onOpen(DatabaseHelper.java:380)
+	at android.database.sqlite.SQLiteOpenHelper.getDatabaseLocked(SQLiteOpenHelper.java:427)
+	at android.database.sqlite.SQLiteOpenHelper.getWritableDatabase(SQLiteOpenHelper.java:316)
+	at com.android.providers.media.DatabaseHelper.runWithTransaction(DatabaseHelper.java:556)
+	at com.android.providers.media.MediaUpgradeReceiver.onReceive(MediaUpgradeReceiver.java:72)
+	... 9 more
+
+========================================
+2026-11-28 13:50:33 SYSTEM_BOOT (text, 547 bytes)
 isPrevious: false
 Build: google/sdk_google_atv_x86/generic_x86:11/RTU1.221129.002/9351025:user/dev-keys
 Hardware: goldfish_x86
@@ -139,9 +173,18 @@ Kernel: Linux version 5.4.86-android11-2-00040-g29b2beadc627-ab7157994 (build-us
 
 
 ========================================
-2026-11-28 13:16:14 event_data (text, 51 bytes)
-start=0
-end=1795871774360
-log_start=1795870561941
+2026-11-28 13:50:46 system_server_wtf (text, 895 bytes)
+Process: system_server
+Subject: ActivityManager
+Build: google/sdk_google_atv_x86/generic_x86:11/RTU1.221129.002/9351025:user/dev-keys
 
+android.util.Log$TerribleFailure: Timeout waiting for provider com.google.android.tv/10052 for provider com.google.android.tv.common.preferences providerRunning=false caller=unknown/10052
+	at android.util.Log.wtf(Log.java:313)
+	at android.util.Slog.wtf(Slog.java:94)
+	at com.android.server.am.ActivityManagerService.getContentProviderImpl(ActivityManagerService.java:7487)
+	at com.android.server.am.ActivityManagerService.getContentProvider(ActivityManagerService.java:7595)
+	at android.app.IActivityManager$Stub.onTransact(IActivityManager.java:2381)
+	at com.android.server.am.ActivityManagerService.onTransact(ActivityManagerService.java:2883)
+	at android.os.Binder.execTransactInternal(Binder.java:1154)
+	at android.os.Binder.execTransact(Binder.java:1123)
 

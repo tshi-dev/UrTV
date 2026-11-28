@@ -1,17 +1,17 @@
-# Automatic round: emulator-23
+# Automatic round: emulator-24
 
 ## Health metrics
 
 | metric | now | limit | previous | change | verdict |
 |---|---|---|---|---|---|
-| cold_start_home_ms | 1066ms | max 20000 |  |  | ok |
-| cold_start_saver_ms | 705ms | max 20000 |  |  | ok |
+| cold_start_home_ms | 1665ms | max 20000 |  |  | ok |
+| cold_start_saver_ms | 1114ms | max 20000 |  |  | ok |
 | jank_home_frames | 63 |  |  |  | no limit |
 | jank_home_pct | 100.0% | max 100 |  |  | ok |
-| jank_home_p90_ms | 44ms |  |  |  | no limit |
-| jank_home_p99_ms | 48ms |  |  |  | no limit |
-| pss_home_kb | 59742KB | max 350000 |  |  | ok |
-| pss_saver_kb | 38815KB | max 350000 |  |  | ok |
+| jank_home_p90_ms | 57ms |  |  |  | no limit |
+| jank_home_p99_ms | 65ms |  |  |  | no limit |
+| pss_home_kb | 63006KB | max 350000 |  |  | ok |
+| pss_saver_kb | 38119KB | max 350000 |  |  | ok |
 | crashes | 0 | zero 0 |  |  | ok |
 | anrs | 0 | zero 0 |  |  | ok |
 | frozen_lines | 0 | zero 0 |  |  | ok |
@@ -20,6 +20,7 @@
 
 | step | result | what |
 |---|---|---|
+| radio | SKIP | left out of this round (--skip / ROUND_SKIP) |
 | layout-classic-none | PASS | كلاسيكي، بلا بطاقة: the home is in front (look at shots/layout-classic-none.png) |
 | layout-classic-stocks | PASS | كلاسيكي، الأسهم: the home is in front (look at shots/layout-classic-stocks.png) |
 | layout-classic-matches | PASS | كلاسيكي، المباريات: the home is in front (look at shots/layout-classic-matches.png) |
@@ -69,19 +70,6 @@
 | settings-tvos-update | PASS | tvOS ← حول والتحديث: «تحديث تلفزيوني» is on the screen |
 | settings-tvos-search | PASS | tvOS ← بحث في الإعدادات: «بحث في الإعدادات» is on the screen |
 | saver-start | PASS | a dream runs |
-| radio-0 | PASS | إذاعة القرآن الكريم - السعودية: playing |
-| radio-1 | PASS | إذاعة القرآن الكريم - مصر: playing |
-| radio-2 | PASS | الشيخ أبو بكر الشاطري: playing |
-| radio-3 | PASS | عبدالرحمن السديس: playing |
-| radio-4 | PASS | سعود الشريم: playing |
-| radio-5 | PASS | ماهر المعيقلي: playing |
-| radio-6 | PASS | مشاري العفاسي: playing |
-| radio-7 | PASS | سعد الغامدي: playing |
-| radio-8 | PASS | ياسر الدوسري: playing |
-| radio-9 | PASS | عبدالباسط عبدالصمد: playing |
-| radio-10 | PASS | محمد صديق المنشاوي: playing |
-| radio-11 | PASS | أحمد العجمي: playing |
-| radio-12 | PASS | الشيخ عبدالله خياط: playing |
 | display-720p-home | PASS | the home at 1280x720, density 213 |
 | display-720p-settings | PASS | the settings at 720p |
 | font-large-home | PASS | the home at font scale 1.3 |
