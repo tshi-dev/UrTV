@@ -38,3 +38,5 @@ jobs:
       - run: pip install fonttools brotli pillow -r .github/tools/cities-world/requirements.txt
       - run: npm install --no-save playwright@1.56.1 acorn@8.14.0 && npx playwright install --with-deps chromium
       - run: tests/run.sh
+        env:
+          URTV_BASE_REF: origin/master   # a release branch of master (4.3.x): the large clock is compared with master's page, not with next's (4.4's)
