@@ -257,7 +257,10 @@ if want radio; then
       key KEYCODE_HOME; nap 2
     done
     if [ "$opened" = 0 ]; then step "$name" FAIL "the تلاوة screen did not open: $(front)"; continue; fi
-    if [ "$found" = 0 ]; then step "$name" FAIL "the row «$sname» was not found on the stations tab (no key pressed on it)"; key KEYCODE_BACK; continue; fi
+    if [ "$found" = 0 ]; then
+      shot "$name"; cp "$OUT/raw/last.xml" "$OUT/raw/$name-notfound.xml" 2> /dev/null   # what the screen showed instead (the next round's reader needs it)
+      step "$name" FAIL "the row «$sname» was not found on the stations tab (no key pressed on it; the screen is in shots/$name.png and raw/$name-notfound.xml)"; key KEYCODE_HOME; nap 2; continue
+    fi
     shot "$name"
     was=$($LIB muted "$OUT/raw/audio-$name-before.txt"); is=$($LIB muted "$OUT/raw/audio-$name-after.txt")
     if grep -q 'source=radio' "$OUT/raw/$name-status.txt" && [ "$was$is" != nono ] && [ "$was" = "$is" ]; then step "$name" PASS "$sname: playing, the mute unchanged ($is)"
