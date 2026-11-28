@@ -124,6 +124,10 @@ final class Own {
     }
 
     private static synchronized String keep(Context c, File src) {
+        if (twin(c, src) > 0) {   // 4.4 beta 4: the same photo again (a phone's retry): kept once, and the add is done
+            if (src.equals(incoming(c))) src.delete();
+            return null;
+        }
         if (count(c) >= max(c)) return "already " + max(c) + " photos (delete one first)";
         String why = check(src);
         if (!why.isEmpty()) return why;
@@ -149,6 +153,28 @@ final class Own {
         }
         new Prefs(c).bumpOwnRev();
         return null;
+    }
+
+    /** 4.4 beta 4: the number of the kept photo with src's bytes, 0 when none (PhotoTwin) */
+    static int twin(Context c, File src) {
+        int n = count(c);
+        File[] kept = new File[n];
+        for (int i = 0; i < n; i++) kept[i] = file(c, i + 1);
+        return PhotoTwin.find(src, kept);
+    }
+
+    /** 4.4 beta 4: a photo the phone sends again while «صوري» is full is the one it has, not a refusal */
+    static boolean sameBytes(Context c, byte[] jpeg) {
+        File t = null;
+        try {
+            t = File.createTempFile("twin", ".jpg", c.getCacheDir());
+            try (OutputStream o = new FileOutputStream(t)) { o.write(jpeg); }
+            return twin(c, t) > 0;
+        } catch (IOException e) {
+            return false;
+        } finally {
+            if (t != null) t.delete();
+        }
     }
 
     /** 4.3: see JpegMeta.cameraData */

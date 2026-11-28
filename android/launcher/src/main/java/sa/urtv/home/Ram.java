@@ -68,6 +68,7 @@ public final class Ram {
                 mb = mi.totalMem / (1024 * 1024);
             } catch (RuntimeException ignored) { }
             t = tier(flag, mb, Runtime.getRuntime().availableProcessors());
+            if (t != LOW && CpuClass.weak(Runtime.getRuntime().availableProcessors(), CpuClass.maxKhz())) t = LOW;   // 4.4 beta 4: a slow processor is LOW too (CpuClass); «إيقاف» below still wins
             try {
                 android.content.SharedPreferences sp = c.getApplicationContext().getSharedPreferences("ram", Context.MODE_PRIVATE);
                 t = liteTier(t, sp.getString("lite", "auto"));   // A14 «الوضع الخفيف»
