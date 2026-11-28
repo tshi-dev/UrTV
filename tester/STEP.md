@@ -1,3 +1,13 @@
+▶▶ BETA 4 = next 7595a14b (28 Nov, morning). This replaces the 46dcad40 block. Do it FIRST.
+0. git fetch (round.sh changed a lot: it now sets its own 10-min idle and restores your 45 s, presses HOME before each step, forces UTF-8, opens games/radio through the hub like a person). Wait until apk-next/version.txt is newer than 3.654. TV muted; save `saver.sh show`.
+1. Install: `tester/auto/round.sh` (it installs apk-next; if install.sh launcher stops with «too slow», just run it again: the safety switch now waits 15 min). Push tester/auto/out/<build>/ (city-boxed copies only).
+2. Answers to your questions: the route to the settings from HOME is UP to the header, «مركز التحكم», OK, then «الإعدادات» (now the FIRST row of the panel, one DOWN). In «كنبة» there is also a «الإعدادات» gear tile at the end of the apps row. Count the presses from HOME to «الإعدادات» in classic, couch and football, each with none and stocks. IMPORTANT: with the stocks/matches card, check whether UP from the card reaches the header at all (the emulator says focus may get stuck on the card). Shot per key.
+3. Manual, still open from the last round: 2c «طريقة الحساب» → «جعفري» (shot of the prayer card, then set it back); 2e games list badges («جوال» 9, «ريموت» 7), «ابدأ» starts at once, domino tile backs, hex letters readable, «بدون كلام» next word covered.
+4. New in this build: «التاريخ الهجري» row (مفعّل/متوقف; off = Gregorian only); «كمّل المشاهدة» shows «ما يشارك» when empty; «التاريخ» centred over the clock with «بدون».
+5. RELEASE-SMOKE S-41..S-49 (in docs): if jank on home > 15%, run `dumpsys gfxinfo sa.urtv.home framestats > raw/gfxinfo.txt` and push it; control centre last row and «تخصيص» and Back; setup «Done» and the mute after a restart; league ticks.
+6. Radio from the UI (round.sh does it; if it fails, do one station by hand: HOME → «تلاوة وأذان» → «الإذاعات» → a station → OK) and then the live channels, 30 s each.
+Restore settings at the end; muted. Never the family PIN, no factory reset, never launcherx/setupwraith, never type any games code.
+
 ▶▶ BETA 4 = next 46dcad40 (27 Nov, night). This replaces the c64dc215 block. Do this FIRST.
 0. Update your checkout (git fetch; it has tester/auto/). Wait until apk-next/version.txt is newer than 3.633 (the Build APKs run on next 46dcad40). TV muted, and check Muted: true. Save `saver.sh show` as show-before.txt.
 1. AUTOMATIC: run `tester/auto/round.sh` (it installs apk-next keeping data, then runs layouts, settings, saver, radio, display, font, adhan, games and health). Read the verdict at the bottom of report.md. Push tester/auto/out/<build>/ to work/tester-report. Box the city in shots (it makes -city.png copies; push only those).
