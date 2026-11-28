@@ -1,0 +1,32 @@
+HOME holder: sa.urtv.home
+saver comp: sa.urtv.screensaver/.ScreenDream
+idle: 45000 sleep: 1139000
+dream delay: 1 1
+disabled pkgs:
+package:com.tcl.repairguide
+package:com.tcl.factory.view
+package:com.tcl.useragreement
+package:com.tcl.initsetup
+package:com.google.android.feedback
+package:android.autoinstalls.config.google.gtvpai
+package:com.tcl.logkit
+package:com.google.android.apps.tv.dreamx
+package:com.google.android.play.games
+package:com.google.android.partnersetup
+package:com.tcl.ocean.instructions
+package:com.tcl.esticker
+package:com.google.android.onetimeinitializer
+package:com.tcl.hotelmenu
+package:com.tcl.usercenter
+package:com.tcl.partnercustomizer
+package:com.tcl.exhibit
+package:com.tcl.messagebox
+partnercustomizer:
+      android.permission.CHANGE_COMPONENT_ENABLED_STATE: granted=true
+    User 0: ceDataInode=515351 installed=true hidden=false suspended=false distractionFlags=0 stopped=false notLaunched=false enabled=3 instant=false virtual=false
+      enabledComponents:
+    User 10: ceDataInode=0 installed=false hidden=false suspended=false distractionFlags=0 stopped=false notLaunched=false enabled=0 instant=false virtual=false
+      android.permission.CHANGE_COMPONENT_ENABLED_STATE: granted=true
+    User 0: ceDataInode=0 installed=true hidden=false suspended=false distractionFlags=0 stopped=false notLaunched=false enabled=0 instant=false virtual=false
+    User 10: ceDataInode=0 installed=true hidden=false suspended=false distractionFlags=0 stopped=false notLaunched=false enabled=0 instant=false virtual=false
+      android.permission.CHANGE_COMPONENT_ENABLED_STATE: granted=true
