@@ -31,7 +31,7 @@ rules, chan, pu = text(HOME + "UpdateRules.java"), text(HOME + "UpdateChannel.ja
 hub, words, en = text(APP + "SettingsHub.java"), text(APP + "Words.java"), text("i18n/en/saver.tsv")
 
 # the row
-LINE = "تجيك التحديثات قبل الكل بعد ما نجربها. ممكن يكون فيها أخطاء بسيطة"
+LINE = "تجيك التحديثات قبل الكل، وفيها أخطاء أحيانًا"   # the audit: at most 8 words, the warning kept
 check("the row «النسخ التجريبية» is in the update page with its line", 'row("النسخ التجريبية"' in act and LINE in act and "toggleBeta()" in act)
 check("off by default", 'sp.getString("updateChannel", "latest")' in prefs and "boolean betaOn()" in prefs and '"beta".equals(updateChannel())' in prefs)
 tg = act.split("private void toggleBeta() {")[1].split("\n    }\n")[0]
