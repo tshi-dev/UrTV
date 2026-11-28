@@ -44,6 +44,7 @@ public class SuggestedAppsActivity extends Activity {
         S.n("يوتيوب بلا إعلانات، مصمَّم للريموت"), S.n("متصفح إنترنت يشتغل بالريموت"), S.n("يشغّل الفيديو والصوت من ذاكرة USB ومن الشبكة"),
         S.n("متجر لتطبيقات التلفزيون المفتوحة المصدر، يثبّتها من صفحاتها على GitHub. تطبيق من طرف ثالث، ما جرّبناه بأنفسنا. التطبيقات اللي يثبّتها على مسؤوليتك."),
         S.n("مشغّل تلفزيونك للفيديو والقوائم، من إصدارات تلفزيونك نفسها"),
+        S.n("فحص تلفزيونك"), S.n("يفحص تلفزيونك ويقول لك وش فيه، مجاني"),   // 4.3.7: its name (the only Arabic one) and its line
     };
 
     private GlassStyle.Look look;
@@ -108,7 +109,7 @@ public class SuggestedAppsActivity extends Activity {
                 head.setLayoutDirection(Dir.layout());
                 head.setGravity(Gravity.CENTER_VERTICAL);
                 head.addView(iconFor(a), new LinearLayout.LayoutParams(dp(36), dp(36)));
-                TextView name = text(a.name, 20, "Medium", look.text);
+                TextView name = text(S.tv(a.name), 20, "Medium", look.text);
                 LinearLayout.LayoutParams np = new LinearLayout.LayoutParams(0, -2, 1f);
                 np.setMarginStart(dp(12));
                 head.addView(name, np);
