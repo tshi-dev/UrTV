@@ -1602,7 +1602,7 @@ public class MainActivity extends Activity {
     /** Shows or hides the «يُتلى الآن» card by what «تلاوة» is doing: a surah or a station (playing or paused), else nothing. */
     private void updateNowPlaying() {
         if (nowCard == null) return;
-        if (cleanShown) { nowCard.setVisibility(View.GONE); return; }   // «UrTV النظيف»
+        if (cleanShown || ConfigSnapshot.ui(this).partOff("tilawah")) { nowCard.setVisibility(View.GONE); return; }   // «UrTV النظيف»; 4.4 «أجزاء UrTV»: تلاوة وأذان off
         NowPlaying.State s = NowPlaying.read(this);
         long now = System.currentTimeMillis();
         nowPausedSince = NowCardRule.pausedSince(s.show, s.playing, nowPausedSince, now);   // 4.4 beta 4: paused for 10 minutes, the card goes (the clock's tick looks again every minute)
@@ -4697,11 +4697,15 @@ public class MainActivity extends Activity {
         applyTasksPill(cfg.tasksPillOn());
         Dock.followBackSaver(this, cfg.backSaver());   // «الرجوع يفتح شاشة التوقف» changed in the screensaver's settings: read at the next Back
         backTwice = cfg.backTwice();   // 4.4 beta 3 «رجوع مرتين يفتح شاشة التوقف»
+        saverPart(cfg.partOff("saver"));   // 4.4 «أجزاء UrTV»: the TV's own screensaver while ours is off
+        askStart(cfg);   // 4.4 «ابدأ بـ»: once, on a TV that has not answered it
         Dock.followKeyApps(this, cfg.keyApps);   // «أزرار الريموت» changed in the screensaver's settings: read at the next key (and told to the add-on)
         applyUpdateBell(cfg.updateBellOn);   // [updates bell]
         applyBarSize(cfg.favBar);   // «تطبيقات في الشريط»
         hiddenQuick.clear();
         for (String k : new String[] {"markets", "matches", "center", "phone", "inputs"}) if (cfg.pillHidden(k)) hiddenQuick.add(k);
+        if (cfg.partOff("markets")) hiddenQuick.add("markets");
+        if (cfg.partOff("matches")) hiddenQuick.add("matches");
         applyQuickPill(inputsPill, !hiddenQuick.contains("inputs"), tasksPill, tilawahPill, centerPill, marketsPill, matchesPill, searchPill, phonePill, updatePill);   // «زر المصادر» (4.4)
         applyQuickPill(marketsPill, !hiddenQuick.contains("markets"), matchesPill, phonePill, updatePill, tilawahPill);
         applyQuickPill(matchesPill, !hiddenQuick.contains("matches"), phonePill, updatePill, tilawahPill);
@@ -4718,7 +4722,7 @@ public class MainActivity extends Activity {
 
     /** Once a minute with the clock: the bar before the adhan shows in the last 10 minutes, and until the iqama. */
     private void updateAdhanBar(ConfigSnapshot cfg) {
-        String words = AdhanBar.text(this, cfg);
+        String words = cfg.partOff("prayer") ? null : AdhanBar.text(this, cfg);   // 4.4 «أجزاء UrTV»: no prayer part, no bar
         int was = adhanBar.getVisibility(), now = words == null ? View.GONE : View.VISIBLE;
         adhanBar.setVisibility(now);
         View f = getCurrentFocus();   // the bar came (or went) while the apps page's first row is up: the page makes room under it (or takes it back)
@@ -5530,6 +5534,36 @@ public class MainActivity extends Activity {
 
     static final int GOLD = 0xFFD6AF6B;
     static final String SAVER_PKG = "sa.urtv.screensaver";
+
+    /** 4.4 «أجزاء UrTV»: «شاشة التوقف» off hands the TV back its own screensaver (on: ours again, only after our own hand-off); off the UI thread */
+    private Boolean saverPartWas;
+    private void saverPart(boolean off) {
+        Boolean was = saverPartWas;
+        saverPartWas = off;
+        if (was != null ? was == off : !off) return;   // nothing changed (and on, at the first read: nothing to do)
+        final Context app = getApplicationContext();
+        new Thread(() -> android.util.Log.i("UrTVParts", "screensaver part " + (off ? "off: " : "on: ") + sa.urtv.home.setup.SaverHandoff.apply(app, off)), "saver-part").start();
+    }
+
+    /**
+     * 4.4 «ابدأ بـ» (the owner): once on a TV that has not answered it, on the screensaver's own screen: a new TV with the focus on «نظيف», a TV
+     * that got 4.4 as an update as a welcome with the focus on «خلّه مثل ما هو». Never in kids mode or «UrTV النظيف», never twice in a run.
+     */
+    private boolean startAsked;
+    private void askStart(ConfigSnapshot cfg) {
+        if (startAsked || cfg.startSeen() || !resumed || cleanShown || Parental.state(this).kids) return;
+        startAsked = true;
+        boolean fresh;
+        try {
+            android.content.pm.PackageInfo i = getPackageManager().getPackageInfo(getPackageName(), 0);
+            fresh = i.firstInstallTime == i.lastUpdateTime;
+        } catch (android.content.pm.PackageManager.NameNotFoundException e) { fresh = false; }
+        try {
+            startActivity(new Intent().setClassName(SAVER_PKG, SAVER_PKG + ".StartActivity").putExtra("welcome", !fresh));
+        } catch (RuntimeException e) {
+            android.util.Log.i("UrTVParts", "start: the screensaver app has no start chooser yet");
+        }
+    }
     private final Map<String, Typeface> fonts = new HashMap<>();
 
     /** Thmanyah from assets/fonts; any old family name maps to the nearest weight. */

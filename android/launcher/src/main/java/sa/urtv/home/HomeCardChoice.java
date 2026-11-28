@@ -33,6 +33,29 @@ final class HomeCardChoice {
     }
 
     /** Is «المهام» one of the cards a pick shows? Then the card is a button on the home screen (the page is told with live=1). */
+    /** 4.4 «أجزاء UrTV»: each card and the part it goes with (a card of no part stays whatever is off) */
+    static final String[][] CARD_PARTS = {
+        {"prayers", "prayer"}, {"prayerrow", "prayer"}, {"nextprayer", "prayer"},
+        {"forecast", "weather"}, {"hourly", "weather"},
+        {"matches", "matches"}, {"nextmatch", "matches"}, {"matchday", "matches"}, {"livenow", "matches"}, {"minitable", "matches"},
+        {"nextmatches", "matches"}, {"yesterday", "matches"}, {"weekend", "matches"}, {"cuppath", "matches"}, {"formula", "matches"},
+        {"stocks", "markets"}, {"tasks", "tasks"}, {"adhkar", "duas"},
+    };
+
+    /** the cards without those of the parts that are off («البطاقات» off: none); "none" when nothing is left */
+    static String withoutParts(String panel, String frag) {
+        if (panel == null || "none".equals(panel)) return panel;
+        if (PartsHome.offIn(frag, "cards")) return "none";
+        StringBuilder b = new StringBuilder();
+        for (String k : panel.split(",")) {
+            String part = null;
+            for (String[] cp : CARD_PARTS) if (cp[0].equals(k.trim())) part = cp[1];
+            if (part != null && PartsHome.offIn(frag, part)) continue;
+            b.append(b.length() == 0 ? "" : ",").append(k.trim());
+        }
+        return b.length() == 0 ? "none" : b.toString();
+    }
+
     static boolean hasTasks(String[] choice) {
         if (choice == null || "none".equals(choice[1])) return false;
         for (String k : choice[1].split(",")) if ("tasks".equals(k.trim())) return true;

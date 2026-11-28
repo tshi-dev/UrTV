@@ -34,7 +34,9 @@ public class AdhanReceiver extends BroadcastReceiver {
         long now = System.currentTimeMillis();
         long due = intent.getLongExtra(AdhanScheduler.EXTRA_DUE, 0);
         // the prayer's own minute only: an alarm that came hours late (standby, a clock that jumped at boot) or early is skipped and logged, never played
-        String late = prefs.alarmWanted() ? AdhanLate.skipReason(due, now, PrayerTimes.aroundToday(context)) : null;
+        // 4.4 «أجزاء UrTV» (the owner): «المواقيت والأذان» off silences the adhan too; the next alarm is still set, so on brings it back
+        String late = sa.urtv.home.PartsHome.off(context, "prayer") ? "the prayer part is off"
+                : prefs.alarmWanted() ? AdhanLate.skipReason(due, now, PrayerTimes.aroundToday(context)) : null;
         if (late != null) {
             Log.i("UrTVAdhan", "adhan skipped: " + late);
             prefs.setLastAlarmNote("skipped: " + late, now);

@@ -576,6 +576,9 @@ public class SettingsActivity extends Activity {
         if (prefs.uiUndo() && prefs.hasPreviousLook()) row("رجّع الشكل السابق", prefs.previousLookName(), R.drawable.ic_eye,
             new Runnable() { public void run() { prefs.restorePreviousLook(); render(); } });
         row("أشكال جاهزة", prefs.presetLabel(), R.drawable.ic_eye, new Runnable() { public void run() { pickPreset(); } });
+        // 4.4 «ابدأ بـ» and «أجزاء UrTV» (the owner, docs/mockups/start-presets/): the starts again, and each part on or off
+        row("ابدأ من جديد", startLabel(), R.drawable.ic_eye, new Runnable() { public void run() { startActivity(new Intent(SettingsActivity.this, StartActivity.class)); } });
+        row("أجزاء UrTV", partsLabel(), R.drawable.ic_eye, new Runnable() { public void run() { pickParts(); } });
         // 4.4 beta 2 «شكل شاشة الإعدادات» (the owner): the settings' own style, in both screens at the same place, so one can always go back
         row("شكل شاشة الإعدادات", Prefs.settingsStyleLabel(prefs.settingsStyle()), R.drawable.ic_eye, new Runnable() { public void run() {
             pickOne("شكل شاشة الإعدادات", Prefs.SETTINGS_STYLE_NAMES, java.util.Arrays.asList(Prefs.SETTINGS_STYLES).indexOf(prefs.settingsStyle()), i -> {
@@ -854,7 +857,7 @@ public class SettingsActivity extends Activity {
         final android.os.Handler h = new android.os.Handler(android.os.Looper.getMainLooper());
         final Runnable look_ = () -> {
             rows.clear();
-            rows.addAll(SettingsHub.search(in.getText().toString().trim()));
+            rows.addAll(Parts.visible(SettingsHub.search(in.getText().toString().trim()), prefs.partsOff()));
             adapter.clear();
             for (int i = 0; i < Math.min(rows.size(), 12); i++) adapter.add(conv(rows.get(i)[0]) + S.sep() + conv(SettingsHub.name(rows.get(i)[1])));
         };
@@ -893,7 +896,7 @@ public class SettingsActivity extends Activity {
     }
 
     private void showFound(String query) {
-        final List<String[]> found = SettingsHub.search(query);
+        final List<String[]> found = Parts.visible(SettingsHub.search(query), prefs.partsOff());
         if (found.isEmpty()) { toast("ما فيه صف بهذا الاسم"); return; }
         int n = Math.min(found.size(), 12);
         String[] labels = new String[n];
@@ -1440,7 +1443,7 @@ public class SettingsActivity extends Activity {
     }
 
     private void hub(String want, int wasIndex) {
-        final String[] cats = SettingsHub.tiles(screen);
+        final String[] cats = tiles(screen);
         final boolean wide = SettingsHub.wide(screen);
         final List<View> tiles = new ArrayList<>();
         LinearLayout line = null;
@@ -1602,6 +1605,7 @@ public class SettingsActivity extends Activity {
             t.setPadding(dp(12), 0, dp(12), dp(12));
             side.addView(t);
             for (String cat : SettingsHub.tiles(null)) {
+                if (sectionGone(cat)) continue;
                 View item = sideItem(cat);
                 LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(-1, -2);
                 lp.bottomMargin = SettingsHub.SEARCH.equals(cat) ? dp(12) : dp(4);
@@ -1796,7 +1800,7 @@ public class SettingsActivity extends Activity {
         side.addView(top);
         sideItems.put(SettingsHub.SEARCH, find);
         for (String cat : SettingsHub.tiles(null)) {
-            if (SettingsHub.SEARCH.equals(cat)) continue;
+            if (SettingsHub.SEARCH.equals(cat) || sectionGone(cat)) continue;
             View item = sideItem(cat);
             LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(-1, -2);
             lp.bottomMargin = cs.px(CouchStyle.SEC_GAP);
@@ -2103,7 +2107,7 @@ public class SettingsActivity extends Activity {
         searchFound.removeAllViews();
         String q = searchIn.getText().toString().trim();
         if (q.isEmpty()) return;
-        List<String[]> found = SettingsHub.search(q);
+        List<String[]> found = Parts.visible(SettingsHub.search(q), prefs.partsOff());
         for (int i = 0; i < Math.min(found.size(), 12); i++) {
             final String[] r = found.get(i);
             LinearLayout card = couchCard(tx(r[0]), null, tx(SettingsHub.name(r[1])), CouchStyle.Mark.CHEVRON, null, "found:" + r[0]);
@@ -4659,6 +4663,7 @@ public class SettingsActivity extends Activity {
         card.setClickable(true);
         card.setTag(FocusKey.key(label));   // which row it is when the list is built again (render keeps the focus on it)
         final String cat = SettingsHub.of(FocusKey.key(label), groupCat);   // its action on every screen (the search runs it), its views only on its own
+        if (Parts.hidesRow(prefs.partsOff(), FocusKey.key(label))) return offscreen();   // 4.4 «أجزاء UrTV»: a part that is off takes its rows with it
         if (onClick != null) actions.put(FocusKey.key(label), onClick);
         if (!on(cat)) return offscreen();   // 4.4 smoother: a row of another section is not built (a section shows about 12 of the 135)
         if (cs != null) {   // «كنبة»: couch-tv's row, the same registry row (its key, its action, its section)
@@ -4750,6 +4755,52 @@ public class SettingsActivity extends Activity {
      * What row() gives for a row of another section: one view, never added, with the «name» text adjRow looks for. Building every row of every
      * section on each render made about 1,080 views for the 12 or so shown (and the side list rebuilt them on each focus move).
      */
+    /** «شاشة التوقف»'s own section goes with its part (4.4 «أجزاء UrTV») */
+    private boolean sectionGone(String cat) { return SettingsHub.SAVER.equals(cat) && prefs.partOff(Parts.SAVER); }
+    /** the sections shown */
+    private String[] tiles(String at) {
+        List<String> out = new ArrayList<>();
+        for (String c : SettingsHub.tiles(at)) if (!sectionGone(c)) out.add(c);
+        return out.toArray(new String[0]);
+    }
+
+    /** «ابدأ من جديد»'s line: the start chosen, or what it does */
+    private String startLabel() {
+        String[] st = Parts.start(prefs.start());
+        return st == null || st[4] == null ? "نظيف، كامل، كنبة، والمزيد" : st[1];
+    }
+
+    /** «أجزاء UrTV»'s line: all on, or which are off (with the adhan said when the prayers are off: the owner) */
+    private String partsLabel() {
+        String off = prefs.partsOff();
+        if (off.isEmpty()) return "كلها مفعّلة";
+        List<String> names = new ArrayList<>();
+        for (String[] p : Parts.ALL) if (Parts.off(off, p[0])) names.add(p[1]);
+        return String.format(Parts.off(off, Parts.PRAYER) ? "متوقف: %s، والأذان ما يشتغل" : "متوقف: %s", Prefs.join(names, "، "));
+    }
+
+    /** «أجزاء UrTV»: each part ticked while on; OK keeps the list. A part off disappears everywhere, its own settings kept for when it is back. */
+    private void pickParts() {
+        final String[][] all = Parts.ALL;
+        String[] labels = new String[all.length];
+        final boolean[] on = new boolean[all.length];
+        String off = prefs.partsOff();
+        for (int i = 0; i < all.length; i++) {
+            labels[i] = Parts.PRAYER.equals(all[i][0]) ? String.format("%s (إيقافها يوقف الأذان)", all[i][1]) : all[i][1];
+            on[i] = !Parts.off(off, all[i][0]);
+        }
+        new Dlg(this).multi(() -> {
+                List<String> v = new ArrayList<>();
+                for (int i = 0; i < all.length; i++) if (!on[i]) v.add(all[i][0]);
+                prefs.setPartsOff(Prefs.join(v, ","));
+                prefs.lookChanged();   // the home and the screensaver read it at once
+                render();
+            })
+            .setTitle("أجزاء UrTV")
+            .setMultiChoiceItems(labels, on, (d, i, checked) -> on[i] = checked)
+            .show();
+    }
+
     private View offscreen() {
         if (offscreenRow == null) {
             LinearLayout v = new LinearLayout(this);

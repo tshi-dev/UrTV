@@ -264,6 +264,9 @@ final class ControlCenter {
         if (apps != null)
             tile("apps", ControlText.APPS, ControlText.APPS_HINT, R.drawable.ic_store,
                     () -> { dismiss(); host.launchGuarded(ParentalPolicy.PILL_TV_SETTINGS, apps, ControlText.APPS); });
+        // 4.4 «أجزاء UrTV»: a part that is off takes its tile with it (the games, the screensaver, the adhan with the prayers)
+        String[][] partTiles = {{"games", "games"}, {"saver", "saver"}, {"adhan", "prayer"}};
+        for (String[] pt : partTiles) if (PartsHome.off(act, pt[1])) items.removeIf(it -> it.key.equals(pt[0]));
 
         android.util.DisplayMetrics dm = act.getResources().getDisplayMetrics();
         final int W = dm.widthPixels, H = dm.heightPixels;

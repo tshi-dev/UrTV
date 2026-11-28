@@ -373,7 +373,12 @@ final class HomeCard {
         // before this app): keep the last cards chosen, «بدون» included. Only with nothing remembered, the prayers.
         if (previewLayout != null) layout = previewLayout;   // 4.5 «المظهر»'s preview: what is under the focus, never saved
         if (previewCards != null) panel = previewCards;
-        String[] choice = HomeCardChoice.pick(frag, panel, sp.getString("frag", null), sp.getString("panel", null));
+        // 4.4 «أجزاء UrTV»: the cards of a part that is off are left out (their choice is kept in the settings for when it is on), and the football
+        // home is the usual one while «المباريات والأندية» is off
+        String partsFrag = frag != null ? frag : sp.getString("frag", "");
+        if (panel != null) panel = HomeCardChoice.withoutParts(panel, partsFrag);
+        if ("football".equals(layout) && PartsHome.offIn(partsFrag, "matches")) layout = "classic";
+        String[] choice = HomeCardChoice.pick(frag, panel, sp.getString("frag", null), HomeCardChoice.withoutParts(sp.getString("panel", null), partsFrag));
         football = HomeCardChoice.football(layout, choice) && footballHost != null;   // 4.3.4: «بدون» turns the football home's widgets off too
         footballShown = football;   // «أرسل تقرير» says which layout the home had
         if (football) { cards = 0; tasks = false; stocks = false; stocksFirst = false; row = false; couch = false; tvos = false; return withGlass(HomePage.fresh(activity, HomeCardChoice.footballUrl(choice))); }

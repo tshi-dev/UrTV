@@ -29,6 +29,7 @@ public class IqamaReceiver extends BroadcastReceiver {
         int prayer = intent.getIntExtra(IqamaScheduler.EXTRA_PRAYER, -1);
         Prefs prefs = new Prefs(app);
         if (!IqamaPlan.onTime(due, now) || prayer < 0) { Log.i("UrTVAdhan", "iqama skipped: late or no prayer"); return; }
+        if (sa.urtv.home.PartsHome.off(app, "prayer")) { Log.i("UrTVAdhan", "iqama skipped: the prayer part is off"); return; }   // 4.4 «أجزاء UrTV»
         PowerManager pm = (PowerManager) app.getSystemService(Context.POWER_SERVICE);
         boolean screenOn = pm == null || pm.isInteractive();
         if (!screenOn) return;   // as the adhan: never to a dark screen, never made up

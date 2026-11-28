@@ -95,6 +95,13 @@
             android:name=".SettingsActivity"
             android:exported="true" />
 
+        <!-- 4.4 «ابدأ بـ»: how the TV starts; our home opens it once (a welcome after an update), the settings any time -->
+        <activity
+            android:name=".StartActivity"
+            android:exported="true"
+            android:excludeFromRecents="true"
+            android:configChanges="keyboard|keyboardHidden|navigation|orientation|screenSize|uiMode" />
+
         <!-- 4.5 «المظهر» over the live home: see-through, at the end side; opened from the settings, or by our home (same key: sa.urtv.home.LOOK) -->
         <activity
             android:name=".LookPanelActivity"
