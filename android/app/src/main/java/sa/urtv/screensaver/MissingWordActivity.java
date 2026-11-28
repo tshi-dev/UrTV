@@ -36,10 +36,9 @@ public class MissingWordActivity extends GameActivity {
             .add("count", S.t("الأسئلة"), new String[]{num(5), num(10), num(15)}, 1)
             .add("time", S.t("الوقت"), new String[]{S.t("%s ثانية", num(10)), S.t("%s ثانية", num(15)), S.t("%s ثانية", num(30))}, 1)
             .add("kids", S.t("للأطفال"), new String[]{S.tv(ON_OFF[0]), S.tv(ON_OFF[1])}, 0)
-            .add("steal", S.t("الخطف"), new String[]{S.tv(ON_OFF[0]), S.tv(ON_OFF[1])}, 0)
-            .add("phones", S.t("اللعب بالجوالات"), new String[]{S.tv(ON_OFF[0]), S.tv(ON_OFF[1])}, 0);
+            .add("steal", S.t("الخطف"), new String[]{S.tv(ON_OFF[0]), S.tv(ON_OFF[1])}, 0);
+            modeChip(chips);
         remembered(soundChip(chips));
-        chips.get("phones").picked = getIntent().getBooleanExtra("phones", false) ? 1 : 0;   // off unless the «بالجوالات» view opened this game; never kept from last time
         onChips(chips);
     }
 
@@ -60,6 +59,9 @@ public class MissingWordActivity extends GameActivity {
     private void go(Screen s) { screen = s; sel = 0; redraw(); }
 
     /** with phones every phone is a team (1 to 4), its name is the team's name; a team's phone types the word on its turn */
+    @Override protected String[] phoneHidden() { return new String[] {"teams"}; }
+    @Override protected Runnable remoteWay() { return () -> { screen = Screen.SETUP; redraw(); start(); }; }
+    @Override protected GameChips lobbyChips() { return chips; }
     private void start() {
         if (chips.picked("phones") == 1) {
             if (!onPhones()) { if (!openPhones()) return; screen = Screen.LOBBY; phoneLobby = true; redraw(); return; }

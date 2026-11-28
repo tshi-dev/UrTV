@@ -10,7 +10,7 @@ import java.util.List;
  */
 final class GameChips {
     static final class Row {
-        final String key, label; final String[] opts; final int def; int picked; boolean[] off;
+        final String key, label; final String[] opts; final int def; int picked; boolean[] off; boolean hidden;
         Row(String key, String label, String[] opts, int def) { this.key = key; this.label = label; this.opts = opts; this.def = def; this.picked = def; this.off = new boolean[opts.length]; }
     }
 
@@ -26,6 +26,18 @@ final class GameChips {
 
     GameChips add(String key, String label, String[] opts, int def) { rows.add(new Row(key, label, opts, Math.max(0, Math.min(opts.length - 1, def)))); row = rows.size(); return this; }
 
+    /** the row `key` moves to the top: «كيف تلعبون؟» is the first thing a game asks (the save is keyed, so the order does not matter to it) */
+    GameChips first(String key) { Row r = get(key); if (r != null && rows.indexOf(r) > 0) { rows.remove(r); rows.add(0, r); } row = rows.size(); return this; }
+    /** a row that does not apply now is not drawn and the focus passes over it (the number of players while the phones decide it) */
+    void hide(String key, boolean hidden) { Row r = get(key); if (r != null) r.hidden = hidden; }
+    /** the rows that are drawn, by index */
+    List<Integer> shown() { List<Integer> v = new ArrayList<>(); for (int i = 0; i < rows.size(); i++) if (!rows.get(i).hidden) v.add(i); return v; }
+    /** the next drawn row from `from` in the direction `d` (the start button, `rows.size()`, is always there), or `from` when there is none */
+    private int step(int from, int d) {
+        for (int i = from + d; i >= 0 && i <= rows.size(); i += d) if (i == rows.size() || !rows.get(i).hidden) return i;
+        return from;
+    }
+
     Row get(String key) { for (Row r : rows) if (r.key.equals(key)) return r; return null; }
     int picked(String key) { Row r = get(key); return r == null ? 0 : r.picked; }
     boolean onButton() { return row >= rows.size(); }
@@ -34,8 +46,8 @@ final class GameChips {
     boolean move(int dx, int dy) {
         if (dy != 0) {
             if (help) { if (dy < 0) return false; help = false; return true; }
-            if (dy < 0 && row == 0 && hasHelp) { help = true; return true; }
-            int to = Math.max(0, Math.min(rows.size(), row + dy));
+            if (dy < 0 && step(row, -1) == row && hasHelp) { help = true; return true; }
+            int to = step(row, dy < 0 ? -1 : 1);
             if (to == row) return false;
             row = to; col = onButton() ? 0 : rows.get(row).picked; btn = 0;
             return true;
