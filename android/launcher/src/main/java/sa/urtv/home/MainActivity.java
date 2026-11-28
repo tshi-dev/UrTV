@@ -5223,10 +5223,11 @@ public class MainActivity extends Activity {
         int w = Math.round(getResources().getDisplayMetrics().widthPixels / (float) MIN_DOCK * 1.12f), h = w * 9 / 16;   // the focused tile grows 12%
         int iw = d.getIntrinsicWidth(), ih = d.getIntrinsicHeight();
         if (iw <= 0 || ih <= 0) return d;
-        float f = banner ? Math.max(w / (float) iw, h / (float) ih) : Math.min(h / (float) iw, h / (float) ih);
-        if (f >= 1f) return d;
+        boolean whole = banner && BannerFit.contain(iw, ih, w, h);   // 4.4 beta 4: a banner of another shape is shown whole, not cut by the tile's fill
+        float f = whole ? Math.min(w / (float) iw, h / (float) ih) : banner ? Math.max(w / (float) iw, h / (float) ih) : Math.min(h / (float) iw, h / (float) ih);
+        if (f >= 1f && !whole) return d;
         try {
-            int bw = banner ? w : Math.max(1, Math.round(iw * f)), bh = banner ? h : Math.max(1, Math.round(ih * f));
+            int bw = banner ? w : Math.max(1, Math.round(iw * f)), bh = banner ? h : Math.max(1, Math.round(ih * f));   // a whole banner: 16:9, the picture in its middle
             Bitmap bm = Bitmap.createBitmap(bw, bh, Bitmap.Config.ARGB_8888);
             Canvas c = new Canvas(bm);
             int dw = Math.round(iw * f), dh = Math.round(ih * f);
