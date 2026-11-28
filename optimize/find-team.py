@@ -37,6 +37,49 @@ team_search = importlib.util.module_from_spec(_spec)
 _spec.loader.exec_module(team_search)
 
 
+# 4.4: the names people say that are not a club's name: Arabic nicknames, common spellings and club abbreviations -> the club's id in
+# teams.json. Compared after team_search.normalize (so «الزعيم» = «زعيم», «آرسنال» = «ارسنال»); the club goes first, the other matches
+# follow. tests/find_team_alias_test.py checks every id is in our list and no alias is another club's own name.
+ALIASES = {
+    "136013": ["الزعيم", "زعيم اسيا", "الموج الازرق"],                      # Al-Hilal
+    "136022": ["العالمي", "فارس نجد"],                                        # Al-Nassr
+    "136018": ["العميد", "النمور", "عميد الاندية"],                           # Al-Ittihad
+    "137721": ["الراقي", "قلعة الكؤوس"],                                      # Al-Ahli
+    "136020": ["الليث", "شيخ الاندية"],                                       # Al-Shabab
+    "136017": ["فارس الدهناء", "النواخذة"],                                   # Al-Ettifaq
+    "136012": ["السكري"],                                                     # Al-Taawoun
+    "136011": ["النموذجي"],                                                   # Al-Fateh
+    "136137": ["الاخضر", "المنتخب السعودي", "منتخبنا"],                       # Saudi Arabia
+    "133738": ["الملكي", "الريال", "ريال", "real", "rma"],                    # Real Madrid
+    "133739": ["البرسا", "برشا", "البلوغرانا", "barca", "barsa"],             # Barcelona
+    "133612": ["مان يونايتد", "مانيونايتد", "مان يو", "الشياطين الحمر",
+               "man utd", "man united", "manu", "mufc"],                       # Manchester United
+    "133613": ["مان سيتي", "مانسيتي", "السيتي", "man city", "mcfc"],          # Manchester City
+    "133664": ["البايرن", "بايرن", "bayern"],                                 # Bayern Munich
+    "133714": ["بي اس جي", "باريس", "psg"],                                   # Paris SG
+    "133676": ["اليوفي", "يوفي", "السيدة العجوز", "juve"],                    # Juventus
+    "133681": ["الانتر", "انتر", "inter"],                                    # Inter Milan
+    "133610": ["البلوز", "تشلسي"],                                           # Chelsea
+    "133604": ["المدفعجية", "الارسنال", "ارسنال"],                            # Arsenal
+    "133602": ["الريدز", "ليفر"],                                             # Liverpool
+    "133616": ["السبيرز", "spurs"],                                           # Tottenham Hotspur
+    "133729": ["الاتلتي", "اتلتيكو", "atleti"],                               # Atlético Madrid
+    "133650": ["بوروسيا", "bvb"],                                             # Borussia Dortmund
+}
+
+
+def alias_key(text):
+    return " ".join(team_search.normalize(text))
+
+
+ALIAS_OF = {alias_key(a): cid for cid, names in ALIASES.items() for a in names}
+
+
+def alias_club(q):   # the club an alias names, or None
+    cid = ALIAS_OF.get(alias_key(q))
+    return next((c for c in CLUBS if c.get("id") == cid), None) if cid else None
+
+
 def plain(ar):   # Arabic compared as the search does: no harakat/tatweel, one hamza and taa/yaa form, no ال, and the
     words = team_search.normalize(ar)   # spelling variants (تشلسي = تشيلسي) folded to one skeleton
     return "".join(team_search.skeleton(w) or w for w in words)
@@ -79,6 +122,9 @@ def main():
         show(sorted(found, key=lambda c: (saudi(c), c["en"])), limit=None)
         return
     hit = ours(q)
+    club = alias_club(q)
+    if club:   # a nickname or an abbreviation: that club first, then whatever else the words match
+        hit = [club] + [c for c in hit if c.get("id") != club["id"]]
     if hit:
         show(hit)
         return
