@@ -1,7 +1,17 @@
 # Simple and the same: the rules for every screen a person sees
 
-The owner: «make sure nothing is complicated, that's our interface consistency job». These rules hold for every screen a person
-sees: the home, the settings, تلاوة وأذان, the screensaver, the on-TV setup and its rescue and update boxes, the doctor app
+> **«ما تخلي شيء مكرر ولا متكرر ولا صعب. كلش بسيط. كلش مضبوط. كلش حلو.»** (the owner)
+
+This is the test for every screen:
+- **مكرر, duplicated:** the same information or control twice on one screen, or two ways to do one thing where one is enough.
+- **متكرر, repeated:** the same row, word or explanation coming back on row after row, or page after page.
+- **صعب, hard:** anything a person has to read at length, understand or work out.
+- **بسيط, simple:** the five questions below.
+- **مضبوط, precise:** aligned edges, the same spacing and the same sizes everywhere, nothing touching or clipped.
+- **حلو, beautiful:** calm, with room to breathe, one look across all the screens.
+
+The owner, again: «make sure nothing is complicated, that's our interface consistency job». These rules hold for every screen a
+person sees: the home, the settings, تلاوة وأذان, the screensaver, the on-TV setup and its rescue and update boxes, the doctor app
 (urtv-doctor), the phone page and the games.
 
 The UI session reviews any visual change against them before it lands. To ask for a review, send mockups at 1080p and at 720p
