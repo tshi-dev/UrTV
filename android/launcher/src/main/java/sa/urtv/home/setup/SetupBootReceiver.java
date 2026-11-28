@@ -13,27 +13,33 @@ import android.content.Intent;
 public class SetupBootReceiver extends BroadcastReceiver {
     @Override public void onReceive(Context context, Intent intent) {
         final Context app = context.getApplicationContext();
-        factoryGuard(app);
-        if (SetupRunner.awaitingRestart(new FileStore(app))) SetupRunner.get().resume(new SetupHost(app));   // its own thread; it waits for a pending home first
-        if (!SetupRecovery.pending(app)) return;
-        SetupRecovery.rearmFromDisk(app);
-        final PendingResult pending = goAsync();
-        new Thread(new Runnable() {
-            @Override public void run() {
-                try {
-                    SetupRecovery.attempt(app, new SetupEngine.Out() { @Override public void line(String text) { } });
-                } finally {
-                    pending.finish();
+        final PendingResult pending = goAsync();   // F133: ONE goAsync for the whole boot (a second call returns null): every task holds the same count
+        final AsyncCount count = new AsyncCount(pending == null ? null : new Runnable() { @Override public void run() { pending.finish(); } });
+        try {
+            factoryGuard(app, count);
+            if (SetupRunner.awaitingRestart(new FileStore(app))) SetupRunner.get().resume(new SetupHost(app));   // its own thread; it waits for a pending home first
+            if (!SetupRecovery.pending(app)) return;
+            SetupRecovery.rearmFromDisk(app);
+            count.hold();
+            new Thread(new Runnable() {
+                @Override public void run() {
+                    try {
+                        SetupRecovery.attempt(app, new SetupEngine.Out() { @Override public void line(String text) { } });
+                    } finally {
+                        count.release();
+                    }
                 }
-            }
-        }, "setup-boot").start();
+            }, "setup-boot").start();
+        } finally {
+            count.release();   // onReceive's own hold: the broadcast ends when the last task does
+        }
     }
 
     /**
      * While the stock interface is off (SetupEngine.FACTORY says «on»): this boot is counted by BootGuard from the last one (did our home come up, did our process crash), and two failed boots
      * in a row give the factory interface back (SetupEngine.restoreFactory, over the TV's own ADB: the key is kept while the step is on). A restore that did not finish is tried again at the next boot.
      */
-    private void factoryGuard(final Context app) {
+    private void factoryGuard(final Context app, final AsyncCount count) {
         try {
             final FileStore store = new FileStore(app);
             String f = store.get(SetupEngine.FACTORY);
@@ -43,7 +49,7 @@ public class SetupBootReceiver extends BroadcastReceiver {
             final BootGuard.Decision d = BootGuard.onBoot(prev, crashesSince(app, prev.bootAt), now);
             store.put(BootGuard.FILE, d.state.text());
             if (!d.restore) return;
-            final PendingResult pending = goAsync();
+            count.hold();
             new Thread(new Runnable() {
                 @Override public void run() {
                     try (SetupSession s = SetupSession.open(app, 0, null, new SetupEngine.Out() { @Override public void line(String text) { } })) {
@@ -52,7 +58,7 @@ public class SetupBootReceiver extends BroadcastReceiver {
                     } catch (Exception e) {
                         // the TV did not answer (ADB off): the count stays at the limit and the next boot tries again
                     } finally {
-                        pending.finish();
+                        count.release();
                     }
                 }
             }, "factory-restore").start();

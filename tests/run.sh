@@ -151,6 +151,7 @@ python3 tests/connectivity_keep_test.py
 python3 tests/keep_settle_test.py
 python3 tests/accounts_keep_test.py
 python3 tests/doctor_offer_test.py
+python3 tests/boot_goasync_test.py
 python3 tests/input_guard_test.py
 python3 tests/reset_screensaver_test.py
 python3 tests/reset_tweaks_test.py
