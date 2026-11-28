@@ -155,6 +155,7 @@ public class MainActivity extends Activity {
     private HomeCard homeCard;
     private SideCards sideCards;   // 4.4 beta 4: «كنبة»'s small cards down the left (off by default: #sidecards=, the owner's pick)
     private NowCard nowCard;   // «يُتلى الآن»: at the right end of the pills row while a surah or a station is on
+    private long nowPausedSince;   // 4.4 beta 4: when the card was first seen paused (NowCardRule), 0 while it plays
     private Pill searchPill;   // 4.3.3 «بحث»: the TV's own search inside the apps (GlobalSearch), off until the settings turn it on
     private Pill marketsPill, matchesPill, phonePill, updatePill;   // «تحديث»: an update is worth opening the update screen for (UpdateNotice)   // «الجوال» (C14): the phone remote's page
     private ImageView netIcon;   // C15: the connection in the top row (Wi-Fi, none)   // «الأسواق» and «المباريات»: they take the look like the others («رملي»: they stayed grey, step 28)
@@ -1580,7 +1581,9 @@ public class MainActivity extends Activity {
         if (nowCard == null) return;
         if (cleanShown) { nowCard.setVisibility(View.GONE); return; }   // «UrTV النظيف»
         NowPlaying.State s = NowPlaying.read(this);
-        if (!s.show) {
+        long now = System.currentTimeMillis();
+        nowPausedSince = NowCardRule.pausedSince(s.show, s.playing, nowPausedSince, now);   // 4.4 beta 4: paused for 10 minutes, the card goes (the clock's tick looks again every minute)
+        if (!NowCardRule.visible(s.show, s.playing, nowPausedSince, now)) {
             if (nowCard.getVisibility() == View.VISIBLE && nowCard.hasFocus() && !pills.isEmpty()) pills.get(0).requestFocus();   // it went with the playback
             nowCard.setVisibility(View.GONE);
             return;
@@ -5644,6 +5647,15 @@ public class MainActivity extends Activity {
         }
         if (e.getKeyCode() == KeyEvent.KEYCODE_MENU && e.getAction() == KeyEvent.ACTION_UP && Parental.state(this).kids) {
             openParental();   // 4.3.3: kids mode has no pills, and maybe no app left to hold OK on: the Menu key is always a way out (the PIN first)
+            return true;
+        }
+        // 4.4 beta 4: Back on the «يُتلى الآن» card closes it: what it holds stops (paused or playing), the focus goes to the pills; the press and its release are both taken here
+        if (e.getKeyCode() == KeyEvent.KEYCODE_BACK && nowCard != null && getCurrentFocus() == nowCard && nowCard.getVisibility() == View.VISIBLE) {
+            if (e.getAction() == KeyEvent.ACTION_UP && !e.isCanceled()) {
+                NowPlaying.close(this);
+                if (!pills.isEmpty()) pills.get(0).requestFocus();
+                nowCard.setVisibility(View.GONE);   // at once; the service's word (CHANGED) follows
+            }
             return true;
         }
         // On the «يُتلى الآن» card the back key (Dir: ▶ in Arabic, ◀ in English) is the previous surah and the forward key the next (a station has none: ◀ goes back to the pills as on any pill)

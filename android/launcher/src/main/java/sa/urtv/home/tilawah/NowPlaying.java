@@ -73,7 +73,7 @@ public final class NowPlaying {
         return new State(true, MusicService.isPlaying(), radio,
                 NowPlayingText.title(radio, cat.surahName(MusicService.currentSurah()), stationName),
                 NowPlayingText.sub(radio, reciterName, minutes, NowPlayingText.note(MusicService.currentError(), MusicService.isBuffering())),
-                NowPlayingText.hint(radio),
+                MusicService.isPlaying() || MusicService.isBuffering() ? NowPlayingText.hint(radio) : NowPlayingText.hintPaused(),   // 4.4 beta 4: paused, Back closes it
                 NowPlayingText.who(radio, reciterName));
     }
 
@@ -93,6 +93,9 @@ public final class NowPlaying {
     public static void stopAdhan(Context c) { MusicService.stopAdhan(c); }
 
     public static void toggle(Context c) { MusicService.toggle(c); }
+
+    /** 4.4 beta 4: Back on the «يُتلى الآن» card: what it holds stops (a paused surah or station too), and the card goes with it */
+    public static void close(Context c) { MusicService.stopAction(c); }
 
     public static void next(Context c) { MusicService.nextAction(c); }
 

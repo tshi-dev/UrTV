@@ -293,6 +293,7 @@ python3 tests/glass_clock_rule_test.py   # 4.4 beta 4: in «كنبة» the big g
 python3 tests/tasks_card_test.py
 python3 tests/reminders_test.py   # «المهام» with a time: the alarm, the cards, the keys, saver.sh, the phone's date and time (the page's card: reminder_page.test.mjs)
 python3 tests/now_playing_test.py
+python3 tests/now_card_close_test.py   # 4.4 beta 4: Back closes «يُتلى الآن», paused 10 minutes it hides
 python3 tests/digits_text_test.py
 python3 tests/page_stamp_test.py
 python3 tests/greeting_test.py
