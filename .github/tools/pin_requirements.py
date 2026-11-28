@@ -14,7 +14,8 @@ from pathlib import Path
 PINS = [
     ("adb-shell", "0.4.4", ""),
     ("rsa", "4.9.1", ""),
-    ("cryptography", "50.0.2", ""),
+    ("cryptography", "46.0.3", ""),   # the newest with wheels for Windows ARM64, 32-bit Windows and macOS 10.9+ (universal2): 47 to 50 make
+                                      # those computers build it from source, which fails (tests/pip_wheels_test.py)
     ("certifi", "2026.10.23", ""),
     ("pillow", "12.2.0", ""),
     ("pyasn1", "0.6.5", ""),
