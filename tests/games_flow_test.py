@@ -48,16 +48,18 @@ check("the list: no filter, no phones extra, no sentence in the header, the tile
 check("the registry says how a game can be played: 2 phones only, 1 both, 0 the remote", "static int way(String id) { return needsPhones(id) ? 2 : inPhones(id) ? 1 : 0; }" in reg)
 check("the tag's three words", all(w in base for w in ('S.t("جوالات")', 'S.t("ريموت أو جوالات")', 'S.t("ريموت")')))
 lob = base[base.index("protected final void drawPhoneLobby"):]
-check("the room: no «أغلق الغرفة», no heading, no code box, the address is Latin and the code is inside it",
-      "أغلق الغرفة" not in lob and "اللي دخلوا" not in lob and "codeBox" not in lob and "phones.code" not in lob and 'url = phones.url.replace("http://", "")' in lob and "TEXT_DIRECTION_LTR" in lob)
+check("the room: no «أغلق الغرفة» BUTTON (only the footer names what Back does), no heading, no code box, the address is Latin and the code is inside it",
+      'button(S.t("أغلق الغرفة")' not in lob and "اللي دخلوا" not in lob and "codeBox" not in lob and "phones.code" not in lob and 'url = phones.url.replace("http://", "")' in lob and "TEXT_DIRECTION_LTR" in lob)
 check("the room (UI review at 720p, font 1.3): the address is never wider than the QR (360) and breaks before «/» when it must, «ناقص …» is in the middle column with a gap from the name tiles, the screen title stands 14 px higher so its tails clear the band (no padded line box: it clipped the dots under ب and ج)",
-      "measure(url, us) > 360 - 32" in lob and 'url.substring(slash)' in lob and "at(552, 72, 504, 410)" in lob and "root.addView(text(big, 96, L.onDeep, true), at(1100, 130, 96, 40));" in base and "t.setPadding(0, 0, 0, px(14))" not in base)
+      "measure(url, us) > 360 - 32" in lob and 'url.substring(slash)' in lob and "at(552, 72, 504, 250)" in lob and "root.addView(text(big, 96, L.onDeep, true), at(1100, 130, 96, 40));" in base and "t.setPadding(0, 0, 0, px(14))" not in base)
+check("the room (UI review of the real build): «ما فتح؟ …» sits right under the address box, and the setup header has no tag where the row «كيف تلعبون؟» says it",
+      'root.addView(how, at(360, 76, 96, 766));' in lob and "if (ph == null) {" in base and "wayWord(way), 30" in base)
 check("the room: the count only while short («ناقص لاعب» for one, «ناقص ٢» for more)",
       "if (!can) {" in lob and 'missing == 1 ? S.t("ناقص لاعب") : S.t("ناقص %s", num(missing))' in lob)
 check("the room: «ابدأ» has the focus even while it is grey; «نلعب بالريموت» only when the game has a remote way",
       'button(S.t("ابدأ"), lobbyBtn == 0)' in lob and "if (!can) go.setAlpha(.55f);" in lob and 'if (way) root.addView(button(S.t("نلعب بالريموت"), lobbyBtn == 1)' in lob and "boolean can = missing <= 0, way = remoteWay() != null;" in lob)
-check("the room's way out: closes the room, remembers the remote for this game, starts the game on it; Back is the other way (the footer says «رجوع»)",
-      "closePhones(); go.run();" in base and 'c.get("phones").picked = 0; GamePrefs.saveChips(this, id(), c.save());' in base and 'S.t("رجوع"), S.t("الإعدادات")' in lob
+check("the room's way out: closes the room, remembers the remote for this game, starts the game on it; Back is the other way (the footer says «رجوع» «أغلق الغرفة»: what happens)",
+      "closePhones(); go.run();" in base and 'c.get("phones").picked = 0; GamePrefs.saveChips(this, id(), c.save());' in base and 'S.t("رجوع"), S.t("أغلق الغرفة"))' in lob
       and "else if (!lobbyKey(ok, dx)) onKey(back, ok, dx, dy);" in base)
 for n in ("Forehead", "Liar", "Night", "Draw", "Link", "Author", "Closest", "Emoji", "Guess", "Math", "Logic", "QuranVerse", "QuranReciter", "EngineGame"):
     try: a = src(n + "Activity.java")
