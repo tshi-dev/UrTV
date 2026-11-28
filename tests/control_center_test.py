@@ -181,6 +181,11 @@ check("«الإعدادات» is the panel's first row on every TV (after the bu
       and "void openSettings();" in center and "@Override public void openSettings() { openSettingsScreen(); }" in main
       and 'SAVER_PKG + ".SettingsActivity"' in main.split("private void openSettingsScreen()")[1].split("\n    }\n")[0]
       and "guarded(ParentalPolicy.OUR_SETTINGS" in main.split("private void openSettingsScreen()")[1].split("\n    }\n")[0])
+check("from the home «مركز التحكم» is near: ▲ from the apps row, a card or the football widgets lands on it (upPill); Home and a fresh start put the focus on the first app, a place kept only once a key was pressed (emulator rounds 8-12)",
+      "private View upPill() {" in main and "if (onTopRow(centerPill)) return centerPill;" in main and "int topId = card != null ? card.getId() : upPill().getId();" in main
+      and "if (to == null) to = upPill();" in main and "keyedSinceHome = false;" in main and "lastFocusedId = View.NO_ID;" in main
+      and main.count("View last = lastFocusedId == View.NO_ID || !keyedSinceHome ? null : findViewById(lastFocusedId);") == 2
+      and "if (e.getAction() == KeyEvent.ACTION_DOWN) keyedSinceHome = true;" in main)
 # ---- 4.3.1: ours before the TV's, the city beside it; a saved old default order follows the new one
 check("«إعدادات تلفزيونك» comes before the TV's «الإعدادات» by default, «المدينة» right after it; the old default order saved by the editor counts as never reordered",
       center.index('"ours", "games", "city", "adhan", "tv"') > 0 and 'OLD_DEFAULT = "net,sound,speed,tv,ours,saver"' in center and 'if (v.equals(OLD_DEFAULT)) v = "";' in center

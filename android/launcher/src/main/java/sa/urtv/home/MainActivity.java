@@ -490,7 +490,7 @@ public class MainActivity extends Activity {
         loadTvRows();   // what one watched since: «كمّل المشاهدة» moves on
         showUpdateResult();
         wireFocus();   // the «المهام» card may have come or gone with the settings
-        View last = lastFocusedId == View.NO_ID ? null : findViewById(lastFocusedId);
+        View last = lastFocusedId == View.NO_ID || !keyedSinceHome ? null : findViewById(lastFocusedId);
         if (last == null && !dockCards.isEmpty()) last = dockCards.get(0);
         if (last != null) last.requestFocus();
         if ("open".equals(getIntent().getStringExtra("bar")) && pillBar != null) { barHeld = true; pillBar.focusInside(true); }   // a picture of the open row (DebugBarShot); nothing else sets it
@@ -821,6 +821,8 @@ public class MainActivity extends Activity {
         // Home pressed while already home: jump back to the first dock app.
         if (inputsPopup != null) inputsPopup.dismiss();
         if (control != null) { control.dismiss(); control.forgetLast(); }
+        keyedSinceHome = false;   // Home: the first app, not the place the focus had before (onResume and the apps' build would put it back)
+        lastFocusedId = View.NO_ID;
         if (!dockCards.isEmpty()) {
             dockCards.get(0).requestFocus();
             final View first = dockCards.get(0);   // 4.4 beta 4 (the emulator's rounds 9-10): the window gave the focus back to the top row's last button
@@ -1877,7 +1879,7 @@ public class MainActivity extends Activity {
         appsLabel.setVisibility(rest.isEmpty() ? View.GONE : View.VISIBLE);
         wireFocus();
         if (!dock.isEmpty()) { title.setText(dock.get(0).label); setGlow(dock.get(0).color); }
-        View last = lastFocusedId == View.NO_ID ? null : findViewById(lastFocusedId);
+        View last = lastFocusedId == View.NO_ID || !keyedSinceHome ? null : findViewById(lastFocusedId);
         if (last != null) last.requestFocus();
         else if (!dockCards.isEmpty()) dockCards.get(0).requestFocus();
         appsShown = true;
@@ -2126,7 +2128,13 @@ public class MainActivity extends Activity {
 
     /** Explicit D-pad targets: one row per press, ends of rows and of the top bar don't wrap. */
     private int dbgFocus;
-    private int lastPillId = View.NO_ID;   // the pill that had the focus last: ▲ from a home card goes back to it
+    private int lastPillId = View.NO_ID;
+    /**
+     * 4.4 beta 4 (the emulator's «reach» round 12: after Home the focus stood on «الجوال», three buttons from «مركز التحكم»): before the apps
+     * came, the top row's first button took the window's first focus and was kept as «the last place»; until the person presses a key after
+     * the home opens (or Home), the place is the first app
+     */
+    private boolean keyedSinceHome;   // the pill that had the focus last: ▲ from a home card goes back to it
 
     /**
      * 4.4 beta 4 (the emulator's «reach» rounds 8-10: ▲ from the apps row or a card went to the first button of the top row, four buttons away from
@@ -5471,6 +5479,7 @@ public class MainActivity extends Activity {
     @Override
     public boolean dispatchKeyEvent(KeyEvent e) {
         if (e.getAction() == KeyEvent.ACTION_DOWN && e.getRepeatCount() == 0) watchKey();   // 4.4 beta 3: the frozen-screen watchdog
+        if (e.getAction() == KeyEvent.ACTION_DOWN) keyedSinceHome = true;   // the person has moved: their place is kept from now on
         if (e.getAction() != KeyEvent.ACTION_DOWN || !DebugFlags.on(this, "keytrace")) return dispatchKey(e);
         KeyTrace trace = KeyTrace.begin(this, e);   // debug only: where the time of this key goes (dock.sh debug keytrace on)
         boolean r = dispatchKey(e);
