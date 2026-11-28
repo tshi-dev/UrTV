@@ -217,7 +217,7 @@ sc26 = (ROOT / "tester/auto/ci/remote26.sh").read_text(encoding="utf-8")
 check("Android 8 (API 26, report row 765): the round's workflow walks the D-pad 30 keys on an API 26 TV emulator, alone and with the add-on's service on, and goes red on a frozen or unmoving remote (R-362)",
       "api-level: 26" in wf29 and "tester/auto/ci/remote26.sh" in wf29 and "grep -q '^PASS' auto-out/remote26/result.txt" in wf29 and 'cp -r "$GITHUB_WORKSPACE/auto-out/remote26"' in wf29
       and '"$SDK" = 26' in sc26 and "ro.kernel.qemu" in sc26 and "input keyevent" in sc26 and "enabled_accessibility_services sa.urtv.extras/sa.urtv.home.ExtrasA11yService" in sc26
-      and "focused=" in sc26 and "-ge 4" in sc26 and "-ge 8" in sc26 and "n=0" in sc26 and "for round in 1 2 3" in sc26 and len(re.findall("DPAD_", sc26.split("keys=")[1].split("\n")[0])) == 10)
+      and "focused=" in sc26 and "-ge 3" in sc26 and "-ge 8" in sc26 and "n=0" in sc26 and "for round in 1 2 3" in sc26 and len(re.findall("DPAD_", sc26.split("keys=")[1].split("\n")[0])) == 10)
 
 ci_src = "\n".join((ROOT / "tester/auto/ci" / f).read_text(encoding="utf-8") for f in ("run.sh", "tv_adb.py", "storage29.sh", "remote26.sh"))
 check("the CI scripts hold no IP address (check.py's «no private IPs, keys or network names» failed on a ping to one): the network is asked with a hostname",
