@@ -1,3 +1,15 @@
+▶▶ 4.3.7 RELEASE CANDIDATE, FULL TEST (28 Nov). Owner is out of the house: you may start now. Do this BEFORE the diagnostics block.
+Build: https://github.com/tshi-dev/UrTV/releases/tag/apk-437rc (prerelease, version.txt 3.683). Its build number 683 is HIGHER than the beta on the TV, so it installs over it keeping data: `APK_TAG=apk-437rc optimize/install.sh all`. Do NOT reinstall apk-next 680 afterwards (Android refuses a lower build); the beta comes back with the next apk-next build (684+) which I will announce.
+TV muted; save `saver.sh show` first.
+1. Install, then `dumpsys package sa.urtv.home | grep versionName` (expect 4.3.7) for home, screensaver, rescue.
+2. Remote: 30 D-pad keys on the home, shot every 10; the focus must keep moving. Then into Android settings and back.
+3. One normal reboot (`adb reboot`), wait 2 min: our home in front after HOME (shot), screensaver component and delay unchanged, `pm list packages -d | grep -i -E "partnercustomizer|account|auth|sync|usercenter|partnersetup"` must be empty, `pm list packages -d | grep -i -E "wifi|connectivity|network"` must be empty.
+4. Accounts page in Android settings (shot), Google Assistant settings (shot): no error dialogs.
+5. Screensaver: start it (start-saver.sh waits up to 60 s), shot: the page draws (clock, cards, photos), no blank page.
+6. Radio from the UI: HOME → «تلاوة وأذان» → «الإذاعات» → السعودية → OK, 2 min, then stop; check logcat -b crash is empty.
+7. If you have the setup tools: run `optimize/keep.sh` then `optimize/keep.sh status`: all protected ON, and the report says «left off by the TV itself» only for factory-off packages.
+Write tester/437rc/REPORT.md: each item PASS/FAIL with shots (city boxed). Restore settings; muted.
+
 ▶▶ DIAGNOSTICS ON THE OWNER'S TV (28 Nov, owner: «use my TV to run diagnostics and do a lot»). Do this after the current round; take your time, one section at a time, push results after each section to work/tester-report under tester/diag/<section>/. TV muted throughout. Save `saver.sh show` first and restore at the end. Never the family PIN, no factory reset, never disable/enable packages yourself, never touch launcherx/setupwraith, never type any games code. Screenshot-checked keys only.
 Get the tools: `git fetch origin work/44-beta4 && git checkout origin/work/44-beta4 -- tester optimize/settle.sh` (newest round.sh, tester/perf/switch.sh, tester/soak/).
 
