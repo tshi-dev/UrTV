@@ -21,6 +21,8 @@ adb shell cmd role add-role-holder --user 0 android.app.role.HOME sa.urtv.home |
 adb shell am start -W -n sa.urtv.home/.MainActivity > /dev/null
 sleep 20
 adb logcat -c
+bash tester/perf/switch.sh "$OUT/switch" 5   # 4.4 beta 4: the app-switch numbers and the debug build's StrictMode lines first (reported, not judged: the emulator draws in software)
+adb logcat -c
 
 play() {   # radio station 1 on even hours, a long surah (al-Baqarah, the first reciter) on odd ones
   if [ $(( $1 % 2 )) = 0 ]; then adb shell am broadcast -n sa.urtv.home/.tilawah.MusicReceiver -a sa.urtv.home.PLAY_RADIO --ei station 1 > /dev/null; echo radio

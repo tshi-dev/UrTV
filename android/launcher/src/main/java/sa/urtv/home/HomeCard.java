@@ -281,13 +281,23 @@ final class HomeCard {
      * be drawn this way leaves a clear picture (the box as before: no worse). Dropped as soon as the page is back, or with it.
      */
     private android.widget.ImageView still;
+    private android.graphics.Bitmap stillBits;   // the picture's pixels, kept for the next pause of the same size
 
     private void keepStill() {
         if (web == null || web.getWidth() <= 0 || web.getHeight() <= 0 || !(web.getLayoutParams() instanceof FrameLayout.LayoutParams)) return;
         dropStill();
         try {
-            android.graphics.Bitmap b = android.graphics.Bitmap.createBitmap(web.getWidth(), web.getHeight(), android.graphics.Bitmap.Config.ARGB_8888);
-            web.draw(new android.graphics.Canvas(b));
+            // 4.4 beta 4 (lag on the way out to an app): this runs in onPause, which the next app waits for, and a WebView drawn into a picture is drawn in
+            // software. At half its size (StillSize) a quarter of the pixels, into a picture kept from the last time when it fits; it shows for at most the
+            // 700 ms until the page draws again
+            int w = StillSize.side(web.getWidth()), h = StillSize.side(web.getHeight());
+            android.graphics.Bitmap b = stillBits != null && !stillBits.isRecycled() && stillBits.getWidth() == w && stillBits.getHeight() == h ? stillBits
+                    : android.graphics.Bitmap.createBitmap(w, h, android.graphics.Bitmap.Config.ARGB_8888);
+            stillBits = b;
+            b.eraseColor(0);
+            android.graphics.Canvas cv = new android.graphics.Canvas(b);
+            cv.scale(w / (float) web.getWidth(), h / (float) web.getHeight());
+            web.draw(cv);
             still = new android.widget.ImageView(activity);
             still.setImageBitmap(b);
             still.setScaleType(android.widget.ImageView.ScaleType.FIT_XY);
