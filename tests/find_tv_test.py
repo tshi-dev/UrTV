@@ -161,5 +161,33 @@ check("use: unreachable refused", code == 1 and h is None and "!!" in out, (code
 code, out, h = use_with("192.168.1.10", open_ports=(37123,), state={"host": "192.168.1.10", "port": 37123})
 check("use: remembered Wireless-debugging port accepted", code == 0 and h == "192.168.1.10", (code, out, h))
 
+# 4.4 (R-375): a TV with ADB on that the knock missed: adbd's own mDNS announcement (_adb._tcp) puts it first, and when nothing is
+# found the person is asked for the TV's address in Arabic (no dead end)
+seen = []
+def fake_browse(service, timeout=3.0, transport=None):
+    seen.append(service)
+    return [{"instance": "adb-x", "host": "192.168.1.40", "port": 5555}] if service == "_adb._tcp.local" else []
+saved = (ft.wireless.browse, ft.wireless.UdpTransport)
+ft.wireless.browse, ft.wireless.UdpTransport = fake_browse, (lambda ip=None: None)
+try:
+    near, tls = ft.mdns_hosts("192.168.1.23")
+finally:
+    ft.wireless.browse, ft.wireless.UdpTransport = saved
+check("mDNS: adbd's own announcement (_adb._tcp) is asked for, and its host is knocked first", "_adb._tcp.local" in seen and near == ["192.168.1.40"]
+      and ft.ANNOUNCED == [("192.168.1.40", 5555)], (seen, near))
+saved = ft.wireless.load_state
+ft.wireless.load_state = lambda: {}
+out = io.StringIO()
+try:
+    with redirect_stdout(out):
+        code = ft.not_found([], [], "192.168.1.23")
+finally:
+    ft.wireless.load_state = saved
+o = out.getvalue()
+check("nothing found: the device that announced ADB is named with its use command, and the person is asked for the address in Arabic",
+      code == 1 and "A device at 192.168.1.40 announces ADB (port 5555)" in o and "optimize/find-tv.sh use 192.168.1.40" in o
+      and "!! The scan did not find the TV" in o and "عنوان IP" in o and "optimize/find-tv.sh use <that address>" in o, o)
+del ft.ANNOUNCED[:]
+
 print("\nall find-tv checks passed" if not failed else f"\n{failed} failed")
 sys.exit(1 if failed else 0)
