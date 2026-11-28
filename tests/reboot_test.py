@@ -33,6 +33,8 @@ class Dev:
             if not tvstate["has_id"]:
                 return "cat: No such file\n"
             return ("new-" if new else "old-") + "0123456789abcdef0123456789abcdef\n"
+        if cmd.startswith("dumpsys power"):   # awake after its restart (a TV left in standby: tests/standby_wake_test.py)
+            return "  mWakefulness=Awake\n"
         if cmd == "cat /proc/uptime":
             return f"{(clock['t'] - tvstate['sent_at'] - tvstate['up_at'] + tvstate['boot_age']) if new else clock['t'] + tvstate['old_up']:.2f} 100.0\n"
         raise SystemExit("fake: unknown command " + cmd)

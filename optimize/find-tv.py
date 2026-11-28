@@ -302,10 +302,16 @@ def knock_all(pairs, timeout, workers=128):
         return [p for p, ok in zip(pairs, pool.map(lambda hp: connects(hp[0], hp[1], timeout), pairs)) if ok]
 
 
+SERVICE_ADB = "_adb._tcp.local"   # adbd's own announcement while network ADB is on (Android 11 and newer, some older builds)
+ANNOUNCED = []   # 4.4: the (host, port) that announced ADB by mDNS in the last scan: said by not_found() when no knock reached them
+
+
 def mdns_hosts(iface_ip):
-    """Addresses that announce themselves as Cast devices (every Android TV does) or as Wireless-debugging TVs."""
+    """Addresses that announce themselves as Cast devices (every Android TV does), as Wireless-debugging TVs, or (4.4: a TV with ADB on
+    that the knock missed) as adbd itself: these are knocked first, and again slowly when nothing answered."""
     hosts, wireless_hits = [], []
-    for service in (wireless.SERVICE_CAST, wireless.SERVICE_CONNECT):
+    del ANNOUNCED[:]
+    for service in (wireless.SERVICE_CAST, wireless.SERVICE_CONNECT, SERVICE_ADB):
         try:
             hits = wireless.browse(service, 2.0, wireless.UdpTransport(iface_ip))
         except OSError:
@@ -313,6 +319,8 @@ def mdns_hosts(iface_ip):
         hosts += [h["host"] for h in hits]
         if service == wireless.SERVICE_CONNECT:
             wireless_hits = hits
+        if service == SERVICE_ADB:
+            ANNOUNCED.extend((h["host"], h["port"]) for h in hits)
     return list(dict.fromkeys(hosts)), wireless_hits
 
 
@@ -427,6 +435,11 @@ def not_found(cast, tls, ip):
         print("Android 11 and newer TVs may keep 5555 closed: Developer options → «Wireless debugging» on, then: optimize/find-tv.sh pair")
     if cast:
         print("(The TV is probably one of the Cast devices above: set TV_HOST=<its address> after turning debugging on.)")
+    for host, port in dict.fromkeys(ANNOUNCED):   # it says ADB is on, but no knock got through (Wi-Fi power-save, a firewall on this computer)
+        print(f"A device at {host} announces ADB (port {port}) but did not answer the scan: if it is the TV, run: optimize/find-tv.sh use {host}")
+    # 4.4 (reports: the scan missed a TV with ADB on): the person can read the address on the TV; a clear prompt instead of a dead end
+    print("!! The scan did not find the TV. Ask the person, in Arabic: «افتح الإعدادات في التلفزيون ← الشبكة والإنترنت ← الشبكة المتصل فيها، "
+          "واقرأ لي عنوان IP (مثل 192.168.x.x)». Then run: optimize/find-tv.sh use <that address>")
     return 1
 
 

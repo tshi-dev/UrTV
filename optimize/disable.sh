@@ -102,7 +102,7 @@ rm -f "$RUN/inputs-left.txt"   # what the guard left on in this run (community.s
 HANDLERS='echo "== sdk $(getprop ro.build.version.sdk)"; echo "== settings"; cmd package query-activities --brief -a android.settings.SETTINGS 2>/dev/null; echo "== tv"; for d in content://android.media.tv/channel/1 content://android.media.tv/passthrough/1; do cmd package query-activities --brief -a android.intent.action.VIEW -d $d 2>/dev/null; done; cmd package query-activities --brief -a android.intent.action.VIEW -d content://android.media.tv/channel/1 -t vnd.android.cursor.item/channel 2>/dev/null; cmd package query-activities --brief -a android.media.tv.action.SETUP_INPUTS 2>/dev/null; echo "== home"; cmd package query-activities --brief -a android.intent.action.MAIN -c android.intent.category.HOME 2>/dev/null; echo END_OF_LIST'
 if [ -n "$intended" ]; then
   raw=$("$PY" -I optimize/tv.py "$HANDLERS" 2> /dev/null | tr -d '\r') || raw=""
-  sdk=$(sed -n -E 's/^== sdk ([0-9]+)$/\1/p' <<< "$raw" | head -n 1)
+  sdk=$(sed -n -E 's/^== sdk ([0-9]+)$/\1/p' <<< "$raw" | sed -n 1p)
   if [ -n "$sdk" ] && [ "$sdk" -lt 24 ]; then
     echo "Nothing turned off from this list: Android 6 and older cannot say which apps open the TV's Settings and channels (على أندرويد 6 وأقدم ما يقدر التلفزيون يقول أي التطبيقات تفتح إعداداته وقنواته، فما أوقفنا شيئاً من هذه القائمة)." >&2
     printf '%s\n' "$intended" > "$RUN/inputs-left.txt"   # community.sh: none of them was applied

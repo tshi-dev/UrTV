@@ -215,6 +215,19 @@ def is_read_only(cmd):
     return True
 
 
+ROLE_SDK = 29   # `cmd role` (the HOME role) is Android 10 and newer; Android 9 answers «Can't find service: role» to every one
+
+
+def no_role_here(tv, line):
+    """True for a `cmd role …` line on a TV older than Android 10: it is not sent (4.4: an Android 9 setup printed an error for each)."""
+    if not line.startswith("cmd role "):
+        return False
+    if not hasattr(tv, "_sdk"):
+        got = tv.shell("getprop ro.build.version.sdk").strip()
+        tv._sdk = int(got) if got.isdigit() else None   # unknown: sent as before
+    return tv._sdk is not None and tv._sdk < ROLE_SDK
+
+
 def shell_line(args):
     """The command line to send for these arguments. One argument is a whole command, as written ('pm list packages'); several are
     words of one, each quoted so that one with a space or a ; stays one word on the TV (a path as Git Bash may have rewritten it
@@ -278,6 +291,12 @@ def send_once(cmd):
     return bool(SEND_ONCE.search(cmd))
 
 
+# properties that are never empty on an Android TV: an empty answer is read again (TV.shell)
+MUST_PROPS = {f"getprop {p}" for p in ("ro.product.manufacturer", "ro.product.brand", "ro.product.model", "ro.product.device",
+                                       "ro.build.version.release", "ro.build.version.sdk", "ro.build.display.id", "sys.boot_completed")}
+PROP_TRIES, PROP_WAIT_S = 3, 2
+
+
 class TV:
     """One connection, reopened on failure; every call retried with a growing pause."""
 
@@ -336,7 +355,16 @@ class TV:
     def shell(self, cmd, timeout=120):
         if send_once(cmd):
             return self.once(cmd, timeout)
-        return self.call("shell", cmd, read_timeout_s=timeout) or ""
+        r = self.call("shell", cmd, read_timeout_s=timeout) or ""
+        # 4.4 (reports: the probe and the precheck read empty properties): a property every TV has that comes back empty is a
+        # half-open connection or a TV still starting its services: read again on a new connection, twice at most
+        for _ in range(PROP_TRIES - 1):
+            if r.strip() or cmd.strip() not in MUST_PROPS:
+                break
+            self.close()
+            time.sleep(PROP_WAIT_S)
+            r = self.call("shell", cmd, read_timeout_s=timeout) or ""
+        return r
 
     def once(self, cmd, timeout=120):
         """Send a command that must not run twice. A connection that may have gone stale is first tested with a harmless
@@ -538,6 +566,15 @@ def stream_exec_tcp(dev, command, local, read_timeout_s):
     return out.decode("utf-8", "replace")
 
 
+def stream_read_s():
+    """How long a streamed install may stay silent: 12 minutes, or TV_STREAM_READ_S seconds (install.sh gives a big extra such as SmartTube
+    25 minutes: a weak TV verifies a 40 MB APK for minutes without a word)."""
+    try:
+        return max(60.0, float(os.environ.get("TV_STREAM_READ_S", "")))
+    except ValueError:
+        return SLOW_READ_S * 4
+
+
 def install_stream(tv, local, opts):
     """`pm install` without a file on the TV: the bytes go straight to `cmd package install -S <size>` (Android 7, SDK 24, and newer; what `adb
     install` does). The answer of pm, or None when it cannot be done here (an older Android, a client without the stream, a connection that
@@ -550,11 +587,12 @@ def install_stream(tv, local, opts):
     try:
         if tv.dev is None:
             tv._open()
+        read_s = stream_read_s()
         if hasattr(tv.dev, "install_stream"):   # the adb program (Wireless debugging)
-            return tv.dev.install_stream(command, local, SLOW_READ_S * 4)
+            return tv.dev.install_stream(command, local, read_s)
         if not hasattr(tv.dev, "_io_manager"):
             return None
-        return stream_exec_tcp(tv.dev, command, local, SLOW_READ_S * 4)
+        return stream_exec_tcp(tv.dev, command, local, read_s)
     except SystemExit:
         raise
     except Exception as e:  # noqa: BLE001
@@ -672,6 +710,28 @@ def address_hint(host=None):
             f"if that is the TV, its address changed. Ask the person, then: optimize/find-tv.sh use {found[0]})")
 
 
+ASLEEP = ("Asleep", "Dozing")   # dumpsys power's mWakefulness while the TV is in standby (Dreaming is a screensaver: awake)
+POWER_ASK = ("The TV answers but its screen stays in standby. Ask the person, in Arabic: «اضغط زر التشغيل (Power) في الريموت مرة وحدة عشان "
+             "تصحى الشاشة». Waiting for the screen (a WAKEUP is sent every 10 s).")
+
+
+def wakefulness(dev):
+    """mWakefulness from dumpsys power (Awake, Asleep, Dozing, Dreaming), or "" when the TV does not say."""
+    out = dev.shell("dumpsys power | grep -m1 mWakefulness=", read_timeout_s=15) or ""
+    m = re.search(r"mWakefulness=(\w+)", out)
+    return m.group(1) if m else ""
+
+
+def wake_up(dev):
+    """4.4 (reports: the setup gave up on a TV that came back from its restart in standby): WAKEUP while it sleeps; True once it is
+    awake (or does not say), False while it still sleeps."""
+    if wakefulness(dev) not in ASLEEP:
+        return True
+    dev.shell("input keyevent KEYCODE_WAKEUP", read_timeout_s=15)
+    time.sleep(3)
+    return wakefulness(dev) not in ASLEEP
+
+
 def wait_for_tv(limit_s=WAIT_S, before=None, restart=False):
     """Try every 10 s until the TV answers and has finished booting, up to 10 minutes (a few TVs take that long to restart).
     The same address and the same port are used throughout (5555, or the remembered Wireless-debugging port, looked up again by
@@ -681,6 +741,8 @@ def wait_for_tv(limit_s=WAIT_S, before=None, restart=False):
     boots can't be told apart, only once it was seen not answering."""
     start = time.time()
     down = False   # seen not answering, or still booting, since we started
+    asked = False   # the person was asked to press Power (once)
+    asleep = False   # the last answer: back from the restart, but the screen in standby
     next_hint, hinted = start + HINT_EVERY_S, set()
     while time.time() - start < limit_s:
         try:
@@ -688,22 +750,34 @@ def wait_for_tv(limit_s=WAIT_S, before=None, restart=False):
             dev.connect(rsa_keys=[signer()], auth_timeout_s=30)
             booted = dev.shell("getprop sys.boot_completed", read_timeout_s=15).strip()
             now = boot_marker(dev) if restart else None
+            back = booted == "1" and (not restart or is_new_boot(before, now) or (is_new_boot(before, now) is None and down))
+            awake = wake_up(dev) if back else False   # back from the restart in standby: woken, else the person presses Power
+            asleep = back and not awake
             dev.close()
             if booted != "1":
                 down = True
-            elif not restart or is_new_boot(before, now) or (is_new_boot(before, now) is None and down):
+            elif back and awake:
                 print(f"TV is back ({int(time.time() - start)} s)")
                 return
+            elif back and not asked:
+                asked = True
+                print(POWER_ASK, file=sys.stderr)
         except Exception:  # noqa: BLE001
-            down = True
+            down, asleep = True, False
         if time.time() >= next_hint:
             next_hint += HINT_EVERY_S
             print(f"   (still waiting for the TV: {int(time.time() - start) // 60} min)", file=sys.stderr)
+            if down and not asked and time.time() - start >= 3 * HINT_EVERY_S:   # silent for 3 minutes: it may be in a deep standby
+                asked = True
+                print("   (if the TV's screen is off, ask the person, in Arabic: «اضغط زر التشغيل (Power) في الريموت مرة وحدة»)", file=sys.stderr)
             hint = address_hint()
             if hint and hint not in hinted:
                 hinted.add(hint)
                 print(hint, file=sys.stderr)
         time.sleep(10)
+    if asleep:
+        sys.exit("!! The TV came back from its restart but its screen stayed in standby for 10 minutes, even after WAKEUP. Ask the person "
+                 "to press Power on the remote (in Arabic: «اضغط زر التشغيل في الريموت»), then run the same command again (it goes on from its step).")
     if restart and not down:
         sys.exit("!! The TV kept answering but never restarted: it may have ignored the reboot. Restart it from its "
                  "own menu (not with this command again), then go on.")
@@ -713,6 +787,30 @@ def wait_for_tv(limit_s=WAIT_S, before=None, restart=False):
                 " Settings → Developer options → Wireless debugging (turn it on if a restart turned it off) and read «IP address & Port», then:"
                 " optimize/find-tv.sh connect <that IP:port>, and the same command again (it goes on from its step)." if wifi_dbg else "")
              + ("\n" + "\n".join(hinted) if hinted else ""))
+
+
+SHOT_TRIES = 3
+
+
+def shot(tv, local):
+    """screencap, pulled to local. 4.4 (reports: «Pillow» blamed for a screenshot of 0 bytes): an empty capture (a TV still waking, the
+    screencap cut off, a pull that wrote nothing) is taken again, up to 3 times; one that stays empty is not saved, and says so."""
+    for i in range(1, SHOT_TRIES + 1):
+        tv.shell("screencap -p /sdcard/_shot.png")
+        size = tv.shell("wc -c < /sdcard/_shot.png 2> /dev/null || echo 0").strip()
+        if size.isdigit() and int(size) > 0:
+            tv.call("pull", "/sdcard/_shot.png", local)
+        tv.shell("rm -f /sdcard/_shot.png")
+        if os.path.isfile(local) and os.path.getsize(local) > 8 and open(local, "rb").read(8) == b"\x89PNG\r\n\x1a\n":
+            print(f"saved {local}")
+            return
+        if os.path.exists(local):
+            os.remove(local)
+        if i < SHOT_TRIES:
+            print(f"   (the screenshot came back empty: taking it again, try {i + 1} of {SHOT_TRIES})", file=sys.stderr)
+            time.sleep(2)
+    sys.exit(f"!! The TV gave an empty screenshot {SHOT_TRIES} times (the screen off or asleep, or a protected picture such as a paid "
+             "video): nothing was saved. Wake the TV or leave that app, then run the same command again.")
 
 
 def main():
@@ -793,6 +891,9 @@ def main():
                 save_identity(first)
     elif a[0] == "--batch":
         for line in batch:
+            if no_role_here(tv, line):
+                print(f"$ {line}\n(not sent: no HOME role before Android 10)")
+                continue
             print(f"$ {line}\n{tv.shell(line).rstrip()}")
     elif a[0] == "--pull":
         tv.call("pull", tv_path(a[1]), a[2])
@@ -813,11 +914,8 @@ def main():
         print(out.rstrip())
         sys.exit(0 if "Success" in out else 1)
     elif a[0] == "--shot":
-        tv.shell("screencap -p /sdcard/_shot.png")
-        tv.call("pull", "/sdcard/_shot.png", a[1])
-        tv.shell("rm /sdcard/_shot.png")
-        print(f"saved {a[1]}")
-    else:
+        shot(tv, a[1])
+    elif not no_role_here(tv, shell_line(a)):   # a `cmd role` question before Android 10 answers nothing, as a TV with no holder
         print(tv.shell(shell_line(a)).rstrip())
     tv.close()
 
