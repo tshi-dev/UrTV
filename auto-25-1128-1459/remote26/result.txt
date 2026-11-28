@@ -1,0 +1,1 @@
+PASS: on Android 8 the D-pad moves the focus in the home, alone and with the add-on's service on (30 keys each, none held)

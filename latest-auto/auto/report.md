@@ -1,17 +1,21 @@
-# Automatic round: emulator-24
+# Automatic round: emulator-25
 
 ## Health metrics
 
 | metric | now | limit | previous | change | verdict |
 |---|---|---|---|---|---|
-| cold_start_home_ms | 1665ms | max 20000 |  |  | ok |
-| cold_start_saver_ms | 1114ms | max 20000 |  |  | ok |
-| jank_home_frames | 63 |  |  |  | no limit |
+| switch_leave_ms | 164ms |  |  |  | no limit |
+| switch_back_ms | 0ms |  |  |  | no limit |
+| switch_jank_pct | 0% |  |  |  | no limit |
+| switch_p99_ms | 4950ms |  |  |  | no limit |
+| cold_start_home_ms | 1157ms | max 20000 |  |  | ok |
+| cold_start_saver_ms | 712ms | max 20000 |  |  | ok |
+| jank_home_frames | 37 |  |  |  | no limit |
 | jank_home_pct | 100.0% | max 100 |  |  | ok |
-| jank_home_p90_ms | 57ms |  |  |  | no limit |
-| jank_home_p99_ms | 65ms |  |  |  | no limit |
-| pss_home_kb | 63006KB | max 350000 |  |  | ok |
-| pss_saver_kb | 38119KB | max 350000 |  |  | ok |
+| jank_home_p90_ms | 40ms |  |  |  | no limit |
+| jank_home_p99_ms | 46ms |  |  |  | no limit |
+| pss_home_kb | 60368KB | max 350000 |  |  | ok |
+| pss_saver_kb | 38999KB | max 350000 |  |  | ok |
 | crashes | 0 | zero 0 |  |  | ok |
 | anrs | 0 | zero 0 |  |  | ok |
 | frozen_lines | 0 | zero 0 |  |  | ok |
@@ -95,6 +99,7 @@
 | adhan-isha-screen | PASS | العشاء: screen |
 | adhan-isha-none | PASS | العشاء: none |
 | games-list | PASS | the games list is on the screen (the badges: look at shots/games-list.png) |
+| switch | PASS | the home out to Settings and back, 5 times: leave_ms: median 164;back_ms: median 0;jank_pct: median 0;p99_ms: median 4950; |
 
 ## Verdict
 

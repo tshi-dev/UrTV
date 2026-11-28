@@ -1,9 +1,0 @@
-api 26
-Performing Streamed Install
-Success
-home: 30 keys, 0 slow, 3 different focused places
-Performing Streamed Install
-Success
-services: sa.urtv.extras/sa.urtv.home.ExtrasA11yService
-addon: 30 keys, 0 slow, 2 different focused places
-FAIL: on Android 8 the remote froze or the focus did not move: the home with the add-on's service on (see addon-*.xml, addon.png);

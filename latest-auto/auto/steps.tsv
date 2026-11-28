@@ -73,3 +73,4 @@ adhan-isha-sound	PASS	العشاء: sound
 adhan-isha-screen	PASS	العشاء: screen
 adhan-isha-none	PASS	العشاء: none
 games-list	PASS	the games list is on the screen (the badges: look at shots/games-list.png)
+switch	PASS	the home out to Settings and back, 5 times: leave_ms: median 164;back_ms: median 0;jank_pct: median 0;p99_ms: median 4950;
