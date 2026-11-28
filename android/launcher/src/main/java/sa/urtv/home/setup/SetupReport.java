@@ -217,6 +217,11 @@ final class SetupReport {
 
     private boolean watchBound;
 
+    /** R-409: the add-on's Home key catch as the home step left it (WizardHome.FILE) */
+    private Boolean homeCatch() {
+        try { String f = store.get(WizardHome.FILE); return f == null ? null : f.trim().equals("on"); } catch (RuntimeException e) { return null; }
+    }
+
     /**
      * 4.4 (user reports, the tester's finding): since 4.3 the role alone never moves the Home key on a Google TV (TCL G10/G08, Changhong Android 14,
      * Sony BRAVIA VH21, Xiaomi MiTV-AFMU0/1): launcherx gets it by name. The add-on's watch is how Home works there; the report says so in words
@@ -241,8 +246,11 @@ final class SetupReport {
         out.addAll(bad);
         // 4.4: «Home:» is what the Home key really opens (the person's way: another app in front, the key, then who is in front), never what the role resolves to: on a
         // Google TV launcherx keeps the key whatever the role says, and the old line said «sa.urtv.home» there (16 runs, a false pass on every Google TV)
-        out.add("Home: " + homeKeyOpens());
+        String opens = homeKeyOpens();
+        out.add("Home: " + opens);
         out.add(homeHow());
+        String wizard = WizardHome.reportLine(opens, Boolean.TRUE.equals(homeCatch()));   // R-409: the wizard keeps Home: how it works here, in plain words
+        if (wizard != null) out.add(wizard);
         if (installed != null && installed.contains(RescuePlan.LAUNCHERX)) out.add(googleTvLine(watchBound));
         String saver = tv.tail1("settings get secure screensaver_components").trim();
         out.add("Screensaver: " + (saver.matches("[A-Za-z0-9_.$/,]+") ? saver : "?"));

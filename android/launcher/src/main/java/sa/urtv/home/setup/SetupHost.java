@@ -53,6 +53,7 @@ final class SetupHost implements SetupRunner.Host {
     @Override public void undone() { SetupSession.dropKey(app); }
 
     @Override public void homeWanted(boolean wanted) { sa.urtv.home.Extras.homeWanted(app, wanted); }
+    @Override public boolean homeCatchOn() { return Boolean.TRUE.equals(sa.urtv.home.Extras.homeKey(app, "on")); }   // R-409
 
     @Override public void freshKey() { SetupSession.keepKey(app); }
 
