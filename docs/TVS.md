@@ -108,6 +108,8 @@ says who owns the saved networks (no names are printed).
 
 ## The remote's shortcut keys
 
+**A key remapper of the person's** (an accessibility service that filters keys, like Button Mapper) and the add-on «إضافات تلفزيونك» both ask Android for the remote's keys; Android gives a key to each in turn, and a key the first one keeps never reaches the other. Where the remapper stops working, `optimize/dock.sh key-filter off` turns our filter off (R-408): the remapper gets every key, and the add-on's Home catch, Settings key and app buttons over other apps stop.
+
 After the home switch the stock launcher is switched off, and the remote's shortcut keys (Settings, YouTube, Netflix, the star)
 stopped working. Six reports: Haier MatrixTV (A14), TCL G08 (three), Xiaomi MiTV-MZTU0, Changhong dangni (A14). A report found the
 cause: YouTube and Netflix arrive as `KEYCODE_BUTTON_3` and `KEYCODE_BUTTON_4`, and the only receiver of Android's global-button

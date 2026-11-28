@@ -28,6 +28,8 @@
 #                                          the Home key there: TCL G10/G08, Changhong Android 14, Sony BRAVIA VH21, Xiaomi MiTV-AFMU0/1); after extras-setup
 #   optimize/dock.sh home-key on|off|status    4.4 «زر الرئيسية يفتح تلفزيونك مباشرة»: the add-on catches the remote's Home key (on by default on a Google TV,
 #                                          only while the person's home is ours; the window watch stays as the fallback)
+#   optimize/dock.sh key-filter on|off|status  4.4 «فلتر أزرار الريموت» (R-408): off = the add-on never filters the remote's keys (a key remapper of the person's
+#                                          gets them all; the Home catch, the Settings key outside the home and the remote buttons over apps stop; on is the default)
 #   optimize/dock.sh key                   «أزرار الريموت»: this remote's app buttons (YouTube, Netflix…: the ones its brand has) and the app each opens
 #   optimize/dock.sh key BUTTON PKG        give one of this remote's buttons (the ids `key` lists: youtube, netflix…) another app; `default` = as before. Over other apps with «إضافات تلفزيونك» (extras-setup)
 #   optimize/dock.sh pin set 1234         «الرقابة الأبوية»: the master PIN (4 digits), set or changed from here without the old one; never printed back
@@ -202,6 +204,12 @@ case "${1:-}:$#" in
       *) echo "usage: optimize/dock.sh home-key on|off|status"; exit 1 ;;
     esac ;;
   home-key:*) echo "usage: optimize/dock.sh home-key on|off|status"; exit 1 ;;
+  key-filter:2)
+    case "$2" in
+      on|off|status) send KEY_FILTER "--es mode $2" ;;
+      *) echo "usage: optimize/dock.sh key-filter on|off|status"; exit 1 ;;
+    esac ;;
+  key-filter:*) echo "usage: optimize/dock.sh key-filter on|off|status"; exit 1 ;;
   home-watch:2)
     case "$2" in
       on|off|status) send HOME_WANTED "--es mode $2" ;;

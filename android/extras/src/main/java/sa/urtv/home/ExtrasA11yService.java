@@ -286,6 +286,20 @@ public class ExtrasA11yService extends AccessibilityService {
         if (s != null) s.main.post(s::filterKeys);
     }
 
+    /**
+     * 4.4 (R-408): «فلتر أزرار الريموت», on by default. A third-party key remapper (an accessibility service that filters keys too) stopped working with ours on:
+     * Android hands a key to the filtering services in turn, and the one that keeps a key (our Home catch, the Settings key, a remote button) leaves the other
+     * nothing. Off: this service never asks for the remote's keys (KeyFilterSwitch); the Home window watch, the sleep timer and the phone's remote stay.
+     */
+    static boolean keyFilter(Context c) { return c.getSharedPreferences("extras", MODE_PRIVATE).getBoolean(ExtrasWords.KEY_FILTER, true); }
+
+    static void setKeyFilter(Context c, boolean on) {
+        c.getSharedPreferences("extras", MODE_PRIVATE).edit().putBoolean(ExtrasWords.KEY_FILTER, on).apply();
+        Log.i("UrTVWatch", on ? "key filter on" : "key filter off");
+        ExtrasA11yService s = running;
+        if (s != null) s.main.post(s::filterKeys);
+    }
+
     private boolean homeKeyCaught(KeyEvent e) {
         if (e.getAction() != KeyEvent.ACTION_UP) return true;
         try {
@@ -383,6 +397,7 @@ public class ExtrasA11yService extends AccessibilityService {
                 || KeyApps.xiaomiGtvWanted(KeyButton.xiaomiGtv(), wanted(this) || oursChosen())   // R-406: a Xiaomi Google TV's YouTube button
                 || SettingsKey.lowRamCatch(front, stockHome, lowRam, stockOff, Build.VERSION.SDK_INT)   // R-407: a weak TV whose stock home is off: its Settings key opens Android's settings
                 || homeKeyActive());   // 4.4 R3: the Home key caught here (on by default on a Google TV, only while the person's home is ours; never on Xiaomi: homeKeyActive)
+            want = KeyFilterSwitch.want(keyFilter(this), want);   // R-408: the person turned our key filter off (a key remapper of theirs)
             AccessibilityServiceInfo info = getServiceInfo();
             if (info == null) return;
             boolean has = (info.flags & AccessibilityServiceInfo.FLAG_REQUEST_FILTER_KEY_EVENTS) != 0;
@@ -405,6 +420,7 @@ public class ExtrasA11yService extends AccessibilityService {
 
     @Override protected boolean onKeyEvent(KeyEvent e) {
         try {   // 4.3.6: never throws into Android's key dispatch; anything unexpected gives the key back untouched
+            if (!keyFilter(this)) return false;   // R-408: off, every key goes on untouched (a key that came while the switch turned)
             return keyEvent(e);
         } catch (Throwable t) {
             log("settings key=error");   // one fixed word: never the key or the exception's text

@@ -176,6 +176,12 @@ public final class Extras {
         return b == null ? null : b.getBoolean(ExtrasWords.HOME_KEY);
     }
 
+    /** 4.4 (R-408): «فلتر أزرار الريموت» in the add-on: "on", "off" or null to read; null when the add-on did not answer */
+    public static Boolean keyFilter(Context c, String set) {
+        Bundle b = ExtrasTrust.call(c, ExtrasWords.WATCH, "on".equals(set) ? ExtrasWords.KEY_FILTER_ON : "off".equals(set) ? ExtrasWords.KEY_FILTER_OFF : null, null);
+        return b == null || !b.containsKey(ExtrasWords.KEY_FILTER) ? null : b.getBoolean(ExtrasWords.KEY_FILTER);
+    }
+
     /** the Home-button watch: "on", "off", or null to only read it; null back when the add-on did not answer */
     static Boolean watch(String set) {
         Bundle b = call(ExtrasWords.WATCH, set, null);

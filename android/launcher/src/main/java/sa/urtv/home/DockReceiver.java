@@ -35,6 +35,7 @@ import java.util.Map;
  *   am broadcast -n sa.urtv.home/.DockReceiver -a sa.urtv.home.PIN_RESET             a forgotten PIN: everything parental back to nothing
  *   am broadcast -n sa.urtv.home/.DockReceiver -a sa.urtv.home.HOME_WANTED --es mode on|off|status   4.4: «the person's home is ours» for the add-on's watch
  *      and the home's re-apply of the role (optimize/homedoctor.py); answers "home-wanted: yes|no"
+ *   am broadcast -n sa.urtv.home/.DockReceiver -a sa.urtv.home.KEY_FILTER --es mode on|off|status   4.4 (R-408): the add-on's key filter (on by default); off for a key remapper
  *   am broadcast -n sa.urtv.home/.DockReceiver -a sa.urtv.home.HOME_KEY --es mode on|off|status   4.4 R3 (on by default on a Google TV): the add-on catches
  *      the remote's Home key itself and opens our home (docs/HOMEDOCTOR.md); answers "home-key: on|off"
  *   am broadcast -n sa.urtv.home/.DockReceiver -a sa.urtv.home.BACK_SAVER --es mode on|off|status   «الرجوع يفتح شاشة التوقف» (off by default)
@@ -159,6 +160,13 @@ public class DockReceiver extends BroadcastReceiver {
                 if (!m.equals("on") && !m.equals("off") && !m.equals("status")) { setResultData("error: add --es mode on|off|status"); return; }
                 Boolean on = Extras.homeKey(c, m.equals("status") ? null : m);
                 setResultData(on == null ? "home-key: the add-on did not answer (install it and turn it on: optimize/dock.sh extras-setup)" : "home-key: " + (on ? "on" : "off"));
+                return;
+            }
+            case "sa.urtv.home.KEY_FILTER": {   // 4.4 (R-408): «فلتر أزرار الريموت»: the add-on's key filter off for a key remapper the person uses
+                String m = String.valueOf(i.getStringExtra("mode"));
+                if (!m.equals("on") && !m.equals("off") && !m.equals("status")) { setResultData("error: add --es mode on|off|status"); return; }
+                Boolean on = Extras.keyFilter(c, m.equals("status") ? null : m);
+                setResultData(on == null ? "key-filter: the add-on did not answer (an older add-on, or not installed: optimize/install.sh addon)" : "key-filter: " + (on ? "on" : "off"));
                 return;
             }
             case "sa.urtv.home.BACK_SAVER": {   // «الرجوع يفتح شاشة التوقف»: on | off | status; read at each Back, nothing to redraw
