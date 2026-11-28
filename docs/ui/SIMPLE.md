@@ -48,7 +48,7 @@ There are two exceptions:
 **The same word for the same thing, everywhere:**
 - تلفزيونك (our app), الرئيسية, الإعدادات, شاشة التوقف, تلاوة وأذان
 - رقم التقرير (never «رمز التقرير»)
-- مفعّل / متوقف
+- مفعّل / متوقف for a feature; ظاهر / مخفي only for a button or a label that is shown on the screen or not
 - تم, كمّل, جرّب مرة ثانية
 
 ## The components: one set

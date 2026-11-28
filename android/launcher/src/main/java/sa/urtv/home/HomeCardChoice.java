@@ -64,6 +64,13 @@ final class HomeCardChoice {
         return b.length() == 0 ? "none" : b.toString();
     }
 
+    /** the audit (H5): a card with today's prayer times is among them (its «المغرب» is the sunset, so the greeting's «الغروب» line would say it twice) */
+    static boolean hasPrayerTimes(String[] choice) {
+        if (choice == null || choice[1] == null || "none".equals(choice[1])) return false;
+        for (String k : choice[1].split(",")) { k = k.trim(); if ("prayers".equals(k) || "prayerrow".equals(k) || "nextprayer".equals(k)) return true; }
+        return false;
+    }
+
     static boolean hasTasks(String[] choice) {
         if (choice == null || "none".equals(choice[1])) return false;
         for (String k : choice[1].split(",")) if ("tasks".equals(k.trim())) return true;

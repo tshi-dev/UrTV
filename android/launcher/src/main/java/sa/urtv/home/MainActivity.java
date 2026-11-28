@@ -982,7 +982,9 @@ public class MainActivity extends Activity {
             @Override public int headerBottom() {
                 View head = clockBlock == null ? null : (View) clockBlock.getParent();
                 if (head == null || head.getHeight() == 0) return bar(192);
-                return head.getTop() + Math.max(clockBlock.getBottom(), pillRow == null ? 0 : pillRow.getBottom()) + bar(24);
+                // the audit (H1, run auto-25: «بتوقيت الرياض» drawn over «مباريات اليوم»): the column's lowest drawn line, its moves counted
+                int column = clockBlock.getTop() + (clockBlock instanceof ViewGroup ? shownBottom((ViewGroup) clockBlock) : clockBlock.getHeight());
+                return head.getTop() + Math.max(column, pillRow == null ? 0 : pillRow.getBottom()) + bar(24);
             }
             @Override public boolean light() { return lightNow; }
             @Override public void focus(View target, String which, boolean has) {
@@ -1159,6 +1161,7 @@ public class MainActivity extends Activity {
         left.addView(weatherLine, sideLlp(-2, -2, dp(4), dp(1), 0, 0));
         weatherLine.addOnLayoutChangeListener((nv, n1, n2, n3, n4, n5, n6, n7, n8) -> keepNudgeClear());   // 4.4: the nudge strip keeps NUDGE_CLEAR_PX from it
         greetingLine = new Greeting(this, greeting, weatherLine, () -> resumed);
+        greetingLine.prayersShown(() -> homeCard != null && homeCard.prayerTimes());   // H5: no «الغروب» beside the prayer card's «المغرب»
 
         LinearLayout clockRow = new LinearLayout(this);
         clockRow.setGravity(Gravity.BOTTOM);
@@ -4659,8 +4662,10 @@ public class MainActivity extends Activity {
         }
         String cal = zone == null ? "" : ClockZone.calendar(zone[1], zone[2]);
         boolean other = zone != null && ClockZone.showLine(ClockZone.differs(tvTz, tz, ms), cal);
+        boolean zoneWas = zoneLine.getVisibility() == View.VISIBLE;
         zoneLine.setVisibility(other ? View.VISIBLE : View.GONE);
         if (other) zoneLine.setText(ClockZone.label(zone[0], cal));
+        if (zoneWas != other && homeCard != null) handler.post(homeCard::fit);   // H1: the football widgets start under the zone line once it shows
         if (gregFormat == null) {
             gregFormat = new SimpleDateFormat("d MMMM y", new Locale("ar"));   // 4.3.3: with the year, as the screensaver's line
             try {

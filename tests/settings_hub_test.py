@@ -187,7 +187,7 @@ check("phone control (4.4 «الجوالات المسموح لها», the owner'
       got.get("الجوالات المسموح لها") == "family" and 'row("الجوالات المسموح لها"' in st and '{"جوال", "الجوالات المسموح لها"}' in hub and '{"ريموت", "الجوالات المسموح لها"}' in hub
       and '{"تحكم من الجوال", "الجوالات المسموح لها"}' in hub and '{FAMILY, "الرقابة الأبوية", "تصفية المواقع", "الجوالات المسموح لها"}' in hub)
 check("its line does not claim it is off (this app cannot see the home's switch): the screen it opens shows the state",
-      'row("الجوالات المسموح لها", "متوقف' not in st and 'row("الجوالات المسموح لها", "التحكم من الجوال: تشغيله وإيقافه' in st)
+      'row("الجوالات المسموح لها", "متوقف' not in st and 'row("الجوالات المسموح لها", "ربط جوال والتحكم منه"' in st)
 check("opening it never fails silently: no home installed says so, and the target is exported in the home's manifest",
       "ثبّت الواجهة الرئيسية" in st[st.index("private void openPhoneControl()"):].split("\n    }\n")[0]
       and re.search(r'<activity\s+android:name="\.PhoneActivity"\s+android:exported="true"', (ROOT / "android/launcher/src/main/AndroidManifest.xml").read_text(encoding="utf-8")) is not None)

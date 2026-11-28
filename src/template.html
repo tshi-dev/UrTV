@@ -774,6 +774,7 @@
   #fb-wx-c{display:flex;flex-direction:column;justify-content:space-between}
   html.off-prayer .p-prayer{display:none}   /* 4.4 «أجزاء UrTV»: the screensaver's next prayer goes with the prayers */
   .fwc{display:flex;align-items:center;gap:calc(var(--u)*8);font-size:calc(var(--u)*28*var(--k));color:var(--fs)}
+  html.fb-short #fb-wx .fbc{padding-block:calc(var(--u)*10)}
   .fwm{display:flex;align-items:center;justify-content:space-between;gap:calc(var(--u)*16)}
   .fwi{font-size:calc(var(--u)*84*var(--k));color:var(--fam);display:flex}
   .fwt{display:flex;flex-direction:column;align-items:flex-end;min-width:0}
@@ -5265,6 +5266,9 @@ const FB_U = () => innerWidth / 1920;
 function fbLayout(){
   document.documentElement.style.setProperty('--u', FB_U() + 'px');
   document.documentElement.style.setProperty('--ft', FB.top + '');
+  // the audit (H2, run auto-25: the weather card's last row, الرياح والرطوبة والمحسوسة, cut at its edge): under a tall header the card is
+  // short and its padding does not shrink with --k: under a tall header the card's padding above and below is less, and the three stay inside it
+  document.documentElement.classList.toggle('fb-short', FB.top > 280);
 }
 // called by the launcher
 function fbTop(t){ FB.top = Math.max(150, Math.min(320, +t || 216)); fbLayout(); }

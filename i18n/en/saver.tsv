@@ -90,18 +90,13 @@
 العرض	Display
 الأرقام	Digits
 تنبيه قبل الأذان	Adhan alert
-مفعّل، شريط أعلى الشاشة آخر ١٠ دقائق، ويبقى لين الإقامة	On, A bar at the top for the last 10 minutes, then until iqama
 الشروق بعد الفجر	Sunrise after Fajr
-يعمل، بعد إقامة الفجر: كم باقي على الشروق، ثم نصف ساعة بعده	On, After Fajr iqama: time left to sunrise, then half an hour after
 شريط الوقت بين الصلاتين	Prayer progress bar
 مفعّل، خط رفيع تحت الصلاة الجاية يمتلي لين يجي وقتها	On, A thin line under the next prayer fills until its time
 الرطوبة والرياح	Humidity & wind
-يعمل، تحت المدينة أعلى اليسار	On, Under the city, top left
 أسماء الأشهر الميلادية	Gregorian month names
 شريط السنة تحت الساعة	Year strip under the clock
-يعمل، نقاط السنة تحت الساعة، واليوم يلمع	On, A dot for each day under the clock, today glowing
 المناسبة القادمة	Next occasion
-ظاهرة، تحت في النص: كم باقي على رمضان والأعياد، والإفطار والإمساك في رمضان	Shown, Bottom center: days to Ramadan and Eid, and iftar and suhoor in Ramadan
 مخفية، كم باقي على رمضان والأعياد	Hidden, days to Ramadan and Eid
 رجّع الشكل السابق	Previous look
 المظهر على الرئيسية	Looks on the home screen
@@ -110,7 +105,6 @@
 كل جزء وحده	Each part on its own
 موافق يثبّت، ورجوع يرجّع الشكل المحفوظ	OK keeps it, Back puts the saved look back
 لوحة المظهر على الرئيسية	Looks panel on home
-مفعّلة، تشوف الشكل على الرئيسية قبل ما تختار	On, see a look on the home screen before you choose
 زر رجّع الشكل السابق	Previous look button
 مفعّل، أول صف بعد تغيير الشكل	On, the first row after the look changes
 تبديل الشكل بلا وميض	Switch looks without flicker
@@ -119,7 +113,6 @@
 متوقف، كما كان	Off, as it was
 مفعّل، الرئيسية تتغير مرة وحدة بتلاشٍ قصير	On, the home screen changes once with a short fade
 تعتيم الليل	Night dimming
-يعمل، تغمق الشاشة من ٩ مساءً، وأغمق من ١١ إلى ٥ الفجر، وترجع ٧ الصباح	On, Dims from 9 pm, darkest 11 pm to 5 am, back at 7 am
 متوقف، نفس الإضاءة طول الليل	Off, Same brightness all night
 المناسبات الوطنية	National days
 حجم الساعة	Clock size
@@ -144,7 +137,6 @@
 الشاشة الرئيسية (تلفزيونك)	Home screen (Your TV)
 التحية والطقس	Greeting & weather
 الأذان	Adhan
-تشغيله وصوته وصوت الفجر والمختصر والإيقاف بأي زر والمستوى	On/off, voice, Fajr voice, short adhan, stop with any key, volume
 افتح تلاوة وأذان	Open Quran and Adhan
 القرآن والإذاعات ومواقيت الأذان	Quran, radio, and adhan times
 زر تلاوة وأذان	Quran and Adhan button
@@ -184,20 +176,15 @@
 بدء شاشة التوقف بعد	Start screensaver after
 التطبيق	App
 التحديث التلقائي للصفحة	Auto-update the page
-يعمل، عند بدء الشاشة، كل ٦ ساعات	On, When the screensaver starts, every 6 hours
 تحديث صفحة شاشة التوقف	Update screensaver page
 ينزّل أحدث صفحة للشاشة فقط، لتحديث التطبيقين: «تحديث تلفزيوني» في نفس القسم	Gets the latest page only, To update the apps: “Update Your TV” in this section
 النسخ التجريبية	Beta versions
 أرسل ملاحظة عن النسخة التجريبية	Send a note about the beta
 رمز QR يفتح صفحة الإرسال في جوالك، وتكتب ملاحظتك هناك	A QR code opens the send page on your phone, and you type your note there
-تعمل، تجيك التحديثات قبل الكل بعد ما نجربها. ممكن يكون فيها أخطاء بسيطة	On, you get updates before everyone, after we have tried them. They may have small bugs
-متوقفة، تجيك التحديثات قبل الكل بعد ما نجربها. ممكن يكون فيها أخطاء بسيطة	Off, you get updates before everyone, after we have tried them. They may have small bugs
 بترجع للنسخة العادية لما توصل لنفس الرقم أو أعلى	It goes back to the normal version once that reaches the same number or higher
 البطاقة الأولى	First card
 البطاقة الثانية	Second card
 البطاقة الثالثة	Third card
-يعمل، ما وقفته في نصه، تحت المفضلة	On, What you stopped halfway, under the favorites
-يعمل، يحتاج السماح مرة واحدة: اختيار	On, Needs your OK once: press OK
 لا شيء	None
 بدون	None
 # ---- on and off (OnOff)
@@ -744,7 +731,7 @@
 الباقين: غطّوا عيونكم	Everyone else: cover your eyes
 أنا جاهز	I am ready
 %s نقطة	%s points
-بدون جوالات: ريموت واحد يدور بينكم	No phones: one remote, passed around
+ريموت واحد يدور بينكم، إلا اللي عليها «جوال»	One remote, passed around, except the games marked «Phones»
 افتح اللعبة	Open the game
 الأقسام	Sections
 خمس خانات	Five Boxes
@@ -1107,7 +1094,6 @@
 الرئيسية وشاشة التوقف	Home and screensaver
 كل التلفزيون	Whole TV
 شكل كنبة والتخطيط، والخلفية والآفاق، والساعة والنص، والتطبيقات، والبطاقات، والصور.	Couch look and layout, background and horizons, clock and text, apps, cards, and photos.
-التحكم من الجوال: تشغيله وإيقافه وربط جوال، وفي الشاشة حالته الآن	Control from the phone: turn it on or off and pair a phone; the screen shows its state now
 الشكل: %s، والإضاءة: %s	Look: %s, lighting: %s
 مفعّل (التخطيط كنبة، الخلفية الآفاق، الساعة زجاجية، التطبيقات أيقونات؛ إيقافه يرجّع اختياراتك)	On (layout Couch, background horizons, glass clock, apps as icons; turning it off brings your own choices back)
 مفعّل (مخصّص: غيّرت صفًا من الأربعة؛ إيقافه يرجّع اختياراتك قبل التشغيل)	On (custom: you changed one of the four rows; turning it off brings back your choices from before)
@@ -1138,7 +1124,6 @@
 صافرة النهاية	Final whistle
 فوق تطبيق آخر	Over other apps
 هذا التلفزيون يخفي هذا الإذن، فيُعطى من الكمبيوتر	This TV hides this permission: it is given from the computer
-يعمل لفرقك	On, for your teams
 جرّب التنبيه	Try the alert
 يظهر الآن بفريقين للتجربة	Shows now, with two sample teams
 بدأت المباراة	Kick-off
@@ -1407,8 +1392,6 @@
 
 جديد	New
 %s سؤال	%s questions
-يعمل، لكنه يحتاج «إضافات تلفزيونك»	On, but it needs “UrTV Extras”
-يعمل لو سمحت للإضافة بالظهور فوق التطبيقات	On, if you allow the add-on to show over other apps
 «فوق تطبيق آخر» يحتاج «إضافات تلفزيونك»: بنفتح لك تثبيتها	“Over another app” needs “UrTV Extras”: opening its install for you
 «فوق تطبيق آخر» يحتاج «إضافات تلفزيونك»، ولم نقدر نفتح تثبيتها	“Over another app” needs “UrTV Extras”, and its install could not be opened
 إضافة أكثر من ٨ قد تبطّئ التلفزيون إذا كان ضعيف	More than 8 may slow a weak TV down
@@ -1621,9 +1604,7 @@ tvOS	tvOS
 محاذاة التطبيقات	Apps alignment
 يمين	Right
 يسار	Left
-يعمل، شريط في أعلى الشاشة آخر ١٥ دقيقة، ثم حتى الإقامة	On, A bar at the top for the last 15 minutes, then until iqama
 بطاقة المباريات لليوم فقط	Matches card: today only
-يعمل، مباريات اليوم فقط، كل مباراة في يومها	On, only today's matches, each on its day
 متوقف، أقرب مباريات الأسبوع	Off, the week's next matches
 جعفري (شيعة)	Jafari (Shia)
 الأذان لكل صلاة	Adhan for each prayer
@@ -1749,3 +1730,21 @@ tvOS	tvOS
 متوقف: %s	Off: %s
 متوقف: %s، والأذان ما يشتغل	Off: %s, no adhan
 %s (إيقافها يوقف الأذان)	%s (off stops the adhan)
+مفعّل لفرقك	On, for your teams
+مفعّل لو سمحت للإضافة بالظهور فوق التطبيقات	On if the add-on may show over apps
+مفعّل، كم باقي على الشروق بعد الفجر	On, the time to sunrise after Fajr
+مفعّل، تحت المدينة أعلى اليسار	On, under the city, top left
+مفعّل، من ٩ مساءً إلى ٧ الصباح	On, from 9 pm to 7 am
+مفعّل، آخر ١٥ دقيقة قبل الأذان	On, the last 15 minutes before the adhan
+مفعّل، آخر ١٠ دقائق قبل الأذان	On, the last 10 minutes before the adhan
+مفعّل، كل ٦ ساعات	On, every 6 hours
+مفعّل، لكنه يحتاج «إضافات تلفزيونك»	On, but it needs «Your TV add-ons»
+مفعّل، ما وقفته في نصه، تحت المفضلة	On, what you stopped halfway, under the favourites
+مفعّل، كل مباراة في يومها	On, each game on its own day
+مفعّل، نقاط السنة واليوم يلمع	On, the year's dots with today lit
+مفعّل، يحتاج السماح مرة واحدة: اختيار	On, it needs your OK once: press OK
+مفعّل، تشوف الشكل على الرئيسية قبل ما تختار	On, you see the look on the home before you choose
+مفعّل، تجيك التحديثات قبل الكل	On, you get updates before everyone
+ظاهرة، كم باقي على رمضان والأعياد	Shown, the time to Ramadan and the Eids
+تشغيله، والصوت، والإيقاف بأي زر	On or off, the voice, stopping with any key
+ربط جوال والتحكم منه	Link a phone and control from it

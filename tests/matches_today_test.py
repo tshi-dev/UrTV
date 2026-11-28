@@ -20,7 +20,7 @@ def text(p):
     return Path(p).read_text(encoding="utf-8")
 
 
-TITLE, ON, OFF = "بطاقة المباريات لليوم فقط", "يعمل، مباريات اليوم فقط، كل مباراة في يومها", "متوقف، أقرب مباريات الأسبوع"
+TITLE, ON, OFF = "بطاقة المباريات لليوم فقط", "مفعّل، كل مباراة في يومها", "متوقف، أقرب مباريات الأسبوع"
 prefs, rcv, st = text(SAVER / "Prefs.java"), text(SAVER / "SaverReceiver.java"), text(SAVER / "SettingsActivity.java")
 check("Prefs: off by default, and #mtoday=1 joins the page's address only when on (the address is as before when off)",
       'boolean matchesToday() { return sp.getBoolean("matchesToday", false); }' in prefs

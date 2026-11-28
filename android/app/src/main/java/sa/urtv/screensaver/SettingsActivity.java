@@ -363,8 +363,8 @@ public class SettingsActivity extends Activity {
             if (page != null) pageRows(); else searchRows();
             return;
         }
-        if (screen == null || on(SettingsHub.LANG))   // on the categories and on «اللغة والموقع» (the city)
-            if (prefs.cityNoteDue()) line(Location.note(Words.city(prefs.city())), look.accent, dp(14));   // still the install's Riyadh: say where to change it
+        // on the categories only: on «اللغة والموقع» the city's own row is right under it and said it twice (the audit, S14)
+        if (screen == null && prefs.cityNoteDue()) line(Location.note(Words.city(prefs.city())), look.accent, dp(14));   // still the install's Riyadh: say where to change it
         actions.clear();
 
         row("معاينة الشاشة", "شاهد الشاشة الآن", R.drawable.ic_play, new Runnable() { public void run() {
@@ -399,22 +399,22 @@ public class SettingsActivity extends Activity {
         row("الدوريات كاملة", leaguesLabel(), R.drawable.ic_trophy,
             new Runnable() { public void run() { startActivity(new Intent(SettingsActivity.this, LeaguesActivity.class)); } });   // 4.3.1 «اختر دورياتك»: one screen (the older dialogs below stay for saver.sh's sake)
         // «بطاقة المباريات لليوم فقط»: the «المباريات» card (beside the clock, on the home) shows only the games of the city's day; off by default
-        row("بطاقة المباريات لليوم فقط", prefs.matchesToday() ? "يعمل، مباريات اليوم فقط، كل مباراة في يومها" : "متوقف، أقرب مباريات الأسبوع", R.drawable.ic_trophy,
+        row("بطاقة المباريات لليوم فقط", prefs.matchesToday() ? "مفعّل، كل مباراة في يومها" : "متوقف، أقرب مباريات الأسبوع", R.drawable.ic_trophy,
             new Runnable() { public void run() { prefs.setMatchesToday(!prefs.matchesToday()); render(); } });
 
         row("رياضات أخرى", labels(Prefs.EVENTS, prefs.list("events"), "بدون"), R.drawable.ic_trophy,
             new Runnable() { public void run() { pickMany("events", "رياضات أخرى", Prefs.EVENTS, "بدون اختيار = بدون"); } });
 
         // 4.4 «تنبيه بداية المباراة» (the home app plays the whistle and draws the notice; this app keeps the choices)
-        row("تنبيه بداية المباراة", prefs.kickoff() ? "يعمل لفرقك" : "متوقف", R.drawable.ic_trophy,
+        row("تنبيه بداية المباراة", prefs.kickoff() ? "مفعّل لفرقك" : "متوقف", R.drawable.ic_trophy,
             new Runnable() { public void run() { prefs.setKickoff(!prefs.kickoff()); render(); } });
-        row("صوت التنبيه", prefs.kickoffWhistle() ? "يعمل" : "متوقف", R.drawable.ic_trophy,
+        row("صوت التنبيه", prefs.kickoffWhistle() ? "مفعّل" : "متوقف", R.drawable.ic_trophy,
             new Runnable() { public void run() { prefs.setKickoffWhistle(!prefs.kickoffWhistle()); render(); } });
-        row("عند الهدف", prefs.kickoffGoal() ? "يعمل" : "متوقف", R.drawable.ic_trophy,
+        row("عند الهدف", prefs.kickoffGoal() ? "مفعّل" : "متوقف", R.drawable.ic_trophy,
             new Runnable() { public void run() { prefs.setKickoffGoal(!prefs.kickoffGoal()); render(); } });
-        row("صافرة النهاية", prefs.kickoffEnd() ? "يعمل" : "متوقف", R.drawable.ic_trophy,
+        row("صافرة النهاية", prefs.kickoffEnd() ? "مفعّل" : "متوقف", R.drawable.ic_trophy,
             new Runnable() { public void run() { prefs.setKickoffEnd(!prefs.kickoffEnd()); render(); } });
-        row("فوق تطبيق آخر", prefs.kickoffOver() ? (Boolean.FALSE.equals(extrasHere) ? "يعمل، لكنه يحتاج «إضافات تلفزيونك»" : extrasHere == null ? "يعمل" : "يعمل لو سمحت للإضافة بالظهور فوق التطبيقات") : "متوقف", R.drawable.ic_trophy,
+        row("فوق تطبيق آخر", prefs.kickoffOver() ? (Boolean.FALSE.equals(extrasHere) ? "مفعّل، لكنه يحتاج «إضافات تلفزيونك»" : extrasHere == null ? "مفعّل" : "مفعّل لو سمحت للإضافة بالظهور فوق التطبيقات") : "متوقف", R.drawable.ic_trophy,
             new Runnable() { public void run() { prefs.setKickoffOver(!prefs.kickoffOver()); render(); if (prefs.kickoffOver()) askOverlay(); } });
         row("جرّب التنبيه", "يظهر الآن بفريقين للتجربة", R.drawable.ic_trophy,
             new Runnable() { public void run() { KickoffTry.show(SettingsActivity.this, prefs.kickoffWhistle()); } });
@@ -431,22 +431,22 @@ public class SettingsActivity extends Activity {
         row("التاريخ الهجري", prefs.hijriShown() ? "مفعّل" : "متوقف", R.drawable.ic_language,
             new Runnable() { public void run() { prefs.setHijriShown(!prefs.hijriShown()); render(); } });
         // OK goes round: on with 10 minutes, on with 15 minutes (4.4 beta 4), off
-        row("تنبيه قبل الأذان", prefs.adhanBar() ? (prefs.adhanLead() == 15 ? "يعمل، شريط في أعلى الشاشة آخر ١٥ دقيقة، ثم حتى الإقامة" : "مفعّل، شريط أعلى الشاشة آخر ١٠ دقائق، ويبقى لين الإقامة") : "متوقف", R.drawable.ic_eye,
+        row("تنبيه قبل الأذان", prefs.adhanBar() ? (prefs.adhanLead() == 15 ? "مفعّل، آخر ١٥ دقيقة قبل الأذان" : "مفعّل، آخر ١٠ دقائق قبل الأذان") : "متوقف", R.drawable.ic_eye,
             new Runnable() { public void run() {
                 if (!prefs.adhanBar()) { prefs.setAdhanLead(10); prefs.setAdhanBar(true); }
                 else if (prefs.adhanLead() == 10) prefs.setAdhanLead(15);
                 else prefs.setAdhanBar(false);
                 render(); } });
         // from PR #28 and the requests: each off until chosen, OK flips it
-        row("الشروق بعد الفجر", prefs.sunrise() ? "يعمل، بعد إقامة الفجر: كم باقي على الشروق، ثم نصف ساعة بعده" : "متوقف", R.drawable.ic_eye,
+        row("الشروق بعد الفجر", prefs.sunrise() ? "مفعّل، كم باقي على الشروق بعد الفجر" : "متوقف", R.drawable.ic_eye,
             new Runnable() { public void run() { prefs.setSunrise(!prefs.sunrise()); render(); } });
         row("شريط الوقت بين الصلاتين", prefs.prayerBar() ? "مفعّل، خط رفيع تحت الصلاة الجاية يمتلي لين يجي وقتها" : "متوقف", R.drawable.ic_eye,
             new Runnable() { public void run() { prefs.setPrayerBar(!prefs.prayerBar()); render(); } });
-        row("الرطوبة والرياح", prefs.wxMore() ? "يعمل، تحت المدينة أعلى اليسار" : "متوقف", R.drawable.ic_eye,
+        row("الرطوبة والرياح", prefs.wxMore() ? "مفعّل، تحت المدينة أعلى اليسار" : "متوقف", R.drawable.ic_eye,
             new Runnable() { public void run() { prefs.setWxMore(!prefs.wxMore()); render(); } });
         row("أسماء الأشهر الميلادية", Prefs.monthsLabel(prefs.months()), R.drawable.ic_language,
             new Runnable() { public void run() { prefs.setMonths("levant".equals(prefs.months()) ? "default" : "levant"); render(); } });
-        row("شريط السنة تحت الساعة", prefs.yearStrip() ? "يعمل، نقاط السنة تحت الساعة، واليوم يلمع" : "متوقف", R.drawable.ic_eye,
+        row("شريط السنة تحت الساعة", prefs.yearStrip() ? "مفعّل، نقاط السنة واليوم يلمع" : "متوقف", R.drawable.ic_eye,
             new Runnable() { public void run() { prefs.setYearStrip(!prefs.yearStrip()); render(); } });
         // «ألبوم صوري» (the card): how fast the photos change, and the date under each
         row("سرعة ألبوم صوري", "minute".equals(prefs.albumMode()) ? "كل دقيقة" : "ten".equals(prefs.albumMode()) ? "كل ١٠ ثوانٍ" : "كل ٤ ثوانٍ", R.drawable.ic_eye,
@@ -460,7 +460,7 @@ public class SettingsActivity extends Activity {
         row("حجم ألبوم صوري", "tall".equals(prefs.albumSize()) ? "طويل بضعف الارتفاع" : "عادي", R.drawable.ic_eye,
             new Runnable() { public void run() { prefs.setAlbumSize("tall".equals(prefs.albumSize()) ? "normal" : "tall"); render(); } });
         // «توهّج لون التطبيق»: the wash behind the focused app on the home; off until the person turns it on
-        row("توهّج لون التطبيق", "on".equals(prefs.glowMode()) ? "مفعّل" : "light".equals(prefs.glowMode()) ? "خفيف" : "مطفأ", R.drawable.ic_eye,
+        row("توهّج لون التطبيق", "on".equals(prefs.glowMode()) ? "مفعّل" : "light".equals(prefs.glowMode()) ? "خفيف" : "متوقف", R.drawable.ic_eye,
             new Runnable() { public void run() { prefs.setGlowMode("off".equals(prefs.glowMode()) ? "light" : "light".equals(prefs.glowMode()) ? "on" : "off"); render(); } });
         // A14 «الوضع الخفيف»: auto (a weak TV: little memory or few cores) by default; on and off are the person's. Less motion, slower refresh, smaller photos, no blur
         final String liteLine = "auto".equals(prefs.lite()) ? liteLineSeen() : null;   // 4.4 beta 3: the home's own line when this TV's signs turned it on
@@ -470,9 +470,9 @@ public class SettingsActivity extends Activity {
         row("نص أوضح", prefs.clearText() ? "مفعّل الكلام الرمادي بلون النص الكامل" : "متوقف", R.drawable.ic_eye,
             new Runnable() { public void run() { prefs.setClearText(!prefs.clearText()); render(); } });
         // shown by default as always; OK hides it (and shows it again)
-        row("المناسبة القادمة", prefs.occasion() ? "ظاهرة، تحت في النص: كم باقي على رمضان والأعياد، والإفطار والإمساك في رمضان" : "مخفية، كم باقي على رمضان والأعياد", R.drawable.ic_eye,
+        row("المناسبة القادمة", prefs.occasion() ? "ظاهرة، كم باقي على رمضان والأعياد" : "مخفية، كم باقي على رمضان والأعياد", R.drawable.ic_eye,
             new Runnable() { public void run() { prefs.setOccasion(!prefs.occasion()); render(); } });
-        row("تعتيم الليل", prefs.nightDim() ? "يعمل، تغمق الشاشة من ٩ مساءً، وأغمق من ١١ إلى ٥ الفجر، وترجع ٧ الصباح" : "متوقف، نفس الإضاءة طول الليل", R.drawable.ic_eye,
+        row("تعتيم الليل", prefs.nightDim() ? "مفعّل، من ٩ مساءً إلى ٧ الصباح" : "متوقف، نفس الإضاءة طول الليل", R.drawable.ic_eye,
             new Runnable() { public void run() { prefs.setNightDim(!prefs.nightDim()); render(); } });
         row("المناسبات الوطنية", Prefs.nationalLabel(prefs.national()), R.drawable.ic_eye,
             new Runnable() { public void run() { pickNational(); } });
@@ -498,7 +498,7 @@ public class SettingsActivity extends Activity {
         row("فرق التاريخ الهجري", HIJRI_CHOICES[prefs.hijriOffset() + HijriOffset.MAX], R.drawable.ic_clock,
             new Runnable() { public void run() { pickHijri(); } });
         // «إظهار الثواني» (off by default): the seconds on the screensaver's clock, small beside the minutes
-        row("إظهار الثواني", prefs.seconds() ? "يعمل" : "متوقف", R.drawable.ic_eye,
+        row("إظهار الثواني", prefs.seconds() ? "مفعّل" : "متوقف", R.drawable.ic_eye,
             new Runnable() { public void run() { prefs.setSeconds(!prefs.seconds()); render(); } });
         row("الخانة اليسرى", Prefs.slotLabel(prefs.slot()), R.drawable.ic_eye,
             new Runnable() { public void run() { pickSlot(); } });
@@ -512,7 +512,7 @@ public class SettingsActivity extends Activity {
             new Runnable() { public void run() { openMarkets(); } });
 
         header("الأسواق (أعلى اليسار)");
-        row("شريط الأسواق", prefs.marketsOn() ? "يعمل" : "مخفي، يبقى طقس اليوم فقط", R.drawable.ic_eye,
+        row("شريط الأسواق", prefs.marketsOn() ? "مفعّل" : "مخفي، يبقى طقس اليوم فقط", R.drawable.ic_eye,
             new Runnable() { public void run() { prefs.setMarketsOn(!prefs.marketsOn()); render(); sendBroadcast(new android.content.Intent(Prefs.CHANGED).setPackage(getPackageName())); } });   // 4.4 beta 4: a screensaver that is up takes it at once (ScreenDream, PagePush)
         row("الأسواق (" + arabicNum(prefs.markets().size()) + "/" + arabicNum(Prefs.MAX_MARKETS) + ")", marketsLabel(),
             R.drawable.ic_trophy, new Runnable() { public void run() { pickMarkets(); } });
@@ -624,7 +624,7 @@ public class SettingsActivity extends Activity {
         row("صفحات الأسهم والمباريات داكنة", prefs.pagesDark() ? "مفعّل، بالمظهر الداكن دائمًا" : "متوقف، تتبع مظهر الرئيسية", R.drawable.ic_eye,
             new Runnable() { public void run() { prefs.setPagesDark(!prefs.pagesDark()); render(); } });
         // 4.4 beta 2 (the owner, «with a protective way»): the new look items, each its own switch, off by default and after an update
-        row("لوحة المظهر على الرئيسية", prefs.uiPanel() ? "مفعّلة، تشوف الشكل على الرئيسية قبل ما تختار" : "متوقفة", R.drawable.ic_eye,
+        row("لوحة المظهر على الرئيسية", prefs.uiPanel() ? "مفعّل، تشوف الشكل على الرئيسية قبل ما تختار" : "متوقف", R.drawable.ic_eye,
             new Runnable() { public void run() { prefs.setUiPanel(!prefs.uiPanel()); render(); } });
         row("زر رجّع الشكل السابق", prefs.uiUndo() ? "مفعّل، أول صف بعد تغيير الشكل" : "متوقف", R.drawable.ic_eye,
             new Runnable() { public void run() { prefs.setUiUndo(!prefs.uiUndo()); render(); } });
@@ -636,14 +636,14 @@ public class SettingsActivity extends Activity {
             row(HOME_CARD_NAMES[k], Prefs.panelLabel(prefs.homePanelAt(k), "بدون"), R.drawable.ic_eye,
                 new Runnable() { public void run() { pickPanel(place); } });
         }
-        row("التحية والطقس", prefs.greeting() ? "تعمل" : "متوقفة", R.drawable.ic_eye,
+        row("التحية والطقس", prefs.greeting() ? "مفعّل" : "متوقف", R.drawable.ic_eye,
             new Runnable() { public void run() { prefs.setGreeting(!prefs.greeting()); render(); } });
         // PR #45 «اسمك في التحية»: a name after the greeting, empty (the default) is the greeting alone
         row("اسمك في التحية", prefs.greetingName().isEmpty() ? "بدون اسم" : prefs.greetingName(), R.drawable.ic_eye,
             new Runnable() { public void run() { askGreetingName(); } });
         // the adhan's settings (on or off, the voice, the Fajr voice, short, any key stops it, the volume): the same screen as the player's adhan tab,
         // opened through the home (behind its family lock), so they are reachable with the «تلاوة وأذان» button hidden too
-        row("الأذان", "تشغيله وصوته وصوت الفجر والمختصر والإيقاف بأي زر والمستوى", R.drawable.ic_settings,
+        row("الأذان", "تشغيله، والصوت، والإيقاف بأي زر", R.drawable.ic_settings,
             new Runnable() { public void run() { openAdhanSettings(); } });
         // 4.4 beta 4: the sound and the screen of each of the five prayers apart (the home's screen, behind the same lock)
         row("الأذان لكل صلاة", prayersValue(), R.drawable.ic_settings,
@@ -725,7 +725,7 @@ public class SettingsActivity extends Activity {
             new Runnable() { public void run() { openDockEdit(); } });
         // first in «الجوال والتحديث» (TV6 row 21: a tester did not find it, and phone control stayed on). This app cannot see the home's
         // switch, so the line never says «متوقف»: the screen it opens shows the real state, with «إيقاف التحكم من الجوال» on it
-        row("الجوالات المسموح لها", "التحكم من الجوال: تشغيله وإيقافه وربط جوال، وفي الشاشة حالته الآن", R.drawable.ic_settings,
+        row("الجوالات المسموح لها", "ربط جوال والتحكم منه", R.drawable.ic_settings,
             new Runnable() { public void run() { openPhoneControl(); } });
         // «كل التطبيقات»: the home screen's «تعديل التطبيقات», or the order by name again (what is hidden stays hidden)
         row("ترتيب كل التطبيقات", "تحريكها وإخفاؤها وإرجاع المخفية، أو الرجوع للترتيب الأصلي", R.drawable.ic_star,
@@ -802,7 +802,7 @@ public class SettingsActivity extends Activity {
             row("إذن شاشة التوقف", OverlayNeed.WHY, R.drawable.ic_screensaver, new Runnable() { public void run() { askSaverOverlay(); } });
 
         header("التطبيق");
-        View autoRow = row("التحديث التلقائي للصفحة", prefs.autoUpdate() ? "يعمل، عند بدء الشاشة، كل ٦ ساعات" : "متوقف", R.drawable.ic_sync, new Runnable() { public void run() {
+        View autoRow = row("التحديث التلقائي للصفحة", prefs.autoUpdate() ? "مفعّل، كل ٦ ساعات" : "متوقف", R.drawable.ic_sync, new Runnable() { public void run() {
             prefs.setAutoUpdate(!prefs.autoUpdate()); render(); } });
         // a switch that flips with one OK sat right under the «تحديث تلفزيوني» action (the tester flipped it by mistake): a clear gap of 32 above it
         if (autoRow != null && autoRow.getLayoutParams() instanceof android.view.ViewGroup.MarginLayoutParams) ((android.view.ViewGroup.MarginLayoutParams) autoRow.getLayoutParams()).topMargin += dp(32);
@@ -810,7 +810,7 @@ public class SettingsActivity extends Activity {
         View last = row("تحديث صفحة شاشة التوقف", "ينزّل أحدث صفحة للشاشة فقط، لتحديث التطبيقين: «تحديث تلفزيوني» في نفس القسم", R.drawable.ic_sync, new Runnable() { public void run() { updateNow(); } });
         if (last.getParent() == list) { TextView ver = note(last, Updater.versionLines(this)); ver.setFocusable(true); ver.setClickable(true); ver.setOnClickListener(v -> versionTap()); }
         // «النسخ التجريبية» (4.3.3): the beta release first, off by default. Off again never downgrades: the newer build stays until the normal one reaches its number
-        row("النسخ التجريبية", prefs.betaOn() ? "تعمل، تجيك التحديثات قبل الكل بعد ما نجربها. ممكن يكون فيها أخطاء بسيطة" : "متوقفة، تجيك التحديثات قبل الكل بعد ما نجربها. ممكن يكون فيها أخطاء بسيطة", R.drawable.ic_sync, new Runnable() { public void run() { toggleBeta(); } });
+        row("النسخ التجريبية", prefs.betaOn() ? "مفعّل، تجيك التحديثات قبل الكل" : "متوقف", R.drawable.ic_sync, new Runnable() { public void run() { toggleBeta(); } });
         // only while it is on: the report screen (its QR code carries «channel: beta» and the versions), the person types their words on the phone page
         if (prefs.betaOn()) row("أرسل ملاحظة عن النسخة التجريبية", "رمز QR يفتح صفحة الإرسال في جوالك، وتكتب ملاحظتك هناك", R.drawable.ic_settings,
             new Runnable() { public void run() { openReport(); } });
@@ -3096,7 +3096,7 @@ public class SettingsActivity extends Activity {
 
     private String watchNextLabel() {
         if (!prefs.watchNext()) return "متوقف";
-        return homeMayReadWatchNext() ? "يعمل، ما وقفته في نصه، تحت المفضلة" : "يعمل، يحتاج السماح مرة واحدة: اختيار";
+        return homeMayReadWatchNext() ? "مفعّل، ما وقفته في نصه، تحت المفضلة" : "مفعّل، يحتاج السماح مرة واحدة: اختيار";
     }
 
     /** The home app's one question for the TV's list («السماح»); it closes by itself when that is allowed already. */

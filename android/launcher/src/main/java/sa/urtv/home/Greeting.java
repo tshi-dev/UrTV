@@ -39,6 +39,10 @@ final class Greeting {
 
     private final java.util.function.BooleanSupplier inFront;   // the home screen is resumed (NetGate)
 
+    /** the audit (H5, «ما تخلي شيء مكرر»): with today's prayer times on the screen, its «المغرب» is the sunset, and «الغروب» is not said again */
+    private java.util.function.BooleanSupplier prayersShown = () -> false;
+    void prayersShown(java.util.function.BooleanSupplier shown) { prayersShown = shown; }
+
     Greeting(Context context, TextView greeting, TextView weather, java.util.function.BooleanSupplier inFront) {
         this.inFront = inFront;
         this.context = context;
@@ -67,8 +71,8 @@ final class Greeting {
             return;
         }
         if (sameCity && sp.contains("code") && System.currentTimeMillis() - at < STALE_MS && d != null) {
-            String line = GreetingText.weather(sp.getInt("code", -1), GreetingText.seenDust(sp.getFloat("dust", 0), sp.getFloat("vis", -1)), s.city, sp.getFloat("temp", 0), s.latin)
-                    + "\n" + GreetingText.sun(S.tv(d.sunLabel), d.sunClock, s.latin, s.clock24);   // «الشروق» / «الغروب»: DayParts keeps the Arabic (MainActivity compares it)
+            String line = GreetingText.weather(sp.getInt("code", -1), GreetingText.seenDust(sp.getFloat("dust", 0), sp.getFloat("vis", -1)), s.city, sp.getFloat("temp", 0), s.latin);
+            if (!("الغروب".equals(d.sunLabel) && prayersShown.getAsBoolean())) line += "\n" + GreetingText.sun(S.tv(d.sunLabel), d.sunClock, s.latin, s.clock24);   // «الشروق» / «الغروب»: DayParts keeps the Arabic (MainActivity compares it)
             weather.setText(line);
             weather.setVisibility(android.view.View.VISIBLE);
             showIcon(GreetingText.icon(sp.getInt("code", -1), "الشروق".equals(d.sunLabel)));   // the next sun is the sunrise: it is night
