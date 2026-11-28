@@ -1051,6 +1051,7 @@ html.lowram .photo.settle, html.lowram .week ul.flip li, html.lowram .mrow.flip 
 </main>
 
 <script>
+if (!Object.fromEntries) Object.fromEntries = function(it){ const o = {}; for(const e of it) o[e[0]] = e[1]; return o; };
 let PAGE_SKIPPED = false, PAGE_FULL = false;
 (function(){
   const real = window.setInterval.bind(window);
