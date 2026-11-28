@@ -229,6 +229,7 @@ public class MusicService extends Service implements AudioManager.OnAudioFocusCh
 
     /** Playing began (or came back): the tick and the Wi-Fi lock on, no pause timer. */
     private void playbackStarted() {
+        if (source == Prefs.SOURCE_SURAH || source == Prefs.SOURCE_RADIO) prefs.setPlayingAt(System.currentTimeMillis());   // «was playing»: cleared by every pause and stop of the person's (ResumeOffer)
         handler.removeCallbacks(pausedStop);
         endFocusWatch();
         if (!foregroundStarted) foreground();   // Android refused it at the start (a command from the background): asked again while it plays
@@ -238,6 +239,7 @@ public class MusicService extends Service implements AudioManager.OnAudioFocusCh
 
     /** Playing stopped for now (a pause, another app's sound, an error): the tick and the lock off, the pause timer on. */
     private void playbackPaused() {
+        prefs.setPlayingAt(0);
         stopTick();
         releaseWifi();
         handler.removeCallbacks(pausedStop);
@@ -328,6 +330,15 @@ public class MusicService extends Service implements AudioManager.OnAudioFocusCh
     }
 
     static void resumeLast(Context c) { start(c, intent(c, ACTION_RESUME)); }
+
+    /** the sound was cut off (the home's process ended while a recitation or a station played): the home's bar offers to go on (ResumeOffer) */
+    public static boolean cutOff(Context c) { Prefs p = new Prefs(c); return ResumeOffer.due(p.playingAt(), System.currentTimeMillis(), carryOurPlaying(), p.source()); }
+    /** the cut-off sound was a station (else a recitation) */
+    public static boolean cutOffWasRadio(Context c) { return new Prefs(c).source() == Prefs.SOURCE_RADIO; }
+    /** «لاحقاً»: the offer is dropped */
+    public static void forgetCutOff(Context c) { new Prefs(c).setPlayingAt(0); }
+    /** «كمّل»: goes on from where it was (the same as «متابعة»), only when the person asked */
+    public static void resumeCutOff(Context c) { forgetCutOff(c); resumeLast(c); }
     static void pause(Context c) { start(c, intent(c, ACTION_PAUSE)); }
     static void resume(Context c) { start(c, intent(c, ACTION_RESUME)); }
     static void toggle(Context c) { start(c, intent(c, ACTION_TOGGLE)); }
@@ -1245,6 +1256,7 @@ public class MusicService extends Service implements AudioManager.OnAudioFocusCh
     }
 
     void stopPlayback() {
+        prefs.setPlayingAt(0);
         resetSeekBurst();
         if (source != Prefs.SOURCE_ADHAN) save();
         adhanVolumeBack();
