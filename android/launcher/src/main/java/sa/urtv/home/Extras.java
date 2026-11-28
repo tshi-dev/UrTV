@@ -158,7 +158,7 @@ public final class Extras {
     /** 4.4 beta 2: whether this app holds the HOME role (Android 10+; RoleManager answers it for the app itself): ExtrasWords.ROLE_OURS, ROLE_NOT or ROLE_UNKNOWN */
     private static final String ROLE_HOME = "android.app.role.HOME";
 
-    static String homeRole(Context c) {
+    public static String homeRole(Context c) {
         if (android.os.Build.VERSION.SDK_INT < 29) return ExtrasWords.ROLE_UNKNOWN;
         try {   // RoleManager by name (public API of Android 10; the class is not in the older SDKs the compile guards build against)
             Object rm = c.getSystemService("role");
