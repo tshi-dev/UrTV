@@ -14,6 +14,7 @@ const GLYPH = {
   rescue: [...TV, { d: 'M47,48a8.5,8.5 0 1,1 1.5,9', stroke: W * 0.8, cap: 'round' },
                   { d: 'M42,44l5,4.5l-5.5,3.5', stroke: W * 0.8, cap: 'round', join: 'round' }],
   extras: [...TV, { d: 'M54,43v16M46,51h16', stroke: W * 0.9, cap: 'round' }],
+  doctor: [...TV, { d: 'M45,51.5l6,6l12,-12', stroke: W, cap: 'round', join: 'round' }],
 };
 // the apps of this repository that take the family now (the home waits for the owner's pick of its banner)
 const APPS = [
@@ -21,6 +22,8 @@ const APPS = [
   { app: 'rescue', module: 'rescue', name: 'ic_rescue' },
   { app: 'extras', module: 'extras', name: 'ic_extras' },
 ];
+// the doctor app lives in its own repository: its set is written to docs/mockups/icons/doctor/res for its session to copy (name ic_launcher)
+const HANDOFF = [{ app: 'doctor', dir: 'docs/mockups/icons/doctor/res', name: 'ic_launcher' }];
 const BG = ['#14402F', '#061A12'], GOLD = ['#F6DC9E', '#C79A43'];
 
 const AAPT = 'xmlns:android="http://schemas.android.com/apk/res/android" xmlns:aapt="http://schemas.android.com/aapt"';
@@ -55,8 +58,8 @@ function svg(app) {
 function write(rel, text) { const p = path.join(ROOT, rel); fs.mkdirSync(path.dirname(p), { recursive: true }); fs.writeFileSync(p, text); }
 
 (async () => {
-  for (const { app, module, name } of APPS) {
-    const res = `android/${module}/src/main/res`;
+  const sets = [...APPS.map(a => ({ ...a, res: `android/${a.module}/src/main/res` })), ...HANDOFF.map(h => ({ ...h, res: h.dir }))];
+  for (const { app, name, res } of sets) {
     // drawable-v26: the gradients need API 24, and only the adaptive icon (API 26) reads them; older TVs take the PNGs
     write(`${res}/drawable-v26/${name}_bg.xml`, background());
     write(`${res}/drawable-v26/${name}_fg.xml`, foreground(app));
@@ -65,10 +68,11 @@ function write(rel, text) { const p = path.join(ROOT, rel); fs.mkdirSync(path.di
   }
   const { chromium } = require('playwright');
   const b = await chromium.launch();
-  for (const { app, module, name } of APPS) for (const [dir, px] of [['xhdpi', 96], ['xxhdpi', 144], ['xxxhdpi', 192]]) {
+  for (const { app, name, res } of sets) for (const [dir, px] of [['mdpi', 48], ['hdpi', 72], ['xhdpi', 96], ['xxhdpi', 144], ['xxxhdpi', 192]]) {
+    if (!res.startsWith('docs/') && px < 96) continue;   // our apps ship xhdpi and up (TVs), as before
     const p = await b.newPage({ viewport: { width: px, height: px }, deviceScaleFactor: 1 });
     await p.setContent(`<html><body style="margin:0;background:transparent">${svg(app).replace('<svg ', `<svg width="${px}" height="${px}" `)}</body></html>`);
-    await p.screenshot({ path: path.join(ROOT, `android/${module}/src/main/res/mipmap-${dir}/${name}.png`), omitBackground: true });
+    await p.screenshot({ path: path.join(ROOT, `${res}/mipmap-${dir}/${name}.png`), omitBackground: true });
     await p.close();
   }
   await b.close();
