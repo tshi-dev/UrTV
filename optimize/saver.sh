@@ -64,6 +64,8 @@
 #   optimize/saver.sh updatechannel next          TESTING ONLY (agents; no screen shows it): «تحديث تلفزيوني» reads the version and the APKs from the apk-next release instead
 #                                                  of apk-latest: next or latest (default). `beta` is the same as the row «النسخ التجريبية» (the apk-beta release). Same signature, newer-version and permission checks. Put it back to latest after
 #   optimize/saver.sh reciter-fav add sudais      the ★ of a reciter in «تلاوة وأذان ← القرّاء» (`remove` takes it off): favourites are listed first under «المفضلون»; ids are `optimize/music.sh reciters`'s
+#   optimize/saver.sh overlay allow               4.4 GitHub #42: lets the screensaver draw over apps (appops SYSTEM_ALERT_WINDOW). Only on a TV whose screensaver
+#                                                  flashes and closes (a Google TV such as TCL 65C7K) and whose own screen hides «الظهور فوق التطبيقات»; `overlay` alone says the state
 #   optimize/saver.sh teamcap 80                  «حد الفرق»: how many teams can be followed: 40 (the default), 80, or 0 = no limit. Only when the person asked,
 #                                                  after telling them «كثرة الفرق ممكن تبطّئ التلفزيون» (many teams can slow the TV down); going back down removes no team
 #   optimize/saver.sh matchestoday on             «بطاقة المباريات لليوم فقط»: the «المباريات» card shows only today's games (off, the default: the week's)
@@ -316,6 +318,12 @@ case "${1:-}" in
     case "$id" in *[!A-Za-z0-9_-]*|"") echo "!! a reciter id is letters, digits, - and _ (optimize/music.sh reciters lists them)" >&2; exit 2 ;; esac
     out=$("$PY" -I optimize/tv.py "am broadcast -n sa.urtv.home/.tilawah.MusicReceiver -a sa.urtv.home.RECITER_FAV --es op $op --es id $id" | tr -d '\r') || out=""
     case "$out" in *'data="saved'*) echo "reciter-fav $op $id: saved" ;; *error:*) echo "!! $(printf '%s\n' "$out" | sed -n 's/.*data="\(error:[^"]*\)".*/\1/p' | sed -n 1p)"; exit 1 ;; *) echo "!! the home app did not answer (is it installed and up to date?)"; exit 1 ;; esac ;;
+  overlay) case "${2:-}" in   # 4.4 GitHub #42 (R-473): the grant survives a reboot now that the app declares it
+      allow) "$PY" -I optimize/tv.py "appops set sa.urtv.screensaver SYSTEM_ALERT_WINDOW allow" > /dev/null || exit 1
+             "$PY" -I optimize/tv.py "appops get sa.urtv.screensaver SYSTEM_ALERT_WINDOW" | tr -d '\r' ;;
+      ""|status) "$PY" -I optimize/tv.py "appops get sa.urtv.screensaver SYSTEM_ALERT_WINDOW" | tr -d '\r' ;;
+      *) echo "usage: optimize/saver.sh overlay [allow]   (only on a TV whose screensaver flashes and closes, GitHub #42)"; exit 1 ;;
+    esac ;;
   teamcap) case "${2:-}" in   # 4.4 the owner (R-472) «حد الفرق»
       40) set1 teamcap 40 ;;
       80|0) echo "Many teams can slow the TV down («كثرة الفرق ممكن تبطّئ التلفزيون»): raise it only when the person asked, after telling them."; set1 teamcap "$2" ;;

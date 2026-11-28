@@ -240,6 +240,8 @@ the phone page's key, «مركز التحكم» the control centre's row that op
 —— بدء شاشة التوقف بعد [شاشة التوقف]
    مثال للوكيل: optimize/saver.sh idle <1, 2, 5, 10, 15, 30>  (minutes; the TV's own timer)
    صفحة الجوال: saver_idle
+—— إذن شاشة التوقف [شاشة التوقف]
+   مثال للوكيل: optimize/saver.sh overlay allow  (only on such a TV whose own screen hides «الظهور فوق التطبيقات»; `overlay` alone says the state)
 —— تصميم شاشة التوقف [شاشة التوقف]
    الخيارات: معلومات / نظيفة / ساعة كبيرة / لوحة / خط اليوم
    الأصل: معلومات

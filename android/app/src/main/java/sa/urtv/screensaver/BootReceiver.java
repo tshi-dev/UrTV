@@ -20,7 +20,7 @@ public class BootReceiver extends BroadcastReceiver {
         final Context app = c.getApplicationContext();
         new Thread(() -> {
             try {
-                BootFirst.atBoot(app);   // 4.4: what this app notes at a boot (R-470: the settings' style while a fresh install is still fresh)
+                BootFirst.atBoot(app);   // 4.4: what this app notes at a boot (R-470 the settings style, R-473 the overlay grant)
                 IdleKeep.atBoot(app);
             } catch (RuntimeException ignored) { } finally { pr.finish(); }
         }, "idle-keep").start();

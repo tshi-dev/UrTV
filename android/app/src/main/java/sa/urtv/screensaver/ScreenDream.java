@@ -72,6 +72,7 @@ public class ScreenDream extends DreamService {
         setScreenBright(true);
         attached = true;
         started = false;
+        shownAt = android.os.SystemClock.elapsedRealtime(); dreamKeyed = false; ownEnd = false;   // 4.4 #42 (R-473): how this dream ends (OverlayNeed)
         if (getWindow() != null) getWindow().setBackgroundDrawable(new android.graphics.drawable.ColorDrawable(0xFF040E09));   // the page's ground while the launcher answers
         // «إعداد تلفزيوني» waits for «السماح بتصحيح USB؟»: never cover it (it would stay stuck). Asked on a thread (DreamHold): with the launcher not running the
         // query waits for its process to start, and on the main thread that was an ANR
@@ -86,6 +87,8 @@ public class ScreenDream extends DreamService {
     }
 
     private boolean started, entered;
+    private long shownAt = -1;
+    private boolean dreamKeyed, ownEnd;   // a key ended it, or we did (the setup's prompt, a lost renderer): not the flash of #42
     private final Runnable holdWait = () -> holdAnswer(false, false);
 
     /** the launcher's answer (or the wait's end, DreamHold.WAIT_MS): start the page once, or end the dream while the setup holds it */
@@ -94,6 +97,7 @@ public class ScreenDream extends DreamService {
         if (answered) snapHandler.removeCallbacks(holdWait);
         if (d == DreamHold.END) {
             android.util.Log.i("UrTVSaver", "not started: the setup is waiting for the debugging prompt");
+            ownEnd = true;
             finish();
             return;
         }
@@ -116,6 +120,7 @@ public class ScreenDream extends DreamService {
     @Override
     public boolean dispatchKeyEvent(KeyEvent e) {
         boolean down = e.getAction() == KeyEvent.ACTION_DOWN;
+        dreamKeyed = true;
         org.json.JSONObject adhan = down ? NowPlayingBridge.adhanKnown(this) : null;   // asked on a press only; a release belongs to the one before
         boolean live = adhan != null && adhan.optBoolean("live");
         int d = adhanKeys.decide(e.getKeyCode(), e.getAction(), e.getRepeatCount(), live, new Prefs(this).adhanBar(), true, live && adhan.optBoolean("any"));
@@ -143,6 +148,7 @@ public class ScreenDream extends DreamService {
             if (!NowPlayingBridge.setupRunning(app)) return;
             snapHandler.post(() -> {
                 if (!attached) return;
+                ownEnd = true;
                 if (android.os.Build.VERSION.SDK_INT >= 29) wakeUp(); else finish();
             });
         }, "dream-setup");
@@ -196,11 +202,14 @@ public class ScreenDream extends DreamService {
         if (dead != web) return;
         web = null;
         if (attached && guard.mayCreate(android.os.SystemClock.elapsedRealtime())) show(false);
-        else finish();
+        else { ownEnd = true; finish(); }
     }
 
     @Override
     public void onDetachedFromWindow() {
+        if (attached && shownAt >= 0) {   // 4.4 #42 (R-473): a dream that ends by itself at once, twice in a row, says the TV needs the overlay grant
+            try { new Prefs(this).noteDreamEnd(android.os.SystemClock.elapsedRealtime() - shownAt, dreamKeyed, ownEnd); } catch (RuntimeException ignored) { }
+        }
         NowPlayingBridge.clearCard();
         if (entered) Showing.leave();
         entered = false;

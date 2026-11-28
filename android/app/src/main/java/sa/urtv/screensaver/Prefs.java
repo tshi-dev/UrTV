@@ -119,6 +119,37 @@ final class Prefs {
         return Build.VERSION.SDK_INT >= 23 && Settings.System.canWrite(c);
     }
 
+    /**
+     * 4.4 GitHub #42 (R-473, OverlayNeed): does this TV need «الظهور فوق التطبيقات» for the screensaver now? Reads the grant; while it is
+     * there it is noted (overlayHad), so a grant lost later is known, and the request may open by itself again once.
+     */
+    boolean overlayNeeded() {
+        boolean can = Build.VERSION.SDK_INT < 23 || Settings.canDrawOverlays(ctx);
+        if (can) {
+            if (!sp.getBoolean("overlayHad", false) || sp.getBoolean("overlayAsked", false) || sp.getInt("overlayQuick", 0) != 0)
+                sp.edit().putBoolean("overlayHad", true).putBoolean("overlayAsked", false).putInt("overlayQuick", 0).apply();
+            return false;
+        }
+        return OverlayNeed.needed(Build.VERSION.SDK_INT, googleTv(), false, sp.getBoolean("overlayHad", false), sp.getInt("overlayQuick", 0));
+    }
+    /** one more end of our screensaver (OverlayNeed.afterDream) */
+    void noteDreamEnd(long shownMs, boolean keyed, boolean own) {
+        int before = sp.getInt("overlayQuick", 0), after = OverlayNeed.afterDream(before, shownMs, keyed, own);
+        if (after != before) sp.edit().putInt("overlayQuick", after).apply();
+    }
+    boolean overlayAsked() { return sp.getBoolean("overlayAsked", false); }
+    void setOverlayAsked() { sp.edit().putBoolean("overlayAsked", true).apply(); }
+    /** a Google TV build (its home, launcherx, is on the TV); asked once per process (a settings redraw reads it) */
+    private static Boolean googleTvKnown;
+    private boolean googleTv() {
+        Boolean g = googleTvKnown;
+        if (g == null) {
+            try { ctx.getPackageManager().getPackageInfo("com.google.android.apps.tv.launcherx", 0); g = true; } catch (Exception e) { g = false; }
+            googleTvKnown = g;
+        }
+        return g;
+    }
+
     /** The TV's idle delay in ms; readable without any permission. -1 when the TV does not say. */
     static long idleMs(Context c) {
         return Settings.System.getLong(c.getContentResolver(), Settings.System.SCREEN_OFF_TIMEOUT, -1);

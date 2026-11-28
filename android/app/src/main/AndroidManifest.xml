@@ -6,6 +6,9 @@
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <!-- only used if the owner allows it for the app: the idle delay row and SaverReceiver's idle -->
     <uses-permission android:name="android.permission.WRITE_SETTINGS" />
+    <!-- 4.4 GitHub #42 (R-473): on some Google TVs (TCL 65C7K) the screensaver only runs while this app may draw over apps. Declared, so the
+         grant survives a reboot (undeclared, Android dropped it at each boot); asked only on a TV that needs it (OverlayNeed), never granted by itself -->
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
 
     <!-- the launcher (same signing key) reads the settings for its home-screen card -->
     <permission

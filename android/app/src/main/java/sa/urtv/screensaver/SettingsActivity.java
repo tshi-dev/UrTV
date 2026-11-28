@@ -244,6 +244,8 @@ public class SettingsActivity extends Activity {
         if (back != null) { returnWant = back; returnUntil = System.currentTimeMillis() + 4000; }   // the home answers a moment later and the list is built again: that build keeps the focus on this row too, until a key is pressed (it landed on the row above)
         forceWant = back;   // back from another screen: the focus goes to the row or button that opened it, in the SAME render that builds the list again (it landed on the one above)
         render();
+        // 4.4 #42 (R-473): a TV that needs «الظهور فوق التطبيقات» for the screensaver is asked once by itself (OverlayNeed), never another TV
+        if (OverlayNeed.openByItself(prefs.overlayNeeded(), prefs.overlayAsked())) askSaverOverlay();
         // the home writes its state a moment after «UrTV النظيف» closes: one more question 1.5 s later, drawn only when the answer differs
         root.postDelayed(() -> { if (!isFinishing() && !isDestroyed()) { cleanAsked = false; homeCleanSeen(); } }, 1500);
     }
@@ -793,6 +795,8 @@ public class SettingsActivity extends Activity {
             new Runnable() { public void run() { openHome("photos"); } });
         row("بدء شاشة التوقف بعد", idleLabel(), R.drawable.ic_screensaver,
             new Runnable() { public void run() { pickIdle(); } });
+        if (prefs.overlayNeeded())   // 4.4 #42 (R-473): only on a TV that needs it
+            row("إذن شاشة التوقف", OverlayNeed.WHY, R.drawable.ic_screensaver, new Runnable() { public void run() { askSaverOverlay(); } });
 
         header("التطبيق");
         View autoRow = row("التحديث التلقائي للصفحة", prefs.autoUpdate() ? "يعمل، عند بدء الشاشة، كل ٦ ساعات" : "متوقف", R.drawable.ic_sync, new Runnable() { public void run() {
@@ -2556,6 +2560,21 @@ public class SettingsActivity extends Activity {
             if (getPackageManager().resolveActivity(i, 0) != null) { startActivity(i); return; }
         } catch (RuntimeException ignored) { }
         toast("هذا التلفزيون يخفي هذا الإذن، فيُعطى من الكمبيوتر");
+    }
+
+    /** 4.4 #42 (R-473): the plain request; «اسمح» opens the TV's own screen for this app (a TV that hides it: the computer's command, said) */
+    private void askSaverOverlay() {
+        prefs.setOverlayAsked();
+        new Dlg(this).setTitle(OverlayNeed.TITLE).setMessage(OverlayNeed.WHY + "\n" + OverlayNeed.HOW)
+            .setPositiveButton("اسمح", (d, w) -> {
+                Intent i = new Intent("android.settings.action.MANAGE_OVERLAY_PERMISSION", Uri.parse("package:" + getPackageName()));
+                try {
+                    if (getPackageManager().resolveActivity(i, 0) != null) { startActivity(i); return; }
+                } catch (RuntimeException ignored) { }
+                toast(OverlayNeed.HIDDEN);
+            })
+            .setNegativeButton("مو الحين", null)
+            .show();
     }
 
     /** «إضافات تلفزيونك» is installed (only read); never in a render: extrasLook asks on a thread */
