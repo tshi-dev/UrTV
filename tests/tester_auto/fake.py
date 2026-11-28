@@ -45,6 +45,8 @@ MARKERS = ["بحث في الإعدادات", "الأذان لكل صلاة", "ا
 # the home as a person meets it after Home (the reach step): the apps row, a card in the couch strip, the header's «مركز التحكم»; its panel opens on a
 # round toggle, «الإعدادات» is the first row under them; OK on it opens our settings
 HOME_LABEL = {"apps": "يوتيوب", "card": "الأسهم", "nudge": "اختر المدينة", "center": "مركز التحكم", "pill": "تلاوة وأذان", "toggle": "البلوتوث", "settings": "الإعدادات"}
+HOME_BOX = {"apps": (1460, 780, 1760, 950), "card": (100, 560, 1820, 740), "center": (300, 40, 460, 110), "pill": (480, 40, 640, 110),
+            "nudge": (900, 40, 1200, 110), "toggle": (1500, 150, 1600, 250), "settings": (1300, 300, 1800, 380)}
 
 
 def xml():
@@ -52,8 +54,9 @@ def xml():
     nodes = []
     where = st("where")
     if st("front") == "sa.urtv.home" and where in HOME_LABEL:
-        for k, n in HOME_LABEL.items():
-            nodes.append(f'<node text="" content-desc="{n}" focused="{"true" if k == where else "false"}" bounds="[100,{100 + len(nodes) * 60}][600,{150 + len(nodes) * 60}]" />')
+        for k, n in HOME_LABEL.items():   # where each is on a 1920 x 1080 screen (the reach step presses toward what it sees): the header at the top, the
+            b = HOME_BOX[k]                 # strip, the apps row at the bottom; the panel at the right, «الإعدادات» under its round buttons
+            nodes.append(f'<node text="" content-desc="{n}" focused="{"true" if k == where else "false"}" bounds="[{b[0]},{b[1]}][{b[2]},{b[3]}]" />')
         nodes.append('<node text="الرياض" focused="false" bounds="[800,40][1000,100]" />')
         return '<?xml version="1.0"?><hierarchy>' + "".join(nodes) + "</hierarchy>"
     for m in MARKERS:

@@ -108,16 +108,18 @@ focus_walk() {   # $1 text, $2 the key, $3 at most how many presses: press only 
   return 1
 }
 PRESSES=0 TRAIL=""
-reach_walk() {   # like focus_walk, every key counted in PRESSES (the reach step: what a person presses from the home); a key that did not move the focus
-  local i now fk was=""   # (the same place and name before and after it) is the edge: not counted, and that way stops (a TV with no city has «اختر المدينة» in the header).
-  for i in $(seq 0 "$3"); do   # TRAIL keeps each key and the name it landed on, for the report (emulator run 8: a FAIL said nothing of where the focus went)
+reach_go() {   # $1 a name on the screen, $2 at most how many keys: the arrow a person presses toward it, read from the screen each time (lib toward), every key
+  local i now fk dir was=""   # counted in PRESSES and kept in TRAIL; a key that left the focus in the same place (its name and place) is not counted and stops the walk.
+  for i in $(seq 0 "$2"); do   # (emulator run 9: walking left first from «الجوال» took 8 presses where 3 to the right were enough)
     dump "$OUT/raw/focus.xml"
     now=$($LIB focused "$OUT/raw/focus.xml"); fk=$($LIB focus-key "$OUT/raw/focus.xml")
-    [ "$i" -gt 0 ] && TRAIL="$TRAIL ${2#KEYCODE_DPAD_}→${now:-?}"
-    if [ "$now" = "$1" ]; then return 0; fi
-    if [ "$i" -gt 0 ] && [ "$fk" = "$was" ]; then PRESSES=$((PRESSES - 1)); return 1; fi
+    [ "$i" -gt 0 ] && TRAIL="$TRAIL $dir→${now:-?}"
+    dir=$($LIB toward "$OUT/raw/focus.xml" "$1")
+    if [ "$dir" = here ]; then return 0; fi
+    if [ "$dir" = none ]; then TRAIL="$TRAIL (no «$1» on the screen)"; return 1; fi
+    if [ "$i" -gt 0 ] && [ "$fk" = "$was" ]; then PRESSES=$((PRESSES - 1)); TRAIL="$TRAIL (stuck)"; return 1; fi
     was=$fk
-    [ "$i" -lt "$3" ] && key "$2" && PRESSES=$((PRESSES + 1)) && nap 1
+    [ "$i" -lt "$2" ] && key "KEYCODE_DPAD_$dir" && PRESSES=$((PRESSES + 1)) && nap 1
   done
   return 1
 }
@@ -226,11 +228,12 @@ if want reach; then
       key KEYCODE_HOME; nap 8
       if ! on_top "$HOME_PKG"; then step "$name" FAIL "$lname، $cname: the home did not come to the front: $(front)"; continue; fi
       PRESSES=0; dump "$OUT/raw/focus.xml"; TRAIL="start→$($LIB focused "$OUT/raw/focus.xml")"
-      if ! reach_walk "مركز التحكم" KEYCODE_DPAD_UP 4 && ! reach_walk "مركز التحكم" KEYCODE_DPAD_LEFT 8 && ! reach_walk "مركز التحكم" KEYCODE_DPAD_RIGHT 16; then
+      if ! reach_go "مركز التحكم" 12; then
+        cp "$OUT/raw/focus.xml" "$OUT/raw/reach-$lkey-$ckey.xml" 2> /dev/null   # the screen it stopped on, for whoever reads the FAIL
         step "$name" FAIL "$lname، $cname: «مركز التحكم» was not reached from the home ($PRESSES presses; $TRAIL)"; continue
       fi
       key KEYCODE_DPAD_CENTER; PRESSES=$((PRESSES + 1)); nap 2
-      if ! reach_walk "الإعدادات" KEYCODE_DPAD_DOWN 4; then step "$name" FAIL "$lname، $cname: «مركز التحكم» has no «الإعدادات» row ($PRESSES presses; $TRAIL)"; key KEYCODE_BACK; continue; fi
+      if ! reach_go "الإعدادات" 4; then cp "$OUT/raw/focus.xml" "$OUT/raw/reach-$lkey-$ckey.xml" 2> /dev/null; step "$name" FAIL "$lname، $cname: «مركز التحكم» has no «الإعدادات» row ($PRESSES presses; $TRAIL)"; key KEYCODE_BACK; continue; fi
       key KEYCODE_DPAD_CENTER; PRESSES=$((PRESSES + 1))
       if ! on_top "$SAVER_PKG" || ! see "بحث في الإعدادات"; then step "$name" FAIL "$lname، $cname: OK on «الإعدادات» did not open the settings: $(front)"
       elif [ "$PRESSES" -le "$REACH_MAX" ]; then step "$name" PASS "$lname، $cname: the settings in $PRESSES presses from the home ($TRAIL)"

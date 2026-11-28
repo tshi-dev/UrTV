@@ -253,6 +253,24 @@ def focus_key(xml):
     return ""
 
 
+def toward(xml, label):
+    """the arrow a person presses from the focused item toward the item named label, as the screen shows them: «here», UP, DOWN, LEFT or RIGHT;
+    «none» when that name is not on the screen or nothing has the focus"""
+    nodes = list(_nodes(xml))
+    if focused(xml) == label:
+        return "here"
+    fb = next((a["_box"] for a in nodes if a.get("focused") == "true" and a["_box"]), None)
+    tb = next((a["_box"] for a in nodes if _label(a) == label and a["_box"]), None)
+    if not fb or not tb:
+        return "none"
+    ty = (tb[1] + tb[3]) / 2
+    if ty < fb[1]:
+        return "UP"
+    if ty > fb[3]:
+        return "DOWN"
+    return "LEFT" if (tb[0] + tb[2]) / 2 < (fb[0] + fb[2]) / 2 else "RIGHT"
+
+
 def has_text(xml, needle):
     return any(needle in _label(a) for a in _nodes(xml))
 
@@ -407,6 +425,8 @@ def main(a):
         print(focused(_read(a[2])))
     elif cmd == "focus-key":
         print(focus_key(_read(a[2])))
+    elif cmd == "toward":
+        print(toward(_read(a[2]), a[3]))
     elif cmd == "has-text":
         print("yes" if has_text(_read(a[2]), a[3]) else "no")
     elif cmd == "box":
