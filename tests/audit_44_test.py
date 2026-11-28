@@ -63,6 +63,11 @@ check("phone page: one way to the settings (the bottom bar), no gear in the head
 check("phone page: the adhan's switch on one tab («الإعدادات»), «يعمل الآن» says the next adhan",
       'id="aOn2"' not in page and "$('aOn2')" not in page and page.count('id="aOn"') == 1 and 'id="nextA"' in page)
 
+check("phone page P7 (the owner): the numbers it shows in Arabic-Indic digits as on the TV, on the Arabic page only; what is typed (the login code, any field) and [data-latin] stay",
+      "function indic(r) { if (document.documentElement.lang !== 'ar' || !r) return;" in page and "e.closest('input,textarea,script,[data-latin]')" in page
+      and "String.fromCharCode(1632 + +d)" in page and ".observe(a, { childList: true, subtree: true, characterData: true }); indic(a);" in page)
+check("phone page P2: the update card says it in one line, no signatures and no Android installer", "<p>ننزّل التحديث ونتأكد منه، وأنت تثبّته بالريموت.</p>" in page and "موقّعة بنفس توقيع" not in page)
+
 # ---- the home
 check("home H1: the football widgets start under the clock column's lowest drawn line, and again when the zone line comes or goes",
       "int column = clockBlock.getTop() + (clockBlock instanceof ViewGroup ? shownBottom((ViewGroup) clockBlock) : clockBlock.getHeight());" in main

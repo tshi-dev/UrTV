@@ -264,7 +264,7 @@ header.top .sub{display:block;font-weight:400;font-size:14px;color:var(--dim)}
 </div>
 <div class="card">
 <div class="ch"><span class="ic" data-i="sync"></span><h2>تحديث تلفزيونك</h2></div>
-<p>يتحقق التلفزيون من أحدث نسخة من مشروعنا وينزّلها ويتأكد أنها موقّعة بنفس توقيع التطبيق المثبّت. إذا نجح كل ذلك تضغط «ثبّت» فيفتح شاشة التثبيت من أندرويد على التلفزيون، وتؤكد أنت بالريموت. لا يُثبَّت شيء بدون تأكيدك.</p>
+<p>ننزّل التحديث ونتأكد منه، وأنت تثبّته بالريموت.</p>
 <div class="row"><button id="upCheck" class="gold">افحص التحديث</button><button id="upGo" class="hidden">ثبّت</button></div>
 <p id="upState"></p>
 <p id="ver"></p>
@@ -419,6 +419,10 @@ header.top .sub{display:block;font-weight:400;font-size:14px;color:var(--dim)}
 		clearTimeout(toast.t); toast.t = setTimeout(function () { m.classList.add('hidden'); }, 3500);
 	}
 	function digits(s) { return String(s).replace(/[٠-٩]/g, function (d) { return d.charCodeAt(0) - 0x660; }).replace(/[۰-۹]/g, function (d) { return d.charCodeAt(0) - 0x6f0; }); }
+	// P7: shown numbers in Arabic-Indic digits as on the TV; fields and [data-latin] stay
+	function indic(r) { if (document.documentElement.lang !== 'ar' || !r) return; var w = document.createTreeWalker(r, 4), n, e;
+		while ((n = w.nextNode())) { e = n.parentNode; if (/[0-9]/.test(n.nodeValue) && !(e.closest && e.closest('input,textarea,script,[data-latin]'))) n.nodeValue = n.nodeValue.replace(/[0-9]/g, function (d) { return String.fromCharCode(1632 + +d); }); } }
+	(function () { var a = $('app'), q; if (a && window.MutationObserver) { new MutationObserver(function () { if (!q) { q = 1; requestAnimationFrame(function () { q = 0; indic(a); }); } }).observe(a, { childList: true, subtree: true, characterData: true }); indic(a); } })();
 	function mmss(x) { x = Math.max(0, Math.floor(x)); return Math.floor(x / 60) + ':' + ('0' + x % 60).slice(-2); }
 	var HR = ['ساعة', 'ساعتين', 'ساعات'], MN = ['دقيقة', 'دقيقتين', 'دقائق'];
 	function nn(n, w) { var r = n % 100; return n === 1 ? w[0] : n === 2 ? w[1] : n + ' ' + (r > 2 && r < 11 ? w[2] : w[3] || w[0]); }

@@ -265,7 +265,7 @@ header.top .sub{display:block;font-weight:400;font-size:14px;color:var(--dim)}
 </div>
 <div class="card">
 <div class="ch"><span class="ic" data-i="sync"></span><h2>Update Your TV</h2></div>
-<p>The TV fetches our latest version and checks that it is signed with the same key as the installed app. If all is well, press Install: Android’s install screen opens on the TV, and you confirm with the remote. Nothing is installed without your OK.</p>
+<p>We download the update and check it; you install it with the remote.</p>
 <div class="row"><button id="upCheck" class="gold">Check for updates</button><button id="upGo" class="hidden">Install</button></div>
 <p id="upState"></p>
 <p id="ver"></p>
@@ -420,6 +420,10 @@ header.top .sub{display:block;font-weight:400;font-size:14px;color:var(--dim)}
 		clearTimeout(toast.t); toast.t = setTimeout(function () { m.classList.add('hidden'); }, 3500);
 	}
 	function digits(s) { return String(s).replace(/[٠-٩]/g, function (d) { return d.charCodeAt(0) - 0x660; }).replace(/[۰-۹]/g, function (d) { return d.charCodeAt(0) - 0x6f0; }); }
+	// P7: shown numbers in Arabic-Indic digits as on the TV; fields and [data-latin] stay
+	function indic(r) { if (document.documentElement.lang !== 'ar' || !r) return; var w = document.createTreeWalker(r, 4), n, e;
+		while ((n = w.nextNode())) { e = n.parentNode; if (/[0-9]/.test(n.nodeValue) && !(e.closest && e.closest('input,textarea,script,[data-latin]'))) n.nodeValue = n.nodeValue.replace(/[0-9]/g, function (d) { return String.fromCharCode(1632 + +d); }); } }
+	(function () { var a = $('app'), q; if (a && window.MutationObserver) { new MutationObserver(function () { if (!q) { q = 1; requestAnimationFrame(function () { q = 0; indic(a); }); } }).observe(a, { childList: true, subtree: true, characterData: true }); indic(a); } })();
 	function mmss(x) { x = Math.max(0, Math.floor(x)); return Math.floor(x / 60) + ':' + ('0' + x % 60).slice(-2); }
 	var HR = ['hour', '2 hours', 'hours'], MN = ['min', '2 min', 'min'];
 	function nn(n, w) { return n + ' ' + (n === 1 ? w[0] : w[2]); }
