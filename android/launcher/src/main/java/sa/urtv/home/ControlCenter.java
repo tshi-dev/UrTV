@@ -253,7 +253,7 @@ final class ControlCenter {
             tile("city", S.t("المدينة"), S.t("للطقس والصلاة"), R.drawable.ic_place, () -> { dismiss(); host.openCity(); });
             tile("games", S.t("الألعاب"), S.t("العب مع العائلة"), R.drawable.ic_play, () -> { dismiss(); host.openGames(); });
             tile("ours", S.t("تلفزيونك"), S.t("الألعاب والمباريات والإعدادات"), R.drawable.ic_home, () -> { dismiss(); host.openOurSettings(); });
-            tile("settings", S.t("الإعدادات"), S.t("إعدادات تلفزيونك"), R.drawable.ic_settings, () -> { dismiss(); host.openSettings(); });
+            tile("settings", S.t("الإعدادات"), S.t("كل الخيارات"), R.drawable.ic_settings, () -> { dismiss(); host.openSettings(); });
         }
         String upd = host.updateLine();
         if (upd != null) tile("update", upd, "", R.drawable.ic_update, () -> { dismiss(); host.openUpdate(); });

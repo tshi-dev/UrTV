@@ -174,7 +174,7 @@ check("the default rows (8 + adhan is among them, saver and apps off) and the bl
 
 # ---- 4.4 beta 4 (the tester, build 654: in «كنبة» the settings were not found from the home; «تلفزيونك» was not read as them)
 check("«الإعدادات» is the panel's first row on every TV (after the build line only): never one of the person's rows, never unticked or cut by the cap, OK opens our settings screen itself",
-      'tile("settings", S.t("الإعدادات"), S.t("إعدادات تلفزيونك"), R.drawable.ic_settings, () -> { dismiss(); host.openSettings(); });' in center
+      'tile("settings", S.t("الإعدادات"), S.t("كل الخيارات"), R.drawable.ic_settings, () -> { dismiss(); host.openSettings(); });' in center
       and '"settings"' not in re.search(r'ROWS = \{([^}]*)\}', center).group(1) and '"settings"' not in re.search(r'DEFAULT_OFF = \{([^}]*)\}', center).group(1)
       and 'boolean fixed = it.key.equals("update") || it.key.equals("settings");' in center
       and center.index('if (setRow != null) shownRows.add(0, setRow);') < center.index('if (updRow != null) shownRows.add(0, updRow);')

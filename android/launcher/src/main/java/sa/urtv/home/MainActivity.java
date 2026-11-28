@@ -3851,7 +3851,7 @@ public class MainActivity extends Activity {
         card.setOnFocusChangeListener((v, has) -> {
             scaleTo(v, has ? FavBar.ZOOM_SCALE : 1f);
             v.animate().translationZ(has ? dp(2 * GlowLook.LIFT_DP) : 0).setInterpolator(Motion.ease()).setDuration(Motion.move(MainActivity.this)).start();
-            if (has) { lastFocusedId = v.getId(); nameCard = v; placeName(); }
+            if (has) { lastFocusedId = v.getId(); nameCard = v; title.setText(S.t("الإعدادات")); placeName(); }   // the name above the tray is its own (run 21: the last app's stayed)
         });
         LinearLayout box = new LinearLayout(this);
         box.setOrientation(LinearLayout.VERTICAL);
