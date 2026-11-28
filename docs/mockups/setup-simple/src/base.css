@@ -1,0 +1,21 @@
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap');
+/* the owner's one box (sa.urtv.home.Box): 560 x 486 dp at density 2 = 1120 x 972 px, one text style: 22 / 17 / 14 sp = 44 / 34 / 28 px */
+:root{--fg:#f4f2ee;--dim:rgba(244,242,238,.68);--faint:rgba(244,242,238,.46);--panel:rgba(255,255,255,.07);--gold:#e8c46a;--green:#5fd38a}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:1920px;height:1080px;overflow:clip;background:radial-gradient(ellipse at 80% 0%,#2a3a3a,#141a1c 70%);color:var(--fg);font-family:'IBM Plex Sans Arabic',sans-serif;direction:rtl}
+.box{position:absolute;left:400px;top:54px;width:1120px;height:972px;background:rgba(22,24,27,.97);border-radius:32px;padding:48px 56px;display:flex;flex-direction:column}
+h1{font-size:44px;font-weight:700;margin-bottom:26px}
+p{font-size:34px;line-height:1.55}
+.dim{color:var(--dim)}.small{font-size:28px;color:var(--dim);line-height:1.5}
+ol{list-style:none;counter-reset:n;font-size:34px;line-height:1.5}
+ol li{counter-increment:n;display:flex;gap:22px;margin-bottom:18px}
+ol li::before{content:counter(n, arabic-indic);color:var(--gold);font-weight:600;min-width:30px}
+.q{font-weight:600;color:var(--fg)}
+.actions{margin-top:auto;display:flex;flex-direction:column;gap:16px}
+.btn{font-size:34px;font-weight:600;text-align:center;border-radius:20px;padding:22px;background:var(--panel)}
+.btn.f{background:#f2f2f0;color:#151515;transform:scale(1.03);box-shadow:0 16px 40px rgba(0,0,0,.5)}
+.btn.quiet{background:none;color:var(--dim);font-weight:500;padding:12px}
+.qr{width:330px;height:330px;background:#fff;border-radius:22px;padding:22px;margin:10px auto 20px}
+.qr div{width:100%;height:100%;background:repeating-conic-gradient(#111 0 25%,#fff 0 50%) 0 0/36px 36px}
+.bar{height:12px;border-radius:6px;background:rgba(255,255,255,.12);margin:30px 0 14px;overflow:hidden}.bar i{display:block;height:100%;width:47%;background:var(--gold);margin-inline-start:auto}
+.cap{position:absolute;left:40px;right:40px;bottom:10px;font-size:19px;color:var(--gold);text-align:left}
