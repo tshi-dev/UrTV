@@ -27,7 +27,11 @@ check("the agent's way: saver.sh sidecards off|a|b, checked, and `show` says it"
 check("A is the next prayer and the hours' weather, B adds the next match", 'return "a".equals(option) ? "nextprayer,hourly" : "b".equals(option) ? "nextprayer,hourly,nextmatch" : null;' in side)
 check("only in «كنبة», and nothing at all when off (no view, no page)", 'if (opt == null || !"couch".equals(layout)) return null;' in side and 'if (url == null) { drop(); return; }' in side)
 check("the column is the mockup's: x 122, 340 wide, y 120 to 554 at 1080p (20 above the strip), scaled with the screen",
-      "static final int X = 122, W = 340, TOP = 120, BOTTOM = 554;" in side and "FavBar.px(W, h), FavBar.px(BOTTOM - TOP, h)" in side)
+      "static final int X = 122, W = 340, TOP = 120, BOTTOM = 554, GAP = 20;" in side and "FavBar.px(W, h), FavBar.px(BOTTOM - TOP, h)" in side)
+check("it never runs into the cards strip (run 22: with the plain clock the strip is higher): checked at every layout, hidden while its whole height does not end 20 above the strip, never cut",
+      "parent.getViewTreeObserver().addOnGlobalLayoutListener(fitter);" in side and "parent.getViewTreeObserver().removeOnGlobalLayoutListener(fitter);" in side
+      and "int vis = top < 0 || FavBar.px(BOTTOM + GAP, h) <= top ? View.VISIBLE : View.INVISIBLE;" in side
+      and "() -> homeCard == null ? -1 : homeCard.stripTop()" in main and "int stripTop() {" in (ROOT / "android/launcher/src/main/java/sa/urtv/home/HomeCard.java").read_text(encoding="utf-8"))
 check("it never takes the focus (the D-pad's ways on the home are unchanged)", "web.setFocusable(false);" in side and "FOCUS_BLOCK_DESCENDANTS" in side)
 check("the settings are read on the loader, the view placed on the UI thread, with the home card's refreshes; dropped on destroy",
       "final String u = side.read();" in main and "loader.execute(() -> {" in main[main.index("private void refreshSideCards()"):]

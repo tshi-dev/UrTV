@@ -28,17 +28,25 @@ import android.widget.FrameLayout;
 final class SideCards {
     private static final Uri CONFIG = Uri.parse("content://sa.urtv.screensaver.config");
     /** the column in 1080p px (FavBar.px scales it): x 122 to 462 from the screen's left, y 120 to 554 (20 above the strip's top) */
-    static final int X = 122, W = 340, TOP = 120, BOTTOM = 554;
+    static final int X = 122, W = 340, TOP = 120, BOTTOM = 554, GAP = 20;
+
+    /** where the cards strip starts (window px), -1 when there is none (HomeCard.stripTop) */
+    interface Strip { int top(); }
 
     private final Activity activity;
     private final ViewGroup parent;
+    private final Strip strip;
+    /** the column never runs into the strip (run 22: with the plain clock the strip is higher, and the column's second card lay over it): checked at
+     *  every layout of the screen, the column hidden while its whole height does not fit above the strip, never cut */
+    private final android.view.ViewTreeObserver.OnGlobalLayoutListener fitter = this::fit;
     private WebView web;
     private final RenderGuard guard = new RenderGuard();   // a renderer that keeps dying: the column stays away for a while (as HomeCard's card)
     private String shown;   // the page's address now on the screen, null for none
 
-    SideCards(Activity activity, ViewGroup parent) {
+    SideCards(Activity activity, ViewGroup parent, Strip strip) {
         this.activity = activity;
         this.parent = parent;
+        this.strip = strip;
     }
 
     /** the option in a page fragment: "a", "b", or null for off (anything else is off) */
@@ -99,6 +107,7 @@ final class SideCards {
             lp.leftMargin = FavBar.px(X, h);   // the screen's left in both directions (the clock is centred, the greeting is on the right)
             lp.topMargin = FavBar.px(TOP, h);
             parent.addView(web, lp);
+            parent.getViewTreeObserver().addOnGlobalLayoutListener(fitter);
         }
         shown = url;
         web.loadUrl(url);
@@ -149,10 +158,19 @@ final class SideCards {
         });
     }
 
+    /** shown only while the column's whole height ends GAP above the strip (or there is no strip) */
+    private void fit() {
+        if (web == null) return;
+        int h = activity.getResources().getDisplayMetrics().heightPixels, top = strip.top();
+        int vis = top < 0 || FavBar.px(BOTTOM + GAP, h) <= top ? View.VISIBLE : View.INVISIBLE;
+        if (web.getVisibility() != vis) web.setVisibility(vis);
+    }
+
     /** the column goes, page and all */
     void drop() {
         shown = null;
         if (web == null) return;
+        parent.getViewTreeObserver().removeOnGlobalLayoutListener(fitter);
         parent.removeView(web);
         web.destroy();
         web = null;

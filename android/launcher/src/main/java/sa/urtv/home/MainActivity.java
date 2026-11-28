@@ -750,7 +750,7 @@ public class MainActivity extends Activity {
 
     /** 4.4 beta 4 SideCards: the screensaver's settings read on the loader, the column placed (or taken away) on the UI thread */
     private void refreshSideCards() {
-        if (sideCards == null) sideCards = new SideCards(this, (android.view.ViewGroup) findViewById(android.R.id.content));
+        if (sideCards == null) sideCards = new SideCards(this, (android.view.ViewGroup) findViewById(android.R.id.content), () -> homeCard == null ? -1 : homeCard.stripTop());
         final SideCards side = sideCards;
         if (loader.isShutdown()) return;
         loader.execute(() -> {

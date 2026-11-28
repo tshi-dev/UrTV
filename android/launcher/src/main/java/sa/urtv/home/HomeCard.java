@@ -118,6 +118,13 @@ final class HomeCard {
     }
     /** the cards are in the strip above the tray (not beside the clock) */
     boolean inRow() { return row && cards > 0; }
+    /** the strip's top in the window while it is on the screen (row, laid out), else -1: «كنبة»'s side cards keep above it (SideCards) */
+    int stripTop() {
+        if (web == null || !inRow() || web.getHeight() == 0 || web.getVisibility() != View.VISIBLE) return -1;
+        int[] at = new int[2];
+        web.getLocationInWindow(at);
+        return at[1];
+    }
     /** the layout the home showed last, for the report (a word, nothing else) */
     static volatile boolean footballShown;
     private FootballFocus.Host footballHost;
