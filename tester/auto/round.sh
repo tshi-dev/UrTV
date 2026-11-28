@@ -288,7 +288,9 @@ if want radio; then
       tries=$((tries + 1)); opened=0; found=0
       open_tilawah || break
       opened=1
-      key KEYCODE_DPAD_RIGHT; nap 1   # one tab to the right: the stations (looked at below: the row must be found by its name, or nothing is pressed)
+      # the tabs are «القرّاء», «الإذاعات», «الأذان» (the first at the start side, so Arabic puts «الإذاعات» to the LEFT of it, English to the right): walk to the tab by its name
+      focus_walk "الإذاعات" KEYCODE_DPAD_LEFT 3 || focus_walk "الإذاعات" KEYCODE_DPAD_RIGHT 6 || break
+      nap 1
       focus_walk "$sname" KEYCODE_DPAD_DOWN 30 || break
       found=1
       tv "dumpsys audio" 2> /dev/null | tr -d '\r' > "$OUT/raw/audio-$name-before.txt"
@@ -307,7 +309,7 @@ if want radio; then
       step "$name" FAIL "the «تلاوة وأذان» pill was not reached from the home with the arrow keys (the screen is in shots/$name.png and raw/$name-notfound.xml): $(front)"; key KEYCODE_HOME; nap 2; continue
     fi
     if [ "$found" = 0 ]; then
-      shot "$name"; cp "$OUT/raw/last.xml" "$OUT/raw/$name-notfound.xml" 2> /dev/null   # what the screen showed instead (the next round's reader needs it)
+      shot "$name"; cp "$OUT/raw/focus.xml" "$OUT/raw/$name-notfound.xml" 2> /dev/null   # what the screen showed instead (the walk's own dump) (the next round's reader needs it)
       step "$name" FAIL "the row «$sname» was not found on the stations tab (no key pressed on it; the screen is in shots/$name.png and raw/$name-notfound.xml)"; key KEYCODE_HOME; nap 2; continue
     fi
     shot "$name"
