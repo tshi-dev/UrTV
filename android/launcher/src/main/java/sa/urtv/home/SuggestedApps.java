@@ -23,7 +23,7 @@ import java.util.List;
 public final class SuggestedApps {
     private SuggestedApps() { }
 
-    public enum Kind { GITHUB, STORE, MIRROR, FLAG }   // FLAG (4.3.7): «فحص تلفزيونك», listed only while urtv-data's content/doctor.json says on, installed from Downloader's code (DoctorOfferStore)
+    public enum Kind { GITHUB, STORE, MIRROR, FLAG }   // FLAG (4.3.7): «فحص تلفزيونك», listed only while urtv-data's release/doctor.json (its main keeps it as content/doctor.json) says on, installed from Downloader's code (DoctorOfferStore)
 
     public static final class App {
         public final String id, pkg, name, why, repo, file;

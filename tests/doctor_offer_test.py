@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""4.3.7: after an update, once, the home's top bar offers the diagnostic app «فحص تلفزيونك» (sa.urtv.doctor), gated by urtv-data's content/doctor.json
+"""4.3.7: after an update, once, the home's top bar offers the diagnostic app «فحص تلفزيونك» (sa.urtv.doctor), gated by urtv-data's release/doctor.json (its main keeps it as content/doctor.json)
 (DoctorOfferRule, DoctorOfferStore). The rules run in Java (tests/DoctorOfferRun.java): no flag, flag off, doctor installed, fresh install, kids mode and
 «لاحقاً» for this build each mean no card. The wiring is pinned: the one bar, after the build, city and home questions; «لاحقاً» keeps the build; «ثبّته» says
 Downloader's code; no permission is added (only a package visibility entry).
@@ -50,8 +50,8 @@ check("the bar asks the rule with: the kept flag, whether sa.urtv.doctor is inst
 check("«لاحقاً» keeps the build (never again for it); «ثبّته» says Downloader's code and installs nothing",
       "DoctorOfferStore.dismiss(this, BuildConfig.VERSION_CODE)" in main and "doctorCodeShown = true" in main and "DoctorOfferStore.flag(this)" in main
       and "PackageInstaller" not in store and "REQUEST_INSTALL" not in store)
-check("the flag is read from urtv-data's content/doctor.json at most every 6 hours, in the background, bounded to 4 KB; a 404 forgets it; a failure keeps the last good copy",
-      "urtv-data/data/content/doctor.json" in store and "EVERY_MS = 6 * 3600_000L" in store and "Bounded.readAll(in, 4096)" in store and "code == 404" in store and "p.edit().remove(\"flag\")" in store
+check("the flag is read from urtv-data's release/doctor.json (its main keeps it as content/doctor.json) at most every 6 hours, in the background, bounded to 4 KB; a 404 forgets it; a failure keeps the last good copy",
+      "urtv-data/data/release/doctor.json" in store and "EVERY_MS = 6 * 3600_000L" in store and "Bounded.readAll(in, 4096)" in store and "code == 404" in store and "p.edit().remove(\"flag\")" in store
       and "new Thread(" in store and "setDaemon(true)" in store)
 check("the words: «ساعدنا نحسّن UrTV، ثبّت فحص تلفزيونك، مجاني» (7 words), «ثبّته», «لاحقاً»; each has its English",
       all(w in main for w in ("ساعدنا نحسّن UrTV، ثبّت فحص تلفزيونك، مجاني", "ثبّته", "افتح Downloader واكتب الرمز")) and len("ساعدنا نحسّن UrTV، ثبّت فحص تلفزيونك، مجاني".split()) <= 8

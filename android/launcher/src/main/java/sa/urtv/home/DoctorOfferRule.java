@@ -1,7 +1,7 @@
 package sa.urtv.home;
 
 /**
- * 4.3.7: after an UPDATE, once, the top bar offers the diagnostic app «فحص تلفزيونك» (sa.urtv.doctor). Remote-gated: urtv-data's content/doctor.json
+ * 4.3.7: after an UPDATE, once, the top bar offers the diagnostic app «فحص تلفزيونك» (sa.urtv.doctor). Remote-gated: urtv-data's release/doctor.json (its main keeps it as content/doctor.json)
  * ({"on":true,"code":"<Downloader code>", ...}); no file, a bad one or "on":false = no card, so the release does not wait for the doctor's. As plain code so
  * tests/doctor_offer_test.py runs it without Android. Never: when the doctor is installed, on a fresh install (the first run of an app nobody updated), in
  * kids mode, after «لاحقاً» for this version (a later version asks again), or when the flag has no code to show (the install is Downloader's, no permission

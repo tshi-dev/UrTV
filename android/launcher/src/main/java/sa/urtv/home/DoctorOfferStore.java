@@ -9,14 +9,14 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 /**
- * 4.3.7: the Android side of DoctorOfferRule. urtv-data's content/doctor.json is read in the background at most every 6 hours and its text kept as it came (only a
+ * 4.3.7: the Android side of DoctorOfferRule. urtv-data's release/doctor.json (its main keeps it as content/doctor.json) is read in the background at most every 6 hours and its text kept as it came (only a
  * usable one: DoctorOfferRule.parse); a 404 (the file was taken away) forgets it, a failed fetch keeps the last good one. «لاحقاً» is kept as the build it was pressed
  * for. Nothing here asks for a permission, installs anything or shows anything: the home's top bar does, from the rule's answer.
  */
 final class DoctorOfferStore {
     private DoctorOfferStore() { }
 
-    static final String URL_FLAG = "https://raw.githubusercontent.com/tshi-dev/urtv-data/data/content/doctor.json";
+    static final String URL_FLAG = "https://raw.githubusercontent.com/tshi-dev/urtv-data/data/release/doctor.json";
     private static final String PREFS = "doctor_offer";
     private static final long EVERY_MS = 6 * 3600_000L;
     private static volatile boolean fetching;
