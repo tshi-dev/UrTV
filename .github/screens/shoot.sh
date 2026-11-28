@@ -141,17 +141,20 @@ saver --es settingsstyle buttons
 # ---- 4.4 beta 4 (the tester, build 654: the settings not found from the home in «كنبة»): «كنبة» with «بدون» (the date over the big clock), the
 # apps row's «الإعدادات» at its end (the owner's «تكبير»), «مركز التحكم» with «الإعدادات» as its first row, and OK on it
 saver --es homelayout couch --es couch on --es clock glass --es appsstyle zoom --es home_panel none
+# the focus walked to a name the screen reads (uiautomator): the emulator has no city, so its header also has «اختر المدينة», which counted keys hit
+focused() { adb shell "uiautomator dump /sdcard/u.xml > /dev/null 2>&1; cat /sdcard/u.xml" 2> /dev/null | grep -q "content-desc=\"$1\"[^>]*focused=\"true\""; }
+focus_to() { local i; for i in $(seq 0 "$2"); do focused "$1" && return 0; [ "$i" -lt "$2" ] && key "$3"; done; return 1; }   # $1 name, $2 at most, $3 the key
 start sa.urtv.home/.MainActivity
 shot couch-none-date 12
-key DPAD_LEFT DPAD_LEFT DPAD_LEFT DPAD_LEFT DPAD_LEFT DPAD_LEFT DPAD_LEFT DPAD_LEFT DPAD_LEFT DPAD_LEFT DPAD_LEFT DPAD_LEFT
+key DPAD_DOWN DPAD_DOWN
+focus_to "الإعدادات" 10 DPAD_LEFT
 shot couch-row-gear 1.5
-start sa.urtv.home/.MainActivity
-sleep 4
-key DPAD_UP DPAD_UP
+key DPAD_UP DPAD_UP DPAD_UP
+focus_to "مركز التحكم" 8 DPAD_LEFT || focus_to "مركز التحكم" 12 DPAD_RIGHT
 shot couch-header 1
 key DPAD_CENTER
 shot couch-panel 2
-key DPAD_DOWN
+focus_to "الإعدادات" 4 DPAD_DOWN
 shot couch-panel-settings 1
 key DPAD_CENTER
 shot couch-panel-settings-open 3
