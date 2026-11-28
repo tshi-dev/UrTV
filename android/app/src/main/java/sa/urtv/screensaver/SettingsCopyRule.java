@@ -65,9 +65,8 @@ final class SettingsCopyRule {
     /** a fresh install takes the copy back: only when nothing of its own was saved yet (at most the keys a first start writes by itself) and only once */
     static boolean shouldRestore(Set<String> ownKeys, boolean triedBefore) {
         if (triedBefore) return false;
-        List<String> own = new ArrayList<>(ownKeys);
-        own.remove("tournaments");   // Prefs writes it on the first start (4.3.1)
-        return own.isEmpty();
+        for (String k : ownKeys) if (!k.equals("tournaments")) return false;   // Prefs writes «tournaments» on the first start (4.3.1): the only key of its own that does not count
+        return true;
     }
 
     /** the home keeps a new copy only when it is a real one; an empty or broken answer never wipes the kept copy */
