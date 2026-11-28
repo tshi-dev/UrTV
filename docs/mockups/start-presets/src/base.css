@@ -1,0 +1,17 @@
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap');
+:root{--fg:#f4f2ee;--dim:rgba(244,242,238,.68);--faint:rgba(244,242,238,.44);--panel:rgba(255,255,255,.07);--edge:rgba(255,255,255,.12);--gold:#e8c46a;--green:#5fd38a;--k:1}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:1920px;height:1080px;overflow:clip;position:relative;background:#0d0c0b;color:var(--fg);font-family:'IBM Plex Sans Arabic',sans-serif;direction:rtl}
+.warm{position:absolute;inset:0;background:radial-gradient(ellipse at 85% 0%,#3d2c1c,#0d0c0b 62%)}
+.bg{position:absolute;inset:0;background:url(../../../../android/launcher/src/main/assets/scenes/saudi/riyadh.jpg) center/cover}
+.shade{position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.35),rgba(0,0,0,0) 32%,rgba(0,0,0,.6))}
+/* focus: scale and a shadow only, never a new colour or a ring */
+.f{transform:scale(1.06);box-shadow:0 26px 60px rgba(0,0,0,.6);position:relative;z-index:2}
+/* the mockup's caption for the owner, outside the TV's picture: bottom left, small */
+.cap{position:absolute;left:40px;bottom:16px;font-size:19px;color:var(--gold);opacity:.9}
+.box{display:inline-block;width:34px;height:34px;border-radius:8px;border:3px solid var(--faint);vertical-align:middle;position:relative;flex:none}
+.box.on{background:var(--green);border-color:var(--green)}
+.box.on::after{content:"";position:absolute;left:9px;top:3px;width:9px;height:17px;border:solid #0d0c0b;border-width:0 4px 4px 0;transform:rotate(45deg)}
+.mark{display:inline-flex;gap:3px;margin-inline-end:10px;vertical-align:middle}
+.mark i{width:0;height:0;border-top:7px solid transparent;border-bottom:7px solid transparent;border-right:10px solid var(--green)}
+.on-w{color:var(--green)}.off-w{color:var(--faint)}
