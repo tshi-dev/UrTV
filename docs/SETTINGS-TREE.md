@@ -437,6 +437,8 @@ the phone page's key, «مركز التحكم» the control centre's row that op
     مثال للوكيل: optimize/saver.sh teams <id:Name> …
     مثال للوكيل: optimize/saver.sh teams none  (`teams ""` does the same)
     مثال للوكيل: optimize/saver.sh teams 136013:Al-Hilal
+——— حد الفرق [الرئيسية وشاشة التوقف]
+    مثال للوكيل: optimize/saver.sh teamcap 80  (`40` the default, `0` no limit; only when the person asked, after telling them it can slow the TV down; `saver.sh show` says `teamcap:`)
 ——— تطبيق المباريات [الرئيسية]
     مثال للوكيل: optimize/saver.sh matchapp auto  (the default: UrTV Player when it is installed and signed with its own key)
       القيم المقبولة: auto|none|<package>

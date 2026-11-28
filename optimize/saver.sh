@@ -10,7 +10,7 @@
 #                                                      unless the name is a built-in city; a built-in city is always Asia/Riyadh)
 #   optimize/saver.sh city 'الكويت' 29.37 47.98 Asia/Kuwait
 #   optimize/saver.sh find-team الهلال             a club's id (Arabic or English name): id:Name | league
-#   optimize/saver.sh teams 136013:Al-Hilal 150643:Al-Zulfi    followed teams in order (up to 40; more are left out and listed; past 20 the TV warns once when the person adds one, an agent's list is taken as it is);
+#   optimize/saver.sh teams 136013:Al-Hilal 150643:Al-Zulfi    followed teams in order (up to the TV's limit, 40 unless teamcap raised it; more are left out and listed; past 20 the TV warns once when the person adds one, an agent's list is taken as it is);
 #                                                  `teams none` (or `teams ""`) follows no team: the defaults (الهلال، المنتخب السعودي) go
 #   optimize/saver.sh card prayers                 beside the clock: shows prayers forecast hourly prayerrow matches nextmatch matchday livenow minitable nextmatches yesterday weekend cuppath formula national verse wisdom adhkar stocks tasks year smart today album none
 #   optimize/saver.sh card2 hourly                 a second card beside the clock, shown only while the clock is small (clocksize small):
@@ -64,6 +64,8 @@
 #   optimize/saver.sh updatechannel next          TESTING ONLY (agents; no screen shows it): «تحديث تلفزيوني» reads the version and the APKs from the apk-next release instead
 #                                                  of apk-latest: next or latest (default). `beta` is the same as the row «النسخ التجريبية» (the apk-beta release). Same signature, newer-version and permission checks. Put it back to latest after
 #   optimize/saver.sh reciter-fav add sudais      the ★ of a reciter in «تلاوة وأذان ← القرّاء» (`remove` takes it off): favourites are listed first under «المفضلون»; ids are `optimize/music.sh reciters`'s
+#   optimize/saver.sh teamcap 80                  «حد الفرق»: how many teams can be followed: 40 (the default), 80, or 0 = no limit. Only when the person asked,
+#                                                  after telling them «كثرة الفرق ممكن تبطّئ التلفزيون» (many teams can slow the TV down); going back down removes no team
 #   optimize/saver.sh matchestoday on             «بطاقة المباريات لليوم فقط»: the «المباريات» card shows only today's games (off, the default: the week's)
 #   optimize/saver.sh pagesdark off               «صفحات الأسهم والمباريات داكنة» (الشاشة الرئيسية): the home's markets and matches pages in the dark look (on, the default) or in the home's look (off)
 #   optimize/saver.sh favbar 7                    the favourites bar's size («التطبيقات والمفضلة ← تطبيقات في الشريط»): how many apps show whole at once, 5 (default) to 10, or all (every favourite, 8 in view and the rest scroll); 9 and 10 are taken as 8
@@ -247,10 +249,12 @@ case "${1:-}" in
       set1 teams ""; exit $?
     fi
     [ "$1" != none ] || { echo "usage: optimize/saver.sh teams none   (alone: it clears the followed teams)"; exit 1; }
-    if [ $# -gt 40 ]; then   # 4.4 the ceiling (FollowLimit.MAX_TEAMS): the app takes 40 at most, so say here which are left out
-      echo "At most 40 teams can be followed. Kept: ${*:1:40}"
-      echo "Left out (${#} given): ${*:41}"
-      set -- "${@:1:40}"
+    cap=40   # 4.4 the ceiling (FollowLimit): 40, unless the person raised it (teamcap 80, or 0 = none; R-472); say here which are left out
+    if [ $# -gt 40 ]; then cap=$(send GET 2> /dev/null | sed -n 's/^teamcap: *//p' || true); case "$cap" in 80|0) ;; *) cap=40 ;; esac; fi
+    if [ "$cap" != 0 ] && [ $# -gt "$cap" ]; then
+      echo "At most $cap teams can be followed (optimize/saver.sh teamcap raises it). Kept: ${*:1:$cap}"
+      echo "Left out (${#} given): ${*:$((cap + 1))}"
+      set -- "${@:1:$cap}"
     fi
     set1 teams "$(IFS=,; echo "$*")" ;;
   card)     [ "${2:-}" = nextprayer ] && { echo "!! nextprayer is a home-screen card only (the screensaver's bottom-right panel already shows the next prayer): optimize/saver.sh home-card nextprayer"; exit 1; }
@@ -312,6 +316,11 @@ case "${1:-}" in
     case "$id" in *[!A-Za-z0-9_-]*|"") echo "!! a reciter id is letters, digits, - and _ (optimize/music.sh reciters lists them)" >&2; exit 2 ;; esac
     out=$("$PY" -I optimize/tv.py "am broadcast -n sa.urtv.home/.tilawah.MusicReceiver -a sa.urtv.home.RECITER_FAV --es op $op --es id $id" | tr -d '\r') || out=""
     case "$out" in *'data="saved'*) echo "reciter-fav $op $id: saved" ;; *error:*) echo "!! $(printf '%s\n' "$out" | sed -n 's/.*data="\(error:[^"]*\)".*/\1/p' | sed -n 1p)"; exit 1 ;; *) echo "!! the home app did not answer (is it installed and up to date?)"; exit 1 ;; esac ;;
+  teamcap) case "${2:-}" in   # 4.4 the owner (R-472) «حد الفرق»
+      40) set1 teamcap 40 ;;
+      80|0) echo "Many teams can slow the TV down («كثرة الفرق ممكن تبطّئ التلفزيون»): raise it only when the person asked, after telling them."; set1 teamcap "$2" ;;
+      *) echo "usage: optimize/saver.sh teamcap 40|80|0   (40 the default; 0 = no limit)"; exit 1 ;;
+    esac ;;
   matchestoday) case "${2:-}" in on|off) set1 matchestoday "$2" ;; *) echo "usage: optimize/saver.sh matchestoday on|off"; exit 1 ;; esac ;;
   pagesdark) set1 pagesdark "${2:?usage: optimize/saver.sh pagesdark on|off}" ;;
   favbar)    set1 favbar "${2:?usage: optimize/saver.sh favbar 5|6|7|8|9|10|all}" ;;

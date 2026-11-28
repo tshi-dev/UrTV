@@ -222,7 +222,7 @@ final class Prefs {
     String prayerMethod() { String v = sp.getString("prayerMethod", "auto"); return PrayerMethod.JAFARI.equals(v) ? PrayerMethod.JAFARI : PrayerMethod.GULF.equals(v) ? PrayerMethod.GULF : PrayerMethod.AUTO; }
     void setPrayerMethod(String v) { sp.edit().putString("prayerMethod", v).apply(); }
 
-    /** 4.4 the clubs: 20 as before without a word, then one warning once (FollowLimit), at most 40 */
+    /** 4.4 the clubs: 20 as before without a word, then one warning once (FollowLimit), at most 40 (the person may raise it: teamCap) */
     static final int SOFT_TEAMS = FollowLimit.SOFT_TEAMS, MAX_TEAMS = FollowLimit.MAX_TEAMS;
     /**
      * Whole leagues followed (#leagues=): the page downloads one small file for each built-in one, every 30 minutes; a league of the
@@ -236,8 +236,12 @@ final class Prefs {
     void setFollowWarned(String kind) { sp.edit().putBoolean("followWarned_" + kind, true).apply(); }
     /** what one more league or club means now: FollowLimit.ADD, WARN or FULL */
     int followState(String kind) {
-        return FollowLimit.check(kind, FollowLimit.LEAGUES.equals(kind) ? leagues().size() : teams().size(), followWarned(kind));
+        return FollowLimit.check(kind, FollowLimit.LEAGUES.equals(kind) ? leagues().size() : teams().size(), followWarned(kind), teamCap());
     }
+
+    /** 4.4 the owner (R-472) «حد الفرق»: 40 by default, 80 or 0 (none) after the warning (FollowLimit.TEAM_CAP_WARNING); saver.sh teamcap */
+    int teamCap() { try { return FollowLimit.teamCap(sp.getInt("teamCap", FollowLimit.MAX_TEAMS)); } catch (ClassCastException e) { return FollowLimit.MAX_TEAMS; } }
+    void setTeamCap(int v) { sp.edit().putInt("teamCap", FollowLimit.teamCap(v)).apply(); }
 
     /** The league of LEAGUES that name (English as TheSportsDB spells it, the Arabic label, or its slug) means, else null. */
     static String[] leagueByName(String name) {
@@ -328,7 +332,7 @@ final class Prefs {
     boolean addTeam(String id, String name) {
         List<String> v = teams();
         for (String t : v) if (t.startsWith(id + "|")) return false;
-        if (FollowLimit.check(FollowLimit.TEAMS, v.size(), followWarned(FollowLimit.TEAMS)) != FollowLimit.ADD) return false;   // the ceiling, or the warning not yet answered
+        if (FollowLimit.check(FollowLimit.TEAMS, v.size(), followWarned(FollowLimit.TEAMS), teamCap()) != FollowLimit.ADD) return false;   // the ceiling, or the warning not yet answered
         v.add(id + "|" + name.replace("|", " ").replace(";", " "));
         setList("teams", v);
         return true;
