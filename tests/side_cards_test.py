@@ -50,7 +50,7 @@ if shutil.which("javac"):
     check("a side card never shows what the strip shows (the next prayer, the hours' weather, the matches): it goes, the next match stands in when free, nothing left = no column",
           got == want, {k: (got.get(k), v) for k, v in want.items() if got.get(k) != v})
 else:
-    print("SKIP SideTopics run: no javac here")
+    print("SKIP SideTopics run: no javac here"); failed += 1   # a missing javac is a failure, as in the other tests (review F128)
 check("the column reads the strip's cards as HomeCard does (home_panels over the first) and passes them; the strip's material is put on its page",
       'String cards = SideTopics.beside(cards(opt), strip);' in side and 'int all = c.getColumnIndex("home_panels");' in side and "String u = url(frag, layout, strip);" in side
       and "side.show(u == null || homeCard == null ? u : homeCard.glassed(u));" in main and "String glassed(String u) { return withGlass(u); }" in (ROOT / "android/launcher/src/main/java/sa/urtv/home/HomeCard.java").read_text(encoding="utf-8"))

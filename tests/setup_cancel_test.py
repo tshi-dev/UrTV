@@ -21,7 +21,7 @@ check("the runner and friendly() read a Cancel by its start, never by equals", "
       and "static boolean cancelled(String message)" in adb)
 if not shutil.which("javac"):
     print("SKIP the fallback on a JVM: no javac here")
-    sys.exit(1 if failed else 0)
+    sys.exit(1)   # a missing javac is a failure, as in the other tests (review F128)
 with tempfile.TemporaryDirectory() as tmp:
     pure = [p for p in sorted(SETUP.glob("*.java")) if "import android." not in p.read_text(encoding="utf-8")] + [SETUP.parent / "phone/UpdateRules.java", SETUP.parent / "SuggestedApps.java", SETUP.parent / "ExtrasWords.java"]
     r = subprocess.run(["javac", "-encoding", "UTF-8", "-d", tmp, *map(str, pure), str(ROOT / "tests/PairFallbackRun.java")], capture_output=True, text=True)

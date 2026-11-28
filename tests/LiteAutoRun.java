@@ -30,6 +30,8 @@ public final class LiteAutoRun {
         System.out.println("TWOSEC " + LiteAuto.on(two, t0 + 2000));
         String apart = LiteAuto.add(LiteAuto.add("", LiteAuto.TRIM, t0), LiteAuto.TRIM, t0 + 4 * 3_600_000L);
         System.out.println("APART " + LiteAuto.on(apart, t0 + 5 * 3_600_000L));
+        String cross = LiteAuto.add(LiteAuto.add(LiteAuto.add("", LiteAuto.TRIM, t0), LiteAuto.OOM, t0 + 1000), LiteAuto.SLOW, t0 + 2000);
+        System.out.println("CROSS " + LiteAuto.parse(cross).size() + " " + LiteAuto.on(cross, t0 + 3000));
         String late = LiteAuto.add(LiteAuto.add("", LiteAuto.TRIM, t0 + 2 * D), LiteAuto.OOM, t0, t0 + 2 * D);   // an older kill read at the next start
         System.out.println("AT " + LiteAuto.parse(late).size() + " " + LiteAuto.on(late, t0 + 2 * D));
         String old = LiteAuto.add("trim " + (t0 - 30 * D) + "\n", LiteAuto.SLOW, t0);

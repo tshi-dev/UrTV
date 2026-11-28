@@ -32,7 +32,7 @@ check("ExtrasTrust.ok: resolveContentProvider of the authority, the owner's pack
 check("the pairing and the shell of the setup go through it (PairRoute.call, Extras.call)", "ExtrasTrust.call(c, method, arg, extras)" in rd(H / "setup/PairRoute.java") and "ExtrasTrust.call(c, method, arg, extras)" in rd(H / "Extras.java"))
 if not shutil.which("javac"):
     print("SKIP the rule on a JVM: no javac")
-    sys.exit(1 if failed else 0)
+    sys.exit(1)   # a missing javac is a failure, as in the other tests (review F128)
 with tempfile.TemporaryDirectory() as tmp:
     run = Path(tmp, "Run.java")
     run.write_text('''package sa.urtv.home;

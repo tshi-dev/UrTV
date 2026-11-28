@@ -87,13 +87,16 @@ public final class PairHost {
             throw new IOException(m.contains("service of this TV found") ? "no_port" : m.contains("not paired") ? "not_paired" : "refused");
         }
         String id = UUID.randomUUID().toString();
-        OPEN.add(id, conn);   // full: the oldest (a caller that died) is closed and goes (ConnPool, review F95)
+        if (!OPEN.add(id, conn)) {   // full of connections in a call: this one is refused, never a command of another cut (ConnPool, review F131); an idle one (a caller that died) goes instead
+            try { conn.close(); } catch (RuntimeException ignored) { }
+            throw new IOException("busy");
+        }
         Log.i(TAG, "connection open");
         return id;
     }
 
     private static PairClient.Connection get(String id) throws IOException {
-        PairClient.Connection conn = OPEN.get(id);
+        PairClient.Connection conn = OPEN.use(id);   // marked in a call: PairHost.run / exec end it (OPEN.done)
         if (conn == null) throw new IOException("closed");
         return conn;
     }
@@ -101,7 +104,11 @@ public final class PairHost {
     /** one shell command, its output with the `URTV_RC=` marker (the home splits it as AdbClient.withCode) */
     public static String run(String id, String command) throws IOException {
         final PairClient.Connection conn = get(id);
-        return Deadline.call(() -> conn.run(command), RUN_MS, () -> close(id));   // a stalled link ends the call and the connection (review F96)
+        try {
+            return Deadline.call(() -> conn.run(command), RUN_MS, () -> close(id));   // a stalled link ends the call and the connection (review F96)
+        } finally {
+            OPEN.done(id);
+        }
     }
 
     /** a command fed {@code size} bytes read from the home's own file (a one-time content address the home made for it) */
@@ -110,6 +117,8 @@ public final class PairHost {
         try (InputStream in = c.getContentResolver().openInputStream(from)) {
             if (in == null) throw new IOException("the file is not there");
             return Deadline.call(() -> conn.exec(command, in, size), EXEC_MS, () -> close(id));
+        } finally {
+            OPEN.done(id);   // the call ended (review F131)
         }
     }
 

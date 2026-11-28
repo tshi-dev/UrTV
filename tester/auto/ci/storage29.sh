@@ -13,6 +13,7 @@ adb wait-for-device
 SDK=$(adb shell getprop ro.build.version.sdk | tr -d '\r')
 echo "api $SDK"
 [ "$SDK" = 29 ] || { echo "FAIL: this emulator is API $SDK, not 29" > "$OUT/result.txt"; exit 1; }
+[ "$(adb shell getprop ro.kernel.qemu | tr -d '\r')" = 1 ] || { echo "FAIL: this is not an emulator (ro.kernel.qemu is not 1): the script installs a debug build, grants permissions and roots the device, so it runs only on the CI emulator (review F130)" > "$OUT/result.txt"; exit 1; }
 adb shell settings put global device_provisioned 1
 adb shell settings put secure user_setup_complete 1
 adb install -r -g "$HOME_APK" || adb install -r "$HOME_APK"

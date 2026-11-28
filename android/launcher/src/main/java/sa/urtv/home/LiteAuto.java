@@ -51,7 +51,7 @@ final class LiteAuto {
     /** a signal that happened at {@code at} (a low-memory kill read at the next start), added {@code now}: the window is reckoned from now, never from at */
     static String add(String text, String kind, long at, long now) {
         List<Event> all = parse(text);
-        for (Event e : all) if (e.kind.equals(kind) && Math.abs(e.at - at) < DEBOUNCE) return add(text, now);   // the same burst: nothing new
+        for (Event e : all) if (Math.abs(e.at - at) < DEBOUNCE) return add(text, now);   // one signal per burst, whatever its kind (review F132: a trim, then the kill and the slow start it caused, are one event)   // the same burst: nothing new
         all.add(new Event(kind, at));
         List<Event> kept = new ArrayList<>();
         for (Event e : all) if (e.at <= now && now - e.at <= HOLD) kept.add(e);

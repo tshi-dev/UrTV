@@ -152,7 +152,8 @@ class Store:
                     if stage(e) < stage(b2[k]):
                         return ""
                     del b2[k]
-                    self.merged += 1   # every removed copy is counted, so the «store shrank» guard never mistakes it for a loss
+                    if k in bucket:   # a duplicate is removed (the store really shrinks by one): counted, so the «store shrank» guard does not mistake it for a loss; a game that only MOVED between season labels is not (review F132)
+                        self.merged += 1
         old = bucket.get(k)
         if old is None:
             bucket[k] = e

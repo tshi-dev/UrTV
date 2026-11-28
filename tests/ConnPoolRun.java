@@ -8,10 +8,16 @@ public final class ConnPoolRun {
     public static void main(String[] a) {
         List<String> closed = new ArrayList<>();
         ConnPool<String> p = new ConnPool<>(2, closed::add);
-        p.add("h1", "c1"); p.add("h2", "c2");
-        System.out.println("two\t" + p.size() + " " + closed);
-        p.add("h3", "c3");   // the caller of h1 died: h1 is closed and gone, h3 is in
-        System.out.println("full evicts the oldest\t" + p.size() + " " + closed + " " + p.get("h1") + " " + p.get("h3"));
+        System.out.println("two\t" + p.add("h1", "c1") + " " + p.add("h2", "c2") + " " + p.size() + " " + closed);
+        System.out.println("full evicts the oldest idle\t" + p.add("h3", "c3") + " " + p.size() + " " + closed + " " + p.use("h1") + " " + p.use("h3"));
+        p.done("h3");
+        List<String> c2 = new ArrayList<>();
+        ConnPool<String> q = new ConnPool<>(2, c2::add);
+        q.add("a", "ca"); q.add("b", "cb");
+        q.use("a"); q.use("b");   // both in a call
+        System.out.println("all in a call: refused, nothing closed\t" + q.add("c", "cc") + " " + q.size() + " " + c2);
+        q.done("b");
+        System.out.println("an idle one goes (the oldest idle, not the one in a call)\t" + q.add("c", "cc") + " " + q.size() + " " + c2 + " " + q.use("a") + " " + q.use("b"));
         for (int i = 0; i < 20; i++) p.add("x" + i, "cx" + i);
         System.out.println("never over max\t" + p.size());
         p.remove("x19");

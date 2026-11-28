@@ -204,7 +204,7 @@ wf29 = (ROOT / ".github/workflows/auto-round.yml").read_text(encoding="utf-8")
 sc29 = (ROOT / "tester/auto/ci/storage29.sh").read_text(encoding="utf-8")
 check("Android 10 (API 29): the round's workflow lists the photos of Downloads on an API 29 TV emulator, and goes red when it lists none (review F97)",
       "api-level: 29" in wf29 and "tester/auto/ci/storage29.sh" in wf29 and "grep -q '^PASS' auto-out/storage29/result.txt" in wf29
-      and '"$SDK" = 29' in sc29 and "/sdcard/Download" in sc29 and "PhotoAddActivity" in sc29 and "لا صور هنا" in sc29)
+      and '"$SDK" = 29' in sc29 and "ro.kernel.qemu" in sc29 and "/sdcard/Download" in sc29 and "PhotoAddActivity" in sc29 and "لا صور هنا" in sc29)
 
 ci_src = "\n".join((ROOT / "tester/auto/ci" / f).read_text(encoding="utf-8") for f in ("run.sh", "tv_adb.py", "storage29.sh"))
 check("the CI scripts hold no IP address (check.py's «no private IPs, keys or network names» failed on a ping to one): the network is asked with a hostname",

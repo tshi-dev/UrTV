@@ -35,6 +35,11 @@ import java.util.concurrent.Executors;
  */
 public final class PhotoAddActivity extends Activity {
     private static final int ASK_READ = 43, SIDE = 160;
+    /** the screensaver app is on this TV (a null answer from its provider with it installed is not «install it») */
+    private boolean saverInstalled() {
+        try { getPackageManager().getPackageInfo("sa.urtv.screensaver", 0); return true; } catch (android.content.pm.PackageManager.NameNotFoundException | RuntimeException e) { return false; }
+    }
+
     private static final Uri SAVER = Uri.parse("content://sa.urtv.screensaver.config");
 
     private final ExecutorService worker = Executors.newSingleThreadExecutor();
@@ -128,7 +133,7 @@ public final class PhotoAddActivity extends Activity {
                 Bundle in = new Bundle();
                 in.putByteArray("jpeg", jpeg);
                 Bundle res = getContentResolver().call(SAVER, "phone_photo_add", null, in);
-                if (res == null) msg = S.t("ثبّت أو حدّث تطبيق «شاشة تلفزيونك» أولاً");
+                if (res == null) msg = saverInstalled() ? S.t("ما قدرنا نضيف هذه الصورة") : S.t("ثبّت أو حدّث تطبيق «شاشة تلفزيونك» أولاً");   // review F132: «install it» only when it is not installed
                 else if ("photo_added".equals(res.getString("result"))) msg = S.t("أضيفت إلى صوري ✓");
                 else msg = "full".equals(res.getString("why")) ? S.t("صوري ممتلئة: احذف بعضها أولاً") : S.t("ما قدرنا نضيف هذه الصورة");
             } catch (RuntimeException | OutOfMemoryError e) {   // F89: a photo too big for this TV's memory is said, never a crash
