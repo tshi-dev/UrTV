@@ -38,6 +38,11 @@ check("a dream: mCurrentDream or DreamActivity; null is none", lib.dreaming("mCu
 check("mute: only the music stream's block counts", lib.muted("- STREAM_MUSIC:\n Muted: true\n- STREAM_ALARM:\n Muted: false") and not lib.muted("- STREAM_MUSIC:\n Muted: false\n- STREAM_ALARM:\n Muted: true"))
 xml = '<node text="" focused="true" bounds="[0,0][100,100]"/><node text="الأذان" focused="false" bounds="[10,10][90,50]"/><node text="x" focused="false" bounds="[200,0][300,10]"/>'
 check("the focused row's name (a child's text when the row itself has none), and a text on the screen", lib.focused(xml) == "الأذان" and lib.has_text(xml, "الأذان") and not lib.has_text(xml, "غير موجود"))
+rows = "".join(f'<node text="" selected="{str(n == 4).lower()}" focused="false" bounds="[0,{n * 100}][800,{n * 100 + 90}]"/><node text="{t}" bounds="[10,{n * 100 + 5}][700,{n * 100 + 50}]"/>'
+               for n, t in enumerate(["سعود الشريم", "ماهر المعيقلي", "مشاري العفاسي", "سعد الغامدي", "ياسر الدوسري"], start=2))
+lst = '<node text="" class="android.widget.ListView" focused="true" bounds="[0,200][800,700]"/>' + rows
+check("a focused list: its selected row is the one named, not the top one on the screen (auto-19: OK on «السديس» played «ماهر المعيقلي»)",
+      lib.focused(lst) == "مشاري العفاسي" and lib.focused(lst.replace('selected="true"', 'selected="false"')) == "سعود الشريم", lib.focused(lst))
 check("the settings style, the volume, the city, the adhan state of a prayer", lib.settings_style("a=1\nsettingsstyle=couch\n") == "couch" and lib.settings_style("nothing") == "" and lib.music_volume("volume is 7 in range [0..15]") == 7 and lib.city("version=4\ncity=الرياض\nx") == "الرياض"
       and lib.adhan_state("prayer_sound=fajr:silent,dhuhr:|prayer_screen=fajr:on,dhuhr:off", "fajr") == "screen" and lib.adhan_state("prayer_sound=fajr:silent,dhuhr:|prayer_screen=fajr:on,dhuhr:off", "dhuhr") == "sound"
       and lib.adhan_state("nothing", "fajr") == "")
