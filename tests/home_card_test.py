@@ -48,7 +48,7 @@ ma_ok = ("protected void onResume() {\n        super.onResume();\n        if (we
 sc = (ROOT / "android/launcher/src/main/java/sa/urtv/home/SideCards.java").read_text(encoding="utf-8")
 sc_ok = ("web.onResume();\n        web.resumeTimers();" in sc and "if (web != null) { web.onPause(); web.pauseTimers(); }" in sc
          and "homeCard.pause();\n        if (sideCards != null) sideCards.pause();" in (ROOT / "android/launcher/src/main/java/sa/urtv/home/MainActivity.java").read_text(encoding="utf-8")
-         and "!isDestroyed() && resumed) side.show(u);" in (ROOT / "android/launcher/src/main/java/sa/urtv/home/MainActivity.java").read_text(encoding="utf-8"))
+         and "!isDestroyed() && resumed) side.show(" in (ROOT / "android/launcher/src/main/java/sa/urtv/home/MainActivity.java").read_text(encoding="utf-8"))
 card_ok = sorted(makers) == ["HomeCard.java", "MatchesActivity.java", "SideCards.java"] and sorted(timers) == ["HomeCard.java", "MatchesActivity.java", "SideCards.java"] and ma_ok and sc_ok
 print(("PASS " if card_ok else "FAIL ") + "the launcher's WebViews are HomeCard's, «المباريات»'s and «كنبة»'s side cards', each pausing the process-wide timers when it goes and resuming them when it comes"
       + ("" if card_ok else f"  -> WebViews: {makers}, pauseTimers in: {timers}; revisit HomeCard.pause()/refresh() before adding another"))

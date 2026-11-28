@@ -38,4 +38,20 @@ check("the settings are read on the loader, the view placed on the UI thread, wi
       and main.count("refreshSideCards();") >= 2 and "if (sideCards != null) sideCards.drop();" in main)
 check("the page: #side=1 is one narrow column, the cards share its height, no two side by side", "if(_Q.get('side') === '1') document.documentElement.classList.add('side');" in page
       and "html.side .mid,html.side .mid.n2,html.side .mid.n3{grid-template-columns:minmax(0,1fr)!important" in page)
+# 4.4 beta 4 (the supervisor, run 23): the column never repeats the strip, and wears the strip's material (no framed look of its own)
+import shutil, subprocess, tempfile
+if shutil.which("javac"):
+    with tempfile.TemporaryDirectory() as tmp:
+        subprocess.run(["javac", "-encoding", "UTF-8", "-d", tmp, str(ROOT / "android/launcher/src/main/java/sa/urtv/home/SideTopics.java"), str(ROOT / "tests/SideTopicsRun.java")], check=True)
+        got = dict(l.split(" -> ") for l in subprocess.run(["java", "-cp", tmp, "sa.urtv.home.SideTopicsRun"], check=True, capture_output=True, text=True).stdout.splitlines())
+    want = {"nextprayer,hourly|none": "nextprayer,hourly", "nextprayer,hourly,nextmatch|none": "nextprayer,hourly,nextmatch", "nextprayer,hourly|stocks": "nextprayer,hourly",
+            "nextprayer,hourly,nextmatch|matches,prayerrow,hourly": "null", "nextprayer,hourly|prayerrow": "hourly,nextmatch",
+            "nextprayer,hourly,nextmatch|prayers,verse": "hourly,nextmatch", "nextprayer,hourly|smart": "null", "nextprayer,hourly,nextmatch|today,stocks": "hourly"}
+    check("a side card never shows what the strip shows (the next prayer, the hours' weather, the matches): it goes, the next match stands in when free, nothing left = no column",
+          got == want, {k: (got.get(k), v) for k, v in want.items() if got.get(k) != v})
+else:
+    print("SKIP SideTopics run: no javac here")
+check("the column reads the strip's cards as HomeCard does (home_panels over the first) and passes them; the strip's material is put on its page",
+      'String cards = SideTopics.beside(cards(opt), strip);' in side and 'int all = c.getColumnIndex("home_panels");' in side and "String u = url(frag, layout, strip);" in side
+      and "side.show(u == null || homeCard == null ? u : homeCard.glassed(u));" in main and "String glassed(String u) { return withGlass(u); }" in (ROOT / "android/launcher/src/main/java/sa/urtv/home/HomeCard.java").read_text(encoding="utf-8"))
 sys.exit(1 if failed else 0)

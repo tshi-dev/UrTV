@@ -62,26 +62,35 @@ final class SideCards {
     }
 
     /** The page's address for the side column, or null when it is off or not for this layout (only «كنبة» has the room). Plain Java: tests run it. */
-    static String url(String frag, String layout) {
+    static String url(String frag, String layout) { return url(frag, layout, null); }
+
+    /** the same, beside the strip's own cards ({@code strip} "a,b,c", null or "none" for none): the column never repeats what the strip shows */
+    static String url(String frag, String layout, String strip) {
         String opt = option(frag);
         if (opt == null || !"couch".equals(layout)) return null;
-        String u = HomeCardChoice.url(new String[] {frag.replaceAll("(^|&)sidecards=[^&]*", ""), cards(opt)});
+        String cards = SideTopics.beside(cards(opt), strip);
+        if (cards == null) return null;   // all of it is in the strip already: no column
+        String u = HomeCardChoice.url(new String[] {frag.replaceAll("(^|&)sidecards=[^&]*", ""), cards});
         return u == null ? null : u + "&side=1";
     }
 
+
     /** Off the UI thread: what the side column should show now (null: nothing). */
     String read() {
-        String frag = null, layout = null;
+        String frag = null, layout = null, strip = null;
         try (Cursor c = activity.getContentResolver().query(CONFIG, null, null, null, null)) {
             if (c != null && c.moveToFirst()) {
                 frag = c.getString(0);
+                strip = c.getString(1);   // the strip's cards, as HomeCard reads them (every card when the screensaver says them all)
+                int all = c.getColumnIndex("home_panels");
+                if (all >= 0 && c.getString(all) != null) strip = c.getString(all);
                 int l = c.getColumnIndex("home_layout");
                 layout = l >= 0 ? c.getString(l) : null;
             }
         } catch (RuntimeException e) {
             return null;   // the screensaver's settings are out of reach: no side cards
         }
-        String u = url(frag, layout);
+        String u = url(frag, layout, strip);
         return u == null ? null : HomePage.fresh(activity, u);
     }
 

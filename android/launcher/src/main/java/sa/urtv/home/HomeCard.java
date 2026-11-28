@@ -379,6 +379,9 @@ final class HomeCard {
      * design/43 «توحيد المظهر»: the cards wear the home's one material (GlassStyle.material, CARDS), the same as the upper buttons and the apps bar, so the stocks, the prayers, the
      * games and the tasks are one family with them in every look. The page reads it as #hpanel= and #hline= (CSS html.hcard) and, with the switch on, its ink (html.hsync).
      */
+    /** «كنبة»'s side cards wear the same material as the strip (the supervisor, run 23: they kept the page's own framed look, its diamonds) */
+    String glassed(String u) { return withGlass(u); }
+
     private String withGlass(String u) {
         if (u == null || !u.contains("#") || DebugFlags.on(activity, "nocardglass")) return u;   // (a tester's switch: the cards keep their own look)
         return u + glassQuery(GlassStyle.material(lookNow, lightNow, GlassStyle.CARDS));

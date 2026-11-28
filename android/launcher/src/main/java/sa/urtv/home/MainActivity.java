@@ -755,7 +755,7 @@ public class MainActivity extends Activity {
         if (loader.isShutdown()) return;
         loader.execute(() -> {
             final String u = side.read();
-            runOnUiThread(() -> { if (!isFinishing() && !isDestroyed() && resumed) side.show(u); });   // never after onPause (it resumes the page's timers)
+            runOnUiThread(() -> { if (!isFinishing() && !isDestroyed() && resumed) side.show(u == null || homeCard == null ? u : homeCard.glassed(u)); });   // never after onPause (it resumes the page's timers)
         });
     }
 
@@ -3710,8 +3710,11 @@ public class MainActivity extends Activity {
         if (nameRow == null || nameRow.getWidth() == 0) return;
         View f = getCurrentFocus();
         boolean inBar = f != null && (dockCards.contains(f) || f == allAppsCard || f == settingsCard) && edit == null;
-        placeZoomName(appsZoom && inBar ? f : null);
-        if (appsZoom) inBar = false;   // «تكبير وظل»: the name is under the tile, not above the tray
+        // 4.4 beta 4 (the supervisor, run 23: «يوتيوب» drawn over the match card): with the big clock the strip comes down to the apps row, over the place
+        // of the name above the tray, so the name goes under the tile as in «تكبير وظل»
+        boolean under = appsZoom || (bigClockOn && homeCard != null && homeCard.inRow());
+        placeZoomName(under && inBar ? f : null);
+        if (under) inBar = false;   // «تكبير وظل»: the name is under the tile, not above the tray
         // this runs on every step of the tray's scroll: a new animator each step (cancel and restart, an invalidation each) is exactly what makes a scroll janky;
         // the name's fade starts only when it has to change
         if (nameShown != inBar || (!inBar && nameRow.getAlpha() > 0f && !nameHiding)) {   // 4.4 beta 2: the row also fades when it was never shown (the zoom ways: it stayed beside the name over the icon)
