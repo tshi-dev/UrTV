@@ -1,0 +1,43 @@
+# Automatic round: emulator-12
+
+## Health metrics
+
+| metric | now | limit | previous | change | verdict |
+|---|---|---|---|---|---|
+| (no metric was measured) | | | | | |
+
+## Checks
+
+| step | result | what |
+|---|---|---|
+| settings | SKIP | left out of this round (--skip / ROUND_SKIP) |
+| saver | SKIP | left out of this round (--skip / ROUND_SKIP) |
+| radio | SKIP | left out of this round (--skip / ROUND_SKIP) |
+| display | SKIP | left out of this round (--skip / ROUND_SKIP) |
+| font | SKIP | left out of this round (--skip / ROUND_SKIP) |
+| adhan | SKIP | left out of this round (--skip / ROUND_SKIP) |
+| games | SKIP | left out of this round (--skip / ROUND_SKIP) |
+| health | SKIP | left out of this round (--skip / ROUND_SKIP) |
+| radio | SKIP | left out of this round (--skip / ROUND_SKIP) |
+| layout-classic-none | PASS | كلاسيكي، بلا بطاقة: the home is in front (look at shots/layout-classic-none.png) |
+| layout-classic-stocks | PASS | كلاسيكي، الأسهم: the home is in front (look at shots/layout-classic-stocks.png) |
+| layout-classic-matches | PASS | كلاسيكي، المباريات: the home is in front (look at shots/layout-classic-matches.png) |
+| layout-couch-none | PASS | كنبة، بلا بطاقة: the home is in front (look at shots/layout-couch-none.png) |
+| layout-couch-stocks | PASS | كنبة، الأسهم: the home is in front (look at shots/layout-couch-stocks.png) |
+| layout-couch-matches | PASS | كنبة، المباريات: the home is in front (look at shots/layout-couch-matches.png) |
+| layout-football-none | PASS | كرة القدم، بلا بطاقة: the home is in front (look at shots/layout-football-none.png) |
+| layout-football-stocks | PASS | كرة القدم، الأسهم: the home is in front (look at shots/layout-football-stocks.png) |
+| layout-football-matches | PASS | كرة القدم، المباريات: the home is in front (look at shots/layout-football-matches.png) |
+| reach-classic-none | PASS | كلاسيكي، بلا بطاقة: the settings in 4 presses from the home (start→ UP→مركز التحكم DOWN→الإعدادات) |
+| reach-classic-stocks | PASS | كلاسيكي، الأسهم: the settings in 4 presses from the home (start→ UP→مركز التحكم DOWN→الإعدادات) |
+| reach-classic-matches | PASS | كلاسيكي، المباريات: the settings in 4 presses from the home (start→ UP→مركز التحكم DOWN→الإعدادات) |
+| reach-couch-none | PASS | كنبة، بلا بطاقة: the settings in 6 presses from the home (start→الجوال RIGHT→المباريات RIGHT→الأسواق RIGHT→مركز التحكم DOWN→الإعدادات) |
+| reach-couch-stocks | PASS | كنبة، الأسهم: the settings in 4 presses from the home (start→ UP→مركز التحكم DOWN→الإعدادات) |
+| reach-couch-matches | PASS | كنبة، المباريات: the settings in 4 presses from the home (start→ UP→مركز التحكم DOWN→الإعدادات) |
+| reach-football-none | PASS | كرة القدم، بلا بطاقة: the settings in 6 presses from the home (start→الجوال RIGHT→المباريات RIGHT→الأسواق RIGHT→مركز التحكم DOWN→الإعدادات) |
+| reach-football-stocks | PASS | كرة القدم، الأسهم: the settings in 4 presses from the home (start→ UP→مركز التحكم DOWN→الإعدادات) |
+| reach-football-matches | PASS | كرة القدم، المباريات: the settings in 4 presses from the home (start→ UP→مركز التحكم DOWN→الإعدادات) |
+
+## Verdict
+
+GREEN: every metric within its limit, no step failed.
