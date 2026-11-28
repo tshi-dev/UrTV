@@ -1,3 +1,5 @@
+▶▶ UPDATE (28 Nov, 09:50): the fixed round.sh is on origin/work/44-beta4 afab5a3b. Before your next run: `git fetch origin work/44-beta4 && git checkout origin/work/44-beta4 -- tester/auto` (only the tester/auto folder). It now restores the home layout, the home card and each prayer's own voice/screen. On build 654 it SKIPS the settings-style walk (the old build cannot report the style); on the newer apk-next it runs it. Still compare `saver.sh show` with show-before.txt at the end.
+
 ▶▶ WARNING (28 Nov, 09:45): round.sh does NOT yet restore everything on a real TV (review F102): homelayout, the home card, the settings style and a prayer's own adhan voice may stay changed. After EVERY round.sh run, compare `saver.sh show` with your show-before.txt and put back by hand anything that differs (homelayout couch, home-card stocks, the voices per prayer) before you stop. A fixed round.sh is coming.
 
 ▶▶ BETA 4 = next 7595a14b (28 Nov, morning). This replaces the 46dcad40 block. Do it FIRST.
