@@ -634,6 +634,7 @@ final class Prefs {
             boolean flag = false;
             try { flag = ((android.app.ActivityManager) c.getSystemService(Context.ACTIVITY_SERVICE)).isLowRamDevice(); } catch (RuntimeException ignored) { }
             int t = ramTier(flag, ramMb(c), Runtime.getRuntime().availableProcessors());
+            if (t != RAM_LOW && CpuClass.weak(Runtime.getRuntime().availableProcessors(), CpuClass.maxKhz())) t = RAM_LOW;   // 4.4 beta 4: a slow processor is LOW too (CpuClass, the home's Ram the same); «إيقاف» below still wins
             try {
                 android.content.SharedPreferences s = c.getSharedPreferences("settings", Context.MODE_PRIVATE);
                 t = liteTier(t, s.getString("lite", "auto"));   // A14 «الوضع الخفيف»

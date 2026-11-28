@@ -45,6 +45,7 @@ python3 tests/step52_test.py   # the tester's step 52 findings in the source: th
 python3 tests/party_games_test.py   # «واحد مو معنا» and «بدون كلام / وصّف»: the rules on a plain JVM, the bundled word files
 python3 tests/ram_tier_test.py   # the three memory tiers (LOW under 2000 MB, MID under 2600, NORMAL), one rule per app, the test switch
 python3 tests/lite_auto_test.py   # 4.4 beta 3: «الوضع الخفيف» تلقائي also from what this TV shows (memory low in front, a slow first frame, a low-memory kill): said once, never on the UI thread
+python3 tests/cpu_class_test.py   # 4.4 beta 4: the processor's class turns lite mode on
 python3 tests/matches_today_test.py   # «بطاقة المباريات لليوم فقط» (PR #65): the setting from the command to the page
 python3 tests/scene_blank_test.py   # 4.4 beta 4: no scene draws: logged, and the wall photos instead of a black home
 python3 tests/scene_home_test.py   # 4.3.3 «المشاهد»: the scene rules per tier on a JVM, the Saudi pack's files and sizes, the Couch TV download checks, the wiring
@@ -501,6 +502,7 @@ node tests/page.test.mjs
 node tests/mkbar_push.test.mjs   # 4.4 beta 4: «شريط الأسواق» on or off reaches the running page
 node tests/clock_off.test.mjs   # 4.4 beta 4: a TV clock far off: «ساعة التلفزيون غير مضبوطة» instead of a wrong date
 node tests/photo_log.test.mjs   # 4.4 beta 4: a photo that does not load is said, and a bundled one that loads stands in
+node tests/lite_cpu.test.mjs   # 4.4 beta 4: «الوضع الخفيف» stays light (no animation, under 2 % main thread)
 node tests/pack_fallback.test.mjs   # 4.4 beta 3: a pack or «صوري» photo that does not load never leaves the screensaver black (a bundled photo shows)
 node tests/tafsir.test.mjs   # «التفسير الميسر» (#tafsir=1): every verse of the deck has its tafsir, whole, in pages of three lines at most, never «…»
 node tests/saver_designs.test.mjs   # 4.4 the screensaver's designs (the owner approved them): each shows what it should; a prayer's name and time never touch

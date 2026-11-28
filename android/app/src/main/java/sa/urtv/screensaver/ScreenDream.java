@@ -27,6 +27,19 @@ public class ScreenDream extends DreamService {
         }
     };
     private final StartGate gate = new StartGate();
+    /** 4.4 beta 4: every 10 minutes while it shows, one log line with this app's share of one core (the page's renderer is its own process) and the tier */
+    static final long CPU_EVERY_MS = 10 * 60_000L;
+    private long cpuAt, cpuMs;
+    private final Runnable cpuTick = new Runnable() {
+        @Override public void run() {
+            if (!attached) return;
+            long now = android.os.SystemClock.elapsedRealtime(), cpu = android.os.Process.getElapsedCpuTime();
+            android.util.Log.i("UrTVSaver", "cpu: " + CpuClass.percent(cpu - cpuMs, now - cpuAt) + "% of one core over " + (now - cpuAt) / 60_000 + " min (this app), tier "
+                    + (Prefs.lowRam(ScreenDream.this) ? "low" : Prefs.midRam(ScreenDream.this) ? "mid" : "normal") + ", " + Runtime.getRuntime().availableProcessors() + " cores at " + CpuClass.maxKhz() / 1000 + " MHz");
+            cpuAt = now; cpuMs = cpu;
+            snapHandler.postDelayed(this, CPU_EVERY_MS);
+        }
+    };
 
     /** S6 (P4): the page is built again only when what it is opened with changed; a setting that does not reach it (the phone's, the home's) left the dream as it was */
     private void rebuildIfChanged(Context c) {
@@ -90,6 +103,8 @@ public class ScreenDream extends DreamService {
         Showing.enter();
         snapHandler.post(adhanWatch);
         ClockCheck.start(this);   // 4.4 beta 4: the TV's clock against the network's, for the page's date line
+        cpuAt = android.os.SystemClock.elapsedRealtime(); cpuMs = android.os.Process.getElapsedCpuTime();
+        snapHandler.postDelayed(cpuTick, CPU_EVERY_MS);   // 4.4 beta 4: what this app's processor use is, in the log (a weak TV's report)
         show(true);
         InternalReceivers.register(this, changed, new IntentFilter(Prefs.CHANGED));
     }
@@ -195,6 +210,7 @@ public class ScreenDream extends DreamService {
         try { unregisterReceiver(changed); } catch (IllegalArgumentException ignored) { }
         snapHandler.removeCallbacks(adhanWatch);
         snapHandler.removeCallbacks(snapTick);   // (the picture the next start draws first was taken while the page showed: SaverSnapshot.capture)
+        snapHandler.removeCallbacks(cpuTick);
         ScreenView.release(web);
         web = null;
         super.onDetachedFromWindow();
