@@ -5016,7 +5016,7 @@ const FB_W = {
   champs:'الأبطال', scorers:'الهدّافون',
   cTabs:'النادي|المباريات|النتائج|البطولات|المواجهات', places:'الأول|الثاني|الثالث|الرابع|الخامس|السادس|السابع|الثامن|التاسع|العاشر|الحادي عشر|الثاني عشر|الثالث عشر|الرابع عشر|الخامس عشر|السادس عشر|السابع عشر|الثامن عشر|التاسع عشر|العشرون',
   placeN:'المركز %s', standing:'%s في %s، %s نقطة من %s مباراة', lastTitle:'آخر بطولة: %s %s', inTable:'في الترتيب', nextGame:'المباراة القادمة', last5:'آخر خمس مباريات',
-  tCols:'النادي|لعب|فاز|تعادل|خسر|له|عليه|الفارق|نقاط|آخر خمس مباريات', fWords:'فوز|تعادل|خسارة', fSay:'آخر خمس مباريات: %s', tAll:'الكل', tLive:'مع المباريات الجارية',
+  tCols:'النادي|لعب|فاز|تعادل|خسر|له|عليه|الفارق|نقاط|آخر خمس مباريات', fWords:'فوز|تعادل|خسارة', fSay:'آخر خمس مباريات: %s', tAll:'الكل', tLive:'مع المباريات الجارية', tHome:'على أرضه', tAway:'خارج أرضه',
   zones:{acle:'دوري أبطال آسيا للنخبة', acl2:'دوري أبطال آسيا %s', ucl:'دوري أبطال أوروبا', uel:'الدوري الأوروبي', uecl:'دوري المؤتمر الأوروبي', po:'الملحق', down:'الهبوط'},
   myLeagues:'دورياتي', add:'أضف دوريًا أو فريقًا', manage:'إعدادات فرقي', noTeams:'ما تتابع فريقًا بعد', noLeagues:'ما تتابع دوريًا بعد', allLands:'كل الدول',
   lgTeams:'فرق هذا الدوري', lgOpen:'الترتيب والنتائج', followedL:'أُضيف %s إلى دورياتك', unfollowedL:'أُزيل %s من دورياتك', on:'متابَع', find:'ابحث عن فريق', found:'نتائج البحث', typeName:'اكتب اسم الفريق', full:'وصلت للحد: ٨ دوريات', fullL:'هذا الحد الأعلى: ٢٤ دوريًا حتى يبقى التلفزيون سريعًا. أزل دوريًا لتضيف غيره', fullT:'هذا الحد الأعلى: ٤٠ فريقًا حتى يبقى التلفزيون سريعًا. أزل فريقًا لتضيف غيره', fullT20:'وصلت للحد: ٢٠ فريقًا',
@@ -5336,7 +5336,7 @@ function mpLeagueView(v){
     const own = sp && !sp.cup && Array.isArray(sp.table) && sp.table.filter(x => x && /^\d+$/.test(String(x.id)) && x.p > 0);
     let rows = [], t = null;
     if(own && own.length){   // 4.4 beta 5 the full table (phase a); the toggle's state lives in the view, so it resets when the page closes
-      const g = mptGroup({id, rows: own, zones: sp.zones, live: v.live, flip: () => { v.live = !v.live; mpRender(); }});
+      const g = mptGroup({id, rows: own, zones: sp.zones, view: v.tv, flip: k => { v.tv = k; mpRender(); }});
       return {title: lgName(id), tabs, pins, groups: [g], focus: g.focus, fx: 1};
     }
     else if(sp !== undefined){   // the archive has no table of it (not there yet, a cup, a season not started): TheSportsDB's
@@ -5418,7 +5418,16 @@ const formMarks = f => { f = (Array.isArray(f) ? f : String(f || '').split('')).
 function mptGroup(o){
   const now = Date.now(), lg = String(o.id || ''), live = !o.past ? fbGames().filter(ev => String(ev.idLeague) === lg && fbLive(ev, now) && fbScored(ev)) : [];
   let rows = (o.rows || []).map(x => Object.assign({}, x, {id: String(x.id)}));
-  if(o.live && live.length){
+  // 4.4 the views of the toggle row: «الكل», «مع المباريات الجارية» (while a game of the league is live), «على أرضه» / «خارج أرضه» (when the
+  // file has each row's home and away counts, hm / aw); OK steps to the next. The home and away tables have no form, movement or zones (those are the whole table's)
+  const split = !o.past && rows.length && rows.every(x => Array.isArray(x.hm) && Array.isArray(x.aw));
+  const views = o.self ? ['all'] : ['all'].concat(live.length ? ['live'] : [], split ? ['home', 'away'] : []), view = views.includes(o.view) ? o.view : 'all';   // a club page's window: the table as it is, no toggle
+  if(view === 'home' || view === 'away'){
+    rows = rows.map(x => { const c = x[view === 'home' ? 'hm' : 'aw'].map(n => +n || 0);
+      return Object.assign({}, x, {p: c[0], w: c[1], d: c[2], l: c[3], gf: c[4], ga: c[5], pts: c[6], f: '', mv: undefined}); });
+    rows.sort((a, b) => (b.pts - a.pts) || ((b.gf - b.ga) - (a.gf - a.ga)) || (b.gf - a.gf) || String(a.n || '').localeCompare(String(b.n || '')));
+  }
+  if(view === 'live' && live.length){
     live.forEach(ev => [[ev.idHomeTeam, +ev.intHomeScore, +ev.intAwayScore], [ev.idAwayTeam, +ev.intAwayScore, +ev.intHomeScore]].forEach(([id, gf, ga]) => {
       const r = rows.find(x => x.id === String(id)); if(!r) return;
       r.p = +r.p + 1; r.gf = +r.gf + gf; r.ga = +r.ga + ga; r.pts = +r.pts + (gf > ga ? 3 : gf === ga ? 1 : 0); r.lv = fbStatus(ev, now);
@@ -5426,10 +5435,10 @@ function mptGroup(o){
     rows.sort((a, b) => (b.pts - a.pts) || ((b.gf - b.ga) - (a.gf - a.ga)) || (b.gf - a.gf) || String(a.n || '').localeCompare(String(b.n || '')));
   }
   const games = [];
-  if(live.length) games.push(Object.assign(mpItem(FB_W.tLive, '', () => { o.flip(); }), {tg: 1, on: !!o.live}));
+  if(views.length > 1) games.push(Object.assign(mpItem(FB_W.tAll, '', () => o.flip(views[(views.indexOf(view) + 1) % views.length])), {tg: 1, views, view}));
   rows.forEach(x => games.push(Object.assign(mpItem(clubNm(x.ar, x.n, x.id), '', () => mpGo({k: 'club', id: x.id})), {tr: x})));
-  return {key: 't', name: o.name || FB_W.table, games, table: {zones: Array.isArray(o.zones) ? o.zones : [], champ: o.champ ? String(o.champ) : '', champW: o.champW || '', past: !!o.past, n: rows.length, self: o.self ? String(o.self) : ''},
-    focus: Math.max(0, games.findIndex(g => g.tr && fbFollowed(g.tr.id))) || (live.length ? 1 : 0)};
+  return {key: 't', name: o.name || FB_W.table, games, table: {zones: Array.isArray(o.zones) && (view === 'all' || view === 'live') ? o.zones : [], champ: o.champ ? String(o.champ) : '', champW: o.champW || '', past: !!o.past, n: rows.length, self: o.self ? String(o.self) : ''},
+    focus: Math.max(0, games.findIndex(g => g.tr && fbFollowed(g.tr.id))) || (views.length > 1 ? 1 : 0)};
 }
 // …drawn: the column heads, then each row (rank, movement, crest, club, P W D L GF GA GD Pts, the last five); a zone's name on a thin line
 // above its first place, a bare line under its last (never at the card's bottom edge)
@@ -5441,7 +5450,7 @@ function mptHtml(g, start){
   let k = 0;
   g.games.forEach((x, j) => {
     const i = start + j;
-    if(x.tg){ out = `<li class="mptg${sel(i)}" data-r="${i}"><span class="${x.on ? '' : 'on'}">${esc(FB_W.tAll)}</span><span class="${x.on ? 'on' : ''}">${esc(FB_W.tLive)}</span></li>` + out; return; }   // above the column heads
+    if(x.tg){ const w = {all: FB_W.tAll, live: FB_W.tLive, home: FB_W.tHome, away: FB_W.tAway}; out = `<li class="mptg${sel(i)}" data-r="${i}">${x.views.map(k => `<span class="${k === x.view ? 'on' : ''}">${esc(w[k])}</span>`).join('')}</li>` + out; return; }   // above the column heads
     const r = x.tr, place = r.rk || ++k, first = j === g.games.findIndex(y => y.tr);
     const z = t.zones.find(z => z.from === place || (first && z.from < place && place <= z.to)), end = t.zones.find(z => z.to === place - 1);   // a window: the zone it starts in is named above it
     if(z) out += `<li class="zl"><span>${esc(zl(z.k))}</span></li>`;

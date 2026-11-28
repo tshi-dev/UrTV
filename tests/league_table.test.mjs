@@ -132,6 +132,26 @@ for (const hash of ['', 'formstyle=boxes', 'formstyle=boxes-letters', 'pagedark=
   check('no script error', !errors.length, errors.join('|'));
   await ctx.close();
 }
+{   // 4.4 «على أرضه» / «خارج أرضه»: the file's hm / aw per row; OK on the toggle steps الكل → على أرضه → خارج أرضه → الكل
+  const HA = TABLE.map((r, i) => Object.assign({}, r, { hm: i === 17 ? [6, 6, 0, 0, 15, 2, 18] : [6, 3, 1, 2, 10, 8, 10 - (i % 5)], aw: [5, 1, 0, 4, 4, 9, 3] }));
+  const { p, ctx, errors } = await open('teams=' + ID(0), { files: { 'sports/4668.json': Object.assign({}, SPORTS, { table: HA }) } });
+  const tg = () => p.evaluate(() => { const li = document.querySelector('ul.mpt li.mptg'); return li && [...li.querySelectorAll('span')].map(x => x.textContent + (x.classList.contains('on') ? '*' : '')).join('|'); });
+  check('a file with home and away counts: the toggle «الكل» «على أرضه» «خارج أرضه» (no live game: no «مع المباريات الجارية»)', (await tg()) === 'الكل*|على أرضه|خارج أرضه', (await tg()) + errors.join('|'));
+  const step = () => p.evaluate(() => { const i = MP.rows.findIndex(x => x.tg); MP.zone = 'rows'; MP.r = i; mpRender(); dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' })); });
+  await step();
+  const h = await table(p);
+  check('OK: «على أرضه»: the home counts, sorted again (النجمة, 18 home points, first), no form, no movement, no zone lines',
+    (await tg()) === 'الكل|على أرضه*|خارج أرضه' && h[0].name === 'النجمة' && h[0].pts === '١٨' && /^١ /.test(h[0].text) && h.every(r => !r.form.length && r.mv === '')
+    && !(await zl(p)).includes('Z:'), JSON.stringify(h.slice(0, 2)));
+  await step();
+  const a = await table(p);
+  check('OK again: «خارج أرضه»: the away counts (every club 3 points here, then by goal difference and goals)', (await tg()) === 'الكل|على أرضه|خارج أرضه*' && a.every(r => r.pts === '٣'), JSON.stringify(a.slice(0, 2)));
+  await step();
+  const b = await table(p);
+  check('OK again: back to «الكل», the file as it is with its form, movement and zones', (await tg()) === 'الكل*|على أرضه|خارج أرضه' && b[0].name === 'الهلال' && b[0].form.length === 5 && (await zl(p)).includes('Z:'), (await tg()));
+  check('no script error', !errors.length, errors.join('|'));
+  await ctx.close();
+}
 for (const [style, cls, n] of [['boxes', 'fbox w', ''], ['boxes-letters', 'fbox fbl w', 'ف']]) {   // «شكل آخر المباريات»
   const { p, ctx } = await open('formstyle=' + style + '&teams=' + ID(0));
   const t = await table(p);

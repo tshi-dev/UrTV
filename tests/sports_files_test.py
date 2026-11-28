@@ -180,6 +180,15 @@ wfl = (ROOT / ".github/workflows/league-fixtures.yml").read_text()
 check("phase a: the archive's CI job checks out the tournaments list (the cups) beside teams.json", "assets/shared/tournaments.json" in wfl)
 check("phase a: docs/MATCH-ARCHIVE.md has a line on mv and on zones", all(w in (ROOT / "docs/MATCH-ARCHIVE.md").read_text() for w in ("`mv`", "`zones`", "league_zones.json")))
 
+# 4.4 (the owner: club things in 4.4) home and away tables: each row of the league's file has hm and aw, [p, w, d, l, gf, ga, pts] of its home and
+# its away games; a past season's file and a cup's groups do not
+hrow = {r["id"]: r for r in lf2["table"]}
+check("home/away: each row's home and away counts [p, w, d, l, gf, ga, pts] add up to its whole (club 10: won 3-0 at home, lost 0-4 away)",
+      hrow["10"]["hm"] == [1, 1, 0, 0, 3, 0, 3] and hrow["10"]["aw"] == [1, 0, 0, 1, 0, 4, 0]
+      and all([a + b for a, b in zip(r["hm"], r["aw"])] == [r["p"], r["w"], r["d"], r["l"], r["gf"], r["ga"], r["pts"]] for r in lf2["table"]), hrow["10"])
+check("home/away: a club with no home game yet has hm all 0", sf.table(mvg[:1], {}, split=True)[-1]["hm"] == [0] * 7 or sf.table(mvg[:1], {}, split=True)[0]["aw"] == [0] * 7)
+check("home/away: not in a past season's file, nor in a plain table (cups' groups)", all("hm" not in r for r in sp["table"]) and "hm" not in sf.table(mvg, {})[0])
+
 answer = {"MRData": {"RaceTable": {"Races": [{"season": "2026", "round": "24", "raceName": "Abu Dhabi Grand Prix", "date": "2026-12-06", "time": "13:00:00Z",
           "Circuit": {"circuitName": "Yas Marina Circuit", "Location": {"country": "UAE", "locality": "Abu Dhabi"}},
           "FirstPractice": {"date": "2026-12-04", "time": "09:30:00Z"}, "Qualifying": {"date": "2026-12-05", "time": "14:00:00Z"}}]}}}

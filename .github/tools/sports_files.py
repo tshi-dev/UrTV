@@ -79,8 +79,9 @@ def season_now(store, lg, now):
     return best or (seasons[0] if seasons else None)
 
 
-def table(games, names):
-    """[{id, n, ar, p, w, d, l, gf, ga, pts, f}] from the finished games of a season, in order"""
+def table(games, names, split=False):
+    """[{id, n, ar, p, w, d, l, gf, ga, pts, f}] from the finished games of a season, in order. 4.4 split: each row also has hm and aw, its
+    home games' and away games' counts [p, w, d, l, gf, ga, pts] (the league page's «على أرضه» / «خارج أرضه»)"""
     rows = {}
     for e in sorted((g for g in games if _done(g)), key=lambda g: g["t"]):
         hs, as_ = _num(e["hs"]), _num(e["as"])
@@ -90,6 +91,12 @@ def table(games, names):
             res = "w" if gf > ga else "d" if gf == ga else "l"
             r["p"] += 1; r["gf"] += gf; r["ga"] += ga; r[res] += 1; r["pts"] += 3 if res == "w" else 1 if res == "d" else 0
             r["f"] = (res + r["f"])[:FORM]
+            if split:
+                c = r.setdefault("hm" if me == e["h"] else "aw", [0] * 7)
+                c[0] += 1; c[1 + "wdl".index(res)] += 1; c[4] += gf; c[5] += ga; c[6] += 3 if res == "w" else 1 if res == "d" else 0
+    if split:
+        for r in rows.values():
+            r.setdefault("hm", [0] * 7); r.setdefault("aw", [0] * 7)
     return sorted(rows.values(), key=lambda r: (-r["pts"], -(r["gf"] - r["ga"]), -r["gf"], r["n"]))
 
 
@@ -295,7 +302,7 @@ def league_file(store, lg, now, stamp, names, ar="", zones=None):
     lo, hi = now - dt.timedelta(days=LAST_DAYS), now + dt.timedelta(days=NEXT_DAYS)
     last = sorted((e for e in games if _done(e) and lo <= (_t(e) or lo - dt.timedelta(1)) <= now), key=lambda e: e["t"], reverse=True)
     nxt = sorted((e for e in games if not _done(e) and not e.get("pp") and now - dt.timedelta(hours=3) <= (_t(e) or lo) <= hi), key=lambda e: e["t"])
-    rows = table(games, names)
+    rows = table(games, names, split=True)
     c = cup(games, names)
     mv = movement_for(games, names, is_cup(lg, c))
     for r in rows:
