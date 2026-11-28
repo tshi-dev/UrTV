@@ -22,7 +22,7 @@ import java.util.Locale;
  *       [--es city 'الرس'] [--es lat 25.86 --es lon 43.49 --es tz Asia/Kuwait]   (tz is needed for a place that is not in the list) [--es teams '136013:Al-Hilal,150643:Al-Zulfi']
  *       [--es panel prayers] [--es panel2 hourly|none] [--es home_panel prayers,hourly,verse|none] [--es greeting on|off] [--es matchestoday on|off] [--es greetingname NAME|off] [--es homephotos same|own] [--es homepacks id,id|none] [--es homeours on|off] [--es albummode seconds|ten|minute] [--es albumtitle on|off] [--es albumfit fit|fill] [--es albumsize normal|tall] [--es cleartext on|off] [--es looksync on|off] [--es surface quick|cards|tray:30..100:look|glass|graphite] [--es accent amber|gold|green|teal|sky|violet|rose|coral|default] [--es baropacity 30..100] [--es walldim 0..90] [--es focusstyle solid|frame|glow] [--es albummode seconds|minute] [--es albumdate on|off] [--es pillshidden markets,matches,center|none] [--es listenpill on|off] [--es updatebell on|off] [--es watchnext on|off] [--es appearance dark|light|auto] [--es look glass|graphite|navy|clean] [--es homelayout classic|couch|football] [--es favbar 5|6|7|8|all] [--es pagesdark on|off] [--es adhanbar on|off] [--es yearstrip on|off] [--es minrating 7]
  *       [--es sunrise on|off] [--es prayerbar on|off] [--es wxmore on|off] [--es months default|levant] [--es verse day|3|10] [--es versekind both|verse|hadith] [--es seconds on|off] [--es backexit press|hold|three] [--es occasion on|off] [--es nightdim on|off] [--es taskspill on|off] [--es backsaver on|off] [--es genres Drama,Comedy] [--es langs English]
- *       [--es photos 30] [--es idle 10] [--es digits hindi|latin] [--es hijrioffset -2..2] [--es clock24 on|off] [--es ramtier low|mid|normal|auto] [--es lite auto|on|off] [--es lang ar|en]
+ *       [--es photos 30] [--es idle 10] [--es digits hindi|latin] [--es hijrioffset -2..2] [--es hijriline on|off] [--es clock24 on|off] [--es ramtier low|mid|normal|auto] [--es lite auto|on|off] [--es lang ar|en]
  *       [--es design info|clean|big|frame|dayline] [--es bar none|prayers|slot|weather] [--es barat bottom|clock] [--es wx auto|usual|clock|corner|off]
  *       [--es cardstyle current|dark1|glass1|dark3|glass3|boxes] [--es national auto|off] [--es scenepacks saudi,couch] [--es scenestay 10|20|60|300] [--es scenetime on|off] [--es sceneweather on|off] [--es background photos|scenes] [--es clock plain|glass] [--es appsstyle frame|zoom] [--es couch on|off]
  *       [--es markets tasi,gold,btc] [--es mkstyle arrows|prices] [--es mkbar on|off] [--es clocksize large|medium|small] [--es stocks 2222,1120,AAPL] [--es stkchg pct|amount]
@@ -266,8 +266,8 @@ public class SaverReceiver extends BroadcastReceiver {
         if (kickoffOn != null && !kickoffOn.matches("on|off|silent|whistle")) return "error: kickoff is one of on off silent whistle";
         for (String[] x : new String[][] {{"kickoffgoal", kickoffGoal}, {"kickoffend", kickoffEnd}, {"kickoffover", kickoffOver}})
             if (x[1] != null && !"on".equals(x[1]) && !"off".equals(x[1])) return "error: " + x[0] + " is one of on off";
-        String backSaver = i.getStringExtra("backsaver"), backTwice = i.getStringExtra("backtwice"), fbHide = i.getStringExtra("fbhide"), dateNum = i.getStringExtra("datenum"), searchPill = i.getStringExtra("searchpill");
-        for (String[] x : new String[][] {{"occasion", occasion}, {"nightdim", nightDim}, {"taskspill", tasksPill}, {"backsaver", backSaver}, {"backtwice", backTwice}, {"fbhide", fbHide}, {"datenum", dateNum}, {"searchpill", searchPill}})
+        String backSaver = i.getStringExtra("backsaver"), backTwice = i.getStringExtra("backtwice"), fbHide = i.getStringExtra("fbhide"), dateNum = i.getStringExtra("datenum"), searchPill = i.getStringExtra("searchpill"), hijriLine = i.getStringExtra("hijriline");
+        for (String[] x : new String[][] {{"occasion", occasion}, {"nightdim", nightDim}, {"taskspill", tasksPill}, {"backsaver", backSaver}, {"backtwice", backTwice}, {"fbhide", fbHide}, {"datenum", dateNum}, {"searchpill", searchPill}, {"hijriline", hijriLine}})
             if (x[1] != null && !"on".equals(x[1]) && !"off".equals(x[1])) return "error: " + x[0] + " is one of on off";
         String verse = i.getStringExtra("verse");
         if (verse != null && !QuoteEvery.valid(verse)) return "error: verse is one of day 3 10";
@@ -584,6 +584,7 @@ public class SaverReceiver extends BroadcastReceiver {
         if (kickoffEnd != null) p.setKickoffEnd("on".equals(kickoffEnd));
         if (kickoffOver != null) p.setKickoffOver("on".equals(kickoffOver));
         if (dateNum != null) p.setDateNum("on".equals(dateNum));
+        if (hijriLine != null) p.setHijriShown("on".equals(hijriLine));
         if (searchPill != null) p.setSearchPill("on".equals(searchPill));
         if (prayerMethod != null) p.setPrayerMethod(PrayerMethod.parse(prayerMethod));
         if (adj != null) p.setPrayerAdj(adj);
@@ -783,6 +784,7 @@ public class SaverReceiver extends BroadcastReceiver {
             + "\nprayermethod: " + p.prayerMethod()
             + "\nprayeradj: " + (p.prayerAdjOn() ? "on" : "off") + " " + PrayerAdj.describe(p.prayerAdj())
             + "\nhijrioffset: " + HijriOffset.describe(p.hijriOffset())
+            + "\nhijriline: " + (p.hijriShown() ? "on" : "off")
             + "\nminrating: " + p.minRating()
             + "\nphotos: " + p.photoMinutes() + (PhotoInterval.fast(Prefs.ramMb(c)) ? "" : " (30s needs 2 GB; " + Prefs.ramMb(c) + " MB here)")
             + "\ndigits: " + p.digits()

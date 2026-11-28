@@ -4534,11 +4534,12 @@ public class MainActivity extends Activity {
         } catch (Exception ignored) { }
         String greg = MonthNames.of(gregFormat.format(now.getTime()), MonthNames.levant(cfg.fragment));   // «تشرين الأول» when chosen
         if (DateNum.on(cfg.fragment)) {   // 4.3.3 «التاريخ بالأرقام»: 06/06/1448 هـ and 16/11/2026, in the digits chosen
-            String n = numericDates(now, tz, HijriShift.fromFragment(cfg.fragment));
+            String n = numericDates(now, tz, HijriShift.fromFragment(cfg.fragment), DateNum.hijriOff(cfg.fragment));
             if (n != null) { hijri = ""; greg = n; }
         }
+        if (DateNum.hijriOff(cfg.fragment)) hijri = "";   // GitHub #15 «التاريخ الهجري» off: the Gregorian date alone
         date.setText(arabicDigits(hijri.isEmpty() ? greg : hijri + "  –  " + greg));
-        if (S.en()) date.setText(arabicDigits(englishDate(now, tz, HijriShift.fromFragment(cfg.fragment), DateNum.on(cfg.fragment))));   // the same line in English (MonthNames.hijriEn)
+        if (S.en()) date.setText(arabicDigits(englishDate(now, tz, HijriShift.fromFragment(cfg.fragment), DateNum.on(cfg.fragment), DateNum.hijriOff(cfg.fragment))));   // the same line in English (MonthNames.hijriEn)
         updateAdhanBar(cfg);
         updatePrayerLine();
         applyListenPill(cfg.listenPillOn);
@@ -4687,12 +4688,12 @@ public class MainActivity extends Activity {
      * 4.3.3 «التاريخ بالأرقام»: «الاثنين، 06/06/1448 هـ  –  16/11/2026», day/month/year in Latin digits (arabicDigits turns them to the digits chosen);
      * null when the TV's ICU has no Umm al-Qura calendar (the line stays in words).
      */
-    private String numericDates(Calendar now, String tz, int shift) {
+    private String numericDates(Calendar now, String tz, int shift, boolean noHijri) {
         String n = numericParts(now, tz, shift);
         if (n == null) return null;
         SimpleDateFormat day = new SimpleDateFormat("EEEE", new Locale("ar"));
         day.setTimeZone(ZoneFix.zone(tz));
-        return DateNum.line(day.format(now.getTime()), n, true);
+        return noHijri ? DateNum.lineGreg(day.format(now.getTime()), n, true) : DateNum.line(day.format(now.getTime()), n, true);
     }
 
     /** "06/06/1448|16/11/2026" (Hijri moved by the offset), or null without an Umm al-Qura calendar */
@@ -4710,7 +4711,7 @@ public class MainActivity extends Activity {
         }
     }
 
-    private static String englishDate(Calendar now, String tz, int shift, boolean numeric) {
+    private static String englishDate(Calendar now, String tz, int shift, boolean numeric, boolean noHijri) {
         java.util.TimeZone zone = ZoneFix.zone(tz);
         SimpleDateFormat greg = new SimpleDateFormat("d MMMM yyyy", Locale.ENGLISH), day = new SimpleDateFormat("EEEE", Locale.ENGLISH);   // 4.3.3: with the year
         greg.setTimeZone(zone);
@@ -4718,8 +4719,9 @@ public class MainActivity extends Activity {
         String g = greg.format(now.getTime());
         if (numeric) {
             String n = numericParts(now, tz, shift);
-            if (n != null) return DateNum.line(day.format(now.getTime()), n, false);
+            if (n != null) return noHijri ? DateNum.lineGreg(day.format(now.getTime()), n, false) : DateNum.line(day.format(now.getTime()), n, false);
         }
+        if (noHijri) return day.format(now.getTime()) + ", " + g;
         try {
             android.icu.util.Calendar h = android.icu.util.Calendar.getInstance(ZoneIcu.of(tz),
                     new android.icu.util.ULocale("en@calendar=islamic-umalqura"));

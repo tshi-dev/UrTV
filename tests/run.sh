@@ -148,6 +148,7 @@ python3 tests/pair_deadline_test.py
 python3 tests/safety_slow_test.py
 python3 tests/phone_request_log_test.py
 python3 tests/card_shape_chain_test.py
+python3 tests/hijri_line_test.py
 python3 tests/dua_usb_pick_test.py
 python3 tests/input_display_test.py
 python3 tests/tv_vendor_test.py   # «المصادر» on any TV: the live TV app and source picker found on the TV (TCL, CultraView, MediaTek…)

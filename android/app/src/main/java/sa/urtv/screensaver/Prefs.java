@@ -724,6 +724,9 @@ final class Prefs {
     boolean fbHideDone() { return sp.getBoolean("fbHideDone", false); }
     /** 4.3.3 «التاريخ بالأرقام»: the dates in words (the default, as always) or as day/month/year, Hijri and Gregorian; #datenum=1 only while on. The digits stay «الأرقام»'s. */
     boolean dateNum() { return sp.getBoolean("dateNum", false); }
+    /** GitHub #15 «التاريخ الهجري» (on by default): off = the Gregorian date alone, on the screensaver, the home's cards and the home's date line (the page reads #nohijri=1) */
+    boolean hijriShown() { return sp.getBoolean("hijriShown", true); }
+    void setHijriShown(boolean v) { sp.edit().putBoolean("hijriShown", v).apply(); }
     /** 4.3.3 «زر البحث»: the home's round button to the TV's own search inside the apps; off by default, #searchpill=1 only while on */
     boolean searchPill() { return sp.getBoolean("searchPill", false); }
     void setSearchPill(boolean v) { sp.edit().putBoolean("searchPill", v).apply(); }
@@ -954,6 +957,7 @@ final class Prefs {
             + prayerAdjFragment()   // 4.3.3: the person's own minutes, and a published correction where they set none (PrayerFix)
             + PrayerMethod.fragment(prayerMethod(), cityCountry(), cityTz())
             + HijriOffset.fragment(hijriOffset())
+            + (hijriShown() ? "" : "&nohijri=1")
             + "&national=" + national()
             + "&markets=" + join(markets(), ",")
             + "&mkstyle=" + mkStyle()

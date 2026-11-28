@@ -76,6 +76,7 @@
 #                                                  suhoor in Ramadan): on (default) or off (the place stays empty)
 #   optimize/saver.sh nightdim off                 «تعتيم الليل», the screensaver darker at night (from 21:00, most 23:00-05:00, normal at 07:00): on (default) or off
 #   optimize/saver.sh searchpill on               home screen: a «بحث» button for the TV's own search inside the apps (off = the default; only where the TV has that search)
+#   optimize/saver.sh hijri off                   the Gregorian date alone, with no Hijri line, on the screensaver, the home's cards and the home (on = the default)
 #   optimize/saver.sh datenum on                  the dates as day/month/year, Hijri and Gregorian, on the screensaver and the home (off = the default: in words); the digits stay `digits`
 #   optimize/saver.sh fbhide on                   the football home: hide the games that ended (off = the default: they show with their score)
 #   optimize/saver.sh kickoff off                 4.4 the kick-off alert of the followed clubs (on = the default; silent = no whistle, whistle = with it)
@@ -329,6 +330,7 @@ case "${1:-}" in
   kickoffend) set1 kickoffend "${2:?usage: optimize/saver.sh kickoffend on|off}" ;;
   kickoffover) set1 kickoffover "${2:?usage: optimize/saver.sh kickoffover on|off}" ;;
   datenum)  set1 datenum "${2:?usage: optimize/saver.sh datenum on|off}" ;;
+  hijri)    set1 hijriline "${2:?usage: optimize/saver.sh hijri on|off}" ;;   # GitHub #15: off = the Gregorian date alone
   searchpill) set1 searchpill "${2:?usage: optimize/saver.sh searchpill on|off}" ;;
   verse)    set1 verse "${2:?usage: optimize/saver.sh verse day|3|10}" ;;
   versekind) case "${2:-}" in both|verse|hadith) set1 versekind "$2" ;; *) echo "usage: optimize/saver.sh versekind both|verse|hadith"; exit 1 ;; esac ;;

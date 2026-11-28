@@ -24,4 +24,16 @@ final class DateNum {
         if (p.length < 2) return weekday;
         return weekday + (arabic ? "، " : ", ") + p[0] + (arabic ? " هـ" : " AH") + "  –  " + p[1];
     }
+
+    /** GitHub #15 «التاريخ الهجري» off: the settings' fragment asks for the Gregorian date alone */
+    static boolean hijriOff(String fragment) {
+        return fragment != null && ("&" + fragment + "&").contains("&nohijri=1&");
+    }
+
+    /** the same line without its Hijri half: the weekday and the Gregorian numbers of numericParts' "hijri|greg" */
+    static String lineGreg(String weekday, String parts, boolean arabic) {
+        String[] p = parts.split("\\|", 2);
+        if (p.length < 2) return weekday;
+        return weekday + (arabic ? "، " : ", ") + p[1];
+    }
 }

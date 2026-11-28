@@ -540,6 +540,9 @@ the phone page's key, «مركز التحكم» the control centre's row that op
 —— التاريخ بالأرقام [الرئيسية وشاشة التوقف]
    مثال للوكيل: optimize/saver.sh datenum on  (`off`, the default: in words)
      القيم المقبولة: on|off
+—— التاريخ الهجري [الرئيسية وشاشة التوقف]
+   مثال للوكيل: optimize/saver.sh hijri off  (`on`, the default: the Hijri date shows as before)
+     القيم المقبولة: on|off
 —— أسماء الأشهر الميلادية [الرئيسية وشاشة التوقف]
    مثال للوكيل: optimize/saver.sh months levant  (`default` = يناير، فبراير… as always)
      القيم المقبولة: default|levant

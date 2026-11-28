@@ -497,6 +497,7 @@
   .natline{margin-top:.55vh;font-size:1.06vw;font-size:clamp(12px,1.06vw,21px);font-weight:500;color:var(--gold)}
   .natline[hidden]{display:none}
   .greg{margin-top:.55vh;font-size:1.06vw;font-size:clamp(12px,1.06vw,21px);font-weight:300;color:var(--dim)}
+  html.nohijri .hijri{display:none}html.nohijri .greg{margin-top:0;font-size:1.86vw;font-size:clamp(19px,1.86vw,37px);font-weight:500;color:var(--sand);line-height:1.3}
   /* starts at the screen edge, under the first letters, and fades toward the middle */
   .rule{margin-top:1.2vh;width:9vw;width:clamp(100px,9vw,190px);height:1px;margin-left:auto;margin-right:0;
     background:rgba(var(--gold-rgb),.45)}   /* a plain line (the owner, 19 Nov) */
@@ -1264,6 +1265,7 @@ const CONFIG = {
   // «فرق التاريخ الهجري»: #hijri=-2..2 moves every Hijri date by that many days, for places that start the month by moon sighting
   // (Egypt, Jordan, the Levant, Morocco). The screensaver sends it only when it is not 0
   hijri: (v => /^-?[0-2]$/.test(v) ? +v || 0 : 0)(_Q.get('hijri') || ''),
+  noHijri: _Q.get('nohijri') === '1',   // GitHub #15 «التاريخ الهجري» off: the Gregorian date alone
   // the slim year strip under the clock: #yearstrip=1 turns it on
   yearStrip: _Q.get('yearstrip') === '1',
   // #live=1 (the launcher): the «المهام» card is a button there
@@ -1507,6 +1509,7 @@ const hijriUtc = d => CONFIG.hijri ? new Date(d.getTime() + CONFIG.hijri*8640000
 
 function tickDates(){
   const now = new Date();
+  document.documentElement.classList.toggle('nohijri', !!CONFIG.noHijri);
   const nat = nationalNow(), nl = document.getElementById('natline');
   document.documentElement.classList.toggle('nat', !!nat);
   nl.hidden = !nat;
@@ -4662,7 +4665,7 @@ function restoreSnap(){
 const SD_NAMES = {Fajr: 'الفجر', Sunrise: 'الشروق', Dhuhr: 'الظهر', Asr: 'العصر', Maghrib: 'المغرب', Isha: 'العشاء'};
 const sdText = id => ((document.getElementById(id) || {}).textContent || '').trim();
 const sdNode = (cls) => { let e = document.querySelector('body > .' + cls.split(' ')[0]); if(!e){ e = document.createElement('div'); document.body.appendChild(e); } e.className = cls; return e; };
-const sdDay = () => [sdText('hijri'), sdText('greg').replace(/^[^،]+،\s*/, '')].filter(Boolean).join(SEP);
+const sdDay = () => CONFIG.noHijri ? sdText('greg') : [sdText('hijri'), sdText('greg').replace(/^[^،]+،\s*/, '')].filter(Boolean).join(SEP);
 const sdMins = k => { const v = DAY_TIMES && DAY_TIMES[k]; if(!v) return null; const [h, m] = String(v).split(':').map(Number); return h * 60 + m; };
 // the next prayer as «<b>name</b> <time>، in N minutes»: the time its own isolated run with a gap (never touching the name), as every design prints it
 function sdNext(){
