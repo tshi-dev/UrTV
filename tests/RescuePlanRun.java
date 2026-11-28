@@ -27,6 +27,10 @@ public final class RescuePlanRun {
         check("ours alone in the list: the list is deleted", r.commands.contains("settings delete secure enabled_accessibility_services"));
         check("the TV did not say its packages: nothing at all", RescuePlan.plan(null, set(), null, "").commands.isEmpty() && RescuePlan.plan(inst, null, null, "").commands.isEmpty());
         check("an Android TV with tvlauncher: Home to it", RescuePlan.plan(set(RescuePlan.TVLAUNCHER), set(), null, "").home.equals(RescuePlan.TVLAUNCHER));
+        check("4.4 (R-471): the rescue never touches the screensaver, and says when ours stays",
+            p.commands.stream().noneMatch(c -> c.contains("screensaver") || c.contains("dream")) && RescuePlan.keepsOurSaver("sa.urtv.screensaver/.ScreenDream")
+            && !RescuePlan.keepsOurSaver("com.google.android.backdrop/.Backdrop") && !RescuePlan.keepsOurSaver("null") && !RescuePlan.keepsOurSaver(null)
+            && RescuePlan.SAVER_KEPT.contains("شاشة التوقف بقيت شاشة UrTV"));
         check("a list the shell would read is never sent", !RescuePlan.plan(inst, set(), null, "a/.B;rm:" + ex).a11yChanged);
         check("packages(): the end marker is required", RescuePlan.packages("package:a\npackage:b\n") == null && RescuePlan.packages("package:a\r\nEND_OF_LIST").equals(set("a")));
         System.out.println(bad == 0 ? "ALL PASS" : bad + " FAILED");

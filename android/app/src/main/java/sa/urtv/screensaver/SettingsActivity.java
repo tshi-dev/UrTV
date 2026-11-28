@@ -81,11 +81,11 @@ public class SettingsActivity extends Activity {
     @Override
     protected void attachBaseContext(android.content.Context base) {
         android.content.Context en = S.wrap(base);
-        if (S.en()) { super.attachBaseContext(en); return; }
+        if (S.en()) { super.attachBaseContext(TextScale.fit(en)); return; }   // 4.4 beta 4: the words scaled to the screen (TextScale)
         android.content.res.Configuration c = new android.content.res.Configuration(base.getResources().getConfiguration());
         c.setLocale(new java.util.Locale("ar"));
         c.setLayoutDirection(new java.util.Locale("ar"));
-        super.attachBaseContext(base.createConfigurationContext(c));
+        super.attachBaseContext(TextScale.fit(base.createConfigurationContext(c)));
     }
 
     private FrameLayout root;
@@ -244,6 +244,8 @@ public class SettingsActivity extends Activity {
         if (back != null) { returnWant = back; returnUntil = System.currentTimeMillis() + 4000; }   // the home answers a moment later and the list is built again: that build keeps the focus on this row too, until a key is pressed (it landed on the row above)
         forceWant = back;   // back from another screen: the focus goes to the row or button that opened it, in the SAME render that builds the list again (it landed on the one above)
         render();
+        // 4.4 #42 (R-473): a TV that needs «الظهور فوق التطبيقات» for the screensaver is asked once by itself (OverlayNeed), never another TV
+        if (OverlayNeed.openByItself(prefs.overlayNeeded(), prefs.overlayAsked())) askSaverOverlay();
         // the home writes its state a moment after «UrTV النظيف» closes: one more question 1.5 s later, drawn only when the answer differs
         root.postDelayed(() -> { if (!isFinishing() && !isDestroyed()) { cleanAsked = false; homeCleanSeen(); } }, 1500);
     }
@@ -385,8 +387,11 @@ public class SettingsActivity extends Activity {
         header("المباريات");
         // «المباريات»: the home app's page of the games (docs/PROPOSALS-NOV2.md §1), the days and the leagues, the followed teams first
         row("مباريات اليوم", "الأيام والدوريات، وفرقك أولاً", R.drawable.ic_trophy, new Runnable() { public void run() { openMatches(); } });
-        row("الفرق المتابعة (" + arabicNum(prefs.teams().size()) + "/" + arabicNum(Prefs.MAX_TEAMS) + ")", teamsLabel(),
+        row("الفرق المتابعة (" + arabicNum(prefs.teams().size()) + (prefs.teamCap() == 0 ? "" : "/" + arabicNum(prefs.teamCap())) + ")", teamsLabel(),
             R.drawable.ic_trophy, new Runnable() { public void run() { manageTeams(); } });
+        // 4.4 the owner (R-472): the clubs' ceiling, 40 by default; raised to 80 or none only after the warning (FollowLimit.TEAM_CAP_WARNING)
+        row("حد الفرق", FollowLimit.teamCapName(prefs.teamCap()) + (prefs.teamCap() == FollowLimit.MAX_TEAMS ? "، الأصل" : ""), R.drawable.ic_trophy,
+            new Runnable() { public void run() { pickTeamCap(); } });
 
         // 4.3 «تطبيق المباريات»: «شاهد المباراة» on a game opens it (UrTV Player is told which game; another app just opens)
         row("تطبيق المباريات", matchAppLabel(), R.drawable.ic_play, new Runnable() { public void run() { pickMatchApp(); } });
@@ -425,6 +430,9 @@ public class SettingsActivity extends Activity {
         // 4.3.3 «التاريخ بالأرقام»: the Hijri and the Gregorian as day/month/year on the screensaver and the home, in the digits above
         row("التاريخ بالأرقام", prefs.dateNum() ? "مفعّل" : "متوقف", R.drawable.ic_language,
             new Runnable() { public void run() { prefs.setDateNum(!prefs.dateNum()); render(); } });
+        // GitHub #15 «التاريخ الهجري»: off = the Gregorian date alone (the screensaver, the home's cards and the home's date line)
+        row("التاريخ الهجري", prefs.hijriShown() ? "مفعّل" : "متوقف", R.drawable.ic_language,
+            new Runnable() { public void run() { prefs.setHijriShown(!prefs.hijriShown()); render(); } });
         // OK goes round: on with 10 minutes, on with 15 minutes (4.4 beta 4), off
         row("تنبيه قبل الأذان", prefs.adhanBar() ? (prefs.adhanLead() == 15 ? "يعمل، شريط في أعلى الشاشة آخر ١٥ دقيقة، ثم حتى الإقامة" : "مفعّل، شريط أعلى الشاشة آخر ١٠ دقائق، ويبقى لين الإقامة") : "متوقف", R.drawable.ic_eye,
             new Runnable() { public void run() {
@@ -508,7 +516,7 @@ public class SettingsActivity extends Activity {
 
         header("الأسواق (أعلى اليسار)");
         row("شريط الأسواق", prefs.marketsOn() ? "يعمل" : "مخفي، يبقى طقس اليوم فقط", R.drawable.ic_eye,
-            new Runnable() { public void run() { prefs.setMarketsOn(!prefs.marketsOn()); render(); } });
+            new Runnable() { public void run() { prefs.setMarketsOn(!prefs.marketsOn()); render(); sendBroadcast(new android.content.Intent(Prefs.CHANGED).setPackage(getPackageName())); } });   // 4.4 beta 4: a screensaver that is up takes it at once (ScreenDream, PagePush)
         row("الأسواق (" + arabicNum(prefs.markets().size()) + "/" + arabicNum(Prefs.MAX_MARKETS) + ")", marketsLabel(),
             R.drawable.ic_trophy, new Runnable() { public void run() { pickMarkets(); } });
         row("عرض الأسواق", Prefs.mkStyleLabel(prefs.mkStyle()), R.drawable.ic_eye,
@@ -643,6 +651,9 @@ public class SettingsActivity extends Activity {
         // 4.4 beta 4 (the UI session's tree): the three screens of the تلاوة app that were only reached through «الأذان»: the muezzin, the duas and reminders, and my sounds
         row("المؤذن", homeValue("adhan_voice", "name", "اختر صوت المؤذن"), R.drawable.ic_settings,
             new Runnable() { public void run() { openHome("voice"); } });
+        // 4.4 beta 4 (the emulator's count of the findability review: as «المؤذن»'s last choice it was ~37 presses): one's own adhan, a row of its own
+        row("أذاني من ملف", "من فلاشة أو التنزيلات أو الجوال، ويصير هو الأذان", R.drawable.ic_settings,
+            new Runnable() { public void run() { openHome("ownadhan"); } });
         row("الأدعية والتذكيرات", duasValue(), R.drawable.ic_settings,
             new Runnable() { public void run() { openHome("duas"); } });
         row("صوتياتي", "أدعيتك وأذاني من ملفاتك", R.drawable.ic_settings,
@@ -787,6 +798,8 @@ public class SettingsActivity extends Activity {
             new Runnable() { public void run() { openHome("photos"); } });
         row("بدء شاشة التوقف بعد", idleLabel(), R.drawable.ic_screensaver,
             new Runnable() { public void run() { pickIdle(); } });
+        if (prefs.overlayNeeded())   // 4.4 #42 (R-473): only on a TV that needs it
+            row("إذن شاشة التوقف", OverlayNeed.WHY, R.drawable.ic_screensaver, new Runnable() { public void run() { askSaverOverlay(); } });
 
         header("التطبيق");
         View autoRow = row("التحديث التلقائي للصفحة", prefs.autoUpdate() ? "يعمل، عند بدء الشاشة، كل ٦ ساعات" : "متوقف", R.drawable.ic_sync, new Runnable() { public void run() {
@@ -1774,6 +1787,7 @@ public class SettingsActivity extends Activity {
         find.setFocusable(true);
         find.setClickable(true);
         find.setTag(SIDE);
+        find.setContentDescription(conv("بحث في الإعدادات"));   // 4.4 beta 4: the icon has a name (a screen reader, and the emulator's count, could not find it)
         find.setImageDrawable(getDrawable(R.drawable.ic_search).mutate());
         find.setImageTintList(CouchStyle.ink(CouchStyle.TEXT, CouchStyle.WHITE, CouchStyle.INK));
         int pad = (cs.px(CouchStyle.FIND) - cs.px(CouchStyle.SEC_ICON)) / 2;
@@ -2551,6 +2565,21 @@ public class SettingsActivity extends Activity {
         toast("هذا التلفزيون يخفي هذا الإذن، فيُعطى من الكمبيوتر");
     }
 
+    /** 4.4 #42 (R-473): the plain request; «اسمح» opens the TV's own screen for this app (a TV that hides it: the computer's command, said) */
+    private void askSaverOverlay() {
+        prefs.setOverlayAsked();
+        new Dlg(this).setTitle(OverlayNeed.TITLE).setMessage(OverlayNeed.WHY + "\n" + OverlayNeed.HOW)
+            .setPositiveButton("اسمح", (d, w) -> {
+                Intent i = new Intent("android.settings.action.MANAGE_OVERLAY_PERMISSION", Uri.parse("package:" + getPackageName()));
+                try {
+                    if (getPackageManager().resolveActivity(i, 0) != null) { startActivity(i); return; }
+                } catch (RuntimeException ignored) { }
+                toast(OverlayNeed.HIDDEN);
+            })
+            .setNegativeButton("مو الحين", null)
+            .show();
+    }
+
     /** «إضافات تلفزيونك» is installed (only read); never in a render: extrasLook asks on a thread */
     private static boolean extrasInstalled(android.content.pm.PackageManager pm) {
         try { pm.getPackageInfo("sa.urtv.extras", 0); return true; } catch (Exception e) { return false; }
@@ -2616,11 +2645,26 @@ public class SettingsActivity extends Activity {
     private void askFollow(final String kind, final Runnable go) {
         int st = prefs.followState(kind);
         if (st == FollowLimit.ADD) { go.run(); return; }
-        if (st == FollowLimit.FULL) { new Dlg(this).setTitle(FollowLimit.full(kind)).setPositiveButton("حسنًا", null).show(); return; }
+        if (st == FollowLimit.FULL) { new Dlg(this).setTitle(FollowLimit.full(kind, prefs.teamCap())).setPositiveButton("حسنًا", null).show(); return; }
         new Dlg(this).setTitle(FollowLimit.warning(kind))
             .setPositiveButton("أضف", (d, w) -> { prefs.setFollowWarned(kind); go.run(); })
             .setNegativeButton("لا", null)
             .show();
+    }
+
+    /** 4.4 the owner (R-472) «حد الفرق»: 40, 80 or none; a higher one only after «كثرة الفرق ممكن تبطّئ التلفزيون» and «ارفع الحد» (lower: at once, no club removed) */
+    private void pickTeamCap() {
+        final int from = prefs.teamCap();
+        int at = 0;
+        for (int k = 0; k < FollowLimit.TEAM_CAPS.length; k++) if (FollowLimit.TEAM_CAPS[k] == from) at = k;
+        pickOne("حد الفرق", FollowLimit.TEAM_CAP_NAMES, at, k -> {
+            final int to = FollowLimit.TEAM_CAPS[k];
+            if (!FollowLimit.raises(from, to)) { prefs.setTeamCap(to); return; }
+            new Dlg(this).setTitle(FollowLimit.TEAM_CAP_WARNING)
+                .setPositiveButton("ارفع الحد", (d, w) -> { prefs.setTeamCap(to); render(); })
+                .setNegativeButton("لا", null)
+                .show();
+        });
     }
 
     /** 4.4 the same in a list of ticks (the count is the dialog's own): past the soft limit the tick waits for the warning's «أضف», at the ceiling it stays off */
@@ -3846,6 +3890,7 @@ public class SettingsActivity extends Activity {
         if (Prefs.canWriteSettings(this)) {
             try {
                 Settings.System.putInt(getContentResolver(), Settings.System.SCREEN_OFF_TIMEOUT, Integer.parseInt(minutes) * 60000);
+                IdleKeep.keep(this, minutes);   // R-400: put back at boot if the firmware resets it to «never»
                 render();
                 return;
             } catch (SecurityException e) {
@@ -3857,7 +3902,7 @@ public class SettingsActivity extends Activity {
             final String r = NowPlayingBridge.setIdle(getApplicationContext(), minutes);
             runOnUiThread(() -> {
                 if (isFinishing()) return;
-                if ("ok".equals(r)) toast("تم");
+                if ("ok".equals(r)) { IdleKeep.keep(getApplicationContext(), minutes); toast("تم"); }
                 else if ("busy".equals(r)) toast("إعداد التلفزيون شغّال الحين، جرّب بعده");
                 else new Dlg(this).setTitle("بدء شاشة التوقف بعد").setMessage(IDLE_NO_LINK).setPositiveButton("تم", null).show();
                 render();

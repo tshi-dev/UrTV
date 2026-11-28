@@ -54,9 +54,8 @@ public class DominoActivity extends GameActivity {
         chips.add("bots", S.t("الكمبيوتر"), new String[]{S.t("بدون"), num(1), num(2), num(3)}, 0);
         chips.add("level", S.t("مستوى الكمبيوتر"), new String[]{S.tv(LEVELS[0]), S.tv(LEVELS[1]), S.tv(LEVELS[2])}, 1);
         chips.add("target", S.t("الهدف"), new String[]{num(DominoGame.TARGETS[0]), num(DominoGame.TARGETS[1]), num(DominoGame.TARGETS[2])}, 1);
-        chips.add("phones", S.t("اللعب بالجوالات"), new String[]{S.tv(ON_OFF[0]), S.tv(ON_OFF[1])}, 0);
+        modeChip(chips);
         remembered(soundChip(chips));
-        chips.get("phones").picked = getIntent().getBooleanExtra("phones", false) ? 1 : 0;   // off unless the «بالجوالات» view opened this game; never kept from last time
         onChips(chips);
     }
     /** two to four at the table: the computer chips that would make fewer or more are switched off */
@@ -83,6 +82,9 @@ public class DominoActivity extends GameActivity {
 
     private boolean onPhones() { return phones != null && phones.room.phase() == GamePhoneRoom.Phase.PLAY; }
     private String sentKey = "";   // what the phone of the player to move shows now (turn, state, hand and ends), so a card is sent once per change
+    @Override protected String[] phoneHidden() { return new String[] {"people", "bots"}; }
+    @Override protected Runnable remoteWay() { return () -> { screen = Screen.SETUP; redraw(); start(); }; }
+    @Override protected GameChips lobbyChips() { return chips; }
     private void start() {
         if (chips.picked("phones") == 1) {
             if (!onPhones()) { if (!openPhones()) return; screen = Screen.LOBBY; phoneLobby = true; redraw(); return; }

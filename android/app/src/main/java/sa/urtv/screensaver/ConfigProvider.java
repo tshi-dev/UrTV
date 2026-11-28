@@ -98,6 +98,14 @@ public class ConfigProvider extends ContentProvider {
 
     @Override
     public Bundle call(String method, String arg, Bundle extras) {
+        if ("settings_copy".equals(method)) {   // 4.4: the home keeps a copy of the settings (SettingsCopy), for a reinstall of this app
+            Context c = getContext();
+            if (c == null || c.checkCallingPermission("sa.urtv.screensaver.READ_CONFIG") != android.content.pm.PackageManager.PERMISSION_GRANTED)
+                throw new SecurityException("the home only");
+            Bundle out = new Bundle();
+            out.putString("copy", SettingsCopy.export(c));
+            return out;
+        }
         if (method == null || !method.startsWith("phone_")) return super.call(method, arg, extras);
         Context c = getContext();
         if (c.checkCallingPermission(PHONE_PERMISSION) != android.content.pm.PackageManager.PERMISSION_GRANTED)
@@ -108,7 +116,7 @@ public class ConfigProvider extends ContentProvider {
             case "phone_photo_add": {   // 4.3: «صوري» from a paired phone (the launcher's /api/photo): a JPEG the phone re-encoded
                 byte[] jpeg = extras == null ? null : JpegMeta.strip(extras.getByteArray("jpeg"));
                 String why = jpeg == null || jpeg.length == 0 ? "no photo" : jpeg.length > Own.MAX_BYTES ? "too large"
-                        : Own.cameraData(jpeg) ? "camera data" : Own.count(c) >= Own.max(c) ? "full" : null;
+                        : Own.cameraData(jpeg) ? "camera data" : Own.count(c) >= Own.max(c) && !Own.sameBytes(c, jpeg) ? "full" : null;
                 if (why == null) {
                     File dir = Own.dir(c);
                     try {

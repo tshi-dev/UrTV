@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Screenshots without navigating by hand. Saves full-size PNGs in optimize/run/shots/<NAME>.png, and next to
-# each a <NAME>-small.png, 960 px wide: the full ones are too large for some agents to attach (needs Pillow,
-# which setup.sh installs; without it the small copy is skipped).
+# each a <NAME>-small.png, 960 px wide: the full ones are too large for some agents to attach (with Pillow, which
+# setup.sh installs; without it optimize/png_small.py makes it). An empty capture is taken again (tv.py --shot).
 #   optimize/shot.sh home [NAME]          the home screen (after Home, 8 s)
 #   optimize/shot.sh screensaver [NAME]   the screensaver (started now, 34 s for its data; SHOT_WAIT=N changes that), then Back; where
 #                                         Android won't start it over ADB, our app's preview of the same page
@@ -25,10 +25,16 @@ file="optimize/run/shots/${2:-$name}.png"
 "$PY" -I optimize/tv.py --shot "$file"
 [ "$1" = screensaver ] && tv "input keyevent KEYCODE_BACK"
 small="${file%.png}-small.png"
-if ! "$PY" -I -c 'import sys; from PIL import Image
+# the small copy: Pillow when it is there, else optimize/png_small.py (the standard library only, a few seconds); an empty or broken file
+# is said as that, never as «Pillow is missing» (4.4: zero-byte screenshots were blamed on Pillow)
+if [ ! -s "$file" ]; then
+  echo "!! $file is empty: the screenshot was not taken. Run the same command again."; exit 1
+elif "$PY" -I -c 'import PIL' 2> /dev/null; then
+  "$PY" -I -c 'import sys; from PIL import Image
 im = Image.open(sys.argv[1]).convert("RGB"); w = 960
-im.resize((w, max(1, round(im.height * w / im.width))), Image.LANCZOS).save(sys.argv[2], optimize=True)' "$file" "$small" 2> /dev/null; then
-  echo "(no small copy: Pillow is missing, run optimize/setup.sh)"
+im.resize((w, max(1, round(im.height * w / im.width))), Image.LANCZOS).save(sys.argv[2], optimize=True)' "$file" "$small" 2> /dev/null \
+    || { echo "(no small copy: Pillow could not read $file)"; small=; }
+elif ! "$PY" -I optimize/png_small.py "$file" "$small"; then
   small=
 fi
 echo "$file"

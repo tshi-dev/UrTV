@@ -241,6 +241,11 @@ final class FavBar {
     }
 
     /** 4.4 beta 2 «محاذاة التطبيقات»: the row's gravity (android.view.Gravity's values, plain ints so this stays plain Java): center, right or left */
+    /** «محاذاة التطبيقات» is the screen's left side (absolute: the same in Arabic and English) */
+    static boolean alignedLeft(String align) { return "left".equals(align); }
+    /** … or the screen's right side */
+    static boolean alignedRight(String align) { return "right".equals(align); }
+
     static int alignGravity(String align) {
         if ("right".equals(align)) return 0x05 | 0x10;   // the screen's right side (absolute, the same in Arabic and English), centred up and down
         if ("left".equals(align)) return 0x03 | 0x10;    // the screen's left side (absolute), centred up and down

@@ -39,7 +39,7 @@ def _read(path):
 def start_time(text):
     """`am start -W` says «TotalTime: 523» (ms to the first frame); a cold start is the one that matters. None when it said nothing."""
     m = re.search(r"TotalTime:\s*(\d+)", text)
-    return int(m.group(1)) if m else None
+    return int(m.group(1)) or None if m else None   # 0 is not a time: the system had already started the app again (tester b654: cold_start_home_ms read 0)
 
 
 def pss(text):
@@ -185,6 +185,57 @@ def adhan_state(text, prayer):
     return "both" if sound and screen else "sound" if sound else "screen" if screen else "none"
 
 
+def front_app(text):
+    """The front app's line of `dumpsys activity activities` («mResumedActivity: ActivityRecord{… u0 pkg/.Act t4}» or «topResumedActivity»), the first one; empty when there is none"""
+    for l in text.splitlines():
+        if "topResumedActivity" in l or "mResumedActivity" in l:
+            return l.strip()
+    return ""
+
+
+def adhan_all(text):
+    """«fajr both» lines, one per prayer the status says, in the order of the status (round.sh puts them back by `music.sh adhan state`; review F102)"""
+    out = []
+    for m in re.finditer(r"prayer_sound=[^|\n]*", text):
+        for p in re.findall(r"(\w+):", m.group(0).split("=", 1)[1]):
+            st = adhan_state(text, p)
+            if st:
+                out.append(f"{p} {st}")
+    return out
+
+
+def adhan_exact(text):
+    """From `music.sh adhan`'s status: «prayer sound screen» per prayer, exactly as the TV keeps them: the sound token («» is the general adhan, «silent», «own», «own_fajr»,
+    «v7» a recording of its own) and the screen (on or off); round.sh puts each back with `adhan prayer` and `adhan screen` (the state words «sound» etc. would turn an own voice
+    into the general one). The token's empty value is written as «general»"""
+    snd = re.search(r"prayer_sound=([^|\n]*)", text)
+    scr = re.search(r"prayer_screen=([^|\n]*)", text)
+    if not snd or not scr:
+        return []
+    screens = dict(x.split(":", 1) for x in scr.group(1).split(",") if ":" in x)
+    out = []
+    for x in snd.group(1).split(","):
+        if ":" not in x:
+            continue
+        p, tok = x.split(":", 1)
+        if p in screens:
+            out.append(f"{p} {tok or 'general'} {screens[p]}")
+    return out
+
+
+def kv(text, key):
+    """a «key: value» (or «key=value») line of `saver.sh show` (empty when it is not there)"""
+    m = re.search(rf"^{re.escape(key)}[ \t]*[=:][ \t]*(\S+)", text, re.M)   # `saver.sh show` prints «homelayout: couch» (the first line only is «version=…»): both are read
+    return m.group(1) if m else ""
+
+
+def wm_back(text):
+    """From `wm size; wm density` output, the command that puts the screen back as it was: the Override lines when there are some, else a reset"""
+    size = re.search(r"Override size:[ \t]*(\d+x\d+)", text)
+    dens = re.search(r"Override density:[ \t]*(\d+)", text)
+    return f"wm size {size.group(1) if size else 'reset'}; wm density {dens.group(1) if dens else 'reset'}"
+
+
 def _nodes(xml):
     for m in re.finditer(r"<node\b([^>]*)>", xml):
         a = dict(re.findall(r'([\w-]+)="([^"]*)"', m.group(1)))
@@ -197,19 +248,71 @@ def _label(a):
     return (a.get("text") or a.get("content-desc") or "").strip()
 
 
+def _focused_index(nodes):
+    """the node that has the focus: a page's WebView says focused="true" too while one of our views over it has it (the stocks card's «الأسواق»,
+    emulator run 10), so a view that is not a WebView wins, then the smallest"""
+    cand = [i for i, a in enumerate(nodes) if a.get("focused") == "true"]
+    if not cand:
+        return None
+    area = lambda i: ((nodes[i]["_box"][2] - nodes[i]["_box"][0]) * (nodes[i]["_box"][3] - nodes[i]["_box"][1])) if nodes[i]["_box"] else 1 << 40
+    return min(cand, key=lambda i: ("WebView" in nodes[i].get("class", ""), area(i)))
+
+
+def _within(inner, outer):
+    return outer is not None and inner is not None and outer[0] <= inner[0] and inner[2] <= outer[2] and outer[1] <= inner[1] and inner[3] <= outer[3]
+
+
 def focused(xml):
     """the text of the focused node of a uiautomator dump, else of the first one inside it that has a text (a row's name sits in a child)"""
     nodes = list(_nodes(xml))
+    fi = _focused_index(nodes)
     for i, a in enumerate(nodes):
-        if a.get("focused") == "true":
+        if i == fi:
             if _label(a):
                 return _label(a)
             box = a["_box"]
-            for c in nodes[i + 1:]:
-                if box and c["_box"] and box[0] <= c["_box"][0] and c["_box"][2] <= box[2] and box[1] <= c["_box"][1] and c["_box"][3] <= box[3] and _label(c):
+            inside = [c for c in nodes[i + 1:] if box and c["_box"] and _within(c["_box"], box)]
+            # a list is focused as a whole: its row is the one marked selected (the first row with a text is only the top one on the
+            # screen; auto-19 played the station two rows down from the one it named)
+            for k, c in enumerate(inside):
+                if c.get("selected") == "true":
+                    if _label(c):
+                        return _label(c)
+                    for d in inside[k + 1:]:
+                        if _within(d["_box"], c["_box"]) and _label(d):
+                            return _label(d)
+            for c in inside:
+                if _label(c):
                     return _label(c)
             return ""
     return ""
+
+
+def focus_key(xml):
+    """where the focus is: the focused node's place on the screen and its name («label@[l,t][r,b]»), empty when nothing has it; two places with the
+    same name (or none, as a card drawn by a page) are told apart"""
+    nodes = list(_nodes(xml))
+    fi = _focused_index(nodes)
+    return "" if fi is None else focused(xml) + "@" + nodes[fi].get("bounds", "")
+
+
+def toward(xml, label):
+    """the arrow a person presses from the focused item toward the item named label, as the screen shows them: «here», UP, DOWN, LEFT or RIGHT;
+    «none» when that name is not on the screen or nothing has the focus"""
+    nodes = list(_nodes(xml))
+    if focused(xml) == label:
+        return "here"
+    fi = _focused_index(nodes)
+    fb = nodes[fi]["_box"] if fi is not None else None
+    tb = next((a["_box"] for a in nodes if _label(a) == label and a["_box"]), None)
+    if not fb or not tb:
+        return "none"
+    ty = (tb[1] + tb[3]) / 2
+    if ty < fb[1]:
+        return "UP"
+    if ty > fb[3]:
+        return "DOWN"
+    return "LEFT" if (tb[0] + tb[2]) / 2 < (fb[0] + fb[2]) / 2 else "RIGHT"
 
 
 def has_text(xml, needle):
@@ -242,7 +345,7 @@ def box(xml, needle, src, dst):
 def thresholds(path=None):
     """key -> (limit, how): how is «max» (red when over) or «min» (red when under) or «zero» (red when not 0); lines starting with # are notes"""
     out = {}
-    with open(path or os.path.join(HERE, "thresholds.tsv"), encoding="utf-8") as f:
+    with open(path or os.environ.get("ROUND_THRESHOLDS") or os.path.join(HERE, "thresholds.tsv"), encoding="utf-8") as f:   # ROUND_THRESHOLDS: another file (the emulator's)
         for ln in f:
             if not ln.strip() or ln.startswith("#"):
                 continue
@@ -314,6 +417,11 @@ def report(outdir, prevdir=None):
 
 
 def main(a):
+    for stream in (sys.stdout, sys.stderr, sys.stdin):   # Arabic on a Windows console (cp1252) is UTF-8 here, whatever the console says (tester b654)
+        try:
+            stream.reconfigure(encoding="utf-8")
+        except (AttributeError, ValueError):
+            pass
     if len(a) < 2:
         sys.stdout.write(__doc__)
         return 2
@@ -348,8 +456,24 @@ def main(a):
         print(settings_style(_read(a[2])))
     elif cmd == "adhan-state":
         print(adhan_state(_read(a[2]), a[3]))
+    elif cmd == "front-app":
+        print(front_app(sys.stdin.read()))
+    elif cmd == "adhan-exact":
+        for x in adhan_exact(_read(a[2])):
+            print(x)
+    elif cmd == "adhan-all":
+        for x in adhan_all(_read(a[2])):
+            print(x)
+    elif cmd == "kv":
+        print(kv(_read(a[2]), a[3]))
+    elif cmd == "wm-back":
+        print(wm_back(_read(a[2])))
     elif cmd == "focused":
         print(focused(_read(a[2])))
+    elif cmd == "focus-key":
+        print(focus_key(_read(a[2])))
+    elif cmd == "toward":
+        print(toward(_read(a[2]), a[3]))
     elif cmd == "has-text":
         print("yes" if has_text(_read(a[2]), a[3]) else "no")
     elif cmd == "box":

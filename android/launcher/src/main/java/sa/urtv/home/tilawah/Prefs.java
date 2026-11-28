@@ -14,6 +14,9 @@ final class Prefs {
     }
 
     int source() { return sp.getInt("source", SOURCE_NONE); }
+    /** «was playing»: when a recitation or a station started (0: nothing, or the person paused or stopped it); still written at the next start = the sound was cut off (ResumeOffer) */
+    long playingAt() { return sp.getLong("playing_at", 0); }
+    void setPlayingAt(long at) { sp.edit().putLong("playing_at", at).apply(); }
     String reciter() { return sp.getString("reciter", ""); }
     int surah() { return sp.getInt("surah", 1); }
     /** the station's number in stations.json; 4.3.1 put Egypt's Quran Radio in at 1: a number saved before that moves up by one, once */

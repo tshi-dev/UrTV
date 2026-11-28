@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
 # The home screen's favourites row, for agents and scripts: no remote, no long-press.
-#   optimize/dock.sh show                  the current order, left to right
+#   optimize/dock.sh show                  the current order, first to last. The row reads like Arabic: the FIRST app is on the RIGHT
+#                                          (in English, on the left); `set` takes them in the same order
 #   optimize/dock.sh apps                  every app that can go in it: package | name
-#   optimize/dock.sh set PKG1 PKG2 ...     a new order, left to right (up to 10; fewer than 5 is topped up)
+#   optimize/dock.sh set PKG1 PKG2 ...     a new order, first to last: PKG1 on the right in Arabic (up to 10; exactly those, never topped up)
 #   optimize/dock.sh reset                 back to the defaults in android/launcher/.../config.xml
 #   optimize/dock.sh hidden                apps left off the home screen, and why: package | reason
 #   optimize/dock.sh hide PKG ...          take these off the home screen (all its lists)
@@ -28,6 +29,10 @@
 #                                          the Home key there: TCL G10/G08, Changhong Android 14, Sony BRAVIA VH21, Xiaomi MiTV-AFMU0/1); after extras-setup
 #   optimize/dock.sh home-key on|off|status    4.4 «زر الرئيسية يفتح تلفزيونك مباشرة»: the add-on catches the remote's Home key (on by default on a Google TV,
 #                                          only while the person's home is ours; the window watch stays as the fallback)
+#   optimize/dock.sh boot-home on|off|status   4.4 «ابدأ بالرئيسية بعد التشغيل» (R-410): UrTV in front a few seconds after the TV starts (on by default on Changhong and
+#                                          Skyworth, which boot into Live TV after a power cut; the TV's own «boot input» setting is the better way where it has one)
+#   optimize/dock.sh key-filter on|off|status  4.4 «فلتر أزرار الريموت» (R-408): off = the add-on never filters the remote's keys (a key remapper of the person's
+#                                          gets them all; the Home catch, the Settings key outside the home and the remote buttons over apps stop; on is the default)
 #   optimize/dock.sh key                   «أزرار الريموت»: this remote's app buttons (YouTube, Netflix…: the ones its brand has) and the app each opens
 #   optimize/dock.sh key BUTTON PKG        give one of this remote's buttons (the ids `key` lists: youtube, netflix…) another app; `default` = as before. Over other apps with «إضافات تلفزيونك» (extras-setup)
 #   optimize/dock.sh pin set 1234         «الرقابة الأبوية»: the master PIN (4 digits), set or changed from here without the old one; never printed back
@@ -58,7 +63,7 @@ send() {   # $1 action, $2 extra arguments; prints the receiver's answer (the "d
 case "${1:-}:$#" in
   familydns:*) shift; exec optimize/familydns.sh "$@" ;;
   cast:*) shift; exec optimize/cast.sh "$@" ;;
-  show:1) send GET_DOCK ;;
+  show:1) send GET_DOCK && echo "(first = the row's start: the rightmost app on the TV in Arabic, the leftmost in English)" ;;
   apps:*)  send LIST_APPS ;;
   reset:*) send RESET_DOCK ;;
   ramtier:2) case "$2" in low|mid|normal|auto) send RAM_TIER "--es tier $2" ;; *) echo "usage: optimize/dock.sh ramtier low|mid|normal|auto"; exit 1 ;; esac ;;
@@ -105,7 +110,7 @@ case "${1:-}:$#" in
     # On some TVs the Settings screen for it is hidden, so the person's choice is set from here. Without the add-on there is nothing to allow: say so, change nothing.
     case "$2" in
       on|status)
-        if ! "$PY" -I optimize/tv.py "pm list packages sa.urtv.extras" | tr -d '\r' | grep -qx "package:sa.urtv.extras"; then
+        if ! "$PY" -I optimize/tv.py "pm list packages sa.urtv.extras" | tr -d '\r' | grep -x "package:sa.urtv.extras" > /dev/null; then
           echo "overlay: «إضافات تلفزيونك» is not installed on this TV: it draws the notice over another app. Offer it to the person: optimize/install.sh addon (or the add-on's install screen on the TV), then run this again"; exit 1
         fi ;;
     esac
@@ -130,7 +135,7 @@ case "${1:-}:$#" in
     # sleep-setup and type-setup are the old names of the same step.
     svc="sa.urtv.extras/sa.urtv.home.ExtrasA11yService"; what="«إضافات تلفزيونك» (UrTV Extras)"
     done_msg="«إضافات تلفزيونك» is on: the end of «مؤقت النوم» turns the screen off, the phone remote presses keys and types in the app in front, the Settings key works in other apps, and on a Google TV the Home button comes back to UrTV"
-    if ! "$PY" -I optimize/tv.py "pm list packages sa.urtv.extras" | tr -d '\r' | grep -qx "package:sa.urtv.extras"; then
+    if ! "$PY" -I optimize/tv.py "pm list packages sa.urtv.extras" | tr -d '\r' | grep -x "package:sa.urtv.extras" > /dev/null; then
       echo "!! «إضافات تلفزيونك» (sa.urtv.extras) is not installed on the TV: optimize/install.sh addon first, then the same command again. (Play Protect may ask: the person presses «تثبيت على أي حال».)"
       exit 1
     fi
@@ -202,6 +207,18 @@ case "${1:-}:$#" in
       *) echo "usage: optimize/dock.sh home-key on|off|status"; exit 1 ;;
     esac ;;
   home-key:*) echo "usage: optimize/dock.sh home-key on|off|status"; exit 1 ;;
+  key-filter:2)
+    case "$2" in
+      on|off|status) send KEY_FILTER "--es mode $2" ;;
+      *) echo "usage: optimize/dock.sh key-filter on|off|status"; exit 1 ;;
+    esac ;;
+  key-filter:*) echo "usage: optimize/dock.sh key-filter on|off|status"; exit 1 ;;
+  boot-home:2)
+    case "$2" in
+      on|off|status) send BOOT_HOME "--es mode $2" ;;
+      *) echo "usage: optimize/dock.sh boot-home on|off|status"; exit 1 ;;
+    esac ;;
+  boot-home:*) echo "usage: optimize/dock.sh boot-home on|off|status"; exit 1 ;;
   home-watch:2)
     case "$2" in
       on|off|status) send HOME_WANTED "--es mode $2" ;;

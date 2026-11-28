@@ -6,7 +6,7 @@
 #         stock_off, switch, verify): after a cut-off the journal says how far the switch got
 TV_TMP=/data/local/tmp
 jfile() { echo "${URTV_RUN_DIR:-optimize/run}/home-switch.json"; }
-jget() { [ -f "$(jfile)" ] || return 0; sed -n "s/^  \"$1\": \"\(.*\)\",*\$/\1/p" "$(jfile)" | head -1; }
+jget() { [ -f "$(jfile)" ] || return 0; sed -n "s/^  \"$1\": \"\(.*\)\",*\$/\1/p" "$(jfile)" | sed -n 1p; }
 jwrite() {   # nonce state stock role_holder_before wizard_before stock_before
   local f; f=$(jfile); mkdir -p "$(dirname "$f")"
   printf '{\n  "nonce": "%s",\n  "state": "%s",\n  "stock": "%s",\n  "role_holder_before": "%s",\n  "wizard_before": "%s",\n  "stock_before": "%s",\n  "safety_switch": "armed",\n  "written": "%s",\n  "step": "armed"\n}\n' \
@@ -57,7 +57,7 @@ jrecover() {
   res=$("$PY" -I optimize/tv.py "cmd package resolve-activity --brief -c android.intent.category.HOME -a android.intent.action.MAIN" 2> /dev/null) \
     || { echo "(An earlier home switch was cut off, but the TV did not answer: it is checked on the next run.)"; return 0; }
   if grep -q sa.urtv.home <<< "$res"; then return 0; fi   # ours is home: the install goes on and checks it
-  if "$PY" -I optimize/tv.py "[ -f $TV_TMP/home_ok.$nonce ] && echo MARKER" 2> /dev/null | grep -q MARKER; then
+  if "$PY" -I optimize/tv.py "[ -f $TV_TMP/home_ok.$nonce ] && echo MARKER" 2> /dev/null | grep MARKER > /dev/null; then
     jstate restored; return 0   # it was confirmed or put back by the switch itself
   fi
   echo "An earlier home switch was cut off (the TV or this computer restarted) and Home is not ours: putting the home back from optimize/run/home-switch.json."

@@ -102,6 +102,8 @@
         <package android:name="sa.urtv.extras" />
         <!-- 4.3 «شاهد المباراة»: UrTV Player (its certificate is checked before it is told a game) -->
         <package android:name="com.urtv.player" />
+        <!-- 4.3.7 «فحص تلفزيونك»: whether the diagnostic app is installed (the offer after an update is never made when it is) -->
+        <package android:name="sa.urtv.doctor" />
         <!-- «صفحته في المتجر» only when the Play Store is on the TV -->
         <package android:name="com.android.vending" />
         <!-- the Settings key's SystemUI handler: whether it resolves (SettingsKey.NOTIFICATION_PANEL_ACTION, a Haier MatrixTV has none) -->
@@ -205,6 +207,7 @@
         android:icon="@mipmap/ic_launcher"
         android:banner="@drawable/banner"
         android:allowBackup="false"
+        android:requestLegacyExternalStorage="true"
         android:networkSecurityConfig="@xml/network_security_config"
         android:supportsRtl="true"
         android:theme="@style/Home">
@@ -489,6 +492,8 @@
                 <action android:name="sa.urtv.home.BACK_SAVER" />
                 <action android:name="sa.urtv.home.HOME_WANTED" />
                 <action android:name="sa.urtv.home.HOME_KEY" />
+                <action android:name="sa.urtv.home.KEY_FILTER" />
+                <action android:name="sa.urtv.home.BOOT_HOME" />
                 <action android:name="sa.urtv.home.PHONE_MESSAGE" />
                 <action android:name="sa.urtv.home.PIN_SET" />
                 <action android:name="sa.urtv.home.PIN_LOCK" />

@@ -20,12 +20,13 @@ words = src("Words.java")
 # 1: the badge says how a game is played
 need = set(re.findall(r'new Game\("([\w-]+)", "[^"]+", "[^"]+", "\w+", true, true\)', reg))
 free = set(re.findall(r'new Game\("([\w-]+)", "[^"]+", "[^"]+", "\w+", false, true\)', reg)) - {"packs"}
-check("1: «جوال» only for the games that need phones (the registry's `phones` flag: «الأسرع» and the party games), «ريموت» for the one-remote games",
+check("1: «جوالات» for the games that need phones (the registry's `phones` flag: «الأسرع» and the party games), «ريموت أو جوالات» for the older games that have both, «ريموت» for the one-remote games",
       "static boolean needsPhones(String id)" in reg and {"quiz", "forehead", "night", "draw"} <= need and {"khanat", "domino", "word5", "charades"} <= free and not (need & free)
-      and "boolean ph = filter == 1 || GameRegistry.needsPhones(g.id);" in hub and 'S.t("جوال") : S.t("ريموت")' in hub and 'id.startsWith("e:") || id.startsWith("e-")' in reg)
-check("1: the tile's word is a square (no pill, no rounded shape), saffron for «جوال» and outlined for «ريموت»; the setup page says the same at its end corner (the phones switch turns it to «جوال»)",
-      "setCornerRadius" not in code(hub + base) and "(GameRegistry.needsPhones(id()) && !remoteOn(c)) || (ph != null && ph.picked == 1)" in base and 'S.t("جوال") : S.t("ريموت")' in base)
-check("1: both words have their English", all(tsv.get(w) for w in ("جوال", "ريموت")) and all(f'S.n("{w}")' in words for w in ("جوال", "ريموت")))
+      and "int way = GameRegistry.way(g.id);" in hub and "static int way(String id) { return needsPhones(id) ? (remoteWay(id) ? 1 : 2) : inPhones(id) ? 1 : 0; }" in reg and 'id.startsWith("e:") || id.startsWith("e-")' in reg)
+check("1: the tile's word is a square (no pill, no rounded shape), ONE quiet outlined style for the three words (no saffron fill); the setup page says the same at its end corner (the mode row turns it to «جوالات»)",
+      "setCornerRadius" not in code(hub + base) and "mb.setColor(0)" in hub and "L.saff" not in hub[hub.index("int way = GameRegistry.way"):hub.index("tile.addView(mark, kp);", hub.index("int way = GameRegistry.way"))]
+      and "ph.picked == 1 ? 2 : 0" in base and "wayWord(way)" in base)
+check("1: both words have their English", all(tsv.get(w) for w in ("جوالات", "ريموت", "ريموت أو جوالات")) and all(f'S.n("{w}")' in words for w in ("جوالات", "ريموت", "ريموت أو جوالات")))
 
 # 2: «ابدأ» always starts
 b = code(base)
@@ -85,8 +86,8 @@ check("8: a step's text keeps its last line whole (font padding on, 12 px under 
 
 # 9: the room page
 lob = base[base.index("protected final void drawPhoneLobby"):]
-check("9: the room page's header is the one short line (the long one was cut after «اكتب»); the instruction and the ADDRESS stand big in the middle (as large as 56 design pixels, in its own box), the code in Latin digits too",
-      'title(S.t("اللعب بالجوالات"), S.t("امسح الرمز بكاميرا الجوال"))' in lob and 'S.t("ما فتح؟ اكتب هذا العنوان في متصفح الجوال")' in lob and "float us = 56; while (us > 30 && measure(url, us) > 552 - 40) us -= 2;" in lob and 'centered("\\u2066" + phones.code + "\\u2069", 120' in lob)
+check("9: the room page's header is the one short line (the long one was cut after «اكتب»); the instruction stands in the middle and the ADDRESS under the QR, never wider than it (shrunk to fit, or on two lines before the last «/»), Latin digits, the code inside it: no separate code box",
+      'title(S.t("اللعب بالجوالات"), S.t("امسح الرمز بكاميرا الجوال"))' in lob and 'S.t("ما فتح؟ اكتب هذا العنوان في متصفح الجوال")' in lob and "while (us > 30 && measure(url, us) > 360 - 32) us -= 2;" in lob and "root.addView(addrBox, at(360, 130, 96, 630));" in lob and "phones.code" not in lob and "codeBox" not in lob)
 check("9: its words have their English", all(tsv.get(w) for w in ("امسح الرمز بكاميرا الجوال", "ما فتح؟ اكتب هذا العنوان في متصفح الجوال")))
 
 # 10: the rows are never under the fold

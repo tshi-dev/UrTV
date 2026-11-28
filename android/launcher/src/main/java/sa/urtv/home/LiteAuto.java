@@ -17,6 +17,8 @@ final class LiteAuto {
     static final long SLOW_MS = 8_000;
     static final String TRIM = "trim", SLOW = "slow", OOM = "oom";
     static final int KEEP = 20;
+    /** one signal of a kind per this long: Android sends the low-memory callbacks in bursts seconds apart, and a burst is one event (review F99) */
+    static final long DEBOUNCE = 3 * 3_600_000L;
     /** where the signals are kept, in the «ram» preferences (Ram.tier reads them; Ram.java is shared with the add-on, so the key lives here) */
     static final String KEY = "auto_signals";
 
@@ -36,9 +38,20 @@ final class LiteAuto {
     /** the text with this signal added; signals older than HOLD, from the future, and all but the last KEEP are let go */
     static String add(String text, String kind, long now) { return add(text, kind, now, now); }
 
+    /** the text as it is, cleaned of what is too old, from the future or past KEEP */
+    private static String add(String text, long now) {
+        List<Event> kept = new ArrayList<>();
+        for (Event e : parse(text)) if (e.at <= now && now - e.at <= HOLD) kept.add(e);
+        kept.sort((a, b) -> Long.compare(a.at, b.at));
+        StringBuilder b = new StringBuilder();
+        for (Event e : kept.subList(Math.max(0, kept.size() - KEEP), kept.size())) b.append(e.kind).append(' ').append(e.at).append('\n');
+        return b.toString();
+    }
+
     /** a signal that happened at {@code at} (a low-memory kill read at the next start), added {@code now}: the window is reckoned from now, never from at */
     static String add(String text, String kind, long at, long now) {
         List<Event> all = parse(text);
+        for (Event e : all) if (Math.abs(e.at - at) < DEBOUNCE) return add(text, now);   // one signal per burst, whatever its kind (review F132: a trim, then the kill and the slow start it caused, are one event)   // the same burst: nothing new
         all.add(new Event(kind, at));
         List<Event> kept = new ArrayList<>();
         for (Event e : all) if (e.at <= now && now - e.at <= HOLD) kept.add(e);

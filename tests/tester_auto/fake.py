@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """A stand-in TV for tests/tester_auto_test.py: `fake.py tv CMD…`, `fake.py saver ARGS…`, `fake.py music ARGS…`. State lives in the folder FAKE_DIR (the front
 app, the focused row, the adhan states); every command it was given is appended to FAKE_DIR/log.txt. FAKE_JANK=bad makes the walk janky, FAKE_FRONT=none makes
-no app ever come to the front, FAKE_MUTE_ON_RADIO=1 mutes the music when a station starts."""
+no app ever come to the front, FAKE_MUTE_ON_RADIO=1 mutes the music when a station starts, FAKE_NO_SETTINGS=1 leaves «الإعدادات» out of the
+control centre (the reach step must fail), FAKE_NUDGE=1 puts «اختر المدينة» where UP lands in the header."""
 import os
 import re
 import sys
@@ -41,12 +42,30 @@ STATIONS = ["إذاعة القرآن الكريم", "محطة ثانية"]
 MARKERS = ["بحث في الإعدادات", "الأذان لكل صلاة", "احذف صورة", "التخطيط", "بدء شاشة التوقف بعد", "الخروج من تلفزيونك", "مباريات اليوم", "الرقابة الأبوية", "المدينة", "تحديث تلفزيوني", "الأسرع"]
 
 
+# the home as a person meets it after Home (the reach step): the apps row, a card in the couch strip, the header's «مركز التحكم»; its panel opens on a
+# round toggle, «الإعدادات» is the first row under them; OK on it opens our settings
+HOME_LABEL = {"apps": "يوتيوب", "card": "الأسهم", "nudge": "اختر المدينة", "center": "مركز التحكم", "pill": "تلاوة وأذان", "toggle": "البلوتوث", "settings": "الإعدادات"}
+HOME_BOX = {"apps": (1460, 780, 1760, 950), "card": (100, 560, 1820, 740), "center": (300, 40, 460, 110), "pill": (480, 40, 640, 110),
+            "nudge": (900, 40, 1200, 110), "toggle": (1500, 150, 1600, 250), "settings": (1300, 300, 1800, 380)}
+
+
 def xml():
     focused = int(st("focus", "0") or 0)
     nodes = []
+    where = st("where")
+    if st("front") == "sa.urtv.home" and where in HOME_LABEL:
+        for k, n in HOME_LABEL.items():   # where each is on a 1920 x 1080 screen (the reach step presses toward what it sees): the header at the top, the
+            b = HOME_BOX[k]                 # strip, the apps row at the bottom; the panel at the right, «الإعدادات» under its round buttons
+            nodes.append(f'<node text="" content-desc="{n}" focused="{"true" if k == where else "false"}" bounds="[{b[0]},{b[1]}][{b[2]},{b[3]}]" />')
+        nodes.append('<node text="الرياض" focused="false" bounds="[800,40][1000,100]" />')
+        return '<?xml version="1.0"?><hierarchy>' + "".join(nodes) + "</hierarchy>"
     for m in MARKERS:
         nodes.append(f'<node text="{m}" focused="false" bounds="[100,100][400,160]" />')
-    for i, n in enumerate(STATIONS):
+    if st("opened") == "1":   # the tabs: «الإذاعات» is focused until the walk moved to it (LEFT, the Arabic side), then the list below
+        nodes.append(f'<node text="ع" focused="{"true" if st("tab", "r") == "r" else "false"}" bounds="[1700,600][1760,660]" />')   # the screen opens with the focus on the letter rail (run 17), not on a tab
+        nodes.append(f'<node text="القرّاء" focused="{"true" if st("tab", "r") == "0" else "false"}" bounds="[500,40][800,100]" />')
+        nodes.append(f'<node text="الإذاعات" focused="{"true" if st("tab") == "1" else "false"}" bounds="[100,40][400,100]" />')
+    for i, n in enumerate(STATIONS if st("opened") == "1" else []):
         nodes.append(f'<node text="{n}" focused="{"true" if i == focused else "false"}" bounds="[100,{200 + i * 60}][600,{250 + i * 60}]" />')
     nodes.append('<node text="الرياض" focused="false" bounds="[800,40][1000,100]" />')
     return '<?xml version="1.0"?><hierarchy>' + "".join(nodes) + "</hierarchy>"
@@ -56,20 +75,65 @@ def tv(cmd):
     log("tv " + cmd)
     if cmd.startswith("--shot"):
         return
+    if cmd.startswith("wm size;") and os.environ.get("FAKE_WM_START"):
+        print("Physical size: 1920x1080\nOverride size: 1600x900\nPhysical density: 320\nOverride density: 280")
+        return
+    ms = re.search(r"am broadcast .*--es settingsstyle (\w+)", cmd)
+    if ms:
+        put("sstyle", ms.group(1))
     for part in re.split(r";\s*", cmd):
         m = re.match(r"am start .*-n (\S+)", part)
         if m:
             put("front", "" if os.environ.get("FAKE_FRONT") == "none" else m.group(1).split("/")[0])
             put("focus", "0")
+            put("where", "")
         if "KEYCODE_HOME" in part:
             put("front", "" if os.environ.get("FAKE_FRONT") == "none" else "sa.urtv.home")
-        if "KEYCODE_DPAD_DOWN" in part:
+            put("opened", "0")
+            put("tab", "r")
+            put("where", "apps")
+        where = st("where") if st("front") == "sa.urtv.home" else ""
+        if where in HOME_LABEL:   # the home's own focus (the reach step)
+            card = st("card", "none") != "none" and st("layout", "classic") == "couch"
+            nudge = os.environ.get("FAKE_NUDGE") == "1"   # a TV with no city: UP lands on «اختر المدينة», «مركز التحكم» is one LEFT from it
+            handled = True
+            if "KEYCODE_DPAD_UP" in part and where in ("apps", "card"):
+                put("where", "card" if where == "apps" and card else "nudge" if nudge else "center")
+            elif "KEYCODE_DPAD_LEFT" in part and where == "nudge":
+                put("where", "center")
+            elif "KEYCODE_DPAD_DOWN" in part and where == "toggle" and os.environ.get("FAKE_NO_SETTINGS") != "1":   # =1: a panel without the row (build 654)
+                put("where", "settings")
+            elif "KEYCODE_DPAD_RIGHT" in part and where == "center":
+                put("where", "pill")   # the «تلاوة وأذان» pill of the header (the radio's way in; the screen itself is not exported)
+            elif "KEYCODE_DPAD_CENTER" in part and where == "pill":
+                put("opened", "1")
+                put("focus", "0")
+                put("where", "")
+            elif "KEYCODE_DPAD_CENTER" in part and where == "center":
+                put("where", "toggle")
+            elif "KEYCODE_DPAD_CENTER" in part and where == "settings":
+                put("front", "sa.urtv.screensaver")
+                put("where", "")
+            else:
+                handled = False   # a key the reach step does not use (OK on the «تلاوة وأذان» pill, say) goes on to the rest
+            if handled:
+                continue
+        if "KEYCODE_DPAD_UP" in part and st("opened") == "1" and st("tab", "r") == "r":
+            put("tab", "0")   # UP from the list's letter rail reaches the tabs
+        elif "KEYCODE_DPAD_LEFT" in part and st("opened") == "1" and st("tab", "r") == "0":
+            put("tab", "1")
+        if "KEYCODE_DPAD_DOWN" in part and st("opened") == "1" and st("tab") == "1":
+            put("tab", "2")   # DOWN from the tab lands on the first row
+        elif "KEYCODE_DPAD_DOWN" in part:
             put("focus", str(min(len(STATIONS) - 1, int(st("focus", "0") or 0) + 1)))
-        if "KEYCODE_DPAD_CENTER" in part and st("front") == "sa.urtv.home":
+        if "KEYCODE_DPAD_CENTER" in part and st("front") == "sa.urtv.home" and st("opened") != "1":
+            put("opened", "1")   # OK on the «تلاوة وأذان» pill opens the screen (it is not exported: the round never starts it)
+            put("focus", "0")
+        elif "KEYCODE_DPAD_CENTER" in part and st("front") == "sa.urtv.home":
             put("playing", "1")
             if os.environ.get("FAKE_MUTE_ON_RADIO") == "1":
                 put("muted", "1")
-    if "dumpsys activity activities | grep" in cmd:
+    if "dumpsys activity activities" in cmd and not cmd.startswith("dumpsys dreams"):
         f = st("front")
         print(f"  mResumedActivity: ActivityRecord{{1 u0 {f}/.MainActivity t5}}" if f else "  mResumedActivity: ActivityRecord{1 u0 com.other.app/.Main t5}")
     elif "uiautomator dump" in cmd:
@@ -101,6 +165,10 @@ def tv(cmd):
         print("2026-11-27 16:00:00")
     elif cmd.startswith("settings get system font_scale"):
         print("1.0")
+    elif cmd.startswith("settings get system screen_off_timeout"):
+        print(st("idle", "45000"))
+    elif cmd.startswith("settings put system screen_off_timeout"):
+        put("idle", cmd.split()[-1])
     elif cmd.startswith("pidof"):
         print("123")
 
@@ -110,25 +178,60 @@ def saver(a):
     if a[:1] == ["export"]:
         print('{"city":"الرياض"}')
     elif a[:1] == ["show"]:
-        print("version=4.4\ncity=الرياض\nhomelayout=classic\nsettingsstyle=couch")
+        # as the real `saver.sh show` prints it: the first line «version=…», then «key: value» lines (SaverReceiver.describe)
+        print("version=4.4\ncity: الرياض\nhome_panel: " + st("card", os.environ.get("FAKE_PANEL_START", "stocks")) + "\nhomelayout: " + st("layout", os.environ.get("FAKE_LAYOUT_START", "classic"))
+              + "\nsettingsstyle: " + st("sstyle", os.environ.get("FAKE_STYLE_START", "couch")))
     elif a[:1] == ["homelayout"] and a[1:2] and a[1] not in ("classic", "couch", "football"):
         sys.exit(1)
+    elif a[:1] == ["homelayout"] and a[1:2]:
+        put("layout", a[1])
+    elif a[:1] == ["home-card"] and a[1:2]:
+        put("card", a[1])
+
+
+def adhan_load():
+    """per prayer [sound token, screen on|off]: «» general, «silent», «own», «vN» a recording; FAKE_ADHAN_START: «fajr:screen,dhuhr:sound:v7,…» (state, then an optional own sound)"""
+    raw = st("adhan_tokens")
+    if raw:
+        return {k: v.split("/") for k, v in (x.split("=") for x in raw.split(","))}
+    out = {}
+    for x in os.environ.get("FAKE_ADHAN_START", "fajr:both,dhuhr:both,asr:both,maghrib:both,isha:both").split(","):
+        parts = x.split(":")
+        state, tok = parts[1], parts[2] if len(parts) > 2 else ""
+        out[parts[0]] = [tok if state in ("both", "sound") else "silent", "on" if state in ("both", "screen") else "off"]
+    return out
+
+
+def adhan_save(d):
+    put("adhan_tokens", ",".join(f"{k}={v[0]}/{v[1]}" for k, v in d.items()))
 
 
 def music(a):
     log("music " + " ".join(a))
-    states = {k.split(":")[0]: k.split(":")[1] for k in st("adhan", "fajr:both,dhuhr:both,asr:both,maghrib:both,isha:both").split(",")}
+    d = adhan_load()
     if a[:1] == ["stations"]:
         for i, n in enumerate(STATIONS):
             print(f"{i}  {n}")
     elif a[:1] == ["status"]:
-        print("source=radio" if st("playing") == "1" else "source=none")
-    elif a[:2] == ["adhan", "state"]:
-        states[a[2]] = a[3]
-        put("adhan", ",".join(f"{k}:{v}" for k, v in states.items()))
+        if st("playing") == "1":   # the real status line: «playing=1|source=radio|station=N|station_name=…»; FAKE_RADIO_OFFSET: the app plays another row than the focused one (emulator run 19)
+            n = min(len(STATIONS) - 1, int(st("focus", "0") or 0) + int(os.environ.get("FAKE_RADIO_OFFSET", "0")))
+            print(f"playing=1|source=radio|station={n}|station_name={STATIONS[n]}|foreground=1")
+        else:
+            print("playing=0|source=none|station=-1|station_name=")
+    elif a[:2] == ["adhan", "state"]:   # the state words set the general sound or silence: a prayer's own recording is lost (as the real PRAYER_STATE does)
+        sound = a[3] in ("both", "sound")
+        d[a[2]] = ["" if sound else "silent", "on" if a[3] in ("both", "screen") else "off"]
+        adhan_save(d)
+    elif a[:2] == ["adhan", "prayer"]:
+        tok = {"general": ""}.get(a[3], a[3] if a[3] in ("silent", "own", "own_fajr") else "v" + a[3])
+        d[a[2]][0] = tok
+        adhan_save(d)
+    elif a[:2] == ["adhan", "screen"]:
+        d[a[2]][1] = a[3]
+        adhan_save(d)
     elif a[:1] == ["adhan"]:
-        snd = ",".join(f"{k}:{'silent' if v in ('screen', 'none') else ''}" for k, v in states.items())
-        scr = ",".join(f"{k}:{'off' if v in ('sound', 'none') else 'on'}" for k, v in states.items())
+        snd = ",".join(f"{k}:{v[0]}" for k, v in d.items())
+        scr = ",".join(f"{k}:{v[1]}" for k, v in d.items())
         print(f"saved|adhan_on=1|prayer_sound={snd}|prayer_screen={scr}")
     elif a[:1] == ["stop"]:
         put("playing", "0")

@@ -68,6 +68,12 @@ HDMI ARC (مضخم أو ساوند بار)	HDMI ARC (amplifier or soundbar)
 م	PM
 ، وضع الاستعداد	, standby
 كمّل المشاهدة	Continue watching
+ما يشارك	Nothing shared
+كمّل الإذاعة	Resume the radio
+كمّل التلاوة	Resume the recitation
+توقفت الإذاعة فجأة	The radio stopped suddenly
+توقفت التلاوة فجأة	The recitation stopped suddenly
+التطبيقات على هذا التلفزيون ما تشارك ما تتابعه مع الشاشة الرئيسية	The apps on this TV do not share what you are watching with the home screen
 الموسم %s	Season %s
 الحلقة %s	Episode %s
 تفاصيل التطبيق	App info
@@ -87,6 +93,7 @@ HDMI ARC (مضخم أو ساوند بار)	HDMI ARC (amplifier or soundbar)
 متجر Play	Play Store
 إعدادات التلفزيون	TV settings
 إعدادات الجهاز	Device settings
+كل الخيارات	All options
 تحديث تلفزيوني	Update Your TV
 تراجع	Undo
 تعديل المفضلة	Edit favorites
@@ -269,6 +276,7 @@ HDMI ARC (مضخم أو ساوند بار)	HDMI ARC (amplifier or soundbar)
 جارٍ التحميل…	Loading…
 %s، نوم %s د	%s, sleep %s min
 اختيار: إيقاف/تشغيل، مطولًا: فتح	OK: pause/play, hold: open
+اختيار: تشغيل، رجوع: إغلاق، مطولًا: فتح	OK: play, Back: close, hold: open
 اختيار: إيقاف/تشغيل، يمين/يسار: السورة، مطولًا: فتح	OK: pause/play, left/right: surah, hold: open
 الآن	Now
 بعد %s	in %s
@@ -978,3 +986,9 @@ mp3 أو m4a أو ogg أو wav	mp3, m4a, ogg or wav
 أضيفت إلى صوري ✓	Added to My photos ✓
 صوري ممتلئة: احذف بعضها أولاً	My photos is full: delete some first
 ما قدرنا نضيف هذه الصورة	We could not add this photo
+التلفزيون رجّع زر الرئيسية لشاشته الأصلية. ترجّعه لتلفزيونك من الإعدادات ← «إعداد تلفزيوني».	The TV gave the Home button back to its own home. Set UrTV as home again in Settings → “Your TV setup”.
+ثبّته	Install it
+ساعدنا نحسّن UrTV، ثبّت فحص تلفزيونك، مجاني	Help us improve UrTV: install the TV check, free
+افتح Downloader واكتب الرمز	Open Downloader and enter the code
+فحص تلفزيونك	UrTV Doctor
+يفحص تلفزيونك ويقول لك وش فيه، مجاني	Checks your TV and tells you what is wrong, free

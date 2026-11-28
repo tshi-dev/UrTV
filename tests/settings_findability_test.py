@@ -42,7 +42,7 @@ NEW = ["أضف صوري من الجوال", "احذف صورة", "صوري", "ا
 
 # the words people use for what lives past a row, and the row that leads there (the adhan's screen, the colours' screen, the photos, the hidden apps)
 WORDS = {
-    "اذاني": "المؤذن", "اذان خاص": "المؤذن", "اذان من ملف": "المؤذن", "دعاء": "الأدعية والتذكيرات", "تذكير": "الأدعية والتذكيرات", "صوتياتي": "صوتياتي", "الاقامه": "الأذان",
+    "اذاني": "أذاني من ملف", "اذان خاص": "أذاني من ملف", "اذان من ملف": "أذاني من ملف", "دعاء": "الأدعية والتذكيرات", "تذكير": "الأدعية والتذكيرات", "صوتياتي": "صوتياتي", "الاقامه": "الأذان",
     "تنبيه عند الاذان": "الأذان", "مستوي صوت الاذان": "الأذان", "اذان الجمعه": "الأذان", "اذان الفجر": "الأذان لكل صلاة", "كتم الاذان": "الأذان لكل صلاة",
     "شفافيه": "الألوان والإضاءة", "لون التمييز": "الألوان والإضاءة", "شكل التركيز": "الألوان والإضاءة", "تعتيم الخلفيه": "الألوان والإضاءة",
     "حذف صوره": "احذف صورة", "اضف صور": "أضف صوري من الجوال", "فلاشه": "أضف من فلاشة أو التنزيلات", "usb": "أضف من فلاشة أو التنزيلات",
@@ -99,6 +99,9 @@ check("the city is in one place, «اللغة والموقع», and every way in
 center = (ROOT / "android/launcher/src/main/java/sa/urtv/home/ControlCenter.java").read_text(encoding="utf-8")
 check("«الإعدادات» means ours: the control centre's tile that opens the TV's own settings is «إعدادات الجهاز»",
       'tile("tv", S.t("إعدادات الجهاز")' in center and 'tile("tv", S.t("الإعدادات")' not in center)
+check("the way from the home is said where the settings are documented: «مركز التحكم» ← «الإعدادات», and the apps row's end in «كنبة»",
+      "the header's «مركز التحكم», then its first row «الإعدادات»" in (ROOT / "docs/SETTINGS.md").read_text(encoding="utf-8")
+      and 'tile("settings", S.t("الإعدادات")' in center)
 phone = [(ROOT / f"android/launcher/src/main/assets/phone/{p}.html").read_text(encoding="utf-8") for p in ("adb", "audio", "draw", "photos")]
 check("the phone link has one name: the help says the home's «الجوال» button, not «أسهل من الجوال» (a button of the markets page only)",
       all("أسهل من الجوال" not in p and "Easier from the phone" not in p for p in phone)

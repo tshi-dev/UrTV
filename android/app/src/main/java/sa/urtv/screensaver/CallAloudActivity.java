@@ -16,7 +16,7 @@ import sa.urtv.screensaver.games.quran.QuranItems;
 import sa.urtv.screensaver.games.remote.CallAloudRound;
 
 /**
- * «نادوا الجواب» (docs/GAMES-REMOTE.md): the one-remote way to play «اقرأ الإيموجي»، «ألغاز المنطق»، «كمّل الآية» and «سباق الحساب» («اللعب بالريموت بس» on their setup page, off by default).
+ * «نادوا الجواب» (docs/GAMES-REMOTE.md): the one-remote way to play «اقرأ الإيموجي»، «ألغاز المنطق»، «كمّل الآية» and «سباق الحساب» («ريموت واحد» on their setup page, off by default).
  * The question and its options are on the TV, everybody calls the answer aloud, OK shows the right one, and the host says who called it first (the pick of «خلية الحروف»).
  * The questions are the games' own (their banks, the verses file, the generators): nothing is made up here. The rules are CallAloudRound (no Android).
  */

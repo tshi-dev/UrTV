@@ -44,6 +44,7 @@ final class TvRows {
     /** One card: what it says, where its picture is, and the link it opens (into its own app only, see {@link #open}). */
     static final class Item {
         String title = "", meta = "", pkg, link, artUri;
+        boolean empty;   // the «ما يشارك» card: nothing to open
         float progress = -1f;
     }
 
@@ -67,7 +68,17 @@ final class TvRows {
         Row row = new Row();
         row.key = TvRowsPick.WATCH_NEXT;
         row.title = TvRowsPick.WATCH_NEXT_TITLE;
-        row.items.addAll(watchNext(c));
+        int[] counted = new int[2];   // [0] the rows the TV's provider holds, [1] 1 only when it answered (a cursor, no exception: review F123)
+        row.items.addAll(watchNext(c, counted));
+        boolean epg = c.checkSelfPermission(EPG) == PackageManager.PERMISSION_GRANTED;
+        android.util.Log.i("UrTVRows", TvRowsPick.logLine(epg, counted[0], row.items.size()));   // #56: what the TV's provider holds, and the permission state
+        if (row.items.isEmpty() && TvRowsPick.nothingShared(counted[1] == 1, counted[0])) {   // nothing is shared by any app: said, not a missing row
+            Item none = new Item();
+            none.title = TvRowsPick.NOTHING_SHARED;
+            none.meta = TvRowsPick.NOTHING_SHARED_LINE;
+            none.empty = true;
+            row.items.add(none);
+        }
         if (!row.items.isEmpty()) out.add(row);
         return out;
     }
@@ -103,7 +114,7 @@ final class TvRows {
     }
 
     /** «كمّل المشاهدة»: continue and next-episode entries, newest first (TvRowsPick.watchNextShown). */
-    private static List<Item> watchNext(Context c) {
+    private static List<Item> watchNext(Context c, int[] providerRows) {
         List<Item> out = new ArrayList<>();
         PackageManager pm = c.getPackageManager();
         boolean latin = Digits.latin();
@@ -115,7 +126,10 @@ final class TvRows {
                 TvContract.WatchNextPrograms.COLUMN_INTENT_URI, TvContract.WatchNextPrograms.COLUMN_BROWSABLE};
         try (Cursor cur = c.getContentResolver().query(TvContract.WatchNextPrograms.CONTENT_URI, cols, null, null,
                 TvContract.WatchNextPrograms.COLUMN_LAST_ENGAGEMENT_TIME_UTC_MILLIS + " DESC")) {
-            while (cur != null && cur.moveToNext() && out.size() < MAX_WATCH_NEXT) {
+            if (cur != null) providerRows[1] = 1;   // the provider answered: an empty answer is «ما يشارك», a refusal or no provider is not
+            while (cur != null && cur.moveToNext()) {
+                providerRows[0]++;
+                if (out.size() >= MAX_WATCH_NEXT) continue;   // all rows are counted for the log; only the first ones are shown
                 String pkg = cur.getString(0);
                 int type = cur.isNull(5) ? -1 : cur.getInt(5);
                 boolean browsable = cur.isNull(11) || cur.getInt(11) != 0;

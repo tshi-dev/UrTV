@@ -61,6 +61,17 @@ else
   echo "!! disable.sh: the TV did not say which packages it has or which were already off, so NOTHING was turned off (a restore could not be exact). Run the same command again." >&2
   exit 1
 fi
+# 4.4 (report row 765, R-362): an app an earlier run turned off (the ledger) that keep.txt names now (com.tcl.partnercustomizer: a TCL OTT box on Android 8 lost its
+# remote; 4.4: the accounts, sign-in, sync and Assistant apps, SetupEngine.HEAL) is turned back on and leaves the ledger; only what the ledger holds and the TV says is off now, never what the maker had off
+if [ -s "$LEDGER" ]; then
+  healed=$(grep -E '^[A-Za-z0-9_.]+$' "$LEDGER" | grep -Fx -f <(grep -vE '^[[:space:]]*(#|$)' "$KEEP" | awk '{print $1}') | grep -Fx -e com.tcl.partnercustomizer -e com.google.android.partnersetup -e com.google.android.syncadapters.calendar -e com.google.android.syncadapters.contacts -e com.google.android.sss.authbridge -e com.google.android.backuptransport -e com.tcl.usercenter -e com.tcl.assistant | grep -Fx -f <(printf '%s\n' "$was_off" | grep . || echo '#none#') || true)
+  if [ -n "$healed" ]; then
+    echo "Turned back on, they are on the never-turn-off list now: $(paste -sd' ' - <<< "$healed")" >&2
+    printf '%s\n' "$healed" | awk '{print "pm enable --user 0 " $1}' | "$PY" -I optimize/tv.py --batch
+    grep -Fxv -f <(printf '%s\n' "$healed") "$LEDGER" > "$LEDGER.tmp" || true
+    mv "$LEDGER.tmp" "$LEDGER"
+  fi
+fi
 # 4.3.3: whatever a list says, an app that answers Home on this TV (its stock home, the setup wizard, a maker's home) stays on: with it off some
 # TVs cannot start (a blank screen and a restart loop; couch-tv's TROUBLESHOOTING.md, github.com/Seagey/couch-tv, MIT). keep.txt names the Google
 # ones; this asks the TV for the rest. Ours (sa.urtv.*) is never in a list. If the TV does not say, keep.txt and core.txt still hold.
@@ -91,7 +102,7 @@ rm -f "$RUN/inputs-left.txt"   # what the guard left on in this run (community.s
 HANDLERS='echo "== sdk $(getprop ro.build.version.sdk)"; echo "== settings"; cmd package query-activities --brief -a android.settings.SETTINGS 2>/dev/null; echo "== tv"; for d in content://android.media.tv/channel/1 content://android.media.tv/passthrough/1; do cmd package query-activities --brief -a android.intent.action.VIEW -d $d 2>/dev/null; done; cmd package query-activities --brief -a android.intent.action.VIEW -d content://android.media.tv/channel/1 -t vnd.android.cursor.item/channel 2>/dev/null; cmd package query-activities --brief -a android.media.tv.action.SETUP_INPUTS 2>/dev/null; echo "== home"; cmd package query-activities --brief -a android.intent.action.MAIN -c android.intent.category.HOME 2>/dev/null; echo END_OF_LIST'
 if [ -n "$intended" ]; then
   raw=$("$PY" -I optimize/tv.py "$HANDLERS" 2> /dev/null | tr -d '\r') || raw=""
-  sdk=$(sed -n -E 's/^== sdk ([0-9]+)$/\1/p' <<< "$raw" | head -n 1)
+  sdk=$(sed -n -E 's/^== sdk ([0-9]+)$/\1/p' <<< "$raw" | sed -n 1p)
   if [ -n "$sdk" ] && [ "$sdk" -lt 24 ]; then
     echo "Nothing turned off from this list: Android 6 and older cannot say which apps open the TV's Settings and channels (على أندرويد 6 وأقدم ما يقدر التلفزيون يقول أي التطبيقات تفتح إعداداته وقنواته، فما أوقفنا شيئاً من هذه القائمة)." >&2
     printf '%s\n' "$intended" > "$RUN/inputs-left.txt"   # community.sh: none of them was applied

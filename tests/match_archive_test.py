@@ -398,5 +398,23 @@ o70 = build(leagues_dir([], lg="4346"), prev70)
 h70 = json.loads((o70 / "health.json").read_text())
 check("#70 build: the duplicates go (not a «store shrank» failure), and MLS has no game «without result»", h70["followed"]["4346"]["without_result"] == 0
       and not any("4346" in p_ for p_ in h70["problems"]) and len(store_events(o70)) == 3, {k: h70[k] for k in ("problems", "events")})
+# 4.4 review F90: the duplicates arriving through put() during a whole build (the store has both copies, the feed brings the game under the
+# other label with its result): put() removes a copy while the other is updated in place, so the store is one smaller; that removal must count
+# as dropped, or the «store shrank» guard stops the build and nothing is pushed (urtv-data's archive froze on d6da764)
+for label in ("2026-2027", "2026"):
+    prevF = Path(tempfile.mkdtemp())
+    (prevF / "store/4346").mkdir(parents=True)
+    for season, evs in (("2026", mls), ("2026-2027", stale)):
+        (prevF / f"store/4346/{season}.json").write_text(json.dumps({"id": "4346", "season": season, "league": "American Major League Soccer",
+                                                                      "events": {e["idEvent"]: ma.compact(e) for e in evs}}))
+    fed = [ev("m1", "1", "2", ago(4), "3", "2", "FT", lg="4346", season=label), ev("m2", "3", "4", ago(3), "2", "1", "FT", lg="4346", season=label)]
+    try:
+        oF = build(leagues_dir(fed, lg="4346"), prevF)
+        ok, why = True, ""
+    except SystemExit as x:
+        ok, why = False, str(x)
+    hF = json.loads((oF / "health.json").read_text()) if ok else {}
+    check(f"F90: a whole build with the duplicates arriving through put() under «{label}»: no «store shrank» stop, one copy each, nothing without result",
+          ok and len(store_events(oF)) == 3 and hF["followed"]["4346"]["without_result"] == 0, why or hF.get("problems"))
 print("\n%s" % ("ALL PASS" if not failed else f"{failed} FAILED"))
 sys.exit(1 if failed else 0)

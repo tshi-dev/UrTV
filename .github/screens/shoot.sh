@@ -138,6 +138,64 @@ shot settings-c-tvos-prayer 2
 key BACK BACK
 saver --es settingsstyle buttons
 
+# ---- 4.4 beta 4 (the tester, build 654: the settings not found from the home in «كنبة»): «كنبة» with «بدون» (the date over the big clock), the
+# apps row's «الإعدادات» at its end (the owner's «تكبير»), «مركز التحكم» with «الإعدادات» as its first row, and OK on it
+saver --es homelayout couch --es couch on --es clock glass --es appsstyle zoom --es home_panel none
+# the focus walked to a name the screen reads (uiautomator): the emulator has no city, so its header also has «اختر المدينة», which counted keys hit
+focused() { adb shell "uiautomator dump /sdcard/u.xml > /dev/null 2>&1; cat /sdcard/u.xml" 2> /dev/null | grep -q "content-desc=\"$1\"[^>]*focused=\"true\""; }
+focus_to() { local i; for i in $(seq 0 "$2"); do focused "$1" && return 0; [ "$i" -lt "$2" ] && key "$3"; done; return 1; }   # $1 name, $2 at most, $3 the key
+start sa.urtv.home/.MainActivity
+shot couch-none-date 12
+key DPAD_DOWN DPAD_DOWN
+focus_to "الإعدادات" 10 DPAD_LEFT
+shot couch-row-gear 1.5
+key DPAD_UP DPAD_UP DPAD_UP
+focus_to "مركز التحكم" 8 DPAD_LEFT || focus_to "مركز التحكم" 12 DPAD_RIGHT
+shot couch-header 1
+key DPAD_CENTER
+shot couch-panel 2
+focus_to "الإعدادات" 4 DPAD_DOWN
+shot couch-panel-settings 1
+key DPAD_CENTER
+shot couch-panel-settings-open 3
+key BACK
+saver --es homelayout classic --es home_panel matches,prayerrow,hourly
+
+# 4.4 beta 4: «كنبة»'s side cards, A (two) and B (three), on the home in the «كنبة» layout; then off again (the default)
+saver --es homelayout couch --es clock glass --es home_panel stocks   # a strip that leaves the column's cards free (it never repeats the strip)
+for opt in a b; do
+  saver --es sidecards $opt
+  start sa.urtv.home/.MainActivity; sleep 8   # our home (the emulator's own launcher answers HOME)
+  start sa.urtv.home/.MainActivity; sleep 6   # again: the big clock is up from the first start, so the strip sits under its digits
+  shot home-side-cards-$opt 2
+done
+adb logcat -d -s UrTVSide:I > "$OUT/side-cards.txt"   # which cards each column loaded (run 22-23: B's shot looked like A's)
+saver --es sidecards off --es home_panel matches,prayerrow,hourly
+# 4.4 beta 4 (the findability review §5): the presses to each target in every settings style, counted by moving the focus as a person would
+python3 .github/screens/presses.py "$OUT" || echo "presses: the walk stopped"
+# ---- 4.4 beta 4 known bugs (the supervisor's a, h): (a) a bar of a few apps is as wide as its tiles; (h) «رملي»: the reciter letters in the look's
+# own ink, and a reminder card under the clock's column, not over it
+saver --es homelayout classic --es appsstyle zoom --es home_panel none
+start sa.urtv.home/.MainActivity
+shot bug-a-dock-few-apps 10
+saver --es look sand
+due=$(adb shell "TZ=Asia/Riyadh date '+%Y-%m-%d %H:%M'" | tr -d '\r')   # the city of these shots is Riyadh: a reminder due now
+adb shell "am broadcast -n sa.urtv.screensaver/.SaverReceiver -a sa.urtv.screensaver.TASKS --es op add --es text 'موعد الطبيب' --es at '$due' --es where home" > /dev/null
+start sa.urtv.home/.MainActivity
+shot bug-h-sand-reminder 10
+key DPAD_CENTER   # «تم»: the card goes
+# تلاوة is not exported (an adb start is refused): from the home by its button, the way a person opens it
+start sa.urtv.home/.MainActivity
+sleep 4
+key DPAD_UP
+focus_to "تلاوة وأذان" 10 DPAD_LEFT || focus_to "تلاوة وأذان" 12 DPAD_RIGHT
+key DPAD_CENTER
+sleep 4
+key DPAD_RIGHT   # from the list to the letters (the start edge is the right in Arabic)
+shot bug-h-sand-letters 3
+key BACK BACK
+saver --es look glass --es home_panel matches,prayerrow,hourly
+
 adb logcat -d -s AndroidRuntime:E > "$OUT/crashes.txt"
 ls "$OUT"
 exit 0

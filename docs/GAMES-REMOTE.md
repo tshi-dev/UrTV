@@ -1,6 +1,6 @@
-# «اللعب بالريموت بس»: the one-remote way for the phone games
+# «ريموت واحد»: the one-remote way for the phone games
 
-A row in the setup page of seven phone games, **off by default** (kept per game like any chip), so nothing changes until someone turns it on. On, the game does not open a room: it plays on the TV with the remote. The setup page and the tile say «ريموت» then. Mockups: `docs/mockups/games-remote/`. Review and designs: `docs/research/GAMES-REVIEW-CODE.md`. Nothing here adds content: every question comes from the game's own bank, verses file or generator, read in memory through `GameBundles` as before.
+The first row of the setup page of seven phone games, «كيف تلعبون؟» (**ريموت واحد** / جوالات), kept per game like any chip; the party games keep «جوالات» as the default, so nothing changes until someone picks «ريموت واحد» (or presses «نلعب بالريموت» in the phone room). The old switch «اللعب بالريموت بس» is gone: this row replaces it (docs/research/GAMES-FLOW.md). On «ريموت واحد», the game does not open a room: it plays on the TV with the remote. The setup page and the tile say «ريموت» then. Mockups: `docs/mockups/games-remote/`. Review and designs: `docs/research/GAMES-REVIEW-CODE.md`. Nothing here adds content: every question comes from the game's own bank, verses file or generator, read in memory through `GameBundles` as before.
 
 | Game | One-remote way | Code |
 |---|---|---|

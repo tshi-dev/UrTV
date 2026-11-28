@@ -20,12 +20,24 @@ done
 restore_rc=0
 restore_out=$(optimize/restore.sh "${lists[@]}" 2>&1) || restore_rc=$?
 { grep -E '^(!!|Note:)' <<< "$restore_out" || true; } >&2
+# R-402 (a G-TEN on Android 15): a TV whose own home is in no list and not in the journal (set up on the TV, or before the journal) never
+# matched, so the reset always stopped here. Then the TV's own HOME apps are read, after restore turned them back on: system apps only, never
+# ours, the setup wizard or a Settings stand-in.
+if [ -z "$stockpkg" ]; then
+  sys_pkgs=$(tv "pm list packages -s" 2> /dev/null | tr -d '\r' | sed -n 's/^package://p' || true)
+  for p in $(tv "cmd package query-activities --brief -a android.intent.action.MAIN -c android.intent.category.HOME" 2> /dev/null | tr -d '\r' \
+             | grep -oE '[A-Za-z0-9_.]+/[A-Za-z0-9_.$]+' | cut -d/ -f1 | sort -u || true); do
+    case "$p" in sa.urtv.*|sa.yourtv.*|com.abdullah.*|com.google.android.tungsten.setupwraith|com.android.settings|com.android.tv.settings) continue ;; esac
+    grep -qxF "$p" <<< "$sys_pkgs" || continue
+    stock_re="$stock_re|$p"
+  done
+fi
 stock=no
 for _ in 1 2 3 4; do   # a cold stock home can take a while to come up
   tv "input keyevent KEYCODE_HOME" > /dev/null
   sleep 6
   home=$(tv "cmd package resolve-activity --brief -c android.intent.category.HOME -a android.intent.action.MAIN" | grep -E "$stock_re" | tail -n 1 || true)
-  here=$(tv "dumpsys activity activities | grep -E 'mResumedActivity|topResumedActivity'" | head -n 1 || true)
+  here=$(tv "dumpsys activity activities | grep -E 'mResumedActivity|topResumedActivity'" | sed -n 1p || true)
   if [ -n "$home" ] && grep -qE "$stock_re" <<< "$here"; then
     stock=yes; break
   fi
@@ -74,7 +86,7 @@ if [ -f "$RUNDIR/accessibility-before.txt" ]; then
     elif [[ "$rest" =~ ^[A-Za-z0-9_.\$/:]+$ ]]; then echo "settings put secure enabled_accessibility_services '$rest'" | tv --batch > /dev/null
     else echo "!! enabled_accessibility_services: the list has a character this script does not send; our entry was left in it"; fi
   else
-    before=$(sed -n 's/^accessibility_enabled=//p' "$RUNDIR/accessibility-before.txt" | head -n 1)
+    before=$(sed -n 's/^accessibility_enabled=//p' "$RUNDIR/accessibility-before.txt" | sed -n 1p)
     { [ -z "$svcs" ] || echo "settings delete secure enabled_accessibility_services"
       if [ "$before" = null ]; then echo "settings delete secure accessibility_enabled"
       elif [[ "$before" =~ ^[0-9]+$ ]]; then echo "settings put secure accessibility_enabled $before"; fi
@@ -91,7 +103,7 @@ if [ "$(tail -n 1 <<< "$home_list")" != END_OF_LIST ] || ! grep -qx "package:and
   echo "!! familydns: could not ask the TV whether the home app is installed, so nothing was removed. Run optimize/reset.sh again."
   exit 1
 fi
-if [ -f "${URTV_RUN_DIR:-optimize/run}/family-dns-journal.txt" ] || grep -qx "package:sa.urtv.home" <<< "$home_list"; then
+if [ -f "${URTV_RUN_DIR:-optimize/run}/family-dns-journal.txt" ] || grep -x "package:sa.urtv.home" > /dev/null <<< "$home_list"; then
   if ! optimize/familydns.sh off; then
     echo "!! familydns: the TV's Private DNS could not be put back, so nothing more was removed (the original setting is still recorded): run optimize/dock.sh familydns off, then optimize/reset.sh again"
     exit 1
@@ -115,14 +127,14 @@ if [ -s "$appop_file" ]; then
   fi
 fi   # APPOP-END
 for p in sa.urtv.home sa.urtv.screensaver sa.urtv.extras sa.urtv.listening sa.yourtv.home sa.yourtv.screensaver com.abdullah.tvhome com.abdullah.tvsaver; do
-  tv "pm uninstall $p" | grep -q Success && echo "   removed $p" || true
+  tv "pm uninstall $p" | grep Success > /dev/null && echo "   removed $p" || true
 done
 # TV Bro and SmartTube: only if the setup put them there (not in the TV's package list saved before it)
 for p in com.phlox.tvwebbrowser org.smarttube.stable; do
   # only against a real package list: a backup saved while the TV answered nothing would make every app look «installed by the setup»
   if [ -f "${URTV_RUN_DIR:-optimize/run}/backup.txt" ] && [ "$(grep -c '^package:' "${URTV_RUN_DIR:-optimize/run}/backup.txt" || true)" -ge 20 ] \
      && ! grep -qx "package:$p" "${URTV_RUN_DIR:-optimize/run}/backup.txt"; then
-    tv "pm uninstall $p" | grep -q Success && echo "   removed $p" || true
+    tv "pm uninstall $p" | grep Success > /dev/null && echo "   removed $p" || true
   fi
 done
 
@@ -133,7 +145,7 @@ from_journal=0; [ -f "${URTV_RUN_DIR:-optimize/run}/tweaks-journal.txt" ] || [ -
 # the cached-apps freezer, the cached-processes limit), that is put back instead (null: it was never set, so it is deleted)
 if [ "${from_journal:-0}" != 1 ] && [ -f "${URTV_RUN_DIR:-optimize/run}/backup.txt" ]; then
   section() { tr -d '\r' < "${URTV_RUN_DIR:-optimize/run}/backup.txt" | awk -v want="$1" '/^== /{s=($2==want)} s&&!/^==/{print}'; }
-  { read -r w t a <<< "$(section animation | head -n 3 | paste -sd' ' -)" || true
+  { read -r w t a <<< "$(section animation | sed -n 1,3p | paste -sd' ' -)" || true
     for kv in "window_animation_scale ${w:-}" "transition_animation_scale ${t:-}" "animator_duration_scale ${a:-}"; do
       read -r key val <<< "$kv"
       if [ "${val:-}" = null ]; then echo "settings delete global $key"

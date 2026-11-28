@@ -27,7 +27,7 @@ case "${1:-}" in
     for p in "$@"; do
       if ! [[ "$p" =~ ^[A-Za-z0-9_][A-Za-z0-9_.]*$ ]]; then echo "!! not a package id: $p"; exit 2; fi
       if [ "$mode" = unkeep ]; then   # the same two refusals as optimize/disable.sh: features people use, and Android's own core
-        if grep -vE '^[[:space:]]*(#|$)' optimize/lists/keep.txt | awk '{print $1}' | grep -qxF "$p"; then echo "!! $p is in optimize/lists/keep.txt (a feature people use): it is never turned off here"; continue; fi
+        if grep -vE '^[[:space:]]*(#|$)' optimize/lists/keep.txt | awk '{print $1}' | grep -xF "$p" > /dev/null; then echo "!! $p is in optimize/lists/keep.txt (a feature people use): it is never turned off here"; continue; fi
         if grep -qEf <(grep -vE '^[[:space:]]*(#|$)' optimize/lists/core.txt | sed 's/.*/^(&)$/') <<< "$p"; then echo "!! $p is Android's own core: it is never turned off here"; continue; fi
       fi
       if grep -qxE "$HOME_SWITCH" <<< "$p"; then echo "!! $p belongs to the home screen switch: optimize/restore.sh brings the stock home back, not this"; continue; fi
@@ -66,6 +66,9 @@ if [ -z "$off" ]; then echo "Protected features: all on."; exit 0; fi
 echo "Turning back on (they must never be off):"
 printf '%s\n' "$off" | sed 's/^/   /'
 printf '%s\n' "$off" | awk '{print "pm enable " $1}' | "$PY" -I optimize/tv.py --batch > /dev/null
+# Android writes the package state about 10 s later: the next step (measure before) restarts the TV, and a restart before then lost
+# the enable (reports: protected features off again after the reboot). The mark makes that restart wait (settle.sh wait in measure.sh)
+optimize/settle.sh mark 2> /dev/null || true
 disabled() {   # of the ones turned on above, those still off
   local now
   now=$(disabled_list) || { echo "!! Could not ask the TV again which packages are off." >&2; return 1; }
@@ -74,6 +77,7 @@ disabled() {   # of the ones turned on above, those still off
 still=$(disabled)
 if [ -n "$still" ]; then   # a second try, the way Android 9 sets want it
   printf '%s\n' "$still" | awk '{print "pm enable --user 0 " $1}' | "$PY" -I optimize/tv.py --batch > /dev/null || true
+  optimize/settle.sh mark 2> /dev/null || true
   still=$(disabled)
 fi
 if [ -n "$still" ]; then
@@ -88,7 +92,8 @@ if [ -n "$still" ]; then
     exit 1
   fi
   kept=$(grep -Fxvf <(printf '%s\n' "${ours:-}") <<< "$still" || true)
-  [ -z "$kept" ] || echo "   left off by the TV itself (off before UrTV, and pm enable can't turn it on): $(paste -sd' ' - <<< "$kept")"
+  # not a failure: the TV's own (a TCL outside Alexa's regions ships com.tcl.smartalexa off and refuses pm enable for it)
+  [ -z "$kept" ] || echo "   left off by the TV itself (the TV's own, not a failure): off before UrTV, and this TV does not let it be turned on (pm enable refused): $(paste -sd' ' - <<< "$kept")"
   if [ -n "$ours" ]; then echo "!! still off, tell the person: $(paste -sd' ' - <<< "$ours")"; exit 1; fi
 fi
 echo "Protected features: all on."

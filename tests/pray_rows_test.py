@@ -24,10 +24,10 @@ check("three rows, each opening its screen through the home", all(f'openHome("{w
       and 'row("المؤذن", homeValue("adhan_voice", "name"' in st and 'row("الأدعية والتذكيرات", duasValue()' in st and 'row("صوتياتي"' in st)
 check("the home opens AdhanActivity, DuaActivity, AudioActivity for them, behind the adhan's lock", 'case "voice": case "duas": case "sounds":' in home and '"AdhanActivity"' in home
       and '"DuaActivity"' in home and '"AudioActivity"' in home and "launchGuarded(ParentalPolicy.PILL_LISTEN" in home[home.index('case "voice"'):home.index('case "prayers"')])
-check("the hub: the three rows in «الصلاة والأذان» after «الأذان» (the muezzin first) and after «تنبيه قبل الأذان» (duas, then sounds), and the words people type lead to them",
+check("the hub: the rows in «الصلاة والأذان» after «الأذان»: the muezzin, «أذاني من ملف», the duas; the sounds after «تنبيه قبل الأذان»; and the words people type lead to them",
       '{"المؤذن", PRAY}' in hub and '{"الأدعية والتذكيرات", PRAY}' in hub and '{"صوتياتي", PRAY}' in hub
-      and '"الأذان", "المؤذن", "الأذان لكل صلاة", "تنبيه قبل الأذان", "الأدعية والتذكيرات", "صوتياتي"' in hub
-      and '{"اذاني", "المؤذن"}' in hub and '{"دعاء", "الأدعية والتذكيرات"}' in hub)
+      and '"الأذان", "المؤذن", "أذاني من ملف", "الأدعية والتذكيرات", "الأذان لكل صلاة", "تنبيه قبل الأذان", "صوتياتي"' in hub   # the emulator's count: «أذاني من ملف» right after the muezzin, the duas next (run 22: 8 presses, the limit 7)
+      and '{"اذاني", "أذاني من ملف"}' in hub and '{"دعاء", "الأدعية والتذكيرات"}' in hub)
 check("the provider answers adhan_voice (the muezzin's name) and duas_new (how many wait)", '"adhan_voice".equals(uri.getLastPathSegment())' in prov and '"duas_new".equals(uri.getLastPathSegment())' in prov
       and "DuaStore.freshCount(getContext())" in prov)
 check("a dua added from «صوتياتي» is fresh until the person changes it on the TV", "d.fresh = true;" in audio and "edit.fresh = false;" in act and 'put("fresh", d.fresh)' in dua and 'optBoolean("fresh", false)' in dua)

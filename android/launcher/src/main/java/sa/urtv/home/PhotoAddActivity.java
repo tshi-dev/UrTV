@@ -3,6 +3,7 @@ package sa.urtv.home;
 import android.app.Activity;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
@@ -34,6 +35,11 @@ import java.util.concurrent.Executors;
  */
 public final class PhotoAddActivity extends Activity {
     private static final int ASK_READ = 43, SIDE = 160;
+    /** the screensaver app is on this TV (a null answer from its provider with it installed is not «install it») */
+    private boolean saverInstalled() {
+        try { getPackageManager().getPackageInfo("sa.urtv.screensaver", 0); return true; } catch (android.content.pm.PackageManager.NameNotFoundException | RuntimeException e) { return false; }
+    }
+
     private static final Uri SAVER = Uri.parse("content://sa.urtv.screensaver.config");
 
     private final ExecutorService worker = Executors.newSingleThreadExecutor();
@@ -122,22 +128,51 @@ public final class PhotoAddActivity extends Activity {
         worker.execute(() -> {
             String msg;
             try {
-                Bitmap b = IconEditorActivity.decode(f, PhotoShrink.screenMax(this));
-                if (b == null) throw new IllegalStateException("unreadable");
-                ByteArrayOutputStream out = new ByteArrayOutputStream();
-                b.compress(Bitmap.CompressFormat.JPEG, PhotoShrink.QUALITY, out);
+                byte[] jpeg = screenJpeg(f, PhotoShrink.screenMax(this));
+                if (jpeg == null) throw new IllegalStateException("unreadable");
                 Bundle in = new Bundle();
-                in.putByteArray("jpeg", out.toByteArray());
+                in.putByteArray("jpeg", jpeg);
                 Bundle res = getContentResolver().call(SAVER, "phone_photo_add", null, in);
-                if (res == null) msg = S.t("ثبّت أو حدّث تطبيق «شاشة تلفزيونك» أولاً");
+                if (res == null) msg = saverInstalled() ? S.t("ما قدرنا نضيف هذه الصورة") : S.t("ثبّت أو حدّث تطبيق «شاشة تلفزيونك» أولاً");   // review F132: «install it» only when it is not installed
                 else if ("photo_added".equals(res.getString("result"))) msg = S.t("أضيفت إلى صوري ✓");
                 else msg = "full".equals(res.getString("why")) ? S.t("صوري ممتلئة: احذف بعضها أولاً") : S.t("ما قدرنا نضيف هذه الصورة");
-            } catch (RuntimeException e) {
+            } catch (RuntimeException | OutOfMemoryError e) {   // F89: a photo too big for this TV's memory is said, never a crash
                 msg = S.t("ما قدرنا نقرأ الصورة");
             }
             final String shown = msg;
             runOnUiThread(() -> { if (alive) Toast.makeText(this, shown, Toast.LENGTH_SHORT).show(); });
         });
+    }
+
+    /**
+     * The photo as a JPEG for «صوري»: sub-sampled while its long side stays at least {@code maxLong} (a 12 MP photo is never decoded whole), scaled to exactly that long side,
+     * and saved at the best quality that fits one provider call (PhotoSize.MAX_JPEG_BYTES; Binder carries about 1 MB). Null when it cannot be read.
+     */
+    static byte[] screenJpeg(File f, int maxLong) {
+        BitmapFactory.Options bounds = new BitmapFactory.Options();
+        bounds.inJustDecodeBounds = true;
+        BitmapFactory.decodeFile(f.getPath(), bounds);
+        if (bounds.outWidth <= 0 || bounds.outHeight <= 0) return null;
+        BitmapFactory.Options o = new BitmapFactory.Options();
+        o.inSampleSize = PhotoSize.sample(bounds.outWidth, bounds.outHeight, maxLong);
+        Bitmap b = BitmapFactory.decodeFile(f.getPath(), o);
+        if (b == null) return null;
+        b = PhotoTurn.upright(f, b);   // review F98: a portrait photo is stored sideways with a tag
+        int[] to = PhotoSize.fit(b.getWidth(), b.getHeight(), maxLong);
+        if (to[0] != b.getWidth() || to[1] != b.getHeight()) {
+            Bitmap scaled = Bitmap.createScaledBitmap(b, to[0], to[1], true);
+            if (scaled != b) b.recycle();
+            b = scaled;
+        }
+        byte[] best = null;
+        for (int q : PhotoSize.QUALITIES) {
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            b.compress(Bitmap.CompressFormat.JPEG, q, out);
+            best = out.toByteArray();
+            if (best.length <= PhotoSize.MAX_JPEG_BYTES) break;
+        }
+        b.recycle();
+        return best;
     }
 
     private final class Thumbs extends BaseAdapter {

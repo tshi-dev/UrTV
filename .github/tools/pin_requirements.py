@@ -33,15 +33,26 @@ def hashes(name, version):
     return out
 
 
-def main():
-    lines = ["# Written by .github/tools/pin_requirements.py: exact versions with every file's sha256 (pip's --require-hashes mode).",
-             "# Do not edit by hand. A phone or an iPad (URTV_SYSTEM_SITE, Termux, Alpine / iSH) installs the names only: see optimize/setup.sh."]
-    for name, version, marker in PINS:
+# optimize/requirements-fallback.txt: the same pins, but cryptography at the newest version with wheels for Windows ARM64, 32-bit Windows and macOS
+# 10.9+ (universal2); setup.sh uses it only when requirements.txt fails to install (no wheel there, so pip tried to build it: tests/pip_wheels_test.py)
+FALLBACK = {"cryptography": "46.0.3"}
+
+
+def write(path, pins, header):
+    lines = ["# Written by .github/tools/pin_requirements.py: exact versions with every file's sha256 (pip's --require-hashes mode).", header]
+    for name, version, marker in pins:
         hs = hashes(name, version)
         lines.append(f"{name}=={version}" + (f" ; {marker}" if marker else "") + " \\")
         lines += [f"    --hash=sha256:{h}" + (" \\" if i + 1 < len(hs) else "") for i, h in enumerate(hs)]
-    Path(__file__).resolve().parents[2].joinpath("optimize/requirements.txt").write_text("\n".join(lines) + "\n", encoding="utf-8")
-    print(f"optimize/requirements.txt: {len(PINS)} pins")
+    Path(__file__).resolve().parents[2].joinpath(path).write_text("\n".join(lines) + "\n", encoding="utf-8")
+
+
+def main():
+    write("optimize/requirements.txt", PINS,
+          "# Do not edit by hand. A phone or an iPad (URTV_SYSTEM_SITE, Termux, Alpine / iSH) installs the names only: see optimize/setup.sh.")
+    write("optimize/requirements-fallback.txt", [(n, FALLBACK.get(n, v), m) for n, v, m in PINS],
+          "# Do not edit by hand. Only when requirements.txt fails to install (no cryptography wheel for this computer): see optimize/setup.sh.")
+    print(f"optimize/requirements.txt and requirements-fallback.txt: {len(PINS)} pins")
 
 
 if __name__ == "__main__":

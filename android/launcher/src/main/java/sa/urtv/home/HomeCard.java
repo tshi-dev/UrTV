@@ -69,7 +69,7 @@ final class HomeCard {
         }
     }
 
-    private static final String FONTS = "https://raw.githubusercontent.com/tshi-dev/UrTV/master/assets/fonts/";
+    static final String FONTS = "https://raw.githubusercontent.com/tshi-dev/UrTV/master/assets/fonts/";
 
     /** Sent inside the app when the cards were changed from the phone: the home screen in front follows at once. */
     static final String CHANGED = "sa.urtv.home.CARDS_CHANGED";
@@ -107,6 +107,8 @@ final class HomeCard {
     private volatile boolean football;
     /** 4.4 «التخطيط: كنبة»: the cards in one low strip above the apps tray, the screen's width (the page's #row=1); the big clock is then alone in the middle */
     private volatile boolean row;
+    /** «كنبة» (not the football home): the big clock is in its fixed box whether a card is shown or not */
+    private volatile boolean couch;
     /** 4.4 beta 2 the full look «tvOS» (layout tvos): the row above the tvOS bar, its cards as glass (the page's html.tvos), each slot's CardFit decision */
     private volatile boolean tvos;
     boolean tvos() { return tvos && cards > 0; }
@@ -118,6 +120,15 @@ final class HomeCard {
     }
     /** the cards are in the strip above the tray (not beside the clock) */
     boolean inRow() { return row && cards > 0; }
+    /** «كنبة», with cards or «بدون» */
+    boolean couch() { return couch; }
+    /** the strip's top in the window while it is on the screen (row, laid out), else -1: «كنبة»'s side cards keep above it (SideCards) */
+    int stripTop() {
+        if (web == null || !inRow() || web.getHeight() == 0 || web.getVisibility() != View.VISIBLE) return -1;
+        int[] at = new int[2];
+        web.getLocationInWindow(at);
+        return at[1];
+    }
     /** the layout the home showed last, for the report (a word, nothing else) */
     static volatile boolean footballShown;
     private FootballFocus.Host footballHost;
@@ -270,13 +281,23 @@ final class HomeCard {
      * be drawn this way leaves a clear picture (the box as before: no worse). Dropped as soon as the page is back, or with it.
      */
     private android.widget.ImageView still;
+    private android.graphics.Bitmap stillBits;   // the picture's pixels, kept for the next pause of the same size
 
     private void keepStill() {
         if (web == null || web.getWidth() <= 0 || web.getHeight() <= 0 || !(web.getLayoutParams() instanceof FrameLayout.LayoutParams)) return;
         dropStill();
         try {
-            android.graphics.Bitmap b = android.graphics.Bitmap.createBitmap(web.getWidth(), web.getHeight(), android.graphics.Bitmap.Config.ARGB_8888);
-            web.draw(new android.graphics.Canvas(b));
+            // 4.4 beta 4 (lag on the way out to an app): this runs in onPause, which the next app waits for, and a WebView drawn into a picture is drawn in
+            // software. At half its size (StillSize) a quarter of the pixels, into a picture kept from the last time when it fits; it shows for at most the
+            // 700 ms until the page draws again
+            int w = StillSize.side(web.getWidth()), h = StillSize.side(web.getHeight());
+            android.graphics.Bitmap b = stillBits != null && !stillBits.isRecycled() && stillBits.getWidth() == w && stillBits.getHeight() == h ? stillBits
+                    : android.graphics.Bitmap.createBitmap(w, h, android.graphics.Bitmap.Config.ARGB_8888);
+            stillBits = b;
+            b.eraseColor(0);
+            android.graphics.Canvas cv = new android.graphics.Canvas(b);
+            cv.scale(w / (float) web.getWidth(), h / (float) web.getHeight());
+            web.draw(cv);
             still = new android.widget.ImageView(activity);
             still.setImageBitmap(b);
             still.setScaleType(android.widget.ImageView.ScaleType.FIT_XY);
@@ -355,8 +376,9 @@ final class HomeCard {
         String[] choice = HomeCardChoice.pick(frag, panel, sp.getString("frag", null), sp.getString("panel", null));
         football = HomeCardChoice.football(layout, choice) && footballHost != null;   // 4.3.4: «بدون» turns the football home's widgets off too
         footballShown = football;   // «أرسل تقرير» says which layout the home had
-        if (football) { cards = 0; tasks = false; stocks = false; stocksFirst = false; row = false; tvos = false; return withGlass(HomePage.fresh(activity, HomeCardChoice.footballUrl(choice))); }
+        if (football) { cards = 0; tasks = false; stocks = false; stocksFirst = false; row = false; couch = false; tvos = false; return withGlass(HomePage.fresh(activity, HomeCardChoice.footballUrl(choice))); }
         row = "couch".equals(layout);
+        couch = row;
         tvos = "tvos".equals(layout);
         if (tvos) row = true;   // «tvOS»: a row too, above the tvOS bar (CardBox.tvosRow)
         cards = HomeCardChoice.count(choice);
@@ -372,6 +394,9 @@ final class HomeCard {
      * design/43 «توحيد المظهر»: the cards wear the home's one material (GlassStyle.material, CARDS), the same as the upper buttons and the apps bar, so the stocks, the prayers, the
      * games and the tasks are one family with them in every look. The page reads it as #hpanel= and #hline= (CSS html.hcard) and, with the switch on, its ink (html.hsync).
      */
+    /** «كنبة»'s side cards wear the same material as the strip (the supervisor, run 23: they kept the page's own framed look, its diamonds) */
+    String glassed(String u) { return withGlass(u); }
+
     private String withGlass(String u) {
         if (u == null || !u.contains("#") || DebugFlags.on(activity, "nocardglass")) return u;   // (a tester's switch: the cards keep their own look)
         return u + glassQuery(GlassStyle.material(lookNow, lightNow, GlassStyle.CARDS));
@@ -403,6 +428,26 @@ final class HomeCard {
         idle.removeCallbacks(this);
         if (resumed) idle.postDelayed(this, KICK_PULL_MS);
     } };
+
+    /** what the home's pages read from file:// and the fonts' address, answered here (S1: the page reads its own file and the assets only; the fonts from
+     *  the APK); null for anything else. HomeCard's page and «كنبة»'s side cards (SideCards) both ask it, {@code page} being the page now loaded. */
+    static WebResourceResponse served(Activity a, WebResourceRequest r, String page) {
+        String s = r.getUrl().toString();
+        if ("file".equals(r.getUrl().getScheme()) && !FileGate.allowed(r.getUrl().getPath(), page == null ? null : Uri.parse(page).getPath())) {   // S1: the page reads its own file and the assets, nothing of the app's folders
+            return new WebResourceResponse("text/plain", "UTF-8", 403, "Forbidden", Collections.<String, String>emptyMap(), new java.io.ByteArrayInputStream(new byte[0]));
+        }
+        if (s.startsWith(FONTS)) {
+            String name = s.substring(FONTS.length());
+            if (name.matches("[A-Za-z0-9_-]+\\.woff2")) {
+                try {
+                    return new WebResourceResponse("font/woff2", null, 200, "OK",
+                        Collections.singletonMap("Access-Control-Allow-Origin", "*"),
+                        a.getAssets().open("fonts/" + name));
+                } catch (java.io.IOException ignored) { }
+            }
+        }
+        return null;
+    }
 
     @SuppressLint("SetJavaScriptEnabled")
     @SuppressWarnings("deprecation")
@@ -455,19 +500,8 @@ final class HomeCard {
             @Override
             public WebResourceResponse shouldInterceptRequest(WebView v, WebResourceRequest r) {
                 String s = r.getUrl().toString();
-                if ("file".equals(r.getUrl().getScheme()) && !FileGate.allowed(r.getUrl().getPath(), url == null ? null : Uri.parse(url).getPath())) {   // S1: the page reads its own file and the assets, nothing of the app's folders
-                    return new WebResourceResponse("text/plain", "UTF-8", 403, "Forbidden", Collections.<String, String>emptyMap(), new java.io.ByteArrayInputStream(new byte[0]));
-                }
-                if (s.startsWith(FONTS)) {
-                    String name = s.substring(FONTS.length());
-                    if (name.matches("[A-Za-z0-9_-]+\\.woff2")) {
-                        try {
-                            return new WebResourceResponse("font/woff2", null, 200, "OK",
-                                Collections.singletonMap("Access-Control-Allow-Origin", "*"),
-                                activity.getAssets().open("fonts/" + name));
-                        } catch (java.io.IOException ignored) { }
-                    }
-                }
+                WebResourceResponse fixed = served(activity, r, url);   // the file gate and the fonts (the side cards' page too)
+                if (fixed != null) return fixed;
                 if (s.startsWith(OWN_BASE)) return ownPhoto(s.substring(OWN_BASE.length()));
                 NetLog.count(s);   // G3: what the card's page asks the network (the request log)
                 return super.shouldInterceptRequest(v, r);

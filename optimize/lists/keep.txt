@@ -16,6 +16,7 @@ com.google.android.tv.assistant        # Google Assistant on TV
 com.tcl.micmanager                     # the remote's microphone
 com.google.android.tv.remote.service   # Google TV remote (phone app)
 com.tcl.autopair                       # remote pairing
+com.tcl.partnercustomizer              # TCL's own part of the remote: a TCL OTT box on Android 8 lost its remote after the setup (report row 765, R-362)
 com.tcl.smartalexa                     # Alexa, if the household uses it
 com.tcl.inputmethod.international      # on-screen keyboard
 com.google.android.inputmethod.latin   # Gboard
@@ -64,6 +65,31 @@ com.sony.dtv.recapp                    # Sony: the remote's REC key
 com.sony.dtv.tvxlauncher.titlelist     # Sony: the remote's TITLE LIST key
 com.sony.dtv.youview                   # Sony (UK): the remote's YouView button
 com.amazon.device_remote_config_sync_service   # Fire TV: the remote's button settings
+
+# Accounts, sign-in, sync and the Assistant (4.4, a TCL on Android 12: the Assistant and the accounts page showed errors after the setup).
+# Our safe list turned off Google's partner setup and the TCL account; community lists turned off the sync adapters, the sign-in bridge and
+# makers' account apps. Off, the accounts page lists an account it cannot sync or sign in. tests/accounts_keep_test.py: every list's name
+# of this kind is here, and the setup and disable.sh turn back on the ones an earlier run turned off.
+com.google.android.partnersetup        # Google's partner setup: the Assistant's and Google apps' client ids
+com.google.android.syncadapters.calendar   # the Google account's calendar sync
+com.google.android.syncadapters.contacts   # the Google account's contacts sync
+com.google.android.sss.authbridge      # Google sign-in bridge
+com.google.android.backuptransport     # the Google account's backup
+com.tcl.usercenter                     # the TCL account
+com.tcl.assistant                      # TCL's voice assistant
+com.heytap.tv.assistant.oneplus        # OnePlus TV's assistant
+com.coocaa.lifeassistant               # Coocaa's assistant
+com.xiaomi.account                     # the Xiaomi account
+com.xiaomi.account.auth                # its sign-in
+com.hisense.hitv.hicloud.account       # the Hisense account
+com.xgimi.account                      # the XGIMI account
+com.sony.dtv.seeds.auth                # Sony's sign-in for its apps
+com.sony.snei.np.android.account       # the PlayStation account (Sony)
+com.yunos.ottauthclient                # YunOS sign-in
+com.talents.huanclientauth             # Huan sign-in
+com.apps.authota                       # the update service's sign-in (Vestel-made sets)
+com.nvidia.shield.smbauth              # SHIELD's network-share sign-in
+uk.co.freeview.fvpconfigauth           # Freeview Play's sign-in
 
 # Home screens: only optimize/install.sh launcher may disable these, behind the safety switch
 com.google.android.apps.tv.launcherx   # Google TV home

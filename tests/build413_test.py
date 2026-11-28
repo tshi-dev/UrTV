@@ -42,7 +42,7 @@ check("1. its English and marker", "\nزر الرئيسية يفتح تلفزي�
 check("1. the docs say on by default on a Google TV", "**On by default on a Google TV**" in read("docs/SETTINGS.md") and "ON by default on a Google TV from build 413" in read("docs/HOMEDOCTOR.md"))
 eng = read("android/launcher/src/main/java/sa/urtv/home/setup/SetupEngine.java")
 fw = eng.split("Result finishWatch(boolean watchOk) throws IOException {")[1].split("\n    }\n")[0]
-check("2. the Home step is judged after the add-on is bound (up to 10 s), then the key", "if (watchOk && boundWithin(BOUND_WAIT_MS) && homeKeyOpensOurs())" in fw and "BOUND_WAIT_MS = 10_000;" in eng)
+check("2. the Home step is judged after the add-on is bound (up to 30 s since the tester's build 427), then the key", "if (watchOk && boundWithin(BOUND_WAIT_MS) && homeKeyOpensOurs())" in fw and "BOUND_WAIT_MS = 30_000;" in eng)
 bw = eng.split("boolean boundWithin(int ms) throws IOException {")[1].split("\n    }\n")[0]
 check("2. bound is Android's own answer, read once a second", "dumpsys accessibility | grep -m1 'Bound services:'" in bw and "sleeper.sleep(1000);" in bw and "if (waited >= ms) return false;" in bw)
 sa = read("android/launcher/src/main/java/sa/urtv/home/setup/SetupActivity.java")

@@ -132,14 +132,17 @@ def too_new_js(html):
                     i += 1
                 elif c == "?" and s.startswith("?.", i) and not s[i + 2:i + 3].isdigit():
                     found.append((line_of(base + i), "?."))
-                elif c == "." and re.match(r"\.(flat|flatMap)\(", s[i:i + 9]):
-                    found.append((line_of(base + i), ".flat("))
+                elif c == "." and re.match(r"\.(flat|flatMap|matchAll|allSettled|replaceAll)\(", s[i:i + 14]):
+                    found.append((line_of(base + i), re.match(r"\.\w+\(", s[i:i + 14]).group(0)))
                 if not c.isspace():
                     last = c
                 i += 1
+    # Object.fromEntries is Chrome 73: WebView 66-72 and Tizen stop the whole script at the first call (rows 140, 644, 707, 711, 762...): allowed only with the page's polyfill
+    if re.search(r"Object\.fromEntries\(", html) and "if (!Object.fromEntries) Object.fromEntries = " not in html:
+        found.append((html.count("\n", 0, html.index("Object.fromEntries(")) + 1, "Object.fromEntries( without its polyfill"))
     return found
 too_new = too_new_js((ROOT / "src/template.html").read_text(encoding="utf-8"))
-check("src/template.html: no ?. or ?? or .flat() in the page's code (they stop the page on a WebView older than 80)", not too_new, too_new)
+check("src/template.html: no ?. or ?? or .flat() or .matchAll()/.allSettled()/.replaceAll() in the page's code, Object.fromEntries only with its polyfill (they stop the page on a WebView older than 80, 73 for the last)", not too_new, too_new)
 
 # ---- data files
 for f in tracked("*.json"):

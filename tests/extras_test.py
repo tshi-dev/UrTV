@@ -66,7 +66,7 @@ check("the add-on's provider answers only its fixed calls (status, type, press, 
       all(f"case ExtrasWords.{m}:" in prov for m in ("STATUS", "TYPE", "PRESS", "SLEEP", "GO_HOME", "WATCH")) and "query(Uri u, String[] p, String s, String[] a, String o) { return null; }" in prov)
 check("the home's bridge answers only the family lock's questions and the Settings key (never another key)",
       all(f"case ExtrasWords.{m}" in bridge for m in ("TYPE_CHECK", "SETTINGS_PIN", "KEY")) and "if (SettingsKey.isSettingsKey(e.getKeyCode()))" in bridge)
-check("the home's calls fail soft: an add-on that is missing or does not answer is «off», never an error", "catch (RuntimeException e) { return null; }" in ext
+check("the home's calls fail soft: an add-on that is missing or does not answer is «off», never an error", "if (!ok(c)) return null;" in (XTRA_TRUST := (ROOT / "android/launcher/src/main/java/sa/urtv/home/ExtrasTrust.java").read_text(encoding="utf-8")) and "catch (RuntimeException e) {\n            return null;" in XTRA_TRUST and "ExtrasTrust.call(c, method, arg, extras)" in ext
       and "return r == null ? RemoteNav.OFF : r;" in ext and "return r == null ? ExtrasWords.OFF : r;" in ext)
 check("the screens never ask the add-on themselves: the kept answer, asked again on a thread when older than 2 s (4.4, QA-6, R1)",
       "static final long FRESH_MS = 2000;" in ext and "android.os.SystemClock.elapsedRealtime() - askedAt < FRESH_MS" in ext

@@ -234,14 +234,14 @@ public class DockActivity extends Activity {
     private void remove(int i) {
         if (row.size() <= Dock.MIN) { toast(S.t("المفضلة لا تقل عن %s تطبيقات", ar(Dock.MIN))); return; }
         row.remove(i);
-        Dock.save(this, row);
+        Dock.save(this, InputFav.keepInputs(Dock.saved(this), row, Dock.MAX));
         render(Math.min(i, row.size() - 1));
     }
 
     private void add(String pkg) {
-        if (row.size() >= Dock.MAX) { toast(S.t("%s كحد أقصى", ar(Dock.MAX))); return; }
+        if (row.size() + InputFav.count(Dock.saved(this)) >= Dock.MAX) { toast(S.t("%s كحد أقصى", ar(Dock.MAX))); return; }   // the favourite inputs take their places too
         row.add(pkg);
-        Dock.save(this, row);
+        Dock.save(this, InputFav.keepInputs(Dock.saved(this), row, Dock.MAX));
         render(row.size() - 1);
         toast(S.t("أُضيف %s", apps.get(pkg)));
     }
@@ -249,7 +249,7 @@ public class DockActivity extends Activity {
     private void drop() {
         int at = moving;
         moving = -1;
-        Dock.save(this, row);
+        Dock.save(this, InputFav.keepInputs(Dock.saved(this), row, Dock.MAX));
         render(at);
     }
 

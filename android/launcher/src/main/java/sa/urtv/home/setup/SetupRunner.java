@@ -101,6 +101,8 @@ final class SetupRunner {
         default void freshKey() { }
         /** 4.4: «إضافات تلفزيونك» learns whether the person's chosen home is ours (its watch then works without the HOME role); quiet without it */
         default void homeWanted(boolean wanted) { }
+        /** 4.4 (R-409): the setup wizard owns Home here: «إضافات تلفزيونك»'s Home key catch turned on (true when the add-on said on); quiet without it */
+        default boolean homeCatchOn() { return false; }
         void sleep(int ms) throws IOException;
         long now();
         /** A file of the app's assets (setup/community.txt), null when it is not there. */
@@ -245,6 +247,9 @@ final class SetupRunner {
                 // ours even when the TV gives the HOME role back to Google TV (after a 15/15 setup it said «role stock wanted no → ours not chosen»)
                 if (on.status == SetupEngine.Status.DONE) c.host.homeWanted(true);
                 r = c.engine.finishWatch(on.status == SetupEngine.Status.DONE);
+                // 4.4 (R-409): the setup wizard keeps Home (TCL/Xiaomi, Android 11/14: it owns the saved Wi-Fi, so it stays on): the add-on's Home key catch is turned
+                // on (the window watch looks at stock homes only, never the wizard), and the result says plainly how Home works here; the «تلفزيونك» tile stays the way in
+                if (on.status == SetupEngine.Status.DONE && r.status != SetupEngine.Status.DONE && c.engine.wizardHoldsHome()) r = c.engine.wizardHome(c.host.homeCatchOn());
             }
             c.runner.wantScreen();   // the stock home and then ours come in front: our home opens this screen again
             return r;
@@ -738,7 +743,7 @@ final class SetupRunner {
         } catch (IOException ex) {
             String why;
             synchronized (this) { why = promptAbort; promptAbort = null; }
-            e = new End(why != null && AdbClient.CANCELLED.equals(ex.getMessage()) ? why : cutText(ex.getMessage(), host.store()), true);
+            e = new End(why != null && AdbClient.cancelled(ex.getMessage()) ? why : cutText(ex.getMessage(), host.store()), true);
         } catch (RuntimeException ex) {
             e = new End("حدث خطأ غير متوقع، ما غيّرنا شيئاً بعده. جرّب «تراجع» ثم أعد.", true);
         }
@@ -961,7 +966,7 @@ final class SetupRunner {
         String cut = CUT;
         if (m == null) return cut;
         if (m.startsWith("debugging is off")) return "تصحيح USB مطفأ في التلفزيون. فعّله (خيارات المطوّر ← تصحيح USB) ثم اضغط «جهّز كل شي».";
-        if (m.equals(AdbClient.CANCELLED)) return CANCELLED_TEXT;
+        if (AdbClient.cancelled(m)) return CANCELLED_TEXT;
         if (m.contains("permission was not accepted")) return NOT_ACCEPTED_TEXT;   // a prompt left unanswered (e.g. under the screensaver) blocks every later one until adbd restarts: TV test, 30 Oct
         if (m.contains("TLS")) return "هذا التلفزيون يطلب التصحيح اللاسلكي؛ استخدم «تصحيح USB» العادي.";
         if (m.startsWith("the TV did not come back")) return "ما رجع الاتصال بالتلفزيون بعد إعادة تشغيله. تأكد أن «تصحيح USB» ما زال مفعّلاً، ثم اضغط «جهّز كل شي» ليكمل الإعداد من حيث توقف.";

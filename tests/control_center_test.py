@@ -138,8 +138,8 @@ check("PR #18 «إدارة التطبيقات»: the apps actions in order, each
 check("Wi-Fi and Bluetooth side by side, first (docs/UX-REVIEW.md): the network tile, then Bluetooth, then the rest",
       center.index('tile("net"') < center.index('tile("bluetooth"') < center.index('tile("sound"') < center.index('tile("speed"')
       < center.index('tile("sleep"') < center.index('tile("off"') < center.index('tile("mirror"') < center.index('tile("saver"'))
-check("at most sixteen tiles: «إدارة التطبيقات» (PR #18, unticked until asked for), sleep, off, network, speed, sound, «الأذان والإقامة» (4.3.3), mirroring, Bluetooth, screensaver, the city, the games, ours, the build line, the TV's settings, and (4.4 #62, only while something plays) the black screen",
-      len(re.findall(r'tile\("[a-z]+"', center)) == 16, re.findall(r'tile\("[a-z]+"', center))
+check("at most seventeen tiles: «الإعدادات» (4.4 beta 4), «إدارة التطبيقات» (PR #18, unticked until asked for), sleep, off, network, speed, sound, «الأذان والإقامة» (4.3.3), mirroring, Bluetooth, screensaver, the city, the games, ours, the build line, the TV's settings, and (4.4 #62, only while something plays) the black screen",
+      len(re.findall(r'tile\("[a-z]+"', center)) == 17, re.findall(r'tile\("[a-z]+"', center))
 # ---- no traffic before OK
 check("the only network code is the speed test's, and it is started by the tile's OK on a worker thread",
       "new SpeedTest()" in center and "HttpURLConnection" not in center and "new Thread(" in center.split("private void speedTest")[1]
@@ -169,9 +169,23 @@ if no_javac:
     print("SKIP control center logic: no javac here")
 # ---- 4.4 review F4: the black screen and the adhan row are not cut by the cap
 check("the default rows (8 + adhan is among them, saver and apps off) and the black screen all fit: the cap is ten and «شاشة سوداء» is never counted or cut by it",
-      "MAX_ROWS = 10" in center and 'shown >= MAX_ROWS && !it.key.equals("black")' in center and 'if (!it.key.equals("update") && !it.key.equals("black")) shown++;' in center
+      "MAX_ROWS = 10" in center and 'shown >= MAX_ROWS && !it.key.equals("black")' in center and 'if (!fixed && !it.key.equals("black")) shown++;' in center
       and len([k for k in re.search(r'ROWS = \{([^}]*)\}', center).group(1).replace('"','').split(",") if k.strip() not in ("saver", "apps")]) <= 10)
 
+# ---- 4.4 beta 4 (the tester, build 654: in «كنبة» the settings were not found from the home; «تلفزيونك» was not read as them)
+check("«الإعدادات» is the panel's first row on every TV (after the build line only): never one of the person's rows, never unticked or cut by the cap, OK opens our settings screen itself",
+      'tile("settings", S.t("الإعدادات"), S.t("كل الخيارات"), R.drawable.ic_settings, () -> { dismiss(); host.openSettings(); });' in center
+      and '"settings"' not in re.search(r'ROWS = \{([^}]*)\}', center).group(1) and '"settings"' not in re.search(r'DEFAULT_OFF = \{([^}]*)\}', center).group(1)
+      and 'boolean fixed = it.key.equals("update") || it.key.equals("settings");' in center
+      and center.index('if (setRow != null) shownRows.add(0, setRow);') < center.index('if (updRow != null) shownRows.add(0, updRow);')
+      and "void openSettings();" in center and "@Override public void openSettings() { openSettingsScreen(); }" in main
+      and 'SAVER_PKG + ".SettingsActivity"' in main.split("private void openSettingsScreen()")[1].split("\n    }\n")[0]
+      and "guarded(ParentalPolicy.OUR_SETTINGS" in main.split("private void openSettingsScreen()")[1].split("\n    }\n")[0])
+check("from the home «مركز التحكم» is near: ▲ from the apps row, a card or the football widgets lands on it (upPill); Home and a fresh start put the focus on the first app, a place kept only once a key was pressed (emulator rounds 8-12)",
+      "private View upPill() {" in main and "if (onTopRow(centerPill)) return centerPill;" in main and "int topId = card != null ? card.getId() : upPill().getId();" in main
+      and "if (to == null) to = upPill();" in main and "keyedSinceHome = false;" in main and "lastFocusedId = View.NO_ID;" in main
+      and main.count("View last = lastFocusedId == View.NO_ID || !keyedSinceHome ? null : findViewById(lastFocusedId);") == 2
+      and "if (e.getAction() == KeyEvent.ACTION_DOWN) keyedSinceHome = true;" in main)
 # ---- 4.3.1: ours before the TV's, the city beside it; a saved old default order follows the new one
 check("«إعدادات تلفزيونك» comes before the TV's «الإعدادات» by default, «المدينة» right after it; the old default order saved by the editor counts as never reordered",
       center.index('"ours", "games", "city", "adhan", "tv"') > 0 and 'OLD_DEFAULT = "net,sound,speed,tv,ours,saver"' in center and 'if (v.equals(OLD_DEFAULT)) v = "";' in center

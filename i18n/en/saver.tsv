@@ -71,6 +71,19 @@
 تصحيح منشور لأوقات اليوم، وتعديلك لأي صلاة يبقى هو المعتمد	A published correction applies to today's times; your own adjustment of a prayer always wins
 المباريات	Matches
 الفرق المتابعة	Followed teams
+حد الفرق	Teams limit
+إذن شاشة التوقف	Screensaver permission
+شاشة التوقف تحتاج إذنك	The screensaver needs your permission
+عشان تشتغل شاشة التوقف بعد كل تشغيل	So the screensaver works after every restart
+فعّل «الظهور فوق التطبيقات» لـUrTV	Turn on «Display over other apps» for UrTV
+التلفزيون يخفي هذا الإذن، يُعطى من الكمبيوتر	This TV hides it; it is given from a computer
+اسمح	Allow
+مو الحين	Not now
+٤٠ فريقًا	40 teams
+٨٠ فريقًا	80 teams
+بلا حد	No limit
+ارفع الحد	Raise the limit
+كثرة الفرق ممكن تبطّئ التلفزيون	Many teams can slow the TV down
 الدوريات كاملة	Whole leagues
 رياضات أخرى	Other sports
 بدون اختيار = بدون	none picked = none
@@ -548,6 +561,7 @@
 المباريات القادمة	Upcoming matches
 إخفاء المباريات المنتهية	Hide finished matches
 التاريخ بالأرقام	Dates in numbers
+التاريخ الهجري	Hijri date
 زر البحث	Search button
 الأيام والدوريات، وفرقك أولاً	Days and leagues, your teams first
 تطبيقات في الشريط	Apps in the bar
@@ -1474,7 +1488,7 @@
 أول فريق يكمل سلسلة متصلة بين جهتيه يفوز، وتُضاء السلسلة.	The first team to complete a connected chain between its sides wins, and the chain lights up.
 الفريق الأول يصل يمين اللوحة بيسارها، والثاني أعلاها بأسفلها.	The first team joins right to left, the second top to bottom.
 الفريق صاحب الدور يحرّك الإطار بالأسهم إلى خلية حرّة ويضغط «اختيار»؛ يظهر سؤال جوابه يبدأ بحرف الخلية.	The team in turn moves the frame to a free cell and presses OK: a question appears whose answer starts with the cell's letter.
-جاوبوا بصوت عالٍ. «خيارات» تُظهر أربعة خيارات. «اكشف الجواب» تُظهره.	Answer aloud. «Options» shows four options. Reveal shows the answer.
+جاوبوا بصوت عالٍ. «خيارات» تُظهر خيارات كلها تبدأ بحرف الخلية. «اكشف الجواب» تُظهره.	Answer aloud. «Options» shows choices that all start with the cell's letter. Reveal shows the answer.
 المضيف يختار من جاوب صح: الخلية له. «ما أحد»: تبقى الخلية حرّة.	The host picks who was right: the cell is theirs. «Nobody»: it stays free.
 من جاوب صح يختار الحرف التالي (أو بالتناوب، حسب الإعداد).	Whoever was right picks the next letter (or by turns, per the setting).
 خمّنوا كلمة عربية من خمسة حروف في عدد محدود من المحاولات (6 افتراضيًا).	Guess a five-letter Arabic word in a limited number of tries (6 by default).
@@ -1674,8 +1688,14 @@ tvOS	tvOS
 وفي «كنبة» بقدر الشريط	as big as the strip in «Couch»
 أضف من فلاشة أو التنزيلات	Add from USB or Downloads
 صور من فلاشة USB أو من التنزيلات تُضاف إلى صوري	Photos from a USB stick or from Downloads are added to My photos
-جوال	Phones
 ريموت	Remote
+جوالات	Phones
+ريموت أو جوالات	Remote or phones
+كيف تلعبون؟	How do you play?
+ريموت واحد	One remote
+ناقص لاعب	1 more player
+ناقص %s	%s more
+نلعب بالريموت	Play with the remote
 الكلمة الجاية جاهزة	The next word is ready
 الممثل: اضغط اختيار لتشوفها	Actor: press OK to see it
 الباقين: غطّوا عيونكم قبل ما يضغط	Everyone else: cover your eyes before they press
@@ -1689,6 +1709,9 @@ tvOS	tvOS
 صوتياتي	My sounds
 أدعيتك وأذاني من ملفاتك	Your duas and your adhan, from your files
 جديد من الجوال: %s	New from the phone: %s
+خيارات أخرى للشكل	More look options
+أذاني من ملف	My adhan from a file
+من فلاشة أو التنزيلات أو الجوال، ويصير هو الأذان	From a USB stick, Downloads or the phone; it becomes the adhan
 من قالها أول؟	Who said it first?
 الجواب: %s	The answer: %s
 اختاروا	Choose
@@ -1719,4 +1742,3 @@ tvOS	tvOS
 على العدّ، الكل يشير للي يظنه. المضيف يختار الأكثر إشارة.	On the count, everyone points at who they think it is. The host picks the most pointed at.
 هذا اللي اخترناه	This is our pick
 نقطة	point
-اللعب بالريموت بس	Remote only

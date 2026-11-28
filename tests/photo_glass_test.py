@@ -100,7 +100,7 @@ check("«الساعة: عادية» (the default): photoGlassTick's first step r
 check("chosen only with the glass clock and the photos (the scenes have their own clock)", "photoGlassTick(cfg, !on && glass);" in main)
 check("made in one place, over the two photo layers and under the dimming; the header clock hidden while it shows",
       main.count("new PhotoGlass(") == 1 and "sceneBackdrop.addView(photoGlass, sceneBackdrop.indexOfChild(wallFront) + 1," in tick and "clock.setVisibility(View.INVISIBLE);" in tick)
-check("every other use waits for it to exist (the photo shown, the screen closed)", main.count("if (photoGlass != null) photoGlass.") == 2)
+check("every other use waits for it to exist (the photo shown, the kept photo put back on a return, the screen closed)", main.count("if (photoGlass != null) photoGlass.") == 3)
 users = sorted(p.name for p in HOME.rglob("*.java") if re.search(r"\bPhotoGlass\b", read(p)) and p.name != "PhotoGlass.java")
 check("only the home's screen knows it", users == ["MainActivity.java"], users)
 check("each photo shown passes its key (pack:, photo:, bundled:, own:) and whether the network may be used now",

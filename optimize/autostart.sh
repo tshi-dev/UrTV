@@ -20,12 +20,12 @@ is_tcl() {
   who=$(tv "getprop ro.product.manufacturer; getprop ro.product.brand; pm list packages com.tcl." | tr -d '\r' | tr 'A-Z' 'a-z')
   grep -qE '^tcl$|^package:com\.tcl\.' <<< "$who"
 }
-installed() { tv "pm list packages $1" | tr -d '\r' | grep -qx "package:$1"; }
+installed() { tv "pm list packages $1" | tr -d '\r' | grep -x "package:$1" > /dev/null; }
 state() {   # what the TV says for this package: allow, ignore, deny, default… none when it says it has no such op, unknown when it said nothing
   local out got op silent=0
   for op in AUTO_START APP_AUTO_START; do
     out=$(tv "appops get $1 $op 2>&1" | tr -d '\r' || true)   # «Error: Unknown operation string» is written to stderr: it must be read
-    got=$(sed -n "s/^$op: \([a-z_]*\).*/\1/p" <<< "$out" | head -1)
+    got=$(sed -n "s/^$op: \([a-z_]*\).*/\1/p" <<< "$out" | sed -n 1p)
     [ -z "$got" ] || { echo "$got"; return; }
     # only an explicit «unknown operation» (or «no operations») is «this build has no such op»; an empty answer is «the TV did not say»
     if grep -qiE 'unknown operation|no operations' <<< "$out"; then :; else silent=1; fi
@@ -35,7 +35,7 @@ state() {   # what the TV says for this package: allow, ignore, deny, default…
 assoc() {   # TCL's second op (ASSOC_START): allow, ignore…, none when this build has no such op, unknown when the TV did not say
   local out got
   out=$(tv "appops get $1 ASSOC_START 2>&1" | tr -d '\r' || true)
-  got=$(sed -n "s/^ASSOC_START: \([a-z_]*\).*/\1/p" <<< "$out" | head -1)
+  got=$(sed -n "s/^ASSOC_START: \([a-z_]*\).*/\1/p" <<< "$out" | sed -n 1p)
   # 4.3 R2-2: as in state(): only an explicit «unknown operation» (or «no operations») is «none»; an empty answer is not «allowed»
   if [ -n "$got" ]; then echo "$got"; elif grep -qiE 'unknown operation|no operations' <<< "$out"; then echo none; else echo unknown; fi
 }

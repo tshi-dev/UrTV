@@ -181,6 +181,28 @@ public class MusicService extends Service implements AudioManager.OnAudioFocusCh
             if (source == Prefs.SOURCE_ADHAN) finishAdhan();
         }
     };
+    /** 4.4 beta 4: the screensaver is on (ACTION_DREAMING_STARTED/STOPPED); a sound lost to it is taken back when it ends (FocusRule.afterDream) */
+    private boolean dreaming, lostInDream;
+    private long lostInDreamAt;
+    private final BroadcastReceiver dream = new BroadcastReceiver() {
+        @Override public void onReceive(Context c, Intent i) {
+            if (Intent.ACTION_DREAMING_STARTED.equals(i.getAction())) { dreaming = true; return; }
+            dreaming = false;
+            boolean back = FocusRule.afterDream(lostInDream, resumeOnFocus, wish.wants() && player != null && prepared && !playing, SystemClock.elapsedRealtime() - lostInDreamAt);
+            lostInDream = false;
+            if (!back) return;
+            if (!requestFocus()) { Log.i(TAG, "focus: after the screensaver, asked back, refused"); return; }
+            Log.i(TAG, "focus: the screensaver ended, the sound taken back");
+            endFocusWatch();
+            try { player.setVolume(1f, 1f); player.start(); } catch (IllegalStateException e) { return; }
+            playing = true;
+            resumeOnFocus = false;
+            waitingFocus = false;
+            playbackStarted();
+            updateSession();
+            updateNotification();
+        }
+    };
     private final Runnable tick = new Runnable() {
         @Override public void run() {
             if (!ticking) return;
@@ -192,7 +214,10 @@ public class MusicService extends Service implements AudioManager.OnAudioFocusCh
                     updateSession();
                 } catch (IllegalStateException ignored) {}
                 // 4.4: and every 30 s while it plays (two small writes a minute; before, only a pause or a stop saved it)
-                if (playing && source != Prefs.SOURCE_ADHAN && SystemClock.elapsedRealtime() - lastSaved >= SAVE_EVERY_MS) save();
+                if (playing && source != Prefs.SOURCE_ADHAN && SystemClock.elapsedRealtime() - lastSaved >= SAVE_EVERY_MS) {
+                    save();
+                    if (source == Prefs.SOURCE_SURAH || source == Prefs.SOURCE_RADIO) prefs.setPlayingAt(System.currentTimeMillis());   // «was playing» = the last time it was seen alive (ResumeOffer: a TV turned off hours ago is not «cut off»)
+                }
             }
             if (watchStall()) return;   // a stalled station was restarted (its own tick starts again with it)
             handler.postDelayed(this, 1000);
@@ -229,6 +254,7 @@ public class MusicService extends Service implements AudioManager.OnAudioFocusCh
 
     /** Playing began (or came back): the tick and the Wi-Fi lock on, no pause timer. */
     private void playbackStarted() {
+        if (source == Prefs.SOURCE_SURAH || source == Prefs.SOURCE_RADIO) prefs.setPlayingAt(System.currentTimeMillis());   // «was playing»: cleared by every pause and stop of the person's (ResumeOffer)
         handler.removeCallbacks(pausedStop);
         endFocusWatch();
         if (!foregroundStarted) foreground();   // Android refused it at the start (a command from the background): asked again while it plays
@@ -238,6 +264,7 @@ public class MusicService extends Service implements AudioManager.OnAudioFocusCh
 
     /** Playing stopped for now (a pause, another app's sound, an error): the tick and the lock off, the pause timer on. */
     private void playbackPaused() {
+        prefs.setPlayingAt(0);
         stopTick();
         releaseWifi();
         handler.removeCallbacks(pausedStop);
@@ -328,6 +355,15 @@ public class MusicService extends Service implements AudioManager.OnAudioFocusCh
     }
 
     static void resumeLast(Context c) { start(c, intent(c, ACTION_RESUME)); }
+
+    /** the sound was cut off (the home's process ended while a recitation or a station played): the home's bar offers to go on (ResumeOffer) */
+    public static boolean cutOff(Context c) { Prefs p = new Prefs(c); return ResumeOffer.due(p.playingAt(), System.currentTimeMillis(), carryOurPlaying(), p.source()); }
+    /** the cut-off sound was a station (else a recitation) */
+    public static boolean cutOffWasRadio(Context c) { return new Prefs(c).source() == Prefs.SOURCE_RADIO; }
+    /** «لاحقاً»: the offer is dropped */
+    public static void forgetCutOff(Context c) { new Prefs(c).setPlayingAt(0); }
+    /** «كمّل»: goes on from where it was (the same as «متابعة»), only when the person asked */
+    public static void resumeCutOff(Context c) { forgetCutOff(c); resumeLast(c); }
     static void pause(Context c) { start(c, intent(c, ACTION_PAUSE)); }
     static void resume(Context c) { start(c, intent(c, ACTION_RESUME)); }
     static void toggle(Context c) { start(c, intent(c, ACTION_TOGGLE)); }
@@ -355,6 +391,7 @@ public class MusicService extends Service implements AudioManager.OnAudioFocusCh
         adhanVolumeBack();
         createChannel();
         session = new MediaSession(this, "urtv-tilawah");
+        push.reset();
         session.setFlags(MediaSession.FLAG_HANDLES_MEDIA_BUTTONS | MediaSession.FLAG_HANDLES_TRANSPORT_CONTROLS);
         session.setCallback(new MediaSession.Callback() {
             @Override public void onPlay() { resume(); }
@@ -366,6 +403,8 @@ public class MusicService extends Service implements AudioManager.OnAudioFocusCh
         });
         session.setActive(true);
         registerReceiver(screenOff, new IntentFilter(Intent.ACTION_SCREEN_OFF));
+        registerReceiver(dream, new IntentFilter(Intent.ACTION_DREAMING_STARTED));   // system broadcasts (no export flag); one receiver, two filters
+        registerReceiver(dream, new IntentFilter(Intent.ACTION_DREAMING_STOPPED));
         watchNetwork();   // 4.4: join again the moment the network is back
     }
 
@@ -420,6 +459,7 @@ public class MusicService extends Service implements AudioManager.OnAudioFocusCh
         stopTick();
         handler.removeCallbacksAndMessages(null);
         try { unregisterReceiver(screenOff); } catch (IllegalArgumentException ignored) {}
+        try { unregisterReceiver(dream); } catch (IllegalArgumentException ignored) {}
         if (netBack != null) {
             try { ((android.net.ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE)).unregisterNetworkCallback(netBack); } catch (RuntimeException ignored) { }
             netBack = null;
@@ -638,7 +678,7 @@ public class MusicService extends Service implements AudioManager.OnAudioFocusCh
      */
     private int standIn(int voice) {
         int other = voice == prefs.fajrVoice() ? prefs.voice() : prefs.fajrVoice();
-        int v = AdhanKeep.stand(voice, other, AdhanKeep.parseSaved(prefs.adhanSaved(), Adhan.VOICES));
+        int v = AdhanKeep.stand(voice, other, AdhanKeep.parseSaved(prefs.adhanSaved(), Adhan.VOICES), adhanPrayer() == PrayerTimes.FAJR);   // F92: the Fajr recording never stands in at another prayer
         return v > 0 && Adhan.isCached(this, v) ? v : -1;
     }
 
@@ -1245,6 +1285,7 @@ public class MusicService extends Service implements AudioManager.OnAudioFocusCh
     }
 
     void stopPlayback() {
+        prefs.setPlayingAt(0);
         resetSeekBurst();
         if (source != Prefs.SOURCE_ADHAN) save();
         adhanVolumeBack();
@@ -1400,6 +1441,7 @@ public class MusicService extends Service implements AudioManager.OnAudioFocusCh
                     updateNotification();
                 }
                 waitingFocus = resumeOnFocus;
+                if (dreaming && resumeOnFocus) { lostInDream = true; lostInDreamAt = SystemClock.elapsedRealtime(); }   // 4.4 beta 4: taken back when the screensaver ends
                 if (change == FocusRule.LOSS && resumeOnFocus) startFocusWatch();
                 Log.i(TAG, "focus lost (" + change + "): paused" + (change == FocusRule.LOSS ? ", watching for " + FocusRule.TAKE_BACK_MS / 1000 + " s" : " until it comes back"));
                 break;
@@ -1472,6 +1514,8 @@ public class MusicService extends Service implements AudioManager.OnAudioFocusCh
         sendBroadcast(new Intent(NowPlaying.CHANGED).setPackage(getPackageName()));
     }
 
+    private final SessionPush push = new SessionPush();
+
     private void updateSession() {
         announce();
         if (session == null) return;
@@ -1489,15 +1533,17 @@ public class MusicService extends Service implements AudioManager.OnAudioFocusCh
             title = Ui.str(this, R.string.adhan);
             artist = adhanName != null ? adhanName : "";
         }
+        String album = source == Prefs.SOURCE_ADHAN ? Ui.str(this, R.string.adhan) : sa.urtv.home.S.t("القرآن الكريم");
         MediaMetadata.Builder meta = new MediaMetadata.Builder()
                 .putString(MediaMetadata.METADATA_KEY_TITLE, title)
                 .putString(MediaMetadata.METADATA_KEY_ARTIST, artist)
-                .putString(MediaMetadata.METADATA_KEY_ALBUM,
-                        source == Prefs.SOURCE_ADHAN ? Ui.str(this, R.string.adhan) : sa.urtv.home.S.t("القرآن الكريم"));
-        if (source == Prefs.SOURCE_SURAH && duration > 0) {
-            meta.putLong(MediaMetadata.METADATA_KEY_DURATION, duration);
+                .putString(MediaMetadata.METADATA_KEY_ALBUM, album);
+        long metaDuration = source == Prefs.SOURCE_SURAH && duration > 0 ? duration : 0;
+        if (metaDuration > 0) {
+            meta.putLong(MediaMetadata.METADATA_KEY_DURATION, metaDuration);
         }
-        session.setMetadata(meta.build());
+        // SessionPush: only what changed goes to the system (it went every second of play, all day)
+        if (push.metaChanged(title, artist, album, metaDuration)) session.setMetadata(meta.build());
 
         int state = error != null ? PlaybackState.STATE_ERROR
                 : buffering ? PlaybackState.STATE_BUFFERING
@@ -1510,11 +1556,14 @@ public class MusicService extends Service implements AudioManager.OnAudioFocusCh
             actions |= PlaybackState.ACTION_SKIP_TO_NEXT | PlaybackState.ACTION_SKIP_TO_PREVIOUS;
         }
         if (source == Prefs.SOURCE_SURAH) actions |= PlaybackState.ACTION_SEEK_TO;
-        session.setPlaybackState(new PlaybackState.Builder()
-                .setActions(actions)
-                .setState(state, source == Prefs.SOURCE_RADIO ? 0 : position, playing ? 1f : 0f)
-                .build());
-        session.setActive(true);
+        long shownPos = source == Prefs.SOURCE_RADIO ? 0 : position;
+        float speed = playing && source != Prefs.SOURCE_RADIO ? 1f : 0f;   // a station's position stays 0 (the controllers move nothing)
+        if (push.stateDue(state, actions, speed, shownPos, SystemClock.elapsedRealtime()))
+            session.setPlaybackState(new PlaybackState.Builder()
+                    .setActions(actions)
+                    .setState(state, shownPos, playing ? 1f : 0f)
+                    .build());
+        if (push.activate()) session.setActive(true);
     }
 
     private void createChannel() {

@@ -71,11 +71,41 @@ final class HomeSnapshot {
             final Bitmap full = Bitmap.createBitmap(Math.round(w * SCALE), Math.round(h * SCALE), Bitmap.Config.ARGB_8888);
             final String key = key(a, w, h);
             final Context app = a.getApplicationContext();
+            final int[] own = ownGrid(root);   // 4.4 beta 4: the home's own views, drawn small, to hold the copy against (SnapshotOwn)
             PixelCopy.request(a.getWindow(), null, full, r -> {
+                if (r == PixelCopy.SUCCESS && own != null && !SnapshotOwn.same(grid(full), own)) {   // the copy holds another app's screen: the old picture stays
+                    android.util.Log.i("UrTVHome", "snapshot capture failed: the copy is not the home's own screen");
+                    full.recycle();
+                    return;
+                }
                 if (r == PixelCopy.SUCCESS) new Thread(() -> { save(app, full, key); if (done != null) new Handler(Looper.getMainLooper()).post(done); }, "home-snapshot").start();
                 else { android.util.Log.i("UrTVHome", "snapshot capture failed: PixelCopy result " + r); full.recycle(); }
             }, new Handler(Looper.getMainLooper()));
         } catch (RuntimeException | OutOfMemoryError e) { android.util.Log.i("UrTVHome", "snapshot capture failed: " + e.getClass().getSimpleName()); }
+    }
+
+    /** the samples of a bitmap on SnapshotOwn's grid, each the middle of its cell */
+    static int[] grid(Bitmap b) {
+        int[] out = new int[SnapshotOwn.GRID * SnapshotOwn.ROWS];
+        for (int y = 0; y < SnapshotOwn.ROWS; y++) for (int x = 0; x < SnapshotOwn.GRID; x++)
+            out[y * SnapshotOwn.GRID + x] = b.getPixel((2 * x + 1) * b.getWidth() / (2 * SnapshotOwn.GRID), (2 * y + 1) * b.getHeight() / (2 * SnapshotOwn.ROWS));
+        return out;
+    }
+
+    /** the home's own views drawn into a small bitmap (View.draw: only this window's views, never another app's), on the grid; null when it cannot be drawn (then the copy is kept, as before) */
+    static int[] ownGrid(View root) {
+        Bitmap b = null;
+        try {
+            b = Bitmap.createBitmap(SnapshotOwn.GRID * 4, SnapshotOwn.ROWS * 4, Bitmap.Config.ARGB_8888);
+            android.graphics.Canvas c = new android.graphics.Canvas(b);
+            c.scale(b.getWidth() / (float) root.getWidth(), b.getHeight() / (float) root.getHeight());
+            root.draw(c);
+            return grid(b);
+        } catch (RuntimeException | OutOfMemoryError e) {
+            return null;   // a view that cannot draw into a plain canvas
+        } finally {
+            if (b != null) b.recycle();
+        }
     }
 
     @SuppressWarnings("deprecation")

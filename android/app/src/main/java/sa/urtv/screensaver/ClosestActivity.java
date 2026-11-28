@@ -22,7 +22,7 @@ public class ClosestActivity extends GameActivity {
     static final long REVEAL_MS = 11_000;
     private Screen screen = Screen.SETUP;
     private GameChips chips; private List<ClosestGame.Item> bank; private ClosestGame game; private GameScore score; private String[] names = new String[0];
-    private boolean paper; private PaperPlaces pg; private int pickSel;   // «اللعب بالريموت بس»: the numbers are written on paper, the host picks the closest three
+    private boolean paper; private PaperPlaces pg; private int pickSel;   // «ريموت واحد»: the numbers are written on paper, the host picks the closest three
     private long phaseAt, askMs, pausedAt; private TickTimer timer; private int sel; private final Random rnd = new Random();
 
     @Override protected String id() { return "closest"; }
@@ -38,7 +38,7 @@ public class ClosestActivity extends GameActivity {
         for (int i = 0; i < secs.length; i++) secs[i] = S.t("%s ثانية", num(ClosestGame.SECONDS[i]));
         String[] sd = new String[5]; for (int i = 0; i < sd.length; i++) sd[i] = num(PaperPlaces.MIN_SIDES + i);
         chips = new GameChips().add("count", S.t("الأسئلة"), qs, 1).add("time", S.t("الوقت"), secs, 1).add("kids", S.t("للأطفال"), new String[]{S.tv(ON_OFF[0]), S.tv(ON_OFF[1])}, 0).add("sides", S.t("الفرق"), sd, 0);
-        remoteChip(chips);
+        modeChip(chips, 1);
         remembered(soundChip(chips));
     }
     @Override protected void onPause() { super.onPause(); keep(); }
@@ -47,6 +47,8 @@ public class ClosestActivity extends GameActivity {
         if (game != null) { List<String> r = new ArrayList<>(game.asked()); Collections.reverse(r); GamePrefs.remember(this, id(), r); } }
     private boolean onPhones() { return phones != null && phones.room.phase() == GamePhoneRoom.Phase.PLAY; }
 
+    @Override protected Runnable remoteWay() { return () -> { screen = Screen.SETUP; redraw(); start(); }; }
+    @Override protected GameChips lobbyChips() { return chips; }
     private void start() {
         if (bank == null) { toast(S.t("قريبًا")); return; }
         paper = remoteOn(chips);

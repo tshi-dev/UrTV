@@ -81,7 +81,7 @@ want = {
     "filter outside chosen": "true", "filter home front": "false", "filter all default": "false", "filter wanted TCL 11": "false",
     "after home burst eaten": "1", "after home release eaten": "1", "after home later opens": "2",
     "no burst window opens": "2", "holding after open": "true", "not holding after release": "false",
-    "global TCL youtube ours": "com.google.android.youtube.tv", "global TCL youtube not ours": "null", "global TCL netflix": "null", "global Sony youtube": "null",
+    "global TCL youtube ours": "com.google.android.youtube.tv", "global TCL youtube not ours": "null", "global TCL netflix": "com.netflix.ninja", "global TCL prime": "com.amazon.amazonvideo.livingroom", "global TCL channel": "null", "global Sony youtube": "null",
     "global wanted TCL": "true", "global wanted TCL 11": "false", "global wanted not ours": "false",
     "global over our home opens": "2:com.google.android.youtube.tv",
 }

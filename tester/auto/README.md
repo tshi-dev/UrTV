@@ -4,7 +4,7 @@ One command on the owner's PC (the TV on the network, adb working: `optimize/fin
 
     tester/auto/round.sh                 install apk-next over the installed build (data kept), run every check, write the report
     tester/auto/round.sh --no-install    the build already on the TV
-    tester/auto/round.sh --only layouts,health     some steps only (install layouts settings saver radio display font adhan games health)
+    tester/auto/round.sh --only layouts,health     some steps only (install layouts reach settings saver radio display font adhan games health)
     tester/auto/round.sh --tag apk-latest --build 4.4b4-629 --prev tester/auto/out/<older build>
 
 It writes `tester/auto/out/<build>/`: `report.md` (the verdict first read at the bottom, GREEN or RED with the reasons), `shots/` (every screen; with Pillow a
@@ -20,6 +20,7 @@ release branches).
 |---|---|
 | install | `APK_TAG=<tag> optimize/install.sh saver` and `launcher`: over the installed ones, so the data stays; a `!!` line stops the round before anything else changed |
 | layouts | every home layout (classic, couch, football) × every card (none, stocks, matches): the home comes to the front, a screenshot |
+| reach | from the home, in every layout × card, our settings by the keys a person presses: up to «مركز التحكم» (then along the header), OK, its row «الإعدادات», OK; each key is sent after the focused item was read, the presses counted, at most 6 (Home not counted) |
 | settings | each settings style (buttons, couch) opened to each top section; the section's marker row must be on the screen |
 | saver | `start-saver.sh`, then `dumpsys dreams` says a dream runs |
 | radio | each station started the way a person starts it: the تلاوة screen, the stations tab, walk down until the focused row is the station's name, OK; 30 s with `MusicService` / `UrTVMute` logs; playing, and the mute not changed |

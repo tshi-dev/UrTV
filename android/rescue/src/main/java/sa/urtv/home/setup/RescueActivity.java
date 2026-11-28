@@ -101,7 +101,9 @@ public class RescueActivity extends Activity {
             Set<String> installed = RescuePlan.packages(adb.run("pm list packages; echo END_OF_LIST").output);
             Set<String> off = RescuePlan.packages(adb.run("pm list packages -d; echo END_OF_LIST").output);
             if (installed == null || off == null) { say("التلفزيون ما قال قائمة تطبيقاته، فما غيّرنا شيئاً. اضغط الزر مرة ثانية."); return; }
-            List<String> ledger = RescuePlan.ledger(homeLedger());
+            String fromHome = homeLedger();
+            boolean fromCopy = LedgerKeep.useCopy(fromHome, LedgerReceiver.read(this));   // the home is gone, did not answer, or answered an empty ledger (a reinstall wiped its data): the copy it sent earlier
+            List<String> ledger = RescuePlan.ledger(fromCopy ? LedgerReceiver.read(this) : fromHome);
             String a11y = lastLine(adb.run("settings get secure enabled_accessibility_services").output);
             RescuePlan.Plan p = RescuePlan.plan(installed, off, ledger, a11y);
             for (String c : p.commands) adb.run(c);
@@ -112,12 +114,14 @@ public class RescueActivity extends Activity {
             said.append(p.enabled.isEmpty() ? "ما كان شيء من تطبيقات التلفزيون موقوفاً.\n" : "شغّلنا " + back + " من " + p.enabled.size() + " تطبيقاً كان موقوفاً.\n");
             said.append(p.home.isEmpty() ? "ما عرفنا الشاشة الأصلية: اختر الشاشة الرئيسية من إعدادات التلفزيون ← التطبيقات.\n" : "زر الرئيسية يفتح الشاشة الأصلية الآن.\n");
             if (p.a11yChanged) said.append("أطفأنا «إضافات تلفزيونك».\n");
+            if (RescuePlan.keepsOurSaver(lastLine(adb.run("settings get secure screensaver_components").output))) said.append(RescuePlan.SAVER_KEPT).append('\n');   // 4.4 (R-471): kept, said
             if (!p.home.isEmpty()) {   // 4.4 (R7): the stock home has Home again: the fallback home steps aside (two homes would ask the person which one)
                 try {
                     getPackageManager().setComponentEnabledSetting(new android.content.ComponentName(this, RescueHome.ALIAS_CLASS),
                         android.content.pm.PackageManager.COMPONENT_ENABLED_STATE_DISABLED, android.content.pm.PackageManager.DONT_KILL_APP);
                 } catch (RuntimeException ignored) { }
             }
+            if (fromCopy) said.append("(استخدمنا النسخة المحفوظة من قائمة ما أوقفه الإعداد، لأن «تلفزيونك» ما ردّت.)\n");
             if (ledger == null) said.append("(ما ردّت الشاشة الرئيسية «تلفزيونك»، فشغّلنا ما نعرفه من تطبيقات التلفزيون الأساسية. لو بقي تطبيق موقوفاً شغّله من إعدادات التلفزيون ← التطبيقات.)\n");
             said.append("اضغط زر الرئيسية في الريموت.");
             say(said.toString());

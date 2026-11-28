@@ -308,6 +308,6 @@ check("4.4 «شكل التطبيقات»: بنرات, أيقونات or مربع
       and 'sp.getString("appsStyle", "frame")' in prefs and 'row("شكل التطبيقات"' in st
       and '"apps_style"' in prov and 'getStringExtra("appsstyle")' in recv and "appsstyle) " in read(ROOT / "optimize/saver.sh")
       and "final boolean zoom = inDock && appsZoom;" in main_tile and "FavBar.ZOOM_SCALE" in main_tile and "shine.setAlpha(0f);   // the owner (19 Nov): no outline" in main_tile
-      and "placeZoomName(appsZoom && inBar ? f : null);" in main and 'java.util.Arrays.asList("zoom", "banners", "icons", "tiles").contains(v)' in snap
+      and "placeZoomName(under && inBar ? f : null);" in main and "boolean under = appsZoom || (bigClockOn && homeCard != null && homeCard.inRow());" in main and 'java.util.Arrays.asList("zoom", "banners", "icons", "tiles").contains(v)' in snap
       and "appsZoom = FavBar.zoom(cfg.appsStyle);" in main)
 sys.exit(1 if failed else 0)

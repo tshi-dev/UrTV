@@ -27,7 +27,7 @@ home = read(ROOT / "android/launcher/src/main/java/sa/urtv/home/MainActivity.jav
 check("a pick of a surah goes on from its place", "playSurahById(rid, n, SurahPlaces.get(prefs.surahPlaces(), rid, n));" in svc)
 check("the place is kept with every save, and an ended surah forgets it", "prefs.setSurahPlaces(SurahPlaces.put(prefs.surahPlaces(), id, surah, position, duration))" in svc
       and "if (source == Prefs.SOURCE_SURAH) { forgetPlace(); next(); }" in svc and '"surah_places"' in prefs)
-check("saved every 30 s while it plays (never the adhan)", "SAVE_EVERY_MS = 30_000" in svc and "if (playing && source != Prefs.SOURCE_ADHAN && SystemClock.elapsedRealtime() - lastSaved >= SAVE_EVERY_MS) save();" in svc)
+check("saved every 30 s while it plays (never the adhan)", "SAVE_EVERY_MS = 30_000" in svc and "if (playing && source != Prefs.SOURCE_ADHAN && SystemClock.elapsedRealtime() - lastSaved >= SAVE_EVERY_MS) {\n                    save();" in svc)
 check("the sleep timer waits for the adhan", "if (source == Prefs.SOURCE_ADHAN) { handler.postDelayed(this, 5_000); return; }" in svc)
 check("OK during the fade: awake (the timer ends, the volume back, it plays on)", "if (fadeStep > 0) { setSleep(0); return; }" in svc.split("void toggle() {")[1].split("}")[0] + "}")
 destroy = svc[svc.index("@Override public void onDestroy()"):svc.index("// ---- playing ----")]

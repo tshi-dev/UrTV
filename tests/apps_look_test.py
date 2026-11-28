@@ -73,7 +73,7 @@ check("A: the TV banner (loadBanner); an app with none its own icon on a neutral
       "banner = ai.loadBanner(pm);" in main and "app.composed && !icons || icons && app.iconComposed ? 0 : TileArt.LIGHT" in main and "darken(" not in main)
 check("a new way makes the row again (its art and cells); the focus «تكبير وظل» per FavBar.zoom, the name under the row",
       "if (!wayNow.equals(appsLook)) {" in main and "applyAppsLook();\n            buildApps();" in main and "appsZoom = FavBar.zoom(cfg.appsStyle);" in main
-      and "placeZoomName(appsZoom && inBar ? f : null);" in main)
+      and "placeZoomName(under && inBar ? f : null);" in main and "boolean under = appsZoom || (bigClockOn && homeCard != null && homeCard.inRow());" in main)
 check("the launcher reads the three ways (and the first two) from the screensaver; an older one says nothing: today's tray",
       'java.util.Arrays.asList("zoom", "banners", "icons", "tiles").contains(v)' in snap and 'appsStyle = "frame";' in snap)
 check("nothing bundled: no app's banner or icon in the app's resources", not any(re.search(r"(banner|logo)_", p.name) for p in (ROOT / "android/launcher/src/main/res").rglob("*.png")))

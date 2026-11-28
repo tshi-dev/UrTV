@@ -228,6 +228,7 @@ final class SetupEngine {
         if (installed == null || wasOff == null) {
             return failed("لم يقل التلفزيون أي التطبيقات عنده وأيها موقوف أصلاً، فما أوقفنا شيئاً (ما نقدر نرجعها بدقة). جرّب مرة ثانية.");
         }
+        healKept(wasOff);
         List<String> intended = new ArrayList<>();
         for (String p : pkgs) if (installed.contains(p) && !wasOff.contains(p)) intended.add(p);
         if (!intended.isEmpty()) {   // disable.sh's handler guard (4.4): what opens the TV's Settings, channels or inputs stays on
@@ -260,6 +261,35 @@ final class SetupEngine {
         for (String p : intended) if (nowOff.contains(p)) confirmed.add(p);
         remember(prev, confirmed);   // the ledger holds what the TV says is off now
         return done("أوقفنا " + confirmed.size() + " تطبيقاً من القائمة الآمنة" + (intended.size() > confirmed.size() ? " (" + (intended.size() - confirmed.size()) + " رفض التلفزيون إيقافها)." : "."));
+    }
+
+    /**
+     * 4.4 (report row 765, R-362): a package an earlier setup turned off (it is in the ledger) and that the protected list now names (com.tcl.partnercustomizer: a TCL
+     * OTT box on Android 8 lost its remote after the setup) is turned back on and leaves the ledger. Only what the ledger holds, and only what is off now: nothing the
+     * maker or the person had off is touched. The step does nothing when the ledger is empty or the TV said nothing.
+     */
+    private void healKept(Set<String> wasOff) throws IOException {
+        List<String> prev = ledgerNames(store.get("disabled-by-us.txt"));
+        List<String> back = healed(prev, wasOff);
+        if (back.isEmpty()) return;
+        for (String p : back) sh.run("pm enable --user 0 " + p);
+        List<String> rest = new ArrayList<>(prev);
+        rest.removeAll(back);
+        store.put("disabled-by-us.txt", ledgerText(rest, new ArrayList<String>(), store.get(SetupPrep.BACKUP)));
+        out.line("رجّعنا شغّالاً ما كنا أوقفناه قبل من تطبيقات الريموت أو الحسابات: " + String.join(" ", back));
+    }
+
+    /** Named, not «everything protected»: the factory step turns the stock home off on purpose and writes it in the ledger (it is protected too). */
+    static final String[] HEAL = {"com.tcl.partnercustomizer",
+        // 4.4 (a TCL on Android 12: the Assistant and the accounts page showed errors after the setup): accounts, sign-in, sync and the Assistant
+        "com.google.android.partnersetup", "com.google.android.syncadapters.calendar", "com.google.android.syncadapters.contacts",
+        "com.google.android.sss.authbridge", "com.google.android.backuptransport", "com.tcl.usercenter", "com.tcl.assistant"};
+
+    /** The ledger's names that were turned off by mistake (HEAL) and are off now. */
+    static List<String> healed(List<String> ledger, Set<String> off) {
+        List<String> back = new ArrayList<>();
+        for (String p : ledger) if (contains(HEAL, p) && contains(SetupLists.KEEP, p) && off.contains(p) && !back.contains(p)) back.add(p);
+        return back;
     }
 
     /** What debloat would turn off on this TV now (installed, not off already): the start screen's count. Null when the TV did not say. */
@@ -733,10 +763,28 @@ final class SetupEngine {
         for (int i = 0; i < 3 && !ok; i++) {
             sh.run("input keyevent KEYCODE_HOME");
             sleeper.sleep(3000);
-            ok = ours(lastLine(text("dumpsys activity activities | grep -E 'mResumedActivity|topResumedActivity' | head -n 1")));
+            String front = lastLine(text("dumpsys activity activities | grep -E 'mResumedActivity|topResumedActivity' | head -n 1"));
+            homeKeyFront = front;   // R-409: what Home opened, for wizardHoldsHome
+            ok = ours(front);
         }
         backToSetup();
         return ok;
+    }
+
+    /** R-409: the resumed line the last Home of homeKeyOpensOurs left (null before a check) */
+    private String homeKeyFront;
+
+    /** 4.4 (R-409): the setup wizard keeps Home on this TV: the last Home opened it, or Android's HOME resolves to it (a TCL/Xiaomi of Android 11/14) */
+    boolean wizardHoldsHome() throws IOException {
+        return WizardHome.holds(homeKeyFront, lastLine(text("cmd package resolve-activity --brief -c android.intent.category.HOME -a android.intent.action.MAIN")));
+    }
+
+    /** R-409: the result when the wizard keeps Home: our home stays the TV's home (confirmed by finishWatch), Home opens ours through the add-on's catch */
+    Result wizardHome(boolean catchOn) {
+        try { store.put(WizardHome.FILE, catchOn ? "on\n" : "off\n"); } catch (IOException ignored) { }   // the report's line
+        String said = catchOn ? WizardHome.SAID_CATCH : WizardHome.SAID_NO_CATCH;
+        out.line(said);
+        return new Result(catchOn ? Status.DONE : Status.FAILED, said);
     }
 
     /** 4.4 (step 88): the setup page in front again after a check put another screen over it (the TV's settings, the Home key) */
@@ -821,7 +869,7 @@ final class SetupEngine {
      * 4.4 (build 413, the tester's T1): the result said the Home step failed while it worked: it was judged before Android had bound the add-on. Android's
      * own answer (Bound services) is read once a second, up to BOUND_WAIT_MS, before the Home key is tried; false when it never said ours.
      */
-    static final int BOUND_WAIT_MS = 10_000;
+    static final int BOUND_WAIT_MS = 30_000;   // was 10 s (build 413): build 427 on a slow TV still said the step failed while Home worked; the wait ends the second Android says «bound», so a fast TV loses nothing
 
     boolean boundWithin(int ms) throws IOException {
         String svc = sa.urtv.home.ExtrasWords.SERVICE;

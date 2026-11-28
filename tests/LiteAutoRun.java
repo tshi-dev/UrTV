@@ -21,8 +21,17 @@ public final class LiteAutoRun {
         String junk = "trim x\nhack 5\n\n" + "slow " + t0 + "\nslow " + (t0 + D) + "\n";
         System.out.println("JUNK " + LiteAuto.parse(junk).size() + " " + LiteAuto.on(junk, t0 + D));
         String many = "";
-        for (int i = 0; i < 40; i++) many = LiteAuto.add(many, LiteAuto.TRIM, t0 + i * 1000);
+        for (int i = 0; i < 40; i++) many = LiteAuto.add(many, LiteAuto.TRIM, t0 + i * 4 * 3_600_000L);
         System.out.println("KEEP " + LiteAuto.parse(many).size());
+        String burst = "";
+        for (int i = 0; i < 40; i++) burst = LiteAuto.add(burst, LiteAuto.TRIM, t0 + i * 1000);
+        System.out.println("BURST " + LiteAuto.parse(burst).size() + " " + LiteAuto.on(burst, t0 + 40_000));
+        String two = LiteAuto.add(LiteAuto.add("", LiteAuto.TRIM, t0), LiteAuto.TRIM, t0 + 1000);
+        System.out.println("TWOSEC " + LiteAuto.on(two, t0 + 2000));
+        String apart = LiteAuto.add(LiteAuto.add("", LiteAuto.TRIM, t0), LiteAuto.TRIM, t0 + 4 * 3_600_000L);
+        System.out.println("APART " + LiteAuto.on(apart, t0 + 5 * 3_600_000L));
+        String cross = LiteAuto.add(LiteAuto.add(LiteAuto.add("", LiteAuto.TRIM, t0), LiteAuto.OOM, t0 + 1000), LiteAuto.SLOW, t0 + 2000);
+        System.out.println("CROSS " + LiteAuto.parse(cross).size() + " " + LiteAuto.on(cross, t0 + 3000));
         String late = LiteAuto.add(LiteAuto.add("", LiteAuto.TRIM, t0 + 2 * D), LiteAuto.OOM, t0, t0 + 2 * D);   // an older kill read at the next start
         System.out.println("AT " + LiteAuto.parse(late).size() + " " + LiteAuto.on(late, t0 + 2 * D));
         String old = LiteAuto.add("trim " + (t0 - 30 * D) + "\n", LiteAuto.SLOW, t0);

@@ -10,7 +10,7 @@
 #                                                      unless the name is a built-in city; a built-in city is always Asia/Riyadh)
 #   optimize/saver.sh city 'الكويت' 29.37 47.98 Asia/Kuwait
 #   optimize/saver.sh find-team الهلال             a club's id (Arabic or English name): id:Name | league
-#   optimize/saver.sh teams 136013:Al-Hilal 150643:Al-Zulfi    followed teams in order (up to 40; more are left out and listed; past 20 the TV warns once when the person adds one, an agent's list is taken as it is);
+#   optimize/saver.sh teams 136013:Al-Hilal 150643:Al-Zulfi    followed teams in order (up to the TV's limit, 40 unless teamcap raised it; more are left out and listed; past 20 the TV warns once when the person adds one, an agent's list is taken as it is);
 #                                                  `teams none` (or `teams ""`) follows no team: the defaults (الهلال، المنتخب السعودي) go
 #   optimize/saver.sh card prayers                 beside the clock: shows prayers forecast hourly prayerrow matches nextmatch matchday livenow minitable nextmatches yesterday weekend cuppath formula national verse wisdom adhkar stocks tasks year smart today album none
 #   optimize/saver.sh card2 hourly                 a second card beside the clock, shown only while the clock is small (clocksize small):
@@ -64,6 +64,10 @@
 #   optimize/saver.sh updatechannel next          TESTING ONLY (agents; no screen shows it): «تحديث تلفزيوني» reads the version and the APKs from the apk-next release instead
 #                                                  of apk-latest: next or latest (default). `beta` is the same as the row «النسخ التجريبية» (the apk-beta release). Same signature, newer-version and permission checks. Put it back to latest after
 #   optimize/saver.sh reciter-fav add sudais      the ★ of a reciter in «تلاوة وأذان ← القرّاء» (`remove` takes it off): favourites are listed first under «المفضلون»; ids are `optimize/music.sh reciters`'s
+#   optimize/saver.sh overlay allow               4.4 GitHub #42: lets the screensaver draw over apps (appops SYSTEM_ALERT_WINDOW). Only on a TV whose screensaver
+#                                                  flashes and closes (a Google TV such as TCL 65C7K) and whose own screen hides «الظهور فوق التطبيقات»; `overlay` alone says the state
+#   optimize/saver.sh teamcap 80                  «حد الفرق»: how many teams can be followed: 40 (the default), 80, or 0 = no limit. Only when the person asked,
+#                                                  after telling them «كثرة الفرق ممكن تبطّئ التلفزيون» (many teams can slow the TV down); going back down removes no team
 #   optimize/saver.sh matchestoday on             «بطاقة المباريات لليوم فقط»: the «المباريات» card shows only today's games (off, the default: the week's)
 #   optimize/saver.sh pagesdark off               «صفحات الأسهم والمباريات داكنة» (الشاشة الرئيسية): the home's markets and matches pages in the dark look (on, the default) or in the home's look (off)
 #   optimize/saver.sh favbar 7                    the favourites bar's size («التطبيقات والمفضلة ← تطبيقات في الشريط»): how many apps show whole at once, 5 (default) to 10, or all (every favourite, 8 in view and the rest scroll); 9 and 10 are taken as 8
@@ -76,6 +80,7 @@
 #                                                  suhoor in Ramadan): on (default) or off (the place stays empty)
 #   optimize/saver.sh nightdim off                 «تعتيم الليل», the screensaver darker at night (from 21:00, most 23:00-05:00, normal at 07:00): on (default) or off
 #   optimize/saver.sh searchpill on               home screen: a «بحث» button for the TV's own search inside the apps (off = the default; only where the TV has that search)
+#   optimize/saver.sh hijri off                   the Gregorian date alone, with no Hijri line, on the screensaver, the home's cards and the home (on = the default)
 #   optimize/saver.sh datenum on                  the dates as day/month/year, Hijri and Gregorian, on the screensaver and the home (off = the default: in words); the digits stay `digits`
 #   optimize/saver.sh fbhide on                   the football home: hide the games that ended (off = the default: they show with their score)
 #   optimize/saver.sh kickoff off                 4.4 the kick-off alert of the followed clubs (on = the default; silent = no whistle, whistle = with it)
@@ -99,6 +104,7 @@
 #   optimize/saver.sh formstyle boxes              «شكل آخر المباريات», a club's last five in the league's table: dots (default) boxes boxes-letters
 #   optimize/saver.sh cardsize l                   the cards' size: s m (default) l
 #   optimize/saver.sh cardcorner soft              the cards' corners: style (default, each card style's own) sharp soft round
+#   optimize/saver.sh sidecards a                  «كنبة»'s small cards on the left: off (default) a (prayer, weather) b (and the next match)
 #   optimize/saver.sh design clean                 the screensaver's design: info (default, as it always was) clean big frame dayline
 #   optimize/saver.sh bar prayers                  a centred bar: none (default) prayers slot (the left slot's item) weather
 #   optimize/saver.sh barat clock                  where the bar goes: bottom (default) clock (under the clock)
@@ -194,7 +200,7 @@ set1() {   # $1 the extra's name, $2 its value
 case "${1:-}" in
   show)   rc=0; send GET || rc=$?; active; exit "$rc" ;;   # the version line stays first
   on)
-    "$PY" -I optimize/tv.py "pm list packages sa.urtv.screensaver" | tr -d '\r' | grep -qx 'package:sa.urtv.screensaver' \
+    "$PY" -I optimize/tv.py "pm list packages sa.urtv.screensaver" | tr -d '\r' | grep -x 'package:sa.urtv.screensaver' > /dev/null \
       || { echo "!! Our screensaver is not installed on this TV: optimize/install.sh saver"; exit 1; }
     printf '%s\n' "settings put secure screensaver_enabled 1" "settings put secure screensaver_components $OURS" \
       "settings put secure screensaver_default_component $OURS" | "$PY" -I optimize/tv.py --batch > /dev/null
@@ -246,10 +252,12 @@ case "${1:-}" in
       set1 teams ""; exit $?
     fi
     [ "$1" != none ] || { echo "usage: optimize/saver.sh teams none   (alone: it clears the followed teams)"; exit 1; }
-    if [ $# -gt 40 ]; then   # 4.4 the ceiling (FollowLimit.MAX_TEAMS): the app takes 40 at most, so say here which are left out
-      echo "At most 40 teams can be followed. Kept: ${*:1:40}"
-      echo "Left out (${#} given): ${*:41}"
-      set -- "${@:1:40}"
+    cap=40   # 4.4 the ceiling (FollowLimit): 40, unless the person raised it (teamcap 80, or 0 = none; R-472); say here which are left out
+    if [ $# -gt 40 ]; then cap=$(send GET 2> /dev/null | sed -n 's/^teamcap: *//p' || true); case "$cap" in 80|0) ;; *) cap=40 ;; esac; fi
+    if [ "$cap" != 0 ] && [ $# -gt "$cap" ]; then
+      echo "At most $cap teams can be followed (optimize/saver.sh teamcap raises it). Kept: ${*:1:$cap}"
+      echo "Left out (${#} given): ${*:$((cap + 1))}"
+      set -- "${@:1:$cap}"
     fi
     set1 teams "$(IFS=,; echo "$*")" ;;
   card)     [ "${2:-}" = nextprayer ] && { echo "!! nextprayer is a home-screen card only (the screensaver's bottom-right panel already shows the next prayer): optimize/saver.sh home-card nextprayer"; exit 1; }
@@ -310,7 +318,18 @@ case "${1:-}" in
     case "$op" in add|remove) ;; *) echo "usage: optimize/saver.sh reciter-fav add|remove <reciter id>" >&2; exit 2 ;; esac
     case "$id" in *[!A-Za-z0-9_-]*|"") echo "!! a reciter id is letters, digits, - and _ (optimize/music.sh reciters lists them)" >&2; exit 2 ;; esac
     out=$("$PY" -I optimize/tv.py "am broadcast -n sa.urtv.home/.tilawah.MusicReceiver -a sa.urtv.home.RECITER_FAV --es op $op --es id $id" | tr -d '\r') || out=""
-    case "$out" in *'data="saved'*) echo "reciter-fav $op $id: saved" ;; *error:*) echo "!! $(printf '%s\n' "$out" | sed -n 's/.*data="\(error:[^"]*\)".*/\1/p' | head -1)"; exit 1 ;; *) echo "!! the home app did not answer (is it installed and up to date?)"; exit 1 ;; esac ;;
+    case "$out" in *'data="saved'*) echo "reciter-fav $op $id: saved" ;; *error:*) echo "!! $(printf '%s\n' "$out" | sed -n 's/.*data="\(error:[^"]*\)".*/\1/p' | sed -n 1p)"; exit 1 ;; *) echo "!! the home app did not answer (is it installed and up to date?)"; exit 1 ;; esac ;;
+  overlay) case "${2:-}" in   # 4.4 GitHub #42 (R-473): the grant survives a reboot now that the app declares it
+      allow) "$PY" -I optimize/tv.py "appops set sa.urtv.screensaver SYSTEM_ALERT_WINDOW allow" > /dev/null || exit 1
+             "$PY" -I optimize/tv.py "appops get sa.urtv.screensaver SYSTEM_ALERT_WINDOW" | tr -d '\r' ;;
+      ""|status) "$PY" -I optimize/tv.py "appops get sa.urtv.screensaver SYSTEM_ALERT_WINDOW" | tr -d '\r' ;;
+      *) echo "usage: optimize/saver.sh overlay [allow]   (only on a TV whose screensaver flashes and closes, GitHub #42)"; exit 1 ;;
+    esac ;;
+  teamcap) case "${2:-}" in   # 4.4 the owner (R-472) «حد الفرق»
+      40) set1 teamcap 40 ;;
+      80|0) echo "Many teams can slow the TV down («كثرة الفرق ممكن تبطّئ التلفزيون»): raise it only when the person asked, after telling them."; set1 teamcap "$2" ;;
+      *) echo "usage: optimize/saver.sh teamcap 40|80|0   (40 the default; 0 = no limit)"; exit 1 ;;
+    esac ;;
   matchestoday) case "${2:-}" in on|off) set1 matchestoday "$2" ;; *) echo "usage: optimize/saver.sh matchestoday on|off"; exit 1 ;; esac ;;
   pagesdark) set1 pagesdark "${2:?usage: optimize/saver.sh pagesdark on|off}" ;;
   favbar)    set1 favbar "${2:?usage: optimize/saver.sh favbar 5|6|7|8|9|10|all}" ;;
@@ -329,6 +348,7 @@ case "${1:-}" in
   kickoffend) set1 kickoffend "${2:?usage: optimize/saver.sh kickoffend on|off}" ;;
   kickoffover) set1 kickoffover "${2:?usage: optimize/saver.sh kickoffover on|off}" ;;
   datenum)  set1 datenum "${2:?usage: optimize/saver.sh datenum on|off}" ;;
+  hijri)    set1 hijriline "${2:?usage: optimize/saver.sh hijri on|off}" ;;   # GitHub #15: off = the Gregorian date alone
   searchpill) set1 searchpill "${2:?usage: optimize/saver.sh searchpill on|off}" ;;
   verse)    set1 verse "${2:?usage: optimize/saver.sh verse day|3|10}" ;;
   versekind) case "${2:-}" in both|verse|hadith) set1 versekind "$2" ;; *) echo "usage: optimize/saver.sh versekind both|verse|hadith"; exit 1 ;; esac ;;
@@ -348,6 +368,7 @@ case "${1:-}" in
   formstyle)set1 formstyle "${2:?usage: optimize/saver.sh formstyle dots|boxes|boxes-letters}" ;;
   cardsize)set1 cardsize "${2:?usage: optimize/saver.sh cardsize s|m|l}" ;;
   cardcorner)set1 cardcorner "${2:?usage: optimize/saver.sh cardcorner style|sharp|soft|round}" ;;
+  sidecards)set1 sidecards "${2:?usage: optimize/saver.sh sidecards off|a|b}" ;;
   design)   set1 design "${2:?usage: optimize/saver.sh design info|clean|big|frame|dayline}" ;;
   bar)      set1 bar "${2:?usage: optimize/saver.sh bar none|prayers|slot|weather}" ;;
   barat)    set1 barat "${2:?usage: optimize/saver.sh barat bottom|clock}" ;;
@@ -388,6 +409,7 @@ case "${1:-}" in
       "error: idle not allowed"*)
         case "$2" in 1|2|5|10|15|30) ;; *) echo "error: idle is one of 1 2 5 10 15 30"; exit 1 ;; esac
         "$PY" -I optimize/tv.py "settings put system screen_off_timeout $(($2 * 60000))"
+        send SET "--es idlekept $v" >/dev/null || true   # R-400: the app keeps it, to put it back if the firmware resets it to «never» at boot
         echo "idle: $2 (set from the shell)" ;;
       error:*) echo "$out"; exit 1 ;;
       *) echo "$out" ;;

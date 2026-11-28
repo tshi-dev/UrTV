@@ -69,7 +69,7 @@ due = body(main, "private NoticeRule.Notice dueNotice() {")
 check("QA-10: the notice bar reads the kept copy, never the file", "notices.value()" in due and "ContentFile.read(" not in due)
 check("QA-10: the copy is loaded on the tick's thread and at each return (off the UI thread)",
       "notices.load(app);" in main.split("clockReads.execute(() -> {")[1].split("runOnUiThread")[0]
-      and "clockReads.execute(() -> notices.load(app));" in body(main, "protected void onResume() {"))
+      and "clockReads.execute(() -> { notices.load(app); doctorFlag.load(app); DoctorOfferStore.keep(app, DoctorOfferRule.fromDoc(doctorFlag.value())); });" in body(main, "protected void onResume() {"))   # (4.3.7: the doctor flag is loaded beside the notices)
 cf = src(HOME / "ContentFile.java")
 load = body(cf, "synchronized void load(Context c) {").split("\n        }")[0] if "synchronized void load(Context c) {" in cf else ""
 check("QA-10: the file is parsed again only when its time or size changed", "if (t == at && n == size) return;" in cf and "read(c, name)" in cf.split("synchronized void load(Context c) {")[1])

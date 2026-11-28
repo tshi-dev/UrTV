@@ -121,6 +121,37 @@ final class Prefs {
         return Build.VERSION.SDK_INT >= 23 && Settings.System.canWrite(c);
     }
 
+    /**
+     * 4.4 GitHub #42 (R-473, OverlayNeed): does this TV need «الظهور فوق التطبيقات» for the screensaver now? Reads the grant; while it is
+     * there it is noted (overlayHad), so a grant lost later is known, and the request may open by itself again once.
+     */
+    boolean overlayNeeded() {
+        boolean can = Build.VERSION.SDK_INT < 23 || Settings.canDrawOverlays(ctx);
+        if (can) {
+            if (!sp.getBoolean("overlayHad", false) || sp.getBoolean("overlayAsked", false) || sp.getInt("overlayQuick", 0) != 0)
+                sp.edit().putBoolean("overlayHad", true).putBoolean("overlayAsked", false).putInt("overlayQuick", 0).apply();
+            return false;
+        }
+        return OverlayNeed.needed(Build.VERSION.SDK_INT, googleTv(), false, sp.getBoolean("overlayHad", false), sp.getInt("overlayQuick", 0));
+    }
+    /** one more end of our screensaver (OverlayNeed.afterDream) */
+    void noteDreamEnd(long shownMs, boolean keyed, boolean own) {
+        int before = sp.getInt("overlayQuick", 0), after = OverlayNeed.afterDream(before, shownMs, keyed, own);
+        if (after != before) sp.edit().putInt("overlayQuick", after).apply();
+    }
+    boolean overlayAsked() { return sp.getBoolean("overlayAsked", false); }
+    void setOverlayAsked() { sp.edit().putBoolean("overlayAsked", true).apply(); }
+    /** a Google TV build (its home, launcherx, is on the TV); asked once per process (a settings redraw reads it) */
+    private static Boolean googleTvKnown;
+    private boolean googleTv() {
+        Boolean g = googleTvKnown;
+        if (g == null) {
+            try { ctx.getPackageManager().getPackageInfo("com.google.android.apps.tv.launcherx", 0); g = true; } catch (Exception e) { g = false; }
+            googleTvKnown = g;
+        }
+        return g;
+    }
+
     /** The TV's idle delay in ms; readable without any permission. -1 when the TV does not say. */
     static long idleMs(Context c) {
         return Settings.System.getLong(c.getContentResolver(), Settings.System.SCREEN_OFF_TIMEOUT, -1);
@@ -135,6 +166,8 @@ final class Prefs {
     Prefs(Context c) {
         ctx = c;
         sp = c.getSharedPreferences("settings", Context.MODE_PRIVATE);
+        if (!sp.contains("cityName")) CityKeep.restore(c, sp);   // R-403: a settings file that came back without its city (a power cut on a TCL A11) gets the kept one
+        if (sp.getAll().size() <= 1 || SettingsCopy.pending(c)) SettingsCopy.restoreSoon(c, sp.getAll().keySet());   // 4.4: a fresh install takes back the home's copy of the settings, once, on a thread
         if (!sp.contains("tournaments")) sp.edit().putBoolean("tournaments", sp.getAll().isEmpty()).apply();   // 4.3.1 «البطولات الكبرى»: on for a new install (nothing saved yet), off for one that already had settings
         GlassStyle.setTweaks(tweaks());
         if (ZoneFix.logger == null) ZoneFix.logger = line -> android.util.Log.i("UrTVZone", line);
@@ -166,6 +199,11 @@ final class Prefs {
         if (code.isEmpty()) code = builtin != null ? Cities.country(builtin) : Location.codeOf(tz);
         sp.edit().putString("cityName", name).putString("cityLat", lat).putString("cityLon", lon)
             .putString("cityTz", tz).putString("cityCountry", code).apply();
+        // R-403: forced to the disk at once, and kept (a power cut right after the choice lost the queued apply()); off the UI thread (a key press calls this)
+        final String fTz = tz, fCode = code;
+        final Context app = ctx.getApplicationContext() != null ? ctx.getApplicationContext() : ctx;
+        try { new Thread(() -> { try { sp.edit().commit(); CityKeep.save(app, name, lat, lon, fTz, fCode); } catch (RuntimeException ignored) { } }, "city-keep").start(); }
+        catch (RuntimeException ignored) { }
     }
 
     /** Also migrates pre-world built-in cities without guessing from a shared time zone. */
@@ -217,7 +255,7 @@ final class Prefs {
     String prayerMethod() { String v = sp.getString("prayerMethod", "auto"); return PrayerMethod.JAFARI.equals(v) ? PrayerMethod.JAFARI : PrayerMethod.GULF.equals(v) ? PrayerMethod.GULF : PrayerMethod.AUTO; }
     void setPrayerMethod(String v) { sp.edit().putString("prayerMethod", v).apply(); }
 
-    /** 4.4 the clubs: 20 as before without a word, then one warning once (FollowLimit), at most 40 */
+    /** 4.4 the clubs: 20 as before without a word, then one warning once (FollowLimit), at most 40 (the person may raise it: teamCap) */
     static final int SOFT_TEAMS = FollowLimit.SOFT_TEAMS, MAX_TEAMS = FollowLimit.MAX_TEAMS;
     /**
      * Whole leagues followed (#leagues=): the page downloads one small file for each built-in one, every 30 minutes; a league of the
@@ -231,8 +269,12 @@ final class Prefs {
     void setFollowWarned(String kind) { sp.edit().putBoolean("followWarned_" + kind, true).apply(); }
     /** what one more league or club means now: FollowLimit.ADD, WARN or FULL */
     int followState(String kind) {
-        return FollowLimit.check(kind, FollowLimit.LEAGUES.equals(kind) ? leagues().size() : teams().size(), followWarned(kind));
+        return FollowLimit.check(kind, FollowLimit.LEAGUES.equals(kind) ? leagues().size() : teams().size(), followWarned(kind), teamCap());
     }
+
+    /** 4.4 the owner (R-472) «حد الفرق»: 40 by default, 80 or 0 (none) after the warning (FollowLimit.TEAM_CAP_WARNING); saver.sh teamcap */
+    int teamCap() { try { return FollowLimit.teamCap(sp.getInt("teamCap", FollowLimit.MAX_TEAMS)); } catch (ClassCastException e) { return FollowLimit.MAX_TEAMS; } }
+    void setTeamCap(int v) { sp.edit().putInt("teamCap", FollowLimit.teamCap(v)).apply(); }
 
     /** The league of LEAGUES that name (English as TheSportsDB spells it, the Arabic label, or its slug) means, else null. */
     static String[] leagueByName(String name) {
@@ -323,7 +365,7 @@ final class Prefs {
     boolean addTeam(String id, String name) {
         List<String> v = teams();
         for (String t : v) if (t.startsWith(id + "|")) return false;
-        if (FollowLimit.check(FollowLimit.TEAMS, v.size(), followWarned(FollowLimit.TEAMS)) != FollowLimit.ADD) return false;   // the ceiling, or the warning not yet answered
+        if (FollowLimit.check(FollowLimit.TEAMS, v.size(), followWarned(FollowLimit.TEAMS), teamCap()) != FollowLimit.ADD) return false;   // the ceiling, or the warning not yet answered
         v.add(id + "|" + name.replace("|", " ").replace(";", " "));
         setList("teams", v);
         return true;
@@ -545,6 +587,16 @@ final class Prefs {
     static final String[] CARD_SIZE_NAMES = {"أصغر", "عادي", "أكبر"};
     static final String[] CARD_CORNERS = {"style", "sharp", "soft", "round"};
     static final String[] CARD_CORNER_NAMES = {"كما في الشكل", "حادة", "ناعمة", "أنعم"};
+    /**
+     * 4.4 beta 4 (the owner's idea, docs/mockups/couch-side-cards/): small cards down the left of «كنبة». "off" (no column), "a" (the next prayer and the
+     * hours' weather) or "b" (and the followed club's next match). SIDE_CARDS_DEFAULT is the owner's pick: changing this one word turns it on for every TV
+     * that never chose; one chosen with saver.sh sidecards stays. The home reads it from the page's fragment (#sidecards=), SideCards.
+     */
+    static final String SIDE_CARDS_DEFAULT = "off";
+    static final String[] SIDE_CARDS = {"off", "a", "b"};
+    String sideCards() { String v = sp.getString("sideCards", SIDE_CARDS_DEFAULT); return java.util.Arrays.asList(SIDE_CARDS).contains(v) ? v : "off"; }
+    void setSideCards(String v) { if (java.util.Arrays.asList(SIDE_CARDS).contains(v)) sp.edit().putString("sideCards", v).apply(); }
+
     String cardSize() { String v = sp.getString("cardSize", "m"); return java.util.Arrays.asList(CARD_SIZES).contains(v) ? v : "m"; }
     void setCardSize(String v) { if (java.util.Arrays.asList(CARD_SIZES).contains(v)) sp.edit().putString("cardSize", v).apply(); }
     String cardCorner() { String v = sp.getString("cardCorner", "style"); return java.util.Arrays.asList(CARD_CORNERS).contains(v) ? v : "style"; }
@@ -628,6 +680,7 @@ final class Prefs {
             boolean flag = false;
             try { flag = ((android.app.ActivityManager) c.getSystemService(Context.ACTIVITY_SERVICE)).isLowRamDevice(); } catch (RuntimeException ignored) { }
             int t = ramTier(flag, ramMb(c), Runtime.getRuntime().availableProcessors());
+            if (t != RAM_LOW && CpuClass.weak(Runtime.getRuntime().availableProcessors(), CpuClass.maxKhz())) t = RAM_LOW;   // 4.4 beta 4: a slow processor is LOW too (CpuClass, the home's Ram the same); «إيقاف» below still wins
             try {
                 android.content.SharedPreferences s = c.getSharedPreferences("settings", Context.MODE_PRIVATE);
                 t = liteTier(t, s.getString("lite", "auto"));   // A14 «الوضع الخفيف»
@@ -719,6 +772,9 @@ final class Prefs {
     boolean fbHideDone() { return sp.getBoolean("fbHideDone", false); }
     /** 4.3.3 «التاريخ بالأرقام»: the dates in words (the default, as always) or as day/month/year, Hijri and Gregorian; #datenum=1 only while on. The digits stay «الأرقام»'s. */
     boolean dateNum() { return sp.getBoolean("dateNum", false); }
+    /** GitHub #15 «التاريخ الهجري» (on by default): off = the Gregorian date alone, on the screensaver, the home's cards and the home's date line (the page reads #nohijri=1) */
+    boolean hijriShown() { return sp.getBoolean("hijriShown", true); }
+    void setHijriShown(boolean v) { sp.edit().putBoolean("hijriShown", v).apply(); }
     /** 4.3.3 «زر البحث»: the home's round button to the TV's own search inside the apps; off by default, #searchpill=1 only while on */
     boolean searchPill() { return sp.getBoolean("searchPill", false); }
     void setSearchPill(boolean v) { sp.edit().putBoolean("searchPill", v).apply(); }
@@ -940,6 +996,7 @@ final class Prefs {
             + "&cardstyle=" + cardStyle()
             + ("dots".equals(formStyle()) ? "" : "&formstyle=" + formStyle())
             + ("m".equals(cardSize()) ? "" : "&csize=" + cardSize()) + ("style".equals(cardCorner()) ? "" : "&ccorner=" + cardCorner())
+            + ("off".equals(sideCards()) ? "" : "&sidecards=" + sideCards())
             + "&design=" + design() + "&bar=" + bar() + "&barat=" + barAt() + "&wx=" + wxAt()
             + "&adhanbar=" + (adhanBar() ? "1" : "0") + (adhanLead() == 15 ? "&adhanlead=15" : "")
             + "&yearstrip=" + (yearStrip() ? "1" : "0")
@@ -949,6 +1006,7 @@ final class Prefs {
             + prayerAdjFragment()   // 4.3.3: the person's own minutes, and a published correction where they set none (PrayerFix)
             + PrayerMethod.fragment(prayerMethod(), cityCountry(), cityTz())
             + HijriOffset.fragment(hijriOffset())
+            + (hijriShown() ? "" : "&nohijri=1")
             + "&national=" + national()
             + "&markets=" + join(markets(), ",")
             + "&mkstyle=" + mkStyle()
@@ -1476,9 +1534,11 @@ final class Prefs {
     /** the style; read the first time after the update as the screen the TV shows now («كنبة» with the look «كنبة», else «أزرار»): no surprise switch */
     /**
      * 4.4 beta 4 (the findability review, §3): a TV set up from now on could open the settings in the side list («كنبة»), the tree's natural form. It is
-     * a default change, so it waits for the owner: false keeps «أزرار» for every TV, new or old. An installed TV is never switched by this.
+     * a default change: 4.4 the owner approved it (true). Only a fresh install (FreshInstall: never updated over an older version) gets «كنبة»; an
+     * installed TV is never switched by this (an update keeps the screen it showed). BootReceiver fixes the style at the first boot, so a TV whose
+     * app updated itself before the person opened the settings still counts as new.
      */
-    static final boolean SIDE_FOR_NEW_SETUPS = false;
+    static final boolean SIDE_FOR_NEW_SETUPS = true;
 
     String settingsStyle() {
         String v = sp.getString("settingsStyle", null);

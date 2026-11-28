@@ -36,7 +36,10 @@ public final class ExoPlayback extends Playback {
      * file's buffer: up to four minutes read ahead, so a slow or dropped connection is heard minutes later or never. A read that drops is
      * retried (FILE_RETRIES, with Media3's growing wait) from the byte it stopped at (an HTTP Range request), not from the start.
      */
-    static final int FILE_MIN_BUFFER_MS = 60_000, FILE_MAX_BUFFER_MS = 240_000, FILE_START_MS = 2_500, FILE_RESTART_MS = 5_000, FILE_RETRIES = 12;
+    static final int FILE_MIN_BUFFER_MS = 120_000, FILE_MAX_BUFFER_MS = 300_000, FILE_START_MS = 5_000, FILE_RESTART_MS = 10_000, FILE_RETRIES = 12;
+    // 4.4 beta 4 (Xiaomi A9: a surah stuttered while the stations played well): was 60 / 240 / 2.5 / 5 s. It reads again once less than two
+    // minutes are ahead (a minute and more without a connection is not heard), keeps up to five (128 kbps: under 5 MB), and starts and restarts
+    // with as much in as a station (tests/surah_buffer_test.py plays two hours of a surah over a weak connection with these numbers)
     static final String UA = "UrTV (Android TV)";
 
     private final ExoPlayer exo;
@@ -54,6 +57,17 @@ public final class ExoPlayback extends Playback {
 
     public ExoPlayback(Context c) { this(c, true); }
 
+    /** the TV's decoders for a type, in DecoderOrder's order (MP3: the platform's software one first; any other type as the TV lists them) */
+    static final androidx.media3.exoplayer.mediacodec.MediaCodecSelector SURAH_DECODERS = (mime, secure, tunneling) -> {
+        java.util.List<androidx.media3.exoplayer.mediacodec.MediaCodecInfo> all = androidx.media3.exoplayer.mediacodec.MediaCodecSelector.DEFAULT.getDecoderInfos(mime, secure, tunneling);
+        if (all.size() < 2) return all;
+        java.util.List<String> names = new java.util.ArrayList<>();
+        for (androidx.media3.exoplayer.mediacodec.MediaCodecInfo i : all) names.add(i.name);
+        java.util.List<androidx.media3.exoplayer.mediacodec.MediaCodecInfo> out = new java.util.ArrayList<>();
+        for (int k : DecoderOrder.order(mime, names)) out.add(all.get(k));
+        return out;
+    };
+
     public ExoPlayback(Context c, boolean live) {
         this.live = live;
         DefaultHttpDataSource.Factory http = new DefaultHttpDataSource.Factory()
@@ -61,7 +75,8 @@ public final class ExoPlayback extends Playback {
                 .setConnectTimeoutMs(10_000)
                 .setReadTimeoutMs(15_000)
                 .setAllowCrossProtocolRedirects(false);   // https stays https (the app allows cleartext for radiojar.com only)
-        exo = new ExoPlayer.Builder(c)
+        // 4.4 beta 4: a surah's MP3 decoded by the platform's software decoder first (DecoderOrder: a vendor decoder with the wrong sample rate plays it slowed)
+        exo = (live ? new ExoPlayer.Builder(c) : new ExoPlayer.Builder(c, new androidx.media3.exoplayer.DefaultRenderersFactory(c).setMediaCodecSelector(SURAH_DECODERS)))
                 .setLooper(Looper.getMainLooper())
                 .setLoadControl(live ? new DefaultLoadControl.Builder().setBufferDurationsMs(MIN_BUFFER_MS, MAX_BUFFER_MS, START_MS, RESTART_MS).build()
                         : new DefaultLoadControl.Builder().setBufferDurationsMs(FILE_MIN_BUFFER_MS, FILE_MAX_BUFFER_MS, FILE_START_MS, FILE_RESTART_MS)

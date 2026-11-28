@@ -27,11 +27,37 @@ public class ScreenDream extends DreamService {
         }
     };
     private final StartGate gate = new StartGate();
+    /** 4.4 beta 4: every 10 minutes while it shows, one log line with this app's share of one core (the page's renderer is its own process) and the tier */
+    static final long CPU_EVERY_MS = 10 * 60_000L;
+    private long cpuAt, cpuMs;
+    private final Runnable cpuTick = new Runnable() {
+        @Override public void run() {
+            if (!attached) return;
+            long now = android.os.SystemClock.elapsedRealtime(), cpu = android.os.Process.getElapsedCpuTime();
+            android.util.Log.i("UrTVSaver", "cpu: " + CpuClass.percent(cpu - cpuMs, now - cpuAt) + "% of one core over " + (now - cpuAt) / 60_000 + " min (this app), tier "
+                    + (Prefs.lowRam(ScreenDream.this) ? "low" : Prefs.midRam(ScreenDream.this) ? "mid" : "normal") + ", " + Runtime.getRuntime().availableProcessors() + " cores at " + CpuClass.maxKhz() / 1000 + " MHz");
+            cpuAt = now; cpuMs = cpu;
+            snapHandler.postDelayed(this, CPU_EVERY_MS);
+        }
+    };
 
     /** S6 (P4): the page is built again only when what it is opened with changed; a setting that does not reach it (the phone's, the home's) left the dream as it was */
     private void rebuildIfChanged(Context c) {
         if (!attached || web == null) return;
         if (new Prefs(c).screenUrl(c, false).equals(shownUrl)) return;
+        final String now = new Prefs(c).screenUrl(c, false);
+        final String push = PagePush.script(shownUrl, now);   // 4.4 beta 4: the markets line on or off reaches the page as it runs
+        if (push != null) {
+            final WebView w = web;
+            shownUrl = now;
+            w.evaluateJavascript(push, r -> { if (!"true".equals(r) && w == web) rebuild(); });   // an older page without it: built again, as before
+            return;
+        }
+        rebuild();
+    }
+
+    private void rebuild() {
+        if (!attached || web == null) return;
         WebView old = web;
         web = null;
         ScreenView.release(old);
@@ -41,17 +67,48 @@ public class ScreenDream extends DreamService {
     @Override
     public void onAttachedToWindow() {
         super.onAttachedToWindow();
-        if (NowPlayingBridge.setupWaiting(this)) {   // «إعداد تلفزيوني» waits for «السماح بتصحيح USB؟»: never cover it (it would stay stuck)
-            android.util.Log.i("UrTVSaver", "not started: the setup is waiting for the debugging prompt");
-            finish();
-            return;
-        }
         setInteractive(false);
         setFullscreen(true);
         setScreenBright(true);
         attached = true;
+        started = false;
+        shownAt = android.os.SystemClock.elapsedRealtime(); dreamKeyed = false; ownEnd = false;   // 4.4 #42 (R-473): how this dream ends (OverlayNeed)
+        if (getWindow() != null) getWindow().setBackgroundDrawable(new android.graphics.drawable.ColorDrawable(0xFF040E09));   // the page's ground while the launcher answers
+        // «إعداد تلفزيوني» waits for «السماح بتصحيح USB؟»: never cover it (it would stay stuck). Asked on a thread (DreamHold): with the launcher not running the
+        // query waits for its process to start, and on the main thread that was an ANR
+        final Context app = getApplicationContext();
+        snapHandler.postDelayed(holdWait, DreamHold.WAIT_MS);
+        Thread t = new Thread(() -> {
+            final boolean held = NowPlayingBridge.setupWaiting(app);
+            snapHandler.post(() -> holdAnswer(true, held));
+        }, "dream-hold");
+        t.setDaemon(true);
+        t.start();
+    }
+
+    private boolean started, entered;
+    private long shownAt = -1;
+    private boolean dreamKeyed, ownEnd;   // a key ended it, or we did (the setup's prompt, a lost renderer): not the flash of #42
+    private final Runnable holdWait = () -> holdAnswer(false, false);
+
+    /** the launcher's answer (or the wait's end, DreamHold.WAIT_MS): start the page once, or end the dream while the setup holds it */
+    private void holdAnswer(boolean answered, boolean held) {
+        int d = DreamHold.decide(attached, started, answered, held);
+        if (answered) snapHandler.removeCallbacks(holdWait);
+        if (d == DreamHold.END) {
+            android.util.Log.i("UrTVSaver", "not started: the setup is waiting for the debugging prompt");
+            ownEnd = true;
+            finish();
+            return;
+        }
+        if (d != DreamHold.START) return;
+        started = true;
+        entered = true;
         Showing.enter();
         snapHandler.post(adhanWatch);
+        ClockCheck.start(this);   // 4.4 beta 4: the TV's clock against the network's, for the page's date line
+        cpuAt = android.os.SystemClock.elapsedRealtime(); cpuMs = android.os.Process.getElapsedCpuTime();
+        snapHandler.postDelayed(cpuTick, CPU_EVERY_MS);   // 4.4 beta 4: what this app's processor use is, in the log (a weak TV's report)
         show(true);
         InternalReceivers.register(this, changed, new IntentFilter(Prefs.CHANGED));
     }
@@ -63,6 +120,7 @@ public class ScreenDream extends DreamService {
     @Override
     public boolean dispatchKeyEvent(KeyEvent e) {
         boolean down = e.getAction() == KeyEvent.ACTION_DOWN;
+        dreamKeyed = true;
         org.json.JSONObject adhan = down ? NowPlayingBridge.adhanKnown(this) : null;   // asked on a press only; a release belongs to the one before
         boolean live = adhan != null && adhan.optBoolean("live");
         int d = adhanKeys.decide(e.getKeyCode(), e.getAction(), e.getRepeatCount(), live, new Prefs(this).adhanBar(), true, live && adhan.optBoolean("any"));
@@ -85,8 +143,17 @@ public class ScreenDream extends DreamService {
     @Override
     public void onDreamingStarted() {
         super.onDreamingStarted();
-        if (!NowPlayingBridge.setupRunning(this)) return;
-        if (android.os.Build.VERSION.SDK_INT >= 29) wakeUp(); else finish();
+        final Context app = getApplicationContext();
+        Thread t = new Thread(() -> {   // on a thread, as setupWaiting (DreamHold): the launcher may have to start first
+            if (!NowPlayingBridge.setupRunning(app)) return;
+            snapHandler.post(() -> {
+                if (!attached) return;
+                ownEnd = true;
+                if (android.os.Build.VERSION.SDK_INT >= 29) wakeUp(); else finish();
+            });
+        }, "dream-setup");
+        t.setDaemon(true);
+        t.start();
     }
 
     /** with the adhan bar off the page does not ask the launcher about the adhan: the dream does, every 3 s, so «إيقاف الأذان بأي زر» still finds it playing (on a thread, never on the UI thread) */
@@ -135,18 +202,24 @@ public class ScreenDream extends DreamService {
         if (dead != web) return;
         web = null;
         if (attached && guard.mayCreate(android.os.SystemClock.elapsedRealtime())) show(false);
-        else finish();
+        else { ownEnd = true; finish(); }
     }
 
     @Override
     public void onDetachedFromWindow() {
+        if (attached && shownAt >= 0) {   // 4.4 #42 (R-473): a dream that ends by itself at once, twice in a row, says the TV needs the overlay grant
+            try { new Prefs(this).noteDreamEnd(android.os.SystemClock.elapsedRealtime() - shownAt, dreamKeyed, ownEnd); } catch (RuntimeException ignored) { }
+        }
         NowPlayingBridge.clearCard();
-        if (attached) Showing.leave();
+        if (entered) Showing.leave();
+        entered = false;
         attached = false;
+        snapHandler.removeCallbacks(holdWait);
         gate.cancel();
         try { unregisterReceiver(changed); } catch (IllegalArgumentException ignored) { }
         snapHandler.removeCallbacks(adhanWatch);
         snapHandler.removeCallbacks(snapTick);   // (the picture the next start draws first was taken while the page showed: SaverSnapshot.capture)
+        snapHandler.removeCallbacks(cpuTick);
         ScreenView.release(web);
         web = null;
         super.onDetachedFromWindow();

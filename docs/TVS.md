@@ -21,7 +21,7 @@ app's preview of the same page and `measure.sh` writes «not measured»). Times 
 | TCL Smart TV Pro (G08) · 18 reports | 14 | works (launcherx + setupwraith off) | no, preview only | 5555; the first probe may hang, run it again | a Wi-Fi drop during the switch: the safety switch restores the stock home and `optimize/install.sh launcher` retries the switch by itself (once); Play Protect refused the home APK over ADB at first (`install.sh` now turns that check off for the install only and puts it back) | 11 min |
 | TCL Smart TV Pro (G08) | 12 | works | not reported | not reported | SmartTube (about 25 MB) uploaded to 100%, then the install ended in a read timeout on the TV (slow steps now run in the background on the TV; `SKIP_EXTRAS=1` skips the extras) | not reported |
 | TCL Smart TV Pro (G10) | 12 | works | not reported | not reported | SmartTube install timed out on every run (see the G08 row, Android 12); Play Protect refused the home APK over ADB at first (`install.sh` now turns that check off for the install only and puts it back) | not reported |
-| TCL 65C7K (Google TV) | not reported | not reported | no: this firmware refuses third-party dreams, even Android's own «Colors» (`com.android.dreams.basic`): with Projectivy as the launcher the system logs «Entering dreamland» and closes the dream at once; with the stock launcher starting it over ADB (`com.android.systemui/.Somnambulator`) shows nothing and logs nothing. Only Google's own Backdrop ambient mode runs, and neither ours nor «Colors» is in the TV's Ambient mode list (`dumpsys dreams`: no current dream, dreaming enabled, no doze component) | not reported | the UrTV home screen works; the screensaver does not run on this model (one report). A later report (issue #42, **a user's steps, not verified by us**) got it running with `adb shell appops set sa.urtv.screensaver SYSTEM_ALERT_WINDOW allow` and opening the screensaver app once, and had to do both again after any power loss | not reported |
+| TCL 65C7K (Google TV) | not reported | not reported | no: this firmware refuses third-party dreams, even Android's own «Colors» (`com.android.dreams.basic`): with Projectivy as the launcher the system logs «Entering dreamland» and closes the dream at once; with the stock launcher starting it over ADB (`com.android.systemui/.Somnambulator`) shows nothing and logs nothing. Only Google's own Backdrop ambient mode runs, and neither ours nor «Colors» is in the TV's Ambient mode list (`dumpsys dreams`: no current dream, dreaming enabled, no doze component) | not reported | the UrTV home screen works; the screensaver does not run on this model (one report). A later report (issue #42, **a user's steps, not verified by us**) got it running with `adb shell appops set sa.urtv.screensaver SYSTEM_ALERT_WINDOW allow` and opening the screensaver app once, and had to do both again after any power loss. Since 4.4 the app declares that permission, so the grant survives a power loss, and it asks for it on such a TV («إذن شاشة التوقف»; `optimize/saver.sh overlay allow` from a computer) | not reported |
 | Xiaomi Mi Box S (MIBOX4), stock Android TV home · 6 reports | 9 | works | not reported | 5555 | – | not reported |
 | Xiaomi MiTV-AESP0 · 4 reports | 9 and 10 | works | not reported | not reported | – | not reported |
 | Xiaomi MiTV-MOOR2 · 3 reports | 11 | works | no | 5555 | screenshots may fail | 17 min |
@@ -83,7 +83,7 @@ User reports (and the tester's own TV) since 4.3: on TCL G10/G08, Changhong (And
 is ours, yet the Home key opens Google TV's home (`launcherx`), which the firmware starts by name. The add-on «إضافات تلفزيونك» is the
 answer: its Home watch brings UrTV forward after each Home press («the person's home is ours», set by «جهّز كل شي» or
 `optimize/dock.sh home-watch on`). The in-TV setup's report says `Google TV: Home works through the add-on's watch…` (or that the
-watch is NOT bound). Never turn `launcherx` off (some Google TVs then cannot start).
+watch is NOT bound). Never turn `launcherx` off (some Google TVs then cannot start). On Xiaomi the add-on's Home key catch is off (R-310: its remote's app buttons and volume), except on the Xiaomi Google TVs listed in `RemoteButtons.XIAOMI_GTV_HOME_CATCH` (MiTV-AFMU0/1, MiTV-AXTU0, MiTV-MZTU0; R-405): add a model there only from a report of that TV.
 
 ## When the setup wizard owns the Wi-Fi (TCL G08/G10/G14, Google TV sets)
 
@@ -106,7 +106,11 @@ again; after «كمّل» it reads the owner again and switches in that order if
 Read only, on any set: `optimize/venv/bin/python -I optimize/tv.py "dumpsys wifi" | grep -o 'cname=[^ ]*' | sort | uniq -c`
 says who owns the saved networks (no names are printed).
 
+**Home opens by itself from the TV's settings** (a TCL on Android 11, R-412): `adb logcat -s UrTVHomeCaller` right after it says who started HOME (`system` for the Home key or Android itself, `the TV's settings`, `a maker's app`); send that line with the option's name in a report.
+
 ## The remote's shortcut keys
+
+**A key remapper of the person's** (an accessibility service that filters keys, like Button Mapper) and the add-on «إضافات تلفزيونك» both ask Android for the remote's keys; Android gives a key to each in turn, and a key the first one keeps never reaches the other. Where the remapper stops working, `optimize/dock.sh key-filter off` turns our filter off (R-408): the remapper gets every key, and the add-on's Home catch, Settings key and app buttons over other apps stop.
 
 After the home switch the stock launcher is switched off, and the remote's shortcut keys (Settings, YouTube, Netflix, the star)
 stopped working. Six reports: Haier MatrixTV (A14), TCL G08 (three), Xiaomi MiTV-MZTU0, Changhong dangni (A14). A report found the
@@ -118,7 +122,7 @@ which is off with it. Our home now answers these keys **while it is in front**:
 |---|---|---|---|---|
 | YouTube | `KEYCODE_BUTTON_3` (190) | opens `com.google.android.youtube.tv`, only if installed | the six reports above | key number from the report and Android's reference; needs a TV |
 | Netflix | `KEYCODE_BUTTON_4` (191) | opens `com.netflix.ninja`, only if installed | the six reports above | same; needs a TV |
-| TCL Netflix / YouTube / Prime Video | vendor keycodes 4062 / 4065 / 4099 (1000 and up: they reach only the window in front, so the home answers them) | open `com.netflix.ninja` / `com.google.android.youtube.tv` / `com.amazon.amazonvideo.livingroom`, only if installed; otherwise the key is passed on | the 2 Nov reports (`UrTVKeys`: `key=4065`) | key numbers from the reports; needs a TCL |
+| TCL Netflix / YouTube / Prime Video | vendor keycodes 4062 / 4065 / 4099 (1000 and up: they reach only the window in front, so the home answers them; over other apps «إضافات تلفزيونك» opens them while UrTV is the home, except on TCL's Android 11 where no key filter is asked for; R-406) | open `com.netflix.ninja` / `com.google.android.youtube.tv` / `com.amazon.amazonvideo.livingroom`, only if installed; otherwise the key is passed on | the 2 Nov reports (`UrTVKeys`: `key=4065`) | key numbers from the reports; needs a TCL |
 | TCL Guard | vendor keycode 4140 | nothing: the press, its repeats and its release are consumed (it would open TCL's memory cleaner, `com.tcl.guard`, which kills apps in the background, our adhan among them) | a TCL 65P735 in the Clean Your TV notes (`TclPhoneWindowManager`) | needs a TCL with a Guard key |
 | TCL Settings (G05) | vendor keycode 4077 | opens **our** settings, like 176 and 83 | the 2 Nov report (`UrTVKeys`: `key=4077`) | needs a TCL G05 |
 | Settings | `KEYCODE_SETTINGS` (176), and on a TCL (seen on the owner's, build 144) `KEYCODE_NOTIFICATION` (83) | opens **our** settings (the screensaver app's `SettingsActivity`, the same screen as the «إعدادات تلفزيونك» tile of «مركز التحكم»), behind «قفل الإعدادات» (`@urtv`); without that app it falls back to the TV's own settings (behind `@tvsettings`). The TV's own settings stay on the «الإعدادات» pill and tile | the six reports above; the TCL's own log line (`UrTVKeys`) said 83; the step-6 test of 3.145 found the key opened Android's own settings (`com.android.tv.settings`), which was the old rule, not a missed key | 176 is Android's reference number; 83 is what a TCL sends. The YouTube and Netflix keys never reach the app there (the system takes them first: they open, our log shows nothing) |
@@ -201,6 +205,26 @@ a setting later: `optimize/dock.sh receiver-mode on|off`, written on top of `hom
 exact restore as the home switch, plus the bucket line), the setting row only showing the state and the command, because enabling or
 disabling a package needs the shell (the TV's own local ADB of «إعداد تلفزيوني» could run it). First on the TV: with `launcherx` enabled and
 ours holding the HOME role, does Home open ours on this firmware at all? If not, the mode is the stock home and nothing more.
+
+## When there is no ADB in the TV's own menus
+
+Three kinds of set came up in reports where `optimize/find-tv.sh` found nothing because ADB could not be turned on the usual way
+(Settings → Device preferences → About → press «Build» 7 times → Developer options → USB debugging / Network debugging):
+
+- **Droidlogic (Amlogic) and CVTE boards** (many unbranded TVs and the TVs built on them for small brands): Developer options may be
+  missing or show no debugging switch. On these boards ADB is in the **factory (service) menu**, opened with a remote key sequence that
+  differs by board and maker (look it up for the exact model, never guess). There, turn on only the ADB item («ADB», «USB debug»,
+  «Network ADB» or similar) and leave the menu: **change nothing else there** (the panel, white balance and region values have no undo
+  for a person). Then `optimize/find-tv.sh` as usual. The person does this with the remote; the agent only says the steps.
+- **An operator's box** (an IPTV or OTT box from a telecom, with the operator's own image, such as the JAWWY row above): the operator may
+  lock Developer options, remove apps installed over ADB (`install.sh` then installs with the Play Store as the installer, once), and
+  keep its own launcher. The limit is the operator's: where Developer options are locked there is no ADB and no setup from a computer;
+  UrTV can still be installed from the box's own store or a downloader app and used as an app (and as the screensaver where the box lets
+  a third-party screensaver run). Never try to unlock or root an operator's box.
+- **A Mi Box with no ADB route** (a Xiaomi Mi Box whose firmware has no Network debugging, only USB debugging, and Android 9, so no
+  Wireless debugging either): its USB port is a host port, so a computer cannot reach adbd over a cable, and there is no way in over
+  the network. There the setup cannot run, from a computer or on the TV («إعداد تلفزيوني» also talks to the TV's adbd): install UrTV with
+  a downloader app and use it from the apps row; say so to the person plainly instead of retrying the scan.
 
 ## D-pad direction on the home screen and its rows
 

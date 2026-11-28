@@ -22,7 +22,7 @@ public class LiarActivity extends GameActivity {
     static final long VOTE_MS = 30_000, REVEAL_MS = 9_000, DEAL_MS = 25_000;
     private Screen screen = Screen.SETUP;
     private GameChips chips; private List<AuthorGame.Prompt> bank; private LiarGame game; private GameScore score; private String[] names = new String[0];
-    private boolean remote; private int dealK, voteSel;   // «اللعب بالريموت بس»: the remote goes to each teller (hand-over), the vote is a show of hands
+    private boolean remote; private int dealK, voteSel;   // «ريموت واحد»: the remote goes to each teller (hand-over), the vote is a show of hands
     private long phaseAt, tellMs, pausedAt; private TickTimer timer; private int sel; private final Random rnd = new Random();
 
     @Override protected String id() { return "liar"; }
@@ -38,13 +38,15 @@ public class LiarActivity extends GameActivity {
         for (int i = 0; i < secs.length; i++) secs[i] = S.t("%s ثانية", num(LiarGame.TELL_SECONDS[i]));
         String[] ps = new String[LiarGame.MAX_PLAYERS - LiarRemote.MIN_PLAYERS + 1]; for (int i = 0; i < ps.length; i++) ps[i] = num(LiarRemote.MIN_PLAYERS + i);
         chips = new GameChips().add("rounds", S.t("الجولات"), rs, 1).add("time", S.t("وقت الحكاية"), secs, 1).add("kids", S.t("للأطفال"), new String[]{S.tv(ON_OFF[0]), S.tv(ON_OFF[1])}, 0).add("players", S.t("اللاعبون"), ps, 0);
-        remoteChip(chips);
+        modeChip(chips, 1);
         remembered(soundChip(chips));
     }
     @Override protected void onPause() { super.onPause(); keep(); }
     private void keep() { if (game != null) { List<String> r = new ArrayList<>(game.asked()); Collections.reverse(r); GamePrefs.remember(this, id(), r); } }
     private boolean onPhones() { return phones != null && phones.room.phase() == GamePhoneRoom.Phase.PLAY; }
 
+    @Override protected Runnable remoteWay() { return () -> { screen = Screen.SETUP; redraw(); start(); }; }
+    @Override protected GameChips lobbyChips() { return chips; }
     private void start() {
         if (bank == null) { toast(S.t("قريبًا")); return; }
         if (remoteOn(chips)) { startRemote(); return; }

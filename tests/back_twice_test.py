@@ -43,7 +43,7 @@ check("its words have their English and the docs say it", f"{ROW}\t" in read(ROO
 pause = card[card.index("    void pause() {"):card.index("    void destroy() {")]
 res = card[card.index("    private void resumeWeb() {"):card.index("    private android.widget.ImageView still;")]
 check("the cards on the way back: the last frame is kept as an app comes in front, in the page's box, and dropped once the page has drawn again (or at once, or with the page)",
-      "keepStill();" in pause and pause.index("keepStill();") < pause.index("web.onPause();") and "web.draw(new android.graphics.Canvas(b));" in card
+      "keepStill();" in pause and pause.index("keepStill();") < pause.index("web.onPause();") and "android.graphics.Canvas cv = new android.graphics.Canvas(b);" in card and "web.draw(cv);" in card   # (R-455: at half size, tests/app_switch_test.py)
       and "parent.addView(still, parent.indexOfChild(web)" in card and res.count("dropStill();") == 3 and "        dropStill();\n        parent.removeView(web);" in card
       and "catch (RuntimeException | OutOfMemoryError e)" in card[card.index("private void keepStill()"):])
 # the owner's decision (beta 3): the row is among the screensaver's own rows (before «الشريط في الوسط»), not the home bar's; a person who chose it keeps it (the stored key), the rest are off

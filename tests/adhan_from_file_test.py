@@ -16,12 +16,12 @@ def check(name, ok, detail=""):
 rd = lambda p: Path(p).read_text(encoding="utf-8")
 
 ad, au = rd(T / "AdhanActivity.java"), rd(T / "AudioActivity.java")
-check("«المؤذن» ends with «أذاني من ملف», for the Fajr list too, and OK opens «صوتياتي» asking for the file to become that adhan",
+check("«المؤذن» starts with «أذاني من ملف» (4.4 beta 4, the emulator's count: last it was ~37 presses), for the Fajr list too, and OK opens «صوتياتي» asking for the file to become that adhan",
       'S.t("أذاني من ملف")' in ad and "position == fileRow()" in ad and 'putExtra(AudioActivity.EXTRA_USE, fajr ? "own_fajr" : "own")' in ad
-      and "voices.length + own + ownFajr + 1" in ad)
+      and "voices.length + own + ownFajr + 1" in ad and "private int fileRow() { return 0; }" in ad and "position -= 1;   // after «أذاني من ملف»" in ad)
 check("coming back, the list knows the new own recording (onResume)", "protected void onResume()" in ad and "adapter.notifyDataSetChanged();" in ad)
 check("«صوتياتي» with a use: the copied file becomes that adhan at once and the screen closes; only own and own_fajr are taken",
-      'u = getIntent().getStringExtra(EXTRA_USE)' in au and '"own".equals(u) || "own_fajr".equals(u) ? u : null' in au and "AudioUse.set(this, it, useAs)" in au and "finish();" in au)
+      'u = getIntent().getStringExtra(EXTRA_USE)' in au and '"own".equals(u) || "own_fajr".equals(u) ? u : null' in au and "AudioUse.set(this, a.item, useAs)" in au and "finish();" in au)
 check("«أضف من فلاشة أو التنزيلات»: the TV's Downloads folder is a place beside the sticks, named «التنزيلات»",
       "DIRECTORY_DOWNLOADS" in au and "if (dl != null) out.add(dl);" in au and 'S.t("التنزيلات")' in au and 'S.t("أضف من فلاشة أو التنزيلات")' in au)
 man = rd(ROOT / "android/launcher/src/main/AndroidManifest.xml")

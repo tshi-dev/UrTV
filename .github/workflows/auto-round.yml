@@ -1,0 +1,164 @@
+name: Auto round
+
+# The automatic tester round (tester/auto/round.sh, tester/auto/README.md) on an Android TV emulator: the apps of a branch (debug builds, as screens.yml) are put
+# on the emulator and every step of the round runs unattended, with its health numbers. The report, the shots and the numbers go to the data-screens branch, in
+# <run>/auto/ :  https://github.com/tshi-dev/UrTV/tree/data-screens/<run>/auto  (report.md first). The job is red when the round is RED.
+# It is not the tester's real TV (the real one is the owner's PC with round.sh); it catches what does not depend on the TV: the layouts, every settings
+# section in every style, the adhan states, crashes, ANRs, frozen screens, memory.
+
+on:
+  # a push of a NEW branch work/auto-round-<shortsha> runs the file of THAT commit (a workflow_dispatch needs the file on the default branch); we never force-push:
+  # to run a commit X,  git push origin X:refs/heads/work/auto-round-$(git rev-parse --short X)
+  push:
+    branches: ['work/auto-round-*']
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: 'branch or sha to run (the apps are built from it); a push runs the pushed commit'
+        default: 
+      skip:
+        description: 'steps to leave out, comma separated (install layouts reach settings saver radio display font adhan games switch health)'
+        default: ''
+
+permissions:
+  contents: write
+
+concurrency:
+  group: auto-round
+  cancel-in-progress: false
+
+jobs:
+  round:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.ref || github.sha }}
+      # Thmanyah comes from the private fonts repository, as in android.yml: built in, never committed
+      - uses: actions/checkout@v4
+        with:
+          repository: tshi-dev/urtv-fonts
+          token: ${{ secrets.FONTS_TOKEN }}
+          path: .fonts-private
+      - name: Private fonts
+        run: |
+          cp .fonts-private/web/*.woff2 assets/fonts/
+          mkdir -p android/launcher/src/main/assets/fonts
+          cp .fonts-private/android/*.otf android/launcher/src/main/assets/fonts/
+          rm -rf .fonts-private
+
+      - name: Build the page
+        run: python3 src/build.py
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.9'
+
+      - name: Build debug APKs
+        env:
+          URTV_BRANCH: ${{ inputs.ref || github.ref_name }}
+        run: gradle -p android assembleDebug --no-daemon
+
+      - name: Enable KVM
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+
+      - name: The round on an Android TV emulator
+        uses: reactivecircus/android-emulator-runner@v2
+        env:
+          BUILD_NAME: emulator-${{ github.run_number }}
+        with:
+          api-level: 30
+          target: android-tv
+          arch: x86
+          profile: tv_1080p
+          disable-animations: true
+          emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim -camera-back none
+          script: bash tester/auto/ci/run.sh android/app/build/outputs/apk/debug/app-debug.apk android/launcher/build/outputs/apk/debug/launcher-debug.apk auto-out ${{ inputs.skip }}
+
+      # review F97: the same photo from Downloads on Android 10 (API 29), where scoped storage hides it from File.listFiles; its result goes beside the round's report
+      - name: Photos from Downloads on Android 10
+        if: always()
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 29
+          target: android-tv
+          arch: x86
+          profile: tv_1080p
+          disable-animations: true
+          emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim -camera-back none
+          script: bash tester/auto/ci/storage29.sh android/launcher/build/outputs/apk/debug/launcher-debug.apk auto-out
+
+      # review round 3, report row 765: the D-pad must keep moving the focus on Android 8 (a TCL OTT box froze), alone and with the add-on's accessibility service on
+      - name: The remote on Android 8
+        if: always()
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 26
+          target: android-tv
+          arch: x86
+          profile: tv_1080p
+          disable-animations: true
+          emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim -camera-back none
+          script: bash tester/auto/ci/remote26.sh android/launcher/build/outputs/apk/debug/launcher-debug.apk android/extras/build/outputs/apk/debug/extras-debug.apk auto-out
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: auto-round
+          path: auto-out
+
+      - name: Publish to data-screens
+        if: always()
+        run: |
+          set -e
+          run="auto-${GITHUB_RUN_NUMBER}-$(date -u +%m%d-%H%M)"
+          [ -d auto-out/auto ] || { echo "no round output to publish"; exit 1; }
+          verdict=$(grep -m1 -o 'RED:\|GREEN:' auto-out/auto/report.md | tr -d ':' || echo UNKNOWN)
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          for try in 1 2 3 4; do
+            work=$(mktemp -d)
+            git clone --quiet --depth 20 --branch data-screens "https://x-access-token:${{ github.token }}@github.com/${GITHUB_REPOSITORY}.git" "$work" || {
+              git init --quiet "$work"; git -C "$work" checkout --quiet -b data-screens
+              git -C "$work" remote add origin "https://x-access-token:${{ github.token }}@github.com/${GITHUB_REPOSITORY}.git"; }
+            cd "$work"
+            ls -d auto-* 2>/dev/null | sort | head -n -9 | xargs -r rm -rf   # the last 10 rounds stay
+            rm -rf "$run"; mkdir -p "$run/auto"
+            cp -r "$GITHUB_WORKSPACE"/auto-out/auto/. "$run/auto/"
+            [ -d "$GITHUB_WORKSPACE/auto-out/storage29" ] && cp -r "$GITHUB_WORKSPACE/auto-out/storage29" "$run/"   # the Android 10 photos check (review F97)
+            [ -d "$GITHUB_WORKSPACE/auto-out/remote26" ] && cp -r "$GITHUB_WORKSPACE/auto-out/remote26" "$run/"   # the Android 8 remote check (row 765)
+            find "$run/auto/raw" -type f -size +1500k -delete 2>/dev/null || true   # a whole logcat is not published
+            rm -rf latest-auto; cp -r "$run" latest-auto
+            git add -A
+            git commit --quiet -m "Auto round ${verdict} of ${GITHUB_SHA::7} (run ${GITHUB_RUN_NUMBER})" || true
+            if git push origin data-screens; then break; fi
+            cd "$GITHUB_WORKSPACE"; sleep $((try * 5))
+          done
+          link="https://github.com/${GITHUB_REPOSITORY}/tree/data-screens/$run/auto"
+          raw="https://raw.githubusercontent.com/${GITHUB_REPOSITORY}/data-screens/$run/auto/report.md"
+          echo "Auto round $verdict: $link   (report: $raw)"
+          { echo "## Auto round: $verdict"; echo; echo "- report: $raw"; echo "- all: $link"; echo; cat "$GITHUB_WORKSPACE/auto-out/auto/report.md"; } >> "$GITHUB_STEP_SUMMARY"
+          [ "$verdict" = GREEN ]
+
+      - name: Android 10 photos verdict
+        if: always()
+        run: |
+          [ -s auto-out/storage29/result.txt ] || { echo "the Android 10 check left no result"; exit 1; }
+          cat auto-out/storage29/result.txt
+          grep -q '^PASS' auto-out/storage29/result.txt
+
+      - name: Android 8 remote verdict
+        if: always()
+        run: |
+          [ -s auto-out/remote26/result.txt ] || { echo "the Android 8 check left no result"; exit 1; }
+          cat auto-out/remote26/result.txt
+          grep -q '^PASS' auto-out/remote26/result.txt

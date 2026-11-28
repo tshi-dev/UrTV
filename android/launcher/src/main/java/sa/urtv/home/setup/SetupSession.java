@@ -48,14 +48,14 @@ final class SetupSession implements Closeable {
         try {
             return open(c, approvalMs, approval, out);
         } catch (IOException first) {
-            if (String.valueOf(first.getMessage()).equals("interrupted")) throw first;
+            if (PairFallback.answered(first.getMessage())) throw first;   // F87: a Cancel is an answer, thrown as it was (no paired route after it, no word added to its message)
             String why = PairRoute.why(c);
-            if (!"paired".equals(why)) throw new IOException(first.getMessage() + "; paired route: " + why);
+            if (!"paired".equals(why)) throw new IOException(PairFallback.message(first.getMessage(), why));
             android.util.Log.i("UrTVFactory", "5555 did not answer; the paired route");
             try {
                 return PairRoute.open(c, out);
             } catch (IOException second) {
-                throw new IOException(first.getMessage() + "; paired route: " + second.getMessage());
+                throw new IOException(PairFallback.message(first.getMessage(), second.getMessage()));
             }
         }
     }

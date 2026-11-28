@@ -12,6 +12,8 @@ final class TvRowsPick {
 
     static final String WATCH_NEXT = "watchnext";
     static final String WATCH_NEXT_TITLE = S.n("كمّل المشاهدة");
+    /** GitHub #56 (Xiaomi): the row said «يعمل» and showed nothing. When the TV's provider holds no row at all, the row says so instead of staying hidden */
+    static final String NOTHING_SHARED = S.n("ما يشارك"), NOTHING_SHARED_LINE = S.n("التطبيقات على هذا التلفزيون ما تشارك ما تتابعه مع الشاشة الرئيسية");
 
     // android.media.tv.TvContract.WatchNextPrograms' types: what one is in the middle of (0), its next episode (1); a new
     // season (2) and a watchlist (3) are the app's promotion, not something watched
@@ -30,6 +32,14 @@ final class TvRowsPick {
 
     /** A card's height (dp): 16:9 of its cell (AspectFrame). */
     static float cardHeight(float cellW) { return cellW * 9f / 16f; }
+
+    /** the empty state: the permission is allowed, the provider ANSWERED (a cursor, no exception: a refused read or a TV with no provider is not «nobody shares»), and it holds no row (not «all filtered out»: those are the person's own choices) */
+    static boolean nothingShared(boolean answered, int providerRows) { return answered && providerRows == 0; }
+
+    /** the one log line of a load, fixed words and numbers only (never a title or an app): the permission state, the rows the TV's provider holds, the rows shown */
+    static String logLine(boolean epg, int providerRows, int shown) {
+        return "watchnext epg=" + (epg ? "granted" : "denied") + " provider_rows=" + providerRows + " shown=" + shown;
+    }
 
     static boolean watchNextShown(int type, boolean browsable, boolean appThere) {
         return (type == WATCH_NEXT_TYPE_CONTINUE || type == WATCH_NEXT_TYPE_NEXT) && browsable && appThere;

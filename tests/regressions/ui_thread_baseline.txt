@@ -66,6 +66,11 @@ disk:stream | saver:ScreenDream.onReceive | PhotoCache.download | over-reach: Ph
 disk:stream | saver:ScreenDream.onReceive | PhotoCache.pack | over-reach: PhotoCache.serve is the WebView's shouldInterceptRequest, which runs on the WebView's own IO thread, not the UI thread
 disk:stream | saver:ScreenDream.onReceive | PhotoCache.readAll | over-reach: PhotoCache.serve is the WebView's shouldInterceptRequest, which runs on the WebView's own IO thread, not the UI thread
 disk:stream | saver:ScreenDream.onReceive | PhotoCache.serve | over-reach: PhotoCache.serve is the WebView's shouldInterceptRequest, which runs on the WebView's own IO thread, not the UI thread
+disk:stream | saver:ScreenDream.onAttachedToWindow | PackStore.creditsJson | over-reach: PhotoCache.serve is the WebView's shouldInterceptRequest, which runs on the WebView's own IO thread, not the UI thread
+disk:stream | saver:ScreenDream.onAttachedToWindow | PhotoCache.download | over-reach: PhotoCache.serve is the WebView's shouldInterceptRequest, which runs on the WebView's own IO thread, not the UI thread
+disk:stream | saver:ScreenDream.onAttachedToWindow | PhotoCache.pack | over-reach: PhotoCache.serve is the WebView's shouldInterceptRequest, which runs on the WebView's own IO thread, not the UI thread
+disk:stream | saver:ScreenDream.onAttachedToWindow | PhotoCache.readAll | over-reach: PhotoCache.serve is the WebView's shouldInterceptRequest, which runs on the WebView's own IO thread, not the UI thread
+disk:stream | saver:ScreenDream.onAttachedToWindow | PhotoCache.serve | over-reach: PhotoCache.serve is the WebView's shouldInterceptRequest, which runs on the WebView's own IO thread, not the UI thread
 disk:stream | saver:SettingsActivity.dispatchKeyEvent | PackStore.creditsJson | over-reach: PhotoCache.serve is the WebView's shouldInterceptRequest, which runs on the WebView's own IO thread, not the UI thread
 disk:stream | saver:SettingsActivity.dispatchKeyEvent | PhotoCache.download | over-reach: PhotoCache.serve is the WebView's shouldInterceptRequest, which runs on the WebView's own IO thread, not the UI thread
 disk:stream | saver:SettingsActivity.dispatchKeyEvent | PhotoCache.pack | over-reach: PhotoCache.serve is the WebView's shouldInterceptRequest, which runs on the WebView's own IO thread, not the UI thread

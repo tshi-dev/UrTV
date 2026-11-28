@@ -20,9 +20,9 @@ import java.util.Locale;
  *   am broadcast -n sa.urtv.screensaver/.SaverReceiver -a sa.urtv.screensaver.CITIES
  *   am broadcast -n sa.urtv.screensaver/.SaverReceiver -a sa.urtv.screensaver.SET
  *       [--es city 'الرس'] [--es lat 25.86 --es lon 43.49 --es tz Asia/Kuwait]   (tz is needed for a place that is not in the list) [--es teams '136013:Al-Hilal,150643:Al-Zulfi']
- *       [--es panel prayers] [--es panel2 hourly|none] [--es home_panel prayers,hourly,verse|none] [--es greeting on|off] [--es matchestoday on|off] [--es greetingname NAME|off] [--es homephotos same|own] [--es homepacks id,id|none] [--es homeours on|off] [--es albummode seconds|ten|minute] [--es albumtitle on|off] [--es albumfit fit|fill] [--es albumsize normal|tall] [--es cleartext on|off] [--es looksync on|off] [--es surface quick|cards|tray:30..100:look|glass|graphite] [--es accent amber|gold|green|teal|sky|violet|rose|coral|default] [--es baropacity 30..100] [--es walldim 0..90] [--es focusstyle solid|frame|glow] [--es albummode seconds|minute] [--es albumdate on|off] [--es pillshidden markets,matches,center|none] [--es listenpill on|off] [--es updatebell on|off] [--es watchnext on|off] [--es appearance dark|light|auto] [--es look glass|graphite|navy|clean] [--es homelayout classic|couch|football] [--es favbar 5|6|7|8|all] [--es pagesdark on|off] [--es adhanbar on|off] [--es yearstrip on|off] [--es minrating 7]
+ *       [--es panel prayers] [--es panel2 hourly|none] [--es home_panel prayers,hourly,verse|none] [--es greeting on|off] [--es matchestoday on|off] [--es teamcap 40|80|0] [--es greetingname NAME|off] [--es homephotos same|own] [--es homepacks id,id|none] [--es homeours on|off] [--es albummode seconds|ten|minute] [--es albumtitle on|off] [--es albumfit fit|fill] [--es albumsize normal|tall] [--es cleartext on|off] [--es looksync on|off] [--es surface quick|cards|tray:30..100:look|glass|graphite] [--es accent amber|gold|green|teal|sky|violet|rose|coral|default] [--es baropacity 30..100] [--es walldim 0..90] [--es focusstyle solid|frame|glow] [--es albummode seconds|minute] [--es albumdate on|off] [--es pillshidden markets,matches,center|none] [--es listenpill on|off] [--es updatebell on|off] [--es watchnext on|off] [--es appearance dark|light|auto] [--es look glass|graphite|navy|clean] [--es homelayout classic|couch|football] [--es favbar 5|6|7|8|all] [--es pagesdark on|off] [--es adhanbar on|off] [--es yearstrip on|off] [--es minrating 7]
  *       [--es sunrise on|off] [--es prayerbar on|off] [--es wxmore on|off] [--es months default|levant] [--es verse day|3|10] [--es versekind both|verse|hadith] [--es seconds on|off] [--es backexit press|hold|three] [--es occasion on|off] [--es nightdim on|off] [--es taskspill on|off] [--es backsaver on|off] [--es genres Drama,Comedy] [--es langs English]
- *       [--es photos 30] [--es idle 10] [--es digits hindi|latin] [--es hijrioffset -2..2] [--es clock24 on|off] [--es ramtier low|mid|normal|auto] [--es lite auto|on|off] [--es lang ar|en]
+ *       [--es photos 30] [--es idle 10] [--es digits hindi|latin] [--es hijrioffset -2..2] [--es hijriline on|off] [--es clock24 on|off] [--es ramtier low|mid|normal|auto] [--es lite auto|on|off] [--es lang ar|en]
  *       [--es design info|clean|big|frame|dayline] [--es bar none|prayers|slot|weather] [--es barat bottom|clock] [--es wx auto|usual|clock|corner|off]
  *       [--es cardstyle current|dark1|glass1|dark3|glass3|boxes] [--es formstyle dots|boxes|boxes-letters] [--es national auto|off] [--es scenepacks saudi,couch] [--es scenestay 10|20|60|300] [--es scenetime on|off] [--es sceneweather on|off] [--es background photos|scenes] [--es clock plain|glass] [--es appsstyle frame|zoom] [--es couch on|off]
  *       [--es markets tasi,gold,btc] [--es mkstyle arrows|prices] [--es mkbar on|off] [--es clocksize large|medium|small] [--es stocks 2222,1120,AAPL] [--es stkchg pct|amount]
@@ -70,6 +70,7 @@ import java.util.Locale;
  * "clear"; cdname = its name (up to 40 characters).
  * national = auto (as always from now: the quiet green look on National Day, 21-25 September, and Founding Day, 20-24 February) or off.
  * cardstyle = the look of the card beside the clock (Prefs.CARD_STYLES; current is the plain card).
+ * sidecards = off|a|b: «كنبة»'s side cards (4.4 beta 4, off by default: Prefs.SIDE_CARDS_DEFAULT is the owner's pick).
  * formstyle = «شكل آخر المباريات», a club's last five in the league's table (Prefs.FORM_STYLES; dots is the default).
  * cardsize = s|m|l, cardcorner = style|sharp|soft|round: «حجم البطاقات» and «زوايا البطاقات» (4.4 beta 4; m and style change nothing).
  * design = the screensaver's design (Prefs.SAVER_DESIGNS; info is the page as it always was); bar = a centred bar (none, prayers, slot: the left slot's
@@ -85,7 +86,8 @@ import java.util.Locale;
  * digits = hindi (١٢٣, as always) or latin (123). photos = minutes between background photos, or 30s on a TV with 2 GB (PhotoInterval). idle = minutes before the TV starts the
  * screensaver (Prefs.IDLE_MINUTES): this is the system's screen_off_timeout, which a receiver (it runs as this
  * app, not as the shell) may write only when the app holds WRITE_SETTINGS; otherwise it says so and
- * optimize/saver.sh sets it from the shell instead. Nothing changes unless the extra is given.
+ * optimize/saver.sh sets it from the shell instead (and then sends idlekept = the same minutes, only kept to put back at boot: IdleKeep, R-400).
+ * Nothing changes unless the extra is given.
  *
  * The answer is in the "data" of am's output. Unknown values are refused with a message, nothing half-saved.
  */
@@ -186,6 +188,9 @@ public class SaverReceiver extends BroadcastReceiver {
                 if (city == null) return "error: city not in the built-in list; give --es lat and --es lon too (CITIES lists them)";
             }
         }
+        String teamCap = i.getStringExtra("teamcap");   // 4.4 the owner (R-472): 40 (the default), 80, or 0 = no limit; read first, so «teams» in the same call is held to it
+        if (teamCap != null && !teamCap.matches("40|80|0")) return "error: teamcap is one of 40 80 0 (0 = no limit)";
+        int ceiling = FollowLimit.teamCeiling(teamCap != null ? Integer.parseInt(teamCap) : p.teamCap());
         List<String> teams = null;
         String t = i.getStringExtra("teams");
         if (t != null) {
@@ -203,7 +208,7 @@ public class SaverReceiver extends BroadcastReceiver {
                     : en.isEmpty() ? "#" + kv[0] : Arabic.team(c, en);
                 teams.add(kv[0] + "|" + ar.replace("|", " ").replace(";", " "));
             }
-            if (teams.size() > Prefs.MAX_TEAMS) return "error: at most " + Prefs.MAX_TEAMS + " teams";
+            if (teams.size() > ceiling) return "error: at most " + ceiling + " teams (optimize/saver.sh teamcap 80, or 0 for no limit, raises it)";
         }
         String panel = i.getStringExtra("panel"), home = i.getStringExtra("home_panel");
         if (panel != null && Prefs.homeOnly(panel)) return "error: " + panel + " is a home-screen card only (the screensaver's panel already shows it): optimize/saver.sh home-card " + panel;
@@ -266,8 +271,8 @@ public class SaverReceiver extends BroadcastReceiver {
         if (kickoffOn != null && !kickoffOn.matches("on|off|silent|whistle")) return "error: kickoff is one of on off silent whistle";
         for (String[] x : new String[][] {{"kickoffgoal", kickoffGoal}, {"kickoffend", kickoffEnd}, {"kickoffover", kickoffOver}})
             if (x[1] != null && !"on".equals(x[1]) && !"off".equals(x[1])) return "error: " + x[0] + " is one of on off";
-        String backSaver = i.getStringExtra("backsaver"), backTwice = i.getStringExtra("backtwice"), fbHide = i.getStringExtra("fbhide"), dateNum = i.getStringExtra("datenum"), searchPill = i.getStringExtra("searchpill");
-        for (String[] x : new String[][] {{"occasion", occasion}, {"nightdim", nightDim}, {"taskspill", tasksPill}, {"backsaver", backSaver}, {"backtwice", backTwice}, {"fbhide", fbHide}, {"datenum", dateNum}, {"searchpill", searchPill}})
+        String backSaver = i.getStringExtra("backsaver"), backTwice = i.getStringExtra("backtwice"), fbHide = i.getStringExtra("fbhide"), dateNum = i.getStringExtra("datenum"), searchPill = i.getStringExtra("searchpill"), hijriLine = i.getStringExtra("hijriline");
+        for (String[] x : new String[][] {{"occasion", occasion}, {"nightdim", nightDim}, {"taskspill", tasksPill}, {"backsaver", backSaver}, {"backtwice", backTwice}, {"fbhide", fbHide}, {"datenum", dateNum}, {"searchpill", searchPill}, {"hijriline", hijriLine}})
             if (x[1] != null && !"on".equals(x[1]) && !"off".equals(x[1])) return "error: " + x[0] + " is one of on off";
         String verse = i.getStringExtra("verse");
         if (verse != null && !QuoteEvery.valid(verse)) return "error: verse is one of day 3 10";
@@ -424,6 +429,8 @@ public class SaverReceiver extends BroadcastReceiver {
         String cardSize = i.getStringExtra("cardsize"), cardCorner = i.getStringExtra("cardcorner");
         if (cardSize != null && !java.util.Arrays.asList(Prefs.CARD_SIZES).contains(cardSize)) return "error: cardsize is one of s, m, l";
         if (cardCorner != null && !java.util.Arrays.asList(Prefs.CARD_CORNERS).contains(cardCorner)) return "error: cardcorner is one of style, sharp, soft, round";
+        String sideCards = i.getStringExtra("sidecards");
+        if (sideCards != null && !java.util.Arrays.asList(Prefs.SIDE_CARDS).contains(sideCards)) return "error: sidecards is one of off, a, b";
         String design = i.getStringExtra("design"), bar = i.getStringExtra("bar"), barAt = i.getStringExtra("barat"), wxAt = i.getStringExtra("wx");
         if (design != null && !isChoice(Prefs.SAVER_DESIGNS, design)) return "error: design is one of " + choices(Prefs.SAVER_DESIGNS);
         if (bar != null && !isChoice(Prefs.SAVER_BARS, bar)) return "error: bar is one of " + choices(Prefs.SAVER_BARS);
@@ -476,6 +483,9 @@ public class SaverReceiver extends BroadcastReceiver {
                 return "error: idle not allowed: this app may not change system settings on this TV"
                     + " (the TV's own screensaver settings can, or the shell: settings put system screen_off_timeout)";
         }
+        String idleKept = i.getStringExtra("idlekept");   // R-400: saver.sh set the delay from the shell; only kept here, to put back at boot
+        if (idleKept != null && !Arrays.asList(Prefs.IDLE_MINUTES).contains(idleKept))
+            return "error: idlekept is one of " + Prefs.join(Arrays.asList(Prefs.IDLE_MINUTES), " ");
         List<String> genres = codes(i.getStringExtra("genres"), Prefs.GENRES);
         List<String> langs = codes(i.getStringExtra("langs"), Prefs.LANGS);
         if (genres != null && genres.contains(null)) return "error: genres are " + names(Prefs.GENRES);
@@ -502,11 +512,14 @@ public class SaverReceiver extends BroadcastReceiver {
             try {
                 if (!Settings.System.putInt(c.getContentResolver(), Settings.System.SCREEN_OFF_TIMEOUT, Integer.parseInt(idle) * 60000))
                     return "error: idle not allowed: the TV did not take the change";   // S11: putInt says false when it was not written
+                IdleKeep.keep(c, idle);   // R-400: put back at boot if the firmware resets it to «never»
             } catch (SecurityException e) {
                 return "error: idle not allowed: the TV refused the change";
             }
         }
+        if (idleKept != null) IdleKeep.keep(c, idleKept);
         if (city != null) p.setCity(city[0], city[1], city[2], tz == null ? "" : tz, cityCountry);
+        if (teamCap != null) p.setTeamCap(Integer.parseInt(teamCap));
         if (teams != null) p.setList("teams", teams);
         if (panel != null) p.setPanel(panel);
         if (panel2 != null) p.setPanel2(panel2);
@@ -585,6 +598,7 @@ public class SaverReceiver extends BroadcastReceiver {
         if (kickoffEnd != null) p.setKickoffEnd("on".equals(kickoffEnd));
         if (kickoffOver != null) p.setKickoffOver("on".equals(kickoffOver));
         if (dateNum != null) p.setDateNum("on".equals(dateNum));
+        if (hijriLine != null) p.setHijriShown("on".equals(hijriLine));
         if (searchPill != null) p.setSearchPill("on".equals(searchPill));
         if (prayerMethod != null) p.setPrayerMethod(PrayerMethod.parse(prayerMethod));
         if (adj != null) p.setPrayerAdj(adj);
@@ -602,6 +616,7 @@ public class SaverReceiver extends BroadcastReceiver {
         if (formStyle != null) p.setFormStyle(formStyle);
         if (cardSize != null) p.setCardSize(cardSize);
         if (cardCorner != null) p.setCardCorner(cardCorner);
+        if (sideCards != null) p.setSideCards(sideCards);
         if (design != null) p.setDesign(design);
         if (bar != null) p.setBar(bar);
         if (barAt != null) p.setBarAt(barAt);
@@ -767,11 +782,12 @@ public class SaverReceiver extends BroadcastReceiver {
             + "\naccent: " + (p.accent().isEmpty() ? "default" : p.accent()) + "\nbaropacity: " + p.barPercent() + "\nwalldim: " + p.wallDim() + "\nfocusstyle: " + p.focusStyle()
             + "\nlooksync: " + (p.lookSync() ? "on" : "off") + "\nsurface quick: " + p.surfacePercent(0) + " " + p.surfaceFill(0) + "\nsurface cards: " + p.surfacePercent(1) + " " + p.surfaceFill(1) + "\nsurface tray: " + p.surfacePercent(2) + " " + p.surfaceFill(2)
             + "\npreset: " + p.presetShow()
-            + "\ncouch: " + (!p.couchOn() ? "off" : "couch".equals(p.look3()) ? "on" : "on (custom)") + "\nhomelayout: " + p.homeLayout() + "\nbackground: " + p.homeBg() + "\nclock: " + p.homeClock() + "\nappsstyle: " + p.appsStyle()
+            + "\ncouch: " + (!p.couchOn() ? "off" : "couch".equals(p.look3()) ? "on" : "on (custom)") + "\nhomelayout: " + p.homeLayout() + "\nsettingsstyle: " + p.settingsStyle() + "\nbackground: " + p.homeBg() + "\nclock: " + p.homeClock() + "\nappsstyle: " + p.appsStyle()
             + "\nscenepacks: " + Prefs.join(p.scenePacks(), ",") + "\nscenestay: " + p.sceneStay()
             + "\nscenetime: " + (p.sceneByTime() ? "on" : "off") + "\nsceneweather: " + (p.sceneByWeather() ? "on" : "off")
             + "\nfavbar: " + p.favBar()
             + "\nmatchestoday: " + (p.matchesToday() ? "on" : "off")
+            + "\nteamcap: " + p.teamCap()
             + "\npagesdark: " + (p.pagesDark() ? "on" : "off")
             + "\nadhanbar: " + (p.adhanBar() ? "on" : "off") + "\nadhanlead: " + p.adhanLead()
             + "\nupdatechannel: " + p.updateChannel()
@@ -784,6 +800,7 @@ public class SaverReceiver extends BroadcastReceiver {
             + "\nprayermethod: " + p.prayerMethod()
             + "\nprayeradj: " + (p.prayerAdjOn() ? "on" : "off") + " " + PrayerAdj.describe(p.prayerAdj())
             + "\nhijrioffset: " + HijriOffset.describe(p.hijriOffset())
+            + "\nhijriline: " + (p.hijriShown() ? "on" : "off")
             + "\nminrating: " + p.minRating()
             + "\nphotos: " + p.photoMinutes() + (PhotoInterval.fast(Prefs.ramMb(c)) ? "" : " (30s needs 2 GB; " + Prefs.ramMb(c) + " MB here)")
             + "\ndigits: " + p.digits()
@@ -794,7 +811,7 @@ public class SaverReceiver extends BroadcastReceiver {
             + "\nnational: " + p.national()
             + "\ncardstyle: " + p.cardStyle() + "\nformstyle: " + p.formStyle()
             + "\ncardstyle: " + p.cardStyle()
-            + "\ncardsize: " + p.cardSize() + "\ncardcorner: " + p.cardCorner()
+            + "\ncardsize: " + p.cardSize() + "\ncardcorner: " + p.cardCorner() + "\nsidecards: " + p.sideCards()
             + "\ndesign: " + p.design() + "\nbar: " + p.bar() + "\nbarat: " + p.barAt() + "\nwx: " + p.wxAt()
             + "\nmarkets: " + (p.marketsOn() ? "" : "off ") + Prefs.join(p.markets(), ",") + "\nclocksize: " + p.clockSize() + "\nmkstyle: " + p.mkStyle()
             + "\nstocks: " + Prefs.join(p.stocks(), ",") + "\nstkchg: " + p.stkChg()

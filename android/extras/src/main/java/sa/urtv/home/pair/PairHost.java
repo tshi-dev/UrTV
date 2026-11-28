@@ -6,8 +6,6 @@ import android.util.Log;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -22,9 +20,11 @@ public final class PairHost {
 
     static final String TAG = "UrTVPair";
     private static final PairState STATE = new PairState();
-    private static final Map<String, PairClient.Connection> OPEN = new HashMap<>();
     /** how many connections may be open at once (the setup uses one; a stuck caller cannot pile them up) */
     static final int MAX_OPEN = 2;
+    /** the longest one command and one file push may take over the paired route before the call ends with «timeout» and the connection is closed */
+    static final long RUN_MS = 120_000, EXEC_MS = 600_000, CONNECT_MS = 30_000;
+    private static final ConnPool<PairClient.Connection> OPEN = new ConnPool<>(MAX_OPEN, c -> { try { c.close(); } catch (RuntimeException ignored) { } });
 
     public static boolean available() { return PairClient.available(); }
 
@@ -78,49 +78,58 @@ public final class PairHost {
     public static String open(Context c) throws IOException {
         if (!available()) throw new IOException("old_android");
         if (!paired(c)) throw new IOException("not_paired");
-        synchronized (OPEN) { if (OPEN.size() >= MAX_OPEN) throw new IOException("busy"); }
         PairClient.Connection conn;
         try {
-            conn = PairClient.connect(c.getApplicationContext(), line -> Log.i(TAG, line));
+            final Context app = c.getApplicationContext();
+            conn = Deadline.call(() -> PairClient.connect(app, line -> Log.i(TAG, line)), CONNECT_MS, null);   // the connect step (mDNS, TLS, the key) had no limit either (review F96, second pass)
         } catch (IOException e) {
             String m = String.valueOf(e.getMessage());
             throw new IOException(m.contains("service of this TV found") ? "no_port" : m.contains("not paired") ? "not_paired" : "refused");
         }
         String id = UUID.randomUUID().toString();
-        synchronized (OPEN) { OPEN.put(id, conn); }
+        if (!OPEN.add(id, conn)) {   // full of connections in a call: this one is refused, never a command of another cut (ConnPool, review F131); an idle one (a caller that died) goes instead
+            try { conn.close(); } catch (RuntimeException ignored) { }
+            throw new IOException("busy");
+        }
         Log.i(TAG, "connection open");
         return id;
     }
 
     private static PairClient.Connection get(String id) throws IOException {
-        synchronized (OPEN) {
-            PairClient.Connection conn = id == null ? null : OPEN.get(id);
-            if (conn == null) throw new IOException("closed");
-            return conn;
-        }
+        PairClient.Connection conn = OPEN.use(id);   // marked in a call: PairHost.run / exec end it (OPEN.done)
+        if (conn == null) throw new IOException("closed");
+        return conn;
     }
 
     /** one shell command, its output with the `URTV_RC=` marker (the home splits it as AdbClient.withCode) */
-    public static String run(String id, String command) throws IOException { return get(id).run(command); }
+    public static String run(String id, String command) throws IOException {
+        final PairClient.Connection conn = get(id);
+        try {
+            return Deadline.call(() -> conn.run(command), RUN_MS, () -> close(id));   // a stalled link ends the call and the connection (review F96)
+        } finally {
+            OPEN.done(id);
+        }
+    }
 
     /** a command fed {@code size} bytes read from the home's own file (a one-time content address the home made for it) */
     public static String exec(Context c, String id, String command, Uri from, long size) throws IOException {
         PairClient.Connection conn = get(id);
         try (InputStream in = c.getContentResolver().openInputStream(from)) {
             if (in == null) throw new IOException("the file is not there");
-            return conn.exec(command, in, size);
+            return Deadline.call(() -> conn.exec(command, in, size), EXEC_MS, () -> close(id));
+        } finally {
+            OPEN.done(id);   // the call ended (review F131)
         }
     }
 
     public static void close(String id) {
-        PairClient.Connection conn;
-        synchronized (OPEN) { conn = id == null ? null : OPEN.remove(id); }
-        if (conn != null) { conn.close(); Log.i(TAG, "connection closed"); }
+        OPEN.remove(id);
+        Log.i(TAG, "connection closed");
     }
 
     /** the home's setup ended with nothing pending: the key and its mark go (the TV forgets it with «إلغاء تراخيص تصحيح USB») */
     public static void forget(Context c) {
-        synchronized (OPEN) { for (PairClient.Connection conn : OPEN.values()) conn.close(); OPEN.clear(); }
+        OPEN.clear();
         PairClient.forget(c);
         STATE.disarm();
         Log.i(TAG, "pairing forgotten");

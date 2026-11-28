@@ -171,4 +171,12 @@ check("the apps' channels are asked only while a row of one is shown (every retu
       (r["needs_unchosen"], r["needs_only_wn"], r["needs_nothing"], r["needs_other"]) == ("true", "false", "false", "true"), (r["needs_unchosen"], r["needs_only_wn"], r["needs_nothing"], r["needs_other"]))
 check("TvRows.load uses it (the channel queries are the cost), and the settings' list (arrange) still asks every channel",
       "TvRowsPick.needsChannels(p.getString(\"shown\", null)) ? found(c)" in (HOME / "TvRows.java").read_text() and "TvRowsPick.arrange(found(c)" in (HOME / "TvRows.java").read_text())
+check("#56 (Xiaomi): a TV whose provider holds no row at all gets the «ما يشارك» card, not a missing row; a provider with rows (all filtered or not) does not",
+      r["nothing_shared_0"] == "true" and r["nothing_shared_3"] == "false" and r["nothing_shared_refused"] == "false"
+      and "TvRowsPick.nothingShared(counted[1] == 1, counted[0])" in (HOME / "TvRows.java").read_text(encoding="utf-8") and "none.empty = true;" in (HOME / "TvRows.java").read_text(encoding="utf-8")
+      and "if (!it.empty) card.setOnClickListener" in read(HOME / "MainActivity.java"))
+check("#56: each load logs the permission state, the provider's row count and the shown count, fixed words and numbers only (UrTVRows)",
+      r["log_granted"] == "watchnext epg=granted provider_rows=0 shown=0" and r["log_denied"] == "watchnext epg=denied provider_rows=7 shown=2"
+      and 'android.util.Log.i("UrTVRows", TvRowsPick.logLine(epg, counted[0], row.items.size()))' in (HOME / "TvRows.java").read_text(encoding="utf-8"))
+check("the two new texts have their English", "ما يشارك\tNothing shared" in read(ROOT / "i18n/en/home.tsv"))
 sys.exit(1 if failed else 0)

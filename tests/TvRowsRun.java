@@ -18,6 +18,11 @@ public final class TvRowsRun {
         put("wn_watchlist", TvRowsPick.watchNextShown(3, true, true));
         put("wn_hidden", TvRowsPick.watchNextShown(0, false, true));
         put("wn_no_app", TvRowsPick.watchNextShown(0, true, false));
+        put("nothing_shared_0", TvRowsPick.nothingShared(true, 0));
+        put("nothing_shared_refused", TvRowsPick.nothingShared(false, 0));
+        put("nothing_shared_3", TvRowsPick.nothingShared(true, 3));
+        put("log_granted", TvRowsPick.logLine(true, 0, 0));
+        put("log_denied", TvRowsPick.logLine(false, 7, 2));
 
         put("meta_episode", TvRowsPick.meta("2", "1", "Pilot", "Show", "", "Netflix", false));
         put("meta_latin", TvRowsPick.meta("2", "10", "", "Show", "", "Netflix", true));

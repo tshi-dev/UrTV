@@ -59,6 +59,7 @@ finish() {
   trap - EXIT
   [ "$(cat "$LOCK" 2> /dev/null || true)" = "$$" ] && rm -f "$LOCK"
   if [ "$rc" -eq 0 ]; then echo "run.sh: done"
+  elif [ "$rc" -eq 6 ] && [ "$current" = precheck ]; then stamp "stopped $current (Android older than 8)"; echo "run.sh: stopped at precheck: this TV's Android is older than 8, which UrTV needs; nothing was changed (see above)"
   elif [ "$rc" -eq 3 ] && [ "$current" = precheck ]; then stamp "stopped $current (not an Android TV)"; echo "run.sh: stopped at precheck: this device is not an Android TV, nothing was changed (see above)"
   elif [ "$rc" -eq 5 ] && [ "$current" = launcher ]; then stamp "paused $current (waiting for the person: the Wi-Fi network)"; echo "run.sh: paused at launcher, nothing was changed there: waiting for the person to forget the Wi-Fi network and join it again (the Arabic line above). When they say «كمّل», run the same command again."
   else stamp "stopped $current (exit $rc)"; echo "run.sh: stopped at $current, run the same command again"; fi
@@ -69,7 +70,7 @@ trap 'exit 130' INT
 trap 'exit 143' TERM
 fi
 
-STEPS=(precheck probe backup keep before before-saver safe mine community tweaks screensaver launcher extras autostart after after-saver report)
+STEPS=(precheck probe backup keep before before-saver safe mine community tweaks screensaver launcher extras autostart after after-saver keep-again report)
 title() {
   case "$1" in
     precheck)    echo "Check it is an Android TV with a WebView the screensaver can run on" ;;
@@ -88,6 +89,7 @@ title() {
     autostart)   echo "Let TCL start our apps at boot (auto-start)" ;;
     after)       if [ "$MEASURE" = 1 ]; then echo "Measure after (restart + 3 min)"; else echo "Measure after (quick, about 1 min)"; fi ;;
     after-saver) echo "Measure our screensaver (1 min; by default only on a weak TV)" ;;
+    keep-again)  echo "Protected features once more, after the last restart" ;;
     report)      echo "Write the report" ;;
   esac
 }
@@ -123,7 +125,7 @@ check_list() {   # never disable what UAD-ng rates Unsafe; show everything that 
   out=$("$PY" -I optimize/check-packages.py "$1") || rc=$?   # 3: something is Unsafe (said below); 2 or other: it could not rate
   if [ "$rc" != 0 ] && [ "$rc" != 3 ]; then echo "$out"; echo "!! $1 could not be checked against UAD-ng's list (needs the internet). Run again when online."; exit 1; fi
   echo "$out" | grep -v '^Recommended' | sed 's/^/   /' || true
-  if echo "$out" | grep -q '^Unsafe'; then echo "!! $1 has a package rated Unsafe. Take it out and run again."; exit 1; fi
+  if echo "$out" | grep '^Unsafe' > /dev/null; then echo "!! $1 has a package rated Unsafe. Take it out and run again."; exit 1; fi
 }
 
 report() {
@@ -141,8 +143,8 @@ report() {
            com.tcl.tvinput com.android.vending com.google.android.gms; do
     # one question with end markers: an empty answer without them is «the TV did not say», not «not installed»
     pk=$(tv "pm list packages -d $p; echo D_END; pm list packages $p; echo I_END" 2> /dev/null | tr -d '\r') || pk=""
-    if awk '/^D_END$/{exit} {print}' <<< "$pk" | grep -qx "package:$p"; then echo "- !! $p is DISABLED"
-    elif awk '/^D_END$/{s=1; next} s' <<< "$pk" | grep -qx "package:$p"; then echo "- ok: $p"
+    if awk '/^D_END$/{exit} {print}' <<< "$pk" | grep -x "package:$p" > /dev/null; then echo "- !! $p is DISABLED"
+    elif awk '/^D_END$/{s=1; next} s' <<< "$pk" | grep -x "package:$p" > /dev/null; then echo "- ok: $p"
     elif ! grep -qx 'I_END' <<< "$pk" || ! grep -qx 'D_END' <<< "$pk"; then echo "- ?? $p: the TV did not answer"
     fi
   done
@@ -154,7 +156,7 @@ report() {
   [ ! -f "$RUN/home-skipped.txt" ] || cat "$RUN/home-skipped.txt"   # a TV that won't let its home be switched (Nokia Streaming Box 8000)
   echo "Screensaver: $(tv "settings get secure screensaver_components")"
   echo "Versions: screensaver $(appver sa.urtv.screensaver), home $(appver sa.urtv.home)"
-  echo "Extras: TV Bro $([ -n "$(tv "pm list packages com.phlox.tvwebbrowser")" ] && echo yes || echo no), SmartTube $([ -n "$(tv "pm list packages org.smarttube.stable")" ] && echo yes || echo no)"
+  echo "Extras: TV Bro $([ -n "$(tv "pm list packages com.phlox.tvwebbrowser")" ] && echo yes || echo "not installed"), SmartTube $([ -n "$(tv "pm list packages org.smarttube.stable")" ] && echo yes || echo "not installed")$([ "${SKIP_EXTRAS:-}" = 1 ] && echo " (SKIP_EXTRAS=1)" || echo " (to add: optimize/install.sh extras)")"
   local picks
   picks=$(grep -cvE '^[[:space:]]*(#|$)' optimize/lists/mine.txt 2>/dev/null || true)
   echo "Optional picks (lists/mine.txt): ${picks:-0}"
@@ -192,20 +194,20 @@ report() {
 # ours can be heavy (heavy.py's advice needs both); a «before» that did not say the memory counts as weak (measured, as before)
 saver_measure() {
   [ "$MEASURE" = 1 ] && return 0
-  local kb; kb=$(sed -n 's/^MemTotal:[[:space:]]*\([0-9][0-9]*\).*/\1/p' "$RUN/ram-before.txt" 2> /dev/null | head -1)
+  local kb; kb=$(sed -n 's/^MemTotal:[[:space:]]*\([0-9][0-9]*\).*/\1/p' "$RUN/ram-before.txt" 2> /dev/null | sed -n 1p)
   [ -z "$kb" ] || [ "$kb" -lt 2621440 ]
 }
 
 do_step() {
   case "$1" in
-    precheck)    rc=0; optimize/precheck.sh > "$RUN/precheck.txt" 2>&1 || rc=$?   # 3: not an Android TV, stop (nothing was changed)
+    precheck)    rc=0; optimize/precheck.sh > "$RUN/precheck.txt" 2>&1 || rc=$?   # 3: not an Android TV, 6: Android older than 8; stop (nothing was changed)
                  cat "$RUN/precheck.txt"; [ "$rc" = 0 ] || exit "$rc" ;;
     probe)       tv --probe | tee "$RUN/tv.txt" ;;
     backup)      optimize/backup.sh
                  # the TV as it came is the first run's: a run.sh again after the tweaks would record the tweaked TV
                  if [ -f "$RUN/backup.txt" ]; then echo "(the backup from the first run stays: optimize/reset.sh puts back what the TV had then)"
                  else
-                   newest=$(ls -t optimize/backup-*.txt | head -1)
+                   newest=$(ls -t optimize/backup-*.txt | sed -n 1p)
                    # a backup saved while the TV answered nothing would be kept for ever and make reset remove the person's own apps
                    if [ "$(grep -c '^package:' "$newest" || true)" -lt 20 ] || ! grep -qx 'package:android' "$newest"; then
                      rm -f "$newest"
@@ -236,6 +238,8 @@ do_step() {
     after)       if [ "$MEASURE" = 1 ]; then optimize/measure.sh after; else optimize/measure.sh after --quick; fi ;;
     after-saver) if saver_measure; then optimize/measure.sh after-screensaver --screensaver
                  else echo "   skipped: not a weak TV (2.5 GB or more), so ours is not heavy here (the full measure: optimize/run.sh --measure)"; fi ;;
+    # 4.4: the restarts of the measures can lose a pm enable Android had not written yet: keep.sh once more after the last one
+    keep-again)  optimize/keep.sh | tee -a "$RUN/keep.txt" ;;
     report)      report > "$RUN/report.md"; cat "$RUN/report.md" ;;
   esac
 }
@@ -276,6 +280,7 @@ fi
 # notice: the run waits for the TV (tv.py --wait, up to 10 minutes; a Wireless-debugging port is looked up again) and runs the same step once more,
 # as «run the same command again» would. Every step is safe to repeat (each checks what is done already). Any other stop, a !! line that asks for
 # something, the Wi-Fi pause (5), a command that may or may not have run: stops as before.
+SIGPIPE_OK="before before-saver after after-saver"   # the steps that only read the TV: a second exit 141 there is not a failure
 DROPPED='^!! TV not answering after [0-9]+ tries|^!! The TV stopped answering while [^ ]+ was installing'
 run_step() {   # $1 step: its exit code; what it printed is also kept in the run folder's .step-out
   local rc=0
@@ -299,6 +304,20 @@ for s in "${STEPS[@]}"; do
       rc=0; run_step "$s" || rc=$?
     fi
   fi
+  # 4.4: 141 is SIGPIPE: a pipeline's reader ended before its writer (grep -q, head). The step is run once more (each is safe to repeat);
+  # a second 141 counts as done only for the measure steps, which change nothing on the TV (the report then lacks that reading);
+  # any other step stops with what it means, never as done
+  if [ "$rc" = 141 ]; then
+    stamp "sigpipe $s (exit 141, the step again)"
+    echo "(exit 141: a pipe in this step closed early; running the same step again)"
+    rc=0; run_step "$s" || rc=$?
+    if [ "$rc" = 141 ]; then
+      case " $SIGPIPE_OK " in
+        *" $s "*) echo "   not measured: the step was cut by a closed pipe twice (exit 141); it changes nothing on the TV, so the setup goes on"; rc=0 ;;
+        *) echo "!! The step «$s» was cut twice by a closed pipe (exit 141, SIGPIPE). Nothing is counted as done. Run the same command again." ;;
+      esac
+    fi
+  fi
   [ "$rc" = 0 ] || exit "$rc"
   touch "$RUN/.done-$s"
   stamp "done $s"
@@ -306,7 +325,7 @@ done
 rm -f "$RUN/.step-out"
 # the heavy-screensaver line is advice for the owner, not a failure: it is shown but does not stop the run
 ADVICE='the screensaver may slow this TV'
-if grep '!!' "$RUN/report.md" | grep -qv "$ADVICE"; then
+if grep '!!' "$RUN/report.md" | grep -v "$ADVICE" > /dev/null; then
   current=report-check   # the stop below is no step's fault
   echo
   echo "Done, with problems:"

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Runs on the CI emulator (.github/workflows/games-screens.yml): the one-remote modes of the family games, shot with screencap, the setting «اللعب بالريموت بس» turned on in each
+# Runs on the CI emulator (.github/workflows/games-screens.yml): the one-remote modes of the family games, shot with screencap, «ريموت واحد» of the first row «كيف تلعبون؟» turned on in each
 # game's own setup page with the remote's keys (nothing is written behind the app's back).   games.sh SAVER_APK HOME_APK OUT_DIR
 # Best effort: every shot is taken whatever is on the screen; the log says what was pressed. (re-shot after the liar rounds' bar fix)
 set +e
@@ -44,11 +44,11 @@ tile() {   # go to tile $1 from $CUR, then open it
   CUR=$to
   key DPAD_CENTER; sleep 2
 }
-remote_on() {   # the setup page: the focus starts on the start button; up twice is «اللعب بالريموت بس» (just above «الصوت»); left is the next chip («نعم»); OK picks it
+remote_on() {   # the setup page: the focus starts on the start button; «كيف تلعبون؟» is the FIRST row (جوالات is picked by default in the party games): up to the «!», down onto the first row, right is the previous chip («ريموت واحد»), OK picks it
   shot "$1-setup-before" 1
-  key DPAD_UP DPAD_UP DPAD_LEFT DPAD_CENTER
+  key DPAD_UP DPAD_UP DPAD_UP DPAD_UP DPAD_UP DPAD_UP DPAD_UP DPAD_UP DPAD_UP DPAD_UP DPAD_DOWN DPAD_RIGHT DPAD_CENTER
   shot "$1-setup-remote-on" 1
-  key DPAD_DOWN DPAD_DOWN
+  key DPAD_DOWN DPAD_DOWN DPAD_DOWN DPAD_DOWN DPAD_DOWN DPAD_DOWN DPAD_DOWN DPAD_DOWN DPAD_DOWN DPAD_DOWN
 }
 leave() { key BACK DPAD_DOWN DPAD_DOWN DPAD_CENTER; sleep 2; }   # the pause card: «الرئيسية»
 

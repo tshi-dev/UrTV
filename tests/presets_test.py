@@ -53,7 +53,7 @@ check("the row is in the first group of «الشكل» (one tree for every setti
       and 'm.put("couch", "couch");' in prefs and 'm.put("tvos", "tvos");' in prefs and "FULL_DESIGN_STYLE = fullDesign();" in prefs
       and 'if (!sp.contains("settingsStyleBefore")) sp.edit().putString("settingsStyleBefore", settingsStyle()).apply();' in prefs
       and 'if (sb != null) sp.edit().putString("settingsStyle", sb).remove("settingsStyleBefore").apply();' in prefs
-      and '"رجّع الشكل السابق", "أشكال جاهزة", "شكل شاشة الإعدادات", "تخصيص", "رجّع بطاقاتك", "شكل كنبة",' in hub and all(f'{{"{r}", LOOK}}' in hub for r in ("أشكال جاهزة", "شكل شاشة الإعدادات", "تخصيص", "رجّع بطاقاتك", "شكل كنبة")) and '{LOOK, H + "أشكال جاهزة والتخطيط", "المظهر على الرئيسية", "رجّع الشكل السابق", "أشكال جاهزة",' in hub)
+      and '"رجّع الشكل السابق", "أشكال جاهزة", "تخصيص", "رجّع بطاقاتك", "شكل كنبة",' in hub and 'H + "خيارات أخرى للشكل", "شكل شاشة الإعدادات",' in hub and all(f'{{"{r}", LOOK}}' in hub for r in ("أشكال جاهزة", "شكل شاشة الإعدادات", "تخصيص", "رجّع بطاقاتك", "شكل كنبة")) and '{LOOK, H + "أشكال جاهزة والتخطيط", "المظهر على الرئيسية", "رجّع الشكل السابق", "أشكال جاهزة",' in hub)
 pics = [ROOT / f"android/app/src/main/assets/presets/{k}.jpg" for k in keys]
 check("each look's picture is in the app, small (under 40 KB)", all(p.is_file() and p.stat().st_size < 40 * 1024 for p in pics), [p.name for p in pics if not p.is_file()])
 check("saver.sh preset tv|couch|tvos|clean|family|sport|calm; show says «preset: family» or «family (custom)»; given before any one row",

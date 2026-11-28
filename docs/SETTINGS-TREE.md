@@ -24,6 +24,10 @@ the phone page's key, «مركز التحكم» the control centre's row that op
 —— المؤذن [كل التلفزيون]
    مثال للوكيل: optimize/music.sh adhan add FILE  (or `--fajr FILE`)
    مثال للوكيل: optimize/music.sh adhan
+—— أذاني من ملف [كل التلفزيون]
+   إجراء أو شاشة من التلفزيون (ما فيه قيمة يضبطها أمر)
+—— الأدعية والتذكيرات [كل التلفزيون]
+   إجراء أو شاشة من التلفزيون (ما فيه قيمة يضبطها أمر)
 —— الأذان لكل صلاة [كل التلفزيون]
    مثال للوكيل: optimize/music.sh adhan state <fajr|dhuhr|asr|maghrib|isha> <both|sound|screen|none>
    مثال للوكيل: optimize/music.sh adhan screen <prayer> on|off
@@ -35,8 +39,6 @@ the phone page's key, «مركز التحكم» the control centre's row that op
      القيم المقبولة: on|off
    مثال للوكيل: optimize/saver.sh adhanlead 15  (or `10`, the default)
      القيم المقبولة: 10|15
-—— الأدعية والتذكيرات [كل التلفزيون]
-   إجراء أو شاشة من التلفزيون (ما فيه قيمة يضبطها أمر)
 —— صوتياتي [كل التلفزيون]
    مثال للوكيل: optimize/music.sh adhan add FILE
 —— الشروق بعد الفجر [الرئيسية وشاشة التوقف]
@@ -131,9 +133,6 @@ the phone page's key, «مركز التحكم» the control centre's row that op
     الخيارات: شكلك المعتاد / كنبة / tvOS / صورة فقط / مواقيت يومي / مباريات اليوم / ليل هادئ
     مثال للوكيل: optimize/saver.sh preset family  (tv, couch, clean, family, sport, calm, or a mix: couch-prayers, clean-icons, sport-night, tv-glass)
       القيم المقبولة: tv|couch|tvos|clean|family|sport|calm|couch-prayers|clean-icons|sport-night|tv-glass
-——— شكل شاشة الإعدادات [كل التلفزيون]
-    مثال للوكيل: optimize/saver.sh settingsstyle couch  (or `buttons`, `tvos`)
-      القيم المقبولة: buttons|couch|tvos
 ——— تخصيص [الرئيسية وشاشة التوقف]
     مثال للوكيل: optimize/saver.sh preset tv
       القيم المقبولة: tv|couch|tvos|clean|family|sport|calm|couch-prayers|clean-icons|sport-night|tv-glass
@@ -156,18 +155,6 @@ the phone page's key, «مركز التحكم» the control centre's row that op
       القيم المقبولة: glass|graphite|navy|clean|sand
     مثال للوكيل: optimize/saver.sh appearance auto
       القيم المقبولة: dark|light|auto
-——— صفحات الأسهم والمباريات داكنة [الرئيسية]
-    مثال للوكيل: optimize/saver.sh pagesdark off
-      القيم المقبولة: on|off
-——— لوحة المظهر على الرئيسية [الرئيسية]
-    مثال للوكيل: optimize/saver.sh lookpanelrow on  (or `off`)
-      القيم المقبولة: on|off
-——— زر رجّع الشكل السابق [الرئيسية وشاشة التوقف]
-    مثال للوكيل: optimize/saver.sh lookundo on  (or `off`)
-      القيم المقبولة: on|off
-——— تبديل الشكل بلا وميض [الرئيسية]
-    مثال للوكيل: optimize/saver.sh smoothlook on  (or `off`)
-      القيم المقبولة: on|off
 —— البطاقات
 ——— شكل البطاقة [الرئيسية وشاشة التوقف]
     الخيارات: الحالية / داكنة / زجاجية / داكنة بإطار / زجاجية بإطار / مربعات / الشكل السابق
@@ -231,12 +218,30 @@ the phone page's key, «مركز التحكم» the control centre's row that op
 ——— توهّج لون التطبيق [الرئيسية]
     مثال للوكيل: optimize/saver.sh glow light  (`off` = the default, `light` = a third of the strength, `on` = full)
       القيم المقبولة: off|light|on
+—— خيارات أخرى للشكل
+——— شكل شاشة الإعدادات [كل التلفزيون]
+    مثال للوكيل: optimize/saver.sh settingsstyle couch  (or `buttons`, `tvos`)
+      القيم المقبولة: buttons|couch|tvos
+——— صفحات الأسهم والمباريات داكنة [الرئيسية]
+    مثال للوكيل: optimize/saver.sh pagesdark off
+      القيم المقبولة: on|off
+——— لوحة المظهر على الرئيسية [الرئيسية]
+    مثال للوكيل: optimize/saver.sh lookpanelrow on  (or `off`)
+      القيم المقبولة: on|off
+——— زر رجّع الشكل السابق [الرئيسية وشاشة التوقف]
+    مثال للوكيل: optimize/saver.sh lookundo on  (or `off`)
+      القيم المقبولة: on|off
+——— تبديل الشكل بلا وميض [الرئيسية]
+    مثال للوكيل: optimize/saver.sh smoothlook on  (or `off`)
+      القيم المقبولة: on|off
 — شاشة التوقف
 —— معاينة الشاشة [شاشة التوقف]
    مثال للوكيل: optimize/shot.sh screensaver
 —— بدء شاشة التوقف بعد [شاشة التوقف]
    مثال للوكيل: optimize/saver.sh idle <1, 2, 5, 10, 15, 30>  (minutes; the TV's own timer)
    صفحة الجوال: saver_idle
+—— إذن شاشة التوقف [شاشة التوقف]
+   مثال للوكيل: optimize/saver.sh overlay allow  (only on such a TV whose own screen hides «الظهور فوق التطبيقات»; `overlay` alone says the state)
 —— تصميم شاشة التوقف [شاشة التوقف]
    الخيارات: معلومات / نظيفة / ساعة كبيرة / لوحة / خط اليوم
    الأصل: معلومات
@@ -310,6 +315,8 @@ the phone page's key, «مركز التحكم» the control centre's row that op
     مثال للوكيل: optimize/saver.sh backexit hold
       القيم المقبولة: press|hold|three
 —— شريط التطبيقات
+——— التطبيقات المخفية [الرئيسية]
+    إجراء أو شاشة من التلفزيون (ما فيه قيمة يضبطها أمر)
 ——— تطبيقات في الشريط [الرئيسية]
     الخيارات: 5 / 6 / 7 / 8 / 9 / 10 / all
     الأصل: 5
@@ -318,7 +325,7 @@ the phone page's key, «مركز التحكم» the control centre's row that op
     صفحة الجوال: fav_bar
 ——— ترتيب التطبيقات المفضلة [الرئيسية]
     مثال للوكيل: optimize/dock.sh apps
-    مثال للوكيل: optimize/dock.sh set <pkg> …  (1–10, in their order: exactly those, never topped up to five; editing the row on the TV keeps its floor of five)
+    مثال للوكيل: optimize/dock.sh set <pkg> …
     مثال للوكيل: optimize/dock.sh show
     مثال للوكيل: optimize/dock.sh reset
 ——— تعديل المفضلة [الرئيسية]
@@ -326,8 +333,6 @@ the phone page's key, «مركز التحكم» the control centre's row that op
 ——— تطبيقات مقترحة [الرئيسية]
     من التلفزيون فقط (بلا أمر، عن قصد)
 ——— ترتيب كل التطبيقات [الرئيسية]
-    إجراء أو شاشة من التلفزيون (ما فيه قيمة يضبطها أمر)
-——— التطبيقات المخفية [الرئيسية]
     إجراء أو شاشة من التلفزيون (ما فيه قيمة يضبطها أمر)
 ——— أسماء المصادر [الرئيسية]
     إجراء أو شاشة من التلفزيون (ما فيه قيمة يضبطها أمر)
@@ -434,6 +439,8 @@ the phone page's key, «مركز التحكم» the control centre's row that op
     مثال للوكيل: optimize/saver.sh teams <id:Name> …
     مثال للوكيل: optimize/saver.sh teams none  (`teams ""` does the same)
     مثال للوكيل: optimize/saver.sh teams 136013:Al-Hilal
+——— حد الفرق [الرئيسية وشاشة التوقف]
+    مثال للوكيل: optimize/saver.sh teamcap 80  (`40` the default, `0` no limit; only when the person asked, after telling them it can slow the TV down; `saver.sh show` says `teamcap:`)
 ——— تطبيق المباريات [الرئيسية]
     مثال للوكيل: optimize/saver.sh matchapp auto  (the default: UrTV Player when it is installed and signed with its own key)
       القيم المقبولة: auto|none|<package>
@@ -540,6 +547,9 @@ the phone page's key, «مركز التحكم» the control centre's row that op
      القيم المقبولة: hindi|latin
 —— التاريخ بالأرقام [الرئيسية وشاشة التوقف]
    مثال للوكيل: optimize/saver.sh datenum on  (`off`, the default: in words)
+     القيم المقبولة: on|off
+—— التاريخ الهجري [الرئيسية وشاشة التوقف]
+   مثال للوكيل: optimize/saver.sh hijri off  (`on`, the default: the Hijri date shows as before)
      القيم المقبولة: on|off
 —— أسماء الأشهر الميلادية [الرئيسية وشاشة التوقف]
    مثال للوكيل: optimize/saver.sh months levant  (`default` = يناير، فبراير… as always)

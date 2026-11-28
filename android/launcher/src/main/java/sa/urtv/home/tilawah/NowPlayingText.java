@@ -46,6 +46,11 @@ final class NowPlayingText {
                 : sa.urtv.home.S.t("اختيار: إيقاف/تشغيل، يمين/يسار: السورة، مطولًا: فتح");
     }
 
+    /** 4.4 beta 4: the hint of a paused card, which can be closed (Back on it stops what it holds; it also hides by itself after NowCardRule.HIDE_PAUSED_MS) */
+    static String hintPaused() {
+        return sa.urtv.home.S.t("اختيار: تشغيل، رجوع: إغلاق، مطولًا: فتح");
+    }
+
     /** 0-9 as ٠-٩ */
     static String digits(String s) {
         return sa.urtv.home.DigitsText.convert(s, false);

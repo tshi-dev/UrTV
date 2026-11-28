@@ -43,7 +43,7 @@ check("Prefs never adds past the soft limit before «أضف», nor past the ceil
 ask = st.split("private void askFollow(", 1)[1].split("\n    }\n", 1)[0]
 check("the settings' warning: «أضف» remembers it and adds, «لا» does nothing; the ceiling says so in a dialog",
       "FollowLimit.warning(kind)" in ask and '.setPositiveButton("أضف", (d, w) -> { prefs.setFollowWarned(kind); go.run(); })' in ask and '.setNegativeButton("لا", null)' in ask
-      and "FollowLimit.full(kind)" in ask and "if (st == FollowLimit.ADD) { go.run(); return; }" in ask)
+      and "FollowLimit.full(kind, prefs.teamCap())" in ask and "if (st == FollowLimit.ADD) { go.run(); return; }" in ask)
 check("a club from the settings (a preset, a league's clubs, a search) goes through it; «إضافة فريق» is always there and says the ceiling",
       "askFollow(FollowLimit.TEAMS, () -> {" in st and 'b.setNeutralButton("إضافة فريق", (d, w) -> askFollow(FollowLimit.TEAMS, () -> pickTeam(0)));' in st)
 tick = st.split("private void tickLeague(", 1)[1].split("\n    }\n", 1)[0]
@@ -62,6 +62,7 @@ check("the launcher's bridge: followCheck and followWarned; an older screensaver
 page = read(ROOT / "src/template.html")
 check("the page: «تابع» on a club, a game's club and a league go through the gate", page.count("mpGate('teams'") == 2 and page.count("mpGate('leagues'") == 1
       and "if(!st) st = (kind === 'leagues' ? mpLeagueIds().length >= 8 : CONFIG.teamIds.length >= 20) ? 'old' : 'add';" in page)
-check("agents keep their own limit, the ceiling (an agent's list is taken as given)", 'if (teams.size() > Prefs.MAX_TEAMS) return "error: at most " + Prefs.MAX_TEAMS + " teams";' in read(APP / "SaverReceiver.java")
-      and "At most 40 teams can be followed." in read(ROOT / "optimize/saver.sh"))
+check("agents keep their own limit, the ceiling (an agent's list is taken as given; 4.4 R-472: the ceiling the person chose, 40 by default)",
+      'if (teams.size() > ceiling) return "error: at most " + ceiling + " teams' in read(APP / "SaverReceiver.java")
+      and 'echo "At most $cap teams can be followed' in read(ROOT / "optimize/saver.sh") and "cap=40" in read(ROOT / "optimize/saver.sh"))
 sys.exit(1 if failed else 0)

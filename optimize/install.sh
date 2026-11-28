@@ -23,21 +23,25 @@ case "$what" in saver|launcher|extras|addon|all|prefetch) ;; *) echo "usage: opt
 . optimize/home-journal.sh   # the journal of the home switch (what the switch changed, to undo it after a restart)
 failed=0   # an extra that did not install: the rest are still tried, then run.sh must not count the step as done
 
-# curl with up to 3 tries. A Windows curl (Schannel) that can't reach the certificate revocation server fails every
+# curl with up to 3 tries (a 5xx answer included, with a longer wait each time). A Windows curl (Schannel) that can't reach the certificate revocation server fails every
 # download; on that error, and only if this curl has the flag, the next try skips just that check.
 curl_get() {
-  local i rc=0 errf extra=()
+  local i rc=0 errf wait extra=()
   errf=$(mktemp)
   for i in 1 2 3; do
     rc=0; curl "${extra[@]+"${extra[@]}"}" "$@" 2> "$errf" || rc=$?
     [ "$rc" = 0 ] && { rm -f "$errf"; return 0; }
-    [ "$rc" = 22 ] && break   # the server answered with an error (no such file): another try gives the same
+    # the server answered with an error: a 4xx (no such file) gives the same again; a 5xx (GitHub busy, a release being
+    # published) is tried again after the wait below, up to 3 tries in all (4.4: one 503 stopped the setup)
+    [ "$rc" = 22 ] && ! grep -qE 'error: 5[0-9][0-9]' "$errf" && break
+    wait=$((i * 2)); [ "$rc" != 22 ] || wait=$((i * 5))   # a busy server gets longer: 5 s, then 10 s
+    [ "$rc" != 22 ] || [ "$i" = 3 ] || echo "The download server answered $(grep -oE 'error: 5[0-9][0-9]' "$errf" | sed -n 1p | cut -c8-) (busy): trying again in $wait s." >&2
     if [ "${#extra[@]}" = 0 ] && grep -qiE 'revocation|CRYPT_E_' "$errf" \
-       && curl -V 2> /dev/null | grep -qi schannel && curl --help all 2> /dev/null | grep -q ssl-revoke-best-effort; then
+       && curl -V 2> /dev/null | grep -i schannel > /dev/null && curl --help all 2> /dev/null | grep ssl-revoke-best-effort > /dev/null; then
       echo "Windows could not check the certificate revocation list: trying again without that check." >&2
       extra=(--ssl-revoke-best-effort)
     fi
-    [ "$i" = 3 ] || sleep $((i * 2))
+    [ "$i" = 3 ] || sleep "$wait"
   done
   cat "$errf" >&2; rm -f "$errf"
   return "$rc"
@@ -96,11 +100,11 @@ pm_install() {   # $1 file name in /data/local/tmp, $2 package: pm's answer. A b
   if [ -z "$out" ]; then printf '%s\n' NO_ANSWER; return 0; fi
   if grep -q Success <<< "$out"; then
     sleep 3
-    if ! "$PY" -I optimize/tv.py "pm list packages $2" | tr -d '\r' | grep -qx "package:$2"; then
+    if ! "$PY" -I optimize/tv.py "pm list packages $2" | tr -d '\r' | grep -x "package:$2" > /dev/null; then
       echo "$2 was removed right after the install (a service of this TV does that to apps installed over ADB): installing it again as if from the Play Store." >&2
       out=$(TV_JOB_LIMIT_S=1200 "$PY" -I optimize/tv.py --bg install "pm install -i com.android.vending -r /data/local/tmp/$1") || true
       sleep 3
-      if grep -q Success <<< "$out" && ! "$PY" -I optimize/tv.py "pm list packages $2" | tr -d '\r' | grep -qx "package:$2"; then
+      if grep -q Success <<< "$out" && ! "$PY" -I optimize/tv.py "pm list packages $2" | tr -d '\r' | grep -x "package:$2" > /dev/null; then
         out="Failure [$2 is removed by this TV right after every install]"
       fi
     fi
@@ -113,13 +117,20 @@ pm_install() {   # $1 file name in /data/local/tmp, $2 package: pm's answer. A b
 # there 3 s later), a newer build already on the TV, or another signature. Anything else (an Android older than 7, a dropped connection, Play Protect,
 # no answer) prints nothing and the caller goes on the way it always did: upload the file, install it (an install -r of the same file twice is harmless).
 # URTV_STREAM=0 turns it off.
-stream_install() {   # $1 file name in optimize/, $2 package: pm's answer, or nothing (then the file is uploaded as before)
-  local out
+stream_install() {   # $1 file name in optimize/, $2 package, $3 tries (1; the extras 2): pm's answer, or nothing (then the file is uploaded as before)
+  local out try
   [ "${URTV_STREAM:-1}" = 1 ] || return 0
-  out=$("$PY" -I optimize/tv.py --install-stream "optimize/$1" -r 2> /dev/null) || true
+  for try in $(seq 1 "${3:-1}"); do
+    out=$("$PY" -I optimize/tv.py --install-stream "optimize/$1" -r 2> /dev/null) || true
+    # 4.4: a stream that gave no answer from pm (a timeout, a dropped connection; not an old Android: exit 3 with no stream at all) is tried once more
+    grep -qE 'Success|Failure' <<< "$out" && break
+    # an extra (more than one try) is streamed only when it is not on the TV: there now means the stream installed it
+    [ "${3:-1}" -gt 1 ] && "$PY" -I optimize/tv.py "pm list packages $2" 2> /dev/null | tr -d '\r' | grep -x "package:$2" > /dev/null && { out=Success; break; }
+    [ "$try" = "${3:-1}" ] || echo "   (the streamed install of $1 gave no answer: streaming it once more)" >&2
+  done
   if grep -q Success <<< "$out"; then
     sleep 3
-    "$PY" -I optimize/tv.py "pm list packages $2" 2> /dev/null | tr -d '\r' | grep -qx "package:$2" || return 0   # removed again: the file way has the Play Store retry
+    "$PY" -I optimize/tv.py "pm list packages $2" 2> /dev/null | tr -d '\r' | grep -x "package:$2" > /dev/null || return 0   # removed again: the file way has the Play Store retry
     echo "Installed $1 by streaming it (no copy on the TV)." >&2
     printf '%s\n' "$out"
   elif grep -qE 'INSTALL_FAILED_VERSION_DOWNGRADE|UPDATE_INCOMPATIBLE|signatures do not match' <<< "$out"; then
@@ -165,12 +176,18 @@ pushed_whole() {   # $1 file name: is the file on the TV (in /data/local/tmp) as
   [ "$got" = "$want" ]
 }
 
+# 4.4: what the TV answered to each install, whole, in the run folder (the screen shows it only on a failure): share.sh and the agent read it
+install_log() {   # $1 apk name, $2 the install's answer
+  mkdir -p "${URTV_RUN_DIR:-optimize/run}"
+  printf '%s %s: %s\n' "$(date '+%Y-%m-%d %H:%M:%S')" "$1" "$(tr -d '\r' <<< "$2" | tr '\n' ' ' | sed 's/ *$//')" >> "${URTV_RUN_DIR:-optimize/run}/install.log" 2> /dev/null || true
+}
+
 push_install() {   # $1 apk name, $2 package
   if [ "$2" = sa.urtv.home ]; then   # the home app targets an older SDK than Play Protect likes (seen on Android 12-14)
     echo "للشخص: بعد لحظات ممكن تطلع على التلفزيون رسالة من Play Protect؛ إذا طلعت اضغط «تثبيت على أي حال» (Install anyway)."
   fi
   # TCL: reinstalling the home app can switch the TV to an input; its TV app is stopped first (idea from Gathin23/cleanyourtv 11993bb0)
-  if [ "$2" = sa.urtv.home ] && "$PY" -I optimize/tv.py "pm list packages com.tcl.tv" 2> /dev/null | tr -d '\r' | grep -qx "package:com.tcl.tv"; then
+  if [ "$2" = sa.urtv.home ] && "$PY" -I optimize/tv.py "pm list packages com.tcl.tv" 2> /dev/null | tr -d '\r' | grep -x "package:com.tcl.tv" > /dev/null; then
     "$PY" -I optimize/tv.py "am force-stop com.tcl.tv" > /dev/null 2>&1 || true
   fi
   if ! fetch_apk "$1"; then
@@ -199,6 +216,7 @@ push_install() {   # $1 apk name, $2 package
     [ -z "$streamed" ] || out=$streamed
   fi
   fi   # (the streamed install answered: no file was uploaded)
+  install_log "$1" "$out"
   if grep -q INSTALL_FAILED_VERIFICATION_FAILURE <<< "$out"; then
     [ -n "$("$PY" -I optimize/tv.py "ls /data/local/tmp/$1 2> /dev/null" 2> /dev/null | tr -d '\r')" ] || "$PY" -I optimize/tv.py --push-b64 "optimize/$1" "/data/local/tmp/$1"   # a streamed refusal: the file for the retries
     verify_retry "$1" "$2" || exit 1
@@ -223,6 +241,9 @@ push_install() {   # $1 apk name, $2 package
       exit 1
     else
       echo "!! Install of $1 failed: $out"
+      if grep -q INSTALL_FAILED_OLDER_SDK <<< "$out"; then
+        echo "   This TV's Android is older than the app needs (Android 8). optimize/precheck.sh says so before anything is changed."
+      fi
       if grep -q "Unable to open file" <<< "$out"; then
         echo "   The TV could not read the file even after it was sent again: its storage may be full or this TV may block /data/local/tmp. Free some space on the TV (Settings, Storage), then run the same command again."
       fi
@@ -268,7 +289,7 @@ from_github() {   # $1 owner/repo, $2 package, $3 asset pattern ({abi} = the TV'
   local abis url name out code body size attempt prop
   # an extra that an earlier try already installed is not downloaded or uploaded again: a flaky Wi-Fi that dropped on the second
   # one resumes there, not from the first (an upload cut off half way is resumed by tv.py itself)
-  if "$PY" -I optimize/tv.py "pm list packages $2" | tr -d '\r' | grep -qx "package:$2"; then
+  if "$PY" -I optimize/tv.py "pm list packages $2" | tr -d '\r' | grep -x "package:$2" > /dev/null; then
     echo "$2 is already on the TV: left as it is (it updates itself)."; return 0
   fi
   body=$(curl_get -sSL -w '\n%{http_code}' "https://api.github.com/repos/$1/releases/latest") || body=$'\n000'
@@ -309,20 +330,23 @@ from_github() {   # $1 owner/repo, $2 package, $3 asset pattern ({abi} = the TV'
   # An optional app never holds the setup up: the upload and the install are tried twice (an upload resumes where it stopped),
   # and a TV that did not answer both times means this app is skipped with one line and the setup goes on.
   local try t0; t0=$(date +%s)
-  out=$(stream_install "$name" "$2")
+  # a big APK (SmartTube) on a weak TV: the stream may stay silent 25 minutes while the TV verifies it, and is tried twice
+  out=$(TV_STREAM_READ_S="${TV_STREAM_READ_S:-1500}" stream_install "$name" "$2" 2)
   [ -z "$out" ] || try=streamed
   [ "${try:-}" = streamed ] || for try in 1 2; do
     if "$PY" -I optimize/tv.py --push-b64 "optimize/$name" "/data/local/tmp/$name"; then out=$(pm_install "$name" "$2"); else out=NO_ANSWER; fi
     [ "$out" = NO_ANSWER ] || break
     # the install may even have finished while the TV was silent
-    ! "$PY" -I optimize/tv.py "pm list packages $2" 2> /dev/null | tr -d '\r' | grep -qx "package:$2" || break
+    ! "$PY" -I optimize/tv.py "pm list packages $2" 2> /dev/null | tr -d '\r' | grep -x "package:$2" > /dev/null || break
     [ "$try" = 2 ] || sleep 5
   done
+  install_log "$name" "$out"
   if grep -q INSTALL_FAILED_VERIFICATION_FAILURE <<< "$out"; then   # 4.4 (cause 4): TV Bro refused by Play Protect: the same retry and hint as our apps
     verify_retry "$name" "$2" || { failed=1; return 0; }
     restore_verifier
   fi
-  if [ "$out" = NO_ANSWER ] && ! "$PY" -I optimize/tv.py "pm list packages $2" 2> /dev/null | tr -d '\r' | grep -qx "package:$2"; then
+  if [ "$out" = NO_ANSWER ] && ! "$PY" -I optimize/tv.py "pm list packages $2" 2> /dev/null | tr -d '\r' | grep -x "package:$2" > /dev/null; then
+    echo "   ${1##*/} ($2): not installed"
     echo "!! skipped after 2 timeouts: ${1##*/}; to add it later: optimize/install.sh extras"
     return 0   # the downloaded file stays, so the next try does not fetch it again
   fi
@@ -333,7 +357,7 @@ from_github() {   # $1 owner/repo, $2 package, $3 asset pattern ({abi} = the TV'
   elif grep -q Success <<< "$out"; then echo "Installed $name"
   elif grep -qE 'UPDATE_INCOMPATIBLE|signatures do not match' <<< "$out"; then
     echo "$2 is already installed from somewhere else: left as it is (with its settings)."   # never removed
-  else echo "!! Install of $name failed: $out"; failed=1; fi
+  else echo "   ${1##*/} ($2): not installed"; echo "!! Install of $name failed: $out"; failed=1; fi
 }
 
 # A home switch that a restart cut off (journal says «switching», Home is not ours, no marker) is undone first.
@@ -526,7 +550,7 @@ if [ "$what" = launcher ] || [ "$what" = all ]; then
   appop_file="${URTV_RUN_DIR:-optimize/run}/install-appop.txt"   # APPOP-BEGIN
   if [ ! -s "$appop_file" ]; then
     appop_now=$("$PY" -I optimize/tv.py "appops get sa.urtv.home REQUEST_INSTALL_PACKAGES" 2>/dev/null | tr -d '\r' || true)
-    appop_mode=$(sed -nE 's/^REQUEST_INSTALL_PACKAGES: *(allow|ignore|deny|default|foreground).*/\1/p' <<< "$appop_now" | head -n 1)
+    appop_mode=$(sed -nE 's/^REQUEST_INSTALL_PACKAGES: *(allow|ignore|deny|default|foreground).*/\1/p' <<< "$appop_now" | sed -n 1p)
     if [ -z "$appop_mode" ] && grep -q "No operations" <<< "$appop_now"; then appop_mode=default; fi   # never set: Android's own default
     if [ -n "$appop_mode" ]; then
       mkdir -p "$(dirname "$appop_file")"
@@ -617,7 +641,7 @@ if [ "$what" = launcher ] || [ "$what" = all ]; then
     local holders res top
     holders=$("$PY" -I optimize/tv.py "cmd role get-role-holders --user 0 android.app.role.HOME 2> /dev/null" 2> /dev/null | tr -d '\r' | sed -n 1p) || holders=""
     res=$("$PY" -I optimize/tv.py "cmd package resolve-activity --brief -c android.intent.category.HOME -a android.intent.action.MAIN" 2> /dev/null | tr -d '\r' | tail -n 1) || res=""
-    top=$("$PY" -I optimize/tv.py "dumpsys activity activities | grep -E 'mResumedActivity|topResumedActivity'" 2> /dev/null | tr -d '\r' | head -n 1 | sed 's/^ *//') || top=""
+    top=$("$PY" -I optimize/tv.py "dumpsys activity activities | grep -E 'mResumedActivity|topResumedActivity'" 2> /dev/null | tr -d '\r' | sed -n 1p | sed 's/^ *//') || top=""
     DIAG="role holder: ${holders:-none}; Home resolves to: ${res:-unknown}; on screen after Home: ${top:-unknown}"
   }
   # an on-TV dialog (a Home chooser, a role request, a permission) is what is in front
@@ -659,7 +683,10 @@ if [ "$what" = launcher ] || [ "$what" = all ]; then
           *) WIZARD_KEPT=yes; echo "The setup wizard answers Home, but the TV did not say who owns its saved Wi-Fi: the wizard is left on, so the network is not lost." ;;   # (if Home then does not open ours, this TV keeps its own home: one plain result, rc 6)
         esac
       fi
-      # 2. Arm the safety switch on the TV: it restores the stock home in 300 s unless we confirm (slow ADB needs time).
+      # 2. Arm the safety switch on the TV: it restores the stock home in 300 s unless we confirm (slow ADB needs time). A TV where the switch already fired
+      #    first (the line «ADB was too slow», which leaves optimize/run/safety-slow) gets 900 s on the next try: the same command again fits it.
+      SAFETY_S=300
+      [ -f "${URTV_RUN_DIR:-optimize/run}/safety-slow" ] && SAFETY_S=900
       #    It carries a nonce (a marker of an older switch cannot disarm this one), and it must show it is alive before
       #    anything is changed. The journal records what the switch changes, to undo it if the TV restarts in the middle.
       local old_nonce role wiz stk
@@ -689,7 +716,7 @@ if [ "$what" = launcher ] || [ "$what" = all ]; then
         "${old_nonce:+touch /data/local/tmp/home_ok.$old_nonce}" \
         "rm -f /data/local/tmp/home_ok /data/local/tmp/home_ok.$NONCE" \
         "for f in /data/local/tmp/home_ok.* /data/local/tmp/home_pid.* /data/local/tmp/home_hb.*; do case \$f in *.$NONCE|*.${old_nonce:-none}|*'*') ;; *) rm -f \$f ;; esac; done" \
-        "if command -v setsid > /dev/null 2>&1; then setsid sh /data/local/tmp/deadman.sh $STOCK 300 $NONCE < /dev/null > /dev/null 2>&1 & else nohup sh /data/local/tmp/deadman.sh $STOCK 300 $NONCE < /dev/null > /dev/null 2>&1 & fi" \
+        "if command -v setsid > /dev/null 2>&1; then setsid sh /data/local/tmp/deadman.sh $STOCK $SAFETY_S $NONCE < /dev/null > /dev/null 2>&1 & else nohup sh /data/local/tmp/deadman.sh $STOCK $SAFETY_S $NONCE < /dev/null > /dev/null 2>&1 & fi" \
         | grep . | "$PY" -I optimize/tv.py --batch || return 1
       # alive = its pid answers and its heartbeat is under 25 s old (it writes one every 10 s)
       alive=no
@@ -743,7 +770,7 @@ if [ "$what" = launcher ] || [ "$what" = all ]; then
           done
         fi
         if [ "$front" != yes ]; then
-          DIAG="am start: $(tr -d '\r' <<< "$res" | grep -iE 'Status|Error' | head -n 2 | tr '\n' ' ')"
+          DIAG="am start: $(tr -d '\r' <<< "$res" | grep -iE 'Status|Error' | sed -n 1,2p | tr '\n' ' ')"
           safe_putback || return 1
           return 12
         fi
@@ -777,7 +804,7 @@ if [ "$what" = launcher ] || [ "$what" = all ]; then
       printf '%s\n' "$stepout"
       # Nokia Streaming Box 8000 answers «This command is illegal» to pm disable-user for its own launcher: no switch there.
       # Put the stock home back as it was and stop the switch (4); nothing else of the setup depends on it.
-      if grep -A2 -F "\$ pm disable-user --user 0 ${STOCK%%/*}" <<< "$stepout" | grep -qi 'illegal'; then
+      if grep -A2 -F "\$ pm disable-user --user 0 ${STOCK%%/*}" <<< "$stepout" | grep -i 'illegal' > /dev/null; then
         printf '%s\n' "cmd role add-role-holder --user 0 android.app.role.HOME ${STOCK%%/*}" \
           "cmd package set-home-activity --user 0 $STOCK" "pm enable com.google.android.tungsten.setupwraith" \
           "touch /data/local/tmp/home_ok.$NONCE" "input keyevent KEYCODE_HOME" | "$PY" -I optimize/tv.py --batch > /dev/null \
@@ -870,7 +897,8 @@ if [ "$what" = launcher ] || [ "$what" = all ]; then
     fi
     st=$(jget state); who=${res%%/*}
     if [ -n "$spkg" ] && [ "$who" = "$spkg" ] && [ "$stk" = enabled ] && [ "$st" = restored ]; then
-      echo "!! The safety switch put the stock home back (ADB was too slow): Home answers with $spkg, it is enabled, and the journal says restored. Nothing is broken: run the same command again."
+      mkdir -p "${URTV_RUN_DIR:-optimize/run}"; : > "${URTV_RUN_DIR:-optimize/run}/safety-slow"
+      echo "!! The safety switch put the stock home back (ADB was too slow): Home answers with $spkg, it is enabled, and the journal says restored. Nothing is broken: run the same command again (it gives the switch 15 minutes this time)."
     elif [ "$who" = sa.urtv.home ]; then
       echo "!! The home switch did not finish its check (code $code), but Home answers with the new launcher now (the stock home is $stk, the journal says ${st:-nothing}). Run the same command again: it checks the switch and stops the safety switch."
     elif [ "$stk" = disabled ]; then
@@ -966,6 +994,17 @@ if [ "$what" = launcher ] || [ "$what" = all ]; then
     optimize/settle.sh mark 2> /dev/null || true
     rm -f "${URTV_RUN_DIR:-optimize/run}/home-skipped.txt"
     echo "Launcher is home. Press Home from inside an app to double-check."
+  fi
+  # 4.4: the report written before this run keeps what the LAST home switch said: its «Home switch: skipped» line is rewritten on each
+  # run, from home-skipped.txt (gone after a switch that worked), so a later run that made the switch does not leave «skipped» there
+  rep="${URTV_RUN_DIR:-optimize/run}/report.md"
+  if [ -f "$rep" ]; then
+    skip_line=$(cat "${URTV_RUN_DIR:-optimize/run}/home-skipped.txt" 2> /dev/null || true)
+    awk -v l="$skip_line" '
+      /^Home switch: skipped/ { if (!done && l != "") print l; done = 1; next }
+      { print }
+      /^Home: / && !done && l != "" { print l; done = 1 }
+      END { if (!done && l != "") print l }' "$rep" > "$rep.tmp" && mv "$rep.tmp" "$rep"
   fi
   echo "Undo everything: optimize/reset.sh"
 fi

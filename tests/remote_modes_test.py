@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """The one-remote modes (docs/GAMES-REMOTE.md): the rules on a plain JVM (tests/RemoteModesTest.java: «نادوا الجواب», «أقرب رقم» on paper, «واحد يكذب» by hands, «على الظهر»),
-then the Android side by its source: the setting «اللعب بالريموت بس» is OFF by default and only a chip of the seven phone games, nothing changes without it, no colour literal and no
+then the Android side by its source: «ريموت واحد» of the first row «كيف تلعبون؟» (the shared mode row; the old switch «اللعب بالريموت بس» is gone) is the one-remote path of the seven phone games, and the games play as before on «جوالات», no colour literal and no
 pill in the new screen, the encrypted banks are only read through GameBundles. Needs javac (exit 1 without, so CI notices)."""
 import re, shutil, subprocess, sys, tempfile
 from pathlib import Path
@@ -37,13 +37,15 @@ for n in ENGINES:
 base, ca, cl, li, fo, ch = src("GameActivity.java"), src("CallAloudActivity.java"), src("ClosestActivity.java"), src("LiarActivity.java"), src("ForeheadActivity.java"), src("CharadesActivity.java")
 manifest = (ROOT / "android/app/src/main/AndroidManifest.xml").read_text(encoding="utf-8")
 phone_games = {"EmojiActivity.java": "emoji", "LogicActivity.java": "logic", "QuranVerseActivity.java": "quran-verse", "MathActivity.java": "maths"}
-check("the setting «اللعب بالريموت بس» is one row (remoteChip) OFF by default, in the setup of the seven phone games and nowhere else",
-      'c.add("remote", S.t("اللعب بالريموت بس"), new String[]{S.tv(ON_OFF[0]), S.tv(ON_OFF[1])}, 0)' in base and "remoteChip(chips);" in cl and "remoteChip(chips);" in li and "remoteChip(chips);" in fo
-      and all("remoteChip(chips);" in src(f) for f in phone_games)
-      and sum(1 for f in APP.glob("*Activity.java") if "remoteChip(chips)" in f.read_text(encoding="utf-8")) == 7)
-check("OFF changes nothing: each activity leaves the phone road as it was unless the row is on (a redirect, or a branch on `remoteOn`)",
+party7 = {"ClosestActivity.java", "LiarActivity.java", "ForeheadActivity.java", "EmojiActivity.java", "LogicActivity.java", "QuranVerseActivity.java", "MathActivity.java"}
+check("«ريموت واحد» is the choice of the first row «كيف تلعبون؟» (modeChip, default «جوالات») of the seven phone games and nowhere else; the old switch and remoteChip are gone",
+      'c.add("phones", S.t("كيف تلعبون؟"), new String[]{S.t("ريموت واحد"), S.t("جوالات")}, def)' in base and "remoteChip" not in base and 'c.add("remote"' not in base
+      and all("modeChip(chips, 1);" in src(f) for f in party7) and "protected final boolean remoteOn(GameChips c) { return c.get(\"phones\") != null && c.picked(\"phones\") == 0; }" in base
+      and {f.name for f in APP.glob("*Activity.java") if "modeChip(chips, 1)" in f.read_text(encoding="utf-8")} == party7)
+check("«جوالات» changes nothing: each activity leaves the phone road as it was unless «ريموت واحد» is picked (a redirect, or a branch on `remoteOn`); the room's «نلعب بالريموت» takes the same road (remoteWay)",
       all(f'if (remoteOn(chips)) {{ startActivity(remoteIntent(CallAloudActivity.class, chips).putExtra("src", "{g}")); finish(); return; }}' in src(f) for f, g in phone_games.items())
-      and "if (remoteOn(chips)) {   // «اللعب بالريموت بس»: «على جبيني» is a mode of «بدون كلام»" in fo and "paper = remoteOn(chips);" in cl and "if (remoteOn(chips)) { startRemote(); return; }" in li)
+      and "if (remoteOn(chips)) {   // «ريموت واحد»: «على جبيني» is a mode of «بدون كلام»" in fo and "paper = remoteOn(chips);" in cl and "if (remoteOn(chips)) { startRemote(); return; }" in li
+      and all("protected Runnable remoteWay() { return () -> { screen = Screen.SETUP; redraw(); start(); }; }" in src(f) for f in party7))
 check("«نادوا الجواب»: one screen for the four games (emoji, logic, verses, sums), in the manifest, its ids apart from the phone games' (so the remembered chips never mix), and its words only from the games' own sources",
       'android:name=".CallAloudActivity"' in manifest and 'return src + "-remote";' in ca and "EmojiGame.parse(GameBundles.load(this, \"emoji\"))" in ca and "LogicItems.bank(GameBundles.load(this, \"logic\"))" in ca
       and 'getAssets().open("shared/verses.json")' in ca and "MathGame.generate(" in ca and "GamePrefs.remember(this, src, r)" in ca and "GamePrefs.recent(this, src)" in ca)

@@ -24,6 +24,7 @@ public final class SetupHook {
         try {
             clearOldFails(app);
             sa.urtv.home.LiteAutoStore.tellOnce(app);   // 4.4 beta 3: «الوضع الخفيف» came on by itself: said once
+            if (sa.urtv.home.RoleBootRule.PENDING.equals(trim(new FileStore(app).get(ROLE_NOTICE)))) sa.urtv.home.RoleNotice.waiting(app);   // R-401: the TV took Home back at a boot
             endNotSeen(app);   // 4.4 (R2)
             if (!SetupRecovery.pending(app)) { migrate(app); return; }
             SetupRecovery.rearmFromDisk(app);
@@ -264,6 +265,62 @@ public final class SetupHook {
             android.util.Log.i(TAG, "idle: adb did not answer");
             return "no_link";
         }
+    }
+
+    /** R-401: the boot's notice that the TV took Home back (RoleBootRule.PENDING, then TOLD; empty once the role is ours again) */
+    static final String ROLE_NOTICE = "home-role-notice.txt";
+
+    /**
+     * 4.4 (R-401): at BOOT_COMPLETED, who holds HOME is read again and logged (RoleBootRule.holderWord: never an app the person installed by name), and
+     * RoleBootRule decides: the role given back once over our kept adb link (no new key is ever offered: no approval wait), or the one notice for the
+     * home's next start. A role found ours again clears the notice. On its own thread; never breaks the boot.
+     */
+    public static void roleAtBoot(Context c) {
+        try {
+            final Context app = c.getApplicationContext();
+            final FileStore store = new FileStore(app);
+            boolean wanted = "1".equals(trim(store.get(SetupEngine.HOME_WANTED)));
+            String role = sa.urtv.home.Extras.homeRole(app);
+            String pkg = null, cls = null;
+            try {
+                android.content.pm.ResolveInfo ri = app.getPackageManager().resolveActivity(new android.content.Intent(android.content.Intent.ACTION_MAIN)
+                    .addCategory(android.content.Intent.CATEGORY_HOME), android.content.pm.PackageManager.MATCH_DEFAULT_ONLY);
+                if (ri != null && ri.activityInfo != null) { pkg = ri.activityInfo.packageName; cls = ri.activityInfo.name; }
+            } catch (RuntimeException ignored) { }
+            boolean ours = sa.urtv.home.ExtrasWords.ROLE_OURS.equals(role) || (sa.urtv.home.ExtrasWords.ROLE_UNKNOWN.equals(role) && app.getPackageName().equals(pkg));
+            android.util.Log.i(TAG, "home role at boot: holder " + sa.urtv.home.RoleBootRule.holderWord(pkg, cls, app.getPackageName()) + ", role " + role
+                + (wanted ? ", the person's home is ours" : ", the person's home is not ours"));
+            String notice = trim(store.get(ROLE_NOTICE));
+            if (ours) { if (!notice.isEmpty()) store.put(ROLE_NOTICE, ""); return; }
+            boolean busy = stockBackOffered(app) || SetupRecovery.pending(app) || SetupRunner.get().running();
+            int d = sa.urtv.home.RoleBootRule.decide(wanted, false, pkg, !trim(store.get(SetupEngine.HOME_REAPPLIED)).isEmpty(), notice, busy);
+            if (d == sa.urtv.home.RoleBootRule.NOTICE) {
+                store.put(ROLE_NOTICE, sa.urtv.home.RoleBootRule.PENDING);
+                android.util.Log.i(TAG, "home role at boot: not ours; the home says so once");
+                return;
+            }
+            if (d != sa.urtv.home.RoleBootRule.REASSERT) return;
+            reapplyTried = System.currentTimeMillis();   // the home's start does not try it again at once
+            new Thread(new Runnable() {
+                @Override public void run() {
+                    try (SetupSession s = SetupSession.openAny(app, 0, null, new SetupEngine.Out() { @Override public void line(String text) { } })) {
+                        boolean ok = s.engine.reapplyHomeRole();
+                        android.util.Log.i(TAG, "home role at boot: given back once: " + (ok ? "ours again" : "not ours"));
+                        if (!ok) store.put(ROLE_NOTICE, sa.urtv.home.RoleBootRule.PENDING);
+                    } catch (Exception e) {
+                        reapplyTried = 0;   // adb not up yet: the home's start tries again (reapplyIfLost)
+                        android.util.Log.i(TAG, "home role at boot: not ours; adb did not answer yet");
+                    }
+                }
+            }, "home-role-boot").start();
+        } catch (Exception ignored) {
+            // the boot must not be broken by this
+        }
+    }
+
+    /** R-401: the home showed the notice (RoleNotice.shown): said once */
+    public static void roleNoticeTold(Context c) {
+        try { new FileStore(c.getApplicationContext()).put(ROLE_NOTICE, sa.urtv.home.RoleBootRule.TOLD); } catch (Exception ignored) { }
     }
 
     /** 4.4 the Home doctor (DockReceiver HOME_WANTED, adb only): «on» / «off» set HOME_WANTED and tell the add-on; «status» reads it. Answers yes or no. */

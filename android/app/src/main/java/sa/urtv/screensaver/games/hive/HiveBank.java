@@ -18,10 +18,10 @@ public final class HiveBank {
     public static final int ITEMS_MAX = 5000, HINTS_MAX = 6;
 
     public static final class Item {
-        public final String id; public final char ar, en; public final int level; public final boolean kids;
+        public final String id, cat; public final char ar, en; public final int level; public final boolean kids;
         public final String[] q, a; public final String[][] w;
-        Item(String id, char ar, char en, int level, boolean kids, String[] q, String[] a, String[][] w) {
-            this.id = id; this.ar = ar; this.en = en; this.level = level; this.kids = kids; this.q = q; this.a = a; this.w = w;
+        Item(String id, char ar, char en, int level, boolean kids, String cat, String[] q, String[] a, String[][] w) {
+            this.id = id; this.ar = ar; this.en = en; this.level = level; this.kids = kids; this.cat = cat == null ? "" : cat; this.q = q; this.a = a; this.w = w;
         }
     }
 
@@ -36,13 +36,33 @@ public final class HiveBank {
     public String[] hints(char letter) { List<String> v = hints.get(letter); return v == null ? new String[0] : v.toArray(new String[0]); }
 
     /** one question; ar or en may be 0 (not played in that language), not both. false: not a question this bank can hold (a repeated id, a letter outside the alphabets) */
-    public boolean add(String id, char ar, char en, int level, boolean kids, String[] q, String[] a, String[][] w) {
+    public boolean add(String id, char ar, char en, int level, boolean kids, String[] q, String[] a, String[][] w) { return add(id, ar, en, level, kids, "", q, a, w); }
+    /** the same with the question's category (the choices of «خيارات» prefer answers of the same category) */
+    public boolean add(String id, char ar, char en, int level, boolean kids, String cat, String[] q, String[] a, String[][] w) {
         if (id == null || (ar == 0 && en == 0) || (ar != 0 && AR.indexOf(ar) < 0) || (en != 0 && EN.indexOf(en) < 0) || level < 1 || level > 3) return false;
         if (q == null || q.length != 2 || a == null || a.length != 2 || w == null || w.length != 3 || ids.size() >= ITEMS_MAX || !ids.add(id)) return false;
-        Item it = new Item(id, ar, en, level, kids, q, a, w);
+        Item it = new Item(id, ar, en, level, kids, cat, q, a, w);
         if (ar != 0) put(ar, it);
         if (en != 0) put(en, it);
         return true;
+    }
+
+    /** does `text` start with `letter` the way the letter index counts it (docs/GAMES-DATA.md): marks and tatweel dropped, أ إ آ ٱ as ا, ة as ه, ى as ي, a leading «ال» skipped; an English letter is the first letter, capital or not */
+    public static boolean starts(char letter, String text) {
+        if (text == null) return false;
+        if (letter >= 'A' && letter <= 'Z') {
+            for (int i = 0; i < text.length(); i++) { char c = text.charAt(i); if (Character.isLetter(c)) return Character.toUpperCase(c) == letter; }
+            return false;
+        }
+        StringBuilder b = new StringBuilder();
+        for (int i = 0; i < text.length(); i++) {
+            char c = text.charAt(i);
+            if ((c >= '\u064B' && c <= '\u0670') || c == '\u0640' || (c >= '\u06D6' && c <= '\u06ED') || c == '\u065F') continue;
+            b.append(c == '\u0623' || c == '\u0625' || c == '\u0622' || c == '\u0671' ? '\u0627' : c == '\u0629' ? '\u0647' : c == '\u0649' ? '\u064A' : c);
+        }
+        String n = b.toString().trim();
+        if (n.startsWith("\u0627\u0644") && n.length() > 3) n = n.substring(2);
+        return !n.isEmpty() && n.charAt(0) == letter;
     }
 
     /** one sample answer for a letter's category question; the first six of a letter are kept, the rest and the ones of no letter are dropped */

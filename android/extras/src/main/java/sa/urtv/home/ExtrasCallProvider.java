@@ -51,6 +51,8 @@ public class ExtrasCallProvider extends ContentProvider {
                 out.putBoolean(ExtrasWords.WANTED, ExtrasA11yService.wanted(getContext()));
                 if (ExtrasWords.HOME_KEY_ON.equals(arg) || ExtrasWords.HOME_KEY_OFF.equals(arg)) ExtrasA11yService.setHomeKey(getContext(), ExtrasWords.HOME_KEY_ON.equals(arg));   // 4.4 R3
                 out.putBoolean(ExtrasWords.HOME_KEY, ExtrasA11yService.homeKey(getContext()));
+                if (ExtrasWords.KEY_FILTER_ON.equals(arg) || ExtrasWords.KEY_FILTER_OFF.equals(arg)) ExtrasA11yService.setKeyFilter(getContext(), ExtrasWords.KEY_FILTER_ON.equals(arg));   // R-408
+                out.putBoolean(ExtrasWords.KEY_FILTER, ExtrasA11yService.keyFilter(getContext()));
                 break;
             // 4.4 beta 3, wireless debugging: the home's setup only (the signature permission); each blocks the home's background thread, never a UI thread
             case ExtrasWords.PAIR_ARM: sa.urtv.home.pair.PairHost.arm(); break;
