@@ -1,0 +1,1351 @@
+{
+ "4328": {
+  "name": "English Premier League",
+  "key": "paid",
+  "seasons": {
+   "2022-2023": {
+    "at": "2026-11-16T20:39:29Z",
+    "complete": true,
+    "current": false,
+    "expected": 380,
+    "expected_sure": true,
+    "finished": 380,
+    "games": 380,
+    "teams": 20,
+    "asked": "no (complete before)"
+   },
+   "2023-2024": {
+    "at": "2026-11-16T20:39:31Z",
+    "complete": true,
+    "current": false,
+    "expected": 380,
+    "expected_sure": true,
+    "finished": 380,
+    "games": 380,
+    "teams": 20,
+    "asked": "no (complete before)"
+   },
+   "2024-2025": {
+    "at": "2026-11-16T20:39:34Z",
+    "complete": true,
+    "current": false,
+    "expected": 380,
+    "expected_sure": true,
+    "finished": 380,
+    "games": 380,
+    "teams": 20,
+    "asked": "no (complete before)"
+   },
+   "2025-2026": {
+    "at": "2026-11-16T20:39:37Z",
+    "complete": true,
+    "current": false,
+    "expected": 380,
+    "expected_sure": true,
+    "finished": 380,
+    "games": 380,
+    "teams": 20,
+    "asked": "no (complete before)"
+   },
+   "2026-2027": {
+    "games": 380,
+    "finished": 111,
+    "expected": 380,
+    "expected_sure": true,
+    "teams": 20,
+    "how": {
+     "season": 380,
+     "rounds": 0
+    },
+    "current": true,
+    "complete": false,
+    "at": "2026-11-28T08:57:13Z"
+   }
+  }
+ },
+ "check": {
+  "history-4328": {},
+  "history-4331": {},
+  "history-4332": {},
+  "history-4334": {},
+  "history-4335": {},
+  "history-4337": {},
+  "history-4339": {},
+  "history-4344": {},
+  "history-4346": {},
+  "history-4480": {},
+  "history-4520": {},
+  "history-4663": {},
+  "history-4668": {
+   "4668 2026-2027": {
+    "page": "2026–27 Saudi Pro League",
+    "wiki_games": 102,
+    "clubs_unmatched": [],
+    "same": 100,
+    "differ": 1,
+    "not_in_wiki": 10,
+    "differences": [
+     "2026-10-24 Al-Riyadh 2-1 Al-Taawoun (wiki 2-0)"
+    ]
+   }
+  },
+  "history-4678": {},
+  "history-4719": {},
+  "history-4829": {},
+  "history-5056": {},
+  "history-5627": {},
+  "history-5649": {}
+ },
+ "requests": {
+  "history-4328": {
+   "thesportsdb": 2,
+   "wikidata and wikipedia": 0,
+   "rate limited (429)": 0,
+   "retried": 0,
+   "empty answers": 0,
+   "errors": {}
+  },
+  "history-4331": {
+   "thesportsdb": 2,
+   "wikidata and wikipedia": 0,
+   "rate limited (429)": 0,
+   "retried": 0,
+   "empty answers": 0,
+   "errors": {}
+  },
+  "history-4332": {
+   "thesportsdb": 2,
+   "wikidata and wikipedia": 0,
+   "rate limited (429)": 0,
+   "retried": 0,
+   "empty answers": 0,
+   "errors": {}
+  },
+  "history-4334": {
+   "thesportsdb": 2,
+   "wikidata and wikipedia": 0,
+   "rate limited (429)": 0,
+   "retried": 0,
+   "empty answers": 0,
+   "errors": {}
+  },
+  "history-4335": {
+   "thesportsdb": 2,
+   "wikidata and wikipedia": 0,
+   "rate limited (429)": 0,
+   "retried": 0,
+   "empty answers": 0,
+   "errors": {}
+  },
+  "history-4337": {
+   "thesportsdb": 2,
+   "wikidata and wikipedia": 0,
+   "rate limited (429)": 0,
+   "retried": 0,
+   "empty answers": 0,
+   "errors": {}
+  },
+  "history-4339": {
+   "thesportsdb": 2,
+   "wikidata and wikipedia": 0,
+   "rate limited (429)": 0,
+   "retried": 0,
+   "empty answers": 0,
+   "errors": {}
+  },
+  "history-4344": {
+   "thesportsdb": 2,
+   "wikidata and wikipedia": 0,
+   "rate limited (429)": 0,
+   "retried": 0,
+   "empty answers": 0,
+   "errors": {}
+  },
+  "history-4346": {
+   "thesportsdb": 2,
+   "wikidata and wikipedia": 0,
+   "rate limited (429)": 0,
+   "retried": 0,
+   "empty answers": 0,
+   "errors": {}
+  },
+  "history-4480": {
+   "thesportsdb": 2,
+   "wikidata and wikipedia": 0,
+   "rate limited (429)": 0,
+   "retried": 0,
+   "empty answers": 0,
+   "errors": {}
+  },
+  "history-4520": {
+   "thesportsdb": 2,
+   "wikidata and wikipedia": 0,
+   "rate limited (429)": 0,
+   "retried": 0,
+   "empty answers": 0,
+   "errors": {}
+  },
+  "history-4663": {
+   "thesportsdb": 2,
+   "wikidata and wikipedia": 0,
+   "rate limited (429)": 0,
+   "retried": 0,
+   "empty answers": 0,
+   "errors": {}
+  },
+  "history-4668": {
+   "thesportsdb": 2,
+   "wikidata and wikipedia": 0,
+   "rate limited (429)": 0,
+   "retried": 0,
+   "empty answers": 0,
+   "errors": {}
+  },
+  "history-4678": {
+   "thesportsdb": 2,
+   "wikidata and wikipedia": 0,
+   "rate limited (429)": 0,
+   "retried": 0,
+   "empty answers": 0,
+   "errors": {}
+  },
+  "history-4719": {
+   "thesportsdb": 2,
+   "wikidata and wikipedia": 0,
+   "rate limited (429)": 0,
+   "retried": 0,
+   "empty answers": 0,
+   "errors": {}
+  },
+  "history-4829": {
+   "thesportsdb": 2,
+   "wikidata and wikipedia": 0,
+   "rate limited (429)": 0,
+   "retried": 0,
+   "empty answers": 0,
+   "errors": {}
+  },
+  "history-5056": {
+   "thesportsdb": 2,
+   "wikidata and wikipedia": 0,
+   "rate limited (429)": 0,
+   "retried": 0,
+   "empty answers": 0,
+   "errors": {}
+  },
+  "history-5627": {
+   "thesportsdb": 2,
+   "wikidata and wikipedia": 0,
+   "rate limited (429)": 0,
+   "retried": 0,
+   "empty answers": 0,
+   "errors": {}
+  },
+  "history-5649": {
+   "thesportsdb": 2,
+   "wikidata and wikipedia": 0,
+   "rate limited (429)": 0,
+   "retried": 0,
+   "empty answers": 0,
+   "errors": {}
+  }
+ },
+ "4331": {
+  "name": "German Bundesliga",
+  "key": "paid",
+  "seasons": {
+   "2022-2023": {
+    "at": "2026-11-16T20:40:00Z",
+    "complete": true,
+    "current": false,
+    "expected": 306,
+    "expected_sure": true,
+    "finished": 308,
+    "games": 308,
+    "teams": 19,
+    "asked": "no (complete before)"
+   },
+   "2023-2024": {
+    "at": "2026-11-16T20:40:02Z",
+    "complete": true,
+    "current": false,
+    "expected": 306,
+    "expected_sure": true,
+    "finished": 308,
+    "games": 308,
+    "teams": 19,
+    "asked": "no (complete before)"
+   },
+   "2024-2025": {
+    "at": "2026-11-16T20:40:05Z",
+    "complete": true,
+    "current": false,
+    "expected": 306,
+    "expected_sure": true,
+    "finished": 308,
+    "games": 308,
+    "teams": 19,
+    "asked": "no (complete before)"
+   },
+   "2025-2026": {
+    "at": "2026-11-16T20:40:08Z",
+    "complete": true,
+    "current": false,
+    "expected": 306,
+    "expected_sure": true,
+    "finished": 308,
+    "games": 308,
+    "teams": 19,
+    "asked": "no (complete before)"
+   },
+   "2026-2027": {
+    "games": 306,
+    "finished": 91,
+    "expected": 306,
+    "expected_sure": true,
+    "teams": 18,
+    "how": {
+     "season": 306,
+     "rounds": 0
+    },
+    "current": true,
+    "complete": false,
+    "at": "2026-11-28T08:57:32Z"
+   }
+  }
+ },
+ "4332": {
+  "name": "Italian Serie A",
+  "key": "paid",
+  "seasons": {
+   "2022-2023": {
+    "at": "2026-11-16T20:39:48Z",
+    "complete": true,
+    "current": false,
+    "expected": 380,
+    "expected_sure": true,
+    "finished": 381,
+    "games": 381,
+    "teams": 20,
+    "asked": "no (complete before)"
+   },
+   "2023-2024": {
+    "at": "2026-11-16T20:39:50Z",
+    "complete": true,
+    "current": false,
+    "expected": 380,
+    "expected_sure": true,
+    "finished": 380,
+    "games": 380,
+    "teams": 20,
+    "asked": "no (complete before)"
+   },
+   "2024-2025": {
+    "at": "2026-11-16T20:39:53Z",
+    "complete": true,
+    "current": false,
+    "expected": 380,
+    "expected_sure": true,
+    "finished": 380,
+    "games": 380,
+    "teams": 20,
+    "asked": "no (complete before)"
+   },
+   "2025-2026": {
+    "at": "2026-11-16T20:39:56Z",
+    "complete": true,
+    "current": false,
+    "expected": 380,
+    "expected_sure": true,
+    "finished": 380,
+    "games": 380,
+    "teams": 20,
+    "asked": "no (complete before)"
+   },
+   "2026-2027": {
+    "games": 380,
+    "finished": 121,
+    "expected": 380,
+    "expected_sure": true,
+    "teams": 20,
+    "how": {
+     "season": 380,
+     "rounds": 0
+    },
+    "current": true,
+    "complete": false,
+    "at": "2026-11-28T08:57:32Z"
+   }
+  }
+ },
+ "4334": {
+  "name": "French Ligue 1",
+  "key": "paid",
+  "seasons": {
+   "2022-2023": {
+    "at": "2026-11-16T20:40:03Z",
+    "complete": true,
+    "current": false,
+    "expected": 380,
+    "expected_sure": true,
+    "finished": 380,
+    "games": 380,
+    "teams": 20,
+    "asked": "no (complete before)"
+   },
+   "2023-2024": {
+    "at": "2026-11-16T20:40:06Z",
+    "complete": true,
+    "current": false,
+    "expected": 306,
+    "expected_sure": true,
+    "finished": 308,
+    "games": 308,
+    "teams": 19,
+    "asked": "no (complete before)"
+   },
+   "2024-2025": {
+    "at": "2026-11-16T20:40:09Z",
+    "complete": true,
+    "current": false,
+    "expected": 306,
+    "expected_sure": true,
+    "finished": 308,
+    "games": 308,
+    "teams": 19,
+    "asked": "no (complete before)"
+   },
+   "2025-2026": {
+    "at": "2026-11-16T20:40:11Z",
+    "complete": true,
+    "current": false,
+    "expected": 306,
+    "expected_sure": true,
+    "finished": 309,
+    "games": 310,
+    "teams": 21,
+    "asked": "no (complete before)"
+   },
+   "2026-2027": {
+    "games": 306,
+    "finished": 100,
+    "expected": 306,
+    "expected_sure": true,
+    "teams": 18,
+    "how": {
+     "season": 306,
+     "rounds": 0
+    },
+    "current": true,
+    "complete": false,
+    "at": "2026-11-28T08:57:36Z"
+   }
+  }
+ },
+ "4335": {
+  "name": "Spanish La Liga",
+  "key": "paid",
+  "seasons": {
+   "2022-2023": {
+    "at": "2026-11-16T20:39:35Z",
+    "complete": true,
+    "current": false,
+    "expected": 380,
+    "expected_sure": true,
+    "finished": 380,
+    "games": 380,
+    "teams": 20,
+    "asked": "no (complete before)"
+   },
+   "2023-2024": {
+    "at": "2026-11-16T20:39:37Z",
+    "complete": true,
+    "current": false,
+    "expected": 380,
+    "expected_sure": true,
+    "finished": 380,
+    "games": 380,
+    "teams": 20,
+    "asked": "no (complete before)"
+   },
+   "2024-2025": {
+    "at": "2026-11-16T20:39:40Z",
+    "complete": true,
+    "current": false,
+    "expected": 380,
+    "expected_sure": true,
+    "finished": 380,
+    "games": 380,
+    "teams": 20,
+    "asked": "no (complete before)"
+   },
+   "2025-2026": {
+    "at": "2026-11-16T20:39:43Z",
+    "complete": true,
+    "current": false,
+    "expected": 380,
+    "expected_sure": true,
+    "finished": 380,
+    "games": 380,
+    "teams": 20,
+    "asked": "no (complete before)"
+   },
+   "2026-2027": {
+    "games": 380,
+    "finished": 130,
+    "expected": 380,
+    "expected_sure": true,
+    "teams": 20,
+    "how": {
+     "season": 380,
+     "rounds": 0
+    },
+    "current": true,
+    "complete": false,
+    "at": "2026-11-28T08:57:11Z"
+   }
+  }
+ },
+ "4337": {
+  "name": "Dutch Eredivisie",
+  "key": "paid",
+  "seasons": {
+   "2022-2023": {
+    "at": "2026-11-16T20:40:25Z",
+    "complete": true,
+    "current": false,
+    "expected": 306,
+    "expected_sure": true,
+    "finished": 324,
+    "games": 324,
+    "teams": 24,
+    "asked": "no (complete before)"
+   },
+   "2023-2024": {
+    "at": "2026-11-16T20:40:28Z",
+    "complete": true,
+    "current": false,
+    "expected": 306,
+    "expected_sure": true,
+    "finished": 321,
+    "games": 321,
+    "teams": 24,
+    "asked": "no (complete before)"
+   },
+   "2024-2025": {
+    "at": "2026-11-16T20:40:30Z",
+    "complete": true,
+    "current": false,
+    "expected": 306,
+    "expected_sure": true,
+    "finished": 321,
+    "games": 321,
+    "teams": 24,
+    "asked": "no (complete before)"
+   },
+   "2025-2026": {
+    "at": "2026-11-16T20:40:33Z",
+    "complete": true,
+    "current": false,
+    "expected": 306,
+    "expected_sure": true,
+    "finished": 317,
+    "games": 317,
+    "teams": 24,
+    "asked": "no (complete before)"
+   },
+   "2026-2027": {
+    "games": 306,
+    "finished": 118,
+    "expected": 306,
+    "expected_sure": true,
+    "teams": 18,
+    "how": {
+     "season": 306,
+     "rounds": 0
+    },
+    "current": true,
+    "complete": false,
+    "at": "2026-11-28T08:57:52Z"
+   }
+  }
+ },
+ "4339": {
+  "name": "Turkish Super Lig",
+  "key": "paid",
+  "seasons": {
+   "2022-2023": {
+    "at": "2026-11-16T20:37:58Z",
+    "complete": true,
+    "current": false,
+    "expected": 342,
+    "expected_sure": true,
+    "finished": 342,
+    "games": 342,
+    "teams": 19,
+    "asked": "no (complete before)"
+   },
+   "2023-2024": {
+    "at": "2026-11-16T20:38:01Z",
+    "complete": true,
+    "current": false,
+    "expected": 380,
+    "expected_sure": true,
+    "finished": 380,
+    "games": 380,
+    "teams": 20,
+    "asked": "no (complete before)"
+   },
+   "2024-2025": {
+    "at": "2026-11-16T20:38:03Z",
+    "complete": true,
+    "current": false,
+    "expected": 342,
+    "expected_sure": true,
+    "finished": 342,
+    "games": 342,
+    "teams": 19,
+    "asked": "no (complete before)"
+   },
+   "2025-2026": {
+    "at": "2026-11-16T20:38:06Z",
+    "complete": true,
+    "current": false,
+    "expected": 306,
+    "expected_sure": true,
+    "finished": 306,
+    "games": 306,
+    "teams": 18,
+    "asked": "no (complete before)"
+   },
+   "2026-2027": {
+    "games": 306,
+    "finished": 110,
+    "expected": 306,
+    "expected_sure": true,
+    "teams": 18,
+    "how": {
+     "season": 306,
+     "rounds": 0
+    },
+    "current": true,
+    "complete": false,
+    "at": "2026-11-28T08:56:09Z"
+   }
+  }
+ },
+ "4344": {
+  "name": "Portuguese Primeira Liga",
+  "key": "paid",
+  "seasons": {
+   "2022-2023": {
+    "at": "2026-11-16T20:40:15Z",
+    "complete": true,
+    "current": false,
+    "expected": 306,
+    "expected_sure": true,
+    "finished": 308,
+    "games": 308,
+    "teams": 19,
+    "asked": "no (complete before)"
+   },
+   "2023-2024": {
+    "at": "2026-11-16T20:40:17Z",
+    "complete": true,
+    "current": false,
+    "expected": 306,
+    "expected_sure": true,
+    "finished": 308,
+    "games": 308,
+    "teams": 19,
+    "asked": "no (complete before)"
+   },
+   "2024-2025": {
+    "at": "2026-11-16T20:40:20Z",
+    "complete": true,
+    "current": false,
+    "expected": 306,
+    "expected_sure": true,
+    "finished": 308,
+    "games": 308,
+    "teams": 19,
+    "asked": "no (complete before)"
+   },
+   "2025-2026": {
+    "at": "2026-11-16T20:40:23Z",
+    "complete": true,
+    "current": false,
+    "expected": 306,
+    "expected_sure": true,
+    "finished": 308,
+    "games": 308,
+    "teams": 19,
+    "asked": "no (complete before)"
+   },
+   "2026-2027": {
+    "games": 306,
+    "finished": 99,
+    "expected": 306,
+    "expected_sure": true,
+    "teams": 18,
+    "how": {
+     "season": 306,
+     "rounds": 0
+    },
+    "current": true,
+    "complete": false,
+    "at": "2026-11-28T08:57:46Z"
+   }
+  }
+ },
+ "4346": {
+  "name": "American Major League Soccer",
+  "key": "paid",
+  "seasons": {
+   "2022": {
+    "at": "2026-11-24T11:00:32Z",
+    "complete": true,
+    "current": false,
+    "expected": null,
+    "expected_sure": false,
+    "finished": 489,
+    "games": 489,
+    "teams": 28,
+    "asked": "no (complete before)"
+   },
+   "2023": {
+    "at": "2026-11-16T20:39:11Z",
+    "complete": true,
+    "current": false,
+    "expected": null,
+    "expected_sure": false,
+    "finished": 521,
+    "games": 521,
+    "teams": 29,
+    "asked": "no (complete before)"
+   },
+   "2024": {
+    "at": "2026-11-16T20:39:13Z",
+    "complete": true,
+    "current": false,
+    "expected": null,
+    "expected_sure": false,
+    "finished": 522,
+    "games": 526,
+    "teams": 29,
+    "asked": "no (complete before)"
+   },
+   "2025": {
+    "at": "2026-11-16T20:39:16Z",
+    "complete": true,
+    "current": false,
+    "expected": null,
+    "expected_sure": false,
+    "finished": 540,
+    "games": 540,
+    "teams": 30,
+    "asked": "no (complete before)"
+   },
+   "2026": {
+    "games": 528,
+    "finished": 522,
+    "expected": null,
+    "expected_sure": false,
+    "teams": 30,
+    "how": {
+     "season": 528,
+     "rounds": 0
+    },
+    "current": true,
+    "complete": false,
+    "at": "2026-11-28T08:56:57Z"
+   }
+  }
+ },
+ "4480": {
+  "name": "UEFA Champions League",
+  "key": "paid",
+  "seasons": {
+   "2022-2023": {
+    "at": "2026-11-16T20:37:54Z",
+    "complete": true,
+    "current": false,
+    "expected": null,
+    "expected_sure": false,
+    "finished": 214,
+    "games": 214,
+    "teams": 78,
+    "asked": "no (complete before)"
+   },
+   "2023-2024": {
+    "at": "2026-11-16T20:37:57Z",
+    "complete": true,
+    "current": false,
+    "expected": null,
+    "expected_sure": false,
+    "finished": 214,
+    "games": 214,
+    "teams": 78,
+    "asked": "no (complete before)"
+   },
+   "2024-2025": {
+    "at": "2026-11-16T20:38:00Z",
+    "complete": true,
+    "current": false,
+    "expected": null,
+    "expected_sure": false,
+    "finished": 279,
+    "games": 279,
+    "teams": 81,
+    "asked": "no (complete before)"
+   },
+   "2025-2026": {
+    "at": "2026-11-16T20:38:02Z",
+    "complete": true,
+    "current": false,
+    "expected": null,
+    "expected_sure": false,
+    "finished": 281,
+    "games": 281,
+    "teams": 82,
+    "asked": "no (complete before)"
+   },
+   "2026-2027": {
+    "games": 234,
+    "finished": 180,
+    "expected": null,
+    "expected_sure": false,
+    "teams": 81,
+    "how": {
+     "season": 234,
+     "rounds": 0
+    },
+    "current": true,
+    "complete": false,
+    "at": "2026-11-28T08:56:08Z"
+   }
+  }
+ },
+ "4520": {
+  "name": "Moroccan Championship",
+  "key": "paid",
+  "seasons": {
+   "2022-2023": {
+    "at": "2026-11-16T20:44:13Z",
+    "complete": true,
+    "current": false,
+    "expected": 240,
+    "expected_sure": false,
+    "finished": 240,
+    "games": 240,
+    "teams": 16,
+    "asked": "no (complete before)"
+   },
+   "2023-2024": {
+    "at": "2026-11-16T20:44:15Z",
+    "complete": true,
+    "current": false,
+    "expected": 240,
+    "expected_sure": false,
+    "finished": 241,
+    "games": 241,
+    "teams": 16,
+    "asked": "no (complete before)"
+   },
+   "2024-2025": {
+    "at": "2026-11-17T09:16:57Z",
+    "complete": true,
+    "current": false,
+    "expected": 306,
+    "expected_sure": false,
+    "finished": 244,
+    "games": 244,
+    "teams": 18,
+    "asked": "no (complete before)"
+   },
+   "2025-2026": {
+    "at": "2026-11-17T09:16:59Z",
+    "complete": true,
+    "current": false,
+    "expected": 306,
+    "expected_sure": false,
+    "finished": 244,
+    "games": 244,
+    "teams": 18,
+    "asked": "no (complete before)"
+   },
+   "2026-2027": {
+    "games": 72,
+    "finished": 56,
+    "expected": 240,
+    "expected_sure": false,
+    "teams": 16,
+    "how": {
+     "season": 72,
+     "rounds": 0
+    },
+    "current": true,
+    "complete": false,
+    "at": "2026-11-28T08:56:57Z"
+   }
+  }
+ },
+ "4663": {
+  "name": "Qatar Stars League",
+  "key": "paid",
+  "seasons": {
+   "2022-2023": {
+    "at": "2026-11-16T20:42:41Z",
+    "complete": true,
+    "current": false,
+    "expected": 132,
+    "expected_sure": false,
+    "finished": 132,
+    "games": 132,
+    "teams": 12,
+    "asked": "no (complete before)"
+   },
+   "2023-2024": {
+    "at": "2026-11-16T20:42:44Z",
+    "complete": true,
+    "current": false,
+    "expected": 132,
+    "expected_sure": false,
+    "finished": 132,
+    "games": 132,
+    "teams": 12,
+    "asked": "no (complete before)"
+   },
+   "2024-2025": {
+    "at": "2026-11-16T20:42:46Z",
+    "complete": true,
+    "current": false,
+    "expected": 132,
+    "expected_sure": false,
+    "finished": 132,
+    "games": 132,
+    "teams": 12,
+    "asked": "no (complete before)"
+   },
+   "2025-2026": {
+    "at": "2026-11-17T09:16:36Z",
+    "complete": true,
+    "current": false,
+    "expected": 156,
+    "expected_sure": false,
+    "finished": 133,
+    "games": 133,
+    "teams": 13,
+    "asked": "no (complete before)"
+   },
+   "2026-2027": {
+    "games": 132,
+    "finished": 62,
+    "expected": 132,
+    "expected_sure": false,
+    "teams": 12,
+    "how": {
+     "season": 132,
+     "rounds": 0
+    },
+    "current": true,
+    "complete": false,
+    "at": "2026-11-28T08:56:42Z"
+   }
+  }
+ },
+ "4668": {
+  "name": "Saudi Pro League",
+  "key": "paid",
+  "seasons": {
+   "2022-2023": {
+    "at": "2026-11-16T20:33:55Z",
+    "complete": true,
+    "current": false,
+    "expected": 240,
+    "expected_sure": true,
+    "finished": 240,
+    "games": 240,
+    "teams": 16,
+    "asked": "no (complete before)"
+   },
+   "2023-2024": {
+    "at": "2026-11-16T20:33:58Z",
+    "complete": true,
+    "current": false,
+    "expected": 306,
+    "expected_sure": true,
+    "finished": 306,
+    "games": 306,
+    "teams": 18,
+    "asked": "no (complete before)"
+   },
+   "2024-2025": {
+    "at": "2026-11-16T20:34:01Z",
+    "complete": true,
+    "current": false,
+    "expected": 306,
+    "expected_sure": true,
+    "finished": 306,
+    "games": 306,
+    "teams": 18,
+    "asked": "no (complete before)"
+   },
+   "2025-2026": {
+    "at": "2026-11-16T20:34:04Z",
+    "complete": true,
+    "current": false,
+    "expected": 306,
+    "expected_sure": true,
+    "finished": 306,
+    "games": 306,
+    "teams": 18,
+    "asked": "no (complete before)"
+   },
+   "2026-2027": {
+    "games": 306,
+    "finished": 111,
+    "expected": 306,
+    "expected_sure": true,
+    "teams": 18,
+    "how": {
+     "season": 306,
+     "rounds": 0
+    },
+    "current": true,
+    "complete": false,
+    "at": "2026-11-28T08:56:15Z"
+   }
+  }
+ },
+ "4678": {
+  "name": "UAE Pro League",
+  "key": "paid",
+  "seasons": {
+   "2022-2023": {
+    "at": "2026-11-16T20:42:42Z",
+    "complete": true,
+    "current": false,
+    "expected": 182,
+    "expected_sure": false,
+    "finished": 182,
+    "games": 182,
+    "teams": 14,
+    "asked": "no (complete before)"
+   },
+   "2023-2024": {
+    "at": "2026-11-16T20:42:45Z",
+    "complete": true,
+    "current": false,
+    "expected": 182,
+    "expected_sure": false,
+    "finished": 182,
+    "games": 182,
+    "teams": 14,
+    "asked": "no (complete before)"
+   },
+   "2024-2025": {
+    "at": "2026-11-16T20:42:48Z",
+    "complete": true,
+    "current": false,
+    "expected": 182,
+    "expected_sure": false,
+    "finished": 182,
+    "games": 182,
+    "teams": 14,
+    "asked": "no (complete before)"
+   },
+   "2025-2026": {
+    "at": "2026-11-16T20:42:50Z",
+    "complete": true,
+    "current": false,
+    "expected": 182,
+    "expected_sure": false,
+    "finished": 182,
+    "games": 182,
+    "teams": 14,
+    "asked": "no (complete before)"
+   },
+   "2026-2027": {
+    "games": 119,
+    "finished": 56,
+    "expected": 182,
+    "expected_sure": false,
+    "teams": 14,
+    "how": {
+     "season": 119,
+     "rounds": 0
+    },
+    "current": true,
+    "complete": false,
+    "at": "2026-11-28T08:56:40Z"
+   }
+  }
+ },
+ "4719": {
+  "name": "AFC Champions League Elite",
+  "key": "paid",
+  "seasons": {
+   "2022": {
+    "at": "2026-11-16T20:38:13Z",
+    "complete": true,
+    "current": false,
+    "expected": null,
+    "expected_sure": false,
+    "finished": 137,
+    "games": 143,
+    "teams": 47,
+    "asked": "no (complete before)"
+   },
+   "2023": {
+    "at": "2026-11-16T20:38:15Z",
+    "complete": true,
+    "current": false,
+    "expected": null,
+    "expected_sure": false,
+    "finished": 162,
+    "games": 163,
+    "teams": 53,
+    "asked": "no (complete before)"
+   },
+   "2024-2025": {
+    "at": "2026-11-16T20:38:18Z",
+    "complete": true,
+    "current": false,
+    "expected": null,
+    "expected_sure": false,
+    "finished": 121,
+    "games": 122,
+    "teams": 27,
+    "asked": "no (complete before)"
+   },
+   "2025-2026": {
+    "at": "2026-11-16T20:38:20Z",
+    "complete": true,
+    "current": false,
+    "expected": null,
+    "expected_sure": false,
+    "finished": 117,
+    "games": 121,
+    "teams": 26,
+    "asked": "no (complete before)"
+   },
+   "2026-2027": {
+    "games": 132,
+    "finished": 83,
+    "expected": null,
+    "expected_sure": false,
+    "teams": 36,
+    "how": {
+     "season": 132,
+     "rounds": 0
+    },
+    "current": true,
+    "complete": false,
+    "at": "2026-11-28T08:56:23Z"
+   }
+  }
+ },
+ "4829": {
+  "name": "Egyptian Premier League",
+  "key": "paid",
+  "seasons": {
+   "2022-2023": {
+    "at": "2026-11-16T20:38:20Z",
+    "complete": true,
+    "current": false,
+    "expected": null,
+    "expected_sure": false,
+    "finished": 308,
+    "games": 308,
+    "teams": 18,
+    "asked": "no (complete before)"
+   },
+   "2023-2024": {
+    "at": "2026-11-16T20:38:22Z",
+    "complete": true,
+    "current": false,
+    "expected": null,
+    "expected_sure": false,
+    "finished": 271,
+    "games": 272,
+    "teams": 17,
+    "asked": "no (complete before)"
+   },
+   "2024-2025": {
+    "at": "2026-11-16T20:38:25Z",
+    "complete": true,
+    "current": false,
+    "expected": null,
+    "expected_sure": false,
+    "finished": 225,
+    "games": 225,
+    "teams": 18,
+    "asked": "no (complete before)"
+   },
+   "2025-2026": {
+    "at": "2026-11-16T20:38:28Z",
+    "complete": true,
+    "current": false,
+    "expected": null,
+    "expected_sure": false,
+    "finished": 322,
+    "games": 322,
+    "teams": 21,
+    "asked": "no (complete before)"
+   },
+   "2026-2027": {
+    "games": 190,
+    "finished": 90,
+    "expected": null,
+    "expected_sure": false,
+    "teams": 20,
+    "how": {
+     "season": 190,
+     "rounds": 0
+    },
+    "current": true,
+    "complete": false,
+    "at": "2026-11-28T08:56:25Z"
+   }
+  }
+ },
+ "5056": {
+  "name": "Iraqi Premier League",
+  "key": "paid",
+  "seasons": {
+   "2022-2023": {
+    "at": "2026-11-16T20:42:49Z",
+    "complete": true,
+    "current": false,
+    "expected": 380,
+    "expected_sure": false,
+    "finished": 380,
+    "games": 380,
+    "teams": 20,
+    "asked": "no (complete before)"
+   },
+   "2023-2024": {
+    "at": "2026-11-16T20:42:52Z",
+    "complete": true,
+    "current": false,
+    "expected": 380,
+    "expected_sure": false,
+    "finished": 384,
+    "games": 385,
+    "teams": 20,
+    "asked": "no (complete before)"
+   },
+   "2024-2025": {
+    "at": "2026-11-16T20:42:55Z",
+    "complete": true,
+    "current": false,
+    "expected": 380,
+    "expected_sure": false,
+    "finished": 390,
+    "games": 393,
+    "teams": 20,
+    "asked": "no (complete before)"
+   },
+   "2025-2026": {
+    "at": "2026-11-17T09:16:49Z",
+    "complete": true,
+    "current": false,
+    "expected": 420,
+    "expected_sure": false,
+    "finished": 380,
+    "games": 387,
+    "teams": 21,
+    "asked": "no (complete before)"
+   },
+   "2026-2027": {
+    "games": 380,
+    "finished": 143,
+    "expected": 380,
+    "expected_sure": false,
+    "teams": 20,
+    "how": {
+     "season": 380,
+     "rounds": 0
+    },
+    "current": true,
+    "complete": false,
+    "at": "2026-11-28T08:56:53Z"
+   }
+  }
+ },
+ "5627": {
+  "name": "Saudi First Division League",
+  "key": "paid",
+  "seasons": {
+   "2024-2025": {
+    "at": "2026-11-16T20:45:00Z",
+    "complete": true,
+    "current": false,
+    "expected": 306,
+    "expected_sure": false,
+    "finished": 309,
+    "games": 309,
+    "teams": 18,
+    "asked": "no (complete before)"
+   },
+   "2025-2026": {
+    "at": "2026-11-16T20:45:03Z",
+    "complete": true,
+    "current": false,
+    "expected": 306,
+    "expected_sure": false,
+    "finished": 308,
+    "games": 309,
+    "teams": 18,
+    "asked": "no (complete before)"
+   },
+   "2026-2027": {
+    "games": 171,
+    "finished": 104,
+    "expected": 306,
+    "expected_sure": false,
+    "teams": 18,
+    "how": {
+     "season": 171,
+     "rounds": 0
+    },
+    "current": true,
+    "complete": false,
+    "at": "2026-11-28T08:57:13Z"
+   }
+  }
+ },
+ "5649": {
+  "name": "Saudi King Cup",
+  "key": "paid",
+  "seasons": {
+   "2024-2025": {
+    "at": "2026-11-16T20:38:33Z",
+    "complete": true,
+    "current": false,
+    "expected": null,
+    "expected_sure": false,
+    "finished": 31,
+    "games": 31,
+    "teams": 32,
+    "asked": "no (complete before)"
+   },
+   "2025-2026": {
+    "games": 31,
+    "finished": 31,
+    "expected": null,
+    "expected_sure": false,
+    "teams": 32,
+    "how": {
+     "season": 31,
+     "rounds": 0
+    },
+    "current": true,
+    "complete": false,
+    "at": "2026-11-28T08:56:36Z"
+   }
+  }
+ },
+ "failed": []
+}

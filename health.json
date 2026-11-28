@@ -1,0 +1,156 @@
+{
+ "updated": "2026-11-28T20:23:09Z",
+ "events": 28970,
+ "new": 0,
+ "updated_events": 17,
+ "pruned": 0,
+ "leagues": 28,
+ "seasons": 106,
+ "teams": 793,
+ "pairs": 5898,
+ "bytes": 12757885,
+ "seconds": 0.69,
+ "problems": [],
+ "last_live": "2026-11-28T20:20:20Z",
+ "live_requests": 18,
+ "live_games": 17,
+ "backfill": {
+  "games": 12866,
+  "names_not_found": 2
+ },
+ "followed": {
+  "4668": {
+   "name": "Saudi Pro League",
+   "last_result": "2026-11-28T17:30:00Z",
+   "games_10d": 9,
+   "results_10d": 7,
+   "without_result": 0
+  },
+  "4339": {
+   "name": "Turkish Super Lig",
+   "last_result": "2026-11-27T17:00:00Z",
+   "games_10d": 13,
+   "results_10d": 11,
+   "without_result": 0
+  },
+  "4480": {
+   "name": "UEFA Champions League",
+   "last_result": "2026-11-25T20:00:00Z",
+   "games_10d": 18,
+   "results_10d": 18,
+   "without_result": 0
+  },
+  "4719": {
+   "name": "AFC Champions League Elite",
+   "last_result": "2026-11-25T10:00:00Z",
+   "games_10d": 16,
+   "results_10d": 16,
+   "without_result": 0
+  },
+  "4829": {
+   "name": "Egyptian Premier League",
+   "last_result": "2026-11-25T18:00:00Z",
+   "games_10d": 10,
+   "results_10d": 10,
+   "without_result": 0
+  },
+  "5649": {
+   "name": "Saudi King Cup",
+   "last_result": "2026-05-08T18:00:00Z",
+   "games_10d": 0,
+   "results_10d": 0,
+   "without_result": 0
+  },
+  "4663": {
+   "name": "Qatar Stars League",
+   "last_result": "2026-11-27T15:30:00Z",
+   "games_10d": 10,
+   "results_10d": 8,
+   "without_result": 0
+  },
+  "4678": {
+   "name": "UAE Pro League",
+   "last_result": "2026-11-21T15:25:00Z",
+   "games_10d": 8,
+   "results_10d": 7,
+   "without_result": 0
+  },
+  "5056": {
+   "name": "Iraqi Premier League",
+   "last_result": "2026-11-27T16:00:00Z",
+   "games_10d": 15,
+   "results_10d": 13,
+   "without_result": 0
+  },
+  "4520": {
+   "name": "Moroccan Championship",
+   "last_result": "2026-11-27T18:00:00Z",
+   "games_10d": 2,
+   "results_10d": 1,
+   "without_result": 0
+  },
+  "4346": {
+   "name": "American Major League Soccer",
+   "last_result": "2026-11-28T17:30:00Z",
+   "games_10d": 12,
+   "results_10d": 12,
+   "without_result": 0
+  },
+  "5627": {
+   "name": "Saudi First Division League",
+   "last_result": "2026-11-25T15:10:00Z",
+   "games_10d": 9,
+   "results_10d": 9,
+   "without_result": 0
+  },
+  "4328": {
+   "name": "English Premier League",
+   "last_result": "2026-11-28T17:30:00Z",
+   "games_10d": 13,
+   "results_10d": 11,
+   "without_result": 0
+  },
+  "4335": {
+   "name": "Spanish La Liga",
+   "last_result": "2026-11-28T17:30:00Z",
+   "games_10d": 13,
+   "results_10d": 11,
+   "without_result": 0
+  },
+  "4332": {
+   "name": "Italian Serie A",
+   "last_result": "2026-11-27T19:45:00Z",
+   "games_10d": 12,
+   "results_10d": 11,
+   "without_result": 0
+  },
+  "4331": {
+   "name": "German Bundesliga",
+   "last_result": "2026-11-27T19:30:00Z",
+   "games_10d": 14,
+   "results_10d": 10,
+   "without_result": 0
+  },
+  "4334": {
+   "name": "French Ligue 1",
+   "last_result": "2026-11-27T19:45:00Z",
+   "games_10d": 11,
+   "results_10d": 10,
+   "without_result": 0
+  },
+  "4344": {
+   "name": "Portuguese Primeira Liga",
+   "last_result": "2026-11-28T18:00:00Z",
+   "games_10d": 3,
+   "results_10d": 1,
+   "without_result": 0
+  },
+  "4337": {
+   "name": "Dutch Eredivisie",
+   "last_result": "2026-11-28T17:45:00Z",
+   "games_10d": 11,
+   "results_10d": 10,
+   "without_result": 0
+  }
+ }
+}
