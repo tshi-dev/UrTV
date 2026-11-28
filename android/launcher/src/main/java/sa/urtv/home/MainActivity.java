@@ -1053,19 +1053,19 @@ public class MainActivity extends Activity {
         grid.setClipToPadding(false);
         content.addView(grid, llp(-1, -2, dp(68), 0, dp(68), dp(160)));
         reminder = new ReminderCard(this, root);   // «المهام» with a time: its card is the topmost view
-        reminder.under(() -> {   // under the clock column, never over it (the tester, step 37), and under the big clock's digits while it shows
-            int y = -1;
-            if (clockBlock != null && clockBlock.getHeight() > 0 && clockBlock.isShown()) {
+        reminder.under(new ReminderCard.Under() {   // under the clock column, never over it (the tester, step 37), and clear of the big clock's digits
+            @Override public int bottom() {
+                if (clockBlock == null || clockBlock.getHeight() == 0 || !clockBlock.isShown()) return -1;
                 int[] at = new int[2];
                 clockBlock.getLocationInWindow(at);
-                y = at[1] + clockBlock.getHeight();
+                return at[1] + clockBlock.getHeight();
             }
-            if (bigClockOn) {   // the emulator's shot (bug-h-sand-reminder): under the clock column only, the card lay over the big digits
+            @Override public int[] bigClock() {
+                if (!bigClockOn) return null;
                 android.util.DisplayMetrics dm = getResources().getDisplayMetrics();
                 boolean beside = homeCard != null && homeCard.shownCards() > 0 && !homeCard.inRow();
-                y = Math.max(y, ScenePlan.fixedBox(dm.widthPixels, dm.heightPixels, beside, Dir.rtl())[3]);
+                return ScenePlan.fixedBox(dm.widthPixels, dm.heightPixels, beside, Dir.rtl());
             }
-            return y;
         });
         return root;
     }

@@ -52,9 +52,10 @@ check("(h) the reciter letters wear the look's own text and focus ink (R.color.s
 card = (H / "ReminderCard.java").read_text(encoding="utf-8")
 check("(h) the reminder card stands 16 dp under the clock column (never above 60 dp) and goes up only as far as the screen's bottom needs",
       "if (y > 0) top = Math.max(top, y + dp(16));" in card and "if (card.getHeight() > 0 && room > 0) top = Math.min(top, room);" in card
-      and "card.post(this::place);" in card and "reminder.under(() -> {" in main and "y = at[1] + clockBlock.getHeight();" in main)
-check("(h) with the big clock it stands under the digits too (the emulator's shot: under the clock column only, it lay over them)",
-      "y = Math.max(y, ScenePlan.fixedBox(dm.widthPixels, dm.heightPixels, beside, Dir.rtl())[3]);" in main)
+      and "card.post(this::place);" in card and "reminder.under(new ReminderCard.Under() {" in main and "return at[1] + clockBlock.getHeight();" in main)
+check("(h) with the big clock it keeps clear of the digits: beside them under the clock column, as wide as that room allows, its two buttons one over the other when narrow; too narrow there, under the digits (the emulator: over the digits, then over the apps row)",
+      "return ScenePlan.fixedBox(dm.widthPixels, dm.heightPixels, beside, Dir.rtl());" in main and "int side = Dir.rtl() ? parent.getWidth() - big[2] : big[0];" in card
+      and "if (room >= dp(200)) width = Math.min(width, room);" in card and "else top = Math.max(top, big[3] + dp(16));" in card and "stack(width < dp(320));" in card)
 shoot = (ROOT / ".github/screens/shoot.sh").read_text(encoding="utf-8")
 check("the letters' shot opens تلاوة by its button (not exported: an adb start is refused)", 'focus_to "تلاوة وأذان" 10 DPAD_LEFT' in shoot)
 check("the emulator's shots of them", all(f"shot {n} " in shoot for n in ("bug-a-dock-few-apps", "bug-h-sand-reminder", "bug-h-sand-letters")))

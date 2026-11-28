@@ -65,7 +65,7 @@ final class ReminderCard {
         head.addView(words, wp);
         box.addView(head, new LinearLayout.LayoutParams(-1, -2));
 
-        LinearLayout buttons = new LinearLayout(c);
+        buttons = new LinearLayout(c);
         ok = button(S.t("تم"), true);
         later = button("", false);
         buttons.addView(ok, new LinearLayout.LayoutParams(0, dp(40), 1f));
@@ -84,8 +84,20 @@ final class ReminderCard {
         root.addView(card, p);
     }
 
-    /** where the home's clock column ends (window px; -1: not known): the card stands under it (ReminderCard.place) */
-    interface Under { int bottom(); }
+    /** where the home's clock column ends (window px; -1: not known), and the big clock's digits' box while it shows (null: none) */
+    interface Under { int bottom(); int[] bigClock(); }
+    private LinearLayout buttons;
+
+    /** the two buttons side by side, or (a narrow card, beside the big clock) one over the other, each the card's width */
+    private void stack(boolean narrow) {
+        if ((buttons.getOrientation() == LinearLayout.VERTICAL) == narrow) return;
+        buttons.setOrientation(narrow ? LinearLayout.VERTICAL : LinearLayout.HORIZONTAL);
+        LinearLayout.LayoutParams a = new LinearLayout.LayoutParams(narrow ? -1 : 0, dp(40), narrow ? 0f : 1f);
+        LinearLayout.LayoutParams b = new LinearLayout.LayoutParams(narrow ? -1 : 0, dp(40), narrow ? 0f : 1f);
+        if (narrow) b.topMargin = dp(8); else b.setMarginStart(dp(8));
+        ok.setLayoutParams(a);
+        later.setLayoutParams(b);
+    }
     private Under under;
     void under(Under u) { under = u; }
 
@@ -95,8 +107,18 @@ final class ReminderCard {
      */
     private void place() {
         FrameLayout.LayoutParams p = (FrameLayout.LayoutParams) card.getLayoutParams();
-        int top = dp(60), y = under == null ? -1 : under.bottom();
+        int top = dp(60), y = under == null ? -1 : under.bottom(), width = dp(380);
         if (y > 0) top = Math.max(top, y + dp(16));
+        int[] big = under == null ? null : under.bigClock();
+        View parent = card.getParent() instanceof View ? (View) card.getParent() : null;
+        if (big != null && parent != null && parent.getWidth() > 0) {   // the emulator's shot: under the digits it lay over the apps row
+            int side = Dir.rtl() ? parent.getWidth() - big[2] : big[0];   // the room beside the digits on the card's side (its start)
+            int room = side - dp(60) - dp(16);
+            if (room >= dp(200)) width = Math.min(width, room);   // beside them, under the clock column, as wide as that room allows
+            else top = Math.max(top, big[3] + dp(16));   // too narrow there: under the digits
+        }
+        stack(width < dp(320));   // narrow: «تم» over «ذكّرني بعد ١٠ دقائق», never cut
+        if (p.width != width) { p.width = width; card.setLayoutParams(p); }
         int room = (card.getParent() instanceof View ? ((View) card.getParent()).getHeight() : 0) - card.getHeight() - dp(16);
         if (card.getHeight() > 0 && room > 0) top = Math.min(top, room);
         if (p.topMargin != top) { p.topMargin = top; card.setLayoutParams(p); }
