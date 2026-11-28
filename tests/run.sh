@@ -522,5 +522,23 @@ python3 tests/saver_gate_test.py   # 4.4 review: a settings change during the pa
 python3 tests/saver_prayerfix_test.py   # 4.4 review: the late prayer correction reaches a running dream (F2)
 python3 tests/saver_kids_keep_test.py   # 4.4 review: the kids copy keeps its last real answer (F3)
 #
+# 4.4 the PC-side setup fixes (R-363 to R-380): one test per fix
+python3 tests/share_decode_test.py   # R-363 share.py reads the TV as UTF-8 (Windows)
+python3 tests/sigpipe_test.py   # R-364 no exit 141 from an early reader in a pipefail pipeline
+python3 tests/check_home_slow_test.py   # R-365 check-home.sh waits up to 30 s and tries once more
+python3 tests/curl_5xx_test.py   # R-366 a 5xx download is tried again
+python3 tests/extras_stream_retry_test.py   # R-367 SmartTube: a longer stream, once more, «not installed»
+python3 tests/role_sdk_test.py   # R-368 no cmd role before Android 10
+python3 tests/measure_fallback_test.py   # R-369 free RAM from /proc/meminfo, «not measured» with the cause
+python3 tests/shot_empty_test.py   # R-370 an empty screenshot taken again; the small copy without Pillow
+python3 tests/standby_wake_test.py   # R-371 WAKEUP after a restart, «press Power»
+python3 tests/pip_wheels_test.py   # R-372 cryptography with wheels, --prefer-binary
+python3 tests/home_skip_line_test.py   # R-373 the report's «Home switch: skipped» rewritten
+python3 tests/props_retry_test.py   # R-374 empty properties read again
+python3 tests/old_android_test.py   # R-376 Android older than 8 stops at the precheck
+python3 tests/find_team_alias_test.py   # R-377 club nicknames and abbreviations
+python3 tests/dock_order_test.py   # R-378 the favourites: the first on the right
+python3 tests/tvs_doc_test.py   # R-379 TVs with no ADB in their menus
+python3 tests/keep_settle_test.py   # R-380 protected features stay on across the restarts
 # «regressions» (docs/dev/REGRESSIONS.md): the gate's own tests, and any guard of the register this file does not run by name above
 python3 tests/regressions/run.py --rest
