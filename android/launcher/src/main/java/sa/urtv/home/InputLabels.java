@@ -24,10 +24,28 @@ final class InputLabels {
                 if (listed(t.isPassthroughInput(), t.getType()) && !t.isHidden(c)) inputs.add(t);
             }
             Collections.sort(inputs, (x, y) -> own(c, x).compareToIgnoreCase(own(c, y)));
+            inputs = once(c, inputs);
         } catch (RuntimeException e) {   // 4.4 beta 3: a TV's input service that throws: no rows, and the popup offers the TV's own way (MainActivity.showInputsNow)
             inputs.clear();
         }
         return inputs;
+    }
+
+    /** 4.4 beta 4: each socket once (InputDisplay.distinct): a port and its CEC device, or one socket the TV reports twice under the same name. */
+    private static List<TvInputInfo> once(Context c, List<TvInputInfo> inputs) {
+        int n = inputs.size();
+        String[] key = new String[n], same = new String[n];
+        boolean[] port = new boolean[n], pass = new boolean[n];
+        for (int i = 0; i < n; i++) {
+            TvInputInfo t = inputs.get(i);
+            key[i] = key(t);
+            same[i] = t.getType() + ":" + own(c, t);
+            port[i] = t.getParentId() == null || t.getParentId().isEmpty();
+            pass[i] = t.isPassthroughInput();
+        }
+        List<TvInputInfo> out = new ArrayList<>();
+        for (int i : InputDisplay.distinct(key, same, port, pass)) out.add(inputs.get(i));
+        return out;
     }
 
     /**
