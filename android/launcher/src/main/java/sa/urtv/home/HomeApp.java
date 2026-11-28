@@ -9,6 +9,7 @@ public final class HomeApp extends Application {
         CrashLoopStore.hook(this);   // 4.3.5 (R7): first, so a crash anywhere after it is counted (CrashLoop, SafeActivity)
         Extras.init(this);   // 4.3.3 «إضافات تلفزيونك»: the add-on is asked with this process's context
         MuteKeep.start(this);
+        sa.urtv.home.setup.LedgerPush.maybe(this);   // the ledger of what the setup turned off, copied to the rescue app when it changed (LedgerKeep)
         BetaNotes.hookCrashes(this);   // 4.3.3: the class name of a crash, for the beta note (BetaNotes)
         ZoneFix.logger = line -> android.util.Log.i("UrTVZone", line);   // issue #55: one line when the page corrects the TV's zone data
         NetLog.logger = new NetLogcat();   // G3: one line per 10 minutes of requests (tag UrTVNet)

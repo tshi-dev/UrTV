@@ -2650,6 +2650,7 @@ public class MainActivity extends Activity {
         nudgeCard.setId(View.generateViewId());
         nudgeCard.setOnClickListener(v -> {
             if (nudgeIsNotice) { dismissNotice(); return; }   // 4.3.3: «تم» on a notice
+            if (nudgeIsResume) { guarded(ParentalPolicy.PILL_LISTEN, null, "تلاوة وأذان", () -> { sa.urtv.home.tilawah.MusicService.resumeCutOff(this); updateHomeNudge(false); }); return; }   // goes on only when the person pressed it
             if (nudgeIsUpdate) { launchGuarded(ParentalPolicy.PILL_UPDATES, new Intent(this, UpdateActivity.class), "تحديث تلفزيوني"); return; }   // 4.3.1: the builds differ
             if (nudgeIsCity) { openCity(); return; }   // 4.3.1: the same bar asks for the city while it is due
             if (nudgeIsStock) {   // 4.4: the TV's own «Home app» choice (no adb needed); where the TV has none, «إعداد تلفزيوني» and its «تراجع»
@@ -2739,6 +2740,7 @@ public class MainActivity extends Activity {
     private void snoozeNudge() {
         if (nudgeIsNotice) { if (!noticeFixed) dismissNotice(); return; }   // 4.3.3: Back on a notice is «تم»
         android.content.SharedPreferences sp = getSharedPreferences(NUDGE_PREFS, MODE_PRIVATE);
+        if (nudgeIsResume) { sa.urtv.home.tilawah.MusicService.forgetCutOff(this); updateHomeNudge(false); return; }   // «لاحقاً»: the offer is dropped
         if (nudgeIsOverlay) { overlayAfterOffer(); return; }   // 4.4: «لاحقاً» counts as shown: the offer is made once
         if (nudgeIsStock) { sa.urtv.home.setup.SetupHook.clearStockBackOffer(this); updateHomeNudge(false); return; }   // 4.4: «لاحقاً»: not asked again until two more bad boots
         if (nudgeIsUpdate) { updateCardOnScreen = -1; updateHomeNudge(false); return; }   // 4.4: the card was shown once; «لاحقاً» hides it (it comes back for a newer build or after 3 days)
@@ -2748,6 +2750,7 @@ public class MainActivity extends Activity {
         updateHomeNudge(false);
     }
 
+    private boolean nudgeIsResume;    // the bar offers «كمّل الإذاعة» / «كمّل التلاوة»: the sound was cut off with the home's process (ResumeOffer)
     private boolean nudgeIsCity;      // the bar is asking for the city (CityAskRule), not for «إعداد تلفزيوني»
     private boolean nudgeIsUpdate;    // 4.4: the bar is the card «في تحديث لـ …» (UpdateNotice.card); OK opens «تحديث تلفزيوني»
     private boolean nudgeIsStock;     // 4.4: the bar offers «رجّع الواجهة الأصلية» after two bad boots of ours (SetupHook.stockBackOffered)
@@ -2884,9 +2887,10 @@ public class MainActivity extends Activity {
         // 4.4: «فوق تطبيق آخر» moved to the add-on: offered once to whoever used it (checkOverlayOffer), after the problems above, before the city
         boolean askOverlay = (overlayDue || overlayOnScreen) && !askStock && !askUpdate && !askExtras && !kids && !quiet && !sa.urtv.home.setup.SetupHold.on();
         if (askOverlay && !overlayOnScreen) { overlayOnScreen = true; overlayShownAt = android.os.SystemClock.elapsedRealtime(); }   // marked seen when the person answers it or leaves after a few seconds of seeing it (onPause), not on first appearance
-        boolean askCity = !askStock && !askUpdate && !askExtras && !askOverlay && mismatch == null && CityAskRule.show(isInstalled(SAVER_PKG), cityChosenNow, java.util.TimeZone.getDefault().getID(), kids, np.getLong("city_later_until", 0), nowMs);
+        boolean askResume = !askStock && !askUpdate && !askExtras && !askOverlay && !kids && !cleanShown && sa.urtv.home.tilawah.MusicService.cutOff(this);   // the sound was cut off (the process ended): offered, never started by itself
+        boolean askCity = !askStock && !askUpdate && !askExtras && !askOverlay && !askResume && mismatch == null && CityAskRule.show(isInstalled(SAVER_PKG), cityChosenNow, java.util.TimeZone.getDefault().getID(), kids, np.getLong("city_later_until", 0), nowMs);
         // 4.4: no bar asks to make UrTV the home any more (it is not pushed: the settings' row «خلّ UrTV هي الشاشة الرئيسية» is the way in for whoever wants it)
-        boolean show = askStock || askUpdate || askExtras || askOverlay || askCity;   // never two at once: the stock home back, the update, the add-on, then the city
+        boolean show = askStock || askUpdate || askExtras || askOverlay || askResume || askCity;   // never two at once: the stock home back, the update, the add-on, then the city
         NoticeRule.Notice notice = show || kids ? null : dueNotice();   // 4.3.3: a notice only when the bar has nothing else to say
         show |= notice != null;
         boolean was = nudge.getVisibility() == View.VISIBLE;
@@ -2894,14 +2898,16 @@ public class MainActivity extends Activity {
         nudgeIsUpdate = askUpdate;
         nudgeIsExtras = askExtras;
         nudgeIsOverlay = askOverlay;
+        nudgeIsResume = askResume;
         nudgeIsStock = askStock;
         nudgeIsNotice = notice != null;
         noticeFixed = notice != null && !notice.dismissible;
-        nudgeCard.setText(notice != null ? S.t("تم") : askStock ? S.t("رجّع الواجهة الأصلية") : askUpdate ? S.t("حدّث الآن") : askExtras ? S.t("أصلحها") : askOverlay ? S.t("شغّلها") : askCity ? S.t("اختر المدينة") : S.t("خلّ تلفزيونك يفتح على UrTV"));
+        nudgeCard.setText(notice != null ? S.t("تم") : askStock ? S.t("رجّع الواجهة الأصلية") : askResume ? (sa.urtv.home.tilawah.MusicService.cutOffWasRadio(this) ? S.t("كمّل الإذاعة") : S.t("كمّل التلاوة")) : askUpdate ? S.t("حدّث الآن") : askExtras ? S.t("أصلحها") : askOverlay ? S.t("شغّلها") : askCity ? S.t("اختر المدينة") : S.t("خلّ تلفزيونك يفتح على UrTV"));
         if (notice != null) nudgeAsk.setText(notice.text(S.en()));
         else if (askStock) nudgeAsk.setText(S.t("تلفزيونك ما فتح بعد آخر تشغيلين للتلفزيون"));
+        else if (askResume) nudgeAsk.setText(sa.urtv.home.tilawah.MusicService.cutOffWasRadio(this) ? S.t("توقفت الإذاعة فجأة") : S.t("توقفت التلاوة فجأة"));
         else if (askUpdate) nudgeAsk.setText(card.line); else if (askExtras) nudgeAsk.setText(S.tv(ExtrasActivity.STUCK_FIX)); else if (askOverlay) nudgeAsk.setText(S.t("«فوق تطبيق آخر» صار في «إضافات تلفزيونك»: شغّلها ليبقى التنبيه فوق التطبيق")); else if (askCity) nudgeAsk.setText(S.tv(CITY_ASK));
-        nudgeAsk.setVisibility(askStock || askUpdate || askExtras || askOverlay || askCity || notice != null ? View.VISIBLE : View.GONE);
+        nudgeAsk.setVisibility(askStock || askUpdate || askExtras || askOverlay || askResume || askCity || notice != null ? View.VISIBLE : View.GONE);
         nudgeCard.setVisibility(noticeFixed ? View.GONE : View.VISIBLE);
         nudgeLater.setVisibility(notice != null ? View.GONE : View.VISIBLE);
         if (show && !was) {

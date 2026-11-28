@@ -101,7 +101,9 @@ public class RescueActivity extends Activity {
             Set<String> installed = RescuePlan.packages(adb.run("pm list packages; echo END_OF_LIST").output);
             Set<String> off = RescuePlan.packages(adb.run("pm list packages -d; echo END_OF_LIST").output);
             if (installed == null || off == null) { say("التلفزيون ما قال قائمة تطبيقاته، فما غيّرنا شيئاً. اضغط الزر مرة ثانية."); return; }
-            List<String> ledger = RescuePlan.ledger(homeLedger());
+            String fromHome = homeLedger();
+            boolean fromCopy = fromHome == null && !LedgerReceiver.read(this).isEmpty();   // the home is gone (a reinstall wiped its data) or did not answer: the copy it sent earlier
+            List<String> ledger = RescuePlan.ledger(fromHome != null ? fromHome : fromCopy ? LedgerReceiver.read(this) : null);
             String a11y = lastLine(adb.run("settings get secure enabled_accessibility_services").output);
             RescuePlan.Plan p = RescuePlan.plan(installed, off, ledger, a11y);
             for (String c : p.commands) adb.run(c);
@@ -118,6 +120,7 @@ public class RescueActivity extends Activity {
                         android.content.pm.PackageManager.COMPONENT_ENABLED_STATE_DISABLED, android.content.pm.PackageManager.DONT_KILL_APP);
                 } catch (RuntimeException ignored) { }
             }
+            if (fromCopy) said.append("(استخدمنا النسخة المحفوظة من قائمة ما أوقفه الإعداد، لأن «تلفزيونك» ما ردّت.)\n");
             if (ledger == null) said.append("(ما ردّت الشاشة الرئيسية «تلفزيونك»، فشغّلنا ما نعرفه من تطبيقات التلفزيون الأساسية. لو بقي تطبيق موقوفاً شغّله من إعدادات التلفزيون ← التطبيقات.)\n");
             said.append("اضغط زر الرئيسية في الريموت.");
             say(said.toString());
