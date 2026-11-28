@@ -26,6 +26,7 @@ public final class PhoneHost {
         if (control == null) {
             final Context app = c.getApplicationContext();
             final PhoneActions actions = new PhoneActions(app);
+            PhoneServer.LOG = line -> android.util.Log.i("UrTVPhone", line);   // the path and the browser family of each request, never an address
             control = new PhoneControl(new PhoneServer.DefaultBinder(), new PhoneControl.Clock() {
                 @Override public long now() { return System.currentTimeMillis(); }
             }, actions, new PhoneControl.Page() {

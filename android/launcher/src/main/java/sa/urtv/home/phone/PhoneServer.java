@@ -36,6 +36,9 @@ public final class PhoneServer {
         }
     }
 
+    /** where a request's one line goes (RequestLog: the path and the browser's family only); null: nowhere. Set by PhoneHost, so this file stays free of Android. */
+    public static volatile java.util.function.Consumer<String> LOG;
+
     public interface Handler {
         Response handle(Request r);
     }
@@ -128,6 +131,8 @@ public final class PhoneServer {
             Response r;
             try {
                 Request req = read(s);
+                java.util.function.Consumer<String> log = LOG;
+                if (req != null && log != null) log.accept(RequestLog.line(req.method, req.path, req.header("user-agent")));
                 r = req == null ? null : handler.handle(req);
             } catch (BadRequest e) {
                 r = new Response(e.status, "text/plain; charset=utf-8", new byte[0]);
