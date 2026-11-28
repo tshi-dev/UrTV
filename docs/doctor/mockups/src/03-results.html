@@ -1,0 +1,37 @@
+<!doctype html><html lang="ar"><head><meta charset="utf-8"><link rel="stylesheet" href="base.css"><style>
+.main{position:absolute;right:100px;top:56px;width:1130px}
+.sum{display:flex;gap:40px;font-size:28px;margin:12px 0 14px}
+.sum b{font-weight:700}
+.sec{font-size:22px;color:var(--faint);margin:10px 8px 6px}
+.row{min-height:68px;font-size:28px;margin-bottom:10px}
+.row.open{flex-direction:row;align-items:flex-start;padding:22px 32px 24px}
+.row.open .body{flex:1}
+.row.open .t{font-size:34px;font-weight:700;display:flex}
+.row.open .d{font-size:25px;line-height:1.6;margin-top:8px}
+.row.open .do{font-size:25px;line-height:1.6;margin-top:10px;color:#111;font-weight:600}
+.row.open .mark{margin:6px 0}
+.side{position:absolute;left:110px;top:250px;width:520px}
+.date{font-size:23px;color:var(--faint);text-align:center;margin-top:8px}
+</style></head><body>
+<div class="main"><h1>نتيجة الفحص</h1>
+<div class="sum"><span class="bad"><b>٢</b> فيها مشكلة</span><span class="warn"><b>٣</b> انتبه لها</span><span class="ok"><b>١٤</b> تمام</span></div>
+<div class="sec">فيها مشكلة</div>
+<div class="row open f"><span class="mark bad"></span><div class="body"><div class="t">زر الرئيسية<span class="st bad">فيه مشكلة</span></div>
+<div class="d">زر الرئيسية يفتح مساعد إعداد التلفزيون، مو تلفزيونك. مساعد الإعداد ماسك شبكة الواي فاي.</div>
+<div class="do">الحل: من إعدادات التلفزيون انسَ شبكة الواي فاي، ثم اتصل فيها مرة ثانية، وبعدها افحص من جديد.</div></div></div>
+<div class="row"><span class="mark bad"></span>زر السهم اللي فوق ما يوصل<span class="st bad">فيه مشكلة</span></div>
+<div class="sec">انتبه لها</div>
+<div class="row"><span class="mark warn"></span>الريموت يتأخر شوي<span class="v">٠٫١٨ ثانية لكل ضغطة</span><span class="st warn">انتبه</span></div>
+<div class="row"><span class="mark warn"></span>إذاعة القرآن<span class="v">١١ من ١٣ محطة تشتغل</span><span class="st warn">انتبه</span></div>
+<div class="row"><span class="mark warn"></span>فيه تحديث لتطبيقاتنا<span class="st warn">انتبه</span></div>
+<div class="sec">تمام</div>
+<div class="row"><span class="mark ok"></span>متصفح التلفزيون حديث<span class="st ok">تمام</span></div>
+<div class="row"><span class="mark ok"></span>ساعة التلفزيون مضبوطة<span class="st ok">تمام</span></div>
+</div>
+<div class="side">
+<div class="btn">أرسل التقرير</div>
+<div class="btn">افحص مرة ثانية</div>
+<div class="btn">رجوع</div>
+<div class="date">اليوم الساعة ٨:٤٠ م</div>
+</div>
+</body></html>

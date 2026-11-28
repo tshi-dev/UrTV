@@ -1,0 +1,32 @@
+<!doctype html><html lang="ar"><head><meta charset="utf-8"><link rel="stylesheet" href="base.css"><style>
+.main{position:absolute;right:110px;top:90px;width:1000px}
+.steps{margin-top:40px}
+.step{display:flex;gap:24px;align-items:baseline;font-size:32px;margin-bottom:22px}
+.step .n{font-size:40px;font-weight:700;color:#e8c46a;width:40px}
+.in{margin-top:34px;font-size:25px;line-height:1.7;color:var(--dim)}
+.in b{color:var(--fg);font-weight:600}
+.qrbox{position:absolute;left:150px;top:150px;width:560px;height:560px;background:#fff;border-radius:28px;padding:40px;box-shadow:0 30px 70px rgba(0,0,0,.5)}
+canvas{width:480px;height:480px;image-rendering:pixelated}
+.side{position:absolute;left:150px;top:770px;width:560px}
+</style></head><body>
+<div class="main"><h1>أرسل التقرير</h1>
+<div class="sub">التلفزيون ما يرسل شي بنفسه. التقرير يروح من جوالك، وانت تشوفه قبل.</div>
+<div class="steps">
+<div class="step"><span class="n">١</span>صوّر الرمز بكاميرا الجوال</div>
+<div class="step"><span class="n">٢</span>تفتح صفحة فيها التقرير، اكتب فيها المشكلة بكلامك</div>
+<div class="step"><span class="n">٣</span>اضغط «أرسل» في الصفحة</div>
+</div>
+<div class="in"><b>وش في التقرير:</b> نوع التلفزيون ونسخة أندرويد والمتصفح، ونسخ تطبيقاتنا، ونتيجة كل فحص بأرقام بس.<br>
+<b>وش مو فيه:</b> اسم الشبكة، والعناوين، والرقم التسلسلي، والحسابات، والمدينة.</div>
+</div>
+<div class="qrbox"><canvas id="q" width="49" height="49"></canvas></div>
+<div class="side"><div class="btn f">رجوع للنتيجة</div></div>
+<script>
+// a drawn stand-in for the QR code (not a real code)
+const c=document.getElementById('q').getContext('2d'),N=49;let s=7;const r=()=>(s=(s*1103515245+12345)&0x7fffffff)/0x7fffffff;
+c.fillStyle='#fff';c.fillRect(0,0,N,N);c.fillStyle='#111';
+for(let y=0;y<N;y++)for(let x=0;x<N;x++)if(r()<.5)c.fillRect(x,y,1,1);
+function f(x,y){c.fillStyle='#fff';c.fillRect(x-1,y-1,9,9);c.fillStyle='#111';c.fillRect(x,y,7,7);c.fillStyle='#fff';c.fillRect(x+1,y+1,5,5);c.fillStyle='#111';c.fillRect(x+2,y+2,3,3);}
+f(0,0);f(N-7,0);f(0,N-7);
+</script>
+</body></html>

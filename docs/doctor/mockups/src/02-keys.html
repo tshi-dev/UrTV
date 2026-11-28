@@ -1,0 +1,54 @@
+<!doctype html><html lang="ar"><head><meta charset="utf-8"><link rel="stylesheet" href="base.css"><style>
+.main{position:absolute;right:110px;top:90px;width:860px}
+.ask{margin-top:56px;font-size:64px;font-weight:700}
+.wait{font-size:30px;color:var(--warn);margin-top:14px}
+.hint{font-size:26px;color:var(--dim);margin-top:30px;line-height:1.6}
+.keys{margin-top:44px;display:grid;grid-template-columns:1fr 1fr;gap:0 18px}
+.keys .row{min-height:68px;font-size:27px}
+.keys .row .st{font-size:23px}
+.pend{color:var(--faint)}
+.remote{position:absolute;left:250px;top:110px;width:330px;height:780px;border-radius:165px 165px 120px 120px;background:#1d1b1a;box-shadow:0 30px 80px rgba(0,0,0,.6),inset 0 2px 0 rgba(255,255,255,.06)}
+.ring{position:absolute;left:45px;top:150px;width:240px;height:240px;border-radius:50%;background:#2a2826}
+.ok{}
+.okb{position:absolute;left:105px;top:210px;width:120px;height:120px;border-radius:50%;background:#3a3734}
+.ar{position:absolute;width:0;height:0;border:22px solid transparent}
+.up{left:143px;top:160px;border-bottom:30px solid #8a8580;border-top:0}
+.dn{left:143px;top:352px;border-top:30px solid #8a8580;border-bottom:0}
+.lf{left:58px;top:248px;border-right:30px solid #8a8580;border-left:0}
+.rt{left:244px;top:248px;border-left:30px solid #8a8580;border-right:0}
+.up.on{border-bottom-color:#fff;filter:drop-shadow(0 0 14px #fff)}
+.small{position:absolute;width:64px;height:64px;border-radius:50%;background:#2e2c2a}
+.col{position:absolute;width:52px;height:22px;border-radius:6px}
+.lab{position:absolute;left:0;right:0;bottom:-56px;text-align:center;font-size:24px;color:var(--faint)}
+.meter{position:absolute;left:60px;bottom:60px;width:720px;text-align:center;font-size:26px;color:var(--dim)}
+</style></head><body>
+<div class="main"><h1>فحص أزرار الريموت</h1>
+<div class="sub">اضغط كل زر نطلبه، ونقول لك إذا وصل.</div>
+<div class="ask">اضغط السهم اللي فوق</div>
+<div class="wait">ننتظر… باقي ٧ ثواني</div>
+<div class="hint">ما عندك هذا الزر، أو ما يشتغل؟ اضغط رجوع ونكمّل.</div>
+<div class="keys">
+<div class="row"><span class="mark ok"></span>السهم يمين<span class="st ok">وصل</span></div>
+<div class="row"><span class="mark ok"></span>السهم يسار<span class="st ok">وصل</span></div>
+<div class="row"><span class="mark ok"></span>السهم تحت<span class="st ok">وصل</span></div>
+<div class="row f"><span class="mark warn"></span>السهم فوق<span class="st warn">ننتظر</span></div>
+<div class="row pend"><span class="mark grey"></span>موافق (الزر اللي بالنص)</div>
+<div class="row pend"><span class="mark grey"></span>رجوع</div>
+<div class="row pend"><span class="mark grey"></span>الرئيسية</div>
+<div class="row pend"><span class="mark grey"></span>الأزرار الملوّنة</div>
+<div class="row pend"><span class="mark grey"></span>أزرار التطبيقات</div>
+<div class="row pend"><span class="mark grey"></span>الإعدادات</div>
+<div class="row pend"><span class="mark grey"></span>زر الصوت (المايك)</div>
+</div></div>
+<div class="remote">
+<div class="small" style="left:133px;top:50px"></div>
+<div class="ring"></div><div class="okb"></div>
+<div class="ar up on"></div><div class="ar dn"></div><div class="ar lf"></div><div class="ar rt"></div>
+<div class="small" style="left:60px;top:440px"></div><div class="small" style="left:206px;top:440px"></div>
+<div class="small" style="left:133px;top:540px"></div>
+<div class="col" style="left:46px;top:660px;background:#c43c34"></div><div class="col" style="left:108px;top:660px;background:#3f9d4f"></div>
+<div class="col" style="left:170px;top:660px;background:#d7b43a"></div><div class="col" style="left:232px;top:660px;background:#3b6fc4"></div>
+<div class="lab">٤ من ١١</div>
+</div>
+<div class="meter">سرعة الأسهم لين الحين: كل ضغطة توصل خلال ٠٫٠٨ ثانية</div>
+</body></html>
