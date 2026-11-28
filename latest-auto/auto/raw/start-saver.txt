@@ -2,6 +2,6 @@ Starting: Intent { cmp=sa.urtv.screensaver/.SettingsActivity }
 Status: ok
 LaunchState: COLD
 Activity: sa.urtv.screensaver/.SettingsActivity
-TotalTime: 835
-WaitTime: 836
+TotalTime: 877
+WaitTime: 880
 Complete

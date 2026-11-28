@@ -1,6 +1,6 @@
 Broadcasting: Intent { act=sa.urtv.screensaver.SET flg=0x400000 cmp=sa.urtv.screensaver/.SaverReceiver (has extras) }
 Broadcast completed: result=0, data="saved
-version: 4.4 (build 18)
+version: 4.4 (build 19)
 city: الرياض (24.6877, 46.7219)
 timezone: Asia/Riyadh
 country: SA
