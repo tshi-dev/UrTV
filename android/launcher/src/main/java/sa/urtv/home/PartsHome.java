@@ -15,10 +15,5 @@ public final class PartsHome {
         return offIn(frag, id);
     }
 
-    static boolean offIn(String frag, String id) {
-        java.util.regex.Matcher m = java.util.regex.Pattern.compile("(?:^|&)off=([a-z,]*)").matcher(frag == null ? "" : frag);
-        if (!m.find()) return false;
-        for (String k : m.group(1).split(",")) if (k.equals(id)) return true;
-        return false;
-    }
+    static boolean offIn(String frag, String id) { return HomeCardChoice.partOffIn(frag, id); }
 }

@@ -43,14 +43,22 @@ final class HomeCardChoice {
     };
 
     /** the cards without those of the parts that are off («البطاقات» off: none); "none" when nothing is left */
+    /** a part named in the fragment's «&off=» (4.4 «أجزاء UrTV»); here so this file compiles on its own (PartsHome uses it too) */
+    static boolean partOffIn(String frag, String id) {
+        java.util.regex.Matcher m = java.util.regex.Pattern.compile("(?:^|&)off=([a-z,]*)").matcher(frag == null ? "" : frag);
+        if (!m.find()) return false;
+        for (String k : m.group(1).split(",")) if (k.equals(id)) return true;
+        return false;
+    }
+
     static String withoutParts(String panel, String frag) {
         if (panel == null || "none".equals(panel)) return panel;
-        if (PartsHome.offIn(frag, "cards")) return "none";
+        if (partOffIn(frag, "cards")) return "none";
         StringBuilder b = new StringBuilder();
         for (String k : panel.split(",")) {
             String part = null;
             for (String[] cp : CARD_PARTS) if (cp[0].equals(k.trim())) part = cp[1];
-            if (part != null && PartsHome.offIn(frag, part)) continue;
+            if (part != null && partOffIn(frag, part)) continue;
             b.append(b.length() == 0 ? "" : ",").append(k.trim());
         }
         return b.length() == 0 ? "none" : b.toString();

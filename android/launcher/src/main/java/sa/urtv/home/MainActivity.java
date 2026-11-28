@@ -1602,7 +1602,8 @@ public class MainActivity extends Activity {
     /** Shows or hides the «يُتلى الآن» card by what «تلاوة» is doing: a surah or a station (playing or paused), else nothing. */
     private void updateNowPlaying() {
         if (nowCard == null) return;
-        if (cleanShown || ConfigSnapshot.ui(this).partOff("tilawah")) { nowCard.setVisibility(View.GONE); return; }   // «UrTV النظيف»; 4.4 «أجزاء UrTV»: تلاوة وأذان off
+        if (cleanShown) { nowCard.setVisibility(View.GONE); return; }   // «UrTV النظيف»
+        if (ConfigSnapshot.ui(this).partOff("tilawah")) { nowCard.setVisibility(View.GONE); return; }   // 4.4 «أجزاء UrTV»: تلاوة وأذان off
         NowPlaying.State s = NowPlaying.read(this);
         long now = System.currentTimeMillis();
         nowPausedSince = NowCardRule.pausedSince(s.show, s.playing, nowPausedSince, now);   // 4.4 beta 4: paused for 10 minutes, the card goes (the clock's tick looks again every minute)
@@ -5558,11 +5559,9 @@ public class MainActivity extends Activity {
             android.content.pm.PackageInfo i = getPackageManager().getPackageInfo(getPackageName(), 0);
             fresh = i.firstInstallTime == i.lastUpdateTime;
         } catch (android.content.pm.PackageManager.NameNotFoundException e) { fresh = false; }
-        try {
-            startActivity(new Intent().setClassName(SAVER_PKG, SAVER_PKG + ".StartActivity").putExtra("welcome", !fresh));
-        } catch (RuntimeException e) {
-            android.util.Log.i("UrTVParts", "start: the screensaver app has no start chooser yet");
-        }
+        // it changes the TV's settings, so it is behind the same family lock as the screensaver's settings (with no lock it just opens)
+        launchGuarded(ParentalPolicy.PILL_SAVER_SETTINGS,
+                new Intent().setClassName(SAVER_PKG, SAVER_PKG + ".StartActivity").putExtra("welcome", !fresh), "ابدأ من جديد");
     }
     private final Map<String, Typeface> fonts = new HashMap<>();
 
