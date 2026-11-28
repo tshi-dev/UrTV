@@ -133,6 +133,7 @@ public final class AllAppsActivity extends Activity {
         grid.setClipToPadding(false);
         grid.setPadding(dp(6), dp(6), dp(6), dp(6));
         grid.setVerticalScrollBarEnabled(false);
+        grid.setVerticalFadingEdgeEnabled(false);   // 4.4 beta 4: no faded top row either
         adapter = new Adapter();
         grid.setAdapter(adapter);
         grid.setOnItemClickListener((p, v, pos, id) -> {
@@ -141,6 +142,18 @@ public final class AllAppsActivity extends Activity {
             finish();
         });
         panel.addView(grid, new LinearLayout.LayoutParams(-1, 0, 1f));
+        // 4.4 beta 4 (the grid cut at the top): once a row is laid out, the grid keeps whole rows of the room it has (GridFit); the rest stays below it
+        grid.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
+            @Override public void onLayoutChange(View v, int l, int t, int r, int b, int ol, int ot, int or, int ob) {
+                if (grid.getChildCount() == 0) return;
+                grid.removeOnLayoutChangeListener(this);
+                int room = b - t, h = GridFit.height(room, grid.getChildAt(0).getHeight(), dp(10), grid.getPaddingTop(), grid.getPaddingBottom());
+                if (h >= room) return;
+                LinearLayout.LayoutParams gp = (LinearLayout.LayoutParams) grid.getLayoutParams();
+                gp.height = h; gp.weight = 0; gp.bottomMargin = room - h;
+                grid.setLayoutParams(gp);
+            }
+        });
         setContentView(root);
         // the keyboard only when the person goes to the search (the emulator: it opened with the window, and Back closed only it)
         getWindow().setSoftInputMode(android.view.WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);

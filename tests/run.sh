@@ -369,6 +369,7 @@ python3 tests/on_off_test.py   # on/off rows: the owner's choice I (green triang
 python3 tests/parental_text_test.py   # «الرقابة الأبوية»: the card and its two buttons, the count of locked apps (docs/UX-REVIEW.md)
 python3 tests/fav_bar_test.py   # the favourites bar: the tray, five tiles, the focus inside it, the one 40 px move (docs/PROPOSALS-NOV2.md §1)
 python3 tests/apps_look_test.py   # 4.4 «شكل التطبيقات»: بنرات / أيقونات / مربعات ملونة, centred, A and B with no tray and «تكبير وظل», nothing bundled
+python3 tests/card_focus_grid_test.py   # 4.4 beta 4: the widget focus and the all-apps grid
 python3 tests/banner_fit_test.py   # 4.4 beta 4: a banner of another shape is shown whole on its tile
 python3 tests/tvos_home_test.py   # 4.4 beta 2 the full look «tvOS»: the preset, the layout only through it, the row above the bar, CardFit per slot, the weak TV
 python3 tests/settings_tvos_test.py   # 4.4 beta 2 «شكل شاشة الإعدادات: tvOS»: the 4.3.2 logic in the tvOS manner, light on a weak TV
@@ -503,6 +504,7 @@ node tests/mkbar_push.test.mjs   # 4.4 beta 4: «شريط الأسواق» on or
 node tests/clock_off.test.mjs   # 4.4 beta 4: a TV clock far off: «ساعة التلفزيون غير مضبوطة» instead of a wrong date
 node tests/photo_log.test.mjs   # 4.4 beta 4: a photo that does not load is said, and a bundled one that loads stands in
 node tests/lite_cpu.test.mjs   # 4.4 beta 4: «الوضع الخفيف» stays light (no animation, under 2 % main thread)
+node tests/fb_focus.test.mjs   # 4.4 beta 4: the football widgets' focus is a scale and a shadow
 node tests/pack_fallback.test.mjs   # 4.4 beta 3: a pack or «صوري» photo that does not load never leaves the screensaver black (a bundled photo shows)
 node tests/tafsir.test.mjs   # «التفسير الميسر» (#tafsir=1): every verse of the deck has its tafsir, whole, in pages of three lines at most, never «…»
 node tests/saver_designs.test.mjs   # 4.4 the screensaver's designs (the owner approved them): each shows what it should; a prayer's name and time never touch
