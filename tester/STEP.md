@@ -1,3 +1,24 @@
+▶▶ DIAGNOSTICS ON THE OWNER'S TV (28 Nov, owner: «use my TV to run diagnostics and do a lot»). Do this after the current round; take your time, one section at a time, push results after each section to work/tester-report under tester/diag/<section>/. TV muted throughout. Save `saver.sh show` first and restore at the end. Never the family PIN, no factory reset, never disable/enable packages yourself, never touch launcherx/setupwraith, never type any games code. Screenshot-checked keys only.
+Get the tools: `git fetch origin work/44-beta4 && git checkout origin/work/44-beta4 -- tester optimize/settle.sh` (newest round.sh, tester/perf/switch.sh, tester/soak/).
+
+D1 REBOOT PERSISTENCE (one normal reboot: `adb reboot`, wait for adb, wait 2 min):
+ - before and after: `cmd role get-role-holders android.app.role.HOME` (or `cmd package resolve-activity -a android.intent.action.MAIN -c android.intent.category.HOME`), `settings get secure screensaver_components`, `settings get system screen_off_timeout`, `settings get secure sleep_timeout`, `saver.sh show` (city, layout, card), `pm list packages -d` (disabled list), `dumpsys package com.tcl.partnercustomizer | grep -i enabled`.
+ - after the reboot, press HOME once (shot): is our home in front? Report any value that changed across the reboot.
+
+D2 APP SWITCH SPEED AND JANK: `tester/perf/switch.sh` (YouTube, Netflix, Settings and back, 5 rounds) and `dumpsys gfxinfo sa.urtv.home framestats` after a 20 s D-pad walk on the home: push raw/gfxinfo.txt and the switch numbers. If jank on home > 15%, also `dumpsys gfxinfo sa.urtv.home` after a cold start.
+
+D3 SOAK (long Quran play, the «freeze after a day» report): start the Saudi Quran radio from the UI (HOME → «تلاوة وأذان» → «الإذاعات» → السعودية → OK), then run `tester/soak/` sampling every 5 min for 3 hours (PSS of sa.urtv.home, threads, `dumpsys media_session | grep -A3 sa.urtv`, logcat -b crash). TV stays muted. Then stop the radio. Push the CSV and say whether PSS grows.
+
+D4 ACCOUNTS AND ASSISTANT: open Android Settings → Accounts (or «الحسابات وتسجيل الدخول») and Google Assistant settings by D-pad with a shot per key; note any error dialog. `pm list packages -d | grep -i -E "account|auth|partner|sync|katniss|assistant|usercenter"`. Do not change anything; just report.
+
+D5 KEYS: with our home in front, press each colour/app key on the remote one at a time (Netflix, YouTube, Prime, apps key, Settings key, voice key), shot after each, then HOME. Report which key opened what, and which did nothing. `logcat -d -s UrTVKeys:V UrTVHome:V` after.
+
+D6 USB (only if a USB stick is already plugged in; do not ask the family): `sm list-volumes all` and whether «أضف من فلاشة أو التنزيلات» lists it.
+
+D7 SETTINGS, presses: from HOME to «الإعدادات» in couch with stocks, and in the settings to «أذاني من ملف», «الأدعية والتذكيرات», «احذف صورة»: count presses, shot each step.
+
+At the end: restore settings, muted, HOME. Write tester/diag/SUMMARY.md: per section PASS/FAIL and the numbers.
+
 ▶▶ UPDATE (28 Nov, 09:50): the fixed round.sh is on origin/work/44-beta4 afab5a3b. Before your next run: `git fetch origin work/44-beta4 && git checkout origin/work/44-beta4 -- tester/auto` (only the tester/auto folder). It now restores the home layout, the home card and each prayer's own voice/screen. On build 654 it SKIPS the settings-style walk (the old build cannot report the style); on the newer apk-next it runs it. Still compare `saver.sh show` with show-before.txt at the end.
 
 ▶▶ WARNING (28 Nov, 09:45): round.sh does NOT yet restore everything on a real TV (review F102): homelayout, the home card, the settings style and a prayer's own adhan voice may stay changed. After EVERY round.sh run, compare `saver.sh show` with your show-before.txt and put back by hand anything that differs (homelayout couch, home-card stocks, the voices per prayer) before you stop. A fixed round.sh is coming.
